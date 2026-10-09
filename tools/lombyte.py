@@ -21,8 +21,9 @@ Lombyte's FUN_LNN_xxxxxxxx against every function
 config/overlays/functions.tsv places in level NN (its shared code is
 named after level 00, as ours is). Each pair records how it was found
 ("us_map" or "sizes"). It lives in build-sn/lombyte_ntsc_pal_map.json.
-Lombyte is looked for in $LOMBYTE, else ~/Projects/Lombyte, else the
-pinned checkout tools/ntsc_source.py fetches (python3 tools/ntsc_source.py fetch).
+Lombyte is looked for in $LOMBYTE, else next to this tree inside OpenRAC
+(games/rac1/ntsc), else ~/Projects/Lombyte, else the pinned checkout
+tools/ntsc_source.py fetches (python3 tools/ntsc_source.py fetch).
 """
 from __future__ import annotations
 import difflib
@@ -41,7 +42,21 @@ def _default_lombyte() -> Path:
     return ntsc_source.cache_root() / ntsc_source.pin()[1]
 
 
-LOMBYTE = Path(os.environ["LOMBYTE"]) if os.environ.get("LOMBYTE") else _default_lombyte()
+def _openrac_top() -> Path | None:
+    """OpenRAC's top directory when this tree is inside it: the nearest parent
+    with games/rac1/game.json, at any depth (games/rac1 or games/rac1/pal)."""
+    for parent in ROOT.parents:
+        if (parent / "games/rac1/game.json").is_file():
+            return parent
+    return None
+
+
+# Inside OpenRAC, Lombyte is this game's other region, games/rac1/ntsc, and
+# OpenRAC keeps a copy of the report its CI publishes (tools/openrac.py progress --fetch).
+OPENRAC = _openrac_top()
+LOMBYTE = (Path(os.environ["LOMBYTE"]) if os.environ.get("LOMBYTE")
+           else OPENRAC / "games/rac1/ntsc" if OPENRAC and (OPENRAC / "games/rac1/ntsc").is_dir()
+           else _default_lombyte())
 MAP = ROOT / "build-sn/lombyte_ntsc_pal_map.json"
 US_MAP = ROOT / "config/overlays/us_map.tsv"
 US_EXE_DELTA = 0xFF080      # SCUS-97199: vram - file offset of its one loaded segment
@@ -52,8 +67,10 @@ def their_report(lombyte: Path = LOMBYTE) -> dict | None:
     """Lombyte's progress report, or None. It was committed as
     progress/report.json until their #64; since then their CI publishes
     it as report.json on the `progress` branch, and their
-    scripts/progress-report.py writes build/progress/report.json."""
-    for path in (lombyte / "progress/report.json", lombyte / "build/progress/report.json"):
+    scripts/progress-report.py writes build/progress/report.json; inside
+    OpenRAC, progress/sources/rac1-ntsc.json holds a copy of the published one."""
+    copies = [OPENRAC / "progress/sources/rac1-ntsc.json"] if OPENRAC else []
+    for path in (lombyte / "progress/report.json", lombyte / "build/progress/report.json", *copies):
         if path.exists():
             return json.loads(path.read_text())
     for ref in ("origin/progress", "progress"):
