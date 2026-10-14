@@ -6,6 +6,7 @@ The following functions adapt source from
 [Lombyte](https://github.com/mateuszklysz/Lombyte) for the PAL executable:
 
 - `src/overlays/l05_rilgar/vendor_002D28D0.c`: `func_L05_003054B0` (path collision and nearest wall distance; adapts this project's matched `func_L00_00262DF0`, based on Lombyte's `src/overlays/shared/gameplay/state/00261968.c`, `FUN_L00_00261d78`, MIT; the distance tracking and return follow the PAL assembly)
+- `src/overlays/l02_aridia/vendor_002A59D8.c`: `func_L02_002D5250` (Sandshark updater; adapted from Lombyte's matched US `FUN_L02_002d3e50`, with PAL state flow, helper addresses, data mappings, and field offsets reconciled against retail assembly; MIT)
 - `src/overlays/shared/mobyfunc_0024FD50.c`: `func_L00_00250478` (animation frame packet builder; `overlays/shared/gameplay/state/0024eec0.c`, `FUN_L00_0024f440`)
 - `src/overlays/shared/vendor_002E1660.c`: `func_L00_002E72E8` (follow camera approach; `overlays/shared/gameplay/vendor/002e5e38.c`, `follow_camera_approach` / `FUN_L00_002e5e38`)
 - `src/core/00119328.c`: `func_001194C8` (`topThread`)
