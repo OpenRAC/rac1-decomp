@@ -55,7 +55,7 @@ classes through, each caught only by luck:
    `st_size`.
 
 **Where the numbers live.** `progress/report.json` (published on
-[decomp.dev](https://decomp.dev/OpenRAC/rac1-decomp)) is the source of
+[ByteMatch](https://bytematch.dev/OpenRAC/rac1-decomp)) is the source of
 truth for what has source and what is finished. `tools/gen_progress_report.py`
 regenerates it from a from-scratch build, and CI fails when it is out of
 date with `src/` or the original-assembly manifests. The report counts

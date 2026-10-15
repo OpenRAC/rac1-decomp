@@ -138,8 +138,9 @@ resident and is shared by every level.
    `src/overlays/`. In `progress/report.json` the shared code is one unit
    ("Shared level code", category `common`) and each level is one
    unit named after it ("Level 04: Eudora", categories `levels` and
-   `level_NN`), so each distinct function counts once. decomp.dev lays
-   its treemap out in report order with no border around a group: one
+   `level_NN`), so each distinct function counts once. decomp.dev, which
+   published the report first, laid its treemap out in report order with
+   no border around a group: one
    unit per level makes each level one box, and the shared files sit
    side by side. The executable's units and categories
    stay as they are; the report's totals cover everything, so its
