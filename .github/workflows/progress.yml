@@ -1,16 +1,17 @@
-# decomp.dev progress report.
+# ByteMatch progress report (https://bytematch.dev/OpenRAC/rac1-decomp).
 #
-# decomp.dev reads objdiff's report.json from an artifact named
-# "<VERSION>_report" on the default branch. This job does NOT build the
-# game: the SN ProDG toolchain and the retail executable cannot be
-# redistributed, so neither is available here. The report is generated
-# locally from a from-scratch build (tools/gen_progress_report.py) and
-# committed as progress/report.json; this job only proves it is current,
-# validates it, and uploads it. It holds names, addresses, sizes and
-# percentages -- no retail bytes.
+# ByteMatch reads objdiff's report.json from an artifact named
+# "<VERSION>_report", from successful push runs on the default branch.
+# This job does NOT build the game: the SN ProDG toolchain and the
+# retail executable cannot be redistributed, so neither is available
+# here. The report is generated locally from a from-scratch build
+# (tools/gen_progress_report.py) and committed as progress/report.json;
+# this job only proves it is current, validates it, and uploads it. It
+# holds names, addresses, sizes and percentages -- no retail bytes.
 #
-# The repository must be registered once by hand at
-# https://decomp.dev/manage/new; this workflow alone does not add it.
+# The repository must be registered once by hand on https://bytematch.dev
+# (sign in with GitHub, Manage, Add project); this workflow alone does not
+# add it.
 name: Progress report
 
 on:
