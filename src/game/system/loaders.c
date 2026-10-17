@@ -1840,9 +1840,21 @@ extern int active_class_resource_index MACRO_ADDR;
 extern int active_decode_buffer MACRO_ADDR;
 
 extern int class_resource_ids[];
+#ifdef OPENRAC_HOSTGEN
+/* These parallel class-resource arrays form one block. The first base is paired through its
+   level loader; the later arrays do not each have a direct address-forming instruction there,
+   so the port (OpenRAC's hostgen) reaches them from the first base and relocates them with it. */
+#undef compressed_class_resources
+#undef class_material_maps
+#undef class_runtime_indices
+#define compressed_class_resources ((int *)((char *)class_resource_ids + 0x60))
+#define class_material_maps ((char (*)[16])((char *)class_resource_ids + 0x120))
+#define class_runtime_indices ((short (*)[16])((char *)class_resource_ids + 0x2A0))
+#else
 extern int compressed_class_resources[];
 extern short class_runtime_indices[][16];
 extern char class_material_maps[][16];
+#endif
 extern unsigned char resident_indexed_textures[];
 extern GadgetRec item_info_table[];
 extern unsigned char gold_weapon_purchased[];
