@@ -2194,6 +2194,7 @@ func_L00_0024DFB0	src/overlays/shared/memcard_0024DFB0.c	match	00:0024CB88	20	10
 func_L00_0024DFC4	-	joined	00:0024CB9C	96	100.00
 func_L00_0024E798	-	asm	00:0024D370	352	100.00
 func_L00_0024E8FC	src/overlays/shared/miscproc_0024E798.c	match	00:0024D4D4	12	100.00
+func_L00_0024EBF8	-	asm	00:0024D7D0	40	100.00
 func_L00_0024EC20	-	asm	00:0024D7F8	28	100.00
 func_L00_0024EEF0	src/overlays/shared/missionfunc_0024EEF0.c	differs	00:0024DAC8	56	99.67
 func_L00_0024EF28	-	differs	00:0024DB00	244	0.00
@@ -3244,6 +3245,7 @@ func_L01_0031B450	src/overlays/shared/vendor_0031AD00.c	match	01:003199A8	176	10
 func_L01_0031B500	src/overlays/shared/vendor_0031AD00.c	match	01:00319A58	308	100.00
 func_L02_001FC308	src/overlays/shared/camera_001FC308.c	match	02:001FBF08	104	100.00
 func_L02_0020BF88	src/overlays/shared/draw_0020BF88.c	match	02:0020BB88	260	100.00
+func_L02_002100E8	-	asm	02:0020FCE8	48	100.00
 func_L02_0021A2E0	-	asm	02:002197B0	12	100.00
 func_L02_0021BC90	src/overlays/l02_aridia/help_0021BC90.c	differs	02:0021B160	1000	0.00
 func_L02_002205B0	src/overlays/l02_aridia/help_0021BC90.c	match	02:0021FA38	836	100.00

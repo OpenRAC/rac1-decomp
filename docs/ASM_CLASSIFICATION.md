@@ -160,3 +160,17 @@ working register: func_L00_001FF240, 001FF270, 001FF2C8, 001FF2F8, 001FF328, 001
 001FF500, 001FF610, 001FFCF8, 00200210, 00251468 and func_L06_002172B0.
 Then func_L00_001FF3E0 (`mtc1` in the `jr` delay slot, `$4` as scratch) and func_L00_001FFDD0 (an
 empty `jr` slot after four `sqc2`, which the assembler fills in any compiled copy).
+
+On 2026-10-21, two more level functions were listed by hand. Each is the level copy of an executable
+function that `config/handwritten_asm.txt` already lists:
+
+- func_L02_002100E8 (48 bytes, `shared/draw_0020BF88.c`, in seven levels) is func_001F9AF0 aimed at
+  DMA channel 0x1000D400 instead of 0x1000D000 (`config/overlays/variants.tsv` pairs them): `$at`
+  holds the channel base for four `sw`, with a hand-placed `nop` after the first;
+- func_L00_0024EBF8 (40 bytes, `shared/miscproc_0024E798.c`, in all 19 levels) is the first 40 bytes
+  of func_0020C758: a busy-wait on bit 8 of the word at `$3` with a `nop` after the load and after
+  the `andi`, empty delay slots and a `j` back to its own entry. The level catalogue cut that
+  function in two. The `teq` trap block after it is listed already: func_L00_0024EC20 in eight
+  levels, the 12-byte func_L01_00262BB0 in the other eleven.
+
+Lombyte keeps both NTSC-U copies (FUN_L02_002101b8 and FUN_L00_0024dbc0) as intentional assembly too.
