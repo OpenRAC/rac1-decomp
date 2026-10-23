@@ -29,17 +29,18 @@
 #
 # Environment:
 #   NTSC_DIR         the NTSC decomp checkout (default: versions/ntsc)
-#   RNC_WINE         passed through to the submodule's configure.py: the runner
-#                    for its SN tools (Ps2EeAs.exe, ee-gcc.exe). Set it to use
-#                    your own runner as is; unset (the default), the script
-#                    writes a `wine` shim into $NTSC_DIR/tools/hostbin (gitignored)
-#                    and points RNC_WINE at it. The shim:
+#   NTSC_WINE_SHIM   1 (the default): the submodule's configure.py runs its SN
+#                    tools (Ps2EeAs.exe, ee-gcc.exe) as `wine ...` from PATH (it
+#                    has no RNC_WINE override any more), so the script writes a
+#                    `wine` shim into $NTSC_DIR/tools/hostbin (gitignored) and puts
+#                    it first on PATH. The shim:
 #                    - runs each call in one of NTSC_WINE_SLOTS prefixes, so the
 #                      parallel ninja jobs do not queue behind one wineserver;
 #                    - keeps Wine headless and makes a crash exit instead of
 #                      hanging in winedbg; kills a call after NTSC_WINE_TIMEOUT s;
 #                    - runs Ps2EeAs.exe from a copy whose PE stack reservation is
 #                      NTSC_PS2EEAS_STACK_MB MiB (see below).
+#                    0: no shim, the `wine` already on PATH runs as is.
 #   NTSC_WINE_ROOT   a user-local Wine install (a directory with usr/bin/wine or
 #                    bin/wine: an extracted distro package or a portable build)
 #                    for hosts without system Wine or sudo (default: `wine` on PATH)
@@ -94,7 +95,7 @@ ISO=$(pick "${NTSC_ISO:-}" "$REPO/baserom/SCUS_971.99.iso" "$REPO/baserom/us/SCU
 # ------------------------------------------------------------ host shims
 HOSTBIN="$NTSC_DIR/tools/hostbin"   # tools/* is gitignored in the submodule
 
-if [[ -z "${RNC_WINE+x}" ]]; then
+if [[ "${NTSC_WINE_SHIM:-1}" != 0 ]]; then
     if [[ -n "${NTSC_WINE_ROOT:-}" ]]; then
         LOADER=
         for c in "$NTSC_WINE_ROOT/usr/bin/wine" "$NTSC_WINE_ROOT/bin/wine"; do
@@ -102,8 +103,9 @@ if [[ -z "${RNC_WINE+x}" ]]; then
         done
         [[ -n "$LOADER" ]] || die "NTSC_WINE_ROOT=$NTSC_WINE_ROOT has no usr/bin/wine or bin/wine"
     else
-        LOADER=$(command -v wine || true)
-        [[ -n "$LOADER" ]] || die "no wine on PATH: install Wine with 32-bit support, set NTSC_WINE_ROOT to a user-local Wine install, or RNC_WINE to a runner"
+        # the real wine, not a shim left on PATH by an earlier run
+        LOADER=$(PATH=$(printf '%s' "$PATH" | tr ':' '\n' | grep -vxF "$HOSTBIN" | paste -sd: -) command -v wine || true)
+        [[ -n "$LOADER" ]] || die "no wine on PATH: install Wine with 32-bit support or set NTSC_WINE_ROOT to a user-local Wine install"
     fi
     LOADER=$(cd -- "$(dirname -- "$LOADER")" && pwd -P)/$(basename -- "$LOADER")
     POOL=${NTSC_WINE_POOL:-$NTSC_DIR/build/wine-pool}
@@ -184,8 +186,7 @@ exit $status
 SHIM
     } > "$HOSTBIN/wine"
     chmod 0755 "$HOSTBIN/wine"
-    export RNC_WINE="$HOSTBIN/wine"
-    export PATH="$HOSTBIN:$PATH"   # setup.sh checks `command -v wine`
+    export PATH="$HOSTBIN:$PATH"   # configure.py runs `wine`, setup.sh checks `command -v wine`
     say "Wine: $LOADER via $HOSTBIN/wine ($SLOTS prefixes in $POOL)"
 fi
 
