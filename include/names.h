@@ -1311,8 +1311,8 @@
 #define LaunchTriggerUpdate                             func_L06_002FEE60
 #define DrawBeam                                        func_L06_00300AB0
 #define SetMobyGroupDormant                             func_L06_00301068
-#define CameraTakeoverTriggerUpdate                     func_L06_003010E0
-#define MobyBreakAndBurst                               func_L06_003016B8
+#define containment_tube_update                         func_L06_003010E0
+#define containment_tube_break                          func_L06_003016B8
 #define DrawBackdropMesh                                func_L06_00301848
 #define SpawnRandomDebris                               func_L06_003020B8
 #define fred_update                                     func_L06_003024C8

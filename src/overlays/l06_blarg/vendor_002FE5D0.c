@@ -439,8 +439,8 @@ extern float D_0015EE70 MACRO_ADDR;
 #define D_L06_001620E0_ff (*(float *)&D_L06_001620E0)
 #define frame_time_ff D_0015EE6C
 #define frame_time_sq_ff D_0015EE70
-/* Moby update for a camera-takeover trigger that scripts the camera, then returns control to the hero. */
-void CameraTakeoverTriggerUpdate(char *moby) {
+/* A glass containment tube holding a creature: when its energy sphere is hit, a short camera shot of the tube, then the tube breaks and control returns to the hero. */
+void containment_tube_update(char *moby) {
     int *data = *(int **)(moby + 0x78);
     float pos[4], rot[4], from[4], target[4], offset[4];
     int base;
@@ -591,7 +591,7 @@ extern float D_0015EE6C MACRO_ADDR;
 extern short D_L06_001620DC;
 
 /* Replaces the moby with a broken copy (type 0x43C); with burst set, also throws 50 pieces around it. */
-void MobyBreakAndBurst(char *m, int burst) {
+void containment_tube_break(char *m, int burst) {
     char *n;
     float w[4];
     float v[4];

@@ -1439,8 +1439,8 @@ func_L06_002FE4B8	RegisterMobyDrawCallbacks	descriptive	config/names_local.tsv	r
 func_L06_002FEE60	LaunchTriggerUpdate	descriptive	config/names_local.tsv	trigger moby: waits for hero in zone, plays open anim, launches a moby (comment)	
 func_L06_00300AB0	DrawBeam	descriptive	config/names_local.tsv	draws the beam as 15 textured quads (comment)	
 func_L06_00301068	SetMobyGroupDormant	descriptive	config/names_local.tsv	puts every moby in group idx into the dormant state (comment)	
-func_L06_003010E0	CameraTakeoverTriggerUpdate	descriptive	config/names_local.tsv	camera-takeover trigger scripts camera then returns control (comment)	
-func_L06_003016B8	MobyBreakAndBurst	descriptive	config/names_local.tsv	replaces moby with a broken copy, optional burst of pieces (comment)	
+func_L06_003010E0	containment_tube_update	descriptive	config/names_local.tsv	moby class 1083 (Blarg Station only), the glass containment tube between a cap and a base that holds a creature (an alien snapper where seen): it waits for its linked energy sphere, and when the hero hits the sphere it plays a short camera shot of the tube (within 32 units), turns its linked contents toward the hero and breaks. Seen in game, class confirmed with the port's moby inspector (Christopher)	CameraTakeoverTriggerUpdate,snapper_cage_update
+func_L06_003016B8	containment_tube_break	descriptive	config/names_local.tsv	called by containment_tube_update: replaces the tube with class 1084 (the broken tube, seen in its place in game) at the same position, hides the intact one and scatters 50 debris pieces around it (the falling glass shards). Seen in game (Christopher)	MobyBreakAndBurst,snapper_cage_break
 func_L06_00301848	DrawBackdropMesh	descriptive	config/names_local.tsv	draws the 64 quads of the backdrop mesh (comment)	
 func_L06_003020B8	SpawnRandomDebris	descriptive	config/names_local.tsv	spawns debris moby with random class and spin (comment)	
 func_L06_003024C8	fred_update	descriptive	the NTSC decomp	fred_update at US level 06 0x00301070 (src/overlays/l06/gameplay/entities/fred.c); US function table counterpart	Moby1105Update
