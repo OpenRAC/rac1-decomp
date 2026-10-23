@@ -2,8 +2,6 @@
 # to the NTSC decomp: our C builds the NTSC-U bytes and the NTSC decomp has not matched it (a pull request
 # there); from the NTSC decomp: matched there, not here. Names, places and directions only.
 # name	direction	NTSC decomp name	NTSC-U place
-func_001FAB40	to the NTSC decomp	FA	boot:001FA978
-func_001FDF78	to the NTSC decomp	draw_level_selection_map	boot:001FD748
 func_00216C50	to the NTSC decomp	music_transition	boot:00215E00
 func_0022FDC0	from the NTSC decomp	update_level_gameplay_frame	boot:0022EAA8
 func_00238D90	from the NTSC decomp	project_graphics_bounds	boot:00237A78
