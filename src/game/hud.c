@@ -968,36 +968,57 @@ extern int *D_00161000 MACRO_ADDR;
    arena's +0xC word. The payload is written through the advanced
    D_00161000 (retail stores relative to it), and the arena is reached
    through a local pointer so its address is built in a register. */
-void append_power_of_two_textured_screen_sprite(long arg0, int arg1, int arg2, int arg3, int arg4,
-                    int arg5, int arg6, int arg7, int arg8, int arg9) {
-    int *base;
-    long *p;
-    char *arena = D_0019A4E8_raw;
+struct SpritePacket {
+    u32 dma_word0;
+    u32 dma_addr;
+    u32 dma_word2;
+    u32 dma_word3;
+    u64 gif_tag;
+};
 
-    D_00161000[0] = 0x10000005;
-    D_00161000[1] = 0;
-    D_00161000[2] = 0;
-    D_00161000[3] = 0x50000005;
+typedef struct {
+    struct SpritePacket *p;
+} SpriteCursor;
 
-    base = D_00161000;
-    D_00161000 = base + 4;
-    p = (long *)D_00161000;
-    p[0] = 0x7400000000008001L;
-    p[1] = 0x5353106;
-    p[2] = arg0;
-    p[3] = 0x156;
-    p[4] = ((long)arg9 << 24) | 0x7F7F7F;
-    p[5] = arg7 | ((long)arg8 << 16);
-    p[6] = (arg1 + D_0013E600[4] - 8)
-         | ((long)(arg2 + D_0013E600[5] - 8) << 16)
-         | ((long)*(int *)(arena + 0xC) << 32);
-    p[7] = (arg7 + (1 << (arg3 + 4)))
-         | ((long)(arg8 + (1 << (arg4 + 4))) << 16);
-    p[8] = (arg1 + arg5 + D_0013E600[4] - 8)
-         | ((long)(arg2 + arg6 + D_0013E600[5] - 8) << 16)
-         | ((long)*(int *)(arena + 0xC) << 32);
-    p[9] = 0;
-    D_00161000 = (int *)((char *)D_00161000 + 0x50);
+/* The HUD arena's depth word at +0xC (sprite_depth_state.z_and_fog in the NTSC decomp). */
+struct SpriteDepthState {
+    u8 pad_00[0xC];
+    s32 z_and_fog;                 /* 0x0C */
+};
+
+extern SpriteCursor render_packet_cursor __asm__("D_00161000") MACRO_ADDR;
+
+void append_power_of_two_textured_screen_sprite(long texture_register_value, s32 screen_x, s32 screen_y,
+                                                s32 texture_width_log2, s32 texture_height_log2,
+                                                s32 screen_width, s32 screen_height, s32 texture_u,
+                                                s32 texture_v, s32 alpha) {
+    struct SpritePacket *tag;
+    u64 *packet_words;
+    struct SpriteDepthState *arena = (struct SpriteDepthState *)D_0019A4E8_raw;
+
+    render_packet_cursor.p->dma_word0 = 0x10000005;
+    render_packet_cursor.p->dma_addr = 0;
+    render_packet_cursor.p->dma_word2 = 0;
+    render_packet_cursor.p->dma_word3 = 0x50000005;
+    tag = render_packet_cursor.p;
+    packet_words = (u64 *)((u8 *)tag + 0x10);
+    render_packet_cursor.p = (struct SpritePacket *)packet_words;
+    tag->gif_tag = 0x7400000000008001;
+    packet_words[1] = 0x5353106;
+    packet_words[2] = texture_register_value;
+    packet_words[4] = ((s64)alpha << 24) | 0x7F7F7F;
+    packet_words[3] = 0x156;
+    packet_words[5] = texture_u | ((s64)texture_v << 16);
+    packet_words[6] = (screen_x + D_0013E600[4] - 8)
+                    | ((s64)(screen_y + D_0013E600[5] - 8) << 16)
+                    | ((long)arena->z_and_fog << 32);
+    packet_words[7] = (texture_u + (1 << (texture_width_log2 + 4)))
+                    | ((s64)(texture_v + (1 << (texture_height_log2 + 4))) << 16);
+    packet_words[8] = (screen_x + screen_width + D_0013E600[4] - 8)
+                    | ((s64)(screen_y + screen_height + D_0013E600[5] - 8) << 16)
+                    | ((long)arena->z_and_fog << 32);
+    packet_words[9] = 0;
+    render_packet_cursor.p = (struct SpritePacket *)((u8 *)render_packet_cursor.p + 0x50);
 }
 
 extern int *D_00161000 MACRO_ADDR;

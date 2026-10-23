@@ -654,37 +654,51 @@ typedef struct {
    through a `next` named at the top of the body (retail computes p + 1
    there), and the joint loop tests and breaks before its increment: in
    a do/while the increment is an expression GCSE hoists to the loop top. */
+/* The class header's GIF table pointer (MobyClass.gifs at +0x20). The rest of the class is not read here. */
+typedef struct {
+    u8 pad_00[0x20];
+    MobyJoint *gifs;
+} MobyClassGifs;
+
+/* Texture index range used when patching GIF packets. */
+struct TexRemap {
+    s16 lo;
+    s16 hi;
+};
+
 void PatchMobyGifs(void) {
-    int *p;
-    int *next;
+    s32 *id;
+    s32 *next;
+    MobyJoint *gif_entry;
+    u8 *tex;
+    u32 *gif;
+    struct TexRemap *texture_remap;
 
-    for (p = moby_class_rectify; *p >= 0; p = next) {
-        MobyJoint *joint;
+    for (id = moby_class_rectify; *id >= 0; id = next) {
+        MobyClassGifs *cls;
 
-        next = p + 1;
-        joint = *(MobyJoint **)(*(char **)((char *)moby_class_resources + *p * 4) + 0x20);
-        for (;;) {
-            unsigned char *t = joint->tags;
-            char *entry = (char *)(joint->entry & 0x7FFFFFFF);
-
-            while (*t != 0xFF) {
-                short *lut = moby_gs_loc_stash + *t * 2;
-                short v;
-                v = lut[0];
-                if (v != 0) {
-                    *(int *)(entry + 0x30) = (*(int *)(entry + 0x30) & 0xFFFFC000) | v;
-                }
-                v = lut[1];
-                t++;
-                if (v != 0) {
-                    *(int *)(entry + 0x40) = (*(int *)(entry + 0x40) & 0xFFFFC000) | v;
-                }
-                entry += 0x40;
+        next = id + 1;
+        cls = ((MobyClassGifs **)moby_class_resources)[*id];
+        gif_entry = cls->gifs;
+        for (;; gif_entry++) {
+            gif = (u32 *)(gif_entry->entry & 0x7FFFFFFF);
+            tex = gif_entry->tags;
+            if (*tex != 0xFF) {
+                do {
+                    texture_remap = &((struct TexRemap *)moby_gs_loc_stash)[*tex];
+                    if (texture_remap->lo != 0) {
+                        gif[12] = (gif[12] & 0xFFFFC000) | texture_remap->lo;
+                    }
+                    if (texture_remap->hi != 0) {
+                        gif[16] = (gif[16] & 0xFFFFC000) | texture_remap->hi;
+                    }
+                    tex++;
+                    gif += 16;
+                } while (*tex != 0xFF);
             }
-            if (joint->entry < 0) {
+            if (gif_entry->entry < 0) {
                 break;
             }
-            joint++;
         }
     }
 }

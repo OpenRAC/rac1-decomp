@@ -1165,20 +1165,29 @@ int PlayBankSound(int idx, int arg1, int arg2) {
 
 extern int D_0015F710 MACRO_ADDR;
 
-int allocate_voice_for_group_entry(int rel, int arg1, int arg2) {
-    int idx = rel + D_0015F694;
-    int h;
+struct VoiceGroupEntryWindow {
+    u8 pad_00[0x7E];
+    s16 linked_index;          /* 0x7E */
+    u8 pad_80[0x8];
+    s32 owner;                 /* 0x88 */
+};
 
-    if (idx >= level_sound_def_count) {
+int allocate_voice_for_group_entry(int group_entry_index, int flags, int owner) {
+    int entry_index;
+    int slot_index;
+    struct VoiceGroupEntryWindow *slot;
+
+    entry_index = group_entry_index + D_0015F694;
+    if (entry_index >= level_sound_def_count) {
         return -1;
     }
-    h = allocate_voice_slot(level_sound_defs + idx * 32, arg1, arg2, 0, 0x400);
-    if (h >= 0) {
-        char *rec = D_0013E650 + h * 0x70;
-        *(int *)(rec + 0x88) = arg2;
-        *(short *)(rec + 0x7E) = idx;
+    slot_index = allocate_voice_slot(level_sound_defs + entry_index * 32, flags, owner, 0, 0x400);
+    if (slot_index >= 0) {
+        slot = (struct VoiceGroupEntryWindow *)(D_0013E650 + slot_index * 0x70);
+        slot->owner = owner;
+        slot->linked_index = entry_index;
     }
-    return h;
+    return slot_index;
 }
 
 LINKER_REMNANT("asm/remnants/text", func_0022EF50);
@@ -1186,6 +1195,18 @@ LINKER_REMNANT("asm/remnants/text", func_0022EF50);
 static inline char *SndSys(void) {
     return D_0013E650;
 }
+
+typedef struct VoiceRequest {
+    u8 pad_00[4];
+    void (*fn)(struct VoiceRequest *);
+    u8 pad_08[0x88];
+} VoiceRequest;
+
+typedef struct VoiceRequestTable {
+    u8 pad_000[0xD90];
+    s32 count;
+    VoiceRequest *handlers;
+} VoiceRequestTable;
 
 /*
  * Calls each entry's +4 callback in the sound system's 0x90-byte entry
@@ -1197,12 +1218,13 @@ static inline char *SndSys(void) {
  * offset-first addu.
  */
 void enqueue_voice_request(void) {
-    int i;
-    for (i = 0; i < *(int *)(SndSys() + 0xD90); i++) {
-        char *e = (char *)(i * 0x90 + *(int *)(SndSys() + 0xD94));
-        void (*fn)(char *) = *(void (**)(char *))(e + 4);
-        if (fn != 0) {
-            fn(e);
+    s32 i;
+
+    for (i = 0; i < ((VoiceRequestTable *)SndSys())->count; i++) {
+        VoiceRequest *handler = (VoiceRequest *)(i * 0x90 + (s32)((VoiceRequestTable *)SndSys())->handlers);
+
+        if (handler->fn != 0) {
+            handler->fn(handler);
         }
     }
 }

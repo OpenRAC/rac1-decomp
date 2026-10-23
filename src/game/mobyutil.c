@@ -172,16 +172,26 @@ extern int D_00160000 MACRO_ADDR;
 /* Looks arg0 up in the {key, a, b} table D_001E8F00 (ended by key -1).
    D_00160000 is read at every use, not cached in a local: CSE then
    reproduces retail's load order and its surviving register copy. */
-void assign_moby_class_data(int arg0) {
-    char *m = moby_class_resources[D_00160000];
+struct Obj {
+    u8 pad_00[0x2C];
+    s32 extra;                       /* 0x2C */
+};
+
+/* Looks id up in the {key, a, b} table D_001E8F00 (ended by key -1).
+   D_00160000 is read at every use, not cached in a local: CSE then
+   reproduces retail's load order and its surviving register copy. */
+
+void assign_moby_class_data(int id) {
+    struct Obj *class_resource;
     int i = 0;
 
-    while (D_001E8F00[i].key != -1 && D_001E8F00[i].key != arg0) {
+    class_resource = moby_class_resources[D_00160000];
+    while (D_001E8F00[i].key != -1 && D_001E8F00[i].key != id) {
         i++;
     }
     D_001B3900[D_00160000] = D_001E8F00[i].a;
-    if (m != 0) {
-        *(int *)(moby_class_resources[D_00160000] + 0x2C) = D_001E8F00[i].b;
+    if (class_resource != 0) {
+        ((struct Obj *)moby_class_resources[D_00160000])->extra = D_001E8F00[i].b;
     }
 }
 

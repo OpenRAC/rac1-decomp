@@ -661,13 +661,19 @@ LINKER_REMNANT("asm/remnants/text", func_0022C9A0);
 extern void func_0022CA00(void *);
 extern void func_0022CC40(void *);
 
+/* Minimal layout for one sky shell: only the flag at +4 is read here. */
+struct SkyShell {
+    u8 pad_0[4];
+    s32 gouraud_enabled;   /* 0x04: nonzero draws the Gouraud path */
+};
+
 /* SkyDrawShell(int) */
-void SkyDrawShell(int idx) {
+void SkyDrawShell(s32 shell_index) {
     SkyDef *def = level_sky_effect_data;
 
-    if (idx < def->count) {
-        void *shell = def->shells[idx];
-        if (*(int *)((char *)shell + 4) != 0) {
+    if (shell_index < def->count) {
+        struct SkyShell *shell = def->shells[shell_index];
+        if (shell->gouraud_enabled != 0) {
             SkyDrawShellGouraud(shell);
         } else {
             SkyDrawShellTextured(shell);

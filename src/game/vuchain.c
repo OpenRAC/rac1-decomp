@@ -492,6 +492,10 @@ extern int D_0013E600[];
    same packet VU1_addGSregister (func_00234C98) builds. Each clamp is a
    `cond ? bound : arg` select assigned back to the argument, and the
    fields are sign-extended to 64 bits, not zero-extended. */
+/* VU1_setScissor(x0, x1, y0, y1): clamps the rectangle to the screen
+   (D_0013E600[0]/[1] are its width and height) and queues it as GS
+   register 0x40 (SCISSOR_1: x0 | x1 << 16 | y0 << 32 | y1 << 48) in the
+   same packet VU1_addGSregister (func_00234C98) builds. */
 void VU1_setScissor(int x0, int x1, int y0, int y1) {
     x0 = x0 < 0 ? 0 : x0;
     x1 = x1 > D_0013E600[0] - 1 ? D_0013E600[0] - 1 : x1;
@@ -505,7 +509,7 @@ void VU1_setScissor(int x0, int x1, int y0, int y1) {
     D_00161000[5] = 0x10000000;
     D_00161000[6] = 0xE;
     D_00161000[7] = 0;
-    *(long *)((char *)D_00161000 + 0x20) =
+    *(long *)(D_00161000 + 8) =
         (long)x0 | ((long)x1 << 16) | ((long)y0 << 32) | ((long)y1 << 48);
     D_00161000[10] = 0x40;
     D_00161000[11] = 0;
