@@ -161,7 +161,7 @@ itself, with its own compilers and tools; this repository adds only the glue:
 `tools/build_ntsc.sh` runs the submodule's own entry points on Linux (its `setup.sh --elf`,
 `make elf`, `make overlays`), taking the executable from `baserom/us/SCUS_971.99` and the disc image
 from `baserom/SCUS_971.99.iso`; its header lists the settings for a host without system Wine. On
-2026-10-22, at 4e1f255e, it ends in `PASS: reconstructed boot ELF matches retail` and
+2026-10-23, at c41bf1c3, it ends in `PASS: reconstructed boot ELF matches retail` and
 `PASS: all 3002 overlay functions in C match retail` (with all 6,630 level data objects in C). CI runs the submodule's
 `scripts/gen_progress_report.py` and uploads its report as `SCUS_971.99_report`.
 
