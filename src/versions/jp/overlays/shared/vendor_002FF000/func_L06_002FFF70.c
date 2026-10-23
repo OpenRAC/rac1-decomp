@@ -16,7 +16,7 @@ void func_L06_002FFF70(char *m) {
 
     d = *(char **)(m + 0x78);
     *(float *)(m + 0x2C) = *(float *)(*(char **)(m + 0x24) + 0x24) * *(float *)&D_L06_00162038;
-    FanMobyUpdate(m);
+    update_blarg_space_commando_beam(m);
     if (*(int *)(d + 0x38) != 0) {
         *(int *)(d + 0x188) = truncate_float_to_s32(func_001F9878(random_float_between(180.0f, 240.0f)));
         *(int *)(d + 0x38) = 0;

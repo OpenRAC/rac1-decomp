@@ -1,4 +1,4 @@
-void CollectableCrateUpdate(char *m) {
+void update_moby_hit_stats_and_state(char *m) {
     char *d = *(char **)(m + 0x78);
     char *info = MobyGetHitMessage(m, 0x330000, 0);
     char *g;

@@ -217,5 +217,5 @@ void JetFighterUpdateL13(Jet47 *m) {
     if (m->position[2]>1008.0f) m->position[2]=1008.0f;
     state=m->state;
     if ((unsigned char)state==4) { qcopy_nc(D_0013E633+0xE9D,m->position); qcopy_nc(D_0013E633+0xEAD,d->angles); }
-    if ((unsigned int)(state-3)<2 || (unsigned char)state==8) SpawnExhaustTrail(m,(char*)d);
+    if ((unsigned int)(state-3)<2 || (unsigned char)state==8) spawn_fighter_jet_joint_particles(m,(char*)d);
 }

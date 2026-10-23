@@ -15,7 +15,7 @@ extern int func_001F9850(int);
 extern int D_L15_0016027C SDATA(D_L15_0016027C);
 
 // spawns a particle at a position offset from a moby
-void PartType31Spawn(int a0, void *a1, char *a2) {
+void spawn_owner_target_particle(int a0, void *a1, char *a2) {
     struct { u128 pos, s, d; } scratch;
     Particle5F0A0 *p;
     Owner5F0A0 *owner = (Owner5F0A0 *)a2;

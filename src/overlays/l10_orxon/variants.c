@@ -12,7 +12,7 @@ extern int D_0015EF88 MACRO_ADDR;
 void SkyFrameDraw(void) {
     SetupSkyGifPaging();
     if (D_0015EE84_m == 10) {
-        SkyShellsRotateByIndex();
+        draw_sky_shells_with_scaled_phase_rotation();
     } else {
         update_sky_shells_static();
     }

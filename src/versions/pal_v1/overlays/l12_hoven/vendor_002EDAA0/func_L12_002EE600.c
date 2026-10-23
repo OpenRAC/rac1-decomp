@@ -1,4 +1,4 @@
-void HovenChallengeUpdate(char *m) {
+void update_hoven_help_and_dialogue(char *m) {
     int *d = *(int **)(m + 0x78);
     if (count_group_e81e0(d[3], -1) == 0) {
         unsigned char *s = D_0013D50F_e + 1;

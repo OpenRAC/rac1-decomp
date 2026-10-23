@@ -1,4 +1,4 @@
-void EnvMappedPickupUpdate(unsigned char *m) {
+void update_moby_proximity_interaction(unsigned char *m) {
     char *d = *(char **)(m + 0x78);
     float *p;
     float tmp[4];
@@ -64,7 +64,7 @@ void EnvMappedPickupUpdate(unsigned char *m) {
                 StartCutscene(5);
                 q[0x49] = 1;
             } else if ((q = D_0013D355 + 0x13B)[0x4A] == 0 && D_0013DE4B[8] != 0) {
-                PlayMovieEntryIfIdle(0xB);
+                start_indexed_disc_stream(0xB);
                 q[0x4A] = 1;
             } else if ((q = D_0013D355 + 0x13B)[0x4B] == 0 && D_0013DE4B[8] != 0) {
                 StartCutscene(6);

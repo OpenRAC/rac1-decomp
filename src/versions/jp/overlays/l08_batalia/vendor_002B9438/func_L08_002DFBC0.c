@@ -1,4 +1,4 @@
-void Moby438Update(char *m) {
+void update_path_following_moby(char *m) {
     float a[4];
     float b[4];
     char *d = *(char **)(m + 0x78);

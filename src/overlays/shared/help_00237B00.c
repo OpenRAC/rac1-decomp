@@ -9,7 +9,7 @@ extern float func_00214D28(float *p, float target, float maxstep);
 extern unsigned char D_0013E633[] NOT_SDA;
 
 /* Steps two floats of arg toward a target and clamps them to [-1, 1]. */
-void Hero_SmoothStickInput(float *out, float *p, float step) {
+void smooth_and_clamp_value_pair(float *out, float *p, float step) {
     char *g = (char *)D_0013E633 + 0xE1D;
     float v[2];
     v[0] = -*(float *)(g + 0x1D20);
@@ -96,7 +96,7 @@ typedef struct {
 } Sel;
 
 /* Applies the item selection for slot i: resolves pending, queued and requested items and refreshes the slot when it changes. */
-void HeroL05_UpdateItemSelection(int i) {
+void apply_hero_item_slot_selection(int i) {
     int changed;
     int flag6;
     int flag4;
@@ -290,7 +290,7 @@ void HeroL05_UpdateItemSelection(int i) {
         int *s;
         int *sb;
         if (*(unsigned char *)((char *)g + 0x1FF5) != 0) {
-            Hero_SpawnSlotProjectiles();
+            replenish_hero_drones();
             g->a[i] = 0;
         }
         sb = g->a;
@@ -364,7 +364,7 @@ void HeroL05_UpdateItemSelection(int i) {
     if (changed) {
         Sel *g = (Sel *)(D_0013E633 + 0xE1D);
         *(int *)((char *)g + i * 0x50 + 0x10B0) = 3;
-        Hero_ClearSlotPairs();
+        clear_hero_idle_rotation_targets();
         *(int *)((char *)g + 0x1010) = rand_range(scale_ticks(0x32), scale_ticks(0x5A));
         Hero_StartEventTimer(*((int *)(D_0013E633 + 0xE1D + 0x20D4) + i));
         Hero_StartEventAnim(*((int *)(D_0013E633 + 0xE1D + 0x20D4) + i));
@@ -444,7 +444,7 @@ extern void func_001FA540_4C558(void *, void *, void *) __asm__("func_001FA540")
 extern void func_001FA480_4C558(void *, void *) __asm__("func_001FA480");
 
 /* Adapted from Lombyte (MIT) for PAL: src/overlays/shared/ui/help/00237488.c, FUN_L05_0024bdc0. */
-void HeroL05_UpdateCollisionProbes(void) {
+void update_hero_movement_and_collision_probes(void) {
     float start[4], end[4], probe[4];
     u128_4C558 moby_rotation[4], rotation[4], combined[4];
     float distance;
@@ -515,7 +515,7 @@ extern int func_L00_001F3958(void);
 extern void func_L05_0024D680(int, int);
 
 /* Decides whether the hero's current motion warrants the swing effect, running a probe when the conditions line up. */
-int Hero_ShouldSwing(void) {
+int try_apply_hero_water_and_ground_transitions(void) {
     char *g = (char *)D_0013E633 + 0xE1D;
     int ret;
     int k = *(int *)(g + 0x208C);
@@ -686,7 +686,7 @@ int HeroL05_GadgetInput(void) {
             if (m == 0) {
                 break;
             }
-            if (!IsMobyClass47(m)) {
+            if (!is_wrench_moby(m)) {
                 break;
             }
             if (m->state != 0) {
@@ -694,7 +694,7 @@ int HeroL05_GadgetInput(void) {
             }
             if ((D_0013CA40_p2523C8.held & 0xA) || ((D_0013F450_h2523C8.state.current == 1 || D_0013F450_h2523C8.state.current == 0x1E) && D_0013F450_h2523C8.state_timer > scale_ticks(0x14))) {
                 if ((D_0013F450_h2523C8.state.current == 1 || D_0013F450_h2523C8.state.current == 0x1E) && D_0013F450_h2523C8.state_timer > scale_ticks(0x14)) {
-                    LaunchGadgetMoby();
+                    launch_hero_wrench();
                     break;
                 }
                 func_L05_0024D680_2523C8(0x15, 1);
@@ -781,8 +781,8 @@ int HeroL05_GadgetInput(void) {
         {
             int t;
 
-            Hero_FindMoby323Target();
-            Hero_FindMoby2F6Target();
+            select_hero_grapple_swing_target();
+            select_hero_grapple_target();
             t = scale_ticks(5);
             if (D_0013F450_h2523C8.air_frames.s != 0) {
                 t = scale_ticks(8);
@@ -1001,7 +1001,7 @@ int HeroL05_GadgetInput(void) {
             stats->fDC = stats->fDC | (1 << D_0015EE84_2523C8) | 0x80000000;
             Moby_PlaySound(0, 0, (int)m);
             Moby_GetJointWorldPos(m, 0, v);
-            Moby1475Spawn(m, v, best, D_0013F450_h2523C8.motion.rot.f[2], D_0013F450_h2523C8.motion.rot.f[1]);
+            create_class_5c3_moby(m, v, best, D_0013F450_h2523C8.motion.rot.f[2], D_0013F450_h2523C8.motion.rot.f[1]);
         }
         break;
     }
@@ -1035,10 +1035,10 @@ extern int func_L05_002559A0(void);
 
 /* Hero idle: picks the idle animation from the stick direction, and occasionally plays a fidget or the
  * look-around when standing still. */
-void Hero_IdleUpdate(void) {
+void update_hero_hoverboard_trick_animations(void) {
     char *g = (char *)D_0013E633 + 0xE1D;
     int pad;
-    *(short *)(g + 0x888) = truncate_float_to_s32(Hero_PredictLandingTime(60.0f, *(float *)(g + 0x860), -1.0f));
+    *(short *)(g + 0x888) = truncate_float_to_s32(predict_hero_trajectory_intercept_time(60.0f, *(float *)(g + 0x860), -1.0f));
     if (((unsigned char *)g)[0x88D] != 0 && ((pad = *(int *)(D_0013A5E0 + 0x2600)) & 0xF) != 0) {
         g[0x88F] = 0;
         if (pad & 8) g[0x88F] = 1;
@@ -1109,7 +1109,7 @@ extern void func_L05_0023E348(int);
 #define HERO ((struct Hero *)((char *)D_0013E633 + 0xE1D))
 
 /* Per-frame check of the three moby groups linked from the hero's moby state. */
-void Hero_CheckLinkedPickupGroups(void) {
+void process_hero_race_object_interactions(void) {
     u8_a *state;
     u8_a *first;
     u8_a *second;
@@ -1191,7 +1191,7 @@ void Hero_CheckLinkedPickupGroups(void) {
                 if (*(int *)((u8_a *)g + 0x10B8) != 0x24) {
                     *(int *)((u8_a *)g + 0x20B8) = 0x24;
                     g->unk20AC = 0;
-                    HeroL05_UpdateItemSelection(0);
+                    apply_hero_item_slot_selection(0);
                     g->unk20AC = 1;
                 }
                 g->unk8CE++;
@@ -1221,7 +1221,7 @@ typedef struct {
 typedef struct { char pad0[0xF0]; unsigned short attempts, best; unsigned int levels; } ScoreStats_254838;
 
 /* Updates action and rotation scores while the challenge is active. */
-void func_L05_00254838(void) {
+void update_hero_hoverboard_trick_score(void) {
     int i;
     if (D_0013D355[0x13B] == 0) return;
     if (((ScoreState_254838 *)(D_0013E633 + 0xE1D))->active != 0) {
@@ -1385,7 +1385,7 @@ extern void func_001FFDA0_254DE8(int, int) __asm__("func_001FFDA0");
 extern void func_001FFFA0_254DE8(void) __asm__("func_001FFFA0");
 
 /* Hoverboard race tick: advances the hero's and the opponents' path nodes and laps, handles wrong-way and fall resets, ranks everyone and finishes the race after three laps. */
-void HoverboardRaceTick(void) {
+void update_hero_hoverboard_race_progress(void) {
     float v0[4] __attribute__((aligned(16)));
     float v1[4] __attribute__((aligned(16)));
     Data_254DE8 *d;
@@ -1778,7 +1778,7 @@ L_BAC:
     if (pp == 0) goto L_D68;
     vp = ((H_9F0 *)(D_0013E633 + 0xE1D))->f80;
     r16 = FindClosestDistanceEntry(vp, pp, 0.0f);
-    r4 = StepTableIndex(((H_9F0 *)(D_0013E633 + 0xE1D))->p8B4, r16, -1, 1);
+    r4 = offset_path_index(((H_9F0 *)(D_0013E633 + 0xE1D))->p8B4, r16, -1, 1);
     ((H_9F0 *)(D_0013E633 + 0xE1D))->s8C8 = r16;
     if (D_0015EE84_2523C8 != 5) goto L_D68;
     pts = (float (*)[4])((H_9F0 *)(D_0013E633 + 0xE1D))->p8B4;

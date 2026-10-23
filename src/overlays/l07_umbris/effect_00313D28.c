@@ -36,7 +36,7 @@ static inline int fx_tint(int col) {
 }
 
 // Umbris effect: builds GS packets for a flare strip from the moby's data and draws its segments
-void func_L07_00313D28(char *moby, int arg2, float fa, float fb, float fc, float fd, float fe) {
+void draw_snagglebeast_sphere_quad_strips(char *moby, int arg2, float fa, float fb, float fc, float fd, float fe) {
     char *data = *(char **)(moby + 0x78);
     int c = *(unsigned char *)(data + 0x1C6);
     int col = (c << 24) | (c << 16) | (c << 8) | c;

@@ -1,4 +1,4 @@
-int RaceTimerHudDraw(HudElem_002670A0 *e) {
+int draw_hud_timer(HudElem_002670A0 *e) {
     char buf[64];
     int y0, y1, y2;
     int frames, per_min, per_sec;

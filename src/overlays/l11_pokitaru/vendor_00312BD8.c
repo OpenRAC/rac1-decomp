@@ -35,7 +35,7 @@ typedef struct {
 extern Icon312BD8 D_L11_001F1318[];
 
 /* Draws one moby's icon on the radar: its offset from the viewer turned into the radar's frame, faded near the rim. */
-void DrawRadarMobyIcon(char *rot, char *from, char *moby, int icon, long color) {
+void draw_ship_radar_moby_icon(char *rot, char *from, char *moby, int icon, long color) {
     float turn[4];
     float mat[16];
     float delta[4];
@@ -85,12 +85,12 @@ extern float func_L11_00312F50(void *, void *);
 extern int func_L11_003194C0(char *moby, void **out);
 
 // finds the closest candidate moby among those listed for a type
-void *FindClosestTargetMoby(void *a0, char *a1, int a2, int a3, void *a4) {
+void *select_ship_lock_on_target(void *a0, char *a1, int a2, int a3, void *a4) {
     void *best = 0;
     float bestd = 1000.0f;
     short *p;
     void *list[12];
-    CountTypeTargets(a0, a1 + 0xE8, a1 + 0xEA);
+    count_active_and_visible_listed_mobys(a0, a1 + 0xE8, a1 + 0xEA);
     if (a4 != 0) {
         if (TargetScreenDistanceSq(a0, a4) < bestd) return a4;
     }
@@ -99,7 +99,7 @@ void *FindClosestTargetMoby(void *a0, char *a1, int a2, int a3, void *a4) {
     do {
         char *m = (char *)(((*(unsigned short *)p & 0x7FFF) << 8) + D_L11_00160058_m);
         if (m[0x20] >= 0) {
-            int n = CollectChainMobys(m, list);
+            int n = collect_oil_tanker_chain_mobys(m, list);
             int i;
             for (i = 1; i < n; i++) {
                 float d = TargetScreenDistanceSq(a0, list[i]);
@@ -123,7 +123,7 @@ float TargetScreenDistanceSq(void *moby_v, void *o_v) {
         char v[16];
         int ax, ay, cx, cy;
         int dx, dy, t;
-        ProjectPointToScreen(o + 0x10, &ax, &ay, 0);
+        project_world_point_to_screen_pixels(o + 0x10, &ax, &ay, 0);
         dx = ax - *(int *)(data + 0xE0);
         dy = ay - *(int *)(data + 0xE4);
         if (dx < 0) dx = -dx;
@@ -131,7 +131,7 @@ float TargetScreenDistanceSq(void *moby_v, void *o_v) {
         qcopy(v, D_L11_00167A60);
         FastVecScale(v, D_L11_00167A60, *(float *)(o + 0xC) / 1280.0f);
         FastVecAdd(v, v, o + 0x10);
-        ProjectPointToScreen(v, &cx, &cy, 0);
+        project_world_point_to_screen_pixels(v, &cx, &cy, 0);
         cx = cx - ax;
         cy = cy - ay;
         t = func_001FA898_r(func_001F9B50(IntToFloat(cx * cx + cy * cy))) + 0x1C;
@@ -140,7 +140,7 @@ float TargetScreenDistanceSq(void *moby_v, void *o_v) {
     return 10000.0f;
 }
 /* counts the listed mobys of the type that are active, and of those the ones with 0x31 set */
-void CountTypeTargets(void *a0, void *a1, void *a2) {
+void count_active_and_visible_listed_mobys(void *a0, void *a1, void *a2) {
     char *d = *(char **)((char *)a0 + 0x78);
     int type = *(short *)(d + 0x108);
     short *p;
@@ -165,31 +165,39 @@ extern short D_L11_001621F4;
 extern void func_001F9908(int *arg0);
 extern char *f12e10(float, int, char *, float *, float *, float, float, char *, int) __asm__("func_L11_00312E10");
 
+typedef struct {
+    u8 pad_00[0x88];
+    struct Moby *lock_target;  /* 0x88 */
+    s32 lock_timer;            /* 0x8C */
+} ShipLockMoby;
+
 /* Per-frame target tracking: drops a dead target, re-picks one and restarts the timer on change. */
-void UpdateTargetTracking(int a, char *moby) {
+extern Hero hero __asm__("D_0013F450");
+
+void update_ship_lock_on_target(int a, char *moby) {
     float v[4];
     float ang = 0.19634955f;
     char *r;
-    if (*(unsigned char *)(D_0013E633 + 0x2413) == 0) {
-        *(int *)(moby + 0x88) = 0;
+    if (hero.ship_ammo == 0) {
+        ((ShipLockMoby *)moby)->lock_target = 0;
     } else {
-        char *cur = *(char **)(moby + 0x88);
-        if (cur != 0) {
-            unsigned char st = cur[0x20];
+        struct Moby *current_target = ((ShipLockMoby *)moby)->lock_target;
+        if (current_target != 0) {
+            unsigned char st = current_target->state;
             if (st == 0xFE) {
-                *(int *)(moby + 0x88) = 0;
+                ((ShipLockMoby *)moby)->lock_target = 0;
             } else if (st == 0xFD) {
-                *(int *)(moby + 0x88) = 0;
+                ((ShipLockMoby *)moby)->lock_target = 0;
             }
         }
         qcopy(v, D_L11_00167850);
-        r = f12e10(ang, a, moby, D_L11_00167850 - 4, v, ang, 255.0f, *(char **)(moby + 0x88), 0);
-        if (r != *(char **)(moby + 0x88)) {
-            int t = *(int *)&lock_hold_frames + *(int *)&lock_fade_frames;
-            *(char **)(moby + 0x88) = r;
-            *(int *)(moby + 0x8C) = t;
+        r = f12e10(ang, a, moby, D_L11_00167850 - 4, v, ang, 255.0f, (char *)((ShipLockMoby *)moby)->lock_target, 0);
+        if (r != (char *)((ShipLockMoby *)moby)->lock_target) {
+            int initial_lock_timer_frames = *(int *)&lock_hold_frames + *(int *)&lock_fade_frames;
+            ((ShipLockMoby *)moby)->lock_target = (struct Moby *)r;
+            ((ShipLockMoby *)moby)->lock_timer = initial_lock_timer_frames;
         } else if (r != 0) {
-            func_001F9908((int *)(moby + 0x8C));
+            func_001F9908((int *)&((ShipLockMoby *)moby)->lock_timer);
         }
     }
 }
@@ -224,7 +232,7 @@ extern int D_L11_001F1348[];
 extern short D_L11_001621FC;
 
 /* Draws the Pokitaru jet HUD: frame halves, a marker on every candidate target, ammo icons, gauge sprites and the lock-on marker; plays the low-health, low-ammo and idle help messages and refreshes the gauge colour table. */
-void DrawJetHud(char *moby) {
+void draw_ship_hud(char *moby) {
     char *d = *(char **)(moby + 0x78);
     char *s;
     short *p;
@@ -264,10 +272,10 @@ void DrawJetHud(char *moby) {
         do {
             char *o = (char *)(((*(unsigned short *)p & 0x7FFF) << 8) + D_L11_00160058_m);
             if (o[0x20] >= 0) {
-                int cnt = CollectChainMobys(o, list);
+                int cnt = collect_oil_tanker_chain_mobys(o, list);
                 int w;
                 for (w = 0; w < cnt; w++) {
-                    DrawRadarMobyIcon((char *)D_L11_00167850, (char *)(D_L11_00167850 - 4), list[w], 0, 0x75808080);
+                    draw_ship_radar_moby_icon((char *)D_L11_00167850, (char *)(D_L11_00167850 - 4), list[w], 0, 0x75808080);
                 }
             }
         } while (*p++ >= 0);
@@ -280,9 +288,9 @@ void DrawJetHud(char *moby) {
         do {
             g = (unsigned char *)D_0013E633 + 0xE1D;
             if (i < g[0x15F6]) {
-                Hud_DrawPointList(x, y, 0.5f, D_L11_001F0FB8, 0x19, 0xFFFFF3, 0x50008F00);
+                append_scaled_screen_triangle_strip(x, y, 0.5f, D_L11_001F0FB8, 0x19, 0xFFFFF3, 0x50008F00);
             } else {
-                Hud_DrawPointList(x, y, 0.5f, D_L11_001F0FB8, 0x19, 0xFFFFF3, 0x20004F00);
+                append_scaled_screen_triangle_strip(x, y, 0.5f, D_L11_001F0FB8, 0x19, 0xFFFFF3, 0x20004F00);
             }
             n = g[0x15F7];
             if (i == n >> 1) {
@@ -301,9 +309,9 @@ void DrawJetHud(char *moby) {
     append_rotated_sprite_quad(ex, ey, 40.0f, 40.0f, 0.0f, 0x3F, 0x3F, tex, 0xFFFFF3, 0xFF20FF20, 0, 0, 0.5f, 0.5f);
     tex = GetEffectTex(8);
     append_rotated_sprite_quad(ex, ey, 10.0f, 10.0f, 0.0f, 0x1F, 0x1F, tex, 0xFFFFF3, 0xFF20FF20, 0, 0, 0.5f, 0.5f);
-    UpdateTargetTracking((int)moby, d);
+    update_ship_lock_on_target((int)moby, d);
     if (*(int *)(d + 0x88) != 0) {
-        ProjectPointToScreen(*(char **)(d + 0x88) + 0x10, &sp40, &sp44, 0);
+        project_world_point_to_screen_pixels(*(char **)(d + 0x88) + 0x10, &sp40, &sp44, 0);
         if (*(int *)(d + 0x8C) > *(int *)&lock_hold_frames) {
             t = IntToFloat(*(int *)(d + 0x8C) - *(int *)&lock_hold_frames);
             t = t / IntToFloat(*(int *)&lock_fade_frames);
@@ -397,7 +405,7 @@ extern void func_001F9BD8_313a70(void *, void *, void *) __asm__("func_001F9BD8"
 extern void func_L00_001FF4B0_313a70(void *, void *, float) __asm__("func_L00_001FF4B0");
 void build_spherical_offset(f32 *out, f32 scale, f32 a, f32 b) __asm__("func_00215C00");
 /* Update. Adapted from Lombyte (MIT) for PAL: overlays/l11/gameplay_vendor_0030c788.c, FUN_L11_003125a8. */
-void Jet_FireWingGuns(char *moby, char *obj, float p2, float p3) {
+void update_ship_shot_firing_and_reticle(char *moby, char *obj, float p2, float p3) {
     char a[16];
     char b[16];
     char c[16];
@@ -433,7 +441,7 @@ extern short D_L11_00162120;
 extern short D_L11_001620F8;
 
 /* on a pad press, fires the aimed shot and resets the cooldown */
-void Jet_FireAimedShot(char *moby, char *d) {
+void try_fire_ship_projectile(char *moby, char *d) {
     if (func_001F9908_i(d + 0x84) && (*(int *)(D_0013A5E0 + 0x2610) & 0x28)) {
         char *g = D_0013E633 + 0xE1D;
         if (*(unsigned char *)(g + 0x15F6) != 0) {
@@ -446,7 +454,7 @@ void Jet_FireAimedShot(char *moby, char *d) {
             func_L00_001FF4B0(b, d, 0.3f);
             FastVecAdd(a, a, b);
             if (*(int *)(d + 0x88) != 0 && !(500 < *(int *)(d + 0x8C))) t = *(int *)(d + 0x88);
-            if (SpawnAttachedEffect(moby, a, t, moby + 0x40, *(float *)&D_L11_001620F4 * *(float *)&D_L11_00162120, scale_ticks(300))) {
+            if (spawn_ship_projectile(moby, a, t, moby + 0x40, *(float *)&D_L11_001620F4 * *(float *)&D_L11_00162120, scale_ticks(300))) {
                 func_0022ED80_i(2, 0, (int)moby);
                 *(unsigned char *)(g + 0x15F6) -= 1;
                 *(int *)(d + 0x84) = *(int *)&D_L11_001620F8;
@@ -582,7 +590,7 @@ extern void exhaust_313D00(Moby *, Jet_313D00 *) __asm__("func_L11_00313BC0");
 extern void wings_313D00(Moby *, Jet_313D00 *, float, float) __asm__("func_L11_00313A70");
 
 /* Jet fighter flight: throttle, stick steering, camera follow, collisions with the target and the hud. */
-void JetFighterFlight(void *a0, void *a1) {
+void update_player_ship_flight(void *a0, void *a1) {
     Moby *moby = a0;
     Jet_313D00 *o = a1;
     Vec4 start;
@@ -1074,9 +1082,9 @@ void jet_fighter_update(Moby *moby) {
                 D_L11_0015F4FC = d->f130;
             }
             D_L11_0015F6E8 = 2;
-            JetFighterFlight(moby, d);
-            n = CountLaunchedCrafts(d->i10C);
-            if (d->hEA != 0 && n < 5 - d->hE8 && func_001F9908_c(&d->t114) != 0 && LaunchIdleCraft(d->i10C) != 0) {
+            update_player_ship_flight(moby, d);
+            n = count_listed_blarg_ships_in_state_5(d->i10C);
+            if (d->hEA != 0 && n < 5 - d->hE8 && func_001F9908_c(&d->t114) != 0 && activate_listed_blarg_ship(d->i10C) != 0) {
                 d->t114 = scale_ticks(0xF0);
             }
             if (d->hE8 <= 0) {
@@ -1133,7 +1141,7 @@ void jet_fighter_update(Moby *moby) {
             break;
         case 8:
             D_L11_0015F6E8 = 2;
-            JetFighterFlight(moby, d);
+            update_player_ship_flight(moby, d);
             if (func_001F9908_c(&d->tF8) != 0) {
                 float f;
                 ApproachValue(&d->f130, 1.0f, D_0015EE6C * 4.0f);
@@ -1198,7 +1206,7 @@ void jet_fighter_update(Moby *moby) {
             qcopy(gHeroPos + 0x10, d->v30);
         }
         if (s2 >= 3 && s2 <= 4) {
-            SpawnParticleTrails(moby, d);
+            emit_type_74_particles_from_moby_joints(moby, d);
             if (Sound_IsPlaying(moby, d->h12C) == 0) {
                 d->h12C = func_0022ED80_c(0, 4, (int)moby);
             }
@@ -1221,7 +1229,7 @@ extern float func_001FA790(float, float);
 extern unsigned char D_0013F450[];
 
 // Clamps and blends camera inputs near the edges of the movement bounds. Adapted from Lombyte (MIT) for PAL: src/overlays/l11/gameplay_vendor_0030c788.c, FUN_L11_00313f60.
-void Jet_BlendInputsAtBounds(char *moby, float *a, float *b) {
+void adjust_ship_steering_for_flight_bounds(char *moby, float *a, float *b) {
     char *d = *(char **)(moby + 0x78);
     float v[4];
     float zz, dist, tmp, hi, lo, f, t, r, s;
@@ -1388,7 +1396,7 @@ void puffoid_update(struct Moby *moby) {
 
     if (moby->state != 0x14) {
         d->unkC8 = 0;
-        PathEnemyStep(moby);
+        update_puffoid_damage_and_path_goal(moby);
     }
     target = d->target;
     Manipulator_ApplyScale(moby, 0, d->unk280, 2.5f);
@@ -1501,7 +1509,7 @@ void puffoid_update(struct Moby *moby) {
         }
         break;
     case 3:
-        Enemy_TurnTowardPoint((char *)moby, d->unk260);
+        update_moby_target_heading_and_conditional_movement((char *)moby, d->unk260);
         if (d->unk214 != 2) {
             d->unk24C = random_float_between(-(*(float *)&D_L11_00162378), (*(float *)&D_L11_00162378)) * 0.017453292f;
             moby->state = 4;
@@ -1522,7 +1530,7 @@ void puffoid_update(struct Moby *moby) {
                 MobyBlendAnimation(moby, 2, 0, scale_ticks(10));
             }
         } else {
-            Enemy_TurnTowardPoint((char *)moby, (float *)&target->pos);
+            update_moby_target_heading_and_conditional_movement((char *)moby, (float *)&target->pos);
         }
         if (d->unk214 == 2) {
             moby->state = 6;
@@ -1539,7 +1547,7 @@ void puffoid_update(struct Moby *moby) {
             SteerAngleWithVelocity(rz, &d->unk250, ang,
                          D_0015EE70 * 12.566371f, D_0015EE70 * 12.566371f, D_0015EE6C * 12.566371f);
         } else {
-            Enemy_TurnTowardPoint((char *)moby, d->unk1D0);
+            update_moby_target_heading_and_conditional_movement((char *)moby, d->unk1D0);
         }
         if (moby->anim_flags & 2) {
             if (d->unk214 != 2) {
@@ -1550,7 +1558,7 @@ void puffoid_update(struct Moby *moby) {
         }
         break;
     case 5:
-        Enemy_TurnTowardPoint((char *)moby, (float *)&target->pos);
+        update_moby_target_heading_and_conditional_movement((char *)moby, (float *)&target->pos);
         if ((moby->anim_flags & 2) && (*(float *)&D_L11_00162374) < func_001F9D48(&moby->pos, &target->pos)) {
             moby->state = 4;
             if (moby->prev_seq != 1) {
@@ -1576,7 +1584,7 @@ void puffoid_update(struct Moby *moby) {
                 MobyBlendAnimation(moby, 1, 0, scale_ticks(10));
             }
         } else {
-            Enemy_TurnTowardPoint((char *)moby, d->home);
+            update_moby_target_heading_and_conditional_movement((char *)moby, d->home);
         }
         if ((moby->anim_flags & 2) && moby->prev_seq != 1) {
             MobyBlendAnimation(moby, 1, 0, 5);
@@ -1618,7 +1626,7 @@ void puffoid_update(struct Moby *moby) {
     case 12: {
         float basis[16];
         float dest[4];
-        if (d->unk214 != 2 && CountGroupActiveEnemies(moby) < 5) {
+        if (d->unk214 != 2 && count_group_class_4de_mobys_in_states_13_to_17(moby) < 5) {
             struct Moby *c = (struct Moby *)(D_L11_00160058 + (d->carrier << 8));
             func_001FA4A0(basis, &c->rot_row0);
             FastVecSub(pos, &moby->pos, &c->pos);
@@ -1680,7 +1688,7 @@ void puffoid_update(struct Moby *moby) {
     case 15:
         RotateWithMoby(moby, D_L11_00160058 + (d->carrier << 8), &moby->pos, &moby->rot,
                             &moby->pos, &moby->rot);
-        Enemy_TurnTowardPoint((char *)moby, (float *)&target->pos);
+        update_moby_target_heading_and_conditional_movement((char *)moby, (float *)&target->pos);
         if ((moby->anim_flags & 2) && func_001F9D48(&moby->pos, &target->pos) < (*(float *)&D_L11_00162374)) {
             moby->state = 0x10;
             if (moby->prev_seq != 2) {
@@ -1694,7 +1702,7 @@ void puffoid_update(struct Moby *moby) {
     case 16:
         RotateWithMoby(moby, D_L11_00160058 + (d->carrier << 8), &moby->pos, &moby->rot,
                             &moby->pos, &moby->rot);
-        Enemy_TurnTowardPoint((char *)moby, (float *)&target->pos);
+        update_moby_target_heading_and_conditional_movement((char *)moby, (float *)&target->pos);
         if ((moby->anim_flags & 2) && (*(float *)&D_L11_00162374) < func_001F9D48(&moby->pos, &target->pos)) {
             moby->state = 0xF;
             if (moby->prev_seq != 1) {
@@ -1904,7 +1912,7 @@ extern float D_L11_0016238C_316DD8 SDATA(D_L11_0016238C);
 
 /* Update of a path-following enemy: sinks or dies with its carrier, takes hits (knockback by hit kind),
  * then follows its path and gives up on it when too far off. */
-void PathEnemyStep(Moby *m) {
+void update_puffoid_damage_and_path_goal(Moby *m) {
     Vec4A v;
     int hit;
     float dmg;
@@ -2052,7 +2060,7 @@ extern short D_0015EE6C_s __asm__("D_0015EE6C");
 extern short D_L11_0016238C;
 
 /* turns a moby toward a point and, while in range, spawns a puff */
-void Enemy_TurnTowardPoint(char *m, float *p) {
+void update_moby_target_heading_and_conditional_movement(char *m, float *p) {
     char *data = *(char **)(m + 0x78);
     float v[3];
     char tmp[16];
@@ -2074,7 +2082,7 @@ void Enemy_TurnTowardPoint(char *m, float *p) {
 }
 extern char *D_L11_00160058 MACRO_ADDR;
 /* Counts the class 0x4DE mobys in this moby's group that are in states 13..17. */
-short CountGroupActiveEnemies(struct Moby *self_) {
+short count_group_class_4de_mobys_in_states_13_to_17(struct Moby *self_) {
     struct Moby *self = (struct Moby *)self_;
     unsigned short *p;
     short n;
@@ -2101,7 +2109,7 @@ short CountGroupActiveEnemies(struct Moby *self_) {
 }
 INCLUDE_ASM("asm/overlays", func_L11_00317518);
 /* whether the moby is in state 20, 11, 18 or 12 */
-int IsEnemyBusyState(struct Moby *m) {
+int is_moby_in_bob_target_exclusion_state(struct Moby *m) {
     int s = m->state;
     if (s == 20 || s == 11 || s == 18 || s == 12) return 1;
     return 0;
@@ -2114,7 +2122,7 @@ extern int func_L00_002DCDA8(void *, void *, void *);
 /* Grabbed check: while held, park the moby in state 0x14 (remembering its state) unless it cannot be grabbed; restore the saved state once released.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l11/gameplay/vendor/00315968.c, FUN_L11_00316160. */
 int Moby_ParkIfGrabbed(struct Moby *moby, void *position, void *target) {
-    int r = CarriedMoby_StepGrab(moby, position, target);
+    int r = process_moby_suck_cannon_suction(moby, position, target);
     if (r != 0) {
         if (moby->state == 2 || moby->state == 4 || moby->state == 5 || moby->state == 6 ||
             moby->state == 0xE || moby->state == 0xF || moby->state == 0x10 || moby->state == 0x14) {
@@ -2189,7 +2197,7 @@ extern float func_00214D88(float *, float *, float, float, float, float);
 extern void func_L00_00251E30(void *);
 
 /* Moby update for a two-leaf gate that spawns and swings open its leaves. */
-void GateUpdate(struct PMoby *moby) {
+void update_two_door_gate(struct PMoby *moby) {
     struct L11GateVars *d = (struct L11GateVars *)moby->pvars;
     float v[4];
 
@@ -2348,7 +2356,7 @@ void oil_tanker_front_update(char *moby) {
         short *h;
         int *z;
         int i;
-        PlaceGroupCraftsOnTable(moby, chain_vars->path_index);
+        distribute_group_class_527_mobys_along_path(moby, chain_vars->path_index);
         if (((unsigned char *)(D_0014171B + 0xAA35))[((struct Moby *)moby)->mission + (map_data_0015EE84 << 4)] == 0xFF) {
             DeleteMoby(moby);
             return;
@@ -2428,9 +2436,9 @@ void oil_tanker_front_update(char *moby) {
             zz++;
             z++;
         }
-        Moby_OrientAlongPath(moby);
-        MoveChainAlongPath(moby);
-        if (((struct Moby *)moby)->state == 2) ChainHandleHits(moby);
+        update_oil_tanker_front_path_pose(moby);
+        update_oil_tanker_link_path_poses(moby);
+        if (((struct Moby *)moby)->state == 2) process_oil_tanker_damage_and_destruction(moby);
         if (Sound_IsPlaying(moby, chain_vars->sound) == 0) {
             chain_vars->sound = func_0022ED80_i(0, 4, (int)moby);
         }
@@ -2445,27 +2453,31 @@ extern float func_001FA748(float, float);
 extern void func_001F9C08(void *, void *, void *, float);
 
 /* Orients a moby along a path of three points read from its data table. */
-void Moby_OrientAlongPath(char *moby) {
-    char *d = *(char **)(moby + 0x78);
-    int i = *(int *)(d + 0x68);
-    char *t = *(char **)(d + 0xF0);
-    int n;
-    float a[4];
-    float b[4];
-    float c[4];
+void update_oil_tanker_front_path_pose(char *moby) {
+    Moby *m = (Moby *)moby;
+    OilChainVars_318730 *chain_vars = (OilChainVars_318730 *)m->pvars;
+    int i = chain_vars->point;
+    char *path = chain_vars->path;
+    int path_point_count;
+    float current_path_point[4];
+    float next_path_point[4];
+    float lookahead_path_point[4];
     float *pb;
     float *pc;
     float x, y, z;
-    qcopy(a, t + i * 16 + 0x10);
-    n = *(int *)t;
-    qcopy(pb = b, t + (i + 1) % n * 16 + 0x10);
-    qcopy(pc = c, t + (i + 2) % n * 16 + 0x10);
-    x = func_L00_001FF860(a[0] - b[0], a[1] - b[1]);
-    y = func_L00_001FF860(b[0] - c[0], b[1] - c[1]);
-    z = func_L00_001FF860(func_001F9D48(a, pb), b[2] - a[2]);
-    *(float *)(moby + 0x44) = FastAddRots(FastSubRots(func_L00_001FF860(func_001F9D48(pb, pc), c[2] - b[2]), z) * *(float *)(d + 0x6C), z);
-    *(float *)(moby + 0x48) = FastAddRots(FastSubRots(y, x) * *(float *)(d + 0x6C), x);
-    func_001F9C08(moby + 0x10, a, pb, *(float *)(d + 0x6C));
+    qcopy(current_path_point, path + i * 16 + 0x10);
+    path_point_count = *(int *)path;
+    qcopy(pb = next_path_point, path + (i + 1) % path_point_count * 16 + 0x10);
+    qcopy(pc = lookahead_path_point, path + (i + 2) % path_point_count * 16 + 0x10);
+    x = func_L00_001FF860(current_path_point[0] - next_path_point[0], current_path_point[1] - next_path_point[1]);
+    y = func_L00_001FF860(next_path_point[0] - lookahead_path_point[0], next_path_point[1] - lookahead_path_point[1]);
+    z = func_L00_001FF860(func_001F9D48(current_path_point, pb), next_path_point[2] - current_path_point[2]);
+    m->rot.y = FastAddRots(
+        FastSubRots(func_L00_001FF860(func_001F9D48(pb, pc), lookahead_path_point[2] - next_path_point[2]), z) *
+            chain_vars->t.f,
+        z);
+    m->rot.z = FastAddRots(FastSubRots(y, x) * chain_vars->t.f, x);
+    func_001F9C08(&m->pos, current_path_point, pb, chain_vars->t.f);
 }
 extern float func_001F9D10(void *, void *);
 extern int func_001FA898(float);
@@ -2489,85 +2501,87 @@ typedef struct {
 } ChainVars_8C90;
 
 /* Moves the linked mobys along a closed path of points. */
-void MoveChainAlongPath(void *mv) {
-    char *moby = mv;
-    ChainVars_8C90 *d = *(ChainVars_8C90 **)(moby + 0x78);
-    ChainPath_8C90 *p = d->path;
-    float v[4];
+/* Moves the linked mobys along a closed path of points. */
+
+void update_oil_tanker_link_path_poses(void *mv) {
+    struct Moby *moby = mv;
+    ChainVars_8C90 *chain_vars = (ChainVars_8C90 *)moby->pvars;
+    ChainPath_8C90 *chain_path = chain_vars->path;
+    float spacing_reference_position[4];
     int i;
 
-    func_L00_001FF4B0(v, moby + 0xC0, (*(float *)&D_L11_001623B8));
-    FastVecAdd(v, v, moby + 0x10);
-    for (i = 0; i < d->count; i++) {
-        int a = d->offsets[i];
-        int b = (a + 1) % p->count;
-        int c = (a + 2) % p->count;
-        float d0 = FastVecDist(&p->pts[a], v);
-        float d1 = FastVecDist(&p->pts[b], v);
-        float t;
-        char *link;
+    func_L00_001FF4B0(spacing_reference_position, &moby->rot_row0, (*(float *)&D_L11_001623B8));
+    FastVecAdd(spacing_reference_position, spacing_reference_position, &moby->pos);
+    for (i = 0; i < chain_vars->count; i++) {
+        int segment_start_index = chain_vars->offsets[i];
+        int segment_end_index = (segment_start_index + 1) % chain_path->count;
+        int lookahead_point_index = (segment_start_index + 2) % chain_path->count;
+        float segment_start_distance = FastVecDist(&chain_path->pts[segment_start_index], spacing_reference_position);
+        float segment_end_distance = FastVecDist(&chain_path->pts[segment_end_index], spacing_reference_position);
+        float segment_fraction;
+        struct Moby *link;
         float yaw0, yaw1, pitch0;
         float *qa, *qb, *qc;
 
-        while (d1 > (*(float *)&D_L11_001623B4)) {
-            a = b;
-            b = (a + 1) % p->count;
-            d0 = d1;
-            c = (b + 1) % p->count;
-            d1 = FastVecDist(&p->pts[b], v);
+        while (segment_end_distance > (*(float *)&D_L11_001623B4)) {
+            segment_start_index = segment_end_index;
+            segment_end_index = (segment_start_index + 1) % chain_path->count;
+            segment_start_distance = segment_end_distance;
+            lookahead_point_index = (segment_end_index + 1) % chain_path->count;
+            segment_end_distance = FastVecDist(&chain_path->pts[segment_end_index], spacing_reference_position);
         }
         {
-            float *q = (float *)((char *)p + a * 16);
+            float *q = (float *)((char *)chain_path + segment_start_index * 16);
 
             if (q[7] == 42.0f) {
-                char *lv = *(char **)(d->links[i] + 0x78);
-                if (*(int *)(lv + 0x28) == 0) {
+                u8 *lv = ((struct Moby *)chain_vars->links[i])->pvars;
+                if (*(s32 *)(lv + 0x28) == 0) {
                     if (D_L11_0015F6A8 == 0) {
-                        Moby_PlaySound(2, 0, (int)d->links[i]);
+                        Moby_PlaySound(2, 0, (int)chain_vars->links[i]);
                     }
-                    *(int *)(lv + 0x28) = scale_ticks((*(int *)&D_L11_001623BC));
+                    *(s32 *)(lv + 0x28) = scale_ticks((*(int *)&D_L11_001623BC));
                 }
             }
         }
-        if (d0 > (*(float *)&D_L11_001623B4)) {
-            t = (d0 - (*(float *)&D_L11_001623B4)) / (d0 - d1);
+        if (segment_start_distance > (*(float *)&D_L11_001623B4)) {
+            segment_fraction = (segment_start_distance - (*(float *)&D_L11_001623B4)) / (segment_start_distance - segment_end_distance);
         } else {
-            t = 0.0f;
+            segment_fraction = 0.0f;
         }
-        d->offsets[i] = a;
-        d->frac[i] = t;
-        if (d->catchup[i] != 0.0f) {
-            float f = t - d->catchup[i];
-            int k = truncate_float_to_s32(f);
-            f -= (float)truncate_float_to_s32(f);
-            if (f < 0.0f) {
+        chain_vars->offsets[i] = segment_start_index;
+        chain_vars->frac[i] = segment_fraction;
+        if (chain_vars->catchup[i] != 0.0f) {
+            float catchup_adjusted_progress = segment_fraction - chain_vars->catchup[i];
+            int k = truncate_float_to_s32(catchup_adjusted_progress);
+            catchup_adjusted_progress -= (float)truncate_float_to_s32(catchup_adjusted_progress);
+            if (catchup_adjusted_progress < 0.0f) {
                 k--;
-                f += 1.0f;
+                catchup_adjusted_progress += 1.0f;
             }
-            a = (a + k + p->count) % p->count;
-            b = (b + k + p->count) % p->count;
-            c = (c + k + p->count) % p->count;
-            t = f;
+            segment_start_index = (segment_start_index + k + chain_path->count) % chain_path->count;
+            segment_end_index = (segment_end_index + k + chain_path->count) % chain_path->count;
+            lookahead_point_index = (lookahead_point_index + k + chain_path->count) % chain_path->count;
+            segment_fraction = catchup_adjusted_progress;
         }
-        link = d->links[i];
-        func_001F9C08(link + 0x10, &p->pts[a], &p->pts[b], t);
-        qcopy(v, d->links[i] + 0x10);
-        qa = (float *)((char *)p + a * 16);
-        qb = (float *)((char *)p + b * 16);
-        qc = (float *)((char *)p + c * 16);
+        link = (struct Moby *)chain_vars->links[i];
+        func_001F9C08(&link->pos, &chain_path->pts[segment_start_index], &chain_path->pts[segment_end_index], segment_fraction);
+        qcopy(spacing_reference_position, &((struct Moby *)chain_vars->links[i])->pos);
+        qa = (float *)((char *)chain_path + segment_start_index * 16);
+        qb = (float *)((char *)chain_path + segment_end_index * 16);
+        qc = (float *)((char *)chain_path + lookahead_point_index * 16);
         yaw0 = func_L00_001FF860(qa[4] - qb[4], qa[5] - qb[5]);
         yaw1 = func_L00_001FF860(qb[4] - qc[4], qb[5] - qc[5]);
-        pitch0 = -func_L00_001FF860(func_001F9D48(&p->pts[b][0], &p->pts[a][0]),
+        pitch0 = -func_L00_001FF860(func_001F9D48(&chain_path->pts[segment_end_index][0], &chain_path->pts[segment_start_index][0]),
                                qa[6] - qb[6]);
-        *(float *)(d->links[i] + 0x44) = FastAddRots(
-            FastSubRots(-func_L00_001FF860(func_001F9D48(&p->pts[c][0], &p->pts[b][0]),
+        ((struct Moby *)chain_vars->links[i])->rot.y = FastAddRots(
+            FastSubRots(-func_L00_001FF860(func_001F9D48(&chain_path->pts[lookahead_point_index][0], &chain_path->pts[segment_end_index][0]),
                                                   qb[6] - qc[6]),
-                                    pitch0) * t,
+                                    pitch0) * segment_fraction,
             pitch0);
-        *(float *)(d->links[i] + 0x48) = FastAddRots(FastSubRots(yaw1, yaw0) * t, yaw0);
-        func_L00_00251E30(d->links[i]);
-        func_L00_001FF4B0(v, d->links[i] + 0xC0, (*(float *)&D_L11_001623B8));
-        FastVecAdd(v, v, d->links[i] + 0x10);
+        ((struct Moby *)chain_vars->links[i])->rot.z = FastAddRots(FastSubRots(yaw1, yaw0) * segment_fraction, yaw0);
+        func_L00_00251E30(chain_vars->links[i]);
+        func_L00_001FF4B0(spacing_reference_position, &((struct Moby *)chain_vars->links[i])->rot_row0, (*(float *)&D_L11_001623B8));
+        FastVecAdd(spacing_reference_position, spacing_reference_position, &((struct Moby *)chain_vars->links[i])->pos);
     }
 }
 struct L11ChainVars_19108 {
@@ -2599,7 +2613,7 @@ extern void func_L00_00265050_19108(char *, int, float *, char *, int, int, floa
 extern void func_0020D678_19108(void *) __asm__("func_0020D678");
 
 /* Adapted from Lombyte (MIT) for PAL: src/overlays/l11/gameplay/vendor/00315968.c, FUN_L11_00317c98. */
-void ChainHandleHits(void *moby_v) {
+void process_oil_tanker_damage_and_destruction(void *moby_v) {
     struct Moby *moby = moby_v;
     struct L11ChainVars_19108 *d = (struct L11ChainVars_19108 *)moby->pvars;
     int i;
@@ -2658,7 +2672,7 @@ void ChainHandleHits(void *moby_v) {
     }
 }
 /* Collects this moby and its linked mobys into out[]; returns the count. */
-int CollectChainMobys(char *moby, void **out) {
+int collect_oil_tanker_chain_mobys(char *moby, void **out) {
     char *data = *(char **)(moby + 0x78);
     int i;
     int count = *(int *)(data + 0x64) + 1;
@@ -2678,7 +2692,7 @@ struct L11ChainVars_19510 {
 };
 
 /* Adapted from Lombyte (the US decompilation): FUN_L11_003180a0. */
-void PlaceGroupCraftsOnTable(void *mp, int table_index) {
+void distribute_group_class_527_mobys_along_path(void *mp, int table_index) {
     Moby *moby = mp;
     short group = ((struct L11ChainVars_19510 *)moby->pvars)->group;
     u16 *list = (u16 *)D_L11_001AC540[group];
@@ -2738,7 +2752,7 @@ extern void func_L00_00260108(void *, void *, int, float, float);
 extern void *func_L00_00265050_s(char *, int, void *, void *, int, int, float *, float *, float, float *) __asm__("func_L00_00265050");
 
 /* Bubbling vent: puffs a bubble while the hero is near; on trigger spawns three debris pieces and goes idle. */
-void BubblingVentUpdate(char *m) {
+void update_oil_tanker_link_effects_and_destruction(char *m) {
     char *d = *(char **)(m + 0x78);
     float v[4];
     float w[4];
@@ -2775,13 +2789,14 @@ extern float func_002140F8(float, float);
 extern float D_0015EE6C MACRO_ADDR;
 
 // Resets the moby state and sets two random speeds scaled by the frame time.
-void ResetMobyRandomSpeeds(char *m) {
-    char *d = *(char **)(m + 0x78);
-    m[0x20] = 1;
-    *(int *)(m + 0x94) = 0;
-    FastVecSub(d + 0x10, m + 0x10, d);
-    *(float *)(d + 0x20) = random_float_between(20.0f, 60.0f) * 0.017453292f * D_0015EE6C;
-    *(float *)(d + 0x24) = random_float_between(20.0f, 60.0f) * 0.017453292f * D_0015EE6C;
+void start_oil_tanker_link_destruction(char *m) {
+    struct Moby *link_moby = (struct Moby *)m;
+    u8 *link_vars = link_moby->pvars;
+    link_moby->state = 1;
+    link_moby->collision = 0;
+    FastVecSub(link_vars + 0x10, &link_moby->pos, link_vars);
+    *(float *)(link_vars + 0x20) = random_float_between(20.0f, 60.0f) * 0.017453292f * D_0015EE6C;
+    *(float *)(link_vars + 0x24) = random_float_between(20.0f, 60.0f) * 0.017453292f * D_0015EE6C;
 }
 extern void func_L11_0031A498(char *moby);
 extern void func_0020D678(void *);
@@ -3023,7 +3038,7 @@ void FlyingCraftUpdate(unsigned char *moby) {
     float distance_to_target;
     char *spawned_shot;
 
-    CollectableCrateUpdate(moby);
+    update_moby_hit_stats_and_state(moby);
     switch (((Moby *)moby)->state) {
     case 0:
         ((Moby *)moby)->draw_dist = 0xFF;
@@ -3042,7 +3057,7 @@ void FlyingCraftUpdate(unsigned char *moby) {
         break;
     case 1:
     case 2:
-        TrailRingUpdate(moby);
+        update_moby_trail_points(moby);
         moby_vars->t += moby_vars->approach_speed;
         if (moby_vars->t > 1.0f) {
             moby_vars->t -= 1.0f;
@@ -3052,13 +3067,13 @@ void FlyingCraftUpdate(unsigned char *moby) {
             moby_vars->point = (moby_vars->point + **(int **)(path_table + moby_vars->path_index * 4) - 1) % **(int **)(path_table + moby_vars->path_index * 4);
         }
         FastAddRots(moby_vars->unk70, moby_vars->unk74);
-        PathOrbitMobyUpdate(moby);
+        update_moby_path_transform(moby);
         if (((Moby *)moby)->state == 2) {
             SpawnExplosionFx(moby, (char *)&((Moby *)moby)->pos, -1, 2.0f, 13.0f);
             if (random_integer_below(2)) {
-                SpawnDirectedMoby((char *)&((Moby *)moby)->pos, D_L11_0015F660, 0x4C4);
+                spawn_moby_with_random_yaw((char *)&((Moby *)moby)->pos, D_L11_0015F660, 0x4C4);
             } else {
-                SpawnDirectedMoby((char *)&((Moby *)moby)->pos, D_L11_0015F660, 0x4C2);
+                spawn_moby_with_random_yaw((char *)&((Moby *)moby)->pos, D_L11_0015F660, 0x4C2);
             }
             Moby_PlaySound(1, 0, (int)moby);
             *(unsigned short *)(D_0014171B + 0x5FD) = 0xFFFF;
@@ -3160,7 +3175,7 @@ void FlyingCraftUpdate(unsigned char *moby) {
                 FastVecSub(shot_displacement, sB0, sA0);
                 func_L00_001FF4B0(shot_velocity, shot_displacement, *(float *)&D_L11_00162460 * D_0015EE6C);
                 FastVecAdd(shot_velocity, shot_velocity, hero_position_delta);
-                spawned_shot = SpawnStreakMoby((int)moby, shot_velocity, sA0, 128.0f, -1.0f, 10.0f);
+                spawned_shot = spawn_class_3f9_moby((int)moby, shot_velocity, sA0, 128.0f, -1.0f, 10.0f);
                 if (spawned_shot) {
                     FastVecSub(shot_velocity, shot_velocity, hero_position_delta);
                     *(float *)(spawned_shot + 0x44) = -func_L00_001FF860(func_001F9CE8(shot_velocity), shot_velocity[2]);
@@ -3181,9 +3196,9 @@ void FlyingCraftUpdate(unsigned char *moby) {
         FastVecAdd((float *)&((Moby *)moby)->pos, (float *)&((Moby *)moby)->pos, scratch_vector);
         SpawnExplosionFx(moby, (char *)&((Moby *)moby)->pos, -1, 2.0f, 13.0f);
         if (random_integer_below(2)) {
-            SpawnDirectedMoby((char *)&((Moby *)moby)->pos, D_L11_0015F660, 0x4C4);
+            spawn_moby_with_random_yaw((char *)&((Moby *)moby)->pos, D_L11_0015F660, 0x4C4);
         } else {
-            SpawnDirectedMoby((char *)&((Moby *)moby)->pos, D_L11_0015F660, 0x4C2);
+            spawn_moby_with_random_yaw((char *)&((Moby *)moby)->pos, D_L11_0015F660, 0x4C2);
         }
         Moby_PlaySound(1, 0, (int)moby);
         ((Moby *)moby)->state = 4;
@@ -3219,7 +3234,7 @@ extern float D_0015EE6C MACRO_ADDR;
 extern char D_0013E633[];
 
 /* finds the idle moby of type 0x527 in a list and launches it at the hero */
-char *LaunchIdleCraft(int idx) {
+char *activate_listed_blarg_ship(int idx) {
     short *p = D_L11_001AC540[idx];
     float v0[4], v1[4], v2[4], v3[4], v4[4], v5[4];
     do {
@@ -3263,7 +3278,7 @@ extern void func_L00_00264DB8(int, int);
 extern unsigned char D_0013D50F[];
 
 /* Moby update that deletes itself or shows a banner depending on its data. */
-void Moby1350Update(char *moby) {
+void update_moby_list_empty_dialogue_trigger(char *moby) {
     int *data = *(int **)(moby + 0x78);
     if (data[0] == -1) {
         DeleteMoby(moby);
@@ -3291,57 +3306,65 @@ extern void func_0020D678(void *);
 extern void func_L00_001FF500(void *, void *, float);
 
 /* Bubble update: rises to the surface, then pops and fades, drifting with its velocity. */
-void BubbleUpdate(char *m) {
-    char *d = *(char **)(m + 0x78);
-    float v[4];
-    float len;
+void update_bubble_motion_and_scale(char *m) {
+    enum {
+        BUBBLE_MOVE_UNTIL_SURFACE_CROSSING = 1,
+        BUBBLE_SHRINK_TO_REMOVAL = 2
+    };
+    struct Moby *bubble_moby = (struct Moby *)m;
+    char *bubble_vars = (char *)bubble_moby->pvars;
+    float randomized_effect_vector[4];
+    float horizontal_speed;
     float rate;
-    char *p;
-    if (((unsigned char *)m)[0x31] == 0) {
-        if (++*(short *)(d + 0x22) > scale_ticks(0xF)) {
+    char *spawned_effect;
+
+    if (bubble_moby->visible == 0) {
+        if (++*(short *)(bubble_vars + 0x22) > scale_ticks(0xF)) {
             DeleteMoby(m);
             return;
         }
     } else {
-        *(short *)(d + 0x22) = 0;
+        *(short *)(bubble_vars + 0x22) = 0;
     }
-    switch (((unsigned char *)m)[0x20]) {
-    case 1:
-        *(float *)(d + 8) -= *(float *)&D_L11_00162490 * D_0015EE70;
-        if (**(float **)(d + 0x24) + 3.0f < *(float *)(m + 0x18)) {
+    switch (bubble_moby->state) {
+    case BUBBLE_MOVE_UNTIL_SURFACE_CROSSING:
+        *(float *)(bubble_vars + 8) -= *(float *)&D_L11_00162490 * D_0015EE70;
+        if (**(float **)(bubble_vars + 0x24) + 3.0f < bubble_moby->pos.z) {
             if (random_integer_below(*(int *)&D_L11_001624A0) == 0) {
                 Bubble_EmitParticle(m);
             }
         }
-        if (*(float *)(m + 0x18) < **(float **)(d + 0x24)) {
-            FastVecScale(d, d, *(float *)&D_L11_0016249C);
-            m[0x20] = 2;
-            SpawnSparksAndSmoke(m, *(float **)(d + 0x24), 8, 4);
+        if (bubble_moby->pos.z < **(float **)(bubble_vars + 0x24)) {
+            FastVecScale(bubble_vars, bubble_vars, *(float *)&D_L11_0016249C);
+            bubble_moby->state = 2;
+            spawn_bubble_surface_effects(m, *(float **)(bubble_vars + 0x24), 8, 4);
         }
         break;
-    case 2:
-        *(float *)(d + 8) -= *(float *)&D_L11_00162494 * D_0015EE70;
-        rate = *(float *)(*(char **)(m + 0x24) + 0x24) / (float)scale_ticks(0x3C);
+    case BUBBLE_SHRINK_TO_REMOVAL:
+        *(float *)(bubble_vars + 8) -= *(float *)&D_L11_00162494 * D_0015EE70;
+        rate = bubble_moby->pclass->scale / (float)scale_ticks(0x3C);
         if ((level_frame & 3) == 0) {
-            SpawnSparksAndSmoke(m, *(float **)(d + 0x24), 0, 1);
-            rand_vec(v, 0.0f, D_0015EE6C);
-            v[2] = FastAbsF(v[2]);
-            p = func_L00_0026FF20_p(m + 0x10, v, *(float *)&D_L11_001624A4, **(float **)(d + 0x24));
-            if (p != 0) {
-                *(int *)(p + 4) = FastTweenColor(*(int *)&D_L11_001624A8, *(int *)&D_L11_001624AC, random_float_between(0.0f, 1.0f));
+            spawn_bubble_surface_effects(m, *(float **)(bubble_vars + 0x24), 0, 1);
+            rand_vec(randomized_effect_vector, 0.0f, D_0015EE6C);
+            randomized_effect_vector[2] = FastAbsF(randomized_effect_vector[2]);
+            spawned_effect = func_L00_0026FF20_p(&bubble_moby->pos, randomized_effect_vector,
+                                                 *(float *)&D_L11_001624A4, **(float **)(bubble_vars + 0x24));
+            if (spawned_effect != 0) {
+                *(int *)(spawned_effect + 4) = FastTweenColor(*(int *)&D_L11_001624A8, *(int *)&D_L11_001624AC,
+                                                              random_float_between(0.0f, 1.0f));
             }
         }
-        ApproachValue((float *)(m + 0x2C), 0.0f, rate);
-        if (*(float *)(m + 0x2C) == 0.0f) {
+        ApproachValue(&bubble_moby->scale, 0.0f, rate);
+        if (bubble_moby->scale == 0.0f) {
             DeleteMoby(m);
             return;
         }
         break;
     }
-    FastVecAdd(m + 0x10, m + 0x10, d);
-    len = func_001F9CE8(d);
-    ApproachValue(&len, 0.0f, *(float *)&D_L11_00162498 * D_0015EE70);
-    func_L00_001FF500(d, d, len);
+    FastVecAdd(&bubble_moby->pos, &bubble_moby->pos, bubble_vars);
+    horizontal_speed = func_001F9CE8(bubble_vars);
+    ApproachValue(&horizontal_speed, 0.0f, *(float *)&D_L11_00162498 * D_0015EE70);
+    func_L00_001FF500(bubble_vars, bubble_vars, horizontal_speed);
 }
 
 /* Creates a class 0x5F4 moby at position with random rotation and returns it, or 0. */
@@ -3370,7 +3393,7 @@ extern char *func_L00_00272770_p(void *, void *, void *, float, float) __asm__("
 extern float func_001F9878(float);
 
 /* Bursts n1 sparks and n2 smoke puffs at the moby, the puffs sitting on the ground height. */
-void SpawnSparksAndSmoke(char *m, float *ground, int n1, int n2) {
+void spawn_bubble_surface_effects(char *m, float *ground, int n1, int n2) {
     float v[4];
     int i;
     for (i = 0; i < n1; i++) {
@@ -3452,7 +3475,7 @@ void Pokitaru_BreakOnHitUpdate(char *m) {
         Moby_PlaySound(0, 0, (int)m);
         SpawnBreakFxByDistance(m);
         SpawnMobyBurstFx(m, 0x745, 1, 0x745, 1, 11, 2);
-        SpawnMobyCopyingPlacement(m, 0x744);
+        spawn_moby_from_placement(m, 0x744);
         DeleteMoby(m);
         break;
     }

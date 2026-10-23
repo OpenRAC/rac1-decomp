@@ -63,7 +63,7 @@ extern float func_001FA850(float, float);
 extern int func_L00_001EFFF0(void *, void *, int, int, int);
 
 /* Fleet turret/enemy state update: refreshes the hit reaction, fires the aim query and sets the lock flags. */
-void EnemyHitStateUpdate(Moby *moby, int arg) {
+void update_robot_dog_hit_reaction_and_target_detection(Moby *moby, int arg) {
     Data_2F1558 *d;
     Hit_2F1558 *q;
     float tmp[4];
@@ -172,7 +172,7 @@ int EnemyStunUpdate(unsigned char *moby, void *pos, void *target, float h) {
     return result;
 }
 int EnemyForceStunState(char *a) {
-    int r = ReleaseCarriedMobySlot(a);
+    int r = cancel_suck_cannon_suction(a);
     a[0x20] = 12;
     return r;
 }
@@ -195,7 +195,7 @@ typedef struct {
 } AimData_1BB0;
 
 /* Aims the turret at the hero: yaw and pitch to him, clamped, become the eased part's targets. */
-void AimTurretAtHero(char *moby) {
+void update_robot_dog_aim_joint(char *moby) {
     AimData_1BB0 *d = *(AimData_1BB0 **)(moby + 0x78);
     float accel = 0.02f;
     float speed = 0.3f;
@@ -230,34 +230,34 @@ extern void func_L17_002F1F58(char *);
 extern int D_L17_0015F6B0 MACRO_ADDR;
 
 // Pulses a moby's colour from a random phase and queues its draw callback.
-void Moby1382_UpdatePulse(unsigned char *moby) {
+void update_robot_dog_glow_effects(unsigned char *moby) {
     char *data;
-    int n;
+    int glow_pulse_period_frames;
     int alpha;
     int mode;
     int i;
     int x, y, z;
     int r, g, b;
-    float f;
+    float glow_pulse_sine;
     int color;
 
     /* Period and base colour by state range; both ranges have the same values in this build. */
-    if (moby[0x20] < 16) {
-        n = 0xAA;
+    if (((struct Moby *)moby)->state < 16) {
+        glow_pulse_period_frames = 0xAA;
         r = 0x32;
         g = 0xB4;
         b = 0x14;
     } else {
-        n = 0xAA;
+        glow_pulse_period_frames = 0xAA;
         r = 0x32;
         g = 0xB4;
         b = 0x14;
     }
-    data = *(char **)(moby + 0x78);
-    n = scale_ticks(n);
+    data = (char *)((struct Moby *)moby)->pvars;
+    glow_pulse_period_frames = scale_ticks(glow_pulse_period_frames);
     alpha = 0x80;
     mode = 0;
-    switch (moby[0x20]) {
+    switch (((struct Moby *)moby)->state) {
     case 4:
     case 5:
     case 6:
@@ -279,14 +279,15 @@ void Moby1382_UpdatePulse(unsigned char *moby) {
     }
     if (mode >= 0) {
         if (mode == 2) {
-            n = scale_ticks(0x32);
+            glow_pulse_period_frames = scale_ticks(0x32);
         } else if (mode == 1) {
-            n = scale_ticks(0x5A);
+            glow_pulse_period_frames = scale_ticks(0x5A);
         }
-        f = FastSin(((float)(D_L17_0015F6B0 % n) / IntToFloat(n)) * 2.0f * 3.1415927f + -3.1415927f);
-        x = func_001FA898_r(f * 20.0f);
-        y = func_001FA898_r(f * 70.0f);
-        z = func_001FA898_r(f * 10.0f);
+        glow_pulse_sine = FastSin(((float)(D_L17_0015F6B0 % glow_pulse_period_frames) / IntToFloat(glow_pulse_period_frames)) * 2.0f * 3.1415927f +
+                     -3.1415927f);
+        x = func_001FA898_r(glow_pulse_sine * 20.0f);
+        y = func_001FA898_r(glow_pulse_sine * 70.0f);
+        z = func_001FA898_r(glow_pulse_sine * 10.0f);
         r += x;
         g += y;
         b += z;
@@ -303,15 +304,15 @@ void Moby1382_UpdatePulse(unsigned char *moby) {
         } else {
             color = (alpha << 24) | (b << 16) | (g << 8) | r;
         }
-        *(int *)(moby + 0x90) = FastTweenColor(*(int *)(moby + 0x90), color, 0.1f);
+        ((struct Moby *)moby)->glow_color = FastTweenColor(((struct Moby *)moby)->glow_color, color, 0.1f);
         for (i = 0; i < 3; i++) {
             Moby_GetJointWorldPos(moby, i + 1, data + 0x200 + i * 16);
         }
-        AddDrawCallback(UpdateTrailColors, moby);
+        AddDrawCallback(draw_three_moby_effect_quads, moby);
     }
 }
 extern void func_L00_00264690(void *, int, float, float);
-void UpdateTrailColors(char *m) {
+void draw_three_moby_effect_quads(char *m) {
     int v = (*(int *)(m + 0x90) & 0xFFFFFF) | 0x30000000;
     char *p = *(char **)(m + 0x78) + 0x200;
     int i;
@@ -347,52 +348,53 @@ typedef struct { P2 p[2]; } T4;
 extern T4 D_L17_001622E8;
 
 /* Builds the two rippling vertex strips around the moby (template points moved to its position, z waved by distance from the centre), then draws them twice with scrolled texture coordinates. */
-void DrawFleetRippleStrips(char *moby) {
-    RippleData *d = *(RippleData **)(moby + 0x78);
+void draw_moby_radial_ripple_mesh_pair(char *moby) {
+    struct Moby *moby_obj = (struct Moby *)moby;
+    RippleData *ripple_vars = (RippleData *)moby_obj->pvars;
     float scale;
     int r, g, b;
     int color;
-    int i, j, m, n, q;
+    int i, j, uv_strip_index, uv_vertex_index, draw_strip_index;
 
     scale = IntToFloat(D_L17_0015F6B0) * (D_L17_001622E0 * D_0015EE6C);
     VU1_addGSregister(6, GetEffectTex(D_L17_001622CC));
     VU1_addGSregister(0x42, ((long)D_L17_001622C8 << 32) | 0x44);
     VU1_addGSregister(8, 0);
     VU1_addGSregister(0x14, ((long)0xFF90 << 32) | 0x260);
-    d->f0 = d->f4;
-    d->f4 = FastAddRots(d->f4, 360.0f / func_001F9878(D_L17_001622D8) * 0.017453292f * D_0015EE6C);
+    ripple_vars->f0 = ripple_vars->f4;
+    ripple_vars->f4 = FastAddRots(ripple_vars->f4, 360.0f / func_001F9878(D_L17_001622D8) * 0.017453292f * D_0015EE6C);
     get_moby_color(moby, &r, &g, &b);
     color = (D_L17_001622D0 << 24) | (b << 16) | (g << 8) | r;
     for (i = 0; i < 2; i++) {
         for (j = 0; j < ((int *)&D_L17_00162290)[i]; j++) {
-            int *e = (int *)&D_L17_001622B0 + i;
-            float *p = (float *)(*e + j * 12);
+            int *template_vertex_array_slot = (int *)&D_L17_001622B0 + i;
+            float *p = (float *)(*template_vertex_array_slot + j * 12);
             float t = D_L17_001622DC *
                 FastSin(FastAddRots(FastNormalizeAngle(
                     func_L00_00200210(func_001F9B50(p[0] * p[0] + p[1] * p[1]), D_L17_001622D4)
-                        * 6.2831855f / D_L17_001622D4), d->f4));
-            *(float *)(j * 12 + ((int *)&D_L17_00162298)[i]) = p[0] + *(float *)(moby + 0x10);
-            *(float *)(j * 12 + ((int *)&D_L17_00162298)[i] + 4) = p[1] + *(float *)(moby + 0x14);
-            *(float *)(j * 12 + ((int *)&D_L17_00162298)[i] + 8) = p[2] + *(float *)(moby + 0x18) + t;
+                        * 6.2831855f / D_L17_001622D4), ripple_vars->f4));
+            *(float *)(j * 12 + ((int *)&D_L17_00162298)[i]) = p[0] + moby_obj->pos.x;
+            *(float *)(j * 12 + ((int *)&D_L17_00162298)[i] + 4) = p[1] + moby_obj->pos.y;
+            *(float *)(j * 12 + ((int *)&D_L17_00162298)[i] + 8) = p[2] + moby_obj->pos.z + t;
             *(int *)(j * 4 + ((int *)&D_L17_001622A8)[i]) = color;
         }
     }
     for (i = 0; i < 2; i++) {
-        for (m = 0; m < 2; m++) {
-            for (n = 0; n < ((int *)&D_L17_00162290)[m]; n++) {
-                T4 tbl = D_L17_001622E8;
-                *(float *)(n * 8 + ((int *)&D_L17_001622A0)[m]) =
-                    *(float *)(n * 8 + ((int *)&D_L17_001622B8)[m])
-                    + func_L00_00200210(scale * tbl.p[i].v[0], 1.0f);
-                *(float *)(n * 8 + ((int *)&D_L17_001622A0)[m] + 4) =
-                    *(float *)(n * 8 + ((int *)&D_L17_001622B8)[m] + 4)
-                    + func_L00_00200210(scale * tbl.p[i].v[1], 1.0f);
+        for (uv_strip_index = 0; uv_strip_index < 2; uv_strip_index++) {
+            for (uv_vertex_index = 0; uv_vertex_index < ((int *)&D_L17_00162290)[uv_strip_index]; uv_vertex_index++) {
+                T4 uv_scroll_factors = D_L17_001622E8;
+                *(float *)(uv_vertex_index * 8 + ((int *)&D_L17_001622A0)[uv_strip_index]) =
+                    *(float *)(uv_vertex_index * 8 + ((int *)&D_L17_001622B8)[uv_strip_index])
+                    + func_L00_00200210(scale * uv_scroll_factors.p[i].v[0], 1.0f);
+                *(float *)(uv_vertex_index * 8 + ((int *)&D_L17_001622A0)[uv_strip_index] + 4) =
+                    *(float *)(uv_vertex_index * 8 + ((int *)&D_L17_001622B8)[uv_strip_index] + 4)
+                    + func_L00_00200210(scale * uv_scroll_factors.p[i].v[1], 1.0f);
             }
         }
         font_queue_vu_state();
-        for (q = 0; q < 2; q++) {
-            func_L00_001FDE48(((int *)&D_L17_00162290)[q], ((int *)&D_L17_00162298)[q],
-                ((int *)&D_L17_001622A8)[q], (void *)((int *)&D_L17_001622A0)[q], 1);
+        for (draw_strip_index = 0; draw_strip_index < 2; draw_strip_index++) {
+            func_L00_001FDE48(((int *)&D_L17_00162290)[draw_strip_index], ((int *)&D_L17_00162298)[draw_strip_index],
+                ((int *)&D_L17_001622A8)[draw_strip_index], (void *)((int *)&D_L17_001622A0)[draw_strip_index], 1);
         }
     }
 }
@@ -482,19 +484,19 @@ extern float D_L17_0016240C SDATA(D_L17_0016240C);
 /* Builds and draws the animated ring of lights around a moby: 45 vertices and colours, then two passes of 45 texture coordinates. */
 void DrawLightRing(char *moby) {
     unsigned int i = 0;
-    unsigned int off = 0;
-    RingVars *data = *(RingVars **)(moby + 0x78);
-    unsigned int n;
+    unsigned int output_vertex_byte_offset = 0;
+    RingVars *data = (RingVars *)((Moby *)moby)->pvars;
+    unsigned int uv_vertex_index;
     int j;
     int k;
     int color;
-    Quad4 t;
+    Quad4 uv_scroll_factors;
     int r;
     int g;
     int b;
     float scale;
-    Quad4 *p;
-    float *o;
+    Quad4 *v_scroll_factors;
+    float *output_vertex;
     scale = IntToFloat(D_L17_0015F6B0) * (D_L17_0016240C * D_0015EE6C);
     VU1_addGSregister(6, GetEffectTex(D_L17_001623F8));
     VU1_addGSregister(0x42, ((long)D_L17_001623F4 << 32) | 0x44);
@@ -504,30 +506,32 @@ void DrawLightRing(char *moby) {
     data->angle = FastAddRots(data->angle, 360.0f / func_001F9878(D_L17_00162404) * 0.017453292f * D_0015EE6C);
     get_moby_color(moby, &r, &g, &b);
     /* The second float of each pair in t: p->f[0] is t.f[1], p->f[2] is t.f[3]. */
-    p = (Quad4 *)&t.f[1];
+    v_scroll_factors = (Quad4 *)&uv_scroll_factors.f[1];
     color = (D_L17_001623FC << 24) | (b << 16) | (g << 8) | r;
-    o = D_L17_001DDE70;
+    output_vertex = D_L17_001DDE70;
     do {
-        float *s = &D_L17_001DDA30[i * 3];
-        float x = s[0];
-        float y = s[1];
+        float *template_vertex = &D_L17_001DDA30[i * 3];
+        float x = template_vertex[0];
+        float y = template_vertex[1];
         float rad = func_001F9B50(x * x + y * y);
-        float a = func_L00_00200210(rad, D_L17_00162400);
-        float w = FastNormalizeAngle(a * 6.2831855f / D_L17_00162400);
+        float radial_phase_input = func_L00_00200210(rad, D_L17_00162400);
+        float w = FastNormalizeAngle(radial_phase_input * 6.2831855f / D_L17_00162400);
         float z = FastSin(FastAddRots(w, data->angle));
-        o[0] = s[0] + *(float *)(moby + 0x10);
-        *(float *)((char *)D_L17_001DDE70 + 4 + off) = s[1] + *(float *)(moby + 0x14);
-        o[2] = s[2] + *(float *)(moby + 0x18) + D_L17_00162408 * z;
+        output_vertex[0] = template_vertex[0] + ((Moby *)moby)->pos.x;
+        *(float *)((char *)D_L17_001DDE70 + 4 + output_vertex_byte_offset) = template_vertex[1] + ((Moby *)moby)->pos.y;
+        output_vertex[2] = template_vertex[2] + ((Moby *)moby)->pos.z + D_L17_00162408 * z;
         D_L17_001DE1F8[i] = color;
         i++;
-        off += 12;
-        o += 3;
+        output_vertex_byte_offset += 12;
+        output_vertex += 3;
     } while (i < 45);
     for (j = 0; j < 2; j++) {
-        for (n = 0; n < 45; n++) {
-            t = D_L17_00162410;
-            D_L17_001DE090[n][0] = D_L17_001DDC50[n][0] + func_L00_00200210(scale * t.f[j * 2], 1.0f);
-            D_L17_001DE090[n][1] = D_L17_001DDC50[n][1] + func_L00_00200210(scale * p->f[j * 2], 1.0f);
+        for (uv_vertex_index = 0; uv_vertex_index < 45; uv_vertex_index++) {
+            uv_scroll_factors = D_L17_00162410;
+            D_L17_001DE090[uv_vertex_index][0] =
+                D_L17_001DDC50[uv_vertex_index][0] + func_L00_00200210(scale * uv_scroll_factors.f[j * 2], 1.0f);
+            D_L17_001DE090[uv_vertex_index][1] =
+                D_L17_001DDC50[uv_vertex_index][1] + func_L00_00200210(scale * v_scroll_factors->f[j * 2], 1.0f);
         }
         font_queue_vu_state();
         for (k = 0; k < 1; k++) {
@@ -634,7 +638,7 @@ void Moby1448Update(unsigned char *m) {
         pl = D_0013E633 + 0xE1D;
         if (*(unsigned char **)(pl + 0x2FC) == m && *(short *)(pl + 0x30E) == 0
             && scale_ticks(30) < v->timer) {
-            ShowModeSelectHelp(m);
+            update_shuttle_help_message(m);
             if ((*(int *)(D_0013A5E0 + 0x2604) & 0x10) && *(int *)&D_L17_0015F674 == 10) {
                 int s = v->dir;
                 if (s >= 0) {
@@ -703,7 +707,7 @@ void Moby1448Update(unsigned char *m) {
         }
         break;
     case 2:
-        if (AdvanceAlongCurvePath(m, v->side)) {
+        if (update_shuttle_travel_and_camera(m, v->side)) {
             int ofs;
             int base;
             m[0x20] = 3;
@@ -742,7 +746,7 @@ void Moby1448Update(unsigned char *m) {
 extern void func_00215F80(int, int);
 
 // Picks a sound id from the moby's state value and plays it.
-void ShowModeSelectHelp(char *moby) {
+void update_shuttle_help_message(char *moby) {
     char *data = *(char **)(moby + 0x78);
     int mode = *(int *)(data + 0x94);
     switch (mode) {
@@ -797,7 +801,7 @@ struct Dat_3CC0 {
 };
 
 /* Advances a moby along a three-curve path and updates its heading, pitch and speed. */
-int AdvanceAlongCurvePath(char *moby, int idx) {
+int update_shuttle_travel_and_camera(char *moby, int idx) {
     float m[4], pos[4];
     struct Dat_3CC0 *d = *(struct Dat_3CC0 **)(moby + 0x78);
     Path_3CC0 *c1 = ((Path_3CC0 **)D_L17_001B10B0)[d->a[idx]];
@@ -877,7 +881,7 @@ extern unsigned char D_0013D510[];
 extern unsigned char D_0013D5CA[] NOT_SDA;
 
 /* Update for moby class 1470: watches camera boxes around the hero, gives skill points and help messages, and turns the camera. */
-void Moby1470Update(char *moby) {
+void update_fleet_camera_box_watcher(char *moby) {
     int off;
     char *d = *(char **)(moby + 0x78);
     int st;
@@ -1048,7 +1052,7 @@ void Moby1470Update(char *moby) {
     case 2: {
         char *cam;
         func_L00_002E9B30();
-        func_L00_002E9E20((int)(D_L17_0016016C + (*(int *)(d + 0x44) << 7) + 0x30), 0.02617994f, 0.0f);
+        set_follow_camera_angle_blend_from_position((int)(D_L17_0016016C + (*(int *)(d + 0x44) << 7) + 0x30), 0.02617994f, 0.0f);
         cam = D_L17_00167600;
         f = func_L00_001FF860(*(float *)(D_L17_0016016C + ((*(int *)(d + 0x44) << 7) + 0x30)) - *(float *)(cam + 0x140),
                               *(float *)(D_L17_0016016C + ((*(int *)(d + 0x44) << 7) + 0x34)) - *(float *)(cam + 0x144));
@@ -1062,7 +1066,7 @@ void Moby1470Update(char *moby) {
         func_L00_002E9B30();
         if (func_001F9908_i((int *)(d + 0x5C))) {
             char *cam;
-            func_L00_002E9E20((int)(D_L17_0016016C + (*(int *)(d + 0x40) << 7) + 0x30), 0.02617994f, 0.0f);
+            set_follow_camera_angle_blend_from_position((int)(D_L17_0016016C + (*(int *)(d + 0x40) << 7) + 0x30), 0.02617994f, 0.0f);
             cam = D_L17_00167600;
             f = func_L00_001FF860(*(float *)(D_L17_0016016C + ((*(int *)(d + 0x40) << 7) + 0x30)) - *(float *)(cam + 0x140),
                                   *(float *)(D_L17_0016016C + ((*(int *)(d + 0x40) << 7) + 0x34)) - *(float *)(cam + 0x144));
@@ -1242,16 +1246,18 @@ extern float D_L17_001DE328[];
 extern float D_L17_001DE340[];
 
 // Fleet moby update: sets up a path on first tick, then animates its scrolling and bounce values.
-void FleetReflectionUpdate(unsigned char *moby) {
-    char *d = *(char **)(moby + 0x78);
-    float t0[4];
-    float t1[4];
-    float t2[4];
+void update_fleet_backdrop_animation(unsigned char *moby) {
+    struct Moby *mby = (struct Moby *)moby;
+    char *moby_pvars = (char *)mby->pvars;
+    float offset_accumulator[4];
+    float pvar_angle_offset[4];
+    float vector_sum[4];
     int i;
-    if (*(int *)(d + 0x4C) != -1) {
-        char *g = D_0013E633 + 0xE1D;
-        if (*(int *)(g + 0x2084) != 0x32 || *(char **)(g + 0x15F0) == 0 || *(short *)(*(char **)(g + 0x15F0) + 0xA6) != 0x563) {
-            if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, *(int *)(d + 0x4C))) {
+    if (*(int *)(moby_pvars + 0x4C) != -1) {
+        char *hero_data = D_0013E633 + 0xE1D;
+        if (*(int *)(hero_data + 0x2084) != 0x32 || *(struct Moby **)(hero_data + 0x15F0) == 0 ||
+            (*(struct Moby **)(hero_data + 0x15F0))->oclass != 0x563) {
+            if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, *(int *)(moby_pvars + 0x4C))) {
                 D_L17_0015F718_m = 150.0f;
                 goto done;
             }
@@ -1259,20 +1265,23 @@ void FleetReflectionUpdate(unsigned char *moby) {
         D_L17_0015F718_m = 10.0f;
     }
 done:
-    if (moby[0x20] == 0) {
-        moby[0x20] = 1;
+    if (mby->state == 0) {
+        mby->state = 1;
         for (i = 0; i < 5; i++) {
             D_L17_001DE3A0[i] = (float)i * 25.0f;
         }
-        qcopy(d, moby + 0x10);
-        BuildSphericalOffset(t0, (*(float *)&D_L17_00162454 + *(float *)&D_L17_00162450) / *(float *)&D_L17_00162458, *(float *)(moby + 0x48), 0.0f);
-        BuildSphericalOffset(t1, *(float *)&D_L17_00162450 / *(float *)&D_L17_00162458, *(float *)(d + 0x44), 0.0f);
-        FastVecAdd(t2, t0, t1);
-        *(u128 *)t0 = *(u128 *)t2;
-        FastVecAdd(t2, d, t0);
-        *(u128 *)(d + 0x10) = *(u128 *)t2;
-        moby[0x30] = 0xFF;
-        *(float *)(d + 0x10) -= 300.0f;
+        qcopy(moby_pvars, &mby->pos);
+        BuildSphericalOffset(offset_accumulator,
+            (*(float *)&D_L17_00162454 + *(float *)&D_L17_00162450) / *(float *)&D_L17_00162458,
+            mby->rot.z, 0.0f);
+        BuildSphericalOffset(pvar_angle_offset, *(float *)&D_L17_00162450 / *(float *)&D_L17_00162458,
+            *(float *)(moby_pvars + 0x44), 0.0f);
+        FastVecAdd(vector_sum, offset_accumulator, pvar_angle_offset);
+        *(u128 *)offset_accumulator = *(u128 *)vector_sum;
+        FastVecAdd(vector_sum, moby_pvars, offset_accumulator);
+        *(u128 *)(moby_pvars + 0x10) = *(u128 *)vector_sum;
+        mby->update_dist = 0xFF;
+        *(float *)(moby_pvars + 0x10) -= 300.0f;
     } else {
         for (i = 0; i < 5; i++) {
             D_L17_001DE310[i] += D_L17_001DE340[i] * D_L17_001DE328[i] * frame_delta_time;
@@ -1348,7 +1357,7 @@ void Moby1843Update(unsigned char *moby) {
     float len;
     char *firing_moby;
 
-    CollectableCrateUpdate(moby);
+    update_moby_hit_stats_and_state(moby);
     switch (((Moby *)moby)->state) {
     case BLARG_SHIP_INITIALIZE:
         ((Moby *)moby)->draw_dist = 0xFF;
@@ -1367,7 +1376,7 @@ void Moby1843Update(unsigned char *moby) {
         break;
     case BLARG_SHIP_FOLLOW_PATH:
     case BLARG_SHIP_BURST_AND_HIDE:
-        TrailRingUpdate(moby);
+        update_moby_trail_points(moby);
         *(float *)(moby_pvars + 0x68) += *(float *)(moby_pvars + 0x6C);
         if (*(float *)(moby_pvars + 0x68) > 1.0f) {
             *(float *)(moby_pvars + 0x68) -= 1.0f;
@@ -1380,13 +1389,13 @@ void Moby1843Update(unsigned char *moby) {
                 **(int **)(D_L17_001B10B0 + *(int *)(moby_pvars + 0x60) * 4);
         }
         FastAddRots(*(float *)(moby_pvars + 0x70), *(float *)(moby_pvars + 0x74));
-        PathOrbitMobyUpdate(moby);
+        update_moby_path_transform(moby);
         if (((Moby *)moby)->state == 2) {
             SpawnExplosionFx(moby, &((Moby *)moby)->pos, -1, 2.0f, 13.0f);
             if (random_integer_below(2)) {
-                SpawnMobyAt((char *)&((Moby *)moby)->pos, 0xE0);
+                spawn_ship_pickup((char *)&((Moby *)moby)->pos, 0xE0);
             } else {
-                SpawnMobyAt((char *)&((Moby *)moby)->pos, 0xE4);
+                spawn_ship_pickup((char *)&((Moby *)moby)->pos, 0xE4);
             }
             Moby_PlaySound(1, 0, (int)moby);
             ((Moby *)moby)->state = 3;
@@ -1492,7 +1501,7 @@ void Moby1843Update(unsigned char *moby) {
                 FastVecSub(firing_target_delta, sB0, sA0);
                 func_L00_001FF4B0(firing_direction, firing_target_delta, *(float *)&D_L17_00162468 * D_0015EE6C);
                 FastVecAdd(firing_direction, firing_direction, hero_position_delta);
-                firing_moby = SpawnStreakMoby((int)moby, firing_direction, sA0, 128.0f, -1.0f, 10.0f);
+                firing_moby = spawn_class_3f9_moby((int)moby, firing_direction, sA0, 128.0f, -1.0f, 10.0f);
                 if (firing_moby) {
                     FastVecSub(firing_direction, firing_direction, hero_position_delta);
                     *(float *)(firing_moby + 0x44) = -func_L00_001FF860(func_001F9CE8(firing_direction), firing_direction[2]);
@@ -1512,9 +1521,9 @@ void Moby1843Update(unsigned char *moby) {
         FastVecAdd(&((Moby *)moby)->pos, &((Moby *)moby)->pos, scratch_vector);
         SpawnExplosionFx(moby, &((Moby *)moby)->pos, -1, 2.0f, 13.0f);
         if (random_integer_below(2)) {
-            SpawnMobyAt((char *)&((Moby *)moby)->pos, 0xE0);
+            spawn_ship_pickup((char *)&((Moby *)moby)->pos, 0xE0);
         } else {
-            SpawnMobyAt((char *)&((Moby *)moby)->pos, 0xE4);
+            spawn_ship_pickup((char *)&((Moby *)moby)->pos, 0xE4);
         }
         Moby_PlaySound(1, 0, (int)moby);
         ((Moby *)moby)->state = 4;
@@ -1527,7 +1536,7 @@ LINKER_REMNANT("asm/overlays", func_L17_002F6AF0);
 extern short *D_L17_001AC440[];
 
 /* Finds the listed moby of type 0x733 in state 4 and launches it along a rotated vector. */
-char *LaunchRandomMoby733(int list) {
+char *try_activate_blarg_ship_from_list(int list) {
     short *s = D_L17_001AC440[list];
     float A[4], B[4], C[4], D[4], E[4], F[4];
     char *m;
@@ -1591,7 +1600,7 @@ void Moby1873Update(unsigned char *m) {
         SpawnBreakFxByDistance(m);
         SpawnMobyBurstFx(m, 0x753, 1, 0x753, 1, 11, 2);
         SpawnMobyBurstFx(m, 0x756, 1, 0x756, 1, 1, 2);
-        SpawnMobyCopyingPlacement(m, 0x752);
+        spawn_moby_from_placement(m, 0x752);
         DeleteMoby(m);
         break;
     }
@@ -1600,26 +1609,33 @@ extern void *func_L00_00265050(char *src, int cls, float *pos, void *mat, int a8
 extern float D_L17_0015F660[] MACRO_ADDR;
 
 /* Update moby 1876: waits for a trigger, then plays an effect and finishes. */
-void Moby1876Update(unsigned char *m) {
+void update_hit_triggered_fragment_and_placement_spawner(unsigned char *m) {
+    enum {
+        HIT_EFFECT_INITIALIZE = 0,
+        HIT_EFFECT_WAIT_FOR_HIT = 1,
+        HIT_EFFECT_EMIT_AND_REMOVE = 2
+    };
     int flag = 0;
-    char *r = MobyGetHitMessage(m, 0x10000, 0);
-    switch (m[0x20]) {
-    case 0:
-        m[0x20] = 1;
+    char *hit_result = MobyGetHitMessage(m, 0x10000, 0);
+    switch (((struct Moby *)m)->state) {
+    case HIT_EFFECT_INITIALIZE:
+        ((struct Moby *)m)->state = 1;
         break;
-    case 1:
-        if (r) {
-            if (*(float *)(r + 0x2C) > 0.0f) flag = 1;
+    case HIT_EFFECT_WAIT_FOR_HIT:
+        if (hit_result) {
+            if (*(float *)(hit_result + 0x2C) > 0.0f)
+                flag = 1;
         }
-        if (flag) m[0x20] = 2;
+        if (flag)
+            ((struct Moby *)m)->state = 2;
         break;
-    case 2:
+    case HIT_EFFECT_EMIT_AND_REMOVE:
         Moby_PlaySound(0, 0, (int)m);
         SetDeathBits(m, 0, -1);
         SpawnBreakFxByDistance(m);
-        SpawnBreakFragment((char *)m, 0x753, (float *)(m + 0x10), m + 0x40, 0, 0, D_L17_0015F660, D_L17_0015F660, 0.0f, D_L17_0015F660);
+        SpawnBreakFragment((char *)m, 0x753, &((struct Moby *)m)->pos.x, &((struct Moby *)m)->rot, 0, 0, D_L17_0015F660, D_L17_0015F660, 0.0f, D_L17_0015F660);
         SpawnMobyBurstFx(m, 0x756, 1, 0x756, 1, 1, 2);
-        SpawnMobyCopyingPlacement(m, 0x755);
+        spawn_moby_from_placement(m, 0x755);
         DeleteMoby(m);
         break;
     }
@@ -1631,7 +1647,7 @@ typedef struct { float x, y, z; } V3;
 typedef struct { V3 v; float w; } V4;
 
 /* Projects each direction pair into 2D texture coordinates (reflection mapping). */
-void ComputeReflectionUVs(int n, V3 *b, V3 *a, int unused, float *out) {
+void compute_reflection_sphere_map_uvs(int n, V3 *b, V3 *a, int unused, float *out) {
     V4 v0;
     V4 p;
     V4 r;
@@ -1680,7 +1696,7 @@ void DrawReflectionStrips(void) {
     font_queue_vu_state();
     p = (float *)D_L17_001DEB70;
     for (i = 0; i < 2; i++) {
-        ComputeReflectionUVs(((int *)&D_L17_00162470)[i], ((int *)&D_L17_00162488)[i], ((int *)&D_L17_00162478)[i], ((int *)&D_L17_00162480)[i], p);
+        compute_reflection_sphere_map_uvs(((int *)&D_L17_00162470)[i], ((int *)&D_L17_00162488)[i], ((int *)&D_L17_00162478)[i], ((int *)&D_L17_00162480)[i], p);
         func_L00_001FDE48(((int *)&D_L17_00162470)[i], ((int *)&D_L17_00162478)[i], ((int *)&D_L17_00162490)[i], p, 1);
     }
 }
@@ -1702,12 +1718,12 @@ void DrawReflectionStrip(void) {
     font_queue_vu_state();
     p = (float *)D_L17_001DF970;
     for (i = 0; i < 1; i++) {
-        ComputeReflectionUVs(((int *)&D_L17_001624A0)[i], (V3 *)((int *)&D_L17_001624D0)[i], (V3 *)((int *)&D_L17_001624C0)[i], ((int *)&D_L17_001624C8)[i], p);
+        compute_reflection_sphere_map_uvs(((int *)&D_L17_001624A0)[i], (V3 *)((int *)&D_L17_001624D0)[i], (V3 *)((int *)&D_L17_001624C0)[i], ((int *)&D_L17_001624C8)[i], p);
         func_L00_001FDE48(((int *)&D_L17_001624A0)[i], ((int *)&D_L17_001624C0)[i], ((int *)&D_L17_001624D8)[i], p, 1);
     }
 }
 /* Computes a per-vertex 2D sphere-map texture coordinate from position and normal arrays. */
-void ComputeSphereMapUVs(int n, char *nrm, char *pos, int unused, float *out) {
+void compute_vertex_to_reference_sphere_map_uvs(int n, char *nrm, char *pos, int unused, float *out) {
     float a[4];
     float t[4];
     float r[4];

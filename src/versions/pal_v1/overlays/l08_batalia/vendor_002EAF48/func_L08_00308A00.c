@@ -1,4 +1,4 @@
-void Moby1349Update(char *m) {
+void update_batalia_item_triggers_and_help(char *m) {
     VData *data = *(VData **)(m + 0x78);
     int elapsed;
     int time;

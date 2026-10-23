@@ -133,7 +133,7 @@ extern Moby_277208 *func_00226720(int);
 extern void func_00213D28(void *, int, int);
 extern void func_L00_002E0AE8(void);
 
-void func_L00_00277208(void) {
+void initialize_pause_menu(void) {
     Menu_277208 *m = &(*(Menu_277208 *)D_L00_001BA070);
     int *page;
     int queued = 0;
@@ -260,13 +260,13 @@ void func_L00_00277208(void) {
     VU1_initChain();
 
     if ((*(Menu_277208 *)D_L00_001BA070).state == 11 || (*(Menu_277208 *)D_L00_001BA070).state == 15) {
-        Map_LoadRenderArchive();
+        initialize_render_archive_transfer();
     }
-    HudBank_Release(0);
+    apply_group_entry_adjustment(0);
     if ((*(Menu_277208 *)D_L00_001BA070).state == 11 || (*(Menu_277208 *)D_L00_001BA070).state == 15 || (*(Menu_277208 *)D_L00_001BA070).state == 0x12) {
-        HudBanks_Upload(1);
+        decompress_and_relocate_selected_groups(1);
     } else {
-        HudBanks_Upload(0);
+        decompress_and_relocate_selected_groups(0);
     }
     DownloadFrameBuffer((*(Menu_277208 *)D_L00_001BA070).unk10, D_0015EF84, *(int *)((char *)D_0013E15A + 0x4AA) << 11);
     t = D_0015EF78;
@@ -291,7 +291,7 @@ void func_L00_00277208(void) {
             p--;
         }
     }
-    MobyPool_Swap(1);
+    select_moby_context(1);
     (*(Menu_277208 *)D_L00_001BA070).unkCC = ((Cnt_277208 *)D_L00_00197680[0])->bC;
     ((Cnt_277208 *)D_L00_00197680[0])->bC += 0x1C;
     for (n = 0; n < 4; n++) {
@@ -344,7 +344,7 @@ extern void func_L00_0023A690(void);
 extern void func_L00_0023A788(void);
 
 /* PageMenuClose: closes the pause menu. */
-void PauseMenu_Close(void) {
+void close_pause_menu(void) {
     int i;
     int value;
     int handle;
@@ -396,12 +396,12 @@ void PauseMenu_Close(void) {
             *(int *)&D_0015EF78 = *(int *)(state + 0x18);
             Hud_SendResidentBank(0, value, 0);
         }
-        HudBank_Release(2);
+        apply_group_entry_adjustment(2);
         if (*(int *)(*(char **)(table + 0x18) + 0x80) != 0) {
-            HudBank_Release(3);
+            apply_group_entry_adjustment(3);
         }
         if (*(int *)(*(char **)(table + 0x18) + 0x84) != 0) {
-            HudBank_Release(4);
+            apply_group_entry_adjustment(4);
         }
         {
             int k;
@@ -552,7 +552,7 @@ extern void func_L00_002777C0(void);
 
 // Page-menu (pause/map/planet-select) per-frame update: state machine over the menu pages.
 // Adapted from Lombyte (MIT) for PAL: src/overlays/shared/audio_voices_00276368.c, FUN_L00_00276bd0.
-void PauseMenu_Update(void) {
+void update_pause_menu(void) {
     Own *u8p;
     Mth *m;
     NO *obj;
@@ -600,7 +600,7 @@ void PauseMenu_Update(void) {
         qcopy(D_L00_00166EC0, &GS.v40);
         qcopy(D_L00_00166EC0 + 4, &GS.v50);
         D_L00_0016CBF0 = GS.unkE8;
-        MobyPool_Swap(0);
+        select_moby_context(0);
         if (GS.unk140 != 0) {
             *(int *)&D_L00_001600CC = -1;
             select_world_object_resource_tables(GS.unk140, GS.unk144);
@@ -614,28 +614,28 @@ void PauseMenu_Update(void) {
         if (GS.unkC == 2) {
             char *w = D_L00_001842F0;
             STUB_printf(D_L00_001E9530, *(int *)(w + 0x224));
-            ShipTravelTo(*(int *)(w + 0x224));
+            prepare_target_level_transition(*(int *)(w + 0x224));
         } else if (GS.unkC == 3) {
             tmp = D_0015EFD8;
             D_0015EFD8 = 2;
             GS.unk130 = tmp;
             FadeToBlack(scale_ticks(0x10));
             D_L00_0015F6A8 = 0;
-            PlayMovieEntryIfIdle((int)GS.unkE4);
+            start_indexed_disc_stream((int)GS.unkE4);
         } else if (GS.unkC == 4) {
             tmp = D_0015EFD8;
             D_0015EFD8 = 1;
             GS.unk130 = tmp;
             FadeToBlack(scale_ticks(0x10));
             D_L00_0015F6A8 = 0;
-            PlayMovieEntryWithMode((int)GS.unkE4);
+            queue_movie_with_game_language((int)GS.unkE4);
         } else if (GS.unkC == 6) {
             tmp = D_0015EFD8;
             D_0015EFD8 = 1;
             GS.unk130 = tmp;
             FadeToBlack(scale_ticks(0x10));
             D_L00_0015F6A8 = 0;
-            PlayMovieEntry((int)GS.unkE4);
+            queue_language_zero_movie((int)GS.unkE4);
         } else if (GS.unkC == 5) {
             tmp = D_0015EFD8;
             D_0015EFD8 = 1;
@@ -648,7 +648,7 @@ void PauseMenu_Update(void) {
             GS.unk130 = tmp;
             FadeToBlack(scale_ticks(0x10));
             D_L00_0015F6A8 = 0;
-            EnterSlideshowMode();
+            start_slideshow();
         } else {
             D_L00_0015F6A8 = 0;
         }
@@ -663,13 +663,13 @@ void PauseMenu_Update(void) {
     v = GS.state;
     if (v == 0 || v == 0xA || v == 0xE || v == 0x11 || v == 0x21 || v == 0x2D ||
         v == 0x23) {
-        func_L00_00277208();
+        initialize_pause_menu();
     }
     if ((D_0015EFB4_m & 1) && !(*(int *)&D_L00_0015F6AC < 8)) {
         mode_freeze_init(3, GS.owner, 0);
         return;
     }
-    PauseCheatEntry();
+    process_unlock_code_input();
     if (GS.state == 1) {
         GS.unk14 = (GS.unk14 < 1) ? 0 : GS.unk14 - 1;
         if (GS.unk14 == 0) {
@@ -751,7 +751,7 @@ L2:
     update_visible_resident_objects();
     sound_update();
     if (GS.unkC != 0) {
-        PauseMenu_Close();
+        close_pause_menu();
     }
 }
 typedef int u128 __attribute__((mode(TI)));
@@ -802,8 +802,8 @@ typedef struct PageMobyData {
 } PageMobyData;
 
 /* draws the pause menu pages: lays out each page moby's screen rect, then renders each page's texture */
-void PauseMenu_DrawPages(int arg0) {
-    u128 c[4];
+void draw_pause_menu_pages(int transfer_only) {
+    u128 corners[4];
     u128 pad[5];
     u128 box[2];
     struct {
@@ -812,18 +812,18 @@ void PauseMenu_DrawPages(int arg0) {
         int x;
         int y;
     } rect;
-    char **pp;
+    char **page_objects;
     int i;
     int k;
     int j;
-    int n;
+    int flashing_panel_index;
     int pass;
     int flags;
 
     append_gif_transfer_packet();
-    pp = 0;
-    UploadImageStrip(PM.unk10, D_0015EF84, *(int *)((char *)D_0013E15A + 0x4AA) << 11);
-    if (arg0 != 0) {
+    page_objects = 0;
+    append_draw_buffer_upload_packets(PM.unk10, D_0015EF84, *(int *)((char *)D_0013E15A + 0x4AA) << 11);
+    if (transfer_only != 0) {
         return;
     }
     ResetGsRegisters();
@@ -841,55 +841,55 @@ void PauseMenu_DrawPages(int arg0) {
         }
     }
     if (PM.owner != 0) {
-        pp = (char **)(PM.owner + 0x44);
+        page_objects = (char **)(PM.owner + 0x44);
     }
     for (k = 0; k < 14; k++) {
-        PageMobyData *d;
+        PageMobyData *page_data;
         if (D_L00_001BA220[k] == 0 || D_L00_001B2740[k] == 0) {
             continue;
         }
         if (k == 6 && PM.unkD8 == 0) {
             continue;
         }
-        d = *(PageMobyData **)((char *)D_L00_001BA220[k] + 0x78);
-        qcopy(&c[0], d);
-        qcopy(&c[1], &d->row[1]);
-        qcopy(&c[2], &d->row[2]);
-        qcopy(&c[3], &d->row[3]);
-        box[0] = c[0];
-        box[1] = c[3];
+        page_data = *(PageMobyData **)((char *)D_L00_001BA220[k] + 0x78);
+        qcopy(&corners[0], page_data);
+        qcopy(&corners[1], &page_data->row[1]);
+        qcopy(&corners[2], &page_data->row[2]);
+        qcopy(&corners[3], &page_data->row[3]);
+        box[0] = corners[0];
+        box[1] = corners[3];
         project_graphics_bounds(&box[0], &box[1], &rect.w, &rect.h, &rect.x, &rect.y);
         flags = rect.w;
         rect.x++;
         rect.y++;
-        if (pp != 0 && pp[k] != 0) {
-            *(int *)(pp[k] + 0x20) = flags;
-            *(int *)(pp[k] + 0x24) = rect.h;
-            *(int *)(pp[k] + 0x18) = rect.x;
-            *(int *)(pp[k] + 0x1C) = rect.y;
+        if (page_objects != 0 && page_objects[k] != 0) {
+            *(int *)(page_objects[k] + 0x20) = flags;
+            *(int *)(page_objects[k] + 0x24) = rect.h;
+            *(int *)(page_objects[k] + 0x18) = rect.x;
+            *(int *)(page_objects[k] + 0x1C) = rect.y;
         }
-        d->x = rect.x;
-        d->y = rect.y;
-        d->w = rect.w;
-        d->h = rect.h;
+        page_data->x = rect.x;
+        page_data->y = rect.y;
+        page_data->w = rect.w;
+        page_data->h = rect.h;
         func_00201640(rect.x + 1, rect.y + 1, rect.x + rect.w - 1, rect.y + rect.h - 1, D_L00_00160330, 0);
     }
     for (pass = 0; pass < 2; pass++) {
         HEnt **mobys = D_L00_001BA220;
         for (j = 0; j < 14; j++) {
-            char *m = (char *)mobys[j];
-            int pw, ph, px, py;
-            int tw, th, su, sv;
-            int r, u, v, u1, v1;
-            char *d;
-            if (m == 0 || pp == 0 || pp[j] == 0) {
+            char *moby = (char *)mobys[j];
+            PageMobyData *vars;
+            int width, height, x, y;
+            int width_log2, height_log2, target_width, target_height;
+            int draw_result, u_start, v_start, u_end, v_end;
+            if (moby == 0 || page_objects == 0 || page_objects[j] == 0) {
                 continue;
             }
-            flags = *(int *)(pp[j] + 0x10);
+            flags = *(int *)(page_objects[j] + 0x10);
             if (flags & 4) {
                 continue;
             }
-            if (D_L00_001B2740[j] == 0 || *(int *)(pp[j] + 4) == 0) {
+            if (D_L00_001B2740[j] == 0 || *(int *)(page_objects[j] + 4) == 0) {
                 continue;
             }
             if (j == 6 && PM.unkD8 == 0) {
@@ -902,72 +902,72 @@ void PauseMenu_DrawPages(int arg0) {
                 continue;
             }
             if (flags & 1) {
-                (*(int (**)(char *))(pp[j] + 4))(pp[j]);
+                (*(int (**)(char *))(page_objects[j] + 4))(page_objects[j]);
                 continue;
             }
-            d = *(char **)(m + 0x78);
-            px = *(int *)(d + 0x50);
-            py = *(int *)(d + 0x54);
-            pw = *(int *)(d + 0x58);
-            ph = *(int *)(d + 0x5C);
-            tw = 7;
-            while ((1 << tw) < pw) {
-                tw++;
+            vars = *(PageMobyData **)(moby + 0x78);
+            x = vars->x;
+            y = vars->y;
+            width = vars->w;
+            height = vars->h;
+            width_log2 = 7;
+            while ((1 << width_log2) < width) {
+                width_log2++;
             }
-            th = 7;
-            while ((1 << th) < ph) {
-                th++;
+            height_log2 = 7;
+            while ((1 << height_log2) < height) {
+                height_log2++;
             }
-            while (tw + th >= 18) {
-                th--;
+            while (width_log2 + height_log2 >= 18) {
+                height_log2--;
             }
-            configure_graphics_render_target_and_projection(tw, th, pass != 0, 1.0f);
-            su = 1 << tw;
-            sv = 1 << th;
-            draw_hud_rect_depth(0, 0, su, sv, D_L00_00160330, 0, 0);
-            r = (*(int (**)(char *))(pp[j] + 4))(pp[j]);
+            configure_graphics_render_target_and_projection(width_log2, height_log2, pass != 0, 1.0f);
+            target_width = 1 << width_log2;
+            target_height = 1 << height_log2;
+            draw_hud_rect_depth(0, 0, target_width, target_height, D_L00_00160330, 0, 0);
+            draw_result = (*(int (**)(char *))(page_objects[j] + 4))(page_objects[j]);
             begin_draw_frame();
             VU1_addGSregister(0x42, 0x8000000064L);
             VU1_addGSregister(0x47, 0x43);
-            if (r & 1) {
+            if (draw_result & 1) {
                 continue;
             }
-            u = 0;
-            u1 = su;
-            v = 0;
-            v1 = sv;
-            if (r & 2) {
-                u1 = pw;
-                v1 = ph;
-            } else if (r & 8) {
-                u = (u1 - pw) / 2;
-                v = (v1 - ph) / 2;
-                u1 -= u;
-                v1 -= v;
-                if (u < 0) {
-                    u = 0;
+            u_start = 0;
+            u_end = target_width;
+            v_start = 0;
+            v_end = target_height;
+            if (draw_result & 2) {
+                u_end = width;
+                v_end = height;
+            } else if (draw_result & 8) {
+                u_start = (u_end - width) / 2;
+                v_start = (v_end - height) / 2;
+                u_end -= u_start;
+                v_end -= v_start;
+                if (u_start < 0) {
+                    u_start = 0;
                 }
-                if (v < 0) {
-                    v = 0;
+                if (v_start < 0) {
+                    v_start = 0;
                 }
-                if (u1 > su) {
-                    u1 = su;
+                if (u_end > target_width) {
+                    u_end = target_width;
                 }
-                if (v1 > sv) {
-                    v1 = sv;
+                if (v_end > target_height) {
+                    v_end = target_height;
                 }
-            } else if (r & 4) {
-                if (pw < ph) {
-                    u = u1 / 2 - (pw * u1) / (ph * 2);
-                    u1 -= u;
+            } else if (draw_result & 4) {
+                if (width < height) {
+                    u_start = u_end / 2 - (width * u_end) / (height * 2);
+                    u_end -= u_start;
                 } else {
-                    v = v1 / 2 - (ph * v1) / (pw * 2);
-                    v1 -= v;
+                    v_start = v_end / 2 - (height * v_end) / (width * 2);
+                    v_end -= v_start;
                 }
-            } else if (!(r & 0x10)) {
+            } else if (!(draw_result & 0x10)) {
                 continue;
             }
-            DrawTexturedQuad(px, py, pw, ph, u, v, u1 - u, v1 - v, 0x80808080L, D_0015EFD0);
+            DrawTexturedQuad(x, y, width, height, u_start, v_start, u_end - u_start, v_end - v_start, 0x80808080L, D_0015EFD0);
         }
         if (pass == 0) {
             RestoreMobyClassDists();
@@ -977,9 +977,9 @@ void PauseMenu_DrawPages(int arg0) {
         }
     }
     SetupGifPaging(0);
-    for (n = 0; n < 14; n++) {
-        if (D_L00_001B2740[n] != 0 && (n != 6 || PM.unkD8 != 0)) {
-            draw_menu_flashing_panel((int)D_L00_001BA220[n]);
+    for (flashing_panel_index = 0; flashing_panel_index < 14; flashing_panel_index++) {
+        if (D_L00_001B2740[flashing_panel_index] != 0 && (flashing_panel_index != 6 || PM.unkD8 != 0)) {
+            draw_menu_flashing_panel((int)D_L00_001BA220[flashing_panel_index]);
         }
     }
     DoGifPaging();
@@ -993,7 +993,7 @@ extern char D_0013CA40[];
 #define menu_system_p (*(struct MenuSystemP *)D_L00_001BA070)
 #define controller_state_p (*(struct CtrlP *)D_0013CA40)
 /* Menu input check for the page `screen`. */
-int handle_menu_screen_buttons(void *screen) {
+int Menu_CheckPageInput(void *screen) {
     if (menu_system_p.current->focus != screen) {
         return 0;
     }
@@ -1157,7 +1157,7 @@ extern unsigned char D_0013D50F[];
 extern char D_0013D355[];
 
 /* Cheat-code entry on the pause screen. */
-void PauseCheatEntry(void) {
+void process_unlock_code_input(void) {
     char *pad = (char *)D_0013A5E0 + 0x2460;
     int lim0, lim;
     int va, vb, vc;
@@ -1326,7 +1326,7 @@ extern BoltSource_286068 D_0014D690[][64];
 
 /* the bolt tally slot of moby uid in level lvl: scanning down from slot 63, the first slot that
    holds uid (stored as uid + 1) or is free, which it claims; -1 when there is none or uid < 0 */
-int BoltTally_FindSlot(int lvl, int uid) {
+int find_or_assign_bolt_source_slot(int lvl, int uid) {
     int k = -1;
 
     if (uid >= 0) {
@@ -1417,7 +1417,7 @@ extern void func_L00_001ED600(void);
 extern void func_00216270(void);
 
 /* loads the saved pause-menu state block into the game globals */
-void PauseMenu_LoadSnapshot(void) {
+void restore_or_clear_level_state(void) {
     char *p = (char *)D_L00_001BB5C0;
     unsigned char *g;
     unsigned char *b;
@@ -1486,7 +1486,7 @@ typedef struct { int off; int pad; unsigned short len; short kind; short a; shor
 extern int func_L00_00286498(int, int);
 
 /* Applies a patch table to the matching records. */
-void Moby_ApplyPatchTable(int *h) {
+void restore_moby_state_entries(int *h) {
     int i;
 
     for (i = 0; i < *h; i++) {

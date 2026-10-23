@@ -191,21 +191,21 @@ extern s32 func_0012E688(s32, s32, void *);
 s32 func_0012DB68(void) {
     s32 bind_result;
     s32 command_arg;
-    u8 *const command_buffer1 = D_00134380;
-    u8 *const command_buffer0 = D_00133380;
+    u8 *const command_buffer1 = snd_command_buffer2;
+    u8 *const command_buffer0 = snd_command_buffer1;
 
-    ((u8 **)&D_0015EDA0)[0] = command_buffer0;
-    ((u8 **)&D_0015EDA0)[1] = command_buffer1;
-    ((u8 **)&D_0015EDB8)[0] = D_00137380;
-    ((u8 **)&D_0015EDB8)[1] = D_001377C0;
-    ((u8 **)&D_0015EDB0)[0] = D_00135380;
-    ((u8 **)&D_0015EDB0)[1] = D_00136380;
+    ((u8 **)&snd_batch_command_buffers)[0] = command_buffer0;
+    ((u8 **)&snd_batch_command_buffers)[1] = command_buffer1;
+    ((u8 **)&snd_batch_return_buffers)[0] = snd_return_buffer1;
+    ((u8 **)&snd_batch_return_buffers)[1] = snd_return_buffer2;
+    ((u8 **)&snd_stream_buffers)[0] = snd_stream_buffer1;
+    ((u8 **)&snd_stream_buffers)[1] = snd_stream_buffer2;
     func_0011AE20(0);
 
     for (;;) {
         bind_result = func_0011B2F8(&D_0015ECC0_2DB68, 0x123456, 0);
         if (bind_result < 0) {
-            func_00116078_2DB68((const char *)D_00153D50, D_00153D78, 0x73);
+            func_00116078_2DB68((const char *)snd_sif_bind_rpc_error_string, snd_989_snd_source_file, 0x73);
             for (;;) {
             }
         }
@@ -217,15 +217,15 @@ s32 func_0012DB68(void) {
         }
     }
 
-    (*(s32 *)&D_0015EDC8) = 0;
-    (*(s32 *)&D_0015EDD0) = 0;
-    D_0015EDD8 = 0;
+    (*(s32 *)&snd_cd_callback_pending) = 0;
+    (*(s32 *)&snd_cd_callback_fn) = 0;
+    snd_cd_callback_data = 0;
     D_0015EE00_2DB68 = 0;
 
     do {
         bind_result = func_0011B2F8(&D_0015ECE8_2DB68, 0x123457, 0);
         if (bind_result < 0) {
-            func_00116078_2DB68((const char *)D_00153D50, D_00153D78, 0x88);
+            func_00116078_2DB68((const char *)snd_sif_bind_rpc_error_string, snd_989_snd_source_file, 0x88);
             for (;;) {
             }
         }
@@ -234,11 +234,11 @@ s32 func_0012DB68(void) {
         }
     } while (D_0015ECE8_2DB68.server == 0);
 
-    *(s32 *)D_00133380 = 0;
+    *(s32 *)snd_command_buffer1 = 0;
     D_00137C00_2DB68.read_active = 0;
-    *(s32 *)D_00134380 = 0;
+    *(s32 *)snd_command_buffer2 = 0;
     D_00137C00_2DB68.read_error = 0;
-    (*(s32 *)&D_0015EDA8) = 0xFFC;
+    (*(s32 *)&snd_batch_free_bytes) = 0xFFC;
     D_0015EDAC = 0xFFC;
     command_arg = (s32)(u32)&D_00137C00_2DB68.read_active;
     return func_0012E688(0, 4, &command_arg);
@@ -798,7 +798,7 @@ int func_0012EC60(int arg0, int arg1, int arg2, int arg3) {
     if (*(int *)&snd_cd_stream_active == 1) {
         return 0;
     }
-    if (*(int *)&D_0015EDC8 != 0) {
+    if (*(int *)&snd_cd_callback_pending != 0) {
         while (func_0012DDC0() != 0) {
         }
     }

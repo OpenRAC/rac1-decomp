@@ -78,7 +78,7 @@ L_BAC:
     if (pp == 0) goto L_D68;
     vp = ((H_9F0 *)(D_0013E633 + 0xE1D))->f80;
     r16 = FindClosestDistanceEntry(vp, pp, 0.0f);
-    r4 = StepTableIndex(((H_9F0 *)(D_0013E633 + 0xE1D))->p8B4, r16, -1, 1);
+    r4 = offset_path_index(((H_9F0 *)(D_0013E633 + 0xE1D))->p8B4, r16, -1, 1);
     ((H_9F0 *)(D_0013E633 + 0xE1D))->s8C8 = r16;
     if (D_0015EE84_2523C8 != 5) goto L_D68;
     pts = (float (*)[4])((H_9F0 *)(D_0013E633 + 0xE1D))->p8B4;

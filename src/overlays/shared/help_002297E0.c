@@ -105,7 +105,7 @@ extern float D_0015EE64 MACRO_ADDR;
 extern int D_L00_0015F7BC MACRO_ADDR;
 
 /* Menu/hint update: picks an action for the player from the game block's timers and flags. Adapted from Lombyte (MIT) for PAL: overlays/shared/ui_help_00229010.c, FUN_L00_002293a8. */
-void HeroChooseAction(void) {
+void update_hero_locomotion_state(void) {
     char *b, *c, *d;
     int n;
     b = D_0013E633 + 0xE1D;
@@ -263,7 +263,7 @@ extern void func_L00_0020ED30(void);
 extern int func_L00_00222B80(int, int);
 
 /* starts the pending global action if conditions hold; returns 1 on success */
-int HeroStartPendingAction(void) {
+int try_start_hero_item_idle_animation(void) {
     char *p = D_0013E633 + 0xE1D;
     if (*(unsigned char *)(p + 0x20A8) != 0 && *(unsigned char *)(p + 0x20AA) != 0 && *(short *)(p + 0x22C8) == 0) {
         int i = hero_slot_item_id(0);

@@ -11,7 +11,7 @@ extern s32 func_L00_00259B88(void *, void *, void *, void *, f32);
 
 /* steers the moby toward a point 100 units ahead along its heading.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l12/math/interpolation/00271dd8.c, FUN_L12_00271dd8. */
-s32 SteerAheadOfHeading(struct Moby *m, void *ctl) {
+s32 move_moby_along_heading(struct Moby *m, void *ctl) {
     Vec4 ahead;
     Vec4 out;
 
@@ -26,7 +26,7 @@ extern float func_L00_001FF860(float, float);
 extern float func_001FA850(float, float);
 
 /* tests whether a point lies within height, distance and heading limits of a moby */
-int IsPointWithinMobyLimits(char *a, float *b, float x, float y, float z) {
+int test_point_within_moby_limits(char *a, float *b, float x, float y, float z) {
     float d = FastAbsF(b[2] - *(float *)(a + 0x18));
     if (d > y) return 0;
     if (FastVecDist(b, a + 0x10) > x) return 0;
@@ -63,7 +63,7 @@ void Moby_AttachChildToVertex(unsigned char *parent, unsigned char *child, int m
 extern char *D_L12_001B0C30[];
 
 // Fills in the per-segment lengths of path record number idx.
-void Path_ComputeOpenSegmentLengths(int idx) {
+void cache_consecutive_point_distances(int idx) {
     char *p;
     int i;
     if (idx == -1) return;

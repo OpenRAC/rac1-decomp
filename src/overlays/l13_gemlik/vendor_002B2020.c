@@ -13,7 +13,7 @@ extern char *D_L13_00160058_m __asm__("D_L13_00160058") MACRO_ADDR;
 extern char D_L13_001F44E8[];
 
 // Switches linked mobys and lists between two state sets when the watched moby's test changes.
-void ClipVolumeTriggerUpdate(char *moby)
+void update_moby_volume_trigger(char *moby)
 {
     char *data = *(char **)(moby + 0x78);
     if (*(int *)data == -1) {
@@ -228,7 +228,7 @@ void LiftL13_UpdateAlt(unsigned char *moby) {
         if (vars->blend < 1.0f) {
             float t = (1.0f - vars->blend) / (1.0f - old);
             char *base;
-            ComputeFlankPosition(moby, camera_pose_scratch, blended_camera_rotation);
+            compute_elevator_camera_pose(moby, camera_pose_scratch, blended_camera_rotation);
             FastVecSub(camera_position_scratch, D_L13_00167140, camera_pose_scratch);
             base = (char *)D_L13_00167140 - 0x140;
             FastVecScale(camera_position_scratch, camera_position_scratch, t);
@@ -251,7 +251,7 @@ void LiftL13_UpdateAlt(unsigned char *moby) {
             vars->voice = Moby_PlaySound(0, 4, (int)moby);
         }
         if (m->command != 0) {
-            ComputeFlankPosition(moby, camera_position_scratch, camera_pose_scratch);
+            compute_elevator_camera_pose(moby, camera_position_scratch, camera_pose_scratch);
             set_camera_position(camera_position_scratch);
             set_camera_rotation(camera_pose_scratch);
         }
@@ -363,7 +363,7 @@ extern float func_L00_001FF860(float, float);
 extern unsigned char D_0013E633[];
 
 // Places the point v at a radius around the moby for the facing angle and sets w to the direction toward the target.
-void ComputeFlankPosition(unsigned char *moby, float *v, float *w)
+void compute_elevator_camera_pose(unsigned char *moby, float *v, float *w)
 {
     float ang = *(float *)(moby + 0x48);
     float r = 2.5f;
@@ -552,7 +552,7 @@ void SpawnAimedProjectile(char *moby)
         v2[1] = FastSin(ang) * (*(float *)&D_L13_00161410 * D_0015EE6C);
         v2[2] = 0;
         FastVecAdd(v, v, v2);
-        SpawnMoby1238(*(float *)(data + 0x68), v, v2, moby);
+        spawn_gemlik_projectile(*(float *)(data + 0x68), v, v2, moby);
     }
 }
 extern int func_L00_00260D30(void *, void *, float);
@@ -732,12 +732,12 @@ void blarg_gunner_update(unsigned char *raw) {
 extern void * func_L13_002811B0(void *, int, int, float, float, int, float, int);
 extern void func_L00_002688A8(void *);
 
-void ToggleParticleProcess(unsigned char *moby, char *data) {
+void update_robosquawker_particle(unsigned char *moby, char *data) {
     float opacity = 0.2f;
     void **handle = (void **)(data + 0x228);
     if (moby[0x31]) {
         if (!*handle) {
-            *handle = AllocParticleProcess(moby, 0, 0x80808080, opacity, opacity, 0x10808080, 0.8f, 0x19);
+            *handle = create_moby_joint_particle(moby, 0, 0x80808080, opacity, opacity, 0x10808080, 0.8f, 0x19);
         }
     } else if (*handle) {
         KillPart(*handle);
@@ -751,7 +751,7 @@ typedef struct {
 
 
 /* Release the vendor moby's attached object and clear its reference. */
-void KillAttachedParticle(Level13VendorMoby *moby) {
+void release_robosquawker_particle(Level13VendorMoby *moby) {
     if (moby->value != 0) {
         KillPart(moby->value);
         moby->value = 0;
@@ -759,21 +759,32 @@ void KillAttachedParticle(Level13VendorMoby *moby) {
 }
 extern float func_00214358(void *,int,float);
 extern short D_0015EE70;
+typedef struct {
+    u8 pad_000[0x120];         /* 0x000 */
+    u8 pad_120[0x8];           /* 0x120 cleared by qzero */
+    f32 vertical_step;         /* 0x128 */
+} RsGroundVars;
+
 /* adjusts moby height toward the sampled ground height */
-void FallTowardGround(char *m,char *d) {
- float ground=ProbeGroundHeight(m+0x10,0,0.5f);
- float z=*(float *)(m+0x18);
- if(ground<z+0.3f) {
- float v=*(float *)(d+0x128)-*(float *)&D_0015EE70*9.8f;
- *(float *)(d+0x128)=v;
- *(float *)(m+0x18)=*(float *)(m+0x18)+v;
- if(*(float *)(m+0x18)<ground) *(float *)(m+0x18)=ground;
- } else if(z<ground) {
- *(float *)(m+0x18)=z+*(float *)&D_0015EE70*9.8f;
- qzero(d+0x120);
- } else {
- qzero(d+0x120);
- }
+/* adjusts moby height toward the sampled ground height */
+
+void update_robosquawker_ground_height(char *m,char *d) {
+    struct Moby *moby = (struct Moby *)m;
+    RsGroundVars *moby_vars = (RsGroundVars *)d;
+    float ground = ProbeGroundHeight(&moby->pos, 0, 0.5f);
+    float z = moby->pos.z;
+    if (ground < z + 0.3f) {
+        float vertical_step = moby_vars->vertical_step - *(float *)&D_0015EE70 * 9.8f;
+        moby_vars->vertical_step = vertical_step;
+        moby->pos.z = moby->pos.z + vertical_step;
+        if (moby->pos.z < ground)
+            moby->pos.z = ground;
+    } else if (z < ground) {
+        moby->pos.z = z + *(float *)&D_0015EE70 * 9.8f;
+        qzero(&moby_vars->pad_120);
+    } else {
+        qzero(&moby_vars->pad_120);
+    }
 }
 extern void func_L00_00264B40(float, int, int, unsigned char *);
 extern float func_001F9D10(void *, void *);
@@ -1040,7 +1051,7 @@ void robosquawker_update(RsMoby *m) {
                 v->f170 = 11.0f;
                 v->f174 = 18.0f;
                 m->state = 0x63;
-                KillAttachedParticle((Level13VendorMoby *)v);
+                release_robosquawker_particle((Level13VendorMoby *)v);
                 v->x110[7] = 0x78;
                 RerollEffectCounter(m, (short *)v->x110);
                 if (FastAbsF(*(float *)(D_0013E633 + 0xEA5) - 248.0f) < 4.0f) {
@@ -1055,7 +1066,7 @@ void robosquawker_update(RsMoby *m) {
                 v->f170 = 5.0f;
                 v->f174 = 10.0f;
                 m->state = 6;
-                KillAttachedParticle((Level13VendorMoby *)v);
+                release_robosquawker_particle((Level13VendorMoby *)v);
                 *(unsigned char *)&v->x110[7] = 0xFA;
                 v->h26 = scale_ticks(0x3C);
                 RerollEffectCounter(m, (short *)v->x110);
@@ -1103,7 +1114,7 @@ void robosquawker_update(RsMoby *m) {
     case 0xE: {
         float d;
 
-        ToggleParticleProcess((unsigned char *)m, (char *)v);
+        update_robosquawker_particle((unsigned char *)m, (char *)v);
         FastVecSub(&va, &tgt, &m->pos);
         d = ProbeGroundHeight(&m->pos, 0x120, 0.5f);
         if (d > 1.0f
@@ -1114,7 +1125,7 @@ void robosquawker_update(RsMoby *m) {
                 MobyBlendAnimation(m, 0, 0, scale_ticks(3));
             }
             m->state = 0x11;
-            KillAttachedParticle((Level13VendorMoby *)v);
+            release_robosquawker_particle((Level13VendorMoby *)v);
         } else if (d > 1.0f && m->bBC == 1 && random_integer_below(4) == 0) {
             if (random_integer_below(0x100) & 1) {
                 v->f1F8 = -v->f1F8;
@@ -1124,7 +1135,7 @@ void robosquawker_update(RsMoby *m) {
             if (m->b53 != 0) {
                 MobyBlendAnimation(m, 0, 0, scale_ticks(3));
             }
-            KillAttachedParticle((Level13VendorMoby *)v);
+            release_robosquawker_particle((Level13VendorMoby *)v);
             m->state = 0x11;
             clear_u64_value(&v->v40);
             m->bBC = 0;
@@ -1196,7 +1207,7 @@ void robosquawker_update(RsMoby *m) {
             }
             m->state = 0xE;
         }
-        ToggleParticleProcess((unsigned char *)m, (char *)v);
+        update_robosquawker_particle((unsigned char *)m, (char *)v);
         break;
     }
     case 0x12: {
@@ -1257,7 +1268,7 @@ void robosquawker_update(RsMoby *m) {
                 }
                 qzero(&v->v40);
                 m->state = 0x11;
-                KillAttachedParticle((Level13VendorMoby *)v);
+                release_robosquawker_particle((Level13VendorMoby *)v);
             } else if (g > 1.0f && m->bBC == 1 && random_integer_below(4) == 0) {
                 if (random_integer_below(0x100) & 1) {
                     v->f1F8 = -v->f1F8;
@@ -1267,14 +1278,14 @@ void robosquawker_update(RsMoby *m) {
                 if (m->b53 != 0) {
                     MobyBlendAnimation(m, 0, 0, scale_ticks(3));
                 }
-                KillAttachedParticle((Level13VendorMoby *)v);
+                release_robosquawker_particle((Level13VendorMoby *)v);
                 qzero(&v->v40);
                 m->state = 0x11;
                 clear_u64_value(&v->v40);
                 m->bBC = 0;
             }
         }
-        ToggleParticleProcess((unsigned char *)m, (char *)v);
+        update_robosquawker_particle((unsigned char *)m, (char *)v);
         break;
     }
     case 0x11: {
@@ -1322,7 +1333,7 @@ void robosquawker_update(RsMoby *m) {
             m->state = 0xE;
             clear_u64_value(&v->v40);
         }
-        ToggleParticleProcess((unsigned char *)m, (char *)v);
+        update_robosquawker_particle((unsigned char *)m, (char *)v);
         break;
     }
     case 1:
@@ -1352,7 +1363,7 @@ void robosquawker_update(RsMoby *m) {
                 MobyBlendAnimation(m, 0, 0, scale_ticks(3));
             }
         }
-        FallTowardGround((char *)m, (char *)v);
+        update_robosquawker_ground_height((char *)m, (char *)v);
         break;
     case 8:
         FastVecSub(&va, &tgt, &m->pos);
@@ -1388,14 +1399,14 @@ void robosquawker_update(RsMoby *m) {
             InitKnockback(m->rot.f[2], m, v->x120, (func_001160D8() & 1) + 9, 1, 0);
             v->f170 = 5.0f;
             v->f174 = 10.0f;
-            ToggleParticleProcess((unsigned char *)m, (char *)v);
+            update_robosquawker_particle((unsigned char *)m, (char *)v);
             m->state = 0xB;
         }
         break;
     }
     case 0xB:
         if (mine_fall(m, v->x120) & 1) {
-            KillAttachedParticle((Level13VendorMoby *)v);
+            release_robosquawker_particle((Level13VendorMoby *)v);
             qzero(v->x120);
             m->state = 3;
             if (random_integer_below(0x100) & 1) {
@@ -1450,7 +1461,7 @@ void robosquawker_update(RsMoby *m) {
         if (m->b53 == 4 && (m->b70 & 2)) {
             MobyBlendAnimation(m, 3, 0, scale_ticks(3));
         }
-        FallTowardGround((char *)m, (char *)v);
+        update_robosquawker_ground_height((char *)m, (char *)v);
         break;
     }
     case 3: {
@@ -1499,7 +1510,7 @@ void robosquawker_update(RsMoby *m) {
             }
         }
         m->bBC = 0;
-        FallTowardGround((char *)m, (char *)v);
+        update_robosquawker_ground_height((char *)m, (char *)v);
         break;
     }
     case 4: {
@@ -1546,7 +1557,7 @@ void robosquawker_update(RsMoby *m) {
             v->f198 = 0.0f;
             m->pos.f[2] = g;
         }
-        FallTowardGround((char *)m, (char *)v);
+        update_robosquawker_ground_height((char *)m, (char *)v);
         break;
     }
     case 5: {
@@ -1592,7 +1603,7 @@ void robosquawker_update(RsMoby *m) {
                 MobyBlendAnimation(m, 4, 0, scale_ticks(3));
             }
         }
-        FallTowardGround((char *)m, (char *)v);
+        update_robosquawker_ground_height((char *)m, (char *)v);
         m->bBC = 0;
         break;
     }
@@ -1611,7 +1622,7 @@ void robosquawker_update(RsMoby *m) {
         }
         break;
     case 7:
-        KillAttachedParticle((Level13VendorMoby *)v);
+        release_robosquawker_particle((Level13VendorMoby *)v);
         if (CarriedMobyUpdate(m, v->x120) != 0) {
             m->state = 0xE;
             if (m->b53 != 0) {
@@ -1627,7 +1638,7 @@ void robosquawker_update(RsMoby *m) {
         if (mine_fall(m, v->x120) & 0x140) {
             clear_u64_value(&va);
             t = (int)((float)scale_ticks(1) * 60.0f);
-            if (ClaimExpiredTimerSlot(D_L13_00161438, 3, t) >= 0) {
+            if (reserve_expired_frame_slot(D_L13_00161438, 3, t) >= 0) {
                 SpawnExplosionFx(m, &m->pos, 4, 0.5f, 13.0f);
             }
             DeleteMoby(m);
@@ -1779,13 +1790,13 @@ void DrawRotatedQuadCross(unsigned char a, unsigned char b, unsigned char c, uns
     float w;
     h = GetEffectTex(0x37);
     w = s * 20.0f;
-    func_L11_003121C0(x, y, w, w, ang, 0x3F, 0x3F, h, 0xFFFFF3, a, b, c, d);
+    append_rotated_textured_screen_quad(x, y, w, w, ang, 0x3F, 0x3F, h, 0xFFFFF3, a, b, c, d);
     ang = FastAddRots(ang, 1.5707964f);
-    func_L11_003121C0(x, y, w, w, ang, 0x3F, 0x3F, h, 0xFFFFF3, a, b, c, d);
+    append_rotated_textured_screen_quad(x, y, w, w, ang, 0x3F, 0x3F, h, 0xFFFFF3, a, b, c, d);
     ang = FastAddRots(ang, 1.5707964f);
-    func_L11_003121C0(x, y, w, w, ang, 0x3F, 0x3F, h, 0xFFFFF3, a, b, c, d);
+    append_rotated_textured_screen_quad(x, y, w, w, ang, 0x3F, 0x3F, h, 0xFFFFF3, a, b, c, d);
     ang = FastAddRots(ang, 1.5707964f);
-    func_L11_003121C0(x, y, w, w, ang, 0x3F, 0x3F, h, 0xFFFFF3, a, b, c, d);
+    append_rotated_textured_screen_quad(x, y, w, w, ang, 0x3F, 0x3F, h, 0xFFFFF3, a, b, c, d);
 }
 typedef int u128 __attribute__((mode(TI)));
 extern void func_L00_00260958(float *v, float s);
@@ -1797,7 +1808,7 @@ extern short D_L13_00161498;
 extern short D_L13_001614A8;
 
 // Spawns two rounds of scaled particle streams from the moby's joints, with a second layer when the obj's intensity is high.
-void SpawnExhaustTrail(void *moby, char *obj)
+void spawn_fighter_jet_joint_particles(void *moby, char *obj)
 {
     float vel[4];
     float pos[4];
@@ -1821,25 +1832,25 @@ void SpawnExhaustTrail(void *moby, char *obj)
         JitterVector(b, *(float *)(obj + 0xC4) * 0.02f + 0.02f);
         JitterVector(c, *(float *)(obj + 0xC4) * 0.01f + 0.02f);
         vel[0] = -((random_float_between(6.0f, 7.0f) + *(float *)(obj + 0xC4) * 2.0f) * D_0015EE6C) * s;
-        PartType74Spawn(moby, a, vel, &D_L13_00161468, 1);
+        spawn_type_74_particle(moby, a, vel, &D_L13_00161468, 1);
         vel[0] = -((random_float_between(6.0f, 7.0f) + *(float *)(obj + 0xC4) * 3.0f) * D_0015EE6C) * s;
-        PartType74Spawn(moby, b, vel, &D_L13_00161478, 1);
+        spawn_type_74_particle(moby, b, vel, &D_L13_00161478, 1);
         vel[0] = -((random_float_between(6.0f, 7.0f) + *(float *)(obj + 0xC4) * 4.0f) * D_0015EE6C) * s;
-        PartType74Spawn(moby, c, vel, &D_L13_00161488, 1);
+        spawn_type_74_particle(moby, c, vel, &D_L13_00161488, 1);
         if (*(float *)(obj + 0xC4) > 0.5f) {
             JitterVector(a, *(float *)(obj + 0xC4) * 0.02f + 0.01f);
             JitterVector(b, *(float *)(obj + 0xC4) * 0.02f + 0.01f);
             JitterVector(c, *(float *)(obj + 0xC4) * 0.01f + 0.01f);
             vel[0] = -((random_float_between(6.0f, 7.0f) + *(float *)(obj + 0xC4) * 2.0f) * D_0015EE6C) * s;
-            PartType74Spawn(moby, a, vel, &D_L13_00161468, 1);
+            spawn_type_74_particle(moby, a, vel, &D_L13_00161468, 1);
             vel[0] = -((random_float_between(6.0f, 7.0f) + *(float *)(obj + 0xC4) * 3.0f) * D_0015EE6C) * s;
-            PartType74Spawn(moby, b, vel, &D_L13_00161478, 1);
+            spawn_type_74_particle(moby, b, vel, &D_L13_00161478, 1);
             vel[0] = -((random_float_between(6.0f, 7.0f) + *(float *)(obj + 0xC4) * 4.0f) * D_0015EE6C) * s;
-            PartType74Spawn(moby, c, vel, &D_L13_00161488, 1);
+            spawn_type_74_particle(moby, c, vel, &D_L13_00161488, 1);
             vel[0] = -((random_float_between(6.0f, 7.0f) + *(float *)(obj + 0xC4) * 2.0f) * D_0015EE6C) * s;
-            PartType74Spawn(moby, a, vel, &D_L13_00161498, 1);
+            spawn_type_74_particle(moby, a, vel, &D_L13_00161498, 1);
             vel[0] = -((random_float_between(6.0f, 7.0f) + *(float *)(obj + 0xC4) * 3.0f) * D_0015EE6C) * s;
-            PartType74Spawn(moby, pos, vel, &D_L13_001614A8, 1);
+            spawn_type_74_particle(moby, pos, vel, &D_L13_001614A8, 1);
         }
     }
 }
@@ -1859,7 +1870,7 @@ typedef struct {
 } IconEC5D0;
 extern IconEC5D0 D_L13_001CC038[];
 // Draws a radar icon with fading near the rim.
-void DrawRadarBlipL13(char *rot, char *from, char *moby, int icon, long color, int tex) {
+void draw_fighter_jet_radar_icon(char *rot, char *from, char *moby, int icon, long color, int tex) {
     float turn[4];
     float mat[16];
     float delta[4];
@@ -1908,7 +1919,7 @@ extern short D_L13_00161458;
 
 /* Walks the moby list: picks the on-screen target, draws the radar icons and target markers, and points an arrow at
  * off-screen pickups. */
-int DrawRadarAndTargets(int a, char *p, char *a2, void *a3, float f0, float f1, float f2, char *cur, char *g) {
+int select_fighter_jet_target_and_draw_indicators(int a, char *p, char *a2, void *a3, float f0, float f1, float f2, char *cur, char *g) {
     float v[4];
     float mat[16];
     float u[4];
@@ -1930,7 +1941,7 @@ int DrawRadarAndTargets(int a, char *p, char *a2, void *a3, float f0, float f1, 
         scr = (int *)(D_0013E15A + 0x4A6);
         if ((((Moby *)m)->flags & 0x1000) && !(((Moby *)m)->flags & 3) && *(unsigned char *)(m + 0x31) != 0 &&
             m != 0 && *(char **)(m + 0x24) != 0 && *(short *)(*(char **)(m + 0x24) + 0x46) == 5) {
-            ProjectPointToScreen(m + 0x10, &sx, &sy, 0);
+            project_world_point_to_screen_pixels(m + 0x10, &sx, &sy, 0);
             dx = sx - *(int *)(p + 0xE0);
             dy = sy - *(int *)(p + 0xE4);
             if (dx < 0) dx = -dx;
@@ -1938,7 +1949,7 @@ int DrawRadarAndTargets(int a, char *p, char *a2, void *a3, float f0, float f1, 
             qcopy(v, D_L13_00167360);
             FastVecScale(v, D_L13_00167360, *(float *)(m + 0xC) / 1280.0f);
             FastVecAdd(v, v, m + 0x10);
-            ProjectPointToScreen(v, &tx, &ty, 0);
+            project_world_point_to_screen_pixels(v, &tx, &ty, 0);
             tx -= sx;
             ty -= sy;
             r = func_001FA898_r(func_001F9B50(IntToFloat(tx * tx + ty * ty))) + 0x1C;
@@ -1960,17 +1971,17 @@ int DrawRadarAndTargets(int a, char *p, char *a2, void *a3, float f0, float f1, 
         switch (*(short *)(m + 0xA6)) {
         case 0xE0:
         case 0x4C2:
-            DrawRadarBlipL13(a3, a2, m, 2, 0x75808080, *(int *)(p + 0x104));
+            draw_fighter_jet_radar_icon(a3, a2, m, 2, 0x75808080, *(int *)(p + 0x104));
             break;
         case 0xE4:
         case 0x4C4:
-            DrawRadarBlipL13(a3, a2, m, 2, 0x75808080, *(int *)(p + 0x104));
+            draw_fighter_jet_radar_icon(a3, a2, m, 2, 0x75808080, *(int *)(p + 0x104));
             break;
         case 0x52:
-            DrawRadarBlipL13(a3, a2, m, 1, 0x75004080, *(int *)(p + 0x104));
+            draw_fighter_jet_radar_icon(a3, a2, m, 1, 0x75004080, *(int *)(p + 0x104));
             break;
         case 0x53:
-            DrawRadarBlipL13(a3, a2, m, 1, 0x75007080, *(int *)(p + 0x104));
+            draw_fighter_jet_radar_icon(a3, a2, m, 1, 0x75007080, *(int *)(p + 0x104));
             break;
         case 0x184:
         case 0x191:
@@ -1983,13 +1994,13 @@ int DrawRadarAndTargets(int a, char *p, char *a2, void *a3, float f0, float f1, 
                         float x = (v[0] - scr[4]) * 0.0625f;
                         float y = (v[1] - scr[5]) * 0.0625f;
                         float ang = normalize_angle(IntToFloat(D_L13_0015F6B0) / 20.0f);
-                        DrawRotatedShape(tab, 0x1E, 0xFFFFF3, 0x500000FF, x, y, 1.0f, ang);
+                        emit_transformed_2d_vertex_packet(tab, 0x1E, 0xFFFFF3, 0x500000FF, x, y, 1.0f, ang);
                     }
                     {
                         float x = (v[0] - scr[4]) * 0.0625f;
                         float y = (v[1] - scr[5]) * 0.0625f;
                         float ang = normalize_angle(IntToFloat(D_L13_0015F6B0) / 20.0f);
-                        DrawRotatedShape(tab, 0x1E, 0xFFFFF3, 0x500000FF, x, y, 1.3f, -ang);
+                        emit_transformed_2d_vertex_packet(tab, 0x1E, 0xFFFFF3, 0x500000FF, x, y, 1.3f, -ang);
                     }
                 }
             }
@@ -2023,19 +2034,19 @@ int DrawRadarAndTargets(int a, char *p, char *a2, void *a3, float f0, float f1, 
                             float x = (v[0] - scr[4]) * 0.0625f;
                             float y = (v[1] - scr[5]) * 0.0625f;
                             float ang = normalize_angle(IntToFloat(D_L13_0015F6B0) / 20.0f);
-                            DrawRotatedShape(tab, 0x1E, 0xFFFFF3, 0x500000FF, x, y, 1.0f, ang);
+                            emit_transformed_2d_vertex_packet(tab, 0x1E, 0xFFFFF3, 0x500000FF, x, y, 1.0f, ang);
                         }
                         {
                             float x = (v[0] - scr[4]) * 0.0625f;
                             float y = (v[1] - scr[5]) * 0.0625f;
                             float ang = normalize_angle(IntToFloat(D_L13_0015F6B0) / 20.0f);
-                            DrawRotatedShape(tab, 0x1E, 0xFFFFF3, 0x500000FF, x, y, 1.3f, -ang);
+                            emit_transformed_2d_vertex_packet(tab, 0x1E, 0xFFFFF3, 0x500000FF, x, y, 1.3f, -ang);
                         }
                     } else {
-                        DrawRotatedShape(&D_L13_00161458, 3, 0xFFFFF3, (c << 24) | 0x8000, u[0], u[1], 240.0f / dist + 1.5f, ang);
+                        emit_transformed_2d_vertex_packet(&D_L13_00161458, 3, 0xFFFFF3, (c << 24) | 0x8000, u[0], u[1], 240.0f / dist + 1.5f, ang);
                     }
                 }
-                DrawRadarBlipL13(a3, a2, m, 0, 0x75808080, *(int *)(p + 0x104));
+                draw_fighter_jet_radar_icon(a3, a2, m, 0, 0x75808080, *(int *)(p + 0x104));
                 if (*(short *)(m + 0xA6) != 0x191) {
                     *(int *)(p + 0xE8) = *(int *)(p + 0xE8) + 1;
                 }
@@ -2050,10 +2061,10 @@ int DrawRadarAndTargets(int a, char *p, char *a2, void *a3, float f0, float f1, 
                         float x = (v[0] - scr[4]) * 0.0625f;
                         float y = (v[1] - scr[5]) * 0.0625f;
                         float ang = normalize_angle(IntToFloat(D_L13_0015F6B0) / 20.0f);
-                        DrawRotatedShape(D_L13_001CBFC0, 0x1E, 0xFFFFF3, 0xFF00FF00, x, y, 1.0f, -ang);
+                        emit_transformed_2d_vertex_packet(D_L13_001CBFC0, 0x1E, 0xFFFFF3, 0xFF00FF00, x, y, 1.0f, -ang);
                     }
                 }
-                DrawRadarBlipL13(a3, a2, m, 1, 0x75808080, *(int *)(p + 0x104));
+                draw_fighter_jet_radar_icon(a3, a2, m, 1, 0x75808080, *(int *)(p + 0x104));
             }
             break;
         case 0x4BF:
@@ -2064,10 +2075,10 @@ int DrawRadarAndTargets(int a, char *p, char *a2, void *a3, float f0, float f1, 
                         float x = (v[0] - scr[4]) * 0.0625f;
                         float y = (v[1] - scr[5]) * 0.0625f;
                         float ang = normalize_angle(IntToFloat(D_L13_0015F6B0) / 20.0f);
-                        DrawRotatedShape(D_L13_001CBFC0, 0x1E, 0xFFFFF3, 0xFF00FF00, x, y, 1.0f, -ang);
+                        emit_transformed_2d_vertex_packet(D_L13_001CBFC0, 0x1E, 0xFFFFF3, 0xFF00FF00, x, y, 1.0f, -ang);
                     }
                 }
-                DrawRadarBlipL13(a3, a2, m, 1, 0x75808080, *(int *)(p + 0x104));
+                draw_fighter_jet_radar_icon(a3, a2, m, 1, 0x75808080, *(int *)(p + 0x104));
             }
             break;
         case 0x185: case 0x186: case 0x187: case 0x188:
@@ -2125,7 +2136,7 @@ take:
     W(p, 0x88) = 0;
 skip:
     qcopy(v, D_L13_00167150);
-    r = (char *)DrawRadarAndTargets(a, p, D_L13_00167150 - 0x10, v, 0.19634955f, 0.19634955f, 255.0f, P(p, 0x88), g);
+    r = (char *)select_fighter_jet_target_and_draw_indicators(a, p, D_L13_00167150 - 0x10, v, 0.19634955f, 0.19634955f, 255.0f, P(p, 0x88), g);
     if ((r != P(p, 0x88) && W(p, 0x8C) >= 0x1F5) || FLAG == 0) {
         W(p, 0xEC) = 0;
         W(p, 0x124) = -1;
@@ -2196,7 +2207,7 @@ void DrawGemlikTurretHud(char *moby) {
 
     UpdateLockOnTarget((int)moby, d);
     if (*(int *)(d + 0x88) != 0) {
-        ProjectPointToScreen(*(char **)(d + 0x88) + 0x10, &sp10, &sp14, 0);
+        project_world_point_to_screen_pixels(*(char **)(d + 0x88) + 0x10, &sp10, &sp14, 0);
         if (*(int *)(d + 0x8C) > scale_ticks(0x1F4)) {
             t = IntToFloat(*(int *)(d + 0x8C) - scale_ticks(0x1F4));
             t = t / IntToFloat(scale_ticks(0x4B));
@@ -2220,9 +2231,9 @@ void DrawGemlikTurretHud(char *moby) {
     for (i = 0; i < n; i++) {
         g = D_0013E633 + 0xE1D;
         if (i < g[0x15F6]) {
-            Hud_DrawPointList(x, y, 0.5f, D_L13_001CBEE0, 0x19, 0xFFFFF3, 0x50008F00);
+            append_scaled_screen_triangle_strip(x, y, 0.5f, D_L13_001CBEE0, 0x19, 0xFFFFF3, 0x50008F00);
         } else {
-            Hud_DrawPointList(x, y, 0.5f, D_L13_001CBEE0, 0x19, 0xFFFFF3, 0x20004F00);
+            append_scaled_screen_triangle_strip(x, y, 0.5f, D_L13_001CBEE0, 0x19, 0xFFFFF3, 0x20004F00);
         }
         n = g[0x15F7];
         if (i == n >> 1) {
@@ -2271,7 +2282,7 @@ extern int func_L11_00309C18(void *, void *, void *, float, float);
 extern int func_001F9908_i(void *) __asm__("func_001F9908");
 
 /* Builds a rotated offset vector from the moby, flips a facing flag on a pad press, and updates the aim. */
-void FireHomingMissileOnPress(char *moby, char *obj, float p2, float p3) {
+void update_fighter_jet_gun_and_aim(char *moby, char *obj, float p2, float p3) {
     char a[16];
     char b[16];
     char c[16];
@@ -2283,18 +2294,18 @@ void FireHomingMissileOnPress(char *moby, char *obj, float p2, float p3) {
         func_L00_001FF4B0(c, a, 2.2f);
         Moby_GetJointWorldPos(moby, 3 + (obj[0x61] & 1), b);
         FastVecAdd(b, b, c);
-        SpawnHomingMissile(moby, a, b, 200.0f, -1.0f);
+        spawn_class_3f1_moby(moby, a, b, 200.0f, -1.0f);
         *(int *)(obj + 0x80) = scale_ticks(4);
         obj[0x61] ^= 1;
     }
     func_L00_001FF4B0(a, a, 23.0f);
     FastVecAdd(d, a, moby + 0x10);
-    ProjectPointToScreen(d, obj + 0xE0, obj + 0xE4, 0);
+    project_world_point_to_screen_pixels(d, obj + 0xE0, obj + 0xE4, 0);
 }
 extern int func_L13_002E7E90(void *, void *, float, int, void *, int);
 
 /* Fires a timed burst from a moby while a pad button is held and ammo remains. */
-void FireGunWhileHeld(char *moby, char *obj) {
+void fire_fighter_jet_rocket(char *moby, char *obj) {
     if (func_001F9908_i(obj + 0x84) && (*(int *)(D_0013A5E0 + 0x2610) & 0x28)) {
         unsigned char *u = D_0013E633 + 0xE1D;
         if (u[0x15F6] != 0) {
@@ -2310,7 +2321,7 @@ void FireGunWhileHeld(char *moby, char *obj) {
             FastVecAdd(a, a, b);
             s = D_0015EE6C * 100.0f;
             h = scale_ticks(300);
-            if (SpawnRocket295(moby, a, s, *(int *)(obj + 0xEC), pos, h) != 0) {
+            if (spawn_ship_rocket(moby, a, s, *(int *)(obj + 0xEC), pos, h) != 0) {
                 Moby_PlaySound(2, 0, (int)moby);
                 u[0x15F6]--;
                 *(int *)(obj + 0x84) = scale_ticks(30);
@@ -2502,12 +2513,12 @@ void PlayerFighterFlight(void *a0, void *a1) {
     }
 
     d = func_001F9D48(m->pos, &D_L13_001614C0);
-    o->f38 = BlendEased(1, 5, d, o->f38, func_L00_001FF860(target[0] - m->pos[0], target[1] - m->pos[1]), 50.0f, lenB);
-    m->r48 = BlendEased(1, 5, d, m->r48, func_L00_001FF860(target[0] - m->pos[0], target[1] - m->pos[1]), 50.0f, lenB);
+    o->f38 = interpolate_value_with_repeated_squaring(1, 5, d, o->f38, func_L00_001FF860(target[0] - m->pos[0], target[1] - m->pos[1]), 50.0f, lenB);
+    m->r48 = interpolate_value_with_repeated_squaring(1, 5, d, m->r48, func_L00_001FF860(target[0] - m->pos[0], target[1] - m->pos[1]), 50.0f, lenB);
     e1 = FastAbsF(target[2] - m->pos[2]);
-    o->f34 = BlendEased(1, 5, e1, o->f34, -func_L00_001FF860(func_001F9D48(m->pos, target), target[2] - m->pos[2]), 50.0f, lenA);
+    o->f34 = interpolate_value_with_repeated_squaring(1, 5, e1, o->f34, -func_L00_001FF860(func_001F9D48(m->pos, target), target[2] - m->pos[2]), 50.0f, lenA);
     e2 = FastAbsF(target[2] - m->pos[2]);
-    m->r44 = BlendEased(1, 5, e2, m->r44, -func_L00_001FF860(func_001F9D48(m->pos, target), target[2] - m->pos[2]), 50.0f, lenA);
+    m->r44 = interpolate_value_with_repeated_squaring(1, 5, e2, m->r44, -func_L00_001FF860(func_001F9D48(m->pos, target), target[2] - m->pos[2]), 50.0f, lenA);
     BuildSphericalOffset(dir, o->speed, o->f38, -o->f34);
     func_L00_001FF4B0(o->v10, dir, 1.0f);
     qcopy(old, m->pos);
@@ -2615,8 +2626,8 @@ void PlayerFighterFlight(void *a0, void *a1) {
         }
     }
     AddDrawCallback(DrawGemlikTurretHud, m);
-    FireGunWhileHeld((char *)m, (char *)o);
-    FireHomingMissileOnPress((char *)m, (char *)o, FastAddRots(o->f28, -o->f6C / 7.0f),
+    fire_fighter_jet_rocket((char *)m, (char *)o);
+    update_fighter_jet_gun_and_aim((char *)m, (char *)o, FastAddRots(o->f28, -o->f6C / 7.0f),
                       -FastAddRots(o->f24, -(o->f70 / 7.0f) - 0.1f));
 }
 typedef float JVec47[4] __attribute__((aligned(16)));
@@ -2909,5 +2920,5 @@ void JetFighterUpdateL13(Jet47 *m) {
     if (m->position[2]>1008.0f) m->position[2]=1008.0f;
     state=m->state;
     if ((unsigned char)state==4) { qcopy_nc(D_0013E633+0xE9D,m->position); qcopy_nc(D_0013E633+0xEAD,d->angles); }
-    if ((unsigned int)(state-3)<2 || (unsigned char)state==8) SpawnExhaustTrail(m,(char*)d);
+    if ((unsigned int)(state-3)<2 || (unsigned char)state==8) spawn_fighter_jet_joint_particles(m,(char*)d);
 }

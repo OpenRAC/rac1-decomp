@@ -45,7 +45,7 @@ typedef struct {
     float seg[4][4][4];
 } D_03430;
 
-void func_L14_00303430(char *m) {
+void draw_vendor_beam(char *m) {
     D_03430 *d = *(D_03430 **)(m + 0x78);
     Pkt_03430 P[3];
     float M1[16] __attribute__((aligned(16)));

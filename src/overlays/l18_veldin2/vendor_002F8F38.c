@@ -69,7 +69,7 @@ typedef struct {
     float f40;
 } M;
 
-void Moby1434Update(M *moby) {
+void update_moby_scene_visibility_and_height_reflection(M *moby) {
     switch (moby->state) {
     case 0:
         moby->state = 1;
@@ -137,7 +137,7 @@ extern void func_L18_002F9AB8_v(void *) __asm__("func_L18_002F9AB8");
 
 void rocket_tank_update(M1454 *m) {
     D1454 *d = m->data;
-    Moby1454TakeHit(m);
+    update_rocket_tank_damage_and_aim(m);
     switch (m->state) {
     case 0:
         AttachManipulator((char *)m, 0, d->buf);
@@ -225,9 +225,9 @@ void rocket_tank_update(M1454 *m) {
             Moby_PlaySound(0, 0, (int)m);
             func_L03_00251AC8(m, w, 0);
             if (func_001F9D48((char *)m + 0x10, D_0013E633 + 0xE9D) > 10.0f) {
-                Moby41Spawn((char *)m, w, v, 0);
+                create_class_29_moby((char *)m, w, v, 0);
             } else {
-                Moby41Spawn((char *)m, w, v, 1);
+                create_class_29_moby((char *)m, w, v, 1);
             }
         }
         if (*(int *)((char *)d + 0xB4) == 2) {
@@ -252,7 +252,7 @@ extern void func_L00_001FFED8(void *, int, float);
 extern void func_L00_0025E590(void *, void *);
 extern float func_L00_0025CE58(float *, float *, float, float, float, float);
 
-void Moby1454TakeHit(void *mv) {
+void update_rocket_tank_damage_and_aim(void *mv) {
     unsigned char *m = mv;
     char *d = *(char **)(m + 0x78);
     int r;

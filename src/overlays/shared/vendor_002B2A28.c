@@ -92,7 +92,7 @@ typedef struct {
 } Ray;
 
 /* Plasmabot update: validates its path and target, walks the path, turns to aim at its owner's target and fires, dies or despawns. */
-void PlasmabotUpdate(char *m) {
+void update_plasmabot(char *m) {
     char *data;
     char *owner;
     int st;
@@ -323,7 +323,7 @@ void PlasmabotUpdate(char *m) {
         }
         if (FastDecTimer(data + 0x260) == 0) break;
         if (Group_CountActiveClass28(((unsigned char *)m)[0x21]) >= 2) break;
-        if (EffectSlot_Alloc(m, 1, 0) == 0) break;
+        if (register_beam_slot(m, 1, 0) == 0) break;
         if (random_integer_below(4) != 0) break;
         if (!(FastDiffRots(*(float *)(m + 0x48), ang) < 0.017453292f)) break;
         if (!(aim < 0.017453292f)) break;
@@ -390,7 +390,7 @@ void PlasmabotUpdate(char *m) {
         if (func_L00_001EFFF0(mat[3], hit, 0, m, &ray) != 0) {
             qcopy(hit, D_L14_00174660);
         }
-        EffectSlot_Update(m, mat, hit);
+        set_beam_origin_transform_and_endpoint(m, mat, hit);
         if (FastDecTimer(data + 0x262) != 0) {
             MobyBlendAnimation(m, 6, 0, scale_ticks(10));
             ((unsigned char *)m)[0x20] = 7;
@@ -1204,7 +1204,7 @@ extern void func_0020D678(struct Moby *);
 extern float D_L14_0015F660[] MACRO_ADDR;
 
 /* Moby update for a falling debris particle. */
-void DebrisParticleUpdate(struct MobyDf *moby) {
+void update_spinning_moby_with_particle_trail(struct MobyDf *moby) {
     float *velocity = (float *)moby->pvars;
     int i;
     int n;
@@ -1354,7 +1354,7 @@ extern short D_L14_00161C18;
 
 /* A piece of debris: follows its race path until its timer runs out, then flies, spins and falls until it hits something or leaves the map.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b17d8.c, FUN_L14_002dfd10. */
-void RaceDebrisUpdate(struct Moby *moby) {
+void update_path_or_ballistic_debris(struct Moby *moby) {
     Data_dfd10 *data = (Data_dfd10 *)moby->pvars;
     Vec4 probe;
     f32 vec[4];
@@ -1515,7 +1515,7 @@ extern float D_0015EE60_2E17B8 __asm__("D_0015EE60") MACRO_ADDR;
 
 /* Engine exhaust of a level-14 moby: puffs particles behind it (as func_L14_002B3850 does for the ship), then
  * spawns a trail piece and a smoke puff at the nozzle, offset along the moby's heading. */
-void MobyL14_EngineExhaust(Moby *m) {
+void emit_debris_trail_particles(Moby *m) {
     Vec4 pos;
     Vec4 dir;
     Vec4 vel;
@@ -1599,7 +1599,7 @@ void MobyL14_EngineExhaust(Moby *m) {
 }
 
 /* Recomputes a path's segment lengths, aims the moby along its first segment, and recomputes a second path. */
-void MobyDualPathInit(char *moby) {
+void initialize_moby_path_state(char *moby) {
     char *data = *(char **)(moby + 0x78);
     char *p;
     int i;
@@ -1625,7 +1625,7 @@ extern void func_L00_001FF4B0(void *, void *, float);
 extern void func_001F9BD8(void *, void *, void *);
 
 /* rebuilds two vectors from the moby's transform and applies them to its linked object */
-void AttachLinkedMobyToTransform(char *moby) {
+void update_linked_moby_position(char *moby) {
     char *data = *(char **)(moby + 0x78);
     float tmp[4];
     if (*(char **)(data + 0xF4) != 0) {
@@ -1662,7 +1662,7 @@ extern short D_L14_001620A8;
 extern short D_L14_001620B4;
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b17d8.c, FUN_L14_002feca8. */
-void SpawnEngineTrailParticles(unsigned char *m) {
+void emit_moby_offset_particles(unsigned char *m) {
     float off[4];
     float pos[4];
     int i;
@@ -2488,7 +2488,7 @@ extern float func_001F9FA8(float);
 
 /* Floating mine: spins and pulses (and bobs in level 16); blows up on a hit and respawns once out of view.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b17d8.c, FUN_L14_002ff640. */
-void FloatingMineUpdate(struct Moby *moby) {
+void update_floating_mine(struct Moby *moby) {
     FloatMineVars_ff640 *vars = (FloatMineVars_ff640 *)moby->pvars;
     union {
         HitInfo_ff640 info;
@@ -2574,7 +2574,7 @@ void FloatingMineUpdate(struct Moby *moby) {
 extern float func_002140F8(float, float);
 
 /* Spawns moby class 0x3A5 at the given position, owned by owner, with three randomised angle values. */
-unsigned char *Moby933Spawn(unsigned char *owner, char *pos) {
+unsigned char *spawn_floating_mine(unsigned char *owner, char *pos) {
     unsigned char *m = CreateMoby(0x3A5);
     if (m != 0) {
         char *d = *(char **)(m + 0x78);
@@ -2632,7 +2632,7 @@ extern void func_L14_00303430(char *);
 extern void func_001F49B0(void (*)(void), void *);
 
 /* Moby update for a timed effect that triggers when the hero is near. */
-void Moby1224Update(unsigned char *m) {
+void update_vendor_beam(unsigned char *m) {
     D1224 *d = *(D1224 **)(m + 0x78);
     float v[4] __attribute__((aligned(16)));
     int s;
@@ -2650,7 +2650,7 @@ void Moby1224Update(unsigned char *m) {
     s = m[0x20];
     switch (s) {
     case 0:
-        InitRopeStripMoby((char *)m);
+        start_vendor_beam_pulse((char *)m);
         d->s10 = scale_ticks(d->wC);
         m[0x20] = 2;
         d->f624 = FastVecLength(D_L14_001601AC_t + (d->w0 << 7) + 0x10);
@@ -2661,7 +2661,7 @@ void Moby1224Update(unsigned char *m) {
         if (*(int *)&D_L14_00162188_s != 0) {
             if (d->s12 == 0) {
                 *(int *)&D_L14_00162188_s = *(int *)&D_L14_00162188_s - 1;
-                InitRopeStripMoby((char *)m);
+                start_vendor_beam_pulse((char *)m);
             }
         }
         break;
@@ -2669,7 +2669,7 @@ void Moby1224Update(unsigned char *m) {
         if (FastDecTimer(&d->s10) != 0) {
             m[0x20] = 3;
             d->s10 = scale_ticks(d->s4);
-            InitRopeStripMoby((char *)m);
+            start_vendor_beam_pulse((char *)m);
         }
         break;
     case 3:
@@ -2682,24 +2682,24 @@ void Moby1224Update(unsigned char *m) {
             }
             d->s10 = scale_ticks(arg);
         } else if (d->s12 == 0) {
-            InitRopeStripMoby((char *)m);
+            start_vendor_beam_pulse((char *)m);
         }
         break;
     }
     if (*(int *)&D_L14_001621A8_s == 0) {
         if (func_001F9D48(m + 0x10, D_0013E633 + 0xE9D) < 10.0f) {
-            BeamSweepDamage((char *)m);
+            apply_vendor_beam_damage((char *)m);
         }
     }
     if (d->s12 != 0) {
         if (*(int *)&D_L14_001621A0_s == 0) {
-            func_L14_00303270((char *)m);
+            update_vendor_beam_animation((char *)m);
         }
         if (*(int *)&D_L14_00162198_s < d->s12) {
             if (*(int *)&D_L14_001621A4_s != 0) {
                 return;
             }
-            AddDrawCallback(func_L14_00303430, m);
+            AddDrawCallback(draw_vendor_beam, m);
         }
     }
 }
@@ -2747,103 +2747,109 @@ typedef struct {
 } D_02C80;
 
 void func_L14_00302C80(char *m);
-/* Init of a 32-point strip (rope/beam style) moby. */
-void InitRopeStripMoby(char *m) {
-    D_02C80 *d = *(D_02C80 **)(m + 0x78);
-    Vq_02C80 P[32];
-    Vq_02C80 Q[32];
-    Vq_02C80 A, B;
-    Vq_02C80 M[4];
-    char *ent;
-    float f22;
-    int a, b, r;
-    int i, j, k, br;
+typedef struct {
+    Vec4 axis[3];
+    Vec4 origin;
+    u8 pad40[0x30];
+    Vec4 rotation;
+} VendorBeamFrame;
 
-    ent = (char *)((d->idx << 7) + (int)D_L14_001601AC);
+/* Init of a 32-point strip (rope/beam style) moby. */
+void start_vendor_beam_pulse(char *moby) {
+    D_02C80 *beam = *(D_02C80 **)(moby + 0x78);
+    Vq_02C80 path[32];
+    Vq_02C80 path_steps[32];
+    Vq_02C80 work, delta;
+    Vq_02C80 matrix[4];
+    VendorBeamFrame *frame;
+    float length;
+    int low, high, duration;
+    int i, j, k, branch;
+
+    frame = (VendorBeamFrame *)((beam->idx << 7) + (int)D_L14_001601AC);
     {
-        int t = (*(int *)&D_L14_0016218C);
-        *(float *)(ent + 0x3C) = 1.0f;
-        a = scale_ticks(t);
+        int ticks = (*(int *)&D_L14_0016218C);
+        frame->origin.f[3] = 1.0f;
+        low = scale_ticks(ticks);
     }
-    b = scale_ticks((*(int *)&D_L14_00162190));
-    r = rand_range(a, b);
-    d->s12 = (short)r;
-    d->r620 = (short)r;
-    f22 = FastVecLength(D_L14_001601AC + (d->idx << 7) + 0x10);
-    f22 = f22 + f22;
+    high = scale_ticks((*(int *)&D_L14_00162190));
+    duration = rand_range(low, high);
+    beam->s12 = (short)duration;
+    beam->r620 = (short)duration;
+    length = FastVecLength(D_L14_001601AC + (beam->idx << 7) + 0x10);
+    length = length + length;
 
     for (i = 0; i < 32; i++) {
-        float f20 = IntToFloat(i);
-        float t = IntToFloat(0x1F);
+        float y_offset = IntToFloat(i);
+        float last = IntToFloat(0x1F);
         float y;
-        f20 = f20 / t;
-        f20 = (0.5f - f20) * f22;
+        y_offset = y_offset / last;
+        y_offset = (0.5f - y_offset) * length;
         if (i < 3 || i > 28) {
-            clear_u64_value(&P[i]);
-            clear_u64_value(&Q[i]);
+            clear_u64_value(&path[i]);
+            clear_u64_value(&path_steps[i]);
         } else {
-            rand_vec(&P[i], 0.0f, *(float *)&D_L14_001621CC);
-            rand_vec(&Q[i], 0.0f, *(float *)&D_L14_001621D0 * D_0015EE6C);
+            rand_vec(&path[i], 0.0f, *(float *)&D_L14_001621CC);
+            rand_vec(&path_steps[i], 0.0f, *(float *)&D_L14_001621D0 * D_0015EE6C);
         }
-        y = P[i].y;
-        P[i].w = 1.0f;
-        P[i].y = y + f20;
+        y = path[i].y;
+        path[i].w = 1.0f;
+        path[i].y = y + y_offset;
     }
 
     for (j = 0; j < 32; j++) {
         if (j == 0 || j == 31) {
-            qcopy(&d->pts[j], &P[j]);
-            qcopy(&d->off[j], &Q[j]);
+            qcopy(&beam->pts[j], &path[j]);
+            qcopy(&beam->off[j], &path_steps[j]);
         } else {
-            FastVecAdd(&A, &P[j - 1], &P[j]);
-            FastVecAdd(&A, &A, &P[j + 1]);
-            FastVecScale(&d->pts[j], &A, 0.333f);
-            FastVecAdd(&A, &Q[j - 1], &Q[j]);
-            FastVecAdd(&A, &A, &Q[j + 1]);
-            FastVecScale(&d->off[j], &A, 0.333f);
+            FastVecAdd(&work, &path[j - 1], &path[j]);
+            FastVecAdd(&work, &work, &path[j + 1]);
+            FastVecScale(&beam->pts[j], &work, 0.333f);
+            FastVecAdd(&work, &path_steps[j - 1], &path_steps[j]);
+            FastVecAdd(&work, &work, &path_steps[j + 1]);
+            FastVecScale(&beam->off[j], &work, 0.333f);
         }
     }
 
-    for (br = 0; br < 4; br++) {
-        int n;
-        float c = (*(float *)&D_L14_001621CC);
-        rand_vec(&A, c, c);
-        n = truncate_float_to_s32(random_float_between((float)br * 6.0f, (float)(br + 1) * 6.0f)) + 4;
-        d->cnt[br] = (unsigned char)n;
-        qcopy(&d->a[0][br], &d->pts[n]);
-        qcopy(&d->b[0][br], &d->off[n]);
+    for (branch = 0; branch < 4; branch++) {
+        int start;
+        float spread = (*(float *)&D_L14_001621CC);
+        rand_vec(&work, spread, spread);
+        start = truncate_float_to_s32(random_float_between((float)branch * 6.0f, (float)(branch + 1) * 6.0f)) + 4;
+        beam->cnt[branch] = (unsigned char)start;
+        qcopy(&beam->a[0][branch], &beam->pts[start]);
+        qcopy(&beam->b[0][branch], &beam->off[start]);
         for (k = 1; k < 4; k++) {
-            rand_vec(&B, 0.1f, 0.1f);
-            rand_vec(&d->b[k][br], 0.0f, (*(float *)&D_L14_001621D0) * D_0015EE6C);
-            FastVecAdd(&d->a[k][br], &d->a[k - 1][br], &A);
-            FastVecAdd(&d->a[k][br], &d->a[k][br], &B);
+            rand_vec(&delta, 0.1f, 0.1f);
+            rand_vec(&beam->b[k][branch], 0.0f, (*(float *)&D_L14_001621D0) * D_0015EE6C);
+            FastVecAdd(&beam->a[k][branch], &beam->a[k - 1][branch], &work);
+            FastVecAdd(&beam->a[k][branch], &beam->a[k][branch], &delta);
         }
     }
 
-    if (func_001F9D48(D_L14_001601AC + (d->idx << 7) + 0x30, D_L14_001675C0) >= 4.0f) {
+    if (func_001F9D48(D_L14_001601AC + (beam->idx << 7) + 0x30, D_L14_001675C0) >= 4.0f) {
         int s17;
         int l;
-        func_001FA218(M, D_L14_001601AC + (d->idx << 7) + 0x70);
-        qcopy(&M[3], (char *)((d->idx << 7) + (int)D_L14_001601AC) + 0x30);
+        func_001FA218(matrix, D_L14_001601AC + (beam->idx << 7) + 0x70);
+        qcopy(&matrix[3], (char *)((beam->idx << 7) + (int)D_L14_001601AC) + 0x30);
         for (l = 0; l < 32; l += 8) {
             int n;
-            Vq_02C80 *p = &d->pts[l];
-            func_001F9EE8(&A, p, M);
-            qcopy(&B, &p[32]);
-            B.w = (*(float *)&D_L14_001621E4);
+            Vq_02C80 *p = &beam->pts[l];
+            func_001F9EE8(&work, p, matrix);
+            qcopy(&delta, &p[32]);
+            delta.w = (*(float *)&D_L14_001621E4);
             s17 = random_integer_below(2) ? (*(int *)&D_L14_001621EC) : (*(int *)&D_L14_001621F0);
             n = scale_ticks(random_integer_below(10) + 20);
-            PartType02Spawn(&A, &B, &B, (*(int *)&D_L14_001621D8), (*(int *)&D_L14_001621DC), l >> 1, 15, n, s17);
+            PartType02Spawn(&work, &delta, &delta, (*(int *)&D_L14_001621D8), (*(int *)&D_L14_001621DC), l >> 1, 15, n, s17);
         }
         for (k = 0; k < 2; k++) {
-            int n, c;
-            func_001F9EE8(&A, &d->a[3][k], M);
-            qcopy(&B, &d->b[3][k]);
-            B.w = (*(float *)&D_L14_001621E4);
-            c = random_integer_below(2) ? (*(int *)&D_L14_001621EC) : (*(int *)&D_L14_001621F0);
+            int n, unused_color;
+            func_001F9EE8(&work, &beam->a[3][k], matrix);
+            qcopy(&delta, &beam->b[3][k]);
+            delta.w = (*(float *)&D_L14_001621E4);
+            unused_color = random_integer_below(2) ? (*(int *)&D_L14_001621EC) : (*(int *)&D_L14_001621F0);
             n = scale_ticks(random_integer_below(10) + 20);
-            PartType02Spawn(&A, &B, &B, (*(int *)&D_L14_001621D8), (*(int *)&D_L14_001621DC),
-                        d->cnt[k] >> 1, 15, n, (*(int *)&D_L14_001621F0));
+            PartType02Spawn(&work, &delta, &delta, (*(int *)&D_L14_001621D8), (*(int *)&D_L14_001621DC), beam->cnt[k] >> 1, 15, n, (*(int *)&D_L14_001621F0));
         }
     }
 }
@@ -2855,7 +2861,7 @@ extern short D_L14_001621C0;
 extern short D_L14_001621C8;
 
 // advances a timed chain of vectors and picks an interpolation value
-void func_L14_00303270(char *moby) {
+void update_vendor_beam_animation(char *moby) {
     D_02C80 *d = *(D_02C80 **)(moby + 0x78);
     if (d->s12 != 0) {
         int i;
@@ -2936,7 +2942,7 @@ extern int func_L00_001EFFF0_3039C0(void *, void *, int, void *, void *) __asm__
 
 /* Sweeps the beam's two end lines; anything they cross takes damage pushed away from the beam.
  * Adapted from Lombyte (MIT) for PAL: overlays/shared/gameplay/vendor/003015d0.c, FUN_L14_00302538. */
-void BeamSweepDamage(char *self) {
+void apply_vendor_beam_damage(char *self) {
     struct Moby *m = (struct Moby *)self;
     D1224_3039C0 *d = (D1224_3039C0 *)m->pvars;
     VendorBeamReq_3039C0 req;
@@ -3016,7 +3022,7 @@ extern void func_L00_002E3700(int, int);
 extern void func_L00_002E3FA0(void);
 
 /* Slot update of moby class 1331: state 0 clears the two slot arrays, state 1 services the pending slots and frees a slot whose moby has died. Level 14 relative of func_L00_002E32A0. */
-void Moby1331Update(unsigned char *m) {
+void update_beam_slots(unsigned char *m) {
     int i;
     int j;
     int n;
@@ -3041,15 +3047,15 @@ void Moby1331Update(unsigned char *m) {
                     D_L14_001622A8[i] = 0;
                 }
             } else if (st == 4) {
-                EffectSlot_FreeAt(i);
+                release_beam_slot(i);
             } else if (st != 0) {
                 n++;
-                BeamSlotUpdate(D_L14_001622A8[i], i);
+                update_slot_panes_and_effects(D_L14_001622A8[i], i);
                 D_L14_00162218[i] = 4;
             }
         }
         if (n != 0) {
-            AddDrawCallback(EffectSlot_DrawPanes, m);
+            AddDrawCallback(draw_active_beam_slots, m);
         }
         break;
     }

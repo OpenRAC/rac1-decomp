@@ -22,36 +22,38 @@ typedef struct {
 } __attribute__((aligned(16))) Q4;
 
 /* Places a moby at a spot: copies the vector in, transforms it, and if the move is blocked pushes it back out along the stored normal. Adapted from Lombyte (MIT) for PAL: overlays/shared/unclassified_002bffa8.c, FUN_L00_002c82f0. */
-void PlaceMobyAtSpot(Q4 *a, char *m, Q4 *c) {
-    char *q = *(char **)(m + 0x78);
-    char *P;
-    char *pos, *w;
-    Q4 t, u;
-    qcopy(q, c);
-    P = D_0013E633 + 0xE1D;
-    if (*(int *)(P + 0x2FC) && GetFlaggedPvarWord(*(char **)(P + 0x2FC))) {
-        FastVecAdd(q, q, P + 0x100);
+void release_glove_of_doom_held_moby(Q4 *release_position, char *released_moby, Q4 *initial_velocity) {
+    struct Moby *moby = (struct Moby *)released_moby;
+    u8 *q = moby->pvars;
+    Hero *P;
+    Vec4f *released_moby_position;
+    struct Moby *collision_reference_moby;
+    Vec4 collision_start, collision_position_offset;
+    qcopy(q, initial_velocity);
+    P = (Hero *)(D_0013E633 + 0xE1D);
+    if (P->ground_moby && GetFlaggedPvarWord(P->ground_moby)) {
+        FastVecAdd(q, q, &P->motion.displacement);
     }
-    pos = m + 0x10;
-    qcopy(pos, a);
+    released_moby_position = &moby->pos;
+    qcopy(released_moby_position, release_position);
     {
-        char *P2 = D_0013E633 + 0xE1D;
-        w = *(char **)(P2 + 0x2080);
+        Hero *P2 = (Hero *)(D_0013E633 + 0xE1D);
+        collision_reference_moby = P2->moby;
     }
-    t = *(Q4 *)(w + 0x10);
-    t.v[2] = a->v[2];
-    if (func_L00_001EFFF0(&t, a, 0, (int)w, 0)) {
+    collision_start.q = ((Vec4 *)&collision_reference_moby->pos)->q;
+    collision_start.f[2] = release_position->v[2];
+    if (func_L00_001EFFF0(&collision_start, release_position, 0, (int)collision_reference_moby, 0)) {
         char *g = D_L00_00173F60;
         float x;
-        qcopy(pos, g);
+        qcopy(released_moby_position, g);
         x = D_0015EE70;
         g += 0x20;
-        func_L00_001FF4B0(&u, g, x * 9.0f - x * 0.1f);
-        FastVecAdd(pos, pos, &u);
+        func_L00_001FF4B0(&collision_position_offset, g, x * 9.0f - x * 0.1f);
+        FastVecAdd(released_moby_position, released_moby_position, &collision_position_offset);
         func_L00_001FF610(q, q, g);
         FastVecScale(q, q, 0.6f);
     }
-    m[0x20] = 2;
+    moby->state = 2;
 }
 struct Manip_2C9820;
 struct GifEntry_2C9820;
@@ -229,7 +231,7 @@ extern float func_001F9FA8(float);
 extern char *func_L00_002C1110(int, void *, void *);
 extern void func_0020D678(void *);
 
-void func_L00_002C9DC8(char *m) {
+void update_doom_bot_spawner(char *m) {
     char *s;
     float f0, f1, f2, f3, f20, f21, f22, f23;
     Q4 v0, v1, v2, v3;
@@ -288,7 +290,7 @@ void func_L00_002C9DC8(char *m) {
             *(int *)(s + 0x34) = scale_ticks(4);
             P1 = (unsigned char *)(D_0013E633 + 0xE1D);
             if (P1[0x20A5] == 0) {
-                PartType32Spawn(m);
+                spawn_moby_bound_effect_particle(m);
             }
         }
         {
@@ -319,7 +321,7 @@ void func_L00_002C9DC8(char *m) {
         }
         if (func_001F9908((int *)(s + 0x34)) != 0) {
             *(int *)(s + 0x34) = scale_ticks(4);
-            PartType32Spawn(m);
+            spawn_moby_bound_effect_particle(m);
         }
         *(float *)(s + 0x8) = *(float *)(s + 0x8) - D_0015EE70 * 9.0f;
         FastVecAdd(&v0, m + 0x10, s);
@@ -387,7 +389,7 @@ void func_L00_002C9DC8(char *m) {
         }
     Lfin:
         FastVecAdd(m + 0x10, m + 0x10, s);
-        BurstOnSelectedCollType(m);
+        spawn_moby_collision_particles(m);
         return;
     Lret:
         qcopy(m + 0x10, &v0);
@@ -427,7 +429,7 @@ void func_L00_002C9DC8(char *m) {
                     FastVecAdd(&v1, &v1, P + 0x100);
                 }
                 FastVecAdd(&v0, &v1, m + 0x10);
-                SpawnMoby186(*(int *)(s + 0x30), &v0, &v1);
+                spawn_doom_bot(*(int *)(s + 0x30), &v0, &v1);
                 *(short *)(s + 0x38) = scale_ticks(8);
                 *(int *)(s + 0x3C) = *(int *)(s + 0x3C) + 1;
                 if (*(int *)(s + 0x3C) >= 4) {
@@ -438,7 +440,7 @@ void func_L00_002C9DC8(char *m) {
         if (*(int *)(s + 0x3C) < 2) {
             if (func_001F9908((int *)(s + 0x34)) != 0) {
                 *(int *)(s + 0x34) = scale_ticks(4);
-                PartType32Spawn(m);
+                spawn_moby_bound_effect_particle(m);
             }
         }
         break;
@@ -681,7 +683,7 @@ typedef struct {
 } Vars_2CABC0;
 
 /* Update for moby class 270 (morphoray chicken): wanders, pecks and flees from the hero, grows, and bursts into feathers when its health runs out. */
-void MorphorayChickenUpdate(Moby *m) {
+void update_morphoray_chicken(Moby *m) {
     Vec4A T;
     Vec4A v;
     Vec4A W;
@@ -1031,7 +1033,7 @@ extern void func_0022ED80(int, int, char *);
 
 int CarriedMoby_StartAnimState5(char *m, int a, int b, float f) {
     char *h = Moby_GetClassRecord(m);
-    int r = StartCarriedMobyAnim(m, a, b, f);
+    int r = launch_suck_cannon_projectile(m, a, b, f);
     if (r != 0) {
         m[0x20] = 5;
     } else if ((unsigned char)m[0x20] == 5) {
@@ -1044,7 +1046,7 @@ int CarriedMoby_StartAnimState5(char *m, int a, int b, float f) {
 }
 extern int func_L00_002DD2D0(void *);
 int CarriedMoby_ReleaseToState5(char *a) {
-    int r = ReleaseCarriedMobySlot(a);
+    int r = cancel_suck_cannon_suction(a);
     a[0x20] = 5;
     return r;
 }
@@ -1183,7 +1185,7 @@ char *SpawnMoby305(char *a, char *vec, char *b, float f12, float f13, float f14,
         } else {
             PartType26Spawn(m, 0x2F4F7F7F, *(short *)(d + 0x24), -1, *(float *)&D_L00_00161958);
             for (i = 0; i < 17; i++) {
-                q = (char *)PartType72Spawn(m + 0x10, (char *)D_L00_0015F660, 1, 0.0f);
+                q = (char *)spawn_random_size_rotated_particle(m + 0x10, (char *)D_L00_0015F660, 1, 0.0f);
                 if (q != 0) {
                     *(float *)(q + 0xC) = random_float_between(*(float *)&D_L00_00161940, *(float *)&D_L00_00161944);
                     fi = IntToFloat(i);
@@ -1268,7 +1270,7 @@ extern void func_001F9BF0_2CC868(void *, void *, void *) __asm__("func_001F9BF0"
 extern void func_0020D678_2CC868(Moby *) __asm__("func_0020D678");
 
 /* Update for moby class 305: steers the moby toward its target, moves it, and on a hit or a timeout ends it; drags its trail of sixteen mobys behind it. */
-void Moby305Update(Moby *m) {
+void update_homing_shot(Moby *m) {
     Vec4A start;
     Vec4A step;
     Query_2CC868 q;
@@ -1574,7 +1576,7 @@ extern float D_0015EE70 MACRO_ADDR;
 extern short D_L00_00161978;
 
 // UpdateMoby_428: apply gravity and drag to the moby's velocity, then test for despawn.
-void Moby428Update(char *m) {
+void update_damped_falling_moby(char *m) {
     float *d = *(float **)(m + 0x78);
     float z;
     float k;
@@ -2228,7 +2230,7 @@ void func_001F9BD8(void *, void *, void *);
 unsigned char *func_L00_002CF6A0(unsigned char *, void *);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002c8440.c, FUN_L00_002cdcc0. */
-void Hero_SpawnSlotProjectiles(void) {
+void replenish_hero_drones(void) {
     P_2cdcc0 *p = &D_0013F450;
     S_2cdcc0 *s;
     float d[4] __attribute__((aligned(16)));
@@ -2267,10 +2269,10 @@ extern int func_L00_00273478(void *, int, float, float, unsigned, unsigned);
 void AttachTrailEffects(char *m) {
     char *p = *(char **)(m + 0x78);
     if (*(int *)(p + 0x4C) == 0) {
-        *(int *)(p + 0x4C) = PartType55Spawn(m, 0, 0.05f, 0.01f, 0x80808080, 0x10808080);
+        *(int *)(p + 0x4C) = spawn_moby_point_attached_particle(m, 0, 0.05f, 0.01f, 0x80808080, 0x10808080);
     }
     if (*(int *)(p + 0x50) == 0) {
-        *(int *)(p + 0x50) = PartType55Spawn(m, 1, 0.05f, 0.01f, 0x80808080, 0x10808080);
+        *(int *)(p + 0x50) = spawn_moby_point_attached_particle(m, 1, 0.05f, 0.01f, 0x80808080, 0x10808080);
     }
 }
 extern int D_L00_001600A4 MACRO_ADDR;
@@ -2500,7 +2502,7 @@ extern void func_L00_002CF328_2CF808(void *) __asm__("func_L00_002CF328");
    src/overlays/shared/gameplay/entities/bomb.c, FUN_L00_002ce358, which carries this file's earlier near miss
    (nonmatching/shared/func_L00_002CF808.c) to a match. D_L00_0015F6A8 is MACRO_ADDR: retail loads it with the
    lui into the same register. */
-void func_L00_002CF808(struct Moby *updated_moby) {
+void update_drone(struct Moby *updated_moby) {
     DroneVars_2CF808 *v = (DroneVars_2CF808 *)updated_moby->pvars;
     Vec4 collision_data[1], old_pos;
     Vec4 direction, rotated;
@@ -2931,7 +2933,7 @@ void crate_update(struct Moby *moby) {
         coll->flags &= ~1;
     }
     if (crate_vars->frameB4 != D_L00_0015F6B0 && moby->state != 0 && (crate_vars->flags & 0xC)) {
-        ThrownChainUpdate(moby);
+        update_crate_stack_motion(moby);
     }
     touched = 0;
     other = MobyGetHitMessage(moby, 0x1830000, 0);
@@ -2962,7 +2964,7 @@ void crate_update(struct Moby *moby) {
         if (moby->oclass == 0x1FF) {
             crate_vars->unkC6 = 100;
         } else if (moby->oclass == 0x1F5) {
-            CreateMoby806ForMoby(moby);
+            create_linked_class_0326_moby(moby);
         }
         break;
 

@@ -595,7 +595,7 @@ extern void delete_2E39E0(Moby *) __asm__("func_0020D678");
 extern void effects_update_2E39E0(Moby *, void *) __asm__("func_L00_0025E590");
 
 /* Ground enemy update: damage reaction, leash and wake checks, then its chase / attack / return state machine. */
-void GroundEnemyUpdate(Moby *m) {
+void update_ground_melee_enemy(Moby *m) {
     V_2E39E0 previous;
     Target_2E39E0 query;
     V_2E39E0 step;
@@ -976,7 +976,7 @@ extern u8 *func_L00_0026E940_08F58(f32, struct Moby *, u32, s32, s32) __asm__("f
 extern void func_L00_00251E30_08F58(struct Moby *) __asm__("func_L00_00251E30");
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/vendor/00307ba8.c, FUN_L09_00307ba8. */
-struct Moby *SpawnEnemyShot(void *owner, Vec4 *pos, Vec4 *vel, s32 life) {
+struct Moby *spawn_class_4ea_projectile(void *owner, Vec4 *pos, Vec4 *vel, s32 life) {
     Vec4 p;
     Vec4 v;
     Vec4 *pp = &p;
@@ -1063,7 +1063,7 @@ extern s32 func_L00_001F2BE8_09118(f32, void *, s32, void *, void *) __asm__("fu
 
 /* Update of the shot FUN_L09_00307ba8 spawns (cf. FUN_L04_002af058): moves along vel, plays its sound once it starts moving away from the hero within 3 units, dies outside the level box, and on a hit (probing along the line from the hero until the timer runs out) bursts into five sparks and a flash, damages around the hit and is removed.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/vendor/00307ba8.c, FUN_L09_00307d68. */
-void EnemyShotUpdate(struct Moby *m)
+void update_class_4ea_projectile(struct Moby *m)
 {
     Vec4 old;
     CollisionProbe_307d68_09118 pr;
@@ -1148,7 +1148,7 @@ extern char D_L09_00209570_BB28[] __asm__("D_L09_00209570");
 extern s32 D_L09_0015F6B0_BB28 __asm__("D_L09_0015F6B0") MACRO_ADDR;
 
 /* Adapted from Lombyte (MIT) for PAL: src/overlays/shared/gameplay/vendor/00307ba8.c, FUN_L09_0030a778. */
-struct Moby *Moby_SpawnChildFromOwner(struct Moby *owner, Vec4 *pos)
+struct Moby *respawn_spawner_child(struct Moby *owner, Vec4 *pos)
 {
     struct Moby *m;
     struct Moby *other;
@@ -1489,7 +1489,7 @@ char *SpawnMoby1886(int owner, void *pos, void *rot, unsigned char a, unsigned c
 }
 extern void func_0020D678(void *);
 
-void Moby1886_ReleaseOwnerSlot(void *moby, char *data)
+void remove_spawner_egg(void *moby, char *data)
 {
     char *other = *(char **)(data + 0x10);
     if (other != 0 && *(short *)(other + 0xA6) == 0x75D &&
@@ -1641,7 +1641,7 @@ void spawner_egg_update(struct Moby *moby) {
         moby->pos.z = ProbeGroundHeight(&moby->pos, 0, 0.5f) + 0.2f;
         moby->pos.w = 0.0f;
         step.q = ((Vec4 *)&moby->pos)->q;
-        vars->held = Moby_SpawnChildFromOwner(vars->owner, &step);
+        vars->held = respawn_spawner_child(vars->owner, &step);
         moby->state = 2;
         break;
     case 2:
@@ -1655,14 +1655,14 @@ void spawner_egg_update(struct Moby *moby) {
             held = vars->held;
             if (held == 0 || held->state == 0xFE || held->state == 0xFD || vars->unk1A == 0 ||
                 held->pclass->scale - 0.01f <= held->scale) {
-                Moby1886_ReleaseOwnerSlot(moby, (char *)vars);
+                remove_spawner_egg(moby, (char *)vars);
             }
         }
         break;
     }
     jet_animate(moby, moby->scale * 0.3f / moby->pclass->scale);
     if (moby->pos.z < 5.0f || moby->pos.z > 500.0f) {
-        Moby1886_ReleaseOwnerSlot(moby, (char *)vars);
+        remove_spawner_egg(moby, (char *)vars);
         return;
     }
     if (moby->pos.x < 5.0f) {

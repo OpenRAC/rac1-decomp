@@ -139,7 +139,7 @@ int Npc_TryStartDialog(char *p, char *q) {
         if (*(short *)(e + 4) == -1) { process_menu_entry(p, q, 1); return 1; }
         y = (char *)&D_L00_00179200;
         *(int *)(y + 8) = (int)p; *(int *)(y + 0xC) = (int)q;
-        if (*(unsigned short *)(e + 4) & 0x4000) { PlayMovieEntryIfIdle((short)(*(unsigned short *)(e + 4) ^ 0x4000)); return 1; }
+        if (*(unsigned short *)(e + 4) & 0x4000) { start_indexed_disc_stream((short)(*(unsigned short *)(e + 4) ^ 0x4000)); return 1; }
         remove_hud_item(*(int *)&bolt_hud_item);
         h4 = *(short *)(e + 4);
         *(int *)&bolt_hud_item = -1;
@@ -147,7 +147,7 @@ int Npc_TryStartDialog(char *p, char *q) {
         return 1;
     }
     if (hud_keep_visible(*(int *)&bolt_hud_item, 0xA)) {
-        *(int *)&bolt_hud_item = queue_animation_update(0xC, 0, (void*)Hud_InitCounter, (void*)DefaultVtbl_DeleteMoby, (void*)func_L00_00237B90, 0, 0);
+        *(int *)&bolt_hud_item = queue_animation_update(0xC, 0, (void*)initialize_numeric_hud_element, (void*)DefaultVtbl_DeleteMoby, (void*)draw_hud_text_panel, 0, 0);
     }
     {
         char *e2 = (char *)*(int *)(q + 0x3C) + *(short *)(q + 0x36) * 0x1C;
@@ -284,7 +284,7 @@ extern Hist_266e80_67CC8 D_0013CA40_67CC8 __asm__("D_0013CA40");
 
 /* The value n entries back in the 30-entry history ring (n is capped at the count).
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/input/pad/pad_pressed_within.c, FUN_L00_00266e80. */
-f32 RingBuffer_GetRecent(s32 n) {
+f32 read_pad_float_history(s32 n) {
     s32 m;
     if (D_0013CA40_67CC8.count < n)
         n = D_0013CA40_67CC8.count;

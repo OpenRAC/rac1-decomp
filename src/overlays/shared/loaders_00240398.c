@@ -54,7 +54,7 @@ extern int func_00120858_240398(int, unsigned short) __asm__("func_00120858");
 extern void func_00203E78_240398(void *, void *, void *, int) __asm__("func_00203E78");
 
 /* Loads a level's four packed images through the GS loader and registers the image records and their data blocks. */
-char *LoadLevelImages(char *buf, int *tbl) {
+char *load_level_texture_bank(char *buf, int *tbl) {
     int img[24];
     int i = 0;
     int a;
@@ -994,7 +994,7 @@ char *load_level_gameplay(int arg0) {
 
                 func_L00_001FF040(e, p, 0x90);
                 p += 0x90;
-                Sound_LookupTableEntry((short *)e);
+                resolve_lookup_record((short *)e);
             }
         } else {
             D_0013E650.fD94 = 0;
@@ -1042,7 +1042,7 @@ char *load_level_gameplay(int arg0) {
             if (flags != 0) {
                 tmp = D_0015EE84; /* read before the test: see the group loop */
                 if (flags & 0x10) {
-                    vis = BoltTally_FindSlot(tmp, uid);
+                    vis = find_or_assign_bolt_source_slot(tmp, uid);
                 } else {
                     vis = 0xFF;
                 }
@@ -1538,7 +1538,7 @@ char *load_level_gameplay(int arg0) {
             if (D_L00_00160600 != 0) {
                 for (m = D_L00_00160098; m->state != 0xFF; m++) {
                     if (m->oclass == first_class_ids[D_0013E130.f26]) {
-                        Ship_Register((char *)m);
+                        initialize_moby_state_record((char *)m);
                         MobySetAnimation(m, 1, 0);
                         break;
                     }
@@ -1553,7 +1553,7 @@ char *load_level_gameplay(int arg0) {
             m->pos.y = ship[1];
             m->pos.z = ship[2];
             rot = ship[3];
-            (*(void **)&m->update) = EnvMappedPickupUpdate;
+            (*(void **)&m->update) = update_moby_proximity_interaction;
             m->draw_dist = 0xFF;
             m->rot.z = rot;
             m->update_dist = 0x10;
@@ -1713,8 +1713,8 @@ char *load_level_gameplay(int arg0) {
         g_debug_menu[7] = 0;
     }
     Level_ResetGameplayGlobals();
-    HeroInit();
-    HeroResetTuning();
+    initialize_hero();
+    reset_hero_to_idle();
     setup_level_cameras();
     Camera_UpdateFrame();
     pad_resetState();
@@ -1995,7 +1995,7 @@ s32 func_L00_00244AE0(s32 full, s32 keep) {
         D_L00_0015F520 = base + h->v[0x1A];
         func_00203038((char *)h + h->v[0x17], h->v[0x16]);
         if (h->v[0x28]) {
-            LightTable_Relocate(base + h->v[0x28]);
+            relocate_counted_pointer_table(base + h->v[0x28]);
         } else {
             D_L00_0015F538 = 0;
             D_L00_0015F53C = 0;
@@ -2063,7 +2063,7 @@ s32 func_L00_00244AE0(s32 full, s32 keep) {
                 }
             }
         }
-        ((Load244110 *)&D_L00_00173F00)->f18 = LoadLevelImages((char *)((u32)end & ~0x3F), (s32 *)h);
+        ((Load244110 *)&D_L00_00173F00)->f18 = load_level_texture_bank((char *)((u32)end & ~0x3F), (s32 *)h);
     }
     ((Load244110 *)&D_L00_00173F00)->f1C = load_level_gameplay(full);
     if (full) {
@@ -2118,7 +2118,7 @@ s32 func_L00_00244AE0(s32 full, s32 keep) {
         ((void (*)())STUB_printf)(D_L00_0015FD40);
     }
     if (keep) {
-        PauseMenu_LoadSnapshot();
+        restore_or_clear_level_state();
     } else {
         clear_scene_state_buffers();
         for (z = 15; z >= 0; z--)
@@ -2193,7 +2193,7 @@ extern void func_00217748(int);
 extern void func_001F4E08(int);
 
 /* Reads a level's packed data from disc and builds its chunk pointer table. */
-void ReadLevelPackedData(int arg) {
+void load_scene_chunks_with_fade(int arg) {
     int *q;
     int i;
     if (D_0015EE80 == 0) {
@@ -2229,7 +2229,7 @@ void func_00217748_45FE0b(s32) __asm__("func_00217748");
 void func_001F4E08_45FE0b(s32) __asm__("func_001F4E08");
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/world_animation_002454c8.c, FUN_L00_00245610. */
-void LoadAnimTable(s32 i, s32 p) {
+void load_chunks_with_optional_fade(s32 i, s32 p) {
     s32 n;
     s32 *e;
     if (D_0015EE80 == 0) {

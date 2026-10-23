@@ -20,7 +20,7 @@
 #   4. git commit of versions/ntsc and config/versions/us/carry.tsv (only those paths);
 #   5. python3 tools/names.py ntsc, then rename: the NTSC decomp's names read from the new
 #      checkout (config/names_ntsc.tsv, config/modules.tsv, config/names.tsv; docs/NAMES.md),
-#      carried into include/names.h and src/, committed on their own.
+#      carried into include/ (names.h and the headers' comments) and src/, committed on their own.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 sub=versions/ntsc
@@ -43,7 +43,7 @@ else
 fi
 python3 tools/names.py ntsc
 python3 tools/names.py rename
-names=(config/names.tsv config/names_ntsc.tsv config/modules.tsv include/names.h src nonmatching)
+names=(config/names.tsv config/names_ntsc.tsv config/modules.tsv include src nonmatching)
 if git diff --quiet -- "${names[@]}"; then
   echo "names unchanged"
   exit 0

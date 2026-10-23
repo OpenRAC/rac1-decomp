@@ -1,4 +1,4 @@
-void Moby22Update(char *m) {
+void update_hero_relocation_trigger(char *m) {
     char *d = *(char **)(m + 0x78);
     unsigned short id;
     ((unsigned char *)m)[0x30] = 0xFF;

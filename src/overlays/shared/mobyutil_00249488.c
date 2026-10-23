@@ -15,7 +15,7 @@ extern float func_001F9F90(float);
 extern void func_00215650(void *arg0, void *arg1, void *arg2);
 
 // Rotates a vector toward another by a fraction of the angle between them using a quaternion.
-void RotateVectorToward(float t, float *dst, float *a, float *b, int flag)
+void rotate_vector_by_scaled_angle_between_vectors(float t, float *dst, float *a, float *b, int flag)
 {
     float q[4];
     float d, l, ang;

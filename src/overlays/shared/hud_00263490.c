@@ -15,7 +15,7 @@ extern void func_L00_00236610(void *);
 extern s32 D_L05_0015FBB4 MACRO_ADDR;
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/text/00262ae8.c, FUN_L05_00262ae8. */
-void HudCounter_Reset(HudElemX *e) {
+void initialize_trick_combo_hud(HudElemX *e) {
     s32 i;
     s32 *p;
     e->unk7C = scale_ticks(0xB4) + 0x1E;
@@ -26,7 +26,7 @@ void HudCounter_Reset(HudElemX *e) {
     for (; i >= 0; i--) {
         *p-- = -1;
     }
-    Hud_SetupCounterDigits(e);
+    initialize_numeric_hud_values_and_dimensions(e);
 }
 extern float func_00214D28(float *p, float target, float maxstep);
 extern int func_001FA898_r(float) __asm__("func_001FA898");
@@ -44,7 +44,7 @@ extern int D_L05_0015FBA8 MACRO_ADDR;
 extern short D_L05_0015F95C;
 
 /* HUD element update for the level 5 challenge: eases the shown count toward the target and runs the start / running / result states. */
-void ChallengeHudUpdate(char *a) {
+void update_trick_combo_hud(char *a) {
     float cur;
     unsigned char *u;
     char *H;
@@ -206,7 +206,7 @@ extern short D_L05_0015F98C;
 extern short D_L05_0015F990;
 
 /* HUD element update: draws the level 5 challenge readouts and the progress bar; returns the element's width. */
-int ChallengeHudDraw(char *a) {
+int draw_trick_combo_hud(char *a) {
     unsigned char *u = (unsigned char *)(a + 0x70);
     char buf[0x80];
     int out[4];
@@ -312,7 +312,7 @@ int ChallengeHudDraw(char *a) {
     hud_screen_position(a, &xa, &xb);
     s16 = (*(int *)(a + 0x74) * 0xDD) / *(int *)(a + 0x8) + 0x1B;
     id = GetIconFrame(0x7558, 1);
-    HudSpriteSubRect(id, xa, xb, s16, 0x40, 0x80);
+    draw_cropped_hud_sprite(id, xa, xb, s16, 0x40, 0x80);
     id2 = GetIconFrame(0x7558, 0);
     HudSprite(id2, xa, xb, 0x100, 0x40, 0x80);
     E = D_0013E633 + 0xE1D;
@@ -355,7 +355,7 @@ typedef struct {
 } HudElem;
 
 /* Sets up a HUD element: timer, 128x128 size, zero offsets. */
-void HudElementInit(HudElem *e) {
+void initialize_hud_element_defaults(HudElem *e) {
     e->unk7C = scale_ticks(0xB4) + 0x1E;
     e->w = 0x80;
     e->unk48 = 0;
@@ -414,7 +414,7 @@ static inline int hud_py_66D10(int pal) {
     return pal ? 0xA : 0x12;
 }
 
-int func_L05_00266D10(char *e) {
+int draw_hud_progress_and_rank(char *e) {
     char buf[0x50] __attribute__((aligned(16)));
     int x, y, y1, tx, px, py, w;
     int pal;
@@ -431,8 +431,8 @@ int func_L05_00266D10(char *e) {
     draw_stretchable_ui_frame(*(int *)&(D_L05_0015FA5C), x, *(int *)&(D_L05_0015FA64), *(int *)&(D_L05_0015FA68), *(int *)&(D_L05_0015FA6C));
     tx = *(int *)&(D_L05_0015FA78);
     func_00116248(buf, D_L05_0015FAB0, msg_string(0x5244));
-    DebugFontPrint(tx - 1, y1, 0x80000000L, buf, -1);
-    DebugFontPrint(tx, y, *(int *)&(D_L05_0015FA70), buf, -1);
+    print_text_with_texture_3(tx - 1, y1, 0x80000000L, buf, -1);
+    print_text_with_texture_3(tx, y, *(int *)&(D_L05_0015FA70), buf, -1);
     w = measure_text_width_regular(buf, -1);
     tx = tx + w;
     {
@@ -440,8 +440,8 @@ int func_L05_00266D10(char *e) {
         if (!(n < 4)) n = 3;
         func_00116248(buf, D_L05_0015FAB8, n);
     }
-    DebugFontPrint(tx - 1, y + 2, 0x80000000L, buf, -1);
-    DebugFontPrint(tx, y, *(int *)&(D_L05_0015FA74), buf, -1);
+    print_text_with_texture_3(tx - 1, y + 2, 0x80000000L, buf, -1);
+    print_text_with_texture_3(tx, y, *(int *)&(D_L05_0015FA74), buf, -1);
     {
         int n = *(int *)(hd + 0x8C0);
         tx = *(int *)&(D_L05_0015FA88);
@@ -451,13 +451,13 @@ int func_L05_00266D10(char *e) {
     }
     w = measure_text_width_regular(buf, -1);
     tx = tx - w;
-    DebugFontPrint(tx + 1, y1, 0x80000000L, buf, -1);
-    DebugFontPrint(tx, y, *(int *)&(D_L05_0015FA74), buf, -1);
+    print_text_with_texture_3(tx + 1, y1, 0x80000000L, buf, -1);
+    print_text_with_texture_3(tx, y, *(int *)&(D_L05_0015FA74), buf, -1);
     func_00116248(buf, D_L05_0015FAC0, msg_string(0x5245));
     w = measure_text_width_regular(buf, -1);
     tx = tx - w;
-    DebugFontPrint(tx + 1, y1, 0x80000000L, buf, -1);
-    DebugFontPrint(tx, y, *(int *)&(D_L05_0015FA70), buf, -1);
+    print_text_with_texture_3(tx + 1, y1, 0x80000000L, buf, -1);
+    print_text_with_texture_3(tx, y, *(int *)&(D_L05_0015FA70), buf, -1);
     if (D_0015EE84 != 0x10)
         return *(int *)(e + 0x58);
     func_00116248(buf + 0x40, D_L05_0015F940, *(unsigned char *)(hd + 0x8CE));
@@ -472,12 +472,12 @@ int func_L05_00266D10(char *e) {
     draw_stretchable_ui_frame(px - 0x18, py, *(int *)&(D_L05_0015FAA0), 0x20, 0x60);
     w = GetIconFrame(0x7558, 2);
     HudSprite(w, px, py, 0x20, 0x20, 0x80);
-    DebugFontPrint(px + 0x29, py + 8, 0x80000000L, buf + 0x40, -1);
+    print_text_with_texture_3(px + 0x29, py + 8, 0x80000000L, buf + 0x40, -1);
     h2 = D_0013E633 + 0xE1D;
     if (*(unsigned char *)(h2 + 0x8CE) != 0)
-        DebugFontPrint(px + 0x28, py + 7, 0x80E08060L, buf + 0x40, -1);
+        print_text_with_texture_3(px + 0x28, py + 7, 0x80E08060L, buf + 0x40, -1);
     else
-        DebugFontPrint(px + 0x28, py + 7, 0x80202080L, buf + 0x40, -1);
+        print_text_with_texture_3(px + 0x28, py + 7, 0x80202080L, buf + 0x40, -1);
     return *(int *)(e + 0x58);
 }
 typedef struct {
@@ -515,7 +515,7 @@ extern void func_L00_001FB7F8_002670A0(int x, int y, u64 color, char *text, int 
 
 /* Draws the race timer HUD: the lap count line when laps are shown, then the time split into minutes, seconds and hundredths; returns the element's width.
    Adapted from Lombyte (MIT) for PAL: src/overlays/shared/ui/hud/002661a0.c, FUN_L05_00266710. */
-int RaceTimerHudDraw(HudElem_002670A0 *e) {
+int draw_hud_timer(HudElem_002670A0 *e) {
     char buf[64];
     int y0, y1, y2;
     int frames, per_min, per_sec;

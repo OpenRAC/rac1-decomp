@@ -3395,7 +3395,7 @@ extern Rec0C D_001CFFC0[];
 extern unsigned char D_00141F08[];
 extern Half4 D_00199812[];
 
-int func_0021E170(void) {
+int build_reversed_active_message_list(void) {
     int i;
     for (i = 0; i < active_message_record_count;) {
         int j = i + 1;

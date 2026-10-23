@@ -20,37 +20,38 @@ extern void func_001F9BD8(void *, void *, void *);
 extern int func_001FA898_r(float) __asm__("func_001FA898");
 
 /* Update a trailing moby: advance its timer, delete it when done or its owner died, else follow the owner. Adapted from Lombyte (MIT) for PAL: overlays/shared/unclassified_002d7f88.c, FUN_L00_002d7f88. */
-void TrailMobyUpdate(char *self) {
-    D_002d7f88 *d = *(D_002d7f88 **)(self + 0x78);
-    char *o;
-    void *m;
-    float t;
-    d->f4 += (D_L00_001617AC_m + D_L00_001617AC_m) * D_0015EE6C;
-    if (func_001F9908_r(d->v8) != 0 || D_L00_001617AC_m * 1.1f <= d->f4) goto kill;
-    o = d->o;
-    if (o == 0 || *(short *)(o + 0xA6) != 0xB9 || *(unsigned char *)(o + 0x20) == 0xFE || *(unsigned char *)(o + 0x20) == 0xFD) {
-kill:
+void update_linked_moby_transform_and_lifetime(char *self) {
+    D_002d7f88 *moby_data = (D_002d7f88 *)((Moby *)self)->pvars;
+    Moby *o;
+    void *linked_moby_data;
+    f32 scale_coefficient;
+    moby_data->f4 += (D_L00_001617AC_m + D_L00_001617AC_m) * D_0015EE6C;
+    if (func_001F9908_r(moby_data->v8) != 0 || D_L00_001617AC_m * 1.1f <= moby_data->f4)
+        goto kill;
+    o = (Moby *)moby_data->o;
+    if (o == 0 || o->oclass != 0xB9 || o->state == 0xFE || o->state == 0xFD) {
+    kill:
         DeleteMoby(self);
         return;
     }
-    m = *(void **)(o + 0x78);
-    clear_u64_value(self + 0x10);
-    *(float *)(self + 0x14) = -d->f4;
-    func_001F9EC0(self + 0x10, self + 0x10, (char *)d->o + 0xC0);
-    FastVecAdd(self + 0x10, self + 0x10, m);
-    qcopy(self + 0x40, (char *)d->o + 0x40);
-    if (d->f4 > D_L00_001617AC_m) {
-        self[0x23] = func_001FA898_r((1.0f - (d->f4 - D_L00_001617AC_m) * 10.0f) * 127.0f);
+    linked_moby_data = o->pvars;
+    clear_u64_value(&((Moby *)self)->pos);
+    ((Moby *)self)->pos.y = -moby_data->f4;
+    func_001F9EC0(&((Moby *)self)->pos, &((Moby *)self)->pos, &((Moby *)moby_data->o)->rot_row0);
+    FastVecAdd(&((Moby *)self)->pos, &((Moby *)self)->pos, linked_moby_data);
+    qcopy(&((Moby *)self)->rot, &((Moby *)moby_data->o)->rot);
+    if (moby_data->f4 > D_L00_001617AC_m) {
+        ((Moby *)self)->alpha = func_001FA898_r((1.0f - (moby_data->f4 - D_L00_001617AC_m) * 10.0f) * 127.0f);
     }
-    t = d->fC;
-    *(float *)(self + 0x2C) = t * 0.1f + t * d->f4 / D_L00_001617AC_m;
+    scale_coefficient = moby_data->fC;
+    ((Moby *)self)->scale = scale_coefficient * 0.1f + scale_coefficient * moby_data->f4 / D_L00_001617AC_m;
 }
 // True when the moby's state byte is 1.
-int IsMobyState1(unsigned char *m) {
+int is_moby_in_state_one(unsigned char *m) {
     return m[0x20] == 1;
 }
 extern char *func_0020D348(int);
-char *CreateMoby806ForMoby(char *a) {
+char *create_linked_class_0326_moby(char *a) {
     char *m;
     if (a[0x20] < 0) return 0;
     m = CreateMoby(0x326);
@@ -757,7 +758,7 @@ extern int func_L00_002D95D8_2DACC0(unsigned char *) __asm__("func_L00_002D95D8"
    Adapted from Lombyte (GPL-3.0) for PAL: src/overlays/shared/gameplay/entities/nanotech_ball.c, FUN_L00_002d9810,
    which carries this file's earlier near miss (nonmatching/shared/func_L00_002DACC0.c) to a match. The tuning
    words D_L00_00161AE0 and D_L00_00161B90..BBC are this level file's $gp data (SDATA). */
-void func_L00_002DACC0(Moby *moby) {
+void draw_nanotech_ball(Moby *moby) {
     GeometryQuad_2DACC0 quad;
     float basis[4] __attribute__((aligned(16)));
     float *forward;
@@ -946,7 +947,7 @@ extern void func_00213DE0(void *, int, int, int);
 extern float func_001F9D48(void *, void *);
 
 /* Lets moby m take a free hero slot once its handler accepts (returns 2); returns the handler's result. */
-int TryClaimHeroSlot(u8 *p, void *q, void *m_, void *r_, void *buf) {
+int process_suck_cannon_suction_candidate(u8 *p, void *q, void *m_, void *r_, void *buf) {
     char *m = (char *)m_;
     char *r = (char *)r_;
     int ret = 0;
@@ -1053,7 +1054,7 @@ extern void func_L00_002DB690_DB810(M_da360 *) __asm__("func_L00_002DB690");
 extern void func_L00_002E0690_DB810(M_da360 *) __asm__("func_L00_002E0690");
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002d7f88.c, FUN_L00_002da360. */
-void SuckCannon_ScanTargets(u8 *p, void *q)
+void update_suck_cannon_suction(u8 *p, void *q)
 {
     u8 buf[0x10] __attribute__((aligned(16)));
     Vec4f v;
@@ -1090,7 +1091,7 @@ void SuckCannon_ScanTargets(u8 *p, void *q)
                         } else if (r->h68 > 0) func_L00_002DB690_DB810(m);
                     } else if (r->h68 < 4) {
                     hit:
-                        TryClaimHeroSlot(p, q, m, r, buf);
+                        process_suck_cannon_suction_candidate(p, q, m, r, buf);
                     }
                 } else if (r->h68 != 0) func_L00_002DB690_DB810(m);
             }
@@ -1107,7 +1108,7 @@ extern char D_L00_001EA368_002da660[] __asm__("D_L00_001EA368") __attribute__((s
 u8 *func_L00_002DCD40_002da660(u8 *) __asm__("func_L00_002DCD40");
 void func_001E9730_002da660(void *, s32, s32) __asm__("func_001E9730");
 /* Update. Adapted from Lombyte (MIT) for PAL: overlays/shared/unclassified_002d7f88.c, FUN_L00_002da660. */
-void UpdateHeroSlots(void) {
+void refresh_suck_cannon_slots(void) {
     s32 i;
     D_0013F450_002da660.i207C = 0;
     D_0013F450_002da660.i2078 = 0;
@@ -1279,12 +1280,12 @@ void suckcannon_update(M40 *self) {
     int special, i, sound, next_state;
     M40 *stored;
 
-    queue_animation_update(4, 0x753F, (int)delete_callback40, (int)HudSuckCannon_Update,
+    queue_animation_update(4, 0x753F, (int)delete_callback40, (int)update_hud_counter_cap_and_visibility,
                  (int)Hud_DrawGaugeFrame, (int)&hero40.count, 5);
     data = self->data;
     special = hero40.weapon_mode == 3;
     if ((u8)self->state != 3 && (u8)self->state != 0) SuckBeam_QueueDraw((int)self);
-    UpdateHeroSlots();
+    refresh_suck_cannon_slots();
     switch ((u8)self->state) {
     case 0:
         for (i=0; i<(order40.gold == 0 ? 5 : 10); ++i) {
@@ -1367,7 +1368,7 @@ void suckcannon_update(M40 *self) {
                 if(s[1].owner==self && s[1].active) Sound_StopSlot(sound);
             }
             data->sound=-1;
-            SuckBeam_ApplyPulls((int)self);
+            stop_suck_cannon_suction_effect((int)self);
             hero40.firing=0;
             if(hero40.count>0) {
                 MobyBlendAnimation(self,6,0,scale_ticks(4));
@@ -1383,7 +1384,7 @@ void suckcannon_update(M40 *self) {
             }
         } else {
             if (self->anim_flags&2) MobyBlendAnimation(self,3,0,scale_ticks(2));
-            SuckCannon_ScanTargets((u8 *)self,data);
+            update_suck_cannon_suction((u8 *)self,data);
         }
         break;
     case 4:
@@ -1591,7 +1592,7 @@ void func_00213DE0(void *, s32, s32, s32);
 f32 func_001F9D48(void *, void *);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002d7f88.c, FUN_L00_002db8f8. */
-s32 CarriedMoby_StepGrab(u8 *moby, u8 *position, u8 *target) {
+s32 process_moby_suck_cannon_suction(u8 *moby, u8 *position, u8 *target) {
     u8 *record = func_L00_002DCD40_DCDA8(moby);
     s16 state;
     if (record == 0)
@@ -1669,7 +1670,7 @@ extern int func_001F9850(int);
 extern void func_00213DE0(void *, int, int, int);
 
 /* Place a moby at the given position under its owner, reset its owner's state to 4 and start the matching animation. Adapted from Lombyte (MIT) for PAL: overlays/shared/unclassified_002d7f88.c, FUN_L00_002dbb20. */
-int PlaceCarriedMoby(unsigned char *m, void *v) {
+int store_moby_in_suck_cannon(unsigned char *m, void *v) {
     unsigned char *o = (unsigned char *)Moby_GetClassRecord((char *)m);
     int g;
     if (o == 0) return 0;
@@ -1700,7 +1701,7 @@ extern float func_001F9D48(void *, void *);
 extern int func_0022ED80(int, int, int);
 
 /* starts a moby's animation from a data moby and sets up its effect state */
-int StartCarriedMobyAnim(char *m, float *pos, char *other, float f) {
+int launch_suck_cannon_projectile(char *m, float *pos, char *other, float f) {
     char *d;
     unsigned char *r;
     char *e;
@@ -1745,7 +1746,7 @@ int StartCarriedMobyAnim(char *m, float *pos, char *other, float f) {
     return 0;
 }
 /* Frees a moby's state slot and returns 1 when it is in state 4. Adapted from Lombyte (MIT) for PAL: overlays/shared/unclassified_002d7f88.c, FUN_L00_002dbe20. */
-int ReleaseCarriedMobySlot(char *m) {
+int cancel_suck_cannon_suction(char *m) {
     char *s = Moby_GetClassRecord(m);
     int st;
     if (s == 0) return 0;
@@ -2542,7 +2543,7 @@ extern float func_001F9CB8(void *);
 typedef float VQ[4] __attribute__((aligned(16)));
 
 /* pull each active entry's marker toward its target, then update the rest */
-void SuckBeam_ApplyPulls(int arg0) {
+void stop_suck_cannon_suction_effect(int arg0) {
     VQ a, b, c;
     int i;
     float len;
@@ -2595,7 +2596,7 @@ void ScatterMobyFromHazards(char *m) {
                 base = pos - 0x80;
                 Moby_StartTumble(m, *(int *)(base + 0x2080), 0.0f, 0.0f);
             } else {
-                Pickup_TryCollect(m);
+                try_collect_ammo_pickup(m);
             }
         }
     }

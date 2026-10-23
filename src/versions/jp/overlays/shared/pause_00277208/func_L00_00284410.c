@@ -1,4 +1,4 @@
-void PauseCheatEntry(void) {
+void process_unlock_code_input(void) {
     char *pad = (char *)D_0013A5E0 + 0x2460;
     int lim0, lim;
     int va, vb, vc;

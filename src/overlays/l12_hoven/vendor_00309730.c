@@ -32,7 +32,7 @@ extern short D_L12_00162050;
 extern short D_L12_00162054;
 extern short D_L12_00162058;
 
-void func_L12_00309730(char *m) {
+void draw_hoven_jittered_quad_layers(char *m) {
     Pkt P[2] __attribute__((aligned(16)));
     float M[16] __attribute__((aligned(16)));
     long tex;

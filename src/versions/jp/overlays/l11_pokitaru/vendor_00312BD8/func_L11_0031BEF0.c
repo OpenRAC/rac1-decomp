@@ -1,4 +1,4 @@
-void Moby1350Update(char *moby) {
+void update_moby_list_empty_dialogue_trigger(char *moby) {
     int *data = *(int **)(moby + 0x78);
     if (data[0] == -1) {
         DeleteMoby(moby);

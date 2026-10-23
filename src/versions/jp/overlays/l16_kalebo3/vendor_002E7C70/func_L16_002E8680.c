@@ -1,4 +1,4 @@
-void BannerTriggerUpdate(char *moby) {
+void update_two_region_trigger_latch(char *moby) {
     char *data = *(char **)(moby + 0x78);
     switch (*(int *)(data + 8)) {
     case 0: {

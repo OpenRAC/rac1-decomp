@@ -1,4 +1,4 @@
-void Moby1000Update(char *moby) {
+void update_level09_item_unlock_and_frame_record(char *moby) {
     int *data = *(int **)(moby + 0x78);
     unsigned char *q;
     unsigned char *b;

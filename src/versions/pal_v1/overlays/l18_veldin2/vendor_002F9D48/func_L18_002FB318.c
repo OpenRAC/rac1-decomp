@@ -1,5 +1,5 @@
 extern float D_E1_L18_001DFAD0[4][4];
-void Moby1563_DrawQuadAlt(struct Moby *m) {
+void draw_moby_three_scaled_two_tint_quads(struct Moby *m) {
     Pk_9c20_FB318 pk;
     float mat[4][4];
     float up[4];

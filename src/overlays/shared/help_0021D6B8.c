@@ -17,7 +17,7 @@ extern char D_0013F450_1D6B8[] __asm__("D_0013F450");
 extern int func_L00_0020DB30(int);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/help/0021d0a0.c, FUN_L06_0021d0a0. */
-int Hero_GetModuleAnimId(int a) {
+int get_hero_help_value(int a) {
     char *g = (char *)D_0013F450_1D6B8;
     switch (*(unsigned char *)(g + 0x20A4)) {
     case 1:
@@ -131,7 +131,7 @@ typedef struct {
 } GS_E7B8;
 
 /* Hero frame update for the help/panel states: runs the update chain; in state 1 keeps two companion mobys (0x4B4 and 0x47A) placed on the hero and tints them, in state 3 pulses the hero tint and drives the fade colour and sound trigger. */
-void HeroL06_UpdateFrame(void) {
+void update_hero_vehicle_attachments_and_effects(void) {
     int h2, v2, t;
     int v, h, i, r16, r17, r18, c20, color;
     int ca, cb, col;
@@ -143,22 +143,22 @@ void HeroL06_UpdateFrame(void) {
 
     func_L00_00232EF0();
     hero_update();
-    HeroL06_ResetFrameFlags();
+    apply_hero_ground_material_response();
     if (((GS_E7B8 *)(D_0013E633 + 0xE1D))->b20A4 == 1) {
         HeroLedgeProbe();
         CameraLeanFromPad();
     }
     HeroL06_UpdateStateTransitions();
     if (((GS_E7B8 *)(D_0013E633 + 0xE1D))->b20A4 == 0) return;
-    Hero_TickReleaseTimers();
-    SettleAllHeldObjects();
+    update_hero_delayed_voice_requests();
+    update_hero_easing_records();
     if (((GS_E7B8 *)(D_0013E633 + 0xE1D))->b20A4 == 0) return;
-    SyncHelpScreenMoby();
+    update_hero_vehicle_moby();
     UpdateRampUpDown();
     CameraShakeUpdate();
     if (((GS_E7B8 *)(D_0013E633 + 0xE1D))->b20A4 == 1) {
         D_L06_0017C0DC = D_0015EEF0[10];
-        UpdateHelperMoby();
+        update_hero_glow_and_extra_manipulators();
         if (((GS_E7B8 *)(D_0013E633 + 0xE1D))->m1624 == 0) {
             ((GS_E7B8 *)(D_0013E633 + 0xE1D))->m1624 = (char *)CreateMoby(0x4B4);
             if (((GS_E7B8 *)(D_0013E633 + 0xE1D))->m1624 != 0) {
@@ -632,7 +632,7 @@ extern void func_L00_00233EE0(void *, f32, f32, f32);
 extern void func_L00_00211908(void);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/help/0021d0a0.c, FUN_L06_002348d0. */
-void HeroL06_UpdateTimers(void) {
+void update_hero_timers_and_spatial_state(void) {
     Vec4 sum;
     Vec4 d;
     struct Moby *m;
@@ -793,7 +793,7 @@ extern f32 func_L00_002345B0(void *);
 extern s32 func_L00_0025A5D8(f32 *, f32 *, f32, f32, f32);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00242950.c, FUN_L06_00242950. */
-f32 HeroL06_PredictLanding(f32 a, f32 b, f32 c) {
+f32 calculate_hero_motion_prediction_time(f32 a, f32 b, f32 c) {
     f32 t[4];
     Vec4 v;
     Vec4 t1;

@@ -1,4 +1,4 @@
-void TutorialHintUpdate(unsigned char *moby) {
+void update_tutorial_hint_triggers(unsigned char *moby) {
     int *data = *(int **)(moby + 0x78);
     moby[0x30] = 0xFF;
 

@@ -928,7 +928,7 @@ extern int func_00116248_2(void *, char *) __asm__("func_00116248");
    serves both the test and the copy), and each block that reads
    D_001A01F0 has its own char * local, which gives retail's kept %hi
    and rebuilt %lo. */
-void func_00208AB0(int bank, unsigned char *dst) {
+void FormatMenuItemText(int bank, unsigned char *dst) {
     unsigned char buf[16];
     unsigned char *src;
     unsigned char *p;

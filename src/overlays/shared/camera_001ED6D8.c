@@ -87,7 +87,7 @@ void setup_level_cameras(void) {
             h = e->id;
             gCameraSlotUsedLvl[i] = 1;
             el->id = h;
-            el->type = Camera_FindTypeIndex((short)h);
+            el->type = find_camera_table_index_by_id((short)h);
             i++;
         } while (i < gCameraDefCountLvl);
     }

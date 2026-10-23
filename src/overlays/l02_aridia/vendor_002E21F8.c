@@ -196,7 +196,7 @@ void skids_agent_update(Moby *m) {
                     d->f178->flags |= 1;
                     d->f178->visible = 0;
                 }
-                PlayMovieEntryIfIdle(2);
+                start_indexed_disc_stream(2);
                 m->state = 5;
             }
         } else {
@@ -335,7 +335,7 @@ void SkidMcMarxAridiaUpdate(char *m)
 
     d = *(char **)(m + 0x78);
     AttachManipulatorsIfCheat(m);
-    SkidMcMarxWarpUpdate(m);
+    update_skid_mcmarx_relocation_sequence(m);
     switch (*(unsigned char *)(m + 0x20)) {
     case 0:
         if (D_0013D605[9] != 0) {
@@ -467,8 +467,28 @@ extern void func_L02_0023D6E0(void);
 
 /* Three-state controller (data+0x180): 0 waits for its trigger, 1 runs timed effects until released, then moves the moby to its spawn point, sets the two linked mobys' flags and enters state 2.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l02/gameplay/entities/002e0dc0.c, FUN_L02_002e1fb8. */
-void SkidMcMarxWarpUpdate(char *moby) {
-    char *data = *(char **)(moby + 0x78);
+typedef struct McmarxRelocVars {
+    u8 pad00[0x8];
+    u8 unk08;                  /* 0x08 set to 1 by the sequence's last step */
+    u8 pad09[0x2D];
+    s16 unk36;                 /* 0x36 set to 2 when the sequence finishes */
+    u8 pad38[0x110];
+    s32 clip_volume;           /* 0x148 clip volume the hero is checked against */
+    s32 hud_value_a;           /* 0x14C */
+    s32 hud_value_b;           /* 0x150 */
+    s32 entry_index;           /* 0x154 row of the table (<< 7) */
+    s32 slot_a;                /* 0x158 */
+    s32 slot_b;                /* 0x15C */
+    s32 hud_bar_a;             /* 0x160 */
+    s32 hud_bar_b;             /* 0x164 */
+    s32 timer;                 /* 0x168 FastDecTimer counts down */
+    u8 pad16C[0x14];
+    s32 state;                 /* 0x180 0 idle, 1 running, 2 done */
+} McmarxRelocVars;
+
+void update_skid_mcmarx_relocation_sequence(char *moby) {
+    struct Moby *m = (struct Moby *)moby;
+    struct McmarxRelocVars *data = (struct McmarxRelocVars *)m->pvars;
     float fx_pos[4] __attribute__((aligned(16)));
     float fx_rot[4] __attribute__((aligned(16)));
     char *entry;
@@ -476,52 +496,52 @@ void SkidMcMarxWarpUpdate(char *moby) {
     char *mobys;
     float yaw;
     char *table;
-    if (*(int *)(data + 0x180) == 1) {
-        if (is_point_inside_clip_volume(gHeroPos, *(int *)(data + 0x148)) == 0) {
-            *(int *)(data + 0x180) = 0;
-            Hud_SetBarValueById(*(int *)(data + 0x160), 0);
-            *(int *)(data + 0x160) = -1;
-            Hud_SetBarValueById(*(int *)(data + 0x164), 0);
-            *(int *)(data + 0x164) = -1;
+    if (data->state == 1) {
+        if (is_point_inside_clip_volume(gHeroPos, data->clip_volume) == 0) {
+            data->state = 0;
+            Hud_SetBarValueById(data->hud_bar_a, 0);
+            data->hud_bar_a = -1;
+            Hud_SetBarValueById(data->hud_bar_b, 0);
+            data->hud_bar_b = -1;
             return;
         }
-        if (*(int *)(data + 0x14C) != 0 || *(int *)(data + 0x150) != 0)
+        if (data->hud_value_a != 0 || data->hud_value_b != 0)
             return;
-        if (FastDecTimer((int *)(data + 0x168)) == 0)
+        if (FastDecTimer(&data->timer) == 0)
             return;
-        *(int *)(data + 0x180) = 2;
+        data->state = 2;
         FadeToBlack(scale_ticks(0x10));
-        Hud_SetBarValueById(*(int *)(data + 0x160), 0);
-        *(int *)(data + 0x160) = -1;
-        Hud_SetBarValueById(*(int *)(data + 0x164), 0);
+        Hud_SetBarValueById(data->hud_bar_a, 0);
+        data->hud_bar_a = -1;
+        Hud_SetBarValueById(data->hud_bar_b, 0);
         table = D_L02_0016016C;
-        entry_off = *(int *)(data + 0x154) << 7;
+        entry_off = data->entry_index << 7;
         mobys = table;
-        *(int *)(data + 0x164) = -1;
-        qcopy(moby + 0x10, (char *)(entry_off + (int)mobys) + 0x30);
+        data->hud_bar_b = -1;
+        qcopy(&m->pos, (char *)(entry_off + (int)mobys) + 0x30);
         entry = (char *)(entry_off + (int)mobys);
-        *(float *)(moby + 0x48) = yaw = func_L00_001FF860(*(float *)(entry + 0), *(float *)(entry + 4));
-        qcopy(fx_pos, moby + 0x10);
+        m->rot.z = yaw = func_L00_001FF860(*(float *)(entry + 0), *(float *)(entry + 4));
+        qcopy(fx_pos, &m->pos);
         fx_pos[0] += FastCos(yaw) * 1.5f;
-        fx_pos[1] += FastSin(*(float *)(moby + 0x48)) * 1.5f;
+        fx_pos[1] += FastSin(m->rot.z) * 1.5f;
         clear_u64_value(fx_rot);
-        fx_rot[2] = FastAddRots(*(float *)(moby + 0x48), 3.1415927f);
+        fx_rot[2] = FastAddRots(m->rot.z, 3.1415927f);
         Hero_ResetToPosition(fx_pos, fx_rot, 0, 1);
         {
-            int i0 = *(int *)(data + 0x158);
-            int i1 = *(int *)(data + 0x15C);
+            int i0 = data->slot_a;
+            int i1 = data->slot_b;
             mobys = D_L02_00160058;
             *(unsigned char *)(mobys + (i0 << 8) + 0xBC) = 1;
             mobys += i1 << 8;
-            mobys[0xBC] = 1;
-            *(short *)(data + 0x36) = 2;
-            data[8] = 1;
+            ((struct Moby *)mobys)->command = 1;
+            data->unk36 = 2;
+            data->unk08 = 1;
         }
-    } else if (*(int *)(data + 0x180) == 0) {
-        if (is_point_inside_clip_volume(gHeroPos, *(int *)(data + 0x148)) != 0) {
-            *(int *)(data + 0x180) = 1;
-            *(int *)(data + 0x164) = queue_animation_update(0x15, 0x7D0, HudTileInit, HudCounter_UpdateRamp, Hud_DrawCounter, data + 0x14C, 100);
-            *(int *)(data + 0x160) = queue_animation_update(0x17, 0x7D1, HudTileInit, HudCounter_UpdateRamp, Hud_DrawCounter, data + 0x150, 7);
+    } else if (data->state == 0) {
+        if (is_point_inside_clip_volume(gHeroPos, data->clip_volume) != 0) {
+            data->state = 1;
+            data->hud_bar_b = queue_animation_update(0x15, 0x7D0, HudTileInit, update_hud_counter_transition, draw_hud_counter, &data->hud_value_a, 100);
+            data->hud_bar_a = queue_animation_update(0x17, 0x7D1, HudTileInit, update_hud_counter_transition, draw_hud_counter, &data->hud_value_b, 7);
         }
     }
 }
@@ -733,7 +753,7 @@ extern void func_L00_00258DB0_ED358(void *, f32, f32) __asm__("func_L00_00258DB0
 
 /* Shard debris update: drifts along its velocity, sheds particle trails and expires when its timer runs out.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l02/gameplay/vendor/002ebf20.c, FUN_L02_002ebf20. */
-void ShardDebrisUpdate(struct Moby *m) {
+void update_shard_debris(struct Moby *m) {
     ShardVars_ED358 *v = (ShardVars_ED358 *)m->pvars;
     Vec4f p, back, half, jit;
     u8 *q;
@@ -785,7 +805,7 @@ extern short D_L02_00161FE4;
 
 /* Spawns a projectile moby from src at pos, heading along dir, with its lifetime in the moby data.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l02/gameplay/vendor/002ebf20.c, FUN_L02_002ec228. */
-char *SpawnAridiaProjectile(char *src, void *pos, float *dir) {
+char *spawn_projectile_moby(char *src, void *pos, float *dir) {
     char *moby;
     char *data;
     moby = CreateMoby(0x4B8);
@@ -831,7 +851,7 @@ extern unsigned char D_0015EEDC[4] MACRO_ADDR;
 extern unsigned char D_0015EEE0[4] MACRO_ADDR;
 
 /* UpdateMoby_1324: tutorial hint triggers around the player */
-void TutorialHintUpdate(unsigned char *moby) {
+void update_tutorial_hint_triggers(unsigned char *moby) {
     int *data = *(int **)(moby + 0x78);
     moby[0x30] = 0xFF;
 
@@ -1113,7 +1133,7 @@ extern void func_0020D678_2F0458(void *) __asm__("func_0020D678");
 
 /* Level 02 moby update (class 1479): state 0 sets up, states 1 and 2 emit particle bursts from two parameter
  * blocks in sdata (a timed burst loop, then one burst), state 3 deletes the moby. */
-void Moby1479Update(Moby *m) {
+void update_smoke_vent(Moby *m) {
     V_2F0458 vec;
     V_2F0458 A;
     V_2F0458 B;
@@ -1261,7 +1281,7 @@ extern char D_L02_00167300_F9E50[] __asm__("D_L02_00167300");
 
 /* Sets the vendor camera mode; mode 3 also aims it from the hero's position.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l02/gameplay/vendor/002ebf20.c, FUN_L02_002f8a18. */
-void Vendor_SetCameraMode(int mode, int arg) {
+void set_vendor_camera_mode(int mode, int arg) {
     char *g = D_L02_00167300_F9E50;
     char *cam = *(char **)(g + 0x180);
     char *d = *(char **)(cam + 0x70);

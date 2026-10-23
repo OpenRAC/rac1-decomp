@@ -94,7 +94,7 @@ extern char *D_L01_001B0C30[];
 typedef int u128 __attribute__((mode(TI)));
 
 // Returns a bitmask of the table's spheres that no listed object touches, testing swept offsets.
-int BuildPathNodeVisibilityMask(int *objs, int n, int idx, float f, float *pos)
+int compute_clear_path_point_mask(int *objs, int n, int idx, float f, float *pos)
 {
     char *t = D_L01_001B0C30[idx];
     int mask = 0;
@@ -135,7 +135,7 @@ int BuildPathNodeVisibilityMask(int *objs, int n, int idx, float f, float *pos)
 }
 
 // Expands a bit mask through a table of per-bit masks until it meets another mask.
-int ExpandNodeMask(int idx, int a, int mask)
+int expand_path_mask_to_intersection(int idx, int a, int mask)
 {
     char *p = D_L01_001B0C30[idx];
     int i;
@@ -216,7 +216,7 @@ s32 func_L01_00277FD8(s32 *ids, s32 n, s32 path_index, f32 radius,
         path = D_L01_001B0C30_77FD8[path_index];
         from_mask = func_L01_00277A38_77FD8(ids, n, radius, path_index, pos);
         to_mask = func_L01_00277A38_77FD8(ids, n, radius, path_index, target);
-        mask = ExpandNodeMask(path_index, from_mask, to_mask);
+        mask = expand_path_mask_to_intersection(path_index, from_mask, to_mask);
         if (mask != 0) {
             nearest = 10000.0f;
             best = -1;
@@ -240,7 +240,7 @@ s32 func_L01_00277FD8(s32 *ids, s32 n, s32 path_index, f32 radius,
     return 1;
 }
 extern char D_0013E633[];
-int Hero_IsOnMoby(char *m) {
+int is_hero_on_moby(char *m) {
     char *h = D_0013E633 + 0xE1D;
 
     if (*(int *)(h + 0x208C) == 3 || *(int *)(h + 0x2084) == 0x1C) {
@@ -294,7 +294,7 @@ extern char *func_0020D348(int);
 extern void func_L00_00251E30(void *);
 
 /* spawns a moby of a class copying the source moby's placement, scaled */
-void SpawnMobyCopyingPlacement(char *src, int oClass) {
+void spawn_moby_from_placement(char *src, int oClass) {
     char *m = CreateMoby(oClass);
     if (m != 0) {
         *(short *)(m + 0x32) = 0xFF;

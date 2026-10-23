@@ -54,7 +54,7 @@ extern Level12MobyList D_L12_0016CD60;
 extern unsigned char D_L12_0017C940[];
 
 /* Re-arms the matching entry of the moby list when the level mode is 2 (func_L02_002E2110 with argument 1). */
-void Moby_AttachCheatManipulators(char *moby) {
+void apply_npc_big_head_cheat(char *moby) {
     int i;
     if (D_L12_0015F6A8 == 2 && gCheats[0] != 0) {
         for (i = 0; i < D_L12_0016CD60.count; i++) {
@@ -76,7 +76,7 @@ extern void func_L12_002BD3D0(void *, int, int, int);
 extern char D_L12_001F5740[];
 
 /* calls func_L12_002BD3D0 with two looked-up ids */
-void Moby_DrawEffectEntries(void) {
+void draw_level_12_effects(void) {
     Effect_DrawEntryList(D_L12_001F5740, 0x2F, GetEffectTex(0x2C), GetEffectTex(0x2D));
 }
 typedef int u128_8670 __attribute__((mode(TI)));
@@ -84,7 +84,7 @@ extern char *func_0020D348(int);
 extern void func_L00_00251E30(void *);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_00308670.c, FUN_L12_00308670. */
-char *SpawnMoby55B(char *a0)
+char *create_class_55b_moby_from_source(char *a0)
 {
     unsigned char *m = (unsigned char *)CreateMoby(0x55B);
     if (m != 0) {
@@ -132,7 +132,7 @@ typedef struct {
 } LobbedVars;
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/vendor/00308670.c, FUN_L12_00308708. */
-void LobbedMoby_Launch(void *unused, struct Moby *m) {
+void start_blarg_commander_knockback(void *unused, struct Moby *m) {
     LobbedVars *d = (LobbedVars *)m->pvars;
     float dir[4];
     float ang;

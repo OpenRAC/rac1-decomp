@@ -11,12 +11,12 @@ extern u8 D_L00_0016A140[];
 void func_L00_001F3AF0(s32, s32, s32, s32);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/rendering_debug_001f36f8.c, FUN_L00_001f36f8. */
-void FlushDebugLines(void) {
+void flush_debug_text_queue(void) {
     s32 i;
     E001f36f8 *p;
 
     for (i = 0; i < (*(s32 *)&D_L00_0015F0C4); i++) {
-        DrawGlyphLine(D_L00_0016A940[i].a, D_L00_0016A940[i].b, D_L00_0016A940[i].c, D_L00_0016A940[i].d);
+        draw_debug_text(D_L00_0016A940[i].a, D_L00_0016A940[i].b, D_L00_0016A940[i].c, D_L00_0016A940[i].d);
     }
     (*(s32 *)&D_L00_0015F0C4) = 0;
     (*(void * *)&D_L00_0015F0C0) = D_L00_0016A140;
@@ -29,66 +29,60 @@ extern int D_L00_00169C00[];
 extern int D_0013E600[];
 
 /* Appends a line of font glyph quads at (x, y) in COLOR to the packet buffer and patches the packet tags. */
-void DrawGlyphLine(int x, int y, int color, int s_) {
-    unsigned char *str = (unsigned char *)s_;
-    int n = 0;
-    int qw;
-    int *base;
-    long *p;
-    long *tag;
-    unsigned int idx;
-    int w;
-    int c;
-    long *q;
-    int hd;
+void draw_debug_text(int x, int y, int color, int s_) {
+    const unsigned char *text = (const unsigned char *)s_;
+    int glyph_count = 0;
+    unsigned int quadwords;
+    unsigned int glyph;
+    int texture_coordinates;
+    u64 *packet;
+    u64 *glyph_tag;
+    u64 *cursor;
 
     VU1_addGSregister(0x42, 0x8000000044L);
     VU1_addGSregister(0x47, 0x5360B);
-    base = D_L00_00161280;
-    D_L00_00161280 = base + 4;
-    p = (long *)D_L00_00161280;
-    tag = p + 8;
-    p[0] = 0x10ab400000000001L;
-    p[1] = 0xE;
-    p[2] = 1;
-    p[3] = 0x14;
-    p[4] = 0x2400000000000001L;
-    p[5] = 0x61;
-    p[6] = (long)color & 0xFFFFFFFFL;
-    p[7] = debug_font_pif_header;
-    p[8] = 0x4400000000008003L;
-    p[9] = 0x5353;
-    D_L00_00161280 = (int *)((char *)D_L00_00161280 + 0x50);
-    qw = 5;
-    while ((c = *str) != 0) {
-        p = (long *)D_L00_00161280;
-        idx = (unsigned char)(c - 0x20);
-        if (idx >= 0x60) {
-            idx = 0x20;
+    packet = (u64 *)D_L00_00161280;
+    D_L00_00161280 = (int *)(packet + 2);
+    packet[2] = 0x10AB400000000001UL;
+    cursor = packet + 2;
+    cursor[1] = 0xE;
+    cursor[2] = 1;
+    cursor[3] = 0x14;
+    cursor[4] = 0x2400000000000001UL;
+    cursor[5] = 0x61;
+    cursor[6] = color & 0xFFFFFFFFUL;
+    cursor[7] = debug_font_pif_header;
+    cursor[8] = 0x4400000000008003UL;
+    cursor[9] = 0x5353;
+    glyph_tag = packet + 10;
+    D_L00_00161280 = (int *)((u64 *)D_L00_00161280 + 10);
+    quadwords = 5;
+    while (*text != 0) {
+        cursor = (u64 *)D_L00_00161280;
+        glyph = (u8)(*text - 0x20);
+        if (glyph >= 0x60)
+            glyph = 0x20;
+        texture_coordinates = D_L00_00169A80[glyph];
+        text++;
+        if (texture_coordinates != -1) {
+            cursor[0] = (s64)texture_coordinates;
+            cursor[1] = (s64)((x * 16) + D_0013E600[4] - 8) |
+                        ((u64)(s64)((y * 16) + D_0013E600[5] - 8) << 16) | 0xFFFFF300000000UL;
+            cursor[2] = (s64)(texture_coordinates + 0xC000A0);
+            glyph_count++;
+            quadwords += 2;
+            cursor[3] = (s64)(((x + 10) * 16) + D_0013E600[4] - 8) |
+                        ((u64)(s64)(((y + 12) * 16) + D_0013E600[5] - 8) << 16) |
+                        0xFFFFF300000000UL;
+            D_L00_00161280 = (int *)((u64 *)D_L00_00161280 + 4);
         }
-        w = D_L00_00169A80[idx];
-        str++;
-        if (w != -1) {
-            p[0] = w;
-            p[1] = (x * 16 + D_0013E600[4] - 8)
-                 | ((long)(y * 16 + D_0013E600[5] - 8) << 16)
-                 | 0xFFFFF300000000L;
-            p[2] = w + 0xC000A0;
-            p[3] = ((x + 10) * 16 + D_0013E600[4] - 8)
-                 | ((long)((y + 12) * 16 + D_0013E600[5] - 8) << 16)
-                 | 0xFFFFF300000000L;
-            n++;
-            qw += 2;
-            D_L00_00161280 = (int *)((char *)D_L00_00161280 + 0x20);
-        }
-        x += D_L00_00169C00[idx];
+        x += D_L00_00169C00[glyph];
     }
-    hd = 0x10000000 | qw;
-    base[0] = hd;
-    base[1] = 0;
-    base[2] = 0;
-    base[3] = 0x50000000 | qw;
-    *tag = ((long)n | 0x8000) | 0x4400000000000000L;
+    ((u32 *)packet)[0] = quadwords | 0x10000000;
+    ((u32 *)packet)[1] = 0;
+    ((u32 *)packet)[2] = 0;
+    ((u32 *)packet)[3] = quadwords | 0x50000000;
+    *glyph_tag = (s64)(glyph_count | 0x8000) | 0x4400000000000000UL;
 }
 LINKER_REMNANT("asm/overlays", func_L00_001F3DF0);
 typedef struct {
@@ -376,7 +370,7 @@ extern char D_L00_00166D80[];
 extern char D_0013E633[];
 
 /* places the camera-follow vector from the angle and offsets, then copies it into the object */
-void Hero_PlaceOnOrbit(void) {
+void update_hero_from_debug_camera(void) {
     char *g = player_camera;
     char *c = g_debug_menu;
     char *b;
@@ -485,7 +479,7 @@ extern s32 func_0011C208(s32);
 extern s32 func_0011C5C0(s32, void *, s32);
 
 // Handles rendering debug menu navigation, display settings and point files.
-void func_L00_001F4918(void) {
+void update_debug_menu(void) {
     MenuCounts_1F4918 counts;
     union {
         struct { float vec[4]; char path[64], text[32]; } points;
@@ -890,7 +884,7 @@ extern u8 D_L00_0015F544[] MACRO_ADDR;
 extern u8 D_L00_0015F545[] MACRO_ADDR;
 extern u8 D_L00_0015F546[] MACRO_ADDR;
 
-/* Row-stride helper for DebugMenuRender: 0 when FLAGS is clear, else one pointer width (the next string slot). */
+/* Row-stride helper for draw_debug_menu: 0 when FLAGS is clear, else one pointer width (the next string slot). */
 static __inline__ int flag_offset60(int flags) {
     if (!flags) return 0;
     return sizeof(char *);
@@ -899,7 +893,7 @@ static __inline__ int flag_offset60(int flags) {
 /* Draws the debug menu: the mode and toggle rows, the camera, display and occlusion modes, the mission line
  * (via the table at D_0014171B + 0xAA35), then the weapon and ammo counters. Waits on the flag at D_L00_00161260
  * before the last section. */
-void DebugMenuRender(void) {
+void draw_debug_menu(void) {
     char buf[16];
     int stride;
     char *fmt;
@@ -1091,7 +1085,7 @@ void DebugMenuRender(void) {
         buf[1] = 0;
         buf[0] = debug_menu60.saved_timer;
         print_debug_text(0x1CA, 0x141, 0x80F0F0F0, buf);
-        FlushDebugLines();
+        flush_debug_text_queue();
         while (D_L00_00161260 & 1) {}
     }
 }
@@ -1182,7 +1176,7 @@ extern unsigned char D_001414F5[] NOT_SDA;
 extern void func_001F3D78(void);
 /* Gameplay-screen render hook: while nothing is loading (D_L00_0015F6BC) and byte 0xC of D_001414F5 is clear,
    picks the profiler colour word D_L00_0015F4F4 (0x7F in display mode 3, else 0x100FF) and draws the debug profiler. */
-void GameplayRender(void) {
+void draw_debug_profiler_if_enabled(void) {
     if (D_L00_0015F6BC == 0 && D_001414F5[0xC] == 0) {
         D_L00_0015F4F4 = 0x100FF;
         if (D_L00_0015F6A8 == 3) D_L00_0015F4F4 = 0x7F;
@@ -1195,19 +1189,19 @@ extern void func_001FBE80(void);
 
 /* Debug-overlay render hook: in overlay mode 0 sets up the large font and draws the profiler, in mode 3 draws the
    pause-menu pages; func_001FBE80 runs either way. Nothing while D_L00_0015F6BC (loading) is set. */
-void DebugProfilerRender(void) {
+void draw_dialog_background_and_text(void) {
     if (D_L00_0015F6BC == 0) {
         if (get_global_state_pointer() == 0) {
             append_gif_transfer_packet();
             D_L00_0015F4F4 = 0x100FF;
             DrawDebugProfiler();
         } else {
-            if (get_global_state_pointer() == 3) PauseMenu_DrawPages(1);
+            if (get_global_state_pointer() == 3) draw_pause_menu_pages(1);
         }
         func_001FBE80();
     }
 }
-void PageMenuModeRender(void) { if (D_L00_0015F6BC == 0) PauseMenu_DrawPages(0); }
+void draw_page_contents(void) { if (D_L00_0015F6BC == 0) draw_pause_menu_pages(0); }
 typedef struct {
     int key;
     int pad[3];
@@ -1225,12 +1219,12 @@ extern void func_001F4748(void);
 
 /* Fade and debug-rectangle render hook: uploads the GS state, draws a black full-screen quad with alpha from gFadeLvl
    (clamped to 1.0), then every D_L00_00173180 record with key >= 0 through func_L00_001FCC50 inside a GIF paging run. */
-void FadeOverlayRender(void) {
+void draw_framebuffer_with_timed_text(void) {
     DbgRec_1F92E8 *p;
     DbgRec_1F92E8 *q;
 
     if (D_L00_0015F6BC == 0) {
-        UploadToGs(slideshow[2]);
+        queue_framebuffer_upload(slideshow[2]);
         if (0.0f < gFadeLvl) {
             if (1.0f < gFadeLvl) {
                 gFadeLvl = 1.0f;
@@ -1259,7 +1253,7 @@ extern void func_002348E8(void);
 extern void func_L00_002A21A8(void *, int, int);
 /* Grabs the current frame buffer into A: syncs VU1, counts the grab in D_L00_0015F4F8 and downloads frame buffer
    D_0015EF84 (its height from D_0013E15A + 0x4AA, in 2 KB rows). */
-void FrameSnapshot_Grab(void *a) {
+void capture_draw_buffer(void *a) {
     VU1_syncChain(1);
     func_00122598(0);
     D_L00_0015F4F8 = D_L00_0015F4F8 + 1;
@@ -1271,7 +1265,7 @@ extern void func_001F6668(void *, void *, void *, void *, void *, int, unsigned 
 extern unsigned char D_L00_001C3C10[];
 
 // Draws font text with effect texture 3 and the level 0 font table.
-void DebugFontPrint(void *a, void *b, void *c, void *d, void *e) {
+void print_text_with_texture_3(void *a, void *b, void *c, void *d, void *e) {
     int mode = GetEffectTex(3);
 
     FontPrint(a, b, c, d, e, mode, D_L00_001C3C10);

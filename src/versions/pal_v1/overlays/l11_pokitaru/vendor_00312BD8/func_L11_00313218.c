@@ -1,4 +1,4 @@
-void DrawJetHud(char *moby) {
+void draw_ship_hud(char *moby) {
     char *d = *(char **)(moby + 0x78);
     char *s;
     short *p;
@@ -38,10 +38,10 @@ void DrawJetHud(char *moby) {
         do {
             char *o = (char *)(((*(unsigned short *)p & 0x7FFF) << 8) + D_L11_00160058_m);
             if (o[0x20] >= 0) {
-                int cnt = CollectChainMobys(o, list);
+                int cnt = collect_oil_tanker_chain_mobys(o, list);
                 int w;
                 for (w = 0; w < cnt; w++) {
-                    DrawRadarMobyIcon((char *)D_L11_00167850, (char *)(D_L11_00167850 - 4), list[w], 0, 0x75808080);
+                    draw_ship_radar_moby_icon((char *)D_L11_00167850, (char *)(D_L11_00167850 - 4), list[w], 0, 0x75808080);
                 }
             }
         } while (*p++ >= 0);
@@ -54,9 +54,9 @@ void DrawJetHud(char *moby) {
         do {
             g = (unsigned char *)D_0013E633 + 0xE1D;
             if (i < g[0x15F6]) {
-                Hud_DrawPointList(x, y, 0.5f, D_L11_001F0FB8, 0x19, 0xFFFFF3, 0x50008F00);
+                append_scaled_screen_triangle_strip(x, y, 0.5f, D_L11_001F0FB8, 0x19, 0xFFFFF3, 0x50008F00);
             } else {
-                Hud_DrawPointList(x, y, 0.5f, D_L11_001F0FB8, 0x19, 0xFFFFF3, 0x20004F00);
+                append_scaled_screen_triangle_strip(x, y, 0.5f, D_L11_001F0FB8, 0x19, 0xFFFFF3, 0x20004F00);
             }
             n = g[0x15F7];
             if (i == n >> 1) {
@@ -75,9 +75,9 @@ void DrawJetHud(char *moby) {
     append_rotated_sprite_quad(ex, ey, 40.0f, 40.0f, 0.0f, 0x3F, 0x3F, tex, 0xFFFFF3, 0xFF20FF20, 0, 0, 0.5f, 0.5f);
     tex = GetEffectTex(8);
     append_rotated_sprite_quad(ex, ey, 10.0f, 10.0f, 0.0f, 0x1F, 0x1F, tex, 0xFFFFF3, 0xFF20FF20, 0, 0, 0.5f, 0.5f);
-    UpdateTargetTracking((int)moby, d);
+    update_ship_lock_on_target((int)moby, d);
     if (*(int *)(d + 0x88) != 0) {
-        ProjectPointToScreen(*(char **)(d + 0x88) + 0x10, &sp40, &sp44, 0);
+        project_world_point_to_screen_pixels(*(char **)(d + 0x88) + 0x10, &sp40, &sp44, 0);
         if (*(int *)(d + 0x8C) > *(int *)&lock_hold_frames) {
             t = IntToFloat(*(int *)(d + 0x8C) - *(int *)&lock_hold_frames);
             t = t / IntToFloat(*(int *)&lock_fade_frames);

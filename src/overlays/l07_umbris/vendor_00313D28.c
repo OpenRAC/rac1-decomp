@@ -8,7 +8,7 @@
 extern void func_L07_00313D28(char *, int, float, float, float, float, float);
 
 /* Starts the effect with an angle ramped from the moby's timer, capped at pi. */
-void RingEffectStart(char *moby)
+void draw_snagglebeast_sphere_effect(char *moby)
 {
     char *data = *(char **)(moby + 0x78);
     float ang;
@@ -18,7 +18,7 @@ void RingEffectStart(char *moby)
     } else {
         ang = 3.14159274f;
     }
-    func_L07_00313D28(moby, 0, 1.0f, 5.8f, ang, 1.0f, *(float *)(data + 0x1C8));
+    draw_snagglebeast_sphere_quad_strips(moby, 0, 1.0f, 5.8f, ang, 1.0f, *(float *)(data + 0x1C8));
 }
 /* functional: high. The NTSC decomp's matched C for the same instructions (FUN_L07_00312e70), carried to PAL's
    names by OpenRAC's tools/port.py. Not a PAL match: its PAL file declares a symbol it uses with another type, so it was not built there. */
@@ -48,7 +48,7 @@ extern void func_001F9EC0(void *, void *, void *);
 extern void func_001F9BD8(void *, void *, void *);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l07/gameplay/entities/00312948.c, FUN_L07_00312e70. */
-void DrawSpinningRing(void *mobyp, float radius, int phase, float speed, int color) {
+void draw_snagglebeast_rope_attack_layer(void *mobyp, float radius, int phase, float speed, int color) {
     char *moby = mobyp;
     char *vars = *(char **)(moby + 0x78);
     struct GeometryQuad quad;
@@ -127,7 +127,7 @@ extern void func_L00_0025A8C0(void *, void *, int, float, void *);
 extern int func_L00_001EFFF0(void *, void *, int, int, int);
 extern int func_L00_001F2BE8(float, void *, int, void *, void *);
 /* Emits layered effects and resolves movement along a scaled displacement. */
-void RingProjectileUpdate(char *moby) {
+void draw_and_probe_snagglebeast_rope_attack(char *moby) {
     float displacement[4];
     char hit[48];
     float direction[4];
@@ -141,9 +141,9 @@ void RingProjectileUpdate(char *moby) {
     FastVecAdd(data + 0x140, displacement, origin);
     func_L00_001FF4B0(displacement, displacement, *(float *)(data + 0x16C));
     FastVecAdd(position, displacement, origin);
-    DrawSpinningRing(moby, 1.0f, 0, 1.0f, 0x20000080);
-    DrawSpinningRing(moby, 0.7f, 10, 2.0f, 0x28008080);
-    DrawSpinningRing(moby, 0.4f, 20, 3.0f, 0x30B0FFFF);
+    draw_snagglebeast_rope_attack_layer(moby, 1.0f, 0, 1.0f, 0x20000080);
+    draw_snagglebeast_rope_attack_layer(moby, 0.7f, 10, 2.0f, 0x28008080);
+    draw_snagglebeast_rope_attack_layer(moby, 0.4f, 20, 3.0f, 0x30B0FFFF);
     FastVecSub(direction, position, origin);
     func_L00_001FF4B0(direction, direction, 1.0f);
     InitDirectionalHitQuery(hit, moby, 0x30000, 1.000123f, direction);
@@ -351,7 +351,7 @@ void func_L07_00314800_r(Moby *moby, ThinkData_314800 *data, Vec_314800 *vec)
 extern float func_002140F8(float, float);
 
 /* Adds a random offset in [-value, value] to the x and y of out. */
-void AddRandomOffsetXY(float *out, float value) {
+void add_random_xy_offset(float *out, float value) {
     float neg = -value;
     out[0] += random_float_between(neg, value);
     out[1] += random_float_between(neg, value);
@@ -362,7 +362,7 @@ extern int func_L01_0028C2D8(void *, void *, float);
 extern char *D_L07_001B0830[];
 
 /* Finds where a path leaves the object's current segment and copies the point out. */
-void FindPathExitPoint(char *m, char *a, void *b, void *c) {
+void select_snagglebeast_chase_waypoint(char *m, char *a, void *b, void *c) {
     float v[8];
     void *r = CollectLinkedMobyIds(m, a, v);
     if (func_L01_00277FD8(v, r, *(int *)(a + 0x188), 0.0f, m + 0x10, b, c)) return;
@@ -390,7 +390,7 @@ extern int func_L00_00259428(void *p, int x, int y, float f, float g);
 extern void func_001F9C30(void *, void *, float);
 
 /* steers a moby toward a target, then handles the pickup contact */
-int ChaseOrSteerAlongPath(char *m, char *a, void *p6, float *p7, float thr) {
+int update_snagglebeast_chase_movement(char *m, char *a, void *p6, float *p7, float thr) {
     float v[4];
     char *mp = m + 0x10;
     float d = func_001F9D48(mp, p6);
@@ -459,7 +459,7 @@ extern int func_L00_00258BC8(int, int);
 extern void func_00213DE0(void *, int, int, int);
 
 /* latches onto a target when it is turned toward enough, then picks a turn animation */
-int TryLatchOntoTarget(unsigned char *m, unsigned char *obj, float *vec, int a, int b) {
+int start_snagglebeast_turn_toward_target(unsigned char *m, unsigned char *obj, float *vec, int a, int b) {
     float h = func_L00_001FF860(vec[0] - *(float *)(m + 0x10), vec[1] - *(float *)(m + 0x14));
     if (*(float *)(obj + 0x98) < FastDiffRots(*(float *)(m + 0x48), h)) {
         *(int *)(obj + 0x168) = 0;
@@ -490,7 +490,7 @@ extern void func_L00_00263950(char *, char *, int, float, float);
 extern float D_0015EE64 MACRO_ADDR;
 
 // Computes a clamped turn angle toward a target and starts an effect.
-void AimYawTowardTarget(char *moby, char *d, float *t) {
+void update_snagglebeast_target_joint_animation(char *moby, char *d, float *t) {
     float a;
     float k;
     if (((unsigned char *)moby)[0x20] < 10) {
@@ -521,7 +521,7 @@ extern unsigned char D_L07_0020C980[];
 extern void func_0020D960(char *, int, void *);
 
 /* When the level flag is 2, find the moby sharing the caller's class and restart its effect. */
-void AttachCheatManipulators(char *arg) {
+void apply_snagglebeast_big_head_cheat(char *arg) {
     if (D_L07_0015F6A8 == 2 && gCheats[0] != 0) {
         int i;
         for (i = 0; i < D_L07_0016C960.count; i++) {
@@ -664,7 +664,7 @@ void snagglebeast_update(unsigned char *m) {
     float *t20;
 
     Manipulator_ApplyScale(2.5f, (int)m, 0xB, d + 0x2A0);
-    AttachCheatManipulators((char *)m);
+    apply_snagglebeast_big_head_cheat((char *)m);
     if (D_L07_0015F6A8 == 2) return;
     if (*(int *)(d + 0x1A4) != -1 && !is_point_inside_clip_volume(D_0013F450 + 0x80, *(int *)(d + 0x1A4))) return;
     if (m[0x31] != 0) {
@@ -675,7 +675,7 @@ void snagglebeast_update(unsigned char *m) {
     }
     qcopy(&oldpos, m + 0x10);
     t20 = (float *)(d + 0x20);
-    EnemyHitReact(m, d, t20);
+    process_snagglebeast_damage(m, d, t20);
     see = 0;
     FindNearestTargetMoby(m, &tgt, 30.0f);
     dist = func_001F9D48(&tgt, m + 0x10);
@@ -795,8 +795,8 @@ void snagglebeast_update(unsigned char *m) {
         }
         if (*(float *)(d + 0x1C8) < 0.0f) *(float *)(d + 0x1C8) = 0.0f;
     }
-    if (*(float *)(d + 0x1C8) > 0.0f) AddDrawCallback(RingEffectStart, m);
-    AimYawTowardTarget((char *)m, (char *)d, (float *)(D_0013F450 + 0x80));
+    if (*(float *)(d + 0x1C8) > 0.0f) AddDrawCallback(draw_snagglebeast_sphere_effect, m);
+    update_snagglebeast_target_joint_animation((char *)m, (char *)d, (float *)(D_0013F450 + 0x80));
     if (m[0x20] != 0 && m[0x20] != 0xA && m[0x20] != 0x10) {
         *(int *)(d + 0x1B0) = queue_animation_update(0x16, 0xFFFF, (int)Hud_InitElement, (int)Hud_UpdateCounter,
                                             (int)((char *)func_L06_0024A080 + 0x20), (int)(d + 0x1B4),
@@ -834,7 +834,7 @@ void snagglebeast_update(unsigned char *m) {
         }
         *(int *)(d + 0xA8) &= ~8;
         *(unsigned short *)(m + 0x34) |= 0x1000;
-        BuildAdjacencyMasks((int *)(d + 0x170), 3, *(int *)(d + 0x188));
+        build_symmetric_adjacency_masks((int *)(d + 0x170), 3, *(int *)(d + 0x188));
         d[0x19C] = 7;
         m[0x30] = 0xFF;
         *(short *)(m + 0x32) = 0xFF;
@@ -911,9 +911,9 @@ void snagglebeast_update(unsigned char *m) {
     case 2: {
         float rot;
         rot = *(float *)(m + 0x48);
-        if (D_L07_0015F6B0 % 6 == 0) SpawnMobyAttachedParticle((char *)m, 0, 600000.0f, 5.0f);
-        if ((D_L07_0015F6B0 - 2) % 6 == 0) SpawnMobyAttachedParticle((char *)m, 1, 600000.0f, 5.0f);
-        if (TryLatchOntoTarget(m, d, (float *)(D_0013F450 + 0x80), 9, 0)) break;
+        if (D_L07_0015F6B0 % 6 == 0) spawn_moby_point_offset_particle((char *)m, 0, 600000.0f, 5.0f);
+        if ((D_L07_0015F6B0 - 2) % 6 == 0) spawn_moby_point_offset_particle((char *)m, 1, 600000.0f, 5.0f);
+        if (start_snagglebeast_turn_toward_target(m, d, (float *)(D_0013F450 + 0x80), 9, 0)) break;
         MobySpringTurn((char *)m, ang, (float *)(d + 0x168), D_0015EE70 * 2.0943952f, D_0015EE70 * 0.6981317f, D_0015EE6C * 2.0943952f);
         if (FastDiffRots(*(float *)(m + 0x48), rot) > D_0015EE6C * 0.17453292f) {
             if (m[0x53] != 0xD) {
@@ -926,7 +926,7 @@ void snagglebeast_update(unsigned char *m) {
                 MobyBlendAnimation(m, 9, r, rand_range(0xF, 0x16));
             }
         }
-        if (m[0x52] == 9 || m[0x52] == 0xD) m[0x20] = HitEffectEmitterUpdate(m, (char *)d, (float *)&tgt);
+        if (m[0x52] == 9 || m[0x52] == 0xD) m[0x20] = update_alternating_joint_emission_burst(m, (char *)d, (float *)&tgt);
         if ((m[0xBC] % 3U == 0 && func_001F9D48(&tgt, m + 0x10) > 13.0f)
             || (m[0xBC] % 3U == 1 && func_001F9D48(&tgt, m + 0x10) > 20.0f)) {
             *(short *)(d + 0x198) = scale_ticks(0x23);
@@ -941,7 +941,7 @@ void snagglebeast_update(unsigned char *m) {
             *(int *)(d + 0x164) += 1;
             qcopy(&va, m + 0x10);
             ((SbData *)d)->i168 = 0;
-            ShockwaveSpawn((int)m, &va, 0x3A, 1.0f, 25.0f, 2.0f, D_0015EE6C * 8.0f, 1.0f);
+            spawn_moby_class_1046((int)m, &va, 0x3A, 1.0f, 25.0f, 2.0f, D_0015EE6C * 8.0f, 1.0f);
             Moby_GetJointWorldPos(m, (*(int *)(d + 0x164) & 1) + 5, &va);
             func_L07_00313298_f(m, d, 1, &va, scale_ticks(0x1E), 0x800060FF, 0, 10.0f);
             va.f[2] = *(float *)(m + 0x18);
@@ -953,7 +953,7 @@ void snagglebeast_update(unsigned char *m) {
                 vc.f[2] += 0.1f;
                 FastVecAdd(&vc, &vc, &va);
                 *(int *)&vb.f[3] = 0;
-                SpawnParticle(&vc, &vb);
+                spawn_white_particle_with_payload(&vc, &vb);
             }
             RumbleByDistance((char *)m);
         }
@@ -976,12 +976,12 @@ void snagglebeast_update(unsigned char *m) {
         }
         break;
     case 4:
-        if (TryLatchOntoTarget(m, d, (float *)(D_0013F450 + 0x80), 5, 0)) break;
+        if (start_snagglebeast_turn_toward_target(m, d, (float *)(D_0013F450 + 0x80), 5, 0)) break;
         if (*(int *)(d + 0x160) < scale_ticks(0x3C) / 2) {
             Moby_GetJointWorldPos(m, 2, &va);
             func_L07_00313298_f(m, d, 2, &va, scale_ticks(0x1E), 0x800060FF, 0, 10.0f);
-            if ((D_L07_0015F6B0 & 7) == 0) SpawnMobyAttachedParticle((char *)m, 2, 0.0f, 0.2f);
-            if (((D_L07_0015F6B0 - 4) & 7) == 0) SpawnMobyAttachedParticle((char *)m, 3, 0.0f, 0.2f);
+            if ((D_L07_0015F6B0 & 7) == 0) spawn_moby_point_offset_particle((char *)m, 2, 0.0f, 0.2f);
+            if (((D_L07_0015F6B0 - 4) & 7) == 0) spawn_moby_point_offset_particle((char *)m, 3, 0.0f, 0.2f);
         }
         if (m[0x52] == 5) {
             qcopy(&va, &tgt);
@@ -1031,7 +1031,7 @@ void snagglebeast_update(unsigned char *m) {
             } else {
                 if (*(int *)(d + 0x160) < scale_ticks(0x3C)) {
                     FastVecAdd(d + 0x140, d + 0x140, d + 0x130);
-                    AddDrawCallback(SwayingBeamDraw, m);
+                    AddDrawCallback(draw_collision_clipped_moby_beam, m);
                     *(int *)(d + 0x164) = 2;
                 } else {
                     *(int *)(d + 0x164) = 0;
@@ -1063,8 +1063,8 @@ void snagglebeast_update(unsigned char *m) {
             qcopy(&vb, D_L07_001B0830[*(int *)(d + 0x188)] + *(int *)(d + 0x1A8) * 16 + 0x10);
             dd = func_001F9D48(m + 0x10, &vb);
         }
-        SetChaserSpeed(m, d, dd, thr, 1.5f);
-        if ((*(int *)(d + 0x298) & 3) == 0) FindPathExitPoint((char *)m, (char *)d, &vb, d + 0x140);
+        update_snagglebeast_chase_speed(m, d, dd, thr, 1.5f);
+        if ((*(int *)(d + 0x298) & 3) == 0) select_snagglebeast_chase_waypoint((char *)m, (char *)d, &vb, d + 0x140);
         qcopy(&va, d + 0x140);
         *(int *)(d + 0x298) += 1;
         if (*(float *)(d + 0x98) < FastDiffRots(*(float *)(m + 0x48), func_L00_001FF860(va.f[0] - *(float *)(m + 0x10), va.f[1] - *(float *)(m + 0x14)))) {
@@ -1079,7 +1079,7 @@ void snagglebeast_update(unsigned char *m) {
             }
             m[0x20] = 7;
         } else {
-            int hit = ChaseOrSteerAlongPath((char *)m, (char *)d, &vb, (float *)&va, thr);
+            int hit = update_snagglebeast_chase_movement((char *)m, (char *)d, &vb, (float *)&va, thr);
             float spd;
             int near;
             int moving;
@@ -1153,7 +1153,7 @@ void snagglebeast_update(unsigned char *m) {
                 }
                 m[0x20] = 1;
             }
-            if (m[0x52] == 0xC) HitEffectEmitterUpdate(m, (char *)d, (float *)&tgt);
+            if (m[0x52] == 0xC) update_alternating_joint_emission_burst(m, (char *)d, (float *)&tgt);
         }
         if (m[0x52] == 0xA || m[0x52] == 0xC) {
             if (IsFrameWithinWindow(m, 27.5f)) RumbleByDistance((char *)m);
@@ -1275,11 +1275,11 @@ void snagglebeast_update(unsigned char *m) {
         }
         if (IsFrameWithinWindow(m, 168.0f)) {
             Moby_GetJointWorldPos(m, 5, &va);
-            ShockwaveSpawn((int)m, &va, 0x3A, 1.0f, 25.0f, 2.0f, D_0015EE6C * 8.0f, 1.0f);
+            spawn_moby_class_1046((int)m, &va, 0x3A, 1.0f, 25.0f, 2.0f, D_0015EE6C * 8.0f, 1.0f);
         }
         if (IsFrameWithinWindow(m, 168.5f)) {
             Moby_GetJointWorldPos(m, 6, &va);
-            ShockwaveSpawn((int)m, &va, 0x3A, 1.0f, 25.0f, 2.0f, D_0015EE6C * 8.0f, 1.0f);
+            spawn_moby_class_1046((int)m, &va, 0x3A, 1.0f, 25.0f, 2.0f, D_0015EE6C * 8.0f, 1.0f);
             RumbleByDistance((char *)m);
         }
         if (*(int *)(d + 0x164) > 0) {
@@ -1329,7 +1329,7 @@ void snagglebeast_update(unsigned char *m) {
                 }
                 }
                 *(int *)(d + 0x1A8) = ((SbData *)d)->b1D4[d[0x19D]];
-                BuildAdjacencyMasks((int *)&va, (int)CollectLinkedMobyIds(m, d, &va), *(int *)(d + 0x188));
+                build_symmetric_adjacency_masks((int *)&va, (int)CollectLinkedMobyIds(m, d, &va), *(int *)(d + 0x188));
                 m[0x20] = 0xF;
             }
         }
@@ -1363,12 +1363,12 @@ void snagglebeast_update(unsigned char *m) {
     case 8: {
         float fr;
         if (*(int *)(d + 0x294) <= 0) {
-            if (TryLatchOntoTarget(m, d, (float *)(D_0013F450 + 0x80), 6, 0)) break;
+            if (start_snagglebeast_turn_toward_target(m, d, (float *)(D_0013F450 + 0x80), 6, 0)) break;
         }
         ((SbData *)d)->i294 = 1;
         MobySpringTurn((char *)m, hang, (float *)(d + 0x168), D_0015EE70 * 2.0943952f, D_0015EE70 * 0.6981317f, D_0015EE6C * 2.0943952f);
         Moby_GetJointWorldPos(m, 4, &va);
-        fr = func_L07_00319230(m, &va);
+        fr = update_snagglebeast_rope(m, &va);
         if (m[0x52] != 6) break;
         qcopy(d + 0x140, D_0013F450 + 0x80);
         *(float *)(d + 0x148) += 0.6f;
@@ -1409,7 +1409,7 @@ void snagglebeast_update(unsigned char *m) {
                     *(int *)(d + 0x164) = 0;
                     *(short *)(d + 0x196) = scale_ticks(0x320);
                     *(int *)(d + 0x160) = scale_ticks(0xF0);
-                    PullMobysToTargets((int)m);
+                    detach_snagglebeast_rope_particles((int)m);
                     { char *g3 = D_0013F450; if (*(int *)(g3 + 0x2084) == 0x78) HeroEnterMoveState(0, 1); }
                     d[0x1C7] = 0;
                     if (*(int *)(d + 0x1F8) != -1) {
@@ -1458,7 +1458,7 @@ void snagglebeast_update(unsigned char *m) {
                                 d1 = func_001F9D48(D_0013F450 + 0x80, &ve);
                                 d2 = func_001F9D48(m + 0x10, &ve);
                             } while (d1 < 8.0f || d2 < 12.0f);
-                            AddRandomOffsetXY((float *)&ve, 0.5f);
+                            add_random_xy_offset((float *)&ve, 0.5f);
                             FastVecSub(&vc, &ve, D_0013F450 + 0x80);
                             zv = ve.f[2];
                             func_L00_001FF4B0(&vc, &vc, 0.9f);
@@ -1486,7 +1486,7 @@ void snagglebeast_update(unsigned char *m) {
         if (!a) {
             *(int *)(d + 0x164) = 0;
             *(short *)(d + 0x196) = scale_ticks(0xF);
-            PullMobysToTargets((int)m);
+            detach_snagglebeast_rope_particles((int)m);
             { char *g3 = D_0013F450; if (*(int *)(g3 + 0x2084) == 0x78) HeroEnterMoveState(0, 1); }
             *(int *)(d + 0x160) = scale_ticks(0x46);
             d[0x1C7] = 0;
@@ -1505,7 +1505,7 @@ void snagglebeast_update(unsigned char *m) {
                 int r = rand_range(0, 2);
                 MobyBlendAnimation(m, 9, r, rand_range(0x10, 0x19));
             }
-            PullMobysToTargets((int)m);
+            detach_snagglebeast_rope_particles((int)m);
             { char *g3 = D_0013F450; if (*(int *)(g3 + 0x2084) == 0x78) HeroEnterMoveState(0, 1); }
             if (*(int *)(d + 0x1F8) != -1) {
                 char *sl = D_0013E650 + *(int *)(d + 0x1F8) * 0x70;
@@ -1520,7 +1520,7 @@ void snagglebeast_update(unsigned char *m) {
     }
     case 9:
         if (*(int *)(d + 0x164) <= 0) {
-            if (TryLatchOntoTarget(m, d, (float *)(d + 0x150), 7, 1)) break;
+            if (start_snagglebeast_turn_toward_target(m, d, (float *)(d + 0x150), 7, 1)) break;
         }
         MobySpringTurn((char *)m, func_L00_001FF860(*(float *)(d + 0x150) - *(float *)(m + 0x10), *(float *)(d + 0x154) - *(float *)(m + 0x14)),
                           (float *)(d + 0x168), D_0015EE70 * 2.0943952f, D_0015EE70 * 0.6981317f, D_0015EE6C * 2.0943952f);
@@ -1553,8 +1553,8 @@ void snagglebeast_update(unsigned char *m) {
             }
             if (func_001F9908((int *)(d + 0x160))) {
                 *(int *)(d + 0x160) = scale_ticks(0xA);
-                SpawnMobyAttachedParticle((char *)m, 0, 800000.0f, 5.0f);
-                SpawnMobyAttachedParticle((char *)m, 1, 800000.0f, 5.0f);
+                spawn_moby_point_offset_particle((char *)m, 0, 800000.0f, 5.0f);
+                spawn_moby_point_offset_particle((char *)m, 1, 800000.0f, 5.0f);
             }
             if (MobyGetFrameValue(m) >= 31.5f) {
                 *(float *)(d + 0x16C) = 0.0f;
@@ -1567,7 +1567,7 @@ void snagglebeast_update(unsigned char *m) {
             *(float *)(d + 0x16C) += D_0015EE60;
             if (r <= *(float *)(d + 0x16C)) *(int *)(d + 0x164) = 4;
             if (func_001F9908((int *)(d + 0x160))) *(int *)(d + 0x160) = scale_ticks(0x14);
-            AddDrawCallback(RingProjectileUpdate, m);
+            AddDrawCallback(draw_and_probe_snagglebeast_rope_attack, m);
             break;
         }
         case 4:
@@ -1578,7 +1578,7 @@ void snagglebeast_update(unsigned char *m) {
             if (*(int *)(d + 0x164) != 0) {
                 if (func_001F9908((int *)(d + 0x160))) *(int *)(d + 0x164) = 5;
             }
-            AddDrawCallback(RingProjectileUpdate, m);
+            AddDrawCallback(draw_and_probe_snagglebeast_rope_attack, m);
             break;
         case 5:
             *(float *)(m + 0x58) = 1.0f;
@@ -1636,7 +1636,7 @@ void snagglebeast_update(unsigned char *m) {
     }
     FastVecSub(d + 0x100, m + 0x10, &oldpos);
     if (m[0x20] < 0xA) jet_animate(m, 2.5f);
-    PointLight_UpdateFade((char *)d);
+    update_timed_point_light_color((char *)d);
 }
 extern s32 D_0015EF88 MACRO_ADDR;
 typedef float RopeVec[4] __attribute__((aligned(16)));
@@ -1657,7 +1657,7 @@ extern RopeVec D_L07_0020DEA0[][20];
 
 /* Draws the rope grid as textured quads between neighbouring rows, each row faded by its level.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l07/gameplay/entities/00312948.c, FUN_L07_00317910. */
-void DrawRopeGrid(void) {
+void draw_rope_strips(void) {
     L07RopeDrawPacket packet;
     float phase;
     float row_phase;
@@ -1753,7 +1753,7 @@ extern void look_319080(void *, void *, void *, float) __asm__("func_002156E0");
 /* Starts the rope when one is pending: lays nine points out from the anchor along the moby's
  * axis, then resets the swing state and, once, clears every entry's link.
  * Adapted from Lombyte (MIT) for PAL: overlays/l07/gameplay/entities/00312948.c, FUN_L07_00317cb0. */
-void StartRopeWhenPending(char *moby, void *anchor) {
+void initialize_snagglebeast_rope(char *moby, void *anchor) {
     RopeVec_319080 step;
     RopeVec_319080 up;
     RopeQuad_319080 c;
@@ -1840,7 +1840,7 @@ extern void func_L07_00318CE0();
 /* Updates the rope: swings its anchor frame, solves the nine segments toward the hero,
  * rebuilds each ring of twenty points, then spawns and moves the sparks running along it;
  * returns the closest segment distance to the hero. */
-float func_L07_00319230(void *moby, void *anchor) {
+float update_snagglebeast_rope(void *moby, void *anchor) {
     RopeVec_319080 v00;
     RopeVec_319080 v10;
     RopeVec_319080 v20;
@@ -1864,7 +1864,7 @@ float func_L07_00319230(void *moby, void *anchor) {
     float best;
 
     best = 1000.0f;
-    StartRopeWhenPending(moby, anchor);
+    initialize_snagglebeast_rope(moby, anchor);
     qcopy(v00, gHeroPos);
     v00[2] += 0.6f;
     D_L07_0020DE88_319080[0] += 4;
@@ -1956,7 +1956,7 @@ float func_L07_00319230(void *moby, void *anchor) {
         fi = i;
         add_319080(D_L07_0020DDC0_319080[i], D_L07_0020DDB0_319080[i], vC0);
         {
-            float dd = SphereClosestApproach(vE0, v00, v00, D_L07_0020DDB0_319080[i], D_L07_0020DDC0_319080[i], 0.0f);
+            float dd = select_segment_point_near_sphere_surface(vE0, v00, v00, D_L07_0020DDB0_319080[i], D_L07_0020DDC0_319080[i], 0.0f);
             if (dd < best) {
                 best = dd;
             }
@@ -1995,7 +1995,7 @@ float func_L07_00319230(void *moby, void *anchor) {
         norm_319080(v10, vC0, 2.8f);
     }
     }
-    AddDrawCallback(DrawRopeGrid, moby);
+    AddDrawCallback(draw_rope_strips, moby);
     {
     int nspawn;
     int nfly;
@@ -2142,7 +2142,7 @@ extern short D_L07_00161C00;
 extern short D_L07_00161BFC;
 
 /* Pulls each pending moby toward its target point and smooths its velocity. */
-void PullMobysToTargets(int arg0) {
+void detach_snagglebeast_rope_particles(int arg0) {
     float a[4];
     float b[4];
     float c[4];
@@ -2380,13 +2380,24 @@ void func_L07_0031A410_r(struct Moby *moby) {
 extern int func_001F9850(int);
 extern void func_0020D678(void *);
 
+typedef struct SwooperSpawnerVars {
+    u8 pad_00[0x84];
+    s32 linger_time;                  /* 0x84 */
+} SwooperSpawnerVars;
+
+typedef struct SwooperVars {
+    u8 pad_00[0x98];
+    s32 life_timer;                   /* 0x98 */
+} SwooperVars;
+
 /* Deletes the moby, first copying other's timer into this moby's data if other is non-null. */
-void DeleteMobyCopyTimer(char *arg, char *other) {
-    char *dst = *(char **)(arg + 0x78);
-    if (other != 0) {
-        *(int *)(dst + 0x98) = scale_ticks(*(int *)(other + 0x84));
+void mark_swooper_for_removal(char *moby, char *spawner_vars) {
+    SwooperVars *vars = (SwooperVars *)((struct Moby *)moby)->pvars;
+
+    if (spawner_vars != 0) {
+        vars->life_timer = scale_ticks(((SwooperSpawnerVars *)spawner_vars)->linger_time);
     }
-    DeleteMoby(arg);
+    DeleteMoby(moby);
 }
 typedef struct { f32 x; f32 y; f32 z; } Vec3_31AAB0;
 typedef struct {
@@ -2464,7 +2475,7 @@ extern s32 probe_31AAB0(f32, void *, s32, void *, void *) __asm__("func_L00_001F
 
 /* Swooper: holds at its goal, dives at the hero once it sees it and bursts on contact.
  * Adapted from Lombyte (MIT) for PAL: overlays/l07/gameplay/entities/00312948.c, FUN_L07_003196e0. */
-void SwooperUpdate(struct Moby *moby) {
+void update_swooper(struct Moby *moby) {
     SwooperVars_31AAB0 *vars;
     SwooperSpawnerVars_31AAB0 *spawner_vars;
     SwooperSight_31AAB0 sight;
@@ -2625,7 +2636,7 @@ extern void delete_31B318(void *) __asm__("func_0020D678");
 /* Breakable prop: when hit by moby 0x415 in state 8 or 0x452 in state 9 with hit kind 1.000123, scatters its shard
  * count of pieces over its rotated extent, spawns debris and removes itself.
  * Adapted from Lombyte (MIT) for PAL: overlays/l07/gameplay/entities/00312948.c, FUN_L07_00319f48. */
-void BreakablePropUpdate(struct Moby *m) {
+void process_breakable_prop_hit(struct Moby *m) {
     BreakableVars_31B318 *v = (BreakableVars_31B318 *)m->pvars;
     MobyHit_31B318 *h;
     Vec4f ext, p, vel;

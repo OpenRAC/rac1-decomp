@@ -56,9 +56,9 @@ typedef struct Camera {
     s16 def_index;             /* 0x84 row of gCameraDefs */
     s16 id;                    /* 0x86 camera id (CameraDef.id): 0 behind the hero; 6 turns shake off */
     u8 pad88;
-    u8 hit_wall;               /* 0x89 MoveCameraToward hit something */
-    s16 snap;                  /* 0x8A nonzero: MoveCameraToward jumps to the target once */
-    s16 type;                  /* 0x8C index into camera_types (Camera_FindTypeIndex(id)) */
+    u8 hit_wall;               /* 0x89 resolve_camera_movement_collisions hit something */
+    s16 snap;                  /* 0x8A nonzero: resolve_camera_movement_collisions jumps to the target once */
+    s16 type;                  /* 0x8C index into camera_types (find_camera_table_index_by_id(id)) */
     s16 hard_cut;              /* 0x8E 1 when it became current without a blend */
     u8 pad90[0x10];
 } Camera;

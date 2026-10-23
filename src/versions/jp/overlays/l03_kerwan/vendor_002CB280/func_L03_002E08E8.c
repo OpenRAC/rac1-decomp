@@ -1,4 +1,4 @@
-void TutorialHintTriggerUpdate(Moby *moby) {
+void update_kerwan_tutorial_hints(Moby *moby) {
     Data_2E08E8 *data = *(Data_2E08E8 **)&moby->pvars;
 
     func_001F9908(&data->f58);

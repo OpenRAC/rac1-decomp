@@ -10,7 +10,7 @@ extern int func_L00_0025D038(float, float, float, float);
 extern unsigned char *D_L01_001B2800[];
 
 /* Spawns a type 6 particle with position, colour, scale and owner. */
-void PartType06Spawn(int owner, float *pos, int snd, unsigned char arg, unsigned char idx, unsigned char mode, float x, float y, float z, float scale, float f21, float r, float g, float b, float a) {
+void create_spark_particle(int owner, float *pos, int snd, unsigned char arg, unsigned char idx, unsigned char mode, float x, float y, float z, float scale, float f21, float r, float g, float b, float a) {
     float buf[4];
     float *tmp = buf;
     unsigned char *p;

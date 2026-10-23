@@ -41,7 +41,7 @@ extern float func_001F9C78(void *, void *);
 extern void func_L00_001FD1D8(void *, void *, int);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l06/gameplay/entities/002fd1a0.c, FUN_L06_002fd1a0. */
-void EffectQuad_DrawVariantA(void) {
+void draw_dual_texture_50_quad_mesh(void) {
     Packet_2fd1a0 first, second;
     float matrix[4][4] __attribute__((aligned(16)));
     float vec2[4] __attribute__((aligned(16)));
@@ -134,7 +134,7 @@ extern float func_001F9C78(void *, void *);
 extern void func_L00_001FD1D8(void *, void *, int);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l06/gameplay/entities/002fd1a0.c, FUN_L06_002fd460. */
-void EffectQuad_DrawVariantB(void) {
+void draw_dual_texture_58_quad_mesh(void) {
     Packet_2fd460 first, second;
     float matrix[4][4] __attribute__((aligned(16)));
     float vec2[4] __attribute__((aligned(16)));
@@ -235,7 +235,7 @@ extern float func_001F9C78(void *, void *);
 extern void func_L00_001FD1D8(void *, void *, int);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l06/gameplay/entities/002fd1a0.c, FUN_L06_002fd748. */
-void EffectQuad_DrawVariantC(void) {
+void draw_dual_texture_864_quad_mesh(void) {
     Packet_2fd748 first, second;
     float matrix[4][4] __attribute__((aligned(16)));
     float vec2[4] __attribute__((aligned(16)));
@@ -308,7 +308,7 @@ extern int func_L06_002EB140(void *, void *);
 extern int func_001F9850(int);
 
 /* Trigger moby: waits for the hero in its zone, plays its open animation, then launches a listed moby. */
-void LaunchTriggerUpdate(char *m) {
+void update_clip_volume_moby_activation_trigger(char *m) {
     int *d = *(int **)(m + 0x78);
     switch (((unsigned char *)m)[0x20]) {
     case 0:
@@ -339,7 +339,7 @@ void LaunchTriggerUpdate(char *m) {
                 short *p = list;
                 char *pos = m + 0x10;
                 do {
-                    if (Moby_LaunchSpinning(D_L06_00160058_p + ((*(unsigned short *)p & 0x7FFF) << 8), pos)) {
+                    if (activate_state_15_moby_at_position(D_L06_00160058_p + ((*(unsigned short *)p & 0x7FFF) << 8), pos)) {
                         found = 1.0f;
                         break;
                     }
@@ -356,7 +356,7 @@ void LaunchTriggerUpdate(char *m) {
 }
 extern char *D_L06_00160058 MACRO_ADDR;
 /* Puts every moby in group idx into the dormant state. */
-void SetMobyGroupDormant(int idx)
+void set_moby_list_state_17(int idx)
 {
     short *p = D_L06_001AC340[idx];
     if (p != 0) {
@@ -440,7 +440,7 @@ extern float D_0015EE70 MACRO_ADDR;
 #define frame_time_ff D_0015EE6C
 #define frame_time_sq_ff D_0015EE70
 /* A glass containment tube holding a creature: when its energy sphere is hit, a short camera shot of the tube, then the tube breaks and control returns to the hero. */
-void containment_tube_update(char *moby) {
+void update_moby_camera_sequence_and_draw_selection(char *moby) {
     int *data = *(int **)(moby + 0x78);
     float pos[4], rot[4], from[4], target[4], offset[4];
     int base;
@@ -591,7 +591,7 @@ extern float D_0015EE6C MACRO_ADDR;
 extern short D_L06_001620DC;
 
 /* Replaces the moby with a broken copy (type 0x43C); with burst set, also throws 50 pieces around it. */
-void containment_tube_break(char *m, int burst) {
+void spawn_moby_breakup_effect(char *m, int burst) {
     char *n;
     float w[4];
     float v[4];
@@ -754,7 +754,7 @@ extern char D_0013E633[] NOT_SDA;
 extern short D_L06_00162120;
 
 // Update for a bobbing moby: waits, then follows a sine offset, then drifts and deletes itself.
-void BobbingMobyUpdate(char *moby) {
+void update_moby_bobbing_and_motion(char *moby) {
     char *data = *(char **)(moby + 0x78);
     int state;
     if (data == 0) {
@@ -789,7 +789,7 @@ void BobbingMobyUpdate(char *moby) {
     }
 }
 /* Sets state 2 and stores the vectors a and b in the moby's data block. */
-void Moby_SetStateWithVectors(char *arg, void *a, void *b) {
+void begin_moby_linear_and_angular_motion(char *arg, void *a, void *b) {
     char *dst = *(char **)(arg + 0x78);
     arg[0x20] = 2;
     qcopy(dst, a);
@@ -1165,7 +1165,7 @@ typedef struct {
  * The three vectors are one set at function level (va, vc, vb: retail's sp+0, 0x10, 0x20). State 3 keeps the
  * table slot address across the vector copy (qcopy_nc) and re-reads the path pointer after the store to d+0xB0.
  * d+0xB8/0xBC are struct members so the stores can sink below the loads of the next call's arguments. */
-void Moby1108Update(unsigned char *m) {
+void update_moby_linked_sequence_camera_and_timer(unsigned char *m) {
     char *d = *(char **)(m + 0x78);
     float va[4];
     float vc[4];
@@ -1456,7 +1456,7 @@ void ShuttleUpdate(Moby *moby) {
     case 0:
         D_L06_0015FE78 = 0;
         if (*(unsigned char *)(d->fF8 + (D_0015EE84_302FE8 << 4) + (int)D_0014C150) == 0xFF) {
-            DeleteMobyGroup((char *)moby);
+            mark_shuttle_linked_mobys_for_removal((char *)moby);
         } else {
             D_0013D4AF_3039B8[5] = 0;
         }
@@ -1479,7 +1479,7 @@ void ShuttleUpdate(Moby *moby) {
         }
         if ((busy == 0 && ((Hero *)(D_0013E633 + 0xE1D))->ground_moby == moby && ((Hero *)(D_0013E633 + 0xE1D))->air_frames.s == 0)
             || D_L06_00162190 != 0) {
-            Shuttle_SelectMode((char *)moby);
+            update_shuttle_route_selection_and_prompt((char *)moby);
             now = D_L06_00162190;
             if (now != 0 || ((*(int *)(D_0013A5E0_3039B8 + 0x2604) & 0x10) && D_L06_0015F674 == 10 && d->f9C >= 0)) {
                 d->go = 1;
@@ -1574,7 +1574,7 @@ void ShuttleUpdate(Moby *moby) {
         }
         break;
     case 3:
-        if (MoveAlongPathsWithSound((char *)moby, d->side) != 0) {
+        if (update_shuttle_path_ride((char *)moby, d->side) != 0) {
             int ofs;
             int base;
             moby->state = 4;
@@ -1667,7 +1667,7 @@ void ShuttleUpdate(Moby *moby) {
         break;
     case 8:
         if (level_game_mode_q != 2) {
-            PlayMovieEntryIfIdle(5);
+            start_indexed_disc_stream(5);
             moby->state = 7;
         }
         break;
@@ -1680,7 +1680,7 @@ extern unsigned char D_0014C150[];
 extern void func_00215F80(int, int);
 
 /* Picks the next selection state from the menu mode, then queues the matching sound. */
-void Shuttle_SelectMode(char *m) {
+void update_shuttle_route_selection_and_prompt(char *m) {
     char *d = *(char **)(m + 0x78);
     switch (*(int *)(d + 0xBC)) {
     case 0: {
@@ -1761,7 +1761,7 @@ extern void func_L06_00304FA8(struct Moby *);
 extern char D_L06_001B0FB0[] ;
 extern char *D_L06_0016016C  MACRO_ADDR;
 /* Moves the moby along three paths and plays the sound marked on the path points. */
-int MoveAlongPathsWithSound(char *moby, int path) {
+int update_shuttle_path_ride(char *moby, int path) {
     float rotation[4], position[4];
     struct PathRide_303160 *ride = *(struct PathRide_303160 **)(moby + 0x78);
     Path_303160 *first_path = ((Path_303160 **)D_L06_001B0FB0)[ride->path_a[path]];
@@ -1831,7 +1831,7 @@ int MoveAlongPathsWithSound(char *moby, int path) {
             ScatterPiecesExplode(6.0f, (struct Moby *)moby, sound + 0x30, sound, 6);
         } else if (marker == 10 || prev_marker == 10) {
             allocate_voice_for_group_entry(1, 0, moby);
-            ScatterLinkedPieces((struct Moby *)moby);
+            break_apart_shuttle_linked_mobys((struct Moby *)moby);
         }
     }
     return ride->progress == 1.0f;
@@ -1954,7 +1954,7 @@ extern u8 *func_00219780(void *, void *, void *, int, int, int, int, int, int);
 
 /* Breaks the linked pieces apart: pushes each one out from their middle (smaller pieces faster), spins it and sheds dust.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l06/gameplay/entities/002fd1a0.c, FUN_L06_00303b68. */
-void ScatterLinkedPieces(struct Moby *moby) {
+void break_apart_shuttle_linked_mobys(struct Moby *moby) {
     char *vars = (char *)moby->pvars;
     float center[4];
     float middle[4];
@@ -2001,7 +2001,7 @@ void ScatterLinkedPieces(struct Moby *moby) {
         func_L00_001FF4B0(push, push, -((piece->bsphere.w - largest) / largest) * speed + speed);
         push[3] = 6.0f;
         rand_vec(spin, D_0015EE6C * 0.2617994f, D_0015EE6C * 0.08726646f);
-        Moby_SetStateWithVectors((char *)(level_mobys_q + (id << 8)), push, spin);
+        begin_moby_linear_and_angular_motion((char *)(level_mobys_q + (id << 8)), push, spin);
         for (i = 0; i < (*(int *)&D_L06_00162220); i++) {
             piece = (struct Moby *)((id << 8) + (int)level_mobys_q);
             rand_vec(pos, 0.0f, piece->bsphere.w * 0.00048828125f);
@@ -2031,7 +2031,7 @@ extern char *D_L06_00160058 MACRO_ADDR;
 extern void func_0020D678(void *);
 
 /* Deletes every moby in the group stored in the data block. */
-void DeleteMobyGroup(char *moby)
+void mark_shuttle_linked_mobys_for_removal(char *moby)
 {
     char *data = *(char **)(moby + 0x78);
     short *p = D_L06_001AC340[*(int *)(data + 0xCC)];
@@ -2040,7 +2040,7 @@ void DeleteMobyGroup(char *moby)
     } while (*p++ >= 0);
 }
 // Sets offset 0x20 to 5
-void Moby_EnterState5(char *arg) {
+void set_moby_state_5(char *arg) {
     arg[0x20] = 5;
 }
 typedef struct { float x, y, z, w; } __attribute__((aligned(16))) V_3054D8;
@@ -2234,14 +2234,14 @@ void red_button_update(Moby *m) {
 extern void func_0022ED80(int, int, void *);
 
 /* Advances a moby from state 1 to state 2 and calls func_0022ED80. */
-void Moby_AdvanceFromState1(char *arg) {
+void begin_red_button_rotation(char *arg) {
     if ((unsigned char)arg[0x20] == 1) {
         arg[0x20] = 2;
         Moby_PlaySound(0, 0, arg);
     }
 }
 /* 2 for a moby in state 7, 1 above state 3, else 0. Adapted from Lombyte (MIT) for PAL: src/overlays/l06/gameplay/entities/002fd1a0.c, FUN_L06_003047f8. */
-s32 GetMobyStateClass(const u8 *moby) {
+s32 get_red_button_sequence_status(const u8 *moby) {
     u32 state = moby[0x20];
 
     if (state == 7) {
@@ -2263,7 +2263,7 @@ extern short D_L06_00162248;
 extern short D_L06_00162244;
 
 // Spawns a burst of particles around an object, count from a level global.
-void electric_fence_spawn_debris(int unused, void *obj) {
+void emit_red_button_particle_burst(int unused, void *obj) {
     float pos[4];
     V6 a;
     V6 b;
@@ -2328,7 +2328,7 @@ typedef struct {
 } Data_305E38;
 
 /* The electric fence across a ledge (class 1123): waits for its partner, animates four ribbons of arcs, then bursts into particles once switched off. */
-void electric_fence_update(char *moby)
+void update_moby_vector_streams_and_particle_burst(char *moby)
 {
     Data_305E38 *d = *(Data_305E38 **)(moby + 0x78);
     union {
@@ -2584,7 +2584,7 @@ extern int func_L01_0026EFB8(int, int);
 
 /* Level 6 help hints: shows the help messages for the area and records how often and when each was due.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l06/gameplay/vendor/003083b0.c, FUN_L06_003083b0. */
-void Level6_UpdateHelpHints(struct Moby *moby) {
+void update_level06_help_hints(struct Moby *moby) {
     int *vars = (int *)moby->pvars;
     struct Moby *m;
     int i;
@@ -2806,7 +2806,7 @@ extern float func_001F9878(float);
 extern int func_001FA898_r(float) __asm__("func_001FA898");
 extern char *D_L06_00160058 MACRO_ADDR;
 /* finds the mobys of type 0x5E8 in state 1 in a level list and starts those within range */
-void StartMobysInRange(int idx) {
+void activate_listed_class_5e8_mobys(int idx) {
     short *p;
     char *m;
     char *data;
@@ -2833,7 +2833,7 @@ extern int D_L06_0015F6A8 MACRO_ADDR;
 extern char D_L06_0016D0E0[];
 
 // Moby update: arms on first frame, then triggers a random event while the level is in phase 2.
-void SparksTriggerL06_Update(unsigned char *moby)
+void update_gated_moby_effects(unsigned char *moby)
 {
     switch (moby[0x20]) {
     case 0:
@@ -2887,7 +2887,7 @@ void func_0020D678_0B248(struct Obj *obj) __asm__("func_0020D678");
 extern void func_L00_00251E30(void *);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l06/gameplay_vendor_003083b0.c, FUN_L06_00309e08. */
-void BreakOnHitBlargUpdate(char *self) {
+void update_hit_triggered_moby_replacement(char *self) {
     int flag = 0;
     char *o = MobyGetHitMessage(self, 0x10000, 0);
     switch (((unsigned char *)self)[0x20]) {
@@ -2923,7 +2923,7 @@ void BreakOnHitBlargUpdate(char *self) {
     }
 }
 /* Moby update for a breakable object that spawns effects and a moby when hit. */
-void BreakableObjectUpdate(char *self) {
+void update_hit_triggered_class_0681_spawner(char *self) {
     int flag = 0;
     char *o = MobyGetHitMessage(self, 0x10000, 0);
     switch (((unsigned char *)self)[0x20]) {

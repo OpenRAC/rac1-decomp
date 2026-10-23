@@ -20,7 +20,7 @@ float ProbeGroundOffset(float *pos) {
     return 0.0f;
 }
 /* Writes the four joint angle limits of a leg-rig block. */
-void SetLegJointLimits(void *unused, char *arg) {
+void initialize_leg_rig_angle_defaults(void *unused, char *arg) {
     *(float *)(arg + 0x10C) = -0.19634955f;
     *(float *)(arg + 0x110) = 1.5707964f;
     *(float *)(arg + 0x1BC) = -1.5707964f;
@@ -106,7 +106,7 @@ extern void func_0020DAF8(struct Moby *m, int joint, float *mtx);
 extern float func_L00_001FF860(float, float);
 extern void func_0020D960(struct Moby *m, int slot, void *manip);
 /* Sets up a two-legged rig on a moby. */
-void InitTwoLeggedRig(struct Moby *moby, LegRig_p *rig) {
+void initialize_leg_rig(struct Moby *moby, LegRig_p *rig) {
     int joints[6];
     float matrix[4][4];
     int i;

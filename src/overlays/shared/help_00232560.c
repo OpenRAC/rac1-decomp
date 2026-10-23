@@ -14,7 +14,7 @@ extern int func_001F9850(int);
    sequences and starts one on each object (func_00213DE0). Each
    sequence is read into a local before the func_001F9850 call, as
    retail holds it in a saved register across it. */
-void HeroPickFidget(void) {
+void blend_hero_slot3_animation_pair(void) {
     char *base = D_0013F450;
     char *a = *(char **)(base + 0x1180);
     char *b = *(char **)(base + 0x1184);
@@ -27,7 +27,7 @@ void HeroPickFidget(void) {
     if (*(unsigned char *)(a + 0x53) != 1) {
         return;
     }
-    if (HeroPickRandomSequence(0, &buf[0], &buf[1]) == 0) {
+    if (select_hero_slot3_animation_pair(0, &buf[0], &buf[1]) == 0) {
         return;
     }
     seq = buf[0];
@@ -53,7 +53,7 @@ extern short D_L00_0015F798;
    of -1. Stores the entry's seq in *OUT and returns 1, or stores 0 and
    returns 0. Mode 4's table is assigned first and cleared when the mode,
    held in a local, differs: retail's addiu / movn select. */
-int LookupSequenceForKey(int key, int *out) {
+int lookup_hero_slot3_animation_key(int key, int *out) {
     SeqEntry *tbl;
     int i;
 
@@ -108,7 +108,7 @@ void HeroSetPairedSequences(int id, int arg, float t) {
     if (a == 0 || b == 0) {
         return;
     }
-    if (HeroPickRandomSequence(id, &seq0, &seq1) != 0 && id != 0) {
+    if (select_hero_slot3_animation_pair(id, &seq0, &seq1) != 0 && id != 0) {
         if (*(unsigned char *)(a + 0x53) == seq0) {
             return;
         }
@@ -118,7 +118,7 @@ void HeroSetPairedSequences(int id, int arg, float t) {
     }
     blk2 = D_0013F450;
     ok = 1;
-    if (*(int *)(blk2 + 0x208C) == 0 && LookupSequenceForKey(*(unsigned char *)(a + 0x53), &id) != 0) {
+    if (*(int *)(blk2 + 0x208C) == 0 && lookup_hero_slot3_animation_key(*(unsigned char *)(a + 0x53), &id) != 0) {
         if (id == 0) {
             ok = 0;
         }
@@ -146,7 +146,7 @@ extern int func_L00_00258BC8(int, int);
    its key and argument bytes in *KEY and *ARG; with no match, *KEY = 1
    and it returns 0. `tbl - -n` keeps retail's index-first addu, which
    `tbl + n` and `&tbl[n]` turn round. */
-int HeroPickRandomSequence(int id, int *key, int *arg) {
+int select_hero_slot3_animation_pair(int id, int *key, int *arg) {
     SeqEntry *tbl;
     int list[20];
     int count;
@@ -191,7 +191,7 @@ extern char D_0013F450[];
    copies the float at +0xA90 to field 0x58 of both objects at +0x1180 and
    +0x1184 that exist. The pair goes in a two-int stack array (&buf[1] is
    retail's `ori $6, $sp, 4`). */
-void HeroSyncPairAnimSpeed(void) {
+void sync_hero_slot3_animation_speed(void) {
     char *base = D_0013F450;
     int buf[2];
 
@@ -201,7 +201,7 @@ void HeroSyncPairAnimSpeed(void) {
     if (*(int *)(base + 0x11A4) != 2) {
         return;
     }
-    if (HeroPickRandomSequence(*(unsigned char *)(*(char **)(base + 0x2080) + 0x53), &buf[0], &buf[1]) == 0) {
+    if (select_hero_slot3_animation_pair(*(unsigned char *)(*(char **)(base + 0x2080) + 0x53), &buf[0], &buf[1]) == 0) {
         return;
     }
     if (*(char **)(base + 0x1180) != 0) {
@@ -259,7 +259,7 @@ void HeroPlayMappedSequence(int a0, int a1, float a2) {
 /* With the animation at D_0013F450 + 0x2278 set and enabled (+0x227C),
    and a sequence ready for the current id (func_L00_00232A18), copies
    the float at +0xA90 to the animation's field 0x58. */
-void HeroSyncMappedSpeed(void) {
+void sync_hero_mapped_moby_animation_speed(void) {
     char *base = D_0013F450;
     int buf[4];
 
@@ -298,7 +298,7 @@ typedef struct {
    sequence byte 0x51 into both sequence slots, then looks each slot's id
    up in its bank of the model. The typed structs give retail's
    base-first index adds, which byte offsets turn round. */
-void HeroSyncSecondaryAnim(void) {
+void sync_hero_mapped_moby_animation_frames(void) {
     char *base = D_0013F450;
     AnimState *obj = *(AnimState **)(base + 0x2278);
 
@@ -509,13 +509,13 @@ void func_L00_00232EF0(void) {
             m->prev_frame = ((Hero *)D_0013F450)->unkAB4;
             m->prev_frame_data = ((AnimSeq_32EF0 *)m->pclass->seqs[m->prev_seq])->frames[m->prev_frame];
             HeroClearQueuedSequence();
-            HeroSyncSecondaryAnim();
+            sync_hero_mapped_moby_animation_frames();
         } else if (((Hero *)D_0013F450)->unkAB0 != -1 && ((Hero *)D_0013F450)->unkAB4 < m->prev_frame) {
             ((Hero *)D_0013F450)->unkA94 = 0.33333334f;
             m->anim_time = 0.0f;
             m->prev_frame = ((Hero *)D_0013F450)->unkAB0;
             m->prev_frame_data = ((AnimSeq_32EF0 *)m->pclass->seqs[m->prev_seq])->frames[m->prev_frame];
-            HeroSyncSecondaryAnim();
+            sync_hero_mapped_moby_animation_frames();
         } else {
             if (m->prev_frame >= ((AnimSeq_32EF0 *)m->pclass->seqs[m->prev_seq])->frame_count) {
                 m->prev_frame = 0;
@@ -537,7 +537,7 @@ void func_L00_00232EF0(void) {
         for (i = 0; i < seq->trigger_count; i++, trig++) {
             s32 at = *trig >> 16;
             if (lo < at && !(hi < at)) {
-                func_0022ED80(*trig & 0xFFFF, 0, m);
+                Moby_PlaySound(*trig & 0xFFFF, 0, m);
                 break;
             }
         }
@@ -547,16 +547,16 @@ void func_L00_00232EF0(void) {
         if (v->owner != m) {
             m->sound_slot = 0xFF;
         } else if (v->sound != m->unk7C) {
-            func_L00_0028EBF0(m->sound_slot);
+            Sound_StopSlot(m->sound_slot);
             m->sound_slot = 0xFF;
         }
     } else if (m->unk7C != 0xFF && D_L00_0015F6A8 != 2 && D_L00_0015F6A8 != 6) {
-        m->sound_slot = func_0022ED80(m->unk7C, 4, m);
+        m->sound_slot = Moby_PlaySound(m->unk7C, 4, m);
     }
-    HeroSyncPairAnimSpeed();
-    HeroSyncMappedSpeed();
+    sync_hero_slot3_animation_speed();
+    sync_hero_mapped_moby_animation_speed();
     prev = ((Hero *)D_0013F450)->anim_frame;
-    ((Hero *)D_0013F450)->anim_frame = func_0020D830(m);
+    ((Hero *)D_0013F450)->anim_frame = MobyGetFrameValue(m);
     if (prev <= ((Hero *)D_0013F450)->anim_frame)
         ((Hero *)D_0013F450)->unkAAC = ((Hero *)D_0013F450)->anim_frame - prev;
     else
@@ -591,7 +591,7 @@ extern f32 func_L00_002342F8_33410(void *) __asm__("func_L00_002342F8");
 extern s32 func_L00_0025A5D8(f32 *, f32 *, f32, f32, f32);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00231d08.c, FUN_L00_00232b90. */
-f32 Hero_PredictLandingTime(f32 a, f32 b, f32 c) {
+f32 predict_hero_trajectory_intercept_time(f32 a, f32 b, f32 c) {
     f32 t[4];
     Vec4 v;
     Vec4 t1;
@@ -808,7 +808,7 @@ void HeroClearMainObjectFlags(void) {
     }
 }
 /* Stores two floats, an index and a byte, and sets the bits of a byte mask in a flag halfword. */
-void Hero_SetBlendParams(float a, float b, short c, unsigned char d, unsigned char e, unsigned char f) {
+void configure_hero_point_effect_emission(float a, float b, short c, unsigned char d, unsigned char e, unsigned char f) {
     char *base = D_0013E633 + 0xE1D;
 
     *(int *)(base + 0x12A8) = c;
@@ -875,7 +875,7 @@ extern unsigned char D_0013D5E4 NOT_SDA;
    short at +0x30E is below func_001F9850(4); otherwise the short at
    +0x308. One `||` condition: retail sends every true test to a single
    `r = 1` block after the call. */
-int Hero_GetMagnetStickState(void) {
+int resolve_hero_gravity_mode(void) {
     char *base = D_0013F450;
     int state = *(int *)(base + 0x2084);
     int r = *(short *)(base + 0x308);
@@ -1145,7 +1145,7 @@ extern float func_001FA888(int);
    n uses the velocity along the view's up axis (func_L00_002342F8) and
    the height is z + VEL.z / 2. The frame count goes to *STEPS when
    given; other modes give 0. */
-float JumpApexHeight(float *pos, float *vel, int *steps, float step) {
+float predict_hero_trajectory_z(float *pos, float *vel, int *steps, float step) {
     int n;
     int k;
     float a;
@@ -1319,7 +1319,7 @@ extern f32 D_0015EE70 MACRO_ADDR;
 
 /* The hero on a moving platform: finds the platform the hero stands on or hangs from, tracks the platform's motion between frames (its attach points at 0x310-0x330) and carries the hero (position, facing, ledge-grab point) with it.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/hero/set_hero_animation.c, FUN_L00_00233f80. */
-void HeroRideMovingPlatform(void) {
+void update_hero_attachment(void) {
     Vec4A v0, v10, v20, v30, v40, v50, v60, v70, v80, v90, vA0;
     float sB0, sB4;
     float amt, ang;
@@ -1419,8 +1419,8 @@ void HeroRideMovingPlatform(void) {
         qcopy((Vec4A *)(D_0013F450 + 0x350), &v20);
     } else if (mode == 2) {
         RotateWithMoby((int)((Hero *)D_0013F450)->moby, ((Hero *)D_0013F450)->unk360, &((Hero *)D_0013F450)->motion.pos, &((Hero *)D_0013F450)->motion.rot, &v40, &v50);
-        TransformToMobyLocal((int)((Hero *)D_0013F450)->moby, ((Hero *)D_0013F450)->unk360, &((Hero *)D_0013F450)->unk310, &((Hero *)D_0013F450)->unk320, &v60, &v70);
-        TransformToMobyLocal((int)((Hero *)D_0013F450)->moby, ((Hero *)D_0013F450)->unk360, &((Hero *)D_0013F450)->unk330, &((Hero *)D_0013F450)->unk320, &v80, &v90);
+        transform_attachment_pose((int)((Hero *)D_0013F450)->moby, ((Hero *)D_0013F450)->unk360, &((Hero *)D_0013F450)->unk310, &((Hero *)D_0013F450)->unk320, &v60, &v70);
+        transform_attachment_pose((int)((Hero *)D_0013F450)->moby, ((Hero *)D_0013F450)->unk360, &((Hero *)D_0013F450)->unk330, &((Hero *)D_0013F450)->unk320, &v80, &v90);
         if ((((Hero *)D_0013F450)->state.current == 1 || ((Hero *)D_0013F450)->state.current == 0x1E) && ((Hero *)D_0013F450)->unk20A5 != 0) {
             ((Hero *)D_0013F450)->motion.rot.f[2] = v50.z;
         } else if (((Hero *)D_0013F450)->unk364 & 2) {
@@ -1474,7 +1474,7 @@ extern int func_L00_002630A8(int, void *, void *, float);
 void Hero_ConstrainToPath(void) {
     char *base = D_0013F450;
 
-    if (PushPointOutsidePathAxis(*(short *)(base + 0x22DA), base + 0x80, base + 0x80, *(float *)(base + 0x234)) != 0) {
+    if (resolve_point_path_segment_clearance(*(short *)(base + 0x22DA), base + 0x80, base + 0x80, *(float *)(base + 0x234)) != 0) {
         *(short *)(base + 0x1F6) = 4;
     }
 }
@@ -1549,7 +1549,7 @@ void HeroUpdateAttachments(int a0) {
                 *(unsigned short *)(o + 0x34) |= 0x800;
             }
         }
-        HeroComputeAttachMatrices(a0);
+        update_hero_world_matrices(a0);
         func_L00_0020FC18();
         HeroPulseAttachmentColors();
         base = D_0013F450;
@@ -1641,7 +1641,7 @@ extern char D_L00_0015F788[];
    others D_L00_0015F788 with 0), then clears +0x50 / +0x54 and points
    +0x68 / +0x6C at D_L00_0017C780. The four tail stores are in the order
    decomp-permuter found for retail's schedule. */
-void PlaceMobyFromMatrix(int id, char *moby) {
+void configure_moby_from_source_bone4(int id, char *moby) {
     float m[16] __attribute__((aligned(16)));
 
     MobyTransformScaledVertex(id, 4, m);
@@ -1666,21 +1666,21 @@ extern float func_001F9B88(float);
    (func_00214358). If that is within 0.3 of the position's z, records
    the old position as the target (func_L00_00234768, with the float at
    +0x98) and moves the position onto the probe. */
-void Hero_TryLedgeSnap(void) {
-    char *base = D_0013F450;
-    float v[4] __attribute__((aligned(16)));
+void try_reposition_hero_on_nearby_ground(void) {
+    struct Hero *hero_base = (struct Hero *)D_0013F450;
+    Vec4 candidate_ground_position;
     float h;
 
-    FastVecScale(v, base, -0.75f);
-    FastVecAdd(v, v, base + 0x80);
-    v[2] += 0.5f;
-    h = ProbeGroundHeight(v, 0, 0.5f);
-    v[2] = h;
-    if (FastAbsF(*(float *)(base + 0x88) - h) > 0.3f) {
+    FastVecScale(candidate_ground_position.f, hero_base->unk0, -0.75f);
+    FastVecAdd(candidate_ground_position.f, candidate_ground_position.f, hero_base->motion.pos.f);
+    candidate_ground_position.f[2] += 0.5f;
+    h = ProbeGroundHeight(candidate_ground_position.f, 0, 0.5f);
+    candidate_ground_position.f[2] = h;
+    if (FastAbsF(hero_base->motion.pos.f[2] - h) > 0.3f) {
         return;
     }
-    HeroSetTargetAndEnterMove((float *)(base + 0x80), 1, *(float *)(base + 0x98));
-    qcopy(base + 0x80, v);
+    HeroSetTargetAndEnterMove(hero_base->motion.pos.f, 1, hero_base->motion.rot.f[2]);
+    qcopy(&hero_base->motion.pos, &candidate_ground_position);
 }
 extern char D_001416F8[];
 extern void func_L00_00239F40(void);
@@ -1692,7 +1692,7 @@ extern int func_001FFB38_p(int, int, void *, void *, void *, void *, int) __asm_
    callbacks and the data at D_001416F8. func_001FFB38 is declared with
    int parameters in hud.c; the alias passes pointers. */
 void show_health_hud(void) {
-    func_001FFB38_p(1, 0x7535, HudHealthInit, HudHealthUpdate, HudHealthDraw, D_001416F8, 8);
+    func_001FFB38_p(1, 0x7535, initialize_hud_element_with_counters, update_health_hud_animation_and_visibility, draw_health_hud_panel, D_001416F8, 8);
 }
 
 extern char D_0013F450[];

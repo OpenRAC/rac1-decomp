@@ -44,7 +44,7 @@ float CubicInterpolate(float a, float b, float c, float d, float t) {
 extern float func_001FA790(float, float);
 extern float func_001F9F90(float);
 extern float func_001FA748(float, float);
-float CosineEaseAngle(float x, float y, float z) {
+float interpolate_wrapped_angle_cosine_eased(float x, float y, float z) {
     float t = FastSubRots(y, x);
     float c = FastCos(z * 3.1415927f);
     return FastAddRots(x, t * ((1.0f - c) * 0.5f));
@@ -56,7 +56,7 @@ extern void func_001F9BD8(void *, void *, void *);
 
 /* Vector cosine interpolation: dst = a + (b - a) * ((1 - cos(t * pi)) * 0.5).
    Scalar analogue matched at src/game/mobyutil.c:func_00214220. */
-void LerpVectorCosine(void *dst, void *a, void *b, float t) {
+void interpolate_vector_xyz_cosine_eased(void *dst, void *a, void *b, float t) {
     float tmp[4];
     float ease;
 
@@ -73,7 +73,7 @@ void LerpVectorCosine(void *dst, void *a, void *b, float t) {
     FastVecScale(tmp, tmp, ease);
     FastVecAdd(dst, a, tmp);
 }
-void CosineEaseAngleVec(float *out, float *a, float *b, float ang) {
+void interpolate_wrapped_rotations_cosine_eased(float *out, float *a, float *b, float ang) {
     float s = (1.0f - FastCos(ang * 3.1415927f)) * 0.5f;
     out[0] = FastAddRots(a[0], FastSubRots(b[0], a[0]) * s);
     out[1] = FastAddRots(a[1], FastSubRots(b[1], a[1]) * s);
@@ -799,7 +799,7 @@ extern char D_L00_0015F660[] MACRO_ADDR;
 extern void func_L00_0025AC00_5AD38(unsigned char *, int, int, void *, void *, float) __asm__("func_L00_0025AC00");
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_entities_0024c7f0.c, FUN_L10_0024c7f0. */
-void PostHitMessageAtPoint(unsigned char *m, int x, int y, void *p, float f) {
+void spawn_nearby_effect_without_direction(unsigned char *m, int x, int y, void *p, float f) {
     func_L00_0025AC00_5AD38(m, x, y, p, D_L00_0015F660, f);
 }
 extern void func_001F9BF0(void *, void *, void *);
@@ -1372,61 +1372,101 @@ extern void func_00213DE0(void *, int, int, int);
 extern float func_001F9878(float);
 extern float func_00214358_f(void *, int, float) __asm__("func_00214358");
 
+typedef struct O_25b440 {
+    u8 pad00[0x10];
+    Vec4 pos;                  /* 0x10: pos.f[2] is z at 0x18 */
+    u8 pad20[0x32];
+    u8 b52;                    /* 0x52 */
+    u8 pad53[0x1D];
+    u8 b70;                    /* 0x70 */
+} O_25b440;
+
+typedef struct S_25b440 {
+    u8 pad00[0x8];
+    f32 f8;                    /* 0x08 */
+    u8 pad0C[0x4];
+    f32 f10;                   /* 0x10 */
+    f32 f14;                   /* 0x14 */
+    f32 f18;                   /* 0x18 */
+    f32 f1C;                   /* 0x1C */
+    u8 pad20[0x4];
+    f32 f24;                   /* 0x24 */
+    f32 f28;                   /* 0x28 */
+    u8 b2C;                    /* 0x2C */
+    u8 b2D;                    /* 0x2D */
+    u8 b2E;                    /* 0x2E */
+    u8 state;                  /* 0x2F */
+    f32 f30;                   /* 0x30 */
+    f32 f34;                   /* 0x34 */
+    f32 f38;                   /* 0x38 */
+    f32 f3C;                   /* 0x3C */
+} S_25b440;
+
 /* Steps a thrown object through its motion states (0 wait, 1 rise, 2 fall, 3 settle) and returns the new state. */
-int ThrownObjectStep(char *m, char *p) {
-    float tmp[3];
-    float f0, f1, v;
+int update_arc_motion(char *m, char *p) {
+    enum {
+        CHECK_ARC_ENTRY_GATES = 0,
+        INTEGRATE_ARC_MOTION = 1,
+        DESCEND_TO_GROUND = 2,
+        WAIT_AFTER_GROUND_CLAMP = 3
+    };
+    O_25b440 *moving_object = (O_25b440 *)m;
+    S_25b440 *arc_motion_state = (S_25b440 *)p;
+    float motion_displacement[4];
+    float prediction_time;
+    float ground_height;
+    float v;
     float *vec;
 
-    switch (*(unsigned char *)(p + 0x2F)) {
-    case 0:
-        if (*(unsigned char *)(m + 0x52) != *(unsigned char *)(p + 0x2C)) {
+    switch (arc_motion_state->state) {
+    case CHECK_ARC_ENTRY_GATES:
+        if (moving_object->b52 != arc_motion_state->b2C) {
             break;
         }
-        if (MobyGetFrameValue(m) <= *(float *)(p + 0x24)) {
+        if (MobyGetFrameValue(moving_object) <= arc_motion_state->f24) {
             break;
         }
-        if (*(unsigned char *)(m + 0x70) & 2) {
-            MobyBlendAnimation(m, *(unsigned char *)(p + 0x2D), 0, 10);
-            *(unsigned char *)(p + 0x2F) = 1;
+        if (moving_object->b70 & 2) {
+            MobyBlendAnimation(moving_object, arc_motion_state->b2D, 0, 10);
+            arc_motion_state->state = INTEGRATE_ARC_MOTION;
         }
-    case 1:
-        MobySpringTurn(m, p + 0x30, *(float *)(p + 0x18), *(float *)(p + 0x34), *(float *)(p + 0x38), *(float *)(p + 0x3C));
-        tmp[0] = FastCos(*(float *)(p + 0x18)) * *(float *)(p + 0x14);
-        tmp[1] = FastSin(*(float *)(p + 0x18)) * *(float *)(p + 0x14);
-        tmp[2] = *(float *)(p + 0x10);
-        FastVecAdd(m + 0x10, m + 0x10, tmp);
-        v = *(float *)(p + 0x10) - *(float *)(p + 0x1C);
-        *(float *)(p + 0x10) = v;
+    case INTEGRATE_ARC_MOTION:
+        MobySpringTurn(moving_object, &arc_motion_state->f30, arc_motion_state->f18, arc_motion_state->f34, arc_motion_state->f38, arc_motion_state->f3C);
+        motion_displacement[0] = FastCos(arc_motion_state->f18) * arc_motion_state->f14;
+        motion_displacement[1] = FastSin(arc_motion_state->f18) * arc_motion_state->f14;
+        motion_displacement[2] = arc_motion_state->f10;
+        FastVecAdd(moving_object->pos.f, moving_object->pos.f, motion_displacement);
+        v = arc_motion_state->f10 - arc_motion_state->f1C;
+        arc_motion_state->f10 = v;
         if (v < 0.0f) {
-            f0 = func_001F9878(*(float *)(p + 0x28) + *(float *)(p + 0x28) + 10.0f);
-            if (*(float *)(m + 0x18) <= *(float *)(p + 8) - (*(float *)(p + 0x10) * f0 - *(float *)(p + 0x1C) * 0.5f * f0 * f0)) {
-                MobyBlendAnimation(m, *(unsigned char *)(p + 0x2E), 0, 10);
-                *(unsigned char *)(p + 0x2F) = 2;
+            prediction_time = func_001F9878(arc_motion_state->f28 + arc_motion_state->f28 + 10.0f);
+            if (moving_object->pos.f[2] <= arc_motion_state->f8 - (arc_motion_state->f10 * prediction_time - arc_motion_state->f1C * 0.5f * prediction_time * prediction_time)) {
+                MobyBlendAnimation(moving_object, arc_motion_state->b2E, 0, 10);
+                arc_motion_state->state = DESCEND_TO_GROUND;
             }
         }
         break;
-    case 2:
-        vec = (float *)(m + 0x10);
-        *(float *)(m + 0x18) += *(float *)(p + 0x10);
-        *(float *)(p + 0x10) = *(float *)(p + 0x10) - *(float *)(p + 0x1C);
-        f1 = func_00214358_f(vec, 0, 0.5f);
-        if (*(float *)(m + 0x18) <= f1) {
-            *(float *)(m + 0x18) = f1;
-            *(unsigned char *)(p + 0x2F) = 3;
+    case DESCEND_TO_GROUND:
+        vec = moving_object->pos.f;
+        moving_object->pos.f[2] += arc_motion_state->f10;
+        arc_motion_state->f10 = arc_motion_state->f10 - arc_motion_state->f1C;
+        ground_height = func_00214358_f(vec, 0, 0.5f);
+        if (moving_object->pos.f[2] <= ground_height) {
+            moving_object->pos.f[2] = ground_height;
+            arc_motion_state->state = WAIT_AFTER_GROUND_CLAMP;
         } else {
-            tmp[0] = FastCos(*(float *)(p + 0x18)) * *(float *)(p + 0x14);
-            tmp[1] = FastSin(*(float *)(p + 0x18)) * *(float *)(p + 0x14);
-            tmp[2] = 0.0f;
-            FastVecAdd(vec, vec, tmp);
+            motion_displacement[0] = FastCos(arc_motion_state->f18) * arc_motion_state->f14;
+            motion_displacement[1] = FastSin(arc_motion_state->f18) * arc_motion_state->f14;
+            motion_displacement[2] = 0.0f;
+            FastVecAdd(vec, vec, motion_displacement);
         }
-    case 3:
-        if (*(unsigned char *)(m + 0x70) & 2) {
-            *(unsigned char *)(p + 0x2F) = 4;
+    case WAIT_AFTER_GROUND_CLAMP:
+        if (moving_object->b70 & 2) {
+            arc_motion_state->state = 4;
         }
         break;
     }
-    return *(unsigned char *)(p + 0x2F);
+    return arc_motion_state->state;
 }
 // Linear interpolation from a to b by t.
 float Lerp(float a, float b, float t) {
@@ -1600,7 +1640,7 @@ typedef struct { int a[4]; } Vq __attribute__((aligned(16)));
 extern void func_L00_001FF4B0(void *, void *, float);
 extern float func_001F9C78(void *, void *);
 extern void func_001F9BF0(void *dst, void *a, void *b);
-void ReflectVelocity(void *a, void *b, void *c, float s) {
+void subtract_homogeneous_scaled_vector_xyz(void *a, void *b, void *c, float s) {
     Vq t0, t1;
     func_L00_001FF4B0(&t1, c, 1.0f);
     FastVecScale(&t0, &t1, FastVecDot(&t1, b) * s);
@@ -1989,7 +2029,7 @@ void StepColorFade(void *a, unsigned char *s) {
     func_L00_00251328(a, cr, cg, cb);
 }
 // Advances an index with wrapping or directional clamping.
-int StepTableIndex(int *limit, int index, int delta, int wrap) {
+int offset_path_index(int *limit, int index, int delta, int wrap) {
  if (wrap) index = (index + delta + *limit) % *limit;
  else {
   index += delta;
@@ -2132,7 +2172,7 @@ extern void func_L00_0025C710(void *, void *, void *, float);
 extern float func_L00_0025EAC8_f(void *, void *, float) __asm__("func_L00_0025EAC8");
 
 /* Nearest point on the segment a-b to p (clamped), returned with the distance result. Adapted from Lombyte (MIT) for PAL: overlays/shared/math_rotations_0025d238.c, FUN_L00_0025dcd8. */
-float NearestPointOnSegment(u128_ED30 *out, u128_ED30 *p, u128_ED30 *a, u128_ED30 *b, float r) {
+float resolve_level_path_segment_point(u128_ED30 *out, u128_ED30 *p, u128_ED30 *a, u128_ED30 *b, float r) {
     u128_ED30 d[2];
     u128_ED30 c[1];
     u128_ED30 e[1];
@@ -2232,7 +2272,7 @@ s32 func_L00_0025EFC0(s32 *path, OvlQuad *point, OvlQuad *nearest,
     current_fraction = best_fraction;
     end = best_segment;
     func_L00_0025E860_5EFC0(path, &work[0], &end, &current_fraction, step, wrap);
-    end = StepTableIndex(path, end, 1, wrap);
+    end = offset_path_index(path, end, 1, wrap);
     current = start;
     distance = 1000000000.0f;
     do {
@@ -2254,7 +2294,7 @@ s32 func_L00_0025EFC0(s32 *path, OvlQuad *point, OvlQuad *nearest,
         count = *path;
         previous = count - 1;
         previous = (best_segment + previous) % count;
-        distance = NearestPointOnSegment(nearest, point,
+        distance = resolve_level_path_segment_point(nearest, point,
             (OvlQuad *)(path + 4 + previous * 4),
             (OvlQuad *)(path + 4 + best_segment * 4), height_tolerance);
         *segment = previous;
@@ -2266,7 +2306,7 @@ s32 func_L00_0025EFC0(s32 *path, OvlQuad *point, OvlQuad *nearest,
     }
     count = *path;
     if (best_segment < count - 1 || wrap) {
-        next_distance = NearestPointOnSegment(&work[1], point,
+        next_distance = resolve_level_path_segment_point(&work[1], point,
             (OvlQuad *)(path + 4 + best_segment * 4),
             (OvlQuad *)(path + 4 + ((best_segment + 1) % count) * 4),
             height_tolerance);
@@ -2994,7 +3034,7 @@ extern int func_L00_002616E0(int x, char *o, float *a, float *c, float *b, float
 extern void func_L00_002607A8(void *a, float x);
 
 /* Transform a point into a moby's local frame, handling its collision flag. */
-int TransformToMobyLocal(int x, char *o, float *p, float *q, float *r, float *s) {
+int transform_attachment_pose(int x, char *o, float *p, float *q, float *r, float *s) {
     float m0[16] __attribute__((aligned(16)));
     float m1[16] __attribute__((aligned(16)));
     float v[4] __attribute__((aligned(16)));

@@ -1,5 +1,5 @@
 extern char D_J_L03_001DC860[];
-void AmbientStreamL03Update(unsigned char *moby) {
+void update_moby_draw_callback(unsigned char *moby) {
     switch (moby[0x20]) {
     case 0:
         ScaleTableIntoBuffer(D_J_L03_001DC860, 0.6666667f, 0x20);

@@ -105,7 +105,7 @@ void jet_camera_mode(void) {
 }
 extern char D_L00_00179548[];
 // Clears a halfword global.
-void Moby_ClearGadgetControl(void) {
+void clear_jet_camera_mode_latch(void) {
     *(short *)D_L00_00179548 = 0;
 }
 extern unsigned char D_L00_00179550[];
@@ -152,7 +152,7 @@ extern s32 func_L00_00258BC8(s32, s32);
 
 /* Clears the hero, binds it to the first moby of class 0 (snapped to the ground, its position and yaw copied in, the camera start set from it unless D_L00_00160540), resets the 31 manipulator records and the eight sound voices, and sets the starting hit points and timers. The item ids are read into save[] before and after the clear and never written back.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/help/00204c60.c, FUN_L00_00204c60. */
-void HeroInit(void) {
+void initialize_hero(void) {
     s32 save[7];
     s32 i;
     struct Moby *m;
@@ -176,7 +176,7 @@ void HeroInit(void) {
             D_0013F450_05278.motion.rot.f[2] = D_0013F450_05278.moby->rot.z;
             qcopy(&D_0013F450_05278.motion.pos, &D_0013F450_05278.moby->pos);
             Hero_UpdateGroundCollision();
-            HeroSyncMoby();
+            update_hero_moby();
             if (D_L00_00160600 == 0) {
                 qcopy(&D_0013E190[0], &D_0013F450_05278.motion.pos);
                 qcopy(&D_0013E190[1], &D_0013F450_05278.motion.rot);
@@ -213,19 +213,19 @@ extern unsigned char D_0013F450[] NOT_SDA;
 extern void func_L00_00232EA8(void);
 extern void func_L00_00222B80(int, int);
 /* Resets the hero's tuning values and reinitialises the hero. */
-void HeroResetTuning(void) {
-    char *g = D_0013F450;
-    *(float *)(g + 0x220) = 0.8f;
-    *(float *)(g + 0x234) = 0.45f;
-    *(float *)(g + 0x228) = 0.8f;
-    *(float *)(g + 0x224) = 0.7f;
-    *(float *)(g + 0x22C) = 0.7f;
-    *(unsigned char *)(g + 0x22CB) = 0;
-    *(int *)(g + 0x2084) = 0;
+void reset_hero_to_idle(void) {
+    struct Hero *hero_state = &D_0013F450_05278;
+    hero_state->capsule_top = 0.8f;
+    hero_state->unk234 = 0.45f;
+    hero_state->unk228 = 0.8f;
+    hero_state->unk224 = 0.7f;
+    hero_state->unk22C = 0.7f;
+    hero_state->unk22CB = 0;
+    hero_state->state.current = HERO_STATE_IDLE;
     *(int *)(D_0014171B + 0x4D) = 0;
-    *(float *)(g + 0xA94) = 1.0f;
+    hero_state->unkA94 = 1.0f;
     HeroClearQueuedSequence();
-    HeroEnterMoveState(0, 1);
+    HeroEnterMoveState(HERO_STATE_IDLE, 1);
 }
 typedef struct { char pad[0x24]; int v; char pad2[0x24]; } Rec;
 extern Rec D_L00_00179BC0[] NOT_SDA;
@@ -327,7 +327,7 @@ extern void func_L00_0025AFA8_00205780(void *, void *) __asm__("func_L00_0025AFA
 extern void func_001F9BC0_00205780(void *) __asm__("func_001F9BC0");
 
 /* Settles one held-object record: at rest it only releases it, otherwise it eases the offsets and angles and applies them. */
-void SettleHeldObject(char *p) {
+void update_hero_easing_record(char *p) {
     Body_00205780 *m = (Body_00205780 *)p;
     int v = func_L00_00205728_00205780(m->type);
 
@@ -374,12 +374,12 @@ extern char D_L00_0017A780[];
 extern void func_L00_00205780(char *p);
 
 /* runs func_L00_00205780 on each 0xB0-byte record of a table */
-void SettleAllHeldObjects(void) {
+void update_hero_easing_records(void) {
     int p = (int)lean_state;
     int end = (int)lean_state + 0x1550;
 
     do {
-        SettleHeldObject((char *)p);
+        update_hero_easing_record((char *)p);
         p += 0xB0;
     } while (p < end);
 }
@@ -409,17 +409,20 @@ extern int D_L00_0015F6B0 MACRO_ADDR;
 extern int func_002140B0(int);
 
 /* Runs the hero's random-interval timer (rand_timer). */
-void HeroRandomTimerUpdate(void) {
-    char *g = D_0013F450;
-    if (*(int *)(g + 0xFF0) == 0) {
-        if (*(int *)(g + 0xFF8) == 0) {
-            *(int *)(g + 0xFF4) = D_L00_0015F6B0 + scale_ticks(30);
-        } else if (D_L00_0015F6B0 > *(int *)(g + 0xFF4)) {
-            int a, b;
-            *(int *)(g + 0xFF0) = 1;
-            a = scale_ticks(20);
-            b = random_integer_below(*(int *)(g + 0xFF8));
-            *(int *)(g + 0xFF4) = D_L00_0015F6B0 + a + b + random_integer_below(*(int *)(g + 0xFF8));
+extern struct Hero D_0013F450_05CC0 __asm__("D_0013F450");
+
+void update_hero_random_timer(void) {
+    struct Hero *hero_random_timer_owner = &D_0013F450_05CC0;
+    if (hero_random_timer_owner->rand_timer.fired == 0) {
+        if (hero_random_timer_owner->rand_timer.range == 0) {
+            hero_random_timer_owner->rand_timer.deadline = D_L00_0015F6B0 + scale_ticks(30);
+        } else if (D_L00_0015F6B0 > hero_random_timer_owner->rand_timer.deadline) {
+            int base_delay_frames, first_random_delay_frames;
+            hero_random_timer_owner->rand_timer.fired = 1;
+            base_delay_frames = scale_ticks(20);
+            first_random_delay_frames = random_integer_below(hero_random_timer_owner->rand_timer.range);
+            hero_random_timer_owner->rand_timer.deadline =
+                D_L00_0015F6B0 + base_delay_frames + first_random_delay_frames + random_integer_below(hero_random_timer_owner->rand_timer.range);
         }
     }
 }
@@ -437,7 +440,7 @@ extern s32 D_L00_0017C2C0[];
 extern f32 D_L00_0017C290[];
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/help/00203b18.c, FUN_L00_002056a8. */
-void ClampAimLeanAngles(void) {
+void update_hero_rotation_targets_and_random_manipulators(void) {
     u8 *e;
 
     {
@@ -464,7 +467,7 @@ void ClampAimLeanAngles(void) {
         if (*(f32 *)(e + 0x8a4) < -0.12217305f)
             *(f32 *)(e + 0x8a4) = -0.12217305f;
     }
-    HeroRandomTimerUpdate();
+    update_hero_random_timer();
     {
         if (D_0013F450_05CC0.rand_timer.fired == 0)
             return;
@@ -513,7 +516,7 @@ extern Quad_56a8 D_L00_0017C360[];
 extern f32 D_L00_0017C3A0[];
 
 /* Per-frame update of the helper/attached moby. */
-void UpdateHelperMoby(void) {
+void update_hero_glow_and_extra_manipulators(void) {
     u8 *g, *g2;
     u8 *h0;
     u8 *moby;
@@ -641,7 +644,7 @@ void HudBoltAlertShow(void) {
         *(float *)(g2 + 0x2044) = 100000.0f;
         *(int *)(g2 + 0x2040) = 0;
         if (*(int *)(g2 + 0x2048) != 0) {
-            queue_animation_update(7, 0x753A, (int)Hud_InitSmallElement, (int)HudSmallElementUpdate, (int)HudSmallElementDraw, (int)(g2 + 0x2048), 1);
+            queue_animation_update(7, 0x753A, (int)reset_numeric_hud_element_32x32_base, (int)update_hud_panel_visibility, (int)draw_hud_bolt_exclamation_panel, (int)(g2 + 0x2048), 1);
         }
     }
 }
@@ -682,7 +685,7 @@ extern void func_L00_00206578(int, int, int);
 extern int func_L00_00211F28(float t);
 
 /* fires the pickup/sound hooks for the player's current gadget state */
-void FireGadgetStateHooks(void) {
+void dispatch_hero_animation_timed_events(void) {
     char *g = (char *)D_0013F450;
     int c;
     int t;
@@ -733,7 +736,7 @@ extern void func_L00_002514B8(void *);
 extern void func_L00_00251E30(void *);
 
 /* Keeps the moby at hero+0xA88 in sync with the hero's own moby. */
-void SyncCompanionMoby(void) {
+void update_hero_bone_attachment(void) {
     long buf[8];
     char *g = (char *)D_0013F450;
     char *m = *(char **)(g + 0xA88);
@@ -830,7 +833,7 @@ typedef struct {
 } GS_68C8;
 
 /* Hero frame update for the help/panel states: runs the update chain; in state 1 keeps two companion mobys placed on the hero and tints them, in state 2 refreshes the hero point, in state 3 pulses the hero tint and drives the fade colour. */
-void Hero_UpdateHelpState(void) {
+void update_hero_in_vehicle_mode(void) {
     int h2, v2, t;
     int v, h, i, r16, r17, r18, c20, color;
     int ca, cb, col;
@@ -842,22 +845,22 @@ void Hero_UpdateHelpState(void) {
 
     func_L00_00232EF0();
     hero_update();
-    Hero_UpdateActionFlags();
+    apply_hero_selected_flags_and_state_transitions();
     if (((GS_68C8 *)(D_0013E633 + 0xE1D))->b20A4 == 1) {
         HeroLedgeProbe();
         CameraLeanFromPad();
     }
     hero_update_transitions();
     if (((GS_68C8 *)(D_0013E633 + 0xE1D))->b20A4 == 0) return;
-    Hero_TickReleaseTimers();
-    SettleAllHeldObjects();
+    update_hero_delayed_voice_requests();
+    update_hero_easing_records();
     if (((GS_68C8 *)(D_0013E633 + 0xE1D))->b20A4 == 0) return;
-    SyncHelpScreenMoby();
+    update_hero_vehicle_moby();
     UpdateRampUpDown();
     CameraShakeUpdate();
     if (((GS_68C8 *)(D_0013E633 + 0xE1D))->b20A4 == 1) {
         D_L00_0017B95C = D_0015EEF0_68C8[10];
-        UpdateHelperMoby();
+        update_hero_glow_and_extra_manipulators();
         if (((GS_68C8 *)(D_0013E633 + 0xE1D))->m1624 == 0) {
             ((GS_68C8 *)(D_0013E633 + 0xE1D))->m1624 = (char *)func_0020D348_68C8(0x4B4);
             if (((GS_68C8 *)(D_0013E633 + 0xE1D))->m1624 != 0) {
@@ -967,8 +970,8 @@ skip:
         if (gCheats[3] != 0) {
             D_L00_0017BB6C = *(float *)&D_0015EF18 * 1.4f;
         }
-        UpdateHelperMoby();
-        SyncCompanionMoby();
+        update_hero_glow_and_extra_manipulators();
+        update_hero_bone_attachment();
         if ((*(unsigned short *)(((GS_68C8 *)(D_0013E633 + 0xE1D))->p2080 + 0x34) ^ 1) & 1) {
             Moby_GetJointWorldPos(((GS_68C8 *)(D_0013E633 + 0xE1D))->p2080, 6, buf);
             qcopy(((GS_68C8 *)(D_0013E633 + 0xE1D))->a1D80, buf);
@@ -1104,7 +1107,7 @@ extern unsigned short D_001419F0 NOT_SDA;
 extern unsigned char D_0013D5C8[] NOT_SDA;
 extern int func_L00_0020DC00(void);
 /* Periodic help-message check: tick-based hints for the pack and the unused-slot count. The two message tables sit behind separate symbols (D_00141A68 and D_001419F0) as in retail. */
-void HelpHintsPeriodicCheck(void) {
+void check_hero_item_reward_conditions(void) {
     int i, n;
     if (D_00141A68.x3c0 == 0 && D_0013D5C8[4] != 0 && Hero_IsInSpecialState() != 0) {
         Help_Request(0x4E2E, 0x78);
@@ -1256,7 +1259,7 @@ extern void func_L00_0025805C(void *);
 extern void func_L00_00207CC0(void);
 extern void func_L00_002091D8(void);
 // Per-frame update of the resident game systems; fades out when the camera leaves bounds.
-void Hero_UpdateWithBoundsCheck(void) {
+void coordinate_hero_frame_update(void) {
     char *g = (char *)D_0013E633 + 0xE1D;
     if (*(float *)(g + 0x80) < 2.0f || *(float *)(g + 0x84) < 2.0f || *(float *)(g + 0x80) > 1022.0f || *(float *)(g + 0x84) > 1022.0f) {
         char *q;
@@ -1268,38 +1271,38 @@ void Hero_UpdateWithBoundsCheck(void) {
     *(short *)(g + 0x1EB2) = 0;
     *(short *)(g + 0x1EB0) = 0;
     if (*(unsigned char *)(g + 0x20A4) != 0) {
-        Hero_UpdateHelpState();
+        update_hero_in_vehicle_mode();
         return;
     }
     func_L00_00232EF0();
     hero_update();
-    Hero_UpdateActionFlags();
+    apply_hero_selected_flags_and_state_transitions();
     HeroLedgeProbe();
     find_grind_rail();
-    Hero_LatchUpperProbe();
+    update_hero_offset_rail_candidate();
     hero_update_transitions();
     if (*(unsigned char *)(g + 0x20A4) != 0) {
         return;
     }
-    Hero_TickReleaseTimers();
+    update_hero_delayed_voice_requests();
     Hero_CheckMovementThresholds();
-    Hero_UpdateObstacleLean();
+    update_hero_collision_ease_target();
     Hero_UpdateBodyTilt();
     HeroScanTargets();
     RerollMotionParams();
-    ClampAimLeanAngles();
-    UpdateHelperMoby();
+    update_hero_rotation_targets_and_random_manipulators();
+    update_hero_glow_and_extra_manipulators();
     Hero_SetTiltJoints();
-    SettleAllHeldObjects();
-    HeroSyncMoby();
-    HeroComputeAttachMatrices(0);
-    Hero_UpdateItems();
+    update_hero_easing_records();
+    update_hero_moby();
+    update_hero_world_matrices(0);
+    update_hero_equipped_items();
     begin_draw_frame();
     UpdateRampUpDown();
     CameraShakeUpdate();
-    HelpHintsPeriodicCheck();
+    check_hero_item_reward_conditions();
     HudBoltAlertShow();
-    FireGadgetStateHooks();
+    dispatch_hero_animation_timed_events();
     Cheats_PollCodes();
     Profile_Mark(*(void **)(g + 0x2080));
     if (*(int *)(g + 0x208C) != 0x16 && *(int *)(g + 0x2084) != 0x32) {
@@ -1309,11 +1312,11 @@ void Hero_UpdateWithBoundsCheck(void) {
         char *q = (char *)D_0013E633 + 0xE1D;
         func_L00_0025805C(*(void **)(q + 0x2080));
     }
-    Hero_UpdateTintFade();
+    update_hero_color_and_item_tint();
     Hero_SteerAimAndProbe();
 }
 /* Copies the hero moby's tint word to the item slots' attached mobys. */
-void CopyHeroTintToItems(void) {
+void copy_hero_color_to_item_mobys(void) {
     int i, j;
     char *g = (char *)D_0013F450;
     for (i = 0; i < 7; i++) {
@@ -1336,7 +1339,7 @@ extern void func_L00_00251388(void *, void *);
 extern void func_L00_002513F8(void *, void *);
 
 /* Tint the effect from the moby's colour bytes, then set the four shape floats from its vector sum. */
-void TintEffectFromMobyColor(void *a, char *m) {
+void update_item_tint_from_hero(void *a, char *m) {
     Vx v;
     float *f;
     float s;
@@ -1367,7 +1370,7 @@ extern void func_L00_00208650(void *vec, int a, float f0, float f1);
 extern void func_0020D960(char *, int, void *);
 
 // Sets up a vendor moby's draw color from a time-driven wave and spawns its glow particle.
-void PulseMobyColor(char *m) {
+void update_moby_pulsing_glow_effects(char *m) {
     float v[4];
     int col;
     int r, c1, c2, c3;
@@ -1431,7 +1434,7 @@ extern void func_L00_00251358(void *, int *, int *, int *);
 extern u8 D_0013E620[];
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/help/00203b18.c, FUN_L00_002076a8. */
-void Hero_UpdateTintFade(void) {
+void update_hero_color_and_item_tint(void) {
     struct Hero *player = &D_0013F450_07CC0;
     int blink;
 
@@ -1474,12 +1477,12 @@ void Hero_UpdateTintFade(void) {
             blue = 0xf0;
         }
         func_L00_00251328(((void *)D_0013F450_07CC0.moby), red, green, blue);
-        CopyHeroTintToItems();
+        copy_hero_color_to_item_mobys();
     }
     if (D_0013F450_07CC0.items[0].item_id >= 0 &&
         D_0013E620[D_0013F450_07CC0.items[0].item_id] != 0 &&
         ((int)D_0013F450_07CC0.items[0].moby) != 0) {
-        TintEffectFromMobyColor(((void *)D_0013F450_07CC0.items[0].moby), ((char *)D_0013F450_07CC0.moby));
+        update_item_tint_from_hero(((void *)D_0013F450_07CC0.items[0].moby), ((char *)D_0013F450_07CC0.moby));
     }
 }
 typedef struct { u8 p0[0x6A8]; float f6A8; float f6AC; u8 p1[0x86C - 0x6B0]; char *o86C; u8 p2[0x8BC - 0x870]; s16 h8BC; u8 p3[0x2080 - 0x8BE]; char *w2080; int w2084; } S13F350_2078a8;
@@ -1493,7 +1496,7 @@ void func_001F9EE8(void *, void *, void *);
 void func_001F9BD8(void *, void *, void *);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00203b18.c, FUN_L00_002078a8. */
-void Hero_BobInStates(void) {
+void apply_hero_vertical_oscillation(void) {
     S13F350_2078a8 *P = &D_0013F450_07EC0;
     Vec4 v;
     float m[16] __attribute__((aligned(16)));
@@ -1518,7 +1521,7 @@ extern unsigned char D_0013F450[] NOT_SDA;
 extern float D_0015EE6C MACRO_ADDR;
 extern void func_L00_00263BF8(int, char *, char *, float, float, float);
 /* Steps the hero's two angle fields toward their targets while in state 0x7F. */
-void Hero_LissajousSway(void) {
+void apply_hero_rotation_oscillation(void) {
     char *g = D_0013F450;
     if (*(int *)(g + 0x2084) == 0x7F) {
         LissajousOffsetUpdate(*(int *)(g + 0x2080), g + 0x6B0, g + 0x6B4, 0.1745329201221466f, D_0015EE6C * 1.5707963705062866f, D_0015EE6C * 2.094395160675049f);
@@ -1718,7 +1721,7 @@ extern char D_0013F450_2086C8[] __asm__("D_0013F450");
 
 // Hero gadget glow: pulses the colour of the hero's gadget moby (hero state 13, 16, 17, 19, 20) and
 // queues its glow sprites. c and g are shared by cases 17 and 20 (one pseudo each, retail's $s0/$s1).
-void QueueItemGlows(void) {
+void update_hero_and_equipped_item_glows(void) {
     Vec4 v;
     Moby *m;
     int i;
@@ -1886,7 +1889,7 @@ extern void func_L00_00233F68(float *dst, float *src, float h);
 extern void func_L00_0024FF10_208E98(void *, int, float, float, void *) __asm__("func_L00_0024FF10");
 extern int func_L00_0020DC00(void);
 // Syncs the hero moby with the hero state: pose, position, and the blend of its animation
-void HeroSyncMoby(void) {
+void update_hero_moby(void) {
     char *g0 = (char *)D_0013E633 + 0xE1D;
     char *g;
     char *g3;
@@ -1901,9 +1904,9 @@ void HeroSyncMoby(void) {
     }
     g = (char *)D_0013E633 + 0xE1D;
     qcopy(*(char **)(g + 0x2080) + 0x10, g + 0x80);
-    Hero_BobInStates();
+    apply_hero_vertical_oscillation();
     qcopy(*(char **)(g + 0x2080) + 0x40, g + 0x90);
-    Hero_LissajousSway();
+    apply_hero_rotation_oscillation();
     func_L00_001FF040((int)(*(char **)(g + 0x2080) + 0xC0), g, 0x30);
     func_L00_00251E30(*(void **)(g + 0x2080));
     if (*(int *)(g + 0x1CC) == 0 && *(int *)(*(char **)(g + 0x2080) + 0x94) != 0) {
@@ -1937,7 +1940,7 @@ extern void func_L00_00233F68(float *, float *, float);
 extern void func_L00_0024FF10(void *, int, void *, float, float);
 
 /* positions the help-screen moby and re-aims it twice */
-void SyncHelpScreenMoby(void) {
+void update_hero_vehicle_moby(void) {
     unsigned char *g;
     char *m;
     unsigned char *q = D_0013E633 + 0xE1D;
@@ -2060,7 +2063,7 @@ extern u8 D_0013F450[] NOT_SDA;
 extern f32 func_00214D28(f32 *p, f32 target, f32 maxstep);
 
 /* Retimes the hero animation playback rate. */
-f32 HeroSetAnimRate(f32 a, f32 b, f32 c, f32 d)
+f32 adjust_hero_animation_speed_for_target_frame(f32 a, f32 b, f32 c, f32 d)
 {
     u8 *g = D_0013F450;
     f32 thresh = *(f32 *)(g + 0xAA8);
@@ -2139,7 +2142,7 @@ void func_001F9BF0_002090d0(Vec4A *, Vec4A *, Vec4A *) __asm__("func_001F9BF0");
 void func_001F9BD8_002090d0(Vec4A *, Vec4A *, Vec4A *) __asm__("func_001F9BD8");
 void func_002153E8_002090d0(Mtx_002090d0 *, Vec4A *) __asm__("func_002153E8");
 /* Camera-relative placement: transforms a position through the camera matrix and an offset rotation, then writes the difference back into the camera block. Adapted from Lombyte (MIT) for PAL: overlays/shared/ui_help_00203b18.c, FUN_L00_002090d0. */
-void PlaceRelativeToCamera(float *inf, float x, float y, float z) {
+void rotate_hero_about_local_pivot(float *inf, float x, float y, float z) {
     u128_002090d0 *in = (u128_002090d0 *)inf;
     struct { Vec4A p; Vec4A a; Vec4A b; Vec4A d; Mtx_002090d0 m; Mtx_002090d0 r; Vec4A e; } L_002090d0;
     Vec4A *cam = &D_0013F4E0_002090d0;
@@ -2168,18 +2171,18 @@ void PlaceRelativeToCameraSimple(float x, float y, float z) {
 
     clear_u64_value(buf);
     buf[2] = 0.6f;
-    PlaceRelativeToCamera(buf, x, y, z);
+    rotate_hero_about_local_pivot(buf, x, y, z);
 }
 typedef struct { int w[9]; } T;
 extern T D_L00_001E7F90;
 extern unsigned char D_0013E633[] NOT_SDA;
 extern void func_L00_00250928(int, int, void *, void *);
-/* HeroComputeAttachMatrices: computes the hero attach matrices for model a. */
-void HeroComputeAttachMatrices(int a) {
+/* update_hero_world_matrices: computes the hero attach matrices for model a. */
+void update_hero_world_matrices(int a) {
     T t;
     if (a == 0) a = *(int *)(D_0013E633 + 0x2E9D);
     t = D_L00_001E7F90;
-    Moby_GetJointWorldMatrices(a, 9, &t, D_0013E633 + 0x18DD);
+    compute_selected_world_matrices(a, 9, &t, D_0013E633 + 0x18DD);
 }
 extern unsigned long func_L00_001FF718(int, float);
 extern void func_L00_00255B90(int);
@@ -2261,7 +2264,7 @@ extern float func_002140F8(float, float);
 extern unsigned char *func_L00_00272488(void *pos, int b, int color, float f, float g);
 
 // Bump a counter; once it passes the limit spawn a random-offset particle and reset the counter.
-int SpawnPeriodicHeroEffect(char *a, int b) {
+int emit_hero_periodic_surface_effect(char *a, int b) {
     char *p = (char *)D_0013E633 + 0xE1D;
     unsigned short *cnt = (unsigned short *)(p + 0x904);
     int n = *cnt + 1;
@@ -2478,7 +2481,7 @@ extern void func_L00_0026A7F8(void *, void *, int, int, int, int, int, int);
 extern float D_0015EE70 MACRO_ADDR;
 
 /* Per-frame spark effect: emits a burst of particles around a saved position while a global timer runs down. Adapted from Lombyte (MIT) for PAL: overlays/shared/ui_help_00203b18.c, FUN_L00_00209ec8. */
-void SparkBurstUpdate(void) {
+void emit_hero_timed_effects(void) {
     V4 v;
     V4 w;
     char *g;
@@ -2560,7 +2563,7 @@ extern int func_L00_0020A8B8(int, float, float);
 extern int func_L00_0025F410(void *);
 extern float func_001F9D10(void *, void *);
 // sets up the camera lag parameters for a zoom and records that it is active
-void Hero_UpdateObstacleLean(void) {
+void update_hero_collision_ease_target(void) {
     char *g = (char *)D_0013E633 + 0xE1D;
     char *p;
     char *p2;
@@ -2604,7 +2607,7 @@ void Hero_UpdateObstacleLean(void) {
     *(short *)(g2 + 0x22C8) = 1;
 }
 /* clears two words and four 16-byte slots of a table */
-void Hero_ClearSlotPairs(void) {
+void clear_hero_idle_rotation_targets(void) {
     char *b = (char *)D_0013E633 + 0xE1D;
     char *p;
     int i;
@@ -3048,7 +3051,7 @@ extern void func_L00_0020BFA8(void);
 extern void func_L00_00211908(void);
 
 /* Per-frame update of the state flags for the current action, then the follow-up action it requests. */
-void Hero_UpdateActionFlags(void) {
+void apply_hero_selected_flags_and_state_transitions(void) {
     char *g = (char *)D_0013E633 + 0xE1D;
     unsigned char keep = *(unsigned char *)(g + 0x12ED);
     int s = *(short *)(g + 0x12E0);

@@ -357,7 +357,7 @@ void toxic_crab_update(Moby2E30F8 *m) {
             if (*(float *)&D_L10_00161ECC * 0.017453292f < diff || d->i1D8 == 0) {
                 MobySpringTurn((char *)m, &d->f190, ang, 0.02f, 0.3f, D_0015EE6C * 6.2831855f);
             }
-            aim = ComputeNarrowedAimAngle((char *)m);
+            aim = compute_toxic_crab_group_approach_angle((char *)m);
             v[0] = FastCos(aim) * (*(short *)(t + 0xA6) == 0x359 ? 2.0f : 3.57f);
             v[1] = FastSin(aim) * (*(short *)(t + 0xA6) == 0x359 ? 2.0f : 3.57f);
             v[2] = 0.0f;
@@ -1099,40 +1099,41 @@ extern float func_001FA790(float, float);
 extern float func_001FA748(float, float);
 
 /* Computes the aim angle of a moby relative to its owner, narrowed by nearby table entries. */
-float ComputeNarrowedAimAngle(char *self) {
-    char *owner = *(char **)(*(char **)(self + 0x78) + 0x160);
-    float hi, lo, ang, dist, v[3];
-    short *p;
-    if ((unsigned char)self[0x21] == 0xFF) {
-        return func_L00_001FF860(*(float *)(self + 0x10) - *(float *)(owner + 0x10),
-                                 *(float *)(self + 0x14) - *(float *)(owner + 0x14));
+float compute_toxic_crab_group_approach_angle(char *self) {
+    struct Moby *owner = *(struct Moby **)(((struct Moby *)self)->pvars + 0x160);
+    float hi, lo, owner_to_self_angle, owner_to_self_distance, v[3];
+    short *group_entry;
+    if (((struct Moby *)self)->group == 0xFF) {
+        return func_L00_001FF860(((struct Moby *)self)->pos.x - owner->pos.x,
+                                 ((struct Moby *)self)->pos.y - owner->pos.y);
     }
     lo = -(*(float *)&D_L10_00161EC8 * 0.017453292f);
     hi = *(float *)&D_L10_00161EC8 * 0.017453292f;
-    ang = func_L00_001FF860(*(float *)(self + 0x10) - *(float *)(owner + 0x10),
-                            *(float *)(self + 0x14) - *(float *)(owner + 0x14));
-    dist = FastVecDist(owner + 0x10, self + 0x10);
-    v[0] = FastCos(ang) * 2.0f;
-    v[1] = FastSin(ang) * 2.0f;
+    owner_to_self_angle = func_L00_001FF860(((struct Moby *)self)->pos.x - owner->pos.x,
+                                            ((struct Moby *)self)->pos.y - owner->pos.y);
+    owner_to_self_distance = FastVecDist(&owner->pos, &((struct Moby *)self)->pos);
+    v[0] = FastCos(owner_to_self_angle) * 2.0f;
+    v[1] = FastSin(owner_to_self_angle) * 2.0f;
     v[2] = 0.0f;
     FastVecAdd(v, v, D_0013E633 + 0xE9D);
-    p = D_L10_001ABFC0[(unsigned char)self[0x21]];
-    if (p != 0) {
+    group_entry = D_L10_001ABFC0[((struct Moby *)self)->group];
+    if (group_entry != 0) {
         do {
-            int idx = *(unsigned short *)p & 0x7FFF;
-            if (D_L10_00160058[idx].state == 5 || FastVecDist(&D_L10_00160058[idx].x, owner + 0x10) < dist) {
-                float d = func_L00_001FF860(D_L10_00160058[idx].x - *(float *)(owner + 0x10),
-                                            D_L10_00160058[idx].y - *(float *)(owner + 0x14));
-                float r = FastSubRots(d, ang);
-                if (r > 0.0f && r < hi) {
-                    hi = r;
-                } else if (r < 0.0f && r > lo) {
-                    lo = r;
+            int listed_entity_index = *(unsigned short *)group_entry & 0x7FFF;
+            if (D_L10_00160058[listed_entity_index].state == 5 ||
+                FastVecDist(&D_L10_00160058[listed_entity_index].x, &owner->pos) < owner_to_self_distance) {
+                float d = func_L00_001FF860(D_L10_00160058[listed_entity_index].x - owner->pos.x,
+                                            D_L10_00160058[listed_entity_index].y - owner->pos.y);
+                float group_angle_offset = FastSubRots(d, owner_to_self_angle);
+                if (group_angle_offset > 0.0f && group_angle_offset < hi) {
+                    hi = group_angle_offset;
+                } else if (group_angle_offset < 0.0f && group_angle_offset > lo) {
+                    lo = group_angle_offset;
                 }
             }
-        } while (*p++ >= 0);
+        } while (*group_entry++ >= 0);
     }
-    return FastAddRots(FastAddRots(lo, FastDiffRots(hi, lo) * 0.5f), ang);
+    return FastAddRots(FastAddRots(lo, FastDiffRots(hi, lo) * 0.5f), owner_to_self_angle);
 }
 /* NON_MATCHING func_L10_002E5E48 -- src/overlays/l10_orxon/vendor_002E30F8.c
  * Best so far: BYTES 58/3804 (98.5% of the bytes match), checked 2026-10-14.
@@ -1507,7 +1508,7 @@ void Enemy_ProcessHit(char *m) {
  ((unsigned char *)m)[0xa4]=255;StepColorFade(m,d+0xc0);
  { unsigned char *hero=D_0013E633_e1d+0xE1D;
  if(hero[0x20a4]==1) {
-  char *v;PickBestTarget(101.0f,m,d+0x110);
+  char *v;select_hero_or_gadgebot_target(101.0f,m,d+0x110);
   if(*(char **)(d+0x110)==0) *(int *)(d+0x114)=2;
   else {v=D_L10_001B0C30[*(int *)(d+0x190)];
    if(!IsPointInPolygon(*(char **)(d+0x110)+0x10,v+0x10,*(int *)v)) {*(int *)(d+0x110)=0;*(int *)(d+0x114)=2;}
@@ -1531,43 +1532,52 @@ extern void func_001F9C30(void *, void *, float);
 extern int func_001FA8A8(int, int, float);
 extern int func_L00_00274788(void *, void *, int, float, float, float, int, int, int);
 
+typedef struct {
+    f32 size;                  /* 0x00 */
+    f32 amount;                /* 0x04 */
+    f32 life;                  /* 0x08 seconds */
+    s32 count;                 /* 0x0C */
+    f32 spread_xy;             /* 0x10 */
+    f32 spread_z;              /* 0x14 */
+} MobyDirectionalPvars;
+
 /* Exhaust vent: each frame emits a burst of smoke puffs from a random spot across the vent, blown out
  * along its facing; some are small fast sparks instead. */
-void ExhaustVentUpdate(char *m) {
+void emit_moby_directional_particles(char *m) {
+    struct Moby *moby = (struct Moby *)m;
     float pos[4];
     float vel[4];
     float off[4];
-    char *d = *(char **)(m + 0x78);
+    MobyDirectionalPvars *pvars = (MobyDirectionalPvars *)moby->pvars;
     int i;
-    ((unsigned char *)m)[0x30] = 0x80;
-    for (i = 0; i < *(int *)(d + 0xC); i++) {
-        int spark = random_integer_below(100) < *(int *)&D_L10_00161F84;
-        char *mp = m + 0x10;
-        float a, b, c;
-        float lo, hi;
+    moby->update_dist = 0x80;
+    for (i = 0; i < pvars->count; i++) {
+        int variant = random_integer_below(100) < *(int *)&D_L10_00161F84;
+        Vec4f *moby_position = &moby->pos;
+        float x, y, z;
         float s;
         int c1, c2;
-        qcopy(pos, mp);
-        off[0] = FastCos(FastAddRots(*(float *)(m + 0x48), 1.5707964f)) * random_float_between(-*(float *)(d + 0x10), *(float *)(d + 0x10));
-        off[1] = FastSin(FastAddRots(*(float *)(m + 0x48), 1.5707964f)) * random_float_between(-*(float *)(d + 0x10), *(float *)(d + 0x10));
+        qcopy(pos, moby_position);
+        off[0] = FastCos(FastAddRots(moby->rot.z, 1.5707964f)) * random_float_between(-pvars->spread_xy, pvars->spread_xy);
+        off[1] = FastSin(FastAddRots(moby->rot.z, 1.5707964f)) * random_float_between(-pvars->spread_xy, pvars->spread_xy);
         off[2] = 0.0f;
-        off[2] = random_float_between(-*(float *)(d + 0x14), *(float *)(d + 0x14));
+        off[2] = random_float_between(-pvars->spread_z, pvars->spread_z);
         FastVecAdd(pos, pos, off);
-        a = random_float_between(*(float *)&D_L10_00161F7C, *(float *)&D_L10_00161F78);
-        b = random_float_between(*(float *)&D_L10_00161F7C, *(float *)&D_L10_00161F78);
-        c = random_float_between(*(float *)&D_L10_00161F7C, *(float *)&D_L10_00161F78);
-        if (a < b) a = b;
-        if (a < c) a = c;
-        BuildSphericalOffset(vel, a * D_0015EE6C, *(float *)(m + 0x48), -*(float *)(m + 0x44));
-        if (spark) {
+        x = random_float_between(*(float *)&D_L10_00161F7C, *(float *)&D_L10_00161F78);
+        y = random_float_between(*(float *)&D_L10_00161F7C, *(float *)&D_L10_00161F78);
+        z = random_float_between(*(float *)&D_L10_00161F7C, *(float *)&D_L10_00161F78);
+        if (x < y) x = y;
+        if (x < z) x = z;
+        BuildSphericalOffset(vel, x * D_0015EE6C, moby->rot.z, -moby->rot.y);
+        if (variant) {
             FastVecScale(vel, vel, random_float_between(0.5f, 1.5f));
-            s = *(float *)(d + 4) * random_float_between(0.24f, 0.36f);
+            s = pvars->amount * random_float_between(0.24f, 0.36f);
         } else {
-            s = *(float *)(d + 4) * random_float_between(0.8f, 1.2f);
+            s = pvars->amount * random_float_between(0.8f, 1.2f);
         }
         c1 = FastTweenColor(*(int *)&D_L10_00161F70, *(int *)&D_L10_00161F74, random_float_between(0.5f, 1.0f));
         c2 = FastTweenColor(*(int *)&D_L10_00161F74, *(int *)&D_L10_00161F74 & 0xFF000000, random_float_between(0.25f, 0.5f));
-        PartType64Spawn(pos, vel, truncate_float_to_s32(func_001F9878(*(float *)(d + 8) * 60.0f)), s, *(float *)d, *(float *)&D_L10_00161F80 * D_0015EE70, c1, c2, spark);
+        PartType64Spawn(pos, vel, truncate_float_to_s32(func_001F9878(pvars->life * 60.0f)), s, pvars->size, *(float *)&D_L10_00161F80 * D_0015EE70, c1, c2, variant);
     }
 }
 extern void func_L00_002676A0(void *, int);
@@ -1708,7 +1718,7 @@ extern unsigned char D_0013D605_2E9978[] __asm__("D_0013D605");
 extern char D_0013D355_2E9978[] __asm__("D_0013D355");
 
 /* Level 10 moby update (class 1344): tracks nearby targets and fires the level's event messages. */
-void Moby1344Update(Moby *m)
+void update_conditional_help_messages(Moby *m)
 {
     EvData_2E9978 *d = (EvData_2E9978 *)((int *)m->pvars);
     Moby *p;
@@ -1916,7 +1926,7 @@ state_two:
                 BuildSphericalOffset(rotation, D_0015EE6C * 40.0f,
                     func_L00_001FF860(target->pos.x - position[0], target->pos.y - position[1]),
                     func_L00_001FF860(func_001F9D48(position, &target->pos), target->pos.z - position[2]));
-                SpawnEnemyShot(m, position, rotation, scale_ticks(30));
+                spawn_class_4ea_projectile(m, position, rotation, scale_ticks(30));
                 if (target == (struct Moby *)(FIRST + (vars->targets[0] << 8)))
                     vars->targets[0] = -1;
                 else if (target == (struct Moby *)(FIRST + (vars->targets[1] << 8)))
@@ -2173,7 +2183,7 @@ extern void func_L10_002EB8A8(void *,short *,short *);
 extern void func_L10_002EBDC8_a01(float,void *,short *,short *) __asm__("func_L10_002EBDC8");
 extern void func_L10_002EBB70(void *,short *);
 // Updates a point emitter, optionally applying effects over up to 32 path points.
-void EffectEmitterUpdate(char *m) {
+void update_configurable_particle_emitter(char *m) {
  char *d=*(char **)(m+0x78);
  switch((unsigned char)m[0x20]) {
  case 0:
@@ -2354,7 +2364,7 @@ extern struct L10Data D_L10_0016CD60;
 extern void func_L00_00264870(int);
 
 /* update: wait for state 1, then act on the level's current mode */
-void Moby1555Update(char *m) {
+void update_level_mode_dispatcher(char *m) {
     switch (*(unsigned char *)(m + 0x20)) {
     case 0:
         ((unsigned char *)m)[0x30] = 0xFF;
@@ -2404,7 +2414,7 @@ void Moby1855Update(char *m) {
 extern void func_L01_00279E10(void *, int);
 
 /* per-frame update: wait for a condition, then run, then clean up */
-void Moby1856Update(char *moby) {
+void update_hit_triggered_moby_spawner(char *moby) {
     int ok = 0;
     char *p = MobyGetHitMessage(moby, 0x10000, 0);
     switch (*(unsigned char *)(moby + 0x20)) {
@@ -2420,7 +2430,7 @@ void Moby1856Update(char *moby) {
     case 2:
         Moby_PlaySound(0, 0, (int)moby);
         SpawnBreakFxByDistance(moby);
-        SpawnMobyCopyingPlacement(moby, 0x741);
+        spawn_moby_from_placement(moby, 0x741);
         DeleteMoby(moby);
         break;
     }

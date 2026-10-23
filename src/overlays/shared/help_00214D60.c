@@ -179,7 +179,7 @@ extern float func_L00_001FF860(float, float);
 extern char D_0013E633[];
 
 /* tracks the nearest target for the camera and stores the heading toward it */
-void CameraTrackNearestTarget(float a, float b, float c) {
+void update_hero_target_heading(float a, float b, float c) {
     char *g = D_0013E633 + 0xE1D;
     float d;
     char *m;
@@ -191,7 +191,7 @@ void CameraTrackNearestTarget(float a, float b, float c) {
             *(int *)(g + 0xA58) = 1;
             *(int *)(g + 0xA54) = 0;
         }
-        m = FindNearestListedObject(a, d, b, c);
+        m = find_best_hero_heading_target(a, d, b, c);
         if (m != 0 && (*(int *)(g + 0xA54) == 0 || *(int *)(g + 0xA58) != 0)) {
             *(float *)(g + 0xA5C) = func_L00_001FF860(*(float *)(m + 0x10) - *(float *)(g + 0x80), *(float *)(m + 0x14) - *(float *)(g + 0x84));
             *(char **)(g + 0xA54) = m;
@@ -278,7 +278,7 @@ extern f32 func_001F9F90(f32);
 extern f32 func_001FA748(f32, f32);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/help/00215340.c, FUN_L00_00215340. */
-void Hero_SetLeanJoints(void) {
+void adjust_hero_pose_targets_from_motion(void) {
     f32 v, nv, k, a, s, ang;
     f32 w, nw;
     f32 b, c1, c2, c3;
@@ -489,7 +489,7 @@ extern f32 func_001F9B88(f32);
 
 /* In hero state 2, sets the lean values from motion.unk188 (clamped to +-1.4); needs the moby in item slot 3.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/help/00214658.c, FUN_L00_00215ef8. */
-void Hero_SetItemLean(void)
+void update_hero_lean_and_sway_parameters(void)
 {
     struct Hero *h = &D_0013F450_15A90;
     f32 scale;
@@ -532,7 +532,7 @@ extern void func_001F9EE8(void *, void *, void *);
 extern float func_L00_001FF860(float, float);
 
 /* Writes the elevation and -azimuth of the vector in, rotated into the hero moby's frame. */
-void VecToHeroAngles(Vx *in, float *out) {
+void compute_rotated_vector_angles(Vx *in, float *out) {
     Mx m0;
     Mx n0;
     Vx v0;
@@ -696,7 +696,7 @@ extern void func_L00_002343A0(float *dst, float *src, float z);
 extern void func_L00_00234420(float *dst, float *src, float z);
 extern void func_001F9BC0(void *);
 // Bleeds off the hero's momentum vector by amount a, clearing it when it is tiny.
-void Hero_DecayMomentum(float a) {
+void reduce_and_apply_hero_planar_velocity_addend(float a) {
     float *v = (float *)(D_0013E633 + 0xF6D);
     float s = gravity_length_xy(v);
     if (s > 0.001f) {
@@ -768,7 +768,7 @@ extern void func_L00_002129D0(s32);
 extern f32 func_001F9B88(f32);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00214658.c, FUN_L00_002167d0. */
-void Hero_ApplyStickVelocity(void) {
+void update_hero_planar_movement_velocity(void) {
     G_167d0 *m;
     H *q;
     V4 *r;
@@ -878,7 +878,7 @@ void Hero_ApplyStickVelocity(void) {
     if (0.0f < k) {
         m->f3B0 = m->f3B0 / (k * (D_0015EE6C * 5.9f));
     }
-    Hero_ProbeGroundSupport(0);
+    clip_hero_velocity_against_probed_surfaces(0);
     if (m->f3B4 < 0.0174532924f && 0.0872664601f < m->f2E4) {
         FastVecScale(D_0013F530, D_0013F530, FastCos(m->f2E4));
     }
@@ -939,7 +939,7 @@ extern unsigned char D_001414F5[] NOT_SDA;
 extern int func_001F9938(void *);
 
 /* Ticks eight timer slots and, for each that has run out, clears a field and calls the release helper. */
-void Hero_TickReleaseTimers(void) {
+void update_hero_delayed_voice_requests(void) {
     char *p = (char *)D_001414F5 + 0x137;
     short *q = (short *)(D_001414F5 + 0x139);
     int i;
@@ -1034,7 +1034,7 @@ float func_L00_002345B0(void *);
 void func_L00_002144A0(float);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00214658.c, FUN_L00_00217118. */
-void Hero_EdgeBrake(float a, float b)
+void stop_hero_motion_without_forward_support(float a, float b)
 {
     q_217118 t[1];
     q_217118 u[1];
@@ -1175,7 +1175,7 @@ extern void func_00213DE0(void *, s32, s32, s32);
 
 /* Launches the equipped gadget moby: aims it at its target (or along the camera), builds its orientation matrix and starts its animation/sound.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/help/00214658.c, FUN_L00_00217658. */
-void LaunchGadgetMoby(void) {
+void launch_hero_wrench(void) {
     f32 dir[4];
     f32 delta[4];
     f32 mat[12];
@@ -1194,7 +1194,7 @@ void LaunchGadgetMoby(void) {
     if (aimed) {
         target = D_0013F450_15A90.items[0].moby;
         has_target = 0;
-        if (target != 0 && IsMobyClass47(target)) {
+        if (target != 0 && is_wrench_moby(target)) {
             tpv = (ThrowPvars_217658 *)target->pvars;
             if (tpv->unk7E) {
                 has_target = 1;
@@ -1210,7 +1210,7 @@ void LaunchGadgetMoby(void) {
         }
     }
     item = D_0013F450_15A90.items[0].moby;
-    if (!IsMobyClass47(item)) {
+    if (!is_wrench_moby(item)) {
         return;
     }
     D_0013F450_15A90.items[0].unk1A = 1;
@@ -1243,8 +1243,8 @@ void LaunchGadgetMoby(void) {
     matrix_to_euler(out_mat, &item->rot);
     pv->unk64 = 0;
     pv->unk60 = D_0015EE6C * 23.0f;
-    Manipulator_StartIfIdle(item, D_00140C00);
-    AddSpawnedCopyToList(D_00140C00, 0x30, 3);
-    AddSpawnedCopyToList(D_00140C00, 0x17, 5);
+    initialize_moby_transform_history(item, D_00140C00);
+    create_moby_transform_history_entry(D_00140C00, 0x30, 3);
+    create_moby_transform_history_entry(D_00140C00, 0x17, 5);
     MobyBlendAnimation(item, 6, 0, scale_ticks(5));
 }
