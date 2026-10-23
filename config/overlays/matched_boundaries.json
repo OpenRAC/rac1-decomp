@@ -1,6 +1,7 @@
 [
   {
     "head": "func_L00_0024BBB0",
+    "exe": "func_002095E8",
     "tail": "func_L00_0024BBCC",
     "prefix": "func_L00_0024BA70",
     "size": 56,
@@ -108,6 +109,7 @@
   },
   {
     "head": "func_L00_0024BF98",
+    "exe": "func_002099D0",
     "tail": "func_L00_0024BFB8",
     "prefix": "func_L00_0024B960",
     "size": 72,
@@ -215,6 +217,7 @@
   },
   {
     "head": "func_L00_0024BFE0",
+    "exe": "func_00209A18",
     "tail": "func_L00_0024BFFC",
     "prefix": "func_L00_0024BBE8",
     "size": 68,
@@ -322,6 +325,7 @@
   },
   {
     "head": "func_L00_0025D3C0",
+    "exe": "func_00215078",
     "tail": "func_L00_0025D3D0",
     "prefix": "func_L00_0025D390",
     "size": 48,

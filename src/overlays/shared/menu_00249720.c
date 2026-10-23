@@ -366,16 +366,6 @@ void MarkSelectedCardSlot(void) {
 INCLUDE_ASM("asm/overlays", func_L00_0024BB5C);
 INCLUDE_ASM("asm/overlays", func_L00_0024BB90);
 INCLUDE_ASM("asm/overlays", func_L00_0024BB98);
-extern char D_0013D355[];
-extern int D_0015EFB4 MACRO_ADDR;
-extern int D_0015EFB0 MACRO_ADDR;
-/* Advances the card menu once the relevant card status and request flag permit it. */
-void func_L00_0024BBB0(void) {
- int flags;
- if (*(int *)(D_0013D355 + 0x57) != 0) { D_0015EFB0=3; return; }
- flags=D_0015EFB4;
- if (flags & 2) {  D_0015EFB0=13; }
-}
 extern int D_L00_0015F688 MACRO_ADDR;
 /* while D_0013D390[7] is set the menu state is 3; else flag 0x20 is taken down with state 24
    (D_L00_0015F688 set) or 12, or flag 0x10 with state 14 */
@@ -441,24 +431,4 @@ void CardMenu_NextStateOnCounters(void) {
             D_0015EFB0 = 1;
         }
     }
-}
-extern char D_0013D355[];
-extern int D_0015EFB4 MACRO_ADDR;
-extern int D_0015EFB0 MACRO_ADDR;
-/* Advances the card menu once the relevant card status and request flag permit it. */
-void func_L00_0024BF98(void) {
- int flags;
- if (*(int *)(D_0013D355 + 0x57) != -2) { D_0015EFB0=3; return; }
- flags=D_0015EFB4;
- if (flags & 32) { D_0015EFB4 = flags ^ 0x20; D_0015EFB0=5; }
-}
-extern char D_0013D355[];
-extern int D_0015EFB4 MACRO_ADDR;
-extern int D_0015EFB0 MACRO_ADDR;
-/* Advances the card menu once the relevant card status and request flag permit it. */
-void func_L00_0024BFE0(void) {
- int flags;
- if (*(int *)(D_0013D355 + 0x57) != 0) { D_0015EFB0=3; return; }
- flags=D_0015EFB4;
- if (flags & 32) { D_0015EFB4 = flags ^ 0x20; D_0015EFB0=12; }
 }

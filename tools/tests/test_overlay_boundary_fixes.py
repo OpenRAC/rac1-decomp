@@ -1,4 +1,4 @@
-"""Regression coverage for catalogue regeneration of four reconstructed C ranges."""
+"""Regression coverage for catalogue regeneration of four joins of executable code."""
 import copy
 from pathlib import Path
 import sys
@@ -16,7 +16,7 @@ class MatchedBoundaryTests(unittest.TestCase):
     def split_again(self):
         rows = copy.deepcopy(self.correct)
         for spec in self.specs:
-            head = rows.pop(spec["head"])
+            head = rows.pop(spec["exe"])
             offset = spec["prefix_size"]
             rows[spec["tail"]] = (spec["tail"], "shared", spec["size"] - offset,
                                   spec["tail_fingerprint"], [(lv, a + offset) for lv, a in head[4]])
@@ -25,8 +25,9 @@ class MatchedBoundaryTests(unittest.TestCase):
         return rows
 
     def test_rebuilds_only_the_four_proven_ranges(self):
-        self.assertEqual({s["head"] for s in self.specs}, {
-            "func_L00_0024BBB0", "func_L00_0024BF98", "func_L00_0024BFE0", "func_L00_0025D3C0"})
+        self.assertEqual({s["head"]: s["exe"] for s in self.specs}, {
+            "func_L00_0024BBB0": "func_002095E8", "func_L00_0024BF98": "func_002099D0",
+            "func_L00_0024BFE0": "func_00209A18", "func_L00_0025D3C0": "func_00215078"})
         rows = self.split_again()
         fixes.restore_matched_merges(rows)
         self.assertEqual(rows, self.correct)

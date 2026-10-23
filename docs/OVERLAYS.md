@@ -209,12 +209,15 @@ and UpdateMoby_324 in level 8) are corrected below.
 placements, references and preceding returns. Catalogue generation applies
 the same corrections; the existing remnant rule remains unchanged.
 
-The same post-split pass preserves four reconstructed C functions whose shared
-prefixes the initial fingerprint pass splits off: `func_L00_0024BBB0` (56 bytes),
-`func_L00_0024BF98` (72), `func_L00_0024BFE0` (68) and `func_L00_0025D3C0` (48).
-All four were checked EXACT at all 19 placements. The tracked
+The same post-split pass rejoins four functions whose shared prefixes the
+initial fingerprint pass splits off, at level 0's `0x24BBB0` (56 bytes),
+`0x24BF98` (72), `0x24BFE0` (68) and `0x25D3C0` (48). Each joined range is the
+same code as an executable function (`func_002095E8`, `func_002099D0`,
+`func_00209A18` and `func_00215078`), so, like any such function, its 19
+placements are catalogued under that function (kind `exe`) and built from its
+C; the check verifies that identity against the executable. The tracked
 `config/overlays/matched_boundaries.json` records those 76 addresses, exact code
-sizes and retail SHA-256 values. The correction removes only their absorbed
+sizes, retail SHA-256 values and the executable counterpart. The correction removes only their absorbed
 prefix occurrences; independent copies and the two unproven joins remain split.
 Variants are computed after these corrections, from the final function ranges,
 so removed tails cannot remain variant names or parents.

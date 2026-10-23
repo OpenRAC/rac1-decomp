@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify and repair PAL v2 overlay boundaries, including four exact C joins.
+"""Verify and repair PAL v2 overlay boundaries, including four joins of executable code.
 
 These are catalogue corrections, not C matches or new assembly classifications.
 The existing overlay_remnants rule must accept every retained remnant.
@@ -48,7 +48,10 @@ def require(condition, message):
 
 
 def verify_matched_merges():
+    exe = {name: ov.fingerprint(body) for name, _, _, body in ov.exe_functions()}
     for spec in matched_merges():
+        require(exe.get(spec["exe"]) == spec["fingerprint"],
+                f"{spec['head']}: not the same code as executable function {spec['exe']}")
         require([p[0] for p in spec["places"]] == list(range(19)),
                 f"{spec['head']}: expected exactly one audited placement in every level")
         size, offset = spec["size"], spec["prefix_size"]
@@ -66,13 +69,17 @@ def verify_matched_merges():
 
 
 def restore_matched_merges(by_name):
-    """Absorb only the 19 audited prefix occurrences, retaining every other copy."""
+    """Absorb only the 19 audited prefix occurrences, retaining every other copy.
+
+    Each joined range is the same code as an executable function, so, as the
+    catalogue does for any such function, its places go under that function
+    (kind exe) and its C is the executable's."""
     for spec in matched_merges():
-        head, tail, prefix = (spec[k] for k in ("head", "tail", "prefix"))
+        head, tail, prefix, name = (spec[k] for k in ("head", "tail", "prefix", "exe"))
         size, offset = spec["size"], spec["prefix_size"]
         places = [(level, int(address, 16)) for level, address, _ in spec["places"]]
-        expected = (head, "shared", size, spec["fingerprint"], places)
-        require((head in by_name) != (tail in by_name), f"{head}: expected split or merged entry, not both")
+        expected = (name, "exe", size, spec["fingerprint"], places)
+        require((name in by_name) != (tail in by_name), f"{head}: expected split or merged entry, not both")
         pro = by_name[prefix]
         require(pro[1:4] == ("shared", offset, spec["prefix_fingerprint"]),
                 f"{head}: shared prefix shape changed")
@@ -88,14 +95,14 @@ def restore_matched_merges(by_name):
                     f"{head}: removing absorbed prefixes would lose an independent copy")
             by_name[prefix] = (*pro[:4], keep)
             del by_name[tail]
-            by_name[head] = expected
+            by_name[name] = expected
         else:
-            require(by_name[head] == expected, f"{head}: merged row differs from audited code")
+            require(by_name[name] == expected, f"{head}: merged row differs from audited code")
             require(not targets.intersection(pro[4]), f"{head}: absorbed prefix still overlaps the C function")
 
 
 def verify_retail():
-    """Check 27 assembly boundaries and 76 placements of the four matched C joins."""
+    """Check 27 assembly boundaries and 76 placements of the four joins of executable code."""
     verify_matched_merges()
     for level, address in OLD_PLACES:
         image = rem.level_image(level)
@@ -221,7 +228,7 @@ def main():
     print("Delta: ", {k: a[k] - b[k] for k in b})
     if args.check:
         require(before == after, "catalogue boundary corrections have not been applied")
-        print("PASS: corrected table and 27 assembly boundaries and 76 C placements verified; original remnant rule unchanged")
+        print("PASS: corrected table and 27 assembly boundaries and 76 placements of executable code verified; original remnant rule unchanged")
     else:
         args.catalogue.write_text(serialize(after))
         print(f"Wrote {args.catalogue}; no C function has been added by this repair")
