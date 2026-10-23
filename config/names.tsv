@@ -246,11 +246,11 @@ func_00200248	GetFrameTex	recovered	config/symbol_names.txt	text: NTSC/PAL funct
 func_00200468	HudSprite	descriptive	ReRAC doc_names.csv	verified at US level 01 0x2500E0 (docs/plan/hud_text.md:79): (frame;x;y;w;h;a); fingerprint	draw_hud_sprite,hud_sprite
 func_00200650	draw_hud_sprite_flipped	descriptive	the NTSC decomp	draw_hud_sprite_flipped at US boot 0x001FFE18 (src/overlays/l02/ui/text/0023ccc8.c); US function table counterpart	DrawHudSpriteTurned,HudSpriteRot180
 func_002008B8	draw_hud_sprite_subpixel	descriptive	the NTSC decomp	draw_hud_sprite_subpixel at US boot 0x00200080 (src/overlays/shared/ui/hud/hud_keep_visible.c); US function table counterpart	DrawHudSpriteSubpixel
-func_00200A90	draw_hud_sprite_uv	descriptive	the NTSC decomp	draw_hud_sprite_uv at US boot 0x00200258 (src/assembly/textbin/ui/map/draw_level_selection_map.c); US function table counterpart	DrawHudSpriteUV
+func_00200A90	draw_hud_sprite_uv	descriptive	the NTSC decomp	draw_hud_sprite_uv at US boot 0x00200258 (src/ui/hud/draw_hud_sprite_uv.c); US function table counterpart	DrawHudSpriteUV
 func_00200E38	draw_rotated_sprite	descriptive	the NTSC decomp	draw_rotated_sprite at US boot 0x00200600 (src/overlays/shared/rendering/00245c28.c); US function table counterpart	DrawHudSpriteRotated
 func_00201190	draw_hud_sprite_rect	descriptive	the NTSC decomp	draw_hud_sprite_rect at US boot 0x00200958 (src/textbin/ui/menus/audio/draw_sound_menu.c); US function table counterpart	
 func_00201348	Hud_sendTexture	recovered	config/symbol_names.txt	text: NTSC/PAL function-size alignment	hud_send_texture
-func_002014B8	draw_hud_rect	descriptive	the NTSC decomp	draw_hud_rect at US boot 0x00200C80 (src/assembly/textbin/ui/map/draw_level_selection_map.c); US function table counterpart	
+func_002014B8	draw_hud_rect	descriptive	the NTSC decomp	draw_hud_rect at US boot 0x00200C80 (src/ui/hud/draw_hud_rect.c); US function table counterpart	
 func_002017C8	draw_hud_rect_depth	descriptive	the NTSC decomp	draw_hud_rect_depth at US boot 0x00200F90 (src/overlays/shared/audio/voices/00276368.c); US function table counterpart	
 func_00201960	draw_stretchable_ui_frame	descriptive	Lombyte recovered_names.json	proposal (high, ui/frames) at US 0x201128; US/PAL size alignment	DrawBarFrame
 func_00201A38	draw_framed_text	descriptive	the NTSC decomp	draw_framed_text at US boot 0x00201200 (src/overlays/shared/ui/hud/hud_keep_visible.c); US function table counterpart	DrawBanner,DrawFramedText
@@ -1824,7 +1824,7 @@ func_001F7B70	draw_debug_font	descriptive	the NTSC decomp	draw_debug_font at US 
 func_001F9478	append_billboard_batch	descriptive	the NTSC decomp	append_billboard_batch at US boot 0x001F92B0 (src/rendering/draw_debug_profiler.c); US function table counterpart	DrawBillboardBatch
 func_001FA888	IntToFloat	descriptive	config/names_local.tsv	body: returns (float)arg0; used for ints converted for 1.0f/x tick math	convert_integer_to_float
 func_001FDF10	calculate_ring_buffer_bounds	descriptive	the NTSC decomp	calculate_ring_buffer_bounds at US boot 0x001FD6E0 (src/runtime/memory/calculate_ring_buffer_bounds.c); US function table counterpart	GetTailBufferPair
-func_001FDF78	draw_level_selection_map	descriptive	the NTSC decomp	draw_level_selection_map at US boot 0x001FD748 (src/assembly/textbin/ui/map/draw_level_selection_map.c); US function table counterpart	DrawLevelSelectMap
+func_001FDF78	draw_level_selection_map	descriptive	the NTSC decomp	draw_level_selection_map at US boot 0x001FD748 (src/ui/map/draw_level_selection_map.c); US function table counterpart	DrawLevelSelectMap
 func_001FFFA0	update_resource_counter	descriptive	the NTSC decomp	update_resource_counter at US boot 0x001FF768 (src/overlays/shared/gameplay/entities/00295100.c); US function table counterpart	TickDownCounter
 func_00202AA8	upload_mip_texture	descriptive	the NTSC decomp	upload_mip_texture at US boot 0x00202270 (src/rendering/texture/upload_mip_texture.c); US function table counterpart	UploadMipTexture
 func_002083E0	load_map_chunk	descriptive	the NTSC decomp	load_map_chunk at US boot 0x00207BB0 (src/overlays/shared/rendering/00245c28.c); US function table counterpart	UnpackOcclusionMap
@@ -4181,7 +4181,7 @@ D_0015EF4C	level_root	descriptive	the NTSC decomp	level_root at US boot 0x0015EE
 D_0015EF50	sound_archive_base	descriptive	the NTSC decomp	sound_archive_base at US boot 0x0015EE50 (src/gameplay/state/service_level_archive_load.c); US/PAL address translation (code of both refers to it)	
 D_0015EF54	level_archive_base	descriptive	the NTSC decomp	level_archive_base at US boot 0x0015EE54 (src/gameplay/state/service_level_archive_load.c); US/PAL address translation (code of both refers to it)	
 D_0015EF90	pause_action_list_mode	descriptive	the NTSC decomp	pause_action_list_mode at US boot 0x0015EE90 (include/rnc/ui/menus/menu_globals.h); US/PAL address translation (code of both refers to it)	
-D_0015EFB8	active_fs_aa_buffer	descriptive	the NTSC decomp	active_fs_aa_buffer at US boot 0x0015EEB8 (src/assembly/textbin/rendering/buffers/setup_fs_aa_buffer.c); US/PAL address translation (code of both refers to it)	
+D_0015EFB8	active_fs_aa_buffer	descriptive	the NTSC decomp	active_fs_aa_buffer at US boot 0x0015EEB8 (src/rendering/buffers/setup_fs_aa_buffer.c); US/PAL address translation (code of both refers to it)	
 D_0015EFC8	debug_font_pif_header	descriptive	the NTSC decomp	debug_font_pif_header at US boot 0x0015EEC8 (include/rnc/overlay/level_globals.h); US/PAL address translation (code of both refers to it)	
 D_0015F020	texture_alloc_counter	descriptive	the NTSC decomp	texture_alloc_counter at US boot 0x0015EF20 (src/runtime/dma/initialize_streaming_state.c); US/PAL address translation (code of both refers to it)	
 D_0015F050	intro_overlay_alpha	descriptive	the NTSC decomp	intro_overlay_alpha at US boot 0x0015EF50 (include/rnc/gameplay/state/game_globals.h); US/PAL address translation (code of both refers to it)	
@@ -4617,7 +4617,7 @@ func_001FA588	multiply_quaternions	candidate	the NTSC decomp	held-alias: multipl
 func_001FA5C8	quaternion_nlerp	candidate	the NTSC decomp	held-alias: quaternion_nlerp at US boot 0x001FA400 (src/assembly/textbin/math/quaternions/quaternion_nlerp.c); US function table counterpart	slerp_67e8
 func_001FA648	quaternion_to_rotation_basis	candidate	the NTSC decomp	held-alias: quaternion_to_rotation_basis at US boot 0x001FA480 (src/assembly/textbin/math/quaternions/quaternion_to_rotation_basis.c); US function table counterpart	quaternion_rotation_basis
 func_001FA8F0	fast_bsphere_check	candidate	the NTSC decomp	held-alias: fast_bsphere_check at US boot 0x001FA728 (src/assembly/textbin/fast_bsphere_check.c); US function table counterpart	sphere_in_view,sphere_in_view_7920,sphere_visible,sphere_visible_ff640
-func_00201640	append_screen_rect_packet	candidate	the NTSC decomp	held-alias: append_screen_rect_packet at US boot 0x00200E08 (src/assembly/textbin/ui/map/draw_level_selection_map.c); US function table counterpart	append_screen_sprite
+func_00201640	append_screen_rect_packet	candidate	the NTSC decomp	held-alias: append_screen_rect_packet at US boot 0x00200E08 (src/overlays/shared/audio/voices/00276368.c); US function table counterpart	append_screen_sprite
 func_0020C468	fast_decompress	candidate	the NTSC decomp	held-alias: fast_decompress at US boot 0x0020B618 (src/assembly/textbin/fast_decompress.c); US function table counterpart	decompress_wad
 func_0020E3D0	advance_moby_animation	candidate	the NTSC decomp	held-alias: advance_moby_animation at US boot 0x0020D580 (src/assembly/textbin/gameplay/animation/advance_moby_animation.c); US function table counterpart	advance_moby_animation_alt,advance_resident_object_animation
 func_0020ED48	refresh_moby_spatial_bounds	candidate	the NTSC decomp	held-alias: refresh_moby_spatial_bounds at US boot 0x0020DEF8 (src/assembly/textbin/gameplay/entities/refresh_moby_spatial_bounds.c); US function table counterpart	refresh_resident_object_spatial_bounds
@@ -4725,7 +4725,7 @@ func_L07_003121D0	door_update	candidate	the NTSC decomp	held-several-symbols: do
 func_L10_002F6F18	initialize_path_camera	candidate	the NTSC decomp	held-several-symbols: initialize_path_camera at US level 10 0x002F5B58 (src/overlays/shared/gameplay/vendor/002e3de8.c); US function table counterpart	
 func_L14_002B4E40	machinegun_turret_update	candidate	the NTSC decomp	held-several-symbols: machinegun_turret_update at US level 14 0x002B3BF0 (src/overlays/l14/gameplay/entities/blarg_heavy_interceptor.c); US function table counterpart	
 func_L15_002C6950	helicopter_update	candidate	the NTSC decomp	held-several-symbols: helicopter_update at US level 15 0x002C5630 (src/overlays/l15/gameplay/entities/gate.c); US function table counterpart	
-D_0015F770	large_font_height	candidate	the NTSC decomp	held-several-symbols: large_font_height at US boot 0x0015F690 (src/assembly/textbin/ui/map/draw_level_selection_map.c); US/PAL address translation (code of both refers to it)	
+D_0015F770	large_font_height	candidate	the NTSC decomp	held-several-symbols: large_font_height at US boot 0x0015F690 (src/ui/map/draw_level_selection_map.c); US/PAL address translation (code of both refers to it)	
 D_L00_0015F6B0	game_frame	candidate	the NTSC decomp	held-several-symbols: game_frame at US level 00 0x0015F5CC (src/overlays/shared/audio/streaming/00266298.c); US/PAL address translation (code of both refers to it)	
 D_L00_0015F770	large_font_height	candidate	the NTSC decomp	held-several-symbols: large_font_height at US level 00 0x0015F690 (src/overlays/shared/gameplay/hero/hero_check_damage.c); US/PAL address translation (code of both refers to it)	
 D_L00_00160098	moby_table	candidate	the NTSC decomp	held-several-symbols: moby_table at US level 00 0x0015FFD8 (src/overlays/shared/gameplay/entities/devastator.c); US/PAL address translation (code of both refers to it)	
