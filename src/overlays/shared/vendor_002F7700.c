@@ -1069,54 +1069,61 @@ extern void func_L00_002B6E10(void *, void *);
 
 typedef struct { int zone; float lo; float hi; int vol; } Zone_303a20;
 
+typedef struct ZoneVars_302648 {
+    Zone_303a20 zones[20];     /* 0x000: per zone: index into D_L01_001B0C30 (-1 unused), z range, volume */
+    s32 count;                 /* 0x140: frames the target has stood clear of every zone; 0 when it is inside one */
+} ZoneVars_302648;
+
 /* Counts how long the type-0xAC moby has stood clear of the 20 zones; after 90 ticks hands it on. */
 void update_target_outside_zone_timeout(char *m) {
-    Zone_303a20 *d = *(Zone_303a20 **)(m + 0x78);
-    char *t = 0;
+    struct Moby *moby = (struct Moby *)m;
+    ZoneVars_302648 *zone_vars = (ZoneVars_302648 *)moby->pvars;
+    struct Moby *target_moby = 0;
+    struct Moby *candidate_moby;
     Zone_303a20 *e;
-    char *tp;
-    ((unsigned char *)m)[0x30] = 0xFF;
+    Vec4f *tp;
+
+    moby->update_dist = 0xFF;
     if (*(int *)(D_0013E633 + 0x2EA1) != 0x1D) goto fail;
     {
-        char *o;
-        for (o = D_L01_00160064; o != 0; o = *(char **)(o + 0x28)) {
-            if (*(short *)(o + 0xA6) == 0xAC) {
-                t = o;
+        for (candidate_moby = (struct Moby *)D_L01_00160064; candidate_moby != 0; candidate_moby = candidate_moby->next) {
+            if (candidate_moby->oclass == 0xAC) {
+                target_moby = candidate_moby;
                 break;
             }
         }
     }
-    if (t == 0 || *(short *)(t + 0xA6) != 0xAC) {
+    if (target_moby == 0 || target_moby->oclass != 0xAC) {
     fail:
-        *(int *)((char *)d + 0x140) = 0;
+        zone_vars->count = 0;
         return;
     }
-    *(int *)((char *)d + 0x140) += 1;
-    tp = t + 0x10;
+    zone_vars->count += 1;
+    tp = &target_moby->pos;
     {
         int none = -1;
-        e = d;
+        e = zone_vars->zones;
         do {
-        if (e->zone != none && *(float *)(t + 0x18) > e->lo && *(float *)(t + 0x18) < e->hi) {
-            char *z = D_L01_001B0C30[e->zone];
-            if (IsPointInPolygon(tp, z + 0x10, *(int *)z)) {
-                *(int *)((char *)d + 0x140) = 0;
+            if (e->zone != none && target_moby->pos.z > e->lo && target_moby->pos.z < e->hi) {
+                s32 *path = (s32 *)D_L01_001B0C30[e->zone];
+                if (IsPointInPolygon(tp, path + 4, path[0])) {
+                    zone_vars->count = 0;
+                    break;
+                }
+            }
+            if (is_point_inside_clip_volume(tp, e->vol)) {
+                zone_vars->count = 0;
                 break;
             }
-        }
-        if (is_point_inside_clip_volume(tp, e->vol)) {
-            *(int *)((char *)d + 0x140) = 0;
-            break;
-        }
-        e++;
-        } while ((int)e < (int)(d + 20));
+            e++;
+        } while ((int)e < (int)(zone_vars->zones + 20));
     }
-    if (*(int *)((char *)d + 0x140) > 0) {
+    if (zone_vars->count > 0) {
         if (*(int *)&D_L01_0015F40C != 0) {
             AddDrawCallback(DrawTiledScreenOverlay, m);
         }
-        if (scale_ticks(0x5A) < *(int *)((char *)d + 0x140)) {
-            Moby_EndGadgetControl(t, *(void **)(t + 0x78));
+        if (scale_ticks(0x5A) < zone_vars->count) {
+            Moby_EndGadgetControl(target_moby, target_moby->pvars);
         }
     }
 }
@@ -1355,30 +1362,42 @@ void GlowRingPickupUpdate(char *moby) {
 extern int func_002140B0(int);
 extern int func_001F9850(int);
 
+typedef struct {
+    u8 pad00[0x20];
+    f32 r[4];                  /* 0x20 random values, one per slot */
+    f32 a[4];                  /* 0x30 */
+    s32 c[4];                  /* 0x40 scale_ticks values, 0x3F + i * 0x40 */
+    f32 x40;                   /* 0x50 */
+    f32 x44;                   /* 0x54 */
+    f32 x48;                   /* 0x58 */
+    f32 x4c;                   /* 0x5C */
+} M_FUN_L01_00308470;
+
 /* fills random floats and sound handles in the moby's data block */
 void initialize_gold_bolt_data(char *moby) {
-    char *data = *(char **)(moby + 0x78);
-    float *f = (float *)(data + 0x20);
-    int *p;
+    Moby *o = (Moby *)moby;
+    M_FUN_L01_00308470 *m = (M_FUN_L01_00308470 *)o->pvars;
+    f32 *f = m->r;
+    s32 *p;
     int i;
     int arg;
     for (i = 3; i >= 0; i--, f++) {
         *f = (float)random_integer_below(0xFF);
     }
-    p = (int *)(data + 0x40);
-    *(float *)(data + 0x30) = -1.0f;
-    *(float *)(data + 0x34) = -2.25f;
-    *(float *)(data + 0x38) = 1.25f;
-    *(float *)(data + 0x3C) = 2.5f;
+    p = m->c;
     arg = 0x3F;
+    m->a[0] = -1.0f;
+    m->a[1] = -2.25f;
+    m->a[2] = 1.25f;
+    m->a[3] = 2.5f;
     for (i = 3; i >= 0; i--, p++) {
         *p = scale_ticks(arg);
         arg += 0x40;
     }
-    *(float *)(data + 0x50) = 2.5f;
-    *(float *)(data + 0x54) = 3.0f;
-    *(float *)(data + 0x5C) = 2.5f;
-    *(float *)(data + 0x58) = 3.0f;
+    m->x40 = 2.5f;
+    m->x44 = 3.0f;
+    m->x4c = 2.5f;
+    m->x48 = 3.0f;
 }
 extern char D_L01_001672C0[];
 extern short D_L01_00161FCC;
@@ -2304,50 +2323,52 @@ extern int func_L00_001EFFF0_30E6E0(void *, void *, int, void *, void *) __asm__
 /* Picks the best lock-on target for moby from the target table: a drawn class-5 enemy with health, within range, whose direction from `from`
  * is inside the yaw/pitch cone (or the wider near cone when close), scored by angle error and distance,
  * with a clear line of sight (or the blocker is the same kind of enemy). */
-void *select_sandmouse_projectile_target(void *moby, void *from, void *ang, float yawMax, float pitchMax, float range, float near,
-                        float nearYaw, float nearPitch) {
+void *select_sandmouse_projectile_target(void *moby, void *from, void *reference_rotation, float yawMax, float pitchMax,
+                        float range, float near, float nearYaw, float nearPitch) {
     float tp[4];
-    char *best = 0;
+    struct Moby *best = 0;
     float bestScore = 1.0e9f;
-    char *t;
-    int i;
-    for (i = 0; (t = D_L01_001AC180_30E6E0[i]) != 0; i++) {
-        char *hs = D_L01_00174340_30E6E0;
-        char *pl = D_0013E633 + 0xE1D;
-        float *hp;
-        int cls;
-        float dist, score, p2;
-        if (*(short *)(t + 0x32) == 0) continue;
-        hp = func_L00_0025D390_30E6E0(t);
-        if (t == 0 || *(char **)(t + 0x24) == 0) continue;
-        cls = *(short *)(*(char **)(t + 0x24) + 0x46);
-        if (cls != 5 || hp == 0 || !(0.0f < *hp)) continue;
-        dist = FastVecDist(from, t + 0x10);
-        if (!(dist < range)) continue;
-        qcopy(tp, t + 0x10);
+    s32 i;
+    struct Moby *candidate_moby;
+
+    for (i = 0; (candidate_moby = (struct Moby *)D_L01_001AC180_30E6E0[i]) != 0; i++) {
+        CollisionHit *collision_hit = (CollisionHit *)D_L01_00174340_30E6E0;
+        Hero *hero_ptr = (Hero *)(D_0013E633 + 0xE1D);
+        f32 *hp;
+        s32 candidate_target_kind;
+        f32 candidate_distance, score, pitch_error_squared;
+
+        if (candidate_moby->draw_dist == 0) continue;
+        hp = func_L00_0025D390_30E6E0(candidate_moby);
+        if (candidate_moby == 0 || candidate_moby->pclass == 0) continue;
+        candidate_target_kind = candidate_moby->pclass->type;
+        if (candidate_target_kind != 5 || hp == 0 || !(0.0f < *hp)) continue;
+        candidate_distance = FastVecDist(from, &candidate_moby->pos);
+        if (!(candidate_distance < range)) continue;
+        qcopy(tp, &candidate_moby->pos);
         tp[2] += 0.4f;
-        score = FastDiffRots(((float *)ang)[2], func_L00_001FF860(tp[0] - ((float *)from)[0], tp[1] - ((float *)from)[1]));
+        score = FastDiffRots(((f32 *)reference_rotation)[2], func_L00_001FF860(tp[0] - ((f32 *)from)[0], tp[1] - ((f32 *)from)[1]));
         score = score * score;
         if (!(score < yawMax * yawMax)) {
-            if (!(dist < near) || !(score < nearYaw * nearYaw)) continue;
+            if (!(candidate_distance < near) || !(score < nearYaw * nearYaw)) continue;
         }
-        p2 = FastDiffRots(((float *)ang)[1], func_L00_001FF860(dist, tp[2] - ((float *)from)[2]));
-        p2 = p2 * p2;
-        if (!(p2 < pitchMax * pitchMax)) {
-            if (!(dist < near) || !(p2 < nearPitch * nearPitch)) continue;
+        pitch_error_squared = FastDiffRots(((f32 *)reference_rotation)[1], func_L00_001FF860(candidate_distance, tp[2] - ((f32 *)from)[2]));
+        pitch_error_squared = pitch_error_squared * pitch_error_squared;
+        if (!(pitch_error_squared < pitchMax * pitchMax)) {
+            if (!(candidate_distance < near) || !(pitch_error_squared < nearPitch * nearPitch)) continue;
         }
-        score *= p2;
+        score *= pitch_error_squared;
         score *= func_001F9B50(FastVecDist(from, tp));
         if (!(score < bestScore)) continue;
         if (func_L00_001EFFF0_30E6E0(from, tp, 0, moby, 0)) {
-            char *hit = *(char **)(hs + 0x18);
-            if (hit == 0 || hit == *(char **)(pl + 0x2080) || hit == 0 || *(char **)(hit + 0x24) == 0
-                || *(short *)(*(char **)(hit + 0x24) + 0x46) != cls) {
+            struct Moby *hit = (struct Moby *)collision_hit->moby;
+            if (hit == 0 || hit == hero_ptr->moby || hit == 0 || hit->pclass == 0
+                || hit->pclass->type != candidate_target_kind) {
                 continue;
             }
         }
         bestScore = score;
-        best = t;
+        best = candidate_moby;
     }
     return best;
 }

@@ -1667,20 +1667,20 @@ extern float func_001F9B88(float);
    the old position as the target (func_L00_00234768, with the float at
    +0x98) and moves the position onto the probe. */
 void try_reposition_hero_on_nearby_ground(void) {
-    char *base = D_0013F450;
-    float v[4] __attribute__((aligned(16)));
+    struct Hero *hero_base = (struct Hero *)D_0013F450;
+    Vec4 candidate_ground_position;
     float h;
 
-    FastVecScale(v, base, -0.75f);
-    FastVecAdd(v, v, base + 0x80);
-    v[2] += 0.5f;
-    h = ProbeGroundHeight(v, 0, 0.5f);
-    v[2] = h;
-    if (FastAbsF(*(float *)(base + 0x88) - h) > 0.3f) {
+    FastVecScale(candidate_ground_position.f, hero_base->unk0, -0.75f);
+    FastVecAdd(candidate_ground_position.f, candidate_ground_position.f, hero_base->motion.pos.f);
+    candidate_ground_position.f[2] += 0.5f;
+    h = ProbeGroundHeight(candidate_ground_position.f, 0, 0.5f);
+    candidate_ground_position.f[2] = h;
+    if (FastAbsF(hero_base->motion.pos.f[2] - h) > 0.3f) {
         return;
     }
-    HeroSetTargetAndEnterMove((float *)(base + 0x80), 1, *(float *)(base + 0x98));
-    qcopy(base + 0x80, v);
+    HeroSetTargetAndEnterMove(hero_base->motion.pos.f, 1, hero_base->motion.rot.f[2]);
+    qcopy(&hero_base->motion.pos, &candidate_ground_position);
 }
 extern char D_001416F8[];
 extern void func_L00_00239F40(void);

@@ -2864,28 +2864,29 @@ extern int func_001F9850(int);
 
 /* fills random floats and sound handles in the moby's data block */
 void initialize_energy_sphere_holder_vars(char *moby) {
-    char *data = *(char **)(moby + 0x78);
-    float *f = (float *)data;
-    int *p;
+    float *holder_vars = *(float **)(moby + 0x78);
+    int *scaled_frame_counts;
+    float *f = holder_vars;
     int i;
     int arg;
+
     for (i = 3; i >= 0; i--, f++) {
         *f = (float)random_integer_below(0xFF);
     }
-    p = (int *)(data + 0x20);
-    *(float *)(data + 0x10) = -2.0f;
-    *(float *)(data + 0x14) = -4.25f;
-    *(float *)(data + 0x18) = 2.25f;
-    *(float *)(data + 0x1C) = 4.5f;
+    *(holder_vars + 4) = -2.0f;
+    *(holder_vars + 5) = -4.25f;
+    *(holder_vars + 6) = 2.25f;
+    *(holder_vars + 7) = 4.5f;
+    scaled_frame_counts = (int *)(holder_vars + 8);
     arg = 0x3F;
-    for (i = 3; i >= 0; i--, p++) {
-        *p = scale_ticks(arg);
+    for (i = 3; i >= 0; i--, scaled_frame_counts++) {
+        *scaled_frame_counts = scale_ticks(arg);
         arg += 0x40;
     }
-    *(float *)(data + 0x30) = 1.75f;
-    *(float *)(data + 0x34) = 2.25f;
-    *(float *)(data + 0x3C) = 1.75f;
-    *(float *)(data + 0x38) = 2.25f;
+    holder_vars[12] = 1.75f;
+    holder_vars[13] = 2.25f;
+    holder_vars[15] = 1.75f;
+    holder_vars[14] = 2.25f;
 }
 extern short D_L06_00161EE8, D_L06_00161EEC, D_L06_00161EF0, D_L06_00161EF4, D_L06_00161EF8, D_L06_00161EFC;
 extern short D_L06_00161F00;
@@ -2951,47 +2952,55 @@ extern void func_L00_00211908(void);
 extern void func_L06_00235E08(int, int);
 
 /* Watches the moby's two 32-entry trigger lists against the hero and fires the matching events. */
+extern struct Hero hero_global __asm__("D_0013F450");
+
 void update_hero_trigger_volume_monitor(char *m) {
-    char *d = *(char **)(m + 0x78);
-    char *g;
+    enum {
+        INITIALIZE_TRIGGER_MONITOR = 0,
+        CHECK_HERO_TRIGGER_VOLUMES = 1
+    };
+    struct Moby *moby = (struct Moby *)m;
+    u8 *trigger_vars = moby->pvars;
+    struct Hero *hero_data;
     int *list;
     int *list2;
-    char *t;
+    struct Moby *ship_moby;
     int i;
     int j;
-    switch (((unsigned char *)m)[0x20]) {
-    case 0:
-        m[0x20] = 1;
-        ((unsigned char *)m)[0x30] = 0xFF;
+
+    switch (moby->state) {
+    case INITIALIZE_TRIGGER_MONITOR:
+        moby->state = 1;
+        moby->update_dist = 0xFF;
         return;
-    case 1:
+    case CHECK_HERO_TRIGGER_VOLUMES:
         break;
     default:
         return;
     }
-    g = D_0013E633 + 0xE1D;
-    if (*(int *)(g + 0x2084) == 0x32) {
-        t = *(char **)(g + 0x15F0);
-        if (t != 0 && ((unsigned char *)t)[0x20] != 0xFE && ((unsigned char *)t)[0x20] != 0xFD
-            && *(short *)(g + 0x15F4) == 0x45) {
+    hero_data = &hero_global;
+    if (hero_data->state.current == 0x32) {
+        ship_moby = hero_data->ship_moby;
+        if (ship_moby != 0 && ship_moby->state != 0xFE && ship_moby->state != 0xFD
+            && hero_data->ship_oclass == 0x45) {
             return;
         }
     }
-    list = (int *)d;
-    list2 = (int *)(d + 0x80);
+    list = (int *)trigger_vars;
+    list2 = (int *)(trigger_vars + 0x80);
     for (i = 0; i < 32; i++) {
-        if (list[i] >= 0 && is_point_inside_clip_volume(D_0013E633 + 0xE9D, list[i])) {
-            char *h = D_0013E633 + 0xE1D;
-            if (*(unsigned char *)(h + 0x20A4) != 0) {
+        if (list[i] >= 0 && is_point_inside_clip_volume(&hero_global.motion.pos, list[i])) {
+            struct Hero *hero_ptr = &hero_global;
+            if (hero_ptr->vehicle_mode != 0) {
                 FadeToBlack(scale_ticks(10));
                 Hero_OnKilled();
-            } else if (*(int *)(h + 0x2084) != 0x77) {
+            } else if (hero_ptr->state.current != 0x77) {
                 HeroL06_TrySetMoveState(0x77, 1);
             }
         }
     }
     for (j = 0; j < 32; j++) {
-        if (list2[j] >= 0 && is_point_inside_clip_volume(D_0013E633 + 0xE9D, list2[j])) {
+        if (list2[j] >= 0 && is_point_inside_clip_volume(&hero_global.motion.pos, list2[j])) {
             FadeToBlack(scale_ticks(10));
             Hero_OnKilled();
         }

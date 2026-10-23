@@ -867,19 +867,26 @@ extern void func_0020D678(void *);
 extern float D_0015EE70 MACRO_ADDR;
 extern short D_L06_00162110;
 
+/* A falling spinning moby's per-frame velocities, the moby's pvars block. */
+typedef struct FallingSpinVars {
+    Vec4f vel;                 /* 0x00: position velocity; z is the fall speed */
+    Vec4f rot_vel;             /* 0x10: rotation velocity */
+} FallingSpinVars;
+
 // Per-frame update: drift a moby and its rotation toward the data vectors, delete when timer ends.
 void update_falling_spinning_moby(char *moby) {
-    char *data;
-    float t = D_0015EE70 * 15.0f;
-    *(float *)(moby + 0x2C) = *(float *)(*(char **)(moby + 0x24) + 0x24) * *(float *)&D_L06_00162110;
-    data = *(char **)(moby + 0x78);
-    *(float *)(data + 8) -= t;
-    FastVecAdd((float *)(moby + 0x10), (float *)(moby + 0x10), (float *)data);
-    FastVecAdd((float *)(moby + 0x40), (float *)(moby + 0x40), (float *)(data + 0x10));
-    *(float *)(moby + 0x40) = FastAddRots(*(float *)(moby + 0x40), *(float *)(data + 0x10));
-    *(float *)(moby + 0x44) = FastAddRots(*(float *)(moby + 0x44), *(float *)(data + 0x14));
-    *(float *)(moby + 0x48) = FastAddRots(*(float *)(moby + 0x48), *(float *)(data + 0x18));
-    if (--*(unsigned char *)(moby + 0xBC) == 0) {
+    struct Moby *m = (struct Moby *)moby;
+    FallingSpinVars *data;
+    float vertical_velocity_decrement = D_0015EE70 * 15.0f;
+    m->scale = m->pclass->scale * *(float *)&D_L06_00162110;
+    data = (FallingSpinVars *)m->pvars;
+    data->vel.z -= vertical_velocity_decrement;
+    FastVecAdd(&m->pos.x, &m->pos.x, &data->vel.x);
+    FastVecAdd(&m->rot.x, &m->rot.x, &data->rot_vel.x);
+    m->rot.x = FastAddRots(m->rot.x, data->rot_vel.x);
+    m->rot.y = FastAddRots(m->rot.y, data->rot_vel.y);
+    m->rot.z = FastAddRots(m->rot.z, data->rot_vel.z);
+    if (--m->command == 0) {
         DeleteMoby(moby);
     }
 }

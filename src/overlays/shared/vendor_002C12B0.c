@@ -624,10 +624,19 @@ typedef struct {
     long q0, q1, q2, q3;
 } Quad;
 
+typedef struct {
+    u8 pad_00[0x20];
+    Vec4 pos;                  /* 0x20 */
+    f32 f20;                   /* 0x30 */
+    f32 f24;                   /* 0x34 */
+    f32 f28;                   /* 0x38 */
+} PV_2acbf0_002acbf0;
+
 /* draws two spinning quads around the moby's data block */
 void draw_moby_oscillating_textured_quads(char *m) {
-    char *s = *(char **)(m + 0x78);
-    int i;
+    Moby *moby = (Moby *)m;
+    PV_2acbf0_002acbf0 *pv = (PV_2acbf0_002acbf0 *)moby->pvars;
+    s32 i;
     Quad quad;
     float rotA[12];
     char vec[16];
@@ -637,8 +646,8 @@ void draw_moby_oscillating_textured_quads(char *m) {
     if (D_L00_0015F6A8 == 2) return;
     for (i = 0; i < 2; i++) {
         float f20, d, w;
-        ea[0] = FastAddRots(-func_L00_001FF860(func_001F9B50(*(float *)(s + 0x30) * *(float *)(s + 0x30) + *(float *)(s + 0x38) * *(float *)(s + 0x38)), *(float *)(s + 0x34)), 1.5707964f);
-        ea[1] = func_L00_001FF860(*(float *)(s + 0x38), *(float *)(s + 0x30));
+        ea[0] = FastAddRots(-func_L00_001FF860(func_001F9B50(pv->f20 * pv->f20 + pv->f28 * pv->f28), pv->f24), 1.5707964f);
+        ea[1] = func_L00_001FF860(pv->f28, pv->f20);
         ea[2] = 0; ea[3] = 0;
         eb[0] = 0;
         f20 = IntToFloat(D_L00_0015F6B0 % scale_ticks(180));
@@ -651,7 +660,7 @@ void draw_moby_oscillating_textured_quads(char *m) {
         func_001FA218(rotB, eb);
         func_001FA218(rotA, ea);
         sce_vu0_mul_matrix(rotA, rotA, rotB);
-        qcopy(vec, s + 0x20);
+        qcopy(vec, &pv->pos);
         quad.c[0] = 0x80808080; quad.c[1] = 0x80808080; quad.c[2] = 0x80808080; quad.c[3] = 0x80808080;
         quad.q1 = GetEffectTex((i & 1) ? 0x12 : 0x11);
         quad.q2 = 0xFF9000000260L;
@@ -792,41 +801,52 @@ extern int D_L00_00173F40[];
 extern struct { float pad[10]; float height; float gap[5]; float vector[4]; } D_L00_00173F40_v __asm__("D_L00_00173F40");
 extern float D_0015EE60 MACRO_ADDR;
 extern char D_0013F450[];
+typedef struct {
+    u8 pad_00[0x10];
+    Vec4 vel;                      /* 0x10: velocity the moby is released with */
+    u8 pad_20[0x24];
+    s16 timer;                     /* 0x44: frames, scale_ticks(30) */
+    u8 pad_46[0x6];
+    f32 target_rot_x;              /* 0x4C: pitch the moby turns toward */
+    f32 target_rot_y;              /* 0x50: yaw the moby turns toward */
+} ReleaseVars_2C4B90;
+
 /* Tests a movement vector against the player and turns a colliding moby. */
-void release_moby_with_collision_check(float *pos,char *m,void *vec) {
- float a[4],b[4],c[4];
- char *d=*(char **)(m+0x78);
- char *camera;
- char *player;
- qcopy(d+0x10,vec);
- { char *view=D_0013F450;
-   if(*(int *)(view+0x2FC) && GetFlaggedPvarWord(*(int *)(view+0x2FC))) FastVecAdd(d+0x10,d+0x10,view+0x100);
+void release_moby_with_collision_check(float *release_position,char *m,void *initial_velocity) {
+ float collision_start[4],collision_normal[4],rotated_normal[4];
+ struct Moby *moby=(struct Moby *)m;
+ ReleaseVars_2C4B90 *state=(ReleaseVars_2C4B90 *)moby->pvars;
+ struct Hero *camera;
+ struct Moby *player;
+ qcopy(&state->vel,initial_velocity);
+ { struct Hero *view=(struct Hero *)D_0013F450;
+   if(view->ground_moby && GetFlaggedPvarWord((int)view->ground_moby)) FastVecAdd(&state->vel,&state->vel,&view->motion.displacement);
  }
- qcopy(m+0x10,pos);
- camera=D_0013F450;
- player=*(char **)(camera+0x2080);
- *(u128 *)a=*(u128 *)(player+0x10); a[2]=pos[2];
- FastVecSub(pos,pos,a);
- func_L00_001FF4B0(pos,pos,FastVecLength(pos)+0.2f);
- FastVecAdd(pos,pos,a);
- if(func_L00_001EFFF0(a,pos,0,*(int *)(camera+0x2080),0)) {
+ qcopy(&moby->pos,release_position);
+ camera=(struct Hero *)D_0013F450;
+ player=camera->moby;
+ *(VecQuad *)collision_start=*(VecQuad *)&player->pos; collision_start[2]=release_position[2];
+ FastVecSub(release_position,release_position,collision_start);
+ func_L00_001FF4B0(release_position,release_position,FastVecLength(release_position)+0.2f);
+ FastVecAdd(release_position,release_position,collision_start);
+ if(func_L00_001EFFF0(collision_start,release_position,0,(int)camera->moby,0)) {
   float smoothing;
-  qcopy(m+0x10,D_00173F60_alias); qzero(d+0x10);
-  m[0x20]=4;
-  *(short *)(d+0x44)=scale_ticks(30);
-  *(float *)(m+0x18)=D_L00_00173F40_v.height;
-  qcopy(b,D_L00_00173F40_v.vector);
+  qcopy(&moby->pos,D_00173F60_alias); qzero(&state->vel);
+  moby->state=4;
+  state->timer=scale_ticks(30);
+  moby->pos.z=D_L00_00173F40_v.height;
+  qcopy(collision_normal,D_L00_00173F40_v.vector);
   { float co,si;
-  co=FastCos(*(float *)(m+0x48)); smoothing=0.1f; si=FastSin(*(float *)(m+0x48));
-  c[0]=b[0]*co+b[1]*si; }
+  co=FastCos(moby->rot.z); smoothing=0.1f; si=FastSin(moby->rot.z);
+  rotated_normal[0]=collision_normal[0]*co+collision_normal[1]*si; }
   { float co,si;
-  co=FastCos(*(float *)(m+0x48)); si=FastSin(*(float *)(m+0x48));
-  c[1]=b[1]*co-b[0]*si; c[2]=b[2]; }
-  *(float *)(d+0x4C)=-func_L00_001FF860(func_001F9B50(c[0]*c[0]+c[2]*c[2]),c[1]);
-  *(float *)(d+0x50)=func_L00_001FF860(c[2],c[0]);
-  *(float *)(m+0x40)=FastAddRots(*(float *)(m+0x40),FastSubRots(*(float *)(d+0x4C),*(float *)(m+0x40))*(D_0015EE60*smoothing));
-  *(float *)(m+0x44)=FastAddRots(*(float *)(m+0x44),FastSubRots(*(float *)(d+0x50),*(float *)(m+0x44))*(D_0015EE60*smoothing));
- } else m[0x20]=2;
+  co=FastCos(moby->rot.z); si=FastSin(moby->rot.z);
+  rotated_normal[1]=collision_normal[1]*co-collision_normal[0]*si; rotated_normal[2]=collision_normal[2]; }
+  state->target_rot_x=-func_L00_001FF860(func_001F9B50(rotated_normal[0]*rotated_normal[0]+rotated_normal[2]*rotated_normal[2]),rotated_normal[1]);
+  state->target_rot_y=func_L00_001FF860(rotated_normal[2],rotated_normal[0]);
+  moby->rot.x=FastAddRots(moby->rot.x,FastSubRots(state->target_rot_x,moby->rot.x)*(D_0015EE60*smoothing));
+  moby->rot.y=FastAddRots(moby->rot.y,FastSubRots(state->target_rot_y,moby->rot.y)*(D_0015EE60*smoothing));
+ } else moby->state=2;
 }
 typedef int OvlQuad __attribute__((mode(TI)));
 typedef struct {
@@ -981,42 +1001,57 @@ extern void func_L00_00259868(void *, void *, float, float, float, int);
 extern float D_0015EE64 MACRO_ADDR;
 extern short D_0015EE70_s __asm__("D_0015EE70");
 
+typedef struct {
+    u8 pad_00[0x60];
+    f32 f60;                       /* 0x60 spring state of the horizontal error */
+    f32 f64;                       /* 0x64 vertical velocity */
+    s32 i68;                       /* 0x68 armed flag */
+} O_2c40a0;
+
 /* Steers a moby toward the player's follow distance, easing its height. Adapted from Lombyte (MIT) for PAL: overlays/shared/unclassified_002bffa8.c, FUN_L00_002c40a0. */
 void update_decoy_proximity_motion(char *m) {
-    char *d = *(char **)(m + 0x78);
-    char *g = D_0013E633 + 0xE1D;
-    float v[4];
-    float w;
-    float len, y;
-    int flag = *(short *)(g + 0x1E2);
-    if (*(int *)(d + 0x68) == 0) {
-        if (flag == 0) return;
-        if (!(func_001F9D48(g + 0x80, m + 0x10) < 1.0f)) return;
-        if (!(FastAbsF(*(float *)(g + 0x88) - *(float *)(m + 0x18)) < 1.3f)) return;
-        *(int *)(d + 0x68) = 1;
+    O_2c40a0 *moby_vars = (O_2c40a0 *)((struct Moby *)m)->pvars;
+    Hero *P = (Hero *)(D_0013E633 + 0xE1D);
+    s32 proximity_response_gate = P->unk1E2;
+    f32 horizontal_displacement[4];
+    f32 horizontal_separation_error, horizontal_separation_distance, ground_height;
+    if (moby_vars->i68 == 0) {
+        if (proximity_response_gate == 0)
+            return;
+        if (!(func_001F9D48(&P->motion.pos, &((struct Moby *)m)->pos) < 1.0f))
+            return;
+        if (!(FastAbsF(P->motion.pos.f[2] - ((struct Moby *)m)->pos.z) < 1.3f))
+            return;
+        moby_vars->i68 = 1;
     }
-    FastVecSub(v, m + 0x10, g + 0x80);
-    v[2] = 0.0f;
-    w = func_001F9CE8(v) - 1.4f;
-    if (w > 0.0f) w = 0.0f;
-    if (flag == 0) w = 0.0f;
-    Spring(&w, 0.0f, (float *)(d + 0x60), D_0015EE64 * 0.02f, D_0015EE64 * 0.3f, D_0015EE6C * 4.0f);
-    if (w == 0.0f && *(float *)(d + 0x60) == 0.0f) {
-        if (FastAbsF(*(float *)(m + 0x18) - ProbeGroundHeight(m + 0x10, 0, 0.5f)) < 0.02f)
-            *(int *)(d + 0x68) = 0;
+    FastVecSub(horizontal_displacement, &((struct Moby *)m)->pos, &P->motion.pos);
+    horizontal_displacement[2] = 0.0f;
+    horizontal_separation_error = func_001F9CE8(horizontal_displacement) - 1.4f;
+    if (horizontal_separation_error > 0.0f)
+        horizontal_separation_error = 0.0f;
+    if (proximity_response_gate == 0)
+        horizontal_separation_error = 0.0f;
+    Spring(&horizontal_separation_error, 0.0f, &moby_vars->f60, D_0015EE64 * 0.02f, D_0015EE64 * 0.3f,
+           D_0015EE6C * 4.0f);
+    if (horizontal_separation_error == 0.0f && moby_vars->f60 == 0.0f) {
+        if (FastAbsF(((struct Moby *)m)->pos.z - ProbeGroundHeight(&((struct Moby *)m)->pos, 0, 0.5f)) < 0.02f)
+            moby_vars->i68 = 0;
     }
-    len = FastVecLength(v);
-    if (len < *(float *)(d + 0x60)) *(float *)(d + 0x60) = len;
-    if (*(float *)(d + 0x60) < len) func_L00_001FF4B0(v, v, *(float *)(d + 0x60));
-    move_4318(m, v, 0.5f, 0.4f, 0.0f, 0);
-    y = ProbeGroundHeight(m + 0x10, 0, 0.5f);
-    if (*(float *)(m + 0x18) < y) {
-        *(float *)(m + 0x18) = y;
-        *(float *)(d + 0x64) = 0.0f;
+    horizontal_separation_distance = FastVecLength(horizontal_displacement);
+    if (horizontal_separation_distance < moby_vars->f60)
+        moby_vars->f60 = horizontal_separation_distance;
+    if (moby_vars->f60 < horizontal_separation_distance)
+        func_L00_001FF4B0(horizontal_displacement, horizontal_displacement, moby_vars->f60);
+    move_4318(m, horizontal_displacement, 0.5f, 0.4f, 0.0f, 0);
+    ground_height = ProbeGroundHeight(&((struct Moby *)m)->pos, 0, 0.5f);
+    if (((struct Moby *)m)->pos.z < ground_height) {
+        ((struct Moby *)m)->pos.z = ground_height;
+        moby_vars->f64 = 0.0f;
     } else {
-        *(float *)(d + 0x64) = *(float *)(d + 0x64) - *(float *)&D_0015EE70_s * 24.0f;
-        *(float *)(m + 0x18) = *(float *)(m + 0x18) + *(float *)(d + 0x64);
-        if (*(float *)(m + 0x18) < y) *(float *)(m + 0x18) = y;
+        moby_vars->f64 = moby_vars->f64 - *(float *)&D_0015EE70_s * 24.0f;
+        ((struct Moby *)m)->pos.z = ((struct Moby *)m)->pos.z + moby_vars->f64;
+        if (((struct Moby *)m)->pos.z < ground_height)
+            ((struct Moby *)m)->pos.z = ground_height;
     }
 }
 extern int func_L00_001F3958(void);

@@ -21,29 +21,30 @@ extern int func_001FA898_r(float) __asm__("func_001FA898");
 
 /* Update a trailing moby: advance its timer, delete it when done or its owner died, else follow the owner. Adapted from Lombyte (MIT) for PAL: overlays/shared/unclassified_002d7f88.c, FUN_L00_002d7f88. */
 void update_linked_moby_transform_and_lifetime(char *self) {
-    D_002d7f88 *d = *(D_002d7f88 **)(self + 0x78);
-    char *o;
-    void *m;
-    float t;
-    d->f4 += (D_L00_001617AC_m + D_L00_001617AC_m) * D_0015EE6C;
-    if (func_001F9908_r(d->v8) != 0 || D_L00_001617AC_m * 1.1f <= d->f4) goto kill;
-    o = d->o;
-    if (o == 0 || *(short *)(o + 0xA6) != 0xB9 || *(unsigned char *)(o + 0x20) == 0xFE || *(unsigned char *)(o + 0x20) == 0xFD) {
-kill:
+    D_002d7f88 *moby_data = (D_002d7f88 *)((Moby *)self)->pvars;
+    Moby *o;
+    void *linked_moby_data;
+    f32 scale_coefficient;
+    moby_data->f4 += (D_L00_001617AC_m + D_L00_001617AC_m) * D_0015EE6C;
+    if (func_001F9908_r(moby_data->v8) != 0 || D_L00_001617AC_m * 1.1f <= moby_data->f4)
+        goto kill;
+    o = (Moby *)moby_data->o;
+    if (o == 0 || o->oclass != 0xB9 || o->state == 0xFE || o->state == 0xFD) {
+    kill:
         DeleteMoby(self);
         return;
     }
-    m = *(void **)(o + 0x78);
-    clear_u64_value(self + 0x10);
-    *(float *)(self + 0x14) = -d->f4;
-    func_001F9EC0(self + 0x10, self + 0x10, (char *)d->o + 0xC0);
-    FastVecAdd(self + 0x10, self + 0x10, m);
-    qcopy(self + 0x40, (char *)d->o + 0x40);
-    if (d->f4 > D_L00_001617AC_m) {
-        self[0x23] = func_001FA898_r((1.0f - (d->f4 - D_L00_001617AC_m) * 10.0f) * 127.0f);
+    linked_moby_data = o->pvars;
+    clear_u64_value(&((Moby *)self)->pos);
+    ((Moby *)self)->pos.y = -moby_data->f4;
+    func_001F9EC0(&((Moby *)self)->pos, &((Moby *)self)->pos, &((Moby *)moby_data->o)->rot_row0);
+    FastVecAdd(&((Moby *)self)->pos, &((Moby *)self)->pos, linked_moby_data);
+    qcopy(&((Moby *)self)->rot, &((Moby *)moby_data->o)->rot);
+    if (moby_data->f4 > D_L00_001617AC_m) {
+        ((Moby *)self)->alpha = func_001FA898_r((1.0f - (moby_data->f4 - D_L00_001617AC_m) * 10.0f) * 127.0f);
     }
-    t = d->fC;
-    *(float *)(self + 0x2C) = t * 0.1f + t * d->f4 / D_L00_001617AC_m;
+    scale_coefficient = moby_data->fC;
+    ((Moby *)self)->scale = scale_coefficient * 0.1f + scale_coefficient * moby_data->f4 / D_L00_001617AC_m;
 }
 // True when the moby's state byte is 1.
 int is_moby_in_state_one(unsigned char *m) {

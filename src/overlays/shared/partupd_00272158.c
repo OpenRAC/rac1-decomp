@@ -195,25 +195,44 @@ extern void func_001F9BD8(void *, void *, void *);
 extern int func_001FA898(float);
 extern void func_L00_002688A8(void *);
 
+typedef struct ExpandRotMotion {
+    Vec4f vel;                 /* 0x00 added to pos each frame (FastVecAdd) */
+    f32 floor_z;               /* 0x10 eased upward by gravity; its truncation is the spin byte */
+    f32 gravity;               /* 0x14 damped by 0.98 each frame */
+    f32 *target;               /* 0x18 optional z the particle is pulled toward */
+} ExpandRotMotion;
+
+typedef struct ExpandRotParticle {
+    u8 pad_0[0x4];
+    u32 color;                 /* 0x04 0xAABBGGRR, alpha in the top byte */
+    u8 spin;                   /* 0x08 */
+    u8 pad_9[0x1];
+    s16 life;                  /* 0x0A frames left */
+    f32 size;                  /* 0x0C */
+    Vec4f pos;                 /* 0x10 pos.z at 0x18 */
+    ExpandRotMotion m;         /* 0x20 */
+} ExpandRotParticle;
+
 /* Particle update: move, spin, ease toward a target value, fade, die. */
-void update_expanding_rotating_alpha_fade_particle(char *m) {
-    char *v = m + 0x20;
-    FastVecAdd(m + 0x10, m + 0x10, v);
-    *(float *)(m + 0xC) += 5880.0f;
-    *(float *)(v + 0x14) *= 0.98f;
-    *(float *)(v + 0x10) += *(float *)(v + 0x14);
-    m[8] = truncate_float_to_s32(*(float *)(v + 0x10));
-    if (*(float **)(v + 0x18) != 0) {
-        if (FastAbsF(*(float *)(m + 0x18) - **(float **)(v + 0x18)) < 0.2f) {
-            *(float *)(m + 0x18) = **(float **)(v + 0x18) + 0.02f;
+void update_expanding_rotating_alpha_fade_particle(char *particle) {
+    struct ExpandRotParticle *p = (struct ExpandRotParticle *)particle;
+    struct ExpandRotMotion *motion = &p->m;
+    FastVecAdd(&p->pos, &p->pos, &motion->vel);
+    p->size += 5880.0f;
+    motion->gravity *= 0.98f;
+    motion->floor_z += motion->gravity;
+    p->spin = truncate_float_to_s32(motion->floor_z);
+    if (motion->target != 0) {
+        if (FastAbsF(p->pos.z - *motion->target) < 0.2f) {
+            p->pos.z = *motion->target + 0.02f;
         }
     }
-    *(short *)(m + 0xA) -= 1;
-    if (*(short *)(m + 0xA) == 0) {
-        *(unsigned *)(m + 4) += 0xFF000000;
-        *(short *)(m + 0xA) = 1;
+    p->life -= 1;
+    if (p->life == 0) {
+        p->color += 0xFF000000;
+        p->life = 1;
     }
-    if ((*(unsigned *)(m + 4) & 0xFF000000) == 0) KillPart(m);
+    if ((p->color & 0xFF000000) == 0) KillPart(particle);
 }
 extern char *D_L00_001B24BC;
 extern int func_001FA898(float);
@@ -335,21 +354,35 @@ void update_moving_height_culled_particle(unsigned char *m) {
 }
 extern float D_0015EE70 MACRO_ADDR;
 
+typedef struct {
+    u8 pad_0[0x4];
+    s32 color;                 /* 0x04: 0xAABBGGRR, its alpha byte fades by 0x02000000 per frame */
+    u8 frame;                  /* 0x08: frames lived, incremented while fading */
+    u8 pad_9;                  /* 0x09 */
+    s16 life;                  /* 0x0A: counted down by FastDecTimer */
+    f32 size;                  /* 0x0C: eases toward 210000 */
+    Vec4 pos;                  /* 0x10 */
+    Vec4 vel;                  /* 0x20 */
+} DampedFadeParticle;
+
 // Updates a particle: drifts it with gravity, fades it, kills it when faded or timed out.
 void update_damped_fading_particle(char *m) {
-    char *v = m + 0x20;
-    char tmp[16];
-    int t;
-    func_L00_001FF2C8(tmp, v, 0.95f);
-    *(float *)(v + 8) += D_0015EE70 * 5.0f;
-    func_L00_001FF240(tmp, m + 0x10, v);
-    t = *(int *)(m + 4) + 0xFE000000;
-    *(int *)(m + 4) = t;
-    if ((unsigned)((t & 0xFF000000) - 1) > 0x5EFFFFFF || FastDecTimer(m + 0xA)) {
+    DampedFadeParticle *p = (DampedFadeParticle *)m;
+    Vec4 unused_vector_argument;
+    Vec4 *particle_velocity = &p->vel;
+    u32 faded_color;
+    f32 current_size;
+    func_L00_001FF2C8(&unused_vector_argument, particle_velocity, 0.95f);
+    particle_velocity->f[2] += D_0015EE70 * 5.0f;
+    func_L00_001FF240(&unused_vector_argument, &p->pos, particle_velocity);
+    faded_color = p->color + 0xFE000000;
+    p->color = faded_color;
+    if ((faded_color & 0xFF000000) - 1 > 0x5EFFFFFF || FastDecTimer(&p->life)) {
         KillPart(m);
     } else {
-        *(float *)(m + 0xC) += (210000.0f - *(float *)(m + 0xC)) * 0.07f;
-        m[8] += 1;
+        current_size = p->size;
+        p->size = current_size + (210000.0f - current_size) * 0.07f;
+        p->frame += 1;
     }
 }
 void update_color_size_tween_particle(char *m) {
@@ -571,23 +604,38 @@ void update_expanding_damped_rgb_fading_particle(char *m) {
         { int u = (t << 8) | 0x60000000; int w = t << 16; *(int *)(m + 4) = (w | u) | t; }
     }
 }
+typedef struct P_272788B {
+    u8 pad_0[0x4];
+    s32 color;                 /* 0x04 */
+    u8 spin;                   /* 0x08 */
+    u8 pad_9;                  /* 0x09 */
+    s16 life;                  /* 0x0A */
+    f32 size;                  /* 0x0C */
+    Vec4 pos;                  /* 0x10 */
+    Vec4 vel;                  /* 0x20 */
+    f32 floor_z;               /* 0x30 */
+    f32 gravity;               /* 0x34 */
+    s32 color2;                /* 0x38 */
+} P_272788B;
+
 // particle update: drift, fade colour in and out over the timer
 void update_expanding_alpha_pulse_particle(char *m) {
-    char *v = m + 0x20;
+    P_272788B *p = (P_272788B *)m;
+    float *particle_data = (float *)&p->vel;
     int t;
-    FastVecAdd(m + 0x10, m + 0x10, v);
-    *(float *)(m + 0xC) += 5880.0f;
-    *(float *)(v + 0x14) *= 0.98f;
-    *(float *)(v + 0x10) += *(float *)(v + 0x14);
-    m[8] = truncate_float_to_s32(*(float *)(v + 0x10));
-    if (--*(short *)(m + 0xA) <= 0) {
+    FastVecAdd(&p->pos, &p->pos, particle_data);
+    p->size += 5880.0f;
+    particle_data[5] *= 0.98f;
+    particle_data[4] += particle_data[5];
+    p->spin = truncate_float_to_s32(particle_data[4]);
+    if (--p->life <= 0) {
         KillPart(m);
     }
-    t = *(short *)(m + 0xA);
+    t = p->life;
     if (t > 0x40) {
-        *(int *)(m + 4) = ((0x80 - t) << 24) | 0x808080;
+        p->color = ((0x80 - t) << 24) | 0x808080;
     } else {
-        *(int *)(m + 4) = (t << 24) | 0x808080;
+        p->color = (t << 24) | 0x808080;
     }
 }
 extern void func_00215C00(void *, float, float, float);
@@ -1220,67 +1268,96 @@ extern void func_001F9EE8(void *, void *, void *);
 extern void func_001F9EC0(void *, void *, void *);
 extern float func_001FA748(float, float);
 
+typedef struct R_274518 {
+    f32 unk0;
+    f32 unk4;
+    f32 unk8;
+    u8 *iC;
+    f32 unk10;
+    f32 unk14;
+    s16 h18;
+    s16 h1A;
+    s16 h1C;
+    u8 pad1E[2];
+} R_274518;
+
+typedef struct M_274518 {
+    u8 b0;
+    u8 b1;
+    u8 b2;
+    u8 b3;
+    u8 b4[3];
+    s8 b7;
+    u8 b8;
+    u8 b9;
+    s16 hA;
+    u8 pad0C[4];
+    u8 v10[16];
+    R_274518 r;
+} M_274518;
+
 // Update for an attached particle: follows its owner moby, spawns a child and orients itself.
 void update_mode_controlled_orbiting_trail_particle(char *m) {
-    char *s = m + 0x20;
+    M_274518 *particle = (M_274518 *)m;
+    R_274518 *r = &particle->r;
     float vv[28];
-    char *q;
-    char *o;
+    u8 *q;
+    u8 *o;
     float z;
     float t, u, e;
-    if (*(short *)(s + 0x1C) == 0) {
-        if (func_L00_0025A468_q(m + 4, *(short *)(s + 0x1A))) {
+    if (r->h1C == 0) {
+        if (func_L00_0025A468_q(particle->b4, r->h1A)) {
             KillPart(m);
             return;
         }
-        if (*(int *)(s + 0xC) == 0) return;
-        vv[0] = *(float *)(m + 0x20);
-        vv[1] = *(float *)(s + 4);
-        vv[2] = *(float *)(s + 8);
-        FastVecScale(vv, vv, IntToFloat(*(short *)(s + 0x18)));
-        FastVecAdd(m + 0x10, *(char **)(s + 0xC) + 0x10, vv);
+        if (r->iC == 0) return;
+        vv[0] = r->unk0;
+        vv[1] = r->unk4;
+        vv[2] = r->unk8;
+        FastVecScale(vv, vv, IntToFloat(r->h18));
+        FastVecAdd(particle->v10, r->iC + 0x10, vv);
         return;
     }
-    if (FastDecTimer(m + 0xA) ||
-        (*(short *)(m + 0xA) < scale_ticks(10) && func_L00_0025A468_q(m + 4, 0x10))) {
+    if (FastDecTimer(&particle->hA) ||
+        (particle->hA < scale_ticks(10) && func_L00_0025A468_q(particle->b4, 0x10))) {
         KillPart(m);
         return;
     }
-    if (*(short *)(s + 0x1C) == 1) {
+    if (r->h1C == 1) {
         z = 0.0f;
-        func_L00_00275248_2753B8(z, 0, m + 0x10, z, scale_ticks(10), 0, *(signed char *)(m + 7), 0);
-        q = m + 0x10;
+        func_L00_00275248_2753B8(z, 0, particle->v10, z, scale_ticks(10), 0, particle->b7, 0);
+        q = particle->v10;
     } else {
-        vv[0] = *(float *)(s + 0);
-        vv[1] = *(float *)(s + 4);
-        vv[2] = *(float *)(s + 8);
+        vv[0] = r->unk0;
+        vv[1] = r->unk4;
+        vv[2] = r->unk8;
         z = 0.0f;
-        o = func_L00_00275248_2753B8(z, *(void **)(s + 0xC), m + 0x10, z, scale_ticks(10), 0, *(signed char *)(m + 7), vv);
-        q = m + 0x10;
-        if (o != 0) *(short *)(o + 0x38) = *(unsigned short *)(s + 0x18);
+        o = func_L00_00275248_2753B8(z, r->iC, particle->v10, z, scale_ticks(10), 0, particle->b7, vv);
+        q = particle->v10;
+        if (o != 0) *(s16 *)(o + 0x38) = *(u16 *)&r->h18;
     }
-    if (*(short *)(s + 0x1C) != 1) return;
-    qcopy(q, *(char **)(s + 0xC) + 0x10);
-    vv[0] = FastCos(*(float *)(s + 0x10)) * 2.25f;
-    vv[1] = FastSin(*(float *)(s + 0x10)) * 2.25f;
+    if (r->h1C != 1) return;
+    qcopy(q, r->iC + 0x10);
+    vv[0] = FastCos(r->unk10) * 2.25f;
+    vv[1] = FastSin(r->unk10) * 2.25f;
     vv[2] = vv[0];
     *(int *)&vv[0] = 0;
-    vv[4] = FastCos(*(float *)(s + 0x14)) * 0.28f;
-    vv[5] = FastSin(*(float *)(s + 0x14)) * 0.28f;
+    vv[4] = FastCos(r->unk14) * 0.28f;
+    vv[5] = FastSin(r->unk14) * 0.28f;
     vv[6] = vv[4];
     *(int *)&vv[4] = 0;
     clear_u64_value((vv + 8));
-    vv[9] = *(float *)(s + 0x10);
+    vv[9] = r->unk10;
     func_001FA218((vv + 12), (vv + 8));
     func_001F9EE8((vv + 4), (vv + 4), (vv + 12));
     FastVecAdd(vv, vv, (vv + 4));
-    func_001F9EC0(vv, vv, *(char **)(s + 0xC) + 0xC0);
+    func_001F9EC0(vv, vv, r->iC + 0xC0);
     FastVecAdd(q, q, vv);
-    t = FastAddRots(*(float *)(s + 0x10), D_0015EE6C * 0.9599311f);
+    t = FastAddRots(r->unk10, D_0015EE6C * 0.9599311f);
     u = D_0015EE6C * 4.3633232f;
-    e = *(float *)(s + 0x14);
-    *(float *)(s + 0x10) = t;
-    *(float *)(s + 0x14) = FastAddRots(e, u);
+    e = r->unk14;
+    r->unk10 = t;
+    r->unk14 = FastAddRots(e, u);
 }
 extern float func_002140F8(float, float);
 extern void func_L00_00250800(void *, int, void *);
@@ -1677,17 +1754,29 @@ void update_timed_alpha_fade_particle(char *a) {
 typedef struct { float x, y, z, w; } Vx __attribute__((aligned(16)));
 extern int func_001FA898(float);
 
+typedef struct {
+    u8 pad_0[0x4];
+    s32 col;                   /* 0x04 */
+    u8 a;                      /* 0x08 */
+    u8 pad_9[0x1];
+    s16 h;                     /* 0x0A */
+    u8 pad_C[0x4];
+    Vec4 pos;                  /* 0x10 */
+    Vec4 vel;                  /* 0x20 */
+} O00275860;
+
 void update_moving_lifetime_scaled_alpha_particle(char *m) {
-    Vx v;
-    float w, t;
-    v = *(Vx *)(m + 0x20);
-    w = v.w;
-    v.w = 0;
-    t = IntToFloat(*(short *)(m + 0xA)) / w;
-    *(int *)(m + 4) = (truncate_float_to_s32(t * 38.0f) << 24) | 0x808080;
-    *(char *)(m + 8) = truncate_float_to_s32(t * 33.0f);
-    FastVecAdd(m + 0x10, m + 0x10, &v);
-    if (FastDecTimer(m + 0xA)) {
+    O00275860 *particle = (O00275860 *)m;
+    Vec4 velocity_xyz;
+    f32 lifetime_scale_divisor, k;
+    velocity_xyz.q = particle->vel.q;
+    lifetime_scale_divisor = velocity_xyz.f[3];
+    velocity_xyz.f[3] = 0.0f;
+    k = IntToFloat(particle->h) / lifetime_scale_divisor;
+    particle->col = (truncate_float_to_s32(k * 38.0f) << 24) | 0x808080;
+    particle->a = truncate_float_to_s32(k * 33.0f);
+    FastVecAdd(&particle->pos, &particle->pos, &velocity_xyz);
+    if (FastDecTimer(&particle->h)) {
         KillPart(m);
     }
 }
@@ -1820,26 +1909,37 @@ void update_moving_fading_particle(char *m) {
             IntToFloat(*(short *)(m + 0xA) - 1) / IntToFloat(*(short *)(m + 0xA)));
     }
 }
+typedef struct Part_275eb0 {
+    u8 pad_0[4];
+    s32 w4;
+    u8 pad_8[2];
+    s16 hA;
+    f32 unkC;
+    f32 unk10;
+    f32 unk14;
+    f32 unk18;
+    u8 pad_1C[4];
+    s32 w20;
+} Part_275eb0;
+
 /* Per-frame update of a fading particle: kills it when out of range or expired, else fades its colour. */
 void update_mode_controlled_shrinking_color_tween_particle(char *m) {
-    float a = *(float *)(m + 0x10);
-    if (a < 2.0f || a > 1021.0f
-        || *(float *)(m + 0x14) < 2.0f || *(float *)(m + 0x14) > 1021.0f
-        || *(float *)(m + 0x18) < 2.0f || *(float *)(m + 0x18) > 1021.0f
-        || FastDecTimer(m + 0xA) != 0) {
+    Part_275eb0 *particle = (Part_275eb0 *)m;
+    if (particle->unk10 < 2.0f || 1021.0f < particle->unk10 || particle->unk14 < 2.0f || 1021.0f < particle->unk14 || particle->unk18 < 2.0f ||
+        1021.0f < particle->unk18 || FastDecTimer(&particle->hA) != 0) {
         KillPart(m);
         return;
     }
-    if (*(int *)(m + 0x20) != 0) {
-        float f;
-        *(float *)(m + 0xC) = *(float *)(m + 0xC) * 0.99f;
-        f = IntToFloat(*(short *)(m + 0xA) - 1);
-        *(int *)(m + 4) = FastTweenColor(0x30FFFFFF, *(int *)(m + 4), f / IntToFloat(*(short *)(m + 0xA)));
+    if (particle->w20 != 0) {
+        float remaining_frames_minus_one;
+        particle->unkC = particle->unkC * 0.99f;
+        remaining_frames_minus_one = IntToFloat(particle->hA - 1);
+        particle->w4 = FastTweenColor(0x30FFFFFF, particle->w4, remaining_frames_minus_one / IntToFloat(particle->hA));
     } else {
-        float f;
-        *(float *)(m + 0xC) = *(float *)(m + 0xC) * 0.95f;
-        f = IntToFloat(*(short *)(m + 0xA) - 1);
-        *(int *)(m + 4) = FastTweenColor(0x603F1008, *(int *)(m + 4), f / IntToFloat(*(short *)(m + 0xA)));
+        float remaining_frames_minus_one;
+        particle->unkC = particle->unkC * 0.95f;
+        remaining_frames_minus_one = IntToFloat(particle->hA - 1);
+        particle->w4 = FastTweenColor(0x603F1008, particle->w4, remaining_frames_minus_one / IntToFloat(particle->hA));
     }
 }
 LINKER_REMNANT("asm/overlays", func_L00_00276EB0);

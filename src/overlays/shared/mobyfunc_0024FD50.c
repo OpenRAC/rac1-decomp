@@ -5,22 +5,28 @@
 
 extern int func_001FA898_r(float) __asm__("func_001FA898");
 
+typedef struct O0024ed18Key {
+    u8 pad_00[4];
+    s16 h;                       /* 0x04 */
+} O0024ed18Key;
+
+typedef struct O0024ed18 {
+    u8 pad_00[0x10];
+    u8 n;                        /* 0x10 */
+    u8 pad_11[0xB];
+    O0024ed18Key *k[1];          /* 0x1C */
+} O0024ed18;
+
 /* Finds the index of the keyframe nearest to the given time, or -1. */
 int find_nearest_animation_sequence_entry(char *a, float time) {
-    int x = (short)func_001FA898_r(time * 16.0f);
-    int i;
-    for (i = 0; i < *(unsigned char *)(a + 0x10); i++) {
-        int *t = (int *)(a + 0x1C);
-        int o = i * 4;
-        int h = *(short *)(*(int *)((char *)t + o) + 4);
-        if (x < h) {
+    O0024ed18 *animation_sequence = (O0024ed18 *)a;
+    s16 scaled_target_position = func_001FA898_r(time * 16.0f);
+    s32 i;
+    for (i = 0; i < animation_sequence->n; i++) {
+        if (scaled_target_position < animation_sequence->k[i]->h) {
             if (i > 0) {
-                int j = i - 1;
-                int d = h - x;
-                int q = j * 4;
-                if (x - *(short *)(*(int *)((char *)t + q) + 4) < d) {
-                    i = j;
-                }
+                if (scaled_target_position - animation_sequence->k[i - 1]->h < animation_sequence->k[i]->h - scaled_target_position)
+                    i = i - 1;
             }
             return i;
         }

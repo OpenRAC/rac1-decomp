@@ -2747,103 +2747,109 @@ typedef struct {
 } D_02C80;
 
 void func_L14_00302C80(char *m);
-/* Init of a 32-point strip (rope/beam style) moby. */
-void start_vendor_beam_pulse(char *m) {
-    D_02C80 *d = *(D_02C80 **)(m + 0x78);
-    Vq_02C80 P[32];
-    Vq_02C80 Q[32];
-    Vq_02C80 A, B;
-    Vq_02C80 M[4];
-    char *ent;
-    float f22;
-    int a, b, r;
-    int i, j, k, br;
+typedef struct {
+    Vec4 axis[3];
+    Vec4 origin;
+    u8 pad40[0x30];
+    Vec4 rotation;
+} VendorBeamFrame;
 
-    ent = (char *)((d->idx << 7) + (int)D_L14_001601AC);
+/* Init of a 32-point strip (rope/beam style) moby. */
+void start_vendor_beam_pulse(char *moby) {
+    D_02C80 *beam = *(D_02C80 **)(moby + 0x78);
+    Vq_02C80 path[32];
+    Vq_02C80 path_steps[32];
+    Vq_02C80 work, delta;
+    Vq_02C80 matrix[4];
+    VendorBeamFrame *frame;
+    float length;
+    int low, high, duration;
+    int i, j, k, branch;
+
+    frame = (VendorBeamFrame *)((beam->idx << 7) + (int)D_L14_001601AC);
     {
-        int t = (*(int *)&D_L14_0016218C);
-        *(float *)(ent + 0x3C) = 1.0f;
-        a = scale_ticks(t);
+        int ticks = (*(int *)&D_L14_0016218C);
+        frame->origin.f[3] = 1.0f;
+        low = scale_ticks(ticks);
     }
-    b = scale_ticks((*(int *)&D_L14_00162190));
-    r = rand_range(a, b);
-    d->s12 = (short)r;
-    d->r620 = (short)r;
-    f22 = FastVecLength(D_L14_001601AC + (d->idx << 7) + 0x10);
-    f22 = f22 + f22;
+    high = scale_ticks((*(int *)&D_L14_00162190));
+    duration = rand_range(low, high);
+    beam->s12 = (short)duration;
+    beam->r620 = (short)duration;
+    length = FastVecLength(D_L14_001601AC + (beam->idx << 7) + 0x10);
+    length = length + length;
 
     for (i = 0; i < 32; i++) {
-        float f20 = IntToFloat(i);
-        float t = IntToFloat(0x1F);
+        float y_offset = IntToFloat(i);
+        float last = IntToFloat(0x1F);
         float y;
-        f20 = f20 / t;
-        f20 = (0.5f - f20) * f22;
+        y_offset = y_offset / last;
+        y_offset = (0.5f - y_offset) * length;
         if (i < 3 || i > 28) {
-            clear_u64_value(&P[i]);
-            clear_u64_value(&Q[i]);
+            clear_u64_value(&path[i]);
+            clear_u64_value(&path_steps[i]);
         } else {
-            rand_vec(&P[i], 0.0f, *(float *)&D_L14_001621CC);
-            rand_vec(&Q[i], 0.0f, *(float *)&D_L14_001621D0 * D_0015EE6C);
+            rand_vec(&path[i], 0.0f, *(float *)&D_L14_001621CC);
+            rand_vec(&path_steps[i], 0.0f, *(float *)&D_L14_001621D0 * D_0015EE6C);
         }
-        y = P[i].y;
-        P[i].w = 1.0f;
-        P[i].y = y + f20;
+        y = path[i].y;
+        path[i].w = 1.0f;
+        path[i].y = y + y_offset;
     }
 
     for (j = 0; j < 32; j++) {
         if (j == 0 || j == 31) {
-            qcopy(&d->pts[j], &P[j]);
-            qcopy(&d->off[j], &Q[j]);
+            qcopy(&beam->pts[j], &path[j]);
+            qcopy(&beam->off[j], &path_steps[j]);
         } else {
-            FastVecAdd(&A, &P[j - 1], &P[j]);
-            FastVecAdd(&A, &A, &P[j + 1]);
-            FastVecScale(&d->pts[j], &A, 0.333f);
-            FastVecAdd(&A, &Q[j - 1], &Q[j]);
-            FastVecAdd(&A, &A, &Q[j + 1]);
-            FastVecScale(&d->off[j], &A, 0.333f);
+            FastVecAdd(&work, &path[j - 1], &path[j]);
+            FastVecAdd(&work, &work, &path[j + 1]);
+            FastVecScale(&beam->pts[j], &work, 0.333f);
+            FastVecAdd(&work, &path_steps[j - 1], &path_steps[j]);
+            FastVecAdd(&work, &work, &path_steps[j + 1]);
+            FastVecScale(&beam->off[j], &work, 0.333f);
         }
     }
 
-    for (br = 0; br < 4; br++) {
-        int n;
-        float c = (*(float *)&D_L14_001621CC);
-        rand_vec(&A, c, c);
-        n = truncate_float_to_s32(random_float_between((float)br * 6.0f, (float)(br + 1) * 6.0f)) + 4;
-        d->cnt[br] = (unsigned char)n;
-        qcopy(&d->a[0][br], &d->pts[n]);
-        qcopy(&d->b[0][br], &d->off[n]);
+    for (branch = 0; branch < 4; branch++) {
+        int start;
+        float spread = (*(float *)&D_L14_001621CC);
+        rand_vec(&work, spread, spread);
+        start = truncate_float_to_s32(random_float_between((float)branch * 6.0f, (float)(branch + 1) * 6.0f)) + 4;
+        beam->cnt[branch] = (unsigned char)start;
+        qcopy(&beam->a[0][branch], &beam->pts[start]);
+        qcopy(&beam->b[0][branch], &beam->off[start]);
         for (k = 1; k < 4; k++) {
-            rand_vec(&B, 0.1f, 0.1f);
-            rand_vec(&d->b[k][br], 0.0f, (*(float *)&D_L14_001621D0) * D_0015EE6C);
-            FastVecAdd(&d->a[k][br], &d->a[k - 1][br], &A);
-            FastVecAdd(&d->a[k][br], &d->a[k][br], &B);
+            rand_vec(&delta, 0.1f, 0.1f);
+            rand_vec(&beam->b[k][branch], 0.0f, (*(float *)&D_L14_001621D0) * D_0015EE6C);
+            FastVecAdd(&beam->a[k][branch], &beam->a[k - 1][branch], &work);
+            FastVecAdd(&beam->a[k][branch], &beam->a[k][branch], &delta);
         }
     }
 
-    if (func_001F9D48(D_L14_001601AC + (d->idx << 7) + 0x30, D_L14_001675C0) >= 4.0f) {
+    if (func_001F9D48(D_L14_001601AC + (beam->idx << 7) + 0x30, D_L14_001675C0) >= 4.0f) {
         int s17;
         int l;
-        func_001FA218(M, D_L14_001601AC + (d->idx << 7) + 0x70);
-        qcopy(&M[3], (char *)((d->idx << 7) + (int)D_L14_001601AC) + 0x30);
+        func_001FA218(matrix, D_L14_001601AC + (beam->idx << 7) + 0x70);
+        qcopy(&matrix[3], (char *)((beam->idx << 7) + (int)D_L14_001601AC) + 0x30);
         for (l = 0; l < 32; l += 8) {
             int n;
-            Vq_02C80 *p = &d->pts[l];
-            func_001F9EE8(&A, p, M);
-            qcopy(&B, &p[32]);
-            B.w = (*(float *)&D_L14_001621E4);
+            Vq_02C80 *p = &beam->pts[l];
+            func_001F9EE8(&work, p, matrix);
+            qcopy(&delta, &p[32]);
+            delta.w = (*(float *)&D_L14_001621E4);
             s17 = random_integer_below(2) ? (*(int *)&D_L14_001621EC) : (*(int *)&D_L14_001621F0);
             n = scale_ticks(random_integer_below(10) + 20);
-            PartType02Spawn(&A, &B, &B, (*(int *)&D_L14_001621D8), (*(int *)&D_L14_001621DC), l >> 1, 15, n, s17);
+            PartType02Spawn(&work, &delta, &delta, (*(int *)&D_L14_001621D8), (*(int *)&D_L14_001621DC), l >> 1, 15, n, s17);
         }
         for (k = 0; k < 2; k++) {
-            int n, c;
-            func_001F9EE8(&A, &d->a[3][k], M);
-            qcopy(&B, &d->b[3][k]);
-            B.w = (*(float *)&D_L14_001621E4);
-            c = random_integer_below(2) ? (*(int *)&D_L14_001621EC) : (*(int *)&D_L14_001621F0);
+            int n, unused_color;
+            func_001F9EE8(&work, &beam->a[3][k], matrix);
+            qcopy(&delta, &beam->b[3][k]);
+            delta.w = (*(float *)&D_L14_001621E4);
+            unused_color = random_integer_below(2) ? (*(int *)&D_L14_001621EC) : (*(int *)&D_L14_001621F0);
             n = scale_ticks(random_integer_below(10) + 20);
-            PartType02Spawn(&A, &B, &B, (*(int *)&D_L14_001621D8), (*(int *)&D_L14_001621DC),
-                        d->cnt[k] >> 1, 15, n, (*(int *)&D_L14_001621F0));
+            PartType02Spawn(&work, &delta, &delta, (*(int *)&D_L14_001621D8), (*(int *)&D_L14_001621DC), beam->cnt[k] >> 1, 15, n, (*(int *)&D_L14_001621F0));
         }
     }
 }

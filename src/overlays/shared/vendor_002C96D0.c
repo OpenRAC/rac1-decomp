@@ -22,36 +22,38 @@ typedef struct {
 } __attribute__((aligned(16))) Q4;
 
 /* Places a moby at a spot: copies the vector in, transforms it, and if the move is blocked pushes it back out along the stored normal. Adapted from Lombyte (MIT) for PAL: overlays/shared/unclassified_002bffa8.c, FUN_L00_002c82f0. */
-void release_glove_of_doom_held_moby(Q4 *a, char *m, Q4 *c) {
-    char *q = *(char **)(m + 0x78);
-    char *P;
-    char *pos, *w;
-    Q4 t, u;
-    qcopy(q, c);
-    P = D_0013E633 + 0xE1D;
-    if (*(int *)(P + 0x2FC) && GetFlaggedPvarWord(*(char **)(P + 0x2FC))) {
-        FastVecAdd(q, q, P + 0x100);
+void release_glove_of_doom_held_moby(Q4 *release_position, char *released_moby, Q4 *initial_velocity) {
+    struct Moby *moby = (struct Moby *)released_moby;
+    u8 *q = moby->pvars;
+    Hero *P;
+    Vec4f *released_moby_position;
+    struct Moby *collision_reference_moby;
+    Vec4 collision_start, collision_position_offset;
+    qcopy(q, initial_velocity);
+    P = (Hero *)(D_0013E633 + 0xE1D);
+    if (P->ground_moby && GetFlaggedPvarWord(P->ground_moby)) {
+        FastVecAdd(q, q, &P->motion.displacement);
     }
-    pos = m + 0x10;
-    qcopy(pos, a);
+    released_moby_position = &moby->pos;
+    qcopy(released_moby_position, release_position);
     {
-        char *P2 = D_0013E633 + 0xE1D;
-        w = *(char **)(P2 + 0x2080);
+        Hero *P2 = (Hero *)(D_0013E633 + 0xE1D);
+        collision_reference_moby = P2->moby;
     }
-    t = *(Q4 *)(w + 0x10);
-    t.v[2] = a->v[2];
-    if (func_L00_001EFFF0(&t, a, 0, (int)w, 0)) {
+    collision_start.q = ((Vec4 *)&collision_reference_moby->pos)->q;
+    collision_start.f[2] = release_position->v[2];
+    if (func_L00_001EFFF0(&collision_start, release_position, 0, (int)collision_reference_moby, 0)) {
         char *g = D_L00_00173F60;
         float x;
-        qcopy(pos, g);
+        qcopy(released_moby_position, g);
         x = D_0015EE70;
         g += 0x20;
-        func_L00_001FF4B0(&u, g, x * 9.0f - x * 0.1f);
-        FastVecAdd(pos, pos, &u);
+        func_L00_001FF4B0(&collision_position_offset, g, x * 9.0f - x * 0.1f);
+        FastVecAdd(released_moby_position, released_moby_position, &collision_position_offset);
         func_L00_001FF610(q, q, g);
         FastVecScale(q, q, 0.6f);
     }
-    m[0x20] = 2;
+    moby->state = 2;
 }
 struct Manip_2C9820;
 struct GifEntry_2C9820;

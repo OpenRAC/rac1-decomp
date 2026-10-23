@@ -1487,12 +1487,15 @@ extern float func_L00_001FF860(float, float);
 extern float func_001F9CB8(float *);
 extern void func_L00_001FF4B0(float *, float *, float);
 
-void scale_wrench_collision_vector_by_heading(float *v) {
+extern Hero hero __asm__("D_0013F450");
+
+void scale_wrench_collision_vector_by_heading(float *in_out_vector) {
     float k = 1.8325957f;
-    float a = func_L00_001FF860(v[0], v[1]);
-    float t = FastDiffRots(*(float *)(D_0013E633 + 0xEB5), a);
-    if (t > k) t = k;
-    func_L00_001FF4B0(v, v, FastVecLength(v) * ((k - t) / k * 0.3f + 0.7f));
+    float vector_heading_angle = func_L00_001FF860(in_out_vector[0], in_out_vector[1]);
+    float clamped_heading_difference = FastDiffRots(hero.motion.rot.f[2], vector_heading_angle);
+    if (clamped_heading_difference > k)
+        clamped_heading_difference = k;
+    func_L00_001FF4B0(in_out_vector, in_out_vector, FastVecLength(in_out_vector) * ((k - clamped_heading_difference) / k * 0.3f + 0.7f));
 }
 typedef unsigned int WQuad48 __attribute__((mode(TI)));
 typedef float WVec48[4] __attribute__((aligned(16)));

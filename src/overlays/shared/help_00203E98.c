@@ -214,18 +214,18 @@ extern void func_L00_00232EA8(void);
 extern void func_L00_00222B80(int, int);
 /* Resets the hero's tuning values and reinitialises the hero. */
 void reset_hero_to_idle(void) {
-    char *g = D_0013F450;
-    *(float *)(g + 0x220) = 0.8f;
-    *(float *)(g + 0x234) = 0.45f;
-    *(float *)(g + 0x228) = 0.8f;
-    *(float *)(g + 0x224) = 0.7f;
-    *(float *)(g + 0x22C) = 0.7f;
-    *(unsigned char *)(g + 0x22CB) = 0;
-    *(int *)(g + 0x2084) = 0;
+    struct Hero *hero_state = &D_0013F450_05278;
+    hero_state->capsule_top = 0.8f;
+    hero_state->unk234 = 0.45f;
+    hero_state->unk228 = 0.8f;
+    hero_state->unk224 = 0.7f;
+    hero_state->unk22C = 0.7f;
+    hero_state->unk22CB = 0;
+    hero_state->state.current = HERO_STATE_IDLE;
     *(int *)(D_0014171B + 0x4D) = 0;
-    *(float *)(g + 0xA94) = 1.0f;
+    hero_state->unkA94 = 1.0f;
     HeroClearQueuedSequence();
-    HeroEnterMoveState(0, 1);
+    HeroEnterMoveState(HERO_STATE_IDLE, 1);
 }
 typedef struct { char pad[0x24]; int v; char pad2[0x24]; } Rec;
 extern Rec D_L00_00179BC0[] NOT_SDA;
@@ -409,17 +409,20 @@ extern int D_L00_0015F6B0 MACRO_ADDR;
 extern int func_002140B0(int);
 
 /* Runs the hero's random-interval timer (rand_timer). */
+extern struct Hero D_0013F450_05CC0 __asm__("D_0013F450");
+
 void update_hero_random_timer(void) {
-    char *g = D_0013F450;
-    if (*(int *)(g + 0xFF0) == 0) {
-        if (*(int *)(g + 0xFF8) == 0) {
-            *(int *)(g + 0xFF4) = D_L00_0015F6B0 + scale_ticks(30);
-        } else if (D_L00_0015F6B0 > *(int *)(g + 0xFF4)) {
-            int a, b;
-            *(int *)(g + 0xFF0) = 1;
-            a = scale_ticks(20);
-            b = random_integer_below(*(int *)(g + 0xFF8));
-            *(int *)(g + 0xFF4) = D_L00_0015F6B0 + a + b + random_integer_below(*(int *)(g + 0xFF8));
+    struct Hero *hero_random_timer_owner = &D_0013F450_05CC0;
+    if (hero_random_timer_owner->rand_timer.fired == 0) {
+        if (hero_random_timer_owner->rand_timer.range == 0) {
+            hero_random_timer_owner->rand_timer.deadline = D_L00_0015F6B0 + scale_ticks(30);
+        } else if (D_L00_0015F6B0 > hero_random_timer_owner->rand_timer.deadline) {
+            int base_delay_frames, first_random_delay_frames;
+            hero_random_timer_owner->rand_timer.fired = 1;
+            base_delay_frames = scale_ticks(20);
+            first_random_delay_frames = random_integer_below(hero_random_timer_owner->rand_timer.range);
+            hero_random_timer_owner->rand_timer.deadline =
+                D_L00_0015F6B0 + base_delay_frames + first_random_delay_frames + random_integer_below(hero_random_timer_owner->rand_timer.range);
         }
     }
 }

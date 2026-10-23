@@ -266,16 +266,27 @@ extern short D_L01_001612A8;
 extern short D_L01_001612AC;
 extern short D_L01_001612B0;
 
+typedef struct L01Camera {
+    u8 pad000[0x190];
+    Vec4 v190;                 /* 0x190 */
+    Vec4 v1A0;                 /* 0x1A0 */
+    u8 pad1B0[0x60];
+    f32 f210;                  /* 0x210 */
+    u8 pad214[0x14];
+    f32 f228;                  /* 0x228 */
+    f32 f22C;                  /* 0x22C */
+} L01Camera;
+
 void build_water_render_setup_packet(void)
 {
-    float m[4][4];
+    f32 scaled_translation_matrix[4][4];
     struct DmaTag *base;
-    u8 *p;
-    char *camera;
+    u8 *packet_write_cursor;
+    L01Camera *camera;
 
-    func_001FA1C0(m, 1024.0f);
-    FastVecScale(m[3], camera_pos, -1024.0f);
-    m[3][3] = 1.0f;
+    func_001FA1C0(scaled_translation_matrix, 1024.0f);
+    FastVecScale(scaled_translation_matrix[3], camera_pos, -1024.0f);
+    scaled_translation_matrix[3][3] = 1.0f;
     if (D_L01_0015F6C4 != 7) {
         VU1_addDataRef(font_vu_program, font_vu_program_tag);
         D_L01_0015F6C4 = 7;
@@ -289,28 +300,28 @@ void build_water_render_setup_packet(void)
     base[1].addr = 0;
     base[1].vif0 = 0;
     base[1].vif1 = 0x6C0C43A4;
-    sce_vu0_mul_matrix(base + 2, camera_pos - 0x100, m);
-    sce_vu0_mul_matrix(base + 6, camera_pos - 0x80, m);
+    sce_vu0_mul_matrix(base + 2, camera_pos - 0x100, scaled_translation_matrix);
+    sce_vu0_mul_matrix(base + 6, camera_pos - 0x80, scaled_translation_matrix);
     base[10].tag = 0x8000;
     base[10].addr = 0x303EC000;
     base[10].vif0 = 0x412;
-    camera = D_L01_0016CF40;
-    *(float *)&base[10].vif1 = *(float *)(camera + 0x210);
-    p = (u8 *)(base + 11);
-    qcopy(p, camera + 0x190);
-    p = (u8 *)(base + 12);
-    qcopy(p, camera + 0x1A0);
-    *(float *)&base[13].tag = *(float *)(camera + 0x22C);
-    *(float *)&base[13].addr = *(float *)(camera + 0x228);
+    camera = (L01Camera *)D_L01_0016CF40;
+    *(f32 *)&base[10].vif1 = camera->f210;
+    packet_write_cursor = (u8 *)(base + 11);
+    qcopy(packet_write_cursor, &camera->v190);
+    packet_write_cursor = (u8 *)(base + 12);
+    qcopy(packet_write_cursor, &camera->v1A0);
+    *(f32 *)&base[13].tag = camera->f22C;
+    *(f32 *)&base[13].addr = camera->f228;
     base[13].vif0 = 0;
     base[13].vif1 = 0;
     base[14].addr = 0x20001D2;
     base[14].vif0 = 0x15000000;
     base[14].tag = 0x3000000;
     base[14].vif1 = 0;
-    p = (u8 *)(base + 15);
-    l01_packet.tag->tag |= ((p - (u8 *)l01_packet.tag) >> 4) - 1;
-    l01_packet.bytes = p;
+    packet_write_cursor = (u8 *)(base + 15);
+    l01_packet.tag->tag |= ((packet_write_cursor - (u8 *)l01_packet.tag) >> 4) - 1;
+    l01_packet.bytes = packet_write_cursor;
     AA_BlurPass();
     l01_packet.tag->tag = 0x30000007;
     l01_packet.tag->addr = (u32)D_L01_001CAF00;
@@ -1884,51 +1895,67 @@ typedef struct {
     char pad1C[0x14];
 } Hit_2eedd8;
 
+struct BurstDebrisVars {
+    f32 vel_x;                      /* 0x00 */
+    f32 vel_y;                      /* 0x04 */
+    union { f32 f; s32 i; } vel_z;  /* 0x08: written as a float and zeroed as an int */
+    u8 pad_0C[0x4];                 /* 0x0C */
+    s32 coll_mask;                  /* 0x10: flags passed to the line collision query */
+    s32 countdown;                  /* 0x14: frames left, ticked by func_001F9908 */
+    f32 floor_offset;               /* 0x18: height kept above the ground */
+};
+
 /* Burning debris: flies along its velocity leaving two smoke trails, sticks to the ground, and hurts what it hits. */
-void update_moby_motion_collision_and_burst(char *m) {
-    char *d = *(char **)(m + 0x78);
-    float prev[4];
+void update_moby_motion_collision_and_burst(char *moby) {
+    enum {
+        MOVE_UNTIL_COLLISION_OR_TIMEOUT = 1,
+        BURST_AND_REMOVE = 2
+    };
+    struct Moby *mb = (struct Moby *)moby;
+    struct BurstDebrisVars *moby_vars = (struct BurstDebrisVars *)mb->pvars;
+    float previous_position[4];
     float z[4];
-    Hit_2eedd8 h;
+    Hit_2eedd8 hit_descriptor;
     float gz;
-    switch (((unsigned char *)m)[0x20]) {
-    case 1:
-        qcopy(prev, m + 0x10);
-        FastVecAdd(m + 0x10, m + 0x10, d);
-        *(float *)(m + 0x48) = func_L00_001FF860(*(float *)(d + 0), *(float *)(d + 4));
+    switch (mb->state) {
+    case MOVE_UNTIL_COLLISION_OR_TIMEOUT:
+        qcopy(previous_position, &mb->pos);
+        FastVecAdd(&mb->pos, &mb->pos, moby_vars);
+        mb->rot.z = func_L00_001FF860(moby_vars->vel_x, moby_vars->vel_y);
         clear_u64_value(z);
-        PartType04Spawn(m + 0x10, z, 0x6F00AFFF, 0xFF, scale_ticks(rand_range(0xF, 0x16)), 0x28,
+        PartType04Spawn(&mb->pos, z, 0x6F00AFFF, 0xFF, scale_ticks(rand_range(0xF, 0x16)), 0x28,
                           rand_range(0x14, 0x23), 1);
-        PartType04Spawn(m + 0x10, z, 0x1FFFFFFF, 0x4F4F4F, scale_ticks(rand_range(0x1E, 0x3C)), 0x28,
+        PartType04Spawn(&mb->pos, z, 0x1FFFFFFF, 0x4F4F4F, scale_ticks(rand_range(0x1E, 0x3C)), 0x28,
                           rand_range(0x32, 0x4B), 0);
-        gz = *(float *)(m + 0x18) - ProbeGroundHeight(m + 0x10, 0, 0.5f);
-        if (gz < *(float *)(d + 0x18)) {
-            *(float *)(m + 0x18) = *(float *)(m + 0x18) + (*(float *)(d + 0x18) - gz);
-            *(int *)(d + 8) = 0;
-        } else if (*(float *)(m + 0x18) < *(float *)(D_0013E633 + 0x10C5) + *(float *)(d + 0x18)) {
-            *(int *)(d + 8) = 0;
+        gz = mb->pos.z - ProbeGroundHeight(&mb->pos, 0, 0.5f);
+        if (gz < moby_vars->floor_offset) {
+            mb->pos.z = mb->pos.z + (moby_vars->floor_offset - gz);
+            moby_vars->vel_z.i = 0;
+        } else if (mb->pos.z < *(float *)(D_0013E633 + 0x10C5) + moby_vars->floor_offset) {
+            moby_vars->vel_z.i = 0;
         } else {
-            *(float *)(d + 8) -= D_0015EE70 * 10.8f;
+            moby_vars->vel_z.f -= D_0015EE70 * 10.8f;
         }
-        if (func_L00_001EFFF0(m + 0x10, prev, 0, *(int *)(d + 0x10), 0) != 0) {
-            char *p = D_L01_00174340_h;
-            if (*(int *)(p + 0x18) != 0) {
-                InitDirectionalHitQuery(&h, m, 0x10001, 1.0f, d);
-                func_L00_001FF500(&h, &h, 1.0f);
-                h.f8 = 1.0f;
-                h.fC = 5627.9248f;
-                h.b19 = 1;
-                h.s1A = *(unsigned short *)(m + 0xA6);
-                h.b18 = 0;
-                PostHitMessageFromRecord(*(void **)(p + 0x18), &h);
+        if (func_L00_001EFFF0(&mb->pos, previous_position, 0, moby_vars->coll_mask, 0) != 0) {
+            char *collision_result = D_L01_00174340_h;
+            if (*(int *)(collision_result + 0x18) != 0) {
+                InitDirectionalHitQuery(&hit_descriptor, moby, 0x10001, 1.0f, moby_vars);
+                func_L00_001FF500(&hit_descriptor, &hit_descriptor, 1.0f);
+                hit_descriptor.f8 = 1.0f;
+                hit_descriptor.fC = 5627.9248f;
+                hit_descriptor.b19 = 1;
+                hit_descriptor.s1A = *(u16 *)&mb->oclass;
+                hit_descriptor.b18 = 0;
+                PostHitMessageFromRecord(*(void **)(collision_result + 0x18), &hit_descriptor);
             }
-            m[0x20] = 2;
+            mb->state = 2;
         }
-        if (func_001F9908(d + 0x14) != 0) m[0x20] = 2;
+        if (func_001F9908(&moby_vars->countdown) != 0)
+            mb->state = 2;
         break;
-    case 2:
-        SpawnExplosionFx(m, m + 0x10, -1, 0.25f, 13.0f);
-        DeleteMoby(m);
+    case BURST_AND_REMOVE:
+        SpawnExplosionFx(moby, &mb->pos, -1, 0.25f, 13.0f);
+        DeleteMoby(moby);
         break;
     }
 }

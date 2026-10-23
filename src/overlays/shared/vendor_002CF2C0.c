@@ -548,27 +548,28 @@ extern int D_L05_00161DCC SDATA(D_L05_00161DCC);
    D_L05_001672C0) and draws ten pairs of textured quads that widen with each
    step. Adapted from Lombyte (GPL-3.0), FUN_L05_0030c220. */
 void draw_moby_wobble_quads(unsigned char *m) {
-    Quad_0D678 quad_a, b;
+    struct Moby *moby = (struct Moby *)m;
+    Quad_0D678 quad_a, quad_b;
     float rotation[4];
     float position[4];
-    /* The draw helper reads four consecutive vectors: side, direction, up, position. */
+    /* Draw helper reads four consecutive vectors: side, direction, up, position. */
     float matrix[16] __attribute__((aligned(16)));
     float *side;
     float *direction;
     float *up;
-    long texture;
-    long flags;
+    u64 texture;
+    u64 flags;
     float phase;
     float sign;
     float pass;
     float offset_a_x, offset_a_z, offset_b_x, offset_b_z;
     int i, j, k;
     float *vertex_a, *vertex_b;
-    char *vars = *(char **)(m + 0x78);
+    char *vars = (char *)moby->pvars;
 
-    f_pos_0D678(m, 0, position);
+    f_pos_0D678(moby, 0, position);
     f_clear_0D678(rotation);
-    rotation[2] = *(float *)(m + 0x48);
+    rotation[2] = moby->rot.z;
     rotation[1] = f_sin_0D678(*(float *)(vars + 0x48)) * 0.5235988f + 0.5235988f;
     side = matrix;
     f_rot_0D678(side, rotation);
@@ -581,26 +582,26 @@ void draw_moby_wobble_quads(unsigned char *m) {
     qcopy(matrix + 12, position);
 
     texture = f_tex_0D678(D_L05_00161DCC);
-    flags = (long)D_L05_00161DB4 |
-            ((long)D_L05_00161DB8 << 2) |
-            ((long)D_L05_00161DBC << 4) |
-            ((long)D_L05_00161DC0 << 6) |
-            0x8000000000L;
-    b.control[0] = 0;
-    b.control[2] = 0xFF9000000260L;
+    flags = (u64)(s64)D_L05_00161DB4 |
+            ((u64)(s64)D_L05_00161DB8 << 2) |
+            ((u64)(s64)D_L05_00161DBC << 4) |
+            ((u64)(s64)D_L05_00161DC0 << 6) |
+            0x8000000000UL;
+    quad_b.control[0] = 0;
+    quad_b.control[2] = 0xFF9000000260L;
     quad_a.control[2] = 0xFF9000000260L;
-    b.control[1] = texture;
+    quad_b.control[1] = texture;
     quad_a.control[1] = texture;
     quad_a.control[0] = 0;
-    b.control[3] = flags;
+    quad_b.control[3] = flags;
     quad_a.control[3] = flags;
     for (k = 0; k < 4; k++) {
         float u = D_L05_001D6B00_0D678[k][0];
         float v = D_L05_001D6B00_0D678[k][1];
         quad_a.texcoord[k][0] = u;
         quad_a.texcoord[k][1] = v;
-        b.texcoord[k][0] = u;
-        b.texcoord[k][1] = v;
+        quad_b.texcoord[k][0] = u;
+        quad_b.texcoord[k][1] = v;
     }
     for (i = 0; i < 10; i++) {
         pass = (float)i;
@@ -608,23 +609,23 @@ void draw_moby_wobble_quads(unsigned char *m) {
         do {
             vertex_a = quad_a.vertex[j];
             qcopy(vertex_a, D_L05_001D6B20_0D678[j]);
-            qcopy(b.vertex[j], D_L05_001D6B60_0D678[j]);
+            qcopy(quad_b.vertex[j], D_L05_001D6B60_0D678[j]);
             phase = (float)(i + (j & 1)) * 0.1f;
             sign = 1.0f;
             if (j > 1) sign = -1.0f;
-            quad_a.color[j] = b.color[j] = f_tween_0D678(D_L05_00161DC4, D_L05_00161DC8, phase);
+            quad_a.color[j] = quad_b.color[j] = f_tween_0D678(D_L05_00161DC4, D_L05_00161DC8, phase);
             offset_a_x = phase * 8.0f * sign;
             offset_a_z = pass * 10.0f;
             offset_b_x = phase * 6.0f * sign;
             offset_b_z = pass * 12.0f;
             vertex_a[0] += offset_a_x;
             vertex_a[2] += offset_a_z;
-            vertex_b = b.vertex[j];
+            vertex_b = quad_b.vertex[j];
             vertex_b[0] += offset_b_x;
             vertex_b[2] += offset_b_z;
         } while (++j < 4);
         f_draw_0D678(&quad_a, matrix, 0);
-        f_draw_0D678(&b, matrix, 0);
+        f_draw_0D678(&quad_b, matrix, 0);
     }
 }
 typedef struct {

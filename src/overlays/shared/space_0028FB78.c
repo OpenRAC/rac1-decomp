@@ -271,38 +271,52 @@ int func_002140B0(int);
 float func_001FA888(int);
 void func_L00_001FD1D8(void *, void *, int);
 
+/* The 0x90-byte quad the effect builds: the NTSC GeometryQuad layout. */
+struct GeometryQuad {
+    V_28efc8 positions[4];          /* 0x00 */
+    u32 colors[4];                  /* 0x40 */
+    f32 texture_coordinates[4][2];  /* 0x50 */
+    u64 reserved;                   /* 0x70 */
+    u64 texture;                    /* 0x78 */
+    u64 texture_state;              /* 0x80 */
+    u64 primitive;                  /* 0x88 */
+};
+
+/* One row of the variant offset tables (quad_positions and its variants). */
+typedef V_28efc8 QuadOffset;
+
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_space_0028e8a0.c, FUN_L00_0028efc8. */
-void build_variant_effect_quads(unsigned char *m) {
-    Q_28efc8 quad;
-    V_28efc8 v;
-    V_28efc8 *tbl;
+void build_variant_effect_quads(unsigned char *quad_source) {
+    struct GeometryQuad quad;
+    QuadOffset quad_source_translation;
+    QuadOffset *selected_quad_offsets;
     int i, j, k;
-    tbl = D_L00_001BDD40;
-    if (D_0013E130_902A0.h26 == 1) tbl = D_L00_001BDDC0;
-    else if (D_0013E130_902A0.h26 == 2) tbl = D_L00_001BDDE0;
-    quad.tex = GetEffectTex(5);
-    quad.unk80 = 0xFF9000000260L;
-    quad.unk88 = 0x8000000048L;
-    quad.unk70 = 0;
+    selected_quad_offsets = D_L00_001BDD40;
+    if (D_0013E130_902A0.h26 == 1) selected_quad_offsets = D_L00_001BDDC0;
+    else if (D_0013E130_902A0.h26 == 2) selected_quad_offsets = D_L00_001BDDE0;
+    quad.texture = GetEffectTex(5);
+    quad.texture_state = 0xFF9000000260L;
+    quad.primitive = 0x8000000048L;
+    quad.reserved = 0;
     for (j = 0; j < 4; j++) {
-        quad.uv[j].u = ((float (*)[2])D_L00_001BDD20)[j][0];
-        quad.uv[j].v = ((float (*)[2])D_L00_001BDD20)[j][1];
+        quad.texture_coordinates[j][0] = ((float (*)[2])D_L00_001BDD20)[j][0];
+        quad.texture_coordinates[j][1] = ((float (*)[2])D_L00_001BDD20)[j][1];
     }
-    FastVecScale(0.0009765625f, &v, m);
+    FastVecScale(0.0009765625f, &quad_source_translation, quad_source);
     for (i = 0; i < (((int *)&D_L00_00160640))[D_0013E130_902A0.h26]; i++) {
-        int c = m[0xBC];
-        unsigned int col;
-        float s;
-        if (*(short *)(m + 0xB2)) c += random_integer_below(*(short *)(m + 0xB2));
-        s = IntToFloat(c) * (tbl[i].f[3] / 40.0f);
-        col = (c << 24) | 0x2058B0;
-        if (*(short *)(m + 0xA6) == 0x215) col = (c << 24) | 0x308000;
+        int quad_alpha = quad_source[0xBC];
+        u32 col;
+        float quad_scale;
+        if (*(short *)(quad_source + 0xB2)) quad_alpha += random_integer_below(*(short *)(quad_source + 0xB2));
+        quad_scale = IntToFloat(quad_alpha) * (selected_quad_offsets[i].f[3] / 40.0f);
+        col = (quad_alpha << 24) | 0x2058B0;
+        if (*(short *)(quad_source + 0xA6) == 0x215) col = (quad_alpha << 24) | 0x308000;
         for (k = 0; k < 4; k++) {
-            quad.color[k] = col;
-            FastVecScale(s, &quad.corner[k], &D_L00_001BDE00[k]);
-            FastVecAdd(&quad.corner[k], &quad.corner[k], &tbl[i]);
-            func_001F9EC0(&quad.corner[k], &quad.corner[k], D_0013E130_902A0.p0 + 0xC0);
-            FastVecAdd(&quad.corner[k], &quad.corner[k], &v);
+            quad.colors[k] = col;
+            FastVecScale(quad_scale, &quad.positions[k], &D_L00_001BDE00[k]);
+            FastVecAdd(&quad.positions[k], &quad.positions[k], &selected_quad_offsets[i]);
+            func_001F9EC0(&quad.positions[k], &quad.positions[k], D_0013E130_902A0.p0 + 0xC0);
+            FastVecAdd(&quad.positions[k], &quad.positions[k], &quad_source_translation);
         }
         func_L00_001FD1D8(&quad, 0, 0);
     }

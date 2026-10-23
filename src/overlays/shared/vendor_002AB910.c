@@ -967,6 +967,24 @@ extern float func_001FA7D8(float x);
 extern int func_001F4868(int);
 extern void func_L00_001FD1D8(void *, void *, int);
 
+typedef struct PV_2acbf0_002acbf0 {
+    u8 pad_00[0x10];
+    Vec4 pos;                  /* 0x10: copied to the marker's transform row 3 */
+    f32 f20;                   /* 0x20 */
+    f32 f24;                   /* 0x24 */
+    f32 f28;                   /* 0x28 */
+} PV_2acbf0_002acbf0;
+
+typedef struct M_2acbf0_002acbf0 {
+    u8 pad_00[0x78];
+    PV_2acbf0_002acbf0 *pv;    /* 0x78 */
+} M_2acbf0_002acbf0;
+
+typedef struct BombE910 {
+    u8 pad_00[0xA];
+    u8 bA;                      /* 0x0A */
+} BombE910;
+
 /* Draws two spinning textured quads around the moby, oriented by its velocity. */
 void draw_bomb_landing_marker(char *moby) {
     QuadPkt q;
@@ -974,20 +992,20 @@ void draw_bomb_landing_marker(char *moby) {
     float E[4][4];
     float rot1[4];
     float rot2[4];
-    char *d = *(char **)(moby + 0x78);
-    int i;
+    PV_2acbf0_002acbf0 *pv = ((M_2acbf0_002acbf0 *)moby)->pv;
+    s32 i;
 
     if (D_L00_0015F6A8 == 2) return;
     for (i = 0; i < 2; i++) {
-        int odd = i & 1;
-        float ang;
-        float den;
-        float r;
-        int kind;
-        float x = *(float *)(d + 0x20);
-        float z = *(float *)(d + 0x28);
-        rot1[0] = FastAddRots(-func_L00_001FF860(func_001F9B50(x * x + z * z), *(float *)(d + 0x24)), 1.5707964f);
-        rot1[1] = func_L00_001FF860(*(float *)(d + 0x28), *(float *)(d + 0x20));
+        s32 odd = i & 1;
+        f32 ang;
+        f32 den;
+        f32 r;
+        s32 kind;
+        f32 x = pv->f20;
+        f32 z = pv->f28;
+        rot1[0] = FastAddRots(-func_L00_001FF860(func_001F9B50(x * x + z * z), pv->f24), 1.5707964f);
+        rot1[1] = func_L00_001FF860(pv->f28, pv->f20);
         rot1[2] = 0;
         rot1[3] = 0;
         rot2[0] = 0;
@@ -1002,7 +1020,7 @@ void draw_bomb_landing_marker(char *moby) {
         func_001FA218(E, rot2);
         func_001FA218(M, rot1);
         sce_vu0_mul_matrix(M, M, E);
-        qcopy(M[3], d + 0x10);
+        qcopy(M[3], &pv->pos);
         kind = 0x11;
         if (odd) kind = 0x12;
         q.rgba[0] = 0x80808080;
@@ -1077,64 +1095,115 @@ extern float func_001F9D48(void *, void *);
 extern float func_001FA850(float, float);
 extern void func_L00_002C3790(float *, float *, float *, float, float, float);
 
+typedef struct BombVars {
+    Vec4 vel;                   /* 0x00 */
+    u8 pad_10[0x30];
+    Vec4 dir;                   /* 0x40 */
+    u8 pad_50[0x4];
+    s16 unk54;                  /* 0x54 */
+    u8 pad_56[0xA];
+    struct BombMoby *target;    /* 0x60 */
+    s32 unk64;                  /* 0x64 */
+    u8 pad_68[0x2];
+    s16 unk6A;                  /* 0x6A */
+} BombVars;
+
+typedef struct BombMoby {
+    Vec4 bsphere;               /* 0x00 */
+    Vec4 pos;                   /* 0x10 */
+    u8 state;                   /* 0x20 */
+    u8 pad_21[0x57];
+    struct BombVars *pvars;     /* 0x78 */
+    u8 pad_7C[0x2A];
+    s16 oclass;                 /* 0xA6 */
+    u8 pad_A8[0x14];
+    u8 command;                 /* 0xBC */
+} BombMoby;
+
+typedef struct BombHeroMotion {
+    Vec4 pos;                   /* 0x00 (hero 0x80) */
+    u8 pad_10[0x70];
+    Vec4 displacement;          /* 0x80 (hero 0x100) */
+} BombHeroMotion;
+
+typedef struct BombHeroState {
+    s32 current;                /* 0x00 (hero 0x2084) */
+    s32 step;                   /* 0x04 */
+    s32 control_mode;           /* 0x08 (hero 0x208C) */
+} BombHeroState;
+
+typedef struct BombHero {
+    u8 pad_000[0x80];
+    BombHeroMotion motion;      /* 0x080 */
+    u8 pad_110[0x1EC];
+    struct BombMoby *ground_moby; /* 0x2FC */
+    u8 pad_300[0x370];
+    f32 unk670;                 /* 0x670 */
+    f32 unk674;                 /* 0x674 */
+    u8 pad_678[0x1A08];
+    struct BombMoby *moby;      /* 0x2080 */
+    BombHeroState state;        /* 0x2084 */
+} BombHero;
+
 void launch_bomb(float *pos, unsigned char *moby, float *velocity) {
-    float *v = *(float **)(moby + 0x78);
+    BombMoby *m = (BombMoby *)moby;
+    BombVars *vars = m->pvars;
     float difference[4] __attribute__((aligned(16)));
     float direction[4] __attribute__((aligned(16)));
     float result[4] __attribute__((aligned(16)));
     float working[4] __attribute__((aligned(16)));
     float desired[4] __attribute__((aligned(16)));
-    char *g;
-    char *gb;
-    char *gc;
+    BombHero *g;
+    BombHero *gb;
+    BombHero *gc;
     unsigned char *mp;
     char *e;
     char *ge;
     float *rp;
     float dot, length, distance, angle, height, total;
 
-    *(short *)((char *)v + 0x6a) = scale_ticks(30);
-    moby[0x20] = 1;
-    qcopy(v, velocity);
-    g = (char *)&D_G910;
-    if (*(int *)(g + 0x208C) == 15) {
-        FastVecAdd(v, v, g + 0x100);
-    } else if (*(unsigned char **)(g + 0x2FC) != 0 && GetFlaggedPvarWord(*(unsigned char **)(g + 0x2FC)) != 0) {
-        FastVecAdd(v, v, g + 0x100);
-    } else if (*(float **)((char *)v + 0x60) != 0) {
-        short cls = *(short *)(*(char **)((char *)v + 0x60) + 0xa6);
+    vars->unk6A = scale_ticks(30);
+    m->state = 1;
+    qcopy(vars, velocity);
+    g = (BombHero *)&D_G910;
+    if (g->state.control_mode == 15) {
+        FastVecAdd(&vars->vel, &vars->vel, &g->motion.displacement);
+    } else if (g->ground_moby != 0 && GetFlaggedPvarWord((unsigned char *)g->ground_moby) != 0) {
+        FastVecAdd(&vars->vel, &vars->vel, &g->motion.displacement);
+    } else if (vars->target != 0) {
+        short cls = vars->target->oclass;
         if (cls == 0x56e || cls == 0x58e) {
-            FastVecAdd(v, v, v + 0x10);
-        } else if (*(int *)((char *)v + 0x64) != 0) {
+            FastVecAdd(&vars->vel, &vars->vel, &vars->dir);
+        } else if (vars->unk64 != 0) {
             length = func_001F9CE8(velocity);
-            FastVecSub(difference, D_G910.pos, *(char **)((char *)v + 0x60) + 0x10);
+            FastVecSub(difference, &((BombHero *)&D_G910)->motion.pos, &vars->target->pos);
             func_L00_001FF4B0(difference, difference, 1.0f);
-            dot = FastVecDot(difference, v + 0x10);
+            dot = FastVecDot(difference, &vars->dir);
             total = dot + length;
-            distance = func_001F9D48(pos, *(char **)((char *)v + 0x60) + 0x10) / total;
+            distance = func_001F9D48(pos, &vars->target->pos) / total;
             if (dot > 0.0f) {
                 FastVecScale(direction, difference, distance * dot);
-                FastVecAdd(working, direction, *(char **)((char *)v + 0x60) + 0x10);
+                FastVecAdd(working, direction, &vars->target->pos);
                 *(VecQuad *)direction = *(VecQuad *)working;
             } else {
-                FastVecScale(direction, v + 0x10, distance);
-                FastVecAdd(working, direction, *(char **)((char *)v + 0x60) + 0x10);
+                FastVecScale(direction, &vars->dir, distance);
+                FastVecAdd(working, direction, &vars->target->pos);
                 *(VecQuad *)direction = *(VecQuad *)working;
             }
-            gb = (char *)&D_G910;
+            gb = (BombHero *)&D_G910;
             {
-                float heading = func_L00_001FF860(*(float *)(gb + 0x670), *(float *)(gb + 0x674));
-                float toward = func_L00_001FF860(direction[0] - *(float *)(gb + 0x80),
-                                             direction[1] - *(float *)(gb + 0x84));
+                float heading = func_L00_001FF860(gb->unk670, gb->unk674);
+                float toward = func_L00_001FF860(direction[0] - gb->motion.pos.f[0],
+                                                 direction[1] - gb->motion.pos.f[1]);
                 angle = FastDiffRots(heading, toward);
             }
             if (angle > 1.5707964f) {
-                working[0] = FastCos(func_L00_001FF860(*(float *)(gb + 0x670), *(float *)(gb + 0x674))) *
-                            func_001F9D48(gb + 0x80, direction) * 0.5f;
-                angle = FastSin(func_L00_001FF860(*(float *)(gb + 0x670), *(float *)(gb + 0x674)));
-                working[1] = angle * func_001F9D48(gb + 0x80, direction) * 0.5f;
+                working[0] = FastCos(func_L00_001FF860(gb->unk670, gb->unk674)) *
+                             func_001F9D48(&gb->motion.pos, direction) * 0.5f;
+                angle = FastSin(func_L00_001FF860(gb->unk670, gb->unk674));
+                working[1] = angle * func_001F9D48(&gb->motion.pos, direction) * 0.5f;
                 working[2] = 0.0f;
-                FastVecAdd(desired, working, gb + 0x80);
+                FastVecAdd(desired, working, &gb->motion.pos);
                 *(VecQuad *)direction = *(VecQuad *)desired;
             }
             total = D_0015EE70 * 11.0f;
@@ -1147,26 +1216,26 @@ void launch_bomb(float *pos, unsigned char *moby, float *velocity) {
             }
             aim_throw_arc(pos, direction, rp, total, 0.00001f, height);
             FastVecScale(result, result, 0.65f);
-            FastVecScale(v, v, 0.35f);
-            FastVecAdd(working, v, result);
-            *(VecQuad *)v = *(VecQuad *)working;
+            FastVecScale(&vars->vel, &vars->vel, 0.35f);
+            FastVecAdd(working, &vars->vel, result);
+            *(VecQuad *)&vars->vel = *(VecQuad *)working;
         }
     }
     mp = moby + 0x10;
-    *(short *)((char *)v + 0x54) = scale_ticks(300);
+    vars->unk54 = scale_ticks(300);
     qcopy(mp, pos);
-    gc = (char *)&D_G910;
-    *(VecQuad *)difference = *(VecQuad *)(*(char **)(gc + 0x2080) + 0x10);
+    gc = (BombHero *)&D_G910;
+    *(VecQuad *)difference = *(VecQuad *)&gc->moby->pos;
     difference[2] = pos[2];
-    if (func_L00_001EFFF0(difference, pos, 0, *(int *)(gc + 0x2080), 0) != 0) {
-        moby[0xbc] = 1;
+    if (func_L00_001EFFF0(difference, pos, 0, (int)gc->moby, 0) != 0) {
+        m->command = 1;
         qcopy(mp, D_L00_00173F60);
     }
     ge = (char *)&D_E910;
-    if (*(unsigned char *)(ge + 0xa) != 0 && *(int *)(gc + 0x2084) == 1) {
-        float z = v[2];
-        FastVecScale(v, v, 1.5f);
-        v[2] = z / 1.5f;
+    if (*(unsigned char *)(ge + 0xa) != 0 && gc->state.current == 1) {
+        float z = vars->vel.f[2];
+        FastVecScale(&vars->vel, &vars->vel, 1.5f);
+        vars->vel.f[2] = z / 1.5f;
     }
 }
 typedef struct { float f[4]; } __attribute__((aligned(16))) V_AE6B0;

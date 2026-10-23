@@ -2419,18 +2419,34 @@ void draw_cropped_hud_sprite(int tex, int x, int y, int w, int h, int alpha) {
 }
 extern int *D_L00_00161280 __attribute__((section(".sdata")));
 
-/* Draws texture TEX as a four-vertex strip, turned a quarter, through the packet pointer. */
-void draw_rotated_hud_sprite(int tex, int x, int y, int w, int h, int alpha) {
-    char *arena = D_L00_0017E5D8;
-    unsigned char *e = (unsigned char *)(*(char **)(arena + 0x24)
-        + *(short *)(*(char **)(arena + 0x20) + tex * 4 + 2) * 8);
-    int th;
-    int tw;
-    int *base;
-    long *p;
+typedef struct {
+    u8 pad_00[0x6];
+    u8 lw;                         /* 0x06: log2 of the texture width */
+    u8 lh;                         /* 0x07: log2 of the texture height */
+} R_23bac0;
 
-    tw = 1 << e[6];
-    th = 1 << e[7];
+typedef struct {
+    u8 pad_00[0x2];
+    s16 k;                         /* 0x02: index into the record table */
+} T_23bac0;
+
+typedef struct {
+    u8 pad_00[0xC];
+    s32 zc;                        /* 0x0C */
+    u8 pad_10[0x10];
+    T_23bac0 *tab;                 /* 0x20 */
+    R_23bac0 *rec;                 /* 0x24 */
+} G_23bac0;
+
+/* Draws texture TEX as a four-vertex strip, turned a quarter, through the packet pointer. */
+void draw_rotated_hud_sprite(int id, int x, int y, int draw_width, int draw_height, int alpha) {
+    G_23bac0 *g = (G_23bac0 *)D_L00_0017E5D8;
+    R_23bac0 *image_page = &g->rec[g->tab[id].k];
+    int ww = 1 << image_page->lw;
+    int hh = 1 << image_page->lh;
+    int *base;
+    u64 *packet_words;
+
     D_L00_00161280[0] = 0x10000007;
     D_L00_00161280[1] = 0;
     D_L00_00161280[2] = 0;
@@ -2438,29 +2454,29 @@ void draw_rotated_hud_sprite(int tex, int x, int y, int w, int h, int alpha) {
 
     base = D_L00_00161280;
     D_L00_00161280 = base + 4;
-    p = (long *)D_L00_00161280;
-    p[0] = 0xB400000000008001L;
-    p[1] = 0x53535353106L;
-    p[2] = GetFrameTex(tex);
-    p[3] = 0x154;
-    p[4] = ((long)alpha << 24) | 0x7F7F7F;
-    p[5] = tw * 16;
-    p[6] = (x * 16 + D_0013E600[4] - 8)
-         | ((long)(y * 16 + D_0013E600[5] - 8) << 16)
-         | ((long)*(int *)(arena + 0xC) << 32);
-    p[7] = (th << 20) + tw * 16;
-    p[8] = ((x + w) * 16 + D_0013E600[4] - 8)
-         | ((long)(y * 16 + D_0013E600[5] - 8) << 16)
-         | ((long)*(int *)(arena + 0xC) << 32);
-    p[9] = 0;
-    p[10] = (x * 16 + D_0013E600[4] - 8)
-          | ((long)((y + h) * 16 + D_0013E600[5] - 8) << 16)
-          | ((long)*(int *)(arena + 0xC) << 32);
-    p[11] = th << 20;
-    p[12] = ((x + w) * 16 + D_0013E600[4] - 8)
-          | ((long)((y + h) * 16 + D_0013E600[5] - 8) << 16)
-          | ((long)*(int *)(arena + 0xC) << 32);
-    p[13] = 0;
+    packet_words = (u64 *)D_L00_00161280;
+    packet_words[0] = 0xB400000000008001UL;
+    packet_words[1] = 0x53535353106UL;
+    packet_words[2] = GetFrameTex(id);
+    packet_words[3] = 0x154;
+    packet_words[4] = ((u64)alpha << 24) | 0x7F7F7F;
+    packet_words[5] = ww * 16;
+    packet_words[6] = (x * 16 + D_0013E600[4] - 8)
+                    | ((u64)(y * 16 + D_0013E600[5] - 8) << 16)
+                    | ((u64)g->zc << 32);
+    packet_words[7] = (hh << 20) + ww * 16;
+    packet_words[8] = ((x + draw_width) * 16 + D_0013E600[4] - 8)
+                    | ((u64)(y * 16 + D_0013E600[5] - 8) << 16)
+                    | ((u64)g->zc << 32);
+    packet_words[9] = 0;
+    packet_words[10] = (x * 16 + D_0013E600[4] - 8)
+                     | ((u64)((y + draw_height) * 16 + D_0013E600[5] - 8) << 16)
+                     | ((u64)g->zc << 32);
+    packet_words[11] = hh << 20;
+    packet_words[12] = ((x + draw_width) * 16 + D_0013E600[4] - 8)
+                     | ((u64)((y + draw_height) * 16 + D_0013E600[5] - 8) << 16)
+                     | ((u64)g->zc << 32);
+    packet_words[13] = 0;
     D_L00_00161280 = (int *)((char *)D_L00_00161280 + 0x70);
 }
 typedef struct O23D750 {

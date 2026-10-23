@@ -30,65 +30,59 @@ extern int D_0013E600[];
 
 /* Appends a line of font glyph quads at (x, y) in COLOR to the packet buffer and patches the packet tags. */
 void draw_debug_text(int x, int y, int color, int s_) {
-    unsigned char *str = (unsigned char *)s_;
-    int n = 0;
-    int qw;
-    int *base;
-    long *p;
-    long *tag;
-    unsigned int idx;
-    int w;
-    int c;
-    long *q;
-    int hd;
+    const unsigned char *text = (const unsigned char *)s_;
+    int glyph_count = 0;
+    unsigned int quadwords;
+    unsigned int glyph;
+    int texture_coordinates;
+    u64 *packet;
+    u64 *glyph_tag;
+    u64 *cursor;
 
     VU1_addGSregister(0x42, 0x8000000044L);
     VU1_addGSregister(0x47, 0x5360B);
-    base = D_L00_00161280;
-    D_L00_00161280 = base + 4;
-    p = (long *)D_L00_00161280;
-    tag = p + 8;
-    p[0] = 0x10ab400000000001L;
-    p[1] = 0xE;
-    p[2] = 1;
-    p[3] = 0x14;
-    p[4] = 0x2400000000000001L;
-    p[5] = 0x61;
-    p[6] = (long)color & 0xFFFFFFFFL;
-    p[7] = debug_font_pif_header;
-    p[8] = 0x4400000000008003L;
-    p[9] = 0x5353;
-    D_L00_00161280 = (int *)((char *)D_L00_00161280 + 0x50);
-    qw = 5;
-    while ((c = *str) != 0) {
-        p = (long *)D_L00_00161280;
-        idx = (unsigned char)(c - 0x20);
-        if (idx >= 0x60) {
-            idx = 0x20;
+    packet = (u64 *)D_L00_00161280;
+    D_L00_00161280 = (int *)(packet + 2);
+    packet[2] = 0x10AB400000000001UL;
+    cursor = packet + 2;
+    cursor[1] = 0xE;
+    cursor[2] = 1;
+    cursor[3] = 0x14;
+    cursor[4] = 0x2400000000000001UL;
+    cursor[5] = 0x61;
+    cursor[6] = color & 0xFFFFFFFFUL;
+    cursor[7] = debug_font_pif_header;
+    cursor[8] = 0x4400000000008003UL;
+    cursor[9] = 0x5353;
+    glyph_tag = packet + 10;
+    D_L00_00161280 = (int *)((u64 *)D_L00_00161280 + 10);
+    quadwords = 5;
+    while (*text != 0) {
+        cursor = (u64 *)D_L00_00161280;
+        glyph = (u8)(*text - 0x20);
+        if (glyph >= 0x60)
+            glyph = 0x20;
+        texture_coordinates = D_L00_00169A80[glyph];
+        text++;
+        if (texture_coordinates != -1) {
+            cursor[0] = (s64)texture_coordinates;
+            cursor[1] = (s64)((x * 16) + D_0013E600[4] - 8) |
+                        ((u64)(s64)((y * 16) + D_0013E600[5] - 8) << 16) | 0xFFFFF300000000UL;
+            cursor[2] = (s64)(texture_coordinates + 0xC000A0);
+            glyph_count++;
+            quadwords += 2;
+            cursor[3] = (s64)(((x + 10) * 16) + D_0013E600[4] - 8) |
+                        ((u64)(s64)(((y + 12) * 16) + D_0013E600[5] - 8) << 16) |
+                        0xFFFFF300000000UL;
+            D_L00_00161280 = (int *)((u64 *)D_L00_00161280 + 4);
         }
-        w = D_L00_00169A80[idx];
-        str++;
-        if (w != -1) {
-            p[0] = w;
-            p[1] = (x * 16 + D_0013E600[4] - 8)
-                 | ((long)(y * 16 + D_0013E600[5] - 8) << 16)
-                 | 0xFFFFF300000000L;
-            p[2] = w + 0xC000A0;
-            p[3] = ((x + 10) * 16 + D_0013E600[4] - 8)
-                 | ((long)((y + 12) * 16 + D_0013E600[5] - 8) << 16)
-                 | 0xFFFFF300000000L;
-            n++;
-            qw += 2;
-            D_L00_00161280 = (int *)((char *)D_L00_00161280 + 0x20);
-        }
-        x += D_L00_00169C00[idx];
+        x += D_L00_00169C00[glyph];
     }
-    hd = 0x10000000 | qw;
-    base[0] = hd;
-    base[1] = 0;
-    base[2] = 0;
-    base[3] = 0x50000000 | qw;
-    *tag = ((long)n | 0x8000) | 0x4400000000000000L;
+    ((u32 *)packet)[0] = quadwords | 0x10000000;
+    ((u32 *)packet)[1] = 0;
+    ((u32 *)packet)[2] = 0;
+    ((u32 *)packet)[3] = quadwords | 0x50000000;
+    *glyph_tag = (s64)(glyph_count | 0x8000) | 0x4400000000000000UL;
 }
 LINKER_REMNANT("asm/overlays", func_L00_001F3DF0);
 typedef struct {

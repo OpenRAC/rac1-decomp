@@ -451,42 +451,66 @@ extern char D_L00_00166EC0[];
 extern unsigned char D_0015EEB4_m[4] __asm__("D_0015EEB4") MACRO_ADDR;
 extern short D_L00_0015F680;
 
+typedef struct CutsceneCamKey {
+    u8 pad_00[0xC];
+    s8 flag;                    /* 0x0C: read as a signed byte (lb) */
+    u8 pad_0D[0x3];
+    f32 values[4];              /* 0x10: rotation angles x, y, z, then the unscaled value */
+} CutsceneCamKey;
+
+typedef struct {
+    u8 pad_00[0x38];
+    s32 key_index;              /* 0x38 */
+    u8 pad_3C[0x18];
+    CutsceneCamKey *keys;       /* 0x54: 32-byte key rows */
+} CutsceneCamCtl;
+
+typedef struct {
+    u8 pad_00[0xB0];
+    f32 unkB0;                  /* 0xB0 */
+} CutsceneCamVars;
+
+typedef struct {
+    u8 pad_000[0x350];
+    Vec4f matrix[3];            /* 0x350: view rotation rows, x/y/z per row */
+} CameraBlock;
+
 /* Builds the camera view matrices from the current camera entry and returns the entry's flag byte. */
 unsigned char apply_cutscene_camera_key(void) {
-    char *d = D_L00_0016C960;
-    int idx = *(int *)(d + 0x38);
-    char *e = *(char **)(d + 0x54) + idx * 32;
-    float *p = (float *)(e + 0x10);
-    char *cc;
+    CutsceneCamCtl *d = (CutsceneCamCtl *)D_L00_0016C960;
+    int idx = d->key_index;
+    CutsceneCamKey *e = d->keys + idx;
+    f32 *p = e->values;
+    CameraBlock *cc;
     float f0;
-    char *b = D_L00_0016CB40;
+    CutsceneCamVars *b = (CutsceneCamVars *)D_L00_0016CB40;
     char *c;
     unsigned char r;
     float m[16];
     float v[4];
-    r = e[0xC];
+    r = e->flag;
     f0 = p[3];
-    *(float *)(b + 0xB0) = f0;
+    b->unkB0 = f0;
     if (gCheats[0] != 0) {
-        *(float *)(b + 0xB0) = f0 * D_L00_0015F67C;
+        b->unkB0 = f0 * D_L00_0015F67C;
     }
     UpdateViewContext();
     c = D_L00_00166EC0;
     qcopy(c, e);
     func_00125358(m);
-    func_001254A0(m, m, *(float *)(e + 0x10));
+    func_001254A0(m, m, e->values[0]);
     func_00125548(m, m, p[1]);
     func_001253F8(m, m, p[2]);
-    cc = c - 0x140;
-    *(float *)(cc + 0x350) = -m[8];
-    *(float *)(cc + 0x360) = -m[0];
-    *(float *)(cc + 0x370) = m[4];
-    *(float *)(cc + 0x354) = -m[9];
-    *(float *)(cc + 0x364) = -m[1];
-    *(float *)(cc + 0x374) = m[5];
-    *(float *)(cc + 0x358) = -m[10];
-    *(float *)(cc + 0x368) = -m[2];
-    *(float *)(cc + 0x378) = m[6];
+    cc = (CameraBlock *)(c - 0x140);
+    cc->matrix[0].x = -m[8];
+    cc->matrix[1].x = -m[0];
+    cc->matrix[2].x = m[4];
+    cc->matrix[0].y = -m[9];
+    cc->matrix[1].y = -m[1];
+    cc->matrix[2].y = m[5];
+    cc->matrix[0].z = -m[10];
+    cc->matrix[1].z = -m[2];
+    cc->matrix[2].z = m[6];
     if (D_0015EEB4_m[0] != 0) {
         FastVecCross(c + 0x220, c + 0x230, c + 0x210);
     }

@@ -1372,61 +1372,101 @@ extern void func_00213DE0(void *, int, int, int);
 extern float func_001F9878(float);
 extern float func_00214358_f(void *, int, float) __asm__("func_00214358");
 
+typedef struct O_25b440 {
+    u8 pad00[0x10];
+    Vec4 pos;                  /* 0x10: pos.f[2] is z at 0x18 */
+    u8 pad20[0x32];
+    u8 b52;                    /* 0x52 */
+    u8 pad53[0x1D];
+    u8 b70;                    /* 0x70 */
+} O_25b440;
+
+typedef struct S_25b440 {
+    u8 pad00[0x8];
+    f32 f8;                    /* 0x08 */
+    u8 pad0C[0x4];
+    f32 f10;                   /* 0x10 */
+    f32 f14;                   /* 0x14 */
+    f32 f18;                   /* 0x18 */
+    f32 f1C;                   /* 0x1C */
+    u8 pad20[0x4];
+    f32 f24;                   /* 0x24 */
+    f32 f28;                   /* 0x28 */
+    u8 b2C;                    /* 0x2C */
+    u8 b2D;                    /* 0x2D */
+    u8 b2E;                    /* 0x2E */
+    u8 state;                  /* 0x2F */
+    f32 f30;                   /* 0x30 */
+    f32 f34;                   /* 0x34 */
+    f32 f38;                   /* 0x38 */
+    f32 f3C;                   /* 0x3C */
+} S_25b440;
+
 /* Steps a thrown object through its motion states (0 wait, 1 rise, 2 fall, 3 settle) and returns the new state. */
 int update_arc_motion(char *m, char *p) {
-    float tmp[3];
-    float f0, f1, v;
+    enum {
+        CHECK_ARC_ENTRY_GATES = 0,
+        INTEGRATE_ARC_MOTION = 1,
+        DESCEND_TO_GROUND = 2,
+        WAIT_AFTER_GROUND_CLAMP = 3
+    };
+    O_25b440 *moving_object = (O_25b440 *)m;
+    S_25b440 *arc_motion_state = (S_25b440 *)p;
+    float motion_displacement[4];
+    float prediction_time;
+    float ground_height;
+    float v;
     float *vec;
 
-    switch (*(unsigned char *)(p + 0x2F)) {
-    case 0:
-        if (*(unsigned char *)(m + 0x52) != *(unsigned char *)(p + 0x2C)) {
+    switch (arc_motion_state->state) {
+    case CHECK_ARC_ENTRY_GATES:
+        if (moving_object->b52 != arc_motion_state->b2C) {
             break;
         }
-        if (MobyGetFrameValue(m) <= *(float *)(p + 0x24)) {
+        if (MobyGetFrameValue(moving_object) <= arc_motion_state->f24) {
             break;
         }
-        if (*(unsigned char *)(m + 0x70) & 2) {
-            MobyBlendAnimation(m, *(unsigned char *)(p + 0x2D), 0, 10);
-            *(unsigned char *)(p + 0x2F) = 1;
+        if (moving_object->b70 & 2) {
+            MobyBlendAnimation(moving_object, arc_motion_state->b2D, 0, 10);
+            arc_motion_state->state = INTEGRATE_ARC_MOTION;
         }
-    case 1:
-        MobySpringTurn(m, p + 0x30, *(float *)(p + 0x18), *(float *)(p + 0x34), *(float *)(p + 0x38), *(float *)(p + 0x3C));
-        tmp[0] = FastCos(*(float *)(p + 0x18)) * *(float *)(p + 0x14);
-        tmp[1] = FastSin(*(float *)(p + 0x18)) * *(float *)(p + 0x14);
-        tmp[2] = *(float *)(p + 0x10);
-        FastVecAdd(m + 0x10, m + 0x10, tmp);
-        v = *(float *)(p + 0x10) - *(float *)(p + 0x1C);
-        *(float *)(p + 0x10) = v;
+    case INTEGRATE_ARC_MOTION:
+        MobySpringTurn(moving_object, &arc_motion_state->f30, arc_motion_state->f18, arc_motion_state->f34, arc_motion_state->f38, arc_motion_state->f3C);
+        motion_displacement[0] = FastCos(arc_motion_state->f18) * arc_motion_state->f14;
+        motion_displacement[1] = FastSin(arc_motion_state->f18) * arc_motion_state->f14;
+        motion_displacement[2] = arc_motion_state->f10;
+        FastVecAdd(moving_object->pos.f, moving_object->pos.f, motion_displacement);
+        v = arc_motion_state->f10 - arc_motion_state->f1C;
+        arc_motion_state->f10 = v;
         if (v < 0.0f) {
-            f0 = func_001F9878(*(float *)(p + 0x28) + *(float *)(p + 0x28) + 10.0f);
-            if (*(float *)(m + 0x18) <= *(float *)(p + 8) - (*(float *)(p + 0x10) * f0 - *(float *)(p + 0x1C) * 0.5f * f0 * f0)) {
-                MobyBlendAnimation(m, *(unsigned char *)(p + 0x2E), 0, 10);
-                *(unsigned char *)(p + 0x2F) = 2;
+            prediction_time = func_001F9878(arc_motion_state->f28 + arc_motion_state->f28 + 10.0f);
+            if (moving_object->pos.f[2] <= arc_motion_state->f8 - (arc_motion_state->f10 * prediction_time - arc_motion_state->f1C * 0.5f * prediction_time * prediction_time)) {
+                MobyBlendAnimation(moving_object, arc_motion_state->b2E, 0, 10);
+                arc_motion_state->state = DESCEND_TO_GROUND;
             }
         }
         break;
-    case 2:
-        vec = (float *)(m + 0x10);
-        *(float *)(m + 0x18) += *(float *)(p + 0x10);
-        *(float *)(p + 0x10) = *(float *)(p + 0x10) - *(float *)(p + 0x1C);
-        f1 = func_00214358_f(vec, 0, 0.5f);
-        if (*(float *)(m + 0x18) <= f1) {
-            *(float *)(m + 0x18) = f1;
-            *(unsigned char *)(p + 0x2F) = 3;
+    case DESCEND_TO_GROUND:
+        vec = moving_object->pos.f;
+        moving_object->pos.f[2] += arc_motion_state->f10;
+        arc_motion_state->f10 = arc_motion_state->f10 - arc_motion_state->f1C;
+        ground_height = func_00214358_f(vec, 0, 0.5f);
+        if (moving_object->pos.f[2] <= ground_height) {
+            moving_object->pos.f[2] = ground_height;
+            arc_motion_state->state = WAIT_AFTER_GROUND_CLAMP;
         } else {
-            tmp[0] = FastCos(*(float *)(p + 0x18)) * *(float *)(p + 0x14);
-            tmp[1] = FastSin(*(float *)(p + 0x18)) * *(float *)(p + 0x14);
-            tmp[2] = 0.0f;
-            FastVecAdd(vec, vec, tmp);
+            motion_displacement[0] = FastCos(arc_motion_state->f18) * arc_motion_state->f14;
+            motion_displacement[1] = FastSin(arc_motion_state->f18) * arc_motion_state->f14;
+            motion_displacement[2] = 0.0f;
+            FastVecAdd(vec, vec, motion_displacement);
         }
-    case 3:
-        if (*(unsigned char *)(m + 0x70) & 2) {
-            *(unsigned char *)(p + 0x2F) = 4;
+    case WAIT_AFTER_GROUND_CLAMP:
+        if (moving_object->b70 & 2) {
+            arc_motion_state->state = 4;
         }
         break;
     }
-    return *(unsigned char *)(p + 0x2F);
+    return arc_motion_state->state;
 }
 // Linear interpolation from a to b by t.
 float Lerp(float a, float b, float t) {

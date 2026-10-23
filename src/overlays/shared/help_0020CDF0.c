@@ -285,36 +285,36 @@ extern int func_L00_0020D3A0(Vec4 *, s32 **, Vec4 *, s32 *, f32 *, s32 *, s32 *,
 
 /* latches a hit into the game block when the probe lands inside a depth window below the camera point */
 void update_hero_offset_rail_candidate(void) {
-    float a[4];
-    float b[4];
-    int o0;
-    int o1;
-    float o2;
-    int o3;
-    char *pad = D_0013E633 + 0xE1D;
-    char *pad2;
+    float rail_query_position[4];
+    float rail_point[4];
+    int i20;
+    int i24;
+    float rail_query_value;
+    int i2C;
+    struct Hero *P = (struct Hero *)(D_0013E633 + 0xE1D);
+    struct Hero *pad2;
     char *q;
-    int s;
-    float d;
-    float lim;
-    *(int *)(pad + 0x5FC) = 0;
-    if (*(short *)(pad + 0x1E4) == 0) {
-        Hero_GetProbePoint(a);
-        s = *(int *)(pad + 0x208C);
-        if ((s == 4 && *(short *)(pad + 0x41E) == 0) || s == 2) {
-            if (nearest_rail_point(a, &o0, b, &o1, &o2, &o3, 0, 0)) {
-                d = a[2] - b[2];
-                lim = -0.7f;
-                if (*(int *)(D_0013A5E0 + 0x2604) & 0x80) lim = -1.2f;
-                if (lim < d && d < 0.4f) {
+    int control_mode;
+    float query_height_above_rail;
+    float minimum_query_height_above_rail;
+    P->unk5FC = 0;
+    if (P->unk1E4 == 0) {
+        Hero_GetProbePoint(rail_query_position);
+        control_mode = P->state.control_mode;
+        if ((control_mode == 4 && P->unk41E == 0) || control_mode == 2) {
+            if (nearest_rail_point(rail_query_position, &i20, rail_point, &i24, &rail_query_value, &i2C, 0, 0)) {
+                query_height_above_rail = rail_query_position[2] - rail_point[2];
+                minimum_query_height_above_rail = -0.7f;
+                if (*(int *)(D_0013A5E0 + 0x2604) & 0x80) minimum_query_height_above_rail = -1.2f;
+                if (minimum_query_height_above_rail < query_height_above_rail && query_height_above_rail < 0.4f) {
                     q = D_0013E633 + 0x13FD;
-                    qcopy(q, b);
-                    pad2 = q - 0x5E0;
-                    *(int *)(pad2 + 0x5F0) = o0;
-                    *(int *)(pad2 + 0x5F4) = o1;
-                    *(float *)(pad2 + 0x5F8) = o2;
-                    *(int *)(pad2 + 0x60C) = o3;
-                    *(int *)(pad2 + 0x5FC) = 1;
+                    qcopy(q, rail_point);
+                    pad2 = (struct Hero *)(q - 0x5E0);
+                    pad2->unk5F0 = (s32 *)i20;
+                    pad2->unk5F4 = i24;
+                    pad2->unk5F8 = rail_query_value;
+                    pad2->unk60C = i2C;
+                    pad2->unk5FC = 1;
                 }
             }
         }
@@ -768,64 +768,64 @@ extern void func_001FA1F8(void *, void *);
 /* Hero animation slots: keeps each of the two slot objects (hero +0xD08) animated for the
    current state, then rebuilds the 0x640 matrix block from the object's 0xC0..0xEF data. */
 void update_hero_held_items_and_orientation(void) {
-    char *g = D_0013E633 + 0xE1D;
-    int k;
+    struct Hero *owner = (struct Hero *)(D_0013E633 + 0xE1D);
+    int slot_index;
 
-    if (HB(0x20A8) != 0 && HB(0x20AA) != 0) {
+    if (owner->unk20A8 != 0 && owner->unk20AA != 0) {
         if (get_ammo(-1) == 0) {
             Hero_ClearPendingModuleAnim();
         }
     }
 
-    for (k = 0; k < 2; k++) {
-        char *l = D_0013E633 + 0xE1D;
-        unsigned char **slotp = (unsigned char **)(l + 0xD08) + k;
-        unsigned char **cur;
-        int ret;
-        int v5;
+    for (slot_index = 0; slot_index < 2; slot_index++) {
+        struct Hero *slot_owner = (struct Hero *)(D_0013E633 + 0xE1D);
+        unsigned char **slot = slot_owner->unkD08 + slot_index;
+        unsigned char **current;
+        int item_id;
+        int animation;
 
-        if (*slotp == 0) {
+        if (*slot == 0) {
             continue;
         }
-        ret = hero_slot_item_id(0);
-        if (ret == *(int *)(l + 0x2298)) {
-            v5 = ((struct { ID_20e4c8 a[1]; } *)D_L00_00179BC0_0EB60)->a[ret].f28;
-            if (*(int *)(l + 0x208C) == 0xC) {
-                v5 = ((struct { ID_20e4c8 a[1]; } *)D_L00_00179BC0_0EB60)->a[ret].f2C;
+        item_id = hero_slot_item_id(0);
+        if (item_id == slot_owner->unk2298) {
+            animation = ((struct { ID_20e4c8 a[1]; } *)D_L00_00179BC0_0EB60)->a[item_id].f28;
+            if (slot_owner->state.control_mode == 12) {
+                animation = ((struct { ID_20e4c8 a[1]; } *)D_L00_00179BC0_0EB60)->a[item_id].f2C;
             }
-            if (v5 != -1 && (*slotp)[0x23] != v5) {
-                *(int *)(l + 0x2294) = v5;
-                MobyAnim_StartBlend(*(int *)(l + 0x2080), *slotp, *(int *)(l + 0x2294), 0,
-                                  scale_ticks(8), 1);
+            if (animation != -1 && (*slot)[0x23] != animation) {
+                slot_owner->unk2294 = animation;
+                MobyAnim_StartBlend((u8 *)slot_owner->moby, *slot, slot_owner->unk2294, 0,
+                                    scale_ticks(8), 1);
             }
         }
 
-        cur = (unsigned char **)(l + 0xD08) + k;
+        current = slot_owner->unkD08 + slot_index;
         {
-        char *h = D_0013E633 + 0xE1D;
-        MobyAnim_StepBlend(*(void **)(h + 0x2080), *cur);
+        struct Hero *pose_owner = (struct Hero *)(D_0013E633 + 0xE1D);
+        MobyAnim_StepBlend((u8 *)pose_owner->moby, *current);
 
-        if (*(int *)(h + 0xD14) != 0) {
-            if (*(int *)(h + 0xD14) == 2) {
-                ApproachValue((float *)(*cur + 8), 0.0f, D_0015EE60 * 0.25f);
+        if (pose_owner->unkD14 != 0) {
+            if (pose_owner->unkD14 == 2) {
+                ApproachValue((float *)(*current + 8), 0.0f, D_0015EE60 * 0.25f);
             } else {
-                ApproachValue((float *)(*cur + 8), 0.0f, D_0015EE60 * 0.07f);
+                ApproachValue((float *)(*current + 8), 0.0f, D_0015EE60 * 0.07f);
             }
-            g = D_0013E633 + 0xE1D;
-            if (*(float *)(*slotp + 8) != 0.0f) {
+            owner = (struct Hero *)(D_0013E633 + 0xE1D);
+            if (*(float *)(*slot + 8) != 0.0f) {
                 continue;
             }
-            List_RemoveAndClearNode(*(void **)(g + 0x2080), slotp);
+            List_RemoveAndClearNode((void *)owner->moby, slot);
             return;
         } else {
-            ApproachValue((float *)(*cur + 8), 1.0f, D_0015EE60 * 0.2f);
-            if (((*cur)[5] & 2) == 0) {
+            ApproachValue((float *)(*current + 8), 1.0f, D_0015EE60 * 0.2f);
+            if (((*current)[5] & 2) == 0) {
                 continue;
             }
-            if (*(unsigned char *)(h + 0x20AA) == 0) {
-                *(int *)(h + 0xD14) = 1;
-                *(int *)(*cur + 0x28) = 0;
-                *(unsigned char *)(h + 0x20A8) = 0;
+            if (pose_owner->unk20AA == 0) {
+                pose_owner->unkD14 = 1;
+                *(int *)(*current + 0x28) = 0;
+                pose_owner->unk20A8 = 0;
                 return;
             }
         }
@@ -833,39 +833,38 @@ void update_hero_held_items_and_orientation(void) {
     }
 
     {
-    char *h = D_0013E633 + 0xE1D;
-    if (*(int *)(h + 0x208C) == 0xF) {
-        char *ptr = *(char **)(h + 0x5D8);
-        float f0;
+    struct Hero *pose_owner = (struct Hero *)(D_0013E633 + 0xE1D);
+    if (pose_owner->state.control_mode == 15) {
+        u8 *target = (u8 *)pose_owner->unk5D8;
 
-        if (ptr != 0) {
-            *(VecQuad *)(h + 0x680) = *(VecQuad *)(h + 0x90);
-            *(float *)(h + 0x688) = func_L00_001FF860(*(float *)(ptr + 0x10) - *(float *)(h + 0x80),
-                                   *(float *)(ptr + 0x14) - *(float *)(h + 0x84));
-            *(float *)(h + 0x684) = -*(float *)(h + 0x580);
+        if (target != 0) {
+            *(VecQuad *)(pose_owner->pad_678 + 8) = pose_owner->motion.rot.q;
+            pose_owner->unk688 = func_L00_001FF860(((f32 *)target)[4] - pose_owner->motion.pos.f[0],
+                                                   ((f32 *)target)[5] - pose_owner->motion.pos.f[1]);
+            pose_owner->unk684 = -pose_owner->unk580;
         } else {
-            *(VecQuad *)(h + 0x680) = *(VecQuad *)(h + 0x90);
-            *(float *)(h + 0x688) = FastAddRots(*(float *)(h + 0x57C), *(float *)(h + 0x5D0));
-            *(float *)(h + 0x684) = -*(float *)(h + 0x580);
+            *(VecQuad *)(pose_owner->pad_678 + 8) = pose_owner->motion.rot.q;
+            pose_owner->unk688 = FastAddRots(pose_owner->unk57C, pose_owner->unk5D0);
+            pose_owner->unk684 = -pose_owner->unk580;
         }
         {
-            char *m = D_0013E633 + 0x145D;
-            func_001FA1F8(m, m + 0x40);
-            clear_u64_value(m + 0x30);
-            *(float *)(m + 0x30) = 1.0f;
-            func_001F9EC0(m + 0x30, m + 0x30, m);
+        char *basis = D_0013E633 + 0x145D;
+        func_001FA1F8(basis, basis + 0x40);
+        clear_u64_value(basis + 0x30);
+        *(float *)(basis + 0x30) = 1.0f;
+        func_001F9EC0(basis + 0x30, basis + 0x30, basis);
         }
     } else {
-        char *a = *(char **)(h + 0x2080);
-        char *m = h + 0x640;
-        char *n = h + 0x670;
-        *(VecQuad *)(m + 0x00) = *(VecQuad *)(a + 0xC0);
-        *(VecQuad *)(m + 0x10) = *(VecQuad *)(a + 0xD0);
-        *(VecQuad *)(m + 0x20) = *(VecQuad *)(a + 0xE0);
-        clear_u64_value(n);
-        *(float *)(h + 0x670) = 1.0f;
-        func_001F9EC0(n, n, m);
-        *(VecQuad *)(h + 0x680) = *(VecQuad *)(h + 0x90);
+        u8 *moby = (u8 *)pose_owner->moby;
+        VecQuad *basis = (VecQuad *)pose_owner->basis;
+        float *offset = &pose_owner->unk670;
+        basis[0] = *(VecQuad *)(moby + 0xC0);
+        basis[1] = *(VecQuad *)(moby + 0xD0);
+        basis[2] = *(VecQuad *)(moby + 0xE0);
+        clear_u64_value(offset);
+        pose_owner->unk670 = 1.0f;
+        func_001F9EC0(offset, offset, basis);
+        *(VecQuad *)(pose_owner->pad_678 + 8) = pose_owner->motion.rot.q;
     }
     }
 }
@@ -2556,80 +2555,83 @@ extern int func_L00_001EFFF0(void *, void *, int, int, int);
 
 /* Hero ground probe: measures the support under the feet, and slides the velocity off a steep floor Adapted from Lombyte (MIT) for PAL: overlays/shared/ui_help_0020c758.c, FUN_L00_00212318. */
 void clip_hero_velocity_against_probed_surfaces(int arg) {
-    char *g = D_0013E633 + 0xE1D;
-    float s0[4] __attribute__((aligned(16)));
-    float w[4] __attribute__((aligned(16)));
-    float s20[4] __attribute__((aligned(16)));
-    float u[4] __attribute__((aligned(16)));
-    float a, b, f, x;
-    int i;
-    char *p;
-    char *r;
-    char *h1, *h2, *h3, *h4, *q;
+    struct Hero *g = (struct Hero *)(D_0013E633 + 0xE1D);
+    Vec4 primary_probe_start;
+    Vec4 primary_probe_offset_or_end;
+    Vec4 b;
+    Vec4 secondary_probe_offset_or_end;
+    f32 primary_probe_height_offset, k, primary_hit_normal_angle, inward_velocity_component;
+    int r;
+    char *pos_base;
+    char *q;
+    struct Hero *h1, *h2, *h3, *h4;
+    CollisionHit *hit;
 
-    if (*(short *)(g + 0x308) == 0) {
-        if (gravity_length_xy((float *)(g + 0xE0)) < D_0015EE6C * 0.1f) {
+    if (g->unk308 == 0) {
+        if (gravity_length_xy(g->motion.velocity.f) < D_0015EE6C * 0.1f) {
             return;
         }
-        a = 0.37f;
-        b = 0.5f;
-        if ((unsigned)(*(int *)(g + 0x208C) - 0x11) < 2) {
-            a = 0.0f;
-            b = 0.7f;
-        } else if (*(unsigned char *)(g + 0x20A4) == 1) {
-            a = 0.35f;
-            b = 0.27f;
-        } else if (*(unsigned char *)(g + 0x20A4) == 2) {
-            a = 1.5f;
-            b = 5.0f;
+        primary_probe_height_offset = 0.37f;
+        k = 0.5f;
+        if ((unsigned)(g->state.control_mode - 0x11) < 2) {
+            primary_probe_height_offset = 0.0f;
+            k = 0.7f;
+        } else if (g->vehicle_mode == 1) {
+            primary_probe_height_offset = 0.35f;
+            k = 0.27f;
+        } else if (g->vehicle_mode == 2) {
+            primary_probe_height_offset = 1.5f;
+            k = 5.0f;
         }
-        p = D_0013E633 + 0xE9D;
-        qcopy(s0, p);
-        s0[2] += a;
-        qcopy(s20, p);
-        s20[2] += a * 0.3f;
-        if (arg != 0 || func_001F9CE8(q = p + 0x60) < 0.01f) {
-            h1 = p - 0x80;
-            w[0] = FastCos(*(float *)(h1 + 0x98)) * b;
-            w[1] = FastSin(*(float *)(h1 + 0x98)) * b;
-            w[2] = 0.0f;
-            u[0] = FastCos(*(float *)(h1 + 0x98)) * b * 1.4f;
-            u[1] = FastSin(*(float *)(h1 + 0x98)) * b * 1.4f;
-            u[2] = 0.0f;
+        pos_base = D_0013E633 + 0xE9D;
+        qcopy(primary_probe_start.f, pos_base);
+        primary_probe_start.f[2] += primary_probe_height_offset;
+        qcopy(b.f, pos_base);
+        b.f[2] += primary_probe_height_offset * 0.3f;
+        if (arg != 0 || func_001F9CE8(q = pos_base + 0x60) < 0.01f) {
+            h1 = (struct Hero *)(pos_base - 0x80);
+            primary_probe_offset_or_end.f[0] = FastCos(h1->motion.rot.f[2]) * k;
+            primary_probe_offset_or_end.f[1] = FastSin(h1->motion.rot.f[2]) * k;
+            primary_probe_offset_or_end.f[2] = 0.0f;
+            secondary_probe_offset_or_end.f[0] = FastCos(h1->motion.rot.f[2]) * k * 1.4f;
+            secondary_probe_offset_or_end.f[1] = FastSin(h1->motion.rot.f[2]) * k * 1.4f;
+            secondary_probe_offset_or_end.f[2] = 0.0f;
         } else {
-            qcopy(w, q);
-            w[2] = 0.0f;
-            FastVecScale(w, w, b / func_001F9CE8(w));
-            qcopy(u, w);
-            FastVecScale(u, u, 1.4f);
+            qcopy(primary_probe_offset_or_end.f, q);
+            primary_probe_offset_or_end.f[2] = 0.0f;
+            FastVecScale(primary_probe_offset_or_end.f, primary_probe_offset_or_end.f,
+                         k / func_001F9CE8(primary_probe_offset_or_end.f));
+            qcopy(secondary_probe_offset_or_end.f, primary_probe_offset_or_end.f);
+            FastVecScale(secondary_probe_offset_or_end.f, secondary_probe_offset_or_end.f, 1.4f);
         }
-        FastVecAdd(w, w, s0);
-        i = -1;
-        FastVecAdd(u, u, s20);
-        h2 = D_0013E633 + 0xE1D;
-        if (func_L00_001EFFF0(s20, u, 4, *(int *)(h2 + 0x2080), 0)) {
+        FastVecAdd(primary_probe_offset_or_end.f, primary_probe_offset_or_end.f, primary_probe_start.f);
+        r = -1;
+        FastVecAdd(secondary_probe_offset_or_end.f, secondary_probe_offset_or_end.f, b.f);
+        h2 = (struct Hero *)(D_0013E633 + 0xE1D);
+        if (func_L00_001EFFF0(b.f, secondary_probe_offset_or_end.f, 4, (int)h2->moby, 0)) {
             if (D_L00_00173F5C > 0) {
-                i = CollType();
+                r = CollType();
             }
         }
-        f = 0.0f;
-        h3 = D_0013E633 + 0xE1D;
-        if (func_L00_001EFFF0(s0, w, 4, *(int *)(h3 + 0x2080), 0)) {
-            p = (char *)D_L00_00173F40;
-            if (*(int *)(p + 0x1C) > 0) {
-                f = func_L00_001FF860(*(float *)(p + 0x48), func_001F9CE8(p + 0x40));
+        primary_hit_normal_angle = 0.0f;
+        h3 = (struct Hero *)(D_0013E633 + 0xE1D);
+        if (func_L00_001EFFF0(primary_probe_start.f, primary_probe_offset_or_end.f, 4, (int)h3->moby, 0)) {
+            pos_base = (char *)D_L00_00173F40;
+            if (((CollisionHit *)pos_base)->unk1C > 0) {
+                primary_hit_normal_angle = func_L00_001FF860(((CollisionHit *)pos_base)->normal_z,
+                                                             func_001F9CE8(&((CollisionHit *)pos_base)->normal_x));
             }
         }
-        if (f >= 0.87266463f || i == 8 || i == 12) {
-            h4 = D_0013E633 + 0xE1D;
-            r = (char *)D_L00_00173F40;
-            *(int *)(r + 0x48) = 0;
-            *(int *)(h4 + 0x240) = *(int *)(r + 0x18);
-            func_001252C0(r + 0x40, r + 0x40);
-            x = -*(float *)(h4 + 0xE0) * *(float *)(r + 0x40) - *(float *)(h4 + 0xE4) * *(float *)(r + 0x44);
-            if (x > 0.0f) {
-                FastVecScale(r + 0x40, r + 0x40, x);
-                FastVecAdd(h4 + 0xE0, h4 + 0xE0, r + 0x40);
+        if (primary_hit_normal_angle >= 0.87266463f || r == 8 || r == 12) {
+            h4 = (struct Hero *)(D_0013E633 + 0xE1D);
+            hit = (CollisionHit *)D_L00_00173F40;
+            *(s32 *)&hit->normal_z = 0;
+            h4->unk240 = hit->moby;
+            func_001252C0(&hit->normal_x, &hit->normal_x);
+            inward_velocity_component = -h4->motion.velocity.f[0] * hit->normal_x - h4->motion.velocity.f[1] * hit->normal_y;
+            if (inward_velocity_component > 0.0f) {
+                FastVecScale(&hit->normal_x, &hit->normal_x, inward_velocity_component);
+                FastVecAdd(h4->motion.velocity.f, h4->motion.velocity.f, &hit->normal_x);
             }
         }
     }

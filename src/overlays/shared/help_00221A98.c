@@ -368,31 +368,37 @@ extern float func_L00_0020DD48(void *, int *, float, float, float, float);
 extern int func_00215570(void *, int);
 extern int func_L00_001EFFF0(void *, void *, int, int, int);
 
+typedef struct Q_221ee0 {
+    s32 i0;                    /* 0x00 nonzero: the target record is live */
+    u8 pad_04[0x18];
+    s32 i1C;                   /* 0x1C clip volume index, < 0 none */
+    f32 f20;                   /* 0x20 max target distance, 0 = default 16 */
+} Q_221ee0;
+
 // picks the nearest eligible moby of class 0x323 near the player and stores it as the target Adapted from Lombyte (MIT) for PAL: overlays/shared/ui_help_00221310.c, FUN_L00_00221ee0.
 void select_hero_grapple_swing_target(void) {
-    char *g, *gb, *g0, *g2;
-    char *m;
-    char *best;
-    char *q;
+    Hero *g, *gb, *g0, *g2;
+    Moby *m;
+    Moby *best;
+    Q_221ee0 *q;
     float bestd, d, a13, a14, a15, t, x;
     int k;
     int out;
-    float v[4];
-    float w[4];
+    Vec4 v, w;
 
     best = 0;
-    g0 = (char *)D_0013E633 + 0xE1D;
-    *(short *)(g0 + 0x99E) = 0;
+    g0 = (Hero *)((char *)D_0013E633 + 0xE1D);
+    g0->unk99E = 0;
     bestd = 1e8f;
-    for (m = suck_moby_list; m != 0; m = *(char **)(m + 0x28)) {
-        if (*(short *)(m + 0xA6) != 0x323) continue;
-        q = *(char **)(m + 0x78);
-        if (*(int *)q == 0) continue;
-        if (*(unsigned short *)(m + 0x34) & 1) continue;
-        g = (char *)D_0013E633 + 0xE1D;
-        if (3.0f < *(float *)(g + 0x88) - *(float *)(m + 0x18)) continue;
-        if (*(float *)(q + 0x20) != 0.0f && *(float *)(q + 0x20) < FastVecDist(g + 0x80, m + 0x10)) continue;
-        k = *(int *)(g + 0x2084);
+    for (m = (Moby *)suck_moby_list; m != 0; m = m->next) {
+        if (m->oclass != 0x323) continue;
+        q = (Q_221ee0 *)m->pvars;
+        if (q->i0 == 0) continue;
+        if (m->flags & 1) continue;
+        g = (Hero *)((char *)D_0013E633 + 0xE1D);
+        if (3.0f < g->motion.pos.f[2] - m->pos.z) continue;
+        if (q->f20 != 0.0f && q->f20 < FastVecDist(&g->motion.pos, &m->pos)) continue;
+        k = g->state.current;
         a14 = 0.7853982f;
         if (k == 0x2D) a14 = 1.2217305f;
         a15 = 0.7853982f;
@@ -401,98 +407,125 @@ void select_hero_grapple_swing_target(void) {
             a15 = 0.08726646f;
             a14 = a15;
         }
-        t = *(float *)(q + 0x20);
+        t = q->f20;
         a13 = 16.0f;
-        gb = (char *)D_0013E633 + 0xE1D;
-        x = *(float *)(gb + 0x98);
+        gb = (Hero *)((char *)D_0013E633 + 0xE1D);
+        x = gb->motion.rot.f[2];
         if (t != 0.0f) a13 = t;
         d = Target_ScoreCandidate(m, &out, x, a13, a14, a15);
         if (out != 0) continue;
-        if (*(unsigned char *)(m + 0x31) == 0) d += 10.0f;
-        if (*(int *)(q + 0x1C) >= 0 && is_point_inside_clip_volume(gb + 0x80, *(int *)(q + 0x1C)) != 0) continue;
+        if (m->visible == 0) d += 10.0f;
+        if (q->i1C >= 0 && is_point_inside_clip_volume(&gb->motion.pos, q->i1C) != 0) continue;
         if (d < bestd) {
             bestd = d;
             best = m;
         }
     }
-    g2 = (char *)D_0013E633 + 0xE1D;
-    *(char **)(g2 + 0x990) = best;
+    g2 = (Hero *)((char *)D_0013E633 + 0xE1D);
+    g2->unk990 = best;
     if (best != 0) {
-        qcopy(v, g2 + 0x80);
-        v[2] += 0.5f;
-        qcopy(w, best + 0x10);
-        if (func_L00_001EFFF0(v, w, 2, 0, 0) == 0) {
-            *(float *)(g2 + 0x998) = bestd;
-            *(short *)(g2 + 0x99E) = 1;
+        qcopy(&v, &g2->motion.pos);
+        v.f[2] += 0.5f;
+        qcopy(&w, &best->pos);
+        if (func_L00_001EFFF0(&v, &w, 2, 0, 0) == 0) {
+            g2->unk998 = bestd;
+            g2->unk99E = 1;
         }
     }
 }
+/* The pvars block of a grapple candidate moby (Moby.pvars, +0x78): the
+   fields select_hero_grapple_target reads. */
+typedef struct {
+    s32 unk00;                 /* 0x00: nonzero skips the candidate */
+    f32 unk04;                 /* 0x04: copied to hero.unk980 */
+    s32 unk08;                 /* 0x08: copied to hero.unk978 */
+    u8 pad0C[0x10];
+    s32 clip_volume;           /* 0x1C: clip volume the hero must stay out of; < 0 none */
+    f32 max_range;             /* 0x20: target range; 0 means 30 */
+} TargetPvars;
+
 /* Picks the nearest free helper moby of class 0x2F6 in reach of the hero as the target; returns whether one is in sight. */
 int select_hero_grapple_target(void) {
-    char *g0, *g, *gb, *g2, *g3;
-    char *m;
-    char *best;
-    char *q;
-    float bestd, d, a13, a14, a15, x;
+    Hero *hero_target_check_base;
+    Hero *hero_angle_state_base;
+    Hero *gb;
+    char *hero_pos;
+    Hero *hero_target_output_base;
+    Hero *hero_target_result_base;
+    struct Moby *candidate_moby;
+    struct Moby *best;
+    TargetPvars *candidate_data;
+    float bestd, target_score, max_target_distance, target_angle_limit, target_elevation_angle_limit, x;
     int k;
     int out;
-    float v[4];
-    float w[4];
+    float collision_start[4];
+    float collision_end[4];
 
-    g0 = (char *)D_0013E633 + 0xE1D;
-    if (*(int *)(g0 + 0x208C) == 0xD) {
-        return *(int *)(g0 + 0x968);
+    hero_target_check_base = (Hero *)((char *)D_0013E633 + 0xE1D);
+    if (hero_target_check_base->state.control_mode == 0xD) {
+        return hero_target_check_base->unk968;
     }
     best = 0;
     bestd = 1e8f;
-    *(int *)(g0 + 0x968) = 0;
-    for (m = suck_moby_list; m != 0; m = *(char **)(m + 0x28)) {
-        if (*(short *)(m + 0xA6) != 0x2F6) continue;
-        if (*(unsigned short *)(m + 0x34) & 1) continue;
-        q = *(char **)(m + 0x78);
-        if (*(int *)q != 0) continue;
-        if (*(float *)(q + 0x20) != 0.0f && *(float *)(q + 0x20) < FastVecDist((char *)D_0013E633 + 0xE9D, m + 0x10)) continue;
-        g = (char *)D_0013E633 + 0xE1D;
-        k = *(int *)(g + 0x2084);
-        a14 = 0.5235988f;
-        a15 = -1.0f;
+    hero_target_check_base->unk968 = 0;
+    for (candidate_moby = (struct Moby *)suck_moby_list; candidate_moby != 0; candidate_moby = candidate_moby->next) {
+        if (candidate_moby->oclass != 0x2F6)
+            continue;
+        if (candidate_moby->flags & 1)
+            continue;
+        candidate_data = (TargetPvars *)candidate_moby->pvars;
+        if (candidate_data->unk00 != 0)
+            continue;
+        if (candidate_data->max_range != 0.0f &&
+            candidate_data->max_range < FastVecDist((char *)&((Hero *)((char *)D_0013E633 + 0xE1D))->motion.pos, (char *)&candidate_moby->pos))
+            continue;
+        hero_angle_state_base = (Hero *)((char *)D_0013E633 + 0xE1D);
+        k = hero_angle_state_base->state.current;
+        target_angle_limit = 0.5235988f;
+        target_elevation_angle_limit = -1.0f;
         if (k == 1 || k == 0x1E) {
-            a15 = 0.08726646f;
-            a14 = a15;
+            target_elevation_angle_limit = 0.08726646f;
+            target_angle_limit = target_elevation_angle_limit;
         }
-        gb = (char *)D_0013E633 + 0xE1D;
-        x = *(float *)(gb + 0x98);
-        if (*(int *)(gb + 0x208C) == 0xF) x = *(float *)(gb + 0x57C);
-        a13 = 30.0f;
-        if (*(float *)(q + 0x20) != 0.0f) a13 = *(float *)(q + 0x20);
-        d = Target_ScoreCandidate(m, &out, x, a13, a14, a15);
-        if (out != 0) continue;
-        gb += 0x80;
-        if (func_001F9D48(gb, m + 0x10) < 4.0f) continue;
-        if (*(unsigned char *)(m + 0x31) == 0) d += 10.0f;
-        if (*(int *)(q + 0x1C) >= 0 && is_point_inside_clip_volume(gb, *(int *)(q + 0x1C)) != 0) continue;
-        if (d < bestd) {
-            bestd = d;
-            best = m;
+        gb = (Hero *)((char *)D_0013E633 + 0xE1D);
+        x = gb->motion.rot.f[2];
+        if (gb->state.control_mode == 0xF)
+            x = gb->unk57C;
+        max_target_distance = 30.0f;
+        if (candidate_data->max_range != 0.0f)
+            max_target_distance = candidate_data->max_range;
+        target_score = Target_ScoreCandidate(candidate_moby, &out, x, max_target_distance, target_angle_limit, target_elevation_angle_limit);
+        if (out != 0)
+            continue;
+        hero_pos = (char *)&gb->motion.pos;
+        if (func_001F9D48(hero_pos, (char *)&candidate_moby->pos) < 4.0f)
+            continue;
+        if (candidate_moby->visible == 0)
+            target_score += 10.0f;
+        if (candidate_data->clip_volume >= 0 && is_point_inside_clip_volume(hero_pos, candidate_data->clip_volume) != 0)
+            continue;
+        if (target_score < bestd) {
+            bestd = target_score;
+            best = candidate_moby;
         }
     }
     if (best != 0) {
-        char *bd;
-        g2 = (char *)D_0013E633 + 0xE1D;
-        *(char **)(g2 + 0x964) = best;
-        qcopy(v, g2 + 0x80);
-        v[2] += 0.5f;
-        qcopy(w, best + 0x10);
-        bd = *(char **)(best + 0x78);
-        *(int *)(g2 + 0x978) = *(int *)(bd + 8);
-        *(float *)(g2 + 0x980) = *(float *)(bd + 4);
-        *(float *)(g2 + 0x984) = bestd;
-        if (func_L00_001EFFF0(v, w, 2, 0, 0) == 0) {
-            *(int *)(g2 + 0x968) = 1;
+        TargetPvars *bd;
+        hero_target_output_base = (Hero *)((char *)D_0013E633 + 0xE1D);
+        hero_target_output_base->unk964 = best;
+        qcopy(collision_start, &hero_target_output_base->motion.pos);
+        collision_start[2] += 0.5f;
+        qcopy(collision_end, &best->pos);
+        bd = (TargetPvars *)best->pvars;
+        hero_target_output_base->unk978 = bd->unk08;
+        hero_target_output_base->unk980 = bd->unk04;
+        hero_target_output_base->unk984 = bestd;
+        if (func_L00_001EFFF0(collision_start, collision_end, 2, 0, 0) == 0) {
+            hero_target_output_base->unk968 = 1;
         }
     }
-    g3 = (char *)D_0013E633 + 0xE1D;
-    return *(int *)(g3 + 0x968);
+    hero_target_result_base = (Hero *)((char *)D_0013E633 + 0xE1D);
+    return hero_target_result_base->unk968;
 }
 typedef struct { int a; int b; int c; char pad[0x20]; } T2C_222B80;
 typedef struct { char pad[0x194]; float f194; } H194_222B80;

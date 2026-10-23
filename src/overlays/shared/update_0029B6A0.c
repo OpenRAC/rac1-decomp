@@ -366,39 +366,55 @@ extern char D_L00_00161130;
 
 /* Leaves the vendor screen: releases two handles, resets state, repositions the hero and restores the game state.
    Adapted from Lombyte (MIT) for PAL: src/overlays/shared/unclassified_00295100.c, FUN_L00_0029ab70. */
-void close_vendor_menu(int a) {
-    Vec4A v;
-    Vec4A r;
-    char *g = (char *)D_L00_001CA7C0;
-    if (*(int *)(g + 0x54) != -1) Hud_SetBarValueById(*(int *)(g + 0x54), 0);
-    if (*(int *)(g + 0x50) != -1) Hud_SetBarValueById(*(int *)(g + 0x50), 0);
-    *(int *)(g + 0x54) = -1;
-    *(int *)(g + 0x50) = -1;
+/* The mode word at D_0014171B + 0x100B5 + 0x5A. */
+typedef struct MusicModeBlock {
+    u8 pad_00[0x5A];
+    u16 mode;                  /* 0x5A */
+} MusicModeBlock;
+
+typedef struct VendorMenuState {
+    u8 pad_00[0x1C];
+    struct Moby *moby;          /* 0x1C: the vendor's moby, only passed on or cleared here */
+    u8 pad_20[0x20];
+    s32 unk40;                  /* 0x40 */
+    u8 pad_44[0xC];
+    s32 hud_bar_50;             /* 0x50: HUD bar id, -1 when none */
+    s32 hud_bar_54;             /* 0x54: HUD bar id, -1 when none */
+} VendorMenuState;
+
+void close_vendor_menu(int exit_cutscene_completed) {
+    Vec4A world_position;
+    Vec4A euler_rotation;
+    VendorMenuState *vendor_state_base = (VendorMenuState *)D_L00_001CA7C0;
+    if (vendor_state_base->hud_bar_54 != -1) Hud_SetBarValueById(vendor_state_base->hud_bar_54, 0);
+    if (vendor_state_base->hud_bar_50 != -1) Hud_SetBarValueById(vendor_state_base->hud_bar_50, 0);
+    vendor_state_base->hud_bar_54 = -1;
+    vendor_state_base->hud_bar_50 = -1;
     update_resource_counter();
     D_L00_0015F6BC = 1;
     *(int *)&D_L00_0015F6A8 = 0;
     HeroEnterMoveState(0, 1);
     D_001414F5[0] = 0;
     HeroClearObjectFlags();
-    if (*(int *)(g + 0x40) == 0) {
-        func_001F9EC0(&v, &D_L00_00161130, *(char **)(g + 0x1C) + 0xC0);
-        FastVecAdd(&v, &v, *(char **)(g + 0x1C) + 0x10);
-        r.x = 0.0f;
-        r.y = 0.0f;
-        r.z = FastAddRots(*(float *)(*(char **)(g + 0x1C) + 0x48), 3.1415927f);
-        if (a == 0) {
-            Hero_ResetToPosition(&v, &r, 0, 0);
+    if (vendor_state_base->unk40 == 0) {
+        func_001F9EC0(&world_position, &D_L00_00161130, (char *)vendor_state_base->moby + 0xC0);
+        FastVecAdd(&world_position, &world_position, (char *)vendor_state_base->moby + 0x10);
+        euler_rotation.x = 0.0f;
+        euler_rotation.y = 0.0f;
+        euler_rotation.z = FastAddRots(*(float *)((char *)vendor_state_base->moby + 0x48), 3.1415927f);
+        if (exit_cutscene_completed == 0) {
+            Hero_ResetToPosition(&world_position, &euler_rotation, 0, 0);
             CameraScript2(2);
         } else {
-            Hero_ResetToPosition(&v, &r, 0, 1);
+            Hero_ResetToPosition(&world_position, &euler_rotation, 0, 1);
         }
     }
     {
-        char *h = (char *)D_L00_001CA7C0;
-        char *q = (char *)D_0014171B + 0x100B5;
-        *(*(char **)(h + 0x1C) + 0x20) = 1;
-        if ((unsigned short)(*(unsigned short *)(q + 0x5A) - 6) >= 2) *(short *)(q + 0x5A) = 5;
-        if (*(int *)(h + 0x40)) DeleteMoby(*(void **)(h + 0x1C));
+        VendorMenuState *vendor_state = (VendorMenuState *)D_L00_001CA7C0;
+        MusicModeBlock *music = (MusicModeBlock *)((char *)D_0014171B + 0x100B5);
+        *((char *)vendor_state->moby + 0x20) = 1;
+        if ((unsigned short)(music->mode - 6) >= 2) music->mode = 5;
+        if (vendor_state->unk40) DeleteMoby(vendor_state->moby);
     }
     func_0012E558(0x1D);
     music_Unpause();
@@ -1371,26 +1387,42 @@ void start_vendor_exit_cutscene(void) {
 }
 extern short D_L00_001611C0;
 
+/* The 0x28-byte record at D_L00_001CA7C0: the actor it follows is at +0x28. */
+typedef struct VendorExitActor {
+    u8 pad_00[0x10];
+    Vec4f pos;                 /* 0x10: position, added to the spawn point */
+    u8 pad_20[0x28];
+    f32 yaw;                   /* 0x48: rot.z */
+    u8 pad_4C[0x74];
+    Vec4f basis[3];            /* 0xC0: rotation rows */
+} VendorExitActor;
+
+typedef struct VendorExitState {
+    u8 pad_00[0x28];
+    VendorExitActor *actor;    /* 0x28 */
+} VendorExitState;
+
 /* resets state and snaps the camera for a new scene */
 void restore_hero_after_vendor_exit_cutscene(void) {
-    float v[8];
-    char *g;
-    char *q;
+    Vec4f world_position;
+    Vec4f euler_rotation;
+    VendorExitState *vendor_state_base;
+    MusicModeBlock *mode_block;
     D_L00_0015F6BC = 1;
     *(int *)&D_L00_0015F6A8 = 0;
     HeroEnterMoveState(0, 1);
     D_001414F5[0] = 0;
     HeroClearObjectFlags();
-    g = D_L00_001CA7C0;
-    func_001F9EC0(v, &D_L00_001611C0, *(char **)(g + 0x28) + 0xC0);
-    FastVecAdd(v, v, *(char **)(g + 0x28) + 0x10);
-    *(int *)&v[4] = 0;
-    *(int *)&v[5] = 0;
-    v[6] = FastAddRots(*(float *)(*(char **)(g + 0x28) + 0x48), -1.5707964f);
-    Hero_ResetToPosition(v, &v[4], 0, 1);
+    vendor_state_base = (VendorExitState *)D_L00_001CA7C0;
+    func_001F9EC0(&world_position, &D_L00_001611C0, vendor_state_base->actor->basis);
+    FastVecAdd(&world_position, &world_position, &vendor_state_base->actor->pos);
+    *(int *)&euler_rotation.x = 0;
+    *(int *)&euler_rotation.y = 0;
+    euler_rotation.z = FastAddRots(vendor_state_base->actor->yaw, -1.5707964f);
+    Hero_ResetToPosition(&world_position, &euler_rotation, 0, 1);
     update_resource_counter();
-    q = (char *)D_0014171B + 0x100B5;
-    if (!(*(unsigned short *)(q + 0x5A) >= 6 && *(unsigned short *)(q + 0x5A) <= 7)) *(short *)(q + 0x5A) = 5;
+    mode_block = (MusicModeBlock *)((char *)D_0014171B + 0x100B5);
+    if (!(mode_block->mode >= 6 && mode_block->mode <= 7)) mode_block->mode = 5;
     func_0012E558(0x1D);
     music_Unpause();
     func_0012DDC0();
