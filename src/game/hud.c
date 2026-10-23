@@ -922,16 +922,16 @@ void func_002008B8(int tex, int x, int y, int w, int h, int alpha) {
 /* func_002008B8 with an explicit texture window: UVs run from (u, v) to
    (u, v) plus the texture's size in 16ths. */
 void draw_hud_sprite_uv(int tex, int x, int y, int w, int h, int u, int v, int alpha) {
-    char *arena = D_0019A4E8_raw;
-    unsigned char *e = (unsigned char *)(*(char **)(arena + 0x24)
-        + *(short *)(*(char **)(arena + 0x20) + tex * 4 + 2) * 8);
+    struct HudState *hud = &D_0019A4E8_FF958;
+    struct HudTexPage *image_page;
     int th;
     int tw;
     int *base;
     long *p;
 
-    tw = 1 << (e[6] + 4);
-    th = 1 << (e[7] + 4);
+    image_page = &hud->image_pages[hud->frame_refs[tex].image_index];
+    tw = 1 << (image_page->width_log2 + 4);
+    th = 1 << (image_page->height_log2 + 4);
     D_00161000[0] = 0x10000005;
     D_00161000[1] = 0;
     D_00161000[2] = 0;
@@ -948,11 +948,11 @@ void draw_hud_sprite_uv(int tex, int x, int y, int w, int h, int u, int v, int a
     p[5] = u | ((long)v << 16);
     p[6] = (x + D_0013E600[4] - 8)
          | ((long)(y + D_0013E600[5] - 8) << 16)
-         | ((long)*(int *)(arena + 0xC) << 32);
+         | ((long)hud->z << 32);
     p[7] = (u + tw) | ((long)(v + th) << 16);
     p[8] = (x + w + D_0013E600[4] - 8)
          | ((long)(y + h + D_0013E600[5] - 8) << 16)
-         | ((long)*(int *)(arena + 0xC) << 32);
+         | ((long)hud->z << 32);
     p[9] = 0;
     D_00161000 = (int *)((char *)D_00161000 + 0x50);
 }
@@ -1203,41 +1203,44 @@ extern int *D_00161000 MACRO_ADDR;
    register-id constant 0x41 (not 0x46) at +0x20, and a FIXED mask
    0x00FFFFF000000000 in the vertices' upper 32 bits instead of a Z
    parameter -- one fewer int argument than func_002017C8. */
-void draw_hud_rect(int arg0, int arg1, int arg2, int arg3, long arg4,
-                    int arg5) {
-    int *base;
+struct Screen {
+    s32 pad_00[4];
+    s32 left;                       /* 0x10 */
+    s32 top;                        /* 0x14 */
+};
+
+extern struct Screen screen_extent __asm__("D_0013E600") NOT_SDA;
+
+void draw_hud_rect(int x0, int y0, int x1, int y1, long prim, int pixels) {
+    long *packet_words;
 
     D_00161000[0] = 0x10000003;
     D_00161000[1] = 0;
     D_00161000[2] = 0;
     D_00161000[3] = 0x50000003;
 
-    base = D_00161000;
-    D_00161000 = base + 4;
-    *(long *)((char *)base + 0x10) = 0x4400000000000001UL;
-    *(long *)((char *)base + 0x18) = 0x4410;
-    *(long *)((char *)base + 0x20) = 0x41;
-    *(long *)((char *)base + 0x28) = arg4;
-    if (arg5 != 0) {
-        *(long *)((char *)base + 0x30) =
-            (arg0 + D_0013E600[4] - 8)
-            | ((long)(arg1 + D_0013E600[5] - 8) << 16)
+    packet_words = (long *)D_00161000;
+    D_00161000 = (int *)(packet_words + 2);
+    packet_words[2] = 0x4400000000000001UL;
+    packet_words[3] = 0x4410;
+    packet_words[4] = 0x41;
+    packet_words[5] = prim;
+    if (pixels != 0) {
+        packet_words[6] = (x0 + screen_extent.left - 8)
+            | ((long)(y0 + screen_extent.top - 8) << 16)
             | 0x00FFFFF000000000L;
-        *(long *)((char *)base + 0x38) =
-            (arg2 + D_0013E600[4] - 8)
-            | ((long)(arg3 + D_0013E600[5] - 8) << 16)
+        packet_words[7] = (x1 + screen_extent.left - 8)
+            | ((long)(y1 + screen_extent.top - 8) << 16)
             | 0x00FFFFF000000000L;
     } else {
-        *(long *)((char *)base + 0x30) =
-            (arg0 * 16 + D_0013E600[4] - 0x10)
-            | ((long)(arg1 * 16 + D_0013E600[5] - 0x10) << 16)
+        packet_words[6] = (x0 * 16 + screen_extent.left - 0x10)
+            | ((long)(y0 * 16 + screen_extent.top - 0x10) << 16)
             | 0x00FFFFF000000000L;
-        *(long *)((char *)base + 0x38) =
-            (arg2 * 16 + D_0013E600[4] - 0x10)
-            | ((long)(arg3 * 16 + D_0013E600[5] - 0x10) << 16)
+        packet_words[7] = (x1 * 16 + screen_extent.left - 0x10)
+            | ((long)(y1 * 16 + screen_extent.top - 0x10) << 16)
             | 0x00FFFFF000000000L;
     }
-    D_00161000 = (int *)((char *)D_00161000 + 0x30);
+    D_00161000 += 12;
 }
 
 extern int *D_00161000 MACRO_ADDR;
