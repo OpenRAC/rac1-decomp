@@ -1450,7 +1450,7 @@ func_L06_003045A0	MoveAlongPathsWithSound	descriptive	config/names_local.tsv	mov
 func_L06_00304FA8	ScatterLinkedPieces	descriptive	config/names_local.tsv	breaks linked pieces apart, spins, sheds dust (comment)	
 func_L06_00305468	DeleteMobyGroup	descriptive	config/names_local.tsv	deletes every moby in the stored group (comment)	
 func_L06_003054D8	red_button_update	descriptive	the NTSC decomp	red_button_update at US level 06 0x00304098 (src/overlays/l06/gameplay/entities/fred.c); US function table counterpart	RedButtonUpdate
-func_L06_00305E38	Moby1123Update	descriptive	config/names_local.tsv	level 06 update for class 1123 (comment)	
+func_L06_00305E38	electric_fence_update	descriptive	config/names_local.tsv	moby class 1123 (Blarg Station only), the electric fences across the ledges that the energy spheres switch off: four jittering ribbons of 30 points (the arcs) with a looping sound and a corner probe, until it bursts into particles and stays where the fence was. Seen in game, class confirmed with the port's moby inspector at a ledge (Christopher)	Moby1123Update
 func_L06_0030A0A8	SparkEmitterUpdate	descriptive	config/names_local.tsv	spark emitter update (comment)	
 func_L06_0030A680	StartMobysInRange	descriptive	config/names_local.tsv	starts type 0x5E8 mobys in state 1 within range (comment)	
 func_L06_0030B3E8	BreakableObjectUpdate	descriptive	config/names_local.tsv	breakable object spawns effects and a moby when hit (comment)	
@@ -3749,7 +3749,7 @@ func_L06_00303630	TimerMobyL06_Draw	descriptive	config/names_local.tsv	level 06 
 func_L06_00304418	Shuttle_SelectMode	descriptive	config/names_local.tsv	Called from ShuttleUpdate: switch on d+0xBC sets d+0x9C from D_0014C150 progress flags	
 func_L06_00304B88	ScatterPiecesExplode	descriptive	config/names_local.tsv	SpawnExplosionFx then loops n random pieces from two tables; used by MoveAlongPathsWithSound/ScatterLinkedPieces	
 func_L06_00305C58	Moby1123_SpawnDebris	descriptive	config/names_local.tsv	Called from Moby1123Update: loop spawning random-velocity pieces with random_float_between	
-func_L06_00306440	Moby1123_ProbeCorners	descriptive	config/names_local.tsv	Called from Moby1123Update: InitHitQuery then four line probes at +-x,+-y corners rotated by moby rot	
+func_L06_00306440	electric_fence_probe_corners	descriptive	config/names_local.tsv	called only by electric_fence_update: the electric fence's corner checks (Christopher, in game)	Moby1123_ProbeCorners
 func_L06_003065B0	Moby1123_Draw	descriptive	config/names_local.tsv	Called from Moby1123Update path: builds matrix and draws effect via VU1_addGSregister packets	
 func_L06_0030A788	SparksTriggerL06_Update	descriptive	config/names_local.tsv	Waits for global mode then SpawnMoby750Sparks; same shape as L04/L13 copies	
 func_L07_0031B620	GunMoby_HandleHit	descriptive	config/names_local.tsv	Moby with Gun data: ComputeHitResponse on hit message 0x230000, on 2+ hits starts death state	machinegun_turret_update

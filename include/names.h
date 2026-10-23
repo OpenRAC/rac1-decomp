@@ -1322,7 +1322,7 @@
 #define ScatterLinkedPieces                             func_L06_00304FA8
 #define DeleteMobyGroup                                 func_L06_00305468
 #define red_button_update                               func_L06_003054D8
-#define Moby1123Update                                  func_L06_00305E38
+#define electric_fence_update                           func_L06_00305E38
 #define SparkEmitterUpdate                              func_L06_0030A0A8
 #define StartMobysInRange                               func_L06_0030A680
 #define BreakableObjectUpdate                           func_L06_0030B3E8
@@ -3612,7 +3612,7 @@
 #define Shuttle_SelectMode                              func_L06_00304418
 #define ScatterPiecesExplode                            func_L06_00304B88
 #define Moby1123_SpawnDebris                            func_L06_00305C58
-#define Moby1123_ProbeCorners                           func_L06_00306440
+#define electric_fence_probe_corners                    func_L06_00306440
 #define Moby1123_Draw                                   func_L06_003065B0
 #define SparksTriggerL06_Update                         func_L06_0030A788
 #define GunMoby_HandleHit                               func_L07_0031B620
