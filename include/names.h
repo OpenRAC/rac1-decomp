@@ -1282,7 +1282,7 @@
 #define gadgebot_spawn_container_update                 func_L06_002D9970
 #define BackdropDraw                                    func_L06_002D9B08
 #define gadgebot_spawn_pad_update                       func_L06_002D9FF0
-#define Moby367Update                                   func_L06_002DB0E0
+#define bridge_panel_update                             func_L06_002DB0E0
 #define frog_update                                     func_L06_002E9AA8
 #define BuildMobyFrame                                  func_L06_002EADC8
 #define SpawnRandomSparkBursts                          func_L06_002EB5C8

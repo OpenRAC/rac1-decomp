@@ -90,8 +90,8 @@ extern float func_00214D88(float *, float *, float, float, float, float);
 extern void func_001F9C08(void *, void *, void *, float);
 extern float D_0015EE6C MACRO_ADDR;
 
-// Updates a moby that swells its scale vector toward a target.
-void Moby367Update(unsigned char *moby) {
+// A bridge panel: when switched it slides 11 units along its own axis, easing in and out.
+void bridge_panel_update(unsigned char *moby) {
     char *data;
     data = *(char **)(moby + 0x78);
     switch (moby[0x20]) {
