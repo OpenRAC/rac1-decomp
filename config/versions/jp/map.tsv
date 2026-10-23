@@ -495,6 +495,7 @@ func_0012A2F0	src/core/0012A2F0.c	match	boot:0012A2F0	296	100.00
 func_0012A418	-	asm	boot:0012A418	320	100.00
 func_0012A558	src/core/0012A2F0.c	match	boot:0012A558	448	100.00
 func_0012A718	-	asm	boot:0012A718	204	100.00
+func_0012A7E8	src/core/0012A2F0.c	match	boot:0012A7E8	648	100.00
 func_0012AA70	src/core/0012A2F0.c	match	boot:0012AA70	52	100.00
 func_0012AAA8	src/core/0012A2F0.c	match	boot:0012AAA8	28	100.00
 func_0012AAC8	src/core/0012A2F0.c	match	boot:0012AAC8	152	100.00
@@ -576,9 +577,11 @@ func_0012D760	src/core/0012CC90.c	match	boot:0012D760	36	100.00
 func_0012D788	src/core/0012CC90.c	match	boot:0012D788	140	100.00
 func_0012D818	src/core/0012CC90.c	match	boot:0012D818	72	100.00
 func_0012D868	-	asm	boot:0012D868	448	100.00
+func_0012DA28	src/core/crt0.c	match	boot:0012DA28	8	100.00
 func_0012DA30	-	asm	boot:0012DA30	8	100.00
 func_0012DA38	src/core/boot.c	match	boot:0012DA38	220	100.00
 func_0012DB18	src/core/boot.c	match	boot:0012DB18	76	100.00
+func_0012DB68	src/core/989snd.c	match	boot:0012DB68	600	100.00
 func_0012DDC0	src/core/989snd.c	match	boot:0012DDC0	480	100.00
 func_0012DFA0	-	absent	-	0	0.00
 func_0012DFB0	src/core/989snd.c	match	boot:0012DFB0	136	100.00
@@ -1690,6 +1693,7 @@ func_L00_001EADEC	-	joined	00:001EB16C	692	100.00
 func_L00_001EB0A0	-	joined	00:001EB420	4	100.00
 func_L00_001EB0A4	-	joined	00:001EB424	240	100.00
 func_L00_001EB194	-	joined	00:001EB514	8	100.00
+func_L00_001EB1A8	-	asm	00:001EB528	4	100.00
 func_L00_001EB380	src/overlays/shared/bloaders_001EB380.c	match	00:001EB700	104	100.00
 func_L00_001EB430	src/overlays/shared/stub_001EB430.c	match	00:001EB7B0	8	100.00
 func_L00_001EB438	-	joined	00:001EB7B8	8	100.00
@@ -1728,6 +1732,7 @@ func_L00_001EF944	-	asm	00:001EFCCC	1548	100.00
 func_L00_001EFF50	-	asm	00:001F02D8	152	100.00
 func_L00_001EFFE8	-	joined	00:001F0370	8	100.00
 func_L00_001EFFF0	-	asm	00:001F0378	1976	100.00
+func_L00_001F07A8	-	joined	00:001F0B30	4	100.00
 func_L00_001F07AC	-	joined	00:001F0B34	92	100.00
 func_L00_001F080C	-	asm	00:001F0B94	2212	100.00
 func_L00_001F10B0	-	joined	00:001F1438	48	100.00
@@ -2001,6 +2006,7 @@ func_L00_00232608	src/overlays/shared/help_00232560.c	match	00:002335A0	200	100.
 func_L00_002326D0	src/overlays/shared/help_00232560.c	match	00:00233668	380	100.00
 func_L00_00232850	src/overlays/shared/help_00232560.c	match	00:002337E8	304	100.00
 func_L00_00232980	src/overlays/shared/help_00232560.c	match	00:00233918	128	100.00
+func_L00_00232A00	src/overlays/shared/help_00232560.c	match	00:00233998	20	100.00
 func_L00_00232A18	src/overlays/shared/help_00232560.c	match	00:002339B0	24	100.00
 func_L00_00232A30	-	joined	00:002339C8	12	100.00
 func_L00_00232A3C	-	joined	00:002339D4	60	100.00
@@ -2012,6 +2018,7 @@ func_L00_00232DF8	src/overlays/shared/help_00232560.c	match	00:00233D90	104	100.
 func_L00_00232E60	src/overlays/shared/help_00232560.c	match	00:00233DF8	72	100.00
 func_L00_00232EA8	src/overlays/shared/help_00232560.c	match	00:00233E40	24	100.00
 func_L00_00232EC0	src/overlays/shared/help_00232560.c	match	00:00233E58	48	100.00
+func_L00_00232EF0	src/overlays/shared/help_00232560.c	match	00:00233E88	1312	100.00
 func_L00_00233410	src/overlays/shared/help_00232560.c	match	00:002343A8	1112	100.00
 func_L00_00233868	src/overlays/shared/help_00232560.c	match	00:00234800	232	100.00
 func_L00_00233950	src/overlays/shared/help_00232560.c	match	00:002348E8	316	100.00
@@ -2998,6 +3005,7 @@ func_L00_002ECFB0	src/overlays/shared/vendor_002EB0D8.c	match	00:002EDB70	176	10
 func_L00_002ED088	src/overlays/shared/vendor_002EB0D8.c	match	00:002EDC48	664	100.00
 func_L00_002ED320	src/overlays/shared/vendor_002EB0D8.c	match	00:002EDEE0	1588	100.00
 func_L00_002ED958	src/overlays/shared/vendor_002EB0D8.c	match	00:002EE518	460	100.00
+func_L00_002EDB58	-	asm	00:002EE718	12	100.00
 func_L00_002EDB70	src/overlays/shared/vendor_002EB0D8.c	match	00:002EE730	236	100.00
 func_L00_002EDC60	src/overlays/shared/vendor_002EB0D8.c	match	00:002EE820	52	100.00
 func_L00_002EDC98	src/overlays/shared/vendor_002EB0D8.c	match	00:002EE858	416	100.00
@@ -3958,6 +3966,7 @@ func_L08_002D68D0	src/overlays/l08_batalia/vendor_002B9438.c	match	08:002D7480	9
 func_L08_002D6C58	src/overlays/l08_batalia/vendor_002B9438.c	match	08:002D7808	952	100.00
 func_L08_002D7010	src/overlays/l08_batalia/vendor_002B9438.c	match	08:002D7BC0	1860	100.00
 func_L08_002D7758	src/overlays/l08_batalia/vendor_002B9438.c	match	08:002D8308	248	100.00
+func_L08_002DB438	-	absent	-	0	0.00
 func_L08_002DB468	src/overlays/l08_batalia/vendor_002B9438.c	match	08:002DC018	720	100.00
 func_L08_002DB768	src/overlays/l08_batalia/vendor_002B9438.c	match	08:002DC318	972	100.00
 func_L08_002DBD88	src/overlays/l08_batalia/vendor_002B9438.c	match	08:002DC938	476	100.00
@@ -3971,7 +3980,7 @@ func_L08_002DDB68	src/overlays/l08_batalia/vendor_002B9438.c	match	08:002DE718	1
 func_L08_002DDC18	src/overlays/l08_batalia/vendor_002B9438.c	match	08:002DE7C8	264	100.00
 func_L08_002DDD20	src/overlays/l08_batalia/vendor_002B9438.c	match	08:002DE8D0	1568	100.00
 func_L08_002DE738	src/overlays/l08_batalia/vendor_002B9438.c	match	08:002DF2E8	4120	100.00
-func_L08_002DF750	-	asm	08:002E0300	4	100.00
+func_L08_002DF750	-	absent	-	0	0.00
 func_L08_002DF758	src/overlays/l08_batalia/vendor_002B9438.c	match	08:002E0308	324	100.00
 func_L08_002DF8A0	src/overlays/l08_batalia/vendor_002B9438.c	match	08:002E0450	800	100.00
 func_L08_002DFBC0	src/versions/jp/overlays/l08_batalia/vendor_002B9438/func_L08_002DFBC0.c	match	08:002E0770	1096	100.00

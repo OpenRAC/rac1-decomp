@@ -25,15 +25,12 @@ func_L00_0024A210	func_L00_0024A198	shared	76
 func_L00_0024A25C	func_L00_0024A1E4	shared	40
 func_L00_0024A338	func_L00_002497E0	shared	40
 func_L00_0024B9A8	func_001F6598	shared	12
-func_L00_0024BBB0	func_002095E8	shared	56
 func_L00_0024BC04	func_L00_0024B980	shared	40
 func_L00_0024BC2C	func_001F6598	shared	12
 func_00209698	func_002094E0	exe	64
-func_L00_0024BF98	func_002099D0	shared	72
-func_L00_0024BFE0	func_00209A18	shared	68
 func_L00_002513F8	func_L00_00251388	shared	64
 func_L00_00251438	func_L00_002513C8	shared	48
-func_L00_0025D3C0	func_00215048	shared	48
+func_00215078	func_00215048	exe	48
 func_00216A90	func_002169B8	exe	212
 func_00220128	func_0021F200	exe	56
 func_00222AD0	func_0021FAF8	exe	48
