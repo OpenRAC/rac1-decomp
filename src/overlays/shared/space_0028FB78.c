@@ -83,7 +83,7 @@ void EnterShipMode(int a) {
     FastMemSet(&D_L00_0016C960_s, 0, 0x1C0);
     FastMemSet(D_L00_0017C440, 0, 0x40);
     FastMemSet(D_L00_0017C480, 0, 0x40);
-    VuChain_SetLevelOffset();
+    calculate_dma_transfer_address();
     u = D_L00_0016128C - 0x60000;
     D_L00_0016C960_s.x58 = D_L00_00173F00_s.x4 + u;
     D_L00_0016C960_s.x5c = D_L00_00173F00_s.x8 + u;
@@ -132,7 +132,7 @@ void EnterShipMode(int a) {
     }
     z = (S_171b *)(D_0014171B + 0x100B5);
     z->x1c = t + 40000;
-    ParseSpaceSceneChunk(0);
+    func_00205220(0);
     while (3 != z->x5a) {
         sound_update();
         func_00122598(0);
@@ -184,7 +184,7 @@ void ShipTravelTo(int dest) {
     D_L00_0015F500 = 0;
     *(int *)(g + 0x20) = 0;
     *(short *)(g + 0x24) = -1;
-    VuChain_SetLevelOffset();
+    calculate_dma_transfer_address();
     base = D_L00_00161288[1] - 0x60000;
     q = (int *)D_L00_00173F00;
     h = D_L00_0016C960;
@@ -201,7 +201,7 @@ void ShipTravelTo(int dest) {
         *(int *)(h + 0x34) = v;
         t = v / d;
         *(int *)(h + 0x3C) = t;
-        ParseSpaceSceneChunk(t);
+        func_00205220(t);
         *(int *)(h + 0x38) = *(int *)(h + 0x34) % d;
     } else {
         memcard_Save(0, dest);
@@ -241,7 +241,7 @@ in:
     D_L00_0015F6A8 = 6;
     gFadeLvl = 1.0f;
     D_0013E130_901A8.x20 = 0;
-    VuChain_SetLevelOffset();
+    calculate_dma_transfer_address();
     u = D_L00_0016128C_901A8 - 0x60000;
     D_L00_0016C960_901A8.x58 = D_L00_00173F00_901A8.x4 + u;
     D_L00_0016C960_901A8.x5c = D_L00_00173F00_901A8.x8_c + u;

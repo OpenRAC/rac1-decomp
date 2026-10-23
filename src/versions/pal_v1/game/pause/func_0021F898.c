@@ -22,10 +22,10 @@ int DrawQuitGameMenu(char *arg0) {
     box[1] = h;
     SetupGifPaging(0);
     func_00234C98_l(0x47, 0x2004B);
-    Font_PrintWindowRegular(box, 0x80FFA888L, func_001FE540_id(0x4F6D), -1);
+    font_print_window_regular(box, 0x80FFA888L, func_001FE540_id(0x4F6D), -1);
     FontPrintCenter(cx, y1, 0x80FFA888L, func_001FE540_id(0x4F3F), -1);
-    a = MeasureTextWidthRegular(func_001FE540_id(0x524B), -1);
-    b = MeasureTextWidthRegular(func_001FE540_id(0x524F), -1);
+    a = measure_text_width_regular(func_001FE540_id(0x524B), -1);
+    b = measure_text_width_regular(func_001FE540_id(0x524F), -1);
     if (b >= a) {
         a = b;
     }

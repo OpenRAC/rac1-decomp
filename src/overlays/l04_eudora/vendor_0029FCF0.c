@@ -488,7 +488,7 @@ extern float D_L04_0015F660[] MACRO_ADDR;
 extern P_B7B0 *D_L04_001B0930_B7B0[] __asm__("D_L04_001B0930");
 
 /* Update of the big axebot: hit reaction, state machine (idle, alert, path, chase, return home, swing, stagger, turn, death), knockback, gravity, and its axe moby. */
-void BigAxebotUpdate(M_B7B0 *moby) {
+void big_axebot_update(M_B7B0 *moby) {
     D_B7B0 *data = moby->data;
     T_B7B0 tg;
     V4_B7B0 prev;
@@ -508,7 +508,7 @@ void BigAxebotUpdate(M_B7B0 *moby) {
     Manipulator_ApplyScale(2.5f, (int)moby, 0, (unsigned char *)&data->m120);
     if (moby->f31 != 0) {
         if (FastVecDist(moby->pos, D_L04_00166FC0) < 27.0f) {
-            SetGroundHeightBand(moby);
+            func_L00_0025B178(moby);
             moby->f7F = 0x15;
         }
     }
@@ -534,7 +534,7 @@ void BigAxebotUpdate(M_B7B0 *moby) {
     qcopy(tpos, tg.pos);
     if (moby->f31 != 0) {
         if (FastVecDist(moby->pos, D_L04_00166FC0) < 32.0f) {
-            SetGroundHeightBand(moby);
+            func_L00_0025B178(moby);
             moby->f7F = 0x1A;
         }
     }
@@ -635,7 +635,7 @@ void BigAxebotUpdate(M_B7B0 *moby) {
                 case 1:
                     data->fE8 = 1.0f;
                     data->fE0 = 0x400;
-                    SetSpringParams(data->fC0, 5.7f, 4.0f);
+                    trooper_set_knockback(data->fC0, 5.7f, 4.0f);
                     *(u128_B7B0 *)v = *(u128_B7B0 *)hit->pos;
                     HeadingFromVector(v, &ang2, &data->fD8, &data->fDC);
                     InitKnockback(ang2, moby, data->fC0, 7, 1, 0);
@@ -660,7 +660,7 @@ void BigAxebotUpdate(M_B7B0 *moby) {
         data->f406 = scale_ticks(0xF0);
     }
     data->f38 = 0;
-    func_L00_001FEF78(&data->f406);
+    fast_subtract_rotations_cf(&data->f406);
     if (moby->state != 0 && data->f2E != 1) {
         if (data->f424 != 0) {
             DeleteMoby(data->f424);
@@ -717,7 +717,7 @@ void BigAxebotUpdate(M_B7B0 *moby) {
             moby->fBC |= 1;
             data->f43A = 1;
         } else {
-            if (moby->f52 == 0xD && func_L00_001FEF78(&data->f407) != 0) {
+            if (moby->f52 == 0xD && fast_subtract_rotations_cf(&data->f407) != 0) {
                 Moby_PlaySound(0xA, 0, (char *)moby);
                 data->f407 = scale_ticks(0xB4);
             }
@@ -925,7 +925,7 @@ void BigAxebotUpdate(M_B7B0 *moby) {
         }
         break;
     case 10:
-        if ((StepMobyPhysics(moby, data->fC0) & 0x40) || moby->pos[2] < 1.0f) {
+        if ((mine_fall(moby, data->fC0) & 0x40) || moby->pos[2] < 1.0f) {
             SpawnMarkerEffect((char *)moby);
             if (data->f424 != 0) {
                 DeleteMoby(data->f424);
@@ -954,8 +954,8 @@ void BigAxebotUpdate(M_B7B0 *moby) {
     }
     data->f408 *= 0.96f;
     func_001F9908(&data->f448);
-    func_L00_001FFED8(v, 1, data->f408);
-    func_L00_001FFED8(data->m120.q, 2, 0.0f);
+    axis_rotation_2d48(v, 1, data->f408);
+    axis_rotation_2d48(data->m120.q, 2, 0.0f);
     func_001FA588(data->m120.q, data->m120.q, v);
     if (moby->state != 8) {
         data->f401 = moby->state;
@@ -986,8 +986,8 @@ void BigAxebotUpdate(M_B7B0 *moby) {
         {
             data->f428 = FastAddRots(data->f428, FastSubRots(moby->rot[2], rot));
             MobyTransformScaledVertex((char *)moby, 0xC, (char *)m);
-            MatrixToEuler(m, e);
-            func_L00_001FFED8(q, 2, FastSubRots(ang, data->f428));
+            matrix_to_euler(m, e);
+            axis_rotation_2d48(q, 2, FastSubRots(ang, data->f428));
             data->f428 = ang;
             func_001FA588(data->m160.q, data->m160.q, q);
         }
@@ -1453,7 +1453,7 @@ extern E_35F0 *D_L04_0016016C MACRO_ADDR;
 extern short D_L04_00161908;
 
 /* Update of the circular saw enemy: hit reaction, state machine (idle, chase, patrol, attack), movement and gravity. */
-void CircularSawUpdate(M_35F0 *moby) {
+void circular_saw_enemy_update(M_35F0 *moby) {
     D_35F0 *data = moby->data;
     T_35F0 tg;
     V4_35F0 prev;
@@ -1471,7 +1471,7 @@ void CircularSawUpdate(M_35F0 *moby) {
     Manipulator_ApplyScale(2.9f, (int)moby, 7, data->f270);
     if (moby->f31 != 0) {
         if (FastVecDist(moby->pos, D_L04_00166FC0) < 27.0f) {
-            SetGroundHeightBand(moby);
+            func_L00_0025B178(moby);
             moby->f7F = 0x15;
         }
     }
@@ -1491,7 +1491,7 @@ void CircularSawUpdate(M_35F0 *moby) {
             moby->state = 7;
         }
     }
-    func_L00_001FEF78(&data->f14D);
+    fast_subtract_rotations_cf(&data->f14D);
     if (moby->state != 8 && moby->state != 0) {
         int tmp;
         float dmg;
@@ -2193,7 +2193,7 @@ void BlargTrooperUpdate(char *moby) {
     Manipulator_SetScale(data + 0x110, 3.0f);
     if (*(unsigned char *)(moby + 0x31) != 0) {
         if (FastVecDist(pos, D_L04_00166FC0) < 27.0f) {
-            SetGroundHeightBand(moby);
+            func_L00_0025B178(moby);
             *(unsigned char *)(moby + 0x7F) = 0x15;
         }
     }
@@ -2332,7 +2332,7 @@ void BlargTrooperUpdate(char *moby) {
         *(unsigned char *)(data + 0xFE) = scale_ticks(0xF0);
     }
     *(int *)(data + 0x38) = 0;
-    func_L00_001FEF78(data + 0xFE);
+    fast_subtract_rotations_cf(data + 0xFE);
     func_001F9908((int *)(data + 0x108));
     switch (*(unsigned char *)(moby + 0x20)) {
     case 0:
@@ -2457,7 +2457,7 @@ void BlargTrooperUpdate(char *moby) {
             } else {
                 k = 0;
             }
-            if (func_L00_001FEF78(data + 0xFF) != 0 && k != *(unsigned char *)(moby + 0x53)) {
+            if (fast_subtract_rotations_cf(data + 0xFF) != 0 && k != *(unsigned char *)(moby + 0x53)) {
                 MobyBlendAnimation(moby, (void *)k, 0, (void *)scale_ticks(0xA));
                 *(unsigned char *)(data + 0xFF) = scale_ticks(0xF);
             }
@@ -2568,7 +2568,7 @@ void BlargTrooperUpdate(char *moby) {
             }
             Moby_PlaySound(7, 0, moby);
             SpawnShotMoby(moby, st.w.p.v70, st.w.p.v80, truncate_float_to_s32(14.0f / (D_0015EE6C * 10.0f)));
-            func_L00_001FEF78(data + 0xFD);
+            fast_subtract_rotations_cf(data + 0xFD);
         } else if ((*(unsigned char *)(moby + 0x70) & 2) && *(short *)(data + 0xF2) == 0 && *(unsigned char *)(data + 0xFD) == 0) {
             *(short *)(data + 0xF2) = scale_ticks(0xB4);
             *(unsigned char *)(moby + 0x20) = 5;
@@ -2628,7 +2628,7 @@ void BlargTrooperUpdate(char *moby) {
         }
         break;
     case 11:
-        if (StepMobyPhysics(moby, data + 0x70) & 0x60) {
+        if (mine_fall(moby, data + 0x70) & 0x60) {
             DeleteMobyAndLinked(moby);
             return;
         }
@@ -2731,7 +2731,7 @@ struct Moby;
 
 /* Follows a linked switch moby (class 0x118): mirrors its position value, loops a sound while it moves, plays a click at either end and swaps class 0x41C back to 0x1B0 when it reaches 1.0.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l04/gameplay/entities/0029eb20.c, FUN_L04_002c6858. */
-void SwitchFollowerUpdate(struct Moby *m) {
+void eudora_bridge_update(struct Moby *m) {
     SwitchFollowerVars_C7BD8 *v = (SwitchFollowerVars_C7BD8 *)m->pvars;
     f32 last = m->anim_time;
     struct Moby *other;
@@ -2850,7 +2850,7 @@ extern u8 D_0013E650[];
 
 /* Door update: follows its lever's travel, pushes the lever back while opening, and runs the motor sounds.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l04/gameplay/entities/0029eb20.c, FUN_L04_002c6bb8. */
-void LeverDoorUpdate(struct Moby *m) {
+void platform_booster_update(struct Moby *m) {
     DoorVars *v = (DoorVars *)m->pvars;
     f32 prev;
     struct Moby *lever;

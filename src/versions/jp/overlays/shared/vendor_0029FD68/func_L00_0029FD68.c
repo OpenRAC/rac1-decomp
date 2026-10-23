@@ -8,7 +8,7 @@ void Vendor_DrawCostBox(void *m, int x, int y) {
     char *fmt;
     int total;
 
-    Framebuf_DrawAlphaRect(0, 0, 0x200, 0x80, 0x200, 0x80, 0);
+    draw_framebuffer_rect(0, 0, 0x200, 0x80, 0x200, 0x80, 0);
     { int n = sizeof(box); func_001153FC((void *)&box, 0, n); }
     box.half_x = x / 2;
     box.half_y = y / 2;
@@ -19,7 +19,7 @@ void Vendor_DrawCostBox(void *m, int x, int y) {
     box.y = (short)y;
     box.x = (short)x;
 
-    if (MENU.rows[MENU.f58].fD4 == 1 && D_0013D530[MENU.rows[MENU.f58].fD0] >= D_L00_001C43B0[MENU.rows[MENU.f58].fD0].hE) {
+    if (MENU.rows[MENU.f58].fD4 == 1 && weapon_ammo_counts[MENU.rows[MENU.f58].fD0] >= D_L00_001C43B0[MENU.rows[MENU.f58].fD0].hE) {
         message_id = 0x528D;
         goto message;
     }
@@ -34,7 +34,7 @@ void Vendor_DrawCostBox(void *m, int x, int y) {
     DrawMobyList(MENU.f20 + 0x500, 1);
     box.half_y = 6;
     box.style = 1;
-    Font_PrintWindowAlt((void *)&box, 0x80f0f0f0L, msg_string(0x528E), -1);
+    func_001F75D0((void *)&box, 0x80f0f0f0L, msg_string(0x528E), -1);
     func_00116248(text, D_L00_00161220, D_L00_00161F30);
     if (D_L00_00161F30 >= 100)
         text_x = 0x17;
@@ -61,15 +61,15 @@ quantity_done:
 no_money:
     message_id = 0x528F;
 message:
-    Font_PrintWindowAlt((void *)&box, 0x80f0f0f0L, msg_string(message_id), -1);
+    func_001F75D0((void *)&box, 0x80f0f0f0L, msg_string(message_id), -1);
     return;
 purchase:
-    cost = gHavePersuader ? D_L00_001C43B0[MENU.rows[MENU.f58].fD0].i4 : D_L00_001C43B0[MENU.rows[MENU.f58].fD0].i0;
+    cost = discount_purchase_pricing ? D_L00_001C43B0[MENU.rows[MENU.f58].fD0].i4 : D_L00_001C43B0[MENU.rows[MENU.f58].fD0].i0;
     if (gBolts >= cost) {
         FontPrintSmall(6, 6, 0x80f0f0f0L, msg_string(0x5290), -1);
         FontPrintSmall(2, 0x20, 0x80f0f0f0L, msg_string(0x528B), -1);
         FontPrintSmall(2, 0x3e, 0x80f0f0f0L, msg_string(0x52A2), -1);
     } else {
-        Font_PrintWindowAlt((void *)&box, 0x80f0f0f0L, msg_string(0x528F), -1);
+        func_001F75D0((void *)&box, 0x80f0f0f0L, msg_string(0x528F), -1);
     }
 }

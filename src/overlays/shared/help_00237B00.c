@@ -582,7 +582,7 @@ int Hero_ShouldSwing(void) {
         if (t & 0xF) goto done;
         f12v = 4.0f;
         if ((t & 0x3F) == 0) f12v = 16.0f;
-        Hero_BuildProbeEndpoints(a, b, 0, f12v, 1.3f);
+        hero_get_collision_ray_endpoints(a, b, 0, f12v, 1.3f);
         if (func_L00_001EFFF0(a, b, 2, *(int *)(p + 0x2080), 0) == 0) goto done;
         s2 = CollType();
         *(short *)(p + 0x12E0) = s2;
@@ -679,7 +679,7 @@ int HeroL05_GadgetInput(void) {
             if (D_0013F450_h2523C8.on_slip_ground != 0) {
                 break;
             }
-            if (!PadPressedWithin(mask, scale_ticks(7), &out0)) {
+            if (!pad_pressed_within(mask, scale_ticks(7), &out0)) {
                 break;
             }
             m = (Moby *)D_0013F450_h2523C8.items[0].moby;
@@ -717,7 +717,7 @@ int HeroL05_GadgetInput(void) {
                 if (D_0013F450_h2523C8.state.current == 0xB || D_0013F450_h2523C8.state.current == 0xE) {
                     t = scale_ticks(0x12);
                 }
-                if (!PadPressedWithin(mask, t, 0)) {
+                if (!pad_pressed_within(mask, t, 0)) {
                     break;
                 }
                 if ((D_0013F450_h2523C8.unk41E == 0 && D_0013F450_h2523C8.ground_distance > 0.1f) || (D_0013F450_h2523C8.unk41E != 0 && D_0013F450_h2523C8.ground_distance > 0.57f)
@@ -741,7 +741,7 @@ int HeroL05_GadgetInput(void) {
                     if (D_0013F450_h2523C8.unkA9C != 0) {
                         break;
                     }
-                    if (D_0013F450_h2523C8.anim_frame >= (float)rec->f10 && (D_0013CA40_p2523C8.held & 0xA) && PadPressedWithin(mask, scale_ticks(0xF), 0)) {
+                    if (D_0013F450_h2523C8.anim_frame >= (float)rec->f10 && (D_0013CA40_p2523C8.held & 0xA) && pad_pressed_within(mask, scale_ticks(0xF), 0)) {
                         func_L05_0024D680_2523C8(0x15, 1);
                         break;
                     }
@@ -763,7 +763,7 @@ int HeroL05_GadgetInput(void) {
             if (D_0013F450_h2523C8.on_slip_ground != 0) {
                 break;
             }
-            if (!PadPressedWithin(mask, t, 0)) {
+            if (!pad_pressed_within(mask, t, 0)) {
                 break;
             }
             if (D_0013CA40_p2523C8.held & 0xA) {
@@ -789,7 +789,7 @@ int HeroL05_GadgetInput(void) {
             }
             if (D_0013F450_h2523C8.state.control_mode < 2U || D_0013F450_h2523C8.state.control_mode == 4 || D_0013F450_h2523C8.state.control_mode == 2 || D_0013F450_h2523C8.state.control_mode == 0xF
                 || D_0013F450_h2523C8.state.control_mode == 5 || D_0013F450_h2523C8.state.current == 0x1E) {
-                if (PadPressedWithin(mask, t, 0) || ((D_0013CA40_p2523C8.held & mask) && D_0013F450_h2523C8.items[0].unk20 > scale_ticks(0xF))) {
+                if (pad_pressed_within(mask, t, 0) || ((D_0013CA40_p2523C8.held & mask) && D_0013F450_h2523C8.items[0].unk20 > scale_ticks(0xF))) {
                     if (D_0013F450_h2523C8.unk99E != 0) {
                         if (D_0013F450_h2523C8.unk968 != 0) {
                             if (D_0013F450_h2523C8.unk998 < D_0013F450_h2523C8.unk984) {
@@ -817,7 +817,7 @@ int HeroL05_GadgetInput(void) {
         if (!Hero_CanUseGadget()) {
             break;
         }
-        if (!PadPressedWithin(mask, scale_ticks(7), 0)) {
+        if (!pad_pressed_within(mask, scale_ticks(7), 0)) {
             break;
         }
         if (D_00141760_2523C8 != 0x1F) {
@@ -835,7 +835,7 @@ int HeroL05_GadgetInput(void) {
         break;
     case 32:
         if (D_0013F450_h2523C8.state.control_mode < 3U || D_0013F450_h2523C8.state.control_mode == 4 || D_0013F450_h2523C8.state.control_mode == 5) {
-            if (PadPressedWithin(mask, scale_ticks(8), 0)) {
+            if (pad_pressed_within(mask, scale_ticks(8), 0)) {
                 VendorOpenMenu(0);
             }
         }
@@ -850,7 +850,7 @@ int HeroL05_GadgetInput(void) {
             }
             pv = (PVar_2523C8 *)((Moby *)D_0013F450_h2523C8.items[0].moby)->pvars;
             if (((D_0013CA40_p2523C8.held & mask) && D_0013F450_h2523C8.items[0].unk20 > scale_ticks(5)) || (D_0013CA40_p2523C8.pressed & mask)) {
-                if (GetAmmo(-1)) {
+                if (get_ammo(-1)) {
                     if (D_0013F450_h2523C8.unk20A8 == 0) {
                         Hero_StartModuleAnim();
                     }
@@ -858,7 +858,7 @@ int HeroL05_GadgetInput(void) {
                 }
             }
             if (D_0013CA40_p2523C8.held & mask) {
-                if (!GetAmmo(-1)) {
+                if (!get_ammo(-1)) {
                     if (!Sound_IsPlaying((Moby *)D_0013F450_h2523C8.items[0].moby, pv->fC)) {
                         pv->fC = Moby_PlaySound(0, 0, (int)((Moby *)D_0013F450_h2523C8.items[0].moby));
                     }
@@ -882,9 +882,9 @@ int HeroL05_GadgetInput(void) {
             }
             t = scale_ticks(7);
             n = D_0013F450_h2523C8.items[0].unk20;
-            if (PadPressedWithin(mask, t <= n ? t : n, &out1)
+            if (pad_pressed_within(mask, t <= n ? t : n, &out1)
                 || ((D_0013CA40_p2523C8.held & 0x20) && n > scale_ticks(8) && n < scale_ticks(0x11))) {
-                if (GetAmmo(-1)) {
+                if (get_ammo(-1)) {
                     if (D_0013F450_h2523C8.state.control_mode == 0xC || D_0013F450_h2523C8.state.control_mode == 0 || D_0013F450_h2523C8.state.current == 3
                         || (D_0013F450_h2523C8.state.control_mode == 1 && D_0013F450_h2523C8.unk229C < 0.7f)) {
                         func_L05_0024D680_2523C8(0x23, 1);
@@ -905,7 +905,7 @@ int HeroL05_GadgetInput(void) {
                 int t = scale_ticks(0xA);
                 int n = D_0013F450_h2523C8.items[0].unk20;
 
-                if (PadPressedWithin(mask, t <= n ? t : n, &out2)) {
+                if (pad_pressed_within(mask, t <= n ? t : n, &out2)) {
                     if (((Moby *)D_0013F450_h2523C8.items[0].moby) != 0) {
                         func_L05_0024D680_2523C8(0x20, 1);
                         if (((Moby *)D_0013F450_h2523C8.items[0].moby) != 0) {
@@ -941,7 +941,7 @@ int HeroL05_GadgetInput(void) {
             if (m == 0) {
                 break;
             }
-            if (func_L00_001FEF78(&D_0013F450_h2523C8.unk8CF) == 2 && D_0013F450_h2523C8.unk8CE != 0) {
+            if (fast_subtract_rotations_cf(&D_0013F450_h2523C8.unk8CF) == 2 && D_0013F450_h2523C8.unk8CE != 0) {
                 D_0013F450_h2523C8.unk8CE--;
             }
             if (D_0013F450_h2523C8.unk8CE == 0) {
@@ -950,7 +950,7 @@ int HeroL05_GadgetInput(void) {
             if (D_0013F450_h2523C8.unk8CF != 0) {
                 break;
             }
-            if (!PadPressedWithin(mask, scale_ticks(7), 0)) {
+            if (!pad_pressed_within(mask, scale_ticks(7), 0)) {
                 break;
             }
             best = 0;
@@ -1006,7 +1006,7 @@ int HeroL05_GadgetInput(void) {
         break;
     }
     if (D_0013F450_h2523C8.state_timer == start) {
-        if (Hero_GetSlotModuleId(3) == 3 && D_0013F450_h2523C8.state.current != 0x81 && (D_0013F450_h2523C8.unk308 == 0 || D_0013D5C8_2523C8[0x1C] == 0)
+        if (hero_slot_item_id(3) == 3 && D_0013F450_h2523C8.state.current != 0x81 && (D_0013F450_h2523C8.unk308 == 0 || D_0013D5C8_2523C8[0x1C] == 0)
             && D_0013F450_h2523C8.unk22D8 == 0) {
             func_001F9908_2523C8(&D_L05_0015F754);
             if (D_L05_0015F754 != 0) {
@@ -1048,7 +1048,7 @@ void Hero_IdleUpdate(void) {
             char *h = (char *)D_0013E633 + 0xE1D;
             int a = ((unsigned char *)h)[0x88F] + 0x69;
             if (((unsigned char *)*(char **)(h + 0x2080))[0x53] != a) {
-                HeroStartAnim(a, 2, (float)scale_ticks(5));
+                set_hero_animation(a, 2, (float)scale_ticks(5));
                 HeroQueueSequence(D_L05_00179CC0[((unsigned char *)h)[0x88F]].bank,
                                   D_L05_00179CC0[((unsigned char *)h)[0x88F]].seq);
             } else if ((float)*(int *)(h + 0xAB0) - 2.0f < *(float *)(h + 0xAA8)) {
@@ -1067,11 +1067,11 @@ void Hero_IdleUpdate(void) {
             int t = *(short *)(k + 0x888);
             if (t > scale_ticks(0x1E)) {
                 int x = Hero_GetHelpAnimId();
-                HeroStartAnim(x, 9, (float)scale_ticks(0x11));
+                set_hero_animation(x, 9, (float)scale_ticks(0x11));
             } else {
                 t = *(short *)(k + 0x888);
                 if (t < scale_ticks(0xA)) t = scale_ticks(0xA);
-                HeroStartAnim(Hero_GetHelpAnimId(), 0xD, (float)t);
+                set_hero_animation(Hero_GetHelpAnimId(), 0xD, (float)t);
             }
         }
     }
@@ -1081,7 +1081,7 @@ void Hero_IdleUpdate(void) {
             int a = ((unsigned char *)*(char **)(h + 0x2080))[0x53];
             if (a == 0x52 || a == 0x7D || a == 0x68 || a == 0x7E) {
                 int x = Hero_GetHelpAnimId();
-                HeroStartAnim(x, 0xB, (float)scale_ticks(0xA));
+                set_hero_animation(x, 0xB, (float)scale_ticks(0xA));
             }
         }
     }
@@ -1089,7 +1089,7 @@ void Hero_IdleUpdate(void) {
         char *h = (char *)D_0013E633 + 0xE1D;
         if ((*(int *)(h + 0xA98) & 2) && *(short *)(h + 0x30C) != 0) {
             int x = Hero_GetHelpAnimId();
-            HeroStartAnim(x, 9, (float)scale_ticks(7));
+            set_hero_animation(x, 9, (float)scale_ticks(7));
         }
     }
 }
@@ -1127,7 +1127,7 @@ void Hero_CheckLinkedPickupGroups(void) {
         GroupMobyIter_Start((void **)&first, *(int *)(state + 0x44), 0, 0);
         if (first != 0) {
             do {
-                if (*(short *)(first + 0xA6) == 0x473 && func_L00_001FEF78(first + 0xBC) != 0) {
+                if (*(short *)(first + 0xA6) == 0x473 && fast_subtract_rotations_cf(first + 0xBC) != 0) {
                     FastVecSub(delta, first + 0x10, (char *)D_0013E633 + 0xEED);
                     func_001FA190(matrix);
                     func_001FA4A0(matrix, first + 0xC0);
@@ -1162,7 +1162,7 @@ void Hero_CheckLinkedPickupGroups(void) {
                     if (*(short *)(second + 0xA6) == 0x474) {
                         *(unsigned short *)(second + 0x34) |= 0x10;
                         *(unsigned int *)(second + 0x90) = color;
-                        if (func_L00_001FEF78(second + 0xBC) != 0) {
+                        if (fast_subtract_rotations_cf(second + 0xBC) != 0) {
                             FastVecSub(delta, second + 0x10, (char *)D_0013E633 + 0xE9D);
                             func_001FA190(matrix);
                             func_001FA4A0(matrix, second + 0xC0);
@@ -1183,9 +1183,9 @@ void Hero_CheckLinkedPickupGroups(void) {
     if (*(int *)(state + 0x4C) != -1) {
         GroupMobyIter_Start((void **)&third, *(int *)(state + 0x4C), 0, 0);
         if (third != 0) {
-        ap = (int *)(D_0013D50F + 0x21);
+        ap = (int *)(menu_item_enabled_115 + 0x21);
         do {
-            if (*(short *)(third + 0xA6) == 0x1D6 && func_L00_001FEF78(third + 0xBC) != 0 && FastVecDist((char *)D_0013E633 + 0xEED, third + 0x10) < 1.5f) {
+            if (*(short *)(third + 0xA6) == 0x1D6 && fast_subtract_rotations_cf(third + 0xBC) != 0 && FastVecDist((char *)D_0013E633 + 0xEED, third + 0x10) < 1.5f) {
                 struct Hero *g = HERO;
                 third[0xBC] = scale_ticks(300);
                 if (*(int *)((u8_a *)g + 0x10B8) != 0x24) {
@@ -1227,13 +1227,13 @@ void func_L05_00254838(void) {
     if (((ScoreState_254838 *)(D_0013E633 + 0xE1D))->active != 0) {
         ScoreStats_254838 *stats = (ScoreStats_254838 *)(D_0014171B + 0x22D);
         if (stats->attempts < 0xFFFF) stats->attempts++;
-        if (func_001F9850(D_0015EFA4) / 600 > stats->best)
-            stats->best = func_001F9850(D_0015EFA4) / 600;
+        if (scale_ticks(D_0015EFA4) / 600 > stats->best)
+            stats->best = scale_ticks(D_0015EFA4) / 600;
         stats->levels = stats->levels | (1 << D_0015EE84) | 0x80000000;
     }
     for (i = 0; i < 3; i++) {
         float *a = &G->angle[i];
-        if (func_001F9B88(*a) > 3.3161256f) {
+        if (FastAbsF(*a) > 3.3161256f) {
             float value = *a;
             if (value > 0.0f) {
                 *a = value - 6.2831855f;
@@ -1263,9 +1263,9 @@ void func_L05_00254838(void) {
     {
         ScoreWeights_254838 weights = D_L05_00216D68;
         G->multiplier = weights.value[G->actionCount];
-        G->actionScore = func_001FA898((float)((G->elapsed * 100) / (int)(func_001F9878(1.0f) * 60.0f)));
+        G->actionScore = truncate_float_to_s32((float)((G->elapsed * 100) / (int)(func_001F9878(1.0f) * 60.0f)));
         G->actionScore += G->actionCount * 25;
-        G->actionScore = func_001FA898((float)G->actionScore * G->multiplier);
+        G->actionScore = truncate_float_to_s32((float)G->actionScore * G->multiplier);
         G->total = G->turnScore + G->actionScore;
     }
 }
@@ -1803,7 +1803,7 @@ L_D68:
     if (m[0x51] < 0xD) {
         int r = Hero_GetHelpAnimId();
         int t = scale_ticks(7);
-        HeroStartAnim(r, 14, (float)t);
+        set_hero_animation(r, 14, (float)t);
     }
 
 L_DEC:
@@ -1836,7 +1836,7 @@ L_DEC:
 
     if (D_0013D355_254DE8[0x13B] != 0) {
         if (D_0015EE84_2523C8 == 5 && ((H_9F0 *)(D_0013E633 + 0xE1D))->i6F0 == 4 && ((H_9F0 *)(D_0013E633 + 0xE1D))->i70C >= 4) {
-            Flags_9F0 *fl = (Flags_9F0 *)(D_0013D50F + 1);
+            Flags_9F0 *fl = (Flags_9F0 *)(menu_item_enabled_115 + 1);
             if (fl->f7 == 0) {
                 fl->f7 = 1;
                 func_0022EE28_254DE8(1, 0, 0);
@@ -1852,7 +1852,7 @@ L_DEC:
         if (((unsigned char *)ee)[0x53] != 0x55 && ((unsigned char *)ee)[0x53] != 0x7F) {
             int r = Hero_GetHelpAnimId();
             int t = scale_ticks(7);
-            HeroStartAnim(r, 14, (float)t);
+            set_hero_animation(r, 14, (float)t);
         }
         return 1;
     }
@@ -1860,7 +1860,7 @@ L_DEC:
     if (c != 0x55 && c != 0x7F) {
         int r = Hero_GetHelpAnimId();
         int t = scale_ticks(7);
-        HeroStartAnim(r, 14, (float)t);
+        set_hero_animation(r, 14, (float)t);
     }
     return 0;
 }

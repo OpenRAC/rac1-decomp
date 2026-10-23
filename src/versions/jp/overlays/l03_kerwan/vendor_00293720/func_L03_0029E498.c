@@ -72,7 +72,7 @@ void TrainWreckReaction(char *moby, void *vel_in, int flag) {
         }
         func_0022EEB8_0029E498(0, 0, moby);
     }
-    D_L03_001607F0 = (void *)TrainCarUpdate;
+    D_L03_001607F0 = (void *)red_ship_1_update;
     ((unsigned char *)moby)[0xA4] = 0xFF;
     if (*(short *)(data + 0x14A) != 0) {
         if (FastDecTimer(data + 0x14A) && flag) {

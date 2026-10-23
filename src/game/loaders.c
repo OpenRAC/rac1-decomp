@@ -64,7 +64,7 @@ extern void func_002023E0(int);
 extern void func_002027C0(int);
 
 /*
- * UploadMipTexture: sends a texture (a header, then its palette and mip levels) to the GS at the
+ * upload_mip_texture: sends a texture (a header, then its palette and mip levels) to the GS at the
  * texture allocation cursor and writes its TEX0, MIPTBP1/TEX1 and MIPTBP1 values to regs[0..2].
  * Used for the planet pictures and area captions of the level transition. Adapted from Lombyte
  * (MIT): src/assembly/textbin/fun_00202270.c (US 0x00202270, the same function).
@@ -107,7 +107,7 @@ extern int func_00122630(void *, short, short, short, short, short, short, short
 extern int func_00122958(void *, void *);
 extern int func_00120858(int, unsigned short);
 
-s32 UploadMipTexture(MipTexture_202AA8 *tex, u64 *regs)
+s32 func_00202AA8(MipTexture_202AA8 *tex, u64 *regs)
 {
     MipUpload_202AA8 upload;
     LoadImage_202AA8 load_image;
@@ -241,7 +241,7 @@ void ParseParticleTexs(int *hdr, int base, int *list, int count) {
         if (*p == 0) D_001CE300[i] = (int)D_001CE500;
         else D_001CE300[i] = *p - (off - (int)D_001CE500);
     }
-    func_001F9A00(D_001CE500, (char *)hdr + off, size);
+    copy_memory_aligned(D_001CE500, (char *)hdr + off, size);
     for (D_001601C0 = 0; D_001601C0 < count; D_001601C0++) {
         int a = base + *list++;
         int b = *list++;
@@ -268,22 +268,22 @@ extern short func_001F9968_s(int) __asm__("func_001F9968");
 
 /* Unpack count point records (x, y, u, v words, 12.4 fixed point for
    x/y) into D_0018D540. Adapted from Lombyte (MIT) for PAL. */
-void UnpackPointRecords(int *src, int count) {
+void func_00203038(int *src, int count) {
     int x;
     int y;
     int u;
     int v;
 
-    for (D_0015F55C = 0; D_0015F55C < count; D_0015F55C++) {
+    for (effect_tex_cnt = 0; effect_tex_cnt < count; effect_tex_cnt++) {
         x = *src++;
         y = *src++;
         u = *src++;
         v = *src++;
-        D_0018D540_p[D_0015F55C].x = x >> 4;
-        D_0018D540_p[D_0015F55C].y = y >> 4;
-        D_0018D540_p[D_0015F55C].u = func_001F9968_s(u);
-        D_0018D540_p[D_0015F55C].v = func_001F9968_s(v);
-        D_0018D540_p[D_0015F55C].flags = 0;
+        D_0018D540_p[effect_tex_cnt].x = x >> 4;
+        D_0018D540_p[effect_tex_cnt].y = y >> 4;
+        D_0018D540_p[effect_tex_cnt].u = func_001F9968_s(u);
+        D_0018D540_p[effect_tex_cnt].v = func_001F9968_s(v);
+        D_0018D540_p[effect_tex_cnt].flags = 0;
     }
 }
 
@@ -330,7 +330,7 @@ extern SkyDefL *D_0016055C_s __asm__("D_0016055C") MACRO_ADDR;
    retail reloads it after each call. The item pointer is a separate
    `sh + k` local: loop.c then reduces it to one register starting at sh
    and reaches the item at +0x20 from it, as retail does. */
-void RelocateSkyDefinition(SkyDefL *s) {
+void func_00203118(SkyDefL *s) {
     int i;
 
     D_0016055C_s = s;
@@ -462,7 +462,7 @@ void LoadHudBanks(void) {
     }
 
     fname = D_0015FC70;
-    d941c0 = D_001941C0;
+    d941c0 = level_resource_buffers;
     size24 = ALIGN64(base->bank[0].size);
     header = (HudHdr *) func_001FFAB8_d(size24, 0, fname, 0x23B);
     FastMemCopy(header, (void *) (base->bank[0].off + (int) base), size24);
@@ -530,7 +530,7 @@ extern void func_0020C468(int, int);
    first. */
 void LoadCompressedHudBank(int idx, int size) {
     if (((size + 0xF) & 0xFFFFFFF0) != 0) {
-        int *base = D_0015EF4C;
+        int *base = level_root;
         int off = idx * 8;
         func_0020C468(*(int *)((char *)base + off + 0x28) + (int)base, (size + 0xF) & 0xFFFFFFF0);
     }
@@ -555,7 +555,7 @@ extern u64 D_0019E7D8_035B0[3] __asm__("D_0019E7D8");
 extern s32 func_001F9968(s32);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/rendering/build_indexed_resident_render_packet.c, build_indexed_resident_render_packet. */
-void func_002035B0(u64 *packet,
+void build_indexed_resident_render_packet(u64 *packet,
                                           struct ResidentRenderTextureDefinition *texture,
                                           s32 draw_high, s32 draw_shift, s32 material_base,
                                           s32 material_shift, s32 material_index) {
@@ -646,9 +646,9 @@ extern long D_0019E7D8[];
    the sign test, as in retail. The OR operands are named locals so fold
    does not move the 0x20 to the end of the chain. */
 void SetUpVisGifViewer(long *out, int arg1, int arg2, int arg3, int arg4, int arg5) {
-    long f0 = D_0019E640[arg5 * 3];
-    long f1 = D_0019E640[arg5 * 3 + 1];
-    long f2 = D_0019E640[arg5 * 3 + 2];
+    long f0 = resident_material_templates[arg5 * 3];
+    long f1 = resident_material_templates[arg5 * 3 + 1];
+    long f2 = resident_material_templates[arg5 * 3 + 2];
 
     if (arg5 >= 0) {
         long t = ((long)arg2 << 6) | 0x20;
@@ -663,7 +663,7 @@ void SetUpVisGifViewer(long *out, int arg1, int arg2, int arg3, int arg4, int ar
         long *tpl = D_0019E7C0;
 
         if (arg5 == -3) {
-            tpl = D_0019E7D8;
+            tpl = alternate_special_material_template;
         }
         {
             long v = (long)arg2 << 6;
@@ -719,7 +719,7 @@ typedef struct {
    loop pass hoists their constants into saved registers, and the pointer
    advances in the for increment so the reversed counter's decrement
    lands in FlushCache's delay slot. */
-void UploadTextureImages(int base, int count, Chunk *list) {
+void func_00203958(int base, int count, Chunk *list) {
     GsLoadImage li;
     int i;
 
@@ -970,20 +970,20 @@ extern void func_00203B70(void *, int, int, int);
    the slot count is bumped. A non-null arg0 also has its +0x2C field
    kept in D_001B6500 and is set up by func_00203B70 once the count is
    bumped. The slot byte is D_00160000 read again as a byte. */
-void RegisterMobyClass(void *arg0, int arg1, int arg2, int arg3) {
+void func_00203E78(void *arg0, int arg1, int arg2, int arg3) {
     int idx = D_00160000;
 
     D_001B3E40[arg3] = *(unsigned char *)&D_00160000;
     D_001B3C80[idx] = arg3;
-    D_001B3580[idx] = arg0;
+    moby_class_resources[idx] = arg0;
     if (arg0 == 0) {
-        SetMobyClassEntry(arg3);
+        assign_moby_class_data(arg3);
         D_00160000 = D_00160000 + 1;
     } else {
         D_001B6500[idx] = *(int *)((char *)arg0 + 0x2C);
-        SetMobyClassEntry(arg3);
+        assign_moby_class_data(arg3);
         D_00160000 = D_00160000 + 1;
-        MobyClassRelocate(arg0, arg1, arg2, arg3);
+        prepare_resident_class_render_data(arg0, arg1, arg2, arg3);
     }
 }
 __asm__(".section .text\n\tnop\n");
@@ -1005,7 +1005,7 @@ extern char D_001E3100[] NOT_SDA;
 extern char D_001E3900[] NOT_SDA;
 extern int func_001FA898(float);
 
-void func_00203F68(char *self, int a1, char *src, int a3) {
+void register_object_render_class(char *self, int a1, char *src, int a3) {
     int N;
     int N2;
     int R;
@@ -1046,14 +1046,14 @@ void func_00203F68(char *self, int a1, char *src, int a3) {
     char *rec;
     char *E;
 
-    *(short *)(D_001E1C00 + D_0016104C * 2) = a3;
-    *(unsigned char *)(D_001E1D00 + a3) = D_0016104C;
-    *(char **)(D_001E1A00 + D_0016104C * 4) = self;
+    *(short *)(object_render_class_ids + D_0016104C * 2) = a3;
+    *(unsigned char *)(object_render_class_slot_by_id + a3) = D_0016104C;
+    *(char **)(object_render_classes + D_0016104C * 4) = self;
     *(short *)(self + 0x46) = D_0016104C;
-    R = func_001FA898(*(float *)(self + 0x48) * 1024.0f);
+    R = truncate_float_to_s32(*(float *)(self + 0x48) * 1024.0f);
     N2 = D_0016104C;
     D_0016104C = N2 + 1;
-    *(int *)(D_001E3100 + 4 * N2) = R;
+    *(int *)(object_render_class_fixed_thresholds + 4 * N2) = R;
 
     *(int *)(self + 0x28) = 0;
     *(short *)(self + 0x26) = 0;
@@ -1072,7 +1072,7 @@ void func_00203F68(char *self, int a1, char *src, int a3) {
     *(int *)(self + 0x0C) = v;
     *(int *)(self + 0x2C) = (int)m;
 
-    dest = D_001E3900 + ((*(unsigned char *)(D_001E1D00 + a3)) << 4);
+    dest = object_render_class_material_maps + ((*(unsigned char *)(object_render_class_slot_by_id + a3)) << 4);
     qcopy(dest, src);
 
     for (j = 0, cur = m; j < *(unsigned char *)(self + 0x23); j++, cur += 0x50) {
@@ -1094,8 +1094,8 @@ void func_00203F68(char *self, int a1, char *src, int a3) {
             if (!(0 < w)) {
                 w = 1;
             }
-            f1 = func_001F9968(t4 >> 16);
-            F2 = func_001F9968(*(short *)(rec + 6));
+            f1 = log2dim(t4 >> 16);
+            F2 = log2dim(*(short *)(rec + 6));
             K = D_0015EF8C >> 8;
             c7 = *(short *)(rec + 0x0E) + K;
             c9 = *(short *)(rec + 0x0C) + K;
@@ -1120,10 +1120,10 @@ void func_00203F68(char *self, int a1, char *src, int a3) {
             continue;
         } else {
             unsigned long T2, E1, E3;
-            dw7 = *(unsigned long *)((char *)D_0019E640 + 24 * idx);
+            dw7 = *(unsigned long *)((char *)resident_material_templates + 24 * idx);
             i = idx * 3;
-            dw4 = *(unsigned long *)((char *)D_0019E640 + ((i + 1) << 3));
-            dw8 = *(unsigned long *)((char *)D_0019E640 + ((i + 2) << 3));
+            dw4 = *(unsigned long *)((char *)resident_material_templates + ((i + 1) << 3));
+            dw8 = *(unsigned long *)((char *)resident_material_templates + ((i + 2) << 3));
             T2 = ((unsigned long)(long)t23 << 6) | 0x20UL;
             E1 = (dw4 & 0x1CUL) | T2 | ((unsigned long)(long)local4 << 32);
             E3 = (unsigned long)(long)local8 | ((unsigned long)(long)local12 << 2) | ((unsigned long)(long)idx << 24);
@@ -1228,7 +1228,7 @@ extern s32 func_001F9968(s32);
    MIPTBP1 words from the mip texture (or from the resident material templates when there is none), copies the
    class's material map and rewrites every packet's texture words. Adapted from Lombyte (GPL-3.0):
    src/rendering/register_shrub_render_class.c, register_shrub_render_class (US 0x203B08). */
-void func_00204340(ShrubRenderClass_04340 *render_class, ResidentRenderTextureDefinition_04340 *textures,
+void register_shrub_render_class(ShrubRenderClass_04340 *render_class, ResidentRenderTextureDefinition_04340 *textures,
                    u128_04340 *material_map, ShrubMipTextureDefinition_04340 *mip_texture, s32 class_id) {
     s32 group_index;
     s32 index;
@@ -1239,13 +1239,13 @@ void func_00204340(ShrubRenderClass_04340 *render_class, ResidentRenderTextureDe
     ShrubRenderGroupHeader_04340 *group_header;
     ShrubRenderPacket_04340 *packet;
 
-    D_001D8440[class_id] = D_001604CC;
-    D_001D83C0[D_001604CC] = class_id;
-    D_001D82C0[D_001604CC] = render_class;
-    render_class->class_slot = D_001604CC;
-    fixed_threshold = func_001FA898(render_class->scale * 1024.0f);
-    D_001D9040[D_001604CC] = fixed_threshold;
-    D_001604CC++;
+    shrub_render_class_slot_by_id[class_id] = registered_shrub_render_class_count;
+    shrub_render_class_ids[registered_shrub_render_class_count] = class_id;
+    shrub_render_classes[registered_shrub_render_class_count] = render_class;
+    render_class->class_slot = registered_shrub_render_class_count;
+    fixed_threshold = truncate_float_to_s32(render_class->scale * 1024.0f);
+    shrub_render_class_fixed_thresholds[registered_shrub_render_class_count] = fixed_threshold;
+    registered_shrub_render_class_count++;
     render_class->first_instance = 0;
     render_class->instance_count = 0;
     if (render_class->packed_geometry != 0) {
@@ -1288,8 +1288,8 @@ void func_00204340(ShrubRenderClass_04340 *render_class, ResidentRenderTextureDe
                 }
             }
 
-            width_log2 = func_001F9968(mip_texture->width);
-            height_log2 = func_001F9968(mip_texture->height);
+            width_log2 = log2dim(mip_texture->width);
+            height_log2 = log2dim(mip_texture->height);
             draw_control_count = mip_texture->draw_control_count;
             texture_block = mip_texture->texture_block_offset;
             gs_block_base = D_0015EF8C >> 8;
@@ -1327,7 +1327,7 @@ void func_00204340(ShrubRenderClass_04340 *render_class, ResidentRenderTextureDe
             mip_packet->tex1.d = template_draw_word;
         }
     }
-    slot_materials = &D_001D9640[D_001D8440[class_id]];
+    slot_materials = &shrub_render_class_material_maps[shrub_render_class_slot_by_id[class_id]];
     qcopy(slot_materials, material_map);
     for (group_index = 0; group_index < render_class->group_count; group_index++) {
         group_header = &render_class->groups[group_index].group->group_header;
@@ -1370,8 +1370,8 @@ void func_00204340(ShrubRenderClass_04340 *render_class, ResidentRenderTextureDe
                 if (width_units_128 <= 0) {
                     width_units_128 = 1;
                 }
-                width_log2 = func_001F9968(width_bits >> 16);
-                height_log2 = func_001F9968(texture->height);
+                width_log2 = log2dim(width_bits >> 16);
+                height_log2 = log2dim(texture->height);
                 gs_block_base = D_0015EF8C >> 8;
                 draw_control_count = texture->draw_control_count;
                 width_bits = texture->clut_block_offset + gs_block_base;
@@ -1438,7 +1438,7 @@ extern float D_00160FA0[3];
 extern char *D_00160F8C MACRO_ADDR;
 extern void func_00234380(void);
 
-void func_00204918(FontHdr_04918 *hdr, char *tbl) {
+void initialize_tfrag_render_data(FontHdr_04918 *hdr, char *tbl) {
     char *base;
     float scale;
     int i;
@@ -1446,21 +1446,21 @@ void func_00204918(FontHdr_04918 *hdr, char *tbl) {
     int n;
     int k;
 
-    D_00160F90 = *(int *)((char *)hdr + 4);
+    tfrag_render_record_count = *(int *)((char *)hdr + 4);
     scale = *(float *)((char *)hdr + 8);
-    D_00160FA0[0] = scale * 6.0f;
-    D_00160FA0[1] = scale * 4.0f;
-    D_00160FA0[2] = scale + scale;
-    func_00234380();
+    tfrag_render_ranges[0] = scale * 6.0f;
+    tfrag_render_ranges[1] = scale * 4.0f;
+    tfrag_render_ranges[2] = scale + scale;
+    SetTfragDists();
     base = (char *)hdr + *(int *)hdr;
-    D_00160F8C = base;
-    n = D_00160F90;
+    tfrag_render_records = base;
+    n = tfrag_render_record_count;
     for (k = 0; k < n; k++) {
         *(int *)(base + k * 0x40 + 0x10) = (int)base + *(int *)(base + k * 0x40 + 0x10);
     }
-    for (i = 0; i < D_00160F90; i++) {
-        for (j = 0; j < ((FontRun_04918 *)D_00160F8C)[i].count; j++) {
-            FontRun_04918 *run = (FontRun_04918 *)((i << 6) + (int)D_00160F8C);
+    for (i = 0; i < tfrag_render_record_count; i++) {
+        for (j = 0; j < ((FontRun_04918 *)tfrag_render_records)[i].count; j++) {
+            FontRun_04918 *run = (FontRun_04918 *)((i << 6) + (int)tfrag_render_records);
             unsigned long *o = (unsigned long *)((char *)run->glyphs + run->off1C + j * 0x50);
             int k0 = ((Glyph_04918 *)o)->x0;
             int k10 = ((Glyph_04918 *)o)->x10;
@@ -1482,8 +1482,8 @@ void func_00204918(FontHdr_04918 *hdr, char *tbl) {
             if (!(0 < a19)) {
                 a19 = 1;
             }
-            u = func_001F9968(t >> 16);
-            v = func_001F9968(m->x6);
+            u = log2dim(t >> 16);
+            v = log2dim(m->x6);
             gs = D_0015EF8C >> 8;
             tex0 = (unsigned long)0 | ((unsigned long)a17 << 14) | ((unsigned long)0x13 << 20)
                   | ((unsigned long)u << 26) | ((unsigned long)v << 30) | ((unsigned long)1 << 34)
@@ -1515,13 +1515,13 @@ extern int D_00137C80[];
 extern char D_1FF7FF0[];
 extern int func_002175C8(int, int, int);
 
-int Level_StartDataRead(void) {
+int load_level_chunk_from_disc(void) {
     int *hdr = D_00137C80;
     int want = ((hdr[0x13F] << 11) + 0x1057) & 0xFFFFF000;
 
-    D_0015EF4C = (int *)(((int)D_1FF7FF0 - want) & -0x10);
-    *D_0015EF4C = 0x60;
-    Stream_SubmitRead((int)D_0015EF4C + *D_0015EF4C, hdr[0x13E], hdr[0x13F]);
+    level_root = (int *)(((int)D_1FF7FF0 - want) & -0x10);
+    *level_root = 0x60;
+    Stream_SubmitRead((int)level_root + *level_root, hdr[0x13E], hdr[0x13F]);
     return 1;
 }
 
@@ -1580,7 +1580,7 @@ extern s32 func_00120F30_04C60(s32) __asm__("func_00120F30");
    error or a 720-frame stall, then by stage reads the shared, level and sound archives
    below 0x1FF8000 and swaps the level's sound bank. Returns 1 when everything is in.
    Adapted from Lombyte (MIT) for PAL: src/gameplay/state/fun_00204428.c, service_level_archive_load. */
-s32 LevelArchiveLoadStep(void) {
+s32 service_level_archive_load(void) {
     s32 stage;
     u16 next_stage;
     s32 retry_stage;
@@ -1798,12 +1798,12 @@ extern int D_00160588[];
 extern int func_0020C468_2(int, int) __asm__("func_0020C468");
 extern struct Moby *func_0020D348_m(int) __asm__("func_0020D348");
 
-/* UpdateWorldObjectAnimation: relocate the model record loaded for the
+/* update_world_object_animation: relocate the model record loaded for the
    current chunk (D_0018CC20+0x58) and hook each of its parts to a moby,
    spawning (func_0020D348) and initialising the moby the first time; each
    part's pointer table is made absolute. Adapted from Lombyte (MIT) for
    PAL. */
-void UpdateWorldObjectAnimation(void *arg0) {
+void update_world_object_animation(void *arg0) {
     struct ModelRec *rec;
     struct Moby *mob;
     int *cp;
@@ -1884,15 +1884,15 @@ extern int D_0016100C;
 
 extern int D_0016100C_m __asm__("D_0016100C") MACRO_ADDR;
 
-/* ParseSpaceSceneChunk(int): run func_00204FC0 on chunk index's slot,
+/* parse_space_scene_chunk(int): run func_00204FC0 on chunk index's slot,
    with the chunk's value as the current one meanwhile. The slot address is
    written base - (-(index * 4)), which keeps retail's base-first addu
    (adapted from Lombyte (MIT) for PAL). */
-void ParseSpaceSceneChunk(int arg0) {
+void func_00205220(int arg0) {
     char *base = (char *)&D_0018CC20;
     char *p = base - (-(arg0 * 4));
     *(int *)(base + 0x5C) = *(int *)(p + 0x60);
-    UpdateWorldObjectAnimation(p);
+    update_world_object_animation(p);
     *(int *)(base + 0x5C) = D_001941C8 + D_0016100C_m;
 }
 
@@ -1923,7 +1923,7 @@ extern GadgetRec_05270 D_001864D0[];
 extern unsigned char D_0013E620[];
 extern long D_0019E7F0[];
 
-void LoadMobyClassResources(int class_id, int buffer_index) {
+void select_world_object_resource_tables(int class_id, int buffer_index) {
     int runtime_index;
     int resource_table_index;
     ClassResourceHeader_05270 *resource_data;
@@ -1932,31 +1932,31 @@ void LoadMobyClassResources(int class_id, int buffer_index) {
     int resource_tag;
     int vendor_item_index;
 
-    if (D_0016004C >= 0 && D_001CBE40[D_0016004C] == class_id) {
+    if (active_class_resource_index >= 0 && class_resource_ids[active_class_resource_index] == class_id) {
         return;
     }
-    for (D_0016004C = 0; D_0016004C < D_00160048; D_0016004C++) {
-        if (D_001CBE40[D_0016004C] == class_id) {
+    for (active_class_resource_index = 0; active_class_resource_index < class_resource_count; active_class_resource_index++) {
+        if (class_resource_ids[active_class_resource_index] == class_id) {
             break;
         }
     }
     if (buffer_index == -1) {
-        buffer_index = D_00160050 == 0;
+        buffer_index = active_decode_buffer == 0;
     }
-    D_00160050 = buffer_index;
-    resource_data = (ClassResourceHeader_05270 *)((char *)D_001941C0[4] + buffer_index * 0x18000);
+    active_decode_buffer = buffer_index;
+    resource_data = (ClassResourceHeader_05270 *)((char *)level_resource_buffers[4] + buffer_index * 0x18000);
     func_00118D80(0);
-    ((void (*)(int, void *))func_0020C468)(D_001CBEA0[D_0016004C], resource_data);
+    ((void (*)(int, void *))func_0020C468)(compressed_class_resources[active_class_resource_index], resource_data);
     func_00118D80(0);
     class_slot = D_001B3E40[class_id];
-    resource_table = D_001B3580;
+    resource_table = moby_class_resources;
     resource_table[class_slot] = resource_data;
     D_001B6500[class_slot] = resource_data->original_field_2c;
-    ((void (*)(void *, void *, void *, int))MobyClassRelocate)(resource_data, D_001CAE40, D_001CBF60[D_0016004C], class_id);
-    resource_table_index = D_0016004C;
-    resource_tag = D_00160044;
+    ((void (*)(void *, void *, void *, int))prepare_resident_class_render_data)(resource_data, D_001CAE40, class_material_maps[active_class_resource_index], class_id);
+    resource_table_index = active_class_resource_index;
+    resource_tag = runtime_resource_tag;
     for (runtime_index = 0; runtime_index < 16; runtime_index++) {
-        short e = D_001CC0E0[resource_table_index][runtime_index];
+        short e = class_runtime_indices[resource_table_index][runtime_index];
         if (e >= 0) {
             ((ClassResourceHeader_05270 *)resource_table[class_slot])->runtime_table[runtime_index].runtime_index = e;
             ((ClassResourceHeader_05270 *)resource_table[class_slot])->runtime_table[runtime_index].resource_tag = resource_tag;
@@ -1968,12 +1968,12 @@ void LoadMobyClassResources(int class_id, int buffer_index) {
             ClassRenderGroup_05270 *rg;
             char *pp;
             if (D_0013E620[vendor_item_index] == 0) return;
-            rh = (ClassResourceHeader_05270 *)D_001B3580[class_slot];
+            rh = (ClassResourceHeader_05270 *)moby_class_resources[class_slot];
             if (rh->third_render_group_count == 0) return;
             rg = &rh->render_groups[rh->patch_group_index];
             pp = rg->packet_data + (rg->packed_packet_extent - 4) * 0x10;
-            *(long *)(pp + 0x20) = D_0019E7F0[0];
-            *(long *)(pp + 0x30) = D_0019E7F0[2];
+            *(long *)(pp + 0x20) = gold_weapon_texture_state[0];
+            *(long *)(pp + 0x30) = gold_weapon_texture_state[2];
             return;
         }
     }

@@ -40,7 +40,7 @@ extern void func_001F99B0(void *, int, int);
 
 void UpdateEffectSlots(void) {
     int i;
-    P *p = D_L00_0016EB40;
+    P *p = glints;
     for (i = 15; i >= 0; i--, p++) {
         if (p->life > 0) {
             p->f = FastSubRots(p->f, D_0015EE6C * 5.2359877f);

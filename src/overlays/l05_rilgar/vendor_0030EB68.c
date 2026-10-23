@@ -18,7 +18,7 @@ extern float func_001F9B88(float);
 /* records, for entry arg, which of the 48 entries sit one grid step away */
 void FindGridNeighbors(int arg) {
     int i;
-    Ent *t = D_L05_001D6BC0;
+    Ent *t = water_records;
     for (i = 0; i < 48; i++) {
         if (arg != i) {
             Ent *e = &t[arg];
@@ -53,7 +53,7 @@ extern int D_L05_0015F6B0 MACRO_ADDR;
 extern unsigned char *D_L05_00160098_0F130 __asm__("D_L05_00160098") MACRO_ADDR;
 
 // Updates the claimed-slot marker: claims or reassigns a table slot while the player is near.
-void func_L05_0030F130(char *m) {
+void electric_gate_update(char *m) {
     char *data = *(char **)(m + 0x78);
     int state = *(unsigned char *)(m + 0x20);
     char *base;
@@ -155,17 +155,17 @@ void func_L05_0030F358(char *a) {
     unsigned short *nxt;
     short cur;
 
-    ang = func_001FA888(D_L05_0015F6B0 & 0x3F) / 63.0f * 6.28318f;
+    ang = IntToFloat(D_L05_0015F6B0 & 0x3F) / 63.0f * 6.28318f;
     i = 0;
     do {
         nx = i + 1;
-        t = (func_001F9FA8(ang) + 1.0f) * 0.5f;
-        r1 = func_001FA8A8(*(int *)&D_L05_00161DFC, *(int *)&D_L05_00161E00, t);
-        r2 = func_001FA8A8(*(int *)&D_L05_00161E04, *(int *)&D_L05_00161E08, t);
-        ang = func_001FA748(ang, 1.2566371f);
+        t = (FastSin(ang) + 1.0f) * 0.5f;
+        r1 = FastTweenColor(*(int *)&D_L05_00161DFC, *(int *)&D_L05_00161E00, t);
+        r2 = FastTweenColor(*(int *)&D_L05_00161E04, *(int *)&D_L05_00161E08, t);
+        ang = FastAddRots(ang, 1.2566371f);
         j = 0;
         do {
-            tex = func_001F4868(*(int *)&D_L05_00161E58);
+            tex = GetEffectTex(*(int *)&D_L05_00161E58);
             nj = j + 1;
             arr[j][i].a88 = (s64)*(int *)&D_L05_00161E30 | ((s64)*(int *)&D_L05_00161E34 << 2) | ((s64)*(int *)&D_L05_00161E38 << 4) | ((s64)*(int *)&D_L05_00161E3C << 6) | 0x8000000000LL;
             arr[j][i].a78 = tex;
@@ -468,7 +468,7 @@ extern float D_L05_00161EBC SDATA(D_L05_00161EBC);
 extern float D_L05_00161EC0 SDATA(D_L05_00161EC0);
 
 /* Updates the drain cover: rattles and bubbles while idle, blows up when the hero is near, hovers, falls back, and pushes the hero standing over it. */
-void DrainCoverUpdate(Moby *moby) {
+void drain_cover_update(Moby *moby) {
     Data_0030FCC0 *d = (Data_0030FCC0 *)moby->pvars;
     float v10[4];
     float v20[4];
@@ -603,7 +603,7 @@ void DrainCoverUpdate(Moby *moby) {
         PostHitMessage((void *)((int)hero->moby), (int)moby, 1, v50, v40, v40[2]);
     }
     FastVecSub(v30, &moby->pos, v10);
-    CarryRiders(d->f20, v30, v20, &moby->rot);
+    update_entity_matrix(d->f20, v30, v20, &moby->rot);
     if (d->lid == 0) {
         d->lid = func_0020D348_0030FCC0(0x388);
         if (d->lid != 0) {
@@ -725,7 +725,7 @@ extern u8 *func_L00_00272F00(void *pos, s32 life, f32 size0, f32 size1, s32 colo
 extern char D_L05_001BAE30[];
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l05/gameplay/entities/0030d6a0.c, FUN_L05_0030f5c8. */
-void Moby980Break(struct Moby *moby) {
+void pipe_mounted_grating_update(struct Moby *moby) {
     float vel[4];
     float spin_vel[4];
     float dir[4];
@@ -1090,7 +1090,7 @@ extern void func_L05_003173A8_16B98(void *, void *, void *) __asm__("func_L05_00
 extern void func_L05_00317438_16B98(void *) __asm__("func_L05_00317438");
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l05/gameplay/entities/0030d6a0.c, FUN_L05_003156d0. */
-void LiftL05_Update(struct Moby *moby) {
+void elevator_with_button_update(struct Moby *moby) {
     LiftVars *vars = (LiftVars *)moby->pvars;
     Vec4 delta;
     Vec4 rot;
@@ -1132,8 +1132,8 @@ void LiftL05_Update(struct Moby *moby) {
             ApproachValue(&vars->fade, 0.0f, 0.133f);
             D_L05_0015F4FC = vars->fade;
             func_L05_003173A8_16B98(moby, &eye, &look);
-            CameraScript_SetPosition(&eye);
-            CameraScript_SetLookAt(&look);
+            set_camera_position(&eye);
+            set_camera_rotation(&look);
             scale = 1.0f / (vars->top - vars->bottom);
             accel = D_0015EE6C * (moby->command ? 6.0f : 16.0f) * scale;
             max_speed = D_0015EE70 * (moby->command ? 6.0f : 16.0f) * scale;
@@ -1253,7 +1253,7 @@ void LiftL05_Update(struct Moby *moby) {
         break;
     }
     FastVecAdd(&delta, &delta, &moby->pos);
-    CarryRiders(vars->rider, &delta, &rot, &moby->rot);
+    update_entity_matrix(vars->rider, &delta, &rot, &moby->rot);
 }
 extern void func_L00_001FF4B0(void *, void *, float);
 extern void func_001F9BD8(void *, void *, void *);
@@ -1263,7 +1263,7 @@ extern short D_L05_00161F80;
 extern short D_L05_00161F84;
 
 // Positions the camera-relative point and fills the output angles.
-void LiftL05_GetCameraView(char *a, char *b, char *c) {
+void lift_camera_view(char *a, char *b, char *c) {
     float t;
     func_L00_001FF4B0(b, a + 0xC0, *(float *)&D_L05_00161F88);
     FastVecAdd(b, b, a + 0x10);
@@ -1279,7 +1279,7 @@ extern float func_001FA748(float, float);
 extern char *D_L05_001B0CB0[];
 
 // Fill a ring of points (radius 3.5) around the moby from an angle step, rotating each by the moby's matrix.
-void LayoutCirclePathPoints(char *moby) {
+void place_marker_ring(char *moby) {
     int i = 0;
     char *data = *(char **)(moby + 0x78);
     char *tab = D_L05_001B0CB0[*(int *)(data + 0x68)];
@@ -1320,7 +1320,7 @@ extern float D_L05_00211E60_3175D8[] __asm__("D_L05_00211E60");
 extern int D_L05_0015F6B0 MACRO_ADDR;
 
 /* updates the pulsing marker: spawns it, then each frame animates its scale and queues the draw */
-void PulsingMarkerUpdate(char *moby) {
+void ocean_rilgar_update(char *moby) {
     switch ((unsigned char)moby[0x20]) {
     case 0:
         ScaleTableIntoBuffer128(D_L05_00211E60_3175D8, 1.0f);
@@ -1372,14 +1372,14 @@ void func_L05_00317720(char *moby) {
         } else {
             *(u8 *)(moby + 0x20) = 1;
             *(float *)(data + 0x60) = 0.5934119f;
-            func_L00_001FFED8(data + 0x20, 0, 0.5934119f);
+            axis_rotation_2d48(data + 0x20, 0, 0.5934119f);
         }
         *(long *)(moby + 0x38) = *(long *)(D_001414D0 + 0x38);
         break;
     case 1:
     case 2:
         {
-            u8 trigger = ((u8 *)*(int *)&D_L05_00160098)[*(int *)(data + 0x58) * 256 + 0xBC];
+            u8 trigger = ((u8 *)*(int *)&moby_pool_4f60)[*(int *)(data + 0x58) * 256 + 0xBC];
             if (trigger == 0)
                 return;
             if (*(u8 *)(moby + 0x20) == 2 && trigger != 2) {
@@ -1422,7 +1422,7 @@ void func_L05_00317720(char *moby) {
                         *(u8 *)(moby + 0x20) = 3;
                 }
             }
-            func_L00_001FFED8(data + 0x20, 0, *(float *)(data + 0x60));
+            axis_rotation_2d48(data + 0x20, 0, *(float *)(data + 0x60));
         }
         break;
     case 3:
@@ -1471,7 +1471,7 @@ typedef struct TrailFields_317CD8 {
 } TrailFields_317CD8;
 
 /* Updates the two trails of the moby; with the cheat counter on, they get wider and pulse. */
-void MobyTrailsUpdate(char *moby, int data_addr) {
+void func_L05_00317CD8(char *moby, int data_addr) {
     char *t = (char *)data_addr;
     int i;
     for (i = 0; i < 2; i++) {
@@ -1505,7 +1505,7 @@ extern void func_0020D960(char *, int, void *);
 extern void func_L05_00317CD8(char *, int);
 
 /* For every moby sharing this one's class: arms the marker record, and notifies it while the level flag is set. */
-void ApplyCheatTrailsToSiblings(char *arg) {
+void func_L05_00317E58(char *arg) {
     if (D_L05_0015F6A8 == 2 && (gCheats[0] != 0 || *(int *)&D_L05_00161F90 != 0)) {
         int i;
         for (i = 0; i < D_L05_0016CD60.n; i++) {
@@ -1521,7 +1521,7 @@ void ApplyCheatTrailsToSiblings(char *arg) {
                     }
                 }
                 if (*(int *)&D_L05_00161F90 != 0) {
-                    MobyTrailsUpdate(moby, *(int *)(arg + 0x78));
+                    func_L05_00317CD8(moby, *(int *)(arg + 0x78));
                 }
             }
         }
@@ -1654,7 +1654,7 @@ extern void func_0022EE28();
 #define func_0022EE28_x ((void(*)(int, int, int))(func_0022EE28))
 
 /* Moby update for the hoverboard race girl NPC. */
-void HoverboardGirlUpdate(HGMoby *moby) {
+void update_hoverboard_girl(HGMoby *moby) {
     HGState *state = moby->data;
     HGVec target_position;
     HGVec head_position;
@@ -1745,7 +1745,7 @@ void HoverboardGirlUpdate(HGMoby *moby) {
             if (state->previous_dialogue_state == 4) {
                 (*(unsigned char *)(D_0013D355 + 0x13B)) = 1;
                 queue_dialogue_message(0x1395, scale_frame_count(300));
-                if (D_0013D50F[0xA] != 0) {
+                if (menu_item_enabled_115[0xA] != 0) {
                     func_0022EE28_x(1, 0, 0);
                     queue_dialogue_message(0x53DB, -1);
                 }
@@ -1908,7 +1908,7 @@ extern float D_0015EE64 MACRO_ADDR;
 extern unsigned char D_0013DE4B[];
 
 /* Bouncer update: spawn and approach states, aims at the player and sets the body and head poses. */
-void BouncerUpdate(char *m)
+void qwarks_bouncer_update(char *m)
 {
     char *d;
     char *p;
@@ -1933,13 +1933,13 @@ void BouncerUpdate(char *m)
         *(unsigned char *)(m + 0x20) = 1;
         DialogRequest_Init(m, d);
         *(float *)(d + 0xC) = 3.7f;
-        SetMobyZBand(m);
+        func_L02_0025D750(m);
         break;
     case 1:
         if (Npc_TryStartDialog(m, d))
             PlaceMarkerAheadOfMoby(2.5f, m);
         if (*(short *)(d + 4) == 5) {
-            UnlockPlanet(7);
+            unlock_planet(7);
             memcard_Save(0, -1);
             DeleteMoby(m);
             return;
@@ -2020,7 +2020,7 @@ extern char D_L05_00161FB8[];
 extern unsigned char D_0013D605[];
 
 /* Shady salesman update: spawn and approach states, aims at the player and sets the body and head poses. */
-void ShadySalesmanUpdate(char *m)
+void shady_salesman_update(char *m)
 {
     char *d;
     char *p;
@@ -2036,7 +2036,7 @@ void ShadySalesmanUpdate(char *m)
     AttachManipulatorsIfCheat(m);
     if (*(unsigned char *)(m + 0x31) != 0) {
         if (FastVecDist(m + 0x10, D_L05_001672C0) < 40.0f) {
-            SetGroundHeightBand(m);
+            func_L00_0025B178(m);
             *(unsigned char *)(m + 0x7F) = 0x20;
         }
     }
@@ -2166,7 +2166,7 @@ extern float D_0015EE6C MACRO_ADDR;
 extern short D_L05_00161FC8;
 
 // Per-frame update: spin a value in the data block and bob the moby's Y with it.
-void BobbingMobyL05_Update(unsigned char *moby) {
+void television_update(unsigned char *moby) {
     float v;
     char *data = *(char **)(moby + 0x78);
     int g;
@@ -2347,7 +2347,7 @@ void PickupL05_Update(char *moby) {
         *(short *)(d + 0xB2) = -1;
     }
     FastVecSub(v20, moby + 0x10, v00);
-    CarryRiders(d + 0x20, v20, v10, moby + 0x40);
+    update_entity_matrix(d + 0x20, v20, v10, moby + 0x40);
 }
 extern unsigned char D_0014C150[][16];
 
@@ -2447,7 +2447,7 @@ void SelectSlotPath(char *moby) {
     *(float *)(d + 0xD8) = b * inv;
 }
 // Updates trailer visibility and flag bit from the current mode.
-void UpdateVisibilityByLevelFlag(char *moby) {
+void qwarks_trailer_update(char *moby) {
     if (D_L05_0015F6A8 == 2) {
         moby[0x31] = 0;
         *(unsigned short *)(moby + 0x34) |= 1;
@@ -2722,7 +2722,7 @@ void Moby1550Update(unsigned char *m) {
             if (t < 2) {
                 int k = 3;
                 if (s < t) k = 0;
-                SpawnMoby750Sparks((int)g->m[k]);
+                cutscene_set_camera_target((int)g->m[k]);
             }
         }
         break;

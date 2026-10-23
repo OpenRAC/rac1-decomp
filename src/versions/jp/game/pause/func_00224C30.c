@@ -1,4 +1,4 @@
-s32 Pause_DrawSaveSlots(SaveMenu_24C30 *menu) {
+s32 draw_save_slot_list(SaveMenu_24C30 *menu) {
     char text[0x50];
     SaveSlot_24C30 *slot;
     s32 color;

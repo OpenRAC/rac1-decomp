@@ -27,7 +27,7 @@ typedef struct {
     char pad21[0xDF];
 } O_26e008;
 
-int MobyGroup_CountNotInState(int i, int st) {
+int count_group_e81e0(int i, int st) {
     unsigned short *p;
     int n = 0;
     O_26e008 *o;
@@ -82,7 +82,7 @@ extern int func_L00_00200290(char *, float);
 void IsBSphereVisibleScaled(char *vec, float scale)
 {
     char scratch[16];
-    func_001F9C48(scratch, vec, 0.0009765625f);
+    scale_vector(scratch, vec, 0.0009765625f);
     FastBSphereCheck(scratch, scale);
 }
 extern void func_001F9BF0(void *dst, void *a, void *b);
@@ -269,12 +269,12 @@ extern float func_001FA748(float, float);
 
 /* Places the marker at a moby's position offset along its heading by scale. */
 void PlaceMarkerAheadOfMoby(float scale, char *moby) {
-    D_L01_0016CD60.f = 1;
-    qcopy(D_L01_0016CD60.p, moby + 0x10);
-    D_L01_0016CD60.p[0] += FastCos(*(float *)(moby + 0x48)) * scale;
-    D_L01_0016CD60.p[1] += FastSin(*(float *)(moby + 0x48)) * scale;
-    clear_u64_value(D_L01_0016CD60.q);
-    D_L01_0016CD60.a = FastAddRots(*(float *)(moby + 0x48), 3.14159274101257324f);
+    fx_cutscene.f = 1;
+    qcopy(fx_cutscene.p, moby + 0x10);
+    fx_cutscene.p[0] += FastCos(*(float *)(moby + 0x48)) * scale;
+    fx_cutscene.p[1] += FastSin(*(float *)(moby + 0x48)) * scale;
+    clear_u64_value(fx_cutscene.q);
+    fx_cutscene.a = FastAddRots(*(float *)(moby + 0x48), 3.14159274101257324f);
 }
 extern float func_001F9D48(void *, void *);
 extern void func_L00_00261B00(void *, int, int, int, int);

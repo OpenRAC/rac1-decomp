@@ -11,7 +11,7 @@ extern unsigned char *D_L01_001B280C;
 
 /* Spawns a type-10 particle at a position and sets its colour, size, life and velocity. */
 void PartType10Spawn(char *pos, char *vel) {
-    unsigned char *p = func_00218928(10);
+    unsigned char *p = create_part(10);
     if (p != 0) {
         char *q = (char *)p + 0x20;
         qcopy(p + 0x10, pos);
@@ -36,7 +36,7 @@ extern unsigned char *D_L01_001B2838;
 
 /* spawns a type 14 particle at the given position with jitter */
 char *PartType14Spawn(int a, char *b) {
-    char *p = func_00218928(0xE);
+    char *p = create_part(0xE);
     int r;
     int *q;
     if (p) {
@@ -105,7 +105,7 @@ extern unsigned char *D_L01_001B28D0;
 
 /* spawns a type-0x34 particle at a with colour b, links c, lifetime d, scale f and drag g */
 unsigned char *PartType52Spawn(void *a, int b, int c, int d, float f, float g) {
-    unsigned char *r = func_00218928(0x34);
+    unsigned char *r = create_part(0x34);
     if (r != 0) {
         char *v = (char *)r + 0x20;
         qcopy(r + 0x10, a);
@@ -134,7 +134,7 @@ extern unsigned char D_L01_001B2928_b[] __asm__("D_L01_001B2928");
 /* spawns a type-74 particle with transformed offset and velocity */
 unsigned char *PartType74Spawn(char *m,char *pos,float *vel,char *cfg,int flag) {
  float v[4]; float mat[16];
- unsigned char *p=func_00218928(74);
+ unsigned char *p=create_part(74);
  if(p) {
  char *q;
  p[9]=func_001FA898_r(4.0f)-0x60;

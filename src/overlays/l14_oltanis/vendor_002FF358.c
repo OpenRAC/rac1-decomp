@@ -370,7 +370,7 @@ void BoltThiefUpdate(L14Moby *m) {
         }
         break;
     case 6:
-        if (StepMobyPhysics(m, d->knock) & 3) {
+        if (mine_fall(m, d->knock) & 3) {
             SpawnExplosionFx(m, m->position, -1, 1.0f, 13.0f);
             DeleteMoby(m);
             return;
@@ -458,7 +458,7 @@ extern unsigned char D_0014171B[] NOT_SDA;
 /* Update function of moby class 924: a state machine on the byte at +0x20 (state 0 waits until the moby may
  * start, state 1 tracks the hero and fills D_L14_0016D060, state 2 marks the moby done and deletes it, as state
  * 3 does), then the aiming tail on the countdowns at data + 0x160 and 0x164. */
-void Moby924Update(char *m) {
+void sam_update(char *m) {
     char *d = *(char **)(m + 0x78);
     AttachManipulatorsIfCheat(m);
     switch (*(unsigned char *)(m + 0x20)) {
@@ -482,9 +482,9 @@ void Moby924Update(char *m) {
         if (*(unsigned char *)(d + 8) == 1 && is_point_inside_clip_volume(D_0013E633 + 0xE9D, *(int *)(d + 0x40)) != 0) {
             if ((D_0014171B + 0xAA35)[*(unsigned char *)(m + 0xB0) + (D_0015EE84 << 4)] != 0xFF) {
                 char *t;
-                SetLevelTriggerDone((unsigned char)m[0xB0]);
+                jet_clear_persistent((unsigned char)m[0xB0]);
                 t = D_L14_001601AC_300468 + (*(int *)(d + 0x44) << 7);
-                PauseMenu_SeedSnapshot(t + 0x30, t + 0x70);
+                jet_reset_camera(t + 0x30, t + 0x70);
             }
             *(float *)(d + 0xC) = 255.0f;
         } else {
@@ -504,7 +504,7 @@ void Moby924Update(char *m) {
         if (D_L14_0015F6A8 == 2) break;
         m[0x20] = 1;
         if (*(short *)(d + 4) != 4) break;
-        UnlockPlanet(0xF);
+        unlock_planet(0xF);
         ShowPlanetBanner(0xF);
         *(int *)(D_0014171B + 0xAB75 + (((short)*(unsigned short *)(m + 0xB2) >> 5) * 4 + (D_0015EE84 << 8))) |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
         D_L14_001BAF60[(short)*(unsigned short *)(m + 0xB2) >> 5] |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
@@ -883,7 +883,7 @@ void TriggeredUnlockUpdate(unsigned char *moby) {
             moby[0x20] = 3;
             return;
         }
-        if (D_0014C290[D_0015EE84][id >> 5] >> (*(unsigned short *)(moby + 0xB2) & 0x1F) & 1) {
+        if (level_moby_killed[D_0015EE84][id >> 5] >> (*(unsigned short *)(moby + 0xB2) & 0x1F) & 1) {
             moby[0x20] = 3;
             return;
         }
@@ -894,7 +894,7 @@ void TriggeredUnlockUpdate(unsigned char *moby) {
         if (((unsigned char *)D_L14_00160098)[d[3] * 0x100 + 0x20] != 2) {
             return;
         }
-        D_0014C290[D_0015EE84][*(short *)(moby + 0xB2) >> 5] |= 1 << (*(unsigned short *)(moby + 0xB2) & 0x1F);
+        level_moby_killed[D_0015EE84][*(short *)(moby + 0xB2) >> 5] |= 1 << (*(unsigned short *)(moby + 0xB2) & 0x1F);
         D_L14_001BAF60[*(short *)(moby + 0xB2) >> 5] |= 1 << (*(unsigned short *)(moby + 0xB2) & 0x1F);
         moby[0x20] = 2;
         d[1] = scale_ticks(0x78);
@@ -1336,7 +1336,7 @@ void StepOnSwitchUpdate(struct Moby *moby) {
         moby->pos.z -= 0.35f;
         id = (s16)moby->save_id;
         if (D_L14_001BBCC0_08000.collected[id] != 0 ||
-            (D_0014C290[D_0015EE84][id >> 5] >> (moby->save_id & 31) & 1) != 0 ||
+            (level_moby_killed[D_0015EE84][id >> 5] >> (moby->save_id & 31) & 1) != 0 ||
             (d[2] != 0 && D_0014C150[moby->mission + D_0015EE84 * 16] == 0xFF)) {
             moby->command = 2;
             moby->glow_color = 0x80208020;
@@ -1369,7 +1369,7 @@ void StepOnSwitchUpdate(struct Moby *moby) {
         moby->glow_color = high | shade | color;
         if (D_0013F450_08000.ground_moby == moby && D_0013F450_08000.air_frames.s == 0) {
             id = (s16)moby->save_id;
-            D_0014C290[D_0015EE84][id >> 5] |= 1 << (moby->save_id & 31);
+            level_moby_killed[D_0015EE84][id >> 5] |= 1 << (moby->save_id & 31);
             D_L14_001BAF60[(s16)moby->save_id >> 5] |= 1 << (moby->save_id & 31);
             moby->state = 2;
             moby->command = 1;
@@ -1814,7 +1814,7 @@ void SkillPointUpdate(unsigned char *moby) {
     unsigned v;
     int i;
     if (d[0] != -1) {
-        if (MobyGroup_CountNotInState(d[0], -1) == 0) {
+        if (count_group_e81e0(d[0], -1) == 0) {
             if (gSkillPoints[0x17] == 0) {
                 gSkillPoints[0x17] = 1;
                 PlayBankSound(1, 0, 0);
@@ -1833,7 +1833,7 @@ void SkillPointUpdate(unsigned char *moby) {
             if (v < 3) {
                 i = 0;
                 if (v <= D_L14_0015F6A8) i = moby[0x20];
-                SpawnMoby750Sparks(D_L14_0016D060.v178[i]);
+                cutscene_set_camera_target(D_L14_0016D060.v178[i]);
             }
         }
         break;
@@ -1844,7 +1844,7 @@ extern char *D_L14_00167600;
 /* Sets the camera state block when the global camera record's descriptor is 7. */
 void BlargInterceptor_NotifyGrab(int value)
 {
-    char *moby = D_L14_00167600;
+    char *moby = race_state;
     if (*(short *)(moby + 0x86) == 7) {
         char *data = *(char **)(moby + 0x70) + 0x40;
         char *again;
@@ -2648,13 +2648,13 @@ int Camera21Init(char *moby, char *b)
 {
     char *rec = *(char **)(D_L14_0015F050 + *(short *)(moby + 0x84) * 32 + 0x1C);
 
-    if (*(int *)(rec + 0x20) == 0 && *(short *)(D_L14_00167600 + 0x86) == 0x14) {
+    if (*(int *)(rec + 0x20) == 0 && *(short *)(race_state + 0x86) == 0x14) {
         *(int *)(rec + 0x20) = 1;
         goto done;
     }
     if (*(int *)(rec + 0x20) != 1)
         goto done;
-    if (*(short *)(D_L14_00167600 + 0x86) != 0x14)
+    if (*(short *)(race_state + 0x86) != 0x14)
         return 1;
     if (b == 0 || *(short *)(b + 0x7E) != 0)
         return 1;

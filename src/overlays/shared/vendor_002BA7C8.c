@@ -316,7 +316,7 @@ void Moby179Update(char *m) {
     }
     OffsetShortPairTables(*(unsigned char **)(m + 0x24), 0, d);
     *(float *)(m + 0x2C) = *(float *)(*(char **)(m + 0x24) + 0x24) * *(float *)(p + 0xC) * random_float_between(0.5f, 1.0f);
-    *(float *)(m + 0x44) = FastAddRots(*(float *)(m + 0x44), WrapAngle(*(float *)(p + 0xC)));
+    *(float *)(m + 0x44) = FastAddRots(*(float *)(m + 0x44), normalize_angle(*(float *)(p + 0xC)));
     func_0020EEE8(m);
 }
 extern short D_L00_001DC1C0[];
@@ -343,7 +343,7 @@ extern void func_001F49B0(void *, void *);
 extern void func_L00_002BCE08(int);
 
 // Per-frame update of a moby that scatters ten fading sparkle quads around the hero.
-void Moby180Update(char *m) {
+void walloper_update(char *m) {
     int flag = 0;
     float vec0[4] __attribute__((aligned(16)));
     float vec1[4] __attribute__((aligned(16)));
@@ -416,7 +416,7 @@ void Moby180Update(char *m) {
                 int k;
                 D_L00_001DC1C0[i] = 2;
                 D_L00_001DC1D8[i] = 0x40;
-                RandomSphericalOffset(vec1, *(float *)&D_L00_00161774, *(float *)&D_L00_00161774);
+                random_spherical_offset(vec1, *(float *)&D_L00_00161774, *(float *)&D_L00_00161774);
                 qcopy(D_L00_001DBEA0 + i * 0x50, vec0);
                 n = i + 1;
                 sign = 1.0f;
@@ -712,7 +712,7 @@ char *Aim_FindAssistTarget(char *self, float *position, float *heading, float *p
         return 0;
     }
     i = 0;
-    if ((candidate = D_L00_001ABD80[i]) != 0) do {
+    if ((candidate = active_mobies[i]) != 0) do {
         if (*(signed char *)(candidate + 0x20) < 0 || *(short *)(candidate + 0xA6) == 0x58E ||
             *(short *)(candidate + 0xA6) == 0x452)
             continue;
@@ -779,7 +779,7 @@ char *Aim_FindAssistTarget(char *self, float *position, float *heading, float *p
                 res[0] = (int)candidate;
             }
         }
-    } while ((candidate = D_L00_001ABD80[++i]) != 0);
+    } while ((candidate = active_mobies[++i]) != 0);
 done:
     return (char *)res[0];
 }
@@ -1069,12 +1069,12 @@ void func_L00_002BE2A0(char *m) {
         char v[16];
         int i, j;
         D_L00_0016188C = 0;
-        f = *(float *)&D_L00_001617AC / func_001FA888(12);
+        f = *(float *)&D_L00_001617AC / IntToFloat(12);
         D_L00_0016189C = f;
-        func_001F9C30(v, m + 0xD0, -f);
+        FastVecScale(v, m + 0xD0, -f);
         qcopy(&D_L00_001DC260, p);
         for (i = 10; i >= 0; i--) {
-            func_001F9BD8((char *)&D_L00_001DC260 + 16 * (11 - i), D_L00_001DC250 + 16 * (11 - i), v);
+            FastVecAdd((char *)&D_L00_001DC260 + 16 * (11 - i), D_L00_001DC250 + 16 * (11 - i), v);
         }
         *(int *)&D_L00_001617E8 = 0;
         *(int *)&D_L00_001617F0 = 0;
@@ -1665,12 +1665,12 @@ void func_L00_002BF958(void *unused) {
             q.rgba[0] = col;
             qcopy(pd, &D_L00_001DD3A0[i]);
             qcopy(&A, &D_L00_001DD3D0[i]);
-            func_001F9C30(&C, D_0013E633 + 0x10AD, -1.0f);
-            func_001F9CA0(&B, &A, &C);
+            FastVecScale(&C, D_0013E633 + 0x10AD, -1.0f);
+            FastVecCross(&B, &A, &C);
             func_L00_001FF4B0(&B, &B, 1.0f);
-            func_001F9CA0(&C, &B, &A);
+            FastVecCross(&C, &B, &A);
             for (j = 0; j < 4; j++) {
-                func_001F9C30(&E, &D_L00_001DC220[j], D_L00_001618D8[i]);
+                FastVecScale(&E, &D_L00_001DC220[j], D_L00_001618D8[i]);
                 func_001F9EE8(&q.v[j], &E, &A);
             }
             func_L00_001FD1D8(&q, 0, 0);
@@ -1857,7 +1857,7 @@ char *Aim_PickBestTarget(char *self, float *position, float *angles, int unused,
     int valid;
     int i;
     (void)unused;
-    for (i = 0; (candidate = D_L00_001ABD80[i]) != 0; i++) {
+    for (i = 0; (candidate = active_mobies[i]) != 0; i++) {
         char *classData = *(char **)(candidate + 0x24);
         short classId = classData ? *(short *)(classData + 0x46) : 0;
         if (classId != 5)
@@ -2114,7 +2114,7 @@ void UpdateHomingState(unsigned char *m, unsigned char *o, void *src) {
     F2BF(o, 0x14) = t;
     if (F2BF(o, 0x20) < t) F2BF(o, 0x14) = F2BF(o, 0x20);
     F2BF(o, 0x18) = func_L00_001FF860(F2BF(o, 0) - F2BF(m, 0x10), F2BF(o, 4) - F2BF(m, 0x14));
-    r = ComputeLaunchVelocityZ(m + 0x10, o, 0, F2BF(o, 0x14), -F2BF(o, 0x1C));
+    r = jump_speed_4318(m + 0x10, o, 0, F2BF(o, 0x14), -F2BF(o, 0x1C));
     lim = D_0015EE6C * 7.0f;
     F2BF(o, 0x10) = r;
     if (lim < r) F2BF(o, 0x10) = lim;

@@ -29,17 +29,19 @@
 #
 # Environment:
 #   NTSC_DIR         the NTSC decomp checkout (default: versions/ntsc)
-#   RNC_WINE         passed through to the submodule's configure.py: the runner
-#                    for its SN tools (Ps2EeAs.exe, ee-gcc.exe). Set it to use
-#                    your own runner as is; unset (the default), the script
-#                    writes a `wine` shim into $NTSC_DIR/tools/hostbin (gitignored)
-#                    and points RNC_WINE at it. The shim:
+#   NTSC_WINE_SHIM   1 (the default): the submodule's configure.py runs its SN
+#                    tools (Ps2EeAs.exe, ee-gcc.exe) as `wine ...` from PATH (it
+#                    has no RNC_WINE override any more), so the script writes a
+#                    `wine` shim into $NTSC_DIR/tools/hostbin (gitignored) and puts
+#                    it first on PATH. The shim:
 #                    - runs each call in one of NTSC_WINE_SLOTS prefixes, so the
 #                      parallel ninja jobs do not queue behind one wineserver;
 #                    - keeps Wine headless and makes a crash exit instead of
 #                      hanging in winedbg; kills a call after NTSC_WINE_TIMEOUT s;
-#                    - runs Ps2EeAs.exe from a copy whose PE stack reservation is
+#                    - runs Ps2EeAs.exe from a copy at a short path
+#                      (NTSC_PS2EEAS_DIR) whose PE stack reservation is
 #                      NTSC_PS2EEAS_STACK_MB MiB (see below).
+#                    0: no shim, the `wine` already on PATH runs as is.
 #   NTSC_WINE_ROOT   a user-local Wine install (a directory with usr/bin/wine or
 #                    bin/wine: an extracted distro package or a portable build)
 #                    for hosts without system Wine or sudo (default: `wine` on PATH)
@@ -47,11 +49,17 @@
 #                    each is ~400 MB, copied with --reflink=auto, so free on btrfs/xfs)
 #   NTSC_WINE_POOL   where the pool's prefixes live (default: $NTSC_DIR/build/wine-pool)
 #   NTSC_WINE_TIMEOUT  seconds before one PE tool call is killed (default 900)
-#   NTSC_PS2EEAS_STACK_MB  stack reservation for Ps2EeAs.exe (default 256; 0 runs
-#                    the installed one unchanged). setup.sh installs it with 64 MiB,
-#                    which overflows on src/overlays/l17/gameplay/entities/door.c
-#                    under Wine 10 and 11 (128 MiB is enough). Only the PE header's
-#                    SizeOfStackReserve differs; the objects are identical.
+#   NTSC_PS2EEAS_DIR  where that copy of Ps2EeAs.exe lives (default /tmp/ps2eeas-$UID).
+#                    Ps2EeAs crashes ("Unhandled stack overflow") on the largest
+#                    inputs (src/overlays/l17/gameplay/entities/door.c and
+#                    l03/gameplay/entities/metropolis_train_locomotive.c at 4e1f255e)
+#                    when its own path is about 80 characters or longer, whatever
+#                    its stack size. The NTSC decomp installs it at
+#                    tools/compilers/sn-compiler/ee/bin/, which inside this
+#                    checkout's submodule is about 89 characters on a typical host.
+#   NTSC_PS2EEAS_STACK_MB  stack reservation of that copy (default 256; 0 keeps the
+#                    installed 64 MiB). Only the PE header's SizeOfStackReserve
+#                    differs; the objects are identical.
 #   NTSC_COMPILER_JOBS  -j for building the game compiler (default 8; GCC 2.9's
 #                    Makefile races at high -j, so setup.sh's all-CPUs default
 #                    can fail on many-core hosts)
@@ -94,7 +102,7 @@ ISO=$(pick "${NTSC_ISO:-}" "$REPO/baserom/SCUS_971.99.iso" "$REPO/baserom/us/SCU
 # ------------------------------------------------------------ host shims
 HOSTBIN="$NTSC_DIR/tools/hostbin"   # tools/* is gitignored in the submodule
 
-if [[ -z "${RNC_WINE+x}" ]]; then
+if [[ "${NTSC_WINE_SHIM:-1}" != 0 ]]; then
     if [[ -n "${NTSC_WINE_ROOT:-}" ]]; then
         LOADER=
         for c in "$NTSC_WINE_ROOT/usr/bin/wine" "$NTSC_WINE_ROOT/bin/wine"; do
@@ -102,8 +110,9 @@ if [[ -z "${RNC_WINE+x}" ]]; then
         done
         [[ -n "$LOADER" ]] || die "NTSC_WINE_ROOT=$NTSC_WINE_ROOT has no usr/bin/wine or bin/wine"
     else
-        LOADER=$(command -v wine || true)
-        [[ -n "$LOADER" ]] || die "no wine on PATH: install Wine with 32-bit support, set NTSC_WINE_ROOT to a user-local Wine install, or RNC_WINE to a runner"
+        # the real wine, not a shim left on PATH by an earlier run
+        LOADER=$(PATH=$(printf '%s' "$PATH" | tr ':' '\n' | grep -vxF "$HOSTBIN" | paste -sd: -) command -v wine || true)
+        [[ -n "$LOADER" ]] || die "no wine on PATH: install Wine with 32-bit support or set NTSC_WINE_ROOT to a user-local Wine install"
     fi
     LOADER=$(cd -- "$(dirname -- "$LOADER")" && pwd -P)/$(basename -- "$LOADER")
     POOL=${NTSC_WINE_POOL:-$NTSC_DIR/build/wine-pool}
@@ -113,8 +122,9 @@ if [[ -z "${RNC_WINE+x}" ]]; then
     {
         printf '#!/usr/bin/env bash\n'
         printf '# Generated by rac1-decomp tools/build_ntsc.sh; see its header.\n'
-        printf 'loader=%q\npool=%q\nslots=%q\nstack_mb=%q\nlimit=%q\n' \
-            "$LOADER" "$POOL" "$SLOTS" "${NTSC_PS2EEAS_STACK_MB:-256}" "${NTSC_WINE_TIMEOUT:-900}"
+        printf 'loader=%q\npool=%q\nslots=%q\nstack_mb=%q\nlimit=%q\nshort=%q\n' \
+            "$LOADER" "$POOL" "$SLOTS" "${NTSC_PS2EEAS_STACK_MB:-256}" "${NTSC_WINE_TIMEOUT:-900}" \
+            "${NTSC_PS2EEAS_DIR:-/tmp/ps2eeas-$(id -u)}"
         cat <<'SHIM'
 set -uo pipefail
 bindir=$(dirname -- "$loader")
@@ -125,19 +135,21 @@ export WINEDEBUG=${WINEDEBUG:--all}
 export WINEDLLOVERRIDES=${WINEDLLOVERRIDES:-mscoree,mshtml=}
 unset DISPLAY WAYLAND_DISPLAY
 
-# Ps2EeAs: run a copy whose PE stack reservation is stack_mb MiB. Code and
-# data are untouched (loader metadata only); 64 MiB overflows on the largest
-# overlay inputs under Wine 10/11.
+# Ps2EeAs: run a copy at a short path (it crashes on the largest inputs when
+# its own path is long), with a stack reservation of stack_mb MiB. Code and
+# data are untouched (loader metadata only).
 args=("$@")
-if [[ ${#args[@]} -gt 0 && "${args[0]##*/}" == Ps2EeAs.exe && "$stack_mb" != 0 ]]; then
-    big="$pool/Ps2EeAs-stack${stack_mb}.exe"
+if [[ ${#args[@]} -gt 0 && "${args[0]##*/}" == Ps2EeAs.exe ]]; then
+    mkdir -p -- "$short"
+    big="$short/as${stack_mb}.exe"
     if [[ ! -f "$big" || "${args[0]}" -nt "$big" ]]; then
         python3 - "${args[0]}" "$big.tmp.$$" "$stack_mb" <<'PATCH' && mv -f -- "$big.tmp.$$" "$big"
 import struct, sys
 d = bytearray(open(sys.argv[1], "rb").read())
 pe = struct.unpack_from("<I", d, 0x3C)[0]
 assert d[pe:pe + 4] == b"PE\0\0" and struct.unpack_from("<H", d, pe + 24)[0] == 0x10B
-struct.pack_into("<I", d, pe + 24 + 72, int(sys.argv[3]) * 1024 * 1024)
+if int(sys.argv[3]):
+    struct.pack_into("<I", d, pe + 24 + 72, int(sys.argv[3]) * 1024 * 1024)
 open(sys.argv[2], "wb").write(d)
 PATCH
     fi
@@ -184,8 +196,7 @@ exit $status
 SHIM
     } > "$HOSTBIN/wine"
     chmod 0755 "$HOSTBIN/wine"
-    export RNC_WINE="$HOSTBIN/wine"
-    export PATH="$HOSTBIN:$PATH"   # setup.sh checks `command -v wine`
+    export PATH="$HOSTBIN:$PATH"   # configure.py runs `wine`, setup.sh checks `command -v wine`
     say "Wine: $LOADER via $HOSTBIN/wine ($SLOTS prefixes in $POOL)"
 fi
 

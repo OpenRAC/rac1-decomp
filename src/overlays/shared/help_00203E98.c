@@ -55,7 +55,7 @@ int Help_Request(int a, int b) {
     if (*(unsigned short *)(D_0014171B + 0x34D + b * 8) == 0xFFFF) return 0;
     *(int *)(D_L00_00179510 + 0x28) = b;
     *(int *)(D_L00_00179510 + 0x24) = a;
-    PushHelpHistory(a);
+    push_help_history(a);
     return 1;
 }
 extern char D_L00_00179510[] NOT_SDA;
@@ -94,7 +94,7 @@ extern char D_L00_00179510[] NOT_SDA;
 extern int func_001F9850(int);
 extern void func_L00_00203E98(void);
 /* Asks the help popup to dismiss. */
-void HelpPopup_RequestDismiss(void) {
+void jet_camera_mode(void) {
     char *g = D_L00_00179510;
     if (*(short *)(g + 0x38) == 0) {
         *(short *)(g + 0x38) = 1;
@@ -130,7 +130,7 @@ int func_L00_00205110(short id, int a1, unsigned short *out) {
 }
 INCLUDE_ASM("asm/overlays", func_L00_00205158);
 // returns -1
-int func_L00_0020516C(void) {
+int return_minus_one(void) {
     return -1;
 }
 typedef u32 u128_05278 __attribute__((mode(TI), aligned(16)));
@@ -199,7 +199,7 @@ void HeroInit(void) {
     /* the eight voice slots unk2218..unk2234 as one array, indexed from the hero base */
     for (i = 0; i < 8; i++)
         ((struct { u8 pad[0x2218]; s32 v[8]; } *)&D_0013F450_05278)->v[i] = -1;
-    D_0013F450_05278.health.hp = gMaxNanotech;
+    D_0013F450_05278.health.hp = hero_max_health;
     D_0013F450_05278.reach_distance = 2.125f;
     D_0013F450_05278.reach_height = 1.25f;
     D_0013F450_05278.health.unk22AC = 4;
@@ -232,7 +232,7 @@ extern Rec D_L00_00179BC0[] NOT_SDA;
 extern int func_L00_0020DB30(int);
 
 /* Picks an id for the hero's current situation. */
-int Hero_PickSituationId(int a) {
+int hero_idle_sequence(int a) {
     char *g = (char *)D_0013F450;
     int c = *(unsigned char *)(g + 0x20A4);
     if (c == 2 || (c < 3 ? c == 1 : c == 3)) {
@@ -260,7 +260,7 @@ int Hero_PickSituationId(int a) {
         }
     }
     {
-        int i = Hero_GetSlotModuleId(0);
+        int i = hero_slot_item_id(0);
         return D_L00_00179BC0[i].v;
     }
 }
@@ -272,7 +272,7 @@ extern char D_0013F450_056D8[] __asm__("D_0013F450");
 void func_L00_00235790(void);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00203b18.c, FUN_L00_002050c0. */
-void Hero_TakeDamage(s32 n) {
+void hero_change_health(s32 n) {
     if (n) {
         char *g = D_0013F450_056D8;
         int v;
@@ -280,7 +280,7 @@ void Hero_TakeDamage(s32 n) {
         v = *(int *)(g + 0x22a8) - n;
         *(int *)(g + 0x22a8) = v;
         if (v < 0) *(int *)(g + 0x22a8) = 0;
-        Hud_RegisterHealthBank();
+        show_health_hud();
     }
 }
 extern int D_001414D0;
@@ -375,8 +375,8 @@ extern void func_L00_00205780(char *p);
 
 /* runs func_L00_00205780 on each 0xB0-byte record of a table */
 void SettleAllHeldObjects(void) {
-    int p = (int)D_L00_0017A780;
-    int end = (int)D_L00_0017A780 + 0x1550;
+    int p = (int)lean_state;
+    int end = (int)lean_state + 0x1550;
 
     do {
         SettleHeldObject((char *)p);
@@ -744,7 +744,7 @@ void SyncCompanionMoby(void) {
         MobyTransformScaledVertex(a, 5, buf);
         qcopy(m + 0x10, (char *)buf + 0x30);
         func_001FA480(m + 0xC0, buf);
-        MatrixToEuler(buf, m + 0x40);
+        matrix_to_euler(buf, m + 0x40);
         *(unsigned short *)(m + 0x34) = *(unsigned short *)(m + 0x34) & 0xFFBE;
         MobyBlendAnimation(m, 0x81, 0, scale_ticks(0xA));
         MobyAnimAdvance(m);
@@ -841,13 +841,13 @@ void Hero_UpdateHelpState(void) {
     float rm[16];
 
     func_L00_00232EF0();
-    Hero_UpdateMotionInput();
+    hero_update();
     Hero_UpdateActionFlags();
     if (((GS_68C8 *)(D_0013E633 + 0xE1D))->b20A4 == 1) {
         HeroLedgeProbe();
         CameraLeanFromPad();
     }
-    HeroL00_UpdateStateTransitions();
+    hero_update_transitions();
     if (((GS_68C8 *)(D_0013E633 + 0xE1D))->b20A4 == 0) return;
     Hero_TickReleaseTimers();
     SettleAllHeldObjects();
@@ -1151,10 +1151,10 @@ void Cheats_PollCodes(void) {
                 int c = *(int *)(g + 0x450);
                 if (c == 0) {
                     s = 1;
-                    if (gCheatMirroredLevels[0]) s = 2;
+                    if (D_0015EEB4[0]) s = 2;
                 } else if (c == 1) {
                     s = 2;
-                    if (gCheatMirroredLevels[0]) s = 1;
+                    if (D_0015EEB4[0]) s = 1;
                 } else if (c == 3) {
                     s = 3;
                 }
@@ -1210,7 +1210,7 @@ void Cheats_PollCodes(void) {
         }
         if (j == n) {
             int t = gCheats[i] == 0;
-            D_0015EEC0[i] = 1;
+            selector_available[i] = 1;
             gCheats[i] = t;
             ShowBanner(t ? 0x4FBE : 0x4FBF, -1);
             break;
@@ -1272,12 +1272,12 @@ void Hero_UpdateWithBoundsCheck(void) {
         return;
     }
     func_L00_00232EF0();
-    Hero_UpdateMotionInput();
+    hero_update();
     Hero_UpdateActionFlags();
     HeroLedgeProbe();
-    Hero_LatchSurfaceProbe();
+    find_grind_rail();
     Hero_LatchUpperProbe();
-    HeroL00_UpdateStateTransitions();
+    hero_update_transitions();
     if (*(unsigned char *)(g + 0x20A4) != 0) {
         return;
     }
@@ -1294,7 +1294,7 @@ void Hero_UpdateWithBoundsCheck(void) {
     HeroSyncMoby();
     HeroComputeAttachMatrices(0);
     Hero_UpdateItems();
-    BeginDrawFrame();
+    begin_draw_frame();
     UpdateRampUpDown();
     CameraShakeUpdate();
     HelpHintsPeriodicCheck();
@@ -1342,7 +1342,7 @@ void TintEffectFromMobyColor(void *a, char *m) {
     float s;
     unsigned char *q = m + 0x38;
     int c = q[4] + q[5] + q[6];
-    func_0020E340(a, c * 4 / 10 + ((c * 3 / 10) << 8), 12, 12, 0);
+    pack_render_command_fields(a, c * 4 / 10 + ((c * 3 / 10) << 8), 12, 12, 0);
     func_L00_00251388(m, D_L00_001802D0);
     func_L00_002513F8(m, &v);
     f = (float *)(D_L00_001802D0 - 0x310);
@@ -1463,7 +1463,7 @@ void Hero_UpdateTintFade(void) {
     }
     if (blink) {
         int red, green, blue;
-        func_L00_00251358(((void *)D_0013F450_07CC0.moby), &red, &green, &blue);
+        get_moby_color(((void *)D_0013F450_07CC0.moby), &red, &green, &blue);
         if (D_0013F450_07CC0.state_timer % 4 < 3) {
             red = 0;
             green = 0;
@@ -1563,7 +1563,7 @@ void CameraShakeUpdate(void) {
                 FastVecScale(u + 0xC0, u + 0xC0, g);
                 FastVecScale(u + 0xD0, u + 0xD0, g);
                 FastVecSub(tmp, u + 0x10, D_0013E633 + 0xEED);
-                HeroPlacePointZ(tmp, tmp, 0.0f);
+                gravity_set_z(tmp, tmp, 0.0f);
                 FastVecSub(u + 0x10, u + 0x10, tmp);
                 FastVecScale(tmp, tmp, f);
                 FastVecAdd(u + 0x10, u + 0x10, tmp);
@@ -1646,7 +1646,7 @@ void DrawHeroGlowQueue(void) {
         return;
     }
     if (*(unsigned char *)(g + 0x20A4) == 0) {
-        if ((Hero_GetSlotModuleId(3) == 3 || Hero_GetSlotModuleId(3) == 2) && *(short *)(g + 0x22D8) == 0) {
+        if ((hero_slot_item_id(3) == 3 || hero_slot_item_id(3) == 2) && *(short *)(g + 0x22D8) == 0) {
             u = 0.015f;
             *(float *)(g + 0x1D88) = *(float *)(g + 0x1D88) + u;
             DrawBillboardAt(g + 0x1D80, 0x280000C0, 0.057f, 0.08f);
@@ -2043,8 +2043,8 @@ void Hero_SteerAimAndProbe(void) {
         func_L00_001FF4B0(px, &v, ((w.f[2] - h) + 0.5f) / -v.f[2]);
         func_001F9BD8_091D8(px, pw, px);
         if (func_L00_001EFFF0_091D8(pw, px, 0x22, 0, 0)) {
-            lo = func_001F9B98(lo, collision->f28);
-            hi = func_001F9B90(hi, collision->f28);
+            lo = min_float(lo, collision->f28);
+            hi = max_float(hi, collision->f28);
         }
     }
     D_0013F450_091D8.m2080->f84 = lo - 0.12f;
@@ -2116,7 +2116,7 @@ extern int func_001FA898(float);
 extern float func_L00_002001D8(void *, float);
 
 /* Interpolates a per-frame table at the hero's current animation position. */
-float HeroInterpolateAnimTable(float *a, int n) {
+float vector_length_xyz_cf(float *a, int n) {
     char buf[16] __attribute__((aligned(16)));
     char *d = (char *)D_0013E633 + 0xE1D;
     int i = truncate_float_to_s32(*(float *)(d + 0xAA8));
@@ -2126,7 +2126,7 @@ float HeroInterpolateAnimTable(float *a, int n) {
     if (*(int *)(d + 0xA98) & 2) {
         p = m;
     }
-    w = func_L00_002001D8(buf, *(float *)(d + 0xAA8));
+    w = split_float_fraction(buf, *(float *)(d + 0xAA8));
     return w * a[i] + (*(float *)(d + 0xAAC) - w) * a[p];
 }
 typedef unsigned int u128_002090d0 __attribute__((mode(TI), aligned(16)));
@@ -2193,8 +2193,8 @@ typedef struct {
 #define SPR_JOINT_ROTATION 0x70000000
 #define SPR_JOINT_SCALE 0x70000010
 #define SPR_JOINT_TRANSLATION 0x70000020
-/* HeroItemPoseFromRatchet: packs a keyframe pose from the scratchpad joint data. */
-void HeroItemPoseFromRatchet(int *joints, PackedPose *pose, unsigned char *model, int padding, int context) {
+/* pack_pose: packs a keyframe pose from the scratchpad joint data. */
+void pack_pose(int *joints, PackedPose *pose, unsigned char *model, int padding, int context) {
     unsigned long *out;
     int rotation_count;
     int scale_count;
@@ -2211,7 +2211,7 @@ void HeroItemPoseFromRatchet(int *joints, PackedPose *pose, unsigned char *model
     pose->root_rotation = PACKED_IDENTITY;
     rotation_count = 1;
     for (i = 1; joints[i] >= 0; i++) {
-        *out++ = func_L00_001FF718((joints[i] << 6) + SPR_JOINT_ROTATION, 32768.0f);
+        *out++ = pack_vector_s16((joints[i] << 6) + SPR_JOINT_ROTATION, 32768.0f);
         rotation_count++;
     }
     if (padding > 0) {
@@ -2227,7 +2227,7 @@ void HeroItemPoseFromRatchet(int *joints, PackedPose *pose, unsigned char *model
     i = 1;
     rotation_size = rotation_count << 3;
     for (; joints[i] >= 0; i++) {
-        value = func_L00_001FF718(SPR_JOINT_SCALE + (joints[i] << 6), 4096.0f);
+        value = pack_vector_s16(SPR_JOINT_SCALE + (joints[i] << 6), 4096.0f);
         if ((value & PACKED_XYZ_MASK) != PACKED_UNIT_SCALE) {
             *out = value & PACKED_XYZ_MASK;
             scale_count++;
@@ -2237,9 +2237,9 @@ void HeroItemPoseFromRatchet(int *joints, PackedPose *pose, unsigned char *model
     }
     translation_count = 0;
     for (joint = 1; joints[joint] >= 0; joint++) {
-        value = func_L00_001FF718(SPR_JOINT_TRANSLATION + (joints[joint] << 6), 1.0f);
+        value = pack_vector_s16(SPR_JOINT_TRANSLATION + (joints[joint] << 6), 1.0f);
         if ((value & PACKED_XYZ_MASK) !=
-            (func_L00_001FF718(*(int *)(model + 0x18) + (joint << 4), 1.0f) & PACKED_XYZ_MASK)) {
+            (pack_vector_s16(*(int *)(model + 0x18) + (joint << 4), 1.0f) & PACKED_XYZ_MASK)) {
             *out = value & PACKED_XYZ_MASK;
             translation_count++;
             *(unsigned short *)((unsigned char *)out + 6) = joint;
@@ -2294,7 +2294,7 @@ typedef struct {
 } P_t;
 
 // Emits a pair of sparks from the player's position each time the counter passes its limit. Adapted from Lombyte (MIT) for PAL: overlays/shared/ui_help_00203b18.c, FUN_L00_00209638.
-void SpawnHeroSideEffects(int seed, int limit) {
+void fast_sin_cf(int seed, int limit) {
     float v[4];
     float pos[4];
     float ang;
@@ -2321,7 +2321,7 @@ void SpawnHeroSideEffects(int seed, int limit) {
                 float r = random_float_between(0.4f, 0.5f);
                 float d = -2.0f;
                 if (i == 0) d = 2.0f;
-                PartType46Spawn(pos, v, &p->f2F0, r, d);
+                spawn_splash(pos, v, &p->f2F0, r, d);
             }
             if (seed) {
                 p->s908 = random_integer_below(seed);
@@ -2529,7 +2529,7 @@ void SparkBurstUpdate(void) {
 extern char D_L00_0017A780[];
 // stores two floats into a global block
 void Hero_SetTiltSpringParams(float a, float b) {
-    char *p = D_L00_0017A780;
+    char *p = lean_state;
     *(float *)(p + 0xA4) = a;
     *(float *)(p + 0xA8) = b;
 }
@@ -2569,9 +2569,9 @@ void Hero_UpdateObstacleLean(void) {
     float f12, f13, f, s, s2;
     *(short *)(g + 0x22C8) = 0;
     if (*(unsigned char *)(g + 0x20AB) == 0) return;
-    if (Hero_GetSlotModuleId(0) == 0x1A) return;
+    if (hero_slot_item_id(0) == 0x1A) return;
     if (*(int *)(g + 0x2084) == 0x81) {
-        p = D_L00_0017A780;
+        p = lean_state;
         s = D_0015EE64;
         *(float *)(p + 0x694) = -0.349065840f;
         *(float *)(p + 0x6D4) = s * 0.05f;
@@ -2588,7 +2588,7 @@ void Hero_UpdateObstacleLean(void) {
         }
     }
     s2 = D_0015EE64;
-    p2 = D_L00_0017A780;
+    p2 = lean_state;
     *(float *)(p2 + 0x6D4) = s2 * 0.05f;
     *(float *)(p2 + 0x6D8) = s2 * 0.3f;
     h = (char *)D_0013E633 + 0xE9D;
@@ -2646,11 +2646,11 @@ void Hero_UpdateBodyTilt(void) {
     if (gCheats[3] != 0) {
         g1 = (char *)D_0013E633 + 0xE1D;
         if (*(int *)(g1 + 0x1184) != 0) {
-            h1 = D_L00_0017A780;
+            h1 = lean_state;
             *(float *)(h1 + 0xD0C) = *(float *)&D_0015EF18;
         }
     }
-    h2 = D_L00_0017A780;
+    h2 = lean_state;
     *(float *)(h2 + 0xC5C) = D_0015EEF0_f[9];
     if (gCheats[1] != 0) {
         ApproachValue(&D_0015EEF0_p[9], 1.57f, 0.05f);
@@ -2666,7 +2666,7 @@ void Hero_UpdateBodyTilt(void) {
         lim = (1.0f - *(float *)(ga + 0x25C)) * 35.0f * 0.0174532924f;
         if (lim < a) a = lim;
         f1 = D_0015EE64_m;
-        h3 = D_L00_0017A780;
+        h3 = lean_state;
         *(float *)(h3 + 0x274) = a;
         Hero_SetTiltSpringParams(f1 * 0.008f, f1 * 0.3f);
         *(float *)(h3 + 0x114) = *(float *)(h3 + 0x274) * 0.7f;
@@ -2702,7 +2702,7 @@ void Hero_UpdateBodyTilt(void) {
     g4 = (char *)D_0013E633 + 0xE1D;
     Hero_SetTiltSpringParams(*(float *)(g4 + 0x1014), *(float *)(g4 + 0x1018));
     f2 = D_0015EE64_m;
-    h4 = D_L00_0017A780;
+    h4 = lean_state;
     *(float *)(h4 + 0x278) = *(float *)(g4 + 0x1008);
     *(float *)(h4 + 0x274) = *(float *)(g4 + 0x1004);
     Hero_SetTiltSpringParams(f2 * 0.008f, f2 * 0.3f);
@@ -2730,7 +2730,7 @@ void RerollMotionParams(void) {
     if (*(unsigned char *)(*(int *)(base + 0x2080) + 0x53) != 0) return;
     q = (int *)(base + 0x1060);
     g = base;
-    tbl = D_L00_0017A780;
+    tbl = lean_state;
     for (i = 0; i < 4; i++) {
         char *f;
         if (func_001F9908(&q[i])) {
@@ -2796,7 +2796,7 @@ void HeroScanTargets(void) {
         bestDist = 100000000.0f;
         bestPri = 0.0f;
         best = 0;
-        for (i = 0; (m = D_L00_001ABD80[i]) != 0; i++) {
+        for (i = 0; (m = active_mobies[i]) != 0; i++) {
             info = (char *)GetFlaggedPvarWord(m);
             if (info != 0) {
                 float d, a, sc, pri;
@@ -2850,7 +2850,7 @@ void HeroScanTargets(void) {
         f21 = 0.0f;
     }
     Hero_SetTiltSpringParams(D_0015EE64 * 0.021f, D_0015EE64 * 0.27f);
-    p = D_L00_0017A780;
+    p = lean_state;
     *(float *)(p + 0x274) = f21;
     *(float *)(p + 0x278) = f20 * 0.7f;
     Hero_SetTiltSpringParams(D_0015EE64 * 0.014f, D_0015EE64 * 0.3f);

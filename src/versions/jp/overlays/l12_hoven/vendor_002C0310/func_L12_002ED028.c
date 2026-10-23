@@ -7,7 +7,7 @@ void Moby336_HandleHit(char *m, int flag) {
         if (*(int *)(D_0013E633 + 0x2EA1) != 0x32) {
             *(int *)&D_0015EF04 += 1;
             if (*(int *)&D_0015EF04 >= 5) {
-                q = (unsigned char *)(D_0013D50F + 1);
+                q = (unsigned char *)(menu_item_enabled_115 + 1);
                 if (q[0x15] == 0) {
                     q[0x15] = 1;
                     PlayBankSound(1, 0, 0);

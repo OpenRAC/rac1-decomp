@@ -35,7 +35,7 @@ void Sky_RenderByMode(void) {
         DrawVeldinSky();
         break;
     case 1:
-        UpdateSkyShellsAnimated();
+        update_sky_shells_animated();
         break;
     case 2:
         SkyStarFieldUpdate();
@@ -89,10 +89,10 @@ void Sky_RenderByMode(void) {
         SkyShellsSevenLayer();
         break;
     case 19:
-        SkyShellsEntryUpdate();
+        draw_scrolling_sky_shells();
         break;
     default:
-        UpdateSkyShellsStatic();
+        update_sky_shells_static();
         break;
     }
     DoSkyGifPaging();
@@ -154,7 +154,7 @@ void Veldin_PerFrameHook(void) {
     if (D_0015EE84_m == 0) {
         for (i = 0; i < D_L00_0016C960.count; i++) {
             if (D_L00_0016C960.mobys[i]->oClass == 0x212) {
-                AddDrawCallback((void *)DrawEnvMappedObject, (void *)D_L00_0016C960.mobys[i]);
+                AddDrawCallback((void *)render_environment_mapped_object, (void *)D_L00_0016C960.mobys[i]);
             }
         }
     }
@@ -183,7 +183,7 @@ void Veldin_PerFrameHook(void) {
     }
     if (D_0015EE84_m == 7 && D_L00_0016C960.state == 4 && D_L00_0016C960.unk188 != 0
         && D_L00_0016C960.unk188->oClass == 0x214) {
-        AddDrawCallback((void *)DrawEnvMappedObject, (void *)D_L00_0016C960.unk188);
+        AddDrawCallback((void *)render_environment_mapped_object, (void *)D_L00_0016C960.unk188);
     }
     if (D_0015EE84_m == 14 && D_L00_0016C960.state == 0) {
         m = D_L00_0016C960.unk17C;

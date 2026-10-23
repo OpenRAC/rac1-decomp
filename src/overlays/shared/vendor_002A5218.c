@@ -245,7 +245,7 @@ void Backdrop_QueueGsPacket(void) {
     char *b;
     long *g;
     int *q;
-    Dma_AppendVifCode(0x13000000);
+    vu1_add_vif_code(0x13000000);
     b = D_L02_0016D0C0;
     *(float *)(b + 0x218) = D_L02_00161378;
     *(float *)(b + 0x21C) = D_L02_0016137C;
@@ -253,33 +253,36 @@ void Backdrop_QueueGsPacket(void) {
     *(float *)(b + 0x22C) = D_L02_00161384;
     UpdateViewContext();
     BuildViewMatrices();
-    D_L02_00161240[0] = 0x10000002;
-    D_L02_00161240[1] = 0;
-    D_L02_00161240[2] = 0x11000000;
-    D_L02_00161240[3] = 0x50000002;
-    q = D_L02_00161240;
-    D_L02_00161240 = q + 4;
+    l02_packet[0] = 0x10000002;
+    l02_packet[1] = 0;
+    l02_packet[2] = 0x11000000;
+    l02_packet[3] = 0x50000002;
+    q = l02_packet;
+    l02_packet = q + 4;
     g = (long *)(q + 4);
     g[0] = 0x1000000000008001L;
     g[1] = 0xE;
     g[2] = (long)*(int *)(b + 0x230) | ((long)*(int *)(b + 0x234) << 8) | ((long)*(int *)(b + 0x238) << 16);
     g[3] = 0x3D;
-    D_L02_00161240 = q + 12;
+    l02_packet = q + 12;
     AA_BlurPass();
 }
 extern unsigned int D_L02_0016005C MACRO_ADDR;
 
 /* Clears a moby's field and sets a flag if its pointer is below the moby pool limit. */
-void func_L02_002CCD18(char *moby) {
+void trackdrive_left_update(char *moby) {
     if ((unsigned int)moby < D_L02_0016005C) {
         *(int *)(moby + 0x58) = 0;
         *(unsigned short *)(moby + 0x34) |= 0x40;
     }
 }
-extern int func_L00_002DCDA8_pt(void *, void *, void *) __asm__("func_L00_002DCDA8");
+extern int func_L00_002DCDA8_pt(void *, void *, void *, float) __asm__("func_L00_002DCDA8");
 /* Calls func_L00_002DCDA8(a) and sets state 9 from its result; returns the result. */
-int Moby_UpdateState9FromCheck(char *a, void *pos, void *target) {
-    int r = func_L00_002DCDA8_pt(a, pos, target);
+/* One of a class's Suck Cannon hooks (grab, place or fire), which the catalogue folds: each copy
+   calls its own one, the fire with (moby, velocity, target, height), so the arguments go on as
+   they came (retail touches none of a1, a2 and $f12 before its call). */
+int Moby_UpdateState9FromCheck(char *a, void *pos, void *target, float h) {
+    int r = func_L00_002DCDA8_pt(a, pos, target, h);
     if (r == 0) {
         if (*(unsigned char *)(a + 0x20) == 9) a[0x20] = 1;
     } else {
@@ -418,7 +421,7 @@ extern char D_0013A5E0_2D9F08[] __asm__("D_0013A5E0");
 
 /* Trespasser puzzle (level 2): the hero rotates its three rings with the pad; when every ring is aligned the gate
    opens and the puzzle is marked solved. State 0 sets up, 1 waits for the hero, 2 is the puzzle view, 3 opens. */
-void TrespasserPuzzleUpdate(Moby *moby) {
+void tresspasser_pad_update(Moby *moby) {
     Vec4A v0, v10;
     Data_2D9F08 *d = (struct Data_2D9F08 *)moby->pvars;
     int i;
@@ -807,7 +810,7 @@ void RingMarkersDraw(char *moby) {
         angle = -0.2617994f;
         if (*(int *)(data + 0xe0) == 1) {
             color = FastTweenColor((*(int *)&D_L02_00161C30), (*(int *)&D_L02_00161C30) & 0xffffff,
-                                  FastSin((float)((D_L02_0015F6B0 % 60) * 6) * 0.017453292f) * 0.5f + 0.5f);
+                                  FastSin((float)((frame_counter_ref % 60) * 6) * 0.017453292f) * 0.5f + 0.5f);
             if (*(float *)(data + 0xe4) != 0.0f) angle = FastAddRots(angle, *(float *)(data + 0xe4));
         } else color = (*(int *)&D_L02_00161C34);
         angle = FastAddRots(angle, (float)(i * 30) * 0.017453292f);
@@ -832,7 +835,7 @@ void RingMarkersDraw(char *moby) {
         angle = -0.2617994f;
         if (*(int *)(data + 0xe0) == 2) {
             color = FastTweenColor((*(int *)&D_L02_00161C30), (*(int *)&D_L02_00161C30) & 0xffffff,
-                                  FastSin((float)((D_L02_0015F6B0 % 60) * 6) * 0.017453292f) * 0.5f + 0.5f);
+                                  FastSin((float)((frame_counter_ref % 60) * 6) * 0.017453292f) * 0.5f + 0.5f);
             if (*(float *)(data + 0xe4) != 0.0f) angle = FastAddRots(angle, *(float *)(data + 0xe4));
         } else color = (*(int *)&D_L02_00161C34);
         angle = FastAddRots(angle, (float)(i * 30) * 0.017453292f);
@@ -857,7 +860,7 @@ void RingMarkersDraw(char *moby) {
         angle = -0.2617994f;
         if (*(int *)(data + 0xe0) == 3) {
             color = FastTweenColor((*(int *)&D_L02_00161C30), (*(int *)&D_L02_00161C30) & 0xffffff,
-                                  FastSin((float)((D_L02_0015F6B0 % 60) * 6) * 0.017453292f) * 0.5f + 0.5f);
+                                  FastSin((float)((frame_counter_ref % 60) * 6) * 0.017453292f) * 0.5f + 0.5f);
             if (*(float *)(data + 0xe4) != 0.0f) angle = FastAddRots(angle, *(float *)(data + 0xe4));
         } else color = (*(int *)&D_L02_00161C34);
         angle = FastAddRots(angle, (float)(i * 30) * 0.017453292f);
@@ -884,7 +887,7 @@ void RingMarkersDraw(char *moby) {
         value = markers->v[i];
         if (value != 0) {
             if (value == 2) color = (*(int *)&D_L02_00161C54);
-            else if (D_L02_0015F6B0 & 0x20) color = (*(int *)&D_L02_00161C50);
+            else if (frame_counter_ref & 0x20) color = (*(int *)&D_L02_00161C50);
             else color = (*(int *)&D_L02_00161C4C);
             DrawEllipticalArc(ctx.texture, angle, phase, (float)(*(int *)&D_L02_00161BE8), (float)(*(int *)&D_L02_00161BE4), color);
         }
@@ -933,7 +936,7 @@ void DrawEllipticalArc(int tex, u32 col, float a, float b, float rx, float ry) {
         xy[2] += func_001FA898_r(FastSin(t1) * rx * 16.0f) + 0x8000;
         xy[3] += (u32)(-(func_001FA898_r(FastCos(t1) * ry * 16.0f) << 16) - (int)0x80000000);
         xy[3] += func_001FA898_r(FastSin(t1) * ry * 16.0f) + 0x8000;
-        AppendDisplayListEntry(xy, uv, cols, tex, 1);
+        draw_geometry_quad_5188(xy, uv, cols, tex, 1);
     }
 }
 extern short D_L02_00161B4C;
@@ -1015,8 +1018,8 @@ void DrawRadarArrow(int p0, int p1, int sel, float a, float s) {
     xy[3] += func_001FA898_r(M[3][0] * 16.0f) << 16;
     xy[3] += func_001FA898_r(M[3][1] * 16.0f);
     tex = GetEffectTex(*(int *)&D_L02_00161BAC + 0x29);
-    AppendDisplayListEntry(xy, uv, col, tex, 1);
-    AppendDisplayListEntry(xy, uv, col, tex, 1);
+    draw_geometry_quad_5188(xy, uv, col, tex, 1);
+    draw_geometry_quad_5188(xy, uv, col, tex, 1);
 }
 extern s32 D_L02_0015F6B0 MACRO_ADDR;
 extern short D_L02_00161BF0;
@@ -1046,7 +1049,7 @@ void RingMarker_DrawScroll(void *unused, f32 a, f32 b, f32 c, s32 d) {
     f32 f24, f25, f26, f27, f28, f29, f30, f31;
     f32 s0;
 
-    t = truncate_float_to_s32((f32)D_L02_0015F6B0 * (*(f32 *)&D_L02_00161BF0));
+    t = truncate_float_to_s32((f32)frame_counter_ref * (*(f32 *)&D_L02_00161BF0));
     off = (t % 512) << 16;
     a4[3] = d;
     a4[2] = d;
@@ -1093,7 +1096,7 @@ void RingMarker_DrawScroll(void *unused, f32 a, f32 b, f32 c, s32 d) {
     { s32 q_ = (truncate_float_to_s32(f28)); q_ = (q_ << 4) + 0x8000; (m[3]) += (u64_t)q_; };
 
     tex = GetEffectTex((*(s32 *)&D_L02_00161BF4));
-    AppendDisplayListEntry(m, p4, a4, tex, 0);
+    draw_geometry_quad_5188(m, p4, a4, tex, 0);
 
     p4[0] = (s32)(*(char * *)&D_L02_00161B8C);
     p4[1] = (s32)(*(char * *)&D_L02_00161B90);
@@ -1135,7 +1138,7 @@ void RingMarker_DrawScroll(void *unused, f32 a, f32 b, f32 c, s32 d) {
     { s32 q_ = (truncate_float_to_s32(f27)); q_ = q_ << 20; (m[3]) += (u64_t)(u32)(-q_ + 0x80000000u); };
     { s32 q_ = (truncate_float_to_s32(f28)); q_ = (q_ << 4) + 0x8000; (m[3]) += (u64_t)q_; };
 
-    AppendDisplayListEntry(m, p4, a4, tex, 0);
+    draw_geometry_quad_5188(m, p4, a4, tex, 0);
 }
 typedef struct { long a, b, c, d; } Q_2dae88;
 extern Q_2dae88 D_L02_001D35E0[];
@@ -1176,7 +1179,7 @@ extern short D_L02_00161CA8;
 extern short D_L02_00161CAC;
 extern short D_L02_00161CA4;
 /* Moby update for a pusher that slides back and forth along its heading. */
-void PusherUpdate(char *moby) {
+void escalator_update(char *moby) {
     char *data = *(char **)(moby + 0x78);
     float limit;
     float y;
@@ -1256,7 +1259,7 @@ state3:
         *(float *)(data + 0x44) = FastSin(*(float *)(moby + 0x48)) * -((*(float *)&D_L02_00161CA4) * D_0015EE6C);
         *(int *)(data + 0x48) = 0;
 move:
-    CarryRiders(data + 0x60, data + 0x40, moby + 0x40, moby + 0x40);
+    update_entity_matrix(data + 0x60, data + 0x40, moby + 0x40, moby + 0x40);
 }
 extern int D_L02_00160058_x __asm__("D_L02_00160058") MACRO_ADDR;
 extern unsigned char D_0014171B_x[] __asm__("D_0014171B");
@@ -1277,7 +1280,7 @@ extern void func_L00_00273F80(void *, void *, int, int, int, int, float);
 
 /* Hideable flower: appears when its slot is free, faces and sparkles at the hero (class 0x323), hides again
  * when its slot is used. */
-void HideableFlowerUpdate(char *m) {
+void swingshot_versatarget_update(char *m) {
     char *d = *(char **)(m + 0x78);
     float v[4];
     float w[4];
@@ -1348,8 +1351,8 @@ extern unsigned char D_L02_0017CAC0[];
 void AttachManipulatorsIfCheat(char *moby) {
     int i;
     if (D_L02_0015F6A8 == 2 && gCheats[0] != 0) {
-        for (i = 0; i < D_L02_0016CEE0.count; i++) {
-            char *e = D_L02_0016CEE0.mobys[i];
+        for (i = 0; i < talk_camera.count; i++) {
+            char *e = talk_camera.mobys[i];
             if (*(short *)(e + 0xA6) == *(short *)(moby + 0xA6)) {
                 unsigned char *s = D_L02_0017CAC0;
                 if (s[1] == 0) {
@@ -1391,7 +1394,7 @@ extern void func_L00_002EC0C8(int);
 typedef int u128_002EB648 __attribute__((mode(TI)));
 
 /* Update function of moby class 1005 (tresspasser) on level 02, class 1016 (hydrodisplacer) on level 06: state machine. */
-void Moby1005Update(char *moby) {
+void tresspasser_update(char *moby) {
     char *d;
     char *g;
     char *gp;
@@ -1414,7 +1417,7 @@ void Moby1005Update(char *moby) {
     switch (*(unsigned char *)(moby + 0x20)) {
     case 0:
         InitRandomMobyData(moby);
-        q = (unsigned char *)(gHavePersuader + 5);
+        q = (unsigned char *)(discount_purchase_pricing + 5);
         k = 0.2f;
         if (q[sel] != 0) {
             DeleteMoby(moby);
@@ -1429,7 +1432,7 @@ void Moby1005Update(char *moby) {
     case 1:
         *(float *)(moby + 0x48) = FastAddRots(*(float *)(moby + 0x48), r);
         SparkleSpritesDrawL02(moby);
-        if (D_L02_0015F6B0 % 10 != 0) {
+        if (frame_counter_ref % 10 != 0) {
             break;
         }
         g = D_0013E633 + 0xE9D;
@@ -1513,8 +1516,8 @@ void Moby1005Update(char *moby) {
             if (gp != 0 && *(short *)(gp + 0x86) != 5) {
                 CameraScript(o, w, 1, 0, 0);
             }
-            CameraScript_SetPosition(o);
-            CameraScript_SetLookAt(w);
+            set_camera_position(o);
+            set_camera_rotation(w);
             e = &D_L02_00179A90;
             if (D_L02_00179A90 == 0 && e[9] == -1 && *(float *)(d + 0x40) > 0.2f) {
                 ApproachValue(&D_L02_0015F4FC, 1.0f, D_0015EE6C * 4.0f);
@@ -1656,7 +1659,7 @@ void RefreshMobyAttachPoints3(char *moby) {
         Moby_GetJointWorldPos(moby, i + 3, p);
         p += 0x10;
     }
-    v = D_L02_0015F6B0;
+    v = frame_counter_ref;
     r = *(unsigned char *)(moby + 0x92);
     g = *(unsigned char *)(moby + 0x91);
     b = *(unsigned char *)(moby + 0x90);
@@ -1701,7 +1704,7 @@ extern int D_0015EEF4 MACRO_ADDR;
 extern int D_0015EEFC MACRO_ADDR;
 
 /* Update for a background ship moby: eases its attach point along a path, spawns effects and drives its state machine. */
-void BackgroundShipUpdate(char *moby) {
+void background_ship_1_update(char *moby) {
     char *d;
     char *t;
     int r;
@@ -1780,7 +1783,7 @@ void BackgroundShipUpdate(char *moby) {
         if (D_0015EE84_2D9F08 == 2) {
             D_0015EEF4 = D_0015EEF4 + 1;
             if (D_0015EEF4 >= 3) {
-                unsigned char *p = D_0013D50F + 1;
+                unsigned char *p = menu_item_enabled_115 + 1;
                 if (p[2] == 0) {
                     p[2] = 1;
                     PlayBankSound(1, 0, 0);
@@ -1792,7 +1795,7 @@ void BackgroundShipUpdate(char *moby) {
             if (*(int *)(D_0013E633 + 0x2EA1) == 0x32) {
                 D_0015EEFC = D_0015EEFC + 1;
                 if (D_0015EEFC >= 5) {
-                    unsigned char *p = D_0013D50F + 1;
+                    unsigned char *p = menu_item_enabled_115 + 1;
                     if (p[0xF] == 0) {
                         p[0xF] = 1;
                         PlayBankSound(1, 0, 0);
@@ -1917,7 +1920,7 @@ void RefreshMobyAttachPoints6(char *m) {
         for (i = 0; i < 6; i++, p += 0x10) {
             Moby_GetJointWorldPos(m, i + 2, p);
         }
-        v = D_L02_0015F6B0;
+        v = frame_counter_ref;
         col = *(unsigned char *)(m + 0x92) << 16;
         col |= 0x30000000;
         col |= *(unsigned char *)(m + 0x91) << 8;
@@ -1946,7 +1949,7 @@ extern short D_L02_00162060;
 extern short D_L02_00162064;
 
 /* Update for a ship moby: eases its attach point along a path, spawns effects and drives its state machine. */
-void ShipPathUpdate(char *moby) {
+void background_ship_2_update(char *moby) {
     char *d;
     char *t;
     int r;
@@ -2039,7 +2042,7 @@ void ShipPathUpdate(char *moby) {
         if (D_0015EE84_2D9F08 == 2) {
             D_0015EEF4 = D_0015EEF4 + 1;
             if (D_0015EEF4 >= 3) {
-                unsigned char *p = D_0013D50F + 1;
+                unsigned char *p = menu_item_enabled_115 + 1;
                 if (p[2] == 0) {
                     p[2] = 1;
                     PlayBankSound(1, 0, 0);
@@ -2051,7 +2054,7 @@ void ShipPathUpdate(char *moby) {
             if (*(int *)(D_0013E633 + 0x2EA1) == 0x32) {
                 D_0015EEFC = D_0015EEFC + 1;
                 if (D_0015EEFC >= 5) {
-                    unsigned char *p = D_0013D50F + 1;
+                    unsigned char *p = menu_item_enabled_115 + 1;
                     if (p[0xF] == 0) {
                         p[0xF] = 1;
                         PlayBankSound(1, 0, 0);
@@ -2175,7 +2178,7 @@ extern void func_L00_00264EA8(void *, int, int, int, int, int, int);
 extern void func_L01_00279E10(void *, int);
 
 /* Update for a moby that waits for a float flag on a nearby object then runs a delete sequence. */
-void BreakOnHitL02Update(char *m) {
+void white_flower_update(char *m) {
     int hit = 0;
     char *r = MobyGetHitMessage(m, 0x10000, 0);
     switch (*(unsigned char *)(m + 0x20)) {

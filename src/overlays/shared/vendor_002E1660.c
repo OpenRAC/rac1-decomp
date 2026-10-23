@@ -114,7 +114,7 @@ extern void func_L00_002512D8(s32);
 extern void func_0020BFC8(s32, s32);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_002df730.c, FUN_L00_002e03a0. */
-void Moby1290Update(M_2e03a0_2e03a0 *m) {
+void pilots_helmet_update(M_2e03a0_2e03a0 *m) {
     P_2e03a0_2e03a0 *p = m->p;
     char *g;
     E_2e03a0_2e03a0 *e;
@@ -162,7 +162,7 @@ void Moby1290Update(M_2e03a0_2e03a0 *m) {
         } else {
             STUB_printf(D_L00_001EA580, m->h);
         }
-        if (m->b0 != 0xFF) SetLevelTriggerDone(m->b0);
+        if (m->b0 != 0xFF) jet_clear_persistent(m->b0);
         D_00141510[0] = 7;
         m->state = 3;
         break;
@@ -275,11 +275,11 @@ int EffectSlot_Free(int id) {
             D_L00_00161CC8[i] = 0;
             D_L00_00161D58[i] = 0;
             if (D_L00_00161D08[i] != -1) {
-                FreePointLight(D_L00_00161D08[i]);
+                light_off_67e8(D_L00_00161D08[i]);
                 D_L00_00161D08[i] = -1;
             }
             if (D_L00_00161D18[i] != -1) {
-                FreePointLight(D_L00_00161D18[i]);
+                light_off_67e8(D_L00_00161D18[i]);
                 D_L00_00161D18[i] = -1;
             }
             return 1;
@@ -298,11 +298,11 @@ void EffectSlot_FreeAt(int i) {
     D_L00_00161CC8[i] = 0;
     D_L00_00161D58[i] = 0;
     if (v != -1) {
-        FreePointLight(v);
+        light_off_67e8(v);
         D_L00_00161D08[i] = -1;
     }
     if (D_L00_00161D18[i] != -1) {
-        FreePointLight(D_L00_00161D18[i]);
+        light_off_67e8(D_L00_00161D18[i]);
         D_L00_00161D18[i] = -1;
     }
 }
@@ -847,7 +847,7 @@ extern int func_002140B0(int);
 extern void func_00213DE0(void *, int, int, int);
 
 /* Path-following moby update: start a run along its path in state 0, then step along the path each frame and pick an animation when the flag is set. Adapted from Lombyte (MIT) for PAL: overlays/shared/gameplay_vendor_002df730.c, FUN_L00_002e3a88. */
-void PathFollowMobyUpdate(unsigned char *m) {
+void pterodactyl_update(unsigned char *m) {
     D_2e *d = *(D_2e **)(m + 0x78);
     int *p = D_L00_001B0830[d->path];
     float y;
@@ -888,7 +888,7 @@ extern float func_001F9D10(void *, void *);
 extern float func_001F9CB8(void *);
 
 // Grass moby update: plays an animation when the player is near and leaves.
-void GrassUpdate(char *m) {
+void red_plant_update(char *m) {
     if (FastVecDist(D_0013E633 + 0xE9D, m + 0x10) < 1.0f) {
         if (FastVecLength(D_0013E633 + 0xE9D + 0x80) > D_0015EE6C + D_0015EE6C) {
             if (*(unsigned char *)(m + 0x53) != 1) {
@@ -917,7 +917,7 @@ extern char D_L00_0015F660[] MACRO_ADDR;
 extern float D_L00_00173F80[] NOT_SDA;
 
 /* Update of an effect-group moby: state machine over its life, then it steers a sprite along its path and bounces it off surfaces. */
-void FxGroupUpdate(char *m) {
+void robot_arm_update(char *m) {
     char *d = *(char **)(m + 0x78);
     float a20[4];
     float a30[12];
@@ -975,7 +975,7 @@ void FxGroupUpdate(char *m) {
     FastVecAdd(a80, a80, m + 0x10);
     if (func_L00_001F10E0_s(a80, r, 0, m)) {
         float f21, f20;
-        q = D_L00_00173F80;
+        q = coll_hit_normal;
         func_L00_001FF4B0(q, q, 1.0f);
         f21 = FastVecLength(d);
         f20 = FastVecDot(d, q);
@@ -987,8 +987,8 @@ void FxGroupUpdate(char *m) {
             FastVecCross(aE0, q, d);
             func_L00_001FF4B0(aE0, aE0, 1.0f);
             build_quaternion_from_axis_angle(aE0, aE0, FastVecLength(s23));
-            func_001FA6C0(aE0, a90);
-            MatrixToEuler(a90, s23);
+            quaternion_to_matrix(aE0, a90);
+            matrix_to_euler(a90, s23);
         }
     }
 }
@@ -1050,7 +1050,7 @@ int Cam_GetPulledBackPosition(void *out, int flag) {
     VQ_2E5770 a, b, c, d;
     char *base = D_0013E633 + 0xE1D;
     float f;
-    char *g = D_L00_00166F10;
+    char *g = camera_view;
 
     if (*(short *)(base + 0x30C) == 0) {
         Cam_GetHeroPosition(*(char **)(g - 0x10), out);
@@ -1083,11 +1083,11 @@ extern void func_001F9BC0(void *);
 extern char D_L00_00166F10[];
 
 /* initialises a moby's matrix block from the global camera frame */
-void CamAttach_Init(char *m) {
+void follow_camera_reset(char *m) {
     float a[4];
     float b[4];
     float c[4];
-    char *g = D_L00_00166F10;
+    char *g = camera_view;
     char *g3 = g + 0x30;
     char *p = *(char **)(m + 0x70);
     char *q;
@@ -1129,7 +1129,7 @@ extern char D_L00_00166F10[];
 float Cam_SignedAngleToAxis(char *a, float f) {
     float v0[4], v1[4], v2[4], v3[4];
     float r, len;
-    char *g = D_L00_00166F10;
+    char *g = camera_view;
     Cam_GetHeroPosition(a, v0);
     FastVecScale(v1, g + 0x20, f);
     FastVecAdd(v1, v1, v0);
@@ -1154,7 +1154,7 @@ extern char D_L00_00166F10[] NOT_SDA;
 void CamAttach_ShiftByHeroDelta(char *a) {
     Vq4 t;
     Vq4 v1, v2;
-    char *b = D_L00_00166F10;
+    char *b = camera_view;
     char *m = *(char **)(a + 0x70);
     char *m40 = m + 0x40;
     char *g, *g3;
@@ -1245,7 +1245,7 @@ typedef struct {
 } CamAttach;
 
 /* camera attach mode transitions: picks the next state from the player's state and arms its timers */
-void CamAttach_UpdateMode(char *m) {
+void follow_cam_update_mode(char *m) {
     char *d = *(char **)(m + 0x70);
     CamAttach *e = (CamAttach *)(d + 0x40);
     char *q;
@@ -1486,7 +1486,7 @@ extern int func_001F9938(void *);
 extern int func_L00_002E5770_r(void *, int) __asm__("func_L00_002E5770");
 
 /* per-frame state machine that eases a moby's attach pose toward the camera block's vector */
-void CamAttach_EasePose(char *m, float *v2) {
+void follow_cam_focus_velocity(char *m, float *v2) {
     float cam[4];
     float tmp[4];
     char *d;
@@ -1498,7 +1498,7 @@ void CamAttach_EasePose(char *m, float *v2) {
     char *q;
     float x, y;
     int flag;
-    g = D_L00_00166F10;
+    g = camera_view;
     d = *(char **)(m + 0x70);
     Cam_GetHeroPosition(m, cam);
     pad = D_0013E633 + 0xE1D;
@@ -1741,7 +1741,7 @@ extern int D_L00_00161DF0_2E6CE0 SDATA(D_L00_00161DF0);
 extern float D_L00_00161DA8_2E6CE0 SDATA(D_L00_00161DA8);
 
 /* Updates the follow camera of a moby: eases its offset vectors, then places the eye, clipped against collision. */
-void FollowCameraUpdate(char *m) {
+void follow_camera_springs(char *m) {
     float a[4], b[4], c[4], d[4], e[4], f[4], g[4], h[4], w[4], u[4], v[4];
     char *gl = D_L00_00166F10_2E6CE0;
     char *p = *(char **)(m + 0x70);
@@ -1856,7 +1856,7 @@ float cam_interp_values(void *, float, float, float, float, float) __asm__("func
    the target offset (+0x40 block) toward their requested or default values, clears the requests, and restores the
    default spring (+0x1D0), target and end-of-blend (+0x220) parameters. */
 void func_L00_002E72E8(unsigned char *moby) __asm__("func_L00_002E72E8");
-void CamObject_Reset(unsigned char *moby)
+void follow_camera_approach(unsigned char *moby)
 {
     unsigned char *init, *cam, *defaults, *orbit, *target, *default_target, *default_orbit, *reset;
     CamSpring_2E72E8 *spring_reset;
@@ -1979,7 +1979,7 @@ extern void func_L00_002E9E20(int, float, float);
    orbit distance and height for the vehicle and control modes, runs the player-camera hook table (D_L00_00166D80),
    looks toward a nearby flagged moby, then times the look-ahead easing (h12/h14/h16) from the recent heading
    changes, writing the blend weight into D_L00_0015F040. */
-void CameraType0_HeroTweaks(O_y *o) {
+void follow_camera_apply_overrides(O_y *o) {
     S220_y *s;
     S40_y *q;
     S1D0_y *t;
@@ -2001,7 +2001,7 @@ void CameraType0_HeroTweaks(O_y *o) {
         v[1] = FastSin(f);
         v[2] = 0.0f;
         func_L00_002E9DC8(v, 0.20943952f, v[2]);
-        func_L00_002E9AF8();
+        follow_camera_start_slide();
     }
     if (hero74.state.control_mode == 0x11) {
         o->m->fF0 = 0.25f;
@@ -2046,7 +2046,7 @@ void CameraType0_HeroTweaks(O_y *o) {
     }
     if (hero74.unk20AA != 0 && hero74.state.control_mode != 0xF) {
         func_L00_002E9A18(0);
-        func_L00_002E9AF8();
+        follow_camera_start_slide();
         func_L00_002E9A40(0.04f, 0.2f);
     }
     x = &player_camera_y[1];
@@ -2080,7 +2080,7 @@ void CameraType0_HeroTweaks(O_y *o) {
     }
     if (hero74.state.current == 0x81 && (D_0013CAE0_y[0] & 3)) {
         func_L00_002E9A18(0);
-        func_L00_002E9AF8();
+        follow_camera_start_slide();
         func_L00_002E9A40(0.04f, 0.2f);
         { M_y *mm = o->m;
         mm->h16 = 0;
@@ -2094,7 +2094,7 @@ void CameraType0_HeroTweaks(O_y *o) {
     {
         s32 j = 0, next;
         f32 *qq = v;
-        char *gc = D_L00_00166F10;
+        char *gc = camera_view;
         f32 *gq = (f32 *)gc + 44;
         do {
             next = j + 1;
@@ -2112,7 +2112,7 @@ void CameraType0_HeroTweaks(O_y *o) {
     if (c < g54) m->h12 = scale_ticks(0x20); }
     if (m->h12 != 0) {
         if (FastDecTimer(&m->h12)) m->h14 = scale_ticks(0x2D);
-        func_L00_002E9AF8();
+        follow_camera_start_slide();
         k = ++m->h16;
         if (scale_ticks(0x1E) < k) m->h16 = scale_ticks(0x1E);
         f = IntToFloat(m->h16) / IntToFloat(scale_ticks(0x1E));
@@ -2139,7 +2139,7 @@ extern float func_001F9D48(void *, void *);
 extern void func_001F9CA0(void *, void *, void *);
 // camera type 0 snap: puts the camera behind the hero, pulls it in along the line of sight, then builds its axes
 void CamType0InitSnap(int snap) {
-    char *cams = gCameraLvl;
+    char *cams = player_camera;
     char *cam = *(char **)(cams + 0x180);
     char *track = cams + 0x190; /* the followed hero: position at 0, up vector at 0x30 */
     char *data = *(char **)(cam + 0x70);
@@ -2432,7 +2432,7 @@ extern void func_L00_002E58E0_2E8210(Camera *) __asm__("func_L00_002E58E0");
 extern void func_L00_002E7B68_2E8210(int) __asm__("func_L00_002E7B68");
 
 /* Initialises the type-0 camera: fills its data blocks and seeds the first position. */
-void CamType0Init(Camera *m) {
+void follow_camera_setup(Camera *m) {
     CamA_2E8210 *a;
     CamB_2E8210 *b;
     Cam_2E8210 *c;
@@ -2873,7 +2873,7 @@ int Cam_ResolveWallCollision(char *m) {
     qcopy(v0, s21);
     f22 = 0.0f;
     qcopy(v1, p + 0x90);
-    f20 = *(float *)&D_L00_00161DA8;
+    f20 = *(float *)&follow_cam_min_distance_gp;
     func_L00_001FF4B0(x, v0, 1.0f);
     i = 0;
     while (i < func_001FA898_r(*(float *)(s18 + 0x40) - 1.0f)) {
@@ -2952,7 +2952,7 @@ void func_002156E0(void *, void *, void *, f32);
 #define BI_2e7d20(o) (*(s32 *)(b + (o)))
 
 /* Follow-camera leaf, called from follow_camera_build_view. */
-void func_L00_002E91D0(int mi) {
+void follow_camera_avoid_mobies(int mi) {
     u8 *m = (u8 *)mi;
     V_2e7d20 v0, v10, v20, v30, v40;
     W_2e7d20 w;
@@ -3077,7 +3077,7 @@ move:
     if (D_0015EE84_x == 0xD && D_0013F450_x.i2084 == 0x7B) {
         goto clear;
     }
-    if (!CAST_func_L00_001EFFF0((x + 0x90), &v10, *(int *)&gCamLineMaskLvl, D_0013F450_x.p2080, 0)) {
+    if (!CAST_func_L00_001EFFF0((x + 0x90), &v10, *(int *)&camera_collision_mask, D_0013F450_x.p2080, 0)) {
         goto clear;
     }
     if (CAST_func_L00_002E5740(D_L00_00173F60_x.v20)) {
@@ -3096,7 +3096,7 @@ move:
     }
     BI_2e7d20(0x4C)++;
     if (BI_2e7d20(0x4C) >= scale_ticks(0x1E)) {
-        CameraResetBehindHero();
+        init_camera_system();
     }
     goto fin;
 clear:
@@ -3147,7 +3147,7 @@ typedef struct {
     short f84;
 } O842e83c0;
 /* Grants camera ARG1 the lock word (+0x220) of the current camera's state: 1 when it is free or already ARG1's, or
-   when ARG1's CameraInfo priority byte (gCameraDefsLvl row + 0x1C -> + 0x1C) beats the holder's; 0 when refused;
+   when ARG1's CameraInfo priority byte (camera_descriptors row + 0x1C -> + 0x1C) beats the holder's; 0 when refused;
    -1 while the current camera is not the hero camera (id at +0x86 nonzero). */
 int Cam_AcquireLock(int arg1) {
     void *a = D_L00_00166F00;
@@ -3166,7 +3166,7 @@ int Cam_AcquireLock(int arg1) {
     if (cur->f220 == arg1) {
         return 1;
     }
-    tab = (u32)gCameraDefsLvl;
+    tab = (u32)camera_descriptors;
     x = *(u8 *)(*(u32 *)(tab + ((O842e83c0 *)(u32)cur->f220)->f84 * 0x20 + 0x1C) + 0x1C);
     y = *(u8 *)(*(u32 *)(tab + ((O842e83c0 *)(u32)arg1)->f84 * 0x20 + 0x1C) + 0x1C);
     if (x < y) {
@@ -3239,7 +3239,7 @@ void func_L00_002E99F0(float value) {
         *(float *)(data + 0x1CC) = value;
     }
 }
-/* Sets the mode short at +0x10 of the hero camera's state buffer (read by FollowCamera_ClampDistance) while the
+/* Sets the mode short at +0x10 of the hero camera's state buffer (read by follow_camera_auto_turn) while the
    current camera's id is 0. */
 void func_L00_002E9A18(int value) {
     char *moby = D_L00_00166F00;
@@ -3267,7 +3267,7 @@ void func_L00_002E9AD0(void) {
     }
 }
 /* Sets the byte flag at +0x116 of the hero camera's state buffer while the current camera's id is 0. */
-void func_L00_002E9AF8(void) {
+void follow_camera_start_slide(void) {
     char *p = D_L00_00166F00;
     if (*(short *)(p + 0x86) == 0) {
         *(char *)(*(char **)(p + 0x70) + 0x116) = 1;
@@ -3293,7 +3293,7 @@ float Cam_SignedAngleBetweenOffsets(char *a0, float *a1, float lim) {
     float b1[4];
     float b2[4];
     float b3[4];
-    char *base = D_L00_00166F10;
+    char *base = camera_view;
     char *axis = base + 0x20;
     char *d = *(char **)(a0 + 0x70);
     char *q = d + 0x1A8;
@@ -3448,10 +3448,10 @@ extern short D_L00_00161D8C;
 extern short D_L00_00161D94;
 
 /* steers the hero heading and pitch towards a stick input. Adapted from Lombyte (MIT) for PAL: overlays/shared/gameplay_vendor_002df730.c, FUN_L00_002e8bb8. */
-void Cam_SteerHeadingFromStick(int mi, float a, float b) {
+void follow_camera_turn_and_pitch(int mi, float a, float b) {
     char *m = (char *)mi;
     char *d = *(char **)(m + 0x70);
-    char *g = D_L00_00166F10;
+    char *g = camera_view;
     char *va = d + 0x130;
     char *wa = d + 0x1A8;
     float sp[4];
@@ -3529,7 +3529,7 @@ extern void func_L00_001FF4B0(void *, void *, float);
    eye-to-target vector is turned by D_L00_0015F040 into the orbit vector, shortened to the maximum when longer and
    otherwise kept at least as long as the previous frame's reach; the slack is recorded at +0x30 of the +0x1D0 block.
    Only in modes (+0x10) above 0. */
-void FollowCamera_ClampDistance(int m) {
+void follow_camera_auto_turn(int m) {
     char *p = *(char **)(m + 0x70);
     char *r = p + 0x1D0;
     char *q = p + 0x130;
@@ -3563,14 +3563,14 @@ extern float func_L00_001EB6A8(void *, float, float, float, float, float);
    forward row from the target-to-eye direction with the camera up axis (D_L00_00166F30) projected off, eases the orbit
    and eye heights (+0x20 block), pitches by the smoothed look angle clamped to +-70 degrees, blends out the start-up
    timer at +0x20, and re-orthogonalises the right and up rows. */
-void func_L00_002EA4C0(int a_) {
+void follow_camera_build_view(int a_) {
     u8 *p = (u8 *)a_;
     u8 *q40, *q, *q2, *q20, *q130, *tb, *base, *p10, *p20, *w, *up;
     float r0, g2, g3, e2, h2;
     float g, r, d, e, t, x, h;
     float v0[4], v1[4], v2[4], v3[4], v4[4];
 
-    base = D_L00_00166F10;
+    base = camera_view;
     q = *(u8 **)(p + 0x70);
     q40 = q + 0x40;
     q20 = q + 0x20;
@@ -3662,8 +3662,8 @@ extern short D_L00_00161DC0;
 extern short D_L00_00161DE4;
 extern short D_L00_00161DE8;
 /* blends two output floats toward the level's targets while the slot is active */
-void func_L00_002EA9C8(char *m, float *o1, float *o2) {
-    char *g = D_L00_00166F10;
+void follow_camera_pull_back(char *m, float *o1, float *o2) {
+    char *g = camera_view;
     char *p = *(char **)(m + 0x70);
     char *h = p + 0x220;
     char *q = p + 0x130;
@@ -3706,7 +3706,7 @@ extern float func_L00_001EB6A8(void *, float, float, float, float, float);
 extern void func_002156E0(void *, void *, void *, float);
 
 /* Aims a camera rig at its target: updates yaw/pitch smoothing and clamps roll. */
-void Cam_AimAtTarget(int arg) {
+void follow_camera_orbit(int arg) {
     char *m = (char *)arg;
     char *d = *(char **)(m + 0x70);
     float t0[4];
@@ -3720,7 +3720,7 @@ void Cam_AimAtTarget(int arg) {
     float t8[4];
     float tb[4];
     float x, bc, e, e1, y, h, r, i, s, len;
-    char *base = D_L00_00166F10;
+    char *base = camera_view;
     char *up = base + 0x20;
     char *base2;
     char *fw;
@@ -3731,7 +3731,7 @@ void Cam_AimAtTarget(int arg) {
     x = *(float *)(p130 + 0x2C);
     x -= *(float *)(p1d0 + 0x30);
     bc = FastVecLength(p140);
-    func_L00_002EA9C8(m, &tb[0], &tb[1]);
+    follow_camera_pull_back(m, &tb[0], &tb[1]);
     bc = Cam_InterpValues(d + 0x158, bc, x, tb[0], tb[1], 0.0f);
     e1 = FastVecDot(p130, up);
     y = FastArcSin(e1 / x);
@@ -3749,7 +3749,7 @@ void Cam_AimAtTarget(int arg) {
     x = Camera_SmoothAngle(d + 0x150, 0.0f, r, *(float *)&D_L00_00161DC4, *(float *)&D_L00_00161DC8, 0.0f);
     FastVecCross(t4, t3, up);
     s = (FastVecDot(t4, t1) >= 0.0f) ? 1.0f : -1.0f;
-    base2 = D_L00_00166F10;
+    base2 = camera_view;
     fw = base2 + 0x30;
     build_look_at_matrix(t5, t3, up, x * s);
     FastVecCross(t4, up, t5);
@@ -3807,11 +3807,11 @@ extern void func_L00_002EA4C0(int);
 void FollowCameraBuildView(int a) {
     float v[2];
     func_L00_002EAF50(a);
-    FollowCamera_ClampDistance(a);
-    FollowCamera_ReadStickInput(a, &v[0], &v[1]);
-    Cam_SteerHeadingFromStick(a, v[0], v[1]);
-    func_L00_002E91D0(a);
-    Cam_AimAtTarget(a);
+    follow_camera_auto_turn(a);
+    follow_camera_read_stick(a, &v[0], &v[1]);
+    follow_camera_turn_and_pitch(a, v[0], v[1]);
+    follow_camera_avoid_mobies(a);
+    follow_camera_orbit(a);
     Cam_DebugDump(a);
-    func_L00_002EA4C0(a);
+    follow_camera_build_view(a);
 }

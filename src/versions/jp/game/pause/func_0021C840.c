@@ -1,4 +1,4 @@
-s32 func_0021C840(MenuScreen_C840 *grid) {
+s32 update_menu_grid_selection(MenuScreen_C840 *grid) {
     s32 column_count;
     s32 row_count;
     s32 cursor;

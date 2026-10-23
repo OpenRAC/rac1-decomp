@@ -1,4 +1,4 @@
-void func_L14_002FE038(Moby *m) {
+void OltanisJetUpdate(Moby *m) {
     Vec_2FE038 vt;
     Vec_2FE038 vb;
     Jet_2FE038 *d = (struct Jet_2FE038 *)m->pvars;

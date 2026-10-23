@@ -268,8 +268,8 @@ extern void func_002027C0(int);
 extern unsigned char D_L00_001803C0[];
 extern unsigned char D_L00_001805C0[];
 
-/* FreePointLight: detaches point light index and clears its slots. */
-void FreePointLight(int index)
+/* light_off_67e8: detaches point light index and clears its slots. */
+void light_off_67e8(int index)
 {
     DetachPointLight(index);
     FastMemZero16(D_L00_001803C0 + index * 0x20, 0x20);

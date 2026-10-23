@@ -18,7 +18,7 @@ extern short D_L08_00160280;
 unsigned char *SpawnEffectAtMoby(char *a)
 {
     float v[4];
-    unsigned char *m = func_00218928(0x27);
+    unsigned char *m = create_part(0x27);
     char *p;
     char *q;
     if (m != 0) {
@@ -48,7 +48,7 @@ unsigned char *func_L08_0027C218(int owner, void *pos, void *vec, short ticks,
                                  unsigned char r, unsigned char g, unsigned char b, unsigned char a,
                                  float size)
 {
-    unsigned char *m = func_00218928(0x2B);
+    unsigned char *m = create_part(0x2B);
     unsigned char *q;
     if (m != 0) {
         q = m + 0x20;
@@ -77,7 +77,7 @@ extern void qcopy(void *, void *);
 typedef int U128 __attribute__((mode(TI)));
 // Spawns a class 0x4D particle moby at a position.
 void SpawnParticleType4D(char *a, char *b, int c, float f) {
-    unsigned char *m = func_00218928(0x4D);
+    unsigned char *m = create_part(0x4D);
     char *q;
     int t;
     if (m != 0) {

@@ -15,13 +15,13 @@ int DrawGBsShipMenu__maybe(char *arg0) {
     {
         int k;
         for (k = 0; k < 4; k++) {
-            if (D_0014BFC0[D_001A01F0[0x89] * 4 + k] != 0) {
+            if (D_0014BFC0[level_map_selection[0x89] * 4 + k] != 0) {
                 count = count + 1;
             }
         }
     }
     func_00116248(buf, D_001603A8, func_001FE540_id(0x4F50), count,
-                  func_001FE540_id(0x4F54), D_001E0B88[D_001A01F0[0x89]]);
+                  func_001FE540_id(0x4F54), D_001E0B88[level_map_selection[0x89]]);
     func_001F6CF8_c(*(int *)(arg0 + 0x20) - 0x10, (D_0013E600[1] >> 1) - 8,
                     0x80000000L, buf, -1);
     func_001F6CF8_c(*(int *)(arg0 + 0x20) - 0x11, (D_0013E600[1] >> 1) - 9,

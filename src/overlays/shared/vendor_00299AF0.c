@@ -165,9 +165,9 @@ void Moby819Update(char *m) {
             if (g[0x20A4] == 2)
                 tp[2] = h + 2.0f;
             FastVecSub(diff, tp, p);
-            a = speed * speed - func_L00_001FF3E0(hv);
+            a = speed * speed - lensq_cc2e8(hv);
             b = (hv[0] * diff[0] + hv[1] * diff[1] + hv[2] * diff[2]) * -2.0f;
-            s = func_001F9B50(b * b - a * 4.0f * -func_L00_001FF3E0(diff));
+            s = func_001F9B50(b * b - a * 4.0f * -lensq_cc2e8(diff));
             r1 = (-b + s) / (a + a);
             r2 = (-b - s) / (a + a);
             if (r1 > 0.0f && r2 > 0.0f) {
@@ -215,7 +215,7 @@ void Moby819Update(char *m) {
             d->passed = 1;
         d->dist = dist;
         if (func_L00_001EFFF0(p, pos0, 0x10, d->owner, 0)) {
-            tb = D_L10_00174340;
+            tb = ground_hit;
             if (*(int *)(tb + 0x18) != d->owner) {
                 if (*(int *)(tb + 0x18) != 0) {
                     func_L00_001FF500(diff, d, 1.0f);
@@ -501,7 +501,7 @@ void func_L10_002F6F18(char *cam) {
     *(int *)(q + 0xC) = 0;
     *(int *)(q + 0x10) = 0;
     *(short *)(q + 0x14) = 0;
-    *(short *)(q + 0x16) = func_001F9850(*(short *)(m + 0x3A));
+    *(short *)(q + 0x16) = scale_ticks(*(short *)(m + 0x3A));
 
     tb = *(char **)(cam + 0x70) + 0x58;
     fb = *(char **)(cam + 0x70) + 0x68;
@@ -536,7 +536,7 @@ void func_L10_002F6F18(char *cam) {
                     n++;
                 }
                 k = (i + 1) % *(int *)list;
-                d = func_001F9D10(list + (i * 16 + 0x10), list + (k * 16 + 0x10));
+                d = FastVecDist(list + (i * 16 + 0x10), list + (k * 16 + 0x10));
                 *(float *)(list + (i << 4) + 0x1C) = d;
                 if (i < *(int *)list - 1) {
                     *(float *)(q + 0x8) = *(float *)(q + 0x8) + d;
@@ -546,7 +546,7 @@ void func_L10_002F6F18(char *cam) {
     }
 
     if (*(short *)(m + 0x3A) > 0) {
-        *(float *)(m + 0x3C) = *(float *)(q + 0x8) / func_001FA888(func_001F9850(*(short *)(m + 0x3A))) * 60.0f;
+        *(float *)(m + 0x3C) = *(float *)(q + 0x8) / IntToFloat(scale_ticks(*(short *)(m + 0x3A))) * 60.0f;
     }
 
     idx = *(int *)(m + 0x24);
@@ -557,7 +557,7 @@ void func_L10_002F6F18(char *cam) {
             for (i2 = 0; i2 < *(int *)list2; i2++) {
                 off2 = i2 * 16;
                 k2 = (i2 + 1) % *(int *)list2;
-                d = func_001F9D10(list2 + (off2 + 0x10), list2 + (k2 * 16 + 0x10));
+                d = FastVecDist(list2 + (off2 + 0x10), list2 + (k2 * 16 + 0x10));
                 *(float *)(list2 + off2 + 0x1C) = d;
                 if (i2 < *(int *)list2 - 1) {
                     *(float *)(q + 0xC) = *(float *)(q + 0xC) + d;
@@ -569,11 +569,11 @@ void func_L10_002F6F18(char *cam) {
     p = *(char **)(cam + 0x70);
     *(float *)(p + 0x0) = 0.03f;
     *(float *)(p + 0x4) = 0.2f;
-    func_001F9BC0(p + 0x10);
+    clear_u64_value(p + 0x10);
     p = *(char **)(cam + 0x70);
     *(float *)(p + 0x20) = 0.03f;
     *(float *)(p + 0x24) = 0.2f;
-    func_001F9BC0(p + 0x30);
+    clear_u64_value(p + 0x30);
 
     base = D_L10_00167180;
     src = *(char **)(base + 0x184);
@@ -583,7 +583,7 @@ void func_L10_002F6F18(char *cam) {
     qcopy(c20, src + 0x20);
 
     if (*(int *)(m + 0x4C) == 0) {
-        func_L00_00222B80(0x72, 1);
+        HeroEnterMoveState(0x72, 1);
     }
 }
 extern char *D_L10_0015F050 MACRO_ADDR;

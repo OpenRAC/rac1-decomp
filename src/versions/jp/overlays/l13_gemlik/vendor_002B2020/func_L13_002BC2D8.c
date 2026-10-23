@@ -60,9 +60,9 @@ void JetFighterUpdateL13(Jet47 *m) {
         if (!initialized) __builtin_memcpy(D_L13_001CC0F0,palette,1024);
         jet_palette_ready47=1; d->wait_timer=1; d->energy=1;
         if (m->persistent!=0xFF && (D_0014171B+0xAA35)[m->persistent+(D_0015EE84<<4)]==0xFF) m->state=9;
-        if (d->group_a>0) SetGroupMobyFlags(d->group_a,0,0,0);
-        if (d->group_b>0) SetGroupMobyFlags(d->group_b,0,0,0);
-        SetMobyFlagsByClassList(D_L13_001CC068,1,1,-1); SetMobyFlagsByClassList(&D_L13_001614D0,1,-1,-1); SetStateOfMobysByClass(0x102,0);
+        if (d->group_a>0) jet_group_state(d->group_a,0,0,0);
+        if (d->group_b>0) jet_group_state(d->group_b,0,0,0);
+        jet_group_switch(D_L13_001CC068,1,1,-1); jet_group_switch(&D_L13_001614D0,1,-1,-1); jet_group_flag(0x102,0);
         d->lock_index=-1; d->start_timer=scale_ticks(575);
         break;
     }
@@ -70,7 +70,7 @@ void JetFighterUpdateL13(Jet47 *m) {
         short enter=0;
         if (m->persistent!=0xFF && (D_0014171B+0xAA35)[m->persistent+(D_0015EE84<<4)]==0xFF) m->state=9;
         else if (d->trigger!=-1 && is_point_inside_clip_volume(D_0013E633+0xE9D,d->trigger)) { d->blend=0.99f; D_L13_0015F4FC=0.99f; enter=1; }
-        else if (func_L00_00251468(m,((JetPlayer47*)(D_0013E633+0xE1D))->moby)<2.0f && ((JetPlayer47*)(D_0013E633+0xE1D))->state!=50 && ((JetPlayer47*)(D_0013E633+0xE1D))->state!=29 && !((JetPlayer47*)(D_0013E633+0xE1D))->busy) {
+        else if (jet_distance(m,((JetPlayer47*)(D_0013E633+0xE1D))->moby)<2.0f && ((JetPlayer47*)(D_0013E633+0xE1D))->state!=50 && ((JetPlayer47*)(D_0013E633+0xE1D))->state!=29 && !((JetPlayer47*)(D_0013E633+0xE1D))->busy) {
             int pressed=try_set_help_message(7,0x543B)!=0;
             if (*(int*)(D_0013A5E0+0x2604)&0x10) enter=pressed;
         }
@@ -82,7 +82,7 @@ void JetFighterUpdateL13(Jet47 *m) {
             d->counterC0=0; d->hit_class=0; *(float*)((char*)d+0xAC)=limit; *(float*)((char*)d+0xB0)=limit;
             qcopy(d->angles,m->rotation); d->wait_timer=1; d->energy=1; m->state=2; d->lock_index=-1;
         } else if (d->blend!=0.0f) { ApproachValue(&d->blend,0.0f,D_0015EE6C*4.0f); D_L13_0015F4FC=d->blend; }
-        RecordMobyShadow((unsigned char*)m,1.5f);
+        jet_animate((unsigned char*)m,1.5f);
         break;
     }
     case 2:
@@ -103,12 +103,12 @@ void JetFighterUpdateL13(Jet47 *m) {
             qcopy(d->previous_rotation,m->rotation);
             d->angle_a=0; d->angle_b=0; d->angle_c=0; d->angle_d=0; d->angle_e=0; d->angle_f=0; ((JetPlayer47*)(D_0013E633+0xE1D))->craft=m; { unsigned short cls=m->class_id; ((JetPlayer47*)(D_0013E633+0xE1D))->health=255.0f; ((JetPlayer47*)(D_0013E633+0xE1D))->ammo=10; ((JetPlayer47*)(D_0013E633+0xE1D))->pad160E=1; ((JetPlayer47*)(D_0013E633+0xE1D))->ammo2=20; ((JetPlayer47*)(D_0013E633+0xE1D))->class_id=cls; ((JetPlayer47*)(D_0013E633+0xE1D))->ammo3=20; d->hud_previous=255; d->hud_health=0; ((JetPlayer47*)(D_0013E633+0xE1D))->ammo4=3; ((JetPlayer47*)(D_0013E633+0xE1D))->ammo5=3; ((JetPlayer47*)(D_0013E633+0xE1D))->ammo6=3; ((JetPlayer47*)(D_0013E633+0xE1D))->pad160F=0; ((JetPlayer47*)(D_0013E633+0xE1D))->max_health=256.0f; ((JetPlayer47*)(D_0013E633+0xE1D))->health_scale=100.0f; }
             BuildSphericalOffset(d,D_0015EE60*0.1f,d->angles[2],-d->angles[1]);
-            if (d->group_a>0) SetGroupMobyFlags(d->group_a,1,1,1);
-            if (d->group_b>0) SetGroupMobyFlags(d->group_b,1,1,1);
-            SetMobyFlagsByClassList(D_L13_001CC068,0,0,-1); SetMobyFlagsByClassList(&D_L13_001614D0,0,-1,-1); SetStateOfMobysByClass(0x102,0);
+            if (d->group_a>0) jet_group_state(d->group_a,1,1,1);
+            if (d->group_b>0) jet_group_state(d->group_b,1,1,1);
+            jet_group_switch(D_L13_001CC068,0,0,-1); jet_group_switch(&D_L13_001614D0,0,-1,-1); jet_group_flag(0x102,0);
             m->position[2]+=3.0f; m->scale=m->model->scale*0.25f; ((JetPlayer47*)(D_0013E633+0xE1D))->in_craft=1;
             if (d->engine_sound==-1) d->engine_sound=Moby_PlaySound(0,4,(int)m);
-            D_L13_0015F6E8=2; PlayerFighterFlight(m,d); HelpPopup_RequestDismiss(); MusicRequestTrack(2,4); m->state=4;
+            D_L13_0015F6E8=2; PlayerFighterFlight(m,d); jet_camera_mode(); MusicRequestTrack(2,4); m->state=4;
         }
         break;
     case 4: {
@@ -127,9 +127,9 @@ void JetFighterUpdateL13(Jet47 *m) {
         HeroEnterMoveState(0,1); CameraScript2(0); Hud_SetBarValueById(((JetPlayer47*)(D_0013E633+0xE1D))->weapon,0);
         qcopy(m->position,d->spawn_position); qcopy(m->rotation,d->spawn_rotation);
         m->scale=m->model->scale; func_0020EEE8(m);
-        if (d->group_a>0) SetGroupMobyFlags(d->group_a,0,0,0);
-        if (d->group_b>0) SetGroupMobyFlags(d->group_b,0,0,0);
-        SetMobyFlagsByClassList(D_L13_001CC068,1,1,-1); SetMobyFlagsByClassList(&D_L13_001614D0,1,-1,-1); SetStateOfMobysByClass(0x102,0);
+        if (d->group_a>0) jet_group_state(d->group_a,0,0,0);
+        if (d->group_b>0) jet_group_state(d->group_b,0,0,0);
+        jet_group_switch(D_L13_001CC068,1,1,-1); jet_group_switch(&D_L13_001614D0,1,-1,-1); jet_group_flag(0x102,0);
         if (d->exit_path!=-1) { JetPath47 *path=&D_L13_0016016C[d->exit_path]; Hero_ResetToPosition(path->position,path->rotation,0,1); }
         else Hero_ResetToPosition(d->spawn_position,D_L13_0016016C[d->destination_path].rotation,0,1);
         {
@@ -188,12 +188,12 @@ void JetFighterUpdateL13(Jet47 *m) {
         if (d->destination_path==-1) STUB_printf(D_L13_001F4798);
         else {
             JetPath47 *path;
-            if (d->group_a>0) SetGroupMobyFlags(d->group_a,0,0,0);
-            if (d->group_b>0) SetGroupMobyFlags(d->group_b,0,0,0);
-            SetMobyFlagsByClassList(D_L13_001CC068,1,1,-1); SetMobyFlagsByClassList(&D_L13_001614D0,1,-1,-1); SetStateOfMobysByClass(0x102,0);
+            if (d->group_a>0) jet_group_state(d->group_a,0,0,0);
+            if (d->group_b>0) jet_group_state(d->group_b,0,0,0);
+            jet_group_switch(D_L13_001CC068,1,1,-1); jet_group_switch(&D_L13_001614D0,1,-1,-1); jet_group_flag(0x102,0);
             path=&D_L13_0016016C[d->destination_path]; Hero_ResetToPosition(path->position,path->rotation,0,1);
         }
-        if (m->persistent!=0xFF) SetLevelTriggerDone(m->persistent);
+        if (m->persistent!=0xFF) jet_clear_persistent(m->persistent);
         {
             int id=d->engine_sound;
             unsigned char *audio;
@@ -203,7 +203,7 @@ void JetFighterUpdateL13(Jet47 *m) {
             if (id!=-1) { audio=D_0013E633+0x1D+id*0x70; if (*(Jet47**)(audio+0x88)==m && audio[0x74]) Sound_StopSlot(id); }
             d->weapon_sound=-1;
         }
-        PauseMenu_SeedSnapshot(D_0013E633+0xE9D,D_0013E633+0xEAD); m->state=9;
+        jet_reset_camera(D_0013E633+0xE9D,D_0013E633+0xEAD); m->state=9;
         break;
     case 9: DeleteMoby(m); return;
     case 10: break;

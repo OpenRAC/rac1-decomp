@@ -63,12 +63,12 @@ void HeroMoveStateVelocity(void) {
         } else {
             D_0013F450_s.target_speed = D_0015EE6C * 3.5f;
         }
-        Hero_ApproachSpeed(D_0015EE70 * 44.0f, D_0015EE70 * 45.0f);
+        speed_step(D_0015EE70 * 44.0f, D_0015EE70 * 45.0f);
         HeroScalePointXY(D_0013F450_s.motion.velocity.f, D_0013F450_s.motion.velocity.f, 0.0f);
         HeroMoveAlongHeading(&D_0013F450_s.motion.velocity, &D_0013F450_s.motion.velocity, D_0013F450_s.ground_speed);
     } else if (state == 0x1C) {
         if (scale_ticks(0x28) < D_0013F450_s.state_timer) {
-            Hero_TurnToHeading(0, D_0015EE64 * 0.04f, D_0015EE64 * 0.2f, D_0015EE6C * 15.009831f);
+            turn_to(0, D_0015EE64 * 0.04f, D_0015EE64 * 0.2f, D_0015EE6C * 15.009831f);
             func_L00_00214520(D_0015EE70 * 20.0f);
         }
         if (13.0f <= D_0013F450_s.anim_frame && D_0013F450_s.anim_frame <= 30.0f) {
@@ -91,11 +91,11 @@ void HeroMoveStateVelocity(void) {
         D_0013F450_s.motion.velocity.f[0] = FastCos(D_0013F450_s.motion.rot.f[2]) * D_0013F450_s.unk45C;
         D_0013F450_s.motion.velocity.f[1] = FastSin(D_0013F450_s.motion.rot.f[2]) * D_0013F450_s.unk45C;
     } else if (state == 11 || state == 12) {
-        if (D_0015EE84 != 0xE && Hero_GetSlotModuleId(3) == 3 && D_0013F450_s.state_timer == scale_ticks(5)) {
+        if (D_0015EE84 != 0xE && hero_slot_item_id(3) == 3 && D_0013F450_s.state_timer == scale_ticks(5)) {
             Hero_PlayActiveSound(1, 0);
         }
         D_0013F450_s.motion.move_yaw = D_0013F450_s.unk43C;
-        Hero_TurnToHeading(0, D_0015EE64 * 0.04f, D_0015EE64 * 0.2f, D_0015EE6C * 6.981317f);
+        turn_to(0, D_0015EE64 * 0.04f, D_0015EE64 * 0.2f, D_0015EE6C * 6.981317f);
         if (D_0013F450_s.unk450 != 3) {
             D_0013F450_s.ground_speed = D_0013F450_s.unk454;
         } else {
@@ -119,7 +119,7 @@ void HeroMoveStateVelocity(void) {
         D_0013F450_s.motion.move_yaw = D_0013F450_s.unk470.f[3];
         qcopy(&D_0013F450_s.motion.unk170, &D_0013F450_s.unk470);
         if (scale_ticks(9) < D_0013F450_s.state_timer) {
-            Hero_TurnToHeading(-1, D_0015EE64 * 0.042f, D_0015EE64 * 0.2f, D_0015EE6C * 11.868238f);
+            turn_to(-1, D_0015EE64 * 0.042f, D_0015EE64 * 0.2f, D_0015EE6C * 11.868238f);
         }
         if (scale_ticks(9) <= D_0013F450_s.state_timer) {
             if (D_0013F450_s.unk308 == 0) {
@@ -139,7 +139,7 @@ void HeroMoveStateVelocity(void) {
             a = FastSubRots(x, D_0013F450_s.motion.rot.f[2]);
             PlaceRelativeToCameraSimple(0.0f, 0.0f, a);
         } else {
-            Hero_TurnToHeading(0, D_0015EE64 * 0.04f, D_0015EE64 * 0.2f, D_0013F450_s.unk414);
+            turn_to(0, D_0015EE64 * 0.04f, D_0015EE64 * 0.2f, D_0013F450_s.unk414);
         }
         Hero_ComputeMoveOffset(0.7f, D_0015EE6C * 0.0f);
         qcopy(&D_0013F450_s.motion.unk150, &D_0013F450_s.move_impulse);
@@ -162,7 +162,7 @@ void HeroMoveStateVelocity(void) {
         if (D_0013F450_s.unk4A8 && D_0013F450_s.unk12E2) {
             arg = D_0015EE70 * 0.17f;
             if (D_0013F450_s.state.current == 15) {
-                Hero_SetHeadingFromStick(0, D_0015EE6C * 2.5f);
+                stick_target(0, D_0015EE6C * 2.5f);
                 arg = D_0015EE70 * 3.0f;
             }
             if (0.2617994f < D_0013F450_s.ground_slope.f) {
@@ -186,7 +186,7 @@ void CameraTrackNearestTarget(float a, float b, float c) {
     if (*(int *)(g + 0xA58) == 0) {
         d = *(float *)(g + 0x98);
         if (*(float *)(g + 0x229C) > 0.5f) {
-            Hero_SetHeadingFromStick(0, 1.0f);
+            stick_target(0, 1.0f);
             d = *(float *)(g + 0x180);
             *(int *)(g + 0xA58) = 1;
             *(int *)(g + 0xA54) = 0;
@@ -419,7 +419,7 @@ void CameraLeanFromPad(void) {
         t = t * FastAbsF(t) * 1.25f;
         h = D_0013E633 + 0xE1D;
         r = *(float *)(h + 0x164) / (D_0015EE6C * 3.0f);
-        x = D_L00_0017A780;
+        x = lean_state;
         n = -t;
         XF(0x1240) = n * 0.3f;
         if (1.0f < r) r = 1.0f;
@@ -435,19 +435,19 @@ void CameraLeanFromPad(void) {
         t = PF(0x188) * 1.6f;
         if (1.25f < t) t = 1.25f;
         else if (t < -1.25f) t = -1.25f;
-        x2 = D_L00_0017A780;
+        x2 = lean_state;
         a = -t * 0.52f;
         X2(0x1240) = a;
         if (0.28f < a) X2(0x1240) = 0.28f;
         else if (a < -0.28f) X2(0x1240) = -0.28f;
-        x2b = D_L00_0017A780;
+        x2b = lean_state;
         b = t * 1.7f;
         X2B(0x1198) = b;
         X2B(0x10E8) = t * 0.58f;
         if (0.7f < b) X2B(0x1198) = 0.7f;
         else if (b < -0.7f) X2B(0x1198) = -0.7f;
         d = FastAbsF(t) * 0.2f;
-        x2c = D_L00_0017A780;
+        x2c = lean_state;
         X2C(0x1194) = d;
         c = 0.2f;
         if (c < d) goto st94;
@@ -457,7 +457,7 @@ st94:
             X2C(0x1194) = c;
         }
         d = FastAbsF(t) * 0.16f;
-        x2d = D_L00_0017A780;
+        x2d = lean_state;
         X2D(0x1190) = d;
         return;
     }
@@ -466,7 +466,7 @@ st94:
         u = PF(0x188);
         if (1.4f < u) u = 1.4f;
         else if (u < -1.4f) u = -1.4f;
-        x3 = D_L00_0017A780;
+        x3 = lean_state;
         X3(0x10E8) = u * 0.29f;
         X3(0x1198) = u * 0.87f;
     }
@@ -612,8 +612,8 @@ void CameraLookAtMatrix(V_c *v, M_c *m, void *p, float a, float b, float c) {
     r.f[1] = 0.0f;
     func_L00_001FFA40(&m1, &r);
     sce_vu0_mul_matrix(m, &m1, m);
-    if (p) MatrixToEuler(m, p);
-    else MatrixToEuler(m, D_0013E633 + 0xEAD);
+    if (p) matrix_to_euler(m, p);
+    else matrix_to_euler(m, D_0013E633 + 0xEAD);
 }
 typedef int U128 __attribute__((mode(TI)));
 extern float D_0015EE64 MACRO_ADDR;
@@ -698,11 +698,11 @@ extern void func_001F9BC0(void *);
 // Bleeds off the hero's momentum vector by amount a, clearing it when it is tiny.
 void Hero_DecayMomentum(float a) {
     float *v = (float *)(D_0013E633 + 0xF6D);
-    float s = ViewXyLength(v);
+    float s = gravity_length_xy(v);
     if (s > 0.001f) {
         float z = 0.0f;
         float d;
-        HeroPlacePointZ(v, v, z);
+        gravity_set_z(v, v, z);
         d = s - a;
         if (d < z) d = z;
         HeroScalePointXY(v, v, d);
@@ -776,9 +776,9 @@ void Hero_ApplyStickVelocity(void) {
     G_167d0 *g;
     f32 f20, f21, f22, a, b, c, d, e, h, k;
 
-    Hero_SetHeadingFromStick(0, 1.0f);
+    stick_target(0, 1.0f);
     f20 = 0.2f;
-    Hero_TurnToHeading(0, D_0015EE64 * 0.02f, D_0015EE64 * f20, D_0015EE6C * 3.66519141f);
+    turn_to(0, D_0015EE64 * 0.02f, D_0015EE64 * f20, D_0015EE6C * 3.66519141f);
     if (D_0013F450_16F58.i2084 == 0x13) {
         if (D_0013F450_16F58.f229C < f20) {
             D_0013F450_16F58.f180 = D_0013F450_16F58.f98;
@@ -908,7 +908,7 @@ typedef struct { char pad[0x2218]; int a[8]; int b[8]; } G;
 extern G D_0013F450 NOT_SDA;
 
 /* Per-slot sound start. */
-void Hero_StartSlotSound(int idx, int a, int b) {
+void release_voice_slot_cf(int idx, int a, int b) {
     G *g = &D_0013F450;
     if (g->a[idx] == -1) {
         g->a[idx] = Moby_PlaySound(b, 4, a);
@@ -997,7 +997,7 @@ void Hero_ResetToPosition(void *a, void *b, int c, int d) {
     if (*(int *)(q + 0x208C) == 0x11) D_L00_00167114 = 1;
     else D_L00_00167114 = 0;
     Hero_UpdateGroundCollision();
-    if (d) CameraResetBehindHero();
+    if (d) init_camera_system();
     EnvNearestSamplePoint(*(int *)(D_0013E633 + 0x2E9D));
 }
 typedef struct {
@@ -1205,8 +1205,8 @@ void LaunchGadgetMoby(void) {
             }
         }
         if (!has_target) {
-            D_0013F450_15A90.aim_yaw = gCameraLvl[0x158 / 4];
-            D_0013F450_15A90.aim_pitch = FastAddRots(-gCameraLvl[0x154 / 4], 0.12217305f);
+            D_0013F450_15A90.aim_yaw = player_camera[0x158 / 4];
+            D_0013F450_15A90.aim_pitch = FastAddRots(-player_camera[0x154 / 4], 0.12217305f);
         }
     }
     item = D_0013F450_15A90.items[0].moby;
@@ -1231,16 +1231,16 @@ void LaunchGadgetMoby(void) {
     clear_u64_value(dir);
     func_001FA1F8(mat, dir);
     if (aimed) {
-        dir[0] = gCameraLvl[0x150 / 4];
-        dir[1] = gCameraLvl[0x154 / 4];
-        dir[2] = gCameraLvl[0x158 / 4];
+        dir[0] = player_camera[0x150 / 4];
+        dir[1] = player_camera[0x154 / 4];
+        dir[2] = player_camera[0x158 / 4];
         func_001FA1F8(cam_mat, dir);
         func_001FA4F0(mat, cam_mat, mat);
     } else {
         func_001FA4F0(mat, &D_0013F450_15A90.moby->rot_row0, mat);
     }
     func_001FA460(out_mat, mat);
-    MatrixToEuler(out_mat, &item->rot);
+    matrix_to_euler(out_mat, &item->rot);
     pv->unk64 = 0;
     pv->unk60 = D_0015EE6C * 23.0f;
     Manipulator_StartIfIdle(item, D_00140C00);

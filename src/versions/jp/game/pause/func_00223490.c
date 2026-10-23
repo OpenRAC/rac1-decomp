@@ -1,6 +1,6 @@
-int TimedTextSequence_Update(char *arg0) {
+int update_timed_menu_sequence(char *arg0) {
     char *pad = D_0013CA40;
-    char *g = D_001D5F70;
+    char *g = menu_system;
     int fast = (*(long *)(pad + 0x1A0) & 0xF) == 0xF;
     int x;
 
@@ -13,7 +13,7 @@ int TimedTextSequence_Update(char *arg0) {
         {
             char *pad2 = D_0013CA40;
             if (*(int *)(pad2 + 0x1C4) & 0x10) {
-                char *g2 = D_001D5F70;
+                char *g2 = menu_system;
                 int t = *(int *)(*(char **)(g2 + 4) + 0x38);
                 if (t != 0) {
                     *(int *)(g2 + 8) = t;
@@ -152,7 +152,7 @@ int TimedTextSequence_Update(char *arg0) {
             return 0;
         }
         {
-            char *g3 = D_001D5F70;
+            char *g3 = menu_system;
             if (*(int *)(g3 + 0xDC) != 0) {
                 return 1;
             }

@@ -48,7 +48,7 @@ void ParentFollowFadeUpdate(char *moby) {
     qcopy(moby + 0x10, *(char **)(*(char **)p + 0x78) + 0xF0);
     v = *(float *)(p + 0x10) + *(float *)(p + 0x14);
     *(float *)(p + 0x10) = v;
-    AddSphericalOffset(moby + 0x10, moby + 0x10, -v, *(float *)(moby + 0x48), *(float *)(moby + 0x44));
+    fast_add_rotations_cf(moby + 0x10, moby + 0x10, -v, *(float *)(moby + 0x48), *(float *)(moby + 0x44));
     *(float *)(moby + 0x40) = FastAddRots(*(float *)(moby + 0x40), D_0015EE6C * 5.235987663269043f);
     ratio = IntToFloat(*(short *)(p + 0xE));
     ratio = ratio / IntToFloat(*(short *)(p + 0xC));
@@ -276,7 +276,7 @@ void ChildSpawnerUpdate(Moby *moby) {
     if (moby == 0) return;
     d = (Data_2C0330 *)moby->pvars;
     if (moby->visible != 0 && FastVecDist(&moby->pos, D_L03_00166F40) < 28.0f) {
-        SetGroundHeightBand(moby);
+        func_L00_0025B178(moby);
         moby->shadow_range = 0x16;
     }
     if (d == 0) return;
@@ -432,7 +432,7 @@ void ChildSpawnerUpdate(Moby *moby) {
             case 0: {
                 float ang;
                 float rad;
-                ang = WrapAngle(IntToFloat(d->count) * 2.0f * 3.1415927f / IntToFloat(d->max + 1) - 3.1415927f);
+                ang = normalize_angle(IntToFloat(d->count) * 2.0f * 3.1415927f / IntToFloat(d->max + 1) - 3.1415927f);
                 rad = func_001F9D48(&moby->pos, D_0013E633 + 0xE9D) * 0.5f;
                 if (d->b83 & 8) {
                     rad = random_float_between(rad, 3.0f);
@@ -561,7 +561,7 @@ void ChildSpawnerUpdate(Moby *moby) {
                 func_L00_001FF4B0(&v60, &v40, 0.05f);
                 JitterVector((float *)&v60, 0.025f);
                 func_L00_001FF240(&v70, &v60, &v30);
-                v40.z = ComputeLaunchVelocityZ(&v60, &v50, 0, speed, -(d->fDC * D_0015EE70));
+                v40.z = jump_speed_4318(&v60, &v50, 0, speed, -(d->fDC * D_0015EE70));
                 m = SpawnMoby545((char *)moby, (float *)&v60, (float *)&v40, d->h8C, d->b83);
                 if (m != 0) {
                     *(unsigned char *)(m + 0x30) = 0xFF;
@@ -725,8 +725,8 @@ void Moby545Update(char *moby)
                 }
             }
             if (FastDecTimer(d + 0x14)) ((unsigned char *)moby)[0x20] = 2;
-            ((Moby *)moby)->rot.x = WrapAngle(*(float *)(d + 0x0));
-            ((Moby *)moby)->rot.y = WrapAngle(*(float *)(d + 0x4));
+            ((Moby *)moby)->rot.x = normalize_angle(*(float *)(d + 0x0));
+            ((Moby *)moby)->rot.y = normalize_angle(*(float *)(d + 0x4));
             ((Moby *)moby)->collision_disable = sv0;
             (*(Moby **)(d + 0x10))->collision_disable = sv1;
             ((Moby *)moby)->collision = sv2;
@@ -767,7 +767,7 @@ void Moby545Update(char *moby)
             }
     }
     }
-    RecordMobyShadow((unsigned char *)moby, *(float *)(moby + 0x2C) * 0.3f / *(float *)(*(char **)(moby + 0x24) + 0x24));
+    jet_animate((unsigned char *)moby, *(float *)(moby + 0x2C) * 0.3f / *(float *)(*(char **)(moby + 0x24) + 0x24));
     if (*(float *)(moby + 0x18) < 5.0f || 500.0f < *(float *)(moby + 0x18)) {
         DeleteMoby(moby);
         return;
@@ -1217,7 +1217,7 @@ void Moby_UpdateHitHealth(char *m) {
 extern float D_L03_0015F660[] MACRO_ADDR;
 extern void func_L01_00279790(void *);
 extern void func_L00_00265050(void *, int, void *, void *, int, int, float, void *, void *, void *);
-void Moby817Update(unsigned char *m) {
+void statue_update(unsigned char *m) {
     int flag = 0;
     float z;
     char *p, *pos, *vel;
@@ -1519,7 +1519,7 @@ typedef u32 u128 __attribute__((mode(TI), aligned(16)));
 extern struct Hero D_0013F450;
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/00291918.c, FUN_L03_002dc310. */
-void Moby_DeleteSelf(char *m) {
+void fred_1_update(char *m) {
     float v[12]; /* unused; sets the frame size */
     FastVecDist(m + 0x10, D_0013F450.motion.pos.f);
     FastDiffRots(func_L00_001FF860(D_0013F450.motion.pos.f[0] - *(float *)(m + 0x10),
@@ -1542,7 +1542,7 @@ extern float D_0015EE64 MACRO_ADDR;
 extern Moby *D_L03_00160058_2DD840 __asm__("D_L03_00160058") MACRO_ADDR;
 
 /* Qwark watch update: aims at the player, turns the target and sets the body and head poses. */
-void QwarkWatchUpdate(char *m)
+void qwark_rilgar_update(char *m)
 {
     char *d;
     char *p;
@@ -1558,7 +1558,7 @@ void QwarkWatchUpdate(char *m)
     func_L01_002FC890_m(m);
     if (*(unsigned char *)(m + 0x31) != 0) {
         if (func_001F9D10_1edff8(m + 0x10, D_L03_00166F40) < 30.0f) {
-            SetGroundHeightBand(m);
+            func_L00_0025B178(m);
             *(unsigned char *)(m + 0x7F) = 0x18;
         }
     }
@@ -1678,7 +1678,7 @@ void RiseWhenCollectedUpdate(struct Moby *m)
         id = m->save_id;
         idx = id;
         if (D_L03_001BB640.collected[idx] == 0) {
-            if (!((D_0014C290[D_0015EE84][idx >> 5] >> (id & 0x1F)) & 1))
+            if (!((level_moby_killed[D_0015EE84][idx >> 5] >> (id & 0x1F)) & 1))
                 return;
         }
         m->state = 1;
@@ -1747,7 +1747,7 @@ void Camera_InitFromEntry(char *cam) {
     ent = (char *)D_L03_0015F050 + (idx << 5);
     p = *(char **)(ent + 0x1C);
     if (idx < 0) {
-        func_001F9978();
+        raise_kernel_trap();
     } else {
         a->x4C = *(float *)(p + 0x18);
     }

@@ -141,7 +141,7 @@ void func_L00_00200598(int display_width, int display_height, int storage_width,
                    int display_offset_x, int display_offset_y) {
     unsigned long *q;
 
-    D_0015EFB8 = &D_00151880;
+    active_fs_aa_buffer = &D_00151880;
     D_00151880.display_width = display_width;
     D_00151880.display_height = display_height;
     D_00151880.storage_width = storage_width;
@@ -179,7 +179,7 @@ void func_L00_00200598(int display_width, int display_height, int storage_width,
     FA->giftag1.NREG = 1;
     FA->giftag1.REGS0 = 0xE;
 
-    q = (unsigned long *)D_00151C60;
+    q = (unsigned long *)fs_aa_transfer_packet;
     q[0] = 0x408B400000000001UL;
     q[1] = 0xEEEE;
     q[2] = 0x30000;
@@ -212,7 +212,7 @@ void func_L00_00200598(int display_width, int display_height, int storage_width,
     q[80] = 0x6FF8 | ((long)(0x7FF8 - FA->storage_height * 8) << 16);
     q[81] = 0x6FF8 | ((long)(FA->storage_height * 8 + 0x7FF8) << 16);
 
-    q = (unsigned long *)D_00151EF0;
+    q = (unsigned long *)fs_aa_resample_packet;
     q[0] = 0x308B400000000001UL;
     q[1] = 0xEEE;
     q[2] = 0x30000;
@@ -235,7 +235,7 @@ void func_L00_00200598(int display_width, int display_height, int storage_width,
         }
     }
 
-    q = (unsigned long *)D_00151A00;
+    q = (unsigned long *)fs_aa_draw_packet;
     q[0] = 0x408B400000000001UL;
     q[1] = 0xEEEE;
     q[2] = 0x30000;
@@ -260,7 +260,7 @@ void func_L00_00200598(int display_width, int display_height, int storage_width,
         }
     }
 
-    q = (unsigned long *)D_00152140;
+    q = (unsigned long *)fs_aa_clear_packet;
     q[0] = 0x1000000000000001UL;
     q[1] = 0xE;
     q[2] = 0x30000;
@@ -280,7 +280,7 @@ void func_L00_00200598(int display_width, int display_height, int storage_width,
         }
     }
 
-    q = (unsigned long *)D_0013CD90;
+    q = (unsigned long *)first_clear_packet;
     {
         unsigned long *p = q + 8;
         int i;
@@ -290,7 +290,7 @@ void func_L00_00200598(int display_width, int display_height, int storage_width,
         }
     }
 
-    q = (unsigned long *)D_0013CED0;
+    q = (unsigned long *)second_clear_packet;
     {
         unsigned long *p = q + 8;
         int i;

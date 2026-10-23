@@ -1,4 +1,4 @@
-void func_0023A220(char *unused, int x, int y) {
+void render_vendor_buy_label_pass(char *unused, int x, int y) {
     char sp[0x18];
     VendorA *v;
     int idx;
@@ -6,7 +6,7 @@ void func_0023A220(char *unused, int x, int y) {
     int price;
     int sz = 0x18;
 
-    func_001FBAB8(0, 0, 0x200, 0x80, 0x200, 0x80, 0);
+    draw_framebuffer_rect(0, 0, 0x200, 0x80, 0x200, 0x80, 0);
     ((void *(*)(void *, int, int))func_001153FC)(sp, 0, 0x18);
     *(short *)(sp + 0x2) = y;
     *(short *)(sp + 0x6) = x;
@@ -14,30 +14,30 @@ void func_0023A220(char *unused, int x, int y) {
     *(short *)(sp + 0xA) = (y >> 1) - 7;
     *(short *)(sp + 0x10) = 0x10;
     *(short *)(sp + 0x12) = 1;
-    if (((VendorA *)D_001E66C0)->sel != 0) {
-        if (((VendorA *)D_001E66C0)->slots[((VendorA *)D_001E66C0)->idx].kind == 1 &&
-            D_0013D530[((VendorA *)D_001E66C0)->slots[((VendorA *)D_001E66C0)->idx].type] >=
-                ((WeaponInfoA *)(D_001E02B0 + ((VendorA *)D_001E66C0)->slots[((VendorA *)D_001E66C0)->idx].type * sz))->max) {
+    if (((VendorA *)vendor_state)->sel != 0) {
+        if (((VendorA *)vendor_state)->slots[((VendorA *)vendor_state)->idx].kind == 1 &&
+            weapon_ammo_counts[((VendorA *)vendor_state)->slots[((VendorA *)vendor_state)->idx].type] >=
+                ((WeaponInfoA *)(vendor_item_prices + ((VendorA *)vendor_state)->slots[((VendorA *)vendor_state)->idx].type * sz))->max) {
             m = 0x528A;
         } else {
-            v = (VendorA *)D_001E66C0;
+            v = (VendorA *)vendor_state;
             if (v->slots[v->idx].kind == 1) {
                 if (v->alt) {
-                    price = ((WeaponInfoA *)(D_001E02B0 + v->slots[v->idx].type * 0x18))->priceAlt;
+                    price = ((WeaponInfoA *)(vendor_item_prices + v->slots[v->idx].type * 0x18))->priceAlt;
                 } else {
-                    price = ((WeaponInfoA *)(D_001E02B0 + v->slots[v->idx].type * 0x18))->price;
+                    price = ((WeaponInfoA *)(vendor_item_prices + v->slots[v->idx].type * 0x18))->price;
                 }
                 m = 0x528A;
-                if (D_0015EE98 >= price)
+                if (gBolts >= price)
                     m = 0x528B;
             } else {
                 int cost;
-                if (D_0013D5EB[0] != 0) {
-                    cost = ((struct { WeaponInfoA a[1]; } *)D_001E02B0)->a[v->slots[v->idx].type].second;
+                if (discount_purchase_pricing[0] != 0) {
+                    cost = ((struct { WeaponInfoA a[1]; } *)vendor_item_prices)->a[v->slots[v->idx].type].second;
                 } else {
-                    cost = ((WeaponInfoA *)(D_001E02B0 + v->slots[v->idx].type * 0x18))->first;
+                    cost = ((WeaponInfoA *)(vendor_item_prices + v->slots[v->idx].type * 0x18))->first;
                 }
-                m = D_0015EE98 < cost ? 0x528A : 0;
+                m = gBolts < cost ? 0x528A : 0;
             }
         }
     } else {

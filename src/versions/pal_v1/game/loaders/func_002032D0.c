@@ -25,7 +25,7 @@ void LoadHudBanks(void) {
     }
 
     fname = D_0015FC70;
-    d941c0 = D_001941C0;
+    d941c0 = level_resource_buffers;
     size24 = ALIGN64(base->bank[0].size);
     header = (HudHdr *) func_001FFAB8_d(size24, 0, fname, 0x23A);
     FastMemCopy(header, (void *) (base->bank[0].off + (int) base), size24);

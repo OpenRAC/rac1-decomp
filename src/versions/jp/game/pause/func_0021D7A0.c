@@ -1,4 +1,4 @@
-int Pause_QuickSelectInput(SelList_0021D7A0 *arg0) {
+int update_menu_item_slots(SelList_0021D7A0 *arg0) {
     char *q = *(char **)(D_001D5F74 + 0x40);
     int item = *(short *)(*(int *)(q + 0x3C) * 10 + *(char **)(q + 0x48) + 6);
     int old = arg0->idx;
@@ -16,7 +16,7 @@ int Pause_QuickSelectInput(SelList_0021D7A0 *arg0) {
     }
     if (item != 0 && ((unsigned char *)&D_0013D5C8)[item] != 0
         && (*(int *)(pad + 0x1C4) & 0x60)) {
-        Stats_0021D7A0 *s = &D_00141948;
+        Stats_0021D7A0 *s = &usage_stats;
 
         if (s->count <= 0xFFFE) {
             s->count++;

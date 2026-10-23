@@ -7,7 +7,7 @@ void Moby1805Update(void *moby) {
     float tmp[4];
     int k, n;
 
-    if ((D_0014C290[D_0015EE84][(short)*(unsigned short *)(m + 0xB2) >> 5] >> (*(unsigned short *)(m + 0xB2) & 0x1F)) & 1) {
+    if ((level_moby_killed[D_0015EE84][(short)*(unsigned short *)(m + 0xB2) >> 5] >> (*(unsigned short *)(m + 0xB2) & 0x1F)) & 1) {
         DeleteMoby(moby);
         return;
     }
@@ -36,9 +36,9 @@ void Moby1805Update(void *moby) {
         break;
     case 2: {
         if (((unsigned char *)m)[0x21] != 0xFF) {
-            int r = MobyGroup_CountNotInState(((unsigned char *)m)[0x21], -1);
+            int r = count_group_e81e0(((unsigned char *)m)[0x21], -1);
             if (r == 1) {
-                unsigned char *t = (unsigned char *)(D_0013D50F + 1);
+                unsigned char *t = (unsigned char *)(menu_item_enabled_115 + 1);
                 if (t[0x16] == 0) {
                     t[0x16] = r;
                     PlayBankSound(1, 0, 0);
@@ -48,7 +48,7 @@ void Moby1805Update(void *moby) {
         }
         Moby_PlaySound(0, 0, (int)moby);
         SpawnBreakFxByDistance(moby);
-            D_0014C290[D_0015EE84][(short)*(unsigned short *)(m + 0xB2) >> 5] |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
+            level_moby_killed[D_0015EE84][(short)*(unsigned short *)(m + 0xB2) >> 5] |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
             D_L13_001BAAE0[(short)*(unsigned short *)(m + 0xB2) >> 5] |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
         for (n = 0; n < 2; n++) {
             for (k = 0x709; k < 0x70D; k++) {

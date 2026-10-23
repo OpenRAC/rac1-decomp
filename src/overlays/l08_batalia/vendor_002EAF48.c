@@ -403,7 +403,7 @@ void Moby600Draw(void) {
     VU1_addGSregister(8, 0);
     VU1_addGSregister(0x14, 0xFF9000000260L);
     VU1_addGSregister(0x47, 0x513F1);
-    Draw_BuildVu1Setup();
+    font_queue_vu_state();
     VU1_addGSregister(6, GetEffectTex(0x3A));
     VU1_addGSregister(0x42, (long)*(int *)&D_L08_00161E60 << 32 | 0x44);
     Moby600_DrawQuads13(0);
@@ -477,8 +477,8 @@ void Moby600Update(unsigned char *moby) {
             D_L08_00161EB8_p[0].b = 0;
         }
         for (i = 0; i < 2; i++) {
-            D_L08_00161EA0[i].a = 0;
-            D_L08_00161EA4[i * 2] = i * 0.4f;
+            scroll_pos_x[i].a = 0;
+            scroll_pos_y[i * 2] = i * 0.4f;
         }
         for (i = 0; i < 1; i++) {
             D_L08_00161EB0[i].a = 0;
@@ -830,12 +830,12 @@ extern char D_0013E633[] NOT_SDA;
 
 /* Commando (moby class 1130) update: a state machine on the byte at +0x20 (states 0 to 3; state 3 deletes the
  * moby), then the relative's aiming tail on the countdowns at data + 0x188 and 0x18C. */
-void CommandoUpdate(char *m) {
+void commando_update(char *m) {
     char *d = *(char **)(m + 0x78);
     AttachManipulatorsIfCheat(m);
     if (*(unsigned char *)(m + 0x31) != 0) {
         if (FastVecDist(m + 0x10, D_L08_00167640) < (float)*(int *)&D_L08_00162268) {
-            SetGroundHeightBand(m);
+            func_L00_0025B178(m);
             m[0x7F] = (*(int *)&D_L08_00162268 * 13) >> 4;
         }
     }
@@ -849,7 +849,7 @@ void CommandoUpdate(char *m) {
         }
         *(float *)(d + 0x2C) = 3.0f;
         *(char **)(d + 0x40) = D_L08_00162270;
-        if (D_0013D4B5[7] == 0) {
+        if (menu_item_enabled_25[7] == 0) {
             m[0x20] = 1;
         } else {
             int i = *(int *)(d + 0x180);
@@ -867,7 +867,7 @@ void CommandoUpdate(char *m) {
             qcopy(m + 0x10, (void *)((i << 7) + base + 0x30));
             qcopy(m + 0x40, (void *)((i << 7) + base + 0x70));
             m[0x20] = 2;
-            D_0013D4B5[7] = 1;
+            menu_item_enabled_25[7] = 1;
         }
         break;
     case 2:
@@ -887,11 +887,11 @@ void CommandoUpdate(char *m) {
         d[0x28] = 1;
         if (*(short *)(d + 0x24) == 3) {
             char *g;
-            UnlockPlanet(10);
+            unlock_planet(10);
             ShowPlanetBanner(10);
-            SetLevelTriggerDone((unsigned char)m[0xB0]);
+            jet_clear_persistent((unsigned char)m[0xB0]);
             g = D_0013E633 + 0xE9D;
-            PauseMenu_SeedSnapshot(g, g + 0x10);
+            jet_reset_camera(g, g + 0x10);
             memcard_Save(0, -1);
             DeleteMoby(m);
             return;
@@ -1001,12 +1001,12 @@ extern char D_L08_00162378[];
 
 /* Deserter (moby class 1144) update: a state machine on the byte at +0x20 (states 0 to 2; state 2 deletes the
  * moby when its path ends), then the commando's aiming tail on the countdowns at data + 0x194 and 0x198. */
-void DeserterUpdate(char *m) {
+void batalia_deserter_update(char *m) {
     char *d = *(char **)(m + 0x78);
     TriggerMobysOfClass(m);
     if (*(unsigned char *)(m + 0x31) != 0) {
         if (FastVecDist(m + 0x10, D_L08_00167640) < 30.0f) {
-            SetGroundHeightBand(m);
+            func_L00_0025B178(m);
             m[0x7F] = 0x18;
         }
     }
@@ -1024,7 +1024,7 @@ void DeserterUpdate(char *m) {
         break;
     case 1:
         if (func_001F9D48(m + 0x10, D_0013E633 + 0xE9D) < 8.0f) {
-            SetLevelTriggerDone((unsigned char)m[0xB0]);
+            jet_clear_persistent((unsigned char)m[0xB0]);
             m[0x20] = 2;
         }
         break;
@@ -1045,7 +1045,7 @@ void DeserterUpdate(char *m) {
             }
         }
         if (*(short *)(d + 0x24) == 4) {
-            UnlockPlanet(9);
+            unlock_planet(9);
             memcard_Save(0, -1);
             DeleteMoby(m);
             return;
@@ -1170,7 +1170,7 @@ extern char *D_L08_00160058 MACRO_ADDR;
  * state 5 and one state-0 case delete the moby). Then, when the byte at +0x53 is zero, updates the countdowns at
  * data + 0x174 and 0x178 and the vector at data + 0x160 from the moby's distance (8.0) and heading to the block
  * at D_0013E633 + 0xE9D. */
-void Moby1283Update(char *m) {
+void the_plumber_batalia_update(char *m) {
     char *d = *(char **)(m + 0x78);
     Moby1283_AttachCheatManipulators(m);
     switch (*(unsigned char *)(m + 0x20)) {
@@ -1187,7 +1187,7 @@ void Moby1283Update(char *m) {
         v = *(short *)(d + 0x36);
         if (v == 2) {
             char *t = D_L08_0016016C + (*(int *)(d + 0x48) << 7);
-            PauseMenu_SeedSnapshot(t + 0x30, t + 0x70);
+            jet_reset_camera(t + 0x30, t + 0x70);
             m[0x20] = v;
             Moby1283_SetHeroState(D_L08_00160058 + (*(int *)(d + 0x50) << 8));
         }
@@ -1204,7 +1204,7 @@ void Moby1283Update(char *m) {
     case 2:
         break;
     case 5:
-        SetLevelTriggerDone((unsigned char)m[0xB0]);
+        jet_clear_persistent((unsigned char)m[0xB0]);
         GiveItem(0x1B, 1);
         memcard_Save(0, -1);
     del:
@@ -1430,7 +1430,7 @@ void Moby1553Update(char *moby) {
                     k = 0;
                     if (D_L08_0016D0E0.a == 1 || D_L08_0016D0E0.a == 4) k = 3;
                     else if (D_L08_0016D0E0.a == 2 || D_L08_0016D0E0.a == 5) k = 2;
-                    SpawnMoby750Sparks((int)D_L08_0016D0E0.objs[k]);
+                    cutscene_set_camera_target((int)D_L08_0016D0E0.objs[k]);
                 }
             }
         }
@@ -1536,7 +1536,7 @@ void Moby1649Draw(void) {
     VU1_addGSregister(8, 0);
     VU1_addGSregister(0x14, 0xFF9000000260L);
     VU1_addGSregister(0x47, 0x513F1);
-    Draw_BuildVu1Setup();
+    font_queue_vu_state();
     VU1_addGSregister(6, GetEffectTex(0x3A));
     VU1_addGSregister(0x42, (long)*(int *)&D_L08_00162420 << 32 | 0x64);
     Moby1649_DrawQuads8(0);

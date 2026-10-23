@@ -12,10 +12,10 @@ void Cheats_PollCodes(void) {
                 int c = *(int *)(g + 0x450);
                 if (c == 0) {
                     s = 1;
-                    if (gCheatMirroredLevels[0]) s = 2;
+                    if (D_0015EEB4[0]) s = 2;
                 } else if (c == 1) {
                     s = 2;
-                    if (gCheatMirroredLevels[0]) s = 1;
+                    if (D_0015EEB4[0]) s = 1;
                 } else if (c == 3) {
                     s = 3;
                 }
@@ -71,7 +71,7 @@ void Cheats_PollCodes(void) {
         }
         if (j == n) {
             int t = gCheats[i] == 0;
-            D_0015EEC0[i] = 1;
+            selector_available[i] = 1;
             gCheats[i] = t;
             ShowBanner(t ? 0x4FBF : 0x4FC0, -1);
             break;

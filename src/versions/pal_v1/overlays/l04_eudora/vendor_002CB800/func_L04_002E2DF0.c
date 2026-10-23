@@ -1,4 +1,4 @@
-void WarpPortalUpdate(Moby *moby) {
+void suck_cannon_update(Moby *moby) {
     PortalVars_002E2DF0 *vars = (PortalVars_002E2DF0 *)moby->pvars;
     Exit_002E2DF0 *exit;
 

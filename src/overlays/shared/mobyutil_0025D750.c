@@ -3,7 +3,7 @@
 #include "include_asm.h"
 
 // Add and subtract a delta from a moby field, storing results
-void SetMobyZBand(char *moby) {
+void func_L02_0025D750(char *moby) {
     float delta = 0.2f;
     float val = *(float *)(moby + 0x18);
     *(float *)(moby + 0x84) = val - delta;
@@ -65,7 +65,7 @@ void EffectSlots_Fire(char *slots, float *position, float *direction, float dist
     unsigned long fl;
 
     {
-        int phase = D_L02_0015F6B0 & 3;
+        int phase = frame_counter_ref & 3;
         save_shot = phase == 0;
     }
     qcopy(origin, position);

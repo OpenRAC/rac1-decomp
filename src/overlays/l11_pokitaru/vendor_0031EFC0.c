@@ -21,7 +21,7 @@ void PokitaruSurfaceNearDraw(void) {
     VU1_addGSregister(8, 0);
     VU1_addGSregister(0x14, 0xFF9000000260L);
     VU1_addGSregister(0x47, 0x513F1);
-    Draw_BuildVu1Setup();
+    font_queue_vu_state();
     VU1_addGSregister(6, GetEffectTex(0x2C));
     VU1_addGSregister(0x42, (long)*(int *)&D_L11_00162588 << 32 | 0x44);
     DrawHudQuadGroup(0);
@@ -194,7 +194,7 @@ void PokitaruSurfaceFarDraw(char *m) {
     VU1_addGSregister(8, 0);
     VU1_addGSregister(0x14, 0xFF9000000260L);
     VU1_addGSregister(0x47, 0x513F1L);
-    Draw_BuildVu1Setup();
+    font_queue_vu_state();
     cam = D_L11_00167700;
     if (*(float *)(cam + 0x148) > 255.0f
         || is_point_inside_clip_volume(cam + 0x140, d[0])

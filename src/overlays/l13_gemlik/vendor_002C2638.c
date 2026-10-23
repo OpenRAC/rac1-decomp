@@ -844,7 +844,7 @@ void Moby_SpringTurnPitch(char *moby, char *d, float p2, float p3) {
     if (1.5707964f < v) *(float *)(moby + 0x40) = 1.5707964f;
     if (*(float *)(moby + 0x40) < -1.5707964f) *(float *)(moby + 0x40) = -1.5707964f;
     *(float *)(moby + 0x40) = *(float *)(moby + 0x40) * 0.98f;
-    WrapAngle(*(float *)(moby + 0x40));
+    normalize_angle(*(float *)(moby + 0x40));
 }
 extern float func_001F9D10(void *, void *);
 extern float func_001FA888(int);
@@ -1570,7 +1570,7 @@ void SpawnGemlikSparks(unsigned char *a0, void *a1, int a2)
         FastVecAdd(vD, vD, vB);
         FastVecSub(vE, vD, pA);
         func_L00_001FF4B0(vE, vE, random_float_between(0.025f, 0.23f));
-        SpawnSpinningParticleMoby(a0, vE, vD, D_L13_0015F660, 0x162, 0, 0.90000004f, 2.1f);
+        spawn_crate_debris(a0, vE, vD, D_L13_0015F660, 0x162, 0, 0.90000004f, 2.1f);
     }
     for (k = 0; k < 4; k++) {
         *(u128z *)vC = 0;
@@ -1582,7 +1582,7 @@ void SpawnGemlikSparks(unsigned char *a0, void *a1, int a2)
         FastVecSub(vE, vD, pA);
         func_L00_001FF4B0(vE, vE, random_float_between(0.025f, 0.23f));
         t = random_integer_below(2);
-        SpawnSpinningParticleMoby(a0, vE, vD, D_L13_0015F660, t + 0x163, 0, 1.2f, 2.4f);
+        spawn_crate_debris(a0, vE, vD, D_L13_0015F660, t + 0x163, 0, 1.2f, 2.4f);
     }
     if (a2 == 0) {
         return;
@@ -1752,7 +1752,7 @@ extern void func_L00_0025F4A8(void *, void *, void *, float, float, int, int, in
 #define func_L00_0025F4A8_s func_L00_0025F4A8
 
 /* Forcefield tower update (moby class 170): state machine over its pieces. */
-void ForcefieldTowerUpdate(char *moby) {
+void forcefield_tower_update(char *moby) {
     char *d = *(char **)(moby + 0x78);
     float vec[4];
     float blk[4];
@@ -1773,7 +1773,7 @@ void ForcefieldTowerUpdate(char *moby) {
         h = *(unsigned short *)(moby + 0xB2);
         w = *(int *)((char *)D_0014171B + 0xAB75 + ((short)h >> 5) * 4 + (rnd << 8));
         if ((w >> (h & 0x1F)) & 1) {
-            if (*(int *)(d + 0x74) != -1) D_L13_00184828[*(int *)(d + 0x74)] = 1;
+            if (*(int *)(d + 0x74) != -1) linked_state_flags[*(int *)(d + 0x74)] = 1;
             DeleteMoby(moby);
         } else {
             Moby_GetJointWorldPos(moby, 0, vec);
@@ -1786,7 +1786,7 @@ void ForcefieldTowerUpdate(char *moby) {
     case 1: {
         int t = *(int *)(d + 0x74);
         int v;
-        if (t != -1) D_L13_00184828[t] = 0;
+        if (t != -1) linked_state_flags[t] = 0;
         if (*(int *)(d + 0x70) == -1) goto alloc;
         if (Sound_IsPlaying(moby, *(int *)(d + 0x70))) goto done;
         if (*(int *)(d + 0x70) != -1) goto play;
@@ -1796,7 +1796,7 @@ alloc:
 play:
         qzero(vec);
         vec[2] = vec[2] + 8.7f;
-        EnableSoundEffect(*(int *)(d + 0x70), vec);
+        set_voice_position(*(int *)(d + 0x70), vec);
 done:
         v = *(unsigned char *)(moby + 0x31);
         if (v != 0 && random_integer_below(9) == 0) {
@@ -1853,7 +1853,7 @@ done:
                 FastVecAdd(acc, acc, moby + 0x10);
                 SpawnGemlikSparks(moby, acc, 1);
             } while (k >= 0);
-            if (*(int *)(d + 0x74) != -1) D_L13_00184828[*(int *)(d + 0x74)] = 1;
+            if (*(int *)(d + 0x74) != -1) linked_state_flags[*(int *)(d + 0x74)] = 1;
             DeleteMoby(moby);
         }
     }
@@ -2730,7 +2730,7 @@ void Moby_SpringTurnPitchYaw(char *m, char *p, float a, float b) {
     if (*(float *)(m + 0x40) > 1.5707964f) *(float *)(m + 0x40) = 1.5707964f;
     if (*(float *)(m + 0x40) < -1.5707964f) *(float *)(m + 0x40) = -1.5707964f;
     *(float *)(m + 0x40) *= 0.985f;
-    WrapAngle(*(float *)(m + 0x40));
+    normalize_angle(*(float *)(m + 0x40));
 }
 extern float func_001F9CE8(void *);
 /* Steers moby m along path idx toward its next point, facing along the motion (or the hero in state 5); turns it when turn. Returns 1 on a wrap. */

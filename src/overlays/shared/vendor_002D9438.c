@@ -381,7 +381,7 @@ extern float func_001FA888_2D9EA0(int) __asm__("func_001FA888");
 extern float func_L00_00258E58_2D9EA0(float, float, float, float, float) __asm__("func_L00_00258E58");
 
 /* Nanotech ball update: spawns, homes in on its target, hits or fizzles; kills itself when its owner goes. */
-void NanotechBallUpdate(Moby *m) {
+void nanotech_ball_update(Moby *m) {
     V_2D9EA0 v0, v10, v20, v30, v40, v50, v60;
     D_2D9EA0 *d = (D_2D9EA0 *)m->pvars;
 
@@ -990,10 +990,11 @@ int CallClassHookC(char *a) {
     }
     return 1;
 }
-int CallClassHook4(char *a) {
-    int (*fn)(char *) = *(int (**)(char *))(*(char **)(*(char **)(a + 0x24) + 0x2C) + 0x4);
+/* The hook places the moby at b (the cannon's muzzle): retail leaves a1 as it came. */
+int CallClassHook4(char *a, void *b) {
+    int (*fn)(char *, void *) = *(int (**)(char *, void *))(*(char **)(*(char **)(a + 0x24) + 0x2C) + 0x4);
     if (fn != 0) {
-        return fn(a);
+        return fn(a, b);
     }
     return 1;
 }
@@ -1009,7 +1010,7 @@ void SuckCannon_GetAimOrigin(char *m, float *a, float *b, float *c) {
     Moby_GetJointWorldPos(m, 0, c);
     g = D_0013E633 + 0xE1D;
     if (*(int *)(g + 0x2084) == 1 || *(int *)(g + 0x2084) == 0x1E) {
-        char *s = gCameraLvl;
+        char *s = player_camera;
         v[1] = 0;
         v[0] = 1.2f;
         *a = *(float *)(s + 0x158);
@@ -1064,9 +1065,9 @@ void SuckCannon_ScanTargets(u8 *p, void *q)
 
     func_L00_002DB700_DB810(p, &a, &b, buf);
     func_L00_002DF410(p, buf);
-    for (m = D_L00_001600A4; m != 0; m = m->next) {
+    for (m = suck_moby_list; m != 0; m = m->next) {
         if (m->a6 != 0 && (m->f34 & 0x1000) &&
-            *(void **)*(u8 **)(m->p24 + 0x2c) != (void *)NullMobyUpdate) {
+            *(void **)*(u8 **)(m->p24 + 0x2c) != (void *)noop_callback_l) {
             r = func_L00_002DCD40_DB810(m);
             if (r != 0 && r->h68 < 6) {
                 d = func_001F9D48(p + 0x10, &m->pos);
@@ -1271,7 +1272,7 @@ extern void func_L00_002DB480(char *,char *,void *);
 
 /* Update the Suck Cannon's suction, aiming and firing state, stored mobys,
    target selection, usage statistics and cancellation input. */
-void SuckCannonUpdate(M40 *self) {
+void suckcannon_update(M40 *self) {
     Work40 work;
     Suck40 *data;
     Stats40 *stats;
@@ -1397,7 +1398,7 @@ void SuckCannonUpdate(M40 *self) {
             (data->target && ((u8)data->target->state&0x80))) data->target=0;
         if (hero40.camera_mode==1) HeroEnterMoveState(30,1);
         if (hero40.camera_mode==30 && (hero40.moby->flags&1) && !hero40.disabled) {
-            char *camera=gCameraLvl;
+            char *camera=player_camera;
             V40 *eye;
             Hit40 *hit;
             work.aim.velocity.q=0;
@@ -1460,7 +1461,7 @@ void SuckCannonUpdate(M40 *self) {
             M40 *best,*m;
             float yaw,pitch,limit;
             work.fire.velocity.q=0;
-            func_001FA480(&work.fire.rotation,gCameraLvl);
+            func_001FA480(&work.fire.rotation,player_camera);
             func_001FA4A0(&work.fire.inverse,&work.fire.rotation);
             if(hero40.camera_mode==30 && (hero40.moby->flags&1)) {
                 work.fire.tmp.q=0;
@@ -1472,7 +1473,7 @@ void SuckCannonUpdate(M40 *self) {
                 work.fire.tmp.f.y=0.3f;
                 work.fire.tmp.f.z=1.0f;
                 func_001F9EE8(&work.fire.launch,&work.fire.tmp,&work.fire.inverse);
-                FastVecAdd(&work.fire.launch,&work.fire.launch,gCameraLvl+0x140);
+                FastVecAdd(&work.fire.launch,&work.fire.launch,player_camera+0x140);
             } else {
                 work.fire.tmp.q=0;
                 work.fire.tmp.f.x=frame_scale40*0.4462f;
@@ -1944,7 +1945,7 @@ void SpawnExplosionBurst(char *self, char *q) {
     }
     D_L00_00166D80_DD3D8.f160 = (f23 < 20.0f) ? 0.4f - f23 * 0.0175f : 0.050000012f;
     D_L00_00166D80_DD3D8.i168 = scale_ticks(25);
-    Moby639Spawn((char *)&blk, self + 0x10, 0, 0);
+    mine_camera_blast((char *)&blk, self + 0x10, 0, 0);
     if ((&D_0013E620)->b9) {
         k = func_L00_001F2BE8_DD3D8(3.0f, self + 0x10, 0x10, self, 0);
         *(u128_DD3D8 *)e = *(u128_DD3D8 *)(self + 0x10);
@@ -2443,7 +2444,7 @@ extern short D_L00_001E6358[];
 extern short D_L00_00161C14;
 extern short D_L00_00161C10;
 // sets two flags and clears a short
-void SuckBeam_Reset(void) {
+void suck_reset(void) {
     *(int *)&D_L00_00161C10 = 1;
     *(int *)&D_L00_00161C14 = 1;
     D_L00_001E6358[0] = 0;
@@ -2655,7 +2656,7 @@ extern short D_L00_00161C60;
 extern short D_L00_00161C64;
 
 /* update for the pulsing colour object */
-void PulsingColorMobyUpdate(char *m) {
+void red_orb_update(char *m) {
     char *p = *(char **)(m + 0x78);
     unsigned char s = m[0x20];
     float a;
@@ -2686,7 +2687,7 @@ void QuadMoby_Update(char *a) {
         *(float *)(a + 0x54) = o;
         *(float *)(a + 0x58) = 0.0f;
     }
-    QuadMoby_UpdateEdgeLengths(a);
+    update_instance_attachment_points_and_lengths(a);
 }
 extern void func_0020D960(char *, int, void *);
 extern float func_001FA748(float, float);
@@ -2695,7 +2696,7 @@ extern float D_0015EE6C MACRO_ADDR;
 extern short D_L00_00161C80;
 
 /* UpdateMoby for class 1143: init then slowly spin/ease its value */
-void Moby1143Update(unsigned char *m) {
+void vendor_orb_update(unsigned char *m) {
     char *p = *(char **)(m + 0x78);
     switch (m[0x20]) {
     case 0:
@@ -2708,7 +2709,7 @@ void Moby1143Update(unsigned char *m) {
         float f = *(float *)&D_L00_00161C80 * 0.017453292f * D_0015EE6C;
         *(float *)(m + 0x48) = FastAddRots(*(float *)(m + 0x48), f);
         *(float *)(p + 0x40) = FastAddRots(*(float *)(p + 0x40), f * -2.0f);
-        func_L00_001FFED8(p + 0x10, 2, *(float *)(p + 0x40));
+        axis_rotation_2d48(p + 0x10, 2, *(float *)(p + 0x40));
         break;
     }
     }
@@ -2799,7 +2800,7 @@ extern int func_001F9908_2E0E50(void *) __asm__("func_001F9908");
 /* Hydrodisplacer pad: while the hero holds the hydrodisplacer it tunes his water physics; the pad waits for the
    hero to stand on it with the gadget, then drains or fills the water level (D_L00_0015F4FC) with a camera move
    between the pad's two path nodes. */
-void HydrodisplacerPadUpdate(Moby *m) {
+void hydrodisplacer_update(Moby *m) {
     Vec_2E0E50 v0, v10;
     Data_2E0E50 *d = (void *)m->pvars;
 

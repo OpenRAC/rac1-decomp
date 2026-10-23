@@ -15,7 +15,7 @@ void BannerTriggerUpdate(char *moby) {
         if (*(int *)(h + 0x2084) == 0x42) {
             *(int *)(data + 8) = 0;
         } else if (is_point_inside_clip_volume(h + 0x80, *(int *)(data + 4)) != 0) {
-            unsigned char *f = (unsigned char *)D_0013D50F + 0x1;
+            unsigned char *f = (unsigned char *)menu_item_enabled_115 + 0x1;
             if (f[0x19] == 0) {
                 f[0x19] = 1;
                 PlayBankSound(1, 0, 0);

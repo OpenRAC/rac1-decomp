@@ -196,13 +196,13 @@ Moby *CreateMoby(int oClass) {
             InitMobyInstance(m, oClass);
             m->pvars = D_00160028 + (m - (Moby *)D_0016001C) * 0x80;
             FastMemSet(m->pvars, 0, 0x80);
-            if (D_0015FFFC != 0) {
-                D_0015FFFC--;
+            if (num_spawnable_mobys != 0) {
+                num_spawnable_mobys--;
             }
             return m;
         }
     }
-    STUB_printf(D_001E86F0, D_0015F6F0, oClass);
+    STUB_printf(s_tried_to_create_moby, D_0015F6F0, oClass);
     return 0;
 }
 
@@ -309,7 +309,7 @@ void InitMobyInstance(void *arg0, int oClass) {
     m->unkA6 = oClass;
     m->unk38 = 0x40404000000000L;
     m->unk36 = 0x7F80;
-    idx = ((char *)m - (char *)D_00160018) >> 8;
+    idx = ((char *)m - (char *)resident_object_pool) >> 8;
     m->unkA8 = idx << 16;
     m->unkAC = idx;
     m->unk7E = 0;
@@ -323,7 +323,7 @@ void InitMobyInstance(void *arg0, int oClass) {
     if (m->unk74 == 0) {
         m->flags |= 2;
     }
-    pClass = (MobyIClass *)D_001B3580[m->oClass];
+    pClass = (MobyIClass *)moby_class_resources[m->oClass];
     if (pClass != 0) {
         MobyIClass *p;
 
@@ -387,7 +387,7 @@ void DeleteMoby(MobyDel *m) {
         m->state = 0xFE;
     }
     m->unk38 = D_0015F6F0 + 2;
-    func_0020EA70(m, 0x80807F7F);
+    update_moby_grids(m, 0x80807F7F);
 }
 
 extern unsigned char D_001AAF40[];
@@ -410,7 +410,7 @@ void update_moby_animation_state(Moby *m) {
     } else {
         m->unk7C = m->seq;
         m->unk7E = 0;
-        m->frameData = (int)&D_001AAF40[m->frame << 11];
+        m->frameData = (int)&debug_font_buffer[m->frame << 11];
     }
     m->prevFrameData = m->pClass->seqs[m->prevSeq]->frames[m->prevFrame];
 }
@@ -424,7 +424,7 @@ extern int func_0022ED80(int, int, int);
    branch is what gives retail's two registers: the compare keeps the
    first load, the copy (live across blocks) becomes CSE's canonical
    register for the index and the call. */
-void MobySyncVoice(unsigned char *s) {
+void update_moby_voice(unsigned char *s) {
     if (s[0x7D] != 0xFF) {
         int id = s[0x7D];
         char *e = D_0013E650 + id * 0x70;
@@ -524,9 +524,9 @@ void DetachManipulator(void *arg0, void *arg1) {
 
 extern int D_001B2F40[];
 
-int AnimSlot_Register(int v) {
+int find_or_allocate_id_slot(int v) {
     int i = 0;
-    int *p = D_001B2F40;
+    int *p = moby_render_slots;
     do {
         if (*p == 0 || *p == v) {
             *p = v;
@@ -538,9 +538,9 @@ int AnimSlot_Register(int v) {
     return -1;
 }
 
-void AnimSlot_ReleaseStale(void) {
+void prune_moby_references(void) {
     int sentinel = 0xFF;
-    char **p = (char **)D_001B2F40;
+    char **p = (char **)moby_render_slots;
     int i = 0xF;
     do {
         char *e = *p;
@@ -583,7 +583,7 @@ void MobyTransformScaledVertex(char *arg0, int arg1, char *arg2) {
 
 /* The many-vertex form of the same thing: arg1 blocks of 0x10 bytes
    starting at arg3, each scaled and transformed in place. */
-void MobyTransformScaledVertexBatch(char *arg0, int arg1, void *arg2, char *arg3) {
+void transform_scaled_vertex_batch(char *arg0, int arg1, void *arg2, char *arg3) {
     char *v = arg3;
     int n = arg1;
     float s;
@@ -621,7 +621,7 @@ void DmaMobyTextures(void) {
     ((int *)D_0016000C)[1] = D_00161000;
     ((int *)D_0016000C)[2] = 0;
     ((int *)D_0016000C)[3] = 0;
-    if (D_0018A3B0[10] != 0 && D_0018A3B0[9] != 0) {
+    if (draw_config[10] != 0 && draw_config[9] != 0) {
         func_00212258(D_0015EF74);
         VU1_texFlush();
     }
@@ -658,17 +658,17 @@ void PatchMobyGifs(void) {
     int *p;
     int *next;
 
-    for (p = D_001B6880; *p >= 0; p = next) {
+    for (p = moby_class_rectify; *p >= 0; p = next) {
         MobyJoint *joint;
 
         next = p + 1;
-        joint = *(MobyJoint **)(*(char **)((char *)D_001B3580 + *p * 4) + 0x20);
+        joint = *(MobyJoint **)(*(char **)((char *)moby_class_resources + *p * 4) + 0x20);
         for (;;) {
             unsigned char *t = joint->tags;
             char *entry = (char *)(joint->entry & 0x7FFFFFFF);
 
             while (*t != 0xFF) {
-                short *lut = D_001B6100 + *t * 2;
+                short *lut = moby_gs_loc_stash + *t * 2;
                 short v;
                 v = lut[0];
                 if (v != 0) {
@@ -694,7 +694,7 @@ extern float D_001CAE00[] NOT_SDA;
 extern float func_001F9F90(float);
 extern float func_001F9FA8(float);
 
-void UpdateLightDirection(void) {
+void update_resident_packed_direction(void) {
     float buf[4];
     float a;
 
@@ -719,7 +719,7 @@ extern void func_001F2558(void *, int);
    a temporary that is advanced in place (t += 0x10): that breaks CSE's
    p == t equivalence, which is what keeps retail's `daddu $16,$2,$0`
    copy. `p = D_00161000; D_00161000 += 0x10;` is 4 bytes short. */
-void SpliceShadowDma(void) {
+void configure_graphics_setup_dma_chain(void) {
     int *p;
     int t;
 
@@ -739,7 +739,7 @@ void SpliceShadowDma(void) {
     ((int *)D_00160040)[2] = 0;
     ((int *)D_00160040)[3] = 0;
     func_00228A58();
-    SubmitGraphicsSetupStream(D_001C8A00);
+    submit_graphics_setup_command_stream(D_001C8A00);
     ((int *)D_00161000)[0] = 0x20000000;
     ((int *)D_00161000)[1] = D_00160040 + 0x10;
     ((int *)D_00161000)[2] = 0;
@@ -762,7 +762,7 @@ extern int D_0015F71C MACRO_ADDR;
    load, scheduled into the jal delay slot, becomes $gp-relative. */
 void ProcessMobyAnimData(void) {
     func_00118D80(0);
-    FastMemCopy((void *)0x70003800, D_00165600, 0x800);
+    FastMemCopy((void *)0x70003800, normal_lut, 0x800);
     MobyAnimProc(D_0015F718, D_0015F71C);
 }
 
@@ -776,12 +776,12 @@ extern char D_001B3200[];
 
 /* StashMobyClassDists(void) */
 void StashMobyClassDists(void) {
-    FastMemCopy(D_001B3200, (void *)0x70003A00, 0x380);
+    FastMemCopy(moby_backup_buffer, (void *)0x70003A00, 0x380);
 }
 
 /* RestoreMobyClassDists(void) */
 void RestoreMobyClassDists(void) {
-    FastMemCopy((void *)0x70003A00, D_001B3200, 0x380);
+    FastMemCopy((void *)0x70003A00, moby_backup_buffer, 0x380);
 }
 
 extern void func_00234B48(void *, int);
@@ -806,7 +806,7 @@ void DrawMobysSetup(void) {
     int p;
 
     VU1_addDataRef(D_0010FAA0, D_0010FA90);
-    D_0015F704 = 6;
+    font_state = 6;
     VU0_loadMicroProgram(D_00100080);
     VU1_addGSregister(0x47, 0x5360B);
     p = D_00161000;
@@ -816,8 +816,8 @@ void DrawMobysSetup(void) {
     D_00161000 = p;
     ProfileMarker_Begin(D_0015FFD0, 1);
     D_00160040 = 0;
-    D_00161008 = D_0015F71C - 0x10000;
-    D_00160014 = D_0015F718;
+    vu1_chain_limit = D_0015F71C - 0x10000;
+    moby_anim_head = D_0015F718;
 }
 
 extern int func_00212658(int, int, int, int);
@@ -827,9 +827,9 @@ void DrawMobyList(int arg0, int arg1) {
     VU1_addGSregister(0x47, 0x5360B);
     func_00118D80(0);
     RestoreMobyClassDists();
-    D_00160014 = func_00212658(arg0, D_00160014, arg1, 0);
+    moby_anim_head = moby_proc(arg0, moby_anim_head, arg1, 0);
     StashMobyClassDists();
-    D_00160014 -= 0x10;
+    moby_anim_head -= 0x10;
 }
 
 extern void func_0020DC40(void);
@@ -846,15 +846,15 @@ void DrawMobysCleanUp(void) {
     ProfileMarker_Begin(D_0015FFE0, 3);
     DmaMobyTextures();
     ProfileMarker_End(D_0015FFE0, 5);
-    if (D_0018A3B0[10] != 0) {
+    if (draw_config[10] != 0) {
         ProcessMobyAnimData();
         if (D_00160038 != 0) {
             func_00212508();
         }
     }
     ProfileMarker_End(D_0015FFF0, 3);
-    if (D_0018A3B0[10] != 0 && D_00160040 != 0) {
-        SpliceShadowDma();
+    if (draw_config[10] != 0 && D_00160040 != 0) {
+        configure_graphics_setup_dma_chain();
     }
 }
 
@@ -868,9 +868,9 @@ void DrawMobys(void) {
     DrawMobysSetup();
     if (D_0018A3D8 != 0) {
         InitMobyClassDists();
-        D_00160014 = func_00212658(D_00160018, D_00160014, -1, 1);
-        if (D_00161000 > D_00161008) {
-            STUB_printf(D_001E8730);
+        moby_anim_head = moby_proc(resident_object_pool, moby_anim_head, -1, 1);
+        if (D_00161000 > vu1_chain_limit) {
+            STUB_printf(vu_chain_overflow_message);
         }
     }
     DrawMobysCleanUp();
@@ -881,7 +881,7 @@ LINKER_REMNANT("asm/remnants/text", func_0020E330);
 void func_0020E340(u64 *command_words, u64 upper_field, u64 middle_field, u64 low_field, u64 tail_field);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/rendering/commands/pack_render_command_fields.c, PackRenderCommandFields. */
-void func_0020E340(u64 *command_words, u64 upper_field,
+void pack_render_command_fields(u64 *command_words, u64 upper_field,
                              u64 middle_field, u64 low_field, u64 tail_field) {
     int command_word_index;
     if (middle_field) {

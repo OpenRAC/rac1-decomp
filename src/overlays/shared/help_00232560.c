@@ -57,12 +57,12 @@ int LookupSequenceForKey(int key, int *out) {
     SeqEntry *tbl;
     int i;
 
-    if (Hero_GetSlotModuleId(3) == 2) {
+    if (hero_slot_item_id(3) == 2) {
         tbl = D_L00_0017BCF0;
-    } else if (Hero_GetSlotModuleId(3) == 3) {
+    } else if (hero_slot_item_id(3) == 3) {
         tbl = D_L00_0017BCD0;
     } else {
-        int mode = Hero_GetSlotModuleId(3);
+        int mode = hero_slot_item_id(3);
         tbl = (SeqEntry *)&D_L00_0015F798;
         if (mode != 4) {
             tbl = 0;
@@ -128,7 +128,7 @@ void HeroSetPairedSequences(int id, int arg, float t) {
     }
     seq = scale_ticks(7);
     blk3 = D_0013F450;
-    if (*(int *)(blk3 + 0x2090) == 8 && Hero_GetSlotModuleId(3) == 2) {
+    if (*(int *)(blk3 + 0x2090) == 8 && hero_slot_item_id(3) == 2) {
         seq = scale_ticks(0x13);
     }
     if (*(unsigned char *)(a + 0x53) != 1) {
@@ -156,12 +156,12 @@ int HeroPickRandomSequence(int id, int *key, int *arg) {
 
     count = 0;
     want = Hero_ResolveAnimId(id);
-    if (Hero_GetSlotModuleId(3) == 2) {
+    if (hero_slot_item_id(3) == 2) {
         tbl = D_L00_0017BCF0;
-    } else if (Hero_GetSlotModuleId(3) == 3) {
+    } else if (hero_slot_item_id(3) == 3) {
         tbl = D_L00_0017BCD0;
     } else {
-        int mode = Hero_GetSlotModuleId(3);
+        int mode = hero_slot_item_id(3);
         tbl = (SeqEntry *)&D_L00_0015F798;
         if (mode != 4) {
             tbl = 0;
@@ -327,7 +327,7 @@ extern void func_L00_00211F68(void);
 extern void func_L00_00232A78(int, int, float);
 
 /* Starts animation sequence A0 (slot byte A1) over time T on the object at +0x2080 of the game block. */
-void HeroStartAnim(int a0, int a1, float t) {
+void set_hero_animation(int a0, int a1, float t) {
     char *g2;
     char *g3;
     char *g1 = D_0013E633 + 0xE1D;
@@ -482,8 +482,8 @@ f32 Hero_PredictLandingTime(f32 a, f32 b, f32 c) {
             Vec4_AdjustNegativeComponents(&v, t);
             qcopy(&v, &(&D_0013F450_33410)->v80);
             if (func_L00_001EFFF0(&v, t, 0x24, 0, 0) != 0) {
-                if (func_L00_002345B0_33410((f32 *)D_L00_00173F80) <= 0.87266463f) {
-                    c = *(f32 *)(D_L00_00173F80 - 0x18);
+                if (func_L00_002345B0_33410((f32 *)coll_hit_normal) <= 0.87266463f) {
+                    c = *(f32 *)(coll_hit_normal - 0x18);
                 }
             }
         }
@@ -896,7 +896,7 @@ extern void func_001F9BF0(void *, void *, void *);
    mode 0 (D_0013F450 + 0x20B3) z is zeroed; in mode 1 the normal is the
    vector at +0x270 scaled to unit length (func_L00_001FF4B0), in mode 2
    the one at +0x290 as is. DST = SRC - dot(n, SRC) n. */
-void HeroRemoveNormalComponent(float *dst, float *src) {
+void gravity_flatten(float *dst, float *src) {
     char *base = D_0013F450;
     float n[4] __attribute__((aligned(16)));
 
@@ -924,7 +924,7 @@ extern void func_001FA4A0(void *, void *);
    rotation func_001FA218 builds from the angles at +0x40 of the object
    at +0x2080 (func_001FA4A0 transposes it); other modes give 0. The
    switch gives retail's case tree. */
-float ViewXyLength(float *v) {
+float gravity_length_xy(float *v) {
     char *base = D_0013F450;
     float m[16] __attribute__((aligned(16)));
     float inv[16] __attribute__((aligned(16)));
@@ -947,7 +947,7 @@ float ViewXyLength(float *v) {
    product of V with (0, 0, 1) taken through the rotation func_001FA218
    builds from the angles at +0x40 of the object at +0x2080; other modes
    give 0. The switch gives retail's case tree. */
-float HeroGetViewZ(float *v) {
+float gravity_z(float *v) {
     char *base = D_0013F450;
     float m[16] __attribute__((aligned(16)));
     float axis[4] __attribute__((aligned(16)));
@@ -972,7 +972,7 @@ float HeroGetViewZ(float *v) {
    +0x0. Either way DST's z becomes Z. Written as a switch: retail's
    bltz / slti 3 range test is gcc's case tree, which an if chain folds
    to one sltu. */
-void HeroPlacePointZ(float *dst, float *src, float z) {
+void gravity_set_z(float *dst, float *src, float z) {
     char *base = D_0013F450;
 
     switch (*(unsigned char *)(base + 0x20B3)) {
@@ -1035,7 +1035,7 @@ float JumpApexHeight(float *pos, float *vel, int *steps, float step) {
         return r;
     case 1:
     case 2:
-        k = truncate_float_to_s32(HeroGetViewZ(vel) / step);
+        k = truncate_float_to_s32(gravity_z(vel) / step);
         if (steps != 0) {
             *steps = k;
         }
@@ -1072,21 +1072,21 @@ extern int D_00140508;
 extern int D_0013D530[];
 extern int D_0013DFA8[];
 /* takes amount from the weapon's ammo (the current weapon for -1): 1 when taken or the weapon has no ammo limit, 0 when there is too little */
-int TakeAmmo(int id, int amount) {
+int use_ammo(int id, int amount) {
     AmmoInfo *e;
     if (id == -1) id = D_00140508;
     e = &D_L00_001C43B0[id];
     if (e->max == 0) return 1;
-    if (D_0013D530[id] < amount) return 0;
-    D_0013D530[id] -= amount;
+    if (weapon_ammo_counts[id] < amount) return 0;
+    weapon_ammo_counts[id] -= amount;
     D_0013DFA8[id] += amount;
     return 1;
 }
 INCLUDE_ASM("asm/overlays", func_L00_00234674);
 /* Adds B rounds to weapon A's ammo (D_0013D530[a]), clamped to the weapon's capacity (D_L00_001C43B0[a].max):
    returns the overflow that did not fit, 0 when it all fit or the weapon has no ammo limit. */
-int AddAmmo(int a, int b) {
-    int *p = &D_0013D530[a];
+int add_ammo(int a, int b) {
+    int *p = &weapon_ammo_counts[a];
     unsigned short *q = (unsigned short *)((char *)D_L00_001C43B0 + a * 0x18);
     int v = *p + b;
     unsigned short t = q[7];
@@ -1102,12 +1102,12 @@ int AddAmmo(int a, int b) {
     return 0;
 }
 /* the weapon's ammo (the current weapon for -1), or 1 when it has no ammo limit */
-int GetAmmo(int id) {
+int get_ammo(int id) {
     AmmoInfo *e;
     if (id == -1) id = D_00140508;
     e = &D_L00_001C43B0[id];
     if (e->max == 0) return 1;
-    return D_0013D530[id];
+    return weapon_ammo_counts[id];
 }
 extern void func_L00_00222B80(int, int);
 
@@ -1398,7 +1398,7 @@ void HeroPulseAttachmentColors(void) {
             *(s32 *)(m2 + 0x90) = FastTweenColor(0xAAC8AA, 0x965050, FastSin(D_0013F450_35088.f22F0) * 0.5f + 0.5f);
         if (m2) {
             if (!D_0013F450_35088.b1D91) AttachManipulator(m2, 0, &D_0013F450_35088.b1D90);
-            else func_L00_001FFED8(D_0013F450_35088.v1DA0, 0, D_0013F450_35088.f22F0);
+            else axis_rotation_2d48(D_0013F450_35088.v1DA0, 0, D_0013F450_35088.f22F0);
         }
     }
 }
@@ -1522,9 +1522,9 @@ void PlaceMobyFromMatrix(int id, char *moby) {
     func_001FA480(moby + 0xC0, m);
     func_0020EEE8(moby);
     if (*(short *)(moby + 0xA6) == 0x1B1) {
-        HeroItemPoseFromRatchet(D_L00_0017A708, D_L00_0017C780, *(void **)(moby + 0x24), 6, id);
+        pack_pose(D_L00_0017A708, D_L00_0017C780, *(void **)(moby + 0x24), 6, id);
     } else {
-        HeroItemPoseFromRatchet(D_L00_0015F788, D_L00_0017C780, *(void **)(moby + 0x24), 0, id);
+        pack_pose(D_L00_0015F788, D_L00_0017C780, *(void **)(moby + 0x24), 0, id);
     }
     *(char **)(moby + 0x68) = D_L00_0017C780;
     *(int *)(moby + 0x54) = 0;
@@ -1564,6 +1564,6 @@ extern int func_001FFB38_p(int, int, void *, void *, void *, void *, int) __asm_
 /* Registers HUD bank 1 (func_001FFB38, id 0x7535) with the three level
    callbacks and the data at D_001416F8. func_001FFB38 is declared with
    int parameters in hud.c; the alias passes pointers. */
-void Hud_RegisterHealthBank(void) {
+void show_health_hud(void) {
     func_001FFB38_p(1, 0x7535, HudHealthInit, HudHealthUpdate, HudHealthDraw, D_001416F8, 8);
 }

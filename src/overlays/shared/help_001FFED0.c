@@ -45,7 +45,7 @@ void HeroL15_FrameUpdate(void) {
     float pulse;
 
     func_L00_00232EF0();
-    Hero_UpdateMotionInput();
+    hero_update();
     Hero_UpdateAimFlags();
     HeroL15_UpdateStateTransitions();
     b0 = D_0013E633 + 0xE1D;
@@ -345,7 +345,7 @@ void HeroL15_SlideAlongWall(int arg) {
     float f2, f21, f20;
     int r18, r;
     if (*(short *)(base + 0x308) != 0) return;
-    if (ViewXyLength((float *)(base + 0xE0)) < D_0015EE6C * 0.1f) return;
+    if (gravity_length_xy((float *)(base + 0xE0)) < D_0015EE6C * 0.1f) return;
     f2 = 0.37f;
     f21 = 0.5f;
     if ((unsigned)(*(int *)(base + 0x208C) - 0x11) < 2) {
@@ -545,25 +545,25 @@ void HeroL15_ResetMotionState(void) {
     if (D_0013F450_0ADD8.xI208c == 2) {
         g = D_0013F450_0ADD8.xF234 * 2.9f;
     }
-    Hero_BuildProbeEndpoints(&v10, &v0, k, g, -48.0f);
+    hero_get_collision_ray_endpoints(&v10, &v0, k, g, -48.0f);
     if (func_L00_001EFFF0(&v10, &v0, 2, D_0013F450_0ADD8.xI2080, 0) == 0) {
         goto tail;
     }
-    r = CollSoundClass();
+    r = coll_sound_class();
     if (r == -1) {
         r = 3;
     }
     D_0013F450_0ADD8.xB12ed = r;
     D_0013F450_0ADD8.xH12e0 = CollType();
     if (D_0013F450_0ADD8.xH12e0 == 0) {
-        D_0013F450_0ADD8.xF2f0 = GetGroundHeight(D_L15_001744E0, (u8 *)&D_0013F450_0ADD8 + 0x280);
+        D_0013F450_0ADD8.xF2f0 = resolve_camera_surface_height(D_L15_001744E0, (u8 *)&D_0013F450_0ADD8 + 0x280);
         if (D_0013F450_0ADD8.xF88 < D_0013F450_0ADD8.xF2f0 && D_0013F450_0ADD8.xI2f8 <= 0) {
             D_0013F450_0ADD8.xI2f8 = 1;
         }
         if (func_L00_001EFFF0(&v10, &v0, 0x24, D_0013F450_0ADD8.xI2080, 0) == 0) {
             goto d1;
         }
-        r = CollSoundClass();
+        r = coll_sound_class();
         if (D_0015EE84 == 1 || D_0015EE84 == 0x12) {
             r = 3;
         }
@@ -773,7 +773,7 @@ void HeroFrameUpkeep(void) {
         D_0013F450_16568.health.hp != 0 && (*(s32 *)&D_L15_0015F6A8_16568) == 0) {
         if (D_0013F450_16568.vehicle_mode == 3) {
             Help_Reset();
-            if (PadPressedWithin(0x80, scale_ticks(0x12), 0)) {
+            if (pad_pressed_within(0x80, scale_ticks(0x12), 0)) {
                 D_0013F450_16568.unk20A6 = 1;
             }
         } else {
@@ -798,7 +798,7 @@ void HeroFrameUpkeep(void) {
         func_001F9908(&D_L15_00179F70[i].w0);
     }
     D_0013F450_16568.unk22B8 = 9999.0f;
-    if (D_0013F450_16568.air_frames.s != 0 && HeroGetViewZ(&D_0013F450_16568.motion.velocity) < 0.0f) {
+    if (D_0013F450_16568.air_frames.s != 0 && gravity_z(&D_0013F450_16568.motion.velocity) < 0.0f) {
         if (D_0013F450_16568.unk21B4 != 0x20) goto skip;
         clear_u64_value(&sum);
         n8 = 8;

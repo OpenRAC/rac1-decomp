@@ -424,7 +424,7 @@ void Moby1402Update(unsigned char *m)
         *(int *)(m + 0x94) = 0;
         break;
     case 1:
-        if (D_0013D505[9] != 0) {
+        if (menu_item_enabled_105[9] != 0) {
             d->w8 = (d->w8 + 1) & 1;
         }
         {
@@ -444,7 +444,7 @@ void Moby1402Update(unsigned char *m)
             *(int *)&D_L18_0016238C = 0;
             m[0x20] = 2;
             if (d->w8 == 0) {
-                D_0013D505[9] = 1;
+                menu_item_enabled_105[9] = 1;
             }
         }
         ApproachWithVelocity(d->f4, D_0015EE70 * 4.0f, D_0015EE70 * 4.0f, D_0015EE6C * 4.0f, (float *)(m + 0x18), (float *)((char *)d + 0x18));
@@ -877,7 +877,7 @@ extern char *func_L18_002D6738(float *pos, float *dir, float *target, float a, f
 extern char *func_L18_002D70E8(int owner, int idx, float *from, float *to, float speed, int frames);
 
 /* Update of the final boss robot (class 1422): one step of its state machine, then its bob, aim and tint. */
-void FinalBossUpdate(Moby *moby) {
+void drek_final_boss_robot_update(Moby *moby) {
     BossData *d = (BossData *)(*(char **)&moby->pvars);
     Moby *tgt;
     float v0[4];
@@ -902,7 +902,7 @@ void FinalBossUpdate(Moby *moby) {
         }
     }
     if (moby->visible != 0 && FastVecDist(((f32 *)&moby->pos), D_L18_00167840) < 32.0f) {
-        SetGroundHeightBand(moby);
+        func_L00_0025B178(moby);
         moby->shadow_range = 0x1A;
     }
     switch (moby->state) {
@@ -957,7 +957,7 @@ void FinalBossUpdate(Moby *moby) {
             }
             if (*(int *)&D_L18_00162430 == 0) {
                 char *b = D_L18_0016016C + d->f294 * 0x80;
-                PauseMenu_SeedSnapshot(b + 0x30, b + 0x70);
+                jet_reset_camera(b + 0x30, b + 0x70);
                 *(int *)&D_L18_00162430 = 1;
             }
         }
@@ -1061,8 +1061,8 @@ void FinalBossUpdate(Moby *moby) {
                 char *b = D_L18_0016016C + d->f2A0 * 0x80;
                 Hero_ResetToPosition(b + 0x30, b + 0x70, 0, 1);
             }
-            SetLevelTriggerDone(d->f2B0);
-            PauseMenu_SeedSnapshot(D_0013F450.f80, D_0013F450.f90);
+            jet_clear_persistent(d->f2B0);
+            jet_reset_camera(D_0013F450.f80, D_0013F450.f90);
             Group_EnableMobys((int)moby, d->f204[0]);
             StartCutscene(1);
             moby->state = 7;
@@ -1876,7 +1876,7 @@ void FinalBossUpdate(Moby *moby) {
         Moby_GetJointWorldPos(moby, 9, v1);
         FastVecSub(v2, v0, v1);
         func_L00_001FF4B0(v2, v2, 0.1f);
-        SpawnSparkRings(v0, v0, v2, 600000.0f, 0.0f);
+        draw_trail(v0, v0, v2, 600000.0f, 0.0f);
     }
     if (d->f34C > 1) {
         D_0013F450.f5D8 = moby;
@@ -2662,7 +2662,7 @@ void FinalBoss_SpawnBurstParticles(char *moby, void *p) {
     a.v[3] = 1.0f;
     b.v[0] = 0.23f;
     b.v[3] = 1.0f;
-    func_L00_001FEF78(moby + 0xBC);
+    fast_subtract_rotations_cf(moby + 0xBC);
     func_001F9EC0(&b, &b, moby + 0xC0);
     FastVecAdd(c, moby + 0x10, &b);
     func_001F9EC0(&a, &a, moby + 0xC0);

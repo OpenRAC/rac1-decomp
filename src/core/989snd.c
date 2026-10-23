@@ -199,15 +199,15 @@ int func_0012DDC0(void) {
     SndCallback fn;
     long arg;
 
-    if (SDA_I(D_0015ED80) != 0 && func_0012DFB0() != 0) {
-        if (SDA_I(D_0015ED9C) != 0) {
-            if ((SndCallback)SDA_I(D_0015EDE0) != 0) {
-                ((SndCallback)SDA_I(D_0015EDE0))(D_00133204[0], *(long *)&D_0015EDE8);
+    if (SDA_I(snd_current_buffer) != 0 && func_0012DFB0() != 0) {
+        if (SDA_I(snd_return_callback_pending) != 0) {
+            if ((SndCallback)SDA_I(snd_return_callback) != 0) {
+                ((SndCallback)SDA_I(snd_return_callback))(snd_iop_return_word[0], *(long *)&snd_return_callback_data);
             }
-            SDA_I(D_0015EDE0) = 0;
-            SDA_I(D_0015ED9C) = 0;
+            SDA_I(snd_return_callback) = 0;
+            SDA_I(snd_return_callback_pending) = 0;
         } else {
-            idx = SDA_I(D_0015EDC0) != 1;
+            idx = SDA_I(snd_batch_index) != 1;
             for (i = 0; i < *SND_COUNT[idx]; i++) {
                 if (SND_CMDS[idx][i].fn != 0) {
                     SND_CMDS[idx][i].fn(SND_REPLY[idx][i + 1], SND_CMDS[idx][i].arg);
@@ -215,36 +215,36 @@ int func_0012DDC0(void) {
             }
         }
     }
-    if (SDA_I(D_0015EDC8) != 0) {
+    if (SDA_I(snd_cd_callback_pending) != 0) {
         func_00118D80(0);
-        if (D_0015EE00 != 0xFFFFFFFF) {
-            if ((SndCallback)SDA_I(D_0015EDD0) != 0) {
+        if (snd_cd_callback_arg != 0xFFFFFFFF) {
+            if ((SndCallback)SDA_I(snd_cd_callback_fn) != 0) {
                 arg = D_0015EDD8_l;
-                fn = (SndCallback)SDA_I(D_0015EDD0);
-                SDA_I(D_0015EDD0) = 0;
+                fn = (SndCallback)SDA_I(snd_cd_callback_fn);
+                SDA_I(snd_cd_callback_fn) = 0;
                 D_0015EDD8_l = 0;
-                fn(D_0015EE00, arg);
+                fn(snd_cd_callback_arg, arg);
             }
-            D_0015EE00 = 0;
-            SDA_I(D_0015EDC8) = 0;
+            snd_cd_callback_arg = 0;
+            SDA_I(snd_cd_callback_pending) = 0;
         }
     }
-    if (SDA_I(D_0015ED80) == 0) {
-        if (*SND_COUNT[SDA_I(D_0015EDC0)] != 0 && SDA_I(D_0015EDC4) == 0) {
+    if (SDA_I(snd_current_buffer) == 0) {
+        if (*SND_COUNT[SDA_I(snd_batch_index)] != 0 && SDA_I(GlobalTableStatus) == 0) {
             func_0012EB18();
         }
     }
-    if (SDA_I(D_0015ED94) != 0) {
+    if (SDA_I(snd_cd_sync_pending) != 0) {
         func_0012EF48(1);
-        if (SDA_I(D_0015ED98) != 0) {
-            SDA_I(D_0015ED94) = 0;
-            SDA_I(D_0015ED98) = 0;
-            if ((void (*)(int))SDA_I(D_0015ED90) != 0) {
-                ((void (*)(int))SDA_I(D_0015ED90))(1);
+        if (SDA_I(snd_cd_stream_end_pending) != 0) {
+            SDA_I(snd_cd_sync_pending) = 0;
+            SDA_I(snd_cd_stream_end_pending) = 0;
+            if ((void (*)(int))SDA_I(snd_cd_status_callback) != 0) {
+                ((void (*)(int))SDA_I(snd_cd_status_callback))(1);
             }
         }
     }
-    return SDA_I(D_0015ED80) != 0 || SDA_I(D_0015EDC8) != 0;
+    return SDA_I(snd_current_buffer) != 0 || SDA_I(snd_cd_callback_pending) != 0;
 }
 
 #undef SDA_I
@@ -272,23 +272,23 @@ int func_0012DFB0(void) {
     int *p;
 
     func_00118D80(0);
-    if (*(int *)&D_0015ED80 == 0) {
+    if (*(int *)&snd_current_buffer == 0) {
         return 1;
     }
-    if (func_0011B6B8(&D_0015ECC0) != 0) {
+    if (func_0011B6B8(&sound_command_client) != 0) {
         return 0;
     }
-    p = *(int **)&D_0015ED80;
+    p = *(int **)&snd_current_buffer;
     if ((unsigned int)p[0] != 0xFFFFFFFFU) {
-        func_00116078(D_00153D98);
+        func_00116078(snd_no_return_error_string);
         return 0;
     }
-    if ((unsigned int)*(int *)((*(int *)&D_0015ED84) * 4 + (char *)p + 4) !=
+    if ((unsigned int)*(int *)((*(int *)&snd_current_buffer_index) * 4 + (char *)p + 4) !=
         (unsigned int)p[0]) {
-        func_00116078(D_00153D98);
+        func_00116078(snd_no_return_error_string);
         return 0;
     }
-    *(int *)&D_0015ED80 = 0;
+    *(int *)&snd_current_buffer = 0;
     return 1;
 }
 
@@ -296,8 +296,8 @@ int func_0012DFB0(void) {
 /* snd_PrepareReturnBuffer */
 void func_0012E038(void *arg0, int arg1) {
     int *p = (int *)arg0;
-    *(int *)&D_0015ED84 = arg1;
-    *(int *)&D_0015ED80 = (int)arg0;
+    *(int *)&snd_current_buffer_index = arg1;
+    *(int *)&snd_current_buffer = (int)arg0;
     p[arg1 + 1] = 0;
     p[0] = 0;
 }
@@ -318,8 +318,8 @@ extern int func_0012DDC0(void);
    D_0015EE00; 0 (and a message) when a stream is pending, the CD is
    busy or the RPC fails (error 0x106 in D_0015ED88). */
 unsigned int func_0012E060(int arg0, int arg1) {
-    *(int *)&D_0015ED88 = 0;
-    if (*(int *)&D_0015EDC8 != 0) {
+    *(int *)&snd_cd_load_error = 0;
+    if (*(int *)&snd_cd_callback_pending != 0) {
         func_00116078(D_00153EA8);
         return 0;
     }
@@ -328,24 +328,24 @@ unsigned int func_0012E060(int arg0, int arg1) {
         return 0;
     }
     D_00137C40_a[1] = arg1;
-    D_0015EE00 = 0xFFFFFFFF;
+    snd_cd_callback_arg = 0xFFFFFFFF;
     D_00137C40_a[0] = arg0;
-    while (func_0011B6B8(&D_0015ECE8) != 0) {
-        func_00116078(D_00153E20);
+    while (func_0011B6B8(&sound_stream_client) != 0) {
+        func_00116078(snd_non_idle_error_string);
         func_0012DDC0();
         func_00118D80(0);
     }
-    if (func_0011B4C8(&D_0015ECE8, 3, 1, D_00137C40_a, 8, &D_0015EE00, 4, 0, 0) < 0) {
-        func_00116078(D_00153EF8);
-        *(int *)&D_0015ED88 = 0x106;
+    if (func_0011B4C8(&sound_stream_client, 3, 1, D_00137C40_a, 8, &snd_cd_callback_arg, 4, 0, 0) < 0) {
+        func_00116078(snd_bank_load_by_loc_rpc_error_string);
+        *(int *)&snd_cd_load_error = 0x106;
         return 0;
     }
-    if (D_0015EE00 == 0xFFFFFFFF) {
+    if (snd_cd_callback_arg == 0xFFFFFFFF) {
         do {
             func_00118D80(0);
-        } while (D_0015EE00 == 0xFFFFFFFF);
+        } while (snd_cd_callback_arg == 0xFFFFFFFF);
     }
-    return D_0015EE00;
+    return snd_cd_callback_arg;
 }
 
 LINKER_REMNANT("asm/remnants/core_text", func_0012E1B8);
@@ -360,26 +360,26 @@ extern char D_00153FF8[];
    pending (D_0015EDC8) or the CD is busy (func_0012EF48); the reply word
    lands in D_0015EE00. */
 void func_0012E1C8(int arg0, int arg1, long arg2) {
-    *(int *)&D_0015ED88 = 0;
-    if (*(int *)&D_0015EDC8 != 0) {
-        func_00116078(D_00153FC0);
+    *(int *)&snd_cd_load_error = 0;
+    if (*(int *)&snd_cd_callback_pending != 0) {
+        func_00116078(snd_bank_load_from_ee_progress_string);
         return;
     }
     if (func_0012EF48(1) == 1) {
-        func_00116078(D_00153FF8);
+        func_00116078(snd_bank_load_from_ee_cd_busy_string);
         return;
     }
-    D_00137C40 = arg0;
-    D_0015EE00 = 0xFFFFFFFF;
-    *(int *)&D_0015EDD0 = arg1;
-    D_0015EDD8 = arg2;
-    while (func_0011B6B8(&D_0015ECE8) != 0) {
-        func_00116078(D_00153E20);
+    snd_cd_bank_load_request = arg0;
+    snd_cd_callback_arg = 0xFFFFFFFF;
+    *(int *)&snd_cd_callback_fn = arg1;
+    snd_cd_callback_data = arg2;
+    while (func_0011B6B8(&sound_stream_client) != 0) {
+        func_00116078(snd_non_idle_error_string);
         func_0012DDC0();
         func_00118D80(0);
     }
-    *(int *)&D_0015EDC8 = 1;
-    func_0011B4C8(&D_0015ECE8, 0x57, 1, &D_00137C40, 4, &D_0015EE00, 4, 0, 0);
+    *(int *)&snd_cd_callback_pending = 1;
+    func_0011B4C8(&sound_stream_client, 0x57, 1, &snd_cd_bank_load_request, 4, &snd_cd_callback_arg, 4, 0, 0);
 }
 
 LINKER_REMNANT("asm/remnants/core_text", func_0012E2D8);
@@ -518,22 +518,22 @@ int func_0012E688(int cmd, int size, void *arg) {
         func_0012DDC0();
         func_00118D80(0);
 check:;
-    } while (*(int *)&D_0015ED80 != 0);
+    } while (*(int *)&snd_current_buffer != 0);
     func_0012E038_s(D_00133200_w, 1);
-    while (func_0011B6B8(&D_0015ECC0) != 0) {
-        func_00116078(D_00153E20);
+    while (func_0011B6B8(&sound_command_client) != 0) {
+        func_00116078(snd_non_idle_error_string);
         func_0012DDC0();
         func_00118D80(0);
     }
     if (size != 0) {
-        func_0011B4C8(&D_0015ECC0, cmd, 1, D_00133240_c, size, D_00133200_w, 0xC, 0, 0);
+        func_0011B4C8(&sound_command_client, cmd, 1, D_00133240_c, size, D_00133200_w, 0xC, 0, 0);
     } else {
-        func_0011B4C8(&D_0015ECC0, cmd, 1, 0, 0, D_00133200_w, 0xC, 0, 0);
+        func_0011B4C8(&sound_command_client, cmd, 1, 0, 0, D_00133200_w, 0xC, 0, 0);
     }
     while (func_0012DFB0() == 0) {
     }
     result = D_00133200_w[1];
-    if (*((int **)&D_0015EDA0)[*(int *)&D_0015EDC0] != 0 && *(int *)&D_0015EDC4 == 0) {
+    if (*((int **)&snd_batch_command_buffers)[*(int *)&snd_batch_index] != 0 && *(int *)&GlobalTableStatus == 0) {
         func_0012EB18();
     }
     return result;
@@ -568,14 +568,14 @@ void func_0012E820_r(int cmd, int size, unsigned char *data, int cb, long cb_dat
     unsigned char *p;
 
     held = 0;
-    if (*(int *)&D_0015EDC4 == 0 && *(int *)&D_0015ED80 == 0 && size == 0 && cb == 0) {
+    if (*(int *)&GlobalTableStatus == 0 && *(int *)&snd_current_buffer == 0 && size == 0 && cb == 0) {
         func_0012E038_s(D_00133200_w, 1);
-        while (func_0011B6B8(&D_0015ECC0) != 0) {
-            func_00116078_p(D_00153E20);
+        while (func_0011B6B8(&sound_command_client) != 0) {
+            func_00116078_p(snd_non_idle_error_string);
             func_0012DDC0();
             func_00118D80(0);
         }
-        func_0011B4C8(&D_0015ECC0, cmd, 1, 0, 0, D_00133200_w, 0xC, 0, 0);
+        func_0011B4C8(&sound_command_client, cmd, 1, 0, 0, D_00133200_w, 0xC, 0, 0);
         return;
     }
     need = size + 4;
@@ -583,26 +583,26 @@ void func_0012E820_r(int cmd, int size, unsigned char *data, int cb, long cb_dat
     if (need % 4 != 0) {
         need += 4 - need % 4;
     }
-    while (*((int **)&D_0015EDA0)[*(int *)&D_0015EDC0] == 0x100 ||
-           ((int *)&D_0015EDA8)[*(int *)&D_0015EDC0] < need) {
-        if (*(int *)&D_0015EDC4 != 0) {
-            *(int *)&D_0015EDC4 = 0;
+    while (*((int **)&snd_batch_command_buffers)[*(int *)&snd_batch_index] == 0x100 ||
+           ((int *)&snd_batch_free_bytes)[*(int *)&snd_batch_index] < need) {
+        if (*(int *)&GlobalTableStatus != 0) {
+            *(int *)&GlobalTableStatus = 0;
             held = 1;
         }
         func_0012DDC0();
         if (tries == 1) {
-            func_00116078_p(D_00154110, *(int *)&D_0015EDC0, *((int **)&D_0015EDA0)[*(int *)&D_0015EDC0]);
+            func_00116078_p(D_00154110, *(int *)&snd_batch_index, *((int **)&snd_batch_command_buffers)[*(int *)&snd_batch_index]);
         }
         tries++;
     }
     if (tries != 0) {
-        func_00116078_p(D_00154170, tries);
+        func_00116078_p(snd_no_wait_continuing_string, tries);
     }
     if (held != 0) {
-        *(int *)&D_0015EDC4 = 1;
+        *(int *)&GlobalTableStatus = 1;
     }
-    p = (unsigned char *)((int **)&D_0015EDA0)[*(int *)&D_0015EDC0] -
-        (((int *)&D_0015EDA8)[*(int *)&D_0015EDC0] - 0x1000);
+    p = (unsigned char *)((int **)&snd_batch_command_buffers)[*(int *)&snd_batch_index] -
+        (((int *)&snd_batch_free_bytes)[*(int *)&snd_batch_index] - 0x1000);
     *(short *)p = cmd;
     p += 2;
     *(short *)p = size;
@@ -610,10 +610,10 @@ void func_0012E820_r(int cmd, int size, unsigned char *data, int cb, long cb_dat
     for (i = 0; i < size; i++) {
         p[i] = data[i];
     }
-    ((int *)&D_0015EDA8)[*(int *)&D_0015EDC0] -= need;
-    slot = *(int *)&D_0015EDC0;
-    ((SndCb_2E820 **)&D_0015EDB0)[slot][*((int **)&D_0015EDA0)[slot]].func = cb;
-    ((SndCb_2E820 **)&D_0015EDB0)[slot][*((int **)&D_0015EDA0)[slot]].data = cb_data;
+    ((int *)&snd_batch_free_bytes)[*(int *)&snd_batch_index] -= need;
+    slot = *(int *)&snd_batch_index;
+    ((SndCb_2E820 **)&snd_stream_buffers)[slot][*((int **)&snd_batch_command_buffers)[slot]].func = cb;
+    ((SndCb_2E820 **)&snd_stream_buffers)[slot][*((int **)&snd_batch_command_buffers)[slot]].data = cb_data;
     func_0012EAE0();
 }
 
@@ -623,8 +623,8 @@ void func_0012E820_r(int cmd, int size, unsigned char *data, int cb, long cb_dat
 
 /* snd_PostMessage */
 void func_0012EAE0(void) {
-    int idx = *(int *)&D_0015EDC0;
-    int **base = (int **)&D_0015EDA0;
+    int idx = *(int *)&snd_batch_index;
+    int **base = (int **)&snd_batch_command_buffers;
     int *msg = base[idx];
 
     *msg = *msg + 1;
@@ -669,7 +669,7 @@ void func_0012EB18(void) {
 
 /* snd_UnkFunction_0012eaf0 */
 void func_0012EC30(void) {
-    *(int *)&D_0015EDC4 = 1;
+    *(int *)&GlobalTableStatus = 1;
 }
 
 
@@ -682,7 +682,7 @@ void func_0012EC30(void) {
  */
 /* snd_UnkFunction_0012eb00 */
 void func_0012EC40(void) {
-    *(int *)&D_0015EDC4 = 0;
+    *(int *)&GlobalTableStatus = 0;
     func_0012DDC0();
 }
 
@@ -703,7 +703,7 @@ int func_0012EC60(int arg0, int arg1, int arg2, int arg3) {
     int hdr[4];
     int r;
 
-    if (*(int *)&D_0015ED8C == 1) {
+    if (*(int *)&snd_cd_stream_active == 1) {
         return 0;
     }
     if (*(int *)((char *)&D_0015EDBC + 0xC) != 0) {
@@ -716,7 +716,7 @@ int func_0012EC60(int arg0, int arg1, int arg2, int arg3) {
     hdr[2] = arg2;
     hdr[3] = arg3;
     r = func_0012E688(0x2A, 0x10, hdr);
-    *(int *)&D_0015ED8C = r;
+    *(int *)&snd_cd_stream_active = r;
     return r;
 }
 
@@ -793,7 +793,7 @@ extern int func_00121750(int, int, int);
 int func_0012EE98(int arg0, int arg1, int arg2) {
     int local[3];
 
-    if (*(int *)&D_0015ED8C == 0) {
+    if (*(int *)&snd_cd_stream_active == 0) {
         return func_00121750(arg0, arg1, arg2);
     }
 
@@ -802,13 +802,13 @@ int func_0012EE98(int arg0, int arg1, int arg2) {
     }
 
     local[0] = arg0;
-    D_00137C00.count = 1;
-    D_00137C00.error = 0;
+    sound_read_work.count = 1;
+    sound_read_work.error = 0;
     local[1] = arg1;
     local[2] = arg2;
     func_0012E820(0x38, 12, local, 0, 0);
-    *(int *)&D_0015ED94 = 1;
-    *(int *)&D_0015ED98 = 0;
+    *(int *)&snd_cd_sync_pending = 1;
+    *(int *)&snd_cd_stream_end_pending = 0;
     return 1;
 }
 
@@ -816,13 +816,13 @@ extern void func_00118D80(int);
 
 /* snd_StreamSafeCdSync */
 int func_0012EF48(int arg0) {
-    if (*(int *)&D_0015ED8C == 0) {
+    if (*(int *)&snd_cd_stream_active == 0) {
         return func_00120F30(arg0);
     }
 
     func_00118D80(0);
-    *(int *)&D_0015ED98 = D_00137C00.count == 0;
-    if (*(int *)&D_0015ED98 == 1) {
+    *(int *)&snd_cd_stream_end_pending = sound_read_work.count == 0;
+    if (*(int *)&snd_cd_stream_end_pending == 1) {
         return 0;
     }
 
@@ -830,10 +830,10 @@ int func_0012EF48(int arg0) {
         return 1;
     }
 
-    while (*(int *)&D_0015ED98 == 0) {
+    while (*(int *)&snd_cd_stream_end_pending == 0) {
         func_0012DDC0();
         func_00118D80(0);
-        *(int *)&D_0015ED98 = D_00137C00.count == 0;
+        *(int *)&snd_cd_stream_end_pending = sound_read_work.count == 0;
     }
 
     return 0;
@@ -843,7 +843,7 @@ extern int func_001219C8(void);
 
 /* snd_StreamSafeCdBreak */
 int func_0012EFE8(void) {
-    if (*(int *)&D_0015ED8C == 0) {
+    if (*(int *)&snd_cd_stream_active == 0) {
         return func_001219C8();
     }
     func_0012E820(0x37, 0, 0, 0, 0);
@@ -858,10 +858,10 @@ extern int func_00121930(void);
  * volatile is what makes retail's separate lui+addiu base and its
  * duplicated epilogue restore come out of this compiler. */
 int func_0012F030(void) {
-    if (*(int *)&D_0015ED8C == 0) {
+    if (*(int *)&snd_cd_stream_active == 0) {
         return func_00121930();
     }
-    return D_00137C00.error;
+    return sound_read_work.error;
 }
 
 /* gp-relative, no retail symbol: gp 0x166D00 - 0x7F74 = 0x15ED8C
@@ -874,11 +874,11 @@ extern int func_00120978(void);
 int func_0012F068(int arg0) {
     int old;
 
-    if (*(int *)&D_0015ED8C == 0) {
+    if (*(int *)&snd_cd_stream_active == 0) {
         return func_00120978();
     }
-    old = *(int *)&D_0015ED90;
-    *(int *)&D_0015ED90 = arg0;
+    old = *(int *)&snd_cd_status_callback;
+    *(int *)&snd_cd_status_callback = arg0;
     return old;
 }
 

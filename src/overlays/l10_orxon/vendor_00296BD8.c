@@ -145,7 +145,7 @@ void BobbingPlatformUpdate(char *m) {
     }
     }
     FastVecSub(v, m + 0x10, prev);
-    CarryRiders(d + 0x60, v, m + 0x40, m + 0x40);
+    update_entity_matrix(d + 0x60, v, m + 0x40, m + 0x40);
 }
 extern unsigned char D_0013D605_00299818[] __asm__("D_0013D605");
 extern char D_0013F450_00299818[] __asm__("D_0013F450");
@@ -166,7 +166,7 @@ extern void remove_00299818(void *) __asm__("func_0020D678");
 
 /* Spinning pickup: waits until the hero is close and level with it, then plays the scene, saves and goes away.
    Adapted from Lombyte (MIT) for PAL: src/overlays/l10/gameplay/entities/00295a38.c, FUN_L10_00298668. */
-void SpinningPickupUpdate(Moby *m) {
+void magnetboots_update(Moby *m) {
     char *d = (char *)m->pvars;
     m->rot.z = addrot_00299818(m->rot.z, D_0015EE6C_x * 1.5707964f);
     switch (m->state) {
@@ -390,7 +390,7 @@ extern void func_L00_002E9A18(int);
 #define func_L00_002E9A18_2BFBB8 func_L00_002E9A18
 
 /* Moby update that emits sparkles and a sound when the hero is near the target moby. */
-void NearHeroSparkleUpdate(char *m)
+void gadgebot_telepot_pad_update(char *m)
 {
     int *data = *(int **)(m + 0x78);
     float position[4];
@@ -709,7 +709,7 @@ void Moby794Update(struct Moby *moby) {
                 if (other != 0 && other->oclass == *(short *)(entry + 1) &&
                     other->state != 0xfe && other->state != 0xfd) {
                     unsigned short id = other->save_id;
-                    if ((((*(int *)(D_0014C290 + (((short)id >> 5) * 4) +
+                    if ((((*(int *)(level_moby_killed + (((short)id >> 5) * 4) +
                               (D_0015EE84 << 8)) >> (id & 31)) ^ 1) & 1) != 0) {
                         if (*(signed char *)((char *)entry + 6) == -1 ||
                             other->state != *(signed char *)((char *)entry + 6))
@@ -748,10 +748,10 @@ void Moby794Update(struct Moby *moby) {
                     char *base = D_L10_00160058_CB030;
                     unsigned short oclass = *(unsigned short *)((index << 8) + (int)base + 0xa6);
                     *(short *)(entry + 1) = oclass;
-                    STUB_printf(D_L10_001DD0D0, ((char *)moby - base) >> 8,
+                    STUB_printf(linked_moby_present_message, ((char *)moby - base) >> 8,
                                 i, index, (short)oclass);
                 } else {
-                    STUB_printf(D_L10_001DD100, ((char *)moby - D_L10_00160058_CB030) >> 8, i);
+                    STUB_printf(linked_moby_missing_message, ((char *)moby - D_L10_00160058_CB030) >> 8, i);
                 }
             }
         }
@@ -860,7 +860,7 @@ void Moby859Update(struct Moby *moby) {
         check[2] += 0.1f;
         raised[2] -= *(float *)(data + 0x1c) + *(float *)(data + 0x1c);
         if (func_L00_001EFFF0(check, raised, 2, (int)moby, 0))
-            Moby_StepZToward(moby, *(float *)(D_L10_00174340 + 0x28) + *(float *)(data + 0x1c));
+            Moby_StepZToward(moby, *(float *)(ground_hit + 0x28) + *(float *)(data + 0x1c));
         else
             Moby_StepZToward(moby, moby->pos.z - 0.1f);
         break;
@@ -881,7 +881,7 @@ void Moby859Update(struct Moby *moby) {
         return;
     }
     if (func_L00_001EFFF0(old, &moby->pos, 0, *(int *)(data + 0x20), (int)hit)) {
-        char *collision = D_L10_00174340;
+        char *collision = ground_hit;
         struct Moby *other = *(struct Moby **)(collision + 0x18);
         if (other == 0 || other->oclass != 0x359) {
             qcopy(&moby->pos, collision + 0x20);
@@ -979,7 +979,7 @@ int SwirlMoby_RayCollide(char *m, char *c, float *a2) {
     v10[2] = one;
     if (*(short *)(c + 0x14) == 0) {
       if (func_L00_001EFFF0(v0, m + 0x10, 0x10, (int)m, 0)) {
-        g = D_L10_00174340;
+        g = ground_hit;
         w6 = *(int *)(g + 0x18);
         if (w6 != 0) {
             FastVecSub(g + 0x40, m + 0x10, (void *)(w6 + 0x10));
@@ -1229,7 +1229,7 @@ extern short D_L10_00161C84;
 extern short D_L10_00161C88;
 
 /* update: on a timer, fire a projectile from the moby's angle, then rearm the timer */
-void TimedShooterUpdate(char *moby) {
+void bombthrower_grass_update(char *moby) {
     char *data = *(char **)(moby + 0x78);
     float a[4];
     float b[4];
@@ -1282,7 +1282,7 @@ void ElectricSparkUpdate(char *m) {
     switch (((unsigned char *)m)[0x20]) {
     case 0:
         if (*(int *)(d + 0xC) != -1) {
-            FreePointLight(*(int *)(d + 0xC));
+            light_off_67e8(*(int *)(d + 0xC));
             *(int *)(d + 0xC) = -1;
         }
         if (*(int *)(d + 0x10) != -1) {
@@ -1363,7 +1363,7 @@ extern int func_L00_0025A208(int *, int, int, int);
 extern int func_L00_0025A2F0(int *, int, int, int);
 
 /* update for a moby that glides between two heights and sets a flag */
-void HeightGlideUpdate(unsigned char *m) {
+void lab_door_update(unsigned char *m) {
     int *d = *(int **)(m + 0x78);
     u128 v[2];
     int it;
@@ -1455,8 +1455,8 @@ void Moby1031Update(char *m) {
     if (n != 0) {
         if (n > 0) {
             int count;
-            list = (char **)D_L10_00178400;
-            contact = D_L10_00174340;
+            list = (char **)nearby_mobys;
+            contact = ground_hit;
             count = n;
             do {
                 float z = ProbeGroundHeight(*list + 0x10, 0, 0.5f);
@@ -1990,14 +1990,14 @@ void Moby1090Update(char *m) {
  if(*(float *)(*(char **)(m+0x24)+0x24)*0.25f<*(float *)(m+0x2C)) {
   int count=coll_sphere_mobys(0.15f,m+0x10,16,*(void **)(d+0x10),0);
   *(Effect128 *)pos=*(Effect128 *)(m+0x10);
-  SendRadialMessageToMobys(*(void **)(d+0x10),pos,D_L10_00178400,count,0,0x810001,2,1,2.0f,1.0f,1.0f);
+  SendRadialMessageToMobys(*(void **)(d+0x10),pos,nearby_mobys,count,0,0x810001,2,1,2.0f,1.0f,1.0f);
  }
 }
 extern void func_001F9BF0(void *dst, void *a, void *b);
 extern char D_L10_00178600[];
 
 /* Collectible trigger: deletes itself once taken, else watches for its toucher. */
-void CollectibleTriggerUpdate(char *m) {
+void block_cave_update(char *m) {
     int i;
     char *e;
     float w[16];
@@ -2121,7 +2121,7 @@ extern Path_2E0630 *D_L10_001B0C30_2E0630[] __asm__("D_L10_001B0C30");
 extern V_2E0630 D_L10_00174360_2E0630 __asm__("D_L10_00174360");
 
 /* Update function for moby class 1196 (screamer) on level 10: follows its path, turns to its target, wanders. */
-void Moby1196Update(Moby *m) {
+void screamer_update(Moby *m) {
     float v[6];
     D_2E0630 *d = (D_2E0630 *)m->pvars;
     Moby *P;
@@ -2322,7 +2322,7 @@ void PathEnemyL10Update(struct Moby *moby) {
         ComputeHitResponse(moby, r, &data->f20, 5, &st, 0, 0, 4);
         if (r != 0) {
             if (data->f20 <= r->f2C) {
-                if (D_L10_00161FB8 != 0 && (f = D_0013D50F + 1, f[0x10]) == 0) {
+                if (D_L10_00161FB8 != 0 && (f = menu_item_enabled_115 + 1, f[0x10]) == 0) {
                     f[0x10] = 1;
                     PlayBankSound(1, 0, 0);
                     ShowBanner(0x53DB, -1);
@@ -2553,7 +2553,7 @@ void Moby1199Update(Moby *m) {
         }
         if (d->f104 == 2) break;
         if (!(3.0f < func_001F9D48_2E0630(&m->pos, &P->pos))) break;
-        if (func_L00_001FEF78(&m->command) == 0) break;
+        if (fast_subtract_rotations_cf(&m->command) == 0) break;
         if (m->group != 0xFF) Group_ResetTimers((unsigned char *)m);
         m->state = 6;
         if (m->prev_seq != 1) func_00213DE0_2E0630(m, 1, 0, func_001F9850_2E0630(10));
@@ -2561,7 +2561,7 @@ void Moby1199Update(Moby *m) {
     }
     case 4:
         m->anim_speed = 4.0f;
-        if (d->f104 != 2 && 3.0f < func_001F9D48_2E0630(&m->pos, &P->pos) && func_L00_001FEF78(&m->command) != 0) {
+        if (d->f104 != 2 && 3.0f < func_001F9D48_2E0630(&m->pos, &P->pos) && fast_subtract_rotations_cf(&m->command) != 0) {
             if (m->group != 0xFF) Group_ResetTimers((unsigned char *)m);
             m->state = 6;
             if (m->prev_seq != 1) func_00213DE0_2E0630(m, 1, 0, func_001F9850_2E0630(10));
@@ -2692,7 +2692,7 @@ void Moby1199Update(Moby *m) {
         d->v120.z = t;
         func_L00_00259B08_2E0630(m, &d->v120, 0.5f, 0x200, 0.0f, 0);
         if (d->f104 == 2) break;
-        if (func_L00_001FEF78(&m->command) == 0) break;
+        if (fast_subtract_rotations_cf(&m->command) == 0) break;
         if (!(D_L10_00161E7C < dist)) break;
         if (m->group != 0xFF) Group_ResetTimers((unsigned char *)m);
         m->state = 10;

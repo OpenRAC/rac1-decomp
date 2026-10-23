@@ -134,9 +134,9 @@ void Hud_ResetBanks(void) {
 
     for (i = 0; i < 13; i++) {
         queue_animation_update(i, 0xFFFF, 0, 0, 0, 0, 1);
-        D_L00_0017DD50[i].unk7C = 0;
-        D_L00_0017DD50[i].unk6C = -6;
-        apply_pending_animation(&D_L00_0017DD50[i]);
+        hud_elements[i].unk7C = 0;
+        hud_elements[i].unk6C = -6;
+        apply_pending_animation(&hud_elements[i]);
     }
 }
 typedef struct {
@@ -166,7 +166,7 @@ typedef struct {
    *X moves left by the width (+0x58) with bit 3, else by half of it.
    Returns 0. The flags are read once for the first test and again after
    the store; `(flags ^ 1) & 1` is retail's xori / andi test of bit 0. */
-int Hud_AlignElement(HudElem *rec, int *x, int *y) {
+int hud_screen_position(HudElem *rec, int *x, int *y) {
     int w = rec->w;
     int h = rec->h;
     int flags = rec->flags;
@@ -270,17 +270,17 @@ void Hud_InitSmallElement(HudElem *e) {
     e->h = 0x20;
     Hud_SetupCounterDigits(e);
 }
-int Hud_ExtendBankTime(int key, int val) {
+int hud_keep_visible(int key, int val) {
     int i;
     int r;
     HudBank *e;
     r = 1;
     for (i = 0; i < 13; i++) {
-        if (D_L00_0017DD50[i].unk64 == key)
+        if (hud_elements[i].unk64 == key)
             break;
     }
-    if (i < 13 && D_L00_0017DD50[i].unk68 == 0) {
-        e = D_L00_0017DD50 + i;
+    if (i < 13 && hud_elements[i].unk68 == 0) {
+        e = hud_elements + i;
         e->unk7C = (val < e->unk7C) ? e->unk7C : val;
         return 0;
     }
@@ -418,10 +418,10 @@ void Hud_InitParticles(HudElem *e) {
 
     Hud_InitElement(e);
     for (i = 0; i < 100; i++) {
-        v = *(float *)&D_L00_0015F830;
+        v = *(float *)&star_init_limit0_gp;
         if (i >= 10) {
-            v = *(float *)&D_L00_0015F834;
-            if (i >= 20) v = *(float *)&D_L00_0015F838;
+            v = *(float *)&star_init_limit1_gp;
+            if (i >= 20) v = *(float *)&star_init_limit2_gp;
         }
         n = *(int *)&D_L00_0015F83C;
         span = (232.0f - (v + v)) / (float)n;
@@ -461,11 +461,11 @@ void Hud_UpdateParticles(HudElem *e) {
         float a, b, na, nb;
 
         if (i < 10) {
-            lim = *(float *)&D_L00_0015F830;
+            lim = *(float *)&star_init_limit0_gp;
         } else if (i < 30) {
-            lim = *(float *)&D_L00_0015F834;
+            lim = *(float *)&star_init_limit1_gp;
         } else {
-            lim = *(float *)&D_L00_0015F838;
+            lim = *(float *)&star_init_limit2_gp;
         }
         a = lim - 17.0f;
         b = lim - 116.0f;
@@ -527,8 +527,8 @@ int func_L00_00236F38(HudElem *rec) {
             __builtin_memcpy(dst, src, 4);
         }
     }
-    func_L00_00236400(rec, &x, &y);
-    func_L00_00236468(rec, &x, &y, *(int *)(r + 0x6C), 0);
+    hud_screen_position(rec, &x, &y);
+    Hud_SlideElement(rec, &x, &y, *(int *)(r + 0x6C), 0);
 
     {
         int w = *(int *)&D_L00_0015F840 * 0xD0;
@@ -547,7 +547,7 @@ int func_L00_00236F38(HudElem *rec) {
 
     n = *(int *)(r + 0x74);
     if (n * 3 < 10001) {
-        s = func_001F9850(1);
+        s = scale_ticks(1);
         f0 = func_001F9878(0.75f);
         flagA = (D_L00_0015F4F8 - 1) % (int)((float)s * 60.0f) < (int)(f0 * 60.0f);
     } else {
@@ -555,20 +555,20 @@ int func_L00_00236F38(HudElem *rec) {
     }
     n = *(int *)(r + 0x74);
     if (n * 3 < 10001) {
-        s = func_001F9850(1);
+        s = scale_ticks(1);
         f0 = func_001F9878(0.75f);
         flagB = D_L00_0015F4F8 % (int)((float)s * 60.0f) < (int)(f0 * 60.0f);
     } else {
         flagB = 0;
     }
     if (!flagA && flagB == 1) {
-        func_L00_00217570(0xB, 0);
+        Hero_PlayActiveSound(0xB, 0);
     }
     w = 0;
-    tex = func_00200198(*(int *)r, flagB);
+    tex = GetIconFrame(*(int *)r, flagB);
     f20 = 16.0f;
     f22 = 32.0f;
-    func_L00_0023C458(tex, x + rec->unk48, y + rec->unk4A, (*(int *)&D_L00_0015F840), (*(int *)&D_L00_0015F844), 0x80);
+    HudSpriteRot90(tex, x + rec->unk48, y + rec->unk4A, (*(int *)&D_L00_0015F840), (*(int *)&D_L00_0015F844), 0x80);
 
     {
         float cx, cy, ox, oy;
@@ -587,15 +587,15 @@ int func_L00_00236F38(HudElem *rec) {
     }
     f21 = (float)(10000 - *(int *)(r + 0x74)) / 10000.0f;
     f21 = 116.0f - (f21 + f21) * 116.0f;
-    t21 = func_00200198(*(int *)r, 2);
+    t21 = GetIconFrame(*(int *)r, 2);
 
-    func_001F9BC0(v20);
-    func_001F9BC0(v30);
-    func_001F9BC0(v40);
+    clear_u64_value(v20);
+    clear_u64_value(v30);
+    clear_u64_value(v40);
     {
-        float q0 = *(float *)&D_L00_0015F830;
-        float q2 = *(float *)&D_L00_0015F834;
-        float q1 = *(float *)&D_L00_0015F838;
+        float q0 = *(float *)&star_init_limit0_gp;
+        float q2 = *(float *)&star_init_limit1_gp;
+        float q1 = *(float *)&star_init_limit2_gp;
         float q3 = q0 * f20;
         q0 = q2 - q0;
         q1 = q1 - q2;
@@ -612,24 +612,24 @@ int func_L00_00236F38(HudElem *rec) {
     for (i = 0; i < 100; i++) {
         if (i == 0) {
             float c0;
-            func_001F9BF0(v10, v10, v20);
-            c0 = *(float *)&D_L00_0015F830;
+            FastVecSub(v10, v10, v20);
+            c0 = *(float *)&star_init_limit0_gp;
             w = (int)(c0 * f22);
             f21 = f21 + c0;
         } else if (i == 10) {
             float c0, c1, c2;
-            func_001F9BF0(v10, v10, v30);
-            c0 = *(float *)&D_L00_0015F834;
-            c1 = *(float *)&D_L00_0015F830;
+            FastVecSub(v10, v10, v30);
+            c0 = *(float *)&star_init_limit1_gp;
+            c1 = *(float *)&star_init_limit0_gp;
             c2 = c0 * f22;
             c0 = c0 - c1;
             w = (int)c2;
             f21 = f21 + c0;
         } else if (i == 30) {
             float c0, c1, c2;
-            func_001F9BF0(v10, v10, v40);
-            c0 = *(float *)&D_L00_0015F838;
-            c1 = *(float *)&D_L00_0015F834;
+            FastVecSub(v10, v10, v40);
+            c0 = *(float *)&star_init_limit2_gp;
+            c1 = *(float *)&star_init_limit1_gp;
             c2 = c0 * f22;
             c0 = c0 - c1;
             w = (int)c2;
@@ -637,7 +637,7 @@ int func_L00_00236F38(HudElem *rec) {
         }
         if (f21 < D_L00_0017E760[i][1]) continue;
         func_L00_001FF2F8(v50, D_L00_0017E760[i], v0);
-        func_001F9BD8(v50, v50, v10);
+        FastVecAdd(v50, v50, v10);
         func_002008B8(t21, (int)v50[0], (int)v50[1], w, w, 0x80);
     }
     return *(int *)(r + 0x58);
@@ -680,10 +680,10 @@ int func_L00_002377E0(HudElem *e) {
             __builtin_memcpy(dst, src, 4);
         }
     }
-    func_L00_00236400(e, &x, &y);
-    func_L00_00236468(e, &x, &y, e->unk6C, 0);
-    tex = func_00200198(*(int *)e, 0);
-    func_L00_0023C458(tex, x + e->unk48, y + e->unk4A, *(int *)&D_L00_0015F840, *(int *)&D_L00_0015F844, 0x80);
+    hud_screen_position(e, &x, &y);
+    Hud_SlideElement(e, &x, &y, e->unk6C, 0);
+    tex = GetIconFrame(*(int *)e, 0);
+    HudSpriteRot90(tex, x + e->unk48, y + e->unk4A, *(int *)&D_L00_0015F840, *(int *)&D_L00_0015F844, 0x80);
     {
         float cx, cy, ox, oy;
         ox = (*(int *)&D_L00_0015F840 * *(float *)&D_L00_0015F848 * 0.5f) / 17.0f;
@@ -701,23 +701,23 @@ int func_L00_002377E0(HudElem *e) {
     }
     t = (10000 - e->unk74) / 10000.0f;
     t = 116.0f - (t + t) * 116.0f;
-    tex = func_00200198(*(int *)e, 1);
-    func_001F9BC0(v2);
-    func_001F9BC0(v3);
-    func_001F9BC0(v4);
-    v2[1] = v2[0] = *(float *)&D_L00_0015F830 * 16.0f;
-    v3[1] = v3[0] = (*(float *)&D_L00_0015F834 - *(float *)&D_L00_0015F830) * 16.0f;
-    v4[1] = v4[0] = (*(float *)&D_L00_0015F838 - *(float *)&D_L00_0015F834) * 16.0f;
+    tex = GetIconFrame(*(int *)e, 1);
+    clear_u64_value(v2);
+    clear_u64_value(v3);
+    clear_u64_value(v4);
+    v2[1] = v2[0] = *(float *)&star_init_limit0_gp * 16.0f;
+    v3[1] = v3[0] = (*(float *)&star_init_limit1_gp - *(float *)&star_init_limit0_gp) * 16.0f;
+    v4[1] = v4[0] = (*(float *)&star_init_limit2_gp - *(float *)&star_init_limit1_gp) * 16.0f;
     sz = 0;
     for (i = 0; i < 100; i++) {
         if (i == 0) {
-            func_001F9BF0(v1, v1, v2);
-            sz = (int)(*(float *)&D_L00_0015F830 * 32.0f);
-            t += *(float *)&D_L00_0015F830;
+            FastVecSub(v1, v1, v2);
+            sz = (int)(*(float *)&star_init_limit0_gp * 32.0f);
+            t += *(float *)&star_init_limit0_gp;
         }
         if (t < D_L00_0017E760[i][1]) continue;
         func_L00_001FF2F8(v5, D_L00_0017E760[i], v0);
-        func_001F9BD8(v5, v5, v1);
+        FastVecAdd(v5, v5, v1);
         func_002008B8(tex, (int)v5[0], (int)v5[1], sz, sz, 0x80);
     }
     return e->w;
@@ -768,13 +768,13 @@ int func_L00_00237B90(char *e) {
     } else {
         y = *(int *)&D_L00_0015F850 + 0x12;
     }
-    fade = func_001FA888(*opacity);
+    fade = IntToFloat(*opacity);
     fade /= func_001F9878(8.0f);
     if (fade < 0.0f) fade = 0.0f;
     if (fade > 1.0f) fade = 1.0f;
     text_y = y + 8;
     i = 0;
-    alpha = func_001FA898(fade * 128.0f);
+    alpha = truncate_float_to_s32(fade * 128.0f);
     color = (alpha << 24) | 0x40f040;
     if (D_L00_0017E630[0] >= 2) {
         do {
@@ -783,9 +783,9 @@ int func_L00_00237B90(char *e) {
     }
     if (D_L00_0017E630[i] == 1) {
         D_L00_0017E630[i] = 0;
-        w1 = func_001F6600((const char *)D_L00_0017E630, -1);
+        w1 = measure_text_width_regular((const char *)D_L00_0017E630, -1);
         l1 = 0xe0 - (w1 >> 1);
-        w2 = func_001F6600((const char *)&D_L00_0017E630[1] + i, -1);
+        w2 = measure_text_width_regular((const char *)&D_L00_0017E630[1] + i, -1);
         l2 = 0xe0 - (w2 >> 1);
         if (l1 >= l2) {
             left = l2;
@@ -794,28 +794,28 @@ int func_L00_00237B90(char *e) {
             left = l1;
             width = w1;
         }
-        func_00200468(func_00200198(0x7580, 0), left + 0x20, y, width, 0x36, alpha);
+        HudSprite(GetIconFrame(0x7580, 0), left + 0x20, y, width, 0x36, alpha);
         c = color;
-        func_00200468(func_00200198(0x7580, 1), left, y, 0x20, 0x36, alpha);
-        tex = func_00200198(0x7580, 1);
+        HudSprite(GetIconFrame(0x7580, 1), left, y, 0x20, 0x36, alpha);
+        tex = GetIconFrame(0x7580, 1);
         {
             int t = width + 0x20;
-            func_00200650(tex, left + t, y, 0x20, 0x36, alpha);
+            draw_hud_sprite_flipped(tex, left + t, y, 0x20, 0x36, alpha);
         }
-        func_001F6EA8(0x100, text_y, c, D_L00_0017E630, -1);
-        func_001F6EA8(0x100, y + 0x1b, c, &D_L00_0017E630[1] + i, -1);
+        FontPrintCenter(0x100, text_y, c, D_L00_0017E630, -1);
+        FontPrintCenter(0x100, y + 0x1b, c, &D_L00_0017E630[1] + i, -1);
     } else {
         int w, x;
-        w = func_001F6600((const char *)D_L00_0017E630, -1);
+        w = measure_text_width_regular((const char *)D_L00_0017E630, -1);
         x = 0xe0 - (w >> 1);
-        func_00200468(func_00200198(0x7580, 1), x, y, 0x20, 0x20, alpha);
-        func_00200468(func_00200198(0x7580, 0), x + 0x20, y, w, 0x20, alpha);
-        tex = func_00200198(0x7580, 1);
+        HudSprite(GetIconFrame(0x7580, 1), x, y, 0x20, 0x20, alpha);
+        HudSprite(GetIconFrame(0x7580, 0), x + 0x20, y, w, 0x20, alpha);
+        tex = GetIconFrame(0x7580, 1);
         {
             int t = w + 0x20;
-            func_00200650(tex, x + t, y, 0x20, 0x20, alpha);
+            draw_hud_sprite_flipped(tex, x + t, y, 0x20, 0x20, alpha);
         }
-        func_001F6EA8(0x100, text_y, color, D_L00_0017E630, -1);
+        FontPrintCenter(0x100, text_y, color, D_L00_0017E630, -1);
     }
     level = D_0015EE84;
     if (level == 5 || level == 0x10) {
@@ -834,7 +834,7 @@ int func_L00_00237B90(char *e) {
             qcopy(&point, &points[1]);
         }
         pt = &point;
-        if (func_001F9D10(D_0013F4D0, pt) < 5.0f) {
+        if (FastVecDist(gHeroPos, pt) < 5.0f) {
             D_L00_0015F728 = y + 100;
             elapsed = D_0015EF58[D_0015EE84 == 0x10 ? 1 : 0];
             score = D_0015EF68[D_0015EE84 == 0x10 ? 1 : 0];
@@ -845,11 +845,11 @@ int func_L00_00237B90(char *e) {
                 rem = elapsed - seconds * interval;
                 minutes = rem / per;
                 rem = (rem - minutes * per) * 100 / per;
-                func_00116248(text, D_L00_001E8840, func_001FE540(0x5320), seconds, minutes, rem);
-                func_00201A38(0x100, y + 0x28, color, text);
+                func_00116248(text, D_L00_001E8840, msg_string(0x5320), seconds, minutes, rem);
+                draw_framed_text(0x100, y + 0x28, color, text);
                 if (score != 0) {
-                    func_00116248(text, D_L00_0015F858, func_001FE540(0x5321), score);
-                    func_00201A38(0x100, y + 0x48, color, text);
+                    func_00116248(text, D_L00_0015F858, msg_string(0x5321), score);
+                    draw_framed_text(0x100, y + 0x48, color, text);
                 }
             }
         }
@@ -907,7 +907,7 @@ int Hud_DrawGaugeFrame(HudElem *e) {
             __builtin_memcpy(dst, src, 4);
         }
     }
-    Hud_AlignElement(e, &pos[0], &pos[1]);
+    hud_screen_position(e, &pos[0], &pos[1]);
     Hud_SlideElement(e, &pos[0], &pos[1], e->unk6C, 0);
     w = *(int *)&D_L00_0015F840 * 0xD0;
     h = *(int *)&D_L00_0015F844 * 0xA0;
@@ -1148,15 +1148,15 @@ void QuickSelectUpdate(Obj_38530 *p) {
             Route *rr;
             int ri = id;
             if (D_0013F450_38530.w10B8 != id) {
-                if (D_00141948.hA0 < 0xFFFF) D_00141948.hA0++;
+                if (usage_stats.hA0 < 0xFFFF) usage_stats.hA0++;
             }
-            if (scale_ticks(D_0015EFA4) / 600 > D_00141948.hA2)
-                D_00141948.hA2 = scale_ticks(D_0015EFA4) / 600;
-            D_00141948.wA4 = D_00141948.wA4 | (1 << D_0015EE84) | 0x80000000;
+            if (scale_ticks(D_0015EFA4) / 600 > usage_stats.hA2)
+                usage_stats.hA2 = scale_ticks(D_0015EFA4) / 600;
+            usage_stats.wA4 = usage_stats.wA4 | (1 << D_0015EE84) | 0x80000000;
             if (id == 0x18) D_0013F450_38530.b1FF5 = 1;
             else D_0013F450_38530.w20B8 = id;
             rr = &D_L00_001C43B0_38530[ri];
-            if (rr->h8 && rr->hE < D_0013D530[id]) D_0013D530[id] = rr->hE;
+            if (rr->h8 && rr->hE < weapon_ammo_counts[id]) weapon_ammo_counts[id] = rr->hE;
         }
         if (c[0]) c[0]--;
     } else if (c[0] < (*(int *)&D_L00_0015F860)) c[0]++;
@@ -1167,7 +1167,7 @@ void QuickSelectUpdate(Obj_38530 *p) {
             D_L00_0015FB54_38530 = b;
             D_L00_0015FB50 = a;
         }
-        Hud_RemoveBank(p->w64);
+        remove_hud_item(p->w64);
         p->w6C = -6;
         D_L00_0015FB4C = D_L00_0015F4F8;
     }
@@ -1243,7 +1243,7 @@ int QuickSelectDraw(HudElem *rec) {
     }
     x = rec->unk50;
     y = rec->unk54;
-    Hud_AlignElement(rec, &x, &y);
+    hud_screen_position(rec, &x, &y);
     half_w = GI(D_L00_0015F7F8) / 2;
     half_h = GI(D_L00_0015F7FC) / 2;
     HudSprite(GetIconFrame(0xe934, 0), x, y, half_w, half_h, alpha);
@@ -1282,7 +1282,7 @@ int QuickSelectDraw(HudElem *rec) {
         wr = D_L00_001C43B0 + id * 24;
         if (*(unsigned short *)(wr + 8) != 0) {
             int shadow, item;
-            item = *(int *)(D_0013D50F + 0x21 + id * 4);
+            item = *(int *)(menu_item_enabled_115 + 0x21 + id * 4);
             func_00116248(formatted, D_L00_0015F8A8, item, *(unsigned short *)(wr + 0xE));
             if (item != 0)
                 shadow = FastTweenColor(GI(D_L00_0015F888), GI(D_L00_0015F88C), open * fade);
@@ -1450,7 +1450,7 @@ void RadialSelectUpdate(Obj *o) {
     }
     if (c[0] == 0) {
         { int a = o->w78; int b = o->w74; D_L00_0015FB54_export = b; D_L00_0015FB50 = a; }
-        Hud_RemoveBank(o->w64);
+        remove_hud_item(o->w64);
         o->w6C = -6;
         D_L00_0015FB4C = D_L00_0015F4F8;
     }
@@ -1741,7 +1741,7 @@ int HudHealthDraw(char *e) {
     if (n == 0) {
         phase = 0x1E;
     }
-    cnt = gMaxNanotech;
+    cnt = hero_max_health;
     if (({ char *gb = D_0013E633 + 0xE1D; *(unsigned char *)(gb + (0x20A4)); }) == 1) {
         cnt = ({ char *gb = D_0013E633 + 0xE1D; *(int *)(gb + (0x22AC)); });
     }
@@ -1764,7 +1764,7 @@ int HudHealthDraw(char *e) {
     y = y0 + *(int *)&D_L00_0015F8F0;
     tex = GetIconFrame(0x7580, 1);
     tex2 = GetIconFrame(0x7580, 0);
-    DrawHudSpriteTurned(tex, x0 + bw, y, (*(int *)&D_L00_0015F8FC), (*(int *)&D_L00_0015F8FC), w);
+    draw_hud_sprite_flipped(tex, x0 + bw, y, (*(int *)&D_L00_0015F8FC), (*(int *)&D_L00_0015F8FC), w);
     HudSprite(tex2, x, y, bw << 1, (*(int *)&D_L00_0015F8FC), w);
     {
         int h = (*(int *)&D_L00_0015F8FC);
@@ -1773,7 +1773,7 @@ int HudHealthDraw(char *e) {
     if (bw2) {
         int x2;
         y += *(int *)&D_L00_0015F8EC;
-        DrawHudSpriteTurned(tex, x0 + bw2, y, (*(int *)&D_L00_0015F8FC), (*(int *)&D_L00_0015F8FC), w);
+        draw_hud_sprite_flipped(tex, x0 + bw2, y, (*(int *)&D_L00_0015F8FC), (*(int *)&D_L00_0015F8FC), w);
         x2 = x0 - bw2;
         HudSprite(tex2, x2, y, bw2 << 1, (*(int *)&D_L00_0015F8FC), w);
         {
@@ -1838,9 +1838,9 @@ void HudBoltsUpdate(HudElem *e) {
         e->unk7C = scale_ticks(0x5A);
     }
     if (e->unk7C >= scale_ticks(5)) {
-        if (e->cnt[0] < *(int *)&D_L00_0015F904) {
+        if (e->cnt[0] < *(int *)&bolt_panel_open_steps_gp) {
             e->cnt[0]++;
-        } else if (c[1] < *(int *)&D_L00_0015F908) {
+        } else if (c[1] < *(int *)&bolt_text_fade_steps_gp) {
             c[1]++;
         }
     } else {
@@ -1922,12 +1922,12 @@ int HudBoltsDraw(HudElem_3A788 *m)
     y = D_0015EE80_3A788 ? 10 : 18;
     x = m->unk50;
 
-    open = IntToFloat(m->cnt[0]) / IntToFloat((*(s32 *)&D_L00_0015F904));
+    open = IntToFloat(m->cnt[0]) / IntToFloat((*(s32 *)&bolt_panel_open_steps_gp));
     if (1.0f < open)
         open = 1.0f;
     else if (open < 0.0f)
         open = 0.0f;
-    text = IntToFloat(fade[1]) / IntToFloat((*(s32 *)&D_L00_0015F908));
+    text = IntToFloat(fade[1]) / IntToFloat((*(s32 *)&bolt_text_fade_steps_gp));
     if (1.0f < text)
         text = 1.0f;
     else if (text < 0.0f)
@@ -1943,17 +1943,17 @@ int HudBoltsDraw(HudElem_3A788 *m)
     apostrophe = 0;
 
     /* panel: right cap, stretched middle, left cap */
-    slide = truncate_float_to_s32((f32)((*(s32 *)&D_L00_0015F92C) * digits) * open);
-    DrawHudSpriteTurned(GetIconFrame(0x7580, 1), cap_x, y, 32, 32, alpha);
+    slide = truncate_float_to_s32((f32)((*(s32 *)&digit_width) * digits) * open);
+    draw_hud_sprite_flipped(GetIconFrame(0x7580, 1), cap_x, y, 32, 32, alpha);
     panel_x -= slide;
     HudSprite(GetIconFrame(0x7580, 0), panel_x, y, slide + 0x10, 32, alpha);
     HudSprite(GetIconFrame(0x7580, 1), panel_x - 0x20, y, 32, 32, alpha);
     func_L00_0023BAB8_3A788(m, GetIconFrame(0x754F, *frame >> 1), icon_x, y, 0, 0x80);
 
     /* the count, shadow first */
-    color = FastTweenColor((*(s32 *)&D_L00_0015F90C), (*(s32 *)&D_L00_0015F910), text);
+    color = FastTweenColor((*(s32 *)&bolt_text_color_clear), (*(s32 *)&bolt_text_color_opaque), text);
     shadow = FastTweenColor(0, 0x80000000, text);
-    func_00116248_3A788(buf, D_L00_0015F930, gBolts);
+    func_00116248_3A788(buf, bolt_count_format, gBolts);
     font_print_right(x + (*(s32 *)&D_L00_0015F914) + 1, y + (*(s32 *)&D_L00_0015F918) + 1, shadow, buf, -1);
     font_print_right(x + (*(s32 *)&D_L00_0015F914), y + (*(s32 *)&D_L00_0015F918), color, buf, -1);
 
@@ -1966,8 +1966,8 @@ int HudBoltsDraw(HudElem_3A788 *m)
     for (i = 3; i < digits; i += 3) {
         sx = x + dx;
         sy = y + dy;
-        font_print_right(sx - (*(s32 *)&D_L00_0015F92C) * i + 2, sy + 2, shadow, buf, -1);
-        font_print_right(sx - (*(s32 *)&D_L00_0015F92C) * i, sy, color, buf, -1);
+        font_print_right(sx - (*(s32 *)&digit_width) * i + 2, sy + 2, shadow, buf, -1);
+        font_print_right(sx - (*(s32 *)&digit_width) * i, sy, color, buf, -1);
     }
     return m->w;
 }
@@ -2065,7 +2065,7 @@ int HudSmallElementDraw(char *m) {
     alpha = truncate_float_to_s32((float)*(int *)&D_L00_0015F9CC * open);
     panel_right = x + *(int *)&D_L00_0015F9D4;
     slide = truncate_float_to_s32((float)*(int *)&D_L00_0015F9D0 * open);
-    DrawHudSpriteTurned(GetIconFrame(0x7580, 1), panel_right + 16, y, 32, 32, alpha);
+    draw_hud_sprite_flipped(GetIconFrame(0x7580, 1), panel_right + 16, y, 32, 32, alpha);
     panel_left = panel_right - slide;
     HudSprite(GetIconFrame(0x7580, 0), panel_left, y, slide + 16, 32, alpha);
     HudSprite(GetIconFrame(0x7580, 1), panel_left - 32, y, 32, 32, alpha);
@@ -2108,7 +2108,7 @@ int Hud_DrawMeter(HudElem *e) {
     y = e->unk54;
     e->w = 0x100;
     e->h = 0x40;
-    Hud_AlignElement(e, &x, &y);
+    hud_screen_position(e, &x, &y);
     Hud_SlideElement(e, &x, &y, e->unk6C, 0);
     len = e->unk74 * 0xDD / e->unk08 + 0x1B;
     HudSpriteSubRect(GetIconFrame(0x7558, 1), x, y, len, 0x40, 0x80);
@@ -2169,7 +2169,7 @@ int HudWeaponDraw(char *m) {
         wd = x + truncate_float_to_s32((float)w * f21);
         HudSprite(GetIconFrame(0x7580, 1), x - 0x1C, y, 0x20, 0x20, a);
         HudSprite(GetIconFrame(0x7580, 0), x4, y, wd, 0x20, a);
-        DrawHudSpriteTurned(GetIconFrame(0x7580, 1), x4 + wd, y, 0x20, 0x20, a);
+        draw_hud_sprite_flipped(GetIconFrame(0x7580, 1), x4 + wd, y, 0x20, 0x20, a);
         tex = GetIconFrame(*(int *)m, 3);
         *(int *)(m + 0x44) = tex;
         HudFrame(m, tex, x, y, 0, alpha);
@@ -2310,7 +2310,7 @@ void HudWeaponShow(void) {
         if (w != 0) {
             D_hud_pair[0] = w;
             D_hud_pair[1] = queue_animation_update(0x10, w + 60000, (int)HudTileInit, (int)HudWeaponUpdate,
-                                           (int)HudWeaponDraw, (int)(D_0013D50F + 0x21 + w * 4),
+                                           (int)HudWeaponDraw, (int)(menu_item_enabled_115 + 0x21 + w * 4),
                                            D_L00_001C43B0[w].unkE);
         } else if (mode == 2) {
             if (D_hud_pair[1] != -1) {
@@ -2537,7 +2537,7 @@ extern void func_L00_00261848(int);
    D_0015EF24 by 180. */
 void InitLevelResidentState(void) {
     register_audio_stream_callback();
-    VuChain_SetLevelOffset();
+    calculate_dma_transfer_address();
     InitMemSlots();
     D_0015EF74 = D_0015EF8C;
     D_0015EF78 = D_0015EF8C;
@@ -2554,11 +2554,11 @@ void InitLevelResidentState(void) {
     InitViewContext();
     UpdateViewContext();
     VU1_initChain();
-    RegisterPartTypes();
+    register_part_types();
     DMAC_VIF1_Enable();
     VendorStockLevelInit();
     if (D_0015EE84 != 0) {
-        UnlockPlanet(D_0015EE84);
+        unlock_planet(D_0015EE84);
     }
     D_0015EF24 += 0xB4;
 }
@@ -2585,8 +2585,8 @@ void VendorStockLevelInit(void) {
     unsigned char c;
     if (D_0015EE84 >= 0x13) {
         for (k = 0; k < 0x25; k++) {
-            (D_0013D50F + 0xB9)[k] = 1;
-            (gHavePersuader + 5)[k] = 1;
+            (menu_item_enabled_115 + 0xB9)[k] = 1;
+            (discount_purchase_pricing + 5)[k] = 1;
         }
         D_0015EED0[0] = 0x4A;
         D_0015EED0[1] = 0x50;

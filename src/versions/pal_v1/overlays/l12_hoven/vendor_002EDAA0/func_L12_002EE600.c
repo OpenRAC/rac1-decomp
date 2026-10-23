@@ -1,6 +1,6 @@
 void HovenChallengeUpdate(char *m) {
     int *d = *(int **)(m + 0x78);
-    if (MobyGroup_CountNotInState(d[3], -1) == 0) {
+    if (count_group_e81e0(d[3], -1) == 0) {
         unsigned char *s = D_0013D50F_e + 1;
         if (s[0x14] == 0) {
             s[0x14] = 1;

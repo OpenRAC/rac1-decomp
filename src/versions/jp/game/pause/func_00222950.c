@@ -1,6 +1,6 @@
-int func_00222950(void) {
+int update_level_selection_map_screen(void) {
     if (D_0013CC04 & 0x60) {
-        D_001D5F78 = D_001D2678;
+        pause_current_action_list = pause_default_action_list;
     }
     return 0;
 }

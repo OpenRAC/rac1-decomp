@@ -174,7 +174,7 @@ extern char D_0013F450[];
 extern short D_L05_00160098;
 
 /* Moby update: plays an animation when its state and a flag allow, then calls the next stage. */
-void Moby341Update(char *m) {
+void hydrodisplacer_faucet_update(char *m) {
     char *g = D_0013F450;
     int f = 0;
     int *d = *(int **)(m + 0x78);
@@ -183,11 +183,11 @@ void Moby341Update(char *m) {
     }
     switch ((unsigned char)m[0x53]) {
     case 0:
-        if (d[0] >= 0 && (*(unsigned char *)(*(int *)&D_L05_00160098 + d[0] * 256 + 0xBC) & 1) && !f)
+        if (d[0] >= 0 && (*(unsigned char *)(*(int *)&moby_pool_4f60 + d[0] * 256 + 0xBC) & 1) && !f)
             MobyBlendAnimation(m, 1, 0, 0);
         break;
     case 2:
-        if (d[0] >= 0 && (*(unsigned char *)(*(int *)&D_L05_00160098 + d[0] * 256 + 0xBC) & 2) && !f)
+        if (d[0] >= 0 && (*(unsigned char *)(*(int *)&moby_pool_4f60 + d[0] * 256 + 0xBC) & 2) && !f)
             MobyBlendAnimation(m, 3, 0, 0);
         break;
     case 3:
@@ -274,7 +274,7 @@ extern unsigned char D_0014171B[];
  * From the staged near miss (nonmatching/shared/func_L05_002F9BA0.c); fixed: state 0 saves the
  * position into pvars +0x10 (the near miss copied the other way), and the state tests.
  * equiv: NEAR (all copies: retail rebuilds moby + 0x10 where this keeps it). */
-void HoverboardUpdate(unsigned char *moby) {
+void hoverboard_update(unsigned char *moby) {
 #define pos ((char *)moby + 0x10)
     char *data;
     char *g;
@@ -497,7 +497,7 @@ void Moby823Update(unsigned char *m) {
         *(float *)(m + 0x48) = FastAddRots(*(float *)(d + 0x40), FastSin(t) * k);
         t = FastAddRots(*(float *)(d + 0x48), *(float *)(d + 0x50));
         *(float *)(d + 0x48) = t;
-        func_L00_001FFED8(d + 0x10, 1, FastSin(t) * k + k);
+        axis_rotation_2d48(d + 0x10, 1, FastSin(t) * k + k);
         break;
     }
     }
@@ -629,7 +629,7 @@ extern unsigned char D_0014C150[];
 extern int func_0022ED80_DA08() __asm__("func_0022ED80");
 
 /* Floor button update: settles, checks whether it is already pressed, pulses and records the press. */
-void FloorButtonUpdate(struct Moby *moby) {
+void floor_button_update(struct Moby *moby) {
     int *d = (int *)moby->pvars;
     short id;
     int i;
@@ -648,7 +648,7 @@ void FloorButtonUpdate(struct Moby *moby) {
         moby->pos.z -= 0.35f;
         id = (short)moby->save_id;
         if (D_L05_001BBA40.done[id] != 0 ||
-            (D_0014C290[D_0015EE84][id >> 5] >> (moby->save_id & 31) & 1) != 0 ||
+            (level_moby_killed[D_0015EE84][id >> 5] >> (moby->save_id & 31) & 1) != 0 ||
             (d[2] != 0 && D_0014C150[moby->mission + (D_0015EE84 << 4)] == 0xFF)) {
             moby->command = 2;
             moby->glow_color = 0x80208020;
@@ -771,7 +771,7 @@ extern char D_L05_00174340[];
 extern float D_0015EE70 MACRO_ADDR;
 
 // Update for the blarg_gun class family: homes the moby toward its target and deletes it when its timer runs out.
-void func_L05_00319C08(char *moby)
+void blarg_gun_update(char *moby)
 {
     char *data = *(char **)(moby + 0x78);
     char buf[0x70];
@@ -965,7 +965,7 @@ extern unsigned char *func_L00_00275248(float f0, float f1, int a0, void *pos, i
 extern char D_L05_0015F660[] MACRO_ADDR;
 
 // Moby update: wakes up, then bursts particles when the player is near.
-void Moby1139Update(char *moby) {
+void hoverboard_ring_update(char *moby) {
     switch (((unsigned char *)moby)[0x20]) {
     case 0:
         ((unsigned char *)moby)[0x30] = 0x80;
@@ -1817,6 +1817,6 @@ void CopyCameraPreset(char *out)
     qcopy(out, src);
     qcopy(out + 0x10, src + 0x10);
     qcopy(out + 0x20, src + 0x20);
-    Matrix_ToQuatCopyBack(out + 0x40, out);
+    extract_matrix_rotation_quaternion(out + 0x40, out);
     ResetCameraFromPreset(out);
 }

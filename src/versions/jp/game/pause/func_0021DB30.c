@@ -1,4 +1,4 @@
-s32 Pause_SoundOptionsInput(struct SoundMenu_1DB30 *menu) {
+s32 sound_options_menu(struct SoundMenu_1DB30 *menu) {
     s32 previous_selection;
     s32 *sound_volume_ptr;
     s32 previous_music_volume;

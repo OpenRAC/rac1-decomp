@@ -107,7 +107,8 @@ This project builds upon years of dedicated reverse-engineering research and too
   - [splat](https://github.com/ethteck/splat) & [spimdisasm](https://github.com/Decompollaborate/spimdisasm) – Binary splitting and MIPS disassembly.
   - [m2c](https://github.com/matt-kempster/m2c) & [asm-differ](https://github.com/simonlindholm/asm-differ) – Assembly-to-C translation and diffing.
   - [objdiff](https://github.com/encounter/objdiff) – Object diffing tool.
-  - [ByteMatch](https://bytematch.dev) & [decomp.wiki](https://decomp.wiki) – Progress tracking and decompilation knowledge base.
+  - [ByteMatch](https://bytematch.dev) – Progress tracking (formerly on decomp.dev).
+  - [decomp.wiki](https://decomp.wiki) – Decompilation knowledge base.
   - [AngheloAlf](https://github.com/AngheloAlf) – PS2 toolchain mirrors.
 
 ---

@@ -1,4 +1,4 @@
-int Mission_CollectObjectiveIds(int *out, int *mask, int *nums, int arg3) {
+int collect_mission_ids(int *out, int *mask, int *nums, int arg3) {
     MissionNode *p = D_001A2FA0;
     int count = 0;
     int all = 1;

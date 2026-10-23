@@ -18,7 +18,7 @@ s32 SteerAheadOfHeading(struct Moby *m, void *ctl) {
     qcopy(&ahead, &m->pos);
     ahead.f[0] += FastCos(m->rot.z) * 100.0f;
     ahead.f[1] += FastSin(m->rot.z) * 100.0f;
-    return MobySteerToward(m, ctl, &ahead, &out, 1.0f);
+    return move_w(m, ctl, &ahead, &out, 1.0f);
 }
 extern float func_001F9B88(float);
 extern float func_001F9D10(void *, void *);

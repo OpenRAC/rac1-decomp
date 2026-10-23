@@ -115,7 +115,7 @@ extern unsigned char D_0015EEB0[] MACRO_ADDR;
 extern float D_L02_0015F4FC MACRO_ADDR;
 
 /* UpdateMoby_786 (skids_agent): steps the agent's conversation states, keeps its child moby on joint 2 and turns its head toward the player. */
-void SkidsAgentUpdate(Moby *m) {
+void skids_agent_update(Moby *m) {
     float v0[4];
     float v1[4];
     float v2[4];
@@ -127,11 +127,11 @@ void SkidsAgentUpdate(Moby *m) {
     AttachManipulatorsIfCheat(m);
     switch (m->state) {
     case 0:
-        if (gHavePersuader[0xA] != 0) goto del;
+        if (discount_purchase_pricing[0xA] != 0) goto del;
         d->f20 = D_L02_00161D80;
         m->state = 1;
         DialogRequest_Init(m, d);
-        SetMobyZBand(m);
+        func_L02_0025D750(m);
         d->f178 = (Moby *)CreateMoby(0x38);
         d->f178->draw_dist = 0x40;
         d->f178->visible = 1;
@@ -183,10 +183,10 @@ void SkidsAgentUpdate(Moby *m) {
         if (D_L02_0015F6A8 != 2) {
             m->state = 1;
             if (d->f4 == 0) {
-                SetLevelTriggerDone(m->mission);
+                jet_clear_persistent(m->mission);
                 if (d->f150 != -1) {
                     char *t = D_L02_0016016C + (d->f150 << 7);
-                    PauseMenu_SeedSnapshot(t + 0x30, t + 0x70);
+                    jet_reset_camera(t + 0x30, t + 0x70);
                 }
             } else if (d->f4 == 2) {
                 m->visible = 0;
@@ -226,8 +226,8 @@ void SkidsAgentUpdate(Moby *m) {
         v1[2] = FastAddRots(FastSubRots(v3[2], v2[2]) * d->f180, v2[2]);
         v1[1] = FastAddRots(FastSubRots(v3[1], v2[1]) * d->f180, v2[1]);
         v1[0] = FastAddRots(FastSubRots(v3[0], v2[0]) * d->f180, v2[0]);
-        CameraScript_SetPosition(v0);
-        CameraScript_SetLookAt(v1);
+        set_camera_position(v0);
+        set_camera_rotation(v1);
         if (d->f180 < 1.0f) {
             ApproachValue(&d->f17C, 0.0f, 0.1f);
         } else {
@@ -347,7 +347,7 @@ void SkidMcMarxAridiaUpdate(char *m)
         *(unsigned char *)(m + 0x20) = 1;
         *(unsigned char *)(m + 0x30) = 0xFF;
         DialogRequest_Init(m, d);
-        SetMobyZBand(m);
+        func_L02_0025D750(m);
         break;
     case 1:
         if (*(unsigned char *)(d + 8) == 1 &&
@@ -363,8 +363,8 @@ void SkidMcMarxAridiaUpdate(char *m)
         if (*(short *)(d + 4) == 2) {
             Help_Request(0x7D0, 0xA);
             GiveItem(0x1E, 1);
-            SetLevelTriggerDone(*(unsigned char *)(m + 0xB0));
-            PauseMenu_SeedSnapshot((char *)&D_0013E633 + 0xE9D, (char *)&D_0013E633 + 0xEAD);
+            jet_clear_persistent(*(unsigned char *)(m + 0xB0));
+            jet_reset_camera((char *)&D_0013E633 + 0xE9D, (char *)&D_0013E633 + 0xEAD);
             memcard_Save(0, -1);
             DeleteMoby(m);
             return;
@@ -382,7 +382,7 @@ void SkidMcMarxAridiaUpdate(char *m)
         break;
     case 2:
         {
-            char *w = D_L02_0016CEE0;
+            char *w = talk_camera;
             if (*(unsigned char *)(w + 0x4A) == 0) {
                 func_L00_001FF4B0(w + 0x10, m + 0xC0, 2.5f);
                 FastVecAdd(w + 0x10, w + 0x10, m + 0x10);
@@ -545,7 +545,7 @@ extern void func_L00_002617B0(void *, void *, void *, void *);
 
 /* Lift platform carried by an animated driver moby: follows the driver's joint 0, waits at an end (3/5) for the hero to step on, then plays the driver's up or down animation (2/4) with its loop sound until it ends.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l02/gameplay/entities/002e0dc0.c, FUN_L02_002e2228. */
-void DriverLiftUpdate(struct Moby *moby) {
+void liftcar_platform_update(struct Moby *moby) {
     char *data = (char *)moby->pvars;
     struct Moby *driver = &D_L02_00160058_E3660[*(int *)(data + 0xA0)];
     Vec4 delta;
@@ -646,7 +646,7 @@ void DriverLiftUpdate(struct Moby *moby) {
         break;
     }
     FastVecAdd(&delta, &delta, &moby->pos);
-    CarryRiders(data + 0x60, &delta, &old_rot, &moby->rot);
+    update_entity_matrix(data + 0x60, &delta, &old_rot, &moby->rot);
 }
 extern int D_L02_0015F6E8_2EB480 __asm__("D_L02_0015F6E8") MACRO_ADDR;
 extern char D_L02_00167440[];
@@ -689,7 +689,7 @@ extern void func_L02_002A59D8(float);
 extern void func_L02_002EB480(void);
 extern void func_001F49B0(void (*)(void), void *);
 
-void Moby854Update(unsigned char *moby) {
+void ocean_aridia_update(unsigned char *moby) {
     switch (moby[0x20]) {
     case 0:
         func_L02_002A59D8(0.16666667f);
@@ -843,7 +843,7 @@ void TutorialHintUpdate(unsigned char *moby) {
             int i;
             for (i = 0; i < 37; i++) {
                 if (D_L02_0017A140[i].active == 0 && i != 8 && i != 24) {
-                    if ((D_0013D50F + 0xB9)[i] != 0) {
+                    if ((menu_item_enabled_115 + 0xB9)[i] != 0) {
                         count++;
                     }
                 }
@@ -867,7 +867,7 @@ void TutorialHintUpdate(unsigned char *moby) {
         if (*(int *)(h + 0x300) != 0) {
             data[0x15] = 0;
         } else if (is_point_inside_clip_volume(h + 0x80, data[0x13]) != 0) {
-            unsigned char *q = D_0013D50F + 1;
+            unsigned char *q = menu_item_enabled_115 + 1;
             if (q[1] == 0) {
                 q[1] = 1;
                 PlayBankSound(1, 0, 0);
@@ -884,7 +884,7 @@ void TutorialHintUpdate(unsigned char *moby) {
             if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, data[4]) != 0) {
                 int lvl = data[0];
                 if (D_0014C150[D_0015EE84][lvl] != 0xFF) {
-                    unsigned char *f = D_0013D50F + 0xB9;
+                    unsigned char *f = menu_item_enabled_115 + 0xB9;
                     if (f[0x10] != 0 && ((int *)(D_0014171B + 0xD875))[lvl] >= 6) {
                         int t = scale_ticks(D_0015EFA4) - D_001418A2 * 600;
                         if (scale_ticks(0x4650) < t) {
@@ -923,7 +923,7 @@ void TutorialHintUpdate(unsigned char *moby) {
             if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, data[4]) != 0) {
                 int lvl = data[0];
                 if (D_0014C150[D_0015EE84][lvl] != 0xFF) {
-                    unsigned char *f = D_0013D50F + 0xB9;
+                    unsigned char *f = menu_item_enabled_115 + 0xB9;
                     if (f[0x10] == 0 && (float)((int *)(D_0014171B + 0xD875))[lvl] >= 3.0f) {
                         Help_Request(0x7D3, 0xD);
                     }
@@ -951,7 +951,7 @@ void TutorialHintUpdate(unsigned char *moby) {
         }
     }
 
-    if (((Flags_0013D5C8 *)(D_0013D50F + 0xB9))->b[0xC] == 0) {
+    if (((Flags_0013D5C8 *)(menu_item_enabled_115 + 0xB9))->b[0xC] == 0) {
         if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, data[5]) != 0) {
             char *b = D_0014171B + 0x34D;
             int t = scale_ticks(D_0015EFA4) - *(unsigned short *)(b + 0x8A) * 600;
@@ -965,7 +965,7 @@ void TutorialHintUpdate(unsigned char *moby) {
             }
         }
     }
-    if (((Flags_0013D5C8 *)(D_0013D50F + 0xB9))->b[0xC] != 0 && is_point_inside_clip_volume(D_0013E633 + 0xE9D, data[5]) != 0) {
+    if (((Flags_0013D5C8 *)(menu_item_enabled_115 + 0xB9))->b[0xC] != 0 && is_point_inside_clip_volume(D_0013E633 + 0xE9D, data[5]) != 0) {
         char *b = D_0014171B + 0x34D;
         if (*(unsigned short *)(b + 0x90) != 0) {
             int t = scale_ticks(D_0015EFA4) - *(unsigned short *)(b + 0x92) * 600;

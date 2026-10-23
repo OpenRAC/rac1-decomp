@@ -343,7 +343,7 @@ void PathLiftUpdate(struct Moby *m) {
         d->riding = 0;
         d->from = d->height;
     }
-    func_L01_002F6540(m);
+    gunship_follow_path(m);
     rider = (struct Moby *)(MB(D_L14_00160098) + (d->rider << 8));
     if (d->mode == 0x3039) {
         if (d->anchor != -1)
@@ -357,9 +357,9 @@ void PathLiftUpdate(struct Moby *m) {
     if (d->sound == -1 || (Sound_IsPlaying(m, d->sound) == 0 && d->sound == -1))
         d->sound = Moby_PlaySound(0, 4, m);
     d->angle = FastAddRots(d->angle, 0.17453292f);
-    func_L00_001FFED8(d->wobble, 0, d->angle);
+    axis_rotation_2d48(d->wobble, 0, d->angle);
     FastVecSub(&delta, &m->pos, &old);
-    CarryRiders((char *)d->spring, &delta, &rot, &m->rot);
+    update_entity_matrix((char *)d->spring, &delta, &rot, &m->rot);
     if (D_0013F450.state.control_mode == 13 && D_0013F450.unk964 == rider) {
         if (d->riding == 0) {
             d->riding = 1;
@@ -1250,7 +1250,7 @@ void LightningArcUpdate(char *moby) {
             }
             D_L14_00161DB0[0] = (unsigned char)(*(short *)&D_L14_00161DB2) + truncate_float_to_s32(IntToFloat(D_L14_00161D84) * D_L14_00161DC0 * -255.0f + 255.0f);
             if (D_L14_00161DC4 != 0) {
-                PlayGroupSound(0, 0, moby);
+                allocate_voice_for_group_entry(0, 0, moby);
                 D_L14_00161DC4 = 0;
             }
             if (D_L14_00161DB0[0] < 50) {
@@ -2277,7 +2277,7 @@ void TaxiUpdate(Moby *moby) {
         d->sound = -1;
     }
     FastVecSub(v20, (*(float (*)[4])&moby->pos), v00);
-    CarryRiders(d->f20, v20, v10, (*(float (*)[4])&moby->rot));
+    update_entity_matrix(d->f20, v20, v10, (*(float (*)[4])&moby->rot));
 }
 struct L14PathPoint_2F24C8 {
     char pad0[0x30];
@@ -2438,12 +2438,12 @@ extern unsigned char D_0014171B_2FCEA8[] __asm__("D_0014171B") NOT_SDA;
 /* Update function of moby class 851: claims the moby when close to D_L14_001675C0, then a state machine on the
  * byte at +0x20 (state 0 waits until the moby may start, state 1 tracks the hero, state 2 marks the moby done and
  * deletes it, as state 3 does), then the aiming tail on the countdowns at data + 0x194 and 0x198. */
-void Moby851Update(char *m) {
+void qwark_oltanis_update(char *m) {
     char *d = *(char **)(m + 0x78);
     AttachManipulatorsIfCheat(m);
     if (*(unsigned char *)(m + 0x31) != 0) {
         if (FastVecDist(m + 0x10, D_L14_001675C0) < 28.0f) {
-            SetGroundHeightBand(m);
+            func_L00_0025B178(m);
             m[0x7F] = 0x16;
         }
     }
@@ -2469,9 +2469,9 @@ void Moby851Update(char *m) {
         if (*(unsigned char *)(d + 8) == 1 && is_point_inside_clip_volume(D_0013E633 + 0xE9D, *(int *)(d + 0x40)) != 0) {
             if ((D_0014171B_2FCEA8 + 0xAA35)[*(unsigned char *)(m + 0xB0) + (D_0015EE84_m << 4)] != 0xFF) {
                 char *t;
-                SetLevelTriggerDone((unsigned char)m[0xB0]);
+                jet_clear_persistent((unsigned char)m[0xB0]);
                 t = D_L14_001601AC_2EC3E8 + (*(int *)(d + 0x48) << 7);
-                PauseMenu_SeedSnapshot(t + 0x30, t + 0x70);
+                jet_reset_camera(t + 0x30, t + 0x70);
             }
             func_L14_002F0A00_2FCEA8(D_L14_00160098_2FCEA8 + (*(int *)(d + 0x44) << 8));
             *(float *)(d + 0xC) = 255.0f;
@@ -3238,7 +3238,7 @@ int OltanisJet_FollowPath(char *m) {
     int r;
     r = func_L00_0025E860_2F05D8(D_L14_001B0F30_ee[*(int *)(d + 0x68)], v, d + 0x60, d + 0x64,
                                  (unsigned int)*(int *)(d + 0x8C) >> 31, *(float *)&D_L14_00162048 * D_0015EE6C);
-    if (*(int *)(d + 0x8C) != 0 && (r != 0 || *(short *)(D_L14_00167600 + 0x86) != 0x13)) {
+    if (*(int *)(d + 0x8C) != 0 && (r != 0 || *(short *)(race_state + 0x86) != 0x13)) {
         SetVendorItemFlag(*(int *)(d + 0x90));
         if (*(int *)(d + 0x6C) != -1) {
             char *e = D_0013E633 + 0x1D + *(int *)(d + 0x6C) * 0x70;

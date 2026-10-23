@@ -39,7 +39,7 @@ int Help_GetCurrentRecord(int a) {
         }
     }
     {
-        int i = Hero_GetSlotModuleId(0);
+        int i = hero_slot_item_id(0);
         return D_L17_0017A440[i].v;
     }
 }
@@ -212,18 +212,18 @@ s32 HeroL17_TryTakeHit(s32 arg) {
             a = 0.0f;
             b = e * 1.7f;
         }
-        Vec_ScaleXYSetZ(&v, flag, a, b);
+        hero_knockback(&v, flag, a, b);
         if (flag != 0 && tbl->b28 == 4) {
             v.f[2] += v.f[2];
         }
         break;
     case 1:
         HeroL17_SetMoveState(0x46, 1);
-        Vec_ScaleXYSetZ(&v, flag, D_0015EE6C * 5.0f, D_0015EE6C * 3.0f);
+        hero_knockback(&v, flag, D_0015EE6C * 5.0f, D_0015EE6C * 3.0f);
         break;
     case 3:
         HeroL17_SetMoveState(0x56, 1);
-        Vec_ScaleXYSetZ(&v, flag, D_0015EE6C * 5.0f, D_0015EE6C * 2.4f);
+        hero_knockback(&v, flag, D_0015EE6C * 5.0f, D_0015EE6C * 2.4f);
         break;
     }
     FastVecAdd(D_0013F530, D_0013F530, &v);

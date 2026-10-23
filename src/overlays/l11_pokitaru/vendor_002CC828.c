@@ -35,7 +35,7 @@ void PickupUpdate(char *moby) {
         FastAddRots(*(float *)(moby + 0x48), D_0015EE6C * 4.7123890f);
         if (func_001F9D48(moby + 0x10, D_0013E633 + 0xE9D) < 2.0f) {
             gHaveHeliPack[4] = 1;
-            gHavePersuader[0xB] = 1;
+            discount_purchase_pricing[0xB] = 1;
             memcard_Save(0, -1);
             Help_Request(0x2AF8, 0x3A);
             DeleteMoby(moby);
@@ -121,7 +121,7 @@ extern float D_0015EE64_2D18D0 __asm__("D_0015EE64") MACRO_ADDR;
 /* Update function of moby class 90 (bob): calls func_L05_003188A8, then a switch on the state byte at +0x20
  * (states 0, 1 and 2). Then, when the byte at +0x53 is zero, updates the countdowns at data + 0x184 and 0x188
  * and the vector at data + 0x170 from the moby's distance (8.0) and heading to the block at D_0013E633 + 0xE9D. */
-void Moby90Update(char *m) {
+void bob_update(char *m) {
     char *d = *(char **)(m + 0x78);
     func_L05_003188A8_2D18D0(m);
     switch (*(unsigned char *)(m + 0x20)) {
@@ -227,10 +227,10 @@ extern void func_L11_002D2500(void *);
 extern void func_L11_002D2670(void *);
 extern void func_L11_002D3970(void *);
 
-void Moby114Update(unsigned char *moby) {
+void resort_owner_update(unsigned char *moby) {
     AttachManipulatorsIfCheat(moby);
-    if (moby[0x31] && FastVecDist(moby + 0x10, D_L11_00167840) < 38.0f) {
-        SetGroundHeightBand(moby);
+    if (moby[0x31] && FastVecDist(moby + 0x10, camera_pos_b358) < 38.0f) {
+        func_L00_0025B178(moby);
         moby[0x7F] = 30;
     }
     BossL11_UpdateMovement(moby);
@@ -309,7 +309,7 @@ void BossL11_UpdateMovement(char *m) {
             tgt = d->target;
             FastVecSub(v, tgt, m + 0x10);
             FastVecScale(v, v, 1.0f / (float)scale_ticks(0x3C));
-            d->velocity[2] = ComputeLaunchVelocityZ((float *)(m + 0x10), (float *)tgt, 0, func_001F9CE8(v), -(D_0015EE70_d * 10.8f));
+            d->velocity[2] = jump_speed_4318((float *)(m + 0x10), (float *)tgt, 0, func_001F9CE8(v), -(D_0015EE70_d * 10.8f));
             boss->opacity = 0.6666667f;
         }
         if (0.0f < FastVecLength(v)) d->velocity[2] -= D_0015EE70_d * 10.8f;
@@ -349,7 +349,7 @@ void BossL11_MoveWithParts(void *mp) {
     float B[4];
     qcopy(A, moby + 0x10);
     qcopy(B, d + 0x130);
-    MoveMobyWithCollision((int)moby, (int)B, 0.5f, 0.3f, 0.0f, 0x10);
+    move_4318((int)moby, (int)B, 0.5f, 0.3f, 0.0f, 0x10);
     if ((moby[0x20] >= 4 && moby[0x20] <= 6) || (moby[0x20] == 7 && *(int *)(d + 0x15C) == 3)) {
         PushPointOutsidePath(0.3f, *(void **)(d + 0x60 - -(*(int *)(d + 0x158) * 4)), moby + 0x10, moby + 0x10);
         switch (*(int *)(d + 0x158)) {
@@ -452,7 +452,7 @@ void PokitaruGuideUpdate(void *mp) {
         BuildAdjacencyMasks(&d->a[2], 1, d->b[2]);
         clear_u64_value(d->f130);
         clear_u64_value(d->f140);
-        if (gHavePersuader[0xB] != 0) {
+        if (discount_purchase_pricing[0xB] != 0) {
             if (D_0014C150[d->f10C + (D_0015EE84 << 4)] == 0xFF) {
                 func_L11_0030BC10_2D2670((char *)D_L11_00160058_d + (d->fF0[0] << 8));
                 func_L11_0030BC10_2D2670((char *)D_L11_00160058_d + (d->fF0[1] << 8));
@@ -575,8 +575,8 @@ void PokitaruGuideUpdate(void *mp) {
         if (Npc_TryStartDialog(moby, d->f20)) {
             int ofs;
             int base;
-            SetLevelTriggerDone(d->f10C);
-            D_0013D4E1[3] = 1;
+            jet_clear_persistent(d->f10C);
+            menu_item_enabled_69[3] = 1;
             LevelTable_SetSlotValue(moby, 2);
             ofs = d->fE0[d->idx] << 7;
             base = (int)D_L11_0016016C_2D2670;
@@ -754,7 +754,7 @@ struct TgtData {
 int TargetZone_ContainsPoint(char *moby, char *other) {
     struct TgtData *d = *(struct TgtData **)(moby + 0x78);
     int *p = d->a;
-    int *ent = D_L11_001B11B0[*(int *)((char *)p - (-(d->idx * 4)))];
+    int *ent = path_table[*(int *)((char *)p - (-(d->idx * 4)))];
     int buf[8];
     int n;
     if (IsPointInPolygon(other, ent + 4, *ent) == 0) return 0;
@@ -844,7 +844,7 @@ int CanDropToGround(char *m, float *out) {
         if (FastVecLength(a) > 4.0f) func_L00_001FF4B0(a, a, 4.0f);
         FastVecAdd(a, a, pos);
         {
-            int *q = D_L11_001B11B0[*(int *)(s - (-(*(int *)(s + 0x158) * 4)) + 0x60)];
+            int *q = path_table[*(int *)(s - (-(*(int *)(s + 0x158) * 4)) + 0x60)];
             if (IsPointInPolygon(a, q + 4, *q)) {
                 a[2] += 5.0f;
                 g = func_L00_0025A748_f(a);
@@ -962,7 +962,7 @@ extern unsigned char D_0013D605_2F21B0[] __asm__("D_0013D605");
 extern unsigned char D_0013D355_2F21B0[] __asm__("D_0013D355");
 
 /* Pokitaru vendor NPC update: spawn, talk and reward states with the visit timer, aims at the player and sets the body and head poses. */
-void PokitaruVendorUpdate(char *m)
+void fred_pokitaru_update(char *m)
 {
     char *d;
     char *p;
@@ -977,8 +977,8 @@ void PokitaruVendorUpdate(char *m)
     d = *(char **)(m + 0x78);
     AttachManipulatorsIfCheat(m);
     if (*(unsigned char *)(m + 0x31) != 0) {
-        if (FastVecDist(m + 0x10, D_L11_00167840) < 30.0f) {
-            SetGroundHeightBand(m);
+        if (FastVecDist(m + 0x10, camera_pos_b358) < 30.0f) {
+            func_L00_0025B178(m);
             *(unsigned char *)(m + 0x7F) = 0x18;
         }
     }
@@ -999,7 +999,7 @@ void PokitaruVendorUpdate(char *m)
             PlaceMarkerAheadOfMoby(3.0f, m);
             *(unsigned char *)(m + 0x20) = 2;
         }
-        if (D_0013D355_2F21B0[0x13C] == 0 && gHavePersuader[0] == 0 &&
+        if (D_0013D355_2F21B0[0x13C] == 0 && discount_purchase_pricing[0] == 0 &&
             FastVecDist(m + 0x10, (char *)&D_0013E633 + 0xE9D) < 4.0f) {
             Stats_2F21B0 *stats;
             int elapsed, period;
@@ -1018,7 +1018,7 @@ void PokitaruVendorUpdate(char *m)
             if (FastVecDist(h, m + 0x10) < 4.0f &&
                 FastAbsF(*(float *)(h + 8) - *(float *)(m + 0x18)) < 4.0f) {
                 char *t;
-                SetLevelTriggerDone(*(unsigned char *)(m + 0xB0));
+                jet_clear_persistent(*(unsigned char *)(m + 0xB0));
                 t = D_L11_0016016C_2F21B0 + (*(int *)(d + 0x48) << 7);
                 func_L00_00286128_2D18D0(t + 0x30, t + 0x70);
             }
@@ -1029,7 +1029,7 @@ void PokitaruVendorUpdate(char *m)
             *(unsigned char *)(m + 0x20) = 1;
             if (*(short *)(d + 4) == 2) {
                 D_0013D355_2F21B0[0x13C] = 0;
-                gHavePersuader[0] = 1;
+                discount_purchase_pricing[0] = 1;
                 D_0013D605_2F21B0[0xE] = 1;
                 ShowBanner(0x2B06, scale_ticks(300));
                 memcard_Save(0, -1);
@@ -1512,7 +1512,7 @@ extern float D_L11_00161E7C_30AE90 SDATA(D_L11_00161E7C);
 extern float D_L11_00161E80_30AE90 SDATA(D_L11_00161E80);
 
 /* Pokitaru boat update: follows its path points, turns toward the next one and swings its rotor. */
-void PokitaruBoatUpdate(Moby *m) {
+void pokitaru_boat_update(Moby *m) {
     V_30AE90 A;
     V_30AE90 B;
     V_30AE90 C;
@@ -1736,10 +1736,10 @@ void RotatingParts_Update(struct Moby *moby) {
             step = D_0015EE6C * 2.6179938f;
         if (((u8 *)d)[i * 0x40 + 0x101]) {
             d->angle[i] = FastAddRots(d->angle[i], step);
-            func_L00_001FFED8(d->parts[i].joint, 0, d->angle[i]);
+            axis_rotation_2d48(d->parts[i].joint, 0, d->angle[i]);
         }
     }
-    if (func_001F9D48(&moby->pos, D_L11_00167840) > 38.0f)
+    if (func_001F9D48(&moby->pos, camera_pos_b358) > 38.0f)
         return;
     if (moby->state == 1 && (D_L11_0015F6B0_0B8D0 & 1))
         return;
@@ -1927,7 +1927,7 @@ void CutsceneControllerUpdate(Moby *moby) {
             clear_u64_value(b);
             b[2] = func_L00_001FF860(moby->pos.x - a[0], moby->pos.y - a[1]);
             Hero_ResetToPosition(a, b, 0x72, 1);
-            CameraScript(D_L11_0016016C + (data->f4 << 7) + 0x30, D_L11_0016016C + (data->f8 << 7) + 0x70, 1, 0, 0);
+            CameraScript(path_points_14b0 + (data->f4 << 7) + 0x30, path_points_14b0 + (data->f8 << 7) + 0x70, 1, 0, 0);
             for (m = 0; m < 6; m++) {
                 D_L11_001DA9E0[m]->flags &= ~1;
                 D_L11_001DA9E0[m]->visible = 1;
@@ -1987,10 +1987,10 @@ void CutsceneControllerUpdate(Moby *moby) {
         }
         D_L11_0015F4FC = data->fC;
         func_00214D88_f(&D_L11_00161F6C, &D_L11_00161F88, 1.0f, D_0015EE70 * 0.2f, D_0015EE70 * 0.2f, D_0015EE6C * 0.2f);
-        func_001F9C08(a, D_L11_0016016C + (data->f4 << 7) + 0x30, D_L11_0016016C + (data->f8 << 7) + 0x30, D_L11_00161F6C);
-        func_001F9C08(b, D_L11_0016016C + (data->f4 << 7) + 0x70, D_L11_0016016C + (data->f8 << 7) + 0x70, D_L11_00161F6C);
-        CameraScript_SetPosition(a);
-        CameraScript_SetLookAt(b);
+        func_001F9C08(a, path_points_14b0 + (data->f4 << 7) + 0x30, path_points_14b0 + (data->f8 << 7) + 0x30, D_L11_00161F6C);
+        func_001F9C08(b, path_points_14b0 + (data->f4 << 7) + 0x70, path_points_14b0 + (data->f8 << 7) + 0x70, D_L11_00161F6C);
+        set_camera_position(a);
+        set_camera_rotation(b);
         if (data->fC >= 1.0f) {
             D_L11_00161F54 = 1.0f;
             D_L11_00161F58 = 1.0f;
@@ -2246,7 +2246,7 @@ void Moby1157Update(char *m) {
             if (0.0f <= d->f78) {
                 char *o = (char *)(D_L11_00160058_m + (d->w60 << 8));
                 Hero_ResetToPosition(o + 0x10, o + 0x40, 0x72, 1);
-                p = D_L11_0016016C + (d->w64 << 7);
+                p = path_points_14b0 + (d->w64 << 7);
                 CameraScript(p + 0x30, p + 0x70, 1, 0, 0);
                 break;
             }
@@ -2274,8 +2274,8 @@ void Moby1157Update(char *m) {
         vb[2] = FastSubRots(((float *)((d->w68 << 7) + D_L11_0016016C_i))[30],
                               ((float *)((d->w64 << 7) + D_L11_0016016C_i))[30]) * d->f6C;
         vb[2] = FastAddRots(((float *)((d->w64 << 7) + D_L11_0016016C_i))[30], vb[2]);
-        CameraScript_SetPosition(va);
-        CameraScript_SetLookAt(vb);
+        set_camera_position(va);
+        set_camera_rotation(vb);
         if (1.0f <= d->f6C) {
             m[0x20] = 4;
             d->f78 = -1.0f;
@@ -2757,7 +2757,7 @@ extern float func_001FA748_10058(float, float) __asm__("func_001FA748");
 extern void func_L00_002617B0_10058(void *, void *, void *, void *) __asm__("func_L00_002617B0");
 
 /* Adapted from Lombyte (MIT) for PAL: src/overlays/l11/gameplay/vendor/0030c788.c, FUN_L11_0030eb90. */
-void Moby1178Update(struct Moby *m) {
+void seesaw_platform_update(struct Moby *m) {
     Vec4f v;
     Vec4f rot;
     float matrix[16] __attribute__((aligned(16)));
@@ -2814,7 +2814,7 @@ void Moby1180Update(char *moby) {
         break;
     case 1:
         if (IsMoby1179Active((char *)(D_L11_00160058_d + (*(int *)data << 8)))) {
-            if (*(int *)&D_L11_0015F6B0 > 10) {
+            if (*(int *)&level_frame > 10) {
                 D_0013D4EB = state;
                 moby[0x20] = 2;
                 Moby_PlaySound(0, 0, (int)moby);
@@ -3025,7 +3025,7 @@ void ShipCollider_Update(struct Moby *m) {
     if (1003.0f < m->pos.z) {
         m->pos.z = 1003.0f;
     }
-    RecordMobyShadow(m, 0.5f);
+    jet_animate(m, 0.5f);
 }
 char *SpawnMoby1219(char *owner) {
     char *moby = CreateMoby(0x4C3);
@@ -3217,7 +3217,7 @@ extern float D_L11_00162058_311648 SDATA(D_L11_00162058);
 extern float D_L11_0016205C_311648 SDATA(D_L11_0016205C);
 
 /* Pokitaru psytcopus (class 1231) update: a state machine on moby->state. */
-void PsytcopusUpdate(Moby *moby)
+void psytcopus_update(Moby *moby)
 {
     PsyData_311648 *data = (PsyData_311648 *)moby->pvars;
     Moby *target;

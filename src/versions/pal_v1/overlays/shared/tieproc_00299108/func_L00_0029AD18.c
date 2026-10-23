@@ -4,11 +4,11 @@ void BeginMoviePlayback(void) {
     music_Stop();
     func_0012EF48(0);
     for (;;) {
-        char *ld = D_0013D390;
+        char *ld = memory_card_state;
         if (*(int *)(ld + 0xD4) < 3 && *(int *)(ld + 0xDC) < 0) {
             break;
         }
-        MemCard_UpdateState();
+        memcard_update_state();
     }
     Movie_Play(D_L00_00161108, D_L00_0016110C,
                   (*(int *)&D_L00_00161114 + 0x3F) & ~0x3F,

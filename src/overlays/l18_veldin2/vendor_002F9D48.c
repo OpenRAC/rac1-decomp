@@ -106,7 +106,7 @@ void Moby1563Update(Moby *moby) {
                     f = t.s.f[k - 3];
                     if (k == 3 && D_L18_0016D2E0_9D48.timer >= scale_ticks(0x285) && D_L18_0016D2E0_9D48.timer <= scale_ticks(0x2E0)) continue;
                     if (k == 5 && D_L18_0016D2E0_9D48.timer >= scale_ticks(0x285) && D_L18_0016D2E0_9D48.timer <= scale_ticks(0x2DA)) f = 300000.0f;
-                    SpawnSparkRings(v, v, D_L18_0015F660, f, f * 0.4f);
+                    draw_trail(v, v, D_L18_0015F660, f, f * 0.4f);
                 }
             }
             if (D_L18_0016D2E0_9D48.timer == scale_ticks(0x2C2)) {
@@ -725,7 +725,7 @@ void Moby1584Update(char *moby) {
         break;
     case 1:
         FastVecSub(tmp, moby + 0x10, data + 0x60);
-        CarryRiders(data + 0x20, tmp, data + 0x70, moby + 0x40);
+        update_entity_matrix(data + 0x20, tmp, data + 0x70, moby + 0x40);
         break;
     }
     if (*(unsigned char *)(moby + 0xBC) != 0 && *(int *)(data + 0x80) != 0 && *(int *)(data + 0x84) == 0) {
@@ -826,7 +826,7 @@ void Moby1799Update(M2 *m) {
                 Moby_GetJointWorldPos(p, 9, buf2);
                 FastVecSub(buf3, buf, buf2);
                 func_L00_001FF4B0(buf3, buf3, *(float *)&D_L18_00162608);
-                SpawnSparkRings(buf, buf, buf3, *(float *)&D_L18_0016260C, *(float *)&D_L18_00162610);
+                draw_trail(buf, buf, buf3, *(float *)&D_L18_0016260C, *(float *)&D_L18_00162610);
             }
         }
         break;
@@ -960,7 +960,7 @@ void Moby1906Update(unsigned char *m) {
         break;
     }
     case 5:
-        if (!(StepMobyPhysics(m, e + 0x70) & 0x140)) break;
+        if (!(mine_fall(m, e + 0x70) & 0x140)) break;
     case 6:
         qcopy(tmp, m + 0x10);
         ((float *)tmp)[2] += 0.5f;
@@ -1166,7 +1166,7 @@ float Moby1906SteerToward(char *self, float *src) {
     v[0] = FastCos(*(float *)(self + 0x48)) * *(float *)(o + 0x1F0);
     v[1] = FastSin(*(float *)(self + 0x48)) * *(float *)(o + 0x1F0);
     v[2] = -(D_0015EE6C + D_0015EE6C);
-    MoveMobyWithCollision((int)self, (int)v, h, h, z, 0);
+    move_4318((int)self, (int)v, h, h, z, 0);
     PushPointOutsidePath(h, *(void **)(o + 0x1E0), self + 0x10, self + 0x10);
     return dist;
 }
@@ -1207,7 +1207,7 @@ int LaunchMoby1906(int group, void *from, void *to, float speed) {
                 FastVecSub(v->velocity, to, from);
                 v->velocity[2] = 0.0f;
                 func_L00_001FF4B0(v->velocity, v->velocity, speed);
-                v->velocity[2] = ComputeLaunchVelocityZ(from, to, speed, -(D_0015EE70 * 10.0f), 0);
+                v->velocity[2] = jump_speed_4318(from, to, speed, -(D_0015EE70 * 10.0f), 0);
                 v->spin = randf_sym(15.0f, 45.0f) * 0.017453292f;
                 return 1;
             }
@@ -1331,10 +1331,13 @@ void Moby1906JointGlowDraw(unsigned char *moby) {
         }
     }
 }
-extern int func_L00_002DCDA8_pos(void *, void *, void *) __asm__("func_L00_002DCDA8");
+extern int func_L00_002DCDA8_pos(void *, void *, void *, float) __asm__("func_L00_002DCDA8");
 /* Runs func_L00_002DCDA8 on the moby and switches state 7 accordingly; returns its result. */
-int Moby1906HitCheck(char *a, void *pos, void *target) {
-    int r = func_L00_002DCDA8_pos(a, pos, target);
+/* One of a class's Suck Cannon hooks (grab, place or fire), which the catalogue folds: each copy
+   calls its own one, the fire with (moby, velocity, target, height), so the arguments go on as
+   they came (retail touches none of a1, a2 and $f12 before its call). */
+int Moby1906HitCheck(char *a, void *pos, void *target, float h) {
+    int r = func_L00_002DCDA8_pos(a, pos, target, h);
     if (r == 0) {
         if (*(unsigned char *)(a + 0x20) == 7) a[0x20] = 2;
     } else {

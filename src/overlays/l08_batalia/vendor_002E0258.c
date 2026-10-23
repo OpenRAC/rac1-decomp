@@ -1346,7 +1346,7 @@ void Batalia_BoltThiefUpdate(Moby *m) {
     Manipulator_ApplyScale(2.5f, (int)m, 1, d->x260);
     if (m->visible != 0) {
         if (FastVecDist(&m->pos, D_L08_00167640) < 29.0f) {
-            SetGroundHeightBand(m);
+            func_L00_0025B178(m);
             m->shadow_range = 0x17;
         }
     }
@@ -1566,7 +1566,7 @@ void Batalia_BoltThiefUpdate(Moby *m) {
         break;
     }
     case 8:
-        if (StepMobyPhysics(m, d->x70) & 3) {
+        if (mine_fall(m, d->x70) & 3) {
             SpawnExplosionFx(m, &m->pos, -1, 1.0f, 13.0f);
             DeleteMoby(m);
             return;
@@ -1933,10 +1933,10 @@ void TurretBoltUpdate(Moby *m) {
                 PartType53Spawn(mt + 4, scale_ticks(0x19), size * 0.14f, size * k, 0x7F7F7F7F, 1, spin, mt, 0.0f);
                 src = m->parent;
                 if (src && !(src->id & 0x80)) {
-                    D_0014D690[D_0015EE84][src->id].bolts += value;
+                    bolt_source_stats[D_0015EE84][src->id].bolts += value;
                 }
                 gBolts += value;
-                D_0013E040[D_0015EE84] += value;
+                level_bolts[D_0015EE84] += value;
                 queue_animation_update(2, 0x754E, func_L00_0023A658_4BE8, func_L00_0023A690_4BE8, func_L00_0023A788_4BE8, &gBolts, 9999999);
                 if (m < D_L08_0016005C) {
                     D_L08_001BB0E0.killed[(short)m->save_id] = m->mission + 2;
@@ -1974,10 +1974,10 @@ void TurretBoltUpdate(Moby *m) {
             }
             src = m->parent;
             if (src && !(src->id & 0x80)) {
-                D_0014D690[D_0015EE84][src->id].bolts += value;
+                bolt_source_stats[D_0015EE84][src->id].bolts += value;
             }
             gBolts += value;
-            D_0013E040[D_0015EE84] += value;
+            level_bolts[D_0015EE84] += value;
             DeleteMoby(m);
             return;
         }
@@ -2003,7 +2003,7 @@ void TurretBoltUpdate(Moby *m) {
                 n = truncate_float_to_s32(func_001F9878(D_L08_00161D60 + random_float_between(-10.0f, 10.0f)));
                 inv = 1.0f / IntToFloat(n);
                 qcopy(d->v0, cl->pos);
-                MatrixToEuler(&m->rot_row0, &m->rot);
+                matrix_to_euler(&m->rot_row0, &m->rot);
                 func_L00_001FF4B0(a, cl->n, 1.0f);
                 SetOrientationFromDirection((char *)m, a);
                 d->f60 = random_angle_radians();
@@ -2117,7 +2117,7 @@ void SetOrientationFromDirection(char *a, float *v) {
     clear_u64_value(m + 12);
     d += 0x10;
     m[15] = 1.0f;
-    MatrixToEuler(m, d);
+    matrix_to_euler(m, d);
     func_001FA218(n, (float *)d);
     n[15] = 42.0f;
 }
@@ -2181,7 +2181,7 @@ void AimTurret(char *m, float *out, float *rot) {
     r[11] = 0.0f;
     clear_u64_value(r + 12);
     r[15] = 1.0f;
-    MatrixToEuler(r, rot);
+    matrix_to_euler(r, rot);
     rot[3] = 0.0f;
     func_L00_001FF4B0(u, b + 8, sy);
     FastVecAdd(out, d, u);
@@ -2261,7 +2261,7 @@ void DrawScreenMarkerQuad(char *m) {
             v[3] += (truncate_float_to_s32(G) << 4) + r19;
         }
         VU1_addGSregister(0x42, 0x8000000048L);
-        AppendDisplayListEntry(v, t, w, GetEffectTex(0x13), 1);
+        draw_geometry_quad_5188(v, t, w, GetEffectTex(0x13), 1);
         VU1_addGSregister(0x42, 0x8000000044L);
     }
 }
@@ -2476,7 +2476,7 @@ extern s32 func_001F9938_EA0A8(s16 *) __asm__("func_001F9938");
 extern void func_L08_002E9CB0_EA0A8(struct Moby *) __asm__("func_L08_002E9CB0");
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l08/gameplay/entities/002deee0.c, FUN_L08_002e8cd0. */
-void Moby462Update(struct Moby *moby) {
+void shrub_update(struct Moby *moby) {
     SwarmVars_EA0A8 *vars = (SwarmVars_EA0A8 *)moby->pvars;
     SwarmPathFollower_EA0A8 *follower;
     struct Moby *target;

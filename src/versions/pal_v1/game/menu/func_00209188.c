@@ -1,9 +1,9 @@
-void CardMenu_State01AdvanceOnInput(void) {
+void save_card_state_good_save(void) {
     int flags = D_0015EFB4;
     char *b;
     int nf;
     D_0015EFB4 = flags & ~4;
-    b = D_0013D390;
+    b = memory_card_state;
     nf = D_0015EFB4 & ~2;
     D_0015EFB4 = nf;
     if (*(int *)(b + 0xF4) == 0) {

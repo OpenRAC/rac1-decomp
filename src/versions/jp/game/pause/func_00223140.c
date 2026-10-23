@@ -1,4 +1,4 @@
-int DrawPageIcons(char *arg0) {
+int draw_selected_menu_item_text(char *arg0) {
     char *p = *(char **)(D_001D5F74 + 0x40);
     int row = *(int *)(*(char **)(p + 0x34) + *(int *)(p + 0x40) * 12 + 4);
 

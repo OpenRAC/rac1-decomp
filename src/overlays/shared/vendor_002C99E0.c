@@ -168,7 +168,7 @@ void func_L11_00309DA0(struct Moby *moby) {
 
     moby->scale += (moby->pclass->scale - moby->scale) * 0.1f;
     qcopy(old, &moby->pos);
-    if (D_L11_0015F6B0 % 6 == (((char *)moby - D_L11_00160058) >> 8) % 6)
+    if (level_frame % 6 == (((char *)moby - D_L11_00160058) >> 8) % 6)
         vars->target = 0;
     moby->alpha = truncate_float_to_s32(vars->size * 24.0f);
     copy_xyz_089d0(look, vars->target_pos);
@@ -531,7 +531,7 @@ void DrawWaterSheet(Moby *moby) {
     VU1_addGSregister(0x14, 0xFF9000000260L);
     VU1_addGSregister(0x47, 0x513F1);
     VU1_addGSregister(6, GetEffectTex(0x16));
-    Draw_BuildVu1Setup();
+    font_queue_vu_state();
     a.x = 1.0f;
     a.y = 0.0f;
     a.z = 0.0f;
@@ -558,7 +558,7 @@ void DrawWaterSheet(Moby *moby) {
     FastVecAdd(&c[3], &v0, &v1);
     for (i = 0; i < 4; i++) {
         Vec4f *p = &c[i];
-        FastVecAdd(p, p, D_L11_00167840);
+        FastVecAdd(p, p, camera_pos_b358);
         p->z = D_L11_00161EA8;
     }
     FastVecSub(&d0, &c[1], &c[0]);
@@ -630,26 +630,26 @@ void DrawWaterSheet(Moby *moby) {
             for (y = d->f18 * -2.0f; y < d->f18 * 2.0f; y += d->f18) {
                 n = 0;
                 for (x = d->f18 * -2.0f; x < d->f18 * 2.0f; x += d->f18) {
-                    D_L11_001DA7E0[n].u = x / (d->f18 * 2.0f) * D_L11_00161E88[layer] + D_L11_00161E98[layer].u;
-                    D_L11_001DA7E0[n].v = y / (d->f18 * 2.0f) * D_L11_00161E88[layer] + D_L11_00161E98[layer].v;
+                    D_L11_001DA7E0[n].u = x / (d->f18 * 2.0f) * wave_speed[layer] + wave_offset[layer].u;
+                    D_L11_001DA7E0[n].v = y / (d->f18 * 2.0f) * wave_speed[layer] + wave_offset[layer].v;
                     D_L11_001DA1D8[n].x = x + ((Cam_30BCD8 *)D_L11_00167700)->x + 1.0f;
                     D_L11_001DA1D8[n].y = y + ((Cam_30BCD8 *)D_L11_00167700)->y + 1.0f;
                     D_L11_001DA1D8[n].z = D_L11_00161EA8;
                     i = n + 1;
-                    D_L11_001DA7E0[i].u = x / (d->f18 * 2.0f) * D_L11_00161E88[layer] + D_L11_00161E98[layer].u;
-                    D_L11_001DA7E0[i].v = (y + d->f18) / (d->f18 * 2.0f) * D_L11_00161E88[layer] + D_L11_00161E98[layer].v;
+                    D_L11_001DA7E0[i].u = x / (d->f18 * 2.0f) * wave_speed[layer] + wave_offset[layer].u;
+                    D_L11_001DA7E0[i].v = (y + d->f18) / (d->f18 * 2.0f) * wave_speed[layer] + wave_offset[layer].v;
                     D_L11_001DA1D8[i].x = x + ((Cam_30BCD8 *)D_L11_00167700)->x + 1.0f;
                     D_L11_001DA1D8[i].y = y + d->f18 + ((Cam_30BCD8 *)D_L11_00167700)->y + 1.0f;
                     D_L11_001DA1D8[i].z = D_L11_00161EA8;
                     i = n + 2;
-                    D_L11_001DA7E0[i].u = (x + d->f18) / (d->f18 * 2.0f) * D_L11_00161E88[layer] + D_L11_00161E98[layer].u;
-                    D_L11_001DA7E0[i].v = y / (d->f18 * 2.0f) * D_L11_00161E88[layer] + D_L11_00161E98[layer].v;
+                    D_L11_001DA7E0[i].u = (x + d->f18) / (d->f18 * 2.0f) * wave_speed[layer] + wave_offset[layer].u;
+                    D_L11_001DA7E0[i].v = y / (d->f18 * 2.0f) * wave_speed[layer] + wave_offset[layer].v;
                     D_L11_001DA1D8[i].x = x + d->f18 + ((Cam_30BCD8 *)D_L11_00167700)->x + 1.0f;
                     D_L11_001DA1D8[i].y = y + ((Cam_30BCD8 *)D_L11_00167700)->y + 1.0f;
                     D_L11_001DA1D8[i].z = D_L11_00161EA8;
                     i = n + 3;
-                    D_L11_001DA7E0[i].u = (x + d->f18) / (d->f18 * 2.0f) * D_L11_00161E88[layer] + D_L11_00161E98[layer].u;
-                    D_L11_001DA7E0[i].v = (y + d->f18) / (d->f18 * 2.0f) * D_L11_00161E88[layer] + D_L11_00161E98[layer].v;
+                    D_L11_001DA7E0[i].u = (x + d->f18) / (d->f18 * 2.0f) * wave_speed[layer] + wave_offset[layer].u;
+                    D_L11_001DA7E0[i].v = (y + d->f18) / (d->f18 * 2.0f) * wave_speed[layer] + wave_offset[layer].v;
                     D_L11_001DA1D8[i].x = x + d->f18 + ((Cam_30BCD8 *)D_L11_00167700)->x + 1.0f;
                     D_L11_001DA1D8[i].y = y + d->f18 + ((Cam_30BCD8 *)D_L11_00167700)->y + 1.0f;
                     D_L11_001DA1D8[i].z = D_L11_00161EA8;
@@ -666,7 +666,7 @@ void DrawWaterSheet(Moby *moby) {
                     }
                     n += 4;
                     if (n >= 0x40) {
-                        func_001F9978();
+                        raise_kernel_trap();
                     }
                 }
                 func_L00_001FDE48_30BCD8(n, D_L11_001DA1D8, D_L11_001DA4D8, D_L11_001DA7E0, 1);
@@ -733,7 +733,7 @@ extern int D_L11_0015F6B0_30C728 __asm__("D_L11_0015F6B0") MACRO_ADDR;
 extern float D_0015EE7C_30C728 __asm__("D_0015EE7C") MACRO_ADDR;
 
 /* Ocean update: scrolls the two wave layers with the camera and the time, keeps their offsets in -1..1 and sets the level's tide values. */
-void OceanUpdate(OceanMoby_30C728 *moby)
+void ocean_pokitaru_update(OceanMoby_30C728 *moby)
 {
     OceanVars_30C728 *d = moby->vars;
     float src[4];
@@ -873,7 +873,7 @@ extern int func_001F9850_3102C8(int) __asm__("func_001F9850");
 
 
 // Thruster pack lock update: a state machine (0 idle, 1 armed, 2 attacking) that aims the pack and counts the cooldown timers.
-void Moby1179Update(Lock_3102C8 *moby)
+void thruster_pack_lock_update(Lock_3102C8 *moby)
 {
     char *d = moby->vars;
 
@@ -1152,7 +1152,7 @@ extern unsigned char D_0013E15A[];
 void ProjectPointToScreen(void *pt, int *outx, int *outy, int yoff) {
     float p[4];
     int *g;
-    projectWorldPoint(p, pt);
+    func_001F2418(p, pt);
     g = (int *)(D_0013E15A + 0x4A6);
     *outx = func_001FA898_r((p[0] - (float)g[4]) * 0.0625f);
     *outy = func_001FA898_r((p[1] - (float)g[5]) * 0.0625f) + yoff;
@@ -1243,31 +1243,31 @@ void func_L11_0031A738(char *m) {
     if (*(unsigned char *)(m + 0x21) == 0xFF) {
         return;
     }
-    if (D_0015EEB0[2] != 0) {
+    if (gCheats[2] != 0) {
         *(float *)&D_L11_00162480 = 16.0f;
     } else {
         *(float *)&D_L11_00162480 = 5.0f;
     }
 
     for (i = 0; i < 16; i++) {
-        long r = func_001F4868(0x13);
+        long r = GetEffectTex(0x13);
         Quad_31A738 *e = &q[i];
         e->pk[1] = r;
         e->pk[2] = 0xFF9000000260L;
         e->pk[0] = 0;
         e->pk[3] = 0x8000000048L;
-        base = func_001FA888((D_L11_0015F6B0 + 3) & 3) / (*(float *)&D_L11_00162480 * 4.0f);
+        base = IntToFloat((level_frame + 3) & 3) / (*(float *)&D_L11_00162480 * 4.0f);
         for (j = 0; j < 4; j++) {
             jj = (j >> 1) - 1;
             q[i].uv[j][0] = D_L11_001F1750[j][0];
             q[i].uv[j][1] = D_L11_001F1750[j][1];
-            a = func_001FA888(i - jj) / *(float *)&D_L11_00162480 + base;
+            a = IntToFloat(i - jj) / *(float *)&D_L11_00162480 + base;
             if (1.0f < a) {
                 a = 1.0f;
             } else if (a < 0.0f) {
                 a = 0.0f;
             }
-            q[i].col[j] = func_001FA8A8(0x8C28AA28, 0x144646, a);
+            q[i].col[j] = FastTweenColor(0x8C28AA28, 0x144646, a);
         }
     }
 
@@ -1301,7 +1301,7 @@ void func_L11_0031A738(char *m) {
                         nh = h + 1;
                         for (n = 0; n < 4; n++) {
                             int x = (s + (n >> 1)) % 16;
-                            func_001F9BD8(q[k].v[n], pv + 0xC0 + h * 0x100 + x * 16, off[n & 1]);
+                            FastVecAdd(q[k].v[n], pv + 0xC0 + h * 0x100 + x * 16, off[n & 1]);
                         }
                         func_L00_001FD1D8(&q[k], 0, 0);
                         h = nh;
@@ -1327,7 +1327,7 @@ void TrailRingUpdate(char *moby) {
     float v[4];
     float w[4];
     int t;
-    if ((D_L11_0015F6B0 & 3) == 0) {
+    if ((level_frame & 3) == 0) {
         int cnt;
         float lim = *(float *)&D_L11_00162480;
         cnt = *(int *)(d + 0x2C0);
@@ -1349,7 +1349,7 @@ void TrailRingUpdate(char *moby) {
     w[2] = 0.3f;
     func_001F9EC0(w, w, moby + 0xC0);
     FastVecAdd(d + ((*(int *)(d + 0x2C4) << 4) + 0x1C0), w, moby + 0x10);
-    t = D_L11_0015F6B0;
+    t = level_frame;
     *(float *)(d + (*(int *)(d + 0x2C4) << 4) + 0x1CC) = 1.0f;
     if (t != 0) {
         int *p = *(int **)(d + 0x2C8);

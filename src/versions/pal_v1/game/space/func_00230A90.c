@@ -1,4 +1,4 @@
-void SpaceFlightUpdate(void) {
+void update_resident_gameplay_state(void) {
     Vector4_230A90 scratch_vectors[4];
     s32 keyframe_flags;
     s32 ticks_per_bank;

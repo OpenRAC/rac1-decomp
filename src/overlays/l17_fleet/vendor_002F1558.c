@@ -82,7 +82,7 @@ void EnemyHitStateUpdate(Moby *moby, int arg) {
         d->f1D4 = func_001FA898_r(func_001F9878(random_float_between(180.0f, 240.0f)));
         d->i38 = 0;
     }
-    func_L08_00211A38(&d->f1D4);
+    update_float_countdown(&d->f1D4);
     y = 0;
     q = (Hit_2F1558 *)MobyGetHitMessage(moby, 0x330000, 0);
     ComputeHitResponse(moby, q, &d->f20, 0, &x, &y, 0, 4);
@@ -147,16 +147,19 @@ int SteerTowardPoint(char *moby, float *target, float speed) {
     tmp[0] = FastCos(*(float *)(moby + 0x48)) * *(float *)(data + 0x1D8);
     tmp[1] = FastSin(*(float *)(moby + 0x48)) * *(float *)(data + 0x1D8);
     tmp[2] = -(D_0015EE6C * 0.5f);
-    MoveMobyWithCollision((int)moby, (int)tmp, 0.5f, 0.5f, 0.0f, 0);
+    move_4318((int)moby, (int)tmp, 0.5f, 0.5f, 0.0f, 0);
     return func_001F9D48(moby + 0x10, target) < 0.2f;
 }
 extern int func_L00_002DCDA8(void *);
 extern int func_001F9850(int);
 extern void func_00213DE0(void *, int, int, int);
 
-extern int func_L00_002DCDA8_pos(void *, void *, void *) __asm__("func_L00_002DCDA8");
-int EnemyStunUpdate(unsigned char *moby, void *pos, void *target) {
-    int result = func_L00_002DCDA8_pos(moby, pos, target);
+extern int func_L00_002DCDA8_pos(void *, void *, void *, float) __asm__("func_L00_002DCDA8");
+/* One of a class's Suck Cannon hooks (grab, place or fire), which the catalogue folds: each copy
+   calls its own one, the fire with (moby, velocity, target, height), so the arguments go on as
+   they came (retail touches none of a1, a2 and $f12 before its call). */
+int EnemyStunUpdate(unsigned char *moby, void *pos, void *target, float h) {
+    int result = func_L00_002DCDA8_pos(moby, pos, target, h);
     if (result) {
         moby[0x20] = 12;
     } else if (moby[0x20] == 12) {
@@ -358,7 +361,7 @@ void DrawFleetRippleStrips(char *moby) {
     VU1_addGSregister(0x14, ((long)0xFF90 << 32) | 0x260);
     d->f0 = d->f4;
     d->f4 = FastAddRots(d->f4, 360.0f / func_001F9878(D_L17_001622D8) * 0.017453292f * D_0015EE6C);
-    func_L00_00251358(moby, &r, &g, &b);
+    get_moby_color(moby, &r, &g, &b);
     color = (D_L17_001622D0 << 24) | (b << 16) | (g << 8) | r;
     for (i = 0; i < 2; i++) {
         for (j = 0; j < ((int *)&D_L17_00162290)[i]; j++) {
@@ -386,7 +389,7 @@ void DrawFleetRippleStrips(char *moby) {
                     + func_L00_00200210(scale * tbl.p[i].v[1], 1.0f);
             }
         }
-        Draw_BuildVu1Setup();
+        font_queue_vu_state();
         for (q = 0; q < 2; q++) {
             func_L00_001FDE48(((int *)&D_L17_00162290)[q], ((int *)&D_L17_00162298)[q],
                 ((int *)&D_L17_001622A8)[q], (void *)((int *)&D_L17_001622A0)[q], 1);
@@ -428,7 +431,7 @@ void DrawRippleRing(char *moby) {
     VU1_addGSregister(0x14, ((long)0xFF90 << 32) | 0x260);
     d->f0 = d->f4;
     d->f4 = FastAddRots(d->f4, 360.0f / func_001F9878(D_L17_00162344) * 0.017453292f * D_0015EE6C);
-    func_L00_00251358(moby, &r, &g, &b);
+    get_moby_color(moby, &r, &g, &b);
     color = (D_L17_0016233C << 24) | (b << 16) | (g << 8) | r;
     for (i = 0; i < D_L17_00162300[0]; i++) {
         RingPt *p = &D_L17_001DC0F0[i];
@@ -447,7 +450,7 @@ void DrawRippleRing(char *moby) {
             D_L17_001DCD80[n][0] = D_L17_001DC520[n][0] + func_L00_00200210(scale * t.p[j].v[0], 1.0f);
             D_L17_001DCD80[n][1] = D_L17_001DC520[n][1] + func_L00_00200210(scale * t.p[j].v[1], 1.0f);
         }
-        Draw_BuildVu1Setup();
+        font_queue_vu_state();
         for (k = 0; k < 1; k++) {
             func_L00_001FDE48(D_L17_00162300[k], D_L17_00162320[k], D_L17_00162330[k], (void *)D_L17_00162328[k], 1);
         }
@@ -499,7 +502,7 @@ void DrawLightRing(char *moby) {
     VU1_addGSregister(0x14, 0xFF9000000260L);
     data->prev = data->angle;
     data->angle = FastAddRots(data->angle, 360.0f / func_001F9878(D_L17_00162404) * 0.017453292f * D_0015EE6C);
-    func_L00_00251358(moby, &r, &g, &b);
+    get_moby_color(moby, &r, &g, &b);
     /* The second float of each pair in t: p->f[0] is t.f[1], p->f[2] is t.f[3]. */
     p = (Quad4 *)&t.f[1];
     color = (D_L17_001623FC << 24) | (b << 16) | (g << 8) | r;
@@ -526,7 +529,7 @@ void DrawLightRing(char *moby) {
             D_L17_001DE090[n][0] = D_L17_001DDC50[n][0] + func_L00_00200210(scale * t.f[j * 2], 1.0f);
             D_L17_001DE090[n][1] = D_L17_001DDC50[n][1] + func_L00_00200210(scale * p->f[j * 2], 1.0f);
         }
-        Draw_BuildVu1Setup();
+        font_queue_vu_state();
         for (k = 0; k < 1; k++) {
             func_L00_001FDE48(D_L17_001623C0[k], D_L17_001623E0[k], D_L17_001623F0[k], (void *)D_L17_001623E8[k], 1);
         }
@@ -677,8 +680,8 @@ void Moby1448Update(unsigned char *m) {
             rot[1] = -func_L00_001FF860(func_001F9D48(a, b), b[2] - a[2]);
             CameraScript(a, rot, 2, scale_ticks(300), 0);
             func_L02_002F9ED8(0.001f, 1.0f, 1.0f, 0.001f, 1.0f, 1.0f);
-            CameraScript_SetPosition(a);
-            CameraScript_SetLookAt(rot);
+            set_camera_position(a);
+            set_camera_rotation(rot);
             Hero_ResetToPosition(D_L17_0016016C + (v->cut << 7) + 0x30, D_L17_0016016C + (v->cut << 7) + 0x70, 0x72, 0);
         } else if (D_L17_001BBE40.collected[(short)*(unsigned short *)(m + 0xB2)] != 0
                    || (*(int *)(D_0014171B + 0xAB75 + (((short)*(unsigned short *)(m + 0xB2) >> 5) * 4 + (D_0015EE84_m << 8))) >> (*(unsigned short *)(m + 0xB2) & 0x1F)) & 1) {
@@ -734,7 +737,7 @@ void Moby1448Update(unsigned char *m) {
         break;
     }
     FastVecSub(delta, m + 0x10, old_pos);
-    CarryRiders(v->area, delta, old_rot, m + 0x40);
+    update_entity_matrix(v->area, delta, old_rot, m + 0x40);
 }
 extern void func_00215F80(int, int);
 
@@ -818,7 +821,7 @@ int AdvanceAlongCurvePath(char *moby, int idx) {
     i3 = func_001FA898_r(t);
     func_001F9C08(pos, &c1->p[i1], &c1->p[i1 + 1], t1);
     func_001F9C08(moby + 0x10, &c3->p[i3], &c3->p[i3 + 1], t3);
-    CameraScript_SetPosition(pos);
+    set_camera_position(pos);
     {
         char *base = D_L17_0016016C + (d->e84 << 7);
         Hero_ResetToPosition(base + 0x30, base + 0x70, 0x72, 0);
@@ -840,7 +843,7 @@ int AdvanceAlongCurvePath(char *moby, int idx) {
         m[2] = FastAddRots(FastSubRots(func_L00_001FF860(c2->p[i2 + 1].x - pos[0], c2->p[i2 + 1].y - pos[1]), ang) * t2, ang);
         ang = -func_L00_001FF860(func_001F9D48(pos, &c2->p[i2]), c2->p[i2].z - pos[2]);
         m[1] = FastAddRots(FastSubRots(-func_L00_001FF860(func_001F9D48(pos, &c2->p[i2 + 1]), c2->p[i2 + 1].z - pos[2]), ang) * t2, ang);
-        CameraScript_SetLookAt(m);
+        set_camera_rotation(m);
     }
     *(float *)(moby + 0x2C) = *(float *)(*(char **)(moby + 0x24) + 0x24) *
         (d->f9C - (d->f9C - d->fA0) * d->fA4);
@@ -1095,7 +1098,7 @@ void Moby750SparkTriggerUpdate(unsigned char *m) {
             if (v != 0 && v != D_L17_0015F6A8) return;
             i = 0;
             if (v == 0 || v == D_L17_0015F6A8) i = 2;
-            SpawnMoby750Sparks(D_L17_0016D1E0.tbl[i]);
+            cutscene_set_camera_target(D_L17_0016D1E0.tbl[i]);
         }
         break;
     }
@@ -1181,7 +1184,7 @@ void FleetReflectionDraw(char *moby) {
             pu[j * 2] = D_L17_001E7340[j * 2] + D_L17_001DE370[i];
             pv[j * 2] = D_L17_001E7340[j * 2 + 1];
         }
-        D_L17_001DE370[i] += *(float *)((char *)&D_L17_00162440 + i * 4) * D_0015EE7C;
+        D_L17_001DE370[i] += *(float *)((char *)&D_L17_00162440 + i * 4) * frame_delta_time;
         func_L00_001FD1D8(&pkt, 0, 0);
     }
     *(long *)&pkt.q[2] = GetEffectTex(0x2F);
@@ -1272,7 +1275,7 @@ done:
         *(float *)(d + 0x10) -= 300.0f;
     } else {
         for (i = 0; i < 5; i++) {
-            D_L17_001DE310[i] += D_L17_001DE340[i] * D_L17_001DE328[i] * D_0015EE7C;
+            D_L17_001DE310[i] += D_L17_001DE340[i] * D_L17_001DE328[i] * frame_delta_time;
             if (1.0f < D_L17_001DE310[i]) {
                 D_L17_001DE310[i] = 1.0f;
                 D_L17_001DE328[i] = -1.0f;
@@ -1283,10 +1286,10 @@ done:
             }
         }
         for (i = 0; i < 5; i++) {
-            D_L17_001DE3A0[i] = FastAddRots(D_L17_001DE3A0[i], D_L17_001DE2B0[i] * 0.1f * D_0015EE7C);
+            D_L17_001DE3A0[i] = FastAddRots(D_L17_001DE3A0[i], D_L17_001DE2B0[i] * 0.1f * frame_delta_time);
         }
         for (i = 0; i < 2; i++) {
-            D_L17_001DE370[i] += ((float *)&D_L17_00162440)[i] * D_0015EE7C;
+            D_L17_001DE370[i] += ((float *)&D_L17_00162440)[i] * frame_delta_time;
             if (1.0f <= D_L17_001DE370[i]) {
                 D_L17_001DE370[i] -= 1.0f;
             }
@@ -1657,7 +1660,7 @@ void DrawReflectionStrips(void) {
     VU1_addGSregister(0x42, 0x2000000064L);
     VU1_addGSregister(8, 0);
     VU1_addGSregister(0x14, 0xFF9000000260L);
-    Draw_BuildVu1Setup();
+    font_queue_vu_state();
     p = (float *)D_L17_001DEB70;
     for (i = 0; i < 2; i++) {
         ComputeReflectionUVs(((int *)&D_L17_00162470)[i], ((int *)&D_L17_00162488)[i], ((int *)&D_L17_00162478)[i], ((int *)&D_L17_00162480)[i], p);
@@ -1679,7 +1682,7 @@ void DrawReflectionStrip(void) {
     VU1_addGSregister(0x42, 0x2000000064L);
     VU1_addGSregister(8, 0);
     VU1_addGSregister(0x14, 0xFF9000000260L);
-    Draw_BuildVu1Setup();
+    font_queue_vu_state();
     p = (float *)D_L17_001DF970;
     for (i = 0; i < 1; i++) {
         ComputeReflectionUVs(((int *)&D_L17_001624A0)[i], (V3 *)((int *)&D_L17_001624D0)[i], (V3 *)((int *)&D_L17_001624C0)[i], ((int *)&D_L17_001624C8)[i], p);

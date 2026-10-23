@@ -419,7 +419,7 @@ void PlasmabotUpdate(char *m) {
         break;
     }
     case 11: {
-        if ((StepMobyPhysics(m, data + 0x60) & 0x160) == 0) return;
+        if ((mine_fall(m, data + 0x60) & 0x160) == 0) return;
         EffectSlot_Free(m);
         Moby_GetJointWorldPos(m, 2, mat);
         Moby325Spawn(m, (char *)mat);
@@ -924,7 +924,7 @@ float TurretAimYaw(char *moby, int flag, float x) {
         float w = D_0015EE70 * 12.566370964050293f;
         func_L00_0025CE58_2B4828((float *)(d + 0x268), s, (float *)(d + 0x26C), w, w, D_0015EE6C * 6.2831854820251465f);
     }
-    func_L00_001FFED8(d + 0x170, 2, *(float *)(d + 0x268));
+    axis_rotation_2d48(d + 0x170, 2, *(float *)(d + 0x268));
     if (flag) {
         float a[4];
         float b[4];
@@ -942,7 +942,7 @@ float TurretAimYaw(char *moby, int flag, float x) {
         t = -func_L00_001FF860(func_001F9CE8(bp), b[2]);
         func_L00_0025CE58_2B4828((float *)(d + 0x280), t, (float *)(d + 0x284), D_0015EE70 * 12.566370964050293f, D_0015EE70 * 12.566370964050293f, D_0015EE6C * 6.2831854820251465f);
         cp = c;
-        func_L00_001FFED8(cp, 1, *(float *)(d + 0x280));
+        axis_rotation_2d48(cp, 1, *(float *)(d + 0x280));
         func_001FA588(d + 0x170, d + 0x170, cp);
     }
     return FastDiffRots(s, *(float *)(d + 0x268));
@@ -963,7 +963,7 @@ void TurretAimPitch(char *a, float x) {
         float k = D_0015EE70 * 12.566370964050293f;
         SteerAngleWithVelocity((float *)(d + 0x270), (float *)(d + 0x274), s, k, k, D_0015EE6C * 6.2831854820251465f);
     }
-    func_L00_001FFED8(d + 0x130, 2, *(float *)(d + 0x270));
+    axis_rotation_2d48(d + 0x130, 2, *(float *)(d + 0x270));
 }
 extern short D_L14_001615A8;
 extern short *D_L14_001AC2C0[];
@@ -1088,7 +1088,7 @@ extern s32 func_001F9908(void *);
 extern void func_00213D28(void *, s32, s32);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002b17d8.c, FUN_L14_002d96e0. */
-void Moby250Update(char *moby) {
+void plasmabot_hatch_update(char *moby) {
     char *data = *(char **)(moby + 0x78);
     if (D_001414F4[0] == 2) {
         *(s32 *)(moby + 0x94) = 0;
@@ -1097,7 +1097,7 @@ void Moby250Update(char *moby) {
     }
     switch ((u8)moby[0x20]) {
     case 0:
-        if (*(s32 *)data != 0 && *(s16 *)(D_L14_00167600 + 0x86) == 0x14) {
+        if (*(s32 *)data != 0 && *(s16 *)(race_state + 0x86) == 0x14) {
             moby[0x20] = 1;
             *(s32 *)(data + 8) = scale_ticks(*(s32 *)(data + 4));
         }
@@ -1115,7 +1115,7 @@ void Moby250Update(char *moby) {
         }
         break;
     case 3:
-        if (*(s16 *)(D_L14_00167600 + 0x86) != 0x14) {
+        if (*(s16 *)(race_state + 0x86) != 0x14) {
             MobySetAnimation(moby, 0, 0);
             moby[0x20] = 4;
         }
@@ -2847,11 +2847,11 @@ void func_L14_00303270(char *moby) {
         int br;
         d->s12--;
         for (i = 4; i < 27; i++) {
-            func_001F9BD8(&d->pts[i], &d->pts[i], &d->off[i]);
+            FastVecAdd(&d->pts[i], &d->pts[i], &d->off[i]);
         }
         for (j = 0; j < 4.0f; j++) {
             for (k = 1; k < 4; k++) {
-                func_001F9BD8(&d->a[k][j], &d->a[k][j], &d->b[k][j]);
+                FastVecAdd(&d->a[k][j], &d->a[k][j], &d->b[k][j]);
             }
         }
         for (br = 0; br < 4; br++) {
@@ -2861,11 +2861,11 @@ void func_L14_00303270(char *moby) {
     {
         int h = d->s12;
         if (*(int *)&D_L14_00162194 < h) {
-            float f = func_001FA888(h - *(int *)&D_L14_00162194) / func_001FA888(d->r620 - *(int *)&D_L14_00162194);
-            *(int *)((char *)d + 0x14) = func_001FA8A8(*(int *)&D_L14_001621C4, *(int *)&D_L14_001621C0, f);
+            float f = IntToFloat(h - *(int *)&D_L14_00162194) / IntToFloat(d->r620 - *(int *)&D_L14_00162194);
+            *(int *)((char *)d + 0x14) = FastTweenColor(*(int *)&D_L14_001621C4, *(int *)&D_L14_001621C0, f);
         } else if (*(int *)&D_L14_00162198 < h) {
-            float f = func_001FA888(h - *(int *)&D_L14_00162198) / func_001FA888(*(int *)&D_L14_00162194 - *(int *)&D_L14_00162198);
-            *(int *)((char *)d + 0x14) = func_001FA8A8(*(int *)&D_L14_001621C8, *(int *)&D_L14_001621C4, f);
+            float f = IntToFloat(h - *(int *)&D_L14_00162198) / IntToFloat(*(int *)&D_L14_00162194 - *(int *)&D_L14_00162198);
+            *(int *)((char *)d + 0x14) = FastTweenColor(*(int *)&D_L14_001621C8, *(int *)&D_L14_001621C4, f);
         } else {
             *(int *)((char *)d + 0x14) = 0;
         }

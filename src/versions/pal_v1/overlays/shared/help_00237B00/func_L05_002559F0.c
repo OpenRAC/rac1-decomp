@@ -103,7 +103,7 @@ L_D68:
     if (m[0x51] < 0xD) {
         int r = Hero_GetHelpAnimId();
         int t = scale_ticks(7);
-        HeroStartAnim(r, 14, (float)t);
+        set_hero_animation(r, 14, (float)t);
     }
 
 L_DEC:
@@ -136,7 +136,7 @@ L_DEC:
 
     if (D_0013D355_254DE8[0x13B] != 0) {
         if (D_0015EE84_2523C8 == 5 && ((H_9F0 *)(D_0013E633 + 0xE1D))->i6F0 == 4 && ((H_9F0 *)(D_0013E633 + 0xE1D))->i70C >= 4) {
-            Flags_9F0 *fl = (Flags_9F0 *)(D_0013D50F + 1);
+            Flags_9F0 *fl = (Flags_9F0 *)(menu_item_enabled_115 + 1);
             if (fl->f7 == 0) {
                 fl->f7 = 1;
                 func_0022EE28_254DE8(1, 0, 0);
@@ -152,7 +152,7 @@ L_DEC:
         if (((unsigned char *)ee)[0x53] != 0x55 && ((unsigned char *)ee)[0x53] != 0x7F) {
             int r = Hero_GetHelpAnimId();
             int t = scale_ticks(7);
-            HeroStartAnim(r, 14, (float)t);
+            set_hero_animation(r, 14, (float)t);
         }
         return 1;
     }
@@ -160,7 +160,7 @@ L_DEC:
     if (c != 0x55 && c != 0x7F) {
         int r = Hero_GetHelpAnimId();
         int t = scale_ticks(7);
-        HeroStartAnim(r, 14, (float)t);
+        set_hero_animation(r, 14, (float)t);
     }
     return 0;
 }

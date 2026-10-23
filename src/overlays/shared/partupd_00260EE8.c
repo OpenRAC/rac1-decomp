@@ -7,7 +7,7 @@ extern int func_001FA898_r(float) __asm__("func_001FA898");
 
 // Spawns a particle (type 0x31) with given vectors, colour source and flags.
 void PartType49Spawn(int a, int *b, int *c, float *d, int e) {
-    unsigned char *p = func_00218928(0x31);
+    unsigned char *p = create_part(0x31);
     if (p != 0) {
         float *q;
         *(int *)(p + 0x4) = 0x7FFFFFFF;

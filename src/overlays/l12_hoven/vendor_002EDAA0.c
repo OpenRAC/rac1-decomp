@@ -44,7 +44,7 @@ extern void func_L12_002EDE40_2EDAA0(char *) __asm__("func_L12_002EDE40");
 extern void func_001F49B0_2EDAA0(void *, void *) __asm__("func_001F49B0");
 
 /* Water reservoir update: steers the surface height and draws the ring of strips. */
-void WaterReservoirUpdate(Moby *moby) {
+void water_reservoir_update(Moby *moby) {
     Data_2EDAA0 *data = *(Data_2EDAA0 **)&moby->pvars;
     float v10[4];
     float v20[4];
@@ -348,7 +348,7 @@ extern void func_L00_00203F20(int, int);
  * awards them (one for staying airborne long enough). */
 void HovenChallengeUpdate(char *m) {
     int *d = *(int **)(m + 0x78);
-    if (MobyGroup_CountNotInState(d[3], -1) == 0) {
+    if (count_group_e81e0(d[3], -1) == 0) {
         unsigned char *s = D_0013D50F_e + 1;
         if (s[0x14] == 0) {
             s[0x14] = 1;
@@ -539,7 +539,7 @@ extern float D_0015EE6C MACRO_ADDR;
 extern char D_L12_001672C0[];
 
 /* Moby update for an animated electric-arc effect. */
-void func_L12_00304038(struct Moby *moby) {
+void ElectricArcUpdate(struct Moby *moby) {
     char *data = (char *)moby->pvars;
     float cycle = (*(float *)&D_L12_00161E78) + (*(float *)&D_L12_00161E7C) * D_0015EE6C;
     int strip;
@@ -563,14 +563,14 @@ void func_L12_00304038(struct Moby *moby) {
                     float length;
                     float index;
                     float rate;
-                    func_001F9BC0(points);
+                    clear_u64_value(points);
                     vector_count_float = (float)*(int *)(data + 0x232c);
                     length = *(float *)(data + 0x2324);
                     index = (float)i;
                     rate = (*(float *)&D_L12_00161E80) * D_0015EE6C;
                     points[3] = 1.0f;
                     points[0] = index * (length / vector_count_float);
-                    func_L00_00258DB0(intermediate + i * 4, 0.0f, rate);
+                    rand_vec(intermediate + i * 4, 0.0f, rate);
                     points += 4;
                     i++;
                 } while (i < *(int *)(data + 0x232c));
@@ -579,9 +579,9 @@ void func_L12_00304038(struct Moby *moby) {
             if (count < *(int *)(data + 0x232c) - 1) {
                 points = (float *)(data + strip * 0x460 + 0x1190);
                 do {
-                    func_001F9BD8(points, intermediate_storage[count - 1], intermediate_storage[count]);
-                    func_001F9BD8(points, points, intermediate_storage[count + 1]);
-                    func_001F9C30(points, points, 0.333f);
+                    FastVecAdd(points, intermediate_storage[count - 1], intermediate_storage[count]);
+                    FastVecAdd(points, points, intermediate_storage[count + 1]);
+                    FastVecScale(points, points, 0.333f);
                     count++;
                     points += 4;
                 } while (count < *(int *)(data + 0x232c) - 1);
@@ -591,12 +591,12 @@ void func_L12_00304038(struct Moby *moby) {
             for (i = 1; i < *(int *)(data + 0x232c) - 1; i++) {
                 float *point = (float *)(data + strip * 0x460 + i * 16);
                 float *delta = (float *)(data + strip * 0x460 + 0x1190 + i * 16 - 16);
-                func_001F9BD8(point, point, delta);
+                FastVecAdd(point, point, delta);
             }
         }
     }
-    if (func_001F9D10(&moby->pos, D_L12_001672C0) < 48.0f)
-        func_001F49B0(func_L12_00303CA8, moby);
+    if (FastVecDist(&moby->pos, D_L12_001672C0) < 48.0f)
+        AddDrawCallback(DrawRingQuads, moby);
 }
 typedef struct Data_304310 {
     char pad0[0x2300];
@@ -730,11 +730,11 @@ void Moby1267_SetCameraView(char *moby) {
     func_L08_00315068(moby);
     func_001F9EC0(m, &D_L12_00161F70, moby + 0xC0);
     FastVecAdd(m, m, moby + 0x10);
-    CameraScript_SetPosition(m);
+    set_camera_position(m);
     m[4] = 0;
     m[5] = -*(float *)(data + 0x74);
     m[6] = FastAddRots(1.5707964f, *(float *)(moby + 0x48));
-    CameraScript_SetLookAt(m + 4);
+    set_camera_rotation(m + 4);
 }
 typedef u32 u128_04750 __attribute__((mode(TI), aligned(16)));
 extern short D_L12_00160058_04750 __asm__("D_L12_00160058");
@@ -915,7 +915,7 @@ extern void func_L12_003055F8();
 extern void func_L12_00306178();
 
 /* Update of moby class 1267 (Hoven turret): waits for the hero, is manned and aimed with the stick, fires, and burns out when destroyed. */
-void Moby1267Update(Moby *moby) {
+void hoven_turret_update(Moby *moby) {
     Data_304920 *d = *(Data_304920 **)&moby->pvars;
 
     ((Snd_304920 *)(D_0013E633_e + 0x1D))->f6C = moby;
@@ -1020,9 +1020,9 @@ void Moby1267Update(Moby *moby) {
                 moby->pos.z = d->fA0;
                 moby->rot.z = 3.1415927f;
             } else {
-                SetLevelTriggerDone(moby->mission);
+                jet_clear_persistent(moby->mission);
                 PlayMovieEntryIfIdle(0xD);
-                UnlockPlanet(0xD);
+                unlock_planet(0xD);
                 {
                     Vec_304920 cpos = { 328.4f, 338.7f, 60.98f };
                     Vec_304920 crot = { 0.0f, 0.0f, -1.7f };
@@ -1069,7 +1069,7 @@ void Moby1267Update(Moby *moby) {
             if (d->f74 < D_L12_00161F28) {
                 d->f74 = D_L12_00161F28;
             }
-            func_L00_001FFED8(d->f10, 1, -d->f74);
+            axis_rotation_2d48(d->f10, 1, -d->f74);
             if (moby->anim_flags & 2) {
                 MobyBlendAnimation(moby, 5, 0, 1);
             }
@@ -1135,7 +1135,7 @@ void Moby1267Update(Moby *moby) {
             b = FastAddRots(((Cam_304920 *)D_L12_00167180_304920)->f158, randf_sym(0.0f, 0.5235988f));
             c = FastAddRots(((Cam_304920 *)D_L12_00167180_304920)->f154, randf_sym(0.0f, 0.5235988f));
             qcopy(v, ((Cam_304920 *)D_L12_00167180_304920)->f140);
-            AddSphericalOffset(v, v, a, b, c);
+            fast_add_rotations_cf(v, v, a, b, c);
             t = random_float_between(0.5f, 1.3f);
             func_L00_0025F4A8(moby, D_L12_0015F660, v, 0.0f, 0.0f, 7, 0xF, 0x19, t, t * 0.57f, 10.0f, 3, 0.7f, 0.0f, 0, 0, -1, 0);
             d->fAE = scale_ticks(rand_range(5, 0xD));
@@ -1487,8 +1487,8 @@ void HovenHomingMineUpdate(struct Moby *moby) {
             InitDirectionalHitQuery(hit_info, moby, 0x10001, 1.0f, &direction);
             qcopy(&probe, &moby->pos);
             probe.f[2] += 0.4f;
-            if (!coll_sphere_mobys(&probe, 0x10, moby, hit_info, 0.4f) || D_L12_00174358 == 0 ||
-                D_L12_00174358->oclass == 0x4F5 || D_L12_00174358 == moby->parent) {
+            if (!coll_sphere_mobys(&probe, 0x10, moby, hit_info, 0.4f) || hit_moby == 0 ||
+                hit_moby->oclass == 0x4F5 || hit_moby == moby->parent) {
                 qcopy(&probe, &moby->pos);
                 probe.f[2] += 0.35f;
                 if (coll_sphere(&probe, 0, moby, 0.35f))
@@ -1504,7 +1504,7 @@ void HovenHomingMineUpdate(struct Moby *moby) {
         func_0020D678_061E0(moby);
         return;
     }
-    RecordMobyShadow(1.0f, moby);
+    jet_animate(1.0f, moby);
 }
 extern float D_0015EE64_f __asm__("D_0015EE64") MACRO_ADDR;
 extern int D_L12_00161F80_m __asm__("D_L12_00161F80") MACRO_ADDR;
@@ -1621,8 +1621,8 @@ void TurretBatteryUpdate(char *moby) {
                     md->h9E = scale_ticks(0x14);
                 }
                 if (FastDecTimer(&md->h9E) == 0) {
-                    if (func_L00_001FEF78(&md->b92) == 0) {
-                        if (func_L00_001FEF78(&md->b93) != 0) {
+                    if (fast_subtract_rotations_cf(&md->b92) == 0) {
+                        if (fast_subtract_rotations_cf(&md->b93) != 0) {
                             func_0022ED80_09590(0, 0, m);
                             md->b93 = scale_ticks(9);
                         }
@@ -2003,7 +2003,7 @@ extern void func_L00_002EC0C8(int);
 extern void func_L00_0028EBF0(int);
 
 /* Planetbuster part update: rides its path, drops its parts and hands its voice slot back when done. */
-void PlanetbusterPartUpdate(char *moby) {
+void planetbuster_maximus_part_update(char *moby) {
     float v[4];
     float w[4];
     char *d = *(char **)(moby + 0x78);
@@ -2148,8 +2148,8 @@ void PlanetbusterPartUpdate(char *moby) {
             switch ((unsigned char)moby[0xBC]) {
             case 0:
                 moby[0xBC] = 1;
-                CameraScript_SetPosition(D_L12_0016016C + *(int *)(d + 0x608) * 128 + 0x30);
-                CameraScript_SetLookAt(D_L12_0016016C + *(int *)(d + 0x608) * 128 + 0x70);
+                set_camera_position(D_L12_0016016C + *(int *)(d + 0x608) * 128 + 0x30);
+                set_camera_rotation(D_L12_0016016C + *(int *)(d + 0x608) * 128 + 0x70);
                 D_L12_0015F504 = 1;
                 D_L12_00161A20 = 1;
                 break;
@@ -2169,8 +2169,8 @@ void PlanetbusterPartUpdate(char *moby) {
                     w[2] = FastSubRots(*(float *)(D_L12_0016016C + *(int *)(d + 0x60C) * 128 + 0x78),
                                          *(float *)(D_L12_0016016C + *(int *)(d + 0x608) * 128 + 0x78)) * *(float *)(d + 0x610);
                     w[2] = FastAddRots(*(float *)(D_L12_0016016C + *(int *)(d + 0x608) * 128 + 0x78), w[2]);
-                    CameraScript_SetPosition(v);
-                    CameraScript_SetLookAt(w);
+                    set_camera_position(v);
+                    set_camera_rotation(w);
                 } else {
                     moby[0xBC] = 2;
                     D_L12_0015F504 = 0;
@@ -2265,7 +2265,7 @@ extern float func_001F9D48(void *, void *);
 extern void func_L12_00308AC0(char *);
 
 /* Door/switch moby: clears its linked mobys, waits for the hero, opens, fires its list one by one, closes. */
-void DoorSwitchUpdate(char *m) {
+void homing_mine_spawner_update(char *m) {
     char *d = *(char **)(m + 0x78);
     int *slots;
     int i;
@@ -2409,7 +2409,7 @@ void Moby1345Update(struct Moby *m) {
             d[1] = -1;
             if (*(unsigned char *)(e + 0x20) == 7) {
                 if (m->mission != 0xFF) {
-                    SetLevelTriggerDone(m->mission);
+                    jet_clear_persistent(m->mission);
                 }
                 func_0022ED80_09590(1, 0, m);
                 m->collision = 0;
@@ -2480,7 +2480,7 @@ void func_L12_0030A880(unsigned char *moby) {
             if (cur == 1 || cur == 7) {
                 k = func_L12_pick(cur);
                 l2 = &D_L12_0016CD60;
-                func_L00_00264870((int)l2->mobys[k]);
+                cutscene_set_camera_target((int)l2->mobys[k]);
             }
         }
         break;
@@ -2530,7 +2530,7 @@ extern int D_L12_00162154 MACRO_ADDR;
 void DrawTenPieceOverlay(char *m) {
     int *d = *(int **)(m + 0x78);
     int i;
-    Draw_BuildVu1Setup();
+    font_queue_vu_state();
     VU1_addGSregister(0x42, 0x7F00000064L);
     VU1_addGSregister(8, 0);
     VU1_addGSregister(0x14, 0xFF9000000260L);
@@ -2590,14 +2590,14 @@ void Moby1901Update(M_bff0 *m) {
         break;
     case 1:
         for (i = 0; i < 2; i++) {
-            D_L12_00162178[i * 2] += D_L12_00162160_0D3D0[i * 2] * D_0015EE7C;
+            D_L12_00162178[i * 2] += D_L12_00162160_0D3D0[i * 2] * frame_delta_time;
             if (D_L12_00162178[i * 2] > 1.0f) {
                 D_L12_00162178[i * 2] -= 1.0f;
             }
             if (D_L12_00162178[i * 2] < -1.0f) {
                 D_L12_00162178[i * 2] += 1.0f;
             }
-            D_L12_0016217C[i * 2] += D_L12_00162160_v0D3D0[i * 2 + 1] * D_0015EE7C;
+            D_L12_0016217C[i * 2] += D_L12_00162160_v0D3D0[i * 2 + 1] * frame_delta_time;
             if (D_L12_0016217C[i * 2] > 1.0f) {
                 D_L12_0016217C[i * 2] -= 1.0f;
             }
@@ -2605,14 +2605,14 @@ void Moby1901Update(M_bff0 *m) {
                 D_L12_0016217C[i * 2] += 1.0f;
             }
         }
-        D_L12_00162188_0D3D0[0] += D_L12_00162158_0D3D0[0] * D_0015EE7C;
+        D_L12_00162188_0D3D0[0] += D_L12_00162158_0D3D0[0] * frame_delta_time;
         if (D_L12_00162188_0D3D0[0] > 1.0f) {
             D_L12_00162188_0D3D0[0] -= 1.0f;
         }
         if (D_L12_00162188_0D3D0[0] < -1.0f) {
             D_L12_00162188_0D3D0[0] += 1.0f;
         }
-        D_L12_00162188_0D3D0[1] += D_L12_00162158_v0D3D0[1] * D_0015EE7C;
+        D_L12_00162188_0D3D0[1] += D_L12_00162158_v0D3D0[1] * frame_delta_time;
         if (D_L12_00162188_0D3D0[1] > 1.0f) {
             D_L12_00162188_0D3D0[1] -= 1.0f;
         }

@@ -51,7 +51,7 @@ extern float D_0015EE64 MACRO_ADDR;
 extern unsigned char D_0015EEB0[] MACRO_ADDR;
 
 /* Update function of moby class 1446 (ultramech scientist): state switch, then the head look-at block shaped like func_L11_002D18D0's (doit flag guards the vector part). */
-void UltramechScientistUpdate(char *moby) {
+void ultramech_scientist_update(char *moby) {
     char *d;
     char *b;
     char *p;
@@ -82,7 +82,7 @@ void UltramechScientistUpdate(char *moby) {
     } else {
         *(int *)(moby + 0x94) = *(int *)(*(char **)(moby + 0x24) + 0x10);
         *(unsigned short *)(moby + 0x34) &= 0xFFBE;
-        SetMobyZBand(moby);
+        func_L02_0025D750(moby);
     }
 
     switch (*(unsigned char *)(moby + 0x20)) {
@@ -138,7 +138,7 @@ void UltramechScientistUpdate(char *moby) {
         if (Npc_TryStartDialog(moby, d) == 0) {
             break;
         }
-        SetLevelTriggerDone(*(int *)(d + 0x280));
+        jet_clear_persistent(*(int *)(d + 0x280));
         *(int *)(moby + 0x58) = 0;
         *(unsigned char *)(moby + 0x20) = 2;
         p = D_L15_00160064;
@@ -176,7 +176,7 @@ void UltramechScientistUpdate(char *moby) {
         if (*(short *)(d + 0x4) == 0) {
             if (*(int *)(d + 0x150) != -1) {
                 char *bb = D_L15_0016016C;
-                PauseMenu_SeedSnapshot(bb + (*(int *)(d + 0x150) << 7) + 0x30, bb + (*(int *)(d + 0x150) << 7) + 0x70);
+                jet_reset_camera(bb + (*(int *)(d + 0x150) << 7) + 0x30, bb + (*(int *)(d + 0x150) << 7) + 0x70);
             }
             *(unsigned char *)(moby + 0x20) = 3;
         } else {
@@ -202,10 +202,10 @@ void UltramechScientistUpdate(char *moby) {
                 }
             }
         }
-        if (MobyGroup_CountNotInState(*(int *)(d + 0x144), 0x40) != 0) {
+        if (count_group_e81e0(*(int *)(d + 0x144), 0x40) != 0) {
             break;
         }
-        if (MobyGroup_CountNotInState(*(int *)(d + 0x148), 0x40) != 0) {
+        if (count_group_e81e0(*(int *)(d + 0x148), 0x40) != 0) {
             break;
         }
         *(unsigned char *)(moby + 0x20) = 4;
@@ -220,15 +220,15 @@ void UltramechScientistUpdate(char *moby) {
         *(int *)(d + 0x140) = 1;
         *(short *)(d + 0x36) = 1;
         *(unsigned char *)(d + 0x8) = 1;
-        UnlockPlanet(0x10);
-        SetLevelTriggerDone(*(int *)(d + 0x284));
+        unlock_planet(0x10);
+        jet_clear_persistent(*(int *)(d + 0x284));
         MusicRequestTrack(0, 5);
         if (*(int *)(d + 0x154) != -1) {
             char *b1 = D_L15_0016016C;
             char *b2;
             Hero_ResetToPosition(b1 + (*(int *)(d + 0x154) << 7) + 0x30, b1 + (*(int *)(d + 0x154) << 7) + 0x70, 0, 1);
             b2 = D_L15_0016016C;
-            PauseMenu_SeedSnapshot(b2 + (*(int *)(d + 0x154) << 7) + 0x30, b2 + (*(int *)(d + 0x154) << 7) + 0x70);
+            jet_reset_camera(b2 + (*(int *)(d + 0x154) << 7) + 0x30, b2 + (*(int *)(d + 0x154) << 7) + 0x70);
         }
         *(unsigned char *)(moby + 0x20) = 5;
         break;
@@ -571,7 +571,7 @@ void BossSlotEffectUpdate(struct Moby *m) {
                     i = 2;
                 else if (v == 6)
                     i = 1;
-                SpawnMoby750Sparks(D_L15_0016CEE0.slot[i]);
+                cutscene_set_camera_target(D_L15_0016CEE0.slot[i]);
             }
         }
         break;
@@ -633,7 +633,7 @@ void RingWave_DrawB(char *moby) {
     VU1_addGSregister(0x14, 0xFF9000000260L);
     data->prev = data->angle;
     data->angle = FastAddRots(data->angle, 360.0f / func_001F9878(D_L15_00162274) * 0.017453292f * D_0015EE6C);
-    func_L00_00251358(moby, &r, &g, &b);
+    get_moby_color(moby, &r, &g, &b);
     color = (D_L15_0016226C << 24) | (b << 16) | (g << 8) | r;
     for (i = 0; i < 46; i++) {
         float *s = D_L15_001DEB30[i];
@@ -654,7 +654,7 @@ void RingWave_DrawB(char *moby) {
             D_L15_001DF1A8[n][0] = D_L15_001DED58[n][0] + func_L00_00200210(scale * t.f[j][0], 1.0f);
             D_L15_001DF1A8[n][1] = D_L15_001DED58[n][1] + func_L00_00200210(scale * t.f[j][1], 1.0f);
         }
-        Draw_BuildVu1Setup();
+        font_queue_vu_state();
         for (k = 0; k < 1; k++) {
             func_L00_001FDE48(D_L15_00162230[k], D_L15_00162250[k], D_L15_00162260[k], (void *)D_L15_00162258[k], 1);
         }
@@ -703,7 +703,7 @@ void LightRingLargeDraw(char *moby) {
     VU1_addGSregister(0x14, 0xFF9000000260L);
     data->prev = data->angle;
     data->angle = FastAddRots(data->angle, 360.0f / func_001F9878(D_L15_001622E4) * 0.017453292f * D_0015EE6C);
-    func_L00_00251358(moby, &r, &g, &b);
+    get_moby_color(moby, &r, &g, &b);
     color = (D_L15_001622DC << 24) | (b << 16) | (g << 8) | r;
     for (i = 0; i < 88; i++) {
         float *s = D_L15_001DF3D0[i];
@@ -724,7 +724,7 @@ void LightRingLargeDraw(char *moby) {
             D_L15_001E0030[n][0] = D_L15_001DF7F0[n][0] + func_L00_00200210(scale * t.f[j][0], 1.0f);
             D_L15_001E0030[n][1] = D_L15_001DF7F0[n][1] + func_L00_00200210(scale * t.f[j][1], 1.0f);
         }
-        Draw_BuildVu1Setup();
+        font_queue_vu_state();
         for (k = 0; k < 1; k++) {
             func_L00_001FDE48(D_L15_001622A0[k], D_L15_001622C0[k], D_L15_001622D0[k], (void *)D_L15_001622C8[k], 1);
         }

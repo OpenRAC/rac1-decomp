@@ -116,7 +116,7 @@ extern int func_001FA8A8_D9970b(int, int, float) __asm__("func_001FA8A8");
 extern char *func_L00_0025B478_D9970b(void *, int, int) __asm__("func_L00_0025B478");
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_00297d10.c, FUN_L06_002d85a0. */
-void Moby302Update(unsigned char *moby) {
+void gadgebot_spawn_container_update(unsigned char *moby) {
     char *p = func_L00_0025B478_D9970b(moby, 0x10000, 0);
     float tmp[4];
     int t;
@@ -145,7 +145,7 @@ void Moby302Update(unsigned char *moby) {
     case 2:
         qcopy(tmp, moby + 0x10);
         tmp[2] += 0.3f;
-        if (func_L00_001FEF78(moby + 0xBC) != 0) {
+        if (fast_subtract_rotations_cf(moby + 0xBC) != 0) {
             DeleteMoby(moby);
         }
         break;
@@ -205,7 +205,7 @@ void BackdropDraw(char *moby) {
     pos[2] = *(float *)(moby + 0x18);
     pos[3] = 1.0f;
     near = 0;
-    g = (float *)D_L06_00167500;
+    g = (float *)referencePosition;
     if (FastAbsF(g[0x140 / 4] - pos[0]) < 16.0f &&
         FastAbsF(g[0x144 / 4] - *(float *)(moby + 0x14)) < 16.0f) {
         near = 1;
@@ -291,7 +291,7 @@ extern int func_001FA8A8(int, int, float);
 extern short D_L06_0015F6B0_s __asm__("D_L06_0015F6B0");
 
 // Pulses the colour of a moby's glow from a global tick counter.
-void Moby303Update(char *moby) {
+void gadgebot_spawn_pad_update(char *moby) {
     char *p = *(char **)(moby + 0xB8);
     if (p != 0 && (unsigned char)p[0x20] < 2) {
         int t = *(int *)&D_L06_0015F6B0_s;
@@ -354,7 +354,7 @@ extern void func_L00_0025AA20(void *, int, int, float, float, float, int, int, i
 extern int func_L00_002DDEA0(void *, void *);
 
 /* Frog (class 827) update: hops along a path, wanders near home, and chases or flees its target. */
-void FrogUpdate(unsigned char *m) {
+void frog_update(unsigned char *m) {
     float A[4] __attribute__((aligned(16)));
     float B[4] __attribute__((aligned(16)));
     float C[4] __attribute__((aligned(16)));
@@ -367,7 +367,7 @@ void FrogUpdate(unsigned char *m) {
     if (*(int *)&D_L06_00161CA0 != 0) {
         return;
     }
-    s = D_L06_0015F6A8;
+    s = level_game_mode_q;
     if (s == 2 && ((*(unsigned short *)(m + 0x34) ^ 1) & 1)) {
         *(short *)(d + 0x1EA) = 1;
         *(unsigned short *)(m + 0x34) |= 0x41;
@@ -385,7 +385,7 @@ void FrogUpdate(unsigned char *m) {
     Manipulator_ApplyScale(2.1f, (int)m, 1, (unsigned char *)(d + 0x250));
     func_L06_002EA920_x(m);
     if (m[0x31] != 0 && FastVecDist(m + 0x10, D_L06_00167640) < 14.0f) {
-        SetGroundHeightBand(m);
+        func_L00_0025B178(m);
         m[0x7F] = 0xB;
     }
     t = *(unsigned char **)(d + 0x1C0);
@@ -489,7 +489,7 @@ void FrogUpdate(unsigned char *m) {
             dist = func_001F9D48(m + 0x10, d + 0x210);
             k = dist / (float)scale_ticks(30);
             *(float *)(d + 0x138) = k;
-            *(float *)(d + 0x13C) = ComputeLaunchVelocityZ(m + 0x10, d + 0x210, 0, k, -*(float *)(d + 0x130));
+            *(float *)(d + 0x13C) = jump_speed_4318(m + 0x10, d + 0x210, 0, k, -*(float *)(d + 0x130));
             d[0x15D] = 3;
             *(int *)(d + 0x144) = 5;
             func_L00_0025D5B0_x(m, d + 0x120, 2, 1, 0,
@@ -499,9 +499,9 @@ void FrogUpdate(unsigned char *m) {
         break;
     }
     case 5:
-        func_001F9BC8(A);
+        set_vector_unit_z(A);
         BuildMobyFrame((char *)m, A, (float *)(d + 0x120));
-        if (StepMobyPhysics(m, d + 0x120) & 1) {
+        if (mine_fall(m, d + 0x120) & 1) {
             m[0x20] = 7;
             if (m[0x53] != 3) MobyBlendAnimation(m, 3, 0, 1);
             *(float *)(m + 0x54) = 1.0f;
@@ -509,7 +509,7 @@ void FrogUpdate(unsigned char *m) {
         }
         break;
     case 6: {
-        int r = StepMobyPhysics(m, d + 0x120);
+        int r = mine_fall(m, d + 0x120);
         if (r & 1) {
             m[0x20] = 7;
             if (m[0x53] != 3) MobyBlendAnimation(m, 3, 0, 1);
@@ -842,8 +842,8 @@ void BuildMobyFrame(char *m, float *a1, float *a2) {
     qcopy(F, D);
     FastVecCross(G, F, H);
     m += 0xC0;
-    Matrix_ToQuatCopyBack(A, m);
-    Matrix_ToQuatCopyBack(B, F);
+    extract_matrix_rotation_quaternion(A, m);
+    extract_matrix_rotation_quaternion(B, F);
     func_001FA5C8(A, A, B, *(float *)&D_L06_00161C90);
     func_001FA648(A, m);
 }
@@ -933,7 +933,7 @@ void SpawnDeathParticlesAndRemove(struct Moby *moby) {
         *(u128_EB360 *)pos = *(u128_EB360 *)offset;
         func_L00_001FF4B0(vel, pos, speed);
         FastVecAdd(pos, pos, origin);
-        SpawnSpinningParticleMoby(*(void **)(vars + 0x20C), vel, pos, D_L06_0015F660, 0x165, 0, 0.3f, 0.6f);
+        spawn_crate_debris(*(void **)(vars + 0x20C), vel, pos, D_L06_0015F660, 0x165, 0, 0.3f, 0.6f);
     }
     for (j = 7; j >= 0; j--) {
         float speed = random_float_between(1.0f, 4.0f) * D_0015EE6C;
@@ -944,7 +944,7 @@ void SpawnDeathParticlesAndRemove(struct Moby *moby) {
         *(u128_EB360 *)pos = *(u128_EB360 *)offset;
         func_L00_001FF4B0(vel, pos, speed);
         FastVecAdd(pos, pos, origin);
-        SpawnSpinningParticleMoby(*(void **)(vars + 0x20C), vel, pos, D_L06_0015F660,
+        spawn_crate_debris(*(void **)(vars + 0x20C), vel, pos, D_L06_0015F660,
                          random_integer_below(2) + 0x166, 0, 0.5f, 0.7f);
     }
     DeleteMoby(*(void **)(vars + 0x20C));
@@ -1113,9 +1113,12 @@ extern int func_001F9850(int);
 extern void func_00213DE0(void *, int, int, int);
 
 // Switches moby state between 0x10 and 8 depending on a check result.
-extern int func_L00_002DCFD0_EBAD8(void *, void *) __asm__("func_L00_002DCFD0");
-int CarriedMoby_PlaceState16(unsigned char *moby, void *v) {
-    int r = func_L00_002DCFD0_EBAD8(moby, v);
+extern int func_L00_002DCFD0_EBAD8(void *, void *, void *, float) __asm__("func_L00_002DCFD0");
+/* One of a class's Suck Cannon hooks (grab, place or fire), which the catalogue folds: each copy
+   calls its own one, the fire with (moby, velocity, target, height), so the arguments go on as
+   they came (retail touches none of a1, a2 and $f12 before its call). */
+int CarriedMoby_PlaceState16(unsigned char *moby, void *v, void *t, float h) {
+    int r = func_L00_002DCFD0_EBAD8(moby, v, t, h);
     if (r != 0) {
         if (moby[0x20] != 0x10) {
             moby[0xBC] = moby[0x20];
@@ -1531,7 +1534,7 @@ void GadgebotUpdate(Moby *moby) {
             }
             ta = &d->f2A0[j];
             tb = &d->f2C0[j];
-            m = &D_L06_00160058[*ta];
+            m = &level_mobys_q[*ta];
             if (m->oclass == 0x3F7 && m->state != 4 && is_point_inside_clip_volume((*(float (*)[4])&D_0013F450.f2080->pos), *tb) != 0
                 && is_point_inside_clip_volume((*(float (*)[4])&moby->pos), *tb) == 0) {
                 moby->state = 4;
@@ -1582,7 +1585,7 @@ void GadgebotUpdate(Moby *moby) {
                     d->ctl.f24 = D_0015EE6C * 3.0f * 1.35f;
                 }
                 if (dist > 0.8f) {
-                    flags = MobySteerToward(moby, &d->ctl, D_0013F450.f80, out, 1.0f);
+                    flags = move_w(moby, &d->ctl, D_0013F450.f80, out, 1.0f);
                 }
                 {
                     int ph = ((int)moby >> 8) % 8;
@@ -1707,7 +1710,7 @@ void GadgebotUpdate(Moby *moby) {
                 }
                 MobySpringTurn((char *)moby, a, &d->ctl.f14, D_0015EE64 * 0.07f, D_0015EE64 * 0.3f, D_0015EE6C * 5.2359877f);
                 d->ctl.f24 = D_0015EE6C * 4.5f;
-                if (MobySteerToward(moby, &d->ctl, (*(float (*)[4])&d->f174->pos), out, 1.0f) & 0x20) {
+                if (move_w(moby, &d->ctl, (*(float (*)[4])&d->f174->pos), out, 1.0f) & 0x20) {
                     moby->state = 4;
                     *(u128 *)(*(float (*)[4])&moby->pos) = *(u128 *)save0;
                 }
@@ -1802,7 +1805,7 @@ void GadgebotUpdate(Moby *moby) {
                 }
                 MobySpringTurn((char *)moby, func_L00_001FF860(v40[0] - (*(float (*)[4])&moby->pos)[0], v40[1] - (*(float (*)[4])&moby->pos)[1]), &d->ctl.f14,
                                   D_0015EE64 * 0.07f, D_0015EE64 * 0.3f, D_0015EE6C * 5.2359877f);
-                if (MobySteerToward(moby, &d->ctl, v40, out, 1.0f) & 0x20) {
+                if (move_w(moby, &d->ctl, v40, out, 1.0f) & 0x20) {
                     moby->state = 4;
                     *(u128 *)(*(float (*)[4])&moby->pos) = *(u128 *)save0;
                 }
@@ -1853,7 +1856,7 @@ void GadgebotUpdate(Moby *moby) {
         return;
     }
     case 9:
-        if (StepMobyPhysics(moby, d->f80) & 0x41) {
+        if (mine_fall(moby, d->f80) & 0x41) {
             int i;
 
             SpawnExplosionFx(moby, (*(float (*)[4])&moby->pos), -1, 0.5f, 13.0f);
@@ -1901,7 +1904,7 @@ void GadgebotUpdate(Moby *moby) {
         s24 = d->ctl.f24;
         d->ctl.f10 = 0.0f;
         d->ctl.f24 = 0.0f;
-        MobySteerToward(moby, &d->ctl, (*(float (*)[4])&moby->pos), out, 1.0f);
+        move_w(moby, &d->ctl, (*(float (*)[4])&moby->pos), out, 1.0f);
         d->ctl.f10 = s10;
         d->ctl.f24 = s24;
         (*(float (*)[4])&moby->pos)[2] = v40[2];
@@ -1998,7 +2001,7 @@ void GadgebotUpdate(Moby *moby) {
     }
     if (moby->visible != 0) {
         if (FastVecDist((*(float (*)[4])&moby->pos), D_L06_00167640) < 17.0f) {
-            SetGroundHeightBand(moby);
+            func_L00_0025B178(moby);
             moby->shadow_range = 0xD;
         }
         if (moby->visible != 0) {
@@ -2014,7 +2017,7 @@ extern char D_L06_00167500[];
 /* scores a target moby by distance, heading differences and flags */
 float ScoreTarget(char *a, char *b, int c) {
     float r = func_001F9D48(a + 0x10, b + 0x10);
-    float *g = (float *)D_L06_00167500;
+    float *g = (float *)referencePosition;
     float t = FastDiffRots(g[0x56],
                             func_L00_001FF860(*(float *)(b + 0x10) - *(float *)(a + 0x10),
                                               *(float *)(b + 0x14) - *(float *)(a + 0x14)));
@@ -2807,7 +2810,7 @@ extern void func_L06_002F8A58(char *);
 extern void func_L00_0025AC00(void *, int, int, void *, void *, float);
 
 /* Collectible spawner: unless already collected (save bit), spawns the pickup moby; marks the bit once it is taken. */
-void CollectibleSpawnerUpdate(char *m) {
+void energy_sphere_holder_update(char *m) {
     char *d = *(char **)(m + 0x78);
     char *o;
     unsigned char *q;
