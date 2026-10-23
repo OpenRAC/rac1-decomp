@@ -854,7 +854,12 @@ there. In parentheses, Lombyte's name.
 `include/hero.h` (the hero and the records inside it) and `include/vector.h` (the 16-byte vector) are
 adapted from Lombyte's `include/rnc/gameplay/hero.h` and `include/rnc/math/vector.h` at 42adb529, while
 Lombyte was MIT licensed. `include/pad.h` (the controller state) is adapted from its
-`include/rnc/input/pad_state.h` at the same commit.
+`include/rnc/input/pad_state.h` at the same commit. On 2026-10-22 `include/moby.h`, `include/hero.h` and
+`include/pad.h` took the NTSC decomp's later changes at 4e1f255e (GPL-3.0 since its a1379f57): two
+hero fields, the pad button bits and the function names in their comments. `include/hero_state.h`,
+`include/moby_class_id.h` and `include/camera_modes.h` (enumerations only) are its
+`include/rnc/gameplay/hero_state.h`, `include/rnc/gameplay/entities/moby_class_id.h` and
+`include/rnc/gameplay/camera/camera_modes.h` at 4e1f255e.
 
 Names from the NTSC decomp (Lombyte's project, the submodule `versions/ntsc`, GPL-3.0 since its commit
 a1379f57): `tools/names.py ntsc` reads the function and data names its C binds to US addresses, and its

@@ -21,6 +21,7 @@
 
 #include "common.h"
 #include "vector.h"
+#include "camera_modes.h"
 
 struct Moby;
 
