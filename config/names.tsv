@@ -3748,9 +3748,9 @@ func_L06_00301FE8	SpinningDebrisUpdate	descriptive	config/names_local.tsv	integr
 func_L06_00303630	TimerMobyL06_Draw	descriptive	config/names_local.tsv	level 06 copy of TimerMoby_Draw: frame plus pulsing mm:ss.t digits	
 func_L06_00304418	Shuttle_SelectMode	descriptive	config/names_local.tsv	Called from ShuttleUpdate: switch on d+0xBC sets d+0x9C from D_0014C150 progress flags	
 func_L06_00304B88	ScatterPiecesExplode	descriptive	config/names_local.tsv	SpawnExplosionFx then loops n random pieces from two tables; used by MoveAlongPathsWithSound/ScatterLinkedPieces	
-func_L06_00305C58	Moby1123_SpawnDebris	descriptive	config/names_local.tsv	Called from Moby1123Update: loop spawning random-velocity pieces with random_float_between	
+func_L06_00305C58	electric_fence_spawn_debris	descriptive	config/names_local.tsv	the electric fence's particle burst helper (Blarg Station only)	Moby1123_SpawnDebris
 func_L06_00306440	electric_fence_probe_corners	descriptive	config/names_local.tsv	called only by electric_fence_update: the electric fence's corner checks (Christopher, in game)	Moby1123_ProbeCorners
-func_L06_003065B0	Moby1123_Draw	descriptive	config/names_local.tsv	Called from Moby1123Update path: builds matrix and draws effect via VU1_addGSregister packets	
+func_L06_003065B0	electric_fence_draw	descriptive	config/names_local.tsv	the draw callback electric_fence_update registers for its arcs (Blarg Station only)	Moby1123_Draw
 func_L06_0030A788	SparksTriggerL06_Update	descriptive	config/names_local.tsv	Waits for global mode then SpawnMoby750Sparks; same shape as L04/L13 copies	
 func_L07_0031B620	GunMoby_HandleHit	descriptive	config/names_local.tsv	Moby with Gun data: ComputeHitResponse on hit message 0x230000, on 2+ hits starts death state	machinegun_turret_update
 func_L07_0031BDB8	MovingMobyL07_Update	descriptive	config/names_local.tsv	L07MovingVars: mission flag check, moves between start/target points with forced start/end	

@@ -3611,9 +3611,9 @@
 #define TimerMobyL06_Draw                               func_L06_00303630
 #define Shuttle_SelectMode                              func_L06_00304418
 #define ScatterPiecesExplode                            func_L06_00304B88
-#define Moby1123_SpawnDebris                            func_L06_00305C58
+#define electric_fence_spawn_debris                     func_L06_00305C58
 #define electric_fence_probe_corners                    func_L06_00306440
-#define Moby1123_Draw                                   func_L06_003065B0
+#define electric_fence_draw                             func_L06_003065B0
 #define SparksTriggerL06_Update                         func_L06_0030A788
 #define GunMoby_HandleHit                               func_L07_0031B620
 #define MovingMobyL07_Update                            func_L07_0031BDB8

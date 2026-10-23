@@ -2263,7 +2263,7 @@ extern short D_L06_00162248;
 extern short D_L06_00162244;
 
 // Spawns a burst of particles around an object, count from a level global.
-void Moby1123_SpawnDebris(int unused, void *obj) {
+void electric_fence_spawn_debris(int unused, void *obj) {
     float pos[4];
     V6 a;
     V6 b;
@@ -2409,7 +2409,7 @@ void electric_fence_update(char *moby)
             }
         }
         if (FastVecDist(moby + 0x10, D_L06_00167640) < 48.0f) {
-            AddDrawCallback((int)Moby1123_Draw, moby);
+            AddDrawCallback((int)electric_fence_draw, moby);
         }
         if (d->f14 >= 0 && *(unsigned char *)(level_mobys_q + 0xBC + (d->f14 << 8)) != 0) {
             int h;
@@ -2515,7 +2515,7 @@ extern short D_L06_00162284;
 extern short D_L06_00162288;
 
 /* draws four copies of a model transformed by a table, then spawns a part for each */
-void Moby1123_Draw(char *m) {
+void electric_fence_draw(char *m) {
     float a[16];
     float b[16];
     float mat[5][16];
