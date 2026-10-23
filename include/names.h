@@ -1301,7 +1301,7 @@
 #define energy_sphere_holder_update                     func_L06_002F86B8
 #define LightBeamDraw                                   func_L06_002F8A58
 #define TriggerListsUpdate                              func_L06_002F8D60
-#define Moby1040Update                                  func_L06_002F8EE8
+#define energy_sphere_update                            func_L06_002F8EE8
 #define alien_snapper_update                            func_L06_002F91A8
 #define alien_queen_update                              func_L06_002FAE58
 #define AimCameraAtMoby                                 func_L06_002FC6D8
@@ -2586,7 +2586,7 @@
 #define Cutscene_UpdateCamera                           func_L06_002FCA98
 #define Circler_UpdateMovement                          func_L06_002FD0B8
 #define Moby_SetState3                                  func_L06_002FDA60
-#define Moby1068Update                                  func_L06_002FF000
+#define blarg_space_commando_update                     func_L06_002FF000
 #define BuildFanVectors                                 func_L06_00300530
 #define FanMobyUpdate                                   func_L06_003006F8
 #define FanSpawnBursts                                  func_L06_00300DA8
@@ -3762,6 +3762,7 @@
 #define gCamSphereMaskBaseLvl                           D_L00_0015F060
 #define camera_collision_mask                           D_L00_0015F058
 #define gFadeLvl                                        D_L00_0015F4FC
+#define electric_barrier_update                         func_L06_002F78A0
 #define noop_callback_a                                 func_001E9770
 #define noop_callback_d                                 func_001E9788
 #define noop_callback_e                                 func_001E9790

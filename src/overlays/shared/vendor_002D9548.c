@@ -3020,7 +3020,7 @@ struct VoiceSlot {
 };
 
 // UpdateMoby_1040: spins up, rotates and tracks a slot, deleting itself when its target is gone.
-void Moby1040Update(char *m) {
+void energy_sphere_update(char *m) {
     enum {
         ENERGY_SPHERE_INITIALIZE = 0,
         ENERGY_SPHERE_UPDATE_ROTATION = 1

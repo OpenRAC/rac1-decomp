@@ -958,7 +958,7 @@ extern char D_0014171B[];
 
 #define FLD(base, off, T) (((struct { char _p[off]; T v; } *)(base))->v)
 /* Moby class 1035 update (level 06): 0 init, 1 update, 2 spawn an entry, 3 delete. */
-void func_L06_002F78A0(char *m) {
+void electric_barrier_update(char *m) {
     char *d = *(char **)(m + 0x78);
     unsigned char st = *(unsigned char *)(m + 0x20);
     struct {

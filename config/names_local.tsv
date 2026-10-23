@@ -3348,3 +3348,6 @@ D_L00_0015F05C	gCamSphereMaskLvl	level copy of gCamSphereMask (MoveCameraToward 
 D_L00_0015F060	gCamSphereMaskBaseLvl	level copy of gCamSphereMaskBase (Camera_PickCollisionMasksLvl)	
 D_L00_0015F058	gCamLineMaskLvl	level copy of gCamLineMask (Camera_PickCollisionMasksLvl; vendor_002E1660.c line probes)	
 D_L00_0015F4FC	gFadeLvl	level copy of gFade (tieproc_00299108.c cutscene fade)	
+func_L06_002F78A0	electric_barrier_update	Blarg Station's electric tunnel barriers (moby class 1035, level 6 only): strand effect, looping sound, a 6-unit line check that hits and knocks back the hero, who loses a health point. Class confirmed with the port's moby inspector next to a barrier (Christopher, in game)	
+func_L06_002F8EE8	energy_sphere_update	the update of moby class 1040, energy_sphere in the class table, seen beside the barriers on Blarg Station in the port's moby inspector (Christopher, in game)	override
+func_L06_002FF000	blarg_space_commando_update	the update of moby class 1068, blarg_space_commando in the class table, seen on Blarg Station in the port's moby inspector (Christopher, in game)	override

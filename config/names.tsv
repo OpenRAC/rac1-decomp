@@ -1429,7 +1429,7 @@ func_L06_002F71A8	LayoutDrawbridgePieces	descriptive	config/names_local.tsv	plac
 func_L06_002F86B8	energy_sphere_holder_update	descriptive	the NTSC decomp	energy_sphere_holder_update at US level 06 0x002F7288 (src/overlays/shared/gameplay/entities/gadgebot_spawn_container.c); US function table counterpart	CollectibleSpawnerUpdate
 func_L06_002F8A58	LightBeamDraw	descriptive	config/names_local.tsv	draws the moby's light beam: four flickering glow sprites toward the camera (comment)	
 func_L06_002F8D60	TriggerListsUpdate	descriptive	config/names_local.tsv	UpdateMoby_1039: watches two 32-entry trigger lists against the hero and fires events (comment)	
-func_L06_002F8EE8	Moby1040Update	descriptive	config/names_local.tsv	UpdateMoby_1040 in l06 vtbl role (config/overlays/names.tsv)	energy_sphere_update
+func_L06_002F8EE8	energy_sphere_update	descriptive	config/names_local.tsv	the update of moby class 1040, energy_sphere in the class table, seen beside the barriers on Blarg Station in the port's moby inspector (Christopher, in game)	Moby1040Update
 func_L06_002F91A8	alien_snapper_update	descriptive	the NTSC decomp	alien_snapper_update at US level 06 0x002F7D78 (src/overlays/l06/gameplay/entities/hangar_door.c); US function table counterpart	Moby1048Update
 func_L06_002FAE58	alien_queen_update	descriptive	the NTSC decomp	alien_queen_update at US level 06 0x002F9A28 (src/overlays/l06/gameplay/entities/hangar_door.c); US function table counterpart	AlienQueenUpdate
 func_L06_002FC6D8	AimCameraAtMoby	descriptive	config/names_local.tsv	aims camera at a moby, returns nonzero when finished (comment)	
@@ -2723,7 +2723,7 @@ func_L06_002FC8E0	Cutscene_End	descriptive	config/names_local.tsv	body: restores
 func_L06_002FCA98	Cutscene_UpdateCamera	descriptive	config/names_local.tsv	body: blends camera pos toward target using ApproachWithVelocity, sets rotation, returns 1 when blend >=1	
 func_L06_002FD0B8	Circler_UpdateMovement	descriptive	config/names_local.tsv	body: CirclerVars; circles centre on side away from hero, blends walk/idle anims, snaps to ground	
 func_L06_002FDA60	Moby_SetState3	descriptive	config/names_local.tsv	body: stores 3 in moby state byte	
-func_L06_002FF000	Moby1068Update	descriptive	config/names_local.tsv	role UpdateMoby_1068:06/10	blarg_space_commando_update
+func_L06_002FF000	blarg_space_commando_update	descriptive	config/names_local.tsv	the update of moby class 1068, blarg_space_commando in the class table, seen on Blarg Station in the port's moby inspector (Christopher, in game)	Moby1068Update
 func_L06_00300530	BuildFanVectors	descriptive	config/names_local.tsv	comment: builds sixteen-segment fan of data vectors from moby yaw	
 func_L06_003006F8	FanMobyUpdate	descriptive	config/names_local.tsv	comment: steps timer at 0x21C, spaces 16 entries, runs pair checks	
 func_L06_00300DA8	FanSpawnBursts	descriptive	config/names_local.tsv	comment: spawns burst of effects for each pair of ready entries	
@@ -3899,6 +3899,7 @@ D_L00_0015F05C	gCamSphereMaskLvl	descriptive	config/names_local.tsv	level copy o
 D_L00_0015F060	gCamSphereMaskBaseLvl	descriptive	config/names_local.tsv	level copy of gCamSphereMaskBase (Camera_PickCollisionMasksLvl)	
 D_L00_0015F058	camera_collision_mask	descriptive	the NTSC decomp	camera_collision_mask at US level 00 0x0015EF58 (src/overlays/shared/gameplay/camera/follow_camera_setup.c); US/PAL address translation (code of both refers to it)	gCamLineMaskLvl
 D_L00_0015F4FC	gFadeLvl	descriptive	config/names_local.tsv	level copy of gFade (tieproc_00299108.c cutscene fade)	fade_level
+func_L06_002F78A0	electric_barrier_update	descriptive	config/names_local.tsv	Blarg Station's electric tunnel barriers (moby class 1035, level 6 only): strand effect, looping sound, a 6-unit line check that hits and knocks back the hero, who loses a health point. Class confirmed with the port's moby inspector next to a barrier (Christopher, in game)	
 func_001E9770	noop_callback_a	descriptive	the NTSC decomp	noop_callback_a at US boot 0x001E93F0 (src/gameplay/update_resident_gameplay_state.c); US function table counterpart	
 func_001E9788	noop_callback_d	descriptive	the NTSC decomp	noop_callback_d at US boot 0x001E9408 (src/gameplay/update_resident_gameplay_state.c); US function table counterpart	
 func_001E9790	noop_callback_e	descriptive	the NTSC decomp	noop_callback_e at US boot 0x001E9410 (src/gameplay/state/update_gameplay_frame.c); US function table counterpart	
