@@ -17,7 +17,10 @@
 #      (needs Linux, its toolchain, and baserom/us/SCUS_971.99 or the disc image; see the script);
 #   3. python3 tools/version_sync.py ntsc: config/versions/us/carry.tsv from the submodule's own
 #      report and our C checked against the NTSC-U bytes (config/versions/us/map.tsv);
-#   4. git commit of versions/ntsc and config/versions/us/carry.tsv (only those paths).
+#   4. git commit of versions/ntsc and config/versions/us/carry.tsv (only those paths);
+#   5. python3 tools/names.py ntsc, then rename: the NTSC decomp's names read from the new
+#      checkout (config/names_ntsc.tsv, config/modules.tsv, config/names.tsv; docs/NAMES.md),
+#      carried into include/names.h and src/, committed on their own.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 sub=versions/ntsc
@@ -33,8 +36,17 @@ if [ "${NTSC_SKIP_BUILD:-}" != 1 ]; then
 fi
 python3 tools/version_sync.py ntsc
 if [ "$old" = "$new" ] && git diff --quiet -- config/versions/us/carry.tsv; then
-  echo "nothing to commit"
+  echo "nothing to commit for the submodule"
+else
+  git add -- "$sub" config/versions/us/carry.tsv
+  git commit -m "chore(ntsc): follow the NTSC decomp to ${new:0:10}" -- "$sub" config/versions/us/carry.tsv
+fi
+python3 tools/names.py ntsc
+python3 tools/names.py rename
+names=(config/names.tsv config/names_ntsc.tsv config/modules.tsv include/names.h src nonmatching)
+if git diff --quiet -- "${names[@]}"; then
+  echo "names unchanged"
   exit 0
 fi
-git add -- "$sub" config/versions/us/carry.tsv
-git commit -m "chore(ntsc): follow the NTSC decomp to ${new:0:10}" -- "$sub" config/versions/us/carry.tsv
+git add -- "${names[@]}"
+git commit -m "chore(names): the NTSC decomp's names at ${new:0:10}" -- "${names[@]}"
