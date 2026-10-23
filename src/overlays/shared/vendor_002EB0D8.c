@@ -1068,7 +1068,9 @@ void FaceMobyToCamera(char *m) {
     func_L00_001FF4B0(m + 0x10, m + 0x10, 1.0f);
     FastVecCross(m + 0x20, m + 0x10, m);
 }
-INCLUDE_ASM("asm/overlays", func_L00_002EDB58);
+/* Two stripped store-word slots; InitCamera_7 begins at +0x10 and is
+ * an independent placement of the existing return-zero func_001E97C8. */
+LINKER_REMNANT("asm/overlays", func_L00_002EDB58);
 extern char D_L00_00166D80_c[] __asm__("D_L00_00166D80");
 extern void func_L00_002ED088(void *);
 extern int func_001F9850(int);

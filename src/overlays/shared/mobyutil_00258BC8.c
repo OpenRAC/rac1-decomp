@@ -942,6 +942,7 @@ extern short D_L00_00160140;
 extern float D_L00_001B0548[][8];
 extern unsigned char D_L00_001B0500[][4];
 extern Q_25a478 *func_L00_0025D390_q(void *) __asm__("func_L00_0025D390");
+extern Q_25a478 *func_L00_0025D3C0_q(void *) __asm__("func_L00_0025D3C0");
 extern int func_001F9938(void *);
 extern void func_L00_001FF500(float *, float *, float);
 
@@ -1083,10 +1084,10 @@ int ComputeHitResponse(O_25a478 *obj, P_25a478 *p, Q_25a478 *q, unsigned int fla
     q->h16 = kind;
     if (fp) *fp = p->f2C;
     if (r == 4) {
-        o = func_L00_0025D390_q(obj);
+        o = func_L00_0025D3C0_q(obj);
         if (o) o->b2E = 1;
     } else {
-        Q_25a478 *o2 = func_L00_0025D390_q(obj);
+        Q_25a478 *o2 = func_L00_0025D3C0_q(obj);
         if (o2) o2->b2E = 0;
     }
     return res;
@@ -1616,7 +1617,12 @@ int GetFlaggedPvarWord(char *m) {
     return *(int *)(*(char **)(m + 0x78));
 }
 INCLUDE_ASM("asm/overlays", func_L00_0025D3A0);
-INCLUDE_ASM("asm/overlays", func_L00_0025D3D0);
+/* Returns the flagged moby private-data word, or zero when the moby is absent or disabled. */
+int func_L00_0025D3C0(char *m) {
+ if (m==0) { none: return 0; }
+ if ((*(unsigned short *)(m + 0x34) & 0x20)==0) goto none;
+ return *(int *)(*(char **)(m + 0x78) + 0x10);
+}
 extern int func_L00_0025BCF8(void *, int, void *, void *, float);
 extern void func_00215C00(void *, float, float, float);
 extern int func_L00_00258BC8(int, int);

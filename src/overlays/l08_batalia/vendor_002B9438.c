@@ -1137,7 +1137,9 @@ void DeleteLinkedGroupMobys(struct Moby *moby) {
         }
     }
 }
-INCLUDE_ASM("asm/overlays", func_L08_002DB438);
+/* A stripped epilogue word. The empty UpdateMoby_324 at 002DB440 is
+ * a separate placement of func_001E9768, referenced by the moby table. */
+LINKER_REMNANT("asm/overlays", func_L08_002DB438);
 extern struct Hero D_0013F450_DB468 __asm__("D_0013F450");
 extern short D_L08_00161A00_DB468 SDATA(D_L08_00161A00);
 extern float D_L08_001D7320_DB468[4] __asm__("D_L08_001D7320");
