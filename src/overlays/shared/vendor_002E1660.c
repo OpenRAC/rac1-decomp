@@ -2953,69 +2953,69 @@ void func_002156E0(void *, void *, void *, f32);
 
 /* Follow-camera leaf, called from follow_camera_build_view. */
 void follow_camera_avoid_mobies(int mi) {
-    u8 *m = (u8 *)mi;
-    V_2e7d20 v0, v10, v20, v30, v40;
-    W_2e7d20 w;
+    Camera *camera_moby = (Camera *)mi;
+    V_2e7d20 probe_center, moby_offset_or_camera_endpoint, v20, planar_moby_direction, orbit_side_direction;
+    W_2e7d20 hit_descriptor;
     u8 *x;
-    u8 *a;
-    u8 *b;
+    u8 *orbit_state;
+    CamG_2E8210 *collision;
     s32 hit, cnt, any;
     s32 j;
-    u8 *o;
-    s32 n;
+    Moby *nearby_moby;
+    s32 nearby_moby_count;
     s32 i;
-    s32 t;
-    s32 s;
-    f32 h;
+    s32 nearby_moby_type_id;
+    s32 retraction_timer_or_below_hold_threshold;
+    f32 probe_diameter;
     f32 f;
     u8 *base;
     f32 g;
-    u8 *q;
+    Moby *restored_moby;
 
     base = D_L00_00166F10_x;
-    x = *(u8 **)(m + 0x70);
-    a = x + 0x130;
-    b = x + 0x1D0;
+    x = camera_moby->state_buf;
+    orbit_state = x + 0x130;
+    collision = (CamG_2E8210 *)(x + 0x1D0);
     hit = 0;
     cnt = 0;
     any = 0;
-    h = AF_2e7d20(0x2C) - BF_2e7d20(0x30) + 1.5f;
+    probe_diameter = ((CamB_2E8210 *)orbit_state)->f2C - collision->f30 + 1.5f;
     if (D_0015EE84_ANCH == 0xF) {
         any = D_0013F450_x.b20A4 == 2;
     }
-    CAST_func_001F9C08(&v0, x + 0x90, base - 0x50, 0.5f);
-    n = CAST_func_L00_001F2BE8(&v0, 1, D_0013F450_x.p2080, 0, h * 0.5f);
-    if (n > 0) {
-        i = n;
+    CAST_func_001F9C08(&probe_center, x + 0x90, base - 0x50, 0.5f);
+    nearby_moby_count = CAST_func_L00_001F2BE8(&probe_center, 1, D_0013F450_x.p2080, 0, probe_diameter * 0.5f);
+    if (nearby_moby_count > 0) {
+        i = nearby_moby_count;
         j = 0;
         do {
-            o = D_L00_00178000[j];
-            if (*(s32 *)(o + 0x94) == 0) {
+            nearby_moby = (Moby *)D_L00_00178000[j];
+            if (nearby_moby->collision == 0) {
                 goto next;
             }
-            if (Moby_HasLinkedRecord(o) && !any) {
+            if (Moby_HasLinkedRecord(nearby_moby) && !any) {
                 goto next;
             }
-            t = *(s16 *)(o + 0xA6);
-            if (t != 0x72 && t != 0xB && t != 0x2C && t != 0x9A && t != 0xFF && t != 0x392 && t != 0x452 && t != 0x353) {
-                D_L00_001E7910[cnt] = o;
+            nearby_moby_type_id = nearby_moby->oclass;
+            if (nearby_moby_type_id != 0x72 && nearby_moby_type_id != 0xB && nearby_moby_type_id != 0x2C && nearby_moby_type_id != 0x9A && nearby_moby_type_id != 0xFF && nearby_moby_type_id != 0x392 && nearby_moby_type_id != 0x452 && nearby_moby_type_id != 0x353) {
+                D_L00_001E7910[cnt] = (u8 *)nearby_moby;
                 cnt++;
-                *(s32 *)(o + 0x94) = 0;
+                nearby_moby->collision = 0;
                 goto next;
             }
-            CAST_func_001F9BF0(&v10, o + 0x10, (x + 0x90));
-            FastVecScale(&v20, base + 0x30, FastVecDot(base + 0x30, &v10));
-            CAST_func_001F9BF0(&v30, &v10, &v20);
-            func_L00_001FF4B0(&v30, &v30, 1.0f);
-            f = FastVecDot(&v30, a);
-            f = FastArcSin(f / (AF_2e7d20(0x2C) - BF_2e7d20(0x30)));
+            CAST_func_001F9BF0(&moby_offset_or_camera_endpoint, (u8 *)&nearby_moby->pos, (x + 0x90));
+            FastVecScale(&v20, base + 0x30, FastVecDot(base + 0x30, &moby_offset_or_camera_endpoint));
+            CAST_func_001F9BF0(&planar_moby_direction, &moby_offset_or_camera_endpoint, &v20);
+            func_L00_001FF4B0(&planar_moby_direction, &planar_moby_direction, 1.0f);
+            f = FastVecDot(&planar_moby_direction, orbit_state);
+            f = FastArcSin(f / (((CamB_2E8210 *)orbit_state)->f2C - collision->f30));
             if (FastAbsF(1.5707964f - f) < 0.43633232f) {
-                FastVecCross(&v40, a, base + 0x30);
-                func_L00_001FF4B0(&v40, &v40, 1.0f);
-                if (0.0f < FastVecDot(&v40, &v10)) {
-                    build_look_at_matrix(a, a, base + 0x20, -0.017453292f);
+                FastVecCross(&orbit_side_direction, orbit_state, base + 0x30);
+                func_L00_001FF4B0(&orbit_side_direction, &orbit_side_direction, 1.0f);
+                if (0.0f < FastVecDot(&orbit_side_direction, &moby_offset_or_camera_endpoint)) {
+                    build_look_at_matrix(orbit_state, orbit_state, base + 0x20, -0.017453292f);
                 } else {
-                    build_look_at_matrix(a, a, base + 0x20, 0.017453292f);
+                    build_look_at_matrix(orbit_state, orbit_state, base + 0x20, 0.017453292f);
                 }
             }
         next:
@@ -3023,24 +3023,24 @@ void follow_camera_avoid_mobies(int mi) {
         } while (--i != 0);
     }
     if (D_0013F450_x.i2084 != 0x7F && (D_0015EE84_x != 0xD || D_0013F450_x.i2084 != 0x7B)) {
-        hit = CAST_func_L00_002E8EE0(m) != 0;
+        hit = CAST_func_L00_002E8EE0(camera_moby) != 0;
     }
-    hit = CAST_func_L00_002E89D0(m) == 0 ? hit : 1;
-    hit = CAST_func_L00_002E87C8(m) == 0 ? hit : 1;
-    g = AF_2e7d20(0x2C);
-    if (g - BF_2e7d20(0x30) < *(f32 *)&D_L00_00161DA0) {
-        BF_2e7d20(0x30) = g - *(f32 *)&D_L00_00161DA0;
-        BH_2e7d20(0x34) = scale_ticks(2000);
+    hit = CAST_func_L00_002E89D0(camera_moby) == 0 ? hit : 1;
+    hit = CAST_func_L00_002E87C8(camera_moby) == 0 ? hit : 1;
+    g = ((CamB_2E8210 *)orbit_state)->f2C;
+    if (g - collision->f30 < *(f32 *)&D_L00_00161DA0) {
+        collision->f30 = g - *(f32 *)&D_L00_00161DA0;
+        collision->h34 = scale_ticks(2000);
     }
-    if (BH_2e7d20(0x3A) != 0) {
+    if (collision->h3A != 0) {
         goto dec;
     }
     if (hit) {
         goto slow;
     }
-    s = BH_2e7d20(0x34);
-    s = s < scale_ticks(2000);
-    if (s && BH_2e7d20(0x34) > 0) {
+    retraction_timer_or_below_hold_threshold = collision->h34;
+    retraction_timer_or_below_hold_threshold = retraction_timer_or_below_hold_threshold < scale_ticks(2000);
+    if (retraction_timer_or_below_hold_threshold && collision->h34 > 0) {
         goto dec;
     }
     if (!((*(C940_2e7d20_t *)(D_0013A5E0 + 0x2460)).x < 0.3f)) {
@@ -3050,34 +3050,34 @@ void follow_camera_avoid_mobies(int mi) {
         goto slow;
     }
 dec:
-    if (FastDecTimer(b + 0x34)) {
-        BH_2e7d20(0x3A) = 0;
+    if (FastDecTimer((u8 *)&collision->h34)) {
+        collision->h3A = 0;
     }
-    if (BH_2e7d20(0x3A) != 0) {
-        if (FastDecTimer(b + 0x34)) {
-            BH_2e7d20(0x3A) = 0;
+    if (collision->h3A != 0) {
+        if (FastDecTimer((u8 *)&collision->h34)) {
+            collision->h3A = 0;
         }
     }
-    f = IntToFloat(BH_2e7d20(0x34));
-    BF_2e7d20(0x30) = CosineInterpolate(0.0f, BF_2e7d20(0x30), f / IntToFloat(scale_ticks(2000)));
+    f = IntToFloat(collision->h34);
+    collision->f30 = CosineInterpolate(0.0f, collision->f30, f / IntToFloat(scale_ticks(2000)));
     goto move;
 slow:
-    s = BH_2e7d20(0x34);
-    if (scale_ticks(2000) < s) {
-        FastDecTimer(b + 0x34);
+    retraction_timer_or_below_hold_threshold = collision->h34;
+    if (scale_ticks(2000) < retraction_timer_or_below_hold_threshold) {
+        FastDecTimer((u8 *)&collision->h34);
     } else {
-        BH_2e7d20(0x34) = scale_ticks(2000);
+        collision->h34 = scale_ticks(2000);
     }
 move:
-    func_L00_001FF4B0(a, a, AF_2e7d20(0x2C) - BF_2e7d20(0x30));
-    FastVecAdd(&v10, a, (x + 0x90));
+    func_L00_001FF4B0(orbit_state, orbit_state, ((CamB_2E8210 *)orbit_state)->f2C - collision->f30);
+    FastVecAdd(&moby_offset_or_camera_endpoint, orbit_state, (x + 0x90));
     if (D_0013F450_x.i2084 == 0x7F) {
         goto clear;
     }
     if (D_0015EE84_x == 0xD && D_0013F450_x.i2084 == 0x7B) {
         goto clear;
     }
-    if (!CAST_func_L00_001EFFF0((x + 0x90), &v10, *(int *)&camera_collision_mask, D_0013F450_x.p2080, 0)) {
+    if (!CAST_func_L00_001EFFF0((x + 0x90), &moby_offset_or_camera_endpoint, *(int *)&camera_collision_mask, D_0013F450_x.p2080, 0)) {
         goto clear;
     }
     if (CAST_func_L00_002E5740(D_L00_00173F60_x.v20)) {
@@ -3088,26 +3088,26 @@ move:
         v20.i[2] = 0;
         func_L00_001FF4B0(&v20, &v20, 1.0f);
         v20.f[3] = 5627.9248046875f;
-        InitDirectionalHitQuery(&w, D_0013F450_x.p2080, 0x800000, &v20, 20.0f);
-        w.b18 = 3;
-        w.b19 = 3;
-        w.h1A = *(u16 *)(D_0013F450_x.p2080 + 0xA6);
-        PostHitMessageFromRecord(D_L00_00173F60_x.p18, &w);
+        InitDirectionalHitQuery(&hit_descriptor, D_0013F450_x.p2080, 0x800000, &v20, 20.0f);
+        hit_descriptor.b18 = 3;
+        hit_descriptor.b19 = 3;
+        hit_descriptor.h1A = *(u16 *)(D_0013F450_x.p2080 + 0xA6);
+        PostHitMessageFromRecord(D_L00_00173F60_x.p18, &hit_descriptor);
     }
-    BI_2e7d20(0x4C)++;
-    if (BI_2e7d20(0x4C) >= scale_ticks(0x1E)) {
+    collision->i4C++;
+    if (collision->i4C >= scale_ticks(0x1E)) {
         init_camera_system();
     }
     goto fin;
 clear:
-    BI_2e7d20(0x4C) = 0;
+    collision->i4C = 0;
 fin:
     if (cnt > 0) {
         u8 **op = D_L00_001E7910;
         s32 k = cnt;
         do {
-            q = *op++;
-            *(s32 *)(q + 0x94) = *(s32 *)(*(u8 **)(q + 0x24) + 0x10);
+            restored_moby = (Moby *)*op++;
+            restored_moby->collision = restored_moby->pclass->collision;
         } while (--k != 0);
     }
 }
@@ -3447,18 +3447,50 @@ extern short D_L00_00161D90;
 extern short D_L00_00161D8C;
 extern short D_L00_00161D94;
 
+typedef struct TurnPitchVec_2e8bb8 {
+    Vec4 vec;                               /* 0x00: vector the look-at matrix is built in */
+    u8 pad_10[0x24];
+    f32 angle;                              /* 0x34: turn_pitch_gain * turn_pitch */
+    union { f32 f; s32 i; } step;           /* 0x38: written as a float and zeroed as an int */
+} TurnPitchVec_2e8bb8;
+
+typedef struct TurnPitchState_2e8bb8 {
+    f32 turn_pitch;                         /* 0x00: eased pitch value */
+    f32 turn_pitch_spring;                  /* 0x04: spring state Cam_InterpValues takes */
+    f32 turn_rate;                          /* 0x08: eased stick turn value */
+    f32 turn_rate_spring;                   /* 0x0C: spring state Cam_InterpValues takes */
+    u8 pad_10[0x4];
+    f32 turn_pitch_gain;                    /* 0x14: multiplies turn_pitch */
+    u8 pad_18[0x8];
+    f32 turn_hold_pitch;                    /* 0x20: pitch used while the camera is not moving */
+} TurnPitchState_2e8bb8;
+
+typedef struct CamTurnPitch_2e8bb8 {
+    u8 pad_00[0x22];
+    s16 unk22;                              /* 0x22: set to 1 when the pitch goes negative */
+    u8 pad_24[0x10C];
+    TurnPitchVec_2e8bb8 turn_vec;           /* 0x130: vector the look-at matrix is built in */
+    u8 pad_170[0x38];
+    TurnPitchState_2e8bb8 turn_state;       /* 0x1A8 */
+    u8 pad_1CC[0x3C];
+    s16 unk208;                             /* 0x208: negative while the camera is on its way down */
+} CamTurnPitch_2e8bb8;
+
 /* steers the hero heading and pitch towards a stick input. Adapted from Lombyte (MIT) for PAL: overlays/shared/gameplay_vendor_002df730.c, FUN_L00_002e8bb8. */
 void follow_camera_turn_and_pitch(int mi, float a, float b) {
-    char *m = (char *)mi;
-    char *d = *(char **)(m + 0x70);
-    char *g = camera_view;
-    char *va = d + 0x130;
-    char *wa = d + 0x1A8;
-    float sp[4];
-    float zero, v, e, lim, x, y;
+    Camera *cam = (Camera *)mi;
+    CamTurnPitch_2e8bb8 *camera_data = (CamTurnPitch_2e8bb8 *)cam->state_buf;
+    TurnPitchVec_2e8bb8 *turn_pitch_vector = &camera_data->turn_vec;
+    TurnPitchState_2e8bb8 *turn_pitch_state = &camera_data->turn_state;
+    char *base = camera_view;
+    float axis[4];
+    float zero, sel, e, abs_ang, lim;
     char *p;
-    *(float *)(d + 0x1A8) = Cam_InterpValues(d + 0x1AC, *(float *)(d + 0x1A8), a, *(float *)&D_L00_00161D7C, *(float *)&D_L00_00161D80, 0.0f);
-    *(float *)(va + 0x34) = *(float *)(wa + 0x14) * *(float *)(d + 0x1A8);
+
+    camera_data->turn_state.turn_pitch = Cam_InterpValues(&camera_data->turn_state.turn_pitch_spring,
+                                                          camera_data->turn_state.turn_pitch, a,
+                                                          *(float *)&D_L00_00161D7C, *(float *)&D_L00_00161D80, 0.0f);
+    turn_pitch_vector->angle = turn_pitch_state->turn_pitch_gain * camera_data->turn_state.turn_pitch;
     if (b < -0.3f) {
         b = (b + 0.3f) * 1.4285715f;
     } else if (0.3f < b) {
@@ -3468,57 +3500,59 @@ void follow_camera_turn_and_pitch(int mi, float a, float b) {
     }
     zero = 0.0f;
     if (b == zero) {
-        v = *(float *)&D_L00_00161D90;
-    } else if (!(FastAbsF(b) < FastAbsF(*(float *)(wa + 0x8)))) {
-        v = *(float *)&D_L00_00161D8C;
-    } else if (zero < b && zero < *(float *)(wa + 0x8)) {
-        v = *(float *)&D_L00_00161D90;
-    } else if (b < zero && *(float *)(wa + 0x8) < zero) {
-        v = *(float *)&D_L00_00161D90;
+        sel = *(float *)&D_L00_00161D90;
+    } else if (!(FastAbsF(b) < FastAbsF(turn_pitch_state->turn_rate))) {
+        sel = *(float *)&D_L00_00161D8C;
+    } else if (zero < b && zero < turn_pitch_state->turn_rate) {
+        sel = *(float *)&D_L00_00161D90;
+    } else if (b < zero && turn_pitch_state->turn_rate < zero) {
+        sel = *(float *)&D_L00_00161D90;
     } else {
-        v = *(float *)&D_L00_00161D8C;
+        sel = *(float *)&D_L00_00161D8C;
     }
-    *(float *)(wa + 0x8) = Cam_InterpValues(wa + 0xC, *(float *)(wa + 0x8), b, *(float *)&D_L00_00161D7C, *(float *)&D_L00_00161D80, v);
-    y = *(float *)(wa + 0x8) * 0.69813168f;
+    turn_pitch_state->turn_rate = Cam_InterpValues(&turn_pitch_state->turn_rate_spring, turn_pitch_state->turn_rate, b,
+                                                   *(float *)&D_L00_00161D7C, *(float *)&D_L00_00161D80, sel);
+    lim = turn_pitch_state->turn_rate * 0.69813168f;
     if (a == 0.0f) {
-        build_look_at_matrix(va, va, g + 0x20, *(float *)(wa + 0x20));
-        p = g + 0x20;
+        build_look_at_matrix(turn_pitch_vector->vec.f, turn_pitch_vector->vec.f, base + 0x20,
+                             turn_pitch_state->turn_hold_pitch);
+        p = base + 0x20;
     } else {
-        p = g + 0x20;
-        build_look_at_matrix(va, va, p, *(float *)(va + 0x34));
+        p = base + 0x20;
+        build_look_at_matrix(turn_pitch_vector->vec.f, turn_pitch_vector->vec.f, p, turn_pitch_vector->angle);
     }
-    b = FastVecDot(va, p);
-    e = FastVecLength(va);
-    FastVecCross(sp, p, va);
-    func_L00_001FF4B0(sp, sp, 1.0f);
+    b = FastVecDot(turn_pitch_vector->vec.f, p);
+    e = FastVecLength(turn_pitch_vector->vec.f);
+    FastVecCross(axis, p, turn_pitch_vector->vec.f);
+    func_L00_001FF4B0(axis, axis, 1.0f);
     b = func_L00_001FF860(e, b);
-    lim = FastAbsF(b);
-    if (lim < FastAbsF(y) && v == *(float *)&D_L00_00161D90) {
-        *(float *)(wa + 0x8) = b / 0.69813168f;
+    abs_ang = FastAbsF(b);
+    if (abs_ang < FastAbsF(lim) && sel == *(float *)&D_L00_00161D90) {
+        turn_pitch_state->turn_rate = b / 0.69813168f;
     }
-    if (b < y) {
-        if (y < FastAddRots(b, *(float *)&D_L00_00161D94)) {
-            *(float *)(va + 0x38) = FastSubRots(y, b);
+    if (b < lim) {
+        if (lim < FastAddRots(b, *(float *)&D_L00_00161D94)) {
+            turn_pitch_vector->step.f = FastSubRots(lim, b);
         } else {
-            *(float *)(va + 0x38) = *(float *)&D_L00_00161D94;
+            turn_pitch_vector->step.f = *(float *)&D_L00_00161D94;
         }
-    } else if (y < b) {
-        if (*(short *)(*(char **)(m + 0x70) + 0x208) < 0) {
-            *(int *)(va + 0x38) = 0;
+    } else if (lim < b) {
+        if (((CamTurnPitch_2e8bb8 *)cam->state_buf)->unk208 < 0) {
+            turn_pitch_vector->step.i = 0;
         } else {
-            if (FastAddRots(b, -*(float *)&D_L00_00161D94) < y) {
-                *(float *)(va + 0x38) = FastSubRots(y, b);
+            if (FastAddRots(b, -*(float *)&D_L00_00161D94) < lim) {
+                turn_pitch_vector->step.f = FastSubRots(lim, b);
             } else {
-                *(float *)(va + 0x38) = -*(float *)&D_L00_00161D94;
+                turn_pitch_vector->step.f = -*(float *)&D_L00_00161D94;
             }
         }
     } else {
-        *(int *)(va + 0x38) = 0;
+        turn_pitch_vector->step.i = 0;
     }
-    if (y < 0.0f) {
-        *(short *)(*(char **)(m + 0x70) + 0x22) = 1;
+    if (lim < 0.0f) {
+        ((CamTurnPitch_2e8bb8 *)cam->state_buf)->unk22 = 1;
     }
-    build_look_at_matrix(va, va, sp, *(float *)(va + 0x38));
+    build_look_at_matrix(turn_pitch_vector->vec.f, turn_pitch_vector->vec.f, axis, turn_pitch_vector->step.f);
 }
 extern float D_L00_0015F040 MACRO_ADDR;
 extern void func_001F9C08(float, void *, void *, void *);

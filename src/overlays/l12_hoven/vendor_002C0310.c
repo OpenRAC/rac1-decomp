@@ -2871,47 +2871,89 @@ extern unsigned char D_0013D605_2EC8F0[] __asm__("D_0013D605");
 extern unsigned char D_0013D5CA[] NOT_SDA;
 extern int D_L12_0015F6A8_2EC8F0 __asm__("D_L12_0015F6A8") MACRO_ADDR;
 
+typedef struct L12Activation {
+    u8 pad00[0x4];
+    s16 unk04;                 /* 0x24 read: == 2 once the dialogue is done */
+    u8 pad06[0x6];
+    f32 radius;                /* 0x2C */
+    u8 pad10[0x26];
+    s16 unk36;                 /* 0x56 set to -1 when the heli pack is owned */
+    u8 pad38[0x8];
+} L12Activation;
+
+typedef struct L16WatchPlayer {
+    u8 pad00[0x80];
+    f32 position[4];           /* 0x80 */
+    u8 pad90[0x40];
+    f32 aim[4];                /* 0xD0 */
+} L16WatchPlayer;
+
+typedef struct L12WatchData {
+    u8 pad00[0x20];
+    L12Activation activation;  /* 0x20 */
+    char body[0x60];           /* 0x60 joint controller for the body */
+    u8 padC0[0x4];
+    f32 pitch;                 /* 0xC4 */
+    f32 yaw;                   /* 0xC8 */
+    u8 padCC[0x4];
+    f32 height;                /* 0xD0 */
+    u8 padD4[0xC];
+    char head[0x60];           /* 0xE0 joint controller for the head */
+    u8 pad140[0x8];
+    f32 head_yaw;              /* 0x148 */
+    u8 pad14C[0x14];
+    s32 region;                /* 0x160 -1 when none */
+    Helper_2EC8F0 *turret;     /* 0x164 */
+    Helper_2EC8F0 *base;       /* 0x168 */
+    u8 pad16C[0x4];
+    f32 target[4];             /* 0x170 */
+    u8 pad180[0x4];
+    s32 moving_timer;          /* 0x184 */
+    s32 target_timer;          /* 0x188 */
+} L12WatchData;
+
 /* Edwina update on level 12: picks her animation, runs the conversation states, keeps her two helper mobys and turns her body and head toward the hero. */
 void edwina_update(char *m) {
-    char *d = *(char **)(m + 0x78);
-    AttachCheatManipulatorToMatchingL03(m);
+    Moby *moby = (Moby *)m;
+    L12WatchData *moby_data = (L12WatchData *)moby->pvars;
+    AttachCheatManipulatorToMatchingL03(moby);
     {
         char *v = (char *)D_0013D605_2EC8F0 + 0xB3;
         if (*(int *)(v + 0x46C) == 0) {
-            if (*(unsigned char *)(m + 0x53) != 1) MobyBlendAnimation(m, 1, 0, 2);
-        } else if (*(unsigned char *)(m + 0x53) != 0) {
-            MobyBlendAnimation(m, 0, 0, 2);
+            if (moby->prev_seq != 1) MobyBlendAnimation(moby, 1, 0, 2);
+        } else if (moby->prev_seq != 0) {
+            MobyBlendAnimation(moby, 0, 0, 2);
         }
     }
-    switch (*(unsigned char *)(m + 0x20)) {
+    switch (moby->state) {
     case 0:
-        m[0x20] = 1;
-        DialogRequest_Init(m, d + 0x20);
-        *(float *)(d + 0x2C) = 1.7f;
-        func_L02_0025D750(m);
-        if (gHaveHeliPack[2] != 0) *(short *)(d + 0x56) = -1;
+        moby->state = 1;
+        DialogRequest_Init(moby, &moby_data->activation);
+        moby_data->activation.radius = 1.7f;
+        func_L02_0025D750(moby);
+        if (gHaveHeliPack[2] != 0) moby_data->activation.unk36 = -1;
         break;
     case 1:
-        if (gHaveHeliPack[2] == 0 && Npc_TryStartDialog(m, d + 0x20) != 0) {
-            PlaceMarkerAheadOfMoby(2.52f, m);
-            *(float *)(m + 0x58) = 0.0f;
-            m[0x20] = 2;
+        if (gHaveHeliPack[2] == 0 && Npc_TryStartDialog(moby, &moby_data->activation) != 0) {
+            PlaceMarkerAheadOfMoby(2.52f, moby);
+            moby->anim_speed = 0.0f;
+            moby->state = 2;
         }
         break;
     case 2:
         if (D_L12_0015F6A8_2EC8F0 != 2) {
-            *(float *)(m + 0x58) = 1.0f;
-            jet_clear_persistent(*(unsigned char *)(m + 0xB0));
-            if (*(int *)(d + 0x160) != -1) {
-                char *t = D_L12_0016016C + (*(int *)(d + 0x160) << 7);
+            moby->anim_speed = 1.0f;
+            jet_clear_persistent(moby->mission);
+            if (moby_data->region != -1) {
+                char *t = D_L12_0016016C + (moby_data->region << 7);
                 jet_reset_camera(t + 0x30, t + 0x70);
             }
-            m[0x20] = 1;
-            if (*(short *)(d + 0x24) == 2) {
+            moby->state = 1;
+            if (moby_data->activation.unk04 == 2) {
                 GiveItem(4, 0);
                 ShowBanner(0x2EE6, -1);
-                if (*(int *)(d + 0x160) != -1) {
-                    char *t = D_L12_0016016C + (*(int *)(d + 0x160) << 7);
+                if (moby_data->region != -1) {
+                    char *t = D_L12_0016016C + (moby_data->region << 7);
                     jet_reset_camera(t + 0x30, t + 0x70);
                 }
                 memcard_Save(0, -1);
@@ -2924,94 +2966,94 @@ void edwina_update(char *m) {
         float sx = 0.02f;
         float sy = 0.3f;
         int doit = 0;
-        if (*(unsigned char *)(m + 0x53) == 0) {
+        if (moby->prev_seq == 0) {
             char *g = D_0013E633 + 0xE9D;
-            char *a_;
+            L16WatchPlayer *a_;
             doit = 1;
-            if (func_001F9D48(m + 0x10, g) < 8.0f
-                && FastDiffRots(*(float *)(m + 0x48),
-                       func_L00_001FF860(*(float *)((a_ = g - 0x80) + 0xD0) - *(float *)(m + 0x10),
-                                         *(float *)(a_ + 0xD4) - *(float *)(m + 0x14))) < 1.5707964f) {
+            if (func_001F9D48(&moby->pos, g) < 8.0f
+                && FastDiffRots(moby->rot.z,
+                       func_L00_001FF860((a_ = (L16WatchPlayer *)(g - 0x80))->aim[0] - moby->pos.x,
+                                         a_->aim[1] - moby->pos.y)) < 1.5707964f) {
                 if (0.01f < FastVecLength(g + 0x80)) {
-                    *(int *)(d + 0x184) = scale_ticks(0x78);
+                    moby_data->moving_timer = scale_ticks(0x78);
                 } else {
-                    func_001F9908((int *)(d + 0x184));
+                    func_001F9908(&moby_data->moving_timer);
                 }
-            } else if (*(int *)(d + 0x184) != 0) {
-                *(int *)(d + 0x184) = 0;
-                qcopy(d + 0x170, D_0013E633 + 0xEED);
+            } else if (moby_data->moving_timer != 0) {
+                moby_data->moving_timer = 0;
+                qcopy(moby_data->target, D_0013E633 + 0xEED);
             }
-            if (func_001F9908((int *)(d + 0x188)) != 0) {
+            if (func_001F9908(&moby_data->target_timer) != 0) {
                 float y;
                 float z;
                 float x = random_float_between(180.0f, 300.0f);
-                *(int *)(d + 0x188) = func_001FA898_r(func_001F9878(x));
-                y = FastAddRots(*(float *)(m + 0x48), random_float_between(-90.0f, 90.0f) * 0.017453292f);
+                moby_data->target_timer = func_001FA898_r(func_001F9878(x));
+                y = FastAddRots(moby->rot.z, random_float_between(-90.0f, 90.0f) * 0.017453292f);
                 z = random_float_between(0.0f, 30.0f) * 0.017453292f;
-                BuildSphericalOffset(d + 0x170, 6.0f, y, z);
-                FastVecAdd(d + 0x170, d + 0x170, m + 0x10);
+                BuildSphericalOffset(moby_data->target, 6.0f, y, z);
+                FastVecAdd(moby_data->target, moby_data->target, &moby->pos);
             }
-            if (*(int *)(d + 0x184) != 0) {
+            if (moby_data->moving_timer != 0) {
                 qcopy(b, D_0013E633 + 0xEED);
                 sx = 0.04f;
                 sy = 0.3f;
             } else {
-                qcopy(b, d + 0x170);
+                qcopy(b, moby_data->target);
             }
         }
         {
             char *v = (char *)D_0013D605_2EC8F0 + 0xB3;
             if (*(int *)(v + 0x46C) == 0) {
-                if (((Data_2EC8F0 *)d)->h1 == 0) {
-                    ((Data_2EC8F0 *)d)->h1 = func_0020D348_2EC8F0(0x4C1);
-                    if (((Data_2EC8F0 *)d)->h1 != 0) {
+                if (moby_data->turret == 0) {
+                    moby_data->turret = func_0020D348_2EC8F0(0x4C1);
+                    if (moby_data->turret != 0) {
                         Helper_2EC8F0 *h;
-                        ((Data_2EC8F0 *)d)->h1->f32 = *(unsigned short *)(m + 0x32);
-                        ((Data_2EC8F0 *)d)->h1->f31 = 1;
-                        h = ((Data_2EC8F0 *)d)->h1;
-                        qcopy(h->position, m + 0x10);
-                        qcopy(h->rot, m + 0x40);
+                        moby_data->turret->f32 = *(unsigned short *)&moby->draw_dist;
+                        moby_data->turret->f31 = 1;
+                        h = moby_data->turret;
+                        qcopy(h->position, &moby->pos);
+                        qcopy(h->rot, &moby->rot);
                         func_L00_00251E30(h);
-                        ((Data_2EC8F0 *)d)->h1->f34 = 0;
-                        MobyBlendAnimation(((Data_2EC8F0 *)d)->h1, 1, 0, 2);
+                        moby_data->turret->f34 = 0;
+                        MobyBlendAnimation(moby_data->turret, 1, 0, 2);
                     }
                 } else if (D_L12_0015F6A8_2EC8F0 == 2) {
-                    ((Data_2EC8F0 *)d)->h1->f34 |= 1;
-                    ((Data_2EC8F0 *)d)->h1->f31 = 0;
+                    moby_data->turret->f34 |= 1;
+                    moby_data->turret->f31 = 0;
                 } else {
-                    ((Data_2EC8F0 *)d)->h1->f34 &= ~1;
-                    ((Data_2EC8F0 *)d)->h1->f31 = 1;
+                    moby_data->turret->f34 &= ~1;
+                    moby_data->turret->f31 = 1;
                 }
-                if (((Data_2EC8F0 *)d)->h2 == 0) {
-                    ((Data_2EC8F0 *)d)->h2 = func_0020D348_2EC8F0(0x196);
-                    if (((Data_2EC8F0 *)d)->h2 != 0) {
+                if (moby_data->base == 0) {
+                    moby_data->base = func_0020D348_2EC8F0(0x196);
+                    if (moby_data->base != 0) {
                         Helper_2EC8F0 *h;
-                        ((Data_2EC8F0 *)d)->h2->f32 = *(unsigned short *)(m + 0x32);
-                        ((Data_2EC8F0 *)d)->h2->f31 = 1;
-                        h = ((Data_2EC8F0 *)d)->h2;
-                        qcopy(h->position, m + 0x10);
-                        qcopy(h->rot, m + 0x40);
+                        moby_data->base->f32 = *(unsigned short *)&moby->draw_dist;
+                        moby_data->base->f31 = 1;
+                        h = moby_data->base;
+                        qcopy(h->position, &moby->pos);
+                        qcopy(h->rot, &moby->rot);
                         func_L00_00251E30(h);
                     }
                 } else if (D_L12_0015F6A8_2EC8F0 == 2) {
-                    ((Data_2EC8F0 *)d)->h1->f34 |= 1;
-                    ((Data_2EC8F0 *)d)->h1->f31 = 0;
-                    ((Data_2EC8F0 *)d)->h2->f34 |= 1;
-                    ((Data_2EC8F0 *)d)->h2->f31 = 0;
+                    moby_data->turret->f34 |= 1;
+                    moby_data->turret->f31 = 0;
+                    moby_data->base->f34 |= 1;
+                    moby_data->base->f31 = 0;
                 } else {
-                    ((Data_2EC8F0 *)d)->h1->f34 &= ~1;
-                    ((Data_2EC8F0 *)d)->h1->f31 = 1;
-                    ((Data_2EC8F0 *)d)->h2->f34 &= ~1;
-                    ((Data_2EC8F0 *)d)->h2->f31 = 1;
+                    moby_data->turret->f34 &= ~1;
+                    moby_data->turret->f31 = 1;
+                    moby_data->base->f34 &= ~1;
+                    moby_data->base->f31 = 1;
                 }
             } else {
-                if (((Data_2EC8F0 *)d)->h2 != 0) {
-                    DeleteMoby(((Data_2EC8F0 *)d)->h2);
-                    ((Data_2EC8F0 *)d)->h2 = 0;
+                if (moby_data->base != 0) {
+                    DeleteMoby(moby_data->base);
+                    moby_data->base = 0;
                 }
-                if (((Data_2EC8F0 *)d)->h1 != 0) {
-                    DeleteMoby(((Data_2EC8F0 *)d)->h1);
-                    ((Data_2EC8F0 *)d)->h1 = 0;
+                if (moby_data->turret != 0) {
+                    DeleteMoby(moby_data->turret);
+                    moby_data->turret = 0;
                 }
             }
         }
@@ -3020,22 +3062,22 @@ void edwina_update(char *m) {
             float u[4];
             float f20;
             float f2;
-            qcopy(w, m + 0x10);
+            qcopy(w, &moby->pos);
             w[2] = w[2] + 1.0f;
             FastVecSub(u, b, w);
-            f20 = FastSubRots(func_L00_001FF860(u[0], u[1]), *(float *)(m + 0x48));
+            f20 = FastSubRots(func_L00_001FF860(u[0], u[1]), moby->rot.z);
             f2 = -func_L00_001FF860(func_001F9CE8(u), u[2]);
             if (f20 > 1.5707964f) f20 = 1.5707964f;
             else if (f20 < -1.5707964f) f20 = -1.5707964f;
             if (f2 > 0.5235988f) f2 = 0.5235988f;
             else if (f2 < -0.5235988f) f2 = -0.5235988f;
-            *(float *)(d + 0xC4) = f2;
-            *(float *)(d + 0xC8) = f20 * 0.5f;
-            *(float *)(d + 0x148) = f20 * 0.5f;
+            moby_data->pitch = f2;
+            moby_data->yaw = f20 * 0.5f;
+            moby_data->head_yaw = f20 * 0.5f;
         }
-        if (gCheats[0] != 0) *(float *)(d + 0xD0) = 2.75f;
-        EaseManipulatorOffsets(m, d + 0x60, 1, sx * D_0015EE64, sy * D_0015EE64);
-        EaseManipulatorOffsets(m, d + 0xE0, 0, sx * D_0015EE64, sy * D_0015EE64);
+        if (gCheats[0] != 0) moby_data->height = 2.75f;
+        EaseManipulatorOffsets(moby, moby_data->body, 1, sx * D_0015EE64, sy * D_0015EE64);
+        EaseManipulatorOffsets(moby, moby_data->head, 0, sx * D_0015EE64, sy * D_0015EE64);
     }
 }
 extern char *func_L00_0025B478(void *, int, int);

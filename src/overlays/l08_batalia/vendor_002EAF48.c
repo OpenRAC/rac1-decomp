@@ -828,64 +828,107 @@ extern unsigned char D_0013D4B5[] NOT_SDA;
 extern unsigned char D_0014171B_q[] __asm__("D_0014171B") NOT_SDA;
 extern char D_0013E633[] NOT_SDA;
 
+typedef struct WD8 {
+    u8 pad_00[0x24];           /* 0x00 dialog block at +0x20, passed as a pointer */
+    s16 h24;                   /* 0x24 */
+    u8 pad_26[0x2];
+    u8 b28;                    /* 0x28 */
+    u8 pad_29[0x3];
+    f32 f2C;                   /* 0x2C */
+    u8 pad_30[0x10];
+    void *p40;                 /* 0x40 */
+    u8 pad_44[0x1C];
+    char body[0x64];           /* 0x60 eased manipulator record for the body joint */
+    f32 pitch;                 /* 0xC4 */
+    f32 yaw;                   /* 0xC8 */
+    u8 pad_CC[0x4];
+    f32 height;                /* 0xD0 */
+    u8 pad_D4[0xC];
+    char head[0x68];           /* 0xE0 eased manipulator record for the head joint */
+    f32 head_yaw;              /* 0x148 */
+    u8 pad_14C[0x14];
+    f32 target[4];             /* 0x160 */
+    u8 pad_170[0x10];
+    s32 joint;                 /* 0x180 */
+    u8 pad_184[0x4];
+    s32 moving_timer;          /* 0x188 */
+    s32 target_timer;          /* 0x18C */
+} WD8;
+
+typedef struct L16WatchPlayer {
+    u8 pad_00[0xD0];
+    f32 aim[4];                /* 0xD0 */
+} L16WatchPlayer;
+
 /* Commando (moby class 1130) update: a state machine on the byte at +0x20 (states 0 to 3; state 3 deletes the
  * moby), then the relative's aiming tail on the countdowns at data + 0x188 and 0x18C. */
+/* Commando (moby class 1130) update: a state machine on the byte at +0x20 (states 0 to 3; state 3 deletes the
+ * moby), then the relative's aiming tail on the countdowns at data + 0x188 and 0x18C. */
+
 void commando_update(char *m) {
-    char *d = *(char **)(m + 0x78);
+    enum {
+        COMMANDO_INITIALIZE = 0,
+        COMMANDO_DIALOGUE_BEFORE_REPOSITION = 1,
+        COMMANDO_DIALOGUE_AFTER_REPOSITION = 2,
+        COMMANDO_POST_DIALOGUE = 3
+    };
+    struct Moby *moby = (struct Moby *)m;
+    WD8 *commando_vars = (WD8 *)moby->pvars;
     AttachManipulatorsIfCheat(m);
-    if (*(unsigned char *)(m + 0x31) != 0) {
-        if (FastVecDist(m + 0x10, D_L08_00167640) < (float)*(int *)&D_L08_00162268) {
+    if (moby->visible != 0) {
+        if (FastVecDist(&moby->pos, D_L08_00167640) < (float)*(int *)&D_L08_00162268) {
             func_L00_0025B178(m);
-            m[0x7F] = (*(int *)&D_L08_00162268 * 13) >> 4;
+            moby->shadow_range = (*(int *)&D_L08_00162268 * 13) >> 4;
         }
     }
-    switch (*(unsigned char *)(m + 0x20)) {
-    case 0:
-        *(unsigned char *)(m + 0x30) = 0xFF;
-        if (*(unsigned char *)(m + 0x53) != 1) MobyBlendAnimation(m, 1, 0, scale_ticks(10));
-        if (D_0013DE4B[7] != 0 && (D_0014171B_q + 0xAA35)[*(unsigned char *)(m + 0xB0) + (D_0015EE84 << 4)] == 0xFF) {
+    switch (moby->state) {
+    case COMMANDO_INITIALIZE:
+        moby->update_dist = 0xFF;
+        if (moby->prev_seq != 1)
+            MobyBlendAnimation(m, 1, 0, scale_ticks(10));
+        if (D_0013DE4B[7] != 0 && (D_0014171B_q + 0xAA35)[moby->mission + (D_0015EE84 << 4)] == 0xFF) {
             DeleteMoby(m);
             return;
         }
-        *(float *)(d + 0x2C) = 3.0f;
-        *(char **)(d + 0x40) = D_L08_00162270;
+        commando_vars->f2C = 3.0f;
+        commando_vars->p40 = D_L08_00162270;
         if (menu_item_enabled_25[7] == 0) {
-            m[0x20] = 1;
+            moby->state = 1;
         } else {
-            int i = *(int *)(d + 0x180);
+            int j = commando_vars->joint;
             int base = (int)D_L08_0016016C;
-            qcopy(m + 0x10, (void *)((i << 7) + base + 0x30));
-            qcopy(m + 0x40, (void *)((i << 7) + base + 0x70));
-            m[0x20] = 2;
+            qcopy(&moby->pos, (void *)((j << 7) + base + 0x30));
+            qcopy(&moby->rot, (void *)((j << 7) + base + 0x70));
+            moby->state = 2;
         }
-        DialogRequest_Init(m, d + 0x20);
+        DialogRequest_Init(m, (char *)commando_vars + 0x20);
         break;
-    case 1:
-        if (Npc_TryStartDialog(m, d + 0x20) != 0) {
-            int i = *(int *)(d + 0x180);
+    case COMMANDO_DIALOGUE_BEFORE_REPOSITION:
+        if (Npc_TryStartDialog(m, (char *)commando_vars + 0x20) != 0) {
+            int j = commando_vars->joint;
             int base = (int)D_L08_0016016C;
-            qcopy(m + 0x10, (void *)((i << 7) + base + 0x30));
-            qcopy(m + 0x40, (void *)((i << 7) + base + 0x70));
-            m[0x20] = 2;
+            qcopy(&moby->pos, (void *)((j << 7) + base + 0x30));
+            qcopy(&moby->rot, (void *)((j << 7) + base + 0x70));
+            moby->state = 2;
             menu_item_enabled_25[7] = 1;
         }
         break;
-    case 2:
-        if (*(unsigned char *)(m + 0x70) & 2) {
-            if (*(unsigned char *)(m + 0x53) != random_integer_below(2) + 1) {
+    case COMMANDO_DIALOGUE_AFTER_REPOSITION:
+        if (moby->anim_flags & 2) {
+            if (moby->prev_seq != random_integer_below(2) + 1) {
                 int a = random_integer_below(2) + 1;
                 MobyBlendAnimation(m, a, 0, scale_ticks(20));
             }
         }
-        if (Npc_TryStartDialog(m, d + 0x20) != 0) {
-            m[0x20] = 3;
+        if (Npc_TryStartDialog(m, (char *)commando_vars + 0x20) != 0) {
+            moby->state = 3;
             PlaceMarkerAheadOfMoby(2.2f, m);
         }
         break;
-    case 3:
+    case COMMANDO_POST_DIALOGUE:
         if (D_L08_0015F6A8 == 2) break;
-        d[0x28] = 1;
-        if (*(short *)(d + 0x24) == 3) {
+        commando_vars->b28 = 1;
+        if (commando_vars->h24 == 3) {
             char *g;
             unlock_planet(10);
             ShowPlanetBanner(10);
@@ -896,70 +939,70 @@ void commando_update(char *m) {
             DeleteMoby(m);
             return;
         }
-        m[0x20] = 2;
+        moby->state = 2;
         break;
     }
     {
-        float b[4];
-        float sx = 0.02f;
-        float sy = 0.3f;
-        int doit = 0;
-        if (*(unsigned char *)(m + 0x53) == 1) {
-            char *g = D_0013E633 + 0xE9D;
+        float target[4];
+        float rate = 0.02f;
+        float head_rate = 0.3f;
+        int tracking = 0;
+        if (moby->prev_seq == 1) {
+            char *player = D_0013E633 + 0xE9D;
             char *a_;
-            doit = 1;
-            if (func_001F9D48(m + 0x10, g) < 8.0f
-                && FastDiffRots(*(float *)(m + 0x48),
-                       func_L00_001FF860(*(float *)((a_ = g - 0x80) + 0xD0) - *(float *)(m + 0x10),
-                                         *(float *)(a_ + 0xD4) - *(float *)(m + 0x14))) < 1.5707964f) {
-                if (0.01f < FastVecLength(g + 0x80)) {
-                    *(int *)(d + 0x188) = scale_ticks(0x78);
+            tracking = 1;
+            if (func_001F9D48(&moby->pos, player) < 8.0f
+                && FastDiffRots(moby->rot.z,
+                       func_L00_001FF860(((L16WatchPlayer *)(a_ = player - 0x80))->aim[0] - moby->pos.x,
+                                         ((L16WatchPlayer *)a_)->aim[1] - moby->pos.y)) < 1.5707964f) {
+                if (0.01f < FastVecLength(player + 0x80)) {
+                    commando_vars->moving_timer = scale_ticks(0x78);
                 } else {
-                    func_001F9908((int *)(d + 0x188));
+                    func_001F9908(&commando_vars->moving_timer);
                 }
-            } else if (*(int *)(d + 0x188) != 0) {
-                *(int *)(d + 0x188) = 0;
-                qcopy(d + 0x160, D_0013E633 + 0xEED);
+            } else if (commando_vars->moving_timer != 0) {
+                commando_vars->moving_timer = 0;
+                qcopy(commando_vars->target, D_0013E633 + 0xEED);
             }
-            if (func_001F9908((int *)(d + 0x18C)) != 0) {
+            if (func_001F9908(&commando_vars->target_timer) != 0) {
                 float y;
                 float z;
                 float x = random_float_between(180.0f, 300.0f);
-                *(int *)(d + 0x18C) = func_001FA898_r(func_001F9878(x));
-                y = FastAddRots(*(float *)(m + 0x48), random_float_between(-90.0f, 90.0f) * 0.017453292f);
+                commando_vars->target_timer = func_001FA898_r(func_001F9878(x));
+                y = FastAddRots(moby->rot.z, random_float_between(-90.0f, 90.0f) * 0.017453292f);
                 z = random_float_between(0.0f, 30.0f) * 0.017453292f;
-                BuildSphericalOffset(d + 0x160, 6.0f, y, z);
-                FastVecAdd(d + 0x160, d + 0x160, m + 0x10);
+                BuildSphericalOffset(commando_vars->target, 6.0f, y, z);
+                FastVecAdd(commando_vars->target, commando_vars->target, &moby->pos);
             }
-            if (*(int *)(d + 0x188) != 0) {
-                qcopy(b, D_0013E633 + 0xEED);
-                sx = 0.04f;
-                sy = 0.3f;
+            if (commando_vars->moving_timer != 0) {
+                qcopy(target, D_0013E633 + 0xEED);
+                rate = 0.04f;
+                head_rate = 0.3f;
             } else {
-                qcopy(b, d + 0x160);
+                qcopy(target, commando_vars->target);
             }
         }
-        if (doit != 0) {
-            float w[4];
-            float u[4];
-            float f20;
-            float f2;
-            qcopy(w, m + 0x10);
-            w[2] = w[2] + 1.0f;
-            FastVecSub(u, b, w);
-            f20 = FastSubRots(func_L00_001FF860(u[0], u[1]), *(float *)(m + 0x48));
-            f2 = -func_L00_001FF860(func_001F9CE8(u), u[2]);
-            if (f20 > 1.5707964f) f20 = 1.5707964f;
-            else if (f20 < -1.5707964f) f20 = -1.5707964f;
-            if (f2 > 0.5235988f) f2 = 0.5235988f;
-            else if (f2 < -0.5235988f) f2 = -0.5235988f;
-            *(float *)(d + 0xC4) = f2;
-            *(float *)(d + 0xC8) = f20 * 0.6f;
-            *(float *)(d + 0x148) = f20 * 0.4f;
+        if (tracking != 0) {
+            float eye[4];
+            float delta[4];
+            float yaw;
+            float pitch;
+            qcopy(eye, &moby->pos);
+            eye[2] = eye[2] + 1.0f;
+            FastVecSub(delta, target, eye);
+            yaw = FastSubRots(func_L00_001FF860(delta[0], delta[1]), moby->rot.z);
+            pitch = -func_L00_001FF860(func_001F9CE8(delta), delta[2]);
+            if (yaw > 1.5707964f) yaw = 1.5707964f;
+            else if (yaw < -1.5707964f) yaw = -1.5707964f;
+            if (pitch > 0.5235988f) pitch = 0.5235988f;
+            else if (pitch < -0.5235988f) pitch = -0.5235988f;
+            commando_vars->pitch = pitch;
+            commando_vars->yaw = yaw * 0.6f;
+            commando_vars->head_yaw = yaw * 0.4f;
         }
-        if (gCheats[0] != 0) *(float *)(d + 0xD0) = 2.75f;
-        EaseManipulatorOffsets(m, d + 0x60, 0, sx * D_0015EE64, sy * D_0015EE64);
-        EaseManipulatorOffsets(m, d + 0xE0, 1, sx * D_0015EE64, sy * D_0015EE64);
+        if (gCheats[0] != 0) commando_vars->height = 2.75f;
+        EaseManipulatorOffsets(m, commando_vars->body, 0, rate * D_0015EE64, head_rate * D_0015EE64);
+        EaseManipulatorOffsets(m, commando_vars->head, 1, rate * D_0015EE64, head_rate * D_0015EE64);
     }
 }
 struct G {

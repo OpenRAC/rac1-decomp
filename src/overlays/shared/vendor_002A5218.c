@@ -422,16 +422,16 @@ extern char D_0013A5E0_2D9F08[] __asm__("D_0013A5E0");
 /* Trespasser puzzle (level 2): the hero rotates its three rings with the pad; when every ring is aligned the gate
    opens and the puzzle is marked solved. State 0 sets up, 1 waits for the hero, 2 is the puzzle view, 3 opens. */
 void tresspasser_pad_update(Moby *moby) {
-    Vec4A v0, v10;
-    Data_2D9F08 *d = (struct Data_2D9F08 *)moby->pvars;
+    Vec4A camera_pos, camera_rot;
+    Data_2D9F08 *data = (struct Data_2D9F08 *)moby->pvars;
     int i;
 
-    if (d == 0) {
+    if (data == 0) {
         return;
     }
     switch (moby->state) {
     case 0:
-        d->h12 = 0;
+        data->h12 = 0;
         moby->state = 1;
         D_L02_001D3680_2D9F08[2][1] = 17.0f;
         D_L02_001D3680_2D9F08[0][1] = 17.0f;
@@ -441,7 +441,7 @@ void tresspasser_pad_update(Moby *moby) {
         D_L02_001D3680_2D9F08[3][0] = -17.0f;
         D_L02_001D3680_2D9F08[3][1] = -17.0f;
         D_L02_001D3680_2D9F08[0][0] = 17.0f;
-        D_L02_00161BAC_2D9F08 = d->iEC;
+        D_L02_00161BAC_2D9F08 = data->iEC;
         if (moby->mission != 0xFF) {
             if (D_L02_001BBB40_2D9F08.collected[(short)moby->save_id] != 0
                 || (((int *)(D_0014C290_2D9F08 + (D_0015EE84_2D9F08 << 8)))[(short)moby->save_id >> 5] >> (moby->save_id & 0x1F)) & 1) {
@@ -451,114 +451,114 @@ void tresspasser_pad_update(Moby *moby) {
         break;
     case 1:
         if (((Hero *)(D_0013E633_2D9F08 + 0xE1D))->ground_moby == moby && ((Hero *)(D_0013E633_2D9F08 + 0xE1D))->air_frames.s == 0) {
-            int on;
+            int holding_tool;
 
-            if (d->h12 == 0) {
-                d->h12 = 1;
+            if (data->h12 == 0) {
+                data->h12 = 1;
                 func_0022ED80_2D9F08(3, 0, moby);
             }
             if (((Hero *)(D_0013E633_2D9F08 + 0xE1D))->items[0].moby != 0 && ((Hero *)(D_0013E633_2D9F08 + 0xE1D))->items[0].item_id == 0x1A) {
                 moby->glow_color = D_L02_00161B30_2D9F08;
-                on = 1;
+                holding_tool = 1;
             } else {
                 moby->glow_color = D_L02_00161B34_2D9F08;
-                on = 0;
+                holding_tool = 0;
             }
-            if (on && ((Hero *)(D_0013E633_2D9F08 + 0xE1D))->items[0].moby->command != 0) {
-                d->h10 = func_001F9850_2D9F08(0x12C);
-                d->h11C = 0;
-                d->h11E = 0;
+            if (holding_tool && ((Hero *)(D_0013E633_2D9F08 + 0xE1D))->items[0].moby->command != 0) {
+                data->h10 = func_001F9850_2D9F08(0x12C);
+                data->h11C = 0;
+                data->h11E = 0;
                 func_L02_0022BE40_2D9F08(0x72, 0);
                 func_L00_00232C10_2D9F08(0x57, 0, func_001F9850_2D9F08(6));
                 func_L00_002EBF50_2D9F08(&D_L02_00167440_2D9F08[0], &D_L02_00167440_2D9F08[1], 1, 0, 0);
                 moby->state = 2;
-                d->h10 = func_001F9850_2D9F08(0x3C);
-                d->f110 = 0.0f;
-                qcopy(&d->vF0, &D_L02_00167440_2D9F08[0]);
-                qcopy(&d->v100, &D_L02_00167440_2D9F08[1]);
+                data->h10 = func_001F9850_2D9F08(0x3C);
+                data->f110 = 0.0f;
+                qcopy(&data->vF0, &D_L02_00167440_2D9F08[0]);
+                qcopy(&data->v100, &D_L02_00167440_2D9F08[1]);
             }
         } else {
-            d->h12 = 0;
+            data->h12 = 0;
             moby->glow_color = D_L02_00161B38_2D9F08;
         }
         break;
     case 2:
         func_L02_002DA728_2D9F08(moby);
-        func_L02_002D9D48_2D9F08(&v0, &v10, moby);
-        func_00214D88_2D9F08(&d->f110, &d->f114, 1.0f, D_0015EE70_2D9F08 + D_0015EE70_2D9F08, D_0015EE70_2D9F08 + D_0015EE70_2D9F08, D_0015EE6C_2D9F08 + D_0015EE6C_2D9F08);
-        func_001F9C08_2D9F08(&v0, &d->vF0, &v0, d->f110);
-        v10.z = func_001FA748_2D9F08(func_001FA790_2D9F08(v10.z, d->v100.z) * d->f110, d->v100.z);
-        v10.y = func_001FA748_2D9F08(func_001FA790_2D9F08(v10.y, d->v100.y) * d->f110, d->v100.y);
-        func_L00_002EBE88_2D9F08(&v0);
-        func_L00_002EBEE0_2D9F08(&v10);
+        func_L02_002D9D48_2D9F08(&camera_pos, &camera_rot, moby);
+        func_00214D88_2D9F08(&data->f110, &data->f114, 1.0f, D_0015EE70_2D9F08 + D_0015EE70_2D9F08, D_0015EE70_2D9F08 + D_0015EE70_2D9F08, D_0015EE6C_2D9F08 + D_0015EE6C_2D9F08);
+        func_001F9C08_2D9F08(&camera_pos, &data->vF0, &camera_pos, data->f110);
+        camera_rot.z = func_001FA748_2D9F08(func_001FA790_2D9F08(camera_rot.z, data->v100.z) * data->f110, data->v100.z);
+        camera_rot.y = func_001FA748_2D9F08(func_001FA790_2D9F08(camera_rot.y, data->v100.y) * data->f110, data->v100.y);
+        func_L00_002EBE88_2D9F08(&camera_pos);
+        func_L00_002EBEE0_2D9F08(&camera_rot);
         D_L02_0017EB88_2D9F08 = 1;
         func_00216028_2D9F08(6, 0);
         if (D_L02_00167300_2D9F08.p180 != 0 && D_L02_00167300_2D9F08.p180->unk86 != 5) {
             func_L00_002EBF50_2D9F08(&D_L02_00167300_2D9F08.v140, &D_L02_00167300_2D9F08.v150, 1, 0, 0);
         }
         i = 0;
-        if (0.99f <= d->f110 && func_001FA850_2D9F08(D_L02_00167300_2D9F08.v150.z, v10.z) < 0.017453292f) {
+        if (0.99f <= data->f110 && func_001FA850_2D9F08(D_L02_00167300_2D9F08.v150.z, camera_rot.z) < 0.017453292f) {
             func_001F49B0_2D9F08(func_L02_002DA820_2D9F08, moby);
             for (i = 0; i < 12; i++) {
-                if (d->iB0[i] == 1) {
+                if (data->iB0[i] == 1) {
                     break;
                 }
             }
-            if (0.0f < d->fE4) {
-                d->fE4 = func_001FA748_2D9F08(d->fE4, D_0015EE6C_2D9F08 * 6.2831855f);
-                if (0.5235988f < d->fE4) {
-                    d->fE4 = 0.0f;
-                    if (d->iE0 == 1) {
-                        d->i14 += 11;
-                        d->i14 %= 12;
-                    } else if (d->iE0 == 2) {
-                        d->i18 += 11;
-                        d->i18 %= 12;
+            if (0.0f < data->fE4) {
+                data->fE4 = func_001FA748_2D9F08(data->fE4, D_0015EE6C_2D9F08 * 6.2831855f);
+                if (0.5235988f < data->fE4) {
+                    data->fE4 = 0.0f;
+                    if (data->iE0 == 1) {
+                        data->i14 += 11;
+                        data->i14 %= 12;
+                    } else if (data->iE0 == 2) {
+                        data->i18 += 11;
+                        data->i18 %= 12;
                     } else {
-                        d->i1C += 11;
-                        d->i1C %= 12;
+                        data->i1C += 11;
+                        data->i1C %= 12;
                     }
                 }
-            } else if (d->fE4 < 0.0f) {
-                d->fE4 = func_001FA748_2D9F08(d->fE4, -(D_0015EE6C_2D9F08 * 6.2831855f));
-                if (d->fE4 < -0.5235988f) {
-                    d->fE4 = 0.0f;
-                    if (d->iE0 == 1) {
-                        d->i14 += 13;
-                        d->i14 %= 12;
-                    } else if (d->iE0 == 2) {
-                        d->i18 += 13;
-                        d->i18 %= 12;
+            } else if (data->fE4 < 0.0f) {
+                data->fE4 = func_001FA748_2D9F08(data->fE4, -(D_0015EE6C_2D9F08 * 6.2831855f));
+                if (data->fE4 < -0.5235988f) {
+                    data->fE4 = 0.0f;
+                    if (data->iE0 == 1) {
+                        data->i14 += 13;
+                        data->i14 %= 12;
+                    } else if (data->iE0 == 2) {
+                        data->i18 += 13;
+                        data->i18 %= 12;
                     } else {
-                        d->i1C += 13;
-                        d->i1C %= 12;
+                        data->i1C += 13;
+                        data->i1C %= 12;
                     }
                 }
             } else if (i == 12) {
-                if (func_001F9938_2D9F08(&d->h10)) {
+                if (func_001F9938_2D9F08(&data->h10)) {
                     moby->state = 3;
                 }
             } else if (((PadDwords *)(D_0013A5E0_2D9F08 + 0x2460))->unmasked.l & 0xA00000000000) {
-                d->h11E |= 1;
+                data->h11E |= 1;
                 func_0022ED80_2D9F08(0, 0, moby);
                 if (((PadDwords *)(D_0013A5E0_2D9F08 + 0x2460))->unmasked.w.hi & 0x8000) {
-                    d->fE4 = -(D_0015EE6C_2D9F08 * 6.2831855f);
+                    data->fE4 = -(D_0015EE6C_2D9F08 * 6.2831855f);
                 } else {
-                    d->fE4 = D_0015EE6C_2D9F08 * 6.2831855f;
+                    data->fE4 = D_0015EE6C_2D9F08 * 6.2831855f;
                 }
             } else if (((PadState *)(D_0013A5E0_2D9F08 + 0x2460))->pressed & 0x1000) {
-                d->h11E |= 2;
-                d->iE0 = d->iE0 - 1;
-                if (d->iE0 == 0) {
-                    d->iE0 = 1;
+                data->h11E |= 2;
+                data->iE0 = data->iE0 - 1;
+                if (data->iE0 == 0) {
+                    data->iE0 = 1;
                 } else {
                     func_0022ED80_2D9F08(1, 0, moby);
                 }
             } else if (((PadState *)(D_0013A5E0_2D9F08 + 0x2460))->pressed & 0x4000) {
-                d->h11E |= 2;
-                d->iE0 = d->iE0 + 1;
-                if (d->iE0 == 4) {
-                    d->iE0 = 3;
+                data->h11E |= 2;
+                data->iE0 = data->iE0 + 1;
+                if (data->iE0 == 4) {
+                    data->iE0 = 3;
                 } else {
                     func_0022ED80_2D9F08(1, 0, moby);
                 }
@@ -567,12 +567,12 @@ void tresspasser_pad_update(Moby *moby) {
             func_L00_00232C10_2D9F08(0x58, 0, func_001F9850_2D9F08(6));
         }
         if (i != 12) {
-            if (((*(int *)(D_0013A5E0_2D9F08 + 0x2604) & 0x10) && D_L02_00179A90_2D9F08.i0 == 0 && D_L02_00179A90_2D9F08.i24 == -1)
+            if (((((PadState *)(D_0013A5E0_2D9F08 + 0x2460))->pressed & 0x10) && D_L02_00179A90_2D9F08.i0 == 0 && D_L02_00179A90_2D9F08.i24 == -1)
                 || ((Hero *)(D_0013E633_2D9F08 + 0xE1D))->state.current != 0x72 || ((Hero *)(D_0013E633_2D9F08 + 0xE1D))->items[0].item_id != 0x1A) {
                 moby->state = 1;
                 func_L00_002EC0C8_2D9F08(1);
                 func_L01_00240CE8_2D9F08();
-                d->h10 = func_001F9850_2D9F08(0x3C);
+                data->h10 = func_001F9850_2D9F08(0x3C);
             }
         }
         break;
@@ -589,7 +589,7 @@ void tresspasser_pad_update(Moby *moby) {
         }
         break;
     }
-    func_L00_0025E590_2D9F08(moby, d);
+    func_L00_0025E590_2D9F08(moby, data);
 }
 extern void func_L00_002607A8(void *a, float x);
 extern float func_001FA748(float, float);
@@ -1278,60 +1278,81 @@ extern int func_001FA898(float);
 extern int func_002140B0(int);
 extern void func_L00_00273F80(void *, void *, int, int, int, int, float);
 
+struct VersatargetPvars {
+    u8 pad_00[0x30];
+    s32 unk30;                 /* 0x30: row index into the flag table D_0014171B, -1 when free */
+    u8 pad_34[0x4];
+    f32 unk38;                 /* 0x38: aim vector; its address goes to func_L00_0025CE58_f */
+    s32 unk3C;                 /* 0x3C: moby index into D_L02_00160058 (<< 8), -1 when none */
+};
+
 /* Hideable flower: appears when its slot is free, faces and sparkles at the hero (class 0x323), hides again
  * when its slot is used. */
 void swingshot_versatarget_update(char *m) {
-    char *d = *(char **)(m + 0x78);
-    float v[4];
-    float w[4];
-    char *o;
-    switch (((unsigned char *)m)[0x20]) {
-    case 0:
-        if (*(int *)(d + 0x30) != -1
-            || (*(int *)(d + 0x3C) != -1 && (o = (char *)(D_L02_00160058_x + (*(int *)(d + 0x3C) << 8))) != 0
-                && ((unsigned char *)o)[0x20] != 0xFE && ((unsigned char *)o)[0x20] != 0xFD)) {
-            ((unsigned char *)m)[0x30] = 0xFF;
-            m[0x20] = 2;
-            *(unsigned short *)(m + 0x34) |= 0x41;
+    enum {
+        VERSATARGET_STATE_INITIALIZE = 0,
+        VERSATARGET_STATE_ACTIVE = 1,
+        VERSATARGET_STATE_INACTIVE = 2
+    };
+    struct VersatargetPvars *moby_data = (struct VersatargetPvars *)((struct Moby *)m)->pvars;
+    float particle_position[4];
+    float particle_velocity[4];
+    struct Moby *linked_moby;
+    switch (((struct Moby *)m)->state) {
+    case VERSATARGET_STATE_INITIALIZE:
+        if (moby_data->unk30 != -1 ||
+            (moby_data->unk3C != -1 &&
+             (linked_moby = (struct Moby *)(D_L02_00160058_x + (moby_data->unk3C << 8))) != 0 &&
+             linked_moby->state != 0xFE && linked_moby->state != 0xFD)) {
+            ((struct Moby *)m)->update_dist = 0xFF;
+            ((struct Moby *)m)->state = 2;
+            ((struct Moby *)m)->flags |= 0x41;
         } else {
             func_L00_00251328(m, 0xC0, 0xC0, 0xC0);
             func_L02_002FBB10_c(m);
-            m[0x20] = 1;
+            ((struct Moby *)m)->state = 1;
         }
         break;
-    case 1:
-        if (*(short *)(m + 0xA6) == 0x323) {
-            char *g = D_0013E633 + 0xE1D;
-            float *rz = (float *)(m + 0x48);
-            float yaw = func_L00_001FF860(*(float *)(g + 0x80) - *(float *)(m + 0x10), *(float *)(g + 0x84) - *(float *)(m + 0x14));
-            func_L00_0025CE58_f(rz, yaw, (float *)(d + 0x38), D_0015EE70 * 6.2831855f, D_0015EE70 * 6.2831855f, D_0015EE6C * 12.566371f);
+    case VERSATARGET_STATE_ACTIVE:
+        if (((struct Moby *)m)->oclass == 0x323) {
+            struct Hero *hero_ptr = (struct Hero *)(D_0013E633 + 0xE1D);
+            float *rz = &((struct Moby *)m)->rot.z;
+            float yaw = func_L00_001FF860(hero_ptr->motion.pos.f[0] - ((struct Moby *)m)->pos.x,
+                                          hero_ptr->motion.pos.f[1] - ((struct Moby *)m)->pos.y);
+            func_L00_0025CE58_f(rz, yaw, &moby_data->unk38, D_0015EE70 * 6.2831855f,
+                                D_0015EE70 * 6.2831855f, D_0015EE6C * 12.566371f);
             if (D_L02_0015F6B0_2A52D0 & 1) {
-                if (((unsigned char *)m)[0x31] != 0) {
-                    float s = 1.0f;
-                    int a;
-                    if (D_L02_0015F6B0_2A52D0 & 4) s = -1.0f;
-                    func_L00_001FF4B0(v, m + 0xD0, s * *(float *)&D_L02_00161D4C);
-                    func_L00_001FF4B0(w, v, -2.0f / func_001F9878(*(float *)&D_L02_00161D40));
-                    FastVecAdd(v, v, m + 0x10);
-                    a = truncate_float_to_s32(func_001F9878(*(float *)&D_L02_00161D40)) & 0xFF;
-                    PartType60Spawn(v, w, *(int *)&D_L02_00161D44, a, random_integer_below(0xFF) & 0xFF, 0,
-                                      *(float *)&D_L02_00161D48);
+                if (((struct Moby *)m)->visible != 0) {
+                    float direction_sign = 1.0f;
+                    int particle_lifetime;
+                    if (D_L02_0015F6B0_2A52D0 & 4)
+                        direction_sign = -1.0f;
+                    func_L00_001FF4B0(particle_position, &((struct Moby *)m)->rot_row1,
+                                      direction_sign * *(float *)&D_L02_00161D4C);
+                    func_L00_001FF4B0(particle_velocity, particle_position,
+                                      -2.0f / func_001F9878(*(float *)&D_L02_00161D40));
+                    FastVecAdd(particle_position, particle_position, &((struct Moby *)m)->pos);
+                    particle_lifetime = truncate_float_to_s32(func_001F9878(*(float *)&D_L02_00161D40)) & 0xFF;
+                    PartType60Spawn(particle_position, particle_velocity, *(int *)&D_L02_00161D44,
+                                    particle_lifetime, random_integer_below(0xFF) & 0xFF, 0,
+                                    *(float *)&D_L02_00161D48);
                 }
             }
         }
         {
-            char *g2 = D_0013E633 + 0xE1D;
-            if (*(int *)(g2 + 0x2084) != 0x2C) func_L02_002FBC00_c(m);
+            struct Hero *hero_reference = (struct Hero *)(D_0013E633 + 0xE1D);
+            if (hero_reference->state.current != HERO_STATE_GRAPPLE_SWING_ENTRY)
+                func_L02_002FBC00_c(m);
         }
         break;
-    case 2:
-        if (((D_0014171B_x + 0xAA35))[*(int *)(d + 0x30) + (D_0015EE84_2D9F08 << 4)] != 0
-            || (*(int *)(d + 0x3C) != -1
-                && ((o = (char *)(D_L02_00160058_x + (*(int *)(d + 0x3C) << 8))) == 0
-                    || ((unsigned char *)o)[0x20] == 0xFE || ((unsigned char *)o)[0x20] == 0xFD))) {
-            *(unsigned short *)(m + 0x34) &= 0xFFBE;
-            *(int *)(d + 0x30) = -1;
-            m[0x20] = 0;
+    case VERSATARGET_STATE_INACTIVE:
+        if ((D_0014171B_x + 0xAA35)[moby_data->unk30 + (D_0015EE84_2D9F08 << 4)] != 0 ||
+            (moby_data->unk3C != -1 &&
+             ((linked_moby = (struct Moby *)(D_L02_00160058_x + (moby_data->unk3C << 8))) == 0 ||
+              linked_moby->state == 0xFE || linked_moby->state == 0xFD))) {
+            ((struct Moby *)m)->flags &= 0xFFBE;
+            moby_data->unk30 = -1;
+            ((struct Moby *)m)->state = 0;
         }
         break;
     }

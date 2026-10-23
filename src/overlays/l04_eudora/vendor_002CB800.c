@@ -1435,11 +1435,17 @@ void leaf_update(struct MobyP *moby) {
 #undef random_int_between
 #undef collision_line
 float riser_rise_speed(char *moby) {
-    switch (*(short *)(moby + 0xA6)) {
-    case 0x44D:
-    case 0x5FC:
+    enum {
+        RISER_CLASS_ASCENDING_WITH_COMPLETION_VOICE = 0x44D,
+        RISER_CLASS_FAST_DESCENDING = 0x5FB,
+        RISER_CLASS_ASCENDING_WITHOUT_COMPLETION_VOICE = 0x5FC
+    };
+    struct Moby *m = (struct Moby *)moby;
+    switch (m->oclass) {
+    case RISER_CLASS_ASCENDING_WITH_COMPLETION_VOICE:
+    case RISER_CLASS_ASCENDING_WITHOUT_COMPLETION_VOICE:
         return 1.3f;
-    case 0x5FB:
+    case RISER_CLASS_FAST_DESCENDING:
         return -2.55f;
     }
     return -2.05f;

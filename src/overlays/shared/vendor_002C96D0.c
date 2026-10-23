@@ -2891,37 +2891,46 @@ extern float func_001F9D48(void *, void *);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002c8440.c, FUN_L00_002cf218. */
 void crate_update(struct Moby *moby) {
+    enum {
+        CRATE_STATE_INITIALIZE = 0,
+        CRATE_STATE_PROCESS_HITS = 1,
+        CRATE_STATE_CLASS_CHANGE_COOLDOWN = 2,
+        CRATE_STATE_BROKEN = 3,
+        CRATE_STATE_REACTIVATION_DELAY = 4,
+        CRATE_STATE_DETONATION_COUNTDOWN = 5,
+        CRATE_STATE_WAIT_RESPAWN = 6
+    };
     Burst burst;
     Vec4f at;
     s32 hitKind;
     s32 hitB;
     s32 hitAngle;
     struct Moby *it;
-    CrateVars *pv;
+    CrateVars *crate_vars;
     Contact *other;
     Coll *coll;
     s32 touched;
     s32 doHit;
 
-    pv = (CrateVars *)moby->pvars;
-    if (pv->rider != 0) {
-        if (IsMobyClass500To540(pv->rider) == 0) {
-            pv->rider = 0;
+    crate_vars = (CrateVars *)moby->pvars;
+    if (crate_vars->rider != 0) {
+        if (IsMobyClass500To540(crate_vars->rider) == 0) {
+            crate_vars->rider = 0;
         }
     }
-    if (pv->below != 0) {
-        if (IsMobyClass500To540(pv->below) == 0) {
-            pv->below = 0;
+    if (crate_vars->below != 0) {
+        if (IsMobyClass500To540(crate_vars->below) == 0) {
+            crate_vars->below = 0;
         }
     }
-    pv->frameFC = D_L00_0015F6B0;
-    coll = &pv->coll;
-    if (pv->rider == 0) {
+    crate_vars->frameFC = D_L00_0015F6B0;
+    coll = &crate_vars->coll;
+    if (crate_vars->rider == 0) {
         coll->flags |= 1;
     } else {
         coll->flags &= ~1;
     }
-    if (pv->frameB4 != D_L00_0015F6B0 && moby->state != 0 && (pv->flags & 0xC)) {
+    if (crate_vars->frameB4 != D_L00_0015F6B0 && moby->state != 0 && (crate_vars->flags & 0xC)) {
         ThrownChainUpdate(moby);
     }
     touched = 0;
@@ -2935,9 +2944,9 @@ void crate_update(struct Moby *moby) {
     }
 
     switch (moby->state) {
-    case 0:
-        clear_u64_value(&pv->unk40);
-        if (D_0015EE84 == 0x12 && moby->oclass == 0x1FF && pv->unkC8 != 0) {
+    case CRATE_STATE_INITIALIZE:
+        clear_u64_value(&crate_vars->unk40);
+        if (D_0015EE84 == 0x12 && moby->oclass == 0x1FF && crate_vars->unkC8 != 0) {
             moby->state = 6;
             moby->flags |= 0x41;
             moby->collision = 0;
@@ -2945,19 +2954,19 @@ void crate_update(struct Moby *moby) {
         } else {
             moby->state = 1;
         }
-        pv->unkA8 = 0;
-        if ((pv->flags ^ 1) & 1) {
+        crate_vars->unkA8 = 0;
+        if ((crate_vars->flags ^ 1) & 1) {
             GroundAttachedUpdate(moby);
         }
-        pv->flags |= 0x14;
+        crate_vars->flags |= 0x14;
         if (moby->oclass == 0x1FF) {
-            pv->unkC6 = 100;
+            crate_vars->unkC6 = 100;
         } else if (moby->oclass == 0x1F5) {
             CreateMoby806ForMoby(moby);
         }
         break;
 
-    case 1:
+    case CRATE_STATE_PROCESS_HITS:
         if (moby->oclass == 0x1F9 &&
             (D_0013F450_C9820.unk240 == (s32)moby || D_0013F450_C9820.coll_hit_moby == (u8 *)moby ||
              (D_0013F450_C9820.ground_moby == moby && D_0013F450_C9820.air_frames.s == 0) ||
@@ -2980,7 +2989,7 @@ void crate_update(struct Moby *moby) {
             } else {
                 moby->command = truncate_float_to_s32(func_001F9878(random_float_between(5.0f, 15.0f)));
             }
-            pv->unkB8 = moby->spawn_frame;
+            crate_vars->unkB8 = moby->spawn_frame;
             doHit = 0;
         }
         if (moby->oclass >= 0x1FB && moby->oclass <= 0x1FD) {
@@ -3013,10 +3022,10 @@ void crate_update(struct Moby *moby) {
             break;
         }
         break_crate(moby, moby->oclass == 0x1F9, other);
-        if (pv->unkC8 != 0 && other != 0 && other->hit.s.moby != 0) {
-            s16 cls = other->hit.s.moby->oclass;
+        if (crate_vars->unkC8 != 0 && other != 0 && other->hit.s.moby != 0) {
+            s16 hit_moby_class_id = other->hit.s.moby->oclass;
 
-            if (cls == 0x2CD || cls == 0x22C) {
+            if (hit_moby_class_id == 0x2CD || hit_moby_class_id == 0x22C) {
                 s16 saved = moby->unkB4;
 
                 moby->unkB4 = 0;
@@ -3028,16 +3037,16 @@ void crate_update(struct Moby *moby) {
         crate_drop_bolts(moby);
         break;
 
-    case 2:
+    case CRATE_STATE_CLASS_CHANGE_COOLDOWN:
         if (--moby->command == 0xFF) {
             moby->hit_slot = 0xFF;
             moby->state = 1;
         }
         break;
 
-    case 3:
-        if (moby->oclass == 0x1F9 && pv->unkCA <= scale_ticks(20)) {
-            f32 r;
+    case CRATE_STATE_BROKEN:
+        if (moby->oclass == 0x1F9 && crate_vars->unkCA <= scale_ticks(20)) {
+            f32 burst_radius_scale;
 
             burst.moby = moby;
             burst.unk1C = 2.0f;
@@ -3045,15 +3054,15 @@ void crate_update(struct Moby *moby) {
             burst.unk20 = 0;
             func_L00_001FF4B0(&at, &moby->rot_row2, 0.5f);
             FastVecAdd(&at, &at, &moby->pos);
-            r = IntToFloat(pv->unkCA) / func_001F9878(20.0f);
+            burst_radius_scale = IntToFloat(crate_vars->unkCA) / func_001F9878(20.0f);
             burst.unk14 = 1;
-            coll_sphere_mobys(r + r, &at, 0x10, moby, &burst);
+            coll_sphere_mobys(burst_radius_scale + burst_radius_scale, &at, 0x10, moby, &burst);
             burst.unk14 = 0x30000;
-            coll_sphere_mobys(r * 3.0f, &at, 0x10, D_001414D0, &burst);
-            pv->unkCA++;
+            coll_sphere_mobys(burst_radius_scale * 3.0f, &at, 0x10, D_001414D0, &burst);
+            crate_vars->unkCA++;
             break;
         }
-        if (pv->unkC8 != 0) {
+        if (crate_vars->unkC8 != 0) {
             moby->flags |= 1;
             moby->collision = 0;
             moby->flags &= ~0x1000;
@@ -3063,30 +3072,30 @@ void crate_update(struct Moby *moby) {
             }
             moby->state = 6;
             if (D_0015EE84 == 0x12) {
-                pv->unkC9 = rand_range(300, 720);
+                crate_vars->unkC9 = rand_range(300, 720);
             } else {
-                pv->unkC9 = rand_range(30, 60);
+                crate_vars->unkC9 = rand_range(30, 60);
             }
             break;
         }
         DeleteMoby(moby);
         return;
 
-    case 6: {
+    case CRATE_STATE_WAIT_RESPAWN: {
         qcopy(&burst.pos, &moby->pos);
         burst.pos.z += 0.5f;
         burst.pos.w = 1.0f;
         if (FastBSphereCheck(&burst.pos, moby->draw_dist) != -1) {
             break;
         }
-        if (!fast_subtract_rotations_cf(&pv->unkC9)) {
+        if (!fast_subtract_rotations_cf(&crate_vars->unkC9)) {
             break;
         }
         if (moby->group == 0xFF) {
             moby->state = 1;
             moby->visible = 1;
             moby->flags &= ~1;
-            moby->collision = ((Part *)moby->pclass)->unk10;
+            moby->collision = moby->pclass->collision;
             moby->flags |= 0x1000;
             break;
         }
@@ -3100,10 +3109,11 @@ void crate_update(struct Moby *moby) {
 
                 for (i = 0; i < 0x25; i++) {
                     if (D_0013D5C8[i] != 0) {
-                        Goal *g = &D_L00_001C43B0[i];
+                        Goal *weapon_item_info = &D_L00_001C43B0[i];
 
                         total++;
-                        if (g->unkE != 0 && (f32)weapon_ammo_counts[i] < (f32)g->unkE * 0.8f) {
+                        if (weapon_item_info->unkE != 0 &&
+                            (f32)weapon_ammo_counts[i] < (f32)weapon_item_info->unkE * 0.8f) {
                             low++;
                         }
                     }
@@ -3125,14 +3135,14 @@ void crate_update(struct Moby *moby) {
                     qcopy(&moby->pos, &it->pos);
                     moby->pos.z += 1.0f;
                     ipv->rider = moby;
-                    pv->below = it;
-                    pv->rider = 0;
+                    crate_vars->below = it;
+                    crate_vars->rider = 0;
                     moby->state = 1;
                     moby->visible = 1;
                     moby->flags &= ~1;
-                    moby->collision = ((Part *)moby->pclass)->unk10;
+                    moby->collision = moby->pclass->collision;
                     moby->flags |= 0x1000;
-                    pv->flags |= 4;
+                    crate_vars->flags |= 4;
                     break;
                 }
             }
@@ -3141,20 +3151,20 @@ void crate_update(struct Moby *moby) {
         if (moby->state != 1) {
             moby->pos.z = ProbeGroundHeight(&moby->pos, 0, 0.5f);
             moby->state = 1;
-            pv->rider = 0;
-            pv->below = 0;
+            crate_vars->rider = 0;
+            crate_vars->below = 0;
             moby->visible = 1;
             moby->flags &= ~1;
-            moby->collision = ((Part *)moby->pclass)->unk10;
+            moby->collision = moby->pclass->collision;
             moby->flags |= 0x1000;
         }
         break;
     }
 
-    case 5:
+    case CRATE_STATE_DETONATION_COUNTDOWN:
         if (moby->command == 0) {
             moby->command = scale_ticks(60) * 3 - 1;
-            pv->unkB8 = moby->spawn_frame;
+            crate_vars->unkB8 = moby->spawn_frame;
         } else if (moby->command > scale_ticks(15) && other != 0) {
             moby->command = truncate_float_to_s32(func_001F9878(random_float_between(5.0f, 15.0f)));
         }
@@ -3166,17 +3176,17 @@ void crate_update(struct Moby *moby) {
             moby->command < scale_ticks(15)) {
             func_L00_00251328_D06C8(moby, 0xC8, 0x40, 0x40);
         } else {
-            moby->spawn_frame = pv->unkB8;
+            moby->spawn_frame = crate_vars->unkB8;
         }
         if (moby->command == 1 || D_001414DC == 0x16) {
-            moby->spawn_frame = pv->unkB8;
+            moby->spawn_frame = crate_vars->unkB8;
             break_crate(moby, 1, 0);
             crate_drop_bolts(moby);
         }
         moby->command--;
         break;
 
-    case 4:
+    case CRATE_STATE_REACTIVATION_DELAY:
         if (fast_subtract_rotations_cf(&moby->command)) {
             moby->state = 1;
             moby->flags &= ~1;

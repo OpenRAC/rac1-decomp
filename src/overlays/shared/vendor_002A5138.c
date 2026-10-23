@@ -5,6 +5,7 @@
 #include "vector.h"
 #include "hero.h"
 #include "moby.h"
+#include "camera.h"
 
 LINKER_REMNANT("asm/overlays", func_L00_002A5138);
 /* Pokes a round ripple into the level water height grids: each 0x1190-byte patch holds
@@ -324,43 +325,47 @@ extern float func_001FA850(float, float);
 extern void func_001F9BD8(void *, void *, void *);
 
 // Moves the moby toward a point on the camera's line of sight, or parks it at a fixed distance.
-void camera_object_update(char *moby) {
+void camera_object_update(char *camera_object) {
+    char *pos;
+    char *object_position;
     float a[4];
     float b[4];
     float d;
-    char *x;
-    char *g = (char *)&player_camera;
-    char *cam = *(char **)(g + 0x180);
+    Hero *P;
+    CameraSystem *C = (CameraSystem *)&player_camera;
+    Camera *cam = C->current;
 
     if (cam != 0) {
-        qcopy(moby + 0x10, cam + 0x30);
-        FastVecSub(a, moby + 0x10, D_0013F450 + 0x80);
-        x = D_0013F450;
-        d = FastVecDot(a, *(char **)(x + 0x2080) + 0xE0);
-        FastVecScale(b, *(char **)(x + 0x2080) + 0xE0, d);
+        object_position = camera_object + 0x10;
+        qcopy(object_position, &cam->pos);
+        pos = (char *)&((Hero *)D_0013F450)->motion.pos;
+        FastVecSub(a, object_position, pos);
+        P = (Hero *)(pos - 0x80);
+        d = FastVecDot(a, &P->moby->rot_row2);
+        FastVecScale(b, &P->moby->rot_row2, d);
         FastVecSub(a, a, b);
         if (FastAbsF(d) < 2.5f) {
             if (FastVecLength(a) < 0.1f
-                || FastDiffRots(*(float *)(x + 0x98), *(float *)(g + 0x158)) < 2.3561945f
-                || *(float *)(x + 0x164) < D_0015EE6C * 0.1f) {
-                *(float *)(moby + 0x18) = 15.0f;
-                *(float *)(moby + 0x14) = 15.0f;
-                *(float *)(moby + 0x10) = 15.0f;
+                || FastDiffRots(P->motion.rot.f[2], C->rot.f[2]) < 2.3561945f
+                || P->motion.unk164 < D_0015EE6C * 0.1f) {
+                *(float *)(camera_object + 0x18) = 15.0f;
+                *(float *)(camera_object + 0x14) = 15.0f;
+                *(float *)(camera_object + 0x10) = 15.0f;
             } else {
-                d = FastVecDot(moby + 0x10, *(char **)(x + 0x2080) + 0xE0);
-                FastVecScale(b, *(char **)(x + 0x2080) + 0xE0, d);
-                FastVecSub(a, moby + 0x10, b);
-                d = FastVecDot(D_0013F450 + 0x80, *(char **)(x + 0x2080) + 0xE0);
-                if (*(int *)(x + 0x208C) != 0x11) {
-                    FastVecScale(b, *(char **)(x + 0x2080) + 0xE0, d);
-                    FastVecAdd(moby + 0x10, a, b);
+                d = FastVecDot(object_position, &P->moby->rot_row2);
+                FastVecScale(b, &P->moby->rot_row2, d);
+                FastVecSub(a, object_position, b);
+                d = FastVecDot(pos, &P->moby->rot_row2);
+                if (P->state.control_mode != 0x11) {
+                    FastVecScale(b, &P->moby->rot_row2, d);
+                    FastVecAdd(object_position, a, b);
                 }
             }
         }
     } else {
-        *(float *)(moby + 0x18) = 5.0f;
-        *(float *)(moby + 0x14) = 5.0f;
-        *(float *)(moby + 0x10) = 5.0f;
+        *(float *)(camera_object + 0x18) = 5.0f;
+        *(float *)(camera_object + 0x14) = 5.0f;
+        *(float *)(camera_object + 0x10) = 5.0f;
     }
 }
 INCLUDE_ASM("asm/overlays", func_L00_002A62D0);

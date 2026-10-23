@@ -5,6 +5,7 @@
 #include "vector.h"
 #include "hero.h"
 #include "moby.h"
+#include "pad.h"
 
 extern void func_00234C98(int, long);
 extern void func_L14_002E0910(void *, void *, int, int, int);
@@ -2048,97 +2049,104 @@ extern float D_0015EE70 MACRO_ADDR;
 extern char D_0013A5E0_2F19C0[] __asm__("D_0013A5E0");
 
 /* Taxi update: waits at a station, flies the hero between stations along a path, and manages its sound. */
+extern PadState D_0013CA40_2F19C0 __asm__("D_0013CA40");
+
 void TaxiUpdate(Moby *moby) {
-    Data_2F19C0 *d = (*(Data_2F19C0 **)&moby->pvars);
-    float v00[4], v10[4], v20[4], v30[4], v40[4], v50[4], v60[4], v70[4];
-    float m80[16];
-    /* Named constants: the chance threshold passed to func_001F9850, the pad bit that boards or leaves, and
-     * func_00215CA8's wrap and flags arguments. Held in locals that are used in later blocks, each is one
-     * more instruction when GCSE sizes its expression table (724 instructions, 363 buckets), and that size
-     * orders moby->pos and moby->rot in the table: with the literals written at the uses (720, 361) the two
-     * addresses the compiler hoists in case 1 swap $s1 and $s2. The emitted code has the literals either way. */
+    enum {
+        TAXI_STATE_INITIALIZE = 0,
+        TAXI_STATE_WAIT_AT_STOP = 1,
+        TAXI_STATE_BLEND_STOP_TO_PATH_START = 3,
+        TAXI_STATE_FOLLOW_PATH = 4,
+        TAXI_STATE_BLEND_PATH_END_TO_STOP = 5,
+        TAXI_STATE_WAIT_FOR_ITEM_GATE = 6,
+        TAXI_STATE_BLEND_SAVED_POSE_TO_PATH_START = 7
+    };
+    Data_2F19C0 *taxi_vars = (Data_2F19C0 *)moby->pvars;
+    float previous_position[4], previous_rotation[4], position_delta[4], blend_from_position_or_rotation_matrix[4], blend_to_position[4], blend_from_rotation[4], blend_to_rotation[4], hero_relative_position[4];
+    float taxi_inverse_rotation_matrix[16];
+    /* The literals stay in locals: this keeps the GCSE table size, and so the register order of moby->pos and moby->rot, as in the matched code. */
     int ticks = 10;
     int button = 0x10;
     int wrap = 0;
     int flags = 0;
-    qcopy(v00, (*(float (*)[4])&moby->pos));
-    qcopy(v10, (*(float (*)[4])&moby->rot));
+    qcopy(previous_position, &moby->pos);
+    qcopy(previous_rotation, &moby->rot);
     LevelTable_SetSlotValue(moby, (moby->flags ^ 1) & 1);
     switch (moby->state) {
-    case 0:
-        d->hB0 = -1;
-        d->sound = -1;
+    case TAXI_STATE_INITIALIZE:
+        taxi_vars->hB0 = -1;
+        taxi_vars->sound = -1;
         SnapToPathPoint((char *)moby);
         break;
-    case 1: {
+    case TAXI_STATE_WAIT_AT_STOP: {
         Hero *g = (Hero *)(D_0013E633 + 0xE1D);
         if (g->ground_moby == moby && g->air_frames.s == 0) {
-            func_001FA4A0(v30, (*(float (*)[16])&moby->rot_row0));
-            FastVecSub(v70, g->motion.pos.f, (*(float (*)[4])&moby->pos));
-            v70[3] = 0;
-            func_001F9EE8(v70, v70, v30);
-            if (FastAbsF(v70[1]) < 1.2f) {
+            func_001FA4A0(blend_from_position_or_rotation_matrix, &moby->rot_row0);
+            FastVecSub(hero_relative_position, g->motion.pos.f, (*(float (*)[4])&moby->pos));
+            hero_relative_position[3] = 0;
+            func_001F9EE8(hero_relative_position, hero_relative_position, blend_from_position_or_rotation_matrix);
+            if (FastAbsF(hero_relative_position[1]) < 1.2f) {
                 Taxi_SelectPath((char *)moby);
                 Vendor_ShowHelpMessage((char *)moby);
-                if ((*(int *)(D_0013A5E0_2F19C0 + 0x2604) & button) && D_L14_0015F674 == 4) {
+                if ((D_0013CA40_2F19C0.pressed & button) && D_L14_0015F674 == 4) {
                     Moby *m;
                     moby->state = 3;
-                    m = FindGroupMobyByTag((char *)moby, d->dst);
+                    m = FindGroupMobyByTag((char *)moby, taxi_vars->dst);
                     if (m != 0) {
                         m->state = 2;
                         m->flags |= 1;
-                        (*(char *)&m->visible) = 0;
-                        (*(int *)&m->collision) = 0;
+                        m->visible = 0;
+                        m->collision = 0;
                     }
-                    d->hB0 = -1;
+                    taxi_vars->hB0 = -1;
                 }
             }
         } else {
-            if (d->vol[0] >= 0 && d->cur != 0 && is_point_inside_clip_volume(D_0013E633 + 0xE9D, d->vol[0])) {
+            if (taxi_vars->vol[0] >= 0 && taxi_vars->cur != 0 && is_point_inside_clip_volume(D_0013E633 + 0xE9D, taxi_vars->vol[0])) {
                 if (D_L14_0015F6B0 < scale_ticks(ticks)) {
-                    d->dst = 0;
-                    d->cur = 0;
-                    qcopy_nc((*(float (*)[4])&moby->pos), D_L14_001601AC_2F19C0[d->station[d->cur]].pos);
-                    qcopy_nc((*(float (*)[4])&moby->rot), D_L14_001601AC_2F19C0[d->station[d->cur]].dir);
+                    taxi_vars->dst = 0;
+                    taxi_vars->cur = 0;
+                    qcopy_nc(&moby->pos, D_L14_001601AC_2F19C0[taxi_vars->station[taxi_vars->cur]].pos);
+                    qcopy_nc(&moby->rot, D_L14_001601AC_2F19C0[taxi_vars->station[taxi_vars->cur]].dir);
                     moby->state = 1;
-                    qcopy_nc(d->pos, D_L14_001601AC_2F19C0[d->station[d->cur]].pos);
-                    qcopy_nc(d->rot, D_L14_001601AC_2F19C0[d->station[d->cur]].dir);
+                    qcopy_nc(taxi_vars->pos, D_L14_001601AC_2F19C0[taxi_vars->station[taxi_vars->cur]].pos);
+                    qcopy_nc(taxi_vars->rot, D_L14_001601AC_2F19C0[taxi_vars->station[taxi_vars->cur]].dir);
                 } else {
-                    if (d->cur == 2) {
-                        d->cur = 3;
+                    if (taxi_vars->cur == 2) {
+                        taxi_vars->cur = 3;
                     } else {
-                        d->cur = 1;
+                        taxi_vars->cur = 1;
                     }
                     Taxi_SelectPath((char *)moby);
                     moby->state = 3;
                 }
             }
-            if (d->vol[1] >= 0 && d->cur != 1 && is_point_inside_clip_volume(D_0013E633 + 0xE9D, d->vol[1])) {
+            if (taxi_vars->vol[1] >= 0 && taxi_vars->cur != 1 && is_point_inside_clip_volume(D_0013E633 + 0xE9D, taxi_vars->vol[1])) {
                 if (D_L14_0015F6B0 < scale_ticks(ticks)) {
-                    d->dst = 1;
-                    d->cur = 1;
-                    qcopy_nc((*(float (*)[4])&moby->pos), D_L14_001601AC_2F19C0[d->station[d->cur]].pos);
-                    qcopy_nc((*(float (*)[4])&moby->rot), D_L14_001601AC_2F19C0[d->station[d->cur]].dir);
+                    taxi_vars->dst = 1;
+                    taxi_vars->cur = 1;
+                    qcopy_nc(&moby->pos, D_L14_001601AC_2F19C0[taxi_vars->station[taxi_vars->cur]].pos);
+                    qcopy_nc(&moby->rot, D_L14_001601AC_2F19C0[taxi_vars->station[taxi_vars->cur]].dir);
                     moby->state = 1;
-                    qcopy_nc(d->pos, D_L14_001601AC_2F19C0[d->station[d->cur]].pos);
-                    qcopy_nc(d->rot, D_L14_001601AC_2F19C0[d->station[d->cur]].dir);
+                    qcopy_nc(taxi_vars->pos, D_L14_001601AC_2F19C0[taxi_vars->station[taxi_vars->cur]].pos);
+                    qcopy_nc(taxi_vars->rot, D_L14_001601AC_2F19C0[taxi_vars->station[taxi_vars->cur]].dir);
                 } else {
-                    d->cur = 0;
+                    taxi_vars->cur = 0;
                     Taxi_SelectPath((char *)moby);
                     moby->state = 3;
                 }
             }
-            if (d->vol[2] >= 0 && d->cur < 2 && is_point_inside_clip_volume(D_0013E633 + 0xE9D, d->vol[2])) {
+            if (taxi_vars->vol[2] >= 0 && taxi_vars->cur < 2 && is_point_inside_clip_volume(D_0013E633 + 0xE9D, taxi_vars->vol[2])) {
                 if (D_L14_0015F6B0 < scale_ticks(ticks)) {
-                    d->dst = 2;
-                    d->cur = 2;
-                    qcopy_nc((*(float (*)[4])&moby->pos), D_L14_001601AC_2F19C0[d->station[d->cur]].pos);
-                    qcopy_nc((*(float (*)[4])&moby->rot), D_L14_001601AC_2F19C0[d->station[d->cur]].dir);
+                    taxi_vars->dst = 2;
+                    taxi_vars->cur = 2;
+                    qcopy_nc(&moby->pos, D_L14_001601AC_2F19C0[taxi_vars->station[taxi_vars->cur]].pos);
+                    qcopy_nc(&moby->rot, D_L14_001601AC_2F19C0[taxi_vars->station[taxi_vars->cur]].dir);
                     moby->state = 1;
-                    qcopy_nc(d->pos, D_L14_001601AC_2F19C0[d->station[d->cur]].pos);
-                    qcopy_nc(d->rot, D_L14_001601AC_2F19C0[d->station[d->cur]].dir);
+                    qcopy_nc(taxi_vars->pos, D_L14_001601AC_2F19C0[taxi_vars->station[taxi_vars->cur]].pos);
+                    qcopy_nc(taxi_vars->rot, D_L14_001601AC_2F19C0[taxi_vars->station[taxi_vars->cur]].dir);
                 } else {
-                    d->cur = 2;
+                    taxi_vars->cur = 2;
                     Taxi_SelectPath((char *)moby);
                     moby->state = 3;
                 }
@@ -2146,93 +2154,93 @@ void TaxiUpdate(Moby *moby) {
         }
         break;
     }
-    case 3: {
+    case TAXI_STATE_BLEND_STOP_TO_PATH_START: {
         Hero *g = (Hero *)(D_0013E633 + 0xE1D);
         if (g->ground_moby == moby && g->air_frames.s == 0) {
             Cam_SetDistanceGoal(7.0f, 0.002f, 0);
         }
-        func_00214D88_2F19C0(1.0f, D_0015EE70, D_0015EE70, D_0015EE6C * 0.5f, &d->t, &d->v);
-        qcopy_nc(v30, D_L14_001601AC_2F19C0[d->station[d->cur]].pos);
-        qcopy_nc(v50, D_L14_001601AC_2F19C0[d->station[d->cur]].dir);
-        func_00215CA8_f2F19C0(0.0f, d->path, wrap, v40, v60, flags);
-        func_001F9C08(d->pos, v30, v40, d->t);
-        d->rot[1] = FastAddRots(FastSubRots(v60[1], v50[1]) * d->t, v50[1]);
-        d->rot[2] = FastAddRots(FastSubRots(v60[2], v50[2]) * d->t, v50[2]);
-        if (1.0f <= d->t) {
-            d->t = 0.0f;
-            d->v = 0.0f;
+        func_00214D88_2F19C0(1.0f, D_0015EE70, D_0015EE70, D_0015EE6C * 0.5f, &taxi_vars->t, &taxi_vars->v);
+        qcopy_nc(blend_from_position_or_rotation_matrix, D_L14_001601AC_2F19C0[taxi_vars->station[taxi_vars->cur]].pos);
+        qcopy_nc(blend_from_rotation, D_L14_001601AC_2F19C0[taxi_vars->station[taxi_vars->cur]].dir);
+        func_00215CA8_f2F19C0(0.0f, taxi_vars->path, wrap, blend_to_position, blend_to_rotation, flags);
+        func_001F9C08(taxi_vars->pos, blend_from_position_or_rotation_matrix, blend_to_position, taxi_vars->t);
+        taxi_vars->rot[1] = FastAddRots(FastSubRots(blend_to_rotation[1], blend_from_rotation[1]) * taxi_vars->t, blend_from_rotation[1]);
+        taxi_vars->rot[2] = FastAddRots(FastSubRots(blend_to_rotation[2], blend_from_rotation[2]) * taxi_vars->t, blend_from_rotation[2]);
+        if (1.0f <= taxi_vars->t) {
+            taxi_vars->t = 0.0f;
+            taxi_vars->v = 0.0f;
             moby->state = 4;
         }
         break;
     }
-    case 7: {
-        float f;
-        func_00214D88_2F19C0(1.0f, D_0015EE70, D_0015EE70, D_0015EE6C * 0.5f, &d->t, &d->v);
-        qcopy(v30, d->pos2);
-        qcopy(v50, d->rot2);
-        func_00215CA8_2F19C0(d->path, wrap, v40, v60, flags, 0.0f);
-        f = CubicInterpolate(1.0f, 0.0f, 1.0f, 0.0f, d->t);
-        func_001F9C08(d->pos, v30, v40, f);
-        d->rot[1] = FastAddRots(FastSubRots(v60[1], v50[1]) * f, v50[1]);
-        d->rot[2] = FastAddRots(FastSubRots(v60[2], v50[2]) * f, v50[2]);
-        if (1.0f <= d->t) {
-            d->t = 0.0f;
-            d->v = 0.0f;
+    case TAXI_STATE_BLEND_SAVED_POSE_TO_PATH_START: {
+        float hermite_blend_fraction;
+        func_00214D88_2F19C0(1.0f, D_0015EE70, D_0015EE70, D_0015EE6C * 0.5f, &taxi_vars->t, &taxi_vars->v);
+        qcopy(blend_from_position_or_rotation_matrix, taxi_vars->pos2);
+        qcopy(blend_from_rotation, taxi_vars->rot2);
+        func_00215CA8_2F19C0(taxi_vars->path, wrap, blend_to_position, blend_to_rotation, flags, 0.0f);
+        hermite_blend_fraction = CubicInterpolate(1.0f, 0.0f, 1.0f, 0.0f, taxi_vars->t);
+        func_001F9C08(taxi_vars->pos, blend_from_position_or_rotation_matrix, blend_to_position, hermite_blend_fraction);
+        taxi_vars->rot[1] = FastAddRots(FastSubRots(blend_to_rotation[1], blend_from_rotation[1]) * hermite_blend_fraction, blend_from_rotation[1]);
+        taxi_vars->rot[2] = FastAddRots(FastSubRots(blend_to_rotation[2], blend_from_rotation[2]) * hermite_blend_fraction, blend_from_rotation[2]);
+        if (1.0f <= taxi_vars->t) {
+            taxi_vars->t = 0.0f;
+            taxi_vars->v = 0.0f;
             moby->state = 4;
         }
         break;
     }
-    case 4: {
+    case TAXI_STATE_FOLLOW_PATH: {
         Hero *g = (Hero *)(D_0013E633 + 0xE1D);
         if (g->ground_moby == moby && g->air_frames.s == 0) {
             Cam_SetDistanceGoal(7.0f, 0.003f, 0);
         }
         if (AdvanceMobyPath((char *)moby)) {
-            d->t = 0.0f;
-            d->v = 0.0f;
+            taxi_vars->t = 0.0f;
+            taxi_vars->v = 0.0f;
             moby->state = 5;
         }
         break;
     }
-    case 5: {
+    case TAXI_STATE_BLEND_PATH_END_TO_STOP: {
         Hero *g;
-        func_00214D88_2F19C0(1.0f, D_0015EE70, D_0015EE70, D_0015EE6C * 0.25f, &d->t, &d->v);
-        qcopy_nc(v40, D_L14_001601AC_2F19C0[d->station[d->dst]].pos);
-        qcopy_nc(v60, D_L14_001601AC_2F19C0[d->station[d->dst]].dir);
-        func_00215CA8_2F19C0(d->path, wrap, v30, v50, flags, (float)*d->path);
-        func_001F9C08(d->pos, v30, v40, d->t);
-        d->rot[1] = FastAddRots(FastSubRots(v60[1], v50[1]) * d->t, v50[1]);
-        d->rot[2] = FastAddRots(FastSubRots(v60[2], v50[2]) * d->t, v50[2]);
-        if (1.0f <= d->t) {
-            d->t = 0.0f;
-            d->v = 0.0f;
+        func_00214D88_2F19C0(1.0f, D_0015EE70, D_0015EE70, D_0015EE6C * 0.25f, &taxi_vars->t, &taxi_vars->v);
+        qcopy_nc(blend_to_position, D_L14_001601AC_2F19C0[taxi_vars->station[taxi_vars->dst]].pos);
+        qcopy_nc(blend_to_rotation, D_L14_001601AC_2F19C0[taxi_vars->station[taxi_vars->dst]].dir);
+        func_00215CA8_2F19C0(taxi_vars->path, wrap, blend_from_position_or_rotation_matrix, blend_from_rotation, flags, (float)*taxi_vars->path);
+        func_001F9C08(taxi_vars->pos, blend_from_position_or_rotation_matrix, blend_to_position, taxi_vars->t);
+        taxi_vars->rot[1] = FastAddRots(FastSubRots(blend_to_rotation[1], blend_from_rotation[1]) * taxi_vars->t, blend_from_rotation[1]);
+        taxi_vars->rot[2] = FastAddRots(FastSubRots(blend_to_rotation[2], blend_from_rotation[2]) * taxi_vars->t, blend_from_rotation[2]);
+        if (1.0f <= taxi_vars->t) {
+            taxi_vars->t = 0.0f;
+            taxi_vars->v = 0.0f;
             moby->state = 1;
             Taxi_SetTargetFromSpawn((char *)moby);
         }
         g = (Hero *)(D_0013E633 + 0xE1D);
         if (g->ground_moby == moby && g->air_frames.s == 0) {
-            func_001FA4A0(m80, (*(float (*)[16])&moby->rot_row0));
-            FastVecSub(v70, g->motion.pos.f, (*(float (*)[4])&moby->pos));
-            v70[3] = 0;
-            func_001F9EE8(v70, v70, m80);
-            if (FastAbsF(v70[1]) < 1.2f) {
+            func_001FA4A0(taxi_inverse_rotation_matrix, &moby->rot_row0);
+            FastVecSub(hero_relative_position, g->motion.pos.f, (*(float (*)[4])&moby->pos));
+            hero_relative_position[3] = 0;
+            func_001F9EE8(hero_relative_position, hero_relative_position, taxi_inverse_rotation_matrix);
+            if (FastAbsF(hero_relative_position[1]) < 1.2f) {
                 Vendor_ShowHelpMessage((char *)moby);
-                if (*(int *)(D_0013A5E0_2F19C0 + 0x2604) & button) {
-                    qcopy(d->pos2, d->pos);
-                    qcopy(d->rot2, d->rot);
+                if (D_0013CA40_2F19C0.pressed & button) {
+                    qcopy(taxi_vars->pos2, taxi_vars->pos);
+                    qcopy(taxi_vars->rot2, taxi_vars->rot);
                     SnapToPathPoint((char *)moby);
-                    d->cur = d->dst;
+                    taxi_vars->cur = taxi_vars->dst;
                     Taxi_SelectPath((char *)moby);
                     moby->state = 7;
-                    qcopy(d->pos, d->pos2);
-                    qcopy(d->rot, d->rot2);
+                    qcopy(taxi_vars->pos, taxi_vars->pos2);
+                    qcopy(taxi_vars->rot, taxi_vars->rot2);
                     {
-                        Moby *m = FindGroupMobyByTag((char *)moby, d->dst);
+                        Moby *m = FindGroupMobyByTag((char *)moby, taxi_vars->dst);
                         if (m != 0) {
                             m->state = 2;
                             m->flags |= 1;
-                            (*(char *)&m->visible) = 0;
-                            (*(int *)&m->collision) = 0;
+                            m->visible = 0;
+                            m->collision = 0;
                         }
                     }
                 }
@@ -2240,15 +2248,15 @@ void TaxiUpdate(Moby *moby) {
         }
         break;
     }
-    case 6: {
+    case TAXI_STATE_WAIT_FOR_ITEM_GATE: {
         unsigned char *t = (unsigned char *)D_0014171B_c + 0xAA35;
         int k = D_0015EE84_m * 16;
-        if (t[d->fB8 + k] == 0xFF || t[d->fBC + k] == 0xFF) {
-            Model_2F19C0 *model = (*(Model_2F19C0 **)&moby->pclass);
+        if (t[taxi_vars->fB8 + k] == 0xFF || t[taxi_vars->fBC + k] == 0xFF) {
+            struct MobyClass *model = moby->pclass;
             unsigned short bits = moby->flags;
-            int value = model->f10;
-            (*(char *)&moby->visible) = 1;
-            (*(int *)&moby->collision) = value;
+            int value = model->collision;
+            moby->visible = 1;
+            moby->collision = value;
             moby->flags = bits & 0xFFFE;
             moby->state = 1;
         }
@@ -2263,21 +2271,21 @@ void TaxiUpdate(Moby *moby) {
             g->unk1F4 = 2;
             TransformLevelTablePoints((char *)moby);
         }
-        if (Sound_IsPlaying(moby, d->sound) == 0) {
-            d->sound = func_0022ED80_2F19C0(0, 4, moby);
+        if (Sound_IsPlaying(moby, taxi_vars->sound) == 0) {
+            taxi_vars->sound = func_0022ED80_2F19C0(0, 4, moby);
         }
-    } else if (Sound_IsPlaying(moby, d->sound) != 0) {
-        int h = d->sound;
-        if (h != -1) {
-            char *e = D_0013E633 + 0x1D + h * 0x70;
-            if (*(Moby **)(e + 0x88) == moby && *(unsigned char *)(e + 0x74) != 0) {
-                Sound_StopSlot(h);
+    } else if (Sound_IsPlaying(moby, taxi_vars->sound) != 0) {
+        int voice_slot = taxi_vars->sound;
+        if (voice_slot != -1) {
+            char *voice_entry = D_0013E633 + 0x1D + voice_slot * 0x70;
+            if (*(Moby **)(voice_entry + 0x88) == moby && *(unsigned char *)(voice_entry + 0x74) != 0) {
+                Sound_StopSlot(voice_slot);
             }
         }
-        d->sound = -1;
+        taxi_vars->sound = -1;
     }
-    FastVecSub(v20, (*(float (*)[4])&moby->pos), v00);
-    update_entity_matrix(d->f20, v20, v10, (*(float (*)[4])&moby->rot));
+    FastVecSub(position_delta, (*(float (*)[4])&moby->pos), previous_position);
+    update_entity_matrix(taxi_vars->f20, position_delta, previous_rotation, (*(float (*)[4])&moby->rot));
 }
 struct L14PathPoint_2F24C8 {
     char pad0[0x30];

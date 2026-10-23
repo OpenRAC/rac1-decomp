@@ -2,6 +2,7 @@
 #include "common.h"
 #include "include_asm.h"
 #include "vector.h"
+#include "hero.h"
 
 extern int D_L00_0015F6A8 MACRO_ADDR;
 extern char D_0014171B[];
@@ -267,7 +268,20 @@ extern void func_L00_002E2F58(char *);
 
 /* Vendor (level 0) update: walks a path, turns toward the player, attacks and self-destructs.
    Adapted from Lombyte (MIT) for PAL: overlays/l00/gameplay_vendor_002e0988.c, FUN_L00_002e0b88. */
+extern Hero hero __asm__("D_0013F450");
+
 void veldin_robot_enemy_update(VendMoby *moby) {
+    enum {
+        VELDIN_ROBOT_STATE_INITIALIZE = 0,
+        VELDIN_ROBOT_STATE_WAIT_TO_FOLLOW_PATH = 1,
+        VELDIN_ROBOT_STATE_FOLLOW_PATH = 2,
+        VELDIN_ROBOT_STATE_FACE_TARGET = 3,
+        VELDIN_ROBOT_STATE_WAIT_TO_START_COLLISION_PROBES = 4,
+        VELDIN_ROBOT_STATE_PROCESS_COLLISION_PROBES = 5,
+        VELDIN_ROBOT_STATE_WAIT_TO_RETURN_TO_FACE_TARGET = 6,
+        VELDIN_ROBOT_STATE_DAMAGE_KNOCKBACK = 7,
+        VELDIN_ROBOT_STATE_DEATH_KNOCKBACK = 8
+    };
     VendVars *vars;
     VendTarget *target;
     VendPath *path;
@@ -276,8 +290,8 @@ void veldin_robot_enemy_update(VendMoby *moby) {
     Vec4 mtx[4];
     VendQuery query;
     Vec4 probe;
-    float vel;
-    int hit;
+    f32 vel;
+    s32 hit;
 
     vars = moby->vars;
     Troll_UpdateHitsAndTarget(moby);
@@ -291,7 +305,7 @@ void veldin_robot_enemy_update(VendMoby *moby) {
         moby->unk7F = 0x15;
     }
     switch (moby->state) {
-    case 0:
+    case VELDIN_ROBOT_STATE_INITIALIZE:
         qcopy(&vars->spawnPos, &moby->pos);
         vars->unk29 = 0;
         vars->unk20 = 2.0f;
@@ -309,74 +323,74 @@ void veldin_robot_enemy_update(VendMoby *moby) {
                 return;
             }
             qcopy(&moby->pos, &D_L00_001B0830[vars->pathIdx]->pts[0]);
-            moby->state = 1;
-            if ((moby)->anim != (1)) MobyBlendAnimation((moby), (1), 0, (5));
+            moby->state = VELDIN_ROBOT_STATE_WAIT_TO_FOLLOW_PATH;
+            if (moby->anim != 1) MobyBlendAnimation(moby, 1, 0, 5);
         } else {
-            moby->state = 3;
-            if ((moby)->anim != (1)) MobyBlendAnimation((moby), (1), 0, (5));
+            moby->state = VELDIN_ROBOT_STATE_FACE_TARGET;
+            if (moby->anim != 1) MobyBlendAnimation(moby, 1, 0, 5);
         }
         break;
-    case 1:
+    case VELDIN_ROBOT_STATE_WAIT_TO_FOLLOW_PATH:
         if (moby->unk70 & 2) {
             if (moby->anim == 1 && random_integer_below(4) == 0) {
-                if ((moby)->anim != (2)) MobyBlendAnimation((moby), (2), 0, (scale_ticks(20)));
+                if (moby->anim != 2) MobyBlendAnimation(moby, 2, 0, scale_ticks(20));
             } else {
-                if ((moby)->anim != (1)) MobyBlendAnimation((moby), (1), 0, (scale_ticks(20)));
+                if (moby->anim != 1) MobyBlendAnimation(moby, 1, 0, scale_ticks(20));
             }
         }
         if (vars->unk114 != 2) {
-            moby->state = 2;
-            if ((moby)->anim != (9)) MobyBlendAnimation((moby), (9), 0, (scale_ticks(10)));
+            moby->state = VELDIN_ROBOT_STATE_FOLLOW_PATH;
+            if (moby->anim != 9) MobyBlendAnimation(moby, 9, 0, scale_ticks(10));
         }
         break;
-    case 2:
+    case VELDIN_ROBOT_STATE_FOLLOW_PATH:
         vel = 0.0f;
         path = D_L00_001B0830[vars->pathIdx];
         qcopy(&delta, &path->pts[vars->pathPt]);
-        SteerAngleWithVelocity(&(moby)->unk40.f[2], func_L00_001FF860(delta.f[0] - moby->pos.f[0], delta.f[1] - moby->pos.f[1]), &(vars)->turnVel, D_0015EE70 * (12.566371f), D_0015EE70 * (12.566371f), D_0015EE6C * 12.566371f);
+        SteerAngleWithVelocity(&moby->unk40.f[2], func_L00_001FF860(delta.f[0] - moby->pos.f[0], delta.f[1] - moby->pos.f[1]), &vars->turnVel, D_0015EE70 * (12.566371f), D_0015EE70 * (12.566371f), D_0015EE6C * 12.566371f);
         FastVecSub(&dir, &delta, &moby->pos);
         ApproachWithVelocity(FastVecDist(&moby->pos, &path->pts[path->count - 1]), D_0015EE70 * 8.0f, D_0015EE70 * 16.0f, D_0015EE6C * 12.0f, &vel, &vars->speed);
         if (FastVecLength(&dir) < vars->speed + vars->speed) {
             vars->pathPt++;
             if (vars->pathPt == path->count) {
-                moby->state = 3;
-                if ((moby)->anim != (1)) MobyBlendAnimation((moby), (1), 0, (scale_ticks(10)));
+                moby->state = VELDIN_ROBOT_STATE_FACE_TARGET;
+                if (moby->anim != 1) MobyBlendAnimation(moby, 1, 0, scale_ticks(10));
             }
         }
         func_L00_001FF4B0(&dir, &dir, vars->speed);
         FastVecAdd(&moby->pos, &moby->pos, &dir);
         break;
-    case 3:
-        SteerAngleWithVelocity(&(moby)->unk40.f[2], func_L00_001FF860(target->pos.f[0] - moby->pos.f[0], target->pos.f[1] - moby->pos.f[1]), &(vars)->turnVel, D_0015EE70 * (12.566371f), D_0015EE70 * (12.566371f), D_0015EE6C * 12.566371f);
-        if (func_001F9D48(&moby->pos, D_0013E633 + 0xE9D) < 20.0f) {
-            if ((moby)->anim != (4)) MobyBlendAnimation((moby), (4), 0, (scale_ticks(20)));
+    case VELDIN_ROBOT_STATE_FACE_TARGET:
+        SteerAngleWithVelocity(&moby->unk40.f[2], func_L00_001FF860(target->pos.f[0] - moby->pos.f[0], target->pos.f[1] - moby->pos.f[1]), &vars->turnVel, D_0015EE70 * (12.566371f), D_0015EE70 * (12.566371f), D_0015EE6C * 12.566371f);
+        if (func_001F9D48(&moby->pos, &hero.motion.pos) < 20.0f) {
+            if (moby->anim != 4) MobyBlendAnimation(moby, 4, 0, scale_ticks(20));
         } else if (moby->unk70 & 2) {
-            if ((moby)->anim != (random_integer_below(2) + 1)) MobyBlendAnimation((moby), (random_integer_below(2) + 1), 0, (scale_ticks(20)));
+            if (moby->anim != (random_integer_below(2) + 1)) MobyBlendAnimation(moby, (random_integer_below(2) + 1), 0, scale_ticks(20));
         }
         if (vars->unk114 != 2 && EffectSlot_Alloc(moby, 0, 0) != 0) {
-            moby->state = 4;
-            if ((moby)->anim != (5)) MobyBlendAnimation((moby), (5), 0, (scale_ticks(10)));
+            moby->state = VELDIN_ROBOT_STATE_WAIT_TO_START_COLLISION_PROBES;
+            if (moby->anim != 5) MobyBlendAnimation(moby, 5, 0, scale_ticks(10));
         }
         break;
-    case 4:
-        SteerAngleWithVelocity(&(moby)->unk40.f[2], func_L00_001FF860(target->pos.f[0] - moby->pos.f[0], target->pos.f[1] - moby->pos.f[1]), &(vars)->turnVel, D_0015EE70 * (12.566371f), D_0015EE70 * (12.566371f), D_0015EE6C * 12.566371f);
+    case VELDIN_ROBOT_STATE_WAIT_TO_START_COLLISION_PROBES:
+        SteerAngleWithVelocity(&moby->unk40.f[2], func_L00_001FF860(target->pos.f[0] - moby->pos.f[0], target->pos.f[1] - moby->pos.f[1]), &vars->turnVel, D_0015EE70 * (12.566371f), D_0015EE70 * (12.566371f), D_0015EE6C * 12.566371f);
         if (moby->unk70 & 2) {
             vars->timer = 0;
-            moby->state = 5;
-            if ((moby)->anim != (6)) MobyBlendAnimation((moby), (6), 0, (scale_ticks(10)));
+            moby->state = VELDIN_ROBOT_STATE_PROCESS_COLLISION_PROBES;
+            if (moby->anim != 6) MobyBlendAnimation(moby, 6, 0, scale_ticks(10));
         }
         break;
-    case 5: {
-        float ang;
-        int lim;
+    case VELDIN_ROBOT_STATE_PROCESS_COLLISION_PROBES: {
+        f32 desired_heading;
+        s32 lim;
 
-        ang = func_L00_001FF860(vars->homeX - moby->pos.f[0], vars->homeY - moby->pos.f[1]);
+        desired_heading = func_L00_001FF860(vars->homeX - moby->pos.f[0], vars->homeY - moby->pos.f[1]);
         if (moby->flags34 & 0x8000) {
-            ang = FastAddRots(ang, *(float *)&D_L00_00161CBC);
+            desired_heading = FastAddRots(desired_heading, *(float *)&D_L00_00161CBC);
         } else {
-            ang = FastSubRots(ang, *(float *)&D_L00_00161CBC);
+            desired_heading = FastSubRots(desired_heading, *(float *)&D_L00_00161CBC);
         }
-        SteerAngleWithVelocity(&(moby)->unk40.f[2], ang, &(vars)->turnVel, D_0015EE70 * (1.5707964f), D_0015EE70 * (1.5707964f), D_0015EE6C * 12.566371f);
+        SteerAngleWithVelocity(&moby->unk40.f[2], desired_heading, &vars->turnVel, D_0015EE70 * (1.5707964f), D_0015EE70 * (1.5707964f), D_0015EE6C * 12.566371f);
         MobyTransformScaledVertex((char *)moby, 0, (char *)mtx);
         qcopy(&delta, &moby->unkC0);
         delta.f[2] = 0.0f;
@@ -401,17 +415,17 @@ void veldin_robot_enemy_update(VendMoby *moby) {
         qcopy(&probe, &moby->pos);
         probe.f[2] += 0.5f;
         if (func_L00_001EFFF0(&mtx[3], &probe, 0, (int)moby, (int)&query) != 0 && hit != 0 &&
-            D_L00_00173F58.moby == *(int *)(D_0013E633 + 0x2E9D)) {
+            D_L00_00173F58.moby == hero.moby) {
             EffectSlot_Free(moby);
-            moby->state = 6;
-            if ((moby)->anim != (7)) MobyBlendAnimation((moby), (7), 0, (scale_ticks(10)));
+            moby->state = VELDIN_ROBOT_STATE_WAIT_TO_RETURN_TO_FACE_TARGET;
+            if (moby->anim != 7) MobyBlendAnimation(moby, 7, 0, scale_ticks(10));
         }
         if (func_L00_001EFFF0(&mtx[3], &dir, 0, (int)moby, (int)&query) != 0) {
             qcopy(&dir, D_L00_00173F58.pos);
-            if (hit != 0 && D_L00_00173F58.moby == *(int *)(D_0013E633 + 0x2E9D)) {
+            if (hit != 0 && D_L00_00173F58.moby == hero.moby) {
                 EffectSlot_Free(moby);
-                moby->state = 6;
-                if ((moby)->anim != (7)) MobyBlendAnimation((moby), (7), 0, (scale_ticks(10)));
+                moby->state = VELDIN_ROBOT_STATE_WAIT_TO_RETURN_TO_FACE_TARGET;
+                if (moby->anim != 7) MobyBlendAnimation(moby, 7, 0, scale_ticks(10));
             }
         }
         EffectSlot_Update(moby, mtx, &dir);
@@ -419,26 +433,26 @@ void veldin_robot_enemy_update(VendMoby *moby) {
             lim = *(int *)&D_L00_00161CB8;
             if (vars->timer++ == lim) {
                 EffectSlot_Free(moby);
-                moby->state = 6;
-                if ((moby)->anim != (12)) MobyBlendAnimation((moby), (12), 0, (scale_ticks(10)));
+                moby->state = VELDIN_ROBOT_STATE_WAIT_TO_RETURN_TO_FACE_TARGET;
+                if (moby->anim != 12) MobyBlendAnimation(moby, 12, 0, scale_ticks(10));
             }
         }
         break;
     }
-    case 6:
-        SteerAngleWithVelocity(&(moby)->unk40.f[2], func_L00_001FF860(target->pos.f[0] - moby->pos.f[0], target->pos.f[1] - moby->pos.f[1]), &(vars)->turnVel, D_0015EE70 * (12.566371f), D_0015EE70 * (12.566371f), D_0015EE6C * 12.566371f);
+    case VELDIN_ROBOT_STATE_WAIT_TO_RETURN_TO_FACE_TARGET:
+        SteerAngleWithVelocity(&moby->unk40.f[2], func_L00_001FF860(target->pos.f[0] - moby->pos.f[0], target->pos.f[1] - moby->pos.f[1]), &vars->turnVel, D_0015EE70 * (12.566371f), D_0015EE70 * (12.566371f), D_0015EE6C * 12.566371f);
         if (moby->unk70 & 2) {
-            moby->state = 3;
-            if ((moby)->anim != (1)) MobyBlendAnimation((moby), (1), 0, (scale_ticks(10)));
+            moby->state = VELDIN_ROBOT_STATE_FACE_TARGET;
+            if (moby->anim != 1) MobyBlendAnimation(moby, 1, 0, scale_ticks(10));
         }
         break;
-    case 7:
+    case VELDIN_ROBOT_STATE_DAMAGE_KNOCKBACK:
         if (mine_fall(moby, vars->unk70) & 0x140) {
-            moby->state = 3;
-            if ((moby)->anim != (1)) MobyBlendAnimation((moby), (1), 0, (scale_ticks(10)));
+            moby->state = VELDIN_ROBOT_STATE_FACE_TARGET;
+            if (moby->anim != 1) MobyBlendAnimation(moby, 1, 0, scale_ticks(10));
         }
         break;
-    case 8:
+    case VELDIN_ROBOT_STATE_DEATH_KNOCKBACK:
         if (mine_fall(moby, vars->unk70) & 0x140) {
             SpawnExplosionFx(moby, &moby->pos, -1, 0.75f, 13.0f);
             SpawnMobyBurstFx(moby, 0x7AB, 1, 0x7AB, 1, 4, 0);

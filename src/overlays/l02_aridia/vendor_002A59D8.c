@@ -2319,12 +2319,12 @@ extern float func_001FA748(float, float);
 void RotatePlatformUpdate(char *moby)
 {
     char zero[16];
-    char pos[16];
-    char *data = *(char **)(moby + 0x78);
+    char previous_rotation[16];
+    char *data = (char *)((struct Moby *)moby)->pvars;
     qzero(zero);
-    qcopy(pos, moby + 0x40);
-    *(float *)(moby + 0x48) = FastAddRots(*(float *)(moby + 0x48), D_0015EE6C * 0.08726646f);
-    update_entity_matrix(data + 0x20, zero, pos, moby + 0x40);
+    qcopy(previous_rotation, &((struct Moby *)moby)->rot);
+    ((struct Moby *)moby)->rot.z = FastAddRots(((struct Moby *)moby)->rot.z, D_0015EE6C * 0.08726646f);
+    update_entity_matrix(data + 0x20, zero, previous_rotation, &((struct Moby *)moby)->rot);
 }
 extern short D_L02_00161CC0;
 extern short D_L02_00161CC4;
@@ -2397,237 +2397,257 @@ typedef struct PPlayer { char pad0[0x2FC]; unsigned char *pod; char pad300[0xE];
 #define G(i) ((char *)D_L02_00160058 + ((i) << 8))
 #define HP ((float *)(D_0013E633 + 0xE9D))
 void transport_pod_update(unsigned char *moby) {
-    Varsdc88 *d = *(Varsdc88 **)(moby + 0x78);
+    enum {
+        TRANSPORT_POD_INITIALIZE = 0,
+        TRANSPORT_POD_WAIT_FOR_GEAR_MOVEMENT_TRIGGER = 1,
+        TRANSPORT_POD_TIMED_GEAR_MOVEMENT = 2,
+        TRANSPORT_POD_RAISE_FOR_BOARDING = 3,
+        TRANSPORT_POD_POSITION_RAILS_FOR_BOARDING = 4,
+        TRANSPORT_POD_WAIT_FOR_RIDER_OR_RECALL = 5,
+        TRANSPORT_POD_WAIT_FOR_RIDER_READY_FOR_DEPARTURE = 6,
+        TRANSPORT_POD_POSITION_RAILS_FOR_DEPARTURE = 7,
+        TRANSPORT_POD_LOWER_AND_TRANSFER_TO_OTHER_STOP = 8,
+        TRANSPORT_POD_ADVANCE_RIDE_CAMERA = 9,
+        TRANSPORT_POD_RAISE_FOR_DISEMBARKING = 10,
+        TRANSPORT_POD_POSITION_RAILS_FOR_DISEMBARKING = 11,
+        TRANSPORT_POD_RAISE_TO_STOP_HEIGHT = 12,
+        TRANSPORT_POD_WAIT_FOR_RIDER_TO_LEAVE = 13,
+        TRANSPORT_POD_CREATE_RAILS = 14,
+        TRANSPORT_POD_POSITION_RAILS_FROM_CONFIGURED_OFFSETS = 15,
+        TRANSPORT_POD_CYCLE_RAILS_TO_SPLIT_HEIGHTS = 16,
+        TRANSPORT_POD_CYCLE_RAILS_TO_SHARED_LOWER_HEIGHT = 17
+    };
+    Varsdc88 *transport_pod_vars = (Varsdc88 *)((struct Moby *)moby)->pvars;
     int i;
     int *path;
     int lim;
-    int t;
+    int adjusted_help_ticks;
     float s;
     OvlVec4 delta;
     OvlVec4 rot;
     OvlVec4 a;
     OvlVec4 b;
-    OvlVec4 c;
-    OvlVec4 e;
+    OvlVec4 camera_position_or_stop_look;
+    OvlVec4 initial_camera_rotation;
 
     FastVecScale(delta, moby + 0x10, -1.0f);
     qcopy(rot, moby + 0x40);
     if ((*(float *)&D_L02_00161CD4) != 0.0f) {
-        for (i = 0; i < *(int *)D_L02_001B0DB0[d->path]; i++) {
-            qcopy(a, D_L02_001B0DB0[d->path] + i * 0x10 + 0x10);
+        for (i = 0; i < *(int *)D_L02_001B0DB0[transport_pod_vars->path]; i++) {
+            qcopy(a, D_L02_001B0DB0[transport_pod_vars->path] + i * 0x10 + 0x10);
             PartType41Spawn(a, moby, 4, 0x800000FF, 0x7F, 2, 0xFF, 0.1f);
         }
     }
     switch (moby[0x20]) {
-    case 0:
-        moby[0x30] = 0xFF;
-        moby[0xBC] = 1;
-        qcopy(moby + 0x10, NODE(d->node_b)[0].pos);
+    case TRANSPORT_POD_INITIALIZE:
+        ((struct Moby *)moby)->update_dist = 0xFF;
+        ((struct Moby *)moby)->command = 1;
+        qcopy(moby + 0x10, NODE(transport_pod_vars->node_b)[0].pos);
         moby[0x20] = 1;
-        *(float *)(moby + 0x18) -= 6.0f;
-        d->rail_a = CreateMoby(0x421);
-        *(short *)(d->rail_a + 0x32) = 0x40;
-        d->rail_a[0x31] = 1;
-        *(u64 *)(d->rail_a + 0x38) = *(u64 *)(moby + 0x38);
-        *(unsigned short *)(d->rail_a + 0x34) = *(unsigned short *)(moby + 0x34);
-        qcopy_nc(d->rail_a + 0x10, moby + 0x10);
-        qcopy_nc(d->rail_a + 0x40, moby + 0x40);
-        d->rail_b = CreateMoby(0x422);
-        *(short *)(d->rail_b + 0x32) = 0x40;
-        d->rail_b[0x31] = 1;
-        *(u64 *)(d->rail_b + 0x38) = *(u64 *)(moby + 0x38);
-        *(unsigned short *)(d->rail_b + 0x34) = *(unsigned short *)(moby + 0x34);
-        qcopy_nc(d->rail_b + 0x10, moby + 0x10);
-        qcopy_nc(d->rail_b + 0x40, moby + 0x40);
-        d->rail_a_off = -1.0f;
-        d->rail_b_off = -1.0f;
-        d->cam_max = D_0015EE70 * 0.1f * (float)*(int *)D_L02_001B0DB0[d->path];
-        d->cam_accel = D_0015EE6C * 0.3f * (float)*(int *)D_L02_001B0DB0[d->path];
+        ((struct Moby *)moby)->pos.z -= 6.0f;
+        transport_pod_vars->rail_a = CreateMoby(0x421);
+        ((struct Moby *)transport_pod_vars->rail_a)->draw_dist = 0x40;
+        ((struct Moby *)transport_pod_vars->rail_a)->visible = 1;
+        ((struct Moby *)transport_pod_vars->rail_a)->spawn_frame = ((struct Moby *)moby)->spawn_frame;
+        ((struct Moby *)transport_pod_vars->rail_a)->flags = ((struct Moby *)moby)->flags;
+        qcopy_nc(transport_pod_vars->rail_a + 0x10, moby + 0x10);
+        qcopy_nc(transport_pod_vars->rail_a + 0x40, moby + 0x40);
+        transport_pod_vars->rail_b = CreateMoby(0x422);
+        ((struct Moby *)transport_pod_vars->rail_b)->draw_dist = 0x40;
+        ((struct Moby *)transport_pod_vars->rail_b)->visible = 1;
+        ((struct Moby *)transport_pod_vars->rail_b)->spawn_frame = ((struct Moby *)moby)->spawn_frame;
+        ((struct Moby *)transport_pod_vars->rail_b)->flags = ((struct Moby *)moby)->flags;
+        qcopy_nc(transport_pod_vars->rail_b + 0x10, moby + 0x10);
+        qcopy_nc(transport_pod_vars->rail_b + 0x40, moby + 0x40);
+        transport_pod_vars->rail_a_off = -1.0f;
+        transport_pod_vars->rail_b_off = -1.0f;
+        transport_pod_vars->cam_max = D_0015EE70 * 0.1f * (float)*(int *)D_L02_001B0DB0[transport_pod_vars->path];
+        transport_pod_vars->cam_accel = D_0015EE6C * 0.3f * (float)*(int *)D_L02_001B0DB0[transport_pod_vars->path];
         LinkedPair_SnapToMoby((char *)moby);
         break;
-    case 1:
-        if (((unsigned char *)D_0014171B + 0xAA35)[moby[0xB0] + (D_0015EE84 << 4)] == 0xFF) {
-            d->timer = scale_ticks(30);
+    case TRANSPORT_POD_WAIT_FOR_GEAR_MOVEMENT_TRIGGER:
+        if (((unsigned char *)D_0014171B + 0xAA35)[((struct Moby *)moby)->mission + (D_0015EE84 << 4)] == 0xFF) {
+            transport_pod_vars->timer = scale_ticks(30);
             moby[0x20] = 2;
         }
         break;
-    case 2:
+    case TRANSPORT_POD_TIMED_GEAR_MOVEMENT:
         s = D_0015EE6C * 5.0f;
-        func_L00_001FF4B0(a, G(d->gear[0]) + 0xC0, -s);
-        FastVecAdd(G(d->gear[0]) + 0x10, G(d->gear[0]) + 0x10, a);
-        func_L00_001FF4B0(a, G(d->gear[1]) + 0xC0, s);
-        FastVecAdd(G(d->gear[1]) + 0x10, G(d->gear[1]) + 0x10, a);
-        func_L00_001FF4B0(a, G(d->gear[2]) + 0xC0, -s);
-        FastVecAdd(G(d->gear[2]) + 0x10, G(d->gear[2]) + 0x10, a);
-        func_L00_001FF4B0(a, G(d->gear[3]) + 0xC0, s);
-        FastVecAdd(G(d->gear[3]) + 0x10, G(d->gear[3]) + 0x10, a);
-        func_L00_00251E30(G(d->gear[0]));
-        func_L00_00251E30(G(d->gear[1]));
-        func_L00_00251E30(G(d->gear[2]));
-        func_L00_00251E30(G(d->gear[3]));
-        if (func_001F9908(&d->timer)) {
+        func_L00_001FF4B0(a, G(transport_pod_vars->gear[0]) + 0xC0, -s);
+        FastVecAdd(G(transport_pod_vars->gear[0]) + 0x10, G(transport_pod_vars->gear[0]) + 0x10, a);
+        func_L00_001FF4B0(a, G(transport_pod_vars->gear[1]) + 0xC0, s);
+        FastVecAdd(G(transport_pod_vars->gear[1]) + 0x10, G(transport_pod_vars->gear[1]) + 0x10, a);
+        func_L00_001FF4B0(a, G(transport_pod_vars->gear[2]) + 0xC0, -s);
+        FastVecAdd(G(transport_pod_vars->gear[2]) + 0x10, G(transport_pod_vars->gear[2]) + 0x10, a);
+        func_L00_001FF4B0(a, G(transport_pod_vars->gear[3]) + 0xC0, s);
+        FastVecAdd(G(transport_pod_vars->gear[3]) + 0x10, G(transport_pod_vars->gear[3]) + 0x10, a);
+        func_L00_00251E30(G(transport_pod_vars->gear[0]));
+        func_L00_00251E30(G(transport_pod_vars->gear[1]));
+        func_L00_00251E30(G(transport_pod_vars->gear[2]));
+        func_L00_00251E30(G(transport_pod_vars->gear[3]));
+        if (func_001F9908(&transport_pod_vars->timer)) {
             moby[0x20] = 3;
             Moby_PlaySound(1, 0, (int)moby);
         }
         break;
-    case 3:
-        ApproachWithVelocity((float *)(moby + 0x18), &d->speed, NODE(d->node_a)[0].pos[2],
+    case TRANSPORT_POD_RAISE_FOR_BOARDING:
+        ApproachWithVelocity(&((struct Moby *)moby)->pos.z, &transport_pod_vars->speed, NODE(transport_pod_vars->node_a)[0].pos[2],
                      (*(float *)&D_L02_00161CC4) * D_0015EE70, (*(float *)&D_L02_00161CC4) * D_0015EE70,
                      (*(float *)&D_L02_00161CC0) * D_0015EE6C);
         LinkedPair_SnapToMoby((char *)moby);
-        if (NODE(d->node_a)[0].pos[2] - 0.0001f <= *(float *)(moby + 0x18)) {
+        if (NODE(transport_pod_vars->node_a)[0].pos[2] - 0.0001f <= ((struct Moby *)moby)->pos.z) {
             moby[0x20] = 4;
             Moby_PlaySound(0, 0, (int)moby);
         }
         break;
-    case 4:
-        d->rail_a_off = 2.0f;
-        d->rail_b_off = -4.0f;
+    case TRANSPORT_POD_POSITION_RAILS_FOR_BOARDING:
+        transport_pod_vars->rail_a_off = 2.0f;
+        transport_pod_vars->rail_b_off = -4.0f;
         LinkedPair_ApproachHeights((char *)moby);
-        if (FastAbsF(*(float *)(d->rail_a + 0x18) - *(float *)(moby + 0x18) - 2.0f) < 0.0001f &&
-            FastAbsF(*(float *)(d->rail_b + 0x18) - *(float *)(moby + 0x18) + 4.0f) < 0.0001f) {
+        if (FastAbsF(((struct Moby *)transport_pod_vars->rail_a)->pos.z - ((struct Moby *)moby)->pos.z - 2.0f) < 0.0001f &&
+            FastAbsF(((struct Moby *)transport_pod_vars->rail_b)->pos.z - ((struct Moby *)moby)->pos.z + 4.0f) < 0.0001f) {
             moby[0x20] = 5;
         }
         break;
-    case 5:
-        if (moby[0xBC] == 0 &&
-            func_001F9D48(HP, (void *)(D_L02_0016016C + ((d->node_b) << 7) + 0x30)) < 16.0f) {
-            qcopy(moby + 0x10, NODE(d->node_b)[0].pos);
-            *(float *)(moby + 0x18) -= 6.0f;
-            d->rail_a_off = -1.0f;
-            d->rail_b_off = -1.0f;
+    case TRANSPORT_POD_WAIT_FOR_RIDER_OR_RECALL:
+        if (((struct Moby *)moby)->command == 0 &&
+            func_001F9D48(HP, (void *)(D_L02_0016016C + ((transport_pod_vars->node_b) << 7) + 0x30)) < 16.0f) {
+            qcopy(moby + 0x10, NODE(transport_pod_vars->node_b)[0].pos);
+            ((struct Moby *)moby)->pos.z -= 6.0f;
+            transport_pod_vars->rail_a_off = -1.0f;
+            transport_pod_vars->rail_b_off = -1.0f;
             LinkedPair_SnapToMoby((char *)moby);
             moby[0x20] = 3;
-            moby[0xBC] = 1;
+            ((struct Moby *)moby)->command = 1;
             Moby_PlaySound(1, 0, (int)moby);
-        } else if (moby[0xBC] == 1 &&
-                   func_001F9D48(HP, (void *)(D_L02_0016016C + ((d->node_a) << 7) + 0x30)) < 16.0f) {
-            qcopy(moby + 0x10, NODE(d->node_a)[0].pos);
-            *(float *)(moby + 0x18) -= 6.0f;
-            d->rail_a_off = -1.0f;
-            d->rail_b_off = -1.0f;
+        } else if (((struct Moby *)moby)->command == 1 &&
+                   func_001F9D48(HP, (void *)(D_L02_0016016C + ((transport_pod_vars->node_a) << 7) + 0x30)) < 16.0f) {
+            qcopy(moby + 0x10, NODE(transport_pod_vars->node_a)[0].pos);
+            ((struct Moby *)moby)->pos.z -= 6.0f;
+            transport_pod_vars->rail_a_off = -1.0f;
+            transport_pod_vars->rail_b_off = -1.0f;
             LinkedPair_SnapToMoby((char *)moby);
-            moby[0xBC] = 0;
+            ((struct Moby *)moby)->command = 0;
             moby[0x20] = 3;
             Moby_PlaySound(1, 0, (int)moby);
         } else if (((PPlayer *)(D_0013E633 + 0xE1D))->pod == moby && ((PPlayer *)(D_0013E633 + 0xE1D))->mode == 0 &&
                    ((PPlayer *)(D_0013E633 + 0xE1D))->blocked == 0) {
             qcopy(b, moby + 0x10);
             b[2] += 2.0f;
-            if (moby[0xBC] == 0) {
-                d->cam_goal = 0;
-                d->cam_pos = (float)(*(int *)D_L02_001B0DB0[d->path] - 1);
-                qcopy_nc(a, NODE(d->node_a)[0].look);
-                qcopy(c, D_L02_001B0DB0[d->path] + truncate_float_to_s32(d->cam_pos) * 0x10 + 0x10);
-                clear_u64_value(e);
-                e[2] = func_L00_001FF860(b[0] - c[0], b[1] - c[1]);
-                e[1] = -func_L00_001FF860(func_001F9D48(c, b), b[2] - c[2]);
+            if (((struct Moby *)moby)->command == 0) {
+                transport_pod_vars->cam_goal = 0;
+                transport_pod_vars->cam_pos = (float)(*(int *)D_L02_001B0DB0[transport_pod_vars->path] - 1);
+                qcopy_nc(a, NODE(transport_pod_vars->node_a)[0].look);
+                qcopy(camera_position_or_stop_look, D_L02_001B0DB0[transport_pod_vars->path] + truncate_float_to_s32(transport_pod_vars->cam_pos) * 0x10 + 0x10);
+                clear_u64_value(initial_camera_rotation);
+                initial_camera_rotation[2] = func_L00_001FF860(b[0] - camera_position_or_stop_look[0], b[1] - camera_position_or_stop_look[1]);
+                initial_camera_rotation[1] = -func_L00_001FF860(func_001F9D48(camera_position_or_stop_look, b), b[2] - camera_position_or_stop_look[2]);
             } else {
-                d->cam_goal = *(int *)D_L02_001B0DB0[d->path] - 1;
-                d->cam_pos = 0.0f;
-                qcopy_nc(a, NODE(d->node_b)[0].look);
-                qcopy(c, D_L02_001B0DB0[d->path] + truncate_float_to_s32(d->cam_pos) * 0x10 + 0x10);
-                clear_u64_value(e);
-                e[2] = func_L00_001FF860(b[0] - c[0], b[1] - c[1]);
-                e[1] = -func_L00_001FF860(func_001F9D48(c, b), b[2] - c[2]);
+                transport_pod_vars->cam_goal = *(int *)D_L02_001B0DB0[transport_pod_vars->path] - 1;
+                transport_pod_vars->cam_pos = 0.0f;
+                qcopy_nc(a, NODE(transport_pod_vars->node_b)[0].look);
+                qcopy(camera_position_or_stop_look, D_L02_001B0DB0[transport_pod_vars->path] + truncate_float_to_s32(transport_pod_vars->cam_pos) * 0x10 + 0x10);
+                clear_u64_value(initial_camera_rotation);
+                initial_camera_rotation[2] = func_L00_001FF860(b[0] - camera_position_or_stop_look[0], b[1] - camera_position_or_stop_look[1]);
+                initial_camera_rotation[1] = -func_L00_001FF860(func_001F9D48(camera_position_or_stop_look, b), b[2] - camera_position_or_stop_look[2]);
             }
             moby[0x20] = 6;
-            d->ride_timer = scale_ticks(0xB4);
+            transport_pod_vars->ride_timer = scale_ticks(0xB4);
             HeroSetTargetAndEnterMove(moby + 0x10, 0, a[2]);
             CameraScript(D_L02_00167440, D_L02_00167440 + 0x10, 3, scale_ticks(0xF0), 0);
             func_L02_002F9ED8((*(float *)&D_L02_00161CD8), (*(float *)&D_L02_00161CDC), (*(float *)&D_L02_00161CE0), (*(float *)&D_L02_00161CE4), (*(float *)&D_L02_00161CE8),
                               (*(float *)&D_L02_00161CF0));
-            set_camera_position(c);
-            set_camera_rotation(e);
+            set_camera_position(camera_position_or_stop_look);
+            set_camera_rotation(initial_camera_rotation);
         }
         break;
-    case 6: {
-        int r6 = Level_GetSpecialMode();
-        if (r6 == 2) {
+    case TRANSPORT_POD_WAIT_FOR_RIDER_READY_FOR_DEPARTURE: {
+        int rider_readiness_status = Level_GetSpecialMode();
+        if (rider_readiness_status == 2) {
             moby[0x20] = 7;
             Moby_PlaySound(2, 0, (int)moby);
             HeroL02_SetMoveState(0x72, 0);
-        } else if (r6 == 0) {
+        } else if (rider_readiness_status == 0) {
             CameraScript2(2);
             moby[0x20] = 0xD;
-        } else if (func_001F9908(&d->ride_timer)) {
+        } else if (func_001F9908(&transport_pod_vars->ride_timer)) {
             CameraScript2(2);
             moby[0x20] = 0xD;
             func_L02_00237C98();
         }
         break;
     }
-    case 7:
-        d->rail_a_off = -1.0f;
-        d->rail_b_off = -1.0f;
+    case TRANSPORT_POD_POSITION_RAILS_FOR_DEPARTURE:
+        transport_pod_vars->rail_a_off = -1.0f;
+        transport_pod_vars->rail_b_off = -1.0f;
         LinkedPair_ApproachHeights((char *)moby);
-        if (FastAbsF(*(float *)(d->rail_a + 0x18) - *(float *)(moby + 0x18) + 1.0f) < 0.01f &&
-            FastAbsF(*(float *)(d->rail_b + 0x18) - *(float *)(moby + 0x18) + 1.0f) < 0.01f) {
+        if (FastAbsF(((struct Moby *)transport_pod_vars->rail_a)->pos.z - ((struct Moby *)moby)->pos.z + 1.0f) < 0.01f &&
+            FastAbsF(((struct Moby *)transport_pod_vars->rail_b)->pos.z - ((struct Moby *)moby)->pos.z + 1.0f) < 0.01f) {
             moby[0x20] = 8;
         }
         break;
-    case 8:
-        ApproachWithVelocity((float *)(moby + 0x18), &d->speed,
-                     NODE(d->node_a)[0].pos[2] - 6.0f,
+    case TRANSPORT_POD_LOWER_AND_TRANSFER_TO_OTHER_STOP:
+        ApproachWithVelocity(&((struct Moby *)moby)->pos.z, &transport_pod_vars->speed,
+                     NODE(transport_pod_vars->node_a)[0].pos[2] - 6.0f,
                      (*(float *)&D_L02_00161CC4) * D_0015EE70, (*(float *)&D_L02_00161CC4) * D_0015EE70,
                      (*(float *)&D_L02_00161CC0) * D_0015EE6C);
         LinkedPair_SnapToMoby((char *)moby);
-        if (*(float *)(moby + 0x18) < NODE(d->node_a)[0].pos[2] - 5.999f) {
-            if (moby[0xBC] == 0) {
-                moby[0xBC] = 1;
-                qcopy_nc(moby + 0x10, NODE(d->node_b)[0].pos);
-                qcopy_nc(c, NODE(d->node_b)[0].look);
-                FastVecSub(a, D_L02_0016016C + (d->node_b << 7) + 0x30, D_L02_0016016C + (d->node_a << 7) + 0x30);
+        if (((struct Moby *)moby)->pos.z < NODE(transport_pod_vars->node_a)[0].pos[2] - 5.999f) {
+            if (((struct Moby *)moby)->command == 0) {
+                ((struct Moby *)moby)->command = 1;
+                qcopy_nc(moby + 0x10, NODE(transport_pod_vars->node_b)[0].pos);
+                qcopy_nc(camera_position_or_stop_look, NODE(transport_pod_vars->node_b)[0].look);
+                FastVecSub(a, D_L02_0016016C + (transport_pod_vars->node_b << 7) + 0x30, D_L02_0016016C + (transport_pod_vars->node_a << 7) + 0x30);
             } else {
-                moby[0xBC] = 0;
-                qcopy_nc(moby + 0x10, NODE(d->node_a)[0].pos);
-                qcopy_nc(c, NODE(d->node_a)[0].look);
-                FastVecSub(a, D_L02_0016016C + (d->node_a << 7) + 0x30, D_L02_0016016C + (d->node_b << 7) + 0x30);
+                ((struct Moby *)moby)->command = 0;
+                qcopy_nc(moby + 0x10, NODE(transport_pod_vars->node_a)[0].pos);
+                qcopy_nc(camera_position_or_stop_look, NODE(transport_pod_vars->node_a)[0].look);
+                FastVecSub(a, D_L02_0016016C + (transport_pod_vars->node_a << 7) + 0x30, D_L02_0016016C + (transport_pod_vars->node_b << 7) + 0x30);
             }
-            *(float *)(moby + 0x18) -= 6.0f;
+            ((struct Moby *)moby)->pos.z -= 6.0f;
             FastVecAdd(b, HP, a);
-            Hero_ResetToPosition(b, c, 0x72, 0);
-            d->speed = -d->speed;
+            Hero_ResetToPosition(b, camera_position_or_stop_look, 0x72, 0);
+            transport_pod_vars->speed = -transport_pod_vars->speed;
             moby[0x20] = 9;
             Vendor_SetCameraMode(2, scale_ticks(0xB4));
         }
         break;
-    case 9:
-        ApproachWithVelocity(&d->cam_pos, &d->cam_speed, (float)d->cam_goal, d->cam_max, d->cam_max, d->cam_accel);
-        if (d->cam_goal != 0 ? (float)d->cam_goal <= d->cam_pos : d->cam_pos <= (float)d->cam_goal) {
+    case TRANSPORT_POD_ADVANCE_RIDE_CAMERA:
+        ApproachWithVelocity(&transport_pod_vars->cam_pos, &transport_pod_vars->cam_speed, (float)transport_pod_vars->cam_goal, transport_pod_vars->cam_max, transport_pod_vars->cam_max, transport_pod_vars->cam_accel);
+        if (transport_pod_vars->cam_goal != 0 ? (float)transport_pod_vars->cam_goal <= transport_pod_vars->cam_pos : transport_pod_vars->cam_pos <= (float)transport_pod_vars->cam_goal) {
             moby[0x20] = 10;
         }
-        SamplePathAt(D_L02_001B0DB0[d->path], 0, c, b, 0, d->cam_pos);
+        SamplePathAt(D_L02_001B0DB0[transport_pod_vars->path], 0, camera_position_or_stop_look, b, 0, transport_pod_vars->cam_pos);
         qcopy(a, moby + 0x10);
         a[2] += 8.0f;
         clear_u64_value(b);
-        b[2] = func_L00_001FF860(a[0] - c[0], a[1] - c[1]);
-        b[1] = -func_L00_001FF860(func_001F9D48(c, a), a[2] - c[2]);
-        set_camera_position(c);
+        b[2] = func_L00_001FF860(a[0] - camera_position_or_stop_look[0], a[1] - camera_position_or_stop_look[1]);
+        b[1] = -func_L00_001FF860(func_001F9D48(camera_position_or_stop_look, a), a[2] - camera_position_or_stop_look[2]);
+        set_camera_position(camera_position_or_stop_look);
         set_camera_rotation(b);
         break;
-    case 10:
-        ApproachWithVelocity((float *)(moby + 0x18), &d->speed, NODE(d->node_a)[0].pos[2],
+    case TRANSPORT_POD_RAISE_FOR_DISEMBARKING:
+        ApproachWithVelocity(&((struct Moby *)moby)->pos.z, &transport_pod_vars->speed, NODE(transport_pod_vars->node_a)[0].pos[2],
                       (*(float *)&D_L02_00161CC4) * D_0015EE70, (*(float *)&D_L02_00161CC4) * D_0015EE70,
                       (*(float *)&D_L02_00161CC0) * D_0015EE6C);
         LinkedPair_SnapToMoby((char *)moby);
-        if (NODE(d->node_a)[0].pos[2] <= *(float *)(moby + 0x18)) {
+        if (NODE(transport_pod_vars->node_a)[0].pos[2] <= ((struct Moby *)moby)->pos.z) {
             moby[0x20] = 0xB;
             Moby_PlaySound(0, 0, (int)moby);
         }
         break;
-    case 11:
-        d->rail_a_off = 2.0f;
-        d->rail_b_off = -4.0f;
+    case TRANSPORT_POD_POSITION_RAILS_FOR_DISEMBARKING:
+        transport_pod_vars->rail_a_off = 2.0f;
+        transport_pod_vars->rail_b_off = -4.0f;
         LinkedPair_ApproachHeights((char *)moby);
-        if (FastAbsF(*(float *)(d->rail_a + 0x18) - *(float *)(moby + 0x18) - 2.0f) < 0.01f &&
-            FastAbsF(*(float *)(d->rail_b + 0x18) - *(float *)(moby + 0x18) + 4.0f) < 0.01f) {
+        if (FastAbsF(((struct Moby *)transport_pod_vars->rail_a)->pos.z - ((struct Moby *)moby)->pos.z - 2.0f) < 0.01f &&
+            FastAbsF(((struct Moby *)transport_pod_vars->rail_b)->pos.z - ((struct Moby *)moby)->pos.z + 4.0f) < 0.01f) {
             {
                 extern unsigned short D_00141992[];
-                t = scale_ticks(D_0015EFA4) - D_00141992[0] * 600;
+                adjusted_help_ticks = scale_ticks(D_0015EFA4) - D_00141992[0] * 600;
             }
             lim = scale_ticks(3600) * 60.0f;
-            if (!(lim < t) || (*(unsigned int *)(D_0014171B + 0x591) & (1 << D_0015EE84))) {
+            if (!(lim < adjusted_help_ticks) || (*(unsigned int *)(D_0014171B + 0x591) & (1 << D_0015EE84))) {
             } else {
                     Help_Request(0x7DD, 0x48);
             }
@@ -2636,64 +2656,64 @@ void transport_pod_update(unsigned char *moby) {
             HeroL02_SetMoveState(0, 1);
         }
         break;
-    case 12:
-        ((struct { char p[0x18]; float z; } *)moby)->z += D_0015EE6C * 4.0f;
-        if (NODE(d->node_a)[0].pos[2] <= *(float *)(moby + 0x18)) {
+    case TRANSPORT_POD_RAISE_TO_STOP_HEIGHT:
+        ((struct Moby *)moby)->pos.z += D_0015EE6C * 4.0f;
+        if (NODE(transport_pod_vars->node_a)[0].pos[2] <= ((struct Moby *)moby)->pos.z) {
             moby[0x20] = 5;
         }
         break;
-    case 13:
+    case TRANSPORT_POD_WAIT_FOR_RIDER_TO_LEAVE:
         if (*(unsigned char **)(D_0013E633 + 0x1119) != moby) {
             moby[0x20] = 5;
         }
         break;
-    case 14:
-        d->rail_a = CreateMoby(0x421);
-        *(short *)(d->rail_a + 0x32) = 0x40;
-        d->rail_a[0x31] = 1;
-        *(u64 *)(d->rail_a + 0x38) = *(u64 *)(moby + 0x38);
-        *(unsigned short *)(d->rail_a + 0x34) = *(unsigned short *)(moby + 0x34);
-        qcopy_nc(d->rail_a + 0x10, moby + 0x10);
-        qcopy_nc(d->rail_a + 0x40, moby + 0x40);
-        d->rail_b = CreateMoby(0x422);
-        *(short *)(d->rail_b + 0x32) = 0x40;
-        d->rail_b[0x31] = 1;
-        *(u64 *)(d->rail_b + 0x38) = *(u64 *)(moby + 0x38);
-        *(unsigned short *)(d->rail_b + 0x34) = *(unsigned short *)(moby + 0x34);
-        qcopy_nc(d->rail_b + 0x10, moby + 0x10);
-        qcopy_nc(d->rail_b + 0x40, moby + 0x40);
+    case TRANSPORT_POD_CREATE_RAILS:
+        transport_pod_vars->rail_a = CreateMoby(0x421);
+        ((struct Moby *)transport_pod_vars->rail_a)->draw_dist = 0x40;
+        ((struct Moby *)transport_pod_vars->rail_a)->visible = 1;
+        ((struct Moby *)transport_pod_vars->rail_a)->spawn_frame = ((struct Moby *)moby)->spawn_frame;
+        ((struct Moby *)transport_pod_vars->rail_a)->flags = ((struct Moby *)moby)->flags;
+        qcopy_nc(transport_pod_vars->rail_a + 0x10, moby + 0x10);
+        qcopy_nc(transport_pod_vars->rail_a + 0x40, moby + 0x40);
+        transport_pod_vars->rail_b = CreateMoby(0x422);
+        ((struct Moby *)transport_pod_vars->rail_b)->draw_dist = 0x40;
+        ((struct Moby *)transport_pod_vars->rail_b)->visible = 1;
+        ((struct Moby *)transport_pod_vars->rail_b)->spawn_frame = ((struct Moby *)moby)->spawn_frame;
+        ((struct Moby *)transport_pod_vars->rail_b)->flags = ((struct Moby *)moby)->flags;
+        qcopy_nc(transport_pod_vars->rail_b + 0x10, moby + 0x10);
+        qcopy_nc(transport_pod_vars->rail_b + 0x40, moby + 0x40);
         moby[0x20] = 0xF;
         break;
-    case 15:
+    case TRANSPORT_POD_POSITION_RAILS_FROM_CONFIGURED_OFFSETS:
         {
         float ha = (*(float *)&D_L02_00161CB0), hb = (*(float *)&D_L02_00161CB4);
-        d->rail_a_off = ha;
-        d->rail_b_off = hb;
+        transport_pod_vars->rail_a_off = ha;
+        transport_pod_vars->rail_b_off = hb;
         }
         LinkedPair_ApproachHeights((char *)moby);
         if ((*(float *)&D_L02_00161CD0) != 0.0f) {
             moby[0x20] = 0x10;
         }
         break;
-    case 16:
-        d->rail_a_off = 2.0f;
-        d->rail_b_off = -4.0f;
+    case TRANSPORT_POD_CYCLE_RAILS_TO_SPLIT_HEIGHTS:
+        transport_pod_vars->rail_a_off = 2.0f;
+        transport_pod_vars->rail_b_off = -4.0f;
         LinkedPair_ApproachHeights((char *)moby);
         if ((*(float *)&D_L02_00161CD0) == 0.0f) {
             moby[0x20] = 0xF;
-        } else if (FastAbsF(*(float *)(d->rail_a + 0x18) - *(float *)(moby + 0x18) - 2.0f) < 0.01f &&
-                   FastAbsF(*(float *)(d->rail_b + 0x18) - *(float *)(moby + 0x18) + 4.0f) < 0.01f) {
+        } else if (FastAbsF(((struct Moby *)transport_pod_vars->rail_a)->pos.z - ((struct Moby *)moby)->pos.z - 2.0f) < 0.01f &&
+                   FastAbsF(((struct Moby *)transport_pod_vars->rail_b)->pos.z - ((struct Moby *)moby)->pos.z + 4.0f) < 0.01f) {
             moby[0x20] = 0x11;
         }
         break;
-    case 17:
-        d->rail_a_off = -1.0f;
-        d->rail_b_off = -1.0f;
+    case TRANSPORT_POD_CYCLE_RAILS_TO_SHARED_LOWER_HEIGHT:
+        transport_pod_vars->rail_a_off = -1.0f;
+        transport_pod_vars->rail_b_off = -1.0f;
         LinkedPair_ApproachHeights((char *)moby);
         if ((*(float *)&D_L02_00161CD0) == 0.0f) {
             moby[0x20] = 0xF;
-        } else if (FastAbsF(*(float *)(d->rail_a + 0x18) - *(float *)(moby + 0x18) + 1.0f) < 0.01f &&
-                   FastAbsF(*(float *)(d->rail_b + 0x18) - *(float *)(moby + 0x18) + 1.0f) < 0.01f) {
+        } else if (FastAbsF(((struct Moby *)transport_pod_vars->rail_a)->pos.z - ((struct Moby *)moby)->pos.z + 1.0f) < 0.01f &&
+                   FastAbsF(((struct Moby *)transport_pod_vars->rail_b)->pos.z - ((struct Moby *)moby)->pos.z + 1.0f) < 0.01f) {
             moby[0x20] = 0x10;
         }
         break;
@@ -2702,7 +2722,7 @@ void transport_pod_update(unsigned char *moby) {
     if (FastVecLength(delta) > 4.0f) {
         clear_u64_value(delta);
     }
-    update_entity_matrix(d->riders, delta, rot, moby + 0x40);
+    update_entity_matrix(transport_pod_vars->riders, delta, rot, moby + 0x40);
 }
 extern float D_0015EE6C MACRO_ADDR;
 extern short D_L02_00161CC0;
@@ -2762,65 +2782,82 @@ extern short D_L02_00161CF8;
 extern int func_0022ED80(int, int, int);
 extern int func_002140B0(int);
 
+typedef struct VoiceSlot {
+    u8 pad_00[0x74];
+    u8 active;                     /* 0x74 */
+    u8 pad_75[0x13];
+    struct Moby *owner;            /* 0x88 */
+} VoiceSlot;
+
 /* State machine for a moby that picks a new animation each time the previous one finishes. */
 void crane_update(unsigned char *moby) {
-    int *d = *(int **)(moby + 0x78);
-    *(float *)(moby + 0x58) = *(float *)&D_L02_00161CF8;
-    switch (moby[0x53]) {
-    case 1:
-    case 3:
-    case 5:
-    case 7:
-        if (moby[0x70] & 2) {
-            int idx;
-            *(int *)(moby + 0x54) = 0;
-            if (moby[0x53] != moby[0xBC]) {
-                MobyBlendAnimation(moby, moby[0xBC], 0, 0);
+    enum {
+        CRANE_ANIM_RESTART_WAIT = 0,
+        CRANE_ANIM_TRANSITION_TO_RANDOM_WAIT = 1,
+        CRANE_ANIM_WAIT_FOR_RANDOM_TRANSITION = 2,
+        CRANE_ANIM_TRANSITION_TO_WAIT_FOR_TRANSITION_TO_RANDOM_WAIT = 3,
+        CRANE_ANIM_WAIT_FOR_TRANSITION_TO_RANDOM_WAIT = 4,
+        CRANE_ANIM_TRANSITION_BACK_TO_RANDOM_WAIT = 5,
+        CRANE_ANIM_TRANSITION_TO_RESTART_WAIT = 7
+    };
+    struct Moby *m = (struct Moby *)moby;
+    int *crane_vars = (int *)m->pvars;
+    m->anim_speed = *(float *)&D_L02_00161CF8;
+    switch (m->prev_seq) {
+    case CRANE_ANIM_TRANSITION_TO_RANDOM_WAIT:
+    case CRANE_ANIM_TRANSITION_TO_WAIT_FOR_TRANSITION_TO_RANDOM_WAIT:
+    case CRANE_ANIM_TRANSITION_BACK_TO_RANDOM_WAIT:
+    case CRANE_ANIM_TRANSITION_TO_RESTART_WAIT:
+        if (m->anim_flags & 2) {
+            int voice_slot_index;
+            *(int *)&m->anim_time = 0;
+            if (m->prev_seq != m->command) {
+                MobyBlendAnimation(moby, m->command, 0, 0);
             }
-            idx = d[0];
-            if (idx != -1) {
-                char *e = D_0013E633 + 0x1D + idx * 0x70;
-                if (*(unsigned char **)(e + 0x88) == moby && ((unsigned char *)e)[0x74] != 0) {
-                    Sound_StopSlot(idx);
+            voice_slot_index = crane_vars[0];
+            if (voice_slot_index != -1) {
+                VoiceSlot *voice_slot = (VoiceSlot *)(D_0013E633 + 0x1D + voice_slot_index * 0x70);
+                if (voice_slot->owner == (struct Moby *)moby && voice_slot->active != 0) {
+                    Sound_StopSlot(voice_slot_index);
                 }
             }
-            d[0] = -1;
+            crane_vars[0] = -1;
             Moby_PlaySound(1, 0, (int)moby);
-            moby[0xBC] = func_001FA898_r(func_001F9878(random_float_between(180.0f, 240.0f)));
+            m->command = func_001FA898_r(func_001F9878(random_float_between(180.0f, 240.0f)));
         }
         break;
-    case 0:
-        if (fast_subtract_rotations_cf(moby + 0xBC)) {
-            if (moby[0x53] != 1) {
+    case CRANE_ANIM_RESTART_WAIT:
+        if (fast_subtract_rotations_cf(&m->command)) {
+            if (m->prev_seq != 1) {
                 MobyBlendAnimation(moby, 1, 0, scale_ticks(10));
             }
-            moby[0xBC] = 2;
-            d[0] = Moby_PlaySound(0, 4, (int)moby);
+            m->command = 2;
+            crane_vars[0] = Moby_PlaySound(0, 4, (int)moby);
         }
         break;
-    case 2:
-        if (fast_subtract_rotations_cf(moby + 0xBC)) {
+    case CRANE_ANIM_WAIT_FOR_RANDOM_TRANSITION:
+        if (fast_subtract_rotations_cf(&m->command)) {
             if (random_integer_below(0xFF) & 1) {
-                if (moby[0x53] != 3) {
+                if (m->prev_seq != 3) {
                     MobyBlendAnimation(moby, 3, 0, scale_ticks(10));
                 }
-                moby[0xBC] = 4;
+                m->command = 4;
             } else {
-                if (moby[0x53] != 7) {
+                if (m->prev_seq != 7) {
                     MobyBlendAnimation(moby, 7, 0, scale_ticks(10));
                 }
-                moby[0xBC] = 0;
+                m->command = 0;
             }
-            d[0] = Moby_PlaySound(0, 4, (int)moby);
+            crane_vars[0] = Moby_PlaySound(0, 4, (int)moby);
         }
         break;
-    case 4:
-        if (fast_subtract_rotations_cf(moby + 0xBC)) {
-            if (moby[0x53] != 5) {
+    case CRANE_ANIM_WAIT_FOR_TRANSITION_TO_RANDOM_WAIT:
+        if (fast_subtract_rotations_cf(&m->command)) {
+            if (m->prev_seq != 5) {
                 MobyBlendAnimation(moby, 5, 0, scale_ticks(10));
             }
-            moby[0xBC] = 2;
-            d[0] = Moby_PlaySound(0, 4, (int)moby);
+            m->command = 2;
+            crane_vars[0] = Moby_PlaySound(0, 4, (int)moby);
         }
         break;
     }
@@ -3174,11 +3211,15 @@ typedef struct { int b[3]; } Int3;
 /* Rock moby (class 762) update: runs two sampling loops over random directions, feeding the result to the level's helpers. */
 void rocks_update(unsigned char *moby)
 {
+    enum {
+        ROCKS_INITIALIZE = 0,
+        ROCKS_WAIT_FOR_HIT = 1
+    };
     float C[4];
     float A[4];
     float B[4];
     float D[4];
-    char *p;
+    char *hit_record;
     float k;
     float s;
     float t;
@@ -3189,21 +3230,21 @@ void rocks_update(unsigned char *moby)
     int n;
     unsigned int *pc;
 
-    p = func_L00_0025B478_2E1B58(moby, 0x800000, 0);
-    switch (moby[0x20]) {
-    case 0:
+    hit_record = func_L00_0025B478_2E1B58(moby, 0x800000, 0);
+    switch (((struct Moby *)moby)->state) {
+    case ROCKS_INITIALIZE:
         if (D_0013D4A5_2E1B58 != 0) {
             func_0020D678_2E1B58(moby);
         } else {
-            moby[0x20] = 1;
+            ((struct Moby *)moby)->state = ROCKS_WAIT_FOR_HIT;
         }
         return;
-    case 1:
+    case ROCKS_WAIT_FOR_HIT:
         break;
     default:
         return;
     }
-    if (p == 0) return;
+    if (hit_record == 0) return;
     D_0013D4A5_2E1B58 = 1;
     func_0022ED80_2E1B58(0, 0, (int)moby);
     for (i = 0; i < 200; i++) {
@@ -3214,14 +3255,14 @@ void rocks_update(unsigned char *moby)
         *(u128 *)B = 0;
         *(u128 *)C = *(u128 *)A;
         t = func_002140F8_2E1B58(-2.0f, 2.0f);
-        t = t * func_001F9F90_2E1B58(*(float *)(moby + 0x48));
+        t = t * func_001F9F90_2E1B58(((struct Moby *)moby)->rot.z);
         B[0] = t;
         t2 = func_002140F8_2E1B58(-1.0f, 1.0f);
-        t2 = t2 * func_001F9FA8_2E1B58(*(float *)(moby + 0x48));
+        t2 = t2 * func_001F9FA8_2E1B58(((struct Moby *)moby)->rot.z);
         B[1] = t2;
         B[2] = func_002140F8_2E1B58(0.0f, 4.0f);
         *(u128 *)A = *(u128 *)B;
-        func_001F9BD8_2E1B58(A, A, moby + 0x10);
+        func_001F9BD8_2E1B58(A, A, &((struct Moby *)moby)->pos);
         k = func_002140F8_2E1B58(1.5f, 3.5f) * D_0015EE6C_2E1B58;
         func_L00_001FF4B0_2E1B58(C, C, k);
         s = func_002140F8_2E1B58(1.5f, 3.5f) * 210000.0f;
@@ -3240,14 +3281,14 @@ void rocks_update(unsigned char *moby)
         *(u128 *)D = 0;
         *(u128 *)A = *(u128 *)B;
         t = func_002140F8_2E1B58(-2.0f, 2.0f);
-        t = t * func_001F9F90_2E1B58(*(float *)(moby + 0x48));
+        t = t * func_001F9F90_2E1B58(((struct Moby *)moby)->rot.z);
         D[0] = t;
         t2 = func_002140F8_2E1B58(-1.0f, 1.0f);
-        t2 = t2 * func_001F9FA8_2E1B58(*(float *)(moby + 0x48));
+        t2 = t2 * func_001F9FA8_2E1B58(((struct Moby *)moby)->rot.z);
         D[1] = t2;
         D[2] = func_002140F8_2E1B58(1.0f, 4.0f);
         *(u128 *)B = *(u128 *)D;
-        func_001F9BD8_2E1B58(B, B, moby + 0x10);
+        func_001F9BD8_2E1B58(B, B, &((struct Moby *)moby)->pos);
         k = func_002140F8_2E1B58(1.0f, 5.0f) * D_0015EE6C_2E1B58;
         func_L00_001FF4B0_2E1B58(A, A, k);
         pc = (unsigned int *)C + func_002140B0_2E1B58(3);

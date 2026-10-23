@@ -515,6 +515,7 @@ extern LvState_2FBBD8 D_L01_001BB9C0_2FBBD8 __asm__("D_L01_001BB9C0");
 
 /* destroyable_cave_wall_update: update for the cave wall moby (class 729) on level 01; a wall already burst is deleted, else it spawns its debris. */
 void destroyable_cave_wall_update(char *moby) {
+    struct Moby *cave_wall_moby = (struct Moby *)moby;
     QuadW_2FBBD8 tab;
     QuadW_2FBBD8 a;
     QuadW_2FBBD8 b;
@@ -528,20 +529,20 @@ void destroyable_cave_wall_update(char *moby) {
     unsigned short uid;
     short id;
 
-    uid = *(unsigned short *)(moby + 0xB2);
+    uid = cave_wall_moby->save_id;
     id = uid;
     if (D_L01_001BB9C0_2FBBD8.collected[id] != 0) {
-        func_0020D678_2FBBD8(moby);
+        func_0020D678_2FBBD8(cave_wall_moby);
         return;
     }
     if ((*(int *)(D_0014171B_2FBBD8 + 0xAB75 + ((id >> 5) * 4 + (D_0015EE84_2FBBD8 << 8))) >> (uid & 0x1F)) & 1) {
-        func_0020D678_2FBBD8(moby);
+        func_0020D678_2FBBD8(cave_wall_moby);
         return;
     }
-    if (func_L00_0025B478_2FBBD8(moby, 0x800000, 0) == 0) {
+    if (func_L00_0025B478_2FBBD8(cave_wall_moby, 0x800000, 0) == 0) {
         return;
     }
-    func_0022ED80_2FBBD8(0, 0, (int)moby);
+    func_0022ED80_2FBBD8(0, 0, (int)cave_wall_moby);
     for (n = 0; n < 500; n++) {
         a.q = 0;
         a.f[0] = func_002140F8_2FBBD8(-1.0f, 1.0f);
@@ -550,14 +551,14 @@ void destroyable_cave_wall_update(char *moby) {
         tab.q = a.q;
         b.q = 0;
         t = func_002140F8_2FBBD8(-4.0f, 4.0f);
-        t = t * func_001F9F90_2FBBD8(*(float *)(moby + 0x48));
+        t = t * func_001F9F90_2FBBD8(cave_wall_moby->rot.z);
         b.f[0] = t;
         u1 = func_002140F8_2FBBD8(-1.0f, 1.0f);
-        u1 = u1 * func_001F9FA8_2FBBD8(*(float *)(moby + 0x48));
+        u1 = u1 * func_001F9FA8_2FBBD8(cave_wall_moby->rot.z);
         b.f[1] = u1;
         b.f[2] = func_002140F8_2FBBD8(0.0f, 8.0f);
         a.q = b.q;
-        func_001F9BD8_2FBBD8(&a, &a, moby + 0x10);
+        func_001F9BD8_2FBBD8(&a, &a, &cave_wall_moby->pos);
         x = func_002140F8_2FBBD8(1.5f, 3.5f);
         func_L00_001FF4B0_2FBBD8(&tab, &tab, x * D_0015EE6C_2FBBD8);
         x = func_002140F8_2FBBD8(1.5f, 3.5f);
@@ -575,14 +576,14 @@ void destroyable_cave_wall_update(char *moby) {
         c.q = 0;
         a.q = b.q;
         t = func_002140F8_2FBBD8(-4.0f, 4.0f);
-        t = t * func_001F9F90_2FBBD8(*(float *)(moby + 0x48));
+        t = t * func_001F9F90_2FBBD8(cave_wall_moby->rot.z);
         c.f[0] = t;
         u1 = func_002140F8_2FBBD8(-1.0f, 1.0f);
-        u1 = u1 * func_001F9FA8_2FBBD8(*(float *)(moby + 0x48));
+        u1 = u1 * func_001F9FA8_2FBBD8(cave_wall_moby->rot.z);
         c.f[1] = u1;
         c.f[2] = func_002140F8_2FBBD8(1.0f, 8.0f);
         b.q = c.q;
-        func_001F9BD8_2FBBD8(&b, &b, moby + 0x10);
+        func_001F9BD8_2FBBD8(&b, &b, &cave_wall_moby->pos);
         x = func_002140F8_2FBBD8(1.0f, 5.0f);
         func_L00_001FF4B0_2FBBD8(&a, &a, x * D_0015EE6C_2FBBD8);
         r = func_002140B0_2FBBD8(3);
@@ -592,11 +593,11 @@ void destroyable_cave_wall_update(char *moby) {
         func_L01_002F9908_2FBBD8(&b, &a, *pi, x, r, 1.0f, 1.0f, 0.75f, 0);
     }
 
-    *(int *)(D_0014171B_2FBBD8 + 0xAB75 + (((short)*(unsigned short *)(moby + 0xB2) >> 5) * 4 + (D_0015EE84_2FBBD8 << 8))) |= 1 << (*(unsigned short *)(moby + 0xB2) & 0x1F);
-    D_L01_001BAC60_2FBBD8[(short)*(unsigned short *)(moby + 0xB2) >> 5] |= 1 << (*(unsigned short *)(moby + 0xB2) & 0x1F);
+    *(int *)(D_0014171B_2FBBD8 + 0xAB75 + ((((short)cave_wall_moby->save_id) >> 5) * 4 + (D_0015EE84_2FBBD8 << 8))) |= 1 << (cave_wall_moby->save_id & 0x1F);
+    D_L01_001BAC60_2FBBD8[((short)cave_wall_moby->save_id) >> 5] |= 1 << (cave_wall_moby->save_id & 0x1F);
     p = (unsigned char *)D_0013D355_2FBBD8 + 0x13B;
     p[0xE] = 1;
-    func_0020D678_2FBBD8(moby);
+    func_0020D678_2FBBD8(cave_wall_moby);
 }
 typedef struct {
     char pad0[0x44];
@@ -1184,49 +1185,61 @@ extern void *func_L00_00265050(char *src, int cls, float *pos, void *mat, int a8
 extern void func_L01_00279E10(void *, int);
 extern float D_L01_0015F660[] MACRO_ADDR;
 
+typedef struct SparkHit {
+    u8 pad_00[0x2C];
+    f32 f2c;
+} SparkHit;
+
 /* Update for a breakable pot: waits for its hit flag, then shatters into four sparks. Adapted from Lombyte (MIT) for PAL: overlays/l01/unclassified_002f9810.c, FUN_L01_002fd9a0. */
 void green_mushroom_update(char *m) {
-    char *hit;
-    int flag;
-    int i;
-    float ang;
-    float s;
-    SV4 off;
-    SV4 rot;
+    enum {
+        GREEN_MUSHROOM_INITIALIZE = 0,
+        GREEN_MUSHROOM_WAIT_FOR_POSITIVE_HIT = 1,
+        GREEN_MUSHROOM_SPAWN_PIECES_AND_REMOVE = 2
+    };
+    Moby *mushroom_moby = (Moby *)m;
+    SparkHit *hit;
+    s32 flag;
+    s32 i;
+    f32 fragment_placement_angle;
+    f32 scale_ratio;
+    SV4 fragment_spawn_position;
+    SV4 fragment_rotation;
 
     flag = 0;
-    hit = MobyGetHitMessage(m, 0x10000, 0);
-    switch (*(unsigned char *)(m + 0x20)) {
-    case 0:
-        m[0x20] = 1;
+    hit = (SparkHit *)MobyGetHitMessage(mushroom_moby, 0x10000, 0);
+    switch (mushroom_moby->state) {
+    case GREEN_MUSHROOM_INITIALIZE:
+        mushroom_moby->state = 1;
         break;
-    case 1:
-        if (hit != 0 && *(float *)(hit + 0x2C) > 0.0f) {
+    case GREEN_MUSHROOM_WAIT_FOR_POSITIVE_HIT:
+        if (hit != 0 && hit->f2c > 0.0f) {
             flag = 1;
         }
         if (flag) {
-            m[0x20] = 2;
+            mushroom_moby->state = 2;
         }
         break;
-    case 2:
-        Moby_PlaySound(0, 0, (int)m);
-        SpawnBreakFxByDistance(m);
-        s = *(float *)(m + 0x2C) / *(float *)(*(char **)(m + 0x24) + 0x24);
+    case GREEN_MUSHROOM_SPAWN_PIECES_AND_REMOVE:
+        Moby_PlaySound(0, 0, (int)mushroom_moby);
+        SpawnBreakFxByDistance(mushroom_moby);
+        scale_ratio = mushroom_moby->scale / mushroom_moby->pclass->scale;
         i = 0;
         do {
-            ang = (float)i * 1.5707964f;
-            clear_u64_value(&rot);
-            rot.z = FastAddRots(ang, 0.87266463f);
-            off.x = FastCos(ang) * -0.57f * s;
-            off.y = FastSin(ang) * -0.57f * s;
-            off.z = 0.0f;
-            FastVecAdd(&off, &off, m + 0x10);
-            off.z += s * 1.2f;
-            SpawnBreakFragment(m, 0x719, (float *)&off, &rot, 0, 0, D_L01_0015F660, D_L01_0015F660, 0.0f, D_L01_0015F660);
+            fragment_placement_angle = (f32)i * 1.5707964f;
+            clear_u64_value(&fragment_rotation);
+            fragment_rotation.z = FastAddRots(fragment_placement_angle, 0.87266463f);
+            fragment_spawn_position.x = FastCos(fragment_placement_angle) * -0.57f * scale_ratio;
+            fragment_spawn_position.y = FastSin(fragment_placement_angle) * -0.57f * scale_ratio;
+            fragment_spawn_position.z = 0.0f;
+            FastVecAdd(&fragment_spawn_position, &fragment_spawn_position, &mushroom_moby->pos);
+            fragment_spawn_position.z += scale_ratio * 1.2f;
+            SpawnBreakFragment(mushroom_moby, 0x719, (float *)&fragment_spawn_position, &fragment_rotation, 0, 0,
+                               D_L01_0015F660, D_L01_0015F660, 0.0f, D_L01_0015F660);
             i++;
         } while (i < 4);
-        SpawnMobyCopyingPlacement(m, 0x718);
-        DeleteMoby(m);
+        SpawnMobyCopyingPlacement(mushroom_moby, 0x718);
+        DeleteMoby(mushroom_moby);
         break;
     }
 }
@@ -2139,29 +2152,40 @@ void Moby1546Update(struct Moby *moby) {
         break;
     }
 }
+typedef struct TriggerHit {
+    u8 pad_00[0x2C];
+    f32 f2c;                    /* 0x2C */
+} TriggerHit;
+
 /* Breakable crate variant update: state 0 starts, 1 waits for a positive value, 2 breaks into pieces. Keeping 'flag' as its own variable (as the NTSC decomp does) gives retail's second callee-saved register. */
 void tall_shroom_update(char *moby) {
-    char *hit;
-    int flag;
+    enum {
+        TALL_SHROOM_STATE_INITIALIZE = 0,
+        TALL_SHROOM_STATE_WAIT_FOR_HIT = 1,
+        TALL_SHROOM_STATE_REMOVE_WITH_EFFECTS = 2
+    };
+    TriggerHit *hit;
+    s32 flag;
 
     flag = 0;
-    hit = MobyGetHitMessage(moby, 0x10000, 0);
-    switch (*(unsigned char *)(moby + 0x20)) {
-    case 0:
-        moby[0x20] = 1;
+    hit = (TriggerHit *)MobyGetHitMessage(moby, 0x10000, 0);
+    switch (((Moby *)moby)->state) {
+    case TALL_SHROOM_STATE_INITIALIZE:
+        ((Moby *)moby)->state = 1;
         break;
-    case 1:
-        if (hit != 0 && *(float *)(hit + 0x2C) > 0.0f) {
+    case TALL_SHROOM_STATE_WAIT_FOR_HIT:
+        if (hit != 0 && hit->f2c > 0.0f) {
             flag = 1;
         }
         if (flag) {
-            moby[0x20] = 2;
+            ((Moby *)moby)->state = 2;
         }
         break;
-    case 2:
+    case TALL_SHROOM_STATE_REMOVE_WITH_EFFECTS:
         Moby_PlaySound(0, 0, (int)moby);
         SpawnBreakFxByDistance(moby);
-        SpawnBreakFragment(moby, 0x717, (float *)(moby + 0x10), moby + 0x40, 0, 0, D_L01_0015F660, D_L01_0015F660, 0.0f, D_L01_0015F660);
+        SpawnBreakFragment(moby, 0x717, (float *)&((Moby *)moby)->pos, (char *)&((Moby *)moby)->rot, 0, 0,
+                           D_L01_0015F660, D_L01_0015F660, 0.0f, D_L01_0015F660);
         SpawnMobyCopyingPlacement(moby, 0x718);
         DeleteMoby(moby);
         break;

@@ -118,34 +118,58 @@ extern int D_L11_0015F6A8 MACRO_ADDR;
 extern unsigned char D_0015EEB0_2D18D0[] __asm__("D_0015EEB0") MACRO_ADDR;
 extern float D_0015EE64_2D18D0 __asm__("D_0015EE64") MACRO_ADDR;
 
+typedef struct WD11 {
+    u8 pad_00[0x4];
+    s16 h04;                   /* 0x04 */
+    u8 pad_06[0x6];
+    f32 f0C;                   /* 0x0C */
+    u8 pad_10[0x30];
+    s32 region;                /* 0x40 */
+    u8 pad_44[0x2C];
+    u8 body[0x64];             /* 0x70 joint animation block */
+    f32 pitch;                 /* 0xD4 */
+    f32 yaw;                   /* 0xD8 */
+    u8 pad_DC[0x4];
+    f32 height;                /* 0xE0 */
+    u8 pad_E4[0xC];
+    u8 head[0x68];             /* 0xF0 joint animation block */
+    f32 head_yaw;              /* 0x158 */
+    u8 pad_15C[0x14];
+    f32 target[4];             /* 0x170 */
+    u8 pad_180[0x4];
+    s32 moving_timer;          /* 0x184 */
+    s32 target_timer;          /* 0x188 */
+} WD11;
+
 /* Update function of moby class 90 (bob): calls func_L05_003188A8, then a switch on the state byte at +0x20
  * (states 0, 1 and 2). Then, when the byte at +0x53 is zero, updates the countdowns at data + 0x184 and 0x188
  * and the vector at data + 0x170 from the moby's distance (8.0) and heading to the block at D_0013E633 + 0xE9D. */
 void bob_update(char *m) {
-    char *d = *(char **)(m + 0x78);
+    struct Moby *moby = (struct Moby *)m;
+    WD11 *moby_vars = (WD11 *)moby->pvars;
     func_L05_003188A8_2D18D0(m);
-    switch (*(unsigned char *)(m + 0x20)) {
+    switch (moby->state) {
     case 0:
         if (gHaveHeliPack[1] != 0) {
-            m[0x20] = 3;
+            moby->state = 3;
         } else {
-            m[0x20] = 1;
+            moby->state = 1;
         }
-        DialogRequest_Init(m, d);
-        *(float *)(d + 0xC) = 3.7f;
+        DialogRequest_Init(m, moby_vars);
+        moby_vars->f0C = 3.7f;
         break;
     case 1:
-        if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, *(int *)(d + 0x40)) != 0) {
-            if (Npc_TryStartDialog(m, d) != 0) {
+        if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, moby_vars->region) != 0) {
+            if (Npc_TryStartDialog(m, moby_vars) != 0) {
                 PlaceMarkerAheadOfMoby(2.7f, m);
-                m[0x20] = 2;
+                moby->state = 2;
             }
         }
         break;
     case 2:
         if (D_L11_0015F6A8 != 2) {
-            m[0x20] = 1;
-            if (*(short *)(d + 4) == 2) {
+            moby->state = 1;
+            if (moby_vars->h04 == 2) {
                 GiveItem(3, 1);
                 func_L00_00286128_2D18D0(D_0013E633 + 0xE9D, D_0013E633 + 0xEAD);
                 memcard_Save(0, -1);
@@ -156,66 +180,66 @@ void bob_update(char *m) {
         break;
     }
     {
-        float b[4];
-        float sx = 0.02f;
-        float sy = 0.3f;
-        int doit = 0;
-        if (*(unsigned char *)(m + 0x53) == 0) {
-            char *g = D_0013E633 + 0xE9D;
+        float target[4];
+        float rate = 0.02f;
+        float head_rate = 0.3f;
+        int tracking = 0;
+        if (moby->prev_seq == 0) {
+            char *player = D_0013E633 + 0xE9D;
             char *a_;
-            doit = 1;
-            if (func_001F9D48(m + 0x10, g) < 8.0f
-                && func_001FA850_2D18D0(*(float *)(m + 0x48),
-                       func_L00_001FF860(*(float *)((a_ = g - 0x80) + 0xD0) - *(float *)(m + 0x10),
-                                         *(float *)(a_ + 0xD4) - *(float *)(m + 0x14))) < 1.5707964f) {
-                if (0.01f < FastVecLength(g + 0x80)) {
-                    *(int *)(d + 0x184) = scale_ticks(0x78);
+            tracking = 1;
+            if (func_001F9D48(&moby->pos, player) < 8.0f
+                && func_001FA850_2D18D0(moby->rot.z,
+                       func_L00_001FF860(*(float *)((a_ = player - 0x80) + 0xD0) - moby->pos.x,
+                                         *(float *)(a_ + 0xD4) - moby->pos.y)) < 1.5707964f) {
+                if (0.01f < FastVecLength(player + 0x80)) {
+                    moby_vars->moving_timer = scale_ticks(0x78);
                 } else {
-                    func_001F9908_2D18D0((int *)(d + 0x184));
+                    func_001F9908_2D18D0(&moby_vars->moving_timer);
                 }
-            } else if (*(int *)(d + 0x184) != 0) {
-                *(int *)(d + 0x184) = 0;
-                qcopy(d + 0x170, D_0013E633 + 0xEED);
+            } else if (moby_vars->moving_timer != 0) {
+                moby_vars->moving_timer = 0;
+                qcopy(moby_vars->target, D_0013E633 + 0xEED);
             }
-            if (func_001F9908_2D18D0((int *)(d + 0x188)) != 0) {
+            if (func_001F9908_2D18D0(&moby_vars->target_timer) != 0) {
                 float y;
                 float z;
                 float x = func_002140F8_2D18D0(180.0f, 300.0f);
-                *(int *)(d + 0x188) = func_001FA898_2D18D0(func_001F9878_2D18D0(x));
-                y = FastAddRots(*(float *)(m + 0x48), func_002140F8_2D18D0(-90.0f, 90.0f) * 0.017453292f);
+                moby_vars->target_timer = func_001FA898_2D18D0(func_001F9878_2D18D0(x));
+                y = FastAddRots(moby->rot.z, func_002140F8_2D18D0(-90.0f, 90.0f) * 0.017453292f);
                 z = func_002140F8_2D18D0(0.0f, 30.0f) * 0.017453292f;
-                func_00215C00_2D18D0(d + 0x170, 6.0f, y, z);
-                FastVecAdd(d + 0x170, d + 0x170, m + 0x10);
+                func_00215C00_2D18D0(moby_vars->target, 6.0f, y, z);
+                FastVecAdd(moby_vars->target, moby_vars->target, &moby->pos);
             }
-            if (*(int *)(d + 0x184) != 0) {
-                qcopy(b, D_0013E633 + 0xEED);
-                sx = 0.04f;
-                sy = 0.3f;
+            if (moby_vars->moving_timer != 0) {
+                qcopy(target, D_0013E633 + 0xEED);
+                rate = 0.04f;
+                head_rate = 0.3f;
             } else {
-                qcopy(b, d + 0x170);
+                qcopy(target, moby_vars->target);
             }
         }
-        if (doit != 0) {
-            float w[4];
-            float u[4];
-            float f20;
-            float f2;
-            qcopy(w, m + 0x10);
-            w[2] = w[2] + 1.0f;
-            FastVecSub(u, b, w);
-            f20 = FastSubRots(func_L00_001FF860(u[0], u[1]), *(float *)(m + 0x48));
-            f2 = -func_L00_001FF860(func_001F9CE8_2D18D0(u), u[2]);
-            if (f20 > 1.5707964f) f20 = 1.5707964f;
-            else if (f20 < -1.5707964f) f20 = -1.5707964f;
-            if (f2 > 0.5235988f) f2 = 0.5235988f;
-            else if (f2 < -0.5235988f) f2 = -0.5235988f;
-            *(float *)(d + 0xD4) = f2;
-            *(float *)(d + 0xD8) = f20 * 0.5f;
-            *(float *)(d + 0x158) = f20 * 0.5f;
+        if (tracking != 0) {
+            float eye[4];
+            float delta[4];
+            float yaw;
+            float pitch;
+            qcopy(eye, &moby->pos);
+            eye[2] = eye[2] + 1.0f;
+            FastVecSub(delta, target, eye);
+            yaw = FastSubRots(func_L00_001FF860(delta[0], delta[1]), moby->rot.z);
+            pitch = -func_L00_001FF860(func_001F9CE8_2D18D0(delta), delta[2]);
+            if (yaw > 1.5707964f) yaw = 1.5707964f;
+            else if (yaw < -1.5707964f) yaw = -1.5707964f;
+            if (pitch > 0.5235988f) pitch = 0.5235988f;
+            else if (pitch < -0.5235988f) pitch = -0.5235988f;
+            moby_vars->pitch = pitch;
+            moby_vars->yaw = yaw * 0.5f;
+            moby_vars->head_yaw = yaw * 0.5f;
         }
-        if (D_0015EEB0_2D18D0[0] != 0) *(float *)(d + 0xE0) = 2.75f;
-        func_L00_00263950_2D18D0(m, d + 0x70, 0, sx * D_0015EE64_2D18D0, sy * D_0015EE64_2D18D0);
-        func_L00_00263950_2D18D0(m, d + 0xF0, 1, sx * D_0015EE64_2D18D0, sy * D_0015EE64_2D18D0);
+        if (D_0015EEB0_2D18D0[0] != 0) moby_vars->height = 2.75f;
+        func_L00_00263950_2D18D0(m, moby_vars->body, 0, rate * D_0015EE64_2D18D0, head_rate * D_0015EE64_2D18D0);
+        func_L00_00263950_2D18D0(m, moby_vars->head, 1, rate * D_0015EE64_2D18D0, head_rate * D_0015EE64_2D18D0);
     }
 }
 extern void func_L02_002E2110(void *);
@@ -2923,40 +2947,60 @@ extern float func_001F9B50(float);
 extern void func_L00_0025B040(void *, float);
 extern struct Moby *D_L11_001748D8 __attribute__((section(".data")));
 
-void ShipCollider_Update(struct Moby *m) {
+typedef struct AmmoCrateVars {
+    Vec4f drift;               /* 0x00 */
+    Vec4f vel;                 /* 0x10 velocity; z is the gravity term */
+    Vec4f offset;              /* 0x20 added to pos after drift */
+    f32 angle;                 /* 0x30 */
+    struct Moby *child;        /* 0x34 attached child moby */
+} AmmoCrateVars;
+
+void ShipCollider_Update(struct Moby *pickup) {
+    enum {
+        AMMOCRATE_STATE_INITIALIZE = 0,
+        AMMOCRATE_STATE_DAMPED_FALL = 1,
+        AMMOCRATE_STATE_ATTRACT_TO_SHIP = 2,
+        AMMOCRATE_STATE_FREE_FALL = 3,
+        AMMOCRATE_STATE_COLLECTED = 4,
+        AMMOCRATE_STATE_REMOVE = 5
+    };
+    enum {
+        OCLASS_SHIP_AMMO_PICKUP = 0x4C2,
+        OCLASS_SHIP_HEALTH_PICKUP = 0x4C4
+    };
     struct Moby *ship = hero_f728.ship_moby;
-    char *pv = m->pvars;
+    AmmoCrateVars *pv = (AmmoCrateVars *)pickup->pvars;
     float dist = 100000.0f;
     float mid = dist;
     int taken = 0;
-    Vec4f v;
+    Vec4f pickup_vector_scratch;
 
-    Moby_GetJointWorldPos(m, 0, &v);
-    if (coll_sphere(0.55f, &v, 0, m)) {
-        struct Moby *p = D_L11_001748D8;
-        if (p != 0 && (p->oclass == 0x4DA || p->oclass == 0x45 || p->oclass == 0x563)) {
+    Moby_GetJointWorldPos(pickup, 0, &pickup_vector_scratch);
+    if (coll_sphere(0.55f, &pickup_vector_scratch, 0, pickup)) {
+        struct Moby *collision_moby = D_L11_001748D8;
+        if (collision_moby != 0 && (collision_moby->oclass == 0x4DA || collision_moby->oclass == 0x45 || collision_moby->oclass == 0x563)) {
             taken = 1;
         } else {
-            func_L00_0025F4A8(m, pv + 0x10, &v, 0.0f, 0.0f, 3, 2, 5, 0.0f, 0.0f, 9.0f, 1.0f, -1, 0.0f, 0, 1, -1, 0);
-            m->state = 5;
+            func_L00_0025F4A8(pickup, &pv->vel, &pickup_vector_scratch, 0.0f, 0.0f, 3, 2, 5, 0.0f, 0.0f, 9.0f, 1.0f, -1, 0.0f, 0, 1, -1, 0);
+            pickup->state = AMMOCRATE_STATE_REMOVE;
         }
     }
-    if (m->state < 4) {
+    if (pickup->state < 4) {
         if (hero_f728.state.current == 0x32 && ship != 0 && ship->state != 0xFE && ship->state != 0xFD &&
             (ship->oclass == 0x4DA || ship->oclass == 0x45 || ship->oclass == 0x563)) {
-            dist = FastVecDist(&ship->pos, &m->pos);
-            mid = func_001F9D48(&ship->pos, &m->pos);
-            FastVecAdd(&v, &m->pos, pv);
-            FastVecScale(&v, &v, 0.5f);
-            mid = func_001F9D48(&ship->pos, &v);
+            dist = FastVecDist(&ship->pos, &pickup->pos);
+            mid = func_001F9D48(&ship->pos, &pickup->pos);
+            FastVecAdd(&pickup_vector_scratch, &pickup->pos, &pv->drift);
+            FastVecScale(&pickup_vector_scratch, &pickup_vector_scratch, 0.5f);
+            mid = func_001F9D48(&ship->pos, &pickup_vector_scratch);
         }
         if (taken || dist < 4.0f || mid < 4.0f) {
-            m->collision = 0;
-            if (*(struct Moby **)(pv + 0x34) != 0) {
-                (*(struct Moby **)(pv + 0x34))->collision = 0;
+            pickup->collision = 0;
+            if (pv->child != 0) {
+                pv->child->collision = 0;
             }
-            switch (m->oclass) {
-            case 0x4C2:
+            switch (pickup->oclass) {
+            case OCLASS_SHIP_AMMO_PICKUP:
                 hero_f728.ship_ammo += 5;
                 if (hero_f728.ship_moby != 0 && hero_f728.ship_moby->state != 0xFE && hero_f728.ship_moby->state != 0xFD) {
                     Moby_PlaySound(4, 0, (int)hero_f728.ship_moby);
@@ -2964,9 +3008,9 @@ void ShipCollider_Update(struct Moby *m) {
                 if (hero_f728.ship_ammo_max < hero_f728.ship_ammo) {
                     hero_f728.ship_ammo = hero_f728.ship_ammo_max;
                 }
-                m->state = 4;
+                pickup->state = AMMOCRATE_STATE_COLLECTED;
                 break;
-            case 0x4C4:
+            case OCLASS_SHIP_HEALTH_PICKUP:
                 hero_f728.ship_hp += hero_f728.ship_hp_max * 0.25f;
                 if (hero_f728.ship_moby != 0 && hero_f728.ship_moby->state != 0xFE && hero_f728.ship_moby->state != 0xFD) {
                     Moby_PlaySound(5, 0, (int)hero_f728.ship_moby);
@@ -2974,89 +3018,89 @@ void ShipCollider_Update(struct Moby *m) {
                 if (hero_f728.ship_hp_max < hero_f728.ship_hp) {
                     hero_f728.ship_hp = hero_f728.ship_hp_max;
                 }
-                m->state = 4;
+                pickup->state = AMMOCRATE_STATE_COLLECTED;
                 break;
             default:
-                m->state = 4;
+                pickup->state = AMMOCRATE_STATE_COLLECTED;
                 break;
             }
         }
     }
-    switch (m->state) {
-    case 0:
-        *(struct Moby **)(pv + 0x34) = 0;
-        Moby1219_SyncChild((char *)m, pv);
-        *(float *)(pv + 0x30) = 0.0f;
-        m->state = 1;
+    switch (pickup->state) {
+    case AMMOCRATE_STATE_INITIALIZE:
+        pv->child = 0;
+        Moby1219_SyncChild((char *)pickup, (char *)pv);
+        pv->angle = 0.0f;
+        pickup->state = AMMOCRATE_STATE_DAMPED_FALL;
         break;
-    case 1:
-        FastVecScale(pv + 0x10, pv + 0x10, 0.9f);
-        *(float *)(pv + 0x18) -= D_0015EE70 * 9.8f;
-        FastVecAdd(pv, pv, pv + 0x10);
-        FastVecAdd(&m->pos, pv, pv + 0x20);
-        if (Moby1219_SyncChild((char *)m, pv)) {
-            if ((*(struct Moby **)(pv + 0x34))->seq == 1) {
-                FastVecScale(pv + 0x10, pv + 0x10, 0.8f);
-                m->state = 2;
+    case AMMOCRATE_STATE_DAMPED_FALL:
+        FastVecScale(&pv->vel, &pv->vel, 0.9f);
+        pv->vel.z -= D_0015EE70 * 9.8f;
+        FastVecAdd(&pv->drift, &pv->drift, &pv->vel);
+        FastVecAdd(&pickup->pos, &pv->drift, &pv->offset);
+        if (Moby1219_SyncChild((char *)pickup, (char *)pv)) {
+            if (pv->child->seq == 1) {
+                FastVecScale(&pv->vel, &pv->vel, 0.8f);
+                pickup->state = AMMOCRATE_STATE_ATTRACT_TO_SHIP;
             }
         }
         break;
-    case 2: {
+    case AMMOCRATE_STATE_ATTRACT_TO_SHIP: {
         float k = 0.8f;
-        m->rot.z = FastAddRots(m->rot.z, D_0015EE6C * 0.034906585f);
-        *(float *)(pv + 0x30) = FastAddRots(*(float *)(pv + 0x30), D_0015EE6C * 1.5707964f);
-        m->rot.y = FastCos(*(float *)(pv + 0x30)) * 0.7853982f;
-        FastVecScale(pv + 0x10, pv + 0x10, k);
-        *(float *)(pv + 0x18) -= D_0015EE70 * 9.8f;
-        if (dist < 40.0f && m->visible != 0) {
+        pickup->rot.z = FastAddRots(pickup->rot.z, D_0015EE6C * 0.034906585f);
+        pv->angle = FastAddRots(pv->angle, D_0015EE6C * 1.5707964f);
+        pickup->rot.y = FastCos(pv->angle) * 0.7853982f;
+        FastVecScale(&pv->vel, &pv->vel, k);
+        pv->vel.z -= D_0015EE70 * 9.8f;
+        if (dist < 40.0f && pickup->visible != 0) {
             k = k / func_001F9B50(dist);
-            FastVecSub(&v, &ship->pos, &m->pos);
-            func_L00_001FF4B0(&v, &v, k);
-            FastVecAdd(pv + 0x10, pv + 0x10, &v);
+            FastVecSub(&pickup_vector_scratch, &ship->pos, &pickup->pos);
+            func_L00_001FF4B0(&pickup_vector_scratch, &pickup_vector_scratch, k);
+            FastVecAdd(&pv->vel, &pv->vel, &pickup_vector_scratch);
         }
-        FastVecAdd(pv, pv, pv + 0x10);
-        FastVecAdd(&m->pos, pv, pv + 0x20);
-        if (Moby1219_SyncChild((char *)m, pv)) {
-            if ((*(struct Moby **)(pv + 0x34))->state == 2) {
-                m->state = (*(struct Moby **)(pv + 0x34))->state;
+        FastVecAdd(&pv->drift, &pv->drift, &pv->vel);
+        FastVecAdd(&pickup->pos, &pv->drift, &pv->offset);
+        if (Moby1219_SyncChild((char *)pickup, (char *)pv)) {
+            if (pv->child->state == 2) {
+                pickup->state = pv->child->state;
             }
         }
         break;
     }
-    case 3:
-        *(float *)(pv + 0x18) -= D_0015EE70 * 9.8f;
-        FastVecAdd(&m->pos, &m->pos, pv + 0x10);
+    case AMMOCRATE_STATE_FREE_FALL:
+        pv->vel.z -= D_0015EE70 * 9.8f;
+        FastVecAdd(&pickup->pos, &pickup->pos, &pv->vel);
         break;
-    case 4:
-        m->state = 5;
+    case AMMOCRATE_STATE_COLLECTED:
+        pickup->state = AMMOCRATE_STATE_REMOVE;
         break;
-    case 5:
-        DeleteMoby(m);
+    case AMMOCRATE_STATE_REMOVE:
+        DeleteMoby(pickup);
         return;
     }
-    if (m->pos.z < 20.0f) {
-        DeleteMoby(m);
+    if (pickup->pos.z < 20.0f) {
+        DeleteMoby(pickup);
         return;
     }
-    if (m->pos.x < 20.0f) {
-        m->pos.x = 20.0f;
+    if (pickup->pos.x < 20.0f) {
+        pickup->pos.x = 20.0f;
     }
-    if (1003.0f < m->pos.x) {
-        m->pos.x = 1003.0f;
+    if (1003.0f < pickup->pos.x) {
+        pickup->pos.x = 1003.0f;
     }
-    if (m->pos.y < 20.0f) {
-        m->pos.y = 20.0f;
+    if (pickup->pos.y < 20.0f) {
+        pickup->pos.y = 20.0f;
     }
-    if (1003.0f < m->pos.y) {
-        m->pos.y = 1003.0f;
+    if (1003.0f < pickup->pos.y) {
+        pickup->pos.y = 1003.0f;
     }
-    if (m->pos.z < 20.0f) {
-        m->pos.z = 20.0f;
+    if (pickup->pos.z < 20.0f) {
+        pickup->pos.z = 20.0f;
     }
-    if (1003.0f < m->pos.z) {
-        m->pos.z = 1003.0f;
+    if (1003.0f < pickup->pos.z) {
+        pickup->pos.z = 1003.0f;
     }
-    jet_animate(m, 0.5f);
+    jet_animate(pickup, 0.5f);
 }
 char *SpawnMoby1219(char *owner) {
     char *moby = CreateMoby(0x4C3);

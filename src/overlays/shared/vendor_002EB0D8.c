@@ -1623,10 +1623,10 @@ typedef struct { unsigned char pad0[0x80]; struct { float pos[4]; } motion; unsi
 
 /* Aim-camera update. */
 void volume_camera_aim(void *cam_) {
-    struct UpdateCam_ee *cam = cam_;
+    struct UpdateCam_ee *aim_camera_record = cam_;
     CameraVec_ee pos;
     CameraVec_ee to_pos;
-    CameraVec_ee tmp;
+    CameraVec_ee gravity_offset;
     CameraVec_ee level;
     AimCameraParams_ee *params;
     struct UpdateCam_ee *rec;
@@ -1637,12 +1637,12 @@ void volume_camera_aim(void *cam_) {
     FollowCamTail_ee *tail;
     FollowCamSnap_ee *snap;
     FollowCamReset_ee *reset;
-    float up;
-    float angle;
+    f32 up;
+    f32 angle;
 
-    params = *(AimCameraParams_ee **)(camera_descriptors + cam->descriptor_index * 32 + 0x1C);
-    if (volume_camera_aim_active(cam)) {
-        if (Cam_AcquireLock(cam) <= 0) {
+    params = ((CameraDescriptor_ee *)camera_descriptors)[aim_camera_record->descriptor_index].params;
+    if (volume_camera_aim_active(aim_camera_record)) {
+        if (Cam_AcquireLock(aim_camera_record) <= 0) {
             if (params->timer) {
                 params->done = 1;
             }
@@ -1657,30 +1657,30 @@ void volume_camera_aim(void *cam_) {
         params->done = 1;
     }
     params->timer = 0;
-    Cam_ReleaseLock(cam);
+    Cam_ReleaseLock(aim_camera_record);
     return;
 run:
     if (params->timer < 2) {
         {
-            pos[0] = *(float *)(camera_descriptors + cam->descriptor_index * 32 + 0);
-            pos[1] = *(float *)(camera_descriptors + cam->descriptor_index * 32 + 4);
-            pos[2] = *(float *)(camera_descriptors + cam->descriptor_index * 32 + 8);
+            pos[0] = ((CameraDescriptor_ee *)camera_descriptors)[aim_camera_record->descriptor_index].pos[0];
+            pos[1] = ((CameraDescriptor_ee *)camera_descriptors)[aim_camera_record->descriptor_index].pos[1];
+            pos[2] = ((CameraDescriptor_ee *)camera_descriptors)[aim_camera_record->descriptor_index].pos[2];
         }
-        *(int *)&pos[3] = 0;
+        *(s32 *)&pos[3] = 0;
         FastVecSub(to_pos, pos, &(*(HeroLike_ee *)D_0013F450).motion.pos);
         up = FastVecDot(to_pos, (*(HeroLike_ee *)D_0013F450).gravity_dir);
-        FastVecScale(tmp, (*(HeroLike_ee *)D_0013F450).gravity_dir, up);
-        FastVecSub(level, to_pos, tmp);
+        FastVecScale(gravity_offset, (*(HeroLike_ee *)D_0013F450).gravity_dir, up);
+        FastVecSub(level, to_pos, gravity_offset);
         params->distance = FastVecLength(level);
         params->height = -up;
         angle = params->angle;
         if (FastAbsF(angle) == 1.5707964f) {
-            *(int *)&params->offset_scale = 0;
+            *(s32 *)&params->offset_scale = 0;
         } else {
             params->offset_scale = params->height - params->distance * (FastSin(angle) / FastCos(angle));
         }
         rec = (struct UpdateCam_ee *)D_L00_00166F00;
-        rig = FOLLOW_CAM_STATE_ee(rec);
+        rig = (FollowCamState_ee *)rec->saved_state;
         rec_pos = &rec->pos;
         follow = &rig->follow;
         tail = &rig->tail;
@@ -1691,22 +1691,22 @@ run:
         tail->unk15C = params->distance;
         tail->distance = params->height;
         follow->look_height = params->offset_scale;
-        FastVecScale(tmp, (*(HeroLike_ee *)D_0013F450).gravity_dir, -tail->distance);
-        FastVecAdd(state->follow.eye, &(*(HeroLike_ee *)D_0013F450).motion.pos, tmp);
+        FastVecScale(gravity_offset, (*(HeroLike_ee *)D_0013F450).gravity_dir, -tail->distance);
+        FastVecAdd(state->follow.eye, &(*(HeroLike_ee *)D_0013F450).motion.pos, gravity_offset);
         FastVecSub(tail->unk130, pos, state->follow.eye);
         qcopy(state->tail.unk140, tail->unk130);
-        FastVecScale(tmp, (*(HeroLike_ee *)D_0013F450).gravity_dir, -follow->look_height);
-        FastVecAdd(state->follow.look_target, &(*(HeroLike_ee *)D_0013F450).motion.pos, tmp);
+        FastVecScale(gravity_offset, (*(HeroLike_ee *)D_0013F450).gravity_dir, -follow->look_height);
+        FastVecAdd(state->follow.look_target, &(*(HeroLike_ee *)D_0013F450).motion.pos, gravity_offset);
         qcopy(state->follow.unkD0, state->follow.look_target);
         qcopy(follow->focus, &(*(HeroLike_ee *)D_0013F450).motion.pos);
         qcopy(state->follow.offset, follow->focus);
         qcopy(state->position, rec_pos);
         qcopy(state->tail.snap.unk1F0, rec_pos);
-        *(int *)&snap->unk200 = 0;
-        *(int *)&reset->unk34 = 0;
+        *(s32 *)&snap->unk200 = 0;
+        *(s32 *)&reset->unk34 = 0;
         reset->look_height = follow->look_height;
-        { float zero = reset->unk34;
-        float distance = tail->distance;
+        { f32 zero = reset->unk34;
+        f32 distance = tail->distance;
         reset->distance = distance;
         reset->unk22 = 0;
         reset->unk38 = zero;
