@@ -832,23 +832,36 @@ void DrawRingStack(char *m) {
     }
 }
 
-void gadgetron_sign_update(unsigned char *moby)
+typedef struct L16SignMoby {
+    u8 pad_00[0x10];
+    struct { f32 x; f32 y; f32 z; f32 w; } pos; /* 0x10 */
+    u8 state;                                   /* 0x20 */
+    u8 pad_21[0xB];                             /* 0x21 */
+    f32 scale;                                  /* 0x2C */
+    u8 update_dist;                             /* 0x30 */
+    u8 pad_31;                                  /* 0x31 */
+    s16 draw_dist;                              /* 0x32 */
+    u8 pad_34[0xC];                             /* 0x34 */
+    struct { f32 x; f32 y; f32 z; f32 w; } rot; /* 0x40 */
+} L16SignMoby;
+
+void gadgetron_sign_update(unsigned char *moby_bytes)
 {
-    switch (moby[0x20]) {
-    case 0:
-        {
-            float size = *(float *)(moby + 0x2C) * 4.0f;
-            int ff = 0xFF;
-            int twohundred = 0x200;
-            moby[0x20] = 1;
-            moby[0x30] = ff;
-            *(short *)(moby + 0x32) = twohundred;
-            *(float *)(moby + 0x18) = 160.0f;
-            *(float *)(moby + 0x2C) = size;
-        }
-        break;
+    L16SignMoby *moby = (L16SignMoby *)moby_bytes;
+
+    switch (moby->state) {
+    case 0: {
+        float size = moby->scale * 4.0f;
+        int ff = 0xFF;
+        int twohundred = 0x200;
+        moby->state = 1;
+        moby->update_dist = ff;
+        moby->draw_dist = twohundred;
+        moby->pos.z = 160.0f;
+        moby->scale = size;
+    } break;
     case 1:
-        *(float *)(moby + 0x48) = FastAddRots(*(float *)(moby + 0x48), D_0015EE6C * -0.2617993950843811f);
+        moby->rot.z = FastAddRots(moby->rot.z, D_0015EE6C * -0.2617993950843811f);
         break;
     }
 }

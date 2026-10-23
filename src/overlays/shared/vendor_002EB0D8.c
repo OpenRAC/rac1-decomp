@@ -1431,24 +1431,52 @@ extern void func_L00_002EDE38(char *);
 extern int D_0015EE84 MACRO_ADDR;
 extern char *D_L00_0015F050 MACRO_ADDR;
 
+typedef struct CamSwingParams_2EE6E0 {
+    u8 pad_00[0x2C];
+    union { s16 s; u16 u; } type;      /* 0x2C */
+    s16 timer;                         /* 0x2E */
+    u8 pad_30[0x18];
+    s16 l_buttons_end;                 /* 0x48 */
+    s16 done;                          /* 0x4A */
+} CamSwingParams_2EE6E0;
+
+typedef struct CamDescriptorRow_2EE6E0 {
+    u8 pad_00[0x1C];
+    struct CamSwingParams_2EE6E0 *params;   /* 0x1C */
+} CamDescriptorRow_2EE6E0;
+
+typedef struct UpdateCamSwing_2EE6E0 {
+    u8 pad_00[0x84];
+    s16 descriptor_index;              /* 0x84 */
+} UpdateCamSwing_2EE6E0;
+
+typedef struct HeroSwingView_2EE6E0 {
+    u8 pad_000[0x30C];
+    union { s16 s; u16 u; } frames_off_ground;   /* 0x30C */
+    u8 pad_30E[0x2284 - 0x30E];
+    s32 unk2284;                       /* 0x2284 */
+} HeroSwingView_2EE6E0;
+
 // Per-frame check of a linked object's state; runs the handler or clears its flag.
 int volume_camera_swing_check(char *m) {
-    char *p = *(char **)(camera_descriptors + *(short *)(m + 0x84) * 32 + 0x1C);
+    struct UpdateCamSwing_2EE6E0 *swing_camera_record = (struct UpdateCamSwing_2EE6E0 *)m;
+    struct CamSwingParams_2EE6E0 *params =
+        ((struct CamDescriptorRow_2EE6E0 *)camera_descriptors)[swing_camera_record->descriptor_index].params;
     short k;
-    if (*(short *)(p + 0x48) == 1 && *(short *)(p + 0x4A) != 0) return 0;
-    if (*(short *)(p + 0x2C) == 11 && *(unsigned char *)(D_0013E633 + 0x2EC1) != 2) return 0;
-    k = *(unsigned short *)(p + 0x2C);
+    if (params->l_buttons_end == 1 && params->done != 0) return 0;
+    if (params->type.s == 11 && *(unsigned char *)(D_0013E633 + 0x2EC1) != 2) return 0;
+    k = params->type.u;
     if (k == 1 || k == 10) {
-        if (*(short *)(p + 0x2E) == 0) {
-            char *q = D_0013E633 + 0xE1D;
-            if (*(short *)(q + 0x30C) != 0) {
+        if (params->timer == 0) {
+            struct HeroSwingView_2EE6E0 *hero_data = (struct HeroSwingView_2EE6E0 *)(D_0013E633 + 0xE1D);
+            if (hero_data->frames_off_ground.s != 0) {
                 if (*(int *)&D_0015EE84 != 14) return 0;
-                if (*(int *)(q + 0x2284) != 13) return 0;
+                if (hero_data->unk2284 != 13) return 0;
             }
         }
     }
-    if ((short)*(unsigned short *)(p + 0x2C) == 2 && *(int *)(D_0013E633 + 0x2EA9) != 0x1A) {
-        *(short *)(p + 0x2E) = 0;
+    if ((short)params->type.u == 2 && *(int *)(D_0013E633 + 0x2EA9) != 0x1A) {
+        params->timer = 0;
     } else {
         volume_camera_swing(m);
     }
@@ -1459,32 +1487,89 @@ extern int func_00215570(void *, int);
 extern int func_L00_00260AB0(void *, int);
 extern int func_L00_00260B68(float *, int);
 
+struct VolAimParams {
+    u8 pad_00[0x8];
+    s32 volume_25faf0;      /* 0x08 sphere volume (IsPointInSphereVolume); < 0 none */
+    s32 clip_volume;        /* 0x0C clip volume (is_point_inside_clip_volume) */
+    s32 volume_25fa38;      /* 0x10 cylinder volume (IsPointInCylinderVolume) */
+    u8 pad_14[0x12];
+    s16 done;               /* 0x26 set when the hero is in none of the volumes */
+    u8 pad_28[0xC];
+    s32 need_still;         /* 0x34 nonzero: the camera waits for the hero to stop */
+    u8 pad_38[0xC];
+    s16 not_in_mode_1;      /* 0x44 nonzero: not used in mode 1 */
+    s16 only_in_mode_1;     /* 0x46 nonzero: used only in mode 1 */
+};
+
+struct VolAimDesc {
+    u8 pad_00[0x1C];
+    struct VolAimParams *params;   /* 0x1C */
+};
+
+struct VolAimCtl {
+    u8 pad_00[0x8];
+    f32 unk1B0;                    /* 0x08 (absolute 0x1B0) */
+};
+
+struct VolAimTail {
+    u8 pad_00[0x34];
+    f32 unk164;                    /* 0x34 (absolute 0x164) */
+    u8 pad_38[0x40];
+    struct VolAimCtl ctl;          /* 0x78 (absolute 0x1A8) */
+};
+
+struct VolAimState {
+    u8 pad_000[0x130];
+    struct VolAimTail tail;        /* 0x130 */
+};
+
+struct VolAimCam {
+    u8 pad_00[0x70];
+    void *saved_state;             /* 0x70 */
+    u8 pad_74[0x10];
+    s16 descriptor_index;          /* 0x84 */
+    s16 unk86;                     /* 0x86 */
+};
+
+struct VolAimWorld {
+    u8 pad_0000[0x2EC1];
+    u8 mode;                       /* 0x2EC1: 1 is the mode the only/not-in-mode-1 volumes test */
+};
+
 /* Returns nonzero when an object's path is blocked; otherwise marks the path entry as reached. */
 int volume_camera_aim_active(void *arg) {
-    char *a = arg;
-    char *g = D_L00_00166F00;
-    char *p = *(char **)(camera_descriptors + *(short *)(a + 0x84) * 32 + 0x1C);
-    char *d = *(char **)(g + 0x70);
-    char *w = d + 0x130;
-    char *v = d + 0x1A8;
-    if (*(short *)(g + 0x86) != 0) return 0;
-    if (*(short *)(p + 0x46) != 0 && *(unsigned char *)(D_0013E633 + 0x2EC1) != 1) return 0;
-    if (*(short *)(p + 0x44) != 0 && *(unsigned char *)(D_0013E633 + 0x2EC1) == 1) return 0;
-    if (*(int *)(p + 0x34) != 0) {
+    struct VolAimCam *aim_camera_record = arg;
+    struct VolAimCam *rec = (struct VolAimCam *)D_L00_00166F00;
+    struct VolAimParams *params = ((struct VolAimDesc *)camera_descriptors)[aim_camera_record->descriptor_index].params;
+    struct VolAimState *state = rec->saved_state;
+    struct VolAimTail *tail = &state->tail;
+    struct VolAimCtl *ctl = &state->tail.ctl;
+    if (rec->unk86 != 0)
+        return 0;
+    if (params->only_in_mode_1 != 0 && ((struct VolAimWorld *)D_0013E633)->mode != 1)
+        return 0;
+    if (params->not_in_mode_1 != 0 && ((struct VolAimWorld *)D_0013E633)->mode == 1)
+        return 0;
+    if (params->need_still != 0) {
         float c = 0.01f;
-        if (FastAbsF(*(float *)(w + 0x34)) > c) return 0;
-        if (FastAbsF(*(float *)(v + 8)) > c) return 0;
+        if (FastAbsF(tail->unk164) > c)
+            return 0;
+        if (FastAbsF(ctl->unk1B0) > c)
+            return 0;
     }
-    if (*(int *)(p + 0xC) >= 0) {
-        if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, *(int *)(p + 0xC)) != 0) return 1;
+    if (params->clip_volume >= 0) {
+        if (is_point_inside_clip_volume((char *)D_0013E633 + 0xE9D, params->clip_volume) != 0)
+            return 1;
     }
-    if (*(int *)(p + 0x10) >= 0) {
-        if (IsPointInCylinderVolume(D_0013E633 + 0xE9D, *(int *)(p + 0x10)) != 0) return 1;
+    if (params->volume_25fa38 >= 0) {
+        if (IsPointInCylinderVolume((char *)D_0013E633 + 0xE9D, params->volume_25fa38) != 0)
+            return 1;
     }
-    if (*(int *)(p + 8) >= 0) {
-        if (IsPointInSphereVolume((float *)(D_0013E633 + 0xE9D), *(int *)(p + 8)) != 0) return 1;
+    if (params->volume_25faf0 >= 0) {
+        if (IsPointInSphereVolume((float *)((char *)D_0013E633 + 0xE9D), params->volume_25faf0) != 0)
+            return 1;
     }
-    *(short *)(p + 0x26) = 1;
+    params->done = 1;
     return 0;
 }
 extern int D_0013CBE0 NOT_SDA;
@@ -1653,18 +1738,37 @@ extern char *D_L00_0015F050 MACRO_ADDR;
 extern int D_L00_0015F6A8 MACRO_ADDR;
 extern int func_L00_002EE7F8(void *);
 extern void func_L00_002EE948(void *);
+typedef struct VolCamParams {
+    u8 pad_00[0x20];
+    s32 timer;                  /* 0x20 */
+    u8 pad_24[0x2];
+    s16 done;                   /* 0x26 */
+} VolCamParams;
+
+typedef struct VolCamDesc {
+    u8 pad_00[0x1C];
+    VolCamParams *params;       /* 0x1C */
+} VolCamDesc;
+
+typedef struct VolCamRec {
+    u8 pad_00[0x84];
+    s16 descriptor_index;       /* 0x84 */
+} VolCamRec;
+
 /* Aim-camera moby update; always returns 0. */
 int volume_camera_check(char *a) {
-    char *p = *(char **)(camera_descriptors + *(short *)(a + 0x84) * 32 + 0x1C);
-    if (*(short *)(p + 0x26) != 0) return 0;
+    VolCamRec *aim_camera_record = (VolCamRec *)a;
+    VolCamParams *params = ((VolCamDesc *)camera_descriptors)[aim_camera_record->descriptor_index].params;
+    if (params->done != 0)
+        return 0;
     if (D_L00_0015F6A8 != 0) {
-        if (volume_camera_aim_active(a) != 0) {
-            *(short *)(p + 0x26) = 0;
-            *(int *)(p + 0x20) = 0;
+        if (volume_camera_aim_active(aim_camera_record) != 0) {
+            params->done = 0;
+            params->timer = 0;
             return 0;
         }
     }
-    volume_camera_aim(a);
+    volume_camera_aim(aim_camera_record);
     return 0;
 }
 typedef struct { s32 id; s32 w4; s32 w8; s32 wC; s32 snd; } S_2ed950;

@@ -3006,46 +3006,64 @@ extern float func_001FA748(float, float);
 extern int func_L00_0028EB98(void *, int);
 extern short D_L06_00161F04, D_L06_00161F08, D_L06_00161F0C, D_L06_00161F10;
 
+struct EnergySphereVars {
+    char *state_data;              /* 0x00: points 0x20 bytes into the vars block */
+    u8 pad_04[0x5C];
+    s32 voice_slot_index;          /* 0x60: voice slot of the looping sound, -1 = none */
+};
+
+struct VoiceSlot {
+    u8 pad_00[0x74];
+    u8 looping;                    /* 0x74: nonzero while the sound loops */
+    u8 pad_75[0x13];
+    struct Moby *moby;             /* 0x88: moby the sound plays on */
+};
+
 // UpdateMoby_1040: spins up, rotates and tracks a slot, deleting itself when its target is gone.
 void Moby1040Update(char *m) {
-    char *d = *(char **)(m + 0x78);
+    enum {
+        ENERGY_SPHERE_INITIALIZE = 0,
+        ENERGY_SPHERE_UPDATE_ROTATION = 1
+    };
+    struct Moby *sphere_moby = (struct Moby *)m;
+    struct EnergySphereVars *sphere_vars = (struct EnergySphereVars *)sphere_moby->pvars;
     if (MobyGetHitMessage(m, 0x330000, 0) != 0) {
-        int idx;
+        int voice_slot_index;
         Moby1040_SpawnSparks(m);
         Moby_PlaySound(1, 0, (int)m);
-        idx = *(int *)(d + 0x60);
-        if (idx != -1) {
-            char *e = D_0013E633 + 0x1D + idx * 0x70;
-            if (*(char **)(e + 0x88) == m && *(unsigned char *)(e + 0x74) != 0) {
-                Sound_StopSlot(idx);
+        voice_slot_index = sphere_vars->voice_slot_index;
+        if (voice_slot_index != -1) {
+            struct VoiceSlot *voice_slot = (struct VoiceSlot *)(D_0013E633 + 0x1D + voice_slot_index * 0x70);
+            if (voice_slot->moby == sphere_moby && voice_slot->looping != 0) {
+                Sound_StopSlot(voice_slot_index);
             }
         }
-        *(int *)(d + 0x60) = -1;
+        sphere_vars->voice_slot_index = -1;
         DeleteMoby(m);
         return;
     }
-    switch (*(unsigned char *)(m + 0x20)) {
-    case 0:
+    switch (sphere_moby->state) {
+    case ENERGY_SPHERE_INITIALIZE:
         func_L00_00251328(m, 0x80, 0x80, 0x80);
-        *(float *)(m + 0x2C) = *(float *)(*(char **)(m + 0x24) + 0x24) * *(float *)&D_L06_00161F10;
-        *(char **)d = d + 0x20;
-        m[0x20] = 1;
-        *(unsigned short *)(m + 0x34) |= 0x20;
-        *(int *)(d + 0x60) = -1;
-    case 1: {
-        float a0 = *(float *)&D_L06_00161F04 * 0.017453292f * D_0015EE6C;
-        float a1, a2;
-        float x = FastAddRots(*(float *)(m + 0x40), a0);
-        a1 = *(float *)&D_L06_00161F08 * 0.017453292f * D_0015EE6C;
-        *(float *)(m + 0x40) = x;
-        x = FastAddRots(*(float *)(m + 0x44), a1);
-        a2 = *(float *)&D_L06_00161F0C * 0.017453292f * D_0015EE6C;
-        *(float *)(m + 0x44) = x;
-        *(float *)(m + 0x48) = FastAddRots(*(float *)(m + 0x48), a2);
+        sphere_moby->scale = sphere_moby->pclass->scale * *(float *)&D_L06_00161F10;
+        sphere_vars->state_data = (char *)sphere_vars + 0x20;
+        sphere_moby->state = ENERGY_SPHERE_UPDATE_ROTATION;
+        sphere_moby->flags |= 0x20;
+        sphere_vars->voice_slot_index = -1;
+    case ENERGY_SPHERE_UPDATE_ROTATION: {
+        float rotation_delta_x = *(float *)&D_L06_00161F04 * 0.017453292f * D_0015EE6C;
+        float rotation_delta_y, rotation_delta_z;
+        float x = FastAddRots(sphere_moby->rot.x, rotation_delta_x);
+        rotation_delta_y = *(float *)&D_L06_00161F08 * 0.017453292f * D_0015EE6C;
+        sphere_moby->rot.x = x;
+        x = FastAddRots(sphere_moby->rot.y, rotation_delta_y);
+        rotation_delta_z = *(float *)&D_L06_00161F0C * 0.017453292f * D_0015EE6C;
+        sphere_moby->rot.y = x;
+        sphere_moby->rot.z = FastAddRots(sphere_moby->rot.z, rotation_delta_z);
     }
     }
-    if (Sound_IsPlaying(m, *(int *)(d + 0x60)) == 0) {
-        *(int *)(d + 0x60) = Moby_PlaySound(0, 4, (int)m);
+    if (Sound_IsPlaying(m, sphere_vars->voice_slot_index) == 0) {
+        sphere_vars->voice_slot_index = Moby_PlaySound(0, 4, (int)m);
     }
 }
 extern float func_002140F8(float, float);

@@ -744,12 +744,39 @@ extern unsigned char D_0014C150[];
 extern float D_0015EE64 MACRO_ADDR;
 extern unsigned char D_0013D605[];
 
+typedef struct PlumberVars {
+    u8 pad00[0x4];
+    s16 sub;                    /* 0x04: dialogue step, 4 unlocks the planet */
+    s16 h6;                     /* 0x06: 2 takes the level 8 post-dialogue path */
+    u8 b8;                      /* 0x08 */
+    u8 pad09[0x17];
+    char *p20;                  /* 0x20: dialogue script for the state */
+    u8 pad24[0x20];
+    s32 i44;                    /* 0x44 */
+    u8 pad48[0x4];
+    s32 i4C;                    /* 0x4C: camera record index, -1 none */
+    u8 body[0x64];              /* 0x50: body joint record eased by EaseManipulatorOffsets */
+    f32 pitch;                  /* 0xB4 */
+    f32 yaw;                    /* 0xB8 */
+    u8 padBC[0x4];
+    f32 height;                 /* 0xC0 */
+    u8 padC4[0xC];
+    u8 head[0x68];              /* 0xD0: head joint record */
+    f32 head_yaw;               /* 0x138 */
+    u8 pad13C[0x14];
+    Vec4 target;                /* 0x150: point the head looks at */
+    u8 pad160[0x4];
+    s32 moving_timer;           /* 0x164 */
+    s32 target_timer;           /* 0x168 */
+} PlumberVars;
+
+extern Hero hero_F7700 __asm__("D_0013F450");
+
 /* Talking NPC update: seven conversation states, aims at the player and sets the body and head poses. */
 void the_plumber_update(char *m)
 {
-    char *d;
-    char *p;
-    char *pl;
+    Moby *plumber_moby = (Moby *)m;
+    PlumberVars *plumber_vars = (PlumberVars *)plumber_moby->pvars;
     float rate;
     float head_rate;
     int tracking;
@@ -757,56 +784,55 @@ void the_plumber_update(char *m)
     float s_eye[4];
     float s_delta[4];
 
-    d = *(char **)(m + 0x78);
-    if (d == 0) return;
+    if (plumber_vars == 0) return;
     AttachCheatManipulatorToMatching(m);
-    if (*(unsigned char *)(m + 0x31) != 0) {
-        if (FastVecDist(m + 0x10, camera_pos) < 32.0f) {
-            func_L00_0025B178(m);
-            *(unsigned char *)(m + 0x7F) = 0x1A;
+    if (plumber_moby->visible != 0) {
+        if (FastVecDist(&plumber_moby->pos, camera_pos) < 32.0f) {
+            func_L00_0025B178(plumber_moby);
+            plumber_moby->shadow_range = 0x1A;
         }
     }
-    switch (*(unsigned char *)(m + 0x20)) {
+    switch (plumber_moby->state) {
     case 0:
-        *(unsigned char *)(m + 0x30) = 0xFF;
-        *(int *)(d + 0x44) = 0;
+        plumber_moby->update_dist = 0xFF;
+        plumber_vars->i44 = 0;
         if (D_0015EE84_c == 1) {
             if (D_0013D605[0x845] != 0) {
                 DeleteMoby(m);
                 return;
             }
-            *(char **)(d + 0x20) = D_L01_0020B8F0;
-            *(unsigned char *)(m + 0x20) = 1;
+            plumber_vars->p20 = D_L01_0020B8F0;
+            plumber_moby->state = 1;
         } else if (D_0015EE84_c == 8) {
-            *(char **)(d + 0x20) = D_L01_00161DC8;
-            *(unsigned char *)(m + 0x20) = 4;
+            plumber_vars->p20 = D_L01_00161DC8;
+            plumber_moby->state = 4;
         } else {
-            *(char **)(d + 0x20) = D_L01_00161DD8;
-            *(unsigned char *)(m + 0x20) = 7;
+            plumber_vars->p20 = D_L01_00161DD8;
+            plumber_moby->state = 7;
         }
-        DialogRequest_Init(m, d);
+        DialogRequest_Init(m, plumber_vars);
         break;
     case 1:
-        if (Npc_TryStartDialog(m, d)) {
+        if (Npc_TryStartDialog(m, plumber_vars)) {
             PlaceMarkerAheadOfMoby(2.2f, m);
-            *(unsigned char *)(m + 0x20) = 2;
+            plumber_moby->state = 2;
         }
         break;
     case 2:
         if (D_L01_0015F6A8 != 2) {
-            if (*(unsigned char *)(*(unsigned char *)(m + 0xB0) + (D_0015EE84_c << 4) + (int)D_0014C150) != 0xFF) {
-                jet_clear_persistent(*(unsigned char *)(m + 0xB0));
-                if (*(int *)(d + 0x4C) != -1) {
-                    char *t = D_L01_0016016C_c + (*(int *)(d + 0x4C) << 7);
+            if (*(unsigned char *)(plumber_moby->mission + (D_0015EE84_c << 4) + (int)D_0014C150) != 0xFF) {
+                jet_clear_persistent(plumber_moby->mission);
+                if (plumber_vars->i4C != -1) {
+                    char *t = D_L01_0016016C_c + (plumber_vars->i4C << 7);
                     jet_reset_camera(t + 0x30, t + 0x70);
                 }
             }
-            *(unsigned char *)(m + 0x20) = 1;
-            if (*(short *)(d + 4) == 4) {
+            plumber_moby->state = 1;
+            if (plumber_vars->sub == 4) {
                 unlock_planet(2);
                 ShowPlanetBanner(2);
-                *(unsigned char *)(m + 0x20) = 3;
-                FindOrAddMobyEntry(m + 0x20, 1, m, 1, D_L01_001BADB0);
+                plumber_moby->state = 3;
+                FindOrAddMobyEntry(&plumber_moby->state, 1, plumber_moby, 1, D_L01_001BADB0);
                 memcard_Save(0, -1);
             }
         }
@@ -815,21 +841,21 @@ void the_plumber_update(char *m)
         DeleteMoby(m);
         return;
     case 4:
-        if (Npc_TryStartDialog(m, d)) {
-            *(unsigned char *)(m + 0x20) = 5;
-            *(unsigned char *)(d + 8) = 0;
+        if (Npc_TryStartDialog(m, plumber_vars)) {
+            plumber_moby->state = 5;
+            plumber_vars->b8 = 0;
         }
         break;
     case 5:
         if (D_L01_0015F6A8 != 2) {
-            if (*(short *)(d + 6) == 2) {
-                char *h = (char *)&D_0013E633 + 0xE1D;
-                *(float *)(h + 0x80) = 130.5f;
-                *(float *)(h + 0x84) = 299.5f;
-                *(float *)(h + 0x88) = 46.0f;
-                *(unsigned char *)(m + 0x20) = 6;
+            if (plumber_vars->h6 == 2) {
+                Hero *h = &hero_F7700;
+                h->motion.pos.f[0] = 130.5f;
+                h->motion.pos.f[1] = 299.5f;
+                h->motion.pos.f[2] = 46.0f;
+                plumber_moby->state = 6;
             } else {
-                *(unsigned char *)(m + 0x20) = 4;
+                plumber_moby->state = 4;
             }
         }
         break;
@@ -839,55 +865,62 @@ void the_plumber_update(char *m)
     rate = 0.02f;
     head_rate = 0.3f;
     tracking = 0;
-    if (*(unsigned char *)(m + 0x53) == 0) {
-        p = (char *)&D_0013E633 + 0xE9D;
+    if (plumber_moby->prev_seq == 0) {
+        char *hero_position = (char *)&hero_F7700.motion.pos;
+        Hero *hero_aim_view;
         tracking = 1;
-        if (func_001F9D48(m + 0x10, p) < 8.0f &&
-            FastDiffRots(*(float *)(m + 0x48),
-                func_L00_001FF860(*(float *)((pl = p - 0x80) + 0xD0) - *(float *)(m + 0x10),
-                    *(float *)(pl + 0xD4) - *(float *)(m + 0x14))) < 1.5707964f) {
-            if (FastVecLength(p + 0x80) > 0.01f)
-                *(int *)(d + 0x164) = scale_ticks(120);
+        if (func_001F9D48(&plumber_moby->pos, hero_position) < 8.0f &&
+            (hero_aim_view = (Hero *)(hero_position - 0x80),
+             FastDiffRots(plumber_moby->rot.z,
+                 func_L00_001FF860(hero_aim_view->motion.unkD0.f[0] - plumber_moby->pos.x,
+                                   hero_aim_view->motion.unkD0.f[1] - plumber_moby->pos.y))) < 1.5707964f) {
+            if (FastVecLength(hero_position + 0x80) > 0.01f)
+                plumber_vars->moving_timer = scale_ticks(120);
             else
-                func_001F9908_c((int *)(d + 0x164));
-        } else if (*(int *)(d + 0x164) != 0) {
-            *(int *)(d + 0x164) = 0;
-            qcopy(d + 0x150, (char *)&D_0013E633 + 0xEED);
+                func_001F9908_c(&plumber_vars->moving_timer);
+        } else if (plumber_vars->moving_timer != 0) {
+            plumber_vars->moving_timer = 0;
+            qcopy(&plumber_vars->target, hero_F7700.motion.unkD0.f);
         }
-        if (func_001F9908_c((int *)(d + 0x168))) {
+        if (func_001F9908_c(&plumber_vars->target_timer)) {
             float heading;
-            *(int *)(d + 0x168) = func_001FA898_r(func_001F9878(random_float_between(180.0f, 300.0f)));
-            heading = FastAddRots(*(float *)(m + 0x48), random_float_between(-90.0f, 90.0f) * 0.017453292f);
-            BuildSphericalOffset(d + 0x150, 6.0f, heading, random_float_between(0.0f, 30.0f) * 0.017453292f);
-            FastVecAdd(d + 0x150, d + 0x150, m + 0x10);
+            plumber_vars->target_timer = func_001FA898_r(func_001F9878(random_float_between(180.0f, 300.0f)));
+            heading = FastAddRots(plumber_moby->rot.z, random_float_between(-90.0f, 90.0f) * 0.017453292f);
+            BuildSphericalOffset(&plumber_vars->target, 6.0f, heading,
+                                 random_float_between(0.0f, 30.0f) * 0.017453292f);
+            FastVecAdd(&plumber_vars->target, &plumber_vars->target, &plumber_moby->pos);
         }
-        if (*(int *)(d + 0x164) != 0) {
-            qcopy(s_target, (char *)&D_0013E633 + 0xEED);
+        if (plumber_vars->moving_timer != 0) {
+            qcopy(s_target, hero_F7700.motion.unkD0.f);
             rate = 0.04f;
             head_rate = 0.3f;
         } else {
-            qcopy(s_target, d + 0x150);
+            qcopy(s_target, &plumber_vars->target);
         }
     }
     if (tracking) {
         float yaw;
         float pitch;
-        qcopy(s_eye, m + 0x10);
+        qcopy(s_eye, &plumber_moby->pos);
         s_eye[2] += 1.0f;
         FastVecSub(s_delta, s_target, s_eye);
-        yaw = FastSubRots(func_L00_001FF860(s_delta[0], s_delta[1]), *(float *)(m + 0x48));
+        yaw = FastSubRots(func_L00_001FF860(s_delta[0], s_delta[1]), plumber_moby->rot.z);
         pitch = -func_L00_001FF860(func_001F9CE8(s_delta), s_delta[2]);
-        if (yaw > 1.5707964f) yaw = 1.5707964f;
-        else if (yaw < -1.5707964f) yaw = -1.5707964f;
-        if (pitch > 0.5235988f) pitch = 0.5235988f;
-        else if (pitch < -0.5235988f) pitch = -0.5235988f;
-        *(float *)(d + 0xB8) = yaw * 0.5f;
-        *(float *)(d + 0x138) = yaw * 0.5f;
-        *(float *)(d + 0xB4) = pitch * 1.25f;
+        if (yaw > 1.5707964f)
+            yaw = 1.5707964f;
+        else if (yaw < -1.5707964f)
+            yaw = -1.5707964f;
+        if (pitch > 0.5235988f)
+            pitch = 0.5235988f;
+        else if (pitch < -0.5235988f)
+            pitch = -0.5235988f;
+        plumber_vars->yaw = yaw * 0.5f;
+        plumber_vars->head_yaw = yaw * 0.5f;
+        plumber_vars->pitch = pitch * 1.25f;
     }
-    if (gCheats[0] != 0) *(float *)(d + 0xC0) = 2.75f;
-    EaseManipulatorOffsets(m, d + 0x50, 0, rate * D_0015EE64, head_rate * D_0015EE64);
-    EaseManipulatorOffsets(m, d + 0xD0, 1, rate * D_0015EE64, head_rate * D_0015EE64);
+    if (gCheats[0] != 0) plumber_vars->height = 2.75f;
+    EaseManipulatorOffsets(m, plumber_vars->body, 0, rate * D_0015EE64, head_rate * D_0015EE64);
+    EaseManipulatorOffsets(m, plumber_vars->head, 1, rate * D_0015EE64, head_rate * D_0015EE64);
 }
 extern char D_0013F4D0_015F8[] __asm__("D_0013F4D0");
 extern s32 D_0014C290_015F8[][64] __asm__("D_0014C290");

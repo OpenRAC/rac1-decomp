@@ -1440,29 +1440,46 @@ extern char D_L10_00178400[];
 extern int D_0015EE84_2DA678 __asm__("D_0015EE84") MACRO_ADDR;
 extern unsigned char D_0014C150[];
 
+typedef struct FloorPlateVars {
+    s32 door;          /* 0x00: index of the door moby, -1 none */
+    s32 link;          /* 0x04: index of the linked plate moby, -1 none */
+    u8 pad_08[0x4];
+    s32 held;          /* 0x0C: plate held down */
+    s32 sound_timer;   /* 0x10: frames until the next door sound */
+} FloorPlateVars;
+
+typedef struct GroundHit {
+    u8 pad_00[0x18];
+    struct Moby *moby; /* 0x18: moby the ground probe hit */
+} GroundHit;
+
 // Updates a button and its linked object from nearby activating objects.
 void Moby1031Update(char *m) {
-    char *d = *(char **)(m + 0x78), *link;
-    int active = 0, n;
-    char **list;
-    char *contact;
-    if (*(int *)d == -1) {
-        func_L00_00251328(m, 8, 8, 8);
+    struct Moby *moby = (struct Moby *)m;
+    FloorPlateVars *plate_vars = (FloorPlateVars *)moby->pvars;
+    struct Moby *door;
+    s32 pressed = 0;
+    s32 nearby_moby_count;
+    struct Moby **list;
+    GroundHit *contact;
+
+    if (plate_vars->door == -1) {
+        func_L00_00251328(moby, 8, 8, 8);
         return;
     }
-    link = D_L10_00160058_00299818 + (*(int *)d << 8);
-    n = coll_sphere_mobys(1.0f, m + 0x10, 0, m, 0);
-    if (n != 0) {
-        if (n > 0) {
+    door = (struct Moby *)D_L10_00160058_00299818 + plate_vars->door;
+    nearby_moby_count = coll_sphere_mobys(1.0f, &moby->pos, 0, moby, 0);
+    if (nearby_moby_count != 0) {
+        if (nearby_moby_count > 0) {
             int count;
-            list = (char **)nearby_mobys;
-            contact = ground_hit;
-            count = n;
+            list = (struct Moby **)nearby_mobys;
+            contact = (GroundHit *)ground_hit;
+            count = nearby_moby_count;
             do {
-                float z = ProbeGroundHeight(*list + 0x10, 0, 0.5f);
-                if (*(char **)(contact + 0x18) == m) {
-                    if (FastAbsF(z - *(float *)(*list + 0x18)) < 0.1f) {
-                        if (*(short *)(*list + 0xA6) != 0x3EF) active = 1;
+                f32 ground_height = ProbeGroundHeight(&(*list)->pos, 0, 0.5f);
+                if (contact->moby == moby) {
+                    if (FastAbsF(ground_height - (*list)->pos.z) < 0.1f) {
+                        if ((*list)->oclass != 0x3EF) pressed = 1;
                     }
                 }
                 --count;
@@ -1470,41 +1487,38 @@ void Moby1031Update(char *m) {
             } while (count);
         }
     }
-    func_001F9908((int *)(d + 0x10));
-    if (D_0014C150[(unsigned char)m[0xB0] + (D_0015EE84_2DA678 << 4)] == 0xFF) active = 1;
-    if (!active) {
-        if (*(int *)(d + 0xC) == 0) goto inactive;
-        *(int *)(d + 0xC) = 0;
+    func_001F9908(&plate_vars->sound_timer);
+    if (D_0014C150[moby->mission + (D_0015EE84_2DA678 << 4)] == 0xFF) pressed = 1;
+    if (!pressed) {
+        if (plate_vars->held == 0) goto inactive;
+        plate_vars->held = 0;
     } else {
-        int target = *(int *)(d + 4);
-        if (target != -1) {
-            char *arr = (char *)(target << 8);
-            arr += (int)D_L10_00160058_00299818;
-            *(int *)(*(char **)(arr + 0x78) + 0xC) = 1;
+        if (plate_vars->link != -1) {
+            ((FloorPlateVars *)((struct Moby *)D_L10_00160058_00299818)[plate_vars->link].pvars)->held = 1;
         } else {
-            *(int *)(d + 0xC) = 0;
+            plate_vars->held = 0;
         }
     }
-    if ((unsigned char)link[0x20] >= 1 && (unsigned char)link[0x20] <= 2) {
-        link[0x20] = 3;
-        if (*(int *)(d + 0x10) == 0) {
-            Moby_PlaySound(0, 0, (int)link);
-            Moby_PlaySound(0, 0, (int)m);
-            *(int *)(d + 0x10) = scale_ticks(0x1E);
+    if (door->state >= 1 && door->state <= 2) {
+        door->state = 3;
+        if (plate_vars->sound_timer == 0) {
+            Moby_PlaySound(0, 0, (int)door);
+            Moby_PlaySound(0, 0, (int)moby);
+            plate_vars->sound_timer = scale_ticks(0x1E);
         }
     }
-    func_L00_00251328(m, 0x7F, 0x7F, 0x7F);
+    func_L00_00251328(moby, 0x7F, 0x7F, 0x7F);
     return;
 inactive:
-    if ((unsigned char)link[0x20] == 4) {
-        link[0x20] = 1;
-        if (*(int *)(d + 0x10) == 0) {
-            Moby_PlaySound(1, 0, (int)link);
-            Moby_PlaySound(0, 0, (int)m);
-            *(int *)(d + 0x10) = scale_ticks(0x1E);
+    if (door->state == 4) {
+        door->state = 1;
+        if (plate_vars->sound_timer == 0) {
+            Moby_PlaySound(1, 0, (int)door);
+            Moby_PlaySound(0, 0, (int)moby);
+            plate_vars->sound_timer = scale_ticks(0x1E);
         }
     }
-    func_L00_00251328(m, 8, 8, 8);
+    func_L00_00251328(moby, 8, 8, 8);
 }
 extern char *func_L10_002DEC08(char *owner);
 extern char *func_L10_002ECC80(char *owner);

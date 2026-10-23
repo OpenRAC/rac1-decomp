@@ -2179,92 +2179,131 @@ extern short D_L13_00161EC8;
 /* UpdateMoby_1261: switch on the state byte at +0x20. State 0 damps the values at +0x40 and +0x44, queries a hit with
  * func_L00_0025B478(moby, 0x330001, 0) and takes the hit's value (at +0x2C) off the float at data + 0x20; once that is
  * used up it clears the flag 0x1000 and moves to state 1. */
+/* Hit-message record: the damage value sits at +0x2C. */
+struct BlastHit {
+    u8 pad_00[0x2C];
+    f32 damage;                        /* 0x2C */
+};
+
+/* The poison vessel's per-moby vars, at Moby.pvars (+0x78). */
+struct BlastVars {
+    u8 pad_00[0x20];
+    union { f32 f; s32 i; } health;    /* 0x20: read as a float, zeroed as an int */
+    u8 pad_24[0x2];
+    s16 effect_timer;                  /* 0x26 */
+    u8 pad_28;
+    u8 hit;                            /* 0x29 */
+    u8 pad_2A[0x36];
+    u8 effects[7];                     /* 0x60: effect block, its address is passed to the effect helpers */
+    u8 effect_level;                   /* 0x67 */
+    u8 pad_68[0x8];
+    s32 timer;                         /* 0x70 */
+};
+
 void Moby1261Update(char *moby) {
-    char *data = *(char **)(moby + 0x78);
-    float vec[4];
-    int out[4];
-    switch (((unsigned char *)moby)[0x20]) {
-    case 0: {
-        float *p22;
-        char *tgt;
-        short *p16;
+    enum {
+        POISON_VESSEL_INTACT = 0,
+        POISON_VESSEL_BLASTING = 1
+    };
+    enum {
+        HIT_RESULT_NONE = 0,
+        HIT_RESULT_DEATH = 1,
+        HIT_RESULT_DYING_KNOCKBACK = 2,
+        HIT_RESULT_STUN_KNOCKBACK = 3,
+        HIT_RESULT_NO_REACTION = 11
+    };
+    struct Moby *m = (struct Moby *)moby;
+    struct BlastVars *vars = (struct BlastVars *)m->pvars;
+    float pos[4];
+    int kind[4];
+
+    switch (m->state) {
+    case POISON_VESSEL_INTACT: {
+        float *health;
+        struct BlastHit *hit;
+        void *effects;
         int r;
-        data[0x29] = 0;
-        *(float *)(moby + 0x40) = *(float *)(moby + 0x40) * 0.7f;
-        *(float *)(moby + 0x44) = *(float *)(moby + 0x44) * 0.7f;
-        p22 = (float *)(data + 0x20);
-        tgt = MobyGetHitMessage(moby, 0x330001, 0);
-        if (tgt != 0) {
-            int a = *(short *)(moby + 0xA6);
-            int b = *(short *)(moby + 0xB2);
-            STUB_printf(D_L13_001F5880, a, b, func_00120778(*(float *)(tgt + 0x2C)));
+
+        vars->hit = 0;
+        m->rot.x = m->rot.x * 0.7f;
+        m->rot.y = m->rot.y * 0.7f;
+        health = &vars->health.f;
+        hit = (struct BlastHit *)MobyGetHitMessage(m, 0x330001, 0);
+        if (hit != 0) {
+            int a = m->oclass;
+            int b = (s16)m->save_id;
+            STUB_printf(D_L13_001F5880, a, b, func_00120778(hit->damage));
         }
-        r = ComputeHitResponse(moby, tgt, p22, 0, out, 0, 0, 4);
+        r = ComputeHitResponse(m, hit, health, 0, kind, 0, 0, 4);
         switch (r) {
-        case 0:
+        case HIT_RESULT_NONE:
             break;
-        case 1:
-        case 2:
-            *(int *)p22 = 0;
+        case HIT_RESULT_DEATH:
+        case HIT_RESULT_DYING_KNOCKBACK:
+            *health = 0;
             break;
-        case 3: case 4: case 5: case 6: case 7: case 8: case 9: case 10: case 11:
+        case HIT_RESULT_STUN_KNOCKBACK:
+        case 4: case 5: case 6: case 7: case 8: case 9: case 10:
+        case HIT_RESULT_NO_REACTION:
             break;
         }
-        p16 = (short *)(data + 0x60);
-        if (out[0] >= 2) {
-            if (*p22 <= *(float *)(tgt + 0x2C)) {
-                *(int *)p22 = 0;
-                *(unsigned short *)(moby + 0x34) = *(unsigned short *)(moby + 0x34) & 0xEFFF;
-                SetDeathBits(moby, 0, -1);
-                data[0x67] = 0x78;
-                RerollEffectCounter(moby, p16);
-                *(int *)(data + 0x70) = 0;
-                DrawVendorBurst(moby, data);
-                SpawnPartType52Near(moby);
-                Moby_PlaySound(0, 0, (int)moby);
-                moby[0x20] = 1;
+        effects = vars->effects;
+        if (kind[0] >= 2) {
+            if (*health <= hit->damage) {
+                *health = 0;
+                m->flags &= 0xEFFF;
+                SetDeathBits(m, 0, -1);
+                vars->effect_level = 0x78;
+                RerollEffectCounter(m, effects);
+                vars->timer = 0;
+                DrawVendorBurst(m, vars);
+                SpawnPartType52Near(m);
+                Moby_PlaySound(0, 0, (int)m);
+                m->state = 1;
             } else {
-                *p22 = *p22 - *(float *)(tgt + 0x2C);
-                ((unsigned char *)data)[0x67] = 0xFA;
-                *(short *)(data + 0x26) = scale_ticks(0x3C);
-                RerollEffectCounter(moby, p16);
-                *(float *)(moby + 0x40) = random_float_between(-0.034906585f, 0.034906585f);
-                *(float *)(moby + 0x44) = random_float_between(-0.034906585f, 0.034906585f);
+                *health = *health - hit->damage;
+                vars->effect_level = 0xFA;
+                vars->effect_timer = scale_ticks(0x3C);
+                RerollEffectCounter(m, effects);
+                m->rot.x = random_float_between(-0.034906585f, 0.034906585f);
+                m->rot.y = random_float_between(-0.034906585f, 0.034906585f);
             }
         }
-        ((unsigned char *)moby)[0xA4] = 0xFF;
-        StepColorFade(moby, p16);
-    break;
+        m->hit_slot = 0xFF;
+        StepColorFade(m, effects);
+        break;
     }
-    case 1: {
-        float f20, f0, g;
+    case POISON_VESSEL_BLASTING: {
+        float elapsed, span, radius, g;
         float one;
-        int s16, n, d;
-        qcopy(vec, moby + 0x10);
+        int timer, hits, duration;
+
+        qcopy(pos, &m->pos);
         one = 1.0f;
-        vec[2] = vec[2] + one;
-        f20 = IntToFloat(*(int *)(data + 0x70));
-        f0 = IntToFloat(scale_ticks(*(int *)&D_L13_00161EBC));
-        f0 = Lerp(*(float *)&D_L13_00161EC0, *(float *)&D_L13_00161EC4, f20 / f0);
-        n = coll_sphere_mobys(f0, vec, 0x10, moby, 0);
-        SendRadialMessageToMobys(moby, vec, sphere_hits_ed158, n, 0, 0x830001, 2, 1, *(float *)&D_L13_00161EC8, one, one);
-        g = (float)*(int *)(data + 0x70);
+        pos[2] = pos[2] + one;
+        elapsed = IntToFloat(vars->timer);
+        span = IntToFloat(scale_ticks(*(int *)&D_L13_00161EBC));
+        radius = Lerp(*(float *)&D_L13_00161EC0, *(float *)&D_L13_00161EC4, elapsed / span);
+        hits = coll_sphere_mobys(radius, pos, 0x10, m, 0);
+        SendRadialMessageToMobys(m, pos, sphere_hits_ed158, hits, 0, 0x830001, 2, 1,
+                                 *(float *)&D_L13_00161EC8, one, one);
+        g = (float)vars->timer;
         if (func_001F9878((float)*(int *)&D_L13_00161EBC * 0.5f) < g) {
-            *(unsigned short *)(moby + 0x34) = *(unsigned short *)(moby + 0x34) | 0x41;
-            SpawnPartType52Near(moby);
+            m->flags |= 0x41;
+            SpawnPartType52Near(m);
         } else {
-            int t = (unsigned char)moby[0x23] * 7;
-            moby[0x23] = t / 8;
+            int fade = (u8)m->alpha * 7;
+            m->alpha = fade / 8;
         }
-        s16 = *(int *)(data + 0x70);
-        d = *(int *)&D_L13_00161EBC;
-        s16 = s16 + 1;
-        *(int *)(data + 0x70) = s16;
-        if (scale_ticks(d) < s16) {
-            SpawnPartType52Near(moby);
-            DeleteMoby(moby);
+        timer = vars->timer;
+        duration = *(int *)&D_L13_00161EBC;
+        timer = timer + 1;
+        vars->timer = timer;
+        if (scale_ticks(duration) < timer) {
+            SpawnPartType52Near(m);
+            DeleteMoby(m);
         }
-    break;
+        break;
     }
     }
 }

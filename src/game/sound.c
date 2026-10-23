@@ -293,17 +293,25 @@ extern int func_001FA898_i(float) __asm__("func_001FA898");
    chain setting one `r` with a single return; early returns let jump.c
    move the last arm's return block to the end. It returns int, and its
    one caller here uses a void alias. */
+struct VoiceVolumeDefinition {
+    u8 pad_00[0x8];
+    s32 far_volume;               /* 0x08 */
+    s32 near_volume;              /* 0x0C */
+    u8 pad_10[0x9];
+    u8 attenuation_flags;         /* 0x19: bit 0 selects the squared falloff */
+};
+
 int calculate_voice_distance_volume(void *arg0, float x, float lo, float hi) {
-    char *s = (char *)arg0;
+    struct VoiceVolumeDefinition *definition = (struct VoiceVolumeDefinition *)arg0;
     int r;
-    if (*(unsigned char *)(s + 0x19) & 1) {
-        if (x <= lo) r = *(int *)(s + 0xC);
-        else if (hi <= x) r = *(int *)(s + 0x8);
-        else r = *(int *)(s + 0x8) + func_001FA898_i((hi - x) * (hi - x) * IntToFloat(*(int *)(s + 0xC) - *(int *)(s + 0x8)) / ((hi - lo) * (hi - lo)));
+    if (definition->attenuation_flags & 1) {
+        if (x <= lo) r = definition->near_volume;
+        else if (hi <= x) r = definition->far_volume;
+        else r = definition->far_volume + func_001FA898_i((hi - x) * (hi - x) * IntToFloat(definition->near_volume - definition->far_volume) / ((hi - lo) * (hi - lo)));
     } else {
-        if (x <= lo) r = *(int *)(s + 0xC);
-        else if (hi <= x) r = *(int *)(s + 0x8);
-        else r = *(int *)(s + 0x8) + func_001FA898_i((hi - x) * IntToFloat(*(int *)(s + 0xC) - *(int *)(s + 0x8)) / (hi - lo));
+        if (x <= lo) r = definition->near_volume;
+        else if (hi <= x) r = definition->far_volume;
+        else r = definition->far_volume + func_001FA898_i((hi - x) * IntToFloat(definition->near_volume - definition->far_volume) / (hi - lo));
     }
     return r;
 }

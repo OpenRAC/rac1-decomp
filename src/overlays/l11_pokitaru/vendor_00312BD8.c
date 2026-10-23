@@ -2321,49 +2321,66 @@ extern char D_0014171B[];
  * D_0014171B + 0xAA35; otherwise it creates eight objects of type 0x4F1 (func_0020D348), kept at data + 0x70, copies the
  * moby's position and angles into each, and moves to state 1. States 1 and 2 step the table index at data + 0x60 and
  * update the eight objects. */
+typedef struct OilChainVars_318730 {
+    u8 pad00[0x60];
+    s32 path_index;                    /* 0x60 */
+    s32 count;                         /* 0x64 */
+    s32 point;                         /* 0x68 */
+    union { f32 f; s32 i; } t;         /* 0x6C: zeroed as an int, read as a float */
+    struct Moby *links[8];             /* 0x70 */
+    s16 offsets[8];                    /* 0x90 */
+    u8 pad_A0[0x20];                   /* 0xA0: frac[8], not used here */
+    f32 catchup[8];                    /* 0xC0 */
+    f32 health;                        /* 0xE0 */
+    u8 pad_E4[0x8];
+    s32 path_sel;                      /* 0xEC */
+    char *path;                        /* 0xF0 */
+    s32 sound;                         /* 0xF4 */
+} OilChainVars_318730;
+
 void oil_tanker_front_update(char *moby) {
-    char *data = *(char **)(moby + 0x78);
-    int st = *(unsigned char *)(moby + 0x20);
+    OilChainVars_318730 *chain_vars = (OilChainVars_318730 *)((struct Moby *)moby)->pvars;
+    int st = ((struct Moby *)moby)->state;
     switch (st) {
     case 0: {
         char *p;
-        char **q;
+        struct Moby **q;
         short *h;
         int *z;
         int i;
-        PlaceGroupCraftsOnTable(moby, *(int *)(data + 0x60));
-        if (((unsigned char *)(D_0014171B + 0xAA35))[*(unsigned char *)(moby + 0xB0) + (map_data_0015EE84 << 4)] == 0xFF) {
+        PlaceGroupCraftsOnTable(moby, chain_vars->path_index);
+        if (((unsigned char *)(D_0014171B + 0xAA35))[((struct Moby *)moby)->mission + (map_data_0015EE84 << 4)] == 0xFF) {
             DeleteMoby(moby);
             return;
         }
-        *(unsigned char *)(moby + 0x30) = 0xFF;
-        *(short *)(moby + 0x32) = 0x200;
-        p = ((char **)path_table)[*(int *)(data + 0xEC)];
-        *(char **)(data + 0xF0) = p;
-        qcopy(moby + 0x10, p + 0x10);
-        *(float *)(data + 0xE0) = 80.0f;
-        *(int *)(data + 0x64) = 8;
-        *(int *)(data + 0xF4) = -1;
-        *(int *)(data + 0x68) = 0;
-        *(int *)(data + 0x6C) = 0;
-        moby[0x20] = 1;
-        z = (int *)(data + 0xC0);
-        h = (short *)(data + 0x90);
-        q = (char **)(data + 0x70);
+        ((struct Moby *)moby)->update_dist = 0xFF;
+        ((struct Moby *)moby)->draw_dist = 0x200;
+        p = ((char **)path_table)[chain_vars->path_sel];
+        chain_vars->path = p;
+        qcopy(&((struct Moby *)moby)->pos, p + 0x10);
+        chain_vars->health = 80.0f;
+        chain_vars->count = 8;
+        chain_vars->sound = -1;
+        chain_vars->point = 0;
+        chain_vars->t.i = 0;
+        ((struct Moby *)moby)->state = 1;
+        z = (int *)chain_vars->catchup;
+        h = chain_vars->offsets;
+        q = chain_vars->links;
         for (i = 7; i >= 0; i--) {
-            char *s = CreateMoby(0x4F1);
-            char *t;
+            struct Moby *s = (struct Moby *)CreateMoby(0x4F1);
+            struct Moby *t;
             *q = s;
-            *(short *)(s + 0x32) = 0x200;
-            *(unsigned char *)(*q + 0x30) = 0xFF;
-            (*q)[0x31] = 1;
-            *(u64 *)(*q + 0x38) = *(u64 *)(moby + 0x38);
-            *(unsigned short *)(*q + 0x34) = *(unsigned short *)(moby + 0x34) & 0xFFDF;
-            *(float *)(*q + 0x2C) = *(float *)(*(char **)(*q + 0x24) + 0x24) * 2.0f;
+            s->draw_dist = 0x200;
+            (*q)->update_dist = 0xFF;
+            (*q)->visible = 1;
+            (*q)->spawn_frame = ((struct Moby *)moby)->spawn_frame;
+            (*q)->flags = ((struct Moby *)moby)->flags & 0xFFDF;
+            (*q)->scale = (*q)->pclass->scale * 2.0f;
             t = *q;
-            qcopy(t + 0x10, moby + 0x10);
-            qcopy(t + 0x40, moby + 0x40);
-            *h = **(unsigned short **)(data + 0xF0) - 0x64;
+            qcopy(&t->pos, &((struct Moby *)moby)->pos);
+            qcopy(&t->rot, &((struct Moby *)moby)->rot);
+            *h = *(unsigned short *)chain_vars->path - 100;
             *z = 0;
             q++;
             h++;
@@ -2373,14 +2390,14 @@ void oil_tanker_front_update(char *moby) {
     }
     case 1:
         if (*(int *)(D_0013E633 + 0x2EA1) == 0x32) {
-            int *z = (int *)(data + 0xC0);
-            short *h = (short *)(data + 0x90);
+            int *z = (int *)chain_vars->catchup;
+            short *h = chain_vars->offsets;
             int i;
-            moby[0x20] = 2;
-            *(char **)(data + 0xF0) = ((char **)path_table)[*(int *)(data + 0x60)];
-            *(int *)(data + 0x68) = 0;
+            ((struct Moby *)moby)->state = 2;
+            chain_vars->path = ((char **)path_table)[chain_vars->path_index];
+            chain_vars->point = 0;
             for (i = 7; i >= 0; i--) {
-                *h = **(unsigned short **)(data + 0xF0) - 0x64;
+                *h = *(unsigned short *)chain_vars->path - 100;
                 *z = 0;
                 h++;
                 z++;
@@ -2388,18 +2405,18 @@ void oil_tanker_front_update(char *moby) {
         }
         /* fall through */
     case 2: {
-        float f = *(float *)(data + 0x6C) + *(float *)&D_L11_001623B0;
+        float f = chain_vars->t.f + *(float *)&D_L11_001623B0;
         float *z;
-        int *q;
+        struct Moby **q;
         float *zz;
         int i;
-        *(float *)(data + 0x6C) = f;
+        chain_vars->t.f = f;
         if (1.0f < f) {
-            *(float *)(data + 0x6C) = f - 1.0f;
-            *(int *)(data + 0x68) = (*(int *)(data + 0x68) + 1) % **(int **)(data + 0xF0);
+            chain_vars->t.f = f - 1.0f;
+            chain_vars->point = (chain_vars->point + 1) % *(s32 *)chain_vars->path;
         }
-        z = (float *)(data + 0xC0);
-        q = (int *)(data + 0x70);
+        z = chain_vars->catchup;
+        q = chain_vars->links;
         zz = z;
         for (i = 7; i >= 0; i--) {
             float old = *z;
@@ -2413,9 +2430,9 @@ void oil_tanker_front_update(char *moby) {
         }
         Moby_OrientAlongPath(moby);
         MoveChainAlongPath(moby);
-        if (*(unsigned char *)(moby + 0x20) == 2) ChainHandleHits(moby);
-        if (Sound_IsPlaying(moby, *(int *)(data + 0xF4)) == 0) {
-            *(int *)(data + 0xF4) = func_0022ED80_i(0, 4, (int)moby);
+        if (((struct Moby *)moby)->state == 2) ChainHandleHits(moby);
+        if (Sound_IsPlaying(moby, chain_vars->sound) == 0) {
+            chain_vars->sound = func_0022ED80_i(0, 4, (int)moby);
         }
         break;
     }

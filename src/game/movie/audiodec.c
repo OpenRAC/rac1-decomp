@@ -4,25 +4,60 @@
 
 extern int func_0012F1A8(int, int, int, int, int, int);
 extern char *D_001613B8 MACRO_ADDR;
+typedef struct MovieSpuStreamHeader {
+    char id[4];
+    s32 size;
+    s32 type;
+    s32 rate;                   /* passed to snd_start_movie_sound */
+    s32 ch;                     /* channel count */
+    s32 interSize;              /* interleave block size */
+    s32 loopStart;
+    s32 loopEnd;
+} MovieSpuStreamHeader;
+
+typedef struct MovieAudioDec {
+    s32 state;                  /* 0x00 0 header, 1 header done, 2 started */
+    s32 strType;                /* 0x04 3 at create; 4 = no header */
+    MovieSpuStreamHeader hdr;   /* 0x08 */
+    char body[8];               /* 0x28 */
+    s32 hdrCount;               /* 0x30 header bytes received (of 0x28) */
+    u8 *data;                   /* 0x34 EE ring buffer */
+    s32 put;                    /* 0x38 write offset */
+    s32 count;                  /* 0x3C bytes buffered */
+    s32 size;                   /* 0x40 */
+    s32 totalBytes;             /* 0x44 */
+    s32 iopBuff;                /* 0x48 snd_init_movie_sound result */
+    s32 iopBuffSize;            /* 0x4C 0x400 at create */
+    s32 iopLastPos;             /* 0x50 */
+    s32 iopPausePos;            /* 0x54 */
+    s32 totalBytesSent;         /* 0x58 */
+    s32 iopZero;                /* 0x5C */
+    s32 spuPos;                 /* 0x60 */
+} MovieAudioDec;
+
+/* Clears the header, sets buffer parameters, and acquires the sound transport handle. */
+
 /* Clears the header, sets buffer parameters, and acquires the sound transport handle. */
 int audioDecCreate(char *dec, void *buffer, int size, char *staging) {
-    FastMemZero16(dec + 8, 0x20);
-    *(void **)(dec + 0x34) = buffer;
-    *(int *)(dec + 0x40) = size;
-    *(int *)(dec + 4) = 3;
-    *(int *)dec = 0;
-    *(int *)(dec + 0x30) = 0;
-    *(int *)(dec + 0x38) = 0;
-    *(int *)(dec + 0x3C) = 0;
-    *(int *)(dec + 0x44) = 0;
-    *(int *)(dec + 0x50) = 0;
-    *(int *)(dec + 0x58) = 0;
-    *(int *)(dec + 0x5C) = 0;
-    *(int *)(dec + 0x60) = 0;
+    MovieAudioDec *audio = (MovieAudioDec *)dec;
+
+    FastMemZero16(&audio->hdr, 0x20);
+    audio->data = buffer;
+    audio->size = size;
+    audio->strType = 3;
+    audio->state = 0;
+    audio->hdrCount = 0;
+    audio->put = 0;
+    audio->count = 0;
+    audio->totalBytes = 0;
+    audio->iopLastPos = 0;
+    audio->totalBytesSent = 0;
+    audio->iopZero = 0;
+    audio->spuPos = 0;
     D_001613B8 = staging;
-    *(int *)(dec + 0x4C) = 0x400;
-    *(int *)(dec + 0x48) = func_0012F1A8(0x400, 0x1000, 0x400, 0, 5, 3);
-    if (*(int *)(dec + 0x48) < 0) return 0;
+    audio->iopBuffSize = 0x400;
+    audio->iopBuff = func_0012F1A8(0x400, 0x1000, 0x400, 0, 5, 3);
+    if (audio->iopBuff < 0) return 0;
     return 1;
 }
 /* AudioDec: only the fields these functions touch are known. */

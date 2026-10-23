@@ -887,57 +887,85 @@ extern short D_0015EE84;
 extern unsigned char D_0014171B[] NOT_SDA;
 extern unsigned char D_0013E633_u[] __asm__("D_0013E633") NOT_SDA;
 
-// hinged bridge: swings with a sound while triggered and poses the bridge moby from its pivot
-// Adapted from Lombyte (MIT) for PAL: overlays/l01/unclassified_002f9810.c, FUN_L01_002fb8a8.
-void bridge_half_update(char *self) {
-    char *v;
-    Vec4 arm;
-    Vec4 d;
-    int h;
-    char *voice;
+typedef struct PendulumVars {
+    u8 pad_00[0x60];
+    Vec4 pivot;                 /* 0x60 */
+    f32 swing;                  /* 0x70 */
+    s32 sound;                  /* 0x74 */
+} PendulumVars;
 
-    v = *(char **)(self + 0x78);
-    switch (*(unsigned char *)(self + 0x20)) {
-    case 0:
-        qcopy(v + 0x60, self + 0x10);
-        *(float *)(v + 0x70) = 1.0f;
-        self[0x20] = 1;
-        *(int *)(v + 0x74) = -1;
+typedef struct PendulumMoby {
+    u8 pad_00[0x10];
+    Vec4 pos;                   /* 0x10 */
+    u8 state;                   /* 0x20 */
+    u8 pad_21[0x23];
+    f32 rot_x;                  /* 0x44 */
+    f32 rot_z;                  /* 0x48 */
+    u8 pad_4C[0x2C];
+    PendulumVars *vars;         /* 0x78 */
+    u8 pad_7C[0x34];
+    u8 id;                      /* 0xB0 */
+    u8 pad_B1[0x0B];
+    u8 trigger;                 /* 0xBC */
+} PendulumMoby;
+
+/* hinged bridge: swings with a sound while triggered and poses the bridge moby from its pivot */
+// Adapted from Lombyte (MIT) for PAL: overlays/l01/unclassified_002f9810.c, FUN_L01_002fb8a8.
+void bridge_half_update(char *p) {
+    enum {
+        BRIDGE_HALF_INITIALIZE = 0,
+        BRIDGE_HALF_WAIT_FOR_TRIGGER = 1,
+        BRIDGE_HALF_REDUCE_SWING_TO_ZERO = 2
+    };
+    PendulumMoby *self = (PendulumMoby *)p;
+    PendulumVars *pendulum_vars;
+    Vec4 arm;
+    Vec4 swing_offset;
+    s32 voice_slot_index;
+    u8 *voice;
+
+    pendulum_vars = self->vars;
+    switch (self->state) {
+    case BRIDGE_HALF_INITIALIZE:
+        qcopy(&pendulum_vars->pivot, &self->pos);
+        pendulum_vars->swing = 1.0f;
+        self->state = 1;
+        pendulum_vars->sound = -1;
         break;
-    case 1:
-        if (*(unsigned char *)(self + 0xBC) == 2 || (D_0014171B + 0xAA35)[*(unsigned char *)(self + 0xB0) + (*(int *)&D_0015EE84 << 4)] == 0xFF) {
-            self[0x20] = 2;
-            self[0xBC] = 0;
+    case BRIDGE_HALF_WAIT_FOR_TRIGGER:
+        if (self->trigger == 2 || (D_0014171B + 0xAA35)[self->id + (*(int *)&D_0015EE84 << 4)] == 0xFF) {
+            self->state = 2;
+            self->trigger = 0;
         }
         break;
-    case 2:
-        *(float *)(v + 0x70) -= D_0015EE6C * 0.5f;
-        if (*(float *)(v + 0x70) < 0.0f) {
-            *(float *)(v + 0x70) = 0.0f;
+    case BRIDGE_HALF_REDUCE_SWING_TO_ZERO:
+        pendulum_vars->swing -= D_0015EE6C * 0.5f;
+        if (pendulum_vars->swing < 0.0f) {
+            pendulum_vars->swing = 0.0f;
         }
-        if (*(float *)(v + 0x70) == 0.0f) {
-            h = *(int *)(v + 0x74);
-            if (h != -1) {
-                voice = (char *)D_0013E633_u + 0x1D + h * 0x70;
-                if (*(void **)(voice + 0x88) == self && *(unsigned char *)(voice + 0x74) != 0) {
-                    Sound_StopSlot(h);
+        if (pendulum_vars->swing == 0.0f) {
+            voice_slot_index = pendulum_vars->sound;
+            if (voice_slot_index != -1) {
+                voice = D_0013E633_u + 0x1D + voice_slot_index * 0x70;
+                if (*(void **)(voice + 0x88) == self && voice[0x74] != 0) {
+                    Sound_StopSlot(voice_slot_index);
                 }
             }
-            *(int *)(v + 0x74) = -1;
-            self[0x20] = 1;
-        } else if (!Sound_IsPlaying(self, *(int *)(v + 0x74))) {
-            *(int *)(v + 0x74) = Moby_PlaySound(0, 4, (int)self);
+            pendulum_vars->sound = -1;
+            self->state = 1;
+        } else if (!Sound_IsPlaying(self, pendulum_vars->sound)) {
+            pendulum_vars->sound = Moby_PlaySound(0, 4, (int)self);
         }
         break;
     }
-    *(float *)(self + 0x44) = *(float *)(v + 0x70) * 0.62831855f;
+    self->rot_x = pendulum_vars->swing * 0.62831855f;
     arm.q = 0;
     arm.f[2] = -11.0f;
-    FastVecAdd(&arm, &arm, v + 0x60);
-    d.f[0] = FastCos(*(float *)(self + 0x48)) * 11.0f * FastSin(*(float *)(self + 0x44));
-    d.f[1] = FastSin(*(float *)(self + 0x48)) * 11.0f * FastSin(*(float *)(self + 0x44));
-    d.f[2] = FastCos(*(float *)(self + 0x44)) * 11.0f;
-    FastVecAdd(self + 0x10, &arm, &d);
+    FastVecAdd(&arm, &arm, &pendulum_vars->pivot);
+    swing_offset.f[0] = FastCos(self->rot_z) * 11.0f * FastSin(self->rot_x);
+    swing_offset.f[1] = FastSin(self->rot_z) * 11.0f * FastSin(self->rot_x);
+    swing_offset.f[2] = FastCos(self->rot_x) * 11.0f;
+    FastVecAdd(&self->pos, &arm, &swing_offset);
 }
 typedef int u128_pool __attribute__((mode(TI)));
 typedef struct {
