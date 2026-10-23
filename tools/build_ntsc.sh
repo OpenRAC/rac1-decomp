@@ -224,6 +224,8 @@ fi
 # high -j (flow.c before insn-flags.h exists, seen at -j32). Build it first
 # with the submodule's own script at a safe job count when setup.sh would
 # rebuild it (missing, or built from an older patch stack: provenance.json).
+# setup.sh's own check misses a patch added since the build (0064 at 6abcf077), so
+# this one also rebuilds then, before setup.sh would take the old compiler as current.
 GC="tools/compilers/game-compiler"
 if ! python3 - "$GC/provenance.json" patches/sce-991111b <<'EOF'
 import hashlib, json, pathlib, sys
@@ -234,6 +236,9 @@ except OSError:
 d = pathlib.Path(sys.argv[2])
 ok = want and all((d / n).is_file() and hashlib.sha256((d / n).read_bytes()).hexdigest() == h
                   for n, h in want.items())
+# A patch added upstream since the build (setup.sh only rechecks the recorded ones; every
+# patch in the directory is in one of build-game-compiler.py's orders).
+ok = ok and all(p.name in want for p in d.glob("*.patch"))
 sys.exit(0 if ok else 1)
 EOF
 then
