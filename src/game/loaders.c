@@ -1136,7 +1136,280 @@ void func_00203F68(char *self, int a1, char *src, int a3) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/text", func_00204340);
+typedef u32 u128_04340 __attribute__((mode(TI), aligned(16)));
+typedef struct ResidentRenderTextureDefinition_04340 {
+    s32 unk0; /* unused here; a word, so the record is 4-byte aligned */
+    s16 width;
+    s16 height;
+    s16 draw_control_count;
+    s16 clut_block_offset; /* 0x0A: TEX0.CBP (bit 37) after adding the base */
+    s16 mip_block_offset_0;
+    s16 mip_block_offset_1;
+} ResidentRenderTextureDefinition_04340;
+typedef union MaterialMap_04340 {
+    u128_04340 q;
+    u8 b[16];
+} MaterialMap_04340;
+typedef struct {
+    s16 width;
+    s16 height;
+    s16 draw_control_count;
+    s16 texture_block_offset;
+    s16 palette_block_offset;
+    s16 mip_block_offset_0;
+    s16 mip_block_offset_1;
+    s16 mip_block_offset_2;
+} ShrubMipTextureDefinition_04340;
+typedef struct {
+    s32 draw_high;
+    s32 draw_shift;
+    u8 pad8[8];
+    s32 material_base;
+    s32 material_shift;
+    u8 pad18[8];
+    s32 material_index;
+    u8 pad24[0x1C];
+} ShrubRenderPacket_04340;
+typedef struct {
+    u8 pad0[0x10];
+    union {
+        u64 d;
+        s32 w[2];
+    } tex1;
+    u64 payload18;
+    union {
+        u64 d;
+        s32 w[2];
+    } tex0;
+    u64 payload28;
+    u64 miptbp1;
+    u64 payload38;
+} ShrubMipPacket_04340;
+typedef struct {
+    s32 count;
+    s32 prefix_record_count;
+} ShrubRenderGroupHeader_04340;
+typedef struct {
+    u8 pad0[0x10];
+    ShrubRenderGroupHeader_04340 group_header;
+} ShrubRenderGroup_04340;
+typedef struct {
+    ShrubRenderGroup_04340 *group;
+    s32 pad4;
+} ShrubRenderGroupReference_04340;
+typedef struct {
+    u8 pad0[0x10];
+    f32 scale;
+    u8 pad14[2];
+    u16 instance_count;
+    void *first_instance;
+    ShrubMipPacket_04340 *mip_packet;
+    u8 pad20[6];
+    u16 class_slot;
+    s16 group_count;
+    u8 pad2A[2];
+    s32 packed_geometry;
+    u8 pad30[0x10];
+    ShrubRenderGroupReference_04340 groups[1];
+} ShrubRenderClass_04340;
+extern ShrubRenderClass_04340 *D_001D82C0[64];
+extern s16 D_001D83C0[64];
+extern u8 D_001D8440[0x400];
+extern s32 D_001D9040[64];
+extern MaterialMap_04340 D_001D9640[64];
+extern s32 D_001604CC MACRO_ADDR;
+extern s32 D_0015EF8C MACRO_ADDR;
+extern u64 D_0019E640_04340[0x30] __asm__("D_0019E640");
+extern s32 func_001FA898(f32);
+extern s32 func_001F9968(s32);
+
+/* Registers a shrub render class in the next free slot: slot and id tables, the class's distance threshold
+   (scale * 1024 as an integer), relocates its group and mip-packet pointers, builds the mip packet's TEX0/TEX1/
+   MIPTBP1 words from the mip texture (or from the resident material templates when there is none), copies the
+   class's material map and rewrites every packet's texture words. Adapted from Lombyte (GPL-3.0):
+   src/rendering/register_shrub_render_class.c, register_shrub_render_class (US 0x203B08). */
+void func_00204340(ShrubRenderClass_04340 *render_class, ResidentRenderTextureDefinition_04340 *textures,
+                   u128_04340 *material_map, ShrubMipTextureDefinition_04340 *mip_texture, s32 class_id) {
+    s32 group_index;
+    s32 index;
+    s32 fixed_threshold;
+    MaterialMap_04340 *slot_materials;
+    ShrubMipPacket_04340 *packed_mip_packet;
+    ShrubMipPacket_04340 *mip_packet;
+    ShrubRenderGroupHeader_04340 *group_header;
+    ShrubRenderPacket_04340 *packet;
+
+    D_001D8440[class_id] = D_001604CC;
+    D_001D83C0[D_001604CC] = class_id;
+    D_001D82C0[D_001604CC] = render_class;
+    render_class->class_slot = D_001604CC;
+    fixed_threshold = func_001FA898(render_class->scale * 1024.0f);
+    D_001D9040[D_001604CC] = fixed_threshold;
+    D_001604CC++;
+    render_class->first_instance = 0;
+    render_class->instance_count = 0;
+    if (render_class->packed_geometry != 0) {
+        render_class->packed_geometry += (s32)render_class;
+    }
+    for (group_index = 0; group_index < render_class->group_count; group_index++) {
+        render_class->groups[group_index].group =
+            (ShrubRenderGroup_04340 *)(((s32)render_class->groups[group_index].group) + ((s32)render_class));
+    }
+
+    packed_mip_packet = render_class->mip_packet;
+    if (packed_mip_packet != 0) {
+        s32 material_base;
+        s32 material_shift;
+
+        mip_packet = (ShrubMipPacket_04340 *)((s32)packed_mip_packet + (s32)render_class);
+        render_class->mip_packet = mip_packet;
+        material_base = mip_packet->tex1.w[0];
+        material_shift = mip_packet->tex1.w[1];
+        if (mip_texture != 0) {
+            s32 mip_width_units[4];
+            s32 width_log2;
+            s32 height_log2;
+            s32 gs_block_base;
+            u64 draw_word;
+            s32 width;
+            s32 level;
+            s32 draw_control_count;
+            s32 palette_block;
+            s32 texture_block;
+            s32 mip_block_0;
+            s32 mip_block_1;
+            s32 mip_block_2;
+
+            width = mip_texture->width;
+            for (level = 0; level < 4; level++) {
+                mip_width_units[level] = width >> (level + 6);
+                if (mip_width_units[level] <= 0) {
+                    mip_width_units[level] = 1;
+                }
+            }
+
+            width_log2 = func_001F9968(mip_texture->width);
+            height_log2 = func_001F9968(mip_texture->height);
+            draw_control_count = mip_texture->draw_control_count;
+            texture_block = mip_texture->texture_block_offset;
+            gs_block_base = D_0015EF8C >> 8;
+            palette_block = mip_texture->palette_block_offset + gs_block_base;
+            mip_block_0 = mip_texture->mip_block_offset_0 + gs_block_base;
+            mip_block_1 = mip_texture->mip_block_offset_1 + gs_block_base;
+            mip_block_2 = mip_texture->mip_block_offset_2 + gs_block_base;
+            mip_packet->tex1.d = (s64)(((u64)(draw_control_count - 1) << 2) | ((u64)1 << 5) | ((u64)material_shift << 6)) | ((s64)material_base << 32);
+            mip_packet->tex0.d = (s64)((u64)((s64)palette_block | ((s64)mip_width_units[0] << 14) | ((s64)0x13 << 20) | ((s64)width_log2 << 26)) | ((u64)height_log2 << 30) | ((u64)1 << 34) | ((u64)(texture_block + gs_block_base) << 37)) | ((s64)4 << 61);
+            draw_word = (u64)mip_block_0 | ((u64)mip_width_units[1] << 14);
+            draw_word |= (u64)mip_block_1 << 20;
+            draw_word |= (u64)mip_width_units[2] << 34;
+            draw_word |= (u64)mip_block_2 << 40;
+            draw_word |= (u64)mip_width_units[3] << 54;
+            mip_packet->miptbp1 = draw_word;
+        } else {
+            s32 template_index;
+            s32 template_slot;
+            u64 template_tex0;
+            u64 template_tex1;
+            u64 template_mip;
+            u64 draw_bits;
+            u64 template_draw_word;
+
+            for (template_index = 0; D_0019E640_04340[(template_index + 1) * 3] != 0; template_index++) {
+            }
+            template_tex0 = D_0019E640_04340[template_index * 3];
+            template_slot = template_index * 3;
+            template_tex1 = D_0019E640_04340[template_slot + 1];
+            template_mip = D_0019E640_04340[template_slot + 2];
+            draw_bits = ((u64)material_shift << 6) | 0x20;
+            template_draw_word = (template_tex1 & 0x1C) | draw_bits | ((u64)material_base << 32);
+            mip_packet->tex0.d = template_tex0;
+            mip_packet->miptbp1 = template_mip;
+            mip_packet->tex1.d = template_draw_word;
+        }
+    }
+    slot_materials = &D_001D9640[D_001D8440[class_id]];
+    qcopy(slot_materials, material_map);
+    for (group_index = 0; group_index < render_class->group_count; group_index++) {
+        group_header = &render_class->groups[group_index].group->group_header;
+        packet = (ShrubRenderPacket_04340 *)((((u8 *)group_header) + (group_header->prefix_record_count * 16)) + 0x10);
+        for (index = 0; index < group_header->count; index++) {
+            s32 material_index;
+            s32 material_base;
+            s32 draw_shift;
+            s32 draw_high;
+            s32 material_shift;
+
+            material_index = slot_materials->b[packet->material_index];
+            draw_high = packet->draw_high;
+            draw_shift = packet->draw_shift;
+            material_base = packet->material_base;
+            material_shift = packet->material_shift;
+            if (textures != 0) {
+                ResidentRenderTextureDefinition_04340 *texture;
+                s32 width_bits;
+                s32 width_units_64;
+                s32 width_units_128;
+                s32 width_log2;
+                s32 height_log2;
+                s32 gs_block_base;
+                s32 mip_block_1;
+                s32 mip_block_0;
+                s32 draw_control_count;
+                u64 tex0_word;
+                u64 tex1_word;
+                u64 mip_word;
+                u64 clamp_word;
+
+                texture = &textures[material_index];
+                width_bits = (u16)texture->width << 16;
+                width_units_64 = width_bits >> 22;
+                width_units_128 = width_bits >> 23;
+                if (width_units_64 <= 0) {
+                    width_units_64 = 1;
+                }
+                if (width_units_128 <= 0) {
+                    width_units_128 = 1;
+                }
+                width_log2 = func_001F9968(width_bits >> 16);
+                height_log2 = func_001F9968(texture->height);
+                gs_block_base = D_0015EF8C >> 8;
+                draw_control_count = texture->draw_control_count;
+                width_bits = texture->clut_block_offset + gs_block_base;
+                mip_block_0 = texture->mip_block_offset_0 + gs_block_base;
+                mip_block_1 = texture->mip_block_offset_1 + gs_block_base;
+                tex1_word = (s64)(((u64)(draw_control_count - 1) << 2) | ((u64)1 << 5) | ((u64)draw_shift << 6)) | ((s64)draw_high << 32);
+                clamp_word = (u64)material_base | ((u64)material_shift << 2) | ((u64)material_index << 24);
+                mip_word = (s64)(((u64)width_units_128 << 14) | ((u64)mip_block_0 << 20) | ((u64)1 << 34) | ((u64)mip_block_1 << 40)) | ((s64)1 << 54);
+                tex0_word = (s64)((u64)(((s64)width_units_64 << 14) | ((s64)0x13 << 20) | ((s64)width_log2 << 26)) | ((u64)height_log2 << 30) | ((u64)1 << 34) | ((u64)width_bits << 37)) | ((s64)4 << 61);
+                *(u64 *)&packet->draw_high = tex1_word;
+                *(u64 *)&packet->material_base = clamp_word;
+                *(u64 *)&packet->material_index = mip_word;
+                *(u64 *)((u8 *)packet + 0x30) = tex0_word;
+            } else {
+                s32 template_index;
+                u64 template_tex0;
+                u64 template_tex1;
+                u64 template_mip;
+                u64 draw_bits;
+                u64 template_draw_word;
+                u64 template_clamp_word;
+
+                template_tex0 = D_0019E640_04340[material_index * 3];
+                template_index = material_index * 3;
+                template_tex1 = D_0019E640_04340[template_index + 1];
+                template_mip = D_0019E640_04340[template_index + 2];
+                draw_bits = ((u64)draw_shift << 6) | 0x20;
+                template_draw_word = (template_tex1 & 0x1C) | draw_bits | ((u64)draw_high << 32);
+                template_clamp_word = (u64)material_base | ((u64)material_shift << 2) | ((u64)material_index << 24);
+                *(u64 *)&packet->draw_high = template_draw_word;
+                *(u64 *)&packet->material_base = template_clamp_word;
+                *(u64 *)&packet->material_index = template_mip;
+                *(u64 *)((u8 *)packet + 0x30) = template_tex0;
+            }
+            packet++;
+        }
+    }
+}
 
 typedef struct { int x0; int x4; float scale; } FontHdr_04918;
 typedef struct {

@@ -42,4 +42,4 @@ void AppendDisplayListEntry(long *a, int *b, int *c, long d, int on) {
     w[14] = a3;
     D_L02_00161240 = D_L02_00161240 + 32;
 }
-INCLUDE_ASM("asm/overlays", func_L02_002100E8);
+ASM_FUNC("asm/overlays", func_L02_002100E8);

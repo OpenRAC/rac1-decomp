@@ -2462,8 +2462,264 @@ int IsWithinAngleRange(char *moby, float a, float b) {
     }
     return 0;
 }
-INCLUDE_ASM("asm/overlays", func_L02_002FCE00);
-extern int func_L02_002FCE00(char *);
+extern PadState D_0013CA40_2FCE00 __asm__("D_0013CA40");
+extern int D_L02_001AC140_2FCE00[] __asm__("D_L02_001AC140");
+extern void f_reset_2FCE00(char *) __asm__("func_L00_002E9838");
+extern int f_ready_2FCE00(char *) __asm__("func_L00_002E9870");
+extern int f_trigger_2FCE00(char *) __asm__("func_L02_002FCA80");
+extern float f_atan_2FCE00(float, float) __asm__("func_L00_001FF860");
+extern float f_abs_2FCE00(float) __asm__("func_001F9B88");
+extern float f_diffrot_2FCE00(float, float) __asm__("func_001FA850");
+extern float f_addrot_2FCE00(float, float) __asm__("func_001FA748");
+extern int f_frames_2FCE00(int) __asm__("func_001F9850");
+extern void f_6570_2FCE00(int) __asm__("func_L02_002F79A8");
+extern void f_6598_2FCE00(float, float, float) __asm__("func_L02_002F79D0");
+extern float f_itof_2FCE00(int) __asm__("func_001FA888");
+extern float f_cos_2FCE00(float) __asm__("func_001F9F90");
+extern float f_sin_2FCE00(float) __asm__("func_001F9FA8");
+extern void f_8918_2FCE00(float, float, float *) __asm__("func_L00_002E9DC8");
+extern void f_8970_2FCE00(float, float, void *) __asm__("func_L00_002E9E20");
+extern void f_8450_2FCE00(int, float, float) __asm__("func_L00_002E9900");
+extern void f_8620_2FCE00(void) __asm__("func_L00_002E9AD0");
+extern void f_84b8_2FCE00(float, float) __asm__("func_L00_002E9968");
+extern void f_84f0_2FCE00(int, float, float) __asm__("func_L00_002E99A0");
+extern void f_8568_2FCE00(int) __asm__("func_L00_002E9A18");
+extern void f_8648_2FCE00(void) __asm__("func_L00_002E9AF8");
+extern void f_latspring_2FCE00(float, float) __asm__("func_L00_002E9A40");
+extern void f_upspring_2FCE00(float, float) __asm__("func_L00_002E9A40");
+extern void f_vsub_2FCE00(void *, void *, void *) __asm__("func_001F9BF0");
+
+/* Camera setup of a camera moby: picks its target (the first live moby of its
+   group, or one by index), checks the trigger, then sets the follow camera's
+   heading, springs and offsets for its mode (data +0x3C). Adapted from Lombyte
+   (GPL-3.0), FUN_L02_002fb9c8. */
+void func_L02_002FCE00(char *moby) {
+    char *data = *(char **)(D_L02_0015F050 + *(short *)(moby + 0x84) * 32 + 0x1c);
+    char *target;
+    unsigned short *group;
+    int id;
+    int index;
+    int duration;
+    int count;
+    int end;
+    int frames;
+    int active;
+    int hit;
+    float scale;
+    float angle;
+    float heading;
+    float amount;
+    float vec[3];
+
+    if (*(int *)(data + 0x50) != 0) {
+        *(short *)(data + 0x20) = 0;
+        f_reset_2FCE00(moby);
+        return;
+    }
+    index = *(int *)(data + 0x44);
+    if (index >= 0) {
+        group = (unsigned short *)D_L02_001AC140_2FCE00[index];
+        if (group == 0) {
+            *(short *)(data + 0x20) = -1;
+            f_reset_2FCE00(moby);
+            return;
+        }
+        {
+            char *first_group_target;
+            char *u;
+            int b;
+            {
+                int e = *group;
+                b = D_L02_00160058_x;
+                first_group_target = (char *)(b + ((e & 0x7fff) << 8));
+                id = e;
+            }
+            if (*(signed char *)(first_group_target + 0x20) < 0) {
+                do {
+                    if ((id << 16) < 0) {
+                        *(short *)(data + 0x20) = -1;
+                        f_reset_2FCE00(moby);
+                        return;
+                    }
+                    group++;
+                    {
+                        int e = *group;
+                        b = D_L02_00160058_x;
+                        u = (char *)(b + ((e & 0x7fff) << 8));
+                        id = e;
+                    }
+                } while (*(signed char *)(u + 0x20) < 0);
+                target = u;
+            } else {
+                target = first_group_target;
+            }
+        }
+    } else {
+        target = (char *)(D_L02_00160058_x + (*(int *)(data + 0x28) << 8));
+        if (*(signed char *)(target + 0x20) < 0) {
+            *(short *)(data + 0x20) = -1;
+            f_reset_2FCE00(moby);
+            return;
+        }
+    }
+    *(char **)(data + 0x48) = target;
+    if (*(short *)(data + 0x3c) == 6 && (char *)D_0013F450.ground_moby != target) {
+        *(short *)(data + 0x20) = 0;
+        f_reset_2FCE00(moby);
+        return;
+    }
+    if (f_ready_2FCE00(moby) <= 0) {
+        *(short *)(data + 0x20) = 0;
+        return;
+    }
+    if (f_trigger_2FCE00(moby) == 0) {
+        *(short *)(data + 0x20) = 0;
+        f_reset_2FCE00(moby);
+        return;
+    }
+    if (*(short *)(data + 0x3c) == 5) {
+        angle = f_atan_2FCE00(*(float *)D_L02_00167480, *(float *)(D_L02_00167480 + 4));
+        if (*(short *)(data + 0x20) < 2)
+            *(float *)(data + 0x40) = *(float *)(D_L02_0015F050 + *(short *)(moby + 0x84) * 32 + 0x18);
+        else if (f_abs_2FCE00(D_0013CA40_2FCE00.analog[0]) >= 0.3f || f_abs_2FCE00(D_0013CA40_2FCE00.analog[1]) >= 0.3f)
+            *(float *)(data + 0x40) = angle;
+        heading = *(float *)(data + 0x40);
+        if (f_diffrot_2FCE00(heading, angle) > 1.5707964f)
+            f_addrot_2FCE00(heading, 3.1415927f);
+    }
+    if (*(short *)(data + 0x3c) == 4) {
+        heading = *(float *)(D_L02_0015F050 + *(short *)(moby + 0x84) * 32 + 0x18);
+        angle = f_atan_2FCE00(*(float *)D_L02_00167480, *(float *)(D_L02_00167480 + 4));
+        if (f_diffrot_2FCE00(heading, angle) > 1.5707964f)
+            heading = f_addrot_2FCE00(heading, 3.1415927f);
+        *(float *)(data + 0x40) = heading;
+    }
+    active = 1;
+    scale = 1.0f;
+    *(short *)(data + 0x20) += 1;
+    if (*(short *)(data + 0x3c) == 1) {
+        duration = f_frames_2FCE00(300);
+        count = f_frames_2FCE00(400);
+        end = f_frames_2FCE00(560);
+        frames = f_frames_2FCE00(200);
+    } else {
+        duration = f_frames_2FCE00(300);
+        count = f_frames_2FCE00(350);
+        end = f_frames_2FCE00(400);
+        frames = f_frames_2FCE00(200);
+    }
+    if (*(short *)(data + 0x3c) == 7) {
+        if (D_0013CA40_2FCE00.analog[0] != 0.0f) *(short *)(data + 0x20) = duration;
+        count = *(short *)(data + 0x20);
+        if (count >= duration) {
+            active = 0;
+            *(short *)(data + 0x3e) += 1;
+            if (duration + f_frames_2FCE00(30) < count) {
+                scale = 0.1f;
+                active = 1;
+            }
+        }
+        if (*(short *)(data + 0x20) >= end) {
+            active = 1;
+            *(short *)(data + 0x3e) = 0;
+            *(short *)(data + 0x20) = 1;
+        }
+        if (frames < *(short *)(data + 0x20) && *(short *)(data + 0x20) < duration) {
+            *(short *)(data + 0x3e) = duration;
+            *(short *)(data + 0x20) = frames;
+        }
+    } else if ((unsigned short)(*(short *)(data + 0x3c) - 1) < 2) {
+        f_6570_2FCE00(176);
+        f_6598_2FCE00(1.0f, 12.0f, 0.11f);
+        if (D_0013CA40_2FCE00.analog[0] != 0.0f || D_0013CA40_2FCE00.analog[1] != 0.0f)
+            *(short *)(data + 0x20) = duration;
+        if (*(short *)(data + 0x20) >= duration) {
+            int waited = (unsigned short)*(short *)(data + 0x3e) + 1;
+            *(short *)(data + 0x3e) = waited;
+            if ((short)waited >= count) {
+                if (IsWithinAngleRange(moby, 30.0f, 0.0f) != 0)
+                    *(short *)(data + 0x20) = end;
+                else
+                    active = 0;
+            } else {
+                active = 0;
+            }
+        }
+        if (*(short *)(data + 0x20) >= end) {
+            active = 1;
+            *(short *)(data + 0x3e) = 0;
+            *(short *)(data + 0x20) = 1;
+        }
+        if (frames < *(short *)(data + 0x20) && *(short *)(data + 0x20) < duration) {
+            *(short *)(data + 0x3e) = duration;
+            *(short *)(data + 0x20) = frames;
+        }
+    } else if (frames < *(short *)(data + 0x20)) {
+        *(short *)(data + 0x20) = frames;
+    }
+    hit = 0;
+    amount = *(float *)data * scale * 0.017453292f * ((float)*(short *)(data + 0x20) / f_itof_2FCE00(frames));
+    if (active) {
+        if (IsWithinAngleRange(moby, *(float *)(data + 0x30), *(float *)(data + 0x2c)) != 0) {
+            hit = 1;
+            if ((unsigned short)(*(short *)(data + 0x3c) - 4) < 2) {
+                vec[0] = f_cos_2FCE00(*(float *)(data + 0x40));
+                vec[1] = f_sin_2FCE00(*(float *)(data + 0x40));
+                vec[2] = 0.0f;
+                f_8918_2FCE00(amount, 0.0f, vec);
+            } else if (*(short *)(data + 0x3c) == 3) {
+                float speed;
+                if (*(short *)(data + 0x20) < f_frames_2FCE00(90))
+                    speed = (amount - 0.0f) * ((float)*(short *)(data + 0x20) / f_itof_2FCE00(f_frames_2FCE00(90))) + 0.0f;
+                else
+                    speed = amount;
+                f_8970_2FCE00(speed, 0.0f, target + 0x10);
+            } else {
+                f_8970_2FCE00(amount, 0.0f, target + 0x10);
+            }
+        }
+    }
+    if (*(float *)(data + 0x34) != 0.0f) {
+        f_8450_2FCE00(0, *(float *)(data + 0x34), 0.003f);
+        f_8620_2FCE00();
+    }
+    if (*(float *)(data + 0x38) != 0.0f)
+        f_84b8_2FCE00(*(float *)(data + 0x38), 0.003f);
+    if (*(float *)(data + 0x4c) != 0.0f)
+        f_84f0_2FCE00(0, *(float *)(data + 0x4c), 0.005f);
+    if (*(short *)(data + 0x3c) == 3) {
+        float heading;
+        f_8568_2FCE00(0);
+        f_8620_2FCE00();
+        f_8648_2FCE00();
+        f_upspring_2FCE00(0.01f, 0.2f);
+        if (*(short *)(data + 0x20) >= f_frames_2FCE00(120))
+            heading = 0.03f;
+        else
+            heading = ((float)*(short *)(data + 0x20) / f_itof_2FCE00(f_frames_2FCE00(120))) * 0.02f + 0.01f;
+        f_latspring_2FCE00(heading, 0.2f);
+    }
+    if ((unsigned short)(*(short *)(data + 0x3c) - 4) < 2) {
+        f_8568_2FCE00(0);
+        f_8620_2FCE00();
+        f_8648_2FCE00();
+        f_upspring_2FCE00(0.02f, 0.2f);
+        f_8450_2FCE00(0, 5.84f, 0.003f);
+        if (*(short *)(data + 0x3c) == 4) {
+            float angle;
+            f_vsub_2FCE00(vec, target + 0x10, &D_0013F450.motion.pos);
+            angle = f_atan_2FCE00(vec[0], vec[1]);
+            if (hit && f_diffrot_2FCE00(angle, *(float *)(data + 0x40)) > 1.9198622f) {
+                if (*(float *)(data + 0x34) != 0.0f)
+                    f_8450_2FCE00(0, *(float *)(data + 0x34) + 3.36f, 0.003f);
+                else
+                    f_8450_2FCE00(0, 8.0f, 0.003f);
+            }
+        }
+        f_6570_2FCE00(176);
+    }
+    return;
+}
 
 // Camera init: runs the setup when the flag is clear and the camera record is not negative, then clears a field and returns 0.
 int CameraMoby_Init(char *moby) {

@@ -1165,7 +1165,206 @@ float ComputeLaunchVelocityZ(float *a, float *b, float *out, float speed, float 
     }
     return -((a[2] - b[2]) + g * (t * t) * 0.5f) / t;
 }
-INCLUDE_ASM("asm/overlays", func_L00_0025BCF8);
+typedef union {
+    VecQuad q;
+    float f[4];
+} Vec4_BCF8 __attribute__((aligned(16)));
+extern void f_54218_BCF8(void *, int, int) __asm__("func_L00_00254218");
+extern void f_vadd_BCF8(void *, void *, void *) __asm__("func_001F9BD8");
+extern void f_vsub_BCF8(void *, void *, void *) __asm__("func_001F9BF0");
+extern void f_vscale_BCF8(float, void *, void *) __asm__("func_001F9C30");
+extern void f_vscale3_BCF8(float, void *, void *) __asm__("func_001F9C48");
+extern void f_25328_BCF8(float, void *, void *) __asm__("func_00125328");
+extern float f_vlen_BCF8(void *) __asm__("func_001F9CB8");
+extern float f_sqrt_BCF8(float) __asm__("func_001F9B50");
+extern void f_vrot_BCF8(void *, void *, void *) __asm__("func_001F9EC0");
+extern void f_FF328_BCF8(float, void *, void *) __asm__("func_L00_001FF328");
+extern float f_cos_BCF8(float) __asm__("func_001F9F90");
+extern float f_sin_BCF8(float) __asm__("func_001F9FA8");
+extern float f_randf_BCF8(float, float) __asm__("func_002140F8");
+extern float f_randang_BCF8(void) __asm__("func_00214158");
+
+/* Scatters up to MAXIMUM points over the volumes listed in the moby class's
+   shape table (spheres, discs, capsules), picked by volume weight; returns how
+   many it wrote. Adapted from Lombyte (GPL-3.0), FUN_L00_0025aca0; the sphere case
+   transforms its point inside the retry loop, where Lombyte has a do-while (0). */
+int func_L00_0025BCF8_r(float density, unsigned char *entity, int maximum, Vec4_BCF8 *out, int mask) __asm__("func_L00_0025BCF8");
+int func_L00_0025BCF8_r(float density, unsigned char *entity, int maximum, Vec4_BCF8 *out, int mask) {
+    enum {
+        SHAPE_INDEXED_CENTER_SPHERE = 2,
+        SHAPE_ENDPOINT_SEGMENT_WITH_BALL_OFFSET = 4
+    };
+    enum {
+        SHAPE_XY_DISK_WITH_Z_EXTENT = 3
+    };
+    float weights[20];
+    unsigned char *entries[20];
+    Vec4_BCF8 first, second, third, fourth, fifth;
+    unsigned char *list;
+    unsigned char *entry;
+    int count, index, chosen, emitted, limit;
+    unsigned int flags;
+    unsigned int last;
+    float total, weight, radius, extent, random;
+    int type;
+
+    {
+        unsigned char *entry;
+        entry = *(unsigned char **)(*(unsigned char **)(entity + 0x24) + 0x10);
+        if (!entry) return 0;
+        if (*(short *)(entry + 2)) f_54218_BCF8(entity, *(short *)(entry + 2), 0);
+        if (*(int *)(entry + 4) <= 0) return 0;
+        count = 0;
+        index = 0;
+        total = 0.0f;
+        entry += 0x10;
+        {
+            unsigned char *list;
+            list = entry + 4;
+            do {
+                float radius, extent;
+                int type;
+                unsigned int active;
+                flags = *(unsigned int *)(list - 4);
+                last = flags >> 31;
+                type = flags & 0xff;
+                active = flags & 0x20000;
+                if (!(((mask >> index) ^ 1) & 1) && active) {
+                    entries[count] = entry;
+                    switch (type) {
+                    case 0:
+                    case 1:
+                    case SHAPE_INDEXED_CENTER_SPHERE: {
+                        if (type < 2) {
+                            qcopy(&first, (void *)((entry + 0x10)));
+                            f_vscale3_BCF8(*(float *)(entity + 0x2c) * 0.0009765625f, &first, &first);
+                            radius = first.f[3];
+                        } else {
+                            qcopy(&first, (void *)((0x70000000 + (*(int *)list << 4))));
+                            qcopy(&second, (void *)((entry + 0x10)));
+                            f_vadd_BCF8(&first, &first, &second);
+                            f_vscale_BCF8(*(float *)(entity + 0x2c) * 0.0009765625f, &first, &first);
+                            radius = *(float *)(entity + 0x2c);
+                            radius = *(float *)(list + 8) * radius * 0.0009765625f;
+                        }
+                        weights[count] = radius * 4.1887903f * radius * radius;
+                        break;
+                    }
+                    case SHAPE_XY_DISK_WITH_Z_EXTENT: {
+                        float radius, extent;
+                        qcopy(&first, (void *)((entry + 0x10)));
+                        f_vscale_BCF8(*(float *)(entity + 0x2c), &first, &first);
+                        radius = first.f[3] * *(float *)(entity + 0x2c);
+                        radius *= 0.0009765625f;
+                        extent = *(float *)list * (*(float *)(entity + 0x2c) * 0.0009765625f);
+                          weights[count] = radius * 4.187743f * radius * radius + radius * 1.5707964f * radius * extent;
+                        break;
+                    }
+                    case SHAPE_ENDPOINT_SEGMENT_WITH_BALL_OFFSET: {
+                        f_25328_BCF8(*(float *)(entity + 0x2c) * 0.0009765625f, &first, (void *)(0x70000000 + (*(short *)list << 4)));
+                        f_25328_BCF8(*(float *)(entity + 0x2c) * 0.0009765625f, &second, (void *)(0x70000000 + (*(short *)(list + 2) << 4)));
+                        f_vsub_BCF8(&third, &first, &second);
+                        radius = f_vlen_BCF8(&third);
+                        extent = *(float *)(list + 8) * *(float *)(entity + 0x2c) * 0.0009765625f;
+                          weights[count] = extent * 1.5707964f * extent * radius;
+                        break;
+                    }
+                    }
+                    total += weights[count];
+                    count++;
+                }
+                index++;
+                list += 0x20;
+                entry += 0x20;
+            } while (!last);
+        }
+    }
+    limit = (int)(density * total + 0.5f);
+    if (maximum < limit) limit = maximum;
+    for (emitted = 0; emitted < limit; emitted++) {
+        random = f_randf_BCF8(0.0f, total);
+        for (chosen = 0; chosen < count; chosen++) {
+            if (random < weights[chosen]) break;
+            random -= weights[chosen];
+        }
+        entry = entries[chosen];
+        switch (type = *entry) {
+        case 0:
+        case 1:
+        case SHAPE_INDEXED_CENTER_SPHERE: {
+            float radius, extent;
+            if (type < 2) {
+                qcopy(&first, (void *)((entry + 0x10)));
+                f_vscale_BCF8(*(float *)(entity + 0x2c), &first, &first);
+                extent = first.f[3] * *(float *)(entity + 0x2c);
+            } else {
+                qcopy(&first, (void *)((0x70000000 + (*(int *)(entry + 4) << 4))));
+                qcopy(&second, (void *)((entry + 0x10)));
+                f_vadd_BCF8(&first, &first, &second);
+                f_vscale_BCF8(*(float *)(entity + 0x2c), &first, &first);
+                extent = *(float *)(entry + 0xc) * *(float *)(entity + 0x2c);
+            }
+            extent *= 0.0009765625f;
+            f_FF328_BCF8(1024.0f, &first, &first);
+            for (;;) {
+                second.f[0] = f_randf_BCF8(-extent, extent);
+                second.f[1] = f_randf_BCF8(-extent, extent);
+                second.f[2] = f_randf_BCF8(-extent, extent);
+                if (f_vlen_BCF8(&second) <= extent) {
+                    f_vadd_BCF8(&second, &second, &first);
+                    f_vrot_BCF8(&second, &second, entity + 0xc0);
+                    f_vadd_BCF8(&out[emitted], &second, entity + 0x10);
+                    break;
+                }
+            }
+            break;
+        }
+        case SHAPE_XY_DISK_WITH_Z_EXTENT: {
+            float radius, extent, weight, random, angle;
+            qcopy(&first, (void *)((entry + 0x10)));
+            f_vscale_BCF8(*(float *)(entity + 0x2c), &first, &first);
+            radius = first.f[3] * *(float *)(entity + 0x2c);
+            extent = *(float *)(entry + 4) * *(float *)(entity + 0x2c);
+            f_FF328_BCF8(1024.0f, &first, &first);
+            radius *= 0.0009765625f;
+            extent *= 0.0009765625f;
+            weight = f_randf_BCF8(0.0f, radius * radius);
+            weight = f_sqrt_BCF8(weight);
+            random = f_randf_BCF8(0.0f, extent);
+            angle = f_randang_BCF8();
+            second.f[0] = f_cos_BCF8(angle) * weight;
+            second.f[1] = f_sin_BCF8(angle) * weight;
+            second.f[2] = random;
+            f_vadd_BCF8(&second, &second, entity + 0x10);
+            f_vadd_BCF8(&out[emitted], &first, &second);
+            break;
+        }
+        case SHAPE_ENDPOINT_SEGMENT_WITH_BALL_OFFSET: {
+            float extent, weight;
+            list = entry + 4;
+            f_25328_BCF8(*(float *)(entity + 0x2c), &first, (void *)(0x70000000 + (*(short *)list << 4)));
+            f_25328_BCF8(*(float *)(entity + 0x2c), &second, (void *)(0x70000000 + (*(short *)(list + 2) << 4)));
+            f_vsub_BCF8(&third, &second, &first);
+            weight = f_randf_BCF8(0.0f, 1.0f);
+            f_vscale_BCF8(weight, &third, &third);
+            f_vadd_BCF8(&fourth, &third, &first);
+            f_FF328_BCF8(1024.0f, &fourth, &fourth);
+            extent = *(float *)(entry + 0xc) * *(float *)(entity + 0x2c);
+            extent = extent * 0.0009765625f;
+            do {
+                fifth.f[0] = f_randf_BCF8(-extent, extent);
+                fifth.f[1] = f_randf_BCF8(-extent, extent);
+                fifth.f[2] = f_randf_BCF8(-extent, extent);
+            } while (!(f_vlen_BCF8(&fifth) <= extent));
+            f_vadd_BCF8(&fifth, &fifth, &fourth);
+            f_vrot_BCF8(&fifth, &fifth, entity + 0xc0);
+            f_vadd_BCF8(&out[emitted], &fifth, entity + 0x10);
+            break;
+        }
+        }
+    }
+    return limit;
+}
 LINKER_REMNANT("asm/overlays", func_L00_0025C488);
 extern float func_0020D830(char *);
 extern void func_00213DE0(void *, int, int, int);

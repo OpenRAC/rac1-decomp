@@ -876,7 +876,161 @@ void CameraType7Activate(void *arg) {
     *(short *)(gg + 0x270) = 1;
     *(int *)(gg + 0x2F4) = scale_ticks(0x3C);
 }
-INCLUDE_ASM("asm/overlays", func_L00_002ED320);
+typedef struct {
+    u8 pad0[0x180];
+    char *current_follow_cam;      /* 0x180 */
+    u8 pad184[0x270 - 0x184];
+    s16 s270;
+} CamGlobals_2ED320;
+typedef int OvlQuad_2ED320 __attribute__((mode(TI)));
+typedef struct {
+    Vec4 pos;                      /* 0x80 */
+    Vec4 rot;                      /* 0x90: z is the yaw */
+} HeroMotion_2ED320;
+typedef struct {
+    u8 pad0[0x80];
+    HeroMotion_2ED320 motion;      /* 0x80 */
+    u8 padA0[0x994 - 0xA0];
+    struct Moby *unk994;           /* 0x994: the rope anchor moby */
+    u8 pad998[8];
+    f32 unk9A0;                    /* 0x9A0 */
+    u8 pad9A4[0x2084 - 0x9A4];
+    struct { s32 current; } state; /* 0x2084 */
+} HeroCam_2ED320;
+extern HeroCam_2ED320 hero_2ED320 __asm__("D_0013F450");
+extern CamGlobals_2ED320 cam_globals_2ED320 __asm__("D_L00_00166D80");
+extern s32 current_level_2ED320 __asm__("D_0015EE84") MACRO_ADDR;
+extern f32 frame_time_2ED320 __asm__("D_0015EE6C") MACRO_ADDR;
+extern void approach_2ED320(float, float, float *) __asm__("func_00214D28");
+extern void FastVecSub_2ED320(void *, void *, void *) __asm__("func_001F9BF0");
+extern void normalize_2ED320(float, void *, void *) __asm__("func_L00_001FF4B0");
+extern void FastVecScale_2ED320(float, void *, void *) __asm__("func_001F9C30");
+extern void FastVecAdd_2ED320(void *, void *, void *) __asm__("func_001F9BD8");
+extern int coll_line_2ED320(void *, void *, int, int, int) __asm__("func_L00_001EFFF0");
+extern int coll_sphere_2ED320(float, void *, int, int) __asm__("func_L00_001F10E0");
+extern float FastVecDot_2ED320(void *, void *) __asm__("func_001F9C78");
+extern float FastVecLength_2ED320(void *) __asm__("func_001F9CB8");
+extern float rope_spring_turn_2ED320(void *, float, float, float, float, float) __asm__("func_L00_001EB6A8");
+extern float FastArcTan_2ED320(float, float) __asm__("func_L00_001FF860");
+extern f32 FastCos_2ED320(f32) __asm__("func_001F9F90");
+extern f32 FastSin_2ED320(f32) __asm__("func_001F9FA8");
+extern unsigned short *neighbour_lists_2ED320[] __asm__("D_L00_001ABBC0");
+extern char *mobys_2ED320 __asm__("D_L00_00160098") MACRO_ADDR;
+extern OvlQuad_2ED320 coll_pos_2ED320 __asm__("D_L00_00173F60");
+extern float rope_turn_k_2ED320 SDATA(D_L00_00161EA8);
+
+/* Follow camera on a rope or a swing: eases the distance, height and lag toward the hero's rope state, turns the
+   camera toward the next rope anchor the hero faces (the anchor's neighbour list, classes 0x323/0x2F6) or toward
+   the hero's yaw, then places it behind the hero and pulls it in front of geometry. Adapted from Lombyte (GPL-3.0) for
+   PAL: src/overlays/shared/gameplay/camera/follow_camera_update.c, FUN_L00_002ebe70. The moby list pointer
+   D_L00_00160098 is MACRO_ADDR (retail loads it with its lui into one register). */
+void func_L00_002ED320(char *cam) {
+    char *state = *(char **)(cam + 0x70);
+    char *follow = state + 0x40;
+    float *distance = (float *)(state + 0xa0);
+    float *angle = (float *)(state + 0xb8);
+    float position[4] __attribute__((aligned(16)));
+    float offset[4] __attribute__((aligned(16)));
+    float direction[4] __attribute__((aligned(16)));
+    float aim[4] __attribute__((aligned(16)));
+    float target, rate, fraction, score, best, length;
+    char *candidate, *chosen, *current_target;
+    float *turn;
+    OvlQuad_2ED320 *collision_position;
+    unsigned short *neighbours;
+    int i;
+
+    if (hero_2ED320.unk994 != 0 && hero_2ED320.state.current == 0x2c) {
+        fraction = ((float *)hero_2ED320.unk994)[6] - hero_2ED320.motion.pos.f[2];
+        if (fraction > hero_2ED320.unk9A0) fraction = hero_2ED320.unk9A0;
+        else if (fraction < 0.0f) fraction = 0.0f;
+        fraction /= hero_2ED320.unk9A0;
+        target = fraction + 3.65f;
+        rate = fraction + fraction;
+    } else {
+        target = 4.64f;
+        rate = 2.0f;
+    }
+    approach_2ED320(target, frame_time_2ED320 * 8.0f, (float *)(*(char **)(cam_globals_2ED320.current_follow_cam + 0x70) + 0xa0));
+    approach_2ED320(rate, frame_time_2ED320 * 4.0f, (float *)(*(char **)(cam_globals_2ED320.current_follow_cam + 0x70) + 0xb0));
+    if (current_level_2ED320 == 14 && hero_2ED320.state.current == 0x2c)
+        approach_2ED320(rate + 0.25f, frame_time_2ED320 * 8.0f, (float *)(*(char **)(cam_globals_2ED320.current_follow_cam + 0x70) + 0x8c));
+    else
+        approach_2ED320(rate - 0.5f, frame_time_2ED320 * 8.0f, (float *)(*(char **)(cam_globals_2ED320.current_follow_cam + 0x70) + 0x8c));
+
+    if (hero_2ED320.state.current == 0x2c) {
+        if ((current_level_2ED320 != 14 && current_level_2ED320 != 7 && current_level_2ED320 != 9) ||
+            (hero_2ED320.unk994 != 0 && *(unsigned char *)((char *)hero_2ED320.unk994 + 0x21) == 255)) {
+            *angle = rope_spring_turn_2ED320(angle + 1, *angle, hero_2ED320.motion.rot.f[2], 0.00125f, 0.175f, 0.0f);
+        } else {
+            chosen = 0;
+            turn = angle + 1;
+            best = 1000.0f;
+            current_target = (char *)hero_2ED320.unk994;
+            /* Fakematch: a dead compare with 10.0f loads that constant early, which fixes the
+             * register order of the loop constants and of turn. */
+            if (target == 10.0f) { }
+            neighbours = neighbour_lists_2ED320[*(unsigned char *)(current_target + 0x21)];
+            if (neighbours != 0) {
+                do {
+                    candidate = mobys_2ED320 + (*neighbours & 0x7fff) * 0x100;
+                    if (candidate != current_target &&
+                        (*(short *)(candidate + 0xa6) == 0x323 || *(short *)(candidate + 0xa6) == 0x2f6)) {
+                        FastVecSub_2ED320(offset, candidate + 0x10, current_target + 0x10);
+                        normalize_2ED320(1.0f, direction, offset);
+                        aim[0] = FastCos_2ED320(hero_2ED320.motion.rot.f[2]);
+                        aim[1] = FastSin_2ED320(hero_2ED320.motion.rot.f[2]);
+                        aim[2] = 0.0f;
+                        score = FastVecDot_2ED320(direction, aim);
+                        if (score > 0.0f) {
+                            target = FastVecLength_2ED320(offset) - score * 10.0f;
+                            if (target < best) {
+                                chosen = candidate;
+                                best = target;
+                            }
+                        }
+                    }
+                } while ((short)*neighbours++ >= 0);
+            }
+            if (chosen != 0) {
+                FastVecSub_2ED320(offset, chosen + 0x10, current_target + 0x10);
+                *angle = rope_spring_turn_2ED320(turn, *angle, FastArcTan_2ED320(offset[0], offset[1]), 0.00125f, 0.175f, 0.0f);
+            } else if (*(int *)(follow + 0x40) == 1)
+                *angle = rope_spring_turn_2ED320(turn, *angle, *(float *)(*(char **)(follow + 0x44) + 0x48), 0.00125f, 0.175f, 0.0f);
+            else
+                *angle = rope_spring_turn_2ED320(turn, *angle, hero_2ED320.motion.rot.f[2], 0.00125f, 0.175f, 0.0f);
+        }
+    } else if (hero_2ED320.state.current == 0x25) {
+        if (*(int *)(follow + 0x40) == 1)
+            *angle = rope_spring_turn_2ED320(angle + 1, *angle, *(float *)(*(char **)(follow + 0x44) + 0x48), rope_turn_k_2ED320, 0.175f, 0.0f);
+        else
+            *angle = rope_spring_turn_2ED320(angle + 1, *angle, hero_2ED320.motion.rot.f[2], rope_turn_k_2ED320, 0.175f, 0.0f);
+    }
+    *(float *)(follow + 0x30) = FastCos_2ED320(*angle);
+    *(float *)(follow + 0x34) = FastSin_2ED320(*angle);
+    *(int *)(follow + 0x38) = 0;
+    *(float *)(follow + 0x3c) = *(float *)(follow + 0x38);
+    normalize_2ED320(-*distance, position, follow + 0x30);
+    position[2] += distance[4];
+    FastVecAdd_2ED320(position, position, &hero_2ED320.motion.pos);
+    if (coll_line_2ED320(cam + 0x30, position, 0x12, 0, 0) != 0) {
+        FastVecSub_2ED320(offset, &coll_pos_2ED320, cam + 0x30);
+        collision_position = &coll_pos_2ED320;
+        length = FastVecLength_2ED320(offset);
+        if (length > 0.5f) {
+            FastVecScale_2ED320((length - 0.5f) / length, offset, offset);
+            FastVecAdd_2ED320(position, cam + 0x30, offset);
+            for (i = 0; i < 5; i++) {
+                if (coll_sphere_2ED320(0.75f, position, 0, 0) != 0) qcopy(position, collision_position + 1);
+                else break;
+            }
+        }
+        qcopy(cam + 0x30, position);
+        FastVecSub_2ED320(offset, &hero_2ED320.motion.pos, cam + 0x30);
+        *angle = FastArcTan_2ED320(offset[0], offset[1]);
+        *(int *)(angle + 1) = 0;
+    } else qcopy(cam + 0x30, position);
+}
 extern void func_001F9BF0(void *, void *, void *);
 extern float func_001F9C78(void *, void *);
 extern float func_001F9FC0(float);

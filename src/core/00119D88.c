@@ -662,20 +662,13 @@ ASM_FUNC("asm/handwritten/core_text", func_0011AC48);
 ASM_FUNC("asm/handwritten/core_text", func_0011AD70);
 
 /*
- * NOT a match, despite being recorded as one until now. Retail is a bare
- * 4-byte `jr $31` with nothing in its delay slot (the next function's
- * first instruction sits there). `void f(void) {}` emits `jr $ra; nop`
- * -- 8 bytes -- and GCC additionally force-aligns a compiled function to
- * 8 bytes where retail sits at a 4-aligned address, so this cost 8 bytes
- * of core_text layout drift in total.
- *
- * It read as a match only because tools/check_match.py compares exactly
- * `retail_size` bytes: the first 4 bytes (`jr`) matched, and the extra
- * nop was invisible to the comparison. Any function that is CORRECT in
- * its first N bytes but LONGER than retail will report a false match the
- * same way -- see docs/DECOMP_PROGRESS.md.
+ * The last word of sceSifWriteBackDCache (func_0011AD70, hand-written): a bare
+ * `jr $31` whose delay slot is the next object's first instruction. The SDK's
+ * libkernl.a gives the function 176 bytes in sifcmd.o (0x11AD70..0x11AE20),
+ * this word included, after its own `last:` label's `jr $31; nop`
+ * (docs/ASM_CLASSIFICATION.md).
  */
-INCLUDE_ASM("asm/nonmatchings/core_text", func_0011AE1C);
+ASM_FUNC("asm/handwritten/core_text", func_0011AE1C);
 
 typedef struct {
     int pid;

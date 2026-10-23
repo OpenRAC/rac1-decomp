@@ -1,0 +1,3 @@
+[submodule "versions/ntsc"]
+	path = versions/ntsc
+	url = https://github.com/mateuszklysz/Lombyte

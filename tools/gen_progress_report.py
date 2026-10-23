@@ -800,6 +800,10 @@ def check() -> None:
     m = report["measures"]
     print(f"report is current: {m['matched_functions']}/{m['total_functions']} functions, "
           f"{m['matched_code_percent']:.2f}% code finished")
+    # The other versions (docs/VERSIONS.md): their maps and reports current with src/, shared C
+    # only, the same code matched in all of them or in none.
+    import version_sync
+    version_sync.check()
 
 
 def main() -> None:

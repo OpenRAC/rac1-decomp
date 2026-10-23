@@ -663,7 +663,246 @@ void NanotechBallUpdate(Moby *m) {
         break;
     }
 }
-INCLUDE_ASM("asm/overlays", func_L00_002DACC0);
+typedef struct { f32 x, y, z; } Vec3_2DACC0;
+typedef unsigned int u128_2DACC0 __attribute__((mode(TI), aligned(16)));
+typedef struct {
+    u128_2DACC0 points[4];
+    u32 colors[4];
+    float texcoords[8];
+    u64 texture[4];
+} __attribute__((aligned(16))) GeometryQuad_2DACC0;
+typedef struct { float x, y, z, w; } __attribute__((aligned(16))) V_2DACC0;
+
+typedef struct { float x, y, z; } V3_2DACC0;
+
+typedef struct Part_2DACC0 {
+    int f0;
+    int f4;
+    unsigned char b8;
+    char p9[3];
+    float fC;
+    V_2DACC0 pos;
+} Part_2DACC0;
+
+typedef struct Ext_2DACC0 {
+    int f0;
+    union {
+        struct { struct Moby *owner; float scale; float ang; } s;
+        V3_2DACC0 a;
+    } u;
+    V3_2DACC0 b;
+    short h1C;
+    short h1E;
+} Ext_2DACC0;
+
+typedef struct D_2DACC0 {
+    float bob_offset;
+    float bob_phase;
+    short h8;
+    short hA;
+    struct Moby *owner;
+    V_2DACC0 pos;
+    V_2DACC0 v20;
+    Part_2DACC0 *slots[8];
+    int f50;
+    short h54;
+    short h56;
+    short h58[4];
+    float f60[4];
+    char p70[0xC];
+    int f7C;
+} D_2DACC0;
+extern float D_L00_00161AE0_2DACC0 SDATA(D_L00_00161AE0);
+extern int D_L00_00161B90_2DACC0 SDATA(D_L00_00161B90);
+extern int D_L00_00161B94_2DACC0 SDATA(D_L00_00161B94);
+extern int D_L00_00161B98_2DACC0 SDATA(D_L00_00161B98);
+extern int D_L00_00161B9C_2DACC0 SDATA(D_L00_00161B9C);
+extern int D_L00_00161BA0_2DACC0 SDATA(D_L00_00161BA0);
+extern int D_L00_00161BA4_2DACC0 SDATA(D_L00_00161BA4);
+extern u32 D_L00_00161BA8_2DACC0 SDATA(D_L00_00161BA8);
+extern float D_L00_00161BAC_2DACC0 SDATA(D_L00_00161BAC);
+extern u32 D_L00_00161BB0_2DACC0 SDATA(D_L00_00161BB0);
+extern int D_L00_00161BB4_2DACC0 SDATA(D_L00_00161BB4);
+extern float D_L00_00161BB8_2DACC0 SDATA(D_L00_00161BB8);
+extern float D_L00_00161BBC_2DACC0 SDATA(D_L00_00161BBC);
+extern int D_L00_00161BE0_2DACC0 __asm__("D_L00_00161BE0") MACRO_ADDR;
+extern char D_L00_00161BC0_2DACC0[] __asm__("D_L00_00161BC0") MACRO_ADDR;
+extern char D_L00_001E1810_2DACC0[] __asm__("D_L00_001E1810");
+extern char D_L00_001E2A30_2DACC0[] __asm__("D_L00_001E2A30");
+extern char D_L00_001E3340_2DACC0[] __asm__("D_L00_001E3340");
+extern char D_L00_001E37D0_2DACC0[] __asm__("D_L00_001E37D0");
+extern char D_L00_001E3DD0_2DACC0[] __asm__("D_L00_001E3DD0");
+extern char D_L00_001E3ED0_2DACC0[] __asm__("D_L00_001E3ED0");
+extern char D_L00_001E3FD0_2DACC0[] __asm__("D_L00_001E3FD0");
+extern char D_L00_001E40F0_2DACC0[] __asm__("D_L00_001E40F0");
+extern char camera_pos_2DACC0[] __asm__("D_L00_00166EC0") NOT_SDA;
+extern s64 get_effect_texture_2DACC0(s32) __asm__("func_001F4868");
+extern void vu1_add_g_sregister_2DACC0(s32, u64) __asm__("func_00234C98");
+extern void fast_vec_add_2DACC0(void *, void *, void *) __asm__("func_001F9BD8");
+extern void fast_vec_normalize_2DACC0(void *, void *, f32) __asm__("func_L00_001FF4B0");
+extern void font_queue_vu_state_2DACC0(void) __asm__("func_001F7868");
+extern void transform_vector_2DACC0(void *, void *, void *) __asm__("func_001F9EE8");
+extern void func_L00_001FDE48_2DACC0(int, void *, void *, void *, int) __asm__("func_L00_001FDE48");
+extern s32 truncate_float_to_s32_2DACC0(f32) __asm__("func_001FA898");
+extern void draw_geometry_quad_2DACC0(void *, void *, int) __asm__("func_L00_001FD1D8");
+extern void set_vector_length_xy_2DACC0(void *, void *, f32) __asm__("func_L00_001FF500");
+extern float func_L00_00200210_2DACC0(float, float) __asm__("func_L00_00200210");
+extern void fast_vec_cross_2DACC0(void *, void *, void *) __asm__("func_001F9CA0");
+extern void fast_vec_scale_2DACC0(void *, void *, float) __asm__("func_001F9C30");
+extern void fast_vec_sub_2DACC0(void *, void *, void *) __asm__("func_001F9BF0");
+extern int func_L00_002D95D8_2DACC0(unsigned char *) __asm__("func_L00_002D95D8");
+
+/* Nanotech ball draw: builds the glowing sphere from its ring tables (D_L00_001E1810..) around the bobbing
+   position, facing the camera, and queues its quads through the level copy of the geometry-quad drawer.
+   Adapted from Lombyte (GPL-3.0) for PAL: src/overlays/shared/gameplay/entities/nanotech_ball.c, FUN_L00_002d9810,
+   which carries this file's earlier near miss (nonmatching/shared/func_L00_002DACC0.c) to a match. The tuning
+   words D_L00_00161AE0 and D_L00_00161B90..BBC are this level file's $gp data (SDATA). */
+void func_L00_002DACC0(Moby *moby) {
+    GeometryQuad_2DACC0 quad;
+    float basis[4] __attribute__((aligned(16)));
+    float *forward;
+    float side[4] __attribute__((aligned(16)));
+    float up[4] __attribute__((aligned(16)));
+    float center[4] __attribute__((aligned(16)));
+    float view_dir[4] __attribute__((aligned(16)));
+    float to_camera[4] __attribute__((aligned(16)));
+    float vertex[4] __attribute__((aligned(16)));
+    D_2DACC0 *vars = (D_2DACC0 *)moby->pvars;
+    Moby *owner;
+    float pulse = vars->bob_offset / D_L00_00161AE0_2DACC0;
+    int i, j, color;
+    short *indices;
+    short *row;
+    short *rows;
+    char *corner;
+    char *outer, *inner;
+    float *u, *v;
+    float *v_base, *u_base;
+
+    quad.texture[1] = get_effect_texture_2DACC0(D_L00_00161BA4_2DACC0);
+    quad.texture[2] = 0xff9000000260ULL;
+    quad.texture[3] = (u64)D_L00_00161B90_2DACC0 |
+                      ((u64)D_L00_00161B94_2DACC0 << 2) |
+                      ((u64)D_L00_00161B98_2DACC0 << 4) |
+                      ((u64)D_L00_00161B9C_2DACC0 << 6) |
+                      ((u64)D_L00_00161BA0_2DACC0 << 32);
+    quad.texture[0] = 0;
+    vu1_add_g_sregister_2DACC0(0x47, 0x53001);
+    forward = basis;
+    center[0] = moby->pos.x;
+    center[1] = moby->pos.y;
+    center[2] = moby->pos.z + 0.5f;
+    center[2] += vars->bob_offset;
+    center[3] = 1.0f;
+    fast_vec_add_2DACC0(&center, &center, D_L00_00161BC0_2DACC0);
+    fast_vec_sub_2DACC0(&to_camera, camera_pos_2DACC0, &center);
+    fast_vec_normalize_2DACC0(forward, &to_camera, 1.0f);
+    owner = vars->owner;
+    fast_vec_cross_2DACC0(&side, forward, &owner->rot_row2);
+    fast_vec_normalize_2DACC0(&side, &side, 1.0f);
+    fast_vec_cross_2DACC0(&up, &side, forward);
+    quad.colors[3] = D_L00_00161BA8_2DACC0;
+    quad.colors[2] = D_L00_00161BA8_2DACC0;
+    quad.colors[1] = D_L00_00161BA8_2DACC0;
+    quad.colors[0] = D_L00_00161BA8_2DACC0;
+    vu1_add_g_sregister_2DACC0(6, get_effect_texture_2DACC0(D_L00_00161BA4_2DACC0));
+    vu1_add_g_sregister_2DACC0(0x42, 0x8000000044ULL);
+    vu1_add_g_sregister_2DACC0(8, 0);
+    vu1_add_g_sregister_2DACC0(0x14, 0xff9000000260ULL);
+    vu1_add_g_sregister_2DACC0(0x4a, 0);
+    font_queue_vu_state_2DACC0();
+    for (j = 0; j < 0x122; j++) {
+        transform_vector_2DACC0(&vertex, D_L00_001E1810_2DACC0 + j * 16, basis);
+        {
+            float x = vertex[0], y = vertex[1], z = vertex[2];
+            ((Vec3_2DACC0 *)D_L00_001E40F0_2DACC0)[j].x = x;
+            ((Vec3_2DACC0 *)D_L00_001E40F0_2DACC0)[j].y = y;
+            ((Vec3_2DACC0 *)D_L00_001E40F0_2DACC0)[j].z = z;
+        }
+    }
+    func_L00_001FDE48_2DACC0(0x94, D_L00_001E40F0_2DACC0,
+                                D_L00_001E3340_2DACC0, D_L00_001E2A30_2DACC0, 1);
+    func_L00_001FDE48_2DACC0(0x6d, D_L00_001E40F0_2DACC0 + 0x6d8,
+                                D_L00_001E3340_2DACC0 + 0x248,
+                                D_L00_001E2A30_2DACC0 + 0x490, 1);
+    func_L00_001FDE48_2DACC0(0x24, D_L00_001E40F0_2DACC0 + 0xbe8,
+                                D_L00_001E3340_2DACC0 + 0x3f8,
+                                D_L00_001E2A30_2DACC0 + 0x7f0, 1);
+    quad.texture[1] = get_effect_texture_2DACC0(0xb);
+    quad.texture[3] = 0x8000000048ULL;
+    color = truncate_float_to_s32_2DACC0(pulse * 64.0f + 128.0f);
+    color = ((u32)(color + D_L00_00161BE0_2DACC0) << 24) | D_L00_00161BB0_2DACC0;
+    quad.colors[3] = 0;
+    quad.colors[2] = 0;
+    quad.colors[1] = color;
+    quad.colors[0] = color;
+    for (i = 0; i < 32; i++) {
+        indices = (short *)(D_L00_001E3DD0_2DACC0 + i * 8);
+        j = 0;
+        inner = (char *)quad.points;
+        outer = (char *)quad.points;
+        for (; j < 4; j++) {
+            short index = *indices;
+            if (j >= 2)
+                fast_vec_scale_2DACC0(outer, D_L00_001E37D0_2DACC0 + index * 16,
+                             D_L00_00161BAC_2DACC0 * D_L00_00161BBC_2DACC0);
+            else
+                fast_vec_scale_2DACC0(inner, D_L00_001E37D0_2DACC0 + index * 16, D_L00_00161BAC_2DACC0);
+            inner += 16;
+            outer += 16;
+            indices++;
+        }
+        quad.texcoords[0] = 0.5f;
+        quad.texcoords[1] = 0.5f;
+        quad.texcoords[2] = 0.5f;
+        quad.texcoords[3] = 0.5f;
+        quad.texcoords[4] = 0.5f;
+        quad.texcoords[5] = 1.0f;
+        quad.texcoords[6] = 0.5f;
+        quad.texcoords[7] = 1.0f;
+        draw_geometry_quad_2DACC0(&quad, basis, 0);
+    }
+    if (func_L00_002D95D8_2DACC0((u8 *)moby)) {
+        quad.texture[1] = get_effect_texture_2DACC0(D_L00_00161BB4_2DACC0);
+        quad.colors[3] = 0x107f7f7f;
+        quad.colors[2] = 0x107f7f7f;
+        quad.colors[1] = 0x107f7f7f;
+        quad.colors[0] = 0x107f7f7f;
+        quad.texture[3] = 0x8000000044ULL;
+        {
+            Moby *owner = vars->owner;
+            qcopy(basis, &owner->rot_row0);
+            qcopy(&side, &owner->rot_row1);
+            qcopy(&up, &owner->rot_row2);
+        }
+        center[2] = moby->pos.z;
+        v_base = &quad.texcoords[0];
+        u_base = &quad.texcoords[1];
+        rows = (short *)D_L00_001E3FD0_2DACC0;
+        for (i = 0; i < 4; i++) {
+            u = u_base;
+            v = v_base;
+            row = (short *)(i * 8 + (u32)rows);
+            corner = (char *)quad.points;
+            for (j = 3; j >= 0; j--) {
+                transform_vector_2DACC0(corner, D_L00_001E3ED0_2DACC0 + (*row++) * 16,
+                                       basis);
+                fast_vec_sub_2DACC0(view_dir, corner, camera_pos_2DACC0);
+                corner += 16;
+                view_dir[1] = view_dir[2];
+                set_vector_length_xy_2DACC0(view_dir, view_dir, D_L00_00161BB8_2DACC0);
+                *v = view_dir[0] * 0.5f + 0.5f;
+                *v = func_L00_00200210_2DACC0(*v, 8.0f);
+                v += 2;
+                *u = view_dir[1] * 0.5f + 0.5f;
+                *u = func_L00_00200210_2DACC0(*u, 8.0f);
+                u += 2;
+            }
+            draw_geometry_quad_2DACC0(&quad, 0, 0);
+        }
+    }
+    vu1_add_g_sregister_2DACC0(0x47, 0x5360b);
+}
 typedef struct { char pad[0x2084]; int f; int pad2; int mode; } G;
 extern G D_0013F450 NOT_SDA;
 

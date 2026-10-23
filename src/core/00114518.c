@@ -524,10 +524,10 @@ ASM_FUNC("asm/handwritten/core_text", func_001150D4);
 
 ASM_FUNC("asm/handwritten/core_text", func_001151B4);
 
-INCLUDE_ASM("asm/nonmatchings/core_text", func_00115248);
+ASM_FUNC("asm/handwritten/core_text", func_00115248);
 
-INCLUDE_ASM("asm/nonmatchings/core_text", func_001152F8);
+ASM_FUNC("asm/handwritten/core_text", func_001152F8);
 
-INCLUDE_ASM("asm/nonmatchings/core_text", func_001153FC);
+ASM_FUNC("asm/handwritten/core_text", func_001153FC);
 
 INCLUDE_ASM("asm/nonmatchings/core_text", func_001154BC);

@@ -1831,7 +1831,91 @@ void RibbonTrailDraw(u8 *moby) {
         group = next_group;
     } while (group < 4);
 }
-INCLUDE_ASM("asm/overlays", func_L10_002DE018);
+extern void f_delete_DE018(void *) __asm__("func_0020D678");
+extern int f_timer_DE018(void *) __asm__("func_001F9908");
+extern void f_clear_DE018(void *) __asm__("func_001F9BC0");
+extern void f_jitter_DE018(void *, float, float) __asm__("func_L00_00258DB0");
+extern void f_add_DE018(void *, void *, void *) __asm__("func_001F9BD8");
+extern void f_scale_DE018(void *, void *, float) __asm__("func_001F9C30");
+extern unsigned char D_0013E633_DE018[] __asm__("D_0013E633");
+extern int D_0015EE84_DE018 __asm__("D_0015EE84") MACRO_ADDR;
+extern float D_0015EE6C_DE018 __asm__("D_0015EE6C") MACRO_ADDR;
+extern int D_L10_00161DE4_DE018 __asm__("D_L10_00161DE4") MACRO_ADDR;
+extern int D_L10_00161DE8_DE018 __asm__("D_L10_00161DE8") MACRO_ADDR;
+extern float D_L10_00161DD4 SDATA(D_L10_00161DD4);
+extern float D_L10_00161DD8 SDATA(D_L10_00161DD8);
+extern float D_L10_00161DDC SDATA(D_L10_00161DDC);
+
+typedef struct {
+    Vec4 pos[4][30][20];
+    Vec4 vel[4][30][20];
+    int timers[4][30];
+    float phase;
+} PlatformWave_DE018;
+
+/* UpdateMoby_1073: a rippling grid of 4 groups x 10 columns x 20 rows. State 0
+   sets each column's timer (unless on level 10 with the flag at D_001414F4 set:
+   then the moby deletes itself); state 1 advances the phase and, for each column
+   whose timer runs out, rebuilds its rows with fresh jitter and averages the
+   jitter into the velocities, otherwise moves the rows by their velocities.
+   Adapted from Lombyte's draft of FUN_L10_002dcc58 (GPL-3.0), with PAL symbols. */
+void func_L10_002DE018(unsigned char *moby) {
+    PlatformWave_DE018 *vars = *(PlatformWave_DE018 **)(moby + 0x78);
+    Vec4 jitter[20][10];
+
+    switch (moby[0x20]) {
+    case 0:
+        if (D_0015EE84_DE018 == 10 && D_0013E633_DE018[0x2EC1] == 1) {
+            f_delete_DE018(moby);
+            break;
+        }
+        D_L10_00161DE8_DE018 = 22;
+        D_L10_00161DE4_DE018 = 45;
+        {
+            int i;
+            for (i = 0; i < 10; i++) {
+                int start = i * D_L10_00161DE4_DE018 / 10;
+                vars->timers[0][i] = start;
+                vars->timers[1][i] = start + 11;
+                vars->timers[2][i] = start + 23;
+                vars->timers[3][i] = start + 34;
+            }
+        }
+        moby[0x20] = 1;
+        break;
+    case 1: {
+        int group, item, row;
+
+        vars->phase += D_L10_00161DDC * D_0015EE6C_DE018;
+        if (vars->phase > 1.0f) vars->phase -= 1.0f;
+        for (group = 0; group < 4; group++) {
+            for (item = 0; item < 10; item++) {
+                if (f_timer_DE018(&vars->timers[group][item])) {
+                    for (row = 0; row < 20; row++) {
+                        f_clear_DE018(&vars->pos[group][row][item]);
+                        vars->pos[group][row][item].f[1] = row * (D_L10_00161DD8 / 20.0f) - D_L10_00161DD8 * 0.5f;
+                        vars->pos[group][row][item].f[3] = 1.0f;
+                        f_jitter_DE018(&jitter[row][item], 0.0f, D_L10_00161DD4 * D_0015EE6C_DE018);
+                    }
+                    for (row = 1; row < 19; row++) {
+                        f_add_DE018(&vars->vel[group][row][item], &jitter[row - 1][item], &jitter[row][item]);
+                        f_add_DE018(&vars->vel[group][row][item], &vars->vel[group][row][item], &jitter[row + 1][item]);
+                        f_scale_DE018(&vars->vel[group][row][item], &vars->vel[group][row][item], 0.333f);
+                    }
+                    vars->timers[group][item] = D_L10_00161DE4_DE018;
+                } else {
+                    int k;
+                    for (k = 1; k < 19; k++) {
+                        int row = k;
+                        f_add_DE018(&vars->pos[group][row][item], &vars->pos[group][row][item], &vars->vel[group][row][item]);
+                    }
+                }
+            }
+        }
+        break;
+    }
+    }
+}
 typedef int OvlQuad_2DE630 __attribute__((mode(TI)));
 typedef struct {
     int b;

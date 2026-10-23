@@ -834,6 +834,23 @@ Three more were adapted by hand on 2026-10-15 in the same way. In parentheses, L
 - `src/overlays/l18_veldin2/vendor_002A8400.c`: `func_L18_002DD8A8` (`FUN_L18_002dc4b8`)
 - `src/overlays/l12_hoven/vendor_002EDAA0.c`: `func_L12_002EE180` (`FUN_L12_002ece00`)
 
+Nine more were adapted by hand on 2026-10-21 from Lombyte's C as of that day (`0d5b2b0c`). Lombyte has
+been licensed under the GNU General Public License v3.0 since `a1379f57` (2026-10-10), the license of this
+repository, so these nine come under it and not under the MIT notice below. The C is Lombyte's with every
+symbol given its PAL name and declared the way this build reaches it; where a form of Lombyte's was
+changed, the function's comment says so. `func_L10_002DE018` started from a draft that does not match
+there. In parentheses, Lombyte's name.
+
+- `src/game/loaders.c`: `func_00204340` (`register_shrub_render_class`)
+- `src/game/sound.c`: `func_0022DD68` (`sound_update`)
+- `src/overlays/l10_orxon/vendor_00296BD8.c`: `func_L10_002DE018` (`FUN_L10_002dcc58`)
+- `src/overlays/shared/mobyutil_00258BC8.c`: `func_L00_0025BCF8` (`FUN_L00_0025aca0`)
+- `src/overlays/shared/vendor_002A5218.c`: `func_L02_002FCE00` (`FUN_L02_002fb9c8`)
+- `src/overlays/shared/vendor_002C96D0.c`: `func_L00_002CF808` (`FUN_L00_002ce358`)
+- `src/overlays/shared/vendor_002CF2C0.c`: `func_L05_0030D678` (`FUN_L05_0030c220`)
+- `src/overlays/shared/vendor_002D9438.c`: `func_L00_002DACC0` (`FUN_L00_002d9810`)
+- `src/overlays/shared/vendor_002EB0D8.c`: `func_L00_002ED320` (`FUN_L00_002ebe70`)
+
 `include/hero.h` (the hero and the records inside it) and `include/vector.h` (the 16-byte vector) are
 adapted from Lombyte's `include/rnc/gameplay/hero.h` and `include/rnc/math/vector.h` at 42adb529, while
 Lombyte was MIT licensed. `include/pad.h` (the controller state) is adapted from its

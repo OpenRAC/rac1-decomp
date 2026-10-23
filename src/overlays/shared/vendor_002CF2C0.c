@@ -465,7 +465,7 @@ extern void func_L00_00251328(void *, int, int, int);
 extern void func_0020D960(char *, int, void *);
 extern void func_001F49B0(void *, void *);
 extern void func_L00_001FFED8(void *, int, float);
-extern void func_L05_0030D678(void);
+extern void func_L05_0030D678(unsigned char *m);
 
 /* UpdateMoby_823: pick random wobble parameters, then animate them each frame */
 void Moby823Update(unsigned char *m) {
@@ -502,7 +502,118 @@ void Moby823Update(unsigned char *m) {
     }
     }
 }
-INCLUDE_ASM("asm/overlays", func_L05_0030D678);
+typedef struct {
+    float vertex[4][4];
+    int color[4];
+    float texcoord[4][2];
+    long control[4];
+} Quad_0D678;
+extern void f_pos_0D678(void *, int, float *) __asm__("func_L00_00250800");
+extern void f_clear_0D678(float *) __asm__("func_001F9BC0");
+extern float f_sin_0D678(float) __asm__("func_001F9FA8");
+extern void f_rot_0D678(float *, float *) __asm__("func_001FA218");
+extern void f_sub_0D678(float *, const float *, const float *) __asm__("func_001F9BF0");
+extern void f_norm_0D678(float *, float *, float) __asm__("func_L00_001FF4B0");
+extern void f_cross_0D678(float *, float *, float *) __asm__("func_001F9CA0");
+extern long f_tex_0D678(int) __asm__("func_001F4868");
+extern int f_tween_0D678(int, int, float) __asm__("func_001FA8A8");
+extern void f_draw_0D678(void *, float *, int) __asm__("func_L00_001FD1D8");
+extern float D_L05_001672C0_0D678[] __asm__("D_L05_001672C0");
+extern float D_L05_001D6B00_0D678[][2] __asm__("D_L05_001D6B00");
+extern float D_L05_001D6B20_0D678[][4] __asm__("D_L05_001D6B20");
+extern float D_L05_001D6B60_0D678[][4] __asm__("D_L05_001D6B60");
+extern int D_L05_00161DB4 SDATA(D_L05_00161DB4);
+extern int D_L05_00161DB8 SDATA(D_L05_00161DB8);
+extern int D_L05_00161DBC SDATA(D_L05_00161DBC);
+extern int D_L05_00161DC0 SDATA(D_L05_00161DC0);
+extern int D_L05_00161DC4 SDATA(D_L05_00161DC4);
+extern int D_L05_00161DC8 SDATA(D_L05_00161DC8);
+extern int D_L05_00161DCC SDATA(D_L05_00161DCC);
+
+/* Draw callback of the class 0x337 wobbling effect (Moby823Update above):
+   builds a basis from the moby (rotation from its pvars phase, direction toward
+   D_L05_001672C0) and draws ten pairs of textured quads that widen with each
+   step. Adapted from Lombyte (GPL-3.0), FUN_L05_0030c220. */
+void func_L05_0030D678(unsigned char *m) {
+    Quad_0D678 quad_a, b;
+    float rotation[4];
+    float position[4];
+    /* The draw helper reads four consecutive vectors: side, direction, up, position. */
+    float matrix[16] __attribute__((aligned(16)));
+    float *side;
+    float *direction;
+    float *up;
+    long texture;
+    long flags;
+    float phase;
+    float sign;
+    float pass;
+    float offset_a_x, offset_a_z, offset_b_x, offset_b_z;
+    int i, j, k;
+    float *vertex_a, *vertex_b;
+    char *vars = *(char **)(m + 0x78);
+
+    f_pos_0D678(m, 0, position);
+    f_clear_0D678(rotation);
+    rotation[2] = *(float *)(m + 0x48);
+    rotation[1] = f_sin_0D678(*(float *)(vars + 0x48)) * 0.5235988f + 0.5235988f;
+    side = matrix;
+    f_rot_0D678(side, rotation);
+    direction = matrix + 4;
+    f_sub_0D678(direction, D_L05_001672C0_0D678, position);
+    f_norm_0D678(direction, direction, 1.0f);
+    up = matrix + 8;
+    f_cross_0D678(side, direction, up);
+    f_cross_0D678(direction, up, side);
+    qcopy(matrix + 12, position);
+
+    texture = f_tex_0D678(D_L05_00161DCC);
+    flags = (long)D_L05_00161DB4 |
+            ((long)D_L05_00161DB8 << 2) |
+            ((long)D_L05_00161DBC << 4) |
+            ((long)D_L05_00161DC0 << 6) |
+            0x8000000000L;
+    b.control[0] = 0;
+    b.control[2] = 0xFF9000000260L;
+    quad_a.control[2] = 0xFF9000000260L;
+    b.control[1] = texture;
+    quad_a.control[1] = texture;
+    quad_a.control[0] = 0;
+    b.control[3] = flags;
+    quad_a.control[3] = flags;
+    for (k = 0; k < 4; k++) {
+        float u = D_L05_001D6B00_0D678[k][0];
+        float v = D_L05_001D6B00_0D678[k][1];
+        quad_a.texcoord[k][0] = u;
+        quad_a.texcoord[k][1] = v;
+        b.texcoord[k][0] = u;
+        b.texcoord[k][1] = v;
+    }
+    for (i = 0; i < 10; i++) {
+        pass = (float)i;
+        j = 0;
+        do {
+            vertex_a = quad_a.vertex[j];
+            qcopy(vertex_a, D_L05_001D6B20_0D678[j]);
+            qcopy(b.vertex[j], D_L05_001D6B60_0D678[j]);
+            phase = (float)(i + (j & 1)) * 0.1f;
+            sign = 1.0f;
+            if (j > 1) sign = -1.0f;
+            quad_a.color[j] = b.color[j] = f_tween_0D678(D_L05_00161DC4, D_L05_00161DC8, phase);
+            offset_a_x = phase * 8.0f * sign;
+            offset_a_z = pass * 10.0f;
+            offset_b_x = phase * 6.0f * sign;
+            offset_b_z = pass * 12.0f;
+            vertex_a[0] += offset_a_x;
+            vertex_a[2] += offset_a_z;
+            vertex_b = b.vertex[j];
+            vertex_b[0] += offset_b_x;
+            vertex_b[2] += offset_b_z;
+        } while (++j < 4);
+        f_draw_0D678(&quad_a, matrix, 0);
+        f_draw_0D678(&b, matrix, 0);
+    }
+}
 typedef struct {
     unsigned char pad0[0x454];
     unsigned char done[1];
