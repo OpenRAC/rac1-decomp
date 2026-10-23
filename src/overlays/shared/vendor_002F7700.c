@@ -43,7 +43,7 @@ extern f32 func_L00_0025C918_F7700(f32 *value, f32 target, f32 *speed, f32 accel
 
 /* Grind rail: measures its paths once, then while the hero is in control mode 0x10 snaps it to the nearest path point in range and pulls it along, faster on level 1 the more rail is left.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002f6328.c, FUN_L01_002f6328. */
-void GrindRailUpdate(struct Moby *m) {
+void update_rail_hero_motion(struct Moby *m) {
     RailVars_F7700 *d = (RailVars_F7700 *)m->pvars;
     RailPath_F7700 *path;
     RailPath_F7700 *best_path;
@@ -211,7 +211,7 @@ extern void func_L00_0026CA10(void *, void *, int, int, float, int, int, int, in
 extern int func_00215570(void *, int);
 
 /* Update of moby class 686, a flying burst: drifts and trails smoke; on reaching its target it damages around it, sprays particles, arms nearby class 0x2BC targets and deletes itself. */
-void FlyingBurstUpdate(Moby *moby) {
+void update_explosive_projectile(Moby *moby) {
     Vec_2F7E08 old;
     Vec_2F7E08 a;
     Data_2F7E08 *d;
@@ -608,7 +608,7 @@ extern void func_L01_00240CE8(void);
 
 /* Cutscene trigger: unless already seen, starts its camera sequence when the hero enters the volume (or it is
  * triggered), then ends it after its timer and re-arms. */
-void CutsceneTriggerUpdate(char *m) {
+void update_cutscene_trigger(char *m) {
     char *d = *(char **)(m + 0x78);
     float a[4];
     float b[4];
@@ -692,7 +692,7 @@ extern void func_L01_002BA380(char *, int);
 
 /* Register this level's vendor data set. */
 void Moby751Draw(void) {
-    RippleDraw(pool_tiles, 0x15);
+    render_water_grids(pool_tiles, 0x15);
 }
 extern short D_L01_00161DC0;
 
@@ -1070,7 +1070,7 @@ extern void func_L00_002B6E10(void *, void *);
 typedef struct { int zone; float lo; float hi; int vol; } Zone_303a20;
 
 /* Counts how long the type-0xAC moby has stood clear of the 20 zones; after 90 ticks hands it on. */
-void RcRangeLimiterUpdate(char *m) {
+void update_target_outside_zone_timeout(char *m) {
     Zone_303a20 *d = *(Zone_303a20 **)(m + 0x78);
     char *t = 0;
     Zone_303a20 *e;
@@ -1356,7 +1356,7 @@ extern int func_002140B0(int);
 extern int func_001F9850(int);
 
 /* fills random floats and sound handles in the moby's data block */
-void InitRandomFloatsAndSounds(char *moby) {
+void initialize_gold_bolt_data(char *moby) {
     char *data = *(char **)(moby + 0x78);
     float *f = (float *)(data + 0x20);
     int *p;
@@ -1938,7 +1938,7 @@ extern int func_L00_0023F0D0(void *, float, float, float, float, float);
 extern void func_L00_0023F1D0(int);
 extern char D_L01_001807C0[];
 
-void WanderingLightUpdate(unsigned char *m) {
+void update_moby_interpolated_point_light(unsigned char *m) {
     int state = m[0x20];
     char *e = *(char **)(m + 0x78);
     int i;
@@ -2079,7 +2079,7 @@ extern void func_001F9EE8(void *, void *, void *);
 extern void func_L00_001FD1D8(void *, void *, s32);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/vendor/0030b618.c, FUN_L01_0030bfa8. */
-void Moby1510_DrawGlow(char *m) {
+void draw_moby_offset_textured_quad(char *m) {
     struct {
         GlowQuad_bfa8 quad;
         GlowVec_bfa8 src_corner[4];
@@ -2207,7 +2207,7 @@ extern OvlQuad_0DD80 D_L01_00174360;
 extern OvlQuad_0DD80 D_0013F4D0_0DD80 __asm__("D_0013F4D0");
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/vendor/0030b618.c, FUN_L01_0030c9a8. */
-void func_L01_0030DD80(char *m) {
+void update_sandmouse_projectile(char *m) {
     char *e = *(char **)(m + 0x78);
     f32 *pos;
     OvlVec4 old_pos;
@@ -2286,7 +2286,7 @@ extern void func_L00_001FF4B0(void *, void *, float);
 extern void func_001F9BD8(void *, void *, void *);
 
 /* offset a position by two camera-relative vectors, then raise z by 1 */
-void GetHeroFrontOffsetPoint(void *unused, float *p) {
+void compute_sandmouse_follow_goal(void *unused, float *p) {
     float a[4];
     float b[4];
     char *g = D_0013E633 + 0xE1D;
@@ -2304,7 +2304,7 @@ extern int func_L00_001EFFF0_30E6E0(void *, void *, int, void *, void *) __asm__
 /* Picks the best lock-on target for moby from the target table: a drawn class-5 enemy with health, within range, whose direction from `from`
  * is inside the yaw/pitch cone (or the wider near cone when close), scored by angle error and distance,
  * with a clear line of sight (or the blocker is the same kind of enemy). */
-void *func_L01_0030E6E0(void *moby, void *from, void *ang, float yawMax, float pitchMax, float range, float near,
+void *select_sandmouse_projectile_target(void *moby, void *from, void *ang, float yawMax, float pitchMax, float range, float near,
                         float nearYaw, float nearPitch) {
     float tp[4];
     char *best = 0;
@@ -2371,7 +2371,7 @@ extern void func_L00_00250800_0E9C8b(void *, int, void *) __asm__("func_L00_0025
 extern void func_L00_00250800_0E9C8c(void *, int, void *) __asm__("func_L00_00250800");
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_0030b618.c, FUN_L01_0030d5f0. */
-void func_L01_0030E9C8(char *moby, char *state) {
+void try_fire_sandmouse_projectile(char *moby, char *state) {
     Vec4 v;
     Vec4 q;
     Vec4 p;
@@ -2381,7 +2381,7 @@ void func_L01_0030E9C8(char *moby, char *state) {
     if (FastDecTimer(state + 0x54) == 0) return;
     func_L00_00250800_0E9C8c(moby, (state[0x56] & 1) + 1, &v);
     state[0x56] = state[0x56] ^ 1;
-    e = func_L01_0030E6E0(moby, &v, moby + 0x40,
+    e = select_sandmouse_projectile_target(moby, &v, moby + 0x40,
                          (*(float *)&D_L01_00162118) * 0.017453292f,
                          (*(float *)&D_L01_0016211C) * 0.017453292f,
                          (*(float *)&D_L01_00162114), 2.0f, 3.1415927f, 3.1415927f);
@@ -2459,7 +2459,7 @@ extern s32 func_L00_00259B08_0EC58(struct Moby *, Vec4 *, f32, f32, s32, s32) __
 extern f32 func_L00_0025F368_0EC58(f32) __asm__("func_L00_0025F368");
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/vendor/0030b618.c, FUN_L01_0030d880. */
-void MouseCritter_StepCommand(struct Moby *m, struct HoverVars_0EC58 *p) {
+void update_sandmouse_hover_movement(struct Moby *m, struct HoverVars_0EC58 *p) {
     Vec4 v;
     f32 d;
     f32 k;
@@ -2544,7 +2544,7 @@ extern void func_L01_0028B570(void *, void *, void *, void *, int);
 extern char D_L01_00162170, D_L01_00162180, D_L01_00162190;
 
 // If the moby's flag byte is set, builds a vector and runs three manipulator calls.
-void EmitFallingParticles(char *m) {
+void emit_sandmouse_particles(char *m) {
     if (*(unsigned char *)(m + 0x31) != 0) {
         float buf[4];
         float v[4];
@@ -2553,15 +2553,15 @@ void EmitFallingParticles(char *m) {
         z[2] = -(random_float_between(1.0f, 2.0f) * D_0015EE6C);
         *(u128 *)v = *(u128 *)z;
         Moby_GetJointWorldPos(m, 0, buf);
-        PartType74Spawn(m, buf, v, &D_L01_00162170, 1);
-        PartType74Spawn(m, buf, v, &D_L01_00162180, 1);
-        PartType74Spawn(m, buf, v, &D_L01_00162190, 1);
+        spawn_type_74_particle(m, buf, v, &D_L01_00162170, 1);
+        spawn_type_74_particle(m, buf, v, &D_L01_00162180, 1);
+        spawn_type_74_particle(m, buf, v, &D_L01_00162190, 1);
     }
 }
 extern void func_L00_00264690(void *, int, float, float);
 
 /* Initialize both consecutive effect entries. */
-void TwinGlowDraw(char *moby) {
+void draw_sandmouse_billboard_quads(char *moby) {
     char *data = *(char **)(moby + 0x78);
     char *entry = data + 0x70;
     int i;
@@ -2573,7 +2573,7 @@ void TwinGlowDraw(char *moby) {
 extern void func_L00_00250800(void *, int, void *);
 
 /* Attach two effect entries and register their update callback. */
-void TwinGlowInit(char *moby) {
+void update_sandmouse_billboard_quads(char *moby) {
     char *data = *(char **)(moby + 0x78);
     char *entry = data + 0x70;
     int i;
@@ -2581,7 +2581,7 @@ void TwinGlowInit(char *moby) {
         Moby_GetJointWorldPos(moby, i + 3, entry);
         entry += 0x10;
     }
-    AddDrawCallback(TwinGlowDraw, moby);
+    AddDrawCallback(draw_sandmouse_billboard_quads, moby);
 }
 typedef struct {
     s32 f0;
@@ -2675,7 +2675,7 @@ void sandmouse_update(Moby *m) {
         } else if (*((u8 *)p + 0x91) != 0) {
             DetachManipulator(m, (u8 *)p + 0x90);
         }
-        TwinGlowInit(m);
+        update_sandmouse_billboard_quads(m);
     }
     switch (m->state) {
     case 0:
@@ -2761,7 +2761,7 @@ void sandmouse_update(Moby *m) {
                 if (func_L00_001EFFF0(&a, &b, 0, m, 0)) {
                     if (D_L01_00174358 != *(Moby **)(h + 0x2080)) break;
                 }
-                Hero_GetPointAhead(m, p);
+                compute_sand_mouse_approach_target(m, p);
                 if (*(Moby **)(h + 0x1130) != 0 && (*(Moby **)(h + 0x1130))->oclass == 0x1B1
                     && (*(Moby **)(h + 0x1130))->state != 0xFE && (*(Moby **)(h + 0x1130))->state != 0xFD) {
                     (*(Moby **)(h + 0x1130))->state = 1;
@@ -2815,12 +2815,12 @@ void sandmouse_update(Moby *m) {
         }
         if (0.6f < func_001F9D48(&m->pos, &p->a30) && p->timer == 0) {
             D_L01_001DEE08.f4 = 0.7f;
-            GetHeroFrontOffsetPoint(m, p);
-            MouseCritter_StepCommand(m, p);
+            compute_sandmouse_follow_goal(m, p);
+            update_sandmouse_hover_movement(m, p);
             r = p->stuck < 0x15;
             r = r ? 0 : 2;
         } else {
-            Hero_GetPointAhead(m, p);
+            compute_sand_mouse_approach_target(m, p);
             ang = func_L00_001FF860(p->goal.f[0] - m->pos.x, p->goal.f[1] - m->pos.y);
             MobySpringTurn(m, ang, &D_L01_001DEE08.f14,
                 D_0015EE70 * 6.2831855f, D_0015EE70 * 3.1415927f, D_0015EE6C * 11.519173f);
@@ -2882,8 +2882,8 @@ void sandmouse_update(Moby *m) {
                 && *(int *)(h + 0x208C) != 0x16 && *(int *)(h + 0x208C) != 0x14
                 && *(u8 *)(h + 0x20A4) == 0 && *(s16 *)(D_L01_00167300 + 0x86) != 0x14
                 && func_001F9908(&p->k58) == 0 && p->k5C < *(int *)&D_L01_0016212C) {
-                GetHeroFrontOffsetPoint(m, p);
-                MouseCritter_StepCommand(m, p);
+                compute_sandmouse_follow_goal(m, p);
+                update_sandmouse_hover_movement(m, p);
             } else {
                 qzero(&p->vel);
                 p->timer = *(int *)&D_L01_00162134;
@@ -2901,7 +2901,7 @@ void sandmouse_update(Moby *m) {
                 }
             }
         }
-        func_L01_0030E9C8(m, p);
+        try_fire_sandmouse_projectile(m, p);
         break;
     case 6:
         if (p->slot != -1) {
@@ -2967,7 +2967,7 @@ void sandmouse_update(Moby *m) {
     }
     if (m->state >= 2) {
         jet_animate(m, 0.3f);
-        ((void (*)(void *, void *))EmitFallingParticles)(m, p);
+        ((void (*)(void *, void *))emit_sandmouse_particles)(m, p);
     }
     if (p->link != -1) {
         LNK(p->link)->collision = LNK(p->link)->pclass->collision;
@@ -3074,7 +3074,7 @@ extern s32 func_L00_0025EFC0(void *, void *, void *, s32 *, f32 *, s32, f32, f32
 
 /* Resets the camera's orbit, focus, spring, view and track from fixed values; for a kind 2 preset it also prepares its two paths once, measuring each point against the path it follows.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/vendor/0030b618.c, FUN_L01_00314e98. */
-void Camera_ResetFromPreset(Camera *cam) {
+void reset_camera_state_and_prepare_preset_paths(Camera *cam) {
     Vec4 at;
     s32 seg;
     f32 t;
@@ -3275,7 +3275,7 @@ extern void func_002156E0(void *dst, void *vec, void *axis, float angle);
 /* Update function of camera 3: follows a path beside the hero's and turns toward a look-at point on it.
    The four `= 0` initialisers in the mode 2 block are dead and leave no code: they make up for the insns
    qcopy()'s parameters add, which decide the size of gcse's hash table and so the order of the spill slots. */
-void Camera3_Update(Cam_316730 *cam) {
+void update_camera_position_and_orientation_from_paths(Cam_316730 *cam) {
     float v0[4];
     float v10[4];
     float v20[4];
@@ -3560,7 +3560,7 @@ extern f32 func_001F9D10(void *, void *);
 extern f32 func_001F9C78(void *, void *);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/vendor/0030b618.c, FUN_L01_00315de0. */
-void Camera_CopyAndApplyPreset(Camera_171B8 *cam) {
+void initialize_camera_transform_and_paths(Camera_171B8 *cam) {
     CameraPresetRow_171B8 *rows = D_L01_0015F050_171B8;
     Camera_171B8 *src = D_L01_00167304;
     CameraPreset_171B8 *s = rows[cam->preset].preset;
@@ -3635,7 +3635,7 @@ extern CamTarget_00317408 *D_L01_0015F7EC_00317408 __asm__("D_L01_0015F7EC") MAC
 
 /* Exit function of camera 3: unless the hero is still on this camera's target, sets the camera object's mode to 3, or 5 for kind 3.
    Adapted from Lombyte (MIT) for PAL: src/overlays/shared/gameplay/vendor/0030b618.c, FUN_L01_00316030. */
-void Camera3_Exit(CamUser_00317408 *o) {
+void update_camera_mode_from_preset(CamUser_00317408 *o) {
     CamData_00317408 *d = D_L01_0015F050_00317408[o->slot].data;
 
     if (hero_00309078.unk2284 == o->unk86) {
@@ -3656,7 +3656,7 @@ extern char *func_L00_001EB578(int);
 extern char *D_L01_00167300;
 
 // Stores two floats into the record at 0xE0 of the data of the moby a global points at, or of moby 5.
-void BoltCrank_SetCameraParams(float a, float b) {
+void set_camera_5_track_acceleration_yz(float a, float b) {
     char *m = D_L01_00167300;
     char *t;
     char *d;

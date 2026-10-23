@@ -91,7 +91,7 @@ extern void func_001F9C08(void *, void *, void *, float);
 extern float D_0015EE6C MACRO_ADDR;
 
 // A bridge panel: when switched it slides 11 units along its own axis, easing in and out.
-void bridge_panel_update(unsigned char *moby) {
+void update_moby_position_interpolation(unsigned char *moby) {
     char *data;
     data = *(char **)(moby + 0x78);
     switch (moby[0x20]) {
@@ -153,7 +153,7 @@ extern float D_0015EE70 MACRO_ADDR;
 extern float D_0015EE6C MACRO_ADDR;
 
 /* starts a moby in state 0xF at pos: state 6, fresh random spin, motion setup; 0 if not in state 0xF */
-int Moby_LaunchSpinning(void *m_, void *pos) {
+int activate_state_15_moby_at_position(void *m_, void *pos) {
     char *m = (char *)m_;
     char *d = *(char **)(m + 0x78);
     float f, g;
@@ -182,7 +182,7 @@ int Moby_LaunchSpinning(void *m_, void *pos) {
 LINKER_REMNANT("asm/overlays", func_L06_002EB258);
 
 /* Switches every moby listed in a table into state 15 until a negative entry. */
-void MobyGroup_SetState15(int index) {
+void set_moby_list_state_15(int index) {
     short *p = D_L06_001AC340[index];
     do {
         char *moby = level_mobys_q + ((*(unsigned short *)p & 0x7FFF) << 8);
@@ -269,7 +269,7 @@ void toxic_gas_vent_update(char *m) {
         if (Sound_IsPlaying(m, *(int *)(d + 0x94)) == 0) {
             *(int *)(d + 0x94) = func_0022ED80_r(0, 4, (int)m);
         }
-        SwingingHazard_EmitSparks(m);
+        emit_toxic_gas_vent_sparks(m);
         SwingingHazard_DrawSwingArcs(m);
         s = *(float *)(d + 0x64) * 0.017453292f * FastSin(*(float *)(d + 0x7C));
         *(float *)(d + 0x7C) = FastAddRots(*(float *)(d + 0x7C), *(float *)(d + 0x80));
@@ -279,7 +279,7 @@ void toxic_gas_vent_update(char *m) {
         if (Sound_IsPlaying(m, *(int *)(d + 0x94)) == 0) {
             *(int *)(d + 0x94) = func_0022ED80_r(0, 4, (int)m);
         }
-        SwingingHazard_EmitSparks(m);
+        emit_toxic_gas_vent_sparks(m);
         SwingingHazard_DrawBeam(m);
         if (func_001F9908(d + 0x88) != 0) {
             m[0x20] = 3;
@@ -325,7 +325,7 @@ extern void func_L00_00258DB0(float *, float, float);
 extern char *func_00219780(void *, void *, void *, int, int, int, int, int, int);
 
 /* Level 6 moby update: aims a vector at its target, runs the chain of distance and angle helpers, and hands the result to func_00219780. */
-void SwingingHazard_EmitSparks(char *moby)
+void emit_toxic_gas_vent_sparks(char *moby)
 {
     float v10[4];
     float g20[4];
@@ -510,7 +510,7 @@ void SwingingHazard_DrawBeam(char *m)
     func_L00_001EFFF0(v, w, 0, m, &q);
 }
 /* Clears state 4 from every moby in the selected table. */
-void MobyGroup_ClearState4(int idx)
+void clear_moby_list_state_4(int idx)
 {
     short *p = D_L06_001AC340[idx];
     do {
@@ -521,7 +521,7 @@ void MobyGroup_ClearState4(int idx)
     } while (*p++ >= 0);
 }
 /* Sets each moby in the selected table to state 4 until its terminal entry. */
-void MobyGroup_SetState4(int idx)
+void set_moby_list_state_4(int idx)
 {
     short *p = D_L06_001AC340[idx];
     do {
@@ -679,7 +679,7 @@ extern int func_0020BFC8_2F69D0(int, int) __asm__("func_0020BFC8");
 
 /* Level 6 drawbridge (class 1028): spawns its two rows of deck pieces, waits for the hero's switch, then
    lowers through three hinge stages (D_L06_00161E08/0C/10) while the camera follows the path nodes. */
-void DrawbridgeUpdate(Moby *m) {
+void update_drawbridge(Moby *m) {
     Vec_2F69D0 v0, v10, v20, v30, v40, v50;
     Data_2F69D0 *s = (struct Data_2F69D0 *)m->pvars;
     float old, t;
@@ -958,7 +958,7 @@ extern char D_0014171B[];
 
 #define FLD(base, off, T) (((struct { char _p[off]; T v; } *)(base))->v)
 /* Moby class 1035 update (level 06): 0 init, 1 update, 2 spawn an entry, 3 delete. */
-void electric_barrier_update(char *m) {
+void update_beam_barrier(char *m) {
     char *d = *(char **)(m + 0x78);
     unsigned char st = *(unsigned char *)(m + 0x20);
     struct {
@@ -1000,7 +1000,7 @@ void electric_barrier_update(char *m) {
             *(int *)(d + 0x10) = ((int (*)(int, int, int))Moby_PlaySound)(0, 4, (int)m);
         {
             p = (float *)(m + 0x10);
-            StrandEffectUpdate((struct Moby *)m);
+            animate_beam_barrier_strands((struct Moby *)m);
             v = FastVecDist(p, D_L06_00167640);
             pos = p;
         }
@@ -1075,7 +1075,7 @@ void electric_barrier_update(char *m) {
             ApproachValue((float *)(d + 0x18), 0.0f, (k = D_0015EE6C) + k);
         }
         if (*(float *)(d + 0x18) != 0.0f)
-            AddDrawCallback(StrandEffectDraw, m);
+            AddDrawCallback(draw_beam_barrier_segments, m);
         /* L7E0C */
         if (FLD((D_0014171B + 0x34D), 0x158, unsigned short) == 0) {
             if (*(short *)(d + 0x16) == 0) {
@@ -1210,7 +1210,7 @@ extern float D_L06_001DB3B0[];
 extern Vec4 D_L06_001DB440_F8200[4][30] __asm__("D_L06_001DB440");
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l06/gameplay/entities/002b4770.c, FUN_L06_002f6dd0. */
-void StrandEffectDraw(char *moby) {
+void draw_beam_barrier_segments(char *moby) {
     float base_matrix[16];
     float yaw_matrix[16];
     float segment_matrix[9][16];
@@ -1296,7 +1296,7 @@ extern void func_L06_002172B0(void *);
 
 /* Spins the moby and animates four 30-point strands: a strand whose timer ran out is rebuilt with a smoothed random drift (each point averages three jitters) and its timer reset; otherwise every inner point moves by its drift.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l06/gameplay/entities/002b4770.c, FUN_L06_002f7000. */
-void StrandEffectUpdate(struct Moby *moby) {
+void animate_beam_barrier_strands(struct Moby *moby) {
     Vec4 jitter[30];
     float y;
     float step;
@@ -2729,7 +2729,7 @@ void MobyGroup_LaunchUp(char *moby) {
             float v[4];
             qcopy(v, (char *)(off + (int)level_mobys_q) + 0x10);
             v[2] = v[2] + random_float_between(15.0f, 20.0f);
-            Moby_LaunchSpinning((char *)((int)level_mobys_q + off), v);
+            activate_state_15_moby_at_position((char *)((int)level_mobys_q + off), v);
         } while (*p++ >= 0);
     }
 }
@@ -2951,7 +2951,7 @@ extern short D_L06_00161FE8;
 extern short D_L06_00161FEC;
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l06/gameplay/entities/002b4770.c, FUN_L06_002fbfb0. */
-void Moby1054Update(char *moby) {
+void update_moby_pair_transforms(char *moby) {
     char *data = *(char **)(moby + 0x78);
     char *child;
     float v[4];
@@ -3104,7 +3104,7 @@ void Moby1054Update(char *moby) {
     }
 }
 // Store byte to structure field
-void Moby_SetState3(unsigned char *moby) {
+void set_moby_state_3(unsigned char *moby) {
     moby[0x20] = 3;
 }
 typedef struct {
@@ -3165,7 +3165,7 @@ extern int D_L06_00162004 SDATA(D_L06_00162004);
 extern int D_L06_00162008 SDATA(D_L06_00162008);
 
 /* Update of moby class 1061: a lift that the hero calls with buttons; it moves between two heights and switches its helper mobys. */
-void CallableLiftUpdate(Moby *moby) {
+void update_hero_triggered_moby_height_cycle(Moby *moby) {
     Vec4A v0;
     Vec4A v10;
     Data_2FDA70 *d = (Data_2FDA70 *)moby->pvars;
@@ -3385,16 +3385,16 @@ extern void func_L06_002FE890(void);
 extern void func_L06_002FEB78(void);
 
 /* Registers the moby's draw callbacks, choosing by its four slot ids. */
-void RegisterMobyDrawCallbacks(char *moby) {
+void enqueue_moby_draw_callbacks_by_clip_volume(char *moby) {
     int *data = *(int **)(moby + 0x78);
     int *p;
     int i;
-    AddDrawCallback((void *)EffectQuad_DrawVariantB, moby);
+    AddDrawCallback((void *)draw_dual_texture_58_quad_mesh, moby);
     p = data;
     for (i = 0; i < 4; p++, i++) {
         if (*p < 0) continue;
         if (is_point_inside_clip_volume(D_L06_00167640, *p)) {
-            AddDrawCallback((void *)EffectQuad_DrawVariantA, moby);
+            AddDrawCallback((void *)draw_dual_texture_50_quad_mesh, moby);
             break;
         }
     }
@@ -3402,7 +3402,7 @@ void RegisterMobyDrawCallbacks(char *moby) {
     for (i = 0; i < 4; p++, i++) {
         char *g = (char *)D_0013E633 + 0xE1D;
         if (*(int *)(g + 0x208C) == 15 || (*p >= 0 && is_point_inside_clip_volume(D_L06_00167640, *p))) {
-            AddDrawCallback((void *)EffectQuad_DrawVariantC, moby);
+            AddDrawCallback((void *)draw_dual_texture_864_quad_mesh, moby);
             return;
         }
     }

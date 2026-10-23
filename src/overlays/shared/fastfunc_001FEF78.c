@@ -43,7 +43,7 @@ extern float func_001FA790(float, float);
 extern float func_001FA748(float, float);
 extern float func_001F9B88(float);
 
-float RotateTowardAngle(float a, float b, float c) {
+float step_rotation_toward_target(float a, float b, float c) {
     float r = FastSubRots(b, a);
     if (!(r > 0.0f)) {
         c = -c;

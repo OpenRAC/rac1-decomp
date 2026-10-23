@@ -36,7 +36,7 @@ void ScaleTableIntoBuffer(char *arg, int val, float scale) {
 }
 
 // Call vendor setup with a fixed value; the scale it was given goes through untouched.
-void ScaleTableIntoBuffer128(char *arg, float scale) {
+void prepare_scaled_table_with_byte_128(char *arg, float scale) {
     ScaleTableIntoBuffer(arg, 0x80, scale);
 }
 typedef struct Arg_2A52D0 {
@@ -91,7 +91,7 @@ extern long D_L02_00161370_2A52D0 __asm__("D_L02_00161370") MACRO_ADDR;
 
 /* Builds one moby's VU1 draw packet: camera matrices and screen setup, the two interpolated vertex tables of
  * its animation frame, then the GS register block for its texture. */
-void DrawMobyVu1Packet(Arg_2A52D0 *arg) {
+void build_interpolated_dma_packet(Arg_2A52D0 *arg) {
     float m[16];
     int *base;
     int *p;
@@ -241,7 +241,7 @@ extern char D_L02_0016D0C0[];
 extern int *D_L02_00161240 MACRO_ADDR;
 
 // Copy four level floats into the draw state, then queue a two-register GS packet from it.
-void Backdrop_QueueGsPacket(void) {
+void restore_view_after_textured_grid(void) {
     char *b;
     long *g;
     int *q;
@@ -1638,7 +1638,7 @@ extern int func_L00_0025A2F0(int *, int, int, int);
 extern void func_L00_00264690(void *, int, float, float);
 
 /* Walks the moby list matching this moby's id and pulses each match's data slots while it is bright. */
-void PulseMatchingMobyLights3(char *self) {
+void draw_background_ship_1_joint_billboards(char *self) {
     char *cur;
     GroupMobyIter_Start((int *)&cur, *(unsigned char *)(self + 0x21), 0, 0);
     while (cur != 0) {
@@ -1692,7 +1692,7 @@ void RefreshMobyAttachPoints3(char *moby) {
         q = *(int **)(data + 0xB4);
         if (v != *q) {
             *q = v;
-            AddDrawCallback(PulseMatchingMobyLights3, moby);
+            AddDrawCallback(draw_background_ship_1_joint_billboards, moby);
         }
     }
 }
@@ -1905,7 +1905,7 @@ void SpawnThreeParticles(char *m, void *arg1) {
     }
 }
 /* Walks the moby list matching this moby's id and pulses each match's six data slots while it is bright. */
-void PulseMatchingMobyLights6(char *self) {
+void draw_matching_moby_slot_quads(char *self) {
     char *cur;
     GroupMobyIter_Start((int *)&cur, *(unsigned char *)(self + 0x21), 0, 0);
     while (cur != 0) {
@@ -1951,7 +1951,7 @@ void RefreshMobyAttachPoints6(char *m) {
             q = *(int **)(data + 0xE4);
             if (v != *q) {
                 *q = v;
-                AddDrawCallback(PulseMatchingMobyLights6, m);
+                AddDrawCallback(draw_matching_moby_slot_quads, m);
             }
         }
     }
@@ -2214,7 +2214,7 @@ void white_flower_update(char *m) {
         Moby_PlaySound(0, 0, (int)m);
         SpawnBreakFxByDistance(m);
         SpawnMobyBurstFx(m, 0x71D, 1, 0x71D, 1, 5, 2);
-        SpawnMobyCopyingPlacement(m, 0x71C);
+        spawn_moby_from_placement(m, 0x71C);
         DeleteMoby(m);
         break;
     }
@@ -2230,7 +2230,7 @@ void SetActiveObjectValue(int value) {
     }
 }
 /* Update the active object's coordinates without replacing zero fields. */
-void SetActiveObjectCoords(float x, float y, float z) {
+void set_nonzero_follow_camera_parameters(float x, float y, float z) {
     char *moby = D_L02_00167480;
     if (*(short *)(moby + 0x86) == 0) {
         char *data = *(char **)(moby + 0x70) + 0x1D0;
@@ -2286,7 +2286,7 @@ extern void func_L02_001FC308(void (*)(void));
 void CamOffsetFx_Begin(void) {
     if (D_L02_0016768C != 0.0f) {
         Cam_SetEyeOffset(1, D_L02_0016768C * 0.35f + 0.0f, 0.005f);
-        RegisterUniqueCallback(CamOffsetFx_Tick);
+        register_camera_update_callback(update_camera_offset_effect_state);
     }
 }
 typedef struct {
@@ -2298,7 +2298,7 @@ typedef struct {
 extern S D_L02_00167680;
 extern short D_L02_0016241C;
 // Resets a timer block: sets a large value and decays a countdown toward zero.
-void CamOffsetFx_Tick(void) {
+void update_camera_offset_effect_state(void) {
     S *s = &D_L02_00167680;
     s->c = 10000.0f;
     if (s->b == 0) {
@@ -2374,7 +2374,7 @@ extern int func_L00_00260B68(void *, int);
 extern int func_L00_0025A778(void *, void *, int);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/vendor/002ec308.c, FUN_L02_002fb648. */
-int CameraMoby_IsHeroInTrigger(char *moby) {
+int test_moby_camera_control_activation(char *moby) {
     char *special = D_L02_0016755C;
     char *data = *(char **)(D_L02_0015F050 + *(short *)(moby + 0x84) * 32 + 0x1c);
     char *target = *(char **)(data + 0x48);
@@ -2429,7 +2429,7 @@ extern char D_L02_00167300[];
 extern float func_001FA850(float, float);
 
 /* Checks whether the target's direction is within a and b degrees of the reference axis. */
-int IsWithinAngleRange(char *moby, float a, float b) {
+int test_moby_camera_target_angle_limits(char *moby, float a, float b) {
     float d[4];
     float p[4];
     float q[4];
@@ -2514,7 +2514,7 @@ extern void f_vsub_2FCE00(void *, void *, void *) __asm__("func_001F9BF0");
    group, or one by index), checks the trigger, then sets the follow camera's
    heading, springs and offsets for its mode (data +0x3C). Adapted from Lombyte
    (GPL-3.0), FUN_L02_002fb9c8. */
-void func_L02_002FCE00(char *moby) {
+void apply_moby_camera_control(char *moby) {
     char *data = *(char **)(D_L02_0015F050 + *(short *)(moby + 0x84) * 32 + 0x1c);
     char *target;
     unsigned short *group;
@@ -2658,7 +2658,7 @@ void func_L02_002FCE00(char *moby) {
             int waited = (unsigned short)*(short *)(data + 0x3e) + 1;
             *(short *)(data + 0x3e) = waited;
             if ((short)waited >= count) {
-                if (IsWithinAngleRange(moby, 30.0f, 0.0f) != 0)
+                if (test_moby_camera_target_angle_limits(moby, 30.0f, 0.0f) != 0)
                     *(short *)(data + 0x20) = end;
                 else
                     active = 0;
@@ -2681,7 +2681,7 @@ void func_L02_002FCE00(char *moby) {
     hit = 0;
     amount = *(float *)data * scale * 0.017453292f * ((float)*(short *)(data + 0x20) / f_itof_2FCE00(frames));
     if (active) {
-        if (IsWithinAngleRange(moby, *(float *)(data + 0x30), *(float *)(data + 0x2c)) != 0) {
+        if (test_moby_camera_target_angle_limits(moby, *(float *)(data + 0x30), *(float *)(data + 0x2c)) != 0) {
             hit = 1;
             if ((unsigned short)(*(short *)(data + 0x3c) - 4) < 2) {
                 vec[0] = f_cos_2FCE00(*(float *)(data + 0x40));
@@ -2743,9 +2743,9 @@ void func_L02_002FCE00(char *moby) {
 }
 
 // Camera init: runs the setup when the flag is clear and the camera record is not negative, then clears a field and returns 0.
-int CameraMoby_Init(char *moby) {
+int update_moby_camera_control(char *moby) {
     char *cam = *(char **)(D_L02_0015F050 + *(short *)(moby + 0x84) * 32 + 0x1C);
-    if (*(short *)(D_L02_00167480 + 0x86) == 0 && *(short *)(cam + 0x20) >= 0) func_L02_002FCE00(moby);
+    if (*(short *)(D_L02_00167480 + 0x86) == 0 && *(short *)(cam + 0x20) >= 0) apply_moby_camera_control(moby);
     *(int *)(cam + 0x50) = 0;
     return 0;
 }

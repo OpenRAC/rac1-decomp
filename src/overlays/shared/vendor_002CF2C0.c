@@ -13,7 +13,7 @@ extern int func_001F9850(int);
 extern float D_0015EE6C MACRO_ADDR;
 
 // Spawns a class 0x5C3 moby with its owner, position, spin and lifetime.
-char *Moby1475Spawn(int owner, char *pos, int arg, float f0, float f1) {
+char *create_class_5c3_moby(int owner, char *pos, int arg, float f0, float f1) {
     char *moby = (char *)func_0020D348_m(0x5C3);
     if (moby != 0) {
         char *d = *(char **)(moby + 0x78);
@@ -120,7 +120,7 @@ extern void func_L05_002F6518_F6588(struct Moby *, TriggerVars_2f5200 *, s32, s3
 extern void func_L05_002F62E8_F6588(s32, TriggerVars_2f5200 *, s32) __asm__("func_L05_002F62E8");
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b3840.c, FUN_L05_002f5200. */
-void Moby258Update(struct Moby *m) {
+void update_moby_spatial_trigger(struct Moby *m) {
     TriggerVars_2f5200 *v = (TriggerVars_2f5200 *)m->pvars;
     Vec4 target;
     s32 inside;
@@ -416,7 +416,7 @@ extern float func_001F9B88(float);
 extern char D_0013E633[];
 
 /* Scans two moby lists near the player and adds a timer bonus when one is in range. */
-void AddTimerBonusNearPlayer(char *moby) {
+void add_moby_frames_for_group_proximity(char *moby) {
     char *d = *(char **)(moby + 0x78);
     char *x = D_0013E633 + 0xE1D;
     char *p;
@@ -481,7 +481,7 @@ extern void func_L00_001FFED8(void *, int, float);
 extern void func_L05_0030D678(unsigned char *m);
 
 /* UpdateMoby_823: pick random wobble parameters, then animate them each frame */
-void Moby823Update(unsigned char *m) {
+void update_moby_wobble(unsigned char *m) {
     char *d = *(char **)(m + 0x78);
     float r, lo, hi;
     switch (m[0x20]) {
@@ -504,7 +504,7 @@ void Moby823Update(unsigned char *m) {
     case 1: {
         float k = 0.5235988f;
         float t;
-        AddDrawCallback((void *)func_L05_0030D678, m);
+        AddDrawCallback((void *)draw_moby_wobble_quads, m);
         t = FastAddRots(*(float *)(d + 0x44), *(float *)(d + 0x4C));
         *(float *)(d + 0x44) = t;
         *(float *)(m + 0x48) = FastAddRots(*(float *)(d + 0x40), FastSin(t) * k);
@@ -543,11 +543,11 @@ extern int D_L05_00161DC4 SDATA(D_L05_00161DC4);
 extern int D_L05_00161DC8 SDATA(D_L05_00161DC8);
 extern int D_L05_00161DCC SDATA(D_L05_00161DCC);
 
-/* Draw callback of the class 0x337 wobbling effect (Moby823Update above):
+/* Draw callback of the class 0x337 wobbling effect (update_moby_wobble above):
    builds a basis from the moby (rotation from its pvars phase, direction toward
    D_L05_001672C0) and draws ten pairs of textured quads that widen with each
    step. Adapted from Lombyte (GPL-3.0), FUN_L05_0030c220. */
-void func_L05_0030D678(unsigned char *m) {
+void draw_moby_wobble_quads(unsigned char *m) {
     Quad_0D678 quad_a, b;
     float rotation[4];
     float position[4];
@@ -732,7 +732,7 @@ extern unsigned char D_L05_0017C9A0[];
 extern short D_L05_00161FA8;
 
 /* Resets the marker record's scale once for every moby sharing this one's class, while the level flag is 2. */
-void AttachCheatManipulatorToSiblings(char *a) {
+void attach_big_head_cheat_manipulator(char *a) {
     if (D_L05_0015F6A8 == 2 && gCheats[0] != 0) {
         int i;
         for (i = 0; i < D_L05_0016CD60.n; i++) {
@@ -759,7 +759,7 @@ typedef struct {
 } Dat;
 
 // Initialises a moby's data: copies two vectors, sets a value and three random-ish speeds.
-void InitSpinningPiece(char *m, int b, void *v1, void *v2, int a) {
+void initialize_moby_launch_motion(char *m, int b, void *v1, void *v2, int a) {
     Dat *d = *(Dat **)(m + 0x78);
     m[0x20] = 1;
     qcopy((char *)d + 0x30, v1);
@@ -855,7 +855,7 @@ extern void func_L05_0031A718(void *);
 extern char * D_L05_001601AC MACRO_ADDR;
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002b3840.c, FUN_L05_00319510. */
-void Taxi_SetTargetFromSpawn(void *moby_v)
+void reset_selected_moby_to_current_placement(void *moby_v)
 {
     char *moby = moby_v;
     char *data = *(char **)(moby + 0x78);
@@ -915,7 +915,7 @@ int AdvanceMobyPath(char *m) {
 extern void func_00215F80(int, int);
 
 /* Plays the sound that goes with the moby's current variant. */
-void ShowVariantHelpMessage(char *moby) {
+void request_moby_variant_help_message(char *moby) {
     switch (*(short *)(*(char **)(moby + 0x78) + 0xB6)) {
     case 0: try_set_help_message(8, 0x13A5); break;
     case 1: try_set_help_message(8, 0x1398); break;
@@ -927,7 +927,7 @@ void ShowVariantHelpMessage(char *moby) {
 }
 extern float D_0015EE6C MACRO_ADDR;
 /* Wobbles a moby's position and rotation from its sine-driven state. */
-void WobbleMoby(char *moby) {
+void apply_moby_position_and_rotation_wobble(char *moby) {
     char *d = *(char **)(moby + 0x78);
     float s, t, w;
     qcopy(moby + 0x10, d + 0x60);
@@ -956,7 +956,7 @@ extern char D_L05_00215F40[];
 extern char D_0013F450[];
 
 /* Transforms the 7 vectors of a level table entry into the moby's space and records its index. */
-void TransformLevelTablePoints(char *a) {
+void transform_moby_vector_table_to_world_space(char *a) {
     char *data = *(char **)(a + 0x78);
     int idx = *(int *)(data + 0xDC);
     if (idx != -1) {
@@ -1064,7 +1064,7 @@ void func_L05_0031E468(char *m);
 
 /* Mine update: sets its glow, fades it out with camera distance and blows up into debris, smoke and sparks when something touches it.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/vendor/0031abe0.c, FUN_L05_0031c8e0. */
-void MineMobyUpdate(struct Moby *moby) {
+void update_moby_glow_and_contact_explosion(struct Moby *moby) {
     struct MineVars_c8e0 *vars = (struct MineVars_c8e0 *)moby->pvars;
     Vec4 tip;
     Vec4 vel;
@@ -1104,7 +1104,7 @@ void MineMobyUpdate(struct Moby *moby) {
     } else {
         vars->alpha = vars->max_alpha;
     }
-    func_001F49B0_1DDF0(DrawGlowSprite, moby);
+    func_001F49B0_1DDF0(draw_moby_glow_sprite, moby);
     hit = MobyGetHitMessage(moby, 0x810000, 0);
     moby->hit_slot = 0xFF;
     if (hit == 0) {
@@ -1121,7 +1121,7 @@ void MineMobyUpdate(struct Moby *moby) {
         }
     }
     Moby_PlaySound(0, 0, moby);
-    Moby1514Spawn((unsigned char *)moby);
+    spawn_moby_class_5ea_from_source((unsigned char *)moby);
     debris = SpawnBreakFragment(D_0015EE70 * 12.0f, moby, 0x5ED, &moby->pos, &moby->rot, scale_ticks(0x5A), 0,
                                D_L05_0015F660, D_L05_0015F660, D_L05_0015F660);
     if (debris != 0) {
@@ -1199,7 +1199,7 @@ extern int func_002140B0(int);
 extern void func_L00_001FD1D8(void *, void *, s32);
 
 /* Draws the moby's camera-facing glow sprite, flickering its alpha at random. */
-void DrawGlowSprite(char *m) {
+void draw_moby_glow_sprite(char *m) {
     char *d = *(char **)(m + 0x78);
     Pk_31e468 pk;
     float up[4];
@@ -1250,7 +1250,7 @@ extern char *func_0020D348(int);
 extern void func_L00_00251E30(void *);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_0031abe0.c, FUN_L05_0031d160. */
-char *Moby1514Spawn(unsigned char *a0)
+char *spawn_moby_class_5ea_from_source(unsigned char *a0)
 {
     unsigned char *m = (unsigned char *)CreateMoby(0x5EA);
     if (m != 0) {
@@ -1307,7 +1307,7 @@ void Camera_SetTargetFromHero(char *moby) {
 }
 extern char *D_L05_00167300;
 /* updates camera parameters with default negative-value limits */
-void Camera_SetParams(float a,float b,float c,float d,float e,float f,float g,float h) {
+void set_camera_follow_parameters(float a,float b,float c,float d,float e,float f,float g,float h) {
  char *o=D_L05_00167300;
  float *p=*(float **)(o+0x70);
  p[0x184/4]=a;
@@ -1326,7 +1326,7 @@ extern void func_L00_001FF4B0(void *, void *, float);
 extern void func_001F9CA0(void *, void *, void *);
 
 /* Places the camera moby relative to the hero's target and builds its look-at basis. */
-void Camera_PlaceRelativeToHero(char *m) {
+void build_hero_follow_camera_transform(char *m) {
     char *d = *(char **)(m + 0x70);
     char *at = m + 0x30;
     char *up = m + 0x10;
@@ -1690,7 +1690,7 @@ extern void vec_cross_32B1F8(void *, void *, void *) __asm__("func_001F9CA0");
 extern void orbit_32B1F8(Camera_32B1F8 *) __asm__("func_L05_0032ADE8");
 
 /* Camera follow: springs the position toward the focus, keeps clear of walls, eases distance and height, then rebuilds the basis. */
-void CameraFollowUpdate(Camera_32B1F8 *m) {
+void update_orbit_camera_position(Camera_32B1F8 *m) {
     V_32B1F8 down;
     V_32B1F8 focus;
     V_32B1F8 rel;
@@ -1829,7 +1829,7 @@ extern void func_00215328(void *, void *);
 extern void func_L05_0032ABF0(void *);
 
 /* Copies the matrix at D_L05_00167304 into out and finishes with func_L05_0032ABF0. */
-void CopyCameraPreset(char *out)
+void reset_camera_from_source_transform(char *out)
 {
     char *src = D_L05_00167304;
     qcopy(out + 0x30, src + 0x30);
@@ -1837,5 +1837,5 @@ void CopyCameraPreset(char *out)
     qcopy(out + 0x10, src + 0x10);
     qcopy(out + 0x20, src + 0x20);
     extract_matrix_rotation_quaternion(out + 0x40, out);
-    ResetCameraFromPreset(out);
+    reset_hero_follow_camera_from_preset(out);
 }

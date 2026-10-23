@@ -268,7 +268,7 @@ void mine_glove_update(struct Moby *moby) {
         break;
     case 3:
         if (vars->held != 0) {
-            InitSpawnedSpinMoby(&pos, vars->held, vars->held->pvars);
+            initialize_moby_motion_at_position(&pos, vars->held, vars->held->pvars);
             if (D_00141780_2DD8.deliveries <= 0xfffe)
                 ++D_00141780_2DD8.deliveries;
             {
@@ -572,7 +572,7 @@ void bomb_glove_update(struct Moby *moby) {
         if (vars->held == 0) {
             vars->held = spawn_bomb(moby, &vars->grip);
         } else {
-            func_L00_002AE278(&pos, vars->held, vars->held->pvars);
+            launch_bomb(&pos, vars->held, vars->held->pvars);
             if (D_00141780.deliveries <= 0xfffe)
                 ++D_00141780.deliveries;
             {
@@ -625,7 +625,7 @@ typedef struct {
 } Quad;
 
 /* draws two spinning quads around the moby's data block */
-void DrawThrownSpinQuads(char *m) {
+void draw_moby_oscillating_textured_quads(char *m) {
     char *s = *(char **)(m + 0x78);
     int i;
     Quad quad;
@@ -675,7 +675,7 @@ void func_0020D678(void *);
 extern char D_L00_001B0BB0[];
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002bffa8.c, FUN_L00_002c3440. */
-void ExplodeMobyIntoParticles(unsigned char *m) {
+void destroy_decoy_with_particles(unsigned char *m) {
     float v[4] __attribute__((aligned(16)));
     int i;
     int r, g; unsigned char b;
@@ -711,7 +711,7 @@ extern void func_L00_0025E210(void *);
 extern void func_L00_002607F8(void *, void *, s32);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002bffa8.c, FUN_L00_002c35c0. */
-u8 *SpawnThrownObject(s32 value, u128_C48C8 *position, u128_C48C8 *other_position) {
+u8 *spawn_decoy(s32 value, u128_C48C8 *position, u128_C48C8 *other_position) {
     u8 *flags = D_0013E620;
     u8 *m;
     u8 *data;
@@ -793,7 +793,7 @@ extern struct { float pad[10]; float height; float gap[5]; float vector[4]; } D_
 extern float D_0015EE60 MACRO_ADDR;
 extern char D_0013F450[];
 /* Tests a movement vector against the player and turns a colliding moby. */
-void ThrownObject_BounceOffHero(float *pos,char *m,void *vec) {
+void release_moby_with_collision_check(float *pos,char *m,void *vec) {
  float a[4],b[4],c[4];
  char *d=*(char **)(m+0x78);
  char *camera;
@@ -871,7 +871,7 @@ extern void func_L00_002C44C8_C4E00(void) __asm__("func_L00_002C44C8");
 
 /* Predicts where a thrown moby lands: steps the velocity (with gravity) from its start until collision_line hits ground (or a moby other than the hero and the holder), for up to `timer` steps. Stores the landing point and normal in vars and pulls the point 5% toward D_L00_00166DC0. mode 0 needs a live hit moby; mode 1 starts from the hero's hand. Returns 1 on a hit.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002bffa8.c, FUN_L00_002c3af8. */
-s32 ThrownObject_TracePath(ThrowVars *v, struct Moby *m, s32 mode)
+s32 predict_thrown_moby_landing(ThrowVars *v, struct Moby *m, s32 mode)
 {
     Vec4 d, e, a, q, w;
     s32 t;
@@ -982,7 +982,7 @@ extern float D_0015EE64 MACRO_ADDR;
 extern short D_0015EE70_s __asm__("D_0015EE70");
 
 /* Steers a moby toward the player's follow distance, easing its height. Adapted from Lombyte (MIT) for PAL: overlays/shared/unclassified_002bffa8.c, FUN_L00_002c40a0. */
-void Moby_FollowHeroDistance(char *m) {
+void update_decoy_proximity_motion(char *m) {
     char *d = *(char **)(m + 0x78);
     char *g = D_0013E633 + 0xE1D;
     float v[4];
@@ -1023,7 +1023,7 @@ extern int func_L00_001F3958(void);
 void func_L00_002C4748(unsigned char *m);
 
 /* Runs func_L00_002C4748 on the moby for selected values of the current mode. */
-void ExplodeOnSelectedCollType(void *m) {
+void destroy_decoy_on_selected_materials(void *m) {
     switch (CollType()) {
     case 0:
     case 1:
@@ -1032,7 +1032,7 @@ void ExplodeOnSelectedCollType(void *m) {
     case 11:
     case 12:
     case 13:
-        ExplodeMobyIntoParticles(m);
+        destroy_decoy_with_particles(m);
         break;
     }
 }
@@ -1101,9 +1101,9 @@ void decoy_update(char *moby) {
         FastVecLength(vars + 0x10) > 0.0f) {
         ground = (char *)D_0013F450_C48C8.ground_moby;
         if (ground == 0 || GetFlaggedPvarWord(ground) == 0) {
-            ThrownObject_TracePath(vars, moby, 1);
-        } else if (ThrownObject_TracePath(vars, moby, 0) == 0) {
-            ThrownObject_TracePath(vars, moby, 2);
+            predict_thrown_moby_landing(vars, moby, 1);
+        } else if (predict_thrown_moby_landing(vars, moby, 0) == 0) {
+            predict_thrown_moby_landing(vars, moby, 2);
         }
     }
     switch (*(unsigned char *)(moby + 0x20)) {
@@ -1211,7 +1211,7 @@ void decoy_update(char *moby) {
                         }
                     }
                 }
-                ExplodeOnSelectedCollType(moby);
+                destroy_decoy_on_selected_materials(moby);
                 if (fast_subtract_rotations_cf(vars + 0x6F) != 0) {
                     Moby_PlaySound(0, 0, moby);
                     *(unsigned char *)(vars + 0x6F) = (unsigned char)scale_ticks(20);
@@ -1229,14 +1229,14 @@ void decoy_update(char *moby) {
     case 4:
         if (D_0013F450_C48C8.state.current == 0x31) {
             if (func_001F9D48(moby + 0x10, &D_0013F450_C48C8.motion.pos) < 1.5f)
-                PostHitMessageAtPoint(1000.0f, moby, moby, 0x10000, &D_0013F450_C48C8.motion.pos);
+                spawn_nearby_effect_without_direction(1000.0f, moby, moby, 0x10000, &D_0013F450_C48C8.motion.pos);
         }
         found = MobyGetHitMessage(moby, 0x30001, 0);
         *(float *)(moby + 0x40) = FastAddRots(*(float *)(moby + 0x40),
             FastSubRots(*(float *)(vars + 0x4C), *(float *)(moby + 0x40)) * (D_0015EE60 * 0.1f));
         *(float *)(moby + 0x44) = FastAddRots(*(float *)(moby + 0x44),
             FastSubRots(*(float *)(vars + 0x50), *(float *)(moby + 0x44)) * (D_0015EE60 * 0.1f));
-        Moby_FollowHeroDistance(moby);
+        update_decoy_proximity_motion(moby);
         func_001F9908(vars + 0x5C);
         FastDecTimer(vars + 0x6C);
         if (found != 0) {
@@ -1298,7 +1298,7 @@ void decoy_update(char *moby) {
         if (*(unsigned char *)(moby + 0x20) != 4) {
             len = ProbeGroundHeight(moby + 0x10, 0, 0.5f);
             if (len == 0.0f) return;
-            ExplodeOnSelectedCollType(moby);
+            destroy_decoy_on_selected_materials(moby);
             if (len + 0.02f < *(float *)(moby + 0x18)) {
                 *(float *)(vars + 0x18) = *(float *)(vars + 0x18) - D_0015EE70 * 9.8f;
                 FastVecAdd(moby + 0x10, moby + 0x10, vars + 0x10);
@@ -1665,7 +1665,7 @@ extern int D_L00_00161908 MACRO_ADDR;
 
 /* per-frame step of a counter moby: advances, plays sound and finishes */
 /* Adapted from Lombyte (MIT) for PAL: overlays/shared/unclassified_002bffa8.c, FUN_L00_002c5be8. */
-int Pickup_TryCollect(char *m) {
+int try_collect_ammo_pickup(char *m) {
     char *p = *(char **)(m + 0x78);
     int a, b, r, d;
     float f;
@@ -2237,7 +2237,7 @@ extern int func_L00_001EFFF0_2C88A8(void *, void *, int, int, int) __asm__("func
 extern void func_L00_002C8680_2C88A8(float *pos, float *tgt, float *out, float speed, float unused, float range) __asm__("func_L00_002C8680");
 
 /* Per-frame camera step for a moby: aims the view at its target and steps the offset. */
-void Carrier_StepCamera(int a0, Moby *m, float *a2)
+void compute_glove_of_doom_throw_velocity(int a0, Moby *m, float *a2)
 {
     Vec_2C88A8 v0;
     Mat3_2C88A8 m10;
@@ -2451,7 +2451,7 @@ extern int func_001160D8(void);
 extern void func_L00_0026AA10(void *, unsigned char, unsigned char, int, float, float, int);
 
 /* On selected modes, spawn twenty random particles around the moby and set its state to 4. */
-void BurstOnSelectedCollType(void *mm) {
+void spawn_moby_collision_particles(void *mm) {
     char *m = mm;
     Vec4A v;
     int n, i;
@@ -2489,7 +2489,7 @@ extern int D_L00_001DD400[];
 extern short D_L00_0016190C;
 
 // Spawns a moby of class 0xE6 at a position, registers it in a 20-entry ring.
-char *SpawnMoby230(int a0, char *pos, char *vec) {
+char *spawn_glove_of_doom_held_moby(int a0, char *pos, char *vec) {
     char *m = func_0020D348_m(0xE6);
     char *d;
     char *g;

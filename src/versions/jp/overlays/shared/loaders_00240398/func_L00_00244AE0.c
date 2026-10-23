@@ -111,7 +111,7 @@ s32 func_L00_00244AE0(s32 full, s32 keep) {
         D_L00_0015F520 = base + h->v[0x1A];
         func_00203038((char *)h + h->v[0x17], h->v[0x16]);
         if (h->v[0x28]) {
-            LightTable_Relocate(base + h->v[0x28]);
+            relocate_counted_pointer_table(base + h->v[0x28]);
         } else {
             D_L00_0015F538 = 0;
             D_L00_0015F53C = 0;
@@ -179,7 +179,7 @@ s32 func_L00_00244AE0(s32 full, s32 keep) {
                 }
             }
         }
-        ((Load244110 *)&D_L00_00173F00)->f18 = LoadLevelImages((char *)((u32)end & ~0x3F), (s32 *)h);
+        ((Load244110 *)&D_L00_00173F00)->f18 = load_level_texture_bank((char *)((u32)end & ~0x3F), (s32 *)h);
     }
     ((Load244110 *)&D_L00_00173F00)->f1C = load_level_gameplay(full);
     if (full) {
@@ -234,7 +234,7 @@ s32 func_L00_00244AE0(s32 full, s32 keep) {
         ((void (*)())STUB_printf)(D_L00_0015FD40);
     }
     if (keep) {
-        PauseMenu_LoadSnapshot();
+        restore_or_clear_level_state();
     } else {
         clear_scene_state_buffers();
         for (z = 15; z >= 0; z--)

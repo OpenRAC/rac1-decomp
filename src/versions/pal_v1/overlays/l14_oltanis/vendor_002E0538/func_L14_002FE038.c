@@ -1,4 +1,4 @@
-void OltanisJetUpdate(Moby *m) {
+void update_enemy_fighter_921(Moby *m) {
     Vec_2FE038 vt;
     Vec_2FE038 vb;
     Jet_2FE038 *d = (struct Jet_2FE038 *)m->pvars;

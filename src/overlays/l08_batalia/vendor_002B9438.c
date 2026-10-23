@@ -23,7 +23,7 @@ void Moby152Init(char *moby) {
     *(int *)(d + 0x28) = 0;
     *(float *)(d + 8) = *(float *)(moby + 0x18);
     func_L00_0025E210(moby);
-    *(int *)(d + 0x24) = SpawnEffectAtMoby(moby);
+    *(int *)(d + 0x24) = spawn_moby_offset_effect(moby);
 }
 typedef struct Target_2B94B0 {
     char pad0[0xA];
@@ -85,7 +85,7 @@ extern char D_0013F450_2B94B0[] __asm__("D_0013F450");
 extern char D_0013DE6E_2B94B0[] __asm__("D_0013DE6E");
 
 /* Level 8 moby update (class 152): state machine that steers the moby toward the hero and fires its event. */
-void Moby152Update(Moby *m)
+void update_bolt_pickup(Moby *m)
 {
     MobyData_2B94B0 *d = (MobyData_2B94B0 *)m->pvars;
     float A[4], F[4], B[4], C[4], P[4], E[4];
@@ -236,7 +236,7 @@ extern blk16 D_L08_001618F8;
 extern short D_L08_001618F0;
 
 /* Bomb (class 248) update: fuse, bounce and blast state machine on the moby's state byte */
-void BombUpdate(char *moby) {
+void update_bomb(char *moby) {
     union Coll_36F8 c;
     blk16 t70;
     float t80[4];
@@ -411,7 +411,7 @@ extern void func_L08_002D6C58(char *moby, int a1, int count);
 extern char *func_L08_002DDC18(char *src, char *pos, char *vec);
 
 /* Bomber tank (class 253) update: spawns its two parts, then a state machine for driving, firing and the group's debris. */
-void BomberTankUpdate(Moby *moby) {
+void update_bomber_tank(Moby *moby) {
     float old[4];
     float rot[4];
     float vel[4];
@@ -535,7 +535,7 @@ void BomberTankUpdate(Moby *moby) {
             vel[1] = FastSin(FastAddRots(*(float *)(d + 0x170), moby->rot.z)) * (FastCos(*(float *)(d + 0x178)) * k);
             vel[2] = 0.0f;
             vel[2] = -FastSin(*(float *)(d + 0x178)) * k;
-            shot = Moby425Spawn((char *)moby, (char *)tmp, (char *)vel);
+            shot = spawn_bomber_tank_projectile((char *)moby, (char *)tmp, (char *)vel);
             if (shot != 0) shot[0x20] = 1;
         }
         break;
@@ -586,9 +586,9 @@ void BomberTankUpdate(Moby *moby) {
         func_L08_002D68D0_55E0(moby, *(int *)(d + 0x150));
         f = func_0020D830_55E0(moby);
         if ((59.0f <= f && f <= 60.0f) || (119.0f <= f && f <= 120.0f)) {
-            BomberTank_SpawnJointDebris((char *)moby, 4, 10);
+            spawn_bomber_tank_joint_particles((char *)moby, 4, 10);
         } else if ((29.0f <= f && f <= 30.0f) || (89.0f <= f && f <= 90.0f)) {
-            BomberTank_SpawnJointDebris((char *)moby, 5, 10);
+            spawn_bomber_tank_joint_particles((char *)moby, 5, 10);
         }
         break;
     }
@@ -667,7 +667,7 @@ extern void matmul_2D5FA8(float *, float *, float *) __asm__("func_001FA588");
 extern void effects_update_2D5FA8(Moby *, short *) __asm__("func_L00_0025E590");
 
 /* Per-frame update of a batalia turret moby: damage, its death state and its two helper parts. */
-void TurretUpdate(Moby *m) {
+void update_bomber_tank_damage_and_aim(Moby *m) {
     Data_2D5FA8 *d = (Data_2D5FA8 *)m->pvars;
     Hit_2D5FA8 *t;
     Hit_2D5FA8 *u;
@@ -849,7 +849,7 @@ typedef struct {
 } PathMoverVars_2d55c8;
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l08/gameplay/entities/002b8228.c, FUN_L08_002d55c8. */
-void PathMover_Step(struct Moby *moby, int path_id) {
+void advance_bomber_tank_along_path(struct Moby *moby, int path_id) {
     PathMoverVars_2d55c8 *vars = (PathMoverVars_2d55c8 *)moby->pvars;
     int *path = (int *)D_L08_001B0FB0[path_id];
     float point[4];
@@ -936,7 +936,7 @@ extern float D_L08_00161988_2D6C58 SDATA(D_L08_00161988);
 extern float D_L08_0016198C_2D6C58 SDATA(D_L08_0016198C);
 
 // Jitters the moby's vector, then spawns the effect groups for each of the count steps.
-void BomberTank_SpawnJointDebris(char *moby, int a1, int count) {
+void spawn_bomber_tank_joint_particles(char *moby, int a1, int count) {
     char *d = *(char **)(moby + 0x78);
     char t10[32];
     float t30[8];
@@ -1004,7 +1004,7 @@ typedef int u128_7010 __attribute__((mode(TI)));
 typedef struct { char pad0[0x21]; unsigned char group; char pad22[0xDE]; } Blk_7010;
 
 /* Spawns debris mobys while the level counter allows, then scatters or bursts the group's other mobys. */
-void SpawnGroupDebris(char *moby) {
+void scatter_bomber_tank_linked_debris(char *moby) {
     float a[4];
     float b[4];
     float c[4];
@@ -1040,7 +1040,7 @@ void SpawnGroupDebris(char *moby) {
             c[1] = FastSin(ang) * (D_0015EE6C * 15.0f);
             c[2] = 0.0f;
             c[2] = random_float_between(D_0015EE6C * 8.0f, D_0015EE6C * 12.0f);
-            InitSpinningPiece(m, (int)moby, c, b, func_001FA898_2D6C58(random_float_between(60.0f, 90.0f)));
+            initialize_moby_launch_motion(m, (int)moby, c, b, func_001FA898_2D6C58(random_float_between(60.0f, 90.0f)));
         }
     }
     while (1) {
@@ -1092,9 +1092,9 @@ void SpawnGroupDebris(char *moby) {
                 if (FastDiffRots(func_L00_001FF860(a[0], a[1]),
                                   func_L00_001FF860(D_L08_00167500_7010[0x50] - *(float *)(moby + 0x10),
                                                     D_L08_00167500_7010[0x51] - *(float *)(moby + 0x14))) < 0.2617994f) {
-                    InitSpinningPiece(other, (int)moby, a, b, func_001FA898_2D6C58(random_float_between(10.0f, 20.0f)));
+                    initialize_moby_launch_motion(other, (int)moby, a, b, func_001FA898_2D6C58(random_float_between(10.0f, 20.0f)));
                 } else {
-                    InitSpinningPiece(other, (int)moby, a, b, func_001FA898_2D6C58(random_float_between(30.0f, 45.0f)));
+                    initialize_moby_launch_motion(other, (int)moby, a, b, func_001FA898_2D6C58(random_float_between(30.0f, 45.0f)));
                 }
             } else if ((short)cls == 0x1D8) {
                 clear_u64_value(a);
@@ -1113,7 +1113,7 @@ extern short * D_L08_001AC340[];
 
 /* Remove active mobys of the selected classes from this moby's linked group.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l08/gameplay/entities/002b8228.c, FUN_L08_002d6450. */
-void DeleteLinkedGroupMobys(struct Moby *moby) {
+void remove_bomber_tank_linked_debris(struct Moby *moby) {
     short *list = D_L08_001AC340[(((struct Moby *)D_L08_00160058) + *(s32 *)(moby->pvars + 0x144))->group];
     struct Moby *other;
     u16 index;
@@ -1164,7 +1164,7 @@ extern float func_001F9878_DB468(float) __asm__("func_001F9878");
 extern s32 func_001FA898_DB468(f32) __asm__("func_001FA898");
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l08/gameplay/entities/002b8228.c, FUN_L08_002da0f0. */
-void Moby327Update(struct Moby *moby) {
+void update_hero_water_entry_effects(struct Moby *moby) {
     Vec4 pos;
     Vec4 v;
     char *r;
@@ -1231,7 +1231,7 @@ extern char *func_L00_0026DA50(void *, void *, int, int, int, int, float);
 
 /* Strings count glowing puffs from one point to another, growing from size0 to size1, then bursts a spark shower at each end.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l08/gameplay/entities/002b8228.c, FUN_L08_002da3f0. */
-void SpawnPuffTrailBetween(struct Moby *moby, void *from, void *to, int count, f32 size0, f32 size1) {
+void spawn_particle_line_effect(struct Moby *moby, void *from, void *to, int count, f32 size0, f32 size1) {
     Vec4 step;
     Vec4 pos;
     Vec4 vel;
@@ -1435,7 +1435,7 @@ void blarg_bombthrower_update(Moby *moby) {
         float t = IntToFloat(D_L08_00161A60);
         int c = d->s132;
         moby->alpha = func_001FA898_2D6C58((float)c + (float)-c * ((float)(D_L08_00161A60 - d->s130) / t));
-        SpawnSmokeTrails(moby);
+        spawn_moby_table_puff_pattern(moby);
         return;
     }
     damage_2D5FA8(moby, find_2D5FA8(moby, 0x330000, 0), &d->health, 0, &hit, &damage, 0, 4);
@@ -1704,7 +1704,7 @@ void blarg_bombthrower_update(Moby *moby) {
             moby->collision = 0;
             d->s132 = 0x28;
             d->s130 = D_L08_00161A60;
-            SpawnSmokeTrails(moby);
+            spawn_moby_table_puff_pattern(moby);
             DeleteMoby(moby);
             return;
         }
@@ -1789,7 +1789,7 @@ void RoutePlatformUpdate(char *m) {
         } else {
             vars->unk100 = -1;
             vars->unkE0 = -1;
-            PlatformChooseRoute(m);
+            select_shuttle_route_for_hero(m);
             moby->state = 2;
             moby->update_dist = 0xFF;
         }
@@ -1801,14 +1801,14 @@ void RoutePlatformUpdate(char *m) {
                 qcopy(hero_position_probe, &q->motion.pos);
                 func_L00_00262DF0_i(vars->stop.i, hero_position_probe, 0.5f, hero_position_probe);
                 if (FastVecDist(&q->motion.pos, hero_position_probe) < 0.001f) {
-                    Platform_ShowHelpMessage(m);
+                    try_set_shuttle_departure_help_message(m);
                     if ((D_0013A5E0_d[0x2604 / 4] & 0x10) && q->air_frames.s == 0 && D_L08_0015F674 == 10) {
                         moby->state = 3;
                     }
                 }
             }
         } else {
-            PlatformChooseRoute(m);
+            select_shuttle_route_for_hero(m);
         }
         break;
     }
@@ -1817,16 +1817,16 @@ void RoutePlatformUpdate(char *m) {
         q->unk1F2 = 5;
         q->unk1F4 = 5;
         q->unk22DA = vars->stop.u;
-        if (Platform_MoveToRouteTarget(m)) {
-            PlatformChooseRoute(m);
+        if (advance_shuttle_path_travel(m)) {
+            select_shuttle_route_for_hero(m);
             moby->state = 2;
         }
         break;
     }
     }
-    Platform_BobAndSway(m);
+    update_moby_transform_wobble(m);
     if (vars->stop.i != -1) {
-        TransformPathPoints(m);
+        update_shuttle_stop_world_points(m);
     }
     FastVecSub(delta, &moby->pos, old_pos);
     update_entity_matrix(vars->motion, delta, rp, &moby->rot);
@@ -1837,7 +1837,7 @@ extern void func_001F9EC0(void *, void *, void *);
 extern void func_001F9BD8(void *, void *, void *);
 
 // Transforms eight vectors of the current table entry by the moby's matrix.
-void TransformPathPoints(char *moby) {
+void update_shuttle_stop_world_points(char *moby) {
     char *data = *(char **)(moby + 0x78);
     int *t = (int *)D_L08_001B0FB0[*(int *)(data + 0x8C)];
     if (*t == 8) {
@@ -1866,7 +1866,7 @@ extern float func_001F9D48(void *, void *);
 /* Platform route choice: picks whichever of its three routes is nearest the player (end of route a, or
  * the start of b or c), and on a change starts along it; on route a it skips to b/c when the current
  * frame's route flags say so, and hides when far from the player. */
-void PlatformChooseRoute(char *m) {
+void select_shuttle_route_for_hero(char *m) {
     char *d = *(char **)(m + 0x78);
     char *pl = D_0013E633 + 0xE9D;
     Route_2dd4f8 *a = D_L08_001B0FB0_r[*(int *)(d + 0x88)];
@@ -1942,7 +1942,7 @@ extern float func_001FA748(float, float);
 extern float D_0015EE6C MACRO_ADDR;
 extern float func_001F9FA8(float);
 /* Moby update for a drifting object that bobs and sways. */
-void Platform_BobAndSway(char *moby) {
+void update_moby_transform_wobble(char *moby) {
     char *d = *(char **)(moby + 0x78);
     float s, t, w;
     qcopy(moby + 0x10, d + 0x60);
@@ -1971,7 +1971,7 @@ extern float func_001F9B88(float);
 extern float D_0015EE70 MACRO_ADDR;
 
 /* Per-frame update: ease the angle and position fields toward their targets. */
-int Platform_MoveToRouteTarget(char *m) {
+int advance_shuttle_path_travel(char *m) {
     char *d = *(char **)(m + 0x78);
     int *path;
     float a = D_0015EE70 * 0.1f;
@@ -1996,7 +1996,7 @@ extern void func_00215F80(int, int);
 extern int D_L08_001B0FB0[];
 
 /* Moby update that shows a help message chosen from its data values. */
-void Platform_ShowHelpMessage(char *moby) {
+void try_set_shuttle_departure_help_message(char *moby) {
     char *data = *(char **)(moby + 0x78);
     if (*(float *)(data + 0x104) > 0.9f) {
         try_set_help_message(0xA, 0x1F4D);
@@ -2013,7 +2013,7 @@ extern int func_001F9850(int);
 extern float func_002140F8(float, float);
 extern float func_L00_001FF860(float, float);
 /* Spawns a moby of class 0x1A9 at a position, with a random spin and a heading from a vector. */
-char *Moby425Spawn(char *src, char *pos, char *vec) {
+char *spawn_bomber_tank_projectile(char *src, char *pos, char *vec) {
     char *moby = CreateMoby(0x1A9);
     char *data;
     if (moby) {
@@ -2076,7 +2076,7 @@ typedef struct EffectRecord_2DC9A8 {
 extern CollisionHit D_L08_001746C0;
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l08/gameplay/entities/002b8228.c, FUN_L08_002dc9a8. */
-void Moby425Update(struct Moby *moby) {
+void update_ballistic_projectile(struct Moby *moby) {
     char *m = (char *)moby;
     char *data = *(char **)(m + 0x78);
     float original[4];
@@ -2251,7 +2251,7 @@ extern void func_00215C00(void*,float,float,float);
 extern int func_L00_001F39B0(void*,int,int,void*,int);
 
 /* Rocket guidance, route traversal, launch effects, and destruction. */
-void GuidedRocketUpdate(M46 *m) {
+void update_rocket(M46 *m) {
     V46 target,delta,accel,effect,aux;
     D46 *d=m->data;
     if (MobyGetHitMessage(m,0x210000,0) && m->state!=4) {
@@ -2408,7 +2408,7 @@ void GuidedRocketUpdate(M46 *m) {
                             launch_offset=effect;
                             if (angle_delta<0.7853982f) { lo=10.0f; hi=20.0f; }
                             else { lo=60.0f; hi=90.0f; }
-                            InitSpinningPiece(other,(int)m,accel,launch_offset,func_001FA898_r(random_float_between(lo,hi)));
+                            initialize_moby_launch_motion(other,(int)m,accel,launch_offset,func_001FA898_r(random_float_between(lo,hi)));
                         }
                     } else if ((short)cls==0x1A8) {
                         special=1; clear_u64_value(accel);
@@ -2453,7 +2453,7 @@ extern int D_L08_00161ACC SDATA(D_L08_00161ACC);
 extern float D_L08_00161AD0 SDATA(D_L08_00161AD0);
 
 /* Adapted from Lombyte (the US decompilation): FUN_L08_002de3e0. */
-Moby *Moby435Spawn(void *pos, Moby *target, void *velocity, float pitch, float yaw) {
+Moby *spawn_class_1b3_projectile(void *pos, Moby *target, void *velocity, float pitch, float yaw) {
     Moby *moby = func_0020D348_mb(0x1B3);
     char *data;
     float *reference;
@@ -2527,7 +2527,7 @@ void func_L08_002DF8A0_r(char *moby, int a, int n, int flag) {
             FastVecSub(vec3, vec, moby + 0x10);
             func_L00_001FF500(vec3, vec3, random_float_between(D_0015EE6C * 12.0f, D_0015EE6C * 15.0f));
             vec3[2] = random_float_between(D_0015EE6C * 6.0f, D_0015EE6C * 18.0f);
-            InitSpinningPiece(m, (int)moby, vec3, vec2, func_001FA898_r(random_float_between(60.0f, 90.0f)));
+            initialize_moby_launch_motion(m, (int)moby, vec3, vec2, func_001FA898_r(random_float_between(60.0f, 90.0f)));
         }
     }
 }
@@ -2547,7 +2547,7 @@ extern unsigned char D_0013D510[];
 /* Update function: switch on the state byte at +0x20. State 0 reads the table D_L08_001B0FB0[*data] (deleting
  * the moby if the index is -1), 1 steps along it, 2 falls under gravity and deletes the moby below z = 10.0
  * or on a hit. */
-void Moby438Update(char *m) {
+void update_path_following_moby(char *m) {
     float a[4];
     float b[4];
     char *d = *(char **)(m + 0x78);

@@ -239,7 +239,7 @@ extern s32_2e1f28 D_L00_00161D48[] MACRO_ADDR;
 extern s32_2e1f28 D_L00_00161D58[] MACRO_ADDR;
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_002df730.c, FUN_L00_002e1f28. */
-s32_2e1f28 EffectSlot_Alloc(s32_2e1f28 id, s32_2e1f28 a, s32_2e1f28 b) {
+s32_2e1f28 register_beam_slot(s32_2e1f28 id, s32_2e1f28 a, s32_2e1f28 b) {
     s32_2e1f28 i, j;
     for (i = 0; i < 3; i++) {
         if (D_L00_00161D58[i] == id) return 1;
@@ -292,7 +292,7 @@ extern int D_L00_00161D08[] MACRO_ADDR;
 extern int D_L00_00161D18[] MACRO_ADDR;
 extern int D_L00_00161D58[] MACRO_ADDR;
 /* Frees one slot: clears its two state words and releases its two handles. MACRO_ADDR arrays, as the NTSC decomp declares them. */
-void EffectSlot_FreeAt(int i) {
+void release_beam_slot(int i) {
     int v;
     v = D_L00_00161D08[i];
     D_L00_00161CC8[i] = 0;
@@ -312,7 +312,7 @@ extern B002E3640 D_L00_001E7070[];
 extern Q002E3640 D_L00_001E7130[];
 extern void func_001F9A98(void *, void *, int);
 /* Finds the slot holding handle id, advances its state word and stores the 0x40-byte matrix and the vector for it. */
-int EffectSlot_Update(int id, void *src, void *v) {
+int set_beam_origin_transform_and_endpoint(int id, void *src, void *v) {
     int i;
     for (i = 0; i < 3; i++) {
         if (id == D_L00_00161D58[i]) {
@@ -388,7 +388,7 @@ extern int func_L00_0023F0D0_2E3700(float *, float, float, float, float, float) 
 /* Per-frame update of one beam slot: lays out the two 20-point strips between the slot's ends
    (a sine wave and a noisy one), spawns sparks at both ends and keeps the two looping sounds
    at the ends. */
-void BeamSlotUpdate(int unused, int idx) {
+void update_slot_panes_and_effects(int unused, int idx) {
     Vec_2E3700 d;
     Vec_2E3700 dir;
     Vec_2E3700 side;
@@ -553,7 +553,7 @@ extern void func_L00_002E4838(int, int);
 extern void func_L00_002E4138(int, int, void *, int, int, int);
 
 /* Scrolls and draws the two panes of each active slot (3 slots). */
-void EffectSlot_DrawPanes(char *m) {
+void draw_active_beam_slots(char *m) {
     int *d = *(int **)(m + 0x78);
     int i;
     VU1_addGSregister(0x47, 0x51001);
@@ -570,8 +570,8 @@ void EffectSlot_DrawPanes(char *m) {
         EffectSlot_DrawPane(D_L00_00161D58[i], i);
         a = d[1] + 0x28;
         b = d[0] + 0x28;
-        DrawSlotBlendQuads(a, b, &D_L00_001E7190[k], 0x80, 0x40, i);
-        DrawSlotBlendQuads(a, b, &D_L00_001E7190[k1], 0x30, 0x10, i);
+        draw_beam_strand_with_glow(a, b, &D_L00_001E7190[k], 0x80, 0x40, i);
+        draw_beam_strand_with_glow(a, b, &D_L00_001E7190[k1], 0x30, 0x10, i);
     }
 }
 typedef struct {
@@ -592,7 +592,7 @@ extern float func_L00_00258E58(float, float, float, float, float);
 
 /* Builds the two blend quads from the slot tables and draws them along the
    19-step trail in a2. */
-void DrawSlotBlendQuads(int a0, int a1, void *a2, int a3, int a4, int a5)
+void draw_beam_strand_with_glow(int a0, int a1, void *a2, int a3, int a4, int a5)
 {
     Quad_2e4138 q[2];
     Vec4 va, vb;
@@ -1151,7 +1151,7 @@ float Cam_SignedAngleToAxis(char *a, float f) {
 typedef struct { int a[4]; } Vq4 __attribute__((aligned(16)));
 extern char D_L00_00166F10[] NOT_SDA;
 // adds the fixed offset vector into a moby's matrix rows and updates its camera-follow fields
-void CamAttach_ShiftByHeroDelta(char *a) {
+void apply_follow_camera_translation(char *a) {
     Vq4 t;
     Vq4 v1, v2;
     char *b = camera_view;
@@ -1625,14 +1625,14 @@ extern float func_001EC120(void *, float, float, float, float, float);
 
 /* Eases the three components of OUT toward IN with Cam_InterpValues, one spring state each at +0xE0/+0xE4/+0xE8 of
    camera M's state buffer (M + 0x70), with the rates A, B and C. */
-void Cam_InterpVec3(char *m, float *out, float *in, float a, float b, float c) {
+void interpolate_follow_camera_position(char *m, float *out, float *in, float a, float b, float c) {
     char *p = *(char **)(m + 0x70);
     out[0] = Cam_InterpValues(p + 0xE0, out[0], in[0], a, b, c);
     out[1] = Cam_InterpValues(p + 0xE4, out[1], in[1], a, b, c);
     out[2] = Cam_InterpValues(p + 0xE8, out[2], in[2], a, b, c);
 }
 // Combines two vectors by mode: mode 1 adds a copied base vector, others add the moby's +0x40 vector; returns 0 for modes 3-7.
-int Cam_CombineOffsetsByMode(char *m, void *a, void *b, int k) {
+int compute_follow_camera_target_position(char *m, void *a, void *b, int k) {
     int r = 1;
     char *p = *(char **)(m + 0x70) + 0x40;
     float buf[4];
@@ -1687,7 +1687,7 @@ void Cam_UpdateOffsetBlend(char *m, float *in) {
         q[0xC5] = q[0xC4];
     }
     s = (float)*(short *)(q + 0xC6) * *(float *)(q + 0xC8);
-    Cam_CombineOffsetsByMode(m, in, v, *(unsigned char *)(q + 0xC4));
+    compute_follow_camera_target_position(m, in, v, *(unsigned char *)(q + 0xC4));
     t = *(unsigned char *)(q + 0xC4);
     if (t == 3 || t == 5 || t == 6 || t == 7 || t == 1) {
         x = *(float *)&D_L00_00161E00 + (*(float *)&D_L00_00161DF8 - *(float *)&D_L00_00161E00) * s;
@@ -1696,7 +1696,7 @@ void Cam_UpdateOffsetBlend(char *m, float *in) {
         x = *(float *)&D_L00_00161DF8;
         y = *(float *)&D_L00_00161DFC;
     }
-    Cam_InterpVec3(m, (float *)(q + 0x90), v, x, y, 0.0f);
+    interpolate_follow_camera_position(m, (float *)(q + 0x90), v, x, y, 0.0f);
 }
 typedef struct Q_2E6CE0 {
     float v0[4];
@@ -2063,7 +2063,7 @@ void follow_camera_apply_overrides(O_y *o) {
             x->i260++;
             if (scale_ticks(400) < x->i260) x->i260 = scale_ticks(400);
             f = IntToFloat(x->i260) / IntToFloat(scale_ticks(400));
-            func_L00_002E9E20((s32)(x->p25C + 0x10), f * 0.20943952f, 0.0f);
+            set_follow_camera_angle_blend_from_position((s32)(x->p25C + 0x10), f * 0.20943952f, 0.0f);
         }
     }
     s->i10 = 0;
@@ -2723,7 +2723,7 @@ extern void func_001F9BF0(float *, float *, float *);
 extern void func_L00_001FF4B0(void *, void *, float);
 
 // combines vectors through the moby's data
-void Cam_BlendPushedPoint(char *m, float *out, float *b, float *c, float *d, float s0, float s1) {
+void compute_follow_camera_collision_delta(char *m, float *out, float *b, float *c, float *d, float s0, float s1) {
     float v0[4];
     float v1[4];
     float v2[4];
@@ -3112,7 +3112,7 @@ fin:
     }
 }
 /* Empty function that only reserves 0x50 bytes of stack. Adapted from Lombyte (MIT), FUN_L00_002e8378; the volatile buffer is what keeps the frame. */
-void Cam_DebugDump(int a) { volatile char buf[0x50]; }
+void run_follow_camera_noop(int a) { volatile char buf[0x50]; }
 typedef struct { u8 pad[0x220]; s32 cur; } Owner_2E9838;
 typedef struct { u8 pad[0x70]; Owner_2E9838 *p; u8 pad2[0x86 - 0x74]; s16 f86; } Vendor_2E9838;
 extern Vendor_2E9838 *D_L00_00166F00_2E9838 __asm__("D_L00_00166F00");
@@ -3353,7 +3353,7 @@ void func_L00_002E9DC8(void *a, float x, float y) {
 extern void func_L00_002E9D78(char *, int, float);
 /* Asks the hero camera to swing toward point A: stores X at +0x1BC of the state buffer and measures the swing with
    Cam_SignedAngleToPoint(camera, A, Y); only while the current camera's id is 0. */
-void func_L00_002E9E20(int a, float x, float y) {
+void set_follow_camera_angle_blend_from_position(int a, float x, float y) {
     char *p = D_L00_00166F00;
     if (*(short *)(p + 0x86) == 0) {
         *(float *)(*(char **)(p + 0x70) + 0x1BC) = x;
@@ -3859,7 +3859,7 @@ extern void func_L00_002E9828(int);
 extern void func_L00_002EA4C0(int);
 /* Builds follow camera A for this frame: func_L00_002EAF50, clamp the orbit distance, read the stick, steer the heading,
    func_L00_002E91D0, aim at the target, debug dump, then func_L00_002EA4C0's final placement. */
-void FollowCameraBuildView(int a) {
+void update_follow_camera_pose(int a) {
     float v[2];
     func_L00_002EAF50(a);
     follow_camera_auto_turn(a);
@@ -3867,6 +3867,6 @@ void FollowCameraBuildView(int a) {
     follow_camera_turn_and_pitch(a, v[0], v[1]);
     follow_camera_avoid_mobies(a);
     follow_camera_orbit(a);
-    Cam_DebugDump(a);
+    run_follow_camera_noop(a);
     follow_camera_build_view(a);
 }

@@ -407,7 +407,7 @@ d1:
     if (!(D_0013F450_40968.xF2dc < 0.25f)) {
         return;
     }
-    VecToHeroAngles((u8 *)&D_0013F450_40968 + 0x270, &v20);
+    compute_rotated_vector_angles((u8 *)&D_0013F450_40968 + 0x270, &v20);
     if (-0.78539819f < v20.f[1] && v20.f[1] < 0.78539819f) {
         D_0013F450_40968.u2e4.F = v20.f[1];
     }
@@ -428,7 +428,7 @@ d1:
                 D_0013F450_40968.a2c0.f[i] = 0.0f;
             }
             func_001252C0(&v60, (u8 *)&D_L05_00174340.f40);
-            VecToHeroAngles(&v60, &v50);
+            compute_rotated_vector_angles(&v60, &v50);
             if (-0.78539819f < v50.f[1] && v50.f[1] < 0.78539819f) {
                 D_0013F450_40968.a2c8.f[i] = v50.f[1];
             }
@@ -561,7 +561,7 @@ extern float func_L00_00213A08(void *);
 extern void func_001F9C30(void *, void *, f32);
 
 /* Integrate player motion, resolve contacts, and measure the resulting movement. */
-void Hero_MoveAndCollide(void) {
+void integrate_hero_motion_with_collisions(void) {
     Vec4 previous;
     Vec4 work;
     Vec4 plane;
@@ -582,7 +582,7 @@ void Hero_MoveAndCollide(void) {
 
     qcopy(previous.f, position);
     player = (Hero *)((char *)position - 0x80);
-    HeroRideMovingPlatform(player->unk4F8, (char *)position + 0x70, (char *)position + 0x10);
+    update_hero_attachment(player->unk4F8, (char *)position + 0x70, (char *)position + 0x10);
     if (player->state.current == 34 || player->state.current == 20) {
         float limit;
         float *limited_velocity;
@@ -644,10 +644,10 @@ void Hero_MoveAndCollide(void) {
     contact_player->wall_hit = 0;
     contact_player->coll_hit_moby = 0;
     if (FastVecLength((char *)position + 0x70) <= 0.0001f) {
-        Hero_ResolveCollision();
+        resolve_hero_collisions_with_history();
         HeroL05_GroundProbe();
         FastVecSub((char *)position + 0x80, position, previous.f);
-        Hero_SnapStepUp();
+        correct_hero_ground_penetration();
     } else {
         HeroL05_GroundProbe();
     }
@@ -693,10 +693,10 @@ void Hero_MoveAndCollide(void) {
         saved = motion_player->motion.platform_delta.f[3];
         clear_u64_value(contact);
         motion_player->motion.platform_delta.f[3] = saved;
-        Hero_ResolveCollision();
+        resolve_hero_collisions_with_history();
         HeroL05_GroundProbe();
         FastVecSub(external, new_position, previous.f);
-        Hero_SnapStepUp();
+        correct_hero_ground_penetration();
     }
     FastVecSub((char *)delta + 0x30, new_position, work.f);
     motion_player->motion.platform_carry.f[3] = motion_player->motion.platform_delta.f[3];

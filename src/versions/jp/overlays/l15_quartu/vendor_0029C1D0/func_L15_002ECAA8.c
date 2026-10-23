@@ -1,4 +1,4 @@
-void DrawTimedMessages(void) {
+void draw_quartu_cutscene_messages(void) {
     char buf[0x50];
     int flag = 0;
     int val = 0;
@@ -46,6 +46,6 @@ void DrawTimedMessages(void) {
     } else if (n < val) {
         if ((n - val) & 4) n = n - 1;
     }
-    DebugFontPrint((void *)(*(int *)&D_L15_00162200 + 1), (void *)(*(int *)&D_L15_00162204 + 1), (void *)*(int *)&D_L15_0016220C, buf, (void *)n);
-    DebugFontPrint((void *)*(int *)&D_L15_00162200, (void *)*(int *)&D_L15_00162204, (void *)*(int *)&D_L15_00162208, buf, (void *)n);
+    print_text_with_texture_3((void *)(*(int *)&D_L15_00162200 + 1), (void *)(*(int *)&D_L15_00162204 + 1), (void *)*(int *)&D_L15_0016220C, buf, (void *)n);
+    print_text_with_texture_3((void *)*(int *)&D_L15_00162200, (void *)*(int *)&D_L15_00162204, (void *)*(int *)&D_L15_00162208, buf, (void *)n);
 }

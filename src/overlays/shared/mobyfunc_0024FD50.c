@@ -6,7 +6,7 @@
 extern int func_001FA898_r(float) __asm__("func_001FA898");
 
 /* Finds the index of the keyframe nearest to the given time, or -1. */
-int MobyAnimFindFrame(char *a, float time) {
+int find_nearest_animation_sequence_entry(char *a, float time) {
     int x = (short)func_001FA898_r(time * 16.0f);
     int i;
     for (i = 0; i < *(unsigned char *)(a + 0x10); i++) {
@@ -313,7 +313,7 @@ void Moby_GetJointWorldPos(char *arg0, int arg1, void *arg2) {
 extern void func_001FA460(void *, void *);
 
 // Builds a matrix from the object's rotation, then rescales and offsets each entry of an attach list.
-void Moby_GetJointWorldMatrices(char *o, int n, int *arg2, char *out) {
+void compute_selected_world_matrices(char *o, int n, int *arg2, char *out) {
     char buf[0x40];
     float s;
     int i;

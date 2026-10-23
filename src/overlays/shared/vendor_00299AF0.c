@@ -268,7 +268,7 @@ void SpawnPartType52Near(char *moby) {
     v[2] = v[2] + 0.025f;
     g = *(int *)&D_L10_00161ED8;
     h = *(int *)&D_L10_00161EDC;
-    PartType52Spawn(v, c, d, g, h, e);
+    spawn_type_52_particle(v, c, d, g, h, e);
 }
 extern void func_001FA4A0(void *, void *);
 extern void func_001F9EE8(void *, void *, void *);
@@ -281,7 +281,7 @@ extern unsigned char D_0014171B_q[] __asm__("D_0014171B") NOT_SDA;
  * hero+0x50, rotates it with the matrix from func_001FA4A0(moby + 0xC0), and if that point lies
  * in the box -5 < x < 5, 0 < z < 8 sets hero byte 0x224B to (y < 0.5), else (y > 0) clears
  * D_0014171B. Then queues func_L10_002EA578. */
-void Moby1378Update(unsigned char *m) {
+void update_hero_flag_from_moby_local_box(unsigned char *m) {
     float v[4] __attribute__((aligned(16)));
     float mtx[16] __attribute__((aligned(16)));
     char *hero;
@@ -308,7 +308,7 @@ void Moby1378Update(unsigned char *m) {
                 D_0014171B_q[0] = 0;
             }
         }
-        AddDrawCallback(Moby1378Draw, m);
+        AddDrawCallback(draw_moby_animated_quad_layers, m);
         break;
     }
 }
@@ -341,7 +341,7 @@ extern void func_L00_001FD1D8(void *, void *, int);
     ((unsigned long)(a) | ((unsigned long)(b) << 2) | ((unsigned long)(c) << 4) | \
      ((unsigned long)(d) << 6) | ((unsigned long)(fix) << 32))
 
-void Moby1378Draw(unsigned char *m) {
+void draw_moby_animated_quad_layers(unsigned char *m) {
     Quad_2EA578 first, second;
     float transform[12] __attribute__((aligned(16)));
     float position[4] __attribute__((aligned(16)));
@@ -788,7 +788,7 @@ void Camera19_Update(char *moby) {
 extern char *D_L10_0015F050 MACRO_ADDR;
 
 // Decides whether a moby's camera target passes the checks; -1 disabled, 0 no, 1 yes.
-int Trigger_Evaluate(char *a, char *b) {
+int evaluate_descriptor_eligibility(char *a, char *b) {
     unsigned char *d = *(unsigned char **)(D_L10_0015F050 + *(short *)(a + 0x84) * 32 + 0x1C);
     int x;
     int y;

@@ -473,7 +473,7 @@ INCLUDE_ASM("asm/overlays", func_L00_001ED460);
 INCLUDE_ASM("asm/overlays", func_L00_001ED464);
 
 /* Returns the index of the entry with the given key, or of the -1 terminator. */
-int Camera_FindTypeIndex(int key) {
+int find_camera_table_index_by_id(int key) {
     int i = 0;
     while (gCameraTypesLvl[i].id != -1 && gCameraTypesLvl[i].id != key) {
         i++;
@@ -557,7 +557,7 @@ extern W D_L00_00173F70;
 extern short D_L00_0015F05C;
 
 /* moves the camera position a toward a target in steps, stopping each step on collision. Adapted from Lombyte (MIT) for PAL: overlays/shared/gameplay_camera_001eb188.c, FUN_L00_001ed6a8. */
-void MoveCameraToward(float *pos, float r) {
+void resolve_camera_movement_collisions(float *pos, float r) {
     W d;
     W v;
     Camera *o = player_camera.current;

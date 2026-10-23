@@ -11,7 +11,7 @@ extern int func_0020C468(int, int);
 extern void func_00203B18(char *arg0, int idx);
 
 // load a table of 16 offsets relative to the base pointer and register each entry
-void RelocatePackedObjects(void) {
+void decompress_and_relocate_vendor_moby_assets(void) {
     int i;
     int *p;
     char *base;
@@ -366,7 +366,7 @@ extern char D_L00_00161130;
 
 /* Leaves the vendor screen: releases two handles, resets state, repositions the hero and restores the game state.
    Adapted from Lombyte (MIT) for PAL: src/overlays/shared/unclassified_00295100.c, FUN_L00_0029ab70. */
-void VendorExit(int a) {
+void close_vendor_menu(int a) {
     Vec4A v;
     Vec4A r;
     char *g = (char *)D_L00_001CA7C0;
@@ -1312,7 +1312,7 @@ extern void func_00216960(void);
 extern void func_00122598(s32);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/00295100.c, FUN_L00_0029ad08. */
-void VendorStartWeaponDemo(void) {
+void start_vendor_exit_cutscene(void) {
     Vendor_29a6b0 *g;
     VendorMoby_29a6b0 *moby;
     s32 index, item, offset;
@@ -1352,12 +1352,12 @@ void VendorStartWeaponDemo(void) {
     gFadeLvl = 0;
     (*(s32 *)&D_L00_0015F500) = 0;
     if (D_0013F450.items[0].item_id != 0 && index != D_0013F450.items[0].item_id)
-        Hero_DestroySlotMobys(0, 0);
+        clear_hero_item_slot(0, 0);
     D_0013F450.pending_item[0] = D_L00_001CA7C0_9C070.f48;
     if (D_0013F450.pending_item[0] == 0x18)
         D_0013F450.pending_item[0] = 0;
     select_world_object_resource_tables(D_L00_00179BC0_9C070[D_L00_001CA7C0_9C070.f48].id, -1);
-    ReadLevelPackedData(item);
+    load_scene_chunks_with_fade(item);
     state = &D_001517D0;
     *(s32 *)&state->pad[0x1C] = 0x2734;
     func_00205220(0);
@@ -1372,7 +1372,7 @@ void VendorStartWeaponDemo(void) {
 extern short D_L00_001611C0;
 
 /* resets state and snaps the camera for a new scene */
-void Vendor_ResetScene(void) {
+void restore_hero_after_vendor_exit_cutscene(void) {
     float v[8];
     char *g;
     char *q;
@@ -1590,7 +1590,7 @@ extern void func_L00_002618D8(int, int);
 extern int func_L00_002346C0(int, int);
 
 /* vendor buy dialog: quantity selection with held-button repeat, confirm and purchase */
-void VendorBuyDialogUpdate(void) {
+void update_vendor_purchase(void) {
     float v[4];
     int n;
     int room;

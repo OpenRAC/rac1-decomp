@@ -1,4 +1,4 @@
-void SkillPointUpdate(unsigned char *moby) {
+void update_moby_list_clear_notification(unsigned char *moby) {
     int *d = *(int **)(moby + 0x78);
     unsigned v;
     int i;

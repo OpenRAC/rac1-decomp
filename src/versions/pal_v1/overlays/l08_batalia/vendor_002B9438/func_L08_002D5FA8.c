@@ -1,4 +1,4 @@
-void TurretUpdate(Moby *m) {
+void update_bomber_tank_damage_and_aim(Moby *m) {
     Data_2D5FA8 *d = (Data_2D5FA8 *)m->pvars;
     Hit_2D5FA8 *t;
     Hit_2D5FA8 *u;

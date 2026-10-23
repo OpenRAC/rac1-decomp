@@ -15,7 +15,7 @@ extern int func_001F9850(int);
 typedef int u128 __attribute__((mode(TI)));
 extern char D_L10_001DC810[];
 // Update for class 1033: oscillates its height between two limits with timed pauses.
-void Moby1033Update(char *m) {
+void update_cycling_platform(char *m) {
     char *d = *(char **)(m + 0x78);
     if (d == 0) {
         STUB_printf(D_L10_001DC810, *(short *)(m + 0xA6), *(short *)(m + 0xB2));
@@ -80,12 +80,12 @@ extern void func_001F9BF0(void *, void *, void *);
 extern void func_L00_002617B0(char *, void *, void *, void *);
 
 /* Bobbing float: drifts with a gentle wobble; when stood on it sinks, then rises back to its rest height. */
-void BobbingPlatformUpdate(char *m) {
+void update_sinking_platform(char *m) {
     char *d = *(char **)(m + 0x78);
     float prev[4];
     float v[4];
     *(Q_296dc0 *)prev = *(Q_296dc0 *)(m + 0x10);
-    if (Hero_IsOnMoby(m)) m[0x20] = 2;
+    if (is_hero_on_moby(m)) m[0x20] = 2;
     func_001F9908((int *)(d + 0xBC));
     switch (((unsigned char *)m)[0x20]) {
     case 0:
@@ -114,7 +114,7 @@ void BobbingPlatformUpdate(char *m) {
         *(float *)(d + 0xA4) = a;
         if (a < lim) *(float *)(d + 0xA4) = lim;
         *(float *)(m + 0x18) += *(float *)(d + 0xA4);
-        if (Hero_IsOnMoby(m) == 0) m[0x20] = 3;
+        if (is_hero_on_moby(m) == 0) m[0x20] = 3;
         if (*(int *)(d + 0xBC) <= 0) {
             Moby_PlaySound(0, 0, (int)m);
             *(int *)(d + 0xBC) = rand_range(0x28, 0x3C);
@@ -228,7 +228,7 @@ extern void func_L00_002664B0(int, int);
 extern void func_L00_002111E8(void);
 
 // Level 10 update for moby class 22: links two Ent records, sets table bits, calls the spawn helpers.
-void Moby22Update(char *m) {
+void update_hero_relocation_trigger(char *m) {
     char *d = *(char **)(m + 0x78);
     unsigned short id;
     ((unsigned char *)m)[0x30] = 0xFF;
@@ -531,7 +531,7 @@ extern void func_L00_0028EBF0(int);
 extern float D_0015EE6C MACRO_ADDR;
 
 // Update for a swirling effect moby: spawns particles along an axis and manages a sound slot.
-void Moby702Update(unsigned char *moby) {
+void update_timed_effect_emitter(unsigned char *moby) {
     char *data = *(char **)(moby + 0x78);
     float d[16];
     float v[4];
@@ -602,7 +602,7 @@ extern void func_L00_0025AD38_2CAD18(unsigned char *m, int x, int y, void *p, fl
 /* Hits every moby inside the box in front of this one: collects the mobys in a sphere around the box, clamps each
  * one's position into the box and hits it when a small sphere at that point still finds it.
  * Adapted from Lombyte (MIT) for PAL: overlays/l10/gameplay/entities/00295a38.c, FUN_L10_002c9958. */
-void HitMobysInBox(struct Moby *moby, HitBox_2CAD18 *box) {
+void spawn_linked_hitbox_contact_effects(struct Moby *moby, HitBox_2CAD18 *box) {
     Vec4 mat[3];
     Vec4 center;
     Vec4 delta;
@@ -687,7 +687,7 @@ extern char D_L10_001DD0D0[];
 extern char D_L10_001DD100[];
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l10/gameplay/entities/00295a38.c, FUN_L10_002c9c70. */
-void Moby794Update(struct Moby *moby) {
+void update_linked_moby_hitbox(struct Moby *moby) {
     char *d = (char *)moby->pvars;
     int differences = 0;
     struct Moby *target = 0;
@@ -798,7 +798,7 @@ void Moby794Update(struct Moby *moby) {
 }
 LINKER_REMNANT("asm/overlays", func_L10_002CF310);
 /* Moves the float at +0x18 toward target by at most 0.1f per call (the target itself when within 0.1f). */
-void Moby_StepZToward(struct Moby *a, float target) {
+void approach_moby_height(struct Moby *a, float target) {
     char *p = (char *)a;
     float cur = *(float *)(p + 0x18);
     float diff = target - cur;
@@ -835,7 +835,7 @@ extern OvlQuad D_L10_001672C0;
 extern struct Moby * D_001414D0;
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l10/gameplay/entities/00295a38.c, FUN_L10_002d7b80. */
-void Moby859Update(struct Moby *moby) {
+void update_height_adjusted_projectile(struct Moby *moby) {
     char *data = (char *)moby->pvars;
     float old[4] __attribute__((aligned(16)));
     float found[20] __attribute__((aligned(16)));
@@ -852,7 +852,7 @@ void Moby859Update(struct Moby *moby) {
     case 0:
         break;
     case 1:
-        Moby_StepZToward(moby, *(float *)(data + 0x1c));
+        approach_moby_height(moby, *(float *)(data + 0x1c));
         break;
     case 2:
         qcopy(check, &moby->pos);
@@ -860,13 +860,13 @@ void Moby859Update(struct Moby *moby) {
         check[2] += 0.1f;
         raised[2] -= *(float *)(data + 0x1c) + *(float *)(data + 0x1c);
         if (func_L00_001EFFF0(check, raised, 2, (int)moby, 0))
-            Moby_StepZToward(moby, *(float *)(ground_hit + 0x28) + *(float *)(data + 0x1c));
+            approach_moby_height(moby, *(float *)(ground_hit + 0x28) + *(float *)(data + 0x1c));
         else
-            Moby_StepZToward(moby, moby->pos.z - 0.1f);
+            approach_moby_height(moby, moby->pos.z - 0.1f);
         break;
     case 3:
         if (*(int *)((char *)found + 0x40) != 0)
-            Moby_StepZToward(moby, found[2] + *(float *)(data + 0x1c));
+            approach_moby_height(moby, found[2] + *(float *)(data + 0x1c));
         break;
     case 4:
         break;
@@ -1002,9 +1002,9 @@ int SwirlMoby_RayCollide(char *m, char *c, float *a2) {
     v40[1] = v30[1] * p - v30[0] * q;
     r = func_001F9B50(v40[0] * v40[0] + v40[2] * v40[2]);
     t = func_L00_001FF860(r, v40[1]);
-    *(float *)(m + 0x40) = RotateTowardAngle(*(float *)(m + 0x40), -t, k);
+    *(float *)(m + 0x40) = step_rotation_toward_target(*(float *)(m + 0x40), -t, k);
     u = func_L00_001FF860(v40[2], v40[0]);
-    *(float *)(m + 0x44) = RotateTowardAngle(*(float *)(m + 0x44), u, k);
+    *(float *)(m + 0x44) = step_rotation_toward_target(*(float *)(m + 0x44), u, k);
     Moby_PlaySound(1, 0, (int)m);
             return 1;
         }
@@ -1036,9 +1036,9 @@ int SwirlMoby_RayCollide(char *m, char *c, float *a2) {
     v40[1] = v30[1] * p - v30[0] * q;
     r = func_001F9B50(v40[0] * v40[0] + v40[2] * v40[2]);
     t = func_L00_001FF860(r, v40[1]);
-    *(float *)(m + 0x40) = RotateTowardAngle(*(float *)(m + 0x40), -t, k);
+    *(float *)(m + 0x40) = step_rotation_toward_target(*(float *)(m + 0x40), -t, k);
     u = func_L00_001FF860(v40[2], v40[0]);
-    *(float *)(m + 0x44) = RotateTowardAngle(*(float *)(m + 0x44), u, k);
+    *(float *)(m + 0x44) = step_rotation_toward_target(*(float *)(m + 0x44), u, k);
     Moby_PlaySound(1, 0, (int)m);
             return 2;
         }
@@ -1267,7 +1267,7 @@ extern void func_L10_002DE630(char *, float *, int *, float, float, float);
 extern int func_L00_0028EF68_v(int, int, void *, int) __asm__("func_L00_0028EF68");
 
 /* Electric spark: runs along its wire path with a light and a buzzing sound, then rests for a random time. */
-void ElectricSparkUpdate(char *m) {
+void update_path_spark_emitter(char *m) {
     char *d = *(char **)(m + 0x78);
     int *path;
     float pos[4];
@@ -1316,7 +1316,7 @@ void ElectricSparkUpdate(char *m) {
         }
         if (random_integer_below(2) != 0) return;
         if (D_L10_0015F6B0 & 1) {
-            SpawnMoby1090(m, pos, path, *(float *)(d + 4), D_0015EE6C * 5.0f, len);
+            spawn_path_spark_effect(m, pos, path, *(float *)(d + 4), D_0015EE6C * 5.0f, len);
         }
         if (Sound_IsPlaying(m, *(int *)(d + 0x10)) == 0) {
             int r = func_L00_0028EF68_v(0, 0xC, m, 0x442);
@@ -1532,7 +1532,7 @@ extern void func_L00_001FF240(void *, void *, void *);
 extern void func_L01_002F9908(void *, void *, unsigned int, float, int, float, float, float, int);
 
 /* Orxon moby update: destroys itself when its item is taken, else fires its effect once per pass. */
-void Moby1047Update(char *moby) {
+void handle_moby_destruction(char *moby) {
     typedef union { u128 q; float f[4]; } Vec4;
     Vec4 v20, v30, v40, v50;
     unsigned short id = *(unsigned short *)(moby + 0xB2);
@@ -1593,7 +1593,7 @@ extern float func_001F9B50(float);
 extern int func_L00_00200290(void *, float);
 extern void func_001F49B0(void *, void *);
 /* Moby update for a sound-emitting prop. */
-void SoundPropUpdate(struct Moby *moby) {
+void update_data_processor_linked_effect(struct Moby *moby) {
     char *data = (char *)moby->pvars;
     union { unsigned char order[10]; float position2[4]; } scratch;
     float position1[4];
@@ -1647,7 +1647,7 @@ void SoundPropUpdate(struct Moby *moby) {
         position1[2] += half_height;
         position1[3] = func_001F9B50(radius_squared + half_width * half_width);
         if (FastVecDist(&moby->pos, &D_L10_001672C0) < 80.0f && 0.0f <= (float)FastBSphereCheck(position1, 80.0f))
-            AddDrawCallback((void *)RibbonTrailDraw, moby);
+            AddDrawCallback((void *)render_data_processor_linked_effect, moby);
         if (Sound_IsPlaying(moby, *(int *)(data + 0x30)) == 0)
             *(int *)(data + 0x30) = Moby_PlaySound(0, 4, (int)moby);
         break;
@@ -1670,7 +1670,7 @@ void SoundPropUpdate(struct Moby *moby) {
         scratch.position2[2] += half_height;
         scratch.position2[3] = func_001F9B50(radius_squared + half_width * half_width);
         if (FastVecDist(&moby->pos, &D_L10_001672C0) < 80.0f && 0.0f <= (float)FastBSphereCheck(scratch.position2, 80.0f))
-            AddDrawCallback((void *)RibbonTrailDraw, moby);
+            AddDrawCallback((void *)render_data_processor_linked_effect, moby);
         break;
     }
     }
@@ -1726,7 +1726,7 @@ extern void func_L00_001FD1D8(void *, void *, s32);
 #define func_L00_001FD1D8_DBA50 func_L00_001FD1D8
 
 /* Per-frame draw of a ribbon/trail effect moby. */
-void RibbonTrailDraw(u8 *moby) {
+void render_data_processor_linked_effect(u8 *moby) {
     char *data = *(char **)(moby + 0x78);
     char *base = *(char **)((*(int *)(data + 0xc) << 8) + (int)D_L10_00160058_DBA50 + 0x78);
     char scratch[(unsigned int)*(int *)(data + 4) * 0x40];
@@ -1985,7 +1985,7 @@ extern float D_0015EE60 MACRO_ADDR;
 extern char D_L10_00178400[];
 typedef struct { int owner; float phase,speed,size; int source,timer; float growth; } EffectData;
 /* Advances an effect, scales its size over its lifetime and emits hits. */
-void Moby1090Update(char *m) {
+void update_path_spark_effect(char *m) {
  float old[4],pos[4],a,b;
  char *d=*(char **)(m+0x78);
  *(Effect128 *)old=*(Effect128 *)(m+0x10);

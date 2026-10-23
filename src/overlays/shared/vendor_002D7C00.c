@@ -204,7 +204,7 @@ void electric_water_update(unsigned char *m) {
                 save_id = ((struct Moby *)MOBY_2D7C00(vars->switches[reset_sw]))->save_id;
                 *(int *)((((short)save_id >> 5) << 2) + (int)D_L15_001BADE0) &= ~(1 << (save_id & 0x1F));
             } else {
-                Moby_ActivateIfTriggered(MOBY_2D7C00(vars->switches[reset_sw]));
+                reset_electric_water_switch(MOBY_2D7C00(vars->switches[reset_sw]));
             }
         }
         vars->on_timer = SECS_2D7C00((*(float *)&D_L15_00161C48));
@@ -286,9 +286,9 @@ void electric_water_update(unsigned char *m) {
                         l->f8 = 0.5f;
                         l->iC = 0;
                     }
-                    ResetBeamPoints((char *)moby);
-                    QuartuArcEmitter(moby);
-                    AddDrawCallback(UpdateBeamCurves, moby);
+                    initialize_electric_water_bolt_effect((char *)moby);
+                    update_electric_water_bolt_effect(moby);
+                    AddDrawCallback(draw_electric_water_bolt_effect, moby);
                 }
             }
         }
@@ -324,9 +324,9 @@ void electric_water_update(unsigned char *m) {
             func_L00_001FF240(unused_vector_argument, &vars->bolt_aim, &D_0013F450.body);
             vars->bolt_end = vars->bolt_aim;
             vars->bolt_start = D_0013F450.body;
-            ResetBeamPoints((char *)moby);
-            QuartuArcEmitter(moby);
-            AddDrawCallback(UpdateBeamCurves, moby);
+            initialize_electric_water_bolt_effect((char *)moby);
+            update_electric_water_bolt_effect(moby);
+            AddDrawCallback(draw_electric_water_bolt_effect, moby);
             hit.attacker = m;
             hit.flags = 0x10001;
             hit.damage = 1.0f;
@@ -413,7 +413,7 @@ void electric_water_update(unsigned char *m) {
             vars->light = -1;
         }
         if (vars->off_timer != 0) {
-            AddDrawCallback(TimerMoby_Draw, moby);
+            AddDrawCallback(draw_electric_water_countdown, moby);
         }
         if (vars->owner != 0) {
             RELEASE_2D7C00(vars);
@@ -452,7 +452,7 @@ void electric_water_update(unsigned char *m) {
             if (((struct Moby *)MOBY_2D7C00(vars->switches[i]))->oclass == 0x33E) {
                 ((struct Moby *)MOBY_2D7C00(vars->switches[i]))->state = ELECTRIC_WATER_ON;
             } else {
-                Moby_ActivateIfTriggered(MOBY_2D7C00(vars->switches[i]));
+                reset_electric_water_switch(MOBY_2D7C00(vars->switches[i]));
             }
         }
         vars->on_timer = SECS_2D7C00((*(float *)&D_L15_00161C48));
@@ -493,7 +493,7 @@ extern short D_L15_00161C74;
 #define W(x) (*(int *)&(x))
 
 /* Draws the level timer as "H:MM:SS.t" text with a pulsing colour. */
-void TimerMoby_Draw(char *moby) {
+void draw_electric_water_countdown(char *moby) {
     char buf[8];
     char *data = *(char **)(moby + 0x78);
     float v;
@@ -547,7 +547,7 @@ extern void func_001F9BD8(void *, void *, void *);
 extern void func_001F9BC0(void *);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002d6810.c, FUN_L15_002d79e8. */
-void ResetBeamPoints(char *m) {
+void initialize_electric_water_bolt_effect(char *m) {
     char *d = *(char **)(m + 0x78);
     float v[4];
     float step[4];
@@ -640,7 +640,7 @@ extern float D_L15_00167440_2d8fa0[] __asm__("D_L15_00167440");
 extern float D_L15_0015F660_2d8fa0[] __asm__("D_L15_0015F660") MACRO_ADDR;
 
 /* Quartu arc emitter: rebuilds the 20-point bolt and its mirror between the data block's end points, regrows or jitters four side arcs, then spawns three particles. */
-void QuartuArcEmitter(Moby *moby) {
+void update_electric_water_bolt_effect(Moby *moby) {
     V_2d8fa0 s[10];
     V_2d8fa0 d[5];
     Data_2d8fa0 *data = (Data_2d8fa0 *)moby->pvars;
@@ -835,7 +835,7 @@ extern void func_L15_002DA238(char *);
 #define F(x) (*(float *)&(x))
 
 // Scrolls a wrapping coordinate, refreshes the two path curves and four colour curves, then runs the follow-up.
-void UpdateBeamCurves(char *moby) {
+void draw_electric_water_bolt_effect(char *moby) {
     float v = F(D_L15_00161CD4) - F(D_L15_00161CD8) * D_0015EE60;
     F(D_L15_00161CD4) = v;
     if (v <= -8.0f) {
@@ -926,7 +926,7 @@ void DrawBillboardQuadPair(char *mv) {
 }
 extern int func_L11_00310738(void *);
 
-void Moby_ActivateIfTriggered(char *moby)
+void reset_electric_water_switch(char *moby)
 {
     if (IsMoby1179Active(moby)) {
         moby[0x20] = 1;
@@ -946,7 +946,7 @@ extern void func_0020D678(void *);
 extern void func_L07_0029C6A8(void *, float, int, float);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002d6810.c, FUN_L15_002e4380. */
-void Moby934Update(unsigned char *m) {
+void update_spinning_projectile(unsigned char *m) {
     char *d = *(char **)(m + 0x78);
     float next[4];
     char col[0x30];
@@ -974,7 +974,7 @@ void Moby934Update(unsigned char *m) {
     }
     qcopy(m + 0x10, next);
     if (D_L15_0015F6B0 % 3 == 0)
-        SpawnMobyAttachedParticle(m, 30000.0f, 0, 0.1f);
+        spawn_moby_point_offset_particle(m, 30000.0f, 0, 0.1f);
 }
 extern char *func_0020D348(int);
 extern void func_001F9C30(void *, void *, float);
@@ -983,7 +983,7 @@ extern void func_L00_00251E30(void *);
 extern char *func_L00_0026E940(char *src, int col, int w, int v, float x);
 
 // Spawns a moby of class 0x3A6 aimed along a direction, copying position and flags from the caller.
-char *SpawnMoby934(char *src, float *v, char *pos) {
+char *spawn_class_3a6_moby(char *src, float *v, char *pos) {
     char *m = CreateMoby(0x3A6);
     if (m != 0) {
         char *p;
@@ -1189,7 +1189,7 @@ void RippleStripsMobyUpdate(char *moby)
         func_L00_00251328(moby, 0x40, 0x40, 0x40);
         moby[0x20] = 1;
     } else {
-        AddDrawCallback((void *)DrawRippleStrips, moby);
+        AddDrawCallback((void *)draw_moby_radial_ripple_mesh_buffers, moby);
         *(short *)(moby + 0x32) = 0;
         *(unsigned short *)(moby + 0x34) |= 1;
     }

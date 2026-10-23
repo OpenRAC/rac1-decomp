@@ -17,7 +17,7 @@ void gadgetron_ceo_update(L16ChallengeMoby *m) {
         *(float *)((char *)d + 0x2C) = 3.7f;
         d->initial_yaw = m->yaw;
         if (*(int *)(D_0013D605 + 0x71F) == 0) m->yaw = FastAddRots(m->yaw, 3.14159265f);
-        Challenge_SetIdleLayout((char *)m);
+        restore_gadgetron_ceo_non_challenge_environment((char *)m);
         break;
     case 1: {
         if (((L16ChallengePlayer *)((char *)&D_0013E633_challenge + 0xE1D))->mode != 15)
@@ -58,11 +58,11 @@ void gadgetron_ceo_update(L16ChallengeMoby *m) {
             qcopy(camera + 0x10, pose + 0x30);
             camera[0x3AC] = 1;
             m->state = 3;
-            Challenge_SetActiveLayout((char *)m);
+            activate_gadgetron_ceo_challenge_environment((char *)m);
         }
         if (((L16ChallengePlayer *)((char *)&D_0013E633_challenge + 0xE1D))->mode == 22) {
             m->state = 3;
-            Challenge_SetActiveLayout((char *)m);
+            activate_gadgetron_ceo_challenge_environment((char *)m);
         }
         break;
     }
@@ -72,7 +72,7 @@ void gadgetron_ceo_update(L16ChallengeMoby *m) {
             m->state = 1;
             previous = activation->previous;
             if (previous == 4) {
-                PlayMovieEntryIfIdle(0);
+                start_indexed_disc_stream(0);
                 m->state = previous;
             }
         }
@@ -99,7 +99,7 @@ void gadgetron_ceo_update(L16ChallengeMoby *m) {
         }
         if (((L16ChallengePlayer *)((char *)&D_0013E633_challenge + 0xE1D))->mode == 0) {
             m->state = 1;
-            Challenge_SetIdleLayout((char *)m);
+            restore_gadgetron_ceo_non_challenge_environment((char *)m);
         }
         event = m->event;
         if (event == 1) {
@@ -116,13 +116,13 @@ void gadgetron_ceo_update(L16ChallengeMoby *m) {
                 activation->pending = pending;
                 activation->flag = event;
             }
-            Challenge_SetIdleLayout((char *)m);
+            restore_gadgetron_ceo_non_challenge_environment((char *)m);
         }
         if (m->event == 2) {
             m->state = 1;
             Hero_ResetToPosition(D_L16_001D9B30, D_L16_001D9B30 + 0x10, 0, 1);
             m->event = 0;
-            Challenge_SetIdleLayout((char *)m);
+            restore_gadgetron_ceo_non_challenge_environment((char *)m);
         }
         if (m->event == 3) {
             char *camera;

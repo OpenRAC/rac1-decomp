@@ -357,7 +357,7 @@ void toxic_crab_update(Moby2E30F8 *m) {
             if (*(float *)&D_L10_00161ECC * 0.017453292f < diff || d->i1D8 == 0) {
                 MobySpringTurn((char *)m, &d->f190, ang, 0.02f, 0.3f, D_0015EE6C * 6.2831855f);
             }
-            aim = ComputeNarrowedAimAngle((char *)m);
+            aim = compute_toxic_crab_group_approach_angle((char *)m);
             v[0] = FastCos(aim) * (*(short *)(t + 0xA6) == 0x359 ? 2.0f : 3.57f);
             v[1] = FastSin(aim) * (*(short *)(t + 0xA6) == 0x359 ? 2.0f : 3.57f);
             v[2] = 0.0f;
@@ -1099,7 +1099,7 @@ extern float func_001FA790(float, float);
 extern float func_001FA748(float, float);
 
 /* Computes the aim angle of a moby relative to its owner, narrowed by nearby table entries. */
-float ComputeNarrowedAimAngle(char *self) {
+float compute_toxic_crab_group_approach_angle(char *self) {
     char *owner = *(char **)(*(char **)(self + 0x78) + 0x160);
     float hi, lo, ang, dist, v[3];
     short *p;
@@ -1507,7 +1507,7 @@ void Enemy_ProcessHit(char *m) {
  ((unsigned char *)m)[0xa4]=255;StepColorFade(m,d+0xc0);
  { unsigned char *hero=D_0013E633_e1d+0xE1D;
  if(hero[0x20a4]==1) {
-  char *v;PickBestTarget(101.0f,m,d+0x110);
+  char *v;select_hero_or_gadgebot_target(101.0f,m,d+0x110);
   if(*(char **)(d+0x110)==0) *(int *)(d+0x114)=2;
   else {v=D_L10_001B0C30[*(int *)(d+0x190)];
    if(!IsPointInPolygon(*(char **)(d+0x110)+0x10,v+0x10,*(int *)v)) {*(int *)(d+0x110)=0;*(int *)(d+0x114)=2;}
@@ -1533,7 +1533,7 @@ extern int func_L00_00274788(void *, void *, int, float, float, float, int, int,
 
 /* Exhaust vent: each frame emits a burst of smoke puffs from a random spot across the vent, blown out
  * along its facing; some are small fast sparks instead. */
-void ExhaustVentUpdate(char *m) {
+void emit_moby_directional_particles(char *m) {
     float pos[4];
     float vel[4];
     float off[4];
@@ -1708,7 +1708,7 @@ extern unsigned char D_0013D605_2E9978[] __asm__("D_0013D605");
 extern char D_0013D355_2E9978[] __asm__("D_0013D355");
 
 /* Level 10 moby update (class 1344): tracks nearby targets and fires the level's event messages. */
-void Moby1344Update(Moby *m)
+void update_conditional_help_messages(Moby *m)
 {
     EvData_2E9978 *d = (EvData_2E9978 *)((int *)m->pvars);
     Moby *p;
@@ -1916,7 +1916,7 @@ state_two:
                 BuildSphericalOffset(rotation, D_0015EE6C * 40.0f,
                     func_L00_001FF860(target->pos.x - position[0], target->pos.y - position[1]),
                     func_L00_001FF860(func_001F9D48(position, &target->pos), target->pos.z - position[2]));
-                SpawnEnemyShot(m, position, rotation, scale_ticks(30));
+                spawn_class_4ea_projectile(m, position, rotation, scale_ticks(30));
                 if (target == (struct Moby *)(FIRST + (vars->targets[0] << 8)))
                     vars->targets[0] = -1;
                 else if (target == (struct Moby *)(FIRST + (vars->targets[1] << 8)))
@@ -2173,7 +2173,7 @@ extern void func_L10_002EB8A8(void *,short *,short *);
 extern void func_L10_002EBDC8_a01(float,void *,short *,short *) __asm__("func_L10_002EBDC8");
 extern void func_L10_002EBB70(void *,short *);
 // Updates a point emitter, optionally applying effects over up to 32 path points.
-void EffectEmitterUpdate(char *m) {
+void update_configurable_particle_emitter(char *m) {
  char *d=*(char **)(m+0x78);
  switch((unsigned char)m[0x20]) {
  case 0:
@@ -2354,7 +2354,7 @@ extern struct L10Data D_L10_0016CD60;
 extern void func_L00_00264870(int);
 
 /* update: wait for state 1, then act on the level's current mode */
-void Moby1555Update(char *m) {
+void update_level_mode_dispatcher(char *m) {
     switch (*(unsigned char *)(m + 0x20)) {
     case 0:
         ((unsigned char *)m)[0x30] = 0xFF;
@@ -2404,7 +2404,7 @@ void Moby1855Update(char *m) {
 extern void func_L01_00279E10(void *, int);
 
 /* per-frame update: wait for a condition, then run, then clean up */
-void Moby1856Update(char *moby) {
+void update_hit_triggered_moby_spawner(char *moby) {
     int ok = 0;
     char *p = MobyGetHitMessage(moby, 0x10000, 0);
     switch (*(unsigned char *)(moby + 0x20)) {
@@ -2420,7 +2420,7 @@ void Moby1856Update(char *moby) {
     case 2:
         Moby_PlaySound(0, 0, (int)moby);
         SpawnBreakFxByDistance(moby);
-        SpawnMobyCopyingPlacement(moby, 0x741);
+        spawn_moby_from_placement(moby, 0x741);
         DeleteMoby(moby);
         break;
     }

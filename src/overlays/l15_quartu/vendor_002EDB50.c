@@ -69,7 +69,7 @@ void ultramech_scientist_update(char *moby) {
     int control_mode;
 
     data = (char *)((struct Moby *)moby)->pvars;
-    Moby_AttachCheatManipulators(moby);
+    apply_npc_big_head_cheat(moby);
     if (*(int *)(data + 0x14C) == -1) {
         return;
     }
@@ -251,7 +251,7 @@ void ultramech_scientist_update(char *moby) {
         if (D_L15_0015F6A8 == 2) {
             break;
         }
-        PlayMovieEntryIfIdle(0x10);
+        start_indexed_disc_stream(0x10);
         ((struct Moby *)moby)->state = 7;
         break;
     case ULTRAMECH_SCIENTIST_START_SECOND_SCENE_AND_SAVE:
@@ -411,7 +411,7 @@ extern unsigned char D_0013D5CA_2EE7E8[] __asm__("D_0013D5CA");
 
 /* Quartu moby update (class 1469): hint and dialogue triggers from the hero's zones, with the play-time
    records of the two hint messages. */
-void Moby1469Update(Moby *m) {
+void update_quartu_hint_triggers(Moby *m) {
     Talk_2EE7E8 *t = (struct Talk_2EE7E8 *)m->pvars;
     int st = m->state;
     Moby *e;
@@ -565,7 +565,7 @@ extern struct L15MissionState D_L15_0016CEE0;
 extern void func_L00_00264870(int);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l15/gameplay/vendor/002e73c0.c, FUN_L15_002edb20. */
-void BossSlotEffectUpdate(struct Moby *m) {
+void emit_cutscene_mode_moby_effects(struct Moby *m) {
     switch (m->state) {
     case 0:
         m->update_dist = 0xFF;
@@ -628,7 +628,7 @@ extern float D_L15_0016227C SDATA(D_L15_0016227C);
 extern float D_L15_00162280 SDATA(D_L15_00162280);
 
 /* Builds and draws the animated ring of lights around a moby: 46 scaled vertices and colours, then two passes of 46 texture coordinates. */
-void RingWave_DrawB(char *moby) {
+void draw_scaled_moby_radial_ripple_mesh(char *moby) {
     RingVars_2EF030 *data = *(RingVars_2EF030 **)(moby + 0x78);
     unsigned int i;
     unsigned int n;
@@ -698,7 +698,7 @@ extern float D_L15_001622EC SDATA(D_L15_001622EC);
 extern float D_L15_001622F0 SDATA(D_L15_001622F0);
 
 /* Builds and draws the animated ring of lights around a moby: 88 scaled vertices and colours, then two passes of 88 texture coordinates. */
-void LightRingLargeDraw(char *moby) {
+void draw_scaled_88_vertex_moby_radial_ripple_mesh(char *moby) {
     RingVars_2EF410 *data = *(RingVars_2EF410 **)(moby + 0x78);
     unsigned int i;
     unsigned int n;
@@ -753,7 +753,7 @@ typedef struct {
 } Entry_F8D30;
 
 /* Tests whether the selected vendor entry is available (joined with func_L15_002F8D9C). */
-int IsVendorEntryAvailable(int index) {
+int can_spawn_codebot_slot_effect(int index) {
     char *other = D_L15_00167480;
     Entry_F8D30 *entries;
     char *sub;
@@ -776,7 +776,7 @@ extern char D_0013E633[];
 extern char *D_L15_0015F050 MACRO_ADDR;
 extern int *D_L15_001B0DB0[];
 /* tests several indexed conditions of a moby's entry in the table */
-int CamTrigger_IsHeroInside(char *moby) {
+int is_hero_in_moby_follow_camera_region(char *moby) {
     int *e = *(int **)(D_L15_0015F050 + *(short *)(moby + 0x84) * 32 + 0x1C);
     int r;
     int i;
@@ -816,7 +816,7 @@ extern char *D_L15_0016016C MACRO_ADDR;
 extern char D_L15_00167490[];
 extern char D_L15_00167300[];
 /* tests whether the target lies within a cone of the player's axis */
-int IsTargetInAimCone(char *moby, float a, float b) {
+int check_moby_target_angular_limits(char *moby, float a, float b) {
     float d[4];
     float p[4];
     float q[4];

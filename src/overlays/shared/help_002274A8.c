@@ -30,7 +30,7 @@ extern unsigned char D_0013E633[];
 extern int func_L00_0028F140(int a0, int a1, int a2, int a3, int a4);
 
 // Plays the hero footstep sound, flagging whether the hero's current moby has type 0xAD.
-void HeroFootstepSound(int a0, int a1, int a2) {
+void request_hero_voice_if_enabled(int a0, int a1, int a2) {
     if (a2 != 0) {
         char *g = (char *)D_0013E633 + 0xE1D;
         char *m = *(char **)(g + 0x10E0);
@@ -101,10 +101,10 @@ void HeroFrameUpdate(void) {
     HeroProcessContactType();
     HeroL01_UpdateStateTransitions();
     if (GG->b20A4 == 0) return;
-    Hero_TickReleaseTimers();
-    SettleAllHeldObjects();
+    update_hero_delayed_voice_requests();
+    update_hero_easing_records();
     if (GG->b20A4 == 0) return;
-    SyncHelpScreenMoby();
+    update_hero_vehicle_moby();
     UpdateRampUpDown();
     CameraShakeUpdate();
     func_L00_00248EF8(GG->a80);
@@ -214,7 +214,7 @@ extern void func_L01_002293D0(void);
 extern void func_L00_002091D8(void);
 
 /* Per-frame update of the help/menu state: validates the cursor, then runs the update chain. */
-void HeroUpdate(void) {
+void update_hero_frame(void) {
     char *g = (char *)D_0013E633 + 0xE1D;
     if (*(float *)(g + 0x80) < 2.0f || *(float *)(g + 0x84) < 2.0f || *(float *)(g + 0x80) > 1022.0f || *(float *)(g + 0x84) > 1022.0f) {
         char *q;
@@ -232,30 +232,30 @@ void HeroUpdate(void) {
     func_L00_00232EF0();
     hero_update();
     HeroProcessContactType();
-    HeroLedgeProbeSingle();
+    update_hero_ledge_probe();
     HeroL01_UpdateStateTransitions();
     if (*(unsigned char *)(g + 0x20A4) != 0) {
         return;
     }
-    Hero_TickReleaseTimers();
+    update_hero_delayed_voice_requests();
     Hero_CheckMovementThresholds();
-    Hero_UpdateObstacleLean();
+    update_hero_collision_ease_target();
     Hero_UpdateBodyTilt();
     HeroScanTargets();
     RerollMotionParams();
-    ClampAimLeanAngles();
-    UpdateHelperMoby();
+    update_hero_rotation_targets_and_random_manipulators();
+    update_hero_glow_and_extra_manipulators();
     Hero_SetTiltJoints();
-    SettleAllHeldObjects();
-    HeroSyncMoby();
-    HeroComputeAttachMatrices(0);
-    Hero_UpdateItems();
+    update_hero_easing_records();
+    update_hero_moby();
+    update_hero_world_matrices(0);
+    update_hero_equipped_items();
     begin_draw_frame();
     UpdateRampUpDown();
     CameraShakeUpdate();
-    HelpHintsPeriodicCheck();
+    check_hero_item_reward_conditions();
     HudBoltAlertShow();
-    FireGadgetStateHooks();
+    dispatch_hero_animation_timed_events();
     Cheats_PollCodes();
     Profile_Mark(*(void **)(g + 0x2080));
     if (*(int *)(g + 0x208C) != 0x16 && *(int *)(g + 0x2084) != 0x32) {
@@ -265,7 +265,7 @@ void HeroUpdate(void) {
         char *q = (char *)D_0013E633 + 0xE1D;
         func_L00_0025805C(*(void **)(q + 0x2080));
     }
-    HeroUpdateBlink();
+    update_hero_blink_and_gold_weapon_tint();
     Hero_SteerAimAndProbe();
 }
 extern struct Hero D_0013F450_293D0 __asm__("D_0013F450");
@@ -279,7 +279,7 @@ extern void func_L00_00207948_293D0(struct Moby *, struct Moby *) __asm__("func_
 
 /* Blinks the hero's moby colour for the first 30 frames of states 0x80 and 0x82 (and of state 0x76 for 20 frames in levels 15 and 17), then, when the equipped item is a gold weapon, runs FUN_L00_00207330 on its moby.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/help/00226f10.c, FUN_L01_00228e38. */
-void HeroUpdateBlink(void)
+void update_hero_blink_and_gold_weapon_tint(void)
 {
     /* three scalars, not an array: an int[3] changes the stack layout */
     int r, g, b;
@@ -426,7 +426,7 @@ extern float func_001FA748_D688(float, float) __asm__("func_001FA748");
 extern float func_001FA850_D688(float, float) __asm__("func_001FA850");
 
 /* the hero's ledge probe (single-size variant): looks for an edge ahead to grab, and where it finds one stores the grab point and direction */
-void HeroLedgeProbeSingle(void) {
+void update_hero_ledge_probe(void) {
     float v0[4], v10[4], v20[4], v30[4], v40[4], v50[4], v60[4], v70[4];
     float down, fwd, up, top, drop, rise, back;
     float speed, ang, d;
@@ -584,7 +584,7 @@ extern f32 func_001FA850_2DE30(f32, f32) __asm__("func_001FA850");
 
 /* Ledge probe, FUN_L00_0020c758 without its hero.unk20A4 == 1 variant: steps forward from `pos` along the hero's yaw looking for a flat top (normal within 20 degrees of up, not material 9 or 12) at least 1.8 above the floor and not above pos + up, then for the wall under it. Returns 1 when the hero (facing `*dir`) faces that wall within 65 degrees and the ledge edge is found within 2.4 units along it. Constants live in locals because retail loads each one once.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/help/00226f10.c, FUN_L01_0022d838. */
-int HeroFindLedgeTop(Vec4 *pos, f32 *dir)
+int test_hero_ledge_ahead(Vec4 *pos, f32 *dir)
 {
     Vec4 probe, top, low, wall, edge;
     f32 drop, fwd, up, reach;
@@ -1065,7 +1065,7 @@ extern int D_L01_0017435C;
 extern char D_L01_00174340[];
 
 /* Checks the hero's movement against walls ahead and slides the direction along the wall. */
-void HeroWallCheck(int flag) {
+void clip_hero_horizontal_velocity(int flag) {
     float s[4];
     float p[4];
     float t[4];
@@ -1353,7 +1353,7 @@ d1:
     if (!(D_0013F450.xF2dc < 0.25f)) {
         return;
     }
-    VecToHeroAngles((u8 *)&D_0013F450 + 0x270, &v20);
+    compute_rotated_vector_angles((u8 *)&D_0013F450 + 0x270, &v20);
     if (-0.78539819f < v20.f[1] && v20.f[1] < 0.78539819f) {
         D_0013F450.u2e4.F = v20.f[1];
     }
@@ -1374,7 +1374,7 @@ d1:
                 D_0013F450.a2c0.f[i] = 0.0f;
             }
             func_001252C0(&v60, (u8 *)&D_L01_00174340_333D8.f40);
-            VecToHeroAngles(&v60, &v50);
+            compute_rotated_vector_angles(&v60, &v50);
             if (-0.78539819f < v50.f[1] && v50.f[1] < 0.78539819f) {
                 D_0013F450.a2c8.f[i] = v50.f[1];
             }
@@ -1581,7 +1581,7 @@ extern void func_L00_00233EE0(void *, f32, f32, f32);
 extern void func_L00_00211908(void);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/help/00226f10.c, FUN_L01_0023c710. */
-void HeroTickTimers(void) {
+void update_hero_timers_and_vehicle_transitions(void) {
     Vec4 sum;
     Vec4 d;
     struct Moby *m;
@@ -1726,7 +1726,7 @@ extern int D_L01_0015F7BC MACRO_ADDR;
 extern char D_0013A5E0[];
 
 // Chooses the next hero state when landing, with sounds and effects.
-void HeroLandingNextState(void) {
+void select_hero_locomotion_state(void) {
     char *b, *c, *d;
     int n;
     b = D_0013E633 + 0xE1D;

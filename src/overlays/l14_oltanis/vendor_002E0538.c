@@ -12,7 +12,7 @@ extern void func_L14_002E0910(void *, void *, int, int, int);
 extern float D_0015EE60 MACRO_ADDR;
 
 // Scrolls a texture offset and draws two layers.
-void ScrollingRibbonsDraw(char *m) {
+void draw_ribbon_effect(char *m) {
     char *d = *(char **)(m + 0x78);
     float v = *(float *)(d + 0x1EC) - D_0015EE60 * 0.2f;
     *(float *)(d + 0x1EC) = v;
@@ -20,8 +20,8 @@ void ScrollingRibbonsDraw(char *m) {
         *(float *)(d + 0x1EC) = v + 8.0f;
     }
     VU1_addGSregister(0x47, 0x51001);
-    DrawRibbon(m, d, 0x80, 0x40, 10);
-    DrawRibbon(m, d + 0xA0, 0x30, 0x10, 0x14);
+    draw_ribbon_effect_path(m, d, 0x80, 0x40, 10);
+    draw_ribbon_effect_path(m, d + 0xA0, 0x30, 0x10, 0x14);
 }
 typedef int u128_E0910 __attribute__((mode(TI)));
 typedef struct { float x, y, z, w; } __attribute__((aligned(16))) V_E0910;
@@ -49,7 +49,7 @@ extern void func_001F9EE8(void *, void *, void *);
 extern char D_L14_001675C0[];
 
 /* Draws a two-layer textured ribbon along the points in path. */
-void DrawRibbon(void *m, void *path, int outer_alpha, int inner_alpha, int n) {
+void draw_ribbon_effect_path(void *m, void *path, int outer_alpha, int inner_alpha, int n) {
     V_E0910 *pts = (V_E0910 *)path;
     Q_E0910 q[2];
     V_E0910 w[2];
@@ -217,7 +217,7 @@ typedef struct {
 } Req;
 
 /* If the moby's check passes, builds an effect request on the stack and submits it. */
-void Hero_RequestEffectInVolume(char *moby)
+void register_hero_hit_in_clip_volume(char *moby)
 {
     char *base = D_0013E633 + 0xE9D;
     Req r;
@@ -447,7 +447,7 @@ extern char D_0013E633_2EC3E8[] __asm__("D_0013E633");
 
 /* Update for moby class 610: checks its volumes and path node on the first call and seeds 48 entries, then pushes
  * the hero along the moby's heading while he stands in the volume. */
-void Moby610Update(Moby *m) {
+void update_wind_control(Moby *m) {
     Data_2EC3E8 *d = (Data_2EC3E8 *)m->pvars;
     float sv[4];
     int i;
@@ -553,7 +553,7 @@ typedef struct {
 } Spk_k_EC7E8;
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/entities/002df080.c, FUN_L14_002eb388. */
-void Sparks_InitParticle(struct Moby *m, int i, void *dir) {
+void initialize_wind_spark(struct Moby *m, int i, void *dir) {
     Spk_k_EC7E8 *d = (Spk_k_EC7E8 *)m->pvars;
     float fwd[4];
     float side[4];
@@ -625,7 +625,7 @@ extern struct L14SparkTarget D_L14_00167480;
 void func_L14_002ECC70_EC9C8(struct Moby *m) __asm__("func_L14_002ECC70");
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/entities/002df080.c, FUN_L14_002eb568. */
-void Sparks_Update(struct Moby *m) {
+void update_wind_sparks(struct Moby *m) {
     Spk_k_EC9C8 *d = (Spk_k_EC9C8 *)m->pvars;
     float dir[4];
     float clip[4];
@@ -716,7 +716,7 @@ extern void func_001F9EE8(void *, void *, void *);
 extern void func_L00_001FD1D8_ECC70(void *, int, int) __asm__("func_L00_001FD1D8");
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/entities/002df080.c, FUN_L14_002eb810. */
-void Sparks_Draw(struct Moby *m) {
+void draw_wind_sparks(struct Moby *m) {
     Spk_k *d = (Spk_k *)m->pvars;
     Pk_m pk;
     float mat[4][4];
@@ -808,7 +808,7 @@ extern float func_001F9FA8(float);
 
 /* Mine update: drifts along its looped path while spinning and pulsing; blows up on a hit.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/entities/002df080.c, FUN_L14_002ec810. */
-void MineL14_Update(struct Moby *m) {
+void update_looping_path_moby(struct Moby *m) {
     L14MineVars *d = (L14MineVars *)m->pvars;
     float v[4];
     Vec4 vel;
@@ -943,7 +943,7 @@ extern struct { u8 pad0[0x18]; struct Moby *moby; u8 pad1C[4]; Vec4 pos; } D_L14
 extern char D_L14_00174680[];
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/entities/002df080.c, FUN_L14_002ece00. */
-void SweepingBoltUpdate(struct Moby *m) {
+void update_flying_bolt(struct Moby *m) {
     L14BoltVars *v = (L14BoltVars *)m->pvars;
     Vec4 old;
     Vec4 target;
@@ -982,7 +982,7 @@ void SweepingBoltUpdate(struct Moby *m) {
                 func_L00_001FF4B0(&dir, &dir, FastVecLength(&spark) * 0.1f);
                 FastVecAdd(&dir, &spark, &dir);
                 func_L00_001FF4B0(&dir, &dir, random_float_between(D_0015EE6C + D_0015EE6C, D_0015EE6C * 4.0f));
-                SpawnPuffParticle(&m->pos, &dir);
+                spawn_projectile_expiry_particle(&m->pos, &dir);
             }
         }
         DeleteMoby(m);
@@ -1046,7 +1046,7 @@ extern void func_L14_002EE990(char *);
 
 /* Camera-intro controller: waits for the cutscene flag, then every few seconds moves the focus to a random
  * visible point of its path. */
-void CameraIntroController(char *m) {
+void update_path_lightning_controller(char *m) {
     char *d = *(char **)(m + 0x78);
     int idx[5];
     float v[4];
@@ -1100,7 +1100,7 @@ void CameraIntroController(char *m) {
             qcopy(m + 0x10, D_L14_00161D90);
         }
     }
-    LightningArcUpdate(m);
+    update_branched_lightning_arc(m);
     if (D_L14_00161D84 == 0) {
         *(int *)&D_L14_00161D20 = scale_ticks(*(int *)&D_L14_00161D24);
         *(int *)&D_L14_00161D28 = 0;
@@ -1119,7 +1119,7 @@ extern void func_0022EEB8(int, int, void *);
 void func_L14_002EFB10(float *pos, int n);
 void func_L14_002EF078();
 /* Lightning arc between the camera points: builds the bolt and its branches once, then ages and fades them. DB2 is an int so the assembler reaches it by lui (-G2); gp-only data is block-scope short. */
-void LightningArcUpdate(char *moby) {
+void update_branched_lightning_arc(char *moby) {
     extern short D_L14_00161D38;
     extern short D_L14_00161D3C;
     extern short D_L14_00161D40;
@@ -1255,12 +1255,12 @@ void LightningArcUpdate(char *moby) {
                 D_L14_00161DC4 = 0;
             }
             if (D_L14_00161DB0[0] < 50) {
-                SpawnRandomSparks(D_L14_00161D90, 3);
+                spawn_lightning_arc_particle_pairs(D_L14_00161D90, 3);
             }
         } else {
             D_L14_00161DB0[0] = 0;
         }
-        AddDrawCallback(FadingQuads_Draw, (struct Moby *)moby);
+        AddDrawCallback(draw_branched_lightning_arc, (struct Moby *)moby);
     }
 }
 typedef int u128_2EF078 __attribute__((mode(TI)));
@@ -1296,7 +1296,7 @@ extern float D_L14_00161D54 SDATA(D_L14_00161D54);
 extern float D_L14_00161D58 SDATA(D_L14_00161D58);
 
 // Draws the lightning bolt between two points as a chain of textured quad pairs, with three side branches.
-void FadingQuads_Draw(void) {
+void draw_branched_lightning_arc(void) {
     Q_2EF078 q[2];
     V_2EF078 m[4];
     V_2EF078 sz[2];
@@ -1493,7 +1493,7 @@ extern short D_L14_00161D7C;
 extern short D_L14_00161D80;
 
 // Spawns n pairs of particles around a position with random velocity and size.
-void SpawnRandomSparks(float *pos, int n) {
+void spawn_lightning_arc_particle_pairs(float *pos, int n) {
     float v[4];
     float p2[4];
     float a, f21, f20;
@@ -1761,7 +1761,7 @@ void Moby685Update(char *moby) {
 extern char * D_L14_001B0F30[];
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/entities/002df080.c, FUN_L14_002eef60. */
-void Moby685_InitPathLengths(struct Moby *m) {
+void initialize_elevator_path_state(struct Moby *m) {
     char *d = (char *)m->pvars;
     int *path;
     int *e;
@@ -1815,7 +1815,7 @@ extern float D_0015EE6C MACRO_ADDR;
 extern short D_L14_00161DE4;
 
 /* Moves the moby along its current path, easing its rotation; returns 1 when the path end is reached. */
-int MoveAlongPath(char *m) {
+int advance_elevator_along_path(char *m) {
     char *d = *(char **)(m + 0x78);
     float rot[4];
     float pos[4];
@@ -1872,7 +1872,7 @@ extern char *D_L14_001B0F30[];
 extern float func_L00_0025C918(float *p, float *v, float t, float u1, float u2, float eps);
 
 /* Springs the moby's position (and, while moving, its rotation) toward its current path point. */
-void SpringToPathPoint(char *m) {
+void settle_elevator_at_path_endpoint(char *m) {
     char *d = *(char **)(m + 0x78);
     float pos[4];
     float rot[4];
@@ -1947,7 +1947,7 @@ extern char D_L14_001E0700[];
 extern char *D_L14_001B0F30[];
 
 /* Rebuild the 11 vectors of a table entry from the moby's matrix and position. */
-void RebuildPathEntryFromMoby(char *moby) {
+void rebuild_elevator_world_path(char *moby) {
     char *data = *(char **)(moby + 0x78);
     char *src = D_L14_001E0700;
     char *dst = D_L14_001B0F30[*(int *)(data + 0x114)] + 0x10;
@@ -1973,7 +1973,7 @@ extern int func_001FA898_r(float) __asm__("func_001FA898");
 extern int func_001FA8A8(int, int, float);
 
 // pulses the moby's tint while the player is near, else fades it to a dim colour
-void Moby685_UpdateGlowTint(char *moby) {
+void update_elevator_idle_glow(char *moby) {
     char *data = *(char **)(moby + 0x78);
     char *x = D_0013E633 + 0xE1D;
     if (FastAbsF(*(float *)(moby + 0x10) - *(float *)(x + 0x80)) > 40.0f ||
@@ -2076,7 +2076,7 @@ void TaxiUpdate(Moby *moby) {
     case TAXI_STATE_INITIALIZE:
         taxi_vars->hB0 = -1;
         taxi_vars->sound = -1;
-        SnapToPathPoint((char *)moby);
+        initialize_taxi_stop_from_position((char *)moby);
         break;
     case TAXI_STATE_WAIT_AT_STOP: {
         Hero *g = (Hero *)(D_0013E633 + 0xE1D);
@@ -2086,12 +2086,12 @@ void TaxiUpdate(Moby *moby) {
             hero_relative_position[3] = 0;
             func_001F9EE8(hero_relative_position, hero_relative_position, blend_from_position_or_rotation_matrix);
             if (FastAbsF(hero_relative_position[1]) < 1.2f) {
-                Taxi_SelectPath((char *)moby);
-                Vendor_ShowHelpMessage((char *)moby);
+                prepare_taxi_route((char *)moby);
+                request_taxi_stop_prompt((char *)moby);
                 if ((D_0013CA40_2F19C0.pressed & button) && D_L14_0015F674 == 4) {
                     Moby *m;
                     moby->state = 3;
-                    m = FindGroupMobyByTag((char *)moby, taxi_vars->dst);
+                    m = find_group_moby_by_tag((char *)moby, taxi_vars->dst);
                     if (m != 0) {
                         m->state = 2;
                         m->flags |= 1;
@@ -2117,7 +2117,7 @@ void TaxiUpdate(Moby *moby) {
                     } else {
                         taxi_vars->cur = 1;
                     }
-                    Taxi_SelectPath((char *)moby);
+                    prepare_taxi_route((char *)moby);
                     moby->state = 3;
                 }
             }
@@ -2132,7 +2132,7 @@ void TaxiUpdate(Moby *moby) {
                     qcopy_nc(taxi_vars->rot, D_L14_001601AC_2F19C0[taxi_vars->station[taxi_vars->cur]].dir);
                 } else {
                     taxi_vars->cur = 0;
-                    Taxi_SelectPath((char *)moby);
+                    prepare_taxi_route((char *)moby);
                     moby->state = 3;
                 }
             }
@@ -2147,7 +2147,7 @@ void TaxiUpdate(Moby *moby) {
                     qcopy_nc(taxi_vars->rot, D_L14_001601AC_2F19C0[taxi_vars->station[taxi_vars->cur]].dir);
                 } else {
                     taxi_vars->cur = 2;
-                    Taxi_SelectPath((char *)moby);
+                    prepare_taxi_route((char *)moby);
                     moby->state = 3;
                 }
             }
@@ -2215,7 +2215,7 @@ void TaxiUpdate(Moby *moby) {
             taxi_vars->t = 0.0f;
             taxi_vars->v = 0.0f;
             moby->state = 1;
-            Taxi_SetTargetFromSpawn((char *)moby);
+            reset_selected_moby_to_current_placement((char *)moby);
         }
         g = (Hero *)(D_0013E633 + 0xE1D);
         if (g->ground_moby == moby && g->air_frames.s == 0) {
@@ -2224,18 +2224,18 @@ void TaxiUpdate(Moby *moby) {
             hero_relative_position[3] = 0;
             func_001F9EE8(hero_relative_position, hero_relative_position, taxi_inverse_rotation_matrix);
             if (FastAbsF(hero_relative_position[1]) < 1.2f) {
-                Vendor_ShowHelpMessage((char *)moby);
+                request_taxi_stop_prompt((char *)moby);
                 if (D_0013CA40_2F19C0.pressed & button) {
                     qcopy(taxi_vars->pos2, taxi_vars->pos);
                     qcopy(taxi_vars->rot2, taxi_vars->rot);
-                    SnapToPathPoint((char *)moby);
+                    initialize_taxi_stop_from_position((char *)moby);
                     taxi_vars->cur = taxi_vars->dst;
-                    Taxi_SelectPath((char *)moby);
+                    prepare_taxi_route((char *)moby);
                     moby->state = 7;
                     qcopy(taxi_vars->pos, taxi_vars->pos2);
                     qcopy(taxi_vars->rot, taxi_vars->rot2);
                     {
-                        Moby *m = FindGroupMobyByTag((char *)moby, taxi_vars->dst);
+                        Moby *m = find_group_moby_by_tag((char *)moby, taxi_vars->dst);
                         if (m != 0) {
                             m->state = 2;
                             m->flags |= 1;
@@ -2263,13 +2263,13 @@ void TaxiUpdate(Moby *moby) {
         break;
     }
     }
-    WobbleMoby((char *)moby);
+    apply_moby_position_and_rotation_wobble((char *)moby);
     if (moby->state >= 3 && moby->state <= 4) {
         Hero *g = (Hero *)(D_0013E633 + 0xE1D);
         if (g->ground_moby == moby && g->air_frames.s == 0) {
             g->unk1F2 = 2;
             g->unk1F4 = 2;
-            TransformLevelTablePoints((char *)moby);
+            transform_moby_vector_table_to_world_space((char *)moby);
         }
         if (Sound_IsPlaying(moby, taxi_vars->sound) == 0) {
             taxi_vars->sound = func_0022ED80_2F19C0(0, 4, moby);
@@ -2304,7 +2304,7 @@ struct L14PickVars_2F24C8 {
 };
 
 /* Adapted from Lombyte (the US decompilation): FUN_L14_002f1040. */
-void SnapToPathPoint(char *m) {
+void initialize_taxi_stop_from_position(char *m) {
     Moby *moby = (Moby *)m;
     struct L14PickVars_2F24C8 *d = (struct L14PickVars_2F24C8 *)moby->pvars;
     int i;
@@ -2325,7 +2325,7 @@ void SnapToPathPoint(char *m) {
 }
 
 // Picks a target by phase, then sets velocity scale from its distance.
-void Taxi_SelectPath(char *moby)
+void prepare_taxi_route(char *moby)
 {
     char *data = *(char **)(moby + 0x78);
     int *t;
@@ -2368,7 +2368,7 @@ void Taxi_SelectPath(char *moby)
 extern int D_L14_001600B4 MACRO_ADDR;
 extern unsigned short *D_L14_001AC2C0[];
 /* Returns the group moby whose data word at +0xB4 equals tag, or 0 if none. */
-Moby *FindGroupMobyByTag(char *moby, int tag) {
+Moby *find_group_moby_by_tag(char *moby, int tag) {
     unsigned short *p;
     char *pool;
     int idx;
@@ -2389,7 +2389,7 @@ found:
 extern void func_00215F80(int, int);
 
 /* Vendor text: pick the message from the vendor data state. */
-void Vendor_ShowHelpMessage(char *moby) {
+void request_taxi_stop_prompt(char *moby) {
     char *data = *(char **)(moby + 0x78);
     int v = *(short *)(data + 0xB4);
     if (*(unsigned char *)(moby + 0x20) == 5) {
@@ -2501,7 +2501,7 @@ void qwark_oltanis_update(char *m) {
             ShowBanner(0x36B3, -1);
         }
         GiveItem(0x20, 1);
-        Vendor_ResetAndMarkSaved(D_L14_00160098_2FCEA8 + (*(int *)(d + 0x44) << 8));
+        mark_elevator_collected(D_L14_00160098_2FCEA8 + (*(int *)(d + 0x44) << 8));
         *(int *)(D_0014171B_2FCEA8 + 0xAB75 + (((short)*(unsigned short *)(m + 0xB2) >> 5) * 4 + (D_0015EE84_m << 8))) |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
         D_L14_001BAF60[(short)*(unsigned short *)(m + 0xB2) >> 5] |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
         memcard_Save(0, -1);
@@ -2614,7 +2614,7 @@ extern char D_L14_001FD1B8_FD578[] __asm__("D_L14_001FD1B8");
 extern char *D_L14_001B0F30_FD578[] __asm__("D_L14_001B0F30");
 
 /* Adapted from Lombyte (MIT) for PAL: src/overlays/l14/gameplay/entities/002df080.c, FUN_L14_002fc0f0. */
-void Moby908Update(struct Moby *moby) {
+void update_enemy_fighter(struct Moby *moby) {
     Class908Vars_FD578 *data = (Class908Vars_FD578 *)moby->pvars;
     int hit = func_L00_0025B478_FD578(moby, 0x800000, 0);
     int index;
@@ -2718,7 +2718,7 @@ extern L14Puff_2FD870 *func_L00_0026DEA0_2FD870(void *, f32, f32, f32, int, void
 
 /* Engine exhaust: two smoke puffs and three fading rings on each side of the moby.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/entities/002df080.c, FUN_L14_002fc3e8. */
-void ThrusterPuffs_Spawn(struct Moby *m) {
+void spawn_enemy_fighter_exhaust(struct Moby *m) {
     Vec4 step;
     Vec4 pos;
     Vec4 base;
@@ -2809,7 +2809,7 @@ void ThrusterPuffs_Spawn(struct Moby *m) {
 extern float func_L00_001FF860(float, float);
 
 // Resets a path-following moby to the start of its path and computes each segment's length and its initial heading.
-void PathFollowerInit(char *moby) {
+void initialize_flight_path_state(char *moby) {
     char *data = *(char **)(moby + 0x78);
     float *path = (float *)D_L14_001B0F30[*(int *)(data + 0x68)];
     int i;
@@ -2834,7 +2834,7 @@ extern short D_L14_00162024;
 extern short D_L14_00162028;
 
 // Steers a moby toward a target position and updates its velocity/rotation springs.
-void Moby_SpringAlongPath(char *m) {
+void advance_enemy_fighter_along_flight_path(char *m) {
     char *d = *(char **)(m + 0x78);
     float v[3];
     float t[3];
@@ -2942,7 +2942,7 @@ extern int D_L14_001BAF60_2FE038[] __asm__("D_L14_001BAF60");
 /* Oltanis jet (pilotable gunship) moby update: removes itself once collected, reacts to a hit, then a state
    machine on m->state: 0 sets up from its path, 1 waits for the hero to board it, 2 flies and drags its
    rider, 3 respawns it on its path; then the shared tail and its engine sound. */
-void OltanisJetUpdate(Moby *m) {
+void update_enemy_fighter_921(Moby *m) {
     Vec_2FE038 vt;
     Vec_2FE038 vb;
     Jet_2FE038 *d = (struct Jet_2FE038 *)m->pvars;
@@ -3122,7 +3122,7 @@ extern short D_L14_00162044;
 
 /* Exhaust of the second engine moby: puffs and rings on both sides plus a grey puff in the middle.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/entities/002df080.c, FUN_L14_002fd310. */
-void SecondEngineExhaustUpdate(struct Moby *m) {
+void spawn_moby_exhaust_puffs(struct Moby *m) {
     Vec4 step;
     Vec4 pos;
     Vec4 base;
@@ -3237,7 +3237,7 @@ extern void func_0020D678(void *);
 extern void func_001F9BF0(void *, void *, void *);
 
 /* Flies the moby along its path, banking and pitching toward the next point; returns 1 once it is removed at the end. */
-int OltanisJet_FollowPath(char *m) {
+int advance_moby_along_flight_path(char *m) {
     char *d = *(char **)(m + 0x78);
     float v[4];
     float w[4];
@@ -3247,7 +3247,7 @@ int OltanisJet_FollowPath(char *m) {
     r = func_L00_0025E860_2F05D8(D_L14_001B0F30_ee[*(int *)(d + 0x68)], v, d + 0x60, d + 0x64,
                                  (unsigned int)*(int *)(d + 0x8C) >> 31, *(float *)&D_L14_00162048 * D_0015EE6C);
     if (*(int *)(d + 0x8C) != 0 && (r != 0 || *(short *)(race_state + 0x86) != 0x13)) {
-        SetVendorItemFlag(*(int *)(d + 0x90));
+        flag_vendor_item(*(int *)(d + 0x90));
         if (*(int *)(d + 0x6C) != -1) {
             char *e = D_0013E633 + 0x1D + *(int *)(d + 0x6C) * 0x70;
             if (*(char **)(e + 0x88) == m && ((unsigned char *)e)[0x74] != 0) {

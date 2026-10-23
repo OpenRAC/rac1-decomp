@@ -51,11 +51,11 @@ void HeroL15_FrameUpdate(void) {
     b0 = D_0013E633 + 0xE1D;
     if (b0[0x20A4] == 0)
         return;
-    Hero_TickReleaseTimers();
-    SettleAllHeldObjects();
+    update_hero_delayed_voice_requests();
+    update_hero_easing_records();
     if (b0[0x20A4] == 0)
         return;
-    SyncHelpScreenMoby();
+    update_hero_vehicle_moby();
     UpdateRampUpDown();
     CameraShakeUpdate();
     func_L00_00248EF8(b0 + 0x80);
@@ -63,8 +63,8 @@ void HeroL15_FrameUpdate(void) {
     if (b0[0x20A4] == 2) {
         if (gCheats[3] != 0)
             D_L15_0017C0EC = (*(float *)&D_0015EF18) * 1.4f;
-        UpdateHelperMoby();
-        SyncCompanionMoby();
+        update_hero_glow_and_extra_manipulators();
+        update_hero_bone_attachment();
         {
         unsigned char *m = *(unsigned char **)(b0 + 0x2080);
         if (((*(unsigned short *)(m + 0x34) ^ 1) & 1) != 0) {
@@ -155,7 +155,7 @@ void Help_ShowIndexedPrompt(void) {
     if (index >= 0 && *(D_0013E15A + 0x4C6 + index) != 0) {
         int first = *(int *)(base + 0x1090);
         if (first != 0) {
-            TintEffectFromMobyColor(first, *(int *)(base + 0x2080));
+            update_item_tint_from_hero(first, *(int *)(base + 0x2080));
         }
     }
 }
@@ -170,7 +170,7 @@ extern void clear_u64_value(void *);
 typedef int u128 __attribute__((mode(TI)));
 
 // Per-frame update of the camera-attached moby position.
-void HeroL15_UpdateAttachedMobyBob(void) {
+void update_hero_bobbing_and_target_position(void) {
     unsigned char *base = D_0013E633 + 0xE1D;
     if (*(int *)(base + 0x2084) == 0x6B && *(short *)(base + 0x8BC) == 0) {
         char *m;
@@ -284,7 +284,7 @@ f32 func_00214D28(f32, f32, f32 *);
 void func_L00_0025C918(f32 *, f32 *, f32, f32, f32, f32);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_001ff938.c, FUN_L15_00209450. */
-void HeroL15_UpdateMoveBlendTargets(void) {
+void update_hero_smoothing_parameters(void) {
     switch (D_0013F450.b20A4) {
     case 0:
         D_0013F450.f228 = 0.8f;
@@ -335,7 +335,7 @@ extern int func_L00_001EFFF0(void *, void *, int, int, int);
 extern int func_L00_001F3958(void);
 extern float func_L00_001FF860(float, float);
 // Steers the hero's aim vectors toward the current target and snaps momentum to it when close enough.
-void HeroL15_SlideAlongWall(int arg) {
+void adjust_hero_planar_velocity_from_probes(int arg) {
     float a[4] __attribute__((aligned(16)));
     float c[4] __attribute__((aligned(16)));
     float b[4] __attribute__((aligned(16)));
@@ -649,7 +649,7 @@ d1:
     if (!(D_0013F450_0ADD8.xF2dc < 0.25f)) {
         return;
     }
-    VecToHeroAngles((u8 *)&D_0013F450_0ADD8 + 0x270, &v20);
+    compute_rotated_vector_angles((u8 *)&D_0013F450_0ADD8 + 0x270, &v20);
     if (-0.78539819f < v20.f[1] && v20.f[1] < 0.78539819f) {
         D_0013F450_0ADD8.u2e4.F = v20.f[1];
     }
@@ -670,7 +670,7 @@ d1:
                 D_0013F450_0ADD8.a2c0.f[i] = 0.0f;
             }
             func_001252C0(&v60, (u8 *)&D_L15_001744C0_0ADD8.f40);
-            VecToHeroAngles(&v60, &v50);
+            compute_rotated_vector_angles(&v60, &v50);
             if (-0.78539819f < v50.f[1] && v50.f[1] < 0.78539819f) {
                 D_0013F450_0ADD8.a2c8.f[i] = v50.f[1];
             }
@@ -713,7 +713,7 @@ extern void func_L00_00211908(void);
 
 /* Per-frame hero upkeep: tick the hero timers, spawn the respawn marker, track sinking, and set the camera follow target. Clone of FUN_L00_002215c8 without the case-1 camera tuning.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/help/001ff938.c, FUN_L15_00215e58. */
-void HeroFrameUpkeep(void) {
+void update_hero_timers_and_auxiliary_state(void) {
     Vec4 sum;
     Vec4 d;
     struct Moby *m;
@@ -849,7 +849,7 @@ skip:
 }
 
 /* Select the message associated with the current help mode. */
-void Help_SelectMessage(void) {
+void set_hero_state_for_vehicle_mode(void) {
     switch (D_0013E633[0x2EC1]) {
     case 0: HeroQuartu_TrySetMoveState(0, 1); break;
     case 2: HeroQuartu_TrySetMoveState(0x5A, 1); break;

@@ -457,7 +457,7 @@ void func_L06_002FFF70(char *m) {
 
     d = *(char **)(m + 0x78);
     *(float *)(m + 0x2C) = *(float *)(*(char **)(m + 0x24) + 0x24) * *(float *)&D_L06_00162038;
-    FanMobyUpdate(m);
+    update_blarg_space_commando_beam(m);
     if (*(int *)(d + 0x38) != 0) {
         *(int *)(d + 0x188) = truncate_float_to_s32(func_001F9878(random_float_between(180.0f, 240.0f)));
         *(int *)(d + 0x38) = 0;
@@ -637,7 +637,7 @@ typedef struct {
 } FanData;
 
 /* Shared moby update: steps the timer at 0x21C, spaces 16 entries, and runs the pair checks. */
-void FanMobyUpdate(void *arg) {
+void update_blarg_space_commando_beam(void *arg) {
     char *moby = arg;
     FanData *data = *(FanData **)(moby + 0x78);
     int x;
@@ -719,7 +719,7 @@ void FanMobyUpdate(void *arg) {
     } while (j < 15);
 
     AddDrawCallback((void *)DrawBeam, moby);
-    FanSpawnBursts(moby);
+    spawn_blarg_space_commando_beam_sparks(moby);
 }
 typedef struct {
     f32 pos[4][4];
@@ -828,7 +828,7 @@ extern short D_L06_001620AC, D_L06_001620B0, D_L06_001620B4, D_L06_001620B8, D_L
 extern short D_L06_001620C4, D_L06_001620C8, D_L06_001620CC, D_L06_001620D0;
 
 /* Spawns a burst of effects for each pair of ready entries in the moby's table. */
-void FanSpawnBursts(char *moby) {
+void spawn_blarg_space_commando_beam_sparks(char *moby) {
     char *data = *(char **)(moby + 0x78);
     int i, n;
     for (i = 0; i < 15; i = n) {
@@ -868,7 +868,7 @@ extern float D_0015EE70 MACRO_ADDR;
 extern short D_L06_00162110;
 
 // Per-frame update: drift a moby and its rotation toward the data vectors, delete when timer ends.
-void SpinningDebrisUpdate(char *moby) {
+void update_falling_spinning_moby(char *moby) {
     char *data;
     float t = D_0015EE70 * 15.0f;
     *(float *)(moby + 0x2C) = *(float *)(*(char **)(moby + 0x24) + 0x24) * *(float *)&D_L06_00162110;
@@ -937,7 +937,7 @@ extern int func_001F6FD8(int a, int b, int c, int d, int e);
 #define W(x) (*(int *)&(x))
 
 /* Draws the level timer as "H:MM:SS.t" text with a pulsing colour. */
-void TimerMobyL06_Draw(char *moby) {
+void draw_pulsing_timer_display(char *moby) {
     char buf[8];
     char *data = *(char **)(moby + 0x78);
     float v;
@@ -963,7 +963,7 @@ void TimerMobyL06_Draw(char *moby) {
     FontPrintCenterLarge(W(D_L06_00162158), W(D_L06_0016215C), col, (int)buf, 8);
 }
 // Sets offset 0x20 to 2
-void Moby_SetState2(char *arg) {
+void set_moby_state_two(char *arg) {
     arg[0x20] = 2;
 }
 INCLUDE_ASM("asm/overlays", func_L06_003089B8);
@@ -972,7 +972,7 @@ extern int func_L00_0028EF68(int i, int a1, int v, int k);
 extern void func_L00_002512D8(int idx);
 
 /* state transitions of a moby depending on its id at 0xA6 */
-void Moby_AdvanceStateByClass(unsigned char *a, unsigned char *m) {
+void activate_bot_door_lock_target(unsigned char *a, unsigned char *m) {
     switch (*(short *)(m + 0xA6)) {
     case 0x3F7:
     case 0x502:
@@ -1108,7 +1108,7 @@ void bot_door_lock_update(char *moby) {
         }
         if (data->cnt < 1 || D_0014C150[(unsigned char)moby[0xb0] + (*(int *)&D_0015EE84) * 16] == 0xff) {
             for (i = 0; i < 4; i++) {
-                if (data->id[i] != -1) Moby_AdvanceStateByClass((unsigned char *)moby, (unsigned char *)((*(int *)&level_mobys_q) + data->id[i] * 0x100));
+                if (data->id[i] != -1) activate_bot_door_lock_target((unsigned char *)moby, (unsigned char *)((*(int *)&level_mobys_q) + data->id[i] * 0x100));
             }
             moby[0x20] = 2;
         }
@@ -1130,7 +1130,7 @@ extern void func_L00_00251E30(void *);
 extern float D_L06_0015F660[] MACRO_ADDR;
 
 /* Update: waits for a positive value, then spawns effects and a child moby and deletes itself. */
-void SpawnChildAndDeleteUpdate(char *moby) {
+void update_hit_triggered_moby_breakup(char *moby) {
     char *p;
     int f;
     float z;
@@ -1180,14 +1180,14 @@ extern void func_001F49B0(void *, void *);
 extern void func_L06_0030D3E8(char *);
 
 /* UpdateMoby: state 0 deletes, state 1 draws and times out */
-void Moby1898Update(char *m) {
+void update_timed_sprite_effect(char *m) {
     float *d = *(float **)(m + 0x78);
     switch ((unsigned char)m[0x20]) {
     case 0:
         DeleteMoby(m);
         break;
     case 1:
-        AddDrawCallback(Moby1898Draw, m);
+        AddDrawCallback(draw_projected_fading_quad, m);
         d[0] = d[0] + d[1];
         if (2.0f < d[0]) {
             DeleteMoby(m);
@@ -1227,7 +1227,7 @@ extern s32 D_L06_001624B4_FF000 SDATA(D_L06_001624B4);
 extern s32 D_L06_001624B8_FF000 SDATA(D_L06_001624B8);
 
 /* Adapted from Lombyte (MIT) for PAL: src/overlays/shared/gameplay/vendor/00307578.c, FUN_L06_0030bfa8. */
-void Moby1898Draw(char *moby) {
+void draw_projected_fading_quad(char *moby) {
     float *d = *(float **)(moby + 0x78);
     Vec4f pos;
     s64 corners[4];

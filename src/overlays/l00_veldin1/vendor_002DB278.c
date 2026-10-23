@@ -95,7 +95,7 @@ typedef unsigned short Ent[4];
  * hero-state table (Ent = 4 ushorts, indexed by the func_L00_00203F20 slot) is tested and
  * the matching slot requested when the hero is at the position named by the moby's
  * params; with slots 1 and 2 clear, guard mobys in params[5..8] are checked for being gone. */
-void Moby1413Update(unsigned char *moby) {
+void update_level_help_controller(unsigned char *moby) {
     int *s = *(int **)(moby + 0x78);
     Ent *t;
     int *p;
@@ -294,7 +294,7 @@ void veldin_robot_enemy_update(VendMoby *moby) {
     s32 hit;
 
     vars = moby->vars;
-    Troll_UpdateHitsAndTarget(moby);
+    update_veldin_robot_damage_and_targeting(moby);
     target = vars->target;
     Manipulator_SetScale(vars->unk120, 2.5f);
     if (D_0015EEB4_m[3] != 0) {
@@ -367,7 +367,7 @@ void veldin_robot_enemy_update(VendMoby *moby) {
         } else if (moby->unk70 & 2) {
             if (moby->anim != (random_integer_below(2) + 1)) MobyBlendAnimation(moby, (random_integer_below(2) + 1), 0, scale_ticks(20));
         }
-        if (vars->unk114 != 2 && EffectSlot_Alloc(moby, 0, 0) != 0) {
+        if (vars->unk114 != 2 && register_beam_slot(moby, 0, 0) != 0) {
             moby->state = VELDIN_ROBOT_STATE_WAIT_TO_START_COLLISION_PROBES;
             if (moby->anim != 5) MobyBlendAnimation(moby, 5, 0, scale_ticks(10));
         }
@@ -428,7 +428,7 @@ void veldin_robot_enemy_update(VendMoby *moby) {
                 if (moby->anim != 7) MobyBlendAnimation(moby, 7, 0, scale_ticks(10));
             }
         }
-        EffectSlot_Update(moby, mtx, &dir);
+        set_beam_origin_transform_and_endpoint(moby, mtx, &dir);
         if (moby->unk70 & 2) {
             lim = *(int *)&D_L00_00161CB8;
             if (vars->timer++ == lim) {
@@ -464,7 +464,7 @@ void veldin_robot_enemy_update(VendMoby *moby) {
         }
         break;
     }
-    Troll_EmitSparks((char *)moby);
+    update_veldin_robot_effects((char *)moby);
 }
 extern int func_L00_00258BC8(int, int);
 extern int func_001F9938(void *);
@@ -543,7 +543,7 @@ typedef struct {
 } TrollColl;
 
 /* Update for the troll moby: takes hits, picks and tracks its target. Adapted from Lombyte (MIT) for PAL: src/overlays/l00/gameplay_vendor_002e0988.c, FUN_L00_002e1678. */
-void Troll_UpdateHitsAndTarget(void *mv) {
+void update_veldin_robot_damage_and_targeting(void *mv) {
     TrollMoby *m = mv;
     TrollVars *vars;
     void *anim;
@@ -655,7 +655,7 @@ extern float D_L00_0015F660[] MACRO_ADDR;
 
 // spawns a spark: steps the moby's position and emits one fast particle and three slow tails
 // Adapted from Lombyte (MIT) for PAL: overlays/l00/gameplay_vendor_002e0988.c, FUN_L00_002e1aa8.
-void Troll_EmitSparks(char *m) {
+void update_veldin_robot_effects(char *m) {
     char *vars;
     char *p;
     char *t;
@@ -707,7 +707,7 @@ typedef struct {
 } T;
 
 /* Builds a four-vertex quad facing the camera from the moby's data point and runs the draw packet. */
-void DrawCameraFacingQuad(char *m) {
+void draw_veldin_robot_effect_quad(char *m) {
     W q[4];
     T t;
     W c, d, e, bb;
@@ -753,7 +753,7 @@ extern void func_L00_002E3700(int, int);
 extern void func_L00_002E3FA0(void);
 
 /* Slot update: state 0 clears the two slot arrays, state 1 services the pending slots. The arrays are MACRO_ADDR (retail loads their addresses unsplit), as the NTSC decomp declares them. */
-void BeamSlotManagerUpdate(unsigned char *m) {
+void update_beam_slot_controller(unsigned char *m) {
     int i;
     int j;
     int n;
@@ -774,15 +774,15 @@ void BeamSlotManagerUpdate(unsigned char *m) {
             st = D_L00_00161CC8[i];
             if (st == 1) {
             } else if (st == 4) {
-                EffectSlot_FreeAt(i);
+                release_beam_slot(i);
             } else if (st != 0) {
                 n++;
-                BeamSlotUpdate(D_L00_00161D58[i], i);
+                update_slot_panes_and_effects(D_L00_00161D58[i], i);
                 D_L00_00161CC8[i] = 4;
             }
         }
         if (n != 0) {
-            AddDrawCallback(EffectSlot_DrawPanes, m);
+            AddDrawCallback(draw_active_beam_slots, m);
         }
         break;
     }
@@ -802,7 +802,7 @@ extern G D_L00_0016C960;
 
 typedef struct { char pad[0x20]; unsigned char state; char pad2[0xF]; unsigned char v; } M2;
 
-void Moby1545Update(M2 *m) {
+void update_phase_effect_controller(M2 *m) {
     char buf[16];
     int idx;
     int i, col, h;

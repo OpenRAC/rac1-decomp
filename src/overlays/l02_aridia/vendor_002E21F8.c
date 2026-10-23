@@ -196,7 +196,7 @@ void skids_agent_update(Moby *m) {
                     d->f178->flags |= 1;
                     d->f178->visible = 0;
                 }
-                PlayMovieEntryIfIdle(2);
+                start_indexed_disc_stream(2);
                 m->state = 5;
             }
         } else {
@@ -335,7 +335,7 @@ void SkidMcMarxAridiaUpdate(char *m)
 
     d = *(char **)(m + 0x78);
     AttachManipulatorsIfCheat(m);
-    SkidMcMarxWarpUpdate(m);
+    update_skid_mcmarx_relocation_sequence(m);
     switch (*(unsigned char *)(m + 0x20)) {
     case 0:
         if (D_0013D605[9] != 0) {
@@ -467,7 +467,7 @@ extern void func_L02_0023D6E0(void);
 
 /* Three-state controller (data+0x180): 0 waits for its trigger, 1 runs timed effects until released, then moves the moby to its spawn point, sets the two linked mobys' flags and enters state 2.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l02/gameplay/entities/002e0dc0.c, FUN_L02_002e1fb8. */
-void SkidMcMarxWarpUpdate(char *moby) {
+void update_skid_mcmarx_relocation_sequence(char *moby) {
     char *data = *(char **)(moby + 0x78);
     float fx_pos[4] __attribute__((aligned(16)));
     float fx_rot[4] __attribute__((aligned(16)));
@@ -520,8 +520,8 @@ void SkidMcMarxWarpUpdate(char *moby) {
     } else if (*(int *)(data + 0x180) == 0) {
         if (is_point_inside_clip_volume(gHeroPos, *(int *)(data + 0x148)) != 0) {
             *(int *)(data + 0x180) = 1;
-            *(int *)(data + 0x164) = queue_animation_update(0x15, 0x7D0, HudTileInit, HudCounter_UpdateRamp, Hud_DrawCounter, data + 0x14C, 100);
-            *(int *)(data + 0x160) = queue_animation_update(0x17, 0x7D1, HudTileInit, HudCounter_UpdateRamp, Hud_DrawCounter, data + 0x150, 7);
+            *(int *)(data + 0x164) = queue_animation_update(0x15, 0x7D0, HudTileInit, update_hud_counter_transition, draw_hud_counter, data + 0x14C, 100);
+            *(int *)(data + 0x160) = queue_animation_update(0x17, 0x7D1, HudTileInit, update_hud_counter_transition, draw_hud_counter, data + 0x150, 7);
         }
     }
 }
@@ -733,7 +733,7 @@ extern void func_L00_00258DB0_ED358(void *, f32, f32) __asm__("func_L00_00258DB0
 
 /* Shard debris update: drifts along its velocity, sheds particle trails and expires when its timer runs out.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l02/gameplay/vendor/002ebf20.c, FUN_L02_002ebf20. */
-void ShardDebrisUpdate(struct Moby *m) {
+void update_shard_debris(struct Moby *m) {
     ShardVars_ED358 *v = (ShardVars_ED358 *)m->pvars;
     Vec4f p, back, half, jit;
     u8 *q;
@@ -785,7 +785,7 @@ extern short D_L02_00161FE4;
 
 /* Spawns a projectile moby from src at pos, heading along dir, with its lifetime in the moby data.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l02/gameplay/vendor/002ebf20.c, FUN_L02_002ec228. */
-char *SpawnAridiaProjectile(char *src, void *pos, float *dir) {
+char *spawn_projectile_moby(char *src, void *pos, float *dir) {
     char *moby;
     char *data;
     moby = CreateMoby(0x4B8);
@@ -831,7 +831,7 @@ extern unsigned char D_0015EEDC[4] MACRO_ADDR;
 extern unsigned char D_0015EEE0[4] MACRO_ADDR;
 
 /* UpdateMoby_1324: tutorial hint triggers around the player */
-void TutorialHintUpdate(unsigned char *moby) {
+void update_tutorial_hint_triggers(unsigned char *moby) {
     int *data = *(int **)(moby + 0x78);
     moby[0x30] = 0xFF;
 
@@ -1113,7 +1113,7 @@ extern void func_0020D678_2F0458(void *) __asm__("func_0020D678");
 
 /* Level 02 moby update (class 1479): state 0 sets up, states 1 and 2 emit particle bursts from two parameter
  * blocks in sdata (a timed burst loop, then one burst), state 3 deletes the moby. */
-void Moby1479Update(Moby *m) {
+void update_smoke_vent(Moby *m) {
     V_2F0458 vec;
     V_2F0458 A;
     V_2F0458 B;
@@ -1261,7 +1261,7 @@ extern char D_L02_00167300_F9E50[] __asm__("D_L02_00167300");
 
 /* Sets the vendor camera mode; mode 3 also aims it from the hero's position.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l02/gameplay/vendor/002ebf20.c, FUN_L02_002f8a18. */
-void Vendor_SetCameraMode(int mode, int arg) {
+void set_vendor_camera_mode(int mode, int arg) {
     char *g = D_L02_00167300_F9E50;
     char *cam = *(char **)(g + 0x180);
     char *d = *(char **)(cam + 0x70);

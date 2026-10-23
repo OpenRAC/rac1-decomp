@@ -11,13 +11,13 @@ extern void func_L02_00250A58(char *);
 extern void func_L02_002A58C0(char *);
 extern char D_L03_001CB180[];
 
-void Moby_DrawVu1AndBackdrop(char *moby)
+void draw_textured_grid(char *moby)
 {
-    DrawMobyVu1Packet(moby);
+    build_interpolated_dma_packet(moby);
     func_L02_002100E8(D_L03_001CB180, 0x70002800, 0xF8);
     func_L02_00250720(moby);
     func_L02_00250A58(moby);
-    Backdrop_QueueGsPacket(moby);
+    restore_view_after_textured_grid(moby);
 }
 LINKER_REMNANT("asm/overlays", func_L03_00292B18);
 extern float D_0015EE6C MACRO_ADDR;
@@ -32,7 +32,7 @@ extern void func_L00_00251328(void *, int, int, int);
 extern int func_001FA898_r(float) __asm__("func_001FA898");
 
 /* update: follow the parent, blend its color, scale by the wind factor */
-void ParentFollowFadeUpdate(char *moby) {
+void update_parent_following_effect(char *moby) {
     char *p = *(char **)(moby + 0x78);
     float ratio;
     float v;
@@ -65,7 +65,7 @@ extern void func_001F9EC0(void *, void *, void *);
 extern void func_001F9BD8(void *, void *, void *);
 
 // Builds a random vector and transforms it by the indexed matrix; returns 1 for index -1.
-int RandomPointInVolume(int idx, float *out) {
+int sample_random_transformed_point(int idx, float *out) {
     char *mat;
     if (idx != -1) {
         mat = D_L03_0016016C + idx * 128;
@@ -93,7 +93,7 @@ extern float *func_L00_0025D390_p(void *) __asm__("func_L00_0025D390");
 /* Spawns a child from m's pool of 18 linked mobys: revives the first dead one (of class cls, or any if
  * -1) at `at`, splitting m's health with it, and counts m's living children. Prints a warning if no
  * free child was found. */
-char *SpawnLinkedChild(char *m, float *at, int cls) {
+char *revive_spawner_pooled_child(char *m, float *at, int cls) {
     float pos[4];
     float *pp;
     char *d;
@@ -479,7 +479,7 @@ void ChildSpawnerUpdate(Moby *moby) {
                 for (j = 0; j < 4; j++) {
                     float dd;
                     if (used[j] == 1) continue;
-                    if (RandomPointInVolume(d->pts[j], (float *)&v70) != 0) continue;
+                    if (sample_random_transformed_point(d->pts[j], (float *)&v70) != 0) continue;
                     dd = func_001F9D48(&moby->pos, D_0013E633 + 0xE9D);
                     if (dd < best) {
                         qcopy(&v60, &v70);
@@ -512,7 +512,7 @@ void ChildSpawnerUpdate(Moby *moby) {
                 for (j = 0; j < 4; j++) {
                     if (p[j] != -1) k--;
                     if (k != 0) continue;
-                    if (RandomPointInVolume(p[j], (float *)&v60) != 0) continue;
+                    if (sample_random_transformed_point(p[j], (float *)&v60) != 0) continue;
                     break;
                 }
                 FastVecSub(&v40, &v60, &v30);
@@ -538,7 +538,7 @@ void ChildSpawnerUpdate(Moby *moby) {
                 for (j = 0; j < 4; j++) {
                     if (p[j] != -1) k--;
                     if (k != 0) continue;
-                    if (RandomPointInVolume(p[j], (float *)&v60) != 0) continue;
+                    if (sample_random_transformed_point(p[j], (float *)&v60) != 0) continue;
                     break;
                 }
                 FastVecSub(&v40, &v60, &v30);
@@ -741,7 +741,7 @@ void Moby545Update(char *moby)
         *(int *)(moby + 0x1C) = 0;
         *(float *)(moby + 0x18) = f0 + 0.2f;
         *(VecQuad *)t = *(VecQuad *)(moby + 0x10);
-        *(int *)(d + 0x18) = (int)SpawnLinkedChild(*(char **)(d + 0x10), t, -1);
+        *(int *)(d + 0x18) = (int)revive_spawner_pooled_child(*(char **)(d + 0x10), t, -1);
         ((unsigned char *)moby)[0x20] = 2;
     break;
     }
@@ -787,7 +787,7 @@ int Moby574_IsInState14(char *moby) {
     }
     return 0;
 }
-void Moby_SetState14(unsigned char *moby) {
+void set_moby_state_14(unsigned char *moby) {
     moby[0x20] = 14;
 }
 typedef float HVec49_2CDDC8[4] __attribute__((aligned(16)));
@@ -1299,7 +1299,7 @@ extern Moby *D_L03_00173FD8;
 extern float D_L03_00161BB0 SDATA(D_L03_00161BB0);
 
 /* Update of moby class 848: a spark that homes on its target moby, sheds particles and an arc when close, and dies on a hit. */
-void Moby848Update(Moby *moby) {
+void update_homing_spark_projectile(Moby *moby) {
     Tgt_2D5B88 tgt;
     Vec4A v50;
     Hit_2D5B88 hit;
@@ -1408,7 +1408,7 @@ void Moby848Update(Moby *moby) {
                 vF0 = v120;
                 FastVecAdd(&v100, &v100, &vF0);
                 func_L00_001FF4B0(&v110, &v110, D_0015EE6C * 100.0f);
-                PartType49Spawn(d->target, &vF0, &v100, &v110, scale_ticks(0x2D));
+                create_type_31_part(d->target, &vF0, &v100, &v110, scale_ticks(0x2D));
                 if (func_L00_001EFFF0(&vA0, &vC0, 0, d->target, 0) != 0) {
                     qcopy(&vA0, D_L03_00173FE0);
                     func_L00_001FF4B0(&vB0, &vB0, D_0015EE6C * 10.0f);
@@ -1678,7 +1678,7 @@ extern void func_00216270(void);
 extern char D_L03_001DC460[];
 
 /* moby update: state 0 plays a sound and arms state 1, state 1 registers a draw callback */
-void AmbientStreamL03Update(unsigned char *moby) {
+void update_moby_draw_callback(unsigned char *moby) {
     switch (moby[0x20]) {
     case 0:
         ScaleTableIntoBuffer(D_L03_001DC460, 0.6666667f, 0x20);
@@ -1735,7 +1735,7 @@ extern int func_001F9908(int *arg0);
 extern void func_0020D678(void *);
 
 /* Falling moby: applies gravity, eases its angles toward the target and fades out until its timer ends. */
-void FallingMobyUpdate(char *moby) {
+void update_falling_moby(char *moby) {
     float v[4];
     char *d = *(char **)(moby + 0x78);
     *(float *)(d + 8) = *(float *)(d + 8) - D_0015EE70 * 9.8f;
@@ -1759,7 +1759,7 @@ extern void func_001FA218(void *, void *);
 typedef struct { char pad0[0x40]; int x40; char pad1[8]; float x4C; } CamSub;
 typedef struct { char pad0[4]; float f4; float f8; int fC; CamSub sub; char pad1[0x20]; int x80; } CamInfo;
 
-void Camera_InitFromEntry(char *cam) {
+void initialize_transform_state_from_level_table(char *cam) {
     float v[4] __attribute__((aligned(16)));
     float mat[16] __attribute__((aligned(16)));
     CamSub *a = &(*(CamInfo **)(cam + 0x70))->sub;
@@ -1801,14 +1801,14 @@ extern float func_L00_001EB6A8(void *,float,float,float,float,float);
 extern void func_L03_0024F6D8(float,float *,float *,float *,int);
 extern void func_001F9CA0(void *,void *,void *);
 /* smooths a direction and rebuilds its orthogonal matrix axes */
-void Camera_SmoothAimAtHero(char *m) {
+void smooth_transform_orientation_toward_hero(char *m) {
  float position[4] __attribute__((aligned(16))); float direction[4] __attribute__((aligned(16)));
  char *data=*(char **)(m+0x70); float *height=(float *)(data+0x10); char *result; float angle,t;
  qcopy(position,gHeroPos); position[2]+=height[19];
  result=m+0x40; FastVecSub(direction,position,m+0x30); func_L00_001FF4B0(direction,direction,1.0f);
  angle=FastArcSin(FastVecDot(direction,m));
  t=Camera_SmoothAngle(data,0.0f,1.57079637f-angle,*(float *)(data+4),*(float *)(data+8),*(float *)(data+12));
- RotateVectorToward(t,(float *)m,(float *)result,direction,1); func_L00_001FF4B0(result,m,1.0f);
+ rotate_vector_by_scaled_angle_between_vectors(t,(float *)m,(float *)result,direction,1); func_L00_001FF4B0(result,m,1.0f);
  qcopy(m,result);
  FastVecCross(m+0x10,m,D_L03_00166FB0); func_L00_001FF4B0(m+0x10,m+0x10,1.0f); FastVecCross(m+0x20,m+0x10,m);
 }

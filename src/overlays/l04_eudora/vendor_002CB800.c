@@ -422,7 +422,7 @@ extern void func_L04_00293530(void *, char *);
 extern void func_L04_00293578(void *, char *);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l04/gameplay/entities/002ca420.c, FUN_L04_002d1418. */
-void WBMoby_InitData(void *m) {
+void initialize_woodcut_bot_movement_data(void *m) {
     char *d = *(char **)(m + 0x78);
     char *p = d + 0x160;
     float speed;
@@ -445,7 +445,7 @@ void WBMoby_InitData(void *m) {
     *(int *)(d + 0x1f8) = *(int *)(*(char **)(*(char **)(m + 0x24) + 0x70) + 0x14);
     *(int *)(d + 0x1fc) = *(int *)(*(char **)(*(char **)(m + 0x24) + 0x70) + 0x14);
     *(int *)(d + 0x200) = *(int *)(*(char **)(*(char **)(m + 0x24) + 0x70) + 0x14);
-    SetLegJointLimits(m, p);
+    initialize_leg_rig_angle_defaults(m, p);
     frameScale = D_0015EE70;
     otherScale = D_0015EE6C;
     angleFull = frameScale * 6.2831855f;
@@ -473,7 +473,7 @@ void WBMoby_InitData(void *m) {
     *(unsigned char *)(d + 0x303) = 13;
     *(unsigned char *)(d + 0x302) = 15;
     *(float *)(d + 0x240) = 0.5f;
-    InitTwoLeggedRig(m, p);
+    initialize_leg_rig(m, p);
 }
 extern void func_001F9BC0(void *);
 extern void func_L00_00250800(void *, int, void *);
@@ -482,7 +482,7 @@ extern void func_L00_0025F4A8_alt(void *, void *, void *, float, float, int, int
     __asm__("func_L00_0025F4A8");
 
 // Clears a vector and spawns an effect on the moby.
-void WBMoby_SpawnJointEffect(void *m) {
+void emit_woodcut_bot_death_effects(void *m) {
     char pos[16];
     char vec[16];
     clear_u64_value(vec);
@@ -829,7 +829,7 @@ void woodcut_bot_update(WBMoby *m) {
         d->f5A = 8;
         qcopy(d->f3B0, pos);
         if (d->f121 == 0) AttachManipulator(m, 6, p120);
-        WBMoby_InitData(m);
+        initialize_woodcut_bot_movement_data(m);
         if (d->f3C0 != 0) {
             m->state = 3;
             MobyBlendAnimation(m, 0xB, 0, scale_ticks(10));
@@ -1154,7 +1154,7 @@ void woodcut_bot_update(WBMoby *m) {
         break;
     case 11:
         if ((mine_fall(m, d->fC0) & 0x40) || m->pos[2] < 1.0f) {
-            WBMoby_SpawnJointEffect(m);
+            emit_woodcut_bot_death_effects(m);
             SpawnBreakFragment(m, 0x6CB, pos, m->rot, 0, 0, 0.0f, D_L04_0015F660, D_L04_0015F660, D_L04_0015F660);
             SpawnBreakFragment(m, 0x6CC, pos, m->rot, 0, 0, 0.0f, D_L04_0015F660, D_L04_0015F660, D_L04_0015F660);
             SpawnBreakFragment(m, 0x6CD, pos, m->rot, 0, 0, 0.0f, D_L04_0015F660, D_L04_0015F660, D_L04_0015F660);
@@ -1206,7 +1206,7 @@ extern struct Moby *func_0020D348_m(int) __asm__("func_0020D348");
 extern void func_L00_00251E30(void *);
 extern void qcopy(void *, void *);
 // Spawns a class 0x23A moby copying fields from another and placing it at a position.
-void *SpawnMoby570(char *src, char *pos) {
+void *spawn_class_23a_moby(char *src, char *pos) {
     char tmp[16];
     char *p = tmp;
     char *m;
@@ -1228,7 +1228,7 @@ void *SpawnMoby570(char *src, char *pos) {
 extern void func_L00_0025E210(void *);
 
 /* UpdateMoby_584 */
-void Moby584Update(char *m) {
+void update_moby_translation_delta_matrix(char *m) {
     char *d = *(char **)(m + 0x78);
     float v[4];
     FastVecSub(v, m + 0x10, d + 0xA0);
@@ -1249,7 +1249,7 @@ extern float func_L00_00200210(float, float);
 extern int func_001FA898_r(float) __asm__("func_001FA898");
 
 /* update: blend two keyframes of a path and write the result to a position */
-void PathKeyframeBlendUpdate(char *moby) {
+void interpolate_moby_and_linked_moby_positions_on_path(char *moby) {
     int *p = *(int **)(moby + 0x78);
     int *t = D_L04_001B0930[p[2]];
     char *base = D_L04_00160058;
@@ -1760,7 +1760,7 @@ extern unsigned short D_00141992 NOT_SDA;
 extern unsigned short D_00141A10 NOT_SDA;
 
 /* UpdateMoby_1343: tutorial hint and statistic triggers around the player on Eudora. */
-void Moby1343Update(Moby *moby) {
+void update_eudora_tutorial_hints_and_stats(Moby *moby) {
     Data_2E57F8 *data = *(void **)&moby->pvars;
 
     switch (moby->state) {
@@ -2006,7 +2006,7 @@ typedef struct BounceData2E6558 {
     short bounces; short timer;
     float velocity[4]; float spin[3];
 } BounceData2E6558;
-void BouncingDebrisUpdate(char *moby) {
+void update_entity_bounce_and_decay(char *moby) {
     float old[4];
     char *pos = moby + 0x10;
     BounceData2E6558 *data = *(BounceData2E6558 **)(moby + 0x78);
@@ -2065,7 +2065,7 @@ extern struct L04MissionState D_L04_0016CA60;
 extern void func_L00_00264870(int);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l04/gameplay/vendor/002e3078.c, FUN_L04_002e53a0. */
-void SparksTriggerL04_Update(struct Moby *m) {
+void dispatch_mode_selected_slot(struct Moby *m) {
     switch (m->state) {
     case 0:
         m->update_dist = 0xFF;
@@ -2106,7 +2106,7 @@ void BreakableL04_Update(char *m) {
         Moby_PlaySound(0, 0, (int)m);
         SpawnBreakFxByDistance(m);
         SpawnMobyBurstFx(m, 0x72C, 1, 0x72C, 1, 1, 2);
-        SpawnMobyCopyingPlacement(m, 0x72B);
+        spawn_moby_from_placement(m, 0x72B);
         DeleteMoby(m);
         break;
     }

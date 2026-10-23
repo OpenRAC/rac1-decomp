@@ -1,4 +1,4 @@
-void Moby_HandleDamageKnockback(char *m) {
+void update_blarg_elite_commando_damage_and_pursuit(char *m) {
     L16DamageScratch scratch;
     L16DamageData *d = *(L16DamageData **)(m + 0x78);
     char *hit;

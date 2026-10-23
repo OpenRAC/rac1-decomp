@@ -101,7 +101,7 @@ void KeyframePlatformUpdate(unsigned char *moby) {
     case 0:
         if (on) {
             float fa;
-            if ((*(short *)(data + 0xB8) != 0 && Hero_IsOnMoby(moby))
+            if ((*(short *)(data + 0xB8) != 0 && is_hero_on_moby(moby))
                 || (fa = FastVecDist(D_0013E633 + 0xE9D, path + *(int *)path * 16),
                     FastVecDist(D_0013E633 + 0xE9D, path + 0x10) < fa)) {
                 moby[0xBC] = 2;
@@ -113,7 +113,7 @@ void KeyframePlatformUpdate(unsigned char *moby) {
     case 1:
         if (on) {
             float nr;
-            if ((*(short *)(data + 0xB8) != 0 && Hero_IsOnMoby(moby))
+            if ((*(short *)(data + 0xB8) != 0 && is_hero_on_moby(moby))
                 || (nr = FastVecDist(D_0013E633 + 0xE9D, path + 0x10),
                     FastVecDist(D_0013E633 + 0xE9D, path + *(int *)path * 16) < nr)) {
                 moby[0xBC] = 2;
@@ -123,7 +123,7 @@ void KeyframePlatformUpdate(unsigned char *moby) {
         }
         break;
     case 2:
-        if (*(int *)(data + 0xC8) == 0 && Hero_IsOnMoby(moby)) {
+        if (*(int *)(data + 0xC8) == 0 && is_hero_on_moby(moby)) {
             char *g = D_0013E633 + 0xE1D;
             *(short *)(g + 0x1F2) = 4;
             *(short *)(g + 0x1F4) = 4;
@@ -200,11 +200,11 @@ void KeyframePlatformUpdate(unsigned char *moby) {
         break;
     }
     if (moby[0xBC] != 2) {
-        EasePositionToPathEnd(moby);
+        ease_path_mover_to_endpoint(moby);
     }
     FastVecSub(delta, (moby + 0x10), orig);
     update_entity_matrix(data + 0x60, delta, moby + 0x40, moby + 0x40);
-    if (!Hero_IsOnMoby(moby)) {
+    if (!is_hero_on_moby(moby)) {
         if (2.0f < func_001F9D48((moby + 0x10), (D_0013E633 + 0xE9D))) {
             if (*(short *)(data + 0xBA) == 0) {
                 *(short *)(data + 0xB8) = 1;
@@ -216,7 +216,7 @@ extern float func_L00_0025C918(float *p, float *v, float t, float u1, float u2, 
 extern int *D_L14_001B0F30[];
 
 // Pick a keyframe vector from the moby's table and ease the moby position toward it per axis.
-void EasePositionToPathEnd(char *moby) {
+void ease_path_mover_to_endpoint(char *moby) {
     char *data = *(char **)(moby + 0x78);
     float v[4];
     char *src;
@@ -367,7 +367,7 @@ extern short D_L14_0016146C;
 extern s32 func_001F9850(s32);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/entities/002460f8.c, FUN_L14_002ac618. */
-void Moby8Update(struct Moby *m) {
+void update_blarg_heavy_interceptor(struct Moby *m) {
     char *d = (char *)m->pvars;
     float v[4];
     float w[4];
@@ -459,7 +459,7 @@ void Moby8Update(struct Moby *m) {
         int hit;
 
         m->glow_color = 0xFF000000 | ((*(s32 *)&D_L14_001614D0) << 16) | ((*(s32 *)&D_L14_001614CC) << 8) | (*(s32 *)&D_L14_001614C8);
-        if (Group_AnyMemberTriggered(*(int *)(d + 0x70))) {
+        if (is_turret_group_activated_or_empty(*(int *)(d + 0x70))) {
             m->state = 3;
             *(s16 *)(d + 0x1F2) = scale_ticks((*(s32 *)&D_L14_00161498));
         }
@@ -500,7 +500,7 @@ void Moby8Update(struct Moby *m) {
             }
         }
         *(s32 *)(d + 0x1D0) = -1;
-        Group_WakeIdleMembers(*(int *)(d + 0x70));
+        activate_waiting_turrets_in_group(*(int *)(d + 0x70));
         m->state = 3;
         *(s16 *)(d + 0x1F2) = scale_ticks((*(s32 *)&D_L14_00161498));
         break;
@@ -568,7 +568,7 @@ void Moby8Update(struct Moby *m) {
                 axis_rotation_2d48(d + 0xF0, 2, *(float *)(d + 0x1BC));
                 axis_rotation_2d48(d + 0x130, 1, *(float *)(d + 0x1C0));
             }
-            if (Group_StartWhenAllReady(*(int *)(d + 0x70))) {
+            if (try_retract_turret_group(*(int *)(d + 0x70))) {
                 MoverPath *p = (MoverPath *)D_L14_001B0F30[*(int *)(d + 0x204)];
 
                 m->state = 5;
@@ -636,7 +636,7 @@ void Moby8Update(struct Moby *m) {
         float ang;
 
         *(s16 *)(d + 0x1F0) = scale_ticks((*(s32 *)&D_L14_0016149C));
-        Group_WakeIdleMembers(*(int *)(d + 0x70));
+        activate_waiting_turrets_in_group(*(int *)(d + 0x70));
         voice = *(s32 *)(d + 0x1D0);
         if (voice != -1) {
             VoicePoolWindow *slot = (VoicePoolWindow *)((u8 *)&D_0013E650 + voice * 0x70);
@@ -746,7 +746,7 @@ extern void func_L00_0025E4B0(void *m, short *p);
 extern void func_L00_0025E590(void *, void *);
 
 /* per-frame update: runs the hit query, decays a timer, then dispatches on the hit result */
-void Moby8_ApplyHit(char *moby) {
+void process_blarg_heavy_interceptor_hit_reactions(char *moby) {
     char *data = *(char **)(moby + 0x78);
     int st;
     float t;
@@ -802,7 +802,7 @@ extern void func_00234C98(s32, s64);
 extern void func_001F7868(void);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/entities/002460f8.c, FUN_L14_002ada18. */
-void Moby8_DrawRing(char *moby) {
+void draw_blarg_heavy_interceptor_light_ring(char *moby) {
     char *d = *(char **)(moby + 0x78);
     struct {
         float mat[4][4]; /* camera-facing frame */
@@ -896,7 +896,7 @@ extern float func_001F9CE8(void *);
 extern void func_L00_001FD1D8_AEF88(void *, int, int) __asm__("func_L00_001FD1D8");
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/entities/002460f8.c, FUN_L14_002add48. */
-void Moby8_DrawSpinningSprite(char *moby) {
+void draw_blarg_heavy_interceptor_spinning_beam(char *moby) {
     char *d = *(char **)(moby + 0x78);
     float src[4][4];
     Pk_2add48 pk;
@@ -998,7 +998,7 @@ extern short D_L14_00161540;
 extern short D_L14_0016153C;
 
 /* Builds the transform and lighting block for an Oltanis moby and draws it. */
-void Moby8_DrawLit(char *moby) {
+void draw_blarg_heavy_interceptor_camera_facing_glow(char *moby) {
     char L[0x100];
     char *data = *(char **)(moby + 0x78);
     char *base;
@@ -1134,7 +1134,7 @@ extern int *D_L14_001B0F30[];
 extern int func_L00_0025E860_2AF688(void *, void *, void *, void *, int, float) __asm__("func_L00_0025E860");
 
 /* Measures the segments of the moby's three paths, sums two of them and places it on the first two. */
-void MeasurePathSegments(char *m) {
+void initialize_blarg_heavy_interceptor_paths(char *m) {
     char *d = *(char **)(m + 0x78);
     int *p;
     int i;
@@ -1181,7 +1181,7 @@ extern int func_L00_0025E860_2AF918(int *tab, float *out, int *a, float *b, int 
 extern int *D_L14_001B0F30[];
 
 // Run the lookup for the moby's track, ease three axes, and on a wrap-around reset and flip the direction.
-void Moby8_AdvanceTargetPath(char *moby) {
+void update_blarg_heavy_interceptor_patrol_aim_point(char *moby) {
     char *data = *(char **)(moby + 0x78);
     float v[4];
     float save = *(float *)(data + 0x1CC);
@@ -1204,7 +1204,7 @@ extern int func_L00_0025E860_AFA18(int *tab, float *out, int *a, float *b, int c
 
 /* Moves the moby to the point on its second path that matches how far along its first path it is.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/entities/002460f8.c, FUN_L14_002ae7d8. */
-void Moby8_SyncSecondPath(struct Moby *moby) {
+void update_blarg_heavy_interceptor_patrol_path_position(struct Moby *moby) {
     char *data = (char *)moby->pvars;
     char *seg = (char *)D_L14_001B0F30[*(int *)(data + 0x78)];
     int n = *(int *)(data + 0x84);
@@ -1239,7 +1239,7 @@ extern float D_0015EE6C MACRO_ADDR;
 extern short D_L14_001614C4;
 
 /* Picks a target point from a list or searches for one, then eases the moby's position toward it per axis. */
-void Moby8_EaseToPathPoint(char *moby, float a, float b, float c) {
+void update_blarg_heavy_interceptor_return_path_position(char *moby, float a, float b, float c) {
     char *data = *(char **)(moby + 0x78);
     int *list = D_L14_001B0F30[*(int *)(data + 0x204)];
     float tmp[4];
@@ -1322,7 +1322,7 @@ extern float func_001FA790(float, float);
 extern void func_L14_002AF4A0(char *);
 
 // Sets up the moby's motion data from its vectors; returns whether it succeeded.
-int Moby8_PrepareGlowDraw(char *moby, int flag) {
+int update_blarg_heavy_interceptor_aim_transforms(char *moby, int flag) {
     int ok = 0;
     char *data = *(char **)(moby + 0x78);
     float w[4];
@@ -1383,7 +1383,7 @@ extern void func_L14_002AEF88_B0068(char *) __asm__("func_L14_002AEF88");
 extern void func_L14_002AEC58_B0068(char *) __asm__("func_L14_002AEC58");
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/entities/002460f8.c, FUN_L14_002aee28. */
-void Moby8_DrawGroup(struct Moby *moby) {
+void draw_blarg_heavy_interceptor_group_effects(struct Moby *moby) {
     char *d = (char *)moby->pvars;
     int i;
     int *out;
@@ -1414,7 +1414,7 @@ extern int D_L14_001D8980[];
 extern char *D_L14_00160098_2B0168 __asm__("D_L14_00160098") MACRO_ADDR;
 
 /* Returns the farthest moby in a list that is not in the excluded-id table, by distance from a point. */
-char *FindFarthestMoby(int index) {
+char *select_farthest_unselected_group_moby(int index) {
     short *p = D_L14_001AC2C0_2B0168[index];
     char *best = 0;
     float bestd = 0.0f;
@@ -1440,7 +1440,7 @@ char *FindFarthestMoby(int index) {
     return best;
 }
 /* counts table entries through the first negative terminator */
-int CountShortTableEntries(char *moby) {
+int count_moby_group_members(char *moby) {
     short *table = D_L14_001AC2C0_2B0168[(unsigned char)moby[0x21]];
     int count = 0;
     if (table == 0)
@@ -1750,7 +1750,7 @@ void Turret_ApplyHit(unsigned char *m) {
 extern int *D_L14_001AC2C0[];
 
 // Marks each listed moby whose state is 1 by writing 1 into its data's field 0x88.
-void Group_WakeIdleMembers(int idx) {
+void activate_waiting_turrets_in_group(int idx) {
     short *p = (short *)D_L14_001AC2C0[idx];
     if (p != 0) {
         char *base = D_L14_00160098_2B0168;
@@ -1773,7 +1773,7 @@ extern float func_001FA888_2B5750(short) __asm__("func_001FA888");
 
 /* Returns 0 unless every object on the list is ready, then wakes the waiting ones and sets their timers.
  * Adapted from Lombyte (MIT) for PAL: overlays/l14/gameplay/entities/002460f8.c, FUN_L14_002b4500. */
-int Group_StartWhenAllReady(int index) {
+int try_retract_turret_group(int index) {
     short *p = D_L14_001AC2C0_2B5750[index];
     unsigned char *base;
     unsigned char *q;
@@ -1819,7 +1819,7 @@ int Group_StartWhenAllReady(int index) {
     return 1;
 }
 // Tests whether a vendor group has no active unready objects.
-int Group_AnyMemberTriggered(int index) {
+int is_turret_group_activated_or_empty(int index) {
  unsigned short *list = (unsigned short *)D_L14_001AC2C0_2B0168[index];
  int count = 0;
  char *base;
@@ -2423,7 +2423,7 @@ void SpawnRadialSparks(char *m, float *input, float angle) {
         pos[0] = saved[0] + randf_sym(0.0f, 0.2f);
         pos[1] = saved[1] + randf_sym(0.0f, 0.2f);
         pos[2] = saved[2] + randf_sym(0.0f, 0.2f);
-        PartType19Spawn(pos, rotated);
+        spawn_two_point_effect_particle(pos, rotated);
     }
     }
     mine_camera_blast(D_L14_001D8BD0, saved, 0, 0);
@@ -2586,7 +2586,7 @@ extern char D_L14_00180AC0[];
 extern int func_L00_0028EF68();
 extern int func_L00_0023F0D0(float *, float, float, float, float, float);
 extern void func_L14_002BC728(char *);
-void Moby81Update(struct Moby *m) {
+void update_flying_debris(struct Moby *m) {
     char *d = (char *)m->pvars;
     float joint[4];
     float ofs[4];
@@ -2606,7 +2606,7 @@ void Moby81Update(struct Moby *m) {
     float blue = 0.2f;
 
     if (FastDecTimer(d + 0x10) != 0)
-        { Moby81Destroy((char *)m); return; }
+        { remove_flying_debris((char *)m); return; }
     FastVecAdd(&m->pos, &m->pos, d);
     if (FastAbsF(*(float *)(d + 0x0)) > *(float *)&D_L14_001616A8 * D_0015EE60)
         *(float *)(d + 0x0) *= (*(float *)&D_L14_001616A4 - 1.0f) * D_0015EE60 + 1.0f;
@@ -2617,14 +2617,14 @@ void Moby81Update(struct Moby *m) {
     *(float *)(d + 0x8) -= *(float *)&D_L14_001616A0 * D_0015EE64;
     if (m->pos.x < 2.0f || m->pos.x > 1021.0f || m->pos.y < 2.0f || m->pos.y > 1021.0f || m->pos.z < 2.0f ||
         m->pos.z > 1021.0f)
-        { Moby81Destroy((char *)m); return; }
+        { remove_flying_debris((char *)m); return; }
     if (coll_sphere(0.75f, &m->pos, 0, 0) != 0 ||
         (FastAbsF(m->pos.x - D_0013F450_AD858.motion.pos.f[0]) < 10.0f && FastAbsF(m->pos.y - D_0013F450_AD858.motion.pos.f[1]) < 10.0f)) {
         clear_u64_value(joint);
         Sound_PlayClassSound(1, 0, (int)m, (*(struct Moby **)(d + 0x20))->oclass);
         func_L00_0025F4A8_AD858(m, joint, &m->pos, 2.0f, 4.0f, 5, 2, 4, 1.0f, 0.5f, 9.0f, 1.0f, -1, 5.0f, 0, 2,
                          -1, 0);
-        Moby81Destroy((char *)m);
+        remove_flying_debris((char *)m);
         return;
     }
     m->rot.x = FastAddRots(m->rot.x, *(float *)(d + 0x14));
@@ -2727,7 +2727,7 @@ unsigned char *SpawnMoby81(char *owner, float angle, char *posp) {
 extern void func_L00_0023F1D0(int);
 extern void func_0020D678(void *);
 
-void Moby81Destroy(char *moby)
+void remove_flying_debris(char *moby)
 {
     char *data = *(char **)(moby + 0x78);
     int index = *(short *)(data + 0x12);
@@ -2808,7 +2808,7 @@ void func_L14_002D84A8_D7250(struct Moby *m) __asm__("func_L14_002D84A8");
 void func_L14_002D87A0_D7250(struct Moby *m) __asm__("func_L14_002D87A0");
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/entities/002460f8.c, FUN_L14_002d5f40. */
-void Moby211Update(struct Moby *m) {
+void update_level14_racer(struct Moby *m) {
     struct L14RacerVars *d = (struct L14RacerVars *)m->pvars;
     u8 pos[16];
     f32 vel[3];
@@ -2871,7 +2871,7 @@ void Moby211Update(struct Moby *m) {
         func_L14_002D84A8_D7250(m);
         break;
     case 6:
-        Moby211_UpdateGunAim(m);
+        update_racer_path_and_weapon(m);
         if (is_point_inside_clip_volume(&m->pos, d->volume)) {
             Moby_GetJointWorldPos(m, 2, pos);
             spark = Moby325Spawn((char *)m, (char *)pos);
@@ -2904,7 +2904,7 @@ typedef struct {
 } PathPos_2D7668;
 
 /* Finds the path segments nearest to the two target points and sums the segment lengths between them. */
-void SumPathSegmentsBetween(char *m) {
+void initialize_racer_path_tracking(char *m) {
     char *d = *(char **)(m + 0x78);
     char *path = *(char **)(D_L14_0015F7EC_p + *(int *)(d + 0x60) * 32 + 0x10);
     char *tg;
@@ -2939,7 +2939,7 @@ extern char *D_L14_0015F7EC_p __asm__("D_L14_0015F7EC") MACRO_ADDR;
 extern char *D_L14_001B0F30_a[] __asm__("D_L14_001B0F30");
 extern int func_001F9908(void *);
 
-int Moby211_StepLerp(char *m) {
+int interpolate_racer_to_path_start(char *m) {
     char *d = *(char **)(m + 0x78);
     char *ent = *(char **)((char *)((*(int *)(d + 0x60) << 5) + (int)D_L14_0015F7EC_p) + 0x10);
     int ok;
@@ -2970,7 +2970,7 @@ extern void func_L00_00217718(void *, void *, int, int);
 extern void func_L00_0025E860_D7880(void *, void *, void *, void *, int, float) __asm__("func_L00_0025E860");
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/entities/002d6358.c, FUN_L14_002d6570. */
-void Moby211_SyncHeroOnRail(struct Moby *m) {
+void reset_racer_group_to_hero_path_position(struct Moby *m) {
     char *list[4];
     float near[4];
     float v[4];
@@ -3068,7 +3068,7 @@ extern int func_L00_002E3640(struct Moby *, void *, void *);
 extern char *func_L00_002757E8(void *, void *, int, void *);
 extern int func_L00_0023F0D0(float *, float, float, float, float, float);
 
-void Moby211_UpdateGunAim(struct Moby *m) {
+void update_racer_path_and_weapon(struct Moby *m) {
     char *d = (char *)m->pvars;
     char *path = *(char **)((char *)D_L14_0015F7EC + *(int *)(d + 0x60) * 32 + 0x10);
     V_67e8 near;
@@ -3160,7 +3160,7 @@ void Moby211_UpdateGunAim(struct Moby *m) {
                 m->command = 0;
             } else {
                 unsigned char s = 3;
-                EffectSlot_Alloc(m, s, 1);
+                register_beam_slot(m, s, 1);
                 m->command = s;
             }
             *(int *)(d + 0x1C4) = scale_ticks(30);
@@ -3214,8 +3214,8 @@ void Moby211_UpdateGunAim(struct Moby *m) {
             *(int *)(d + 0x1C4) = 0;
         }
         if (m->command == 3) {
-            if (EffectSlot_Update(m, d + 0xA0, d + 0x1E0) == 0) {
-                EffectSlot_Alloc(m, 3, 1);
+            if (set_beam_origin_transform_and_endpoint(m, d + 0xA0, d + 0x1E0) == 0) {
+                register_beam_slot(m, 3, 1);
             }
             ray.flags = 0x10001;
             ray.self = m;
@@ -3309,7 +3309,7 @@ extern void func_001F9EE8_D8500(void *, void *, void *) __asm__("func_001F9EE8")
 extern void func_L00_001FD1D8_D8500(void *, int, int) __asm__("func_L00_001FD1D8");
 
 /* Adapted from Lombyte (MIT) for PAL: src/overlays/l14/gameplay/entities/002d6358.c, FUN_L14_002d71f0. */
-void Moby211_DrawQuad(struct Moby *m) {
+void draw_racer_glow_quads(struct Moby *m) {
     char *d = (char *)m->pvars;
     Pk_2D8500 pk;
     float mat[4][4];
@@ -3368,7 +3368,7 @@ extern char *func_L00_002757E8(void *, void *, int, void *);
 extern void func_L14_002D8500(struct Moby *);
 
 /* Puffs smoke from the moby's exhaust joint: keeps its light in place while active, then spawns four puffs. */
-void PuffExhaustSmoke(char *m) {
+void update_moby_joint_visual_effects(char *m) {
     char *d = *(char **)(m + 0x78);
     float p[4];
     float v[4];
@@ -3414,13 +3414,13 @@ void PuffExhaustSmoke(char *m) {
         *(short *)(e + 0x16) = 3;
     }
     Moby_GetJointWorldPos(m, 6, d + 0x200);
-    AddDrawCallback(Moby211_DrawQuad, m);
+    AddDrawCallback(draw_racer_glow_quads, m);
 }
 extern void func_L14_002DF6B8_m(Moby *, f32, f32) __asm__("func_L14_002DF6B8");
 extern float D_L14_00161BCC SDATA(D_L14_00161BCC);
 
 /* Adapted from Lombyte (the US decompilation): FUN_L14_002de1f8. */
-void Moby309Update(Moby *moby) {
+void update_tilting_platform(Moby *moby) {
     char *data = (char *)moby->pvars;
     void *rotation;
     Vec4 old_rotation;
@@ -3529,7 +3529,7 @@ extern float func_001F9FA8(float);
 extern void func_L14_002E0538(char *);
 
 /* Updates a gem-lock sentry: picks up a sound slot and fires when the player is near. */
-void GemLockSentryUpdate(char *moby) {
+void update_ribbon_effect_moby(char *moby) {
     char *data = *(char **)(moby + 0x78);
     char *x;
     float v[4];
@@ -3541,7 +3541,7 @@ void GemLockSentryUpdate(char *moby) {
             DeleteMoby(moby);
             return;
         }
-        InitSpacedVectorTables(moby);
+        initialize_ribbon_effect_state(moby);
         moby[0x20] = 1;
         *(int *)(data + 0x204) = -1;
         break;
@@ -3557,7 +3557,7 @@ void GemLockSentryUpdate(char *moby) {
         if (Sound_IsPlaying(moby, *(int *)(data + 0x204)) == 0) {
             *(int *)(data + 0x204) = Sound_PlayClassSound(6, 4, (int)moby, 0xD3);
         }
-        Hero_RequestEffectInVolume(moby);
+        register_hero_hit_in_clip_volume(moby);
         v[0] = FastCos(*(float *)(moby + 0x48)) * 3.125f;
         v[1] = FastSin(*(float *)(moby + 0x48)) * 3.125f;
         v[2] = 0.0f;
@@ -3565,7 +3565,7 @@ void GemLockSentryUpdate(char *moby) {
         qcopy(w, v);
         w[3] = 4.5f;
         if (FastBSphereCheck((char *)w, 64.0f) >= 0) {
-            func_L14_002E0538(moby);
+            animate_ribbon_effect_paths(moby);
         }
         return;
     }
@@ -3582,7 +3582,7 @@ end:
     }
 }
 /* Initialises two tables of spaced vectors in the moby's data block and clears four fields. */
-void InitSpacedVectorTables(char *moby) {
+void initialize_ribbon_effect_state(char *moby) {
     float *d = *(float **)(moby + 0x78);
     float *p = d;
     int i;

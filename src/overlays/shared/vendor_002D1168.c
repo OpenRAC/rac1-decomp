@@ -661,7 +661,7 @@ extern float func_001F9CB8(void *);
 extern void func_001F9BD8(void *, void *, void *);
 
 /* per-frame update of a thrown object chain: walks to the root, then moves each link and resolves its collision */
-void ThrownChainUpdate(char *a) {
+void update_crate_stack_motion(char *a) {
     float v0[4];
     float v1[4];
     float v2[4];
@@ -740,7 +740,7 @@ void ThrownChainUpdate(char *a) {
                     *(short *)(a + 0x36) = 0x7F80;
                 qcopy(v5, a + 0x10);
                 qcopy(v6, a + 0x40);
-                TransformToMobyLocal((int)a, *(char **)(o + 0xF0), v4, (float *)(o + 0xE0), (float *)(a + 0x10), (float *)(a + 0x40));
+                transform_attachment_pose((int)a, *(char **)(o + 0xF0), v4, (float *)(o + 0xE0), (float *)(a + 0x10), (float *)(a + 0x40));
                 if (*(int *)(GetFlaggedPvarWord(*(char **)(o + 0xF0)) + 0x3C) & 4) {
                     qcopy(o + 0xD0, v4);
                     *(float *)(o + 0xD8) = *(float *)(o + 0xD8) - *(float *)(o + 0xF4);
@@ -1093,7 +1093,7 @@ void decoy_glove_update(unsigned char *moby) {
             qzero(&loc);
             mine_spawn_drops(*(char **)(d + 0x50), D_L00_001B0BB0);
             ((void (*)(void *))DeleteMoby)(*(char **)(d + 0x50));
-            *(int *)(d + 0x50) = SpawnThrownObject(moby, d + 0x40, &loc);
+            *(int *)(d + 0x50) = spawn_decoy(moby, d + 0x40, &loc);
         }
         if (*(char **)(d + 0x50) != 0 &&
             *(unsigned char *)(*(char **)(d + 0x50) + 0x20) != 0xFE &&
@@ -1139,7 +1139,7 @@ L3D34:
             if (scale_ticks(D_0015EFA4) / 600 > (int)*(unsigned short *)(P + 0xCA))
                 *(unsigned short *)(P + 0xCA) = scale_ticks(D_0015EFA4) / 600;
             *(unsigned int *)(P + 0xCC) = (*(unsigned int *)(P + 0xCC) | (1 << D_0015EE84)) | 0x80000000;
-            ThrownObject_BounceOffHero((float *)(d + 0x40), *(char **)(d + 0x50), *(char **)(*(char **)(d + 0x50) + 0x78) + 0x10);
+            release_moby_with_collision_check((float *)(d + 0x40), *(char **)(d + 0x50), *(char **)(*(char **)(d + 0x50) + 0x78) + 0x10);
             *(int *)(d + 0x50) = 0;
         } else {
             Moby_PlaySound(0, 0, (int)moby);
@@ -1167,12 +1167,12 @@ L3D34:
     }
     if (get_ammo(-1)) {
         qzero(&loc);
-        *(int *)(d + 0x50) = SpawnThrownObject(moby, d + 0x40, &loc);
+        *(int *)(d + 0x50) = spawn_decoy(moby, d + 0x40, &loc);
     } else {
         char *h = D_0013E633 + 0xE1D;
         if (*(unsigned char *)(h + 0x20A8)) {
             qzero(&loc);
-            *(int *)(d + 0x50) = SpawnThrownObject(moby, d + 0x40, &loc);
+            *(int *)(d + 0x50) = spawn_decoy(moby, d + 0x40, &loc);
         }
     }
 }
@@ -1278,7 +1278,7 @@ void DrawRingSpriteTrail(Moby *moby) {
 extern int D_0015EE84 MACRO_ADDR;
 extern unsigned char D_0014C010[];
 /* increments the selected packed nibble, saturating at fifteen */
-void IncrementNibbleSaturating(unsigned char *moby) {
+void increment_metal_detector_collection_counter(unsigned char *moby) {
  int row=D_0015EE84;
  if (row<20) { int index=moby[0xBC]-1;
  if (index&1) { unsigned char *p=D_0014C010+(index/2+row*16); unsigned int value=*p; int n=(value&15)+1; if(n>=16)n=15; *p=(value&240)|n; }
@@ -1681,7 +1681,7 @@ extern int func_001FA898_r(float) __asm__("func_001FA898");
 extern int func_L00_0023F0D0(float *, float, float, float, float, float);
 
 /* moby class 639 update: runs its state machine and eases its tracked values toward their targets */
-void Moby639Update(unsigned char *m) {
+void update_animated_point_light_moby(unsigned char *m) {
     unsigned char *o;
     Vx tp;
     Vx t2;
@@ -2326,7 +2326,7 @@ int CarriedMoby_UpdateState9(char *a, void *p, void *t, float h) {
 }
 /* Runs func_L00_002DD2D0 and forces the moby into state 9; returns its result. */
 int CarriedMoby_ReleaseToState9(char *a) {
-    int r = ReleaseCarriedMobySlot(a);
+    int r = cancel_suck_cannon_suction(a);
     a[0x20] = 9;
     return r;
 }
@@ -2823,7 +2823,7 @@ void infobot_update(struct Moby *moby)
         }
         moby->state = 10;
         if (infobot->msg1 != -1) {
-            PlayMovieEntryIfIdle(infobot->msg1);
+            start_indexed_disc_stream(infobot->msg1);
         }
         break;
     case 10:
@@ -3017,7 +3017,7 @@ void particle_spawner_smoke_fire_update(P *p) {
             r = random_integer_below(2);
             D_L00_001CBAE0_D83D8[i].w = 1.0f;
             D_L00_001D2B60[i] = r;
-            ResetEmitterParticle(p, i);
+            reset_smoke_fire_spawner_particle(p, i);
             D_L00_001D5A40[i] = 0;
         }
         j = e;
@@ -3062,7 +3062,7 @@ void particle_spawner_smoke_fire_update(P *p) {
                 }
             }
         }
-        AddDrawCallback(func_L00_002D8898, p);
+        AddDrawCallback(draw_smoke_fire_spawner, p);
         return;
     }
 }

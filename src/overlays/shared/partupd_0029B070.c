@@ -7,7 +7,7 @@ extern int func_001FA898_r(float) __asm__("func_001FA898");
 extern unsigned char *D_L07_001B24CC;
 
 // Spawns a short-lived particle at a position with a given velocity.
-unsigned char *SpawnPuffParticle(char *pos, char *vec) {
+unsigned char *spawn_projectile_expiry_particle(char *pos, char *vec) {
     unsigned char *p = create_part(0x33);
     if (p != 0) {
         char *b = (char *)p + 0x20;
@@ -38,7 +38,7 @@ extern float D_0015EE60 MACRO_ADDR;
 extern float D_L07_00166EC0[];
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/rendering/0029a2a0.c, FUN_L07_0029b8d8. */
-unsigned char *SpawnMobyAttachedParticle(void *m, short index, float amount, float factor) {
+unsigned char *spawn_moby_point_offset_particle(void *m, short index, float amount, float factor) {
     float v[4];
     float t[4];
     unsigned char *p = create_part(0x3d);

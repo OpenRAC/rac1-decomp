@@ -162,7 +162,7 @@ extern void func_001F9BD8_BE2C8c(void *, void *, void *) __asm__("func_001F9BD8"
 extern f32 D_0015EE60_BE2C8b __asm__("D_0015EE60") MACRO_ADDR;
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l01/unclassified_002b96e0.c, FUN_L01_002bd100. */
-void ParticleEmitterUpdate(EmitterMoby *self) {
+void update_spark_particle_emitter(EmitterMoby *self) {
     Emitter *v;
     Vec4 out;
     Vec4 p;
@@ -213,7 +213,7 @@ void ParticleEmitterUpdate(EmitterMoby *self) {
                 func_001FA218(&u.rot.m, &u.rot.ang);
                 func_001F9EE8(&out, &v->vel, &u.rot.m);
                 size = func_002140F8_BE2C8b(v->size_min, v->size_max);
-                PartType06Spawn(v, &p, out.f[0], out.f[1], out.f[2], size, func_002140F8_BE2C8b(v->life_min, v->life_max), v->fade[0], v->fade[1], v->fade[2], v->fade[3], v->tex, v->blend, v->alpha, 0xFF);
+                create_spark_particle(v, &p, out.f[0], out.f[1], out.f[2], size, func_002140F8_BE2C8b(v->life_min, v->life_max), v->fade[0], v->fade[1], v->fade[2], v->fade[3], v->tex, v->blend, v->alpha, 0xFF);
             } else {
                 u.lin.vel.f[0] = func_002140F8_BE2C8b(v->vel.f[0], v->vel_range[0]) * D_0015EE60_BE2C8b;
                 u.lin.vel.f[1] = func_002140F8_BE2C8b(v->vel.f[1], v->vel_range[1]) * D_0015EE60_BE2C8b;
@@ -223,7 +223,7 @@ void ParticleEmitterUpdate(EmitterMoby *self) {
                     func_001F9EE8(&u.lin.vel, &u.lin.vel, &u.lin.m);
                 }
                 size = func_002140F8_BE2C8b(v->size_min, v->size_max);
-                PartType06Spawn(v, &p, u.lin.vel.f[0], u.lin.vel.f[1], u.lin.vel.f[2], size, func_002140F8_BE2C8b(v->life_min, v->life_max), v->fade[0], v->fade[1], v->fade[2], v->fade[3], v->tex, v->blend, v->alpha, 0xFF);
+                create_spark_particle(v, &p, u.lin.vel.f[0], u.lin.vel.f[1], u.lin.vel.f[2], size, func_002140F8_BE2C8b(v->life_min, v->life_max), v->fade[0], v->fade[1], v->fade[2], v->fade[3], v->tex, v->blend, v->alpha, 0xFF);
             }
         }
     } else {
@@ -336,7 +336,7 @@ extern float func_001FA850(float, float);
 
 /* Picks the path node the follower should head for: an ordered path just steps to the next stop; otherwise the nearest node and its two neighbours are scored (distance, or heading change for slow movers) and the best one is written to *idx. Returns nonzero when the pick differs from the nearest node.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l01/gameplay/entities/002b96e0.c, FUN_L01_002e6790. */
-int PickFollowerPathNode(void *arg, int *idx) {
+int select_birdbot_path_node(void *arg, int *idx) {
     PathPickMoby *m = arg;
     PathPickTarget target;
     Vec4 pt;
@@ -682,7 +682,7 @@ void birdbot_update(PeMoby *m) {
         v->w1C8--;
     }
     if (m->state != 0) {
-        res = PickFollowerPathNode(m, &idx);
+        res = select_birdbot_path_node(m, &idx);
     }
     r = flag ? v->f1A0 * 2.0f : v->f1A0;
     FindNearestTargetMoby(m, &tgt, r);
@@ -1241,7 +1241,7 @@ void birdbot_update(PeMoby *m) {
     } else {
         ground = ProbeGroundHeight(&m->pos, 0, 0.5f);
     }
-    SetRangeAroundValue((char *)m, ground);
+    set_range_centered_on_value((char *)m, ground);
     if (CollType() == 0 && m->pos.f[2] < ground + 1.0f) {
         func_L00_0025F4A8(m, &v->v40, &m->pos, 0.0f, 0.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, 1.0f, 4, 15.0f, 1, 1, -1, 0);
         SpawnBreakFragment((char *)m, 0x6C8, m->pos.f, &m->rot, 0, 0, 0.0f, D_L01_0015F660, D_L01_0015F660, D_L01_0015F660);
@@ -1889,7 +1889,7 @@ void peckbot_update(GcMoby *m) {
         if (mine_fall(m, v->x120) & 0x140) {
             clear_u64_value(&va);
             t = (int)((float)scale_ticks(1) * 60.0f);
-            if (ClaimExpiredTimerSlot(D_L01_00161B10, 3, t) >= 0) {
+            if (reserve_expired_frame_slot(D_L01_00161B10, 3, t) >= 0) {
                 SpawnExplosionFx(m, &m->pos, 4, 0.5f, 13.0f);
             }
             SpawnBreakFragment((char *)m, 0x6D3, m->pos.f, &m->rot, 0, 0, 0.0f, D_L01_0015F660, D_L01_0015F660, D_L01_0015F660);
@@ -2573,14 +2573,14 @@ extern void func_L01_002BA898(int, void *);
 extern char D_L01_001E32A0[];
 
 /* The moby comes in $a0 and goes on to the delete, untouched. */
-void DrawScrollingLayers8Callback(void *moby) {
+void update_and_draw_level01_scrolling_layers(void *moby) {
     DefaultVtbl_DeleteMoby(moby);
-    DrawScrollingLayers(8, D_L01_001E32A0);
+    update_and_draw_scrolling_overlay_layers(8, D_L01_001E32A0);
 }
 extern char D_L01_001E3660[];
-void DrawScrollingLayers2Callback(void *moby) {
+void draw_two_scroll_layers(void *moby) {
     DefaultVtbl_DeleteMoby(moby);
-    DrawScrollingLayers(2, D_L01_001E3660);
+    update_and_draw_scrolling_overlay_layers(2, D_L01_001E3660);
 }
 typedef struct {
     Vec4 *pts;
@@ -2598,7 +2598,7 @@ extern void func_L01_002F7528(void *);
 void func_001F49B0(void *fn, void *arg);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l01/unclassified_002b96e0.c, FUN_L01_002f6180. */
-void ScrollingLayers2Update(void *arg) {
+void initialize_bounds_and_enqueue_scroll_layers(void *arg) {
     Vec4 c;
     Vec4 d;
     Vec4 *p;
@@ -2630,7 +2630,7 @@ void ScrollingLayers2Update(void *arg) {
             qcopy((D_L01_001E3660_F7558 + i)->out, &c);
         }
     }
-    AddDrawCallback(DrawScrollingLayers2Callback, arg);
+    AddDrawCallback(draw_two_scroll_layers, arg);
 }
 typedef unsigned int u128_t __attribute__((mode(TI), aligned(16)));
 typedef struct {
@@ -3119,7 +3119,7 @@ extern void func_L01_002F9908(void *, void *, unsigned int, int, float, float, f
 extern char *func_L00_0026CD70(float f, char *a, char *b, int c, int d, int e, int g);
 
 // Emitter update: ticks timers, occasionally bursts a smoke puff and spawns two drifting smoke particles per frame. Adapted from Lombyte (MIT) for PAL: overlays/l01/unclassified_002b96e0.c, FUN_L01_002f8c58.
-void SteamVentUpdate(SteamMoby *m) {
+void update_rising_particle_and_debris_emitter(SteamMoby *m) {
     SteamVars *v;
     SteamColors colors;
     Vec4 vel;
@@ -3194,7 +3194,7 @@ extern void func_L00_002E9968(float x, float y);
 extern void func_L00_002E99A0(int, float, float);
 
 /* sets up a rotated vector and the level's fog/light parameters */
-void ApplyNodeLighting(char *moby) {
+void apply_falling_rock_camera_overrides(char *moby) {
     float tmp[4];
     char *p = camera_points + (*(int *)(*(char **)(moby + 0x78) + 0x80) << 7);
     build_look_at_matrix(tmp, p, p + 0x20, *(float *)&D_L01_00161CB8);
@@ -3326,7 +3326,7 @@ void falling_rock_update(CapMoby *falling_rock) {
         }
         break;
     case FALLING_ROCK_STATE_WAIT_BEFORE_FALL:
-        ApplyNodeLighting((char *)falling_rock);
+        apply_falling_rock_camera_overrides((char *)falling_rock);
         if (FastDecTimer(&falling_rock_vars->rise)) {
             clear_u64_value(&falling_rock_vars->rot);
             falling_rock_vars->hold = scale_ticks(0x2D);
@@ -3336,7 +3336,7 @@ void falling_rock_update(CapMoby *falling_rock) {
     case FALLING_ROCK_STATE_FALLING: {
         CapVec3 old;
 
-        ApplyNodeLighting((char *)falling_rock);
+        apply_falling_rock_camera_overrides((char *)falling_rock);
         falling_rock->pos.f[2] -= 0.0f;
         qcopy(&old, &falling_rock->pos);
         falling_rock_vars->rot.f[2] -= D_0015EE70 * 30.0f;

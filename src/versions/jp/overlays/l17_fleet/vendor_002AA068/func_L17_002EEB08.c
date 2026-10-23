@@ -89,7 +89,7 @@ void FighterJetUpdate(Moby1379 *moby) {
             if (d->i11C > 0) {
                 jet_group_state(d->i11C, 0, 0, 0);
             }
-            Moby_SetFlagsByClass(0x325, 1, 1, -1);
+            update_moby_class_flags_and_link(0x325, 1, 1, -1);
             d->i124 = -1;
             break;
         case 1: {
@@ -167,7 +167,7 @@ void FighterJetUpdate(Moby1379 *moby) {
                 if (d->i11C > 0) {
                     jet_group_state(d->i11C, 1, 1, 1);
                 }
-                Moby_SetFlagsByClass(0x325, 0, 0, -1);
+                update_moby_class_flags_and_link(0x325, 0, 0, -1);
                 moby->pos[2] = moby->pos[2] + 3.0f;
                 moby->scale = *(float *)(moby->cls + 0x24) * D_L17_0016211C;
                 g->b20A5 = 1;
@@ -176,7 +176,7 @@ void FighterJetUpdate(Moby1379 *moby) {
                 }
                 jet_camera_mode();
                 D_L17_0015F6E8 = 2;
-                PlayerShipUpdate(moby, d);
+                update_fighter_jet_flight(moby, d);
                 moby->state = 4;
             }
             break;
@@ -190,7 +190,7 @@ void FighterJetUpdate(Moby1379 *moby) {
                 d->i108 = -1;
                 d->i108 = Moby_PlaySound(0, 4, (int)moby);
             }
-            PlayerShipUpdate(moby, d);
+            update_fighter_jet_flight(moby, d);
             if (d->iE8 <= 0) {
                 d->tF8 = *(int *)&D_L17_001621F8;
                 moby->state = 8;
@@ -245,7 +245,7 @@ void FighterJetUpdate(Moby1379 *moby) {
             force_help_message(6, 0);
             D_L17_0015F6E8 = 2;
             if (FastDecTimer(&d->t62) != 0) {
-                Moby_ClearGadgetControl();
+                clear_jet_camera_mode_latch();
                 {
                     Glob1379 *g = (Glob1379 *)(D_0013E633 + 0xE1D);
                     g->p2080->i98 = 0;
@@ -276,7 +276,7 @@ void FighterJetUpdate(Moby1379 *moby) {
         case 8:
             force_help_message(6, 0);
             D_L17_0015F6E8 = 2;
-            PlayerShipUpdate(moby, d);
+            update_fighter_jet_flight(moby, d);
             if (func_001F9908(&d->tF8) != 0) {
                 ApproachValue(&d->f130, 1.0f, D_0015EE6C * 4.0f);
                 D_L17_0015F4FC = d->f130;
@@ -309,7 +309,7 @@ void FighterJetUpdate(Moby1379 *moby) {
                     if (d->i11C > 0) {
                         jet_group_state(d->i11C, 0, 0, 0);
                     }
-                    Moby_SetFlagsByClass(0x325, 1, 1, -1);
+                    update_moby_class_flags_and_link(0x325, 1, 1, -1);
                     e = D_L17_0016016C + d->iFC * 128;
                     Hero_ResetToPosition(e + 0x30, e + 0x70, 0, 1);
                 }
@@ -359,7 +359,7 @@ void FighterJetUpdate(Moby1379 *moby) {
             qcopy(gHeroPos + 0x10, d->v30);
         }
         if (s2 >= 3 && s2 <= 4) {
-            SpawnParticleTrails(moby, d);
+            emit_type_74_particles_from_moby_joints(moby, d);
         }
     }
 }

@@ -36,7 +36,7 @@ extern char *D_L18_001B2DDC_c __asm__("D_L18_001B2DDC");
 typedef struct { float v[4]; } __attribute__((aligned(16))) QVa840;
 
 /* Moby update for a projectile created by func_L18_002A87D0. */
-void Moby41Update(char *moby) {
+void update_projectile_motion_collision_and_trail(char *moby) {
     float a[4];
     char c[0x30];
     float b[4];
@@ -98,7 +98,7 @@ void Moby41Update(char *moby) {
 extern int func_001F9850(int);
 
 /* Spawns a projectile moby (class 0x29) at pos travelling along vec. */
-char *Moby41Spawn(char *owner, float *pos, float *vec, int arg3) {
+char *create_class_29_moby(char *owner, float *pos, float *vec, int arg3) {
     char *moby = CreateMoby(0x29);
     if (moby != 0) {
         char *data;
@@ -146,7 +146,7 @@ typedef struct {
 } L18D;
 
 /* Moby update for a homing projectile created by func_L18_002D6738. */
-void Moby564Update(char *moby) {
+void update_rocket_moby(char *moby) {
     L18D *d = *(L18D **)(moby + 0x78);
     float v0[4];
     float v10[4];
@@ -180,7 +180,7 @@ void Moby564Update(char *moby) {
         func_001F9EC0(v0, v0, a70);
         func_001F9EC0(v0, v0, a40);
         func_001F9C08(v10, d, v0, s);
-        Moby564_SpawnTrail(moby, v10);
+        spawn_rocket_trail_effects(moby, v10);
         FastVecAdd(moby + 0x10, moby + 0x10, v10);
         *(float *)(moby + 0x48) = func_L00_001FF860(v10[0], v10[1]);
         f = func_L00_001FF860(func_001F9CE8(v10), v10[2]);
@@ -206,7 +206,7 @@ void Moby564Update(char *moby) {
         } else if (d->flags & 2) {
             f = (float)(d->end - d->c);
             if (f <= func_001F9878(*(float *)&D_L18_001619F4)) {
-                AddDrawCallback(func_L18_002D6B58, moby);
+                AddDrawCallback(draw_rocket_target_pulse_quad, moby);
             }
         }
     }
@@ -217,7 +217,7 @@ extern void func_L00_00251328(void *, int, int, int);
 extern void func_0022ED80(int, int, int);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l18/gameplay/entities/002a7220.c, FUN_L18_002d5348. */
-char *Moby564Spawn(float *pos, float *dir, float *target, float a, float b, int frames, int kind) {
+char *create_rocket_moby(float *pos, float *dir, float *target, float a, float b, int frames, int kind) {
     char *moby = func_0020D348_D6738(0x234);
     if (moby != 0) {
         char *data;
@@ -246,7 +246,7 @@ char *Moby564Spawn(float *pos, float *dir, float *target, float a, float b, int 
 extern unsigned char *D_L18_001B2DDC;
 
 /* Spawns the trail effect for a projectile. */
-void Moby564_SpawnTrail(void *mobyp, void *vec) {
+void spawn_rocket_trail_effects(void *mobyp, void *vec) {
     char *moby = mobyp;
     float a0[4];
     float v10[4];
@@ -306,7 +306,7 @@ extern float D_L18_001D3900[];
 extern float D_L18_001D3940[];
 
 /* Builds a 4-vertex textured quad packet from a moby's angle and draws it. */
-void func_L18_002D6B58(char *moby) {
+void draw_rocket_target_pulse_quad(char *moby) {
     char *data = *(char **)(moby + 0x78);
     float v[16];
     int col[4];
@@ -372,10 +372,10 @@ extern short D_L18_00161A18;
 extern int D_001414D0 NOT_SDA;
 
 /* Moby update for a launchable object (class 0x238) fired by func_L18_002D70E8. */
-void Moby568Update(unsigned char *moby) {
+void update_class_238_moby(unsigned char *moby) {
     char *data = *(char **)(moby + 0x78);
     float v[4];
-    Moby568_CheckImpact(moby);
+    update_class_238_detonation(moby);
     switch (moby[0x20]) {
     case 0:
         *(int *)(moby + 0x94) = 0;
@@ -478,7 +478,7 @@ extern void func_001F9BD8(void *, void *, void *);
 extern void func_L00_001FF4B0(void *, void *, float);
 extern void func_0022ED80(int, int, int);
 /* Launches a dormant class 0x238 moby from list idx toward p7; returns it or 0. */
-char *Moby568Launch(float f, int a0, int idx, float *p6, float *p7, int a8) {
+char *launch_class_238_moby_from_list(float f, int a0, int idx, float *p6, float *p7, int a8) {
     float v[4];
     float r;
     float g;
@@ -591,7 +591,7 @@ extern int func_L00_002DCDA8_D74F8(void *) __asm__("func_L00_002DCDA8");
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l18/gameplay/entities/002a7220.c, FUN_L18_002d6108. */
 extern int func_L00_002DCDA8_D74F8_pos(void *, void *, void *) __asm__("func_L00_002DCDA8");
-int Moby_StepStunState(struct Moby *m, void *pos, void *target) {
+int update_moby_state_pause(struct Moby *m, void *pos, void *target) {
     char *d = (char *)m->pvars;
     int r = func_L00_002DCDA8_D74F8_pos(m, pos, target);
     if (r != 0) {
@@ -643,7 +643,7 @@ int Moby_HoldStateWhileActive(Level18VendorMoby *moby, void *arg, void *t, float
 extern int func_001F9850(int);
 
 /* Puts a moby into the dormant state. */
-void Moby_GoDormant(unsigned char *arg) {
+void hide_moby_and_disable_collision(unsigned char *arg) {
     unsigned short flags;
     arg[0x20] = 5;
     if (arg[0x53] != 0) {
@@ -686,7 +686,7 @@ extern s32 D_L18_0015F7F0 MACRO_ADDR;
 extern char * D_L18_0016016C MACRO_ADDR;
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l18/gameplay/entities/002a7220.c, FUN_L18_002d62e8. */
-void PathJunctionUpdate(struct Moby *moby) {
+void update_path_junction_selection(struct Moby *moby) {
     PathJunctionVars *vars = (PathJunctionVars *)moby->pvars;
     s32 n;
     s32 i;
@@ -723,7 +723,7 @@ void PathJunctionUpdate(struct Moby *moby) {
             }
         } while (n < 4);
         for (n = 0; n < 2; n++) {
-            Moby806Spawn(D_L18_0016016C + vars->node[n] * 0x80 + 0x30);
+            create_class_326_moby(D_L18_0016016C + vars->node[n] * 0x80 + 0x30);
         }
         break;
     case 1:
@@ -936,7 +936,7 @@ void *Moby583_FindWidestBearing(float *a, float *b, int idx) {
 /* Of the mobys of class 0x247 in list idx, the one nearest to pos (within
    255 units), or 0. The second spelling of the table base keeps the
    address out of the loop's $gp-relative reload in the bc1f delay slot. */
-char *Moby583_FindNearest(void *pos, int idx) {
+char *find_nearest_class_247_moby_in_list(void *pos, int idx) {
     short *p = (short *)D_L18_001AC540[idx];
     char *best = 0;
     float bestd = 255.0f;
@@ -1098,7 +1098,7 @@ extern int func_L00_0028EB98(void *, int);
 extern int func_0022EEB8(int, int, void *);
 
 /* Activates a moby and starts an effect on it if none is playing. */
-void Moby_ActivateWithSound(unsigned char *arg, int value) {
+void request_thruster_pack_lock_red_wait(unsigned char *arg, int value) {
     char *data = *(char **)(arg + 0x78);
     if (arg[0x20] != 2) {
         arg[0x20] = 2;
@@ -1111,7 +1111,7 @@ void Moby_ActivateWithSound(unsigned char *arg, int value) {
 extern void func_L00_0028EBF0(int);
 
 /* Deactivates a moby in state 2 and stops its sound/effect slot. */
-void Moby_DeactivateStopSound(unsigned char *arg) {
+void end_thruster_pack_lock_red_wait(unsigned char *arg) {
     int *data = *(int **)(arg + 0x78);
     if (arg[0x20] == 2) {
         int idx;
@@ -1159,7 +1159,7 @@ extern int func_001F6FD8(int a, int b, int c, int d, int e);
 #define W(x) (*(int *)&(x))
 
 /* Draws the level timer as "H:MM:SS.t" text with a pulsing colour. */
-void BossTimer_Draw(char *moby) {
+void draw_pulsing_timer_hud(char *moby) {
     char buf[8];
     char *data = *(char **)(moby + 0x78);
     float v;
@@ -1353,7 +1353,7 @@ extern short D_L18_00161ADC;
 extern short D_L18_00161AD8;
 
 /* turns the moby's heading toward a target, clamped per state, and updates its hover offset */
-void HoverTurnUpdate(char *moby) {
+void update_floating_platform_tilt_and_bob(char *moby) {
     char *data = *(char **)(moby + 0x78);
     float v = FastAddRots(*(float *)(moby + 0x44), *(float *)(data + 0x6C));
     *(float *)(moby + 0x44) = v;
@@ -1385,7 +1385,7 @@ typedef struct {
 } Level18State;
 
 /* Return one for the active state; advance state two to five. */
-int Moby587_PollState(Level18State *obj) {
+int request_floating_platform_sink(Level18State *obj) {
     if (obj->state == 1) {
         return 1;
     }
@@ -1395,7 +1395,7 @@ int Moby587_PollState(Level18State *obj) {
     return 0;
 }
 /* Sets a moby's state to 3 and stores two words in its data block if its state is 1; returns 1 on success, 0 otherwise. */
-int Moby_TryStartState(unsigned char *moby, int a1, int a2) {
+int request_floating_platform_tilt(unsigned char *moby, int a1, int a2) {
     char *data = *(char **)(moby + 0x78);
     if (moby[0x20] == 1) {
         moby[0x20] = 3;
@@ -1429,7 +1429,7 @@ extern short D_L18_00161B38;
 extern short D_L18_00161B44;
 
 /* Emits a burst of sparks near the moby. */
-void SpawnSparkBurstNearMoby(char *moby) {
+void spawn_floating_platform_sparks(char *moby) {
     float v[4];
     float m[4];
     float a[4];
@@ -1493,7 +1493,7 @@ extern short D_L18_00161CD0;
 extern short D_L18_00161CD4;
 
 /* Moby update for a falling fireball (class 0x270) created by func_L18_002DCD28. */
-void FallingFireballUpdate(char *moby) {
+void update_ballistic_ring_projectile(char *moby) {
     float v[4];
     float a[4];
     float c[4];
@@ -1566,8 +1566,8 @@ void FallingFireballUpdate(char *moby) {
         break;
     case 2:
         d[9] = d[9] + d[8];
-        FireballDamageRing(moby);
-        AddDrawCallback(Moby624Draw, moby);
+        process_expanding_ring_collisions(moby);
+        AddDrawCallback(draw_expanding_projectile_ring, moby);
         if (d[9] > d[10]) {
             ((unsigned char *)moby)[0x20] = 3;
         }
@@ -1608,7 +1608,7 @@ typedef struct {
 } Obj;
 
 /* Allocate an object, init its fields and child record. */
-void Moby624Spawn(char *pos, float *vec, int arg, float fa, float fb) {
+void spawn_class_270_moby(char *pos, float *vec, int arg, float fa, float fb) {
     Obj *o = (Obj *)CreateMoby(0x270);
     if (o != 0) {
         Child *c;
@@ -1678,7 +1678,7 @@ extern void func_L00_001FD1D8_CE10(void *, void *, int) __asm__("func_L00_001FD1
 extern void func_001FA4F0_CE10(void *, void *, void *) __asm__("func_001FA4F0");
 
 /* Adapted from Lombyte (MIT) for PAL: src/overlays/l18/gameplay/entities/002a7220.c, FUN_L18_002dba20. */
-void Moby624Draw(void *moby_v) {
+void draw_expanding_projectile_ring(void *moby_v) {
     M_CE10 *moby = moby_v;
     Q_CE10 q[4];
     V_CE10 m[4];
@@ -1748,7 +1748,7 @@ extern void func_001F9BD8(void *, void *, void *);
 extern void func_L18_002DD4B8(char *moby, void *a1, void *a2);
 
 /* Damage ring for the class 0x270 moby. */
-void FireballDamageRing(char *moby) {
+void process_expanding_ring_collisions(char *moby) {
     char hit[0x30];
     float v[4];
     float a[4];
@@ -1831,7 +1831,7 @@ extern void func_L18_002DD8A8(void *);
 extern short D_L18_00161D30;
 
 /* UpdateMoby_628 */
-void Moby628Update(char *moby) {
+void update_class_274_ring_effect(char *moby) {
     char buf[0x30];
     float v[4];
     float *d = *(float **)(moby + 0x78);
@@ -1858,7 +1858,7 @@ void Moby628Update(char *moby) {
     if (flag == 0) {
         MobySphereHitDirectional(*(int *)(d + 3), d[0], pos, 0x10000, 1.0f, 1.0f, 0, 1, 0);
     }
-    AddDrawCallback(Moby628Draw, moby);
+    AddDrawCallback(draw_class_274_ring_effect, moby);
 }
 /* Spawns a class 0x274 moby at vector with the given value and owner. */
 char *Moby628Spawn(void *owner, void *vector, float value) {
@@ -1882,7 +1882,7 @@ typedef struct {
 } MobyData;
 
 // Resets a moby's position and advances its counter, wrapping at a limit.
-void Moby628_Refresh(char *moby, void *pos, float f)
+void refresh_ring_effect(char *moby, void *pos, float f)
 {
     int *d = *(int **)(moby + 0x78);
     int lim;
@@ -1931,7 +1931,7 @@ extern void func_001F9BC0_D8A8(void *) __asm__("func_001F9BC0");
 extern void func_001FA1F8_D8A8(void *, void *) __asm__("func_001FA1F8");
 
 /* Adapted from Lombyte (MIT) for PAL: src/overlays/l18/gameplay/entities/002a7220.c, FUN_L18_002dc4b8. */
-void Moby628Draw(void *moby_v) {
+void draw_class_274_ring_effect(void *moby_v) {
     char *moby = moby_v;
     Q_D8A8 quad[4];
     V_D8A8 mat[4];
@@ -2007,7 +2007,7 @@ extern int D_L18_0015F504 MACRO_ADDR;
 extern int D_L18_00179E90[];
 
 /* UpdateMoby state machine for the vendor moby (state at +0x20). */
-void VendorMobyUpdate(char *moby) {
+void update_position_and_rotation_transition(char *moby) {
     char *data = *(char **)(moby + 0x78);
     float v[12];
     switch (((unsigned char *)moby)[0x20]) {
@@ -2160,7 +2160,7 @@ int FinalBoss_GetMoveStatus(u8 *p) {
 extern void func_001F9BC0(void *);
 
 /* Spawns a dormant class 0x326 moby at vector for the path junction nodes. */
-char *Moby806Spawn(void *vector) {
+char *create_class_326_moby(void *vector) {
     char *moby = CreateMoby(0x326);
     if (moby != 0) {
         char *data = *(char **)(moby + 0x78);
@@ -2190,7 +2190,7 @@ void func_L18_002EB240(char *arg);
 typedef struct { char pad[0x40]; float r0; float r1; } MobyR;
 
 /* Update function of a debris moby: spawn, burst into sparks and particles, fall. */
-void HitTrigger_Update(char *moby) {
+void update_moby_hit_response_burst_and_ballistic_flight(char *moby) {
     char *data = *(char **)(moby + 0x78);
     union {
         struct { int a[6]; int pad0[2]; int b[6]; int pad1[2]; float v[4]; } s1;
@@ -2213,7 +2213,7 @@ void HitTrigger_Update(char *moby) {
         break;
     case 1:
         if (func_L00_0025B478_2D7310(moby, 0x80000, 0) != 0) {
-            SetGroupStateTwo((char *)(int)((unsigned char *)moby)[0x21]);
+            set_moby_group_state_two((char *)(int)((unsigned char *)moby)[0x21]);
             Sound_PlayClassSound(0, 0, (int)moby, 0x375);
         }
         ((unsigned char *)moby)[0xA4] = 0xFF;
@@ -2299,7 +2299,7 @@ void HitTrigger_Update(char *moby) {
 }
 extern void func_L01_0026F090(char *arg, int val);
 /* Sets the state of every moby in list index arg to 2. */
-void SetGroupStateTwo(char *arg) {
+void set_moby_group_state_two(char *arg) {
     MobyGroup_SetState(arg, 0x2);
 }
 extern void func_L15_002D9B00(char *);
@@ -2314,7 +2314,7 @@ extern void func_L18_002EB5E8(char *);
 extern void func_L00_0025A8E8_2EB260(int, void *, float, int, float, float, int, int, int) __asm__("func_L00_0025A8E8");
 
 /* Moby update for a homing spark (class 0x3D7). */
-void HomingSpark_Update(char *moby) {
+void update_moby_target_travel_and_electric_effects(char *moby) {
     float *d = *(float **)(moby + 0x78);
     float t = FastAddRots(d[0xB], *(float *)&D_L18_00161F60 * 0.017453292f * D_0015EE6C);
     float u = *(float *)&D_L18_00161F64 * 0.017453292f * D_0015EE6C;
@@ -2339,9 +2339,9 @@ void HomingSpark_Update(char *moby) {
         HomingSpark_EmitTrail(moby);
         rand_vec(q, *(float *)&D_L18_00161F68 * d[9], *(float *)&D_L18_00161F68 * d[9]);
         FastVecAdd(q, q, p);
-        HomingSpark_InitTrail(moby);
+        initialize_electric_bolt_effect_if_requested(moby);
         ArcEmitterUpdate(moby);
-        AddDrawCallback((void (*)(void))UpdateBeamCurves, moby);
+        AddDrawCallback((void (*)(void))draw_electric_water_bolt_effect, moby);
         if (len < lim) {
             spawn_explosion_burst(moby);
             DeleteMoby(moby);
@@ -2382,7 +2382,7 @@ char *HomingSpark_Spawn(void *owner, void *vector, int value) {
 }
 
 /* Starts or retargets a homing spark. */
-void HomingSparkStart(unsigned char *arg, void *src, void *position, int active, float speed) {
+void refresh_moby_position_and_activate(unsigned char *arg, void *src, void *position, int active, float speed) {
     char *data = *(char **)(arg + 0x78);
     qcopy(arg + 0x10, src);
     *(int *)(data + 0x28) = scale_ticks(5);
@@ -2919,7 +2919,7 @@ extern short D_L18_001620E4;
 extern short D_L18_0016213C;
 
 /* Draws two additive glow quads facing the camera at pos[1]. */
-void DrawGlowQuads(V_2bb0b0 *pos) {
+void draw_moby_billboard_quad_pair(V_2bb0b0 *pos) {
     Q_2bb0b0 quad;
     V_2bb0b0 mat[4];
     unsigned int c;
@@ -3004,7 +3004,7 @@ void drek_fight_missile_update(char *moby) {
         qcopy(missile_vars + 0x120, &m->pos);
         *(float *)(missile_vars + 0x128) += 5.0f;
         *(float *)(missile_vars + 0x128) = ProbeGroundHeight((void *)(missile_vars + 0x120), 0, 0.5f);
-        Moby1355_PickWanderPoint(moby, missile_vars + 0x110);
+        select_drek_fight_missile_wander_target(moby, missile_vars + 0x110);
         m->state = 1;
         m->flags |= 1;
         m->visible = 0;
@@ -3013,10 +3013,10 @@ void drek_fight_missile_update(char *moby) {
     }
     case 2: {
         char *p = missile_vars + 0x110;
-        if (Moby1355_SteerStep(moby, (float *)p)) {
-            Moby1355_PickWanderPoint(moby, p);
+        if (update_drek_fight_missile_wander_movement(moby, (float *)p)) {
+            select_drek_fight_missile_wander_target(moby, p);
         }
-        Moby1355_RecordTrail(moby);
+        update_drek_fight_missile_trail_and_queue_effects(moby);
         if (random_integer_below(*(int *)&D_L18_001622C4)) {
             return;
         }
@@ -3039,7 +3039,7 @@ void drek_fight_missile_update(char *moby) {
         m->rot.y = -func_L00_001FF860(func_001F9CE8(v), v[2]);
         func_L00_001FF4B0(w, (void *)&m->rot_row0, 1.0f);
         FastVecAdd(w, w, (void *)&m->pos);
-        Moby1355_RecordTrail(moby);
+        update_drek_fight_missile_trail_and_queue_effects(moby);
         if (w[2] < *(float *)(missile_vars + 0x128)) {
             float t;
             func_0022ED80_2F0F78(1, 0, (int)moby);
@@ -3071,7 +3071,7 @@ void drek_fight_missile_update(char *moby) {
                 qcopy(missile_vars + 0x10 + i * 16, pos);
             }
         } else {
-            Moby1355_RecordTrail(moby);
+            update_drek_fight_missile_trail_and_queue_effects(moby);
         }
         break;
     }
@@ -3079,7 +3079,7 @@ void drek_fight_missile_update(char *moby) {
 }
 /* Hands pos to every class 0x54B moby of the group that waits in state 1 and points it at moby: 0 if one took it, 1 if none.
    Adapted from Lombyte (MIT) for PAL: src/overlays/l18/gameplay/vendor/002efb88.c, FUN_L18_002f0030. */
-int Moby1355_AssignTarget(char *moby, int group, float *pos) {
+int activate_drek_fight_missiles_in_group(char *moby, int group, float *pos) {
     short *p = (short *)D_L18_001AC540[group];
     int idle;
     int i;
@@ -3112,7 +3112,7 @@ extern float func_L00_0025CE58(float *, float *, float, float, float, float);
 extern short D_L18_001622BC;
 
 /* Steering step for a class 0x54B moby; returns 1 when it has reached the target. */
-int Moby1355_SteerStep(char *moby, float *vec) {
+int update_drek_fight_missile_wander_movement(char *moby, float *vec) {
     float buf[4];
     float v[4];
     char *d = *(char **)(moby + 0x78);
@@ -3154,7 +3154,7 @@ extern short D_L18_001622AC;
 extern short D_L18_001622B0;
 
 // Builds a direction vector from a random angle and stores it plus a timer.
-void Moby1355_PickWanderPoint(char *moby, void *out) {
+void select_drek_fight_missile_wander_target(char *moby, void *out) {
     char *data = *(char **)(moby + 0x78);
     float v[3];
     float r = random_float_between(*(float *)&D_L18_001622B4, *(float *)&D_L18_001622B8);
@@ -3190,7 +3190,7 @@ extern void func_001153FC(void *, int, int);
 extern float D_L18_001DA5C0[4][2];
 extern char *D_L18_00160058 MACRO_ADDR;
 /* Draw callback that renders the trails of the class 0x54B mobys in the group. */
-void Moby1355_DrawTrails(struct Moby *moby) {
+void draw_drek_fight_missile_group_trails(struct Moby *moby) {
     struct GeometryQuad_1780 quads[16];
     float extra[8];
     short *p;
@@ -3261,7 +3261,7 @@ extern short D_L18_001622F4;
 extern short D_L18_001622F8;
 extern short D_L18_001622FC;
 
-void func_L18_002F1AB0(char *moby) {
+void render_drek_fight_missile_group_effects(char *moby) {
     short *p;
     float a, b;
     if (*(int *)&D_L18_001622C8 != 0) {
@@ -3300,7 +3300,7 @@ extern void func_L18_002F1780(struct Moby *);
 extern void func_L18_002F1AB0();
 
 /* Advance a ring of recorded positions, store the moby's position, and register draw callbacks once per frame. */
-void Moby1355_RecordTrail(char *moby) {
+void update_drek_fight_missile_trail_and_queue_effects(char *moby) {
     char *data = *(char **)(moby + 0x78);
     int off;
     int cur;
@@ -3318,7 +3318,7 @@ void Moby1355_RecordTrail(char *moby) {
     *(float *)(data + off + 0x1C) = 1.0f;
     if (cur != old) {
         *(int *)&D_L18_001622C0 = cur;
-        AddDrawCallback(Moby1355_DrawTrails, moby);
-        AddDrawCallback(func_L18_002F1AB0, moby);
+        AddDrawCallback(draw_drek_fight_missile_group_trails, moby);
+        AddDrawCallback(render_drek_fight_missile_group_effects, moby);
     }
 }

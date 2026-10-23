@@ -472,18 +472,18 @@ void update_birdbot_projectile(DropMoby *m) {
     probe.id = m->hA6;
     if (func_001F9908(v->sound) != 0) {
         tmp = m->pos;
-        SpawnExplosionEffect(m, &tmp, 0, 0.5f, zero);
+        spawn_explosion_effects(m, &tmp, 0, 0.5f, zero);
         DeleteMoby(m);
     } else if (func_L00_001EFFF0(&prev, pos, 0, v->coll, &probe) != 0) {
         qcopy(pos, D_L01_00174360);
         tmp = m->pos;
-        SpawnExplosionEffect(m, &tmp, 0, 0.5f, zero);
+        spawn_explosion_effects(m, &tmp, 0, 0.5f, zero);
         DeleteMoby(m);
     } else {
         half = 0.5f;
         if (func_L00_001F2BE8_2FB898(half, pos, 0x10, v->coll, &probe) != 0) {
             tmp = m->pos;
-            SpawnExplosionEffect(m, &tmp, 0, half, zero);
+            spawn_explosion_effects(m, &tmp, 0, half, zero);
             DeleteMoby(m);
         }
     }
@@ -1022,7 +1022,7 @@ extern f32 D_L01_0016128C MACRO_ADDR;
 extern f32 D_L01_00161290 MACRO_ADDR;
 extern f32 D_L01_00161294 MACRO_ADDR;
 
-void WaterSurfaceFxUpdate(PMoby *moby) {
+void update_pool_tiles_and_effects(PMoby *moby) {
     s32 *volumes;
     s32 found;
     s32 i;
@@ -1238,16 +1238,16 @@ void green_mushroom_update(char *m) {
                                D_L01_0015F660, D_L01_0015F660, 0.0f, D_L01_0015F660);
             i++;
         } while (i < 4);
-        SpawnMobyCopyingPlacement(mushroom_moby, 0x718);
+        spawn_moby_from_placement(mushroom_moby, 0x718);
         DeleteMoby(mushroom_moby);
         break;
     }
 }
 extern char D_L01_001FBF40[];
 /* The moby comes in $a0 and goes on to the delete, untouched. */
-void DrawScrollingLayers4Callback(void *moby) {
+void draw_four_scroll_layers(void *moby) {
     DefaultVtbl_DeleteMoby(moby);
-    DrawScrollingLayers(4, D_L01_001FBF40);
+    update_and_draw_scrolling_overlay_layers(4, D_L01_001FBF40);
 }
 typedef u32 u128_FFF30 __attribute__((mode(TI), aligned(16)));
 typedef struct {
@@ -1266,7 +1266,7 @@ extern int func_001F49B0_FFF30(void (*)(void), void *) __asm__("func_001F49B0");
 
 /* On first use, lowers and ripples the layers' vertices; every frame, pulses their glow and queues FUN_L01_002feb28.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l01/gameplay/entities/002f9810.c, FUN_L01_002feb58. */
-void PulsingMeshUpdate(void *arg) {
+void update_scroll_layers_and_queue_draw(void *arg) {
     s32 i;
     s32 g;
     s32 j;
@@ -1312,7 +1312,7 @@ void PulsingMeshUpdate(void *arg) {
     for (g = 3; g >= 0; g--) {
         D_L01_001FBF40_FFF30[g].glow = s;
     }
-    func_001F49B0_FFF30(DrawScrollingLayers4Callback, arg);
+    func_001F49B0_FFF30(draw_four_scroll_layers, arg);
 }
 typedef struct { float f[4]; } V __attribute__((aligned(16)));
 typedef struct { V home; float t; float radius; } HoverVars;
@@ -1472,7 +1472,7 @@ typedef union {
 } V300F00 __attribute__((aligned(16)));
 
 /* Smoke emitter: keeps its sound alive and spawns two puffs of particles per frame. Adapted from Lombyte (MIT) for PAL: overlays/l01/unclassified_002f9810.c, FUN_L01_002ffb28. */
-void SmokeEmitterUpdate(char *self) {
+void update_smoke_emitter(char *self) {
     int *v;
     V300F00 pos;
     V300F00 vel;
@@ -1533,7 +1533,7 @@ extern void func_L00_002703E8(void *, void *, int, int);
 
 /* Falling chunk: drops and spins; on its first landing it splashes (sound, splash and 16 drops) and
  * bounces up smaller, then fades out when its timer ends. Deleted if it lands out of bounds. */
-void FallingChunkUpdate(char *m) {
+void update_falling_splash_moby(char *m) {
     float np[4];
     float at[4];
     float vel[4];
@@ -1649,7 +1649,7 @@ extern int func_L00_0025A208(int *, int, int, int);
 extern int func_001FA898_r(float) __asm__("func_001FA898");
 
 /* creates a moby from the owner's template and initialises its data */
-char *SpawnTemplateMoby(char *owner) {
+char *initialize_beehive_spawn_moby(char *owner) {
     char *moby = 0;
     char *data;
     GroupMobyIter_Start((int *)&moby, **(int **)(owner + 0x78), 0, 0);
@@ -1690,12 +1690,12 @@ extern float func_001FA888(int);
 extern float func_001F9FA8(float);
 
 /* draw callback: pulses three colour entries from a sine of the frame counter */
-void DrawPulsingScrollingLayers(void *moby) {
+void draw_level01_scroll_layers(void *moby) {
     float *p;
     float v;
     int i;
     DefaultVtbl_DeleteMoby(moby);
-    DrawScrollingLayers(3, D_L01_00203040);
+    update_and_draw_scrolling_overlay_layers(3, D_L01_00203040);
     v = FastSin((IntToFloat(D_L01_0015F6B0 & 0x3F) - 32.0f) * 0.09817477f) * 0.5f + 0.5f;
     p = (float *)(D_L01_00203040 + 0x11C);
     for (i = 2; i >= 0; i--) {
@@ -1706,11 +1706,11 @@ void DrawPulsingScrollingLayers(void *moby) {
 extern void func_L01_0030AFD0(void *);
 extern void func_001F49B0(void *, void *);
 
-void Moby1225Update(unsigned char *moby) {
+void set_moby_flags_and_queue_draw_callback(unsigned char *moby) {
     int value = 0xFF;
     *(short *)(moby + 0x32) = value;
     moby[0x30] = value;
-    AddDrawCallback((void *)DrawPulsingScrollingLayers, moby);
+    AddDrawCallback((void *)draw_level01_scroll_layers, moby);
 }
 typedef struct { u16 count; u16 unk2; u32 level_mask; } UStat_30C090;
 typedef struct { u16 id; u16 pad; s32 v; } HRec_30C090;
@@ -1729,7 +1729,7 @@ extern float func_001F9D10(void *, void *);
 extern int func_L00_00203F20(int, int);
 extern int func_L00_002D95D8(void *);
 extern int func_L01_00276680(float, void *);
-void HelpHintDirectorUpdate(Moby *moby) {
+void update_level01_tutorial_hints(Moby *moby) {
     s32 *data;
     Moby *m;
     Moby *m2;
@@ -1831,7 +1831,7 @@ void HelpHintDirectorUpdate(Moby *moby) {
         for (m2 = D_L01_00160064; m2 != 0; m2 = m2->next) {
             if (m2->oclass == 0x326 && FastVecDist(&m2->pos, &D_0013F450.motion.pos) < 10.0f && help_state.state == 0 &&
                 help_state.cur == -1 && D_00141A68[1].id == 0 && D_00141A68[2].id == 0 &&
-                usage_stats[13].count == 0 && IsMobyState1(m2) == 0) {
+                usage_stats[13].count == 0 && is_moby_in_state_one(m2) == 0) {
                 if (D_0013F450.health.hp < hero_max_health) {
                     if (usage_stats[13].count < 0xFFFF) {
                         usage_stats[13].count++;
@@ -1903,7 +1903,7 @@ extern void func_L00_0025F4A8(void *, void *, void *, float, float, int, int, in
 extern void func_L00_0026DA50(void *, void *, int, int, float, int, int);
 extern FxSpark_D568 *func_L00_0026DEA0(void *, float, float, float, int, void *, float, int);
 
-void Moby1510Update(struct Moby *m) {
+void update_explosive_moby(struct Moby *m) {
     BlobVars *v;
     int hit;
     int i;
@@ -1917,7 +1917,7 @@ void Moby1510Update(struct Moby *m) {
 
     v = (BlobVars *)m->pvars;
     if (random_integer_below(2)) {
-        AddDrawCallback(Moby1510_DrawGlow, m);
+        AddDrawCallback(draw_moby_offset_textured_quad, m);
     }
     FastVecAdd(&m->pos, &m->pos, v);
     if (FastAbsF(v->vel.x) > *(float *)&D_L01_001620F0 * D_0015EE60) {
@@ -2020,7 +2020,7 @@ extern void func_L00_00264BE8(void *, void *, void *, float, float);
 extern void func_00233AB8(void);
 #define fx_cutscene_D568 (*(CutsceneFx_D568 *)&D_L01_0016CD60)
 
-void Moby1546Update(struct Moby *moby) {
+void update_level01_cutscene_effects(struct Moby *moby) {
     FxVec_D568 a;
     FxVec_D568 b;
     FxVec_D568 c;
@@ -2186,7 +2186,7 @@ void tall_shroom_update(char *moby) {
         SpawnBreakFxByDistance(moby);
         SpawnBreakFragment(moby, 0x717, (float *)&((Moby *)moby)->pos, (char *)&((Moby *)moby)->rot, 0, 0,
                            D_L01_0015F660, D_L01_0015F660, 0.0f, D_L01_0015F660);
-        SpawnMobyCopyingPlacement(moby, 0x718);
+        spawn_moby_from_placement(moby, 0x718);
         DeleteMoby(moby);
         break;
     }
@@ -2200,7 +2200,7 @@ extern float D_L01_001621A0 MACRO_ADDR;
 extern float D_L01_001621A4 MACRO_ADDR;
 
 /* Projects each of n point/normal pairs onto a 2D texture coordinate. */
-void ProjectEnvMapUVs(int n, char *pts, char *nrm, int unused, float *out) {
+void generate_level01_environment_map_uvs(int n, char *pts, char *nrm, int unused, float *out) {
     float v0[4];
     float v1[4];
     float v2[4];
@@ -2241,7 +2241,7 @@ extern float D_L01_00208430[];
 extern int D_L01_00208410[];
 
 /* Draw callback: sets up draw state, then draws five shapes from parallel tables. */
-void DrawEnvMappedShapes(void) {
+void draw_level01_environment_mapped_meshes(void) {
     int i;
     VU1_addGSregister(6, GetEffectTex(0x28));
     VU1_addGSregister(0x42, 0x2000000064L);
@@ -2249,7 +2249,7 @@ void DrawEnvMappedShapes(void) {
     VU1_addGSregister(0x14, 0xFF9000000260L);
     font_queue_vu_state();
     for (i = 4; i >= 0; i--) {
-        ProjectEnvMapUVs(D_L01_00203160[4 - i], D_L01_002083F8[4 - i], D_L01_002083C8[4 - i], D_L01_002083E0[4 - i], D_L01_00208430);
+        generate_level01_environment_map_uvs(D_L01_00203160[4 - i], D_L01_002083F8[4 - i], D_L01_002083C8[4 - i], D_L01_002083E0[4 - i], D_L01_00208430);
         func_L00_001FDE48(D_L01_00203160[4 - i], (int)D_L01_002083C8[4 - i], D_L01_00208410[4 - i], D_L01_00208430, 1);
     }
 }
@@ -2263,7 +2263,7 @@ typedef struct {
 extern f32 D_0015EE7C MACRO_ADDR;
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l01/gameplay/vendor/00309bf8.c, FUN_L01_0030f208. */
-void Moby1848Update(ScrollMoby *m) {
+void update_level01_environment_map_uv_scroll(ScrollMoby *m) {
     f32 d;
 
     switch (m->state) {
@@ -2288,7 +2288,7 @@ void Moby1848Update(ScrollMoby *m) {
         if (D_L01_001621A0_105E0[1] < -1.0f) {
             D_L01_001621A0_105E0[1] += 1.0f;
         }
-        AddDrawCallback(DrawEnvMappedShapes, m);
+        AddDrawCallback(draw_level01_environment_mapped_meshes, m);
         break;
     }
 }

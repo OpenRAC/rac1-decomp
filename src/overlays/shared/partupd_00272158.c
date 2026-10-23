@@ -57,7 +57,7 @@ extern unsigned char D_0013E633[] NOT_SDA;
 
 /* Per-frame update of a type 0x2C particle: fade colour, move and rotate its velocity.
    Adapted from Lombyte (MIT) for PAL: src/overlays/shared/rendering_002712b8.c, FUN_L00_00271450. */
-void PartType44Update(unsigned char *p) {
+void update_moving_rotating_resizing_alpha_fade_particle(unsigned char *p) {
     float v[4];
     Q t[1];
     Q m[1];
@@ -141,7 +141,7 @@ extern void func_L00_002688A8(void *);
 extern float func_001F9B88(float);
 
 /* updates a type-45 particle: moves it, kills it when out of range or faded */
-void PartType45Update(char *m) {
+void update_moving_resizing_height_snapped_alpha_fade_particle(char *m) {
     char *v = m + 0x20;
     int t;
     float *q = (float *)m;
@@ -196,7 +196,7 @@ extern int func_001FA898(float);
 extern void func_L00_002688A8(void *);
 
 /* Particle update: move, spin, ease toward a target value, fade, die. */
-void PartType46Update(char *m) {
+void update_expanding_rotating_alpha_fade_particle(char *m) {
     char *v = m + 0x20;
     FastVecAdd(m + 0x10, m + 0x10, v);
     *(float *)(m + 0xC) += 5880.0f;
@@ -218,7 +218,7 @@ void PartType46Update(char *m) {
 extern char *D_L00_001B24BC;
 extern int func_001FA898(float);
 
-unsigned char *PartType47Spawn(void *a, void *b, float f) {
+unsigned char *spawn_random_alpha_rotated_particle(void *a, void *b, float f) {
     unsigned char *r = create_part(0x2F);
     if (r != 0) {
         qcopy(r + 0x10, a);
@@ -235,7 +235,7 @@ unsigned char *PartType47Spawn(void *a, void *b, float f) {
 }
 extern void func_001F9BD8(void *, void *, void *);
 extern void func_L00_002688A8(void *);
-void PartType47Update(char *m) {
+void update_expanding_damped_fading_particle(char *m) {
     char *v = m + 0x20;
     int t;
     FastVecScale(v, v, 0.975f);
@@ -252,7 +252,7 @@ extern void func_001F9BD8(void *, void *, void *);
 extern int func_001FA8A8(int, int, float);
 extern int func_001F9938(void *);
 extern void func_L00_002688A8(void *);
-void PartType48Update(char *m) {
+void update_color_tween_particle(char *m) {
     char *v = m + 0x20;
     m[8] += v[0x1C];
     FastVecAdd(m + 0x10, m + 0x10, v);
@@ -296,7 +296,7 @@ s32 func_001F9938_72BC0g(void *) __asm__("func_001F9938");
 void func_L00_002688A8_72BC0o(void *) __asm__("func_L00_002688A8");
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/rendering_002712b8.c, FUN_L00_00271d20. */
-void PartType49Update(O00271d20 *o) {
+void update_timed_line_collision_particle(O00271d20 *o) {
     Vec4 t;
     Vec4 *acc = &o->acc;
     Vec4 *pos = &o->pos;
@@ -319,7 +319,7 @@ extern short D_L00_001602D0;
 extern float D_0015EE6C MACRO_ADDR;
 
 // particle update: advance position, tick colour, spawn-time drift, kill when done
-void PartType50Update(unsigned char *m) {
+void update_moving_height_culled_particle(unsigned char *m) {
     unsigned char *v = m + 0x20;
     if (FastDecTimer(m + 0xA)) {
         *(float *)(v + 8) -= *(float *)(v + 0x18);
@@ -336,7 +336,7 @@ void PartType50Update(unsigned char *m) {
 extern float D_0015EE70 MACRO_ADDR;
 
 // Updates a particle: drifts it with gravity, fades it, kills it when faded or timed out.
-void PartType51Update(char *m) {
+void update_damped_fading_particle(char *m) {
     char *v = m + 0x20;
     char tmp[16];
     int t;
@@ -352,7 +352,7 @@ void PartType51Update(char *m) {
         m[8] += 1;
     }
 }
-void PartType52Update(char *m) {
+void update_color_size_tween_particle(char *m) {
     char *v;
     float f;
     if (FastDecTimer(m + 0xA)) {
@@ -410,7 +410,7 @@ static __inline__ void vcopy_273090(float *d, float *s) {
 }
 
 // Particle update: ramps the size and alpha over its life, moves by its velocity, applies gravity and kills it when out of range or its timer expires.
-void func_L00_00273090(char *m) {
+void update_moving_size_alpha_tween_particle(char *m) {
     char *v = m + 0x20;
     float f4;
     float a[4] __attribute__((aligned(16)));
@@ -451,7 +451,7 @@ extern void func_L00_0025BA50(void *, void *, void *, int, int, int, int, int, f
 extern int *D_L00_00178000[];
 
 /* Part type 54 update: advances a particle, fades its color near the end of life and spawns a light effect at its position. Adapted from Lombyte (MIT) for PAL: overlays/shared/rendering_002712b8.c, FUN_L00_00272438. */
-void PartType54Update(unsigned char *m) {
+void update_timed_sphere_probed_particle(unsigned char *m) {
     V54 *pos = (V54 *)(m + 0x10);
     Q54 *q = (Q54 *)(m + 0x20);
     V54 old;
@@ -498,7 +498,7 @@ int func_001FA898_73478c(float) __asm__("func_001FA898");
 s32 func_001FA898_73478d(f32) __asm__("func_001FA898");
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/rendering_002712b8.c, FUN_L00_002725d8. */
-P_2725d8 *PartType55Spawn(u8 *a0, u8 *a1, s32 a2, s32 a3, f32 a4, f32 a5) {
+P_2725d8 *spawn_moby_point_attached_particle(u8 *a0, u8 *a1, s32 a2, s32 a3, f32 a4, f32 a5) {
     P_2725d8 *p = func_00218928_73478(0x37);
     a3++;
     a3--;
@@ -533,7 +533,7 @@ extern void func_001F9BF0_273578(void *, void *, void *) __asm__("func_001F9BF0"
 extern f32 func_001F9CB8_273578(void *) __asm__("func_001F9CB8");
 extern void func_L00_001FF4B0_273578(void *, void *, f32) __asm__("func_L00_001FF4B0");
 /* Particle update. Adapted from Lombyte (MIT) for PAL: overlays/shared/rendering_002712b8.c, FUN_L00_002726d8. */
-void PartType55Update(P_2726d8 *p) {
+void update_moby_point_attached_particle(P_2726d8 *p) {
     Q_2726d8 *q = &p->q;
     u128_2726d8 t;
     f32 save, sc, r2, f;
@@ -558,7 +558,7 @@ void PartType55Update(P_2726d8 *p) {
     p->f2C = save;
 }
 /* Updates a fading particle: damps velocity, moves, dims colour, kills at zero. */
-void PartType56Update(char *m) {
+void update_expanding_damped_rgb_fading_particle(char *m) {
     char *v = m + 0x20;
     int t;
     FastVecScale(v, v, 0.975f);
@@ -572,7 +572,7 @@ void PartType56Update(char *m) {
     }
 }
 // particle update: drift, fade colour in and out over the timer
-void PartType57Update(char *m) {
+void update_expanding_alpha_pulse_particle(char *m) {
     char *v = m + 0x20;
     int t;
     FastVecAdd(m + 0x10, m + 0x10, v);
@@ -651,7 +651,7 @@ typedef struct { char p0[0x88]; float f88; char p1[0x2080 - 0x8C]; int i2080; } 
 extern unsigned char *D_L00_0016022C MACRO_ADDR;
 
 /* part type 58 update: fade in, hold spawning sparks, then fall and fade out. Adapted from Lombyte (MIT) for PAL: overlays/shared/rendering_002712b8.c, FUN_L00_00272bc0. */
-void PartType58Update(unsigned char *p) {
+void update_color_tween_emitter_particle(unsigned char *p) {
     V_272bc0 t;
     unsigned char *q;
     unsigned char *c;
@@ -757,7 +757,7 @@ unsigned char *PartType59Spawn(float f, void *pos, int a1, unsigned char a2, int
 }
 
 // Particle update: registers the velocity vector once, then kills the particle when its timer expires.
-void PartType59Update(char *m) {
+void update_timed_hero_relative_particle(char *m) {
     char *v = m + 0x20;
     if (*(int *)(v + 0x10) == 1) {
         FastVecAdd(m + 0x10, D_0013E633 + 0xE9D, v);
@@ -801,7 +801,7 @@ unsigned char *PartType60Spawn(float *pos, char *vel, int color, unsigned char l
     return m;
 }
 /* Particle update: move with the camera offset when flagged, kill it when off the map or its timer ends, else fade its colour. */
-void PartType60Update(char *m) {
+void update_moving_hero_relative_alpha_fade_particle(char *m) {
     char *v = m + 0x20;
     int col;
     float a;
@@ -857,7 +857,7 @@ typedef struct {
 } P_p;
 
 /* Updates a fading, pulsing particle: animates its phase, colour and scale, then orients it. Adapted from Lombyte (MIT) for PAL: src/overlays/shared/rendering_002712b8.c, FUN_L00_00273448. */
-void PartType61Update(P_p *p) {
+void update_moby_point_attached_alpha_pulse_particle(P_p *p) {
     E_p *e;
     float lim;
     float a[4] __attribute__((aligned(16)));
@@ -937,7 +937,7 @@ unsigned char *PartType62Spawn(void *a, int b, int c) {
     }
     return r;
 }
-void PartType62Update(char *a) {
+void update_mode_controlled_alpha_fade_particle(char *a) {
     char *s = a + 0x20;
     int w;
     int t;
@@ -1019,7 +1019,7 @@ extern f32 D_0015EE6C MACRO_ADDR;
 extern s32 D_0015EE84 MACRO_ADDR;
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/rendering/002712b8.c, FUN_L00_00273a68. */
-void PartType64Update(struct EmberParticle *p) {
+void update_gravity_floor_burst_particle(struct EmberParticle *p) {
     struct EmberMotion *m = &p->m;
     Vec4 t;
     s32 cr, cg, cb;
@@ -1086,7 +1086,7 @@ extern int func_L00_001EFFF0(void *, void *, int, void *, int);
 extern void func_001F9BC0(void *);
 
 /* Particle type 65 update: fall under gravity, bounce off the world, fade the colour and die when spent. Adapted from Lombyte (MIT) for PAL: overlays/shared/rendering_002712b8.c, FUN_L00_00273ee0. */
-void PartType65Update(unsigned char *o) {
+void update_line_collision_rgb_fading_particle(unsigned char *o) {
     V out;
     float *c;
     unsigned char *b;
@@ -1131,7 +1131,7 @@ void PartType65Update(unsigned char *o) {
 extern unsigned char *D_L00_001B2508;
 
 /* spawns a type-0x42 particle moving in a random direction */
-unsigned char *PartType66Spawn(void *pos, int color, float f, float speed) {
+unsigned char *spawn_random_planar_drift_particle(void *pos, int color, float f, float speed) {
     unsigned char *r = create_part(0x42);
     if (r != 0) {
         float ang, sp;
@@ -1165,7 +1165,7 @@ unsigned char *PartType66Spawn(void *pos, int color, float f, float speed) {
     }
     return r;
 }
-void PartType66Update(char *m) {
+void update_moving_resizing_periodic_alpha_fade_particle(char *m) {
     char *v = m + 0x20;
     int t;
     FastVecAdd(m + 0x10, m + 0x10, v);
@@ -1221,7 +1221,7 @@ extern void func_001F9EC0(void *, void *, void *);
 extern float func_001FA748(float, float);
 
 // Update for an attached particle: follows its owner moby, spawns a child and orients itself.
-void PartType67Update(char *m) {
+void update_mode_controlled_orbiting_trail_particle(char *m) {
     char *s = m + 0x20;
     float vv[28];
     char *q;
@@ -1288,7 +1288,7 @@ extern void func_0020DAF8(void *, int, void *);
 extern void func_L00_001FF4B0(void *, void *, float);
 
 /* part type 68 update: follows its owner, scaling velocity until the owner goes away */
-void PartType68Update(char *m) {
+void update_randomized_moby_point_attached_particle(char *m) {
     float v[16];
     float v2[4];
     unsigned char *p = (unsigned char *)m + 0x30;
@@ -1344,7 +1344,7 @@ unsigned char *PartType69Spawn(void *a, void *b, int c, int d) {
 extern float func_L00_00258C80(float, float);
 
 /* Per-frame update of a particle that follows a moby's joint, kills itself when out of range or expired. */
-void PartType69Update(char *p) {
+void update_mode_controlled_rotating_alpha_fade_particle(char *p) {
     char *v = p + 0x20;
     float z;
     int t;
@@ -1407,7 +1407,7 @@ unsigned char *PartType70Spawn(void *a, int idx, float ang) {
     return r;
 }
 extern void func_L00_002688A8(void *);
-void PartType70Update(char *a) {
+void update_periodic_alpha_fade_particle(char *a) {
     int t = *(unsigned short *)(a + 0xA) - 1;
     *(short *)(a + 0xA) = t;
     if ((short)t == 0) {
@@ -1423,7 +1423,7 @@ extern void func_002158E8(float *v, int *out);
 extern void func_00215A10(float *arg0, int *arg1);
 extern void func_001F9C08(void *, void *, void *, float);
 // Advances a particle that homes on a target: steers toward it, fades the colour and steps its keyframes.
-void PartType71Update(char *m) {
+void update_three_phase_motion_alpha_fade_particle(char *m) {
     float x[4] __attribute__((aligned(16)));
     float y[4] __attribute__((aligned(16)));
     float z[4] __attribute__((aligned(16)));
@@ -1486,7 +1486,7 @@ void PartType71Update(char *m) {
 extern unsigned char *D_L00_001B2520;
 
 /* spawns a type-72 particle with a signed spin and a scaled lifetime */
-unsigned char *PartType72Spawn(char *a, char *b, int c, float f) {
+unsigned char *spawn_random_size_rotated_particle(char *a, char *b, int c, float f) {
     unsigned char *p = create_part(0x48);
     unsigned char *u;
     if (p) {
@@ -1521,7 +1521,7 @@ unsigned char *PartType72Spawn(char *a, char *b, int c, float f) {
     return p;
 }
 extern void func_L00_002688A8(void *);
-void PartType72Update(char *a) {
+void update_size_gated_rotating_particle(char *a) {
     *(unsigned char *)(a + 8) = *(unsigned char *)(a + 8) + *(unsigned char *)(a + 0x38);
     if (*(float *)(a + 0xC) <= 0.0f) {
         *(float *)(a + 0xC) = 0.0f;
@@ -1541,7 +1541,7 @@ extern float func_L00_002644E0(void *);
 extern void func_L00_00264570(void *);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/rendering/002712b8.c, FUN_L00_00275320. */
-void PartType73Update(O_275320 *o) {
+void update_gravity_ground_culled_particle(O_275320 *o) {
     Vec4 tmp;
     Vec4 t2;
     Vec4 t3;
@@ -1594,7 +1594,7 @@ void PartType73Update(O_275320 *o) {
 extern int func_L00_00237B70(float, int, int);
 
 /* Update a particle following a parent moby with a scaled offset. */
-void PartType74Update(char *m) {
+void update_damped_moby_relative_color_size_tween_particle(char *m) {
     char *s = m + 0x20;
     char *d = *(char **)(s + 0x1C);
     float t[3];
@@ -1642,7 +1642,7 @@ extern float func_001F9CE8(void *);
 extern int func_L00_0025A468_r(void *, void *) __asm__("func_L00_0025A468");
 
 /* particle type 75 update: move, damp, then fade or die */
-void PartType75Update(char *m) {
+void update_gravity_damped_resizing_particle(char *m) {
     char *v = m + 0x20;
     float s;
     float t;
@@ -1668,7 +1668,7 @@ void PartType75Update(char *m) {
 extern void func_L00_0025A468(void *, void *);
 extern int func_001F9938(void *);
 extern short D_L00_00160300;
-void PartType76Update(char *a) {
+void update_timed_alpha_fade_particle(char *a) {
     Particle_FadeAlpha(a + 4, *(void **)&D_L00_00160300);
     if (FastDecTimer(a + 0xA) != 0) {
         KillPart(a);
@@ -1677,7 +1677,7 @@ void PartType76Update(char *a) {
 typedef struct { float x, y, z, w; } Vx __attribute__((aligned(16)));
 extern int func_001FA898(float);
 
-void PartType77Update(char *m) {
+void update_moving_lifetime_scaled_alpha_particle(char *m) {
     Vx v;
     float w, t;
     v = *(Vx *)(m + 0x20);
@@ -1744,7 +1744,7 @@ static __inline__ void vcopy_276940(float *d, float *s) {
 }
 
 // Particle update (type 0x78): ramps the size and alpha, moves by a velocity vector, steers it away from a nearby moby and kills the particle when its timer expires.
-void PartType78Update(char *m) {
+void update_proximity_corrected_size_alpha_tween_particle(char *m) {
     char *v = m + 0x20;
     char *p;
     float f4;
@@ -1794,7 +1794,7 @@ void PartType78Update(char *m) {
     }
 }
 // Particle update: move by velocity, fade color over remaining lifetime.
-void PartType79Update(char *m) {
+void update_moving_fading_particle(char *m) {
     char *v = m + 0x20;
     int c;
     if (*(int *)(v + 0x1C) != 0) {
@@ -1821,7 +1821,7 @@ void PartType79Update(char *m) {
     }
 }
 /* Per-frame update of a fading particle: kills it when out of range or expired, else fades its colour. */
-void PartType80Update(char *m) {
+void update_mode_controlled_shrinking_color_tween_particle(char *m) {
     float a = *(float *)(m + 0x10);
     if (a < 2.0f || a > 1021.0f
         || *(float *)(m + 0x14) < 2.0f || *(float *)(m + 0x14) > 1021.0f
@@ -1855,7 +1855,7 @@ extern int func_00234158(int arg0, int arg1, int arg2, int arg3);
 
 // loads the 20 table entries from the resident table into the level's slots
 // Adapted from Lombyte (MIT) for PAL: overlays/shared/rendering_002712b8.c, FUN_L00_00276078.
-void Stash_SendLoadedEntries(void) {
+void load_misc_animations_into_stash(void) {
     int h = D_L00_00173F08;
     int i;
     for (i = 0; i < 20; i++) {

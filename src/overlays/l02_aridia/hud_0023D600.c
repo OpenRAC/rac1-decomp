@@ -5,7 +5,7 @@
 extern int func_001F9850(int);
 
 // Ticks two small counters up or down depending on a random roll; copies a value.
-void HudCounter_UpdateRamp(char *m) {
+void update_hud_counter_transition(char *m) {
     unsigned char *p = (unsigned char *)(m + 0x70);
     if (*(int *)(m + 0x7C) >= scale_ticks(5)) {
         if (p[0] < scale_ticks(8)) {
@@ -71,7 +71,7 @@ extern short D_L02_0015FA34;
 
 /* Draws the counter: a stretched bar behind the icon and the count, on whichever side of the screen it sits.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l02/ui/text/0023ccc8.c, FUN_L02_0023cda8. */
-s32 Hud_DrawCounter(HudElem *m) {
+s32 draw_hud_counter(HudElem *m) {
     char text[16];
     int x;
     int y;
@@ -167,7 +167,7 @@ extern int D_0015EF88 MACRO_ADDR;
 void Sky_DrawLevel02(void) {
     SetupSkyGifPaging();
     if (D_0015EE84_m == 2) {
-        SkyStarFieldUpdate();
+        draw_four_sky_shells_with_animated_particles();
     } else {
         update_sky_shells_static();
     }

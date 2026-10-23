@@ -53,7 +53,7 @@ void qwark_oltanis_update(char *m) {
             ShowBanner(0x36B3, -1);
         }
         GiveItem(0x20, 1);
-        Vendor_ResetAndMarkSaved(D_L14_00160098_2FCEA8 + (*(int *)(d + 0x44) << 8));
+        mark_elevator_collected(D_L14_00160098_2FCEA8 + (*(int *)(d + 0x44) << 8));
         *(int *)(D_0014171B_2FCEA8 + 0xAB75 + (((short)*(unsigned short *)(m + 0xB2) >> 5) * 4 + (D_0015EE84_m << 8))) |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
         D_L14_001BAF60[(short)*(unsigned short *)(m + 0xB2) >> 5] |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
         memcard_Save(0, -1);

@@ -1,4 +1,4 @@
-void Vendor_ShowHelpMessage(char *moby) {
+void request_taxi_stop_prompt(char *moby) {
     char *data = *(char **)(moby + 0x78);
     int v = *(short *)(data + 0xB4);
     if (*(unsigned char *)(moby + 0x20) == 5) {

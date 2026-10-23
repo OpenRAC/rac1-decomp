@@ -18,7 +18,7 @@ extern int func_00116248(void *, void *);
 extern void func_0020D678(void *);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002c8830.c, FUN_L11_002cb790. */
-void Moby37Update(char *a0)
+void remove_moby_when_near_hero(char *a0)
 {
     if (FastVecDist(a0 + 0x10, gHeroPos) < 2.0f) {
         D_0013D491[0] = 1;
@@ -36,7 +36,7 @@ extern char *D_L11_00160064 MACRO_ADDR;
 typedef int u128 __attribute__((mode(TI)));
 
 // Finds the best-scoring moby of class 5 in range of a position, by distance and aim cone.
-char *FindBestAimMobyClass5(float *pos, float *aim, float r1, float r2, float maxd) {
+char *select_homing_missile_target(float *pos, float *aim, float r1, float r2, float maxd) {
     char *best = 0;
     char *q;
     char *p = D_L11_00160064;
@@ -80,7 +80,7 @@ extern void func_L00_00251328(void *, int, int, int);
 extern void func_L00_00251E30(void *);
 
 /* spawns a moby of class 0x3F1 aimed along a direction */
-unsigned char *SpawnHomingMissile(char *owner, float *dir, float *pos, float a, float b) {
+unsigned char *spawn_class_3f1_moby(char *owner, float *dir, float *pos, float a, float b) {
     unsigned char *m = CreateMoby(0x3F1);
     if (m) {
         char *d = *(char **)(m + 0x78);
@@ -155,7 +155,7 @@ static inline void copy_xyz_089d0(float *dst, float *src) {
 
 /* Homing missile: eases its scale, re-picks a target every sixth frame, turns toward it within a cone and flies on; on impact it bursts into five sparks, otherwise it shrinks away once its timer runs out.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002c8830.c, FUN_L11_003089d0. */
-void func_L11_00309DA0(struct Moby *moby) {
+void update_homing_missile(struct Moby *moby) {
     MissileVars_089d0 *vars = (MissileVars_089d0 *)moby->pvars;
     float old[4];
     float look[4];
@@ -176,7 +176,7 @@ void func_L11_00309DA0(struct Moby *moby) {
     target = vars->target;
     if (target == 0 || target->state == 0xFE || target->state == 0xFD ||
         FastVecDist(&target->pos, look) > 3.0f)
-        vars->target = (struct Moby *)FindBestAimMobyClass5((float *)&moby->pos, (float *)&moby->rot, 0.2617994f, 0.2617994f, 60.0f);
+        vars->target = (struct Moby *)select_homing_missile_target((float *)&moby->pos, (float *)&moby->rot, 0.2617994f, 0.2617994f, 60.0f);
     if (vars->target != 0) {
         copy_xyz_089d0(vars->target_pos, (float *)&vars->target->pos);
         speed = FastVecLength(vars);
@@ -239,7 +239,7 @@ extern float func_L00_001FF860(float, float);
 extern void func_L00_001FF4B0(void *, void *, float);
 
 /* spawns a streak moby aimed along a direction with the given size and colour */
-char *SpawnStreakMoby(int owner, float *dir, float *pos, float size, float len, float z) {
+char *spawn_class_3f9_moby(int owner, float *dir, float *pos, float size, float len, float z) {
     char *m = CreateMoby(0x3F9);
     if (m != 0) {
         char *p = *(char **)(m + 0x78);
@@ -286,7 +286,7 @@ extern int func_001F9908(int *);
 
 /* Fireball: flies along its velocity leaving smoke; when it hits something it bursts into five puffs
  * and is deleted, otherwise it shrinks away once its timer runs out. */
-void FireballUpdate(char *m) {
+void update_projectile_with_trail(char *m) {
     float old[4];
     float p[4];
     float v[4];
@@ -977,7 +977,7 @@ extern u128_ad0 D_L11_00160970;
 extern int D_0013E600[];
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/vendor/0030e690.c, FUN_L11_00310ad0. */
-void Hud_DrawPointList(short *pts, int n, float x0, float y0, unsigned int col, unsigned long prim, float scale) {
+void append_scaled_screen_triangle_strip(short *pts, int n, float x0, float y0, unsigned int col, unsigned long prim, float scale) {
     int q = (n + 1) / 2 + 3;
     unsigned long *o;
     int x, y;
@@ -1022,7 +1022,7 @@ extern unsigned char D_0013E15A[];
 extern int D_L11_00161240 MACRO_ADDR;
 
 /* Builds one GIF packet for a rotated textured sprite and advances the packet pointer. */
-void func_L11_003121C0(float fa, float fb, float fc, float fd, float fe, int a0, int a1, long a2, int a3,
+void append_rotated_textured_screen_quad(float fa, float fb, float fc, float fd, float fe, int a0, int a1, long a2, int a3,
                        int a4, int a5, int a6, int a7) {
     float s[4];
     float t[4];
@@ -1136,20 +1136,20 @@ void Hud_DrawFourRotatedQuads(unsigned char a, unsigned char b, unsigned char c,
     float w;
     h = GetEffectTex(0x42);
     w = s * 20.0f;
-    func_L11_003121C0(x, y, w, w, ang, 0x3F, 0x3F, h, 0xFFFFF3, a, b, c, d);
+    append_rotated_textured_screen_quad(x, y, w, w, ang, 0x3F, 0x3F, h, 0xFFFFF3, a, b, c, d);
     ang = FastAddRots(ang, 1.5707964f);
-    func_L11_003121C0(x, y, w, w, ang, 0x3F, 0x3F, h, 0xFFFFF3, a, b, c, d);
+    append_rotated_textured_screen_quad(x, y, w, w, ang, 0x3F, 0x3F, h, 0xFFFFF3, a, b, c, d);
     ang = FastAddRots(ang, 1.5707964f);
-    func_L11_003121C0(x, y, w, w, ang, 0x3F, 0x3F, h, 0xFFFFF3, a, b, c, d);
+    append_rotated_textured_screen_quad(x, y, w, w, ang, 0x3F, 0x3F, h, 0xFFFFF3, a, b, c, d);
     ang = FastAddRots(ang, 1.5707964f);
-    func_L11_003121C0(x, y, w, w, ang, 0x3F, 0x3F, h, 0xFFFFF3, a, b, c, d);
+    append_rotated_textured_screen_quad(x, y, w, w, ang, 0x3F, 0x3F, h, 0xFFFFF3, a, b, c, d);
 }
 extern void func_001F2418(float *, void *);
 extern int func_001FA898_r(float) __asm__("func_001FA898");
 extern unsigned char D_0013E15A[];
 
 /* Projects a world point to screen and stores its x and y in 1/16 units, y plus an offset. */
-void ProjectPointToScreen(void *pt, int *outx, int *outy, int yoff) {
+void project_world_point_to_screen_pixels(void *pt, int *outx, int *outy, int yoff) {
     float p[4];
     int *g;
     func_001F2418(p, pt);
@@ -1171,7 +1171,7 @@ extern short D_L11_00162288;
 extern short D_L11_00162298;
 
 // Spawns two rounds of scaled particle trails from three offset copies of a moby's point.
-void SpawnParticleTrails(void *m, char *t) {
+void emit_type_74_particles_from_moby_joints(void *m, char *t) {
     int i;
     for (i = 1; i < 3; i++) {
         float vel[4];
@@ -1197,25 +1197,25 @@ void SpawnParticleTrails(void *m, char *t) {
         JitterVector(b, *(float *)(t + 0xC4) * 0.02f + 0.02f);
         JitterVector(c, *(float *)(t + 0xC4) * 0.01f + 0.02f);
         vel[0] = -((random_float_between(6.0f, 7.0f) + *(float *)(t + 0xC4) * 2.0f) * D_0015EE6C) * scale;
-        PartType74Spawn(m, a, vel, &D_L11_00162258, 1);
+        spawn_type_74_particle(m, a, vel, &D_L11_00162258, 1);
         vel[0] = -((random_float_between(6.0f, 7.0f) + *(float *)(t + 0xC4) * 3.0f) * D_0015EE6C) * scale;
-        PartType74Spawn(m, b, vel, &D_L11_00162268, 1);
+        spawn_type_74_particle(m, b, vel, &D_L11_00162268, 1);
         vel[0] = -((random_float_between(6.0f, 7.0f) + *(float *)(t + 0xC4) * 4.0f) * D_0015EE6C) * scale;
-        PartType74Spawn(m, c, vel, &D_L11_00162278, 1);
+        spawn_type_74_particle(m, c, vel, &D_L11_00162278, 1);
         if (*(float *)(t + 0xC4) > 0.5f) {
             JitterVector(a, *(float *)(t + 0xC4) * 0.02f + 0.01f);
             JitterVector(b, *(float *)(t + 0xC4) * 0.02f + 0.01f);
             JitterVector(c, *(float *)(t + 0xC4) * 0.01f + 0.01f);
             vel[0] = -((random_float_between(6.0f, 7.0f) + *(float *)(t + 0xC4) * 2.0f) * D_0015EE6C) * scale;
-            PartType74Spawn(m, a, vel, &D_L11_00162258, 1);
+            spawn_type_74_particle(m, a, vel, &D_L11_00162258, 1);
             vel[0] = -((random_float_between(6.0f, 7.0f) + *(float *)(t + 0xC4) * 3.0f) * D_0015EE6C) * scale;
-            PartType74Spawn(m, b, vel, &D_L11_00162268, 1);
+            spawn_type_74_particle(m, b, vel, &D_L11_00162268, 1);
             vel[0] = -((random_float_between(6.0f, 7.0f) + *(float *)(t + 0xC4) * 4.0f) * D_0015EE6C) * scale;
-            PartType74Spawn(m, c, vel, &D_L11_00162278, 1);
+            spawn_type_74_particle(m, c, vel, &D_L11_00162278, 1);
             vel[0] = -((random_float_between(6.0f, 7.0f) + *(float *)(t + 0xC4) * 2.0f) * D_0015EE6C) * scale;
-            PartType74Spawn(m, a, vel, &D_L11_00162288, 1);
+            spawn_type_74_particle(m, a, vel, &D_L11_00162288, 1);
             vel[0] = -((random_float_between(6.0f, 7.0f) + *(float *)(t + 0xC4) * 3.0f) * D_0015EE6C) * scale;
-            PartType74Spawn(m, pos, vel, &D_L11_00162298, 1);
+            spawn_type_74_particle(m, pos, vel, &D_L11_00162298, 1);
         }
     }
 }
@@ -1322,7 +1322,7 @@ extern int D_L11_0015F6B0 MACRO_ADDR;
 extern short D_L11_00162480;
 
 /* Advances a trail ring buffer and records two offset points each fourth frame. */
-void TrailRingUpdate(char *moby) {
+void update_moby_trail_points(char *moby) {
     char *d = *(char **)(moby + 0x78);
     float v[4];
     float w[4];
@@ -1371,7 +1371,7 @@ extern void func_00213DE0(void *, int, int, int);
 extern int func_L00_001F10E0(float, void *, int, void *);
 
 /* Collectable crate: when hit, updates the totals (count, best time, levels mask, a level-11 bonus) and breaks open. */
-void CollectableCrateUpdate(char *m) {
+void update_moby_hit_stats_and_state(char *m) {
     char *d = *(char **)(m + 0x78);
     char *info = MobyGetHitMessage(m, 0x330000, 0);
     char *g;
@@ -1463,7 +1463,7 @@ extern void func_001F9BF0_0031B8A8(void *, void *, void *) __asm__("func_001F9BF
 extern float D_0015EE70_0031B8A8 __asm__("D_0015EE70") MACRO_ADDR;
 
 /* Path follower: turns the moby to the blend of the headings of its current and next path segments, and eases its position toward the blended path point offset sideways around the path. */
-void PathOrbitMobyUpdate(Moby *moby) {
+void update_moby_path_transform(Moby *moby) {
     float mtx[4][4];
     float A[4];
     float B[4];
@@ -1519,7 +1519,7 @@ extern int D_L11_00217A00[];
 extern Pair8 D_L11_001626B8[] MACRO_ADDR;
 
 // Fills 5 rows of a three-column table and hands each row to two builders.
-void PlaceLevelEffectPieces(int a) {
+void queue_oil_tanker_front_texture_2b_batches(int a) {
     int i;
     for (i = 0; i < 5; i++) {
         func_L08_00259040(D_L11_00217A30, D_L11_002179D0[i], D_L11_00215528[i], &D_L11_001626B8[a]);

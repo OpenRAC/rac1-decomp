@@ -16,7 +16,7 @@ extern int D_L11_001625AC MACRO_ADDR;
 extern int D_L11_00162620 MACRO_ADDR;
 
 // Draws the pokitaru HUD elements with their colours.
-void PokitaruSurfaceNearDraw(void) {
+void draw_level11_layered_effect_batches(void) {
     VU1_addGSregister(0x42, 0x8000000044L);
     VU1_addGSregister(8, 0);
     VU1_addGSregister(0x14, 0xFF9000000260L);
@@ -34,9 +34,9 @@ void PokitaruSurfaceNearDraw(void) {
     }
     VU1_addGSregister(6, GetEffectTex(0x2A));
     VU1_addGSregister(0x42, (long)*(int *)&D_L11_001625A8 << 32 | 0x48);
-    Moby600_DrawQuads8(0);
+    emit_pair_offset_render_batch(0);
     VU1_addGSregister(0x42, (long)D_L11_001625AC << 32 | 0x48);
-    Moby600_DrawQuads8(1);
+    emit_pair_offset_render_batch(1);
     VU1_addGSregister(6, GetEffectTex(0x2B));
     VU1_addGSregister(0x42, (long)*(int *)&D_L11_001625B8 << 32 | 0x48);
     Moby600_DrawQuads11(0);
@@ -74,7 +74,7 @@ extern short D_L11_00162578;
 
 /* Update function: state 0 sets up some global tables (running func_L08_002F2428 once), state 1 tests a point
  * and its distance to the hero and sets D_L11_00162620 to a 0 to 255 value that fades between 15.0 and 35.0. */
-void PokitaruSurfaceNearUpdate(unsigned char *moby) {
+void update_level11_layered_effect_and_queue_draw(unsigned char *moby) {
     int i;
     float v[4];
     float w[4];
@@ -83,9 +83,9 @@ void PokitaruSurfaceNearUpdate(unsigned char *moby) {
     switch (moby[0x20]) {
     case 0:
         if (*(int *)&D_L11_001625BC == 0) {
-            ScaleColorTables(&D_L11_00162600, 4, &D_L11_001625C0, 0.7f, 1.0f, 0.9f, 0.5f, 1);
-            ScaleColorTables(D_L11_001F9D08, 11, D_L11_001F4C38, 0.5f, 0.5f, 0.5f, 1.0f, 1);
-            ScaleColorTables(D_L11_001FF9F0, 8, D_L11_001F9D38, 0.25f, 0.25f, 0.25f, 0.7f, 1);
+            scale_rgba_tables(&D_L11_00162600, 4, &D_L11_001625C0, 0.7f, 1.0f, 0.9f, 0.5f, 1);
+            scale_rgba_tables(D_L11_001F9D08, 11, D_L11_001F4C38, 0.5f, 0.5f, 0.5f, 1.0f, 1);
+            scale_rgba_tables(D_L11_001FF9F0, 8, D_L11_001F9D38, 0.25f, 0.25f, 0.25f, 0.7f, 1);
             *(int *)&D_L11_001625BC = 1;
         }
         moby[0x20] = 1;
@@ -121,7 +121,7 @@ void PokitaruSurfaceNearUpdate(unsigned char *moby) {
                     d = FastVecLength(w);
                     if (d <= 35.0f) {
                         AdvanceScrollOffsets(0);
-                        AdvanceWavePhase(D_L11_001FFA18, 0.52f, 0.62f, 0.06f, D_L11_00162640);
+                        advance_wrapped_sine_pair(D_L11_001FFA18, 0.52f, 0.62f, 0.06f, D_L11_00162640);
                         AdvanceScrollOffsets(2);
                         if (d < 15.0f) {
                             *(unsigned char *)&D_L11_00162620 = 0xFF;
@@ -134,7 +134,7 @@ void PokitaruSurfaceNearUpdate(unsigned char *moby) {
                     AdvanceScrollEntry(0);
                     AdvanceScrollEntry(0);
                     AdvanceScrollEntry(1);
-                    AddDrawCallback(PokitaruSurfaceNearDraw, moby);
+                    AddDrawCallback(draw_level11_layered_effect_batches, moby);
                 }
             }
         }
@@ -152,7 +152,7 @@ extern int D_L11_00215408[];
 extern int D_L11_002154E0[];
 
 /* Builds 17 entries from parallel tables. */
-void PokitaruSurfaceBuildPieces(int arg) {
+void emit_render_batches_with_pair_offset(int arg) {
     int i;
     for (i = 0; i < 17; i++) {
         func_L08_00259040(D_L11_00217A30, D_L11_00215450[i], D_L11_00207BC0[i], D_L11_00217A18 + arg * 8);
@@ -167,7 +167,7 @@ extern int D_L11_00207B98[];
 extern Pair8 D_L11_001626A8[] MACRO_ADDR;
 
 /* Places the level's 9 effect pieces from their tables (a relative of func_L11_0031FCC8). */
-void PlaceEffectPieces(int a) {
+void emit_oil_tanker_render_batches_with_pair_offset(int a) {
     int i;
     for (i = 0; i < 9; i++) {
         func_L08_00259040(D_L11_00217A30, D_L11_00207B48[i], D_L11_002009E8[i], &D_L11_001626A8[a]);
@@ -205,24 +205,24 @@ void PokitaruSurfaceFarDraw(char *m) {
     if (flag) {
         VU1_addGSregister(6, GetEffectTex(0x2C));
         VU1_addGSregister(0x42, ((long)*(int *)&D_L11_00162658 << 32) | 0x44);
-        PokitaruSurfaceBuildPieces(0);
+        emit_render_batches_with_pair_offset(0);
     }
     if (*(unsigned char *)&D_L11_001626A0_w != 0 && flag) {
         VU1_addGSregister(6, GetEffectTex(0x29));
         VU1_addGSregister(0x42, ((long)((D_L11_0016265C * *(unsigned char *)&D_L11_001626A0_w) >> 8) << 32) | 0x68);
-        PokitaruSurfaceBuildPieces(1);
+        emit_render_batches_with_pair_offset(1);
         VU1_addGSregister(0x42, ((long)((D_L11_0016265C * *(unsigned char *)&D_L11_001626A0_w) >> 8) << 32) | 0x62);
-        PokitaruSurfaceBuildPieces(2);
+        emit_render_batches_with_pair_offset(2);
     }
     VU1_addGSregister(6, GetEffectTex(0x2A));
     VU1_addGSregister(0x42, ((long)*(int *)&D_L11_00162678 << 32) | 0x48);
-    PlaceEffectPieces(0);
+    emit_oil_tanker_render_batches_with_pair_offset(0);
     VU1_addGSregister(0x42, ((long)D_L11_0016267C << 32) | 0x48);
-    PlaceEffectPieces(1);
+    emit_oil_tanker_render_batches_with_pair_offset(1);
     if (flag) {
         VU1_addGSregister(6, GetEffectTex(0x2B));
         VU1_addGSregister(0x42, ((long)*(int *)&D_L11_00162688 << 32) | 0x48);
-        PlaceLevelEffectPieces(0);
+        queue_oil_tanker_front_texture_2b_batches(0);
     }
 }
 typedef struct { int a, b; } PairA_3205C0;
@@ -241,7 +241,7 @@ extern short D_L11_00162648;
 
 /* Update function: state 0 sets up some global tables (running func_L08_002F2428 once), state 1 tests a point
  * and its distance to the hero and sets D_L11_001626A0 to a 0 to 255 value that fades between 80.0 and 100.0. */
-void PokitaruSurfaceFarUpdate(unsigned char *moby) {
+void update_level11_distance_faded_effect_and_queue_draw(unsigned char *moby) {
     int i;
     float v[4];
     float w[4];
@@ -250,9 +250,9 @@ void PokitaruSurfaceFarUpdate(unsigned char *moby) {
     switch (moby[0x20]) {
     case 0:
         if (*(int *)&D_L11_0016268C == 0) {
-            ScaleColorTables(D_L11_002154E0, 17, D_L11_00207BC0, 0.7f, 1.0f, 0.9f, 0.5f, 1);
-            ScaleColorTables(D_L11_00217A00, 5, D_L11_00215528, 0.5f, 0.5f, 0.5f, 1.0f, 1);
-            ScaleColorTables(D_L11_00207B98, 9, D_L11_002009E8, 0.25f, 0.25f, 0.25f, 0.7f, 1);
+            scale_rgba_tables(D_L11_002154E0, 17, D_L11_00207BC0, 0.7f, 1.0f, 0.9f, 0.5f, 1);
+            scale_rgba_tables(D_L11_00217A00, 5, D_L11_00215528, 0.5f, 0.5f, 0.5f, 1.0f, 1);
+            scale_rgba_tables(D_L11_00207B98, 9, D_L11_002009E8, 0.25f, 0.25f, 0.25f, 0.7f, 1);
             *(int *)&D_L11_0016268C = 1;
         }
         moby[0x20] = 1;
@@ -288,7 +288,7 @@ void PokitaruSurfaceFarUpdate(unsigned char *moby) {
                     d = FastVecLength(w);
                     if (d <= 100.0f) {
                         AdvanceScrollOffsets(0);
-                        AdvanceWavePhase(D_L11_00217A20, 0.52f, 0.62f, 0.06f, D_L11_001626C0_p);
+                        advance_wrapped_sine_pair(D_L11_00217A20, 0.52f, 0.62f, 0.06f, D_L11_001626C0_p);
                         AdvanceScrollOffsets(2);
                         if (d < 80.0f) {
                             *(unsigned char *)&D_L11_001626A0_w = 0xFF;

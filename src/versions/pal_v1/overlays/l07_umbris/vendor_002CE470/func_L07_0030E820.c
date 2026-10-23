@@ -2,7 +2,7 @@ extern char D_E1_L07_00208460[];
 void ocean_umbris_update(unsigned char *moby) {
     switch (moby[0x20]) {
     case 0:
-        ScaleTableIntoBuffer128(D_E1_L07_00208460, 0.66666669f);
+        prepare_scaled_table_with_byte_128(D_E1_L07_00208460, 0.66666669f);
         moby[0x20] = 1;
         moby[0x30] = 0xFF;
         break;

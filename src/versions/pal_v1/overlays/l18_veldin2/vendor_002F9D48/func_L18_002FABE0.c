@@ -1,5 +1,5 @@
 extern float D_E1_L18_001624DC MACRO_ADDR;
-void DrawCutsceneFlare(void) {
+void draw_three_scaled_camera_facing_quads(void) {
     extern ML_9780 D_L18_0016D2E0;
     extern int func_001F9850(int);
     extern unsigned long func_001F4868(int);

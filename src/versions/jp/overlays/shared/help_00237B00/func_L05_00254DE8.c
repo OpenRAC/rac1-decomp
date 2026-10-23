@@ -1,4 +1,4 @@
-void HoverboardRaceTick(void) {
+void update_hero_hoverboard_race_progress(void) {
     float v0[4] __attribute__((aligned(16)));
     float v1[4] __attribute__((aligned(16)));
     Data_254DE8 *d;

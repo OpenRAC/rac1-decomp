@@ -92,7 +92,7 @@ typedef struct {
 } Ray;
 
 /* Plasmabot update: validates its path and target, walks the path, turns to aim at its owner's target and fires, dies or despawns. */
-void PlasmabotUpdate(char *m) {
+void update_plasmabot(char *m) {
     char *data;
     char *owner;
     int st;
@@ -323,7 +323,7 @@ void PlasmabotUpdate(char *m) {
         }
         if (FastDecTimer(data + 0x260) == 0) break;
         if (Group_CountActiveClass28(((unsigned char *)m)[0x21]) >= 2) break;
-        if (EffectSlot_Alloc(m, 1, 0) == 0) break;
+        if (register_beam_slot(m, 1, 0) == 0) break;
         if (random_integer_below(4) != 0) break;
         if (!(FastDiffRots(*(float *)(m + 0x48), ang) < 0.017453292f)) break;
         if (!(aim < 0.017453292f)) break;
@@ -390,7 +390,7 @@ void PlasmabotUpdate(char *m) {
         if (func_L00_001EFFF0(mat[3], hit, 0, m, &ray) != 0) {
             qcopy(hit, D_L14_00174660);
         }
-        EffectSlot_Update(m, mat, hit);
+        set_beam_origin_transform_and_endpoint(m, mat, hit);
         if (FastDecTimer(data + 0x262) != 0) {
             MobyBlendAnimation(m, 6, 0, scale_ticks(10));
             ((unsigned char *)m)[0x20] = 7;
@@ -1204,7 +1204,7 @@ extern void func_0020D678(struct Moby *);
 extern float D_L14_0015F660[] MACRO_ADDR;
 
 /* Moby update for a falling debris particle. */
-void DebrisParticleUpdate(struct MobyDf *moby) {
+void update_spinning_moby_with_particle_trail(struct MobyDf *moby) {
     float *velocity = (float *)moby->pvars;
     int i;
     int n;
@@ -1354,7 +1354,7 @@ extern short D_L14_00161C18;
 
 /* A piece of debris: follows its race path until its timer runs out, then flies, spins and falls until it hits something or leaves the map.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b17d8.c, FUN_L14_002dfd10. */
-void RaceDebrisUpdate(struct Moby *moby) {
+void update_path_or_ballistic_debris(struct Moby *moby) {
     Data_dfd10 *data = (Data_dfd10 *)moby->pvars;
     Vec4 probe;
     f32 vec[4];
@@ -1515,7 +1515,7 @@ extern float D_0015EE60_2E17B8 __asm__("D_0015EE60") MACRO_ADDR;
 
 /* Engine exhaust of a level-14 moby: puffs particles behind it (as func_L14_002B3850 does for the ship), then
  * spawns a trail piece and a smoke puff at the nozzle, offset along the moby's heading. */
-void MobyL14_EngineExhaust(Moby *m) {
+void emit_debris_trail_particles(Moby *m) {
     Vec4 pos;
     Vec4 dir;
     Vec4 vel;
@@ -1599,7 +1599,7 @@ void MobyL14_EngineExhaust(Moby *m) {
 }
 
 /* Recomputes a path's segment lengths, aims the moby along its first segment, and recomputes a second path. */
-void MobyDualPathInit(char *moby) {
+void initialize_moby_path_state(char *moby) {
     char *data = *(char **)(moby + 0x78);
     char *p;
     int i;
@@ -1625,7 +1625,7 @@ extern void func_L00_001FF4B0(void *, void *, float);
 extern void func_001F9BD8(void *, void *, void *);
 
 /* rebuilds two vectors from the moby's transform and applies them to its linked object */
-void AttachLinkedMobyToTransform(char *moby) {
+void update_linked_moby_position(char *moby) {
     char *data = *(char **)(moby + 0x78);
     float tmp[4];
     if (*(char **)(data + 0xF4) != 0) {
@@ -1662,7 +1662,7 @@ extern short D_L14_001620A8;
 extern short D_L14_001620B4;
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b17d8.c, FUN_L14_002feca8. */
-void SpawnEngineTrailParticles(unsigned char *m) {
+void emit_moby_offset_particles(unsigned char *m) {
     float off[4];
     float pos[4];
     int i;
@@ -2488,7 +2488,7 @@ extern float func_001F9FA8(float);
 
 /* Floating mine: spins and pulses (and bobs in level 16); blows up on a hit and respawns once out of view.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b17d8.c, FUN_L14_002ff640. */
-void FloatingMineUpdate(struct Moby *moby) {
+void update_floating_mine(struct Moby *moby) {
     FloatMineVars_ff640 *vars = (FloatMineVars_ff640 *)moby->pvars;
     union {
         HitInfo_ff640 info;
@@ -2574,7 +2574,7 @@ void FloatingMineUpdate(struct Moby *moby) {
 extern float func_002140F8(float, float);
 
 /* Spawns moby class 0x3A5 at the given position, owned by owner, with three randomised angle values. */
-unsigned char *Moby933Spawn(unsigned char *owner, char *pos) {
+unsigned char *spawn_floating_mine(unsigned char *owner, char *pos) {
     unsigned char *m = CreateMoby(0x3A5);
     if (m != 0) {
         char *d = *(char **)(m + 0x78);
@@ -2632,7 +2632,7 @@ extern void func_L14_00303430(char *);
 extern void func_001F49B0(void (*)(void), void *);
 
 /* Moby update for a timed effect that triggers when the hero is near. */
-void Moby1224Update(unsigned char *m) {
+void update_vendor_beam(unsigned char *m) {
     D1224 *d = *(D1224 **)(m + 0x78);
     float v[4] __attribute__((aligned(16)));
     int s;
@@ -2650,7 +2650,7 @@ void Moby1224Update(unsigned char *m) {
     s = m[0x20];
     switch (s) {
     case 0:
-        InitRopeStripMoby((char *)m);
+        start_vendor_beam_pulse((char *)m);
         d->s10 = scale_ticks(d->wC);
         m[0x20] = 2;
         d->f624 = FastVecLength(D_L14_001601AC_t + (d->w0 << 7) + 0x10);
@@ -2661,7 +2661,7 @@ void Moby1224Update(unsigned char *m) {
         if (*(int *)&D_L14_00162188_s != 0) {
             if (d->s12 == 0) {
                 *(int *)&D_L14_00162188_s = *(int *)&D_L14_00162188_s - 1;
-                InitRopeStripMoby((char *)m);
+                start_vendor_beam_pulse((char *)m);
             }
         }
         break;
@@ -2669,7 +2669,7 @@ void Moby1224Update(unsigned char *m) {
         if (FastDecTimer(&d->s10) != 0) {
             m[0x20] = 3;
             d->s10 = scale_ticks(d->s4);
-            InitRopeStripMoby((char *)m);
+            start_vendor_beam_pulse((char *)m);
         }
         break;
     case 3:
@@ -2682,24 +2682,24 @@ void Moby1224Update(unsigned char *m) {
             }
             d->s10 = scale_ticks(arg);
         } else if (d->s12 == 0) {
-            InitRopeStripMoby((char *)m);
+            start_vendor_beam_pulse((char *)m);
         }
         break;
     }
     if (*(int *)&D_L14_001621A8_s == 0) {
         if (func_001F9D48(m + 0x10, D_0013E633 + 0xE9D) < 10.0f) {
-            BeamSweepDamage((char *)m);
+            apply_vendor_beam_damage((char *)m);
         }
     }
     if (d->s12 != 0) {
         if (*(int *)&D_L14_001621A0_s == 0) {
-            func_L14_00303270((char *)m);
+            update_vendor_beam_animation((char *)m);
         }
         if (*(int *)&D_L14_00162198_s < d->s12) {
             if (*(int *)&D_L14_001621A4_s != 0) {
                 return;
             }
-            AddDrawCallback(func_L14_00303430, m);
+            AddDrawCallback(draw_vendor_beam, m);
         }
     }
 }
@@ -2748,7 +2748,7 @@ typedef struct {
 
 void func_L14_00302C80(char *m);
 /* Init of a 32-point strip (rope/beam style) moby. */
-void InitRopeStripMoby(char *m) {
+void start_vendor_beam_pulse(char *m) {
     D_02C80 *d = *(D_02C80 **)(m + 0x78);
     Vq_02C80 P[32];
     Vq_02C80 Q[32];
@@ -2855,7 +2855,7 @@ extern short D_L14_001621C0;
 extern short D_L14_001621C8;
 
 // advances a timed chain of vectors and picks an interpolation value
-void func_L14_00303270(char *moby) {
+void update_vendor_beam_animation(char *moby) {
     D_02C80 *d = *(D_02C80 **)(moby + 0x78);
     if (d->s12 != 0) {
         int i;
@@ -2936,7 +2936,7 @@ extern int func_L00_001EFFF0_3039C0(void *, void *, int, void *, void *) __asm__
 
 /* Sweeps the beam's two end lines; anything they cross takes damage pushed away from the beam.
  * Adapted from Lombyte (MIT) for PAL: overlays/shared/gameplay/vendor/003015d0.c, FUN_L14_00302538. */
-void BeamSweepDamage(char *self) {
+void apply_vendor_beam_damage(char *self) {
     struct Moby *m = (struct Moby *)self;
     D1224_3039C0 *d = (D1224_3039C0 *)m->pvars;
     VendorBeamReq_3039C0 req;
@@ -3016,7 +3016,7 @@ extern void func_L00_002E3700(int, int);
 extern void func_L00_002E3FA0(void);
 
 /* Slot update of moby class 1331: state 0 clears the two slot arrays, state 1 services the pending slots and frees a slot whose moby has died. Level 14 relative of func_L00_002E32A0. */
-void Moby1331Update(unsigned char *m) {
+void update_beam_slots(unsigned char *m) {
     int i;
     int j;
     int n;
@@ -3041,15 +3041,15 @@ void Moby1331Update(unsigned char *m) {
                     D_L14_001622A8[i] = 0;
                 }
             } else if (st == 4) {
-                EffectSlot_FreeAt(i);
+                release_beam_slot(i);
             } else if (st != 0) {
                 n++;
-                BeamSlotUpdate(D_L14_001622A8[i], i);
+                update_slot_panes_and_effects(D_L14_001622A8[i], i);
                 D_L14_00162218[i] = 4;
             }
         }
         if (n != 0) {
-            AddDrawCallback(EffectSlot_DrawPanes, m);
+            AddDrawCallback(draw_active_beam_slots, m);
         }
         break;
     }

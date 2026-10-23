@@ -29,7 +29,7 @@ extern char D_0013E633[];
 #define F(p, o) (*(float *)((p) + (o)))
 
 /* Moves a moby along a path, easing between nodes and tracking the hero. */
-void FollowPathTrackHero(unsigned char *moby) {
+void update_taxi_platform(unsigned char *moby) {
     char *data = *(char **)(moby + 0x78);
     char *hero;
     char *path;
@@ -77,9 +77,9 @@ void FollowPathTrackHero(unsigned char *moby) {
     }
     case 1:
         if (*(short *)(data + 0xB8) != 0) {
-            if (Hero_IsOnMoby(moby)) {
+            if (is_hero_on_moby(moby)) {
                 if (*(int *)(data + 0xC8) == 0) {
-                    if (Hero_IsOnMoby(moby)) {
+                    if (is_hero_on_moby(moby)) {
                         HeroEnterMoveState(0x72, 1);
                     }
                 }
@@ -122,8 +122,8 @@ void FollowPathTrackHero(unsigned char *moby) {
             F(data, 0xA4) = F(data, 0xA4) + F(data, 0xA8);
             if (0.5f < FastAbsF(F(data, 0xA4) - 0.5f)) {
                 int r;
-                if (*(int *)(data + 0xC8) == 0 && Hero_IsOnMoby(moby)) {
-                    Hero_SetStateFromMode();
+                if (*(int *)(data + 0xC8) == 0 && is_hero_on_moby(moby)) {
+                    set_hero_idle_state_for_vehicle_mode();
                 }
                 if (0.0f < F(data, 0xAC)) {
                     moby[0xBC] = 0;
@@ -163,7 +163,7 @@ void FollowPathTrackHero(unsigned char *moby) {
     }
     FastVecSub(delta, (moby + 0x10), orig);
     update_entity_matrix(data + 0x60, delta, moby + 0x40, moby + 0x40);
-    if (!Hero_IsOnMoby(moby)) {
+    if (!is_hero_on_moby(moby)) {
         if (2.0f < func_001F9D48((moby + 0x10), D_0013E633 + 0xE9D)) {
             if (*(short *)(data + 0xBA) == 0) {
                 *(short *)(data + 0xB8) = 1;
@@ -174,7 +174,7 @@ void FollowPathTrackHero(unsigned char *moby) {
 extern unsigned char D_L07_0015FD08[] MACRO_ADDR;
 
 /* Moves a moby along a path between its two ends, hidden while its gate byte is set. */
-void ShuttleBetweenPathEnds(unsigned char *moby) {
+void update_mission_gated_taxi_platform(unsigned char *moby) {
     char *data = *(char **)(moby + 0x78);
     char *hero;
     char *path;
@@ -229,9 +229,9 @@ void ShuttleBetweenPathEnds(unsigned char *moby) {
     }
     case 1:
         if (*(short *)(data + 0xB8) != 0) {
-            if (Hero_IsOnMoby(moby)) {
+            if (is_hero_on_moby(moby)) {
                 if (*(int *)(data + 0xC8) == 0) {
-                    if (Hero_IsOnMoby(moby)) {
+                    if (is_hero_on_moby(moby)) {
                         HeroEnterMoveState(0x72, 1);
                     }
                 }
@@ -274,8 +274,8 @@ void ShuttleBetweenPathEnds(unsigned char *moby) {
             *(float *)(data + 0xA4) = *(float *)(data + 0xA4) + *(float *)(data + 0xA8);
             if (0.5f < FastAbsF(*(float *)(data + 0xA4) - 0.5f)) {
                 int r;
-                if (*(int *)(data + 0xC8) == 0 && Hero_IsOnMoby(moby)) {
-                    Hero_SetStateFromMode();
+                if (*(int *)(data + 0xC8) == 0 && is_hero_on_moby(moby)) {
+                    set_hero_idle_state_for_vehicle_mode();
                 }
                 if (0.0f < *(float *)(data + 0xAC)) {
                     moby[0xBC] = 3;
@@ -313,14 +313,14 @@ void ShuttleBetweenPathEnds(unsigned char *moby) {
         }
         break;
     case 3:
-        if (!Hero_IsOnMoby(moby)) {
+        if (!is_hero_on_moby(moby)) {
             moby[0xBC] = 0;
         }
         break;
     }
     FastVecSub(delta, (moby + 0x10), orig);
     update_entity_matrix(data + 0x60, delta, moby + 0x40, moby + 0x40);
-    if (!Hero_IsOnMoby(moby)) {
+    if (!is_hero_on_moby(moby)) {
         if (2.0f < func_001F9D48((moby + 0x10), D_0013E633 + 0xE9D)) {
             if (*(short *)(data + 0xBA) == 0) {
                 *(short *)(data + 0xB8) = 1;
@@ -375,7 +375,7 @@ extern int func_0020BFC8_2F6F20(int, int) __asm__("func_0020BFC8");
 extern void func_0022F4A0_2F6F20(int) __asm__("func_0022F4A0");
 
 /* Update for moby class 436 on level 07: steps the moby's state byte through its table of cases. */
-void Moby436Update(Moby *moby)
+void update_umbris_scene_progression(Moby *moby)
 {
     MobyData_2F6F20 *data = (MobyData_2F6F20 *)moby->pvars;
     float v[4];
@@ -554,7 +554,7 @@ extern struct AnimTimer_30C320 *func_L00_0025D390_30C320(struct Moby *) __asm__(
 
 /* resets a spawned moby from its class defaults and restarts its animation.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l07/gameplay/entities/002cd2b0.c, FUN_L07_0030af40. */
-void ResetMobyFromClassDefaults(struct Moby *m) {
+void reset_moby_from_class_defaults(struct Moby *m) {
     struct SpawnClassView_30C320 *cls;
     struct AnimTimer_30C320 *t;
 
@@ -777,7 +777,7 @@ void boltcrate_possibly_for_metal_detector_update(char *m) {
                     qcopy(&((struct Moby *)cursor)->pos, &child_seg->pos);
                     if (func_001F9908(&child_seg->timer) &&
                         child_seg->segment == ((CrateGroupView *)data)->first_segment)
-                        ResetMobyFromClassDefaults((void *)cursor);
+                        reset_moby_from_class_defaults((void *)cursor);
                 }
             }
             GroupMobyIter_Next(&cursor, cursor, 1, 0);
@@ -796,7 +796,7 @@ extern void func_00213DE0(void *, int, int, int);
 extern void func_L00_00251E30(void *);
 
 /* spawns a moby of class 0x370 at a position moving along a direction */
-unsigned char *Moby880Spawn(void *pos, float *dir, int a, int b) {
+unsigned char *spawn_machinegun_turret_projectile(void *pos, float *dir, int a, int b) {
     unsigned char *m = CreateMoby(0x370);
     if (m) {
         char *d;
@@ -850,7 +850,7 @@ extern Vec4 D_L07_00173F60;
 extern char D_L07_00173F80[];
 
 /* Bolt update: flies on, sparks out at the end of its range, bursts on impact, removes it out of bounds. Adapted from Lombyte (MIT) for PAL: src/overlays/l07/gameplay/entities/002cd2b0.c, FUN_L07_0030b6a8. */
-void BoltProjectileUpdate(Moby *m) {
+void update_linear_projectile(Moby *m) {
     BoltVars_30CA88 *v = (BoltVars_30CA88 *)((void *)m->pvars);
     Vec4 old;
     Vec4 dir;
@@ -957,7 +957,7 @@ extern float D_0015EE70 MACRO_ADDR;
 
 /* Debris update: moves and spins it, bursts it on impact, removes it out of bounds.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l07/gameplay/entities/002cd2b0.c, FUN_L07_0030bbc8. */
-void GravityDebrisUpdate(struct Moby *m) {
+void update_tumbling_ballistic_moby(struct Moby *m) {
     Vec4f *pos = &m->pos;
     DebrisVars_0CFA8 *d = (DebrisVars_0CFA8 *)m->pvars;
     Vec4 old;
@@ -1262,7 +1262,7 @@ void WaterPlateUpdate(Moby *m) {
 extern void func_L01_002BA380(char *, int);
 extern char D_L07_001DD100[];
 void DrawLevelRipples(void) {
-    RippleDraw(D_L07_001DD100, 0x24);
+    render_water_grids(D_L07_001DD100, 0x24);
 }
 typedef struct {
     float x;
@@ -1331,7 +1331,7 @@ typedef struct {
     float radius;
 } Vars30E370;
 
-void TargetDrivenSliderUpdate(unsigned char *moby) {
+void update_linked_state_sliding_platform(unsigned char *moby) {
     Vars30E370 *vars = *(Vars30E370 **)(moby + 0x78);
     float origin[4];
     float rotated[4] __attribute__((aligned(16)));
@@ -1462,7 +1462,7 @@ extern void func_00216270(void);
 void ocean_umbris_update(unsigned char *moby) {
     switch (moby[0x20]) {
     case 0:
-        ScaleTableIntoBuffer128(D_L07_00208820, 0.66666669f);
+        prepare_scaled_table_with_byte_128(D_L07_00208820, 0.66666669f);
         moby[0x20] = 1;
         moby[0x30] = 0xFF;
         break;
@@ -1686,7 +1686,7 @@ eb20:
     }
 }
 // spawns a moby of class 0x416 and initialises its data from the arguments
-unsigned char *ShockwaveSpawn(int a, void *pos, int b, float f0, float f1, float f2, float f3, float f4) {
+unsigned char *spawn_moby_class_1046(int a, void *pos, int b, float f0, float f1, float f2, float f3, float f4) {
     unsigned char *moby = (unsigned char *)func_0020D348_m(0x416);
     if (moby != 0) {
         char *data;
@@ -1833,7 +1833,7 @@ extern void func_L07_0030F0D0(unsigned char *);
 extern char *D_L07_00160064 MACRO_ADDR;
 
 // Fades a moby in and out by its progress, then runs its per-moby callbacks.
-void ShockwaveUpdate(unsigned char *m) {
+void update_fading_ring_effect(unsigned char *m) {
     char *d = *(char **)(m + 0x78);
     float r;
     char *p;
@@ -1892,7 +1892,7 @@ extern int func_L00_001F10E0_f(float, void *, int, int) __asm__("func_L00_001F10
 extern void func_L00_0025F4A8_alt(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float, int, int, int, int) __asm__("func_L00_0025F4A8");
 
 /* Lobbed bomb: falls and spins along its velocity, smoking now and then; bursts on impact or when it leaves the level. */
-void LobbedBombUpdate(char *m) {
+void update_growing_ballistic_moby(char *m) {
     char *d = *(char **)(m + 0x78);
     float prev[4];
     qcopy(prev, m + 0x10);
@@ -1907,7 +1907,7 @@ void LobbedBombUpdate(char *m) {
         *(float *)(m + 0x2C) *= 1.2f;
     }
     if (D_L07_0015F6B0 % 3 == 0) {
-        SpawnMobyAttachedParticle(m, 0, 400000.0f, 5.0f);
+        spawn_moby_point_offset_particle(m, 0, 400000.0f, 5.0f);
     }
     if (func_L00_001EFFF0(prev, m + 0x10, 0, *(int *)(d + 0x10), 0) != 0
         || func_L00_001F10E0_f(0.1f, m + 0x10, 0, *(int *)(d + 0x10)) != 0) {
@@ -2059,7 +2059,7 @@ void EnemyTakeHit(char *m, char *x, float *hp) {
         case 6:
         case 7:
         case 8:
-            LaunchMobyHit(m, x + 0x70, info + 0x10);
+            start_sharkigator_hit_knockback(m, x + 0x70, info + 0x10);
             m[0x20] = 0xC;
             break;
         case 9:
@@ -2076,7 +2076,7 @@ void EnemyTakeHit(char *m, char *x, float *hp) {
             if (*hp <= *(float *)(info + 0x2C)) {
                 *hp = 0.0f;
                 *(unsigned short *)(m + 0x34) &= 0xEFFF;
-                LaunchMobyDeath(m, x + 0x70, info + 0x10);
+                start_sharkigator_death_knockback(m, x + 0x70, info + 0x10);
                 SetDeathBits(m, 0, -1);
                 x[0x67] = 0x78;
                 RerollEffectCounter(m, (short *)(x + 0x60));
@@ -2093,7 +2093,7 @@ void EnemyTakeHit(char *m, char *x, float *hp) {
 }
 extern float func_001F9D10(void *, void *);
 
-void Path_ComputeSegmentLengths(char *data) {
+void cache_path_segment_lengths(char *data) {
     int i, count;
     if (data != 0) {
         count = *(int *)data;
@@ -2173,7 +2173,7 @@ int WalkerInit(char *moby, char *d) {
     t = D_L07_001B0830;
     p = t[i];
     *(char **)(d + 0x128) = p;
-    Path_ComputeSegmentLengths(p);
+    cache_path_segment_lengths(p);
     j = *(int *)(d + 0x144);
     if (j == -1) {
         STUB_printf(D_L07_00211A48, (int)(moby - D_L07_00160058) >> 8);
@@ -2181,7 +2181,7 @@ int WalkerInit(char *moby, char *d) {
     }
     q = t[j];
     *(char **)(d + 0x148) = q;
-    Path_ComputeSegmentLengths(q);
+    cache_path_segment_lengths(q);
     k = *(int *)(d + 0x118);
     if (k == -1) {
         STUB_printf(D_L07_00211A80, (int)(moby - D_L07_00160058) >> 8);
@@ -2966,7 +2966,7 @@ extern char D_0013E633_3126A8[] __asm__("D_0013E633");
 extern char D_0014171B_3126A8[] __asm__("D_0014171B");
 
 /* Level 07 update function for moby class 1069: runs its state machine and moves its parts. */
-void Moby1069Update(Moby *m) {
+void update_command_triggered_falling_platform(Moby *m) {
     V_3126A8 v0;
     V_3126A8 v1;
     V_3126A8 v2;
@@ -3142,7 +3142,7 @@ extern float func_002140F8(float, float);
 extern float func_L00_0025F368(float);
 
 /* Falling leaf: drops off its branch after a random delay, swaying, then falls faster and vanishes near the ground. */
-void FallingLeafUpdate(char *m) {
+void update_hero_triggered_falling_platform(char *m) {
     char *d;
     float prev[4];
     float v[4];
@@ -3165,7 +3165,7 @@ void FallingLeafUpdate(char *m) {
         m[0x20] = 1;
         break;
     case 1:
-        if (Hero_IsOnMoby(m)) {
+        if (is_hero_on_moby(m)) {
             *(float *)(d + 0xA8) = *(float *)(m + 0x40);
             *(float *)(d + 0xAC) = *(float *)(m + 0x44);
             *(short *)(d + 0xA0) = scale_ticks(0x1E);
@@ -3298,7 +3298,7 @@ extern int func_001FA8A8(int, int, float);
 extern char D_L07_001803C0[];
 
 // fades a colour entry in a level table, or frees it once the timer is done
-void PointLight_UpdateFade(char *a) {
+void update_timed_point_light_color(char *a) {
     int h;
     float f;
     int c;
@@ -3331,7 +3331,7 @@ extern void func_L00_001FF5B0(float, void *, void *);
 extern void func_L07_00313298(float, void *, void *, short, void *, short, unsigned int, int);
 
 /* steps a hit-effect emitter: orient, spawn a puff, and reseed the timer */
-int HitEffectEmitterUpdate(void *mp, char *obj, float *vec) {
+int update_alternating_joint_emission_burst(void *mp, char *obj, float *vec) {
     unsigned char *moby = mp;
     float A[4];
     float B[4];
@@ -3396,7 +3396,7 @@ extern char D_L07_001670D0_313800[] __asm__("D_L07_001670D0");
 extern char D_L07_00173F60_313800[] __asm__("D_L07_00173F60");
 
 /* Umbris: sets up the effect vectors from the moby's data block and emits the GS packet. */
-void SwayingBeamDraw(Moby *arg)
+void draw_collision_clipped_moby_beam(Moby *arg)
 {
     float v0[4], v10[4], v20[4], v30[4], v40[4], v50[4], m[4], c2[4], h[4], ii[4], jj[4];
     Packet_313800 pkt;

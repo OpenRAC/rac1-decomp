@@ -522,9 +522,9 @@ void SteerAlongPath(char *m) {
 extern void *func_L00_002DD2D0(void *);
 extern void func_00213DE0(void *, int, int, int);
 
-void *CarriedMoby_ReleaseToState3(char *arg)
+void *enter_scoutbot_return_home_state(char *arg)
 {
-    void *result = ReleaseCarriedMobySlot(arg);
+    void *result = cancel_suck_cannon_suction(arg);
     char *obj = *(char **)(arg + 0x78);
     arg[0x20] = 3;
     *(float *)(obj + 0x200) = 4.0f;
@@ -841,7 +841,7 @@ extern void func_L08_00259040(void *, int, int, void *);
 extern void func_L00_001FDE48(int, int, int, void *, int);
 
 /* Runs the two per-entry update calls over a 13-entry table. */
-void Moby600_DrawQuads13(int a) {
+void draw_scrolled_mesh_batch(int a) {
     int i;
     for (i = 0; i < 13; i++) {
         func_L08_00259040(D_L08_001E8620, D_L08_001E8560[i], D_L08_001E2B18[i], &D_L08_001E8608[a]);
@@ -870,7 +870,7 @@ extern int D_L08_001DE1E0[];
 extern Pair D_L08_00161EB0[] MACRO_ADDR;
 
 /* Runs the two per-entry update calls over an 8-entry table. */
-void Moby600_DrawQuads8(int a) {
+void emit_pair_offset_render_batch(int a) {
     int i;
     for (i = 0; i < 8; i++) {
         func_L08_00259040(D_L08_001E8620, D_L08_001DE1A0[i], D_L08_001DB7D8[i], &D_L08_00161EB0[a]);
@@ -881,7 +881,7 @@ extern float func_001FA888(int);
 extern int func_001FA898_r(float) __asm__("func_001FA898");
 
 /* Scales every RGBA word of a set of colour tables by four factors, optionally using the flat 255 for colour. */
-void ScaleColorTables(int **tabs, int n, int *counts, int flat, float r, float g, float b, float a) {
+void scale_rgba_tables(int **tabs, int n, int *counts, int flat, float r, float g, float b, float a) {
     int i, j;
     for (i = 0; i < n; i++) {
         for (j = 0; j < counts[i]; j++) {
@@ -910,7 +910,7 @@ extern float func_001F9FA8(float);
 extern float D_0015EE7C MACRO_ADDR;
 
 /* advance a 2-D wrapped phase by a and b and write scaled sines */
-void AdvanceWavePhase(float *out, float *ph, float a, float b, float scale) {
+void advance_wrapped_sine_pair(float *out, float *ph, float a, float b, float scale) {
     ph[0] += a * frame_delta_time;
     if (ph[0] > 1.0f) {
         ph[0] -= 2.0f;
@@ -1668,7 +1668,7 @@ extern void func_L00_00260108(void *, void *, int, float, float);
 extern void func_0020D678(void *);
 
 /* Fire bolt: flies along its velocity with a smoke trail (while the level is not underwater), damaging what it hits. */
-void FireBoltUpdate(char *m) {
+void update_fire_bolt(char *m) {
     char *d = *(char **)(m + 0x78);
     float prev[4];
     float sc[4];
@@ -1774,7 +1774,7 @@ extern void func_L08_002803B8_3091B0(void *, void *, float, void *) __asm__("fun
 extern void func_L00_00264570_3091B0(void *) __asm__("func_L00_00264570");
 
 /* moby class 1400 update: steers the offset vectors from the mode, fans them out to the object over counted loops */
-void Moby1400Update(Moby *m) {
+void scatter_ground_particles(Moby *m) {
     V_3091B0 pt;
     V_3091B0 dv;
     V_3091B0 base;
@@ -1977,7 +1977,7 @@ extern float func_001F9F90(float);
 extern void func_L08_00273A80(void *, void *, void *, float);
 
 /* While the player is within range, scatters spawned particles around the moby on a random disc. */
-void Moby1629Update(char *moby) {
+void spawn_moby_radial_particles(char *moby) {
     float v[4];
     float pos[4];
     float w[4];
@@ -2022,7 +2022,7 @@ extern int func_L00_0028F210(int, int);
 extern int func_L00_0028F0B0(int a, int b, int c, int d);
 
 /* Wind ambience: probes 20 points around the hero; the more of them are below the camera, the louder the loop. */
-void WindAmbienceUpdate(char *m) {
+void update_ground_height_modulated_voice(char *m) {
     float p[4];
     float off[4];
     float axis[4];

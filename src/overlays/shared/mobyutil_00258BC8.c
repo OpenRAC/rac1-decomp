@@ -44,7 +44,7 @@ float CubicInterpolate(float a, float b, float c, float d, float t) {
 extern float func_001FA790(float, float);
 extern float func_001F9F90(float);
 extern float func_001FA748(float, float);
-float CosineEaseAngle(float x, float y, float z) {
+float interpolate_wrapped_angle_cosine_eased(float x, float y, float z) {
     float t = FastSubRots(y, x);
     float c = FastCos(z * 3.1415927f);
     return FastAddRots(x, t * ((1.0f - c) * 0.5f));
@@ -56,7 +56,7 @@ extern void func_001F9BD8(void *, void *, void *);
 
 /* Vector cosine interpolation: dst = a + (b - a) * ((1 - cos(t * pi)) * 0.5).
    Scalar analogue matched at src/game/mobyutil.c:func_00214220. */
-void LerpVectorCosine(void *dst, void *a, void *b, float t) {
+void interpolate_vector_xyz_cosine_eased(void *dst, void *a, void *b, float t) {
     float tmp[4];
     float ease;
 
@@ -73,7 +73,7 @@ void LerpVectorCosine(void *dst, void *a, void *b, float t) {
     FastVecScale(tmp, tmp, ease);
     FastVecAdd(dst, a, tmp);
 }
-void CosineEaseAngleVec(float *out, float *a, float *b, float ang) {
+void interpolate_wrapped_rotations_cosine_eased(float *out, float *a, float *b, float ang) {
     float s = (1.0f - FastCos(ang * 3.1415927f)) * 0.5f;
     out[0] = FastAddRots(a[0], FastSubRots(b[0], a[0]) * s);
     out[1] = FastAddRots(a[1], FastSubRots(b[1], a[1]) * s);
@@ -799,7 +799,7 @@ extern char D_L00_0015F660[] MACRO_ADDR;
 extern void func_L00_0025AC00_5AD38(unsigned char *, int, int, void *, void *, float) __asm__("func_L00_0025AC00");
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_entities_0024c7f0.c, FUN_L10_0024c7f0. */
-void PostHitMessageAtPoint(unsigned char *m, int x, int y, void *p, float f) {
+void spawn_nearby_effect_without_direction(unsigned char *m, int x, int y, void *p, float f) {
     func_L00_0025AC00_5AD38(m, x, y, p, D_L00_0015F660, f);
 }
 extern void func_001F9BF0(void *, void *, void *);
@@ -1373,7 +1373,7 @@ extern float func_001F9878(float);
 extern float func_00214358_f(void *, int, float) __asm__("func_00214358");
 
 /* Steps a thrown object through its motion states (0 wait, 1 rise, 2 fall, 3 settle) and returns the new state. */
-int ThrownObjectStep(char *m, char *p) {
+int update_arc_motion(char *m, char *p) {
     float tmp[3];
     float f0, f1, v;
     float *vec;
@@ -1600,7 +1600,7 @@ typedef struct { int a[4]; } Vq __attribute__((aligned(16)));
 extern void func_L00_001FF4B0(void *, void *, float);
 extern float func_001F9C78(void *, void *);
 extern void func_001F9BF0(void *dst, void *a, void *b);
-void ReflectVelocity(void *a, void *b, void *c, float s) {
+void subtract_homogeneous_scaled_vector_xyz(void *a, void *b, void *c, float s) {
     Vq t0, t1;
     func_L00_001FF4B0(&t1, c, 1.0f);
     FastVecScale(&t0, &t1, FastVecDot(&t1, b) * s);
@@ -1989,7 +1989,7 @@ void StepColorFade(void *a, unsigned char *s) {
     func_L00_00251328(a, cr, cg, cb);
 }
 // Advances an index with wrapping or directional clamping.
-int StepTableIndex(int *limit, int index, int delta, int wrap) {
+int offset_path_index(int *limit, int index, int delta, int wrap) {
  if (wrap) index = (index + delta + *limit) % *limit;
  else {
   index += delta;
@@ -2132,7 +2132,7 @@ extern void func_L00_0025C710(void *, void *, void *, float);
 extern float func_L00_0025EAC8_f(void *, void *, float) __asm__("func_L00_0025EAC8");
 
 /* Nearest point on the segment a-b to p (clamped), returned with the distance result. Adapted from Lombyte (MIT) for PAL: overlays/shared/math_rotations_0025d238.c, FUN_L00_0025dcd8. */
-float NearestPointOnSegment(u128_ED30 *out, u128_ED30 *p, u128_ED30 *a, u128_ED30 *b, float r) {
+float resolve_level_path_segment_point(u128_ED30 *out, u128_ED30 *p, u128_ED30 *a, u128_ED30 *b, float r) {
     u128_ED30 d[2];
     u128_ED30 c[1];
     u128_ED30 e[1];
@@ -2232,7 +2232,7 @@ s32 func_L00_0025EFC0(s32 *path, OvlQuad *point, OvlQuad *nearest,
     current_fraction = best_fraction;
     end = best_segment;
     func_L00_0025E860_5EFC0(path, &work[0], &end, &current_fraction, step, wrap);
-    end = StepTableIndex(path, end, 1, wrap);
+    end = offset_path_index(path, end, 1, wrap);
     current = start;
     distance = 1000000000.0f;
     do {
@@ -2254,7 +2254,7 @@ s32 func_L00_0025EFC0(s32 *path, OvlQuad *point, OvlQuad *nearest,
         count = *path;
         previous = count - 1;
         previous = (best_segment + previous) % count;
-        distance = NearestPointOnSegment(nearest, point,
+        distance = resolve_level_path_segment_point(nearest, point,
             (OvlQuad *)(path + 4 + previous * 4),
             (OvlQuad *)(path + 4 + best_segment * 4), height_tolerance);
         *segment = previous;
@@ -2266,7 +2266,7 @@ s32 func_L00_0025EFC0(s32 *path, OvlQuad *point, OvlQuad *nearest,
     }
     count = *path;
     if (best_segment < count - 1 || wrap) {
-        next_distance = NearestPointOnSegment(&work[1], point,
+        next_distance = resolve_level_path_segment_point(&work[1], point,
             (OvlQuad *)(path + 4 + best_segment * 4),
             (OvlQuad *)(path + 4 + ((best_segment + 1) % count) * 4),
             height_tolerance);
@@ -2994,7 +2994,7 @@ extern int func_L00_002616E0(int x, char *o, float *a, float *c, float *b, float
 extern void func_L00_002607A8(void *a, float x);
 
 /* Transform a point into a moby's local frame, handling its collision flag. */
-int TransformToMobyLocal(int x, char *o, float *p, float *q, float *r, float *s) {
+int transform_attachment_pose(int x, char *o, float *p, float *q, float *r, float *s) {
     float m0[16] __attribute__((aligned(16)));
     float m1[16] __attribute__((aligned(16)));
     float v[4] __attribute__((aligned(16)));

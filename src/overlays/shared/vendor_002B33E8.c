@@ -757,7 +757,7 @@ extern s32 func_L00_0020DB30_4198(s32) __asm__("func_L00_0020DB30");
 extern void func_0020D678_4198(void *) __asm__("func_0020D678");
 extern void func_L00_002B4F40_4198(void *) __asm__("func_L00_002B4F40");
 /* Multi-state update for a timed object: random delays from func_001F9850 pace the stages, which adjust the step and scale fields of its private block and call the shared callback. Adapted from Lombyte (MIT) for PAL: overlays/shared/unclassified_002b2100.c, FUN_L00_002b4198. */
-void Moby167Update(void *p) {
+void update_beam_effect_lifecycle(void *p) {
     O_4198 *o = (O_4198 *)p;
     V_4198 *v = o->v;
     s32 flag = 0;
@@ -1387,11 +1387,11 @@ void Moby_EndGadgetControl(int a, int *b) {
     int *p = *(int **)(*(char **)b + 0x78);
     if (p != 0) p[1] = 0;
     *(int *)(D_0013E633 + 0x2DFD) = 0;
-    Camera_ChooseFollowState(b[5]);
+    select_camera_mode_by_hero_alignment_and_distance(b[5]);
     b[5] = 0;
     HeroEnterMoveState(0, 1);
     Moby_RestoreGlobalsState(a, 1);
-    Moby_ClearGadgetControl();
+    clear_jet_camera_mode_latch();
     DeleteMoby(a);
     D_L00_00167114 = 0;
 }
@@ -1949,7 +1949,7 @@ void taunter_update(Moby *m)
             r1 = truncate_float_to_s32(((Cfg *)m->pclass)->tab[i].x * 10.0f);
             r2 = truncate_float_to_s32(((Cfg *)m->pclass)->tab[i].y * 10.0f);
             if (!(o->idx < ((Cfg *)m->pclass)->count && r1 == 0x1E && r2 == r1)) o->idx = 0;
-            Moby175_HitNearbyTargets(m, o->radius);
+            apply_taunter_to_nearby_mobies(m, o->radius);
             o->retry = 0;
             goto end;
         }
@@ -1975,9 +1975,9 @@ void taunter_update(Moby *m)
     o->anim = -1;
     goto end;
 L7340:
-    if (!((*(s32 *)&D_L00_0015F6B0_B8208b) & 3)) Moby175_HitNearbyTargets(m, o->radius);
+    if (!((*(s32 *)&D_L00_0015F6B0_B8208b) & 3)) apply_taunter_to_nearby_mobies(m, o->radius);
 end:
-    if ((s32)(D_0013F450_2B8208.w10B4 ^ 3) != 0) Moby175SlotsUpdate(m);
+    if ((s32)(D_0013F450_2B8208.w10B4 ^ 3) != 0) update_taunter_effect_slots(m);
 }
 typedef struct { float f; short a; short b; short c; short pad; } E8690;
 extern E8690 D_L00_001DB740_b[10] __asm__("D_L00_001DB740") NOT_SDA;
@@ -1997,7 +1997,7 @@ extern void func_L00_00250800(void *, int, void *);
 extern void func_001F49B0(void (*)(void), void *);
 extern void func_L00_002B8860_b(void) __asm__("func_L00_002B8860");
 /* per-frame update of the ten slot table: spawn one, age the rest, then draw */
-void Moby175SlotsUpdate(Moby *arg) {
+void update_taunter_effect_slots(Moby *arg) {
     E8690 *p;
     unsigned short av;
 
@@ -2119,7 +2119,7 @@ int func_001F9850(int);
 void func_L00_00203F20(int, int);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002b2100.c, FUN_L00_002b8230. */
-void func_L00_002B9528(unsigned char *m)
+void update_pyrocitor_usage_and_cleanup(unsigned char *m)
 {
     unsigned char *v = *(unsigned char **)(m + 0x78);
     unsigned char *P;
@@ -2190,7 +2190,7 @@ extern float func_001F9878(float);
 extern char *func_00219780(void *, void *, void *, int, int, int, int, int, int);
 
 // Updates the effect moby's 15 slots: spawns and releases spark particles around live children.
-void EffectSlots_SparkUpdate(char *m) {
+void update_pyrocitor_flame_effect_slots(char *m) {
     float vec[4];
     char buf[0x30];
     char qv[16];

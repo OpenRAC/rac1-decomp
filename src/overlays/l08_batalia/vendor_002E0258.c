@@ -372,7 +372,7 @@ extern void func_001F49B0_2E16A0(void *,void *) __asm__("func_001F49B0");
 extern void func_L08_002E0258_2E16A0(void *) __asm__("func_L08_002E0258");
 
 /* Updates the mounted Batalia cannon: entry/exit, aiming, alternating barrels, waves, and attached visuals. */
-void CannonUpdate(Moby *m) {
+void update_batalia_cannon(Moby *m) {
     float position[4], offset[4], work[4], direction[4], muzzle[4], scatter[4], random_vec[4];
     CannonData52_2E16A0 *d = (*(CannonData52_2E16A0 **)&m->pvars);
     int i, target, all_done, dead, best, lo;
@@ -675,7 +675,7 @@ void CannonUpdate(Moby *m) {
 extern void func_L08_00231228(int, int);
 
 /* Sets byte +0xBC of the moby to 1 and calls func_L08_00231228(0x32, 1). */
-void Moby1283_SetHeroState(char *arg) {
+void request_batalia_cannon_mount(char *arg) {
     arg[0xBC] = 1;
     Hero_TryMoveStateL08(0x32, 1);
 }
@@ -720,7 +720,7 @@ extern float D_L08_00161CB8 SDATA(D_L08_00161CB8);
 extern float D_L08_00161CBC SDATA(D_L08_00161CBC);
 
 /* Update function for moby classes 441-443 on level 08 (falling debris): picks its spin, falls with a smoke trail, bursts into particles near the ground, then falls on until out of bounds. */
-void FallingDebrisUpdate(Moby *m) {
+void update_falling_debris(Moby *m) {
     Data_2E2A38 *d = (Data_2E2A38 *)m->pvars;
     float v10[4];
     Pair_2E2A38 tab;
@@ -827,7 +827,7 @@ extern void *func_L08_002E3010(char *parent, int oClass, int joint, int pjoint);
 
 /* Fills the data block at +0x60 to +0x1xx with objects made by func_L08_002E3010 (types 0x1B9 to 0x1C2, each
  * with its parent and index fields), including loops of eight for type 0x1BB. */
-void SpawnPartMobys(char *m) {
+void spawn_gunship_parts(char *m) {
     char *d = *(char **)(m + 0x78);
     char *x3;
     char *x5;
@@ -914,7 +914,7 @@ extern short D_0015EE6C_g __asm__("D_0015EE6C");
 extern short D_L08_00161CCC;
 
 // Updates the attached part mobys and the three spinning parts of a moby.
-void UpdatePartMobys(char *moby) {
+void update_linked_moby_parts(char *moby) {
     float v0[4];
     float v10[4];
     float v20[4];
@@ -1084,7 +1084,7 @@ extern struct Moby *func_L08_002DF758(void *, struct Moby *, void *, f32, f32);
 extern void func_L08_002E35C8(struct Moby *);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l08/gameplay/entities/002deee0.c, FUN_L08_002e24e8. */
-void Moby444Update(struct Moby *moby) {
+void update_gunship(struct Moby *moby) {
     GunshipVars *vars = (GunshipVars *)moby->pvars;
     SwarmPathFollower *follower;
     struct Moby *target;
@@ -1166,7 +1166,7 @@ void Moby444Update(struct Moby *moby) {
             yaw = -0.34f;
         }
         func_L00_001FF4B0(&velocity, &step, ((*(f32 *)&D_L08_00161CC8) + (*(f32 *)&D_L08_00161CC8)) * D_0015EE6C);
-        shot = Moby435Spawn(&muzzle, target, &velocity, pitch, yaw);
+        shot = spawn_class_1b3_projectile(&muzzle, target, &velocity, pitch, yaw);
         shot->scale = shot->pclass->scale / 5.0f;
         target_vars = (SwarmTargetVars *)target->pvars;
         for (slot = 0; slot < 8; slot++) {
@@ -1213,7 +1213,7 @@ void Moby444Update(struct Moby *moby) {
         pitch = random_float_between(-0.5235988f, -0.2617994f);
         yaw = random_angle_radians();
         func_L00_001FF4B0(&velocity, &step, ((*(f32 *)&D_L08_00161CC8) + (*(f32 *)&D_L08_00161CC8)) * D_0015EE6C);
-        bolt = Moby435Spawn(&muzzle, 0, &velocity, pitch, yaw);
+        bolt = spawn_class_1b3_projectile(&muzzle, 0, &velocity, pitch, yaw);
         if (bolt != 0) {
             bolt->rot.z = vars->links[4].part->rot.z;
             bolt->state = 5;
@@ -1251,7 +1251,7 @@ void Moby444Update(struct Moby *moby) {
 extern char *D_L08_00160058 MACRO_ADDR;
 
 /* updates matching objects in the selected object range */
-void CollectClass279Mobys(char *moby) {
+void build_bolt_thief_target_list(char *moby) {
     char *data = *(char **)(moby + 0x78);
     int oclass=0x279;
     char *base = D_L08_00160058;
@@ -1393,7 +1393,7 @@ void Batalia_BoltThiefUpdate(Moby *m) {
     case 1:
         qcopy(&va, &D_L08_001B0FB0_2E4168[d->w220]->pts[0]);
         if (FastVecDist(D_0013E633 + 0xE9D, &va) < 24.0f) {
-            CollectClass279Mobys((char *)m);
+            build_bolt_thief_target_list((char *)m);
             m->state = 5;
             if (m->prev_seq != 3) {
                 MobyBlendAnimation(m, 3, 0, 6);
@@ -1432,7 +1432,7 @@ void Batalia_BoltThiefUpdate(Moby *m) {
         if (m->anim_flags & 2) {
             int i;
 
-            CollectClass279Mobys((char *)m);
+            build_bolt_thief_target_list((char *)m);
             for (i = 0; i < 0x32; i++) {
                 Moby *o = d->list[i];
 
@@ -1673,7 +1673,7 @@ extern int D_L08_001746D8_4BE8 __asm__("D_L08_001746D8");
 extern unsigned char D_0014BFC0[][4];
 
 /* Batalia turret bolt: rides its turret, flies to the hero when shot and is collected, falls and bounces when the turret dies. */
-void TurretBoltUpdate(Moby *m) {
+void update_batalia_bolt_pickup(Moby *m) {
     float a[4];
     float b[4];
     float c[4];
@@ -1734,11 +1734,11 @@ void TurretBoltUpdate(Moby *m) {
         Vars_4BE8 *d = (Vars_4BE8 *)m->pvars;
 
         if (d->u7C.i != 0) {
-            TransformToMobyLocal(m, d->u7C.i, d->v20, d->v30, d->v0, d->v10);
+            transform_attachment_pose(m, d->u7C.i, d->v20, d->v30, d->v0, d->v10);
             if ((signed char)((Moby *)d->u7C.i)->state < 0) {
                 d = (Vars_4BE8 *)m->pvars;
                 clear_u64_value(d->v40);
-                BuildRollMatrix(d, &m->rot_row1, D_L08_00161D28 * 0.017453292f * D_0015EE6C);
+                build_axis_roll_matrix(d, &m->rot_row1, D_L08_00161D28 * 0.017453292f * D_0015EE6C);
                 m->state = 4;
                 break;
             }
@@ -1803,7 +1803,7 @@ void TurretBoltUpdate(Moby *m) {
             FastVecSub(b, &m->pos, D_0013E633 + 0xE9D);
             func_L00_001FF4B0(b, b, 1.0f);
             FastVecCross(b, a, b);
-            BuildRollMatrix(e, b, D_L08_00161D24 * k * D_0015EE6C);
+            build_axis_roll_matrix(e, b, D_L08_00161D24 * k * D_0015EE6C);
             m->flags |= 0x100;
             func_L00_001FF4B0(e->v40, a, D_0015EE6C * 8.0f);
             e->f74 = 0.0f;
@@ -2266,7 +2266,7 @@ void DrawScreenMarkerQuad(char *m) {
     }
 }
 /* spawns the child mobys this object owns and fills its part table */
-void SpawnChildMobys(char *moby) {
+void spawn_shrub_parts(char *moby) {
     char *data = *(char **)(moby + 0x78);
     char *e = data + 0xBC;
     int i = 0;
@@ -2385,7 +2385,7 @@ extern float D_0015EE6C MACRO_ADDR;
 extern short D_L08_00161DB8;
 
 /* Re-aims the twelve child mobys of a parent, adjusts the parent's spin, then runs the children's follow-up. */
-void UpdateTwelvePartMobys(char *a) {
+void update_shrub_parts(char *a) {
     char *data = *(char **)(a + 0x78);
     float v0[4], v10[4], v20[4];
     char *base = data + 0x60;
@@ -2636,7 +2636,7 @@ void shrub_update(struct Moby *moby) {
     }
 }
 /* Builds the moby's part hierarchy: body, head, arms and eight trailing segments. */
-void BuildPartHierarchy(char *moby) {
+void spawn_joint_linked_moby_parts(char *moby) {
     char *data = *(char **)(moby + 0x78);
     char *e = data + 0xFC;
     int i = 0;
@@ -2706,7 +2706,7 @@ typedef struct {
 extern s32 func_0022ED80_EAB30(s32, s32, struct Moby *) __asm__("func_0022ED80");
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l08/gameplay/entities/002deee0.c, FUN_L08_002e9758. */
-void LaunchDamagedSwarmPart(struct Moby *moby) {
+void process_linked_moby_part_hits(struct Moby *moby) {
     int selected = 0;
     char *data = (char *)moby->pvars;
     SwarmPart *slots = (SwarmPart *)(data + 0x60);
@@ -2796,7 +2796,7 @@ extern void func_L00_00251E30();
 extern short D_L08_00161DC8;
 
 // Updates the moby's attached parts: pose each one, scale one value, then run the flagged ones.
-void UpdateSixteenPartMobys(char *arg) {
+void update_commando_parts(char *arg) {
     char *data = *(char **)(arg + 0x78);
     float v0[4];
     float v1[4];

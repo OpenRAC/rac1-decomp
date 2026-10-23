@@ -16,12 +16,12 @@ extern void func_L00_002E72E8(void *);
 void follow_camera_update(char *m) {
     char *p = *(char **)(m + 0x70) + 0x1D0;
     *(float *)&D_L00_0015F044 = ((float *)&D_L00_00161E80)[D_0015EED0[5]];
-    CamAttach_ShiftByHeroDelta(m);
+    apply_follow_camera_translation(m);
     follow_camera_apply_overrides(m);
     Profile_Mark(m);
     follow_camera_springs(m);
     Profile_Mark(m, p);
-    FollowCameraBuildView(m);
+    update_follow_camera_pose(m);
     Profile_Mark(m);
     follow_camera_approach(m);
 }
@@ -59,7 +59,7 @@ extern char D_0013F450[];
 extern void *D_L00_00166F04;
 
 /* builds the camera-relative matrix rows of a moby from the camera state */
-void Camera_BuildFollowMatrix(char *m) {
+void initialize_hero_aligned_camera_pose(char *m) {
     float a[4];
     float b[4];
     char *g = D_0013F450;
@@ -94,7 +94,7 @@ void func_L00_002EB3A0(p)
 {
     int *q = *(int **)(p + 0x70);
     q[0] = 0; q[2] = 0; q[1] = 0; q[3] = 0; q[4] = 0; q[5] = 0; q[6] = 0;
-    Camera_BuildFollowMatrix(p);
+    initialize_hero_aligned_camera_pose(p);
     *(short *)(p + 0x7E) = 0;
 }
 typedef struct { float f[4]; } __attribute__((aligned(16))) V;
@@ -126,7 +126,7 @@ float func_001FA790(float, float);
 int func_L00_001F10E0(void *, int, void *, float);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_002e9010.c, FUN_L00_002e9f38. */
-void CameraType4Update(u8 *o) {
+void update_hero_aligned_camera_from_input(u8 *o) {
     V up;
     V side;
     V d;
@@ -309,7 +309,7 @@ extern float func_001F9CB8(void *);
 extern float func_001F9FC0(float);
 
 /* Exit-camera update: reset the camera state, or drop to state 4 when the view lines up within 80 degrees. */
-void Camera_ExitUpdate(char *m) {
+void select_camera_mode_by_hero_vector_alignment(char *m) {
     char *p = (char *)D_0013E633_2EBCC0 + 0xE1D;
     S *g;
     S *h;
@@ -457,7 +457,7 @@ LINKER_REMNANT("asm/overlays", func_L00_002EC208);
 extern void func_001F9BC0(void *);
 
 /* Camera-state init: sets the default parameters and builds the moby's matrix. */
-void Camera_StateInit(char *m) {
+void initialize_camera_pose_springs(char *m) {
     float v[16];
     char *q;
     char *p;
@@ -511,8 +511,8 @@ void CameraScript_Update(void *arg) {
         float u;
         func_001F9908((int *)c);
         u = (float)(*(int *)(c + 4) - *(int *)(d + 0xE0)) / IntToFloat(*(int *)(c + 4));
-        LerpVectorCosine(m + 0x30, m + 0x30, b, u);
-        CosineEaseAngleVec((float *)(m + 0x40), (float *)(m + 0x40), (float *)(d + 0x90), u);
+        interpolate_vector_xyz_cosine_eased(m + 0x30, m + 0x30, b, u);
+        interpolate_wrapped_rotations_cosine_eased((float *)(m + 0x40), (float *)(m + 0x40), (float *)(d + 0x90), u);
     } else if (t == 3) {
         if (func_001F9908((int *)c) != 0) {
             qcopy(m + 0x30, b);
@@ -533,13 +533,13 @@ void CameraScript_Update(void *arg) {
                 }
                 F(c, 0x1C) += CosineInterpolate(0, diff, t);
             } else {
-                F(c, 0x1C) = CosineEaseAngle(F(c, 0x1C), F(c, 8), t);
+                F(c, 0x1C) = interpolate_wrapped_angle_cosine_eased(F(c, 0x1C), F(c, 8), t);
             }
             F(c, 0x24) = F(c, 0x24) + (F(c, 0x10) - F(c, 0x24)) * CubicInterpolate(F(c, 0x44), 0, 1.0f, F(c, 0x48), t);
-            F(c, 0x20) = CosineEaseAngle(F(c, 0x20), F(c, 0xC), t);
-            LerpVectorCosine(c + 0x30, c + 0x30, D_0013E633 + 0xE9D, t);
+            F(c, 0x20) = interpolate_wrapped_angle_cosine_eased(F(c, 0x20), F(c, 0xC), t);
+            interpolate_vector_xyz_cosine_eased(c + 0x30, c + 0x30, D_0013E633 + 0xE9D, t);
             Camera_Polar3dToPos(m + 0x30, c + 0x1C, c + 0x30);
-            CosineEaseAngleVec((float *)(m + 0x40), (float *)(m + 0x40), (float *)(b + 0x10), t);
+            interpolate_wrapped_rotations_cosine_eased((float *)(m + 0x40), (float *)(m + 0x40), (float *)(b + 0x10), t);
         }
     } else {
         if (*(short *)(d + 0x1C) == 1) {
@@ -559,12 +559,12 @@ void CameraScript_Update(void *arg) {
 extern void func_L00_002EC2D0(void *);
 extern void func_L00_001EDA28(void *, float);
 /* Update wrapper: runs the base camera update, then a follow-up call if a flag is set. */
-void CameraType5Update(char *a) {
+void update_camera_pose_with_optional_collision(char *a) {
     char *p = *(char **)(a + 0x70) + 0xE0;
     CameraScript_Update(a);
     if (*(int *)(p + 0x40) != 0) {
         a[0x89] = 0;
-        MoveCameraToward(a + 0x30, 0.5f);
+        resolve_camera_movement_collisions(a + 0x30, 0.5f);
     }
 }
 extern float func_001FA748(float, float);
@@ -629,7 +629,7 @@ void Camera_ResetTuning(void *arg) {
     *(short *)(p + 0x7E) = 0;
 }
 /* smooths camera values toward targets and rebuilds the camera matrix */
-void Camera_SmoothToTargets(char *m) {
+void update_orbit_camera_pose(char *m) {
     char *p = *(char **)(m + 0x70);
     char *q = p + 0xB0;
     float mat[16];
@@ -764,7 +764,7 @@ extern char D_0013E633[];
 extern float func_001F9D10(void *, void *);
 
 /* Sets the moby's state to 2 (and arms the camera-side fields) when the target is nearly in front and close, else to 4. */
-void Camera_ChooseFollowState(char *m) {
+void select_camera_mode_by_hero_alignment_and_distance(char *m) {
     char *g = D_0013E633 + 0xE1D;
     char *s = (char *)&player_camera;
     char *t = *(char **)(g + 0x2080);
@@ -782,7 +782,7 @@ void Camera_ChooseFollowState(char *m) {
 }
 extern char D_0013F450[];
 /* Camera setup from the global block at D_0013F450+0x80. */
-void CameraType6Activate(void *arg) {
+void initialize_orbit_camera_from_hero(void *arg) {
     char *a = arg;
     char *g = D_0013F450 + 0x80;
     char *p0 = *(char **)(a + 0x70);
@@ -924,7 +924,7 @@ extern float rope_turn_k_2ED320 SDATA(D_L00_00161EA8);
    the hero's yaw, then places it behind the hero and pulls it in front of geometry. Adapted from Lombyte (GPL-3.0) for
    PAL: src/overlays/shared/gameplay/camera/follow_camera_update.c, FUN_L00_002ebe70. The moby list pointer
    D_L00_00160098 is MACRO_ADDR (retail loads it with its lui into one register). */
-void func_L00_002ED320(char *cam) {
+void update_target_tracking_camera_position(char *cam) {
     char *state = *(char **)(cam + 0x70);
     char *follow = state + 0x40;
     float *distance = (float *)(state + 0xa0);
@@ -1038,7 +1038,7 @@ extern void func_002156E0(void *, void *, void *, float);
 extern char D_0013E633[] NOT_SDA;
 extern char D_L00_00166F30[] NOT_SDA;
 /* orients a moby to face the camera, blending by the turn angle */
-void FaceMobyToCamera(char *m) {
+void turn_camera_view_toward_hero(char *m) {
     char *p = *(char **)(m + 0x70);
     char *q = p + 0x40;
     char *g = D_0013E633 + 0xE9D;
@@ -1077,7 +1077,7 @@ extern int func_001F9850(int);
 extern void func_00202790(int);
 
 /* camera update: copies the moby's matrix when the camera mode changes */
-void CameraType7Update(char *m) {
+void update_target_tracking_camera(char *m) {
     char *b = D_0013E633 + 0xE1D;
     char *p = *(char **)(m + 0x70) + 0xB8;
     int v = *(int *)(b + 0x2084);
@@ -1105,7 +1105,7 @@ void CameraType7Update(char *m) {
     }
 done:
     RefreshPointLight((int)m);
-    MoveCameraToward(q, 0.5f);
+    resolve_camera_movement_collisions(q, 0.5f);
     *(int *)(*(char **)(m + 0x70) + 0x80) = 0;
 }
 extern char D_0013F450[];
@@ -1787,7 +1787,7 @@ s32 func_001F9850(s32);
 void func_L00_0028EBF0(s32);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_002e9010.c, FUN_L00_002ed950. */
-void SndInstSphereUpdate(u8 *m) {
+void update_sound_emitter_playback_by_distance(u8 *m) {
     S_2ed950 *s = *(S_2ed950 **)(m + 8);
     f32 d, r;
     if (s->id < 0) return;
@@ -1819,7 +1819,7 @@ extern float func_002140F8(float, float);
 extern int func_002140B0(int);
 
 /* updates a one-shot sound box: checks the listener is inside, then starts the sound */
-void SndInstBoxOneShotUpdate(char *m) {
+void update_sound_emitter_playback_at_random_position(char *m) {
     float v[20];
     int *d = *(int **)(m + 8);
     float f = *(float *)(m + 0xC);

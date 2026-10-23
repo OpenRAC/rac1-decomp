@@ -158,7 +158,7 @@ struct Amb {
 extern struct Amb D_L00_001CBAC0;
 
 /* per-frame level ambience (wind/sway) state machine: picks a random target, then eases toward it */
-void LevelAmbienceUpdate(void) {
+void update_ambience_target_cycle(void) {
     struct Amb *s = &D_L00_001CBAC0;
     float a, b, c, d, e;
     switch (s->hC) {
@@ -301,7 +301,7 @@ extern void func_L00_00251E30(void *);
    its +0x34 flags, copies the caller's 16-byte position/orientation
    vector into its +0x10, and hands it to func_L00_00251E30. Returns
    the new moby, or NULL if the spawn failed. */
-void *Moby1007Spawn(void *arg0) {
+void *create_camera_collision_moby(void *arg0) {
     void *m = CreateMoby(0x3EF);
 
     if (m != 0) {
@@ -969,7 +969,7 @@ void ThrownMobyOrient(char *moby, void *out1, void *out2) {
     float c1, c2, c3, c4, c5;
 
     if (*(char **)(data + 0x5C) != 0) {
-        TransformToMobyLocal((int)moby, *(char **)(data + 0x5C), (float *)data, (float *)(data + 0x10), A, B);
+        transform_attachment_pose((int)moby, *(char **)(data + 0x5C), (float *)data, (float *)(data + 0x10), A, B);
     } else {
         qcopy(A, data);
         qcopy(B, data + 0x10);
@@ -1113,7 +1113,7 @@ extern void func_00215380(void *, void *, float);
 
 /* Spawns a bolt worth `value` (1, 5, 20 or 50) at `pos` with velocity `vel`, coloured like `src`, spinning about vel x (src - pos). flags & 2 sends it toward D_001413D0 (& 0x10 with a random angle). When no moby is free the value goes straight into the bolt count.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002a4830.c, FUN_L00_002a7438. */
-struct Moby *SpawnBolt(struct Moby *src, void *pos, void *vel, int flags, int value, int counted)
+struct Moby *spawn_bolt_by_value(struct Moby *src, void *pos, void *vel, int flags, int value, int counted)
 {
     f32 dir[4] __attribute__((aligned(16)));
     f32 tmp[4] __attribute__((aligned(16)));
@@ -1358,7 +1358,7 @@ void CopyHeroAnimToMoby(char *m) {
 }
 extern void *D_L00_00173F58;
 extern char *func_L00_0025D390(void *);
-int CollMoby_IsPvarTypeOne(void) {
+int get_wrench_hit_sound_variant(void) {
     int r = 0;
     char *x = 0;
     if (D_L00_00173F58 != 0) x = GetFlaggedPvarWord(D_L00_00173F58);
@@ -1366,7 +1366,7 @@ int CollMoby_IsPvarTypeOne(void) {
     return r;
 }
 extern char *func_L00_0025D390(void *);
-int CollMoby_HasPvarFlag2(void) {
+int should_trigger_wrench_hit_reaction(void) {
     char *x = GetFlaggedPvarWord(D_L00_00173F58);
     if (x != 0) {
         if (*(unsigned short *)(x + 0x1E) & 2) {
@@ -1418,7 +1418,7 @@ extern void func_L00_0026D588(void *, void *);
 extern void func_L00_0026DA50(void *, void *, int, int, int, int, float);
 
 /* Spawns a burst of particles around D_L00_00173F60 aimed along the line from D_L00_00166EC0. */
-void SpawnImpactBurst(char *m) {
+void spawn_wrench_impact_effects(char *m) {
     V v;
     V p;
     float len, ang, a, b;
@@ -1434,7 +1434,7 @@ void SpawnImpactBurst(char *m) {
         BuildSphericalOffset(v, 0.2f, b, a);
         FastVecScale(p, v, random_float_between(1.0f, 3.0f));
         FastVecAdd(p, p, D_L00_00173F60);
-        PartType19Spawn(p, v);
+        spawn_two_point_effect_particle(p, v);
     }
     q = (float *)D_L00_00173F40;
     for (i = 9; i >= 0; i--) {
@@ -1458,7 +1458,7 @@ extern int func_L00_0025F450(void *);
 extern int func_L00_002C6F48(void *);
 
 /* Walk the moby list and trigger the first nearby one that accepts it. */
-void TriggerNearbyMobyHit(char *a) {
+void process_mobies_near_returning_wrench(char *a) {
     char *m = suck_moby_list;
     if (m != 0) {
         char *g = D_0013E633 + 0xE1D;
@@ -1474,7 +1474,7 @@ void TriggerNearbyMobyHit(char *a) {
             } else {
                 if (IsMobyScatterClass(m) != 0) {
                     if (FastVecDist(m + 0x10, a + 0x10) < 2.7f) {
-                        if (Pickup_TryCollect(m)) return;
+                        if (try_collect_ammo_pickup(m)) return;
                     }
                 }
             }
@@ -1487,7 +1487,7 @@ extern float func_L00_001FF860(float, float);
 extern float func_001F9CB8(float *);
 extern void func_L00_001FF4B0(float *, float *, float);
 
-void Vec_ScaleByHeadingDiff(float *v) {
+void scale_wrench_collision_vector_by_heading(float *v) {
     float k = 1.8325957f;
     float a = func_L00_001FF860(v[0], v[1]);
     float t = FastDiffRots(*(float *)(D_0013E633 + 0xEB5), a);
@@ -1669,7 +1669,7 @@ void wrench_update(Wrench48 *m) {
         if (sweepp48()->move_mode!=15 && sweepp48()->state!=112 && sweepp48()->state!=20) {
             difference=FastDiffRots(sweepp48()->yaw,func_L00_001FF860(sweepp48()->sweep_end[0]-sweepp48()->position[0],sweepp48()->sweep_end[1]-sweepp48()->position[1]));
             if (difference>1.5707964f) active=0;
-            Vec_ScaleByHeadingDiff(work.v[0]);
+            scale_wrench_collision_vector_by_heading(work.v[0]);
         }
         FastVecAdd(wend48(),(wend48()-4),work.v[0]);
         if (sweepp48()->state!=43 && sweepp48()->state!=112 && difference<1.2217305f && scale_ticks(10)<sweepp48()->state_timer) {
@@ -1678,10 +1678,10 @@ void wrench_update(Wrench48 *m) {
             angle=func_L00_001FF860(sweepp48()->sweep_end[0]-sweepp48()->position[0],sweepp48()->sweep_end[1]-sweepp48()->position[1]);
             qcopy(work.v[1],sweepp48()->position); work.v[1][2]+=0.5f;
             work.v[2][0]=FastCos(angle)*1.4f; work.v[2][1]=FastSin(angle)*1.4f; work.v[2][2]=0.0f;
-            Vec_ScaleByHeadingDiff(work.v[2]); FastVecAdd(work.v[1],work.v[1],work.v[2]);
+            scale_wrench_collision_vector_by_heading(work.v[2]); FastVecAdd(work.v[1],work.v[1],work.v[2]);
             if (!sweepp48()->attack_cooldown && func_L00_001EFFF0(work.v[0],work.v[1],2,0,0) && CollType()) {
                 if (!wrench_hit48.moby || IsMobyClass502OrOutsideRange((char*)wrench_hit48.moby)) {
-                    sweepp48()->attack_cooldown=1; Moby_PlaySound(2,0,(int)m); SpawnImpactBurst((char*)m);
+                    sweepp48()->attack_cooldown=1; Moby_PlaySound(2,0,(int)m); spawn_wrench_impact_effects((char*)m);
                     if (wrench_hit48.moby) {
                         work.v[3][0]=FastCos(yaw); work.v[3][1]=FastSin(yaw); work.v[3][2]=0.0f;
                         PostHitMessage(wrench_hit48.moby,(int)m,0x10000,wrench_hit48.position,work.v[3],1.0f);
@@ -1693,7 +1693,7 @@ void wrench_update(Wrench48 *m) {
             Moby_PlaySound(2,0,(int)m);
             qcopy(work.v[0],wplayer48()->sweep_end); qcopy(work.v[1],work.v[0]);
             HeroMoveUpAlongNormal(work.v[0],work.v[0],0.7f); HeroMoveUpAlongNormal(work.v[1],work.v[1],-0.9f);
-            if (func_L00_001EFFF0(work.v[0],work.v[1],2,0,0)) SpawnImpactBurst((char*)m);
+            if (func_L00_001EFFF0(work.v[0],work.v[1],2,0,0)) spawn_wrench_impact_effects((char*)m);
         }
         if (active) {
             int count=1;
@@ -1703,10 +1703,10 @@ void wrench_update(Wrench48 *m) {
             InitDirectionalHitQuery(work.v[0],m,0x10000,(float)count,work.v[3]); func_L00_001FF500(work.v[0],work.v[0],scale);
             work.query.force=1.0f; work.query.range=5627.925f; work.query.enabled=1; work.query.class_id=m->class_id; work.query.flags=0;
             if (sweep_hit_segment(wplayer48()->sweep_start,wplayer48()->sweep_end,wplayer48()->previous_start,wplayer48()->previous_end,wplayer48()->moby,&work,5) && wrench_hit48.moby) {
-                if (CollMoby_HasPvarFlag2()) reaction=1;
+                if (should_trigger_wrench_hit_reaction()) reaction=1;
                 else if (!wplayer48()->attack_cooldown) {
                     if (!wrench_hit48.moby || !wrench_hit48.moby->model || wrench_hit48.moby->model->kind!=20) {
-                        wplayer48()->attack_cooldown=1; Moby_PlaySound(CollMoby_IsPvarTypeOne(),0,(int)m); SpawnImpactBurst((char*)m);
+                        wplayer48()->attack_cooldown=1; Moby_PlaySound(get_wrench_hit_sound_variant(),0,(int)m); spawn_wrench_impact_effects((char*)m);
                     }
                 }
             }
@@ -1717,8 +1717,8 @@ void wrench_update(Wrench48 *m) {
             if (sweepp48()->move_mode==15) radius=0.7f;
             if (sweepp48()->state==20) radius=0.47f;
             if (sphere48(work.v[4],radius,0,sweepp48()->moby,work.v[0]) && (!D_L00_00178000[0] || !D_L00_00178000[0]->model || D_L00_00178000[0]->model->kind!=18)) {
-                if (CollMoby_HasPvarFlag2()) reaction=1;
-                else if (!wplayer48()->attack_cooldown) { wplayer48()->attack_cooldown=1; Moby_PlaySound(CollMoby_IsPvarTypeOne(),0,(int)m); SpawnImpactBurst((char*)m); }
+                if (should_trigger_wrench_hit_reaction()) reaction=1;
+                else if (!wplayer48()->attack_cooldown) { wplayer48()->attack_cooldown=1; Moby_PlaySound(get_wrench_hit_sound_variant(),0,(int)m); spawn_wrench_impact_effects((char*)m); }
             }
         }
         if (reaction) {
@@ -1737,11 +1737,11 @@ void wrench_update(Wrench48 *m) {
         {
         char *control=D_0013E633+0x25CD;
         WPlayer48 *control_player=(WPlayer48*)(control-0x17B0);
-        TransformTrailUpdate(control,0);
+        update_moby_transform_history(control,0);
         m->parent=control_player->moby; control_player->wrench_state=2;
         if (m->state==10 && control_player->thrown_sound==-1) control_player->thrown_sound=Moby_PlaySound(14,4,(int)control_player->moby);
         }
-        MobyRotateEuler((char*)m,0.0f,0.0f,D_0015EE6C*24.434608f);
+        compose_target_euler_rotation((char*)m,0.0f,0.0f,D_0015EE6C*24.434608f);
         if (wplayer48()->attack_cooldown && func_001F9908(&d->timer)) wplayer48()->attack_cooldown=0;
         position=m->position;
         if (!wplayer48()->no_ground_adjust) {
@@ -1764,7 +1764,7 @@ void wrench_update(Wrench48 *m) {
         } else {
             int arrived=0;
             float length,steps;
-            TriggerNearbyMobyHit((char*)m);
+            process_mobies_near_returning_wrench((char*)m);
             FastVecSub(work.v[1],D_0013E633+0x1E8D,position);
             d->acceleration+=D_0015EE70*0.9f; d->speed+=d->acceleration;
             length=FastVecLength(work.v[1]); steps=d->speed; steps=length/steps;
@@ -1791,7 +1791,7 @@ void wrench_update(Wrench48 *m) {
         if (collided || d->collision) {
             d->collision=0;
             if (!wplayer48()->attack_cooldown) { d->timer=scale_ticks(30); wplayer48()->attack_cooldown=1; Moby_PlaySound(2,0,(int)m); }
-            if (m->state==10) { SpawnImpactBurst((char*)m); d->speed*=0.5f; m->state=11; }
+            if (m->state==10) { spawn_wrench_impact_effects((char*)m); d->speed*=0.5f; m->state=11; }
         }
         radius=1.2f; if (m->state==11) radius=-0.37f;
         func_L00_001FF4B0(work.v[4],d->direction,radius);
@@ -1805,7 +1805,7 @@ void wrench_update(Wrench48 *m) {
                 if (!hit || hit->hit_count<2 || hit->hit_index!=work.shifted.query.class_id) {
                     work.q[7]=*(WQuad48*)wrench_hit48.moby->position;
                     LerpVec4(work.v[6],work.v[5],work.v[7],0.5f); SpawnSparkPairs(work.v[6],5);
-                    d->timer=scale_ticks(30); wplayer48()->attack_cooldown=1; Moby_PlaySound(CollMoby_IsPvarTypeOne(),0,(int)m);
+                    d->timer=scale_ticks(30); wplayer48()->attack_cooldown=1; Moby_PlaySound(get_wrench_hit_sound_variant(),0,(int)m);
                 }
             }
         }
@@ -1842,7 +1842,7 @@ char *SpawnHomingBolt(void *owner, void *pos, float a, float b, float c, char *t
         if (tgt == 0) {
             BuildSphericalOffset(&t, D_0015EE6C * 20.0f, rz, ry);
             p.q = *(Q_2aa998 *)pos;
-            tgt = func_L00_00264140(owner, &p, &t, &a, &b, &c, 0.34906584f);
+            tgt = select_auto_aim_target_moby(owner, &p, &t, &a, &b, &c, 0.34906584f);
         }
         *(void **)(d + 0x10) = owner;
         qcopy(m + 0x10, pos);
@@ -1895,7 +1895,7 @@ char *SpawnHomingBolt(void *owner, void *pos, float a, float b, float c, char *t
 LINKER_REMNANT("asm/overlays", func_L00_002AAC48);
 
 /* Creates a moby at a position with a scale, colour and a few data fields. */
-void *Moby1427Spawn(int unused, void *pos, int c, float scale, float a, float b) {
+void *spawn_class_593_moby(int unused, void *pos, int c, float scale, float a, float b) {
     char *m = CreateMoby(0x593);
     if (m != 0) {
         char *d;
@@ -1954,7 +1954,7 @@ void *Moby1523Spawn(int unused, float *pos) {
 typedef int u128_2AAE20 __attribute__((mode(TI)));
 extern void func_L00_002AAD40_2AAE20(int, void *) __asm__("func_L00_002AAD40");
 // Moves the tracked moby to a position when it is class 0x5F3.
-void Moby1523SetPosition(int a, char *pos) {
+void set_tracked_class_5f3_moby_position(int a, char *pos) {
     u128_2AAE20 tmp = *(u128_2AAE20 *)pos;
     int v = *(int *)&D_L00_00161490;
     if (v == 0) {
@@ -2141,7 +2141,7 @@ typedef struct {
 } P2;
 
 /* Initialises a spawned moby: random spin vector, nearby-count cull of the oldest same-class moby, then a bounce off the floor probe. Adapted from Lombyte (MIT) for PAL: src/overlays/shared/unclassified_002a4830.c, FUN_L00_002aa008. */
-void InitSpawnedSpinMoby(Vec4 *pos, N2 *self, void *arg) {
+void initialize_moby_motion_at_position(Vec4 *pos, N2 *self, void *arg) {
     Vec4 d;
     Vec4 t;
     Vec4 e;
@@ -2198,7 +2198,7 @@ extern int D_L00_0015F6A8 MACRO_ADDR;
 extern float D_L00_00173F80[];
 
 // Traces a projectile path from a0 step by step and resolves where it lands.
-int ProjectilePath_Trace(char *a0, char *o, int mode) {
+int predict_mine_impact(char *a0, char *o, int mode) {
     float w[4];
     float B[4];
     float C[4];

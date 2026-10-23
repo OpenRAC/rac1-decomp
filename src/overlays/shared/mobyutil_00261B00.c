@@ -247,16 +247,16 @@ void func_L00_00261B00(char *a, int b, int c, int flags, int idx)
         }
         FastVecAdd(s20, s20, s0);
         if (c30) {
-            SpawnBolt(a, s10, s20, flags, 50, f84);
+            spawn_bolt_by_value(a, s10, s20, flags, 50, f84);
             c30--;
         } else if (c22) {
-            SpawnBolt(a, s10, s20, flags, 20, f84);
+            spawn_bolt_by_value(a, s10, s20, flags, 20, f84);
             c22--;
         } else if (c23) {
-            SpawnBolt(a, s10, s20, flags, 5, f84);
+            spawn_bolt_by_value(a, s10, s20, flags, 5, f84);
             c23--;
         } else {
-            SpawnBolt(a, s10, s20, flags, 1, f84);
+            spawn_bolt_by_value(a, s10, s20, flags, 1, f84);
             ones--;
         }
     }
@@ -527,7 +527,7 @@ extern f32 func_001F9CB8_630A8(Vec4 *) __asm__("func_001F9CB8");
 extern void func_L00_001FF4B0_630A8(f32, Vec4 *, Vec4 *) __asm__("func_L00_001FF4B0");
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/state/00261968.c, FUN_L00_00262030. */
-s32 PushPointOutsidePathAxis(f32 distance, s32 path_index, Vec4 *point, Vec4 *out) {
+s32 resolve_point_path_segment_clearance(f32 distance, s32 path_index, Vec4 *point, Vec4 *out) {
     Vec4 difference;
     Vec4 scaled_difference;
     Vec4 working;
@@ -644,7 +644,7 @@ void PathSampleAtDistance(PointPath *path, s32 *seg_out, f32 *along, Vec4 *out, 
 extern void func_001FA218(void *, void *);
 extern void func_002153E8(void *, void *);
 /* Rotates the matrix at a+0x40 by the Euler angles (x, y, z). */
-void MobyRotateEuler(char *a, float x, float y, float z) {
+void compose_target_euler_rotation(char *a, float x, float y, float z) {
     float in[3];
     float t[16], u[16];
     in[0] = x;
@@ -656,7 +656,7 @@ void MobyRotateEuler(char *a, float x, float y, float z) {
     matrix_to_euler(u, a + 0x40);
 }
 /* Starts a manipulator state in b if it is idle. */
-void Manipulator_StartIfIdle(int a, char *b) {
+void initialize_moby_transform_history(int a, char *b) {
     if (*(int *)(b + 0x13C) == 0) {
         *(int *)(b + 0x134) = a;
         *(int *)(b + 0x13C) = 1;
@@ -668,7 +668,7 @@ void Manipulator_StartIfIdle(int a, char *b) {
 extern struct Moby *func_0020D348_m(int) __asm__("func_0020D348");
 
 /* adds a spawned copy of an object to the owner's list (up to 4) */
-void AddSpawnedCopyToList(char *o, int a, int b) {
+void create_moby_transform_history_entry(char *o, int a, int b) {
     if (*(int *)(o + 0x138) != 4) {
         if (b < 9) {
             char *m = (char *)func_0020D348_m(*(short *)(*(char **)(o + 0x134) + 0xA6));
@@ -707,7 +707,7 @@ extern void func_L00_00251E30(void *);
 
 /* Pushes the source object's transforms into an 8-entry ring and replays them into the trailing objects, ending them when all faded.
    Adapted from Lombyte (MIT) for PAL: src/overlays/shared/gameplay_state_00261968.c, FUN_L00_00262608. */
-void TransformTrailUpdate(S_263680 *s, int dec) {
+void update_moby_transform_history(S_263680 *s, int dec) {
     unsigned char *src;
     unsigned char *o;
     int h, i, k, done;
@@ -886,7 +886,7 @@ typedef struct {
 
 /* Picks the best auto-aim target moby (kind 5) for a shot from pos along dir: writes yaw/pitch toward it and its aim height, returns the moby or 0.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002630b8.c, FUN_L00_002630c8. */
-struct Moby *func_L00_00264140(void *ignore, Vec4 *pos_in, Vec4 *dir_in, f32 *yaw, f32 *pitch,
+struct Moby *select_auto_aim_target_moby(void *ignore, Vec4 *pos_in, Vec4 *dir_in, f32 *yaw, f32 *pitch,
                               f32 *height, f32 max_angle) {
     Vec4 pos, dir, target, probe;
     Vec4 *pp = &pos, *dp = &dir;
@@ -1336,7 +1336,7 @@ extern void func_L00_00237B70(void);
 extern void func_L00_00237B90(void);
 extern void func_L00_002367A8(int, int);
 /* Per-frame update for the countdown D_L00_0015F670. */
-void CountdownDisplayUpdate(void) {
+void update_timed_hud_visibility(void) {
     if (D_L00_0015F670 != 0) {
         D_L00_0015F670 = D_L00_0015F670 - 1;
         if (D_L00_0015F670 == 0) {
@@ -1346,7 +1346,7 @@ void CountdownDisplayUpdate(void) {
     if (D_L00_0015F674 == 0 || (*(int *)&D_L00_00161F08_g) == 0) {
         (*(int *)&D_L00_00161F04_g) = -1;
     } else if ((*(int *)&D_L00_00161F04_g) == -1) {
-        (*(int *)&D_L00_00161F04_g) = queue_animation_update(0xC, 0, (void *)((char *)func_L00_002377E0 + 0x340), DefaultVtbl_DeleteMoby, func_L00_00237B90, 0, 0);
+        (*(int *)&D_L00_00161F04_g) = queue_animation_update(0xC, 0, (void *)((char *)func_L00_002377E0 + 0x340), DefaultVtbl_DeleteMoby, draw_hud_text_panel, 0, 0);
     } else {
         hud_keep_visible((*(int *)&D_L00_00161F04_g), 0xA);
     }

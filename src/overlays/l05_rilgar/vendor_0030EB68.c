@@ -233,7 +233,7 @@ extern int func_001FA8A8(int, int, float);
 
 /* Fog zone: switches the level fog between its two settings when the hero enters either trigger volume, and
  * tints a colour by the hero's side of a gate while inside the third. */
-void FogZoneUpdate(char *m) {
+void update_fog_zone(char *m) {
     char *d = *(char **)(m + 0x78);
     float v[4];
     float w[4];
@@ -336,7 +336,7 @@ extern float advance_30F9D0(float, float, float, float, float *, float *) __asm_
    1 waits for the trigger byte 0xBC of its D_L05_00160098 record, 2 eases
    it toward the end point, 3 lowers it to 5.9 below the entry's height.
    Adapted from Lombyte (MIT) for PAL: overlays/l05/gameplay/entities/0030d6a0.c, FUN_L05_0030e508. */
-void PoseSlideOutUpdate(char *moby) {
+void update_triggered_moby_slide_and_lowering(char *moby) {
     char *data = *(char **)(moby + 0x78);
     float v[4];
     float pos;
@@ -517,14 +517,14 @@ void drain_cover_update(Moby *moby) {
         }
         break;
     case 1:
-        Moby_EaseTiltTowardHero((char *)moby, 0.0f, 8.0f);
+        update_drain_cover_tilt((char *)moby, 0.0f, 8.0f);
         if (D_L05_0015F6A8 == 0 && func_001F9D48(&moby->pos, D_0013E633 + 0xE9D) < 24.0f && func_001F9908(&d->timer) != 0) {
             moby->state = 2;
             clear_u64_value(d->vel);
             d->vel[2] = func_001F9B50(d->f80 * 2.0f * (D_L05_00161E6C * D_0015EE70));
         } else if ((float)d->timer < (float)scale_ticks(*(int *)&D_L05_00161E78) * 0.5f) {
-            ScatterParticlesInRange((char *)moby, d->home[2], D_L05_00161EA8 + d->home[2]);
-            ScatterParticlesInRange((char *)moby, d->home[2], D_L05_00161EA8 + d->home[2]);
+            emit_drain_cover_particles((char *)moby, d->home[2], D_L05_00161EA8 + d->home[2]);
+            emit_drain_cover_particles((char *)moby, d->home[2], D_L05_00161EA8 + d->home[2]);
             if ((float)d->timer < (float)scale_ticks(*(int *)&D_L05_00161E78) * 0.2f) {
                 a = D_L05_00161EB4;
                 b = D_L05_00161EB8;
@@ -551,8 +551,8 @@ void drain_cover_update(Moby *moby) {
         if ((D_L05_0015F6B0 & 3) == 0) {
             MobySphereHitDirectional((int)moby, 1.0f, &moby->pos, 0x10000, 2.0f, 1.0f, 0, 1, 0);
         }
-        ScatterParticlesInRange((char *)moby, d->home[2], d->vel[2] * (float)scale_ticks(*(int *)&D_L05_00161E78) * 0.5f + moby->pos.z);
-        Moby_EaseTiltTowardHero((char *)moby, D_L05_00161E94, 1.0f);
+        emit_drain_cover_particles((char *)moby, d->home[2], d->vel[2] * (float)scale_ticks(*(int *)&D_L05_00161E78) * 0.5f + moby->pos.z);
+        update_drain_cover_tilt((char *)moby, D_L05_00161E94, 1.0f);
         FastVecAdd(&moby->pos, &moby->pos, d->vel);
         d->vel[2] = d->vel[2] - D_L05_00161E6C * D_0015EE70;
         if (d->vel[2] <= 0.0f) {
@@ -562,8 +562,8 @@ void drain_cover_update(Moby *moby) {
         }
         break;
     case 3:
-        ScatterParticlesInRange((char *)moby, d->home[2], moby->pos.z);
-        Moby_EaseTiltTowardHero((char *)moby, D_L05_00161E94, 1.0f);
+        emit_drain_cover_particles((char *)moby, d->home[2], moby->pos.z);
+        update_drain_cover_tilt((char *)moby, D_L05_00161E94, 1.0f);
         ApproachWithVelocity(d->home[2] + d->home[3], D_L05_00161E70 * D_0015EE70, D_L05_00161E70 * D_0015EE70, D_0015EE6C * 20.0f, &moby->pos.z, &d->vel[2]);
         if (d->vel[2] == 0.0f) {
             if (d->home[3] > d->f84) {
@@ -577,8 +577,8 @@ void drain_cover_update(Moby *moby) {
         }
         break;
     case 4:
-        ScatterParticlesInRange((char *)moby, d->home[2], d->vel[2] * (float)scale_ticks(*(int *)&D_L05_00161E78) + moby->pos.z);
-        Moby_EaseTiltTowardHero((char *)moby, d->home[2] + 1.0f < moby->pos.z ? D_L05_00161E94 : 0.0f, d->home[2] + 1.0f < moby->pos.z ? 1.0f : 10.0f);
+        emit_drain_cover_particles((char *)moby, d->home[2], d->vel[2] * (float)scale_ticks(*(int *)&D_L05_00161E78) + moby->pos.z);
+        update_drain_cover_tilt((char *)moby, d->home[2] + 1.0f < moby->pos.z ? D_L05_00161E94 : 0.0f, d->home[2] + 1.0f < moby->pos.z ? 1.0f : 10.0f);
         FastVecAdd(&moby->pos, &moby->pos, d->vel);
         d->vel[2] = d->vel[2] - D_L05_00161E6C * D_0015EE70;
         if (moby->pos.z < d->home[2]) {
@@ -641,7 +641,7 @@ extern short D_L05_00161E8C;
 extern short D_L05_00161E90;
 
 /* Scatters points along a range, placing each one with a heading and radius. */
-void ScatterParticlesInRange(char *obj, float a, float b) {
+void emit_drain_cover_particles(char *obj, float a, float b) {
     float v[4];
     float w[4];
     float ground, x, y, t, u;
@@ -665,7 +665,7 @@ void ScatterParticlesInRange(char *obj, float a, float b) {
         k = scale_ticks(*(int *)&D_L05_00161E78);
         m = func_001FA898_r(randf_sym(fi, (float)*(int *)&D_L05_00161E84));
         n = *(int *)&D_L05_00161E8C;
-        Particle_Spawn(u, w, v, k, m, n);
+        create_particle_with_velocity_and_lifetime(u, w, v, k, m, n);
     }
 }
 extern float func_001F9C78(void *a, void *b);
@@ -680,7 +680,7 @@ extern short D_L05_00161EA4;
 /* When the block at D_0013E633 + 0xE1D points back at this moby and its short at +0x30E is zero, derives two values
  * from the vector between them; otherwise both are 0. Eases the values at data + 0x98 and 0x9C toward those at 0xA0 and
  * 0xA4, then calls func_L00_0025CE58 on the moby's values at +0x40 and +0x44 with the results. */
-void Moby_EaseTiltTowardHero(char *moby, float k, float m) {
+void update_drain_cover_tilt(char *moby, float k, float m) {
     char *g = D_0013E633 + 0xE1D;
     char *data = *(char **)(moby + 0x78);
     float v[4];
@@ -750,7 +750,7 @@ void pipe_mounted_grating_update(struct Moby *moby) {
             speed = random_float_between(5.0f, 12.0f);
             FastVecScale(vel, &moby->rot_row0, -(speed * D_0015EE6C));
             clear_u64_value(spin_vel);
-            InitSpinningPiece(piece, moby, vel, spin_vel, scale_ticks(60));
+            initialize_moby_launch_motion(piece, moby, vel, spin_vel, scale_ticks(60));
             *(int *)(vars + 0xC) = 0x200;
         }
         Moby_PlaySound(0, 0, piece);
@@ -796,7 +796,7 @@ void pipe_mounted_grating_update(struct Moby *moby) {
                     life = random_float_between(60.0f, 120.0f);
                     FastVecScale(vel, &moby->rot_row0, -(speed * D_0015EE6C));
                     clear_u64_value(spin_vel);
-                    InitSpinningPiece(piece, moby, vel, spin_vel, truncate_float_to_s32(func_001F9878(life)));
+                    initialize_moby_launch_motion(piece, moby, vel, spin_vel, truncate_float_to_s32(func_001F9878(life)));
                     *(int *)(vars + 0xC) = 0x200;
                     piece->rot.x = angle;
                     func_L00_00251E30_10A90(piece);
@@ -831,7 +831,7 @@ extern float func_L00_0025CE58(float *, float *, float, float, float, float);
 
 /* Gate: waits for its trigger moby, then rises to topZ and swings its yaw back to 0, with sounds per class.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l05/gameplay/entities/0030d6a0.c, FUN_L05_00314eb0. */
-void GateRiseUpdate(struct Moby *m) {
+void update_triggered_gate_motion(struct Moby *m) {
     struct GateVars_16378 *d = (struct GateVars_16378 *)m->pvars;
     struct Moby *t;
 
@@ -924,7 +924,7 @@ extern short D_L05_00161F78_165B8 SDATA(D_L05_00161F78);
 extern short D_L05_00161F7C_165B8 SDATA(D_L05_00161F7C);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l05/gameplay/entities/0030d6a0.c, FUN_L05_003150f0. */
-void EmitterL05_Update(struct Moby *m) {
+void update_triggered_particle_spray_emitter(struct Moby *m) {
     float v[4];
     float w[4];
     float u[4];
@@ -1311,7 +1311,7 @@ void CheckHeroOutsideClipVolumes(char *moby) {
             break;
         }
     }
-    if (none) Moby_DrawVu1AndBackdrop(D_L05_00211E60);
+    if (none) draw_textured_grid(D_L05_00211E60);
 }
 extern void func_L02_002A52B0(void *, float);
 extern void func_L05_00317538_3175D8(void) __asm__("func_L05_00317538");
@@ -1327,7 +1327,7 @@ void ocean_rilgar_update(char *moby) {
     };
     switch (((Moby *)moby)->state) {
     case OCEAN_RILGAR_INITIALIZE:
-        ScaleTableIntoBuffer128(D_L05_00211E60_3175D8, 1.0f);
+        prepare_scaled_table_with_byte_128(D_L05_00211E60_3175D8, 1.0f);
         ((Moby *)moby)->state = 1;
         ((Moby *)moby)->update_dist = 0xFF;
         break;
@@ -1351,7 +1351,7 @@ extern void func_L00_001FFED8(void *, int, float);
 extern char * D_001414D0;
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l05/gameplay/entities/0030d6a0.c, FUN_L05_00316258. */
-void func_L05_00317720(char *moby) {
+void update_triggered_moby_motion_and_manipulator_angle(char *moby) {
     char *data = *(char **)(moby + 0x78);
     float target[4];
     float delta[4];
@@ -1970,7 +1970,7 @@ void qwarks_bouncer_update(char *m)
 
     bouncer_moby = (struct Moby *)m;
     bouncer_data = (QwarksBouncerData *)bouncer_moby->pvars;
-    AttachCheatManipulatorToSiblings(m);
+    attach_big_head_cheat_manipulator(m);
     if (!bouncer_data) return;
     switch (bouncer_moby->state) {
     case QWARKS_BOUNCER_INITIALIZE:
@@ -2218,7 +2218,7 @@ extern float sin_319F78(float) __asm__("func_001F9FA8");
 /* Two-state marker: arms the moby, then once its target is found copies the
  * target position and sets the bob height from the frame counter.
  * Adapted from Lombyte (MIT) for PAL: overlays/l05/gameplay/entities/0030d6a0.c, FUN_L05_00318a68. */
-void WaterPlaneMarkerUpdate(char *m) {
+void update_hero_clip_volume_outputs(char *m) {
     int state = *(unsigned char *)(m + 0x20);
     int *v = *(int **)(m + 0x78);
     char *t;
@@ -2353,7 +2353,7 @@ void PickupL05_Update(char *moby) {
             func_001F9EE8(hero_offset, hero_offset, rotation_or_start_position_scratch);
             if (FastAbsF(hero_offset[1]) < 1.2f && hero_offset[0] < 1.0f && -0.75f < hero_offset[0]) {
                 SelectSlotPath(moby);
-                ShowVariantHelpMessage(moby);
+                request_moby_variant_help_message(moby);
                 if (*(int *)(D_0013A5E0 + 0x2604) & 0x10) {
                     ((struct Moby *)moby)->state = 3;
                     destination_stop_moby = FindMobyByDataId(moby, *(short *)(taxi_data + 0xB6));
@@ -2407,7 +2407,7 @@ void PickupL05_Update(char *moby) {
             *(int *)(taxi_data + 0xC0) = 0;
             *(int *)(taxi_data + 0xC4) = 0;
             ((struct Moby *)moby)->state = 1;
-            Taxi_SetTargetFromSpawn(moby);
+            reset_selected_moby_to_current_placement(moby);
         }
         break;
     case TAXI_WAIT_FOR_ACTIVATION:
@@ -2424,12 +2424,12 @@ void PickupL05_Update(char *moby) {
         }
         break;
     }
-    WobbleMoby(moby);
+    apply_moby_position_and_rotation_wobble(moby);
     if (((struct Moby *)moby)->state >= 3 && ((struct Moby *)moby)->state <= 5) {
         travel_hero = (struct Hero *)(D_0013E633 + 0xE1D);
         travel_hero->unk1F2 = 2;
         travel_hero->unk1F4 = 2;
-        TransformLevelTablePoints(moby);
+        transform_moby_vector_table_to_world_space(moby);
         if (Sound_IsPlaying(moby, *(short *)(taxi_data + 0xB2)) == 0) {
             *(short *)(taxi_data + 0xB2) = func_0022ED80_i(0, 4, moby);
         }
@@ -2672,7 +2672,7 @@ extern L05Fields_0013D388 D_0013D490[];
 extern L05Fields_0013D4C0 D_0013D5C8[];
 #define l05_0013D4C0_a D_0013D5C8
 /* Moby update that checks the level's challenge conditions and records new bests. */
-void ChallengeUpdate(unsigned char *moby) {
+void update_moby_gameplay_events(unsigned char *moby) {
     int *data = *(int **)(moby + 0x78);
     int value, elapsed, limit;
     char *pp;
@@ -2803,7 +2803,7 @@ extern void func_L00_00264870(int);
  * entry of that table to func_L00_00264870. The index select `s < t ? 0 : 3` is kept as retail
  * has it (it always gives 3 here since t < 2). The two state stores have to be written in
  * the order 0x30, 0x20 to come out as retail's. */
-void Moby1550Update(unsigned char *m) {
+void update_selected_moby_effects(unsigned char *m) {
     unsigned int s = m[0x20];
     unsigned int t;
     G *g;

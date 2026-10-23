@@ -1,4 +1,4 @@
-void Moby1470Update(char *moby) {
+void update_fleet_camera_box_watcher(char *moby) {
     int off;
     char *d = *(char **)(moby + 0x78);
     int st;
@@ -169,7 +169,7 @@ void Moby1470Update(char *moby) {
     case 2: {
         char *cam;
         func_L00_002E9B30();
-        func_L00_002E9E20((int)(D_L17_0016016C + (*(int *)(d + 0x44) << 7) + 0x30), 0.02617994f, 0.0f);
+        set_follow_camera_angle_blend_from_position((int)(D_L17_0016016C + (*(int *)(d + 0x44) << 7) + 0x30), 0.02617994f, 0.0f);
         cam = D_L17_00167600;
         f = func_L00_001FF860(*(float *)(D_L17_0016016C + ((*(int *)(d + 0x44) << 7) + 0x30)) - *(float *)(cam + 0x140),
                               *(float *)(D_L17_0016016C + ((*(int *)(d + 0x44) << 7) + 0x34)) - *(float *)(cam + 0x144));
@@ -183,7 +183,7 @@ void Moby1470Update(char *moby) {
         func_L00_002E9B30();
         if (func_001F9908_i((int *)(d + 0x5C))) {
             char *cam;
-            func_L00_002E9E20((int)(D_L17_0016016C + (*(int *)(d + 0x40) << 7) + 0x30), 0.02617994f, 0.0f);
+            set_follow_camera_angle_blend_from_position((int)(D_L17_0016016C + (*(int *)(d + 0x40) << 7) + 0x30), 0.02617994f, 0.0f);
             cam = D_L17_00167600;
             f = func_L00_001FF860(*(float *)(D_L17_0016016C + ((*(int *)(d + 0x40) << 7) + 0x30)) - *(float *)(cam + 0x140),
                                   *(float *)(D_L17_0016016C + ((*(int *)(d + 0x40) << 7) + 0x34)) - *(float *)(cam + 0x144));

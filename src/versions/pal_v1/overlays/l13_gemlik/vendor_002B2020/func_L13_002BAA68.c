@@ -29,7 +29,7 @@ void DrawGemlikTurretHud(char *moby) {
 
     UpdateLockOnTarget((int)moby, d);
     if (*(int *)(d + 0x88) != 0) {
-        ProjectPointToScreen(*(char **)(d + 0x88) + 0x10, &sp10, &sp14, 0);
+        project_world_point_to_screen_pixels(*(char **)(d + 0x88) + 0x10, &sp10, &sp14, 0);
         if (*(int *)(d + 0x8C) > scale_ticks(0x1F4)) {
             t = IntToFloat(*(int *)(d + 0x8C) - scale_ticks(0x1F4));
             t = t / IntToFloat(scale_ticks(0x4B));
@@ -53,9 +53,9 @@ void DrawGemlikTurretHud(char *moby) {
     for (i = 0; i < n; i++) {
         g = D_0013E633 + 0xE1D;
         if (i < g[0x15F6]) {
-            Hud_DrawPointList(x, y, 0.5f, D_L13_001CBEE0, 0x19, 0xFFFFF3, 0x50008F00);
+            append_scaled_screen_triangle_strip(x, y, 0.5f, D_L13_001CBEE0, 0x19, 0xFFFFF3, 0x50008F00);
         } else {
-            Hud_DrawPointList(x, y, 0.5f, D_L13_001CBEE0, 0x19, 0xFFFFF3, 0x20004F00);
+            append_scaled_screen_triangle_strip(x, y, 0.5f, D_L13_001CBEE0, 0x19, 0xFFFFF3, 0x20004F00);
         }
         n = g[0x15F7];
         if (i == n >> 1) {

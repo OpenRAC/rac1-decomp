@@ -84,10 +84,10 @@ void OpenVendorScreen(char *m, int lvl) {
     D_L01_0015F4FC = 1.0f;
     D_L01_0016124C = n;
     *(int *)&D_L01_0015F500 = 0;
-    Hero_DestroySlotMobys(0, 0);
+    clear_hero_item_slot(0, 0);
     *(int *)(g + 0x20B8) = lvl;
     select_world_object_resource_tables(D_L01_00179FC0[lvl].f10, -1);
-    ReadLevelPackedData(r);
+    load_scene_chunks_with_fade(r);
     q = (char *)D_0014171B + 0x100B5;
     *(int *)(q + 0x1C) = 0x2734;
     func_00205220(0);
@@ -97,6 +97,6 @@ void OpenVendorScreen(char *m, int lvl) {
     }
     c2 = fx_cutscene;
     g2 = D_0013E633 + 0xE1D;
-    TintEffectFromMobyColor(*(int *)(c2 + 0x17C), *(int *)(g2 + 0x2080));
+    update_item_tint_from_hero(*(int *)(c2 + 0x17C), *(int *)(g2 + 0x2080));
     Music_ContinueStreamIfReady();
 }

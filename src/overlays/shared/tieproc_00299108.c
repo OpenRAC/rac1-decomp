@@ -190,7 +190,7 @@ void handle_pause_input(void) {
         r[0x10] = 1;
         return;
     }
-    if (((HeroS *)(D_0013E633 + 0xE1D))->w2084 != 0x1D && ((HeroS *)(D_0013E633 + 0xE1D))->w2084 != 0x32) CountdownDisplayUpdate();
+    if (((HeroS *)(D_0013E633 + 0xE1D))->w2084 != 0x1D && ((HeroS *)(D_0013E633 + 0xE1D))->w2084 != 0x32) update_timed_hud_visibility();
     if ((((PadS *)(D_0013A5E0 + 0x2460))->w1A4 & 0x200) && ((HeroS *)(D_0013E633 + 0xE1D))->w2084 != 0x1D
         && ((HeroS *)(D_0013E633 + 0xE1D))->w2084 != 0x32) {
         int x;
@@ -217,21 +217,21 @@ void handle_pause_input(void) {
         CountExpiredMobys();
         update_visible_resident_objects();
         enqueue_voice_request();
-        LevelAmbienceUpdate();
+        update_ambience_target_cycle();
     }
     func_001E9768_a(D_L00_001610B8, 3);
-    if ((g_debug_menu.w8 & 1) || ((g_debug_menu.w8 & 0x10) && (((PadS *)(D_0013A5E0 + 0x2460))->w1A4 & 0x200))) Hero_UpdateWithBoundsCheck();
+    if ((g_debug_menu.w8 & 1) || ((g_debug_menu.w8 & 0x10) && (((PadS *)(D_0013A5E0 + 0x2460))->w1A4 & 0x200))) coordinate_hero_frame_update();
     func_001E9768_a(D_L00_001610C8, 7);
     if ((g_debug_menu.w8 & 4) || ((g_debug_menu.w8 & 0x10) && (((PadS *)(D_0013A5E0 + 0x2460))->w1A4 & 0x200))) {
         UpdateParts();
-        UpdateEffectSlots();
+        update_glints();
     }
     func_001E9768_a(D_L00_001610D8, 5);
     if ((g_debug_menu.w8 & 8) || ((g_debug_menu.w8 & 0x10) && (((PadS *)(D_0013A5E0 + 0x2460))->w1A4 & 0x200))) {
         Camera_UpdateFrame();
     } else if (g_debug_menu.w14) {
         update_debug_camera();
-        if (g_debug_menu.w14 == 2) Hero_PlaceOnOrbit();
+        if (g_debug_menu.w14 == 2) update_hero_from_debug_camera();
     }
     func_001E9768_a(D_L00_001610E8, 8);
     sound_update();
@@ -384,7 +384,7 @@ extern AB D_L00_00179200;
 extern PP D_L00_001BA070 NOT_SDA;
 
 // Level teardown: clears the moby table, flags, camera floats and cached objects.
-void EndCutscene(void) {
+void finish_cutscene(void) {
     Obj *o;
     O5A *h = (O5A *)((char *)D_0014171B + 0x100B5 - 0);
     char *p, *b;
@@ -452,7 +452,7 @@ extern unsigned char D_0015EEB4_m[4] __asm__("D_0015EEB4") MACRO_ADDR;
 extern short D_L00_0015F680;
 
 /* Builds the camera view matrices from the current camera entry and returns the entry's flag byte. */
-unsigned char BuildCameraViewMatrices(void) {
+unsigned char apply_cutscene_camera_key(void) {
     char *d = D_L00_0016C960;
     int idx = *(int *)(d + 0x38);
     char *e = *(char **)(d + 0x54) + idx * 32;
@@ -669,7 +669,7 @@ extern void func_L00_00207A48(void *);
 
 /* Per-frame update while the cutscene in D_L00_0016C860 plays: runs the debug-gated subsystem updates, fades, advances the frame counters and either finishes the cutscene (end frame reached or skipped) or steps each of its mobys between two keyframes.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/00295100.c, FUN_L00_00298f90. */
-void CutsceneModeUpdate(void) {
+void update_cutscene_playback(void) {
     VendorCutscene *cs;
     VendorMoby *m;
     s32 done;
@@ -686,7 +686,7 @@ void CutsceneModeUpdate(void) {
         ResetFrameCounters();
     }
     if (!(D_L00_0016C158_9A300.update_flags & 0x10) || (D_0013CBE4 & 0x220)) {
-        Veldin_PerFrameHook();
+        apply_level_specific_cutscene_moby_effects();
     }
     if ((D_L00_0016C158_9A300.update_flags & 2) || ((D_L00_0016C158_9A300.update_flags & 0x10) && (D_0013CBE4 & 0x200))) {
         update_visible_resident_objects();
@@ -694,7 +694,7 @@ void CutsceneModeUpdate(void) {
     }
     Profile_Mark(D_L00_001610B8_9A300, 3);
     if ((D_L00_0016C158_9A300.update_flags & 1) || ((D_L00_0016C158_9A300.update_flags & 0x10) && (D_0013CBE4 & 0x200))) {
-        Hero_UpdateWithBoundsCheck();
+        coordinate_hero_frame_update();
     }
     Profile_Mark(D_L00_001610C8_9A300, 7);
     if ((D_L00_0016C158_9A300.update_flags & 4) || ((D_L00_0016C158_9A300.update_flags & 0x10) && (D_0013CBE4 & 0x200))) {
@@ -722,7 +722,7 @@ void CutsceneModeUpdate(void) {
         }
     }
     if (done) {
-        EndCutscene();
+        finish_cutscene();
     } else {
         lim = D_0015EE80 ? 0x50 : 0x60;
         if (D_L00_0016C960_9A300.f38 >= lim) {
@@ -755,7 +755,7 @@ void CutsceneModeUpdate(void) {
                 HeroAttachManipulators(m);
             }
             if (m->oclass == 10 || m->oclass == 0x1A3 || m->oclass == 0x555) {
-                PulseMobyColor(m);
+                update_moby_pulsing_glow_effects(m);
             }
         }
     }
@@ -784,7 +784,7 @@ extern void func_L00_00211908(void);
 extern void func_L00_0029A940(int, int, int);
 
 /* Dialog stream update: pick the entry's pair and start it unless one is already playing. */
-void PlayMovieEntryIfIdle(int idx) {
+void start_indexed_disc_stream(int idx) {
     int a, b;
     char *base;
     if (idx < 0) return;
@@ -799,7 +799,7 @@ void PlayMovieEntryIfIdle(int idx) {
     if (*(int *)(base + 0x22A8) == 0) {
         Hero_OnKilled();
     } else if (*(unsigned char *)(base + 0x20B1) == 0) {
-        StartMovie(b, a, D_0015EE88);
+        prepare_movie_playback(b, a, D_0015EE88);
     }
 }
 typedef struct { int b; int a; } LL7;
@@ -811,7 +811,7 @@ typedef struct {
 extern G7 D_00137C80_q __asm__("D_00137C80");
 
 /* Plays the movie of table entry i (set chosen by a flag). Adapted from Lombyte (MIT) for PAL: overlays/shared/unclassified_00295100.c, FUN_L00_002994f8. */
-void PlayMovieEntry(int i) {
+void queue_language_zero_movie(int i) {
     int a, b;
     if (i < 0) return;
     if (D_0015EE80) {
@@ -819,7 +819,7 @@ void PlayMovieEntry(int i) {
     } else {
         b = D_00137C80_q.x[i].b; a = D_00137C80_q.x[i].a;
     }
-    StartMovie(b, a, 0);
+    prepare_movie_playback(b, a, 0);
 }
 typedef struct { int b; int a; } LL7_29A8D0;
 typedef struct {
@@ -830,7 +830,7 @@ typedef struct {
 extern G7_29A8D0 D_00137C80_q_29A8D0 __asm__("D_00137C80");
 
 /* Plays the movie of table entry i (set chosen by a flag). Adapted from Lombyte (MIT) for PAL: overlays/shared/unclassified_00295100.c, FUN_L00_00299560. */
-void PlayMovieEntryWithMode(int i) {
+void queue_movie_with_game_language(int i) {
     int a, b;
     if (i < 0) return;
     if (D_0015EE80) {
@@ -838,7 +838,7 @@ void PlayMovieEntryWithMode(int i) {
     } else {
         b = D_00137C80_q_29A8D0.x[i].b; a = D_00137C80_q_29A8D0.x[i].a;
     }
-    StartMovie(b, a, D_0015EE88);
+    prepare_movie_playback(b, a, D_0015EE88);
 }
 extern char D_0013E650[];
 extern void func_00118D80(int);
@@ -864,7 +864,7 @@ extern int D_L00_00173F04;
 extern char D_L00_001E9800[];
 
 /* sets up a movie load, then uploads image data from the level buffer to GS memory in two runs of strips */
-void StartMovie(int sector, int size, int arg2) {
+void prepare_movie_playback(int sector, int size, int arg2) {
     int image[24];
     int big, small, gs_addr, src, i, j;
     D_0013E650[0x6B] |= 8;
@@ -988,7 +988,7 @@ extern int D_L00_00161108 MACRO_ADDR;
 extern short D_L00_00161114;
 
 /* Stop sound, wait for the loader to go idle, then start the movie load. */
-void BeginMoviePlayback(void) {
+void play_queued_movie(void) {
     func_00118D80(0);
     sound_StopAllSounds();
     music_Stop();
@@ -1016,7 +1016,7 @@ typedef struct { char pad[0x16A8]; LL9 normal[20]; LL9 alt[20]; } G9;
 extern G9 D_00137C80;
 
 /* starts the slideshow: resets state, rebases the level data pointers, and starts the first two streams */
-void EnterSlideshowMode(void) {
+void start_slideshow(void) {
     int t;
     update_audio_stream_until_idle(0);
     FadeToBlack(8);
@@ -1044,7 +1044,7 @@ void EnterSlideshowMode(void) {
 extern void func_00234AC8(int);
 extern void func_00217588(void);
 extern int D_L00_0015F4FC MACRO_ADDR;
-void ExitSlideshowMode(void) {
+void end_slideshow(void) {
     VU1_syncChain(1);
     FadeToBlack(0xC);
     request_audio_stream_break();
@@ -1061,7 +1061,7 @@ extern int D_L00_00173D00[];
 #define ICNT (((short *)D_L00_0015F700)[2])
 #define ITMR (((short *)D_L00_0015F700)[3])
 
-void SlideshowModeUpdate(void) {
+void update_slideshow(void) {
     int s0, t, i, r, one;
     int *src, *dst;
     float f;
@@ -1080,7 +1080,7 @@ void SlideshowModeUpdate(void) {
             }
             if (!s0 && IIDX == 0x29) {
             quit:
-                ExitSlideshowMode();
+                end_slideshow();
                 return;
             }
             if (IIDX >= 0x2D) goto quit;
@@ -1130,7 +1130,7 @@ void SlideshowModeUpdate(void) {
     ICNT = ICNT + 1;
     ITMR = ITMR + 1;
     if (*(int *)(D_0013A5E0 + 0x2604) & 0x800) {
-        ExitSlideshowMode();
+        end_slideshow();
     }
     sound_update();
 }

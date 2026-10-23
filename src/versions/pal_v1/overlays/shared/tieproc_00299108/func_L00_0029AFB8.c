@@ -1,5 +1,5 @@
 extern int D_L00_00173CF0[];
-void SlideshowModeUpdate(void) {
+void update_slideshow(void) {
     int s0, t, i, r, one;
     int *src, *dst;
     float f;
@@ -18,7 +18,7 @@ void SlideshowModeUpdate(void) {
             }
             if (!s0 && IIDX == 0x27) {
             quit:
-                ExitSlideshowMode();
+                end_slideshow();
                 return;
             }
             if (IIDX >= 0x2B) goto quit;
@@ -68,7 +68,7 @@ void SlideshowModeUpdate(void) {
     ICNT = ICNT + 1;
     ITMR = ITMR + 1;
     if (*(int *)(D_0013A5E0 + 0x2604) & 0x800) {
-        ExitSlideshowMode();
+        end_slideshow();
     }
     sound_update();
 }

@@ -84,7 +84,7 @@ int func_L00_0024A198(int a, float b, float c, float x) {
 }
 INCLUDE_ASM("asm/overlays", func_L00_0024A1E4);
 /* tests menu coordinate bounds selected by item */
-int func_L00_0024A210(int item, float a, float b, float x) {
+int test_selected_z_range(int item, float a, float b, float x) {
  if (item < 224) return x >= 42.0f && x <= 43.0f;
  return x >= 39.0f;
 }
@@ -165,7 +165,7 @@ typedef struct {
 extern void func_00207090(unsigned char *dst, int row, unsigned char *src, short *offs);
 extern Cache D_L00_001842F0;
 extern int D_L00_0015F4F8 MACRO_ADDR;
-int func_L00_0024A798(int key) {
+int ensure_menu_cache_entry(int key) {
     int i;
     int victim;
     int miss;

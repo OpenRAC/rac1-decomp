@@ -102,7 +102,7 @@ extern void func_L09_0021E410_t(int, int, float) __asm__("func_L09_0021E410");
 typedef struct { char pad[0x20]; short idx[16]; } Strip;
 
 /* Draws a list of scrolling-texture strips (water) into the scratchpad. */
-void DrawScrollingStrips(char *list, float t, int count, long tex0, long tex1) {
+void draw_level09_scrolling_textured_strips(char *list, float t, int count, long tex0, long tex1) {
     int i;
     int j;
     int c;
@@ -155,7 +155,7 @@ extern int D_0015EF88 MACRO_ADDR;
 void Sky_DrawLevel09(void) {
     SetupSkyGifPaging();
     if (D_0015EE84_m == 9) {
-        DrawSkyShellsExtra();
+        draw_sky_shells_with_modulo_25000_rotation();
     } else {
         update_sky_shells_static();
     }

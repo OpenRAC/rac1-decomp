@@ -1,4 +1,4 @@
-void Moby908Update(struct Moby *moby) {
+void update_enemy_fighter(struct Moby *moby) {
     Class908Vars_FD578 *data = (Class908Vars_FD578 *)moby->pvars;
     int hit = func_L00_0025B478_FD578(moby, 0x800000, 0);
     int index;

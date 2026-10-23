@@ -1,4 +1,4 @@
-void BeginMoviePlayback(void) {
+void play_queued_movie(void) {
     func_00118D80(0);
     sound_StopAllSounds();
     music_Stop();

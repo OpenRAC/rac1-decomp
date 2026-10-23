@@ -3421,7 +3421,7 @@ extern int D_0013E604[];
 #define PK ((unsigned char *)D_00161000)
 
 /* Uploads a block to the GS in DMA packets. */
-void UploadToGs(unsigned int source) {
+void queue_framebuffer_upload(unsigned int source) {
     int remaining = frame_size[0];
     int destination = D_0015EF84 >> 8;
     unsigned long count;

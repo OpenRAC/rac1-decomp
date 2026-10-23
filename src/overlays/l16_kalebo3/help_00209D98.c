@@ -128,7 +128,7 @@ extern void func_001F9BD8(void *, void *, void *);
 extern void func_L00_002607A8(void *a, float x);
 
 // Builds a vector from two global blocks, transforms it, and passes it on with a summed float.
-void HeroL16_IntegrateVelocity(void) {
+void compose_and_limit_hero_velocity(void) {
     char tmp[16];
     char *p = D_0013E633 + 0x158D;
     char *q;
@@ -356,7 +356,7 @@ d1:
     if (!(D_0013F450.xF2dc < 0.25f)) {
         return;
     }
-    VecToHeroAngles((u8 *)&D_0013F450 + 0x270, &v20);
+    compute_rotated_vector_angles((u8 *)&D_0013F450 + 0x270, &v20);
     if (-0.78539819f < v20.f[1] && v20.f[1] < 0.78539819f) {
         D_0013F450.u2e4.F = v20.f[1];
     }
@@ -377,7 +377,7 @@ d1:
                 D_0013F450.a2c0.f[i] = 0.0f;
             }
             func_001252C0(&v60, (u8 *)&D_L16_001742C0.f40);
-            VecToHeroAngles(&v60, &v50);
+            compute_rotated_vector_angles(&v60, &v50);
             if (-0.78539819f < v50.f[1] && v50.f[1] < 0.78539819f) {
                 D_0013F450.a2c8.f[i] = v50.f[1];
             }
@@ -513,7 +513,7 @@ extern float D_0015EE6C MACRO_ADDR;
 extern char *D_L16_001742D8;
 
 /* Integrate player motion, resolve contacts, and measure the resulting movement. */
-void HeroL16_IntegrateMotion(void) {
+void integrate_hero_motion(void) {
     Vec4 previous;
     Vec4 work;
     Vec4 plane;
@@ -534,7 +534,7 @@ void HeroL16_IntegrateMotion(void) {
 
     qcopy(previous.f, position);
     player = (Hero *)((char *)position - 0x80);
-    HeroRideMovingPlatform(player->unk4F8, (char *)position + 0x70, (char *)position + 0x10);
+    update_hero_attachment(player->unk4F8, (char *)position + 0x70, (char *)position + 0x10);
     /* Limit the velocity by state and mode. Inside an arm `position` moves on to the velocity; it is formed again below. */
     if (player->state.current == 34 || player->state.current == 20) {
         float limit;
@@ -616,10 +616,10 @@ void HeroL16_IntegrateMotion(void) {
     contact_player->wall_hit = 0;
     contact_player->coll_hit_moby = 0;
     if (FastVecLength((char *)position + 0x70) <= 0.0001f) {
-        Hero_ResolveCollision();
+        resolve_hero_collisions_with_history();
         HeroL16_UpdateGroundCollision();
         FastVecSub((char *)position + 0x80, position, previous.f);
-        Hero_SnapStepUp();
+        correct_hero_ground_penetration();
     } else {
         HeroL16_UpdateGroundCollision();
     }
@@ -665,10 +665,10 @@ void HeroL16_IntegrateMotion(void) {
         saved = motion_player->motion.platform_delta.f[3];
         clear_u64_value(contact);
         motion_player->motion.platform_delta.f[3] = saved;
-        Hero_ResolveCollision();
+        resolve_hero_collisions_with_history();
         HeroL16_UpdateGroundCollision();
         FastVecSub(external, new_position, previous.f);
-        Hero_SnapStepUp();
+        correct_hero_ground_penetration();
     }
     FastVecSub((char *)delta + 0x30, new_position, work.f);
     motion_player->motion.platform_carry.f[3] = motion_player->motion.platform_delta.f[3];

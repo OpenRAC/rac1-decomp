@@ -228,7 +228,7 @@ void mine_layer_update(struct Moby *m) {
                 FastVecScale(vel, vel, scale);
                 FastVecAdd(vel, vel, spread);
                 vel[2] = D_L03_00161994_CB280 * D_0015EE6C * random_float_between(0.9f, 1.1f);
-                Moby627Spawn((char *)m, muzzle, vel);
+                spawn_mine_layer_projectile((char *)m, muzzle, vel);
             }
         }
         break;
@@ -370,7 +370,7 @@ extern void func_L00_0025E590(struct Moby *, void *);
 
 /* Trooper hit handler: takes damage, then knocks back away from the attacker by hit strength (dying on lethal hits).
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l03/gameplay/entities/002c9eb8.c, FUN_L03_002ca808. */
-void TrooperHitHandler(struct Moby *m) {
+void handle_mine_layer_damage(struct Moby *m) {
     TrooperVars_CBBD0 *v = (TrooperVars_CBBD0 *)m->pvars;
     TrooperHit_CBBD0 *h;
     Vec4 at;
@@ -502,7 +502,7 @@ extern void func_L00_00260878(struct Moby *, void *);
 
 /* l03 mine update: falls until it lands, sticks to or homes on its target, arms, and explodes on contact (debris, camera shake, blast) or shrinks away when old.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l03/gameplay/entities/002c9eb8.c, FUN_L03_002cbea8. */
-void KerwanMineUpdate(struct Moby *m) {
+void update_mine(struct Moby *m) {
     MineBlast blast = D_L03_001E35A0;
     MineVec tmp;
     MineVars *v = (MineVars *)m->pvars;
@@ -512,7 +512,7 @@ void KerwanMineUpdate(struct Moby *m) {
     int i;
     int k;
 
-    KerwanMine_CheckHit((unsigned char *)m);
+    handle_mine_hit((unsigned char *)m);
     v->unk60 = 0;
     v->age++;
     switch (m->state) {
@@ -639,7 +639,7 @@ void KerwanMineUpdate(struct Moby *m) {
 }
 extern char *func_L00_0025B478(void *, int, int);
 
-void KerwanMine_CheckHit(unsigned char *arg) {
+void handle_mine_hit(unsigned char *arg) {
     char *item = MobyGetHitMessage(arg, 0x130000, 0);
     if (item != 0) {
         char *other = *(char **)(item + 0x20);
@@ -657,7 +657,7 @@ extern void func_L00_0025D5B0(void *, void *, int, int, int, float);
 
 /* Spawns a projectile moby (class 0x273) at pos, heading along dir, owned by parent p.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l03/gameplay/entities/002c9eb8.c, FUN_L03_002cc888. */
-char *Moby627Spawn(char *p, void *pos, float *dir) {
+char *spawn_mine_layer_projectile(char *p, void *pos, float *dir) {
     char *m = CreateMoby(0x273);
     char *v;
     float s;
@@ -692,14 +692,14 @@ char *Moby627Spawn(char *p, void *pos, float *dir) {
     return m;
 }
 /* whether the moby is a taxi (class 0x330) in states 2 to 6 */
-s32 IsTaxiInTransit(u8 *object) {
+s32 is_taxi_in_round_trip_phase(u8 *object) {
     struct Moby *m = (struct Moby *)object;
     if (m->oclass != 0x330) return 0;
     return m->state >= 2 && m->state < 7;
 }
 extern void func_00215F80(int, int);
 
-void ShowPlatformHelpMessage(void *arg, int mode) {
+void request_taxi_return_help_message(void *arg, int mode) {
     if (mode == 1) {
         try_set_help_message(8, 0xBC9);
     } else {
@@ -769,14 +769,14 @@ s32 func_L03_002D4CE0_D4560(struct Moby *m, s32 path, s32 *snd) __asm__("func_L0
 
 /* Rail taxi: waits at its stop until the hero enters a route's trigger volume, flies the outbound path, lets the hero off, flies back (or onward) and returns to waiting. With the debug flag set it draws its first route's paths.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l03/gameplay/entities/002c9eb8.c, FUN_L03_002d3198. */
-void RailTaxiUpdate(struct Moby *m) {
+void update_rail_taxi(struct Moby *m) {
     struct RailTaxiVars_D4560 *v = (struct RailTaxiVars_D4560 *)m->pvars;
     Vec4 oldPos, oldRot, move;
     struct RailPath_D4560 *p;
     s32 i;
     s32 r;
 
-    LevelTable_SetSlotValue(m, IsTaxiInTransit((u8 *)m));
+    LevelTable_SetSlotValue(m, is_taxi_in_round_trip_phase((u8 *)m));
     if (D_L03_00161B84_D4560 != 0) {
         for (i = 0; i < D_L03_001B08B0_D4560[v->out[0]]->count; i++) {
             PartType41Spawn(&D_L03_001B08B0_D4560[v->out[0]]->pts[i], m, 4, 0x800000FF, 0x7F, 2, 0xFF, 0.333f);
@@ -849,7 +849,7 @@ void RailTaxiUpdate(struct Moby *m) {
         SteerAngleWithVelocity(&m->rot.x, 0.0f, &v->roll_vel, D_L03_00161B98_D4560 * 0.017453292f * D_0015EE70,
                             D_L03_00161B98_D4560 * 0.017453292f * D_0015EE70, D_0015EE6C * 12.566371f);
         if (D_0013F450_CBBD0.ground_moby == m && D_0013F450_CBBD0.air_frames.s == 0) {
-            ShowPlatformHelpMessage(m, v->help[m->command]);
+            request_taxi_return_help_message(m, v->help[m->command]);
             if ((D_0013CBE4 & 0x10) && D_L03_0015F674_D4560 == 8) {
                 HeroSetTargetAndEnterMove(&m->pos, m->rot.z, 0);
                 m->state = 4;
@@ -863,7 +863,7 @@ void RailTaxiUpdate(struct Moby *m) {
         }
         break;
     case 5:
-        if (Hero_IsOnMoby(m)) {
+        if (is_hero_on_moby(m)) {
             D_0013F450_CBBD0.unk1F2 = 4;
             D_0013F450_CBBD0.unk1F4 = 4;
         }
@@ -923,7 +923,7 @@ typedef struct PathFollower4CE0 {
 } PathFollower4CE0;
 
 /* Moves along a waypoint path and eases the orientation toward its direction. */
-int FollowWaypointPath(char *moby, int pathIndex, int *sound) {
+int advance_moby_along_rail_path(char *moby, int pathIndex, int *sound) {
     char **entry = &D_L03_001B08B0[pathIndex];
     PathFollower4CE0 *data = *(PathFollower4CE0 **)(moby + 0x78);
     float target[4];
@@ -986,7 +986,7 @@ extern short D_L03_00161B7C_g __asm__("D_L03_00161B7C");
 extern short D_L03_00161B80_g __asm__("D_L03_00161B80");
 
 /* Sets two speed pairs on a moby's data from level constants scaled by degrees-to-radians and the frame scale. */
-void UpdateMobyBobSway(char *m) {
+void update_taxi_bobbing_and_rocking(char *m) {
     char *d = *(char **)(m + 0x78);
     MobyBobZ(*(float *)&D_L03_00161B70_g, *(float *)&D_L03_00161B74_g * 0.0174532925f * D_0015EE6C, m, (float *)(d + 0xEC), (float *)(d + 0xE8));
     LissajousOffsetUpdate(m, d + 0xF0, d + 0xF4, *(float *)&D_L03_00161B78_g, *(float *)&D_L03_00161B7C_g * 0.0174532925f * D_0015EE6C, *(float *)&D_L03_00161B80_g * 0.0174532925f * D_0015EE6C);
@@ -1114,7 +1114,7 @@ extern int func_001F9908_D5790(s32 *) __asm__("func_001F9908");
 
 /* Homing rocket update: flies on, trails smoke, steers up or down toward a target, explodes on impact or timeout.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l03/gameplay/entities/002c9eb8.c, FUN_L03_002d43c8. */
-void KerwanHomingRocketUpdate(struct Moby *m) {
+void update_homing_rocket(struct Moby *m) {
     Vec4 old;
     Vec4 side;
     Vec4 back;
@@ -1204,7 +1204,7 @@ extern void func_0020D960(char *, int, void *);
 extern short D_L03_00161C34;
 
 /* triggers objects matching the moby's class, with per-segment settings */
-void QuestGiver_AttachCheatManipulator(char *moby) {
+void apply_helga_big_head_cutscene_adjustments(char *moby) {
     int i;
     if (D_L03_0015F6A8 == 2 && gCheats[0]) {
         if (D_L03_0016C9E0.a == 2 && D_L03_0016C9E0.b >= 0x1EA && D_L03_0016C9E0.b < 0x266) {
@@ -1311,7 +1311,7 @@ void helga_update(struct Moby *m) {
     float pitch;
     int tracking;
 
-    QuestGiver_AttachCheatManipulator(m);
+    apply_helga_big_head_cutscene_adjustments(m);
     switch (m->state) {
     case 0:
         if (gHaveHeliPack[10] != 0) {
@@ -1580,7 +1580,7 @@ extern int func_L00_0028EB98_DC648(struct RailSpawnerMoby *, int) __asm__("func_
 extern int func_L00_0028EF68_DC648(int, int, struct RailSpawnerMoby *, int) __asm__("func_L00_0028EF68");
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l03/gameplay/entities/002c9eb8.c, FUN_L03_002db280. */
-void RailSpawnerUpdate(struct RailSpawnerMoby *moby) {
+void update_path_mover_spawner(struct RailSpawnerMoby *moby) {
     struct RailSpawnerVars *vars = moby->vars;
     struct RailPath *path;
     float d;
@@ -1600,12 +1600,12 @@ void RailSpawnerUpdate(struct RailSpawnerMoby *moby) {
         moby->state = 1;
         vars->voice = -1;
         for (d = 2.9f; d < path->count * path->pts[0].f[3]; d += 2.9f)
-            SpawnRailMoby(path, d);
+            spawn_path_mover(path, d);
         moby->unk30 = 0x60;
     }
     if (func_001F9908_DC648(&vars->timer)) {
         vars->timer = truncate_float_to_s32(2.9f / D_L03_00161C40_DC648);
-        SpawnRailMoby(D_L03_001B08B0_DC648[vars->path], 0.0f);
+        spawn_path_mover(D_L03_001B08B0_DC648[vars->path], 0.0f);
     }
     if (!func_L00_0028EB98_DC648(moby, vars->voice))
         vars->voice = func_L00_0028EF68_DC648(0, 4, moby, 0x382);
@@ -1953,7 +1953,7 @@ void robot_qwark_update(unsigned char *m) {
 INCLUDE_ASM("asm/overlays", func_L03_002DDE38);
 INCLUDE_ASM("asm/overlays", func_L03_002DDE9C);
 /* whether the moby is a taxi (class 0x3F4), active, with its pvars word at +0x7C equal to 1. Adapted from Lombyte (MIT) for PAL: src/overlays/l03/gameplay/entities/002c9eb8.c, FUN_L03_002dcb30. */
-int IsLiftMobyActive(struct Moby *moby) {
+int is_rail_lift_started(struct Moby *moby) {
     char *data = (char *)moby->pvars;
     if (moby->oclass != 0x3F4) {
         return 0;
@@ -1976,7 +1976,7 @@ extern void func_L00_00237B70(void);
 extern void func_L00_00237B90(void);
 
 /* Shows a help message for the mode, then keeps a hud queue entry alive. */
-void ShowModeHelpMessage(char *m, int mode) {
+void update_rail_lift_help_and_hud(char *m, int mode) {
     char *d = *(char **)(m + 0x78);
     int h;
     switch (mode) {
@@ -1998,7 +1998,7 @@ void ShowModeHelpMessage(char *m, int mode) {
     }
     h = *(int *)(d + 0xA4);
     if (h == -1) {
-        *(int *)(d + 0xA4) = queue_animation_update(0xC, 0, (int)Hud_InitCounter, (int)DefaultVtbl_DeleteMoby, (int)func_L00_00237B90, 0, 0);
+        *(int *)(d + 0xA4) = queue_animation_update(0xC, 0, (int)initialize_numeric_hud_element, (int)DefaultVtbl_DeleteMoby, (int)draw_hud_text_panel, 0, 0);
     } else {
         hud_keep_visible(h, 0xA);
     }
@@ -2050,7 +2050,7 @@ struct RailLiftVars_DE088 {
 void func_L03_002DE4B8_DE088(struct Moby *m) __asm__("func_L03_002DE4B8");
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l03/gameplay/entities/002c9eb8.c, FUN_L03_002dccc0. */
-void RailLiftUpdate(struct Moby *m) {
+void update_rail_lift(struct Moby *m) {
     struct RailLiftVars_DE088 *d = (struct RailLiftVars_DE088 *)m->pvars;
     Vec4 oldPos, oldRot, move;
     s32 hero_end, lift_end;
@@ -2136,7 +2136,7 @@ extern short D_L03_00161C64;
 extern short D_L03_00161C68;
 extern void func_L00_00263B78(float x, float y, char *a, float *p, float *q);
 /* sets two aim angles on a moby from level constants scaled by degrees-to-radians */
-void UpdateMobyAimSway(char *moby) {
+void update_moby_oscillation(char *moby) {
     char *data = *(char **)(moby + 0x78);
     MobyBobZ(*(float *)&D_L03_00161C58, *(float *)&D_L03_00161C5C * 0.017453292f * D_0015EE6C, moby, (float *)(data + 0xAC), (float *)(data + 0xA8));
     LissajousOffsetUpdate((float *)moby, (float *)(data + 0xB0), (float *)(data + 0xB4), *(float *)&D_L03_00161C60, *(float *)&D_L03_00161C64 * 0.017453292f * D_0015EE6C, *(float *)&D_L03_00161C68 * 0.017453292f * D_0015EE6C);
@@ -2226,7 +2226,7 @@ extern int D_L03_0015F6A8 MACRO_ADDR;
 extern Entry_2E08E8 D_L03_00179C40[];
 
 /* UpdateMoby_1342: tutorial hint and statistic triggers around the player on Kerwan. */
-void TutorialHintTriggerUpdate(Moby *moby) {
+void update_kerwan_tutorial_hints(Moby *moby) {
     Data_2E08E8 *data = *(Data_2E08E8 **)&moby->pvars;
 
     func_001F9908(&data->f58);
@@ -2501,7 +2501,7 @@ extern void func_L00_0026DD70(void *, void *, int, int, float, int);
 
 /* Starts the cutscene, then during mode 3 (frames 900-10000) emits two particle beams from the listed moby.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l03/gameplay/vendor/002df520.c, FUN_L03_002e01d0. */
-void CutsceneBeamsUpdate(char *m) {
+void update_kerwan_cutscene_effects(char *m) {
     char *moby;
     float from[4];
     float to[4];
@@ -2564,7 +2564,7 @@ void lightpost_update(char *m) {
         Moby_PlaySound(0, 0, (int)m);
         SpawnBreakFxByDistance(m);
         SpawnMobyBurstFx(m, 0x725, 1, 0x725, 1, 1, 2);
-        SpawnMobyCopyingPlacement(m, 0x724);
+        spawn_moby_from_placement(m, 0x724);
         DeleteMoby(m);
         break;
     }
@@ -2642,7 +2642,7 @@ extern void func_L03_002ECBA8(void *);
 extern int func_001F9850(int);
 
 /* ActivateCamera_14: seed the camera's smoothing state from the current camera table entry */
-void Camera14_Activate(char *m) {
+void initialize_hero_relative_camera(char *m) {
     CameraMobyECD40 *mob = (CameraMobyECD40 *)m;
     char *g = D_0013E633 + 0xE1D;
     CameraConfigECD40 *e = D_L03_0015F050_camera[mob->index].config;
@@ -2692,7 +2692,7 @@ void Camera14_Activate(char *m) {
     *(int *)(buf + 15) = 0;
     func_001FA1F8(buf, buf + 12);
     qcopy(c, buf);
-    PlaceCameraBehindHero(m);
+    rebuild_hero_relative_camera_transform(m);
     mob->resetFlag = 0;
     D_L03_001670F4 = 0x78;
 }
@@ -2769,7 +2769,7 @@ extern void func_L03_002ECEC8(void *);
 extern void func_001E9768(void *);
 extern void func_L03_002ED020(void *);
 
-void Camera14Update(void *arg) {
+void update_camera_position_and_orientation(void *arg) {
     Camera14_SmoothPosition(arg);
     Profile_Mark(arg);
     Camera14_RebuildAxes(arg);
@@ -2777,7 +2777,7 @@ void Camera14Update(void *arg) {
 extern int D_L03_0015F050 MACRO_ADDR;
 extern int func_00215570(void *, int);
 
-void Camera14Exit(char *moby)
+void update_camera_state_outside_clip_volume(char *moby)
 {
     char *entry = (char *)((*(short *)(moby + 0x84) << 5) + D_L03_0015F050);
     char *sub = *(char **)(entry + 0x1C);

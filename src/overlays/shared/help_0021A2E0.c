@@ -72,7 +72,7 @@ void Hero_ApplyMotionCollisionL02(void) {
 
     qcopy(previous.f, start);
     position = (float *)((char *)start - 0x80);
-    HeroRideMovingPlatform(((Hero *)position)->unk4F8, (char *)start + 0x70, (char *)start + 0x10);
+    update_hero_attachment(((Hero *)position)->unk4F8, (char *)start + 0x70, (char *)start + 0x10);
     if (((Hero *)position)->state.current == 34 || ((Hero *)position)->state.current == 20) {
         float limit;
 
@@ -113,10 +113,10 @@ void Hero_ApplyMotionCollisionL02(void) {
     contact_player->wall_hit = 0;
     contact_player->coll_hit_moby = 0;
     if (FastVecLength((char *)position + 0x70) <= 0.0001f) {
-        Hero_ResolveCollision();
+        resolve_hero_collisions_with_history();
         Hero_UpdateGroundContact();
         FastVecSub((char *)position + 0x80, position, previous.f);
-        Hero_SnapStepUp();
+        correct_hero_ground_penetration();
     } else {
         Hero_UpdateGroundContact();
     }
@@ -163,10 +163,10 @@ void Hero_ApplyMotionCollisionL02(void) {
         saved = motion_player->motion.platform_delta.f[3];
         clear_u64_value(start);
         motion_player->motion.platform_delta.f[3] = saved;
-        Hero_ResolveCollision();
+        resolve_hero_collisions_with_history();
         Hero_UpdateGroundContact();
         FastVecSub(external, new_position, previous.f);
-        Hero_SnapStepUp();
+        correct_hero_ground_penetration();
     }
     FastVecSub((char *)position + 0x30, new_position, work.f);
     motion_player->motion.platform_carry.f[3] = motion_player->motion.platform_delta.f[3];
@@ -356,7 +356,7 @@ extern int func_L02_0022BE40(int, int);
 extern int func_001F9908_22F568(int *) __asm__("func_001F9908");
 
 /* Gadget and weapon input for the current hero state: starts the matching move and returns 1 when the state changed. */
-int Hero_TryStartGadgetMove(void) {
+int process_hero_item_action_input(void) {
     int out[3];
     int start;
     int mask;
@@ -390,7 +390,7 @@ int Hero_TryStartGadgetMove(void) {
             if (m == 0) {
                 break;
             }
-            if (!IsMobyClass47(m)) {
+            if (!is_wrench_moby(m)) {
                 break;
             }
             if (m->state != 0) {
@@ -398,7 +398,7 @@ int Hero_TryStartGadgetMove(void) {
             }
             if ((D_0013CA40_p22F568.held & 0xA) || ((D_0013F450_h22F568.state.current == 1 || D_0013F450_h22F568.state.current == 0x1E) && D_0013F450_h22F568.state_timer > scale_ticks(0x14))) {
                 if ((D_0013F450_h22F568.state.current == 1 || D_0013F450_h22F568.state.current == 0x1E) && D_0013F450_h22F568.state_timer > scale_ticks(0x14)) {
-                    LaunchGadgetMoby();
+                    launch_hero_wrench();
                     break;
                 }
                 HeroL02_SetMoveState(0x15, 1);
@@ -485,8 +485,8 @@ int Hero_TryStartGadgetMove(void) {
         {
             int t;
 
-            Hero_FindMoby323Target();
-            Hero_FindMoby2F6Target();
+            select_hero_grapple_swing_target();
+            select_hero_grapple_target();
             t = scale_ticks(5);
             if (D_0013F450_h22F568.air_frames.s != 0) {
                 t = scale_ticks(8);

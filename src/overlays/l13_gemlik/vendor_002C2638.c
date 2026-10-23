@@ -96,7 +96,7 @@ extern Moby *D_L13_001741D8;
 extern Tex_2C27B0 D_L13_001B2680;
 
 /* Update for the homing rocket (class 82): smoke trail, steering toward its target, collision and expiry. */
-void HomingRocket82Update(Moby *m) {
+void update_level_13_homing_rocket(Moby *m) {
     Rocket_2C27B0 *d = (void *)m->pvars;
     Vec4A old;
     Vec4A hitpos;
@@ -272,7 +272,7 @@ extern char D_L13_001741C0_2C32D0[] __asm__("D_L13_001741C0");
 
 /* Moby update for class 83 on level 13: drifts toward its target and steers, calling the shared helpers.
  * The block at D_L13_001741C0 is read through a struct cast at each use, so the base stays in a register. */
-void Moby83Update(char *moby) {
+void update_level_13_class_53_projectile(char *moby) {
     char vec[16];
     char out[48];
     char *d = *(char **)(moby + 0x78);
@@ -396,7 +396,7 @@ extern short D_L13_0016152C;
 extern char *D_L13_0016016C MACRO_ADDR;
 
 /* Moby update for class 101 (blarg space fighter) on level 13: a state machine on moby+0x20, with a second switch on moby+0xBC. */
-void BlargSpaceFighterUpdate(char *m) {
+void update_hovering_rocket_attacker(char *m) {
     char *d;
     char *q;
     char v20[16];
@@ -415,7 +415,7 @@ void BlargSpaceFighterUpdate(char *m) {
     extern void func_L00_0025F4A8(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float, int, int, int, int);
 
     d = *(char **)(m + 0x78);
-    BlargFighter_UpdateCommon((unsigned char *)m);
+    update_hovering_rocket_attacker_common((unsigned char *)m);
     q = *(char **)(d + 0xB0);
     k = *(unsigned char *)(m + 0x20);
     if ((unsigned)k >= 9) {
@@ -437,8 +437,8 @@ void BlargSpaceFighterUpdate(char *m) {
             MobyBlendAnimation(m, 0, 0, 10);
         }
         *(unsigned char *)(m + 0xBC) = 0;
-        *(int *)(d + 0xFC) = Moby1233Spawn(m, 0);
-        *(int *)(d + 0xF8) = Moby1233Spawn(m, 1);
+        *(int *)(d + 0xFC) = create_attached_rocket(m, 0);
+        *(int *)(d + 0xF8) = create_attached_rocket(m, 1);
         if (*(int *)(d + 0xD4) != -1) {
             *(unsigned char *)(m + 0x20) = 5;
         } else {
@@ -530,17 +530,17 @@ void BlargSpaceFighterUpdate(char *m) {
                 func_L00_001FF4B0(pv, pv, *(float *)&D_L13_0016152C * D_0015EE6C);
                 if (*(int *)(d + 0xF4) != 0) {
                     if (*(int *)(d + 0xF8)) {
-                        Moby1233Init(*(char **)(d + 0xF8), pv, (int)q, *(float *)(d + 0xEC));
+                        launch_attached_rocket(*(char **)(d + 0xF8), pv, (int)q, *(float *)(d + 0xEC));
                         Moby_PlaySound(0, 0, (int)m);
                     }
-                    *(int *)(d + 0xF8) = Moby1233Spawn(m, 1);
+                    *(int *)(d + 0xF8) = create_attached_rocket(m, 1);
                     *(int *)(d + 0xF4) = 0;
                 } else {
                     if (*(int *)(d + 0xFC)) {
-                        Moby1233Init(*(char **)(d + 0xFC), pv, (int)q, *(float *)(d + 0xEC));
+                        launch_attached_rocket(*(char **)(d + 0xFC), pv, (int)q, *(float *)(d + 0xEC));
                         Moby_PlaySound(0, 0, (int)m);
                     }
-                    *(int *)(d + 0xFC) = Moby1233Spawn(m, 0);
+                    *(int *)(d + 0xFC) = create_attached_rocket(m, 0);
                     *(int *)(d + 0xF4) = 1;
                 }
                 *(float *)(d + 0xEC) = *(float *)(d + 0xEC) + 5.0f;
@@ -658,7 +658,7 @@ extern char *D_L13_001B0AB0_2C3FB8[] __asm__("D_L13_001B0AB0");
 extern float D_L13_00161520_2C3FB8 SDATA(D_L13_00161520);
 
 // Hero-moby update for the grab/hang state: samples points, picks a move state, and resets timers.
-void BlargFighter_UpdateCommon(unsigned char *moby) {
+void update_hovering_rocket_attacker_common(unsigned char *moby) {
     unsigned char *d;
     char *r;
     int st;
@@ -850,7 +850,7 @@ extern float func_001F9D10(void *, void *);
 extern float func_001FA888(int);
 
 // picks the entry of a ring table nearest a point, scanning outward from a start index
-int Path_FindPointNearDistance(char *pt, int *tbl, int start, float ref) {
+int select_blarg_space_fighter_path_point_by_distance(char *pt, int *tbl, int start, float ref) {
     int best = start;
     int i = 0;
     float bestd = 1e11f;
@@ -880,7 +880,7 @@ extern void func_001F9BF0(void *, void *, void *);
 extern float func_001F9D48(void *, void *);
 
 /* Steers moby m along its path toward the next point (advancing when reached); aims it at the hero when aim. Returns 1 on a wrap. */
-int PathVehicle_AdvanceNode(char *m, char *d, int aim) {
+int advance_blarg_space_fighter_along_path(char *m, char *d, int aim) {
     char *path = D_L13_001B0AB0[*(int *)(d + 0xA0)];
     float a, seg, diff, t;
     int wrapped = 0;
@@ -924,7 +924,7 @@ extern float func_001FA748(float, float);
 extern void func_001F9BD8(void *, void *, void *);
 
 // Computes an offset vector from the player's angle data, or copies the default vector when there is no player.
-void GetShipAimPoint(char *out, float scale) {
+void predict_hero_vehicle_position(char *out, float scale) {
     char *x = D_0013E633 + 0xE1D;
     if (*(char **)(x + 0x15F0) == 0) {
         qcopy(out, x + 0x80);
@@ -981,7 +981,7 @@ int PathVehicle_ControlSpeed(char *moby, char *vars, int aim) {
             func_L00_001FF548(point, point, 100.0f);
             FastVecAdd(point, point, linked + 0x10);
         } else {
-            GetShipAimPoint((char *)point, 140.0f);
+            predict_hero_vehicle_position((char *)point, 140.0f);
         }
     } else {
         if (*(int *)(vars + 0xBC) == -1 ||
@@ -992,7 +992,7 @@ int PathVehicle_ControlSpeed(char *moby, char *vars, int aim) {
             qcopy(point, linked + 0x10);
         }
     }
-    backward = Path_FindPointNearDistance((char *)point, (int *)path, *(short *)(vars + 0xB4), 0.0f);
+    backward = select_blarg_space_fighter_path_point_by_distance((char *)point, (int *)path, *(short *)(vars + 0xB4), 0.0f);
     forward = backward + 5;
     point_count = *(int *)path;
     if (forward >= point_count) {
@@ -1059,7 +1059,7 @@ int PathVehicle_ControlSpeed(char *moby, char *vars, int aim) {
         *(float *)(vars + 0xCC) = maximum;
     }
 update_path:
-    result = PathVehicle_AdvanceNode(moby, vars, aim);
+    result = advance_blarg_space_fighter_along_path(moby, vars, aim);
 done:
     return result;
 }
@@ -1112,7 +1112,7 @@ extern float D_0015EE60 MACRO_ADDR;
 extern float D_L13_00167140[];
 
 /* Update for the blarg space fighter (class 111): joins its path, follows it while its carrier lives, fires at the hero's ship, and explodes. */
-void BlargFighter111Update(Moby *moby) {
+void update_blarg_space_fighter(Moby *moby) {
     Data_2C56B0 *d;
     Moby *veh;
     Veh_2C56B0 *vehd = 0;
@@ -1266,7 +1266,7 @@ void BlargFighter111Update(Moby *moby) {
                         FastVecSub(v30, v30, &moby->pos);
                         func_L00_001FF4B0(v40, v30, 2.6f);
                         FastVecAdd(v40, v40, &moby->pos);
-                        SpawnStreakMoby((int)moby, v30, v40, 121.0f, D_0015EE6C * 50.0f, 5.0f);
+                        spawn_class_3f9_moby((int)moby, v30, v40, 121.0f, D_0015EE6C * 50.0f, 5.0f);
                         func_0022ED80_s(0, 0, (int)moby);
                     }
                     d->fAC = d->fAC * ((random_float_between(0.92f, 0.94f) - 1.0f) * D_0015EE60 + 1.0f);
@@ -1304,7 +1304,7 @@ void BlargFighter111Update(Moby *moby) {
         FastVecScale(v30, &d->vel, 0.5f);
         switch (func_001160D8() % 10) {
         case 0:
-            SpawnMobyAt((char *)v40, 0xE0);
+            spawn_ship_pickup((char *)v40, 0xE0);
             break;
         case 1:
         case 2:
@@ -1312,7 +1312,7 @@ void BlargFighter111Update(Moby *moby) {
         case 4:
         case 5:
         case 6:
-            SpawnMobyAt((char *)v40, 0xE4);
+            spawn_ship_pickup((char *)v40, 0xE4);
             break;
         case 7:
         case 8:
@@ -1406,7 +1406,7 @@ extern float func_001FA748_2C9208(float, float) __asm__("func_001FA748");
 extern float func_001FA790_2C9208(float, float) __asm__("func_001FA790");
 
 /* Level 13 moby update (classes 127, 128, 159): six-state machine that turns the moby open and shut with its link. */
-void RotatingDoorUpdate(RotMoby_2C9208 *m)
+void update_linked_moby_rotation(RotMoby_2C9208 *m)
 {
     RotVars_2C9208 *d = m->vars;
     RotMoby_2C9208 *g;
@@ -1522,7 +1522,7 @@ extern Blk24 D_L13_001F4C40;
 extern Blk24 D_L13_001F4C58;
 
 /* Gemlik spark emitter: builds a spark frame from a1, runs two burst loops of effect calls, and with a2 set, the extra burst set. */
-void SpawnGemlikSparks(unsigned char *a0, void *a1, int a2)
+void emit_forcefield_tower_destruction_effects(unsigned char *a0, void *a1, int a2)
 {
     int k;
     int j;
@@ -1651,7 +1651,7 @@ typedef struct HitAttack2CFF90 {
     char pad24[8]; float damage; char pad30[8]; int kind;
 } HitAttack2CFF90;
 /* Hit handler for a damageable moby: applies the damage to *hp and handles death. */
-void Moby_TakeDamage(char *m, char *d, float *hp) {
+void process_forcefield_tower_damage(char *m, char *d, float *hp) {
     HitMoby2CFF90 *mob = (HitMoby2CFF90 *)m;
     if (mob->state != 2) {
         int cnt;
@@ -1778,7 +1778,7 @@ void forcefield_tower_update(char *moby) {
         } else {
             Moby_GetJointWorldPos(moby, 0, vec);
             vec[2] = vec[2] + 1.1f;
-            Moby1632Spawn(moby, vec, 2.8f);
+            spawn_scaled_owned_moby(moby, vec, 2.8f);
             *(unsigned short *)(moby + 0x34) &= 0xEFFF;
         }
     break;
@@ -1814,7 +1814,7 @@ done:
             m = scale_ticks(e % 40 + 40);
             func_L00_0026AA10_C4748(vec, s17, s16, s18, f20, 0.0f, m);
         }
-        Moby_TakeDamage(moby, d, (float *)(d + 0x20));
+        process_forcefield_tower_damage(moby, d, (float *)(d + 0x20));
     break;
     }
     case 2: {
@@ -1851,7 +1851,7 @@ done:
                 r = random_float_between(0.0f, 3.0f);
                 FastVecScale(acc, blk, r);
                 FastVecAdd(acc, acc, moby + 0x10);
-                SpawnGemlikSparks(moby, acc, 1);
+                emit_forcefield_tower_destruction_effects(moby, acc, 1);
             } while (k >= 0);
             if (*(int *)(d + 0x74) != -1) linked_state_flags[*(int *)(d + 0x74)] = 1;
             DeleteMoby(moby);
@@ -1868,7 +1868,7 @@ extern float func_002140F8(float, float);
 extern int func_001160D8(void);
 
 // spawns a spinning moby of class 0x584 with randomized angular rates
-char *SpawnMoby584(char *owner, char *pos, char *vec, int a3, float f) {
+char *spawn_asteroid_fragment(char *owner, char *pos, char *vec, int a3, float f) {
     char *moby = CreateMoby(0x584);
     if (moby != 0) {
         char *d;
@@ -1942,7 +1942,7 @@ void BlobHit(char *m, char *d, float s) {
             func_L00_001FF4B0(p, v, 0.5f);
             FastVecAdd(p, p, m + 0x10);
             FastVecAdd(p, p, v);
-            SpawnMoby584(m, (char *)p, (char *)v, *(short *)(d + 0x4E) - 1, part);
+            spawn_asteroid_fragment(m, (char *)p, (char *)v, *(short *)(d + 0x4E) - 1, part);
             *(float *)(m + 0x2C) -= part;
             if (--*(short *)(d + 0x4E) == 0) break;
             if (*(float *)(m + 0x2C) / *(float *)(*(char **)(m + 0x24) + 0x24) <= 0.2f) break;
@@ -2238,7 +2238,7 @@ void DriftingBlobUpdate(struct MobyP *moby) {
 #undef moby_base_p
 #undef frame_time_p
 /* runs one step of a moby's timed state and reports whether the timer ran out */
-int Moby_StepHealth(char *m, char *arg, float *t) {
+int process_linked_switch_damage(char *m, char *arg, float *t) {
     char *r = MobyGetHitMessage(m, 0x330000, 0);
     int n;
     int result = 0;
@@ -2321,7 +2321,7 @@ typedef struct {
 } SwitchVars;
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l13/gameplay/entities/002c13b0.c, FUN_L13_002e4448. */
-void SwitchUpdate(char *moby) {
+void update_linked_switch_group(char *moby) {
     SwitchVars *data = *(SwitchVars **)(moby + 0x78);
     int hit = 0;
 
@@ -2445,7 +2445,7 @@ void SwitchUpdate(char *moby) {
 }
 
 /* Spawns a class 0x160 child moby at the owner's position and returns it. */
-char *SpawnMoby160(char *owner) {
+char *spawn_owner_linked_class_160_moby(char *owner) {
     char *moby = CreateMoby(0x160);
     if (moby != 0) {
         char *data;
@@ -2473,7 +2473,7 @@ extern void func_0020D678_2E9910(void *) __asm__("func_0020D678");
 /* Fades the moby in (state 1), holds until its owner is gone or dying (state 2), fades it out (state 3) and removes
  * it (state 4), easing its scale toward the class scale and spinning it all the while.
  * Adapted from Lombyte (MIT) for PAL: overlays/l13/gameplay/entities/002c13b0.c, FUN_L13_002e84d8. */
-void FadeInHoldOutUpdate(struct Moby *moby) {
+void update_owner_linked_class_160_moby(struct Moby *moby) {
     int *d = (int *)moby->pvars;
     int old;
     int step;
@@ -2639,7 +2639,7 @@ typedef struct {
 } Vd_v_E9D58;
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l13/gameplay/entities/002c13b0.c, FUN_L13_002e8920. */
-void SpawnJointFlameParticles(struct Moby *m, char *d) {
+void emit_gated_moby_joint_effects(struct Moby *m, char *d) {
     OvlQuad_E9D58 zv;
     float a[4];
     int i;
@@ -2705,7 +2705,7 @@ extern char *func_L13_002EE148(char *, int, int);
 extern int D_L13_001D3778[];
 
 /* updates attached children and creates or deletes the selected extra child */
-void QwarkStarfighter_SyncParts(char *m, char *data) {
+void update_moby_joint_attachments(char *m, char *data) {
     int i, selected;
     char *p;
     for (i = 0; i < 10; i++) {
@@ -2828,7 +2828,7 @@ extern char D_0013F4D0[];
 extern int func_L13_002EA598(char *, char *, int, int);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l13/gameplay/entities/002c13b0.c, FUN_L13_002e9408. */
-int Path_ChooseDirectionTowardHero(struct Moby *m, char *d, int idx, int aim) {
+int update_moby_path_following_away_from_hero(struct Moby *m, char *d, int idx, int aim) {
     char *path = D_L13_001B0AB0[*(int *)(&d[idx << 2] + 0xB0)];
     int r = 0;
     float ahead[4];
@@ -3072,7 +3072,7 @@ extern int func_L13_002E9B30_2EAE80(void *, void *, int, int) __asm__("func_L13_
 /* Per-frame update of a breakable vehicle part (level 13): probes the first attached object and then the
    eleven attached children for hits, takes damage from them, advances the damage stage (unkBC) with its
    effects and sounds, and runs the stage's follow-up action. */
-void VehiclePart_UpdateDamage(Moby *m, Data_2EAE80 *d) {
+void process_moby_attachment_damage(Moby *m, Data_2EAE80 *d) {
     int hit;
     int rf;
     int mode;
@@ -3350,7 +3350,7 @@ extern int func_001F9850_EB978(int) __asm__("func_001F9850");
 extern void func_0022ED80_EB978(int, int, char *) __asm__("func_0022ED80");
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l13/gameplay/entities/002c13b0.c, FUN_L13_002ea540. */
-unsigned char *FireAtShipTarget(struct Moby *m, unsigned char *d) {
+unsigned char *fire_starfighter_homing_rocket(struct Moby *m, unsigned char *d) {
     float v[4];
     struct {
         int a;
@@ -3389,7 +3389,7 @@ extern unsigned char *func_L13_002C31B0(char *owner, char *pos, char *vec);
 extern void func_0022ED80(int, int, int);
 
 /* computes a velocity vector for a moby from the camera/player and spawns a projectile */
-unsigned char *FireMoby83AtTarget(char *a, char *b) {
+unsigned char *fire_class_53_projectile(char *a, char *b) {
     float v0[4], v1[4], v2[4], v3[4], v4[4];
     char *x;
     unsigned char *r;

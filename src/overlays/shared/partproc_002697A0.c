@@ -193,7 +193,7 @@ extern f32 func_L00_002644E0(Vec4 *);
 extern void func_L00_002688A8_69BE8(FallingParticle *) __asm__("func_L00_002688A8");
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/rendering/effects/00268900.c, FUN_L00_00268d48. */
-void PartType00Update(FallingParticle *p)
+void update_falling_effect_particle(FallingParticle *p)
 {
     Vec4 step;
     Vec4 tmp1;
@@ -257,7 +257,7 @@ void PartType01Spawn(char *pos, int a1) {
 extern int func_001F9938(void *);
 extern void func_L00_002688A8(void *);
 
-void PartType01Update(char *m) {
+void update_timed_effect_particle(char *m) {
     int t = *(short *)(m + 0xA) * *(int *)(m + 0x20) / scale_ticks(0x1B);
     int a;
     *(int *)(m + 4) = (*(int *)(m + 4) & 0xFFFFFF) | (t << 24);

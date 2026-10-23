@@ -167,7 +167,7 @@ extern int fr_23e008(int) __asm__("func_001F9850");
 extern unsigned char *emit_23e008(float *, int, float, float, float, int, int, int, void *) __asm__("func_L00_00272F00");
 extern int rf_23e008(float) __asm__("func_001FA898");
 /* Spawns a burst of directed particles with randomised speeds from the frame time. Adapted from Lombyte (MIT) for PAL: overlays/shared/unclassified_0023db30.c, FUN_L00_0023e008. */
-void GlowParticlesSpawn(void *p)
+void emit_moby_particle_pairs(void *p)
 {
     ti_23e008 dir[1];
     ti_23e008 old[1];

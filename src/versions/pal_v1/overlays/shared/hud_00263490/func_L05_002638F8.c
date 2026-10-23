@@ -1,4 +1,4 @@
-int ChallengeHudDraw(char *a) {
+int draw_trick_combo_hud(char *a) {
     unsigned char *u = (unsigned char *)(a + 0x70);
     char buf[0x80];
     int out[4];
@@ -104,7 +104,7 @@ int ChallengeHudDraw(char *a) {
     hud_screen_position(a, &xa, &xb);
     s16 = (*(int *)(a + 0x74) * 0xDD) / *(int *)(a + 0x8) + 0x1B;
     id = GetIconFrame(0x7558, 1);
-    HudSpriteSubRect(id, xa, xb, s16, 0x40, 0x80);
+    draw_cropped_hud_sprite(id, xa, xb, s16, 0x40, 0x80);
     id2 = GetIconFrame(0x7558, 0);
     HudSprite(id2, xa, xb, 0x100, 0x40, 0x80);
     E = D_0013E633 + 0xE1D;

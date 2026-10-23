@@ -65,7 +65,7 @@ extern float func_001F9FA8(float);
 extern void func_001F9BD8(void *, void *, void *);
 extern void func_L01_002F9908(void *, void *, unsigned int, int, float, float, float, float, int);
 
-void Moby1381Update(unsigned char *moby) {
+void update_linked_moby_group_transform_and_fall(unsigned char *moby) {
     VData *d = *(VData **)(moby + 0x78);
     if (d) {
         float a1 = *(float *)&D_L18_00162320 * D_0015EE70;
@@ -97,7 +97,7 @@ void Moby1381Update(unsigned char *moby) {
             d->f350 = 0;
             d->f34C = scale_ticks(5);
             d->cnt = j;
-            TransformChildrenToParentSpace(moby, (char *)d + 0x30, j);
+            capture_linked_moby_relative_transforms(moby, (char *)d + 0x30, j);
             moby[0x20] = 1;
             break;
         }
@@ -148,7 +148,7 @@ void Moby1381Update(unsigned char *moby) {
             if (*(float *)(moby + 0x18) < 20.0f) {
                 int i;
                 for (i = 0; i < d->cnt; i++) {
-                    RemoveMobyAndChild(D_L18_00160058 + (d->ent[i].idx << 8));
+                    mark_class_0630_moby_and_child_for_removal(D_L18_00160058 + (d->ent[i].idx << 8));
                 }
                 DeleteMoby(moby);
                 return;
@@ -186,7 +186,7 @@ void Moby1381Update(unsigned char *moby) {
 extern void func_L18_002F3108(int, int);
 extern void func_L18_002FBCE8(int, int);
 
-void Moby1381Trigger(unsigned char *moby) {
+void activate_drek_boss_class_0565_moby(unsigned char *moby) {
     char *state = *(char **)(moby + 0x78);
     if (*(short *)(moby + 0xA6) == 0x565 && moby[0x20] == 1) {
         if (*(int *)(state + 0xC) != -1) {
@@ -195,7 +195,7 @@ void Moby1381Trigger(unsigned char *moby) {
             BlockEntries_ResetNear(0x954, *(int *)(state + 0xC));
         }
         moby[0x20] = 2;
-        SetGroupMoby1584Mode(moby[0x21], 1);
+        set_group_class_0630_moby_byte_bc(moby[0x21], 1);
     }
 }
 typedef struct {
@@ -259,7 +259,7 @@ extern int func_0022ED80(int, int, int);
 extern void func_L00_0028EBF0(int);
 extern float func_00214D28(float *p, float target, float maxstep);
 
-void Moby1392Update(unsigned char *m)
+void update_glow_moby_state_and_voice(unsigned char *m)
 {
     int *d = *(int **)(m + 0x78);
     switch (m[0x20]) {
@@ -268,7 +268,7 @@ void Moby1392Update(unsigned char *m)
         ((float *)d)[3] = 1.0f;
         break;
     case 1:
-        AddDrawCallback(Moby1392Draw, m);
+        AddDrawCallback(draw_glow_moby_layered_quads, m);
         if (Sound_IsPlaying(m, d[1]) == 0) {
             d[1] = Moby_PlaySound(0, 4, (int)m);
         }
@@ -331,7 +331,7 @@ extern int func_001F4868(int);
 extern int func_001FA8A8(int, int, float);
 extern void func_L00_001FD1D8(void *, void *, int);
 
-void Moby1392Draw(struct Moby *moby) {
+void draw_glow_moby_layered_quads(struct Moby *moby) {
     struct GeometryQuad_33D8 quads[4];
     float matrix[4][4] __attribute__((aligned(16)));
     struct GlowVars_33D8 *vars;
@@ -402,7 +402,7 @@ extern void func_L18_002F3DD0(char *);
 
 typedef struct { float f0; float f4; int w8; int wc; int w10; int w14; float f18; } VD;
 
-void Moby1402Update(unsigned char *m)
+void update_lift_state_and_queue_draw(unsigned char *m)
 {
     VD *d = *(VD **)(m + 0x78);
     switch (m[0x20]) {
@@ -448,7 +448,7 @@ void Moby1402Update(unsigned char *m)
             }
         }
         ApproachWithVelocity(d->f4, D_0015EE70 * 4.0f, D_0015EE70 * 4.0f, D_0015EE6C * 4.0f, (float *)(m + 0x18), (float *)((char *)d + 0x18));
-        Group_CopyZFromOwner(m);
+        synchronize_lift_group_height(m);
         m[0xBC] = 1;
         break;
     case 2:
@@ -457,7 +457,7 @@ void Moby1402Update(unsigned char *m)
             *(int *)&D_L18_0016238C = 1;
         }
         m[0xBC] = 2;
-        Group_CopyZFromOwner(m);
+        synchronize_lift_group_height(m);
         ApproachWithVelocity(d->f0, D_0015EE70 * 4.0f, D_0015EE70 * 4.0f, D_0015EE6C * 4.0f, (float *)(m + 0x18), (float *)((char *)d + 0x18));
         if (FastAbsF(*(float *)(m + 0x18) - d->f0) > 0.1f) {
             char *b = D_0013E633 + 0xE1D;
@@ -477,14 +477,14 @@ void Moby1402Update(unsigned char *m)
         if (t > 1.0f) {
             *(float *)&D_L18_00162398 = t - 1.0f;
         }
-        AddDrawCallback((void (*)(void))DrawQuads25, m);
+        AddDrawCallback((void (*)(void))draw_lift_25_quad_mesh, m);
         break;
     }
     case 2:
-        AddDrawCallback((void (*)(void))DrawQuads38, m);
+        AddDrawCallback((void (*)(void))draw_lift_38_quad_mesh, m);
         break;
     case 0:
-        AddDrawCallback((void (*)(void))DrawQuads22, m);
+        AddDrawCallback((void (*)(void))draw_lift_22_quad_mesh, m);
         break;
     }
 }
@@ -494,7 +494,7 @@ typedef struct { int pad[2]; float f; char pad2[0x1190 - 12]; } E;
 extern E D_L18_001DB7C0[];
 typedef struct { char pad[0x18]; float f; char pad2[0x5]; unsigned char idx; } S;
 
-void Group_CopyZFromOwner(void *a)
+void synchronize_lift_group_height(void *a)
 {
     unsigned char *s = a;
     short *p = D_L18_001AC540[s[0x21]];
@@ -526,7 +526,7 @@ extern void func_001FA190(void *);
 extern void func_L00_001FD1D8(void *, void *, int);
 
 /* Draws 25 textured quads from the L18 tables, in the moby's frame. */
-void DrawQuads25(char *moby) {
+void draw_lift_25_quad_mesh(char *moby) {
     FRow m[4];
     int colors[4];
     float uv[4][2];
@@ -564,7 +564,7 @@ extern FRow D_L18_001DAB90[];
 extern short D_L18_001DAEE0[][4][2];
 
 /* Draws 38 textured quads from the L18 tables, in the moby's frame. */
-void DrawQuads38(char *moby) {
+void draw_lift_38_quad_mesh(char *moby) {
     FRow m[4];
     int colors[4];
     float uv[4][2];
@@ -602,7 +602,7 @@ extern FRow D_L18_001DB2F0[];
 extern short D_L18_001DB500[][4][2];
 
 /* Draws 22 textured quads from the L18 tables, in the moby's frame. */
-void DrawQuads22(char *moby) {
+void draw_lift_22_quad_mesh(char *moby) {
     FRow m[4];
     int colors[4];
     float uv[4][2];
@@ -649,7 +649,7 @@ extern short D_L18_00162434;
 extern void func_0020D960(char *, int, void *);
 
 /* Re-initialize the class 0x4E1 effect block for each listed moby that has no active effect. */
-void Moby1249_AttachManipulators(char *moby) {
+void attach_drek_boss_big_head_manipulator(char *moby) {
     if (D_L18_0015F6A8 == 2 && gCheats[0] != 0) {
         int i;
         for (i = 0; i < D_L18_0016D2E0.count; i++) {
@@ -890,11 +890,11 @@ void drek_final_boss_robot_update(Moby *moby) {
     float *aim;
     float fast;
 
-    Boss_LatchTargetHit((char *)moby);
-    Boss_HitUpdate((char *)moby);
+    count_drek_boss_platform_event_once((char *)moby);
+    update_drek_boss_damage_and_phase_transitions((char *)moby);
     tgt = d->fB0;
     /* The file defines this one without parameters; retail passes the moby. */
-    Moby1249_AttachManipulators((char *)moby);
+    attach_drek_boss_big_head_manipulator((char *)moby);
     {
         char *o = d->f3A4;
         if (o != 0 && o[0x20] >= 0) {
@@ -928,7 +928,7 @@ void drek_final_boss_robot_update(Moby *moby) {
         d->f3D0 = 0.75f;
         d->f374 = 0.0f;
         for (i = 0; i < 3; i++) {
-            Group_DisableMobys((int)moby, d->f204[i]);
+            hide_drek_boss_moby_group((int)moby, d->f204[i]);
         }
         break;
     }
@@ -986,7 +986,7 @@ void drek_final_boss_robot_update(Moby *moby) {
                 }
                 moby->rot.z = func_L00_001FF860(D_0013F450.f80[0] - d->f3C0[0],
                                                  D_0013F450.f80[1] - d->f3C0[1]);
-                Group_EnableMobys((int)moby, d->f204[0]);
+                show_drek_boss_moby_group((int)moby, d->f204[0]);
                 d->f38C = d->f38C * 0.85714287f;
             } else if (FastVecDist(D_0013F450.f80, D_L18_0016016C + (d->f250[0] << 7) + 0x30) < 50.0f) {
                 moby->flags &= 0xFFBE;
@@ -1050,7 +1050,7 @@ void drek_final_boss_robot_update(Moby *moby) {
         ang = func_L00_001FF860(D_0013F450.f80[0] - moby->pos.x, D_0013F450.f80[1] - moby->pos.y);
         SteerAngleWithVelocity(aim, &d->f370, ang, D_0015EE70 * 6.2831855f, D_0015EE70 * 6.2831855f,
                           D_0015EE6C * 6.2831855f);
-        Boss_CircleStep((char *)moby);
+        update_drek_boss_arena_circling_movement((char *)moby);
         if (d->f38C <= 301.0f) {
             if (D_0013F450.f20A4 != 0) {
                 D_0013F450.f2080->collision = 0;
@@ -1063,7 +1063,7 @@ void drek_final_boss_robot_update(Moby *moby) {
             }
             jet_clear_persistent(d->f2B0);
             jet_reset_camera(D_0013F450.f80, D_0013F450.f90);
-            Group_EnableMobys((int)moby, d->f204[0]);
+            show_drek_boss_moby_group((int)moby, d->f204[0]);
             StartCutscene(1);
             moby->state = 7;
             moby->flags |= 0x41;
@@ -1102,7 +1102,7 @@ void drek_final_boss_robot_update(Moby *moby) {
                     } else if (e < 60.0f) {
                         e = 60.0f;
                     }
-                    Moby564Spawn(v1, v2, v0, a, c, func_001FA898_r(func_001F9878(e)), 0);
+                    create_rocket_moby(v1, v2, v0, a, c, func_001FA898_r(func_001F9878(e)), 0);
                 }
             }
         }
@@ -1141,7 +1141,7 @@ void drek_final_boss_robot_update(Moby *moby) {
             qcopy(v2, D_L18_0016016C + d->f344 * 0x80 + 0x30);
             v2[2] = v2[2] + 10.0f;
             v2[2] = ProbeGroundHeight(v2, 0, 0.5f);
-            HomingSparkStart(d->f33C, v1, D_L18_0016016C + d->f344 * 0x80 + 0x30, 1, 1.0f);
+            refresh_moby_position_and_activate(d->f33C, v1, D_L18_0016016C + d->f344 * 0x80 + 0x30, 1, 1.0f);
             d->f33C = 0;
         } else if (lvl >= 0.729f) {
             int i;
@@ -1155,7 +1155,7 @@ void drek_final_boss_robot_update(Moby *moby) {
             for (i = 0; i < 4; i++) {
                 int k = d->f34C == 1 ? d->f230[i] : d->f240[i];
 
-                Moby1381Trigger(D_L18_00160058 + k * 0x100);
+                activate_drek_boss_class_0565_moby(D_L18_00160058 + k * 0x100);
             }
         }
         if (d->f33C != 0) {
@@ -1166,7 +1166,7 @@ void drek_final_boss_robot_update(Moby *moby) {
             if (f > 1.0f) {
                 f = 1.0f;
             }
-            HomingSparkStart(d->f33C, v1, D_L18_0015F660, 0, f);
+            refresh_moby_position_and_activate(d->f33C, v1, D_L18_0015F660, 0, f);
         }
         break;
     }
@@ -1187,7 +1187,7 @@ void drek_final_boss_robot_update(Moby *moby) {
             }
             FastVecAdd(d->f3C0, d->f3C0, v0);
         }
-        h = FindNearestGroupMoby((char *)moby);
+        h = select_drek_boss_platform_firing_target((char *)moby);
         if (h != 0 &&
             (IsFrameWithinWindow((char *)moby, 1.0f) != 0 || IsFrameWithinWindow((char *)moby, 16.0f) != 0)) {
             qcopy(v2, h + 0x10);
@@ -1198,7 +1198,7 @@ void drek_final_boss_robot_update(Moby *moby) {
             {
                 float a = randf_sym(0.5235988f, 0.7853982f);
                 float c = -random_float_between(0.34906584f, 0.5235988f);
-                Moby564Spawn(v0, v1, v2, a, c, scale_ticks(0x3C), 5);
+                create_rocket_moby(v0, v1, v2, a, c, scale_ticks(0x3C), 5);
             }
         }
         if (d->f348 == *d->f340 - 2) {
@@ -1247,11 +1247,11 @@ void drek_final_boss_robot_update(Moby *moby) {
             *(int *)&D_L18_001623F0 = 1;
             moby->state = 7;
             d->f39C = 5;
-            d->f330 = (Moby *)Moby583_FindNearest(D_0013F450.f80, d->f200);
+            d->f330 = (Moby *)find_nearest_class_247_moby_in_list(D_0013F450.f80, d->f200);
             moby->flags |= 0x41;
             StartCutscene(2);
             for (i = 0; i < 3; i++) {
-                Group_DisableMobys((int)moby, d->f204[i]);
+                hide_drek_boss_moby_group((int)moby, d->f204[i]);
             }
         }
         break;
@@ -1288,7 +1288,7 @@ void drek_final_boss_robot_update(Moby *moby) {
                           *(int *)&D_L18_00162428, 1);
         D_0013F450.f20C4 = 3;
         moby->state = 8;
-        Moby_ActivateWithSound(D_L18_00160058 + d->f21C * 0x100, scale_ticks(0x708));
+        request_thruster_pack_lock_red_wait(D_L18_00160058 + d->f21C * 0x100, scale_ticks(0x708));
         break;
     }
     case 3:
@@ -1299,8 +1299,8 @@ void drek_final_boss_robot_update(Moby *moby) {
             if (moby->prev_seq != 7) {
                 MobyBlendAnimation(moby, 7, 0, scale_ticks(0x14));
             }
-            Group_EnableMobys((int)moby, d->f398);
-            Group_DisableMobys((int)moby, d->f204[d->f34C - 1]);
+            show_drek_boss_moby_group((int)moby, d->f398);
+            hide_drek_boss_moby_group((int)moby, d->f204[d->f34C - 1]);
             Moby_GetJointWorldPos(moby, 1, v0);
             d->f33C = (unsigned char *)HomingSpark_Spawn(moby, v0, 300);
         }
@@ -1320,7 +1320,7 @@ void drek_final_boss_robot_update(Moby *moby) {
             d->f354 = scale_ticks(0x14);
             qcopy(v0, d->f3C0);
             v0[2] = v0[2] + 4.0f;
-            if (Moby1355_AssignTarget((char *)moby, d->f214, v0) != 0) {
+            if (activate_drek_fight_missiles_in_group((char *)moby, d->f214, v0) != 0) {
                 moby->state = 0xC;
             }
         }
@@ -1330,11 +1330,11 @@ void drek_final_boss_robot_update(Moby *moby) {
         ang = func_L00_001FF860(tgt->pos.x - moby->pos.x, tgt->pos.y - moby->pos.y);
         SteerAngleWithVelocity(aim, &d->f370, ang, D_0015EE70 * 6.2831855f, D_0015EE70 * 6.2831855f,
                           D_0015EE6C * 6.2831855f);
-        Boss_CircleStep((char *)moby);
+        update_drek_boss_arena_circling_movement((char *)moby);
         if ((moby->anim_flags & 2) == 0) {
             break;
         }
-        switch (PickRandomState((char *)moby)) {
+        switch (select_drek_boss_next_action((char *)moby)) {
         case 0xF:
             moby->state = 0xF;
             if (moby->prev_seq != 10) {
@@ -1418,7 +1418,7 @@ void drek_final_boss_robot_update(Moby *moby) {
                           D_0015EE6C * 6.2831855f);
         Moby_GetJointWorldPos(moby, 0x13, v0);
         *(BossQ *)v1 = *(BossQ *)d->f320;
-        Moby_SetRelativeYawToward((char *)moby, d->f140, v0, v1);
+        set_drek_boss_relative_aim_yaw((char *)moby, d->f140, v0, v1);
         d->f3D8 = -3.0f;
         if ((moby->anim_flags & 2) != 0 && moby->prev_seq != 8) {
             MobyBlendAnimation(moby, 8, 0, scale_ticks(0x14));
@@ -1438,7 +1438,7 @@ void drek_final_boss_robot_update(Moby *moby) {
                 v2[2] = 2.0f;
                 func_L00_001FF500(v2, v2, 180.0f);
                 FastVecAdd(v2, v2, v1);
-                HomingSparkStart(d->f33C, v1, v2, 1, 1.0f);
+                refresh_moby_position_and_activate(d->f33C, v1, v2, 1, 1.0f);
                 d->f33C = 0;
                 if (d->f358 == 0) {
                     d->f350 = 0xE;
@@ -1453,7 +1453,7 @@ void drek_final_boss_robot_update(Moby *moby) {
                     f = 0.0f;
                 }
                 Moby_GetJointWorldPos(moby, 1, v1);
-                HomingSparkStart(d->f33C, v1, d->f320, 0, f);
+                refresh_moby_position_and_activate(d->f33C, v1, d->f320, 0, f);
                 if (scale_ticks(0xF) < d->f354) {
                     qcopy(d->f320, ((f32 *)&tgt->pos));
                 }
@@ -1466,7 +1466,7 @@ void drek_final_boss_robot_update(Moby *moby) {
         ang = func_L00_001FF860(tgt->pos.x - moby->pos.x, tgt->pos.y - moby->pos.y);
         SteerAngleWithVelocity(aim, &d->f370, ang, D_0015EE70 * 6.2831855f, D_0015EE70 * 6.2831855f,
                           D_0015EE6C * 6.2831855f);
-        Boss_CircleStep((char *)moby);
+        update_drek_boss_arena_circling_movement((char *)moby);
         if (IsFrameWithinWindow((char *)moby, 1.0f) != 0 || IsFrameWithinWindow((char *)moby, 16.0f) != 0) {
             if (random_integer_below(5) != 0 || d->fB4 == 2) {
                 float a;
@@ -1514,8 +1514,8 @@ void drek_final_boss_robot_update(Moby *moby) {
                 } else if (e < 60.0f) {
                     e = 60.0f;
                 }
-                Moby564Spawn(v1, v2, v0, a, c, func_001FA898_r(func_001F9878(e)), 2);
-                FinalBoss_SpawnBurstParticles((char *)moby, v1);
+                create_rocket_moby(v1, v2, v0, a, c, func_001FA898_r(func_001F9878(e)), 2);
+                spawn_drek_boss_firing_effects((char *)moby, v1);
             }
         }
         if (func_001F9908(&d->f358) != 0 || (d->f390 > 25.0f && (float)d->f34C < 4.0f)) {
@@ -1528,7 +1528,7 @@ void drek_final_boss_robot_update(Moby *moby) {
         ang = func_L00_001FF860(tgt->pos.x - moby->pos.x, tgt->pos.y - moby->pos.y);
         SteerAngleWithVelocity(aim, &d->f370, ang, D_0015EE70 * 6.2831855f, D_0015EE70 * 6.2831855f,
                           D_0015EE6C * 6.2831855f);
-        Boss_CircleStep((char *)moby);
+        update_drek_boss_arena_circling_movement((char *)moby);
         if (d->f354 < d->f358 + d->f35C) {
             d->f128 = func_L00_001FF860(1.0f, d->f3BC);
         }
@@ -1556,8 +1556,8 @@ void drek_final_boss_robot_update(Moby *moby) {
                     f = 0.0f;
                 }
                 func_L00_001FF4B0(v1, v1, f * D_0015EE6C);
-                Moby624Spawn((char *)v0, v1, (int)moby, 64.0f, D_0015EE6C * 18.0f);
-                FinalBoss_SpawnBurstParticles((char *)moby, v0);
+                spawn_class_270_moby((char *)v0, v1, (int)moby, 64.0f, D_0015EE6C * 18.0f);
+                spawn_drek_boss_firing_effects((char *)moby, v0);
                 d->f3BC = randf_sym(0.133f, 0.333f);
             } else if ((moby->anim_flags & 2) != 0 && moby->prev_seq != 3) {
                 MobyBlendAnimation(moby, 3, 0, scale_ticks(0x14));
@@ -1576,7 +1576,7 @@ void drek_final_boss_robot_update(Moby *moby) {
         ang = func_L00_001FF860(D_0013F450.f80[0] - moby->pos.x, D_0013F450.f80[1] - moby->pos.y);
         SteerAngleWithVelocity(aim, &d->f370, ang, D_0015EE70 * 6.2831855f, D_0015EE70 * 6.2831855f,
                           D_0015EE6C * 6.2831855f);
-        Boss_CircleStep((char *)moby);
+        update_drek_boss_arena_circling_movement((char *)moby);
         if (func_001F9908(&d->f354) != 0) {
             float a;
             float r;
@@ -1597,7 +1597,7 @@ void drek_final_boss_robot_update(Moby *moby) {
                 float speed = func_001F9D48(v2, v1) / (float)scale_ticks(0x3C);
                 float w = random_float_between(18.0f, 20.0f);
 
-                Moby568Launch((int)moby, d->f29C, v1, v2, speed,
+                launch_class_238_moby_from_list((int)moby, d->f29C, v1, v2, speed,
                                   func_001FA898_r(func_001F9878(w * 60.0f)));
             }
             d->f354 = scale_ticks(0xF);
@@ -1614,7 +1614,7 @@ void drek_final_boss_robot_update(Moby *moby) {
         ang = func_L00_001FF860(D_0013F450.f80[0] - moby->pos.x, D_0013F450.f80[1] - moby->pos.y);
         SteerAngleWithVelocity(aim, &d->f370, ang, D_0015EE70 * 6.2831855f, D_0015EE70 * 6.2831855f,
                           D_0015EE6C * 6.2831855f);
-        Boss_CircleStep((char *)moby);
+        update_drek_boss_arena_circling_movement((char *)moby);
         if ((moby->anim_flags & 2) != 0 && moby->prev_seq != 12) {
             MobyBlendAnimation(moby, 0xC, 0, scale_ticks(0x14));
         }
@@ -1628,12 +1628,12 @@ void drek_final_boss_robot_update(Moby *moby) {
                 /* v1 is not written in this state; retail passes it all the same. */
                 float speed = func_001F9D48(v0, v1) / (float)scale_ticks(0x3C);
 
-                if (LaunchMoby1906(d->f210, v0, v0, speed) != 0 && d->f354 == 0) {
+                if (launch_first_idle_group_class_0772_moby(d->f210, v0, v0, speed) != 0 && d->f354 == 0) {
                     d->f354 = scale_ticks(0x3C);
                 }
             }
         }
-        n = CountActiveMoby1906(d->f210);
+        n = count_group_class_0772_mobys_not_in_state_8(d->f210);
         if (n >= 11 && scale_ticks(0x3C) > d->f354) {
             d->f354 = scale_ticks(1000);
         } else if (n < 3 && scale_ticks(0x3C) < d->f354) {
@@ -1656,9 +1656,9 @@ void drek_final_boss_robot_update(Moby *moby) {
         SteerAngleWithVelocity(aim, &d->f370, ang, D_0015EE70 * 6.2831855f, D_0015EE70 * 6.2831855f,
                           D_0015EE6C * 6.2831855f);
         if (func_001F9908(&d->f354) != 0) {
-            StepFollowDistance((char *)moby);
+            update_drek_boss_hero_follow_movement((char *)moby);
         }
-        Moby628_Refresh(d->f338, d->f3C0, 5.8f);
+        refresh_ring_effect(d->f338, d->f3C0, 5.8f);
         if (Sound_IsPlaying(moby, d->f3B0) == 0) {
             d->f3B0 = Moby_PlaySound(0xE, 4, (int)moby);
         }
@@ -1747,7 +1747,7 @@ void drek_final_boss_robot_update(Moby *moby) {
                 ticks = scale_ticks(600);
                 break;
             }
-            Moby_ActivateWithSound(D_L18_00160058 + d->f21C * 0x100, scale_ticks(ticks));
+            request_thruster_pack_lock_red_wait(D_L18_00160058 + d->f21C * 0x100, scale_ticks(ticks));
             d->f354 = 0;
             if (d->f34C == 4) {
                 moby->state = 0x14;
@@ -1768,7 +1768,7 @@ void drek_final_boss_robot_update(Moby *moby) {
         ang = func_L00_001FF860(D_0013F450.f80[0] - moby->pos.x, D_0013F450.f80[1] - moby->pos.y);
         SteerAngleWithVelocity(aim, &d->f370, ang, D_0015EE70 * 6.2831855f, D_0015EE70 * 6.2831855f,
                           D_0015EE6C * 6.2831855f);
-        Boss_CircleStep((char *)moby);
+        update_drek_boss_arena_circling_movement((char *)moby);
         d->f358 = d->f358 + 1;
         n = scale_ticks(0x14);
         if (d->f358 % n == 0) {
@@ -1795,7 +1795,7 @@ void drek_final_boss_robot_update(Moby *moby) {
         }
         if (moby->seq == moby->prev_seq && moby->seq == 14 && IsFrameWithinWindow((char *)moby, 30.0f) != 0) {
             moby->state = 0x1B;
-            Moby_DeactivateStopSound(D_L18_00160058 + d->f21C * 0x100);
+            end_thruster_pack_lock_red_wait(D_L18_00160058 + d->f21C * 0x100);
         }
         break;
     }
@@ -1848,13 +1848,13 @@ void drek_final_boss_robot_update(Moby *moby) {
             StartCutscene(5);
             d->f34C = 9;
         } else if (d->f34C == 9 && D_L18_0015F6A8 == 0) {
-            EnterSlideshowMode();
+            start_slideshow();
             d->f34C = 10;
         } else {
             int k = d->f34C;
 
             if (k == 10 && D_L18_0015F6A8 == 0) {
-                PlayMovieEntryWithMode(0xB);
+                queue_movie_with_game_language(0xB);
                 d->f34C = 0xB;
             } else if (k == 0xB && D_L18_0015F6A8 == 0) {
                 *(int *)&D_L18_001623F0 = 0;
@@ -1870,7 +1870,7 @@ void drek_final_boss_robot_update(Moby *moby) {
         }
         break;
     }
-    FinalBoss_BlendByHeroDist((char *)moby);
+    update_drek_boss_state_dependent_scalars((char *)moby);
     if (moby->visible != 0) {
         Moby_GetJointWorldPos(moby, 8, v0);
         Moby_GetJointWorldPos(moby, 9, v1);
@@ -1903,13 +1903,13 @@ void drek_final_boss_robot_update(Moby *moby) {
         d->f3B8 = (a << 24) | ((b / 3) << 16) | (g << 8) | (r / 3);
     }
     if (moby->visible != 0) {
-        AddDrawCallback((void (*)(void))FinalBoss_DrawGlowBillboards, moby);
+        AddDrawCallback((void (*)(void))render_drek_boss_joint_glows, moby);
     }
 }
 extern short D_L18_00162438;
 
 /* Latches the target from the global block once, and counts a class 0x24B hit. */
-void Boss_LatchTargetHit(char *moby) {
+void count_drek_boss_platform_event_once(char *moby) {
     char *d = *(char **)(moby + 0x78);
     if (*(int *)(d + 0x3E4) == 0) {
         char *a = D_0013E633 + 0xE1D;
@@ -1968,7 +1968,7 @@ extern void func_L18_002F30C8_v(void *) __asm__("func_L18_002F30C8");
 extern void func_L18_002E0E90_v(char *, void *, void *, void *, void *, void *, int, int, int) __asm__("func_L18_002E0E90");
 
 /* Boss hit update: drain health (0x38C) by the damage taken down to this stage's floor, place the two attached mobys, and start the next stage once the floor is crossed. */
-void Boss_HitUpdate(char *moby) {
+void update_drek_boss_damage_and_phase_transitions(char *moby) {
     char *d = *(char **)(moby + 0x78);
     int res;
     float step;
@@ -2233,7 +2233,7 @@ extern short D_L18_0016240C;
 extern short D_L18_001623DC;
 
 /* Moves a moby's follow distance toward a target, clamped to a range, then applies it. */
-void StepFollowDistance(char *m) {
+void update_drek_boss_hero_follow_movement(char *m) {
     float v[4];
     char *d = *(char **)(m + 0x78);
     char *b = D_0013E633 + 0xE9D;
@@ -2368,7 +2368,7 @@ extern float func_001F9C78(void *, void *);
 extern short D_L18_001623C8;
 extern short D_L18_001623CC;
 
-unsigned char *FindNearestGroupMoby(char *self) {
+unsigned char *select_drek_boss_platform_firing_target(char *self) {
     char *data = *(char **)(self + 0x78);
     short *p = D_L18_001AC540[*(int *)(data + 0x398)];
     unsigned char *best = 0;
@@ -2386,7 +2386,7 @@ start:
         if (*(short *)(m + 0xA6) == 0x24B) {
             char *c = data + 0x3C0;
             unsigned char *q;
-            Moby587_PollState(m);
+            request_floating_platform_sink(m);
             q = D_L18_00160058 + off;
             if (func_001F9D48(q + 0x10, c) < *(float *)&D_L18_001623C8) {
                 unsigned char *r;
@@ -2397,7 +2397,7 @@ start:
                 r = D_L18_00160058 + off;
                 a = scale_ticks(0x3C);
                 b = scale_ticks(*(int *)&D_L18_001623CC);
-                Moby_TryStartState(r, a, b);
+                request_floating_platform_tilt(r, a, b);
                 dot = FastVecDot(v, self + 0xC0);
                 if (0.333f < dot) {
                     float d = FastVecLength(v);
@@ -2416,7 +2416,7 @@ start:
     return best;
 }
 
-void Group_DisableMobys(int unused, int idx)
+void hide_drek_boss_moby_group(int unused, int idx)
 {
     short *p = D_L18_001AC540[idx];
     if (p != 0) {
@@ -2434,7 +2434,7 @@ void Group_DisableMobys(int unused, int idx)
 }
 
 // Walks a list of moby indices and resets the flags of each live moby.
-void Group_EnableMobys(int a0, int idx) {
+void show_drek_boss_moby_group(int a0, int idx) {
     short *p = D_L18_001AC540[idx];
     if (p != 0) {
         do {
@@ -2450,7 +2450,7 @@ void Group_EnableMobys(int a0, int idx) {
 extern short D_L18_001DFE00[];
 
 /* Picks a new state for the moby at random among the allowed transitions, retrying up to 100 times until one is accepted. */
-int PickRandomState(char *moby) {
+int select_drek_boss_next_action(char *moby) {
     char *data = *(char **)(moby + 0x78);
     int state = *(int *)(data + 0x350);
     int tries = 0;
@@ -2488,7 +2488,7 @@ typedef union { long long quad; float f[4]; } L18Vector;
 extern float func_L00_001FF860(float, float);
 extern float func_001FA790(float, float);
 
-void Moby_SetRelativeYawToward(char *source, char *dest, L18Vector *from, L18Vector *to) {
+void set_drek_boss_relative_aim_yaw(char *source, char *dest, L18Vector *from, L18Vector *to) {
     L18Vector a, b;
     a.quad = from->quad;
     b.quad = to->quad;
@@ -2523,7 +2523,7 @@ extern short D_L18_00162470;
 extern short D_L18_00162474;
 
 /* Steers the camera-ish follow targets of a moby from its state and the player distance. */
-void FinalBoss_BlendByHeroDist(char *moby) {
+void update_drek_boss_state_dependent_scalars(char *moby) {
     char *d = *(char **)(moby + 0x78);
     char *t = *(char **)(D_L18_0015F050 + *(int *)(d + 0x224) * 32 + 0x1C);
     float f;
@@ -2653,7 +2653,7 @@ extern short D_L18_001624D4;
 extern short D_L18_001624D8;
 extern short D_L18_001624DC;
 
-void FinalBoss_SpawnBurstParticles(char *moby, void *p) {
+void spawn_drek_boss_firing_effects(char *moby, void *p) {
     QVec a = {{0.0f, 0.0f, 0.0f, 0.0f}};
     QVec b = {{0.0f, 0.0f, 0.0f, 0.0f}};
     float c[4];
@@ -2705,7 +2705,7 @@ typedef struct {
     int p3B8;
 } L18Q;
 
-void FinalBoss_DrawGlowBillboards(char *moby) {
+void render_drek_boss_joint_glows(char *moby) {
     char a[16];
     char b[16];
     L18Q *q = *(L18Q **)(moby + 0x78);
@@ -2741,7 +2741,7 @@ void FinalBoss_DrawGlowBillboards(char *moby) {
 }
 
 /* Activate the vendor moby and set its initial flags. */
-void VendorActivate(Moby *moby) {
+void initialize_moby_state_and_flags(Moby *moby) {
     if (moby->state == 0) {
         moby->state = 1;
         moby->flags |= 3;

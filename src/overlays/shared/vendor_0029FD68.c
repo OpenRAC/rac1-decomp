@@ -119,7 +119,7 @@ extern void func_00234C98(int, long);
 extern void func_L00_001FD1D8(void *, void *, int);
 
 // draws five glass quads around a moby's joints
-void Vendor_DrawGlassQuads(char *m) {
+void draw_vendor_inset_quads(char *m) {
     float A[4];
     float B[4];
     float C[4];
@@ -398,7 +398,7 @@ extern void func_0020DD48_2A1540(void) __asm__("func_0020DD48");
 /* Vendor screen frame: on the first frame sets up the camera rows, the two preview mobys and the stream read; then
  * draws the vendor mobys, the capture pass and the HUD.
  * Adapted from Lombyte (MIT) for PAL: overlays/shared/gameplay/entities/0029f990.c, FUN_L00_002a02b0. */
-void Vendor_RenderScreen(void) {
+void draw_vendor_screen(void) {
     A02b0_obj_2A1540 *e;
     A02b0_tab_2A1540 *g;
 

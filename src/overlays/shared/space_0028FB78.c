@@ -11,7 +11,7 @@ extern void func_L00_0028F458(void);
 extern void func_00213D28(void *, int, int);
 
 /* Start the moby's camera-follow state: stash it in the global record, point its update at func_L00_0028F458. */
-void Ship_Register(char *m) {
+void initialize_moby_state_record(char *m) {
     char *g;
     int *src;
     *(int *)&D_L00_00160600 = 1;
@@ -26,7 +26,7 @@ void Ship_Register(char *m) {
     g = D_0013E130_a;
     *(short *)(g + 0x26) = *(unsigned short *)(m + 0xA6) - 0x213;
     *(char **)g = m;
-    *(void **)(m + 0x74) = EnvMappedPickupUpdate;
+    *(void **)(m + 0x74) = update_moby_proximity_interaction;
     *(unsigned short *)(m + 0x34) &= 0xFFFC;
     *(int *)(m + 0x94) = *(int *)(*(int *)(m + 0x24) + 0x10);
     MobySetAnimation(m, 1, 0);
@@ -109,7 +109,7 @@ void EnterShipMode(int a) {
             m = 8;
             t = 14;
         }
-        LoadAnimTable(m, scale_ticks(6));
+        load_chunks_with_optional_fade(m, scale_ticks(6));
     } else {
         int k, r;
         n = D_0013E130_s.x26;
@@ -128,7 +128,7 @@ void EnterShipMode(int a) {
         }
         r = 0;
         if (!D_0013E130_s.x2c) r = scale_ticks(6);
-        LoadAnimTable(m2, r);
+        load_chunks_with_optional_fade(m2, r);
     }
     z = (S_171b *)(D_0014171B + 0x100B5);
     z->x1c = t + 40000;
@@ -173,7 +173,7 @@ extern short D_L00_00160630;
 extern int func_0020BFC8(int, int);
 
 /* start a ship-travel transition to the given destination, setting up the flight path and timing Adapted from Lombyte (MIT) for PAL: overlays/shared/gameplay_space_0028e8a0.c, FUN_L00_0028ed58. */
-void ShipTravelTo(int dest) {
+void prepare_target_level_transition(int dest) {
     char *g = D_0013DE6E + 0x2C2;
     char *h;
     int base;
@@ -272,7 +272,7 @@ float func_001FA888(int);
 void func_L00_001FD1D8(void *, void *, int);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_space_0028e8a0.c, FUN_L00_0028efc8. */
-void Ship_DrawBillboards(unsigned char *m) {
+void build_variant_effect_quads(unsigned char *m) {
     Q_28efc8 quad;
     V_28efc8 v;
     V_28efc8 *tbl;

@@ -70,7 +70,7 @@ extern void func_L18_002FB318_9D48(void *) __asm__("func_L18_002FB318");
 extern void func_L18_002FAEF8(void);
 
 /* Class 1563 update: a cutscene director that times its effects (part flashes, fades, bursts) off the level script state. */
-void Moby1563Update(Moby *moby) {
+void update_deplanetizer_gun_sequence_effects(Moby *moby) {
     switch (moby->state) {
     case 0:
         *(int *)&D_L18_00162528 = 0x163;
@@ -169,7 +169,7 @@ void Moby1563Update(Moby *moby) {
                 float f = IntToFloat(D_L18_0016D2E0_9D48.timer - scale_ticks(*(int *)&D_L18_0016254C));
                 f = f / IntToFloat(scale_ticks(*(int *)&D_L18_00162550 - *(int *)&D_L18_0016254C));
                 D_L18_001625B4 = func_001FA898_r(f * 255.0f);
-                AddDrawCallback(Moby1563_DrawQuad, D_L18_001625B8);
+                AddDrawCallback(draw_moby_two_tint_glow_quads, D_L18_001625B8);
             }
             if (D_L18_0016D2E0_9D48.timer >= scale_ticks(*(int *)&D_L18_00162554) && D_L18_0016D2E0_9D48.timer < scale_ticks(*(int *)&D_L18_00162558)) {
                 float f = IntToFloat(D_L18_0016D2E0_9D48.timer - scale_ticks(*(int *)&D_L18_00162554));
@@ -178,7 +178,7 @@ void Moby1563Update(Moby *moby) {
                 AddDrawCallback(func_L18_002FB318_9D48, D_L18_001625B8);
             }
             if (D_L18_0016D2E0_9D48.timer >= scale_ticks(*(int *)&D_L18_00162528) && D_L18_0016D2E0_9D48.timer < scale_ticks(*(int *)&D_L18_00162530)) {
-                AddDrawCallback(DrawCutsceneFlare, D_L18_0016D2E0_9D48.objs[0]);
+                AddDrawCallback(draw_three_scaled_camera_facing_quads, D_L18_0016D2E0_9D48.objs[0]);
                 if (D_L18_0016D2E0_9D48.timer >= scale_ticks(*(int *)&D_L18_0016252C)) {
                     D_L18_001625B0 = 10.0f;
                 } else {
@@ -212,7 +212,7 @@ void Moby1563Update(Moby *moby) {
                 float f = IntToFloat(D_L18_0016D2E0_9D48.timer - *(int *)&D_L18_0016254C);
                 f = f / IntToFloat(*(int *)&D_L18_00162550 - *(int *)&D_L18_0016254C);
                 D_L18_001625B4 = func_001FA898_r(f * 255.0f);
-                AddDrawCallback(Moby1563_DrawQuad, D_L18_001625B8);
+                AddDrawCallback(draw_moby_two_tint_glow_quads, D_L18_001625B8);
             }
             if (D_L18_0016D2E0_9D48.timer >= scale_ticks(*(int *)&D_L18_00162554) && D_L18_0016D2E0_9D48.timer < scale_ticks(*(int *)&D_L18_00162558)) {
                 float f = IntToFloat(D_L18_0016D2E0_9D48.timer - *(int *)&D_L18_00162554);
@@ -221,7 +221,7 @@ void Moby1563Update(Moby *moby) {
                 AddDrawCallback(func_L18_002FB318_9D48, D_L18_001625B8);
             }
             if (D_L18_0016D2E0_9D48.timer >= scale_ticks(*(int *)&D_L18_00162528) && D_L18_0016D2E0_9D48.timer < scale_ticks(*(int *)&D_L18_00162530)) {
-                AddDrawCallback(DrawCutsceneFlare, D_L18_0016D2E0_9D48.objs[0]);
+                AddDrawCallback(draw_three_scaled_camera_facing_quads, D_L18_0016D2E0_9D48.objs[0]);
                 if (D_L18_0016D2E0_9D48.timer >= *(int *)&D_L18_0016252C) {
                     D_L18_001625B0 = 10.0f;
                 } else {
@@ -232,7 +232,7 @@ void Moby1563Update(Moby *moby) {
             }
         }
         if (D_L18_0016D2E0_9D48.state == 1 && D_L18_0016D2E0_9D48.objs[3] != 0) {
-            AddDrawCallback(DrawPulsingGlows, D_L18_0016D2E0_9D48.objs[3]);
+            AddDrawCallback(draw_moby_color_cycling_bone_glows, D_L18_0016D2E0_9D48.objs[3]);
         }
         if (D_L18_0016D2E0_9D48.state == 5 && D_L18_0016D2E0_9D48.timer >= scale_ticks(0x8A) && D_L18_0016D2E0_9D48.timer <= scale_ticks(0x108)) {
             Moby *m = D_L18_0016D2E0_9D48.objs[2];
@@ -247,8 +247,8 @@ void Moby1563Update(Moby *moby) {
                         float f = IntToFloat(j) / 12.0f;
                         func_001F9C08(x, a, D_L18_001625C0, f);
                         func_001F9C08(e, b, D_L18_001625D0, f);
-                        EmitBeamSparks(x, x, D_L18_0015F660, *(float *)&D_L18_00162560, *(float *)&D_L18_00162560 * 0.4f);
-                        EmitBeamSparks(e, e, D_L18_0015F660, *(float *)&D_L18_00162560, *(float *)&D_L18_00162560 * 0.4f);
+                        spawn_deplanetizer_gun_trail_effects(x, x, D_L18_0015F660, *(float *)&D_L18_00162560, *(float *)&D_L18_00162560 * 0.4f);
+                        spawn_deplanetizer_gun_trail_effects(e, e, D_L18_0015F660, *(float *)&D_L18_00162560, *(float *)&D_L18_00162560 * 0.4f);
                     }
                     qcopy(D_L18_001625C0, a);
                     qcopy(D_L18_001625D0, b);
@@ -285,7 +285,7 @@ void Moby1563Update(Moby *moby) {
         }
         if (D_L18_0016D2E0_9D48.state == 2 || D_L18_0016D2E0_9D48.state == 0 || (D_L18_0016D2E0_9D48.state == 3 && D_L18_0016D2E0_9D48.timer < scale_ticks(0x24A))) {
             if (D_L18_0016D2E0_9D48.objs[2] != 0) {
-                AddDrawCallback(DrawPulsingGlows, D_L18_0016D2E0_9D48.objs[2]);
+                AddDrawCallback(draw_moby_color_cycling_bone_glows, D_L18_0016D2E0_9D48.objs[2]);
             }
         }
         if (D_L18_0016D2E0_9D48.state == 3 && D_L18_0016D2E0_9D48.timer == scale_ticks(0x24A)) {
@@ -330,7 +330,7 @@ extern volatile float D_L18_001625E8 MACRO_ADDR;
 extern float D_L18_001625EC MACRO_ADDR;
 extern float D_L18_001625B0 MACRO_ADDR;
 /* Draws the cutscene flare. */
-void DrawCutsceneFlare(void) {
+void draw_three_scaled_camera_facing_quads(void) {
     extern ML_9780 D_L18_0016D2E0;
     extern int func_001F9850(int);
     extern unsigned long func_001F4868(int);
@@ -471,7 +471,7 @@ extern void func_001F9EE8(void *, void *, void *);
 extern void func_L00_001FD1D8(void *, void *, int);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l18/gameplay/vendor/002f88e8.c, FUN_L18_002f9c20. */
-void Moby1563_DrawQuad(struct Moby *m) {
+void draw_moby_two_tint_glow_quads(struct Moby *m) {
     Pk_9c20 pk;
     float mat[4][4];
     float up[4];
@@ -545,7 +545,7 @@ extern short D_L18_001625AC;
 extern float D_L18_001DFE90[4][4];
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l18/gameplay/vendor/002f88e8.c, FUN_L18_002f9eb8. */
-void Moby1563_DrawQuadAlt(struct Moby *m) {
+void draw_moby_three_scaled_two_tint_quads(struct Moby *m) {
     Pk_9c20_FB318 pk;
     float mat[4][4];
     float up[4];
@@ -639,7 +639,7 @@ extern int func_001FA898_r(float) __asm__("func_001FA898");
 extern char *func_L00_0026DEA0_c(void *, int, void *, float, float, float, float, int) __asm__("func_L00_0026DEA0");
 
 /* Emits spark streaks for a beam effect. */
-void EmitBeamSparks(void *a, void *b, void *c, float f0, float f1) {
+void spawn_deplanetizer_gun_trail_effects(void *a, void *b, void *c, float f0, float f1) {
     char v0[16];
     char v1[16];
     int i;
@@ -685,7 +685,7 @@ extern int D_L18_0016D310;
 extern float func_001FA748(float, float);
 
 /* State machine: waits for level flags, then turns the moby around and back. */
-void Moby1568Update(char *moby) {
+void update_moby_visibility_and_half_turn(char *moby) {
     switch (*(unsigned char *)(moby + 0x20)) {
     case 0:
         moby[0x20] = 1;
@@ -715,7 +715,7 @@ extern char *func_0020D348_m(int) __asm__("func_0020D348");
 extern void func_L00_00251E30(void *);
 
 /* updates a moby that drags a child moby along with it */
-void Moby1584Update(char *moby) {
+void update_moby_transform_and_child(char *moby) {
     char *data = *(char **)(moby + 0x78);
     char tmp[16];
     char *child;
@@ -751,7 +751,7 @@ extern unsigned short *D_L18_001AC540[];
 extern unsigned char *D_L18_00160058_m __asm__("D_L18_00160058") MACRO_ADDR;
 
 /* Sets the byte at +0xBC to value on every class 0x630 moby in list idx. */
-void SetGroupMoby1584Mode(int idx, int value)
+void set_group_class_0630_moby_byte_bc(int idx, int value)
 {
     unsigned short *table = D_L18_001AC540[idx];
     if (table != 0) {
@@ -779,7 +779,7 @@ typedef struct {
 extern void func_0020D678(void *);
 
 /* Remove a vendor moby and any child it owns. */
-void RemoveMobyAndChild(Level18VendorMoby *moby) {
+void mark_class_0630_moby_and_child_for_removal(Level18VendorMoby *moby) {
     if (moby->class_id == 0x630) {
         void *child = moby->data->child;
         if (child != 0) {
@@ -804,7 +804,7 @@ extern ML D_L18_0016D2E0;
 typedef struct { char pad[0x20]; unsigned char state; char pad2[0xF]; unsigned char v; } M2;
 
 /* Cutscene moby update that emits a glow effect between two joints. */
-void Moby1799Update(M2 *m) {
+void update_selected_moby_joint_trail(M2 *m) {
     char buf[16];
     char buf2[16];
     char buf3[16];
@@ -862,7 +862,7 @@ void Moby1906Update(unsigned char *m) {
     char tmp[16];
     unsigned char *e = *(unsigned char **)(m + 0x78);
     unsigned char *s0;
-    Moby1906SharedUpdate(m);
+    update_gadgebot_damage_target_and_glow(m);
     switch (m[0x20]) {
     case 0: {
         unsigned short h;
@@ -981,7 +981,7 @@ void Moby1906Update(unsigned char *m) {
         g = g - *(float *)(e + 0x1F4);
         FastVecScale(s0, s0, g);
         FastVecScale(m + 0xD0, m + 0xD0, g);
-        AddDrawCallback(Moby1906Draw, m);
+        AddDrawCallback(draw_gadgebot_launch_glow_quad, m);
     }
 }
 typedef struct {
@@ -1042,7 +1042,7 @@ extern int func_L00_00260FB0(float, void *, void *, int, int, int *, int);
 #define hero (*(Hero *)(D_0013E633 + 0xE1D))
 
 /* Shared per-frame handler of the class 0x772 enemy. */
-void Moby1906SharedUpdate(void *m_) {
+void update_gadgebot_damage_target_and_glow(void *m_) {
     struct Moby *m = m_;
     SentryVars_5C0 *d = (SentryVars_5C0 *)m->pvars;
     union { u128 q; float f[4]; } v;
@@ -1059,7 +1059,7 @@ void Moby1906SharedUpdate(void *m_) {
     }
     if (m->state != 7 && (*(int *)&D_L18_0015F6B0) != (*(int *)&D_L18_00162694)) {
         (*(int *)&D_L18_00162694) = (*(int *)&D_L18_0015F6B0);
-        AddDrawCallback((void *)Moby1906JointGlowDraw, m);
+        AddDrawCallback((void *)draw_group_class_0772_joint_glows, m);
     }
     speed = F(D_L18_001626A4);
     if (m->state == 4 || m->state == 5) {
@@ -1185,7 +1185,7 @@ extern float func_L00_00258C80(float, float);
 
 /* Launches the first idle (state 8) class-0x772 moby of group `group` from `from` towards `to` at `speed`. Returns 1 when one was launched.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l18/gameplay/vendor/002f88e8.c, FUN_L18_002fc668. */
-int LaunchMoby1906(int group, void *from, void *to, float speed) {
+int launch_first_idle_group_class_0772_moby(int group, void *from, void *to, float speed) {
     unsigned short *p = (unsigned short *)D_L18_001AC540_FDB28[group];
     struct Moby *table;
     struct Moby *moby;
@@ -1217,7 +1217,7 @@ int LaunchMoby1906(int group, void *from, void *to, float speed) {
     }
 }
 /* Counts the class 0x772 mobys in list idx that are not inactive. */
-short CountActiveMoby1906(int idx) {
+short count_group_class_0772_mobys_not_in_state_8(int idx) {
     unsigned short *p = D_L18_001AC540[idx];
     short n = 0;
     int base;
@@ -1311,7 +1311,7 @@ extern unsigned short *D_L18_001AC540[];
 extern short D_L18_001626E4;
 
 /* For each listed moby of matching type, spawns effects at five points. */
-void Moby1906JointGlowDraw(unsigned char *moby) {
+void draw_group_class_0772_joint_glows(unsigned char *moby) {
     unsigned short *p = D_L18_001AC540[moby[0x21]];
     if (p != 0) {
         while (1) {
@@ -1346,7 +1346,7 @@ int Moby1906HitCheck(char *a, void *pos, void *target, float h) {
     return r;
 }
 /* Puts a moby into the inactive state (8). */
-void SetMobyInactive(unsigned char *arg) {
+void hide_moby_and_clear_collision(unsigned char *arg) {
     unsigned short flags;
     arg[0x20] = 8;
     if (arg[0x53] != 0) {

@@ -9,10 +9,10 @@ extern void func_L00_0028A5A8(void);
 extern void func_0022C870(void);
 extern void func_00234C98(int, long);
 extern int D_0015EF88 MACRO_ADDR;
-void DrawSkyL13(void) {
+void draw_paged_sky_shells(void) {
     SetupSkyGifPaging();
     if (D_0015EE84_m == 13) {
-        SkyShellsSparkleStatic();
+        draw_three_sky_shells_with_particles();
     } else {
         update_sky_shells_static();
     }

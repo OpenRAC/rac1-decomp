@@ -140,7 +140,7 @@ typedef struct {
 } Quad;
 
 // Draws a ring of four-vertex strips around the moby with a lit colour.
-void DrawLitRingStrips(char *moby) {
+void draw_water_reservoir(char *moby) {
     char *data = *(char **)(moby + 0x78);
     Quad q;
     float m[12];
@@ -185,7 +185,7 @@ extern int func_001F9850(int);
 extern void func_L00_00251E30(void *);
 
 // Spawns a moby with a data block aimed from its direction vector.
-char *SpawnHovenShot(char *src, char *pos, int owner, int seed, float f0, float f1, float f2) {
+char *spawn_rocket(char *src, char *pos, int owner, int seed, float f0, float f1, float f2) {
     char *moby = CreateMoby(0x199);
     if (moby != 0) {
         char *data;
@@ -346,7 +346,7 @@ extern void func_L00_00203F20(int, int);
 
 /* Hoven challenge tracker: unlocks the area once, records the time and run flags for two skill points and
  * awards them (one for staying airborne long enough). */
-void HovenChallengeUpdate(char *m) {
+void update_hoven_help_and_dialogue(char *m) {
     int *d = *(int **)(m + 0x78);
     if (count_group_e81e0(d[3], -1) == 0) {
         unsigned char *s = D_0013D50F_e + 1;
@@ -639,7 +639,7 @@ extern float D_L12_0015F660_304310[] __asm__("D_L12_0015F660") MACRO_ADDR;
 extern float D_0013F4D0_304310[] __asm__("D_0013F4D0");
 
 /* Level 12 vendor moby update: steers toward its target, then calls the vendor helpers. */
-void Moby1259Update(Moby *moby) {
+void update_oscillating_target_link(Moby *moby) {
     Vec4 tmp0;
     Vec4 tmp1;
     char tmp2[0x30];
@@ -758,7 +758,7 @@ typedef struct {
 
 /* Raises the timer while one of the ten targets is in the view cone, otherwise counts it down.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l12/gameplay/vendor/003028c8.c, FUN_L12_00303370. */
-void UpdateViewConeTimer(void *moby) {
+void update_hoven_turret_target_alignment_timer(void *moby) {
     Data_303370 *data = (Data_303370 *)((struct Moby *)moby)->pvars;
     int found = 0;
     int i;
@@ -985,7 +985,7 @@ void hoven_turret_update(Moby *moby) {
         if (D_L12_0015F6A8 != 2 && D_L12_00161A20 == 0) {
             AddDrawCallback(DrawGauge, moby);
         }
-        UpdateViewConeTimer(moby);
+        update_hoven_turret_target_alignment_timer(moby);
         if (func_001F9908_304920(&d->f90)) {
             Hit_304920 *hit = (Hit_304920 *)MobyGetHitMessage(moby, 0x10000, 0);
             if (hit != 0) {
@@ -1021,7 +1021,7 @@ void hoven_turret_update(Moby *moby) {
                 moby->rot.z = 3.1415927f;
             } else {
                 jet_clear_persistent(moby->mission);
-                PlayMovieEntryIfIdle(0xD);
+                start_indexed_disc_stream(0xD);
                 unlock_planet(0xD);
                 {
                     Vec_304920 cpos = { 328.4f, 338.7f, 60.98f };
@@ -1406,7 +1406,7 @@ extern struct Moby * D_L12_00174358;
 
 /* A homing mine: rises, then steers toward the point ahead and blows up near it or on contact.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l12/gameplay/vendor/003028c8.c, FUN_L12_00304e00. */
-void HovenHomingMineUpdate(struct Moby *moby) {
+void update_homing_mine(struct Moby *moby) {
     Data_304e00 *data = (Data_304e00 *)moby->pvars;
     s32 *damage = data->damage;
     f32 target[20];
@@ -1651,7 +1651,7 @@ void TurretBatteryUpdate(char *moby) {
                         v2[2] += random_float_between((float)n * -0.3f, (float)n * 0.3f);
                         pitch = func_L00_001FF860(func_001F9D48(v0, v2), v2[2] - v0[2]);
                         BuildSphericalOffset(v1, D_0015EE6C * 80.0f, rz, pitch);
-                        if (SpawnShotMoby(m, v0, v1, scale_ticks(0x96)) != 0) {
+                        if (spawn_class_b8_projectile(m, v0, v1, scale_ticks(0x96)) != 0) {
                             int j;
                             md->b92 = scale_ticks(0x14);
                             for (j = 0; j < 9; j++) {
@@ -1942,7 +1942,7 @@ extern int func_001FA898(float);
 extern float func_001FA888(int);
 
 /* Moby update that pulses a glow tint on 18 linked mobys. */
-void GlowPulseUpdate(char *moby) {
+void update_planetbuster_maximus_glow_color(char *moby) {
     int i;
     int alpha = 0x80000000;
     char *data = *(char **)(moby + 0x78);
@@ -2027,7 +2027,7 @@ void planetbuster_maximus_part_update(char *moby) {
             int i;
             int j;
             D_L12_00161FA4 = 0;
-            TransformChildrenToParentSpace(moby, d, 0x11);
+            capture_linked_moby_relative_transforms(moby, d, 0x11);
             path = D_L12_001B0C30_7DB0[*(int *)(d + 0x5C0)];
             qcopy(moby + 0x10, path + 1);
             *(float *)(d + 0x618) = *(float *)(moby + 0x18);
@@ -2210,7 +2210,7 @@ void planetbuster_maximus_part_update(char *moby) {
         UpdateSlotPieces(moby);
         break;
     }
-    GlowPulseUpdate(moby);
+    update_planetbuster_maximus_glow_color(moby);
     if ((unsigned char)moby[0x20] >= 1 && (unsigned char)moby[0x20] <= 3) {
         if (*(int *)(d + 0x604) == -1) *(int *)(d + 0x604) = func_0022ED80_09590(0, 4, moby);
     } else {
@@ -2228,7 +2228,7 @@ extern int func_L00_0025D390(char *);
 extern float D_0015EE6C MACRO_ADDR;
 
 /* spawns a debris piece from the owner's slot at the owner's position, then bursts particles */
-void SpawnSlotDebris(char *moby) {
+void spawn_next_linked_moby(char *moby) {
     char *data = *(char **)(moby + 0x78);
     char *slot = data + (*(int *)(data + 0xF0) << 2);
     char *c = (char *)(D_L12_00160058_m + ((*(int *)(slot + 0xC0)) << 8));
@@ -2254,7 +2254,7 @@ void SpawnSlotDebris(char *moby) {
     func_L00_00251E30(c);
     *(char **)(c + 0xB8) = moby;
     for (i = 0; i < 14; i++) {
-        PartType28Spawn(random_float_between(D_0015EE6C * 3.0f, D_0015EE6C * 5.0f), moby + 0x10, 0);
+        spawn_jittered_effect_particle_with_optional_basis(random_float_between(D_0015EE6C * 3.0f, D_0015EE6C * 5.0f), moby + 0x10, 0);
     }
     r = (short *)GetFlaggedPvarWord(c);
     if (r != 0) *(float *)r = (float)r[2];
@@ -2269,7 +2269,7 @@ void homing_mine_spawner_update(char *m) {
     char *d = *(char **)(m + 0x78);
     int *slots;
     int i;
-    Moby_UpdateApproachState(m);
+    update_homing_mine_spawner_target(m);
     slots = (int *)(d + 0xC0);
     switch (((unsigned char *)m)[0x20]) {
     case 0:
@@ -2304,7 +2304,7 @@ void homing_mine_spawner_update(char *m) {
     case 3:
         if (FastDecTimer(d + 0xFC)) {
             if (slots[*(int *)(d + 0xF0)] != -1) {
-                SpawnSlotDebris(m);
+                spawn_next_linked_moby(m);
                 m[0xBC] = ((unsigned char *)m)[0xBC] == 0;
                 *(short *)(d + 0xFC) = scale_ticks(0x28);
             }
@@ -2335,7 +2335,7 @@ extern float func_001F9B88(float);
 extern int func_L00_00260D30(char *, char *, float);
 
 /* per-frame update of a moby's timer and approach state */
-void Moby_UpdateApproachState(char *m) {
+void update_homing_mine_spawner_target(char *m) {
     char *d = *(char **)(m + 0x78);
     char *pad;
     if (*(unsigned char *)(m + 0x20) != 0) {
@@ -2372,7 +2372,7 @@ extern void func_L12_00309730(void);
 
 /* Pvars: d[0] is the moby to watch, d[1] the voice slot held for this moby.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l12/gameplay/vendor/003028c8.c, FUN_L12_003081b0. */
-void Moby1345Update(struct Moby *m) {
+void update_moby_draw_and_monitor_linked_state(struct Moby *m) {
     int st = m->state;
     int vis;
     int *d = (int *)m->pvars;
@@ -2391,7 +2391,7 @@ void Moby1345Update(struct Moby *m) {
             vis = 0;
         }
         if (vis) {
-            AddDrawCallback(func_L12_00309730, m);
+            AddDrawCallback(draw_hoven_jittered_quad_layers, m);
         }
         if (d[1] == -1) {
             d[1] = func_0022ED80_09590(0, 4, m);
@@ -2426,7 +2426,7 @@ extern char D_L12_0016CD70[];
 extern int func_00215570(void *arg0, int arg1);
 
 /* Vendor-counter moby update: once the shared block is ready, latch its data and copy two vectors. */
-void CutsceneVolumeTriggerUpdate(char *moby) {
+void trigger_scene_once_in_clip_volume(char *moby) {
     char *data = *(char **)(moby + 0x78);
     char *base;
     char *p;
@@ -2463,7 +2463,7 @@ static inline unsigned char func_L12_pick(int cur) {
     return 0;
 }
 
-void func_L12_0030A880(unsigned char *moby) {
+void emit_phase_selected_moby_effects(unsigned char *moby) {
     Level12MobyList *list;
     Level12MobyList *l2;
     int cur;
@@ -2506,7 +2506,7 @@ void BreakableUpdate(char *m) {
         Moby_PlaySound(0, 0, (int)m);
         SpawnBreakFxByDistance(m);
         SpawnMobyBurstFx(m, 0x748, 1, 0x748, 1, 11, 2);
-        SpawnMobyCopyingPlacement(m, 0x747);
+        spawn_moby_from_placement(m, 0x747);
         DeleteMoby(m);
         break;
     }
@@ -2527,7 +2527,7 @@ extern int D_L12_00205D18[];
 extern int D_L12_00162154 MACRO_ADDR;
 
 /* Draws the moby's 10-piece overlay when its trigger is visible, with its own GS state. */
-void DrawTenPieceOverlay(char *m) {
+void draw_hoven_scrolling_texture_layers(char *m) {
     int *d = *(int **)(m + 0x78);
     int i;
     font_queue_vu_state();
@@ -2543,10 +2543,10 @@ void DrawTenPieceOverlay(char *m) {
         }
     }
     VU1_addGSregister(6, GetEffectTex(0x2F));
-    PlaceLevelEffectPieces(0);
+    queue_oil_tanker_front_texture_2b_batches(0);
     VU1_addGSregister(0x42, ((long)D_L12_00162154 << 32) | 0x68);
     VU1_addGSregister(6, GetEffectTex(0x30));
-    PlaceLevelEffectPieces(1);
+    queue_oil_tanker_front_texture_2b_batches(1);
 }
 extern float D_L12_00162188_0D3D0[2] __asm__("D_L12_00162188") MACRO_ADDR;
 void func_L12_0030D248_0D3D0(struct Moby *m) __asm__("func_L12_0030D248");
@@ -2571,13 +2571,13 @@ typedef struct {
 } M_bff0;
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l12/gameplay/vendor/003028c8.c, FUN_L12_0030bff0. */
-void Moby1901Update(M_bff0 *m) {
+void update_hoven_scrolling_texture_layers(M_bff0 *m) {
     int i;
     switch (m->state) {
     case 0:
         if (D_L12_00162170_0D3D0 == 0) {
-            ScaleColorTables(D_L12_00208DA0, 5, D_L12_00205D40, 0.1f, 0.5f, 0.4f, 0.5f, 1);
-            ScaleColorTables(D_L12_00205D18, 10, D_L12_001FBFD0, 0.1f, 0.6f, 0.4f, 0.5f, 1);
+            scale_rgba_tables(D_L12_00208DA0, 5, D_L12_00205D40, 0.1f, 0.5f, 0.4f, 0.5f, 1);
+            scale_rgba_tables(D_L12_00205D18, 10, D_L12_001FBFD0, 0.1f, 0.6f, 0.4f, 0.5f, 1);
             D_L12_00162170_0D3D0 = 1;
         }
         m->state = 1;

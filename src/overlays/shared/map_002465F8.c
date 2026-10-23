@@ -127,7 +127,7 @@ extern void func_00216EF0_2465F8(int) __asm__("func_00216EF0");
 /* Level main loop (shared by every level): clears the level's work area, sets up the level and counts the visit
    and play time of the planet, then runs one frame per pass, dispatching on the game mode, until the level asks to
    quit. */
-void LevelMainLoop(void) {
+void run_level_main_loop(void) {
     int i;
     int v;
     int quit;
@@ -587,7 +587,7 @@ void func_L00_00295010(s32, s32, s32, s32);
 void func_00234238(s32, s32, s32, s32, s32);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/rendering/00245c28.c, FUN_L00_002468b8. */
-void Map_LoadRenderArchive(void) {
+void initialize_render_archive_transfer(void) {
     s32 first_base;
     s32 second_base;
     s32 buffer;
@@ -623,7 +623,7 @@ void Map_LoadRenderArchive(void) {
             update_audio_stream_until_idle(1);
             state->loaded = 1;
             state->transfer_bytes = bytes;
-            Stash_FetchSlot(state->buffer, state->file_handle, 0, bytes);
+            send_dma_to_stash_slot(state->buffer, state->file_handle, 0, bytes);
             state->level_slot = D_0015EE84 + 0x100;
             state->last_transfer_bytes = bytes;
             state->active = 1;

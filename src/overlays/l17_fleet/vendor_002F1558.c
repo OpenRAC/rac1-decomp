@@ -63,7 +63,7 @@ extern float func_001FA850(float, float);
 extern int func_L00_001EFFF0(void *, void *, int, int, int);
 
 /* Fleet turret/enemy state update: refreshes the hit reaction, fires the aim query and sets the lock flags. */
-void EnemyHitStateUpdate(Moby *moby, int arg) {
+void update_robot_dog_hit_reaction_and_target_detection(Moby *moby, int arg) {
     Data_2F1558 *d;
     Hit_2F1558 *q;
     float tmp[4];
@@ -172,7 +172,7 @@ int EnemyStunUpdate(unsigned char *moby, void *pos, void *target, float h) {
     return result;
 }
 int EnemyForceStunState(char *a) {
-    int r = ReleaseCarriedMobySlot(a);
+    int r = cancel_suck_cannon_suction(a);
     a[0x20] = 12;
     return r;
 }
@@ -195,7 +195,7 @@ typedef struct {
 } AimData_1BB0;
 
 /* Aims the turret at the hero: yaw and pitch to him, clamped, become the eased part's targets. */
-void AimTurretAtHero(char *moby) {
+void update_robot_dog_aim_joint(char *moby) {
     AimData_1BB0 *d = *(AimData_1BB0 **)(moby + 0x78);
     float accel = 0.02f;
     float speed = 0.3f;
@@ -230,7 +230,7 @@ extern void func_L17_002F1F58(char *);
 extern int D_L17_0015F6B0 MACRO_ADDR;
 
 // Pulses a moby's colour from a random phase and queues its draw callback.
-void Moby1382_UpdatePulse(unsigned char *moby) {
+void update_robot_dog_glow_effects(unsigned char *moby) {
     char *data;
     int n;
     int alpha;
@@ -307,11 +307,11 @@ void Moby1382_UpdatePulse(unsigned char *moby) {
         for (i = 0; i < 3; i++) {
             Moby_GetJointWorldPos(moby, i + 1, data + 0x200 + i * 16);
         }
-        AddDrawCallback(UpdateTrailColors, moby);
+        AddDrawCallback(draw_three_moby_effect_quads, moby);
     }
 }
 extern void func_L00_00264690(void *, int, float, float);
-void UpdateTrailColors(char *m) {
+void draw_three_moby_effect_quads(char *m) {
     int v = (*(int *)(m + 0x90) & 0xFFFFFF) | 0x30000000;
     char *p = *(char **)(m + 0x78) + 0x200;
     int i;
@@ -347,7 +347,7 @@ typedef struct { P2 p[2]; } T4;
 extern T4 D_L17_001622E8;
 
 /* Builds the two rippling vertex strips around the moby (template points moved to its position, z waved by distance from the centre), then draws them twice with scrolled texture coordinates. */
-void DrawFleetRippleStrips(char *moby) {
+void draw_moby_radial_ripple_mesh_pair(char *moby) {
     RippleData *d = *(RippleData **)(moby + 0x78);
     float scale;
     int r, g, b;
@@ -634,7 +634,7 @@ void Moby1448Update(unsigned char *m) {
         pl = D_0013E633 + 0xE1D;
         if (*(unsigned char **)(pl + 0x2FC) == m && *(short *)(pl + 0x30E) == 0
             && scale_ticks(30) < v->timer) {
-            ShowModeSelectHelp(m);
+            update_shuttle_help_message(m);
             if ((*(int *)(D_0013A5E0 + 0x2604) & 0x10) && *(int *)&D_L17_0015F674 == 10) {
                 int s = v->dir;
                 if (s >= 0) {
@@ -703,7 +703,7 @@ void Moby1448Update(unsigned char *m) {
         }
         break;
     case 2:
-        if (AdvanceAlongCurvePath(m, v->side)) {
+        if (update_shuttle_travel_and_camera(m, v->side)) {
             int ofs;
             int base;
             m[0x20] = 3;
@@ -742,7 +742,7 @@ void Moby1448Update(unsigned char *m) {
 extern void func_00215F80(int, int);
 
 // Picks a sound id from the moby's state value and plays it.
-void ShowModeSelectHelp(char *moby) {
+void update_shuttle_help_message(char *moby) {
     char *data = *(char **)(moby + 0x78);
     int mode = *(int *)(data + 0x94);
     switch (mode) {
@@ -797,7 +797,7 @@ struct Dat_3CC0 {
 };
 
 /* Advances a moby along a three-curve path and updates its heading, pitch and speed. */
-int AdvanceAlongCurvePath(char *moby, int idx) {
+int update_shuttle_travel_and_camera(char *moby, int idx) {
     float m[4], pos[4];
     struct Dat_3CC0 *d = *(struct Dat_3CC0 **)(moby + 0x78);
     Path_3CC0 *c1 = ((Path_3CC0 **)D_L17_001B10B0)[d->a[idx]];
@@ -877,7 +877,7 @@ extern unsigned char D_0013D510[];
 extern unsigned char D_0013D5CA[] NOT_SDA;
 
 /* Update for moby class 1470: watches camera boxes around the hero, gives skill points and help messages, and turns the camera. */
-void Moby1470Update(char *moby) {
+void update_fleet_camera_box_watcher(char *moby) {
     int off;
     char *d = *(char **)(moby + 0x78);
     int st;
@@ -1048,7 +1048,7 @@ void Moby1470Update(char *moby) {
     case 2: {
         char *cam;
         func_L00_002E9B30();
-        func_L00_002E9E20((int)(D_L17_0016016C + (*(int *)(d + 0x44) << 7) + 0x30), 0.02617994f, 0.0f);
+        set_follow_camera_angle_blend_from_position((int)(D_L17_0016016C + (*(int *)(d + 0x44) << 7) + 0x30), 0.02617994f, 0.0f);
         cam = D_L17_00167600;
         f = func_L00_001FF860(*(float *)(D_L17_0016016C + ((*(int *)(d + 0x44) << 7) + 0x30)) - *(float *)(cam + 0x140),
                               *(float *)(D_L17_0016016C + ((*(int *)(d + 0x44) << 7) + 0x34)) - *(float *)(cam + 0x144));
@@ -1062,7 +1062,7 @@ void Moby1470Update(char *moby) {
         func_L00_002E9B30();
         if (func_001F9908_i((int *)(d + 0x5C))) {
             char *cam;
-            func_L00_002E9E20((int)(D_L17_0016016C + (*(int *)(d + 0x40) << 7) + 0x30), 0.02617994f, 0.0f);
+            set_follow_camera_angle_blend_from_position((int)(D_L17_0016016C + (*(int *)(d + 0x40) << 7) + 0x30), 0.02617994f, 0.0f);
             cam = D_L17_00167600;
             f = func_L00_001FF860(*(float *)(D_L17_0016016C + ((*(int *)(d + 0x40) << 7) + 0x30)) - *(float *)(cam + 0x140),
                                   *(float *)(D_L17_0016016C + ((*(int *)(d + 0x40) << 7) + 0x34)) - *(float *)(cam + 0x144));
@@ -1242,7 +1242,7 @@ extern float D_L17_001DE328[];
 extern float D_L17_001DE340[];
 
 // Fleet moby update: sets up a path on first tick, then animates its scrolling and bounce values.
-void FleetReflectionUpdate(unsigned char *moby) {
+void update_fleet_backdrop_animation(unsigned char *moby) {
     char *d = *(char **)(moby + 0x78);
     float t0[4];
     float t1[4];
@@ -1348,7 +1348,7 @@ void Moby1843Update(unsigned char *moby) {
     float len;
     char *firing_moby;
 
-    CollectableCrateUpdate(moby);
+    update_moby_hit_stats_and_state(moby);
     switch (((Moby *)moby)->state) {
     case BLARG_SHIP_INITIALIZE:
         ((Moby *)moby)->draw_dist = 0xFF;
@@ -1367,7 +1367,7 @@ void Moby1843Update(unsigned char *moby) {
         break;
     case BLARG_SHIP_FOLLOW_PATH:
     case BLARG_SHIP_BURST_AND_HIDE:
-        TrailRingUpdate(moby);
+        update_moby_trail_points(moby);
         *(float *)(moby_pvars + 0x68) += *(float *)(moby_pvars + 0x6C);
         if (*(float *)(moby_pvars + 0x68) > 1.0f) {
             *(float *)(moby_pvars + 0x68) -= 1.0f;
@@ -1380,13 +1380,13 @@ void Moby1843Update(unsigned char *moby) {
                 **(int **)(D_L17_001B10B0 + *(int *)(moby_pvars + 0x60) * 4);
         }
         FastAddRots(*(float *)(moby_pvars + 0x70), *(float *)(moby_pvars + 0x74));
-        PathOrbitMobyUpdate(moby);
+        update_moby_path_transform(moby);
         if (((Moby *)moby)->state == 2) {
             SpawnExplosionFx(moby, &((Moby *)moby)->pos, -1, 2.0f, 13.0f);
             if (random_integer_below(2)) {
-                SpawnMobyAt((char *)&((Moby *)moby)->pos, 0xE0);
+                spawn_ship_pickup((char *)&((Moby *)moby)->pos, 0xE0);
             } else {
-                SpawnMobyAt((char *)&((Moby *)moby)->pos, 0xE4);
+                spawn_ship_pickup((char *)&((Moby *)moby)->pos, 0xE4);
             }
             Moby_PlaySound(1, 0, (int)moby);
             ((Moby *)moby)->state = 3;
@@ -1492,7 +1492,7 @@ void Moby1843Update(unsigned char *moby) {
                 FastVecSub(firing_target_delta, sB0, sA0);
                 func_L00_001FF4B0(firing_direction, firing_target_delta, *(float *)&D_L17_00162468 * D_0015EE6C);
                 FastVecAdd(firing_direction, firing_direction, hero_position_delta);
-                firing_moby = SpawnStreakMoby((int)moby, firing_direction, sA0, 128.0f, -1.0f, 10.0f);
+                firing_moby = spawn_class_3f9_moby((int)moby, firing_direction, sA0, 128.0f, -1.0f, 10.0f);
                 if (firing_moby) {
                     FastVecSub(firing_direction, firing_direction, hero_position_delta);
                     *(float *)(firing_moby + 0x44) = -func_L00_001FF860(func_001F9CE8(firing_direction), firing_direction[2]);
@@ -1512,9 +1512,9 @@ void Moby1843Update(unsigned char *moby) {
         FastVecAdd(&((Moby *)moby)->pos, &((Moby *)moby)->pos, scratch_vector);
         SpawnExplosionFx(moby, &((Moby *)moby)->pos, -1, 2.0f, 13.0f);
         if (random_integer_below(2)) {
-            SpawnMobyAt((char *)&((Moby *)moby)->pos, 0xE0);
+            spawn_ship_pickup((char *)&((Moby *)moby)->pos, 0xE0);
         } else {
-            SpawnMobyAt((char *)&((Moby *)moby)->pos, 0xE4);
+            spawn_ship_pickup((char *)&((Moby *)moby)->pos, 0xE4);
         }
         Moby_PlaySound(1, 0, (int)moby);
         ((Moby *)moby)->state = 4;
@@ -1527,7 +1527,7 @@ LINKER_REMNANT("asm/overlays", func_L17_002F6AF0);
 extern short *D_L17_001AC440[];
 
 /* Finds the listed moby of type 0x733 in state 4 and launches it along a rotated vector. */
-char *LaunchRandomMoby733(int list) {
+char *try_activate_blarg_ship_from_list(int list) {
     short *s = D_L17_001AC440[list];
     float A[4], B[4], C[4], D[4], E[4], F[4];
     char *m;
@@ -1591,7 +1591,7 @@ void Moby1873Update(unsigned char *m) {
         SpawnBreakFxByDistance(m);
         SpawnMobyBurstFx(m, 0x753, 1, 0x753, 1, 11, 2);
         SpawnMobyBurstFx(m, 0x756, 1, 0x756, 1, 1, 2);
-        SpawnMobyCopyingPlacement(m, 0x752);
+        spawn_moby_from_placement(m, 0x752);
         DeleteMoby(m);
         break;
     }
@@ -1600,7 +1600,7 @@ extern void *func_L00_00265050(char *src, int cls, float *pos, void *mat, int a8
 extern float D_L17_0015F660[] MACRO_ADDR;
 
 /* Update moby 1876: waits for a trigger, then plays an effect and finishes. */
-void Moby1876Update(unsigned char *m) {
+void update_hit_triggered_fragment_and_placement_spawner(unsigned char *m) {
     int flag = 0;
     char *r = MobyGetHitMessage(m, 0x10000, 0);
     switch (m[0x20]) {
@@ -1619,7 +1619,7 @@ void Moby1876Update(unsigned char *m) {
         SpawnBreakFxByDistance(m);
         SpawnBreakFragment((char *)m, 0x753, (float *)(m + 0x10), m + 0x40, 0, 0, D_L17_0015F660, D_L17_0015F660, 0.0f, D_L17_0015F660);
         SpawnMobyBurstFx(m, 0x756, 1, 0x756, 1, 1, 2);
-        SpawnMobyCopyingPlacement(m, 0x755);
+        spawn_moby_from_placement(m, 0x755);
         DeleteMoby(m);
         break;
     }
@@ -1631,7 +1631,7 @@ typedef struct { float x, y, z; } V3;
 typedef struct { V3 v; float w; } V4;
 
 /* Projects each direction pair into 2D texture coordinates (reflection mapping). */
-void ComputeReflectionUVs(int n, V3 *b, V3 *a, int unused, float *out) {
+void compute_reflection_sphere_map_uvs(int n, V3 *b, V3 *a, int unused, float *out) {
     V4 v0;
     V4 p;
     V4 r;
@@ -1680,7 +1680,7 @@ void DrawReflectionStrips(void) {
     font_queue_vu_state();
     p = (float *)D_L17_001DEB70;
     for (i = 0; i < 2; i++) {
-        ComputeReflectionUVs(((int *)&D_L17_00162470)[i], ((int *)&D_L17_00162488)[i], ((int *)&D_L17_00162478)[i], ((int *)&D_L17_00162480)[i], p);
+        compute_reflection_sphere_map_uvs(((int *)&D_L17_00162470)[i], ((int *)&D_L17_00162488)[i], ((int *)&D_L17_00162478)[i], ((int *)&D_L17_00162480)[i], p);
         func_L00_001FDE48(((int *)&D_L17_00162470)[i], ((int *)&D_L17_00162478)[i], ((int *)&D_L17_00162490)[i], p, 1);
     }
 }
@@ -1702,12 +1702,12 @@ void DrawReflectionStrip(void) {
     font_queue_vu_state();
     p = (float *)D_L17_001DF970;
     for (i = 0; i < 1; i++) {
-        ComputeReflectionUVs(((int *)&D_L17_001624A0)[i], (V3 *)((int *)&D_L17_001624D0)[i], (V3 *)((int *)&D_L17_001624C0)[i], ((int *)&D_L17_001624C8)[i], p);
+        compute_reflection_sphere_map_uvs(((int *)&D_L17_001624A0)[i], (V3 *)((int *)&D_L17_001624D0)[i], (V3 *)((int *)&D_L17_001624C0)[i], ((int *)&D_L17_001624C8)[i], p);
         func_L00_001FDE48(((int *)&D_L17_001624A0)[i], ((int *)&D_L17_001624C0)[i], ((int *)&D_L17_001624D8)[i], p, 1);
     }
 }
 /* Computes a per-vertex 2D sphere-map texture coordinate from position and normal arrays. */
-void ComputeSphereMapUVs(int n, char *nrm, char *pos, int unused, float *out) {
+void compute_vertex_to_reference_sphere_map_uvs(int n, char *nrm, char *pos, int unused, float *out) {
     float a[4];
     float t[4];
     float r[4];

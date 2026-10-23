@@ -79,7 +79,7 @@ extern void func_L08_002EADF0_2EAF48(struct Moby *) __asm__("func_L08_002EADF0")
 /* Swarm leader: cruises or circles along its waypoint path with its parts in tow, fires at its target, and in
  * state 0x63 scatters the parts and removes itself.
  * Adapted from Lombyte (MIT) for PAL: overlays/l08/gameplay/entities/002e9b70.c, FUN_L08_002e9b70. */
-void SwarmLeaderUpdate(struct Moby *moby) {
+void update_path_following_moby_swarm(struct Moby *moby) {
     SwarmVars_2EAF48 *vars = (SwarmVars_2EAF48 *)moby->pvars;
     SwarmPathFollower_2EAF48 *follower;
     struct Moby *target;
@@ -233,7 +233,7 @@ void SwarmLeaderUpdate(struct Moby *moby) {
     }
 }
 /* Moby update: deletes its group's mobys when triggered, else runs a small state machine. */
-void GroupClearUpdate(char *m)
+void update_moby_height_from_driver(char *m)
 {
     extern unsigned char D_0013D355[];
     extern char func_00214D28[];
@@ -328,7 +328,7 @@ extern int func_001F9850(int);
 
 /* Swings the gate to its driver's progress, fading a creak in while it moves and out when it stops, and latches its flag once fully open.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l08/gameplay/entities/002e9b70.c, FUN_L08_002ea4c0. */
-void GateSwingUpdate(struct Moby *moby) {
+void update_swing_gate_from_driver(struct Moby *moby) {
     SwingGateVars *vars = (SwingGateVars *)moby->pvars;
     f32 progress = *(f32 *)D_L08_00160058_2EAF48[vars->driver].pvars;
     Vec4 mat[4];
@@ -398,7 +398,7 @@ extern int D_L08_00161E68 MACRO_ADDR;
 extern int D_L08_00161E84 MACRO_ADDR;
 extern int D_L08_00161E98 MACRO_ADDR;
 /* Draws three rows of HUD elements with their colours. */
-void Moby600Draw(void) {
+void draw_layered_mesh_effect(void) {
     VU1_addGSregister(0x42, 0x8000000044L);
     VU1_addGSregister(8, 0);
     VU1_addGSregister(0x14, 0xFF9000000260L);
@@ -406,12 +406,12 @@ void Moby600Draw(void) {
     font_queue_vu_state();
     VU1_addGSregister(6, GetEffectTex(0x3A));
     VU1_addGSregister(0x42, (long)*(int *)&D_L08_00161E60 << 32 | 0x44);
-    Moby600_DrawQuads13(0);
+    draw_scrolled_mesh_batch(0);
     VU1_addGSregister(6, GetEffectTex(0x3B));
     VU1_addGSregister(0x42, (long)((D_L08_00161E64 * *(unsigned char *)&D_L08_00161E98) >> 8) << 32 | 0x62);
-    Moby600_DrawQuads13(1);
+    draw_scrolled_mesh_batch(1);
     VU1_addGSregister(0x42, (long)((D_L08_00161E68 * *(unsigned char *)&D_L08_00161E98) >> 8) << 32 | 0x68);
-    Moby600_DrawQuads13(2);
+    draw_scrolled_mesh_batch(2);
     VU1_addGSregister(6, GetEffectTex(0x3C));
     VU1_addGSregister(0x42, (long)*(int *)&D_L08_00161E80 << 32 | 0x48);
     Moby600_DrawQuads11(0);
@@ -419,7 +419,7 @@ void Moby600Draw(void) {
     Moby600_DrawQuads11(1);
     VU1_addGSregister(6, GetEffectTex(0x3D));
     VU1_addGSregister(0x42, (long)*(int *)&D_L08_00161E90 << 32 | 0x48);
-    Moby600_DrawQuads8(0);
+    emit_pair_offset_render_batch(0);
 }
 typedef struct { int a, b; } PairA;
 typedef struct { int a, b; } Pair8;
@@ -455,7 +455,7 @@ extern short D_L08_00161E50;
 
 /* Update function: state 0 sets up some global tables (running func_L08_002F2428 once), state 1 tests a point
  * and its distance to D_L08_00167640 and sets D_L08_00161E98 to a 0 to 255 value that fades between 20.0 and 84.0. */
-void Moby600Update(unsigned char *moby) {
+void update_layered_mesh_effect(unsigned char *moby) {
     int i;
     float v[4];
     float w[4];
@@ -464,9 +464,9 @@ void Moby600Update(unsigned char *moby) {
     switch (moby[0x20]) {
     case 0:
         if (*(int *)&D_L08_00161E94 == 0) {
-            ScaleColorTables(D_L08_001E85D0, 13, D_L08_001E2B18, 0.5f, 0.5f, 0.65f, 0.5f, 1);
-            ScaleColorTables(D_L08_001DE1E0, 8, D_L08_001DB7D8, 0.5f, 0.5f, 0.5f, 1.0f, 1);
-            ScaleColorTables(D_L08_001E2AE8, 11, D_L08_001DE200, 0.25f, 0.25f, 0.25f, 1.0f, 1);
+            scale_rgba_tables(D_L08_001E85D0, 13, D_L08_001E2B18, 0.5f, 0.5f, 0.65f, 0.5f, 1);
+            scale_rgba_tables(D_L08_001DE1E0, 8, D_L08_001DB7D8, 0.5f, 0.5f, 0.5f, 1.0f, 1);
+            scale_rgba_tables(D_L08_001E2AE8, 11, D_L08_001DE200, 0.25f, 0.25f, 0.25f, 1.0f, 1);
             *(int *)&D_L08_00161E94 = 1;
         }
         moby[0x20] = 1;
@@ -499,7 +499,7 @@ void Moby600Update(unsigned char *moby) {
             d = FastVecLength(w);
             if (d <= 84.0f) {
                 AdvanceScrollOffsets(0);
-                AdvanceWavePhase(D_L08_001E8610, 0.52f, 0.62f, 0.06f, D_L08_00161EB8_p);
+                advance_wrapped_sine_pair(D_L08_001E8610, 0.52f, 0.62f, 0.06f, D_L08_00161EB8_p);
                 AdvanceScrollOffsets(2);
                 if (d < 20.0f) {
                     *(unsigned char *)&D_L08_00161E98 = 0xFF;
@@ -512,7 +512,7 @@ void Moby600Update(unsigned char *moby) {
             AdvanceScrollEntry(0);
             AdvanceScrollEntry(0);
             AdvanceScrollEntry(1);
-            AddDrawCallback(Moby600Draw, moby);
+            AddDrawCallback(draw_layered_mesh_effect, moby);
         }
         break;
     }
@@ -549,7 +549,7 @@ extern void func_L00_0025F4A8(char *, void *, char *, f32, f32, s32, s32, s32, f
 extern short D_L08_00162000;
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l08/gameplay/entities/002e9b70.c, FUN_L08_002f44c0. */
-void Moby621Update(struct Moby *moby)
+void update_path_following_moby_with_fade(struct Moby *moby)
 {
     SwarmPathFollower *follower = (SwarmPathFollower *)moby->pvars;
     Vec4 point;
@@ -639,7 +639,7 @@ extern int func_001FA898_r(float) __asm__("func_001FA898");
 extern float func_001FA888(int);
 
 /* Smooth noise: linearly interpolates between two entries of an 8-float ring at arg+0x90. */
-float SmoothNoise(float x, char *arg) {
+float interpolate_sample_ring(float x, char *arg) {
     float f = x * 8.0f;
     int i = func_001FA898_r(f);
     float fr = f - IntToFloat(i);
@@ -711,7 +711,7 @@ extern f32 func_001FA888_2F8560(s32) __asm__("func_001FA888");
 /* Flickering point light: state 0 checks the periods and fills the two flicker rings; then sets the draw scale,
  * fades the intensity with the distance to the camera and creates, updates or frees its point light.
  * Adapted from Lombyte (MIT) for PAL: overlays/l08/gameplay/entities/002e9b70.c, FUN_L08_002f70a0. */
-void FlickerLightUpdate(struct Moby *m) {
+void update_flickering_mesh_effect(struct Moby *m) {
     FlickerLightVars_2F8560 *d;
     Vec4 pos;
     f32 view, dist, fade;
@@ -1294,10 +1294,10 @@ void the_plumber_batalia_update(char *m) {
             char *t = D_L08_0016016C + (d->i48 << 7);
             jet_reset_camera(t + 0x30, t + 0x70);
             ((struct Moby *)m)->state = v;
-            Moby1283_SetHeroState(D_L08_00160058 + (d->i50 << 8));
+            request_batalia_cannon_mount(D_L08_00160058 + (d->i50 << 8));
         }
         if (d->sub == 3) {
-            PlayMovieEntryIfIdle(1);
+            start_indexed_disc_stream(1);
             ((struct Moby *)m)->state = 5;
         }
         if (d->sub == 4) {
@@ -1424,7 +1424,7 @@ extern void func_L00_00264DB8(int, int);
 extern int func_L00_00203F20(int a, int b);
 extern float func_001F9C78(void *a, void *b);
 /* Moby update for a trigger-volume controller; tracks best times and raises Help_Request. */
-void Moby1349Update(char *m) {
+void update_batalia_item_triggers_and_help(char *m) {
     VData *data = *(VData **)(m + 0x78);
     int elapsed;
     int time;
@@ -1520,7 +1520,7 @@ sample_volume:
 }
 extern void func_L00_00264870(int);
 /* per-frame update of a moby that fires a sound event when the game state allows */
-void Moby1553Update(char *moby) {
+void update_batalia_selected_moby_effects(char *moby) {
     int k;
     switch (*(unsigned char *)(moby + 0x20)) {
     case 0:
@@ -1549,7 +1549,7 @@ extern void func_L08_00280BC8(float *, float *, int, float);
 extern float D_0015EE6C MACRO_ADDR;
 
 // Per-frame update: for each entry, builds a rotated vector from the moby's data and spawns an effect.
-void Moby1641Update(char *moby) {
+void spawn_batalia_moby_effects_with_random_motion(char *moby) {
     char *data = *(char **)(moby + 0x78);
     float a[4];
     float b[12];
@@ -1567,7 +1567,7 @@ void Moby1641Update(char *moby) {
         c[1] = random_float_between(*(float *)(data + 0x18) * D_0015EE6C, *(float *)(data + 0x1C) * D_0015EE6C);
         c[2] = random_float_between(*(float *)(data + 0x20) * D_0015EE6C, *(float *)(data + 0x24) * D_0015EE6C);
         c[3] = 0;
-        SpawnParticleType4D(a, c, *(int *)(data + 0x10), *(float *)(data + 0xC));
+        spawn_effect_with_initial_motion(a, c, *(int *)(data + 0x10), *(float *)(data + 0xC));
     }
 }
 extern void func_L08_00259040(void *, int, int, void *);
@@ -1612,7 +1612,7 @@ extern short D_L08_00162468;
 extern short D_L08_00162478;
 
 /* Runs the two-entry setup loop for slot `x`: one call fills from the tables, the second applies them. */
-void Moby1649_DrawQuads2(int x) {
+void queue_batalia_offset_textured_batches(int x) {
     int i;
     int *a = (int *)&D_L08_00162458;
     int *b = (int *)&D_L08_00162468;
@@ -1636,7 +1636,7 @@ extern int D_L08_00162444 MACRO_ADDR;
 extern int D_L08_00162480 MACRO_ADDR;
 
 // Draws three rows of HUD elements with their colours.
-void Moby1649Draw(void) {
+void queue_batalia_textured_batch_passes(void) {
     VU1_addGSregister(0x42, 0x8000000044L);
     VU1_addGSregister(8, 0);
     VU1_addGSregister(0x14, 0xFF9000000260L);
@@ -1657,7 +1657,7 @@ void Moby1649Draw(void) {
     Moby1649_DrawQuads6(1);
     VU1_addGSregister(6, GetEffectTex(0x3D));
     VU1_addGSregister(0x42, (long)*(int *)&D_L08_00162450 << 32 | 0x48);
-    Moby1649_DrawQuads2(0);
+    queue_batalia_offset_textured_batches(0);
 }
 extern int func_L00_00200290(char *, float);
 extern void func_001F9BF0(void *, void *, void *);
@@ -1680,7 +1680,7 @@ extern short D_L08_00162454;
 extern char D_L08_00167640[];
 
 // UpdateMoby for a pulsing light effect: init on state 0, draw when close enough on state 1
-void Moby1649Update(unsigned char *moby) {
+void update_batalia_textured_effect(unsigned char *moby) {
     int i;
     float v[4];
     float w[4];
@@ -1689,9 +1689,9 @@ void Moby1649Update(unsigned char *moby) {
     switch (moby[0x20]) {
     case 0:
         if (*(int *)&D_L08_00162454 == 0) {
-            ScaleColorTables(D_L08_001F87E8, 8, D_L08_001F4F20, 0.5f, 0.5f, 0.65f, 0.5f, 1);
-            ScaleColorTables(&D_L08_00162478, 2, &D_L08_00162458, 0.5f, 0.5f, 0.5f, 1.0f, 1);
-            ScaleColorTables(D_L08_001F4F08, 6, D_L08_001F0488, 0.25f, 0.25f, 0.25f, 1.0f, 1);
+            scale_rgba_tables(D_L08_001F87E8, 8, D_L08_001F4F20, 0.5f, 0.5f, 0.65f, 0.5f, 1);
+            scale_rgba_tables(&D_L08_00162478, 2, &D_L08_00162458, 0.5f, 0.5f, 0.5f, 1.0f, 1);
+            scale_rgba_tables(D_L08_001F4F08, 6, D_L08_001F0488, 0.25f, 0.25f, 0.25f, 1.0f, 1);
             *(int *)&D_L08_00162454 = 1;
         }
         moby[0x20] = 1;
@@ -1724,7 +1724,7 @@ void Moby1649Update(unsigned char *moby) {
             d = FastVecLength(w);
             if (d <= 84.0f) {
                 AdvanceScrollOffsets(0);
-                AdvanceWavePhase(D_L08_001F8810, 0.52f, 0.62f, 0.06f, &D_L08_00162498[1]);
+                advance_wrapped_sine_pair(D_L08_001F8810, 0.52f, 0.62f, 0.06f, &D_L08_00162498[1]);
                 AdvanceScrollOffsets(2);
                 if (d < 20.0f) {
                     *(unsigned char *)&D_L08_00162480 = 0xFF;
@@ -1737,7 +1737,7 @@ void Moby1649Update(unsigned char *moby) {
             AdvanceScrollEntry(0);
             AdvanceScrollEntry(0);
             AdvanceScrollEntry(1);
-            AddDrawCallback(Moby1649Draw, moby);
+            AddDrawCallback(queue_batalia_textured_batch_passes, moby);
         }
         break;
     }
@@ -1750,7 +1750,7 @@ extern void func_L01_00279E10(void *, int);
 extern void func_0020D678(void *);
 
 // Moby state machine: wait, check hit on first probe, then clean up and delete.
-void BreakableL08_Update(char *m) {
+void update_moby_hit_removal_state(char *m) {
     int hit = 0;
     char *r = MobyGetHitMessage(m, 0x10000, 0);
     switch (*(unsigned char *)(m + 0x20)) {
@@ -1765,7 +1765,7 @@ void BreakableL08_Update(char *m) {
         Moby_PlaySound(0, 0, (int)m);
         SpawnBreakFxByDistance(m);
         SpawnMobyBurstFx(m, 0x736, 1, 0x737, 1, 1, 2);
-        SpawnMobyCopyingPlacement(m, 0x735);
+        spawn_moby_from_placement(m, 0x735);
         DeleteMoby(m);
         break;
     }

@@ -17,10 +17,10 @@ extern float func_L00_00258C80(float, float);
 extern float func_001F9F90(float x);
 struct Moby;
 extern void func_001F49B0(void (*)(struct Moby *), struct Moby *);
-void ScrollingRibbonsDraw(char *m);
+void func_L14_002E0858(char *m);
 
 // Per-frame update for the level 14 moby: refreshes its ring table and hands the table to func_001F49B0.
-void func_L14_002E0538(char *moby)
+void animate_ribbon_effect_paths(char *moby)
 {
     char *d = *(char **)(moby + 0x78);
     char *o;
@@ -113,5 +113,5 @@ void func_L14_002E0538(char *moby)
         o += 0x10;
     }
 
-    AddDrawCallback((void (*)(struct Moby *))ScrollingRibbonsDraw, (struct Moby *)moby);
+    AddDrawCallback((void (*)(struct Moby *))draw_ribbon_effect, (struct Moby *)moby);
 }

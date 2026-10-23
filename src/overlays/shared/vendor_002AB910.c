@@ -225,9 +225,9 @@ void mine_update(M910 *m) {
     if (v->owner != 0 && v->owner->state != 0xFE && v->owner->state != 0xFD
         && v->owner->cls == 0xBE && v->h36 == 0 && 0.0f < FastVecLength(v)) {
         if (D_G910.p2FC == 0 || GetFlaggedPvarWord(D_G910.p2FC) == 0) {
-            ProjectilePath_Trace(v, m, 1);
-        } else if (ProjectilePath_Trace(v, m, 0) == 0) {
-            ProjectilePath_Trace(v, m, 2);
+            predict_mine_impact(v, m, 1);
+        } else if (predict_mine_impact(v, m, 0) == 0) {
+            predict_mine_impact(v, m, 2);
         }
     }
     st = m->state;
@@ -412,8 +412,8 @@ void mine_update(M910 *m) {
                                     r[0] = n[0] * FastCos(m->rz) + n[1] * FastSin(m->rz);
                                     r[1] = n[1] * FastCos(m->rz) - n[0] * FastSin(m->rz);
                                     r[2] = n[2];
-                                    m->rx = RotateTowardAngle(m->rx, -func_L00_001FF860(func_001F9B50(r[0] * r[0] + r[2] * r[2]), r[1]), 0.05235988f);
-                                    m->ry = RotateTowardAngle(m->ry, func_L00_001FF860(r[2], r[0]), 0.05235988f);
+                                    m->rx = step_rotation_toward_target(m->rx, -func_L00_001FF860(func_001F9B50(r[0] * r[0] + r[2] * r[2]), r[1]), 0.05235988f);
+                                    m->ry = step_rotation_toward_target(m->ry, func_L00_001FF860(r[2], r[0]), 0.05235988f);
                                 }
                             }
                         }
@@ -934,7 +934,7 @@ typedef struct M_d {
 } M_d;
 
 /* updates a decaying moby: spins down its position fields and fades it out. Adapted from Lombyte (MIT) for PAL: overlays/shared/unclassified_002aa670.c, FUN_L00_002acad8. */
-void SpinFadeOutUpdate(M_d *m) {
+void update_glow_particle(M_d *m) {
     V_d *v = m->v;
     float a, b;
     int n;
@@ -968,7 +968,7 @@ extern int func_001F4868(int);
 extern void func_L00_001FD1D8(void *, void *, int);
 
 /* Draws two spinning textured quads around the moby, oriented by its velocity. */
-void DrawSpinningQuadPair(char *moby) {
+void draw_bomb_landing_marker(char *moby) {
     QuadPkt q;
     float M[4][4];
     float E[4][4];
@@ -1077,7 +1077,7 @@ extern float func_001F9D48(void *, void *);
 extern float func_001FA850(float, float);
 extern void func_L00_002C3790(float *, float *, float *, float, float, float);
 
-void func_L00_002AE278(float *pos, unsigned char *moby, float *velocity) {
+void launch_bomb(float *pos, unsigned char *moby, float *velocity) {
     float *v = *(float **)(moby + 0x78);
     float difference[4] __attribute__((aligned(16)));
     float direction[4] __attribute__((aligned(16)));
@@ -1315,7 +1315,7 @@ check_surface:
     }
     if (timer && (mode || (D_L00_00173F58 && GetFlaggedPvarWord((unsigned char *)D_L00_00173F58)))) {
         if (mode != 2 || !D_L00_00173F58 || !GetFlaggedPvarWord((unsigned char *)D_L00_00173F58))
-            AddDrawCallback((void *)DrawSpinningQuadPair, m);
+            AddDrawCallback((void *)draw_bomb_landing_marker, m);
         if (!object_hit && v->last_hit) {
             last = v->last_hit;
             if (*(unsigned char *)(last + 0x20) == 0xFE) {
@@ -2166,7 +2166,7 @@ extern s32 func_L00_0025D390_B1290(char *) __asm__("func_L00_0025D390");
 extern s32 func_L00_002608F0(char *);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002aa670.c, FUN_L00_002affa8. */
-void FindMissileTarget(char *self, O *out, char *skip) {
+void select_gold_devastator_missile_target(char *self, O *out, char *skip) {
     Vec4 v;
     Vec4 lv;
     char *o;
@@ -2644,7 +2644,7 @@ void gold_devastator_missile_update(M910 *m) {
         FastVecAdd((&m->pos),(&m->pos),&bounce[1]);
         if(impact1688.moby) d->owner=impact1688.moby;
         if(!d->bounce_timer) d->bounce_timer=scale_ticks(90);
-        FindMissileTarget((char *)m,(O *)d,(char *)impact1688.moby);
+        select_gold_devastator_missile_target((char *)m,(O *)d,(char *)impact1688.moby);
         Moby_PlaySound(1,0,(int)m);
             }
     }

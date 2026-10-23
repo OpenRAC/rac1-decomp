@@ -11,7 +11,7 @@ extern float func_L00_001FF860(float, float);
 extern float func_001F9CE8(void *);
 
 // Creates a class 0x31 moby that looks along a direction, copying owner data and position.
-char *SpawnMoby31(char *owner, float *pos, char *vec) {
+char *spawn_blarg_elite_commando_rocket(char *owner, float *pos, char *vec) {
     char *moby = CreateMoby(0x31);
     if (moby != 0) {
         char *data;
@@ -66,7 +66,7 @@ void HomingProjectileUpdate(char *m) {
         *(int*)(d+0x34)=1;Sound_PlayClassSound(5,0,(int)m,0x54C);
     }
     if(*(unsigned char*)(m+0x20)!=0) return;
-    SpawnTrailParticles(m);
+    spawn_rocket_trail_spark(m);
     FastVecSub(delta,d+0x10,m+0x10);
     yaw=func_L00_001FF860(delta[0],delta[1]);
     pitch=func_L00_001FF860(func_001F9CE8(delta),delta[2]);
@@ -181,7 +181,7 @@ void blarg_elite_commando_update(char *m) {
     float *heading, *movement;
     int ticks;
     int cls;
-    Moby_HandleDamageKnockback(m);
+    update_blarg_elite_commando_damage_and_pursuit(m);
     owner = *(char **)(d + 0x110);
     cls = *(short *)(owner + 0xA6);
     if (cls == 0 || cls == 0x1A3) {
@@ -260,7 +260,7 @@ void blarg_elite_commando_update(char *m) {
                     m[0x20] = 7;
                     *(short *)(d + 0x2DC) = truncate_float_to_s32(func_001F9878(random_float_between(30.0f, 90.0f)));
                     *(short *)(d + 0x300) = (*(short *)(d + 0x300) + 1) % 2;
-                    Moby_UpdateTurnAnim(m);
+                    select_blarg_elite_commando_movement_animation(m);
                 } else if (!random_integer_below(20)) {
                     m[0x20] = 4;
                     if (((unsigned char *)m)[0x53] != 2) { MobyBlendAnimation(m, 2, 0, scale_ticks(10)); }
@@ -271,7 +271,7 @@ void blarg_elite_commando_update(char *m) {
                 *(short *)(d + 0x300) = (*(short *)(d + 0x300) + 1) % 2;
                 m[0x20] = 3;
                 *(short *)(d + 0x302) = scale_ticks(180);
-                Moby_UpdateTurnAnim(m);
+                select_blarg_elite_commando_movement_animation(m);
             }
         }
         break;
@@ -308,7 +308,7 @@ void blarg_elite_commando_update(char *m) {
             Moby_GetJointWorldPos(m, 0, temp);
             FastVecSub(delta, target, temp);
             func_L00_001FF4B0(delta, delta, D_0015EE6C * 20.0f);
-            SpawnMoby31(m, delta, (char *)temp);
+            spawn_blarg_elite_commando_rocket(m, delta, (char *)temp);
         } else if (IsFrameWithinWindow(m, 10.0f)) {
             int count = *(unsigned short *)(d + 0x2DE) + 1;
             *(unsigned short *)(d + 0x2DE) = count;
@@ -378,8 +378,8 @@ animate_idle:
         if (func_001F9D10_update(m + 0x10, D_L16_00167240) < 32.0f && !Sound_IsPlaying(m, *(int *)(d + 0x304)))
             *(int *)(d + 0x304) = func_0022ED80_update(7, 4, m);
     }
-    if (*(int *)&D_L16_00161B38) Moby_AimJointsAtTarget(m);
-    if (*(int *)&D_L16_00161B3C && *(int *)(D_0013E633 + 0x2EA9) != 22) Moby_EmitJointParticles(m);
+    if (*(int *)&D_L16_00161B38) update_blarg_elite_commando_joint_aim(m);
+    if (*(int *)&D_L16_00161B3C && *(int *)(D_0013E633 + 0x2EA9) != 22) emit_blarg_elite_commando_joint_sparks(m);
     if (D_0015EE84 == 18 && D_L16_0015F6A8 == 2 && (unsigned int)(D_L16_0016CD10 - 3) < 3U) DeleteMoby(m);
 }
 extern char *func_L00_0025B478(void *, int, int);
@@ -457,7 +457,7 @@ typedef struct {
 typedef struct { unsigned char pad00[0x1D]; unsigned char awarded; } L16DamageReward;
 extern L16DamageResident D_L16DamageState __asm__("D_0013E633");
 /* Handle damage and knockback, then update the pursuit target and timer. */
-void Moby_HandleDamageKnockback(char *m) {
+void update_blarg_elite_commando_damage_and_pursuit(char *m) {
     L16DamageScratch scratch;
     L16DamageData *d = *(L16DamageData **)(m + 0x78);
     char *hit;
@@ -587,7 +587,7 @@ void Moby_HandleDamageKnockback(char *m) {
     if (range < func_001F9D48(m + 0x10, d->target)) d->pursuit_mode = 2;
     if (d->owner == 0) d->owner = ((L16DamageResident *)((char *)&D_L16DamageState + 0xE1D))->owner;
 }
-void Passenger_AttachOwner(char *moby, void *owner, void *position, char *vector) {
+void set_blarg_elite_commando_parent_transform(char *moby, void *owner, void *position, char *vector) {
     char *data = *(char **)(moby + 0x78);
     *(void **)(data + 0x2D0) = owner;
     qcopy(data + 0x2C0, position);
@@ -595,7 +595,7 @@ void Passenger_AttachOwner(char *moby, void *owner, void *position, char *vector
 }
 
 // Starts the moby's state-10 setup: sets its animation, flags, and copies position and timing into its data block.
-void Passenger_StartRide(char *moby, int arg) {
+void start_blarg_elite_commando_return_to_initial_position(char *moby, int arg) {
     char *d = *(char **)(moby + 0x78);
     if (((unsigned char *)moby)[0x20] == 10) {
         moby[0x20] = 1;
@@ -662,7 +662,7 @@ next:
 }
 extern float func_L00_001FF860(float, float);
 extern float func_001FA790(float, float);
-void Moby_UpdateTurnAnim(char *moby) {
+void select_blarg_elite_commando_movement_animation(char *moby) {
     char *data = *(char **)(moby + 0x78);
     char *target = D_L16_001B0C30[*(int *)(data + 0x120)] + (*(short *)(data + 0x300) << 4);
     float angle = func_L00_001FF860(*(float *)(target + 0x10) - *(float *)(moby + 0x10), *(float *)(target + 0x14) - *(float *)(moby + 0x14));
@@ -749,7 +749,7 @@ extern void func_001F9BD8(void*,void*,void*);
 extern void func_L00_00263950(char*,char*,int,float,float);
 extern float D_0015EE64 MACRO_ADDR;
 /* Aim paired joints toward the owner or player, then smooth their rotations. */
-void Moby_AimJointsAtTarget(char *m) {
+void update_blarg_elite_commando_joint_aim(char *m) {
     float position[4],target[4],matrix[16],delta[4],aim[4],aimDelta[4],velocity[4];
     char *d=*(char**)(m+0x78);
     if(*(int*)(d+0x114)!=2) {
@@ -799,7 +799,7 @@ extern void func_L00_00258DB0(float*,float,float);
 extern int func_001FA8A8(int,int,float);
 extern char *func_00219780(void*,void*,void*,int,int,int,int,int,int);
 /* Emit randomized joint particles while the moby is active. */
-void Moby_EmitJointParticles(char *m) {
+void emit_blarg_elite_commando_joint_sparks(char *m) {
     float matrix[16],velocity[4],acceleration[4],scatter[4];
     int i;
     if(*(unsigned char*)(m+0x31)==0 || *(unsigned char*)(m+0x20)==10) return;
@@ -846,7 +846,7 @@ void armed_transport_update(char *m) {
     Vec4 vector, rotation;
     char *d = *(char **)(m + 0x78);
 
-    Moby_UpdateHitsAndPursuit(m);
+    update_armed_transport_damage_and_targeting(m);
     switch (*(unsigned char *)(m + 0x20)) {
     case 0: {
         char *path;
@@ -857,8 +857,8 @@ void armed_transport_update(char *m) {
         *(float *)(d + 0x20) = 12.0f;
         *(short *)(d + 0x24) = 12;
         d[0x28] = 3;
-        if (*(int *)(d + 0xD8) != -1) Path_ComputeHeadings(D_L16_001B0C30[*(int *)(d + 0xD8)]);
-        if (*(int *)(d + 0xDC) != -1) Path_ComputeHeadings(D_L16_001B0C30[*(int *)(d + 0xDC)]);
+        if (*(int *)(d + 0xD8) != -1) compute_armed_transport_path_headings(D_L16_001B0C30[*(int *)(d + 0xD8)]);
+        if (*(int *)(d + 0xDC) != -1) compute_armed_transport_path_headings(D_L16_001B0C30[*(int *)(d + 0xDC)]);
         speed = *(float *)&D_L16_00161E40 * D_0015EE6C;
         *(int *)(d + 0x16C) = 0;
         *(int *)(d + 0x168) = 0;
@@ -893,7 +893,7 @@ void armed_transport_update(char *m) {
             vector.f[2] = 3.14159f;
             for (i = 0; i < 4; i++) {
                 if (((int *)(d + 0xC0))[i] >= 0) {
-                    Passenger_AttachOwner(D_L16_00160098 + (((int *)(d + 0xC0))[i] << 8), m, D_L16_001D9950,
+                    set_blarg_elite_commando_parent_transform(D_L16_00160098 + (((int *)(d + 0xC0))[i] << 8), m, D_L16_001D9950,
                                       (char *)vector.f);
                 }
             }
@@ -912,7 +912,7 @@ void armed_transport_update(char *m) {
             ApproachWithVelocity((float *)(d + 0x17C), (float *)(d + 0x180), 1.5707964f, D_0015EE70 * 12.566371f,
                           D_0015EE70 * 12.566371f, D_0015EE6C * 6.2831855f);
         }
-        if (Moby_AdvancePathSegment(m, path)) {
+        if (advance_armed_transport_along_path(m, path)) {
             if (loaded) {
                 m[0x20] = 3;
             } else if (*(int *)(d + 0xDC) == -1) {
@@ -936,7 +936,7 @@ void armed_transport_update(char *m) {
                 rotation.f[2] = FastAddRots(*(float *)(m + 0x48), 3.14159f);
                 func_001F9EC0(vector.f, D_L16_001D9950, m + 0xC0);
                 FastVecAdd(vector.f, vector.f, m + 0x10);
-                Passenger_StartRide(passenger, scale_ticks(90));
+                start_blarg_elite_commando_return_to_initial_position(passenger, scale_ticks(90));
                 *slot = -1;
                 *(int *)(d + 0x184) = scale_ticks(30);
                 break;
@@ -966,7 +966,7 @@ void armed_transport_update(char *m) {
     case 5:
         ApproachWithVelocity((float *)(d + 0x17C), (float *)(d + 0x180), 0.0f, D_0015EE70 * 12.566371f,
                       D_0015EE70 * 12.566371f, D_0015EE6C * 6.2831855f);
-        if (Moby_AdvancePathSegment(m, D_L16_001B0C30[*(int *)(d + 0xDC)])) {
+        if (advance_armed_transport_along_path(m, D_L16_001B0C30[*(int *)(d + 0xDC)])) {
             if (*(int *)(d + 0xD0) == -1) {
                 DeleteMoby(m);
                 return;
@@ -1022,7 +1022,7 @@ void armed_transport_update(char *m) {
     *(float *)(d + 0x18C) = FastAddRots(*(float *)(d + 0x18C),
                                           *(float *)&D_L16_00161E48 * 0.017453292f * D_0015EE6C);
     *(float *)(m + 0x18) = *(float *)(d + 0x194) + *(float *)&D_L16_00161E4C * FastSin(*(float *)(d + 0x18C));
-    Moby_StepWithCollision(m);
+    update_armed_transport_joint_animation(m);
 }
 extern int func_L00_0028EB98(void*,int);
 extern int func_0022ED80_6B70(int,int,void*) __asm__("func_0022ED80");
@@ -1038,7 +1038,7 @@ typedef struct {char pad[0x74];unsigned char active;char pad75[0x13];char *owner
 typedef struct {char pad[0x80];float position[4];char pad90[0x1FF0];int owner;} L16PursuitPlayer;
 typedef struct {int status;float amount;} L16HitResult;
 /* Update interaction ownership, damage responses and pursuit tracking. */
-void Moby_UpdateHitsAndPursuit(char *m) {
+void update_armed_transport_damage_and_targeting(char *m) {
     L16HitResult hit;
     char *d=*(char**)(m+0x78);
     float zero;
@@ -1101,7 +1101,7 @@ extern float func_001F9D10_path42(void*,void*) __asm__("func_001F9D10");
 extern float func_00214D88_path42(float,float,float,float,float*,float*) __asm__("func_00214D88");
 extern short D_L16_00161E44, D_L16_00161E40;
 /* Advance a path segment and ease the remaining travel distance. */
-int Moby_AdvancePathSegment(char *m, char *path) {
+int advance_armed_transport_along_path(char *m, char *path) {
     char *d = *(char **)(m+0x78);
     float progress = (float)*(int *)(d+0x168) + *(float *)(d+0x16C) + *(float *)(d+0x170) / *(float *)(d+0x174);
     int index = truncate_float_to_s32(progress);
@@ -1132,7 +1132,7 @@ typedef struct {
 } Path2fa0;
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/vendor/002e22d8.c, FUN_L16_002e2fa0. */
-void Path_ComputeHeadings(void *arg) {
+void compute_armed_transport_path_headings(void *arg) {
     Path2fa0 *path = arg;
     int i;
     int n;
@@ -1150,7 +1150,7 @@ void Path_ComputeHeadings(void *arg) {
 }
 extern void func_L00_00263950(char *, char *, int, float, float);
 
-void Moby_StepWithCollision(char *moby)
+void update_armed_transport_joint_animation(char *moby)
 {
     float ticks = D_0015EE64;
     float a = ticks * 0.03f;
@@ -1204,14 +1204,14 @@ void grindrail_barrier_update(unsigned char *m) {
         }
         if (barrier_moby->visible)
             AddDrawCallback(RingEffectDraw, barrier_moby);
-        if (*(int *)(barrier_data + 0x20) != -1 && Group_AreAllReady(*(int *)(barrier_data + 0x20))) {
+        if (*(int *)(barrier_data + 0x20) != -1 && check_grindrail_barrier_release_condition(*(int *)(barrier_data + 0x20))) {
             barrier_moby->collision = 0;
             barrier_moby->state = 2;
             Group_TriggerNearest(*(int *)(barrier_data + 0x20));
         }
         break;
     case GRINDRAIL_BARRIER_STATE_COLLISION_DISABLED:
-        if (!Group_AreAllReady(*(int *)(barrier_data + 0x20))) {
+        if (!check_grindrail_barrier_release_condition(*(int *)(barrier_data + 0x20))) {
             barrier_moby->state = 1;
             barrier_moby->collision = barrier_moby->pclass->collision;
         }
@@ -1310,7 +1310,7 @@ void RingEffectDraw(char *m) {
 }
 /* 1 when every moby in list IDX has its byte at 0xBC set; the list ends at the entry with the top
  * bit set. The catalogue cuts this function in three (config/overlays/joined.tsv). */
-int Group_AreAllReady(int idx) {
+int check_grindrail_barrier_release_condition(int idx) {
     short *p = D_L16_001ABFC0[idx];
     if (p == 0) return 0;
     do {
@@ -1351,7 +1351,7 @@ void Moby_UpdateDrawOnly(unsigned char *moby) {
         moby[0x20] = 1;
         break;
     case 1:
-        AddDrawCallback(EnvMapC_Draw, moby);
+        AddDrawCallback(draw_level16_reflection_mesh_batch, moby);
         break;
     }
 }

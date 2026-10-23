@@ -63,7 +63,7 @@ extern void func_L00_0028FB78_30CAE0(void *) __asm__("func_L00_0028FB78");
 extern int func_0020BFC8_30CAE0(int, int) __asm__("func_0020BFC8");
 
 /* Update function for moby class 1353 on level 13: runs the state machine in moby->state. */
-void Moby1353Update(Moby *moby)
+void update_gemlik_scene_controller(Moby *moby)
 {
     MobyData_30CAE0 *data = (MobyData_30CAE0 *)moby->pvars;
 
@@ -221,7 +221,7 @@ extern int func_L00_0025EFC0(void *, void *, float *, int *, float *, int, float
 extern int func_L09_00295880(void *, void *, void *, int, int, float);
 
 /* Follows its target moby along a path: snaps to the nearest path point, then walks the path segments. */
-void FollowTargetAlongPath(char *m) {
+void update_moby_path_follower(char *m) {
     int *d = *(int **)(m + 0x78);
     char *path;
     char *pth;
@@ -282,7 +282,7 @@ extern L13Action D_L13_0016CBE0;
 extern void func_L00_00264870(int);
 
 // Initializes the moby and invokes its selected level action.
-void SparksTriggerL13_Update(unsigned char *moby)
+void update_cutscene_target_effects(unsigned char *moby)
 {
     switch (moby[0x20]) {
     case 0:
@@ -302,7 +302,7 @@ void func_0020D678(void *obj);
 
 /* Records the classes of the tracked mobys, then removes this moby once too few of them are left.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l13/gameplay/vendor/003058a8.c, FUN_L13_0030be60. */
-void WatchMobysUpdate(struct Moby *m) {
+void remove_moby_when_tracked_count_below_threshold(struct Moby *m) {
     int *d = (int *)m->pvars;
     if (m->state == 0) {
         int *ids = d + 4;
@@ -346,7 +346,7 @@ void WatchMobysUpdate(struct Moby *m) {
 extern char *func_0020D348(int);
 extern void func_L00_00251E30(void *);
 
-char *Moby1632Spawn(char *owner, void *position, float scale) {
+char *spawn_scaled_owned_moby(char *owner, void *position, float scale) {
     char *moby = CreateMoby(0x660);
     if (moby != 0) {
         char *data = *(char **)(moby + 0x78);
@@ -371,7 +371,7 @@ extern char *func_L00_0025B478(void *, int, int);
 extern void func_L00_0025AAC0(void *, void *);
 
 /* updates the moby: deletes it when its owner is gone, else copies the owner's effect data and marks it */
-void Moby1632Update(char *moby) {
+void forward_moby_hits_to_owner(char *moby) {
     char *data = *(char **)(moby + 0x78);
     char *owner = *(char **)(data + 0x60);
     char *p;
@@ -401,7 +401,7 @@ extern float func_002140F8(float, float);
 extern float D_0015EE6C MACRO_ADDR;
 
 // Creates an effect moby at a position and seeds its random wobble data.
-char *Moby1634Spawn(void *a, void *b, int c, int d) {
+char *spawn_poison_vessel_effect_moby(void *a, void *b, int c, int d) {
     unsigned char *m = (unsigned char *)CreateMoby(0x662);
     if (m != 0) {
         char *data;
@@ -469,7 +469,7 @@ extern int func_L00_001EFFF0(void *, void *, int, int, int);
 extern void func_L10_002E51A8(char *moby);
 
 /* Gemlik moby update (class 1634): two particle bursts around the moby, then movement and expiry. */
-void Moby1634Update(char *moby)
+void update_moby_motion_and_emit_sparks(char *moby)
 {
     char *data = *(char **)(moby + 0x78);
     char buf[16];
