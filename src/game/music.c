@@ -247,82 +247,147 @@ extern void func_0012ED48(int, int, int, int, short, int, int, int,
 
 /* Plays sound arg0 in 60000..: the other play functions below differ
    only in their table. */
+typedef struct {
+    u32 handle;                 /* 0x00: stream handle; 0xFFFFFFFF while starting (unsigned, as retail builds it) */
+    s16 track;                  /* 0x04 */
+    s16 volume;                 /* 0x06 */
+    s16 flags;                  /* 0x08 */
+    s16 state;                  /* 0x0A: set 1 on start */
+    s16 fade_flags;             /* 0x0C */
+    s16 unkE;                   /* 0x0E */
+    s16 crossfade_enabled;      /* 0x10 */
+    u8 pad_12[0x2];
+    s32 poll_interval;          /* 0x14 */
+    s32 remaining_time;         /* 0x18 */
+} SndSecondaryChannel;
+
+/* 0x1C */
+
+typedef struct {
+    u8 pad_00[0x50];
+    SndSecondaryChannel secondary;  /* 0x50: the secondary record in D_001517D0 */
+} SndStreamBlock;
+
 void music_start_track_60000(int arg0, int arg1, int arg2) {
     SndToc *toc = (SndToc *)D_00137C80;
     int i = arg0 - 60000;
     int h;
-    char *s;
+    SndStreamBlock *s;
 
     h = toc->ids60000[i].handle;
     if (h == 0) {
         return;
     }
-    s = (char *)D_001517D0;
-    if (*(int *)(s + 0x50) != 0) {
+    s = (SndStreamBlock *)D_001517D0;
+    if (s->secondary.handle != 0) {
         return;
     }
-    *(unsigned int *)(s + 0x50) = 0xFFFFFFFF;
-    *(short *)(s + 0x5A) = 1;
-    *(short *)(s + 0x54) = arg0;
-    *(short *)(s + 0x58) = arg1;
-    *(int *)(s + 0x64) = 10;
-    *(int *)(s + 0x68) = 0xBB80;
-    *(short *)(s + 0x56) = arg2;
-    *(short *)(s + 0x60) = 0;
+    s->secondary.handle = 0xFFFFFFFF;
+    s->secondary.state = 1;
+    s->secondary.track = arg0;
+    s->secondary.flags = arg1;
+    s->secondary.poll_interval = 10;
+    s->secondary.remaining_time = 0xBB80;
+    s->secondary.volume = arg2;
+    s->secondary.crossfade_enabled = 0;
     func_0012ED48(h, 0, 0, 0, arg2, 0, 2, 0, 0x21,
-                  music_secondary_start_callback, (long)(unsigned int)(s + 0x50));
+                  music_secondary_start_callback, (long)(unsigned int)&s->secondary);
 }
 
-void music_start_track_50000(int arg0, int arg1, int arg2) {
-    SndToc *toc = (SndToc *)D_00137C80;
-    int i = arg0 - 50000;
-    int h;
-    char *s;
+typedef struct {
+    s32 handle;                 /* 0x00: stream handle from the start callback; -1 while starting */
+    s16 track;                  /* 0x04 */
+    s16 volume;                 /* 0x06 */
+    s16 flags;                  /* 0x08 */
+    s16 state;                  /* 0x0A: set 1 on start */
+    s16 fade_flags;             /* 0x0C */
+    s16 unkE;                   /* 0x0E */
+    s16 crossfade_enabled;      /* 0x10 */
+    u8 pad_12[0x2];
+    s32 poll_interval;          /* 0x14 */
+    s32 remaining_time;         /* 0x18 */
+} TrackChannel;
 
-    h = toc->ids50000[i][D_0015EE88];
-    if (h == 0) {
+typedef struct {
+    u8 pad_00[0x50];
+    TrackChannel secondary;     /* 0x50 */
+} TrackStreamState;
+
+typedef struct {
+    u8 pad_0000[0xF00];
+    s32 music_50000[40][6];     /* 0xF00: tracks 50000.., one handle per language */
+} TrackDiscTable;
+
+void music_start_track_50000(int track, int flags, int volume) {
+    TrackDiscTable *disc_table = (TrackDiscTable *)D_00137C80;
+    int i = track - 50000;
+    int handle;
+    TrackStreamState *music_stream_state;
+
+    handle = disc_table->music_50000[i][D_0015EE88];
+    if (handle == 0) {
         return;
     }
-    s = (char *)D_001517D0;
-    if (*(int *)(s + 0x50) != 0) {
+    music_stream_state = (TrackStreamState *)D_001517D0;
+    if (music_stream_state->secondary.handle != 0) {
         return;
     }
-    *(unsigned int *)(s + 0x50) = 0xFFFFFFFF;
-    *(short *)(s + 0x5A) = 1;
-    *(short *)(s + 0x54) = arg0;
-    *(short *)(s + 0x58) = arg1;
-    *(int *)(s + 0x64) = 10;
-    *(int *)(s + 0x68) = 0xBB80;
-    *(short *)(s + 0x56) = arg2;
-    *(short *)(s + 0x60) = 0;
-    func_0012ED48(h, 0, 0, 0, arg2, 0, 2, 0, 0x21,
-                  music_secondary_start_callback, (long)(unsigned int)(s + 0x50));
+    *(u32 *)&music_stream_state->secondary.handle = 0xFFFFFFFF;
+    music_stream_state->secondary.state = 1;
+    music_stream_state->secondary.track = track;
+    music_stream_state->secondary.flags = flags;
+    music_stream_state->secondary.poll_interval = 10;
+    music_stream_state->secondary.remaining_time = 48000;
+    music_stream_state->secondary.volume = volume;
+    music_stream_state->secondary.crossfade_enabled = 0;
+    func_0012ED48(handle, 0, 0, 0, (s16)volume, 0, 2, 0, 0x21,
+                  music_secondary_start_callback,
+                  (long)(unsigned int)&music_stream_state->secondary);
 }
 
-void music_start_track_40000(int arg0, int arg1, int arg2) {
-    SndToc *toc = (SndToc *)D_00137C80;
-    int i = arg0 - 40000;
-    int h;
-    char *s;
+typedef struct {
+    s32 handle;
+    s16 track;
+    s16 volume;
+    s16 flags;
+    s16 state;
+    s16 fade_flags;
+    s16 unkE;
+    s16 crossfade_enabled;
+    u8 pad_12[0x2];
+    s32 poll_interval;
+    s32 remaining_time;
+} MusicChannelRec;
 
-    h = toc->ids40000[i].handle;
-    if (h == 0) {
+typedef struct {
+    u8 pad_00[0x50];
+    MusicChannelRec secondary;
+} MusicStreamTail;
+
+void music_start_track_40000(int track, int track_flags, int volume) {
+    SndToc *toc = (SndToc *)D_00137C80;
+    int i = track - 40000;
+    int location;
+    MusicStreamTail *s;
+
+    location = toc->ids40000[i].handle;
+    if (location == 0) {
         return;
     }
-    s = (char *)D_001517D0;
-    if (*(int *)(s + 0x50) != 0) {
+    s = (MusicStreamTail *)D_001517D0;
+    if (s->secondary.handle != 0) {
         return;
     }
-    *(unsigned int *)(s + 0x50) = 0xFFFFFFFF;
-    *(short *)(s + 0x5A) = 1;
-    *(short *)(s + 0x54) = arg0;
-    *(short *)(s + 0x58) = arg1;
-    *(int *)(s + 0x64) = 10;
-    *(int *)(s + 0x68) = 0xBB80;
-    *(short *)(s + 0x56) = arg2;
-    *(short *)(s + 0x60) = 0;
-    func_0012ED48(h, 0, 0, 0, arg2, 0, 2, 0, 0x21,
-                  music_secondary_start_callback, (long)(unsigned int)(s + 0x50));
+    *(unsigned int *)&s->secondary.handle = 0xFFFFFFFF;
+    s->secondary.state = 1;
+    s->secondary.track = track;
+    s->secondary.flags = track_flags;
+    s->secondary.poll_interval = 10;
+    s->secondary.remaining_time = 0xBB80;
+    s->secondary.volume = volume;
+    s->secondary.crossfade_enabled = 0;
+    func_0012ED48(location, 0, 0, 0, volume, 0, 2, 0, 0x21,
+                  music_secondary_start_callback, (long)(unsigned int)&s->secondary);
 }
 
 /* A byte flag; declared int-sized so MACRO_ADDR keeps it off $gp (-G2). */
@@ -355,56 +420,96 @@ void music_start_track_30000(int arg0, int arg1, int arg2) {
                   0, 2, 0, 0x21, music_secondary_start_callback, (long)(unsigned int)music_player_dialogue);
 }
 
-void music_start_track_20000(int arg0, int arg1, int arg2) {
-    SndToc *toc = (SndToc *)D_00137C80;
-    int i = arg0 - 20000;
-    int h;
-    char *s;
+typedef struct {
+    u32 handle;              /* 0x00: 0 none, 0xFFFFFFFF starting */
+    s16 track;               /* 0x04 */
+    s16 volume;              /* 0x06 */
+    s16 flags;               /* 0x08 */
+    s16 state;               /* 0x0A */
+    s16 fade_flags;          /* 0x0C */
+    s16 unkE;                /* 0x0E */
+    s16 crossfade_enabled;   /* 0x10 */
+    u8 pad_12[0x2];
+    s32 poll_interval;       /* 0x14 */
+    s32 remaining_time;      /* 0x18 */
+} MusicTrackChannel;
 
-    h = toc->ids20000[i].handle;
-    if (h == 0) {
+typedef struct {
+    u8 pad_00[0x50];
+    MusicTrackChannel secondary; /* 0x50 */
+} MusicStreamLayout;
+
+void music_start_track_20000(int track, int track_flags, int volume) {
+    SndToc *toc = (SndToc *)D_00137C80;
+    int index = track - 20000;
+    int handle;
+    MusicStreamLayout *state;
+
+    handle = toc->ids20000[index].handle;
+    if (handle == 0) {
         return;
     }
-    s = (char *)D_001517D0;
-    if (*(int *)(s + 0x50) != 0) {
+    state = (MusicStreamLayout *)D_001517D0;
+    if (state->secondary.handle != 0) {
         return;
     }
-    *(unsigned int *)(s + 0x50) = 0xFFFFFFFF;
-    *(short *)(s + 0x5A) = 1;
-    *(short *)(s + 0x54) = arg0;
-    *(short *)(s + 0x58) = arg1;
-    *(int *)(s + 0x64) = 10;
-    *(int *)(s + 0x68) = 0xBB80;
-    *(short *)(s + 0x56) = arg2;
-    *(short *)(s + 0x60) = 0;
-    func_0012ED48(h, 0, 0, 0, arg2, 0, 2, 0, 0x21,
-                  music_secondary_start_callback, (long)(unsigned int)(s + 0x50));
+    state->secondary.handle = 0xFFFFFFFF;
+    state->secondary.state = 1;
+    state->secondary.track = track;
+    state->secondary.flags = track_flags;
+    state->secondary.poll_interval = 10;
+    state->secondary.remaining_time = 0xBB80;
+    state->secondary.volume = volume;
+    state->secondary.crossfade_enabled = 0;
+    func_0012ED48(handle, 0, 0, 0, volume, 0, 2, 0, 0x21,
+                  music_secondary_start_callback, (long)(unsigned int)&state->secondary);
 }
 
-void music_start_track_10000(int arg0, int arg1, int arg2) {
-    SndToc *toc = (SndToc *)D_00137C80;
-    int i = arg0 - 10000;
-    int h;
-    char *s;
+/* The PAL music stream state at D_001517D0: only the secondary channel record
+   (at 0x50, 0x1C bytes) that music_start_track_10000 writes. */
+typedef struct {
+    s32 handle;            /* 0x00: stream handle; -1 while starting */
+    s16 track;             /* 0x04 */
+    s16 volume;            /* 0x06 */
+    s16 flags;             /* 0x08 */
+    s16 state;             /* 0x0A: set 1 on start */
+    s16 fade_flags;        /* 0x0C */
+    s16 unkE;              /* 0x0E */
+    s16 crossfade_enabled; /* 0x10 */
+    u8 pad_12[0x2];
+    s32 poll_interval;     /* 0x14 */
+    s32 remaining_time;    /* 0x18 */
+} PalStreamChannel;
 
-    h = toc->ids10000[i].handle;
-    if (h == 0) {
+typedef struct {
+    u8 pad_00[0x50];
+    PalStreamChannel secondary; /* 0x50 */
+} PalStreamState;
+
+void music_start_track_10000(int track, int flags, int volume) {
+    SndToc *toc = (SndToc *)D_00137C80;
+    int i = track - 10000;
+    int stream;
+    PalStreamState *rec;
+
+    stream = toc->ids10000[i].handle;
+    if (stream == 0) {
         return;
     }
-    s = (char *)D_001517D0;
-    if (*(int *)(s + 0x50) != 0) {
+    rec = (PalStreamState *)D_001517D0;
+    if (rec->secondary.handle != 0) {
         return;
     }
-    *(unsigned int *)(s + 0x50) = 0xFFFFFFFF;
-    *(short *)(s + 0x5A) = 1;
-    *(short *)(s + 0x54) = arg0;
-    *(short *)(s + 0x58) = arg1;
-    *(int *)(s + 0x64) = 10;
-    *(int *)(s + 0x68) = 0xBB80;
-    *(short *)(s + 0x56) = arg2;
-    *(short *)(s + 0x60) = 0;
-    func_0012ED48(h, 0, 0, 0, arg2, 0, 2, 0, 0x21,
-                  music_secondary_start_callback, (long)(unsigned int)(s + 0x50));
+    *(u32 *)&rec->secondary.handle = 0xFFFFFFFF;
+    rec->secondary.state = 1;
+    rec->secondary.track = track;
+    rec->secondary.flags = flags;
+    rec->secondary.poll_interval = 10;
+    rec->secondary.remaining_time = 0xBB80;
+    rec->secondary.volume = volume;
+    rec->secondary.crossfade_enabled = 0;
+    func_0012ED48(stream, 0, 0, 0, volume, 0, 2, 0, 0x21,
+                  music_secondary_start_callback, (long)(unsigned int)&rec->secondary);
 }
 
 extern char D_0013A764[];
@@ -414,52 +519,57 @@ extern char D_0013A764[];
    the same music_Playing setup those siblings do, inline, with the sound
    handle read from D_0013A764[arg0][D_0015EE88] (stride 0x250) instead of
    a SndToc table. */
-void music_start_track_by_id(int arg0, int arg1, int arg2) {
-    char *s;
+typedef struct {
+    u8 pad_00[0x50];
+    MusicChannelRec secondary;
+} MusicStateSecondaryView;
+
+void music_start_track_by_id(int track, int track_flags, int volume) {
+    MusicStateSecondaryView *s;
     int handle;
 
-    if (arg0 >= 60000) {
-        music_start_track_60000(arg0, arg1, arg2);
+    if (track >= 60000) {
+        music_start_track_60000(track, track_flags, volume);
         return;
     }
-    if (arg0 >= 50000) {
-        music_start_track_50000(arg0, arg1, arg2);
+    if (track >= 50000) {
+        music_start_track_50000(track, track_flags, volume);
         return;
     }
-    if (arg0 >= 40000) {
-        music_start_track_40000(arg0, arg1, arg2);
+    if (track >= 40000) {
+        music_start_track_40000(track, track_flags, volume);
         return;
     }
-    if (arg0 >= 30000) {
-        music_start_track_30000(arg0, arg1, arg2);
+    if (track >= 30000) {
+        music_start_track_30000(track, track_flags, volume);
         return;
     }
-    if (arg0 >= 20000) {
-        music_start_track_20000(arg0, arg1, arg2);
+    if (track >= 20000) {
+        music_start_track_20000(track, track_flags, volume);
         return;
     }
-    if (arg0 >= 10000) {
-        music_start_track_10000(arg0, arg1, arg2);
+    if (track >= 10000) {
+        music_start_track_10000(track, track_flags, volume);
         return;
     }
-    handle = *(int *)((char *)scene_sounds + arg0 * 0x250 + D_0015EE88 * 4);
+    handle = *(int *)((char *)scene_sounds + track * 0x250 + D_0015EE88 * 4);
     if (handle == 0) {
         return;
     }
-    s = (char *)D_001517D0;
-    if (*(int *)(s + 0x50) != 0) {
+    s = (MusicStateSecondaryView *)D_001517D0;
+    if (s->secondary.handle != 0) {
         return;
     }
-    *(unsigned int *)(s + 0x50) = 0xFFFFFFFF;
-    *(short *)(s + 0x5A) = 1;
-    *(short *)(s + 0x54) = arg0;
-    *(short *)(s + 0x58) = arg1;
-    *(int *)(s + 0x64) = 10;
-    *(int *)(s + 0x68) = 0xBB80;
-    *(short *)(s + 0x56) = arg2;
-    *(short *)(s + 0x60) = 0;
-    func_0012ED48(handle, 0, 0, 0, arg2, 0, 2, 0, 0x21,
-                  music_secondary_start_callback, (long)(unsigned int)(s + 0x50));
+    *(u32 *)&s->secondary.handle = 0xFFFFFFFF;
+    s->secondary.state = 1;
+    s->secondary.track = track;
+    s->secondary.flags = track_flags;
+    s->secondary.poll_interval = 10;
+    s->secondary.remaining_time = 0xBB80;
+    s->secondary.volume = volume;
+    s->secondary.crossfade_enabled = 0;
+    func_0012ED48(handle, 0, 0, 0, volume, 0, 2, 0, 0x21,
+                  music_secondary_start_callback, (long)(unsigned int)&s->secondary);
 }
 
 extern short D_001517D0[];
@@ -481,43 +591,77 @@ int Music_ContinueStreamIfReady(void) {
 extern void func_002178C0(int, long);
 
 /* music_PreseekTrack(int, int, int) */
-void music_PreseekTrack(int arg0, int arg1, int arg2) {
-    char *s = (char *)D_001517D0;
-    char *base;
-    int *tbl;
-    long h;
+typedef struct {
+    u32 handle;            /* 0x00: 0 none, 0xFFFFFFFF starting */
+    s16 track;             /* 0x04 */
+    s16 volume;            /* 0x06 */
+    s16 flags;             /* 0x08 */
+    s16 state;             /* 0x0A */
+    s16 fade_flags;        /* 0x0C */
+    s16 unkE;              /* 0x0E */
+    s16 crossfade_enabled; /* 0x10 */
+    u8 pad_12[0x2];
+    s32 poll_interval;     /* 0x14 */
+    s32 remaining_time;    /* 0x18 */
+} PreseekChannel;
 
-    if (*(int *)(s + 0x34) != 0) {
-        return;
+typedef struct {
+    u8 pad_00[0x34];
+    PreseekChannel primary; /* 0x34 */
+} PreseekStreamState;
+
+void music_PreseekTrack(int arg0, int arg1, int arg2) {
+    PreseekStreamState *music_stream_state = (PreseekStreamState *)D_001517D0;
+    u8 *disc_table_base;
+    s32 track_location_table_byte_offset;
+    s32 *entry;
+    long stream_location;
+
+    if (music_stream_state->primary.handle == 0) {
+        disc_table_base = (u8 *)D_00137C80;
+        track_location_table_byte_offset = 0x2AA8;
+        entry = (s32 *)(disc_table_base + track_location_table_byte_offset) + arg0;
+        if (*entry != 0) {
+            music_stream_state->primary.state = 1;
+            music_stream_state->primary.track = arg0;
+            music_stream_state->primary.poll_interval = 10;
+            music_stream_state->primary.remaining_time = 0xBB80;
+            music_stream_state->primary.handle = 0xFFFFFFFF;
+            music_stream_state->primary.flags = arg1;
+            music_stream_state->primary.volume = arg2;
+            music_stream_state->primary.crossfade_enabled = 0;
+            stream_location = *entry;
+            func_0012ED48(stream_location, 0, 0, 0, arg2, 0, 1, 0, 0x21,
+                          music_primary_preseek_callback,
+                          (long)(unsigned int)&music_stream_state->primary.handle);
+        }
     }
-    base = (char *)D_00137C80;
-    tbl = (int *)(base + 0x2AA8);
-    if (tbl[arg0] == 0) {
-        return;
-    }
-    *(short *)(s + 0x3E) = 1;
-    h = tbl[arg0];
-    *(short *)(s + 0x38) = arg0;
-    *(int *)(s + 0x48) = 10;
-    *(int *)(s + 0x4C) = 0xBB80;
-    *(unsigned int *)(s + 0x34) = 0xFFFFFFFF;
-    *(short *)(s + 0x3C) = arg1;
-    *(short *)(s + 0x3A) = arg2;
-    *(short *)(s + 0x44) = 0;
-    func_0012ED48(h, 0, 0, 0, arg2, 0, 1, 0, 0x21,
-                  music_primary_preseek_callback, (long)(unsigned int)(s + 0x34));
 }
 
 extern void func_002179C8(int, long);
 
 /* music_StartTrack(int, int, int) */
+typedef struct {
+    u8 pad_00[0x34];
+    u32 handle;                /* 0x34: 0 none, 0xFFFFFFFF starting */
+    s16 track;                 /* 0x38 */
+    s16 volume;                /* 0x3A */
+    s16 flags;                 /* 0x3C */
+    s16 state;                 /* 0x3E: 1 on start */
+    u8 pad_40[0x4];
+    s16 crossfade_enabled;     /* 0x44 */
+    u8 pad_46[0x2];
+    s32 poll_interval;         /* 0x48 */
+    s32 remaining_time;        /* 0x4C */
+} MusicPrimaryStream;
+
 void music_StartTrack(int arg0, int arg1, int arg2) {
-    char *s = (char *)D_001517D0;
+    MusicPrimaryStream *s = (MusicPrimaryStream *)D_001517D0;
     char *base;
     int *tbl;
     long h;
 
-    if (*(int *)(s + 0x34) != 0) {
+    if (s->handle != 0) {
         return;
     }
     base = (char *)D_00137C80;
@@ -525,17 +669,17 @@ void music_StartTrack(int arg0, int arg1, int arg2) {
     if (tbl[arg0] == 0) {
         return;
     }
-    *(short *)(s + 0x3E) = 1;
+    s->state = 1;
     h = tbl[arg0];
-    *(short *)(s + 0x38) = arg0;
-    *(int *)(s + 0x48) = 10;
-    *(int *)(s + 0x4C) = 0xBB80;
-    *(unsigned int *)(s + 0x34) = 0xFFFFFFFF;
-    *(short *)(s + 0x3C) = arg1;
-    *(short *)(s + 0x3A) = arg2;
-    *(short *)(s + 0x44) = 0;
+    s->track = arg0;
+    s->poll_interval = 10;
+    s->remaining_time = 0xBB80;
+    s->handle = 0xFFFFFFFF;
+    s->flags = arg1;
+    s->volume = arg2;
+    s->crossfade_enabled = 0;
     func_0012ED48(h, 0, 0, 0, arg2, 0, 1, 0, 0x20,
-                  music_primary_start_callback, (long)(unsigned int)(s + 0x34));
+                  music_primary_start_callback, (long)(unsigned int)&s->handle);
 }
 
 extern void func_00217970(int, long);
@@ -591,27 +735,53 @@ extern void func_00217920(int, long);
 
 /* The success path ends in the call, so `return 1` does not break the
    block's trailing call run (the scheduler then keeps retail's order). */
+typedef struct {
+    u8 pad_0[0x2AA8];
+    s32 music_tracks[1];               /* 0x2AA8, by track number */
+} MusicTrackTable;
+
+/* One channel record (0x1C bytes), minimal layout for the transition slot. */
+typedef struct {
+    u32 handle;                        /* 0x00 */
+    s16 track;                         /* 0x04 */
+    s16 volume;                        /* 0x06 */
+    s16 flags;                         /* 0x08 */
+    s16 state;                         /* 0x0A */
+    s16 fade_flags;                    /* 0x0C */
+    s16 unkE;                          /* 0x0E */
+    s16 crossfade_enabled;             /* 0x10 */
+    u8 pad_12[0x2];
+    s32 poll_interval;                 /* 0x14 */
+    s32 remaining_time;                /* 0x18 */
+} MusicTransitionSlot;
+
+/* The stream state up to the transition record at 0x6C. */
+typedef struct {
+    u8 pad_00[0x6C];
+    MusicTransitionSlot transition;    /* 0x6C */
+} MusicTransitionBlock;
+
 int music_Transition(int arg0, int arg1, int arg2, int arg3) {
-    char *s = (char *)D_001517D0;
-    char *base;
-    int *tbl;
+    MusicTransitionBlock *s = (MusicTransitionBlock *)D_001517D0;
+    MusicTrackTable *base;
+    s32 *tbl;
     long h;
 
-    if (*(int *)(s + 0x6C) == 0) {
-        base = (char *)D_00137C80;
-        tbl = (int *)(base + 0x2AA8);
+    if (s->transition.handle == 0) {
+        base = (MusicTrackTable *)D_00137C80;
+        tbl = base->music_tracks;
         if (tbl[arg1] != 0) {
-            *(short *)(s + 0x74) = arg2;
+            s->transition.flags = arg2;
             h = tbl[arg1];
-            *(int *)(s + 0x80) = 10;
-            *(int *)(s + 0x84) = 0xBB80;
-            *(unsigned int *)(s + 0x6C) = 0xFFFFFFFF;
-            *(short *)(s + 0x70) = arg0;
-            *(short *)(s + 0x76) = 1;
-            *(short *)(s + 0x7C) = 1;
-            *(short *)(s + 0x72) = arg3;
+            s->transition.poll_interval = 10;
+            s->transition.remaining_time = 0xBB80;
+            s->transition.handle = 0xFFFFFFFF;
+            s->transition.track = arg0;
+            s->transition.state = 1;
+            s->transition.crossfade_enabled = 1;
+            s->transition.volume = arg3;
             func_0012ED48(h, 0, 0, 0, arg3, 0, 1, 0, 0x20,
-                          music_transition_start_callback, (long)(unsigned int)(s + 0x6C));
+                          music_transition_start_callback, (long)(unsigned int)&s->transition.handle);
         } else {
             return 0;
         }
@@ -656,22 +826,49 @@ extern void func_0012EE70(int);
    exit test in front of the loop then gets its own pseudo, and the loop
    keeps retail's copy in $s1. The stores are in the order that gives
    retail's schedule. */
+typedef struct {
+    u32 handle;                    /* 0x00: 0 none, 0xFFFFFFFF starting */
+    s16 track;                     /* 0x04 */
+    s16 volume;                    /* 0x06 */
+    s16 flags;                     /* 0x08 */
+    s16 state;                     /* 0x0A */
+    s16 fade_flags;                /* 0x0C */
+    s16 unkE;                      /* 0x0E */
+    s16 crossfade_enabled;         /* 0x10 */
+    u8 pad12[2];
+    s32 poll_interval;             /* 0x14 */
+    s32 remaining_time;            /* 0x18 */
+} MusicStreamChanRec;
+
+/* 0x1C */
+
+typedef struct {
+    u8 pad00[0x20];
+    s16 crossfade_state;           /* 0x20 */
+    s8 requested_track;            /* 0x22: -1 = none */
+    s8 requested_transition_track; /* 0x23 */
+    u8 pad24[0x10];
+    MusicStreamChanRec primary;    /* 0x34 */
+    MusicStreamChanRec secondary;  /* 0x50 */
+    MusicStreamChanRec transition; /* 0x6C */
+} MusicStreamBlock;
+
 void music_Stop(void) {
     {
-        char *d;
-        while (d = (char *)D_001517D0, *(unsigned int *)(d + 0x34) == 0xFFFFFFFF) {
+        MusicStreamBlock *d;
+        while (d = (MusicStreamBlock *)D_001517D0, d->primary.handle == 0xFFFFFFFF) {
             func_0012DDC0();
         }
     }
     {
-        char *d;
-        while (d = (char *)D_001517D0, *(unsigned int *)(d + 0x6C) == 0xFFFFFFFF) {
+        MusicStreamBlock *d;
+        while (d = (MusicStreamBlock *)D_001517D0, d->transition.handle == 0xFFFFFFFF) {
             func_0012DDC0();
         }
     }
     {
-        char *d;
-        while (d = (char *)D_001517D0, *(unsigned int *)(d + 0x50) == 0xFFFFFFFF) {
+        MusicStreamBlock *d;
+        while (d = (MusicStreamBlock *)D_001517D0, d->secondary.handle == 0xFFFFFFFF) {
             func_0012DDC0();
         }
     }
@@ -680,22 +877,22 @@ void music_Stop(void) {
     }
     func_0012EE70(1);
     {
-        char *s = (char *)D_001517D0;
-        *(short *)(s + 0x3E) = 0;
-        *(short *)(s + 0x3C) = 0;
-        *(int *)(s + 0x34) = 0;
-        if (*(signed char *)(s + 0x22) != -1) {
-            *(short *)(s + 0x38) = *(signed char *)(s + 0x22);
+        MusicStreamBlock *s = (MusicStreamBlock *)D_001517D0;
+        s->primary.state = 0;
+        s->primary.flags = 0;
+        s->primary.handle = 0;
+        if (s->requested_track != -1) {
+            s->primary.track = s->requested_track;
         }
-        *(short *)(s + 0x5A) = 0;
-        *(short *)(s + 0x58) = 0;
-        *(int *)(s + 0x50) = 0;
-        *(short *)(s + 0x76) = 0;
-        *(short *)(s + 0x74) = 0;
-        *(int *)(s + 0x6C) = 0;
-        *(short *)(s + 0x20) = 0;
-        *(char *)(s + 0x22) = -1;
-        *(char *)(s + 0x23) = -1;
+        s->secondary.state = 0;
+        s->secondary.flags = 0;
+        s->secondary.handle = 0;
+        s->transition.state = 0;
+        s->transition.flags = 0;
+        s->transition.handle = 0;
+        s->crossfade_state = 0;
+        s->requested_track = -1;
+        s->requested_transition_track = -1;
     }
 }
 

@@ -397,20 +397,40 @@ extern void func_001FFD30(void *, int);
    is one, and clears +0x68. The copies are in retail's store order, and
    the +0x10 copy is unconditional (retail stores it in the beqz's delay
    slot), which also makes the scheduler load +0x30 first. */
-void apply_pending_animation(void *arg0) {
-    char *p = (char *)arg0;
+typedef struct AnimRec {
+    u8 pad_00[0x4];
+    s32 a;                   /* 0x04 */
+    s32 d;                   /* 0x08 */
+    s32 e;                   /* 0x0C */
+    void (*fn)(void *);      /* 0x10: handler, called with the record if nonzero */
+    s32 c;                   /* 0x14 */
+    s32 b;                   /* 0x18 */
+    u8 pad_1C[0x4];
+    s32 next_id;             /* 0x20: definition id for load_animation_definition */
+    s32 next_a;              /* 0x24 */
+    s32 next_d;              /* 0x28 */
+    s32 next_e;              /* 0x2C */
+    void (*next_fn)(void *); /* 0x30 */
+    s32 next_c;              /* 0x34 */
+    s32 next_b;              /* 0x38 */
+    u8 pad_3C[0x2C];
+    s32 pending;             /* 0x68: cleared once the pending values are applied */
+} AnimRec;
 
-    load_animation_definition(arg0, *(int *)(p + 0x20));
-    *(int *)(p + 4) = *(int *)(p + 0x24);
-    *(int *)(p + 0x14) = *(int *)(p + 0x34);
-    *(int *)(p + 0x18) = *(int *)(p + 0x38);
-    *(int *)(p + 0xC) = *(int *)(p + 0x2C);
-    *(int *)(p + 8) = *(int *)(p + 0x28);
-    *(int *)(p + 0x10) = *(int *)(p + 0x30);
-    if (*(int *)(p + 0x10) != 0) {
-        (*(void (**)(void *))(p + 0x10))(arg0);
+void apply_pending_animation(void *arg0) {
+    struct AnimRec *anim = (struct AnimRec *)arg0;
+
+    load_animation_definition(arg0, anim->next_id);
+    anim->a = anim->next_a;
+    anim->c = anim->next_c;
+    anim->b = anim->next_b;
+    anim->e = anim->next_e;
+    anim->d = anim->next_d;
+    anim->fn = anim->next_fn;
+    if (anim->fn != 0) {
+        anim->fn(arg0);
     }
-    *(int *)(p + 0x68) = 0;
+    anim->pending = 0;
 }
 
 /* The 13 0x90-byte records at D_00199C60, looked up by their +0x64. */

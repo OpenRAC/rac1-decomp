@@ -504,41 +504,66 @@ typedef struct { char pad[0x44]; char *items[14]; } ObjList;
 /* Pause teardown: calls each object's +0xC handler, then refreshes the
    14 D_001D6120 handles. Retail's register copies come from gcse, so the
    base is re-read inside each block (and inside the loop body). */
-void close_menu_system(void) {
-    char *g = menu_system;
+struct PauseMenuScreen {
+    s32 (*update)(struct PauseMenuScreen *);       /* 0x00 */
+    u8 pad_04[0x4];
+    void (*enter)(struct PauseMenuScreen *, s32);  /* 0x08 */
+    void (*leave)(struct PauseMenuScreen *, s32);  /* 0x0C */
+};
 
-    if (*(int *)(g + 0x110) < 10) {
+struct PauseMenuPage {
+    s32 moby_anims[14];                /* 0x00 */
+    struct PauseMenuPage *back;        /* 0x38 */
+    s32 state;                         /* 0x3C */
+    struct PauseMenuScreen *focus;     /* 0x40 */
+    struct PauseMenuScreen *screens[14]; /* 0x44 */
+};
+
+struct PauseMenuSystem {
+    s32 state;                         /* 0x000: set to 20 on close */
+    struct PauseMenuPage *current;     /* 0x004: active page, 0 after close */
+    u8 pad_008[0xC];
+    s32 timer;                         /* 0x014: set to 2 on close */
+    s32 saved_texture_start;           /* 0x018 */
+    u8 pad_01C[0xF4];
+    s32 update_count;                  /* 0x110 */
+};
+
+void close_menu_system(void) {
+    struct PauseMenuSystem *g = (struct PauseMenuSystem *)menu_system;
+
+    if (g->update_count < 10) {
         return;
     }
-    if (*(int *)(g + 4) != 0) {
+    if (g->current != 0) {
         int i;
         for (i = 0; i < 14; i++) {
-            char *g2 = menu_system;
-            char *obj = ((ObjList *)*(char **)(g2 + 4))->items[i];
-            if (obj != 0) {
-                void (*fn)(void *, int) = *(void (**)(void *, int))(obj + 0xC);
+            struct PauseMenuSystem *g2 = (struct PauseMenuSystem *)menu_system;
+            struct PauseMenuScreen *screen = g2->current->screens[i];
+            if (screen != 0) {
+                void (*fn)(struct PauseMenuScreen *, s32) = screen->leave;
                 if (fn != 0) {
-                    fn(obj, 0);
+                    fn(screen, 0);
                 }
             }
         }
         {
-            char *g5 = menu_system;
-            *(int *)(g5 + 4) = 0;
+            struct PauseMenuSystem *g5 = (struct PauseMenuSystem *)menu_system;
+            g5->current = 0;
         }
     }
     {
-        char *g3 = menu_system;
+        struct PauseMenuSystem *g3 = (struct PauseMenuSystem *)menu_system;
         int j;
-        D_0015EF78 = *(int *)(g3 + 0x18);
+        D_0015EF78 = g3->saved_texture_start;
         for (j = 0; j < 14; j++) {
             panel_slots[j] = func_002267C0(panel_slots[j]);
         }
     }
     {
-        char *g4 = menu_system;
-        *(int *)g4 = 0x14;
-        *(int *)(g4 + 0x14) = 2;
+        struct PauseMenuSystem *g4 = (struct PauseMenuSystem *)menu_system;
+        g4->state = 0x14;
+        g4->timer = 2;
     }
 }
 
@@ -2879,71 +2904,95 @@ extern LevelG D_001A01F0_lv __asm__("D_001A01F0");
 extern unsigned char D_0013DE48[];
 
 /* Pause slot-select tick. Adapted from Lombyte (MIT) for PAL: src/ui/menus/fun_0021c4c0.c, FUN_0021c4c0. */
-int update_menu_mission_list(struct Menu *m) {
+/* The menu page (MenuPage): back at 0x38, focus at 0x40. */
+struct MenuPage_21D4C0 {
+    s32 moby_anims[14];                  /* 0x00 */
+    struct MenuPage_21D4C0 *back;        /* 0x38: page for the back button; 0 = none */
+    s32 state;                           /* 0x3C */
+    struct Menu *focus;                  /* 0x40: screen with input focus */
+};
+
+/* The menu system at D_001D5F70 (fields used here only). */
+struct MenuSystem_21D4C0 {
+    s32 state;                           /* 0x000 */
+    struct MenuPage_21D4C0 *current;     /* 0x004: active page */
+    struct MenuPage_21D4C0 *next;        /* 0x008: requested page */
+    u8 pad_00C[0x118];
+    s32 close_locked;                    /* 0x124: nonzero blocks back closing the menu */
+};
+
+/* Map selection at D_001A01F0 (fields used here only). */
+struct MapSelection_21D4C0 {
+    u8 pad_0[0x224];
+    s32 level;                           /* 0x224: selected level 0..19 */
+};
+
+int update_menu_mission_list(struct Menu *menu_screen) {
     int old;
     int i;
-    int prev;
+    int previous_mission_choice_index;
     unsigned int pad;
-    int *p;
+    int *mission_choice_ptr;
     int *ch;
 
     {
-        struct Menu *owner = D_001D5F70_g.cur->owner;
-        old = D_001A01F0_lv.level;
-        if (owner != m) {
+        struct Menu *owner = ((struct MenuSystem_21D4C0 *)&D_001D5F70_g)->current->focus;
+        old = ((struct MapSelection_21D4C0 *)&D_001A01F0_lv)->level;
+        if (owner != menu_screen) {
             if (old < 20) {
-                m->choice[old] = -1;
+                menu_screen->choice[old] = -1;
             }
             return 0;
         }
     }
-    if ((D_0013CA40_g.pressed & 0xD00) && D_001D5F70_g.unk124 == 0) {
+    if ((((struct PadState *)&D_0013CA40_g)->pressed_unmasked & (PAD_SELECT | PAD_R3 | PAD_START))
+        && ((struct MenuSystem_21D4C0 *)&D_001D5F70_g)->close_locked == 0) {
         return 1;
     }
-    if (D_0013CA40_g.pressed & 8) {
-        for (i = D_001A01F0_lv.level + 1; i < 20; i++) {
+    if (((struct PadState *)&D_0013CA40_g)->pressed_unmasked & PAD_R1) {
+        for (i = ((struct MapSelection_21D4C0 *)&D_001A01F0_lv)->level + 1; i < 20; i++) {
             if (D_0013DE48[i] != 0 || D_0015EE84 == i) {
-                D_001A01F0_lv.level = i;
+                ((struct MapSelection_21D4C0 *)&D_001A01F0_lv)->level = i;
                 break;
             }
         }
     }
-    if (D_0013CA40_g.pressed & 4) {
-        for (i = D_001A01F0_lv.level - 1; i >= 0; i--) {
+    if (((struct PadState *)&D_0013CA40_g)->pressed_unmasked & PAD_L1) {
+        for (i = ((struct MapSelection_21D4C0 *)&D_001A01F0_lv)->level - 1; i >= 0; i--) {
             if (D_0013DE48[i] != 0 || D_0015EE84 == i) {
-                D_001A01F0_lv.level = i;
+                ((struct MapSelection_21D4C0 *)&D_001A01F0_lv)->level = i;
                 break;
             }
         }
     }
-    if (D_001A01F0_lv.level != old) {
-        Moby_PlaySound(1, 0x11, m->unk14);
+    if (((struct MapSelection_21D4C0 *)&D_001A01F0_lv)->level != old) {
+        Moby_PlaySound(1, 0x11, menu_screen->unk14);
         func_0020C7A0_i();
     }
-    if (m->count != 0) {
-        pad = D_0013CA40_g.pressed;
-        ch = m->choice;
-        prev = m->choice[D_001A01F0_lv.level];
-        if (pad & 0x1000) {
-            m->choice[D_001A01F0_lv.level] = (prev + m->count - 1) % m->count;
+    if (menu_screen->count != 0) {
+        pad = ((struct PadState *)&D_0013CA40_g)->pressed_unmasked;
+        ch = menu_screen->choice;
+        previous_mission_choice_index = menu_screen->choice[((struct MapSelection_21D4C0 *)&D_001A01F0_lv)->level];
+        if (pad & PAD_UP) {
+            menu_screen->choice[((struct MapSelection_21D4C0 *)&D_001A01F0_lv)->level] = (previous_mission_choice_index + menu_screen->count - 1) % menu_screen->count;
         }
-        if (pad & 0x4000) {
-            m->choice[D_001A01F0_lv.level] = (m->choice[D_001A01F0_lv.level] + 1) % m->count;
+        if (pad & PAD_DOWN) {
+            menu_screen->choice[((struct MapSelection_21D4C0 *)&D_001A01F0_lv)->level] = (menu_screen->choice[((struct MapSelection_21D4C0 *)&D_001A01F0_lv)->level] + 1) % menu_screen->count;
         }
-        if (m->choice[D_001A01F0_lv.level] != prev) {
-            Moby_PlaySound(1, 0x11, m->unk14);
+        if (menu_screen->choice[((struct MapSelection_21D4C0 *)&D_001A01F0_lv)->level] != previous_mission_choice_index) {
+            Moby_PlaySound(1, 0x11, menu_screen->unk14);
         }
-        if ((pad & 0x5000) || D_001A01F0_lv.level != old) {
-            m->count = collect_mission_ids((void *)0x70000000, (void *)0, (void *)0x70000100, 1);
-            p = &ch[D_001A01F0_lv.level];
-            D_001CFBF4 = ((unsigned int *)0x70000000)[*p];
-            D_001CFAD8 = ((unsigned int *)0x70000100)[*p];
+        if ((pad & (PAD_UP | PAD_DOWN)) || ((struct MapSelection_21D4C0 *)&D_001A01F0_lv)->level != old) {
+            menu_screen->count = collect_mission_ids((void *)(7 << 28), (void *)0, (void *)((7 << 28) + 0x100), 1);
+            mission_choice_ptr = &ch[((struct MapSelection_21D4C0 *)&D_001A01F0_lv)->level];
+            D_001CFBF4 = ((unsigned int *)(7 << 28))[*mission_choice_ptr];
+            D_001CFAD8 = ((unsigned int *)((7 << 28) + 0x100))[*mission_choice_ptr];
         }
     }
-    if (D_0013CA40_g.pressed & 0x10) {
-        if (D_001D5F70_g.cur->unk38 != 0) {
-            D_001D5F70_g.unk8 = D_001D5F70_g.cur->unk38;
-        } else if (D_001D5F70_g.unk124 == 0) {
+    if (((struct PadState *)&D_0013CA40_g)->pressed_unmasked & PAD_TRIANGLE) {
+        if (((struct MenuSystem_21D4C0 *)&D_001D5F70_g)->current->back != 0) {
+            ((struct MenuSystem_21D4C0 *)&D_001D5F70_g)->next = ((struct MenuSystem_21D4C0 *)&D_001D5F70_g)->current->back;
+        } else if (((struct MenuSystem_21D4C0 *)&D_001D5F70_g)->close_locked == 0) {
             return -1;
         }
     }
@@ -3910,48 +3959,82 @@ extern void func_0021F200(char *);
    when the entry's class (D_001864D0 record +0x3A) is -1, spawn it in
    front of the camera focus when there is none yet, or respawn it with
    the old one's position and orientation when the class changed. */
+typedef struct ItemPreviewScreen {
+    u8 pad_00[0x44];
+    struct Moby *moby;                 /* 0x44: preview moby (create_menu_preview_moby) */
+} ItemPreviewScreen;
+
+typedef struct PreviewGridCell {
+    u16 icon;                          /* 0x0 */
+    s16 frame;                         /* 0x2 */
+    s16 kind;                          /* 0x4 */
+    s16 id;                            /* 0x6: item id */
+    s16 stream_entry;                  /* 0x8 */
+} PreviewGridCell;
+
+typedef struct PreviewGridScreen {
+    u8 pad_00[0x3C];
+    s32 selected_cell;                 /* 0x3C */
+    u8 pad_40[0x8];
+    PreviewGridCell *cells;            /* 0x48: rows * cols */
+} PreviewGridScreen;
+
+typedef struct ItemPreviewInfo {
+    u8 pad_00[0x3A];
+    s16 preview_class;                 /* 0x3A: preview moby class, -1 for none */
+    u8 pad_3C[0x10];
+} ItemPreviewInfo;
+
+/* 0x4C bytes per item */
+
+typedef struct ItemPreviewCamera {
+    u8 pad_000[0x140];
+    Vec4f pos;                         /* 0x140: eye position */
+} ItemPreviewCamera;
+
 int update_item_preview_moby(char *arg0) {
-    char *q = *(char **)(D_001D5F74 + 0x40);
-    int item = *(short *)(*(int *)(q + 0x3C) * 10 + *(char **)(q + 0x48) + 6);
-    short cur;
-    char *rec;
+    ItemPreviewScreen *menu = (ItemPreviewScreen *)arg0;
+    PreviewGridScreen *grid = *(PreviewGridScreen **)(D_001D5F74 + 0x40);
+    int item = grid->cells[grid->selected_cell].id;
+    short current_preview_class;
+    ItemPreviewInfo *rec;
     short want;
 
-    cur = *(char **)(arg0 + 0x44) != 0 ? *(short *)(*(char **)(arg0 + 0x44) + 0xA6) : -1;
-    rec = D_001864D0 + item * 0x4C;
-    want = *(short *)(rec + 0x3A);
-    if (want != -1 && cur == -1) {
-        char *o = func_00226720_a(want);
+    current_preview_class = menu->moby != 0 ? menu->moby->oclass : -1;
+    rec = (ItemPreviewInfo *)D_001864D0 + item;
+    want = rec->preview_class;
+    if (want != -1 && current_preview_class == -1) {
+        struct Moby *spawned_moby = func_00226720_a(want);
 
-        if (o != 0) {
-            char *t = gCamera;
+        if (spawned_moby != 0) {
+            ItemPreviewCamera *preview_camera_base = (ItemPreviewCamera *)gCamera;
 
-            *(char **)(arg0 + 0x44) = o;
-            *(short *)(o + 0x34) = 0;
-            *(float *)(o + 0x10) = *(float *)(t + 0x140) + 6.0f;
-            *(float *)(o + 0x14) = *(float *)(t + 0x144);
-            *(float *)(o + 0x18) = *(float *)(t + 0x148) - 0.3f;
-            *(float *)(o + 0x48) = 3.1415927f;
-            *(void **)(o + 0x74) = (void *)rotate_item_preview_moby;
-            **(void ***)(o + 0x78) = arg0;
+            menu->moby = spawned_moby;
+            spawned_moby->flags = 0;
+            spawned_moby->pos.x = preview_camera_base->pos.x + 6.0f;
+            spawned_moby->pos.y = preview_camera_base->pos.y;
+            spawned_moby->pos.z = preview_camera_base->pos.z - 0.3f;
+            spawned_moby->rot.z = 3.1415927f;
+            spawned_moby->update = (void (*)(struct Moby *))rotate_item_preview_moby;
+            *(void **)spawned_moby->pvars = arg0;
         }
     } else if (want == -1) {
-        *(int *)(arg0 + 0x44) = func_002267C0(*(int *)(arg0 + 0x44));
-    } else if (cur != want) {
-        char *n = func_00226720_a(want);
+        menu->moby = (struct Moby *)func_002267C0((int)menu->moby);
+    } else if (current_preview_class != want) {
+        struct Moby *replacement_moby = func_00226720_a(want);
 
-        if (n != 0) {
-            char *old;
+        if (replacement_moby != 0) {
+            struct Moby *old;
 
-            *(short *)(n + 0x34) = 0;
-            old = *(char **)(arg0 + 0x44);
-            qcopy(n + 0x10, old + 0x10);
-            qcopy(n + 0x40, old + 0x40);
-            *(int *)(n + 0x74) = *(int *)(old + 0x74);
-            **(void ***)(n + 0x78) = arg0;
+            replacement_moby->flags = 0;
+            old = menu->moby;
+            qcopy(&replacement_moby->pos, &old->pos);
+            qcopy(&replacement_moby->rot, &old->rot);
+            replacement_moby->update = old->update;
+            *(void **)replacement_moby->pvars = arg0;
         }
-        func_002267C0(*(int *)(arg0 + 0x44));
-        *(char **)(arg0 + 0x44) = n;
+        func_002267C0((int)menu->moby);
+        menu->moby = replacement_moby;
     }
     return 0;
 }
@@ -4639,20 +4722,30 @@ extern void *func_00226720_a(int) __asm__("func_00226720");
 /* Attach marker object 0x46E to arg0, parked just above the camera
    focus in D_00187040's 0x140 block, and point it back at its owner
    through the node at +0x78. Always returns 0. */
-int create_rotating_preview_moby(void *arg0) {
-    char *o = (char *)func_00226720_a(0x46E);
-    char *t;
+struct RotatingPreviewCamera {
+    u8 pad_000[0x140];
+    Vec4 pos;                                /* 0x140 eye position */
+};
 
-    if (o != 0) {
-        t = gCamera;
-        *(char **)((char *)arg0 + 0x44) = o;
-        *(short *)(o + 0x34) = 0;
-        *(float *)(o + 0x10) = *(float *)(t + 0x140) + 8.0f;
-        *(float *)(o + 0x14) = *(float *)(t + 0x144) + 0.5f;
-        *(float *)(o + 0x18) = *(float *)(t + 0x148) - 0.1f;
-        *(float *)(o + 0x44) = -1.9f;
-        *(void **)(o + 0x74) = (void *)rotate_preview_moby_x;
-        **(void ***)(o + 0x78) = arg0;
+struct RotatingPreviewOwner {
+    u8 pad_00[0x44];
+    struct Moby *preview_moby;               /* 0x44 */
+};
+
+int create_rotating_preview_moby(void *owner) {
+    struct Moby *moby = (struct Moby *)func_00226720_a(0x46E);
+    struct RotatingPreviewCamera *preview_camera;
+
+    if (moby != 0) {
+        preview_camera = (struct RotatingPreviewCamera *)gCamera;
+        ((struct RotatingPreviewOwner *)owner)->preview_moby = moby;
+        moby->flags = 0;
+        moby->pos.x = preview_camera->pos.f[0] + 8.0f;
+        moby->pos.y = preview_camera->pos.f[1] + 0.5f;
+        moby->pos.z = preview_camera->pos.f[2] - 0.1f;
+        moby->rot.y = -1.9f;
+        moby->update = (void (*)(struct Moby *))rotate_preview_moby_x;
+        *(void **)moby->pvars = owner;
     }
     return 0;
 }
@@ -5514,13 +5607,27 @@ int enter_menu_stream_image(void *arg0) {
 
 extern int func_00226F68(int);
 
+typedef struct MenuStreamData_220DA0 {
+    u8 pad_00[0x14];           /* 0x00 (MenuScreen 0x30): entries, flags, texture size, language base */
+    s32 state;                 /* 0x14 (MenuScreen 0x44): see the stream screen flags */
+    s32 buffer[2];             /* 0x18 (MenuScreen 0x48): stream buffers */
+    s32 loaded_entry[2];       /* 0x20 (MenuScreen 0x50): entry held by each buffer, -1 none */
+} MenuStreamData_220DA0;
+
+typedef struct StreamScreen_220DA0 {
+    u8 pad_00[0x30];
+    struct {
+        MenuStreamData_220DA0 stream;
+    } data;                    /* 0x30 */
+} StreamScreen_220DA0;
+
 int leave_menu_stream_image(void *arg0) {
-    char *s = (char *)arg0;
-    *(int *)(s + 0x48) = release_menu_stream_buffer(*(int *)(s + 0x48));
-    *(int *)(s + 0x4C) = release_menu_stream_buffer(*(int *)(s + 0x4C));
-    *(int *)(s + 0x50) = -1;
-    *(int *)(s + 0x54) = -1;
-    *(int *)(s + 0x44) = -1;
+    StreamScreen_220DA0 *menu = (StreamScreen_220DA0 *)arg0;
+    menu->data.stream.buffer[0] = release_menu_stream_buffer(menu->data.stream.buffer[0]);
+    menu->data.stream.buffer[1] = release_menu_stream_buffer(menu->data.stream.buffer[1]);
+    menu->data.stream.loaded_entry[0] = -1;
+    menu->data.stream.loaded_entry[1] = -1;
+    menu->data.stream.state = -1;
     return 0;
 }
 
@@ -6179,51 +6286,74 @@ extern void func_00200CA0(long, int, int, int, int, int, int, int, int, int);
    others inset them by D_001DE2E8[state] and scroll the bottom one.
    Each branch reaches the two globals through its own block-scoped
    pointers, which gives retail's registers. */
-int draw_map_screen_layers(void) {
-    char *g = D_001A01F0_c;
-    int s = *(int *)(g + 0x228);
-    int k, d, u, t;
+/* The map-selection block at D_001A01F0: only the fields this function reads. */
+typedef struct LevelMapSelection {
+    u8 pad000[0x228];
+    s32 loaded;                /* 0x228: index of the loaded map, -1 none */
+    u8 pad22C[0x2C];
+    long tex0;                 /* 0x258: TEX0 of the image at hdr +0x10, passed as a 64-bit long */
+    long tex1;                 /* 0x260: TEX0 of the image at hdr +0x14 */
+    long tex2;                 /* 0x268: TEX0 of the image at hdr +0x18 */
+} LevelMapSelection;
 
-    if (s < 0) {
+/* The full-screen AA buffer at D_00151880: only the render target size is read here. */
+typedef struct FsAaBuffer {
+    u8 pad000[0x160];
+    s16 target_width;          /* 0x160 */
+    s16 target_height;         /* 0x162 */
+} FsAaBuffer;
+
+int draw_map_screen_layers(void) {
+    LevelMapSelection *g = (LevelMapSelection *)D_001A01F0_c;
+    s32 loaded_map_index = g->loaded;
+    s32 size;
+    s32 screen_extent_reduction;
+    s32 map_adjusted_frame_count;
+    s32 ph;
+
+    if (loaded_map_index < 0) {
         return 0;
     }
-    if (s == 6 || s == 13 || s == 17) {
-        char *g2;
-        char *fb;
+    if (loaded_map_index == 6 || loaded_map_index == 13 || loaded_map_index == 17) {
+        LevelMapSelection *g2;
+        FsAaBuffer *fb;
 
         func_00234C98_l(0x47, 0);
         func_00234C98_l(8, 5);
-        g2 = D_001A01F0_c;
-        fb = D_00151880_c;
-        append_power_of_two_textured_screen_sprite(*(long *)(g2 + 0x258), 0, 0, 7, 7,
-                      *(short *)(fb + 0x160) << 4, *(short *)(fb + 0x162) << 4, 0, 0, 0x80);
+        g2 = (LevelMapSelection *)D_001A01F0_c;
+        fb = (FsAaBuffer *)D_00151880_c;
+        append_power_of_two_textured_screen_sprite(g2->tex0, 0, 0, 7, 7,
+                      fb->target_width << 4, fb->target_height << 4, 0, 0, 0x80);
         func_00234C98_l(0x47, 0x360B);
         if (D_0015F538 % 60 < 40) {
-            append_power_of_two_textured_screen_sprite(*(long *)(g2 + 0x260), 0, 0, 7, 7,
-                          *(short *)(fb + 0x160) << 4, *(short *)(fb + 0x162) << 4, 0, 0, 0x80);
+            append_power_of_two_textured_screen_sprite(g2->tex1, 0, 0, 7, 7,
+                          fb->target_width << 4, fb->target_height << 4, 0, 0, 0x80);
         }
         if (D_0015F538 % 150 < 90) {
-            append_power_of_two_textured_screen_sprite(*(long *)(g2 + 0x268), 0, 0, 7, 7,
-                          *(short *)(fb + 0x160) << 4, *(short *)(fb + 0x162) << 4, 0, 0, 0x80);
+            append_power_of_two_textured_screen_sprite(g2->tex2, 0, 0, 7, 7,
+                          fb->target_width << 4, fb->target_height << 4, 0, 0, 0x80);
         }
     } else {
-        char *fb;
+        FsAaBuffer *fb;
 
-        t = D_0015F538 + s * 0x2AB;
-        k = D_001DE2E8[s];
-        d = k * 2;
-        u = t % 2048;
+        map_adjusted_frame_count = D_0015F538 + loaded_map_index * 0x2AB;
+        size = D_001DE2E8[loaded_map_index];
+        screen_extent_reduction = size * 2;
+        ph = map_adjusted_frame_count % 0x800;
         func_00234C98_l(0x47, 0);
         func_00234C98_l(8, 0);
-        fb = D_00151880_c;
-        append_power_of_two_textured_screen_sprite(*(long *)(g + 0x258), k, k, 7, 7,
-                      (*(short *)(fb + 0x160) << 4) - d, (*(short *)(fb + 0x162) << 4) - d, u, 0, 0x80);
+        fb = (FsAaBuffer *)D_00151880_c;
+        append_power_of_two_textured_screen_sprite(g->tex0, size, size, 7, 7,
+                      (fb->target_width << 4) - screen_extent_reduction,
+                      (fb->target_height << 4) - screen_extent_reduction, ph, 0, 0x80);
         func_00234C98_l(0x47, 0x360B);
         func_00234C98_l(8, 5);
-        append_power_of_two_textured_screen_sprite(*(long *)(g + 0x260), k, k, 7, 7,
-                      (*(short *)(fb + 0x160) << 4) - d, (*(short *)(fb + 0x162) << 4) - d, 0, 0, 0x80);
-        append_power_of_two_textured_screen_sprite(*(long *)(g + 0x268), k, k, 7, 7,
-                      (*(short *)(fb + 0x160) << 4) - d, (*(short *)(fb + 0x162) << 4) - d, 0, 0, 0x80);
+        append_power_of_two_textured_screen_sprite(g->tex1, size, size, 7, 7,
+                      (fb->target_width << 4) - screen_extent_reduction,
+                      (fb->target_height << 4) - screen_extent_reduction, 0, 0, 0x80);
+        append_power_of_two_textured_screen_sprite(g->tex2, size, size, 7, 7,
+                      (fb->target_width << 4) - screen_extent_reduction,
+                      (fb->target_height << 4) - screen_extent_reduction, 0, 0, 0x80);
     }
     return 4;
 }
