@@ -90,8 +90,8 @@ extern float func_00214D88(float *, float *, float, float, float, float);
 extern void func_001F9C08(void *, void *, void *, float);
 extern float D_0015EE6C MACRO_ADDR;
 
-// Updates a moby that swells its scale vector toward a target.
-void Moby367Update(unsigned char *moby) {
+// A bridge panel: when switched it slides 11 units along its own axis, easing in and out.
+void bridge_panel_update(unsigned char *moby) {
     char *data;
     data = *(char **)(moby + 0x78);
     switch (moby[0x20]) {
@@ -958,7 +958,7 @@ extern char D_0014171B[];
 
 #define FLD(base, off, T) (((struct { char _p[off]; T v; } *)(base))->v)
 /* Moby class 1035 update (level 06): 0 init, 1 update, 2 spawn an entry, 3 delete. */
-void func_L06_002F78A0(char *m) {
+void electric_barrier_update(char *m) {
     char *d = *(char **)(m + 0x78);
     unsigned char st = *(unsigned char *)(m + 0x20);
     struct {

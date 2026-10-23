@@ -1282,7 +1282,7 @@
 #define gadgebot_spawn_container_update                 func_L06_002D9970
 #define BackdropDraw                                    func_L06_002D9B08
 #define gadgebot_spawn_pad_update                       func_L06_002D9FF0
-#define Moby367Update                                   func_L06_002DB0E0
+#define bridge_panel_update                             func_L06_002DB0E0
 #define frog_update                                     func_L06_002E9AA8
 #define BuildMobyFrame                                  func_L06_002EADC8
 #define SpawnRandomSparkBursts                          func_L06_002EB5C8
@@ -1295,13 +1295,13 @@
 #define ConsiderTarget                                  func_L06_002F4818
 #define PickBestTarget                                  func_L06_002F4908
 #define toxic_gas_vent_update                           func_L06_002F4F08
-#define DoorRingUpdate                                  func_L06_002F6330
+#define iris_door_update                                func_L06_002F6330
 #define DrawbridgeUpdate                                func_L06_002F69D0
 #define LayoutDrawbridgePieces                          func_L06_002F71A8
 #define energy_sphere_holder_update                     func_L06_002F86B8
 #define LightBeamDraw                                   func_L06_002F8A58
 #define TriggerListsUpdate                              func_L06_002F8D60
-#define Moby1040Update                                  func_L06_002F8EE8
+#define energy_sphere_update                            func_L06_002F8EE8
 #define alien_snapper_update                            func_L06_002F91A8
 #define alien_queen_update                              func_L06_002FAE58
 #define AimCameraAtMoby                                 func_L06_002FC6D8
@@ -1311,8 +1311,8 @@
 #define LaunchTriggerUpdate                             func_L06_002FEE60
 #define DrawBeam                                        func_L06_00300AB0
 #define SetMobyGroupDormant                             func_L06_00301068
-#define CameraTakeoverTriggerUpdate                     func_L06_003010E0
-#define MobyBreakAndBurst                               func_L06_003016B8
+#define containment_tube_update                         func_L06_003010E0
+#define containment_tube_break                          func_L06_003016B8
 #define DrawBackdropMesh                                func_L06_00301848
 #define SpawnRandomDebris                               func_L06_003020B8
 #define fred_update                                     func_L06_003024C8
@@ -1322,7 +1322,7 @@
 #define ScatterLinkedPieces                             func_L06_00304FA8
 #define DeleteMobyGroup                                 func_L06_00305468
 #define red_button_update                               func_L06_003054D8
-#define Moby1123Update                                  func_L06_00305E38
+#define electric_fence_update                           func_L06_00305E38
 #define SparkEmitterUpdate                              func_L06_0030A0A8
 #define StartMobysInRange                               func_L06_0030A680
 #define BreakableObjectUpdate                           func_L06_0030B3E8
@@ -2586,7 +2586,7 @@
 #define Cutscene_UpdateCamera                           func_L06_002FCA98
 #define Circler_UpdateMovement                          func_L06_002FD0B8
 #define Moby_SetState3                                  func_L06_002FDA60
-#define Moby1068Update                                  func_L06_002FF000
+#define blarg_space_commando_update                     func_L06_002FF000
 #define BuildFanVectors                                 func_L06_00300530
 #define FanMobyUpdate                                   func_L06_003006F8
 #define FanSpawnBursts                                  func_L06_00300DA8
@@ -3611,9 +3611,9 @@
 #define TimerMobyL06_Draw                               func_L06_00303630
 #define Shuttle_SelectMode                              func_L06_00304418
 #define ScatterPiecesExplode                            func_L06_00304B88
-#define Moby1123_SpawnDebris                            func_L06_00305C58
-#define Moby1123_ProbeCorners                           func_L06_00306440
-#define Moby1123_Draw                                   func_L06_003065B0
+#define electric_fence_spawn_debris                     func_L06_00305C58
+#define electric_fence_probe_corners                    func_L06_00306440
+#define electric_fence_draw                             func_L06_003065B0
 #define SparksTriggerL06_Update                         func_L06_0030A788
 #define GunMoby_HandleHit                               func_L07_0031B620
 #define MovingMobyL07_Update                            func_L07_0031BDB8
@@ -3762,6 +3762,7 @@
 #define gCamSphereMaskBaseLvl                           D_L00_0015F060
 #define camera_collision_mask                           D_L00_0015F058
 #define gFadeLvl                                        D_L00_0015F4FC
+#define electric_barrier_update                         func_L06_002F78A0
 #define noop_callback_a                                 func_001E9770
 #define noop_callback_d                                 func_001E9788
 #define noop_callback_e                                 func_001E9790

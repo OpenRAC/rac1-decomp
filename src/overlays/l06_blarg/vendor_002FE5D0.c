@@ -439,8 +439,8 @@ extern float D_0015EE70 MACRO_ADDR;
 #define D_L06_001620E0_ff (*(float *)&D_L06_001620E0)
 #define frame_time_ff D_0015EE6C
 #define frame_time_sq_ff D_0015EE70
-/* Moby update for a camera-takeover trigger that scripts the camera, then returns control to the hero. */
-void CameraTakeoverTriggerUpdate(char *moby) {
+/* A glass containment tube holding a creature: when its energy sphere is hit, a short camera shot of the tube, then the tube breaks and control returns to the hero. */
+void containment_tube_update(char *moby) {
     int *data = *(int **)(moby + 0x78);
     float pos[4], rot[4], from[4], target[4], offset[4];
     int base;
@@ -591,7 +591,7 @@ extern float D_0015EE6C MACRO_ADDR;
 extern short D_L06_001620DC;
 
 /* Replaces the moby with a broken copy (type 0x43C); with burst set, also throws 50 pieces around it. */
-void MobyBreakAndBurst(char *m, int burst) {
+void containment_tube_break(char *m, int burst) {
     char *n;
     float w[4];
     float v[4];
@@ -2263,7 +2263,7 @@ extern short D_L06_00162248;
 extern short D_L06_00162244;
 
 // Spawns a burst of particles around an object, count from a level global.
-void Moby1123_SpawnDebris(int unused, void *obj) {
+void electric_fence_spawn_debris(int unused, void *obj) {
     float pos[4];
     V6 a;
     V6 b;
@@ -2327,8 +2327,8 @@ typedef struct {
     int f18;
 } Data_305E38;
 
-/* Level 06 update for moby class 1123: waits for its partner, animates four ribbons, then bursts into particles. */
-void Moby1123Update(char *moby)
+/* The electric fence across a ledge (class 1123): waits for its partner, animates four ribbons of arcs, then bursts into particles once switched off. */
+void electric_fence_update(char *moby)
 {
     Data_305E38 *d = *(Data_305E38 **)(moby + 0x78);
     union {
@@ -2379,7 +2379,7 @@ void Moby1123Update(char *moby)
         if (Sound_IsPlaying(moby, d->f18) == 0) {
             d->f18 = func_0022ED80_305E38(0, 4, moby);
         }
-        Moby1123_ProbeCorners(moby);
+        electric_fence_probe_corners(moby);
         v = *(float *)&D_L06_00162288 + *(float *)&D_L06_0016228C * D_0015EE6C;
         *(float *)&D_L06_00162288 = v;
         if (1.0f < v) {
@@ -2409,7 +2409,7 @@ void Moby1123Update(char *moby)
             }
         }
         if (FastVecDist(moby + 0x10, D_L06_00167640) < 48.0f) {
-            AddDrawCallback((int)Moby1123_Draw, moby);
+            AddDrawCallback((int)electric_fence_draw, moby);
         }
         if (d->f14 >= 0 && *(unsigned char *)(level_mobys_q + 0xBC + (d->f14 << 8)) != 0) {
             int h;
@@ -2467,7 +2467,7 @@ extern short D_L06_0016227C;
 extern short D_L06_00162280;
 
 // builds two rotated corner points of a box around the moby and runs a line test between them
-void Moby1123_ProbeCorners(char *m) {
+void electric_fence_probe_corners(char *m) {
     float P[4];
     float Q[4];
     float A[12];
@@ -2515,7 +2515,7 @@ extern short D_L06_00162284;
 extern short D_L06_00162288;
 
 /* draws four copies of a model transformed by a table, then spawns a part for each */
-void Moby1123_Draw(char *m) {
+void electric_fence_draw(char *m) {
     float a[16];
     float b[16];
     float mat[5][16];

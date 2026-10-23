@@ -101,7 +101,7 @@ extern void func_L06_002FFF70();
 extern void func_L06_00300530_FF000(struct Moby *) __asm__("func_L06_00300530");
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002fdbd0.c, FUN_L06_002fdbd0. */
-void Moby1068Update(struct Moby *moby) {
+void blarg_space_commando_update(struct Moby *moby) {
     Moby1068Vars *vars = (Moby1068Vars *)moby->pvars;
     struct Moby *target;
     s32 *route;
