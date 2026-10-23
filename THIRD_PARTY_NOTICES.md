@@ -1102,3 +1102,16 @@ check. In parentheses, Lombyte's name.
 - `src/overlays/shared/vendor_002E1660.c`: `func_L00_002EA4C0` (`FUN_L00_002e9010`)
 - `src/overlays/shared/vendor_002F7700.c`: `func_L01_00303810` (`FUN_L01_00302438`)
 - `src/overlays/shared/vendor_002FF000.c`: `func_L06_00309170` (`FUN_L06_00307d30`)
+
+## PAL v2 matching additions (2026-10-23)
+
+The following reconstructions build on the NTSC decomp (Lombyte), pinned at
+4e1f255e524d922af78aecc2af49df3deb57a709 (GPL-3.0). PAL addresses, compiler
+behaviour and emitted bytes are checked against the PAL v2 retail image:
+
+- src/core/989snd.c: func_0012DB68 (snd_StartSoundSystem), from
+  src/textbin/audio/snd_start_sound_system.c, snd_start_sound_system.
+- src/overlays/shared/help_00232560.c: func_L00_00232EF0, from
+  src/overlays/shared/ui/help/00232670.c, FUN_L00_00232670, continued from
+  the staged OpenRAC candidate. The scalar pool and the animation-reset
+  helper identity are verified separately against PAL.

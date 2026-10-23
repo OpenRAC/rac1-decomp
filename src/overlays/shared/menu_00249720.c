@@ -366,7 +366,6 @@ void MarkSelectedCardSlot(void) {
 INCLUDE_ASM("asm/overlays", func_L00_0024BB5C);
 INCLUDE_ASM("asm/overlays", func_L00_0024BB90);
 INCLUDE_ASM("asm/overlays", func_L00_0024BB98);
-INCLUDE_ASM("asm/overlays", func_L00_0024BBCC);
 extern int D_L00_0015F688 MACRO_ADDR;
 /* while D_0013D390[7] is set the menu state is 3; else flag 0x20 is taken down with state 24
    (D_L00_0015F688 set) or 12, or flag 0x10 with state 14 */
@@ -433,5 +432,3 @@ void CardMenu_NextStateOnCounters(void) {
         }
     }
 }
-INCLUDE_ASM("asm/overlays", func_L00_0024BFB8);
-INCLUDE_ASM("asm/overlays", func_L00_0024BFFC);

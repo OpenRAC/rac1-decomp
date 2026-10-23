@@ -120,4 +120,5 @@ INCLUDE_ASM("asm/overlays", func_L00_001EADEC);
 INCLUDE_ASM("asm/overlays", func_L00_001EB0A0);
 INCLUDE_ASM("asm/overlays", func_L00_001EB0A4);
 INCLUDE_ASM("asm/overlays", func_L00_001EB194);
-INCLUDE_ASM("asm/overlays", func_L00_001EB1A4);
+/* 001EB1A4 is alignment after the preceding remnant; the next one starts at 001EB1A8. */
+LINKER_REMNANT("asm/overlays", func_L00_001EB1A8);

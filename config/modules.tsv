@@ -1632,6 +1632,7 @@ func_L00_00211A38	src/overlays/shared/gameplay/hero/hero_check_damage.c
 func_L00_00211D28	src/overlays/shared/gameplay/hero/hero_check_damage.c
 func_L00_00211EE8	src/overlays/shared/gameplay/hero/hero_check_damage.c
 func_L00_00211F28	src/overlays/shared/gameplay/hero/hero_check_damage.c
+func_L00_00211F68	src/overlays/shared/gameplay/hero/hero_check_damage.c
 func_L00_00211F80	src/overlays/shared/gameplay/hero/hero_check_damage.c
 func_L00_002122A0	src/overlays/shared/gameplay/hero/hero_check_damage.c
 func_L00_002123B0	src/overlays/shared/gameplay/hero/hero_check_damage.c
@@ -1704,6 +1705,7 @@ func_L00_00232608	src/overlays/shared/gameplay/hero/set_hero_animation.c
 func_L00_002326D0	src/overlays/shared/gameplay/hero/set_hero_animation.c
 func_L00_00232850	src/overlays/shared/gameplay/hero/set_hero_animation.c
 func_L00_00232980	src/overlays/shared/gameplay/hero/set_hero_animation.c
+func_L00_00232A00	src/overlays/shared/ui/help/0020a1f8.c
 func_L00_00232A18	src/overlays/shared/gameplay/hero/set_hero_animation.c
 func_L00_00232A78	src/overlays/shared/gameplay/hero/set_hero_animation.c
 func_L00_00232B20	src/overlays/shared/gameplay/hero/set_hero_animation.c

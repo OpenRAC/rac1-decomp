@@ -174,3 +174,17 @@ function that `config/handwritten_asm.txt` already lists:
   levels, the 12-byte func_L01_00262BB0 in the other eleven.
 
 Lombyte keeps both NTSC-U copies (FUN_L02_002101b8 and FUN_L00_0024dbc0) as intentional assembly too.
+
+### Corrected level boundaries, 2026-10-23
+
+Three corrected entries now pass the existing remnant test at every place:
+`func_L00_001EB1A8` (4 bytes, 19 placements),
+`func_L08_002DB438` (4 bytes, one placement), and
+`func_L00_002EDB58` (12 bytes, three placements). The first started on an
+alignment nop four bytes too early; the other two included independent
+empty/return-zero functions referenced by moby/camera dispatch tables.
+The fill-only
+`func_L06_00216EE4` entry is removed from the function catalogue, not
+classified as a remnant or C. `tools/overlay_boundary_fixes.py --check`
+verifies the bytes, preceding returns and references at all 27 places.
+See docs/OVERLAYS.md for the explicit denominator correction.
