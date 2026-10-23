@@ -856,6 +856,13 @@ adapted from Lombyte's `include/rnc/gameplay/hero.h` and `include/rnc/math/vecto
 Lombyte was MIT licensed. `include/pad.h` (the controller state) is adapted from its
 `include/rnc/input/pad_state.h` at the same commit.
 
+Names from the NTSC decomp (Lombyte's project, the submodule `versions/ntsc`, GPL-3.0 since its commit
+a1379f57): `tools/names.py ntsc` reads the function and data names its C binds to US addresses, and its
+source file for each function, from the pinned commit at every `tools/sync_ntsc.sh`, and places them on
+this project's PAL symbols. They are listed in `config/names_ntsc.tsv` (first imported at 4e1f255e:
+1,458 names adopted in `config/names.tsv` and `include/names.h`) and `config/modules.tsv`. Only the
+names and paths are taken, no code (docs/NAMES.md).
+
 Data taken from Lombyte:
 
 - `tools/extract/moby_classes.tsv`: the moby class names the level editor
