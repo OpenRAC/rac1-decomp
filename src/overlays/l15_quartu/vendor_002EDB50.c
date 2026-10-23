@@ -629,9 +629,10 @@ extern float D_L15_00162280 SDATA(D_L15_00162280);
 
 /* Builds and draws the animated ring of lights around a moby: 46 scaled vertices and colours, then two passes of 46 texture coordinates. */
 void draw_scaled_moby_radial_ripple_mesh(char *moby) {
-    RingVars_2EF030 *data = *(RingVars_2EF030 **)(moby + 0x78);
+    struct Moby *m = (struct Moby *)moby;
+    RingVars_2EF030 *data = (RingVars_2EF030 *)m->pvars;
     unsigned int i;
-    unsigned int n;
+    unsigned int uv_vertex_index;
     int j;
     int k;
     int r;
@@ -649,23 +650,23 @@ void draw_scaled_moby_radial_ripple_mesh(char *moby) {
     get_moby_color(moby, &r, &g, &b);
     color = (D_L15_0016226C << 24) | (b << 16) | (g << 8) | r;
     for (i = 0; i < 46; i++) {
-        float *s = D_L15_001DEB30[i];
-        float x = s[0];
-        float y = s[1];
+        float *template_vertex = D_L15_001DEB30[i];
+        float x = template_vertex[0];
+        float y = template_vertex[1];
         float rad = func_001F9B50(x * x + y * y);
-        float a = func_L00_00200210(rad, D_L15_00162270);
-        float w = FastNormalizeAngle(a * 6.2831855f / D_L15_00162270);
+        float radius_remainder = func_L00_00200210(rad, D_L15_00162270);
+        float w = FastNormalizeAngle(radius_remainder * 6.2831855f / D_L15_00162270);
         float z = FastSin(FastAddRots(w, data->angle));
-        D_L15_001DEF80[i][0] = D_L15_00162280 * s[0] + *(float *)(moby + 0x10);
-        D_L15_001DEF80[i][1] = D_L15_00162280 * s[1] + *(float *)(moby + 0x14);
-        D_L15_001DEF80[i][2] = D_L15_00162280 * s[2] + *(float *)(moby + 0x18) + D_L15_00162278 * z;
+        D_L15_001DEF80[i][0] = D_L15_00162280 * template_vertex[0] + m->pos.x;
+        D_L15_001DEF80[i][1] = D_L15_00162280 * template_vertex[1] + m->pos.y;
+        D_L15_001DEF80[i][2] = D_L15_00162280 * template_vertex[2] + m->pos.z + D_L15_00162278 * z;
         D_L15_001DF318[i] = color;
     }
     for (j = 0; j < 2; j++) {
-        for (n = 0; n < 46; n++) {
-            Quad4_2EF030 t = D_L15_00162288;
-            D_L15_001DF1A8[n][0] = D_L15_001DED58[n][0] + func_L00_00200210(scale * t.f[j][0], 1.0f);
-            D_L15_001DF1A8[n][1] = D_L15_001DED58[n][1] + func_L00_00200210(scale * t.f[j][1], 1.0f);
+        for (uv_vertex_index = 0; uv_vertex_index < 46; uv_vertex_index++) {
+            Quad4_2EF030 uv_scroll_factors = D_L15_00162288;
+            D_L15_001DF1A8[uv_vertex_index][0] = D_L15_001DED58[uv_vertex_index][0] + func_L00_00200210(scale * uv_scroll_factors.f[j][0], 1.0f);
+            D_L15_001DF1A8[uv_vertex_index][1] = D_L15_001DED58[uv_vertex_index][1] + func_L00_00200210(scale * uv_scroll_factors.f[j][1], 1.0f);
         }
         font_queue_vu_state();
         for (k = 0; k < 1; k++) {
@@ -699,9 +700,9 @@ extern float D_L15_001622F0 SDATA(D_L15_001622F0);
 
 /* Builds and draws the animated ring of lights around a moby: 88 scaled vertices and colours, then two passes of 88 texture coordinates. */
 void draw_scaled_88_vertex_moby_radial_ripple_mesh(char *moby) {
-    RingVars_2EF410 *data = *(RingVars_2EF410 **)(moby + 0x78);
+    RingVars_2EF410 *data = (RingVars_2EF410 *)((struct Moby *)moby)->pvars;
     unsigned int i;
-    unsigned int n;
+    unsigned int uv_vertex_index;
     int j;
     int k;
     int r;
@@ -719,23 +720,23 @@ void draw_scaled_88_vertex_moby_radial_ripple_mesh(char *moby) {
     get_moby_color(moby, &r, &g, &b);
     color = (D_L15_001622DC << 24) | (b << 16) | (g << 8) | r;
     for (i = 0; i < 88; i++) {
-        float *s = D_L15_001DF3D0[i];
-        float x = s[0];
-        float y = s[1];
+        float *template_vertex = D_L15_001DF3D0[i];
+        float x = template_vertex[0];
+        float y = template_vertex[1];
         float rad = func_001F9B50(x * x + y * y);
-        float a = func_L00_00200210(rad, D_L15_001622E0);
-        float w = FastNormalizeAngle(a * 6.2831855f / D_L15_001622E0);
+        float radius_remainder = func_L00_00200210(rad, D_L15_001622E0);
+        float w = FastNormalizeAngle(radius_remainder * 6.2831855f / D_L15_001622E0);
         float z = FastSin(FastAddRots(w, data->angle));
-        D_L15_001DFC10[i][0] = D_L15_001622F0 * s[0] + *(float *)(moby + 0x10);
-        D_L15_001DFC10[i][1] = D_L15_001622F0 * s[1] + *(float *)(moby + 0x14);
-        D_L15_001DFC10[i][2] = D_L15_001622F0 * s[2] + *(float *)(moby + 0x18) + D_L15_001622E8 * z;
+        D_L15_001DFC10[i][0] = D_L15_001622F0 * template_vertex[0] + ((struct Moby *)moby)->pos.x;
+        D_L15_001DFC10[i][1] = D_L15_001622F0 * template_vertex[1] + ((struct Moby *)moby)->pos.y;
+        D_L15_001DFC10[i][2] = D_L15_001622F0 * template_vertex[2] + ((struct Moby *)moby)->pos.z + D_L15_001622E8 * z;
         D_L15_001E02F0[i] = color;
     }
     for (j = 0; j < 2; j++) {
-        for (n = 0; n < 88; n++) {
-            Quad4_2EF410 t = D_L15_001622F8;
-            D_L15_001E0030[n][0] = D_L15_001DF7F0[n][0] + func_L00_00200210(scale * t.f[j][0], 1.0f);
-            D_L15_001E0030[n][1] = D_L15_001DF7F0[n][1] + func_L00_00200210(scale * t.f[j][1], 1.0f);
+        for (uv_vertex_index = 0; uv_vertex_index < 88; uv_vertex_index++) {
+            Quad4_2EF410 uv_scroll_factors = D_L15_001622F8;
+            D_L15_001E0030[uv_vertex_index][0] = D_L15_001DF7F0[uv_vertex_index][0] + func_L00_00200210(scale * uv_scroll_factors.f[j][0], 1.0f);
+            D_L15_001E0030[uv_vertex_index][1] = D_L15_001DF7F0[uv_vertex_index][1] + func_L00_00200210(scale * uv_scroll_factors.f[j][1], 1.0f);
         }
         font_queue_vu_state();
         for (k = 0; k < 1; k++) {

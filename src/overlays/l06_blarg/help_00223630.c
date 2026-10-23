@@ -14,59 +14,60 @@ extern float func_001F9B88(float);
 
 // Resolves the pending hero action id into input flags, then triggers a state change when its conditions hold.
 void apply_hero_ground_material_response(void) {
-    char *g = (D_0013E633 + 0xE1D);
-    char *g1;
-    char *g2;
-    char *g3;
-    int u = *(unsigned char *)(g + 0x12ED);
-    int w = *(short *)(g + 0x12E0);
-    FastMemZero16(g + 0x12E0, 0x10);
-    *(unsigned char *)(g + 0x12ED) = u;
-    *(short *)(g + 0x12E0) = -1;
-    *(unsigned char *)(g + 0x20A9) = 0;
-    *(short *)(g + 0x308) = 0;
-    if (w == -1) return;
-    if (w == 2) {
-        if (*(short *)(g + 0x30C) == 0 || *(float *)(g + 0x2DC) < 0.3f) {
-            *(unsigned char *)(g + 0x12E7) = 1;
-            if (*(unsigned char *)(g + 0x20A4) == 0) {
-                char *m = *(char **)(g + 0x10E0);
-                if (m != 0 && *(short *)(m + 0xA6) == 0xAD) *(short *)(g + 0x308) = 1;
+    Hero *hero_state = (Hero *)(D_0013E633 + 0xE1D);
+    Hero *g1;
+    Hero *g2;
+    Hero *g3;
+    int saved_ground_sound_class = hero_state->unk12ED;
+    int previous_ground_type = hero_state->ground_type;
+    FastMemZero16(&hero_state->ground_type, 0x10);
+    hero_state->unk12ED = saved_ground_sound_class;
+    hero_state->ground_type = -1;
+    hero_state->unk20A9 = 0;
+    hero_state->unk308 = 0;
+    if (previous_ground_type == -1) return;
+    if (previous_ground_type == 2) {
+        if (hero_state->frames_off_ground.s == 0 || hero_state->ground_distance < 0.3f) {
+            hero_state->unk12E7 = 1;
+            if (hero_state->vehicle_mode == 0) {
+                Moby *item_slot_1_moby = hero_state->items[1].moby;
+                if (item_slot_1_moby != 0 && item_slot_1_moby->oclass == 0xAD)
+                    hero_state->unk308 = 1;
             }
         }
     }
-    if (w == 0xD) {
-        char *gx = (D_0013E633 + 0xE1D);
-        *(unsigned char *)(gx + 0x12EC) = 1;
+    if (previous_ground_type == 0xD) {
+        Hero *gx = (Hero *)(D_0013E633 + 0xE1D);
+        gx->selector_13 = 1;
     }
-    if (w == 1) {
-        char *gx = (D_0013E633 + 0xE1D);
-        *(unsigned char *)(gx + 0x12E5) = 1;
+    if (previous_ground_type == 1) {
+        Hero *gx = (Hero *)(D_0013E633 + 0xE1D);
+        gx->selector_1 = 1;
     }
-    if (w == 8) {
-        char *gx = (D_0013E633 + 0xE1D);
-        *(unsigned char *)(gx + 0x12EA) = 1;
+    if (previous_ground_type == 8) {
+        Hero *gx = (Hero *)(D_0013E633 + 0xE1D);
+        gx->on_slip_ground = 1;
     }
-    if (w == 9) {
-        char *gx = (D_0013E633 + 0xE1D);
-        *(unsigned char *)(gx + 0x12EE) = 1;
+    if (previous_ground_type == 9) {
+        Hero *gx = (Hero *)(D_0013E633 + 0xE1D);
+        gx->unk12EE = 1;
     }
-    if (w == 0xC) {
-        char *gx = (D_0013E633 + 0xE1D);
-        *(unsigned char *)(gx + 0x12EA) = 1;
+    if (previous_ground_type == 0xC) {
+        Hero *gx = (Hero *)(D_0013E633 + 0xE1D);
+        gx->on_slip_ground = 1;
     }
-    g1 = (D_0013E633 + 0xE1D);
-    if (*(unsigned char *)(g1 + 0x12E5) != 0) {
-        if (*(int *)(g1 + 0x300) != 0 && *(unsigned char *)(g1 + 0x20A4) == 1 && *(int *)(g1 + 0x2084) != 0x7D) {
+    g1 = (Hero *)(D_0013E633 + 0xE1D);
+    if (g1->selector_1 != 0) {
+        if (g1->grounded_frames != 0 && g1->vehicle_mode == 1 && g1->state.current != 0x7D) {
             HeroL06_TrySetMoveState(0x7D, 1);
             return;
         }
-        g2 = (D_0013E633 + 0xE1D);
-        if (*(unsigned char *)(g2 + 0x12E5) != 0) {
-            if (*(int *)(g2 + 0x300) != 0) {
-                if (*(int *)(g2 + 0x2084) != 0x3C || *(short *)(g2 + 0x41E) != 0) {
+        g2 = (Hero *)(D_0013E633 + 0xE1D);
+        if (g2->selector_1 != 0) {
+            if (g2->grounded_frames != 0) {
+                if (g2->state.current != 0x3C || g2->unk41E != 0) {
                     ResetHelpStateIfMode3();
-                    if (*(int *)(g2 + 0x22A8) != 0) {
+                    if (g2->health.hp != 0) {
                         HeroL06_TrySetMoveState(0x3C, 1);
                     } else {
                         HeroL06_TrySetMoveState(0x7C, 1);
@@ -76,12 +77,12 @@ void apply_hero_ground_material_response(void) {
             }
         }
     }
-    g3 = (D_0013E633 + 0xE1D);
-    if (*(unsigned char *)(g3 + 0x12EC) == 0) return;
-    if (*(int *)(g3 + 0x2084) == 0x7F) return;
-    if (!(FastAbsF(*(float *)(g3 + 0x2F0) - (*(float *)(g3 + 0x88) + 0.25f)) < 1.0f)) return;
-    if (!(0.0f < *(float *)(g3 + 0x2F0) - *(float *)(g3 + 0x88))) return;
-    if (!(*(float *)(g3 + 0x108) < 0.0f)) return;
+    g3 = (Hero *)(D_0013E633 + 0xE1D);
+    if (g3->selector_13 == 0) return;
+    if (g3->state.current == 0x7F) return;
+    if (!(FastAbsF(g3->water_surface_z - (g3->motion.pos.f[2] + 0.25f)) < 1.0f)) return;
+    if (!(0.0f < g3->water_surface_z - g3->motion.pos.f[2])) return;
+    if (!(g3->motion.displacement.f[2] < 0.0f)) return;
     ResetHelpStateIfMode3();
     HeroL06_TrySetMoveState(0x7F, 1);
 }
@@ -247,51 +248,49 @@ extern float D_0015EE64 MACRO_ADDR;
 extern float D_0015EE6C MACRO_ADDR;
 
 // Eases the follow-camera distance/height/tilt toward targets picked from the current mode.
+extern Hero heroBlock __asm__("D_0013F450");
+
 void CameraL06_UpdateFollowOffsets(void) {
-    char *b = D_0013E633 + 0xE1D;
-    char *d;
-    char *b2, *b3, *e;
-    switch (*(unsigned char *)(b + 0x20A4)) {
-    case 0:
-        *(float *)(b + 0x228) = 0.8f;
-        *(float *)(b + 0x22C) = 0.7f;
-        *(float *)(b + 0x230) = 0.45f;
+    f32 *smoothing_state;
+
+    switch (heroBlock.vehicle_mode) {
+    case HERO_VEHICLE_MODE_ON_FOOT:
+        heroBlock.unk228 = 0.8f;
+        heroBlock.unk22C = 0.7f;
+        heroBlock.unk230 = 0.45f;
         break;
-    case 1:
-        *(float *)(b + 0x228) = 0.59999996f;
-        *(float *)(b + 0x22C) = 0.45000002f;
-        *(float *)(b + 0x230) = 0.3f;
+    case HERO_VEHICLE_MODE_CLANK:
+        heroBlock.unk228 = 0.59999996f;
+        heroBlock.unk22C = 0.45000002f;
+        heroBlock.unk230 = 0.3f;
         break;
     case 3:
-        *(float *)(b + 0x228) = 0.8f;
-        *(float *)(b + 0x22C) = 0.6f;
-        *(float *)(b + 0x230) = 0.45f;
+        heroBlock.unk228 = 0.8f;
+        heroBlock.unk22C = 0.6f;
+        heroBlock.unk230 = 0.45f;
         break;
     }
-    b2 = D_0013E633 + 0xE1D;
-    if (*(int *)(b2 + 0x208C) == 4) {
-        if (*(int *)(b2 + 0x198) > *(int *)(b2 + 0x420)) {
-            if (*(short *)(b2 + 0x41E) == 0) *(float *)(b2 + 0x22C) = *(float *)(b2 + 0x434);
+    if (heroBlock.state.control_mode == 4) {
+        if (heroBlock.state_timer > heroBlock.unk420) {
+            if (heroBlock.unk41E == 0) heroBlock.unk22C = heroBlock.unk434;
         }
-    } else if (*(int *)(b2 + 0x2084) == 6) {
-        *(float *)(b2 + 0x22C) = 0.5f;
-    } else if (*(int *)(b2 + 0x2084) == 4) {
-        *(float *)(b2 + 0x228) = 0.35000002f;
-    } else if (*(int *)(b2 + 0x2084) == 0x7F) {
-        *(float *)(b2 + 0x230) = 0.8f;
+    } else if (heroBlock.state.current == HERO_STATE_FALL) {
+        heroBlock.unk22C = 0.5f;
+    } else if (heroBlock.state.current == HERO_STATE_CROUCH) {
+        heroBlock.unk228 = 0.35000002f;
+    } else if (heroBlock.state.current == HERO_STATE_SINK) {
+        heroBlock.unk230 = 0.8f;
     }
-    b3 = D_0013E633 + 0xE1D;
-    if (*(unsigned char *)(b3 + 0x257) != 0 && *(int *)(b3 + 0x2094) != 0x12 &&
-        *(int *)(b3 + 0x208C) != 0x11 && *(unsigned char *)(b3 + 0x12E4) == 0) {
-        float dist = func_001F9D48((float *)(b3 + 0x210), (float *)(b3 + 0x80));
-        if (!(*(float *)(b3 + 0x234) * 0.5f < dist)) return;
+    if (heroBlock.wall_hit != 0 && heroBlock.state.prev_control_mode != 0x12 &&
+        heroBlock.state.control_mode != 0x11 && heroBlock.base_condition == 0) {
+        float dist = func_001F9D48(heroBlock.unk210.f, heroBlock.motion.pos.f);
+        if (!(heroBlock.unk234 * 0.5f < dist)) return;
     }
-    d = D_0013E633 + 0x103D;
-    e = d - 0x220;
-    ApproachValue((float *)d, *(float *)(e + 0x228), D_0015EE60 * 0.02f);
-    ApproachValue((float *)(d + 4), *(float *)(e + 0x22C), D_0015EE60 * 0.02f);
-    Spring((float *)(d + 0x14), (float *)(d + 0x18), *(float *)(e + 0x230),
-                      D_0015EE64 * 0.02f, D_0015EE64 * 0.3f, D_0015EE6C * 4.0f);
+    smoothing_state = &heroBlock.capsule_top;
+    ApproachValue(smoothing_state, heroBlock.unk228, D_0015EE60 * 0.02f);
+    ApproachValue(smoothing_state + 1, heroBlock.unk22C, D_0015EE60 * 0.02f);
+    Spring(smoothing_state + 5, smoothing_state + 6, heroBlock.unk230,
+           D_0015EE64 * 0.02f, D_0015EE64 * 0.3f, D_0015EE6C * 4.0f);
 }
 extern void func_L00_00211F80(float, int);
 extern float D_L06_0017C638[];

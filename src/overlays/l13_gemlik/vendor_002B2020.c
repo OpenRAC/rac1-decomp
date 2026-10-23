@@ -759,21 +759,32 @@ void release_robosquawker_particle(Level13VendorMoby *moby) {
 }
 extern float func_00214358(void *,int,float);
 extern short D_0015EE70;
+typedef struct {
+    u8 pad_000[0x120];         /* 0x000 */
+    u8 pad_120[0x8];           /* 0x120 cleared by qzero */
+    f32 vertical_step;         /* 0x128 */
+} RsGroundVars;
+
 /* adjusts moby height toward the sampled ground height */
+/* adjusts moby height toward the sampled ground height */
+
 void update_robosquawker_ground_height(char *m,char *d) {
- float ground=ProbeGroundHeight(m+0x10,0,0.5f);
- float z=*(float *)(m+0x18);
- if(ground<z+0.3f) {
- float v=*(float *)(d+0x128)-*(float *)&D_0015EE70*9.8f;
- *(float *)(d+0x128)=v;
- *(float *)(m+0x18)=*(float *)(m+0x18)+v;
- if(*(float *)(m+0x18)<ground) *(float *)(m+0x18)=ground;
- } else if(z<ground) {
- *(float *)(m+0x18)=z+*(float *)&D_0015EE70*9.8f;
- qzero(d+0x120);
- } else {
- qzero(d+0x120);
- }
+    struct Moby *moby = (struct Moby *)m;
+    RsGroundVars *moby_vars = (RsGroundVars *)d;
+    float ground = ProbeGroundHeight(&moby->pos, 0, 0.5f);
+    float z = moby->pos.z;
+    if (ground < z + 0.3f) {
+        float vertical_step = moby_vars->vertical_step - *(float *)&D_0015EE70 * 9.8f;
+        moby_vars->vertical_step = vertical_step;
+        moby->pos.z = moby->pos.z + vertical_step;
+        if (moby->pos.z < ground)
+            moby->pos.z = ground;
+    } else if (z < ground) {
+        moby->pos.z = z + *(float *)&D_0015EE70 * 9.8f;
+        qzero(&moby_vars->pad_120);
+    } else {
+        qzero(&moby_vars->pad_120);
+    }
 }
 extern void func_L00_00264B40(float, int, int, unsigned char *);
 extern float func_001F9D10(void *, void *);

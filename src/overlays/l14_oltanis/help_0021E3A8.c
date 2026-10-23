@@ -16,54 +16,79 @@ extern void func_L00_0020BFA8(void);
 extern void func_L14_002306C8(int, int);
 
 /* Resolve the hero's surface reaction for the frame from the previous state and flags. */
+extern struct Hero hero __asm__("D_0013F450");
+
 void resolve_hero_surface_reactions(void) {
-    char *h;
-    char *g = (char *)D_0013E633 + 0xE1D;
-    int keep = *(unsigned char *)(g + 0x12ED);
-    int st = *(short *)(g + 0x12E0);
-    FastMemZero16(g + 0x12E0, 0x10);
-    *(unsigned char *)(g + 0x12ED) = keep;
-    *(short *)(g + 0x12E0) = -1;
-    *(unsigned char *)(g + 0x20A9) = 0;
-    *(short *)(g + 0x308) = 0;
-    if (st == -1) return;
-    if (st == 2) {
-        if (*(short *)(g + 0x30C) == 0 || *(float *)(g + 0x2DC) < 0.3f) {
-            *(unsigned char *)(g + 0x12E7) = 1;
-            if (*(unsigned char *)(g + 0x20A4) == 0) {
-                char *p = *(char **)(g + 0x10E0);
-                if (p != 0 && *(short *)(p + 0xA6) == 0xAD) {
-                    *(short *)(g + 0x308) = 1;
+    struct Hero *hero_ptr;
+    struct Hero *hero_data = &hero;
+    int keep = hero_data->unk12ED;
+    int saved_ground_type = hero_data->ground_type;
+    FastMemZero16(&hero_data->ground_type, 0x10);
+    hero_data->unk12ED = keep;
+    hero_data->ground_type = -1;
+    hero_data->unk20A9 = 0;
+    hero_data->unk308 = 0;
+    if (saved_ground_type == -1)
+        return;
+    if (saved_ground_type == 2) {
+        if (hero_data->frames_off_ground.s == 0 || hero_data->ground_distance < 0.3f) {
+            hero_data->unk12E7 = 1;
+            if (hero_data->vehicle_mode == 0) {
+                struct Moby *item_moby = hero_data->items[1].moby;
+                if (item_moby != 0 && item_moby->oclass == 0xAD) {
+                    hero_data->unk308 = 1;
                 }
             }
         }
     }
     if (D_0015EE84_m == 0xD) {
-        char *q = (char *)D_0013E633 + 0xE1D;
-        if (*(int *)(q + 0x2084) != 0x7B) {
-            if (coll_sphere(*(float *)(q + 0x234) + 0.03f, q + 0xD0, 2, 0)) {
+        struct Hero *q = &hero;
+        if (q->state.current != 0x7B) {
+            if (coll_sphere(q->unk234 + 0.03f, &q->motion.unkD0, 2, 0)) {
                 if (CollType() == 0xB) {
-                    Hero_TryMoveStateL14(0x7B, 1);
+                    Hero_TryMoveStateL14(HERO_STATE_HEIGHT_OR_TIMEOUT_RESPAWN_WAIT, 1);
                     return;
                 }
             }
         }
     }
-    if (st == 0xB) { char *q = (char *)D_0013E633 + 0xE1D; *(unsigned char *)(q + 0x12EB) = 1; }
-    if (st == 2) { char *q = (char *)D_0013E633 + 0xE1D; *(unsigned char *)(q + 0x12E7) = 1; }
-    if (st == 7) { char *q = (char *)D_0013E633 + 0xE1D; *(unsigned char *)(q + 0x12E2) = 1; }
-    if (st == 0xD) { char *q = (char *)D_0013E633 + 0xE1D; *(unsigned char *)(q + 0x12EC) = 1; }
-    if (st == 8) { char *q = (char *)D_0013E633 + 0xE1D; *(unsigned char *)(q + 0x12EA) = 1; }
-    if (st == 9) { char *q = (char *)D_0013E633 + 0xE1D; *(unsigned char *)(q + 0x12EE) = 1; }
-    if (st == 0xC) { char *q = (char *)D_0013E633 + 0xE1D; *(unsigned char *)(q + 0x12EA) = 1; }
-    h = (char *)D_0013E633 + 0xE1D;
-    if (*(unsigned char *)(h + 0x12EC) != 0) {
-        if (*(int *)(h + 0x2084) == 0x7F) return;
-        if (FastAbsF(*(float *)(h + 0x2F0) - (*(float *)(h + 0x88) + 0.25f)) < 1.0f) {
-            if (*(float *)(h + 0x2F0) - *(float *)(h + 0x88) > 0.0f) {
-                if (*(float *)(h + 0x108) < 0.0f) {
+    if (saved_ground_type == 0xB) {
+        struct Hero *q = &hero;
+        q->selector_11 = 1;
+    }
+    if (saved_ground_type == 2) {
+        struct Hero *q = &hero;
+        q->unk12E7 = 1;
+    }
+    if (saved_ground_type == 7) {
+        struct Hero *q = &hero;
+        q->unk12E2 = 1;
+    }
+    if (saved_ground_type == 0xD) {
+        struct Hero *q = &hero;
+        q->selector_13 = 1;
+    }
+    if (saved_ground_type == 8) {
+        struct Hero *q = &hero;
+        q->on_slip_ground = 1;
+    }
+    if (saved_ground_type == 9) {
+        struct Hero *q = &hero;
+        q->unk12EE = 1;
+    }
+    if (saved_ground_type == 0xC) {
+        struct Hero *q = &hero;
+        q->on_slip_ground = 1;
+    }
+    hero_ptr = &hero;
+    if (hero_ptr->selector_13 != 0) {
+        if (hero_ptr->state.current == 0x7F)
+            return;
+        if (FastAbsF(hero_ptr->water_surface_z - (hero_ptr->motion.pos.f[2] + 0.25f)) < 1.0f) {
+            if (hero_ptr->water_surface_z - hero_ptr->motion.pos.f[2] > 0.0f) {
+                if (hero_ptr->motion.displacement.f[2] < 0.0f) {
                     ResetHelpStateIfMode3();
-                    Hero_TryMoveStateL14(0x7F, 1);
+                    Hero_TryMoveStateL14(HERO_STATE_SINK, 1);
                 }
             }
         }

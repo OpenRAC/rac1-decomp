@@ -1254,40 +1254,44 @@ typedef struct { float x, y, z, w; } __attribute__((aligned(16))) Vx;
 
 // Update of a timed explosive moby: counts down, then bursts into sparks and spawns its remains.
 void handle_moby_damage_and_destruction(char *m) {
-    char *d = *(char **)(m + 0x78);
-    char *r = MobyGetHitMessage(m, 0x10000, 0);
+    Moby *moby = (Moby *)m;
+    char *moby_vars_or_random_frames = (char *)moby->pvars;
+    char *hit_record = MobyGetHitMessage(m, 0x10000, 0);
     Vx v;
-    Vx b;
+    Vx effect_velocity_or_spawn_position;
     int i;
-    if (r != 0) {
-        *(float *)d = *(float *)d - *(float *)(r + 0x2C);
-        if (0.0f < *(float *)d) {
-            d[0x47] = 0x46;
-            RerollEffectCounter(m, (short *)(d + 0x40));
+    if (hit_record != 0) {
+        *(float *)moby_vars_or_random_frames = *(float *)moby_vars_or_random_frames - *(float *)(hit_record + 0x2C);
+        if (0.0f < *(float *)moby_vars_or_random_frames) {
+            moby_vars_or_random_frames[0x47] = 0x46;
+            RerollEffectCounter(m, (short *)(moby_vars_or_random_frames + 0x40));
         } else {
-            char *pos = m + 0x10;
-            v.x = FastCos(*(float *)(m + 0x48)) * (D_0015EE6C * 20.0f);
-            v.y = FastSin(*(float *)(m + 0x48)) * (D_0015EE6C * 20.0f);
+            char *pos = (char *)&moby->pos;
+            v.x = FastCos(moby->rot.z) * (D_0015EE6C * 20.0f);
+            v.y = FastSin(moby->rot.z) * (D_0015EE6C * 20.0f);
             v.z = 0.0f;
             for (i = 24; i >= 0; i--) {
                 Vx t = {0};
                 t.x = random_float_between(-1.0f, 1.0f);
                 t.y = random_float_between(-1.0f, 1.0f);
                 t.z = random_float_between(-1.0f, 1.0f);
-                b = t;
-                func_L00_001FF4B0(&b, &b, FastVecLength(&v) * (D_0015EE60 * -0.35000002f + 1.0f));
-                FastVecAdd(&b, &v, &b);
-                func_L00_001FF4B0(&b, &b, random_float_between(D_0015EE6C * 3.0f, D_0015EE6C * 6.0f));
-                d = (char *)rand_range(scale_ticks(5), scale_ticks(10));
-                PartType27Spawn(pos, (char *)&b, 0x5F7F4F2F, (int)d, random_float_between(20000.0f, 50000.0f));
+                effect_velocity_or_spawn_position = t;
+                func_L00_001FF4B0(&effect_velocity_or_spawn_position, &effect_velocity_or_spawn_position,
+                                  FastVecLength(&v) * (D_0015EE60 * -0.35000002f + 1.0f));
+                FastVecAdd(&effect_velocity_or_spawn_position, &v, &effect_velocity_or_spawn_position);
+                func_L00_001FF4B0(&effect_velocity_or_spawn_position, &effect_velocity_or_spawn_position,
+                                  random_float_between(D_0015EE6C * 3.0f, D_0015EE6C * 6.0f));
+                moby_vars_or_random_frames = (char *)rand_range(scale_ticks(5), scale_ticks(10));
+                PartType27Spawn(pos, (char *)&effect_velocity_or_spawn_position, 0x5F7F4F2F,
+                                (int)moby_vars_or_random_frames, random_float_between(20000.0f, 50000.0f));
             }
-            *(xu128 *)&b = *(xu128 *)(m + 0x10);
-            spawn_class_11c_moby(m, &b, *(float *)(m + 0x48));
+            *(xu128 *)&effect_velocity_or_spawn_position = *(xu128 *)&moby->pos;
+            spawn_class_11c_moby(m, &effect_velocity_or_spawn_position, moby->rot.z);
             DeleteMoby(m);
             return;
         }
     }
-    ((unsigned char *)m)[0xA4] = 0xFF;
+    moby->hit_slot = 0xFF;
 }
 extern char *func_0020D348(int);
 extern void func_L00_00251E30(void *);
@@ -1518,22 +1522,26 @@ typedef unsigned int u128_ee380 __attribute__((mode(TI)));
 extern char *CreateMoby_c(int) __asm__("func_0020D348");
 /* Creates a type-0x144 moby that inherits its owner's colour, position, rotation and timer. Adapted from Lombyte (MIT) for PAL: overlays/l09/unclassified_0021e538.c, FUN_L09_002efda8. */
 char *spawn_class_144_moby(char *owner, void *position, float angle) {
-    u128_ee380 pos;
-    void *copy = &pos;
+    u128_ee380 position_copy;
+    void *copy = &position_copy;
     char *moby;
 
-    pos = *(u128_ee380 *)position;
+    position_copy = *(u128_ee380 *)position;
     moby = CreateMoby_c(0x144);
     if (moby != 0) {
         unsigned char state;
+        Moby *spawned;
+        Moby *src;
 
-        ((unsigned char *)moby)[0x30] = ((unsigned char *)owner)[0x30];
-        state = ((unsigned char *)owner)[0x30];
-        moby[0x31] = 1;
-        *(short *)(moby + 0x32) = state;
-        qcopy(moby + 0x10, copy);
-        qcopy(moby + 0x40, owner + 0x40);
-        *(long *)(moby + 0x38) = *(long *)(owner + 0x38);
+        spawned = (Moby *)moby;
+        src = (Moby *)owner;
+        spawned->update_dist = src->update_dist;
+        state = src->update_dist;
+        spawned->visible = 1;
+        spawned->draw_dist = state;
+        qcopy(&spawned->pos, copy);
+        qcopy(&spawned->rot, &src->rot);
+        spawned->spawn_frame = src->spawn_frame;
         func_L00_00251E30_2f10f8(moby);
     }
     return moby;

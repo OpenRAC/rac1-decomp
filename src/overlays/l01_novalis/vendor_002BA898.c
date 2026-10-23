@@ -3193,12 +3193,18 @@ extern void func_L00_002E9900(float x, float y, int flag);
 extern void func_L00_002E9968(float x, float y);
 extern void func_L00_002E99A0(int, float, float);
 
+typedef struct {
+    u8 pad_00[0x80];
+    s32 idx;
+} FallingRockVars;
+
 /* sets up a rotated vector and the level's fog/light parameters */
 void apply_falling_rock_camera_overrides(char *moby) {
-    float tmp[4];
-    char *p = camera_points + (*(int *)(*(char **)(moby + 0x78) + 0x80) << 7);
-    build_look_at_matrix(tmp, p, p + 0x20, *(float *)&D_L01_00161CB8);
-    func_L00_002E9DC8(tmp, 0.13962633907794952f, 0.0f);
+    float rotated_vector[4];
+    u8 *camera_record = camera_points + (((FallingRockVars *)((Moby *)moby)->pvars)->idx << 7);
+
+    build_look_at_matrix(rotated_vector, camera_record, camera_record + 0x20, *(float *)&D_L01_00161CB8);
+    func_L00_002E9DC8(rotated_vector, 0.13962633907794952f, 0.0f);
     Cam_SetDistanceGoal(*(float *)&D_L01_00161CBC, *(float *)&D_L01_00161CC8, 0);
     func_L00_002E9968(*(float *)&D_L01_00161CC0, *(float *)&D_L01_00161CC8);
     Cam_SetEyeOffset(0, *(float *)&D_L01_00161CC4, *(float *)&D_L01_00161CC8);

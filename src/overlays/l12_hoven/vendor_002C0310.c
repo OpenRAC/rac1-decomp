@@ -46,52 +46,61 @@ extern void func_L01_002B9198(char *p, int n);
 extern void func_001F49B0(void *, void *);
 extern void func_L12_002C0918(void);
 
+typedef struct {
+    s32 unk00;          /* 0x00: set to 3 when the tile claims its slot */
+    s32 unk04;          /* 0x04 */
+    f32 vel;            /* 0x08: spring velocity of the height (ApproachWithVelocity) */
+    s32 slot;           /* 0x0C: index of this tile's slot in the table */
+    f32 target_z;       /* 0x10: height the tile eases toward */
+    s32 moving;         /* 0x14: set once the tile starts easing */
+    s32 clip_volume;    /* 0x18: clip volume index, -1 for none */
+} L12WaterTileData;
+
 /* Level 12 moby update (class 19): state 0 claims a slot and builds the table, state 2 steers, then the per-frame tail. */
 void update_level_12_water_tile(char *moby) {
-    char *data;
+    L12WaterTileData *data;
     char *rec;
     char *x;
     char *q;
-    char *p;
     float *P;
-    float fa;
+    float one;
     float fb;
     float fc;
-    float f20;
-    float f21;
-    float f;
-    float g;
-    float r1;
-    float r2;
-    int st;
+    float scale;
+    float dist_x;
+    float dist_y;
+    float dx;
+    float dy;
+    float visible;
+    float inv_sqrt3;
+    int state;
     int n;
     int k;
-    int idx;
-    int r;
+    int hit;
 
-    st = *(unsigned char *)(moby + 0x20);
-    data = *(char **)(moby + 0x78);
-    switch (st) {
+    state = ((struct Moby *)moby)->state;
+    data = (L12WaterTileData *)((struct Moby *)moby)->pvars;
+    switch (state) {
     case 0: {
         n = *(int *)&D_L12_00161410;
-        *(int *)(data + 0xC) = n;
+        data->slot = n;
         *(int *)&D_L12_00161410 = n + 1;
         if (n + 1 > 0x7f) {
             STUB_printf(D_L12_0020BF80);
         }
-        f = *(float *)(*(char **)(moby + 0x24) + 0x24);
-        *(float *)(moby + 0x2C) = f + f;
-        *(int *)data = 3;
-        *(unsigned char *)(moby + 0x30) = 0xFF;
-        *(unsigned short *)(moby + 0x34) = *(unsigned short *)(moby + 0x34) | 1;
-        if (*(int *)(data + 0xC) == 0) {
+        scale = ((struct Moby *)moby)->pclass->scale;
+        ((struct Moby *)moby)->scale = scale + scale;
+        data->unk00 = 3;
+        ((struct Moby *)moby)->update_dist = 0xFF;
+        ((struct Moby *)moby)->flags = ((struct Moby *)moby)->flags | 1;
+        if (data->slot == 0) {
             for (k = 0x10; k >= 0; k--) {
                 ((L12Slot *)D_L12_001CC1C0)[k].visibility = 0;
             }
-            fa = 1.0f;
+            one = 1.0f;
             RipplePatchesInit(D_L12_001CC1C0, 0x11);
-            f21 = 0.57735f;
-            RescaleFloatTable(fa);
+            inv_sqrt3 = 0.57735f;
+            RescaleFloatTable(one);
             P = (float *)D_L12_001CAF80;
             *(float *)D_L12_001CAF80 = 16.0f;
             P[1] = 16.0f;
@@ -102,11 +111,11 @@ void update_level_12_water_tile(char *moby) {
             P[6] = 0.9f;
             P[8] = 0.1f;
             fc = func_L00_001FF860(*(float *)((q = D_L12_001803C0) + 0x10), *(float *)(q + 0x14));
-            P[12] = FastCos(fc) * f21;
-            P[13] = FastSin(fc) * f21;
+            P[12] = FastCos(fc) * inv_sqrt3;
+            P[13] = FastSin(fc) * inv_sqrt3;
             P[14] = -0.57735f;
-            *(int *)(P + 10) = *(int *)data + 0x28;
-            *(int *)(P + 11) = *(int *)(data + 4) + 0x28;
+            *(int *)(P + 10) = data->unk00 + 0x28;
+            *(int *)(P + 11) = data->unk04 + 0x28;
             *(unsigned char *)((char *)P + 0x3C) = 0x1C;
             *(unsigned char *)((char *)P + 0x3D) = 0x40;
             *(int *)&D_L12_00161350 = (int)D_L12_001CC1C0;
@@ -117,74 +126,73 @@ void update_level_12_water_tile(char *moby) {
             D_L12_00161294 = 48.0f;
             D_L12_00161288 = 0;
         }
-        idx = *(int *)(data + 0xC);
-        *(float *)(D_L12_001CC1C0 + *(int *)(data + 0xC) * 0x1190) = *(float *)(moby + 0x10);
-        *(float *)(D_L12_001CC1C0 + *(int *)(data + 0xC) * 0x1190 + 4) = *(float *)(moby + 0x14);
-        *(float *)(D_L12_001CC1C0 + *(int *)(data + 0xC) * 0x1190 + 8) = *(float *)(moby + 0x18);
-        *(int *)(D_L12_001CC1C0 + *(int *)(data + 0xC) * 0x1190 + 0x14) = *(int *)data + 0x28;
-        *(int *)(D_L12_001CC1C0 + *(int *)(data + 0xC) * 0x1190 + 0x18) = *(int *)(data + 4) + 0x28;
-        *(unsigned char *)(D_L12_001CC1C0 + *(int *)(data + 0xC) * 0x1190 + 0x1C) = 0x1C;
-        *(unsigned char *)(D_L12_001CC1C0 + *(int *)(data + 0xC) * 0x1190 + 0x1D) = 0x44;
-        *(unsigned short *)(D_L12_001CC1C0 + *(int *)(data + 0xC) * 0x1190 + 0x1E) = 0xFFFF;
-        RipplePatch_ToFixedPoint((float *)(D_L12_001CC1C0 + *(int *)(data + 0xC) * 0x1190), (int *)(D_L12_001CC080 + *(int *)(data + 0xC) * 16));
-        *(unsigned char *)(moby + 0x20) = 1;
+        *(float *)(D_L12_001CC1C0 + data->slot * 0x1190) = ((struct Moby *)moby)->pos.x;
+        *(float *)(D_L12_001CC1C0 + data->slot * 0x1190 + 4) = ((struct Moby *)moby)->pos.y;
+        *(float *)(D_L12_001CC1C0 + data->slot * 0x1190 + 8) = ((struct Moby *)moby)->pos.z;
+        *(int *)(D_L12_001CC1C0 + data->slot * 0x1190 + 0x14) = data->unk00 + 0x28;
+        *(int *)(D_L12_001CC1C0 + data->slot * 0x1190 + 0x18) = data->unk04 + 0x28;
+        *(unsigned char *)(D_L12_001CC1C0 + data->slot * 0x1190 + 0x1C) = 0x1C;
+        *(unsigned char *)(D_L12_001CC1C0 + data->slot * 0x1190 + 0x1D) = 0x44;
+        *(unsigned short *)(D_L12_001CC1C0 + data->slot * 0x1190 + 0x1E) = 0xFFFF;
+        RipplePatch_ToFixedPoint((float *)(D_L12_001CC1C0 + data->slot * 0x1190), (int *)(D_L12_001CC080 + data->slot * 16));
+        ((struct Moby *)moby)->state = 1;
         break;
     }
     case 1:
         {
-            int m = *(int *)(data + 0xC);
+            int slot = data->slot;
             *(int *)&D_L12_00161410 = 0;
-            initialize_level_12_slot_grid_neighbors(m);
+            initialize_level_12_slot_grid_neighbors(slot);
         }
-        *(unsigned char *)(moby + 0x20) = 2;
-        *(float *)(data + 0x10) = *(float *)(moby + 0x18);
+        ((struct Moby *)moby)->state = 2;
+        data->target_z = ((struct Moby *)moby)->pos.z;
         break;
     case 2: {
-        if (*(unsigned char *)(moby + 0xBC) & 4) {
-            *(float *)(data + 0x10) = *(float *)(data + 0x10) + 5.0f;
-            *(int *)(data + 0x14) = 1;
+        if (((struct Moby *)moby)->command & 4) {
+            data->target_z = data->target_z + 5.0f;
+            data->moving = 1;
         }
-        *(unsigned char *)(moby + 0xBC) = 1;
-        if (*(int *)(data + 0x14) != 0) {
-            ApproachWithVelocity((float *)(moby + 0x18), (float *)(data + 8), *(float *)(data + 0x10), D_0015EE70 * 4.0f, D_0015EE70 * 4.0f, D_0015EE6C * 4.0f);
+        ((struct Moby *)moby)->command = 1;
+        if (data->moving != 0) {
+            ApproachWithVelocity(&((struct Moby *)moby)->pos.z, &data->vel, data->target_z, D_0015EE70 * 4.0f, D_0015EE70 * 4.0f, D_0015EE6C * 4.0f);
             Group_CopyZToTableSlots(moby);
         }
         x = D_0013E633 + 0xE1D;
-        f = FastAbsF(*(float *)(x + 0x80) - *(float *)(moby + 0x10));
-        if (f <= 8.0f) {
-            *(float *)(x + 0x2F0) = *(float *)(moby + 0x18);
+        dist_x = FastAbsF(*(float *)(x + 0x80) - ((struct Moby *)moby)->pos.x);
+        if (dist_x <= 8.0f) {
+            *(float *)(x + 0x2F0) = ((struct Moby *)moby)->pos.z;
         } else {
-            g = FastAbsF(*(float *)(x + 0x84) - *(float *)(moby + 0x14));
-            if (g <= 8.0f) {
-                *(float *)(x + 0x2F0) = *(float *)(moby + 0x18);
+            dist_y = FastAbsF(*(float *)(x + 0x84) - ((struct Moby *)moby)->pos.y);
+            if (dist_y <= 8.0f) {
+                *(float *)(x + 0x2F0) = ((struct Moby *)moby)->pos.z;
             }
         }
         if (random_integer_below(200) == 0) {
-            r1 = random_float_between(-4.0f, 4.0f);
-            fb = *(float *)(D_L12_001CC1C0 + *(int *)(data + 0xC) * 0x1190) + r1;
-            r2 = random_float_between(-4.0f, 4.0f);
-            rec = D_L12_001CC1C0 + *(int *)(data + 0xC) * 0x1190;
-            RippleDisturb(rec, 1, 1, fb, *(float *)(rec + 4) + r2, 1.0f, -0.05f);
+            dx = random_float_between(-4.0f, 4.0f);
+            fb = *(float *)(D_L12_001CC1C0 + data->slot * 0x1190) + dx;
+            dy = random_float_between(-4.0f, 4.0f);
+            rec = D_L12_001CC1C0 + data->slot * 0x1190;
+            RippleDisturb(rec, 1, 1, fb, *(float *)(rec + 4) + dy, 1.0f, -0.05f);
         }
         break;
     }
     }
 
-    if (*(int *)(data + 0xC) >= 0) {
-        r = IsBSphereVisibleScaled(moby, 64.0f);
-        f20 = 0.0f;
-        if (r != -1) {
-            f20 = 1.0f;
+    if (data->slot >= 0) {
+        hit = IsBSphereVisibleScaled(moby, 64.0f);
+        visible = 0.0f;
+        if (hit != -1) {
+            visible = 1.0f;
         }
-        if (*(int *)(data + 0x18) != -1 && is_point_inside_clip_volume(D_L12_001672C0, *(int *)(data + 0x18)) == 0) {
-            f20 = 0.0f;
+        if (data->clip_volume != -1 && is_point_inside_clip_volume(D_L12_001672C0, data->clip_volume) == 0) {
+            visible = 0.0f;
         }
-        if (f20 == 0.0f) {
-            ((L12Slot *)D_L12_001CC1C0)[*(int *)(data + 0xC)].visibility = 0;
+        if (visible == 0.0f) {
+            ((L12Slot *)D_L12_001CC1C0)[data->slot].visibility = 0;
         } else {
-            ((L12Slot *)D_L12_001CC1C0)[*(int *)(data + 0xC)].visibility = 0xFFFF;
+            ((L12Slot *)D_L12_001CC1C0)[data->slot].visibility = 0xFFFF;
         }
-        if (*(int *)(data + 0xC) == 0) {
+        if (data->slot == 0) {
             RippleSimClock(D_L12_001CC1C0, 0x11);
             AddDrawCallback((void *)Moby19Draw, moby);
         }
@@ -2010,127 +2018,177 @@ extern void func_L00_0025D5B0(void *, void *, float, int, int, int);
 extern void func_L00_0025E4B0(void *m, short *p);
 extern void func_L00_0025E590(void *, void *);
 
+typedef struct BlargTrooperVars_e81e0 {
+    u8 pad_00[0x20];
+    f32 health;                /* 0x20 */
+    u8 pad_24[0x2];
+    s16 stun_timer;            /* 0x26 */
+    u8 pad_28[0x10];
+    s32 reset_alert;           /* 0x38 */
+    u8 pad_3C[0x24];
+    s16 anim[3];               /* 0x60: passed to the anim reset and update calls */
+    u8 pad_66;
+    u8 unk67;                  /* 0x67 */
+    u8 pad_68[0x8];
+    f32 fall[4];               /* 0x70: passed to InitKnockback */
+    f32 unk80;                 /* 0x80 */
+    u8 pad_84[0x4];
+    f32 unk88;                 /* 0x88 */
+    f32 unk8C;                 /* 0x8C */
+    u8 pad_90[0x4];
+    s32 unk94;                 /* 0x94 */
+    u8 pad_98[0x8];
+    f32 unkA0;                 /* 0xA0 */
+    f32 unkA4;                 /* 0xA4 */
+    f32 unkA8;                 /* 0xA8 */
+    u8 pad_AC;
+    u8 unkAD;                  /* 0xAD */
+    u8 pad_AE[0x12];
+    f32 unkC0;                 /* 0xC0 */
+    f32 unkC4;                 /* 0xC4 */
+    u8 pad_C8[0x168];
+    f32 speed;                 /* 0x230 */
+    u8 pad_234[0xC];
+    s16 alert_timer;           /* 0x240 */
+    u8 pad_242[0x32];
+    s32 call_enabled;          /* 0x274 */
+    s32 groups[4];             /* 0x278 */
+    s32 call_timer;            /* 0x288 */
+    f32 alert_speed;           /* 0x28C */
+    s32 volume;                /* 0x290 */
+} BlargTrooperVars_e81e0;
+
+typedef struct BlargTrooperHit_e81e0 {
+    u8 pad_00[0x10];
+    Vec4 pos;                  /* 0x10 */
+    struct Moby *moby;         /* 0x20 */
+} BlargTrooperHit_e81e0;
+
 /* Hoven vendor moby update: counters, a timed check, then one of two anim setups; ends by setting moby+0xA4. */
 void process_blarg_trooper_damage_and_alerts(char *moby) {
-    char *data = *(char **)(moby + 0x78);
-    char *ret;
-    float vc[4];
-    int ii;
-    float zf;
-    float fx;
-    float fy;
-    float x, pi, b;
-    int r, sum, t;
-    int v21;
-    float m80;
+    BlargTrooperVars_e81e0 *vars = (BlargTrooperVars_e81e0 *)((struct Moby *)moby)->pvars;
+    Vec4 help_direction_or_hit_position;
+    s32 hit;
+    f32 dmg;
+    f32 angle;
+    f32 unused;
+    BlargTrooperHit_e81e0 *coll;
+    f32 pi;
+    f32 b;
+    f32 health;
+    f32 m80;
+    s32 r;
+    s32 sum;
+    s32 t;
 
-    if (*(int *)(data + 0x38) != 0) {
-        *(int *)(data + 0x38) = 0;
-        *(short *)(data + 0x240) = scale_ticks(0xF0);
+    if (vars->reset_alert != 0) {
+        vars->reset_alert = 0;
+        vars->alert_timer = scale_ticks(0xF0);
     }
-    if (*(unsigned char *)(moby + 0x20) != 0) {
-        r = FastDecTimer(data + 0x240);
-        *(float *)(data + 0x230) = (r != 0) ? *(float *)(data + 0x28C) : 20.0f;
+    if (((struct Moby *)moby)->state != 0) {
+        r = FastDecTimer(&vars->alert_timer);
+        vars->speed = (r != 0) ? vars->alert_speed : 20.0f;
     }
-    if (*(int *)(data + 0x274) != 0 && *(unsigned char *)(moby + 0x20) != 2) {
-        t = *(int *)(data + 0x288) + 1;
-        *(int *)(data + 0x288) = t;
-        r = scale_ticks(60);
-        if (r * 17 < *(int *)(data + 0x288)) {
+    if (vars->call_enabled != 0 && ((struct Moby *)moby)->state != 2) {
+        t = vars->call_timer + 1;
+        vars->call_timer = t;
+        r = scale_ticks(0x3C);
+        if (r * 17 < vars->call_timer) {
             sum = 0;
-            if (*(int *)(data + 0x278) != -1) sum = count_group_e81e0(*(int *)(data + 0x278), 2);
-            if (*(int *)(data + 0x27C) != -1) sum += count_group_e81e0(*(int *)(data + 0x27C), 2);
-            if (*(int *)(data + 0x280) != -1) sum += count_group_e81e0(*(int *)(data + 0x280), 2);
-            if (*(int *)(data + 0x284) != -1) sum += count_group_e81e0(*(int *)(data + 0x284), 2);
+            if (vars->groups[0] != -1) sum = count_group_e81e0(vars->groups[0], 2);
+            if (vars->groups[1] != -1) sum += count_group_e81e0(vars->groups[1], 2);
+            if (vars->groups[2] != -1) sum += count_group_e81e0(vars->groups[2], 2);
+            if (vars->groups[3] != -1) sum += count_group_e81e0(vars->groups[3], 2);
             if (sum >= 9 && random_integer_below(0x27) == 0) {
                 pi = 3.1415927f;
-                vc[0] = FastCos(FastAddRots(*(float *)(moby + 0x48), pi));
-                b = FastAddRots(*(float *)(moby + 0x48), pi);
-                vc[1] = FastSin(b);
-                vc[2] = 0.0f;
-                PostHitMessage(moby, *(int *)(D_0013E633 + 0x2E9D), 0x10000, moby + 0x10, vc, 1.0f);
+                help_direction_or_hit_position.f[0] = FastCos(FastAddRots(((struct Moby *)moby)->rot.z, pi));
+                b = FastAddRots(((struct Moby *)moby)->rot.z, pi);
+                help_direction_or_hit_position.f[1] = FastSin(b);
+                help_direction_or_hit_position.f[2] = 0.0f;
+                PostHitMessage(moby, *(int *)(D_0013E633 + 0x2E9D), 0x10000,
+                               &((struct Moby *)moby)->pos, help_direction_or_hit_position.f, 1.0f);
             }
         }
     }
-
-    if (*(int *)(data + 0x290) != -1) {
-        if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, *(int *)(data + 0x290)) != 0) {
+    if (vars->volume != -1) {
+        if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, vars->volume) != 0) {
             remove_blarg_trooper_and_attachment(moby);
             return;
         }
     }
 
-    ret = MobyGetHitMessage(moby, 0x330000, 0);
-    zf = 0.0f;
-    ComputeHitResponse(moby, ret, data + 0x20, 0, &ii, &zf, 0, 4);
-    if (ret != 0) {
-        if (*(short *)(*(char **)(ret + 0x20) + 0xA6) != *(short *)(moby + 0xA6)
-            && *(short *)(*(char **)(ret + 0x20) + 0xA6) != 0xB8
-            && *(unsigned char *)(moby + 0x20) != 9
-            && zf != 0.0f) {
-            if (*(unsigned char *)(moby + 0x21) != 0xFF) {
-                MobyGroup_SetByteBC(*(unsigned char *)(moby + 0x21), 1);
+    coll = (BlargTrooperHit_e81e0 *)MobyGetHitMessage(moby, 0x330000, 0);
+    dmg = 0.0f;
+    ComputeHitResponse(moby, coll, &vars->health, 0, &hit, &dmg, 0, 4);
+    if (coll != 0) {
+        if (coll->moby->oclass != ((struct Moby *)moby)->oclass
+            && coll->moby->oclass != 0xB8
+            && ((struct Moby *)moby)->state != 9
+            && dmg != 0.0f) {
+            if (((struct Moby *)moby)->group != 0xFF) {
+                MobyGroup_SetByteBC(((struct Moby *)moby)->group, 1);
             }
-            x = *(float *)(data + 0x20) - zf;
+            health = vars->health - dmg;
             m80 = D_0015EE70 * 30.0f;
-            *(unsigned char *)(data + 0xAD) = 0;
-            *(float *)(data + 0x20) = x;
-            *(float *)(data + 0x80) = m80;
-            *(int *)(data + 0x94) = 9;
-            *(float *)(data + 0xA0) = 1.0f;
-            *(float *)(data + 0xA4) = 1.0f;
-            *(float *)(data + 0xA8) = 1.0f;
-            if (x <= 0.0f) {
+            vars->unkAD = 0;
+            vars->health = health;
+            vars->unk80 = m80;
+            vars->unk94 = 9;
+            vars->unkA0 = 1.0f;
+            vars->unkA4 = 1.0f;
+            vars->unkA8 = 1.0f;
+            if (health <= 0.0f) {
                 float d6 = D_0015EE6C;
                 float p0 = d6 * 12.0f;
                 float p1 = d6 * 9.0f;
-                *(unsigned short *)(moby + 0x34) &= 0xEFFF;
-                *(float *)(data + 0x88) = p0;
-                *(float *)(data + 0x8C) = p1;
-                *(u128 *)vc = *(u128 *)(ret + 0x10);
-                HeadingFromVector(vc, &fx, data + 0x88, data + 0x8C);
-                InitKnockback(moby, data + 0x70, fx, 9, 1, 0);
-                *(float *)(data + 0xC0) = 10.0f;
-                *(float *)(data + 0xC4) = 19.0f;
-                *(unsigned char *)(moby + 0x20) = 9;
-                *(unsigned char *)(data + 0x67) = 0x78;
-                RerollEffectCounter(moby, (short *)(data + 0x60));
+                ((struct Moby *)moby)->flags &= 0xEFFF;
+                vars->unk88 = p0;
+                vars->unk8C = p1;
+                help_direction_or_hit_position.q = coll->pos.q;
+                HeadingFromVector(help_direction_or_hit_position.f, &angle, &vars->unk88, &vars->unk8C);
+                InitKnockback(moby, vars->fall, angle, 9, 1, 0);
+                vars->unkC0 = 10.0f;
+                vars->unkC4 = 19.0f;
+                ((struct Moby *)moby)->state = 9;
+                vars->unk67 = 0x78;
+                RerollEffectCounter(moby, vars->anim);
             } else {
                 float d6 = D_0015EE6C;
                 float p0 = d6 * 4.7f;
                 float p1 = d6 * 7.7f;
-                *(float *)(data + 0x88) = p0;
-                *(float *)(data + 0x8C) = p1;
-                *(u128 *)vc = *(u128 *)(ret + 0x10);
-                HeadingFromVector(vc, &fy, data + 0x88, data + 0x8C);
-                InitKnockback(moby, data + 0x70, fy, 6, 1, 0);
-                *(float *)(data + 0xC0) = 4.0f;
-                *(float *)(data + 0xC4) = 8.0f;
-                *(unsigned char *)(moby + 0x20) = 4;
-                *(unsigned char *)(data + 0x67) = 0xFA;
-                *(short *)(data + 0x26) = scale_ticks(60);
-                RerollEffectCounter(moby, (short *)(data + 0x60));
+                vars->unk88 = p0;
+                vars->unk8C = p1;
+                help_direction_or_hit_position.q = coll->pos.q;
+                HeadingFromVector(help_direction_or_hit_position.f, &unused, &vars->unk88, &vars->unk8C);
+                InitKnockback(moby, vars->fall, unused, 6, 1, 0);
+                vars->unkC0 = 4.0f;
+                vars->unkC4 = 8.0f;
+                ((struct Moby *)moby)->state = 4;
+                vars->unk67 = 0xFA;
+                vars->stun_timer = scale_ticks(0x3C);
+                RerollEffectCounter(moby, vars->anim);
             }
         }
     }
-    *(unsigned char *)(moby + 0xA4) = 0xFF;
-    StepColorFade(moby, data + 0x60);
+    ((struct Moby *)moby)->hit_slot = 0xFF;
+    StepColorFade(moby, vars->anim);
 }
 extern float func_L00_001FF860(float, float);
 extern float func_001FA790(float, float);
 
 // Steers a moby's two turn-rate fields from the clamped heading error to a point.
 void set_blarg_trooper_aim_yaw_offsets(char *moby, float *pos) {
-    char *data = *(char **)(moby + 0x78);
-    float a = func_L00_001FF860(pos[0] - *(float *)(moby + 0x10), pos[1] - *(float *)(moby + 0x14));
-    float d = FastSubRots(a, *(float *)(moby + 0x48));
-    if (d > 1.2217305f) {
-        d = 1.2217305f;
-    } else if (d < -1.2217305f) {
-        d = -1.2217305f;
+    struct Moby *m = (struct Moby *)moby;
+    char *data = (char *)m->pvars;
+    float target_yaw = func_L00_001FF860(pos[0] - m->pos.x, pos[1] - m->pos.y);
+    float yaw_offset = FastSubRots(target_yaw, m->rot.z);
+    if (yaw_offset > 1.2217305f) {
+        yaw_offset = 1.2217305f;
+    } else if (yaw_offset < -1.2217305f) {
+        yaw_offset = -1.2217305f;
     }
-    *(float *)(data + 0x188) = d * 0.35f;
-    *(float *)(data + 0x208) = d * 0.8f;
+    *(float *)(data + 0x188) = yaw_offset * 0.35f;
+    *(float *)(data + 0x208) = yaw_offset * 0.8f;
 }
 typedef struct {
     char pad0[0x248];
@@ -2734,20 +2792,21 @@ extern float D_0015EE6C MACRO_ADDR;
 
 /* Springs the moby's two rotation angles toward a heading taken from its data's direction vector. */
 void update_blarg_helicopter_motion_tilt(char *moby) {
-    char *data = *(char **)(moby + 0x78);
-    float ang = FastSubRots(func_L00_001FF860(*(float *)(data + 0x70), *(float *)(data + 0x74)), *(float *)(moby + 0x48));
-    float a = *(float *)(data + 0x94) * 0.2268928f * FastCos(ang) / (D_0015EE6C * 10.0f);
-    float b = *(float *)(data + 0x94) * -0.2268928f * FastSin(ang) / (D_0015EE6C * 10.0f);
-    float r0, k0, d0, m0, k1, d1, m1;
+    struct Moby *m = (struct Moby *)moby;
+    char *data = (char *)m->pvars;
+    float ang = FastSubRots(func_L00_001FF860(*(float *)(data + 0x70), *(float *)(data + 0x74)), m->rot.z);
+    float target_rotation_y = *(float *)(data + 0x94) * 0.2268928f * FastCos(ang) / (D_0015EE6C * 10.0f);
+    float target_rotation_x = *(float *)(data + 0x94) * -0.2268928f * FastSin(ang) / (D_0015EE6C * 10.0f);
+    float updated_rotation_y, k0, rotation_y_damping, rotation_y_step_limit, k1, rotation_x_damping, rotation_x_step_limit;
     k0 = D_0015EE70 * 0.5235988f;
-    d0 = D_0015EE70 * 1.0471976f;
-    m0 = D_0015EE6C * 0.7853982f;
-    r0 = SpringTurn((float *)(data + 0x9C), *(float *)(moby + 0x44), a, k0, d0, m0);
+    rotation_y_damping = D_0015EE70 * 1.0471976f;
+    rotation_y_step_limit = D_0015EE6C * 0.7853982f;
+    updated_rotation_y = SpringTurn((float *)(data + 0x9C), m->rot.y, target_rotation_y, k0, rotation_y_damping, rotation_y_step_limit);
     k1 = D_0015EE70 * 1.0471976f;
-    d1 = D_0015EE70 * 2.0943952f;
-    m1 = D_0015EE6C * 1.2217305f;
-    *(float *)(moby + 0x44) = r0;
-    *(float *)(moby + 0x40) = SpringTurn((float *)(data + 0x98), *(float *)(moby + 0x40), b, k1, d1, m1);
+    rotation_x_damping = D_0015EE70 * 2.0943952f;
+    rotation_x_step_limit = D_0015EE6C * 1.2217305f;
+    m->rot.y = updated_rotation_y;
+    m->rot.x = SpringTurn((float *)(data + 0x98), m->rot.x, target_rotation_x, k1, rotation_x_damping, rotation_x_step_limit);
 }
 void func_L12_002EC180_EC2E8(struct Moby *moby) __asm__("func_L12_002EC180");
 extern char * D_L12_001B0C30[];
@@ -2799,54 +2858,79 @@ extern void func_L00_0025E4B0(void *m, short *p);
 extern float func_001F9B88(float);
 extern void func_L00_0025E590(void *, void *);
 
+typedef struct MobyHitRecord {
+    f32 x;                         /* 0x00 */
+    f32 y;                         /* 0x04 */
+    u8 pad_08[0x14];               /* 0x08 */
+    f32 tag;                       /* 0x1C: compared with 5627.925f */
+    struct Moby *hit_moby;         /* 0x20: the moby that hit */
+} MobyHitRecord;
+
+typedef struct BlargHelicopterVars {
+    u8 pad_00[0x20];
+    f32 health;                    /* 0x20 */
+    u8 pad_24[0x3C];
+    s16 anim[3];                   /* 0x60: passed to RerollEffectCounter as short * */
+    u8 pad_66[0x1];
+    u8 hit_timer;                  /* 0x67 */
+    u8 pad_68[0x26];
+    s16 knockback_timer;           /* 0x8E */
+    u8 pad_90[0x4];
+    f32 knockback_speed;           /* 0x94 */
+    f32 rot_x_vel;                 /* 0x98 */
+    f32 rot_y_vel;                 /* 0x9C */
+} BlargHelicopterVars;
+
 // Updates a moby's knockback/hit state and its pose after a collision.
 void process_blarg_helicopter_hits(char *m) {
-    int st;
+    struct Moby *moby = (struct Moby *)m;
+    BlargHelicopterVars *vars;
+    int hit_processing_status;
     float fv;
-    int res;
-    char *d;
-    char *r;
-    float a, b, p, q;
-    d = *(char **)(m + 0x78);
+    int hit_reaction_code;
+    MobyHitRecord *hit_record;
+    float hit_to_moby_angle, hit_yaw_offset, knockback_rotation_y, knockback_rotation_x;
+    vars = (BlargHelicopterVars *)moby->pvars;
     fv = 0.0f;
-    r = MobyGetHitMessage(m, 0x330000, 0);
-    res = ComputeHitResponse(m, r, d + 0x20, 0, &st, &fv, 0, 4);
-    if (st != 1 && *(unsigned char *)(m + 0x20) != 6 &&
-        *(short *)(*(char **)(r + 0x20) + 0xA6) != 0xB8 &&
-        *(short *)(*(char **)(r + 0x20) + 0xA6) != 0x199) {
-        float t;
-        if (*(short *)(*(char **)(r + 0x20) + 0xA6) == 0x1CA) fv = 10.0f;
-        t = *(float *)(d + 0x20) - fv;
-        *(float *)(d + 0x20) = t;
-        if (res == 1 || t <= 0.0f) {
-            Moby_PlaySound(2, 0, (int)m);
-            *(unsigned char *)(m + 0x20) = 6;
-        } else if (res != 0xB) {
-            *(unsigned char *)(d + 0x67) = 0xB4;
-            RerollEffectCounter(m, (short *)(d + 0x60));
-            if (*(float *)(r + 0x1C) == 5627.925f && *(unsigned char *)(m + 0x20) != 5) {
-                a = func_L00_001FF860(*(float *)(m + 0x10) - *(float *)(r + 0), *(float *)(m + 0x14) - *(float *)(r + 4));
-                b = FastSubRots(a, *(float *)(m + 0x48));
-                p = FastCos(b) * 0.08726646f;
-                q = FastSin(b) * -0.34906584f;
-                if (FastAbsF(*(float *)(m + 0x40)) < FastAbsF(q)) {
-                    *(float *)(m + 0x40) = q;
-                    *(float *)(d + 0x98) = 0.0f;
+    hit_record = MobyGetHitMessage(moby, 0x330000, 0);
+    hit_reaction_code = ComputeHitResponse(moby, hit_record, &vars->health, 0, &hit_processing_status, &fv, 0, 4);
+    if (hit_processing_status != 1 && moby->state != 6 &&
+        hit_record->hit_moby->oclass != 0xB8 &&
+        hit_record->hit_moby->oclass != 0x199) {
+        float remaining_health;
+        if (hit_record->hit_moby->oclass == 0x1CA)
+            fv = 10.0f;
+        remaining_health = vars->health - fv;
+        vars->health = remaining_health;
+        if (hit_reaction_code == 1 || remaining_health <= 0.0f) {
+            Moby_PlaySound(2, 0, (int)moby);
+            moby->state = 6;
+        } else if (hit_reaction_code != 0xB) {
+            vars->hit_timer = 0xB4;
+            RerollEffectCounter(moby, vars->anim);
+            if (hit_record->tag == 5627.925f && moby->state != 5) {
+                hit_to_moby_angle = func_L00_001FF860(moby->pos.x - hit_record->x, moby->pos.y - hit_record->y);
+                hit_yaw_offset = FastSubRots(hit_to_moby_angle, moby->rot.z);
+                knockback_rotation_y = FastCos(hit_yaw_offset) * 0.08726646f;
+                knockback_rotation_x = FastSin(hit_yaw_offset) * -0.34906584f;
+                if (FastAbsF(moby->rot.x) < FastAbsF(knockback_rotation_x)) {
+                    moby->rot.x = knockback_rotation_x;
+                    vars->rot_x_vel = 0.0f;
                 }
-                if (FastAbsF(*(float *)(m + 0x44)) < FastAbsF(p)) {
-                    *(float *)(m + 0x44) = p;
-                    *(float *)(d + 0x9C) = 0.0f;
+                if (FastAbsF(moby->rot.y) < FastAbsF(knockback_rotation_y)) {
+                    moby->rot.y = knockback_rotation_y;
+                    vars->rot_y_vel = 0.0f;
                 }
-                *(float *)(d + 0x94) = D_0015EE6C * 4.0f;
-                *(short *)(d + 0x8E) = scale_ticks(0x3C);
-                *(unsigned char *)(m + 0xBC) = *(unsigned char *)(m + 0x20);
-                *(unsigned char *)(m + 0x20) = 5;
-                Moby_PlaySound(1, 0, (int)m);
+                vars->knockback_speed = D_0015EE6C * 4.0f;
+                vars->knockback_timer = scale_ticks(0x3C);
+                moby->command = moby->state;
+                moby->state = 5;
+                Moby_PlaySound(1, 0, (int)moby);
             }
         }
     }
-    *(unsigned char *)(m + 0xA4) = 0xFF;
-    StepColorFade(m, d + 0x60);
+    moby->hit_slot = 0xFF;
+    StepColorFade(moby, vars->anim);
 }
 typedef struct Helper_2EC8F0 {
     char pad00[0x10];

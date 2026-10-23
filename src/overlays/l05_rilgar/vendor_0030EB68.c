@@ -680,34 +680,42 @@ extern short D_L05_00161EA4;
 /* When the block at D_0013E633 + 0xE1D points back at this moby and its short at +0x30E is zero, derives two values
  * from the vector between them; otherwise both are 0. Eases the values at data + 0x98 and 0x9C toward those at 0xA0 and
  * 0xA4, then calls func_L00_0025CE58 on the moby's values at +0x40 and +0x44 with the results. */
-void update_drain_cover_tilt(char *moby, float k, float m) {
-    char *g = D_0013E633 + 0xE1D;
-    char *data = *(char **)(moby + 0x78);
-    float v[4];
-    float x, y;
-    float s, x2, y2, d;
-    if (*(char **)(g + 0x2FC) == moby && *(short *)(g + 0x30E) == 0) {
-        FastVecSub(v, g + 0x80, moby + 0x10);
-        d = FastVecDot(v, moby + 0xC0);
-        x = -k * FastVecDot(v, moby + 0xD0);
-        y = k * d;
+void update_drain_cover_tilt(char *moby, float turn_scale, float speed_scale) {
+    Moby *m = (Moby *)moby;
+    u8 *data = m->pvars;
+    Hero *game = (Hero *)(D_0013E633 + 0xE1D);
+    float offset[4];
+    float vertical;
+    float horizontal;
+    float target0;
+    float target1;
+    float deg_to_rad;
+    float dot0;
+
+    if (game->ground_moby == m && game->air_frames.s == 0) {
+        FastVecSub(offset, &game->motion.pos, &m->pos);
+        dot0 = FastVecDot(offset, &m->rot_row0);
+        vertical = -turn_scale * FastVecDot(offset, &m->rot_row1);
+        horizontal = turn_scale * dot0;
     } else {
-        y = 0.0f;
-        x = y;
+        horizontal = 0.0f;
+        vertical = horizontal;
     }
-    s = 0.017453292f;
+
+    deg_to_rad = 0.017453292f;
     *(float *)(data + 0x98) = FastAddRots(*(float *)(data + 0x98), *(float *)(data + 0xA0));
     *(float *)(data + 0x9C) = FastAddRots(*(float *)(data + 0x9C), *(float *)(data + 0xA4));
-    x2 = FastAddRots(x, FastSin(*(float *)(data + 0x98)) * k * *(float *)&D_L05_00161E98);
-    y2 = FastAddRots(y, FastSin(*(float *)(data + 0x9C)) * k * *(float *)&D_L05_00161E98);
-    func_L00_0025CE58_3108D0((float *)(moby + 0x40), x2, (float *)(data + 0x90),
-                      *(float *)&D_L05_00161E9C * m * s * D_0015EE70,
-                      *(float *)&D_L05_00161EA0 * m * s * D_0015EE70,
-                      *(float *)&D_L05_00161EA4 * s * D_0015EE6C);
-    func_L00_0025CE58_3108D0((float *)(moby + 0x44), y2, (float *)(data + 0x94),
-                      *(float *)&D_L05_00161E9C * m * s * D_0015EE70,
-                      *(float *)&D_L05_00161EA0 * m * s * D_0015EE70,
-                      *(float *)&D_L05_00161EA4 * s * D_0015EE6C);
+    target0 = FastAddRots(vertical, FastSin(*(float *)(data + 0x98)) * turn_scale * *(float *)&D_L05_00161E98);
+    target1 = FastAddRots(horizontal, FastSin(*(float *)(data + 0x9C)) * turn_scale * *(float *)&D_L05_00161E98);
+
+    func_L00_0025CE58_3108D0(&m->rot.x, target0, (float *)(data + 0x90),
+                      *(float *)&D_L05_00161E9C * speed_scale * deg_to_rad * D_0015EE70,
+                      *(float *)&D_L05_00161EA0 * speed_scale * deg_to_rad * D_0015EE70,
+                      *(float *)&D_L05_00161EA4 * deg_to_rad * D_0015EE6C);
+    func_L00_0025CE58_3108D0(&m->rot.y, target1, (float *)(data + 0x94),
+                      *(float *)&D_L05_00161E9C * speed_scale * deg_to_rad * D_0015EE70,
+                      *(float *)&D_L05_00161EA0 * speed_scale * deg_to_rad * D_0015EE70,
+                      *(float *)&D_L05_00161EA4 * deg_to_rad * D_0015EE6C);
 }
 typedef u32 u128_10A90 __attribute__((mode(TI), aligned(16)));
 extern void *func_L00_0025B478(struct Moby *, int, int);
@@ -1350,109 +1358,132 @@ extern void func_0020D960_17720(void *, int, void *) __asm__("func_0020D960");
 extern void func_L00_001FFED8(void *, int, float);
 extern char * D_001414D0;
 
+struct ElectricGateData {
+    Vec4 saved_pos;            /* 0x00: moby position saved at setup (qcopy); the target it returns to */
+    Vec4 unk10;                /* 0x10: passed to attach_manipulator */
+    Vec4 unk20;                /* 0x20: passed to axis_rotation_2d48 */
+    u8 pad_30[0x20];           /* 0x30 */
+    s32 unk50;                 /* 0x50: nonzero flips the offset direction */
+    s32 unk54;                 /* 0x54: nonzero starts the move to the offset position */
+    s32 unk58;                 /* 0x58: moby pool index; byte 0xBC of its 256-byte record is the trigger */
+    f32 unk5C;                 /* 0x5C: approach speed */
+    f32 unk60;                 /* 0x60: manipulator angle, 0 .. 0.5934119 */
+    f32 unk64;                 /* 0x64: angular speed of the manipulator angle */
+};
+
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l05/gameplay/entities/0030d6a0.c, FUN_L05_00316258. */
 void update_triggered_moby_motion_and_manipulator_angle(char *moby) {
-    char *data = *(char **)(moby + 0x78);
+    enum {
+        MOBY_INITIALIZE = 0,
+        MOBY_WAIT_FOR_TRIGGER = 1,
+        MOBY_WAIT_TO_RETURN_TO_SAVED_POSITION = 2,
+        MOBY_MOVE_TO_OFFSET_POSITION = 3,
+        MOBY_RETURN_TO_SAVED_POSITION = 4,
+        MOBY_SETTLE_AT_UPPER_MANIPULATOR_ANGLE = 5,
+        MOBY_SETTLE_AT_ZERO_MANIPULATOR_ANGLE = 6
+    };
+    Moby *m = (Moby *)moby;
+    struct ElectricGateData *data = (struct ElectricGateData *)m->pvars;
     float target[4];
     float delta[4];
     float stopped;
 
-    switch (*(u8 *)(moby + 0x20)) {
-    case 0:
-        if (*(int *)(data + 0x50) != 0) {
-            *(float *)(moby + 0x40) = 3.1415927f;
-            *(float *)(moby + 0x18) += 4.0f;
+    switch (m->state) {
+    case MOBY_INITIALIZE:
+        if (data->unk50 != 0) {
+            m->rot.x = 3.1415927f;
+            m->pos.z += 4.0f;
         }
-        qcopy(data, moby + 0x10);
-        func_0020D960_17720(moby, 0, data + 0x10);
-        if (*(int *)(data + 0x54) != 0) {
-            *(float *)(data + 0x60) = 0.0f;
-            *(u8 *)(moby + 0x20) = 2;
-            if (*(int *)(data + 0x50) != 0)
-                FastVecScale(target, moby + 0xD0, 2.0f);
+        qcopy(data, &m->pos);
+        func_0020D960_17720(moby, 0, &data->unk10);
+        if (data->unk54 != 0) {
+            data->unk60 = 0.0f;
+            m->state = MOBY_WAIT_TO_RETURN_TO_SAVED_POSITION;
+            if (data->unk50 != 0)
+                FastVecScale(target, &m->rot_row1, 2.0f);
             else
-                FastVecScale(target, moby + 0xD0, -2.0f);
-            FastVecAdd(moby + 0x10, moby + 0x10, target);
+                FastVecScale(target, &m->rot_row1, -2.0f);
+            FastVecAdd(&m->pos, &m->pos, target);
         } else {
-            *(u8 *)(moby + 0x20) = 1;
-            *(float *)(data + 0x60) = 0.5934119f;
-            axis_rotation_2d48(data + 0x20, 0, 0.5934119f);
+            m->state = MOBY_WAIT_FOR_TRIGGER;
+            data->unk60 = 0.5934119f;
+            axis_rotation_2d48(&data->unk20, 0, 0.5934119f);
         }
-        *(long *)(moby + 0x38) = *(long *)(D_001414D0 + 0x38);
+        *(long *)&m->spawn_frame = *(long *)(D_001414D0 + 0x38);
         break;
-    case 1:
-    case 2:
+    case MOBY_WAIT_FOR_TRIGGER:
+    case MOBY_WAIT_TO_RETURN_TO_SAVED_POSITION:
         {
-            u8 trigger = ((u8 *)*(int *)&moby_pool_4f60)[*(int *)(data + 0x58) * 256 + 0xBC];
+            u8 trigger = ((u8 *)*(int *)&moby_pool_4f60)[data->unk58 * 256 + 0xBC];
             if (trigger == 0)
                 return;
-            if (*(u8 *)(moby + 0x20) == 2 && trigger != 2) {
-                *(u8 *)(moby + 0x20) = 4;
+            if (m->state == MOBY_WAIT_TO_RETURN_TO_SAVED_POSITION && trigger != 2) {
+                m->state = MOBY_RETURN_TO_SAVED_POSITION;
                 break;
             }
-            if (*(u8 *)(moby + 0x20) != 1)
+            if (m->state != MOBY_WAIT_FOR_TRIGGER)
                 return;
             Moby_PlaySound(0, 0, moby);
-            *(u8 *)(moby + 0x20) = 6;
+            m->state = MOBY_SETTLE_AT_ZERO_MANIPULATOR_ANGLE;
             return;
         }
-    case 5:
-    case 6:
+    case MOBY_SETTLE_AT_UPPER_MANIPULATOR_ANGLE:
+    case MOBY_SETTLE_AT_ZERO_MANIPULATOR_ANGLE:
         {
             float end;
             float approach;
-            if (*(u8 *)(moby + 0x20) == 5) {
+            if (m->state == MOBY_SETTLE_AT_UPPER_MANIPULATOR_ANGLE) {
                 end = 0.5934119f;
                 approach = 1.1868238f;
             } else {
                 end = 0.0f;
                 approach = -0.5934119f;
             }
-            SteerAngleWithVelocity((float *)(data + 0x60), (float *)(data + 0x64), approach,
+            SteerAngleWithVelocity(&data->unk60, &data->unk64, approach,
                               D_0015EE70 * 4.1887903f, D_0015EE70 * 4.1887903f,
                               D_0015EE6C * 12.566371f);
-            if (*(float *)(data + 0x60) > 0.5934119f || *(float *)(data + 0x60) < 0.0f) {
-                if (*(float *)(data + 0x60) > 0.5934119f)
-                    *(float *)(data + 0x60) = 0.5934119f;
-                else if (*(float *)(data + 0x60) < 0.0f)
-                    *(float *)(data + 0x60) = 0.0f;
-                if (*(u8 *)(moby + 0xBC) == 0) {
-                    *(u8 *)(moby + 0xBC) = 1;
-                    *(float *)(data + 0x64) *= -0.33f;
-                } else if (*(float *)(data + 0x60) == end) {
-                    if (*(u8 *)(moby + 0x20) == 5)
-                        *(u8 *)(moby + 0x20) = 7;
+            if (data->unk60 > 0.5934119f || data->unk60 < 0.0f) {
+                if (data->unk60 > 0.5934119f)
+                    data->unk60 = 0.5934119f;
+                else if (data->unk60 < 0.0f)
+                    data->unk60 = 0.0f;
+                if (m->command == 0) {
+                    m->command = 1;
+                    data->unk64 *= -0.33f;
+                } else if (data->unk60 == end) {
+                    if (m->state == MOBY_SETTLE_AT_UPPER_MANIPULATOR_ANGLE)
+                        m->state = 7;
                     else
-                        *(u8 *)(moby + 0x20) = 3;
+                        m->state = MOBY_MOVE_TO_OFFSET_POSITION;
                 }
             }
-            axis_rotation_2d48(data + 0x20, 0, *(float *)(data + 0x60));
+            axis_rotation_2d48(&data->unk20, 0, data->unk60);
         }
         break;
-    case 3:
-    case 4:
-        if (*(u8 *)(moby + 0x20) == 3) {
-            FastVecScale(target, moby + 0xD0, -1.9f);
-            FastVecAdd(target, data, target);
+    case MOBY_MOVE_TO_OFFSET_POSITION:
+    case MOBY_RETURN_TO_SAVED_POSITION:
+        if (m->state == MOBY_MOVE_TO_OFFSET_POSITION) {
+            FastVecScale(target, &m->rot_row1, -1.9f);
+            FastVecAdd(target, &data->saved_pos, target);
         } else {
-            qcopy(target, data);
+            qcopy(target, &data->saved_pos);
         }
-        FastVecSub(delta, target, moby + 0x10);
+        FastVecSub(delta, target, &m->pos);
         stopped = 0.0f;
         ApproachWithVelocity(FastVecLength(delta), D_0015EE70 * 6.0f,
                                    D_0015EE70 * 12.0f, D_0015EE6C * 10.0f,
-                                   &stopped, (float *)(data + 0x5C));
-        FastVecSub(delta, target, moby + 0x10);
-        func_L00_001FF4B0(delta, delta, *(float *)(data + 0x5C));
-        FastVecAdd(moby + 0x10, moby + 0x10, delta);
-        if (!(FastVecDist(moby + 0x10, target) < 0.0001f))
+                                   &stopped, &data->unk5C);
+        FastVecSub(delta, target, &m->pos);
+        func_L00_001FF4B0(delta, delta, data->unk5C);
+        FastVecAdd(&m->pos, &m->pos, delta);
+        if (!(FastVecDist(&m->pos, target) < 0.0001f))
             return;
-        if (*(u8 *)(moby + 0x20) == 3) {
+        if (m->state == MOBY_MOVE_TO_OFFSET_POSITION) {
             Moby_PlaySound(1, 0, moby);
-            *(u8 *)(moby + 0x20) = 7;
+            m->state = 7;
             return;
         }
-        *(u8 *)(moby + 0x20) = 5;
+        m->state = MOBY_SETTLE_AT_UPPER_MANIPULATOR_ANGLE;
         break;
     }
 }
@@ -2672,11 +2703,13 @@ extern L05Fields_0013D388 D_0013D490[];
 extern L05Fields_0013D4C0 D_0013D5C8[];
 #define l05_0013D4C0_a D_0013D5C8
 /* Moby update that checks the level's challenge conditions and records new bests. */
+/* Moby update that checks the level's challenge conditions and records new bests. */
+
 void update_moby_gameplay_events(unsigned char *moby) {
-    int *data = *(int **)(moby + 0x78);
+    int *data = (int *)((struct Moby *)moby)->pvars;
     int value, elapsed, limit;
     char *pp;
-    moby[0x30] = 0xff;
+    ((struct Moby *)moby)->update_dist = 0xff;
 
     if (is_point_inside_clip_volume(D_0013F3D0, data[20])) {
         if (*(int *)(D_0013F3D0 + 0x200c) == 0x12 && data[26]++ > scale_game_frames(0x168)) {
@@ -2789,7 +2822,7 @@ void update_moby_gameplay_events(unsigned char *moby) {
     if (value != -1 && D_0014C150[D_L05_0015ED84][data[22]] == 0xff &&
         D_0014C150[D_L05_0015ED84][data[8]] == 0xff &&
         (frame_number < 5 || (D_0013F64C &&
-          (*(short *)(D_0013F64C + 0xa6) == 0x3e6 || *(short *)(D_0013F64C + 0xa6) == 0x33e)))) {
+          (((struct Moby *)D_0013F64C)->oclass == 0x3e6 || ((struct Moby *)D_0013F64C)->oclass == 0x33e)))) {
         FUN_L00_002d5830((void *)(D_L05_0015FFD8 + value * 256));
         data[21] = -1;
     }

@@ -1863,107 +1863,141 @@ extern Route_2dd4f8 *D_L08_001B0FB0_r[] __asm__("D_L08_001B0FB0");
 extern char D_0014171B_r[] __asm__("D_0014171B") NOT_SDA;
 extern float func_001F9D48(void *, void *);
 
+typedef struct ShuttleVars {
+    u8 pad_00[0x60];
+    f32 pos[4];                        /* 0x60: route point copied by qcopy; pos[0] x, pos[1] y */
+    u8 pad_70[0x8];
+    f32 angle;                         /* 0x78: heading, set on each route change */
+    u8 pad_7C[0x4];
+    s32 configured_index;              /* 0x80: row of D_L08_001B0FB0_r */
+    s32 alternate_index;               /* 0x84: row of D_L08_001B0FB0_r */
+    s32 route_index;                   /* 0x88: row of D_L08_001B0FB0_r */
+    u8 pad_8C[0x8];
+    s32 configured_visit;              /* 0x94: visited-table index for the configured path */
+    s32 alternate_visit;               /* 0x98: visited-table index for the alternate path */
+    u8 pad_9C[0x48];
+    union { f32 f; s32 i; } unkE4;     /* 0xE4 */
+    u8 pad_E8[0x18];
+    s32 last_sel;                      /* 0x100: selection made last frame */
+    union { f32 f; s32 i; } unk104;    /* 0x104 */
+    u8 pad_108[0x18];
+    Route_2dd4f8 *cur_path;            /* 0x120: route the hero follows */
+    s32 active;                        /* 0x124 */
+} ShuttleVars;
+
 /* Platform route choice: picks whichever of its three routes is nearest the player (end of route a, or
  * the start of b or c), and on a change starts along it; on route a it skips to b/c when the current
  * frame's route flags say so, and hides when far from the player. */
 void select_shuttle_route_for_hero(char *m) {
-    char *d = *(char **)(m + 0x78);
+    enum {
+        SHUTTLE_SELECT_ROUTE_END = 0,
+        SHUTTLE_SELECT_CONFIGURED_PATH_START = 1,
+        SHUTTLE_SELECT_ROUTE_START = 2,
+        SHUTTLE_SELECT_ALTERNATE_PATH_START = 3
+    };
+    Moby *moby = (Moby *)m;
+    ShuttleVars *data = (ShuttleVars *)moby->pvars;
     char *pl = D_0013E633 + 0xE9D;
-    Route_2dd4f8 *a = D_L08_001B0FB0_r[*(int *)(d + 0x88)];
-    Route_2dd4f8 *b = D_L08_001B0FB0_r[*(int *)(d + 0x80)];
-    Route_2dd4f8 *c = D_L08_001B0FB0_r[*(int *)(d + 0x84)];
-    float d0 = FastVecDist(pl, (char *)a + (a->count << 4));
-    float d1 = FastVecDist(pl, b->e[0]);
-    float d2 = FastVecDist(pl, c->e[0]);
+    Route_2dd4f8 *route = D_L08_001B0FB0_r[data->route_index];
+    Route_2dd4f8 *configured_path = D_L08_001B0FB0_r[data->configured_index];
+    Route_2dd4f8 *alternate_path = D_L08_001B0FB0_r[data->alternate_index];
+    float best_candidate_distance = FastVecDist(pl, (char *)route + (route->count << 4));
+    float configured_path_start_distance = FastVecDist(pl, configured_path->e[0]);
+    float alternate_path_start_distance = FastVecDist(pl, alternate_path->e[0]);
     int sel = 0;
     float y;
-    if (d1 < d0) {
-        d0 = d1;
+    if (configured_path_start_distance < best_candidate_distance) {
+        best_candidate_distance = configured_path_start_distance;
         sel = 1;
     }
-    if (d2 < d0) sel = 3;
-    if (*(int *)(d + 0x100) == sel) return;
-    *(int *)(d + 0x100) = sel;
-    *(int *)(d + 0xE4) = 0;
-    *(float *)(d + 0x104) = 1.0f;
-    m[0x31] = 1;
-    *(unsigned short *)(m + 0x34) &= 0xFFFE;
-    *(int *)(d + 0x124) = 1;
-    *(int *)(m + 0x94) = *(int *)(*(char **)(m + 0x24) + 0x10);
+    if (alternate_path_start_distance < best_candidate_distance) sel = 3;
+    if (data->last_sel == sel) return;
+    data->last_sel = sel;
+    data->unkE4.i = 0;
+    data->unk104.f = 1.0f;
+    moby->visible = 1;
+    moby->flags &= 0xFFFE;
+    data->active = 1;
+    moby->collision = moby->pclass->collision;
     switch (sel) {
-    case 0: {
-        int n = a->count;
-        unsigned char *t;
-        int f94, f98;
+    case SHUTTLE_SELECT_ROUTE_END: {
+        int route_point_count = route->count;
+        unsigned char *visited_table;
+        int configured_path_entry_is_ff, alternate_path_entry_is_ff;
         int fr;
-        qcopy(d + 0x60, (char *)((n << 4) + (int)a));
-        y = func_L00_001FF860(*(float *)((char *)a + ((n - 2) << 4) + 0x10) - *(float *)(d + 0x60),
-                              *(float *)((char *)a + ((n - 2) << 4) + 0x14) - *(float *)(d + 0x64));
+        qcopy(data->pos, (char *)((route_point_count << 4) + (int)route));
+        y = func_L00_001FF860(*(float *)((char *)route + ((route_point_count - 2) << 4) + 0x10) - data->pos[0],
+                              *(float *)((char *)route + ((route_point_count - 2) << 4) + 0x14) - data->pos[1]);
         fr = D_0015EE84_2B94B0 << 4;
-        t = (unsigned char *)(D_0014171B_r + 0xAA35);
-        *(float *)(d + 0x78) = y;
-        *(float *)(d + 0xE4) = 1.0f;
-        *(int *)(d + 0x104) = 0;
-        f94 = t[*(int *)(d + 0x94) + fr] == 0xFF;
-        f98 = t[*(int *)(d + 0x98) + fr] == 0xFF;
-        if (f98) {
-            *(Route_2dd4f8 **)(d + 0x120) = c;
-        } else if (f94) {
-            *(Route_2dd4f8 **)(d + 0x120) = b;
-        } else if (32.0f < func_001F9D48(m + 0x10, pl) || D_L08_0015F6B0_2B94B0 < 5) {
-            m[0x31] = 0;
-            *(unsigned short *)(m + 0x34) |= 1;
-            *(int *)(d + 0x124) = 0;
-            *(int *)(m + 0x94) = 0;
+        visited_table = (unsigned char *)(D_0014171B_r + 0xAA35);
+        data->angle = y;
+        data->unkE4.f = 1.0f;
+        data->unk104.i = 0;
+        configured_path_entry_is_ff = visited_table[data->configured_visit + fr] == 0xFF;
+        alternate_path_entry_is_ff = visited_table[data->alternate_visit + fr] == 0xFF;
+        if (alternate_path_entry_is_ff) {
+            data->cur_path = alternate_path;
+        } else if (configured_path_entry_is_ff) {
+            data->cur_path = configured_path;
+        } else if (32.0f < func_001F9D48(&moby->pos, pl) || D_L08_0015F6B0_2B94B0 < 5) {
+            moby->visible = 0;
+            moby->flags |= 1;
+            data->active = 0;
+            moby->collision = 0;
         }
         return;
     }
-    case 1:
-        qcopy(d + 0x60, b->e[0]);
-        y = func_L00_001FF860(b->e[1][0] - *(float *)(d + 0x60), b->e[1][1] - *(float *)(d + 0x64));
-        *(Route_2dd4f8 **)(d + 0x120) = b;
+    case SHUTTLE_SELECT_CONFIGURED_PATH_START:
+        qcopy(data->pos, configured_path->e[0]);
+        y = func_L00_001FF860(configured_path->e[1][0] - data->pos[0], configured_path->e[1][1] - data->pos[1]);
+        data->cur_path = configured_path;
         break;
-    case 2:
-        qcopy(d + 0x60, a->e[0]);
-        y = func_L00_001FF860(a->e[1][0] - *(float *)(d + 0x60), a->e[1][1] - *(float *)(d + 0x64));
-        *(Route_2dd4f8 **)(d + 0x120) = a;
+    case SHUTTLE_SELECT_ROUTE_START:
+        qcopy(data->pos, route->e[0]);
+        y = func_L00_001FF860(route->e[1][0] - data->pos[0], route->e[1][1] - data->pos[1]);
+        data->cur_path = route;
         break;
-    case 3:
-        qcopy(d + 0x60, c->e[0]);
-        y = func_L00_001FF860(c->e[1][0] - *(float *)(d + 0x60), c->e[1][1] - *(float *)(d + 0x64));
-        *(Route_2dd4f8 **)(d + 0x120) = c;
+    case SHUTTLE_SELECT_ALTERNATE_PATH_START:
+        qcopy(data->pos, alternate_path->e[0]);
+        y = func_L00_001FF860(alternate_path->e[1][0] - data->pos[0], alternate_path->e[1][1] - data->pos[1]);
+        data->cur_path = alternate_path;
         break;
     default:
         return;
     }
-    *(float *)(d + 0x78) = y;
+    data->angle = y;
 }
 extern float func_001FA748(float, float);
 extern float D_0015EE6C MACRO_ADDR;
 extern float func_001F9FA8(float);
 /* Moby update for a drifting object that bobs and sways. */
 void update_moby_transform_wobble(char *moby) {
-    char *d = *(char **)(moby + 0x78);
-    float s, t, w;
-    qcopy(moby + 0x10, d + 0x60);
-    qcopy(moby + 0x40, d + 0x70);
-    s = FastAddRots(*(float *)(d + 0xEC), D_0015EE6C * 2.0943951f);
-    *(float *)(d + 0xEC) = s;
-    t = FastSin(s);
-    w = D_0015EE6C * 1.6929693f;
-    *(float *)(moby + 0x18) += t * 0.25f;
-    s = FastAddRots(*(float *)(d + 0xF0), w);
-    *(float *)(d + 0xF0) = s;
-    t = FastAddRots(*(float *)(moby + 0x44), FastSin(s) * 0.08726646f);
-    w = D_0015EE6C * 0.9250245f;
-    *(float *)(moby + 0x44) = t;
-    s = FastAddRots(*(float *)(d + 0xF4), w);
-    *(float *)(d + 0xF4) = s;
-    *(float *)(moby + 0x40) = FastAddRots(*(float *)(moby + 0x40), FastSin(s) * 0.08726646f);
-    if (*(float *)(moby + 0x40) > 0.17453292f) *(float *)(moby + 0x40) = 0.17453292f;
-    else if (*(float *)(moby + 0x40) < -0.17453292f) *(float *)(moby + 0x40) = -0.17453292f;
-    if (*(float *)(moby + 0x44) > 0.17453292f) *(float *)(moby + 0x44) = 0.17453292f;
-    else if (*(float *)(moby + 0x44) < -0.17453292f) *(float *)(moby + 0x44) = -0.17453292f;
+    struct Moby *m = (struct Moby *)moby;
+    u8 *pvars = m->pvars;
+    float wobble_phase, wobble_value, wobble_phase_step;
+    qcopy(&m->pos, pvars + 0x60);
+    qcopy(&m->rot, pvars + 0x70);
+    wobble_phase = FastAddRots(*(float *)(pvars + 0xEC), D_0015EE6C * 2.0943951f);
+    *(float *)(pvars + 0xEC) = wobble_phase;
+    wobble_value = FastSin(wobble_phase);
+    wobble_phase_step = D_0015EE6C * 1.6929693f;
+    m->pos.z += wobble_value * 0.25f;
+    wobble_phase = FastAddRots(*(float *)(pvars + 0xF0), wobble_phase_step);
+    *(float *)(pvars + 0xF0) = wobble_phase;
+    wobble_value = FastAddRots(m->rot.y, FastSin(wobble_phase) * 0.08726646f);
+    wobble_phase_step = D_0015EE6C * 0.9250245f;
+    m->rot.y = wobble_value;
+    wobble_phase = FastAddRots(*(float *)(pvars + 0xF4), wobble_phase_step);
+    *(float *)(pvars + 0xF4) = wobble_phase;
+    m->rot.x = FastAddRots(m->rot.x, FastSin(wobble_phase) * 0.08726646f);
+    if (m->rot.x > 0.17453292f)
+        m->rot.x = 0.17453292f;
+    else if (m->rot.x < -0.17453292f)
+        m->rot.x = -0.17453292f;
+    if (m->rot.y > 0.17453292f)
+        m->rot.y = 0.17453292f;
+    else if (m->rot.y < -0.17453292f)
+        m->rot.y = -0.17453292f;
 }
 extern float func_00214D88(float *, float *, float, float, float, float);
 extern void func_00215CA8(int *, int, void *, float *, int, float);

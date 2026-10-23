@@ -686,25 +686,30 @@ extern float func_001FA748(float, float);
 
 /* State machine: waits for level flags, then turns the moby around and back. */
 void update_moby_visibility_and_half_turn(char *moby) {
-    switch (*(unsigned char *)(moby + 0x20)) {
-    case 0:
-        moby[0x20] = 1;
+    enum {
+        INITIALIZE_STATE_MACHINE = 0,
+        WAIT_TO_HIDE_AND_TURN = 1,
+        HIDDEN_WAIT_TO_SHOW = 2
+    };
+    switch (((struct Moby *)moby)->state) {
+    case INITIALIZE_STATE_MACHINE:
+        ((struct Moby *)moby)->state = 1;
         break;
-    case 1:
+    case WAIT_TO_HIDE_AND_TURN:
         if (D_L18_0015F6A8 == 2 && D_L18_0016D310 == 3) {
-            *(unsigned short *)(moby + 0x34) |= 1;
-            moby[0x31] = 0;
-            *(float *)(moby + 0x40) = FastAddRots(*(float *)(moby + 0x40), 3.1415927f);
-            moby[0x20] = 2;
+            ((struct Moby *)moby)->flags |= 1;
+            ((struct Moby *)moby)->visible = 0;
+            ((struct Moby *)moby)->rot.x = FastAddRots(((struct Moby *)moby)->rot.x, 3.1415927f);
+            ((struct Moby *)moby)->state = 2;
         }
         break;
-    case 2:
+    case HIDDEN_WAIT_TO_SHOW:
         if (D_L18_0015F6A8 != 2) {
-            unsigned short fl = *(unsigned short *)(moby + 0x34);
-            moby[0x20] = 3;
+            unsigned short fl = ((struct Moby *)moby)->flags;
+            ((struct Moby *)moby)->state = 3;
             fl &= 0xFFFE;
-            moby[0x31] = 1;
-            *(unsigned short *)(moby + 0x34) = fl;
+            ((struct Moby *)moby)->visible = 1;
+            ((struct Moby *)moby)->flags = fl;
         }
         break;
     }
@@ -1043,100 +1048,101 @@ extern int func_L00_00260FB0(float, void *, void *, int, int, int *, int);
 
 /* Shared per-frame handler of the class 0x772 enemy. */
 void update_gadgebot_damage_target_and_glow(void *m_) {
-    struct Moby *m = m_;
-    SentryVars_5C0 *d = (SentryVars_5C0 *)m->pvars;
+    struct Moby *moby = m_;
+    SentryVars_5C0 *sentry_vars = (SentryVars_5C0 *)moby->pvars;
     union { u128 q; float f[4]; } v;
     int hit;
     float dmg;
     float angle;
     float speed;
     char *coll;
-    int a;
-    int b;
+    int reaction_value_or_path_address;
+    int fall_setup_value_or_path_slot_address;
 
-    if (m->state == 0 || m->state == 8) {
+    if (moby->state == 0 || moby->state == 8) {
         return;
     }
-    if (m->state != 7 && (*(int *)&D_L18_0015F6B0) != (*(int *)&D_L18_00162694)) {
+    if (moby->state != 7 && (*(int *)&D_L18_0015F6B0) != (*(int *)&D_L18_00162694)) {
         (*(int *)&D_L18_00162694) = (*(int *)&D_L18_0015F6B0);
-        AddDrawCallback((void *)draw_group_class_0772_joint_glows, m);
+        AddDrawCallback((void *)draw_group_class_0772_joint_glows, moby);
     }
     speed = F(D_L18_001626A4);
-    if (m->state == 4 || m->state == 5) {
+    if (moby->state == 4 || moby->state == 5) {
         speed = F(D_L18_001626A8);
     }
-    d->spin = FastAddRots(d->spin, speed * 0.017453292f * D_0015EE6C);
-    *(int *)((char *)m + 0x90) = FastTweenColor((*(int *)&D_L18_0016269C), (*(int *)&D_L18_001626A0),
-                                FastSin(d->spin) * 0.5f + 0.5f);
-    if (m->pos.z < 100.0f && m->state != 7) {
-        m->state = 6;
+    sentry_vars->spin = FastAddRots(sentry_vars->spin, speed * 0.017453292f * D_0015EE6C);
+    moby->glow_color = FastTweenColor((*(int *)&D_L18_0016269C), (*(int *)&D_L18_001626A0),
+                                FastSin(sentry_vars->spin) * 0.5f + 0.5f);
+    if (moby->pos.z < 100.0f && moby->state != 7) {
+        moby->state = 6;
     }
-    m->scale = m->pclass->scale * F(D_L18_0016268C);
+    moby->scale = moby->pclass->scale * F(D_L18_0016268C);
     if (hero.state.current == 0x72 || D_L18_0015F6A8 == 2) {
-        if (m->state != 7) {
-            m->state = 8;
-            if (*((u8 *)m + 0x53) != 0) {
-                MobyBlendAnimation(m, 0, 0, scale_ticks(10));
+        if (moby->state != 7) {
+            moby->state = 8;
+            if (moby->prev_seq != 0) {
+                MobyBlendAnimation(moby, 0, 0, scale_ticks(10));
             }
-            *(int *)((char *)m + 0x94) = 0;
-            *(u16 *)((char *)m + 0x34) = (*(u16 *)((char *)m + 0x34) | 0x41) & ~0x1000;
+            moby->collision = 0;
+            moby->flags = (moby->flags | 0x41) & ~0x1000;
             return;
         }
     }
     dmg = 0.0f;
-    coll = MobyGetHitMessage(m, 0x330000, 0);
-    ComputeHitResponse(m, coll, &d->health, 0, &hit, &dmg, 0, 4);
-    if (hit != 1 && m->state != 6 && dmg != 0.0f) {
-        d->health -= dmg;
-        if (d->health <= 0.0f) {
+    coll = MobyGetHitMessage(moby, 0x330000, 0);
+    ComputeHitResponse(moby, coll, &sentry_vars->health, 0, &hit, &dmg, 0, 4);
+    if (hit != 1 && moby->state != 6 && dmg != 0.0f) {
+        sentry_vars->health -= dmg;
+        if (sentry_vars->health <= 0.0f) {
             if (random_integer_below(2) != 0) {
-                m->state = 6;
+                moby->state = 6;
             } else {
                 float k = D_0015EE70;
                 float t0 = F(D_L18_001626AC) * k;
                 float t1 = F(D_L18_001626B0) * k;
                 float t2 = F(D_L18_001626B4) * D_0015EE6C;
                 float t3 = F(D_L18_001626B8) * D_0015EE6C;
-                b = 0x200;
-                d->unk90 = b;
+                fall_setup_value_or_path_slot_address = 0x200;
+                sentry_vars->unk90 = fall_setup_value_or_path_slot_address;
                 k = 0.5f;
-                d->unk98 = k;
-                d->unk80 = t0;
-                d->unk84 = t1;
-                d->unk88 = t2;
-                d->unk8C = t3;
-                a = 0x29;
-                d->unk94 = a;
-                d->unkAD = 0;
-                d->unkBC = D_0015EE6C + D_0015EE6C;
-                *(u16 *)((char *)m + 0x34) &= ~0x1000;
+                sentry_vars->unk98 = k;
+                sentry_vars->unk80 = t0;
+                sentry_vars->unk84 = t1;
+                sentry_vars->unk88 = t2;
+                sentry_vars->unk8C = t3;
+                reaction_value_or_path_address = 0x29;
+                sentry_vars->unk94 = reaction_value_or_path_address;
+                sentry_vars->unkAD = 0;
+                sentry_vars->unkBC = D_0015EE6C + D_0015EE6C;
+                moby->flags &= ~0x1000;
                 v.q = *(u128 *)(coll + 0x10);
-                HeadingFromVector(&v, &angle, &d->unk88, &d->unk8C);
-                InitKnockback(angle, m, d->fall, 3, 1, 0);
-                d->unkC0 = 7.5f;
-                d->unkC4 = 15.0f;
-                m->state = 5;
-                *(int *)((char *)m + 0x94) = 0;
-                d->anim_flags = 0x78;
-                RerollEffectCounter(m, d->anim);
+                HeadingFromVector(&v, &angle, &sentry_vars->unk88, &sentry_vars->unk8C);
+                InitKnockback(angle, moby, sentry_vars->fall, 3, 1, 0);
+                sentry_vars->unkC0 = 7.5f;
+                sentry_vars->unkC4 = 15.0f;
+                moby->state = 5;
+                moby->collision = 0;
+                sentry_vars->anim_flags = 0x78;
+                RerollEffectCounter(moby, sentry_vars->anim);
             }
         }
     }
-    *((u8 *)m + 0xA4) = 0xFF;
-    StepColorFade(m, d->anim);
-    b = (int)&D_L18_001B11B0[d->path];
-    a = *(int *)b;
-    FindNearestEligibleMoby(512.0f, m, &d->target, 0, 0, (int *)(a + 0x10), *(int *)a);
-    if (d->target_mode == 2) {
+    moby->hit_slot = 0xFF;
+    StepColorFade(moby, sentry_vars->anim);
+    fall_setup_value_or_path_slot_address = (int)&D_L18_001B11B0[sentry_vars->path];
+    reaction_value_or_path_address = *(int *)fall_setup_value_or_path_slot_address;
+    FindNearestEligibleMoby(512.0f, moby, &sentry_vars->target, 0, 0,
+                            (int *)(reaction_value_or_path_address + 0x10), *(int *)reaction_value_or_path_address);
+    if (sentry_vars->target_mode == 2) {
         if (hero.state.control_mode == 0xF) {
             int *list = (int *)hero.unk560;
-            qcopy(&d->target, (char *)list + *list * 16);
+            qcopy(&sentry_vars->target, (char *)list + *list * 16);
         } else {
-            qcopy(&d->target, &hero.motion.pos);
+            qcopy(&sentry_vars->target, &hero.motion.pos);
         }
     }
-    if (d->target_moby == 0) {
-        d->target_moby = hero.moby;
+    if (sentry_vars->target_moby == 0) {
+        sentry_vars->target_moby = hero.moby;
     }
 }
 typedef struct { float v[4]; } __attribute__((aligned(16))) QVec;
@@ -1347,15 +1353,15 @@ int Moby1906HitCheck(char *a, void *pos, void *target, float h) {
 }
 /* Puts a moby into the inactive state (8). */
 void hide_moby_and_clear_collision(unsigned char *arg) {
-    unsigned short flags;
-    arg[0x20] = 8;
-    if (arg[0x53] != 0) {
+    u16 flags;
+    ((struct Moby *)arg)->state = 0x8;
+    if (((struct Moby *)arg)->prev_seq != 0) {
         MobyBlendAnimation(arg, 0, 0, scale_ticks(10));
     }
-    flags = *(unsigned short *)(arg + 0x34);
-    arg[0x31] = 0;
+    flags = ((struct Moby *)arg)->flags;
+    ((struct Moby *)arg)->visible = 0;
     flags |= 1;
-    *(int *)(arg + 0x94) = 0;
+    ((struct Moby *)arg)->collision = 0;
     flags &= 0xEFFF;
-    *(unsigned short *)(arg + 0x34) = flags;
+    ((struct Moby *)arg)->flags = flags;
 }

@@ -1168,15 +1168,15 @@ extern float func_L00_001FF860(float, float);
 extern void func_L00_00251E30(void *);
 
 void launch_sand_shark(unsigned char *moby, void *position, float *direction) {
-    char *data = *(char **)(moby + 0x78);
-    moby[0x20] = 0x1B;
-    *(unsigned short *)(moby + 0x34) &= 0xFFBE;
-    if (moby[0x53] != 0xB) {
+    char *data = (char *)((struct Moby *)moby)->pvars;
+    ((struct Moby *)moby)->state = 0x1B;
+    ((struct Moby *)moby)->flags &= 0xFFBE;
+    if (((struct Moby *)moby)->prev_seq != 0xB) {
         MobyBlendAnimation(moby, 0xB, 0, 1);
     }
-    qcopy(moby + 0x10, position);
+    qcopy(&((struct Moby *)moby)->pos, position);
     qcopy(data + 0x40, direction);
-    *(float *)(moby + 0x48) = func_L00_001FF860(direction[0], direction[1]);
+    ((struct Moby *)moby)->rot.z = func_L00_001FF860(direction[0], direction[1]);
     func_L00_00251E30(moby);
 }
 extern void *func_L00_002DCFD0(void *);
@@ -1205,15 +1205,16 @@ extern void func_L02_002D51D0(void *);
 extern void func_0020D678(void *);
 
 void prepare_sand_shark_for_relaunch_or_remove(unsigned char *moby) {
-    char *data = *(char **)(moby + 0x78);
+    struct Moby *m = (struct Moby *)moby;
+    char *data = (char *)m->pvars;
     int result = FindLinkedMoby29C(moby);
     *(int *)(data + 0x27C) = result;
     if (result != 0) {
-        moby[0x20] = 0x1A;
-        *(int *)(moby + 0x58) = 0;
-        qcopy(moby + 0x10, data + 0x220);
-        *(int *)(moby + 0x94) = 0;
-        *(float *)(moby + 0x18) -= 10.0f;
+        m->state = 0x1A;
+        m->anim_speed = 0;
+        qcopy(&m->pos, data + 0x220);
+        m->collision = 0;
+        m->pos.z -= 10.0f;
     } else {
         SpawnMobyStreaks(moby);
         DeleteMoby(moby);
@@ -1319,12 +1320,36 @@ typedef struct {
 } L02BotData;
 
 // UpdateMoby_612: state machine of an Aridia enemy that walks to its post, turns to the hero, fires and wanders back.
-void update_level02_bot(unsigned char *moby) {
+void update_level02_bot(unsigned char *raw) {
+    enum {
+        L02_BOT_INITIALIZE = 0,
+        L02_BOT_WAIT_FOR_WAKE_ANIMATION = 2,
+        L02_BOT_ALIGN_TO_GROUND_AT_POST = 3,
+        L02_BOT_WAIT_FOR_ANIMATION_BEFORE_MOVE_TO_POST = 4,
+        L02_BOT_MOVE_TO_POST = 5,
+        L02_BOT_WANDER = 6,
+        L02_BOT_SELECT_ATTACK_OR_WANDER = 7,
+        L02_BOT_WAIT_FOR_WAKE_TRIGGER_BEFORE_GROUND_ALIGNMENT = 8,
+        L02_BOT_WAIT_FOR_WAKE_TRIGGER_WITH_ALTERNATE_WAKE_ANIMATION = 9,
+        L02_BOT_WAIT_FOR_WAKE_TRIGGER = 10,
+        L02_BOT_WAIT_FOR_ANIMATION_BEFORE_ATTACK = 11,
+        L02_BOT_UPDATE_ATTACK_SHOTS = 12,
+        L02_BOT_WAIT_FOR_ANIMATION_BEFORE_ATTACK_RECHECK = 13,
+        L02_BOT_HIT_KNOCKBACK_RECOVERY = 16,
+        L02_BOT_DEATH_KNOCKBACK = 17
+    };
+    enum {
+        L02_BOT_START_SELECT_ATTACK_OR_WANDER = 0,
+        L02_BOT_START_WAIT_FOR_WAKE_TRIGGER = 1,
+        L02_BOT_START_WAIT_FOR_WAKE_TRIGGER_BEFORE_GROUND_ALIGNMENT = 2,
+        L02_BOT_START_WAIT_FOR_WAKE_TRIGGER_WITH_ALTERNATE_WAKE_ANIMATION = 3
+    };
     float position[4];
     float direction[4];
     char shot[0x30];
-    L02BotData *data = *(L02BotData **)(moby + 0x78);
-    char *target;
+    struct Moby *moby = (struct Moby *)raw;
+    L02BotData *data = (L02BotData *)moby->pvars;
+    struct Moby *target;
     float angle;
     float ground;
     float wander_heading;
@@ -1334,23 +1359,23 @@ void update_level02_bot(unsigned char *moby) {
     int triggered;
 
     Manipulator_ApplyScale(2.5f, (int)moby, 1, data->blink);
-    if (moby[0x31] != 0 && FastVecDist(moby + 0x10, D_L02_00167440) < 30.0f) {
+    if (moby->visible != 0 && FastVecDist(&moby->pos, D_L02_00167440) < 30.0f) {
         func_L00_0025B178(moby);
-        moby[0x7F] = 0x18;
+        moby->shadow_range = 0x18;
     }
     handle_level02_bot_damage_and_retargeting(moby);
-    switch (moby[0x20]) {
-    case 0:
+    switch (moby->state) {
+    case L02_BOT_INITIALIZE:
         if (func_001160D8() & 1) {
-            *(unsigned short *)(moby + 0x34) |= 0x8000;
+            moby->flags |= 0x8000;
         }
-        *(unsigned short *)(moby + 0x34) |= 0x1000;
+        moby->flags |= 0x1000;
         data->b5C = 1;
         data->f30 = 1.0f;
         data->b58 = 0xF;
         data->b5A = 8;
         data->b29 = 0;
-        *(long *)(moby + 0x38) = *(long *)(*(char **)(D_0013E633 + 0x2E9D) + 0x38);
+        *(long *)&moby->spawn_frame = *(long *)(*(char **)(D_0013E633 + 0x2E9D) + 0x38);
         MoveCtl_Init(data->walk);
         step = D_0015EE6C * 4.0f;
         data->b28 = 2;
@@ -1364,125 +1389,125 @@ void update_level02_bot(unsigned char *moby) {
         clear_u64_value(data->velocity);
         reset_shot_tracking((char *)data->shots);
         switch (data->start) {
-        case 0:
+        case L02_BOT_START_SELECT_ATTACK_OR_WANDER:
         default:
-            if (moby[0x53] != 0) {
+            if (moby->prev_seq != 0) {
                 MobyBlendAnimation(moby, 0, 0, 0);
             }
-            moby[0x20] = 7;
+            moby->state = 7;
             break;
-        case 1:
-            if (moby[0x53] != 0) {
+        case L02_BOT_START_WAIT_FOR_WAKE_TRIGGER:
+            if (moby->prev_seq != 0) {
                 MobyBlendAnimation(moby, 0, 0, 0);
             }
-            moby[0x20] = 10;
+            moby->state = 10;
             break;
-        case 2:
-            if (moby[0x53] != 2) {
+        case L02_BOT_START_WAIT_FOR_WAKE_TRIGGER_BEFORE_GROUND_ALIGNMENT:
+            if (moby->prev_seq != 2) {
                 MobyBlendAnimation(moby, 2, 0, 0);
             }
-            moby[0x20] = 8;
+            moby->state = 8;
             break;
-        case 3:
-            if (moby[0x53] != 15) {
+        case L02_BOT_START_WAIT_FOR_WAKE_TRIGGER_WITH_ALTERNATE_WAKE_ANIMATION:
+            if (moby->prev_seq != 15) {
                 MobyBlendAnimation(moby, 15, 0, 0);
             }
-            moby[0x20] = 9;
+            moby->state = 9;
             break;
         }
         break;
-    case 2:
-        if (moby[0x70] & 2) {
-            moby[0x20] = 3;
-            if (moby[0x53] != 4) {
+    case L02_BOT_WAIT_FOR_WAKE_ANIMATION:
+        if (moby->anim_flags & 2) {
+            moby->state = 3;
+            if (moby->prev_seq != 4) {
                 MobyBlendAnimation(moby, 4, 0, 0);
             }
         }
         break;
-    case 3:
-        target = data->target;
-        angle = func_L00_001FF860(*(float *)(target + 0x10) - *(float *)(moby + 0x10),
-                                  *(float *)(target + 0x14) - *(float *)(moby + 0x14));
+    case L02_BOT_ALIGN_TO_GROUND_AT_POST:
+        target = (struct Moby *)data->target;
+        angle = func_L00_001FF860(target->pos.x - moby->pos.x,
+                                  target->pos.y - moby->pos.y);
         MobySpringTurn((char *)moby, angle, &data->turn_speed, 0.02f, 0.3f, D_0015EE6C * 1.5707964f);
-        FastVecSub(position, D_L02_0016016C + data->post * 0x80 + 0x30, moby + 0x10);
+        FastVecSub(position, D_L02_0016016C + data->post * 0x80 + 0x30, &moby->pos);
         position[2] = 0.0f;
         ClampVectorLength(position, D_0015EE6C * 6.0f);
-        FastVecAdd(moby + 0x10, moby + 0x10, position);
-        ground = ProbeGroundHeight(moby + 0x10, 0, 0.5f);
+        FastVecAdd(&moby->pos, &moby->pos, position);
+        ground = ProbeGroundHeight(&moby->pos, 0, 0.5f);
         ApproachValue(&data->velocity[2], D_0015EE6C * 40.0f, D_L02_00161B14 * D_0015EE70);
-        ApproachValue((float *)(moby + 0x18), ground, data->velocity[2]);
-        if (*(float *)(moby + 0x18) == ground) {
-            moby[0x20] = 4;
-            if (moby[0x53] != 5) {
+        ApproachValue(&moby->pos.z, ground, data->velocity[2]);
+        if (moby->pos.z == ground) {
+            moby->state = 4;
+            if (moby->prev_seq != 5) {
                 MobyBlendAnimation(moby, 5, 4, scale_ticks(10));
             }
         }
         break;
-    case 4:
-        if (moby[0x70] & 2) {
-            moby[0x20] = 5;
-            if (moby[0x53] != 6) {
+    case L02_BOT_WAIT_FOR_ANIMATION_BEFORE_MOVE_TO_POST:
+        if (moby->anim_flags & 2) {
+            moby->state = 5;
+            if (moby->prev_seq != 6) {
                 MobyBlendAnimation(moby, 6, 0, scale_ticks(6));
             }
         }
         break;
-    case 5:
+    case L02_BOT_MOVE_TO_POST:
         if (ClassifyTargetInCone((char *)moby, data->walk, (float *)(D_L02_0016016C + data->post * 0x80 + 0x30), (char *)data->velocity) == 4) {
-            if (moby[0x53] != 0) {
+            if (moby->prev_seq != 0) {
                 MobyBlendAnimation(moby, 0, 0, scale_ticks(30));
             }
-            moby[0x20] = 7;
+            moby->state = 7;
         }
         break;
-    case 6:
+    case L02_BOT_WANDER:
         if (ClassifyTargetInCone((char *)moby, data->walk, data->wander, (char *)data->velocity) & 6) {
-            if (moby[0x53] != 0) {
+            if (moby->prev_seq != 0) {
                 MobyBlendAnimation(moby, 0, 0, scale_ticks(10));
             }
-            moby[0x20] = 7;
-        } else if (FastVecDist(data->target + 0x10, D_L02_0016016C + data->post * 0x80 + 0x30) < data->attack_range
-                   && FastAbsF(*(float *)(data->target + 0x18) - *(float *)(moby + 0x18)) < 4.0f) {
-            moby[0x20] = 5;
-            if (moby[0x53] != 6) {
+            moby->state = 7;
+        } else if (FastVecDist(&((struct Moby *)data->target)->pos, D_L02_0016016C + data->post * 0x80 + 0x30) < data->attack_range
+                   && FastAbsF(((struct Moby *)data->target)->pos.z - moby->pos.z) < 4.0f) {
+            moby->state = 5;
+            if (moby->prev_seq != 6) {
                 MobyBlendAnimation(moby, 6, 0, scale_ticks(10));
             }
         }
         break;
-    case 7:
-        if (FastVecDist(data->target + 0x10, D_L02_0016016C + data->post * 0x80 + 0x30) < data->attack_range
-            && FastAbsF(*(float *)(data->target + 0x18) - *(float *)(moby + 0x18)) < 4.0f) {
-            if (FastVecDist(moby + 0x10, D_L02_0016016C + data->post * 0x80 + 0x30) < 1.0f) {
-                target = data->target;
-                angle = func_L00_001FF860(*(float *)(target + 0x10) - *(float *)(moby + 0x10),
-                                          *(float *)(target + 0x14) - *(float *)(moby + 0x14));
+    case L02_BOT_SELECT_ATTACK_OR_WANDER:
+        if (FastVecDist(&((struct Moby *)data->target)->pos, D_L02_0016016C + data->post * 0x80 + 0x30) < data->attack_range
+            && FastAbsF(((struct Moby *)data->target)->pos.z - moby->pos.z) < 4.0f) {
+            if (FastVecDist(&moby->pos, D_L02_0016016C + data->post * 0x80 + 0x30) < 1.0f) {
+                target = (struct Moby *)data->target;
+                angle = func_L00_001FF860(target->pos.x - moby->pos.x,
+                                          target->pos.y - moby->pos.y);
                 MobySpringTurn((char *)moby, angle, &data->turn_speed, 0.02f, 0.3f, 0.1f);
-                if (FastDiffRots(*(float *)(moby + 0x48), angle) < 0.08726646f) {
-                    moby[0x20] = 0xB;
-                    if (moby[0x53] != 8) {
+                if (FastDiffRots(moby->rot.z, angle) < 0.08726646f) {
+                    moby->state = 0xB;
+                    if (moby->prev_seq != 8) {
                         MobyBlendAnimation(moby, 8, 0, scale_ticks(6));
                     }
                 }
             } else {
-                moby[0x20] = 5;
-                if (moby[0x53] != 6) {
+                moby->state = 5;
+                if (moby->prev_seq != 6) {
                     MobyBlendAnimation(moby, 6, 0, scale_ticks(10));
                 }
             }
-        } else if (moby[0x70] & 2) {
+        } else if (moby->anim_flags & 2) {
             wander_heading = random_angle_radians();
             data->wander[0] = FastCos(wander_heading) * random_float_between(1.0f, 2.0f);
             data->wander[1] = FastSin(wander_heading) * random_float_between(1.0f, 2.0f);
             data->wander[2] = 0.0f;
             FastVecAdd(data->wander, data->wander, D_L02_0016016C + data->post * 0x80 + 0x30);
-            moby[0x20] = 6;
-            if (moby[0x53] != 6) {
+            moby->state = 6;
+            if (moby->prev_seq != 6) {
                 MobyBlendAnimation(moby, 6, 0, scale_ticks(10));
             }
         }
         break;
-    case 8:
-    case 9:
-        if (!(frame_counter_ref & 3) && moby[0x31] != 0) {
+    case L02_BOT_WAIT_FOR_WAKE_TRIGGER_BEFORE_GROUND_ALIGNMENT:
+    case L02_BOT_WAIT_FOR_WAKE_TRIGGER_WITH_ALTERNATE_WAKE_ANIMATION:
+        if (!(frame_counter_ref & 3) && moby->visible != 0) {
             spray_radius = random_float_between(0.0f, D_L02_00161B28) * D_0015EE6C;
             spray_heading = random_angle_radians();
             direction[0] = FastCos(spray_heading) * spray_radius;
@@ -1492,7 +1517,7 @@ void update_level02_bot(unsigned char *moby) {
             PartType21Spawn(position, direction, D_L02_00161B18, D_L02_00161B18,
                               rand_range(scale_ticks(D_L02_00161B20), scale_ticks(D_L02_00161B24)), 1, 40000.0f);
         }
-    case 10:
+    case L02_BOT_WAIT_FOR_WAKE_TRIGGER:
         triggered = 0;
         if (data->wake_volume >= 0) {
             triggered = is_point_inside_clip_volume(D_0013E633 + 0x10BD, data->wake_volume) != 0;
@@ -1500,43 +1525,43 @@ void update_level02_bot(unsigned char *moby) {
             triggered = 1;
         }
         if (triggered) {
-            if (moby[0x20] == 8) {
-                if (moby[0x53] != 4) {
+            if (moby->state == 8) {
+                if (moby->prev_seq != 4) {
                     MobyBlendAnimation(moby, 4, 0, scale_ticks(10));
                 }
-                moby[0x20] = 2;
-            } else if (moby[0x20] == 9) {
-                if (moby[0x53] != 0x10) {
+                moby->state = 2;
+            } else if (moby->state == 9) {
+                if (moby->prev_seq != 0x10) {
                     MobyBlendAnimation(moby, 0x10, 0, scale_ticks(10));
                 }
-                moby[0x20] = 2;
+                moby->state = 2;
             } else {
-                moby[0x20] = 5;
-                if (moby[0x53] != 6) {
+                moby->state = 5;
+                if (moby->prev_seq != 6) {
                     MobyBlendAnimation(moby, 6, 0, scale_ticks(6));
                 }
             }
         }
         break;
-    case 11:
-        *(float *)(moby + 0x58) = 2.0f;
-        target = data->target;
-        angle = func_L00_001FF860(*(float *)(target + 0x10) - *(float *)(moby + 0x10),
-                                  *(float *)(target + 0x14) - *(float *)(moby + 0x14));
+    case L02_BOT_WAIT_FOR_ANIMATION_BEFORE_ATTACK:
+        moby->anim_speed = 2.0f;
+        target = (struct Moby *)data->target;
+        angle = func_L00_001FF860(target->pos.x - moby->pos.x,
+                                  target->pos.y - moby->pos.y);
         MobySpringTurn((char *)moby, angle, &data->turn_speed, 0.02f, 0.3f, 0.1f);
-        if (moby[0x70] & 2) {
-            *(float *)(moby + 0x58) = 1.0f;
-            moby[0x20] = 0xC;
-            if (moby[0x53] != 9) {
+        if (moby->anim_flags & 2) {
+            moby->anim_speed = 1.0f;
+            moby->state = 0xC;
+            if (moby->prev_seq != 9) {
                 MobyBlendAnimation(moby, 9, 0, scale_ticks(6));
             }
         }
         break;
-    case 12:
-        *(float *)(moby + 0x58) = 0.5f;
+    case L02_BOT_UPDATE_ATTACK_SHOTS:
+        moby->anim_speed = 0.5f;
         Moby_GetJointWorldPos(moby, 0, position);
-        direction[0] = FastCos(func_L00_001FF860(position[0] - *(float *)(moby + 0x10), position[1] - *(float *)(moby + 0x14)));
-        direction[1] = FastSin(func_L00_001FF860(position[0] - *(float *)(moby + 0x10), position[1] - *(float *)(moby + 0x14)));
+        direction[0] = FastCos(func_L00_001FF860(position[0] - moby->pos.x, position[1] - moby->pos.y));
+        direction[1] = FastSin(func_L00_001FF860(position[0] - moby->pos.x, position[1] - moby->pos.y));
         direction[2] = -0.1f;
         EffectSlots_Fire(data->shots, position, direction, D_L02_00161B10);
         direction[3] = 5627.925f;
@@ -1544,59 +1569,59 @@ void update_level02_bot(unsigned char *moby) {
         InitDirectionalHitQuery(shot, (int)moby, 0x10001, direction, 1.0f);
         shot[0x18] = 5;
         shot[0x19] = 1;
-        *(short *)(shot + 0x1A) = *(unsigned short *)(moby + 0xA6);
+        *(short *)(shot + 0x1A) = *(u16 *)&moby->oclass;
         collect_mobies_around_tracked_objects(data->shots, (int)moby, (int)shot);
-        if (moby[0x70] & 2) {
-            *(float *)(moby + 0x58) = 1.0f;
-            moby[0x20] = 0xD;
+        if (moby->anim_flags & 2) {
+            moby->anim_speed = 1.0f;
+            moby->state = 0xD;
             if (random_integer_below(0xFF) & 1) {
-                if (moby[0x53] != 10) {
+                if (moby->prev_seq != 10) {
                     MobyBlendAnimation(moby, 10, 0, scale_ticks(6));
                 }
-            } else if (moby[0x53] != 8) {
+            } else if (moby->prev_seq != 8) {
                 MobyBlendAnimation(moby, 8, 0, scale_ticks(6));
             }
         }
         break;
-    case 13:
-        target = data->target;
-        angle = func_L00_001FF860(*(float *)(target + 0x10) - *(float *)(moby + 0x10),
-                                  *(float *)(target + 0x14) - *(float *)(moby + 0x14));
+    case L02_BOT_WAIT_FOR_ANIMATION_BEFORE_ATTACK_RECHECK:
+        target = (struct Moby *)data->target;
+        angle = func_L00_001FF860(target->pos.x - moby->pos.x,
+                                  target->pos.y - moby->pos.y);
         MobySpringTurn((char *)moby, angle, &data->turn_speed, 0.02f, 0.3f, 0.1f);
-        if (moby[0x70] & 2) {
-            if (func_001F9D48(moby + 0x10, data->target + 0x10) < data->attack_range + 1.0f
-                && FastAbsF(*(float *)(data->target + 0x18) - *(float *)(moby + 0x18)) < 3.0f) {
-                moby[0x20] = 0xC;
-                if (moby[0x53] != 9) {
+        if (moby->anim_flags & 2) {
+            if (func_001F9D48(&moby->pos, &((struct Moby *)data->target)->pos) < data->attack_range + 1.0f
+                && FastAbsF(((struct Moby *)data->target)->pos.z - moby->pos.z) < 3.0f) {
+                moby->state = 0xC;
+                if (moby->prev_seq != 9) {
                     MobyBlendAnimation(moby, 9, 0, scale_ticks(6));
                 }
             } else {
-                moby[0x20] = 7;
-                if (moby[0x53] != 0) {
+                moby->state = 7;
+                if (moby->prev_seq != 0) {
                     MobyBlendAnimation(moby, 0, 0, scale_ticks(6));
                 }
             }
         }
         break;
-    case 16:
+    case L02_BOT_HIT_KNOCKBACK_RECOVERY:
         if (mine_fall(moby, data->knockback) & 0x40) {
-            moby[0x20] = 7;
-            if (moby[0x53] != 0) {
+            moby->state = 7;
+            if (moby->prev_seq != 0) {
                 MobyBlendAnimation(moby, 0, 0, scale_ticks(6));
             }
         }
         break;
-    case 17:
+    case L02_BOT_DEATH_KNOCKBACK:
         if (mine_fall(moby, data->knockback) & 0x140) {
-            qcopy(position, moby + 0x10);
+            qcopy(position, &moby->pos);
             position[2] += 1.0f;
             SetDeathBits(moby, 0, -1);
             func_L00_0025F4A8(moby, data->velocity, position, 0.0f, 0.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, -1, 1.0f, 15.0f, 1, 1, -1, 0);
-            SpawnBreakFragment((char *)moby, 0x6D7, (float *)(moby + 0x10), moby + 0x40, 0, 0, 0.0f, D_L02_0015F660, D_L02_0015F660, D_L02_0015F660);
-            SpawnBreakFragment((char *)moby, 0x6D8, (float *)(moby + 0x10), moby + 0x40, 0, 0, 0.0f, D_L02_0015F660, D_L02_0015F660, D_L02_0015F660);
-            SpawnBreakFragment((char *)moby, 0x6D9, (float *)(moby + 0x10), moby + 0x40, 0, 0, 0.0f, D_L02_0015F660, D_L02_0015F660, D_L02_0015F660);
-            SpawnBreakFragment((char *)moby, 0x6E9, (float *)(moby + 0x10), moby + 0x40, 0, 0, 0.0f, D_L02_0015F660, D_L02_0015F660, D_L02_0015F660);
-            SpawnBreakFragment((char *)moby, 0x782, (float *)(moby + 0x10), moby + 0x40, 0, 0, 0.0f, D_L02_0015F660, D_L02_0015F660, D_L02_0015F660);
+            SpawnBreakFragment((char *)moby, 0x6D7, (float *)(&moby->pos), &moby->rot, 0, 0, 0.0f, D_L02_0015F660, D_L02_0015F660, D_L02_0015F660);
+            SpawnBreakFragment((char *)moby, 0x6D8, (float *)(&moby->pos), &moby->rot, 0, 0, 0.0f, D_L02_0015F660, D_L02_0015F660, D_L02_0015F660);
+            SpawnBreakFragment((char *)moby, 0x6D9, (float *)(&moby->pos), &moby->rot, 0, 0, 0.0f, D_L02_0015F660, D_L02_0015F660, D_L02_0015F660);
+            SpawnBreakFragment((char *)moby, 0x6E9, (float *)(&moby->pos), &moby->rot, 0, 0, 0.0f, D_L02_0015F660, D_L02_0015F660, D_L02_0015F660);
+            SpawnBreakFragment((char *)moby, 0x782, (float *)(&moby->pos), &moby->rot, 0, 0, 0.0f, D_L02_0015F660, D_L02_0015F660, D_L02_0015F660);
             DeleteMoby(moby);
             return;
         }
@@ -2730,30 +2755,38 @@ extern short D_L02_00161CC4;
 extern short D_L02_00161CC8;
 extern short D_L02_00161CCC;
 
+typedef struct TransportPodVars {
+    u8 pad_00[0x84];
+    struct Moby *rail[2];          /* 0x84: the two linked rail mobys */
+    f32 vel[2];                    /* 0x8C: approach velocities, one per rail */
+    f32 height_offset[2];          /* 0x94: added to moby->pos.z for each rail's target height */
+} TransportPodVars;
+
 // Updates two linked mobys' heights and angles toward this moby.
 void advance_transport_pod_rails_to_offsets(char *moby) {
-    char *d = *(char **)(moby + 0x78);
-    ApproachWithVelocity((float *)(*(char **)(d + 0x84) + 0x18), (float *)(d + 0x8C),
-                  *(float *)(moby + 0x18) + *(float *)(d + 0x94),
+    struct Moby *m = (struct Moby *)moby;
+    TransportPodVars *transport_pod_vars = (TransportPodVars *)m->pvars;
+    ApproachWithVelocity((float *)&transport_pod_vars->rail[0]->pos.z, &transport_pod_vars->vel[0],
+                  m->pos.z + transport_pod_vars->height_offset[0],
                   *(float *)&D_L02_00161CC4 * D_0015EE70,
                   *(float *)&D_L02_00161CC8 * D_0015EE70,
                   *(float *)&D_L02_00161CC0 * D_0015EE6C);
-    ApproachWithVelocity((float *)(*(char **)(d + 0x88) + 0x18), (float *)(d + 0x90),
-                  *(float *)(moby + 0x18) + *(float *)(d + 0x98),
+    ApproachWithVelocity((float *)&transport_pod_vars->rail[1]->pos.z, &transport_pod_vars->vel[1],
+                  m->pos.z + transport_pod_vars->height_offset[1],
                   *(float *)&D_L02_00161CC4 * D_0015EE70,
                   *(float *)&D_L02_00161CC8 * D_0015EE70,
                   *(float *)&D_L02_00161CC0 * D_0015EE6C);
     {
-        float r0 = FastAddRots(*(float *)(moby + 0x48),
-                      (*(float *)(*(char **)(d + 0x84) + 0x18) - *(float *)(moby + 0x18)) * *(float *)&D_L02_00161CCC * 0.017453292f);
+        float r0 = FastAddRots(m->rot.z,
+                      (transport_pod_vars->rail[0]->pos.z - m->pos.z) * *(float *)&D_L02_00161CCC * 0.017453292f);
         float k = *(float *)&D_L02_00161CCC;
-        *(float *)(*(char **)(d + 0x84) + 0x48) = r0;
-        *(float *)(*(char **)(d + 0x88) + 0x48) =
-            FastAddRots(*(float *)(moby + 0x48),
-                      (*(float *)(*(char **)(d + 0x88) + 0x18) - *(float *)(moby + 0x18)) * k * 0.017453292f);
+        transport_pod_vars->rail[0]->rot.z = r0;
+        transport_pod_vars->rail[1]->rot.z =
+            FastAddRots(m->rot.z,
+                      (transport_pod_vars->rail[1]->pos.z - m->pos.z) * k * 0.017453292f);
     }
-    func_L00_00251E30(*(void **)(d + 0x84));
-    func_L00_00251E30(*(void **)(d + 0x88));
+    func_L00_00251E30(transport_pod_vars->rail[0]);
+    func_L00_00251E30(transport_pod_vars->rail[1]);
 }
 
 // Copies the moby position into two linked objects and eases their heights toward it.

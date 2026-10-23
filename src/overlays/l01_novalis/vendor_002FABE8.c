@@ -1648,30 +1648,44 @@ void beehive_update(SpawnerMoby *m) {
 extern int func_L00_0025A208(int *, int, int, int);
 extern int func_001FA898_r(float) __asm__("func_001FA898");
 
+typedef struct ClonedVars {
+    u8 pad_00[0x20];
+    f32 f20;                   /* 0x20 */
+    u8 pad_24[0x14C];
+    s32 w170;                  /* 0x170 */
+    u8 pad_174[0xB0];
+    f32 f224;                  /* 0x224 */
+    u8 pad_228[0x28];
+    f32 f250;                  /* 0x250 */
+} ClonedVars;
+
 /* creates a moby from the owner's template and initialises its data */
 char *initialize_beehive_spawn_moby(char *owner) {
-    char *moby = 0;
-    char *data;
-    GroupMobyIter_Start((int *)&moby, **(int **)(owner + 0x78), 0, 0);
-    data = *(char **)(moby + 0x78);
-    ((unsigned char *)moby)[0x30] = 0x80;
-    *(short *)(moby + 0x32) = 0x80;
-    *(unsigned long *)(moby + 0x38) = *(unsigned long *)(owner + 0x38);
-    moby[0x31] = 1;
-    *(int *)(moby + 0x94) = *(int *)(*(char **)(moby + 0x24) + 0x10);
-    *(unsigned short *)(moby + 0x34) |= 0x1020;
-    *(float *)(moby + 0x2C) = *(float *)(*(char **)(moby + 0x24) + 0x24);
+    Moby *clone_spawner_moby = (Moby *)owner;
+    Moby *destination_moby;
+    ClonedVars *destination_moby_vars;
+
+    destination_moby = 0;
+    GroupMobyIter_Start((int *)&destination_moby, *(s32 *)clone_spawner_moby->pvars, 0, 0);
+    destination_moby_vars = (ClonedVars *)destination_moby->pvars;
+    destination_moby->update_dist = 0x80;
+    destination_moby->draw_dist = 0x80;
+    destination_moby->spawn_frame = clone_spawner_moby->spawn_frame;
+    destination_moby->visible = 1;
+    destination_moby->collision = destination_moby->pclass->collision;
+    destination_moby->flags |= 0x1020;
+    destination_moby->scale = destination_moby->pclass->scale;
     {
-        char *m = moby;
-        qcopy(m + 0x10, owner + 0x10);
-        qcopy(m + 0x40, owner + 0x40);
+        Moby *transform_destination = destination_moby;
+        qcopy(&transform_destination->pos, &clone_spawner_moby->pos);
+        qcopy(&transform_destination->rot, &clone_spawner_moby->rot);
     }
-    *(float *)(data + 0x20) = 3.0f;
-    *(float *)(data + 0x250) = 1.0f;
-    *(int *)(data + 0x170) = func_001FA898_r(819.2f);
-    *(float *)(data + 0x224) = 30.0f;
-    ((void (*)(void *))func_L00_00251E30)(moby);
-    return moby;
+    destination_moby_vars->f20 = 3.0f;
+    destination_moby_vars->f250 = 1.0f;
+    destination_moby_vars->w170 = func_001FA898_r(819.2f);
+    destination_moby_vars->f224 = 30.0f;
+    ((void (*)(void *))func_L00_00251E30)(destination_moby);
+    return (char *)destination_moby;
 }
 extern char *func_L00_0025B478(void *, int, int);
 extern void func_0020D678(void *);
@@ -2021,29 +2035,33 @@ extern void func_00233AB8(void);
 #define fx_cutscene_D568 (*(CutsceneFx_D568 *)&D_L01_0016CD60)
 
 void update_level01_cutscene_effects(struct Moby *moby) {
-    FxVec_D568 a;
-    FxVec_D568 b;
+    enum {
+        CUTSCENE_FX_STATE_INITIALIZE = 0,
+        CUTSCENE_FX_STATE_UPDATE = 1
+    };
+    FxVec_D568 effect_position_or_motion_delta;
+    FxVec_D568 debris_vector_or_effect_position;
     FxVec_D568 c;
-    FxVec_D568 d;
-    struct Moby *m;
-    char *e;
-    FxSpark_D568 *s;
-    float ang;
-    float r;
-    int i;
-    int j;
-    int n;
-    int color;
-    int spread;
-    int step;
-    int node;
+    FxVec_D568 secondary_effect_position;
+    struct Moby *cutscene_moby;
+    char *splash;
+    FxSpark_D568 *spark;
+    f32 debris_horizontal_angle_radians;
+    f32 debris_horizontal_magnitude;
+    s32 i;
+    s32 j;
+    s32 debris_spawn_random_value;
+    s32 color;
+    s32 spread;
+    s32 step;
+    s32 node;
 
     switch (moby->state) {
-    case 0:
-        *(unsigned char *)((char *)moby + 0x30) = 0xFF;
+    case CUTSCENE_FX_STATE_INITIALIZE:
+        moby->update_dist = 0xFF;
         moby->state = 1;
         break;
-    case 1:
+    case CUTSCENE_FX_STATE_UPDATE:
         if (D_L01_0015F6A8 == 2) {
             if (fx_cutscene_D568.scene == 1 || (fx_cutscene_D568.scene == 2 && fx_cutscene_D568.frame <= scale_ticks(148)) ||
                 fx_cutscene_D568.scene == 3 || fx_cutscene_D568.scene == 4) {
@@ -2059,57 +2077,60 @@ void update_level01_cutscene_effects(struct Moby *moby) {
             if (fx_cutscene_D568.scene == 1) {
                 if (fx_cutscene_D568.frame >= scale_ticks(472) && fx_cutscene_D568.frame <= scale_ticks(537) &&
                     fx_cutscene_D568.slot[0] != 0) {
-                    Moby_GetJointWorldPos(fx_cutscene_D568.slot[0], 1, &a);
-                    e = spawn_splash(random_float_between(0.5f, 2.0f), random_integer_below(2) ? 2.0f : -2.0f, &a, (char *)D_L01_0015F660,
-                                        &a.f[2]);
-                    if (e != 0) {
-                        *(short *)(e + 0xA) = scale_ticks(60);
+                    Moby_GetJointWorldPos(fx_cutscene_D568.slot[0], 1, &effect_position_or_motion_delta);
+                    splash = spawn_splash(random_float_between(0.5f, 2.0f), random_integer_below(2) ? 2.0f : -2.0f,
+                                          &effect_position_or_motion_delta, (char *)D_L01_0015F660,
+                                          &effect_position_or_motion_delta.f[2]);
+                    if (splash != 0) {
+                        *(s16 *)(splash + 0xA) = scale_ticks(60);
                     }
                 }
                 if (fx_cutscene_D568.scene == 1 && fx_cutscene_D568.frame == scale_ticks(472) && fx_cutscene_D568.slot[0] != 0) {
-                    Moby_GetJointWorldPos(fx_cutscene_D568.slot[0], 1, &a);
+                    Moby_GetJointWorldPos(fx_cutscene_D568.slot[0], 1, &effect_position_or_motion_delta);
                     {
-                        char *burst = Moby775Spawn(&a, 3.0f);
+                        char *burst = Moby775Spawn(&effect_position_or_motion_delta, 3.0f);
 
                         if (burst != 0) {
                             burst[0x23] = 0x70;
                         }
                     }
                     for (i = 0; i < 16; i++) {
-                        ang = random_angle_radians();
-                        r = random_float_between(D_0015EE6C * 0.0f, D_0015EE6C * 3.0f);
-                        b.f[0] = FastCos(ang) * r;
-                        b.f[1] = FastSin(ang) * r;
-                        b.f[2] = random_float_between(D_0015EE6C * 3.0f, D_0015EE6C * 6.5f);
-                        n = rand_range(90, 120);
-                        PartType35Spawn(&a, &b, random_integer_below(2), n);
+                        debris_horizontal_angle_radians = random_angle_radians();
+                        debris_horizontal_magnitude = random_float_between(D_0015EE6C * 0.0f, D_0015EE6C * 3.0f);
+                        debris_vector_or_effect_position.f[0] = FastCos(debris_horizontal_angle_radians) * debris_horizontal_magnitude;
+                        debris_vector_or_effect_position.f[1] = FastSin(debris_horizontal_angle_radians) * debris_horizontal_magnitude;
+                        debris_vector_or_effect_position.f[2] = random_float_between(D_0015EE6C * 3.0f, D_0015EE6C * 6.5f);
+                        debris_spawn_random_value = rand_range(90, 120);
+                        PartType35Spawn(&effect_position_or_motion_delta, &debris_vector_or_effect_position,
+                                        random_integer_below(2), debris_spawn_random_value);
                     }
                 }
             }
             if (fx_cutscene_D568.scene == 4) {
-                m = fx_cutscene_D568.slot[4];
-                if (m != 0 && m->oclass == 0x213) {
-                    AddDrawCallback(render_environment_mapped_object, m);
+                cutscene_moby = fx_cutscene_D568.slot[4];
+                if (cutscene_moby != 0 && cutscene_moby->oclass == 0x213) {
+                    AddDrawCallback(render_environment_mapped_object, cutscene_moby);
                     if (fx_cutscene_D568.frame >= scale_ticks(850) && fx_cutscene_D568.frame <= scale_ticks(1160)) {
                         color = 0x7F204080;
                         for (node = 1; node < 7; node++) {
-                            Moby_GetJointWorldPos(m, node, &a);
+                            Moby_GetJointWorldPos(cutscene_moby, node, &effect_position_or_motion_delta);
                             for (j = 0; j < 2; j++) {
                                 spread = random_integer_below(16);
-                                s = PartType23Spawn(&a, 0.1f, 1.0f, 0.9f, random_integer_below(2) == 0 ? spread : -spread,
-                                                   (char *)D_L01_0015F660, 200000.0f, color);
-                                if (s != 0) {
-                                    FxSparkTail_D568 *t = &s->tail;
+                                spark = PartType23Spawn(&effect_position_or_motion_delta, 0.1f, 1.0f, 0.9f,
+                                                        random_integer_below(2) == 0 ? spread : -spread,
+                                                        (char *)D_L01_0015F660, 200000.0f, color);
+                                if (spark != 0) {
+                                    FxSparkTail_D568 *spark_tail = &spark->tail;
 
                                     if (fx_cutscene_D568.frame >= scale_ticks(1100)) {
-                                        s->unkA = scale_ticks(30);
+                                        spark->unkA = scale_ticks(30);
                                     } else {
-                                        s->unkA = scale_ticks(6);
+                                        spark->unkA = scale_ticks(6);
                                     }
-                                    s->unk9 = truncate_float_to_s32(4.0f) + 0x40;
-                                    t->unk4 = 2;
-                                    t->unkA = color >> 24;
-                                    t->unkB = s->unkA;
+                                    spark->unk9 = truncate_float_to_s32(4.0f) + 0x40;
+                                    spark_tail->unk4 = 2;
+                                    spark_tail->unkA = color >> 24;
+                                    spark_tail->unkB = spark->unkA;
                                 }
                             }
                         }
@@ -2117,34 +2138,34 @@ void update_level01_cutscene_effects(struct Moby *moby) {
                 }
             }
             if (fx_cutscene_D568.scene == 5 && fx_cutscene_D568.frame < scale_ticks(120)) {
-                m = fx_cutscene_D568.slot[2];
-                if (m != 0) {
-                    a.q = 0;
-                    Moby_GetJointWorldPos(m, 5, &b);
+                cutscene_moby = fx_cutscene_D568.slot[2];
+                if (cutscene_moby != 0) {
+                    effect_position_or_motion_delta.q = 0;
+                    Moby_GetJointWorldPos(cutscene_moby, 5, &debris_vector_or_effect_position);
                     if (fx_cutscene_D568.frame >= 2) {
-                        FastVecSub(&a, &b, &fx_prev_pos);
-                        qcopy(&fx_prev_pos, &b);
+                        FastVecSub(&effect_position_or_motion_delta, &debris_vector_or_effect_position, &fx_prev_pos);
+                        qcopy(&fx_prev_pos, &debris_vector_or_effect_position);
                     } else {
-                        qcopy(&fx_prev_pos, &b);
+                        qcopy(&fx_prev_pos, &debris_vector_or_effect_position);
                     }
                     if (fx_cutscene_D568.frame == scale_ticks(118)) {
                         clear_u64_value(&c);
-                        func_L00_0025F4A8(m, &c, &b, 0.0f, 0.0f, 3, 200, 200, 5.0f, 2.5f, 9.0f, 1.0f, -1, 60.0f, 0, 60, -1, 0);
-                        qcopy(&d, &b);
-                        d.f[2] = d.f[2] - 1.0f;
-                        func_L00_0025F4A8(m, &c, &d, 0.0f, 0.0f, 300, 2, 2, 1.0f, 0.5f, 9.0f, 1.0f, -1, 60.0f, 0, 0, -1, 0);
+                        func_L00_0025F4A8(cutscene_moby, &c, &debris_vector_or_effect_position, 0.0f, 0.0f, 3, 200, 200, 5.0f, 2.5f, 9.0f, 1.0f, -1, 60.0f, 0, 60, -1, 0);
+                        qcopy(&secondary_effect_position, &debris_vector_or_effect_position);
+                        secondary_effect_position.f[2] = secondary_effect_position.f[2] - 1.0f;
+                        func_L00_0025F4A8(cutscene_moby, &c, &secondary_effect_position, 0.0f, 0.0f, 300, 2, 2, 1.0f, 0.5f, 9.0f, 1.0f, -1, 60.0f, 0, 0, -1, 0);
                     }
-                    AddDrawCallback(render_environment_mapped_object, m);
-                    Moby_GetJointWorldPos(m, 1, &c);
-                    Moby_GetJointWorldPos(m, 2, &d);
-                    FastVecSub(&c, &c, &a);
-                    FastVecSub(&d, &d, &a);
-                    FastVecScale(&a, &a, 0.25f);
+                    AddDrawCallback(render_environment_mapped_object, cutscene_moby);
+                    Moby_GetJointWorldPos(cutscene_moby, 1, &c);
+                    Moby_GetJointWorldPos(cutscene_moby, 2, &secondary_effect_position);
+                    FastVecSub(&c, &c, &effect_position_or_motion_delta);
+                    FastVecSub(&secondary_effect_position, &secondary_effect_position, &effect_position_or_motion_delta);
+                    FastVecScale(&effect_position_or_motion_delta, &effect_position_or_motion_delta, 0.25f);
                     for (step = 0; step < 4; step++) {
                         draw_trail(&c, &c, (char *)D_L01_0015F660, 150000.0f, 60000.0f);
-                        draw_trail(&d, &d, (char *)D_L01_0015F660, 150000.0f, 60000.0f);
-                        FastVecAdd(&c, &c, &a);
-                        FastVecAdd(&d, &d, &a);
+                        draw_trail(&secondary_effect_position, &secondary_effect_position, (char *)D_L01_0015F660, 150000.0f, 60000.0f);
+                        FastVecAdd(&c, &c, &effect_position_or_motion_delta);
+                        FastVecAdd(&secondary_effect_position, &secondary_effect_position, &effect_position_or_motion_delta);
                     }
                 }
             }
@@ -2199,33 +2220,44 @@ extern float func_001F9CB8(void *);
 extern float D_L01_001621A0 MACRO_ADDR;
 extern float D_L01_001621A4 MACRO_ADDR;
 
+typedef struct EnvVec {
+    f32 x;
+    f32 y;
+    f32 z;
+    f32 w;
+} EnvVec;
+
 /* Projects each of n point/normal pairs onto a 2D texture coordinate. */
-void generate_level01_environment_map_uvs(int n, char *pts, char *nrm, int unused, float *out) {
-    float v0[4];
-    float v1[4];
-    float v2[4];
-    float v3[4];
-    int i;
-    for (i = 0; i < n; i++) {
-        float len;
-        v1[0] = *(float *)(nrm + i * 12);
-        v1[1] = *(float *)(nrm + i * 12 + 4);
-        v1[2] = *(float *)(nrm + i * 12 + 8);
-        v1[3] = 1.0f;
-        FastVecSub(v0, v1, camera_pos);
-        func_L00_001FF4B0(v0, v0, 1.0f);
-        v3[0] = -*(float *)(pts + i * 12);
-        v3[1] = -*(float *)(pts + i * 12 + 4);
-        v3[2] = -*(float *)(pts + i * 12 + 8);
-        v3[3] = 1.0f;
-        func_L00_001FF4B0(v3, v3, 1.0f);
-        FastVecScale(v2, v3, FastVecDot(v3, v0) * 2.0f);
-        FastVecSub(v2, v0, v2);
-        func_L00_001FF4B0(v2, v2, 1.0f);
-        v2[2] += 1.0f;
-        len = FastVecLength(v2) * 2.0f;
-        out[i * 2] = (v2[0] / len + 0.5f) * 2.0f + D_L01_001621A0;
-        out[i * 2 + 1] = (v2[1] / len + 0.5f) * 2.0f + D_L01_001621A4;
+void generate_level01_environment_map_uvs(int vertex_count, char *normals, char *verts, int unused, float *uv) {
+    f32 (*normal_list)[3] = (f32 (*)[3])normals;
+    f32 (*vert_list)[3] = (f32 (*)[3])verts;
+    f32 (*uv_pairs)[2] = (f32 (*)[2])uv;
+    EnvVec eye;
+    EnvVec vertex_position;
+    EnvVec refl;
+    EnvVec nrm;
+    s32 i;
+    f32 uv_projection_denominator;
+
+    for (i = 0; i < vertex_count; i++) {
+        vertex_position.x = vert_list[i][0];
+        vertex_position.y = vert_list[i][1];
+        vertex_position.z = vert_list[i][2];
+        vertex_position.w = 1.0f;
+        FastVecSub(&eye, &vertex_position, camera_pos);
+        func_L00_001FF4B0(&eye, &eye, 1.0f);
+        nrm.x = -normal_list[i][0];
+        nrm.y = -normal_list[i][1];
+        nrm.z = -normal_list[i][2];
+        nrm.w = 1.0f;
+        func_L00_001FF4B0(&nrm, &nrm, 1.0f);
+        FastVecScale(&refl, &nrm, FastVecDot(&nrm, &eye) * 2.0f);
+        FastVecSub(&refl, &eye, &refl);
+        func_L00_001FF4B0(&refl, &refl, 1.0f);
+        refl.z += 1.0f;
+        uv_projection_denominator = FastVecLength(&refl) * 2.0f;
+        uv_pairs[i][0] = (refl.x / uv_projection_denominator + 0.5f) * 2.0f + D_L01_001621A0;
+        uv_pairs[i][1] = (refl.y / uv_projection_denominator + 0.5f) * 2.0f + D_L01_001621A4;
     }
 }
 extern int func_001F4868(int);

@@ -657,39 +657,40 @@ extern void func_L00_0025D5B0(void *, void *, int, int, int, float);
 
 /* Spawns a projectile moby (class 0x273) at pos, heading along dir, owned by parent p.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l03/gameplay/entities/002c9eb8.c, FUN_L03_002cc888. */
-char *spawn_mine_layer_projectile(char *p, void *pos, float *dir) {
-    char *m = CreateMoby(0x273);
-    char *v;
-    float s;
+char *spawn_mine_layer_projectile(char *parent_moby, void *pos, float *launch_velocity) {
+    struct Moby *spawned_moby = (struct Moby *)CreateMoby(0x273);
+    char *spawned_moby_vars;
+    float frame_scale_squared;
+    struct Moby *parent = (struct Moby *)parent_moby;
 
-    if (m == 0) {
+    if (spawned_moby == 0) {
         return 0;
     }
-    *(unsigned short *)(m + 0x32) = *(unsigned short *)(p + 0x32);
-    m[0x30] = p[0x32];
-    m[0x31] = 1;
-    *(long *)(m + 0x38) = *(long *)(p + 0x38);
-    qcopy(m + 0x10, pos);
-    v = *(char **)(m + 0x78);
-    s = D_0015EE64;
-    *(float *)(v + 0x10) = s * 0.008f;
-    *(float *)(v + 0x14) = s * 0.0005f;
-    *(float *)(v + 0x18) = func_001F9CE8(dir);
-    *(float *)(v + 0x1C) = dir[2];
-    *(int *)(v + 0x20) = 0x400;
-    *(float *)(v + 0x28) = 1.0f;
-    *(float *)(v + 0x30) = 0.75f;
-    *(float *)(v + 0x34) = 0.5f;
-    *(float *)(v + 0x38) = 0.65f;
-    *(float *)(v + 0x48) = 0.2f;
-    *(float *)(v + 0x4C) = 0.01f;
-    v[0x3D] = 0;
-    *(int *)(v + 0x24) = 1;
-    InitKnockback(m, v, 0, 1, 0, func_L00_001FF860(dir[0], dir[1]));
-    *(char **)(v + 0x68) = p;
-    *(int *)(v + 0x6C) = 0;
-    m[0x20] = 1;
-    return m;
+    *(u16 *)&spawned_moby->draw_dist = *(u16 *)&parent->draw_dist;
+    spawned_moby->update_dist = *(char *)&parent->draw_dist;
+    spawned_moby->visible = 1;
+    spawned_moby->spawn_frame = parent->spawn_frame;
+    qcopy(&spawned_moby->pos, pos);
+    spawned_moby_vars = (char *)spawned_moby->pvars;
+    frame_scale_squared = D_0015EE64;
+    *(float *)(spawned_moby_vars + 0x10) = frame_scale_squared * 0.008f;
+    *(float *)(spawned_moby_vars + 0x14) = frame_scale_squared * 0.0005f;
+    *(float *)(spawned_moby_vars + 0x18) = func_001F9CE8(launch_velocity);
+    *(float *)(spawned_moby_vars + 0x1C) = launch_velocity[2];
+    *(int *)(spawned_moby_vars + 0x20) = 0x400;
+    *(float *)(spawned_moby_vars + 0x28) = 1.0f;
+    *(float *)(spawned_moby_vars + 0x30) = 0.75f;
+    *(float *)(spawned_moby_vars + 0x34) = 0.5f;
+    *(float *)(spawned_moby_vars + 0x38) = 0.65f;
+    *(float *)(spawned_moby_vars + 0x48) = 0.2f;
+    *(float *)(spawned_moby_vars + 0x4C) = 0.01f;
+    spawned_moby_vars[0x3D] = 0;
+    *(int *)(spawned_moby_vars + 0x24) = 1;
+    InitKnockback(spawned_moby, spawned_moby_vars, 0, 1, 0, func_L00_001FF860(launch_velocity[0], launch_velocity[1]));
+    *(char **)(spawned_moby_vars + 0x68) = parent_moby;
+    *(int *)(spawned_moby_vars + 0x6C) = 0;
+    spawned_moby->state = 1;
+    return (char *)spawned_moby;
 }
 /* whether the moby is a taxi (class 0x330) in states 2 to 6 */
 s32 is_taxi_in_round_trip_phase(u8 *object) {
@@ -922,59 +923,81 @@ typedef struct PathFollower4CE0 {
     float yawVelocity, pitchVelocity, rollVelocity;
 } PathFollower4CE0;
 
+typedef struct RailFlyerVars {
+    u8 pad_00[0x60];
+    f32 speed;                     /* 0x60 */
+    s32 idx;                       /* 0x64 */
+    f32 yaw_vel;                   /* 0x68 */
+    f32 pitch_vel;                 /* 0x6C */
+    f32 roll_vel;                  /* 0x70 */
+} RailFlyerVars;
+
+typedef struct VoiceSlot {
+    u8 pad_00[0x74];
+    u8 active;                     /* 0x74 */
+    u8 pad_75[0x13];
+    struct Moby *owner;            /* 0x88 */
+} VoiceSlot;
+
 /* Moves along a waypoint path and eases the orientation toward its direction. */
 int advance_moby_along_rail_path(char *moby, int pathIndex, int *sound) {
-    char **entry = &D_L03_001B08B0[pathIndex];
-    PathFollower4CE0 *data = *(PathFollower4CE0 **)(moby + 0x78);
-    float target[4];
-    float direction[4];
-    float zero = 0.0f;
-    float step, distance, accel, pitch;
-    int finished = 0;
+    struct Moby *rail_moby = (struct Moby *)moby;
+    struct RailPath_D4560 **pp = (struct RailPath_D4560 **)&D_L03_001B08B0[pathIndex];
+    RailFlyerVars *rail_flyer_vars = (RailFlyerVars *)rail_moby->pvars;
+    Vec4f target_path_point;
+    Vec4f movement_delta;
+    f32 acc = 0.0f;
+    f32 step, distance, accel, target_pitch;
+    s32 done = 0;
     char *position;
-    qcopy(target, *entry + (data->waypoint * 16 + 0x10));
-    position = moby + 0x10;
-    FastVecSub(direction, target, position);
-    distance = FastVecLength(direction);
+
+    qcopy(&target_path_point, &(*pp)->pts[rail_flyer_vars->idx]);
+    position = (char *)&rail_moby->pos;
+    FastVecSub(&movement_delta, &target_path_point, position);
+    distance = FastVecLength(&movement_delta);
     step = D_L03_00161B88 * D_0015EE6C;
     if (distance < step + step) {
-        data->waypoint++;
-        finished = data->waypoint == *(int *)*entry;
+        rail_flyer_vars->idx++;
+        done = rail_flyer_vars->idx == (*pp)->count;
     }
-    distance = FastVecDist(position, *entry + (*(int *)*entry << 4));
+    distance = FastVecDist(position, (char *)*pp + ((*pp)->count << 4));
     accel = D_L03_00161B8C * D_0015EE70;
-    ApproachWithVelocity(&zero, &data->speed, distance, accel, accel, D_L03_00161B88 * D_0015EE6C);
-    func_L00_001FF4B0(direction, direction, data->speed);
-    FastVecAdd(position, direction, position);
-    pitch = -func_L00_001FF860(func_001F9CE8(direction), direction[2]);
-    if (pitch > 0.261799395f) pitch = 0.261799395f;
-    else if (pitch < -0.261799395f) pitch = -0.261799395f;
-    SteerAngleWithVelocity((float *)(moby + 0x44), pitch, &data->pitchVelocity,
+    ApproachWithVelocity(&acc, &rail_flyer_vars->speed, distance, accel, accel, D_L03_00161B88 * D_0015EE6C);
+    func_L00_001FF4B0(&movement_delta, &movement_delta, rail_flyer_vars->speed);
+    FastVecAdd(position, &movement_delta, position);
+    target_pitch = -func_L00_001FF860(func_001F9CE8(&movement_delta), movement_delta.z);
+    if (target_pitch > 0.261799395f)
+        target_pitch = 0.261799395f;
+    else if (target_pitch < -0.261799395f)
+        target_pitch = -0.261799395f;
+    SteerAngleWithVelocity(&rail_moby->rot.y, target_pitch, &rail_flyer_vars->pitch_vel,
         D_L03_00161B90 * 0.017453292f * D_0015EE70,
         D_L03_00161B90 * 0.017453292f * D_0015EE70,
         D_0015EE6C * 12.566371f);
-    SteerAngleWithVelocity((float *)(moby + 0x48),
-        func_L00_001FF860(target[0] - *(float *)(moby + 0x10), target[1] - *(float *)(moby + 0x14)), &data->yawVelocity,
+    SteerAngleWithVelocity(&rail_moby->rot.z,
+        func_L00_001FF860(target_path_point.x - rail_moby->pos.x, target_path_point.y - rail_moby->pos.y),
+        &rail_flyer_vars->yaw_vel,
         D_L03_00161B94 * 0.017453292f * D_0015EE70,
         D_L03_00161B94 * 0.017453292f * D_0015EE70,
         D_0015EE6C * 12.566371f);
-    SteerAngleWithVelocity((float *)(moby + 0x40),
-        data->yawVelocity * data->speed * D_L03_00161B9C, &data->rollVelocity,
+    SteerAngleWithVelocity(&rail_moby->rot.x,
+        rail_flyer_vars->yaw_vel * rail_flyer_vars->speed * D_L03_00161B9C,
+        &rail_flyer_vars->roll_vel,
         D_L03_00161B98 * 0.017453292f * D_0015EE70,
         D_L03_00161B98 * 0.017453292f * D_0015EE70,
         D_0015EE6C * 12.566371f);
-    if (finished == 0) {
+    if (done == 0) {
         if (Sound_IsPlaying(moby, *sound) == 0)
             *sound = Sound_PlayClassSound(0, 4, (int)moby, 0x330);
     } else {
         if (*sound != -1) {
-            char *e = D_0013E633 + 0x1D + *sound * 0x70;
-            if (*(char **)(e + 0x88) == moby && ((unsigned char *)e)[0x74] != 0)
+            VoiceSlot *voice_slot = (VoiceSlot *)(D_0013E633 + 0x1D + *sound * 0x70);
+            if (voice_slot->owner == rail_moby && voice_slot->active != 0)
                 Sound_StopSlot(*sound);
         }
         *sound = -1;
     }
-    return finished;
+    return done;
 }
 extern void func_L00_00263B78(float, float, char *, float *, float *);
 extern void func_L00_00263BF8(void *, char *, char *, float, float, float);
@@ -1204,7 +1227,7 @@ extern void func_0020D960(char *, int, void *);
 extern short D_L03_00161C34;
 
 /* triggers objects matching the moby's class, with per-segment settings */
-void apply_helga_big_head_cutscene_adjustments(char *moby) {
+void apply_helga_big_head_cutscene_adjustments(char *class_reference_moby) {
     int i;
     if (D_L03_0015F6A8 == 2 && gCheats[0]) {
         if (D_L03_0016C9E0.a == 2 && D_L03_0016C9E0.b >= 0x1EA && D_L03_0016C9E0.b < 0x266) {
@@ -1214,15 +1237,15 @@ void apply_helga_big_head_cutscene_adjustments(char *moby) {
             D_L03_0015F680 = 0.2f;
         }
         for (i = 0; i < D_L03_0016C9E0.n; i++) {
-            char *o = D_L03_0016C9E0.objs[i];
-            if (*(short *)(o + 0xA6) == *(short *)(moby + 0xA6)) {
-                if (D_L03_0017C5C0[1] == 0) {
+            struct Moby *o = (struct Moby *)D_L03_0016C9E0.objs[i];
+            if (o->oclass == ((struct Moby *)class_reference_moby)->oclass) {
+                if (((struct HeroManipulator *)D_L03_0017C5C0)->attached == 0) {
                     float f;
                     AttachManipulator(o, 0, D_L03_0017C5C0);
                     f = *(float *)&D_L03_00161C34;
-                    *(float *)(D_L03_0017C5C0 + 0x20) = f;
-                    *(float *)(D_L03_0017C5C0 + 0x24) = f;
-                    *(float *)(D_L03_0017C5C0 + 0x28) = f;
+                    ((struct HeroManipulator *)D_L03_0017C5C0)->scale3.f[0] = f;
+                    ((struct HeroManipulator *)D_L03_0017C5C0)->scale3.f[1] = f;
+                    ((struct HeroManipulator *)D_L03_0017C5C0)->scale3.f[2] = f;
                 }
             }
         }

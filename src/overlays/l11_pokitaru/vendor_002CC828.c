@@ -19,26 +19,32 @@ extern char D_0013E633[];
 
 /* Per-frame update of a pickup moby: waits for the player to come near, then grants the item. */
 void update_pokitaru_pickup(char *moby) {
-    switch ((unsigned char)moby[0x20]) {
-    case 0:
+    struct Moby *m = (struct Moby *)moby;
+    enum {
+        PICKUP_INITIALIZE = 0,
+        PICKUP_IDLE = 1,
+        PICKUP_CHECK_PROXIMITY = 2
+    };
+    switch (m->state) {
+    case PICKUP_INITIALIZE:
         if (gHaveHeliPack[4] != 0) {
-            DeleteMoby(moby);
+            DeleteMoby(m);
         } else {
-            *(float *)(moby + 0x18) += 0.75f;
-            *(unsigned short *)(moby + 0x34) |= 1;
-            moby[0x20] = 1;
+            m->pos.z += 0.75f;
+            m->flags |= 1;
+            m->state = 1;
         }
         break;
-    case 1:
+    case PICKUP_IDLE:
         break;
-    case 2:
-        FastAddRots(*(float *)(moby + 0x48), D_0015EE6C * 4.7123890f);
-        if (func_001F9D48(moby + 0x10, D_0013E633 + 0xE9D) < 2.0f) {
+    case PICKUP_CHECK_PROXIMITY:
+        FastAddRots(m->rot.z, D_0015EE6C * 4.7123890f);
+        if (func_001F9D48(&m->pos, D_0013E633 + 0xE9D) < 2.0f) {
             gHaveHeliPack[4] = 1;
             discount_purchase_pricing[0xB] = 1;
             memcard_Save(0, -1);
             Help_Request(0x2AF8, 0x3A);
-            DeleteMoby(moby);
+            DeleteMoby(m);
         }
         break;
     }
@@ -50,33 +56,39 @@ extern float D_0015EE70 MACRO_ADDR;
 
 // Update for a moby that spawns a child copy once, then eases along a path and changes state.
 void update_pokitaru_paired_rotation(char *moby) {
-    char *data = *(char **)(moby + 0x78);
-    int state = (unsigned char)moby[0x20];
+    enum {
+        ROTATION_INITIALIZE = 0,
+        ROTATION_WAIT_FOR_TRIGGER = 1,
+        ROTATION_APPROACH_OFFSET = 2
+    };
+    struct Moby *m = (struct Moby *)moby;
+    char *data = (char *)m->pvars;
+    int state = (unsigned char)m->state;
     switch (state) {
-    case 0:
-        moby[0x20] = 1;
-        *(float *)(data + 4) = *(float *)(moby + 0x48);
-        if ((*(unsigned short *)(moby + 0x34) & 0x8000) == 0) {
-            char *c = CreateMoby(0x41);
-            *(short *)(c + 0x32) = *(short *)(moby + 0x32);
-            c[0x30] = moby[0x30];
-            *(unsigned short *)(c + 0x34) = *(unsigned short *)(moby + 0x34) | 0x8000;
-            qcopy(c + 0x10, moby + 0x10);
-            qcopy(c + 0x40, moby + 0x40);
-            *(char **)(data + 8) = c;
-            *(float *)(*(char **)(c + 0x78) + 4) = *(float *)(moby + 0x48);
+    case ROTATION_INITIALIZE:
+        m->state = 1;
+        *(float *)(data + 4) = m->rot.z;
+        if ((m->flags & 0x8000) == 0) {
+            struct Moby *partner = (struct Moby *)CreateMoby(0x41);
+            partner->draw_dist = m->draw_dist;
+            partner->update_dist = m->update_dist;
+            partner->flags = m->flags | 0x8000;
+            qcopy(&partner->pos, &m->pos);
+            qcopy(&partner->rot, &m->rot);
+            *(struct Moby **)(data + 8) = partner;
+            *(float *)((char *)partner->pvars + 4) = m->rot.z;
         }
         break;
-    case 1:
+    case ROTATION_WAIT_FOR_TRIGGER:
         break;
-    case 2: {
-        float f;
-        if ((*(unsigned short *)(moby + 0x34) & 0x8000) == 0)
-            f = FastAddRots(*(float *)(data + 4), 0.20769417f);
+    case ROTATION_APPROACH_OFFSET: {
+        float target_angle;
+        if ((m->flags & 0x8000) == 0)
+            target_angle = FastAddRots(*(float *)(data + 4), 0.20769417f);
         else
-            f = FastSubRots(*(float *)(data + 4), 0.20769417f);
-        if (SteerAngleWithVelocity((float *)(moby + 0x48), f, (float *)data, D_0015EE70 * 0.34906584f, D_0015EE70 * 0.34906584f, D_0015EE6C * 0.7853982f) == 0.0f)
-            moby[0x20] = 3;
+            target_angle = FastSubRots(*(float *)(data + 4), 0.20769417f);
+        if (SteerAngleWithVelocity(&m->rot.z, target_angle, (float *)data, D_0015EE70 * 0.34906584f, D_0015EE70 * 0.34906584f, D_0015EE6C * 0.7853982f) == 0.0f)
+            m->state = 3;
         break;
     }
     }
@@ -84,13 +96,15 @@ void update_pokitaru_paired_rotation(char *moby) {
 extern struct { unsigned char value; char pad[3]; } D_0013D4EA;
 
 void trigger_pokitaru_paired_rotation(char *moby) {
-    char *state = *(char **)(moby + 0x78);
-    if (*(short *)(moby + 0xA6) == 0x41 && (unsigned char)moby[0x20] == 1) {
+    struct Moby *m = (struct Moby *)moby;
+    char *state = (char *)m->pvars;
+    if (m->oclass == 0x41 && m->state == 1) {
         char *child;
-        D_0013D4EA.value = moby[0x20];
-        moby[0x20] = 2;
+        D_0013D4EA.value = m->state;
+        m->state = 2;
         child = *(char **)(state + 8);
-        if (child) child[0x20] = 2;
+        if (child)
+            child[0x20] = 2;
     }
 }
 extern void func_L05_003188A8_2D18D0(char *) __asm__("func_L05_003188A8");
@@ -806,34 +820,44 @@ extern int D_L11_00160074_m __asm__("D_L11_00160074") MACRO_ADDR;
 extern short *D_L11_001AC540[];
 extern int func_L11_00317598(char *);
 extern float func_001F9D10(void *,void *);
+/* One target-set entry: the moby group it names, then two bytes of padding. */
+struct TargetSetEntry {
+    s16 group;
+    s16 pad_02;
+};
+
+/* A resort owner's pvars: the target sets, one row of four entries per set. */
+struct TargetSets {
+    u8 pad_00[0x90];
+    struct TargetSetEntry sets[8][4];   /* 0x90 */
+    u8 pad_110[0x48];
+    s32 set;                            /* 0x158 */
+};
+
 /* tests nearby active objects in four selected class lists */
 int classify_resort_owner_target_proximity(char *moby) {
+    struct TargetSets *target_sets = (struct TargetSets *)((struct Moby *)moby)->pvars;
     int found = 0;
-    char *data = *(char **)(moby + 0x78);
-    char *groups;
     int i = 0;
-    short *ids;
+    s16 *group_moby_entry;
     int group;
 
-    {
-        char *first = data + 0x90;
-        group = *(short *)(first + (*(int *)(data + 0x158) << 4));
-    }
+    group = target_sets->sets[target_sets->set][0].group;
     if (group >= 0 && D_L11_00160074_m >= group) {
         do {
-            groups = data + 0x90;
-            ids = D_L11_001AC540[group];
-            if (ids) {
+            group_moby_entry = D_L11_001AC540[group];
+            if (group_moby_entry) {
                 do {
-                    unsigned int offset = (*(unsigned short *)ids & 0x7FFF) * 256;
-                    char *other = (char *)(offset + D_L11_00160058_d);
-                    if (other[0x20] >= 0 && (*(short *)(other + 0xA6) != 1246 || !is_moby_in_bob_target_exclusion_state(other))) {
+                    unsigned int offset = (*(unsigned short *)group_moby_entry & 0x7FFF) * 256;
+                    struct Moby *other = (struct Moby *)(offset + D_L11_00160058_d);
+                    if ((signed char)other->state >= 0 && (other->oclass != 0x4DE || !is_moby_in_bob_target_exclusion_state((char *)other))) {
                         found = 1;
-                        if (FastVecDist(moby + 0x10, (char *)D_L11_00160058_d + offset + 0x10) < 10.0f) return 2;
+                        if (FastVecDist(&((struct Moby *)moby)->pos, &((struct Moby *)(D_L11_00160058_d + offset))->pos) < 10.0f)
+                            return 2;
                     }
-                } while (*ids++ >= 0);
+                } while (*group_moby_entry++ >= 0);
             }
-        } while (++i < 4 && (group = *(short *)(groups + (*(int *)(data + 0x158) * 16 + i * 4))) >= 0
+        } while (++i < 4 && (group = target_sets->sets[target_sets->set][i].group) >= 0
                  && D_L11_00160074_m >= group);
     }
     return found;
@@ -848,37 +872,38 @@ typedef int u128 __attribute__((mode(TI)));
 
 /* Tests whether a moby can drop onto the ground, writing the landing point. */
 int try_find_resort_owner_jump_target(char *m, float *out) {
-    char *s = *(char **)(m + 0x78);
-    int *p = (int *)(s + 0xF8);
+    struct Moby *moby = (struct Moby *)m;
+    char *pvars = (char *)moby->pvars;
+    int *clip_volume_index_ptr = (int *)(pvars + 0xF8);
     int i;
     int found = 0;
-    float a[4];
-    float b[4];
-    float g;
+    float candidate_position[4];
+    float collision_start_position[4];
+    float landing_ground_height;
     for (i = 0; i < 2; i++) {
-        if (is_point_inside_clip_volume(m + 0x10, *p)) {
+        if (is_point_inside_clip_volume(&moby->pos, *clip_volume_index_ptr)) {
             found = 1;
             break;
         }
-        p++;
+        clip_volume_index_ptr++;
     }
     if (found) {
-        float *pos = (float *)(m + 0x10);
-        FastVecSub(a, out, pos);
-        if (FastVecLength(a) > 4.0f) func_L00_001FF4B0(a, a, 4.0f);
-        FastVecAdd(a, a, pos);
+        float *pos = &moby->pos.x;
+        FastVecSub(candidate_position, out, pos);
+        if (FastVecLength(candidate_position) > 4.0f) func_L00_001FF4B0(candidate_position, candidate_position, 4.0f);
+        FastVecAdd(candidate_position, candidate_position, pos);
         {
-            int *q = path_table[*(int *)(s - (-(*(int *)(s + 0x158) * 4)) + 0x60)];
-            if (IsPointInPolygon(a, q + 4, *q)) {
-                a[2] += 5.0f;
-                g = func_L00_0025A748_f(a);
-                if (FastAbsF(g - *(float *)(m + 0x18)) > 0.5f) {
-                    qcopy(b, pos);
-                    b[2] += 0.15f;
-                    a[2] = g + 0.15f;
-                    if (func_L00_001EFFF0(b, a, 2, m, 0)) {
-                        a[2] = g;
-                        qcopy(out, a);
+            int *path_entry = path_table[*(int *)(pvars - (-(*(int *)(pvars + 0x158) * 4)) + 0x60)];
+            if (IsPointInPolygon(candidate_position, path_entry + 4, *path_entry)) {
+                candidate_position[2] += 5.0f;
+                landing_ground_height = func_L00_0025A748_f(candidate_position);
+                if (FastAbsF(landing_ground_height - moby->pos.z) > 0.5f) {
+                    qcopy(collision_start_position, pos);
+                    collision_start_position[2] += 0.15f;
+                    candidate_position[2] = landing_ground_height + 0.15f;
+                    if (func_L00_001EFFF0(collision_start_position, candidate_position, 2, m, 0)) {
+                        candidate_position[2] = landing_ground_height;
+                        qcopy(out, candidate_position);
                         return 1;
                     }
                 }
@@ -2236,130 +2261,138 @@ typedef struct { char *slot[4][6]; int w60; int w64; int w68; float f6C; float f
 
 // Update for moby class 1157: spawns six child mobies per row, then eases a pair of vectors between two linked objects.
 void update_child_grid_controller(char *m) {
-    EcData *d = *(EcData **)(m + 0x78);
-    char *o;
-    char *p;
-    char *ob;
-    char *q;
+    enum {
+        CHILD_GRID_STATE_CREATE_CHILDREN = 0,
+        CHILD_GRID_STATE_WAIT_LINK_COMMAND = 1,
+        CHILD_GRID_STATE_FADE_TO_POINT_POSE = 2,
+        CHILD_GRID_STATE_BLEND_POINT_POSES = 3,
+        CHILD_GRID_STATE_FADE_TO_HERO_POSE = 4,
+        CHILD_GRID_STATE_IDLE = 5
+    };
+    struct Moby *grid_controller = (struct Moby *)m;
+    EcData *d = (EcData *)grid_controller->pvars;
+    struct Moby *o;
+    struct Moby *ob;
+    struct Moby *q;
+    char *g;
+    char *source_pose_point;
+    float old;
     float f20;
-    float f21;
-    float ta;
-    float tb;
     float f0;
-    float va[4];
-    float vb[4];
-    int i;
-    int k;
-    int r;
     float f13;
     float f14;
     float f15;
-    float f12;
-    char *g;
-    switch (*(unsigned char *)(m + 0x20)) {
-    case 0:
+    Vec4f pos;
+    Vec4f rot;
+    int i;
+    int k;
+    int r;
+
+    switch (grid_controller->state) {
+    case CHILD_GRID_STATE_CREATE_CHILDREN:
         g = D_0013E633 + 0xE1D;
         for (i = 0; i < 4; i++) {
-            char **pp = &d->slot[i][0];
+            struct Moby **pp = (struct Moby **)&d->slot[i][0];
             for (k = 5; k >= 0; k--) {
                 ob = CreateMoby(0x4B7);
                 *pp = ob;
-                *(short *)(ob + 0x32) = 0x40;
-                (*pp)[0x31] = 1;
-                *(long *)(*pp + 0x38) = *(long *)(*(char **)(g + 0x2080) + 0x38);
-                *(unsigned short *)((*pp) + 0x34) = *(unsigned short *)(m + 0x34);
+                ob->draw_dist = 0x40;
+                (*pp)->visible = 1;
+                (*pp)->spawn_frame = ((Hero *)g)->moby->spawn_frame;
+                (*pp)->flags = grid_controller->flags;
                 q = *pp;
-                qcopy(q + 0x10, m + 0x10);
-                qcopy(q + 0x40, m + 0x40);
+                qcopy(&q->pos, &grid_controller->pos);
+                qcopy(&q->rot, &grid_controller->rot);
                 pp++;
             }
         }
         *(int *)&d->f6C = 0;
-        m[0x20] = 1;
+        grid_controller->state = CHILD_GRID_STATE_WAIT_LINK_COMMAND;
         break;
-    case 1:
-        o = (char *)((d->w60 << 8) + D_L11_00160058_m);
-        if (*(unsigned char *)(o + 0xBC) == 1) {
-            m[0x20] = 2;
+    case CHILD_GRID_STATE_WAIT_LINK_COMMAND:
+        o = (struct Moby *)((d->w60 << 8) + D_L11_00160058_m);
+        if (o->command == 1) {
+            grid_controller->state = CHILD_GRID_STATE_FADE_TO_POINT_POSE;
             d->f78 = -1.0f;
             *(int *)&D_L11_00161FE4 = 0;
             Moby_PlaySound(0, 0, (int)m);
-        } else if (*(unsigned char *)(o + 0xBC) == 2) {
+        } else if (o->command == 2) {
             d->f6C = 1.0f;
-            m[0x20] = 5;
+            grid_controller->state = CHILD_GRID_STATE_IDLE;
         }
         break;
-    case 2:
-        f21 = d->f78;
+    case CHILD_GRID_STATE_FADE_TO_POINT_POSE:
+        old = d->f78;
         r = scale_ticks(0x14);
         f20 = 1.0f;
         ApproachValue((float *)&d->f78, 1.0f, 1.0f / (float)r);
         f0 = FastAbsF(d->f78);
         f20 = f20 - f0;
         *(float *)&D_L11_0015F4FC = f20;
-        if (f21 < 0.0f) {
+        if (old < 0.0f) {
             if (0.0f <= d->f78) {
-                char *o = (char *)(D_L11_00160058_m + (d->w60 << 8));
-                Hero_ResetToPosition(o + 0x10, o + 0x40, 0x72, 1);
-                p = path_points_14b0 + (d->w64 << 7);
-                CameraScript(p + 0x30, p + 0x70, 1, 0, 0);
+                struct Moby *link = (struct Moby *)(D_L11_00160058_m + (d->w60 << 8));
+                Hero_ResetToPosition(&link->pos, &link->rot, 0x72, 1);
+                source_pose_point = path_points_14b0 + (d->w64 << 7);
+                CameraScript(source_pose_point + 0x30, source_pose_point + 0x70, 1, 0, 0);
                 break;
             }
         }
         if (1.0f <= d->f78) {
-            m[0x20] = 3;
+            grid_controller->state = CHILD_GRID_STATE_BLEND_POINT_POSES;
         }
         break;
-    case 3:
+    case CHILD_GRID_STATE_BLEND_POINT_POSES:
         f0 = D_0015EE70;
         f13 = *(float *)&D_L11_00161FE8 * f0;
         f14 = *(float *)&D_L11_00161FEC * f0;
         f15 = *(float *)&D_L11_00161FF0 * D_0015EE6C;
         d->f74 = d->f6C;
         func_00214D88_f((float *)&d->f6C, (float *)&d->f70, 1.0f, f13, f14, f15);
-        func_001F9C08(va, (char *)(D_L11_0016016C_i + (d->w64 << 7)) + 0x30,
+        func_001F9C08(&pos, (char *)(D_L11_0016016C_i + (d->w64 << 7)) + 0x30,
                       (char *)(D_L11_0016016C_i + (d->w68 << 7)) + 0x30, d->f6C);
-        clear_u64_value(vb);
-        vb[0] = FastSubRots(((float *)((d->w68 << 7) + D_L11_0016016C_i))[28],
-                              ((float *)((d->w64 << 7) + D_L11_0016016C_i))[28]) * d->f6C;
-        vb[0] = FastAddRots(((float *)((d->w64 << 7) + D_L11_0016016C_i))[28], vb[0]);
-        vb[1] = FastSubRots(((float *)((d->w68 << 7) + D_L11_0016016C_i))[29],
-                              ((float *)((d->w64 << 7) + D_L11_0016016C_i))[29]) * d->f6C;
-        vb[1] = FastAddRots(((float *)((d->w64 << 7) + D_L11_0016016C_i))[29], vb[1]);
-        vb[2] = FastSubRots(((float *)((d->w68 << 7) + D_L11_0016016C_i))[30],
-                              ((float *)((d->w64 << 7) + D_L11_0016016C_i))[30]) * d->f6C;
-        vb[2] = FastAddRots(((float *)((d->w64 << 7) + D_L11_0016016C_i))[30], vb[2]);
-        set_camera_position(va);
-        set_camera_rotation(vb);
+        clear_u64_value(&rot);
+        rot.x = FastSubRots(((float *)((d->w68 << 7) + D_L11_0016016C_i))[28],
+                            ((float *)((d->w64 << 7) + D_L11_0016016C_i))[28]) * d->f6C;
+        rot.x = FastAddRots(((float *)((d->w64 << 7) + D_L11_0016016C_i))[28], rot.x);
+        rot.y = FastSubRots(((float *)((d->w68 << 7) + D_L11_0016016C_i))[29],
+                            ((float *)((d->w64 << 7) + D_L11_0016016C_i))[29]) * d->f6C;
+        rot.y = FastAddRots(((float *)((d->w64 << 7) + D_L11_0016016C_i))[29], rot.y);
+        rot.z = FastSubRots(((float *)((d->w68 << 7) + D_L11_0016016C_i))[30],
+                            ((float *)((d->w64 << 7) + D_L11_0016016C_i))[30]) * d->f6C;
+        rot.z = FastAddRots(((float *)((d->w64 << 7) + D_L11_0016016C_i))[30], rot.z);
+        set_camera_position(&pos);
+        set_camera_rotation(&rot);
         if (1.0f <= d->f6C) {
-            m[0x20] = 4;
+            grid_controller->state = CHILD_GRID_STATE_FADE_TO_HERO_POSE;
             d->f78 = -1.0f;
         }
         break;
-    case 4:
-        f21 = d->f78;
+    case CHILD_GRID_STATE_FADE_TO_HERO_POSE:
+        old = d->f78;
         r = scale_ticks(0x14);
         f20 = 1.0f;
         ApproachValue((float *)&d->f78, 1.0f, 1.0f / (float)r);
         f0 = FastAbsF(d->f78);
         f20 = f20 - f0;
         *(float *)&D_L11_0015F4FC = f20;
-        if (f21 < 0.0f) {
+        if (old < 0.0f) {
             if (0.0f <= d->f78) {
-                Hero_ResetToPosition(D_0013E633 + 0xE9D, D_0013E633 + 0xE9D + 0x10, 0, 1);
+                Hero_ResetToPosition(&((Hero *)(D_0013E633 + 0xE1D))->motion.pos,
+                                     &((Hero *)(D_0013E633 + 0xE1D))->motion.rot, 0, 1);
                 CameraScript2(3);
                 break;
             }
         }
         if (1.0f <= d->f78) {
-            m[0x20] = 5;
+            grid_controller->state = CHILD_GRID_STATE_IDLE;
         }
         break;
-    case 5:
+    case CHILD_GRID_STATE_IDLE:
     default:
         break;
     }
-    update_child_grid_poses((struct Moby *)m);
+    update_child_grid_poses(grid_controller);
 }
 
 #undef func_00214D88_f
@@ -2737,50 +2770,51 @@ extern char D_0013D355_t[] __asm__("D_0013D355");
 typedef struct { char pad[0x57]; char f57; } Rec57;
 
 void update_link_triggered_moby_motion(unsigned char *m) {
-    char *d = *(char **)(m + 0x78);
+    struct Moby *moving_moby = (struct Moby *)m;
+    char *private_data = (char *)moving_moby->pvars;
     float v[4] __attribute__((aligned(16)));
-    unsigned char *c;
-    unsigned char *o;
-    char *p;
-    char *q;
-    switch (m[0x20]) {
+    struct Moby *spawned_moby;
+    struct Moby *linked_moby;
+    char *spawned_private_data;
+    struct MobyClass *source_moby_class;
+    switch (moving_moby->state) {
     case 0:
-        *(float *)(m + 0x18) = *(float *)(m + 0x18) + *(float *)(d + 0xC) * 1.9f;
-        c = (unsigned char *)func_0020D348_c(0x487);
-        c[0x31] = 1;
-        *(short *)(c + 0x32) = 0x40;
-        *(long *)(c + 0x38) = *(long *)(m + 0x38);
-        *(unsigned short *)(c + 0x34) = *(unsigned short *)(m + 0x34);
-        qcopy(c + 0x10, m + 0x10);
-        qcopy(c + 0x40, m + 0x40);
-        *(float *)(c + 0x40) = func_001FA748_f(*(float *)(c + 0x40), 3.1415927f);
-        func_L00_00251E30_u(c);
-        p = *(char **)(c + 0x78);
-        *(int *)(p + 8) = *(int *)(d + 8);
-        *(float *)(p + 0x10) = *(float *)(d + 0x10);
-        *(int *)(p + 0x14) = *(int *)(d + 0x14);
-        q = *(char **)(m + 0x24);
-        *(float *)(m + 0x2C) = *(float *)(q + 0x24) * *(float *)(d + 0xC);
-        *(float *)(c + 0x2C) = *(float *)(q + 0x24) * *(float *)(d + 0xC);
-        c[0x20] = 1;
-        m[0x20] = 1;
+        moving_moby->pos.z = moving_moby->pos.z + *(float *)(private_data + 0xC) * 1.9f;
+        spawned_moby = (struct Moby *)func_0020D348_c(0x487);
+        spawned_moby->visible = 1;
+        spawned_moby->draw_dist = 0x40;
+        spawned_moby->spawn_frame = moving_moby->spawn_frame;
+        spawned_moby->flags = moving_moby->flags;
+        qcopy(&spawned_moby->pos, &moving_moby->pos);
+        qcopy(&spawned_moby->rot, &moving_moby->rot);
+        spawned_moby->rot.x = func_001FA748_f(spawned_moby->rot.x, 3.1415927f);
+        func_L00_00251E30_u(spawned_moby);
+        spawned_private_data = (char *)spawned_moby->pvars;
+        *(int *)(spawned_private_data + 8) = *(int *)(private_data + 8);
+        *(float *)(spawned_private_data + 0x10) = *(float *)(private_data + 0x10);
+        *(int *)(spawned_private_data + 0x14) = *(int *)(private_data + 0x14);
+        source_moby_class = moving_moby->pclass;
+        moving_moby->scale = source_moby_class->scale * *(float *)(private_data + 0xC);
+        spawned_moby->scale = source_moby_class->scale * *(float *)(private_data + 0xC);
+        spawned_moby->state = 1;
+        moving_moby->state = 1;
         break;
     case 1:
-        o = (unsigned char *)((*(int *)(d + 8) << 8) + (int)D_L11_00160058_t);
-        if (*(short *)(o + 0xA6) == 0x267 && o[0x20] == 4) {
+        linked_moby = (struct Moby *)((*(int *)(private_data + 8) << 8) + (int)D_L11_00160058_t);
+        if (linked_moby->oclass == 0x267 && linked_moby->state == 4) {
             goto go;
         }
-        if (*(short *)(o + 0xA6) == 0x33E && o[0xBC] != 0) {
+        if (linked_moby->oclass == 0x33E && linked_moby->command != 0) {
         go:
-            m[0x20] = 2;
-            ((Rec57 *)(*(int *)(d + 0x14) + (int)(D_0013D355_t + 0x13B)))->f57 = 1;
-            func_0022ED80_u(0, 0, m);
+            moving_moby->state = 2;
+            ((Rec57 *)(*(int *)(private_data + 0x14) + (int)(D_0013D355_t + 0x13B)))->f57 = 1;
+            func_0022ED80_u(0, 0, moving_moby);
         }
         break;
     case 2:
-        func_00214D88_f((float *)d, (float *)(d + 4), *(float *)(d + 0x10), D_0015EE70_d, D_0015EE70_d, D_0015EE6C_d + D_0015EE6C_d);
-        func_L00_001FF4B0_u(v, m + 0xD0, -*(float *)(d + 4));
-        func_001F9BD8_u(m + 0x10, m + 0x10, v);
+        func_00214D88_f((float *)private_data, (float *)(private_data + 4), *(float *)(private_data + 0x10), D_0015EE70_d, D_0015EE70_d, D_0015EE6C_d + D_0015EE6C_d);
+        func_L00_001FF4B0_u(v, &moving_moby->rot_row1, -*(float *)(private_data + 4));
+        func_001F9BD8_u(&moving_moby->pos, &moving_moby->pos, v);
         break;
     }
 }
@@ -2859,32 +2893,38 @@ extern short D_L11_0015F6B0;
 
 // Update for a moby that waits, then animates toward its target and changes state.
 void update_link_triggered_moby_turn(char *moby) {
-    char *data = *(char **)(moby + 0x78);
-    int state = (unsigned char)moby[0x20];
-    switch (state) {
-    case 0:
-        ((unsigned char *)moby)[0x30] = 0xFF;
-        moby[0x20] = 1;
-        *(float *)(data + 8) = *(float *)(moby + 0x48);
+    enum {
+        LINKED_TURN_STATE_INITIALIZE = 0,
+        LINKED_TURN_STATE_WAIT_FOR_LINK = 1,
+        LINKED_TURN_STATE_ROTATE_TO_TARGET = 2
+    };
+    struct Moby *turning_moby = (struct Moby *)moby;
+    float *private_data = (float *)turning_moby->pvars;
+    int entry_state = turning_moby->state;
+    switch (entry_state) {
+    case LINKED_TURN_STATE_INITIALIZE:
+        turning_moby->update_dist = 0xFF;
+        turning_moby->state = 1;
+        private_data[2] = turning_moby->rot.z;
         break;
-    case 1:
-        if (IsMoby1179Active((char *)(D_L11_00160058_d + (*(int *)data << 8)))) {
+    case LINKED_TURN_STATE_WAIT_FOR_LINK:
+        if (IsMoby1179Active((char *)(D_L11_00160058_d + (*(int *)private_data << 8)))) {
             if (*(int *)&level_frame > 10) {
-                D_0013D4EB = state;
-                moby[0x20] = 2;
-                Moby_PlaySound(0, 0, (int)moby);
+                D_0013D4EB = entry_state;
+                turning_moby->state = 2;
+                Moby_PlaySound(0, 0, (int)turning_moby);
             } else {
-                moby[0x20] = 3;
-                *(float *)(moby + 0x48) = FastAddRots(*(float *)(data + 8), 1.0471976f);
+                turning_moby->state = 3;
+                turning_moby->rot.z = FastAddRots(private_data[2], 1.0471976f);
             }
         }
         break;
-    case 2: {
-        float t = FastAddRots(*(float *)(data + 8), 1.0471976f);
-        if (SteerAngleWithVelocity((float *)(moby + 0x48), t, (float *)(data + 4),
-                              D_0015EE70 * 0.34906584f, D_0015EE70 * 0.34906584f,
-                              D_0015EE6C * 0.7853982f) == 0.0f)
-            moby[0x20] = 3;
+    case LINKED_TURN_STATE_ROTATE_TO_TARGET: {
+        float target_angle = FastAddRots(private_data[2], 1.0471976f);
+        if (SteerAngleWithVelocity(&turning_moby->rot.z, target_angle, private_data + 1,
+                                   D_0015EE70 * 0.34906584f, D_0015EE70 * 0.34906584f,
+                                   D_0015EE6C * 0.7853982f) == 0.0f)
+            turning_moby->state = 3;
         break;
     }
     }

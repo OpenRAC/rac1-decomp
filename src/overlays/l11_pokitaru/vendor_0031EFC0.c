@@ -75,20 +75,25 @@ extern short D_L11_00162578;
 /* Update function: state 0 sets up some global tables (running func_L08_002F2428 once), state 1 tests a point
  * and its distance to the hero and sets D_L11_00162620 to a 0 to 255 value that fades between 15.0 and 35.0. */
 void update_level11_layered_effect_and_queue_draw(unsigned char *moby) {
+    enum {
+        EFFECT_INITIALIZE = 0,
+        EFFECT_UPDATE_AND_QUEUE_DRAW = 1
+    };
     int i;
-    float v[4];
-    float w[4];
-    float d;
+    float effect_bounds[4];
+    float effect_to_reference_delta[4];
+    float effect_distance;
+    char *reference_position_base;
 
     switch (moby[0x20]) {
-    case 0:
+    case EFFECT_INITIALIZE:
         if (*(int *)&D_L11_001625BC == 0) {
             scale_rgba_tables(&D_L11_00162600, 4, &D_L11_001625C0, 0.7f, 1.0f, 0.9f, 0.5f, 1);
             scale_rgba_tables(D_L11_001F9D08, 11, D_L11_001F4C38, 0.5f, 0.5f, 0.5f, 1.0f, 1);
             scale_rgba_tables(D_L11_001FF9F0, 8, D_L11_001F9D38, 0.25f, 0.25f, 0.25f, 0.7f, 1);
             *(int *)&D_L11_001625BC = 1;
         }
-        moby[0x20] = 1;
+        moby[0x20] = EFFECT_UPDATE_AND_QUEUE_DRAW;
         for (i = 0; i < 3; i++) {
             D_L11_001FFA10[i].a = 0;
             D_L11_001FFA10[i].b = 0;
@@ -104,42 +109,41 @@ void update_level11_layered_effect_and_queue_draw(unsigned char *moby) {
             *(float *)&D_L11_00162638[i].b = i * 0.4f;
         }
         break;
-    case 1: {
-        char *g = D_L11_00167700;
-        if (!(*(float *)(g + 0x148) < 170.0f)) {
-            v[0] = *(float *)&D_L11_00162578;
-            v[1] = D_L11_0016257C;
-            v[2] = D_L11_00162580;
-            v[3] = D_L11_00162584;
-            if (FastBSphereCheck((char *)v, 1000.0f) >= 0) {
-                if (*(float *)(g + 0x148) > 180.0f) {
-                    w[0] = *(float *)&D_L11_00162578;
-                    w[1] = D_L11_0016257C;
-                    w[2] = D_L11_00162580;
-                    w[3] = 1.0f;
-                    FastVecSub(w, g + 0x140, w);
-                    d = FastVecLength(w);
-                    if (d <= 35.0f) {
-                        AdvanceScrollOffsets(0);
-                        advance_wrapped_sine_pair(D_L11_001FFA18, 0.52f, 0.62f, 0.06f, D_L11_00162640);
-                        AdvanceScrollOffsets(2);
-                        if (d < 15.0f) {
-                            *(unsigned char *)&D_L11_00162620 = 0xFF;
-                        } else if (d < 35.0f) {
-                            *(char *)&D_L11_00162620 = func_001FA898_r((1.0f - (d - 15.0f) / 20.0f) * 255.0f);
-                        } else {
-                            *(char *)&D_L11_00162620 = 0;
-                        }
-                    }
-                    AdvanceScrollEntry(0);
-                    AdvanceScrollEntry(0);
-                    AdvanceScrollEntry(1);
-                    AddDrawCallback(draw_level11_layered_effect_batches, moby);
-                }
+    case EFFECT_UPDATE_AND_QUEUE_DRAW:
+        reference_position_base = D_L11_00167700;
+        if (*(float *)(reference_position_base + 0x148) < 170.0f)
+            break;
+        effect_bounds[0] = *(float *)&D_L11_00162578;
+        effect_bounds[1] = D_L11_0016257C;
+        effect_bounds[2] = D_L11_00162580;
+        effect_bounds[3] = D_L11_00162584;
+        if (FastBSphereCheck((char *)effect_bounds, 1000.0f) < 0)
+            break;
+        if (!(*(float *)(reference_position_base + 0x148) > 180.0f))
+            break;
+        effect_to_reference_delta[0] = *(float *)&D_L11_00162578;
+        effect_to_reference_delta[1] = D_L11_0016257C;
+        effect_to_reference_delta[2] = D_L11_00162580;
+        effect_to_reference_delta[3] = 1.0f;
+        FastVecSub(effect_to_reference_delta, reference_position_base + 0x140, effect_to_reference_delta);
+        effect_distance = FastVecLength(effect_to_reference_delta);
+        if (effect_distance <= 35.0f) {
+            AdvanceScrollOffsets(0);
+            advance_wrapped_sine_pair(D_L11_001FFA18, 0.52f, 0.62f, 0.06f, D_L11_00162640);
+            AdvanceScrollOffsets(2);
+            if (effect_distance < 15.0f) {
+                *(unsigned char *)&D_L11_00162620 = 0xFF;
+            } else if (effect_distance < 35.0f) {
+                *(char *)&D_L11_00162620 = func_001FA898_r((1.0f - (effect_distance - 15.0f) / 20.0f) * 255.0f);
+            } else {
+                *(char *)&D_L11_00162620 = 0;
             }
         }
+        AdvanceScrollEntry(0);
+        AdvanceScrollEntry(0);
+        AdvanceScrollEntry(1);
+        AddDrawCallback(draw_level11_layered_effect_batches, moby);
         break;
-    }
     }
 }
 extern void func_L08_00259040(void *, int, int, void *);
@@ -239,23 +243,33 @@ extern int D_L11_00217A20[];
 extern short D_L11_0016268C;
 extern short D_L11_00162648;
 
+struct Level11Reference {
+    u8 pad_000[0x140];
+    f32 pos[4];                /* 0x140: pos[2] is the z at 0x148 */
+};
+
 /* Update function: state 0 sets up some global tables (running func_L08_002F2428 once), state 1 tests a point
  * and its distance to the hero and sets D_L11_001626A0 to a 0 to 255 value that fades between 80.0 and 100.0. */
 void update_level11_distance_faded_effect_and_queue_draw(unsigned char *moby) {
+    enum {
+        EFFECT_INITIALIZE = 0,
+        EFFECT_UPDATE_AND_QUEUE_DRAW = 1
+    };
     int i;
-    float v[4];
-    float w[4];
-    float d;
+    float effect_bounds[4];
+    float effect_to_reference_delta[4];
+    float effect_distance;
+    struct Level11Reference *reference_position_base;
 
     switch (moby[0x20]) {
-    case 0:
+    case EFFECT_INITIALIZE:
         if (*(int *)&D_L11_0016268C == 0) {
             scale_rgba_tables(D_L11_002154E0, 17, D_L11_00207BC0, 0.7f, 1.0f, 0.9f, 0.5f, 1);
             scale_rgba_tables(D_L11_00217A00, 5, D_L11_00215528, 0.5f, 0.5f, 0.5f, 1.0f, 1);
             scale_rgba_tables(D_L11_00207B98, 9, D_L11_002009E8, 0.25f, 0.25f, 0.25f, 0.7f, 1);
             *(int *)&D_L11_0016268C = 1;
         }
-        moby[0x20] = 1;
+        moby[0x20] = EFFECT_UPDATE_AND_QUEUE_DRAW;
         for (i = 0; i < 3; i++) {
             D_L11_00217A18_p[i].a = 0;
             D_L11_00217A18_p[i].b = 0;
@@ -271,29 +285,29 @@ void update_level11_distance_faded_effect_and_queue_draw(unsigned char *moby) {
             *(float *)&D_L11_001626B8[i].b = i * 0.4f;
         }
         break;
-    case 1: {
-        char *g = D_L11_00167700;
-        if (!(*(float *)(g + 0x148) < 170.0f)) {
-            v[0] = *(float *)&D_L11_00162648;
-            v[1] = D_L11_0016264C;
-            v[2] = D_L11_00162650;
-            v[3] = D_L11_00162654;
-            if (FastBSphereCheck((char *)v, 1000.0f) >= 0) {
-                if (*(float *)(g + 0x148) > 180.0f) {
-                    w[0] = *(float *)&D_L11_00162648;
-                    w[1] = D_L11_0016264C;
-                    w[2] = D_L11_00162650;
-                    w[3] = 1.0f;
-                    FastVecSub(w, g + 0x140, w);
-                    d = FastVecLength(w);
-                    if (d <= 100.0f) {
+    case EFFECT_UPDATE_AND_QUEUE_DRAW:
+        reference_position_base = (struct Level11Reference *)D_L11_00167700;
+        if (!(reference_position_base->pos[2] < 170.0f)) {
+            effect_bounds[0] = *(float *)&D_L11_00162648;
+            effect_bounds[1] = D_L11_0016264C;
+            effect_bounds[2] = D_L11_00162650;
+            effect_bounds[3] = D_L11_00162654;
+            if (FastBSphereCheck((char *)effect_bounds, 1000.0f) >= 0) {
+                if (reference_position_base->pos[2] > 180.0f) {
+                    effect_to_reference_delta[0] = *(float *)&D_L11_00162648;
+                    effect_to_reference_delta[1] = D_L11_0016264C;
+                    effect_to_reference_delta[2] = D_L11_00162650;
+                    effect_to_reference_delta[3] = 1.0f;
+                    FastVecSub(effect_to_reference_delta, reference_position_base->pos, effect_to_reference_delta);
+                    effect_distance = FastVecLength(effect_to_reference_delta);
+                    if (effect_distance <= 100.0f) {
                         AdvanceScrollOffsets(0);
                         advance_wrapped_sine_pair(D_L11_00217A20, 0.52f, 0.62f, 0.06f, D_L11_001626C0_p);
                         AdvanceScrollOffsets(2);
-                        if (d < 80.0f) {
+                        if (effect_distance < 80.0f) {
                             *(unsigned char *)&D_L11_001626A0_w = 0xFF;
-                        } else if (d < 100.0f) {
-                            *(char *)&D_L11_001626A0_w = func_001FA898_r((1.0f - (d - 80.0f) / 20.0f) * 255.0f);
+                        } else if (effect_distance < 100.0f) {
+                            *(char *)&D_L11_001626A0_w = func_001FA898_r((1.0f - (effect_distance - 80.0f) / 20.0f) * 255.0f);
                         } else {
                             *(char *)&D_L11_001626A0_w = 0;
                         }
@@ -306,6 +320,5 @@ void update_level11_distance_faded_effect_and_queue_draw(unsigned char *moby) {
             }
         }
         break;
-    }
     }
 }

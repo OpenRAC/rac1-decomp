@@ -14,73 +14,75 @@ extern int func_L12_002407C0(int, int);
 
 /* Level 12 pickup/ability state update. Adapted from Lombyte (MIT) for PAL: src/overlays/l12/ui_help_0022de30.c, FUN_L12_0022de30. */
 void update_hero_ground_material_flags(void) {
-    char *g = D_0013E633 + 0xE1D;
+    struct Hero *hero_for_ground_flags_update = (struct Hero *)(D_0013E633 + 0xE1D);
     unsigned char saved;
     int state;
-    saved = *(unsigned char *)(g + 0x12ED);
-    state = *(short *)(g + 0x12E0);
-    FastMemZero16(g + 0x12E0, 0x10);
-    *(unsigned char *)(g + 0x12ED) = saved;
-    *(short *)(g + 0x12E0) = -1;
-    *(unsigned char *)(g + 0x20A9) = 0;
-    *(short *)(g + 0x308) = 0;
-    if (state == -1) return;
+    saved = hero_for_ground_flags_update->unk12ED;
+    state = hero_for_ground_flags_update->ground_type;
+    FastMemZero16(&hero_for_ground_flags_update->ground_type, 0x10);
+    hero_for_ground_flags_update->unk12ED = saved;
+    hero_for_ground_flags_update->ground_type = -1;
+    hero_for_ground_flags_update->unk20A9 = 0;
+    hero_for_ground_flags_update->unk308 = 0;
+    if (state == -1)
+        return;
     if (state == 2) {
-        if (*(short *)(g + 0x30C) == 0 || *(float *)(g + 0x2DC) < 0.3f) {
-            *(unsigned char *)(g + 0x12E7) = 1;
-            if (*(unsigned char *)(g + 0x20A4) == 0) {
-                if (*(int *)(g + 0x10E0) != 0 && *(short *)(*(int *)(g + 0x10E0) + 0xA6) == 0xAD)
-                    *(short *)(g + 0x308) = 1;
+        if (hero_for_ground_flags_update->frames_off_ground.s == 0 || hero_for_ground_flags_update->ground_distance < 0.3f) {
+            hero_for_ground_flags_update->unk12E7 = 1;
+            if (hero_for_ground_flags_update->vehicle_mode == 0) {
+                if ((s32)hero_for_ground_flags_update->items[1].moby != 0 && hero_for_ground_flags_update->items[1].moby->oclass == 0xAD)
+                    hero_for_ground_flags_update->unk308 = 1;
             }
         }
     }
     if (state == 0xE) {
-        char *a = D_0013E633 + 0xE1D;
-        *(unsigned char *)(a + 0x12E4) = 1;
-        *(float *)(a + 0x22A4) = 0.2f;
-        *(float *)(a + 0x2F0) = *(float *)(a + 0x2D8) + 0.2f;
+        struct Hero *hero_for_surface_update = (struct Hero *)(D_0013E633 + 0xE1D);
+        hero_for_surface_update->base_condition = 1;
+        hero_for_surface_update->unk22A4 = 0.2f;
+        hero_for_surface_update->water_surface_z = hero_for_surface_update->ground_z.f + 0.2f;
     }
     if (state == 0) {
-        char *b = D_0013E633 + 0xE1D;
-        char *b2;
-        float v = *(float *)(b + 0x2F0) - *(float *)(b + 0x2D8);
-        *(float *)(b + 0x22A4) = v;
-        if (v < 0.85f && 0.25f < v) *(unsigned char *)(b + 0x20A9) = 1;
-        b2 = D_0013E633 + 0xE1D;
-        *(unsigned char *)(b2 + 0x12E4) = 1;
+        struct Hero *hero_for_water_height_check = (struct Hero *)(D_0013E633 + 0xE1D);
+        struct Hero *hero_for_base_condition_update;
+        float water_surface_ground_z_delta = hero_for_water_height_check->water_surface_z - hero_for_water_height_check->ground_z.f;
+        hero_for_water_height_check->unk22A4 = water_surface_ground_z_delta;
+        if (water_surface_ground_z_delta < 0.85f && 0.25f < water_surface_ground_z_delta)
+            hero_for_water_height_check->unk20A9 = 1;
+        hero_for_base_condition_update = (struct Hero *)(D_0013E633 + 0xE1D);
+        hero_for_base_condition_update->base_condition = 1;
     }
     if (state == 2) {
-        char *d = D_0013E633 + 0xE1D;
-        *(unsigned char *)(d + 0x12E7) = 1;
+        struct Hero *d = (struct Hero *)(D_0013E633 + 0xE1D);
+        d->unk12E7 = 1;
     }
     if (state == 7) {
-        char *d = D_0013E633 + 0xE1D;
-        *(unsigned char *)(d + 0x12E2) = 1;
+        struct Hero *d = (struct Hero *)(D_0013E633 + 0xE1D);
+        d->unk12E2 = 1;
     }
     if (state == 0xD) {
-        char *d = D_0013E633 + 0xE1D;
-        *(unsigned char *)(d + 0x12EC) = 1;
+        struct Hero *d = (struct Hero *)(D_0013E633 + 0xE1D);
+        d->selector_13 = 1;
     }
     if (state == 8) {
-        char *d = D_0013E633 + 0xE1D;
-        *(unsigned char *)(d + 0x12EA) = 1;
+        struct Hero *d = (struct Hero *)(D_0013E633 + 0xE1D);
+        d->on_slip_ground = 1;
     }
     if (state == 9) {
-        char *d = D_0013E633 + 0xE1D;
-        *(unsigned char *)(d + 0x12EE) = 1;
+        struct Hero *d = (struct Hero *)(D_0013E633 + 0xE1D);
+        d->unk12EE = 1;
     }
     if (state == 0xC) {
-        char *d = D_0013E633 + 0xE1D;
-        *(unsigned char *)(d + 0x12EA) = 1;
+        struct Hero *d = (struct Hero *)(D_0013E633 + 0xE1D);
+        d->on_slip_ground = 1;
     }
     {
-        char *h = D_0013E633 + 0xE1D;
-        if (*(unsigned char *)(h + 0x12EC)) {
-            if (*(int *)(h + 0x2084) != 0x7F) {
-                float e = FastAbsF(*(float *)(h + 0x2F0) - (*(float *)(h + 0x88) + 0.25f));
-                if (e < 1.0f) {
-                    if (*(float *)(h + 0x2F0) - *(float *)(h + 0x88) > 0.0f) {
-                        if (*(float *)(h + 0x108) < 0.0f) {
+        struct Hero *hero_for_sink_check = (struct Hero *)(D_0013E633 + 0xE1D);
+        if (hero_for_sink_check->selector_13) {
+            if (hero_for_sink_check->state.current != 0x7F) {
+                float water_surface_distance = FastAbsF(hero_for_sink_check->water_surface_z - (hero_for_sink_check->motion.pos.f[2] + 0.25f));
+                if (water_surface_distance < 1.0f) {
+                    if (hero_for_sink_check->water_surface_z - hero_for_sink_check->motion.pos.f[2] > 0.0f) {
+                        if (hero_for_sink_check->motion.displacement.f[2] < 0.0f) {
                             ResetHelpStateIfMode3();
                             HeroL12_SetMoveState(0x7F, 1);
                         }
@@ -208,15 +210,15 @@ extern HS D_L12_00174340;
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l12/ui_help_0022de30.c, FUN_L12_00233e80. */
 void Hero_ProbeGround(void) {
-    Vec4 v0, v10, v20, v30, v40, v50, v60;
+    Vec4 collision_ray_second_endpoint, ground_ray_first_endpoint, ground_geometry_scratch, ground_probe_first_endpoint, unused_ground_probe_output, hit_surface_angles, normalized_hit_normal;
     f32 f;
-    s32 r;
+    s32 collision_sound_class;
     s32 i;
-    f32 a;
-    u8 *p;
+    f32 ground_probe_angle;
+    u8 *hit_moby_flag_data;
 
     s32 k;
-    f32 g;
+    f32 ground_ray_first_endpoint_offset;
 
     D_0013F450.unk270.f[2] = 1.0f;
     D_0013F450.air_frames.s++;
@@ -225,7 +227,7 @@ void Hero_ProbeGround(void) {
     D_0013F450.unk270.f[1] = 0.0f;
     D_0013F450.ground_slope.f = 0.0f;
     D_0013F450.ground_z.f = 0.0f;
-    clear_u64_value((u8 *)&D_0013F450 + 0x2A0);
+    clear_u64_value((u8 *)&D_0013F450.ground_point);
     D_0013F450.unk30A = 0;
     D_0013F450.ground_distance = 32.0f;
     D_0013F450.ground_moby = 0;
@@ -234,38 +236,38 @@ void Hero_ProbeGround(void) {
     }
     k = 0;
     if (D_0013F450.unk20B3) k = 1;
-    g = D_0013F450.unk234 * 2.2f;
+    ground_ray_first_endpoint_offset = D_0013F450.unk234 * 2.2f;
     if (D_0013F450.state.control_mode == 2) {
-        g = D_0013F450.unk234 * 2.9f;
+        ground_ray_first_endpoint_offset = D_0013F450.unk234 * 2.9f;
     }
-    hero_get_collision_ray_endpoints(&v10, &v0, k, g, -48.0f);
-    if (func_L00_001EFFF0(&v10, &v0, 2, (s32)D_0013F450.moby, 0) == 0) {
+    hero_get_collision_ray_endpoints(&ground_ray_first_endpoint, &collision_ray_second_endpoint, k, ground_ray_first_endpoint_offset, -48.0f);
+    if (func_L00_001EFFF0(&ground_ray_first_endpoint, &collision_ray_second_endpoint, 2, (s32)D_0013F450.moby, 0) == 0) {
         goto tail;
     }
-    r = coll_sound_class();
-    if (r == -1) {
-        r = 3;
+    collision_sound_class = coll_sound_class();
+    if (collision_sound_class == -1) {
+        collision_sound_class = 3;
     }
-    D_0013F450.unk12ED = r;
+    D_0013F450.unk12ED = collision_sound_class;
     D_0013F450.ground_type = CollType();
     if (D_0013F450.ground_type == 0) {
-        D_0013F450.water_surface_z = resolve_camera_surface_height(D_L12_00174360, (u8 *)&D_0013F450 + 0x280);
+        D_0013F450.water_surface_z = resolve_camera_surface_height(D_L12_00174360, (u8 *)&D_0013F450.unk280);
         if (D_0013F450.motion.pos.f[2] < D_0013F450.water_surface_z && D_0013F450.unk2F8 <= 0) {
             D_0013F450.unk2F8 = 1;
         }
-        if (func_L00_001EFFF0(&v10, &v0, 0x24, (s32)D_0013F450.moby, 0) == 0) {
+        if (func_L00_001EFFF0(&ground_ray_first_endpoint, &collision_ray_second_endpoint, 0x24, (s32)D_0013F450.moby, 0) == 0) {
             goto d1;
         }
-        r = coll_sound_class();
+        collision_sound_class = coll_sound_class();
         if (D_0015EE84 == 1 || D_0015EE84 == 0x12) {
-            r = 3;
+            collision_sound_class = 3;
         }
-        D_0013F450.unk12ED = r;
+        D_0013F450.unk12ED = collision_sound_class;
     }
     if (D_0013F450.ground_type == 0xD) {
         D_0013F450.water_surface_z = D_L12_00174340.v20.f[2];
-        v10.f[2] = D_L12_00174340.v20.f[2] - 0.01f;
-        if (func_L00_001EFFF0(&v10, &v0, 4, (s32)D_0013F450.moby, 0) == 0) {
+        ground_ray_first_endpoint.f[2] = D_L12_00174340.v20.f[2] - 0.01f;
+        if (func_L00_001EFFF0(&ground_ray_first_endpoint, &collision_ray_second_endpoint, 4, (s32)D_0013F450.moby, 0) == 0) {
             goto d1;
         }
     }
@@ -273,21 +275,21 @@ void Hero_ProbeGround(void) {
         if (IsMobyClass500To540(D_L12_00174340.i18)) {
             D_0013F450.unk30A = 1;
         }
-        p = GetFlaggedPvarWord(D_L12_00174340.i18);
-        if (p != 0 && (*(u16 *)(p + 0x1E) & 8)) {
+        hit_moby_flag_data = GetFlaggedPvarWord(D_L12_00174340.i18);
+        if (hit_moby_flag_data != 0 && (*(u16 *)(hit_moby_flag_data + 0x1E) & 8)) {
             D_0013F450.unk30A = 1;
         }
     }
     if (D_L12_00174340.i1C > 0) {
-        qcopy((u8 *)&D_0013F450 + 0x2A0, &D_L12_00174340.v20);
+        qcopy((u8 *)&D_0013F450.ground_point, &D_L12_00174340.v20);
         D_0013F450.ground_z.f = D_L12_00174340.v20.f[2];
-        D_0013F450.ground_distance = FastVecDist((u8 *)&D_0013F450 + 0x80, ((u8 *)&D_0013F450 + 0x2A0));
+        D_0013F450.ground_distance = FastVecDist((u8 *)&D_0013F450.motion.pos, (u8 *)&D_0013F450.ground_point);
         D_0013F450.ground_moby = (Moby *)D_L12_00174340.i18;
-        func_001252C0((u8 *)&D_0013F450 + 0x270, (u8 *)&D_L12_00174340.f40);
+        func_001252C0(&D_0013F450.unk270, (u8 *)&D_L12_00174340.f40);
         D_0013F450.ground_slope.f = ViewGetPitch((u8 *)&D_L12_00174340.f40);
         D_0013F450.downhill_yaw = func_L00_001FF860(D_L12_00174340.f40, D_L12_00174340.f44);
-        FastVecSub(&v20, ((u8 *)&D_0013F450 + 0x2A0), (u8 *)&D_0013F450 + 0x80);
-        if (0.0f < FastVecDot(&v20, (u8 *)&D_0013F450 + 0x270)) {
+        FastVecSub(&ground_geometry_scratch, (u8 *)&D_0013F450.ground_point, (u8 *)&D_0013F450.motion.pos);
+        if (0.0f < FastVecDot(&ground_geometry_scratch, (u8 *)&D_0013F450.unk270)) {
             D_0013F450.ground_distance = -D_0013F450.ground_distance;
         }
         if (D_0013F450.ground_distance < 0.02f) {
@@ -303,24 +305,24 @@ tail:
         D_0013F450.grounded_frames = 0;
     } else {
         D_0013F450.grounded_frames++;
-        qcopy((u8 *)&D_0013F450 + 0x2B0, (u8 *)&D_0013F450 + 0x2A0);
+        qcopy((u8 *)&D_0013F450.unk2B0, (u8 *)&D_0013F450.ground_point);
     }
     if (D_0013F450.motion.pos.f[2] > D_0013F450.water_surface_z) {
         D_0013F450.unk2F8 = 0;
     }
 d1:
-    clear_u64_value(((u8 *)&D_0013F450 + 0x290));
+    clear_u64_value(((u8 *)&D_0013F450.gravity_dir));
     switch (D_0013F450.unk20B3) {
-    case 0:
+    case HERO_GRAVITY_WORLD_DOWN:
         D_0013F450.gravity_dir.f[2] = -1.0f;
         break;
-    case 1:
-        qcopy((u8 *)&D_0013F450 + 0x290, ((u8 *)&D_0013F450 + 0x290) - 0x20);
-        FastVecScale(((u8 *)&D_0013F450 + 0x290), ((u8 *)&D_0013F450 + 0x290), -1.0f);
+    case HERO_GRAVITY_OPPOSITE_GROUND_NORMAL:
+        qcopy((u8 *)&D_0013F450.gravity_dir, ((u8 *)&D_0013F450.gravity_dir) - 0x20);
+        FastVecScale(((u8 *)&D_0013F450.gravity_dir), ((u8 *)&D_0013F450.gravity_dir), -1.0f);
         break;
-    case 2:
-        FastVecSub(((u8 *)&D_0013F450 + 0x290), ((u8 *)&D_0013F450 + 0x290) - 0x1E0, ((u8 *)&D_0013F450 + 0x290) - 0x210);
-        func_L00_001FF4B0(((u8 *)&D_0013F450 + 0x290), ((u8 *)&D_0013F450 + 0x290), 1.0f);
+    case HERO_GRAVITY_TOWARD_REFERENCE_POINT:
+        FastVecSub(((u8 *)&D_0013F450.gravity_dir), ((u8 *)&D_0013F450.gravity_dir) - 0x1E0, ((u8 *)&D_0013F450.gravity_dir) - 0x210);
+        func_L00_001FF4B0(((u8 *)&D_0013F450.gravity_dir), ((u8 *)&D_0013F450.gravity_dir), 1.0f);
         break;
     }
     D_0013F450.ground_pitch.f = 0.0f;
@@ -337,33 +339,33 @@ d1:
     if (!(D_0013F450.ground_distance < 0.25f)) {
         return;
     }
-    compute_rotated_vector_angles((u8 *)&D_0013F450 + 0x270, &v20);
-    if (-0.78539819f < v20.f[1] && v20.f[1] < 0.78539819f) {
-        D_0013F450.ground_pitch.f = v20.f[1];
+    compute_rotated_vector_angles((u8 *)&D_0013F450.unk270, &ground_geometry_scratch);
+    if (-0.78539819f < ground_geometry_scratch.f[1] && ground_geometry_scratch.f[1] < 0.78539819f) {
+        D_0013F450.ground_pitch.f = ground_geometry_scratch.f[1];
     }
-    if (-0.78539819f < v20.f[0] && v20.f[0] < 0.78539819f) {
-        D_0013F450.unk2E8.f = v20.f[0];
+    if (-0.78539819f < ground_geometry_scratch.f[0] && ground_geometry_scratch.f[0] < 0.78539819f) {
+        D_0013F450.unk2E8.f = ground_geometry_scratch.f[0];
     }
     for (i = 0; i < 2; i++) {
-        a = 1.5707964f;
+        ground_probe_angle = 1.5707964f;
         if (i == 1) {
-            a = -a;
+            ground_probe_angle = -ground_probe_angle;
         }
-        PolarToWorldPoint(&v30, 0.2f, a, 0.45f);
-        PolarToWorldPoint(&v40, 0.2f, a, -0.45f);
-        if (func_L00_001EFFF0(&v30, &v0, 0x22, (s32)D_0013F450.moby, 0)) {
+        PolarToWorldPoint(&ground_probe_first_endpoint, 0.2f, ground_probe_angle, 0.45f);
+        PolarToWorldPoint(&unused_ground_probe_output, 0.2f, ground_probe_angle, -0.45f);
+        if (func_L00_001EFFF0(&ground_probe_first_endpoint, &collision_ray_second_endpoint, 0x22, (s32)D_0013F450.moby, 0)) {
             f = D_L12_00174340.v20.f[2] - D_0013F450.ground_z.f;
             D_0013F450.unk2C0.f[i] = f;
             if (0.4f < FastAbsF(f)) {
                 D_0013F450.unk2C0.f[i] = 0.0f;
             }
-            func_001252C0(&v60, (u8 *)&D_L12_00174340.f40);
-            compute_rotated_vector_angles(&v60, &v50);
-            if (-0.78539819f < v50.f[1] && v50.f[1] < 0.78539819f) {
-                D_0013F450.unk2C8.f[i] = v50.f[1];
+            func_001252C0(&normalized_hit_normal, (u8 *)&D_L12_00174340.f40);
+            compute_rotated_vector_angles(&normalized_hit_normal, &hit_surface_angles);
+            if (-0.78539819f < hit_surface_angles.f[1] && hit_surface_angles.f[1] < 0.78539819f) {
+                D_0013F450.unk2C8.f[i] = hit_surface_angles.f[1];
             }
-            if (-0.78539819f < v50.f[0] && v50.f[0] < 0.78539819f) {
-                D_0013F450.unk2D0.f[i] = v50.f[0];
+            if (-0.78539819f < hit_surface_angles.f[0] && hit_surface_angles.f[0] < 0.78539819f) {
+                D_0013F450.unk2D0.f[i] = hit_surface_angles.f[0];
             }
         } else {
             D_0013F450.unk2C0.f[i] = 0.0f;

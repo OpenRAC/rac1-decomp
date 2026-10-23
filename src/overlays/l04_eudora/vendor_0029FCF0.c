@@ -243,20 +243,20 @@ extern void func_0020EEE8(void *);
 
 // Per-frame update: counts down a timer, firing a effect call at start and end.
 void update_moby_random_interval_animation(char *m) {
-    int *d;
+    int *animation_countdown;
     if (m != 0) {
-        *(int *)(m + 0x94) = 0;
-        d = *(int **)(m + 0x78);
-        if (*d == 0) {
-            if (*(unsigned char *)(m + 0x53) != 1) {
+        ((struct Moby *)m)->collision = 0;
+        animation_countdown = (int *)((struct Moby *)m)->pvars;
+        if (*animation_countdown == 0) {
+            if (((struct Moby *)m)->prev_seq != 1) {
                 MobyBlendAnimation(m, (void *)1, 0, (void *)scale_ticks(3));
             }
-            *d = scale_ticks((func_001160D8() + 0x1E) & 0xFF);
+            *animation_countdown = scale_ticks((func_001160D8() + 0x1E) & 0xFF);
         }
-        if ((*(unsigned char *)(m + 0x70) & 2) && *(unsigned char *)(m + 0x53) != 0) {
+        if ((((struct Moby *)m)->anim_flags & 2) && ((struct Moby *)m)->prev_seq != 0) {
             MobyBlendAnimation(m, 0, 0, (void *)scale_ticks(3));
         }
-        *d = *d - 1;
+        *animation_countdown = *animation_countdown - 1;
         func_0020EEE8(m);
     }
 }
@@ -1137,30 +1137,47 @@ extern void func_L00_0025F4A8_alt(void *, void *, void *, float, float, int, int
     __asm__("func_L00_0025F4A8");
 extern int func_0022ED80(int, int, char *);
 
+typedef struct {
+    u8 pad_000[0x238];
+    s32 engine_voice_index;
+} CircularSawVars;
+
+typedef struct VoiceSlot {
+    u8 pad_00[4];
+    u8 state;
+    u8 pad_05[0x13];
+    struct Moby *owner;
+} VoiceSlot;
+
+typedef struct VoicePoolWindow {
+    u8 header[0x70];
+    VoiceSlot voice;
+} VoicePoolWindow;
+
 // release the moby's claimed slot, then spawn an effect at it
 void spawn_circular_saw_destruction_effects(char *moby)
 {
-    float pos[4];
+    float explosion_position[4];
     float vec[4];
-    char *data = *(char **)(moby + 0x78);
-    int idx;
-    int r;
+    CircularSawVars *data = (CircularSawVars *)((struct Moby *)moby)->pvars;
+    int engine_voice_index;
+    int invalid_voice_index;
 
     clear_u64_value(vec);
-    idx = *(int *)(data + 0x238);
-    if (idx != -1) {
-        char *e = (char *)D_0013E633 + 0x1D + idx * 0x70;
-        if (*(char **)(e + 0x88) == moby) {
-            if (*(unsigned char *)(e + 0x74) != 0)
-                Sound_StopSlot(idx);
+    engine_voice_index = data->engine_voice_index;
+    if (engine_voice_index != -1) {
+        VoicePoolWindow *voice_slot_window = (VoicePoolWindow *)((char *)D_0013E633 + 0x1D + engine_voice_index * 0x70);
+        if (voice_slot_window->voice.owner == (struct Moby *)moby) {
+            if (voice_slot_window->voice.state != 0)
+                Sound_StopSlot(engine_voice_index);
         }
     }
-    r = -1;
-    *(int *)(data + 0x238) = r;
+    invalid_voice_index = -1;
+    data->engine_voice_index = invalid_voice_index;
     SetDeathBits(moby, 0, -1);
-    Moby_GetJointWorldPos(moby, 5, pos);
-    func_L00_0025F4A8_alt(moby, vec, pos, 0.0f, 0.0f, 10, 3, 4,
-                          2.0f, 1.0f, 100000.0f, 1.0f, -1, 15.0f, 1, 1, r, 0);
+    Moby_GetJointWorldPos(moby, 5, explosion_position);
+    func_L00_0025F4A8_alt(moby, vec, explosion_position, 0.0f, 0.0f, 10, 3, 4,
+                          2.0f, 1.0f, 100000.0f, 1.0f, -1, 15.0f, 1, 1, invalid_voice_index, 0);
     Moby_PlaySound(1, 0, moby);
 }
 extern void func_L00_00260D30(char *, float *, float);

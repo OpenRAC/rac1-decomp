@@ -91,64 +91,86 @@ extern char *D_L00_00160098 MACRO_ADDR;
 extern int func_L00_00203F20(int a, int b);
 extern int func_00215570(void *, int);
 typedef unsigned short Ent[4];
+typedef struct HelpMoby {
+    u8 pad_00[0x20];
+    u8 state;                      /* 0x20: 0 on the first update, then 1 */
+    u8 pad_21[0xF];
+    u8 alpha;                      /* 0x30: set to 0xFF on the first update */
+    u8 pad_31[0x47];
+    s32 *vars;                     /* 0x78: parameter words, vars[0..8] */
+} HelpMoby;
+
+typedef struct HelpTarget {
+    u8 pad_00[0x20];
+    u8 state;                      /* 0x20: 0xFE / 0xFD mean the moby is gone */
+} HelpTarget;
+
 /* UpdateMoby_1413: first-update init of the moby state, then each trigger entry in the
  * hero-state table (Ent = 4 ushorts, indexed by the func_L00_00203F20 slot) is tested and
  * the matching slot requested when the hero is at the position named by the moby's
  * params; with slots 1 and 2 clear, guard mobys in params[5..8] are checked for being gone. */
 void update_level_help_controller(unsigned char *moby) {
-    int *s = *(int **)(moby + 0x78);
-    Ent *t;
-    int *p;
-    int i;
-    unsigned char *g3;
-    if (moby[0x20] == 0) {
-        moby[0x20] = 1;
-        moby[0x30] = 0xFF;
+    HelpMoby *help;
+    s32 *vars;
+    u16 *trig;
+    s32 *target_index_ptr;
+    s32 i;
+    s32 k;
+    s32 e;
+    s32 d;
+    HelpTarget *target_moby;
+    Hero *hero_ptr;
+
+    help = (HelpMoby *)moby;
+    vars = help->vars;
+    if (help->state == 0) {
+        help->state = 1;
+        help->alpha = 0xFF;
     }
-    t = ((Ent *)(D_0014171B + 0x34D));
-    if (t[3][0] == 0) Help_Request(3, 3);
-    if (t[0x74][0] == 0) {
-        if (is_point_inside_clip_volume(((void *)(D_0013E633 + 0xE9D)), s[4])) Help_Request(0x4E2A, 0x74);
+    trig = (u16 *)(D_0014171B + 0x34D);
+    if (trig[0x18 / 2] == 0) Help_Request(3, 3);
+    if (trig[0x3A0 / 2] == 0) {
+        if (is_point_inside_clip_volume((void *)&((Hero *)(D_0013E633 + 0xE1D))->motion.pos, vars[4])) Help_Request(0x4E2A, 0x74);
     }
     {
-    Ent *t2 = ((Ent *)(D_0014171B + 0x34D));
-    if (t2[9][0] == 0) {
-        if (is_point_inside_clip_volume(((void *)(D_0013E633 + 0xE9D)), s[0])) {
+    u16 *trig2 = (u16 *)(D_0014171B + 0x34D);
+    if (trig2[0x48 / 2] == 0) {
+        if (is_point_inside_clip_volume((void *)&((Hero *)(D_0013E633 + 0xE1D))->motion.pos, vars[0])) {
             if (*(unsigned short *)(D_0014171B_q + 0x235) == 0) Help_Request(5, 9);
         }
     }
     }
     {
-    Ent *t3 = ((Ent *)(D_0014171B + 0x34D));
-    if (t3[8][0] == 0 && *(unsigned short *)(D_0014171B_q + 0x22D) == 0) {
-        if (is_point_inside_clip_volume(((void *)(D_0013E633 + 0xE9D)), s[1])) Help_Request(4, 8);
+    u16 *trig3 = (u16 *)(D_0014171B + 0x34D);
+    if (trig3[0x40 / 2] == 0 && *(unsigned short *)(D_0014171B_q + 0x22D) == 0) {
+        if (is_point_inside_clip_volume((void *)&((Hero *)(D_0013E633 + 0xE1D))->motion.pos, vars[1])) Help_Request(4, 8);
     }
     }
-    if (((Ent *)(D_0014171B + 0x34D))[0][0] == 0) {
-        if (is_point_inside_clip_volume(((void *)(D_0013E633 + 0xE9D)), s[2])) Help_Request(0, 0);
+    if (((u16 *)(D_0014171B + 0x34D))[0] == 0) {
+        if (is_point_inside_clip_volume((void *)&((Hero *)(D_0013E633 + 0xE1D))->motion.pos, vars[2])) Help_Request(0, 0);
     }
     {
-    Ent *t4 = ((Ent *)(D_0014171B + 0x34D));
-    if (t4[1][0] != 0) return;
-    if (t4[2][0] != 0) return;
+    u16 *trig4 = (u16 *)(D_0014171B + 0x34D);
+    if (trig4[0x8 / 2] != 0) return;
+    if (trig4[0x10 / 2] != 0) return;
     }
-    g3 = D_0013E633 + 0xE1D;
-    p = s + 5;
-    {
-    int k = -1, e = 0xFE, d = 0xFD;
+    hero_ptr = (Hero *)(D_0013E633 + 0xE1D);
+    target_index_ptr = vars + 5;
+    k = -1;
+    e = 0xFE;
+    d = 0xFD;
     i = 3;
     do {
-        int id = *p;
+        s32 id = *target_index_ptr;
         if (id != k) {
-            unsigned char *m = (unsigned char *)D_L00_00160098 + (id << 8);
-            if (m == 0 || m[0x20] == e || m[0x20] == d) {
-                if (*(int *)(g3 + 0x22A8) < 4) Help_Request(1, 1);
+            target_moby = (HelpTarget *)((unsigned char *)D_L00_00160098 + (id << 8));
+            if (target_moby == 0 || target_moby->state == e || target_moby->state == d) {
+                if (hero_ptr->health.hp < 4) Help_Request(1, 1);
                 else Help_Request(2, 2);
             }
         }
-        p++;
+        target_index_ptr++;
     } while (--i >= 0);
-    }
 }
 typedef int u128 __attribute__((mode(TI)));
 typedef struct { int count; int pad4[3]; Vec4 pts[1]; } VendPath;

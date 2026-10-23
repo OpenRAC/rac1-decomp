@@ -2181,19 +2181,48 @@ extern int func_L10_002F6E38(void *);
 extern char *D_L14_0015F050 MACRO_ADDR;
 extern char D_0013E633[];
 
+typedef struct CameraRule {
+    u8 pad00[0x38];
+    u8 disabled;               /* 0x38 nonzero: the camera never activates (-1) */
+    u8 pad39[0xB];
+    s32 required_hero_state;   /* 0x44 -1 for any state */
+    s32 required_control_mode; /* 0x48 -1 for any control mode */
+} CameraRule;
+
+typedef struct CameraDefRow {
+    u8 pad00[0x1C];
+    CameraRule *info;          /* 0x1C */
+} CameraDefRow;
+
+/* The two camera fields this function reads: transition_state at 0x7E, descriptor_index at 0x84. */
+typedef struct CameraRecord {
+    u8 pad00[0x7E];
+    s16 transition_state;      /* 0x7E */
+    u8 pad80[0x4];
+    s16 descriptor_index;      /* 0x84 row of the camera table */
+} CameraRecord;
+
 /* Returns 1 when the record selected by the moby's index matches the current targets, -1 when that record is disabled. */
-int check_camera_hero_requirements(char *a, char *b) {
-    char *rec = *(char **)(D_L14_0015F050 + *(short *)(a + 0x84) * 32 + 0x1C);
-    int t, u;
-    if (*(unsigned char *)(rec + 0x38) != 0) return -1;
-    if (b != 0 && *(short *)(b + 0x7E) == 0) {
-        if (*(int *)(D_0013E633 + 0x2EA9) != 15) return 0;
+extern Hero hero __asm__("D_0013F450");
+
+int check_camera_hero_requirements(char *camera, char *control_mode_gate_object) {
+    CameraDefRow *defs = (CameraDefRow *)D_L14_0015F050;
+    CameraRule *rec = defs[((CameraRecord *)camera)->descriptor_index].info;
+    int required_control_mode, required_hero_state;
+    if (rec->disabled != 0)
+        return -1;
+    if (control_mode_gate_object != 0 && ((CameraRecord *)control_mode_gate_object)->transition_state == 0) {
+        if (hero.state.control_mode != 15)
+            return 0;
     }
-    if (Trigger_IsHeroInside(a) == 0) return 0;
-    t = *(int *)(rec + 0x48);
-    if (t >= 0 && *(int *)(D_0013E633 + 0x2EA9) != t) return 0;
-    u = *(int *)(rec + 0x44);
-    if (u >= 0 && *(int *)(D_0013E633 + 0x2EA1) != u) return 0;
+    if (Trigger_IsHeroInside(camera) == 0)
+        return 0;
+    required_control_mode = rec->required_control_mode;
+    if (required_control_mode >= 0 && hero.state.control_mode != required_control_mode)
+        return 0;
+    required_hero_state = rec->required_hero_state;
+    if (required_hero_state >= 0 && hero.state.current != required_hero_state)
+        return 0;
     return 1;
 }
 /* Starts the vendor camera: measures the three camera paths of the slot record into the length tables,

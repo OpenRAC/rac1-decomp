@@ -1943,11 +1943,12 @@ extern float func_001FA888(int);
 
 /* Moby update that pulses a glow tint on 18 linked mobys. */
 void update_planetbuster_maximus_glow_color(char *moby) {
+    struct Moby *self = (struct Moby *)moby;
     int i;
     int alpha = 0x80000000;
-    char *data = *(char **)(moby + 0x78);
+    char *data = (char *)self->pvars;
     for (i = 0; i < 18; i++) {
-        char *other;
+        struct Moby *other;
         int period;
         float sine;
         float color;
@@ -1958,11 +1959,11 @@ void update_planetbuster_maximus_glow_color(char *moby) {
         float phase;
         float divisor;
         if (i == 17) {
-            other = moby;
+            other = self;
         } else {
-            other = (char *)D_L12_00160058_303CA8 + ((unsigned int)*(int *)(data + i * 0x30 + 0x20) << 8);
+            other = (struct Moby *)((char *)D_L12_00160058_303CA8 + ((unsigned int)*(int *)(data + i * 0x30 + 0x20) << 8));
         }
-        if (*(short *)(other + 0xA6) == 0x4FE) continue;
+        if (other->oclass == 0x4FE) continue;
         {
             period = scale_ticks(0xAA);
             divisor = IntToFloat(period);
@@ -1975,8 +1976,8 @@ void update_planetbuster_maximus_glow_color(char *moby) {
             packed_color = ((blue + 0x46) << 16) | alpha |
                 ((green + 0xB4 > 0xFF ? 0xFF : green + 0xB4) << 8) |
                 (red + 0xB4 > 0xFF ? 0xFF : red + 0xB4);
-            *(unsigned short *)(other + 0x34) |= 0x10;
-            *(int *)(other + 0x90) = packed_color;
+            other->flags |= 0x10;
+            other->glow_color = packed_color;
         }
     }
 }
@@ -2229,35 +2230,38 @@ extern float D_0015EE6C MACRO_ADDR;
 
 /* spawns a debris piece from the owner's slot at the owner's position, then bursts particles */
 void spawn_next_linked_moby(char *moby) {
-    char *data = *(char **)(moby + 0x78);
-    char *slot = data + (*(int *)(data + 0xF0) << 2);
-    char *c = (char *)(D_L12_00160058_m + ((*(int *)(slot + 0xC0)) << 8));
-    char *t;
-    short *r;
+    struct Moby *spawner = (struct Moby *)moby;
+    u8 *spawner_data = spawner->pvars;
+    int *indexed_spawner_data = (int *)(spawner_data + (*(int *)(spawner_data + 0xF0) << 2));
+    struct Moby *spawned_moby = (struct Moby *)(D_L12_00160058_m + (indexed_spawner_data[0x30] << 8));
+    struct MobyClass *moby_class;
+    short *aim_height_data;
     int i;
-    qcopy(c + 0x10, moby + 0x10);
-    *(float *)(c + 0x18) = *(float *)(c + 0x18) - 0.35f;
-    c[0x20] = 0;
-    c[0xBC] = 0;
-    t = *(char **)(c + 0x24);
-    *(unsigned short *)(c + 0x34) = *(unsigned short *)(t + 0x44);
-    *(float *)(c + 0x2C) = *(float *)(t + 0x24);
-    ((unsigned char *)c)[0x30] = 0xFF;
-    c[0x31] = 1;
-    *(short *)(c + 0x36) = 0x7F80;
-    *(short *)(c + 0x32) = 0xFF;
-    ((unsigned char *)c)[0x71] = 0xFF;
-    ((unsigned char *)c)[0x72] = 0xFF;
-    ((unsigned char *)c)[0xA4] = 0xFF;
-    *(int *)(c + 0x94) = *(int *)(t + 0x10);
-    *(long *)(c + 0x38) = *(long *)(moby + 0x38);
-    func_L00_00251E30(c);
-    *(char **)(c + 0xB8) = moby;
+    qcopy(&spawned_moby->pos, &spawner->pos);
+    spawned_moby->pos.z = spawned_moby->pos.z - 0.35f;
+    spawned_moby->state = 0;
+    spawned_moby->command = 0;
+    moby_class = spawned_moby->pclass;
+    spawned_moby->flags = moby_class->flags;
+    spawned_moby->scale = moby_class->scale;
+    spawned_moby->update_dist = 0xFF;
+    spawned_moby->visible = 1;
+    spawned_moby->occlusion = 0x7F80;
+    spawned_moby->draw_dist = 0xFF;
+    spawned_moby->unk71 = 0xFF;
+    spawned_moby->unk72 = 0xFF;
+    spawned_moby->hit_slot = 0xFF;
+    spawned_moby->collision = moby_class->collision;
+    spawned_moby->spawn_frame = spawner->spawn_frame;
+    func_L00_00251E30(spawned_moby);
+    spawned_moby->parent = spawner;
     for (i = 0; i < 14; i++) {
-        spawn_jittered_effect_particle_with_optional_basis(random_float_between(D_0015EE6C * 3.0f, D_0015EE6C * 5.0f), moby + 0x10, 0);
+        spawn_jittered_effect_particle_with_optional_basis(random_float_between(D_0015EE6C * 3.0f, D_0015EE6C * 5.0f), &spawner->pos, 0);
     }
-    r = (short *)GetFlaggedPvarWord(c);
-    if (r != 0) *(float *)r = (float)r[2];
+    aim_height_data = (short *)GetFlaggedPvarWord(spawned_moby);
+    if (aim_height_data != 0) {
+        *(float *)aim_height_data = (float)aim_height_data[2];
+    }
 }
 extern void func_L12_00308E98(char *m);
 extern void func_0020D678(void *);
@@ -2336,27 +2340,28 @@ extern int func_L00_00260D30(char *, char *, float);
 
 /* per-frame update of a moby's timer and approach state */
 void update_homing_mine_spawner_target(char *m) {
-    char *d = *(char **)(m + 0x78);
+    struct Moby *spawner = (struct Moby *)m;
+    u8 *spawner_data = spawner->pvars;
     char *pad;
-    if (*(unsigned char *)(m + 0x20) != 0) {
-        if (*(int *)(d + 0x38) != 0) {
-            *(short *)(d + 0xFE) = scale_ticks(0xB4);
+    if (spawner->state != 0) {
+        if (*(int *)(spawner_data + 0x38) != 0) {
+            *(short *)(spawner_data + 0xFE) = scale_ticks(0xB4);
         }
-        *(int *)(d + 0x38) = 0;
-        if (FastDecTimer(d + 0xFE)) {
-            *(float *)(d + 0xF8) = *(float *)(d + 0xF4);
+        *(int *)(spawner_data + 0x38) = 0;
+        if (FastDecTimer(spawner_data + 0xFE)) {
+            *(float *)(spawner_data + 0xF8) = *(float *)(spawner_data + 0xF4);
         } else {
-            *(float *)(d + 0xF8) = *(float *)(d + 0xF4) + 5.0f;
+            *(float *)(spawner_data + 0xF8) = *(float *)(spawner_data + 0xF4) + 5.0f;
         }
-        if (FindNearestTargetMoby(m, d + 0x70, *(float *)(d + 0xF8)) != 2) {
-            if (FastAbsF(*(float *)(m + 0x18) - *(float *)(d + 0x78)) > 3.0f) {
-                *(int *)(d + 0xB4) = 2;
+        if (FindNearestTargetMoby(m, spawner_data + 0x70, *(float *)(spawner_data + 0xF8)) != 2) {
+            if (FastAbsF(spawner->pos.z - *(float *)(spawner_data + 0x78)) > 3.0f) {
+                *(int *)(spawner_data + 0xB4) = 2;
             }
         }
-        if (*(int *)(d + 0xB0) == 0) {
+        if (*(int *)(spawner_data + 0xB0) == 0) {
             pad = D_0013E633 + 0xE1D;
-            *(int *)(d + 0xB0) = *(int *)(pad + 0x2080);
-            qcopy(d + 0x70, pad + 0x80);
+            *(int *)(spawner_data + 0xB0) = *(int *)(pad + 0x2080);
+            qcopy(spawner_data + 0x70, pad + 0x80);
         }
     }
 }

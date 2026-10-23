@@ -2380,13 +2380,24 @@ void func_L07_0031A410_r(struct Moby *moby) {
 extern int func_001F9850(int);
 extern void func_0020D678(void *);
 
+typedef struct SwooperSpawnerVars {
+    u8 pad_00[0x84];
+    s32 linger_time;                  /* 0x84 */
+} SwooperSpawnerVars;
+
+typedef struct SwooperVars {
+    u8 pad_00[0x98];
+    s32 life_timer;                   /* 0x98 */
+} SwooperVars;
+
 /* Deletes the moby, first copying other's timer into this moby's data if other is non-null. */
-void mark_swooper_for_removal(char *arg, char *other) {
-    char *dst = *(char **)(arg + 0x78);
-    if (other != 0) {
-        *(int *)(dst + 0x98) = scale_ticks(*(int *)(other + 0x84));
+void mark_swooper_for_removal(char *moby, char *spawner_vars) {
+    SwooperVars *vars = (SwooperVars *)((struct Moby *)moby)->pvars;
+
+    if (spawner_vars != 0) {
+        vars->life_timer = scale_ticks(((SwooperSpawnerVars *)spawner_vars)->linger_time);
     }
-    DeleteMoby(arg);
+    DeleteMoby(moby);
 }
 typedef struct { f32 x; f32 y; f32 z; } Vec3_31AAB0;
 typedef struct {

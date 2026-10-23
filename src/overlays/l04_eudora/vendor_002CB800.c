@@ -2007,45 +2007,50 @@ typedef struct BounceData2E6558 {
     float velocity[4]; float spin[3];
 } BounceData2E6558;
 void update_entity_bounce_and_decay(char *moby) {
+    enum {
+        ENTITY_MOTION_STATE_BOUNCE = 0,
+        ENTITY_MOTION_STATE_DECAY_AND_REMOVE = 1
+    };
+    struct Moby *entity = (struct Moby *)moby;
+    BounceData2E6558 *pv = (BounceData2E6558 *)entity->pvars;
     float old[4];
-    char *pos = moby + 0x10;
-    BounceData2E6558 *data = *(BounceData2E6558 **)(moby + 0x78);
+    Vec4f *pos = &entity->pos;
     float *vel;
     qcopy(old, pos);
-    vel = data->velocity;
-    data->velocity[2] = data->velocity[2] - D_0015EE70 * 20.0f;
+    vel = pv->velocity;
+    pv->velocity[2] = pv->velocity[2] - D_0015EE70 * 20.0f;
     FastVecAdd(pos, pos, vel);
-    *(float *)(moby + 0x40) = FastAddRots(*(float *)(moby + 0x40), data->spin[0]);
-    *(float *)(moby + 0x44) = FastAddRots(*(float *)(moby + 0x44), data->spin[1]);
-    *(float *)(moby + 0x48) = FastAddRots(*(float *)(moby + 0x48), data->spin[2]);
-    switch ((unsigned char)moby[0x20]) {
-    case 0:
-        if (*(float *)(moby + 0x18) < data->floor - 3.0f) {
-            moby[0x20] = 1;
-        } else if (func_001F9938_bounce(&data->timer) != 0 && data->bounces != 0) {
-            if (coll_sphere(data->radius, pos, 2, 0) != 0) {
-                char *n = D_L04_00174080;
+    entity->rot.x = FastAddRots(entity->rot.x, pv->spin[0]);
+    entity->rot.y = FastAddRots(entity->rot.y, pv->spin[1]);
+    entity->rot.z = FastAddRots(entity->rot.z, pv->spin[2]);
+    switch (entity->state) {
+    case ENTITY_MOTION_STATE_BOUNCE:
+        if (entity->pos.z < pv->floor - 3.0f) {
+            entity->state = ENTITY_MOTION_STATE_DECAY_AND_REMOVE;
+        } else if (func_001F9938_bounce(&pv->timer) != 0 && pv->bounces != 0) {
+            if (coll_sphere(pv->radius, pos, 2, 0) != 0) {
+                VecQuad *collision_normal = (VecQuad *)D_L04_00174080;
                 float zero;
-                if (FastVecDot(vel, n) < (zero = 0.0f)) {
-                    qcopy(pos, n - 0x10);
-                    *(unsigned short *)&data->bounces = *(unsigned short *)&data->bounces - 1;
-                    func_L00_001FF610(vel, vel, n);
+                if (FastVecDot(vel, collision_normal) < (zero = 0.0f)) {
+                    qcopy(pos, collision_normal - 1);
+                    *(unsigned short *)&pv->bounces = *(unsigned short *)&pv->bounces - 1;
+                    func_L00_001FF610(vel, vel, collision_normal);
                     FastVecScale(vel, vel, 0.75f);
-                    data->spin[0] = zero;
-                    data->spin[1] = randf_sym(D_L04_00161E08, D_L04_00161E0C) * 0.017453292f * D_0015EE6C;
-                    data->spin[2] = randf_sym(D_L04_00161E08, D_L04_00161E0C) * 0.017453292f * D_0015EE6C;
+                    pv->spin[0] = zero;
+                    pv->spin[1] = randf_sym(D_L04_00161E08, D_L04_00161E0C) * 0.017453292f * D_0015EE6C;
+                    pv->spin[2] = randf_sym(D_L04_00161E08, D_L04_00161E0C) * 0.017453292f * D_0015EE6C;
                 }
             }
         }
         break;
-    case 1: {
+    case ENTITY_MOTION_STATE_DECAY_AND_REMOVE: {
         unsigned t;
-        *(float *)(moby + 0x2C) = *(float *)(moby + 0x2C) * 0.9f;
-        t = (unsigned char)moby[0x23];
+        entity->scale = entity->scale * 0.9f;
+        t = entity->alpha;
         if (t < 4) {
             DeleteMoby(moby);
         } else {
-            moby[0x23] = t - 4;
+            entity->alpha = t - 4;
         }
         break;
     }

@@ -16,45 +16,48 @@ extern void func_L00_0020BFA8(void);
 
 // Handles a pending state change: clears the request and sets per-state flags.
 void HeroL08_ResetActionState(void) {
-    char *p = (char *)D_0013E633 + 0xE1D;
+    struct Hero *hero_ptr = (struct Hero *)((char *)D_0013E633 + 0xE1D);
     int v;
     int x;
-    unsigned char saved = *(unsigned char *)(p + 0x12ED);
-    v = *(short *)(p + 0x12E0);
-    FastMemZero16(p + 0x12E0, 0x10);
-    *(unsigned char *)(p + 0x12ED) = saved;
-    *(short *)(p + 0x12E0) = -1;
-    *(unsigned char *)(p + 0x20A9) = 0;
-    *(short *)(p + 0x308) = 0;
-    if (v == -1) return;
+    u8 saved = hero_ptr->unk12ED;
+    v = hero_ptr->ground_type;
+    FastMemZero16(&hero_ptr->ground_type, 0x10);
+    hero_ptr->unk12ED = saved;
+    hero_ptr->ground_type = -1;
+    hero_ptr->unk20A9 = 0;
+    hero_ptr->unk308 = 0;
+    if (v == -1)
+        return;
     if (v == 2) {
-        if (*(short *)(p + 0x30C) == 0 || *(float *)(p + 0x2DC) < 0.3f) {
-            *(unsigned char *)(p + 0x12E7) = 1;
-            if (*(unsigned char *)(p + 0x20A4) == 0) {
-                char *o = *(char **)(p + 0x10E0);
-                if (o != 0 && *(short *)(o + 0xA6) == 0xAD) *(short *)(p + 0x308) = 1;
+        if (hero_ptr->frames_off_ground.s == 0 || hero_ptr->ground_distance < 0.3f) {
+            hero_ptr->unk12E7 = 1;
+            if (hero_ptr->vehicle_mode == 0) {
+                struct Moby *item_moby = hero_ptr->items[1].moby;
+                if (item_moby != 0 && item_moby->oclass == 0xAD)
+                    hero_ptr->unk308 = 1;
             }
         }
     }
     if (v == 0xE) {
-        char *q = (char *)D_0013E633 + 0xE1D;
-        *(unsigned char *)(q + 0x12E4) = 1;
-        *(float *)(q + 0x22A4) = 0.2f;
-        *(float *)(q + 0x2F0) = *(float *)(q + 0x2D8) + 0.2f;
+        struct Hero *q = (struct Hero *)((char *)D_0013E633 + 0xE1D);
+        q->base_condition = 1;
+        q->unk22A4 = 0.2f;
+        q->water_surface_z = q->ground_z.f + 0.2f;
     }
     if (v == 0) {
-        char *q = (char *)D_0013E633 + 0xE1D;
-        *(float *)(q + 0x22A4) = *(float *)(q + 0x2F0) - *(float *)(q + 0x2D8);
-        if (*(float *)(q + 0x22A4) < 0.85f) {
-            if (*(float *)(q + 0x22A4) > 0.25f) *(unsigned char *)(q + 0x20A9) = 1;
+        struct Hero *q = (struct Hero *)((char *)D_0013E633 + 0xE1D);
+        q->unk22A4 = q->water_surface_z - q->ground_z.f;
+        if (q->unk22A4 < 0.85f) {
+            if (q->unk22A4 > 0.25f)
+                q->unk20A9 = 1;
         }
-        q = (char *)D_0013E633 + 0xE1D;
-        *(unsigned char *)(q + 0x12E4) = 1;
+        q = (struct Hero *)((char *)D_0013E633 + 0xE1D);
+        q->base_condition = 1;
     }
     if (D_0015EE84_m == 0xD) {
-        char *q = (char *)D_0013E633 + 0xE1D;
-        if (*(int *)(q + 0x2084) != 0x7B) {
-            if (coll_sphere(*(float *)(q + 0x234) + 0.03f, q + 0xD0, 2, 0)) {
+        struct Hero *q = (struct Hero *)((char *)D_0013E633 + 0xE1D);
+        if (q->state.current != 0x7B) {
+            if (coll_sphere(q->unk234 + 0.03f, &q->motion.unkD0, 2, 0)) {
                 if (CollType() == 0xB) {
                     Hero_TryMoveStateL08(0x7B, 1);
                     return;
@@ -62,36 +65,58 @@ void HeroL08_ResetActionState(void) {
             }
         }
     }
-    if (v == 0xB) { char *q = (char *)D_0013E633 + 0xE1D; q[0x12EB] = 1; }
-    if (v == 2) { char *q = (char *)D_0013E633 + 0xE1D; q[0x12E7] = 1; }
-    if (v == 4) { char *q = (char *)D_0013E633 + 0xE1D; q[0x12E3] = 1; }
-    if (v == 0xD) { char *q = (char *)D_0013E633 + 0xE1D; q[0x12EC] = 1; }
-    if (v == 8) { char *q = (char *)D_0013E633 + 0xE1D; q[0x12EA] = 1; }
-    if (v == 9) { char *q = (char *)D_0013E633 + 0xE1D; q[0x12EE] = 1; }
-    if (v == 0xC) { char *q = (char *)D_0013E633 + 0xE1D; q[0x12EA] = 1; }
-    {
-    char *q = (char *)D_0013E633 + 0xE1D;
-    if (*(unsigned char *)(q + 0x12E3) != 0 && *(int *)(q + 0x300) != 0) {
-        x = *(int *)(q + 0x208C);
-        if (x != 0x10 && x != 0x14 && x != 7) {
-            Hero_TryMoveStateL08(0x31, 1);
-            return;
-        }
+    if (v == 0xB) {
+        struct Hero *q = (struct Hero *)((char *)D_0013E633 + 0xE1D);
+        q->selector_11 = 1;
+    }
+    if (v == 2) {
+        struct Hero *q = (struct Hero *)((char *)D_0013E633 + 0xE1D);
+        q->unk12E7 = 1;
+    }
+    if (v == 4) {
+        struct Hero *q = (struct Hero *)((char *)D_0013E633 + 0xE1D);
+        q->unk12E3 = 1;
+    }
+    if (v == 0xD) {
+        struct Hero *q = (struct Hero *)((char *)D_0013E633 + 0xE1D);
+        q->selector_13 = 1;
+    }
+    if (v == 8) {
+        struct Hero *q = (struct Hero *)((char *)D_0013E633 + 0xE1D);
+        q->on_slip_ground = 1;
+    }
+    if (v == 9) {
+        struct Hero *q = (struct Hero *)((char *)D_0013E633 + 0xE1D);
+        q->unk12EE = 1;
+    }
+    if (v == 0xC) {
+        struct Hero *q = (struct Hero *)((char *)D_0013E633 + 0xE1D);
+        q->on_slip_ground = 1;
     }
     {
-    char *r = (char *)D_0013E633 + 0xE1D;
-    if (*(unsigned char *)(r + 0x12EC) != 0) {
-        if (*(int *)(r + 0x2084) == 0x7F) return;
-        if (FastAbsF(*(float *)(r + 0x2F0) - (*(float *)(r + 0x88) + 0.25f)) < 1.0f) {
-            if (*(float *)(r + 0x2F0) - *(float *)(r + 0x88) > 0.0f) {
-                if (*(float *)(r + 0x108) < 0.0f) {
-                    ResetHelpStateIfMode3();
-                    Hero_TryMoveStateL08(0x7F, 1);
-                }
+        struct Hero *q = (struct Hero *)((char *)D_0013E633 + 0xE1D);
+        if (q->unk12E3 != 0 && q->grounded_frames != 0) {
+            x = q->state.control_mode;
+            if (x != 0x10 && x != 0x14 && x != 7) {
+                Hero_TryMoveStateL08(0x31, 1);
+                return;
             }
         }
     }
-    }
+    {
+        struct Hero *r = (struct Hero *)((char *)D_0013E633 + 0xE1D);
+        if (r->selector_13 != 0) {
+            if (r->state.current == HERO_STATE_SINK)
+                return;
+            if (FastAbsF(r->water_surface_z - (r->motion.pos.f[2] + 0.25f)) < 1.0f) {
+                if (r->water_surface_z - r->motion.pos.f[2] > 0.0f) {
+                    if (r->motion.displacement.f[2] < 0.0f) {
+                        ResetHelpStateIfMode3();
+                        Hero_TryMoveStateL08(HERO_STATE_SINK, 1);
+                    }
+                }
+            }
+        }
     }
 }
 typedef int u128 __attribute__((mode(TI)));
