@@ -178,7 +178,7 @@ extern void func_00216270(void);
    The two -1 stores are one chained assignment written last: that
    shares one register between the word and the byte store, and leaves
    the other stores in source order, as retail has them. */
-void Music_Reset(void) {
+void reset_music(void) {
     char *s = (char *)D_001517D0;
 
     *(char *)(s + 0x30) = 0x20;
@@ -203,7 +203,7 @@ extern void func_0012F068(void *);
 extern void func_002177F0(int);
 
 void register_audio_stream_callback(void) {
-    func_0012F068(FinishAudioStreamRead);
+    func_0012F068(finish_audio_stream_read);
 }
 
 /* The sound tables in the WAD table of contents at D_00137C80, as far as
@@ -247,7 +247,7 @@ extern void func_0012ED48(int, int, int, int, short, int, int, int,
 
 /* Plays sound arg0 in 60000..: the other play functions below differ
    only in their table. */
-void Music_PlayId60000(int arg0, int arg1, int arg2) {
+void music_start_track_60000(int arg0, int arg1, int arg2) {
     SndToc *toc = (SndToc *)D_00137C80;
     int i = arg0 - 60000;
     int h;
@@ -270,10 +270,10 @@ void Music_PlayId60000(int arg0, int arg1, int arg2) {
     *(short *)(s + 0x56) = arg2;
     *(short *)(s + 0x60) = 0;
     func_0012ED48(h, 0, 0, 0, arg2, 0, 2, 0, 0x21,
-                  MusicStartCallback, (long)(unsigned int)(s + 0x50));
+                  music_secondary_start_callback, (long)(unsigned int)(s + 0x50));
 }
 
-void Music_PlayId50000(int arg0, int arg1, int arg2) {
+void music_start_track_50000(int arg0, int arg1, int arg2) {
     SndToc *toc = (SndToc *)D_00137C80;
     int i = arg0 - 50000;
     int h;
@@ -296,10 +296,10 @@ void Music_PlayId50000(int arg0, int arg1, int arg2) {
     *(short *)(s + 0x56) = arg2;
     *(short *)(s + 0x60) = 0;
     func_0012ED48(h, 0, 0, 0, arg2, 0, 2, 0, 0x21,
-                  MusicStartCallback, (long)(unsigned int)(s + 0x50));
+                  music_secondary_start_callback, (long)(unsigned int)(s + 0x50));
 }
 
-void Music_PlayId40000(int arg0, int arg1, int arg2) {
+void music_start_track_40000(int arg0, int arg1, int arg2) {
     SndToc *toc = (SndToc *)D_00137C80;
     int i = arg0 - 40000;
     int h;
@@ -322,7 +322,7 @@ void Music_PlayId40000(int arg0, int arg1, int arg2) {
     *(short *)(s + 0x56) = arg2;
     *(short *)(s + 0x60) = 0;
     func_0012ED48(h, 0, 0, 0, arg2, 0, 2, 0, 0x21,
-                  MusicStartCallback, (long)(unsigned int)(s + 0x50));
+                  music_secondary_start_callback, (long)(unsigned int)(s + 0x50));
 }
 
 /* A byte flag; declared int-sized so MACRO_ADDR keeps it off $gp (-G2). */
@@ -332,7 +332,7 @@ extern char D_00151820[];
 
 /* The same through a per-language table at D_0011C278; volume only
    when the D_0015EF1C flag is set. */
-void Music_PlayId30000(int arg0, int arg1, int arg2) {
+void music_start_track_30000(int arg0, int arg1, int arg2) {
     int *p = (int *)(D_0011C278 + (arg0 * 4 + D_0015EE88 * 0x258));
     char *s;
 
@@ -352,10 +352,10 @@ void Music_PlayId30000(int arg0, int arg1, int arg2) {
     *(short *)(s + 0x56) = arg2;
     *(short *)(s + 0x60) = 0;
     func_0012ED48(*p, 0, 0, 0, *(unsigned char *)&D_0015EF1C_w ? arg2 : 0,
-                  0, 2, 0, 0x21, MusicStartCallback, (long)(unsigned int)D_00151820);
+                  0, 2, 0, 0x21, music_secondary_start_callback, (long)(unsigned int)music_player_dialogue);
 }
 
-void Music_PlayId20000(int arg0, int arg1, int arg2) {
+void music_start_track_20000(int arg0, int arg1, int arg2) {
     SndToc *toc = (SndToc *)D_00137C80;
     int i = arg0 - 20000;
     int h;
@@ -378,10 +378,10 @@ void Music_PlayId20000(int arg0, int arg1, int arg2) {
     *(short *)(s + 0x56) = arg2;
     *(short *)(s + 0x60) = 0;
     func_0012ED48(h, 0, 0, 0, arg2, 0, 2, 0, 0x21,
-                  MusicStartCallback, (long)(unsigned int)(s + 0x50));
+                  music_secondary_start_callback, (long)(unsigned int)(s + 0x50));
 }
 
-void Music_PlayId10000(int arg0, int arg1, int arg2) {
+void music_start_track_10000(int arg0, int arg1, int arg2) {
     SndToc *toc = (SndToc *)D_00137C80;
     int i = arg0 - 10000;
     int h;
@@ -404,7 +404,7 @@ void Music_PlayId10000(int arg0, int arg1, int arg2) {
     *(short *)(s + 0x56) = arg2;
     *(short *)(s + 0x60) = 0;
     func_0012ED48(h, 0, 0, 0, arg2, 0, 2, 0, 0x21,
-                  MusicStartCallback, (long)(unsigned int)(s + 0x50));
+                  music_secondary_start_callback, (long)(unsigned int)(s + 0x50));
 }
 
 extern char D_0013A764[];
@@ -419,30 +419,30 @@ void music_start_track_by_id(int arg0, int arg1, int arg2) {
     int handle;
 
     if (arg0 >= 60000) {
-        Music_PlayId60000(arg0, arg1, arg2);
+        music_start_track_60000(arg0, arg1, arg2);
         return;
     }
     if (arg0 >= 50000) {
-        Music_PlayId50000(arg0, arg1, arg2);
+        music_start_track_50000(arg0, arg1, arg2);
         return;
     }
     if (arg0 >= 40000) {
-        Music_PlayId40000(arg0, arg1, arg2);
+        music_start_track_40000(arg0, arg1, arg2);
         return;
     }
     if (arg0 >= 30000) {
-        Music_PlayId30000(arg0, arg1, arg2);
+        music_start_track_30000(arg0, arg1, arg2);
         return;
     }
     if (arg0 >= 20000) {
-        Music_PlayId20000(arg0, arg1, arg2);
+        music_start_track_20000(arg0, arg1, arg2);
         return;
     }
     if (arg0 >= 10000) {
-        Music_PlayId10000(arg0, arg1, arg2);
+        music_start_track_10000(arg0, arg1, arg2);
         return;
     }
-    handle = *(int *)((char *)D_0013A764 + arg0 * 0x250 + D_0015EE88 * 4);
+    handle = *(int *)((char *)scene_sounds + arg0 * 0x250 + D_0015EE88 * 4);
     if (handle == 0) {
         return;
     }
@@ -459,7 +459,7 @@ void music_start_track_by_id(int arg0, int arg1, int arg2) {
     *(short *)(s + 0x56) = arg2;
     *(short *)(s + 0x60) = 0;
     func_0012ED48(handle, 0, 0, 0, arg2, 0, 2, 0, 0x21,
-                  MusicStartCallback, (long)(unsigned int)(s + 0x50));
+                  music_secondary_start_callback, (long)(unsigned int)(s + 0x50));
 }
 
 extern short D_001517D0[];
@@ -505,7 +505,7 @@ void music_PreseekTrack(int arg0, int arg1, int arg2) {
     *(short *)(s + 0x3A) = arg2;
     *(short *)(s + 0x44) = 0;
     func_0012ED48(h, 0, 0, 0, arg2, 0, 1, 0, 0x21,
-                  MusicPreseekCallback, (long)(unsigned int)(s + 0x34));
+                  music_primary_preseek_callback, (long)(unsigned int)(s + 0x34));
 }
 
 extern void func_002179C8(int, long);
@@ -535,7 +535,7 @@ void music_StartTrack(int arg0, int arg1, int arg2) {
     *(short *)(s + 0x3A) = arg2;
     *(short *)(s + 0x44) = 0;
     func_0012ED48(h, 0, 0, 0, arg2, 0, 1, 0, 0x20,
-                  MusicStartTrackCallback, (long)(unsigned int)(s + 0x34));
+                  music_primary_start_callback, (long)(unsigned int)(s + 0x34));
 }
 
 extern void func_00217970(int, long);
@@ -581,7 +581,7 @@ void music_StartTrackBody(int arg0, int arg1, int arg2) {
     *(short *)(s + 0x3A) = arg2;
     *(short *)(s + 0x44) = 0;
     func_0012ED48(h, 0, 0, 0, arg2, 0, 1, cur, flags,
-                  MusicStartTrackBodyCallback, (long)(unsigned int)(s + 0x34));
+                  music_primary_replace_callback, (long)(unsigned int)(s + 0x34));
 }
 
 /* Retail carries 4 bytes of inter-function padding after this endlabel. */
@@ -611,7 +611,7 @@ int music_Transition(int arg0, int arg1, int arg2, int arg3) {
             *(short *)(s + 0x7C) = 1;
             *(short *)(s + 0x72) = arg3;
             func_0012ED48(h, 0, 0, 0, arg3, 0, 1, 0, 0x20,
-                          MusicTransitionCallback, (long)(unsigned int)(s + 0x6C));
+                          music_transition_start_callback, (long)(unsigned int)(s + 0x6C));
         } else {
             return 0;
         }
@@ -793,12 +793,12 @@ void music_UpdateStream(MusicPlaying *p) {
         if (p->state != 2 && p->state != 3) {
             h = p->handle;
             p->handle = 0xFFFFFFFF;
-            func_0012EE10(h, MusicTimeRemainingCallback, (long)(unsigned int)p);
-            func_0012E588(h, MusicReleaseCallback, (long)(unsigned int)p);
+            func_0012EE10(h, music_remaining_time_callback, (long)(unsigned int)p);
+            func_0012E588(h, set_sound_handle_id, (long)(unsigned int)p);
             return;
         }
         if (p->handle != 0xFFFFFFFF && p->state == 2) {
-            func_0012EE40(p->handle, MusicAdvanceStateCallback, (long)(unsigned int)p);
+            func_0012EE40(p->handle, music_channel_ready_callback, (long)(unsigned int)p);
         }
     } else if (p->state == 7 || p->handle == 0) {
         p->state = 0;

@@ -35,7 +35,7 @@ typedef struct {
     int i60;
 } E;
 
-void Moby834Update(M *m) {
+void clank_cutscene_trigger_update(M *m) {
     unsigned char *g, *h;
     E *e = (E *)m->ext;
     if (D_L00_0015F6A8 == 2) {
@@ -75,7 +75,7 @@ void Moby834Update(M *m) {
             e->f2c = 3.0f;
         }
         if (e->s24 >= 4 && D_L00_0015F6A8 != 6)
-            RequestPlanetLoad(1);
+            initialize_global_state_entry(1);
         break;
     case 2:
         if (D_L00_0015F6A8 == 2)
@@ -267,7 +267,7 @@ extern void func_L00_002E2F58(char *);
 
 /* Vendor (level 0) update: walks a path, turns toward the player, attacks and self-destructs.
    Adapted from Lombyte (MIT) for PAL: overlays/l00/gameplay_vendor_002e0988.c, FUN_L00_002e0b88. */
-void VendorUpdate(VendMoby *moby) {
+void veldin_robot_enemy_update(VendMoby *moby) {
     VendVars *vars;
     VendTarget *target;
     VendPath *path;
@@ -287,7 +287,7 @@ void VendorUpdate(VendMoby *moby) {
         EaseManipulatorOffsets((char *)moby, (char *)vars->unk120, 2, *(float *)&D_0015EE64_s * 0.03f, *(float *)&D_0015EE64_s * 0.3f);
     }
     if (moby->unk31 != 0 && FastVecDist(&moby->pos, D_L00_00166EC0) < 27.0f) {
-        SetGroundHeightBand(moby);
+        func_L00_0025B178(moby);
         moby->unk7F = 0x15;
     }
     switch (moby->state) {
@@ -433,13 +433,13 @@ void VendorUpdate(VendMoby *moby) {
         }
         break;
     case 7:
-        if (StepMobyPhysics(moby, vars->unk70) & 0x140) {
+        if (mine_fall(moby, vars->unk70) & 0x140) {
             moby->state = 3;
             if ((moby)->anim != (1)) MobyBlendAnimation((moby), (1), 0, (scale_ticks(10)));
         }
         break;
     case 8:
-        if (StepMobyPhysics(moby, vars->unk70) & 0x140) {
+        if (mine_fall(moby, vars->unk70) & 0x140) {
             SpawnExplosionFx(moby, &moby->pos, -1, 0.75f, 13.0f);
             SpawnMobyBurstFx(moby, 0x7AB, 1, 0x7AB, 1, 4, 0);
             SpawnBreakFragment((char *)moby, 0x78D, (float *)&moby->pos, &moby->unk40, 0, 0, 0.0f, (float *)D_L00_0015F660, (float *)D_L00_0015F660, (float *)D_L00_0015F660);
@@ -654,7 +654,7 @@ void Troll_EmitSparks(char *m) {
     pos = (float *)(vars + 0x1C0);
     Moby_GetJointWorldPos(m, 1, pos);
     ((float *)(vars + 0x1C0))[2] -= 0.333f;
-    RandomSphericalOffset(vel, 0.005f, 0.03f);
+    random_spherical_offset(vel, 0.005f, 0.03f);
     p = PartType69Spawn(pos, vel, 0x7F, m);
     if (p != 0) {
         *(float *)(p + 0xC) = random_float_between(6000.0f, 32000.0f);
@@ -803,7 +803,7 @@ void Moby1545Update(M2 *m) {
         if (D_L00_0015F6A8 == 2) {
             if ((D_L00_0016C960.a == 2 && D_L00_0016C960.b >= scale_ticks(0x618)) || (D_L00_0015F6A8 == 2 && D_L00_0016C960.a == 3)) {
                 idx = -1; if (D_L00_0016C960.a == 2) idx = 3; else if (D_L00_0016C960.a == 3) idx = 2;
-                SpawnMoby750Sparks(D_L00_0016C960.arr[idx]);
+                cutscene_set_camera_target(D_L00_0016C960.arr[idx]);
             }
             if (D_L00_0015F6A8 == 2) {
                 if (D_L00_0016C960.a == 4) {
@@ -812,7 +812,7 @@ void Moby1545Update(M2 *m) {
                     if (D_L00_0016C960.b < scale_ticks(0x96)) return;
                     if (scale_ticks(0xDC) < D_L00_0016C960.b) return;
                     Moby_GetJointWorldPos(p, 0, buf);
-                    SpawnSparkRings(buf, buf, D_L00_0015F660, 120000.0f, 50000.0f);
+                    draw_trail(buf, buf, D_L00_0015F660, 120000.0f, 50000.0f);
                     for (i = 0; i < 10; i++) {
                         col = (rand_range(0x40, 0x80) << 24) | 0x787878;
                         h = rand_range(0, 4);

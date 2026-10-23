@@ -1,9 +1,9 @@
-void Moby851Update(char *m) {
+void qwark_oltanis_update(char *m) {
     char *d = *(char **)(m + 0x78);
     AttachManipulatorsIfCheat(m);
     if (*(unsigned char *)(m + 0x31) != 0) {
         if (FastVecDist(m + 0x10, D_L14_001675C0) < 28.0f) {
-            SetGroundHeightBand(m);
+            func_L00_0025B178(m);
             m[0x7F] = 0x16;
         }
     }
@@ -29,9 +29,9 @@ void Moby851Update(char *m) {
         if (*(unsigned char *)(d + 8) == 1 && is_point_inside_clip_volume(D_0013E633 + 0xE9D, *(int *)(d + 0x40)) != 0) {
             if ((D_0014171B_2FCEA8 + 0xAA35)[*(unsigned char *)(m + 0xB0) + (D_0015EE84_m << 4)] != 0xFF) {
                 char *t;
-                SetLevelTriggerDone((unsigned char)m[0xB0]);
+                jet_clear_persistent((unsigned char)m[0xB0]);
                 t = D_L14_001601AC_2EC3E8 + (*(int *)(d + 0x48) << 7);
-                PauseMenu_SeedSnapshot(t + 0x30, t + 0x70);
+                jet_reset_camera(t + 0x30, t + 0x70);
             }
             func_L14_002F0A00_2FCEA8(D_L14_00160098_2FCEA8 + (*(int *)(d + 0x44) << 8));
             *(float *)(d + 0xC) = 255.0f;

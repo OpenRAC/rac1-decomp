@@ -15,14 +15,14 @@ void EnvMappedPickupUpdate(unsigned char *m) {
             } else {
                 *(int *)(m + 0x90) = v | (v << 8) | (v << 16);
             }
-            AddDrawCallback(DrawEnvMappedObject, m);
+            AddDrawCallback(render_environment_mapped_object, m);
             if (func_001F9D48(m + 0x10, D_L00_00166EC0) < 32.0f) {
-                AddDrawCallback(DrawLightFlare, m);
+                AddDrawCallback(draw_light_flare, m);
             }
         }
         p = (float *)(m + 0x10);
         if (*(short *)(d + 0xC) != 0) {
-            func_001F9EC0(tmp, D_L00_001BDC10 + D_0013E156[0] * 16, m + 0xC0);
+            func_001F9EC0(tmp, D_L00_001BDC10 + ship_index[0] * 16, m + 0xC0);
             FastVecAdd(tmp, tmp, p);
             if (FastVecDist(tmp, D_0013E633 + 0xE9D) > 4.1f) {
                 *(short *)(d + 0xC) = 0;
@@ -30,7 +30,7 @@ void EnvMappedPickupUpdate(unsigned char *m) {
         } else {
             q = (unsigned char *)D_0013E633 + 0xE9D;
             if (func_001F9D48(p, q) < 6.0f) {
-                func_001F9EC0(tmp, D_L00_001BDC10 + D_0013E156[0] * 16, m + 0xC0);
+                func_001F9EC0(tmp, D_L00_001BDC10 + ship_index[0] * 16, m + 0xC0);
                 FastVecAdd(tmp, tmp, p);
                 if (FastVecDist(tmp, q) < 4.0f) {
                     *(short *)(d + 0xC) = 1;
@@ -50,7 +50,7 @@ void EnvMappedPickupUpdate(unsigned char *m) {
                 } else {
                     Hud_ClosePopupIfActive(2);
                     D_L00_0015F710 = 1;
-                    D_0013E156[1] = 0;
+                    ship_index[1] = 0;
                 }
             }
         }
@@ -73,7 +73,7 @@ void EnvMappedPickupUpdate(unsigned char *m) {
                 m[0x20] = 0;
                 *(unsigned short *)(m + 0x34) &= 0xFFBE;
                 one = 1;
-                D_0013E156[1] = one;
+                ship_index[1] = one;
                 D_L00_0015F710 = one;
             }
         }

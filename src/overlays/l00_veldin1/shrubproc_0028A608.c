@@ -22,8 +22,8 @@ void DrawVeldinSky(void) {
     *(short *)(D_L00_001605DC + 4) = 0;
     SkyDrawShell(0);
     SkyDrawShell(1);
-    if (*(short *)(D_L00_001605DC + 8) == 0) SkyInitParticles(0xF4, 0xC);
-    StepSkySparkles();
+    if (*(short *)(D_L00_001605DC + 8) == 0) sky_particles_init(0xF4, 0xC);
+    sky_particles_update();
     SkySpriteProc();
     VU1_addGSregister(0x42, 0x8000000044L);
     SkyDrawShell(2);

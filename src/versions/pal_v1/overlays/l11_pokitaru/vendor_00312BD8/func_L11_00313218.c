@@ -70,22 +70,22 @@ void DrawJetHud(char *moby) {
     ex = *(int *)(d + 0xE0);
     ey = *(int *)(d + 0xE4);
     tex = GetEffectTex(0x11);
-    func_001F5E60(ex, ey, 40.0f, 40.0f, 0.0f, 0x3F, 0x3F, tex, 0xFFFFF3, 0xFF20FF20, 0, 0, 0.5f, 0.5f);
+    append_rotated_sprite_quad(ex, ey, 40.0f, 40.0f, 0.0f, 0x3F, 0x3F, tex, 0xFFFFF3, 0xFF20FF20, 0, 0, 0.5f, 0.5f);
     tex = GetEffectTex(0x12);
-    func_001F5E60(ex, ey, 40.0f, 40.0f, 0.0f, 0x3F, 0x3F, tex, 0xFFFFF3, 0xFF20FF20, 0, 0, 0.5f, 0.5f);
+    append_rotated_sprite_quad(ex, ey, 40.0f, 40.0f, 0.0f, 0x3F, 0x3F, tex, 0xFFFFF3, 0xFF20FF20, 0, 0, 0.5f, 0.5f);
     tex = GetEffectTex(8);
-    func_001F5E60(ex, ey, 10.0f, 10.0f, 0.0f, 0x1F, 0x1F, tex, 0xFFFFF3, 0xFF20FF20, 0, 0, 0.5f, 0.5f);
+    append_rotated_sprite_quad(ex, ey, 10.0f, 10.0f, 0.0f, 0x1F, 0x1F, tex, 0xFFFFF3, 0xFF20FF20, 0, 0, 0.5f, 0.5f);
     UpdateTargetTracking((int)moby, d);
     if (*(int *)(d + 0x88) != 0) {
         ProjectPointToScreen(*(char **)(d + 0x88) + 0x10, &sp40, &sp44, 0);
-        if (*(int *)(d + 0x8C) > *(int *)&D_L11_001621F0) {
-            t = IntToFloat(*(int *)(d + 0x8C) - *(int *)&D_L11_001621F0);
-            t = t / IntToFloat(*(int *)&D_L11_001621F4);
+        if (*(int *)(d + 0x8C) > *(int *)&lock_hold_frames) {
+            t = IntToFloat(*(int *)(d + 0x8C) - *(int *)&lock_hold_frames);
+            t = t / IntToFloat(*(int *)&lock_fade_frames);
             m = 2.0f * (1.0f - t);
             k = t * 5.0f + 1.0f;
             if (m > 1.0f) m = 1.0f;
             c = func_001FA898_r(m * 96.0f);
-            func_L11_00312510_f(IntToFloat(sp40), IntToFloat(sp44), k, WrapAngle(IntToFloat(D_L11_0015F6B0) / 30.0f), 0, 0xFF, 0, c);
+            func_L11_00312510_f(IntToFloat(sp40), IntToFloat(sp44), k, normalize_angle(IntToFloat(level_frame) / 30.0f), 0, 0xFF, 0, c);
             *(int *)(d + 0xEC) = 0;
         } else {
             a = 0xFF;

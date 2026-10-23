@@ -23,8 +23,8 @@ extern Level02MobyList D_L02_0016CEE0;
 void Aridia_FlagMoby433(void) {
     int i;
     if (D_0015EE84 == 2) {
-        for (i = 0; i < D_L02_0016CEE0.count; i++) {
-            Level02Moby *moby = D_L02_0016CEE0.mobys[i];
+        for (i = 0; i < talk_camera.count; i++) {
+            Level02Moby *moby = talk_camera.mobys[i];
             if (moby->class_id == 0x1B1) {
                 moby->flags |= 0x800;
             }

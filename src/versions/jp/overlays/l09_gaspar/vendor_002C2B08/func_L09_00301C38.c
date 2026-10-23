@@ -6,7 +6,7 @@ void Moby1000Update(char *moby) {
     int n;
     if (D_L09_0015F6B0 > 0) {
         if (D_L09_00161450 == 0) {
-            q = D_0013D50F + 1;
+            q = menu_item_enabled_115 + 1;
             if (q[0xE] == 0) {
                 q[0xE] = 1;
                 PlayBankSound(1, 0, 0);

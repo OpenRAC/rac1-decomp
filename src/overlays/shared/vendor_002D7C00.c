@@ -123,7 +123,7 @@ extern int func_L00_0020DC00(void);
     if ((i) != -1) {                                                                               \
         unsigned char *e_ = D_0013E650 + (i) * 0x70;                                                 \
         if (*(unsigned char **)(e_ + 0x88) == (own) && e_[0x74] != 0) {                                     \
-            func_L00_0028EBF0(i);                                                           \
+            Sound_StopSlot(i);                                                           \
         }                                                                                          \
     }
 #define RELEASE_2D7C00(pv)                                                                         \
@@ -133,7 +133,7 @@ extern int func_L00_0020DC00(void);
     (pv)->voice1 = -1;
 #define SECS_2D7C00(x) func_001FA898(func_001F9878((x) * 60.0f))
 
-void func_L15_002D7C00(unsigned char *m) {
+void electric_water_update(unsigned char *m) {
     extern float D_L15_00167440[];
     float tmp[4];
     Hit_2D7C00 hit;
@@ -147,12 +147,12 @@ void func_L15_002D7C00(unsigned char *m) {
     unsigned short u;
     float d1, a, b, c;
 
-    if (m[0x20] != 0 && func_00215570(D_0013F4D0, pv->area) == 0) {
+    if (m[0x20] != 0 && is_point_inside_clip_volume(gHeroPos, pv->area) == 0) {
         if (pv->owner != 0) {
             RELEASE_2D7C00(pv);
         }
         if (pv->light != -1) {
-            func_L00_0023F1D0(pv->light);
+            light_off_67e8(pv->light);
             pv->light = -1;
         }
         return;
@@ -169,16 +169,16 @@ void func_L15_002D7C00(unsigned char *m) {
                 D_L15_001BB334[*(short *)(MOBY_2D7C00(pv->sw[k1]) + 0xB2)] = 0;
                 D_L15_001BBF94[*(short *)(MOBY_2D7C00(pv->sw[k1]) + 0xB2)] = 0;
                 u = *(unsigned short *)(MOBY_2D7C00(pv->sw[k1]) + 0xB2);
-                *(int *)((((short)u >> 5) << 2) + (D_0015EE84 << 8) + (int)D_0014C290) &=
+                *(int *)((((short)u >> 5) << 2) + (D_0015EE84 << 8) + (int)level_moby_killed) &=
                     ~(1 << (u & 0x1F));
                 u = *(unsigned short *)(MOBY_2D7C00(pv->sw[k1]) + 0xB2);
                 *(int *)((((short)u >> 5) << 2) + (int)D_L15_001BADE0) &= ~(1 << (u & 0x1F));
             } else {
-                func_L15_002DA990(MOBY_2D7C00(pv->sw[k1]));
+                Moby_ActivateIfTriggered(MOBY_2D7C00(pv->sw[k1]));
             }
         }
         pv->onT = SECS_2D7C00((*(float *)&D_L15_00161C48));
-        pv->offT = func_001F9850(200);
+        pv->offT = scale_ticks(200);
         pv->shocks = 0;
         pv->light = -1;
         m[0x20] = 1;
@@ -188,8 +188,8 @@ void func_L15_002D7C00(unsigned char *m) {
 
     case 1:
         inside = 0;
-        wet = func_L15_002D7B60();
-        if (func_001F9938(&pv->onT) != 0) {
+        wet = Hero_IsNearGround();
+        if (FastDecTimer(&pv->onT) != 0) {
             pv->offT = SECS_2D7C00((*(float *)&D_L15_00161C4C));
             m[0x20] = 2;
             if (pv->owner != 0) {
@@ -198,7 +198,7 @@ void func_L15_002D7C00(unsigned char *m) {
             }
         }
         for (k2 = 0; k2 < 12; k2++) {
-            if (func_00215570(D_0013F4D0, pv->water[k2]) != 0) {
+            if (is_point_inside_clip_volume(gHeroPos, pv->water[k2]) != 0) {
                 inside = 1;
                 break;
             }
@@ -211,14 +211,14 @@ void func_L15_002D7C00(unsigned char *m) {
             }
         } else {
             for (k4 = 0; k4 < 3; k4++) {
-                int v = func_L00_00258BC8(0x40, 0x7F);
+                int v = rand_range(0x40, 0x7F);
                 if (pv->lamps[k4] != -1) {
                     func_L00_00251328(MOBYP_2D7C00(pv->lamps[k4]), v, v, v);
                 }
             }
         }
 
-        if ((!inside || !wet) && func_002140B0(1) == 0 && (*(float *)&D_L15_00161C50) == 0.0f) {
+        if ((!inside || !wet) && random_integer_below(1) == 0 && (*(float *)&D_L15_00161C50) == 0.0f) {
             best = 0;
             for (k5 = 0; k5 < 24; k5 += 8) {
                 line = &pv->lines[k5];
@@ -226,8 +226,8 @@ void func_L15_002D7C00(unsigned char *m) {
                     continue;
                 }
                 if (best != 0) {
-                    d1 = func_001F9D10(CUBP_2D7C00(best[0]) + 0x30, D_0013F4D0);
-                    if (!(func_001F9D10(CUBP_2D7C00(line[0]) + 0x30, D_0013F4D0) < d1)) {
+                    d1 = FastVecDist(CUBP_2D7C00(best[0]) + 0x30, gHeroPos);
+                    if (!(FastVecDist(CUBP_2D7C00(line[0]) + 0x30, gHeroPos) < d1)) {
                         continue;
                     }
                 }
@@ -242,11 +242,11 @@ void func_L15_002D7C00(unsigned char *m) {
                     }
                 }
                 if (n >= 2) {
-                    line = (int *)((func_L00_00258BC8(0, n - 2) << 2) + (int)best);
+                    line = (int *)((rand_range(0, n - 2) << 2) + (int)best);
                     pv->start = *(Q_2D7C00 *)(CUB_2D7C00(line[0]) + 0x30);
                     pv->aim = pv->end = *(Q_2D7C00 *)(CUB_2D7C00(line[1]) + 0x30);
                     if (pv->light == -1) {
-                        pv->light = func_L00_0023F0D0(&pv->start, 8.0f, 0.0f, 1.0f, 1.0f, 0.5f);
+                        pv->light = UpdatePointLight(&pv->start, 8.0f, 0.0f, 1.0f, 1.0f, 0.5f);
                     } else {
                         Light_2D7C00 *l = (Light_2D7C00 *)(D_L15_00180940 + (pv->light << 5));
                         qcopy(&l->pos, &pv->start);
@@ -256,9 +256,9 @@ void func_L15_002D7C00(unsigned char *m) {
                         l->f8 = 0.5f;
                         l->iC = 0;
                     }
-                    func_L15_002D8DD8(m);
-                    func_L15_002D8FA0(m);
-                    func_001F49B0(func_L15_002D9B00, m);
+                    ResetBeamPoints(m);
+                    QuartuArcEmitter(m);
+                    AddDrawCallback(UpdateBeamCurves, m);
                 }
             }
         }
@@ -268,8 +268,8 @@ void func_L15_002D7C00(unsigned char *m) {
                 RELEASE_2D7C00(pv);
             }
             pv->owner = D_0013F450.moby;
-            pv->voice0 = func_L00_0028EF68(0, 4, D_0013F450.moby, 0x28F);
-            pv->voice1 = func_L00_0028EF68(1, 4, D_0013F450.moby, 0x28F);
+            pv->voice0 = Sound_PlayClassSound(0, 4, D_0013F450.moby, 0x28F);
+            pv->voice1 = Sound_PlayClassSound(1, 4, D_0013F450.moby, 0x28F);
             if (pv->shocks == 0) {
                 pv->fog[0] = D_L15_0015F548;
                 pv->fog[1] = D_L15_0015F54C;
@@ -285,23 +285,23 @@ void func_L15_002D7C00(unsigned char *m) {
             D_L15_0015F546[0] = 0x7F;
             D_L15_0015F54C = 131072.0f;
             *(int *)&D_L15_0015F548 = 0;
-            D_L15_0015F550 = func_002140F8(128.0f, 255.0f);
+            D_L15_0015F550 = random_float_between(128.0f, 255.0f);
             *(int *)&D_L15_0015F554 = 0;
-            c = func_002140F8(5.0f, 8.0f);
-            a = func_00214158();
-            b = func_00214158();
-            func_00215C00(&pv->aim, c, a, b);
+            c = random_float_between(5.0f, 8.0f);
+            a = random_angle_radians();
+            b = random_angle_radians();
+            BuildSphericalOffset(&pv->aim, c, a, b);
             func_L00_001FF240(tmp, &pv->aim, &D_0013F450.body);
             pv->end = pv->aim;
             pv->start = D_0013F450.body;
-            func_L15_002D8DD8(m);
-            func_L15_002D8FA0(m);
-            func_001F49B0(func_L15_002D9B00, m);
+            ResetBeamPoints(m);
+            QuartuArcEmitter(m);
+            AddDrawCallback(UpdateBeamCurves, m);
             hit.attacker = m;
             hit.flags = 0x10001;
             hit.damage = 1.0f;
-            hit.v[0] = func_001F9F90(*(float *)(m + 0x48)) * 0.2f;
-            hit.v[1] = func_001F9FA8(*(float *)(m + 0x48)) * 0.2f;
+            hit.v[0] = FastCos(*(float *)(m + 0x48)) * 0.2f;
+            hit.v[1] = FastSin(*(float *)(m + 0x48)) * 0.2f;
             *(int *)&hit.v[2] = 0;
             func_L00_001FF500(hit.v, hit.v, 1.0f);
             hit.b29 = 1;
@@ -309,7 +309,7 @@ void func_L15_002D7C00(unsigned char *m) {
             hit.v[2] = 1.0f;
             hit.v[3] = 5627.9248f;
             hit.b28 = 0;
-            func_L00_0025AAC0(D_0013F450.moby, &hit);
+            PostHitMessageFromRecord(D_0013F450.moby, &hit);
             if (m[0x20] == 2) {
                 D_L15_0015F548 = pv->fog[0];
                 D_L15_0015F54C = pv->fog[1];
@@ -342,15 +342,15 @@ void func_L15_002D7C00(unsigned char *m) {
             }
             pv->owner = near;
         }
-        if (func_L00_0028EB98(pv->owner, pv->voice0) == 0) {
-            pv->voice0 = func_L00_0028EF68(0, 5, pv->owner, 0x28F);
+        if (Sound_IsPlaying(pv->owner, pv->voice0) == 0) {
+            pv->voice0 = Sound_PlayClassSound(0, 5, pv->owner, 0x28F);
         }
-        if (m[0x20] == 1 && func_L00_0028EB98(pv->owner, pv->voice1) == 0) {
-            pv->voice1 = func_L00_0028EF68(1, 5, pv->owner, 0x28F);
+        if (m[0x20] == 1 && Sound_IsPlaying(pv->owner, pv->voice1) == 0) {
+            pv->voice1 = Sound_PlayClassSound(1, 5, pv->owner, 0x28F);
         }
-        if (func_001F9938(&pv->offT) != 0 && m[0x20] == 2) {
+        if (FastDecTimer(&pv->offT) != 0 && m[0x20] == 2) {
             pv->onT = SECS_2D7C00((*(float *)&D_L15_00161C48));
-            pv->offT = func_001F9850(200);
+            pv->offT = scale_ticks(200);
             pv->shocks = 0;
             m[0x20] = 1;
         }
@@ -358,12 +358,12 @@ void func_L15_002D7C00(unsigned char *m) {
             if (pv->sw[k7] != -1 && *(short *)(MOBY_2D7C00(pv->sw[k7]) + 0xA6) == 0x33E && MOBY_2D7C00(pv->sw[k7])[0x20] == 2) {
                 pv->offT = SECS_2D7C00(pv->offSecs);
                 m[0x20] = 3;
-                func_L00_0028EF68(2, 0, MOBYP_2D7C00(pv->sw[k7]), 0x28F);
+                Sound_PlayClassSound(2, 0, MOBYP_2D7C00(pv->sw[k7]), 0x28F);
                 pv->armed = 0;
-            } else if (pv->sw[k7] != -1 && func_L11_00310738(MOBYP_2D7C00(pv->sw[k7])) != 0) {
+            } else if (pv->sw[k7] != -1 && IsMoby1179Active(MOBYP_2D7C00(pv->sw[k7])) != 0) {
                 pv->offT = SECS_2D7C00(pv->offSecs);
                 m[0x20] = 3;
-                func_L00_0028EF68(2, 0, MOBYP_2D7C00(pv->sw[k7]), 0x28F);
+                Sound_PlayClassSound(2, 0, MOBYP_2D7C00(pv->sw[k7]), 0x28F);
                 pv->armed = 0;
             }
         }
@@ -376,11 +376,11 @@ void func_L15_002D7C00(unsigned char *m) {
             }
         }
         if (pv->light != -1) {
-            func_L00_0023F1D0(pv->light);
+            light_off_67e8(pv->light);
             pv->light = -1;
         }
         if (pv->offT != 0) {
-            func_001F49B0(func_L15_002D8BB0, m);
+            AddDrawCallback(TimerMoby_Draw, m);
         }
         if (pv->owner != 0) {
             RELEASE_2D7C00(pv);
@@ -395,17 +395,17 @@ void func_L15_002D7C00(unsigned char *m) {
             }
             if (pv->armed != 0) {
                 t = pv->offT;
-                if (t < SECS_2D7C00(pv->offSecs) - func_001F9850(0x3C)) {
+                if (t < SECS_2D7C00(pv->offSecs) - scale_ticks(0x3C)) {
                     pv->offT = SECS_2D7C00(pv->offSecs);
-                    func_L00_0028EF68(2, 0, MOBYP_2D7C00(pv->sw[k8]), 0x28F);
+                    Sound_PlayClassSound(2, 0, MOBYP_2D7C00(pv->sw[k8]), 0x28F);
                 }
             }
             armed = 0;
         }
         pv->armed = armed;
-        if (func_001F9938(&pv->offT) == 0) {
-            if (func_00215570(&D_0013F450.pos, pv->resetA) == 0 || D_0013F450.airTicks != 0) {
-                if (func_00215570(&D_0013F450.pos, pv->resetB) == 0) {
+        if (FastDecTimer(&pv->offT) == 0) {
+            if (is_point_inside_clip_volume(&D_0013F450.pos, pv->resetA) == 0 || D_0013F450.airTicks != 0) {
+                if (is_point_inside_clip_volume(&D_0013F450.pos, pv->resetB) == 0) {
                     break;
                 }
             }
@@ -417,21 +417,21 @@ void func_L15_002D7C00(unsigned char *m) {
             if (*(short *)(MOBY_2D7C00(pv->sw[k8]) + 0xA6) == 0x33E) {
                 MOBY_2D7C00(pv->sw[k8])[0x20] = 1;
             } else {
-                func_L15_002DA990(MOBY_2D7C00(pv->sw[k8]));
+                Moby_ActivateIfTriggered(MOBY_2D7C00(pv->sw[k8]));
             }
         }
         pv->onT = SECS_2D7C00((*(float *)&D_L15_00161C48));
-        pv->offT = func_001F9850(200);
+        pv->offT = scale_ticks(200);
         pv->shocks = 0;
         m[0x20] = 1;
         break;
     }
 
     {
-        char *pos = D_0013F4D0;
+        char *pos = gHeroPos;
         Hero_2D7C00 *g = (Hero_2D7C00 *)(pos - 0x80);
         for (k11 = 0; k11 < 4; k11++) {
-            if (func_00215570(pos, pv->levels[k11]) != 0 && func_L00_0020DC00() != 0) {
+            if (is_point_inside_clip_volume(pos, pv->levels[k11]) != 0 && Hero_IsInSpecialState() != 0) {
                 g->waterLevel = *(float *)(CUB_2D7C00(pv->levels[k11]) + 0x38);
             }
         }
@@ -640,7 +640,7 @@ void QuartuArcEmitter(Moby *moby) {
         float b;
         f21 = *(float *)&D_L15_00161C8C
               + (*(float *)&D_L15_00161C90 - *(float *)&D_L15_00161C8C) * (IntToFloat(i) * 0.05f);
-        f21 = f21 * FastSin(WrapAngle(*(float *)&D_L15_00161C94 + (float)i * *(float *)&D_L15_00161C88));
+        f21 = f21 * FastSin(normalize_angle(*(float *)&D_L15_00161C94 + (float)i * *(float *)&D_L15_00161C88));
         f21 = f21 + randf_sym(*(float *)&D_L15_00161CCC, *(float *)&D_L15_00161CD0);
         D_L15_001D3A20_2d8fa0[0][i].f[2] = D_L15_001D3A20_2d8fa0[0][i].f[2] - D_L15_001D3CA0[i];
         D_L15_001D3CA0[i] = f21;
@@ -680,9 +680,9 @@ void QuartuArcEmitter(Moby *moby) {
             float h;
             float ang;
             float m;
-            g = WrapAngle(*(float *)&D_L15_00161C9C + (float)i * *(float *)&D_L15_00161CA4);
+            g = normalize_angle(*(float *)&D_L15_00161C9C + (float)i * *(float *)&D_L15_00161CA4);
             h = *(float *)&D_L15_00161CA8
-                * FastSin(WrapAngle(*(float *)&D_L15_00161CB0 + (float)i * *(float *)&D_L15_00161CB8));
+                * FastSin(normalize_angle(*(float *)&D_L15_00161CB0 + (float)i * *(float *)&D_L15_00161CB8));
             qcopy(&D_L15_001D3A20_2d8fa0[1][i], &D_L15_001D3A20_2d8fa0[0][i]);
             h = h * FastSin(g) + randf_sym(0.0f, 0.1f);
             D_L15_001D3A20_2d8fa0[1][i].f[2] = D_L15_001D3A20_2d8fa0[1][i].f[2] + h;
@@ -1011,7 +1011,7 @@ typedef struct {
 } RingVars_6D48;
 
 /* Underwater ring update: approach check, then the ring's state machine. */
-void UnderwaterRingUpdate(unsigned char *moby) {
+void underwater_ring_update(unsigned char *moby) {
     RingVars_6D48 *vars = *(RingVars_6D48 **)(moby + 0x78);
     unsigned char delta[16];
     unsigned char matrix[64];
@@ -1171,7 +1171,7 @@ extern short D_L15_00162220;
 extern unsigned char D_0013D355[];
 
 /* Update for moby class 1428: a four-state trigger that spins and then deletes itself. */
-void Moby1428Update(unsigned char *moby) {
+void codebot_update(unsigned char *moby) {
     unsigned char *p;
     if (D_0015EE84 != 0xF) {
         *(float *)(moby + 0x48) = FastAddRots(*(float *)(moby + 0x48), D_0015EE6C * 1.5707964f);
@@ -1244,7 +1244,7 @@ extern char D_0014171B[] NOT_SDA;
 typedef int u128_2EE458 __attribute__((mode(TI)));
 
 // Update for the giant Clank pad moby: a small state machine that sets up its effect block and its timers.
-void GiantClankPadUpdate(char *m) {
+void giant_clank_pad_update(char *m) {
     char *data = *(char **)(m + 0x78);
     PadMoby_2EE458 *other;
     PadMoby_2EE458 *p0;
@@ -1324,7 +1324,7 @@ void GiantClankPadUpdate(char *m) {
         *(u128_2EE458 *)V = *(u128_2EE458 *)(m + 0x10);
         f = ProbeGroundHeight(V, 0, 0.5f);
         V[2] = f + 0.1f;
-        if (D_0015EE84 == 0xF) PauseMenu_SeedSnapshot(V, m + 0x40);
+        if (D_0015EE84 == 0xF) jet_reset_camera(V, m + 0x40);
         Hero_ResetToPosition(V, m + 0x40, 0, 1);
         o3 = other->unk24;
         other->unk94 = *(int *)(o3 + 0x10);

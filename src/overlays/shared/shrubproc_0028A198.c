@@ -14,7 +14,7 @@ extern float func_001F9F90(float);
 extern float func_001F9FA8(float);
 
 /* Fills the sky particle list: entries from a up are dim specks, the first a are coloured sparks with random direction and speed. Adapted from Lombyte (MIT) for PAL: overlays/shared/unclassified_00288ec0.c, FUN_L00_00288ec0. */
-void SkyInitParticles(int a, int b) {
+void sky_particles_init(int a, int b) {
     int i;
     E *e;
     float x, y;
@@ -82,7 +82,7 @@ extern float func_001F9B88(float);
 extern int func_001160D8(void);
 
 /* Steps each shrub sparkle entry: type 0 spins and scales a direction, type 1 randomises a colour. Adapted from Lombyte (MIT) for PAL: overlays/shared/unclassified_00288ec0.c, FUN_L00_00289108. */
-void StepSkySparkles(void) {
+void sky_particles_update(void) {
     int i;
     for (i = 0; i < D_L00_001605DC_g->n; i++) {
         E_289108 *e = &D_L00_001605DC_g->list[i];
@@ -118,7 +118,7 @@ extern void func_001FA190(void *);
 extern void func_0022C9A8(int);
 
 /* Draws each static sky shell in turn. */
-void UpdateSkyShellsStatic(void) {
+void update_sky_shells_static(void) {
     int i;
     func_001FA190(D_L00_001BDB70);
     for (i = 0; i < *(short *)(D_L00_001605DC + 6); i++) {
@@ -128,7 +128,7 @@ void UpdateSkyShellsStatic(void) {
 extern int D_L00_0015F6B0 MACRO_ADDR;
 void func_L00_001FFA40(void *,void *);
 /* rotates animated sky shells and draws each layer */
-void UpdateSkyShellsAnimated(void) {
+void update_sky_shells_animated(void) {
  float v[4] __attribute__((aligned(16))); int i;
  *(short *)(D_L00_001605DC+4)=0;
  qzero(v);
@@ -287,8 +287,8 @@ void SkyShellsSparkleTwo(void) {
     float v[4] __attribute__((aligned(16)));
     func_001FA190(D_L00_001BDB70);
     SkyDrawShell(0);
-    if (*(short *)(D_L00_001605DC + 8) == 0) SkyInitParticles(0x78, 8);
-    StepSkySparkles();
+    if (*(short *)(D_L00_001605DC + 8) == 0) sky_particles_init(0x78, 8);
+    sky_particles_update();
     SkySpriteProc();
     VU1_addGSregister(0x42, (0x8000L << 24) | 0x44);
     qzero(v);
@@ -479,8 +479,8 @@ void SkyShellsSparkleThree(void) {
     float v[4] __attribute__((aligned(16)));
     func_001FA190(D_L00_001BDB70);
     SkyDrawShell(0);
-    if (*(short *)(D_L00_001605DC + 8) == 0) SkyInitParticles(0x78, 8);
-    StepSkySparkles();
+    if (*(short *)(D_L00_001605DC + 8) == 0) sky_particles_init(0x78, 8);
+    sky_particles_update();
     SkySpriteProc();
     VU1_addGSregister(0x42, (0x8000L << 24) | 0x44);
     SkyDrawShell(1);
@@ -601,8 +601,8 @@ void SkyShellsSparkleStatic(void) {
     func_001FA190(D_L00_001BDB70);
     SkyDrawShell(0);
     SkyDrawShell(1);
-    if (*(short *)(D_L00_001605DC + 8) == 0) SkyInitParticles(0x78, 8);
-    StepSkySparkles();
+    if (*(short *)(D_L00_001605DC + 8) == 0) sky_particles_init(0x78, 8);
+    sky_particles_update();
     SkySpriteProc();
     VU1_addGSregister(0x42, 0x8000000044L);
     SkyDrawShell(2);
@@ -628,8 +628,8 @@ void SkyShellsRotatePair(void) {
 void SkyShellsSparkleOne(void) {
     func_001FA190(D_L00_001BDB70);
     SkyDrawShell(0);
-    if (*(short *)(D_L00_001605DC + 8) == 0) SkyInitParticles(0x78, 8);
-    StepSkySparkles();
+    if (*(short *)(D_L00_001605DC + 8) == 0) sky_particles_init(0x78, 8);
+    sky_particles_update();
     SkySpriteProc();
     VU1_addGSregister(0x42, 0x8000000044L);
     SkyDrawShell(1);
@@ -745,7 +745,7 @@ void func_L00_001FFA40_28b1a0(void *, void *) __asm__("func_L00_001FFA40");
 void func_001F9C48_28b1a0(void *, void *, float) __asm__("func_001F9C48");
 void func_0022C9A8_28b1a0(int) __asm__("func_0022C9A8");
 /* Per-entry update of a table of up to five entries (a switch on the index): each entry gets its own tilt, scale and turn speed, and its matrix is rebuilt every frame. Adapted from Lombyte (MIT) for PAL: overlays/shared/unclassified_00288ec0.c, FUN_L00_0028b1a0. */
-void SkyShellsEntryUpdate(void)
+void draw_scrolling_sky_shells(void)
 {
     float v[4] __attribute__((aligned(16)));
     int i = 0;

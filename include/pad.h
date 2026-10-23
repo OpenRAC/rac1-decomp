@@ -69,7 +69,7 @@ typedef struct PadState PadState;
 /*
  * The two button pairs as doublewords: retail reads held/pressed (0x1A0) and
  * held_unmasked/pressed_unmasked (0x1C0) with a single ld in
- * DebugFreeCameraUpdate and func_L02_002D9F08, and the pair comes out as one
+ * update_debug_camera and func_L02_002D9F08, and the pair comes out as one
  * long. Only a union member of a struct the pad is cast to gives GCC 2.95
  * that load with retail's schedule (a cast of the field's address does not),
  * so those two readers cast the pad to this view.

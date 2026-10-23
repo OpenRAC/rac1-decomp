@@ -257,10 +257,10 @@ extern int func_001EFE10_a(void *, void *, int, int, int) __asm__("func_001EFE10
 /* Jitter the vector at arg0 between 0.5 and 6.0, fold in the reference
    frame at D_00187180, and if the emitter accepts it, re-derive it from
    D_00194220, damp to 3/4 and fold the frame in again. */
-void Sound_PickOcclusionOrigin(void *arg0) {
-    RandomSphericalOffset(arg0, 0.5f, 6.0f);
+void clamp_voice_position_to_collision(void *arg0) {
+    random_spherical_offset(arg0, 0.5f, 6.0f);
     func_001F9BD8_a(arg0, arg0, D_00187180_a);
-    if (func_001EFE10_a(D_00187180_a, arg0, 0x82, D_0013E6BC, 0) != 0) {
+    if (func_001EFE10_a(D_00187180_a, arg0, 0x82, sound_probe_ignore, 0) != 0) {
         func_001F9BF0_a(arg0, D_00194220, D_00187180_a);
         func_001F9C30_a(arg0, arg0, 0.75f);
         func_001F9BD8_a(arg0, arg0, D_00187180_a);
@@ -275,13 +275,13 @@ extern void func_001EFE10(void *, void *, int, int, int);
 /* Aim the vector from the frame at D_00187180 toward arg0+0x20, scaled to
    3/4 and 64, and return the line test from arg1 to its end. The int
    return keeps retail's argument order for func_001F9BD8. */
-int Sound_LineTest(void *arg0, void *arg1) {
+int test_voice_occlusion(void *arg0, void *arg1) {
     float v[4];
 
-    FastVecSub(v, (char *)arg0 + 0x20, D_00187180);
+    FastVecSub(v, (char *)arg0 + 0x20, camera_position);
     FastVecScale(v, v, 0.75f);
     func_001F9E58(v, v, 64.0f);
-    FastVecAdd(v, v, D_00187180);
+    FastVecAdd(v, v, camera_position);
     return func_001EFE10_a(arg1, v, 0x82, *(int *)((char *)arg0 + 0x18), 0);
 }
 
@@ -293,7 +293,7 @@ extern int func_001FA898_i(float) __asm__("func_001FA898");
    chain setting one `r` with a single return; early returns let jump.c
    move the last arm's return block to the end. It returns int, and its
    one caller here uses a void alias. */
-int sound_GetFade(void *arg0, float x, float lo, float hi) {
+int calculate_voice_distance_volume(void *arg0, float x, float lo, float hi) {
     char *s = (char *)arg0;
     int r;
     if (*(unsigned char *)(s + 0x19) & 1) {
@@ -314,9 +314,9 @@ extern float func_001F9D10(int, void *);
    declaring it int would move its next temporary to $v1. */
 extern void func_0022DA10_v(void *, float, float, float) __asm__("func_0022DA10");
 
-void Sound_ApplyDistanceFade(void *arg0, int arg1) {
+void calculate_voice_volume(void *arg0, int arg1) {
     char *s = (char *)arg0;
-    float v = FastVecDist(arg1, D_00187180);
+    float v = FastVecDist(arg1, camera_position);
     float *p = *(float **)(s + 0x8);
     func_0022DA10_v(p, v, p[0], p[1]);
 }
@@ -330,13 +330,13 @@ extern void func_001FA898(float);
    arg2, and steer by its heading: atan2 of the xy part, negated and
    converted from radians to degrees (180 * 1/pi), scaled by how far the
    projection runs past 1.0, clamped to 0..1. arg0 is unused. */
-void Sound_ComputePan(void *arg0, void *arg1, void *arg2) {
+void calculate_voice_pan(void *arg0, void *arg1, void *arg2) {
     float v[4];
     float t;
 
     func_001F9BF0_a(v, arg1, D_00187180_a);
     func_001F9EE8(v, v, arg2);
-    t = func_001F9BB0(func_001F9CE8(v) - 1.0f, 0.0f, 1.0f);
+    t = clamp_float(func_001F9CE8(v) - 1.0f, 0.0f, 1.0f);
     truncate_float_to_s32(-func_001FA058_a(v[0], v[1]) * 180.0f * t * 0.31830987f);
 }
 
@@ -365,7 +365,7 @@ extern void func_0012E3F8(int, int, int);
 extern void func_0012E348(int, int);
 extern void func_002161E0(void);
 
-void Sound_InitState(void) {
+void initialize_gameplay_sound_system(void) {
     s32 i;
     s32 p;
     s32 end;
@@ -384,7 +384,7 @@ void Sound_InitState(void) {
         p += 0x70;
     } while (p < end);
     func_0012DB68();
-    func_0012E380(gStereo == 0);
+    func_0012E380(playback_mode == 0);
     func_0012E3C0(0, 1);
     func_0012F0E8(2, 4);
     func_0012E3F8(1, 0x18, 0x2F);
@@ -392,12 +392,12 @@ void Sound_InitState(void) {
     func_0012E3F8(4, 0x18, 0x2F);
     v = D_0015EEF0;
     ((SndState_2DBE8 *)D_0013E650)->vol[0] = (v * 8) / 10;
-    ((SndState_2DBE8 *)D_0013E650)->vol[1] = D_0015EEEC;
+    ((SndState_2DBE8 *)D_0013E650)->vol[1] = music_volume;
     ((SndState_2DBE8 *)D_0013E650)->vol[2] = (v * 8) / 10;
     ((SndState_2DBE8 *)D_0013E650)->vol[3] = (v * 7) / 10;
     ((SndState_2DBE8 *)D_0013E650)->vol[4] = (v * 7) / 10;
     ((SndState_2DBE8 *)D_0013E650)->vol[5] = v;
-    Music_Reset();
+    reset_music();
     func_0012E348(0, ((SndState_2DBE8 *)D_0013E650)->vol[0]);
     func_0012E348(1, ((SndState_2DBE8 *)D_0013E650)->vol[1]);
     func_0012E348(2, ((SndState_2DBE8 *)D_0013E650)->vol[2]);
@@ -888,7 +888,7 @@ extern void func_0012E2E8(void);
    *next* call. That callee, func_0012EE70 (snd_StreamSafeCheckCDIdle),
    returns int: a value call resets $v0's readers, which lets the
    capture sink into its slot. */
-int sound_loadBankByLocation(void *arg0) {
+int load_audio_bank_by_location(void *arg0) {
     char *base = D_0013E650;
     int r = 0;
 
@@ -1129,7 +1129,7 @@ int Moby_PlaySound(int idx, int arg1, int arg2) {
     if (idx >= *(unsigned char *)(p + 0xD)) {
         return -1;
     }
-    h = func_0022EB08(tbl + idx * 32, arg1, arg2, 0, 0x400);
+    h = allocate_voice_slot(tbl + idx * 32, arg1, arg2, 0, 0x400);
     if (h >= 0) {
         char *rec = D_0013E650 + h * 0x70;
         *(int *)(rec + 0x88) = arg2;
@@ -1146,7 +1146,7 @@ int PlayBankSound(int idx, int arg1, int arg2) {
     if (idx >= D_0015F694) {
         return -1;
     }
-    h = func_0022EB08(D_0015F714 + idx * 32, arg1, arg2, 0, 0x400);
+    h = allocate_voice_slot(level_sound_defs + idx * 32, arg1, arg2, 0, 0x400);
     if (h >= 0) {
         char *rec = D_0013E650 + h * 0x70;
         *(int *)(rec + 0x88) = arg2;
@@ -1157,14 +1157,14 @@ int PlayBankSound(int idx, int arg1, int arg2) {
 
 extern int D_0015F710 MACRO_ADDR;
 
-int PlayGroupSound(int rel, int arg1, int arg2) {
+int allocate_voice_for_group_entry(int rel, int arg1, int arg2) {
     int idx = rel + D_0015F694;
     int h;
 
-    if (idx >= D_0015F710) {
+    if (idx >= level_sound_def_count) {
         return -1;
     }
-    h = func_0022EB08(D_0015F714 + idx * 32, arg1, arg2, 0, 0x400);
+    h = allocate_voice_slot(level_sound_defs + idx * 32, arg1, arg2, 0, 0x400);
     if (h >= 0) {
         char *rec = D_0013E650 + h * 0x70;
         *(int *)(rec + 0x88) = arg2;
@@ -1188,7 +1188,7 @@ static inline char *SndSys(void) {
  * `i * 0x90 + (int)table` (not an offset variable) gives the
  * offset-first addu.
  */
-void SoundRunEntryCallbacks(void) {
+void enqueue_voice_request(void) {
     int i;
     for (i = 0; i < *(int *)(SndSys() + 0xD90); i++) {
         char *e = (char *)(i * 0x90 + *(int *)(SndSys() + 0xD94));
@@ -1253,7 +1253,7 @@ void SoundBank_StoreHandle(int arg0, long arg1) {
     }
 }
 
-void Sound_StoreHandleAdvance(int arg0, long arg1) {
+void voice_start_callback(int arg0, long arg1) {
     unsigned char *p = (unsigned char *)(int)arg1;
     if (p != 0) {
         *(int *)p = arg0;
@@ -1269,7 +1269,7 @@ void Sound_StoreHandleAdvance(int arg0, long arg1) {
     }
 }
 
-void Sound_StoreHandleReset(int arg0, long arg1) {
+void voice_update_callback(int arg0, long arg1) {
     int *p = (int *)(int)arg1;
     if (p != 0) {
         *p = arg0;

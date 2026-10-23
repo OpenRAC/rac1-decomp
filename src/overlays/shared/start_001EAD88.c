@@ -87,13 +87,13 @@ int func_L00_001EAD88(int *out) {
         case 5: {
             float f, g;
             if (r < p->fall) {
-                f = func_001FA888(r) * 3.1415927f / func_001FA888(p->fall);
+                f = IntToFloat(r) * 3.1415927f / IntToFloat(p->fall);
             } else {
-                f = 3.1415927f - func_001FA888(r - p->fall) * 3.1415927f / func_001FA888(p->rise);
+                f = 3.1415927f - IntToFloat(r - p->fall) * 3.1415927f / IntToFloat(p->rise);
             }
             f = FastCos(f);
-            g = func_001FA888(p->amp);
-            v = func_001FA898((f * g + g) * 0.5f) + p->base;
+            g = IntToFloat(p->amp);
+            v = truncate_float_to_s32((f * g + g) * 0.5f) + p->base;
             if (v >= 256) v = 255;
             break;
         }

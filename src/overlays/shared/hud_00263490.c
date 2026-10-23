@@ -274,9 +274,9 @@ int ChallengeHudDraw(char *a) {
                 }
                 D_L05_0015FBB8 = D_L05_0015FBB8 / cnt;
                 func_00116248_002670A0(buf, D_L05_0015F940, D_L05_0015FBB8);
-                DrawFramedText(*(int *)&D_L05_0015F9A4, *(int *)&D_L05_0015F9A8 - 0x18, acc, (int)buf);
+                draw_framed_text(*(int *)&D_L05_0015F9A4, *(int *)&D_L05_0015F9A8 - 0x18, acc, (int)buf);
                 func_00116248_002670A0(buf, D_L05_0015F9B8, func_001FE540_002670A0(idx + 0x5092));
-                DrawFramedText(*(int *)&D_L05_0015F9A4, *(int *)&D_L05_0015F9A8, acc, (int)buf);
+                draw_framed_text(*(int *)&D_L05_0015F9A4, *(int *)&D_L05_0015F9A8, acc, (int)buf);
             } else if (D_L05_0015FB90 > 0) {
                 int n = 0;
                 int m;
@@ -289,17 +289,17 @@ int ChallengeHudDraw(char *a) {
                 if (D_L05_0015FB90 == 1) {
                     D_L05_0015FBB8 = D_L05_0015FB8C * 10;
                     func_00116248_002670A0(buf, D_L05_0015F940, D_L05_0015FBB8);
-                    DrawFramedText(*(int *)&D_L05_0015F9A4, *(int *)&D_L05_0015F9A8 - 0x18, acc, (int)buf);
+                    draw_framed_text(*(int *)&D_L05_0015F9A4, *(int *)&D_L05_0015F9A8 - 0x18, acc, (int)buf);
                     func_00116248_002670A0(buf, D_L05_0015F9C0, func_001FE540_002670A0(out[0] + 0x5183), D_L05_0015FB8C,
                                            func_001FE540_002670A0(D_L05_0015FB8C == 0x168 ? 0x50A7 : 0x50A8));
-                    DrawFramedText(*(int *)&D_L05_0015F9A4, *(int *)&D_L05_0015F9A8, acc, (int)buf);
+                    draw_framed_text(*(int *)&D_L05_0015F9A4, *(int *)&D_L05_0015F9A8, acc, (int)buf);
                 } else {
                     D_L05_0015FBB8 = D_L05_0015FB8C * 20;
                     func_00116248_002670A0(buf, D_L05_0015F940, D_L05_0015FBB8);
-                    DrawFramedText(*(int *)&D_L05_0015F9A4, *(int *)&D_L05_0015F9A8 - 0x18, acc, (int)buf);
+                    draw_framed_text(*(int *)&D_L05_0015F9A4, *(int *)&D_L05_0015F9A8 - 0x18, acc, (int)buf);
                     func_00116248_002670A0(buf, D_L05_00216FC0, func_001FE540_002670A0(out[0] + 0x5183),
                                            func_001FE540_002670A0(out[1] + 0x5183), D_L05_0015FB8C);
-                    DrawFramedText(*(int *)&D_L05_0015F9A4, *(int *)&D_L05_0015F9A8, acc, (int)buf);
+                    draw_framed_text(*(int *)&D_L05_0015F9A4, *(int *)&D_L05_0015F9A8, acc, (int)buf);
                 }
             }
         }
@@ -309,7 +309,7 @@ int ChallengeHudDraw(char *a) {
     xb = *(int *)(a + 0x54);
     *(int *)(a + 0x58) = 0x100;
     *(int *)(a + 0x5C) = 0x40;
-    Hud_AlignElement(a, &xa, &xb);
+    hud_screen_position(a, &xa, &xb);
     s16 = (*(int *)(a + 0x74) * 0xDD) / *(int *)(a + 0x8) + 0x1B;
     id = GetIconFrame(0x7558, 1);
     HudSpriteSubRect(id, xa, xb, s16, 0x40, 0x80);
@@ -323,8 +323,8 @@ int ChallengeHudDraw(char *a) {
         f0 = FastSin(f0 * 6.283180236816406f - 3.141590118408203f);
         r3 = FastTweenColor(*(int *)&D_L05_0015F98C, *(int *)&D_L05_0015F990, f0 * 0.5f + 0.5f);
         func_00116248_002670A0(buf, func_001FE540_002670A0(0x531F));
-        DrawFramedText(*(int *)&D_L05_0015F984 + 1, *(int *)&D_L05_0015F988 + 1, 0x80000000, (int)buf);
-        DrawFramedText(*(int *)&D_L05_0015F984, *(int *)&D_L05_0015F988, r3, (int)buf);
+        draw_framed_text(*(int *)&D_L05_0015F984 + 1, *(int *)&D_L05_0015F988 + 1, 0x80000000, (int)buf);
+        draw_framed_text(*(int *)&D_L05_0015F984, *(int *)&D_L05_0015F988, r3, (int)buf);
     }
     return *(int *)(a + 0x58);
 }
@@ -428,36 +428,36 @@ int func_L05_00266D10(char *e) {
     y = hud_sub_66D10(D_0013E600[1], pal, &D_L05_0015FA7C);
     hd = D_0013E633 + 0xE1D;
     y1 = y + 1;
-    func_00201960(*(int *)&(D_L05_0015FA5C), x, *(int *)&(D_L05_0015FA64), *(int *)&(D_L05_0015FA68), *(int *)&(D_L05_0015FA6C));
+    draw_stretchable_ui_frame(*(int *)&(D_L05_0015FA5C), x, *(int *)&(D_L05_0015FA64), *(int *)&(D_L05_0015FA68), *(int *)&(D_L05_0015FA6C));
     tx = *(int *)&(D_L05_0015FA78);
-    func_00116248(buf, D_L05_0015FAB0, func_001FE540(0x5244));
-    func_L00_001FB7F8(tx - 1, y1, 0x80000000L, buf, -1);
-    func_L00_001FB7F8(tx, y, *(int *)&(D_L05_0015FA70), buf, -1);
-    w = func_001F6600(buf, -1);
+    func_00116248(buf, D_L05_0015FAB0, msg_string(0x5244));
+    DebugFontPrint(tx - 1, y1, 0x80000000L, buf, -1);
+    DebugFontPrint(tx, y, *(int *)&(D_L05_0015FA70), buf, -1);
+    w = measure_text_width_regular(buf, -1);
     tx = tx + w;
     {
         int n = *(short *)(hd + 0x89A) + 1;
         if (!(n < 4)) n = 3;
         func_00116248(buf, D_L05_0015FAB8, n);
     }
-    func_L00_001FB7F8(tx - 1, y + 2, 0x80000000L, buf, -1);
-    func_L00_001FB7F8(tx, y, *(int *)&(D_L05_0015FA74), buf, -1);
+    DebugFontPrint(tx - 1, y + 2, 0x80000000L, buf, -1);
+    DebugFontPrint(tx, y, *(int *)&(D_L05_0015FA74), buf, -1);
     {
         int n = *(int *)(hd + 0x8C0);
         tx = *(int *)&(D_L05_0015FA88);
         n = n - 1;
         if (!(n < 5)) n = 4;
-        func_00116248(buf, D_L05_0015F9B8, func_001FE540(n + 0x5229));
+        func_00116248(buf, D_L05_0015F9B8, msg_string(n + 0x5229));
     }
-    w = func_001F6600(buf, -1);
+    w = measure_text_width_regular(buf, -1);
     tx = tx - w;
-    func_L00_001FB7F8(tx + 1, y1, 0x80000000L, buf, -1);
-    func_L00_001FB7F8(tx, y, *(int *)&(D_L05_0015FA74), buf, -1);
-    func_00116248(buf, D_L05_0015FAC0, func_001FE540(0x5245));
-    w = func_001F6600(buf, -1);
+    DebugFontPrint(tx + 1, y1, 0x80000000L, buf, -1);
+    DebugFontPrint(tx, y, *(int *)&(D_L05_0015FA74), buf, -1);
+    func_00116248(buf, D_L05_0015FAC0, msg_string(0x5245));
+    w = measure_text_width_regular(buf, -1);
     tx = tx - w;
-    func_L00_001FB7F8(tx + 1, y1, 0x80000000L, buf, -1);
-    func_L00_001FB7F8(tx, y, *(int *)&(D_L05_0015FA70), buf, -1);
+    DebugFontPrint(tx + 1, y1, 0x80000000L, buf, -1);
+    DebugFontPrint(tx, y, *(int *)&(D_L05_0015FA70), buf, -1);
     if (D_0015EE84 != 0x10)
         return *(int *)(e + 0x58);
     func_00116248(buf + 0x40, D_L05_0015F940, *(unsigned char *)(hd + 0x8CE));
@@ -469,15 +469,15 @@ int func_L05_00266D10(char *e) {
         px = *(int *)&(D_L05_0015FA98);
         py = *(int *)&(D_L05_0015FA9C);
     }
-    func_00201960(px - 0x18, py, *(int *)&(D_L05_0015FAA0), 0x20, 0x60);
-    w = func_00200198(0x7558, 2);
-    func_00200468(w, px, py, 0x20, 0x20, 0x80);
-    func_L00_001FB7F8(px + 0x29, py + 8, 0x80000000L, buf + 0x40, -1);
+    draw_stretchable_ui_frame(px - 0x18, py, *(int *)&(D_L05_0015FAA0), 0x20, 0x60);
+    w = GetIconFrame(0x7558, 2);
+    HudSprite(w, px, py, 0x20, 0x20, 0x80);
+    DebugFontPrint(px + 0x29, py + 8, 0x80000000L, buf + 0x40, -1);
     h2 = D_0013E633 + 0xE1D;
     if (*(unsigned char *)(h2 + 0x8CE) != 0)
-        func_L00_001FB7F8(px + 0x28, py + 7, 0x80E08060L, buf + 0x40, -1);
+        DebugFontPrint(px + 0x28, py + 7, 0x80E08060L, buf + 0x40, -1);
     else
-        func_L00_001FB7F8(px + 0x28, py + 7, 0x80202080L, buf + 0x40, -1);
+        DebugFontPrint(px + 0x28, py + 7, 0x80202080L, buf + 0x40, -1);
     return *(int *)(e + 0x58);
 }
 typedef struct {

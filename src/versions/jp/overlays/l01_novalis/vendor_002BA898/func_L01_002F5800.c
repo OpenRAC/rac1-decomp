@@ -10,7 +10,7 @@ void TetheredMineUpdate(char *m) {
         *(float *)(d + 0x174) = *(float *)(d + 0xFC);
     }
     {
-        float dist = FastVecDist(m + 0x10, D_L01_001672C0);
+        float dist = FastVecDist(m + 0x10, camera_pos);
         float lo = *(float *)&D_L01_00161B84;
         float x0 = *(float *)&D_L01_00161B8C;
         float k = -((1.0f - lo) / (*(float *)&D_L01_00161B88 - x0));
@@ -44,7 +44,7 @@ void TetheredMineUpdate(char *m) {
         return;
     }
     if (((unsigned char *)m)[0x20] == 0x65) return;
-    func_L01_002F6540(m);
+    gunship_follow_path(m);
     *(unsigned short *)(m + 0x34) |= 0x1000;
     d[0x2B] = 1;
     d[0x2C] = 0x64;

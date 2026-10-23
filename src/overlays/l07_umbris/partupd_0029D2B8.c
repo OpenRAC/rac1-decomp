@@ -12,7 +12,7 @@ extern unsigned char *D_L07_001B2464;
 
 /* Spawn a particle moby at pos with a colour, lifetime and size. */
 void SpawnParticle(void *pos, void *pos2) {
-    unsigned char *p = func_00218928(0x41);
+    unsigned char *p = create_part(0x41);
     if (p) {
         float *f = (float *)(p + 0x20);
         qcopy(p + 0x10, pos);

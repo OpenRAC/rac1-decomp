@@ -1,5 +1,5 @@
-int ToggleList_PadInput(char *arg0) {
-    char *g = D_001D5F70;
+int update_menu_option_list(char *arg0) {
+    char *g = menu_system;
     int sel = *(char **)(*(char **)(g + 4) + 0x40) == arg0;
 
     if (*(int *)(arg0 + 0x3C) != 0) {
@@ -22,7 +22,7 @@ int ToggleList_PadInput(char *arg0) {
     {
         char *pad2 = D_0013CA40;
         if (*(int *)(pad2 + 0x1C4) & 0x10) {
-            char *g2 = D_001D5F70;
+            char *g2 = menu_system;
             int t = *(int *)(*(char **)(g2 + 4) + 0x38);
             if (t != 0) {
                 *(int *)(g2 + 8) = t;
@@ -54,8 +54,8 @@ int ToggleList_PadInput(char *arg0) {
                 Moby_PlaySound(0, 0x11, *(int *)(arg0 + 0x14));
                 if ((*(Row14 **)(arg0 + 0x34))[*(int *)(arg0 + 0x38)].flags & 1) {
                     if (*(unsigned char *)&D_0016044C_i) {
-                        char *g3 = D_001D5F70;
-                        Freeze_Enter(6, *(void **)(g3 + 4), 0);
+                        char *g3 = menu_system;
+                        mode_freeze_init(6, *(void **)(g3 + 4), 0);
                     } else {
                         FadeToBlack(4);
                         *(int *)(arg0 + 0x3C) = func_001F98C0(0x10);

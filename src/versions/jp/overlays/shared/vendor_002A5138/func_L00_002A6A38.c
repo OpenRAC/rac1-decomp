@@ -1,4 +1,4 @@
-void LightBeamUpdate(char *moby) {
+void vendor_update(char *moby) {
     char *p = *(char **)(moby + 0x78);
     char *c;
     int i;
@@ -45,8 +45,8 @@ void LightBeamUpdate(char *moby) {
             }
         }
         AddDrawCallback(func_L00_002A62D0, moby);
-        func_L00_001FFED8(p + 0x20, 2, *(float *)&D_L00_00161464);
-        func_L00_001FFED8(p + 0x60, 2, *(float *)&D_L00_00161468);
+        axis_rotation_2d48(p + 0x20, 2, *(float *)&D_L00_00161464);
+        axis_rotation_2d48(p + 0x60, 2, *(float *)&D_L00_00161468);
         *(float *)&D_L00_00161464 = FastAddRots(*(float *)&D_L00_00161464, 0.01f);
         t2 = FastAddRots(*(float *)&D_L00_00161468, -0.02f);
         m = *(char **)(p + 0xC);
@@ -76,8 +76,8 @@ void LightBeamUpdate(char *moby) {
         AddDrawCallback(func_L00_002A62D0, moby);
         a = 1;
         b = 1;
-        func_L00_001FFED8(p + 0x20, 2, *(float *)&D_L00_00161464);
-        func_L00_001FFED8(p + 0x60, 2, *(float *)&D_L00_00161468);
+        axis_rotation_2d48(p + 0x20, 2, *(float *)&D_L00_00161464);
+        axis_rotation_2d48(p + 0x60, 2, *(float *)&D_L00_00161468);
         *(float *)&D_L00_00161464 = FastAddRots(*(float *)&D_L00_00161464, 0.01f);
         t2 = FastAddRots(*(float *)&D_L00_00161468, -0.02f);
         m = *(char **)(p + 0xC);

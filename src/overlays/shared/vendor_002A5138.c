@@ -324,12 +324,12 @@ extern float func_001FA850(float, float);
 extern void func_001F9BD8(void *, void *, void *);
 
 // Moves the moby toward a point on the camera's line of sight, or parks it at a fixed distance.
-void Moby_FollowCameraSightLine(char *moby) {
+void camera_object_update(char *moby) {
     float a[4];
     float b[4];
     float d;
     char *x;
-    char *g = (char *)&gCameraLvl;
+    char *g = (char *)&player_camera;
     char *cam = *(char **)(g + 0x180);
 
     if (cam != 0) {
@@ -384,7 +384,7 @@ typedef struct { unsigned char p0[0x80]; float f80, f84; unsigned char p88[0x98 
 extern G_pp_t G_pp __asm__("D_0013F450");
 
 /* Per-frame update of a pulsing light-beam moby: spawns a child, fades it with distance to the player, draws it and may trigger the player's grab. Adapted from Lombyte (MIT) for PAL: src/overlays/shared/unclassified_002a4830.c, FUN_L00_002a57a8. */
-void LightBeamUpdate(char *moby) {
+void vendor_update(char *moby) {
     char *p = *(char **)(moby + 0x78);
     char *c;
     int i;
@@ -431,8 +431,8 @@ void LightBeamUpdate(char *moby) {
             }
         }
         AddDrawCallback(func_L00_002A62D0, moby);
-        func_L00_001FFED8(p + 0x20, 2, *(float *)&D_L00_00161464);
-        func_L00_001FFED8(p + 0x60, 2, *(float *)&D_L00_00161468);
+        axis_rotation_2d48(p + 0x20, 2, *(float *)&D_L00_00161464);
+        axis_rotation_2d48(p + 0x60, 2, *(float *)&D_L00_00161468);
         *(float *)&D_L00_00161464 = FastAddRots(*(float *)&D_L00_00161464, 0.01f);
         t2 = FastAddRots(*(float *)&D_L00_00161468, -0.02f);
         m = *(char **)(p + 0xC);
@@ -462,8 +462,8 @@ void LightBeamUpdate(char *moby) {
         AddDrawCallback(func_L00_002A62D0, moby);
         a = 1;
         b = 1;
-        func_L00_001FFED8(p + 0x20, 2, *(float *)&D_L00_00161464);
-        func_L00_001FFED8(p + 0x60, 2, *(float *)&D_L00_00161468);
+        axis_rotation_2d48(p + 0x20, 2, *(float *)&D_L00_00161464);
+        axis_rotation_2d48(p + 0x60, 2, *(float *)&D_L00_00161468);
         *(float *)&D_L00_00161464 = FastAddRots(*(float *)&D_L00_00161464, 0.01f);
         t2 = FastAddRots(*(float *)&D_L00_00161468, -0.02f);
         m = *(char **)(p + 0xC);
@@ -597,7 +597,7 @@ extern void func_001FA1F8_A7078(void *, void *) __asm__("func_001FA1F8");
 extern void func_L00_002A7E10_A7078(void *) __asm__("func_L00_002A7E10");
 
 /* Bolt update (classes 13-16): lands where it was dropped, hovers and spins, bounces off the ground, flies to the hero when he is near or sucks bolts in, leaves a trail, and is collected on arrival. */
-void BoltUpdate(Moby *m) {
+void bolt_update(Moby *m) {
     Vars_A7078 *d = *(Vars_A7078 **)&m->pvars;
     union {
         struct {
@@ -922,11 +922,11 @@ void CollectBolt(struct Moby *bolt)
 
     src = bolt->parent;
     if (src && !(src->id & 0x80))
-        D_0014D690[D_0015EE84][src->id].bolts += value;
+        bolt_source_stats[D_0015EE84][src->id].bolts += value;
     gBolts += value;
     if (bolt->pvars[0x40] || (D_L00_0015F678 && (void *)bolt < (*(void * *)&D_L00_0016009C)))
         D_0015EF2C += value;
-    D_0013E040[D_0015EE84_A7E10b] += value;
+    level_bolts[D_0015EE84_A7E10b] += value;
 
     k = 0.7f;
     queue_animation_update(2, 0x754E, HudBoltsInit, HudBoltsUpdate, HudBoltsDraw,
@@ -1454,7 +1454,7 @@ extern int func_L00_002C6F48(void *);
 
 /* Walk the moby list and trigger the first nearby one that accepts it. */
 void TriggerNearbyMobyHit(char *a) {
-    char *m = D_L00_001600A4;
+    char *m = suck_moby_list;
     if (m != 0) {
         char *g = D_0013E633 + 0xE1D;
         do {
@@ -1573,7 +1573,7 @@ static __inline__ unsigned char *waudio48(int slot) { return D_0013E650+slot*0x7
 static __inline__ WPlayer48 *sweepp48(void) { return (WPlayer48*)((char*)wend48()-0xA00); }
 
 /* Updates normal wrench swings and its thrown/returning collision sweep. */
-void WrenchUpdate(Wrench48 *m) {
+void wrench_update(Wrench48 *m) {
     WData48 *d=m->data;
     WWorkspace48 work;
     WPlayer48 *initial_player=wplayer48();
@@ -1630,7 +1630,7 @@ void WrenchUpdate(Wrench48 *m) {
         if (player_moby->current_animation!=player_moby->animation || (int)player_moby->frame_end-player_moby->frame>=3)
             d->animation_count++;
         m->animation_scale=wplayer48()->animation_scale;
-        attack=&D_L00_0017BD28[wplayer48()->attack_index];
+        attack=&attack_records[wplayer48()->attack_index];
         if (wplayer48()->move_mode!=6 && wplayer48()->state!=43) break;
         active=1; reaction=0;
         if (wplayer48()->blocked || wplayer48()->animation_frame<(float)attack->first_frame || (float)attack->last_frame<wplayer48()->animation_frame) active=0;
@@ -1655,7 +1655,7 @@ void WrenchUpdate(Wrench48 *m) {
         Moby_GetJointWorldPos(wplayer48()->moby,0,wplayer48()->sweep_start);
         if (wplayer48()->state==19 || wplayer48()->state==112 || wplayer48()->state==43) {
             yaw=func_L00_001FF860(wplayer48()->sweep_end[0]-wplayer48()->position[0],wplayer48()->sweep_end[1]-wplayer48()->position[1]);
-            if (D_L00_0017BD28[wplayer48()->attack_index].side==1)
+            if (attack_records[wplayer48()->attack_index].side==1)
                 yaw=FastAddRots(yaw,-1.5707964f);
             else yaw=FastAddRots(yaw,1.5707964f);
         }
@@ -1697,7 +1697,7 @@ void WrenchUpdate(Wrench48 *m) {
             work.v[3][0]=FastCos(yaw); work.v[3][1]=FastSin(yaw); work.v[3][2]=0.0f;
             InitDirectionalHitQuery(work.v[0],m,0x10000,(float)count,work.v[3]); func_L00_001FF500(work.v[0],work.v[0],scale);
             work.query.force=1.0f; work.query.range=5627.925f; work.query.enabled=1; work.query.class_id=m->class_id; work.query.flags=0;
-            if (SweepSegmentCheck(wplayer48()->sweep_start,wplayer48()->sweep_end,wplayer48()->previous_start,wplayer48()->previous_end,wplayer48()->moby,&work,5) && wrench_hit48.moby) {
+            if (sweep_hit_segment(wplayer48()->sweep_start,wplayer48()->sweep_end,wplayer48()->previous_start,wplayer48()->previous_end,wplayer48()->moby,&work,5) && wrench_hit48.moby) {
                 if (CollMoby_HasPvarFlag2()) reaction=1;
                 else if (!wplayer48()->attack_cooldown) {
                     if (!wrench_hit48.moby || !wrench_hit48.moby->model || wrench_hit48.moby->model->kind!=20) {
@@ -1980,7 +1980,7 @@ void Moby1523Delete(void) {
             D_L00_0015F420 = 0;
             D_L00_0015F430 = 0;
             idx = *(short *)(data + 0x2C);
-            if (idx != -1) FreePointLight(idx);
+            if (idx != -1) light_off_67e8(idx);
             DeleteMoby(*(char **)&D_L00_00161490);
         }
         *(int *)&D_L00_00161490 = 0;
@@ -2069,7 +2069,7 @@ float func_002140F8(float, float);
 void func_L00_00251E30(void *);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002a4830.c, FUN_L00_002a9ed0. */
-unsigned char *Moby74Spawn(int owner, q128_2a9ed0 *pos) {
+unsigned char *spawn_mine(int owner, q128_2a9ed0 *pos) {
     unsigned char *m = func_0020D348_AB170(0x4A);
     if (m) {
         unsigned char *v = *(unsigned char **)(m + 0x78);
@@ -2165,7 +2165,7 @@ void InitSpawnedSpinMoby(Vec4 *pos, N2 *self, void *arg) {
     count = 0;
     best = 0;
     bestv = 0;
-    for (n = (N2 *)D_L00_001600A4; n; n = n->p28) {
+    for (n = (N2 *)suck_moby_list; n; n = n->p28) {
         if (n->b20 != 0xFE) if (n->b20 != 0xFD) if (n->hA6 == self->hA6) if (n != self) {
             if (best == 0 || ((D5C *)n->p78)->i5C < bestv) {
                 bestv = ((D5C *)n->p78)->i5C;
@@ -2263,7 +2263,7 @@ int ProjectilePath_Trace(char *a0, char *o, int mode) {
         {
             char *g = (char *)&D_L00_00166EC0;
             char *a10 = a0 + 0x10;
-            *(u128 *)(a0 + 0x20) = *(u128 *)D_L00_00173F80;
+            *(u128 *)(a0 + 0x20) = *(u128 *)coll_hit_normal;
             FastVecSub(C, a10, g);
             FastVecScale(C, C, 0.95f);
             FastVecAdd(a10, C, g);

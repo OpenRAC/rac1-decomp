@@ -72,7 +72,7 @@ s32 DrawItemsMenu(ItemsMenu *menu) {
     font_print_right_large(add_offset((*(s32 *)&D_001602B8), 0xF0), add_offset((*(s32 *)&D_001602BC), 0x36), 0x80000000L,
                     text_buffer, -1);
     font_print_right_large(0xF0, 0x36, 0x80FFA888L, text_buffer, -1);
-    func_00116248(text_buffer, D_001603A0, GetUnspentGoldBolts());
+    func_00116248(text_buffer, D_001603A0, compute_clamped_count_difference());
     font_print_right_large(add_offset((*(s32 *)&D_001602B8), 0xF0), add_offset((*(s32 *)&D_001602BC), 0x54), 0x80000000L,
                     text_buffer, -1);
     font_print_right_large(0xF0, 0x54, 0x80FFA888L, text_buffer, -1);

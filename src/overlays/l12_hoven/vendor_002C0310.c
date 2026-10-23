@@ -717,7 +717,7 @@ int TrollSteerAndMove(char *moby, float target) {
     vel[0] = FastCos(*(float *)(moby + 0x48)) * 2;
     vel[1] = FastSin(*(float *)(moby + 0x48)) * 2;
     vel[2] = 0;
-    r = MobySteerToward(moby, d + 0x180, vel, (char *)out, 1.0f);
+    r = move_w(moby, d + 0x180, vel, (char *)out, 1.0f);
     if (*(int *)(d + 0x2D0) != -1) {
         float *vp = v;
         FastVecSub(vp, pos, moby + 0x10);
@@ -910,7 +910,7 @@ void TrollDamageAndAlert(struct Moby *moby) {
     if (vars->call_enabled != 0 && moby->state != 9) {
         s16 n = ++vars->call_timer;
         if (scale_ticks(0x3C) * 15 < n && moby->visible == 0 && moby->group < 0xFF &&
-            MobyGroup_CountNotInState(moby->group, -1) >= 4 && random_integer_below(0x45) == 0) {
+            count_group_e81e0(moby->group, -1) >= 4 && random_integer_below(0x45) == 0) {
             v.f[0] = FastCos(FastAddRots(moby->rot.z, 3.1415927f));
             v.f[1] = FastSin(FastAddRots(moby->rot.z, 3.1415927f));
             v.f[2] = 0.0f;
@@ -1135,7 +1135,7 @@ void HovenPlatformUpdate(Moby *moby) {
         HovenExhaustUpdate((char *)moby);
         return;
     }
-    if (moby->state != 0 && d->fDC != -1 && MobyGroup_CountNotInState(d->fDC, -1) != 0) {
+    if (moby->state != 0 && d->fDC != -1 && count_group_e81e0(d->fDC, -1) != 0) {
         HovenExhaustUpdate((char *)moby);
         return;
     }
@@ -1335,7 +1335,7 @@ void HovenPlatformUpdate(Moby *moby) {
     }
     }
     FastVecSub(delta, (*(float (*)[4])&moby->pos), oldPos);
-    CarryRiders(d->f60, delta, oldRot, (*(float (*)[4])&moby->rot));
+    update_entity_matrix(d->f60, delta, oldRot, (*(float (*)[4])&moby->rot));
 }
 extern void func_L12_002E7EE0(char *);
 extern int func_L00_002676E8(void *, void *);
@@ -1401,7 +1401,7 @@ extern short D_L12_0015F6A8_2E7FC8 __asm__("D_L12_0015F6A8");
 extern char *D_L12_0016016C MACRO_ADDR;
 
 /* Miner (class 282) update on level 12: runs its conversation states, steers its body and head toward the player and keeps its helper moby attached. */
-void MinerUpdate(Moby *m) {
+void miner_update(Moby *m) {
     Scratch_2E7FC8 scratch;
     Data_2E7FC8 *d = (Data_2E7FC8 *)m->pvars;
     float rate;
@@ -1416,7 +1416,7 @@ void MinerUpdate(Moby *m) {
         }
         m->state = 1;
         DialogRequest_Init(m, d->activation);
-        SetMobyZBand(m);
+        func_L02_0025D750(m);
         break;
     case 1:
         if (((Flags_2E7FC8 *)((char *)&D_0013D355_2E7FC8 + 0x13B))->f1 == 0 && Npc_TryStartDialog(m, d->activation)) {
@@ -1432,10 +1432,10 @@ void MinerUpdate(Moby *m) {
             flags->f1 = 1;
             ShowBanner(0x2EE7, scale_ticks(300));
             flags->f61 = 1;
-            SetLevelTriggerDone(m->mission);
+            jet_clear_persistent(m->mission);
             if (d->node != -1) {
                 char *t = D_L12_0016016C + (d->node << 7);
-                PauseMenu_SeedSnapshot(t + 0x30, t + 0x70);
+                jet_reset_camera(t + 0x30, t + 0x70);
             }
             memcard_Save(0, -1);
             m->state = 1;
@@ -1733,7 +1733,7 @@ void Moby294Update(char *moby) {
         }
         if (M_U8(moby, 0x53) != 0) {
             if (M_U8(moby, 0x52) == M_U8(moby, 0x53)) {
-                MobyBlendAnimationEx(moby, 0, 0, ((int (*)(int))scale_ticks)(8), 5);
+                blend_moby_animation_ex(moby, 0, 0, ((int (*)(int))scale_ticks)(8), 5);
             }
         }
         r = IsPointWithinMobyLimits(moby, hero + 0x10, M_F(data, 0x230), 3.0f, 0.0f);
@@ -1784,7 +1784,7 @@ void Moby294Update(char *moby) {
             break;
         }
         if (M_U8(moby, 0x53) != 8 && M_U8(moby, 0x52) == M_U8(moby, 0x53)) {
-            MobyBlendAnimationEx(moby, 8, 0, ((int (*)(int))scale_ticks)(11), 5);
+            blend_moby_animation_ex(moby, 8, 0, ((int (*)(int))scale_ticks)(11), 5);
         }
         row = ((char * *)D_L12_001B0C30)[M_I(data, 0x254)];
         if (((float (*)(void *, void *))func_001F9D48)(moby + 0x10, row + ((M_I(data, 0x260) << 4) + 0x10)) < 3.0f) {
@@ -1852,7 +1852,7 @@ void Moby294Update(char *moby) {
             }
         }
         if (M_U8(moby, 0x53) != 8 && M_U8(moby, 0x52) == M_U8(moby, 0x53)) {
-            MobyBlendAnimationEx(moby, 8, 0, ((int (*)(int))scale_ticks)(11), 5);
+            blend_moby_animation_ex(moby, 8, 0, ((int (*)(int))scale_ticks)(11), 5);
         }
         goto tail;
 
@@ -1863,11 +1863,11 @@ void Moby294Update(char *moby) {
         ((void (*)(void *, void *))HovenEnemyAimHead)(moby, hero + 0x10);
         ((void (*)(void *))HovenEnemyFollowGround)(moby);
         if (M_U8(moby, 0x53) != 2 && M_U8(moby, 0x52) == M_U8(moby, 0x53)) {
-            MobyBlendAnimationEx(moby, 2, 0, ((int (*)(int))scale_ticks)(8), 5);
+            blend_moby_animation_ex(moby, 2, 0, ((int (*)(int))scale_ticks)(8), 5);
         }
         if (M_U8(moby, 0x70) & 2) {
             if (M_U8(moby, 0x53) != 10 && M_U8(moby, 0x52) == M_U8(moby, 0x53)) {
-                MobyBlendAnimationEx(moby, 10, 0, ((int (*)(int))scale_ticks)(5), 5);
+                blend_moby_animation_ex(moby, 10, 0, ((int (*)(int))scale_ticks)(5), 5);
             }
             M_U8(moby, 0x20) = 6;
         }
@@ -1893,7 +1893,7 @@ void Moby294Update(char *moby) {
         }
         if (M_U8(moby, 0x70) & 2) {
             if (M_U8(moby, 0x53) != 5 && M_U8(moby, 0x52) == M_U8(moby, 0x53)) {
-                MobyBlendAnimationEx(moby, 5, 0, ((int (*)(int))scale_ticks)(8), 5);
+                blend_moby_animation_ex(moby, 5, 0, ((int (*)(int))scale_ticks)(8), 5);
             }
             M_U8(moby, 0x20) = 7;
         }
@@ -1904,7 +1904,7 @@ void Moby294Update(char *moby) {
         ((void (*)(void *))HovenEnemyFollowGround)(moby);
         if (M_U8(moby, 0x53) != 5 || (M_U8(moby, 0x70) & 2)) {
             if (M_U8(moby, 0x53) != 0 && M_U8(moby, 0x52) == M_U8(moby, 0x53)) {
-                MobyBlendAnimationEx(moby, 0, 0, ((int (*)(int))scale_ticks)(8), 5);
+                blend_moby_animation_ex(moby, 0, 0, ((int (*)(int))scale_ticks)(8), 5);
             }
         }
         if (((int (*)(int))random_integer_below)(9) == 0) {
@@ -1938,7 +1938,7 @@ void Moby294Update(char *moby) {
 
     case 4:
         M_U16(moby, 0x34) = M_U16(moby, 0x34) & 0xFFBE;
-        r = StepMobyPhysics(moby, data + 0x70);
+        r = mine_fall(moby, data + 0x70);
         if (r & 0x60) {
             if (((float (*)(void *, void *))func_001F9D48)(moby + 0x10, hero + 0x10) < 6.0f || M_U8(data, 0x242) != 0) {
                 f = ((float (*)(float, float))FastDiffRots)(M_F(moby, 0x48), ((float (*)(float, float))func_L00_001FF860)(M_F(hero, 0x10) - M_F(moby, 0x10), M_F(hero, 0x14) - M_F(moby, 0x14)));
@@ -1956,7 +1956,7 @@ void Moby294Update(char *moby) {
         goto finish;
 
     case 9:
-        r = StepMobyPhysics(moby, data + 0x70);
+        r = mine_fall(moby, data + 0x70);
         if (r & 0x60) {
             SetDeathBits(moby, 0, -1);
             ((void (*)(void *, void *))Moby294_SpawnExplosion)(moby, moby + 0x10);
@@ -2038,10 +2038,10 @@ void HovenEnemyCommonUpdate(char *moby) {
         r = scale_ticks(60);
         if (r * 17 < *(int *)(data + 0x288)) {
             sum = 0;
-            if (*(int *)(data + 0x278) != -1) sum = MobyGroup_CountNotInState(*(int *)(data + 0x278), 2);
-            if (*(int *)(data + 0x27C) != -1) sum += MobyGroup_CountNotInState(*(int *)(data + 0x27C), 2);
-            if (*(int *)(data + 0x280) != -1) sum += MobyGroup_CountNotInState(*(int *)(data + 0x280), 2);
-            if (*(int *)(data + 0x284) != -1) sum += MobyGroup_CountNotInState(*(int *)(data + 0x284), 2);
+            if (*(int *)(data + 0x278) != -1) sum = count_group_e81e0(*(int *)(data + 0x278), 2);
+            if (*(int *)(data + 0x27C) != -1) sum += count_group_e81e0(*(int *)(data + 0x27C), 2);
+            if (*(int *)(data + 0x280) != -1) sum += count_group_e81e0(*(int *)(data + 0x280), 2);
+            if (*(int *)(data + 0x284) != -1) sum += count_group_e81e0(*(int *)(data + 0x284), 2);
             if (sum >= 9 && random_integer_below(0x27) == 0) {
                 pi = 3.1415927f;
                 vc[0] = FastCos(FastAddRots(*(float *)(moby + 0x48), pi));
@@ -2713,7 +2713,7 @@ void Moby326Update(char *moby) {
         return;
     }
     if (FastVecDist(moby + 0x10, D_L12_001672C0) < 30.0f) {
-        SetGroundHeightBand(moby);
+        func_L00_0025B178(moby);
         M_U8(moby, 0x7F) = 0x18;
     }
 }
@@ -2872,7 +2872,7 @@ extern unsigned char D_0013D5CA[] NOT_SDA;
 extern int D_L12_0015F6A8_2EC8F0 __asm__("D_L12_0015F6A8") MACRO_ADDR;
 
 /* Edwina update on level 12: picks her animation, runs the conversation states, keeps her two helper mobys and turns her body and head toward the hero. */
-void EdwinaUpdate(char *m) {
+void edwina_update(char *m) {
     char *d = *(char **)(m + 0x78);
     AttachCheatManipulatorToMatchingL03(m);
     {
@@ -2888,7 +2888,7 @@ void EdwinaUpdate(char *m) {
         m[0x20] = 1;
         DialogRequest_Init(m, d + 0x20);
         *(float *)(d + 0x2C) = 1.7f;
-        SetMobyZBand(m);
+        func_L02_0025D750(m);
         if (gHaveHeliPack[2] != 0) *(short *)(d + 0x56) = -1;
         break;
     case 1:
@@ -2901,10 +2901,10 @@ void EdwinaUpdate(char *m) {
     case 2:
         if (D_L12_0015F6A8_2EC8F0 != 2) {
             *(float *)(m + 0x58) = 1.0f;
-            SetLevelTriggerDone(*(unsigned char *)(m + 0xB0));
+            jet_clear_persistent(*(unsigned char *)(m + 0xB0));
             if (*(int *)(d + 0x160) != -1) {
                 char *t = D_L12_0016016C + (*(int *)(d + 0x160) << 7);
-                PauseMenu_SeedSnapshot(t + 0x30, t + 0x70);
+                jet_reset_camera(t + 0x30, t + 0x70);
             }
             m[0x20] = 1;
             if (*(short *)(d + 0x24) == 2) {
@@ -2912,7 +2912,7 @@ void EdwinaUpdate(char *m) {
                 ShowBanner(0x2EE6, -1);
                 if (*(int *)(d + 0x160) != -1) {
                     char *t = D_L12_0016016C + (*(int *)(d + 0x160) << 7);
-                    PauseMenu_SeedSnapshot(t + 0x30, t + 0x70);
+                    jet_reset_camera(t + 0x30, t + 0x70);
                 }
                 memcard_Save(0, -1);
             }
@@ -3056,7 +3056,7 @@ void Moby336_HandleHit(char *m, int flag) {
         if (*(int *)(D_0013E633 + 0x2EA1) != 0x32) {
             *(int *)&D_0015EF04 += 1;
             if (*(int *)&D_0015EF04 >= 5) {
-                q = (unsigned char *)(D_0013D50F + 1);
+                q = (unsigned char *)(menu_item_enabled_115 + 1);
                 if (q[0x15] == 0) {
                     q[0x15] = 1;
                     PlayBankSound(1, 0, 0);
@@ -3173,7 +3173,7 @@ extern float func_001F9D48(void *, void *);
 extern int func_L00_001FEF78(void *);
 
 /* Idle critter: waits a random time, then plays one of its fidget animations (or reacts when the hero comes close). */
-void Moby339Update(unsigned char *m) {
+void crane_arm_update(unsigned char *m) {
     float dist = func_001F9D48(m + 0x10, D_0013E633 + 0xE9D);
     switch (m[0x20]) {
     case 0:
@@ -3184,7 +3184,7 @@ void Moby339Update(unsigned char *m) {
     case 1:
         if (m[0x52] == 0 && dist < 9.0f && m[0xBC] < 2) m[0xBC] = 2;
         if (dist < 12.0f && m[0x52] == m[0x53] && m[0x52] != 0) m[0xBC] = 0;
-        if (func_L00_001FEF78(m + 0xBC)) {
+        if (fast_subtract_rotations_cf(m + 0xBC)) {
             switch (m[0x52]) {
             case 0:
                 if (random_integer_below(0x100) & 1) {

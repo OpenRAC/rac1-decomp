@@ -1,4 +1,4 @@
-void BackgroundShipUpdate(char *moby) {
+void background_ship_1_update(char *moby) {
     char *d;
     char *t;
     int r;
@@ -77,7 +77,7 @@ void BackgroundShipUpdate(char *moby) {
         if (D_0015EE84_2D9F08 == 2) {
             D_0015EEF4 = D_0015EEF4 + 1;
             if (D_0015EEF4 >= 3) {
-                unsigned char *p = D_0013D50F + 1;
+                unsigned char *p = menu_item_enabled_115 + 1;
                 if (p[2] == 0) {
                     p[2] = 1;
                     PlayBankSound(1, 0, 0);
@@ -89,7 +89,7 @@ void BackgroundShipUpdate(char *moby) {
             if (*(int *)(D_0013E633 + 0x2EA1) == 0x32) {
                 D_0015EEFC = D_0015EEFC + 1;
                 if (D_0015EEFC >= 5) {
-                    unsigned char *p = D_0013D50F + 1;
+                    unsigned char *p = menu_item_enabled_115 + 1;
                     if (p[0xF] == 0) {
                         p[0xF] = 1;
                         PlayBankSound(1, 0, 0);

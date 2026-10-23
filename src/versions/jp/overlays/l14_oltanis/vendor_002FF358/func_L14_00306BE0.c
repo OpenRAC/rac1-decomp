@@ -1,4 +1,4 @@
-void func_L14_00306BE0(struct Moby *moby) {
+void CollectiblePickupUpdate(struct Moby *moby) {
     u8 *o = (u8 *)moby;
     u8 *d = (u8 *)moby->pvars;
     f32 v[4];

@@ -203,7 +203,7 @@ void KeyframePlatformUpdate(unsigned char *moby) {
         EasePositionToPathEnd(moby);
     }
     FastVecSub(delta, (moby + 0x10), orig);
-    CarryRiders(data + 0x60, delta, moby + 0x40, moby + 0x40);
+    update_entity_matrix(data + 0x60, delta, moby + 0x40, moby + 0x40);
     if (!Hero_IsOnMoby(moby)) {
         if (2.0f < func_001F9D48((moby + 0x10), (D_0013E633 + 0xE9D))) {
             if (*(short *)(data + 0xBA) == 0) {
@@ -400,7 +400,7 @@ void Moby8Update(struct Moby *m) {
     func_L14_002AEAF8_AD858(m);
     if (m->state > 0 && m->state < 7) {
         if (FastVecDist(&m->pos, D_L14_001675C0) < 40.0f) {
-            SetGroundHeightBand(m);
+            func_L00_0025B178(m);
         }
         *(s16 *)(d + 0x200) = 0;
     }
@@ -565,8 +565,8 @@ void Moby8Update(struct Moby *m) {
                 if (FastAbsF(*(float *)(d + 0x1BC)) < 0.0001f) {
                     *(float *)(d + 0x1BC) = 0.0f;
                 }
-                func_L00_001FFED8(d + 0xF0, 2, *(float *)(d + 0x1BC));
-                func_L00_001FFED8(d + 0x130, 1, *(float *)(d + 0x1C0));
+                axis_rotation_2d48(d + 0xF0, 2, *(float *)(d + 0x1BC));
+                axis_rotation_2d48(d + 0x130, 1, *(float *)(d + 0x1C0));
             }
             if (Group_StartWhenAllReady(*(int *)(d + 0x70))) {
                 MoverPath *p = (MoverPath *)D_L14_001B0F30[*(int *)(d + 0x204)];
@@ -827,7 +827,7 @@ void Moby8_DrawRing(char *moby) {
     VU1_addGSregister(0x14, 0xFF9000000260);
     VU1_addGSregister(0x47, 0x50000);
     VU1_addGSregister(0x4A, 0);
-    Draw_BuildVu1Setup();
+    font_queue_vu_state();
     for (i = 0; i < (*(s32 *)&D_L14_001614E0); i++) {
         float *s = D_L14_001D7D60[i];
         float *o = f.verts[i];
@@ -1339,10 +1339,10 @@ int Moby8_PrepareGlowDraw(char *moby, int flag) {
         func_L00_001FF4B0(data + 0xB0, data + 0xB0, 1.0f);
         func_L00_001FF4B0(data + 0xC0, data + 0xC0, 1.0f);
         t = FastSubRots(func_L00_001FF860(v[0], v[1]), *(float *)(moby + 0x48));
-        func_L00_001FFED8(data + 0xF0, 2, t);
+        axis_rotation_2d48(data + 0xF0, 2, t);
         *(float *)(data + 0x1BC) = t;
         t = -func_L00_001FF860(func_001F9CE8(v), v[2]);
-        func_L00_001FFED8(data + 0x130, 1, t);
+        axis_rotation_2d48(data + 0x130, 1, t);
         *(float *)(data + 0x1C0) = t;
         qcopy(data + 0x90, data + 0x170);
         if (flag != 0) {
@@ -1947,7 +1947,7 @@ extern void func_L00_0025F4A8_2B5938(void *, void *, void *, float, float, int, 
                                      int, float, int, int, int, int) __asm__("func_L00_0025F4A8");
 
 /* Update of the minibomber (moby class 31): flies along its paths, turns at the ends, dives and drops bombs. */
-void MinibomberUpdate(Moby *moby) {
+void minibomber_update(Moby *moby) {
     Data_2B5938 *d = (struct Data_2B5938 *)moby->pvars;
     float v[12];
     float *tgt;
@@ -1976,7 +1976,7 @@ void MinibomberUpdate(Moby *moby) {
     if (moby->visible != 0) {
         if (FastVecDist(&moby->pos, D_L14_001675C0) < 40.0f && moby->state != 0 && moby->state != 1 &&
             moby->state != 9) {
-            SetGroundHeightBand(moby);
+            func_L00_0025B178(moby);
         }
     }
     switch (moby->state) {
@@ -2104,7 +2104,7 @@ void MinibomberUpdate(Moby *moby) {
     case 4:
         tg = 0.0f;
         a = CosineInterpolate(tg, d->f104, (float)d->f102 / IntToFloat(scale_ticks(D_L14_00161628)));
-        func_L00_001FFED8(d->f120, 2, a);
+        axis_rotation_2d48(d->f120, 2, a);
         if (func_001F9D48(&moby->pos, &d->fB0->pos) < D_L14_00161638) {
             if (d->f10C == 0) {
                 d->fE8 = 0;
@@ -2168,7 +2168,7 @@ void MinibomberUpdate(Moby *moby) {
         PathNode_2B5938 *q = D_L14_001B0F30_2B5938[d->fD8] + d->f100;
         tg = FastSubRots(func_L00_001FF860(q[1].v[0] - moby->pos.x, q[1].v[1] - moby->pos.y), moby->rot.z);
         a = CosineInterpolate(tg, d->f104, (float)d->f102 / IntToFloat(scale_ticks(D_L14_00161624)));
-        func_L00_001FFED8(d->f120, 2, a);
+        axis_rotation_2d48(d->f120, 2, a);
         if (moby->prev_seq == 2) {
             moby->state = 4;
             d->f102 = scale_ticks(D_L14_00161628);
@@ -2183,7 +2183,7 @@ void MinibomberUpdate(Moby *moby) {
         if (IsFrameWithinWindow(moby, 3.0f) != 0) {
             PathNode_2B5938 *q;
             n = (float)scale_ticks(D_L14_0016162C);
-            func_L00_001FFED8(d->f120, 2, d->f104);
+            axis_rotation_2d48(d->f120, 2, d->f104);
             Moby_GetJointWorldPos(moby, 1, v);
             FastVecSub(v + 4, D_L14_001B0F30_2B5938[d->fD8] + (d->f100 + 1), v);
             v[6] = 0.0f;
@@ -2426,7 +2426,7 @@ void SpawnRadialSparks(char *m, float *input, float angle) {
         PartType19Spawn(pos, rotated);
     }
     }
-    Moby639Spawn(D_L14_001D8BD0, saved, 0, 0);
+    mine_camera_blast(D_L14_001D8BD0, saved, 0, 0);
 }
 extern int *D_L14_001B0F30[];
 typedef struct {
@@ -2732,7 +2732,7 @@ void Moby81Destroy(char *moby)
     char *data = *(char **)(moby + 0x78);
     int index = *(short *)(data + 0x12);
     if (index != -1) {
-        FreePointLight(index);
+        light_off_67e8(index);
         *(short *)(data + 0x12) = -1;
     }
     DeleteMoby(moby);
@@ -2836,7 +2836,7 @@ void Moby211Update(struct Moby *m) {
         AttachManipulator(m, 4, d->manips[2]);
         return;
     case 1:
-        if (D_L14_00167600->phase == 0x14) {
+        if (race_state->phase == 0x14) {
             d->timer = scale_ticks(d->delay);
             m->state = 2;
         }
@@ -3018,7 +3018,7 @@ void Moby211_SyncHeroOnRail(struct Moby *m) {
         *(int *)(od + 0xF8) = i * 2;
         *(int *)(od + 0xFC) = i * 2 + 1;
         if (*(int *)(od + 0xF0) != -1) {
-            FreePointLight(*(int *)(od + 0xF0));
+            light_off_67e8(*(int *)(od + 0xF0));
             *(int *)(od + 0xF0) = -1;
         }
     }
@@ -3172,7 +3172,7 @@ void Moby211_UpdateGunAim(struct Moby *m) {
             }
             turn = (turn - 0.0f) * blend + 0.0f;
         }
-        func_L00_001FFED8(d + 0x150, 2, turn);
+        axis_rotation_2d48(d + 0x150, 2, turn);
         ((void (*)(struct Moby *, int, void *))Moby_GetJointWorldPos)(m, 4, &v[2]);
         *(u128_67e8 *)&v[3] = 0;
         v[3].z = 1.0f;
@@ -3262,11 +3262,11 @@ void Moby211_UpdateGunAim(struct Moby *m) {
                 l[2] = D_L14_00161A58;
             }
         } else if (*(int *)(d + 0xF0) != -1) {
-            FreePointLight(*(int *)(d + 0xF0));
+            light_off_67e8(*(int *)(d + 0xF0));
             *(int *)(d + 0xF0) = -1;
         }
     } else if (*(int *)(d + 0xF0) != -1) {
-        FreePointLight(*(int *)(d + 0xF0));
+        light_off_67e8(*(int *)(d + 0xF0));
         *(int *)(d + 0xF0) = -1;
     }
     FastVecSub(&v[0], &D_0013F3D0_67e8, &m->pos);
@@ -3276,7 +3276,7 @@ void Moby211_UpdateGunAim(struct Moby *m) {
     } else if (a < -1.2217305f) {
         a = -1.2217305f;
     }
-    func_L00_001FFED8(d + 0x110, 2, a);
+    axis_rotation_2d48(d + 0x110, 2, a);
 }
 extern int D_L14_0015F7EC MACRO_ADDR;
 extern short D_L14_00161B00;
@@ -3391,7 +3391,7 @@ void PuffExhaustSmoke(char *m) {
         }
         p[2] -= 1.0f;
     }
-    RandomSphericalOffset(w, 0.005f, 0.03f);
+    random_spherical_offset(w, 0.005f, 0.03f);
     q = PartType69Spawn(p, w, 0x7F, m);
     if (q != 0) {
         *(float *)(q + 0xC) = random_float_between(6000.0f, 32000.0f);
@@ -3440,7 +3440,7 @@ void Moby309Update(Moby *moby) {
         rotation = &moby->rot;
     }
     func_L14_002DF6B8_m(moby, D_L14_00161BCC, 8.0f);
-    CarryRiders(data + 0x20, D_L14_0015F660, &old_rotation, rotation);
+    update_entity_matrix(data + 0x20, D_L14_0015F660, &old_rotation, rotation);
 }
 typedef int u128_s07 __attribute__((mode(TI)));
 extern short D_L14_00161BD4;
@@ -3501,7 +3501,7 @@ void Moby309_TrackHero(char *moby) {
             0.1f < FastAbsF(*(float *)(moby + 0xE8) - v[2])) {
             *(int *)(data + 0x70) = scale_ticks(60);
             *(float *)(moby + 0x18) = *(float *)(moby + 0x18) + 2.0f;
-            func_0022EB08(*(void **)(*(char **)(moby + 0x24) + 0x28), 8, (int)moby, (int)(moby + 0x10), 0x400);
+            allocate_voice_slot(*(void **)(*(char **)(moby + 0x24) + 0x28), 8, (int)moby, (int)(moby + 0x10), 0x400);
             *(float *)(moby + 0x18) = *(float *)(moby + 0x18) - 2.0f;
         }
     }

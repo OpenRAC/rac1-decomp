@@ -1,5 +1,5 @@
 extern B_00284e50 D_J_L00_001BB410;
-void func_L00_00286128(void *a0, void *a1)
+void jet_reset_camera(void *a0, void *a1)
 {
     unsigned char *src;
     int i;
@@ -13,7 +13,7 @@ void func_L00_00286128(void *a0, void *a1)
         if ((unsigned char)v == 0) continue;
         if ((unsigned char)v != 1 && D_0014C150[lvl][(unsigned char)v - 2] != 0xFF) continue;
         D_J_L00_001BB410.f[i] = v;
-        D_0014C290[lvl][i >> 5] |= 1 << (i & 0x1F);
+        level_moby_killed[lvl][i >> 5] |= 1 << (i & 0x1F);
         D_L00_001BA860[i >> 5] |= 1 << (i & 0x1F);
     }
     g = (char *)D_L00_001BB5C0;

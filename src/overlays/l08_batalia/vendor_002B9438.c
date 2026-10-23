@@ -380,7 +380,7 @@ void BombUpdate(char *moby) {
         return;
     }
     }
-    RecordMobyShadow(moby, 0.2f);
+    jet_animate(moby, 0.2f);
 }
 extern char D_0013E633[] NOT_SDA;
 extern char D_0013D355[] NOT_SDA;
@@ -472,7 +472,7 @@ void BomberTankUpdate(Moby *moby) {
             (*(Moby **)(d + 0x164))->collision = 0;
             if (moby->prev_seq != 0) func_00213DE0_55E0(moby, 0, 0, 0);
         } else if (*(int *)(d + 0x144) > 0) {
-            if (D_0013D4B5[9] == 0) {
+            if (menu_item_enabled_25[9] == 0) {
                 moby->state = 14;
                 moby->flags |= 0x41;
                 (*(Moby **)(d + 0x160))->flags |= 0x41;
@@ -594,7 +594,7 @@ void BomberTankUpdate(Moby *moby) {
     }
     }
     FastVecSub(vel, &moby->pos, old);
-    CarryRiders(d + 0x60, vel, &moby->rot, rot);
+    update_entity_matrix(d + 0x60, vel, &moby->rot, rot);
 }
 typedef struct {
     char pad0[0x20];
@@ -1404,7 +1404,7 @@ typedef struct {
 } Data_DBF68;
 
 /* Update function of the blarg bomb thrower: hit reactions, then a state machine that walks to its bomb crate, picks up and throws bombs at the hero. */
-void BlargBombThrowerUpdate(Moby *moby) {
+void blarg_bombthrower_update(Moby *moby) {
     Data_DBF68 *d = (Data_DBF68 *)moby->pvars;
     Look_DBF68 look;
     float v50[4];
@@ -1420,7 +1420,7 @@ void BlargBombThrowerUpdate(Moby *moby) {
     func_L00_00264B40_x(moby, D_L08_00161A3C, 3.0f, d->blk160);
     if (moby->visible != 0) {
         if (FastVecDist(&moby->pos, D_L08_00167640) < 29.0f) {
-            SetGroundHeightBand(moby);
+            func_L00_0025B178(moby);
             moby->shadow_range = 0x17;
         }
     }
@@ -1643,7 +1643,7 @@ void BlargBombThrowerUpdate(Moby *moby) {
             func_L00_00250800_2D6C58(moby, 9, v50);
             FastVecSub(v60, &target->pos, v50);
             func_L00_001FF500(v60, v60, t);
-            v60[2] = ComputeLaunchVelocityZ(v50, v70, &out, t, -(D_0015EE70 * 15.0f));
+            v60[2] = jump_speed_4318(v50, v70, &out, t, -(D_0015EE70 * 15.0f));
             p = BombSpawn((int)moby, (char *)v50, (char *)v60);
             d->p124 = (Moby *)p;
             if (p != 0) {
@@ -1676,7 +1676,7 @@ void BlargBombThrowerUpdate(Moby *moby) {
     case 0x5A:
     case 0x5C:
     case 0x5D:
-        if (StepMobyPhysics(moby, d->blk70) & 0x40) {
+        if (mine_fall(moby, d->blk70) & 0x40) {
             old = d->p120;
             if ((d->p120 = (Moby *)FindBestGroupTarget((char *)moby)) == 0) {
                 d->p120 = old;
@@ -1696,7 +1696,7 @@ void BlargBombThrowerUpdate(Moby *moby) {
         }
         break;
     case 0x63:
-        if (StepMobyPhysics(moby, d->blk70) & 0x40) {
+        if (mine_fall(moby, d->blk70) & 0x40) {
             moby->anim_speed = 0.0f;
             moby->state = 100;
             moby->collision = 0;
@@ -1804,7 +1804,7 @@ void RoutePlatformUpdate(char *m) {
         TransformPathPoints(m);
     }
     FastVecSub(vec, m + 0x10, pos);
-    CarryRiders(d + 0x20, vec, rp, m + 0x40);
+    update_entity_matrix(d + 0x20, vec, rp, m + 0x40);
 }
 extern int D_L08_001B0FB0[];
 extern char D_L08_001DB540[];
@@ -2134,14 +2134,14 @@ void Moby425Update(struct Moby *moby) {
                 color = scale_ticks(60);
                 color2 = scale_ticks(120);
                 alpha = rand_range(color, color2);
-                PartType16Spawn(record.pos, position, 0x1f101820, 0x101010, size, alpha, 0);
+                mine_debris(record.pos, position, 0x1f101820, 0x101010, size, alpha, 0);
             } break;
             case 2: {
                 int color, color2, alpha;
                 color = random_integer_below(100) < 40 ? 0x5ff8f8f8 : 0x2f486078;
                 color2 = scale_ticks(30);
                 alpha = scale_ticks(45);
-                PartType16Spawn(record.pos, position, color, 0x0f000020, 150000.0f,
+                mine_debris(record.pos, position, color, 0x0f000020, 150000.0f,
                                       rand_range(color2, alpha), 2);
             } break;
             case 3: {
@@ -2156,7 +2156,7 @@ void Moby425Update(struct Moby *moby) {
                 radius = random_float_between(150000.0f, 200000.0f);
                 alpha = scale_ticks(60);
                 alpha = rand_range(alpha, scale_ticks(120));
-                PartType16Spawn(record.pos, position, color, color2, radius,
+                mine_debris(record.pos, position, color, color2, radius,
                                       alpha, 3);
             } break;
             case 1: break;
@@ -2258,7 +2258,7 @@ void GuidedRocketUpdate(M46 *m) {
         qcopy(target,d->target->position); target[2]+=5.0f;
         yaw=func_L00_001FF860(m->position[0]-target[0],m->position[1]-target[1]);
         pitch=func_L00_001FF860(func_001F9D48(target,m->position),m->position[2]-target[2]);
-        AddSphericalOffset(target,target,d->roll,d->yaw,d->pitch);
+        fast_add_rotations_cf(target,target,d->roll,d->yaw,d->pitch);
         FastVecSub(delta,target,m->position);
         ClampVectorLength(delta,t->speed*D_0015EE6C);
         FastVecSub(accel,delta,d->velocity);

@@ -1,4 +1,4 @@
-void PathVehicleUpdate(VehicleMoby_2CB800 *m) {
+void snow_plow_update(VehicleMoby_2CB800 *m) {
     VehicleVec_2CB800 old, delta;
     VehicleData_2CB800 *d=m->data;
     u8 state=m->state;
@@ -21,7 +21,7 @@ void PathVehicleUpdate(VehicleMoby_2CB800 *m) {
         d->shield=m->shield;
     }
     izero=0; zero=*(float *)&izero;
-    func_L01_002F6540(m);
+    gunship_follow_path(m);
     if (m->cls!=0x1E4) {
         FastDecTimer(&d->phase_timer);
         switch (d->phase) {
@@ -89,15 +89,15 @@ void PathVehicleUpdate(VehicleMoby_2CB800 *m) {
         switch ((s16)((u16)m->cls-0x1D2)) {
         case 0:case 14:
             d->angle0=FastAddRots(d->angle0,D_0015EE6C*12.566371f);
-            func_L00_001FFED8(d->matrix0+0x10,0,d->angle0);break;
+            axis_rotation_2d48(d->matrix0+0x10,0,d->angle0);break;
         case 19:case 20:case 28:case 29:case 32:case 89:
             d->angle0=FastAddRots(d->angle0,D_0015EE6C*12.566371f);
-            func_L00_001FFED8(d->matrix0+0x10,2,d->angle0);break;
+            axis_rotation_2d48(d->matrix0+0x10,2,d->angle0);break;
         case 22:case 27:
             d->angle0=FastAddRots(d->angle0,D_0015EE6C*12.566371f);
-            func_L00_001FFED8(d->matrix0+0x10,2,d->angle0);
+            axis_rotation_2d48(d->matrix0+0x10,2,d->angle0);
             d->angle1=FastAddRots(d->angle1,D_0015EE6C*12.566371f);
-            func_L00_001FFED8(d->matrix1+0x10,2,d->angle1);break;
+            axis_rotation_2d48(d->matrix1+0x10,2,d->angle1);break;
         }
     }
     if (d->partner!=-1) {

@@ -161,12 +161,12 @@ void SndInstConditionalLoopUpdate(int a0) {
     int n = *(int *)(p + 4);
     char *r;
     int flag;
-    qcopy(D_0013E6E0 + n * 0x70, D_L01_001672C0);
-    r = D_0013E6E0 - 0x90 + n * 0x70;
+    qcopy(voice_positions + n * 0x70, camera_pos);
+    r = voice_positions - 0x90 + n * 0x70;
     flag = *(int *)(r + 0x8C) == a0 && *(unsigned char *)(r + 0x74) != 0;
-    if (*(int *)(D_L01_001672C0 + 0x254) != 0) {
+    if (*(int *)(camera_pos + 0x254) != 0) {
         if (!flag) {
-            *(int *)(p + 4) = Sound_PlayLevelSound(*(int *)p, 0x15, a0, 0x400);
+            *(int *)(p + 4) = play_voice(*(int *)p, 0x15, a0, 0x400);
         }
     } else {
         if (flag) {

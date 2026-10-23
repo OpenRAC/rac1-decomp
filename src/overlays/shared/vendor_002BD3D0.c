@@ -25,7 +25,7 @@ void Effect_DrawEntryList(void *list_, int count, int tex0, int tex1) {
     D_L12_00161240[2] = 0;
     D_L12_00161240[3] = 0x50000009;
     D_L12_00161240 += 4;
-    Draw_BuildVu1Setup();
+    font_queue_vu_state();
     sp = (int *)0x70000000;
     for (i = 0xB3; i >= 0; i--) {
         *sp++ = 0x80808080;
@@ -179,7 +179,7 @@ extern void func_L00_0025F4A8_alt(void *, void *, void *, float, float, int, int
 extern void func_0020D678(void *);
 
 // updates a moby's velocity and either spawns an effect and deletes itself or expires by height
-void LobbedMoby_UpdateFlight(char *m) {
+void blarg_commander_update(char *m) {
     int st;
     char *d;
     char *p;
@@ -190,7 +190,7 @@ void LobbedMoby_UpdateFlight(char *m) {
     d = *(char **)(m + 0x78);
     if (st == 1) {
         p = d + 0x20;
-        r = StepMobyPhysics(m, p);
+        r = mine_fall(m, p);
         mo->vx = FastAddRots(mo->vx, D_0015EE6C * 4.3633232f);
         mo->vy = FastAddRots(mo->vy, D_0015EE6C * 4.3633232f);
         *(unsigned short *)(m + 0x34) &= 0xEFFF;

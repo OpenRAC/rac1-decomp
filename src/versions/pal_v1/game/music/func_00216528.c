@@ -1,5 +1,5 @@
 extern char D_0011C478[];
-void func_00216528(int arg0, int arg1, int arg2) {
+void music_start_track_30000(int arg0, int arg1, int arg2) {
     int *p = (int *)(D_0011C478 + (arg0 * 4 + D_0015EE88 * 0x258));
     char *s;
 
@@ -19,5 +19,5 @@ void func_00216528(int arg0, int arg1, int arg2) {
     *(short *)(s + 0x56) = arg2;
     *(short *)(s + 0x60) = 0;
     func_0012ED48(*p, 0, 0, 0, *(unsigned char *)&D_0015EF1C_w ? arg2 : 0,
-                  0, 2, 0, 0x21, func_00217860, (long)(unsigned int)D_00151820);
+                  0, 2, 0, 0x21, music_secondary_start_callback, (long)(unsigned int)music_player_dialogue);
 }

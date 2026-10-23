@@ -1,4 +1,4 @@
-void HoverboardGirlUpdate(HGMoby *moby) {
+void update_hoverboard_girl(HGMoby *moby) {
     HGState *state = moby->data;
     HGVec target_position;
     HGVec head_position;
@@ -89,7 +89,7 @@ void HoverboardGirlUpdate(HGMoby *moby) {
             if (state->previous_dialogue_state == 4) {
                 (*(unsigned char *)(D_0013D355 + 0x13B)) = 1;
                 queue_dialogue_message(0x1395, scale_frame_count(300));
-                if (D_0013D50F[0xA] != 0) {
+                if (menu_item_enabled_115[0xA] != 0) {
                     func_0022EE28_x(1, 0, 0);
                     queue_dialogue_message(0x542D, -1);
                 }

@@ -1,4 +1,4 @@
-void func_L16_002D4C78(char *m) {
+void Moby_HandleDamageKnockback(char *m) {
     L16DamageScratch scratch;
     L16DamageData *d = *(L16DamageData **)(m + 0x78);
     char *hit;
@@ -7,23 +7,23 @@ void func_L16_002D4C78(char *m) {
     float time_scale;
     *(float *)(m + 0x2C) = *(float *)(*(char **)(m + 0x24) + 0x24);
     scratch.amount = 0.0f;
-    hit = func_L00_0025B478(m, 0x330000, 0);
+    hit = MobyGetHitMessage(m, 0x330000, 0);
     if (hit) {
         if (*(char **)(hit + 0x20)) {
             char *source = *(char **)(hit + 0x20);
             hit = *(short *)(source + 0xA6) != 0x31 ? hit : 0;
         }
     }
-    response = func_L00_0025B4D0(m, hit, &d->health, 0, &scratch.status, &scratch.amount, 0, 4);
+    response = ComputeHitResponse(m, hit, &d->health, 0, &scratch.status, &scratch.amount, 0, 4);
     if (scratch.status != 1 && ((unsigned char *)m)[0x20] != 9) {
-        func_L16_002D5340(m, 0x12C, 0x168);
+        Group_RandomizeTimers(m, 0x12C, 0x168);
         if (hit && *(char **)(hit + 0x20) &&
             *(short *)(*(char **)(hit + 0x20) + 0xA6) != 0x47) {
             d->reward_hits = 0;
         }
         d->health -= scratch.amount;
         if (d->health <= 0.0f) response = 1;
-        d->sound_timer = func_001FA898(512.0f);
+        d->sound_timer = truncate_float_to_s32(512.0f);
         d->impulse_time = D_0015EE70 * 20.0f;
         d->damping = 0.5f;
         d->vertical_impulse = 0.0f;
@@ -53,8 +53,8 @@ void func_L16_002D4C78(char *m) {
                 scratch.vector = *(unsigned long long *)(hit + 0x10);
                 scratch.angle = heading;
             }
-            func_L00_0025BBA0(&scratch.vector, &scratch.angle, &d->forward_impulse, &d->lateral_impulse);
-            func_L00_0025D5B0(scratch.angle, m, d->knockback, 6, 1, 0);
+            HeadingFromVector(&scratch.vector, &scratch.angle, &d->forward_impulse, &d->lateral_impulse);
+            InitKnockback(scratch.angle, m, d->knockback, 6, 1, 0);
             m[0x20] = 8;
             d->animation = 0x78;
             break;
@@ -65,10 +65,10 @@ void func_L16_002D4C78(char *m) {
             if (D_0015EE84 == 18 && d->reward_hits) {
                 ++*(int *)&D_0015EF10;
                 if (*(int *)&D_0015EF10 >= 10) {
-                    if (((L16DamageReward *)(D_0013D50F + 1))->awarded == 0) {
-                        ((L16DamageReward *)(D_0013D50F + 1))->awarded = 1;
-                        func_0022EE28(1, 0, 0);
-                        func_L00_00264DB8(0x542D, -1);
+                    if (((L16DamageReward *)(menu_item_enabled_115 + 1))->awarded == 0) {
+                        ((L16DamageReward *)(menu_item_enabled_115 + 1))->awarded = 1;
+                        PlayBankSound(1, 0, 0);
+                        ShowBanner(0x542D, -1);
                     }
                 }
             }
@@ -94,11 +94,11 @@ void func_L16_002D4C78(char *m) {
                 scratch.vector = *(unsigned long long *)(hit + 0x10);
                 scratch.fatal_angle = heading;
             }
-            func_L00_0025BBA0(&scratch.vector, &scratch.fatal_angle, &d->forward_impulse, &d->lateral_impulse);
-            func_L00_0025D5B0(scratch.fatal_angle, m, d->knockback, 7, 1, 0);
+            HeadingFromVector(&scratch.vector, &scratch.fatal_angle, &d->forward_impulse, &d->lateral_impulse);
+            InitKnockback(scratch.fatal_angle, m, d->knockback, 7, 1, 0);
             m[0x20] = 9;
             d->animation = 0xF0;
-            func_L00_002584A8(m, 0, -1);
+            SetDeathBits(m, 0, -1);
             break;
         }
         case 0:
@@ -106,13 +106,13 @@ void func_L16_002D4C78(char *m) {
         default:
             break;
         }
-        func_L00_0025E4B0(m, d->damage);
+        RerollEffectCounter(m, d->damage);
     }
     ((unsigned char *)m)[0xA4] = 0xFF;
-    func_L00_0025E590(m, d->damage);
+    StepColorFade(m, d->damage);
     func_001F9908(&d->pursuit_timer);
     if (d->reset_timer) {
-        d->pursuit_timer = func_001FA898(func_001F9878(func_002140F8(180.0f, 240.0f)));
+        d->pursuit_timer = truncate_float_to_s32(func_001F9878(random_float_between(180.0f, 240.0f)));
     }
     d->reset_timer = 0;
     range = 255.0f;
@@ -121,9 +121,9 @@ void func_L16_002D4C78(char *m) {
         d->pursuit_mode = 2;
     } else if (d->path_index >= 0 && d->pursuit_timer == 0) {
         char *path = D_L16_001B0C30[d->path_index];
-        func_L00_00260FB0(24.0f, m, d->target, 0, 0, path + 0x10, *(int *)path);
+        FindNearestEligibleMoby(24.0f, m, d->target, 0, 0, path + 0x10, *(int *)path);
     } else {
-        func_L00_00260D30(24.0f, m, d->target);
+        FindNearestTargetMoby(24.0f, m, d->target);
     }
     if (range < func_001F9D48(m + 0x10, d->target)) d->pursuit_mode = 2;
     if (d->owner == 0) d->owner = ((L16DamageResident *)((char *)&D_L16DamageState + 0xE1D))->owner;

@@ -1,6 +1,6 @@
-int DrawPageIconsGated(char *arg0) {
-    char *g = D_001D5F70;
-    char *b = D_0013D390;
+int draw_menu_selection_text(char *arg0) {
+    char *g = menu_system;
+    char *b = memory_card_state;
     int row = ((PageTbl *)b)->rec[*(int *)(*(char **)(*(char **)(g + 4) + 0x40) + 0x40)].row;
 
     SetupGifPaging(0);

@@ -120,7 +120,7 @@ void Moby1068Update(struct Moby *moby) {
     target = vars->target;
     Manipulator_ApplyScale(moby, 1, vars->unk420, 2.5f);
     if (moby->visible != 0 && FastVecDist(&moby->pos, &D_L06_00167640) < 27.0f) {
-        SetGroundHeightBand(moby);
+        func_L00_0025B178(moby);
         moby->shadow_range = 0x15;
     }
     moby->anim_speed = 1.0f;
@@ -206,7 +206,7 @@ void Moby1068Update(struct Moby *moby) {
             b.f[0] = FastCos(moby->rot.z) * dist;
             b.f[1] = FastSin(moby->rot.z) * dist;
             b.f[2] = 0.0f;
-            MobySteerToward(moby, &vars->ctl, &b, &c, 1.0f);
+            move_w(moby, &vars->ctl, &b, &c, 1.0f);
         }
         break;
     case 2:
@@ -279,7 +279,7 @@ void Moby1068Update(struct Moby *moby) {
             shot.unk18 = 0;
             shot.unk19 = 1;
             shot.oclass = moby->oclass;
-            SweepSegmentCheck(&a, &b, &vars->unk200, &b, moby, &shot, 5);
+            sweep_hit_segment(&a, &b, &vars->unk200, &b, moby, &shot, 5);
         }
         qcopy(&vars->unk200, &a);
         if (moby->anim_flags & 2) {
@@ -305,7 +305,7 @@ void Moby1068Update(struct Moby *moby) {
         a.f[0] = 2.0f * FastCos(moby->rot.z);
         a.f[1] = 2.0f * FastSin(moby->rot.z);
         a.f[2] = 0.0f;
-        MobySteerToward(moby, &vars->ctl, &a, &b, 1.0f);
+        move_w(moby, &vars->ctl, &a, &b, 1.0f);
         PushPointOutsidePath(vars->path, &moby->pos, &moby->pos, 0.75f);
         if (SegmentCrossPolyline(vars->path, &moby->pos, &target->pos, &c) != 0 &&
             FastVecDist(&moby->pos, &c) < 0.8f) {
@@ -339,7 +339,7 @@ void Moby1068Update(struct Moby *moby) {
             shot.unk18 = 0;
             shot.unk19 = 1;
             shot.oclass = moby->oclass;
-            SweepSegmentCheck(&a, &b, &vars->unk200, &b, moby, &shot, 5);
+            sweep_hit_segment(&a, &b, &vars->unk200, &b, moby, &shot, 5);
         }
         qcopy(&vars->unk200, &a);
         if (moby->anim_flags & 2) {
@@ -358,7 +358,7 @@ void Moby1068Update(struct Moby *moby) {
         if (FastDiffRots(
                 moby->rot.z, func_L00_001FF860(vars->home.f[0] - moby->pos.x, vars->home.f[1] - moby->pos.y)) <
             0.7853982f) {
-            MobySteerToward(moby, &vars->ctl, &a, &b, 1.0f);
+            move_w(moby, &vars->ctl, &a, &b, 1.0f);
             PushPointOutsidePath(vars->path, &moby->pos, &moby->pos, 0.75f);
         }
         if (FastVecDist(&vars->home, &moby->pos) < 1.0f) {
@@ -369,7 +369,7 @@ void Moby1068Update(struct Moby *moby) {
         }
         break;
     case 15:
-        hit = StepMobyPhysics(moby, &vars->vel);
+        hit = mine_fall(moby, &vars->vel);
         if (hit & 0x40) {
             moby->state = 1;
             if (moby->prev_seq != 0) {
@@ -380,7 +380,7 @@ void Moby1068Update(struct Moby *moby) {
         }
         break;
     case 16:
-        if (StepMobyPhysics(moby, &vars->vel) & 0x160) {
+        if (mine_fall(moby, &vars->vel) & 0x160) {
             s32 none;
 
             qcopy(&a, &moby->pos);
@@ -988,7 +988,7 @@ void Moby_AdvanceStateByClass(unsigned char *a, unsigned char *m) {
         m[0x20] = 2;
         Sound_PlayClassSound(0, 0, (int)m, 0x434);
         m[0x30] = 0xFF;
-        SetLevelTriggerDone(a[0xB0]);
+        jet_clear_persistent(a[0xB0]);
         break;
     }
 }
@@ -1027,7 +1027,7 @@ struct LockVars_p {
 };
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/vendor/00307578.c, FUN_L06_00307d30. */
-void Moby1302Update(char *moby) {
+void bot_door_lock_update(char *moby) {
     struct LockVars_p *data = *(struct LockVars_p **)(moby + 0x78);
     float pos[4];
     float offset[3];
@@ -1072,7 +1072,7 @@ void Moby1302Update(char *moby) {
                 if (data->cnt < 10) {
                     PartType41Spawn(pos, moby, data->cnt + 2, color, 0x7f, 4, 0xff, 0.5f);
                 } else {
-                    if (*(unsigned char *)&gCheatMirroredLevels) {
+                    if (*(unsigned char *)&D_0015EEB4) {
                         angle = FastAddRots(*(float *)(moby + 0x48), 1.5707964f);
                         offset[0] = FastCos(angle) * 0.15f;
                         angle = FastAddRots(*(float *)(moby + 0x48), 1.5707964f);
@@ -1108,7 +1108,7 @@ void Moby1302Update(char *moby) {
         }
         if (data->cnt < 1 || D_0014C150[(unsigned char)moby[0xb0] + (*(int *)&D_0015EE84) * 16] == 0xff) {
             for (i = 0; i < 4; i++) {
-                if (data->id[i] != -1) Moby_AdvanceStateByClass((unsigned char *)moby, (unsigned char *)((*(int *)&D_L06_00160058) + data->id[i] * 0x100));
+                if (data->id[i] != -1) Moby_AdvanceStateByClass((unsigned char *)moby, (unsigned char *)((*(int *)&level_mobys_q) + data->id[i] * 0x100));
             }
             moby[0x20] = 2;
         }
@@ -1250,7 +1250,7 @@ void Moby1898Draw(char *moby) {
     if (1.0f < fade) fade = 1.0f;
     else if (fade < 0.0f) fade = 0.0f;
     VU1_addGSregister(0x47, 0x5380B);
-    projectWorldPoint(screen, &pos);
+    func_001F2418(screen, &pos);
     screen_center = (s32 *)(D_0013E15A + 0x4A6);
     raw_x = truncate_float_to_s32(screen[0] - (float)screen_center[4]);
     screen_offset = (float)screen_center[4];
@@ -1280,7 +1280,7 @@ void Moby1898Draw(char *moby) {
     corners[3] += (y + radius) << 16;
     corners[3] += x - radius;
     texture = GetEffectTex(D_L06_001624A4_FF000);
-    AppendDisplayListEntry(corners, uvs, colors, texture, 1);
+    draw_geometry_quad_5188(corners, uvs, colors, texture, 1);
     VU1_addGSregister(0x47, 0x5360B);
 }
 extern char *D_L06_0015F050 MACRO_ADDR;

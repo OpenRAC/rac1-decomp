@@ -1,4 +1,4 @@
-void MemCard_UpdateState(void) {
+void memcard_update_state(void) {
     union {
         char name[0x40];
         struct {

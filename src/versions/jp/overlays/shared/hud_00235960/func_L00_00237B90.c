@@ -13,13 +13,13 @@ int func_L00_00237B90(char *e) {
     } else {
         y = *(int *)&D_L00_0015F850 + 0x12;
     }
-    fade = func_001FA888(*opacity);
+    fade = IntToFloat(*opacity);
     fade /= func_001F9878(8.0f);
     if (fade < 0.0f) fade = 0.0f;
     if (fade > 1.0f) fade = 1.0f;
     text_y = y + 8;
     i = 0;
-    alpha = func_001FA898(fade * 128.0f);
+    alpha = truncate_float_to_s32(fade * 128.0f);
     color = (alpha << 24) | 0x40f040;
     if (D_L00_0017E630[0] >= 2) {
         do {
@@ -28,9 +28,9 @@ int func_L00_00237B90(char *e) {
     }
     if (D_L00_0017E630[i] == 1) {
         D_L00_0017E630[i] = 0;
-        w1 = func_001F6600((const char *)D_L00_0017E630, -1);
+        w1 = measure_text_width_regular((const char *)D_L00_0017E630, -1);
         l1 = 0xe0 - (w1 >> 1);
-        w2 = func_001F6600((const char *)&D_L00_0017E630[1] + i, -1);
+        w2 = measure_text_width_regular((const char *)&D_L00_0017E630[1] + i, -1);
         l2 = 0xe0 - (w2 >> 1);
         if (l1 >= l2) {
             left = l2;
@@ -39,28 +39,28 @@ int func_L00_00237B90(char *e) {
             left = l1;
             width = w1;
         }
-        func_00200468(func_00200198(0x7580, 0), left + 0x20, y, width, 0x36, alpha);
+        HudSprite(GetIconFrame(0x7580, 0), left + 0x20, y, width, 0x36, alpha);
         c = color;
-        func_00200468(func_00200198(0x7580, 1), left, y, 0x20, 0x36, alpha);
-        tex = func_00200198(0x7580, 1);
+        HudSprite(GetIconFrame(0x7580, 1), left, y, 0x20, 0x36, alpha);
+        tex = GetIconFrame(0x7580, 1);
         {
             int t = width + 0x20;
-            func_00200650(tex, left + t, y, 0x20, 0x36, alpha);
+            draw_hud_sprite_flipped(tex, left + t, y, 0x20, 0x36, alpha);
         }
-        func_001F6EA8(0x100, text_y, c, D_L00_0017E630, -1);
-        func_001F6EA8(0x100, y + 0x1b, c, &D_L00_0017E630[1] + i, -1);
+        FontPrintCenter(0x100, text_y, c, D_L00_0017E630, -1);
+        FontPrintCenter(0x100, y + 0x1b, c, &D_L00_0017E630[1] + i, -1);
     } else {
         int w, x;
-        w = func_001F6600((const char *)D_L00_0017E630, -1);
+        w = measure_text_width_regular((const char *)D_L00_0017E630, -1);
         x = 0xe0 - (w >> 1);
-        func_00200468(func_00200198(0x7580, 1), x, y, 0x20, 0x20, alpha);
-        func_00200468(func_00200198(0x7580, 0), x + 0x20, y, w, 0x20, alpha);
-        tex = func_00200198(0x7580, 1);
+        HudSprite(GetIconFrame(0x7580, 1), x, y, 0x20, 0x20, alpha);
+        HudSprite(GetIconFrame(0x7580, 0), x + 0x20, y, w, 0x20, alpha);
+        tex = GetIconFrame(0x7580, 1);
         {
             int t = w + 0x20;
-            func_00200650(tex, x + t, y, 0x20, 0x20, alpha);
+            draw_hud_sprite_flipped(tex, x + t, y, 0x20, 0x20, alpha);
         }
-        func_001F6EA8(0x100, text_y, color, D_L00_0017E630, -1);
+        FontPrintCenter(0x100, text_y, color, D_L00_0017E630, -1);
     }
     level = D_0015EE84;
     if (level == 5 || level == 0x10) {
@@ -79,7 +79,7 @@ int func_L00_00237B90(char *e) {
             qcopy(&point, &points[1]);
         }
         pt = &point;
-        if (func_001F9D10(D_0013F4D0, pt) < 5.0f) {
+        if (FastVecDist(gHeroPos, pt) < 5.0f) {
             D_L00_0015F728 = y + 100;
             elapsed = D_0015EF58[D_0015EE84 == 0x10 ? 1 : 0];
             score = D_0015EF68[D_0015EE84 == 0x10 ? 1 : 0];
@@ -90,11 +90,11 @@ int func_L00_00237B90(char *e) {
                 rem = elapsed - seconds * interval;
                 minutes = rem / per;
                 rem = (rem - minutes * per) * 100 / per;
-                func_00116248(text, D_L00_001E8840, func_001FE540(0x5372), seconds, minutes, rem);
-                func_00201A38(0x100, y + 0x28, color, text);
+                func_00116248(text, D_L00_001E8840, msg_string(0x5372), seconds, minutes, rem);
+                draw_framed_text(0x100, y + 0x28, color, text);
                 if (score != 0) {
-                    func_00116248(text, D_L00_0015F858, func_001FE540(0x5373), score);
-                    func_00201A38(0x100, y + 0x48, color, text);
+                    func_00116248(text, D_L00_0015F858, msg_string(0x5373), score);
+                    draw_framed_text(0x100, y + 0x48, color, text);
                 }
             }
         }

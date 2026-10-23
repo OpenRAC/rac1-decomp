@@ -12,7 +12,7 @@ extern unsigned char D_0013A5E0[] NOT_SDA;
 extern unsigned char D_0013E633[] NOT_SDA;
 extern void func_L00_002C2A80(void *);
 /* Moby update that runs func_L00_002C2A80 or sets byte +0xBC from the pad input mask. */
-void Moby188Update(char *m) {
+void trespasser_update(char *m) {
     if (*(int *)(*(char **)(m + 0x78) + 4) != 0) {
         Moby188_StateStep(m);
     } else if (*(int *)(D_0013A5E0 + 0x2600) & *(int *)(D_0013E633 + 0x1EBD)) {
@@ -154,7 +154,7 @@ typedef struct {
 } GloveVars_2DD8;
 
 /* update function of moby class 190 (mine_glove): aims the glove, throws a mine at the target */
-void MineGloveUpdate(struct Moby *moby) {
+void mine_glove_update(struct Moby *moby) {
     GloveVars_2DD8 *vars;
     Vec4 saved, offset, rotatedOffset;
     Vec4 local[4];
@@ -193,10 +193,10 @@ void MineGloveUpdate(struct Moby *moby) {
     if (func_001F9908(&vars->timer58) && !D_0013F450_2DD8.unk20AC) {
         if ((D_0013F450_2DD8.unk20A8 && D_0013F450_2DD8.unk1BC == scale_ticks(0x11)) ||
             ((D_0013CBE4 & D_0013F450_2DD8.items[0].button_mask) &&
-             D_0013F450_2DD8.state.current == 0x1E && GetAmmo(-1)) ||
+             D_0013F450_2DD8.state.current == 0x1E && get_ammo(-1)) ||
             (D_0013F450_2DD8.state.current == 0x23 && D_0013F450_2DD8.state_timer == scale_ticks(0x10))) {
             Hero_PlayActiveSound(0x1A, 0);
-            TakeAmmo(-1, 1);
+            use_ammo(-1, 1);
             moby->state = 3;
         }
     }
@@ -302,9 +302,9 @@ void MineGloveUpdate(struct Moby *moby) {
     func_001F9908(&vars->timer54);
     if (vars->held != 0) {
         qcopy(&vars->held->pos, &vars->grip);
-    } else if (vars->timer54 == 0 && GetAmmo(-1)) {
+    } else if (vars->timer54 == 0 && get_ammo(-1)) {
         qzero(&launch);
-        vars->held = Moby74Spawn(moby, &vars->grip, &launch);
+        vars->held = spawn_mine(moby, &vars->grip, &launch);
     }
 }
 extern float D_0015EE6C MACRO_ADDR;
@@ -314,7 +314,7 @@ extern float func_001FA888(int);
 typedef struct { float x, y, z, w; } V4 __attribute__((aligned(16)));
 
 /* Compute a follow-camera offset toward point b, limited to lim from a, into out. */
-void ComputeFollowOffset(float *a, float *b, float *out, float x, float y, float lim) {
+void aim_throw_arc(float *a, float *b, float *out, float x, float y, float lim) {
     V4 t;
     float u[3];
     float r, e, q;
@@ -341,7 +341,7 @@ void ComputeFollowOffset(float *a, float *b, float *out, float x, float y, float
     out[0] = FastCos(r) * e;
     out[1] = FastSin(r) * e;
     out[2] = 0.0f;
-    out[2] = ComputeLaunchVelocityZ(a, (float *)&t, e, -x, 0);
+    out[2] = jump_speed_4318(a, (float *)&t, e, -x, 0);
     if (*(int *)(D_0013A5E0 + 0x2600) & 5) {
         q = (IntToFloat(*(D_0013E633 - 9)) * 2.5f + 8.5f) / e;
     } else {
@@ -425,7 +425,7 @@ extern void func_L00_00250800(void *, int, void *);
 
 /* Updates the grip, chooses a throw target, and handles the held moby states.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002bffa8.c, FUN_L00_002c26c8. */
-void Moby192Update(struct Moby *moby) {
+void bomb_glove_update(struct Moby *moby) {
     CarrierVars_2c26c8 *vars;
     Vec4 local[4], saved, offset, rotatedOffset, pos, target, basis[3], matrix[4];
     Vec4 launch;
@@ -442,7 +442,7 @@ void Moby192Update(struct Moby *moby) {
     offset.q = 0;
     offset.f[1] = -0.09f;
     offset.f[2] = -0.02f;
-    func_001FA480(basis, gCameraLvl);
+    func_001FA480(basis, player_camera);
     func_001FA4A0(matrix, basis);
     if (vars == 0)
         return;
@@ -463,10 +463,10 @@ void Moby192Update(struct Moby *moby) {
     if (func_001F9908(&vars->timer) && !D_0013F450_C39D0.unk20AC) {
         if ((D_0013F450_C39D0.unk20A8 && D_0013F450_C39D0.unk1BC == scale_ticks(0x11)) ||
             ((D_0013CBE4 & D_0013F450_C39D0.items[0].button_mask) &&
-             D_0013F450_C39D0.state.current == 0x1E && GetAmmo(-1)) ||
+             D_0013F450_C39D0.state.current == 0x1E && get_ammo(-1)) ||
             (D_0013F450_C39D0.state.current == 0x23 && D_0013F450_C39D0.state_timer == scale_ticks(0x10))) {
             Hero_PlayActiveSound(0x1A, 0);
-            TakeAmmo(-1, 1);
+            use_ammo(-1, 1);
             moby->state = 3;
         }
     }
@@ -533,7 +533,7 @@ void Moby192Update(struct Moby *moby) {
             s32 entry = 0;
             struct Moby *candidate;
             D_0013F450_C39D0.unkA50 = 0;
-            while ((candidate = D_L00_001ABD80[entry]) != 0) {
+            while ((candidate = active_mobies[entry]) != 0) {
                 u8 *data = func_L00_0025D390_C39D0(candidate);
                 if ((s8)candidate->state >= 0 && data && (candidate->flags & 0x1000)) {
                     f32 candidateAngle, elevation, difference;
@@ -570,7 +570,7 @@ void Moby192Update(struct Moby *moby) {
         break;
     case 3:
         if (vars->held == 0) {
-            vars->held = SpawnHeroBomb(moby, &vars->grip);
+            vars->held = spawn_bomb(moby, &vars->grip);
         } else {
             func_L00_002AE278(&pos, vars->held, vars->held->pvars);
             if (D_00141780.deliveries <= 0xfffe)
@@ -602,8 +602,8 @@ void Moby192Update(struct Moby *moby) {
     }
     if (vars->held != 0)
         qcopy(&vars->held->pos, &vars->grip);
-    else if (GetAmmo(-1) || D_0013F450_C39D0.unk20A8)
-        vars->held = SpawnHeroBomb(moby, &vars->grip);
+    else if (get_ammo(-1) || D_0013F450_C39D0.unk20A8)
+        vars->held = spawn_bomb(moby, &vars->grip);
 }
 extern float func_L00_001FF860(float, float);
 extern float func_001FA748(float, float);
@@ -691,7 +691,7 @@ void ExplodeMobyIntoParticles(unsigned char *m) {
         s = random_float_between(100000.0f, 600000.0f);
         func_L00_0026AA10_C4748(v, r, g, b, s, 0.0f, scale_ticks(func_001160D8() % 40 + 10));
     }
-    MobyList_Remove(m, D_L00_001B0BB0);
+    mine_spawn_drops(m, D_L00_001B0BB0);
     DeleteMoby(m);
 }
 extern u8 D_0013E620[40];
@@ -759,7 +759,7 @@ u8 *SpawnThrownObject(s32 value, u128_C48C8 *position, u128_C48C8 *other_positio
                 }
             }
             if (candidate != 0) {
-                MobyList_Remove(candidate, D_L00_001B0BB0_C48C8);
+                mine_spawn_drops(candidate, D_L00_001B0BB0_C48C8);
                 candidate[0x20] = 6;
             }
         }
@@ -963,7 +963,7 @@ s32 ThrownObject_TracePath(ThrowVars *v, struct Moby *m, s32 mode)
     }
     if (mode != 2 || D_L00_00173F40_C4E00.moby == 0 || !GetFlaggedPvarWord(D_L00_00173F40_C4E00.moby))
         AddDrawCallback(func_L00_002C44C8_C4E00, m);
-    v->normal.q = D_L00_00173F80.q;
+    v->normal.q = coll_hit_normal.q;
     FastVecSub(&a, &v->landing, &D_L00_00166EC0_C4E00);
     FastVecScale(&a, &a, 0.94999998807907104492f);
     FastVecAdd(&v->landing, &a, &D_L00_00166EC0_C4E00);
@@ -1008,7 +1008,7 @@ void Moby_FollowHeroDistance(char *m) {
     len = FastVecLength(v);
     if (len < *(float *)(d + 0x60)) *(float *)(d + 0x60) = len;
     if (*(float *)(d + 0x60) < len) func_L00_001FF4B0(v, v, *(float *)(d + 0x60));
-    MoveMobyWithCollision(m, v, 0.5f, 0.4f, 0.0f, 0);
+    move_4318(m, v, 0.5f, 0.4f, 0.0f, 0);
     y = ProbeGroundHeight(m + 0x10, 0, 0.5f);
     if (*(float *)(m + 0x18) < y) {
         *(float *)(m + 0x18) = y;
@@ -1058,7 +1058,7 @@ extern float func_002140F8(float, float);
 extern void func_L00_00261478(void *, void *, void *, void *, void *, void *);
 
 /* Per-frame update of a projectile-like moby. */
-void ThrownObjectUpdate(char *moby) {
+void decoy_update(char *moby) {
     int active = D_0013E633[6];
     char *vars = *(char **)(moby + 0x78);
     char *target, *found, *ground;
@@ -1075,20 +1075,20 @@ void ThrownObjectUpdate(char *moby) {
     if (*(float *)(moby + 0x10) < 2.0f || 1021.0f < *(float *)(moby + 0x10) ||
         *(float *)(moby + 0x14) < 2.0f || 1021.0f < *(float *)(moby + 0x14) ||
         *(float *)(moby + 0x18) < 2.0f || 1021.0f < *(float *)(moby + 0x18)) {
-        MobyList_Remove(moby, D_L00_001B0BB0);
+        mine_spawn_drops(moby, D_L00_001B0BB0);
         DeleteMoby(moby);
         return;
     }
     {
     if (((char *)D_0013F450_C48C8.items[0].moby == 0 || *(short *)((char *)D_0013F450_C48C8.items[0].moby + 0xA6) != 0x232) &&
         *(unsigned char *)(moby + 0x20) == 1) {
-        MobyList_Remove(moby, D_L00_001B0BB0);
+        mine_spawn_drops(moby, D_L00_001B0BB0);
         DeleteMoby(moby);
         return;
     } }
     {
     if (D_0013F450_C48C8.vehicle_mode != 0 && *(unsigned char *)(moby + 0x20) == 1) {
-        MobyList_Remove(moby, D_L00_001B0BB0);
+        mine_spawn_drops(moby, D_L00_001B0BB0);
         DeleteMoby(moby);
         return;
     } }
@@ -1122,7 +1122,7 @@ void ThrownObjectUpdate(char *moby) {
             (t = (char *)D_0013F450_C48C8.items[0].moby) != 0 && *(short *)(t + 0xA6) == 0x232)
             return;
         }
-        MobyList_Remove(moby, D_L00_001B0BB0);
+        mine_spawn_drops(moby, D_L00_001B0BB0);
         DeleteMoby(moby);
         return;
     case 2:
@@ -1148,7 +1148,7 @@ void ThrownObjectUpdate(char *moby) {
         }
         if (D_0013F450_C48C8.state.current == 0x1E)
             *(int *)((char *)D_0013F450_C48C8.moby + 0x94) = 0;
-        ok = ((int (*)(void *, void *, float, float, float, int))MoveMobyWithCollision)(moby, vars + 0x10, 0.2f, 0.2f, 0.0f, 0);
+        ok = ((int (*)(void *, void *, float, float, float, int))move_4318)(moby, vars + 0x10, 0.2f, 0.2f, 0.0f, 0);
         if (ok & 1) {
             qcopy(wv, moby + 0x10);
             wv[2] = wv[2] + 0.2f;
@@ -1212,7 +1212,7 @@ void ThrownObjectUpdate(char *moby) {
                     }
                 }
                 ExplodeOnSelectedCollType(moby);
-                if (func_L00_001FEF78(vars + 0x6F) != 0) {
+                if (fast_subtract_rotations_cf(vars + 0x6F) != 0) {
                     Moby_PlaySound(0, 0, moby);
                     *(unsigned char *)(vars + 0x6F) = (unsigned char)scale_ticks(20);
                 } else {
@@ -1280,7 +1280,7 @@ void ThrownObjectUpdate(char *moby) {
                             *(unsigned short *)((char *)xv + 10) = *(unsigned short *)(moby + 0xA6);
                             coll_sphere_mobys(effect * 3.0f, moby + 0x10, 0x10, moby, wv);
                         }
-                        MobyList_Remove(moby, D_L00_001B0BB0);
+                        mine_spawn_drops(moby, D_L00_001B0BB0);
                         DeleteMoby(moby);
                         return;
                     }
@@ -1331,7 +1331,7 @@ void ThrownObjectUpdate(char *moby) {
             if (FastDecTimer(vars + 0x44) != 0) {
                 if (*(unsigned char *)(moby + 0x53) != 0)
                     MobyBlendAnimation(moby, 0, 0, scale_ticks(60));
-                MobyList_Remove(moby, D_L00_001B0BB0);
+                mine_spawn_drops(moby, D_L00_001B0BB0);
                 *(unsigned char *)(moby + 0x20) = 5;
             }
         }
@@ -1368,7 +1368,7 @@ extern char *func_0020D348(int);
 extern void func_L00_00251E30(void *);
 
 /* spawns a moby of a class and initialises its data block. Adapted from Lombyte (MIT) for PAL: overlays/shared/unclassified_002bffa8.c, FUN_L00_002c52a8. */
-char *SpawnMobyFromTable(void *pos, int idx, int a2, int a3) {
+char *spawn_on_path(void *pos, int idx, int a2, int a3) {
     char *m = 0;
     int *d;
     {
@@ -1447,7 +1447,7 @@ typedef struct {
 
 /* Update ammunition pickup physics, collection, animation and scale.
    Animation states share one stack value; index reloads follow calls. */
-void AmmoPickupUpdate(Moby *m) {
+void devestator_ammo_update(Moby *m) {
     AmmoPickup_6720 *p;
     unsigned int state;
     FxVec position;
@@ -1525,7 +1525,7 @@ void AmmoPickupUpdate(Moby *m) {
                 eligible = 0;
         }
         idx = p->weapon;
-        before = ((int *)(D_0013D50F + 0x21))[idx];
+        before = ((int *)(menu_item_enabled_115 + 0x21))[idx];
         max_ammo = ((FxWeaponInfo *)D_L00_001C43B0)[idx].max;
         if (before >= max_ammo)
             eligible = 0;
@@ -1537,9 +1537,9 @@ void AmmoPickupUpdate(Moby *m) {
             goto pickup_failed;
 
         {
-            AddAmmo(idx, p->amount);
+            add_ammo(idx, p->amount);
             sound_idx = p->weapon;
-            after = ((int *)(D_0013D50F + 0x21))[sound_idx];
+            after = ((int *)(menu_item_enabled_115 + 0x21))[sound_idx];
             if (before < after) {
                 difference = after - before;
                 if (difference == 1) {
@@ -1550,13 +1550,13 @@ void AmmoPickupUpdate(Moby *m) {
                 ShowBannerf(sound, difference, -1);
             }
             account_idx = p->weapon;
-            ((int *)(D_0013DE6E + 0xA2))[account_idx] += ((int *)(D_0013D50F + 0x21))[account_idx] - before;
+            ((int *)(D_0013DE6E + 0xA2))[account_idx] += ((int *)(menu_item_enabled_115 + 0x21))[account_idx] - before;
             m->state = 2;
             m->scale *= D_0015EE60 * 0.20000005f + 1.0f;
             clear_u64_value(&p->velocity);
             elapsed = D_L00_0015F6B0 - D_L00_00161908;
             p->rise_speed = D_0015EE6C * 8.0f;
-            random = func_001F9B70(elapsed);
+            random = subtract_integer_with_clamp(elapsed);
             if (scale_ticks(10) < random) {
                 Sound_PlayClassSound(0, 0, (int)m, 0xD5);
                 D_L00_00161908 = D_L00_0015F6B0;
@@ -1566,7 +1566,7 @@ void AmmoPickupUpdate(Moby *m) {
     pickup_failed:
         if (m->alpha < 0xFF)
             ++m->alpha;
-        if (func_L00_00251468(m, ((Hero *)(D_0013E633 + 0xE1D))->moby) <= -0.2f) {
+        if (jet_distance(m, ((Hero *)(D_0013E633 + 0xE1D))->moby) <= -0.2f) {
             m->state = 3;
             p->recovery_timer = scale_ticks(60);
         }
@@ -1623,12 +1623,12 @@ void AmmoPickupUpdate(Moby *m) {
         random = scale_ticks(30);
         ApproachValue(value_ptr, target, (float)(128 / random));
         m->alpha = truncate_float_to_s32(*value_ptr);
-        if (func_L00_00251468(m, ((Hero *)D_0013F450)->moby) >= 0.0f) {
+        if (jet_distance(m, ((Hero *)D_0013F450)->moby) >= 0.0f) {
             m->state = 1;
             return;
         }
         idx = p->weapon;
-        if (((int *)(D_0013D50F + 0x21))[idx] <
+        if (((int *)(menu_item_enabled_115 + 0x21))[idx] <
                 ((FxWeaponInfo *)D_L00_001C43B0)[idx].max) {
             m->state = 1;
         }
@@ -1673,9 +1673,9 @@ int Pickup_TryCollect(char *m) {
     fail:
         return 0;
     }
-    a = *(int *)(D_0013D50F + 0x21 + *(int *)(p + 8) * 4);
-    f = AddAmmo(*(int *)(p + 8), *(int *)p);
-    b = *(int *)(D_0013D50F + 0x21 + *(int *)(p + 8) * 4);
+    a = *(int *)(menu_item_enabled_115 + 0x21 + *(int *)(p + 8) * 4);
+    f = add_ammo(*(int *)(p + 8), *(int *)p);
+    b = *(int *)(menu_item_enabled_115 + 0x21 + *(int *)(p + 8) * 4);
     if (a >= b) goto fail;
     if (b - a == 1)
         r = ((Rec_2C6F48 *)((char *)D_L00_00179BC0_2C6F48 + *(int *)(p + 8) * 0x4C))->b;
@@ -1683,14 +1683,14 @@ int Pickup_TryCollect(char *m) {
         r = ((Rec_2C6F48 *)((char *)D_L00_00179BC0_2C6F48 + *(int *)(p + 8) * 0x4C))->a;
     ShowBannerf(r, b - a, -1);
     if (f < (float)*(int *)p) {
-        *(int *)(D_0013DE6E + 0xA2 + *(int *)(p + 8) * 4) += *(int *)(D_0013D50F + 0x21 + *(int *)(p + 8) * 4) - a;
+        *(int *)(D_0013DE6E + 0xA2 + *(int *)(p + 8) * 4) += *(int *)(menu_item_enabled_115 + 0x21 + *(int *)(p + 8) * 4) - a;
         m[0x20] = 2;
         *(float *)(m + 0x2C) *= D_0015EE60 * 0.20000005f + 1.0f;
         clear_u64_value(p + 0x10);
         d = D_L00_0015F6B0 - D_L00_00161908;
         *(float *)(p + 0x24) = D_0015EE6C * 8.0f;
         {
-            int r = func_001F9B70(d);
+            int r = subtract_integer_with_clamp(d);
             if (scale_ticks(10) < r) {
                 Sound_PlayClassSound(0, 0, (int)m, 0xD5);
                 D_L00_00161908 = D_L00_0015F6B0;
@@ -2079,7 +2079,7 @@ extern void func_0020D678(void *);
 extern void func_0020EEE8(void *);
 
 // Per-frame update for a linked moby: follows its owner's state and keeps its own animation in step.
-void Moby209Update(unsigned char *m) {
+void swingshot_hook_update(unsigned char *m) {
     unsigned char *p;
     unsigned char *o;
     int st;
@@ -2188,7 +2188,7 @@ void ComputeFollowHeading(float *pos, float *tgt, float *out, float speed, float
     out[0] = FastCos(ang) * s;
     out[1] = FastSin(ang) * s;
     *(int *)&out[2] = 0;
-    out[2] = ComputeLaunchVelocityZ(pos, (float *)&t, s, -speed, 0);
+    out[2] = jump_speed_4318(pos, (float *)&t, s, -speed, 0);
     if (*(int *)(D_0013A5E0 + 0x2600) & 5) {
         k = 3.5f / s;
     } else {
@@ -2360,7 +2360,7 @@ extern void func_L00_002C96D0_2C8DB8(Vec4 *, u8 *, void *) __asm__("func_L00_002
 /* Carrier: keeps its grip point in front of it, hands the held moby over when the hero asks, and
  * picks a new one up when func_L00_00234718 allows.
  * Adapted from Lombyte (MIT) for PAL: overlays/shared/gameplay/entities/002bffa8.c, FUN_L00_002c7a58. */
-void CarrierUpdate(struct Moby *moby) {
+void glove_of_doom_update(struct Moby *moby) {
     Vec4 pos;
     Vec4 offset;
     Vec4 local;

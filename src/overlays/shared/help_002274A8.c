@@ -22,7 +22,7 @@ int Help_GetRecordValue(int a) {
     if (*(unsigned char *)(g + 0x20A8) == 0) return 0;
     if (*(unsigned char *)(g + 0x20AA) == 0) return 0;
     if (*(short *)(g + 0x22C8) != 0) return 0;
-    n = Hero_GetSlotModuleId(0);
+    n = hero_slot_item_id(0);
     r = D_L01_00179FC0 - (-(n * 0x4C));
     return *(int *)(r + 0x24);
 }
@@ -97,7 +97,7 @@ void HeroFrameUpdate(void) {
     float f0, f20, ang;
 
     func_L00_00232EF0();
-    Hero_UpdateMotionInput();
+    hero_update();
     HeroProcessContactType();
     HeroL01_UpdateStateTransitions();
     if (GG->b20A4 == 0) return;
@@ -230,7 +230,7 @@ void HeroUpdate(void) {
         return;
     }
     func_L00_00232EF0();
-    Hero_UpdateMotionInput();
+    hero_update();
     HeroProcessContactType();
     HeroLedgeProbeSingle();
     HeroL01_UpdateStateTransitions();
@@ -250,7 +250,7 @@ void HeroUpdate(void) {
     HeroSyncMoby();
     HeroComputeAttachMatrices(0);
     Hero_UpdateItems();
-    BeginDrawFrame();
+    begin_draw_frame();
     UpdateRampUpDown();
     CameraShakeUpdate();
     HelpHintsPeriodicCheck();
@@ -703,7 +703,7 @@ void HeroStartScene(int a, int b, int c) {
     Hero_ClearPendingModuleAnim();
     g = (char *)D_0013E633 + 0xE1D;
     *(char *)(g + 0x20A6) = 1;
-    func_L00_00210E00();
+    hero_update_items();
     *(int *)(g + 0x2080) = *(int *)(g + 0xA88);
     DeleteOwnedMobys(g + 0x1670);
     *(int *)(*(char **)(g + 0x2080) + 0x98) = -1;
@@ -930,14 +930,14 @@ s32 HeroL01_TryTakeHit(s32 arg) {
             a = 0.0f;
             b = e * 1.7f;
         }
-        Vec_ScaleXYSetZ(&v, flag, a, b);
+        hero_knockback(&v, flag, a, b);
         if (flag != 0 && tbl->b28 == 4) {
             v.f[2] += v.f[2];
         }
         break;
     case 3:
         Hero_SetMoveState(0x56, 1);
-        Vec_ScaleXYSetZ(&v, flag, D_0015EE6C * 5.0f, D_0015EE6C * 2.4f);
+        hero_knockback(&v, flag, D_0015EE6C * 5.0f, D_0015EE6C * 2.4f);
         break;
     }
     FastVecAdd(D_0013F530, D_0013F530, &v);
@@ -1030,7 +1030,7 @@ extern void func_L00_00211F80(int, float);
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/help/00226f10.c, FUN_L01_00232290. */
 void HeroSpeedFromTable(void) {
     char *x;
-    Hero_SetHeadingFromStick(0, 1.0f);
+    stick_target(0, 1.0f);
     x = D_0013E633_328A8 + 0xE1D;
     if (0.0f < *(float *)(x + 0x190)) {
         if (*(float *)(x + 0x190) < D_L01_0017C2B8[3]) {
@@ -1079,7 +1079,7 @@ void HeroWallCheck(int flag) {
     if (*(short *)(g + 0x308) != 0) {
         return;
     }
-    if (ViewXyLength((float *)(g + 0xE0)) < D_0015EE6C * 0.1f) {
+    if (gravity_length_xy((float *)(g + 0xE0)) < D_0015EE6C * 0.1f) {
         return;
     }
     f2 = 0.37f;
@@ -1250,25 +1250,25 @@ void HeroGroundProbe(void) {
     if (D_0013F450.xI208c == 2) {
         g = D_0013F450.xF234 * 2.9f;
     }
-    Hero_BuildProbeEndpoints(&v10, &v0, k, g, -48.0f);
+    hero_get_collision_ray_endpoints(&v10, &v0, k, g, -48.0f);
     if (func_L00_001EFFF0(&v10, &v0, 2, D_0013F450.xI2080, 0) == 0) {
         goto tail;
     }
-    r = CollSoundClass();
+    r = coll_sound_class();
     if (r == -1) {
         r = 3;
     }
     D_0013F450.xB12ed = r;
     D_0013F450.xH12e0 = CollType();
     if (D_0013F450.xH12e0 == 0) {
-        D_0013F450.xF2f0 = GetGroundHeight(D_L01_00174360, (u8 *)&D_0013F450 + 0x280);
+        D_0013F450.xF2f0 = resolve_camera_surface_height(D_L01_00174360, (u8 *)&D_0013F450 + 0x280);
         if (D_0013F450.xF88 < D_0013F450.xF2f0 && D_0013F450.xI2f8 <= 0) {
             D_0013F450.xI2f8 = 1;
         }
         if (func_L00_001EFFF0(&v10, &v0, 0x24, D_0013F450.xI2080, 0) == 0) {
             goto d1;
         }
-        r = CollSoundClass();
+        r = coll_sound_class();
         if (D_0015EE84 == 1 || D_0015EE84 == 0x12) {
             r = 3;
         }
@@ -1477,7 +1477,7 @@ extern void func_L00_00234420(float *, float *, float);
 extern void func_L00_00233F88(void *, void *, float);
 
 // Accelerates the hero's air velocity toward the stick direction, clamped to the step.
-void HeroAirAccel(float step) {
+void air_accel(float step) {
     float v[4];
     float w[4];
     float u[4];
@@ -1537,7 +1537,7 @@ void HeroAirAccel(float step) {
         FastVecAdd(h, h, v);
         *(u128_34970 *)w = *(u128_34970 *)(h + 0x840);
         {
-            float t = Hero_ProjectOnHeading(w);
+            float t = forward_component(w);
             char *g5 = (char *)&D_0013F450;
             *(float *)(g5 + 0x194) = *(float *)(g5 + 0x168) - t;
         }
@@ -1546,7 +1546,7 @@ void HeroAirAccel(float step) {
     case 1:
     case 2: {
         char *h = (char *)&D_0013F450 + 0xE0;
-        u[0] = ViewXyLength((float *)h);
+        u[0] = gravity_length_xy((float *)h);
         ApproachValue(*(float *)(h + 0xB0), step, u);
         HeroScalePointXY((float *)h, (float *)h, 0.0f);
         HeroMoveAlongHeading(h, h, u[0]);
@@ -1641,7 +1641,7 @@ void HeroTickTimers(void) {
         D_0013F450_293D0.health.hp != 0 && (*(s32 *)&D_L01_0015F6A8_3CE00) == 0) {
         if (D_0013F450_293D0.vehicle_mode == 3) {
             HeroEndScene();
-            if (PadPressedWithin(0x80, scale_ticks(0x12), 0)) {
+            if (pad_pressed_within(0x80, scale_ticks(0x12), 0)) {
                 D_0013F450_293D0.unk20A6 = 1;
             }
         } else {
@@ -1663,7 +1663,7 @@ void HeroTickTimers(void) {
         func_001F9908(&D_L01_00179DF0[i].w0);
     }
     D_0013F450_293D0.unk22B8 = 9999.0f;
-    if (D_0013F450_293D0.air_frames.s != 0 && HeroGetViewZ(&D_0013F450_293D0.motion.velocity) < 0.0f) {
+    if (D_0013F450_293D0.air_frames.s != 0 && gravity_z(&D_0013F450_293D0.motion.velocity) < 0.0f) {
         if (D_0013F450_293D0.unk21B4 != 0x20) goto skip;
         func_001F9BC0_3CE00(&sum);
         n8 = 8;
@@ -1731,10 +1731,10 @@ void HeroLandingNextState(void) {
     int n;
     b = D_0013E633 + 0xE1D;
     *(int *)(b + 0x2284) = 0;
-    Hero_SetHeadingFromStick(0, 1.0f);
+    stick_target(0, 1.0f);
     if (*(int *)(D_0013A5E0 + 0x2600) & 0xA) {
         hl_next(4, 0);
-        HeroStartAnim(0xD, 2, -2.0f);
+        set_hero_animation(0xD, 2, -2.0f);
         HeroQueueSequence(3, 0x12);
         return;
     }
@@ -1748,7 +1748,7 @@ void HeroLandingNextState(void) {
             *(int *)(c + 0x2088) = 1;
             n = scale_ticks(8);
             if (scale_ticks(5) < *(int *)(c + 0x418)) n = scale_ticks(14);
-            HeroStartAnim(4, D_L01_0015F7BC, (float)n);
+            set_hero_animation(4, D_L01_0015F7BC, (float)n);
             *(short *)(c + 0x3BC) = 1;
         }
         return;
@@ -1756,7 +1756,7 @@ void HeroLandingNextState(void) {
     d = D_0013E633 + 0xE1D;
     if ((*(float *)&D_0015EE6C * 3.0f < *(float *)(d + 0x168) && scale_ticks(3) < *(int *)(d + 0x418)) || *(int *)(d + 0x2084) == 0x10) {
         if (hl_next(3, 0)) {
-            HeroStartAnim(5, 0, -1.0f);
+            set_hero_animation(5, 0, -1.0f);
             ClampVectorLength(D_0013E633 + 0xF6D, D_0015EE6C * 5.0f);
         }
         return;
@@ -1765,9 +1765,9 @@ void HeroLandingNextState(void) {
         if (hl_next(0, 0)) {
             if (Help_GetRecordValue(0) == 0x54) {
                 n = Help_GetRecordValue(0);
-                HeroStartAnim(n, 0, (float)scale_ticks(15));
+                set_hero_animation(n, 0, (float)scale_ticks(15));
             } else if (*(int *)(d + 0xA98) & 2) {
-                HeroStartAnim(Help_GetRecordValue(0), 0, -2.0f);
+                set_hero_animation(Help_GetRecordValue(0), 0, -2.0f);
             }
         }
     }

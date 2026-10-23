@@ -65,8 +65,8 @@ void Moby_HandleDamageKnockback(char *m) {
             if (D_0015EE84 == 18 && d->reward_hits) {
                 ++*(int *)&D_0015EF10;
                 if (*(int *)&D_0015EF10 >= 10) {
-                    if (((L16DamageReward *)(D_0013D50F + 1))->awarded == 0) {
-                        ((L16DamageReward *)(D_0013D50F + 1))->awarded = 1;
+                    if (((L16DamageReward *)(menu_item_enabled_115 + 1))->awarded == 0) {
+                        ((L16DamageReward *)(menu_item_enabled_115 + 1))->awarded = 1;
                         PlayBankSound(1, 0, 0);
                         ShowBanner(0x53D6, -1);
                     }

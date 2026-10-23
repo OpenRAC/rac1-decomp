@@ -52,7 +52,7 @@ void UploadImageStrip(int a, int b, int n) {
 LINKER_REMNANT("asm/overlays", func_L00_002A2668);
 /* classifies a point against wrapped ranges and bounds; returns a bitmask. Adapted from Lombyte (MIT) for PAL: src/overlays/shared/runtime_dma_002a13d8.c, FUN_L00_002a13f0. */
 struct WalkAnim;
-int GetFootPhaseMask(struct WalkAnim *anim, float v) {
+int walker_gait_mask(struct WalkAnim *anim, float v) {
     int bit = 1;
     int r = 0;
     int i;
@@ -84,8 +84,8 @@ void WalkCycle_ResetFeet(char *a) {
     int i;
     for (i = 0; i < 2; i++) {
         char *p = a + i * 0xB0;
-        if (((unsigned char *)p)[0x161] != 0) func_L00_001FFED8(p + 0x170, 2, 0.0f);
-        if (((unsigned char *)p)[0x121] != 0) func_L00_001FFED8(p + 0x130, 2, 0.0f);
+        if (((unsigned char *)p)[0x161] != 0) axis_rotation_2d48(p + 0x170, 2, 0.0f);
+        if (((unsigned char *)p)[0x121] != 0) axis_rotation_2d48(p + 0x130, 2, 0.0f);
         *(int *)(p + 0x104) = 0;
         *(int *)(p + 0xFC) = 0;
     }
@@ -214,7 +214,7 @@ void WalkCycleStep(WalkMoby *m, WalkData *d, int flags, float speed, float ang, 
                 WalkCycle_ResetFeet((char *)d);
             }
             d->bB7 = 0xD;
-            d->bB6 = GetFootPhaseMask(d->anim[7], (float)d->anim[7]->i14);
+            d->bB6 = walker_gait_mask(d->anim[7], (float)d->anim[7]->i14);
             d->sEC = 0;
         } else if (speed > D_0015EE6C * 0.21f || FastDiffRots(m->f48, ang) > 0.10471976f) {
             d->sEC++;
@@ -226,7 +226,7 @@ void WalkCycleStep(WalkMoby *m, WalkData *d, int flags, float speed, float ang, 
                     WalkCycle_ResetFeet((char *)d);
                 }
                 d->bB7 = 1;
-                d->bB6 = GetFootPhaseMask(d->anim[0], (float)d->anim[0]->i14);
+                d->bB6 = walker_gait_mask(d->anim[0], (float)d->anim[0]->i14);
                 d->sEC = 0;
             }
         }
@@ -687,7 +687,7 @@ void WalkCycleStep(WalkMoby *m, WalkData *d, int flags, float speed, float ang, 
         if (flags & 0x30) {
             float dist = func_001F9D48(m->pos, d->v60);
             STUB_printf(D_L00_001612A0, dist);
-            d->fD8 = ComputeLaunchVelocityZ(m->pos, d->v60, 0, d->fC0, -d->fDC);
+            d->fD8 = jump_speed_4318(m->pos, d->v60, 0, d->fC0, -d->fDC);
             d->uEE |= 4;
             d->f6C = func_L00_001FF860(d->v60[0] - m->pos[0], d->v60[1] - m->pos[1]);
         }
@@ -717,7 +717,7 @@ void WalkCycleStep(WalkMoby *m, WalkData *d, int flags, float speed, float ang, 
         if (flags & 0x30) {
             float dist = FastVecDist(m->pos, d->v60);
             STUB_printf(D_L00_001612A0, dist);
-            d->fD8 = ComputeLaunchVelocityZ(m->pos, d->v60, 0, d->fC0, -d->fDC);
+            d->fD8 = jump_speed_4318(m->pos, d->v60, 0, d->fC0, -d->fDC);
             d->uEE |= 4;
             d->f6C = func_L00_001FF860(d->v60[0] - m->pos[0], d->v60[1] - m->pos[1]);
         }

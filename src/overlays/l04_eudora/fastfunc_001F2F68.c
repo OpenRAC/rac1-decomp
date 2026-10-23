@@ -324,7 +324,7 @@ void DrawEudoraSky(void) {
     if (D_0015EE84_m == 4) {
         SkyShellsRotateLooped();
     } else {
-        UpdateSkyShellsStatic();
+        update_sky_shells_static();
     }
     DoSkyGifPaging();
     VU1_addGSregister(0x47, 0x5360B);

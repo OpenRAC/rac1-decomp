@@ -1,4 +1,4 @@
-void GoldBoltUpdate(Moby *moby) {
+void gold_bolt_update(Moby *moby) {
     Vars_00309078 *vars = (Vars_00309078 *)moby->pvars;
     Hero *h;
     Vec4f at;

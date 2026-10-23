@@ -39,15 +39,15 @@ void PauseCheatEntry(void) {
         vb = code - 0x37;
         vc = code - 0x3d;
         if (code < 0x25) {
-            (D_0013D50F + 0xB9)[code] = 1;
-            (gHavePersuader + 5)[code] = 1;
+            (menu_item_enabled_115 + 0xB9)[code] = 1;
+            (discount_purchase_pricing + 5)[code] = 1;
         } else if ((unsigned)(code - 0x25) < 0x12) {
-            UnlockPlanet(va);
+            unlock_planet(va);
         } else if ((unsigned)vb < 6) {
             char *p3 = D_0013D355 + 0x13B;
             p3[vb] = 1;
         } else if ((unsigned)vc < 0x1e) {
-            unsigned char *q = D_0013D50F + 1 + vc;
+            unsigned char *q = menu_item_enabled_115 + 1 + vc;
             if (!*q) {
                 *q = 1;
                 PlayBankSound(1, 0, 0);

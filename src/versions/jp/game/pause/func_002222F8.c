@@ -1,5 +1,5 @@
-int RowList_PadInput(char *arg0) {
-    char *g = D_001D5F70;
+int update_menu_choice_list(char *arg0) {
+    char *g = menu_system;
 
     if (*(char **)(*(char **)(g + 4) + 0x40) != arg0) {
         return 0;
@@ -15,7 +15,7 @@ int RowList_PadInput(char *arg0) {
     {
         char *pad2 = D_0013CA40;
         if (*(int *)(pad2 + 0x1C4) & 0x10) {
-            char *g2 = D_001D5F70;
+            char *g2 = menu_system;
             int t = *(int *)(*(char **)(g2 + 4) + 0x38);
             if (t != 0) {
                 *(int *)(g2 + 8) = t;

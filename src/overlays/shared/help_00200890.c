@@ -55,7 +55,7 @@ void HeroL03_FrameUpdate(void) {
         return;
     }
     func_L00_00232EF0();
-    Hero_UpdateMotionInput();
+    hero_update();
     HeroProcessContactType();
     HeroLedgeProbeSingle();
     Hero_LatchUpperProbe();
@@ -76,7 +76,7 @@ void HeroL03_FrameUpdate(void) {
     HeroSyncMoby();
     HeroComputeAttachMatrices(0);
     Hero_UpdateItems();
-    BeginDrawFrame();
+    begin_draw_frame();
     UpdateRampUpDown();
     CameraShakeUpdate();
     HelpHintsPeriodicCheck();

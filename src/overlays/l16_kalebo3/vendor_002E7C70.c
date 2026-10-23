@@ -79,14 +79,14 @@ typedef struct {
 extern L16ChallengePlayer D_0013E633_challenge __asm__("D_0013E633");
 
 /* Update the challenge NPC's interaction state and gaze. */
-void ChallengeNpcUpdate(L16ChallengeMoby *m) {
+void gadgetron_ceo_update(L16ChallengeMoby *m) {
     L16ChallengeScratch scratch;
     L16ChallengeData *d = m->data;
     L16ChallengeActivation *activation = (L16ChallengeActivation *)d->activation;
     float rate, head_rate;
     int tracking;
     if (m->visible && FastVecDist(m->position, D_L16_00167240) < 28.0f) {
-        SetGroundHeightBand(m);
+        func_L00_0025B178(m);
         m->distance_class = 22;
     }
     AttachManipulatorsIfCheat(m);
@@ -170,7 +170,7 @@ void ChallengeNpcUpdate(L16ChallengeMoby *m) {
         L16ChallengePlayer *player = (L16ChallengePlayer *)((char *)&D_0013E633_challenge + 0xE1D);
         unsigned char event;
         if (player->points >= 4500) {
-            unsigned char *flags = (unsigned char *)D_0013D50F + 1;
+            unsigned char *flags = (unsigned char *)menu_item_enabled_115 + 1;
             if (!flags[0x1A]) {
                 flags[0x1A] = 1;
                 PlayBankSound(1, 0, 0);
@@ -279,12 +279,12 @@ void Challenge_SetActiveLayout(char *moby) {
     int *p = (int *)(data + 0x60);
     int i;
     for (i = 15; i >= 0; i--) {
-        SetGroupMobyFlags(*p, 1, 1, 1);
+        jet_group_state(*p, 1, 1, 1);
         p++;
     }
     p = (int *)(data + 0xA0);
     for (i = 7; i >= 0; i--) {
-        SetGroupMobyFlags(*p, 0, 0, 0);
+        jet_group_state(*p, 0, 0, 0);
         p++;
     }
     *(float *)&D_L16_0015F718 = 74.0f;
@@ -301,12 +301,12 @@ void Challenge_SetIdleLayout(char *moby)
     int i;
     p = (int *)(data + 0x60);
     for (i = 15; i >= 0; i--) {
-        SetGroupMobyFlags(p[0], 0, 0, 0);
+        jet_group_state(p[0], 0, 0, 0);
         p++;
     }
     p = (int *)(data + 0xA0);
     for (i = 7; i >= 0; i--) {
-        SetGroupMobyFlags(p[0], 1, 1, 0);
+        jet_group_state(p[0], 1, 1, 0);
         p++;
     }
     Challenge_SetLayoutParam(100.0f);
@@ -334,7 +334,7 @@ void BannerTriggerUpdate(char *moby) {
         if (*(int *)(h + 0x2084) == 0x42) {
             *(int *)(data + 8) = 0;
         } else if (is_point_inside_clip_volume(h + 0x80, *(int *)(data + 4)) != 0) {
-            unsigned char *f = (unsigned char *)D_0013D50F + 0x1;
+            unsigned char *f = (unsigned char *)menu_item_enabled_115 + 0x1;
             if (f[0x19] == 0) {
                 f[0x19] = 1;
                 PlayBankSound(1, 0, 0);
@@ -596,12 +596,12 @@ void SparkRingEmitterUpdate(char *moby) {
             Moby_GetJointWorldPos(p, 4, c);
             FastVecSub(e, a, c);
             func_L00_001FF4B0(e, e, k1);
-            SpawnSparkRings(a, a, e, k2, k3);
+            draw_trail(a, a, e, k2, k3);
             Moby_GetJointWorldPos(p, 7, b);
             Moby_GetJointWorldPos(p, 5, d);
             FastVecSub(f, b, d);
             func_L00_001FF4B0(f, f, j1);
-            SpawnSparkRings(b, b, f, j2, j3);
+            draw_trail(b, b, f, j2, j3);
         }
         }
         break;
@@ -729,7 +729,7 @@ void ElevatorPlatformUpdate(L16PlatformMoby *m) {
             }
             clear_u64_value(motion.v);
             motion.v[2] = speed;
-            CarryRiders((char *)d->basis, motion.v, m->rotation, m->rotation);
+            update_entity_matrix((char *)d->basis, motion.v, m->rotation, m->rotation);
             if (motion.v[2] != 0.0f) {
                 if (!Sound_IsPlaying(m, d->particle)) {
                     d->particle = Moby_PlaySound(0, 4, (int)m);
@@ -750,7 +750,7 @@ void ElevatorPlatformUpdate(L16PlatformMoby *m) {
         }
         }
         FastVecAdd(delta.v, delta.v, m->position);
-        CarryRiders((char *)d->basis, delta.v, old_rotation.v, m->rotation);
+        update_entity_matrix((char *)d->basis, delta.v, old_rotation.v, m->rotation);
     }
 }
 extern int func_001FA8A8(int,int,float);
@@ -832,7 +832,7 @@ void DrawRingStack(char *m) {
     }
 }
 
-void SpinningObjectUpdate(unsigned char *moby)
+void gadgetron_sign_update(unsigned char *moby)
 {
     switch (moby[0x20]) {
     case 0:
@@ -985,7 +985,7 @@ void EnvMapA_Draw(void) {
     VU1_addGSregister(0x42, 0x4000000064);
     VU1_addGSregister(8, 0);
     VU1_addGSregister(0x14, 0xFF9000000260);
-    Draw_BuildVu1Setup();
+    font_queue_vu_state();
     for (i = 0; i < 3; i++) {
         if (FastBSphereCheck(D_L16_001DC8D0[i], 512.0f) != -1) {
             EnvMap_ComputeUVs(a[i], d[i], b[i], c[i], D_L16_001DC900);
@@ -1071,7 +1071,7 @@ void EnvMapSingle_Draw(void) {
     VU1_addGSregister(0x42, 0x4000000064);
     VU1_addGSregister(8, 0);
     VU1_addGSregister(0x14, 0xFF9000000260);
-    Draw_BuildVu1Setup();
+    font_queue_vu_state();
     for (i = 0; i < 1; i++) {
         if (FastBSphereCheck(p[i], 512.0f) != -1) {
             EnvMap_ComputeUVs(a[i], d[i], b[i], c[i], (float *)D_L16_001DDF50);
@@ -1158,7 +1158,7 @@ void EnvMapB_Draw(void) {
     VU1_addGSregister(0x42, 0x4000000064);
     VU1_addGSregister(8, 0);
     VU1_addGSregister(0x14, 0xFF9000000260);
-    Draw_BuildVu1Setup();
+    font_queue_vu_state();
     for (i = 0; i < 2; i++) {
         if (FastBSphereCheck(D_L16_001DF580[i], 512.0f) != -1) {
             EnvMap_ComputeUVs(a[i], d[i], b[i], c[i], D_L16_001DF5A0);
@@ -1236,7 +1236,7 @@ void EnvMapC_Draw(void) {
     VU1_addGSregister(0x42, 0x4000000064L);
     VU1_addGSregister(8, 0);
     VU1_addGSregister(0x14, 0xFF9000000260L);
-    Draw_BuildVu1Setup();
+    font_queue_vu_state();
     for (i = 0; i < 3; i++) {
         EnvMap_ComputeUVs(((int *)D_L16_00162078)[i], ((int *)D_L16_001620A8)[i], ((int *)D_L16_00162088)[i], ((int *)D_L16_00162098)[i], D_L16_001E2BA0);
         func_L00_001FDE48(((int *)D_L16_00162078)[i], ((int *)D_L16_00162088)[i], ((int *)D_L16_001620B8)[i], D_L16_001E2BA0, 1);

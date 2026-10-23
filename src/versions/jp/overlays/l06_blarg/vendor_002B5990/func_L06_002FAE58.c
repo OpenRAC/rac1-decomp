@@ -1,4 +1,4 @@
-void AlienQueenUpdate(unsigned char *moby)
+void alien_queen_update(unsigned char *moby)
 {
     unsigned char *data = *(unsigned char **)(moby + 0x78);
     char *target;

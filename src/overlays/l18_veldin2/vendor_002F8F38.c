@@ -135,7 +135,7 @@ typedef struct {
    with the pointer typed void *, hence the alias. */
 extern void func_L18_002F9AB8_v(void *) __asm__("func_L18_002F9AB8");
 
-void Moby1454Update(M1454 *m) {
+void rocket_tank_update(M1454 *m) {
     D1454 *d = m->data;
     Moby1454TakeHit(m);
     switch (m->state) {
@@ -329,8 +329,8 @@ void Moby1454TakeHit(void *mv) {
         SteerAngleWithVelocity((float *)(d + 0x110), (float *)(d + 0x114), *(float *)(m + 0x48), D_0015EE70 * 12.566371f, D_0015EE70 * 12.566371f, D_0015EE6C * 9.424778f);
         SteerAngleWithVelocity((float *)(d + 0x118), (float *)(d + 0x11C), 0.0f, D_0015EE70 * 12.566371f, D_0015EE70 * 12.566371f, D_0015EE6C * 9.424778f);
     }
-    func_L00_001FFED8(v, 1, *(float *)(d + 0x118));
-    func_L00_001FFED8(d + 0xD0, 2, FastSubRots(*(float *)(d + 0x110), *(float *)(m + 0x48)));
+    axis_rotation_2d48(v, 1, *(float *)(d + 0x118));
+    axis_rotation_2d48(d + 0xD0, 2, FastSubRots(*(float *)(d + 0x110), *(float *)(m + 0x48)));
     func_001FA588(d + 0xD0, v, d + 0xD0);
     StepColorFade(m, d + 0x60);
 }
@@ -358,7 +358,7 @@ void Moby_TurnTowardPathNode(char *m) {
     ApproachValue((float *)(d + 0x12C), f, D_0015EE70);
     z = 0.0f;
     func_L00_001FF4B0(v, m + 0xC0, *(float *)(d + 0x12C));
-    MoveMobyWithCollision((int)m, (int)v, 0.5f, 0.5f, z, 0);
+    move_4318((int)m, (int)v, 0.5f, 0.5f, z, 0);
     if (FastVecDist(m + 0x10, t) < 1.0f) {
         int k = random_integer_below(*D_L18_001B11B0[*(int *)(d + 0x100)] - 1) + 1;
         *(int *)(d + 0x120) = (*(int *)(d + 0x120) + k) % *D_L18_001B11B0[*(int *)(d + 0x100)];

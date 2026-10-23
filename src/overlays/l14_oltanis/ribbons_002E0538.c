@@ -52,23 +52,23 @@ void func_L14_002E0538(char *moby)
     c1 = 0.1f;
     c16 = 1.6f;
     one = 1.0f;
-    *(float *)(d + 0x1E0) = func_001FA748(*(float *)(d + 0x1E0), 0.17453292f);
-    *(float *)(d + 0x1E4) = func_001FA790(*(float *)(d + 0x1E4), 0.80285144f);
-    *(float *)(d + 0x1E8) = func_001FA748(*(float *)(d + 0x1E8), 0.05236f);
-    f22 = 360.0f / (func_001FA888(10) * 0.5f) * 0.017453292f;
+    *(float *)(d + 0x1E0) = FastAddRots(*(float *)(d + 0x1E0), 0.17453292f);
+    *(float *)(d + 0x1E4) = FastSubRots(*(float *)(d + 0x1E4), 0.80285144f);
+    *(float *)(d + 0x1E8) = FastAddRots(*(float *)(d + 0x1E8), 0.05236f);
+    f22 = 360.0f / (IntToFloat(10) * 0.5f) * 0.017453292f;
 
     n = 5;
     o = d;
     for (i = 0; i < 5; i++) {
-        func_001FA888(i);
-        func_001FA888(10);
+        IntToFloat(i);
+        IntToFloat(10);
         if (i == 0) {
             f20 = 0.0f;
             f21 = f20;
         } else {
             float t = (float)i;
-            f21 = func_001F9FA8(func_L00_0025F368(*(float *)(d + 0x1E0) + t * f22)) * c1;
-            f21 = f21 + func_L00_00258C80(0.0f, 0.2f);
+            f21 = FastSin(normalize_angle(*(float *)(d + 0x1E0) + t * f22)) * c1;
+            f21 = f21 + randf_sym(0.0f, 0.2f);
             f20 = t;
         }
         *(float *)(o + 0x8) = f21;
@@ -102,16 +102,16 @@ void func_L14_002E0538(char *moby)
         float fi = (float)i;
         float x, c, s;
         *(int *)(o + 0xA8) = 0;
-        x = func_L00_0025F368(*(float *)(d + 0x1E4) + fi * k99);
-        b = func_L00_0025F368(*(float *)(d + 0x1E8) + fi * k20);
-        c = func_001F9FA8(b) * k75;
-        s = func_001F9FA8(x);
-        *(float *)(o + 0xA8) = *(float *)(o + 0xA8) + (c * s + func_L00_00258C80(0.0f, 0.2f));
-        *(float *)(o + 0xA4) = func_001F9F90(x) * k50;
+        x = normalize_angle(*(float *)(d + 0x1E4) + fi * k99);
+        b = normalize_angle(*(float *)(d + 0x1E8) + fi * k20);
+        c = FastSin(b) * k75;
+        s = FastSin(x);
+        *(float *)(o + 0xA8) = *(float *)(o + 0xA8) + (c * s + randf_sym(0.0f, 0.2f));
+        *(float *)(o + 0xA4) = FastCos(x) * k50;
         *(float *)(o + 0xAC) = one3;
         *(float *)(o + 0xA0) = fi * c39;
         o += 0x10;
     }
 
-    func_001F49B0((void (*)(struct Moby *))ScrollingRibbonsDraw, (struct Moby *)moby);
+    AddDrawCallback((void (*)(struct Moby *))ScrollingRibbonsDraw, (struct Moby *)moby);
 }

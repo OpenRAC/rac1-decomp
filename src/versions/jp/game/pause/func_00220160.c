@@ -1,4 +1,4 @@
-int Pause_DrawItemCount(char *arg0) {
+int draw_selected_item_ammo(char *arg0) {
     char text[0x50];
     short box[10];
     char *p = *(char **)(D_001D5F74 + 0x40);
@@ -9,8 +9,8 @@ int Pause_DrawItemCount(char *arg0) {
     if (((unsigned char *)&D_0013D5C8)[id] == 0) {
         return 0;
     }
-    have = D_0013D530[id];
-    rec = D_001E02B0 + id * 0x18;
+    have = weapon_ammo_counts[id];
+    rec = vendor_item_prices + id * 0x18;
     total = *(unsigned short *)(rec + 0xE);
     func_00234C98_l(0x42, 0x44);
     func_00234C98_l(0x47, 0xB);
@@ -30,10 +30,10 @@ int Pause_DrawItemCount(char *arg0) {
         }
     }
     SetupGifPaging(0);
-    Menu_InitTextBox(box, arg0);
+    pack_image_descriptor(box, arg0);
     box[8] = 0x10;
     box[9] = 3;
-    Font_PrintWindowRegular(box, 0x80FFA888L, text, -1);
+    font_print_window_regular(box, 0x80FFA888L, text, -1);
     DoGifPaging();
     return 2;
 }

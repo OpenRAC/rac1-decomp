@@ -73,25 +73,25 @@ extern int D_001A01F0[];
 extern int *D_001602E0;
 
 int Menu_IsPointInFixedQuad(int x1, int y1) {
-    return menu_pointIsClockwise(x1, y1, 0xD3, 0xDB, 0x129, 0xF9);
+    return point_is_clockwise(x1, y1, 0xD3, 0xDB, 0x129, 0xF9);
 }
 
 extern unsigned char D_0013D49C NOT_SDA;
 
-int MenuL01_HasSpecialItem0C(void) {
-    return D_0013D49C != 0;
+int map_filter_l01_1(void) {
+    return menu_item_enabled_0 != 0;
 }
 
 extern unsigned char D_0013D49D NOT_SDA;
 
-int MenuL01_HasSpecialItem0D(void) {
+int map_filter_l01_2(void) {
     return D_0013D49D != 0;
 }
 
 extern unsigned char D_0013D4A5 NOT_SDA;
 
-int MenuL02_HasSpecialItem15(void) {
-    return D_0013D4A5 != 0;
+int map_filter_l02_0(void) {
+    return menu_item_enabled_9 != 0;
 }
 
 typedef struct {
@@ -105,7 +105,7 @@ extern Menu13F450 D_0013F450;
 /* Menu hit test: arg3 is the third float ($f14). b (state 16) is
    computed before a, as retail evaluates it; the second if's own
    `arg1 >= 0xC8` is retail's second test of $a1. */
-int MenuL01_HitTest3(void *arg0, int arg1, float unused1, float unused2, float arg3) {
+int map_filter_l01_3(void *arg0, int arg1, float unused1, float unused2, float arg3) {
     Menu13F450 *s = &D_0013F450;
     int b = s->unk208C == 16;
     int a = s->unk208C == 17 || s->unk208C == 18 || s->unk12E4 == 1;
@@ -125,7 +125,7 @@ extern unsigned char D_0013D49E NOT_SDA;
 /* `if (x) return 1;` in both arms with one shared `return 0;` keeps the
    flag test a beqz with the li in its slot; a result variable or a
    return 0 per arm becomes sltu. */
-int MenuL01_HitTest4(int arg0, float unused1, float unused2, float arg1) {
+int map_filter_l01_4(int arg0, float unused1, float unused2, float arg1) {
     int is16 = D_001414DC_early == 0x10;
 
     if (arg0 < 0x100) {
@@ -140,7 +140,7 @@ int MenuL01_HitTest4(int arg0, float unused1, float unused2, float arg1) {
 
 /* The struct's address in a local keeps one base register for both
    field reads. */
-int MenuL01_HitTest5(int arg0, float unused1, float unused2, float arg1) {
+int map_filter_l01_5(int arg0, float unused1, float unused2, float arg1) {
     if (arg0 < 0x100) {
         Menu13F450 *s = &D_0013F450;
         return s->unk208C == 17 || s->unk208C == 18 || s->unk12E4 == 1;
@@ -150,38 +150,38 @@ int MenuL01_HitTest5(int arg0, float unused1, float unused2, float arg1) {
 
 extern short D_0015FE24;   /* declared small so -G2 puts it in SDA */
 
-int MenuL03_IsStateWordZero(void) {
-    return *(int *)&D_0015FE24 == 0;
+int map_filter_l03_0(void) {
+    return *(int *)&menu_selection_count == 0;
 }
 
 extern unsigned char D_0013D4AC NOT_SDA;
 
-int MenuL04_HasSpecialItem1C(void) {
-    return D_0013D4AC != 0;
+int map_filter_l04_0(void) {
+    return menu_item_enabled_16 != 0;
 }
 
 extern unsigned char D_0013D4AD NOT_SDA;
 
-int MenuL04_HasSpecialItem1D(void) {
-    return D_0013D4AD != 0;
+int map_filter_l04_1(void) {
+    return menu_item_enabled_17 != 0;
 }
 
 extern unsigned char D_0013D4AE NOT_SDA;
 
-int MenuL04_HasSpecialItem1E(void) {
-    return D_0013D4AE != 0;
+int map_filter_l04_2(void) {
+    return menu_item_enabled_18 != 0;
 }
 
 extern unsigned char D_0013D4AF NOT_SDA;
 
-int MenuL04_HasSpecialItem1F(void) {
-    return D_0013D4AF != 0;
+int map_filter_l04_3(void) {
+    return menu_item_enabled_19 != 0;
 }
 
 extern unsigned char D_0013D4B5 NOT_SDA;
 
-int MenuL06_HasSpecialItem25(void) {
-    return D_0013D4B5 != 0;
+int map_filter_l06_0(void) {
+    return menu_item_enabled_25 != 0;
 }
 
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
@@ -202,18 +202,18 @@ extern f32 func_001F9D48_07408(union RegionVector *, union RegionVector *) __asm
 s32 func_00207408(s32 projected_x, s32 projected_y, f32 x, f32 y, f32 z);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/textbin/fun_00206bd8.c, passes_projected_region_callback_0. */
-s32 MenuL07_HitTest0(s32 projected_x, s32 projected_y, f32 x, f32 y, f32 z) {
+s32 map_filter_l07_0(s32 projected_x, s32 projected_y, f32 x, f32 y, f32 z) {
     s32 special_state;
 
-    if (menu_pointIsClockwise(projected_x, projected_y, 0x189, 0x16F, 0x87, 0xED)) {
-        if (menu_pointIsClockwise(projected_x, projected_y, 0x75, 0x146, 0x18B, 0x1CC) &&
-            menu_pointIsClockwise(projected_x, projected_y, 0x141, 0x130, 0xB0, 0x130)) {
+    if (point_is_clockwise(projected_x, projected_y, 0x189, 0x16F, 0x87, 0xED)) {
+        if (point_is_clockwise(projected_x, projected_y, 0x75, 0x146, 0x18B, 0x1CC) &&
+            point_is_clockwise(projected_x, projected_y, 0x141, 0x130, 0xB0, 0x130)) {
             if (43.9f <= z) {
                 return 1;
             }
             return 0;
         }
-    } else if (menu_pointIsClockwise(projected_x, projected_y, 0x191, 0xCD, 0xD2, 0x13B)) {
+    } else if (point_is_clockwise(projected_x, projected_y, 0x191, 0xCD, 0xD2, 0x13B)) {
         union RegionVector position;
         union RegionVector region_center;
 
@@ -226,7 +226,7 @@ s32 MenuL07_HitTest0(s32 projected_x, s32 projected_y, f32 x, f32 y, f32 z) {
         if (func_001F9D48_07408(&position, &region_center) <= 7.0f) {
             return 1;
         }
-        if (menu_pointIsClockwise(projected_x, projected_y, 0x142, 0x12A, 0x173, 0xFC) && D_001A04B0[0]) {
+        if (point_is_clockwise(projected_x, projected_y, 0x142, 0x12A, 0x173, 0xFC) && region_enabled[0]) {
             return 1;
         }
         return 0;
@@ -235,10 +235,10 @@ s32 MenuL07_HitTest0(s32 projected_x, s32 projected_y, f32 x, f32 y, f32 z) {
         if ((u32)(D_0013F450_07408.active_state - 0x11) < 2 || D_0013F450_07408.region_mode == 1) {
             special_state = 1;
         }
-        if (special_state && menu_pointIsClockwise(projected_x, projected_y, 0x12B, 0xB8, 0x13A, 0xF2) &&
-            menu_pointIsClockwise(projected_x, projected_y, 0x130, 0xED, 0x165, 0xCB) &&
-            menu_pointIsClockwise(projected_x, projected_y, 0x161, 0xDC, 0x13B, 0xB0) &&
-            menu_pointIsClockwise(projected_x, projected_y, 0x156, 0xA8, 0x119, 0xD1)) {
+        if (special_state && point_is_clockwise(projected_x, projected_y, 0x12B, 0xB8, 0x13A, 0xF2) &&
+            point_is_clockwise(projected_x, projected_y, 0x130, 0xED, 0x165, 0xCB) &&
+            point_is_clockwise(projected_x, projected_y, 0x161, 0xDC, 0x13B, 0xB0) &&
+            point_is_clockwise(projected_x, projected_y, 0x156, 0xA8, 0x119, 0xD1)) {
             return 1;
         }
     }
@@ -252,21 +252,21 @@ extern int D_001A04A8 NOT_SDA;
    the first box with arg1 >= 0x135 and D_001A04A8 set and arg3 >= 47.7,
    which can succeed even when `a` is true; or, only when `a` is true,
    all three of a second group of boxes hit. */
-int func_00207648(int arg0, int arg1, float unused1, float unused2,
+int map_filter_l07_1(int arg0, int arg1, float unused1, float unused2,
                    float arg3) {
     Menu13F450 *s = &D_0013F450;
     int a = s->unk208C == 17 || s->unk208C == 18 || s->unk12E4 == 1;
 
-    if (menu_pointIsClockwise(arg0, arg1, 0x93, 0x168, 0x182, 0x168) != 0
+    if (point_is_clockwise(arg0, arg1, 0x93, 0x168, 0x182, 0x168) != 0
         && arg1 >= 0x135 && D_001A04A8 != 0 && arg3 >= 47.7f) {
         return 1;
     }
     if (!a) {
         return 0;
     }
-    if (menu_pointIsClockwise(arg0, arg1, 0xC5, 0x9A, 0x13C, 0xE1) != 0
-        && menu_pointIsClockwise(arg0, arg1, 0xD6, 0xC3, 0x157, 0xC5) != 0
-        && menu_pointIsClockwise(arg0, arg1, 0x107, 0xDA, 0x171, 0xA0) != 0) {
+    if (point_is_clockwise(arg0, arg1, 0xC5, 0x9A, 0x13C, 0xE1) != 0
+        && point_is_clockwise(arg0, arg1, 0xD6, 0xC3, 0x157, 0xC5) != 0
+        && point_is_clockwise(arg0, arg1, 0x107, 0xDA, 0x171, 0xA0) != 0) {
         return 1;
     }
     return 0;
@@ -280,33 +280,33 @@ int func_00207648(int arg0, int arg1, float unused1, float unused2,
    it $s0 before the arguments are allocated, as retail has it. The two
    compound conditions (`&&` chain, `!a && !b`) keep the return values
    as branches instead of an sltu. */
-int MenuL07_HitTest2(int arg0, int arg1) {
+int map_filter_l07_2(int arg0, int arg1) {
     if (arg1 < 0xE9) {
-        if (menu_pointIsClockwise(arg0, arg1, 0x132, 0xA0, 0x15F, 0xD8)
-            && menu_pointIsClockwise(arg0, arg1, 0x14D, 0xD8, 0x181, 0x9A)
-            && menu_pointIsClockwise(arg0, arg1, 0x182, 0xB4, 0x137, 0x93)
-            && menu_pointIsClockwise(arg0, arg1, 0x157, 0x8C, 0x130, 0xAA)) {
+        if (point_is_clockwise(arg0, arg1, 0x132, 0xA0, 0x15F, 0xD8)
+            && point_is_clockwise(arg0, arg1, 0x14D, 0xD8, 0x181, 0x9A)
+            && point_is_clockwise(arg0, arg1, 0x182, 0xB4, 0x137, 0x93)
+            && point_is_clockwise(arg0, arg1, 0x157, 0x8C, 0x130, 0xAA)) {
             return 1;
         }
         return 0;
     }
     {
-        int a = menu_pointIsClockwise(arg0, arg1, 0x8F, 0x115, 0x148, 0x14B);
-        int b = menu_pointIsClockwise(arg0, arg1, 0xE7, 0x108, 0x127, 0x164);
+        int a = point_is_clockwise(arg0, arg1, 0x8F, 0x115, 0x148, 0x14B);
+        int b = point_is_clockwise(arg0, arg1, 0xE7, 0x108, 0x127, 0x164);
         if (a == 0 && b == 0) {
             return 0;
         }
     }
     {
-        int a = menu_pointIsClockwise(arg0, arg1, 0xED, 0x15F, 0x154, 0x10E);
-        int b = menu_pointIsClockwise(arg0, arg1, 0xA2, 0x12B, 0x16F, 0x147);
+        int a = point_is_clockwise(arg0, arg1, 0xED, 0x15F, 0x154, 0x10E);
+        int b = point_is_clockwise(arg0, arg1, 0xA2, 0x12B, 0x16F, 0x147);
         if (a == 0 && b == 0) {
             return 0;
         }
     }
     {
-        int a = menu_pointIsClockwise(arg0, arg1, 0x132, 0x163, 0x141, 0xCC);
-        int b = menu_pointIsClockwise(arg0, arg1, 0xC2, 0x108, 0x1A0, 0x12E);
+        int a = point_is_clockwise(arg0, arg1, 0x132, 0x163, 0x141, 0xCC);
+        int b = point_is_clockwise(arg0, arg1, 0xC2, 0x108, 0x1A0, 0x12E);
         if (!a && !b) {
             return 0;
         }
@@ -323,7 +323,7 @@ extern int D_001A04BC NOT_SDA;
    needs its own `return 0`: jump.c then sets v0 = 1 before the test
    there too, which gives retail's registers and lets the arm be
    cross-jumped into the second one. */
-int MenuL07_HitTest3(int arg0, int arg1, float unused1, float unused2, float arg3) {
+int map_filter_l07_3(int arg0, int arg1, float unused1, float unused2, float arg3) {
     if (arg1 < 0xBB) {
         Menu13F450 *s = &D_0013F450;
         int a = s->unk208C == 17 || s->unk208C == 18 || s->unk12E4 == 1;
@@ -334,7 +334,7 @@ int MenuL07_HitTest3(int arg0, int arg1, float unused1, float unused2, float arg
         return 0;
     }
     if (arg3 >= 51.5f && arg3 <= 54.0f
-        && menu_pointIsClockwise(arg0, arg1, 0x10A, 0xE5, 0x124, 0xF9) != 0) {
+        && point_is_clockwise(arg0, arg1, 0x10A, 0xE5, 0x124, 0xF9) != 0) {
         return 1;
     }
     return 0;
@@ -348,9 +348,9 @@ extern int D_001A04B4 NOT_SDA;
    The last store goes through a short: jump.c folds `r = 0; if (b) r = 1;`
    into an sltu only when the store sets a whole register, and a subreg
    store keeps retail's beqz. */
-int MenuL07_HitTest4(int x1, int y1) {
-    int a = menu_pointIsClockwise(x1, y1, 0x99, 0xED, 0x160, 0x117);
-    int b = menu_pointIsClockwise(x1, y1, 0x10E, 0xF7, 0x13D, 0x119);
+int map_filter_l07_4(int x1, int y1) {
+    int a = point_is_clockwise(x1, y1, 0x99, 0xED, 0x160, 0x117);
+    int b = point_is_clockwise(x1, y1, 0x10E, 0xF7, 0x13D, 0x119);
     int r = 0;
 
     if (D_001A04B4 != 0) {
@@ -372,7 +372,7 @@ extern int D_001A04B8 NOT_SDA;
    [73.5, 80] with D_001A04C0 set, or for arg1 >= 0x9D in [51.5, 54] with
    D_001A04B8 set. Written as `<`/`>` rejections so they compile to retail's
    c.lt/bc1t; the second arm's `return 0` cross-jumps into the first's. */
-int MenuL07_HitTest5(void *arg0, int arg1, float unused1, float unused2, float arg3) {
+int map_filter_l07_5(void *arg0, int arg1, float unused1, float unused2, float arg3) {
     if (arg1 < 0x9D) {
         if (arg3 < 73.5f || arg3 > 80.0f || D_001A04C0 == 0) {
             return 0;
@@ -393,7 +393,7 @@ extern int func_00209048(int, int, int, int, int, int);
    D_001A04AC set and arg3 >= 47.7; otherwise returns `a` directly when
    arg1 < 0xC1, else `a` unless func_00209048's box test hits (which
    clears it to 0). */
-int MenuL07_HitTest6(int arg0, int arg1, float unused1, float unused2, float arg3) {
+int map_filter_l07_6(int arg0, int arg1, float unused1, float unused2, float arg3) {
     Menu13F450 *s = &D_0013F450;
     int a = s->unk208C == 17 || s->unk208C == 18 || s->unk12E4 == 1;
     int result;
@@ -408,7 +408,7 @@ int MenuL07_HitTest6(int arg0, int arg1, float unused1, float unused2, float arg
         return a;
     }
     result = a;
-    if (menu_pointIsClockwise(arg0, arg1, 0xD9, 0xB8, 0x156, 0xD2) != 0) {
+    if (point_is_clockwise(arg0, arg1, 0xD9, 0xB8, 0x156, 0xD2) != 0) {
         result = 0;
     }
     return result;
@@ -417,7 +417,7 @@ int MenuL07_HitTest6(int arg0, int arg1, float unused1, float unused2, float arg
 /* Menu hit test (func_00207200's family): hits unless the menu state
    blocks it, arg3 ($f14) is below 71.5, or the first box is hit, and
    then only if the second box is not. */
-int MenuL07_HitTest7(int arg0, int arg1, float unused1, float unused2, float arg3) {
+int map_filter_l07_7(int arg0, int arg1, float unused1, float unused2, float arg3) {
     Menu13F450 *s = &D_0013F450;
     int a = s->unk208C == 17 || s->unk208C == 18 || s->unk12E4 == 1;
 
@@ -427,26 +427,26 @@ int MenuL07_HitTest7(int arg0, int arg1, float unused1, float unused2, float arg
     if (arg3 < 71.5f) {
         return 0;
     }
-    if (menu_pointIsClockwise(arg0, arg1, 0x131, 0xE2, 0xC6, 0x93) != 0) {
+    if (point_is_clockwise(arg0, arg1, 0x131, 0xE2, 0xC6, 0x93) != 0) {
         return 0;
     }
-    return menu_pointIsClockwise(arg0, arg1, 0x190, 0x89, 0xD1, 0xFB) == 0;
+    return point_is_clockwise(arg0, arg1, 0x190, 0x89, 0xD1, 0xFB) == 0;
 }
 
 extern unsigned char D_0013D4C5 NOT_SDA;
 extern int D_001414DC NOT_SDA;
 
-int MenuL08_HitTest0(int arg0, int arg1) {
+int map_filter_l08_0(int arg0, int arg1) {
     if (arg1 >= 0x101) {
         return D_001414DC == 0xF;
     }
-    return D_0013D4C5 != 0;
+    return menu_item_enabled_41 != 0;
 }
 
 /* The two unused float parameters put the threshold's argument in
    $f14 (floats count consecutively from $f12). The nops after the mtc1
    and the compare are ps2eeas's (tools/ps2eeas_nops.py). */
-int MenuL08_HitTest1(int arg0, float unused1, float unused2, float arg1) {
+int map_filter_l08_1(int arg0, float unused1, float unused2, float arg1) {
     if (arg0 < 0xE0) {
         return (arg1 >= 47.75f) ? 1 : 0;
     }
@@ -455,7 +455,7 @@ int MenuL08_HitTest1(int arg0, float unused1, float unused2, float arg1) {
 
 /* `(a && b) ? 1 : 0` gives retail's bc1f then bc1tl; the other arm is
    a plain `? 1 : 0`. */
-int MenuL08_HitTest2(int arg0, float unused1, float unused2, float arg1) {
+int map_filter_l08_2(int arg0, float unused1, float unused2, float arg1) {
     if (arg0 < 0xE0) {
         return (arg1 >= 44.0f && arg1 <= 45.0f) ? 1 : 0;
     }
@@ -463,7 +463,7 @@ int MenuL08_HitTest2(int arg0, float unused1, float unused2, float arg1) {
 }
 
 /* func_00207D38's twin. */
-int MenuL08_HitTest3(int arg0, float unused1, float unused2, float arg1) {
+int map_filter_l08_3(int arg0, float unused1, float unused2, float arg1) {
     if (arg0 < 0xE0) {
         return (arg1 >= 42.0f && arg1 <= 43.0f) ? 1 : 0;
     }
@@ -473,7 +473,7 @@ int MenuL08_HitTest3(int arg0, float unused1, float unused2, float arg1) {
 /* Returning the compare as `? 1 : 0` gives bc1t with the `li 1` in its
    slot; folded into `&&` it becomes bc1tl. The two nops, after the mtc1
    and after the compare, are ps2eeas's (tools/ps2eeas_nops.py). */
-int MenuL08_HitTest4(int arg0, float unused1, float unused2, float arg1) {
+int map_filter_l08_4(int arg0, float unused1, float unused2, float arg1) {
     if (arg0 >= 0xE0) {
         return 0;
     }
@@ -487,28 +487,28 @@ extern unsigned char D_0013D4D3 NOT_SDA;
 extern unsigned char D_0013D4D4 NOT_SDA;
 extern unsigned char D_0013D4D5 NOT_SDA;
 
-int MenuL08_HasSpecialItem30(void) {
-    return D_0013D4C0 != 0;
+int map_filter_l08_5(void) {
+    return menu_item_enabled_36 != 0;
 }
 
-int MenuL08_HasSpecialItem31(void) {
-    return D_0013D4C1 != 0;
+int map_filter_l08_6(void) {
+    return menu_item_enabled_37 != 0;
 }
 
-int MenuL08_HasSpecialItem32(void) {
-    return D_0013D4C2 != 0;
+int map_filter_l08_7(void) {
+    return menu_item_enabled_38 != 0;
 }
 
-int MenuL09_HasSpecialItem43(void) {
-    return D_0013D4D3 != 0;
+int map_filter_l09_0(void) {
+    return menu_item_enabled_55 != 0;
 }
 
-int MenuL09_HasSpecialItem44(void) {
-    return D_0013D4D4 != 0;
+int map_filter_l09_1(void) {
+    return menu_item_enabled_56 != 0;
 }
 
-int MenuL09_HasSpecialItem45(void) {
-    return D_0013D4D5 != 0;
+int map_filter_l09_2(void) {
+    return menu_item_enabled_57 != 0;
 }
 
 extern unsigned char D_0013D4E0;
@@ -516,7 +516,7 @@ extern unsigned char D_0013D4E0;
 extern unsigned char D_0013D4E0_far __asm__("D_0013D4E0") NOT_SDA;
 /* The recorded C was right; the two ps2eeas nops were the only
    residual. */
-int MenuL10_HitTest0(int arg0, float unused1, float unused2, float arg1) {
+int map_filter_l10_0(int arg0, float unused1, float unused2, float arg1) {
     if (arg0 >= 0xBE) return D_0013D4E0_far != 0;
     return (arg1 >= 58.5f) ? 1 : 0;
 }
@@ -527,29 +527,29 @@ extern unsigned char D_0013D4DE NOT_SDA;
 extern unsigned char D_0013D4DF NOT_SDA;
 extern unsigned char D_0013D4E1 NOT_SDA;
 
-int MenuL10_HasSpecialItem4C(void) {
-    return D_0013D4DC != 0;
+int map_filter_l10_1(void) {
+    return menu_item_enabled_64 != 0;
 }
 
-int MenuL10_HasSpecialItem4D(void) {
-    return D_0013D4DD != 0;
+int map_filter_l10_2(void) {
+    return menu_item_enabled_65 != 0;
 }
 
-int MenuL10_HasSpecialItem4E(void) {
-    return D_0013D4DE != 0;
+int map_filter_l10_3(void) {
+    return menu_item_enabled_66 != 0;
 }
 
-int MenuL10_HasSpecialItem4F(void) {
-    return D_0013D4DF != 0;
+int map_filter_l10_4(void) {
+    return menu_item_enabled_67 != 0;
 }
 
-int MenuL10_HasSpecialItem51(void) {
-    return D_0013D4E1 != 0;
+int map_filter_l10_5(void) {
+    return menu_item_enabled_69 != 0;
 }
 
 extern unsigned char D_0013D4E6 NOT_SDA;
 
-int MenuL11_HitTest0(int arg0, float unused1, float unused2, float arg1) {
+int map_filter_l11_0(int arg0, float unused1, float unused2, float arg1) {
     if (arg0 < 0xDD) {
         return arg1 >= 232.0f && arg1 <= 235.0f && D_0013D4E6 != 0;
     }
@@ -558,7 +558,7 @@ int MenuL11_HitTest0(int arg0, float unused1, float unused2, float arg1) {
 
 extern unsigned char D_0013D4E7 NOT_SDA;
 
-int MenuL11_HitTest1(int arg0, float unused1, float unused2, float arg1) {
+int map_filter_l11_1(int arg0, float unused1, float unused2, float arg1) {
     if (arg0 < 0xDD) {
         return (arg1 >= 242.0f) ? 1 : 0;
     }
@@ -567,7 +567,7 @@ int MenuL11_HitTest1(int arg0, float unused1, float unused2, float arg1) {
 
 extern unsigned char D_0013D4E8 NOT_SDA;
 
-int MenuL11_HitTest2(int arg0, float unused1, float unused2, float arg1) {
+int map_filter_l11_2(int arg0, float unused1, float unused2, float arg1) {
     if (arg0 < 0xDD) {
         return (arg1 >= 238.0f && arg1 <= 241.0f) ? 1 : 0;
     }
@@ -579,7 +579,7 @@ extern unsigned char D_0013D4EA NOT_SDA;
 /* The Menu13F450 state test of func_00207340, computed up front (retail
    evaluates it before the arg0 branch), gates the arg0 < 0x15F arm; the
    other arm is func_00208160's second test with D_0013D4EA. */
-int MenuL11_HitTest3(int arg0, float unused1, float unused2, float arg1) {
+int map_filter_l11_3(int arg0, float unused1, float unused2, float arg1) {
     Menu13F450 *s = &D_0013F450;
     int a = s->unk208C == 17 || s->unk208C == 18 || s->unk12E4 == 1;
 
@@ -591,7 +591,7 @@ int MenuL11_HitTest3(int arg0, float unused1, float unused2, float arg1) {
 
 extern unsigned char D_0013D4EB NOT_SDA;
 
-int MenuL11_HitTest4(int arg0, float unused1, float unused2, float arg1) {
+int map_filter_l11_4(int arg0, float unused1, float unused2, float arg1) {
     if (arg0 < 0x15F) {
         return (arg1 >= 228.0f && arg1 <= 230.0f) ? 1 : 0;
     }
@@ -600,8 +600,8 @@ int MenuL11_HitTest4(int arg0, float unused1, float unused2, float arg1) {
 
 extern unsigned char D_0013D4E9 NOT_SDA;
 
-int MenuL11_HasSpecialItem59(void) {
-    return D_0013D4E9 != 0;
+int map_filter_l11_5(void) {
+    return menu_item_enabled_77 != 0;
 }
 
 /* arg0 is unused; the two unused float parameters put arg3 in $f14
@@ -609,7 +609,7 @@ int MenuL11_HasSpecialItem59(void) {
    func_00207CE0). With `r` defaulting to 1, reorg turns the reset into
    retail's bc1fl with `r = 0` in its delay slot. The nop after the mtc1
    is ps2eeas's (tools/ps2eeas_nops.py). */
-int MenuL12_HitTest0(void *arg0, int arg1, float unused1, float unused2, float arg3) {
+int map_filter_l12_0(void *arg0, int arg1, float unused1, float unused2, float arg3) {
     int r = 1;
 
     if (arg1 < 0x141 && !(63.5f <= arg3)) {
@@ -622,7 +622,7 @@ int MenuL12_IsAlwaysActive1(void) {
     return 1;
 }
 
-int MenuL12_IsAlwaysActive2(void) {
+int map_filter_l12_2(void) {
     return 1;
 }
 
@@ -633,7 +633,7 @@ extern float func_001F9D48(float *, float *);
    while D_001A04A8 is set. Both vectors are 16-byte aligned like the
    SDK's sceVu0FVECTOR; a partial initializer then clears the whole
    quadword with one por/sq (a plain float[4] gets a memset call). */
-int MenuL15_HitTest0(int x, int y) {
+int map_filter_l15_0(int x, int y) {
     if (D_001A04A8 == 0) {
         FVec4 p = { (float)x, (float)y };
         FVec4 c = { 0 };
@@ -647,30 +647,30 @@ int MenuL15_HitTest0(int x, int y) {
 
 extern unsigned char D_0013D502 NOT_SDA;
 
-int MenuL16_HasSpecialItem72(void) {
-    return D_0013D502 != 0;
+int map_filter_l16_0(void) {
+    return menu_item_enabled_102 != 0;
 }
 
 extern unsigned char D_0013D503 NOT_SDA;
 
-int MenuL16_HasSpecialItem73(void) {
-    return D_0013D503 != 0;
+int map_filter_l16_1(void) {
+    return menu_item_enabled_103 != 0;
 }
 
 extern unsigned char D_0013D504 NOT_SDA;
 extern unsigned char D_0013D505 NOT_SDA;
 extern unsigned char D_0013D50F NOT_SDA;
 
-int MenuL16_HasSpecialItem74(void) {
-    return D_0013D504 != 0;
+int map_filter_l16_2(void) {
+    return menu_item_enabled_104 != 0;
 }
 
-int MenuL16_HasSpecialItem75(void) {
-    return D_0013D505 != 0;
+int map_filter_l16_3(void) {
+    return menu_item_enabled_105 != 0;
 }
 
-int MenuL18_HasSpecialItem7F(void) {
-    return D_0013D50F != 0;
+int map_filter_l18_0(void) {
+    return menu_item_enabled_115 != 0;
 }
 
 extern int D_001A01F0[];
@@ -689,17 +689,17 @@ extern int D_0015EE84 MACRO_ADDR;
 /* Read a sector into arg0 from the open file (D_001A01F0 slot state) or
    clear it when none is open, and track the largest read per slot in
    D_0013D668. Adapted from Lombyte (MIT) for PAL. */
-void Menu_ReadSector(int arg0) {
+void save_map_coverage(int arg0) {
     int n;
 
     DebugEnter_Nop();
-    if (D_001A01F0[0xA] == 0) {
+    if (level_map_selection[0xA] == 0) {
         FastMemSet((void *)arg0, 0, 0x800);
         return;
     }
-    n = func_001FAA28((void *)arg0, 0x800, D_001A01F0[5], D_001A01F0[3]);
+    n = func_001FAA28((void *)arg0, 0x800, level_map_selection[5], level_map_selection[3]);
     if (n == -1) {
-        CondenseBitmapTo1bpp((void *)arg0);
+        downsample_map_coverage((void *)arg0);
     }
     if (D_0013D668[D_0015EE84] < n) {
         D_0013D668[D_0015EE84] = n;
@@ -710,7 +710,7 @@ extern int D_001A0218[] NOT_SDA;
 extern void func_00208458(void *, unsigned char *, int);
 extern void func_00208688(void *, unsigned char *);
 
-void UnpackOcclusionMap(void *arg0, unsigned char *arg1, int arg2) {
+void load_map_chunk(void *arg0, unsigned char *arg1, int arg2) {
     /* func_00209040 is empty in retail and takes no arguments; $4/$5/$6
        still hold our own incoming arguments across it, which is why retail
        saves them into $16-$18 rather than reloading. */
@@ -719,14 +719,14 @@ void UnpackOcclusionMap(void *arg0, unsigned char *arg1, int arg2) {
         return;
     }
     if (*arg1 & 1) {
-        DecodeOcclusionMap(arg0, arg1, arg2);
+        decode_compressed_occlusion_map(arg0, arg1, arg2);
     } else {
-        ExpandBitmapTo4bpp(arg0, arg1);
+        expand_map_coverage(arg0, arg1);
     }
 }
 
 /* Decodes the run-length compressed 1-bit occlusion map into 0x8000 bytes at dst: runs are expanded one byte per bit in the scratchpad, packed eight to a byte and copied out 0x400 bytes at a time. */
-void DecodeOcclusionMap(void *dst, unsigned char *ctrl, int spans) {
+void decode_compressed_occlusion_map(void *dst, unsigned char *ctrl, int spans) {
     unsigned char *dst_end;
     unsigned char *end;
     unsigned char *span;
@@ -810,7 +810,7 @@ void DecodeOcclusionMap(void *dst, unsigned char *ctrl, int spans) {
    per source row). The first bit is a plain store over the zeroed entry
    (retail's store-in-delay-slot), and the row buffer is filled through
    a block-local pointer, which gives retail's separate buffer copies. */
-void ExpandBitmapTo4bpp(void *dst, unsigned char *src) {
+void expand_map_coverage(void *dst, unsigned char *src) {
     unsigned int table[256];
     unsigned int rowbuf[16];
     int i, j, row;
@@ -875,7 +875,7 @@ extern unsigned char *D_001A01FC;
    stack) are summed, and a column with 8 or more set bits becomes a
    set bit, packed eight columns to a byte. The first byte is then
    flagged with 0x02 and bit 0 cleared. */
-void CondenseBitmapTo1bpp(void *arg0) {
+void downsample_map_coverage(void *arg0) {
     unsigned char *dst = arg0;
     int acc[128];
     NibbleBits bits;
@@ -927,13 +927,13 @@ extern int func_00116248_2(void *, char *) __asm__("func_00116248");
    serves both the test and the copy), and each block that reads
    D_001A01F0 has its own char * local, which gives retail's kept %hi
    and rebuilt %lo. */
-void FormatMenuItemText(int bank, unsigned char *dst) {
+void func_00208AB0(int bank, unsigned char *dst) {
     unsigned char buf[16];
     unsigned char *src;
     unsigned char *p;
     char *t;
 
-    t = (char *)D_001A01F0;
+    t = (char *)level_map_selection;
     src = func_001FE540_id(*(short *)(*(char **)(t + 0x20) + bank * 0x28 + 0xA));
     p = buf;
     if (src == 0) {
@@ -948,9 +948,9 @@ void FormatMenuItemText(int bank, unsigned char *dst) {
     }
     src++;
     if (*src == 'b') {
-        char *t2 = (char *)D_001A01F0;
+        char *t2 = (char *)level_map_selection;
         func_00116248_3(buf, D_0015FE60,
-                        *(int *)(D_001E02B0 + *(short *)(*(char **)(t2 + 0x20) + bank * 0x28 + 0xC) * 0x18));
+                        *(int *)(vendor_item_prices + *(short *)(*(char **)(t2 + 0x20) + bank * 0x28 + 0xC) * 0x18));
     } else {
         func_00116248_2(buf, D_0015FE68);
     }
@@ -977,7 +977,7 @@ extern OrientEntry D_0019EA70[];
    D_0015EE84"; anything out of [0,0x13) collapses to row 0. Row 6 with
    the +100 variant blends against fixed constants instead of the
    generic per-row formula. */
-void WorldToMapCoords(float *out0, float *out1, int arg2, float arg3, float arg4) {
+void func_00208C38(float *out0, float *out1, int arg2, float arg3, float arg4) {
     int idx;
     int flag = 0;
 
@@ -998,13 +998,13 @@ void WorldToMapCoords(float *out0, float *out1, int arg2, float arg3, float arg4
     }
 
     if (idx == 6 && flag) {
-        *out0 = (D_0019EA70[6].d * arg4 + 1053.0f) * (1.0f / 512.0f);
-        *out1 = (740.0f - D_0019EA70[6].b * arg3) * (1.0f / 512.0f);
+        *out0 = (level_map_transforms[6].d * arg4 + 1053.0f) * (1.0f / 512.0f);
+        *out1 = (740.0f - level_map_transforms[6].b * arg3) * (1.0f / 512.0f);
         return;
     }
 
-    *out0 = (D_0019EA70[idx].a + D_0019EA70[idx].b * arg3) * (1.0f / 512.0f);
-    *out1 = (D_0019EA70[idx].c + D_0019EA70[idx].d * arg4) * (1.0f / 512.0f);
+    *out0 = (level_map_transforms[idx].a + level_map_transforms[idx].b * arg3) * (1.0f / 512.0f);
+    *out1 = (level_map_transforms[idx].c + level_map_transforms[idx].d * arg4) * (1.0f / 512.0f);
 }
 
 LINKER_REMNANT("asm/remnants/text", func_00208D30);
@@ -1023,17 +1023,17 @@ extern void func_00201640(int, int, int, int, long, int);
 extern int func_00200198(int, int);
 extern void func_002008B8(int, int, int, int, int, int);
 
-void DrawMapMarkers(int left, int top, int right, int bottom) {
+void func_00208D38(int left, int top, int right, int bottom) {
     float nx;
     float ny;
-    int n = D_001A01F0[0x2C];
-    MapMarker *m = (MapMarker *)D_001A01F0[7];
+    int n = level_map_selection[0x2C];
+    MapMarker *m = (MapMarker *)level_map_selection[7];
 
     while (n-- != 0) {
         int sx;
         int sy;
 
-        WorldToMapCoords(&nx, &ny, D_0015EE84, m->x, m->y);
+        func_00208C38(&nx, &ny, D_0015EE84, m->x, m->y);
         sx = left + (int)((float)(right - left) * nx);
         sy = top + (int)((float)(bottom - top) * ny);
         if (sx < -0x199 || sy < -0x199 || sx >= 0x219A || sy >= 0x1B9A) {
@@ -1041,11 +1041,11 @@ void DrawMapMarkers(int left, int top, int right, int bottom) {
             continue;
         }
         if (m->icon == -1) {
-            func_00201640(sx - D_0015FE70, sy - D_0015FE70, sx + D_0015FE70,
-                          sy + D_0015FE70, m->sub, 1);
+            func_00201640(sx - marker_half_size, sy - marker_half_size, sx + marker_half_size,
+                          sy + marker_half_size, m->sub, 1);
         } else {
             int tex = GetIconFrame(m->icon, m->sub);
-            int *st = D_001A01F0;
+            int *st = level_map_selection;
             float *sc = (float *)(st + 0x2D);   /* the zoom scale table, at 0xB4 of the same block (the assembly's D_001A02A4) */
             char *arena = D_0019A4E8_raw;
             unsigned char *e = (unsigned char *)(*(char **)(arena + 0x24)
@@ -1053,7 +1053,7 @@ void DrawMapMarkers(int left, int top, int right, int bottom) {
             float scale = (2.0f * sc[st[0x89]] + 5.0f) / 13.0f;
             float w = scale * (float)(1 << (e[6] + 4));
 
-            DrawHudSpriteSubpixel(tex, sx - (int)(scale * (float)(1 << (e[6] + 3))),
+            func_002008B8(tex, sx - (int)(scale * (float)(1 << (e[6] + 3))),
                           sy - (int)(scale * (float)(1 << (e[7] + 3))),
                           (int)w, (int)(scale * (float)(1 << (e[7] + 4))), 0x80);
         }
@@ -1069,13 +1069,13 @@ extern char D_0013D6B8[];
    D_0015EE84's objects in D_00199578 into the 16-byte slots at
    D_0013D6B8; the index range is D_001E06B8[i]..[i + 1]. Binding the
    two bases to locals in retail's order orders their %hi halves. */
-void Map_CopyObjectPositions(void) {
+void copy_level_object_positions(void) {
     int i = D_0015EE84;
     if ((unsigned int)i < 0x13) {
         int start = D_001E06B8[i];
         int end = D_001E06B8[i + 1];
         if (start < end) {
-            void **sbase = D_00199578;
+            void **sbase = menu_action_messages;
             char *dbase = D_0013D6B8;
             float *dst = (float *)(dbase + start * 16);
             void **src = &sbase[start];
@@ -1132,7 +1132,7 @@ void DebugEnter_Nop(void) {
    `srl $v0,$v0,31`; retail has `slti $v0,$v0,0`, which is what you get
    when the comparison feeds a branch rather than being the return value
    itself. That one instruction was this function's entire residual. */
-int menu_pointIsClockwise(int x1, int y1, int x0, int y0, int x2, int y2) {
+int point_is_clockwise(int x1, int y1, int x0, int y0, int x2, int y2) {
     int cross;
 
     x2 -= x0;
@@ -1157,7 +1157,7 @@ extern void (*D_001A0538[])(void);
    D_001A0538. Bits 0x80 and 0x100 of D_0015EFB4 request states 0x15 and
    0x14; D_00161380 counts calls since the state last changed. */
 void Menu_RunStateHandler(void) {
-    char *b = D_0013D390;
+    char *b = memory_card_state;
     int old;
 
     if (*(int *)(b + 0xEC) != 0 || *(int *)(b + 0x1C) != 0) {
@@ -1192,7 +1192,7 @@ extern int D_0013D390_i[] __asm__("D_0013D390");
 
 /* Sets menu state 3, clears the record's word at +0xFC and copies +0xC4
    into +0x1C. */
-void CardMenu_State00Reset(void) {
+void save_card_state_init(void) {
     D_0015EFB0 = 3;
     D_0013D390_i[0x3F] = 0;
     D_0013D390_i[0x07] = D_0013D390_i[0x31];
@@ -1203,12 +1203,12 @@ void CardMenu_State00Reset(void) {
    D_0013D390 record. The cross-jumped `b` back into the 0x80 arm is
    one GNU as pads as a short loop and ps2eeas did not;
    tools/ps2eeas_nops.py writes it as a .word. */
-void CardMenu_State01AdvanceOnInput(void) {
+void save_card_state_good_save(void) {
     int flags = D_0015EFB4;
     char *b;
     int nf;
     D_0015EFB4 = flags & ~4;
-    b = D_0013D390;
+    b = memory_card_state;
     nf = D_0015EFB4 & ~2;
     D_0015EFB4 = nf;
     if (*(int *)(b + 0xFC) == 0) {
@@ -1237,8 +1237,8 @@ void CardMenu_State01AdvanceOnInput(void) {
     }
 }
 
-void CardMenu_State02ReleaseSlot(void) {
-    char *b = D_0013D390;
+void save_card_state_warning(void) {
+    char *b = memory_card_state;
     char *base = b + 0xB0;
     int idx = *(int *)(b + 0xCC);
     int *slot = (int *)(base + idx * 0xC0);
@@ -1251,7 +1251,7 @@ void CardMenu_State02ReleaseSlot(void) {
 }
 
 void CardMenu_State03ClearSlots(void) {
-    char *b = D_0013D390;
+    char *b = memory_card_state;
     char *base = b + 0xB0;
     int idx = *(int *)(b + 0xCC);
     int *slot;
@@ -1270,7 +1270,7 @@ void CardMenu_State03ClearSlots(void) {
 }
 
 void CardMenu_State04AdvanceOnStatus(void) {
-    char *b = D_0013D390;
+    char *b = memory_card_state;
     int v;
     D_0015EFB4 &= ~0x20;
     if (*(int *)(b + 8) != 2) {
@@ -1287,7 +1287,7 @@ void CardMenu_State04AdvanceOnStatus(void) {
     }
 }
 
-void CardMenu_State05WaitFlag2(void) {
+void save_card_state_unformatted(void) {
     if (D_0013D3AC != -2) {
         D_0015EFB0 = 3;
         return;
@@ -1299,7 +1299,7 @@ void CardMenu_State05WaitFlag2(void) {
 
 extern int D_0015F6C8 MACRO_ADDR;
 
-void CardMenu_State06AdvanceOnFlags(void) {
+void save_card_state_prompt_format(void) {
     int flags;
     if (D_0013D3AC != -2) {
         D_0015EFB0 = 3;
@@ -1308,7 +1308,7 @@ void CardMenu_State06AdvanceOnFlags(void) {
     flags = D_0015EFB4;
     if (flags & 0x20) {
         D_0015EFB4 = flags ^ 0x20;
-        if (D_0015F6C8 != 0) {
+        if (boot_level_active != 0) {
             D_0015EFB0 = 0x17;
             return;
         }
@@ -1321,8 +1321,8 @@ void CardMenu_State06AdvanceOnFlags(void) {
     }
 }
 
-void menu_post_preparePageOpen(void) {
-    char *s = D_0013D390;
+void save_card_state_format_pending(void) {
+    char *s = memory_card_state;
     *(int *)(s + 0x1C) = 0;
     if (*(int *)(s + 0xE4) < 0) {
         *(int *)(s + 0xE8) = 0;
@@ -1331,8 +1331,8 @@ void menu_post_preparePageOpen(void) {
     D_0015EFB0 = 8;
 }
 
-void CardMenu_State08StartFromStatus(void) {
-    char *s = D_0013D390;
+void save_card_state_formatting(void) {
+    char *s = memory_card_state;
     if (*(int *)(s + 0xDC) == 2 && *(int *)(s + 0xE4) < 0) {
         if (*(int *)(s + 0xEC) != 0) {
             D_0015EFB0 = 0x11;
@@ -1343,7 +1343,7 @@ void CardMenu_State08StartFromStatus(void) {
     }
 }
 
-void CardMenu_State09WaitFlags(void) {
+void save_card_state_formatted(void) {
     if (D_0013D3AC != 0) {
         D_0015EFB0 = 3;
         return;
@@ -1353,8 +1353,8 @@ void CardMenu_State09WaitFlags(void) {
     }
 }
 
-void CardMenu_State10BeginSlot7(void) {
-    char *s = D_0013D390;
+void save_card_state_check_save(void) {
+    char *s = memory_card_state;
     if (*(int *)(s + 0xDC) == 2 && *(int *)(s + 0xE4) < 0) {
         *(int *)(s + 0xE4) = 7;
         *(int *)(s + 0xE8) = 0;
@@ -1374,7 +1374,7 @@ extern char D_0013D390[];
    way round). Then it re-reads the record fresh and sets D_0015EFB0
    (the next-state word) from unk1C/unkEC/unk14/unkC+unkAC. */
 void CardMenu_State11MarkSlotChoose(void) {
-    char *b = D_0013D390;
+    char *b = memory_card_state;
     int v;
     if (*(int *)(b + 0xDC) >= 3 || *(int *)(b + 0xE4) >= 0) {
         char *base = b + 0xB0;
@@ -1384,7 +1384,7 @@ void CardMenu_State11MarkSlotChoose(void) {
             *slot = 2;
         }
     }
-    b = D_0013D390;
+    b = memory_card_state;
     if (*(int *)(b + 0x1C) < -1 || *(int *)(b + 0xEC) != 0) {
         D_0015EFB0 = 3;
         return;
@@ -1403,7 +1403,7 @@ void CardMenu_State11MarkSlotChoose(void) {
     }
 }
 
-void CardMenu_State12WaitFlag2(void) {
+void save_card_state_no_save(void) {
     if (D_0013D3AC != 0) {
         D_0015EFB0 = 3;
         return;
@@ -1413,7 +1413,7 @@ void CardMenu_State12WaitFlag2(void) {
     }
 }
 
-void CardMenu_State13AdvanceOnFlags(void) {
+void save_card_state_prompt_create_save(void) {
     int flags;
     if (D_0013D3AC != 0) {
         D_0015EFB0 = 3;
@@ -1422,7 +1422,7 @@ void CardMenu_State13AdvanceOnFlags(void) {
     flags = D_0015EFB4;
     if (flags & 0x20) {
         D_0015EFB4 = flags ^ 0x20;
-        if (D_0015F6C8 != 0) {
+        if (boot_level_active != 0) {
             D_0015EFB0 = 0x18;
             return;
         }
@@ -1435,8 +1435,8 @@ void CardMenu_State13AdvanceOnFlags(void) {
     }
 }
 
-void CardMenu_State14BeginSlot9(void) {
-    char *s = D_0013D390;
+void save_card_state_create_save_pending(void) {
+    char *s = memory_card_state;
     if (*(int *)(s + 0xDC) == 2 && *(int *)(s + 0xE4) < 0) {
         *(int *)(s + 0xE4) = 9;
         *(int *)(s + 0xE8) = 0;
@@ -1444,8 +1444,8 @@ void CardMenu_State14BeginSlot9(void) {
     }
 }
 
-void CardMenu_State15AdvanceOrAlternate(void) {
-    char *s = D_0013D390;
+void save_card_state_creating_save(void) {
+    char *s = memory_card_state;
     if (*(int *)(s + 0xDC) == 2 && *(int *)(s + 0xE4) < 0) {
         if (*(int *)(s + 0xEC) != 0) {
             D_0015EFB0 = 0x12;
@@ -1483,7 +1483,7 @@ void CardMenu_State16NextState(void) {
         D_0015EFB4 = (flags ^ 0x100) | 0x40;
         return;
     }
-    b = D_0013D390;
+    b = memory_card_state;
     if (*(int *)(b + 0x1C) != 0) {
         D_0015EFB0 = 3;
         return;
@@ -1494,8 +1494,8 @@ void CardMenu_State16NextState(void) {
 }
 
 
-void CardMenu_State17FinishSlot(void) {
-    char *b = D_0013D390;
+void save_card_state_format_failed(void) {
+    char *b = memory_card_state;
     char *base = b + 0xB0;
     int idx = *(int *)(b + 0xCC);
     int *slot = (int *)(base + idx * 0xC0);
@@ -1507,8 +1507,8 @@ void CardMenu_State17FinishSlot(void) {
     }
 }
 
-void CardMenu_State18FinishSlot(void) {
-    char *b = D_0013D390;
+void save_card_state_create_failed(void) {
+    char *b = memory_card_state;
     char *base = b + 0xB0;
     int idx = *(int *)(b + 0xCC);
     int *slot = (int *)(base + idx * 0xC0);
@@ -1520,14 +1520,14 @@ void CardMenu_State18FinishSlot(void) {
     }
 }
 
-void CardMenu_State19AbortOnStatus(void) {
+void save_card_state_no_room(void) {
     if (D_0013D3AC != 0) {
         D_0015EFB0 = 3;
     }
 }
 
-void CardMenu_State20FinishSlot(void) {
-    char *b = D_0013D390;
+void save_card_state_load_failed(void) {
+    char *b = memory_card_state;
     char *base = b + 0xB0;
     int idx = *(int *)(b + 0xCC);
     int *slot = (int *)(base + idx * 0xC0);
@@ -1539,8 +1539,8 @@ void CardMenu_State20FinishSlot(void) {
     }
 }
 
-void CardMenu_State21FinishSlot(void) {
-    char *b = D_0013D390;
+void save_card_state_save_failed(void) {
+    char *b = memory_card_state;
     char *base = b + 0xB0;
     int idx = *(int *)(b + 0xCC);
     int *slot = (int *)(base + idx * 0xC0);
@@ -1553,7 +1553,7 @@ void CardMenu_State21FinishSlot(void) {
 }
 
 void CardMenu_State22StartOrFinish(void) {
-    char *b = D_0013D390;
+    char *b = memory_card_state;
     if (*(int *)(b + 0xDC) < 3 && *(int *)(b + 0xE4) < 0) {
         if (*(int *)(b + 0xEC) != 0) {
             *(int *)(b + 0xFC) = 0;
@@ -1565,7 +1565,7 @@ void CardMenu_State22StartOrFinish(void) {
     }
 }
 
-void CardMenu_State23WaitFlag20(void) {
+void save_card_state_prompt_begin_unformatted(void) {
     int flags;
     if (D_0013D3AC != -2) {
         D_0015EFB0 = 3;
@@ -1578,7 +1578,7 @@ void CardMenu_State23WaitFlag20(void) {
     }
 }
 
-void CardMenu_State24WaitFlag20(void) {
+void save_card_state_prompt_begin_no_save(void) {
     int flags;
     if (D_0013D3AC != 0) {
         D_0015EFB0 = 3;

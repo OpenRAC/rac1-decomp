@@ -118,7 +118,7 @@ extern void func_L00_0025B178(struct Moby *);
 
 /* l03 trooper update: patrols its rail path, turns to face the hero once in sight, fires three-shot bursts, falls under gravity and blows up when shot down or when it drops into a pit.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l03/gameplay/entities/002c9eb8.c, FUN_L03_002c9eb8. */
-void TrooperUpdate(struct Moby *m) {
+void mine_layer_update(struct Moby *m) {
     TrooperVars_CB280 *v = (TrooperVars_CB280 *)m->pvars;
     TrooperPatrol_CB280 *pt;
     struct RailPath_CB280 *path;
@@ -276,7 +276,7 @@ void TrooperUpdate(struct Moby *m) {
         }
     }
     if (m->visible != 0 && FastVecDist(&m->pos, D_L03_00166F40) < 32.0f) {
-        SetGroundHeightBand(m);
+        func_L00_0025B178(m);
     }
 }
 typedef u32 u128_CBBD0 __attribute__((mode(TI), aligned(16)));
@@ -398,7 +398,7 @@ void TrooperHitHandler(struct Moby *m) {
         case 3:
         case 6:
             v->kb_speed = D_L03_0016197C_CBBD0 * D_0015EE70;
-            SetSpringParams(v->knockback, D_L03_00161980_CBBD0, D_L03_00161984_CBBD0);
+            trooper_set_knockback(v->knockback, D_L03_00161980_CBBD0, D_L03_00161984_CBBD0);
             v->kb_landed = 0;
             v->kb_frames = 9;
             *(u128_CBBD0 *)&at = *(u128_CBBD0 *)&h->pos;
@@ -412,7 +412,7 @@ void TrooperHitHandler(struct Moby *m) {
         case 4:
         case 5:
             v->kb_speed = D_L03_0016197C_CBBD0 * D_0015EE70;
-            SetSpringParams(v->knockback, D_L03_00161980_CBBD0, D_L03_00161984_CBBD0);
+            trooper_set_knockback(v->knockback, D_L03_00161980_CBBD0, D_L03_00161984_CBBD0);
             v->kb_landed = 0;
             v->kb_frames = 9;
             *(u128_CBBD0 *)&at = *(u128_CBBD0 *)&h->pos;
@@ -425,7 +425,7 @@ void TrooperHitHandler(struct Moby *m) {
             break;
         case 1:
             v->kb_speed = D_L03_00161978_CBBD0 * D_0015EE70;
-            SetSpringParams(v->knockback, D_L03_00161988_CBBD0, D_L03_0016198C_CBBD0);
+            trooper_set_knockback(v->knockback, D_L03_00161988_CBBD0, D_L03_0016198C_CBBD0);
             v->kb_landed = 0;
             v->kb_frames = 9;
             *(u128_CBBD0 *)&at = *(u128_CBBD0 *)&h->pos;
@@ -519,7 +519,7 @@ void KerwanMineUpdate(struct Moby *m) {
     case 0:
         break;
     case 1:
-        if (StepMobyPhysics(m, v) & 1) {
+        if (mine_fall(m, v) & 1) {
             m->state = 3;
             if (m->prev_seq != 1) {
                 MobyBlendAnimation(m, 1, 0, scale_ticks(10));
@@ -598,14 +598,14 @@ void KerwanMineUpdate(struct Moby *m) {
                 dir[2] -= rr * D_0015EE6C * 8.0f;
                 switch (kind) {
                 case 0:
-                    PartType16Spawn(r, dir, 0x1F101820, 0x101010, random_float_between(200000.0f, 300000.0f),
+                    mine_debris(r, dir, 0x1F101820, 0x101010, random_float_between(200000.0f, 300000.0f),
                                 rand_range(scale_ticks(0xB4), scale_ticks(0xF0)), 0);
                     break;
                 case 1:
-                    PartType16Spawn(r, dir, 0x3F081020, 0x0F081020, random_float_between(50000.0f, 100000.0f), scale_ticks(0xB4), 1);
+                    mine_debris(r, dir, 0x3F081020, 0x0F081020, random_float_between(50000.0f, 100000.0f), scale_ticks(0xB4), 1);
                     break;
                 case 2:
-                    PartType16Spawn(r, dir, random_integer_below(100) < 0x28 ? 0x5FF8F8F8 : 0x2F486078, 0x0F000020, 150000.0f,
+                    mine_debris(r, dir, random_integer_below(100) < 0x28 ? 0x5FF8F8F8 : 0x2F486078, 0x0F000020, 150000.0f,
                                 rand_range(scale_ticks(0x1E), scale_ticks(0x2D)), 2);
                     break;
                 case 3: {
@@ -613,7 +613,7 @@ void KerwanMineUpdate(struct Moby *m) {
                     int c2 = func_L00_00237B70_CD270(0, 0x5F5F5F, random_float_between(0.5f, 1.0f));
 
                     BuildSphericalOffset(dir, random_float_between(0.0f, 1.0f) * D_0015EE6C, ang, random_angle_radians());
-                    PartType16Spawn(r, dir, c1, c2, random_float_between(200000.0f, 300000.0f),
+                    mine_debris(r, dir, c1, c2, random_float_between(200000.0f, 300000.0f),
                                 rand_range(scale_ticks(0xF0), scale_ticks(0x12C)), 3);
                     break;
                 }
@@ -623,15 +623,15 @@ void KerwanMineUpdate(struct Moby *m) {
         func_0022ED80_CD270(0, 0, m);
         D_L03_00166E00.shake = dist < 20.0f ? 0.4f - dist * 0.0175f : 0.050000012f;
         D_L03_00166E00.shake_frames = scale_ticks(0x19);
-        Moby639Spawn(&blast, &m->pos, 0, 0);
-        MobyList_Remove(m, D_L03_001B0BB0);
+        mine_camera_blast(&blast, &m->pos, 0, 0);
+        mine_spawn_drops(m, D_L03_001B0BB0);
         func_0020D678_CD270(m);
         return;
     }
     case 5:
         m->scale *= D_0015EE60 * -0.074f + 1.0f;
         if (m->scale < m->pclass->scale * 0.01f) {
-            MobyList_Remove(m, D_L03_001B0BB0);
+            mine_spawn_drops(m, D_L03_001B0BB0);
             func_0020D678_CD270(m);
         }
         break;
@@ -805,7 +805,7 @@ void RailTaxiUpdate(struct Moby *m) {
         m->state = 1;
         m->collision = 0;
         if (D_L03_001BB640.collected[(s16)m->save_id] != 0 ||
-            (D_0014C290[D_0015EE84_D4560][(s16)m->save_id >> 5] >> (m->save_id & 0x1F)) & 1) {
+            (level_moby_killed[D_0015EE84_D4560][(s16)m->save_id >> 5] >> (m->save_id & 0x1F)) & 1) {
             func_0020D678_D4560(m);
             return;
         }
@@ -893,7 +893,7 @@ void RailTaxiUpdate(struct Moby *m) {
     }
     func_L03_002D5008_D4560(m);
     FastVecSub(&move, &m->pos, &oldPos);
-    CarryRiders(v->coll, &move, &oldRot, &m->rot);
+    update_entity_matrix(v->coll, &move, &oldRot, &m->rot);
 }
 extern float D_0015EE6C MACRO_ADDR;
 extern char D_0013E633[];
@@ -1005,7 +1005,7 @@ struct SpinnerVars_D5220 {
 extern float func_001FA748_D5220(float, float) __asm__("func_001FA748");
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l03/gameplay/entities/002c9eb8.c, FUN_L03_002d3e58. */
-void SpinnerUpdate(struct Moby *m) {
+void robo_shack_sign_update(struct Moby *m) {
     Vec4 move;
     Vec4 oldRot;
     struct SpinnerVars_D5220 *v;
@@ -1027,7 +1027,7 @@ extern char D_L03_00173FE0[];
 typedef int u128 __attribute__((mode(TI)));
 
 // Spawns a moby of class 0x341 at a position, initialises its data and registers it.
-char *SpawnHomingRocket(char *a, char *pos, char *parent, int n, float f0, float f1, float f2) {
+char *compute_interpolated_record_value_cf(char *a, char *pos, char *parent, int n, float f0, float f1, float f2) {
     char *m = (char *)func_0020D348_m(0x341);
     char *d;
     if (m != 0) {
@@ -1293,7 +1293,7 @@ extern f32 func_001FA790(f32, f32);
 extern f32 func_001F9CE8(void *);
 extern void func_L00_00263950(void *, void *, int, f32, f32);
 
-void QuestGiverUpdate(struct Moby *m) {
+void helga_update(struct Moby *m) {
     struct QuestGiverVars_hg *v = (struct QuestGiverVars_hg *)m->pvars;
     struct TalkState_hg *talk = &v->talk;
     struct Moby *t;
@@ -1329,7 +1329,7 @@ void QuestGiverUpdate(struct Moby *m) {
         talk->script = D_L03_00161C38;
         v->talk.unk48 = 5;
         ((void (*)(struct Moby *, struct TalkState_hg *))DialogRequest_Init)(m, talk);
-        SetMobyZBand(m);
+        func_L02_0025D750(m);
         break;
     case 1:
         if (Npc_TryStartDialog(m, talk)) {
@@ -1343,12 +1343,12 @@ void QuestGiverUpdate(struct Moby *m) {
     case 2:
         if (D_L03_0015F6A8 != 2) {
             if (v->talk.mode != 2) {
-                SetLevelTriggerDone(m->mission);
+                jet_clear_persistent(m->mission);
                 if (v->link != -1) {
                     LINK_HELPER(m, v)
                 }
                 if (v->talk.warp != -1) {
-                    PauseMenu_SeedSnapshot((*(char **)&D_L03_0016016C) + v->talk.warp * 128 + 0x30,
+                    jet_reset_camera((*(char **)&D_L03_0016016C) + v->talk.warp * 128 + 0x30,
                                       (*(char **)&D_L03_0016016C) + v->talk.warp * 128 + 0x70);
                 }
             }
@@ -1654,8 +1654,8 @@ typedef struct {
 
 #define stage (D_0014171B + 0xAA35)
 #define BASE_gd ((char *)D_L03_00160058)
-static inline u8 flag2(void) { u8 *p = D_0013D50F + 0xB9; return p[2]; }
-void GuideUpdate(struct Moby *m) {
+static inline u8 flag2(void) { u8 *p = menu_item_enabled_115 + 0xB9; return p[2]; }
+void big_al_update(struct Moby *m) {
     struct GuideVars_gd *v = (struct GuideVars_gd *)m->pvars;
     struct Moby *t;
     struct Moby *o;
@@ -1689,7 +1689,7 @@ void GuideUpdate(struct Moby *m) {
         m->spawn_frame = *(u64 *)(*(char **)&D_0013E633[0x2E9D] + 0x38);
         m->state = 1;
         DialogRequest_Init(m, &v->talk);
-        SetMobyZBand(m);
+        func_L02_0025D750(m);
         if (gHaveHeliPack[0] != 0) {
             v->talk.unk36 = -1;
         }
@@ -1734,7 +1734,7 @@ void GuideUpdate(struct Moby *m) {
         }
         m->anim_speed = 1.0f;
         if (v->talk.mode != 2) {
-            SetLevelTriggerDone(m->mission);
+            jet_clear_persistent(m->mission);
             if (v->link != -1) {
                 t = (struct Moby *)((v->link << 8) + (int)D_L03_00160058);
                 if (t->oclass == 0x3F4) {
@@ -1742,7 +1742,7 @@ void GuideUpdate(struct Moby *m) {
                 }
             }
             if (v->warp != -1) {
-                PauseMenu_SeedSnapshot(WT + v->warp * 128 + 0x30, WT + v->warp * 128 + 0x70);
+                jet_reset_camera(WT + v->warp * 128 + 0x30, WT + v->warp * 128 + 0x70);
             }
         }
         m->state = 1;
@@ -1770,7 +1770,7 @@ void GuideUpdate(struct Moby *m) {
             }
         }
         if (v->warp != -1) {
-            PauseMenu_SeedSnapshot(WT + v->warp * 128 + 0x30, WT + v->warp * 128 + 0x70);
+            jet_reset_camera(WT + v->warp * 128 + 0x30, WT + v->warp * 128 + 0x70);
         }
         ((int (*)(int, int))memcard_Save)(0, -1);
         Hero_ResetToPosition(WT + v->warp * 128 + 0x30, WT + v->warp * 128 + 0x70, 0, 1);
@@ -1866,7 +1866,7 @@ extern int D_L03_0015F6A8;
 typedef struct { int pad0[8]; int source; int pad1; unsigned char type; } Hit_DD158;
 typedef struct { unsigned char pad[4]; short mode; unsigned char pad2[0x30]; short unk36; unsigned char pad3[0x14]; int warp; } Vars_DD158;
 
-void Moby914Update(unsigned char *m) {
+void robot_qwark_update(unsigned char *m) {
     Vars_DD158 *d = *(Vars_DD158 **)(m + 0x78);
     Hit_DD158 *hit;
     unsigned char type;
@@ -1876,11 +1876,11 @@ void Moby914Update(unsigned char *m) {
     float tmp[4] __attribute__((aligned(16)));
 
     if (m[0x31] != 0 && FastVecDist(m + 0x10, D_L03_00166F40) < 26.0f) {
-        SetGroundHeightBand(m);
+        func_L00_0025B178(m);
         m[0x7F] = 21;
     }
     if (SAVEFLAGS->collected[(short)*(unsigned short *)(m + 0xB2)] != 0 ||
-        (D_0014C290[D_0015EE84][(short)*(unsigned short *)(m + 0xB2) >> 5] >> (*(unsigned short *)(m + 0xB2) & 0x1F)) & 1) {
+        (level_moby_killed[D_0015EE84][(short)*(unsigned short *)(m + 0xB2) >> 5] >> (*(unsigned short *)(m + 0xB2) & 0x1F)) & 1) {
         if (m[0x20] != 3) {
             m[0x20] = 3;
             MobySetAnimation(m, 1, 0);
@@ -1889,8 +1889,8 @@ void Moby914Update(unsigned char *m) {
     hit = (Hit_DD158 *)MobyGetHitMessage(m, -1, 0);
     if (hit != 0 && hit->source != 0 && (type = hit->type) == 3 &&
         SAVEFLAGS->collected[(short)*(unsigned short *)(m + 0xB2)] == 0 &&
-        (((D_0014C290[D_0015EE84][(short)*(unsigned short *)(m + 0xB2) >> 5] >> (*(unsigned short *)(m + 0xB2) & 0x1F)) ^ 1) & 1)) {
-        unsigned char *p5 = D_0013D50F + 1;
+        (((level_moby_killed[D_0015EE84][(short)*(unsigned short *)(m + 0xB2) >> 5] >> (*(unsigned short *)(m + 0xB2) & 0x1F)) ^ 1) & 1)) {
+        unsigned char *p5 = menu_item_enabled_115 + 1;
         if (p5[5] == 0) {
             p5[5] = 1;
             PlayBankSound(1, 0, 0);
@@ -1902,7 +1902,7 @@ void Moby914Update(unsigned char *m) {
         func_L00_0025F4A8(m, vel, pos, 0.0f, 0.0f, 10, 3, 16, 4.0f, 2.0f, 9.0f, 1.0f, 0, 15.0f, 1, 1, -1, 0);
         m[0x20] = type;
         MobySetAnimation(m, 1, 0);
-        D_0014C290[D_0015EE84][(short)*(unsigned short *)(m + 0xB2) >> 5] |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
+        level_moby_killed[D_0015EE84][(short)*(unsigned short *)(m + 0xB2) >> 5] |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
         D_L03_001BA8E0[(short)*(unsigned short *)(m + 0xB2) >> 5] |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
     }
     m[0xA4] = 0xFF;
@@ -1914,14 +1914,14 @@ void Moby914Update(unsigned char *m) {
         *(unsigned long *)(m + 0x38) = *(unsigned long *)(D_001414D0[0] + 0x38);
         m[0x20] = 1;
         DialogRequest_Init(m, (unsigned char *)d);
-        if (D_0013D4A5[4] != 0) {
+        if (menu_item_enabled_9[4] != 0) {
             d->mode = 1;
             d->unk36 = 2;
         }
         break;
     case 1:
         if (Npc_TryStartDialog(m, (unsigned char *)d)) {
-            D_0013D4A5[4] = 1;
+            menu_item_enabled_9[4] = 1;
             PlaceMarkerAheadOfMoby(2.7f, m);
             m[0x20] = 2;
         }
@@ -1933,7 +1933,7 @@ void Moby914Update(unsigned char *m) {
         m[0x20] = 1;
         if (d->mode == 2 && d->warp != -1) {
             w = WARPTAB + d->warp * 128;
-            PauseMenu_SeedSnapshot((unsigned char *)(w + 0x30), (unsigned char *)(w + 0x70));
+            jet_reset_camera((unsigned char *)(w + 0x30), (unsigned char *)(w + 0x70));
         }
         break;
     case 3:
@@ -2000,7 +2000,7 @@ void ShowModeHelpMessage(char *m, int mode) {
     if (h == -1) {
         *(int *)(d + 0xA4) = queue_animation_update(0xC, 0, (int)Hud_InitCounter, (int)DefaultVtbl_DeleteMoby, (int)func_L00_00237B90, 0, 0);
     } else {
-        Hud_ExtendBankTime(h, 0xA);
+        hud_keep_visible(h, 0xA);
     }
 }
 typedef u32 u128_DE088 __attribute__((mode(TI), aligned(16)));
@@ -2335,7 +2335,7 @@ void TutorialHintTriggerUpdate(Moby *moby) {
                 && (((unsigned int)((Hero *)(D_0013E633 + 0xE1D))->state.control_mode) < 2 || ((unsigned int)((Hero *)(D_0013E633 + 0xE1D))->state.control_mode) == 9)
                 && ((Hero *)(D_0013E633 + 0xE1D))->state.current != 0x1E
                 && (gHaveHeliPack + 0xD)[0] != 0
-                && GetAmmo(0xF) >= 0x15
+                && get_ammo(0xF) >= 0x15
                 && D_L03_00179590[0] == 0 && D_L03_00179590[9] == -1
                 && (D_00141A68_2E08E8)[0x4A].count == 0
                 && D_00141948_2E08E8[0x13].count == 0) {
@@ -2383,7 +2383,7 @@ void TutorialHintTriggerUpdate(Moby *moby) {
             }
         }
 
-        if (D_L03_0015F6A8 == 0 && (gHavePersuader + 0x11)[0] != 0
+        if (D_L03_0015F6A8 == 0 && (discount_purchase_pricing + 0x11)[0] != 0
             && D_L03_00179590[0] == 0 && D_L03_00179590[9] == -1) {
             Help_2E08E8 *b = D_00141A68_2E08E8;
             if (b[0x19].count == 0) {
@@ -2458,7 +2458,7 @@ void TutorialHintTriggerUpdate(Moby *moby) {
                 int i;
                 for (i = 0; i < 37; i++) {
                     if (D_L03_00179C40[i].active == 0 && i != 8 && i != 24) {
-                        if ((D_0013D50F + 0xB9)[i] != 0) {
+                        if ((menu_item_enabled_115 + 0xB9)[i] != 0) {
                             count++;
                         }
                     }
@@ -2474,7 +2474,7 @@ void TutorialHintTriggerUpdate(Moby *moby) {
             g[0x18] = 1;
         }
         if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, data->f74) != 0) {
-            unsigned char *q = D_0013D50F + 1;
+            unsigned char *q = menu_item_enabled_115 + 1;
             if (q[3] == 0) {
                 q[3] = 1;
                 PlayBankSound(1, 0, 0);
@@ -2523,7 +2523,7 @@ void CutsceneBeamsUpdate(char *m) {
                 i = 2;
             else if (v == 10)
                 i = 0;
-            SpawnMoby750Sparks(D_L03_0016C9E0_2E1598.mobys[i]);
+            cutscene_set_camera_target(D_L03_0016C9E0_2E1598.mobys[i]);
         }
         if (D_L03_0015F6A8 != 2 || D_L03_0016C9E0_2E1598.mode != 3)
             break;
@@ -2549,7 +2549,7 @@ extern void func_L01_00279790(void *);
 extern void func_L00_00264EA8(void *, int, int, int, int, int, int);
 extern void func_L01_00279E10(void *, int);
 extern void func_0020D678(void *);
-void Kerwan_BreakOnHitUpdate(char *m) {
+void lightpost_update(char *m) {
     int hit = 0;
     char *r = MobyGetHitMessage(m, 0x10000, 0);
     switch (*(unsigned char *)(m + 0x20)) {

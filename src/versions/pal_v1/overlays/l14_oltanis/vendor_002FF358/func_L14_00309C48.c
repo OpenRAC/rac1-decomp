@@ -3,7 +3,7 @@ void SkillPointUpdate(unsigned char *moby) {
     unsigned v;
     int i;
     if (d[0] != -1) {
-        if (MobyGroup_CountNotInState(d[0], -1) == 0) {
+        if (count_group_e81e0(d[0], -1) == 0) {
             if (gSkillPoints[0x17] == 0) {
                 gSkillPoints[0x17] = 1;
                 PlayBankSound(1, 0, 0);
@@ -22,7 +22,7 @@ void SkillPointUpdate(unsigned char *moby) {
             if (v < 3) {
                 i = 0;
                 if (v <= D_L14_0015F6A8) i = moby[0x20];
-                SpawnMoby750Sparks(D_L14_0016D060.v178[i]);
+                cutscene_set_camera_target(D_L14_0016D060.v178[i]);
             }
         }
         break;

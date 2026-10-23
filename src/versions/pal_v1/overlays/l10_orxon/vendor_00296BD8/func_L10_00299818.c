@@ -1,4 +1,4 @@
-void SpinningPickupUpdate(Moby *m) {
+void magnetboots_update(Moby *m) {
     char *d = (char *)m->pvars;
     m->rot.z = addrot_00299818(m->rot.z, D_0015EE6C_x * 1.5707964f);
     switch (m->state) {

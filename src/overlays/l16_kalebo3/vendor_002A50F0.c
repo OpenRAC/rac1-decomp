@@ -580,7 +580,7 @@ void Moby471_CarryGroupRiders(int index, void *arg) {
         do {
             char *moby = D_L16_00160098 + ((*(unsigned short *)p & 0x7FFF) << 8);
             if (*(short *)(moby + 0xA6) == 0x1D7) {
-                CarryRiders(*(char **)(moby + 0x78) + 0x20, arg, moby + 0x40, moby + 0x40);
+                update_entity_matrix(*(char **)(moby + 0x78) + 0x20, arg, moby + 0x40, moby + 0x40);
             }
         } while (*p++ >= 0);
     }
@@ -723,7 +723,7 @@ extern unsigned char *func_L16_002C75D0_2cf180(int, void *, float *, float, int)
 extern int func_L00_0025A8E8_2cf180(int, float, void *, int, float, float, int, int, int) __asm__("func_L00_0025A8E8");
 
 /* Updates the test dummy (moby class 541): walks its path, throws at or sprays its target, bursts and respawns. */
-void TestDummyUpdate(unsigned char *m) {
+void test_dummy_update(unsigned char *m) {
     L16SparkVector v0, v1, v2;
     L16SparkQuery fx;
     L16DummyData *d = *(L16DummyData **)(m + 0x78);
@@ -824,7 +824,7 @@ void TestDummyUpdate(unsigned char *m) {
             FastVecSub(v2.f, v0.f, v1.f);
             v2.f[2] = 0.0f;
             func_L00_001FF4B0(v2.f, v2.f, speed);
-            v2.f[2] = ComputeLaunchVelocityZ(v1.f, v0.f, 0, speed, -gravity);
+            v2.f[2] = jump_speed_4318(v1.f, v0.f, 0, speed, -gravity);
             func_L16_002C75D0_2cf180((int)m, v1.f, v2.f, gravity, scale_ticks(300));
         } else if (m[0x70] & 2) {
             d->node = (d->node + 1) & 1;
@@ -1276,7 +1276,7 @@ extern char D_0014171B[];
 extern int D_0015EE84 MACRO_ADDR;
 extern short D_L16_0015EE6C;
 /* Pulse a linked control object and toggle its child when hit or its timer expires. */
-void Moby546Update(char *m) {
+void wall_button_update(char *m) {
     char *d=*(char**)(m+0x78);
     switch((*(unsigned char *)((char *)(m)+(0x20)))) {
     case 0:
@@ -1759,7 +1759,7 @@ extern int D_L16_00161AC8 SDATA(D_L16_00161AC8);
 extern int D_L16_00161ACC SDATA(D_L16_00161ACC);
 
 /* Update the hoverboard race competitor: wait for the race, follow the path, leap, and emit spray. */
-void HoverboardRacerUpdate(unsigned char *m) {
+void test_dummy_on_hoverboard_update(unsigned char *m) {
     float pos[4], delta[4], ahead[4], impact[4], spray[4], lateral[4], dust[4];
     char *d = *(char **)(m + 0x78);
     char *g;
@@ -2100,7 +2100,7 @@ extern short D_L16_00161B48;
 extern short D_L16_00161B44;
 
 // State machine for a moby that eases its position toward a target.
-void Moby650Update(char *moby) {
+void test_dummy_door_update(char *moby) {
     char *data = *(char **)(moby + 0x78);
     switch (*(unsigned char *)(moby + 0x20)) {
     case 0:
@@ -2112,7 +2112,7 @@ void Moby650Update(char *moby) {
         float f;
         if (r != 0) {
             if (r == 2) {
-                if (func_001F9B70(*(int *)&D_L16_00161B48 - D_L16_0015F6B0) >= 4) {
+                if (subtract_integer_with_clamp(*(int *)&D_L16_00161B48 - D_L16_0015F6B0) >= 4) {
                     *(int *)&D_L16_00161B48 = D_L16_0015F6B0;
                     Moby_PlaySound(1, 0, moby);
                 }
@@ -2148,7 +2148,7 @@ extern void func_0022ED80_timeout(int,int,void*) __asm__("func_0022ED80");
 void Moby_RateLimitedNotify(char *m) {
     char *d=*(char **)(m+0x78);
     if (*(int *)(d+8)==0) {
-        if (func_001F9B70(*(int *)&D_L16_00161B48-D_L16_0015F6B0_abs)>=4) {
+        if (subtract_integer_with_clamp(*(int *)&D_L16_00161B48-D_L16_0015F6B0_abs)>=4) {
             *(int *)&D_L16_00161B48=D_L16_0015F6B0;
             func_0022ED80_timeout(0,0,m);
         }
@@ -2203,9 +2203,9 @@ void Moby654Update(char *m) {
         break;
     case 3:
         Moby654_ComputePose(m,position,rotation);
-        CameraScript_SetPosition(position);CameraScript_SetLookAt(rotation);
+        set_camera_position(position);set_camera_rotation(rotation);
         if(d->camera>=0) *(unsigned short*)(D_0014171B+0xF)=*(unsigned short*)&d->camera;
-        if(MobyGroup_CountNotInState(d->path,-1)) break;
+        if(count_group_e81e0(d->path,-1)) break;
         if(!func_001F9908(&d->timer)) break;
         *(unsigned char *)(m+0x31)=1;*(unsigned char *)(m+0x20)=4;*(unsigned short *)(m+0x34)&=0xFFFE;
         CameraScript2(3);
@@ -2225,7 +2225,7 @@ notify:
     case 6: {
         char *player=D_0013E633+0xE9D;
         if(is_point_inside_clip_volume(player,d->trigger) && d->camera>=0) *(unsigned short*)(player+0x225A)=*(unsigned short*)&d->camera;
-        if(!MobyGroup_CountNotInState(d->path,-1)) {
+        if(!count_group_e81e0(d->path,-1)) {
             *(unsigned char *)(m+0x20)=4;
             helper=ActivateLinkedMobysNearest(d->helper,0);
             if(helper) Moby_PlaySound(1,0,helper);
@@ -2387,7 +2387,7 @@ extern L16WatchPlayer D_0013E633_watch __asm__("D_0013E633");
 extern L16WatchFlags D_0013D355_watch __asm__("D_0013D355");
 
 /* Activate the watcher and steer its body and head toward the player. */
-void WatcherUpdate(L16WatchMoby *m) {
+void help_desk_lady_update(L16WatchMoby *m) {
     L16WatchScratch scratch;
     L16WatchData *d = m->data;
     L16WatchFlags *flags;
@@ -2419,9 +2419,9 @@ void WatcherUpdate(L16WatchMoby *m) {
             Hero_ResetToPosition(D_L16_001D9990, D_L16_001D9990 + 4, 0, 1);
             Help_Request(0x3E82, 0x84);
             GiveItem(0x21, 1);
-            SetLevelTriggerDone(m->widget);
+            jet_clear_persistent(m->widget);
             player = (char *)&D_0013E633_watch + 0xE9D;
-            PauseMenu_SeedSnapshot(player, player + 0x10);
+            jet_reset_camera(player, player + 0x10);
             memcard_Save(0, -1);
             m->state = 3;
         }
@@ -2736,7 +2736,7 @@ void CratePlatformUpdate(L16CrateMoby *m) {
         }
         break;
     case 6:
-        if (StepMobyPhysics(m, d->knock) & 3) {
+        if (mine_fall(m, d->knock) & 3) {
             SpawnExplosionFx(m, m->position, -1, 1.0f, 13.0f);
             DeleteMoby(m);
             return;
@@ -2918,7 +2918,7 @@ void PathPickup_Update(char *moby) {
         *(short *)(d + 0xAA) = -1;
     }
     FastVecSub(v20, moby + 0x10, v00);
-    CarryRiders(d + 0x20, v20, v10, moby + 0x40);
+    update_entity_matrix(d + 0x20, v20, v10, moby + 0x40);
 }
 extern unsigned char D_0013D5C8_b[] __asm__("D_0013D5C8");
 
@@ -3180,7 +3180,7 @@ extern void func_L16_002E6B48_6908(void *) __asm__("func_L16_002E6B48");
 extern int func_0022ED80_6908(int, int, void *) __asm__("func_0022ED80");
 extern int func_001FA8A8(float, int, int);
 
-void Moby1442Update(unsigned char *m) {
+void grindrail_button_update(unsigned char *m) {
     char *d = *(char **)(m + 0x78);
     char *g;
     char *base;
@@ -3258,12 +3258,12 @@ extern int func_L00_002DDEA0(void *,void *);
 extern void func_L00_00260108(void *,void *,int,float,float);
 extern short D_L16_00161F08;
 /* Update the wandering helper's motion, animations, interaction and damage states. */
-void WanderingHelperUpdate(char *m) {
+void chomper_update(char *m) {
     char *d=*(char **)(m+0x78);
     PursuitMobyUpdate(m);
     Manipulator_ApplyScale(2.1f,(int)m,1,(unsigned char *)(d+0x220));
     if(*(unsigned char *)(m + 0x31)!=0 && FastVecDist(m+0x10,D_L16_00167240)<29.0f) {
-        SetGroundHeightBand(m); *(unsigned char *)(m + 0x7F)=23;
+        func_L00_0025B178(m); *(unsigned char *)(m + 0x7F)=23;
     }
     switch(*(unsigned char *)(m + 0x20)) {
     case 0:
@@ -3311,7 +3311,7 @@ void WanderingHelperUpdate(char *m) {
         if(CarriedMobyUpdate(m,d+0x120)) { *(unsigned char *)(m + 0x20)=1; *(unsigned short *)(d + 0xC8)=0; }
         break;
     case 8:
-        if(StepMobyPhysics(m,d+0x120)&0x140) {
+        if(mine_fall(m,d+0x120)&0x140) {
             SpawnExplosionFx(m,m+0x10,6,0.5f,13.0f);
             SetDeathBits(m,0,-1);
             DeleteMoby(m);
@@ -3448,7 +3448,7 @@ float SteerMobyToward(void *m_v, void *t_v) {
                    D_0015EE6C * 4.0f, (float *)(d + 0x204));
     func_L00_001FF4B0(vec, m + 0xC0, *(float *)(d + 0x204));
     vec[2] = *(float *)(d + 0x208) - D_0015EE70 * 10.0f;
-    MoveMobyWithCollision(m, vec, 0.5f, 0.5f, 0.0f, 0x10);
+    move_4318(m, vec, 0.5f, 0.5f, 0.0f, 0x10);
     PushPointOutsidePath(0.333f, *(void **)(d + 0x1F0), m + 0x10, m + 0x10);
     *(float *)(d + 0x208) = oldz - *(float *)(m + 0x18);
     return dist;

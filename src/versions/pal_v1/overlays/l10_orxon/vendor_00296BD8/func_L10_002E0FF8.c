@@ -29,7 +29,7 @@ void PathEnemyL10Update(struct Moby *moby) {
         ComputeHitResponse(moby, r, &data->f20, 5, &st, 0, 0, 4);
         if (r != 0) {
             if (data->f20 <= r->f2C) {
-                if (D_L10_00161FB8 != 0 && (f = D_0013D50F + 1, f[0x10]) == 0) {
+                if (D_L10_00161FB8 != 0 && (f = menu_item_enabled_115 + 1, f[0x10]) == 0) {
                     f[0x10] = 1;
                     PlayBankSound(1, 0, 0);
                     ShowBanner(0x53D6, -1);

@@ -100,7 +100,7 @@ int LinkedRiser_StepAlongPath(struct Moby *moby) {
     if (path->node[vars->node].f[3] == 42.0f)
         vars->yaw_offset = 0.0f;
     vars->spin = FastAddRots(vars->spin, vars->speed);
-    func_L00_001FFED8(vars->unk70, 0, vars->spin);
+    axis_rotation_2d48(vars->unk70, 0, vars->spin);
     if (func_001F9D48(&moby->pos, &path->node[path->count - 1]) > 8.0f &&
         func_001F9D48(&moby->pos, &path->node[0]) > 8.0f && !random_integer_below(7)) {
         qcopy(&puff, &moby->pos);

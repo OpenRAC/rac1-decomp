@@ -1,4 +1,4 @@
-s32 Pause_TextListUpdate(struct MenuScreen_1BB90 *menu) {
+s32 update_menu_entry_actions(struct MenuScreen_1BB90 *menu) {
     s32 focused;
     s32 entry_index;
     s32 entry_count;

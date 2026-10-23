@@ -1,4 +1,4 @@
-int BuildCheatMenuList(void) {
+int rebuild_configured_text_label_list(void) {
     int ids[8];
     int names[7];
     int i, n;
@@ -7,7 +7,7 @@ int BuildCheatMenuList(void) {
     *(Blk28 *)names = D_001E8A78;
     n = 0;
     for (i = 0; i < 12 && ids[i] != -1; i++) {
-        if (D_0015EEC0[ids[i]] != 0) {
+        if (selector_available[ids[i]] != 0) {
             D_001D3E90[n].val = names[i];
             D_001D3E90[n].addr = &gCheats[ids[i]];
             D_001D3E90[n].c1 = 0x4F5B;

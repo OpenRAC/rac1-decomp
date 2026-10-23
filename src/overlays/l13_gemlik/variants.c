@@ -14,7 +14,7 @@ void DrawSkyL13(void) {
     if (D_0015EE84_m == 13) {
         SkyShellsSparkleStatic();
     } else {
-        UpdateSkyShellsStatic();
+        update_sky_shells_static();
     }
     DoSkyGifPaging();
     VU1_addGSregister(0x47, 0x5360B);

@@ -172,7 +172,7 @@ extern short D_L16_00161B38;
 extern short D_L16_00161B3C;
 
 /* Update the floating enemy's patrol, attack and death states. */
-void FloatingEnemyUpdate(char *m) {
+void blarg_elite_commando_update(char *m) {
     float target[4], temp[4], delta[4];
     char *d = *(char **)(m + 0x78);
     char *source, *owner;
@@ -349,7 +349,7 @@ animate_idle:
             movement = temp;
             position = m + 0x10;
             qcopy(movement, position);
-            if (StepMobyPhysics(m, d + 0x70) & 0x160) {
+            if (mine_fall(m, d + 0x70) & 0x160) {
                 Moby_SpawnHitParticles(m, position);
                 func_0022ED80_update(0, 0, m);
                 DeleteMoby(m);
@@ -523,8 +523,8 @@ void Moby_HandleDamageKnockback(char *m) {
             if (D_0015EE84 == 18 && d->reward_hits) {
                 ++*(int *)&D_0015EF10;
                 if (*(int *)&D_0015EF10 >= 10) {
-                    if (((L16DamageReward *)(D_0013D50F + 1))->awarded == 0) {
-                        ((L16DamageReward *)(D_0013D50F + 1))->awarded = 1;
+                    if (((L16DamageReward *)(menu_item_enabled_115 + 1))->awarded == 0) {
+                        ((L16DamageReward *)(menu_item_enabled_115 + 1))->awarded = 1;
                         PlayBankSound(1, 0, 0);
                         ShowBanner(0x53DB, -1);
                     }
@@ -841,7 +841,7 @@ extern float D_L16_0015F660[] MACRO_ADDR;
 extern short D_L16_00161E3C, D_L16_00161E40, D_L16_00161E48, D_L16_00161E4C;
 
 /* Update the armed transport: fly in, set down its four passengers, hover, track and fire; sink and burst when destroyed. */
-void ArmedTransportUpdate(char *m) {
+void armed_transport_update(char *m) {
     Vec4 vector, rotation;
     char *d = *(char **)(m + 0x78);
 
@@ -1170,7 +1170,7 @@ extern int func_L16_002E7138(int);
 extern void func_L16_002E7198(int);
 
 /* Updates a moby effect and advances it when its linked object is ready. */
-void RingEffectUpdate(unsigned char *m) {
+void grindrail_barrier_update(unsigned char *m) {
     char *d = *(char **)(m + 0x78);
     float cycle;
     int i;

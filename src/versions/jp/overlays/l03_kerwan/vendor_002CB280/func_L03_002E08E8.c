@@ -107,7 +107,7 @@ void TutorialHintTriggerUpdate(Moby *moby) {
                 && (((unsigned int)((Hero *)(D_0013E633 + 0xE1D))->state.control_mode) < 2 || ((unsigned int)((Hero *)(D_0013E633 + 0xE1D))->state.control_mode) == 9)
                 && ((Hero *)(D_0013E633 + 0xE1D))->state.current != 0x1E
                 && (gHaveHeliPack + 0xD)[0] != 0
-                && GetAmmo(0xF) >= 0x15
+                && get_ammo(0xF) >= 0x15
                 && D_L03_00179590[0] == 0 && D_L03_00179590[9] == -1
                 && (D_00141A68_2E08E8)[0x4A].count == 0
                 && D_00141948_2E08E8[0x13].count == 0) {
@@ -155,7 +155,7 @@ void TutorialHintTriggerUpdate(Moby *moby) {
             }
         }
 
-        if (D_L03_0015F6A8 == 0 && (gHavePersuader + 0x11)[0] != 0
+        if (D_L03_0015F6A8 == 0 && (discount_purchase_pricing + 0x11)[0] != 0
             && D_L03_00179590[0] == 0 && D_L03_00179590[9] == -1) {
             Help_2E08E8 *b = D_00141A68_2E08E8;
             if (b[0x19].count == 0) {
@@ -230,7 +230,7 @@ void TutorialHintTriggerUpdate(Moby *moby) {
                 int i;
                 for (i = 0; i < 37; i++) {
                     if (D_L03_00179C40[i].active == 0 && i != 8 && i != 24) {
-                        if ((D_0013D50F + 0xB9)[i] != 0) {
+                        if ((menu_item_enabled_115 + 0xB9)[i] != 0) {
                             count++;
                         }
                     }
@@ -246,7 +246,7 @@ void TutorialHintTriggerUpdate(Moby *moby) {
             g[0x18] = 1;
         }
         if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, data->f74) != 0) {
-            unsigned char *q = D_0013D50F + 1;
+            unsigned char *q = menu_item_enabled_115 + 1;
             if (q[3] == 0) {
                 q[3] = 1;
                 PlayBankSound(1, 0, 0);

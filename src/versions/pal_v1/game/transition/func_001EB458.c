@@ -1,4 +1,4 @@
-void UpdateSpaceFlightSequence(void) {
+void update_gameplay_frame(void) {
     Vec4A first_position;
     Vec4A next_position;
     RenderSequenceActor_EB458 *actor;

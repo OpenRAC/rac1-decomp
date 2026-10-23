@@ -173,7 +173,7 @@ extern void func_0020D678(void *);
 extern void func_L00_0025B178(void *);
 
 /* Update for the toxic crab (moby class 1202): line-of-sight test, then a 13-state walk/chase/attack/death machine. */
-void ToxicCrabUpdate(Moby2E30F8 *m) {
+void toxic_crab_update(Moby2E30F8 *m) {
     int see = 0;
     Crab2E30F8 *d = m->data;
     char *t;
@@ -378,7 +378,7 @@ void ToxicCrabUpdate(Moby2E30F8 *m) {
                     *(u128_2E30F8 *)to2 = *(u128_2E30F8 *)(t + 0x10);
                     to2[2] += 1.0f;
                     if (func_L00_001EFFF0(from2, to2, 2, m, 0)) {
-                        char *h = D_L10_00174340;
+                        char *h = ground_hit;
                         if ((*(char **)(h + 0x18) == 0 || *(short *)(*(char **)(h + 0x18) + 0xA6) != 0x31A)
                             && FastVecDist(from2, h + 0x20) < *(float *)&D_L10_00161EB4) {
                             m->state = 6;
@@ -389,7 +389,7 @@ void ToxicCrabUpdate(Moby2E30F8 *m) {
                         }
                     }
                 }
-                r = MobySteerToward(m, &d->iD0, dir, out, 1.0f);
+                r = move_w(m, &d->iD0, dir, out, 1.0f);
                 m->f48 = rot;
                 if (r & 3) {
                     if (func_001F9D48(m->pos, old) < d->fF4 * 0.25f) {
@@ -468,7 +468,7 @@ void ToxicCrabUpdate(Moby2E30F8 *m) {
             *(u128_2E30F8 *)to2 = *(u128_2E30F8 *)(t + 0x10);
             to2[2] += 1.0f;
             if (func_L00_001EFFF0(from2, to2, 2, m, 0)) {
-                char *h = D_L10_00174340;
+                char *h = ground_hit;
                 if ((*(char **)(h + 0x18) == 0 || *(short *)(*(char **)(h + 0x18) + 0xA6) != 0x31A)
                     && FastVecDist(from2, h + 0x20) < *(float *)&D_L10_00161EB4) {
                     ok = 0;
@@ -569,7 +569,7 @@ void ToxicCrabUpdate(Moby2E30F8 *m) {
             dir[0] = FastCos(m->f48) * 2.0f;
             dir[1] = FastSin(m->f48) * 2.0f;
             dir[2] = 0.0f;
-            MobySteerToward(m, &d->iD0, dir, out, 1.0f);
+            move_w(m, &d->iD0, dir, out, 1.0f);
             m->f48 = rot;
             if (see) {
                 if (func_001F9908(&d->i1A8) || *(float *)&D_L10_00161EC4 < FastVecDist(m->pos, t + 0x10)) {
@@ -604,7 +604,7 @@ void ToxicCrabUpdate(Moby2E30F8 *m) {
             dir[0] = FastCos(m->f48) * 2.0f;
             dir[1] = FastSin(m->f48) * 2.0f;
             dir[2] = 0.0f;
-            MobySteerToward(m, &d->iD0, dir, out, 1.0f);
+            move_w(m, &d->iD0, dir, out, 1.0f);
             if (FastVecDist(m->pos, d->v170) < 1.0f) {
                 m->state = 3;
                 if (m->anim != 1) {
@@ -623,7 +623,7 @@ void ToxicCrabUpdate(Moby2E30F8 *m) {
         break;
     }
     case 10:
-        if (StepMobyPhysics(m, d->v70) & 0x41) {
+        if (mine_fall(m, d->v70) & 0x41) {
             int anim;
             m->state = 7;
             d->fF4 = D_0015EE6C * 5.0f;
@@ -665,7 +665,7 @@ void ToxicCrabUpdate(Moby2E30F8 *m) {
                 d->f98 = 0.75f;
                 d->i94 = 9;
                 d->f80 = x;
-                SetSpringParams(d->v70, 2.0f, 1.5f);
+                trooper_set_knockback(d->v70, 2.0f, 1.5f);
                 d->fC0 = 7.0f;
                 d->fC4 = 13.0f;
                 func_L00_0025D5B0_b(m, d->v70, 0xD, 1, 0, FastAddRots(m->f48, 3.1415927f));
@@ -721,7 +721,7 @@ void ToxicCrabUpdate(Moby2E30F8 *m) {
     }
     if (m->b31 != 0) {
         if (FastVecDist(m->pos, D_L10_001672C0) < 18.0f) {
-            SetGroundHeightBand(m);
+            func_L00_0025B178(m);
             m->b7F = 0xE;
         }
     }
@@ -1456,7 +1456,7 @@ void BlargShipUpdate(Ship_5E48 *m) {
     }
     if (m->b31 != 0) {
         if (FastVecDist(&m->pos, D_L10_001672C0) < 28.0f) {
-            SetGroundHeightBand(m);
+            func_L00_0025B178(m);
             m->b7F = 0x16;
         }
     }
@@ -1590,7 +1590,7 @@ static inline short msgSel(void) {
 }
 
 // Update of a pickup-style moby: waits for the player to come near, then spends bolts on a purchase.
-void NanotechVendorUpdate(char *m) {
+void nanotech_upgrade_vendor_update(char *m) {
     char *d = *(char **)(m + 0x78);
     unsigned char *g;
     unsigned char *p;
@@ -1613,7 +1613,7 @@ void NanotechVendorUpdate(char *m) {
                                     p[4] = (int)d;
                                     *(int *)(g + 0x22A8) = 5;
                                     gBolts = gBolts - 4000;
-                                    *(int *)&gMaxNanotech = 5;
+                                    *(int *)&hero_max_health = 5;
                                     StartCutscene(0);
                                     m[0x20] = (int)d;
                                 }
@@ -1629,7 +1629,7 @@ void NanotechVendorUpdate(char *m) {
                                         p[5] = (int)d;
                                         *(int *)(g + 0x22A8) = 8;
                                         gBolts = gBolts - 30000;
-                                        *(int *)&gMaxNanotech = 8;
+                                        *(int *)&hero_max_health = 8;
                                         StartCutscene(1);
                                         m[0x20] = (int)d;
                                     }
@@ -1812,7 +1812,7 @@ extern int func_L09_00308F58(void *, void *, void *, int);
 
 #define LIVE(o) ((o) != 0 && *(unsigned char *)((o) + 0x20) != 0xFE && *(unsigned char *)((o) + 0x20) != 0xFD)
 /* Moby update for a turret-like object that aims at and fires on linked mobys. */
-void LinkedTurretUpdate(char *m) {
+void gun_update(char *m) {
     int *d = *(int **)(m + 0x78);
     int *bits;
     float rotation[4];
@@ -1979,7 +1979,7 @@ extern int func_001F9908_EAA08(int *) __asm__("func_001F9908");
 
 /* Level 10 door: swings open once the hero enters its clip volume and sets its save bit; starts open when the bit is already set.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l10/gameplay/vendor/002df270.c, FUN_L10_002e9648. */
-void SwingDoorUpdate(struct Moby *moby) {
+void gate_1_update(struct Moby *moby) {
     DoorVars_e9648 *vars = (DoorVars_e9648 *)moby->pvars;
     unsigned short save_id;
 
@@ -1989,7 +1989,7 @@ void SwingDoorUpdate(struct Moby *moby) {
         if (D_001414F4[0] == 0) {
             save_id = moby->save_id;
             if (D_L10_001BB9C0.collected[(short)save_id] == 0 &&
-                ((D_0014C290[D_0015EE84][(short)save_id >> 5] >> (save_id & 31)) & 1) == 0) {
+                ((level_moby_killed[D_0015EE84][(short)save_id >> 5] >> (save_id & 31)) & 1) == 0) {
                 vars->home_yaw = moby->rot.y;
                 moby->state = 1;
                 return;
@@ -2003,7 +2003,7 @@ void SwingDoorUpdate(struct Moby *moby) {
             goto open;
         save_id = moby->save_id;
         if (D_L10_001BB9C0.collected[(short)save_id] != 0 ||
-            ((D_0014C290[D_0015EE84][(short)save_id >> 5] >> (save_id & 31)) & 1) != 0) {
+            ((level_moby_killed[D_0015EE84][(short)save_id >> 5] >> (save_id & 31)) & 1) != 0) {
         open:
             moby->rot.y = FastAddRots(moby->rot.y, -1.3962634f);
             moby->state = 3;
@@ -2014,7 +2014,7 @@ void SwingDoorUpdate(struct Moby *moby) {
         if (vars->unk0 <= 0 || vars->sound <= 0)
             return;
         save_id = moby->save_id;
-        D_0014C290[D_0015EE84][(short)save_id >> 5] |= 1 << (save_id & 31);
+        level_moby_killed[D_0015EE84][(short)save_id >> 5] |= 1 << (save_id & 31);
         save_id = moby->save_id;
         D_L10_001BAC60[(short)save_id >> 5] |= 1 << (save_id & 31);
         if (is_point_inside_clip_volume(&D_0013F450.motion.pos, vars->clip_volume))
@@ -2033,7 +2033,7 @@ void SwingDoorUpdate(struct Moby *moby) {
         save_id = moby->save_id;
         if (D_L10_001BB9C0.collected[(short)save_id] != 0)
             return;
-        if ((((D_0014C290[D_0015EE84][(short)save_id >> 5] >> (save_id & 31)) ^ 1) & 1) == 0)
+        if ((((level_moby_killed[D_0015EE84][(short)save_id >> 5] >> (save_id & 31)) ^ 1) & 1) == 0)
             return;
         moby->rot.y = FastAddRots(moby->rot.y, 1.3962634f);
         moby->state = 0;
@@ -2083,7 +2083,7 @@ extern float func_001FA888_2EAD50(int) __asm__("func_001FA888");
 extern int func_001F9908_2EAD50(int *) __asm__("func_001F9908");
 
 // Level 10 gate_2 update: four-state machine on m[0x20], moby class 1424.
-void Moby1424Update(GateMoby_2EAD50 *m)
+void gate_2_update(GateMoby_2EAD50 *m)
 {
     GateVars_2EAD50 *d = m->vars;
     float v[3];
@@ -2360,7 +2360,7 @@ void Moby1555Update(char *m) {
                 if (v == 3) i = 1;
                 else if (v == 5 || v == 6) i = 2;
                 else if (v == 7) i = 3;
-                SpawnMoby750Sparks(D_L10_0016CD60.slot[i]);
+                cutscene_set_camera_target(D_L10_0016CD60.slot[i]);
             }
         }
         break;

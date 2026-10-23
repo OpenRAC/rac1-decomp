@@ -63,15 +63,15 @@ void DrawBackdropShapes(void *data_ptr, void *list_ptr, int count) {
     func_001FA1C0(1024.0f, matrix);
     func_001F9C30_C2B08(-1024.0f, offset, D_L09_00166FC0);
     offset[3] = 1.0f;
-    VU1_addDataRef(D_0010E810, D_0010E800[0]);
+    VU1_addDataRef(font_vu_program, font_vu_program_tag[0]);
     {
         int *packet;
         int *packet_end;
-        (*(int * volatile *)&D_L09_00161240)[0] = 0x10000000;
-        (*(int * volatile *)&D_L09_00161240)[1] = 0;
-        (*(int * volatile *)&D_L09_00161240)[2] = 0x11000000;
-        (*(int * volatile *)&D_L09_00161240)[3] = 0x01000404;
-        packet = (*(int * volatile *)&D_L09_00161240);
+        (*(int * volatile *)&l09_packet)[0] = 0x10000000;
+        (*(int * volatile *)&l09_packet)[1] = 0;
+        (*(int * volatile *)&l09_packet)[2] = 0x11000000;
+        (*(int * volatile *)&l09_packet)[3] = 0x01000404;
+        packet = (*(int * volatile *)&l09_packet);
         packet[4] = 0;
         packet[5] = 0;
         packet[6] = 0;
@@ -99,26 +99,26 @@ void DrawBackdropShapes(void *data_ptr, void *list_ptr, int count) {
         packet[59] = 0;
         packet_end = packet + 60;
         {
-            int *words = (*(int * volatile *)&D_L09_00161240);
+            int *words = (*(int * volatile *)&l09_packet);
             *words |= (((int)packet_end - (int)words) >> 4) - 1;
         }
-        D_L09_00161240 = packet_end;
+        l09_packet = packet_end;
         packet[60] = 0x30000003;
     }
-    (*(int * volatile *)&D_L09_00161240)[1] = (int)D_L09_001CB6F0;
-    (*(int * volatile *)&D_L09_00161240)[2] = 0;
-    (*(int * volatile *)&D_L09_00161240)[3] = 0x50000003;
+    (*(int * volatile *)&l09_packet)[1] = (int)D_L09_001CB6F0;
+    (*(int * volatile *)&l09_packet)[2] = 0;
+    (*(int * volatile *)&l09_packet)[3] = 0x50000003;
     {
-        int *packet = (*(int * volatile *)&D_L09_00161240) + 4;
-        D_L09_00161240 = packet;
+        int *packet = (*(int * volatile *)&l09_packet) + 4;
+        l09_packet = packet;
         packet[0] = 0x10000008;
     }
-    (*(int * volatile *)&D_L09_00161240)[1] = 0;
-    (*(int * volatile *)&D_L09_00161240)[2] = 0;
-    (*(int * volatile *)&D_L09_00161240)[3] = 0x50000008;
-    packet = (*(int * volatile *)&D_L09_00161240);
+    (*(int * volatile *)&l09_packet)[1] = 0;
+    (*(int * volatile *)&l09_packet)[2] = 0;
+    (*(int * volatile *)&l09_packet)[3] = 0x50000008;
+    packet = (*(int * volatile *)&l09_packet);
     words = (u64 *)(packet + 4);
-    D_L09_00161240 = packet + 4;
+    l09_packet = packet + 4;
     color = (unsigned char)data[0x30] | (unsigned char)data[0x31] << 8 | (unsigned char)data[0x32] << 16;
     /* Retail reads the mode after the packet cursor stores. */
     if (*(volatile int *)&D_L09_0015F558 == 1)
@@ -148,7 +148,7 @@ void DrawBackdropShapes(void *data_ptr, void *list_ptr, int count) {
         words[13] = 0x14;
         words[14] = blend;
         words[15] = 0x47;
-        D_L09_00161240 = (int *)(words + 16);
+        l09_packet = (int *)(words + 16);
     }
     scratch = (int *)0x70000000;
     for (i = 255; i >= 0; i--)
@@ -1154,7 +1154,7 @@ extern void func_L00_0025F4A8(struct Moby *, void *, void *, float, float, int, 
 
 /* Level 9 breakable stack: when hit, swaps in the next damaged class (0x512 -> 0x513 -> 0x514), bursts debris and smoke and removes itself once gone.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l09/gameplay/entities/0021e538.c, FUN_L09_002edc30. */
-void BreakableStackUpdate(struct Moby *moby) {
+void display_update(struct Moby *moby) {
     float center[4];
     float top[4];
     float push[4];
@@ -1176,7 +1176,7 @@ void BreakableStackUpdate(struct Moby *moby) {
     if (moby->state == 0) {
         moby->state = 1;
     }
-    if (func_L00_001FEF78(&moby->command) == 0 || hit == 0) {
+    if (fast_subtract_rotations_cf(&moby->command) == 0 || hit == 0) {
         return;
     }
     if (moby->oclass < 0x514) {
@@ -1747,7 +1747,7 @@ void Moby1000Update(char *moby) {
     int n;
     if (D_L09_0015F6B0 > 0) {
         if (D_L09_00161450 == 0) {
-            q = D_0013D50F + 1;
+            q = menu_item_enabled_115 + 1;
             if (q[0xE] == 0) {
                 q[0xE] = 1;
                 PlayBankSound(1, 0, 0);
@@ -1948,7 +1948,7 @@ void PathPlatformL09_Update(unsigned char *moby) {
         break;
     }
     FastVecSub(delta, (moby + 0x10), orig);
-    CarryRiders(data + 0x60, delta, moby + 0x40, moby + 0x40);
+    update_entity_matrix(data + 0x60, delta, moby + 0x40, moby + 0x40);
     if (!Hero_IsOnMoby(moby)) {
         if (2.0f < func_001F9D48((moby + 0x10), (D_0013E633 + 0xE9D))) {
             if (*(short *)(data + 0xBA) == 0) {
@@ -2043,7 +2043,7 @@ extern int func_0022ED80_r(int, int, char *) __asm__("func_0022ED80");
 extern void func_L00_0025F4A8_alt(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float, int, int, int, int) __asm__("func_L00_0025F4A8");
 
 /* Pressure plate: waits for its trigger slot, hums while armed, wakes its linked moby when stepped on, then shatters. */
-void PressurePlateUpdate(char *m) {
+void refueling_station_update(char *m) {
     char *d = *(char **)(m + 0x78);
     float v[4];
     unsigned char *q;
@@ -2455,7 +2455,7 @@ extern void func_L00_001EE2E0(void *, int, int, int, int, int, float, float, flo
 #define a_222B80 ((int (*)(int, int))func_L00_00222B80)
 #define a_26EBC0 ((void (*)(void *, void *, int, int, float))func_L00_0026EBC0)
 /* Moby update for a mountable turret. */
-void MountableTurretUpdate(struct Moby *moby) {
+void turret_update(struct Moby *moby) {
     Vec4 seat;
     Vec4 offset;
     Vec4 tmp;
@@ -2567,7 +2567,7 @@ void MountableTurretUpdate(struct Moby *moby) {
             }
             if ((*(struct Moby **)(D_0013E633 + 0x1119)) != moby && vars->beam != -1) {
                 Moby_PlaySound(2, 0, moby);
-                FreePointLight(vars->beam);
+                light_off_67e8(vars->beam);
                 vars->beam = -1;
             }
         }
@@ -2587,7 +2587,7 @@ void MountableTurretUpdate(struct Moby *moby) {
         tmp.f[1] = stick_y;
         len = func_001F9CE8(&tmp);
         if (len > 1.0f) {
-            func_L00_001FF328(&tmp, &tmp, len);
+            divide_vector_xyz(&tmp, &tmp, len);
         }
         vars->yaw_speed += D_0015EE70 * 3.1415927f * -tmp.f[0];
         vars->pitch_speed += D_0015EE70 * 0.7853982f * -tmp.f[1];
@@ -2602,7 +2602,7 @@ void MountableTurretUpdate(struct Moby *moby) {
         }
         vars->yaw_speed *= 0.97f;
         vars->pitch_speed *= 0.97f;
-        func_L00_001FFED8(&vars->aim, 1, -vars->pitch);
+        axis_rotation_2d48(&vars->aim, 1, -vars->pitch);
         if (ctl->held & 0x20) {
             if (ctl->pressed & 0x20) {
                 MobyBlendAnimation(moby, vars->barrel == 0 ? 4 : 3, 0, 1);
@@ -2672,11 +2672,11 @@ void MountableTurretUpdate(struct Moby *moby) {
             BuildSphericalOffset(&shot, D_L09_00161D30_f, FastAddRots(1.5707964f, moby->rot.z), vars->pitch);
             shot.f[2] += D_L09_00161D34_f;
             FastVecAdd(&muzzle, &tmp, &shot);
-            CameraScript_SetPosition(&muzzle);
+            set_camera_position(&muzzle);
             dir.f[0] = 0.0f;
             dir.f[1] = -vars->pitch;
             dir.f[2] = FastAddRots(1.5707964f, moby->rot.z);
-            CameraScript_SetLookAt(&dir);
+            set_camera_rotation(&dir);
         }
         EffectQueue_Add(moby, 0xFF0F0FFF, 0, 0xD, -1, 4, 1.0f, 0.0f, 90.0f);
         break;
@@ -2803,7 +2803,7 @@ extern char D_0013D355_309688[] __asm__("D_0013D355");
 
 /* Moby update (barrier classes 1285-1287): bursts into pieces when hit and deletes itself; clears or sets
    its slot in the level's flag block. */
-void BarrierUpdate(Moby *m)
+void barrier_update(Moby *m)
 {
     BarrierData_309688 *d = (*(BarrierData_309688 **)&m->pvars);
     float a20[4], a30[4], a40[4], a50[4], a60[4];

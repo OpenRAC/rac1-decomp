@@ -172,14 +172,14 @@ s32 HeroL08_TryTakeHit(s32 arg) {
             a = 0.0f;
             b = e * 1.7f;
         }
-        Vec_ScaleXYSetZ(&v, flag, a, b);
+        hero_knockback(&v, flag, a, b);
         if (flag != 0 && tbl->b28 == 4) {
             v.f[2] += v.f[2];
         }
         break;
     case 3:
         Hero_TryMoveStateL08(0x56, 1);
-        Vec_ScaleXYSetZ(&v, flag, D_0015EE6C * 5.0f, D_0015EE6C * 2.4f);
+        hero_knockback(&v, flag, D_0015EE6C * 5.0f, D_0015EE6C * 2.4f);
         break;
     }
     FastVecAdd(D_0013F530, D_0013F530, &v);

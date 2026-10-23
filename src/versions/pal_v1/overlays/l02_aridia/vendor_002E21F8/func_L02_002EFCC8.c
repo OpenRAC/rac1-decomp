@@ -10,7 +10,7 @@ void TutorialHintUpdate(unsigned char *moby) {
             int i;
             for (i = 0; i < 37; i++) {
                 if (D_L02_0017A140[i].active == 0 && i != 8 && i != 24) {
-                    if ((D_0013D50F + 0xB9)[i] != 0) {
+                    if ((menu_item_enabled_115 + 0xB9)[i] != 0) {
                         count++;
                     }
                 }
@@ -34,7 +34,7 @@ void TutorialHintUpdate(unsigned char *moby) {
         if (*(int *)(h + 0x300) != 0) {
             data[0x15] = 0;
         } else if (is_point_inside_clip_volume(h + 0x80, data[0x13]) != 0) {
-            unsigned char *q = D_0013D50F + 1;
+            unsigned char *q = menu_item_enabled_115 + 1;
             if (q[1] == 0) {
                 q[1] = 1;
                 PlayBankSound(1, 0, 0);
@@ -51,7 +51,7 @@ void TutorialHintUpdate(unsigned char *moby) {
             if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, data[4]) != 0) {
                 int lvl = data[0];
                 if (D_0014C150[D_0015EE84][lvl] != 0xFF) {
-                    unsigned char *f = D_0013D50F + 0xB9;
+                    unsigned char *f = menu_item_enabled_115 + 0xB9;
                     if (f[0x10] != 0 && ((int *)(D_0014171B + 0xD875))[lvl] >= 6) {
                         int t = scale_ticks(D_0015EFA4) - D_001418A2 * 600;
                         if (scale_ticks(0x4650) < t) {
@@ -90,7 +90,7 @@ void TutorialHintUpdate(unsigned char *moby) {
             if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, data[4]) != 0) {
                 int lvl = data[0];
                 if (D_0014C150[D_0015EE84][lvl] != 0xFF) {
-                    unsigned char *f = D_0013D50F + 0xB9;
+                    unsigned char *f = menu_item_enabled_115 + 0xB9;
                     if (f[0x10] == 0 && (float)((int *)(D_0014171B + 0xD875))[lvl] >= 3.0f) {
                         Help_Request(0x7D3, 0xD);
                     }
@@ -118,7 +118,7 @@ void TutorialHintUpdate(unsigned char *moby) {
         }
     }
 
-    if (((Flags_0013D5C8 *)(D_0013D50F + 0xB9))->b[0xC] == 0) {
+    if (((Flags_0013D5C8 *)(menu_item_enabled_115 + 0xB9))->b[0xC] == 0) {
         if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, data[5]) != 0) {
             char *b = D_0014171B + 0x34D;
             int t = scale_ticks(D_0015EFA4) - *(unsigned short *)(b + 0x8A) * 600;
@@ -132,7 +132,7 @@ void TutorialHintUpdate(unsigned char *moby) {
             }
         }
     }
-    if (((Flags_0013D5C8 *)(D_0013D50F + 0xB9))->b[0xC] != 0 && is_point_inside_clip_volume(D_0013E633 + 0xE9D, data[5]) != 0) {
+    if (((Flags_0013D5C8 *)(menu_item_enabled_115 + 0xB9))->b[0xC] != 0 && is_point_inside_clip_volume(D_0013E633 + 0xE9D, data[5]) != 0) {
         char *b = D_0014171B + 0x34D;
         if (*(unsigned short *)(b + 0x90) != 0) {
             int t = scale_ticks(D_0015EFA4) - *(unsigned short *)(b + 0x92) * 600;

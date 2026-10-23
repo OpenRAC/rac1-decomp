@@ -94,14 +94,14 @@ s32 Hud_DrawCounter(HudElem *m) {
     }
     x = m->unk50;
     y = m->unk54;
-    Hud_AlignElement(m, &x, &y);
+    hud_screen_position(m, &x, &y);
     left = x < 0x101;
     if (left) {
         x = (*(s32 *)&D_L02_0015FA1C);
     } else {
         x = (*(s32 *)&D_L02_0015FA20);
     }
-    bottom = D_0013E604[0];
+    bottom = frame_size[0];
     y = D_0015EE80 != 0 ? bottom - 0x2A : bottom - 0x32;
     grow = IntToFloat(fade[0]) / IntToFloat((*(s32 *)&D_L02_0015F9F4));
     if (1.0f < grow) {
@@ -131,10 +131,10 @@ s32 Hud_DrawCounter(HudElem *m) {
         frame = GetIconFrame(0x7580, 0);
         HudSprite(frame, bar, y, width, 0x20, alpha);
         frame = GetIconFrame(0x7580, 1);
-        DrawHudSpriteTurned(frame, bar + width, y, 0x20, 0x20, alpha);
+        draw_hud_sprite_flipped(frame, bar + width, y, 0x20, 0x20, alpha);
     } else {
         frame = GetIconFrame(0x7580, 1);
-        DrawHudSpriteTurned(frame, bar, y, 0x20, 0x20, alpha);
+        draw_hud_sprite_flipped(frame, bar, y, 0x20, 0x20, alpha);
         px = bar - width;
         frame = GetIconFrame(0x7580, 0);
         HudSprite(frame, px, y, width, 0x20, alpha);
@@ -169,7 +169,7 @@ void Sky_DrawLevel02(void) {
     if (D_0015EE84_m == 2) {
         SkyStarFieldUpdate();
     } else {
-        UpdateSkyShellsStatic();
+        update_sky_shells_static();
     }
     DoSkyGifPaging();
     VU1_addGSregister(0x47, 0x5360B);

@@ -12,7 +12,7 @@ extern unsigned char *D_L00_001B24B0;
 /* Spawns a type 0x2C particle with position, velocity, colour and scale parameters.
    Adapted from Lombyte (MIT) for PAL: src/overlays/shared/rendering_002712b8.c, FUN_L00_002712b8. */
 unsigned char *PartType44Spawn(void *pos, float *vec, int s, int a, int col, int n, float x, float y, float z, float w, float pw) {
-    unsigned char *m = func_00218928(0x2C);
+    unsigned char *m = create_part(0x2C);
     if (m) {
         unsigned char *q;
         float d;
@@ -105,7 +105,7 @@ extern float func_001F9FA8(float);
 
 /* spawn a type-0x2D particle at a position with a velocity scale */
 unsigned char *PartType45Spawn(void *pos, int b, int color, float f, float g) {
-    unsigned char *r = func_00218928(0x2D);
+    unsigned char *r = create_part(0x2D);
     if (r != 0) {
         char *v;
         float t, u, s;
@@ -170,8 +170,8 @@ void PartType45Update(char *m) {
 extern unsigned char *D_L00_001B24B8;
 
 /* spawns a type-0x2E particle at a with velocity block b, link c, scale f and drag g */
-unsigned char *PartType46Spawn(void *a, void *b, int c, float f, float g) {
-    unsigned char *r = func_00218928(0x2E);
+unsigned char *spawn_splash(void *a, void *b, int c, float f, float g) {
+    unsigned char *r = create_part(0x2E);
     if (r != 0) {
         char *v;
         qcopy(r + 0x10, a);
@@ -219,7 +219,7 @@ extern char *D_L00_001B24BC;
 extern int func_001FA898(float);
 
 unsigned char *PartType47Spawn(void *a, void *b, float f) {
-    unsigned char *r = func_00218928(0x2F);
+    unsigned char *r = create_part(0x2F);
     if (r != 0) {
         qcopy(r + 0x10, a);
         *(int *)(r + 4) = ((random_integer_below(8) + 0x28) << 24) | 0x808080;
@@ -368,7 +368,7 @@ extern int D_L00_001B24D4;
 
 /* spawns a type 53 particle */
 unsigned char *PartType53Spawn(float *pos, int a, int col, int mode, int b, float *vel, float f0, float f1, float f2) {
-    unsigned char *r = func_00218928(0x35);
+    unsigned char *r = create_part(0x35);
     unsigned char *q;
     float *w;
     if (r != 0) {
@@ -596,7 +596,7 @@ extern unsigned char *D_L00_001B24E8;
 /* Spawn a type-0x3A particle of kind a1 at pos. */
 unsigned char *func_L00_00273868(float *pos, unsigned char a1, unsigned char a2, unsigned char a3,
     unsigned char a4, unsigned char a5, int a6, float f0, float f1) {
-    unsigned char *r = func_00218928(0x3A);
+    unsigned char *r = create_part(0x3A);
     unsigned char *v;
     int k;
     if (r != 0) {
@@ -732,7 +732,7 @@ extern unsigned char *D_L00_001B2400[];
 
 /* spawns particle type 0x3B from a position, colour index and flags */
 unsigned char *PartType59Spawn(float f, void *pos, int a1, unsigned char a2, int idx, int flag, int s, int mode) {
-    unsigned char *r = func_00218928(0x3B);
+    unsigned char *r = create_part(0x3B);
     if (r != 0) {
         char *v = (char *)r + 0x20;
         *(int *)(v + 0x10) = mode;
@@ -777,7 +777,7 @@ unsigned char *PartType60Spawn(float *pos, char *vel, int color, unsigned char l
     float *v;
     if (pos[0] < 2.0f || 1021.0f < pos[0] || pos[1] < 2.0f || 1021.0f < pos[1] || pos[2] < 2.0f || 1021.0f < pos[2])
         return 0;
-    m = func_00218928(0x3C);
+    m = create_part(0x3C);
     if (m) {
         v = (float *)(m + 0x20);
         qcopy(m + 0x10, pos);
@@ -919,7 +919,7 @@ extern unsigned char *D_L00_001B24F8;
 
 // Spawns a type-62 particle at a position with a lifetime and a colour index.
 unsigned char *PartType62Spawn(void *a, int b, int c) {
-    unsigned char *r = func_00218928(0x3E);
+    unsigned char *r = create_part(0x3E);
     if (r != 0) {
         unsigned char *v = r + 0x20;
         qcopy(r + 0x10, a);
@@ -962,7 +962,7 @@ extern unsigned char *D_L00_001B2500;
 
 /* Spawns a type-64 particle at pos moving with vel, sprite size chosen by distance to the hero. */
 unsigned char *PartType64Spawn(void *pos, void *vel, float scale, int life, float f1, int col, float f2, int a4, int big) {
-    unsigned char *r = func_00218928(0x40);
+    unsigned char *r = create_part(0x40);
     unsigned char *u;
     if (r != 0) {
         u = r + 0x20;
@@ -1074,7 +1074,7 @@ void PartType64Update(struct EmberParticle *p) {
             t.f[2] -= 1.5f;
             f = random_float_between(420000.0f, 630000.0f);
             n = rand_range(scale_ticks(0x5A), scale_ticks(0x96));
-            PartType16Spawn(&t, &m->vel, c1, c2, f, n, 3);
+            mine_debris(&t, &m->vel, c1, c2, f, n, 3);
         }
     }
     KillPart(p);
@@ -1132,7 +1132,7 @@ extern unsigned char *D_L00_001B2508;
 
 /* spawns a type-0x42 particle moving in a random direction */
 unsigned char *PartType66Spawn(void *pos, int color, float f, float speed) {
-    unsigned char *r = func_00218928(0x42);
+    unsigned char *r = create_part(0x42);
     if (r != 0) {
         float ang, sp;
         int c;
@@ -1185,7 +1185,7 @@ extern unsigned char *D_L00_001B250C;
 
 /* spawns particle type 0x43 at a position with a colour, timer and optional velocity */
 unsigned char *PartType67Spawn(float f0, float f1, int a0, void *pos, int timer, int flag, int col, float *vel) {
-    unsigned char *r = func_00218928(0x43);
+    unsigned char *r = create_part(0x43);
     if (r != 0) {
         unsigned char *v = r + 0x20;
         qcopy(r + 0x10, pos);
@@ -1315,7 +1315,7 @@ extern unsigned char *D_L00_001B2514;
 
 /* spawns a particle at a with velocity b, colour byte c and payload d */
 unsigned char *PartType69Spawn(void *a, void *b, int c, int d) {
-    unsigned char *r = func_00218928(0x45);
+    unsigned char *r = create_part(0x45);
     char *v;
     int x;
     float t;
@@ -1392,7 +1392,7 @@ extern unsigned char *D_L00_001B2518;
 
 /* spawns a particle at pos with a colour byte taken from a table and a heading */
 unsigned char *PartType70Spawn(void *a, int idx, float ang) {
-    unsigned char *r = func_00218928(0x46);
+    unsigned char *r = create_part(0x46);
     if (r != 0) {
         qcopy(r + 0x10, a);
         *(int *)(r + 4) = 0x80404040;
@@ -1440,7 +1440,7 @@ void PartType71Update(char *m) {
                 FastVecAdd(m + 0x10, m + 0x10, y);
             } else {
                 func_L00_001FF4B0(y, y, 0.005f);
-                PackVectorScaled(y, (int *)(m + 0x24));
+                pack_vector_xyz_with_shared_scale(y, (int *)(m + 0x24));
             }
         }
     }
@@ -1487,7 +1487,7 @@ extern unsigned char *D_L00_001B2520;
 
 /* spawns a type-72 particle with a signed spin and a scaled lifetime */
 unsigned char *PartType72Spawn(char *a, char *b, int c, float f) {
-    unsigned char *p = func_00218928(0x48);
+    unsigned char *p = create_part(0x48);
     unsigned char *u;
     if (p) {
         qcopy(p + 0x10, a);
@@ -1567,15 +1567,15 @@ void PartType73Update(O_275320 *o) {
     iy = o->pos.f[1];
     tmp.f[3] = 0.0f;
     FastVecAdd(&o->pos, &o->pos, &tmp);
-    FastVecAdd(&o->pos, &o->pos, D_L00_00160310);
+    FastVecAdd(&o->pos, &o->pos, particle_drift);
     if (ix != (int)o->pos.f[0] || iy != (int)o->pos.f[1]) {
         t2.q = o->pos.q;
-        h = SampleHeightMap(&t2);
-        if (h < D_L00_00160320) {
-            h = D_L00_00160320;
+        h = ground_height_at(&t2);
+        if (h < particle_min_ground) {
+            h = particle_min_ground;
         } else {
             t3.q = o->pos.q;
-            h = SampleHeightMap(&t3);
+            h = ground_height_at(&t3);
         }
         if (o->pos.f[2] < h) {
             t2.q = o->pos.q;
@@ -1589,7 +1589,7 @@ void PartType73Update(O_275320 *o) {
     tmp.f[3] = 0.0f;
     tmp.f[2] = -(D_0015EE70 * 0.5f);
     FastVecAdd(vel, &tmp, vel);
-    vel->f[3] = h + D_L00_00160318;
+    vel->f[3] = h + particle_clearance;
 }
 extern int func_L00_00237B70(float, int, int);
 
@@ -1696,7 +1696,7 @@ extern unsigned char *D_L00_001B2538;
 
 /* Spawns a type 78 particle: position, colour, lifetime and mode, with a trailing record of speeds, id and target. Adapted from Lombyte (MIT) for PAL: overlays/shared/rendering_002712b8.c, FUN_L00_00275910. */
 unsigned char *PartType78Spawn(void *pos, int s, int col, int mode, int b, float *vec, int h, float x, float y) {
-    unsigned char *m = func_00218928(0x4E);
+    unsigned char *m = create_part(0x4E);
     if (m) {
         float *v;
         unsigned char *q = m + 0x20;

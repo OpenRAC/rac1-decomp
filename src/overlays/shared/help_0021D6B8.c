@@ -44,7 +44,7 @@ int Hero_GetModuleAnimId(int a) {
         }
     }
     {
-        int i = Hero_GetSlotModuleId(0);
+        int i = hero_slot_item_id(0);
         return D_L06_0017A340[i].v;
     }
 }
@@ -142,7 +142,7 @@ void HeroL06_UpdateFrame(void) {
     float rm[16];
 
     func_L00_00232EF0();
-    Hero_UpdateMotionInput();
+    hero_update();
     HeroL06_ResetFrameFlags();
     if (((GS_E7B8 *)(D_0013E633 + 0xE1D))->b20A4 == 1) {
         HeroLedgeProbe();
@@ -380,7 +380,7 @@ void Hero_EndObjectControl(void) {
     }
     *(float *)(g2 + 0xA94) = 1.0f;
     HeroClearQueuedSequence();
-    if (*(int *)(g2 + 0x2084) != 100 || (D_L06_0015F6A8 != 2 && D_L06_0015F6A8 != 6)) {
+    if (*(int *)(g2 + 0x2084) != 100 || (level_game_mode_q != 2 && level_game_mode_q != 6)) {
         HeroL06_TrySetMoveState(0, 1);
     }
     }
@@ -414,7 +414,7 @@ void HeroL06_ProbeGroundSupport(int arg) {
     int s;
     float f;
     if (*(short *)(p + 0x308) != 0) return;
-    if (ViewXyLength((float *)(p + 0xE0)) < D_0015EE6C * 0.1f) return;
+    if (gravity_length_xy((float *)(p + 0xE0)) < D_0015EE6C * 0.1f) return;
     sa = 0.37f;
     sb = 0.5f;
     if ((unsigned)(*(int *)(p + 0x208C) - 0x11) < 2) {
@@ -692,7 +692,7 @@ void HeroL06_UpdateTimers(void) {
         D_0013F450_35038.health.hp != 0 && (*(s32 *)&D_L06_0015F6A8_35038) == 0) {
         if (D_0013F450_35038.vehicle_mode == 3) {
             Hero_EndObjectControl();
-            if (PadPressedWithin(0x80, scale_ticks(0x12), 0)) {
+            if (pad_pressed_within(0x80, scale_ticks(0x12), 0)) {
                 D_0013F450_35038.unk20A6 = 1;
             }
         } else {
@@ -714,7 +714,7 @@ void HeroL06_UpdateTimers(void) {
         func_001F9908(&D_L06_0017A170[i].w0);
     }
     D_0013F450_35038.unk22B8 = 9999.0f;
-    if (D_0013F450_35038.air_frames.s != 0 && HeroGetViewZ(&D_0013F450_35038.motion.velocity) < 0.0f) {
+    if (D_0013F450_35038.air_frames.s != 0 && gravity_z(&D_0013F450_35038.motion.velocity) < 0.0f) {
         if (D_0013F450_35038.unk21B4 != 0x20) goto skip;
         clear_u64_value(&sum);
         n8 = 8;
@@ -837,9 +837,9 @@ f32 HeroL06_PredictLanding(f32 a, f32 b, f32 c) {
         if (func_L00_001EFFF0(&(&D_0013F450_431A0)->v80, t, 0xd24, 0, 0) != 0) {
             f32 nb;
             nb = b * -0.5f;
-            z = HeroGetViewZ(&(&D_0013F450_431A0)->vE0) - nb;
-            x = HeroGetViewZ(&(&D_0013F450_431A0)->v80);
-            y = HeroGetViewZ(&D_L06_001746E0);
+            z = gravity_z(&(&D_0013F450_431A0)->vE0) - nb;
+            x = gravity_z(&(&D_0013F450_431A0)->v80);
+            y = gravity_z(&D_L06_001746E0);
             if (SolveQuadratic(&o[2], &o[3], nb, z, x - y) > 0 && o[2] > 0.0f) {
                 return o[2];
             }
@@ -861,9 +861,9 @@ f32 HeroL06_PredictLanding(f32 a, f32 b, f32 c) {
         if (func_L00_001EFFF0(&(&D_0013F450_431A0)->v80, t, 0xd24, 0, 0) != 0) {
             f32 nb;
             nb = b * -0.5f;
-            z = HeroGetViewZ(&(&D_0013F450_431A0)->vE0) - nb;
-            x = HeroGetViewZ(&(&D_0013F450_431A0)->v80);
-            y = HeroGetViewZ(&D_L06_001746E0);
+            z = gravity_z(&(&D_0013F450_431A0)->vE0) - nb;
+            x = gravity_z(&(&D_0013F450_431A0)->v80);
+            y = gravity_z(&D_L06_001746E0);
             if (SolveQuadratic(&o[4], &o[5], nb, z, x - y) > 0 && o[4] > 0.0f) {
                 return o[4];
             }

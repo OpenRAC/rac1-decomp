@@ -81,7 +81,7 @@ Slot *AllocAnimSlot(char *o, int id) {
     s->used = 1;
     s->id = id;
     id = (short)id;
-    s->p10 = D_L00_001870C0 + i * 0x1500;
+    s->p10 = slot_buffers + i * 0x1500;
     s->p14 = *(int *)(o + 0x24);
     r = *(unsigned char **)(*(char **)(*(char **)(o + 0x24) + 0x1C) + id * 4 + 4);
     s->s2 = r[2];
@@ -364,7 +364,7 @@ void EnvNearestSamplePoint(char *o) {
     }
     off = idx * 0x30;
     e1 = (char *)(off + (int)D_L00_00160100);
-    func_0020E340(o, *(int *)(o + 0x80) = (*(int *)(e1 + 0x18) << 16) + (*(int *)(e1 + 0x14) << 8) + *(int *)(e1 + 0x10), 0, 0, 0);
+    pack_render_command_fields(o, *(int *)(o + 0x80) = (*(int *)(e1 + 0x18) << 16) + (*(int *)(e1 + 0x14) << 8) + *(int *)(e1 + 0x10), 0, 0, 0);
     *(int *)(o + 0x38) = *(int *)((char *)(off + (int)D_L00_00160100) + 0x1C);
     e2 = (char *)(off + (int)D_L00_00160100);
     if (*(unsigned char *)(e2 + 0x27) != 0) {
@@ -387,7 +387,7 @@ void EnvNearestSamplePoint(char *o) {
 }
 extern int D_0015EE84 MACRO_ADDR;
 extern unsigned char D_0014C150[];
-void SetLevelTriggerDone(int idx) {
+void jet_clear_persistent(int idx) {
     if (idx != 0xFF) {
         D_0014C150[idx + D_0015EE84 * 16] = 0xFF;
     }

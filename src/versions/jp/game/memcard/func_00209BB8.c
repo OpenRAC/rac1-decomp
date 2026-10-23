@@ -1,4 +1,4 @@
-int MemCard_CheckFreeSpace(void) {
+int check_memory_card(void) {
     int type, free, format, cmd, result;
 
     result = func_00124068(D_0013D390_i[0], D_0013D390_i[1], &type, &free, &format);

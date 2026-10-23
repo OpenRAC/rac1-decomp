@@ -342,7 +342,7 @@ extern int func_001F9850(int);
 extern int func_0022ED80(int, int, int);
 
 /* Per-frame update of a moby that arms a pickup-style reaction when the player state allows it. */
-void Moby163Update(char *m) {
+void visibomb_update(char *m) {
     int *p;
     char *g;
     char *pad;
@@ -363,13 +363,13 @@ void Moby163Update(char *m) {
             int w = *(int *)(g + 0x2084);
             if (w != 0x72 && w != 0x65 && w != 0x32) {
                 int x;
-                g2 = gCameraLvl;
+                g2 = player_camera;
                 x = *(int *)(g2 + 0x180);
                 if (x == 0 || *(short *)(x + 0x86) != 5) {
                     if (*(int *)(g + 0x300) != 0) {
                         int y = *(int *)(g + 0x2FC);
                         if (y == 0 || (*(short *)(y + 0xA6) != 0x13E && *(short *)(y + 0xA6) != 0x46F)) {
-                            if (TakeAmmo(-1, 1) != 0) {
+                            if (use_ammo(-1, 1) != 0) {
                                 f21 = 0;
                                 f20 = *(float *)(g + 0x688);
                                 if (*(int *)(g + 0x2084) == 1 && (*(unsigned short *)(*(int *)(g + 0x2080) + 0x34) & 1)) {
@@ -392,7 +392,7 @@ void Moby163Update(char *m) {
                                     }
                                 }
                                 if (*(unsigned char *)(m + 0x53) != 3) MobyBlendAnimation(m, 3, 0, 0);
-                                HelpPopup_RequestDismiss();
+                                jet_camera_mode();
                                 p[1] = VisibombMissileSpawn(m, t0, f20, f21);
                                 {
                                     char *h = D_0014171B + 0x65;
@@ -889,7 +889,7 @@ unsigned char *Aim_RefineTarget(int ign, Vec4 *from, float *yaw, float *pitch) {
     src.q = from->q;
     from = &src;
     bestd = 20.0f;
-    for (m = (unsigned char *)D_L00_001600A4; m != 0; m = *(unsigned char **)(m + 0x28)) {
+    for (m = (unsigned char *)suck_moby_list; m != 0; m = *(unsigned char **)(m + 0x28)) {
         if ((signed char)m[0x20] < 0) {
             continue;
         }
@@ -1583,7 +1583,7 @@ extern void func_L00_0025BA50_2B7430(void *, void *, void *, int, int, int, int,
 extern void func_L00_00260958_2B7430(void *, float) __asm__("func_L00_00260958");
 
 /* visibomb_missile update (moby class 172): drift, homing toward the target, arming countdown. */
-void VisibombMissileUpdate(Moby *m) {
+void visibomb_missile_update(Moby *m) {
     V_2B7430 v20;
     V_2B7430 k30;
     V_2B7430 k40;
@@ -1813,7 +1813,7 @@ int func_L00_002B7EC0_r(char *m, float r) {
     n = d[5];
     lim = random_integer_below(n > 0 ? n : 1);
     d[5] = 0;
-    for (i = 0; (e = D_L00_001ABD80[i]) != 0; i++) {
+    for (i = 0; (e = active_mobies[i]) != 0; i++) {
         c = GetFlaggedPvarWord(e);
         if (c) {
             dist = func_001F9D48(&pos, e + 0x10);
@@ -1891,7 +1891,7 @@ extern s32 D_0015EFA4 MACRO_ADDR;
 extern short D_L00_0015F6B0_B8208b SDATA(D_L00_0015F6B0);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002b2100.c, FUN_L00_002b6f10. */
-void Moby175Update(Moby *m)
+void taunter_update(Moby *m)
 {
     Vars *o;
     s32 v;
@@ -2130,7 +2130,7 @@ void func_L00_002B9528(unsigned char *m)
         if (*(void **)v)
             func_0020D678_B9528(*(void **)v);
         if (*(short *)(v + 0x44) != -1) {
-            FreePointLight(*(short *)(v + 0x44));
+            light_off_67e8(*(short *)(v + 0x44));
             *(short *)(v + 0x44) = -1;
         }
         h = *(short *)(v + 0x4A);
@@ -2144,7 +2144,7 @@ void func_L00_002B9528(unsigned char *m)
     }
     if (D_00141CD8)
         return;
-    P = D_00141948;
+    P = usage_stats;
     if (*(unsigned short *)(P + 0x50))
         return;
     if (m[0x20] == 3) {

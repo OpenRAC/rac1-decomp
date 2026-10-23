@@ -93,7 +93,7 @@ extern void func_L09_002C73D0_2C6B30(struct Moby *) __asm__("func_L09_002C73D0")
 /* Update of the oClass 52 moby: follows its target at a hover height above the hero, with a voice while it moves,
  * and bursts or is removed in its last states.
  * Adapted from Lombyte (MIT) for PAL: overlays/shared/gameplay/entities/002c5990.c, FUN_L09_002c5990. */
-void Moby52Update(struct Moby *moby) {
+void seeker_update(struct Moby *moby) {
     Moby52Vars_2C6B30 *vars = (Moby52Vars_2C6B30 *)moby->pvars;
     struct Moby *target;
     Vec4 vel;
@@ -1259,7 +1259,7 @@ int CountLiveMoby1886Slots(int unused, char *m) {
     int last = -1;
     int i;
     char **slot;
-    m[0x91] = MobyGroup_CountNotInState(*(int *)(m + 0x94), -1);
+    m[0x91] = count_group_e81e0(*(int *)(m + 0x94), -1);
     for (i = 0, slot = (char **)(m + 0xB0); i < 20; i++, slot++) {
         char *o = *slot;
         if (o != 0 && *(short *)(o + 0xA6) == 0x75E &&
@@ -1578,7 +1578,7 @@ static inline void bubble_bounce(struct Moby *moby, BubbleVars *vars) {
 }
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/vendor/00307ba8.c, FUN_L09_0030b3b0. */
-void Moby1886Update(struct Moby *moby) {
+void spawner_egg_update(struct Moby *moby) {
     BubbleVars *vars = (BubbleVars *)moby->pvars;
     Vec4 prev;
     Vec4 step;
@@ -1590,7 +1590,7 @@ void Moby1886Update(struct Moby *moby) {
     f32 dist;
     f32 rate;
 
-    func_L00_001FEF78(&vars->sound_delay);
+    fast_subtract_rotations_cf(&vars->sound_delay);
     qcopy(&prev, &moby->pos);
     switch (moby->state) {
     case 0:
@@ -1629,8 +1629,8 @@ void Moby1886Update(struct Moby *moby) {
         if (FastDecTimer(&vars->life) != 0) {
             moby->state = 2;
         }
-        moby->rot.x = WrapAngle(vars->vel.f[0]);
-        moby->rot.y = WrapAngle(vars->vel.f[1]);
+        moby->rot.x = normalize_angle(vars->vel.f[0]);
+        moby->rot.y = normalize_angle(vars->vel.f[1]);
         moby->collision = moby->pclass->collision;
         vars->owner->collision = vars->owner->pclass->collision;
         vars->vel.f[2] -= D_0015EE70 * 9.8f;
@@ -1660,7 +1660,7 @@ void Moby1886Update(struct Moby *moby) {
         }
         break;
     }
-    RecordMobyShadow(moby, moby->scale * 0.3f / moby->pclass->scale);
+    jet_animate(moby, moby->scale * 0.3f / moby->pclass->scale);
     if (moby->pos.z < 5.0f || moby->pos.z > 500.0f) {
         Moby1886_ReleaseOwnerSlot(moby, (char *)vars);
         return;

@@ -260,7 +260,7 @@ int MoveKeepingOverGround(void *ign, Vec4 *to, Vec4 *pos, int flags, float h, fl
 extern float func_001F9CB8(void *);
 
 /* Moves a moby position by a vector with ground collision steps; returns hit flags. */
-int MoveMobyWithCollision(char *m, char *v, int flags, float a, float b, float c) {
+int move_4318(char *m, char *v, int flags, float a, float b, float c) {
     Vs t0;
     Vs t1;
     Vs t2;
@@ -372,7 +372,7 @@ extern s32 func_L00_00259B08_59B88(void *, void *, f32, s32, f32, s32) __asm__("
 extern f32 func_00214358_59B88(void *, s32, f32) __asm__("func_00214358");
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/math_interpolation_00257ef0.c, FUN_L00_00258b50. */
-s32 MobySteerToward(Obj *m, Ctl *c, void *v, Vec4 *out, f32 f) {
+s32 move_w(Obj *m, Ctl *c, void *v, Vec4 *out, f32 f) {
     Vec4 save;
     Vec4 d;
     Vec4 p;
@@ -492,7 +492,7 @@ int ClassifyTargetInCone(char *m, char *p, float *pos, char *v) {
         }
     }
     if (*(int *)(p + 0x48) != 0) {
-        flags |= MobySteerToward(m, p, pos, v, (*(float *)(p + 0x28) - b) / *(float *)(p + 0x28));
+        flags |= move_w(m, p, pos, v, (*(float *)(p + 0x28) - b) / *(float *)(p + 0x28));
         if (0.1f < b) {
             flags &= ~2;
         }
@@ -774,12 +774,12 @@ void PostHitMessage(char *m, float t, int a, int b, void *pos, void *vel) {
     int i = D_L00_00173F40[5];
     E *e;
     if (*(unsigned char *)(m + 0xA4) != 0xFF) {
-        E *p = D_L00_00178200 + *(unsigned char *)(m + 0xA4);
+        E *p = moby_hits + *(unsigned char *)(m + 0xA4);
         if (p->owner == m && t < p->t) {
             return;
         }
     }
-    e = &D_L00_00178200[i];
+    e = &moby_hits[i];
     e->a = a;
     e->b = b;
     e->t = t;
@@ -790,8 +790,8 @@ void PostHitMessage(char *m, float t, int a, int b, void *pos, void *vel) {
     } else {
         e->on = 0;
     }
-    qcopy(&D_L00_00178200[i], pos);
-    qcopy(D_L00_00178200[i].vel, vel);
+    qcopy(&moby_hits[i], pos);
+    qcopy(moby_hits[i].vel, vel);
     *(unsigned char *)(m + 0xA4) = i;
     D_L00_00173F40[5] = (i + 1) & 0x3F;
 }
@@ -805,7 +805,7 @@ void PostHitMessageAtPoint(unsigned char *m, int x, int y, void *p, float f) {
 extern void func_001F9BF0(void *, void *, void *);
 
 /* steps two interpolated points from a0/a1 toward a2/a3 and reports whether any step hits */
-int SweepSegmentCheck(void *a, void *b, void *c, void *d, int e, int f, int n) {
+int sweep_hit_segment(void *a, void *b, void *c, void *d, int e, int f, int n) {
     float da[4];
     float db[4];
     float p[4];
@@ -834,9 +834,9 @@ typedef struct { int a[4]; } Vk __attribute__((aligned(16)));
 extern void func_L00_001FFED8(void *, int, float);
 void BuildEulerMatrix(void *a, float *v) {
     Vk t0, t1, t2;
-    func_L00_001FFED8(&t2, 0, v[0]);
-    func_L00_001FFED8(&t1, 1, v[1]);
-    func_L00_001FFED8(&t0, 2, v[2]);
+    axis_rotation_2d48(&t2, 0, v[0]);
+    axis_rotation_2d48(&t1, 1, v[1]);
+    axis_rotation_2d48(&t0, 2, v[2]);
     func_001FA588(a, &t2, &t1);
     func_001FA588(a, a, &t0);
 }
@@ -848,7 +848,7 @@ extern struct Ent D_L00_0016E180[];
 extern float D_L00_00173F80[];
 
 /* Records a shadow-like entry for the moby at its ground height, scaled by arg. Adapted from Lombyte (MIT) for PAL: overlays/shared/gameplay_entities_00259710.c, FUN_L00_00259fe8. */
-void RecordMobyShadow(unsigned char *m, float s) {
+void jet_animate(unsigned char *m, float s) {
     float h;
     float v;
     int n;
@@ -861,7 +861,7 @@ void RecordMobyShadow(unsigned char *m, float s) {
             n = D_L00_0015F534;
             e = &D_L00_0016E180[n];
             e->a[2] = h + 0.025f;
-            qcopy(D_L00_0016E180[n].b, D_L00_00173F80);
+            qcopy(D_L00_0016E180[n].b, coll_hit_normal);
             v = (8.0f - FastAbsF(*(float *)(m + 0x18) - h)) * 0.125f;
             if (v < 0.25f) {
                 v = 0.25f;
@@ -872,7 +872,7 @@ void RecordMobyShadow(unsigned char *m, float s) {
     }
 }
 LINKER_REMNANT("asm/overlays", func_L00_0025B168);
-void SetGroundHeightBand(char *o) {
+void func_L00_0025B178(char *o) {
     float a[4];
     float b[4];
     void *p = o + 0x10;
@@ -1152,7 +1152,7 @@ typedef struct { float x, y, z, w; } Vc0 __attribute__((aligned(16)));
 extern void func_001F9BF0(void *, void *, void *);
 extern float func_001F9CE8(void *);
 
-float ComputeLaunchVelocityZ(float *a, float *b, float *out, float speed, float g) {
+float jump_speed_4318(float *a, float *b, float *out, float speed, float g) {
     Vc0 d;
     float t;
     FastVecSub(&d, b, a);
@@ -1679,7 +1679,7 @@ void InitKnockback(float ang, char *o, float *s, int a, int b, int c) {
         *(int *)(o + 0x94) = 0;
     }
     if (*(int *)((char *)s + 0x24) & 2) {
-        MobyBlendAnimationEx(o, a, c, b, 1);
+        blend_moby_animation_ex(o, a, c, b, 1);
     } else {
         MobyBlendAnimation(o, a, c, b);
     }
@@ -1690,7 +1690,7 @@ extern int func_L00_001F2BE8_d6f0(float, void *, int, void *, void *) __asm__("f
 extern char *func_L00_002D9340(void *, float);
 
 /* Steps moby MOBY's motion from state ST and returns the flag bits it set. */
-int StepMobyPhysics(char *moby, char *st) {
+int mine_fall(char *moby, char *st) {
     float v0[4];
     float v10[4];
     float v20[4];
@@ -1929,7 +1929,7 @@ void RerollEffectCounter(void *m, short *p) {
         if (p[0] <= 0) p[0] = 1;
     } else {
         int c0, c1, c2;
-        func_L00_00251358(m, &c0, &c1, &c2);
+        get_moby_color(m, &c0, &c1, &c2);
         *((unsigned char *)p + 4) = (unsigned char)c0;
         *((unsigned char *)p + 5) = (unsigned char)c1;
         *((unsigned char *)p + 6) = (unsigned char)c2;
@@ -2284,7 +2284,7 @@ LINKER_REMNANT("asm/overlays", func_L00_0025F360);
 extern f32 func_L00_002001D8(void *, f32);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/math_rotations_0025d238.c, FUN_L00_0025e310. */
-f32 WrapAngle(f32 a) {
+f32 normalize_angle(f32 a) {
     f32 out;
     f32 x;
     f32 pi = 3.14159274f;
@@ -2292,7 +2292,7 @@ f32 WrapAngle(f32 a) {
 
     x = a + pi;
     x /= tp;
-    x = func_L00_002001D8(&out, x);
+    x = split_float_fraction(&out, x);
     x *= tp;
     return x - pi;
 }
@@ -2627,7 +2627,7 @@ void SpawnExplosionFx(char *a, char *b, int snd, float sc, float fl) {
             D_L00_001B0670[10] = 13.0f;
             D_L00_001B0670[8] = 13.0f;
         }
-        Moby639Spawn(D_L00_001B0670, b, 0, 0);
+        mine_camera_blast(D_L00_001B0670, b, 0, 0);
     }
 }
 typedef struct { float x, y, z, w; } Vy10 __attribute__((aligned(16)));
@@ -2678,7 +2678,7 @@ void SpawnExplosionFxSwapped(char *a, char *b, float sc, float fl) {
             D_L00_001B0670[10] = 13.0f;
             D_L00_001B0670[8] = 13.0f;
         }
-        Moby639Spawn(D_L00_001B0670, b, 0, 0);
+        mine_camera_blast(D_L00_001B0670, b, 0, 0);
     }
 }
 extern float func_001F9CB8(void *);
@@ -2704,7 +2704,7 @@ void MobyList_AddUnique(int a, short *list, short max) {
 extern s32 D_L00_00160098 MACRO_ADDR;
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/math/rotations/0025d238.c, FUN_L00_0025f800. */
-void MobyList_Remove(s32 p, s16 *a) {
+void mine_spawn_drops(s32 p, s16 *a) {
     s32 i;
     for (i = 1; i <= a[0]; i++) {
         if (D_L00_00160098 + (a[i] << 8) == p) {
@@ -2986,7 +2986,7 @@ int RotateWithMoby(int unused, char *m, char *a, void *b, char *c, void *d) {
     FastVecAdd(c, c, p);
     func_001FA218(t1, b);
     sce_vu0_mul_matrix(t1, t0, t1);
-    MatrixToEuler(t1, d);
+    matrix_to_euler(t1, d);
     return 1;
 }
 extern void func_001FA460(void *, void *);
@@ -3005,7 +3005,7 @@ int TransformToMobyLocal(int x, char *o, float *p, float *q, float *r, float *s)
     func_001FA218(m1, q);
     func_001FA460(m0, o + 0xC0);
     sce_vu0_mul_matrix(m1, m0, m1);
-    MatrixToEuler(m1, s);
+    matrix_to_euler(m1, s);
     if (*(int *)(e + 0x3C) & 4) {
         FastVecAdd(r, r, e + 0x10);
         RotateIntoMobySpace(x, o, r, s, p, q);
@@ -3033,18 +3033,18 @@ int RotateIntoMobySpace(int x, char *o, float *a, float *c, float *b, float *d) 
     func_001F9EE8(b, v, m);
     func_001FA218(w, c);
     sce_vu0_mul_matrix(w, m, w);
-    MatrixToEuler(w, d);
+    matrix_to_euler(w, d);
     return 1;
 }
 typedef struct { int a[16]; } Mx __attribute__((aligned(16)));
 typedef struct { int a[4]; } Vx __attribute__((aligned(16)));
-void CarryRiders(char *a, Vx *b, void *c, void *d) {
+void update_entity_matrix(char *a, Vx *b, void *c, void *d) {
     Mx t0, t1, t2;
     func_001FA218(&t0, c);
     func_001FA4A0(&t0, &t0);
     func_001FA218(&t1, d);
     sce_vu0_mul_matrix(&t2, &t0, &t1);
-    MatrixToEuler(&t2, a);
+    matrix_to_euler(&t2, a);
     qcopy(a + 0x10, b);
 }
 /* From Lombyte (MIT), FUN_L00_002607d0 (PR #66), adapted to PAL. */
@@ -3053,7 +3053,7 @@ extern int D_0013D618[];
 extern int D_0015EE84 MACRO_ADDR;
 extern void func_L00_00263DB0(int);
 
-void UnlockPlanet(int id) {
+void unlock_planet(int id) {
     int n = 0;
     int i;
     if (D_0013DE48[id] == 0) {
@@ -3082,7 +3082,7 @@ extern void func_L00_00264DB8(int arg0, int arg1);
 /* Gives item ID to the player: plays its sound, raises its count and records it in the slot lists. */
 void GiveItem(int id, int flag) {
     unsigned char *pa = &D_0013D5C8[id];
-    unsigned char *pb = &D_0013D5F0[id];
+    unsigned char *pb = &items_acquired[id];
     int idx = id + 0x25;
     int *p;
     int i;
@@ -3101,7 +3101,7 @@ void GiveItem(int id, int flag) {
         r = &D_L00_001C43B0[id];
         *pb = 1;
         if (r->a != 0) {
-            int *q = &D_0013D530[id];
+            int *q = &weapon_ammo_counts[id];
             int v = r->b;
             if (v < *q) {
                 v = *q;
@@ -3132,10 +3132,10 @@ void GiveItem(int id, int flag) {
             }
         }
         if (D_L00_00179BC0[id].t == 0) {
-            for (i = 0; i < 8 && D_00141FA0[i] != 0; i++) {
+            for (i = 0; i < 8 && pause_iop_sprite_lists[i] != 0; i++) {
             }
             if (i < 8) {
-                D_00141FA0[i] = id;
+                pause_iop_sprite_lists[i] = id;
             }
         }
     }

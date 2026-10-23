@@ -41,7 +41,7 @@ extern int func_001F9938_30D370(void *) __asm__("func_001F9938");
 /* Timed activation pad update: runs the 10-state machine on the data block at moby+0x78.
  * The timer is a MIN() of two expressions with calls in them, so the calls are made twice;
  * the timer of state 1 is a call in each arm (retail cross-jumps the two calls into one). */
-void TimedPadUpdate(unsigned char *moby)
+void timed_activation_pads_update(unsigned char *moby)
 {
     char *d;
     char *p;
@@ -331,7 +331,7 @@ extern u8 * D_L07_00160058 MACRO_ADDR;
 extern f32 D_0015EE6C MACRO_ADDR;
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b1e48.c, FUN_L07_0031aee0. */
-void func_L07_0031C2B0(u8 *moby)
+void bridge_update(u8 *moby)
 {
     u8 *data = *(u8 **)(moby + 0x78);
     u8 *other;
@@ -450,5 +450,5 @@ void func_L07_0031C2B0(u8 *moby)
         break;
     }
     FastVecAdd(delta, delta, moby + 0x10);
-    CarryRiders(data + 0x60, delta, old_rotation, moby + 0x40);
+    update_entity_matrix(data + 0x60, delta, old_rotation, moby + 0x40);
 }

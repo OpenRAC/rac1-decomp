@@ -1,4 +1,4 @@
-void StartLevel(int level) {
+void start_level(int level) {
     int a;
     int b;
     int t;
@@ -25,14 +25,14 @@ void StartLevel(int level) {
     music_Stop();
     func_0012EF48(0);
     for (;;) {
-        char *ld = D_0013D390;
+        char *ld = memory_card_state;
         if (*(int *)(ld + 0xD4) < 3 && *(int *)(ld + 0xDC) < 0) {
             break;
         }
-        MemCard_UpdateState();
+        memcard_update_state();
     }
     {
-        char *g = D_001941C0;
+        char *g = level_resource_buffers;
         t = *(int *)(g + 0x1C);
     }
     Movie_Play(b, a, t + 0x100000, t + 0x400000, 0);

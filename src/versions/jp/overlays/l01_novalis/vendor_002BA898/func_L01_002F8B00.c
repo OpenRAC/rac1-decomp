@@ -1,4 +1,4 @@
-void GunshipUpdate(Moby *m) {
+void bomber_jet_update(Moby *m) {
     Vars_F8B00 *d = (void *)m->pvars;
     Sub_F8B00 *sub = &d->sub;
     float s;
@@ -11,7 +11,7 @@ void GunshipUpdate(Moby *m) {
     Vec4 pos;
     Vec4 col;
     {
-        float dist = FastVecDist(&m->pos, D_L01_001672C0);
+        float dist = FastVecDist(&m->pos, camera_pos);
         float x0 = D_L01_00161C68;
         float k = -((1.0f - D_L01_00161C60) / (D_L01_00161C64 - x0));
         s = k * dist + (1.0f - k * x0);
@@ -76,11 +76,11 @@ void GunshipUpdate(Moby *m) {
         }
         if (d->flag170 != -1) {
             if (m->state == 0) {
-                func_L01_002F6540((char *)m);
+                gunship_follow_path((char *)m);
             }
             if (d->timer == -1 && is_point_inside_clip_volume(D_0013E633 + 0xE9D, d->flag170)) {
                 if (D_L01_001BBE14[(short)m->save_id] != 0
-                    || (D_0014C290[D_0015EE84][(short)m->save_id >> 5] >> (m->save_id & 0x1F)) & 1) {
+                    || (level_moby_killed[D_0015EE84][(short)m->save_id >> 5] >> (m->save_id & 0x1F)) & 1) {
                     for (j = 0; j < 4; j++) {
                         if (d->turrets[j] != -1) {
                             Moby *o = (Moby *)(D_L01_00160058_F8B00 + (d->turrets[j] << 8));
@@ -97,7 +97,7 @@ void GunshipUpdate(Moby *m) {
                 m->flags &= 0xFFBE;
                 if (d->cam174 != -1) {
                     Hero_SetMoveState(0x72, 0);
-                    CameraScript(D_L01_0016016C + (d->cam174 << 7) + 0x30, D_L01_0016016C + (d->cam174 << 7) + 0x70, 0, 0, 0);
+                    CameraScript(camera_points + (d->cam174 << 7) + 0x30, camera_points + (d->cam174 << 7) + 0x70, 0, 0, 0);
                     D_L01_0015F504 = 1;
                     m->collision = 0;
                     m->flags &= 0xEFFF;
@@ -108,8 +108,8 @@ void GunshipUpdate(Moby *m) {
                     CameraScript2(0);
                     Hero_SetMoveState(0, 1);
                     D_L01_0015F504 = 0;
-                    D_0014C290[D_0015EE84][(short)m->save_id >> 5] |= 1 << (m->save_id & 0x1F);
-                    D_L01_001BAC60[(short)m->save_id >> 5] |= 1 << (m->save_id & 0x1F);
+                    level_moby_killed[D_0015EE84][(short)m->save_id >> 5] |= 1 << (m->save_id & 0x1F);
+                    moby_killed[(short)m->save_id >> 5] |= 1 << (m->save_id & 0x1F);
                     DeleteMoby(m);
                     return;
                 }
@@ -125,13 +125,13 @@ void GunshipUpdate(Moby *m) {
                         }
                     }
                 }
-                func_L01_002F6540((char *)m);
+                gunship_follow_path((char *)m);
             } else {
                 m->flags |= 0x41;
                 break;
             }
         } else {
-            func_L01_002F6540((char *)m);
+            gunship_follow_path((char *)m);
         }
         m->flags |= 0x1000;
         d->b2B = 1;
@@ -157,9 +157,9 @@ void GunshipUpdate(Moby *m) {
                     }
                 }
                 if (j == 0) break;
-                if (is_point_inside_clip_volume(D_L01_001672C0, d->flag188)) break;
+                if (is_point_inside_clip_volume(camera_pos, d->flag188)) break;
                 for (i = j - 1; i >= 0; i--) {
-                    if (func_L00_001EFFF0(D_L01_001672C0, D_L01_0016016C + (a.v[i] << 7) + 0x30, 0x86, m, 0)) {
+                    if (func_L00_001EFFF0(camera_pos, camera_points + (a.v[i] << 7) + 0x30, 0x86, m, 0)) {
                         if (D_L01_00174340.moby == 0 || D_L01_00174340.moby != m) {
                             b.v[i] = -1;
                             cnt--;
@@ -182,9 +182,9 @@ void GunshipUpdate(Moby *m) {
                     i = a.v[random_integer_below(j)];
                     d->side ^= 1;
                     Moby_GetJointWorldPos(m, d->side, &pos);
-                    FastVecSub(&dir, D_L01_0016016C + (i << 7) + 0x30, &pos);
+                    FastVecSub(&dir, camera_points + (i << 7) + 0x30, &pos);
                     func_L00_001FF4B0(&dir, &dir, D_0015EE6C * 160.0f);
-                    col.q = *(u128 *)((i << 7) + (int)D_L01_0016016C + 0x30);
+                    col.q = *(u128 *)((i << 7) + (int)camera_points + 0x30);
                     bm = func_L01_002F7C78_F8B00(m, &pos, &dir, &col, is_point_inside_clip_volume(D_0013E633 + 0xE9D, d->flag18C), d->flag170 != -1);
                     if (bm != 0) {
                         int k = 0;
@@ -200,7 +200,7 @@ void GunshipUpdate(Moby *m) {
                                     Guard_F8B00 *g = (void *)o->pvars;
                                     if (g->f4 == 0 && g->f0 == 0 && random_integer_below(0x64) < 0x64
                                         && is_point_inside_clip_volume(D_0013E633 + 0xE9D, g->f8)
-                                        && is_point_inside_clip_volume(D_L01_001672C0, g->f8)) {
+                                        && is_point_inside_clip_volume(camera_pos, g->f8)) {
                                         out[k] = d->guards[i];
                                         k++;
                                     }

@@ -1,4 +1,4 @@
-void Freeze_Enter(int arg0, int arg1, int arg2) {
+void mode_freeze_init(int arg0, int arg1, int arg2) {
     char *s = D_00193400;
 
     *(int *)(s + 0x30) = arg2;
@@ -43,7 +43,7 @@ void Freeze_Enter(int arg0, int arg1, int arg2) {
     }
     case 5: {
         char *p = D_00193400;
-        PushHelpHistory(0x4E2B);
+        push_help_history(0x4E2B);
         *(int *)(p + 4) = func_001F98C0(0x1E);
         *(int *)(p + 0x20) = 0;
         *(int *)(p + 0x24) = func_001F98C0(0x1E);
