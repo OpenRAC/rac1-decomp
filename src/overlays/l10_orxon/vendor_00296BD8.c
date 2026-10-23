@@ -1230,21 +1230,23 @@ extern short D_L10_00161C88;
 
 /* update: on a timer, fire a projectile from the moby's angle, then rearm the timer */
 void bombthrower_grass_update(char *moby) {
-    char *data = *(char **)(moby + 0x78);
-    float a[4];
-    float b[4];
-    if (((unsigned char *)moby)[0x20] == 0) {
+    char *data = (char *)((struct Moby *)moby)->pvars;
+    float launch_offset[4];
+    float launch_position[4];
+    if (((struct Moby *)moby)->state == 0) {
         *(int *)data = scale_ticks(rand_range(*(int *)&D_L10_00161C70, *(int *)&D_L10_00161C74));
-        moby[0x20] = 1;
+        ((struct Moby *)moby)->state = 1;
     }
     if (func_001F9908((int *)data)) {
         float x = *(float *)&D_L10_00161C78;
-        float p = random_float_between(-x, x) * 0.017453292f;
-        float q = FastAddRots(*(float *)(moby + 0x48), p);
+        float yaw_offset = random_float_between(-x, x) * 0.017453292f;
+        float launch_yaw = FastAddRots(((struct Moby *)moby)->rot.z, yaw_offset);
         float r = random_float_between(*(float *)&D_L10_00161C7C, *(float *)&D_L10_00161C80) * 0.017453292f;
-        BuildSphericalOffset(a, random_float_between(*(float *)&D_L10_00161C84, *(float *)&D_L10_00161C88) * D_0015EE6C, q, r);
-        FastVecAdd(b, moby + 0x10, a);
-        SpawnSwirlMoby(moby, b, a);
+        BuildSphericalOffset(launch_offset,
+            random_float_between(*(float *)&D_L10_00161C84, *(float *)&D_L10_00161C88) * D_0015EE6C,
+            launch_yaw, r);
+        FastVecAdd(launch_position, &((struct Moby *)moby)->pos, launch_offset);
+        SpawnSwirlMoby(moby, launch_position, launch_offset);
         Moby_PlaySound(0, 0, (int)moby);
         *(int *)data = scale_ticks(rand_range(*(int *)&D_L10_00161C70, *(int *)&D_L10_00161C74));
     }
@@ -2010,37 +2012,47 @@ void Moby1090Update(char *m) {
 extern void func_001F9BF0(void *dst, void *a, void *b);
 extern char D_L10_00178600[];
 
+typedef struct CaveLink {
+    u8 pad_00[0x20];
+    struct Moby *other;        /* 0x20 */
+    s32 flags;                 /* 0x24 */
+    u8 pad_28[0xC];
+    struct Moby *owner;        /* 0x34 */
+    u8 pad_38[0x8];
+} CaveLink;
+
 /* Collectible trigger: deletes itself once taken, else watches for its toucher. */
 void block_cave_update(char *m) {
     int i;
-    char *e;
-    float w[16];
-    float v[4];
-    unsigned short id = *(unsigned short *)(m + 0xB2);
+    CaveLink *table_entry;
+    float transposed_rotation_matrix[16];
+    float relative_position[4];
+    struct Moby *moby = (struct Moby *)m;
+    unsigned short id = moby->save_id;
     if (D_L10_001BB9C0.collected[(short)id] != 0
         || (*(int *)(D_0014171B + 0xAB75 + (((short)id >> 5) * 4 + (D_0015EE84_2DA678 << 8))) >> (id & 0x1F)) & 1) {
-        DeleteMoby(m);
+        DeleteMoby(moby);
         return;
     }
-    *(short *)(m + 0x32) = 0x80;
-    e = D_L10_00178600;
-    for (i = 0; i < 0x40; i++, e += 0x40) {
-        if (*(char **)(e + 0x34) == m) {
-            if (*(int *)(e + 0x24) & 0x20000) {
-                char *o = *(char **)(e + 0x20);
-                if (*(short *)(o + 0xA6) == 0xAC || *(short *)(o + 0xA6) == 0x99) {
-                    FastVecSub(v, m + 0x10, o + 0x10);
-                    func_001FA4A0(w, m + 0xC0);
-                    func_001F9EE8(v, v, w);
-                    if (v[0] > 0.25f) {
-                        *(int *)(D_0014171B + 0xAB75 + (((short)*(unsigned short *)(m + 0xB2) >> 5) * 4 + (D_0015EE84_2DA678 << 8))) |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
-                        D_L10_001BAC60[(short)*(unsigned short *)(m + 0xB2) >> 5] |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
-                        DeleteMoby(m);
+    moby->draw_dist = 0x80;
+    table_entry = (CaveLink *)D_L10_00178600;
+    for (i = 0; i < 0x40; i++, table_entry++) {
+        if (table_entry->owner == moby) {
+            if (table_entry->flags & 0x20000) {
+                struct Moby *other_moby = table_entry->other;
+                if (other_moby->oclass == 0xAC || other_moby->oclass == 0x99) {
+                    FastVecSub(relative_position, &moby->pos, &other_moby->pos);
+                    func_001FA4A0(transposed_rotation_matrix, &moby->rot_row0);
+                    func_001F9EE8(relative_position, relative_position, transposed_rotation_matrix);
+                    if (relative_position[0] > 0.25f) {
+                        *(int *)(D_0014171B + 0xAB75 + (((short)moby->save_id >> 5) * 4 + (D_0015EE84_2DA678 << 8))) |= 1 << (moby->save_id & 0x1F);
+                        D_L10_001BAC60[(short)moby->save_id >> 5] |= 1 << (moby->save_id & 0x1F);
+                        DeleteMoby(moby);
                         return;
                     }
-                    *(int *)(e + 0x34) = 0;
+                    table_entry->owner = 0;
                 } else {
-                    *(int *)(e + 0x34) = 0;
+                    table_entry->owner = 0;
                 }
             }
         }

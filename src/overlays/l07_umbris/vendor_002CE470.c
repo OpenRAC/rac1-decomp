@@ -598,7 +598,56 @@ extern char D_L07_00211840[];
 extern char D_L07_00211870[];
 extern char D_L07_002118C0[];
 
+typedef struct CrateGroupView {
+    u8 pad_00[0x20];
+    f32 remaining;             /* 0x20 */
+    u8 pad_24[0x2];
+    s16 timer;                 /* 0x26 */
+    u8 pad_28[0x48];
+    s32 path_index;            /* 0x70 index into the path table, -1 when none */
+    s32 group;                 /* 0x74 */
+    s32 child_count;           /* 0x78 */
+    f32 speed;                 /* 0x7C */
+    f32 step;                  /* 0x80 */
+    s32 unk84;                 /* 0x84 compared with -1 */
+    u8 pad_88[0x8];
+    s32 first_segment;         /* 0x90 */
+    u8 flag;                   /* 0x94 */
+    u8 flag2;                  /* 0x95 */
+} CrateGroupView;
+
+typedef struct FollowerSegmentView {
+    u8 pad_00[0x60];
+    Vec4f delta;               /* 0x60 */
+    Vec4f unk70;               /* 0x70 */
+    Vec4f pos;                 /* 0x80 */
+    s32 segment;               /* 0x90 */
+    s32 next_segment;          /* 0x94 */
+    s32 timer;                 /* 0x98 */
+    u8 pad_9C[0x4];
+    s32 owner;                 /* 0xA0 */
+} FollowerSegmentView;
+
 void boltcrate_possibly_for_metal_detector_update(char *m) {
+    enum {
+        INITIALIZE_PATH_CHILDREN = 0x0,
+        ADVANCE_PATH_CHILDREN = 0x1
+    };
+    enum {
+        HIT_REACTION_NONE = 0x0,
+        BOLTCRATE_CLEAR_HEALTH_RESPONSE = 0x1,
+        BOLTCRATE_ALTERNATE_CLEAR_HEALTH_RESPONSE = 0x2,
+        HIT_REACTION_START_KNOCKBACK = 0x3,
+        HIT_REACTION_KNOCKBACK_RESPONSE = 0x4,
+        HIT_REACTION_ALTERNATE_KNOCKBACK_RESPONSE = 0x5,
+        HIT_REACTION_START_HIT_KNOCKBACK_RECOVERY = 0x6,
+        HIT_REACTION_LAUNCH_HIT_KNOCKBACK_RECOVERY = 0x7,
+        HIT_REACTION_ENTER_HIT_KNOCKBACK_RECOVERY = 0x8,
+        HIT_REACTION_HIT_ANIMATION_RESPONSE = 0x9,
+        HIT_REACTION_ALTERNATE_HIT_ANIMATION_RESPONSE = 0xA,
+        HIT_REACTION_NO_ANIMATION_RESPONSE = 0xB
+    };
+    struct Moby *moby = (struct Moby *)m;
     char *data;
     char *path;
     float *remaining;
@@ -613,27 +662,27 @@ void boltcrate_possibly_for_metal_detector_update(char *m) {
     char *limit;
     int result;
 
-    if (!m) return;
-    data = *(char **)(m + 0x78);
+    if (!moby) return;
+    data = (char *)moby->pvars;
     if (!data) return;
-    remaining = (float *)(data + 0x20);
-    if (*(unsigned char *)(data + 0x94)) {
+    remaining = &((CrateGroupView *)data)->remaining;
+    if (((CrateGroupView *)data)->flag) {
         limit = MobyGetHitMessage(m, 0x230000, 0);
         result = ComputeHitResponse(m, limit, remaining, 0, &count, 0, 0, 4);
         switch ((unsigned)result) {
-        case 0:
-        case 3:
-        case 4:
-        case 5:
-        case 6:
-        case 7:
-        case 8:
-        case 9:
-        case 10:
-        case 11:
+        case HIT_REACTION_NONE:
+        case HIT_REACTION_START_KNOCKBACK:
+        case HIT_REACTION_KNOCKBACK_RESPONSE:
+        case HIT_REACTION_ALTERNATE_KNOCKBACK_RESPONSE:
+        case HIT_REACTION_START_HIT_KNOCKBACK_RECOVERY:
+        case HIT_REACTION_LAUNCH_HIT_KNOCKBACK_RECOVERY:
+        case HIT_REACTION_ENTER_HIT_KNOCKBACK_RECOVERY:
+        case HIT_REACTION_HIT_ANIMATION_RESPONSE:
+        case HIT_REACTION_ALTERNATE_HIT_ANIMATION_RESPONSE:
+        case HIT_REACTION_NO_ANIMATION_RESPONSE:
             break;
-        case 1:
-        case 2:
+        case BOLTCRATE_CLEAR_HEALTH_RESPONSE:
+        case BOLTCRATE_ALTERNATE_CLEAR_HEALTH_RESPONSE:
             *remaining = 0.0f;
             break;
         }
@@ -641,7 +690,7 @@ void boltcrate_possibly_for_metal_detector_update(char *m) {
             float step = *(float *)(limit + 0x2c);
             if (*remaining <= step) {
                 *remaining = 0.0f;
-                MobyGroup_SetState(*(int *)(data + 0x74), 3);
+                MobyGroup_SetState(((CrateGroupView *)data)->group, 3);
                 clear_u64_value(position);
                 func_L00_0025F4A8(m, position, (void *)0, 0.0f, 0.0f, 10, 3, 16, 4.0f, 2.0f, 9.0f, 1.0f, -1, 15.0f, 1, 1, -1, 0);
                 DeleteMoby(m);
@@ -649,18 +698,19 @@ void boltcrate_possibly_for_metal_detector_update(char *m) {
             }
             *remaining -= step;
             *(unsigned char *)(data + 0x67) = 0xfa;
-            *(short *)(data + 0x26) = scale_ticks(0x3c);
+            ((CrateGroupView *)data)->timer = scale_ticks(0x3c);
             RerollEffectCounter(m, (short *)(data + 0x60));
         }
-        *(unsigned char *)(m + 0xA4) = 0xff;
+        moby->hit_slot = 0xff;
     }
     StepColorFade(m, data + 0x60);
-    if (*(int *)(data + 0x70) == -1) return;
-    path = D_L07_001B0830[*(int *)(data + 0x70)];
-    switch (*(unsigned char *)(m + 0x20)) {
-    case 0: {
+    if (((CrateGroupView *)data)->path_index == -1) return;
+    path = D_L07_001B0830[((CrateGroupView *)data)->path_index];
+    switch (moby->state) {
+    case INITIALIZE_PATH_CHILDREN: {
         int j;
-        int i0, ch;
+        int placed;
+        FollowerSegmentView *follower;
         current = 0;
         next = 0;
         qcopy(position, path + 0x10);
@@ -670,62 +720,63 @@ void boltcrate_possibly_for_metal_detector_update(char *m) {
                 FastVecDist(path + 0x10 + j * 16,
                               path + 0x10 + ((j + 1) % *(int *)path) * 16);
         }
-        if (GroupMobyIter_Start(&current, *(int *)(data + 0x74), 1, 0)) {
-            STUB_printf(D_L07_00211840, *(int *)(data + 0x74));
+        if (GroupMobyIter_Start(&current, ((CrateGroupView *)data)->group, 1, 0)) {
+            STUB_printf(D_L07_00211840, ((CrateGroupView *)data)->group);
             return;
         }
-        first = *(int *)(data + 0x90) = FindClosestDistanceEntry(m + 0x10, path, 0.0f);
-        i0 = 0;
-        if (0 < ((struct { char pad[0x78]; int n; } *)data)->n) do {
-            ch = *(int *)(current + 0x78);
-            *(int *)(ch + 0xa0) = (int)m;
-            qcopy((void *)(current + 0x10), position);
-            qcopy((void *)(ch + 0x80), position);
-            qcopy((void *)(ch + 0x70), position);
-            ((struct { char pad[0x90]; int a; int b; } *)ch)->a = first;
-            ((struct { char pad[0x94]; int b; } *)ch)->b = first + 1;
+        first = ((CrateGroupView *)data)->first_segment = FindClosestDistanceEntry((char *)&moby->pos, path, 0.0f);
+        placed = 0;
+        if (0 < ((CrateGroupView *)data)->child_count) do {
+            follower = (FollowerSegmentView *)((struct Moby *)current)->pvars;
+            follower->owner = (int)moby;
+            qcopy(&((struct Moby *)current)->pos, position);
+            qcopy(&follower->pos, position);
+            qcopy(&follower->unk70, position);
+            follower->segment = first;
+            follower->next_segment = first + 1;
             if (GroupMobyIter_Next(&current, current, 1, 0)) {
-                int child_count = *(int *)(data + 0x78);
-                if (i0 < child_count - 1) {
-                    STUB_printf(D_L07_00211870, i0 + 1, *(int *)(data + 0x74), child_count);
-                } else if (i0 == child_count - 1) {
-                    STUB_printf(D_L07_002118C0, *(int *)(data + 0x74), child_count);
+                int child_count = ((CrateGroupView *)data)->child_count;
+                if (placed < child_count - 1) {
+                    STUB_printf(D_L07_00211870, placed + 1, ((CrateGroupView *)data)->group, child_count);
+                } else if (placed == child_count - 1) {
+                    STUB_printf(D_L07_002118C0, ((CrateGroupView *)data)->group, child_count);
                 }
-                *(int *)(data + 0x78) = i0 + 1;
+                ((CrateGroupView *)data)->child_count = placed + 1;
                 break;
             }
-            Spline_AdvanceByDistance(path, position, &first, (float *)&next, *(float *)(data + 0x80), 1);
-            i0++;
-        } while (i0 < *(int *)(data + 0x78));
-        if (!*(unsigned char *)(data + 0x94)) {
-            *(int *)(m + 0x94) = 0;
-            *(unsigned short *)(m + 0x34) &= 0xefff;
+            Spline_AdvanceByDistance(path, position, &first, (float *)&next, ((CrateGroupView *)data)->step, 1);
+            placed++;
+        } while (placed < ((CrateGroupView *)data)->child_count);
+        if (!((CrateGroupView *)data)->flag) {
+            moby->collision = 0;
+            moby->flags &= 0xefff;
         }
-        if (!*(unsigned char *)(data + 0x95)) *(unsigned short *)(m + 0x34) |= 1;
-        *(unsigned char *)(m + 0x20) = 1;
+        if (!((CrateGroupView *)data)->flag2) moby->flags |= 1;
+        moby->state = 1;
         break;
     }
-    case 1: {
+    case ADVANCE_PATH_CHILDREN: {
         int cursor = 0;
-        GroupMobyIter_Start(&cursor, ((struct { char pad[0x74]; int id; } *)data)->id, 1, 0);
-        for (i = 0; i < *(int *)(data + 0x78); i++) {
-            child = *(int *)(cursor + 0x78);
+        FollowerSegmentView *child_seg;
+        GroupMobyIter_Start(&cursor, ((CrateGroupView *)data)->group, 1, 0);
+        for (i = 0; i < ((CrateGroupView *)data)->child_count; i++) {
+            child_seg = (FollowerSegmentView *)((struct Moby *)cursor)->pvars;
             {
-                float segment_distance = FastVecDist((char *)child + 0x80,
-                              path + 0x10 + *(int *)(child + 0x90) * 16);
-                float step = *(float *)(data + 0x7c) * D_0015EE6C;
+                float segment_distance = FastVecDist((char *)&child_seg->pos,
+                              path + 0x10 + child_seg->segment * 16);
+                float step = ((CrateGroupView *)data)->speed * D_0015EE6C;
                 distance = segment_distance;
-                Spline_AdvanceByDistance(path, (char *)child + 0x80, (int *)((char *)child + 0x90), &distance, step, 1);
+                Spline_AdvanceByDistance(path, (char *)&child_seg->pos, &child_seg->segment, &distance, step, 1);
             }
-            *(int *)(child + 0x94) = *(int *)(child + 0x90) + 1;
-            if (cursor == 0 || *(unsigned char *)(cursor + 0x20) == 0xfe ||
-                *(unsigned char *)(cursor + 0x20) == 0xfd) {
-                if (*(int *)(data + 0x84) != -1) {
-                    FastVecSub((char *)child + 0x60, (char *)child + 0x80,
-                                  (char *)cursor + 0x10);
-                    qcopy((void *)(cursor + 0x10), (void *)(child + 0x80));
-                    if (func_001F9908((int *)(child + 0x98)) &&
-                        *(int *)(child + 0x90) == *(int *)(data + 0x90))
+            child_seg->next_segment = child_seg->segment + 1;
+            if (cursor == 0 || ((struct Moby *)cursor)->state == 0xfe ||
+                ((struct Moby *)cursor)->state == 0xfd) {
+                if (((CrateGroupView *)data)->unk84 != -1) {
+                    FastVecSub((char *)&child_seg->delta, (char *)&child_seg->pos,
+                                  (char *)&((struct Moby *)cursor)->pos);
+                    qcopy(&((struct Moby *)cursor)->pos, &child_seg->pos);
+                    if (func_001F9908(&child_seg->timer) &&
+                        child_seg->segment == ((CrateGroupView *)data)->first_segment)
                         ResetMobyFromClassDefaults((void *)cursor);
                 }
             }

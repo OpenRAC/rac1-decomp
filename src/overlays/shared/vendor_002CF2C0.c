@@ -174,30 +174,42 @@ extern char D_0013F450[];
 extern short D_L05_00160098;
 
 /* Moby update: plays an animation when its state and a flag allow, then calls the next stage. */
-void hydrodisplacer_faucet_update(char *m) {
-    char *g = D_0013F450;
-    int f = 0;
-    int *d = *(int **)(m + 0x78);
-    if (*(char **)(g + 0x2FC) == m) {
-        f = *(int *)(g + 0x208C) == 0x13;
+void hydrodisplacer_faucet_update(char *faucet_moby) {
+    enum {
+        HYDRODISPLACER_FAUCET_ANIM_WAIT_FOR_LINK_FLAG_1 = 0,
+        HYDRODISPLACER_FAUCET_ANIM_TRANSITION_TO_LINK_FLAG_2_WAIT = 1,
+        HYDRODISPLACER_FAUCET_ANIM_WAIT_FOR_LINK_FLAG_2 = 2,
+        HYDRODISPLACER_FAUCET_ANIM_TRANSITION_TO_LINK_FLAG_1_WAIT = 3
+    };
+    struct Hero *player_hero = (struct Hero *)D_0013F450;
+    int hero_on_faucet_in_mode_13 = 0;
+    int *faucet_vars = (int *)((struct Moby *)faucet_moby)->pvars;
+    if ((char *)player_hero->ground_moby == faucet_moby) {
+        hero_on_faucet_in_mode_13 = player_hero->state.control_mode == 0x13;
     }
-    switch ((unsigned char)m[0x53]) {
-    case 0:
-        if (d[0] >= 0 && (*(unsigned char *)(*(int *)&moby_pool_4f60 + d[0] * 256 + 0xBC) & 1) && !f)
-            MobyBlendAnimation(m, 1, 0, 0);
+    switch ((unsigned char)((struct Moby *)faucet_moby)->prev_seq) {
+    case HYDRODISPLACER_FAUCET_ANIM_WAIT_FOR_LINK_FLAG_1:
+        if (faucet_vars[0] >= 0 &&
+            (((struct Moby *)*(int *)&moby_pool_4f60)[faucet_vars[0]].command & 1) &&
+            !hero_on_faucet_in_mode_13)
+            MobyBlendAnimation(faucet_moby, 1, 0, 0);
         break;
-    case 2:
-        if (d[0] >= 0 && (*(unsigned char *)(*(int *)&moby_pool_4f60 + d[0] * 256 + 0xBC) & 2) && !f)
-            MobyBlendAnimation(m, 3, 0, 0);
+    case HYDRODISPLACER_FAUCET_ANIM_WAIT_FOR_LINK_FLAG_2:
+        if (faucet_vars[0] >= 0 &&
+            (((struct Moby *)*(int *)&moby_pool_4f60)[faucet_vars[0]].command & 2) &&
+            !hero_on_faucet_in_mode_13)
+            MobyBlendAnimation(faucet_moby, 3, 0, 0);
         break;
-    case 3:
-        if (m[0x70] & 2) MobyBlendAnimation(m, 0, 0, 0);
+    case HYDRODISPLACER_FAUCET_ANIM_TRANSITION_TO_LINK_FLAG_1_WAIT:
+        if (faucet_moby[0x70] & 2)
+            MobyBlendAnimation(faucet_moby, 0, 0, 0);
         break;
-    case 1:
-        if (m[0x70] & 2) MobyBlendAnimation(m, 2, 0, 0);
+    case HYDRODISPLACER_FAUCET_ANIM_TRANSITION_TO_LINK_FLAG_2_WAIT:
+        if (faucet_moby[0x70] & 2)
+            MobyBlendAnimation(faucet_moby, 2, 0, 0);
         break;
     }
-    UpdateFocusPulse(m);
+    UpdateFocusPulse(faucet_moby);
 }
 extern float func_00214D28(float *p, float target, float maxstep);
 extern float func_001FA748(float, float);
@@ -263,6 +275,13 @@ extern short D_L05_001619D0;
 extern unsigned char D_0013D355[];
 extern unsigned char D_0014171B[];
 
+typedef struct HoverboardVars {
+    Vec4 last_pos;           /* 0x00: the moby's position last frame */
+    Vec4 home_pos;           /* 0x10: where the board returns when it is released */
+    u8 pad_20[0x30];
+    s32 unk50;               /* 0x50: nonzero keeps it from returning home */
+} HoverboardVars;
+
 /* func_L05_002F9BA0 -- src/overlays/shared/vendor_002CF2C0.c (functional C for the port, not a match)
  * Hoverboard moby update (class 439, levels 05 and 16). State 0: when Ratchet comes within 5.5 (and
  * the story flag D_L05_0015F6B0 is at least 4, and he is not in movement group 0x15 or 0x16) it
@@ -275,49 +294,44 @@ extern unsigned char D_0014171B[];
  * position into pvars +0x10 (the near miss copied the other way), and the state tests.
  * equiv: NEAR (all copies: retail rebuilds moby + 0x10 where this keeps it). */
 void hoverboard_update(unsigned char *moby) {
-#define pos ((char *)moby + 0x10)
-    char *data;
-    char *g;
-    char *gq;
-    char v0[16];
-    char v10[16];
-    char v20[16];
-    char v30[16];
-    char v40[16];
-    float f1;
+    HoverboardVars *data;
+    char *hero_pos;
+    struct Hero *player;
+    float delta[4], position[4], effect_position[4], offset[4], second_position[4];
+    float delta_length;
     int one = 1;
     int st;
 
-    data = *(char **)(moby + 0x78);
-    st = moby[0x20];
+    data = (HoverboardVars *)((struct Moby *)moby)->pvars;
+    st = ((struct Moby *)moby)->state;
     switch (st) {
     case 0:
-                g = D_0013E633 + 0xE9D;
-                if (FastVecDist(g, pos) < 5.5f) {
-                    if (*(int *)&D_L05_0015F6B0 >= 4) {
-                        int grp;
-                        gq = g - 0x80;
-                        grp = *(int *)(gq + 0x208C);
-                        if (grp != 0x15) if (grp != 0x16) {
-                            *(unsigned char **)(gq + 0x86C) = moby;
-                            ((int (*)(int, int))Hero_TryMoveStateL05)(0x6B, 1);
-                            if (*(int *)(data + 0x50) == 0) {
-                                qcopy(data + 0x10, pos);
-                            }
-                            moby[0x20] = one;
-                            moby[0x30] = 0xFF;
-                        }
+        hero_pos = D_0013E633 + 0xE9D;
+        if (FastVecDist(hero_pos, &((struct Moby *)moby)->pos) < 5.5f) {
+            if (*(int *)&D_L05_0015F6B0 >= 4) {
+                int grp;
+                player = (struct Hero *)(hero_pos - 0x80);
+                grp = player->state.control_mode;
+                if (grp != 0x15) if (grp != 0x16) {
+                    player->unk86C = moby;
+                    ((int (*)(int, int))Hero_TryMoveStateL05)(0x6B, 1);
+                    if (data->unk50 == 0) {
+                        qcopy(&data->home_pos, &((struct Moby *)moby)->pos);
                     }
+                    ((struct Moby *)moby)->state = one;
+                    ((struct Moby *)moby)->update_dist = 0xFF;
                 }
+            }
+        }
         break;
     case 1: {
-        if (*(int *)(data + 0x50) == 0) {
+        if (data->unk50 == 0) {
             if (D_0013D355[0x13B] != 0) {
                 if (*(unsigned short *)(D_0014171B + 0x31D) == 0) {
                     if (D_L05_0015F788 != 0) {
-                        char *h = D_0013E633 + 0xE1D;
+                        struct Hero *h = (struct Hero *)(D_0013E633 + 0xE1D);
                         int ret = scale_ticks(0x4B0);
-                        if (ret < *(int *)(h + 0x19C)) {
+                        if (ret < h->unk19C) {
                             extern unsigned short D_00141D60[];
                             if (D_00141D60[0] == 0) {
                                 Help_Request(0x138F, 0x5F);
@@ -328,16 +342,16 @@ void hoverboard_update(unsigned char *moby) {
             }
         }
         {
-        char *h2 = D_0013E633 + 0xE1D;
-        if (*(int *)(h2 + 0x208C) != 0x16) {
-            moby[0x30] = 0x10;
-            if (*(int *)(data + 0x50) != 0) {
-                moby[0x20] = 0;
-            } else {
-                qcopy(pos, data + 0x10);
-                moby[0x20] = 0;
+            struct Hero *h2 = (struct Hero *)(D_0013E633 + 0xE1D);
+            if (h2->state.control_mode != 0x16) {
+                ((struct Moby *)moby)->update_dist = 0x10;
+                if (data->unk50 != 0) {
+                    ((struct Moby *)moby)->state = 0;
+                } else {
+                    qcopy(&((struct Moby *)moby)->pos, &data->home_pos);
+                    ((struct Moby *)moby)->state = 0;
+                }
             }
-        }
         }
         break;
     }
@@ -345,38 +359,38 @@ void hoverboard_update(unsigned char *moby) {
         break;
     }
 
-    FastVecSub(v0, pos, data);
-    qcopy(data, pos);
-    f1 = FastVecLength(v0);
-    if (moby[0xBC] != 2 && f1 < 2.0f) {
-        float f20;
-        float f21;
-        Moby_GetJointWorldPos(moby, *(int *)&D_L05_0015F6B0 & 1, v10);
-        f21 = random_angle_radians();
-        f20 = D_0015EE6C * 0.25f;
-        func_L00_001FF4B0(v20, moby + 0xE0, f20 * FastCos(f21));
-        func_L00_001FF4B0(v30, moby + 0xD0, f20 * FastSin(f21));
-        FastVecAdd(v20, v20, v0);
-        FastVecAdd(v20, v20, v30);
-        qcopy(v20, v0);
-        *(float *)(v20 + 0xC) = (float)*(int *)&D_L05_001619E8;
-        if (moby[0xBC] == 0) {
+    FastVecSub(delta, &((struct Moby *)moby)->pos, data);
+    qcopy(&data->last_pos, &((struct Moby *)moby)->pos);
+    delta_length = FastVecLength(delta);
+    if (((struct Moby *)moby)->command != 2 && delta_length < 2.0f) {
+        float distance_scale;
+        float angle;
+        Moby_GetJointWorldPos(moby, *(int *)&D_L05_0015F6B0 & 1, position);
+        angle = random_angle_radians();
+        distance_scale = D_0015EE6C * 0.25f;
+        func_L00_001FF4B0(effect_position, &((struct Moby *)moby)->rot_row2, distance_scale * FastCos(angle));
+        func_L00_001FF4B0(offset, &((struct Moby *)moby)->rot_row1, distance_scale * FastSin(angle));
+        FastVecAdd(effect_position, effect_position, delta);
+        FastVecAdd(effect_position, effect_position, offset);
+        qcopy(effect_position, delta);
+        effect_position[3] = (float)*(int *)&D_L05_001619E8;
+        if (((struct Moby *)moby)->command == 0) {
             int a;
             int b;
             int c;
             a = scale_ticks(10);
             b = scale_ticks(13);
             c = rand_range(a, b);
-            PartType04Spawn(v10, v20, *(int *)&D_L05_001619CC, *(int *)&D_L05_001619D0, c, 15, 15, 1);
+            PartType04Spawn(position, effect_position, *(int *)&D_L05_001619CC, *(int *)&D_L05_001619D0, c, 15, 15, 1);
         } else {
             int a;
             int b;
             int c;
-            FastVecScale(v40, v0, 0.92f);
+            FastVecScale(second_position, delta, 0.92f);
             a = scale_ticks(0xF);
             b = scale_ticks(0x12);
             c = rand_range(a, b);
-            PartType04Spawn(v10, v40, 0x5032F0D2, *(int *)&D_L05_001619D0, c, 0x1E, 0x14, 1);
+            PartType04Spawn(position, second_position, 0x5032F0D2, *(int *)&D_L05_001619D0, c, 0x1E, 0x14, 1);
             {
                 int a2;
                 int b2;
@@ -384,12 +398,11 @@ void hoverboard_update(unsigned char *moby) {
                 a2 = scale_ticks(8);
                 b2 = scale_ticks(0x11);
                 c2 = rand_range(a2, b2);
-                PartType21Spawn(v10, v20, *(int *)&D_L05_001619CC, *(int *)&D_L05_001619D0, c2, 1, 15000.0f);
+                PartType21Spawn(position, effect_position, *(int *)&D_L05_001619CC, *(int *)&D_L05_001619D0, c2, 1, 15000.0f);
             }
         }
     }
-    moby[0xBC] = 0;
-#undef pos
+    ((struct Moby *)moby)->command = 0;
 }
 extern int func_001F9908(int *);
 extern int func_L00_0025A208(int *, int, int, int);
@@ -965,24 +978,30 @@ extern unsigned char *func_L00_00275248(float f0, float f1, int a0, void *pos, i
 extern char D_L05_0015F660[] MACRO_ADDR;
 
 // Moby update: wakes up, then bursts particles when the player is near.
+extern struct Hero hero __asm__("D_0013F450");
+
 void hoverboard_ring_update(char *moby) {
-    switch (((unsigned char *)moby)[0x20]) {
-    case 0:
-        ((unsigned char *)moby)[0x30] = 0x80;
-        *(unsigned short *)(moby + 0x34) |= 0x41;
-        moby[0x20] = 1;
+    enum {
+        HOVERBOARD_RING_STATE_INIT = 0,
+        HOVERBOARD_RING_STATE_ACTIVE = 1
+    };
+    switch (((struct Moby *)moby)->state) {
+    case HOVERBOARD_RING_STATE_INIT:
+        ((struct Moby *)moby)->update_dist = 0x80;
+        ((struct Moby *)moby)->flags |= 0x41;
+        ((struct Moby *)moby)->state = HOVERBOARD_RING_STATE_ACTIVE;
         break;
-    case 1: {
-        float v[4];
+    case HOVERBOARD_RING_STATE_ACTIVE: {
+        float bounding_sphere[4];
         int i;
-        qcopy(v, moby + 0x10);
-        v[3] = 8.0f;
-        if (FastBSphereCheck((char *)v, 128.0f) != -1) {
-            if (*(int *)(D_0013E633 + 0x2EA9) == 0x16) {
+        qcopy(bounding_sphere, &((struct Moby *)moby)->pos);
+        bounding_sphere[3] = 8.0f;
+        if (FastBSphereCheck((char *)bounding_sphere, 128.0f) != -1) {
+            if (hero.state.control_mode == 0x16) {
                 for (i = 0; i < 3; i++) {
-                    float a = random_angle_radians();
-                    float b = random_angle_radians();
-                    PartType67Spawn(a, b, (int)moby, D_L05_0015F660, scale_ticks(0x28), 1, 0x7F, 0);
+                    float first_random_angle = random_angle_radians();
+                    float second_random_angle = random_angle_radians();
+                    PartType67Spawn(first_random_angle, second_random_angle, (int)moby, D_L05_0015F660, scale_ticks(0x28), 1, 0x7F, 0);
                 }
             }
         }

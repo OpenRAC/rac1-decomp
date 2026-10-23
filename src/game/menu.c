@@ -2,6 +2,7 @@
 #include "callees.h"
 #include "records.h"
 #include "structs.h"
+#include "hero.h"
 
 /*
  * menu.cpp in the original source; text 0x2071A8-0x209A60.
@@ -105,15 +106,15 @@ extern Menu13F450 D_0013F450;
 /* Menu hit test: arg3 is the third float ($f14). b (state 16) is
    computed before a, as retail evaluates it; the second if's own
    `arg1 >= 0xC8` is retail's second test of $a1. */
-int map_filter_l01_3(void *arg0, int arg1, float unused1, float unused2, float arg3) {
-    Menu13F450 *s = &D_0013F450;
-    int b = s->unk208C == 16;
-    int a = s->unk208C == 17 || s->unk208C == 18 || s->unk12E4 == 1;
+int map_filter_l01_3(void *unused_input, int reveal_test_selector, float unused1, float unused2, float reveal_test_value) {
+    Hero *hero_ptr = (Hero *)&D_0013F450;
+    int hero_state_blocks_high_range_reveal = hero_ptr->state.control_mode == 16;
+    int hero_state_blocks_low_range_reveal = hero_ptr->state.control_mode == 17 || hero_ptr->state.control_mode == 18 || hero_ptr->base_condition == 1;
 
-    if (arg1 < 0xC8 && arg3 >= 39.5f && arg3 <= 42.5f && !a) {
+    if (reveal_test_selector < 0xC8 && reveal_test_value >= 39.5f && reveal_test_value <= 42.5f && !hero_state_blocks_low_range_reveal) {
         return 1;
     }
-    if (arg1 >= 0xC8 && arg3 >= 87.0f && !b) {
+    if (reveal_test_selector >= 0xC8 && reveal_test_value >= 87.0f && !hero_state_blocks_high_range_reveal) {
         return 1;
     }
     return 0;
@@ -140,12 +141,12 @@ int map_filter_l01_4(int arg0, float unused1, float unused2, float arg1) {
 
 /* The struct's address in a local keeps one base register for both
    field reads. */
-int map_filter_l01_5(int arg0, float unused1, float unused2, float arg1) {
-    if (arg0 < 0x100) {
-        Menu13F450 *s = &D_0013F450;
-        return s->unk208C == 17 || s->unk208C == 18 || s->unk12E4 == 1;
+int map_filter_l01_5(int reveal_test_selector, float unused1, float unused2, float reveal_test_value) {
+    if (reveal_test_selector < 0x100) {
+        struct Hero *hero_ptr = (struct Hero *)&D_0013F450;
+        return hero_ptr->state.control_mode == 17 || hero_ptr->state.control_mode == 18 || hero_ptr->base_condition == 1;
     }
-    return (arg1 >= 95.0f) ? 1 : 0;
+    return (reveal_test_value >= 95.0f) ? 1 : 0;
 }
 
 extern short D_0015FE24;   /* declared small so -G2 puts it in SDA */
@@ -323,18 +324,18 @@ extern int D_001A04BC NOT_SDA;
    needs its own `return 0`: jump.c then sets v0 = 1 before the test
    there too, which gives retail's registers and lets the arm be
    cross-jumped into the second one. */
-int map_filter_l07_3(int arg0, int arg1, float unused1, float unused2, float arg3) {
-    if (arg1 < 0xBB) {
-        Menu13F450 *s = &D_0013F450;
-        int a = s->unk208C == 17 || s->unk208C == 18 || s->unk12E4 == 1;
+int map_filter_l07_3(int px, int py, float unused1, float unused2, float reveal_test_value) {
+    if (py < 0xBB) {
+        Hero *hero_ptr = (Hero *)&D_0013F450;
+        int hero_state_blocks_low_y_reveal = hero_ptr->state.control_mode == 17 || hero_ptr->state.control_mode == 18 || hero_ptr->base_condition == 1;
 
-        if (!a && D_001A04BC != 0) {
+        if (!hero_state_blocks_low_y_reveal && D_001A04BC != 0) {
             return 1;
         }
         return 0;
     }
-    if (arg3 >= 51.5f && arg3 <= 54.0f
-        && point_is_clockwise(arg0, arg1, 0x10A, 0xE5, 0x124, 0xF9) != 0) {
+    if (reveal_test_value >= 51.5f && reveal_test_value <= 54.0f
+        && point_is_clockwise(px, py, 0x10A, 0xE5, 0x124, 0xF9) != 0) {
         return 1;
     }
     return 0;
@@ -393,22 +394,22 @@ extern int func_00209048(int, int, int, int, int, int);
    D_001A04AC set and arg3 >= 47.7; otherwise returns `a` directly when
    arg1 < 0xC1, else `a` unless func_00209048's box test hits (which
    clears it to 0). */
-int map_filter_l07_6(int arg0, int arg1, float unused1, float unused2, float arg3) {
-    Menu13F450 *s = &D_0013F450;
-    int a = s->unk208C == 17 || s->unk208C == 18 || s->unk12E4 == 1;
+int map_filter_l07_6(int px, int py, float fparg0, float fparg1, float reveal_test_value) {
+    Hero *hero = (Hero *)&D_0013F450;
+    int hit = hero->state.control_mode == 17 || hero->state.control_mode == 18 || hero->base_condition == 1;
     int result;
 
-    if (arg1 >= 0x105) {
+    if (py >= 0x105) {
         if (D_001A04AC == 0) {
             return 0;
         }
-        return (arg3 >= 47.7f) ? 1 : 0;
+        return (reveal_test_value >= 47.7f) ? 1 : 0;
     }
-    if (arg1 < 0xC1) {
-        return a;
+    if (py < 0xC1) {
+        return hit;
     }
-    result = a;
-    if (point_is_clockwise(arg0, arg1, 0xD9, 0xB8, 0x156, 0xD2) != 0) {
+    result = hit;
+    if (point_is_clockwise(px, py, 0xD9, 0xB8, 0x156, 0xD2) != 0) {
         result = 0;
     }
     return result;
@@ -417,20 +418,20 @@ int map_filter_l07_6(int arg0, int arg1, float unused1, float unused2, float arg
 /* Menu hit test (func_00207200's family): hits unless the menu state
    blocks it, arg3 ($f14) is below 71.5, or the first box is hit, and
    then only if the second box is not. */
-int map_filter_l07_7(int arg0, int arg1, float unused1, float unused2, float arg3) {
-    Menu13F450 *s = &D_0013F450;
-    int a = s->unk208C == 17 || s->unk208C == 18 || s->unk12E4 == 1;
+s32 map_filter_l07_7(s32 px, s32 py, f32 fparg0, f32 fparg1, f32 reveal_test_value) {
+    struct Hero *hero = (struct Hero *)&D_0013F450;
+    s32 var_4_15 = hero->state.control_mode == 17 || hero->state.control_mode == 18 || hero->base_condition == 1;
 
-    if (a) {
+    if (var_4_15) {
         return 0;
     }
-    if (arg3 < 71.5f) {
+    if (reveal_test_value < 71.5f) {
         return 0;
     }
-    if (point_is_clockwise(arg0, arg1, 0x131, 0xE2, 0xC6, 0x93) != 0) {
+    if (point_is_clockwise(px, py, 0x131, 0xE2, 0xC6, 0x93) != 0) {
         return 0;
     }
-    return point_is_clockwise(arg0, arg1, 0x190, 0x89, 0xD1, 0xFB) == 0;
+    return point_is_clockwise(px, py, 0x190, 0x89, 0xD1, 0xFB) == 0;
 }
 
 extern unsigned char D_0013D4C5 NOT_SDA;
@@ -579,14 +580,14 @@ extern unsigned char D_0013D4EA NOT_SDA;
 /* The Menu13F450 state test of func_00207340, computed up front (retail
    evaluates it before the arg0 branch), gates the arg0 < 0x15F arm; the
    other arm is func_00208160's second test with D_0013D4EA. */
-int map_filter_l11_3(int arg0, float unused1, float unused2, float arg1) {
-    Menu13F450 *s = &D_0013F450;
-    int a = s->unk208C == 17 || s->unk208C == 18 || s->unk12E4 == 1;
+int map_filter_l11_3(int reveal_test_selector, float unused1, float unused2, float reveal_test_value) {
+    struct Hero *hero_ptr = (struct Hero *)&D_0013F450;
+    int hero_state_allows_reveal = hero_ptr->state.control_mode == 17 || hero_ptr->state.control_mode == 18 || hero_ptr->base_condition == 1;
 
-    if (arg0 < 0x15F) {
-        return (arg1 >= 200.0f) ? a : 0;
+    if (reveal_test_selector < 0x15F) {
+        return (reveal_test_value >= 200.0f) ? hero_state_allows_reveal : 0;
     }
-    return arg1 >= 233.0f && arg1 <= 235.0f && D_0013D4EA != 0;
+    return reveal_test_value >= 233.0f && reveal_test_value <= 235.0f && D_0013D4EA != 0;
 }
 
 extern unsigned char D_0013D4EB NOT_SDA;

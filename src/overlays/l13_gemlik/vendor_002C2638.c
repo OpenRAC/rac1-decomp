@@ -2050,16 +2050,34 @@ extern s32 D_L13_0015F6B0 MACRO_ADDR;
 extern f32 D_0015EE6C MACRO_ADDR;
 #define frame_time_p D_0015EE6C
 
+/* The record find_hit_p returns: the moby it hit is at +0x20. */
+typedef struct MobyHitRecP {
+    u8 pad0[0x20];
+    struct MobyP *moby;
+} MobyHitRecP;
+
 /* Moby update for a drifting blob that moves while the hero's ship is near. */
 void DriftingBlobUpdate(struct MobyP *moby) {
+    enum {
+        ASTEROID_INITIALIZE = 0,
+        ASTEROID_WAIT_TO_LAUNCH = 1,
+        ASTEROID_MOVE_AND_COLLIDE = 2,
+        ASTEROID_RESET_AT_HOME = 3,
+        ASTEROID_WAIT_TO_RESPAWN = 4
+    };
+    enum {
+        SPIN_AXIS_X = 0,
+        SPIN_AXIS_Y = 1,
+        SPIN_AXIS_Z = 2
+    };
     struct BlobVarsP *vars = (struct BlobVarsP *)moby->pvars;
-    f32 distance = distance_p(&moby->pos, hero_base_p + 0xE9D);
+    f32 distance = distance_p(&moby->pos, &((struct Hero *)&hero_p)->motion.pos);
     f32 size;
     f32 spin;
     char *hit;
 
     switch (moby->state) {
-    case 0:
+    case ASTEROID_INITIALIZE:
         qcopy(&vars->home, &moby->pos);
         vars->home.w = 20.0f;
         qcopy(vars->dir, &moby->rot_row0);
@@ -2070,14 +2088,16 @@ void DriftingBlobUpdate(struct MobyP *moby) {
         }
         moby->state = 3;
         break;
-    case 1:
-        if (hero_p.state == 0x32 && hero_p.ship_moby != 0 && hero_p.ship_moby->oclass == 0x45
+    case ASTEROID_WAIT_TO_LAUNCH:
+        if (((struct Hero *)&hero_p)->state.current == 0x32
+            && ((struct Hero *)&hero_p)->ship_moby != 0
+            && ((struct Hero *)&hero_p)->ship_moby->oclass == 0x45
             && (moby->visible != 0 || distance < 40.0f)) {
             normalize_p(vars, vars->dir, random_float_p(1.0f, 10.0f) * frame_time_p);
             moby->state = 2;
         }
         break;
-    case 2:
+    case ASTEROID_MOVE_AND_COLLIDE:
         tick16_p(&vars->cooldown);
         add_vec_p(&moby->pos, &moby->pos, vars);
         if (moby->visible != 0 || distance < 40.0f) {
@@ -2093,14 +2113,14 @@ void DriftingBlobUpdate(struct MobyP *moby) {
                     && coll_p(size * 6.2f, &moby->pos, 0, moby) != 0) {
                     if ((struct MobyP *)coll_hit_p.moby != vars->owner) {
                         reflect_p(vars, vars, &coll_hit_p.normal_x);
-                        qcopy(&moby->pos, (char *)&coll_hit_p + 0x30);
+                        qcopy(&moby->pos, coll_hit_p.pad30);
                         if (coll_hit_p.moby == 0 || ((struct MobyP *)coll_hit_p.moby)->oclass != 0xD4) {
                             hit_blob_p(moby, vars, size);
                         }
                     }
                 } else {
                     hit = find_hit_p(moby, 0x330000, 0);
-                    if (hit != 0 && (*(struct MobyP **)(hit + 0x20))->oclass != 0xD4) {
+                    if (hit != 0 && ((MobyHitRecP *)hit)->moby->oclass != 0xD4) {
                         hit += 0x10;
                         size = moby->scale;
                         size /= moby->pclass->scale;
@@ -2123,20 +2143,32 @@ void DriftingBlobUpdate(struct MobyP *moby) {
             moby->scale = vars->start_scale;
         }
         break;
-    case 3:
+    case ASTEROID_RESET_AT_HOME:
         qcopy(&moby->pos, &vars->home);
         qzero(&vars->spin);
         spin = random_float_p(-30.0f, 30.0f) * 0.017453292f * frame_time_p;
         switch (rand_p() % 3) {
-        case 0: vars->spin.x = spin; break;
-        case 1: vars->spin.y = spin; break;
-        case 2: vars->spin.z = spin; break;
+        case SPIN_AXIS_X:
+            vars->spin.x = spin;
+            break;
+        case SPIN_AXIS_Y:
+            vars->spin.y = spin;
+            break;
+        case SPIN_AXIS_Z:
+            vars->spin.z = spin;
+            break;
         }
         spin = random_float_p(-180.0f, 180.0f) * 0.017453292f * frame_time_p;
         switch (rand_p() % 3) {
-        case 0: vars->spin.x = spin; break;
-        case 1: vars->spin.y = spin; break;
-        case 2: vars->spin.z = spin; break;
+        case SPIN_AXIS_X:
+            vars->spin.x = spin;
+            break;
+        case SPIN_AXIS_Y:
+            vars->spin.y = spin;
+            break;
+        case SPIN_AXIS_Z:
+            vars->spin.z = spin;
+            break;
         }
         moby->rot.x = random_angle_p();
         moby->rot.y = random_angle_p();
@@ -2148,7 +2180,7 @@ void DriftingBlobUpdate(struct MobyP *moby) {
         }
         moby->state = 1;
         break;
-    case 4:
+    case ASTEROID_WAIT_TO_RESPAWN:
         if (draw_dist_p(moby->draw_dist, &vars->home) < 0) {
             qcopy(&moby->pos, &vars->home);
             moby->collision = moby->pclass->collision;
@@ -2158,12 +2190,24 @@ void DriftingBlobUpdate(struct MobyP *moby) {
         }
         break;
     }
-    if (moby->pos.x < 20.0f) moby->pos.x = 20.0f;
-    if (moby->pos.x > 1003.0f) moby->pos.x = 1003.0f;
-    if (moby->pos.y < 20.0f) moby->pos.y = 20.0f;
-    if (moby->pos.y > 1003.0f) moby->pos.y = 1003.0f;
-    if (moby->pos.z < 20.0f) moby->pos.z = 20.0f;
-    if (moby->pos.z > 1003.0f) moby->pos.z = 1003.0f;
+    if (moby->pos.x < 20.0f) {
+        moby->pos.x = 20.0f;
+    }
+    if (moby->pos.x > 1003.0f) {
+        moby->pos.x = 1003.0f;
+    }
+    if (moby->pos.y < 20.0f) {
+        moby->pos.y = 20.0f;
+    }
+    if (moby->pos.y > 1003.0f) {
+        moby->pos.y = 1003.0f;
+    }
+    if (moby->pos.z < 20.0f) {
+        moby->pos.z = 20.0f;
+    }
+    if (moby->pos.z > 1003.0f) {
+        moby->pos.z = 1003.0f;
+    }
     moby->rot.x = add_rot_p(moby->rot.x, vars->spin.x);
     moby->rot.y = add_rot_p(moby->rot.y, vars->spin.y);
     moby->rot.z = add_rot_p(moby->rot.z, vars->spin.z);

@@ -3,6 +3,7 @@
 #include "callees.h"
 #include "include_asm.h"
 #include "vector.h"
+#include "moby.h"
 
 extern char *func_0020D348(int);
 extern int func_001F9850(int);
@@ -1171,40 +1172,48 @@ extern void func_L16_002E7198(int);
 
 /* Updates a moby effect and advances it when its linked object is ready. */
 void grindrail_barrier_update(unsigned char *m) {
-    char *d = *(char **)(m + 0x78);
+    enum {
+        GRINDRAIL_BARRIER_STATE_INITIALIZE = 0,
+        GRINDRAIL_BARRIER_STATE_COLLISION_ENABLED = 1,
+        GRINDRAIL_BARRIER_STATE_COLLISION_DISABLED = 2
+    };
+    struct Moby *barrier_moby = (struct Moby *)m;
+    char *barrier_data = (char *)barrier_moby->pvars;
     float cycle;
     int i;
-    float *p;
-    switch (m[0x20]) {
-    case 0:
-        m[0x20] = 1;
-        m[0x30] = 0xFF;
+    float *cardinal_angles;
+    switch (barrier_moby->state) {
+    case GRINDRAIL_BARRIER_STATE_INITIALIZE:
+        barrier_moby->state = 1;
+        barrier_moby->update_dist = 0xFF;
         break;
-    case 1:
-        cycle = *(float *)(d + 0xC) + *(float *)&D_L16_00161EC4 * D_0015EE6C;
-        *(float *)(d + 0xC) = cycle;
-        if (cycle > 1.0f) *(float *)(d + 0xC) = cycle - 1.0f;
-        if (Sound_IsPlaying(m, *(int *)(d + 0x24)) == 0) {
-            *(int *)(d + 0x24) = func_0022ED80_6B70(0, 4, m);
+    case GRINDRAIL_BARRIER_STATE_COLLISION_ENABLED:
+        cycle = *(float *)(barrier_data + 0xC) + *(float *)&D_L16_00161EC4 * D_0015EE6C;
+        *(float *)(barrier_data + 0xC) = cycle;
+        if (cycle > 1.0f)
+            *(float *)(barrier_data + 0xC) = cycle - 1.0f;
+        if (Sound_IsPlaying(barrier_moby, *(int *)(barrier_data + 0x24)) == 0) {
+            *(int *)(barrier_data + 0x24) = func_0022ED80_6B70(0, 4, barrier_moby);
         }
-        *(float *)(d + 8) = FastAddRots(*(float *)(d + 8),
-                            *(float *)&D_L16_00161EC0 * 0.017453292f * D_0015EE6C);
-        p = (float *)(d + 0x10);
+        *(float *)(barrier_data + 8) = FastAddRots(*(float *)(barrier_data + 8),
+                                                   *(float *)&D_L16_00161EC0 * 0.017453292f * D_0015EE6C);
+        cardinal_angles = (float *)(barrier_data + 0x10);
         for (i = 0; i < 4; i++) {
-            p[i] = FastAddRots(p[i],
-                   ((float *)&D_L16_00161EC8)[i] * 0.017453292f * D_0015EE6C);
+            cardinal_angles[i] = FastAddRots(cardinal_angles[i],
+                                             ((float *)&D_L16_00161EC8)[i] * 0.017453292f * D_0015EE6C);
         }
-        if (m[0x31]) AddDrawCallback(RingEffectDraw, m);
-        if (*(int *)(d + 0x20) != -1 && Group_AreAllReady(*(int *)(d + 0x20))) {
-            *(int *)(m + 0x94) = 0;
-            m[0x20] = 2;
-            Group_TriggerNearest(*(int *)(d + 0x20));
+        if (barrier_moby->visible)
+            AddDrawCallback(RingEffectDraw, barrier_moby);
+        if (*(int *)(barrier_data + 0x20) != -1 && Group_AreAllReady(*(int *)(barrier_data + 0x20))) {
+            barrier_moby->collision = 0;
+            barrier_moby->state = 2;
+            Group_TriggerNearest(*(int *)(barrier_data + 0x20));
         }
         break;
-    case 2:
-        if (!Group_AreAllReady(*(int *)(d + 0x20))) {
-            m[0x20] = 1;
-            *(int *)(m + 0x94) = *(int *)(*(char **)(m + 0x24) + 0x10);
+    case GRINDRAIL_BARRIER_STATE_COLLISION_DISABLED:
+        if (!Group_AreAllReady(*(int *)(barrier_data + 0x20))) {
+            barrier_moby->state = 1;
+            barrier_moby->collision = barrier_moby->pclass->collision;
         }
         break;
     }

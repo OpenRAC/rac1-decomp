@@ -1321,14 +1321,18 @@ extern int D_L05_0015F6B0 MACRO_ADDR;
 
 /* updates the pulsing marker: spawns it, then each frame animates its scale and queues the draw */
 void ocean_rilgar_update(char *moby) {
-    switch ((unsigned char)moby[0x20]) {
-    case 0:
+    enum {
+        OCEAN_RILGAR_INITIALIZE = 0,
+        OCEAN_RILGAR_UPDATE_BOBBING = 1
+    };
+    switch (((Moby *)moby)->state) {
+    case OCEAN_RILGAR_INITIALIZE:
         ScaleTableIntoBuffer128(D_L05_00211E60_3175D8, 1.0f);
-        moby[0x20] = 1;
-        ((unsigned char *)moby)[0x30] = 0xFF;
+        ((Moby *)moby)->state = 1;
+        ((Moby *)moby)->update_dist = 0xFF;
         break;
-    case 1:
-        if (*(int *)(D_0013E633 + 0x2EA9) == 0x16) {
+    case OCEAN_RILGAR_UPDATE_BOBBING:
+        if (((Hero *)(D_0013E633 + 0xE1D))->state.control_mode == 0x16) {
             D_L05_00211E60_3175D8[2] = FastSin((float)(*(int *)&D_L05_0015F6B0 % 360) * 0.017444444f - 3.14f) * 0.25f + 61.5f;
         } else {
             D_L05_00211E60_3175D8[2] = FastSin((float)(*(int *)&D_L05_0015F6B0 % 360) * 0.017444444f - 3.14f) * 0.25f + 59.5f;
@@ -2247,28 +2251,33 @@ extern short D_L05_00161FC8;
 
 // Per-frame update: spin a value in the data block and bob the moby's Y with it.
 void television_update(unsigned char *moby) {
-    float v;
-    char *data = *(char **)(moby + 0x78);
+    enum {
+        TELEVISION_INITIALIZE = 0,
+        TELEVISION_UPDATE_BOBBING = 1
+    };
+    struct Moby *m = (struct Moby *)moby;
+    float bobbing_phase;
+    char *data = (char *)m->pvars;
     int g;
-    *(float *)(moby + 0x2C) = *(float *)(*(char **)(moby + 0x24) + 0x24) * *(float *)&D_L05_00161FC8;
-    switch (moby[0x20]) {
-    case 0:
-        moby[0x20] = 1;
+    m->scale = m->pclass->scale * *(float *)&D_L05_00161FC8;
+    switch (m->state) {
+    case TELEVISION_INITIALIZE:
+        m->state = 1;
         *(float *)data = random_angle_radians();
-        *(float *)(data + 4) = *(float *)(moby + 0x18);
+        *(float *)(data + 4) = m->pos.z;
         break;
-    case 1:
+    case TELEVISION_UPDATE_BOBBING:
         g = D_L05_0015F6A8;
         if (g == 2) {
-            moby[0x31] = 0;
-            *(unsigned short *)(moby + 0x34) |= 1;
+            m->visible = 0;
+            m->flags |= 1;
         } else {
-            moby[0x31] = 1;
-            *(unsigned short *)(moby + 0x34) &= 0xFFFE;
+            m->visible = 1;
+            m->flags &= 0xFFFE;
         }
-        v = FastAddRots(*(float *)data, D_0015EE6C * 0.87266463f);
-        *(float *)data = v;
-        *(float *)(moby + 0x18) = *(float *)(data + 4) + FastSin(v);
+        bobbing_phase = FastAddRots(*(float *)data, D_0015EE6C * 0.87266463f);
+        *(float *)data = bobbing_phase;
+        m->pos.z = *(float *)(data + 4) + FastSin(bobbing_phase);
         break;
     }
 }
@@ -2305,129 +2314,137 @@ extern char D_0014171B[];
 
 /* Update the moving pickup, interpolate its path transitions, and manage its sound handle. */
 void PickupL05_Update(char *moby) {
-    char *d = *(char **)(moby + 0x78);
-    float v00[4], v10[4], v20[4], v30[4], v40[4], v50[4], v60[4], v70[4];
-    char *g;
-    char *g2;
+    enum {
+        TAXI_INITIALIZE = 0,
+        TAXI_WAIT_FOR_PICKUP = 1,
+        TAXI_BLEND_TO_PATH_START = 3,
+        TAXI_FOLLOW_PATH = 4,
+        TAXI_BLEND_TO_DESTINATION = 5,
+        TAXI_WAIT_FOR_ACTIVATION = 6
+    };
+    char *taxi_data = (char *)((struct Moby *)moby)->pvars;
+    float old_position[4], old_rotation[4], position_delta[4], rotation_or_start_position_scratch[4], interpolation_end_position[4], interpolation_start_angles[4], interpolation_end_angles[4], hero_offset[4];
+    struct Hero *pickup_hero;
+    struct Hero *travel_hero;
     float z;
-    char *m;
-    char *e;
+    struct Moby *destination_stop_moby;
+    char *voice_slot;
     L05PickupPose *tab;
     float *qa;
     unsigned char *t;
     int k;
-    int h;
+    int voice_slot_index;
     int s;
-    qcopy(v00, moby + 0x10);
-    qcopy(v10, moby + 0x40);
-    LevelTable_SetSlotValue(moby, (*(unsigned short *)(moby + 0x34) ^ 1) & 1);
-    switch (*(unsigned char *)(moby + 0x20)) {
-    case 0:
-        *(short *)(d + 0xB0) = -1;
-        *(short *)(d + 0xB2) = -1;
+    qcopy(old_position, &((struct Moby *)moby)->pos);
+    qcopy(old_rotation, &((struct Moby *)moby)->rot);
+    LevelTable_SetSlotValue(moby, (((struct Moby *)moby)->flags ^ 1) & 1);
+    switch (((struct Moby *)moby)->state) {
+    case TAXI_INITIALIZE:
+        *(short *)(taxi_data + 0xB0) = -1;
+        *(short *)(taxi_data + 0xB2) = -1;
         PickNearestTargetSlot(moby);
         break;
-    case 1:
-        g = D_0013E633 + 0xE1D;
-        if (*(char **)(g + 0x2FC) == moby && *(short *)(g + 0x30E) == 0) {
-            func_001FA4A0(v30, moby + 0xC0);
-            FastVecSub(v70, g + 0x80, moby + 0x10);
-            v70[3] = 0;
-            func_001F9EE8(v70, v70, v30);
-            if (FastAbsF(v70[1]) < 1.2f && v70[0] < 1.0f && -0.75f < v70[0]) {
+    case TAXI_WAIT_FOR_PICKUP:
+        pickup_hero = (struct Hero *)(D_0013E633 + 0xE1D);
+        if (((char *)pickup_hero->ground_moby) == moby && pickup_hero->air_frames.s == 0) {
+            func_001FA4A0(rotation_or_start_position_scratch, &((struct Moby *)moby)->rot_row0);
+            FastVecSub(hero_offset, &pickup_hero->motion.pos, &((struct Moby *)moby)->pos);
+            hero_offset[3] = 0;
+            func_001F9EE8(hero_offset, hero_offset, rotation_or_start_position_scratch);
+            if (FastAbsF(hero_offset[1]) < 1.2f && hero_offset[0] < 1.0f && -0.75f < hero_offset[0]) {
                 SelectSlotPath(moby);
                 ShowVariantHelpMessage(moby);
                 if (*(int *)(D_0013A5E0 + 0x2604) & 0x10) {
-                    moby[0x20] = 3;
-                    m = FindMobyByDataId(moby, *(short *)(d + 0xB6));
-                    if (m != 0) {
-                        m[0x20] = 2;
-                        *(unsigned short *)(m + 0x34) |= 1;
-                        m[0x31] = 0;
-                        *(int *)(m + 0x94) = 0;
+                    ((struct Moby *)moby)->state = 3;
+                    destination_stop_moby = FindMobyByDataId(moby, *(short *)(taxi_data + 0xB6));
+                    if (destination_stop_moby != 0) {
+                        destination_stop_moby->state = 2;
+                        destination_stop_moby->flags |= 1;
+                        destination_stop_moby->visible = 0;
+                        destination_stop_moby->collision = 0;
                     }
                 }
             }
         }
         break;
-    case 3:
-        ApproachWithVelocity(1.0f, D_0015EE70, D_0015EE70, D_0015EE6C * 0.5f, (float *)(d + 0xC0), (float *)(d + 0xC4));
-        qa = v30;
-        s = *(int *)(d + 0x80 - (-(*(short *)(d + 0xB4) * 4)));
+    case TAXI_BLEND_TO_PATH_START:
+        ApproachWithVelocity(1.0f, D_0015EE70, D_0015EE70, D_0015EE6C * 0.5f, (float *)(taxi_data + 0xC0), (float *)(taxi_data + 0xC4));
+        qa = rotation_or_start_position_scratch;
+        s = *(int *)(taxi_data + 0x80 - (-(*(short *)(taxi_data + 0xB4) * 4)));
         tab = D_L05_001601AC;
         qcopy(qa, tab[s].position);
-        qcopy(v50, tab[s].direction);
+        qcopy(interpolation_start_angles, tab[s].direction);
         z = 0.0f;
-        func_00215CA8_f5848(z, *(int **)(d + 0xAC), 0, v40, v60, 0);
-        func_001F9C08(d + 0x60, v30, v40, *(float *)(d + 0xC0));
-        *(float *)(d + 0x74) = FastAddRots(FastSubRots(v60[1], v50[1]) * *(float *)(d + 0xC0), v50[1]);
-        *(float *)(d + 0x78) = FastAddRots(FastSubRots(v60[2], v50[2]) * *(float *)(d + 0xC0), v50[2]);
-        if (1.0f <= *(float *)(d + 0xC0)) {
-            *(float *)(d + 0xC0) = z;
-            *(float *)(d + 0xC4) = z;
-            moby[0x20] = 4;
+        func_00215CA8_f5848(z, *(int **)(taxi_data + 0xAC), 0, interpolation_end_position, interpolation_end_angles, 0);
+        func_001F9C08(taxi_data + 0x60, rotation_or_start_position_scratch, interpolation_end_position, *(float *)(taxi_data + 0xC0));
+        *(float *)(taxi_data + 0x74) = FastAddRots(FastSubRots(interpolation_end_angles[1], interpolation_start_angles[1]) * *(float *)(taxi_data + 0xC0), interpolation_start_angles[1]);
+        *(float *)(taxi_data + 0x78) = FastAddRots(FastSubRots(interpolation_end_angles[2], interpolation_start_angles[2]) * *(float *)(taxi_data + 0xC0), interpolation_start_angles[2]);
+        if (1.0f <= *(float *)(taxi_data + 0xC0)) {
+            *(float *)(taxi_data + 0xC0) = z;
+            *(float *)(taxi_data + 0xC4) = z;
+            ((struct Moby *)moby)->state = 4;
         }
         break;
-    case 4:
+    case TAXI_FOLLOW_PATH:
         if (AdvanceMobyPath(moby)) {
-            *(int *)(d + 0xC0) = 0;
-            *(int *)(d + 0xC4) = 0;
-            moby[0x20] = 5;
+            *(int *)(taxi_data + 0xC0) = 0;
+            *(int *)(taxi_data + 0xC4) = 0;
+            ((struct Moby *)moby)->state = 5;
         }
         break;
-    case 5:
-        ApproachWithVelocity(1.0f, D_0015EE70, D_0015EE70, D_0015EE6C * 0.5f, (float *)(d + 0xC0), (float *)(d + 0xC4));
-        qa = v40;
-        s = *(int *)(d + 0x80 - (-(*(short *)(d + 0xB6) * 4)));
+    case TAXI_BLEND_TO_DESTINATION:
+        ApproachWithVelocity(1.0f, D_0015EE70, D_0015EE70, D_0015EE6C * 0.5f, (float *)(taxi_data + 0xC0), (float *)(taxi_data + 0xC4));
+        qa = interpolation_end_position;
+        s = *(int *)(taxi_data + 0x80 - (-(*(short *)(taxi_data + 0xB6) * 4)));
         tab = D_L05_001601AC;
         qcopy(qa, tab[s].position);
-        qcopy(v60, tab[s].direction);
-        SamplePathAt(*(int **)(d + 0xAC), 0, v30, v50, 0, (float)**(int **)(d + 0xAC));
-        func_001F9C08(d + 0x60, v30, v40, *(float *)(d + 0xC0));
-        *(float *)(d + 0x74) = FastAddRots(FastSubRots(v60[1], v50[1]) * *(float *)(d + 0xC0), v50[1]);
-        *(float *)(d + 0x78) = FastAddRots(FastSubRots(v60[2], v50[2]) * *(float *)(d + 0xC0), v50[2]);
-        if (1.0f <= *(float *)(d + 0xC0)) {
-            *(int *)(d + 0xC0) = 0;
-            *(int *)(d + 0xC4) = 0;
-            moby[0x20] = 1;
+        qcopy(interpolation_end_angles, tab[s].direction);
+        SamplePathAt(*(int **)(taxi_data + 0xAC), 0, rotation_or_start_position_scratch, interpolation_start_angles, 0, (float)**(int **)(taxi_data + 0xAC));
+        func_001F9C08(taxi_data + 0x60, rotation_or_start_position_scratch, interpolation_end_position, *(float *)(taxi_data + 0xC0));
+        *(float *)(taxi_data + 0x74) = FastAddRots(FastSubRots(interpolation_end_angles[1], interpolation_start_angles[1]) * *(float *)(taxi_data + 0xC0), interpolation_start_angles[1]);
+        *(float *)(taxi_data + 0x78) = FastAddRots(FastSubRots(interpolation_end_angles[2], interpolation_start_angles[2]) * *(float *)(taxi_data + 0xC0), interpolation_start_angles[2]);
+        if (1.0f <= *(float *)(taxi_data + 0xC0)) {
+            *(int *)(taxi_data + 0xC0) = 0;
+            *(int *)(taxi_data + 0xC4) = 0;
+            ((struct Moby *)moby)->state = 1;
             Taxi_SetTargetFromSpawn(moby);
         }
         break;
-    case 6:
+    case TAXI_WAIT_FOR_ACTIVATION:
         t = (unsigned char *)D_0014171B + 0xAA35;
         k = D_0015EE84 * 16;
-        if (t[*(int *)(d + 0xB8) + k] == 0xFF || t[*(int *)(d + 0xBC) + k] == 0xFF) {
-            char *model = *(char **)(moby + 0x24);
-            unsigned short flags = *(unsigned short *)(moby + 0x34);
-            int value = *(int *)(model + 0x10);
-            moby[0x31] = 1;
-            *(int *)(moby + 0x94) = value;
-            *(unsigned short *)(moby + 0x34) = flags & 0xFFFE;
-            moby[0x20] = 1;
+        if (t[*(int *)(taxi_data + 0xB8) + k] == 0xFF || t[*(int *)(taxi_data + 0xBC) + k] == 0xFF) {
+            struct MobyClass *model = ((struct Moby *)moby)->pclass;
+            unsigned short flags = ((struct Moby *)moby)->flags;
+            int value = model->collision;
+            ((struct Moby *)moby)->visible = 1;
+            ((struct Moby *)moby)->collision = value;
+            ((struct Moby *)moby)->flags = flags & 0xFFFE;
+            ((struct Moby *)moby)->state = 1;
         }
         break;
     }
     WobbleMoby(moby);
-    if (*(unsigned char *)(moby + 0x20) >= 3 && *(unsigned char *)(moby + 0x20) <= 5) {
-        g2 = D_0013E633 + 0xE1D;
-        *(short *)(g2 + 0x1F2) = 2;
-        *(short *)(g2 + 0x1F4) = 2;
+    if (((struct Moby *)moby)->state >= 3 && ((struct Moby *)moby)->state <= 5) {
+        travel_hero = (struct Hero *)(D_0013E633 + 0xE1D);
+        travel_hero->unk1F2 = 2;
+        travel_hero->unk1F4 = 2;
         TransformLevelTablePoints(moby);
-        if (Sound_IsPlaying(moby, *(short *)(d + 0xB2)) == 0) {
-            *(short *)(d + 0xB2) = func_0022ED80_i(0, 4, moby);
+        if (Sound_IsPlaying(moby, *(short *)(taxi_data + 0xB2)) == 0) {
+            *(short *)(taxi_data + 0xB2) = func_0022ED80_i(0, 4, moby);
         }
-    } else if (Sound_IsPlaying(moby, *(short *)(d + 0xB2)) != 0) {
-        h = *(short *)(d + 0xB2);
-        if (h != -1) {
-            e = D_0013E633 + 0x1D + h * 0x70;
-            if (*(char **)(e + 0x88) == moby && *(unsigned char *)(e + 0x74) != 0) {
-                Sound_StopSlot(h);
+    } else if (Sound_IsPlaying(moby, *(short *)(taxi_data + 0xB2)) != 0) {
+        voice_slot_index = *(short *)(taxi_data + 0xB2);
+        if (voice_slot_index != -1) {
+            voice_slot = D_0013E633 + 0x1D + voice_slot_index * 0x70;
+            if (*(char **)(voice_slot + 0x88) == moby && *(unsigned char *)(voice_slot + 0x74) != 0) {
+                Sound_StopSlot(voice_slot_index);
             }
         }
-        *(short *)(d + 0xB2) = -1;
+        *(short *)(taxi_data + 0xB2) = -1;
     }
-    FastVecSub(v20, moby + 0x10, v00);
-    update_entity_matrix(d + 0x20, v20, v10, moby + 0x40);
+    FastVecSub(position_delta, &((struct Moby *)moby)->pos, old_position);
+    update_entity_matrix(taxi_data + 0x20, position_delta, old_rotation, &((struct Moby *)moby)->rot);
 }
 extern unsigned char D_0014C150[][16];
 

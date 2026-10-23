@@ -2,6 +2,7 @@
 #include "callees.h"
 #include "records.h"
 #include "structs.h"
+#include "pad.h"
 
 /*
  * stream.cpp in the original source; text 0x217588-0x217F68.
@@ -294,10 +295,15 @@ int Load(int arg0, int arg1, int arg2) {
    $a0 for the guard), loop.c hoists the loop's copy into $s0 and CSE turns
    it into `daddu $s0,$a0,$0`. A second, separate local for the return keeps
    its base a temp ($v1) sharing the %hi with the guard through $s1. */
+struct MusicStreamState {
+    u8 pad_0[0x8];
+    s16 read_state;            /* 0x08: 0 idle, 1 reading, 2 done */
+};
+
 short update_audio_stream_until_idle(int arg0) {
     if (arg0 != 0) {
-        char *d;
-        while (d = (char *)D_001517D0, *(short *)(d + 0x8) != 0) {
+        struct MusicStreamState *d;
+        while (d = (struct MusicStreamState *)D_001517D0, d->read_state != 0) {
             func_00122598(0);
             music_Update();
             func_0012EC40();
@@ -311,20 +317,20 @@ short update_audio_stream_until_idle(int arg0) {
         func_0012EC30();
     }
     {
-        char *d = (char *)D_001517D0;
-        return *(short *)(d + 0x8);
+        struct MusicStreamState *d = (struct MusicStreamState *)D_001517D0;
+        return d->read_state;
     }
 }
 
 extern int func_0012F030(void);
 
-void finish_audio_stream_read(int arg0) {
-    char *d;
-    if (arg0 == 1) {
-        d = (char *)D_001517D0;
-        *(short *)(d + 0x8) = 0;
+void finish_audio_stream_read(int callback_value) {
+    struct MusicStreamState *state;
+    if (callback_value == 1) {
+        state = (struct MusicStreamState *)D_001517D0;
+        state->read_state = 0;
         if (func_0012F030() != 0) {
-            *(short *)(d + 0x8) = 2;
+            state->read_state = 2;
         }
     }
 }
@@ -651,16 +657,23 @@ extern void func_00124650(void);
 extern void func_00124B88(int);
 extern int func_00124BC8(void *, void *);
 
+/* Minimal layouts for init_pads: the port/slot socket parameter (NTSC name unknown)
+   and the leading part of PadState from pad.h, up to the fields init_pads writes. */
+typedef struct {
+    s32 port;
+    s32 slot;
+} PadSocketParam;
+
 void init_pads(void) {
-    int *p = &D_001CDAE0;
+    PadSocketParam *p = (PadSocketParam *)&D_001CDAE0;
 
     func_00124650();
     func_00124B88(0);
     D_001CDAE0 = 2;
-    p[1] = 0;
-    *(int *)(D_0013CA40 + 0x194) = func_00124BC8(p, D_0013CA40);
+    p->slot = 0;
+    ((struct PadState *)D_0013CA40)->socket = func_00124BC8(p, D_0013CA40);
     D_001CDAE0 = 2;
-    p[1] = 1;
-    *(int *)(D_0013CA40 + 0x198) = 0;
-    *(int *)(D_0013CA40 + 0x19C) = 0;
+    p->slot = 1;
+    ((struct PadState *)D_0013CA40)->profile_state = 0;
+    ((struct PadState *)D_0013CA40)->device_state = 0;
 }

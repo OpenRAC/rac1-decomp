@@ -1087,57 +1087,74 @@ extern s32 func_001F9850(s32);
 extern s32 func_001F9908(void *);
 extern void func_00213D28(void *, s32, s32);
 
+typedef struct {
+    s32 armed;     /* 0x00: nonzero once the hatch may open */
+    s32 duration;  /* 0x04: input to scale_ticks for the activation timer */
+    s32 timer;     /* 0x08: fast_dec_timer countdown */
+} PlasmabotHatchVars;
+
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002b17d8.c, FUN_L14_002d96e0. */
 void plasmabot_hatch_update(char *moby) {
-    char *data = *(char **)(moby + 0x78);
+    enum {
+        HATCH_WAIT_ACTIVATION = 0,
+        HATCH_WAIT_ACTIVATION_DELAY = 1,
+        HATCH_WAIT_ACTIVATION_ANIMATION = 2,
+        HATCH_WAIT_ACTIVATION_GATE_CLEAR = 3,
+        HATCH_IDLE_AFTER_ACTIVATION_GATE_CLEAR = 4,
+        HATCH_WAIT_ANIMATION_BEFORE_RESET_DELAY = 5,
+        HATCH_WAIT_RESET_DELAY = 6,
+        HATCH_WAIT_RESET_ANIMATION = 7
+    };
+    struct Moby *m = (struct Moby *)moby;
+    PlasmabotHatchVars *data = (PlasmabotHatchVars *)m->pvars;
     if (D_001414F4[0] == 2) {
-        *(s32 *)(moby + 0x94) = 0;
+        m->collision = 0;
     } else {
-        *(s32 *)(moby + 0x94) = *(s32 *)(*(char **)(moby + 0x24) + 0x10);
+        m->collision = m->pclass->collision;
     }
-    switch ((u8)moby[0x20]) {
-    case 0:
-        if (*(s32 *)data != 0 && *(s16 *)(race_state + 0x86) == 0x14) {
-            moby[0x20] = 1;
-            *(s32 *)(data + 8) = scale_ticks(*(s32 *)(data + 4));
+    switch (m->state) {
+    case HATCH_WAIT_ACTIVATION:
+        if (data->armed != 0 && *(s16 *)(race_state + 0x86) == 0x14) {
+            m->state = 1;
+            data->timer = scale_ticks(data->duration);
         }
         break;
-    case 1:
-        if (func_001F9908(data + 8) != 0) {
-            moby[0x20] = 2;
-            MobySetAnimation(moby, 1, 0);
+    case HATCH_WAIT_ACTIVATION_DELAY:
+        if (func_001F9908(&data->timer) != 0) {
+            m->state = 2;
+            MobySetAnimation(m, 1, 0);
         }
         break;
-    case 2:
-        if ((moby[0x70] & 2) != 0) {
-            moby[0x20] = 3;
-            MobySetAnimation(moby, 2, 0);
+    case HATCH_WAIT_ACTIVATION_ANIMATION:
+        if ((m->anim_flags & 2) != 0) {
+            m->state = 3;
+            MobySetAnimation(m, 2, 0);
         }
         break;
-    case 3:
+    case HATCH_WAIT_ACTIVATION_GATE_CLEAR:
         if (*(s16 *)(race_state + 0x86) != 0x14) {
-            MobySetAnimation(moby, 0, 0);
-            moby[0x20] = 4;
+            MobySetAnimation(m, 0, 0);
+            m->state = 4;
         }
         break;
-    case 4:
+    case HATCH_IDLE_AFTER_ACTIVATION_GATE_CLEAR:
         break;
-    case 5:
-        if ((moby[0x70] & 2) != 0) {
-            moby[0x20] = 6;
-            MobySetAnimation(moby, 2, 0);
+    case HATCH_WAIT_ANIMATION_BEFORE_RESET_DELAY:
+        if ((m->anim_flags & 2) != 0) {
+            m->state = 6;
+            MobySetAnimation(m, 2, 0);
         }
         break;
-    case 6:
-        if (func_001F9908(data + 8) != 0) {
-            MobySetAnimation(moby, 3, 0);
-            moby[0x20] = 7;
+    case HATCH_WAIT_RESET_DELAY:
+        if (func_001F9908(&data->timer) != 0) {
+            MobySetAnimation(m, 3, 0);
+            m->state = 7;
         }
         break;
-    case 7:
-        if ((moby[0x70] & 2) != 0) {
-            moby[0x20] = 0;
-            MobySetAnimation(moby, 0, 0);
+    case HATCH_WAIT_RESET_ANIMATION:
+        if ((m->anim_flags & 2) != 0) {
+            m->state = 0;
+            MobySetAnimation(m, 0, 0);
         }
         break;
     }

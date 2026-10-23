@@ -4,6 +4,7 @@
 #include "records.h"
 #include "structs.h"
 #include "camera.h"
+#include "hero.h"
 
 /*
  * camera.cpp in the original source; text 0x1EC038-0x1EDFF8.
@@ -1053,41 +1054,43 @@ extern int D_0015F098 MACRO_ADDR;
    arm ORs the new mode in itself (the constants fold per arm, as in retail),
    and each block reads D_0013F450 through its own local (%hi kept, %lo
    rebuilt). */
+extern Hero D_0013F450_HERO __asm__("D_0013F450");
+
 void refresh_camera_control_flags(void) {
     CameraFollow *f = &gCamera.follow;
-    char *g = D_0013F450;
+    Hero *g = &D_0013F450_HERO;
     int st;
 
     cam_coll_flag = 0x14;
-    st = *(int *)(g + 0x208C);
-    if (st == 0x11 || st == 0x12 || *(int *)(g + 0x2084) == 0x73) {
+    st = g->state.control_mode;
+    if (st == 0x11 || st == 0x12 || g->state.current == 0x73) {
         cam_coll_flag = 0x34;
     }
     {
-        char *g2 = D_0013F450;
-        if (*(int *)(g2 + 0x208C) != 0x11
-            && *(float *)(g2 + 0x2F0) < gCamera.pos.f[2]) {
+        Hero *g2 = &D_0013F450_HERO;
+        if (g2->state.control_mode != 0x11
+            && g2->water_surface_z < gCamera.pos.f[2]) {
             cam_coll_flag = 0x14;
         }
     }
     {
-        unsigned char *g3 = (unsigned char *)D_0013F450;
+        Hero *g3 = &D_0013F450_HERO;
         cam_coll_flag_prev = cam_coll_flag;
         cam_coll_flag |= 0x80;
         cam_coll_mode = 0xB4;
-        if (g3[0x12E5]) {
+        if (g3->selector_1) {
             f->coll_bits = 0x100;
             cam_coll_mode |= f->coll_bits;
-        } else if (g3[0x12EB]) {
+        } else if (g3->selector_11) {
             f->coll_bits = 0xB00;
             cam_coll_mode |= f->coll_bits;
-        } else if (g3[0x12E6]) {
+        } else if (g3->selector_3) {
             f->coll_bits = 0x300;
             cam_coll_mode |= f->coll_bits;
-        } else if (g3[0x12EC]) {
+        } else if (g3->selector_13) {
             f->coll_bits = 0xD00;
             cam_coll_mode |= f->coll_bits;
-        } else if (g3[0x12E4]) {
+        } else if (g3->base_condition) {
             f->coll_bits = 0;
             cam_coll_mode |= f->coll_bits;
         } else {

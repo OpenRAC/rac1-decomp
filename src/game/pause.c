@@ -4,6 +4,7 @@
 #include "pad.h"
 #include "moby.h"
 #include "structs.h"
+#include "menu.h"
 
 /*
  * pause.cpp in the original source; text 0x219C08-0x228A58.
@@ -511,26 +512,8 @@ struct PauseMenuScreen {
     void (*leave)(struct PauseMenuScreen *, s32);  /* 0x0C */
 };
 
-struct PauseMenuPage {
-    s32 moby_anims[14];                /* 0x00 */
-    struct PauseMenuPage *back;        /* 0x38 */
-    s32 state;                         /* 0x3C */
-    struct PauseMenuScreen *focus;     /* 0x40 */
-    struct PauseMenuScreen *screens[14]; /* 0x44 */
-};
-
-struct PauseMenuSystem {
-    s32 state;                         /* 0x000: set to 20 on close */
-    struct PauseMenuPage *current;     /* 0x004: active page, 0 after close */
-    u8 pad_008[0xC];
-    s32 timer;                         /* 0x014: set to 2 on close */
-    s32 saved_texture_start;           /* 0x018 */
-    u8 pad_01C[0xF4];
-    s32 update_count;                  /* 0x110 */
-};
-
 void close_menu_system(void) {
-    struct PauseMenuSystem *g = (struct PauseMenuSystem *)menu_system;
+    struct MenuSystem *g = (struct MenuSystem *)menu_system;
 
     if (g->update_count < 10) {
         return;
@@ -538,7 +521,7 @@ void close_menu_system(void) {
     if (g->current != 0) {
         int i;
         for (i = 0; i < 14; i++) {
-            struct PauseMenuSystem *g2 = (struct PauseMenuSystem *)menu_system;
+            struct MenuSystem *g2 = (struct MenuSystem *)menu_system;
             struct PauseMenuScreen *screen = g2->current->screens[i];
             if (screen != 0) {
                 void (*fn)(struct PauseMenuScreen *, s32) = screen->leave;
@@ -548,12 +531,12 @@ void close_menu_system(void) {
             }
         }
         {
-            struct PauseMenuSystem *g5 = (struct PauseMenuSystem *)menu_system;
+            struct MenuSystem *g5 = (struct MenuSystem *)menu_system;
             g5->current = 0;
         }
     }
     {
-        struct PauseMenuSystem *g3 = (struct PauseMenuSystem *)menu_system;
+        struct MenuSystem *g3 = (struct MenuSystem *)menu_system;
         int j;
         D_0015EF78 = g3->saved_texture_start;
         for (j = 0; j < 14; j++) {
@@ -561,7 +544,7 @@ void close_menu_system(void) {
         }
     }
     {
-        struct PauseMenuSystem *g4 = (struct PauseMenuSystem *)menu_system;
+        struct MenuSystem *g4 = (struct MenuSystem *)menu_system;
         g4->state = 0x14;
         g4->timer = 2;
     }
@@ -3474,15 +3457,23 @@ int enter_menu_help_text(char *arg0) {
 extern int D_0015F780_m __asm__("D_0015F780") MACRO_ADDR;
 extern int D_001997FC;
 
+struct MenuHelpTextState {
+    u8 pad_00[0x38];
+    s32 saved_text_count;      /* 0x38 */
+    u8 pad_3C[0x14];
+    s32 load_state;            /* 0x50 */
+    s32 saved_text_table;      /* 0x54 */
+};
+
 int restore_menu_help_text(int arg0) {
-    if (D_001517D0[4] != 0 && *(int *)(arg0 + 0x50) == 1) {
+    if (D_001517D0[4] != 0 && ((struct MenuHelpTextState *)arg0)->load_state == 1) {
         request_audio_stream_break();
     }
     initialize_menu_stream_buffers(1);
     {
-        int v = *(int *)(arg0 + 0x54);
+        int v = ((struct MenuHelpTextState *)arg0)->saved_text_table;
         if (v != 0) {
-            int w = *(int *)(arg0 + 0x38);
+            int w = ((struct MenuHelpTextState *)arg0)->saved_text_count;
             D_0015F780_m = v;
             help_msg_count = w;
         }
@@ -3964,19 +3955,11 @@ typedef struct ItemPreviewScreen {
     struct Moby *moby;                 /* 0x44: preview moby (create_menu_preview_moby) */
 } ItemPreviewScreen;
 
-typedef struct PreviewGridCell {
-    u16 icon;                          /* 0x0 */
-    s16 frame;                         /* 0x2 */
-    s16 kind;                          /* 0x4 */
-    s16 id;                            /* 0x6: item id */
-    s16 stream_entry;                  /* 0x8 */
-} PreviewGridCell;
-
 typedef struct PreviewGridScreen {
     u8 pad_00[0x3C];
     s32 selected_cell;                 /* 0x3C */
     u8 pad_40[0x8];
-    PreviewGridCell *cells;            /* 0x48: rows * cols */
+    struct MenuGridCell *cells;            /* 0x48: rows * cols */
 } PreviewGridScreen;
 
 typedef struct ItemPreviewInfo {
@@ -4078,81 +4061,6 @@ void rotate_item_preview_moby(char *arg0) {
     *(float *)(arg0 + 0x48) = FastAddRots(*(float *)(arg0 + 0x48), 0.01f);
 }
 
-struct MenuScreen;
-struct MenuPage {
-    s32 moby_anims[14]; /* 0x00: animation per menu moby */
-    struct MenuPage *back; /* 0x38: page for the back button (pad 0x10); 0 = none */
-    s32 state; /* 0x3C: menu_system.state while this page is current */
-    struct MenuScreen *focus; /* 0x40: screen with input focus */
-    struct MenuScreen *screens[14]; /* 0x44 */
-    u8 pad_7C[0x4];
-    struct MenuScreen *pending_focus; /* 0x80: becomes focus on the next update */
-    s32 confirmed; /* 0x84: confirm page answer, 1 = yes */
-};
-struct MenuSystem {
-    /* Page switching (FUN_002192a8) */
-    s32 state; /* 0x000: menu state, from page->state; 0x2D at init */
-    struct MenuPage *current; /* 0x004: active page */
-    struct MenuPage *next; /* 0x008: requested page */
-    s32 close_request; /* 0x00C: nonzero closes the menu */
-    s32 unk10; /* 0x010: buffer address D_001940C0[2] + 0xA0000 */
-    s32 timer; /* 0x014: 12 on a switch, 2 on close; counts down */
-    s32 saved_texture_start; /* 0x018: gs_texture_allocation_start to restore on close */
-    s32 current_gadget; /* 0x01C: gadget of the queued preview animation, -1 none */
-    u8 pad_20[0x10];
-    s32 equipped[4]; /* 0x030: gadget id held by each slot */
-    u8 pad_40[0x60];
-
-    /* Preview animation stream */
-    s32 stream_buffer[2]; /* 0x0A0: double buffer */
-    s32 unkA8; /* 0x0A8: fun_00226848 first-resource argument */
-    s32 unkAC; /* 0x0AC: fun_00226848 count argument */
-    s32 unkB0[3]; /* 0x0B0: buffer addresses read by fun_00226848 */
-    s32 read_offset; /* 0x0BC: offset of the data in the read buffer */
-    s32 unkC0; /* 0x0C0: -1 at preview init */
-    u8 pad_C4[0x4];
-    u8 loaded_animation[2]; /* 0x0C8: animation held by each buffer, 0xFF none */
-    u8 read_buffer_index; /* 0x0CA: buffer being read */
-    u8 pending_buffer; /* 0x0CB: buffer index + 1 while a read is in flight */
-    u32 streamed_animation_base; /* 0x0CC: first animation id read from the stream archive */
-
-    struct MenuPage *previous; /* 0x0D0: page left by the last switch */
-    s32 unkD4; /* 0x0D4: 0 saving_data_menu, 1/2 saving_data_menu2; picks draw_prompt_box text */
-    s32 unkD8; /* 0x0D8: fun_002196b8 draws slot 6 only while set */
-    s32 unkDC; /* 0x0DC: pause_all_sounds: (mode == 0x23) */
-    s32 unkE0; /* 0x0E0: memcard_make_whole_save / memcard_restore_game argument */
-    s32 unkE4; /* 0x0E4: written with unkF0/unkF4 before close_request 3 */
-    u8 pad_E8[0x4];
-    s32 unkEC; /* 0x0EC: menu_action_messages[] entry (fun_0021abf8) */
-    struct MenuPage *unkF0; /* 0x0F0: menu_system.current, or D_001CF418 (draw_map_screen) */
-    s32 unkF4; /* 0x0F4: 0, 2, 0xB or 0xF */
-    s32 unkF8; /* 0x0F8: read by pause_all_sounds */
-
-    /* Buffers carved at init (FUN_00218f98) */
-    s32 unkFC; /* 0x0FC: from D_001940C0[1] */
-    s32 unk100; /* 0x100: from D_001940C0[2] */
-    s32 unk104; /* 0x104: D_001940C0[1] + 0xA0000 */
-    s32 help_text_buffer; /* 0x108: help text read target, D_001940C0[1] + 0xDC000 */
-    s32 unk10C; /* 0x10C: D_001940C0[2] + 0x180000 */
-
-    s32 update_count; /* 0x110: FUN_002192a8 updates */
-    u8 pad_114[0x4];
-
-    /* Preview moby resources */
-    s32 resource_table_toggle; /* 0x118: alternates per resource table select */
-    s32 unk11C; /* 0x11C: an oclass, -1 none */
-    s32 unk120; /* 0x120: an oclass, -1 none */
-
-    s32 close_locked; /* 0x124: nonzero blocks start/back closing the menu */
-    s32 card_op_pending; /* 0x128: card save/load started, waiting for the card */
-    s32 card_op_text; /* 0x12C: text shown while pending (0x4FB5 save, 0x4FB6 load) */
-    u8 pad_130[0x4];
-    s32 unk134; /* 0x134: hides pages / items with flags 8 */
-    s32 unk138; /* 0x138: hides pages / items with flags 4 */
-    s32 unk13C; /* 0x13C: written by FUN_00218d78 */
-    s32 unk140; /* 0x140: oclass at the last resource table select */
-    s32 last_resource_table_toggle; /* 0x144: resource_table_toggle at the last select */
-};
 extern struct MenuSystem D_001D5F70_1F238 __asm__("D_001D5F70");
 struct MenuScreenWords {
     u8 pad_30[0x4];
@@ -4189,13 +4097,6 @@ struct MenuChoiceListData {
 struct MenuMissionListData {
     s32 choice[19]; /* 0x30: selected mission per level; -1 while unfocused */
     s32 count; /* 0x7C: collect_mission_ids result */
-};
-struct MenuGridCell {
-    u16 icon; /* 0x0: get_icon_frame icon */
-    s16 frame; /* 0x2: first frame */
-    s16 kind; /* 0x4: 0 = item (owned D_0013D4C0[id]), else D_0013D388[id] */
-    s16 id; /* 0x6: item id */
-    s16 stream_entry; /* 0x8: stream entry shown for this cell (fun_0021fdc8) */
 };
 struct MenuItemGridData {
     s32 flags; /* 0x30: 2 fixed row step, 4/8 lockable, 0x20 no equipped frame */
@@ -4530,20 +4431,29 @@ extern void func_0020E180(int, int);
 
 /* The entry address is written inline in the index, as in
    func_0021F118; a `char *e` local swapped the addu. */
-int draw_available_item_preview_mobys(char *arg0) {
-    char *p = *(char **)(D_001D5F74 + 0x40);
-    int v;
+/* Item preview screen (draw_available_item_preview_mobys): the two moby words, as the original int temporaries. */
+typedef struct PreviewScreenWords_21F610 {
+    u8 pad_00[0x44];
+    s32 moby;                 /* 0x44: preview moby, drawn when nonzero */
+    s32 second_moby;          /* 0x48: optional, drawn after moby */
+} PreviewScreenWords_21F610;
 
-    if (((unsigned char *)&D_0013D5C8)[*(short *)(*(int *)(p + 0x3C) * 10 + *(char **)(p + 0x48) + 6)] == 0) {
+int draw_available_item_preview_mobys(char *arg0) {
+    PreviewGridScreen *grid;
+    s32 primary_moby;
+    s32 secondary_moby;
+
+    grid = (PreviewGridScreen *)((struct MenuPage *)D_001D5F74)->focus;
+    if (((unsigned char *)&D_0013D5C8)[grid->cells[grid->selected_cell].id] == 0) {
         return 0;
     }
-    v = *(int *)(arg0 + 0x44);
-    if (v != 0) {
-        DrawMobyList(v, 1);
+    primary_moby = ((PreviewScreenWords_21F610 *)arg0)->moby;
+    if (primary_moby != 0) {
+        DrawMobyList(primary_moby, 1);
     }
-    v = *(int *)(arg0 + 0x48);
-    if (v != 0) {
-        DrawMobyList(v, 1);
+    secondary_moby = ((PreviewScreenWords_21F610 *)arg0)->second_moby;
+    if (secondary_moby != 0) {
+        DrawMobyList(secondary_moby, 1);
     }
     return 8;
 }
@@ -5040,40 +4950,43 @@ extern void func_001F6968_c(int, int, long, void *, int) __asm__("func_001F6968"
    at least 2 in, and spaced arg0+0x24 / (6 or 7 lines) apart starting a
    line minus 6 down. */
 int DrawMissionsMenu(char *arg0) {
-    int maxw, w;
-    int x, y, step;
+    int w;
+    int text_width;
+    int x;
+    int y;
+    int step;
 
     VU1_addGSregister(0x42, 0x44);
     VU1_addGSregister(0x47, 0xB);
     SetupGifPaging(0);
-    maxw = measure_text_width_small(func_001FE540_id(0x4EEE), -1);
-    w = measure_text_width_small(func_001FE540_id(0x4EFA), -1);
-    if (w >= maxw) {
-        maxw = w;
+    w = measure_text_width_small(func_001FE540_id(0x4EEE), -1);
+    text_width = measure_text_width_small(func_001FE540_id(0x4EFA), -1);
+    if (text_width >= w) {
+        w = text_width;
     }
     if (D_0015EE84 != 0) {
-        w = measure_text_width_small(func_001FE540_id(0x4EEF), -1);
-        if (w >= maxw) {
-            maxw = w;
+        text_width = measure_text_width_small(func_001FE540_id(0x4EEF), -1);
+        if (text_width >= w) {
+            w = text_width;
         }
     }
-    w = measure_text_width_small(func_001FE540_id(0x4EFB), -1);
-    if (w >= maxw) {
-        maxw = w;
+    text_width = measure_text_width_small(func_001FE540_id(0x4EFB), -1);
+    if (text_width >= w) {
+        w = text_width;
     }
-    w = measure_text_width_small(func_001FE540_id(0x4EFC), -1);
-    if (w >= maxw) {
-        maxw = w;
+    text_width = measure_text_width_small(func_001FE540_id(0x4EFC), -1);
+    if (text_width >= w) {
+        w = text_width;
     }
-    w = measure_text_width_small(func_001FE540_id(0x4EE0), -1);
-    if (w >= maxw) {
-        maxw = w;
+    text_width = measure_text_width_small(func_001FE540_id(0x4EE0), -1);
+    if (text_width >= w) {
+        w = text_width;
     }
-    x = (*(int *)(arg0 + 0x20) - maxw) >> 1;
+    x = (((Menu *)arg0)->width - w) >> 1;
     if (x < 2) {
         x = 2;
     }
-    step = *(int *)(arg0 + 0x24) / (D_0015EE84 != 0 ? 7 : 6);
+    step = ((Menu *)arg0)->height / (D_0015EE84 != 0 ? 7 : 6);
     Font_DisableColorCodes();
     y = step - 6;
     func_001F6968_c(x, y, 0x80FFA888L, func_001FE540_id(0x4EEE), -1);
@@ -5585,23 +5498,41 @@ extern int func_00226EA8(int);
 /* Sibling of func_00220DA0 below: the same slot set (0x44/0x48/0x4C/
    0x50/0x54/0x5C) on the same object, seeded here instead of torn down.
    The tail stores go 5C, 50, 54. */
-int enter_menu_stream_image(void *arg0) {
-    char *s = (char *)arg0;
+typedef struct MenuStreamData_220D08 {
+    u8 pad_00[0x4];            /* 0x30 entries */
+    s32 flags;                 /* 0x34: 0x200 is the acquire_menu_stream_buffer argument */
+    u8 pad_38[0xC];            /* 0x38 texture size, language base */
+    s32 state;                 /* 0x44 */
+    s32 buffer[2];             /* 0x48: stream buffers */
+    s32 loaded_entry[2];       /* 0x50: entry held by each buffer, -1 none */
+    u8 pad_58[0x4];            /* 0x58 fixed_entry */
+    s32 elapsed_frames;        /* 0x5C: updates since enter */
+} MenuStreamData_220D08;
 
-    *(int *)(s + 0x44) = 0;
-    *(int *)(s + 0x48) = acquire_menu_stream_buffer(*(int *)(s + 0x34) & 0x200);
-    *(int *)(s + 0x4C) = acquire_menu_stream_buffer(*(int *)(s + 0x34) & 0x200);
-    if ((*(int *)(s + 0x34) & 0x200) == 0) {
-        if (*(int *)(s + 0x48) == 0) {
-            *(int *)(s + 0x48) = acquire_menu_stream_buffer(1);
+typedef struct StreamScreen_220D08 {
+    u8 pad_00[0x30];
+    struct {
+        MenuStreamData_220D08 stream;
+    } data;                    /* 0x30 */
+} StreamScreen_220D08;
+
+int enter_menu_stream_image(void *arg0) {
+    StreamScreen_220D08 *menu = (StreamScreen_220D08 *)arg0;
+
+    menu->data.stream.state = 0;
+    menu->data.stream.buffer[0] = acquire_menu_stream_buffer(menu->data.stream.flags & 0x200);
+    menu->data.stream.buffer[1] = acquire_menu_stream_buffer(menu->data.stream.flags & 0x200);
+    if (!(menu->data.stream.flags & 0x200)) {
+        if (menu->data.stream.buffer[0] == 0) {
+            menu->data.stream.buffer[0] = acquire_menu_stream_buffer(1);
         }
-        if (*(int *)(s + 0x4C) == 0) {
-            *(int *)(s + 0x4C) = acquire_menu_stream_buffer(1);
+        if (menu->data.stream.buffer[1] == 0) {
+            menu->data.stream.buffer[1] = acquire_menu_stream_buffer(1);
         }
     }
-    *(int *)(s + 0x5C) = 0;
-    *(int *)(s + 0x50) = -1;
-    *(int *)(s + 0x54) = -1;
+    menu->data.stream.elapsed_frames = 0;
+    menu->data.stream.loaded_entry[0] = -1;
+    menu->data.stream.loaded_entry[1] = -1;
     return 0;
 }
 
@@ -6380,56 +6311,77 @@ typedef struct {
    selected slot (drawn with a pulsing highlight box), and slots[i]
    indexes an icon-info table (D_001864D0, 0x4C bytes/entry) and a byte
    flags table (D_0013E620) when nonzero. */
+/* The pause page state (arg0 of draw_pause_ring): viewport size, the ring's
+   icon slots and the selected ring position. */
+struct PauseState {
+    u8 pad_00[0x20];
+    s32 w;                              /* 0x20 viewport width */
+    s32 h;                              /* 0x24 viewport height */
+    u8 pad_28[0x8];
+    s32 slots[8];                       /* 0x30 item slot per ring position */
+    s32 sel;                            /* 0x50 selected ring position */
+};
+
+/* One 0x4C-byte icon-info record (the D_001864D0 table). */
+struct MenuItemInfo {
+    u8 pad_00[0x38];
+    u16 unk38;                          /* 0x38: icon id for GetIconFrame */
+    u8 pad_3A[0x12];
+};
+
 int draw_pause_ring(char *arg0) {
-    int v0, v1;
-    int flag;
-    float cx, cy, radius;
-    char *iconTab;
-    int i;
+    struct PauseState *pause_state = (struct PauseState *)arg0;
+    s32 i;
+    s32 flag;
+    f32 cx, cy, radius;
+    struct MenuItemInfo *iconTab;
+    s32 viewport_dimension, viewport_height;
 
     SetupGifPaging(0);
-    v1 = *(int *)(arg0 + 0x20);
-    iconTab = D_001864D0;
-    v0 = *(int *)(arg0 + 0x24);
-    flag = v1 < v0;
+    viewport_dimension = pause_state->w;
+    iconTab = (struct MenuItemInfo *)D_001864D0;
+    viewport_height = pause_state->h;
+    flag = viewport_dimension < viewport_height;
     /* v1 doubles as `selected`: retail's movz reuses the same register
        that already holds v1 (loaded straight into it), so the C must
        overwrite v1 itself rather than assign a fresh local -- that
        fresh local costs an extra `move` before the conditional one. */
-    cx = (float)v1 * 0.5f;
-    cy = (float)v0 * 0.5f;
+    cx = (f32)viewport_dimension * 0.5f;
+    cy = (f32)viewport_height * 0.5f;
     if (flag == 0) {
-        v1 = v0;
+        viewport_dimension = viewport_height;
     }
-    radius = (float)v1 * 0.5f - 40.0f;
+    radius = (f32)viewport_dimension * 0.5f - 40.0f;
     i = 0;
     do {
-        float ang, t, x, y;
-        int idx;
+        f32 ang, slot_angle, x, y;
+        s32 icon_entry_index;
 
-        ang = (float)i * 0.7853982f + -1.5707964f;
-        t = FastNormalizeAngle(ang, flag);
-        x = cx + FastCos(t) * radius;
-        y = cy + FastSin(t) * radius;
-        if (i == *(int *)(arg0 + 0x50)) {
+        ang = (f32)i * 0.7853982f + -1.5707964f;
+        slot_angle = FastNormalizeAngle(ang, flag);
+        x = cx + FastCos(slot_angle) * radius;
+        y = cy + FastSin(slot_angle) * radius;
+        if (i == pause_state->sel) {
             unsigned int color = ((subtract_integer_with_clamp((D_0015F538 & 0x3F) - 0x20) + 0x40) * 0x10202) | 0x80000000;
+
             func_00201640((int)x - 0x13, (int)y - 0x13, (int)x + 0x13, (int)y + 0x13, color, 0);
             func_00201640((int)x - 0x12, (int)y - 0x12, (int)x + 0x12, (int)y + 0x12, *(int *)&D_001602B0, 0);
         }
-        idx = ((PauseIcons *)arg0)->slots[i];
-        if (idx == 0) {
+        icon_entry_index = pause_state->slots[i];
+        if (icon_entry_index == 0) {
             func_00201640((int)x - 0xF, (int)y - 0xF, (int)x + 0xF, (int)y + 0xF, 0x40404040L, 0);
         } else {
-            int id = GetIconFrame(*(unsigned short *)(iconTab + idx * 0x4C + 0x38), D_0013E620[idx] == 0 ? 0 : 4);
+            int id = GetIconFrame(iconTab[icon_entry_index].unk38, D_0013E620[icon_entry_index] == 0 ? 0 : 4);
+
             HudSprite(id, (int)x - 0x11, (int)y - 0x11, 0x20, 0x20, 0x80);
         }
         i += 1;
         flag = 0xE99E;
     } while (i < 8);
     HudSprite(GetIconFrame(0xE99E, 0), 8, 0x27, 0x20, -0x20, 0x80);
-    HudSprite(GetIconFrame(0xE99E, 0), *(int *)(arg0 + 0x20) - 0xA, 0x27, -0x20, -0x20, 0x80);
+    HudSprite(GetIconFrame(0xE99E, 0), pause_state->w - 0xA, 0x27, -0x20, -0x20, 0x80);
     func_001F68E8_c(0x28, 0xF, 0x80FFA888L, D_001603D8, -1);
-    func_001F68E8_c(*(int *)(arg0 + 0x20) - 0x3C, 0xF, 0x80FFA888L, D_001603E0, -1);
+    func_001F68E8_c(pause_state->w - 0x3C, 0xF, 0x80FFA888L, D_001603E0, -1);
     DoGifPaging();
     return 2;
 }
@@ -6793,13 +6745,32 @@ extern int D_001D6610[];
 extern char D_001864D0[];
 extern char D_001D1408[];
 
+/* One 0x4C-byte record of D_001864D0, indexed by item id: the icon the
+   filtered list shows, and the two values it copies out. */
+struct Info {
+    u8 pad_00[0x38];
+    u16 icon;                  /* 0x38 */
+    u8 pad_3A[0x6];
+    s16 a;                     /* 0x40 */
+    u8 pad_42[0x2];
+    s16 b;                     /* 0x44 */
+    u8 pad_46[0x6];
+};
+
+/* The filtered-list header at D_001D1408: its entry count sits at 0x40. */
+struct FilteredItemList {
+    u8 pad_00[0x40];
+    s32 count;                 /* 0x40 */
+};
+
 /* func_00222640's sibling over four source tables. */
 int build_filtered_menu_item_list(void) {
+    int filtered_item_count;
     int i;
     int id;
-    int n = 0;
-    char *m;
+    struct Info *item_info;
 
+    filtered_item_count = 0;
     for (i = 0; i < 14; i++) {
         if (i < 6) {
             id = D_001CEFA0[i].id;
@@ -6811,19 +6782,18 @@ int build_filtered_menu_item_list(void) {
             id = D_001CF020[i - 12].id;
         }
         if (((unsigned char *)&D_0013D5C8)[id] != 0) {
-            char *rec = D_001864D0 + id * 0x4C;
-            D_001D6548[n].a = *(unsigned short *)(rec + 0x38);
-            D_001D6548[n].b = 0;
-            D_001D6548[n].c = 0;
-            D_001D6548[n].id = id;
-            D_001D6548[n].idx = i;
-            D_001D65D8[n] = *(short *)(rec + 0x40);
-            D_001D6610[n] = *(short *)(rec + 0x44);
-            n++;
+            item_info = &((struct Info *)D_001864D0)[id];
+            D_001D6548[filtered_item_count].a = item_info->icon;
+            D_001D6548[filtered_item_count].b = 0;
+            D_001D6548[filtered_item_count].c = 0;
+            D_001D6548[filtered_item_count].id = id;
+            D_001D6548[filtered_item_count].idx = i;
+            D_001D65D8[filtered_item_count] = item_info->a;
+            D_001D6610[filtered_item_count] = item_info->b;
+            filtered_item_count++;
         }
     }
-    m = D_001D1408;
-    *(int *)(m + 0x40) = n;
+    ((struct FilteredItemList *)D_001D1408)->count = filtered_item_count;
     return 0;
 }
 
@@ -8493,73 +8463,81 @@ extern void func_00226250(void *);
    `g` local per block reading D_001D5F70 gives retail's %hi kept in a
    saved register with %lo rebuilt; the -1 stores are written in the
    order that gives retail's schedule. */
+struct MenuPreviewScreen_225358 {
+    u8 pad_00[0x44];
+    struct Moby *gadget_moby;    /* 0x44: gadget preview moby (func_00226720_a(0)) */
+    struct Moby *pose_moby;      /* 0x48: pose moby (func_00226720_a(0x259)) */
+    u8 pad_4C[0x58];
+    char flags[0x18];            /* 0xA4: 24 flag bytes cleared on setup, ending at 0xBB */
+};
+
 int initialize_menu_preview_objects(char *arg0) {
-    char *m;
-    int *p;
-    int *v;
-    char *q;
+    struct Moby *object;
+    int *resource_buffer_slot;
+    int *object_variables;
+    char *held_flag;
     int i, j;
 
     initialize_menu_stream_buffers(1);
     clear_preview_animation_queue();
     {
-        unsigned char *g = menu_system;
+        struct MenuSystem *g = (struct MenuSystem *)menu_system;
 
         active_class_resource_index = -1;
-        *(int *)(g + 0x11C) = -1;
-        *(int *)(g + 0x120) = -1;
-        *(int *)(g + 0xA0) = acquire_menu_stream_buffer(1);
-        *(int *)(g + 0xA4) = acquire_menu_stream_buffer(1);
-        g[0xC8] = 0xFF;
-        g[0xC9] = 0xFF;
-        g[0xCA] = 0;
-        p = (int *)(g + 0xB0);
+        g->unk11C = -1;
+        g->unk120 = -1;
+        g->stream_buffer[0] = acquire_menu_stream_buffer(1);
+        g->stream_buffer[1] = acquire_menu_stream_buffer(1);
+        g->loaded_animation[0] = 0xFF;
+        g->loaded_animation[1] = 0xFF;
+        g->read_buffer_index = 0;
+        resource_buffer_slot = g->unkB0;
         for (i = 2; i >= 0; i--) {
-            *p = acquire_menu_stream_buffer(0);
-            p++;
+            *resource_buffer_slot = acquire_menu_stream_buffer(0);
+            resource_buffer_slot++;
         }
     }
     {
-        char *g = menu_system;
+        struct MenuSystem *g = (struct MenuSystem *)menu_system;
 
         class_pose_manipulator[1] = 0;
-        *(int *)(g + 0x1C) = -1;
+        g->current_gadget = -1;
         first_attachment_manipulator[1] = 0;
         second_attachment_manipulator[1] = 0;
     }
-    m = func_00226720_a(0);
-    q = arg0 + 0xBB;
+    object = func_00226720_a(0);
+    held_flag = ((struct MenuPreviewScreen_225358 *)arg0)->flags + 23;
     for (j = 23; j >= 0; j--) {
-        *q = 0;
-        q--;
+        *held_flag = 0;
+        held_flag--;
     }
-    if (m != 0) {
-        char *cam = gCamera;
-        char *g;
+    if (object != 0) {
+        struct RotatingPreviewCamera *camera = (struct RotatingPreviewCamera *)gCamera;
+        struct MenuSystem *g;
 
-        *(char **)(arg0 + 0x44) = m;
-        *(short *)(m + 0x34) = 0;
-        *(float *)(m + 0x10) = *(float *)(cam + 0x140) + 4.0f;
-        *(float *)(m + 0x14) = *(float *)(cam + 0x144);
-        *(float *)(m + 0x18) = *(float *)(cam + 0x148) - 0.6f;
-        *(float *)(m + 0x48) = 3.1415927f;
-        *(void **)(m + 0x74) = NullMobyUpdate_Gadget;
-        v = *(int **)(m + 0x78);
-        v[0] = (int)arg0;
-        v[1] = 0;
-        v[2] = 0;
-        g = menu_system;
-        *(int *)(g + 0xC0) = -1;
+        ((struct MenuPreviewScreen_225358 *)arg0)->gadget_moby = object;
+        object->flags = 0;
+        object->pos.x = camera->pos.f[0] + 4.0f;
+        object->pos.y = camera->pos.f[1];
+        object->pos.z = camera->pos.f[2] - 0.6f;
+        object->rot.z = 3.1415927f;
+        object->update = (void (*)(struct Moby *))NullMobyUpdate_Gadget;
+        object_variables = (int *)object->pvars;
+        object_variables[0] = (int)arg0;
+        object_variables[1] = 0;
+        object_variables[2] = 0;
+        g = (struct MenuSystem *)menu_system;
+        g->unkC0 = -1;
         FastMemSet(D_00186410, 0, 0x40);
-        noop_callback_e(m);
+        noop_callback_e(object);
     }
-    m = func_00226720_a(0x259);
-    if (m != 0) {
-        **(int **)(m + 0x78) = (int)arg0;
-        *(void **)(m + 0x74) = update_menu_preview_animation_pose;
-        *(short *)(m + 0x34) = 4;
+    object = func_00226720_a(0x259);
+    if (object != 0) {
+        *(int *)object->pvars = (int)arg0;
+        object->update = (void (*)(struct Moby *))update_menu_preview_animation_pose;
+        object->flags = 4;
     }
-    *(char **)(arg0 + 0x48) = m;
+    ((struct MenuPreviewScreen_225358 *)arg0)->pose_moby = object;
     return 0;
 }
 __asm__(".section .text\n\tnop\n");
@@ -8575,20 +8553,35 @@ extern int func_002267C0(int);
 extern int func_00226F68(int);
 extern void func_00227A70(void);
 
-int release_menu_preview_objects(void *arg0) {
-    unsigned char *g; int *p; int *q; int i; int j;
+typedef struct MenuPreviewObjects_225548 {
+    u8 pad_00[0x44];
+    s32 objects[24];          /* 0x44: preview object handles, freed by func_002267C0 */
+} MenuPreviewObjects_225548;
 
-    p = (int *)((char *)arg0 + 0x44);
-    for (i = 23; i >= 0; i--) { *p = func_002267C0(*p); p++; }
-    g = menu_system;
-    *(int *)(g + 0xA0) = release_menu_stream_buffer(*(int *)(g + 0xA0));
-    *(int *)(g + 0xA4) = release_menu_stream_buffer(*(int *)(g + 0xA4));
-    g[0xC8] = 0xFF;      // emitted 0xC9 then 0xC8: two stores of the
-    g[0xC9] = 0xFF;      // same value come out in the opposite order
-    g[0xCA] = 0;
+int release_menu_preview_objects(void *arg0) {
+    int *object_slot;
+    int *resource_slot;
+    int objects_remaining;
+    int resources_remaining;
+    struct MenuSystem *resources;
+
+    object_slot = &((MenuPreviewObjects_225548 *)arg0)->objects[0];
+    for (objects_remaining = 23; objects_remaining >= 0; objects_remaining--) {
+        *object_slot = func_002267C0(*object_slot);
+        object_slot++;
+    }
+    resources = (struct MenuSystem *)menu_system;
+    resources->stream_buffer[0] = release_menu_stream_buffer(resources->stream_buffer[0]);
+    resources->stream_buffer[1] = release_menu_stream_buffer(resources->stream_buffer[1]);
+    resources->loaded_animation[0] = 0xFF;
+    resources->loaded_animation[1] = 0xFF;
+    resources->read_buffer_index = 0;
     clear_preview_resource_bindings();
-    q = (int *)(g + 0xB0);
-    for (j = 2; j >= 0; j--) { *q = release_menu_stream_buffer(*q); q++; }
+    resource_slot = &resources->unkB0[0];
+    for (resources_remaining = 2; resources_remaining >= 0; resources_remaining--) {
+        *resource_slot = release_menu_stream_buffer(*resource_slot);
+        resource_slot++;
+    }
     return 0;
 }
 
@@ -9369,6 +9362,36 @@ int HelperMobyMenu_Init(char *h) {
     return 0;
 }
 
+/* Menu screen words leave_streamed_moby_screen reads (MenuScreen 0x30-0x5F). */
+struct MenuScreenWords_268F0 {
+    u8 pad_30[0xC];
+    s32 unk3C;                 /* 0x3C: stream buffer (release_menu_stream_buffer) */
+    u8 pad_40[0x4];
+    s32 slots[24];             /* 0x44: moby handles, each freed on leave */
+};
+
+typedef struct MenuScreen_268F0 {
+    u8 pad_00[0x30];
+    union {
+        struct MenuScreenWords_268F0 raw;   /* not understood yet */
+    } data;                    /* 0x30 */
+} MenuScreen_268F0;
+
+/* Music stream channel record (0x1C bytes); only state is read here. */
+typedef struct MusicStreamChannel {
+    s32 handle;                /* 0x00 */
+    s16 track;                 /* 0x04 */
+    s16 volume;                /* 0x06 */
+    s16 flags;                 /* 0x08 */
+    u16 state;                 /* 0x0A: unsigned, read with lhu */
+    u8 pad_0C[0x10];
+} MusicStreamChannel;
+
+typedef struct MusicStreamState {
+    u8 pad_00[0x50];
+    MusicStreamChannel secondary;  /* 0x50 */
+} MusicStreamState;
+
 /*
  * Exact once the short-loop padding retail's assembler adds is reproduced
  * (tools/fix_short_loops.py); it was the whole residual. Taking the
@@ -9376,14 +9399,20 @@ int HelperMobyMenu_Init(char *h) {
  * %hi/%lo out of a callee-saved register, as retail has it.
  */
 int leave_streamed_moby_screen(void *arg0) {
-    int *p = (int *)((char *)arg0 + 0x44);
-    unsigned short *q;
-    int i;
-    for (i = 0x17; i >= 0; i--) { *p = func_002267C0(*p); p++; }
-    *(int *)((char *)arg0 + 0x3C) =
-        release_menu_stream_buffer(*(int *)((char *)arg0 + 0x3C));
-    q = (unsigned short *)D_001517D0;
-    if ((unsigned int)(q[0x2D] - 6) >= 2) { q[0x2D] = 5; }
+    MenuScreen_268F0 *menu = (MenuScreen_268F0 *)arg0;
+    s32 *slot = menu->data.raw.slots;
+    MusicStreamState *music;
+    s32 remaining;
+
+    for (remaining = 0x17; remaining >= 0; remaining--) {
+        *slot = func_002267C0(*slot);
+        slot++;
+    }
+    menu->data.raw.unk3C = release_menu_stream_buffer(menu->data.raw.unk3C);
+    music = (MusicStreamState *)D_001517D0;
+    if ((u32)(music->secondary.state - 6) >= 2U) {
+        music->secondary.state = 5;
+    }
     return 0;
 }
 

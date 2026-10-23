@@ -3254,98 +3254,112 @@ extern int func_0022ED80_2FA458(int, int, void *) __asm__("func_0022ED80");
 
 /* Collapsing platform: sparkles while idle, then drops when the player stands near, and records it as collected.
    Adapted from Lombyte (MIT) for PAL: overlays/l01/unclassified_002b96e0.c, FUN_L01_002f9080. */
-void falling_rock_update(CapMoby *m) {
-    CapVars *v;
-    unsigned char *e;
+typedef struct CapCameraPoint {
+    u8 pad0[0x30];
+    Vec4 pos;
+    u8 pad40[0x40];
+} CapCameraPoint;
 
-    v = m->pvars;
-    if (m->state != 1 && !FastDecTimer(&v->wait) && random_integer_below(100) < 5) {
+extern Hero hero __asm__("D_0013F450");
+
+void falling_rock_update(CapMoby *falling_rock) {
+    enum {
+        FALLING_ROCK_STATE_INITIALIZE = 0,
+        FALLING_ROCK_STATE_WAIT_FOR_TRIGGER = 1,
+        FALLING_ROCK_STATE_WAIT_BEFORE_FALL = 2,
+        FALLING_ROCK_STATE_FALLING = 3,
+        FALLING_ROCK_STATE_FALLEN = 4
+    };
+    CapVars *falling_rock_vars;
+    CapCameraPoint *camera_record;
+
+    falling_rock_vars = falling_rock->pvars;
+    if (falling_rock->state != 1 && !FastDecTimer(&falling_rock_vars->wait) && random_integer_below(100) < 5) {
         CapColors colors;
-        Vec4 vel;
+        Vec4 debris_initial_velocity;
         Vec4 pos;
-        float r;
-        float ang;
+        f32 debris_spawn_radius;
+        f32 debris_spawn_angle;
 
         colors = D_L01_00161CD0;
         pos.q = 0;
         pos.f[0] = random_float_between(D_0015EE6C * -0.5f, D_0015EE6C * 0.5f);
         pos.f[1] = random_float_between(D_0015EE6C * -0.5f, D_0015EE6C * 0.5f);
-        vel.q = pos.q;
-        r = random_float_between(2.0f, 3.0f);
-        ang = random_angle_radians();
-        pos.f[0] = FastCos(ang) * r;
-        pos.f[1] = FastSin(ang) * r;
+        debris_initial_velocity.q = pos.q;
+        debris_spawn_radius = random_float_between(2.0f, 3.0f);
+        debris_spawn_angle = random_angle_radians();
+        pos.f[0] = FastCos(debris_spawn_angle) * debris_spawn_radius;
+        pos.f[1] = FastSin(debris_spawn_angle) * debris_spawn_radius;
         pos.f[2] = 0.0f;
-        FastVecAdd(&pos, &pos, &v->home);
-        func_L01_002F9908(&pos, &vel, colors.c[random_integer_below(3)], rand_range(0xB4, 0x12C), 0.05f, 1.0f, 1.0f, 0.75f, 0);
+        FastVecAdd(&pos, &pos, &falling_rock_vars->home);
+        func_L01_002F9908(&pos, &debris_initial_velocity, colors.c[random_integer_below(3)], rand_range(0xB4, 0x12C), 0.05f, 1.0f, 1.0f, 0.75f, 0);
     }
-    switch (m->state) {
-    case 0:
-        v->w20 = 0;
-        v->h24 = 0;
-        v->b28 = 4;
-        v->h3E = 5;
-        qcopy(&v->home, &m->pos);
-        m->state = 1;
-        if (D_L01_001BB9C0.collected[(short)m->id] != 0
-            || (*(int *)(D_0014171B + 0xAB75 + (((short)m->id >> 5) * 4 + (D_0015EE84_m << 8))) >> (m->id & 0x1F)) & 1) {
-            clear_u64_value(&v->rot);
-            m->state = 4;
-            m->pos.f[2] = v->home.f[2] - 20.0f;
-            v->music = -1;
+    switch (falling_rock->state) {
+    case FALLING_ROCK_STATE_INITIALIZE:
+        falling_rock_vars->w20 = 0;
+        falling_rock_vars->h24 = 0;
+        falling_rock_vars->b28 = 4;
+        falling_rock_vars->h3E = 5;
+        qcopy(&falling_rock_vars->home, &falling_rock->pos);
+        falling_rock->state = 1;
+        if (D_L01_001BB9C0.collected[(short)falling_rock->id] != 0
+            || (*(int *)(D_0014171B + 0xAB75 + (((short)falling_rock->id >> 5) * 4 + (D_0015EE84_m << 8))) >> (falling_rock->id & 0x1F)) & 1) {
+            clear_u64_value(&falling_rock_vars->rot);
+            falling_rock->state = 4;
+            falling_rock->pos.f[2] = falling_rock_vars->home.f[2] - 20.0f;
+            falling_rock_vars->music = -1;
         }
         break;
-    case 1:
-        if (v->cam != -1) {
-            CapPlayer *p = (CapPlayer *)(D_0013E633 + 0xE1D);
-            e = (unsigned char *)(v->cam * 128 + (int)camera_points);
-            if (p->z >= *(float *)(e + 0x38)
-                && func_001F9D48(p->pos, e + 0x30) < 10.0f
-                && (p->mode < 2 || p->mode == 9)) {
-                v->wait = rand_range(scale_ticks(300), scale_ticks(600));
-                v->rise = scale_ticks(v->rise_len);
-                m->state = 2;
+    case FALLING_ROCK_STATE_WAIT_FOR_TRIGGER:
+        if (falling_rock_vars->cam != -1) {
+            camera_record = (CapCameraPoint *)(falling_rock_vars->cam * 128 + (int)camera_points);
+            if (hero.motion.pos.f[2] >= camera_record->pos.f[2]
+                && func_001F9D48(&hero.motion.pos, &camera_record->pos) < 10.0f
+                && ((u32)hero.state.control_mode < 2 || hero.state.control_mode == 9)) {
+                falling_rock_vars->wait = rand_range(scale_ticks(300), scale_ticks(600));
+                falling_rock_vars->rise = scale_ticks(falling_rock_vars->rise_len);
+                falling_rock->state = 2;
                 D_L01_00167180.shake = 0.4f;
                 D_L01_00167180.shake_time = scale_ticks(30);
-                func_0022ED80_2FA458(1, 0, m);
+                func_0022ED80_2FA458(1, 0, falling_rock);
             }
         }
         break;
-    case 2:
-        ApplyNodeLighting((char *)m);
-        if (FastDecTimer(&v->rise)) {
-            clear_u64_value(&v->rot);
-            v->hold = scale_ticks(0x2D);
-            m->state = 3;
+    case FALLING_ROCK_STATE_WAIT_BEFORE_FALL:
+        ApplyNodeLighting((char *)falling_rock);
+        if (FastDecTimer(&falling_rock_vars->rise)) {
+            clear_u64_value(&falling_rock_vars->rot);
+            falling_rock_vars->hold = scale_ticks(0x2D);
+            falling_rock->state = 3;
         }
         break;
-    case 3: {
+    case FALLING_ROCK_STATE_FALLING: {
         CapVec3 old;
 
-        ApplyNodeLighting((char *)m);
-        m->pos.f[2] -= 0.0f;
-        qcopy(&old, &m->pos);
-        v->rot.f[2] -= D_0015EE70 * 30.0f;
-        FastVecAdd(&m->pos, &m->pos, &v->rot);
-        if (FastDecTimer(&v->hold) && 20.0f < v->home.f[2] - m->pos.f[2]) {
+        ApplyNodeLighting((char *)falling_rock);
+        falling_rock->pos.f[2] -= 0.0f;
+        qcopy(&old, &falling_rock->pos);
+        falling_rock_vars->rot.f[2] -= D_0015EE70 * 30.0f;
+        FastVecAdd(&falling_rock->pos, &falling_rock->pos, &falling_rock_vars->rot);
+        if (FastDecTimer(&falling_rock_vars->hold) && 20.0f < falling_rock_vars->home.f[2] - falling_rock->pos.f[2]) {
             D_L01_00167180.shake = 0.1f;
             D_L01_00167180.shake_time = scale_ticks(20);
-            clear_u64_value(&v->rot);
-            m->state = 4;
-            func_0022ED80_2FA458(0, 0, m);
-            m->pos.f[2] = v->home.f[2] - 20.0f;
-            *(int *)(D_0014171B + 0xAB75 + (((short)m->id >> 5) * 4 + (D_0015EE84_m << 8))) |= 1 << (m->id & 0x1F);
-            moby_killed[(short)m->id >> 5] |= 1 << (m->id & 0x1F);
+            clear_u64_value(&falling_rock_vars->rot);
+            falling_rock->state = 4;
+            func_0022ED80_2FA458(0, 0, falling_rock);
+            falling_rock->pos.f[2] = falling_rock_vars->home.f[2] - 20.0f;
+            *(int *)(D_0014171B + 0xAB75 + (((short)falling_rock->id >> 5) * 4 + (D_0015EE84_m << 8))) |= 1 << (falling_rock->id & 0x1F);
+            moby_killed[(short)falling_rock->id >> 5] |= 1 << (falling_rock->id & 0x1F);
         }
-        m->pos.f[2] += 0.0f;
+        falling_rock->pos.f[2] += 0.0f;
         break;
     }
-    case 4:
-        if (v->wait == 0 && v->music != -1) {
+    case FALLING_ROCK_STATE_FALLEN:
+        if (falling_rock_vars->wait == 0 && falling_rock_vars->music != -1) {
             CameraScript2(0);
-            Hero_SetMoveState(0, 1);
+            Hero_SetMoveState(HERO_STATE_IDLE, 1);
             D_L01_0015F504 = 0;
-            v->music = -1;
+            falling_rock_vars->music = -1;
         }
         break;
     }

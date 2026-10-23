@@ -180,156 +180,180 @@ extern float D_0015EE6C MACRO_ADDR;
 extern float D_0015EE70_4B90 __asm__("D_0015EE70") MACRO_ADDR;
 extern float D_L13_00167140[];
 
+typedef struct LiftVars {
+    u8 pad_00[0x20];
+    f32 path[16];                 /* 0x20 4x4 matrix update_entity_matrix writes from */
+    f32 top;                      /* 0x60 height of the top stop */
+    f32 bottom;                   /* 0x64 height of the bottom stop */
+    f32 speed;                    /* 0x68 vertical speed */
+    s32 voice;                    /* 0x6C sound slot of the lift's loop, -1 none */
+    f32 blend;                    /* 0x70 camera blend progress, reaches 1 */
+    f32 blend_speed;              /* 0x74 */
+    f32 pulse;                    /* 0x78 glow pulse phase */
+    u8 armed;                     /* 0x7C set once the hero leaves the lift */
+} LiftVars;
+
 /* Updates the lift: rises/lowers between two heights, blends the camera and pulses its colour by state. */
 void LiftL13_UpdateAlt(unsigned char *moby) {
-    char *state = (*(char **)((char *)(moby) + (0x78)));
+    enum {
+        ELEVATOR_STATE_INITIALIZE = 0,
+        ELEVATOR_STATE_BLEND_CAMERA = 1,
+        ELEVATOR_STATE_MOVE_TO_TOP = 2,
+        ELEVATOR_STATE_MOVE_TO_BOTTOM = 3,
+        ELEVATOR_STATE_WAIT_AT_TOP = 4,
+        ELEVATOR_STATE_WAIT_AT_BOTTOM = 5,
+        ELEVATOR_STATE_WAIT_FOR_HERO_EXIT_AT_TOP = 6,
+        ELEVATOR_STATE_WAIT_FOR_HERO_EXIT_AT_BOTTOM = 7
+    };
+    struct Moby *m = (struct Moby *)moby;
+    LiftVars *vars = (LiftVars *)m->pvars;
     float delta[4];
     float rot[4];
-    float a[4];
-    float b[4];
-    float c[4];
+    float camera_position_scratch[4];
+    float camera_pose_scratch[4];
+    float blended_camera_rotation[4];
 
-    FastVecScale(delta, moby + 0x10, -1.0f);
-    qcopy(rot, moby + 0x40);
-    switch ((*(unsigned char *)((char *)(moby) + (0x20)))) {
-    case 0:
-        (*(float *)((char *)(state) + (0x78))) = random_angle_radians();
-        (*(int *)((char *)(state) + (0x6C))) = -1;
-        (*(unsigned char *)((char *)(moby) + (0x20))) = 3;
+    FastVecScale(delta, &m->pos, -1.0f);
+    qcopy(rot, &m->rot);
+    switch (m->state) {
+    case ELEVATOR_STATE_INITIALIZE:
+        vars->pulse = random_angle_radians();
+        vars->voice = -1;
+        m->state = 3;
         break;
-    case 1: {
-        float old = (*(float *)((char *)(state) + (0x70)));
-        ApproachWithVelocity((float *)(state + 0x70), (float *)(state + 0x74), 1.0f,
-                      D_0015EE70_4B90 * 4.0f, D_0015EE70_4B90 * 4.0f, D_0015EE6C * 4.0f);
-        if ((*(float *)((char *)(state) + (0x70))) < 1.0f) {
-            float t = (1.0f - (*(float *)((char *)(state) + (0x70)))) / (1.0f - old);
+    case ELEVATOR_STATE_BLEND_CAMERA: {
+        float old = vars->blend;
+        ApproachWithVelocity(&vars->blend, &vars->blend_speed, 1.0f,
+                             D_0015EE70_4B90 * 4.0f, D_0015EE70_4B90 * 4.0f, D_0015EE6C * 4.0f);
+        if (vars->blend < 1.0f) {
+            float t = (1.0f - vars->blend) / (1.0f - old);
             char *base;
-            ComputeFlankPosition(moby, b, c);
-            FastVecSub(a, D_L13_00167140, b);
+            ComputeFlankPosition(moby, camera_pose_scratch, blended_camera_rotation);
+            FastVecSub(camera_position_scratch, D_L13_00167140, camera_pose_scratch);
             base = (char *)D_L13_00167140 - 0x140;
-            FastVecScale(a, a, t);
-            FastVecAdd(b, b, a);
-            c[1] = FastAddRots(FastSubRots((*(float *)((char *)(base) + (0x154))), c[1]) * t, c[1]);
-            c[2] = FastAddRots(FastSubRots((*(float *)((char *)(base) + (0x158))), c[2]) * t, c[2]);
-            set_camera_position(b);
-            set_camera_rotation(c);
+            FastVecScale(camera_position_scratch, camera_position_scratch, t);
+            FastVecAdd(camera_pose_scratch, camera_pose_scratch, camera_position_scratch);
+            blended_camera_rotation[1] = FastAddRots(FastSubRots((*(float *)(base + 0x154)), blended_camera_rotation[1]) * t, blended_camera_rotation[1]);
+            blended_camera_rotation[2] = FastAddRots(FastSubRots((*(float *)(base + 0x158)), blended_camera_rotation[2]) * t, blended_camera_rotation[2]);
+            set_camera_position(camera_pose_scratch);
+            set_camera_rotation(blended_camera_rotation);
         } else {
-            unsigned char s = (*(unsigned char *)((char *)(moby) + (0xBC)));
-            (*(unsigned char *)((char *)(moby) + (0xBC))) = 1;
-            (*(unsigned char *)((char *)(moby) + (0x20))) = s;
+            u8 s = m->command;
+            m->command = 1;
+            m->state = s;
         }
         break;
     }
-    case 2:
-    case 3: {
+    case ELEVATOR_STATE_MOVE_TO_TOP:
+    case ELEVATOR_STATE_MOVE_TO_BOTTOM: {
         float target;
-        if (!Sound_IsPlaying(moby, (*(int *)((char *)(state) + (0x6C))))) {
-            (*(int *)((char *)(state) + (0x6C))) = Moby_PlaySound(0, 4, (int)moby);
+        if (!Sound_IsPlaying(moby, vars->voice)) {
+            vars->voice = Moby_PlaySound(0, 4, (int)moby);
         }
-        if ((*(unsigned char *)((char *)(moby) + (0xBC))) != 0) {
-            ComputeFlankPosition(moby, a, b);
-            set_camera_position(a);
-            set_camera_rotation(b);
+        if (m->command != 0) {
+            ComputeFlankPosition(moby, camera_position_scratch, camera_pose_scratch);
+            set_camera_position(camera_position_scratch);
+            set_camera_rotation(camera_pose_scratch);
         }
-        if ((*(unsigned char *)((char *)(moby) + (0x20))) == 2) {
-            target = (*(float *)((char *)(state) + (0x60)));
+        if (m->state == 2) {
+            target = vars->top;
         } else {
-            target = (*(float *)((char *)(state) + (0x64)));
+            target = vars->bottom;
         }
-        ApproachWithVelocity((float *)(moby + 0x18), (float *)(state + 0x68), target,
-                      D_0015EE70_4B90 * 8.0f, D_0015EE70_4B90 * 8.0f, D_0015EE6C * 40.0f);
-        if (FastAbsF((*(float *)((char *)(moby) + (0x18))) - target) == 0.0f) {
-            if ((*(unsigned char *)((char *)(moby) + (0x20))) == 2) {
-                (*(unsigned char *)((char *)(moby) + (0x20))) = 6;
+        ApproachWithVelocity(&m->pos.z, &vars->speed, target,
+                             D_0015EE70_4B90 * 8.0f, D_0015EE70_4B90 * 8.0f, D_0015EE6C * 40.0f);
+        if (FastAbsF(m->pos.z - target) == 0.0f) {
+            if (m->state == 2) {
+                m->state = 6;
             } else {
-                (*(unsigned char *)((char *)(moby) + (0x20))) = 7;
+                m->state = 7;
             }
-            if ((*(unsigned char *)((char *)(moby) + (0xBC))) != 0) {
+            if (m->command != 0) {
                 HeroEnterMoveState(0, 0);
                 CameraScript2(1);
             }
         }
         break;
     }
-    case 6:
-    case 7: {
+    case ELEVATOR_STATE_WAIT_FOR_HERO_EXIT_AT_TOP:
+    case ELEVATOR_STATE_WAIT_FOR_HERO_EXIT_AT_BOTTOM: {
         char *g;
-        if (Sound_IsPlaying(moby, (*(int *)((char *)(state) + (0x6C))))) {
-            Sound_StopSlot((*(int *)((char *)(state) + (0x6C))));
-            (*(int *)((char *)(state) + (0x6C))) = -1;
+        if (Sound_IsPlaying(moby, vars->voice)) {
+            Sound_StopSlot(vars->voice);
+            vars->voice = -1;
         }
         g = (char *)D_0013E633 + 0xE1D;
-        if ((*(unsigned char **)((char *)(g) + (0x2FC))) == moby && (*(short *)((char *)(g) + (0x30E))) == 0
-            && !(func_001F9D48(g + 0x80, moby + 0x10) > 0.5f)) {
+        if (*(struct Moby **)(g + 0x2FC) == m && *(short *)(g + 0x30E) == 0
+            && !(func_001F9D48(g + 0x80, &m->pos) > 0.5f)) {
             break;
         }
-        if ((*(unsigned char *)((char *)(moby) + (0x20))) == 7) {
-            (*(unsigned char *)((char *)(state) + (0x7C))) = 0;
-            (*(unsigned char *)((char *)(moby) + (0x20))) = 5;
+        if (m->state == 7) {
+            vars->armed = 0;
+            m->state = 5;
         } else {
-            (*(unsigned char *)((char *)(state) + (0x7C))) = 0;
-            (*(unsigned char *)((char *)(moby) + (0x20))) = 4;
+            vars->armed = 0;
+            m->state = 4;
         }
         break;
     }
-    case 4:
-    case 5: {
+    case ELEVATOR_STATE_WAIT_AT_TOP:
+    case ELEVATOR_STATE_WAIT_AT_BOTTOM: {
         int i;
         char *g;
-        (*(float *)((char *)(state) + (0x78))) = FastAddRots((*(float *)((char *)(state) + (0x78))), D_0015EE6C * 6.2831855f);
-        i = func_001FA898_r((FastSin((*(float *)((char *)(state) + (0x78)))) * 4.0f - 3.0f) * 128.0f);
+        vars->pulse = FastAddRots(vars->pulse, D_0015EE6C * 6.2831855f);
+        i = func_001FA898_r((FastSin(vars->pulse) * 4.0f - 3.0f) * 128.0f);
         if (i > 0x80) {
             i = 0x80;
         } else if (i < 0x20) {
             i = 0x20;
         }
-        (*(int *)((char *)(moby) + (0x90))) = 0x80000000 | (i << 16) | (i << 8) | i;
+        m->glow_color = 0x80000000 | (i << 16) | (i << 8) | i;
         g = (char *)D_0013E633 + 0xE1D;
-        if ((*(unsigned char **)((char *)(g) + (0x2FC))) != moby || (*(short *)((char *)(g) + (0x30E))) != 0
-            || func_001F9D48(g + 0x80, moby + 0x10) > 1.1f) {
-            (*(unsigned char *)((char *)(state) + (0x7C))) = 1;
+        if (*(struct Moby **)(g + 0x2FC) != m || *(short *)(g + 0x30E) != 0
+            || func_001F9D48(g + 0x80, &m->pos) > 1.1f) {
+            vars->armed = 1;
         }
-        if ((*(unsigned char *)((char *)(state) + (0x7C))) != 0) {
+        if (vars->armed != 0) {
             char *h = (char *)D_0013E633 + 0xE1D;
-            if ((*(unsigned char **)((char *)(h) + (0x2FC))) == moby && (*(short *)((char *)(h) + (0x30E))) == 0
-                && func_001F9D48(h + 0x80, moby + 0x10) < 0.5f) {
-                (*(int *)((char *)(moby) + (0x90))) = 0x80208020;
-                if ((*(unsigned char *)((char *)(moby) + (0x20))) == 5) {
-                    (*(unsigned char *)((char *)(moby) + (0xBC))) = 2;
+            if (*(struct Moby **)(h + 0x2FC) == m && *(short *)(h + 0x30E) == 0
+                && func_001F9D48(h + 0x80, &m->pos) < 0.5f) {
+                m->glow_color = 0x80208020;
+                if (m->state == 5) {
+                    m->command = 2;
                 } else {
-                    (*(unsigned char *)((char *)(moby) + (0xBC))) = 3;
+                    m->command = 3;
                 }
-                (*(unsigned char *)((char *)(moby) + (0x20))) = 1;
+                m->state = 1;
                 HeroEnterMoveState(0x72, 1);
                 CameraScript(D_L13_00167140, D_L13_00167140 + 4, 1, 0, 0);
-                (*(int *)((char *)(state) + (0x70))) = 0;
+                (*(int *)((char *)vars + 0x70)) = 0;
                 break;
             }
         }
-        if ((*(unsigned char *)((char *)(moby) + (0x20))) == 4) {
+        if (m->state == 4) {
             char *p = (char *)D_0013E633 + 0xE9D;
-            float d = func_001F9D48(moby + 0x10, p);
-            float e = FastAbsF((*(float *)((char *)(p) + (0x258))) - (*(float *)((char *)(state) + (0x64))));
+            float d = func_001F9D48(&m->pos, p);
+            float e = FastAbsF((*(float *)(p + 0x258)) - vars->bottom);
             if (e < 2.0f && d < 32.0f && d > 5.0f) {
-                (*(unsigned char *)((char *)(moby) + (0xBC))) = 0;
-                (*(unsigned char *)((char *)(moby) + (0x20))) = 3;
-                (*(float *)((char *)(state) + (0x68))) = -(D_0015EE6C * 5.0f);
+                m->command = 0;
+                m->state = 3;
+                vars->speed = -(D_0015EE6C * 5.0f);
             }
-        } else if ((*(unsigned char *)((char *)(moby) + (0x20))) == 5) {
+        } else if (m->state == 5) {
             char *p = (char *)D_0013E633 + 0xE9D;
-            float d = func_001F9D48(moby + 0x10, p);
-            float e = FastAbsF((*(float *)((char *)(p) + (0x258))) - (*(float *)((char *)(state) + (0x60))));
+            float d = func_001F9D48(&m->pos, p);
+            float e = FastAbsF((*(float *)(p + 0x258)) - vars->top);
             if (e < 2.0f && d < 32.0f && d > 5.0f) {
-                (*(unsigned char *)((char *)(moby) + (0xBC))) = 0;
-                (*(unsigned char *)((char *)(moby) + (0x20))) = 2;
-                (*(float *)((char *)(state) + (0x68))) = D_0015EE6C * 5.0f;
+                m->command = 0;
+                m->state = 2;
+                vars->speed = D_0015EE6C * 5.0f;
             }
         }
         break;
     }
     }
-    FastVecAdd(delta, delta, moby + 0x10);
-    update_entity_matrix(state + 0x20, delta, rot, moby + 0x40);
+    FastVecAdd(delta, delta, &m->pos);
+    update_entity_matrix(vars->path, delta, rot, &m->rot);
 }
 extern float func_001FA790(float, float);
 extern float func_001FA748(float, float);
@@ -655,45 +679,51 @@ extern void func_L00_0025F4A8(void *, void *, void *, float, float, int, int, in
 extern void func_0020D678(void *);
 
 /* Updates the gem-lock turret: idle animations, then a burst of particles when destroyed. */
-void blarg_gunner_update(unsigned char *moby) {
-    unsigned char *d = *(unsigned char **)(moby + 0x78);
-    float a[4];
-    float b[4];
-    switch (moby[0x20]) {
-    case 0:
-        d[0x29] = 1;
-        moby[0x20] = 1;
-        d[0x5A] = 6;
-        d[0x58] = 8;
+void blarg_gunner_update(unsigned char *raw) {
+    enum {
+        BLARG_GUNNER_STATE_INITIALIZE = 0,
+        BLARG_GUNNER_STATE_ACTIVE = 1,
+        BLARG_GUNNER_STATE_DESTROY = 2
+    };
+    struct Moby *moby = (struct Moby *)raw;
+    unsigned char *moby_vars = moby->pvars;
+    float explosion_offset[4];
+    float explosion_spawn_position[4];
+    switch (moby->state) {
+    case BLARG_GUNNER_STATE_INITIALIZE:
+        moby_vars[0x29] = 1;
+        moby->state = 1;
+        moby_vars[0x5A] = 6;
+        moby_vars[0x58] = 8;
         break;
-    case 1:
-        if ((*(unsigned char **)(d + 0x70))[0x20] == 3) {
-            if (moby[0x53] != 2) {
+    case BLARG_GUNNER_STATE_ACTIVE:
+        if ((*(unsigned char **)(moby_vars + 0x70))[0x20] == 3) {
+            if (moby->prev_seq != 2) {
                 int x = rand_range(0, 3);
                 int y = rand_range(7, 0xC);
                 MobyBlendAnimation(moby, 2, x, y);
             }
         } else {
-            if (moby[0x53] >= 2 || (moby[0x70] & 2)) {
+            if (moby->prev_seq >= 2 || (moby->anim_flags & 2)) {
                 if (!random_integer_below(7)) {
-                    if (moby[0x53] != 1) {
+                    if (moby->prev_seq != 1) {
                         MobyBlendAnimation(moby, 1, 0, rand_range(7, 0xD));
                     }
                 } else {
-                    if (moby[0x53] != 0) {
+                    if (moby->prev_seq != 0) {
                         MobyBlendAnimation(moby, 0, 0, rand_range(7, 0xD));
                     }
                 }
-                *(float *)(moby + 0x58) = random_float_between(0.8f, 1.2f);
+                moby->anim_speed = random_float_between(0.8f, 1.2f);
             }
         }
-        GemLockTurret_HandleHit(moby, d);
+        GemLockTurret_HandleHit(moby, moby_vars);
         break;
-    case 2:
-        if (moby[0x70] & 2) {
-            FastVecSub(a, D_L13_00167140, moby + 0x10);
-            Moby_GetJointWorldPos(moby, 0, b);
-            func_L00_0025F4A8(moby, a, b, 0.0f, 0.0f, 0x14, 9, 0x20, 10.0f, 7.0f, 20.0f, -1, 2.0f, 40.0f, 0, 1, -1, 0);
+    case BLARG_GUNNER_STATE_DESTROY:
+        if (moby->anim_flags & 2) {
+            FastVecSub(explosion_offset, D_L13_00167140, &moby->pos);
+            Moby_GetJointWorldPos(moby, 0, explosion_spawn_position);
+            func_L00_0025F4A8(moby, explosion_offset, explosion_spawn_position, 0.0f, 0.0f, 0x14, 9, 0x20, 10.0f, 7.0f, 20.0f, -1, 2.0f, 40.0f, 0, 1, -1, 0);
             DeleteMoby(moby);
         }
         break;

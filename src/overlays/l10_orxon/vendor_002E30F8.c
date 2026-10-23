@@ -1811,9 +1811,17 @@ extern int func_L09_00308F58(void *, void *, void *, int);
 #define GPT ((char *)D_L10_00160058)
 
 #define LIVE(o) ((o) != 0 && *(unsigned char *)((o) + 0x20) != 0xFE && *(unsigned char *)((o) + 0x20) != 0xFD)
+typedef struct Vars_2E8AB0 {
+    s32 linked;                /* 0x00: moby set to command 1 when the turret stops */
+    s32 targets[3];            /* 0x04: slots of the three candidate targets, -1 = none */
+    f32 turn_velocity;         /* 0x10: spring velocity of the turn (SpringTurn) */
+    s32 wake;                  /* 0x14: moby set to state 1 when the turret goes idle */
+} Vars_2E8AB0;
+
 /* Moby update for a turret-like object that aims at and fires on linked mobys. */
 void gun_update(char *m) {
-    int *d = *(int **)(m + 0x78);
+    struct Moby *moby = (struct Moby *)m;
+    Vars_2E8AB0 *vars = (Vars_2E8AB0 *)moby->pvars;
     int *bits;
     float rotation[4];
     float position[4];
@@ -1821,7 +1829,7 @@ void gun_update(char *m) {
     float angle;
     int state;
 
-    state = *(unsigned char *)(m + 0x20);
+    state = moby->state;
     if (state == 1) return;
     if (state < 2) {
         if (state == 0) goto state_zero;
@@ -1834,20 +1842,20 @@ state_zero:
     {
         unsigned short save_id;
         int signed_save_id;
-        save_id = *(unsigned short *)(m + 0xB2);
+        save_id = moby->save_id;
         signed_save_id = (short)save_id;
         if (D_L10_001BB9C0.collected[(short)save_id] != 0 ||
             ((*(int *)(D_0014171B + 0xAB75 + ((signed_save_id >> 5) * 4 + (D_0015EE84 << 8))) >> (save_id & 31)) & 1) != 0) {
-            *(unsigned char *)(m + 0x20) = 3;
+            moby->state = 3;
             return;
         }
         {
-            if (d[1] == -1) {
+            if (vars->targets[0] == -1) {
                 DeleteMoby(m);
                 return;
             }
-            d[4] = 0;
-            *(unsigned char *)(m + 0x20) = 1;
+            vars->turn_velocity = 0.0f;
+            moby->state = 1;
             return;
         }
     }
@@ -1855,31 +1863,31 @@ state_two:
     {
         unsigned short save_id;
         int signed_save_id;
-        char *target;
-        char *candidate;
-        save_id = *(unsigned short *)(m + 0xB2);
+        struct Moby *target;
+        struct Moby *candidate;
+        save_id = moby->save_id;
         signed_save_id = (short)save_id;
         if (D_L10_001BB9C0.collected[(short)save_id] != 0 ||
             ((*(int *)(D_0014171B + 0xAB75 + ((signed_save_id >> 5) * 4 + (D_0015EE84 << 8))) >> (save_id & 31)) & 1) != 0) {
-            *(unsigned char *)(m + 0x20) = 3;
+            moby->state = 3;
             return;
         }
         {
-            char *candidate;
+            struct Moby *candidate;
             candidate = 0;
-            if (d[1] != -1) {
-                char *t;
-                t = FIRST + (d[1] << 8);
-                candidate = LIVE(t) ? t : 0;
+            if (vars->targets[0] != -1) {
+                struct Moby *t;
+                t = (struct Moby *)(FIRST + (vars->targets[0] << 8));
+                candidate = (t != 0 && t->state != 0xfe && t->state != 0xfd) ? t : 0;
             }
             {
-                char *t;
+                struct Moby *t;
                 t = candidate;
                 if (candidate == 0) {
-                    if (d[2] != -1) {
-                        char *c;
-                        c = GPT + (d[2] << 8);
-                        if (LIVE(c)) t = c;
+                    if (vars->targets[1] != -1) {
+                        struct Moby *c;
+                        c = (struct Moby *)(GPT + (vars->targets[1] << 8));
+                        if (c != 0 && c->state != 0xfe && c->state != 0xfd) t = c;
                     }
                 }
                 candidate = t;
@@ -1887,75 +1895,77 @@ state_two:
             target = candidate;
         }
         if (target == 0) {
-            if (d[3] != -1) {
-                candidate = GPT + (d[3] << 8);
-                if (LIVE(candidate)) target = candidate;
+            if (vars->targets[2] != -1) {
+                candidate = (struct Moby *)(GPT + (vars->targets[2] << 8));
+                if (candidate != 0 && candidate->state != 0xfe && candidate->state != 0xfd)
+                    target = candidate;
             }
         }
         if (target != 0) {
             float pi = 3.1415927f;
-            *(float *)(m + 0x48) = FastAddRots(*(float *)(m + 0x48), pi);
-            angle = func_L00_001FF860(*(float *)(target + 0x10) - *(float *)(m + 0x10), *(float *)(target + 0x14) - *(float *)(m + 0x14));
-            *(float *)(m + 0x48) = SpringTurn((float *)(d + 4), *(float *)(m + 0x48), angle,
-                                                  D_0015EE70 * 1.5707964f, D_0015EE70 * pi, D_0015EE6C * 0.7853982f);
-            angle = func_L00_001FF860(*(float *)(target + 0x10) - *(float *)(m + 0x10), *(float *)(target + 0x14) - *(float *)(m + 0x14));
-            if (FastDiffRots(*(float *)(m + 0x48), angle) < 0.04363323f) {
-                position[0] = FastCos(*(float *)(m + 0x48)) * 1.5f;
-                position[1] = FastSin(*(float *)(m + 0x48)) * 1.5f;
+            moby->rot.z = FastAddRots(moby->rot.z, pi);
+            angle = func_L00_001FF860(target->pos.x - moby->pos.x, target->pos.y - moby->pos.y);
+            moby->rot.z = SpringTurn(&vars->turn_velocity, moby->rot.z, angle,
+                                     D_0015EE70 * 1.5707964f, D_0015EE70 * pi, D_0015EE6C * 0.7853982f);
+            angle = func_L00_001FF860(target->pos.x - moby->pos.x, target->pos.y - moby->pos.y);
+            if (FastDiffRots(moby->rot.z, angle) < 0.04363323f) {
+                position[0] = FastCos(moby->rot.z) * 1.5f;
+                position[1] = FastSin(moby->rot.z) * 1.5f;
                 position[2] = 0.0f;
-                func_L00_001FF240(displacement, position, m + 0x10);
+                func_L00_001FF240(displacement, position, &moby->pos);
                 BuildSphericalOffset(rotation, D_0015EE6C * 40.0f,
-                    func_L00_001FF860(*(float *)(target + 0x10) - position[0], *(float *)(target + 0x14) - position[1]),
-                    func_L00_001FF860(func_001F9D48(position, target + 0x10), *(float *)(target + 0x18) - position[2]));
+                    func_L00_001FF860(target->pos.x - position[0], target->pos.y - position[1]),
+                    func_L00_001FF860(func_001F9D48(position, &target->pos), target->pos.z - position[2]));
                 SpawnEnemyShot(m, position, rotation, scale_ticks(30));
-                if (target == FIRST + (d[1] << 8))
-                    d[1] = -1;
-                else if (target == FIRST + (d[2] << 8))
-                    d[2] = -1;
+                if (target == (struct Moby *)(FIRST + (vars->targets[0] << 8)))
+                    vars->targets[0] = -1;
+                else if (target == (struct Moby *)(FIRST + (vars->targets[1] << 8)))
+                    vars->targets[1] = -1;
                 else
-                    d[3] = -1;
+                    vars->targets[2] = -1;
             }
-            *(float *)(m + 0x48) = FastAddRots(*(float *)(m + 0x48), 3.1415927f);
+            moby->rot.z = FastAddRots(moby->rot.z, 3.1415927f);
         } else {
-            *(unsigned char *)(m + 0x20) = 3;
-            if (d[5] != -1) {
-                ((unsigned char *)((d[5] << 8) + (int)GPT))[0x20] = 1;
-                d[5] = -1;
+            moby->state = 3;
+            if (vars->wake != -1) {
+                ((struct Moby *)((vars->wake << 8) + (int)GPT))->state = 1;
+                vars->wake = -1;
             }
         }
-        if (d[0] != -1) {
-            ((unsigned char *)((d[0] << 8) + (int)GPT))[0xBC] = 1;
-            d[0] = -1;
+        if (vars->linked != -1) {
+            ((struct Moby *)((vars->linked << 8) + (int)GPT))->command = 1;
+            vars->linked = -1;
         }
         return;
     }
 state_three:
     {
         unsigned short save_id;
-        char *target;
-        char *candidate;
+        struct Moby *target;
+        struct Moby *candidate;
         target = 0;
-        if (d[1] != -1) {
-            char *c = FIRST + (d[1] << 8);
-            if (LIVE(c)) target = c;
+        if (vars->targets[0] != -1) {
+            struct Moby *c = (struct Moby *)(FIRST + (vars->targets[0] << 8));
+            if (c != 0 && c->state != 0xfe && c->state != 0xfd) target = c;
         }
         if (target != 0) {
             DeleteMoby(target);
             candidate = target;
             goto remove_candidate;
         }
-        if (d[2] == -1) goto no_second_target;
-        candidate = GPT + (d[2] << 8);
-        if (!LIVE(candidate)) goto no_second_target;
+        if (vars->targets[1] == -1) goto no_second_target;
+        candidate = (struct Moby *)(GPT + (vars->targets[1] << 8));
+        if (candidate == 0 || candidate->state == 0xfe || candidate->state == 0xfd)
+            goto no_second_target;
         goto remove_candidate;
 no_second_target:
         candidate = target;
 remove_candidate:
         if (candidate != 0) DeleteMoby(candidate);
-        save_id = *(unsigned short *)(m + 0xB2);
+        save_id = moby->save_id;
         bits = (int *)(D_0014171B + 0xAB75 + (((int)((unsigned int)save_id << 16) >> 21) * 4 + (D_0015EE84 << 8)));
         *bits |= 1 << (save_id & 31);
-        save_id = *(unsigned short *)(m + 0xB2);
+        save_id = moby->save_id;
         D_L10_001BAC60[(int)((unsigned int)save_id << 16) >> 21] |= 1 << (save_id & 31);
         return;
     }

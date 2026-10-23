@@ -2,6 +2,7 @@
 #include "callees.h"
 #include "records.h"
 #include "structs.h"
+#include "music.h"
 
 /*
  * music.cpp in the original source; text 0x2161E0-0x217588.
@@ -295,22 +296,8 @@ void music_start_track_60000(int arg0, int arg1, int arg2) {
 }
 
 typedef struct {
-    s32 handle;                 /* 0x00: stream handle from the start callback; -1 while starting */
-    s16 track;                  /* 0x04 */
-    s16 volume;                 /* 0x06 */
-    s16 flags;                  /* 0x08 */
-    s16 state;                  /* 0x0A: set 1 on start */
-    s16 fade_flags;             /* 0x0C */
-    s16 unkE;                   /* 0x0E */
-    s16 crossfade_enabled;      /* 0x10 */
-    u8 pad_12[0x2];
-    s32 poll_interval;          /* 0x14 */
-    s32 remaining_time;         /* 0x18 */
-} TrackChannel;
-
-typedef struct {
     u8 pad_00[0x50];
-    TrackChannel secondary;     /* 0x50 */
+    struct MusicStreamChannel secondary;     /* 0x50 */
 } TrackStreamState;
 
 typedef struct {
@@ -346,22 +333,8 @@ void music_start_track_50000(int track, int flags, int volume) {
 }
 
 typedef struct {
-    s32 handle;
-    s16 track;
-    s16 volume;
-    s16 flags;
-    s16 state;
-    s16 fade_flags;
-    s16 unkE;
-    s16 crossfade_enabled;
-    u8 pad_12[0x2];
-    s32 poll_interval;
-    s32 remaining_time;
-} MusicChannelRec;
-
-typedef struct {
     u8 pad_00[0x50];
-    MusicChannelRec secondary;
+    struct MusicStreamChannel secondary;
 } MusicStreamTail;
 
 void music_start_track_40000(int track, int track_flags, int volume) {
@@ -521,7 +494,7 @@ extern char D_0013A764[];
    a SndToc table. */
 typedef struct {
     u8 pad_00[0x50];
-    MusicChannelRec secondary;
+    struct MusicStreamChannel secondary;
 } MusicStateSecondaryView;
 
 void music_start_track_by_id(int track, int track_flags, int volume) {
@@ -826,20 +799,6 @@ extern void func_0012EE70(int);
    exit test in front of the loop then gets its own pseudo, and the loop
    keeps retail's copy in $s1. The stores are in the order that gives
    retail's schedule. */
-typedef struct {
-    u32 handle;                    /* 0x00: 0 none, 0xFFFFFFFF starting */
-    s16 track;                     /* 0x04 */
-    s16 volume;                    /* 0x06 */
-    s16 flags;                     /* 0x08 */
-    s16 state;                     /* 0x0A */
-    s16 fade_flags;                /* 0x0C */
-    s16 unkE;                      /* 0x0E */
-    s16 crossfade_enabled;         /* 0x10 */
-    u8 pad12[2];
-    s32 poll_interval;             /* 0x14 */
-    s32 remaining_time;            /* 0x18 */
-} MusicStreamChanRec;
-
 /* 0x1C */
 
 typedef struct {
@@ -848,9 +807,9 @@ typedef struct {
     s8 requested_track;            /* 0x22: -1 = none */
     s8 requested_transition_track; /* 0x23 */
     u8 pad24[0x10];
-    MusicStreamChanRec primary;    /* 0x34 */
-    MusicStreamChanRec secondary;  /* 0x50 */
-    MusicStreamChanRec transition; /* 0x6C */
+    struct MusicStreamChannel primary;    /* 0x34 */
+    struct MusicStreamChannel secondary;  /* 0x50 */
+    struct MusicStreamChannel transition; /* 0x6C */
 } MusicStreamBlock;
 
 void music_Stop(void) {
@@ -1002,19 +961,6 @@ void music_UpdateStream(MusicPlaying *p) {
     }
 }
 
-struct MusicStreamChannel {
-    s32 handle; /* 0x00: stream handle from the start callback; -1 while starting */
-    s16 track; /* 0x04 */
-    s16 volume; /* 0x06 */
-    s16 flags; /* 0x08 */
-    s16 state; /* 0x0A: set 1 on start, 1 -> 2 in the start callback */
-    s16 fade_flags; /* 0x0C: -0x8000 on music_pause, 4 on music_unpause */
-    s16 unkE; /* 0x0E: cleared by music_pause */
-    s16 crossfade_enabled; /* 0x10: remaining-time callback starts the crossfade */
-    u8 pad_12[0x2];
-    s32 poll_interval; /* 0x14 */
-    s32 remaining_time; /* 0x18: set by music_remaining_time_callback */
-};
 struct MusicCdReadMode {
     u8 trycount; /* 0x20 from reset_music */
     u8 spindlctrl;
