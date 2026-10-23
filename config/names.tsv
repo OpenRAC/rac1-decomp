@@ -1423,7 +1423,7 @@ func_L06_002F4058	SparkEmitterHitCheck	descriptive	config/names_local.tsv	spark 
 func_L06_002F4818	ConsiderTarget	descriptive	config/names_local.tsv	scores a candidate target and keeps it if it beats the best so far (comment)	
 func_L06_002F4908	PickBestTarget	descriptive	config/names_local.tsv	picks best target among live class-0x359 mobys and the hero (comment)	
 func_L06_002F4F08	toxic_gas_vent_update	descriptive	the NTSC decomp	toxic_gas_vent_update at US level 06 0x002F3AD8 (src/overlays/l06/gameplay/entities/hangar_door.c); US function table counterpart	SwingingHazardUpdate
-func_L06_002F6330	DoorRingUpdate	descriptive	config/names_local.tsv	UpdateMoby_1021: door ring of seven petals opens on trigger, eases angle (comment)	
+func_L06_002F6330	iris_door_update	descriptive	config/names_local.tsv	moby class 1021, an iris door of eight curved blades (the moby and the seven petals it spawns, 45 degrees apart) that rotate open when the hero comes near or its trigger fires. Seen in game on Blarg Station at the door of Clank's section, class confirmed with the port's moby inspector (Christopher)	DoorRingUpdate
 func_L06_002F69D0	DrawbridgeUpdate	descriptive	config/names_local.tsv	level 6 drawbridge class 1028 (comment)	
 func_L06_002F71A8	LayoutDrawbridgePieces	descriptive	config/names_local.tsv	places and rotates the chained segment mobys (comment)	
 func_L06_002F86B8	energy_sphere_holder_update	descriptive	the NTSC decomp	energy_sphere_holder_update at US level 06 0x002F7288 (src/overlays/shared/gameplay/entities/gadgebot_spawn_container.c); US function table counterpart	CollectibleSpawnerUpdate

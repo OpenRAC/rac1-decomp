@@ -2694,7 +2694,7 @@ extern float func_L00_0025CE58(float *, float *, float, float, float, float);
 extern float func_001FA790(float, float);
 
 /* Moby class 1021 update (levels 6, 17, 18): a door ring of seven petals; opens when its trigger fires, eases its angle open and shut. */
-void DoorRingUpdate(Moby *m) {
+void iris_door_update(Moby *m) {
     Vars_2F6330 *d = (Vars_2F6330 *)(*(void **)&m->pvars);
     float tmp[4];
     int i;

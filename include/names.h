@@ -1295,7 +1295,7 @@
 #define ConsiderTarget                                  func_L06_002F4818
 #define PickBestTarget                                  func_L06_002F4908
 #define toxic_gas_vent_update                           func_L06_002F4F08
-#define DoorRingUpdate                                  func_L06_002F6330
+#define iris_door_update                                func_L06_002F6330
 #define DrawbridgeUpdate                                func_L06_002F69D0
 #define LayoutDrawbridgePieces                          func_L06_002F71A8
 #define energy_sphere_holder_update                     func_L06_002F86B8
