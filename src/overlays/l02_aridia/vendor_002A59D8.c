@@ -2022,59 +2022,82 @@ extern unsigned char D_0014171B[] NOT_SDA;
 
 typedef struct { char pad[0x200]; struct { unsigned short a; unsigned short b; } e[1]; } NestTable;
 
+typedef struct NestVars {
+    char pad00[0x20];
+    f32 f20;                 /* 0x20 */
+    s16 s24;                 /* 0x24 */
+    char pad26[0x8];
+    u8 b2E;                  /* 0x2E */
+    char pad2F[0x11];
+    f32 vel[4];              /* 0x40 */
+    char pad50[0x20];
+    char anim[0x30];         /* 0x70 */
+    char padA0[0x34];
+    s32 delay;               /* 0xD4 */
+    s32 timer;               /* 0xD8 */
+    char padDC[0x4];
+    s32 spawner;             /* 0xE0 */
+} NestVars;
+
+typedef struct NestSpawner {
+    char pad00[0x14C];
+    s32 i14C;                /* 0x14C */
+    s32 i150;                /* 0x150 */
+} NestSpawner;
+
 // Sand shark nest update: a five-state machine (idle, wait, strike, cooldown, fire) that times the attacks and aims the nest.
 void sand_shark_nest_update(char *m)
 {
-    char *d = *(char **)(m + 0x78);
+    NestVars *nest_vars = (NestVars *)((struct Moby *)m)->pvars;
     EnemyHitKnockback(m);
-    if (*(signed char *)(m + 0x20) < 0) {
+    if (*(signed char *)&((struct Moby *)m)->state < 0) {
         return;
     }
-    if (((unsigned char *)m)[0x31] != 0) {
-        if (FastVecDist(m + 0x10, D_L02_00167440) < 28.0f) {
+    if (((struct Moby *)m)->visible != 0) {
+        if (FastVecDist(&((struct Moby *)m)->pos, D_L02_00167440) < 28.0f) {
             func_L00_0025B178(m);
-            ((unsigned char *)m)[0x7F] = 0x16;
+            ((struct Moby *)m)->shadow_range = 0x16;
         }
     }
-    switch (((unsigned char *)m)[0x20]) {
+    switch (((struct Moby *)m)->state) {
     case 0: {
-        unsigned short b4 = *(unsigned short *)(m + 0xB4);
-        unsigned char u5 = ((unsigned char *)m)[0xB1];
+        unsigned short b4 = *(unsigned short *)&((struct Moby *)m)->unkB4;
+        unsigned char u5 = ((struct Moby *)m)->unkB1;
         int r = b4 - ((NestTable *)(D_0014171B + 0xBF75))->e[u5].b;
-        *(short *)(m + 0xB4) = r;
+        ((struct Moby *)m)->unkB4 = r;
         if ((short)r <= 0) {
-            *(short *)(m + 0xB4) = 1;
+            ((struct Moby *)m)->unkB4 = 1;
         }
-        ((unsigned char *)m)[0x20] = 1;
-        *(float *)(d + 0x20) = 3.0f;
-        *(short *)(d + 0x24) = 3;
-        *(unsigned char *)(d + 0x2E) = 1;
-        *(int *)(d + 0xD8) = scale_ticks(*(int *)(d + 0xD4));
-        if (*(int *)(d + 0xE0) >= 0) {
-            char *p = *(char **)((*(int *)(d + 0xE0) << 8) + D_L02_00160058_m + 0x78);
-            *(int *)(p + 0x150) += 1;
+        ((struct Moby *)m)->state = 1;
+        nest_vars->f20 = 3.0f;
+        nest_vars->s24 = 3;
+        nest_vars->b2E = 1;
+        nest_vars->timer = scale_ticks(nest_vars->delay);
+        if (nest_vars->spawner >= 0) {
+            NestSpawner *p = *(NestSpawner **)((nest_vars->spawner << 8) + D_L02_00160058_m + 0x78);
+            p->i150 += 1;
         }
         return;
     }
     case 1: {
-        if (!func_001F9908((int *)(d + 0xD8))) {
+        if (!func_001F9908(&nest_vars->timer)) {
             return;
         }
         if (SandSharkNest_FindShark(m) != 0) {
-            ((unsigned char *)m)[0x20] = 2;
-            if (((unsigned char *)m)[0x53] == 1) {
+            ((struct Moby *)m)->state = 2;
+            if (((struct Moby *)m)->prev_seq == 1) {
                 return;
             }
             MobyBlendAnimation(m, 1, 0, scale_ticks(10));
             return;
         }
-        *(int *)(d + 0xD8) = scale_ticks(*(int *)(d + 0xD4));
+        nest_vars->timer = scale_ticks(nest_vars->delay);
         return;
     }
     case 2: {
-        if (((unsigned char *)m)[0x70] & 2) {
-            ((unsigned char *)m)[0x20] = 1;
-            if (((unsigned char *)m)[0x53] == 0) {
+        if (((struct Moby *)m)->anim_flags & 2) {
+            ((struct Moby *)m)->state = 1;
+            if (((struct Moby *)m)->prev_seq == 0) {
                 return;
             }
             MobyBlendAnimation(m, 0, 0, scale_ticks(10));
@@ -2084,64 +2107,64 @@ void sand_shark_nest_update(char *m)
             return;
         }
         {
-            int v = *(int *)((char *)D_0014171B + 0xD875 + (((unsigned char *)m)[0xB0] << 2));
-            int w;
-            int s;
-            char *e;
-            char *fr;
-            float b[4];
-            float a[4];
-            if (v >= 21) {
-                v = 20;
+            int spawn_delay_factor = *(int *)((char *)D_0014171B + 0xD875 + (((struct Moby *)m)->mission << 2));
+            int delay_ticks;
+            int timer_ticks;
+            char *launched_shark;
+            char *od;
+            float launch_velocity[4];
+            float launch_position[4];
+            if (spawn_delay_factor >= 21) {
+                spawn_delay_factor = 20;
             }
-            w = scale_ticks(v * 15);
-            s = scale_ticks(*(int *)(d + 0xD4) + w);
-            *(int *)(d + 0xD8) = s;
-            e = SandSharkNest_FindShark(m);
-            if (e == 0) {
+            delay_ticks = scale_ticks(spawn_delay_factor * 15);
+            timer_ticks = scale_ticks(nest_vars->delay + delay_ticks);
+            nest_vars->timer = timer_ticks;
+            launched_shark = SandSharkNest_FindShark(m);
+            if (launched_shark == 0) {
                 return;
             }
-            fr = *(char **)(e + 0x78);
-            if (*(int *)(d + 0xE0) >= 0) {
-                char *p = *(char **)((*(int *)(d + 0xE0) << 8) + D_L02_00160058_m + 0x78);
-                *(int *)(p + 0x14C) += 1;
+            od = (char *)((struct Moby *)launched_shark)->pvars;
+            if (nest_vars->spawner >= 0) {
+                NestSpawner *p = *(NestSpawner **)((nest_vars->spawner << 8) + D_L02_00160058_m + 0x78);
+                p->i14C += 1;
             }
-            qcopy(a, m + 0x10);
-            a[2] = a[2] + 1.5f;
-            FastVecSub(b, fr + 0x220, m + 0x10);
-            func_L00_001FF500(b, b, D_0015EE6C + D_0015EE6C);
-            b[2] = D_0015EE6C * 6.0f;
-            Moby_PlaceWithDirection((unsigned char *)e, a, b);
+            qcopy(launch_position, &((struct Moby *)m)->pos);
+            launch_position[2] = launch_position[2] + 1.5f;
+            FastVecSub(launch_velocity, od + 0x220, &((struct Moby *)m)->pos);
+            func_L00_001FF500(launch_velocity, launch_velocity, D_0015EE6C + D_0015EE6C);
+            launch_velocity[2] = D_0015EE6C * 6.0f;
+            Moby_PlaceWithDirection((unsigned char *)launched_shark, launch_position, launch_velocity);
         }
         return;
     }
     case 3: {
-        mine_fall(m, d + 0x70);
-        if (!(((unsigned char *)m)[0x70] & 2)) {
+        mine_fall(m, nest_vars->anim);
+        if (!(((struct Moby *)m)->anim_flags & 2)) {
             return;
         }
-        ((unsigned char *)m)[0x20] = 1;
-        if (((unsigned char *)m)[0x53] == 0) {
+        ((struct Moby *)m)->state = 1;
+        if (((struct Moby *)m)->prev_seq == 0) {
             return;
         }
         MobyBlendAnimation(m, 0, 0, scale_ticks(20));
         return;
     }
     case 4: {
-        float b[4];
-        if (!(mine_fall(m, d + 0x70) & 0x40)) {
+        float explosion_position[4];
+        if (!(mine_fall(m, nest_vars->anim) & 0x40)) {
             return;
         }
-        if (*(int *)(d + 0xE0) >= 0) {
-            char *p = *(char **)((*(int *)(d + 0xE0) << 8) + D_L02_00160058_g + 0x78);
-            *(int *)(p + 0x150) -= 1;
+        if (nest_vars->spawner >= 0) {
+            NestSpawner *p = *(NestSpawner **)((nest_vars->spawner << 8) + D_L02_00160058_g + 0x78);
+            p->i150 -= 1;
         }
-        qcopy(b, m + 0x10);
-        func_L00_0025F4A8(m, d + 0x40, b, 0.0f, 0.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, -1, 1.0f, 15.0f, 1, 1, -1, 0);
-        SpawnBreakFragment(m, 0x6E4, (float *)(m + 0x10), m + 0x40, 0, 0, 0.0f, D_L02_0015F660, D_L02_0015F660, D_L02_0015F660);
-        SpawnBreakFragment(m, 0x6E4, (float *)(m + 0x10), m + 0x40, 0, 0, 0.0f, D_L02_0015F660, D_L02_0015F660, D_L02_0015F660);
-        SpawnBreakFragment(m, 0x6E5, (float *)(m + 0x10), m + 0x40, 0, 0, 0.0f, D_L02_0015F660, D_L02_0015F660, D_L02_0015F660);
-        SpawnBreakFragment(m, 0x6E5, (float *)(m + 0x10), m + 0x40, 0, 0, 0.0f, D_L02_0015F660, D_L02_0015F660, D_L02_0015F660);
+        qcopy(explosion_position, &((struct Moby *)m)->pos);
+        func_L00_0025F4A8(m, nest_vars->vel, explosion_position, 0.0f, 0.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, -1, 1.0f, 15.0f, 1, 1, -1, 0);
+        SpawnBreakFragment(m, 0x6E4, (float *)&((struct Moby *)m)->pos, &((struct Moby *)m)->rot, 0, 0, 0.0f, D_L02_0015F660, D_L02_0015F660, D_L02_0015F660);
+        SpawnBreakFragment(m, 0x6E4, (float *)&((struct Moby *)m)->pos, &((struct Moby *)m)->rot, 0, 0, 0.0f, D_L02_0015F660, D_L02_0015F660, D_L02_0015F660);
+        SpawnBreakFragment(m, 0x6E5, (float *)&((struct Moby *)m)->pos, &((struct Moby *)m)->rot, 0, 0, 0.0f, D_L02_0015F660, D_L02_0015F660, D_L02_0015F660);
+        SpawnBreakFragment(m, 0x6E5, (float *)&((struct Moby *)m)->pos, &((struct Moby *)m)->rot, 0, 0, 0.0f, D_L02_0015F660, D_L02_0015F660, D_L02_0015F660);
         DeleteMoby(m);
         return;
     }
@@ -2813,12 +2836,30 @@ extern float func_L00_0025CE58(float *, float *, float, float, float, float);
 extern void func_L00_001FF4B0(void *, void *, float);
 extern char *func_L02_002ED660(char *src, void *pos, float *dir);
 
+typedef struct SwivelTurretVars {
+    f32 yaw_vel;                   /* 0x00 */
+    f32 target_yaw;                /* 0x04 */
+    s16 wait_timer;                /* 0x08 */
+    u8 pad_0A[0x2];
+    s16 voice;                     /* 0x0C */
+    u8 pad_0E[0x2];
+    f32 recoil;                    /* 0x10 */
+} SwivelTurretVars;
+
+typedef struct TurretVoiceSlot {
+    u8 pad_00[0x74];
+    u8 active;                     /* 0x74 */
+    u8 pad_75[0x13];
+    struct Moby *owner;            /* 0x88 */
+} TurretVoiceSlot;
+
 /* Rocket launcher update: on its state byte it aims at the target, fires, and clears its lock. */
 void rocket_launcher_update(unsigned char *m) {
-    char *d;
+    struct Moby *moby;
+    SwivelTurretVars *rocket_launcher_vars;
+    TurretVoiceSlot *voice_slot;
     int st;
     int s;
-    unsigned char *e;
     float A;
     float C;
     float r2;
@@ -2826,38 +2867,39 @@ void rocket_launcher_update(unsigned char *m) {
     float v20[4];
     float v30[4];
 
-    d = *(char **)(m + 0x78);
+    moby = (struct Moby *)m;
+    rocket_launcher_vars = (SwivelTurretVars *)moby->pvars;
     RangeWave_PlaySounds((char *)m);
-    st = m[0x20];
+    st = moby->state;
     switch (st) {
     case 0:
-        if (FastDecTimer(d + 8)) {
-                *(float *)(d + 4) = random_float_between(0.0f, 3.14159012f);
-                m[0x20] = 1;
-                Moby_PlaySound(4, 0, (int)m);
-            }
-            break;
+        if (FastDecTimer(&rocket_launcher_vars->wait_timer)) {
+            rocket_launcher_vars->target_yaw = random_float_between(0.0f, 3.14159012f);
+            moby->state = 1;
+            Moby_PlaySound(4, 0, (int)m);
+        }
+        break;
     case 1:
         A = *(float *)&D_L02_00161D00 * 0.01745329238f * D_0015EE70;
         C = *(float *)&D_L02_00161D04 * 0.01745329238f * D_0015EE6C;
-        SteerAngleWithVelocity((float *)(m + 0x48), (float *)d, *(float *)(d + 4), A, A, C);
-        if (Sound_IsPlaying(m, *(short *)(d + 0xC)) == 0) {
-            *(short *)(d + 0xC) = Moby_PlaySound(2, 4, (int)m);
+        SteerAngleWithVelocity(&moby->rot.z, &rocket_launcher_vars->yaw_vel, rocket_launcher_vars->target_yaw, A, A, C);
+        if (Sound_IsPlaying(m, rocket_launcher_vars->voice) == 0) {
+            rocket_launcher_vars->voice = Moby_PlaySound(2, 4, (int)m);
         }
-        r2 = FastDiffRots(*(float *)(m + 0x48), *(float *)(d + 4));
-        if (r2 < 0.01745329238f && *(float *)d == 0.0f) {
-            s = *(short *)(d + 0xC);
+        r2 = FastDiffRots(moby->rot.z, rocket_launcher_vars->target_yaw);
+        if (r2 < 0.01745329238f && rocket_launcher_vars->yaw_vel == 0.0f) {
+            s = rocket_launcher_vars->voice;
             if (s != -1) {
-                e = (unsigned char *)(D_0013E633 + 0x1D + s * 0x70);
-                if (*(int *)(e + 0x88) == (int)m && e[0x74] != 0) {
+                voice_slot = (TurretVoiceSlot *)(D_0013E633 + 0x1D + s * 0x70);
+                if (voice_slot->owner == moby && voice_slot->active != 0) {
                     Sound_StopSlot(s);
                 }
             }
-            *(short *)(d + 0xC) = -1;
+            rocket_launcher_vars->voice = -1;
             Moby_PlaySound(3, 0, (int)m);
-            *(float *)(d + 0x10) = *(float *)&D_L02_00161D14;
-            m[0x20] = 2;
-            if (m[0x53] != 1) {
+            rocket_launcher_vars->recoil = *(float *)&D_L02_00161D14;
+            moby->state = 2;
+            if (moby->prev_seq != 1) {
                 MobyBlendAnimation(m, 1, 0, 1);
             }
             Moby_GetJointWorldPos(m, 1, v30);
@@ -2869,20 +2911,19 @@ void rocket_launcher_update(unsigned char *m) {
         }
         break;
     case 2:
-        *(unsigned short *)(m + 0x34) = *(unsigned short *)(m + 0x34) | 0x10;
+        moby->flags |= 0x10;
         v = MobyGetFrameValue(m) / 10.0f;
         if (1.0f < v) {
             v = 1.0f;
         }
-        *(int *)(m + 0x90) = FastTweenColor(*(int *)&D_L02_00161D08, *(int *)&D_L02_00161D0C, v);
-        if (m[0x70] & 2) {
-            if (m[0x53] != 0) {
+        moby->glow_color = FastTweenColor(*(int *)&D_L02_00161D08, *(int *)&D_L02_00161D0C, v);
+        if (moby->anim_flags & 2) {
+            if (moby->prev_seq != 0) {
                 MobyBlendAnimation(m, 0, 0, 1);
             }
-            m[0x20] = 0;
-            *(short *)(d + 8) = func_001FA898_r(func_001F9878(random_float_between(60.0f, 180.0f)));
+            moby->state = 0;
+            rocket_launcher_vars->wait_timer = func_001FA898_r(func_001F9878(random_float_between(60.0f, 180.0f)));
         }
-
         break;
     }
 }

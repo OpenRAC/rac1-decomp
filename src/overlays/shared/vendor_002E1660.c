@@ -3661,40 +3661,61 @@ extern short D_L00_00161DBC;
 extern short D_L00_00161DC0;
 extern short D_L00_00161DE4;
 extern short D_L00_00161DE8;
+typedef struct PullBackBlock {
+    s32 unk00;                     /* 0x00 */
+    s16 h4;                        /* 0x04: nonzero while pulled back */
+    s16 h6;                        /* 0x06: pull back only while 0 */
+    f32 f8;                        /* 0x08: current pull-back distance */
+    f32 fC;                        /* 0x0C: default pull-back target */
+    u8 pad10[0x10];
+} PullBackBlock;
+
+typedef struct PullCamState {
+    u8 pad000[0x220];
+    PullBackBlock pull_back;       /* 0x220 */
+} PullCamState;
+
+typedef struct PullRefOrbit {
+    u8 pad00[0x58];
+    f32 unk58;                     /* 0x58 (state +0x188) */
+} PullRefOrbit;
+
 /* blends two output floats toward the level's targets while the slot is active */
-void follow_camera_pull_back(char *m, float *o1, float *o2) {
+void follow_camera_pull_back(char *camera_object, float *x, float *y) {
     char *g = camera_view;
-    char *p = *(char **)(m + 0x70);
-    char *h = p + 0x220;
-    char *q = p + 0x130;
+    PullCamState *camera_state = (PullCamState *)((Camera *)camera_object)->state_buf;
+    PullBackBlock *pull_back_state = &camera_state->pull_back;
+    PullRefOrbit *reference_orbit_state = (PullRefOrbit *)((char *)camera_state + 0x130);
     float k;
-    float v;
-    float x;
-    float y;
-    float t;
-    if (*(short *)(h + 6) == 0
-        && ((*(short *)(h + 4) != 0 && *(float *)(g + 0xA4) == 0.0f
-             && FastVecDot(*(char **)(D_0013E633 + 0x2E9D) + 0xC0, m) <= -0.3f)
+    float pull_back_target;
+    float reference_distance;
+    float current_distance;
+    float interpolated_pull_back_value;
+
+    if (pull_back_state->h6 == 0
+        && ((pull_back_state->h4 != 0 && *(float *)(g + 0xA4) == 0.0f
+             && FastVecDot(*(char **)(D_0013E633 + 0x2E9D) + 0xC0, camera_object) <= -0.3f)
             || (FastAbsF(*(float *)(g + 0xA4)) > 0.0001f
-                && FastVecDot(g + 0x80, m) <= -0.3f))) {
-        *(short *)(h + 4) = scale_ticks(0x78);
+                && FastVecDot(g + 0x80, camera_object) <= -0.3f))) {
+        pull_back_state->h4 = scale_ticks(0x78);
         k = *(float *)(g + 0xA4) * 14.2857f;
         if (k > 1.0f) k = 1.0f;
-        v = (*(unsigned char *)(D_0013E633 + 0x2EC1) == 1) ? 4.0f : *(float *)(h + 0xC);
-        x = *(float *)(q + 0x58);
-        t = *(float *)(h + 8);
-        y = x + (v - x) * k;
-        if (t < y) *(float *)(h + 8) = y;
-        Cam_SetDistanceGoal(*(float *)(h + 8), 0.003f, 0);
-        *o1 = *(float *)&D_L00_00161DBC + (*(float *)&D_L00_00161DE4 - *(float *)&D_L00_00161DBC) * k;
-        *o2 = *(float *)&D_L00_00161DC0 + (*(float *)&D_L00_00161DE8 - *(float *)&D_L00_00161DC0) * k;
+        pull_back_target = (*(unsigned char *)(D_0013E633 + 0x2EC1) == 1) ? 4.0f : pull_back_state->fC;
+        reference_distance = reference_orbit_state->unk58;
+        current_distance = pull_back_state->f8;
+        interpolated_pull_back_value = reference_distance + (pull_back_target - reference_distance) * k;
+        if (current_distance < interpolated_pull_back_value)
+            pull_back_state->f8 = interpolated_pull_back_value;
+        Cam_SetDistanceGoal(pull_back_state->f8, 0.003f, 0);
+        *x = *(float *)&D_L00_00161DBC + (*(float *)&D_L00_00161DE4 - *(float *)&D_L00_00161DBC) * k;
+        *y = *(float *)&D_L00_00161DC0 + (*(float *)&D_L00_00161DE8 - *(float *)&D_L00_00161DC0) * k;
     } else {
-        if (*(short *)(h + 4) != 0) {
-            *(short *)(h + 4) = 0;
-            *(float *)(h + 8) = *(float *)(q + 0x58);
+        if (pull_back_state->h4 != 0) {
+            pull_back_state->h4 = 0;
+            pull_back_state->f8 = reference_orbit_state->unk58;
         }
-        *o1 = *(float *)&D_L00_00161DBC;
-        *o2 = *(float *)&D_L00_00161DC0;
+        *x = *(float *)&D_L00_00161DBC;
+        *y = *(float *)&D_L00_00161DC0;
     }
 }
 extern short D_L00_00161DCC;

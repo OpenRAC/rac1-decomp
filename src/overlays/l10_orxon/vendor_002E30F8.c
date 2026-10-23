@@ -1591,47 +1591,48 @@ static inline short msgSel(void) {
 
 // Update of a pickup-style moby: waits for the player to come near, then spends bolts on a purchase.
 void nanotech_upgrade_vendor_update(char *m) {
-    char *d = *(char **)(m + 0x78);
-    unsigned char *g;
-    unsigned char *p;
-    int one;
+    Moby *moby = (Moby *)m;
+    u8 *d = moby->pvars;
+    Hero *g;
+    unsigned char *alternate_item_available;
+
     func_001F9908((int *)(d + 4));
-    switch (*(unsigned char *)(m + 0x20)) {
+    switch (moby->state) {
     case 0:
-        g = D_0013E633 + 0xE1D;
-        if (FastDiffRots(*(float *)(m + 0x48), func_L00_001FF860(*(float *)(g + 0x80) - *(float *)(m + 0x10), *(float *)(g + 0x84) - *(float *)(m + 0x14))) < 1.5707964f) {
-            if (func_001F9D48(m + 0x10, g + 0x80) < 4.0f) {
+        g = (Hero *)(D_0013E633 + 0xE1D);
+        if (FastDiffRots(moby->rot.z, func_L00_001FF860(g->motion.pos.f[0] - moby->pos.x, g->motion.pos.f[1] - moby->pos.y)) < 1.5707964f) {
+            if (func_001F9D48(&moby->pos, &g->motion.pos) < 4.0f) {
                 if (*(int *)(d + 4) == 0) {
                     if (D_L10_0015F6A8 != 2) {
-                        LevelTable_SetSlotValue(m, 1);
-                        p = D_0013D355 + 0x13B;
-                        if (p[4] == 0) {
+                        LevelTable_SetSlotValue((char *)moby, 1);
+                        alternate_item_available = D_0013D355 + 0x13B;
+                        if (alternate_item_available[4] == 0) {
                             if (gBolts > 4000) {
-                                int c = try_set_help_message(1, 0x271E) != 0;
-                                if ((*(int *)(D_0013A5E0 + 0x2604) & 0x10) && c) {
-                                    d = (char *)1;
-                                    p[4] = (int)d;
-                                    *(int *)(g + 0x22A8) = 5;
+                                int accepted = try_set_help_message(1, 0x271E) != 0;
+                                if ((*(int *)(D_0013A5E0 + 0x2604) & 0x10) && accepted) {
+                                    d = (u8 *)1;
+                                    alternate_item_available[4] = (int)d;
+                                    g->health.hp = 5;
                                     gBolts = gBolts - 4000;
                                     *(int *)&hero_max_health = 5;
                                     StartCutscene(0);
-                                    m[0x20] = (int)d;
+                                    moby->state = (int)d;
                                 }
                             } else {
                                 try_set_help_message(1, 0x2720);
                             }
-                        } else if (p[5] == 0) {
+                        } else if (alternate_item_available[5] == 0) {
                             if (*(int *)(d + 4) == 0) {
                                 if (gBolts > 30000) {
-                                    int c = try_set_help_message(1, 0x271F) != 0;
-                                    if ((*(int *)(D_0013A5E0 + 0x2604) & 0x10) && c) {
-                                        d = (char *)1;
-                                        p[5] = (int)d;
-                                        *(int *)(g + 0x22A8) = 8;
+                                    int accepted = try_set_help_message(1, 0x271F) != 0;
+                                    if ((*(int *)(D_0013A5E0 + 0x2604) & 0x10) && accepted) {
+                                        d = (u8 *)1;
+                                        alternate_item_available[5] = (int)d;
+                                        g->health.hp = 8;
                                         gBolts = gBolts - 30000;
                                         *(int *)&hero_max_health = 8;
                                         StartCutscene(1);
-                                        m[0x20] = (int)d;
+                                        moby->state = (int)d;
                                     }
                                 } else {
                                     try_set_help_message(1, 0x2721);
@@ -1645,12 +1646,11 @@ void nanotech_upgrade_vendor_update(char *m) {
         break;
     case 1:
         if (D_L10_0015F6A8 != 2) {
-            int msg;
             memcard_Save(0, -1);
             ShowBanner(msgSel(), -1);
             *(int *)&D_L10_0015F720 = 0xB4;
             *(int *)(d + 4) = scale_ticks(0xF0);
-            m[0x20] = 0;
+            moby->state = 0;
         }
         break;
     }

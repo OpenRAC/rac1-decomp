@@ -961,10 +961,33 @@ extern unsigned char D_0014171B_2F21B0[] __asm__("D_0014171B");
 extern unsigned char D_0013D605_2F21B0[] __asm__("D_0013D605");
 extern unsigned char D_0013D355_2F21B0[] __asm__("D_0013D355");
 
+typedef struct PokSentryVars {
+    u8 pad_00[0x4];
+    s16 h04;                   /* 0x04 */
+    u8 pad_06[0x6];
+    f32 f0C;                   /* 0x0C */
+    u8 pad_10[0x38];
+    s32 slot;                  /* 0x48 */
+    u8 pad_4C[0x4];
+    u8 body[0x64];             /* 0x50 joint animation block */
+    f32 pitch;                 /* 0xB4 */
+    f32 yaw;                   /* 0xB8 */
+    u8 pad_BC[0x4];
+    f32 height;                /* 0xC0 */
+    u8 pad_C4[0xC];
+    u8 head[0x68];             /* 0xD0 joint animation block */
+    f32 head_yaw;              /* 0x138 */
+    u8 pad_13C[0x14];
+    f32 target[4];             /* 0x150 */
+    s32 moving_timer;          /* 0x160 */
+    s32 target_timer;          /* 0x164 */
+} PokSentryVars;
+
 /* Pokitaru vendor NPC update: spawn, talk and reward states with the visit timer, aims at the player and sets the body and head poses. */
 void fred_pokitaru_update(char *m)
 {
-    char *d;
+    PokSentryVars *moby_vars;
+    struct Moby *moby;
     char *p;
     char *pl;
     float rate;
@@ -974,33 +997,34 @@ void fred_pokitaru_update(char *m)
     float s_eye[4];
     float s_delta[4];
 
-    d = *(char **)(m + 0x78);
+    moby = (struct Moby *)m;
+    moby_vars = (PokSentryVars *)moby->pvars;
     AttachManipulatorsIfCheat(m);
-    if (*(unsigned char *)(m + 0x31) != 0) {
-        if (FastVecDist(m + 0x10, camera_pos_b358) < 30.0f) {
+    if (moby->visible != 0) {
+        if (FastVecDist((char *)&moby->pos, camera_pos_b358) < 30.0f) {
             func_L00_0025B178(m);
-            *(unsigned char *)(m + 0x7F) = 0x18;
+            moby->shadow_range = 24;
         }
     }
-    switch (*(unsigned char *)(m + 0x20)) {
+    switch (moby->state) {
     case 0:
-        *(unsigned char *)(m + 0x20) = 1;
-        if (*(unsigned char *)(m + 0x53) != 1)
+        moby->state = 1;
+        if (moby->prev_seq != 1)
             MobyBlendAnimation(m, 1, 0, scale_ticks(0x14));
         if (D_0013D605_2F21B0[0xE] != 0) {
             DeleteMoby(m);
             return;
         }
-        DialogRequest_Init(m, d);
-        *(float *)(d + 0xC) = 4.0f;
+        DialogRequest_Init(m, (char *)moby_vars);
+        moby_vars->f0C = 4.0f;
         break;
     case 1:
-        if (Npc_TryStartDialog(m, d)) {
+        if (Npc_TryStartDialog(m, (char *)moby_vars)) {
             PlaceMarkerAheadOfMoby(3.0f, m);
-            *(unsigned char *)(m + 0x20) = 2;
+            moby->state = 2;
         }
         if (D_0013D355_2F21B0[0x13C] == 0 && discount_purchase_pricing[0] == 0 &&
-            FastVecDist(m + 0x10, (char *)&D_0013E633 + 0xE9D) < 4.0f) {
+            FastVecDist((char *)&moby->pos, (char *)&D_0013E633 + 0xE9D) < 4.0f) {
             Stats_2F21B0 *stats;
             int elapsed, period;
             elapsed = scale_ticks(D_0015EFA4_2F21B0);
@@ -1013,21 +1037,21 @@ void fred_pokitaru_update(char *m)
                 stats->f432 = scale_ticks(D_0015EFA4_2F21B0) / 600;
             }
         }
-        if (D_0014C150[*(unsigned char *)(m + 0xB0) + (D_0015EE84 << 4)] != 0xFF) {
+        if (D_0014C150[moby->mission + (D_0015EE84 << 4)] != 0xFF) {
             char *h = (char *)&D_0013E633 + 0xE9D;
-            if (FastVecDist(h, m + 0x10) < 4.0f &&
-                FastAbsF(*(float *)(h + 8) - *(float *)(m + 0x18)) < 4.0f) {
+            if (FastVecDist(h, (char *)&moby->pos) < 4.0f &&
+                FastAbsF(((Vec4f *)h)->z - moby->pos.z) < 4.0f) {
                 char *t;
-                jet_clear_persistent(*(unsigned char *)(m + 0xB0));
-                t = D_L11_0016016C_2F21B0 + (*(int *)(d + 0x48) << 7);
+                jet_clear_persistent(moby->mission);
+                t = D_L11_0016016C_2F21B0 + (moby_vars->slot << 7);
                 func_L00_00286128_2D18D0(t + 0x30, t + 0x70);
             }
         }
         break;
     case 2:
         if (D_L11_0015F6A8 != 2) {
-            *(unsigned char *)(m + 0x20) = 1;
-            if (*(short *)(d + 4) == 2) {
+            moby->state = 1;
+            if (moby_vars->h04 == 2) {
                 D_0013D355_2F21B0[0x13C] = 0;
                 discount_purchase_pricing[0] = 1;
                 D_0013D605_2F21B0[0xE] = 1;
@@ -1041,55 +1065,62 @@ void fred_pokitaru_update(char *m)
     rate = 0.02f;
     head_rate = 0.3f;
     tracking = 0;
-    if (*(unsigned char *)(m + 0x53) == 1) {
+    if (moby->prev_seq == 1) {
         p = (char *)&D_0013E633 + 0xE9D;
         tracking = 1;
-        if (func_001F9D48(m + 0x10, p) < 8.0f &&
-            func_001FA850_2D18D0(*(float *)(m + 0x48),
-                func_L00_001FF860(*(float *)((pl = p - 0x80) + 0xD0) - *(float *)(m + 0x10),
-                    *(float *)(pl + 0xD4) - *(float *)(m + 0x14))) < 1.5707964f) {
+        if (func_001F9D48((char *)&moby->pos, p) < 8.0f &&
+            func_001FA850_2D18D0(moby->rot.z,
+                func_L00_001FF860(*(float *)((pl = p - 0x80) + 0xD0) - moby->pos.x,
+                    *(float *)(pl + 0xD4) - moby->pos.y)) < 1.5707964f) {
             if (FastVecLength(p + 0x80) > 0.01f)
-                *(int *)(d + 0x160) = scale_ticks(120);
+                moby_vars->moving_timer = scale_ticks(120);
             else
-                func_001F9908_2D18D0((int *)(d + 0x160));
-        } else if (*(int *)(d + 0x160) != 0) {
-            *(int *)(d + 0x160) = 0;
-            qcopy(d + 0x150, (char *)&D_0013E633 + 0xEED);
+                func_001F9908_2D18D0((int *)&moby_vars->moving_timer);
+        } else if (moby_vars->moving_timer != 0) {
+            moby_vars->moving_timer = 0;
+            qcopy(moby_vars->target, (char *)&D_0013E633 + 0xEED);
         }
-        if (func_001F9908_2D18D0((int *)(d + 0x164))) {
+        if (func_001F9908_2D18D0((int *)&moby_vars->target_timer)) {
             float heading;
-            *(int *)(d + 0x164) = func_001FA898_2D18D0(func_001F9878_2D18D0(func_002140F8_2D18D0(180.0f, 300.0f)));
-            heading = FastAddRots(*(float *)(m + 0x48), func_002140F8_2D18D0(-90.0f, 90.0f) * 0.017453292f);
-            func_00215C00_2D18D0(d + 0x150, 6.0f, heading, func_002140F8_2D18D0(0.0f, 30.0f) * 0.017453292f);
-            FastVecAdd(d + 0x150, d + 0x150, m + 0x10);
+            moby_vars->target_timer =
+                func_001FA898_2D18D0(func_001F9878_2D18D0(func_002140F8_2D18D0(180.0f, 300.0f)));
+            heading = FastAddRots(moby->rot.z, func_002140F8_2D18D0(-90.0f, 90.0f) * 0.017453292f);
+            func_00215C00_2D18D0(moby_vars->target, 6.0f, heading,
+                func_002140F8_2D18D0(0.0f, 30.0f) * 0.017453292f);
+            FastVecAdd(moby_vars->target, moby_vars->target, (char *)&moby->pos);
         }
-        if (*(int *)(d + 0x160) != 0) {
+        if (moby_vars->moving_timer != 0) {
             qcopy(s_target, (char *)&D_0013E633 + 0xEED);
             rate = 0.04f;
             head_rate = 0.3f;
         } else {
-            qcopy(s_target, d + 0x150);
+            qcopy(s_target, moby_vars->target);
         }
     }
     if (tracking) {
         float yaw;
         float pitch;
-        qcopy(s_eye, m + 0x10);
+        qcopy(s_eye, &moby->pos);
         s_eye[2] += 1.0f;
         FastVecSub(s_delta, s_target, s_eye);
-        yaw = FastSubRots(func_L00_001FF860(s_delta[0], s_delta[1]), *(float *)(m + 0x48));
+        yaw = FastSubRots(func_L00_001FF860(s_delta[0], s_delta[1]), moby->rot.z);
         pitch = -func_L00_001FF860(func_001F9CE8_2D18D0(s_delta), s_delta[2]);
-        if (yaw > 1.5707964f) yaw = 1.5707964f;
-        else if (yaw < -1.5707964f) yaw = -1.5707964f;
-        if (pitch > 0.5235988f) pitch = 0.5235988f;
-        else if (pitch < -0.5235988f) pitch = -0.5235988f;
-        *(float *)(d + 0xB4) = pitch;
-        *(float *)(d + 0xB8) = yaw * 0.5f;
-        *(float *)(d + 0x138) = yaw * 0.5f;
+        if (yaw > 1.5707964f)
+            yaw = 1.5707964f;
+        else if (yaw < -1.5707964f)
+            yaw = -1.5707964f;
+        if (pitch > 0.5235988f)
+            pitch = 0.5235988f;
+        else if (pitch < -0.5235988f)
+            pitch = -0.5235988f;
+        moby_vars->pitch = pitch;
+        moby_vars->yaw = yaw * 0.5f;
+        moby_vars->head_yaw = yaw * 0.5f;
     }
-    if (D_0015EEB0_2D18D0[0] != 0) *(float *)(d + 0xC0) = 2.75f;
-    func_L00_00263950_2D18D0(m, d + 0x50, 0, rate * D_0015EE64_2D18D0, head_rate * D_0015EE64_2D18D0);
-    func_L00_00263950_2D18D0(m, d + 0xD0, 1, rate * D_0015EE64_2D18D0, head_rate * D_0015EE64_2D18D0);
+    if (D_0015EEB0_2D18D0[0] != 0)
+        moby_vars->height = 2.75f;
+    func_L00_00263950_2D18D0(m, (char *)moby_vars->body, 0, rate * D_0015EE64_2D18D0, head_rate * D_0015EE64_2D18D0);
+    func_L00_00263950_2D18D0(m, (char *)moby_vars->head, 1, rate * D_0015EE64_2D18D0, head_rate * D_0015EE64_2D18D0);
 }
 extern char D_0013F450_F3888[] __asm__("D_0013F450");
 extern float D_0013F4D8;

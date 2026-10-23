@@ -1731,54 +1731,77 @@ extern void func_L08_002DD440(char *moby);
 
 /* Platform moby update: toggles visibility, spins, records its start pose, then rides its path while the
  * player stands on it; at the end of the path it can hand over to the cutscene state. */
+typedef struct LiftVars {
+    char pad_00[0x20];
+    char motion[0x40];                 /* 0x20 update_entity_matrix destination */
+    Vec4 home_pos;                     /* 0x60 */
+    Vec4 home_rot;                     /* 0x70 */
+    s32 path;                          /* 0x80 -1 when the platform has no route */
+    char pad_84[0x8];
+    union { s32 i; u16 u; } stop;      /* 0x8C route stop target; .u is read as a halfword */
+    char pad_90[0x10];
+    char manip_unk0;                   /* 0xA0 manipulator record (AttachManipulator) */
+    u8 manip_set;                      /* 0xA1 0 = manipulator not attached yet */
+    char pad_A2[0xE];
+    char spin_state[0x30];             /* 0xB0 rotation matrix built by BuildEulerMatrix */
+    s16 unkE0;                         /* 0xE0 */
+    char pad_E2[0x1E];
+    s32 unk100;                        /* 0x100 */
+    char pad_104[0xC];
+    Vec4 spin;                         /* 0x110 spin angles (spin.f[0] is the yaw) */
+    char pad_120[0x4];
+    s32 ridable;                       /* 0x124 nonzero: the hero may stand on it */
+} LiftVars;
+
 void RoutePlatformUpdate(char *m) {
-    char *d = *(char **)(m + 0x78);
-    float pos[4];
-    float rot[4];
-    float vec[4];
-    float tgt[4];
+    struct Moby *moby = (struct Moby *)m;
+    LiftVars *vars = (LiftVars *)moby->pvars;
+    float old_pos[4];
+    float old_rot[4];
+    float delta[4];
+    float hero_position_probe[4];
     float *rp;
-    qcopy(pos, m + 0x10);
-    qcopy(rot, m + 0x40);
-    if (D_L08_0015F6A8 != 2 && *(int *)(d + 0x124) != 0) {
-        m[0x31] = 1;
-        *(unsigned short *)(m + 0x34) &= 0xFFFE;
+    qcopy(old_pos, &moby->pos);
+    qcopy(old_rot, &moby->rot);
+    if (D_L08_0015F6A8 != 2 && vars->ridable != 0) {
+        moby->visible = 1;
+        moby->flags &= 0xFFFE;
     } else {
-        m[0x31] = 0;
-        *(unsigned short *)(m + 0x34) |= 1;
+        moby->visible = 0;
+        moby->flags |= 1;
     }
-    rp = rot;
-    if (((unsigned char *)d)[0xA1] == 0) {
-        AttachManipulator(m, 0, d + 0xA0);
+    rp = old_rot;
+    if (vars->manip_set == 0) {
+        AttachManipulator(m, 0, &vars->manip_unk0);
     }
-    *(float *)(d + 0x110) = FastAddRots(*(float *)(d + 0x110), D_0015EE6C_2D5FA8 * 1.5707964f);
-    BuildEulerMatrix(d + 0xB0, d + 0x110);
-    switch (((unsigned char *)m)[0x20]) {
+    vars->spin.f[0] = FastAddRots(vars->spin.f[0], D_0015EE6C_2D5FA8 * 1.5707964f);
+    BuildEulerMatrix(vars->spin_state, &vars->spin);
+    switch (moby->state) {
     case 0:
-        clear_u64_value(d + 0x110);
-        if (*(int *)(d + 0x80) == -1) {
-            qcopy(d + 0x60, m + 0x10);
-            qcopy(d + 0x70, m + 0x40);
-            m[0x20] = 4;
-            *(int *)(d + 0x124) = 1;
+        clear_u64_value(&vars->spin);
+        if (vars->path == -1) {
+            qcopy(&vars->home_pos, &moby->pos);
+            qcopy(&vars->home_rot, &moby->rot);
+            moby->state = 4;
+            vars->ridable = 1;
         } else {
-            *(int *)(d + 0x100) = -1;
-            *(short *)(d + 0xE0) = -1;
+            vars->unk100 = -1;
+            vars->unkE0 = -1;
             PlatformChooseRoute(m);
-            m[0x20] = 2;
-            ((unsigned char *)m)[0x30] = 0xFF;
+            moby->state = 2;
+            moby->update_dist = 0xFF;
         }
         break;
     case 2: {
-        char *q = D_0013E633 + 0xE1D;
-        if (*(char **)(q + 0x2FC) == m) {
+        Hero *q = (Hero *)(D_0013E633 + 0xE1D);
+        if (q->ground_moby == moby) {
             if (D_L08_00179C90[0] == 0 && D_L08_00179C90[9] == -1) {
-                qcopy(tgt, q + 0x80);
-                func_L00_00262DF0_i(*(int *)(d + 0x8C), tgt, 0.5f, tgt);
-                if (FastVecDist(q + 0x80, tgt) < 0.001f) {
+                qcopy(hero_position_probe, &q->motion.pos);
+                func_L00_00262DF0_i(vars->stop.i, hero_position_probe, 0.5f, hero_position_probe);
+                if (FastVecDist(&q->motion.pos, hero_position_probe) < 0.001f) {
                     Platform_ShowHelpMessage(m);
-                    if ((D_0013A5E0_d[0x2604 / 4] & 0x10) && *(short *)(q + 0x30E) == 0 && D_L08_0015F674 == 10) {
-                        m[0x20] = 3;
+                    if ((D_0013A5E0_d[0x2604 / 4] & 0x10) && q->air_frames.s == 0 && D_L08_0015F674 == 10) {
+                        moby->state = 3;
                     }
                 }
             }
@@ -1788,23 +1811,23 @@ void RoutePlatformUpdate(char *m) {
         break;
     }
     case 3: {
-        char *q = D_0013E633 + 0xE1D;
-        *(short *)(q + 0x1F2) = 5;
-        *(short *)(q + 0x1F4) = 5;
-        *(short *)(q + 0x22DA) = *(unsigned short *)(d + 0x8C);
+        Hero *q = (Hero *)(D_0013E633 + 0xE1D);
+        q->unk1F2 = 5;
+        q->unk1F4 = 5;
+        q->unk22DA = vars->stop.u;
         if (Platform_MoveToRouteTarget(m)) {
             PlatformChooseRoute(m);
-            m[0x20] = 2;
+            moby->state = 2;
         }
         break;
     }
     }
     Platform_BobAndSway(m);
-    if (*(int *)(d + 0x8C) != -1) {
+    if (vars->stop.i != -1) {
         TransformPathPoints(m);
     }
-    FastVecSub(vec, m + 0x10, pos);
-    update_entity_matrix(d + 0x20, vec, rp, m + 0x40);
+    FastVecSub(delta, &moby->pos, old_pos);
+    update_entity_matrix(vars->motion, delta, rp, &moby->rot);
 }
 extern int D_L08_001B0FB0[];
 extern char D_L08_001DB540[];

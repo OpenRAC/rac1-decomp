@@ -1907,12 +1907,56 @@ extern char D_L05_00161FB0[];
 extern float D_0015EE64 MACRO_ADDR;
 extern unsigned char D_0013DE4B[];
 
+enum QwarksBouncerState {
+    QWARKS_BOUNCER_INITIALIZE = 0,
+    QWARKS_BOUNCER_UPDATE_DIALOGUE = 1
+};
+
+/* One pose block of the bouncer data: body at 0x40, head at 0xC0. */
+typedef struct QwarksBouncerPose {
+    u8 pad_00[0x64];
+    f32 pitch;                 /* 0x64 */
+    f32 yaw;                   /* 0x68 */
+    u8 pad_6C[0x4];
+    f32 height;                /* 0x70 (body only; 2.75 when the cheat flag is set) */
+    u8 pad_74[0xC];
+} QwarksBouncerPose;
+
+/* The bouncer's per-moby data block, Moby.pvars (0x140+ used). */
+typedef struct QwarksBouncerData {
+    u8 pad_00[0x4];
+    s16 sub;                   /* 0x04 dialogue sub-state */
+    u8 pad_06[0x6];
+    f32 fC;                    /* 0x0C */
+    u8 pad_10[0x10];
+    void *ptr20;               /* 0x20 */
+    u8 pad_24[0x1C];
+    QwarksBouncerPose body;    /* 0x40 */
+    QwarksBouncerPose head;    /* 0xC0 */
+    u8 pad_140[0x4];
+    s32 idle_timer;            /* 0x144 */
+    s32 moving_timer;          /* 0x148 */
+    s32 target_timer;          /* 0x14C */
+    f32 target[4];             /* 0x150 */
+} QwarksBouncerData;
+
+/* The watch player block;
+
+pl = player - 0x80 in this function. */
+typedef struct QwarksWatchPlayer {
+    u8 pad_00[0x80];
+    f32 position[4];           /* 0x80 */
+    u8 pad_90[0x40];
+    f32 aim[4];                /* 0xD0 */
+} QwarksWatchPlayer;
+
 /* Bouncer update: spawn and approach states, aims at the player and sets the body and head poses. */
 void qwarks_bouncer_update(char *m)
 {
-    char *d;
+    struct Moby *bouncer_moby;
+    QwarksBouncerData *bouncer_data;
     char *p;
-    char *pl;
+    QwarksWatchPlayer *pl;
     float rate;
     float head_rate;
     int tracking;
@@ -1920,38 +1964,39 @@ void qwarks_bouncer_update(char *m)
     float s_eye[4];
     float s_delta[4];
 
-    d = *(char **)(m + 0x78);
+    bouncer_moby = (struct Moby *)m;
+    bouncer_data = (QwarksBouncerData *)bouncer_moby->pvars;
     AttachCheatManipulatorToSiblings(m);
-    if (d == 0) return;
-    switch (*(unsigned char *)(m + 0x20)) {
-    case 0:
+    if (!bouncer_data) return;
+    switch (bouncer_moby->state) {
+    case QWARKS_BOUNCER_INITIALIZE:
         if (D_0013DE4B[4] != 0) {
             DeleteMoby(m);
             return;
         }
-        *(char **)(d + 0x20) = D_L05_00161FB0;
-        *(unsigned char *)(m + 0x20) = 1;
-        DialogRequest_Init(m, d);
-        *(float *)(d + 0xC) = 3.7f;
+        bouncer_data->ptr20 = D_L05_00161FB0;
+        bouncer_moby->state = 1;
+        DialogRequest_Init(m, bouncer_data);
+        bouncer_data->fC = 3.7f;
         func_L02_0025D750(m);
         break;
-    case 1:
-        if (Npc_TryStartDialog(m, d))
+    case QWARKS_BOUNCER_UPDATE_DIALOGUE:
+        if (Npc_TryStartDialog(m, bouncer_data))
             PlaceMarkerAheadOfMoby(2.5f, m);
-        if (*(short *)(d + 4) == 5) {
+        if (bouncer_data->sub == 5) {
             unlock_planet(7);
             memcard_Save(0, -1);
             DeleteMoby(m);
             return;
         }
-        if (*(unsigned char *)(m + 0x53) == 0 && func_001F9908(d + 0x144)) {
-            int mode;
-            *(int *)(d + 0x144) = func_001FA898_r(func_001F9878(random_float_between(1200.0f, 2400.0f)));
-            mode = 2;
-            if (random_integer_below(2)) mode = 1;
-            if (*(unsigned char *)(m + 0x53) != mode)
-                MobyBlendAnimation(m, mode, 0, scale_ticks(10));
-        } else if ((*(unsigned char *)(m + 0x70) & 2) && *(unsigned char *)(m + 0x53) != 0) {
+        if (bouncer_moby->prev_seq == 0 && func_001F9908(&bouncer_data->idle_timer)) {
+            int idle_animation;
+            bouncer_data->idle_timer = func_001FA898_r(func_001F9878(random_float_between(1200.0f, 2400.0f)));
+            idle_animation = 2;
+            if (random_integer_below(2)) idle_animation = 1;
+            if (bouncer_moby->prev_seq != idle_animation)
+                MobyBlendAnimation(m, idle_animation, 0, scale_ticks(10));
+        } else if ((bouncer_moby->anim_flags & 2) && bouncer_moby->prev_seq != 0) {
             MobyBlendAnimation(m, 0, 0, scale_ticks(10));
         }
         break;
@@ -1959,55 +2004,56 @@ void qwarks_bouncer_update(char *m)
     rate = 0.02f;
     head_rate = 0.3f;
     tracking = 0;
-    if (*(unsigned char *)(m + 0x53) == 0) {
+    if (bouncer_moby->prev_seq == 0) {
         p = (char *)&D_0013E633 + 0xE9D;
         tracking = 1;
-        if (func_001F9D48(m + 0x10, p) < 8.0f &&
-            FastDiffRots(*(float *)(m + 0x48),
-                func_L00_001FF860(*(float *)((pl = p - 0x80) + 0xD0) - *(float *)(m + 0x10),
-                    *(float *)(pl + 0xD4) - *(float *)(m + 0x14))) < 1.5707964f) {
+        if (func_001F9D48(&bouncer_moby->pos, p) < 8.0f &&
+            FastDiffRots(bouncer_moby->rot.z,
+                func_L00_001FF860((pl = (QwarksWatchPlayer *)(p - 0x80))->aim[0] - bouncer_moby->pos.x,
+                    pl->aim[1] - bouncer_moby->pos.y)) < 1.5707964f) {
             if (FastVecLength(p + 0x80) > 0.01f)
-                *(int *)(d + 0x148) = scale_ticks(120);
+                bouncer_data->moving_timer = scale_ticks(120);
             else
-                func_001F9908((int *)(d + 0x148));
-        } else if (*(int *)(d + 0x148) != 0) {
-            *(int *)(d + 0x148) = 0;
-            qcopy(d + 0x150, (char *)&D_0013E633 + 0xEED);
+                func_001F9908(&bouncer_data->moving_timer);
+        } else if (bouncer_data->moving_timer != 0) {
+            bouncer_data->moving_timer = 0;
+            qcopy(bouncer_data->target, (char *)&D_0013E633 + 0xEED);
         }
-        if (func_001F9908((int *)(d + 0x14C))) {
+        if (func_001F9908(&bouncer_data->target_timer)) {
             float heading;
-            *(int *)(d + 0x14C) = func_001FA898_r(func_001F9878(random_float_between(180.0f, 300.0f)));
-            heading = FastAddRots(*(float *)(m + 0x48), random_float_between(-90.0f, 90.0f) * 0.017453292f);
-            BuildSphericalOffset(d + 0x150, 6.0f, heading, random_float_between(0.0f, 30.0f) * 0.017453292f);
-            FastVecAdd(d + 0x150, d + 0x150, m + 0x10);
+            bouncer_data->target_timer = func_001FA898_r(func_001F9878(random_float_between(180.0f, 300.0f)));
+            heading = FastAddRots(bouncer_moby->rot.z, random_float_between(-90.0f, 90.0f) * 0.017453292f);
+            BuildSphericalOffset(bouncer_data->target, 6.0f, heading,
+                                 random_float_between(0.0f, 30.0f) * 0.017453292f);
+            FastVecAdd(bouncer_data->target, bouncer_data->target, &bouncer_moby->pos);
         }
-        if (*(int *)(d + 0x148) != 0) {
+        if (bouncer_data->moving_timer != 0) {
             qcopy(s_target, (char *)&D_0013E633 + 0xEED);
             rate = 0.04f;
             head_rate = 0.3f;
         } else {
-            qcopy(s_target, d + 0x150);
+            qcopy(s_target, bouncer_data->target);
         }
     }
     if (tracking) {
         float yaw;
         float pitch;
-        qcopy(s_eye, m + 0x10);
+        qcopy(s_eye, &bouncer_moby->pos);
         s_eye[2] += 1.0f;
         FastVecSub(s_delta, s_target, s_eye);
-        yaw = FastSubRots(func_L00_001FF860(s_delta[0], s_delta[1]), *(float *)(m + 0x48));
+        yaw = FastSubRots(func_L00_001FF860(s_delta[0], s_delta[1]), bouncer_moby->rot.z);
         pitch = -func_L00_001FF860(func_001F9CE8(s_delta), s_delta[2]);
         if (yaw > 1.5707964f) yaw = 1.5707964f;
         else if (yaw < -1.5707964f) yaw = -1.5707964f;
         if (pitch > 0.5235988f) pitch = 0.5235988f;
         else if (pitch < -0.5235988f) pitch = -0.5235988f;
-        *(float *)(d + 0xA4) = pitch;
-        *(float *)(d + 0xA8) = yaw * 0.5f;
-        *(float *)(d + 0x128) = yaw * 0.5f;
+        bouncer_data->body.pitch = pitch;
+        bouncer_data->body.yaw = yaw * 0.5f;
+        bouncer_data->head.yaw = yaw * 0.5f;
     }
-    if (gCheats[0] != 0) *(float *)(d + 0xB0) = 2.75f;
-    EaseManipulatorOffsets(m, d + 0x40, 0, rate * D_0015EE64, head_rate * D_0015EE64);
-    EaseManipulatorOffsets(m, d + 0xC0, 1, rate * D_0015EE64, head_rate * D_0015EE64);
+    if (gCheats[0] != 0) bouncer_data->body.height = 2.75f;
+    EaseManipulatorOffsets(m, &bouncer_data->body, 0, rate * D_0015EE64, head_rate * D_0015EE64);
+    EaseManipulatorOffsets(m, &bouncer_data->head, 1, rate * D_0015EE64, head_rate * D_0015EE64);
 }
 extern void func_L02_002E2110(void *);
 extern void func_L00_0025B178(void *);
@@ -2019,12 +2065,41 @@ extern float func_001FA790(float, float);
 extern char D_L05_00161FB8[];
 extern unsigned char D_0013D605[];
 
+typedef struct ShadySalesmanNpc {
+    u8 pad_00[0x4];
+    u16 sub;                 /* 0x04: dialogue sub-state; 3 or 4 ends the talk */
+    u8 pad_06[0x1A];
+    void *ptr20;             /* 0x20 */
+    u8 pad_24[0x1C];
+    u8 body[0x64];           /* 0x40: body joint record, passed to EaseManipulatorOffsets */
+    f32 pitch;               /* 0xA4 */
+    f32 yaw;                 /* 0xA8 */
+    u8 pad_AC[0x4];
+    f32 height;              /* 0xB0 */
+    u8 pad_B4[0xC];
+    u8 head[0x64];           /* 0xC0: head joint record */
+    u8 pad_124[0x4];
+    f32 head_yaw;            /* 0x128 */
+    u8 pad_12C[0x14];
+    f32 target[4];           /* 0x140: point the salesman looks at */
+    u8 pad_150[0x4];
+    s32 idle_timer;          /* 0x154 */
+    s32 moving_timer;        /* 0x158 */
+    s32 target_timer;        /* 0x15C */
+} ShadySalesmanNpc;
+
+typedef struct ShadyWatchPlayer {
+    u8 pad_00[0xD0];
+    f32 aim[4];              /* 0xD0 */
+} ShadyWatchPlayer;
+
 /* Shady salesman update: spawn and approach states, aims at the player and sets the body and head poses. */
 void shady_salesman_update(char *m)
 {
-    char *d;
+    Moby *moby = (Moby *)m;
+    ShadySalesmanNpc *npc_data;
+    ShadyWatchPlayer *pl;
     char *p;
-    char *pl;
     float rate;
     float head_rate;
     int tracking;
@@ -2032,41 +2107,41 @@ void shady_salesman_update(char *m)
     float s_eye[4];
     float s_delta[4];
 
-    d = *(char **)(m + 0x78);
+    npc_data = (ShadySalesmanNpc *)moby->pvars;
     AttachManipulatorsIfCheat(m);
-    if (*(unsigned char *)(m + 0x31) != 0) {
-        if (FastVecDist(m + 0x10, D_L05_001672C0) < 40.0f) {
+    if (moby->visible != 0) {
+        if (FastVecDist(&moby->pos, D_L05_001672C0) < 40.0f) {
             func_L00_0025B178(m);
-            *(unsigned char *)(m + 0x7F) = 0x20;
+            moby->shadow_range = 0x20;
         }
     }
-    switch (*(unsigned char *)(m + 0x20)) {
+    switch (moby->state) {
     case 0:
         if (D_0013D605[2] != 0) {
             DeleteMoby(m);
             return;
         }
-        *(float *)(m + 0x18) += 0.5f;
-        *(float *)(m + 0x18) = ProbeGroundHeight(m + 0x10, 0, 0.5f);
-        *(char **)(d + 0x20) = D_L05_00161FB8;
-        *(unsigned char *)(m + 0x20) = 1;
-        DialogRequest_Init(m, d);
+        moby->pos.z += 0.5f;
+        moby->pos.z = ProbeGroundHeight(&moby->pos, 0, 0.5f);
+        npc_data->ptr20 = D_L05_00161FB8;
+        moby->state = 1;
+        DialogRequest_Init(m, npc_data);
         break;
     case 1:
-        if (Npc_TryStartDialog(m, d))
+        if (Npc_TryStartDialog(m, npc_data))
             PlaceMarkerAheadOfMoby(2.0f, m);
-        if (*(unsigned short *)(d + 4) >= 3 && *(unsigned short *)(d + 4) <= 4) {
+        if (npc_data->sub >= 3 && npc_data->sub <= 4) {
             GiveItem(0x17, 1);
             ShowBanner(0x1396, -1);
             memcard_Save(0, -1);
             DeleteMoby(m);
             return;
         }
-        if (*(unsigned char *)(m + 0x53) == 0 && func_001F9908(d + 0x154)) {
-            *(int *)(d + 0x154) = func_001FA898_r(func_001F9878(random_float_between(1200.0f, 2400.0f)));
-            if (*(unsigned char *)(m + 0x53) != 1)
+        if (moby->prev_seq == 0 && func_001F9908(&npc_data->idle_timer)) {
+            npc_data->idle_timer = func_001FA898_r(func_001F9878(random_float_between(1200.0f, 2400.0f)));
+            if (moby->prev_seq != 1)
                 MobyBlendAnimation(m, 1, 0, scale_ticks(10));
-        } else if (*(unsigned char *)(m + 0x53) == 1 && (*(unsigned char *)(m + 0x70) & 2)) {
+        } else if (moby->prev_seq == 1 && (moby->anim_flags & 2)) {
             MobyBlendAnimation(m, 0, 0, scale_ticks(10));
         }
         break;
@@ -2074,55 +2149,60 @@ void shady_salesman_update(char *m)
     rate = 0.02f;
     head_rate = 0.3f;
     tracking = 0;
-    if (*(unsigned char *)(m + 0x53) == 0) {
+    if (moby->prev_seq == 0) {
         p = (char *)&D_0013E633 + 0xE9D;
         tracking = 1;
-        if (func_001F9D48(m + 0x10, p) < 8.0f &&
-            FastDiffRots(*(float *)(m + 0x48),
-                func_L00_001FF860(*(float *)((pl = p - 0x80) + 0xD0) - *(float *)(m + 0x10),
-                    *(float *)(pl + 0xD4) - *(float *)(m + 0x14))) < 1.5707964f) {
+        if (func_001F9D48(&moby->pos, p) < 8.0f &&
+            FastDiffRots(moby->rot.z,
+                func_L00_001FF860((pl = (ShadyWatchPlayer *)(p - 0x80))->aim[0] - moby->pos.x,
+                    pl->aim[1] - moby->pos.y)) < 1.5707964f) {
             if (FastVecLength(p + 0x80) > 0.01f)
-                *(int *)(d + 0x158) = scale_ticks(120);
+                npc_data->moving_timer = scale_ticks(120);
             else
-                func_001F9908((int *)(d + 0x158));
-        } else if (*(int *)(d + 0x158) != 0) {
-            *(int *)(d + 0x158) = 0;
-            qcopy(d + 0x140, (char *)&D_0013E633 + 0xEED);
+                func_001F9908(&npc_data->moving_timer);
+        } else if (npc_data->moving_timer != 0) {
+            npc_data->moving_timer = 0;
+            qcopy(npc_data->target, (char *)&D_0013E633 + 0xEED);
         }
-        if (func_001F9908((int *)(d + 0x15C))) {
+        if (func_001F9908(&npc_data->target_timer)) {
             float heading;
-            *(int *)(d + 0x15C) = func_001FA898_r(func_001F9878(random_float_between(180.0f, 300.0f)));
-            heading = FastAddRots(*(float *)(m + 0x48), random_float_between(-90.0f, 90.0f) * 0.017453292f);
-            BuildSphericalOffset(d + 0x140, 6.0f, heading, random_float_between(0.0f, 30.0f) * 0.017453292f);
-            FastVecAdd(d + 0x140, d + 0x140, m + 0x10);
+            npc_data->target_timer = func_001FA898_r(func_001F9878(random_float_between(180.0f, 300.0f)));
+            heading = FastAddRots(moby->rot.z, random_float_between(-90.0f, 90.0f) * 0.017453292f);
+            BuildSphericalOffset(npc_data->target, 6.0f, heading, random_float_between(0.0f, 30.0f) * 0.017453292f);
+            FastVecAdd(npc_data->target, npc_data->target, &moby->pos);
         }
-        if (*(int *)(d + 0x158) != 0) {
+        if (npc_data->moving_timer != 0) {
             qcopy(s_target, (char *)&D_0013E633 + 0xEED);
             rate = 0.04f;
             head_rate = 0.3f;
         } else {
-            qcopy(s_target, d + 0x140);
+            qcopy(s_target, npc_data->target);
         }
     }
     if (tracking) {
         float yaw;
         float pitch;
-        qcopy(s_eye, m + 0x10);
+        qcopy(s_eye, &moby->pos);
         s_eye[2] += 1.0f;
         FastVecSub(s_delta, s_target, s_eye);
-        yaw = FastSubRots(func_L00_001FF860(s_delta[0], s_delta[1]), *(float *)(m + 0x48));
+        yaw = FastSubRots(func_L00_001FF860(s_delta[0], s_delta[1]), moby->rot.z);
         pitch = -func_L00_001FF860(func_001F9CE8(s_delta), s_delta[2]);
-        if (yaw > 1.5707964f) yaw = 1.5707964f;
-        else if (yaw < -1.5707964f) yaw = -1.5707964f;
-        if (pitch > 0.5235988f) pitch = 0.5235988f;
-        else if (pitch < -0.5235988f) pitch = -0.5235988f;
-        *(float *)(d + 0xA4) = pitch;
-        *(float *)(d + 0xA8) = yaw * 0.6f;
-        *(float *)(d + 0x128) = yaw * 0.4f;
+        if (yaw > 1.5707964f)
+            yaw = 1.5707964f;
+        else if (yaw < -1.5707964f)
+            yaw = -1.5707964f;
+        if (pitch > 0.5235988f)
+            pitch = 0.5235988f;
+        else if (pitch < -0.5235988f)
+            pitch = -0.5235988f;
+        npc_data->pitch = pitch;
+        npc_data->yaw = yaw * 0.6f;
+        npc_data->head_yaw = yaw * 0.4f;
     }
-    if (gCheats[0] != 0) *(float *)(d + 0xB0) = 2.75f;
-    EaseManipulatorOffsets(m, d + 0x40, 0, rate * D_0015EE64, head_rate * D_0015EE64);
-    EaseManipulatorOffsets(m, d + 0xC0, 1, rate * D_0015EE64, head_rate * D_0015EE64);
+    if (gCheats[0] != 0)
+        npc_data->height = 2.75f;
+    EaseManipulatorOffsets(m, npc_data->body, 0, rate * D_0015EE64, head_rate * D_0015EE64);
+    EaseManipulatorOffsets(m, npc_data->head, 1, rate * D_0015EE64, head_rate * D_0015EE64);
 }
 extern char D_0013E633_319F78[] __asm__("D_0013E633");
 extern int D_L05_0016139C_319F78 __asm__("D_L05_0016139C") MACRO_ADDR;

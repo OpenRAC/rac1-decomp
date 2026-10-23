@@ -2142,21 +2142,39 @@ extern float func_001FA7D8(float x);
 extern char *D_L01_00160058 MACRO_ADDR;
 
 // Crank rotator update: state 0 initialises, state 1 drives the linked moby.
+enum {
+    CAVE_DOOR_STATE_INITIALIZE = 0,
+    CAVE_DOOR_STATE_UPDATE_ROTATION = 1
+};
+
+/* The cave door's pvars block (Moby.pvars at 0x78). */
+typedef struct CaveDoorVars_2BA898 {
+    s32 target;                /* 0x00 index of the moby whose class 0x118 drives it, -1 none */
+    f32 angle;                 /* 0x04 angle the door starts from (its rot.x) */
+    f32 speed;                 /* 0x08 rotation speed, converted to radians on init */
+} CaveDoorVars_2BA898;
+
 void cave_door_update(char *m) {
-    char *d = *(char **)(m + 0x78);
-    switch (*(unsigned char *)(m + 0x20)) {
-    case 0:
-        *(float *)(d + 4) = *(float *)(m + 0x40);
-        *(float *)(d + 8) = *(float *)(d + 8) * 0.0174532925f;
-        *(unsigned char *)(m + 0x20) = 1;
+    Moby *self = (Moby *)m;
+    CaveDoorVars_2BA898 *cave_door_vars;
+    Moby *target_moby;
+    f32 *mv;
+
+    cave_door_vars = (CaveDoorVars_2BA898 *)self->pvars;
+    switch (self->state) {
+    case CAVE_DOOR_STATE_INITIALIZE:
+        cave_door_vars->angle = self->rot.x;
+        cave_door_vars->speed = cave_door_vars->speed * 0.0174532925f;
+        self->state = 1;
         break;
-    case 1:
-        if (*(int *)d != -1) {
-            char *o = (char *)(*(int *)&D_L01_00160058 + (*(int *)d << 8));
-            if (*(short *)(o + 0xA6) == 0x118) {
-                char *e = *(char **)(o + 0x78);
-                *(unsigned char *)(o + 0x30) = 0xFF;
-                *(float *)(m + 0x40) = FastAddRots(*(float *)(d + 4), FastNormalizeAngle(FastAddRots(*(float *)(d + 8), -*(float *)(d + 4)) * *(float *)e));
+    case CAVE_DOOR_STATE_UPDATE_ROTATION:
+        if (cave_door_vars->target != -1) {
+            target_moby = &(*(Moby **)&D_L01_00160058)[cave_door_vars->target];
+            if (target_moby->oclass == 0x118) {
+                mv = (f32 *)target_moby->pvars;
+                target_moby->update_dist = 0xFF;
+                self->rot.x = FastAddRots(cave_door_vars->angle,
+                    FastNormalizeAngle(FastAddRots(cave_door_vars->speed, -cave_door_vars->angle) * mv[0]));
             }
         }
         break;

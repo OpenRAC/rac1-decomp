@@ -1792,167 +1792,192 @@ extern int func_L00_0028EB98(void *, int);
 extern float func_001FA888(int);
 extern void func_L00_002617B0(char *, void *, void *, void *);
 
+typedef struct ElevatorVars {
+    u8 pad00[0x20];
+    s32 unk20;                       /* 0x20 */
+    s16 unk24;                       /* 0x24 */
+    u8 pad26[0x2];
+    u8 unk28;                        /* 0x28 */
+    u8 pad29[0x15];
+    s16 unk3E;                       /* 0x3E */
+    u8 pad40[0x20];
+    u8 matrix[0x40];                 /* 0x60: update_entity_matrix target */
+    u8 unkA0;                        /* 0xA0: start-state byte from the class */
+    u8 padA1[0x3];
+    f32 unkA4;                       /* 0xA4: progress 0..1 along the path */
+    union { f32 f; s32 i; } unkA8;   /* 0xA8: progress speed, zeroed as an int */
+    f32 unkAC;                       /* 0xAC: signed speed per frame */
+    f32 unkB0;                       /* 0xB0: seconds of travel */
+    s32 path_index;                  /* 0xB4: row of D_L09_001B0930, -1 none */
+    s16 unkB8;                       /* 0xB8: nonzero when the hero steps on */
+    s16 timer;                       /* 0xBA: frames, counted down */
+    union { f32 f; s32 i; } unkBC;   /* 0xBC: height delta last frame, zeroed as an int */
+    s32 clip_volume;                 /* 0xC0: clip volume id, -1 none */
+    s32 voice;                       /* 0xC4: voice slot playing, -1 none */
+    s32 unkC8;                       /* 0xC8 */
+} ElevatorVars;
+
 // Moves an elevator along its path once its collectable flag is set, easing between nodes. Adapted from Lombyte (MIT) for PAL: src/overlays/l09/gameplay_vendor_003033a0.c, FUN_L09_003033a0.
 void PathPlatformL09_Update(unsigned char *moby) {
-    char *data = *(char **)(moby + 0x78);
-    char *hero;
+    Moby *m = (Moby *)moby;
+    ElevatorVars *data = (ElevatorVars *)m->pvars;
     char *path;
     float orig[4], delta[4], tmp[4];
     int on = 0;
-    if (*(int *)(data + 0xB4) == -1) {
+    if (data->path_index == -1) {
         return;
     }
-    path = D_L09_001B0930[*(int *)(data + 0xB4)];
-    if (*(int *)(data + 0xC0) != -1) {
+    path = D_L09_001B0930[data->path_index];
+    if (data->clip_volume != -1) {
         unsigned short id;
-        if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, *(int *)(data + 0xC0))
-            || D_L09_001BB6C0.collected[(short)(id = *(unsigned short *)(moby + 0xB2))] != 0
+        if (is_point_inside_clip_volume(&((Hero *)(D_0013E633 + 0xE1D))->motion.pos, data->clip_volume)
+            || D_L09_001BB6C0.collected[(short)(id = m->save_id)] != 0
             || ((*(int *)(D_0014171B + 0xAB75 + (D_0015EE84 << 8) + (((short)id >> 5) << 2))) >> (id & 0x1F)) & 1) {
-            if (*(int *)(data + 0xC0) != -1) {
-                (*(int *)(D_0014171B + 0xAB75 + (D_0015EE84 << 8) + (((short)*(unsigned short *)(moby + 0xB2) >> 5) << 2))) |= 1 << (*(unsigned short *)(moby + 0xB2) & 0x1F);
-                D_L09_001BA960[(short)*(unsigned short *)(moby + 0xB2) >> 5] |= 1 << (*(unsigned short *)(moby + 0xB2) & 0x1F);
-                *(int *)(data + 0xC0) = -1;
+            if (data->clip_volume != -1) {
+                (*(int *)(D_0014171B + 0xAB75 + (D_0015EE84 << 8) + (((short)m->save_id >> 5) << 2))) |= 1 << (m->save_id & 0x1F);
+                D_L09_001BA960[(short)m->save_id >> 5] |= 1 << (m->save_id & 0x1F);
+                data->clip_volume = -1;
             }
             on = 1;
         }
     } else {
         on = 1;
     }
-    qcopy(orig, moby + 0x10);
-    FastDecTimer(data + 0xBA);
-    if (moby[0x20] == 0) {
+    qcopy(orig, &m->pos);
+    FastDecTimer(&data->timer);
+    if (m->state == 0) {
         float f;
         char *pts;
-        data[0x28] = 4;
-        *(short *)(data + 0x3E) = 5;
-        *(int *)(data + 0x20) = 0;
-        *(short *)(data + 0x24) = 0;
+        data->unk28 = 4;
+        data->unk3E = 5;
+        data->unk20 = 0;
+        data->unk24 = 0;
         f = 0.0f;
-        if ((moby[0xBC] = data[0xA0]) == 0) {
+        if ((m->command = data->unkA0) == 0) {
             f = 1.0f;
         }
-        (*(float *)((data) + (0xA4))) = f;
+        data->unkA4 = f;
         pts = path + 0x10;
-        qcopy((moby + 0x10), func_001FA898_r(f) ? pts + (*(int *)path - 1) * 16 : pts);
-        *(short *)(data + 0xBA) = 0;
-        *(int *)(data + 0xA8) = 0;
-        *(int *)(data + 0xBC) = 0;
-        moby[0x20] = 1;
-        moby[0x30] = 0xFF;
-        *(short *)(moby + 0x32) = 0xFF;
-        *(int *)(data + 0xC4) = -1;
+        qcopy(&m->pos, func_001FA898_r(f) ? pts + (*(int *)path - 1) * 16 : pts);
+        data->timer = 0;
+        data->unkA8.i = 0;
+        data->unkBC.i = 0;
+        m->state = 1;
+        m->update_dist = 0xFF;
+        m->draw_dist = 0xFF;
+        data->voice = -1;
     }
-    switch (moby[0xBC]) {
+    switch (m->command) {
     case 0:
         if (on) {
             float far;
-            if ((*(short *)(data + 0xB8) != 0 && Hero_IsOnMoby(moby))
-                || (far = FastVecDist((D_0013E633 + 0xE9D), path + *(int *)path * 16),
-                    FastVecDist((D_0013E633 + 0xE9D), path + 0x10) < far)) {
-                if (*(int *)(data + 0xC8) == 0 && Hero_IsOnMoby(moby)) {
+            if ((data->unkB8 != 0 && Hero_IsOnMoby(moby))
+                || (far = FastVecDist(&((Hero *)(D_0013E633 + 0xE1D))->motion.pos, path + *(int *)path * 16),
+                    FastVecDist(&((Hero *)(D_0013E633 + 0xE1D))->motion.pos, path + 0x10) < far)) {
+                if (data->unkC8 == 0 && Hero_IsOnMoby(moby)) {
                     HeroEnterMoveState(0x72, 1);
                 }
-                moby[0xBC] = 2;
-                (*(float *)((data) + (0xAC))) = -1.0f / func_001F9878((*(float *)((data) + (0xB0))) * 60.0f);
-                *(short *)(data + 0xB8) = 0;
+                m->command = 2;
+                data->unkAC = -1.0f / func_001F9878(data->unkB0 * 60.0f);
+                data->unkB8 = 0;
             }
         }
         break;
     case 1:
         if (on) {
             float near;
-            if ((*(short *)(data + 0xB8) != 0 && Hero_IsOnMoby(moby))
-                || (near = FastVecDist((D_0013E633 + 0xE9D), path + 0x10),
-                    FastVecDist((D_0013E633 + 0xE9D), path + *(int *)path * 16) < near)) {
-                if (*(int *)(data + 0xC8) == 0 && Hero_IsOnMoby(moby)) {
+            if ((data->unkB8 != 0 && Hero_IsOnMoby(moby))
+                || (near = FastVecDist(&((Hero *)(D_0013E633 + 0xE1D))->motion.pos, path + 0x10),
+                    FastVecDist(&((Hero *)(D_0013E633 + 0xE1D))->motion.pos, path + *(int *)path * 16) < near)) {
+                if (data->unkC8 == 0 && Hero_IsOnMoby(moby)) {
                     HeroEnterMoveState(0x72, 1);
                 }
                 Moby_PlaySound(1, 0, (int)moby);
-                moby[0xBC] = 2;
-                (*(float *)((data) + (0xAC))) = 1.0f / func_001F9878((*(float *)((data) + (0xB0))) * 60.0f);
-                *(short *)(data + 0xB8) = 0;
+                m->command = 2;
+                data->unkAC = 1.0f / func_001F9878(data->unkB0 * 60.0f);
+                data->unkB8 = 0;
             }
         }
         break;
     case 2:
-        if (*(short *)(data + 0xBA) != 0
-            || ((*(float *)((data) + (0xBC))) < 0.0f
-                && func_001F9D48((moby + 0x10), hero = (D_0013E633 + 0xE9D)) < 2.0f
-                && FastAbsF((*(float *)((hero -= 0x80) + (0x88))) - (*(float *)((moby) + (0x18)))) < 4.0f
-                && (*(float *)((moby) + (0x18))) - (*(float *)((hero) + (0x88))) > 1.0f)) {
+        if (data->timer != 0
+            || (data->unkBC.f < 0.0f
+                && func_001F9D48(&m->pos, &((Hero *)(D_0013E633 + 0xE1D))->motion.pos) < 2.0f
+                && FastAbsF(((Hero *)(D_0013E633 + 0xE1D))->motion.pos.f[2] - m->pos.z) < 4.0f
+                && m->pos.z - ((Hero *)(D_0013E633 + 0xE1D))->motion.pos.f[2] > 1.0f)) {
             int r;
-            if (*(short *)(data + 0xBA) == 0) {
-                *(short *)(data + 0xBA) = scale_ticks(30);
+            if (data->timer == 0) {
+                data->timer = scale_ticks(30);
             }
-            r = *(int *)(data + 0xC4);
-            *(int *)(data + 0xA8) = 0;
+            r = data->voice;
+            data->unkA8.i = 0;
             if (r != -1) {
                 unsigned char *s = (unsigned char *)(D_0013E633 + 0x1D) + r * 0x70;
                 if (*(unsigned char **)(s + 0x88) == moby && s[0x74] != 0) {
                     Sound_StopSlot(r);
                 }
             }
-            *(int *)(data + 0xC4) = -1;
+            data->voice = -1;
         } else {
             int i;
             float f20, t;
             char *q;
-            if (!Sound_IsPlaying(moby, *(int *)(data + 0xC4))) {
-                *(int *)(data + 0xC4) = Moby_PlaySound(0, 4, (int)moby);
+            if (!Sound_IsPlaying(moby, data->voice)) {
+                data->voice = Moby_PlaySound(0, 4, (int)moby);
             }
-            (*(float *)((data) + (0xA8))) += (*(float *)((data) + (0xAC))) * D_0015EE6C;
-            if (FastAbsF((*(float *)((data) + (0xA8)))) > FastAbsF((*(float *)((data) + (0xAC))))) {
-                (*(float *)((data) + (0xA8))) = (*(float *)((data) + (0xAC)));
+            data->unkA8.f += data->unkAC * D_0015EE6C;
+            if (FastAbsF(data->unkA8.f) > FastAbsF(data->unkAC)) {
+                data->unkA8.f = data->unkAC;
             }
-            (*(float *)((data) + (0xA4))) = (*(float *)((data) + (0xA4))) + (*(float *)((data) + (0xA8)));
-            if (0.5f < FastAbsF((*(float *)((data) + (0xA4))) - 0.5f)) {
+            data->unkA4 = data->unkA4 + data->unkA8.f;
+            if (0.5f < FastAbsF(data->unkA4 - 0.5f)) {
                 int r;
-                if (*(int *)(data + 0xC8) == 0 && Hero_IsOnMoby(moby)) {
+                if (data->unkC8 == 0 && Hero_IsOnMoby(moby)) {
                     HeroEnterMoveState(0, 1);
                 }
-                if (0.0f < (*(float *)((data) + (0xAC)))) {
-                    moby[0xBC] = 0;
-                    (*(float *)((data) + (0xA4))) = 1.0f;
+                if (0.0f < data->unkAC) {
+                    m->command = 0;
+                    data->unkA4 = 1.0f;
                 } else {
-                    moby[0xBC] = 1;
-                    (*(float *)((data) + (0xA4))) = 0.0f;
+                    m->command = 1;
+                    data->unkA4 = 0.0f;
                 }
                 Moby_PlaySound(2, 0, (int)moby);
-                *(int *)(data + 0xA8) = 0;
-                *(short *)(data + 0xBA) = scale_ticks(15);
-                r = *(int *)(data + 0xC4);
+                data->unkA8.i = 0;
+                data->timer = scale_ticks(15);
+                r = data->voice;
                 if (r != -1) {
                     unsigned char *s = (unsigned char *)(D_0013E633 + 0x1D) + r * 0x70;
                     if (*(unsigned char **)(s + 0x88) == moby && s[0x74] != 0) {
                         Sound_StopSlot(r);
                     }
                 }
-                *(int *)(data + 0xC4) = -1;
+                data->voice = -1;
             }
             f20 = IntToFloat(*(int *)path - 1);
-            i = func_001FA898_r(f20 * (*(float *)((data) + (0xA4))));
+            i = func_001FA898_r(f20 * data->unkA4);
             f20 = IntToFloat(*(int *)path - 1);
             t = IntToFloat(i);
-            f20 *= (*(float *)((data) + (0xA4)));
+            f20 *= data->unkA4;
             f20 -= t;
             if (i == *(int *)path - 1) {
-                qcopy((moby + 0x10), path + 0x10 + i * 16);
+                qcopy(&m->pos, path + 0x10 + i * 16);
             } else {
                 q = path + 0x10 + i * 16;
                 FastVecSub(tmp, path + 0x20 + i * 16, q);
                 FastVecScale(tmp, tmp, f20);
-                FastVecAdd((moby + 0x10), tmp, q);
+                FastVecAdd(&m->pos, tmp, q);
             }
-            (*(float *)((data) + (0xBC))) = (*(float *)((moby) + (0x18))) - orig[2];
+            data->unkBC.f = m->pos.z - orig[2];
         }
         break;
     }
-    FastVecSub(delta, (moby + 0x10), orig);
-    update_entity_matrix(data + 0x60, delta, moby + 0x40, moby + 0x40);
+    FastVecSub(delta, &m->pos, orig);
+    update_entity_matrix(data->matrix, delta, &m->rot, &m->rot);
     if (!Hero_IsOnMoby(moby)) {
-        if (2.0f < func_001F9D48((moby + 0x10), (D_0013E633 + 0xE9D))) {
-            if (*(short *)(data + 0xBA) == 0) {
-                *(short *)(data + 0xB8) = 1;
+        if (2.0f < func_001F9D48(&m->pos, &((Hero *)(D_0013E633 + 0xE1D))->motion.pos)) {
+            if (data->timer == 0) {
+                data->unkB8 = 1;
             }
         }
     }

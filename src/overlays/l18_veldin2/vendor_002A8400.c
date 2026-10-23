@@ -2970,37 +2970,38 @@ extern void func_L18_002F1C38(char *moby);
 
 /* State machine for the class 1355 moby: dispatches on moby state (0 init, 2 wander, 3 dive, 4 land). */
 void drek_fight_missile_update(char *moby) {
-    char *d = *(char **)(moby + 0x78);
-    if (((unsigned char *)moby)[0x20] != 4) {
-        *(float *)(moby + 0x40) = FastAddRots(*(float *)(moby + 0x40),
-                                  *(float *)&D_L18_001622A0 * 0.017453292f * D_0015EE6C);
+    struct Moby *m = (struct Moby *)moby;
+    char *missile_vars = (char *)m->pvars;
+    if (m->state != 4) {
+        m->rot.x = FastAddRots(m->rot.x,
+                               *(float *)&D_L18_001622A0 * 0.017453292f * D_0015EE6C);
     }
     if (D_L18_0015F6A8 == 2 && D_L18_0016D310 == 3) {
         DeleteMoby(moby);
         return;
     }
-    switch (((unsigned char *)moby)[0x20]) {
+    switch (m->state) {
     case 0: {
         float a = D_0015EE70;
         float b = D_0015EE6C;
-        *(float *)(d + 0x158) = a * 10.0f;
-        *(float *)(d + 0x154) = b * 12.566371f;
-        *(float *)(d + 0x150) = a * 3.1415927f;
-        *(float *)(d + 0x15C) = b * 10.0f;
-        *(float *)(d + 0x168) = random_angle_radians();
-        *(short *)(moby + 0x32) = 0xFF;
-        qcopy(d + 0x120, moby + 0x10);
-        *(float *)(d + 0x128) += 5.0f;
-        *(float *)(d + 0x128) = ProbeGroundHeight(d + 0x120, 0, 0.5f);
-        Moby1355_PickWanderPoint(moby, d + 0x110);
-        moby[0x20] = 1;
-        *(unsigned short *)(moby + 0x34) |= 1;
-        moby[0x31] = 0;
-        *(int *)(moby + 0x94) = 0;
+        *(float *)(missile_vars + 0x158) = a * 10.0f;
+        *(float *)(missile_vars + 0x154) = b * 12.566371f;
+        *(float *)(missile_vars + 0x150) = a * 3.1415927f;
+        *(float *)(missile_vars + 0x15C) = b * 10.0f;
+        *(float *)(missile_vars + 0x168) = random_angle_radians();
+        m->draw_dist = 0xFF;
+        qcopy(missile_vars + 0x120, &m->pos);
+        *(float *)(missile_vars + 0x128) += 5.0f;
+        *(float *)(missile_vars + 0x128) = ProbeGroundHeight((void *)(missile_vars + 0x120), 0, 0.5f);
+        Moby1355_PickWanderPoint(moby, missile_vars + 0x110);
+        m->state = 1;
+        m->flags |= 1;
+        m->visible = 0;
+        m->collision = 0;
         break;
     }
     case 2: {
-        char *p = d + 0x110;
+        char *p = missile_vars + 0x110;
         if (Moby1355_SteerStep(moby, (float *)p)) {
             Moby1355_PickWanderPoint(moby, p);
         }
@@ -3008,54 +3009,55 @@ void drek_fight_missile_update(char *moby) {
         if (random_integer_below(*(int *)&D_L18_001622C4)) {
             return;
         }
-        moby[0x20] = 3;
-        *(float *)(d + 0x130) = FastCos(*(float *)(moby + 0x48)) * (*(float *)&D_L18_001622A4 * D_0015EE6C);
-        *(float *)(d + 0x134) = FastSin(*(float *)(moby + 0x48)) * (*(float *)&D_L18_001622A4 * D_0015EE6C);
-        *(float *)(d + 0x138) = *(float *)(d + 0x144);
-        *(int *)(d + 0x14C) = 0;
+        m->state = 3;
+        *(float *)(missile_vars + 0x130) = FastCos(m->rot.z) * (*(float *)&D_L18_001622A4 * D_0015EE6C);
+        *(float *)(missile_vars + 0x134) = FastSin(m->rot.z) * (*(float *)&D_L18_001622A4 * D_0015EE6C);
+        *(float *)(missile_vars + 0x138) = *(float *)(missile_vars + 0x144);
+        *(int *)(missile_vars + 0x14C) = 0;
         break;
     }
     case 3: {
         float v[4];
         float w[4];
-        FastVecSub(v, d + 0x120, moby + 0x10);
+        FastVecSub(v, missile_vars + 0x120, (void *)&m->pos);
         func_L00_001FF4B0(v, v, *(float *)&D_L18_001622A8 * D_0015EE6C);
-        ApproachValue((float *)(d + 0x14C), 1.0f, D_0015EE6C);
-        func_001F9C08(v, d + 0x130, v, *(float *)(d + 0x14C));
-        FastVecAdd(moby + 0x10, moby + 0x10, v);
-        *(float *)(moby + 0x48) = func_L00_001FF860(v[0], v[1]);
-        *(float *)(moby + 0x44) = -func_L00_001FF860(func_001F9CE8(v), v[2]);
-        func_L00_001FF4B0(w, moby + 0xC0, 1.0f);
-        FastVecAdd(w, w, moby + 0x10);
+        ApproachValue((float *)(missile_vars + 0x14C), 1.0f, D_0015EE6C);
+        func_001F9C08(v, missile_vars + 0x130, v, *(float *)(missile_vars + 0x14C));
+        FastVecAdd((void *)&m->pos, (void *)&m->pos, v);
+        m->rot.z = func_L00_001FF860(v[0], v[1]);
+        m->rot.y = -func_L00_001FF860(func_001F9CE8(v), v[2]);
+        func_L00_001FF4B0(w, (void *)&m->rot_row0, 1.0f);
+        FastVecAdd(w, w, (void *)&m->pos);
         Moby1355_RecordTrail(moby);
-        if (w[2] < *(float *)(d + 0x128)) {
+        if (w[2] < *(float *)(missile_vars + 0x128)) {
             float t;
             func_0022ED80_2F0F78(1, 0, (int)moby);
-            ((unsigned char *)moby)[0x20] = 4;
-            *(int *)(d + 0x160) = scale_ticks(0x5A);
-            t = *(float *)(d + 0x128) + 0.7f;
-            if (*(float *)(moby + 0x18) < t) {
-                *(float *)(moby + 0x18) = t;
+            m->state = 4;
+            *(int *)(missile_vars + 0x160) = scale_ticks(0x5A);
+            t = *(float *)(missile_vars + 0x128) + 0.7f;
+            if (m->pos.z < t) {
+                m->pos.z = t;
             }
         }
         break;
     }
     case 4: {
-        float x = *(float *)(moby + 0x44);
+        float x = m->rot.y;
         if (x < 0.87266463f) {
             x = 0.87266463f;
         }
-        StepAngleToward((float *)(moby + 0x44), 0, x, D_0015EE6C * 12.566371f);
-        if (func_001F9908((int *)(d + 0x160))) {
+        StepAngleToward((float *)&m->rot.y, 0, x, D_0015EE6C * 12.566371f);
+        if (func_001F9908((int *)(missile_vars + 0x160))) {
             int i;
-            char *pos = moby + 0x10;
-            moby[0x20] = 2;
-            *(short *)(d + 0x164) = 0;
-            func_L00_0025F4A8(*(void **)(d + 0x16C), &D_L18_0015F660, pos, 1.0f, 1.0f, 10, 3, 16, 1.5f, 0.5f, 9.0f, 1.0f, 2, 5.0f, 0, 0, -1, 0);
+            char *pos = (char *)&m->pos;
+            m->state = 2;
+            *(short *)(missile_vars + 0x164) = 0;
+            func_L00_0025F4A8(*(void **)(missile_vars + 0x16C), &D_L18_0015F660, pos, 1.0f, 1.0f, 10, 3, 16,
+                              1.5f, 0.5f, 9.0f, 1.0f, 2, 5.0f, 0, 0, -1, 0);
             qcopy(pos, D_L18_00167840);
-            *(float *)(moby + 0x18) += 20.0f;
+            m->pos.z += 20.0f;
             for (i = 0; (float)i < 4.0f; i++) {
-                qcopy(d + 0x10 + i * 16, pos);
+                qcopy(missile_vars + 0x10 + i * 16, pos);
             }
         } else {
             Moby1355_RecordTrail(moby);
