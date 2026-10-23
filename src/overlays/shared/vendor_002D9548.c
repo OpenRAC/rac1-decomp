@@ -2694,7 +2694,7 @@ extern float func_L00_0025CE58(float *, float *, float, float, float, float);
 extern float func_001FA790(float, float);
 
 /* Moby class 1021 update (levels 6, 17, 18): a door ring of seven petals; opens when its trigger fires, eases its angle open and shut. */
-void DoorRingUpdate(Moby *m) {
+void iris_door_update(Moby *m) {
     Vars_2F6330 *d = (Vars_2F6330 *)(*(void **)&m->pvars);
     float tmp[4];
     int i;
@@ -3020,7 +3020,7 @@ struct VoiceSlot {
 };
 
 // UpdateMoby_1040: spins up, rotates and tracks a slot, deleting itself when its target is gone.
-void Moby1040Update(char *m) {
+void energy_sphere_update(char *m) {
     enum {
         ENERGY_SPHERE_INITIALIZE = 0,
         ENERGY_SPHERE_UPDATE_ROTATION = 1
