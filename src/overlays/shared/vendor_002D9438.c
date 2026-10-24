@@ -114,7 +114,7 @@ void DropMobyToGround(D9668Moby *m) {
     }
     if (hit) {
         if (D_L00_00173F40[6] != 0) {
-            if (IsMobyClass500To540((void *)D_L00_00173F40[6])) {
+            if (is_moby_in_class_range_500_to_540((void *)D_L00_00173F40[6])) {
                 m->x = d->x = ((D9668Moby *)D_L00_00173F40[6])->x;
                 m->y = d->y = ((D9668Moby *)D_L00_00173F40[6])->y;
                 d->z = (m->z = *(float *)&D_L00_00173F40[10]) + 0.5f;
@@ -251,7 +251,7 @@ extern void func_002156E0(void *, void *, float, void *);
 extern void func_L00_001FF4B0(void *, void *, float);
 extern void func_001F9BD8(void *, void *, void *);
 
-void func_L00_002D9D00(char *m, float *out, int i) {
+void compute_nanotech_ball_slot_position(char *m, float *out, int i) {
     Vz v;
     char *pv = *(char **)(m + 0x78);
     char *o;
@@ -268,7 +268,7 @@ extern short D_L00_00161AC0;
 extern short D_L00_00161AE4;
 
 /* Applies two transforms to each of eight 16-byte vectors. */
-void func_L00_002D9DB8(void) {
+void update_nanotech_ball_slot_offsets(void) {
     int i;
     for (i = 0; i < 8; i++) {
         build_look_at_matrix(D_L00_001E3FF0 + i * 16, D_L00_001E3FF0 + i * 16, *(float *)&D_L00_00161AC0, D_L00_001E4070 + i * 16);
@@ -279,7 +279,7 @@ extern char D_0013E633[] NOT_SDA;
 extern int func_L00_001EFFF0(void *, void *, int, int, int);
 
 // tests a sightline from a moby (raised 0.5) to the player's position (raised 0.5); true if clear
-int HasLineOfSightToHero(char *m) {
+int is_nanotech_ball_target_line_clear(char *m) {
     Vz a, b;
     qcopy(&a, m + 0x10);
     a.z += 0.5f;
@@ -908,7 +908,7 @@ typedef struct { char pad[0x2084]; int f; int pad2; int mode; } G;
 extern G D_0013F450 NOT_SDA;
 
 /* tests a state value against a set of cases */
-int SuckCannon_IsBlockedByHeroMode(void) {
+int is_suck_cannon_suction_blocked_by_hero_state(void) {
     G *g = &D_0013F450;
     int r = 1;
     switch (g->mode) {
@@ -930,7 +930,7 @@ extern void func_001FA218(void *, void *);
 extern void func_001FA460(void *, void *);
 extern void func_001FA480(void *, void *);
 extern void func_0020EEE8(void *);
-void CarriedMoby_AttachMatrix(char *a, char *b, void *c) {
+void compose_moby_rotation_with_euler_offset(char *a, char *b, void *c) {
     V t0, t1, t2;
     func_001FA218(&t0, c);
     func_001FA460(&t1, a + 0xC0);
@@ -984,7 +984,7 @@ int process_suck_cannon_suction_candidate(u8 *p, void *q, void *m_, void *r_, vo
     }
     return ret;
 }
-int CallClassHookC(char *a) {
+int dispatch_suck_cannon_suction_cancel(char *a) {
     int (*fn)(char *) = *(int (**)(char *))(*(char **)(*(char **)(a + 0x24) + 0x2C) + 0xC);
     if (fn != 0) {
         return fn(a);
@@ -992,7 +992,7 @@ int CallClassHookC(char *a) {
     return 1;
 }
 /* The hook places the moby at b (the cannon's muzzle): retail leaves a1 as it came. */
-int CallClassHook4(char *a, void *b) {
+int invoke_optional_moby_callback_or_return_one(char *a, void *b) {
     int (*fn)(char *, void *) = *(int (**)(char *, void *))(*(char **)(*(char **)(a + 0x24) + 0x2C) + 0x4);
     if (fn != 0) {
         return fn(a, b);
@@ -1072,7 +1072,7 @@ void update_suck_cannon_suction(u8 *p, void *q)
             r = func_L00_002DCD40_DB810(m);
             if (r != 0 && r->h68 < 6) {
                 d = func_001F9D48(p + 0x10, &m->pos);
-                if (d < 15.0f && !SuckCannon_IsBlockedByHeroMode() &&
+                if (d < 15.0f && !is_suck_cannon_suction_blocked_by_hero_state() &&
                     ((n = (&D_0013F450_DB810)->i2078), (&D_0013E620)->b9 == 0 ? n < 5 : n < 10)) {
                     if (r->h68 < 3) {
                         thr = 0.043864909559488297f;
@@ -1308,15 +1308,15 @@ void suckcannon_update(M40 *self) {
     case 1:
         if (self->anim_flags & 2) MobyBlendAnimation(self,1,0,scale_ticks(0));
         func_001F9908_r(&data->cooldown);
-        if (data->cooldown == 0) Hero_ClearPendingModuleAnim();
+        if (data->cooldown == 0) cancel_hero_item_animation();
         if (hero40.count > 0) {
             MobyBlendAnimation(self,6,0,scale_ticks(4));
             self->state = 4;
             break;
         }
         if ((input40.held & hero40.fire_mask) && data->cooldown==0 && hero40.locked==0 &&
-            hero40.disabled==0 && scale_ticks(15) < hero40.cooldown && SuckCannon_IsBlockedByHeroMode()==0) {
-            Hero_StartModuleAnim();
+            hero40.disabled==0 && scale_ticks(15) < hero40.cooldown && is_suck_cannon_suction_blocked_by_hero_state()==0) {
+            start_equipped_item_animation();
             data->sound = Moby_PlaySound(2,4,(int)self);
             data->cooldown = scale_ticks(10);
             stats = (Stats40 *)(D_0014171B + 0x65);
@@ -1329,14 +1329,14 @@ void suckcannon_update(M40 *self) {
         break;
     case 2:
         if (self->anim_flags & 2) MobyBlendAnimation(self,3,0,scale_ticks(5));
-        if (SuckCannon_IsBlockedByHeroMode()!=0 || hero40.disabled || hero40.locked) {
+        if (is_suck_cannon_suction_blocked_by_hero_state()!=0 || hero40.disabled || hero40.locked) {
             sound = data->sound;
             if (sound!=-1) {
                 Sound40 *s=(Sound40 *)(D_0013E633+0x1D)+sound;
                 if (s[1].owner==self && s[1].active) Sound_StopSlot(sound);
             }
             data->sound=-1;
-            Hero_ClearPendingModuleAnim();
+            cancel_hero_item_animation();
             hero40.firing=0;
             if (hero40.count>0) {
                 MobyBlendAnimation(self,6,0,scale_ticks(4));
@@ -1359,9 +1359,9 @@ void suckcannon_update(M40 *self) {
             MobyBlendAnimation(self,3,0,scale_ticks(5));
         func_001F9908_r(&data->cooldown);
         if (!(hero40.sucking || (hero40.count < (order40.gold==0?5:10) &&
-            SuckCannon_IsBlockedByHeroMode()==0 && ((input40.held&hero40.fire_mask) || data->cooldown) &&
+            is_suck_cannon_suction_blocked_by_hero_state()==0 && ((input40.held&hero40.fire_mask) || data->cooldown) &&
             !hero40.disabled && !hero40.locked))) {
-            Hero_ClearPendingModuleAnim();
+            cancel_hero_item_animation();
             sound=data->sound;
             if(sound!=-1) {
                 Sound40 *s=(Sound40 *)(D_0013E633+0x1D)+sound;
@@ -1389,10 +1389,10 @@ void suckcannon_update(M40 *self) {
         break;
     case 4:
         func_001F9908_r(&data->cooldown);
-        if (!data->cooldown) Hero_ClearPendingModuleAnim();
+        if (!data->cooldown) cancel_hero_item_animation();
         if (self->anim_flags&2) {
             MobyBlendAnimation(self,6,0,scale_ticks(0));
-            Hero_ClearPendingModuleAnim();
+            cancel_hero_item_animation();
         }
         if (!(input40.held&hero40.fire_mask)) data->blocked=0;
         if (func_001F9908_r(&data->target_timer) ||
@@ -1434,7 +1434,7 @@ void suckcannon_update(M40 *self) {
             (input40.held&hero40.fire_mask) && hero40.move_mode!=7 && hero40.move_mode!=3 &&
             hero40.move_mode!=18 && hero40.move_mode!=17 && !hero40.disabled && !hero40.locked &&
             scale_ticks(22)<hero40.cooldown) {
-            Hero_StartModuleAnim();
+            start_equipped_item_animation();
             MobyBlendAnimation(self,5,0,scale_ticks(2));
             hero40.firing=2;
             data->cooldown=scale_ticks(25);
@@ -1538,7 +1538,7 @@ void suckcannon_update(M40 *self) {
                 }
                 if(best) data->target=best;
             }
-            CarriedMoby_AttachMatrix((char *)self,(char *)stored,fire_tuning40);
+            compose_moby_rotation_with_euler_offset((char *)self,(char *)stored,fire_tuning40);
             if(stored->cls->handlers->fire) stored->cls->handlers->fire(stored,&work.fire.velocity,data->target,data->target_height);
             hero40.count--;
             if(hero40.count>0) {
@@ -1575,7 +1575,7 @@ typedef struct { char pad[0x10]; Fn2DCD40 f10; } Cb2DCD40;
 typedef struct { char pad[0x2C]; Cb2DCD40 *f2C; } Sub2DCD40;
 typedef struct { char pad0[0x20]; unsigned char f20; char pad1[3]; Sub2DCD40 *f24; char pad2[0x50]; int f78; } Obj2DCD40;
 
-char *Moby_GetClassRecord(char *p) {
+char *get_moby_suck_cannon_record(char *p) {
     Obj2DCD40 *o = (Obj2DCD40 *)p;
     Fn2DCD40 f;
     if (o == 0 || o->f20 == 0xFE) return 0;
@@ -1671,12 +1671,12 @@ extern void func_00213DE0(void *, int, int, int);
 
 /* Place a moby at the given position under its owner, reset its owner's state to 4 and start the matching animation. Adapted from Lombyte (MIT) for PAL: overlays/shared/unclassified_002d7f88.c, FUN_L00_002dbb20. */
 int store_moby_in_suck_cannon(unsigned char *m, void *v) {
-    unsigned char *o = (unsigned char *)Moby_GetClassRecord((char *)m);
+    unsigned char *o = (unsigned char *)get_moby_suck_cannon_record((char *)m);
     int g;
     if (o == 0) return 0;
     if (m != 0 && m[0x20] != 0xFE && m[0x20] != 0xFD && *(short *)(o + 0x68) != 8) {
         qcopy(m + 0x10, v);
-        CarriedMoby_AttachMatrix(*(char **)(o + 0x60), (char *)m, &D_L00_00161BF0);
+        compose_moby_rotation_with_euler_offset(*(char **)(o + 0x60), (char *)m, &D_L00_00161BF0);
         func_0020EEE8(m);
         g = *(int *)(D_0013E633 + 0x1EAD);
         if (g != 0 && *(short *)(g + 0xA6) == 0x351) {
@@ -1707,7 +1707,7 @@ int launch_suck_cannon_projectile(char *m, float *pos, char *other, float f) {
     char *e;
     short s;
 
-    d = Moby_GetClassRecord(m);
+    d = get_moby_suck_cannon_record(m);
     if (d == 0) return 0;
     if (m != 0 && (unsigned char)m[0x20] != 0xFE && (unsigned char)m[0x20] != 0xFD
         && *(short *)(d + 0x68) != 8) {
@@ -1747,7 +1747,7 @@ int launch_suck_cannon_projectile(char *m, float *pos, char *other, float f) {
 }
 /* Frees a moby's state slot and returns 1 when it is in state 4. Adapted from Lombyte (MIT) for PAL: overlays/shared/unclassified_002d7f88.c, FUN_L00_002dbe20. */
 int cancel_suck_cannon_suction(char *m) {
-    char *s = Moby_GetClassRecord(m);
+    char *s = get_moby_suck_cannon_record(m);
     int st;
     if (s == 0) return 0;
     if (m == 0) return 0;
@@ -1810,7 +1810,7 @@ extern int func_L00_001F2BE8_DD3D8(float, void *, int, void *, void *) __asm__("
 extern void func_L00_0025BA50(void *, void *, void *, int, int, int, int, int, float, float, float);
 
 /* Explosion burst for a moby: debris sprays, sparks, coloured flashes, camera shake and an optional damage area. */
-void SpawnExplosionBurst(char *self, char *q) {
+void spawn_suck_cannon_projectile_explosion(char *self, char *q) {
     B50_DD3D8 blk;
     float a[4];
     float b[4];
@@ -1903,8 +1903,8 @@ void SpawnExplosionBurst(char *self, char *q) {
             float big;
             t1 = D_L00_001EA480;
             t2 = D_L00_001EA498;
-            A = PermuteColorChannels(t1.v[random_integer_below(6)], (&D_0013E620)->b9);
-            B = PermuteColorChannels(t2.v[random_integer_below(6)], (&D_0013E620)->b9);
+            A = swap_packed_color_channels(t1.v[random_integer_below(6)], (&D_0013E620)->b9);
+            B = swap_packed_color_channels(t2.v[random_integer_below(6)], (&D_0013E620)->b9);
             big = f22 * 400000.0f;
             r1 = rand_range(scale_ticks(15), scale_ticks(20));
             r2 = rand_range(scale_ticks(25), scale_ticks(30));
@@ -1917,13 +1917,13 @@ void SpawnExplosionBurst(char *self, char *q) {
         r0 = 0x7F;
         g0 = 0x20;
         b0 = 0;
-        PermuteChannels(&r0, &g0, &b0, (&D_0013E620)->b9);
+        swap_color_channel_words(&r0, &g0, &b0, (&D_0013E620)->b9);
         func_L00_002E0CB8_DD3D8(s4, self, self + 0x10, b, scale_ticks(24), r0, g0, b0, 0x20);
     }
     r1 = 0x7F;
     g1 = 0x3F;
     b1 = 0;
-    PermuteChannels(&r1, &g1, &b1, (&D_0013E620)->b9);
+    swap_color_channel_words(&r1, &g1, &b1, (&D_0013E620)->b9);
     {
         float s = f22 * 4.0f;
         func_L00_002E0CB8_DD3D8(s, self, self + 0x10, b, scale_ticks(20), r1, g1, b1, 0x30);
@@ -1931,7 +1931,7 @@ void SpawnExplosionBurst(char *self, char *q) {
     r1 = 0x60;
     g1 = 0x10;
     b1 = 0;
-    PermuteChannels(&r1, &g1, &b1, (&D_0013E620)->b9);
+    swap_color_channel_words(&r1, &g1, &b1, (&D_0013E620)->b9);
     {
         float s = f22 * 3.5f;
         func_L00_002E0CB8_DD3D8(s, self, self + 0x10, b, scale_ticks(27), r1, g1, b1, 0x40);
@@ -1939,7 +1939,7 @@ void SpawnExplosionBurst(char *self, char *q) {
     r1 = 0x20;
     g1 = 0;
     b1 = 0;
-    PermuteChannels(&r1, &g1, &b1, (&D_0013E620)->b9);
+    swap_color_channel_words(&r1, &g1, &b1, (&D_0013E620)->b9);
     {
         float s = f22 * 3.0f;
         func_L00_002E0CB8_DD3D8(s, self, self + 0x10, b, scale_ticks(29), r1, g1, b1, 0x20);
@@ -1961,7 +1961,7 @@ extern void func_L00_002DD3D8(char *, char *);
 void EndCarriedMoby(char *p, char *q, int flag) {
     Mtx2DDDE8 m;
     void (*fn)(char *);
-    if (flag) SpawnExplosionBurst(p, q);
+    if (flag) spawn_suck_cannon_projectile_explosion(p, q);
     *(int *)(p + 0x98) = *(int *)(q + 0x84);
     qzero(p + 0x40);
     func_001FA218(&m, p + 0x40);
@@ -2613,16 +2613,16 @@ void GroupMoby_DrawBillboards(u8 *p) {
     if (D_0015EE84 == 0 || D_0015EE84 == 0x12) {
         s = 1.0f;
     }
-    GroupMobyIter_Start(it, p[0x21], 0, 0);
+    get_first_moby_in_group(it, p[0x21], 0, 0);
     while (it[0] != 0) {
         u8 *q = it[0];
         if (q[0x31] != 0) {
             void **m = *(void ***)(q + 0x78);
             if (*(s16 *)(q + 0xA6) == *(s16 *)(p + 0xA6)) {
-                DrawBillboardAt(q + 0x10, m[1], s, 0.5f);
+                draw_offset_textured_effect_quad(q + 0x10, m[1], s, 0.5f);
             }
         }
-        GroupMobyIter_Next(it, it[0], 0, 0);
+        get_next_moby_in_group(it, it[0], 0, 0);
     }
 }
 extern short D_L00_0015F6B0;
@@ -2633,7 +2633,7 @@ void func_L00_002E0888_E0958(M09 *) __asm__("func_L00_002E0888");
 void func_001F49B0_E0958(CB09, M09 *) __asm__("func_001F49B0");
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002d7f88.c, FUN_L00_002df4a8. */
-void PulsingColor_QueueDraw(M09 *m) {
+void enqueue_red_orb_group_draw_if_cache_changed(M09 *m) {
     u8 b;
     s32 v;
     S09 *s;
@@ -2675,7 +2675,7 @@ void red_orb_update(char *m) {
         b = (c >> 16) & 0xFF; g = (c >> 8) & 0xFF; r = c & 0xFF;
         hi = 0x38; if (D_0015EE84_m == 0 || D_0015EE84_m == 0x12) hi = 0x20;
         *(int *)(p + 4) = (hi << 24) | (b << 16) | (g << 8) | r;
-        PulsingColor_QueueDraw(m);
+        enqueue_red_orb_group_draw_if_cache_changed(m);
         func_L00_00251328(m, c & 0xFF, (c >> 16) & 0xFF, (unsigned)c >> 24);
         break;
     }

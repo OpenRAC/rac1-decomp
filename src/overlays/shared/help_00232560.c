@@ -89,7 +89,7 @@ int lookup_hero_slot3_animation_key(int key, int *out) {
    as the last func_00213DE0 argument. The pair are
    two scalars next to the spilled ID, which gives retail's 0x80 frame;
    the block pointer is re-formed for each stage, as retail does. */
-void HeroSetPairedSequences(int id, int arg, float t) {
+void blend_hero_slot3_mapped_animation_pair(int id, int arg, float t) {
     char *base = D_0013F450;
     char *blk2;
     char *blk3;
@@ -155,7 +155,7 @@ int select_hero_slot3_animation_pair(int id, int *key, int *arg) {
     SeqEntry *e;
 
     count = 0;
-    want = Hero_ResolveAnimId(id);
+    want = return_hero_animation_id_unchanged(id);
     if (hero_slot_item_id(3) == 2) {
         tbl = D_L00_0017BCF0;
     } else if (hero_slot_item_id(3) == 3) {
@@ -213,7 +213,7 @@ void sync_hero_slot3_animation_speed(void) {
 }
 extern short *D_001416CC;
 /* searches a terminated key/value list */
-int LookupShortKeyPair(int key, int *out) {
+int lookup_s16_pair_value(int key, int *out) {
     short *base = D_001416CC;
     short *p;
     if (!base) return 0;
@@ -240,14 +240,14 @@ extern int func_001F9850(int);
    starts the sequence func_L00_00232A18 picks for A0; if none is ready and
    the animation has a previous sequence (+0x53), restarts sequence 0.
    Retail reloads the animation pointer at each use. */
-void HeroPlayMappedSequence(int a0, int a1, float a2) {
+void blend_hero_mapped_moby_animation(int a0, int a1, float a2) {
     char *base = D_0013F450;
     int buf[4];
     int ok;
 
     if (*(void **)(base + 0x2278) != 0) {
         if (*(int *)(base + 0x227C) != 0) {
-            ok = LookupShortKeyPair(a0, buf);
+            ok = lookup_s16_pair_value(a0, buf);
             if (ok != 0) {
                 MobyBlendAnimation(*(void **)(base + 0x2278), buf[0], a1, (int)a2);
             } else if (*(unsigned char *)(*(char **)(base + 0x2278) + 0x53) != 0) {
@@ -264,7 +264,7 @@ void sync_hero_mapped_moby_animation_speed(void) {
     int buf[4];
 
     if (*(void **)(base + 0x2278) != 0 && *(int *)(base + 0x227C) != 0
-        && LookupShortKeyPair(*(unsigned char *)(*(char **)(base + 0x2080) + 0x53), buf) != 0) {
+        && lookup_s16_pair_value(*(unsigned char *)(*(char **)(base + 0x2080) + 0x53), buf) != 0) {
         *(float *)(*(char **)(base + 0x2278) + 0x58) = *(float *)(base + 0xA90);
     }
 }
@@ -383,11 +383,11 @@ void set_hero_animation(int a0, int a1, float t) {
         t = *(int *)((char *)&D_L00_0015F7C0 + *(int *)(g3 + 0xAA0) * 4);
     }
     if (*(unsigned char *)(g3 + 0x20A4) == 0) {
-        HeroSetPairedSequences(a0, a1, t);
+        blend_hero_slot3_mapped_animation_pair(a0, a1, t);
     }
     func_L00_00232A00();
     if (*(int *)(g3 + 0x2278) != 0) {
-        HeroPlayMappedSequence(a0, a1, t);
+        blend_hero_mapped_moby_animation(a0, a1, t);
     }
 }
 
@@ -606,7 +606,7 @@ f32 predict_hero_trajectory_intercept_time(f32 a, f32 b, f32 c) {
             t[2] -= ((a * a + a) * 0.5f) * b;
             FastVecAdd(t, t, &(&D_0013F450_33410)->v80);
             v.q = (&D_0013F450_33410)->v80.q;
-            Vec4_AdjustNegativeComponents(&v, t);
+            clip_negative_segment_endpoint_xyz(&v, t);
             qcopy(&v, &(&D_0013F450_33410)->v80);
             if (func_L00_001EFFF0(&v, t, 0x24, 0, 0) != 0) {
                 if (func_L00_002345B0_33410((f32 *)coll_hit_normal) <= 0.87266463f) {
@@ -615,7 +615,7 @@ f32 predict_hero_trajectory_intercept_time(f32 a, f32 b, f32 c) {
             }
         }
         if (c > 0.0f) {
-            if (SolveQuadratic(&o[0], &o[1], b * -0.5f, (&D_0013F450_33410)->vE0.f[2] - b * -0.5f, (&D_0013F450_33410)->v80.f[2] - c) > 0
+            if (solve_quadratic_equation(&o[0], &o[1], b * -0.5f, (&D_0013F450_33410)->vE0.f[2] - b * -0.5f, (&D_0013F450_33410)->v80.f[2] - c) > 0
                 && o[0] > 0.0f) {
                 return o[0];
             }
@@ -630,14 +630,14 @@ f32 predict_hero_trajectory_intercept_time(f32 a, f32 b, f32 c) {
         FastVecAdd(t, &t1, t);
         FastVecAdd(t, &(&D_0013F450_33410)->v80, t);
         v2.q = (&D_0013F450_33410)->v80.q;
-        Vec4_AdjustNegativeComponents(&v2, t);
+        clip_negative_segment_endpoint_xyz(&v2, t);
         if (func_L00_001EFFF0(&(&D_0013F450_33410)->v80, t, 0x24, 0, 0) != 0) {
             f32 nb;
             nb = b * -0.5f;
             z = func_L00_002342F8_33410(&(&D_0013F450_33410)->vE0) - nb;
             x = func_L00_002342F8_33410(&(&D_0013F450_33410)->v80);
             y = func_L00_002342F8_33410(&D_L00_00173F60);
-            if (SolveQuadratic(&o[2], &o[3], nb, z, x - y) > 0
+            if (solve_quadratic_equation(&o[2], &o[3], nb, z, x - y) > 0
                 && o[2] > 0.0f) {
                 return o[2];
             }
@@ -655,14 +655,14 @@ f32 predict_hero_trajectory_intercept_time(f32 a, f32 b, f32 c) {
         FastVecAdd(t, &t1, t);
         FastVecAdd(t, &(&D_0013F450_33410)->v80, t);
         v2.q = (&D_0013F450_33410)->v80.q;
-        Vec4_AdjustNegativeComponents(&v2, t);
+        clip_negative_segment_endpoint_xyz(&v2, t);
         if (func_L00_001EFFF0(&(&D_0013F450_33410)->v80, t, 0x24, 0, 0) != 0) {
             f32 nb;
             nb = b * -0.5f;
             z = func_L00_002342F8_33410(&(&D_0013F450_33410)->vE0) - nb;
             x = func_L00_002342F8_33410(&(&D_0013F450_33410)->v80);
             y = func_L00_002342F8_33410(&D_L00_00173F60);
-            if (SolveQuadratic(&o[4], &o[5], nb, z, x - y) > 0
+            if (solve_quadratic_equation(&o[4], &o[5], nb, z, x - y) > 0
                 && o[4] > 0.0f) {
                 return o[4];
             }
@@ -785,7 +785,7 @@ void HeroClearObjectFlags(void) {
 }
 /* Sets bit 0 of the flags (0x34) of the objects at D_0013F450 + 0x2080
    and, when present, +0x1620. */
-void HeroSetMainObjectFlags(void) {
+void set_hero_moby_flag_bit0(void) {
     char *base = D_0013F450;
     char *obj;
 
@@ -797,7 +797,7 @@ void HeroSetMainObjectFlags(void) {
 }
 /* Clears what func_L00_00233A90 sets: bit 0 of the flags (0x34) of the
    objects at D_0013F450 + 0x2080 and, when present, +0x1620. */
-void HeroClearMainObjectFlags(void) {
+void clear_hero_moby_flag_bit0(void) {
     char *base = D_0013F450;
     char *obj;
 
@@ -835,7 +835,7 @@ typedef struct {
    then back about z. The rotation source is named from the symbol and
    the base after it, which gives retail's base derived from that
    address. */
-float HeroGetHeading(void) {
+float compute_hero_ground_aligned_heading(void) {
     char *base;
     float m[16] __attribute__((aligned(16)));
     float dir[4] __attribute__((aligned(16)));
@@ -924,7 +924,7 @@ extern void func_001F9BD8(void *, void *, void *);
 /* The polar form of func_L00_00233EE0: sets OUT to (R cos ANGLE,
    R sin ANGLE, Z) via func_001F9F90 / func_001F9FA8, then transforms it
    by the matrix at D_0013F450 and adds the vector at D_0013F450 + 0x80. */
-void PolarToWorldPoint(float *out, float r, float angle, float z) {
+void transform_hero_polar_offset_to_world(float *out, float r, float angle, float z) {
     char *base;
 
     out[0] = FastCos(angle) * r;
@@ -940,7 +940,7 @@ extern void func_001F9BD8(void *, void *, void *);
 /* Sets OUT to the point (X, Y, Z, 0) (cleared first by func_001F9BC0),
    then transforms it by the matrix at D_0013F450 and adds the vector at
    D_0013F450 + 0x80. */
-void LocalToWorldPoint(float *out, float x, float y, float z) {
+void transform_hero_local_offset_to_world(float *out, float x, float y, float z) {
     char *base;
 
     clear_u64_value(out);
@@ -955,7 +955,7 @@ void LocalToWorldPoint(float *out, float x, float y, float z) {
 void func_L00_00233D50(float *dst, float *src, float h);
 
 /* Moves SRC up by H along the hero's surface normal into DST: HeroMoveDownAlongNormal with the distance negated. */
-void HeroMoveUpAlongNormal(float *dst, float *src, float h) {
+void offset_hero_position_against_gravity(float *dst, float *src, float h) {
     HeroMoveDownAlongNormal(dst, src, -h);
 }
 
@@ -964,7 +964,7 @@ void HeroMoveUpAlongNormal(float *dst, float *src, float h) {
    (R cos, R sin) added to a copy; in modes 1 and 2 as (R, 0, 0) taken
    through the rotation func_001FA218 builds from its angles (+0x40). The
    switch gives retail's case tree. */
-void HeroMoveAlongHeading(float *dst, float *src, float r) {
+void add_hero_forward_offset(float *dst, float *src, float r) {
     char *base = D_0013F450;
     float m[16] __attribute__((aligned(16)));
     float off[4] __attribute__((aligned(16)));
@@ -1121,7 +1121,7 @@ extern void func_L00_001FF500(float *, float *, float);
    xy to length Z (func_L00_001FF500): in view mode 0 (D_0013F450 +
    0x20B3) directly, in modes 1 and 2 between the transforms by the
    matrices at +0x40 and +0x0. The switch gives retail's case tree. */
-void HeroScalePointXY(float *dst, float *src, float z) {
+void set_gravity_relative_vector_length_xy(float *dst, float *src, float z) {
     char *base = D_0013F450;
 
     switch (*(unsigned char *)(base + 0x20B3)) {
@@ -1178,7 +1178,7 @@ extern float func_L00_001FF860(float, float);
    (D_0013F450 + 0x20B3) V is first transformed by the matrix at +0x40,
    in an aligned stack copy; any other mode gives 0. The switch gives
    retail's case tree. */
-float ViewGetPitch(float *v) {
+float compute_gravity_relative_vector_inclination(float *v) {
     char *base = D_0013F450;
     float tmp[4] __attribute__((aligned(16)));
 
@@ -1243,7 +1243,7 @@ extern void func_L00_00222B80(int, int);
    state 0x65 (func_L00_00222B80). The copy goes to the symbol's address
    and the base is named after it, which gives retail's base derived back
    from the copy's address; the stores are in reverse. */
-void HeroSetTargetAndEnterMove(float *pos, int arg, float t) {
+void request_hero_target_pose(float *pos, int arg, float t) {
     char *base;
     int state;
 
@@ -1258,7 +1258,7 @@ void HeroSetTargetAndEnterMove(float *pos, int arg, float t) {
 }
 extern int D_001414D4;
 /* 1 when the word at 0x1414D4 is 101 or 102, 2 when it is 103, else 0 */
-int Level_GetSpecialMode(void) {
+int get_hero_target_pose_status(void) {
     switch (D_001414D4) {
     case 101:
     case 102:
@@ -1374,13 +1374,13 @@ void update_hero_attachment(void) {
                 v20.z -= -1.43f;
                 RotateWithMoby((int)((Hero *)D_0013F450)->moby, ((Hero *)D_0013F450)->unk360, &((Hero *)D_0013F450)->unk4D0, &((Hero *)D_0013F450)->motion.rot, &v30, &v40);
                 RotateWithMoby((int)((Hero *)D_0013F450)->moby, ((Hero *)D_0013F450)->unk360, &v20, &((Hero *)D_0013F450)->motion.rot, &v20, &v40);
-                RotateIntoMobySpace((int)((Hero *)D_0013F450)->moby, ((Hero *)D_0013F450)->unk360, &((Hero *)D_0013F450)->unk4D0, &((Hero *)D_0013F450)->motion.rot, &((Hero *)D_0013F450)->unk310, &v40);
-                RotateIntoMobySpace((int)((Hero *)D_0013F450)->moby, ((Hero *)D_0013F450)->unk360, &v20, &((Hero *)D_0013F450)->motion.rot, &((Hero *)D_0013F450)->unk330, &v40);
+                convert_pose_to_reference_local((int)((Hero *)D_0013F450)->moby, ((Hero *)D_0013F450)->unk360, &((Hero *)D_0013F450)->unk4D0, &((Hero *)D_0013F450)->motion.rot, &((Hero *)D_0013F450)->unk310, &v40);
+                convert_pose_to_reference_local((int)((Hero *)D_0013F450)->moby, ((Hero *)D_0013F450)->unk360, &v20, &((Hero *)D_0013F450)->motion.rot, &((Hero *)D_0013F450)->unk330, &v40);
             } else if (plat->i3C & 4) {
-                RotateIntoMobySpace((int)((Hero *)D_0013F450)->moby, ((Hero *)D_0013F450)->unk360, &((Hero *)D_0013F450)->motion.pos, &((Hero *)D_0013F450)->motion.rot, &((Hero *)D_0013F450)->unk310, &v20);
+                convert_pose_to_reference_local((int)((Hero *)D_0013F450)->moby, ((Hero *)D_0013F450)->unk360, &((Hero *)D_0013F450)->motion.pos, &((Hero *)D_0013F450)->motion.rot, &((Hero *)D_0013F450)->unk310, &v20);
             } else {
                 RotateWithMoby((int)((Hero *)D_0013F450)->moby, ((Hero *)D_0013F450)->unk360, &((Hero *)D_0013F450)->motion.pos, &((Hero *)D_0013F450)->motion.rot, &v30, &v40);
-                RotateIntoMobySpace((int)((Hero *)D_0013F450)->moby, ((Hero *)D_0013F450)->unk360, &v30, &v40, &((Hero *)D_0013F450)->unk310, &v20);
+                convert_pose_to_reference_local((int)((Hero *)D_0013F450)->moby, ((Hero *)D_0013F450)->unk360, &v30, &v40, &((Hero *)D_0013F450)->unk310, &v20);
             }
             ((Hero *)D_0013F450)->unk364 |= 1;
         }
@@ -1389,7 +1389,7 @@ void update_hero_attachment(void) {
     }
     if ((((Hero *)D_0013F450)->state.control_mode == 0 || ((Hero *)D_0013F450)->state.control_mode == 12) && ((Hero *)D_0013F450)->motion.unk184 == 0.0f && ((Hero *)D_0013F450)->air_frames.s == 0) {
         if (!(((Hero *)D_0013F450)->unk364 & 2)) {
-            RotateIntoMobySpace((int)((Hero *)D_0013F450)->moby, ((Hero *)D_0013F450)->unk360, &((Hero *)D_0013F450)->motion.pos, &((Hero *)D_0013F450)->motion.rot, &v20, &((Hero *)D_0013F450)->unk320);
+            convert_pose_to_reference_local((int)((Hero *)D_0013F450)->moby, ((Hero *)D_0013F450)->unk360, &((Hero *)D_0013F450)->motion.pos, &((Hero *)D_0013F450)->motion.rot, &v20, &((Hero *)D_0013F450)->unk320);
             ((Hero *)D_0013F450)->unk364 |= 2;
         }
     } else {
@@ -1493,7 +1493,7 @@ void func_0020D960(void *, s32, void *);
 void func_L00_001FFED8(void *, s32, f32);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00231d08.c, FUN_L00_00234808. */
-void HeroPulseAttachmentColors(void) {
+void animate_hero_slot4_and_slot5_visuals(void) {
     char *m0, *m1, *m2;
     f32 k;
     s32 a, b;
@@ -1535,7 +1535,7 @@ extern void func_L00_0020FC18(void);
 extern void func_L00_00235088(void);
 
 /* in state 2 or 6: flag the matching mobys, update, then clear bit 0 of three mobys */
-void HeroUpdateAttachments(int a0) {
+void update_hero_slot4_and_slot5_mobys(int a0) {
     char *d;
     char *base;
     char *o;
@@ -1551,7 +1551,7 @@ void HeroUpdateAttachments(int a0) {
         }
         update_hero_world_matrices(a0);
         func_L00_0020FC18();
-        HeroPulseAttachmentColors();
+        animate_hero_slot4_and_slot5_visuals();
         base = D_0013F450;
         t = *(char **)(base + 0x11D0);
         if (t != 0) {
@@ -1625,7 +1625,7 @@ void HeroAttachManipulators(char *obj) {
     q2 = D_0013E633 + 0xE1D;
     t = FastSin(*(float *)(q2 + 0x1628));
     *(int *)(obj + 0x90) = FastTweenColor(c1, c0, t * 0.5f + 0.5f);
-    HeroUpdateAttachments((int)obj);
+    update_hero_slot4_and_slot5_mobys((int)obj);
 }
 extern void func_0020DAF8(int, int, void *);
 extern void func_001FA480(void *, void *);
@@ -1679,7 +1679,7 @@ void try_reposition_hero_on_nearby_ground(void) {
     if (FastAbsF(hero_base->motion.pos.f[2] - h) > 0.3f) {
         return;
     }
-    HeroSetTargetAndEnterMove(hero_base->motion.pos.f, 1, hero_base->motion.rot.f[2]);
+    request_hero_target_pose(hero_base->motion.pos.f, 1, hero_base->motion.rot.f[2]);
     qcopy(&hero_base->motion.pos, &candidate_ground_position);
 }
 extern char D_001416F8[];

@@ -135,7 +135,7 @@ LINKER_REMNANT("asm/overlays", func_L00_00259418);
 typedef struct { float a[4]; } Vs __attribute__((aligned(16)));
 extern int D_L00_00173F40[];
 extern int func_L00_001EFFF0(void *, void *, int, int, int);
-int CheckGroundBelow(Vs *p, int x, int y, float f, float g) {
+int probe_vertical_ground_collision(Vs *p, int x, int y, float f, float g) {
     Vs t0;
     Vs t1;
     int r;
@@ -322,7 +322,7 @@ extern float func_001FA888(int);
 extern void func_L00_00259868_c(int, int, float, float, float, int) __asm__("func_L00_00259868");
 
 /* Forwards its arguments, replacing the middle float with func_001FA888's result scaled by 1/1024. */
-void MoveMobyScaledStep(int a, int b, int g, int e, float c, float d) {
+void move_moby_with_collision_integer_radius(int a, int b, int g, int e, float c, float d) {
     func_L00_00259868_c(a, b, c, IntToFloat(g) * 0.0009765625f, d, e);
 }
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
@@ -511,7 +511,7 @@ int func_L00_0025A2F0(char **, char *);
 
 /* Looks up table entry idx and makes it current; the flag test reads the current entry back, as the original did.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/math/interpolation/00257ef0.c, FUN_L00_002591d0. */
-int GroupMobyIter_Start(char **out, int idx, int a, int b) {
+int get_first_moby_in_group(char **out, int idx, int a, int b) {
     unsigned short *v;
     char *e;
     int c;
@@ -532,8 +532,8 @@ int GroupMobyIter_Start(char **out, int idx, int a, int b) {
     *out = e;
     c = (unsigned)D_L00_001601D4[0x20] >> 31;
     if (!a) {
-        if (b || c) return GroupMobyIter_Next(out, D_L00_001601D4_5A208);
-    } else if (b && !c) return GroupMobyIter_Next(out, D_L00_001601D4_5A208);
+        if (b || c) return get_next_moby_in_group(out, D_L00_001601D4_5A208);
+    } else if (b && !c) return get_next_moby_in_group(out, D_L00_001601D4_5A208);
     return 0;
 }
 extern unsigned char *D_L00_001601D4_5A2F0 __asm__("D_L00_001601D4") MACRO_ADDR;
@@ -604,7 +604,7 @@ int func_L00_0025A2F0_r(int *out, unsigned char *m, int a2, int a3) {
 INCLUDE_ASM("asm/overlays", func_L00_0025A344);
 INCLUDE_ASM("asm/overlays", func_L00_0025A43C);
 LINKER_REMNANT("asm/overlays", func_L00_0025A458);
-int Particle_FadeAlpha(int *p, int b) {
+int decrement_packed_countdown(int *p, int b) {
     int w = *p;
     int v = (w >> 24) - b;
     if (v < 0) v = 0;
@@ -613,7 +613,7 @@ int Particle_FadeAlpha(int *p, int b) {
 }
 extern int func_001FA898(float);
 extern float func_001FA888(int);
-float PredictBallisticHeight(float *a, float *b, int *out, float f) {
+float calculate_triangular_corrected_scalar(float *a, float *b, int *out, float f) {
     int n = truncate_float_to_s32(b[2] / f);
     float s = IntToFloat(n);
     float r = a[2] + b[2] * s - IntToFloat((n * n + n) >> 1) * f;
@@ -623,7 +623,7 @@ float PredictBallisticHeight(float *a, float *b, int *out, float f) {
     return r;
 }
 extern float func_001FA888(int);
-void PredictBallisticPos(void *a, void *b, void *c, int d, float f) {
+void predict_position_with_vertical_drop(void *a, void *b, void *c, int d, float f) {
     float t[4];
     FastVecScale(t, c, IntToFloat(d));
     t[2] -= IntToFloat((d * d + d) >> 1) * f;
@@ -632,7 +632,7 @@ void PredictBallisticPos(void *a, void *b, void *c, int d, float f) {
 extern float func_001F9B88(float);
 
 // solves a*x^2 + b*x + c = 0; returns the number of roots
-int SolveQuadratic(float *r0, float *r1, float a, float b, float c) {
+int solve_quadratic_equation(float *r0, float *r1, float a, float b, float c) {
     float d = b * b - a * 4.0f * c;
     float s;
     float x;
@@ -676,12 +676,12 @@ int IsPointInPolygon(float *p, float *v, int n) {
 }
 LINKER_REMNANT("asm/overlays", func_L00_0025A848);
 /* From Lombyte (MIT), FUN_L00_00259830 (PR #66), adapted to PAL. */
-int Moby_HasLinkedRecord(char *a) {
+int test_moby_linked_record_word8(char *a) {
     char *p = *(char **)(a + 0x94);
     if (p && *(int *)(p + 8)) return 1;
     return 0;
 }
-void InitHitQuery(char *a, int b, int c, float d) {
+void initialize_hit_descriptor(char *a, int b, int c, float d) {
     *(int *)(a + 0x10) = b;
     *(int *)(a + 0x14) = c;
     *(float *)(a + 0x1C) = d;
@@ -726,7 +726,7 @@ extern int func_L00_0025A8E8(void *, void *, int, float, float, float, int, int,
 
 /* Calls FUN_L00_002598b0 at a moby point; the f13 argument is ignored and c is passed again as a float.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/00259710.c, FUN_L00_002599e8. */
-int MobySphereHitAtPoint(void *moby, int point, int c, float d, float unused, float f, int g, int h, int i) {
+int collect_mobies_in_sphere_at_moby_point(void *moby, int point, int c, float d, float unused, float f, int g, int h, int i) {
     float position[4] __attribute__((aligned(16)));
     Moby_GetJointWorldPos(moby, point, position);
     return MobySphereHitDirectional(moby, position, c, d, (float)c, f, g, h, i);
@@ -738,7 +738,7 @@ typedef struct { u128_t a; u128_t b; int x, y; unsigned char b0, b1; unsigned sh
 extern T_t D_T_00178200[] __asm__("D_L00_00178200");
 
 /* Records a timed effect entry for a moby unless a fresher one of its own is still live. Adapted from Lombyte (MIT) for PAL: overlays/shared/gameplay_entities_00259710.c, FUN_L00_00259a88. */
-void PostHitMessageFromRecord(unsigned char *m, L_t *src) {
+void record_moby_hit(unsigned char *m, L_t *src) {
     L_t l;
     int i = D_L00_00173F40[5];
     T_t *e;
@@ -832,7 +832,7 @@ int sweep_hit_segment(void *a, void *b, void *c, void *d, int e, int f, int n) {
 }
 typedef struct { int a[4]; } Vk __attribute__((aligned(16)));
 extern void func_L00_001FFED8(void *, int, float);
-void BuildEulerMatrix(void *a, float *v) {
+void build_quaternion_from_axis_rotations(void *a, float *v) {
     Vk t0, t1, t2;
     axis_rotation_2d48(&t2, 0, v[0]);
     axis_rotation_2d48(&t1, 1, v[1]);
@@ -1131,7 +1131,7 @@ void SendRadialMessageToMobys(char *self, Q4 *pos, char **list, int n, char *ski
         l.m.y = FastSin(a) * spd;
         l.m.z = z;
         l.m.w = 5627.925f;
-        PostHitMessageFromRecord(list[i], &l.m);
+        record_moby_hit(list[i], &l.m);
     }
 }
 /* From Lombyte (MIT), FUN_L00_0025ab48 (PR #66), adapted to PAL. */
@@ -1481,13 +1481,13 @@ void func_L00_0025C710_r(Lerp_C710 *dst, Lerp_C710 a, Lerp_C710 b, float t) {
     dst->z = Lerp(a.z, b.z, t);
     dst->w = Lerp(a.w, b.w, t);
 }
-float LerpAngle(float a, float b, float c) {
+float interpolate_angle(float a, float b, float c) {
     float r = FastSubRots(b, a);
     return FastAddRots(a, r * c);
 }
 extern float func_001F9B88(float arg0);
 
-void SpringVelocityStep(float *ptr, float rate, float b, float c, float limit) {
+void advance_damped_scalar_velocity(float *ptr, float rate, float b, float c, float limit) {
     float v = *ptr + (b * rate - c * (*ptr));
 
     *ptr = v;
@@ -1509,7 +1509,7 @@ extern float func_001F9B88(float);
 
 float Spring(float *p, float *v, float t, float u1, float u2, float eps) {
     float n, d;
-    SpringVelocityStep(v, t - *p, u1, u2, eps);
+    advance_damped_scalar_velocity(v, t - *p, u1, u2, eps);
     n = *p + *v;
     d = t - n;
     *p = n;
@@ -1520,7 +1520,7 @@ float Spring(float *p, float *v, float t, float u1, float u2, float eps) {
     }
     return d;
 }
-float AngleDiffDirected(int n, float x, float y) {
+float compute_directed_angle_delta(int n, float x, float y) {
     float d = FastSubRots(x, y);
     if (n == 0 || d * (float)n > 0.0f) return d;
     if (FastAbsF(d) <= 0.0017453292f) return 0.0f;
@@ -1530,7 +1530,7 @@ float AngleDiffDirected(int n, float x, float y) {
 extern float cb90_alt(float x, int n, float y) __asm__("func_L00_0025CB90");
 
 /* Clamp *p's target toward [-y, y] via func_001FA748, calling func_L00_0025CB90 before and after. */
-float StepAngleToward(float *p, int n, float x, float y) {
+float step_angle_toward_target(float *p, int n, float x, float y) {
     float r = cb90_alt(x, n, *p);
     if (y < r) {
         r = y;
@@ -1554,7 +1554,7 @@ float SpringAngle(float *p, float *v, int n, float x, float b, float c, float d)
             n = 0;
         }
     }
-    SpringVelocityStep(v, cb90_alt(x, n, *p), b, c, d);
+    advance_damped_scalar_velocity(v, cb90_alt(x, n, *p), b, c, d);
     *p = FastAddRots(*p, *v);
     r = cb90_alt(x, n, *p);
     if (FastAbsF(r) < d * 0.01f) {
@@ -1585,9 +1585,9 @@ float SteerAngleWithVelocity(float *p, float *v, float a, float b, float c, floa
             float g = func_001F9B50((c + c) * r);
             if (d < g) g = d;
             if (r < 0.0f) {
-                StepAngleToward(v, 0, -g, b);
+                step_angle_toward_target(v, 0, -g, b);
             } else {
-                StepAngleToward(v, 0, g, b);
+                step_angle_toward_target(v, 0, g, b);
             }
         }
         if (!(FastAbsF(r) > FastAbsF(*v))) {
@@ -1595,7 +1595,7 @@ float SteerAngleWithVelocity(float *p, float *v, float a, float b, float c, floa
             return r;
         }
     } else {
-        StepAngleToward(v, 0, 0.0f, c);
+        step_angle_toward_target(v, 0, 0.0f, c);
     }
     *p = FastAddRots(*v, *p);
     return *v;
@@ -1607,14 +1607,14 @@ unsigned int PackColorRGBA(float r, float g, float b, float a) {
     unsigned int w = truncate_float_to_s32(a * 255.0f);
     return x | (y << 8) | (z << 16) | (w << 24);
 }
-void PermuteChannels(int *a, int *b, int *c, int mask) {
+void swap_color_channel_words(int *a, int *b, int *c, int mask) {
     int x, y;
     if (mask & 1) { x = *b; y = *a; *a = x; *b = y; }
     if (mask & 2) { x = *c; y = *b; *b = x; *c = y; }
     if (mask & 4) { x = *a; y = *c; *c = x; *a = y; }
 }
 extern void func_L00_0025D0E0(int *, int *, int *, int);
-unsigned PermuteColorChannels(unsigned c, int mask) {
+unsigned swap_packed_color_channels(unsigned c, int mask) {
     int v[3];
     unsigned a;
     if (mask == 0) return c;
@@ -1622,13 +1622,13 @@ unsigned PermuteColorChannels(unsigned c, int mask) {
     v[1] = ((int)(c & 0xFF00)) >> 8;
     v[2] = (c >> 16) & 0xFF;
     a = c >> 24;
-    PermuteChannels(&v[0], &v[1], &v[2], mask);
+    swap_color_channel_words(&v[0], &v[1], &v[2], mask);
     return (a << 24) | (v[2] << 16) | (v[1] << 8) | v[0];
 }
 extern void func_001F9BF0(void *, void *, void *);
 extern void func_001FA4A0(void *, void *);
 extern void func_001F9EE8(void *, void *, void *);
-float GetLocalAxisCoord(void *a, void *b, void *c, int d) {
+float compute_transformed_delta_component(void *a, void *b, void *c, int d) {
     float v0[4], v1[4], v2[16];
     float *w = v1;
     FastVecSub(v0, c, a);
@@ -1667,12 +1667,12 @@ extern unsigned char D_0013E15A[];
 typedef struct { float v[4]; } V4 __attribute__((aligned(16)));
 
 /* Spawns one particle per point found by func_L00_0025BCF8, at a random offset about A1. */
-void SpawnPointParticles(void *a0, void *a1, void *a2) {
+void spawn_particles_at_shape_points(void *a0, void *a1, void *a2) {
     V4 buf[20];
     float tmp[4];
     int n, i;
 
-    n = func_L00_0025BCF8(a0, 20, buf, a2, 14.0f);
+    n = generate_random_points_from_shape_entries(a0, 20, buf, a2, 14.0f);
     if (n == 0) {
         return;
     }
@@ -1749,7 +1749,7 @@ int mine_fall(char *moby, char *st) {
     *(float *)(st + 0x8) = *(float *)(st + 0x8) - *(float *)(st + 0x10);
     if (*(unsigned char *)(st + 0x2E) == 1) {
         if (*(unsigned char *)(st + 0x2F) != 0) {
-            SpawnPointParticles(moby, st, (void *)(int)*(unsigned char *)(st + 0x2F));
+            spawn_particles_at_shape_points(moby, st, (void *)(int)*(unsigned char *)(st + 0x2F));
         }
     }
 
@@ -1816,7 +1816,7 @@ int mine_fall(char *moby, char *st) {
             } else {
                 float h = *(float *)(st + 0x10) * -0.5f;
                 f20 = 60.0f;
-                n = SolveQuadratic(&f64, &f68, h, *(float *)(st + 0x8) - h, *(float *)(moby + 0x18) - f21);
+                n = solve_quadratic_equation(&f64, &f68, h, *(float *)(st + 0x8) - h, *(float *)(moby + 0x18) - f21);
                 if (n > 0 && 0.0f < f64 && f64 < f20) {
                     f20 = f64;
                 }
@@ -1858,7 +1858,7 @@ int mine_fall(char *moby, char *st) {
         int **pp = D_L00_00178000;
         int k = n;
         do {
-            if (IsMobyClass500To540(*pp) == 0) {
+            if (is_moby_in_class_range_500_to_540(*pp) == 0) {
                 if (*(int *)(st + 0x24) & 0x20) {
                     if (*(short *)(st + 0x3E) == 2) {
                         flags |= 0x100;
@@ -1932,7 +1932,7 @@ extern f32 func_001F9B88_25e290(f32) __asm__("func_001F9B88");
 extern void func_001F9C30_25e290(void *, void *, f32) __asm__("func_001F9C30");
 extern void func_001F9BD8_25e290(void *, void *, void *) __asm__("func_001F9BD8");
 /* Per-component adjustment of v against src: for each of the three components of v that is negative it recomputes v through the vector helpers. Adapted from Lombyte (MIT) for PAL: overlays/shared/math_rotations_0025d238.c, FUN_L00_0025d238. */
-void Vec4_AdjustNegativeComponents(Vec4 *src, Vec4 *v) {
+void clip_negative_segment_endpoint_xyz(Vec4 *src, Vec4 *v) {
     Vec4 t0, t1;
     f32 *pv, *p0, *p1;
     Vec4 *a = &t0, *b = &t1;
@@ -2129,7 +2129,7 @@ float DistanceWithHeightTolerance(V *a, V *b, float r) {
 }
 
 /* Projects point v onto the line through a and b, clamps it to the segment, and writes the result back to v. */
-void ProjectPointOnSegment(float *out, float *v, float *a, float *b) {
+void project_level_path_point_onto_segment(float *out, float *v, float *a, float *b) {
     float d[4];
     float n[4];
     float q[4];
@@ -2341,7 +2341,7 @@ int IsMobyClass502OrOutsideRange(char *a) {
     int r;
     if (a == 0) {
         r = 0;
-    } else if (IsMobyClass500To540(a) == 0) {
+    } else if (is_moby_in_class_range_500_to_540(a) == 0) {
         r = 1;
     } else {
         r = *(short *)(a + 0xA6) == 0x1F6;
@@ -2352,7 +2352,7 @@ extern int D_L00_00160098 MACRO_ADDR;
 extern int D_L00_001600A0 MACRO_ADDR;
 
 // Checks whether a moby address is in the active range and has the target class.
-int IsMobyClass500To540(void *moby) {
+int is_moby_in_class_range_500_to_540(void *moby) {
     if (moby == 0) {
         return 0;
     }
@@ -2681,7 +2681,7 @@ extern int func_L00_002ADBB0(void *, void *, void *, float, int, int, int, int, 
 extern void func_L00_002D4CE8(void *, void *, int, int);
 
 // Spawn three bursts of coloured sparks around a point, then optional glow pieces and a flash.
-void SpawnExplosionFxSwapped(char *a, char *b, float sc, float fl) {
+void spawn_color_swapped_explosion_burst(char *a, char *b, float sc, float fl) {
     Vy10 m;
     S6y10 c0;
     S6y10 c1;
@@ -2694,17 +2694,17 @@ void SpawnExplosionFxSwapped(char *a, char *b, float sc, float fl) {
         big = sc * 500000.0f;
         c0 = D_L00_001E93B0;
         c1 = D_L00_001E93C8;
-        PartType11Spawn(b, &m, PermuteColorChannels(c0.v[random_integer_below(6)], 1), PermuteColorChannels(c1.v[random_integer_below(6)], 1),
+        PartType11Spawn(b, &m, swap_packed_color_channels(c0.v[random_integer_below(6)], 1), swap_packed_color_channels(c1.v[random_integer_below(6)], 1),
             big, rand_range(scale_ticks(0xF), scale_ticks(0x14)),
             rand_range(scale_ticks(0x19), scale_ticks(0x1E)), 0, 0, sp * sc);
     }
     if (a != 0) {
         r[0] = 0x7F; r[1] = 0x40; r[2] = 0;
-        PermuteChannels(&r[0], &r[1], &r[2], 1);
+        swap_color_channel_words(&r[0], &r[1], &r[2], 1);
         t1 = sc * 4.0f;
         func_L00_002ADBB0(a, b, &m, t1, scale_ticks(0x14), *(unsigned char *)&r[0], *(unsigned char *)&r[1], *(unsigned char *)&r[2], 0x30);
         r[0] = 0x60; r[1] = 0x20; r[2] = 0;
-        PermuteChannels(&r[0], &r[1], &r[2], 1);
+        swap_color_channel_words(&r[0], &r[1], &r[2], 1);
         t2 = sc * 3.0f;
         func_L00_002ADBB0(a, b, &m, t2, scale_ticks(0x1D), *(unsigned char *)&r[0], *(unsigned char *)&r[1], *(unsigned char *)&r[2], 0x20);
     }
@@ -2730,7 +2730,7 @@ void ClampVectorLength(void *a, float x) {
 }
 extern int D_L00_00160098 MACRO_ADDR;
 
-void MobyList_AddUnique(int a, short *list, short max) {
+void append_unique_moby_index(int a, short *list, short max) {
     int k = ((a - D_L00_00160098) << 8) >> 16;
     int i;
     for (i = 1; i <= list[0]; i++) {
@@ -2768,7 +2768,7 @@ extern s16 D_L00_001B0AF0[];
 extern u8 * D_L00_00160098_608F0 __asm__("D_L00_00160098") MACRO_ADDR;
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/math/rotations/0025d238.c, FUN_L00_0025f878. */
-M25f878 *FindMobyByPvarId(s32 id) {
+M25f878 *find_listed_moby_by_data_id(s32 id) {
     s32 i;
     for (i = 1; i <= D_L00_001B0AF0[0]; i++) {
         M25f878 *o = (M25f878 *)(D_L00_001B0AF0[i] * 0x100 + (s32)D_L00_00160098_608F0);
@@ -2779,7 +2779,7 @@ M25f878 *FindMobyByPvarId(s32 id) {
 }
 INCLUDE_ASM("asm/overlays", func_L00_0026093C);
 extern float func_002140F8(float, float);
-void JitterVector(float *v, float s) {
+void add_random_offset_to_vector_xyz(float *v, float s) {
     v[0] += random_float_between(-s, s);
     v[1] += random_float_between(-s, s);
     v[2] += random_float_between(-s, s);
@@ -2788,7 +2788,7 @@ typedef struct { float x, y, z, w; } Vp __attribute__((aligned(16)));
 extern char *D_L00_001601BC MACRO_ADDR;
 extern void func_001F9EC0(void *, void *, void *);
 
-int IsPointInCylinderVolume(void *p, int i) {
+int test_point_in_transformed_unit_cylinder(void *p, int i) {
     Vp a;
     Vp b;
     char *e;
@@ -2807,7 +2807,7 @@ int IsPointInCylinderVolume(void *p, int i) {
     return 0;
 }
 extern int D_L00_001601B4 MACRO_ADDR;
-int IsPointInSphereVolume(float *p, int idx) {
+int test_point_in_transformed_unit_sphere(float *p, int idx) {
     float a[4] __attribute__((aligned(16)));
     float b[4] __attribute__((aligned(16)));
     char *e;
@@ -3048,7 +3048,7 @@ int transform_attachment_pose(int x, char *o, float *p, float *q, float *r, floa
     matrix_to_euler(m1, s);
     if (*(int *)(e + 0x3C) & 4) {
         FastVecAdd(r, r, e + 0x10);
-        RotateIntoMobySpace(x, o, r, s, p, q);
+        convert_pose_to_reference_local(x, o, r, s, p, q);
         return 1;
     }
     if (*(unsigned char *)(x + 0x22) != 0) {
@@ -3062,7 +3062,7 @@ int transform_attachment_pose(int x, char *o, float *p, float *q, float *r, floa
 }
 extern int func_L00_0025D390(char *);
 
-int RotateIntoMobySpace(int x, char *o, float *a, float *c, float *b, float *d) {
+int convert_pose_to_reference_local(int x, char *o, float *a, float *c, float *b, float *d) {
     float m[16];
     float v[4];
     float w[4];
@@ -3102,7 +3102,7 @@ void unlock_planet(int id) {
         }
         D_0013DE48[id] = 1;
         gGalaxyList[n] = id;
-        if (id != D_0015EE84) ShowPlanetBanner(id);
+        if (id != D_0015EE84) queue_planet_unlock_message(id);
     }
 }
 extern unsigned char D_0013D5C8[] NOT_SDA;
@@ -3120,7 +3120,7 @@ extern unsigned char D_0015EED0[] MACRO_ADDR;
 extern void func_L00_00264DB8(int arg0, int arg1);
 
 /* Gives item ID to the player: plays its sound, raises its count and records it in the slot lists. */
-void GiveItem(int id, int flag) {
+void grant_inventory_item(int id, int flag) {
     unsigned char *pa = &D_0013D5C8[id];
     unsigned char *pb = &items_acquired[id];
     int idx = id + 0x25;

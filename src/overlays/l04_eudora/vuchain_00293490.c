@@ -8,7 +8,7 @@ extern float D_L04_00174068;
 extern int func_L00_001EFFF0(void *, void *, int, int, int);
 
 /* probes a ray from just above a point; returns the ground offset or 0 */
-float ProbeGroundOffset(float *pos) {
+float probe_leg_rig_ground_height(float *pos) {
     float a[4];
     float b[4];
     qcopy(a, pos);
@@ -254,7 +254,7 @@ int HoverMobySteer(StMoby_2939E8 *m, Steer_2939E8 *a)
         for (j = 0; j < 4; j++) {
             Vec4f *e = &a->pts[j];
             if (a->mask & bit) {
-                h = ProbeGroundOffset((float *)e);
+                h = probe_leg_rig_ground_height((float *)e);
                 sum += h;
                 if (0.0f < h) {
                     t = func_001F9B88_2939E8(((StTab_2939E8 *)D_L04_00174040_2939E8)->v40.x);
@@ -697,7 +697,7 @@ extern float func_001F9B88(float);
 extern int func_L04_00293990_96FA8(struct Moby *m, LegRig *rig, float t) __asm__("func_L04_00293990");
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l04/runtime/dma/002922d0.c, FUN_L04_00295de8. */
-void LegRig_Init(struct Moby *m, LegRig *rig) {
+void reset_leg_rig_from_animation(struct Moby *m, LegRig *rig) {
     int joints[6];
     float mtx[4][4];
     float t;

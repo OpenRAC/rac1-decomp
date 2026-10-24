@@ -830,7 +830,7 @@ void update_fleet_bobbing_moby(char *m) {
         *(unsigned char *)(m + 0x20) = 1;
         break;
     case 1:
-        MobyBobZ(*(float *)&D_L17_00161DAC, *(float *)&D_L17_00161DB0 * 0.017453292f * D_0015EE6C, m, (float *)(data + 0x60), (float *)(data + 0x64));
+        update_moby_vertical_oscillation(*(float *)&D_L17_00161DAC, *(float *)&D_L17_00161DB0 * 0.017453292f * D_0015EE6C, m, (float *)(data + 0x60), (float *)(data + 0x64));
         func_L00_0025A8C0_alt(w, (int)m, 0x10001, 1.0f, v);
         qcopy(pos, m + 0x10);
         pos[2] = pos[2] + 0.75f;
@@ -1060,9 +1060,9 @@ void update_drone_flight_and_sparks(char *moby) {
         if (*(int *)(d + 0x38) < 0x3C) {
             step = (0x3C - *(int *)(d + 0x38)) >> 2;
         }
-        SpawnFadingParticle((char *)a, 1, step);
-        SpawnFadingParticle((char *)f, 1, step);
-        SpawnFadingParticle((char *)a, 0, step);
+        create_drone_flight_trail_record((char *)a, 1, step);
+        create_drone_flight_trail_record((char *)f, 1, step);
+        create_drone_flight_trail_record((char *)a, 0, step);
         b[2] = b[2] + 0.25f;
         func_L00_0025A8C0_alt((char *)w, (int)moby, 1, 6.0f, d);
         *(short *)((char *)w + 0x1A) = *(short *)(moby + 0xA6);
@@ -1275,7 +1275,7 @@ extern char D_L17_00167950[];
 extern short D_L17_00162208;
 
 /* Walks the moby list: picks the on-screen target, marks targetable mobys and points an arrow at the nearest pickup. */
-int Ship_PickTarget(int a, char *p, char *a2, char *a3, float f0, float f1, float f2, char *cur, char *g) {
+int select_fighter_jet_target_and_draw_contacts(int a, char *p, char *a2, char *a3, float f0, float f1, float f2, char *cur, char *g) {
     float v[4];
     float w[4];
     float mat[16];
@@ -1517,7 +1517,7 @@ take:
     W(p, 0x88) = 0;
 skip:
     qcopy(v, D_L17_00167750);
-    r = (char *)Ship_PickTarget(a, p, D_L17_00167750 - 0x10, (char *)v, 0.19634955f, 0.19634955f, 255.0f, P(p, 0x88), g);
+    r = (char *)select_fighter_jet_target_and_draw_contacts(a, p, D_L17_00167750 - 0x10, (char *)v, 0.19634955f, 0.19634955f, 255.0f, P(p, 0x88), g);
     if ((r != P(p, 0x88) && W(p, 0x8C) >= 0x1F5) || FLAG == 0) {
         W(p, 0xEC) = 0;
         W(p, 0x128) = -1;
@@ -1863,7 +1863,7 @@ typedef struct {
 extern float D_L17_00162120_f SDATA(D_L17_00162120);
 
 /* Flies the player's ship: throttle and stick input, steering toward the target, camera, and collision response. */
-void update_fighter_jet_flight(Moby *m, Obj *o) {
+void PlayerShipUpdate(Moby *m, Obj *o) {
     float dt = D_L17_00162120_f;
     W4 old;
     W4 vel = { 0.0f, 0.0f, D_0015EE6C * 8.0f * dt, 0.0f };
@@ -2349,7 +2349,7 @@ void FighterJetUpdate(Moby1379 *moby) {
                 }
             }
             if (ok) {
-                Hud_ClosePopupIfActive(7);
+                remove_help_message_for_selector(7);
                 HeroL17_SetMoveState(0x32, 1);
                 moby->state = 2;
                 d->i124 = -1;
@@ -2422,7 +2422,7 @@ void FighterJetUpdate(Moby1379 *moby) {
                 }
                 jet_camera_mode();
                 D_L17_0015F6E8 = 2;
-                update_fighter_jet_flight(moby, d);
+                PlayerShipUpdate(moby, d);
                 moby->state = 4;
             }
             break;
@@ -2436,7 +2436,7 @@ void FighterJetUpdate(Moby1379 *moby) {
                 d->i108 = -1;
                 d->i108 = Moby_PlaySound(0, 4, (int)moby);
             }
-            update_fighter_jet_flight(moby, d);
+            PlayerShipUpdate(moby, d);
             if (d->iE8 <= 0) {
                 d->tF8 = *(int *)&D_L17_001621F8;
                 moby->state = 8;
@@ -2522,7 +2522,7 @@ void FighterJetUpdate(Moby1379 *moby) {
         case 8:
             force_help_message(6, 0);
             D_L17_0015F6E8 = 2;
-            update_fighter_jet_flight(moby, d);
+            PlayerShipUpdate(moby, d);
             if (func_001F9908(&d->tF8) != 0) {
                 ApproachValue(&d->f130, 1.0f, D_0015EE6C * 4.0f);
                 D_L17_0015F4FC = d->f130;
@@ -2711,7 +2711,7 @@ void magnet_elevator_update(char *moby) {
         if ((*(float *)((char *)(state) + (0x70))) < 1.0f) {
             float t = (1.0f - (*(float *)((char *)(state) + (0x70)))) / (1.0f - old);
             char *base;
-            Moby1380_InitAim(moby, (char *)b, (char *)c);
+            build_magnet_elevator_camera_pose(moby, (char *)b, (char *)c);
             FastVecSub(a, D_L17_00167740, b);
             base = D_L17_00167740 - 0x140;
             FastVecScale(a, a, t);
@@ -2729,7 +2729,7 @@ void magnet_elevator_update(char *moby) {
     }
     case 2:
     case 3:
-        RebuildPathEntryFromMobyL17(moby);
+        rebuild_magnet_elevator_world_path(moby);
     case 4:
     case 5: {
         float target;
@@ -2846,7 +2846,7 @@ typedef struct {
 extern CameraGlobals D_0013F450;
 extern void func_L00_001FF500(void *, void *, float);
 
-void Moby1380_InitAim(char *moby, char *temp, char *state) {
+void build_magnet_elevator_camera_pose(char *moby, char *temp, char *state) {
     FastVecSub(temp, D_L17_00167740, moby + 0x10);
     func_L00_001FF500(temp, temp, 2.5f);
     *(float *)(temp + 8) = 1.5f;
@@ -2858,7 +2858,7 @@ void Moby1380_InitAim(char *moby, char *temp, char *state) {
 }
 extern char D_L17_001DA240[];
 
-void RebuildPathEntryFromMobyL17(char *moby) {
+void rebuild_magnet_elevator_world_path(char *moby) {
     char *state = *(char **)(moby + 0x78);
     if (D_0013F450.active && D_0013F450.current == moby) {
         char *vec = *(char **)(D_L17_001B10B0 + *(int *)(state + 0x80) * 4) + 0x10;
@@ -3160,7 +3160,7 @@ void Moby1382Update(unsigned char *m) {
         break;
     }
     case 9:
-        SteerTowardPoint((char *)m, d->v180, d->f1EC);
+        move_robot_dog_toward_position((char *)m, d->v180, d->f1EC);
         *(float *)(m + 0x58) = 1.8f;
         if (IsPointInPolygon(D_0013E633 + 0xE9D, ((int **)D_L17_001B10B0)[d->path] + 4, ((int **)D_L17_001B10B0)[d->path][0]) == 0 && d->f1D4 == 0.0f) {
             m[0x20] = 11;
@@ -3199,7 +3199,7 @@ void Moby1382Update(unsigned char *m) {
         float k1;
         float k2;
         float v;
-        SteerTowardPoint((char *)m, (float *)&d->home, D_0015EE6C * 5.0f);
+        move_robot_dog_toward_position((char *)m, (float *)&d->home, D_0015EE6C * 5.0f);
         *(float *)(m + 0x58) = 1.35f;
         dist = func_001F9D48(m + 0x10, &d->home);
         if ((dist < 1.4f && (m[0x70] & 2)) || dist < 0.3f) {
@@ -3248,7 +3248,7 @@ void Moby1382Update(unsigned char *m) {
             SpawnExplosionFx(m, m + 0x10, -1, 0.5f, 13.0f);
             SpawnBreakFragment((char *)m, 0x6CE, (float *)(m + 0x10), m + 0x40, 0, 0, 0.0f, zero, zero, zero);
             SpawnBreakFragment((char *)m, 0x6CF, (float *)(m + 0x10), m + 0x40, 0, 0, 0.0f, zero, zero, zero);
-            SpawnMobyBurstFx(m, 0x77D, 1, 0x77D, 1, 3, 2);
+            spawn_moby_break_fragments(m, 0x77D, 1, 0x77D, 1, 3, 2);
             SetDeathBits(m, 0, -1);
             DeleteMoby(m);
         } else if (*(float *)(m + 0x18) < 2.0f) {

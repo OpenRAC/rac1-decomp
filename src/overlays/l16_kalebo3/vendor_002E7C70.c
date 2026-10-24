@@ -89,7 +89,7 @@ void gadgetron_ceo_update(L16ChallengeMoby *m) {
         func_L00_0025B178(m);
         m->distance_class = 22;
     }
-    AttachManipulatorsIfCheat(m);
+    attach_big_head_cheat_manipulator_to_matching_moby(m);
     switch (m->state) {
     case 0:
         m->opacity = 255;
@@ -153,7 +153,7 @@ void gadgetron_ceo_update(L16ChallengeMoby *m) {
             m->state = 1;
             previous = activation->previous;
             if (previous == 4) {
-                start_indexed_disc_stream(0);
+                PlayMovieEntryIfIdle(0);
                 m->state = previous;
             }
         }
@@ -161,7 +161,7 @@ void gadgetron_ceo_update(L16ChallengeMoby *m) {
     case 4:
         if (D_L16_0015F6A8 == 0) {
             m->state = 1;
-            GiveItem(31, 1);
+            grant_inventory_item(31, 1);
             memcard_Save(0, -1);
         }
         break;
@@ -889,7 +889,7 @@ void update_target_reposition_cycle(char *moby) {
             if (find_group_class_010e_moby_in_state_6(*(int *)data) != 0) {
                 if (func_001F9908(data + 0xC)) {
                     moby[0x20] = 2;
-                    Moby_ActivateFromState1(target);
+                    request_target_reposition(target);
                     *(int *)(data + 0xC) = scale_ticks(rand_range(0xB4, 0x168));
                 }
             }
@@ -940,7 +940,7 @@ typedef struct {
 extern float func_001F9C78(void *, void *);
 
 /* For each of n point pairs, reflects a direction and writes its 2D map coordinates. */
-void EnvMap_ComputeUVs(int n, Vec3f *p1, Vec3f *p2, int unused, float *out) {
+void compute_level16_reflection_map_coordinates(int n, Vec3f *p1, Vec3f *p2, int unused, float *out) {
     int i;
     float a[4];
     float v[4];
@@ -1001,7 +1001,7 @@ void EnvMapA_Draw(void) {
     font_queue_vu_state();
     for (i = 0; i < 3; i++) {
         if (FastBSphereCheck(D_L16_001DC8D0[i], 512.0f) != -1) {
-            EnvMap_ComputeUVs(a[i], d[i], b[i], c[i], D_L16_001DC900);
+            compute_level16_reflection_map_coordinates(a[i], d[i], b[i], c[i], D_L16_001DC900);
             func_L00_001FDE48(a[i], b[i], e[i], D_L16_001DC900, 1);
         }
     }
@@ -1071,7 +1071,7 @@ extern char D_L16_00162040_draw[][16] __asm__("D_L16_00162040") MACRO_ADDR;
 extern char D_L16_001DDF50[];
 
 /* Sets up the draw state, then draws the one entry of the level's table. */
-void EnvMapSingle_Draw(void) {
+void draw_level16_visible_single_reflection_mesh(void) {
     int *a = (int *)&D_L16_00162000;
     int *b = (int *)&D_L16_00162020;
     int *c = (int *)&D_L16_00162028;
@@ -1087,7 +1087,7 @@ void EnvMapSingle_Draw(void) {
     font_queue_vu_state();
     for (i = 0; i < 1; i++) {
         if (FastBSphereCheck(p[i], 512.0f) != -1) {
-            EnvMap_ComputeUVs(a[i], d[i], b[i], c[i], (float *)D_L16_001DDF50);
+            compute_level16_reflection_map_coordinates(a[i], d[i], b[i], c[i], (float *)D_L16_001DDF50);
             func_L00_001FDE48(a[i], b[i], e[i], D_L16_001DDF50, 1);
         }
     }
@@ -1146,7 +1146,7 @@ void update_level16_single_mesh_render_state(unsigned char *m) {
         break;
     }
     case 1:
-        AddDrawCallback(EnvMapSingle_Draw, m);
+        AddDrawCallback(draw_level16_visible_single_reflection_mesh, m);
         break;
     }
 }
@@ -1174,7 +1174,7 @@ void draw_level16_visible_textured_batches(void) {
     font_queue_vu_state();
     for (i = 0; i < 2; i++) {
         if (FastBSphereCheck(D_L16_001DF580[i], 512.0f) != -1) {
-            EnvMap_ComputeUVs(a[i], d[i], b[i], c[i], D_L16_001DF5A0);
+            compute_level16_reflection_map_coordinates(a[i], d[i], b[i], c[i], D_L16_001DF5A0);
             func_L00_001FDE48(a[i], b[i], e[i], D_L16_001DF5A0, 1);
         }
     }
@@ -1251,7 +1251,7 @@ void draw_level16_reflection_mesh_batch(void) {
     VU1_addGSregister(0x14, 0xFF9000000260L);
     font_queue_vu_state();
     for (i = 0; i < 3; i++) {
-        EnvMap_ComputeUVs(((int *)D_L16_00162078)[i], ((int *)D_L16_001620A8)[i], ((int *)D_L16_00162088)[i], ((int *)D_L16_00162098)[i], D_L16_001E2BA0);
+        compute_level16_reflection_map_coordinates(((int *)D_L16_00162078)[i], ((int *)D_L16_001620A8)[i], ((int *)D_L16_00162088)[i], ((int *)D_L16_00162098)[i], D_L16_001E2BA0);
         func_L00_001FDE48(((int *)D_L16_00162078)[i], ((int *)D_L16_00162088)[i], ((int *)D_L16_001620B8)[i], D_L16_001E2BA0, 1);
     }
 }

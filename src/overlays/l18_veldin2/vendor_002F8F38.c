@@ -223,7 +223,7 @@ void rocket_tank_update(M1454 *m) {
             v[2] = 0;
             v[2] = -FastSin(d->f118) * s;
             Moby_PlaySound(0, 0, (int)m);
-            func_L03_00251AC8(m, w, 0);
+            emit_radial_particle_burst(m, w, 0);
             if (func_001F9D48((char *)m + 0x10, D_0013E633 + 0xE9D) > 10.0f) {
                 create_class_29_moby((char *)m, w, v, 0);
             } else {

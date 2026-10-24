@@ -127,7 +127,7 @@ void sentrybot_update(unsigned char *moby) {
     FastDecTimer(data + 0x19C);
     if (*(short *)(data + 0x156) != 0 && *(int *)(data + 0x128) != -1) {
         char *o = (char *)((*(int *)(data + 0x128) << 8) + D_L15_00160058_m);
-        if (*(int *)(*(char **)(o + 0x78) + 8) != 0) Group_SetClass198Timer(o, 0xB4);
+        if (*(int *)(*(char **)(o + 0x78) + 8) != 0) set_sentrybot_alarm_duration(o, 0xB4);
     }
     if (moby[0xBC] == 0) data[0x15F] = 0;
     switch (moby[0x20]) {
@@ -222,7 +222,7 @@ void sentrybot_update(unsigned char *moby) {
                     if (moby[0x53] != 2) MobyBlendAnimation(moby, 2, 0, scale_ticks(10));
                 }
             } else if (*(int *)(data + 0x124) == -1) {
-                PickFacingState(moby, data, 2, 0, *(float *)(data + 0x16C));
+                begin_sentrybot_turn_toward_heading(moby, data, 2, 0, *(float *)(data + 0x16C));
             }
         } else if (moby[0x20] == 3) {
             if (func_001F9908(data + 0x14C) != 0) {
@@ -258,11 +258,11 @@ void sentrybot_update(unsigned char *moby) {
         if (moby[0x70] & 2) {
             *(short *)(data + 0x154) = scale_ticks(0xF0);
             if (*(int *)(data + 0x150) != -1) {
-                Moby_MarkKilled(D_L15_00160058_m + (*(int *)(data + 0x150) << 8));
+                mark_moby_killed_and_release_owned_voice(D_L15_00160058_m + (*(int *)(data + 0x150) << 8));
                 *(int *)(data + 0x150) = -1;
             }
             if (*(int *)(data + 0x12C) != -1) {
-                Moby_MarkKilled(D_L15_00160058_m + (*(int *)(data + 0x12C) << 8));
+                mark_moby_killed_and_release_owned_voice(D_L15_00160058_m + (*(int *)(data + 0x12C) << 8));
                 *(int *)(data + 0x12C) = -1;
             }
             moby[0x20] = data[0x15C];
@@ -397,7 +397,7 @@ void sentrybot_update(unsigned char *moby) {
             if (moby[0x53] != 0xD) MobyBlendAnimation(moby, 0xD, 0, scale_ticks(10));
             if (*(int *)(data + 0x128) != -1) {
                 char *o = (char *)((*(int *)(data + 0x128) << 8) + D_L15_00160058_m);
-                if (*(int *)(*(char **)(o + 0x78) + 8) != 0) Group_SetClass198Timer(o, scale_ticks(0x1E));
+                if (*(int *)(*(char **)(o + 0x78) + 8) != 0) set_sentrybot_alarm_duration(o, scale_ticks(0x1E));
             }
         }
         break;
@@ -411,7 +411,7 @@ void sentrybot_update(unsigned char *moby) {
             *(int *)(data + 0x144) = 0;
             begin_sentrybot_turn_toward_point((char *)moby, data, (float *)((char *)D_L15_001B0DB0[*(int *)(data + 0x124)] + (*(int *)(data + 0x13C) * 0x10 + 0x10)), (void *)2, (void *)0);
         } else {
-            PickFacingState(moby, data, 2, 0, *(float *)(data + 0x16C));
+            begin_sentrybot_turn_toward_heading(moby, data, 2, 0, *(float *)(data + 0x16C));
         }
         break;
     }
@@ -425,7 +425,7 @@ void sentrybot_update(unsigned char *moby) {
             if (*(int *)(data + 0x124) != -1) {
                 begin_sentrybot_turn_toward_point((char *)moby, data, (float *)((char *)D_L15_001B0DB0[*(int *)(data + 0x124)] + (*(int *)(data + 0x13C) * 0x10 + 0x10)), (void *)2, (void *)0);
             } else {
-                PickFacingState(moby, data, 2, 0, *(float *)(data + 0x16C));
+                begin_sentrybot_turn_toward_heading(moby, data, 2, 0, *(float *)(data + 0x16C));
             }
         } else if (FastDiffRots(*(float *)(moby + 0x48), func_L00_001FF860(*(float *)(data + 0xD0) - *(float *)(moby + 0x10), *(float *)(data + 0xD4) - *(float *)(moby + 0x14))) > 0.7853982f
                    && data[0x15B] == 0) {
@@ -472,10 +472,10 @@ void sentrybot_update(unsigned char *moby) {
         break;
     case 15:
         if (moby[0x52] == moby[0x53] && MobyGetFrameValue(moby) >= 12.0f) {
-            Group_SetClass198Timer((char *)(D_L15_00160058_m + (*(int *)(data + 0x128) << 8)), 0xB4);
+            set_sentrybot_alarm_duration((char *)(D_L15_00160058_m + (*(int *)(data + 0x128) << 8)), 0xB4);
         }
         if (moby[0x70] & 2) {
-            Group_SetClass198Timer((char *)(D_L15_00160058_m + (*(int *)(data + 0x128) << 8)), 0xB4);
+            set_sentrybot_alarm_duration((char *)(D_L15_00160058_m + (*(int *)(data + 0x128) << 8)), 0xB4);
             begin_sentrybot_turn_toward_point((char *)moby, data, (float *)(target + 0x10), (void *)0x14, (void *)0xE);
         }
         break;
@@ -601,7 +601,7 @@ void sentrybot_update(unsigned char *moby) {
             if (moby[0x53] != 0xD) MobyBlendAnimation(moby, 0xD, 0, scale_ticks(10));
             if (*(int *)(data + 0x128) != -1) {
                 char *o = (char *)((*(int *)(data + 0x128) << 8) + D_L15_00160058_m);
-                if (*(int *)(*(char **)(o + 0x78) + 8) != 0) Group_SetClass198Timer(o, -1);
+                if (*(int *)(*(char **)(o + 0x78) + 8) != 0) set_sentrybot_alarm_duration(o, -1);
             }
         } else {
             int mode = *(int *)(data + 0x114);
@@ -612,7 +612,7 @@ void sentrybot_update(unsigned char *moby) {
                 if (moby[0x53] != 0xD) MobyBlendAnimation(moby, 0xD, 0, scale_ticks(10));
                 if (*(int *)(data + 0x128) != -1) {
                     char *o = (char *)((*(int *)(data + 0x128) << 8) + D_L15_00160058_m);
-                    if (*(int *)(*(char **)(o + 0x78) + 8) != 0) Group_SetClass198Timer(o, scale_ticks(0x1E));
+                    if (*(int *)(*(char **)(o + 0x78) + 8) != 0) set_sentrybot_alarm_duration(o, scale_ticks(0x1E));
                 }
             } else if (data[0x15A] != 0) {
                 if (mode != 2 && data[0x15B] == 0) {
@@ -664,11 +664,11 @@ void sentrybot_update(unsigned char *moby) {
                 return;
             }
             if (*(int *)(data + 0x12C) != -1) {
-                Moby_MarkKilled(D_L15_00160058_m + (*(int *)(data + 0x12C) << 8));
+                mark_moby_killed_and_release_owned_voice(D_L15_00160058_m + (*(int *)(data + 0x12C) << 8));
                 *(int *)(data + 0x12C) = -1;
             }
             if (*(int *)(data + 0x150) != -1) {
-                Moby_MarkKilled(D_L15_00160058_m + (*(int *)(data + 0x150) << 8));
+                mark_moby_killed_and_release_owned_voice(D_L15_00160058_m + (*(int *)(data + 0x150) << 8));
                 *(int *)(data + 0x150) = -1;
             }
             Moby_PlaySound(0xD, 0, (int)moby);
@@ -685,11 +685,11 @@ void sentrybot_update(unsigned char *moby) {
     case 23:
         if (mine_fall(moby, data + 0x70) & 0x160) {
             if (*(int *)(data + 0x12C) != -1) {
-                Moby_MarkKilled(D_L15_00160058_m + (*(int *)(data + 0x12C) << 8));
+                mark_moby_killed_and_release_owned_voice(D_L15_00160058_m + (*(int *)(data + 0x12C) << 8));
                 *(int *)(data + 0x12C) = -1;
             }
             if (*(int *)(data + 0x150) != -1) {
-                Moby_MarkKilled(D_L15_00160058_m + (*(int *)(data + 0x150) << 8));
+                mark_moby_killed_and_release_owned_voice(D_L15_00160058_m + (*(int *)(data + 0x150) << 8));
                 *(int *)(data + 0x150) = -1;
             }
             Moby_PlaySound(0xD, 0, (int)moby);
@@ -700,7 +700,7 @@ void sentrybot_update(unsigned char *moby) {
         }
         break;
     }
-    TurretAimAtTarget(moby);
+    update_sentrybot_joint_aim(moby);
     if (*(short *)(data + 0x156) != 0) {
         lvl = 2;
     } else if (*(int *)(data + 0x114) != 2) {
@@ -750,7 +750,7 @@ void sentrybot_update(unsigned char *moby) {
 extern float func_001FA790(float, float);
 
 /* Picks a facing state from the signed angle to a target; returns 1 when it turned a lot, else 0. */
-int PickFacingState(unsigned char *moby, char *d, int a, int b, float angle) {
+int begin_sentrybot_turn_toward_heading(unsigned char *moby, char *d, int a, int b, float angle) {
     float n = -FastSubRots(*(float *)(moby + 0x48), angle);
     float v;
     int ret = 1;
@@ -797,7 +797,7 @@ void begin_sentrybot_turn_toward_point(char *moby, void *a, float *point, void *
 {
     float angle = func_L00_001FF860(point[0] - *(float *)(moby + 0x10),
                                      point[1] - *(float *)(moby + 0x14));
-    PickFacingState(moby, a, b, c, angle);
+    begin_sentrybot_turn_toward_heading(moby, a, b, c, angle);
 }
 extern float D_0015EE70 MACRO_ADDR;
 extern float func_L00_0025CE58(float *p, float *v, float a, float b, float c, float d);
@@ -981,7 +981,7 @@ extern float D_0015EE64 MACRO_ADDR;
 extern void func_L00_00263950(char *, char *, int, float, float);
 
 /* Turns the turret head toward its current target (or remembered point), clamping yaw and pitch, and eases both joints. */
-void TurretAimAtTarget(void *mv) {
+void update_sentrybot_joint_aim(void *mv) {
     char *m = mv;
     char *d = *(char **)(m + 0x78);
     float tgt[4];
@@ -1286,7 +1286,7 @@ void draw_sentrybot_effect_quads(char *m) {
     char *p = *(char **)(m + 0x78) + 0x2A0;
     int i;
     for (i = 2; i >= 0; i--) {
-        DrawBillboardAt(p, v, 0.2f, 0.08f);
+        draw_offset_textured_effect_quad(p, v, 0.2f, 0.08f);
         p += 0x10;
     }
 }
@@ -1702,7 +1702,7 @@ void update_target_leading_missile(M_29E8A0 *m) {
                 }
                 v100[2] = v100[2] + D_0015EE6C * 5.0f;
                 FastVecAdd(v100, v100, v70);
-                PartType15Spawn(m->pos, v100, 0x4F007FFF, 0x1F00007F, 40000.0f,
+                spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns(m->pos, v100, 0x4F007FFF, 0x1F00007F, 40000.0f,
                     rand_range(scale_ticks(0x3C), scale_ticks(0x78)), 1, -1, -1);
             }
             {
@@ -1970,7 +1970,7 @@ void update_charged_blast(Moby29FF90 *moby) {
                     (D_L15_00180940 + d->light)->f0 < (D_L15_00180940 + d->light)->f4 * 0.8f ? (D_L15_00180940 + d->light)->f0 : (D_L15_00180940 + d->light)->f4 * 0.8f,
                     (D_L15_00180940 + d->light)->f0);
             } else if ((D_L15_0015F6B0 & 3) == 0) {
-                d->light = AllocPointLight(moby->pos, 0.0f, 0.0f, 0);
+                d->light = allocate_packed_color_point_light_slot(moby->pos, 0.0f, 0.0f, 0);
             }
         } else {
             D_L15_0015F420.on = 0;
@@ -1993,7 +1993,7 @@ void update_charged_blast(Moby29FF90 *moby) {
         if (d->light != -1) {
             (D_L15_00180940 + d->light)->f1C = (D_L15_00180940 + d->light)->f1C * (D_0015EE60 * -0.6f + 1.0f);
             if ((D_L15_00180940 + d->light)->f1C < 0.0001f) {
-                light_off_67e8(d->light);
+                release_point_light_slot(d->light);
                 d->light = -1;
             }
         }
@@ -2024,7 +2024,7 @@ void update_charged_blast(Moby29FF90 *moby) {
                 random_spherical_offset(w, r * D_0015EE6C, r * 2.0f * D_0015EE6C);
                 random_spherical_offset(v, 0.0f, r * 0.5f);
                 func_L00_001FF240(v2, v, moby->pos);
-                p = (Part29FF90 *)PartType69Spawn(v, w, 0x7F, moby);
+                p = (Part29FF90 *)spawn_mode_controlled_rotating_alpha_fade_particle(v, w, 0x7F, moby);
                 if (p != 0) {
                     p->fC = random_float_between(6000.0f, 32000.0f) * r * 0.4f;
                 }
@@ -2034,7 +2034,7 @@ void update_charged_blast(Moby29FF90 *moby) {
             int i;
 
             for (i = 0; i < 12; i++) {
-                Part29FF90 *p = (Part29FF90 *)PartType69Spawn(moby->pos, D_L15_0015F660, 0x7F, moby);
+                Part29FF90 *p = (Part29FF90 *)spawn_mode_controlled_rotating_alpha_fade_particle(moby->pos, D_L15_0015F660, 0x7F, moby);
 
                 if (p != 0) {
                     PartSub29FF90 *q = &p->sub;
@@ -2562,7 +2562,7 @@ extern void func_L00_0028EBF0(s32);
 
 /* Marks the moby as killed in the level's spawn tables and releases the voice slot it still owns.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/00278fd8.c, FUN_L15_002a35d8. */
-void Moby_MarkKilled(int addr) {
+void mark_moby_killed_and_release_owned_voice(int addr) {
     struct Moby *m = (struct Moby *)addr;
     s32 slot;
     m->collision = 0;
@@ -2746,7 +2746,7 @@ void spiderbot_update(unsigned char *moby) {
             func_L00_00273F80_r(A, (char *)B, 0x604040FF, life, random_integer_below(0xFF), 0, *(float *)&D_L15_001615DC);
         }
     }
-    AddDrawCallback(Moby_DrawBeamQuad, moby);
+    AddDrawCallback(draw_spiderbot_effect_quad, moby);
 }
 typedef int u128_2A8850 __attribute__((mode(TI)));
 extern void func_001F9BF0(void *, void *, void *);
@@ -2764,7 +2764,7 @@ typedef struct {
 } Quad;
 
 /* Builds a screen-space quad from the moby's offset and draws it. */
-void Moby_DrawBeamQuad(char *moby) {
+void draw_spiderbot_effect_quad(char *moby) {
     float B[4];
     float A[4];
     Quad q;
@@ -3786,7 +3786,7 @@ void SentrybotAlarmUpdate(L15AlarmMoby *m) {
         d->f14 = FastAddRots(d->f14, D_0015EE6C * 12.566371f);
         if (func_001F9908(d->blk18) == 0 && D_L15_0015F6A8 != 2)
             break;
-        Group_SetClass198Timer((char *)m, 0);
+        set_sentrybot_alarm_duration((char *)m, 0);
         d->f8 = 0;
         if (m->animation != 8)
             MobyBlendAnimation(m, 8, 0, scale_ticks(10));
@@ -3819,7 +3819,7 @@ void SentrybotAlarmUpdate(L15AlarmMoby *m) {
         }
         r = func_001F9908(d->blk18);
         if (r != 0 || D_L15_0015F6A8 == 2) {
-            Group_SetClass198Timer((char *)m, 0);
+            set_sentrybot_alarm_duration((char *)m, 0);
             d->f8 = 0;
             m->state = 9;
             if (m->animation != 7)
@@ -3860,7 +3860,7 @@ tail:
 extern short D_L15_00161B44;
 
 // Sets the two fields of the moby's data (and of matching mobys in the level list) from a flag.
-void Group_SetClass198Timer(char *m, int a) {
+void set_sentrybot_alarm_duration(char *m, int a) {
     char *d = *(char **)(m + 0x78);
     int flag;
     short *p;
@@ -3918,7 +3918,7 @@ void update_sentrybot_alarm_effect(void *moby) {
     struct Hero *base = (struct Hero *)(D_0013E633 + 0xE1D);
     if (base->state.current == 0x65) {
         ApproachValue(&D_L15_00161B44, 0.0f, D_0015EE6C * 2);
-        Group_SetClass198Timer(moby, 0);
+        set_sentrybot_alarm_duration(moby, 0);
     } else if (*(int *)&D_L15_00161B40 != 0
                && (*(int *)&D_0015EE84 != 0xF || 240.0f < base->motion.pos.f[1])) {
         ApproachValue(&D_L15_00161B44, 1.0f, D_0015EE6C * 2);
@@ -3931,7 +3931,7 @@ void update_sentrybot_alarm_effect(void *moby) {
             *(int *)&D_L15_00161B4C = Moby_PlaySound(5, 0x11, (int)moby);
             *(void **)&D_L15_00161B50 = moby;
         }
-        AddDrawCallback(LoopingFx_Draw, moby);
+        AddDrawCallback(emit_sine_modulated_rgba_draw_packet, moby);
     } else {
         if (Sound_IsPlaying(*(void **)&D_L15_00161B50, *(int *)&D_L15_00161B4C) != 0) {
             Sound_StopSlot(*(int *)&D_L15_00161B4C);
@@ -3949,7 +3949,7 @@ extern short D_L15_00161B58;
 extern short D_L15_00161B54;
 
 // Draws an oscillating-intensity effect: a sine of the global timer scaled by a level value.
-void LoopingFx_Draw(void) {
+void emit_sine_modulated_rgba_draw_packet(void) {
     int n = scale_ticks(*(int *)&D_L15_00161B5C);
     float d = IntToFloat(n);
     float s = FastSin((float)(D_L15_0015F6B0 % n) / d * 6.28318f);

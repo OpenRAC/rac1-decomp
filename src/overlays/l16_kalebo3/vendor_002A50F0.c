@@ -265,7 +265,7 @@ void reposition_moby_with_collision_check(unsigned char *m, void *p) {
             func_00215C00_57(speed, b, *(float *)&D_L16_001619A8 * 0.017453292f, effectVelocity);
             speed = random_float_between(3.5f, 5.5f);
             vel[2] = speed * D_0015EE6C;
-            SpawnMoby428(m, effectPosition, effectVelocity);
+            spawn_feather_moby(m, effectPosition, effectVelocity);
         } while (--i >= 0);
         func_0022ED80_57(1, 0, m);
     } else {
@@ -374,7 +374,7 @@ extern float func_L00_001FF860(float, float);
 extern void func_L00_00251E30(void *);
 
 // Spawns a class 0x119 moby and initialises its data, position and angles.
-unsigned char *SpawnThrownBomb(int a, void *pos, float *dir, int c, float f) {
+unsigned char *spawn_thrown_bomb(int a, void *pos, float *dir, int c, float f) {
     unsigned char *moby = (unsigned char *)func_0020D348_m(0x119);
     if (moby != 0) {
         char *data = *(char **)(moby + 0x78);
@@ -534,7 +534,7 @@ void Moby471Update(unsigned char *m) {
         if (*(float *)(d + 0x6C) != target) {
             ApproachValue((float *)(d + 0x6C), target, D_0015EE70 * 12.0f);
             func_L00_001FF4B0(vec, m + 0xC0, *(float *)(d + 0x6C));
-            Moby471_CarryGroupRiders(m[0x21], vec);
+            update_conveyor_group_motion_transforms(m[0x21], vec);
         }
         if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, *(int *)(d + 0x68))) m[0x20] = one;
         AddDrawCallback(draw_conveyor_belt_strips, m);
@@ -544,7 +544,7 @@ void Moby471Update(unsigned char *m) {
         if (*(float *)(d + 0x6C) != target) {
             ApproachValue((float *)(d + 0x6C), target, D_0015EE70 * 12.0f);
             func_L00_001FF4B0(vec, m + 0xC0, *(float *)(d + 0x6C));
-            Moby471_CarryGroupRiders(m[0x21], vec);
+            update_conveyor_group_motion_transforms(m[0x21], vec);
         }
         if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, *(int *)(d + 0x64))) m[0x20] = 2;
         AddDrawCallback(draw_conveyor_belt_strips, m);
@@ -602,7 +602,7 @@ extern short *D_L16_001ABFC0_2CB000[] __asm__("D_L16_001ABFC0");
 extern void func_L00_002617B0(char *a, void *b, void *c, void *d);
 
 // For each moby in a list with type 0x1D7, calls a helper with its data and position.
-void Moby471_CarryGroupRiders(int index, void *arg) {
+void update_conveyor_group_motion_transforms(int index, void *arg) {
     short *p = D_L16_001ABFC0_2CB000[index];
     if (p) {
         do {
@@ -781,7 +781,7 @@ void test_dummy_update(unsigned char *moby) {
        is what this compiler does with a multiplication and with a shift in an address. */
     char *path;
 
-    TestDummyHandleHit(moby);
+    update_test_dummy_damage_and_respawn(moby);
     path = D_L16_001B0C30[dummy_data->path];
     Manipulator_ApplyScale(2.5f, (int)moby, 2, (unsigned char *)dummy_data->block140);
     switch (((struct Moby *)moby)->state) {
@@ -1098,7 +1098,7 @@ typedef struct L16HitMoby {
 } L16HitMoby;
 
 /* The test dummy's respawn and hit handling: respawns or deletes it, takes damage, and carries its child on a joint. */
-void TestDummyHandleHit(void *moby) {
+void update_test_dummy_damage_and_respawn(void *moby) {
     L16HitMoby *m = moby;
     float matrix[16];
     int status;
@@ -1130,7 +1130,7 @@ void TestDummyHandleHit(void *moby) {
         return;
     }
     if (d->frame != D_L16_0015F6B0) {
-        TestDummies_SpinAndQueueDraw((char *)m);
+        update_test_dummy_group_glow_phases((char *)m);
     }
     amount = 0.0f;
     record = MobyGetHitMessage(m, 0x330000, 0);
@@ -1181,7 +1181,7 @@ void TestDummyHandleHit(void *moby) {
 extern int *D_L16_001ABFC0[];
 
 // For each listed moby of class 0x21D: sets its state bytes and clears bit 0 of its flags.
-void TestDummies_SetState(int idx) {
+void activate_test_dummy_group(int idx) {
     short *p = (short *)D_L16_001ABFC0[idx];
     if (p != 0) {
         do {
@@ -1227,7 +1227,7 @@ extern int D_L16_0015F6B0 MACRO_ADDR;
 extern void func_L16_002D0328();
 extern short D_L16_00161A9C;
 /* spins the level's rotating parts by the current angle and queues the draw callback */
-void TestDummies_SpinAndQueueDraw(char *moby) {
+void update_test_dummy_group_glow_phases(char *moby) {
     short *p;
     float f;
     char *m;
@@ -1390,7 +1390,7 @@ void update_linked_pair_effect(char *moby) {
         case 1:
             if (is_linked_pair_effect_enabled(moby) != 0) {
                 data[2] = state;
-                AddDrawCallback(DrawLinkedRibbonPairs, moby);
+                AddDrawCallback(draw_linked_pair_group_ribbons, moby);
                 if (Sound_IsPlaying(moby, data[3]) == 0) {
                     data[3] = func_0022ED80_i(0, 4, moby);
                 }
@@ -1412,7 +1412,7 @@ void update_linked_pair_effect(char *moby) {
 extern int func_L16_002D0A40(char *);
 
 // Walks the moby's list of linked mobys and refreshes their data word.
-void RefreshLinkedPeers228(char *moby) {
+void initialize_linked_pair_group(char *moby) {
     short *p = D_L16_001ABFC0[(unsigned char)moby[0x21]];
     if (p != 0) {
         do {
@@ -1423,14 +1423,14 @@ void RefreshLinkedPeers228(char *moby) {
                     *(unsigned short *)(other + 0x34) |= 2;
                 }
                 data = *(int **)(other + 0x78);
-                *data = FindHeightPeerMoby(other);
+                *data = find_linked_pair_partner_by_height(other);
             }
         } while (*p++ >= 0);
     }
 }
 typedef struct {char pad00[0x10];float position[4];unsigned char state,group;char pad22[0x84];short type;} L16HeightPeer;
 /* Find another linked class-228 moby at the same height. */
-int FindHeightPeerMoby(char *arg) {
+int find_linked_pair_partner_by_height(char *arg) {
     L16HeightPeer *m=(L16HeightPeer *)arg,*other;
     short *p=(short *)D_L16_001ABFC0[m->group];
     if(!p) return 0;
@@ -1460,7 +1460,7 @@ INCLUDE_ASM("asm/overlays", func_L16_002D0B60);
 extern int D_L16_0015F6B0 MACRO_ADDR;
 extern void func_L16_002D0C18(char*,char*);
 /* Draw each linked pair once per generation. */
-void DrawLinkedRibbonPairs(char *arg) {
+void draw_linked_pair_group_ribbons(char *arg) {
     short *p=(short *)D_L16_001ABFC0[*(unsigned char *)(arg+0x21)];
     if (p) {
         do {
@@ -1536,7 +1536,7 @@ typedef struct {
 } Level16VendorVectorMoby;
 
 /* Copy the selected 16-byte vendor vector. */
-void GetNodeVector(Level16VendorVectorMoby *moby, int index, void *out) {
+void copy_hoverboard_dummy_path_node(Level16VendorVectorMoby *moby, int index, void *out) {
     qcopy(out, moby->data->vectors + index * 16 + 16);
 }
 extern int func_L01_0028C2D8(void *, void *, float);
@@ -1577,13 +1577,13 @@ void advance_hoverboard_dummy_path_node(char *m) {
     float target[4];
     float heading, distance;
 
-    GetNodeVector((Level16VendorVectorMoby *)moby, d->node, target);
+    copy_hoverboard_dummy_path_node((Level16VendorVectorMoby *)moby, d->node, target);
     heading = func_L00_001FF860(target[0] - moby->position[0], target[1] - moby->position[1]);
     for (;;) {
         L16PatrolPath *path;
         L16PatrolPath *base;
 
-        GetNodeVector((Level16VendorVectorMoby *)moby, d->node, target);
+        copy_hoverboard_dummy_path_node((Level16VendorVectorMoby *)moby, d->node, target);
         distance = func_001F9D48(target, d->position);
         if ((FastDiffRots(heading, moby->yaw) < 1.5707964f || distance > 4.0f) && distance > 2.0f) {
             break;
@@ -1595,7 +1595,7 @@ void advance_hoverboard_dummy_path_node(char *m) {
             /* At the last node of a branch: back to the base path, five nodes past its nearest one. */
             if (d->node == path->count - 1) {
                 d->path = base;
-                d->node = FindClosestDistanceEntry(d->position, base, 0.0f);
+                d->node = select_point_index_by_distance(d->position, base, 0.0f);
                 d->node = offset_path_index((char *)d->path, d->node, 5, 1);
             }
         } else if (path->points[d->node][3] > 10.0f && random_integer_below(100) >= 31) {
@@ -1606,7 +1606,7 @@ void advance_hoverboard_dummy_path_node(char *m) {
             d->node = 0;
         }
         /* The same two statements as before the loop, written out again: the compiler merges the copies. */
-        GetNodeVector((Level16VendorVectorMoby *)moby, d->node, target);
+        copy_hoverboard_dummy_path_node((Level16VendorVectorMoby *)moby, d->node, target);
         heading = func_L00_001FF860(target[0] - moby->position[0], target[1] - moby->position[1]);
     }
 }
@@ -1640,7 +1640,7 @@ void accumulate_moby_frames_in_group_bounds(char *moby) {
     }
     od = *(char **)(other + 0x78);
     if (*(int *)(od + 0x44) != -1) {
-        GroupMobyIter_Start((int *)&l1, *(int *)(od + 0x44), 0, 0);
+        get_first_moby_in_group((int *)&l1, *(int *)(od + 0x44), 0, 0);
         while (l1) {
             if (*(short *)(l1 + 0xA6) == 0x473) {
                 float a[4];
@@ -1659,11 +1659,11 @@ void accumulate_moby_frames_in_group_bounds(char *moby) {
                     }
                 }
             }
-            GroupMobyIter_Next((int *)&l1, (int)l1, 0, 0);
+            get_next_moby_in_group((int *)&l1, (int)l1, 0, 0);
         }
     }
     if (*(int *)(od + 0x48) != -1) {
-        GroupMobyIter_Start((int *)&l2, *(int *)(od + 0x48), 0, 0);
+        get_first_moby_in_group((int *)&l2, *(int *)(od + 0x48), 0, 0);
         while (l2) {
             if (*(short *)(l2 + 0xA6) == 0x474) {
                 float m[16];
@@ -1678,7 +1678,7 @@ void accumulate_moby_frames_in_group_bounds(char *moby) {
                     }
                 }
             }
-            GroupMobyIter_Next((int *)&l2, (int)l2, 0, 0);
+            get_next_moby_in_group((int *)&l2, (int)l2, 0, 0);
         }
     }
 }
@@ -1724,7 +1724,7 @@ typedef struct {
 } L16LeapMoby;
 
 /* Adjust animation and pitch to the remaining time in a jump. */
-void LeapMoby_AdjustPitch(L16LeapMoby *m) {
+void update_hoverboard_dummy_jump_animation_and_pitch(L16LeapMoby *m) {
     float root0, root1;
     float pitch;
     L16LeapData *d = m->data;
@@ -1746,7 +1746,7 @@ void LeapMoby_AdjustPitch(L16LeapMoby *m) {
         }
         acceleration = D_0015EE70 * 21.0f * -0.5f;
         duration = 30.0f;
-        if (SolveQuadratic(&root0, &root1, acceleration, d->vertical_speed - acceleration, d->height - d->target_height) > 0 && root0 > 0.0f) {
+        if (solve_quadratic_equation(&root0, &root1, acceleration, d->vertical_speed - acceleration, d->height - d->target_height) > 0 && root0 > 0.0f) {
             duration = func_001FA898_caa18(root0);
         }
         if (scale_ticks(7) < d->timer && scale_ticks(11) > d->timer && m->next_animation == 5 && (float)scale_ticks(27) < duration) {
@@ -1831,7 +1831,7 @@ void test_dummy_on_hoverboard_update(unsigned char *m) {
         *(unsigned short *)(m + 0x34) |= 0x41;
         path = D_L16_001B0C30[*(int *)(d + 0x2B0)];
         *(char **)(d + 0x2C0) = path;
-        GetNodeVector((Level16VendorVectorMoby *)m, 0, pos);
+        copy_hoverboard_dummy_path_node((Level16VendorVectorMoby *)m, 0, pos);
         qcopy(m + 0x10, pos);
         qcopy(d + 0x260, m + 0x10);
         *(int *)(m + 0x40) = 0;
@@ -1911,8 +1911,8 @@ void test_dummy_on_hoverboard_update(unsigned char *m) {
             qcopy(pos, m + 0x10);
             pos[2] += 0.5f;
             func_L00_0025F4A8(m, D_L16_0015F660_spark, pos, 0.0f, 0.0f, 5, 15, 25, 2.5f, 1.5f, 4.0f, -1, 1.0f, 7.0f, 0, 9, -1, 0);
-            SpawnMobyBurstFx(m, 0x655, 1, 0x656, 2, 2, 0);
-            SpawnMobyBurstFx(m, 0x6FA, 1, 0x6FB, 1, 1, 0);
+            spawn_moby_break_fragments(m, 0x655, 1, 0x656, 2, 2, 0);
+            spawn_moby_break_fragments(m, 0x6FA, 1, 0x6FB, 1, 1, 0);
             *(short *)(d + 0x2F2) = 0;
             *(int *)(g + 0x8A8) += 250;
             m[0x20] = 3;
@@ -1952,8 +1952,8 @@ void test_dummy_on_hoverboard_update(unsigned char *m) {
                 ApproachValue((float *)(d + 0x2C8), target, D_0015EE70 * 110.0f);
             }
         }
-        LeapMoby_AdjustPitch((L16LeapMoby *)m);
-        GetNodeVector((Level16VendorVectorMoby *)m, *(short *)(d + 0x2F4), pos);
+        update_hoverboard_dummy_jump_animation_and_pitch((L16LeapMoby *)m);
+        copy_hoverboard_dummy_path_node((Level16VendorVectorMoby *)m, *(short *)(d + 0x2F4), pos);
         angle = func_L00_001FF860(pos[0] - *(float *)(m + 0x10), pos[1] - *(float *)(m + 0x14));
         SpringAngle(m + 0x48, d + 0x2C4, 0, angle, D_0015EE64 * 0.035f, D_0015EE64 * 0.3f, D_0015EE6C * 6.981317f);
         if (*(float *)(d + 0x268) < pos[2] - 5.0f) {
@@ -1970,7 +1970,7 @@ void test_dummy_on_hoverboard_update(unsigned char *m) {
         if (n) {
             FastVecScale(impact, delta, 7.0f);
             for (i = 0; i < n; i++) {
-                if (IsMobyClass500To540((int)D_L16_00178380[i])) {
+                if (is_moby_in_class_range_500_to_540((int)D_L16_00178380[i])) {
                     PostHitMessage(D_L16_00178380[i], (int)m, mask, d + 0x260, impact, 1.0f);
                 }
             }
@@ -2099,7 +2099,7 @@ void Moby647Update(unsigned char *moby) {
 }
 extern float D_L16_00161B40 SDATA(D_L16_00161B40);
 /* Activate the linked mobys and return the one nearest the challenge target. */
-void *ActivateLinkedMobysNearest(int index, int secondary) {
+void *set_class_0287_group_activation_and_find_nearest(int index, int secondary) {
     short *p = (short *)D_L16_001ABFC0[index];
     char *nearest = 0;
     float distance = 1000.0f;
@@ -2122,7 +2122,7 @@ void *ActivateLinkedMobysNearest(int index, int secondary) {
     }
 }
 /* Activate the linked mobys, clearing their timers, and return the one nearest the challenge target. */
-void *ActivateLinkedMobysClearTimers(int index, int secondary) {
+void *activate_class_0287_group_and_find_nearest(int index, int secondary) {
     short *p = (short *)D_L16_001ABFC0[index];
     char *nearest = 0;
     float distance = 1000.0f;
@@ -2256,7 +2256,7 @@ void update_triggered_group_objective(char *m) {
             moby->collision = 0;
         } else {
             moby->state = 1;
-            ActivateLinkedMobysNearest(scene_data->helper, 1);
+            set_class_0287_group_activation_and_find_nearest(scene_data->helper, 1);
         }
         break;
     case SCENE_STATE_WAIT_FOR_TRIGGER: {
@@ -2268,7 +2268,7 @@ void update_triggered_group_objective(char *m) {
         if (scene_data->camera >= 0)
             *(unsigned short *)(player + 0x225A) = *(unsigned short *)&scene_data->camera;
         CameraScript(D_L16_00167240, D_L16_00167240 + 0x10, 1, 0, 0);
-        helper = ActivateLinkedMobysClearTimers(scene_data->helper, 0);
+        helper = activate_class_0287_group_and_find_nearest(scene_data->helper, 0);
         goto notify;
     }
     case SCENE_STATE_WAIT_TO_HIDE:
@@ -2279,16 +2279,16 @@ void update_triggered_group_objective(char *m) {
             scene_data->timer = scale_ticks(60);
             moby->visible = 0;
             moby->flags |= 1;
-            TestDummies_SetState(scene_data->path);
+            activate_test_dummy_group(scene_data->path);
         }
         break;
     case SCENE_STATE_WAIT_FOR_LINKED_MOBYS_AND_TIMER:
-        Moby654_ComputePose(m, position, rotation);
+        compute_triggered_scene_path_pose(m, position, rotation);
         set_camera_position(position);
         set_camera_rotation(rotation);
         if (scene_data->camera >= 0)
             *(unsigned short *)(D_0014171B+0xF) = *(unsigned short *)&scene_data->camera;
-        if (count_group_e81e0(scene_data->path, -1))
+        if (count_active_moby_group_members(scene_data->path, -1))
             break;
         if (!func_001F9908(&scene_data->timer))
             break;
@@ -2301,7 +2301,7 @@ void update_triggered_group_objective(char *m) {
         MobySphereHitDirectional((int)m, 5.0f, D_L16_001601AC_m + (scene_data->pose << 7) + 0x30,
                                  0x10000, 50.0f, 1.0f, 0, 1, 0);
         ((L16ObjectiveEntry *)(D_0013D355+0x13B+scene_data->objective))->complete = 1;
-        helper = ActivateLinkedMobysNearest(scene_data->helper, 0);
+        helper = set_class_0287_group_activation_and_find_nearest(scene_data->helper, 0);
 notify:
         if (helper)
             Moby_PlaySound(1, 0, helper);
@@ -2310,8 +2310,8 @@ notify:
         break;
     case SCENE_STATE_HIDDEN_WAIT_FOR_TRIGGER:
         if (is_point_inside_clip_volume(D_0013E633+0xE9D, scene_data->trigger)) {
-            ActivateLinkedMobysClearTimers(scene_data->helper, 0);
-            TestDummies_SetState(scene_data->path);
+            activate_class_0287_group_and_find_nearest(scene_data->helper, 0);
+            activate_test_dummy_group(scene_data->path);
             moby->state = 6;
         }
         break;
@@ -2319,9 +2319,9 @@ notify:
         char *player = D_0013E633+0xE9D;
         if (is_point_inside_clip_volume(player, scene_data->trigger) && scene_data->camera >= 0)
             *(unsigned short *)(player + 0x225A) = *(unsigned short *)&scene_data->camera;
-        if (!count_group_e81e0(scene_data->path, -1)) {
+        if (!count_active_moby_group_members(scene_data->path, -1)) {
             moby->state = 4;
-            helper = ActivateLinkedMobysNearest(scene_data->helper, 0);
+            helper = set_class_0287_group_activation_and_find_nearest(scene_data->helper, 0);
             if (helper)
                 Moby_PlaySound(1, 0, helper);
             ((L16ObjectiveEntry *)(D_0013D355+0x13B+scene_data->objective))->complete = 1;
@@ -2336,7 +2336,7 @@ extern void func_001F9EC0(void *, void *, void *);
 extern void func_001F9C08(void *, void *, void *, float);
 
 /* Computes a moby's direction vectors from its table entry. */
-void Moby654_ComputePose(char *moby, void *out1, float *out2) {
+void compute_triggered_scene_path_pose(char *moby, void *out1, float *out2) {
     char *data = *(char **)(moby + 0x78);
     float v[4];
     char *entry = D_L16_001601AC_m + (*(int *)data << 7);
@@ -2370,8 +2370,8 @@ void update_moby_hit_triggered_removal(char *moby) {
     case 2:
         Moby_PlaySound(0, 0, moby);
         SetDeathBits(moby, 0, -1);
-        SpawnBreakFxByDistance(moby);
-        SpawnMobyBurstFx(moby, 0x74E, 1, 0x74E, 1, 0xB, 2);
+        spawn_proximity_gated_bolts(moby);
+        spawn_moby_break_fragments(moby, 0x74E, 1, 0x74E, 1, 0xB, 2);
         DeleteMoby(moby);
         break;
     }
@@ -2384,7 +2384,7 @@ void Challenge_SetLayoutParam(float f) {
 }
 extern void func_0022ED80(int, int, void *);
 
-void Moby_ActivateFromState1(unsigned char *moby) {
+void request_target_reposition(unsigned char *moby) {
     int state = 1;
     if (moby[0x20] == state) {
         Moby_PlaySound(0, 0, moby);
@@ -2519,7 +2519,7 @@ void help_desk_lady_update(L16WatchMoby *moby) {
             moby->state = 1;
             Hero_ResetToPosition(D_L16_001D9990, D_L16_001D9990 + 4, 0, 1);
             Help_Request(0x3E82, 0x84);
-            GiveItem(0x21, 1);
+            grant_inventory_item(0x21, 1);
             jet_clear_persistent(moby->widget);
             player = (char *)&D_0013E633_watch + 0xE9D;
             jet_reset_camera(player, player + 0x10);
@@ -2931,7 +2931,7 @@ void PathPickup_Update(char *moby) {
     int s;
     qcopy(v00, moby + 0x10);
     qcopy(v10, moby + 0x40);
-    LevelTable_SetSlotValue(moby, (*(unsigned short *)(moby + 0x34) ^ 1) & 1);
+    set_moby_dialogue_record_value(moby, (*(unsigned short *)(moby + 0x34) ^ 1) & 1);
     switch (*(unsigned char *)(moby + 0x20)) {
     case 0:
         *(short *)(d + 0xAA) = -1;
@@ -2945,7 +2945,7 @@ void PathPickup_Update(char *moby) {
             v70[3] = 0;
             func_001F9EE8(v70, v70, v30);
             if (FastAbsF(v70[1]) < 1.2f) {
-                SelectSegmentPath(moby);
+                prepare_taxi_departure_path(moby);
                 request_moby_help_message(moby);
                 if ((*(int *)(D_0013A5E0 + 0x2604) & 0x10) && *(int *)&D_L16_0015F674 == 8) {
                     moby[0x20] = 3;
@@ -3079,7 +3079,7 @@ void SelectNearestTargetSlot(void *moby_v) {
 extern char *D_L16_001B0C30[];
 
 /* Pick the path for the current segment and set the travel speeds from its length. */
-void SelectSegmentPath(char *moby) {
+void prepare_taxi_departure_path(char *moby) {
     char *d = *(char **)(moby + 0x78);
     char *p;
     float inv, a, b, r;
@@ -3385,7 +3385,7 @@ typedef struct {
 } Level16VendorTurnMoby;
 
 /* Start the vendor moby's turn and mark it active. */
-void Moby_StartTurn(Level16VendorTurnMoby *moby) {
+void activate_grindrail_button(Level16VendorTurnMoby *moby) {
     moby->data->value = -3.1415925f;
     moby->active = 1;
     moby->state = 2;
@@ -3450,7 +3450,7 @@ void chomper_update(char *m) {
     case 3:
         break;
     case CHOMPER_APPROACH_TARGET:
-        if (SteerMobyToward(chomper_moby, chomper_data + 0x180) < 1.25f) {
+        if (move_chomper_toward_position(chomper_moby, chomper_data + 0x180) < 1.25f) {
             chomper_moby->state = CHOMPER_FACE_TARGET;
             if (chomper_moby->prev_seq != 1)
                 MobyBlendAnimation(chomper_moby, 1, 0, scale_ticks(20));
@@ -3464,7 +3464,7 @@ void chomper_update(char *m) {
         SteerAngleWithVelocity(yaw, (float *)(chomper_data + 0x1F4), angle,
                                D_0015EE70 * 12.566371f, D_0015EE70 * 12.566371f, D_0015EE6C * 12.566371f);
         if (IsFrameWithinWindow(chomper_moby, 13.0f)) {
-            MobySphereHitAtPoint(chomper_moby, 0, 1, 0.333f, 1.0f, 1.0f, 0, 1, 0);
+            collect_mobies_in_sphere_at_moby_point(chomper_moby, 0, 1, 0.333f, 1.0f, 1.0f, 0, 1, 0);
         } else if ((chomper_moby->anim_flags & 2) && FastVecDist(&chomper_moby->pos, chomper_data + 0x180) > 1.5f) {
             chomper_moby->state = CHOMPER_APPROACH_TARGET;
             if (chomper_moby->prev_seq != 0)
@@ -3473,7 +3473,7 @@ void chomper_update(char *m) {
         break;
     }
     case CHOMPER_RETURN_HOME:
-        if (SteerMobyToward(chomper_moby, chomper_data + 0x1D0) < 1.0f) {
+        if (move_chomper_toward_position(chomper_moby, chomper_data + 0x1D0) < 1.0f) {
             chomper_moby->state = CHOMPER_WAIT_TO_APPROACH_TARGET;
             if (chomper_moby->prev_seq != 2)
                 MobyBlendAnimation(chomper_moby, 2, 0, scale_ticks(20));
@@ -3603,7 +3603,7 @@ extern void func_L00_00259868(void *, void *, float, float, float, int);
 extern void func_L00_00262DF0(float, void *, void *, void *);
 
 /* Steers and moves a moby toward a target point, returning the distance. */
-float SteerMobyToward(void *m_v, void *t_v) {
+float move_chomper_toward_position(void *m_v, void *t_v) {
     char *m = m_v;
     float *t = t_v;
     char *d = *(char **)(m + 0x78);

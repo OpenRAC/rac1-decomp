@@ -230,7 +230,7 @@ extern u8 D_L00_001CA9E0[];
 extern s32 D_0015EE88 MACRO_ADDR;
 extern f32 D_0015EE60 MACRO_ADDR;
 /* Opens the vendor menu. */
-void VendorOpenMenu(VendorMoby_pv *m) {
+void open_vendor_menu(VendorMoby_pv *m) {
     extern s32 D_L00_00173F00[];
     s32 i;
     Vec4 *v;
@@ -273,13 +273,13 @@ void VendorOpenMenu(VendorMoby_pv *m) {
     if (half < 3) sel = 1;
     VP.cursor = half / 2;
     VP.scroll = (sel - half / 2) * 0x28;
-    Hud_ResetState();
-    VP.title_text = queue_animation_update(0x12, 0x754E, HudBoltsInit, HudBoltsUpdate,
-                                               HudBoltsDraw, &gBolts, 0x98967F);
+    reset_hud_and_suspend_weapon_updates();
+    VP.title_text = queue_animation_update(0x12, 0x754E, initialize_bolt_counter_hud, update_bolt_counter_hud_animation_and_visibility,
+                                               draw_bolt_counter_hud_panel, &gBolts, 0x98967F);
     if (VP.entries[VP.cursor].selected == 1) {
         s32 item = VP.entries[VP.cursor].item;
 
-        VP.item_text = queue_animation_update(0x30, item + 0xEA60, HudTileInit,
+        VP.item_text = queue_animation_update(0x30, item + 0xEA60, initialize_numeric_hud_timer_and_base_dimensions,
                                                   Hud_UpdateCounter, HudWeaponDraw,
                                                   &weapon_ammo_counts[item], D_L00_001C43B0[item].hE);
     }
@@ -293,7 +293,7 @@ void VendorOpenMenu(VendorMoby_pv *m) {
     if (VP.mode == 0) {
         FadeToBlack(4);
     }
-    HelpPopup_Cancel();
+    clear_active_help_record();
     *(f32 *)&gFadeLvl = 1.0f;
     *(s32 *)((char *)&D_L00_0015F6BC - 0x14) = 5;
     *(s32 *)&D_L00_0015F500 = 0;
@@ -1436,7 +1436,7 @@ extern int D_L00_00161250 MACRO_ADDR;
 extern int D_L00_00161254 MACRO_ADDR;
 
 /* steps the pickup-spawn state machine for the given mode */
-void PickupSpawn_Step(int a) {
+void handle_vendor_auxiliary_moby_event(int a) {
     char *b;
     unsigned char *m;
     int s;
@@ -1507,7 +1507,7 @@ extern void func_0020E340(void *, int, int, int, int);
 #define TB (*(int *)((char *)GG - (-(GG->idx * 0x14)) + 0xD4))
 
 // builds the three UI objects for the current entry
-void Vendor_InitItemDisplay(void) {
+void initialize_vendor_selected_item_mobys(void) {
     float v[4];
     A *q;
     B *r;
@@ -1756,7 +1756,7 @@ void update_vendor_purchase(void) {
                             price = (D_L00_001CA7C0_9CDE0.f40 ? D_L00_001C43B0[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].hA
                                                               : D_L00_001C43B0[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].h8) * n;
                             ((int *)(D_0013DE6E + 0xA))[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item] += n;
-                            PickupSpawn_Step(3);
+                            handle_vendor_auxiliary_moby_event(3);
                             gBolts = gBolts - price;
                             VendorBuildItemList(D_L00_001CA7C0_9CDE0.f40 != 0);
                             set_scrolling_status_message(msg_string(0x4F5F));
@@ -1772,8 +1772,8 @@ void update_vendor_purchase(void) {
                     price = discount_purchase_pricing[0] ? D_L00_001C43B0[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].f4
                                           : D_L00_001C43B0[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].f0;
                     if (gBolts >= price) {
-                        PickupSpawn_Step(2);
-                        GiveItem(D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item, 1);
+                        handle_vendor_auxiliary_moby_event(2);
+                        grant_inventory_item(D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item, 1);
                         D_L00_001CA7C0_9CDE0.f48 = D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item;
                         if (D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item == 0x18) {
                             D_0013E633[0x2E12] = 1;
@@ -1784,14 +1784,14 @@ void update_vendor_purchase(void) {
                         D_L00_001CA7C0_9CDE0.f50 = -1;
                         if (D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].sel == 1) {
                             D_L00_001CA7C0_9CDE0.f50 = queue_animation_update(0x30, D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item + 0xEA60,
-                                                                     HudTileInit, Hud_UpdateCounter, HudWeaponDraw,
+                                                                     initialize_numeric_hud_timer_and_base_dimensions, Hud_UpdateCounter, HudWeaponDraw,
                                                                      &weapon_ammo_counts[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item],
                                                                      D_L00_001C43B0[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].hE);
                         } else {
                             if (D_L00_001CA7C0_9CDE0.count - 1 < D_L00_001CA7C0_9CDE0.idx) {
                                 D_L00_001CA7C0_9CDE0.idx = D_L00_001CA7C0_9CDE0.count - 1;
                             }
-                            Vendor_InitItemDisplay();
+                            initialize_vendor_selected_item_mobys();
                         }
                         set_scrolling_status_message(msg_string(0x4F5F));
                         Moby_PlaySound(7, 0, D_L00_001CA7C0_9CDE0.cam);

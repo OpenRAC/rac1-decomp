@@ -27,7 +27,7 @@ void DrawGemlikTurretHud(char *moby) {
     float f;
     float q;
 
-    UpdateLockOnTarget((int)moby, d);
+    update_fighter_jet_target_tracking((int)moby, d);
     if (*(int *)(d + 0x88) != 0) {
         project_world_point_to_screen_pixels(*(char **)(d + 0x88) + 0x10, &sp10, &sp14, 0);
         if (*(int *)(d + 0x8C) > scale_ticks(0x1F4)) {

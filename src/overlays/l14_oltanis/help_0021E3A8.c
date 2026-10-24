@@ -87,7 +87,7 @@ void resolve_hero_surface_reactions(void) {
         if (FastAbsF(hero_ptr->water_surface_z - (hero_ptr->motion.pos.f[2] + 0.25f)) < 1.0f) {
             if (hero_ptr->water_surface_z - hero_ptr->motion.pos.f[2] > 0.0f) {
                 if (hero_ptr->motion.displacement.f[2] < 0.0f) {
-                    ResetHelpStateIfMode3();
+                    exit_hero_vehicle_mode_if_mode_three();
                     Hero_TryMoveStateL14(HERO_STATE_SINK, 1);
                 }
             }
@@ -194,7 +194,7 @@ s32 process_hero_hit_reaction(s32 arg) {
     if (arg == 0) {
         return 1;
     }
-    HeroClearSoundSlots();
+    release_and_clear_hero_voice_slots();
     flag = 0;
     if (tbl->i30 & 1) {
         qcopy(&v, &tbl->v10);
@@ -492,9 +492,9 @@ void HeroL14_UpdateStatePhysics(void) {
             float speed;
 
             if (D_0013F450.unk12E2 != 0) {
-                Hero_ComputeMoveOffset(0.7f, D_0015EE6C * 0.0f);
+                build_scaled_hero_move_impulse(0.7f, D_0015EE6C * 0.0f);
             } else {
-                Hero_ComputeMoveOffset(0.5f, D_0015EE6C * 2.0f);
+                build_scaled_hero_move_impulse(0.5f, D_0015EE6C * 2.0f);
             }
             stop_hero_motion_without_forward_support(3.7f, 0.0f);
             stick_target(1.0f, 0);
@@ -617,7 +617,7 @@ void HeroL14_UpdateStatePhysics(void) {
                 clip_hero_horizontal_velocity(0);
                 if (D_0013F450.air_frames.s != 0) {
                     HeroMoveDownAlongNormal(D_0013F450.motion.velocity.f, D_0013F450.motion.unk120.f, D_0015EE70 * 25.0f);
-                    Hero_StopAtSteepWall();
+                    correct_hero_airborne_wall_velocity();
                 } else {
                     HeroMoveDownAlongNormal(D_0013F450.motion.velocity.f, D_0013F450.motion.velocity.f, D_0015EE70 * 54.0f);
                 }
@@ -663,7 +663,7 @@ void HeroL14_UpdateStatePhysics(void) {
             len = func_001F9CE8(D_0013F450.motion.velocity.f);
             func_L00_001FF5B0(D_0015EE60 * -0.07999998f * len + len, D_0013F450.motion.velocity.f, D_0013F450.motion.velocity.f);
         }
-        Hero_UpdateTiltSpring();
+        update_hero_water_height_and_bobbing();
         break;
     case 0x30:
         {
@@ -673,9 +673,9 @@ void HeroL14_UpdateStatePhysics(void) {
             anim = -1;
             frames = 0;
             if (D_0013F450.unk12E2 != 0) {
-                Hero_ComputeMoveOffset(0.7f, D_0015EE6C * 0.0f);
+                build_scaled_hero_move_impulse(0.7f, D_0015EE6C * 0.0f);
             } else {
-                Hero_ComputeMoveOffset(0.5f, D_0015EE6C * 2.0f);
+                build_scaled_hero_move_impulse(0.5f, D_0015EE6C * 2.0f);
             }
             stop_hero_motion_without_forward_support(3.7f, 0.0f);
             stick_target(1.0f, 0);
@@ -684,7 +684,7 @@ void HeroL14_UpdateStatePhysics(void) {
             reduce_and_apply_hero_planar_velocity_addend(D_0015EE70 * 12.6f);
             if (D_0013F450.air_frames.s != 0) {
                 HeroMoveDownAlongNormal(D_0013F450.motion.velocity.f, D_0013F450.motion.displacement.f, D_0015EE70 * 25.0f);
-                Hero_StopAtSteepWall();
+                correct_hero_airborne_wall_velocity();
             } else {
                 HeroMoveDownAlongNormal(D_0013F450.motion.velocity.f, D_0013F450.motion.velocity.f, D_0015EE70 * 54.0f);
             }
@@ -704,7 +704,7 @@ void HeroL14_UpdateStatePhysics(void) {
         reduce_and_apply_hero_planar_velocity_addend(D_0015EE70 * 12.6f);
         if (D_0013F450.air_frames.s != 0) {
             HeroMoveDownAlongNormal(D_0013F450.motion.velocity.f, D_0013F450.motion.unk110.f, D_0015EE70 * 24.0f);
-            Hero_StopAtSteepWall();
+            correct_hero_airborne_wall_velocity();
         } else {
             HeroMoveDownAlongNormal(D_0013F450.motion.velocity.f, D_0013F450.motion.velocity.f, D_0015EE70 * 54.0f);
         }
@@ -731,7 +731,7 @@ void HeroL14_UpdateStatePhysics(void) {
             } else if (D_0013F450.state.step == 1) {
                 ApproachValue(&D_0013F450.unk960, 0.0f, D_0015EE70 * 42.0f);
             }
-            if (SolveQuadratic(&t0, &t1, -(D_0015EE70 * 42.0f) * 0.5f, D_0013F450.unk960, -(D_0013F450.unk970 - 1.9f)) > 0 && t0 > 0.0f) {
+            if (solve_quadratic_equation(&t0, &t1, -(D_0015EE70 * 42.0f) * 0.5f, D_0013F450.unk960, -(D_0013F450.unk970 - 1.9f)) > 0 && t0 > 0.0f) {
                 D_0013F450.unk96C = t0;
                 D_0013F450.state.step = 1;
             }
@@ -739,12 +739,12 @@ void HeroL14_UpdateStatePhysics(void) {
                 D_0013F450.unk974 = 1;
             }
             if (D_0013F450.unk974 != 0) {
-                StepAngleToward(&D_0013F450.motion.rot.f[1], 0, 0.0f, D_0015EE6C * 3.8397243f);
+                step_angle_toward_target(&D_0013F450.motion.rot.f[1], 0, 0.0f, D_0015EE6C * 3.8397243f);
             } else {
                 float a;
 
                 a = FastAddRots(-func_L00_001FF860(func_001F9D48(D_0013F450.motion.pos.f, vec[0]), vec[0][2] - D_0013F450.motion.pos.f[2]), 1.5707964f);
-                StepAngleToward(&D_0013F450.motion.rot.f[1], 0, a, D_0015EE6C * 6.4577184f);
+                step_angle_toward_target(&D_0013F450.motion.rot.f[1], 0, a, D_0015EE6C * 6.4577184f);
             }
             vec[2][0] = FastCos(FastAddRots(D_0013F450.motion.rot.f[2], -1.5707964f)) * -0.57f;
             vec[2][1] = FastSin(FastAddRots(D_0013F450.motion.rot.f[2], -1.5707964f)) * -0.57f;
@@ -943,7 +943,7 @@ void HeroL14_UpdateStatePhysics(void) {
 
             D_0013F450.target_speed = 0.0f;
             speed_step(D_0015EE70 * 30.0f, D_0015EE70 * 30.0f);
-            HeroScalePointXY(D_0013F450.motion.velocity.f, D_0013F450.motion.velocity.f, D_0013F450.ground_speed);
+            set_gravity_relative_vector_length_xy(D_0013F450.motion.velocity.f, D_0013F450.motion.velocity.f, D_0013F450.ground_speed);
             t0 = scale_ticks(0xC);
             a = D_0015EE6C * 5.7f;
             b = D_0015EE70 * 70.0f;
@@ -1007,7 +1007,7 @@ void HeroL14_UpdateStatePhysics(void) {
                     D_0013F450.motion.velocity.f[1] = FastSin(D_0013F450.motion.rot.f[2]) * D_0013F450.ground_speed;
                 } else {
                     speed_step(D_0015EE70 * 2.0f, D_0015EE70 * 2.0f);
-                    HeroScalePointXY(D_0013F450.motion.velocity.f, D_0013F450.motion.velocity.f, D_0013F450.ground_speed);
+                    set_gravity_relative_vector_length_xy(D_0013F450.motion.velocity.f, D_0013F450.motion.velocity.f, D_0013F450.ground_speed);
                 }
             } else {
                 if (D_0013F450.unkA54 != 0) {
@@ -1022,7 +1022,7 @@ void HeroL14_UpdateStatePhysics(void) {
                     D_0013F450.motion.velocity.f[1] = FastSin(D_0013F450.motion.rot.f[2]) * D_0013F450.ground_speed;
                 } else {
                     speed_step(D_0015EE70 * 15.0f, D_0015EE70 * 15.0f);
-                    HeroScalePointXY(D_0013F450.motion.velocity.f, D_0013F450.motion.velocity.f, D_0013F450.ground_speed);
+                    set_gravity_relative_vector_length_xy(D_0013F450.motion.velocity.f, D_0013F450.motion.velocity.f, D_0013F450.ground_speed);
                 }
             }
             if (D_0013F450.unkA58 != 0 || D_0013F450.unkA54 != 0) {
@@ -1043,7 +1043,7 @@ void HeroL14_UpdateStatePhysics(void) {
             if (D_0013F450.unkA9C == 0 && D_0013F450.anim_frame > 23.5f && D_0013F450.motion.displacement.f[2] < 0.0f && D_0013F450.air_frames.s != 0) {
 
                 qcopy(vec[0], D_0013F450.motion.pos.f);
-                HeroMoveUpAlongNormal(vec[0], vec[0], -0.5f);
+                offset_hero_position_against_gravity(vec[0], vec[0], -0.5f);
                 vec[4][0] = FastCos(D_0013F450.motion.rot.f[2]) * 2.0f;
                 vec[4][1] = FastSin(D_0013F450.motion.rot.f[2]) * 2.0f;
                 vec[4][2] = 0.0f;
@@ -1054,7 +1054,7 @@ void HeroL14_UpdateStatePhysics(void) {
                 ((Hit *)vec[1])->f18 = 0;
                 coll_sphere_mobys(0.4f, vec[0], 0x10, D_0013F450.moby, vec[1]);
             }
-            Hero_IsTimeInWindow(27.0f);
+            test_hero_animation_frame_window(27.0f);
             if (D_0013F450.state_timer < t0) {
                 float z;
 
@@ -1094,7 +1094,7 @@ void HeroL14_UpdateStatePhysics(void) {
                         float e;
 
                         d = FastSubRots(D_0013F450.unkA5C, D_0013F450.motion.rot.f[2]);
-                        e = AngleDiffDirected(1, D_0013F450.unkA5C, D_0013F450.motion.rot.f[2]);
+                        e = compute_directed_angle_delta(1, D_0013F450.unkA5C, D_0013F450.motion.rot.f[2]);
                         if (e > 4.363323f) {
                             near = 0;
                         }
@@ -1124,7 +1124,7 @@ void HeroL14_UpdateStatePhysics(void) {
                     }
                 }
             }
-            if (D_0013F450.unkA9C == 0 && Hero_IsTimeInWindow(33.0f)) {
+            if (D_0013F450.unkA9C == 0 && test_hero_animation_frame_window(33.0f)) {
                 if (D_0013F450.unk12E2 != 0 && D_0013F450.motion.speed_xy < D_0015EE6C * 2.0f) {
                     D_0013F450.motion.velocity.f[0] += FastCos(D_0013F450.motion.rot.f[2]) * (D_0015EE6C * 1.3f);
                     D_0013F450.motion.velocity.f[1] += FastSin(D_0013F450.motion.rot.f[2]) * (D_0015EE6C * 1.3f);
@@ -1133,7 +1133,7 @@ void HeroL14_UpdateStatePhysics(void) {
                 launch_hero_wrench();
             }
             if (D_0013F450.unk12E2 != 0) {
-                if (Hero_IsTimeInWindow(84.0f)) {
+                if (test_hero_animation_frame_window(84.0f)) {
                     float a;
                     float s;
 
@@ -1363,7 +1363,7 @@ void HeroL14_UpdateStatePhysics(void) {
             clip_hero_horizontal_velocity(1);
             if (D_0013F450.air_frames.s != 0) {
                 HeroMoveDownAlongNormal(D_0013F450.motion.velocity.f, D_0013F450.motion.unk110.f, D_0015EE70 * 24.0f);
-                Hero_StopAtSteepWall();
+                correct_hero_airborne_wall_velocity();
             } else {
                 HeroMoveDownAlongNormal(D_0013F450.motion.velocity.f, D_0013F450.motion.velocity.f, D_0015EE70 * 54.0f);
             }
@@ -1381,7 +1381,7 @@ void HeroL14_UpdateStatePhysics(void) {
         set_planar_vel(99999.0f);
         if (D_0013F450.air_frames.s != 0) {
             D_0013F450.motion.velocity.f[2] = D_0013F450.motion.displacement.f[2] - D_0015EE70 * 25.0f;
-            Hero_StopAtSteepWall();
+            correct_hero_airborne_wall_velocity();
         } else {
             D_0013F450.motion.velocity.f[2] -= D_0015EE70 * 54.0f;
         }
@@ -1392,7 +1392,7 @@ void HeroL14_UpdateStatePhysics(void) {
             float t;
             float lim;
 
-            Hero_UpdateSpeedDecay();
+            update_hero_stick_target_magnitude();
             func_001F9EE8(vec[0], D_0013F450.motion.unk170.f, D_0013F450.unk40);
             a = FastAbsF(func_L00_001FF860(vec[0][0], vec[0][1]));
             if (a > slideAngle) {
@@ -1448,10 +1448,10 @@ void HeroL14_UpdateStatePhysics(void) {
                     D_0013F450.unk3BE = 0;
                 }
             }
-            Hero_UpdateSpeedDecay();
+            update_hero_stick_target_magnitude();
             if (D_0013F450.unk930 > 0.0f) {
 
-                Hero_ComputeMoveOffset(0.7f, 0.0f);
+                build_scaled_hero_move_impulse(0.7f, 0.0f);
                 *(u128 *)vec[0] = *(u128 *)D_0013F450.move_impulse.f;
                 D_0013F450.target_speed = D_0013F450.target_speed + forward_component(vec[0]);
                 if (D_0013F450.target_speed < D_0015EE6C * 0.7f) {
@@ -1516,7 +1516,7 @@ void HeroL14_UpdateStatePhysics(void) {
             }
             if (D_0013F450.air_frames.s != 0) {
                 HeroMoveDownAlongNormal(D_0013F450.motion.velocity.f, D_0013F450.motion.unk120.f, D_0015EE70 * 25.0f);
-                Hero_StopAtSteepWall();
+                correct_hero_airborne_wall_velocity();
             } else {
                 HeroMoveDownAlongNormal(D_0013F450.motion.velocity.f, D_0013F450.motion.velocity.f, D_0015EE70 * 54.0f);
             }
@@ -1602,7 +1602,7 @@ void HeroL14_UpdateStatePhysics(void) {
                 vec[1][2] = 0.0f;
                 vec[1][2] = random_float_between(D_0015EE6C * 3.0f, D_0015EE6C * 5.0f);
                 vec[1][3] = -(D_0015EE70 * 30.0f);
-                PartType25Spawn((char *)vec[0], (char *)vec[1], 0);
+                spawn_color_decaying_effect_particle((char *)vec[0], (char *)vec[1], 0);
             }
             hasW = D_L14_0017A2C0[D_0013F450.items[0].item_id].f18 != 0;
             if (D_0013F450.items[0].item_id == 0xC) {
@@ -1902,7 +1902,7 @@ void HeroL14_UpdateStatePhysics(void) {
     case 0x19:
         D_0013F450.motion.move_yaw = FastAddRots(D_0013F450.unk4E4, 3.1415927f);
         turn_to(0, D_0015EE64 * 0.04f, D_0015EE64 * 0.2f, D_0015EE6C * 6.2831855f);
-        StepAngleToward(&D_0013F450.motion.rot.f[1], 0, 0.0f, D_0015EE6C * 4.712389f);
+        step_angle_toward_target(&D_0013F450.motion.rot.f[1], 0, 0.0f, D_0015EE6C * 4.712389f);
         FastVecSub(D_0013F450.motion.velocity.f, D_0013F450.unk4D0.f, D_0013F450.motion.pos.f);
         ClampVectorLength(D_0013F450.motion.velocity.f, D_0015EE6C * 4.0f);
         ApproachValue(&D_0013F450.unk4F0, D_0013F450.motion.pos.f[2], D_0015EE6C * 3.0f);
@@ -1958,7 +1958,7 @@ void HeroL14_UpdateStatePhysics(void) {
     case 0x79:
         D_0013F450.motion.move_yaw = D_0013F450.downhill_yaw;
         D_0013F450.target_speed = D_0015EE6C * 5.5f;
-        func_L00_00214520(D_0015EE70 * 25.0f);
+        steer_hero_planar_velocity(D_0015EE70 * 25.0f);
         HeroMoveDownAlongNormal(D_0013F450.motion.velocity.f, D_0013F450.motion.unk120.f, D_0015EE70 * 18.0f);
         break;
     case 0x6:
@@ -1973,17 +1973,17 @@ void HeroL14_UpdateStatePhysics(void) {
             qcopy(vec[0], D_0013F450.motion.rot.f);
             SpringAngle(&vec[0][1], t, &D_0013F450.motion.unkA0.f[1], 0, D_0015EE64 * 0.02f, D_0015EE64 * 0.3f, D_0015EE6C * 2.6179938f);
             SpringAngle(&vec[0][0], 0.0f, &D_0013F450.motion.unkA0.f[0], 0, D_0015EE64 * 0.02f, D_0015EE64 * 0.3f, D_0015EE6C * 2.6179938f);
-            PlaceRelativeToCameraSimple(D_0013F450.motion.unkA0.f[0], D_0013F450.motion.unkA0.f[1], 0.0f);
+            rotate_hero_about_fixed_local_pivot(D_0013F450.motion.unkA0.f[0], D_0013F450.motion.unkA0.f[1], 0.0f);
             if (D_0013F450.ground_distance > 1.0f) {
                 D_0013F450.state.step = 1;
             }
         }
-        Hero_UpdateSpeedDecay();
+        update_hero_stick_target_magnitude();
         if (D_0013F450.unk1C4 == 0) {
             Hero_UpdateHopMovement();
         }
         adjust_hero_pose_targets_from_motion();
-        Hero_ComputeMoveOffset(0.7f, D_0015EE6C * 0.0f);
+        build_scaled_hero_move_impulse(0.7f, D_0015EE6C * 0.0f);
         HeroMoveDownAlongNormal(D_0013F450.motion.velocity.f, D_0013F450.motion.velocity.f, D_0013F450.unk940);
         if (gravity_z(D_0013F450.motion.velocity.f) < -(D_0015EE6C * 50.0f)) {
             gravity_set_z(D_0013F450.motion.velocity.f, D_0013F450.motion.velocity.f, -(D_0015EE6C * 50.0f));
@@ -1993,7 +1993,7 @@ void HeroL14_UpdateStatePhysics(void) {
         D_0013F450.unk20AC = 1;
         ApproachValue(&D_0013F450.unk948, D_0013F450.unk950, D_0015EE70 * 8.726646f);
         ApproachValue(&D_0013F450.unk94C, D_0013F450.unk954, D_0015EE70 * 8.726646f);
-        PlaceRelativeToCameraSimple(D_0013F450.unk948, D_0013F450.unk94C, 0.0f);
+        rotate_hero_about_fixed_local_pivot(D_0013F450.unk948, D_0013F450.unk94C, 0.0f);
         {
             float len;
 
@@ -2043,7 +2043,7 @@ void HeroL14_UpdateStatePhysics(void) {
                     v = D_0015EE70 * 1.2f;
                 }
             }
-            func_L00_00214520(v);
+            steer_hero_planar_velocity(v);
             adjust_hero_pose_targets_from_motion();
             clip_hero_horizontal_velocity(1);
             if (fast) {
@@ -2094,7 +2094,7 @@ void HeroL14_UpdateStatePhysics(void) {
             if (D_0013F450.motion.pos.f[2] < D_0013F450.unk410) {
                 ApproachValue(&D_0013F450.unk410, D_0013F450.motion.pos.f[2], D_0015EE6C * 4.0f);
             }
-            HeroLedgeGrabCheck();
+            probe_hero_airborne_wall_contact();
         }
         break;
     case 0x7:
@@ -2115,8 +2115,8 @@ void HeroL14_UpdateStatePhysics(void) {
     case 0x5E:
     case 0x69:
         if (D_0013F450.state.current == 0x1C && D_0013F450.unk22D8 == 0 && D_0013F450.items[3].item_id == 3) {
-            if (Hero_IsTimeInWindow(10.0f)) {
-                Hero_PlayActiveSound(4, 0);
+            if (test_hero_animation_frame_window(10.0f)) {
+                allocate_hero_voice_for_entry(4, 0);
             }
         }
         if (D_0013F450.unk4A8 != 0 && D_0013F450.unk12E2 != 0) {
@@ -2174,13 +2174,13 @@ void HeroL14_UpdateStatePhysics(void) {
                     if (D_0013F450.unk418 != 0) {
                         reduce_and_apply_hero_planar_velocity_addend(D_0013F450.unk484);
                     }
-                    Hero_ComputeMoveOffset(0.5f, D_0015EE6C * 2.0f);
+                    build_scaled_hero_move_impulse(0.5f, D_0015EE6C * 2.0f);
                     if (D_0013F450.state.current == 9 && D_0013F450.state_timer < D_0013F450.unk420 + scale_ticks(4)) {
-                        HeroMoveAlongHeading(D_0013F450.motion.velocity.f, D_0013F450.motion.velocity.f, D_0015EE70 * 16.0f * D_0013F450.state_timer);
+                        add_hero_forward_offset(D_0013F450.motion.velocity.f, D_0013F450.motion.velocity.f, D_0015EE70 * 16.0f * D_0013F450.state_timer);
                     }
                     if (D_0013F450.state.current == 0xA) {
                         if (D_0013F450.state_timer < scale_ticks(0x22)) {
-                            HeroMoveAlongHeading(D_0013F450.motion.velocity.f, D_0013F450.motion.velocity.f, D_0015EE70 * 53.0f * D_0013F450.state_timer);
+                            add_hero_forward_offset(D_0013F450.motion.velocity.f, D_0013F450.motion.velocity.f, D_0015EE70 * 53.0f * D_0013F450.state_timer);
                         }
                     }
                     if (D_0013F450.state_timer < scale_ticks(0xA) && D_0013F450.unk229C > 0.2f) {
@@ -2227,14 +2227,14 @@ void HeroL14_UpdateStatePhysics(void) {
             if (D_0013F450.anim_frame < 28.0f) {
                 int n;
 
-                LocalToWorldPoint(vec[0], 0.8f, 0.0f, 0.3f);
+                transform_hero_local_offset_to_world(vec[0], 0.8f, 0.0f, 0.3f);
                 n = coll_sphere_mobys(0.9f, vec[0], 0, D_0013F450.moby, 0);
                 if (n != 0) {
                     int i;
 
                     FastVecScale(vec[1], D_0013F450.motion.displacement.f, 7.0f);
                     for (i = 0; i < n; i++) {
-                        if (IsMobyClass500To540((int)D_L14_00178700[i])) {
+                        if (is_moby_in_class_range_500_to_540((int)D_L14_00178700[i])) {
                             PostHitMessage(D_L14_00178700[i], (int)D_0013F450.moby, 0x10000, D_0013F450.motion.pos.f, vec[1], 1.0f);
                         }
                     }
@@ -2242,7 +2242,7 @@ void HeroL14_UpdateStatePhysics(void) {
             }
         }
         hero_integrate_velocity();
-        HeroLedgeGrabCheck();
+        probe_hero_airborne_wall_contact();
         break;
     case 0x16:
         {
@@ -2314,7 +2314,7 @@ void HeroL14_UpdateStatePhysics(void) {
             }
             if (D_0013F450.air_frames.s != 0) {
                 HeroMoveDownAlongNormal(D_0013F450.motion.velocity.f, D_0013F450.motion.displacement.f, D_0015EE70 * 25.0f);
-                Hero_StopAtSteepWall();
+                correct_hero_airborne_wall_velocity();
             } else {
                 HeroMoveDownAlongNormal(D_0013F450.motion.velocity.f, D_0013F450.motion.velocity.f, D_0015EE70 * 54.0f);
             }
@@ -2332,7 +2332,7 @@ void HeroL14_UpdateStatePhysics(void) {
             clip_hero_horizontal_velocity(0);
             if (D_0013F450.air_frames.s != 0) {
                 HeroMoveDownAlongNormal(D_0013F450.motion.velocity.f, D_0013F450.motion.displacement.f, D_0015EE70 * 25.0f);
-                Hero_StopAtSteepWall();
+                correct_hero_airborne_wall_velocity();
             } else {
                 HeroMoveDownAlongNormal(D_0013F450.motion.velocity.f, D_0013F450.motion.velocity.f, D_0015EE70 * 54.0f);
             }
@@ -2354,7 +2354,7 @@ void HeroL14_UpdateStatePhysics(void) {
         clip_hero_horizontal_velocity(0);
         if (D_0013F450.air_frames.s != 0) {
             HeroMoveDownAlongNormal(D_0013F450.motion.velocity.f, D_0013F450.motion.unk120.f, D_0015EE70 * 25.0f);
-            Hero_StopAtSteepWall();
+            correct_hero_airborne_wall_velocity();
         } else {
             HeroMoveDownAlongNormal(D_0013F450.motion.velocity.f, D_0013F450.motion.velocity.f, D_0015EE70 * 54.0f);
         }
@@ -2362,7 +2362,7 @@ void HeroL14_UpdateStatePhysics(void) {
     case 0x58:
         D_0013F450.motion.move_yaw = D_0013F450.downhill_yaw;
         D_0013F450.target_speed = D_0015EE6C * 5.5f;
-        func_L00_00214520(D_0015EE70 * 25.0f);
+        steer_hero_planar_velocity(D_0015EE70 * 25.0f);
         HeroMoveDownAlongNormal(D_0013F450.motion.velocity.f, D_0013F450.motion.unk120.f, D_0015EE70 * 18.0f);
         break;
     case 0x55:
@@ -2402,7 +2402,7 @@ void HeroL14_UpdateStatePhysics(void) {
             clip_hero_horizontal_velocity(1);
             if (D_0013F450.air_frames.s != 0) {
                 HeroMoveDownAlongNormal(D_0013F450.motion.velocity.f, D_0013F450.motion.unk120.f, D_0015EE70 * 25.0f);
-                Hero_StopAtSteepWall();
+                correct_hero_airborne_wall_velocity();
             } else {
                 HeroMoveDownAlongNormal(D_0013F450.motion.velocity.f, D_0013F450.motion.velocity.f, D_0015EE70 * 54.0f);
             }

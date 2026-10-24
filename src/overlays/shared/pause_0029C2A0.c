@@ -19,7 +19,7 @@ typedef struct {
 } Table;
 
 /* Find or add a table entry keyed on the moby offset and parameters; register the new one. */
-void FindOrAddMobyEntry(char *a0, int a1, char *p, int mode, Table *t) {
+void record_moby_context_bytes(char *a0, int a1, char *p, int mode, Table *t) {
     short v20 = *(short *)(p + 0xB2);
     short v19 = *(short *)(p + 0xA6);
     short key;

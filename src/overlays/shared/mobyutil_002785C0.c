@@ -19,7 +19,7 @@ extern void func_001F9BC0(void *);
 extern float func_001F9F90(float);
 extern float func_001F9FA8(float);
 
-void RandomRadialOffset(float *out, float scale)
+void generate_random_scaled_vector2(float *out, float scale)
 {
     float angle = random_angle_radians();
     float magnitude = scale_by_one_minus_random_squared(scale);

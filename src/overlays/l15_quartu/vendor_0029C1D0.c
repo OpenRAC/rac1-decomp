@@ -1003,7 +1003,7 @@ void construction_arm_update(char *moby) {
     case CONSTRUCTION_ARM_DESTROY:
         Moby_PlaySound(0, 0, (int)m);
         SpawnExplosionFx(m, &m->pos, -1, 1.5f, 13.0f);
-        SpawnBreakFxByDistance(m);
+        spawn_proximity_gated_bolts(m);
         SpawnBreakFragment(m, 0x74B, &m->pos, &m->rot, 0, 0, 0.0f, D_L15_0015F660, D_L15_0015F660, D_L15_0015F660);
         SpawnBreakFragment(m, 0x74C, &m->pos, &m->rot, 0, 0, 0.0f, D_L15_0015F660, D_L15_0015F660, D_L15_0015F660);
         SpawnBreakFragment(m, 0x74D, &m->pos, &m->rot, 0, 0, 0.0f, D_L15_0015F660, D_L15_0015F660, D_L15_0015F660);
@@ -1417,7 +1417,7 @@ void func_L15_002C6950(HMoby_6950 *m) {
             return;
         }
         if (d->w190 != -1 || (is_point_inside_clip_volume(D_0013E633 + 0xE9D, d->w1B0) && goal.mode != 2)) {
-            if (d->w190 != -1 && count_group_e81e0(d->w190, 0x40)) break;
+            if (d->w190 != -1 && count_active_moby_group_members(d->w190, 0x40)) break;
             m->w94 = *(int *)(m->cls + 0x10);
             m->flags = (m->flags & 0xFFBE) | 0x1000;
             d->b58 = 0x19;
@@ -1543,7 +1543,7 @@ void func_L15_002C6950(HMoby_6950 *m) {
                 FastVecSub(&vA0, &vB0, &v90);
                 func_L00_001FF500(&vA0, &vA0, D_0015EE6C * 6.0f);
                 vA0.i[2] = 0;
-                d->shot = (HMoby_6950 *)SpawnHomingSpark((char *)&vA0, (char *)&v90, (int)m, scale_ticks(0xF0), goal.pos.f[2]);
+                d->shot = (HMoby_6950 *)spawn_homing_spark_projectile((char *)&vA0, (char *)&v90, (int)m, scale_ticks(0xF0), goal.pos.f[2]);
             }
         } else {
             vA0.q = m->pos.q;
@@ -1729,7 +1729,7 @@ extern void func_L00_001FF4B0(void *, void *, float);
 
 /* Flocking step toward the moby's path target: separates from same-type mobys, keeps ~10 units off the
  * target while others are closer, writes the steering point to out and returns the heading to follow. */
-float FlockStepAlongPath(void *m_, void *out, float r) {
+float compute_ultramech_flocking_steering_point(void *m_, void *out, float r) {
     char *m = m_;
     float tmp[4];
     float tgt[4];
@@ -1985,7 +1985,7 @@ void ultramech_unlimited_update(UMoby *m) {
         break;
     case 1:
         if (d->w1CC != -1 || is_point_inside_clip_volume(D_0013E633 + 0xE9D, d->w1DC)) {
-            if (d->w1CC != -1 && count_group_e81e0(d->w1CC, 0x40)) break;
+            if (d->w1CC != -1 && count_active_moby_group_members(d->w1CC, 0x40)) break;
             if (D_001414F4[0] == 2) {
                 m->w94 = *(int *)(m->cls + 0x10);
                 m->flags = (m->flags & 0xFFBE) | 0x1000;
@@ -2113,7 +2113,7 @@ void ultramech_unlimited_update(UMoby *m) {
                 func_L10_002CD578_v(&v20, 3.0f, &v10, (int)m, (int)tgt, scale_ticks(*(int *)&D_L15_00161BA4));
                 func_L00_001FF4B0(&v20, &v20, 3.0f);
                 func_L00_001FF240(&v30, &v10, &v20);
-                func_L03_00251AC8(m, &v10, 0);
+                emit_radial_particle_burst(m, &v10, 0);
                 d->shots++;
             } else if ((float)d->shots >= 6.0f && (m->animFlags & 2)) {
                 m->state = 6;
@@ -2163,7 +2163,7 @@ void ultramech_unlimited_update(UMoby *m) {
     case 7: {
         float ang = func_L00_001FF860(tgt->pos.f[0] - m->pos.f[0], tgt->pos.f[1] - m->pos.f[1]);
         if (d->w164 != 2) {
-            ang = FlockStepAlongPath(m, &v20, d->f1B8);
+            ang = compute_ultramech_flocking_steering_point(m, &v20, d->f1B8);
             if (func_001F9D48(&m->pos, &tgt->pos) < *(float *)&D_L15_00161BB0) {
                 m->state = 8;
                 if (m->anim != 2) MobyBlendAnimation(m, 2, 0, scale_ticks(0xA));
@@ -2251,7 +2251,7 @@ void ultramech_unlimited_update(UMoby *m) {
         SpawnBreakFragment(m, 0x64A, &m->pos, &m->rot, scale_ticks(0x5A), 0, D_0015EE70 * 12.0f, &v10, D_L15_0015F660, D_L15_0015F660);
         SpawnBreakFragment(m, 0x64B, &m->pos, &m->rot, scale_ticks(0x5A), 0, D_0015EE70 * 12.0f, &v10, D_L15_0015F660, D_L15_0015F660);
         SpawnBreakFragment(m, 0x64C, &m->pos, &m->rot, 0, 0, 0.0f, D_L15_0015F660, D_L15_0015F660, D_L15_0015F660);
-        SpawnMobyBurstFx(m, 0x7A9, 1, 0x7A9, 2, 4, 2);
+        spawn_moby_break_fragments(m, 0x7A9, 1, 0x7A9, 2, 4, 2);
         m->state = 0x40;
         return;
     case 0x40:
@@ -2295,7 +2295,7 @@ spawn:
                 k = random_integer_below(100) & 1;
                 Moby_GetJointWorldPos(m, j, &v20);
                 func_001F9EC0(&v10, &v10, m->mtx);
-                PartType22Spawn(&v20, &v10, k ? 0x400F0F7F : 0x407F7F7F, 0x272727, random_float_between(1.5f, 3.0f) * 210000.0f, scale_ticks(k ? rand_range(0xA, 0xF) : rand_range(0x14, 0x1E)));
+                spawn_effect_particle_with_target_scalar(&v20, &v10, k ? 0x400F0F7F : 0x407F7F7F, 0x272727, random_float_between(1.5f, 3.0f) * 210000.0f, scale_ticks(k ? rand_range(0xA, 0xF) : rand_range(0x14, 0x1E)));
             }
         }
     } else if (m->state > 1 && m->state != 0x40) {
@@ -2523,7 +2523,7 @@ extern void func_001F9BC0(void *);
 extern void func_L00_00251E30(void *, void *);
 
 /* Creates a class 0x4E9 moby at vector and returns it, or 0 if none is free. */
-char *Moby1257Spawn(void *unused, void *vector) {
+char *spawn_poison_vessel(void *unused, void *vector) {
     char *moby = CreateMoby(0x4E9);
     if (moby != 0) {
         char *data = *(char **)(moby + 0x78);
@@ -2692,7 +2692,7 @@ void bolt_grabber_update(unsigned char *m) {
     moby->scale = moby->pclass->scale * *(float *)&D_L15_001620F8;
     switch (moby->state) {
     case BOLT_GRABBER_INITIALIZE:
-        DriftingSprites_Init((char *)moby);
+        initialize_moby_particle_effect((char *)moby);
         if (D_0013D605[0xD] != 0) {
             DeleteMoby(moby);
             return;
@@ -2701,7 +2701,7 @@ void bolt_grabber_update(unsigned char *m) {
         moby->pos.z = moby->pos.z + 1.0f;
         break;
     case BOLT_GRABBER_WAIT_FOR_PROXIMITY:
-        DriftingSprites_DrawL10((char *)moby);
+        emit_moby_sprite_particles((char *)moby);
         if (func_001F9D48(&moby->pos, D_0013E633 + 0xE9D) < 3.0f) {
             moby->flags |= 0x41;
             StartCutscene(5);
@@ -2712,7 +2712,7 @@ void bolt_grabber_update(unsigned char *m) {
         if (D_L15_0015F6A8 != 2) {
             ShowBanner(0x3AA3, -1);
             D_L15_0015F720 = scale_ticks(0xB4);
-            GiveItem(0x22, 1);
+            grant_inventory_item(0x22, 1);
             memcard_Save(0, -1);
             moby->state = 3;
         }
@@ -2737,7 +2737,7 @@ void update_poison_vessel_spawner(char *moby) {
     case 1:
         if (func_001F9908(data)) {
             data[0] = func_001FA898_r(func_001F9878(*(float *)&D_L15_001620FC * 60.0f));
-            Moby1257Spawn(moby, moby + 0x10);
+            spawn_poison_vessel(moby, moby + 0x10);
         }
         break;
     }
@@ -2933,7 +2933,7 @@ void update_quartu_cutscene_trigger(unsigned char *moby) {
         break;
     case 2:
         if (D_L15_0015F6A8 != 2) {
-            start_indexed_disc_stream(0x11);
+            PlayMovieEntryIfIdle(0x11);
             moby[0x20] = 1;
         }
         break;
@@ -2955,7 +2955,7 @@ void update_quartu_cutscene_trigger(unsigned char *moby) {
                 char *p = D_L15_0016016C + data[1] * 128;
                 jet_reset_camera(p + 0x30, p + 0x70);
             }
-            ShowPlanetBanner(0x11);
+            queue_planet_unlock_message(0x11);
             memcard_Save(0, -1);
             moby[0x20] = 4;
         }
@@ -3173,7 +3173,7 @@ void codebot_slot_update(char *moby) {
             unsigned char *q = D_0013E633 + 0xE9D;
             if (func_001F9D48(q, &m->pos) < 3.0f) {
                 if (q[0x2024] == 0) {
-                    Trigger_Arm(data[0]);
+                    activate_descriptor(data[0]);
                     m->state = CODEBOT_SLOT_WAIT_TO_CREATE_EFFECT;
                 }
             }

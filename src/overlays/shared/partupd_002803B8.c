@@ -10,7 +10,7 @@ extern int func_001FA898_r(float) __asm__("func_001FA898");
 extern unsigned char *D_L08_001B2CA4;
 
 // Spawns a particle of the given kind at pos with velocity vel.
-void Particle_SpawnByKind(void *pos, int kind, void *vel, float f) {
+void create_type_49_particle(void *pos, int kind, void *vel, float f) {
     float v[4];
     unsigned char *p;
     float *vp = v;

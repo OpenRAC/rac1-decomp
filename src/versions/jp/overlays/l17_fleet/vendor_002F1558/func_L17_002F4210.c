@@ -154,7 +154,7 @@ void update_fleet_camera_box_watcher(char *moby) {
             *(unsigned char *)(d + 0x4C) = 1;
         }
         if (*(unsigned char *)(d + 0x4C) == 0 && is_point_inside_clip_volume(D_0013E633 + 0xE9D, *(int *)(d + 0x3C))) {
-            HelpPopup_Cancel();
+            clear_active_help_record();
             if (*(int *)(D_0014171B + 0x7A9) >= 0) {
                 Help_Request(0x4268, 0x8B);
             }
@@ -168,7 +168,7 @@ void update_fleet_camera_box_watcher(char *moby) {
         break;
     case 2: {
         char *cam;
-        func_L00_002E9B30();
+        set_follow_camera_blend_output_flags();
         set_follow_camera_angle_blend_from_position((int)(D_L17_0016016C + (*(int *)(d + 0x44) << 7) + 0x30), 0.02617994f, 0.0f);
         cam = D_L17_00167600;
         f = func_L00_001FF860(*(float *)(D_L17_0016016C + ((*(int *)(d + 0x44) << 7) + 0x30)) - *(float *)(cam + 0x140),
@@ -180,7 +180,7 @@ void update_fleet_camera_box_watcher(char *moby) {
         break;
     }
     case 3:
-        func_L00_002E9B30();
+        set_follow_camera_blend_output_flags();
         if (func_001F9908_i((int *)(d + 0x5C))) {
             char *cam;
             set_follow_camera_angle_blend_from_position((int)(D_L17_0016016C + (*(int *)(d + 0x40) << 7) + 0x30), 0.02617994f, 0.0f);
@@ -188,7 +188,7 @@ void update_fleet_camera_box_watcher(char *moby) {
             f = func_L00_001FF860(*(float *)(D_L17_0016016C + ((*(int *)(d + 0x40) << 7) + 0x30)) - *(float *)(cam + 0x140),
                                   *(float *)(D_L17_0016016C + ((*(int *)(d + 0x40) << 7) + 0x34)) - *(float *)(cam + 0x144));
             if (FastDiffRots(*(float *)(cam + 0x158), f) < 0.034906585f) {
-                HeroL06_SetStateFromMode();
+                enter_hero_idle_state_for_current_vehicle_mode();
                 *(unsigned char *)(d + 0x4C) = 1;
                 *(unsigned char *)(moby + 0x20) = 1;
             }

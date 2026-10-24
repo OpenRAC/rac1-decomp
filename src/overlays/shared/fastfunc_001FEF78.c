@@ -7,7 +7,7 @@ ASM_FUNC("asm/overlays", func_L00_001FEFE0);
 ASM_FUNC("asm/overlays", func_L00_001FF040);
 INCLUDE_ASM("asm/overlays", func_L00_001FF088);
 INCLUDE_ASM("asm/overlays", func_L00_001FF0B0);
-void Vec_ZeroXYZ(s64 *v) {
+void clear_twelve_bytes(s64 *v) {
     v[0] = 0;
     __asm__ volatile ("nop");
     ((s32 *)v)[2] = 0;

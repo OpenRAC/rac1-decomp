@@ -64,7 +64,7 @@ void background_ship_1_update(char *moby) {
             *(int *)(moby + 0x94) = *(int *)(*(char **)(moby + 0x24) + 0x10);
         }
         if (*(unsigned char *)(moby + 0x31) != 0) {
-            SpawnThreeParticles(moby, tv);
+            spawn_background_ship_1_joint_sparks(moby, tv);
         }
         if (r != 0 && 0.0f < *(float *)(r + 0x2C)) {
             flag = 1;
@@ -127,6 +127,6 @@ void background_ship_1_update(char *moby) {
             *(int *)(moby + 0x90) = res;
             *(float *)(d + 0x68) = FastAddRots(*(float *)(d + 0x68), k);
         }
-        RefreshMobyAttachPoints3(moby);
+        prepare_background_ship_1_joint_billboards(moby);
     }
 }

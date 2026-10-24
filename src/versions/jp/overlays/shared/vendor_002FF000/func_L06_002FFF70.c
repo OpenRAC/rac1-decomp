@@ -103,7 +103,7 @@ void func_L06_002FFF70(char *m) {
                 vec2[0] = vec2[0] + FastCos(func_L00_001FF860(*(float *)(t + 0x10), *(float *)(t + 0x14))) * (D_0015EE6C * pull);
                 vec2[1] = vec2[1] + FastSin(func_L00_001FF860(*(float *)(t + 0x10), *(float *)(t + 0x14))) * (D_0015EE6C * pull);
                 vec2[2] = random_float_between(off, 8.5f) * D_0015EE6C;
-                p = SpawnRandomDebris((int)m, (char *)vv, (char *)vec2);
+                p = spawn_spinning_moby_fragment((int)m, (char *)vv, (char *)vec2);
                 if (p != 0) {
                     *(float *)(p + 0x2C) = *(float *)(p + 0x2C) * 0.4f;
                 }

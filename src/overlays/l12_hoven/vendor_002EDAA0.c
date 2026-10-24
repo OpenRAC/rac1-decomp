@@ -306,7 +306,7 @@ void HovenShotUpdate(struct Moby *moby) {
                 hit.unk18 = 1;
                 hit.unk19 = 1;
                 hit.oclass = moby->oclass;
-                PostHitMessageFromRecord(D_L12_00174340.moby, &hit);
+                record_moby_hit(D_L12_00174340.moby, &hit);
             }
             moby->state = 2;
         }
@@ -348,7 +348,7 @@ extern void func_L00_00203F20(int, int);
  * awards them (one for staying airborne long enough). */
 void update_hoven_help_and_dialogue(char *m) {
     int *d = *(int **)(m + 0x78);
-    if (count_group_e81e0(d[3], -1) == 0) {
+    if (count_active_moby_group_members(d[3], -1) == 0) {
         unsigned char *s = D_0013D50F_e + 1;
         if (s[0x14] == 0) {
             s[0x14] = 1;
@@ -724,7 +724,7 @@ extern void func_L00_002EBEE0(void *);
 extern char D_L12_00161F70;
 
 // Builds a rotated/translated matrix from a moby and its data, then sets a rotation from an angle.
-void Moby1267_SetCameraView(char *moby) {
+void update_hoven_turret_camera(char *moby) {
     float m[8];
     char *data = *(char **)(moby + 0x78);
     func_L08_00315068(moby);
@@ -968,7 +968,7 @@ void hoven_turret_update(Moby *moby) {
                     MobySetAnimation(moby, 5, 0);
                 }
                 HeroL12_SetMoveState(0x32, 1);
-                Moby1267_SetCameraView((char *)moby);
+                update_hoven_turret_camera((char *)moby);
                 d->f8C = 200.0f;
                 moby->hit_slot = 0xFF;
                 D_L12_00161FA0++;
@@ -1021,7 +1021,7 @@ void hoven_turret_update(Moby *moby) {
                 moby->rot.z = 3.1415927f;
             } else {
                 jet_clear_persistent(moby->mission);
-                start_indexed_disc_stream(0xD);
+                PlayMovieEntryIfIdle(0xD);
                 unlock_planet(0xD);
                 {
                     Vec_304920 cpos = { 328.4f, 338.7f, 60.98f };
@@ -1118,12 +1118,12 @@ void hoven_turret_update(Moby *moby) {
                 PartType27Spawn(muz, dir, 0x2F4F7F7F, rand_range(scale_ticks(4), scale_ticks(7)), 500000.0f);
             }
             if (D_L12_00161A20 == 0) {
-                Moby1267_SetCameraView((char *)moby);
+                update_hoven_turret_camera((char *)moby);
             }
         }
         break;
     case 7:
-        AddDrawCallback(DrawCounterFadeOverlay, moby);
+        AddDrawCallback(draw_hoven_turret_destruction_fade, moby);
         if (FastDecTimer(&d->fAE)) {
             Vec_304920 v;
             float a;
@@ -1361,7 +1361,7 @@ extern int func_001F9850(int);
 extern void func_001F55C0(int, int, int, int);
 
 /* Scale and play the vendor cue while its counter is below the limit. */
-void DrawCounterFadeOverlay(Level12VendorCounterMoby *moby) {
+void draw_hoven_turret_destruction_fade(Level12VendorCounterMoby *moby) {
     Level12VendorCounterData *data = moby->data;
     int count = scale_ticks(0x50);
     int value = data->value;
@@ -1545,7 +1545,7 @@ typedef struct {
 } Gun_306890;
 
 /* Hoven turret battery update: aims each manned gun at the hero, fires, takes hits and smokes when damaged. */
-void TurretBatteryUpdate(char *moby) {
+void update_planetbuster_maximus_guns(char *moby) {
     char *d = *(char **)(moby + 0x78);
     int i;
     float v0[4];
@@ -1585,7 +1585,7 @@ void TurretBatteryUpdate(char *moby) {
                                           -1.5707964f),
                             *(float *)(moby + 0x48));
         if (md->h90 == 0) {
-            if (StepAngleToward((float *)(ent + 0x18), yaw, 0,
+            if (step_angle_toward_target((float *)(ent + 0x18), yaw, 0,
                                   D_0015EE6C * 0.5235988f + D_0015EE6C * 0.17453292f * (float)i) < 0.08726646f) {
                 md->h90 = 1;
                 md->f8C = 1.0f;
@@ -1727,14 +1727,14 @@ void TurretBatteryUpdate(char *moby) {
                         } else {
                             D_L12_001FB948[0x11] = 1;
                         }
-                        StartSlotPieceMotion((struct Moby *)moby, k);
+                        initialize_planetbuster_maximus_detached_part_motion((struct Moby *)moby, k);
                         if (i == 4) {
                             for (j = 0; j < 0x11; j++) {
                                 int id = *(int *)(d + j * 0x30 + 0x20);
                                 if (id != -1 && *(short *)((id << 8) + D_L12_00160058_m + 0xA6) == 0x4FD) {
                                     D_L12_001FB948[j] = id;
                                     *(int *)(d + j * 0x30 + 0x20) = -1;
-                                    StartSlotPieceMotion((struct Moby *)moby, j);
+                                    initialize_planetbuster_maximus_detached_part_motion((struct Moby *)moby, j);
                                 }
                             }
                         }
@@ -1753,7 +1753,7 @@ void TurretBatteryUpdate(char *moby) {
                         v1[1] = FastSin(ang) * s;
                         v1[2] = 0.0f;
                         v1[2] = random_float_between(D_0015EE6C, D_0015EE6C * 5.5f);
-                        PartType22Spawn(v0, v1, 0x500A1414, 0xA0A0A, 420000.0f, c);
+                        spawn_effect_particle_with_target_scalar(v0, v1, 0x500A1414, 0xA0A0A, 420000.0f, c);
                     }
                     *(int *)(m + 0x94) = 0;
                     *(unsigned short *)(m + 0x34) |= 0x41;
@@ -1783,7 +1783,7 @@ void TurretBatteryUpdate(char *moby) {
                 v1[2] = 0.0f;
                 v1[2] = random_float_between(D_0015EE6C * 7.0f, D_0015EE6C * 17.0f) * func_001FA888_3055F8(lvl) * 1.5f
                         / func_001FA888_3055F8(5);
-                PartType22Spawn(v0, v1, (rand_range(0x46, 0xCD) << 8) | 0x460A00AA, 0xA0A46, 420000.0f, c);
+                spawn_effect_particle_with_target_scalar(v0, v1, (rand_range(0x46, 0xCD) << 8) | 0x460A00AA, 0xA0A46, 420000.0f, c);
             }
             for (j = 0; j < 3; j++) {
                 int c;
@@ -1798,12 +1798,12 @@ void TurretBatteryUpdate(char *moby) {
                 v1[1] = FastSin(ang) * s;
                 v1[2] = 0.0f;
                 v1[2] = random_float_between(D_0015EE6C * 2.4f, D_0015EE6C * 5.5f);
-                PartType22Spawn(v0, v1, 0x460A1414, 0xA0A0A, 504000.03f, c);
+                spawn_effect_particle_with_target_scalar(v0, v1, 0x460A1414, 0xA0A0A, 504000.03f, c);
             }
         }
         }
     }
-    UpdateSlotPieces(moby);
+    update_planetbuster_maximus_detached_parts(moby);
     if (*(short *)(d + 0x5FC) <= 0 && D_L12_00161F84_m == 0) {
         D_L12_00161FA4_s = 1;
         moby[0x20] = 4;
@@ -1816,7 +1816,7 @@ extern char * D_L12_00160058_07730 __asm__("D_L12_00160058") MACRO_ADDR;
 extern int D_L12_001FB948[];
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l12/gameplay/vendor/003028c8.c, FUN_L12_00306350. */
-void StartSlotPieceMotion(struct Moby *moby, int slot) {
+void initialize_planetbuster_maximus_detached_part_motion(struct Moby *moby, int slot) {
     char *data = (char *)moby->pvars;
     struct Moby *selected;
     float *speed;
@@ -1869,7 +1869,7 @@ extern float D_L12_00161FF0 MACRO_ADDR;
 extern float D_0015EE6C MACRO_ADDR;
 
 // Level 12 vendor: updates each of the 18 slot objects for one frame.
-void UpdateSlotPieces(char *moby) {
+void update_planetbuster_maximus_detached_parts(char *moby) {
     int i;
     int off;
     char *data = *(char **)(moby + 0x78);
@@ -2082,11 +2082,11 @@ void planetbuster_maximus_part_update(char *moby) {
             Spring((float *)(moby + 0x18), (float *)(d + 0x62C), *(float *)(d + 0x618) + add,
                               D_0015EE64 * 0.03f, D_0015EE64 * 0.3f, D_0015EE6C * 2.7f);
         }
-        MobyBobZ(0.7f, D_0015EE6C * 1.2217305f, moby, (float *)(d + 0x5CC), (float *)(d + 0x5C8));
-        LissajousOffsetUpdate(moby, d + 0x5E4, d + 0x5E8, *(float *)&D_L12_00161FB0,
+        update_moby_vertical_oscillation(0.7f, D_0015EE6C * 1.2217305f, moby, (float *)(d + 0x5CC), (float *)(d + 0x5C8));
+        update_moby_rotation_oscillation(moby, d + 0x5E4, d + 0x5E8, *(float *)&D_L12_00161FB0,
                           *(float *)&D_L12_00161FA8 * 0.017453292f * D_0015EE6C,
                           *(float *)&D_L12_00161FAC * 0.017453292f * D_0015EE6C);
-        Moby_UpdateAttachedChildren(moby, d, 0x11);
+        apply_linked_moby_relative_transforms(moby, d, 0x11);
         if (is_point_inside_clip_volume(D_0013E633_e + 0xE9D, *(int *)(d + 0x5EC)) || D_L12_00161F80_m) {
             int i;
             D_L12_00161A34 = 1;
@@ -2102,8 +2102,8 @@ void planetbuster_maximus_part_update(char *moby) {
         P_7DB0 *path;
         int nx;
         float f;
-        MobyBobZ(0.7f, D_0015EE6C * 1.2217305f, moby, (float *)(d + 0x5CC), (float *)(d + 0x5C8));
-        LissajousOffsetUpdate(moby, d + 0x5E4, d + 0x5E8, *(float *)&D_L12_00161FB0,
+        update_moby_vertical_oscillation(0.7f, D_0015EE6C * 1.2217305f, moby, (float *)(d + 0x5CC), (float *)(d + 0x5C8));
+        update_moby_rotation_oscillation(moby, d + 0x5E4, d + 0x5E8, *(float *)&D_L12_00161FB0,
                           *(float *)&D_L12_00161FA8 * 0.017453292f * D_0015EE6C,
                           *(float *)&D_L12_00161FAC * 0.017453292f * D_0015EE6C);
         path = D_L12_001B0C30_7DB0[*(int *)(d + 0x5C0)];
@@ -2130,19 +2130,19 @@ void planetbuster_maximus_part_update(char *moby) {
                                                *(float *)((char *)path + (*(short *)(d + 0x5F8) << 4) + 0x14) - *(float *)(moby + 0x14))) > 1.5707964f) {
             *(short *)(d + 0x5F8) = (*(short *)(d + 0x5F8) + 1) % *(int *)path;
         }
-        Moby_UpdateAttachedChildren(moby, d, 0x11);
-        TurretBatteryUpdate(moby);
+        apply_linked_moby_relative_transforms(moby, d, 0x11);
+        update_planetbuster_maximus_guns(moby);
         break;
     }
     case 3:
         D_L12_00161FB4++;
         SpringAngle(moby + 0x48, 3.0543261f, d + 0x5F4, -1, D_0015EE64 * 0.0015f, D_0015EE64 * 0.3f, D_0015EE6C * 0.17453292f);
-        MobyBobZ(0.7f, D_0015EE6C * 1.2217305f, moby, (float *)(d + 0x5CC), (float *)(d + 0x5C8));
-        LissajousOffsetUpdate(moby, d + 0x5E4, d + 0x5E8, *(float *)&D_L12_00161FB0,
+        update_moby_vertical_oscillation(0.7f, D_0015EE6C * 1.2217305f, moby, (float *)(d + 0x5CC), (float *)(d + 0x5C8));
+        update_moby_rotation_oscillation(moby, d + 0x5E4, d + 0x5E8, *(float *)&D_L12_00161FB0,
                           *(float *)&D_L12_00161FA8 * 0.017453292f * D_0015EE6C,
                           *(float *)&D_L12_00161FAC * 0.017453292f * D_0015EE6C);
-        Moby_UpdateAttachedChildren(moby, d, 0x11);
-        TurretBatteryUpdate(moby);
+        apply_linked_moby_relative_transforms(moby, d, 0x11);
+        update_planetbuster_maximus_guns(moby);
         break;
     case 4:
         if (*(int *)(d + 0x608) != -1 && *(int *)(d + 0x60C) != -1) {
@@ -2205,10 +2205,10 @@ void planetbuster_maximus_part_update(char *moby) {
                 *(int *)(d + i * 0x30 + 0x20) = -1;
             }
             D_L12_001FB948[17] = 1;
-            for (i = 0; i < 18; i++) StartSlotPieceMotion((struct Moby *)moby, i);
+            for (i = 0; i < 18; i++) initialize_planetbuster_maximus_detached_part_motion((struct Moby *)moby, i);
         }
         *(short *)(d + 0x5FA) = *(short *)(d + 0x5FA) + 1;
-        UpdateSlotPieces(moby);
+        update_planetbuster_maximus_detached_parts(moby);
         break;
     }
     update_planetbuster_maximus_glow_color(moby);
@@ -2392,7 +2392,7 @@ void update_moby_draw_and_monitor_linked_state(struct Moby *m) {
         break;
     case 1:
         vis = 1;
-        if (IsBSphereVisibleScaled(m, 48.0f) == -1) {
+        if (check_scaled_vector_bsphere(m, 48.0f) == -1) {
             vis = 0;
         }
         if (vis) {
@@ -2509,8 +2509,8 @@ void BreakableUpdate(char *m) {
         break;
     case 2:
         Moby_PlaySound(0, 0, (int)m);
-        SpawnBreakFxByDistance(m);
-        SpawnMobyBurstFx(m, 0x748, 1, 0x748, 1, 11, 2);
+        spawn_proximity_gated_bolts(m);
+        spawn_moby_break_fragments(m, 0x748, 1, 0x748, 1, 11, 2);
         spawn_moby_from_placement(m, 0x747);
         DeleteMoby(m);
         break;

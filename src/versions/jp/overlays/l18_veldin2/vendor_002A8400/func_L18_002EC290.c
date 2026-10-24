@@ -1,5 +1,5 @@
 extern short D_J_L18_001620AC;
-void ArcEmitterUpdate(void *moby) {
+void update_electric_bolt_geometry_and_particles(void *moby) {
     V_ec290 s[10];
     V_ec290 d[5];
     unsigned char flag = *(unsigned char *)D_0013E633;

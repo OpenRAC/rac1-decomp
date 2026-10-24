@@ -355,7 +355,7 @@ extern unsigned char D_0013D50F[] NOT_SDA;
 extern unsigned char D_0014171B[] NOT_SDA;
 
 /* Sets up the map's tables, loads its data from disc and builds the circular mask. */
-void Map_LoadData(void) {
+void initialize_level_map_archive(void) {
     int i, j;
     int *gl;
     int *q;

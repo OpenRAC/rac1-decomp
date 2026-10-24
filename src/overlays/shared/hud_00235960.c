@@ -196,7 +196,7 @@ extern float D_L00_0017E500[];
    D_L00_0017E500, and offsets *Y by it times (height + 52) for flags 1
    (up) / 2 (down), or *X by it times (width + 20) for flags 4 (left) /
    8 (right), rounded (func_001FA888 / func_001FA898 convert). */
-void Hud_SlideElement(HudElem *e, int *x, int *y, int t, int d) {
+void apply_hud_slide_offset(HudElem *e, int *x, int *y, int t, int d) {
     int dx = 0;
     int dy = 0;
     float s;
@@ -255,7 +255,7 @@ extern void func_L00_00236610(HudElem *);
 
 /* Resets a HUD element: a timer of 30 + func_001F9850(180) (+0x7C),
    offsets 0x48 / 0x4A cleared, then func_L00_00236610. */
-void Hud_InitElement(HudElem *e) {
+void reset_numeric_hud_element(HudElem *e) {
     e->unk7C = scale_ticks(0xB4) + 0x1E;
     e->unk48 = 0;
     e->unk4A = 0;
@@ -416,7 +416,7 @@ void Hud_InitParticles(HudElem *e) {
     float v, lo, span, hi;
     int n;
 
-    Hud_InitElement(e);
+    reset_numeric_hud_element(e);
     for (i = 0; i < 100; i++) {
         v = *(float *)&star_init_limit0_gp;
         if (i >= 10) {
@@ -528,7 +528,7 @@ int draw_hud_stars(HudElem *rec) {
         }
     }
     hud_screen_position(rec, &x, &y);
-    Hud_SlideElement(rec, &x, &y, *(int *)(r + 0x6C), 0);
+    apply_hud_slide_offset(rec, &x, &y, *(int *)(r + 0x6C), 0);
 
     {
         int w = *(int *)&D_L00_0015F840 * 0xD0;
@@ -562,7 +562,7 @@ int draw_hud_stars(HudElem *rec) {
         flagB = 0;
     }
     if (!flagA && flagB == 1) {
-        Hero_PlayActiveSound(0xB, 0);
+        allocate_hero_voice_for_entry(0xB, 0);
     }
     w = 0;
     tex = GetIconFrame(*(int *)r, flagB);
@@ -681,7 +681,7 @@ int func_L00_002377E0(HudElem *e) {
         }
     }
     hud_screen_position(e, &x, &y);
-    Hud_SlideElement(e, &x, &y, e->unk6C, 0);
+    apply_hud_slide_offset(e, &x, &y, e->unk6C, 0);
     tex = GetIconFrame(*(int *)e, 0);
     draw_rotated_hud_sprite(tex, x + e->unk48, y + e->unk4A, *(int *)&D_L00_0015F840, *(int *)&D_L00_0015F844, 0x80);
     {
@@ -908,7 +908,7 @@ int Hud_DrawGaugeFrame(HudElem *e) {
         }
     }
     hud_screen_position(e, &pos[0], &pos[1]);
-    Hud_SlideElement(e, &pos[0], &pos[1], e->unk6C, 0);
+    apply_hud_slide_offset(e, &pos[0], &pos[1], e->unk6C, 0);
     w = *(int *)&D_L00_0015F840 * 0xD0;
     h = *(int *)&D_L00_0015F844 * 0xA0;
     bh = *(int *)&D_L00_0015F840 * 0x260;
@@ -1808,8 +1808,8 @@ extern void func_L00_0023B0F8(HudElem *);
 /* Sets E up with func_L00_0023B0F8, points +0x80 at the shorts of
    D_L00_0015FB70 (declared like D_L00_0015FB68, out of $gp's reach) and
    clears the first. */
-void HudBoltsInit(HudElem *e) {
-    HudTileInit(e);
+void initialize_bolt_counter_hud(HudElem *e) {
+    initialize_numeric_hud_timer_and_base_dimensions(e);
     e->unk80 = &D_L00_0015FB70;
     D_L00_0015FB70.unk0 = 0;
 }
@@ -1826,7 +1826,7 @@ extern int D_0015EE98 MACRO_ADDR;
    to D_L00_0015F904 / D_L00_0015F908; otherwise it lowers them and
    sets +0x6C to 1, or to -6 once both are 0. D_0015EE98 is read before
    the tick update, where retail loads it. */
-void HudBoltsUpdate(HudElem *e) {
+void update_bolt_counter_hud_animation_and_visibility(HudElem *e) {
     unsigned char *c = e->cnt;
     short *tick = e->unk80;
     int v;
@@ -1901,7 +1901,7 @@ extern int func_00116248_3A788() __asm__("func_00116248");
 extern void func_001F6CF8(int, int, int, char *, int);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/text/002377b8.c, FUN_L00_00239df8. */
-int HudBoltsDraw(HudElem_3A788 *m)
+int draw_bolt_counter_hud_panel(HudElem_3A788 *m)
 {
     char buf[16];
     s16 *frame;
@@ -2099,7 +2099,7 @@ extern void func_00200468(int, int, int, int, int, int);
    32 x 32 icon that is visible only while D_00140A86 is set. Returns the
    width. The position is two scalars, not an array: that gives retail's
    argument order. */
-int Hud_DrawMeter(HudElem *e) {
+int draw_hud_cropped_gauge_panel(HudElem *e) {
     int x;
     int y;
     int len;
@@ -2109,7 +2109,7 @@ int Hud_DrawMeter(HudElem *e) {
     e->w = 0x100;
     e->h = 0x40;
     hud_screen_position(e, &x, &y);
-    Hud_SlideElement(e, &x, &y, e->unk6C, 0);
+    apply_hud_slide_offset(e, &x, &y, e->unk6C, 0);
     len = e->unk74 * 0xDD / e->unk08 + 0x1B;
     draw_cropped_hud_sprite(GetIconFrame(0x7558, 1), x, y, len, 0x40, 0x80);
     HudSprite(GetIconFrame(0x7558, 0), x, y, 0x100, 0x40, 0x80);
@@ -2118,7 +2118,7 @@ int Hud_DrawMeter(HudElem *e) {
 }
 /* func_L00_00236750 without the offsets: a 32 x 32 element with a timer
    of 30 + func_001F9850(120). */
-void HudTileInit(HudElem *e) {
+void initialize_numeric_hud_timer_and_base_dimensions(HudElem *e) {
     e->unk7C = scale_ticks(0x78) + 0x1E;
     e->w = 0x20;
     e->h = 0x20;
@@ -2309,7 +2309,7 @@ void update_weapon_hud_state(void) {
         }
         if (w != 0) {
             D_hud_pair[0] = w;
-            D_hud_pair[1] = queue_animation_update(0x10, w + 60000, (int)HudTileInit, (int)HudWeaponUpdate,
+            D_hud_pair[1] = queue_animation_update(0x10, w + 60000, (int)initialize_numeric_hud_timer_and_base_dimensions, (int)HudWeaponUpdate,
                                            (int)HudWeaponDraw, (int)(menu_item_enabled_115 + 0x21 + w * 4),
                                            D_L00_001C43B0[w].unkE);
         } else if (mode == 2) {
@@ -2317,8 +2317,8 @@ void update_weapon_hud_state(void) {
                 Hud_SetBarValueById(D_hud_pair[1], 0);
                 D_hud_pair[1] = -1;
             }
-            *(short *)(base + 0x1634) = queue_animation_update(0x10, 0xFFFF, (int)Hud_InitElement, (int)Hud_UpdateCounter,
-                                                      (int)Hud_DrawMeter, (int)(base + 0x1630), 200);
+            *(short *)(base + 0x1634) = queue_animation_update(0x10, 0xFFFF, (int)reset_numeric_hud_element, (int)Hud_UpdateCounter,
+                                                      (int)draw_hud_cropped_gauge_panel, (int)(base + 0x1630), 200);
         } else {
             if (D_hud_pair[1] != -1) {
                 Hud_SetBarValueById(D_hud_pair[1], 0);
@@ -2335,7 +2335,7 @@ extern void func_L00_00236208(void);
 
 /* Resets the HUD banks (func_L00_00236208), then D_L00_0015FA40 = 1,
    D_L00_0015FA48 = -1 and D_L00_0015FA44 = 0. */
-void Hud_ResetState(void) {
+void reset_hud_and_suspend_weapon_updates(void) {
     reset_hud_animation_channels();
     *(int *)&D_L00_0015FA40 = 1;
     D_L00_0015FA48 = -1;
@@ -2572,7 +2572,7 @@ void init_level_runtime_state(void) {
     VU1_initChain();
     register_part_types();
     DMAC_VIF1_Enable();
-    VendorStockLevelInit();
+    init_level_item_inventory();
     if (D_0015EE84 != 0) {
         unlock_planet(D_0015EE84);
     }
@@ -2596,7 +2596,7 @@ extern unsigned char D_0014171B[] NOT_SDA;
 extern void func_L00_002618D8(int, int);
 
 /* Initialise the vendor stock list: fixed defaults once the level is at least 19, else prune unknown entries. */
-void VendorStockLevelInit(void) {
+void init_level_item_inventory(void) {
     int i, j, v, k;
     unsigned char c;
     if (D_0015EE84 >= 0x13) {
@@ -2626,7 +2626,7 @@ void VendorStockLevelInit(void) {
         *(int *)(D_0014171B + 0x8A1) = 0x13;
     } else {
         if (gHaveHeliPack[8] == 0) {
-            GiveItem(0xA, 1);
+            grant_inventory_item(0xA, 1);
             D_0015EED0[0] = 0x4A;
             *(int *)(D_0014171B + 0x45) = 0xA;
         }

@@ -805,7 +805,7 @@ void update_blarg_heavy_interceptor(struct Moby *m) {
     }
     if ((s8)m->state >= 0 && m->prev_seq == 1) {
         if (m->command == 1) {
-            SpawnPointParticles(m, D_L14_0015F660_AD858, 0xFFFF);
+            spawn_particles_at_shape_points(m, D_L14_0015F660_AD858, 0xFFFF);
         }
     } else {
         m->command = 0;
@@ -1366,11 +1366,11 @@ extern short D_L14_00161490;
 extern short D_L14_00161494;
 
 // Per-frame update of a moby's aim and turn state from level tuning constants.
-void Moby8_Wobble(char *moby) {
+void update_blarg_heavy_interceptor_oscillation_and_patrol_heading(char *moby) {
     char *data = *(char **)(moby + 0x78);
     float t;
-    MobyBobZ(*(float *)&D_L14_00161470, *(float *)&D_L14_00161474, moby, (float *)(data + 0x1A0), (float *)(data + 0x1A4));
-    LissajousOffsetUpdate(moby, data + 0x1A8, data + 0x1AC, *(float *)&D_L14_00161478, *(float *)&D_L14_0016147C, *(float *)&D_L14_00161480);
+    update_moby_vertical_oscillation(*(float *)&D_L14_00161470, *(float *)&D_L14_00161474, moby, (float *)(data + 0x1A0), (float *)(data + 0x1A4));
+    update_moby_rotation_oscillation(moby, data + 0x1A8, data + 0x1AC, *(float *)&D_L14_00161478, *(float *)&D_L14_0016147C, *(float *)&D_L14_00161480);
     if (*(unsigned char *)(moby + 0x20) == 1) {
         if (FastDecTimer(data + 0x1B4)) {
             *(short *)(data + 0x1B4) = scale_ticks(*(int *)&D_L14_00161484);
@@ -1389,7 +1389,7 @@ extern void func_0020DAF8(char *, int, void *);
 extern void func_L00_001FF4B0(void *, void *, float);
 
 /* Checks a flag and a position test, then sets up three vectors in the moby data. */
-void Moby8_PrepareDistantDraw(char *moby) {
+void prepare_blarg_heavy_interceptor_light_ring_transform(char *moby) {
     char *data = *(char **)(moby + 0x78);
     char *p;
     float v[4];
@@ -1450,7 +1450,7 @@ extern int D_L14_001D8510[];
 extern int D_L14_001D83C8[];
 
 /* Advance the blink phase and fade each light entry's alpha up and down. */
-void UpdateBlinkLights(char *moby) {
+void update_blarg_heavy_interceptor_light_ring_alpha(char *moby) {
     char *data = *(char **)(moby + 0x78);
     int step;
     int i;
@@ -2062,8 +2062,8 @@ void minibomber_update(Moby *moby) {
     }
     tgt = d->f180;
     Minibomber_ApplyHit((unsigned char *)moby);
-    Minibomber_FindTarget((char *)moby);
-    Minibomber_EaseToTarget((char *)moby, tgt, d->f17C, d->f170, d->f174, d->f178, d->f154, d->f158, d->f15C);
+    update_minibomber_target((char *)moby);
+    ease_minibomber_position_and_heading((char *)moby, tgt, d->f17C, d->f170, d->f174, d->f178, d->f154, d->f158, d->f15C);
     Minibomber_HoverMotion((char *)moby);
     Minibomber_EmitExhaust((char *)moby);
     if (moby->visible != 0) {
@@ -2128,7 +2128,7 @@ void minibomber_update(Moby *moby) {
         d->f108 = -1;
         moby->update_dist = 0x80;
         moby->state = 1;
-        Minibomber_StopSound((char *)moby);
+        hide_minibomber_and_release_voice((char *)moby);
         FastMemSet(buf, 0, 0x40);
         AttachManipulator(moby, 0, buf);
         moby->shadow_range = 0x20;
@@ -2139,7 +2139,7 @@ void minibomber_update(Moby *moby) {
             moby->state = 2;
             moby->flags &= 0xFFBE;
             moby->collision = ((Class_2B5938 *)moby->pclass)->f10;
-            Minibomber_ResetToFirstNode((char *)moby);
+            initialize_minibomber_path_following((char *)moby);
         }
         break;
     case 2: {
@@ -2190,7 +2190,7 @@ void minibomber_update(Moby *moby) {
                                      -(D_L14_0016161C * D_0015EE60), D_L14_00161654, D_L14_00161640, D_L14_00161644,
                                      D_L14_00161658, D_L14_0016164C, D_L14_00161650) != 0) {
             moby->state = 1;
-            Minibomber_StopSound((char *)moby);
+            hide_minibomber_and_release_voice((char *)moby);
         }
         break;
     }
@@ -2213,7 +2213,7 @@ void minibomber_update(Moby *moby) {
             clear_u64_value(d->fF0);
         } else if (d->fB4 == 2) {
             moby->state = 3;
-            Minibomber_PlaceOnLastSegment((char *)moby);
+            initialize_minibomber_path_retrace((char *)moby);
         } else if (FastDecTimer(&d->f102) != 0) {
             if (moby->prev_seq != 2) {
                 moby->state = 5;
@@ -2299,9 +2299,9 @@ void minibomber_update(Moby *moby) {
     case 9: {
         int i;
         Moby_GetJointWorldPos(moby, 2, v);
-        SpawnMoby81((char *)moby, moby->rot.z, (char *)v);
+        spawn_flying_debris((char *)moby, moby->rot.z, (char *)v);
         Moby_GetJointWorldPos(moby, 3, v);
-        SpawnMoby81((char *)moby, FastAddRots(moby->rot.z, 3.1415927f), (char *)v);
+        spawn_flying_debris((char *)moby, FastAddRots(moby->rot.z, 3.1415927f), (char *)v);
         func_L00_0025F4A8_2B5938(moby, d->f40, &moby->pos, 0.0f, 0.0f, 5, 2, 6, 4.0f, 1.0f, 9.0f, 1.0f, 1, 15.0f, 1, 1,
                                  -1, 0);
         i = d->f108;
@@ -2396,16 +2396,16 @@ void Minibomber_HoverMotion(char *moby) {
         t = t * 1.5f;
     } else {
         Spring((float *)(data + 0x168), (float *)(data + 0x16C), *(float *)&D_L14_00161604, 0.002f, 0.2f, 0.0f);
-        MobyBobZ(*(float *)&D_L14_00161600, *(float *)(data + 0x168), moby, (float *)(data + 0xC0), (float *)(data + 0xC4));
+        update_moby_vertical_oscillation(*(float *)&D_L14_00161600, *(float *)(data + 0x168), moby, (float *)(data + 0xC0), (float *)(data + 0xC4));
     }
     Spring((float *)(data + 0x160), (float *)(data + 0x164), t, 0.003f, 0.2f, 0.0f);
-    LissajousOffsetUpdate(moby, data + 0xC8, data + 0xCC, *(float *)(data + 0x160), *(float *)&D_L14_0016160C, *(float *)&D_L14_00161610);
+    update_moby_rotation_oscillation(moby, data + 0xC8, data + 0xCC, *(float *)(data + 0x160), *(float *)&D_L14_0016160C, *(float *)&D_L14_00161610);
 }
 extern int *D_L14_001B0F30[];
 extern int func_L00_00260FB0(float a, char *m, char *b, int c, int d, int *e, int f);
 
 // Updates a moby's effect from its table entry and latches a default word.
-void Minibomber_FindTarget(char *moby) {
+void update_minibomber_target(char *moby) {
     char *data = *(char **)(moby + 0x78);
     if (((unsigned char *)moby)[0x20] != 0 && ((unsigned char *)moby)[0x20] != 9) {
         int *p = D_L14_001B0F30[*(int *)(data + 0xD4)];
@@ -2452,7 +2452,7 @@ int func_L14_002B6980(char *moby, char *a1, int a2, int a3, float *v, float *vel
 extern void func_L00_002592B0_2B6AA0(char *moby, float target, float *vel, float k, float d, float max) __asm__("func_L00_002592B0");
 
 /* eases a moby's position and heading toward targets while in states 4-6 or 8 */
-void Minibomber_EaseToTarget(char *moby, float *target, float a, float b, float c, float d, float e, float f, float g) {
+void ease_minibomber_position_and_heading(char *moby, float *target, float a, float b, float c, float d, float e, float f, float g) {
     int data;
     int s = moby[0x20] & 0xFF;
     if ((s >= 4 && s <= 6) || s == 8) {
@@ -2555,7 +2555,7 @@ void func_L14_002B6E80_r(Moby *moby) {
 extern void func_L00_0028EBF0(int);
 
 // Clears a moby's link to its slot entry, releasing the slot if it still points back here.
-void Minibomber_StopSound(char *moby)
+void hide_minibomber_and_release_voice(char *moby)
 {
     char *data = *(char **)(moby + 0x78);
     int idx;
@@ -2763,7 +2763,7 @@ void update_flying_debris(struct Moby *m) {
         qcopy(push, (char *)m + 0xE0);
     FastVecAdd(at, at, push);
     if (*(short *)(d + 0x12) == -1) {
-        *(short *)(d + 0x12) = UpdatePointLight(at, range, 0.0f, bright, green, blue);
+        *(short *)(d + 0x12) = allocate_colored_effect_slot(at, range, 0.0f, bright, green, blue);
     } else {
         l = (float *)(D_L14_00180AC0 + *(short *)(d + 0x12) * 32);
         qcopy(l + 4, at);
@@ -2782,7 +2782,7 @@ extern void func_002156E0(void *dst, void *vec, void *axis, float angle);
 extern void func_L00_00251E30(void *);
 
 // Spawns moby 0x51 at a position facing away from an owner, with random drift and spin parameters.
-unsigned char *SpawnMoby81(char *owner, float angle, char *posp) {
+unsigned char *spawn_flying_debris(char *owner, float angle, char *posp) {
     float vec[12];
     unsigned char *m;
     char *d;
@@ -2825,7 +2825,7 @@ void remove_flying_debris(char *moby)
     char *data = *(char **)(moby + 0x78);
     int index = *(short *)(data + 0x12);
     if (index != -1) {
-        light_off_67e8(index);
+        release_point_light_slot(index);
         *(short *)(data + 0x12) = -1;
     }
     DeleteMoby(moby);
@@ -2967,7 +2967,7 @@ void update_level14_racer(struct Moby *m) {
         update_racer_path_and_weapon(m);
         if (is_point_inside_clip_volume(&m->pos, d->volume)) {
             Moby_GetJointWorldPos(m, 2, pos);
-            spark = Moby325Spawn((char *)m, (char *)pos);
+            spark = spawn_plasmabot_death_debris((char *)m, (char *)pos);
             if (spark) {
                 sv = *(f32 **)(spark + 0x78);
                 vel[0] = FastCos(m->rot.z) * (D_0015EE60 * 0.4f);
@@ -2976,7 +2976,7 @@ void update_level14_racer(struct Moby *m) {
                 sv[0] = vel[0];
                 sv[1] = vel[1];
             }
-            Moby403Spawn(m, &(*(s32 *)&D_L14_00161B2C), 0);
+            spawn_path_or_ballistic_debris(m, &(*(s32 *)&D_L14_00161B2C), 0);
             func_L00_0025F4A8(m, &d->trail, &m->pos, 0.0f, 0.0f, 5, 2, 4, 4.0f, 2.0f, 9.0f, 1, 1.0f,
                              15.0f, 1, 5, -1, 0);
             DeleteMoby(m);
@@ -3111,7 +3111,7 @@ void reset_racer_group_to_hero_path_position(struct Moby *m) {
         *(int *)(od + 0xF8) = i * 2;
         *(int *)(od + 0xFC) = i * 2 + 1;
         if (*(int *)(od + 0xF0) != -1) {
-            light_off_67e8(*(int *)(od + 0xF0));
+            release_point_light_slot(*(int *)(od + 0xF0));
             *(int *)(od + 0xF0) = -1;
         }
     }
@@ -3328,7 +3328,7 @@ void update_racer_path_and_weapon(struct Moby *m) {
             char *muzzle = d + 0xD0;
             FastVecScale(&ray, d + 0xA0, D_L14_00161A44);
             FastVecAdd(&ray, &ray, muzzle);
-            p = ((char * (*)(void *, void *, int, struct Moby *))PartType69Spawn)(&ray, ((char *)D_L14_0015F660), 0x7F, m);
+            p = ((char * (*)(void *, void *, int, struct Moby *))spawn_mode_controlled_rotating_alpha_fade_particle)(&ray, ((char *)D_L14_0015F660), 0x7F, m);
             if (p != 0) {
                 char *q = p + 0x20;
                 int n;
@@ -3344,7 +3344,7 @@ void update_racer_path_and_weapon(struct Moby *m) {
             ((float *)&ray.self)[2] -= 0.5f;
             r = (D_L14_00161A4C - 0.1f) * blend + 0.1f;
             if (*(int *)(d + 0xF0) == -1) {
-                *(int *)(d + 0xF0) = ((int (*)(void *, float, float, float, float, float))UpdatePointLight)(&ray.self, r, 0.0f, D_L14_00161A50, D_L14_00161A54, D_L14_00161A58);
+                *(int *)(d + 0xF0) = ((int (*)(void *, float, float, float, float, float))allocate_colored_effect_slot)(&ray.self, r, 0.0f, D_L14_00161A50, D_L14_00161A54, D_L14_00161A58);
             }
             if (*(int *)(d + 0xF0) >= 0) {
                 float *l = (float *)(D_L14_00180AC0 + (*(int *)(d + 0xF0) << 5));
@@ -3355,11 +3355,11 @@ void update_racer_path_and_weapon(struct Moby *m) {
                 l[2] = D_L14_00161A58;
             }
         } else if (*(int *)(d + 0xF0) != -1) {
-            light_off_67e8(*(int *)(d + 0xF0));
+            release_point_light_slot(*(int *)(d + 0xF0));
             *(int *)(d + 0xF0) = -1;
         }
     } else if (*(int *)(d + 0xF0) != -1) {
-        light_off_67e8(*(int *)(d + 0xF0));
+        release_point_light_slot(*(int *)(d + 0xF0));
         *(int *)(d + 0xF0) = -1;
     }
     FastVecSub(&v[0], &D_0013F3D0_67e8, &m->pos);
@@ -3475,7 +3475,7 @@ void update_moby_joint_visual_effects(char *m) {
     if ((unsigned int)(((unsigned char *)m)[0x20] - 3) < 3) {
         p[2] += 1.0f;
         if (*(int *)(d + 0xF0) == -1) {
-            *(int *)(d + 0xF0) = UpdatePointLight(p, *(float *)&D_L14_00161B30, 0.0f, 0.5f, 0.5f, 1.0f);
+            *(int *)(d + 0xF0) = allocate_colored_effect_slot(p, *(float *)&D_L14_00161B30, 0.0f, 0.5f, 0.5f, 1.0f);
         }
         if (*(int *)(d + 0xF0) >= 0) {
             char *e = D_L14_00180AC0 + *(int *)(d + 0xF0) * 32;
@@ -3485,14 +3485,14 @@ void update_moby_joint_visual_effects(char *m) {
         p[2] -= 1.0f;
     }
     random_spherical_offset(w, 0.005f, 0.03f);
-    q = PartType69Spawn(p, w, 0x7F, m);
+    q = spawn_mode_controlled_rotating_alpha_fade_particle(p, w, 0x7F, m);
     if (q != 0) {
         *(float *)(q + 0xC) = random_float_between(6000.0f, 32000.0f);
     }
     for (i = 0; i < 3; i++) {
         char *e;
         int t;
-        q = PartType69Spawn(p, D_L14_0015F660, 0x7F, m);
+        q = spawn_mode_controlled_rotating_alpha_fade_particle(p, D_L14_0015F660, 0x7F, m);
         if (q == 0) continue;
         e = q + 0x20;
         if (i == 2 && random_integer_below(8) == 0) {

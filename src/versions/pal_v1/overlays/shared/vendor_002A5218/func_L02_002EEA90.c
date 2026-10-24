@@ -1,5 +1,5 @@
 extern short D_E1_L02_00161FAC;
-void SpawnTwoParticles(char *moby, void *arg) {
+void spawn_background_ship_2_level_10_joint_sparks(char *moby, void *arg) {
     float v0[4];
     float v1[4];
     float mat[4];

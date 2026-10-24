@@ -108,12 +108,12 @@ int Hero_TryMoveStateL14(int a, int b) {
             *(unsigned char *)(p + 0x20B2) = 0;
             *(unsigned char *)(p + 0x20AF) = 0;
             *(short *)(p + 0x22E0) = 0;
-            DeleteOwnedMobys(p + 0x1670);
+            clear_moby_transform_history(p + 0x1670);
         }
         if (*(unsigned char *)(p + 0x20A4) == 3) {
             int s = *(int *)(p + 0x2084);
             if (!(s >= 0x53 && s <= 0x59) && !(s >= 0x65 && s <= 0x67) && s != 0 && s != 1) {
-                ResetHelpStateIfMode3();
+                exit_hero_vehicle_mode_if_mode_three();
                 *(int *)(p + 0x2084) = a;
             }
         }
@@ -131,7 +131,7 @@ int Hero_TryMoveStateL14(int a, int b) {
         *(int *)(p + 0x1010) = rand_range(scale_ticks(0x32), scale_ticks(0x64));
         clear_hero_idle_rotation_targets();
         if (*(unsigned char *)(p + 0x20A4) != 0) {
-            Hero_SetMoveStateFromMode();
+            request_hero_idle_state_for_vehicle_mode();
             return 1;
         }
         qcopy(p + 0x150, p + 0x110);
@@ -342,7 +342,7 @@ int Hero_TryMoveStateL14(int a, int b) {
         *(int *)(p + 0x2284) = 0;
         *(float *)(p + 0x194) = func_001F9CE8(p + 0x110);
         *(unsigned char *)(p + 0x20AC) = 1;
-        if (*(unsigned char *)(p + 0x20A4) == 0) Hero_ClearPendingModuleAnim();
+        if (*(unsigned char *)(p + 0x20A4) == 0) cancel_hero_item_animation();
         if (b) {
             if (*(unsigned char *)(p + 0x20A4) == 3) {
                 set_hero_animation(1, 0, (float)scale_ticks(8));
@@ -378,7 +378,7 @@ int Hero_TryMoveStateL14(int a, int b) {
             char *q = D_0013E633 + 0xE1D;
             float d = *(float *)(q + 0xAA8);
             int id = 6;
-            if (Hero_ResolveAnimId(*(unsigned char *)(moby + 0x52)) == 4 && 3.0f < d && d < 16.0f) id = 5;
+            if (return_hero_animation_id_unchanged(*(unsigned char *)(moby + 0x52)) == 4 && 3.0f < d && d < 16.0f) id = 5;
             set_hero_animation(id, 4, (float)scale_ticks(9));
         }
         break;
@@ -393,7 +393,7 @@ int Hero_TryMoveStateL14(int a, int b) {
         if (b) {
             int id = 6;
             float d = *(float *)(p + 0xAA8);
-            if (Hero_ResolveAnimId(*(unsigned char *)(moby + 0x52)) == 4 && 3.0f < d && d < 16.0f) id = 5;
+            if (return_hero_animation_id_unchanged(*(unsigned char *)(moby + 0x52)) == 4 && 3.0f < d && d < 16.0f) id = 5;
             set_hero_animation(id, 4, (float)scale_ticks(9));
         }
         break;
@@ -413,7 +413,7 @@ int Hero_TryMoveStateL14(int a, int b) {
             *(int *)(q + 0xFF8) = 0x68;
             qcopy(q + 0x150, q + 0x110);
             ClampVectorLength(q + 0x150, D_0015EE6C * 7.0f);
-            if (D_0015EE6C * 3.5f < *(float *)(q + 0x168)) Hero_PlayActiveSound(0xC, 0);
+            if (D_0015EE6C * 3.5f < *(float *)(q + 0x168)) allocate_hero_voice_for_entry(0xC, 0);
             if (b) {
                 if (*(unsigned char *)(*(char **)(q + 0x2080) + 0x52) == Hero_GetGadgetAnimId(0)) {
                     set_hero_animation(0xD, 2, (float)scale_ticks(9));
@@ -654,7 +654,7 @@ int Hero_TryMoveStateL14(int a, int b) {
         *(float *)(p + 0x944) = D_0015EE70 * 7.0f;
         if (*(int *)(p + 0x2084) == 0x77) {
             if (*(unsigned char *)(p + 0x20A4) == 0) {
-                *(short *)(p + 0x22B2) = Hero_PlayActiveSound(0x17, 0x20);
+                *(short *)(p + 0x22B2) = allocate_hero_voice_for_entry(0x17, 0x20);
             }
             *(float *)(p + 0x950) = randf_sym(D_0015EE6C * 3.1415927f, D_0015EE6C * 4.3633232f);
             *(float *)(p + 0x954) = randf_sym(D_0015EE6C * 3.1415927f, D_0015EE6C * 4.3633232f);
@@ -687,7 +687,7 @@ int Hero_TryMoveStateL14(int a, int b) {
         *(int *)(p + 0xFF8) = 0x68;
         *(int *)(p + 0x2284) = 0;
         if (D_0015EE6C * 4.5f < *(float *)(p + 0x160)) {
-            Hero_ScaleMotion(D_0015EE6C * 4.5f / *(float *)(p + 0x160));
+            scale_hero_motion(D_0015EE6C * 4.5f / *(float *)(p + 0x160));
         }
         qcopy(p + 0xE0, p + 0x110);
         if (b) {
@@ -702,7 +702,7 @@ int Hero_TryMoveStateL14(int a, int b) {
         *(int *)(p + 0xFF8) = 0x68;
         *(int *)(p + 0x2284) = 0;
         if (D_0015EE6C * 4.5f < *(float *)(p + 0x160)) {
-            Hero_ScaleMotion(D_0015EE6C * 4.5f / *(float *)(p + 0x160));
+            scale_hero_motion(D_0015EE6C * 4.5f / *(float *)(p + 0x160));
         }
         qcopy(p + 0xE0, p + 0x100);
         if (b) {
@@ -749,7 +749,7 @@ int Hero_TryMoveStateL14(int a, int b) {
             r = v - 0xE0;
             if (*(int *)(r + 0x2084) != 0x12) {
                 if (*(unsigned char *)(r + 0x12E4) != 0 && *(float *)(r + 0x88) < *(float *)(r + 0x2F0) + 0.5f) {
-                    HeroKickUpDust(3, 0x10, 0);
+                    emit_hero_surface_effect_burst(3, 0x10, 0);
                 }
             }
         }
@@ -1035,7 +1035,7 @@ int Hero_TryMoveStateL14(int a, int b) {
                 } else if (s == 9) {
                     int id = 8;
                     int n = truncate_float_to_s32(*(float *)(q + 0xAA8));
-                    if (Hero_ResolveAnimId(*(unsigned char *)(moby + 0x52)) == 4) id = D_L14_0017C5D8[n];
+                    if (return_hero_animation_id_unchanged(*(unsigned char *)(moby + 0x52)) == 4) id = D_L14_0017C5D8[n];
                     set_hero_animation(id, 0, (float)scale_ticks(5));
                 } else if (s == 0xA) {
                     set_hero_animation(0x12, 0, (float)scale_ticks(5));
@@ -1305,7 +1305,7 @@ int Hero_TryMoveStateL14(int a, int b) {
         char *r;
         *(int *)(p + 0x208C) = 7;
         *(int *)(p + 0x2284) = 0;
-        Hero_ScaleMotion(0.5f);
+        scale_hero_motion(0.5f);
         *(short *)(p + 0x1EE) = scale_ticks(0x2D);
         qcopy(p + 0xE0, p + 0x110);
         ClampVectorLength(p + 0xE0, D_0015EE6C * 7.0f);
@@ -1396,7 +1396,7 @@ int Hero_TryMoveStateL14(int a, int b) {
         char *p = D_0013E633 + 0xE1D;
         *(int *)(p + 0x208C) = 7;
         *(int *)(p + 0x2284) = 0;
-        Hero_ScaleMotion(0.5f);
+        scale_hero_motion(0.5f);
         qcopy(p + 0xE0, p + 0x110);
         ClampVectorLength(p + 0xE0, D_0015EE6C * 5.0f);
         hero_change_health(1);
@@ -1434,7 +1434,7 @@ int Hero_TryMoveStateL14(int a, int b) {
         char *p = D_0013E633 + 0xE1D;
         *(int *)(p + 0x2284) = 0x51;
         *(int *)(p + 0x208C) = 0;
-        if (Hero_ResolveAnimId(*(unsigned char *)(*(char **)(p + 0x2080) + 0x53)) != Hero_GetGadgetAnimId(1)) {
+        if (return_hero_animation_id_unchanged(*(unsigned char *)(*(char **)(p + 0x2080) + 0x53)) != Hero_GetGadgetAnimId(1)) {
             set_hero_animation(Hero_GetGadgetAnimId(1), 0, (float)scale_ticks(5));
         }
         break;
@@ -1451,7 +1451,7 @@ int Hero_TryMoveStateL14(int a, int b) {
         *(int *)(p + 0x208C) = 9;
         *(unsigned char *)(p + 0x20AC) = 1;
         *(int *)(p + 0x2284) = 0;
-        Hero_ClearPendingModuleAnim();
+        cancel_hero_item_animation();
         set_hero_animation(Hero_GetGadgetAnimId(0), 0, (float)scale_ticks(0xA));
         break;
     }
@@ -1487,7 +1487,7 @@ int Hero_TryMoveStateL14(int a, int b) {
         char *p = D_0013E633 + 0xE1D;
         *(int *)(p + 0x208C) = 0x18;
         *(unsigned char *)(p + 0x20AC) = 1;
-        Hero_ClearPendingModuleAnim();
+        cancel_hero_item_animation();
         if (b) set_hero_animation(Hero_GetGadgetAnimId(0), 0, -1.0f);
         break;
     }
@@ -1519,11 +1519,11 @@ int Hero_TryMoveStateL14(int a, int b) {
     {
         char *t = D_0013E633 + 0xE1D;
         if (*(int *)(t + 0x208C) == 0x14) {
-            Hero_ClearPendingModuleAnim();
+            cancel_hero_item_animation();
             *(unsigned char *)(t + 0x20AC) = 1;
         }
         if (*(int *)(t + 0x208C) != *(int *)(t + 0x2094)) {
-            HeroClearSoundSlots();
+            release_and_clear_hero_voice_slots();
         }
         *(int *)(t + 0x198) = 0;
         *(int *)(t + 0x1A0) = 0;

@@ -777,7 +777,7 @@ void update_rail_taxi(struct Moby *m) {
     s32 i;
     s32 r;
 
-    LevelTable_SetSlotValue(m, is_taxi_in_round_trip_phase((u8 *)m));
+    set_moby_dialogue_record_value(m, is_taxi_in_round_trip_phase((u8 *)m));
     if (D_L03_00161B84_D4560 != 0) {
         for (i = 0; i < D_L03_001B08B0_D4560[v->out[0]]->count; i++) {
             PartType41Spawn(&D_L03_001B08B0_D4560[v->out[0]]->pts[i], m, 4, 0x800000FF, 0x7F, 2, 0xFF, 0.333f);
@@ -852,14 +852,14 @@ void update_rail_taxi(struct Moby *m) {
         if (D_0013F450_CBBD0.ground_moby == m && D_0013F450_CBBD0.air_frames.s == 0) {
             request_taxi_return_help_message(m, v->help[m->command]);
             if ((D_0013CBE4 & 0x10) && D_L03_0015F674_D4560 == 8) {
-                HeroSetTargetAndEnterMove(&m->pos, m->rot.z, 0);
+                request_hero_target_pose(&m->pos, m->rot.z, 0);
                 m->state = 4;
                 v->idx = 1;
             }
         }
         break;
     case 4:
-        if (!Level_GetSpecialMode()) {
+        if (!get_hero_target_pose_status()) {
             m->state = 5;
         }
         break;
@@ -1011,8 +1011,8 @@ extern short D_L03_00161B80_g __asm__("D_L03_00161B80");
 /* Sets two speed pairs on a moby's data from level constants scaled by degrees-to-radians and the frame scale. */
 void update_taxi_bobbing_and_rocking(char *m) {
     char *d = *(char **)(m + 0x78);
-    MobyBobZ(*(float *)&D_L03_00161B70_g, *(float *)&D_L03_00161B74_g * 0.0174532925f * D_0015EE6C, m, (float *)(d + 0xEC), (float *)(d + 0xE8));
-    LissajousOffsetUpdate(m, d + 0xF0, d + 0xF4, *(float *)&D_L03_00161B78_g, *(float *)&D_L03_00161B7C_g * 0.0174532925f * D_0015EE6C, *(float *)&D_L03_00161B80_g * 0.0174532925f * D_0015EE6C);
+    update_moby_vertical_oscillation(*(float *)&D_L03_00161B70_g, *(float *)&D_L03_00161B74_g * 0.0174532925f * D_0015EE6C, m, (float *)(d + 0xEC), (float *)(d + 0xE8));
+    update_moby_rotation_oscillation(m, d + 0xF0, d + 0xF4, *(float *)&D_L03_00161B78_g, *(float *)&D_L03_00161B7C_g * 0.0174532925f * D_0015EE6C, *(float *)&D_L03_00161B80_g * 0.0174532925f * D_0015EE6C);
 }
 typedef u32 u128_D5220 __attribute__((mode(TI), aligned(16)));
 struct Manip_D5220;
@@ -1307,7 +1307,7 @@ extern void func_0020D678(void *);
 extern f32 func_001FA850(f32, f32);
 #define LINK_HELPER(M, V) \
     t = (struct Moby *)((V->link << 8) + (int)D_L03_00160058); \
-    if (t->oclass == 0x3F4) { flag = (s32 *)(t->pvars + 0x8C); *flag = 1; FindOrAddMobyEntry(flag, 4, M, 2, D_L03_001BAA30); }
+    if (t->oclass == 0x3F4) { flag = (s32 *)(t->pvars + 0x8C); *flag = 1; record_moby_context_bytes(flag, 4, M, 2, D_L03_001BAA30); }
 extern void func_001F9908(int *arg0);
 extern f32 func_001F9878(f32);
 extern int func_001FA898(f32);
@@ -1377,7 +1377,7 @@ void helga_update(struct Moby *m) {
             }
             m->state = 1;
             if (v->talk.mode == 2) {
-                GiveItem(0xC, 1);
+                grant_inventory_item(0xC, 1);
                 ShowBanner(0xBC8, -1);
                 if (v->reward != -1) {
                     D_L03_001BA9E0.collected[(s16)((struct Moby *)((v->reward << 8) + (int)D_L03_00160058))->save_id] =
@@ -1694,7 +1694,7 @@ void big_al_update(struct Moby *m) {
     int tracking;
     u8 group;
 
-    AttachCheatManipulatorToMatchingL03(m);
+    attach_shared_manipulator_to_matching_class_moby(m);
     switch (m->state) {
     case 0:
         if (*(s32 *)(D_0013D605 + 0x1FF) == 0) {
@@ -1772,7 +1772,7 @@ void big_al_update(struct Moby *m) {
         if (v->talk.mode != 2) {
             break;
         }
-        GiveItem(2, 1);
+        grant_inventory_item(2, 1);
         ShowBanner(0xBC7, -1);
         if (v->reward != -1) {
             t = (struct Moby *)((v->reward << 8) + (int)D_L03_00160058);
@@ -1968,7 +1968,7 @@ void robot_qwark_update(unsigned char *m) {
         pos[2] = 0.0f;
         func_L00_001FF240(tmp, pos, m + 0x10);
         if (random_integer_below(3) == 0) {
-            PartType22Spawn(pos, vel, 0x20202020, 0x7F7F7F, 157500.0f, scale_ticks(rand_range(0x3C, 0x78)));
+            spawn_effect_particle_with_target_scalar(pos, vel, 0x20202020, 0x7F7F7F, 157500.0f, scale_ticks(rand_range(0x3C, 0x78)));
         }
         break;
     }
@@ -2161,8 +2161,8 @@ extern void func_L00_00263B78(float x, float y, char *a, float *p, float *q);
 /* sets two aim angles on a moby from level constants scaled by degrees-to-radians */
 void update_moby_oscillation(char *moby) {
     char *data = *(char **)(moby + 0x78);
-    MobyBobZ(*(float *)&D_L03_00161C58, *(float *)&D_L03_00161C5C * 0.017453292f * D_0015EE6C, moby, (float *)(data + 0xAC), (float *)(data + 0xA8));
-    LissajousOffsetUpdate((float *)moby, (float *)(data + 0xB0), (float *)(data + 0xB4), *(float *)&D_L03_00161C60, *(float *)&D_L03_00161C64 * 0.017453292f * D_0015EE6C, *(float *)&D_L03_00161C68 * 0.017453292f * D_0015EE6C);
+    update_moby_vertical_oscillation(*(float *)&D_L03_00161C58, *(float *)&D_L03_00161C5C * 0.017453292f * D_0015EE6C, moby, (float *)(data + 0xAC), (float *)(data + 0xA8));
+    update_moby_rotation_oscillation((float *)moby, (float *)(data + 0xB0), (float *)(data + 0xB4), *(float *)&D_L03_00161C60, *(float *)&D_L03_00161C64 * 0.017453292f * D_0015EE6C, *(float *)&D_L03_00161C68 * 0.017453292f * D_0015EE6C);
 }
 typedef struct Sub_2E08E8 {
     char pad0[0x46];
@@ -2560,9 +2560,9 @@ void update_kerwan_cutscene_effects(char *m) {
         zero.q = 0;
         Moby_GetJointWorldPos(moby, 0, from);
         Moby_GetJointWorldPos(moby, 1, to);
-        PartType22Spawn(from, &zero, 0x7F7F7F7F, 0x7F7F7F, random_float_between(0.25f, 0.5f) * 210000.0f,
+        spawn_effect_particle_with_target_scalar(from, &zero, 0x7F7F7F7F, 0x7F7F7F, random_float_between(0.25f, 0.5f) * 210000.0f,
                          scale_ticks(rand_range(45, 60)));
-        PartType22Spawn(to, &zero, 0x407F7F7F, 0x7F7F7F, random_float_between(0.25f, 0.5f) * 210000.0f,
+        spawn_effect_particle_with_target_scalar(to, &zero, 0x407F7F7F, 0x7F7F7F, random_float_between(0.25f, 0.5f) * 210000.0f,
                          scale_ticks(rand_range(45, 60)));
         break;
     }
@@ -2585,8 +2585,8 @@ void lightpost_update(char *m) {
         break;
     case 2:
         Moby_PlaySound(0, 0, (int)m);
-        SpawnBreakFxByDistance(m);
-        SpawnMobyBurstFx(m, 0x725, 1, 0x725, 1, 1, 2);
+        spawn_proximity_gated_bolts(m);
+        spawn_moby_break_fragments(m, 0x725, 1, 0x725, 1, 1, 2);
         spawn_moby_from_placement(m, 0x724);
         DeleteMoby(m);
         break;
@@ -2724,7 +2724,7 @@ extern float func_001EC120(void *, float, float, float, float, float);
 extern void func_001F9BD8(void *, void *, void *);
 
 // Smooths a camera-like moby's position toward the player's and sets its orientation vector.
-void Camera14_SmoothPosition(void *arg) {
+void update_smoothed_hero_relative_camera_position(void *arg) {
     char *m = arg;
     char *d = *(char **)(m + 0x70);
     char *a = d + 0xD0;
@@ -2758,7 +2758,7 @@ extern short D_L03_00161EF4;
 extern char D_L03_00166FC0[];
 
 /* smooths the moby's data floats and rebuilds its orientation axes */
-void Camera14_RebuildAxes(void *arg) {
+void rebuild_camera_orientation_axes(void *arg) {
     char *m = arg;
     char *d = *(char **)(m + 0x70);
     float *p = (float *)(d + 0xB0);
@@ -2793,9 +2793,9 @@ extern void func_001E9768(void *);
 extern void func_L03_002ED020(void *);
 
 void update_camera_position_and_orientation(void *arg) {
-    Camera14_SmoothPosition(arg);
+    update_smoothed_hero_relative_camera_position(arg);
     Profile_Mark(arg);
-    Camera14_RebuildAxes(arg);
+    rebuild_camera_orientation_axes(arg);
 }
 extern int D_L03_0015F050 MACRO_ADDR;
 extern int func_00215570(void *, int);

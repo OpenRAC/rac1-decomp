@@ -51,7 +51,7 @@ extern char D_L00_001E7C00[];
 extern s32 func_L00_001EE698_EE530(Vec4 *, s32 *, f32) __asm__("func_L00_001EE698");
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_001ee1b0.c, FUN_L00_001ee1b0. */
-s32 *FindVolumeInGrid(q128 *v, f32 rad) {
+s32 *find_camera_collision_volume_for_point(q128 *v, f32 rad) {
     Vec4 t;
     Vec4 d;
     Vec4 *tp;

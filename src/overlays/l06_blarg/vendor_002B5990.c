@@ -118,7 +118,7 @@ extern short *D_L06_001AC340[];
 extern char *D_L06_00160058 MACRO_ADDR;
 
 // Walks a moby index list and, for each moby of one type, sets its state to 2 and a float to 1.0.
-void Moby16F_EnableGroup(int index)
+void set_listed_class_16f_state_2_and_data_28_to_one(int index)
 {
     short *p = D_L06_001AC340[index];
     if (p != 0) {
@@ -132,7 +132,7 @@ void Moby16F_EnableGroup(int index)
     }
 }
 /* Sets state 2 on every class 0x16F moby in group idx. */
-void Moby16F_DisableGroup(int idx)
+void set_listed_class_16f_state_2_and_clear_data_28(int idx)
 {
     short *p = D_L06_001AC340[idx];
     if (p != 0) {
@@ -197,7 +197,7 @@ void set_moby_list_state_15(int index) {
     } while (*p++ >= 0);
 }
 /* Returns 1 if no class 0x33B moby in group index is alive, else 0. */
-int IsMoby33BGroupDone(int index) {
+int check_all_listed_class_33b_states_fe_fd_or_10(int index) {
     unsigned short *p = (unsigned short *)D_L06_001AC340[index];
     char *base;
     char *moby;
@@ -270,7 +270,7 @@ void toxic_gas_vent_update(char *m) {
             *(int *)(d + 0x94) = func_0022ED80_r(0, 4, (int)m);
         }
         emit_toxic_gas_vent_sparks(m);
-        SwingingHazard_DrawSwingArcs(m);
+        check_oscillating_toxic_gas_vent_collisions(m);
         s = *(float *)(d + 0x64) * 0.017453292f * FastSin(*(float *)(d + 0x7C));
         *(float *)(d + 0x7C) = FastAddRots(*(float *)(d + 0x7C), *(float *)(d + 0x80));
         *(float *)(m + 0x48) = FastAddRots(*(float *)(d + 0x84), s);
@@ -280,7 +280,7 @@ void toxic_gas_vent_update(char *m) {
             *(int *)(d + 0x94) = func_0022ED80_r(0, 4, (int)m);
         }
         emit_toxic_gas_vent_sparks(m);
-        SwingingHazard_DrawBeam(m);
+        check_timed_toxic_gas_vent_collisions(m);
         if (func_001F9908(d + 0x88) != 0) {
             m[0x20] = 3;
             *(int *)(d + 0x88) = scale_ticks(truncate_float_to_s32(*(float *)(d + 0x74) * 60.0f));
@@ -407,7 +407,7 @@ typedef struct {
 typedef struct { float x, y, z, w; } __attribute__((aligned(16))) Vx;
 
 // Spawns four rings of sparks around a moby, sweeping the angle each pass.
-void SwingingHazard_DrawSwingArcs(char *m) {
+void check_oscillating_toxic_gas_vent_collisions(char *m) {
     Sx s;
     Vx a;
     Vx b;
@@ -457,7 +457,7 @@ extern float func_001F9F90(float);
 extern float func_001F9FA8(float);
 
 // Sweeps two probe segments around a moby (sin/cos offsets scaled by its speed) via a collision query.
-void SwingingHazard_DrawBeam(char *m)
+void check_timed_toxic_gas_vent_collisions(char *m)
 {
     struct {
         int pad0[2];
@@ -532,7 +532,7 @@ void set_moby_list_state_4(int idx)
 extern void func_0022ED80(int, int, int);
 
 // Marks a moby as done when in state 2: sets state 4, clears two fields and puts its 7 children into state 5.
-void Moby_EnterState4WithChildren(char *moby) {
+void set_moby_and_links_to_states_4_and_5(char *moby) {
     char *data = *(char **)(moby + 0x78);
     char **p;
     int i;
@@ -549,7 +549,7 @@ void Moby_EnterState4WithChildren(char *moby) {
     }
 }
 /* Switches a moby from state 6 to 8 and sets its ten children to state 9. */
-void Moby_EnterState8WithChildren(char *moby)
+void set_moby_and_links_to_states_8_and_9(char *moby)
 {
     char *data = *(char **)(moby + 0x78);
     int i;
@@ -578,7 +578,7 @@ extern float func_001FA790(float, float);
 extern void func_L00_00251E30(void *);
 
 /* Puts a moby in state 2 and its seven linked mobys in state 3, resetting each one's heading. */
-void Moby_EnterState2WithChildren(char *a) {
+void set_moby_and_links_to_states_2_and_3(char *a) {
     char *data = *(char **)(a + 0x78);
     char **p;
     int i;
@@ -826,7 +826,7 @@ extern Vec_2F69D0 D_L06_00161DE0 SDATA(D_L06_00161DE0);
 extern Vec_2F69D0 D_L06_00161DF0 SDATA(D_L06_00161DF0);
 
 /* Blarg drawbridge pieces: places and rotates the 20 + 10 chained segment mobys. */
-void LayoutDrawbridgePieces(Moby *m)
+void update_drawbridge_segment_transforms(Moby *m)
 {
     Vec_2F69D0 v, w, x;
     Data_2F69D0 *s = (Data_2F69D0 *)m->pvars;
@@ -1064,7 +1064,7 @@ void update_beam_barrier(char *m) {
                     func_L00_001FF4B0(V.sh.local[0], m + 0xC0, 1.0f);
                 else
                     func_L00_001FF4B0(V.sh.local[0], m + 0xC0, -1.0f);
-                PostHitMessageFromRecord(FLD((D_0013E633 + 0xE1D), 0x2080, void *), V.sh.local[0]);
+                record_moby_hit(FLD((D_0013E633 + 0xE1D), 0x2080, void *), V.sh.local[0]);
                 if (FLD((D_0014171B + 0x34D), 0x158, unsigned short) == 0 && *(short *)(d + 0x16) == 0) {
                     short t = *(short *)(d + 0x14) + 1;
                     *(short *)(d + 0x14) = t;
@@ -2035,7 +2035,7 @@ void Snapper_ApplyDamage(Moby *moby)
     }
 }
 /* Advances every moby in the arg's group from state 1 to state 2. */
-void MobyGroup_AdvanceState1To2(char *arg)
+void transition_moby_group_state_1_to_2(char *arg)
 {
     short *table = D_L06_001AC340[(unsigned char)arg[0x21]];
     if (table != 0) {
@@ -2096,7 +2096,7 @@ float Snapper_GetSteerAngle(char *self) {
     return FastAddRots(FastAddRots(lo, FastDiffRots(hi, lo) * 0.5f), ang);
 }
 /* Puts every moby in group idx into state 0x12 and clears its flags. */
-void MobyGroup_SetState18(int idx)
+void set_moby_list_state_18(int idx)
 {
     short *p = D_L06_001AC340[idx];
     if (p != 0) {
@@ -2112,7 +2112,7 @@ void MobyGroup_SetState18(int idx)
     }
 }
 // Resets every moby of a list that is in state 0x12.
-void MobyGroup_ClearState18(int index)
+void clear_moby_list_state_18(int index)
 {
     short *p = D_L06_001AC340[index];
     if (p != 0) {
@@ -2718,7 +2718,7 @@ extern float func_002140F8(float, float);
 extern int func_L06_002EB140(void *, void *);
 
 /* raise each listed moby's position z by a fixed amount and notify it */
-void MobyGroup_LaunchUp(char *moby) {
+void activate_listed_state_15_mobys_at_raised_positions(char *moby) {
     char *data = *(char **)(moby + 0x78);
     short *q = D_L06_001AC340[*(int *)(data + 0xF0)];
     short *p;
@@ -2743,7 +2743,7 @@ extern char *D_L06_0016016C MACRO_ADDR;
 extern int *D_L06_001B0FB0[];
 
 // sets up a camera-like aim from a moby toward its orbit point and releases the slot
-void Cutscene_BeginCamera(char *moby) {
+void start_alien_queen_intro(char *moby) {
     float v0[4], m[4], v1[4];
     char *data = *(char **)(moby + 0x78);
     char *base = D_L06_0016016C + (*(int *)(data + 0xF8) << 7);
@@ -2773,7 +2773,7 @@ extern char D_0013E633[];
 extern float D_0015EE6C MACRO_ADDR;
 extern short D_0015EE70_s __asm__("D_0015EE70");
 /* Aims the camera at a moby, blending toward its orbit; returns nonzero when finished. */
-int AimCameraAtMoby(char *moby) {
+int update_alien_queen_intro_camera(char *moby) {
     float v0[4], m[4], v1[4], v2[4];
     char *data;
     char *pos;
@@ -2810,14 +2810,14 @@ extern void func_L00_002EC0C8(int);
 extern int *D_L06_001B0FB0[];
 
 /* Ends the moby's script. */
-void Cutscene_End(char *arg) {
+void finish_alien_queen_intro(char *arg) {
     char *data = *(char **)(arg + 0x78);
     HeroL06_TrySetMoveState(0, 0);
     *D_L06_001B0FB0[*(int *)(data + 0xEC)] = *(int *)(data + 0x114);
     CameraScript2(2);
 }
 /* Steers a moby's camera-like orientation toward a target point, returns 1 when done. */
-int Cutscene_UpdateCamera(char *moby) {
+int update_alien_queen_first_recovery_camera(char *moby) {
     float v0[4], m[4], v1[4], v2[4];
     char *data;
     char *pos;
@@ -2998,7 +2998,7 @@ void update_moby_pair_transforms(char *moby) {
             moby[0x20] = 4;
             *(int *)(data + 0x4c) = scale_ticks(0x14);
         } else if ((unsigned char)moby[0x21] != 0xff) {
-            MobyGroup_SetState((unsigned char)moby[0x21], 3);
+            set_moby_list_state((unsigned char)moby[0x21], 3);
         } else {
             moby[0x20] = 3;
         }
@@ -3195,10 +3195,10 @@ void update_hero_triggered_moby_height_cycle(Moby *moby) {
             ((Moby *)level_mobys_q)[d->f6C].flags |= 2;
             ((Moby *)level_mobys_q)[d->f6C].collision = 0;
         } else if (((Hero *)(D_0013E633 + 0xE1D))->vehicle_mode == 1) {
-            Moby_EnterState8WithChildren(level_mobys_q + (d->f60 << 8));
+            set_moby_and_links_to_states_8_and_9(level_mobys_q + (d->f60 << 8));
         }
-        Moby_EnterState8WithChildren(level_mobys_q + (d->f64 << 8));
-        Moby_EnterState8WithChildren(level_mobys_q + (d->f68 << 8));
+        set_moby_and_links_to_states_8_and_9(level_mobys_q + (d->f64 << 8));
+        set_moby_and_links_to_states_8_and_9(level_mobys_q + (d->f68 << 8));
         break;
     case 1:
         if (is_point_inside_clip_volume(&((Hero *)(D_0013E633 + 0xE1D))->motion.pos, d->f70) != 0) {
@@ -3235,12 +3235,12 @@ void update_hero_triggered_moby_height_cycle(Moby *moby) {
                 d->f90 = scale_ticks(0x78);
                 if (((Hero *)(D_0013E633 + 0xE1D))->vehicle_mode == 1) {
                     FadeToBlack(scale_ticks(0x10));
-                    Moby_EnterState2WithChildren(level_mobys_q + (d->f64 << 8));
-                    Moby_EnterState2WithChildren(level_mobys_q + (d->f68 << 8));
-                    Moby_EnterState4WithChildren(level_mobys_q + (d->f60 << 8));
+                    set_moby_and_links_to_states_2_and_3(level_mobys_q + (d->f64 << 8));
+                    set_moby_and_links_to_states_2_and_3(level_mobys_q + (d->f68 << 8));
+                    set_moby_and_links_to_states_4_and_5(level_mobys_q + (d->f60 << 8));
                     d->f84 = 0;
                     ((Moby *)level_mobys_q)[d->f6C].collision = 0;
-                    Hero_EndObjectControl();
+                    restore_hero_from_vehicle_mode();
                     {
                         char *b = D_L06_0016016C + (d->f7C << 7);
                         Hero_ResetToPosition(b + 0x30, b + 0x70, 0, 1);
@@ -3256,9 +3256,9 @@ void update_hero_triggered_moby_height_cycle(Moby *moby) {
                     }
                 } else if (D_0013D5CA_2FDA70[4] == 0) {
                     FadeToBlack(scale_ticks(0x10));
-                    Moby_EnterState4WithChildren(level_mobys_q + (d->f64 << 8));
-                    Moby_EnterState8WithChildren(level_mobys_q + (d->f68 << 8));
-                    Moby_EnterState2WithChildren(level_mobys_q + (d->f60 << 8));
+                    set_moby_and_links_to_states_4_and_5(level_mobys_q + (d->f64 << 8));
+                    set_moby_and_links_to_states_8_and_9(level_mobys_q + (d->f68 << 8));
+                    set_moby_and_links_to_states_2_and_3(level_mobys_q + (d->f60 << 8));
                     d->f84 = 1;
                     ((Moby *)level_mobys_q)[d->f6C].collision = ((Cls_2FDA70 *)((Moby *)level_mobys_q)[d->f6C].pclass)->f10;
                     ((Moby *)level_mobys_q)[d->f6C].flags &= 0xFFFE;
@@ -3266,13 +3266,13 @@ void update_hero_triggered_moby_height_cycle(Moby *moby) {
                         char *b = D_L06_0016016C + (d->f80 << 7);
                         Hero_ResetToPosition(b + 0x30, b + 0x70, 0, 1);
                     }
-                    HeroStartScene(1, 0x43, (int)(level_mobys_q + (d->f6C << 8)));
+                    enter_hero_vehicle_mode_and_set_moby(1, 0x43, (int)(level_mobys_q + (d->f6C << 8)));
                     MusicRequestTrack(2, 7);
                 } else if (d->f84 == 0) {
                     FadeToBlack(scale_ticks(0x10));
-                    Moby_EnterState4WithChildren(level_mobys_q + (d->f64 << 8));
-                    Moby_EnterState8WithChildren(level_mobys_q + (d->f68 << 8));
-                    Moby_EnterState2WithChildren(level_mobys_q + (d->f60 << 8));
+                    set_moby_and_links_to_states_4_and_5(level_mobys_q + (d->f64 << 8));
+                    set_moby_and_links_to_states_8_and_9(level_mobys_q + (d->f68 << 8));
+                    set_moby_and_links_to_states_2_and_3(level_mobys_q + (d->f60 << 8));
                     d->f84 = 1;
                     d->f94 = 1;
                     {
@@ -3281,9 +3281,9 @@ void update_hero_triggered_moby_height_cycle(Moby *moby) {
                     }
                 } else {
                     FadeToBlack(scale_ticks(0x10));
-                    Moby_EnterState2WithChildren(level_mobys_q + (d->f64 << 8));
-                    Moby_EnterState8WithChildren(level_mobys_q + (d->f68 << 8));
-                    Moby_EnterState4WithChildren(level_mobys_q + (d->f60 << 8));
+                    set_moby_and_links_to_states_2_and_3(level_mobys_q + (d->f64 << 8));
+                    set_moby_and_links_to_states_8_and_9(level_mobys_q + (d->f68 << 8));
+                    set_moby_and_links_to_states_4_and_5(level_mobys_q + (d->f60 << 8));
                     d->f84 = 0;
                     d->f94 = 0;
                     {
@@ -3301,11 +3301,11 @@ void update_hero_triggered_moby_height_cycle(Moby *moby) {
             Moby_PlaySound(0, 0, (int)moby);
             if (moby->state == 3) {
                 moby->state = 5;
-                Moby_EnterState8WithChildren(level_mobys_q + (d->f64 << 8));
+                set_moby_and_links_to_states_8_and_9(level_mobys_q + (d->f64 << 8));
                 d->f90 = scale_ticks(0x78);
             } else {
                 moby->state = 6;
-                Moby_EnterState8WithChildren(level_mobys_q + (d->f68 << 8));
+                set_moby_and_links_to_states_8_and_9(level_mobys_q + (d->f68 << 8));
                 d->f90 = scale_ticks(0x78);
             }
         } else if (func_001F9D48(&moby->pos, &((Hero *)(D_0013E633 + 0xE1D))->motion.pos) < 24.0f
@@ -3314,14 +3314,14 @@ void update_hero_triggered_moby_height_cycle(Moby *moby) {
             d->f84 = 1;
             d->f94 = 1;
             moby->state = 5;
-            Moby_EnterState8WithChildren(level_mobys_q + (d->f64 << 8));
-            Moby_EnterState8WithChildren(level_mobys_q + (d->f60 << 8));
+            set_moby_and_links_to_states_8_and_9(level_mobys_q + (d->f64 << 8));
+            set_moby_and_links_to_states_8_and_9(level_mobys_q + (d->f60 << 8));
             d->f90 = scale_ticks(0x78);
         } else if (func_001F9D48(&moby->pos, &((Hero *)(D_0013E633 + 0xE1D))->motion.pos) < 24.0f
                    && moby->state == 4
                    && moby->pos.z < ((Hero *)(D_0013E633 + 0xE1D))->motion.pos.f[2] - 5.0f) {
             moby->state = 6;
-            Moby_EnterState8WithChildren(level_mobys_q + (d->f68 << 8));
+            set_moby_and_links_to_states_8_and_9(level_mobys_q + (d->f68 << 8));
             d->f90 = scale_ticks(0x78);
         }
         break;
@@ -3338,9 +3338,9 @@ void update_hero_triggered_moby_height_cycle(Moby *moby) {
         if (FastAbsF(moby->pos.z - target) < 0.01f) {
             if (moby->state == 6) {
                 moby->state = 7;
-                Moby_EnterState4WithChildren(level_mobys_q + (d->f64 << 8));
+                set_moby_and_links_to_states_4_and_5(level_mobys_q + (d->f64 << 8));
             } else {
-                Moby_EnterState4WithChildren(level_mobys_q + (d->f68 << 8));
+                set_moby_and_links_to_states_4_and_5(level_mobys_q + (d->f68 << 8));
                 moby->state = 8;
             }
         }

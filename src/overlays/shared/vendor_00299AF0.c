@@ -23,7 +23,7 @@ extern int func_001FA898(float);
 extern char D_L10_001672C0[];
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_00298940.c, FUN_L10_00298940. */
-void DriftingSprites_DrawL10(char *m) {
+void emit_moby_sprite_particles(char *m) {
     L10SpriteData_298940 *p = *(L10SpriteData_298940 **)(m + 0x78);
     float d[4] __attribute__((aligned(16)));
     float e[4] __attribute__((aligned(16)));
@@ -62,7 +62,7 @@ extern void func_L00_00251E30(void *);
 extern char D_0013E633[];
 
 /* spawn a moby of class 0x333 with position, velocity vector and aim angles */
-char *Moby819Spawn(float scale, void *vel, void *pos, int a, int b, int c) {
+char *create_rocket(float scale, void *vel, void *pos, int a, int b, int c) {
     char *m = (char *)func_0020D348_m(0x333);
     char *d;
     if (m) {
@@ -253,7 +253,7 @@ extern short D_L10_00161ED8;
 extern short D_L10_00161EDC;
 
 // spawns an effect at a jittered position around the moby
-void SpawnPartType52Near(char *moby) {
+void spawn_type_52_particle_near_moby(char *moby) {
     float v[3];
     int g, h;
     float a = random_angle_radians();
@@ -432,7 +432,7 @@ void draw_moby_animated_quad_layers(unsigned char *m) {
 extern char * D_L10_0015F050 MACRO_ADDR;
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_002e3de8.c, FUN_L10_002f5a50. */
-void Trigger_Arm(int i) {
+void activate_descriptor(int i) {
     unsigned char *q;
     q = *(unsigned char **)(D_L10_0015F050 + i * 0x20 + 0x1C);
     q[0x38] = 1;
@@ -445,16 +445,16 @@ extern int func_L00_00260B68(float *, int);
 extern int func_L00_0025A778(float *, float *, int);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_002e3de8.c, FUN_L10_002f5a78. */
-int Trigger_IsHeroInside(char *moby, char *unused)
+int check_descriptor_hero_trigger(char *moby, char *unused)
 {
     unsigned char *e = *(unsigned char **)(D_L10_0015F050 + *(short *)(moby + 0x84) * 32 + 0x1C);
 
     if (*(int *)(e + 0x0C) >= 0) {
         if (is_point_inside_clip_volume(gHeroPos, *(int *)(e + 0x0C))) return 1;
     } else if (*(int *)(e + 0x10) >= 0) {
-        if (IsPointInCylinderVolume(gHeroPos, *(int *)(e + 0x10))) return 1;
+        if (test_point_in_transformed_unit_cylinder(gHeroPos, *(int *)(e + 0x10))) return 1;
     } else if (*(int *)(e + 0x08) >= 0) {
-        if (IsPointInSphereVolume((float *)gHeroPos, *(int *)(e + 0x08))) return 1;
+        if (test_point_in_transformed_unit_sphere((float *)gHeroPos, *(int *)(e + 0x08))) return 1;
     } else if (*(int *)(e + 0x14) >= 0) {
         int i = *(int *)(e + 0x14);
         if (IsPointInPolygon((float *)gHeroPos,
@@ -866,7 +866,7 @@ int evaluate_descriptor_eligibility(char *descriptor_owner, char *comparison_obj
     if (comparison_object != 0 && ((UpdateCam *)comparison_object)->transition_state == 0 && (unsigned char)((UpdateCam *)comparison_object)->active >= (unsigned char)((UpdateCam *)descriptor_owner)->active) {
         return 0;
     }
-    if (Trigger_IsHeroInside(descriptor_owner, comparison_object) == 0) {
+    if (check_descriptor_hero_trigger(descriptor_owner, comparison_object) == 0) {
         return 0;
     }
     x = *(int *)(descriptor_record + 0x48);

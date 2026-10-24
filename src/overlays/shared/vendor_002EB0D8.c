@@ -31,7 +31,7 @@ extern void func_L00_001FF4B0(void *, void *, float);
 extern void func_001F9C30(void *, void *, float);
 extern void func_001F9BD8(void *, void *, void *);
 /* Builds a view matrix and multiplies it into the camera and projection matrices. The mode flag is read as a byte of a MACRO_ADDR int, which gives retail's one-register lui/lbu. */
-void BuildViewProjection(char *p) {
+void update_hero_aligned_camera_position(char *p) {
     char a[16] __attribute__((aligned(16)));
     char b[16] __attribute__((aligned(16)));
     char *g = D_0013E633 + 0xE1D;
@@ -291,7 +291,7 @@ extern void func_0022ED80(int, int, int);
 
 /* ActivateCamera_4, the first-person camera's init: the camera it gets is handed on to the
    state reset (func_L00_002EB3A0), which builds the camera's rows. */
-void Camera_FirstPersonInit(char *cam) {
+void initialize_hero_aligned_camera_mode(char *cam) {
     S *g = &player_camera;
     S *h;
     if (g->s == 0) g->s = 1; else g->s = 2;
@@ -299,7 +299,7 @@ void Camera_FirstPersonInit(char *cam) {
     h->c = 0;
     h->f1 = 0.05f;
     h->f0 = 0.05f;
-    func_L00_002EB3A0(cam);
+    reset_hero_aligned_camera(cam);
     if (h->p != 0) Moby_PlaySound(0, 0, h->p);
 }
 extern unsigned char D_0013E633_2EBCC0[] __asm__("D_0013E633");
@@ -358,7 +358,7 @@ void set_camera_position(char *src) {
     char *g = D_L00_00166F00;
     char *p;
     if (*(short *)(g + 0x86) != 5)
-        p = FindCameraById(5);
+        p = find_camera_record_by_id(5);
     else
         p = g;
     qcopy(*(char **)(p + 0x70) + 0x80, src);
@@ -368,7 +368,7 @@ void set_camera_rotation(char *src) {
     char *g = D_L00_00166F00;
     char *p;
     if (*(short *)(g + 0x86) != 5)
-        p = FindCameraById(5);
+        p = find_camera_record_by_id(5);
     else
         p = g;
     qcopy(*(char **)(p + 0x70) + 0x90, src);
@@ -428,7 +428,7 @@ void CameraScript2(int mode) {
     float a[4];
     float b[4];
     float mx[16];
-    Camera_ReleaseCurrent();
+    initialize_camera_record_handoff_defaults();
     if (mode == 0) {
         char *p = obj + 0x30;
         char *t = D_0013E633 + 0xEAD;
@@ -496,7 +496,7 @@ extern float D_L00_00166ED8;
 #define F(p, o) (*(float *)((char *)(p) + (o)))
 
 // advances a camera-like object toward its target state and rebuilds its matrix
-void CameraScript_Update(void *arg) {
+void update_camera_pose_from_targets(void *arg) {
     char *m = arg;
     float mtx[16];
     char *d = *(char **)(m + 0x70);
@@ -520,7 +520,7 @@ void CameraScript_Update(void *arg) {
         } else {
             float t, x, y, diff, z;
             t = (float)(*(int *)(c + 4) - *(int *)(d + 0xE0)) / IntToFloat(*(int *)(c + 4));
-            Camera_UpdatePolarFromPos(d + 0xE8, b, D_0013E633 + 0xE9D);
+            compute_spherical_offset_from_positions(d + 0xE8, b, D_0013E633 + 0xE9D);
             x = FastSubRots(F(c, 8), F(c, 0x1C));
             y = FastSubRots(F(b, 0x18), D_L00_00166ED8);
             if ((x > 0.34906584f && y < -0.34906584f) || (x < -0.34906584f && y > 0.34906584f)) {
@@ -538,7 +538,7 @@ void CameraScript_Update(void *arg) {
             F(c, 0x24) = F(c, 0x24) + (F(c, 0x10) - F(c, 0x24)) * CubicInterpolate(F(c, 0x44), 0, 1.0f, F(c, 0x48), t);
             F(c, 0x20) = interpolate_wrapped_angle_cosine_eased(F(c, 0x20), F(c, 0xC), t);
             interpolate_vector_xyz_cosine_eased(c + 0x30, c + 0x30, D_0013E633 + 0xE9D, t);
-            Camera_Polar3dToPos(m + 0x30, c + 0x1C, c + 0x30);
+            compute_position_from_spherical_offset(m + 0x30, c + 0x1C, c + 0x30);
             interpolate_wrapped_rotations_cosine_eased((float *)(m + 0x40), (float *)(m + 0x40), (float *)(b + 0x10), t);
         }
     } else {
@@ -561,7 +561,7 @@ extern void func_L00_001EDA28(void *, float);
 /* Update wrapper: runs the base camera update, then a follow-up call if a flag is set. */
 void update_camera_pose_with_optional_collision(char *a) {
     char *p = *(char **)(a + 0x70) + 0xE0;
-    CameraScript_Update(a);
+    update_camera_pose_from_targets(a);
     if (*(int *)(p + 0x40) != 0) {
         a[0x89] = 0;
         resolve_camera_movement_collisions(a + 0x30, 0.5f);
@@ -569,11 +569,11 @@ void update_camera_pose_with_optional_collision(char *a) {
 }
 extern float func_001FA748(float, float);
 /* Orients the moby from its position and the stored target. */
-void Camera_OrientFromTarget(void *arg) {
+void initialize_orbit_camera_pose(void *arg) {
     char *a = arg;
     float m[16];
     char *p = *(char **)(a + 0x70) + 0xB0;
-    Camera_Polar3dToPos(a + 0x30, a + 0x50, p);
+    compute_position_from_spherical_offset(a + 0x30, a + 0x50, p);
     *(float *)(a + 0x50) = FastAddRots(*(float *)(a + 0x50), *(float *)(p + 0x18));
     *(int *)(a + 0x40) = 0;
     *(float *)(a + 0x44) = FastAddRots(*(float *)(a + 0x54), *(float *)(a + 0x5C));
@@ -588,21 +588,21 @@ extern void func_L00_001EB430(void *);
 extern void func_L00_001FF200(void *);
 extern void func_L00_002EC728(void *);
 /* Sets up a camera moby from the vectors c and b and the value f. */
-void Camera_SetTargetAndOffset(char *a, void *b, void *c, float f) {
+void initialize_orbit_camera_from_parameters(char *a, void *b, void *c, float f) {
     char *p = *(char **)(a + 0x70);
     char *q = p + 0xB0;
     qcopy(q, c);
     qcopy(p + 0x80, c);
     *(float *)(q + 0x18) = f;
-    CopyRecordAddRot(p + 0x14, b, f);
-    CopyRecordAddRot(a + 0x50, b, 0.0f);
-    ClearFiveWords(p);
-    Vec_ZeroXYZ(p + 0x90);
-    Camera_OrientFromTarget(a);
+    copy_five_floats_with_rotation_offset(p + 0x14, b, f);
+    copy_five_floats_with_rotation_offset(a + 0x50, b, 0.0f);
+    zero_five_words(p);
+    clear_twelve_bytes(p + 0x90);
+    initialize_orbit_camera_pose(a);
 }
 /* From Lombyte (MIT), FUN_L00_002eb3b0 (PR #66), adapted to PAL. */
 
-void Camera_ResetTuning(void *arg) {
+void initialize_orbit_camera_state(void *arg) {
     char *p = arg;
     char *m;
     *(int *)(*(char **)(p + 0x70) + 0xF0) = 0;
@@ -622,10 +622,10 @@ void Camera_ResetTuning(void *arg) {
     *(float *)(m + 0x30) = 0.07f;
     *(float *)(m + 0x34) = 1.0f;
     *(float *)(m + 0x38) = 0.07f;
-    ClearFiveWords(m + 0x50);
-    ClearFiveWords(m);
-    Vec_ZeroXYZ(m + 0x90);
-    Camera_OrientFromTarget(p);
+    zero_five_words(m + 0x50);
+    zero_five_words(m);
+    clear_twelve_bytes(m + 0x90);
+    initialize_orbit_camera_pose(p);
     *(short *)(p + 0x7E) = 0;
 }
 typedef struct OrbitCamState_2EC930 {
@@ -645,7 +645,7 @@ typedef struct OrbitCamState_2EC930 {
 
 typedef struct OrbitCamObj_2EC930 {
     u8 pad_00[0x30];
-    f32 pos[4];                 /* 0x30: written by Camera_Polar3dToPos */
+    f32 pos[4];                 /* 0x30: written by compute_position_from_spherical_offset */
     f32 rot[4];                 /* 0x40: rotation, rot[0..2] set below */
     f32 angles[5];              /* 0x50: angles eased toward the state targets */
 } OrbitCamObj_2EC930;
@@ -678,7 +678,7 @@ void update_orbit_camera_pose(char *camera_object) {
     } else {
         qcopy(orbit_origin, camera_state->look_target);
     }
-    Camera_Polar3dToPos(obj->pos, obj->angles, orbit_origin);
+    compute_position_from_spherical_offset(obj->pos, obj->angles, orbit_origin);
     obj->rot[0] = camera_state->offset[3];
     obj->rot[1] = FastAddRots(obj->angles[1], obj->angles[3]);
     obj->rot[2] = FastAddRots(3.1415927f, obj->angles[0]);
@@ -721,11 +721,11 @@ int Camera_PlaceBehindMoby(char *a, char *t) {
     FastVecAdd(w, t + 0x10, v);
     pw = w;
     if (*(int *)(n + 0x10) == -1) {
-        CopyRecordAddRot(c, a + 0x50, 0.0f);
+        copy_five_floats_with_rotation_offset(c, a + 0x50, 0.0f);
         c[2] = 6.0f;
         c[1] = c[3];
         c[3] = 0.0f;
-        Camera_SetTargetAndOffset(a, c, w, 0.0f);
+        initialize_orbit_camera_from_parameters(a, c, w, 0.0f);
     }
     if (*(int *)(n + 0x10) > 0) goto pos;
     *(float *)(m + 0xAC) = FastAddRots(*(float *)(m + 0xAC), *(float *)(n + 0x18));
@@ -772,8 +772,8 @@ extern char D_L00_001E7B28[];
 extern char D_L00_001E7B40[];
 
 // initialises a moby of type 6 from the given one
-char *Camera_ActivateOnMoby(char *a) {
-    char *m = FindCameraById(6);
+char *initialize_mode6_orbit_camera(char *a) {
+    char *m = find_camera_record_by_id(6);
     char *p;
     char *q;
     D_L00_00166FF0[0] = 0;
@@ -782,13 +782,13 @@ char *Camera_ActivateOnMoby(char *a) {
     p = *(char **)(m + 0x70);
     qcopy(p + 0xB0, p + 0x80);
     q = p + 0x14;
-    CopyRecordAddRot(q, D_L00_001E7B10, 0.0f);
-    CopyRecordAddRot(m + 0x50, q, 0.0f);
-    Camera_ResetTuning(m);
+    copy_five_floats_with_rotation_offset(q, D_L00_001E7B10, 0.0f);
+    copy_five_floats_with_rotation_offset(m + 0x50, q, 0.0f);
+    initialize_orbit_camera_state(m);
     *(int *)(p + 0x9C) = 1;
-    CopyRecordAddRot(p + 0x28, D_L00_001E7B28, 0.0f);
-    CopyRecordAddRot(p + 0x3C, D_L00_001E7B40, 0.0f);
-    ClearFiveWords(p + 0x50);
+    copy_five_floats_with_rotation_offset(p + 0x28, D_L00_001E7B28, 0.0f);
+    copy_five_floats_with_rotation_offset(p + 0x3C, D_L00_001E7B40, 0.0f);
+    zero_five_words(p + 0x50);
     return m;
 }
 extern char D_0013E633[];
@@ -824,10 +824,10 @@ void initialize_orbit_camera_from_hero(void *arg) {
     qcopy(p0 + 0xC0, g + 0x10);
     p = *(char **)(a + 0x70);
     qcopy(p + 0x80, q);
-    ClearFiveWords(p + 0x14);
+    zero_five_words(p + 0x14);
     *(float *)(p + 0x1C) = 4.639999866485596f;
-    CopyRecordAddRot(a + 0x50, p + 0x14, 0.0f);
-    Camera_ResetTuning(a);
+    copy_five_floats_with_rotation_offset(a + 0x50, p + 0x14, 0.0f);
+    initialize_orbit_camera_state(a);
 }
 extern int D_0015EE84 MACRO_ADDR;
 extern int func_001F9850(int);
@@ -835,7 +835,7 @@ extern float func_001F9F90(float);
 extern float func_001F9FA8(float);
 
 /* Sets up the camera activation moby: tuning floats, then the pose copied from the current camera. */
-void CameraType7Activate(void *arg) {
+void initialize_target_tracking_camera(void *arg) {
     char *m = arg;
     char *g;
     int lvl0 = D_0015EE84;
@@ -1179,7 +1179,7 @@ void update_target_tracking_camera(char *m) {
         qcopy(r, m);
         qcopy(&r->basis[1], &cam->basis[1]);
         qcopy(&r->basis[2], &cam->basis[2]);
-        CameraType7Activate(m);
+        initialize_target_tracking_camera(m);
         g->blend.orbit.frames = scale_ticks(0x2D);
     }
 done:
@@ -1189,7 +1189,7 @@ done:
 }
 extern char D_0013F450[];
 /* Update check that sets state 3 when a global value no longer matches the moby's. */
-void CameraType7Exit(char *a) {
+void conditionally_set_camera_state_three(char *a) {
     char *g = D_0013F450;
     if (*(int *)(g + 0x2284) != *(short *)(a + 0x86) && *(int *)(g + 0x2084) != 6) {
         *(char *)(a + 0x7D) = 0;
@@ -1241,7 +1241,7 @@ s32 volume_camera_swing_active(A_2ec7e8 *a) {
     }
     if (o->f0C >= 0 && (v17 || is_point_inside_clip_volume(&gHeroPos[0], o->f0C))) return 1;
     if (o->f4C >= 0 && (v17 || is_point_inside_clip_volume(&gHeroPos[0], o->f4C))) return 1;
-    if (o->f10 >= 0 && (v17 || IsPointInCylinderVolume(&gHeroPos[0], o->f10))) return 1;
+    if (o->f10 >= 0 && (v17 || test_point_in_transformed_unit_cylinder(&gHeroPos[0], o->f10))) return 1;
     if (o->f08 >= 0 && (v17 || func_L00_00260B68_EDC98(&gHeroPos[0], o->f08))) return 1;
     if (o->f14 >= 0 && (v17 || IsPointInPolygon(&gHeroPos[0], D_L00_001B0830[o->f14] + 0x10, *(s32 *)D_L00_001B0830[o->f14]))) return 1;
     return 0;
@@ -1345,7 +1345,7 @@ void volume_camera_swing(char *arg) {
     if (volume_camera_swing_active((void *)cam) == 0) {
         goto stop;
     }
-    if (Cam_AcquireLock(cam) <= 0) {
+    if (try_select_follow_camera_volume(cam) <= 0) {
         if (params->timer != 0) {
             params->done = 1;
         }
@@ -1362,7 +1362,7 @@ stop:
             params->done = 1;
         }
         params->timer = 0;
-        Cam_ReleaseLock(cam);
+        clear_follow_camera_volume_if_current(cam);
         return;
     }
     if (params->timer == 0) {
@@ -1409,11 +1409,11 @@ stop:
     total = IntToFloat(scale_ticks(200));
     params->timer++;
     if (params->type == 10) {
-        func_L00_002E9B30();
+        set_follow_camera_blend_output_flags();
         FOLLOW_CAM_STATE(((struct UpdateCam *)D_L00_00166F00))->tail.mode = 0x14D;
     }
     if (params->type == 11) {
-        func_L00_002E9B30();
+        set_follow_camera_blend_output_flags();
         FOLLOW_CAM_STATE(((struct UpdateCam *)D_L00_00166F00))->tail.mode = 2;
     }
     if (params->type == 2 || params->type == 4) {
@@ -1455,7 +1455,7 @@ stop:
     *(s32 *)&dir[2] = 0;
     swing = params->swing * 0.017453292f * (params->timer / total);
     if ((params->type != 1 && params->type != 7 && params->type != 9) || at_end == 0) {
-        func_L00_002E9DC8(dir, swing, params->pitch * 0.017453292f);
+        set_follow_camera_angle_blend_from_direction(dir, swing, params->pitch * 0.017453292f);
     }
     if (params->distance != 0.0f) {
         if (params->type == 6 || params->type == 8) {
@@ -1570,9 +1570,9 @@ extern int func_L00_00260B68(float *, int);
 
 struct VolAimParams {
     u8 pad_00[0x8];
-    s32 volume_25faf0;      /* 0x08 sphere volume (IsPointInSphereVolume); < 0 none */
+    s32 volume_25faf0;      /* 0x08 sphere volume (test_point_in_transformed_unit_sphere); < 0 none */
     s32 clip_volume;        /* 0x0C clip volume (is_point_inside_clip_volume) */
-    s32 volume_25fa38;      /* 0x10 cylinder volume (IsPointInCylinderVolume) */
+    s32 volume_25fa38;      /* 0x10 cylinder volume (test_point_in_transformed_unit_cylinder) */
     u8 pad_14[0x12];
     s16 done;               /* 0x26 set when the hero is in none of the volumes */
     u8 pad_28[0xC];
@@ -1643,11 +1643,11 @@ int volume_camera_aim_active(void *arg) {
             return 1;
     }
     if (params->volume_25fa38 >= 0) {
-        if (IsPointInCylinderVolume((char *)D_0013E633 + 0xE9D, params->volume_25fa38) != 0)
+        if (test_point_in_transformed_unit_cylinder((char *)D_0013E633 + 0xE9D, params->volume_25fa38) != 0)
             return 1;
     }
     if (params->volume_25faf0 >= 0) {
-        if (IsPointInSphereVolume((float *)((char *)D_0013E633 + 0xE9D), params->volume_25faf0) != 0)
+        if (test_point_in_transformed_unit_sphere((float *)((char *)D_0013E633 + 0xE9D), params->volume_25faf0) != 0)
             return 1;
     }
     params->done = 1;
@@ -1723,7 +1723,7 @@ void volume_camera_aim(void *cam_) {
 
     params = ((CameraDescriptor_ee *)camera_descriptors)[aim_camera_record->descriptor_index].params;
     if (volume_camera_aim_active(aim_camera_record)) {
-        if (Cam_AcquireLock(aim_camera_record) <= 0) {
+        if (try_select_follow_camera_volume(aim_camera_record) <= 0) {
             if (params->timer) {
                 params->done = 1;
             }
@@ -1738,7 +1738,7 @@ void volume_camera_aim(void *cam_) {
         params->done = 1;
     }
     params->timer = 0;
-    Cam_ReleaseLock(aim_camera_record);
+    clear_follow_camera_volume_if_current(aim_camera_record);
     return;
 run:
     if (params->timer < 2) {

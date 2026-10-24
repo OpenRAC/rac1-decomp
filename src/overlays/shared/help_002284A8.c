@@ -81,7 +81,7 @@ void Hero_UpdateHopMovement(void) {
 
     state = D_0013F450_s.state.current;
     if (state == 10) {
-        Hero_ComputeMoveOffset(0.7f, D_0015EE6C * 0.0f);
+        build_scaled_hero_move_impulse(0.7f, D_0015EE6C * 0.0f);
         qcopy(&D_0013F450_s.motion.unk150, &D_0013F450_s.move_impulse);
         D_0013F450_s.ground_speed = D_0013F450_s.motion.unk164;
     } else if (state == 16) {
@@ -94,12 +94,12 @@ void Hero_UpdateHopMovement(void) {
             D_0013F450_s.target_speed = D_0015EE6C * 3.5f;
         }
         speed_step(D_0015EE70 * 44.0f, D_0015EE70 * 45.0f);
-        HeroScalePointXY(D_0013F450_s.motion.velocity.f, D_0013F450_s.motion.velocity.f, 0.0f);
-        HeroMoveAlongHeading(&D_0013F450_s.motion.velocity, &D_0013F450_s.motion.velocity, D_0013F450_s.ground_speed);
+        set_gravity_relative_vector_length_xy(D_0013F450_s.motion.velocity.f, D_0013F450_s.motion.velocity.f, 0.0f);
+        add_hero_forward_offset(&D_0013F450_s.motion.velocity, &D_0013F450_s.motion.velocity, D_0013F450_s.ground_speed);
     } else if (state == 0x1C) {
         if (scale_ticks(0x28) < D_0013F450_s.state_timer) {
             turn_to(0, D_0015EE64 * 0.04f, D_0015EE64 * 0.2f, D_0015EE6C * 15.009831f);
-            func_L00_00214520(D_0015EE70 * 20.0f);
+            steer_hero_planar_velocity(D_0015EE70 * 20.0f);
         }
         if (13.0f <= D_0013F450_s.anim_frame && D_0013F450_s.anim_frame <= 30.0f) {
             if (27.0f < D_0013F450_s.anim_frame) {
@@ -112,7 +112,7 @@ void Hero_UpdateHopMovement(void) {
         D_0013F450_s.motion.velocity.f[1] = FastSin(D_0013F450_s.motion.rot.f[2]) * D_0013F450_s.unk45C;
     } else if (state == 11 || state == 12) {
         if (D_0015EE84 != 0xE && hero_slot_item_id(3) == 3 && D_0013F450_s.state_timer == scale_ticks(5)) {
-            Hero_PlayActiveSound(1, 0);
+            allocate_hero_voice_for_entry(1, 0);
         }
         D_0013F450_s.motion.move_yaw = D_0013F450_s.unk43C;
         turn_to(0, D_0015EE64 * 0.04f, D_0015EE64 * 0.2f, D_0015EE6C * 6.981317f);
@@ -133,7 +133,7 @@ void Hero_UpdateHopMovement(void) {
         a = D_0013F450_s.unk454 * FastSin(FastDiffRots(D_0013F450_s.unk43C, D_0013F450_s.unk438));
         D_0013F450_s.motion.velocity.f[0] += FastCos(D_0013F450_s.unk43C) * a;
         D_0013F450_s.motion.velocity.f[1] += FastSin(D_0013F450_s.unk43C) * a;
-        Hero_ComputeMoveOffset(0.7f, D_0015EE6C * 0.0f);
+        build_scaled_hero_move_impulse(0.7f, D_0015EE6C * 0.0f);
         qcopy(&D_0013F450_s.motion.unk150, &D_0013F450_s.move_impulse);
     } else if (state == 0x11) {
         D_0013F450_s.motion.move_yaw = D_0013F450_s.unk470.f[3];
@@ -146,7 +146,7 @@ void Hero_UpdateHopMovement(void) {
                 D_0013F450_s.motion.velocity.f[0] = FastCos(D_0013F450_s.motion.move_yaw) * (D_0015EE6C * 4.9f);
                 D_0013F450_s.motion.velocity.f[1] = FastSin(D_0013F450_s.motion.move_yaw) * (D_0015EE6C * 4.9f);
             } else {
-                HeroScalePointXY(D_0013F450_s.motion.velocity.f, D_0013F450_s.motion.velocity.f, 0.0f);
+                set_gravity_relative_vector_length_xy(D_0013F450_s.motion.velocity.f, D_0013F450_s.motion.velocity.f, 0.0f);
                 func_L00_001FF4B0(&tmp, &D_0013F450_s.motion.unk170, D_0015EE6C * 4.9f);
                 FastVecAdd(&D_0013F450_s.motion.velocity, &D_0013F450_s.motion.velocity, &tmp);
             }
@@ -157,11 +157,11 @@ void Hero_UpdateHopMovement(void) {
             x = D_0013F450_s.motion.rot.f[2];
             D_0013F450_s.motion.unk188 = SpringAngle(&x, D_0013F450_s.motion.move_yaw, &D_0013F450_s.motion.unk184, 0, D_0015EE64 * 0.018f, D_0015EE64 * 0.2f, D_0015EE6C * 7.330383f);
             a = FastSubRots(x, D_0013F450_s.motion.rot.f[2]);
-            PlaceRelativeToCameraSimple(0.0f, 0.0f, a);
+            rotate_hero_about_fixed_local_pivot(0.0f, 0.0f, a);
         } else {
             turn_to(0, D_0015EE64 * 0.04f, D_0015EE64 * 0.2f, D_0013F450_s.unk414);
         }
-        Hero_ComputeMoveOffset(0.7f, D_0015EE6C * 0.0f);
+        build_scaled_hero_move_impulse(0.7f, D_0015EE6C * 0.0f);
         qcopy(&D_0013F450_s.motion.unk150, &D_0013F450_s.move_impulse);
         arg = D_0015EE70 * 20.0f;
         if (D_0013F450_s.target_speed < D_L12_0017C2D0[0] * D_0015EE6C * 0.2f) {
@@ -190,6 +190,6 @@ void Hero_UpdateHopMovement(void) {
                 arg = D_0013F450_s.ground_slope.f * (D_0015EE70 * 9.0f) / 0.7853982f;
             }
         }
-        func_L00_00214520(arg);
+        steer_hero_planar_velocity(arg);
     }
 }

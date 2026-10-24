@@ -25,7 +25,7 @@ void Camera_RunQueuedCallbacks(void) {
 INCLUDE_ASM("asm/overlays", func_L00_001EB564);
 /* Returns the camera slot (gCameraSlotsLvl) whose id is id, or 0 when none.
    Adapted from Lombyte (MIT) for PAL: src/overlays/shared/gameplay/camera/001eb188.c, FUN_L00_001eb1f8. */
-Camera *FindCameraById(int id) {
+Camera *find_camera_record_by_id(int id) {
     s32 p;
     s32 e;
     s16 v;
@@ -76,7 +76,7 @@ extern CameraSystem D_L00_00166D80;
 
 /* Lets any eligible camera take over from the current one: sets the current camera's
    transition_state to 1 and clears its handoff_state. */
-void Camera_ReleaseCurrent(void) {
+void initialize_camera_record_handoff_defaults(void) {
     CameraSystem *g = &player_camera;
     g->current->transition_state = 1;
     g->current->handoff_state = 0;
@@ -496,7 +496,7 @@ void init_camera_system(void) {
         g->current->handoff_state = 0;
         g->current->transition_state = 0;
     }
-    g->current = FindCameraById(0);
+    g->current = find_camera_record_by_id(0);
     g->current->hard_cut = 1;
     g->current->state_buf = gCamCurStateLvl;
     g->blend.phase = 0;
@@ -523,7 +523,7 @@ extern float func_001F9FA8(float);
 extern void func_001F9BD8(void *, void *, void *);
 
 /* Inverse of Camera_Pos2Polar3d: out = origin + the point at polar (yaw, pitch, distance). */
-void Camera_Polar3dToPos(float *out, float *polar, void *origin) {
+void compute_position_from_spherical_offset(float *out, float *polar, void *origin) {
     out[0] = polar[2] * FastCos(polar[1]) * FastCos(polar[0]);
     out[1] = polar[2] * FastCos(polar[1]) * FastSin(polar[0]);
     out[2] = polar[2] * FastSin(polar[1]);
@@ -538,7 +538,7 @@ extern void func_001FA790(float, float);
 extern float func_001F9CB8(float *);
 extern void func_001F9BF0_3(float *, float *, float *) __asm__("func_001F9BF0");
 /* polar = (yaw, pitch, distance) of pos as seen from origin; the FastSubRots result is unused (kept, as retail). */
-int Camera_UpdatePolarFromPos(float *polar, float *pos, float *origin) {
+int compute_spherical_offset_from_positions(float *polar, float *pos, float *origin) {
     W v;
     float t;
     func_001F9BF0_3(v, pos, origin);

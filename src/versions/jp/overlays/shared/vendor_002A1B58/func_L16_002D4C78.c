@@ -16,7 +16,7 @@ void update_blarg_elite_commando_damage_and_pursuit(char *m) {
     }
     response = ComputeHitResponse(m, hit, &d->health, 0, &scratch.status, &scratch.amount, 0, 4);
     if (scratch.status != 1 && ((unsigned char *)m)[0x20] != 9) {
-        Group_RandomizeTimers(m, 0x12C, 0x168);
+        randomize_blarg_elite_commando_group_pursuit_timers(m, 0x12C, 0x168);
         if (hit && *(char **)(hit + 0x20) &&
             *(short *)(*(char **)(hit + 0x20) + 0xA6) != 0x47) {
             d->reward_hits = 0;

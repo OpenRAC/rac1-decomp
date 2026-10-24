@@ -93,7 +93,7 @@ extern int *D_L05_001AC040[];
 extern void func_L05_002F62E8(int, int, int);
 
 /* Runs func_L05_002F62E8 for each entry of list i until an entry without the top bit set. */
-void ApplyTriggerSwitchesToList(int a, int b, int i, int c) {
+void apply_spatial_trigger_to_moby_list(int a, int b, int i, int c) {
     unsigned short *p = (unsigned short *)D_L05_001AC040[i];
     if (p != 0) {
         do {
@@ -209,7 +209,7 @@ void hydrodisplacer_faucet_update(char *faucet_moby) {
             MobyBlendAnimation(faucet_moby, 2, 0, 0);
         break;
     }
-    UpdateFocusPulse(faucet_moby);
+    update_hydrodisplacer_faucet_pulse_color(faucet_moby);
 }
 extern float func_00214D28(float *p, float target, float maxstep);
 extern float func_001FA748(float, float);
@@ -224,7 +224,7 @@ extern short D_L05_0016198C;
 extern short D_L05_00161990;
 
 /* eases the pulse level of the moby that holds the focus and mixes its colour from two palettes */
-void UpdateFocusPulse(void *mv) {
+void update_hydrodisplacer_faucet_pulse_color(void *mv) {
     char *moby = mv;
     char *base = D_0013E633 + 0xE1D;
     char *data = *(char **)(moby + 0x78);
@@ -430,7 +430,7 @@ void add_moby_frames_for_group_proximity(char *moby) {
     if (p == 0) return;
     e = *(char **)(p + 0x78);
     if (*(int *)(e + 0x44) != -1) {
-        GroupMobyIter_Start(&cur0, *(int *)(e + 0x44), 0, 0);
+        get_first_moby_in_group(&cur0, *(int *)(e + 0x44), 0, 0);
         while (cur0 != 0) {
             if (*(short *)(cur0 + 0xA6) == 0x473) {
                 float v1[4];
@@ -449,11 +449,11 @@ void add_moby_frames_for_group_proximity(char *moby) {
                     }
                 }
             }
-            GroupMobyIter_Next(&cur0, cur0, 0, 0);
+            get_next_moby_in_group(&cur0, cur0, 0, 0);
         }
     }
     if (*(int *)(e + 0x48) != -1) {
-        GroupMobyIter_Start(&cur1, *(int *)(e + 0x48), 0, 0);
+        get_first_moby_in_group(&cur1, *(int *)(e + 0x48), 0, 0);
         while (cur1 != 0) {
             if (*(short *)(cur1 + 0xA6) == 0x474) {
                 float m[16];
@@ -468,7 +468,7 @@ void add_moby_frames_for_group_proximity(char *moby) {
                     }
                 }
             }
-            GroupMobyIter_Next(&cur1, cur1, 0, 0);
+            get_next_moby_in_group(&cur1, cur1, 0, 0);
         }
     }
 }
@@ -1002,7 +1002,7 @@ void hoverboard_ring_update(char *moby) {
                 for (i = 0; i < 3; i++) {
                     float first_random_angle = random_angle_radians();
                     float second_random_angle = random_angle_radians();
-                    PartType67Spawn(first_random_angle, second_random_angle, (int)moby, D_L05_0015F660, scale_ticks(0x28), 1, 0x7F, 0);
+                    spawn_mode_controlled_orbiting_trail_particle(first_random_angle, second_random_angle, (int)moby, D_L05_0015F660, scale_ticks(0x28), 1, 0x7F, 0);
                 }
             }
         }
@@ -1128,7 +1128,7 @@ void update_moby_glow_and_contact_explosion(struct Moby *moby) {
     if (debris != 0) {
         debris->spawn_frame = moby->spawn_frame;
     }
-    SpawnBreakFxByDistance(moby);
+    spawn_proximity_gated_bolts(moby);
     FastVecScale(&vel, &moby->rot_row0, (*(f32 *)&D_L05_00162090) * D_0015EE60);
     vel.f[2] += (*(f32 *)&D_L05_00162094) * D_0015EE60;
     debris = SpawnBreakFragment(D_0015EE70 * 12.0f, moby, 0x5EE, &moby->pos, &moby->rot, scale_ticks(0x5A), 0,
@@ -1274,7 +1274,7 @@ extern char D_0013F6E0[];
 extern int D_0015EE84 MACRO_ADDR;
 
 /* Sets up a moby's vector from the level table and clamps its height for the current state. */
-void Camera_SetTargetFromHero(char *moby) {
+void update_hero_follow_camera_focus(char *moby) {
     float v[4];
     char *d = *(char **)(moby + 0x70);
     float *p = (float *)(d + 0x80);
@@ -1340,7 +1340,7 @@ void build_hero_follow_camera_transform(char *m) {
     float v2[4];
     float v3[4];
     float v4[4];
-    Camera_SetTargetFromHero(m);
+    update_hero_follow_camera_focus(m);
     g = D_0013E633 + 0xE1D;
     a = d + 0x80;
     b = d + 0xE0;

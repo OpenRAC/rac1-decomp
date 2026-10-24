@@ -174,9 +174,9 @@ int hero_handle_jump_press(void) {
     if (*(int *)(g + 0x2084) == 0xE) {
         return 0;
     }
-    n = GetStickTilt();
+    n = get_hero_high_jump_input_window_frames();
     t = scale_ticks(5);
-    if ((*(int *)(D_0013A5E0 + 0x2600) & 0xA) != 0 && n > 0 && PadComboWithin(0x40, 0x1F000, t + n, n) != 0) {
+    if ((*(int *)(D_0013A5E0 + 0x2600) & 0xA) != 0 && n > 0 && check_pad_press_separation(0x40, 0x1F000, t + n, n) != 0) {
         m = 0xB;
 found:
         HeroEnterMoveState(m, 1);
@@ -269,7 +269,7 @@ int try_start_hero_item_idle_animation(void) {
         int i = hero_slot_item_id(0);
         int v;
         if (i != *(int *)(p + 0x2298)) {
-            Hero_ClearPendingModuleAnim();
+            cancel_hero_item_animation();
             return 0;
         }
         v = D_L00_00179BC0[i].v;

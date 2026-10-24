@@ -950,7 +950,7 @@ void Moby1906Update(unsigned char *m) {
         b = D_0015EE70 * k;
         d = D_0015EE6C * k;
         SteerAngleWithVelocity((float *)s0, (float *)(e + 0x1E8), r, b, b, d);
-        if (IsFrameWithinWindow((char *)m, 14.0f)) MobySphereHitAtPoint(m, 0.5f, 1.0f, 1.0f, 1, 1, 0, 1, 0);
+        if (IsFrameWithinWindow((char *)m, 14.0f)) collect_mobies_in_sphere_at_moby_point(m, 0.5f, 1.0f, 1.0f, 1, 1, 0, 1, 0);
         if (m[0x70] & 2) {
             if (*(int *)(e + 0x1C4) == 2) {
                 m[0x20] = 2;
@@ -1153,7 +1153,7 @@ extern void func_L00_00259868(int, int, float, float, float, int);
 extern void func_L00_00262DF0(float, void *, void *, void *);
 
 /* Steers a class 0x772 enemy toward src and returns the distance to it. */
-float Moby1906SteerToward(char *self, float *src) {
+float move_gadgebot_toward_target(char *self, float *src) {
     QVec a;
     float v[4];
     float b[4];
@@ -1329,7 +1329,7 @@ void draw_group_class_0772_joint_glows(unsigned char *moby) {
                 float v[4];
                 for (i = 2; i < 5; i++) {
                     Moby_GetJointWorldPos(obj, i, v);
-                    DrawBillboardAt(v, col, 0.175f, 0.08f);
+                    draw_offset_textured_effect_quad(v, col, 0.175f, 0.08f);
                 }
             }
             if (*(short *)p < 0) break;

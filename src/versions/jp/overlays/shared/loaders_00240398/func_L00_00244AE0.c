@@ -82,7 +82,7 @@ s32 func_L00_00244AE0(s32 full, s32 keep) {
             func_00203118(base + h->v[4]);
         else
             D_L00_001605DC = 0;
-        CollInit(base + h->v[5]);
+        resolve_level_asset_block_pointers(base + h->v[5]);
         for (i = 0, q2 = (char *)h + h->v[7]; i < h->v[6]; i++, q2 += 0x20)
             func_00203E78(*(s32 *)q2 ? base + *(s32 *)q2 : 0, (char *)h + h->v[0xF], q2 + 0x10, *(s32 *)(q2 + 4));
         print_moby_class_sizes((int *)((char *)h + h->v[7]), h->v[7]);
@@ -118,7 +118,7 @@ s32 func_L00_00244AE0(s32 full, s32 keep) {
             D_L00_0015F540 = 0;
         }
         if (h->v[0x29]) {
-            LoadLightHeader(base + h->v[0x29]);
+            load_two_int_two_float_header(base + h->v[0x29]);
         } else {
             D_L00_0015FD58 = 0;
             D_L00_0015FD5C = 0;

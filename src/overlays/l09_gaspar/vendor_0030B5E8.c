@@ -104,9 +104,9 @@ int advance_shuttle_along_path(struct Moby *moby) {
     if (func_001F9D48(&moby->pos, &path->node[path->count - 1]) > 8.0f &&
         func_001F9D48(&moby->pos, &path->node[0]) > 8.0f && !random_integer_below(7)) {
         qcopy(&puff, &moby->pos);
-        JitterVector(&puff, 0.5f);
+        add_random_offset_to_vector_xyz(&puff, 0.5f);
         puff.f[2] = 25.01f;
-        PartType45Spawn(&puff, 0, 0x40103080, vars->speed * 3.0f / (D_0015EE6C * 10.0f), 12600.0f);
+        spawn_moving_resizing_height_snapped_alpha_fade_particle(&puff, 0, 0x40103080, vars->speed * 3.0f / (D_0015EE6C * 10.0f), 12600.0f);
     }
     return done;
 }
@@ -129,8 +129,8 @@ void BreakableL09_Update(char *m) {
         break;
     case 2:
         Moby_PlaySound(0, 0, (int)m);
-        SpawnBreakFxByDistance(m);
-        SpawnMobyBurstFx(m, 0x73B, 1, 0x73B, 1, 7, 2);
+        spawn_proximity_gated_bolts(m);
+        spawn_moby_break_fragments(m, 0x73B, 1, 0x73B, 1, 7, 2);
         spawn_moby_from_placement(m, 0x73A);
         DeleteMoby(m);
         break;

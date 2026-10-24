@@ -104,7 +104,7 @@ extern float func_001F9F90(float);
 extern float func_001F9FA8(float);
 
 /* spawn a type-0x2D particle at a position with a velocity scale */
-unsigned char *PartType45Spawn(void *pos, int b, int color, float f, float g) {
+unsigned char *spawn_moving_resizing_height_snapped_alpha_fade_particle(void *pos, int b, int color, float f, float g) {
     unsigned char *r = create_part(0x2D);
     if (r != 0) {
         char *v;
@@ -730,7 +730,7 @@ void update_color_tween_emitter_particle(unsigned char *p) {
         for (i = 0; i < q[0x13]; i++) {
             qcopy(t, p + 0x10);
             m = 1.0f;
-            JitterVector(t, 0.05f);
+            add_random_offset_to_vector_xyz(t, 0.05f);
             if (*(short *)(p + 0xA) < scale_ticks(10)) {
                 m = IntToFloat(*(short *)(p + 0xA)) / (float)scale_ticks(10);
             }
@@ -966,7 +966,7 @@ void update_moby_point_attached_alpha_pulse_particle(P_p *p) {
 extern unsigned char *D_L00_001B24F8;
 
 // Spawns a type-62 particle at a position with a lifetime and a colour index.
-unsigned char *PartType62Spawn(void *a, int b, int c) {
+unsigned char *spawn_mode_controlled_alpha_fade_particle(void *a, int b, int c) {
     unsigned char *r = create_part(0x3E);
     if (r != 0) {
         unsigned char *v = r + 0x20;
@@ -1009,7 +1009,7 @@ void update_mode_controlled_alpha_fade_particle(char *a) {
 extern unsigned char *D_L00_001B2500;
 
 /* Spawns a type-64 particle at pos moving with vel, sprite size chosen by distance to the hero. */
-unsigned char *PartType64Spawn(void *pos, void *vel, float scale, int life, float f1, int col, float f2, int a4, int big) {
+unsigned char *spawn_gravity_floor_burst_particle(void *pos, void *vel, float scale, int life, float f1, int col, float f2, int a4, int big) {
     unsigned char *r = create_part(0x40);
     unsigned char *u;
     if (r != 0) {
@@ -1091,7 +1091,7 @@ void update_gravity_floor_burst_particle(struct EmberParticle *p) {
         f = p->size;
         f *= 0.5f;
         n = rand_range(scale_ticks(0x3C), scale_ticks(0x78));
-        PartType15Spawn(&p->pos, &m->vel, p->color, m->color2, f, n, 0, p->tex, p->blend);
+        spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns(&p->pos, &m->vel, p->color, m->color2, f, n, 0, p->tex, p->blend);
     } else {
         p->pos.f[2] = m->floor_z;
         m->vel.f[0] += random_float_between(-5.0f, 5.0f) * D_0015EE6C;
@@ -1100,13 +1100,13 @@ void update_gravity_floor_burst_particle(struct EmberParticle *p) {
         f = p->size;
         f *= 0.25f;
         n = rand_range(scale_ticks(0x1E), scale_ticks(0x3C));
-        PartType15Spawn(&p->pos, &m->vel, p->color, m->color2, f, n, 0, p->tex, p->blend);
+        spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns(&p->pos, &m->vel, p->color, m->color2, f, n, 0, p->tex, p->blend);
     }
     if (D_0015EE84 == 10) {
         if (!random_integer_below(0x13)) {
             t.q = p->pos.q;
             t.f[2] += 0.1f;
-            PartType45Spawn(&t, 0, ((random_integer_below(6) + 0x34) << 24) | (cb << 16) | (cg << 8) | cr,
+            spawn_moving_resizing_height_snapped_alpha_fade_particle(&t, 0, ((random_integer_below(6) + 0x34) << 24) | (cb << 16) | (cg << 8) | cr,
                              0.05f, 10500.0f);
         }
         if (!random_integer_below(9)) {
@@ -1232,7 +1232,7 @@ void update_moving_resizing_periodic_alpha_fade_particle(char *m) {
 extern unsigned char *D_L00_001B250C;
 
 /* spawns particle type 0x43 at a position with a colour, timer and optional velocity */
-unsigned char *PartType67Spawn(float f0, float f1, int a0, void *pos, int timer, int flag, int col, float *vel) {
+unsigned char *spawn_mode_controlled_orbiting_trail_particle(float f0, float f1, int a0, void *pos, int timer, int flag, int col, float *vel) {
     unsigned char *r = create_part(0x43);
     if (r != 0) {
         unsigned char *v = r + 0x20;
@@ -1391,7 +1391,7 @@ extern int func_001F9850(int);
 extern unsigned char *D_L00_001B2514;
 
 /* spawns a particle at a with velocity b, colour byte c and payload d */
-unsigned char *PartType69Spawn(void *a, void *b, int c, int d) {
+unsigned char *spawn_mode_controlled_rotating_alpha_fade_particle(void *a, void *b, int c, int d) {
     unsigned char *r = create_part(0x45);
     char *v;
     int x;
@@ -1468,7 +1468,7 @@ extern int func_001F9850(int);
 extern unsigned char *D_L00_001B2518;
 
 /* spawns a particle at pos with a colour byte taken from a table and a heading */
-unsigned char *PartType70Spawn(void *a, int idx, float ang) {
+unsigned char *spawn_texture_indexed_rotated_particle(void *a, int idx, float ang) {
     unsigned char *r = create_part(0x46);
     if (r != 0) {
         qcopy(r + 0x10, a);
@@ -1635,7 +1635,7 @@ void update_gravity_ground_culled_particle(O_275320 *o) {
     }
     if (o->pos.f[2] < h) {
         tmp.q = o->pos.q;
-        SpawnImpactSparks(&tmp);
+        spawn_ground_contact_effect_particle(&tmp);
         KillPart(o);
         return;
     }
@@ -1656,7 +1656,7 @@ void update_gravity_ground_culled_particle(O_275320 *o) {
         }
         if (o->pos.f[2] < h) {
             t2.q = o->pos.q;
-            SpawnImpactSparks(&t2);
+            spawn_ground_contact_effect_particle(&t2);
             KillPart(o);
             return;
         }
@@ -1746,7 +1746,7 @@ extern void func_L00_0025A468(void *, void *);
 extern int func_001F9938(void *);
 extern short D_L00_00160300;
 void update_timed_alpha_fade_particle(char *a) {
-    Particle_FadeAlpha(a + 4, *(void **)&D_L00_00160300);
+    decrement_packed_countdown(a + 4, *(void **)&D_L00_00160300);
     if (FastDecTimer(a + 0xA) != 0) {
         KillPart(a);
     }

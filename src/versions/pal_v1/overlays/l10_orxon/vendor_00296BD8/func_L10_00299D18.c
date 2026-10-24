@@ -79,12 +79,12 @@ void update_hero_relocation_trigger(char *m) {
             k = *(int *)(d + 8);
             Hero_ResetToPosition(D_L10_0016016C + (k << 7) + 0x30, D_L10_0016016C + (k << 7) + 0x70, 0, 1);
         }
-        Hero_BeginObjectControl(1, 0x43, D_L10_00160058_00299818 + (*(int *)d << 8));
+        enter_hero_vehicle_mode(1, 0x43, D_L10_00160058_00299818 + (*(int *)d << 8));
         MusicRequestTrack(2, 4);
     } else {
         unsigned char *h = (unsigned char *)D_0013E633 + 0xE1D;
         if (h[0x20A4] == 1) {
-        ResetHelpState();
+        exit_hero_vehicle_mode();
         {
             Hero_ResetToPosition(D_L10_0016016C + (*(int *)(d + 4) << 7) + 0x30, D_L10_0016016C + (*(int *)(d + 4) << 7) + 0x70, 0, 1);
         }

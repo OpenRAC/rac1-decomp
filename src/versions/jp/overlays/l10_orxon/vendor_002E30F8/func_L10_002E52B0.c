@@ -1,4 +1,4 @@
-void ToxicCrabL10_Update(void *mv) {
+void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
     Moby *m = mv;
     V_2E52B0 vA;
     V_2E52B0 vB;

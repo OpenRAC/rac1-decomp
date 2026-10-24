@@ -103,7 +103,7 @@ void FighterJetUpdate(Moby1379 *moby) {
                 }
             }
             if (ok) {
-                Hud_ClosePopupIfActive(7);
+                remove_help_message_for_selector(7);
                 HeroL17_SetMoveState(0x32, 1);
                 moby->state = 2;
                 d->i124 = -1;
@@ -176,7 +176,7 @@ void FighterJetUpdate(Moby1379 *moby) {
                 }
                 jet_camera_mode();
                 D_L17_0015F6E8 = 2;
-                update_fighter_jet_flight(moby, d);
+                PlayerShipUpdate(moby, d);
                 moby->state = 4;
             }
             break;
@@ -190,7 +190,7 @@ void FighterJetUpdate(Moby1379 *moby) {
                 d->i108 = -1;
                 d->i108 = Moby_PlaySound(0, 4, (int)moby);
             }
-            update_fighter_jet_flight(moby, d);
+            PlayerShipUpdate(moby, d);
             if (d->iE8 <= 0) {
                 d->tF8 = *(int *)&D_L17_001621F8;
                 moby->state = 8;
@@ -276,7 +276,7 @@ void FighterJetUpdate(Moby1379 *moby) {
         case 8:
             force_help_message(6, 0);
             D_L17_0015F6E8 = 2;
-            update_fighter_jet_flight(moby, d);
+            PlayerShipUpdate(moby, d);
             if (func_001F9908(&d->tF8) != 0) {
                 ApproachValue(&d->f130, 1.0f, D_0015EE6C * 4.0f);
                 D_L17_0015F4FC = d->f130;

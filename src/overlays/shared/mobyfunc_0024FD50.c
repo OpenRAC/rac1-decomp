@@ -40,7 +40,7 @@ extern void func_001F9EE8(void *, void *, void *);
 extern void func_001F9C30(void *, void *, float);
 
 /* places a scaled, camera-relative entry in an object's table */
-void Moby_SetScaledJointEntry(char *a, int idx, void *pos, float x, float y) {
+void set_moby_local_table_entry(char *a, int idx, void *pos, float x, float y) {
     float m[16];
     float v[4];
     char *e = *(char **)(a + 0x94) + (idx * 32 + 0x10);
@@ -53,7 +53,7 @@ void Moby_SetScaledJointEntry(char *a, int idx, void *pos, float x, float y) {
     *(float *)(e + 4) = y * s;
     *(float *)(e + 0x1C) = x * s;
 }
-void OffsetShortPairTables(unsigned char *a, int dx, int dy) {
+void offset_moby_class_point_pairs(unsigned char *a, int dx, int dy) {
     int i;
     int n = a[4] + a[5];
     int *t = *(int **)a;
@@ -77,7 +77,7 @@ typedef struct Slot {
 extern Slot D_L00_0018EEC0[];
 extern char D_L00_001870C0[];
 
-Slot *AllocAnimSlot(char *o, int id) {
+Slot *allocate_moby_animation_slot(char *o, int id) {
     int i = 0;
     Slot *s;
     unsigned char *r;
@@ -108,7 +108,7 @@ typedef struct {
 extern void func_001F99B0(void *, s32, s32);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/state/0024eec0.c, FUN_L00_0024f0e8. */
-void List_RemoveAndClearNode(ListOwner_24f0e8 *owner, ListNode_24f0e8 **slot) {
+void release_moby_animation_slot(ListOwner_24f0e8 *owner, ListNode_24f0e8 **slot) {
     ListNode_24f0e8 *p;
 
     if (*slot == 0)
@@ -191,7 +191,7 @@ typedef struct { u8 pad[0x51]; u8 b51, b52, b53; } A;
 extern void func_L00_002501C8_50418(void *, void *) __asm__("func_L00_002501C8");
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_state_0024eec0.c, FUN_L00_0024f3e0. */
-void MobyAnim_StartBlend(A *a0, S *a1, s32 a2, s32 a3, s32 a4, s32 a5) {
+void initialize_moby_animation_blend(A *a0, S *a1, s32 a2, s32 a3, s32 a4, s32 a5) {
     a1->b22 = a0->b53;
     a1->b20 = a0->b51;
     a1->b23 = a2;
@@ -343,7 +343,7 @@ extern void func_001E9730();
 extern void func_0020E340(void *, int, int, int, int);
 
 /* Finds the table entry nearest the object's position (within 8 units) and applies its fields to the object and globals. */
-void EnvNearestSamplePoint(char *o) {
+void apply_nearest_environment_sample(char *o) {
     float vec[4];
     float best = 999999.0f;
     float d;

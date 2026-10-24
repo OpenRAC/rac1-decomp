@@ -39,9 +39,9 @@ void draw_moby_color_cycling_bone_glows(void *moby) {
     MobyTransformScaledVertex(moby, 1, b);
     FastVecScale(e, c, *(float*)&D_L18_00162590);
     FastVecSub(a, d, e);
-    DrawBillboardAt(a, h, D_L18_001624E0, D_L18_001624E4);
+    draw_offset_textured_effect_quad(a, h, D_L18_001624E0, D_L18_001624E4);
     MobyTransformScaledVertex(moby, 2, b);
     FastVecScale(e, c, *(float*)&D_L18_00162590);
     FastVecSub(a, d, e);
-    DrawBillboardAt(a, h, D_L18_001624E0_b, D_L18_001624E4_b);
+    draw_offset_textured_effect_quad(a, h, D_L18_001624E0_b, D_L18_001624E4_b);
 }

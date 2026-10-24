@@ -1,4 +1,4 @@
-void TrainWreckReaction(char *moby, void *vel_in, int flag) {
+void update_spline_moby_destruction_and_respawn(char *moby, void *vel_in, int flag) {
     float spot[4];
     float vel[4];
     float push[4];

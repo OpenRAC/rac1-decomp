@@ -37,7 +37,7 @@ void update_moby_volume_trigger(char *moby)
                     }
                 }
             }
-            if (*(int *)(data + 0x14) != -1 && data[0x2C] != -1) MobyGroup_SetState(*(int *)(data + 0x14), data[0x2C]);
+            if (*(int *)(data + 0x14) != -1 && data[0x2C] != -1) set_moby_list_state(*(int *)(data + 0x14), data[0x2C]);
             {
                 int uid = *(int *)(data + 0x8);
                 if (uid != -1) {
@@ -52,7 +52,7 @@ void update_moby_volume_trigger(char *moby)
                     }
                 }
             }
-            if (*(int *)(data + 0x18) != -1 && data[0x2D] != -1) MobyGroup_SetState(*(int *)(data + 0x18), data[0x2D]);
+            if (*(int *)(data + 0x18) != -1 && data[0x2D] != -1) set_moby_list_state(*(int *)(data + 0x18), data[0x2D]);
             {
                 int uid = *(int *)(data + 0xC);
                 if (uid != -1) {
@@ -67,7 +67,7 @@ void update_moby_volume_trigger(char *moby)
                     }
                 }
             }
-            if (*(int *)(data + 0x1C) != -1 && data[0x2E] != -1) MobyGroup_SetState(*(int *)(data + 0x1C), data[0x2E]);
+            if (*(int *)(data + 0x1C) != -1 && data[0x2E] != -1) set_moby_list_state(*(int *)(data + 0x1C), data[0x2E]);
             {
                 int uid = *(int *)(data + 0x10);
                 if (uid != -1) {
@@ -82,7 +82,7 @@ void update_moby_volume_trigger(char *moby)
                     }
                 }
             }
-            if (*(int *)(data + 0x20) != -1 && data[0x2F] != -1) MobyGroup_SetState(*(int *)(data + 0x20), data[0x2F]);
+            if (*(int *)(data + 0x20) != -1 && data[0x2F] != -1) set_moby_list_state(*(int *)(data + 0x20), data[0x2F]);
             if (data[0x34] != -1) moby[0x20] = data[0x34];
             if (data[0x36] != -1) moby[0xBC] = data[0x36];
             data[0x38] = 1;
@@ -103,7 +103,7 @@ void update_moby_volume_trigger(char *moby)
                     }
                 }
             }
-            if (*(int *)(data + 0x14) != -1 && data[0x30] != -1) MobyGroup_SetState(*(int *)(data + 0x14), data[0x30]);
+            if (*(int *)(data + 0x14) != -1 && data[0x30] != -1) set_moby_list_state(*(int *)(data + 0x14), data[0x30]);
             {
                 int uid = *(int *)(data + 0x8);
                 if (uid != -1) {
@@ -118,7 +118,7 @@ void update_moby_volume_trigger(char *moby)
                     }
                 }
             }
-            if (*(int *)(data + 0x18) != -1 && data[0x31] != -1) MobyGroup_SetState(*(int *)(data + 0x18), data[0x31]);
+            if (*(int *)(data + 0x18) != -1 && data[0x31] != -1) set_moby_list_state(*(int *)(data + 0x18), data[0x31]);
             {
                 int uid = *(int *)(data + 0xC);
                 if (uid != -1) {
@@ -133,7 +133,7 @@ void update_moby_volume_trigger(char *moby)
                     }
                 }
             }
-            if (*(int *)(data + 0x1C) != -1 && data[0x32] != -1) MobyGroup_SetState(*(int *)(data + 0x1C), data[0x32]);
+            if (*(int *)(data + 0x1C) != -1 && data[0x32] != -1) set_moby_list_state(*(int *)(data + 0x1C), data[0x32]);
             {
                 int uid = *(int *)(data + 0x10);
                 if (uid != -1) {
@@ -148,7 +148,7 @@ void update_moby_volume_trigger(char *moby)
                     }
                 }
             }
-            if (*(int *)(data + 0x20) != -1 && data[0x33] != -1) MobyGroup_SetState(*(int *)(data + 0x20), data[0x33]);
+            if (*(int *)(data + 0x20) != -1 && data[0x33] != -1) set_moby_list_state(*(int *)(data + 0x20), data[0x33]);
             if (data[0x35] != -1) moby[0x20] = data[0x35];
             if (data[0x37] != -1) moby[0xBC] = data[0x37];
             data[0x38] = 0;
@@ -536,7 +536,7 @@ extern short D_L13_00161414;
 extern short D_L13_00161410;
 
 // Every few ticks spawns a projectile moby aimed from the moby's position using its target.
-void SpawnAimedProjectile(char *moby)
+void fire_blarg_turret_projectile(char *moby)
 {
     float v[4];
     float v2[4];
@@ -557,7 +557,7 @@ void SpawnAimedProjectile(char *moby)
 }
 extern int func_L00_00260D30(void *, void *, float);
 
-void Moby_PickTargetByState(unsigned char *moby) {
+void update_blarg_turret_target_and_state(unsigned char *moby) {
     char *data = *(char **)(moby + 0x78);
     float distance;
     if (moby[0x20] == 3) distance = 22.0f;
@@ -573,7 +573,7 @@ extern void func_L00_00251E30(void *);
 extern void func_L00_0025E210(void *);
 
 /* Spawns a class 0x24 child moby that copies its parent's placement and scale. */
-char *SpawnChildMoby24(char *parent) {
+char *spawn_blarg_turret_child(char *parent) {
     char *m = CreateMoby(0x24);
     if (m) {
         char *d = *(char **)(m + 0x78);
@@ -1108,7 +1108,7 @@ void robosquawker_update(RsMoby *m) {
         }
         v->pD0 = &D_L13_00161428;
         if (v->w220 != -1) {
-            v->w224 = FindClosestDistanceEntry(&m->pos, D_L13_001B0AB0[v->w220], 0.0f);
+            v->w224 = select_point_index_by_distance(&m->pos, D_L13_001B0AB0[v->w220], 0.0f);
         }
         break;
     case 0xE: {
@@ -1473,7 +1473,7 @@ void robosquawker_update(RsMoby *m) {
         r = FastAbsF(m->pos.f[2] - tgt.pos.f[2]);
         r = r / func_001F9D48(&m->pos, &tgt);
         if (v->w21C != -1) {
-            FindClosestPointPair(m, D_L13_001B0AB0[v->w21C], &tgt, &vb);
+            select_list_point_toward_target(m, D_L13_001B0AB0[v->w21C], &tgt, &vb);
         } else {
             qcopy(&vb, &tgt);
         }
@@ -1565,7 +1565,7 @@ void robosquawker_update(RsMoby *m) {
         float a;
 
         if (v->w21C != -1) {
-            FindClosestPointPair(m, D_L13_001B0AB0[v->w21C], &v->v1D0, &vb);
+            select_list_point_toward_target(m, D_L13_001B0AB0[v->w21C], &v->v1D0, &vb);
         } else {
             qcopy(&vb, &v->v1D0);
         }
@@ -1657,7 +1657,7 @@ void robosquawker_update(RsMoby *m) {
         r = FastAbsF(m->pos.f[2] - tgt.pos.f[2]);
         r = r / func_001F9D48(&m->pos, &tgt);
         if (v->w21C != -1) {
-            FindClosestPointPair(m, D_L13_001B0AB0[v->w21C], &v->v1D0, &vb);
+            select_list_point_toward_target(m, D_L13_001B0AB0[v->w21C], &v->v1D0, &vb);
         } else {
             qcopy(&vb, &v->v1D0);
         }
@@ -1773,7 +1773,7 @@ void robosquawker_update(RsMoby *m) {
 
                 r = func_001160D8() % 3;
                 if (m->b21 != 0xFF) {
-                    r = count_group_e81e0(m->b21, -1);
+                    r = count_active_moby_group_members(m->b21, -1);
                 }
                 if (r >= 3) {
                     DeleteMoby(m);
@@ -1785,7 +1785,7 @@ void robosquawker_update(RsMoby *m) {
 extern int func_001F4868(int);
 extern void func_L11_003121C0(float, float, float, float, float, int, int, long, int, int, int, int, int);
 extern float func_001FA748(float, float);
-void DrawRotatedQuadCross(unsigned char a, unsigned char b, unsigned char c, unsigned char d, float x, float y, float s, float ang) {
+void append_four_quarter_turn_effect_quads(unsigned char a, unsigned char b, unsigned char c, unsigned char d, float x, float y, float s, float ang) {
     int h;
     float w;
     h = GetEffectTex(0x37);
@@ -1828,9 +1828,9 @@ void spawn_fighter_jet_joint_particles(void *moby, char *obj)
         qcopy(a, pos);
         qcopy(b, pos);
         qcopy(c, pos);
-        JitterVector(a, *(float *)(obj + 0xC4) * 0.02f + 0.02f);
-        JitterVector(b, *(float *)(obj + 0xC4) * 0.02f + 0.02f);
-        JitterVector(c, *(float *)(obj + 0xC4) * 0.01f + 0.02f);
+        add_random_offset_to_vector_xyz(a, *(float *)(obj + 0xC4) * 0.02f + 0.02f);
+        add_random_offset_to_vector_xyz(b, *(float *)(obj + 0xC4) * 0.02f + 0.02f);
+        add_random_offset_to_vector_xyz(c, *(float *)(obj + 0xC4) * 0.01f + 0.02f);
         vel[0] = -((random_float_between(6.0f, 7.0f) + *(float *)(obj + 0xC4) * 2.0f) * D_0015EE6C) * s;
         spawn_type_74_particle(moby, a, vel, &D_L13_00161468, 1);
         vel[0] = -((random_float_between(6.0f, 7.0f) + *(float *)(obj + 0xC4) * 3.0f) * D_0015EE6C) * s;
@@ -1838,9 +1838,9 @@ void spawn_fighter_jet_joint_particles(void *moby, char *obj)
         vel[0] = -((random_float_between(6.0f, 7.0f) + *(float *)(obj + 0xC4) * 4.0f) * D_0015EE6C) * s;
         spawn_type_74_particle(moby, c, vel, &D_L13_00161488, 1);
         if (*(float *)(obj + 0xC4) > 0.5f) {
-            JitterVector(a, *(float *)(obj + 0xC4) * 0.02f + 0.01f);
-            JitterVector(b, *(float *)(obj + 0xC4) * 0.02f + 0.01f);
-            JitterVector(c, *(float *)(obj + 0xC4) * 0.01f + 0.01f);
+            add_random_offset_to_vector_xyz(a, *(float *)(obj + 0xC4) * 0.02f + 0.01f);
+            add_random_offset_to_vector_xyz(b, *(float *)(obj + 0xC4) * 0.02f + 0.01f);
+            add_random_offset_to_vector_xyz(c, *(float *)(obj + 0xC4) * 0.01f + 0.01f);
             vel[0] = -((random_float_between(6.0f, 7.0f) + *(float *)(obj + 0xC4) * 2.0f) * D_0015EE6C) * s;
             spawn_type_74_particle(moby, a, vel, &D_L13_00161468, 1);
             vel[0] = -((random_float_between(6.0f, 7.0f) + *(float *)(obj + 0xC4) * 3.0f) * D_0015EE6C) * s;
@@ -2105,7 +2105,7 @@ extern int func_L13_002B9E50(int, char *, char *, void *, float, float, float, c
 #define FLAG (D_0013E633[0x2413])
 
 /* Per-frame target tracking: validates the current target, re-picks one and drops it when lost. */
-void UpdateLockOnTarget(int a, char *p) {
+void update_fighter_jet_target_tracking(int a, char *p) {
     char *g = 0;
     char *pad;
     char *t;
@@ -2205,7 +2205,7 @@ void DrawGemlikTurretHud(char *moby) {
     float f;
     float q;
 
-    UpdateLockOnTarget((int)moby, d);
+    update_fighter_jet_target_tracking((int)moby, d);
     if (*(int *)(d + 0x88) != 0) {
         project_world_point_to_screen_pixels(*(char **)(d + 0x88) + 0x10, &sp10, &sp14, 0);
         if (*(int *)(d + 0x8C) > scale_ticks(0x1F4)) {

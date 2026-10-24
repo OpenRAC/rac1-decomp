@@ -16,7 +16,7 @@ extern Ent D_L05_001D6BC0[];
 extern float func_001F9B88(float);
 
 /* records, for entry arg, which of the 48 entries sit one grid step away */
-void FindGridNeighbors(int arg) {
+void record_grid_entry_neighbor_indices(int arg) {
     int i;
     Ent *t = water_records;
     for (i = 0; i < 48; i++) {
@@ -812,7 +812,7 @@ void pipe_mounted_grating_update(struct Moby *moby) {
             }
         }
         moby->command = 1;
-        FindOrAddMobyEntry(&moby->command, 1, moby, 1, D_L05_001BAE30);
+        record_moby_context_bytes(&moby->command, 1, moby, 1, D_L05_001BAE30);
         func_0020D678_10A90(moby);
     } else if (moby->command) {
         func_0020D678_10A90(moby);
@@ -1308,7 +1308,7 @@ extern int func_00215570(void *, int);
 extern void func_L03_00292AC0(char *);
 
 // Scans 8 data slots; if none of the set ones passes a check, calls a helper.
-void CheckHeroOutsideClipVolumes(char *moby) {
+void draw_ocean_grid_outside_clip_volumes(char *moby) {
     int *p = *(int **)(moby + 0x78);
     int i;
     int none = 1;
@@ -2143,7 +2143,7 @@ void shady_salesman_update(char *m)
     float s_delta[4];
 
     npc_data = (ShadySalesmanNpc *)moby->pvars;
-    AttachManipulatorsIfCheat(m);
+    attach_big_head_cheat_manipulator_to_matching_moby(m);
     if (moby->visible != 0) {
         if (FastVecDist(&moby->pos, D_L05_001672C0) < 40.0f) {
             func_L00_0025B178(m);
@@ -2166,7 +2166,7 @@ void shady_salesman_update(char *m)
         if (Npc_TryStartDialog(m, npc_data))
             PlaceMarkerAheadOfMoby(2.0f, m);
         if (npc_data->sub >= 3 && npc_data->sub <= 4) {
-            GiveItem(0x17, 1);
+            grant_inventory_item(0x17, 1);
             ShowBanner(0x1396, -1);
             memcard_Save(0, -1);
             DeleteMoby(m);
@@ -2368,7 +2368,7 @@ void PickupL05_Update(char *moby) {
     int s;
     qcopy(old_position, &((struct Moby *)moby)->pos);
     qcopy(old_rotation, &((struct Moby *)moby)->rot);
-    LevelTable_SetSlotValue(moby, (((struct Moby *)moby)->flags ^ 1) & 1);
+    set_moby_dialogue_record_value(moby, (((struct Moby *)moby)->flags ^ 1) & 1);
     switch (((struct Moby *)moby)->state) {
     case TAXI_INITIALIZE:
         *(short *)(taxi_data + 0xB0) = -1;
@@ -2383,7 +2383,7 @@ void PickupL05_Update(char *moby) {
             hero_offset[3] = 0;
             func_001F9EE8(hero_offset, hero_offset, rotation_or_start_position_scratch);
             if (FastAbsF(hero_offset[1]) < 1.2f && hero_offset[0] < 1.0f && -0.75f < hero_offset[0]) {
-                SelectSlotPath(moby);
+                select_taxi_route(moby);
                 request_moby_variant_help_message(moby);
                 if (*(int *)(D_0013A5E0 + 0x2604) & 0x10) {
                     ((struct Moby *)moby)->state = 3;
@@ -2533,7 +2533,7 @@ extern char * D_L05_001B0CB0[];
 extern unsigned char D_0014C150[][16];
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l05/unclassified_0030d6a0.c, FUN_L05_003193a8. */
-void SelectSlotPath(char *moby) {
+void select_taxi_route(char *moby) {
     char *d = *(char **)(moby + 0x78);
     char *p;
     float inv, a, b, r;

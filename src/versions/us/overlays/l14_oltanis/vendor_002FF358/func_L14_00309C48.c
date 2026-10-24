@@ -3,7 +3,7 @@ void update_moby_list_clear_notification(unsigned char *moby) {
     unsigned v;
     int i;
     if (d[0] != -1) {
-        if (count_group_e81e0(d[0], -1) == 0) {
+        if (count_active_moby_group_members(d[0], -1) == 0) {
             if (gSkillPoints[0x17] == 0) {
                 gSkillPoints[0x17] = 1;
                 PlayBankSound(1, 0, 0);

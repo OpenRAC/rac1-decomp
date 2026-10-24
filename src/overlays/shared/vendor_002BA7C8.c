@@ -36,17 +36,17 @@ void draw_beam_and_arc_effects(char *m) {
     if (t <= -8.0f) {
         *(float *)&D_L00_001616BC = t + 8.0f;
     }
-    DrawScrollingRibbon(D_L00_001DB8C0, *(int *)&D_L00_001616A4, *(int *)&D_L00_001616AC, *(short *)(p + 0x3E),
+    draw_beam_and_arc_two_pass_quads(D_L00_001DB8C0, *(int *)&D_L00_001616A4, *(int *)&D_L00_001616AC, *(short *)(p + 0x3E),
         *(float *)&D_L00_001616CC, *(float *)&D_L00_001616D0, *(float *)&D_L00_00161700);
-    DrawScrollingRibbon(D_L00_001DB8C0 + 0x140, *(int *)&D_L00_001616D4, *(int *)&D_L00_001616D8, *(short *)(p + 0x3E),
+    draw_beam_and_arc_two_pass_quads(D_L00_001DB8C0 + 0x140, *(int *)&D_L00_001616D4, *(int *)&D_L00_001616D8, *(short *)(p + 0x3E),
         *(float *)&D_L00_001616DC, *(float *)&D_L00_001616E0, *(float *)&D_L00_00161704);
-    DrawScrollingRibbon(D_L00_001DBD20, *(short *)&D_L00_00161730, *(short *)&D_L00_00161730, 5,
+    draw_beam_and_arc_two_pass_quads(D_L00_001DBD20, *(short *)&D_L00_00161730, *(short *)&D_L00_00161730, 5,
         *(float *)&D_L00_001616DC, *(float *)&D_L00_001616E0, 0.2f);
-    DrawScrollingRibbon(D_L00_001DBD20 + 0x50, *(short *)&D_L00_00161732, *(short *)&D_L00_00161732, 5,
+    draw_beam_and_arc_two_pass_quads(D_L00_001DBD20 + 0x50, *(short *)&D_L00_00161732, *(short *)&D_L00_00161732, 5,
         *(float *)&D_L00_001616DC, *(float *)&D_L00_001616E0, 0.2f);
-    DrawScrollingRibbon(D_L00_001DBD20 + 0xA0, *(short *)&D_L00_00161734, *(short *)&D_L00_00161734, 5,
+    draw_beam_and_arc_two_pass_quads(D_L00_001DBD20 + 0xA0, *(short *)&D_L00_00161734, *(short *)&D_L00_00161734, 5,
         *(float *)&D_L00_001616DC, *(float *)&D_L00_001616E0, 0.2f);
-    DrawScrollingRibbon(D_L00_001DBD20 + 0xF0, *(short *)&D_L00_00161736, *(short *)&D_L00_00161736, 5,
+    draw_beam_and_arc_two_pass_quads(D_L00_001DBD20 + 0xF0, *(short *)&D_L00_00161736, *(short *)&D_L00_00161736, 5,
         *(float *)&D_L00_001616DC, *(float *)&D_L00_001616E0, 0.2f);
     draw_beam_anchor_camera_facing_quads(m);
 }
@@ -72,7 +72,7 @@ typedef struct {
 } RT_2BBDE8;
 
 // Draws a ribbon of quads along a polyline, in two passes with edge colouring and a scrolled texture (colours from globals).
-void DrawScrollingRibbon(void *m, int a, int b, int n, float sx, float sy, float sz) {
+void draw_beam_and_arc_two_pass_quads(void *m, int a, int b, int n, float sx, float sy, float sz) {
     RW_2BBDE8 q[4];
     RT_2BBDE8 t;
     RW_2BBDE8 q2[4];
@@ -255,7 +255,7 @@ extern char *func_0020D348(int);
 extern void func_001F9BC0(void *);
 extern void func_0020EEE8(void *);
 extern void func_L00_00251E30(void *);
-char *SpawnMoby179(char *src) {
+char *spawn_linked_moby_from_basis(char *src) {
     char *m = CreateMoby(0xB3);
     if (m != 0) {
         char *p = *(char **)(m + 0x78);
@@ -314,7 +314,7 @@ void update_linked_moby_scale_and_rotation(char *m) {
         d = 0xF40;
         *(int *)(p + 4) = v + 0xF40;
     }
-    OffsetShortPairTables(*(unsigned char **)(m + 0x24), 0, d);
+    offset_moby_class_point_pairs(*(unsigned char **)(m + 0x24), 0, d);
     *(float *)(m + 0x2C) = *(float *)(*(char **)(m + 0x24) + 0x24) * *(float *)(p + 0xC) * random_float_between(0.5f, 1.0f);
     *(float *)(m + 0x44) = FastAddRots(*(float *)(m + 0x44), normalize_angle(*(float *)(p + 0xC)));
     func_0020EEE8(m);
@@ -450,7 +450,7 @@ void walloper_update(char *m) {
             else D_L00_001DC1D8[i] = 0;
         }
     }
-    AddDrawCallback(DrawRibbonSlots, m);
+    AddDrawCallback(draw_walloper_arc_and_quad_effects, m);
 }
 extern float func_001FA888(int);
 extern int func_001FA898_r(float) __asm__("func_001FA898");
@@ -461,7 +461,7 @@ extern void func_L00_002BCED0(char *, int, int, int, float, float, float);
 extern void func_L00_002BD4A8(int);
 
 // Spawns an effect for each active slot of a ten-entry table, then runs the follow-up.
-void DrawRibbonSlots(int arg) {
+void draw_walloper_arc_and_quad_effects(int arg) {
     int i;
     for (i = 9; i >= 0; i--) {
         if (D_L00_001DC1C0[9 - i] != 0) {
@@ -1062,7 +1062,7 @@ extern char D_L00_001DC250[];
 extern Vec4A D_L00_001DD3D0[];
 
 /* rebuilds the camera tables from a moby's matrix */
-void func_L00_002BE2A0(char *m) {
+void reset_beam_chain_and_pulse_state(char *m) {
     char *p = *(char **)(m + 0x78);
     if (D_L00_0016188C != 0) {
         float f;
@@ -1427,7 +1427,7 @@ void func_L00_001FD1D8(void *, void *, int);
 
 /* scrolls the two texture-offset accumulators and draws the 10x20 band of textured quads between the D_L00_001DC060/001DC1A0 rings, skipping back-facing ones.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b94d0.c, FUN_L00_002bdc50. */
-void DrawTexturedBand(void *o) {
+void draw_beam_ring_and_rail_effects(void *o) {
     Quad quad;
     Vec4 d1, d2, n, e;
     float y, a, b, t;
@@ -1746,7 +1746,7 @@ extern int func_L00_001F10E0(float, void *, int, void *);
 extern int D_L00_00173F40[];
 
 /* Nudge a position and ask the level helper about it, lowering a global on success. */
-int Hero_ProbeSphereRaised(char *a, int b, Vx *c) {
+int probe_moby_raised_sphere_collision(char *a, int b, Vx *c) {
     Vx v;
     float s;
     float t;
@@ -1783,7 +1783,7 @@ void restore_state_fields_from_hero(char *a) {
     *(int *)(a + 0x4C) = *(int *)(g + 0x1F08);
     *(float *)(a + 0x5C) = *(float *)(g + 0x1EE4);
 }
-void Hero_SetTargetBlock(char *a) {
+void save_state_vector_and_fields_to_hero(char *a) {
     char *g = D_0013F450;
     *(float *)(g + 0x1F20) = *(float *)(a + 0x50);
     *(float *)(g + 0x1F24) = *(float *)(a + 0x54);
@@ -1792,7 +1792,7 @@ void Hero_SetTargetBlock(char *a) {
     *(float *)(g + 0x1F40) = *(float *)(a + 0x44);
     qcopy(g + 0x1F10, a);
 }
-void Hero_GetTargetBlock(char *a) {
+void restore_saved_state_fields_from_hero(char *a) {
     char *g = D_0013F450;
     *(float *)(a + 0x50) = *(float *)(g + 0x1F20);
     *(float *)(a + 0x54) = *(float *)(g + 0x1F24);
@@ -1806,7 +1806,7 @@ typedef struct { char pad[0x18]; TopS *o18; char pad2[0xC]; float f28; } S173F40
 extern S173F40 D_L00_00173F40_s __asm__("D_L00_00173F40") NOT_SDA;
 
 /* Probe below a point and return the ground height offset, or zero when nothing is hit. Adapted from Lombyte (MIT) for PAL: overlays/shared/unclassified_002b94d0.c, FUN_L00_002bec80. */
-float Ground_ProbeHeightBelow(Vx *a, void *b) {
+float probe_moby_landing_height(Vx *a, void *b) {
     Vx v1;
     Vx v2;
     float z;
@@ -2084,7 +2084,7 @@ extern void func_001F9C30(void *, void *, float);
 extern void func_001F9BD8(void *, void *, void *);
 
 /* Steps a vector by n repeated additions of the normalised difference. */
-void StepVectorToward(char *a, char *b, int n) {
+void accumulate_local_vector_steps(char *a, char *b, int n) {
     float d[4];
     float t[4];
     int i;
@@ -2103,7 +2103,7 @@ extern float D_0015EE6C MACRO_ADDR;
 
 /* Updates a homing state block o from target m: turn rate, heading, and a speed clamped to seven times a global.
    Adapted from Lombyte (MIT) for PAL: src/overlays/shared/unclassified_002b94d0.c, FUN_L00_002bf8b0. */
-void UpdateHomingState(unsigned char *m, unsigned char *o, void *src) {
+void initialize_moby_hop_trajectory(unsigned char *m, unsigned char *o, void *src) {
     float s, t, r, lim;
 #define F2BF(p, x) (*(float *)((p) + (x)))
     *(int *)(o + 0x30) = 0;

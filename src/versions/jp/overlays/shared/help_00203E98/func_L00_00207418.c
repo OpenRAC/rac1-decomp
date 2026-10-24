@@ -1,4 +1,4 @@
-void Cheats_PollCodes(void) {
+void scan_hero_input_sequences(void) {
     char *g;
     int s;
     int i;

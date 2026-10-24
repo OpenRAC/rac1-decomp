@@ -209,7 +209,7 @@ void update_homing_missile(struct Moby *moby) {
         DeleteMoby(moby);
         return;
     }
-    InitHitQuery(1.0f, &hit, moby, 0x10000);
+    initialize_hit_descriptor(1.0f, &hit, moby, 0x10000);
     hit.oclass = moby->oclass;
     if (func_L00_001EFFF0(old, &moby->pos, 0, vars->owner, &hit)) {
         for (i = 0; i < 5; i++) {
@@ -963,7 +963,7 @@ void thruster_pack_lock_update(Lock_3102C8 *moby)
     }
 }
 /* Recognize the active vendor object state. */
-int IsMoby1179Active(char *moby) {
+int test_linked_moby_turn_trigger(char *moby) {
     if (*(short *)(moby + 0xA6) == 0x49B &&
         ((unsigned char *)moby)[0x20] == 2) {
         return 1;
@@ -1131,7 +1131,7 @@ extern void func_L11_003121C0(float, float, float, float, float, int, int, long,
 extern float func_001FA748(float, float);
 
 /* Draws four quads with the angle advanced by a quarter turn each time. */
-void Hud_DrawFourRotatedQuads(unsigned char a, unsigned char b, unsigned char c, unsigned char d, float x, float y, float s, float ang) {
+void draw_quarter_turn_textured_quads(unsigned char a, unsigned char b, unsigned char c, unsigned char d, float x, float y, float s, float ang) {
     int h;
     float w;
     h = GetEffectTex(0x42);
@@ -1193,9 +1193,9 @@ void emit_type_74_particles_from_moby_joints(void *m, char *t) {
         qcopy(a, pos);
         qcopy(b, pos);
         qcopy(c, pos);
-        JitterVector(a, *(float *)(t + 0xC4) * 0.02f + 0.02f);
-        JitterVector(b, *(float *)(t + 0xC4) * 0.02f + 0.02f);
-        JitterVector(c, *(float *)(t + 0xC4) * 0.01f + 0.02f);
+        add_random_offset_to_vector_xyz(a, *(float *)(t + 0xC4) * 0.02f + 0.02f);
+        add_random_offset_to_vector_xyz(b, *(float *)(t + 0xC4) * 0.02f + 0.02f);
+        add_random_offset_to_vector_xyz(c, *(float *)(t + 0xC4) * 0.01f + 0.02f);
         vel[0] = -((random_float_between(6.0f, 7.0f) + *(float *)(t + 0xC4) * 2.0f) * D_0015EE6C) * scale;
         spawn_type_74_particle(m, a, vel, &D_L11_00162258, 1);
         vel[0] = -((random_float_between(6.0f, 7.0f) + *(float *)(t + 0xC4) * 3.0f) * D_0015EE6C) * scale;
@@ -1203,9 +1203,9 @@ void emit_type_74_particles_from_moby_joints(void *m, char *t) {
         vel[0] = -((random_float_between(6.0f, 7.0f) + *(float *)(t + 0xC4) * 4.0f) * D_0015EE6C) * scale;
         spawn_type_74_particle(m, c, vel, &D_L11_00162278, 1);
         if (*(float *)(t + 0xC4) > 0.5f) {
-            JitterVector(a, *(float *)(t + 0xC4) * 0.02f + 0.01f);
-            JitterVector(b, *(float *)(t + 0xC4) * 0.02f + 0.01f);
-            JitterVector(c, *(float *)(t + 0xC4) * 0.01f + 0.01f);
+            add_random_offset_to_vector_xyz(a, *(float *)(t + 0xC4) * 0.02f + 0.01f);
+            add_random_offset_to_vector_xyz(b, *(float *)(t + 0xC4) * 0.02f + 0.01f);
+            add_random_offset_to_vector_xyz(c, *(float *)(t + 0xC4) * 0.01f + 0.01f);
             vel[0] = -((random_float_between(6.0f, 7.0f) + *(float *)(t + 0xC4) * 2.0f) * D_0015EE6C) * scale;
             spawn_type_74_particle(m, a, vel, &D_L11_00162258, 1);
             vel[0] = -((random_float_between(6.0f, 7.0f) + *(float *)(t + 0xC4) * 3.0f) * D_0015EE6C) * scale;

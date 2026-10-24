@@ -118,7 +118,7 @@ extern int func_0022ED80(int, int, int);
 extern char D_0013E633[];
 
 // Gemlik state machine: advances the moby's state byte at 0xBC and sets its timers
-void QwarkStarfighter_UpdateByMode(void *mobyp, void *pp) {
+void update_qwarks_starfighter_attack_commands(void *mobyp, void *pp) {
     char *moby = mobyp;
     char *p = pp;
     float sv[4];
@@ -559,7 +559,7 @@ void update_qwarks_starfighter(Moby388 *moby) {
         }
         moby->scale = ((struct MobyClass *)moby->cls)->scale * 4.0f;
         for (i = 0; i < 10; i++) {
-            data->parts[i] = SpawnChildMobyAtPoint((char *)moby, i, D_L13_001D37A8[i]);
+            data->parts[i] = spawn_moby_joint_attachment((char *)moby, i, D_L13_001D37A8[i]);
         }
         data->owner = (char *)moby;
         for (j = 0; j < 5; j++) {
@@ -636,7 +636,7 @@ void update_qwarks_starfighter(Moby388 *moby) {
                 hero->ship_moby->bBC = 0;
             }
         }
-        data->hud104 = queue_animation_update(0x11, 0xFFFF, (int)Hud_InitElement, (int)Hud_UpdateCounter,
+        data->hud104 = queue_animation_update(0x11, 0xFFFF, (int)reset_numeric_hud_element, (int)Hud_UpdateCounter,
                                   (int)((char *)func_L06_0024A080 + 0x20), (int)&data->i108,
                                   (data->s24 << 4) | 0xF);
         data->fAC += (D_0015EE6C * 42.0f - data->fAC) * 0.1f;
@@ -652,7 +652,7 @@ void update_qwarks_starfighter(Moby388 *moby) {
             data->b13B = D_L13_001D3718[moby->bBC];
             data->iF8 = scale_ticks(0x14);
             moby->state = STARFIGHTER_STATE_FOLLOW_COMMAND_PATH;
-            data->s9C = FindClosestDistanceEntry(moby->pos, D_L13_001B0AB0[data->paths[data->b13B]], 0.0f);
+            data->s9C = select_point_index_by_distance(moby->pos, D_L13_001B0AB0[data->paths[data->b13B]], 0.0f);
             data->s9C = *(unsigned short *)&data->s9C + rand_range(3, 7);
             data->s9C = data->s9C % *(int *)D_L13_001B0AB0[data->paths[data->b13B]];
             data->s9E = data->s9C - 1;
@@ -664,7 +664,7 @@ void update_qwarks_starfighter(Moby388 *moby) {
     }
     case STARFIGHTER_STATE_FOLLOW_COMMAND_PATH:
     case STARFIGHTER_STATE_FOLLOW_COMMAND_PATH_WITH_TIMED_VOLLEY:
-        data->hud104 = queue_animation_update(0x11, 0xFFFF, (int)Hud_InitElement, (int)Hud_UpdateCounter,
+        data->hud104 = queue_animation_update(0x11, 0xFFFF, (int)reset_numeric_hud_element, (int)Hud_UpdateCounter,
                                   (int)((char *)func_L06_0024A080 + 0x20), (int)&data->i108,
                                   (data->s24 << 4) | 0xF);
         {
@@ -673,11 +673,11 @@ void update_qwarks_starfighter(Moby388 *moby) {
                 hero->ship_moby->bBC = 0;
             }
         }
-        QwarkStarfighter_UpdateByMode(moby, data);
+        update_qwarks_starfighter_attack_commands(moby, data);
         if (update_moby_path_following_away_from_hero(moby, data, data->b13B, 1) & 2) {
             if (data->b13B != D_L13_001D3718[moby->bBC]) {
                 data->b13B = D_L13_001D3718[moby->bBC];
-                data->s9C = FindClosestDistanceEntry(moby->pos, D_L13_001B0AB0[data->paths[D_L13_001D3718[moby->bBC]]], 0.0f);
+                data->s9C = select_point_index_by_distance(moby->pos, D_L13_001B0AB0[data->paths[D_L13_001D3718[moby->bBC]]], 0.0f);
                 data->s9C = *(unsigned short *)&data->s9C + rand_range(3, 7);
                 data->s9C = data->s9C % *(int *)D_L13_001B0AB0[data->paths[D_L13_001D3718[moby->bBC]]];
                 data->s9E = data->s9C - 1;
@@ -694,10 +694,10 @@ void update_qwarks_starfighter(Moby388 *moby) {
         break;
     case STARFIGHTER_STATE_TRACTOR_BEAM: {
         float hero_distance;
-        data->hud104 = queue_animation_update(0x11, 0xFFFF, (int)Hud_InitElement, (int)Hud_UpdateCounter,
+        data->hud104 = queue_animation_update(0x11, 0xFFFF, (int)reset_numeric_hud_element, (int)Hud_UpdateCounter,
                                   (int)((char *)func_L06_0024A080 + 0x20), (int)&data->i108,
                                   (data->s24 << 4) | 0xF);
-        QwarkStarfighter_UpdateByMode(moby, data);
+        update_qwarks_starfighter_attack_commands(moby, data);
         Moby_GetJointWorldPos(moby, 0x13, joint);
         hero_distance = FastVecDist(data->v80, D_0013E633 + 0xE9D);
         if (data->snd11C != -1) {
@@ -732,7 +732,7 @@ void update_qwarks_starfighter(Moby388 *moby) {
             if (Moby_SteerAlongPathFacing(moby, data, data->b13B, 1) & 2) {
                 if (data->b13B != D_L13_001D3718[moby->bBC]) {
                     data->b13B = D_L13_001D3718[moby->bBC];
-                    data->s9C = FindClosestDistanceEntry(moby->pos, D_L13_001B0AB0[data->paths[D_L13_001D3718[moby->bBC]]], 0.0f);
+                    data->s9C = select_point_index_by_distance(moby->pos, D_L13_001B0AB0[data->paths[D_L13_001D3718[moby->bBC]]], 0.0f);
                     data->s9C = *(unsigned short *)&data->s9C + rand_range(3, 7);
                     data->s9C = data->s9C % *(int *)D_L13_001B0AB0[data->paths[D_L13_001D3718[moby->bBC]]];
                     data->s9E = data->s9C - 1;
@@ -764,7 +764,7 @@ void update_qwarks_starfighter(Moby388 *moby) {
             float yaw, pitch, distance;
             yaw = func_L00_001FF860(hero->pos.x - moby->pos[0], hero->pos.y - moby->pos[1]);
             pitch = -func_L00_001FF860(func_001F9D48(moby->pos, &hero->pos), hero->pos.z - moby->pos[2]);
-            Moby_SpringTurnPitchYaw(moby, data, yaw, pitch);
+            update_moby_spring_steering_and_banking(moby, data, yaw, pitch);
             if (hero->ship_moby != 0 && hero->ship_moby->cls_id == 0x45) {
                 hero->ship_moby->bBC = 1;
             }
@@ -916,7 +916,7 @@ void update_qwarks_starfighter(Moby388 *moby) {
             owner->state = 8;
             owner->flags |= 2;
             if (data->light120 != -1) {
-                light_off_67e8(data->light120);
+                release_point_light_slot(data->light120);
             }
             flag_vendor_item(data->i12C);
             DeleteMoby(moby);
@@ -964,7 +964,7 @@ void update_qwarks_starfighter(Moby388 *moby) {
             data->snd11C = -1;
         }
         if (data->light120 != -1) {
-            light_off_67e8(data->light120);
+            release_point_light_slot(data->light120);
         }
         if (data->hud104 != -1) {
             Hud_SetBarValueById(data->hud104, 0);
@@ -1068,7 +1068,7 @@ void update_qwarks_starfighter(Moby388 *moby) {
         FastVecSub(offset, moby->pos, offset);
         offset[3] = 50.0f;
         if (data->light120 == -1) {
-            data->light120 = UpdatePointLight(offset, 50.0f, 0.0f, 3.0f, 0.5f, 0.01f);
+            data->light120 = allocate_colored_effect_slot(offset, 50.0f, 0.0f, 3.0f, 0.5f, 0.01f);
         } else {
             char *light = D_L13_00180640 + (data->light120 << 5);
             qcopy(light + 0x10, offset);
@@ -1123,7 +1123,7 @@ extern void func_L00_00251E30(void *);
 typedef int u128 __attribute__((mode(TI)));
 
 // Spawns a moby from a template moby and copies its transform.
-char *SpawnChildMobyAtPoint(char *src, int arg, int id) {
+char *spawn_moby_joint_attachment(char *src, int arg, int id) {
     char *moby = func_0020D348_m(id);
     if (moby != 0) {
         char *data;
@@ -1344,7 +1344,7 @@ void forcefield_update(char *moby) {
         break;
     case 3:
         if (*(short *)(d + 0xE) != -1) {
-            light_off_67e8(*(short *)(d + 0xE));
+            release_point_light_slot(*(short *)(d + 0xE));
             *(short *)(d + 0xE) = -1;
         }
         DeleteMoby(moby);
@@ -1361,7 +1361,7 @@ void forcefield_update(char *moby) {
         *(short *)(d + 0xC) = v + 0x1000;
         dx = 0x10C0;
     }
-    OffsetShortPairTables(*(unsigned char **)(moby + 0x24), dx, 0);
+    offset_moby_class_point_pairs(*(unsigned char **)(moby + 0x24), dx, 0);
 }
 typedef struct {
     char pad0[0x34];
@@ -1602,7 +1602,7 @@ void update_controller_linked_gate(char *m) {
         *(int *)(d + 0x14) += 0x1000;
         step += 0x1000;
     }
-    OffsetShortPairTables(*(unsigned char **)(m + 0x24), step, 0);
+    offset_moby_class_point_pairs(*(unsigned char **)(m + 0x24), step, 0);
 }
 struct Manip_306D40;
 struct GifEntry_306D40;
@@ -1971,7 +1971,7 @@ void update_gemlik_projectile(struct Moby *moby) {
                 *(unsigned short *)(work.hit + 0x1A) = *(unsigned short *)((char *)moby + 0xA6);
                 work.hit[0x19] = 1;
                 if ((unsigned char)ent[0xA4] == 0xFF || (e = &D_L13_00178480[(unsigned char)ent[0xA4]])->p34 != ent) {
-                    PostHitMessageFromRecord(ent, work.hit);
+                    record_moby_hit(ent, work.hit);
                 } else {
                     e->f2C += 1.0f;
                     D_L13_00178480[(unsigned char)ent[0xA4]].b28 = 1;
@@ -2301,7 +2301,7 @@ void Moby1261Update(char *moby) {
                 RerollEffectCounter(m, effects);
                 vars->timer = 0;
                 spawn_poison_vessel_destruction_effects(m, vars);
-                SpawnPartType52Near(m);
+                spawn_type_52_particle_near_moby(m);
                 Moby_PlaySound(0, 0, (int)m);
                 m->state = 1;
             } else {
@@ -2334,7 +2334,7 @@ void Moby1261Update(char *moby) {
         g = (float)vars->timer;
         if (func_001F9878((float)*(int *)&D_L13_00161EBC * 0.5f) < g) {
             m->flags |= 0x41;
-            SpawnPartType52Near(m);
+            spawn_type_52_particle_near_moby(m);
         } else {
             int fade = (u8)m->alpha * 7;
             m->alpha = fade / 8;
@@ -2344,7 +2344,7 @@ void Moby1261Update(char *moby) {
         timer = timer + 1;
         vars->timer = timer;
         if (scale_ticks(duration) < timer) {
-            SpawnPartType52Near(m);
+            spawn_type_52_particle_near_moby(m);
             DeleteMoby(m);
         }
         break;
@@ -2493,7 +2493,7 @@ void BlargSpaceCommandoUpdate(struct Moby *moby) {
     case 2:
         if (moby->anim_flags & 2) {
             moby->state = 3;
-            InitCurvedTrail((char *)moby);
+            initialize_gemlik_trail((char *)moby);
             if (moby->prev_seq != 5) {
                 MobyBlendAnimation(moby, 5, 0, scale_ticks(10));
             }
@@ -2521,7 +2521,7 @@ void BlargSpaceCommandoUpdate(struct Moby *moby) {
                           &vars->turn, D_0015EE70 * 6.2831855f, D_0015EE70 * 6.2831855f, D_0015EE6C * 3.1415927f);
         if (func_001F9908(&vars->timer) != 0) {
             moby->state = 3;
-            InitCurvedTrail((char *)moby);
+            initialize_gemlik_trail((char *)moby);
             if (moby->prev_seq != 5) {
                 MobyBlendAnimation(moby, 5, 0, scale_ticks(5));
             }
@@ -2926,7 +2926,7 @@ extern void func_001F9BD8(void *,void *,void *);
 extern char D_L13_00174200[];
 extern short D_L13_00161F10,D_L13_00161F14;
 /* initializes a sixteen-point curved trail around a moby */
-void InitCurvedTrail(char *m) {
+void initialize_gemlik_trail(char *m) {
  float v[4]; int i; char *d=*(char **)(m+0x78);
  ProbeGroundHeight(m+0x10,0,0.5f);
  func_L00_001FF4B0(d+0x200,D_L13_00174200,1.0f);
@@ -3273,7 +3273,7 @@ void update_gemlik_bobbing_pool_tile(struct Moby *moby) {
     if (bobbing_platform_vars->idx >= 0) {
         height_half_span_or_tile_enabled = 0.0f;
         (D_L13_001D9E80_0B340 + bobbing_platform_vars->idx)->z = moby->pos.z;
-        if (IsBSphereVisibleScaled(48.0f, moby) != -1)
+        if (check_scaled_vector_bsphere(48.0f, moby) != -1)
             height_half_span_or_tile_enabled = 1.0f;
         if (height_half_span_or_tile_enabled == 0.0f)
             D_L13_001D9E80_0B340[bobbing_platform_vars->idx].c1E = 0;
@@ -3281,7 +3281,7 @@ void update_gemlik_bobbing_pool_tile(struct Moby *moby) {
             D_L13_001D9E80_0B340[bobbing_platform_vars->idx].c1E = D_L13_001F20E0[bobbing_platform_vars->idx];
         if (bobbing_platform_vars->idx == 0) {
             RippleSimClock(D_L13_001D9E80_0B340, 22);
-            AddDrawCallback(RipplePatches_DrawAll, moby);
+            AddDrawCallback(render_level13_water_grids, moby);
         }
         if (bobbing_platform_vars->idx == (*(int *)&D_L13_00161F80)) {
             D_L13_001D9E80_0B340[bobbing_platform_vars->idx].c1E = D_L13_00161F84;
@@ -3291,7 +3291,7 @@ void update_gemlik_bobbing_pool_tile(struct Moby *moby) {
 }
 extern void func_L01_002BA380(char *, int);
 extern char D_L13_001D9E80[];
-void RipplePatches_DrawAll(void) {
+void render_level13_water_grids(void) {
     render_water_grids(Tiles_9e88, 0x16);
 }
 typedef struct {
@@ -3580,7 +3580,7 @@ int count_eligible_mobies_in_list(int idx, int arg)
         int id = *p & 0x7FFF;
         char *m = (char *)(id << 8) + (int)D_L13_00160058_m;
         if (m[0x20] >= 0) {
-            char *f = Moby_GetClassRecord(m);
+            char *f = get_moby_suck_cannon_record(m);
             if (f == 0 || *(short *)(f + 0x68) < 4) {
                 if (arg == -1 || *(unsigned char *)((char *)(id << 8) + (int)D_L13_00160058_m + 0x20) != arg) {
                     count++;

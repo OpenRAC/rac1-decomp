@@ -373,8 +373,8 @@ void update_airship_part(Moby *moby) {
     case 1:
     case 2: {
         if (moby->oclass == 0x4A0) {
-            MobyBobZ(d->f48, d->f4C * 0.017453292f * D_0015EE6C, (char *)moby, &d->f40, &d->f44);
-            LissajousOffsetUpdate(moby, (char *)&d->f50, (char *)&d->f54, d->f58 * 0.017453292f, d->f5C * 0.017453292f * D_0015EE6C, d->f60 * 0.017453292f * D_0015EE6C);
+            update_moby_vertical_oscillation(d->f48, d->f4C * 0.017453292f * D_0015EE6C, (char *)moby, &d->f40, &d->f44);
+            update_moby_rotation_oscillation(moby, (char *)&d->f50, (char *)&d->f54, d->f58 * 0.017453292f, d->f5C * 0.017453292f * D_0015EE6C, d->f60 * 0.017453292f * D_0015EE6C);
         }
         if (moby->oclass != 0x4A0 && d->parent != 0 && d->parent->state != 3) {
             Moby *p = d->parent;
@@ -701,7 +701,7 @@ extern float D_0015EE70 MACRO_ADDR;
 extern float D_L09_00166FC0[];
 
 /* ticks a fading drifting moby: decays its velocity, follows it and eases its rotation */
-void FadingDriftUpdate(unsigned char *m) {
+void update_fading_asteroid_debris(unsigned char *m) {
     if (m[0x23] < 3) {
         DeleteMoby(m);
     } else {
@@ -753,7 +753,7 @@ extern int func_001F9850(int);
 extern int func_L00_00258BC8(int, int);
 
 /* ticks a falling rock: moves it toward its target, sheds sparks and debris on impact, shakes the camera and removes it */
-void FallingRockUpdate(Moby *m) {
+void update_falling_asteroid(Moby *m) {
     float v0[4];
     float v1[4];
     float v2[4];
@@ -844,7 +844,7 @@ void FallingRockUpdate(Moby *m) {
                 qcopy(v2, d->pos);
                 v2[2] = 25.0f;
                 for (j = 4; j >= 0; j--) {
-                    Moby417Spawn(m, v2, v0, d->f50 * 4.0f, d->f50 * 12.0f);
+                    spawn_radially_scattered_moby(m, v2, v0, d->f50 * 4.0f, d->f50 * 12.0f);
                 }
                 d->f54 = d->f54 * (D_0015EE60 * -0.100000024f + 1.0f);
                 if (d->f58 <= 0) {
@@ -916,7 +916,7 @@ void FallingRockUpdate(Moby *m) {
             qcopy(v2, d->pos);
             v2[2] = 25.0f;
             for (j = 1; j >= 0; j--) {
-                Moby417Spawn(m, v2, v0, d->f50 * 4.0f, d->f50 * 12.0f);
+                spawn_radially_scattered_moby(m, v2, v0, d->f50 * 4.0f, d->f50 * 12.0f);
             }
             if (m->state > scale_ticks(10)) {
                 DeleteMoby(m);
@@ -1002,11 +1002,11 @@ void AsteroidBeltUpdate(Moby *m) {
     int i;
 
     if (d->mode == 2) {
-        FadingDriftUpdate((unsigned char *)m);
+        update_fading_asteroid_debris((unsigned char *)m);
         return;
     }
     if (d->mode == 1) {
-        FallingRockUpdate((void *)m);
+        update_falling_asteroid((void *)m);
         return;
     }
     if (m->command == 0 && d->init == 0) {
@@ -1199,7 +1199,7 @@ void display_update(struct Moby *moby) {
     qcopy(top, &moby->pos);
     top[2] += 1.25f;
     qcopy(center, top);
-    JitterVector(center, 0.4f);
+    add_random_offset_to_vector_xyz(center, 0.4f);
     if (moby->oclass < 0x513) {
         func_0022ED80_EEF80(0, 0, moby);
     } else {
@@ -1411,7 +1411,7 @@ typedef struct { char pad[0x24]; float scale; } SpawnClass_2F0BB8;
 typedef struct { float velocity[4]; float spin; float roll; char *owner; int timer; } SpawnData_2F0BB8;
 
 // Spawns a moby from class 0x140 + base, seeds random rotation and velocity data.
-char *SpawnDebrisPiece(char *owner, void *pos, void *vec, int base, float f) {
+char *spawn_tumbling_debris(char *owner, void *pos, void *vec, int base, float f) {
     u128_2F0BB8 a = *(u128_2F0BB8 *)pos;
     u128_2F0BB8 b = *(u128_2F0BB8 *)vec;
     void *pa = &a;
@@ -1550,7 +1550,7 @@ extern float func_L00_001FF860(float, float);
 extern float func_001FA850(float, float);
 
 /* Adapted from Lombyte (MIT) for PAL: src/overlays/l09/gameplay/entities/0021e538.c, FUN_L09_002efe48. */
-char *Moby417Spawn(void *unused, void *origin, void *direction_v, float lower_radius, float upper_radius) {
+char *spawn_radially_scattered_moby(void *unused, void *origin, void *direction_v, float lower_radius, float upper_radius) {
     float *direction = direction_v;
     float offset[4];
     char *moby = (char *)CreateMoby(0x1A1);
@@ -2216,7 +2216,7 @@ void handle_linked_moby_damage(Moby *moby, VendorVars2_05378 *vars, f32 *health)
 }
 typedef int u128 __attribute__((mode(TI)));
 // Finds the nearest eligible moby to a position, returning it only when close enough.
-char *FindNearestLinkTarget(char *self, char *pos, int bone) {
+char *find_nearby_chain_attachment(char *self, char *pos, int bone) {
     char *best = 0;
     float bestd = 1000000000.0f;
     char tmp[16];
@@ -2574,7 +2574,7 @@ void turret_update(struct Moby *moby) {
             FastVecAdd(&tmp, &tmp, &seat);
             if (vars->beam == -1) {
                 vars->beam_frames = 0;
-                vars->beam = UpdatePointLight(&tmp, 0.4f, 0.0f, 4.0f, 4.0f, 4.0f);
+                vars->beam = allocate_colored_effect_slot(&tmp, 0.4f, 0.0f, 4.0f, 4.0f, 4.0f);
                 Moby_PlaySound(1, 0, moby);
             } else {
                 beam = &D_L09_001804C0[vars->beam];
@@ -2600,7 +2600,7 @@ void turret_update(struct Moby *moby) {
             }
             if ((*(struct Moby **)(D_0013E633 + 0x1119)) != moby && vars->beam != -1) {
                 Moby_PlaySound(2, 0, moby);
-                light_off_67e8(vars->beam);
+                release_point_light_slot(vars->beam);
                 vars->beam = -1;
             }
         }
@@ -2773,7 +2773,7 @@ void update_damage_causer(Moby *moby) {
 extern int func_001F9850(int);
 
 /* spawn a moby copying position, rotation and data word from owner */
-char *CloneMobyAsClass(char *owner, int cls) {
+char *spawn_barrier_replacement(char *owner, int cls) {
     char *moby = CreateMoby(cls);
     if (moby != 0) {
         unsigned char state;

@@ -1,6 +1,6 @@
 void qwark_oltanis_update(char *m) {
     char *d = *(char **)(m + 0x78);
-    AttachManipulatorsIfCheat(m);
+    attach_big_head_cheat_manipulator_to_matching_moby(m);
     if (*(unsigned char *)(m + 0x31) != 0) {
         if (FastVecDist(m + 0x10, D_L14_001675C0) < 28.0f) {
             func_L00_0025B178(m);
@@ -52,7 +52,7 @@ void qwark_oltanis_update(char *m) {
         } else {
             ShowBanner(0x36B3, -1);
         }
-        GiveItem(0x20, 1);
+        grant_inventory_item(0x20, 1);
         mark_elevator_collected(D_L14_00160098_2FCEA8 + (*(int *)(d + 0x44) << 8));
         *(int *)(D_0014171B_2FCEA8 + 0xAB75 + (((short)*(unsigned short *)(m + 0xB2) >> 5) * 4 + (D_0015EE84_m << 8))) |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
         D_L14_001BAF60[(short)*(unsigned short *)(m + 0xB2) >> 5] |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);

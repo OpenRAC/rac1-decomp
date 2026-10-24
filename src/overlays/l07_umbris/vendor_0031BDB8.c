@@ -573,7 +573,7 @@ void mushroom_update(char *m) {
     case 2:
         Moby_PlaySound(0, 0, (int)m);
         d = D_L07_0015F660;
-        SpawnBreakFxByDistance(m);
+        spawn_proximity_gated_bolts(m);
         p = m + 0x10;
         q = m + 0x40;
         SpawnBreakFragment(m, 0x674, p, q, 0, 0, 0.0f, d, d, d);
@@ -614,7 +614,7 @@ void robot_head_update(char *self) {
     case 2: {
         char *m;
         Moby_PlaySound(0, 0, (int)self);
-        SpawnBreakFxByDistance(self);
+        spawn_proximity_gated_bolts(self);
         SpawnBreakFragment(self, 0x68E, self + 0x10, self + 0x40, 0, 0, 0.0f, D_L07_0015F660, D_L07_0015F660, D_L07_0015F660);
         SpawnBreakFragment(self, 0x68F, self + 0x10, self + 0x40, 0, 0, 0.0f, D_L07_0015F660, D_L07_0015F660, D_L07_0015F660);
         SpawnBreakFragment(self, 0x690, self + 0x10, self + 0x40, 0, 0, 0.0f, D_L07_0015F660, D_L07_0015F660, D_L07_0015F660);
@@ -654,7 +654,7 @@ void seashell_update(unsigned char *m) {
         z = 0.0f;
         p = D_L07_0015F660;
         pos = m + 0x10;
-        SpawnBreakFxByDistance(m);
+        spawn_proximity_gated_bolts(m);
         vel = m + 0x40;
         SpawnBreakFragment(m, 0x698, pos, vel, 0, 0, z, p, p, p);
         SpawnBreakFragment(m, 0x699, pos, vel, 0, 0, z, p, p, p);

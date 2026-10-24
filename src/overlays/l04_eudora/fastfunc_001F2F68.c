@@ -7,7 +7,7 @@
 extern float func_001F9D48(void *, void *);
 
 /* index of the nearest of n vectors to a + 0x10 */
-int NearestVectorIndex(char *a, char *b, int n) {
+int find_nearest_point_index_xy(char *a, char *b, int n) {
     int best = -1;
     int i;
     float m = 32767.0f;

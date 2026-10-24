@@ -25,7 +25,7 @@ extern int D_L00_00161F30 MACRO_ADDR;
 extern char D_L00_00161228[];
 extern char D_L00_00161230[];
 
-void Vendor_DrawCostBox(void *m, int x, int y) {
+void draw_vendor_purchase_text(void *m, int x, int y) {
     TBox box;
     char text[256];
     int cost;
@@ -193,7 +193,7 @@ extern void func_001F5800(int, int, int, int, int, int, int, int, long, long);
 extern long D_0015EFD0 MACRO_ADDR;
 
 /* Draws a screen-space rectangle from five joints of a moby: builds a box from its joint vectors, projects it and draws the rectangle. Adapted from Lombyte (MIT) for PAL: overlays/shared/unclassified_0029f990.c, FUN_L00_0029fcd0. */
-void DrawMobyJointRect(void *m) {
+void draw_vendor_purchase_panel(void *m) {
     q2A d1[1];
     q2A d2[1];
     q2A base[1];
@@ -228,7 +228,7 @@ void DrawMobyJointRect(void *m) {
     configure_capture_target(9, 7, 1.0f);
     draw_centered_capture_background(0x200, 0x200);
     VU1_addGSregister(0x42, 0x8000000064L);
-    Vendor_DrawCostBox(m, x, y);
+    draw_vendor_purchase_text(m, x, y);
     render_vendor_capture_texture_overlays_pass(6, (float)x, (float)y);
     begin_draw_frame();
     draw_centered_capture_background(0x200, 0x200);
@@ -253,7 +253,7 @@ struct HoloPacket {
 };
 
 /* Draws the four quads of the hologram cone, scrolling the texture coordinates. */
-void Vendor_DrawHologramCone(void) {
+void draw_vendor_hologram_cone(void) {
     struct HoloPacket s;
     float v[4][4];
     int i;

@@ -332,7 +332,7 @@ void mine_update(M910 *m) {
                     V910 ov;
                     {
                         if (D_H910.moby != 0
-                            && (IsMobyClass500To540((int)D_H910.moby) != 0 || (D_H910.moby->flags & 0x5000))
+                            && (is_moby_in_class_range_500_to_540((int)D_H910.moby) != 0 || (D_H910.moby->flags & 0x5000))
                             && D_H910.moby->cls != m->cls
                             && D_H910.moby != D_G910.cam
                             && D_H910.moby != v->owner) {
@@ -560,7 +560,7 @@ void mine_update(M910 *m) {
                         }
                     }
                 }
-                LissajousOffsetUpdate(m, (char *)&v->f60, (char *)&v->f64, 0.5235988f, D_0015EE6C * 0.5235988f, D_0015EE6C * 0.29670596f);
+                update_moby_rotation_oscillation(m, (char *)&v->f60, (char *)&v->f64, 0.5235988f, D_0015EE6C * 0.5235988f, D_0015EE6C * 0.29670596f);
                 if (m->state & 4) {
                     V910 t;
                     {
@@ -621,7 +621,7 @@ void mine_update(M910 *m) {
                             m->bBC = 1;
                             break;
                         }
-                        if (IsMobyClass500To540((int)o) != 0) {
+                        if (is_moby_in_class_range_500_to_540((int)o) != 0) {
                             goto next;
                         }
                         rg = range;
@@ -747,7 +747,7 @@ void mine_update(M910 *m) {
                             FastVecAdd(r, r, &m->pos);
                             r[2] = wz + 0.5f;
                             n[2] -= rr * D_0015EE6C * 8.0f;
-                            PartType64Spawn(r, n, 0, random_float_between(0.35f, 1.25f), wz, D_0015EE70 * 20.0f, (0x16 << 24) | (cb << 16) | (cg << 8) | cr, (cb << 16) | (cg << 8) | cr, 1);
+                            spawn_gravity_floor_burst_particle(r, n, 0, random_float_between(0.35f, 1.25f), wz, D_0015EE70 * 20.0f, (0x16 << 24) | (cb << 16) | (cg << 8) | cr, (cb << 16) | (cg << 8) | cr, 1);
                         }
                         for (l = 0; l < 20; l++) {
                             int c1 = DefaultVtbl_DeleteMoby(0x7F000000, (0x7F << 24) | (cb << 16) | (cg << 8) | cr, random_float_between(0.25f, 1.0f));
@@ -762,11 +762,11 @@ void mine_update(M910 *m) {
                             r[2] = random_float_between(3.0f, 6.0f) * D_0015EE6C;
                             *(Q910 *)n = m->pos.q;
                             n[2] = wz;
-                            c1 = PermuteColorChannels(c1, D_E910.b11);
-                            c2 = PermuteColorChannels(c2, D_E910.b11);
+                            c1 = swap_packed_color_channels(c1, D_E910.b11);
+                            c2 = swap_packed_color_channels(c2, D_E910.b11);
                             sz = random_float_between(31500.002f, 52500.0f);
                             life = rand_range(scale_ticks(0x5A), scale_ticks(0x96));
-                            PartType15Spawn(n, r, c1, c2, sz, life, 1, D_L00_001B2400[11][0], -1);
+                            spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns(n, r, c1, c2, sz, life, 1, D_L00_001B2400[11][0], -1);
                         }
                     }
                 } else if (gz + 2.0f < m->pos.f[2]) {
@@ -804,7 +804,7 @@ void mine_update(M910 *m) {
                             n[2] -= rr * D_0015EE6C * 8.0f;
                             switch (kind) {
                             case 0: {
-                                int c1 = PermuteColorChannels(0x1F101820, D_E910.b11);
+                                int c1 = swap_packed_color_channels(0x1F101820, D_E910.b11);
                                 float sz = random_float_between(200000.0f, 300000.0f) * sc;
                                 int life = rand_range(scale_ticks(0xB4), scale_ticks(0xF0));
 
@@ -812,20 +812,20 @@ void mine_update(M910 *m) {
                                 break;
                             }
                             case 1: {
-                                int c1 = PermuteColorChannels(0x3F081020, D_E910.b11);
-                                int c2 = PermuteColorChannels(0x0F081020, D_E910.b11);
+                                int c1 = swap_packed_color_channels(0x3F081020, D_E910.b11);
+                                int c2 = swap_packed_color_channels(0x0F081020, D_E910.b11);
                                 float sz = random_float_between(50000.0f, 100000.0f) * sc;
 
                                 mine_debris((char *)r, (char *)n, c1, c2, sz, scale_ticks(0xB4), 1);
                                 break;
                             }
                             case 2: {
-                                int c1 = PermuteColorChannels(random_integer_below(100) < 0x28 ? 0x5FF8F8F8 : 0x2F486078, D_E910.b11);
+                                int c1 = swap_packed_color_channels(random_integer_below(100) < 0x28 ? 0x5FF8F8F8 : 0x2F486078, D_E910.b11);
                                 int c2;
                                 float sz;
                                 int life;
 
-                                c2 = PermuteColorChannels(0x0F000020, D_E910.b11);
+                                c2 = swap_packed_color_channels(0x0F000020, D_E910.b11);
                                 sz = sc * 150000.0f;
                                 life = rand_range(scale_ticks(0x1E), scale_ticks(0x2D));
                                 mine_debris((char *)r, (char *)n, c1, c2, sz, life, 2);
@@ -837,8 +837,8 @@ void mine_update(M910 *m) {
                                 float sz;
                                 int life;
 
-                                c1 = PermuteColorChannels(c1, D_E910.b11);
-                                c2 = PermuteColorChannels(c2, D_E910.b11);
+                                c1 = swap_packed_color_channels(c1, D_E910.b11);
+                                c2 = swap_packed_color_channels(c2, D_E910.b11);
                                 BuildSphericalOffset(n, random_float_between(0.0f, 1.0f) * D_0015EE6C, ang, random_angle_radians());
                                 sz = random_float_between(200000.0f, 300000.0f) * sc;
                                 life = rand_range(scale_ticks(0xF0), scale_ticks(0x12C));
@@ -1751,8 +1751,8 @@ void bomb_update(M_2aedd0 *m) {
                         C6_2aedd0 c2 = D_L00_001E9CB8;
 
                         PartType11Spawn(&m->pos, &a,
-                                          PermuteColorChannels(c1.c[random_integer_below(6)], (unsigned char)D_E910.p0[0xA]),
-                                          PermuteColorChannels(c2.c[random_integer_below(6)], (unsigned char)D_E910.p0[0xA]),
+                                          swap_packed_color_channels(c1.c[random_integer_below(6)], (unsigned char)D_E910.p0[0xA]),
+                                          swap_packed_color_channels(c2.c[random_integer_below(6)], (unsigned char)D_E910.p0[0xA]),
                                           s * 400000.0f,
                                           rand_range(scale_ticks(0xF), scale_ticks(0x14)),
                                           rand_range(scale_ticks(0x19), scale_ticks(0x1E)),
@@ -1767,23 +1767,23 @@ void bomb_update(M_2aedd0 *m) {
                         r = 0x7F;
                         gg = 0x20;
                         bb = 0;
-                        PermuteChannels(&r, &gg, &bb, (unsigned char)D_E910.p0[0xA]);
+                        swap_color_channel_words(&r, &gg, &bb, (unsigned char)D_E910.p0[0xA]);
                         SpawnMoby1192(m, &m->pos, &a, s * 4.0f, scale_ticks(0x18), r, gg, bb, 0x20);
                     }
                     r2 = 0x7F;
                     g2 = 0x3F;
                     b2 = 0;
-                    PermuteChannels(&r2, &g2, &b2, (unsigned char)D_E910.p0[0xA]);
+                    swap_color_channel_words(&r2, &g2, &b2, (unsigned char)D_E910.p0[0xA]);
                     SpawnMoby1192(m, &m->pos, &a, s * 4.0f, scale_ticks(0x14), r2, g2, b2, 0x30);
                     r2 = 0x60;
                     g2 = 0x10;
                     b2 = 0;
-                    PermuteChannels(&r2, &g2, &b2, (unsigned char)D_E910.p0[0xA]);
+                    swap_color_channel_words(&r2, &g2, &b2, (unsigned char)D_E910.p0[0xA]);
                     SpawnMoby1192(m, &m->pos, &a, s * 3.5f, scale_ticks(0x1B), r2, g2, b2, 0x40);
                     r2 = 0x20;
                     g2 = 0;
                     b2 = 0;
-                    PermuteChannels(&r2, &g2, &b2, (unsigned char)D_E910.p0[0xA]);
+                    swap_color_channel_words(&r2, &g2, &b2, (unsigned char)D_E910.p0[0xA]);
                     SpawnMoby1192(m, &m->pos, &a, s * 3.0f, scale_ticks(0x1D), r2, g2, b2, 0x20);
                 }
                 if (d->h68 >= scale_ticks(0x14)) {
@@ -1857,7 +1857,7 @@ void bomb_update(M_2aedd0 *m) {
                             FastVecAdd(&w, &w, &m->pos);
                             w.f[2] = gz + 0.5f;
                             v2.f[2] -= r * D_0015EE6C * 8.0f;
-                            PartType64Spawn(&w, &v2, delay, random_float_between(0.25f, 1.0f), gz, D_0015EE70 * 20.0f, (0x16 << 24) | (cb << 16) | (cg << 8) | cr, (cb << 16) | (cg << 8) | cr, 1);
+                            spawn_gravity_floor_burst_particle(&w, &v2, delay, random_float_between(0.25f, 1.0f), gz, D_0015EE70 * 20.0f, (0x16 << 24) | (cb << 16) | (cg << 8) | cr, (cb << 16) | (cg << 8) | cr, 1);
                         }
                         for (j = 0; j < 20; j++) {
                             int c0 = DefaultVtbl_DeleteMoby(0x7F << 24, (0x7F << 24) | (cb << 16) | (cg << 8) | cr, random_float_between(0.25f, 1.0f));
@@ -1874,7 +1874,7 @@ void bomb_update(M_2aedd0 *m) {
                             v2.f[2] = gz;
                             sz = random_float_between(31500.002f, 52500.0f);
                             life = rand_range(scale_ticks(0x5A), scale_ticks(0x96));
-                            PartType15Spawn(&v2, &w, c0, c1, sz, life, 1, D_L00_001B2400[11][0], -1);
+                            spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns(&v2, &w, c0, c1, sz, life, 1, D_L00_001B2400[11][0], -1);
                         }
                     }
                 }
@@ -1965,8 +1965,8 @@ void debris_update(unsigned char *m) {
             *(Q_2af5b8 *)&v = *(Q_2af5b8 *)&t;
             func_L00_001FF4B0(&v, &v, D_0015EE6C);
             if (m[0xBC] & 0xFE) {
-                int a = PermuteColorChannels(c.c[random_integer_below(4)], m[0xBC] >> 1);
-                int b = PermuteColorChannels(0x4FFF, m[0xBC] >> 1);
+                int a = swap_packed_color_channels(c.c[random_integer_below(4)], m[0xBC] >> 1);
+                int b = swap_packed_color_channels(0x4FFF, m[0xBC] >> 1);
                 PartType04Spawn(m + 0x10, &v, a, b, scale_ticks(0x2D), 0x32, 0x78, 1);
             } else {
                 PartType04Spawn(m + 0x10, &v, c.c[random_integer_below(4)], 0x4FFF, scale_ticks(0x2D), 0x32, 0x78, 1);
@@ -2113,7 +2113,7 @@ extern short D_L00_001B0AF0[];
 
 // spawns an effect moby (class 0x99) at pos, tied to an owner and a target, and aims its starting state
 // Adapted from Lombyte (MIT) for PAL: overlays/shared/unclassified_002aa670.c, FUN_L00_002afc70.
-unsigned char *SpawnMissile(unsigned char *a, Vec4 *pos, unsigned char *tgt, float f12, float f13, float f14, float f15, float f16) {
+unsigned char *spawn_devastator_missile(unsigned char *a, Vec4 *pos, unsigned char *tgt, float f12, float f13, float f14, float f15, float f16) {
     Vec4 tmp;
     unsigned char *m;
     unsigned char *v;
@@ -2180,7 +2180,7 @@ unsigned char *SpawnMissile(unsigned char *a, Vec4 *pos, unsigned char *tgt, flo
             qcopy(m + 0x10, D_L00_00173F60);
         }
         func_L00_00251E30(m);
-        MobyList_AddUnique((int)m, D_L00_001B0AF0, 0x1F);
+        append_unique_moby_index((int)m, D_L00_001B0AF0, 0x1F);
         *(float *)(m + 0x2C) += *(float *)(m + 0x2C);
     }
     return m;
@@ -2188,7 +2188,7 @@ unsigned char *SpawnMissile(unsigned char *a, Vec4 *pos, unsigned char *tgt, flo
 extern float D_0015EE64 MACRO_ADDR;
 
 // Runs n steps of a critically-damped chase toward a target and sums the positions.
-float SumDampedChaseSteps(int n) {
+float calculate_eased_step_sum(int n) {
     float sum = 0.0f;
     float pos = 0.0f;
     int i;
@@ -2303,7 +2303,7 @@ void select_gold_devastator_missile_target(char *self, O *out, char *skip) {
             best = dist;
             pitch = -angv;
             yaw = angh;
-            if (FindMobyByPvarId(o) != 0) goto next;
+            if (find_listed_moby_by_data_id(o) != 0) goto next;
             z = 0.5f;
             out->owner = o;
             if (p != 0) z = *(f32 *)(p + 0x10);
@@ -2499,7 +2499,7 @@ void gold_devastator_missile_update(M910 *m) {
         rotate1688(&phase.vectors.relative,&phase.vectors.relative,m->mtx);
         axis_rotate1688(&phase.vectors.relative,&phase.vectors.relative,m->mtx,random_angle1688());
         {
-            int color=PermuteColorChannels(0x4F007FFF,D_0013E620.bB);
+            int color=swap_packed_color_channels(0x4F007FFF,D_0013E620.bB);
             spark1688(&smoke_position,&phase.vectors.relative,color,0x1FFFFFFF,scale_ticks(15),1,25000.0f);
         }
     }
@@ -2607,14 +2607,14 @@ void gold_devastator_missile_update(M910 *m) {
             predicted.f[2]+=D_0015EE6C*5.0f;
             FastVecAdd(&predicted,&predicted,&blast_velocity);
             {
-                int color=PermuteColorChannels(0x4F007FFF,D_0013E620.bB);
-                int fade=PermuteColorChannels(0x1F00007F,D_0013E620.bB);
+                int color=swap_packed_color_channels(0x4F007FFF,D_0013E620.bB);
+                int fade=swap_packed_color_channels(0x1F00007F,D_0013E620.bB);
                 int life;
                 float particle_scale;
                 if(FastVecLength(&predicted)>1.0f) func_L00_001FF4B0(&predicted,&predicted,D_0015EE6C*8.0f);
                 particle_scale=size*40000.0f;
                 life=rand_range(scale_ticks(60),scale_ticks(120))-particle_reduction*35;
-                PartType15Spawn((&m->pos),&predicted,color,fade,particle_scale,life,1,-1,-1);
+                spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns((&m->pos),&predicted,color,fade,particle_scale,life,1,-1,-1);
             }
         }
         }
@@ -2642,8 +2642,8 @@ void gold_devastator_missile_update(M910 *m) {
             float speed=random_float_between(8.0f,10.0f)*size*D_0015EE6C-near_adjust*D_0015EE6C;
             Colors1688 color=D_L00_001E9D70;
             Colors1688 fade=D_L00_001E9D88;
-            int c=PermuteColorChannels(color.colors[random_integer_below(6)],D_0013E620.bB);
-            int f=PermuteColorChannels(fade.colors[random_integer_below(6)],D_0013E620.bB);
+            int c=swap_packed_color_channels(color.colors[random_integer_below(6)],D_0013E620.bB);
+            int f=swap_packed_color_channels(fade.colors[random_integer_below(6)],D_0013E620.bB);
             int life=rand_range(scale_ticks(15),scale_ticks(20))-particle_reduction*7;
             int end=rand_range(scale_ticks(25),scale_ticks(30))-particle_reduction*10;
             int white_life, white_end;
@@ -2666,8 +2666,8 @@ void gold_devastator_missile_update(M910 *m) {
                 v=random;
             }
             func_L00_001FF4B0(&v,&v,random_float_between(0.0f,3.0f)*D_0015EE6C*size);
-            c=PermuteColorChannels(color.colors[random_integer_below(6)],D_0013E620.bB);
-            f=PermuteColorChannels(fade.colors[random_integer_below(6)],D_0013E620.bB);
+            c=swap_packed_color_channels(color.colors[random_integer_below(6)],D_0013E620.bB);
+            f=swap_packed_color_channels(fade.colors[random_integer_below(6)],D_0013E620.bB);
             debris_scale=size*200000.0f;
             life=rand_range(scale_ticks(20),scale_ticks(35))-particle_reduction*10;
             debris1688((&m->pos),&v,c,f,debris_scale,life);
@@ -2736,7 +2736,7 @@ int rndi_2b1af0(int, int) __asm__("func_L00_00258BC8");
 void smoke_2b1af0(void *, void *, int, int, int, int, float, float, float, float, float) __asm__("func_L00_00272158");
 void spark_2b1af0(void *, void *, int, int, int, int, float) __asm__("func_L00_0026DA50");
 /* Moby update. Adapted from Lombyte (MIT) for PAL: overlays/shared/unclassified_002aa670.c, FUN_L00_002b1af0. */
-void EmitMuzzleSmoke(unsigned char *o) {
+void emit_object_offset_particles(unsigned char *o) {
     V_2b1af0 b;
     V_2b1af0 a;
     V_2b1af0 c;
@@ -2798,7 +2798,7 @@ int func_001FA898(float);
 int func_002140B0(int);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002aa670.c, FUN_L00_002b1de0. */
-void EmitMuzzleBurst(unsigned char *o) {
+void emit_object_offset_particle_burst(unsigned char *o) {
     V_2b1af0_B30C8 c;
     V_2b1af0_B30C8 a;
     V_2b1af0_B30C8 b;

@@ -88,7 +88,7 @@ static inline int coin_flip(void)
     return r;
 }
 /* Emits two rings of randomly varied particles around the moby's axis. */
-void func_L03_00251AC8(char *moby, float *position, void *extra)
+void emit_radial_particle_burst(char *moby, float *position, void *extra)
 {
     float pos[4], vec[4], tmp[4];
     float *p = pos;

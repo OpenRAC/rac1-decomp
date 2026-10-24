@@ -75,7 +75,7 @@ void rock_formation_update(DebrisMoby *m) {
                 FastVecAdd(&pos, &pos, &m->pos);
                 func_L00_001FF4B0(&vel, &vel, random_float_between(0.5f, 1.5f) * D_0015EE6C);
                 s = random_float_between(0.5f, 1.0f) * 210000.0f;
-                PartType22Spawn(&pos, &vel, 0x5F787878, 0x181818, s, scale_ticks(rand_range(30, 90)));
+                spawn_effect_particle_with_target_scalar(&pos, &vel, 0x5F787878, 0x181818, s, scale_ticks(rand_range(30, 90)));
             }
         }
         for (j = 0; j < 40; j++) {
@@ -279,7 +279,7 @@ extern void func_L00_00251E30(void *, int);
 
 /* Spawns a beam moby (0x2D2) from owner between two points, colored, with random rotation and two glow sprites.
    Adapted from Lombyte (MIT) for PAL: src/overlays/l01/unclassified_002f9810.c, FUN_L01_002fa068. */
-char *SpawnBeamMoby(int owner, void *pos, void *target, int color) {
+char *spawn_colored_half_scale_moby(int owner, void *pos, void *target, int color) {
     Vy p;
     Vy t;
     char *m;
@@ -306,8 +306,8 @@ char *SpawnBeamMoby(int owner, void *pos, void *target, int color) {
         qcopy(m + 0x10, pp);
         qcopy(v, tp);
         *(int *)(v + 0x14) = color;
-        PartType26Spawn(m, 0x2F00007F, color, -1, 210000.0f);
-        PartType26Spawn(m, 0x4F004F7F, *(int *)(v + 0x14), -1, 115500.0f);
+        spawn_source_attached_fading_effect_particle(m, 0x2F00007F, color, -1, 210000.0f);
+        spawn_source_attached_fading_effect_particle(m, 0x4F004F7F, *(int *)(v + 0x14), -1, 115500.0f);
         ((void (*)(void *))func_L00_00251E30)(m);
     }
     return m;
@@ -612,7 +612,7 @@ extern unsigned char D_L01_0017C940[];
 extern void func_0020D960(char *, int, void *);
 
 /* Arms the 0x32B mobys' marker record once, while the level flag is 2. */
-void AttachMarkerManipulators(void) {
+void apply_cutscene_big_head_cheat(void) {
     if (D_L01_0015F6A8 == 2 && gCheats[0] != 0) {
         int i;
         for (i = 0; i < fx_cutscene.n; i++) {
@@ -1222,7 +1222,7 @@ void green_mushroom_update(char *m) {
         break;
     case GREEN_MUSHROOM_SPAWN_PIECES_AND_REMOVE:
         Moby_PlaySound(0, 0, (int)mushroom_moby);
-        SpawnBreakFxByDistance(mushroom_moby);
+        spawn_proximity_gated_bolts(mushroom_moby);
         scale_ratio = mushroom_moby->scale / mushroom_moby->pclass->scale;
         i = 0;
         do {
@@ -1434,15 +1434,15 @@ void Moby778Update(char *m) {
             w[2] = 0;
             w[2] = random_float_between(w[2], 3.0f) * D_0015EE6C;
             a = random_float_between(125000.0f, 175000.0f);
-            PartType22Spawn(v, w, 0x207F7F7F, 0x272727, a, scale_ticks(rand_range(0x2D, 0x3C)));
+            spawn_effect_particle_with_target_scalar(v, w, 0x207F7F7F, 0x272727, a, scale_ticks(rand_range(0x2D, 0x3C)));
         }
-        SpawnMoby30B(m);
+        spawn_pipe_replacement_moby(m);
         DeleteMoby(m);
     }
 }
 extern void func_L00_00251E30(void *, int);
 
-char *SpawnMoby30B(char *owner) {
+char *spawn_pipe_replacement_moby(char *owner) {
     char *moby = CreateMoby(0x30B);
     if (moby != 0) {
         char *data;
@@ -1495,7 +1495,7 @@ void update_smoke_emitter(char *self) {
         func_001F9EC0(&vel, &vel, self + 0xC0);
         FastVecAdd(&pos, &pos, self + 0x10);
         size = random_float_between(125000.0f, 175000.0f);
-        PartType22Spawn(&pos, &vel, 0x207F7F7F, 0x272727, size, scale_ticks(rand_range(0x2D, 0x3C)));
+        spawn_effect_particle_with_target_scalar(&pos, &vel, 0x207F7F7F, 0x272727, size, scale_ticks(rand_range(0x2D, 0x3C)));
     }
 }
 extern float func_002140F8(float,float);
@@ -1666,7 +1666,7 @@ char *initialize_beehive_spawn_moby(char *owner) {
     ClonedVars *destination_moby_vars;
 
     destination_moby = 0;
-    GroupMobyIter_Start((int *)&destination_moby, *(s32 *)clone_spawner_moby->pvars, 0, 0);
+    get_first_moby_in_group((int *)&destination_moby, *(s32 *)clone_spawner_moby->pvars, 0, 0);
     destination_moby_vars = (ClonedVars *)destination_moby->pvars;
     destination_moby->update_dist = 0x80;
     destination_moby->draw_dist = 0x80;
@@ -1856,7 +1856,7 @@ void update_level01_tutorial_hints(Moby *moby) {
                     }
                     usage_stats[13].level_mask = usage_stats[13].level_mask | (1 << D_0015EE84_2FBBD8) | 0x80000000;
                     Help_Request(1, 1);
-                } else if (IsBSphereVisibleScaled(255.0f, m2) != 0) {
+                } else if (check_scaled_vector_bsphere(255.0f, m2) != 0) {
                     Help_Request(2, 2);
                 }
             }
@@ -2204,7 +2204,7 @@ void tall_shroom_update(char *moby) {
         break;
     case TALL_SHROOM_STATE_REMOVE_WITH_EFFECTS:
         Moby_PlaySound(0, 0, (int)moby);
-        SpawnBreakFxByDistance(moby);
+        spawn_proximity_gated_bolts(moby);
         SpawnBreakFragment(moby, 0x717, (float *)&((Moby *)moby)->pos, (char *)&((Moby *)moby)->rot, 0, 0,
                            D_L01_0015F660, D_L01_0015F660, 0.0f, D_L01_0015F660);
         spawn_moby_from_placement(moby, 0x718);

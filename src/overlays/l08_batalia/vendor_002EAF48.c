@@ -874,7 +874,7 @@ void commando_update(char *m) {
     };
     struct Moby *moby = (struct Moby *)m;
     WD8 *commando_vars = (WD8 *)moby->pvars;
-    AttachManipulatorsIfCheat(m);
+    attach_big_head_cheat_manipulator_to_matching_moby(m);
     if (moby->visible != 0) {
         if (FastVecDist(&moby->pos, D_L08_00167640) < (float)*(int *)&D_L08_00162268) {
             func_L00_0025B178(m);
@@ -931,7 +931,7 @@ void commando_update(char *m) {
         if (commando_vars->h24 == 3) {
             char *g;
             unlock_planet(10);
-            ShowPlanetBanner(10);
+            queue_planet_unlock_message(10);
             jet_clear_persistent((unsigned char)m[0xB0]);
             g = D_0013E633 + 0xE9D;
             jet_reset_camera(g, g + 0x10);
@@ -1021,7 +1021,7 @@ extern unsigned char D_L08_0017CCC0[];
 extern void func_0020D960(char *, int, void *);
 
 /* triggers objects matching the moby's class */
-void TriggerMobysOfClass(char *moby) {
+void attach_batalia_deserter_class_manipulator(char *moby) {
     int i;
     if (D_L08_0015F6A8 == 2 && gCheats[0]) {
         if (D_L08_0016D0E0.a == 3 && D_L08_0016D0E0.b >= 0x1BA && D_L08_0016D0E0.b < 0x284) {
@@ -1074,7 +1074,7 @@ typedef struct DeserterData_2EAF48 {
 void batalia_deserter_update(char *m) {
     struct Moby *moby = (struct Moby *)m;
     DeserterData_2EAF48 *deserter_data = (DeserterData_2EAF48 *)moby->pvars;
-    TriggerMobysOfClass(m);
+    attach_batalia_deserter_class_manipulator(m);
     if (moby->visible != 0) {
         if (FastVecDist(&moby->pos, D_L08_00167640) < 30.0f) {
             func_L00_0025B178(m);
@@ -1189,7 +1189,7 @@ void batalia_deserter_update(char *m) {
 extern short D_L08_00162390;
 
 /* triggers objects matching the moby's class, with per-segment settings */
-void Moby1283_AttachCheatManipulators(char *moby) {
+void attach_batalia_plumber_class_manipulator(char *moby) {
     int i;
     if (D_L08_0015F6A8 == 2 && gCheats[0]) {
         if (D_L08_0016D0E0.a == 6 && D_L08_0016D0E0.b >= 0x26C && D_L08_0016D0E0.b < 0x2CC) {
@@ -1277,7 +1277,7 @@ typedef struct {
 
 void the_plumber_batalia_update(char *m) {
     BataliaPlumberData *d = (BataliaPlumberData *)((struct Moby *)m)->pvars;
-    Moby1283_AttachCheatManipulators(m);
+    attach_batalia_plumber_class_manipulator(m);
     switch (((struct Moby *)m)->state) {
     case 0:
         ((struct Moby *)m)->update_dist = 0xFF;
@@ -1297,7 +1297,7 @@ void the_plumber_batalia_update(char *m) {
             request_batalia_cannon_mount(D_L08_00160058 + (d->i50 << 8));
         }
         if (d->sub == 3) {
-            start_indexed_disc_stream(1);
+            PlayMovieEntryIfIdle(1);
             ((struct Moby *)m)->state = 5;
         }
         if (d->sub == 4) {
@@ -1310,7 +1310,7 @@ void the_plumber_batalia_update(char *m) {
         break;
     case 5:
         jet_clear_persistent((unsigned char)((struct Moby *)m)->mission);
-        GiveItem(0x1B, 1);
+        grant_inventory_item(0x1B, 1);
         memcard_Save(0, -1);
     del:
         DeleteMoby(m);
@@ -1580,7 +1580,7 @@ extern int D_L08_001F8788[];
 extern int D_L08_001F87E8_30A278[] __asm__("D_L08_001F87E8");
 
 // Runs eight setup calls over parallel tables, offset by the argument.
-void Moby1649_DrawQuads8(int arg) {
+void queue_batalia_eight_textured_batches(int arg) {
     int i;
     for (i = 7; i >= 0; i--) {
         func_L08_00259040(D_L08_001F8820_30A278, D_L08_001F87A8[7 - i], D_L08_001F4F20_30A278[7 - i], (char *)D_L08_001F8808_30A278 + arg * 8);
@@ -1595,7 +1595,7 @@ extern int D_L08_001F4F08_30A350[] __asm__("D_L08_001F4F08");
 extern long D_L08_00162488_30A350[] __asm__("D_L08_00162488") MACRO_ADDR;
 
 /* Draws six quads from parallel tables, offset by the given index. */
-void Moby1649_DrawQuads6(int x) {
+void queue_batalia_six_textured_batches(int x) {
     int i;
 
     for (i = 0; i < 6; i++) {
@@ -1644,17 +1644,17 @@ void queue_batalia_textured_batch_passes(void) {
     font_queue_vu_state();
     VU1_addGSregister(6, GetEffectTex(0x3A));
     VU1_addGSregister(0x42, (long)*(int *)&D_L08_00162420 << 32 | 0x64);
-    Moby1649_DrawQuads8(0);
+    queue_batalia_eight_textured_batches(0);
     VU1_addGSregister(6, GetEffectTex(0x3B));
     VU1_addGSregister(0x42, (long)((D_L08_00162424 * *(unsigned char *)&D_L08_00162480) >> 8) << 32 | 0x62);
-    Moby1649_DrawQuads8(1);
+    queue_batalia_eight_textured_batches(1);
     VU1_addGSregister(0x42, (long)((D_L08_00162428 * *(unsigned char *)&D_L08_00162480) >> 8) << 32 | 0x68);
-    Moby1649_DrawQuads8(2);
+    queue_batalia_eight_textured_batches(2);
     VU1_addGSregister(6, GetEffectTex(0x3C));
     VU1_addGSregister(0x42, (long)*(int *)&D_L08_00162440 << 32 | 0x48);
-    Moby1649_DrawQuads6(0);
+    queue_batalia_six_textured_batches(0);
     VU1_addGSregister(0x42, (long)D_L08_00162444 << 32 | 0x48);
-    Moby1649_DrawQuads6(1);
+    queue_batalia_six_textured_batches(1);
     VU1_addGSregister(6, GetEffectTex(0x3D));
     VU1_addGSregister(0x42, (long)*(int *)&D_L08_00162450 << 32 | 0x48);
     queue_batalia_offset_textured_batches(0);
@@ -1763,8 +1763,8 @@ void update_moby_hit_removal_state(char *m) {
         break;
     case 2:
         Moby_PlaySound(0, 0, (int)m);
-        SpawnBreakFxByDistance(m);
-        SpawnMobyBurstFx(m, 0x736, 1, 0x737, 1, 1, 2);
+        spawn_proximity_gated_bolts(m);
+        spawn_moby_break_fragments(m, 0x736, 1, 0x737, 1, 1, 2);
         spawn_moby_from_placement(m, 0x735);
         DeleteMoby(m);
         break;

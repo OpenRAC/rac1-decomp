@@ -23,7 +23,7 @@ extern void func_L01_00262BC0(char *a, char *b);
 extern void func_L01_00262FE8(char *a, int i, int c, char *base);
 
 // steps the ripple simulation for each active entry, then swaps the two buffer indices
-void RippleSimStep(char *base, int n) {
+void step_pool_wave_simulation(char *base, int n) {
     int i;
     for (i = 0; i < n; i++) {
         char *p = base + i * 0x1190;
@@ -958,7 +958,7 @@ void bolt_crank_update(char *m) {
             }
             if (I(s, 0x34) != -1 &&
                 ((unsigned char *)D_0014C150)[(unsigned char)m[0xB0] + (D_0015EE84 << 4)] != 0xFF) {
-                FindOrAddMobyEntry(s, 4, m, 2, D_L01_001BADB0);
+                record_moby_context_bytes(s, 4, m, 2, D_L01_001BADB0);
                 jet_clear_persistent((unsigned char)m[0xB0]);
                 if (I(s, 0x34) != -1) {
                     char *b = camera_points + (I(s, 0x34) << 7);
@@ -989,14 +989,14 @@ void bolt_crank_update(char *m) {
                 if (I(s, 0x38) != 0) {
                     m[0x20] = 1;
                 } else if (F(s, 0x0) == 1.0f) {
-                    FindOrAddMobyEntry(s, 4, m, 2, D_L01_001BADB0);
+                    record_moby_context_bytes(s, 4, m, 2, D_L01_001BADB0);
                     m[0x20] = 4;
                     *(int *)(D_0014171B + 0xAB75 + (((short)*(unsigned short *)(m + 0xB2) >> 5) * 4 + (D_0015EE84 << 8))) |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
                     moby_killed[(short)*(unsigned short *)(m + 0xB2) >> 5] |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
                     ((int (*)(int, int, char *))Moby_PlaySound)(0, 0, m);
                     if (I(s, 0x34) != -1 &&
                         ((unsigned char *)D_0014C150)[(unsigned char)m[0xB0] + (D_0015EE84 << 4)] != 0xFF) {
-                        FindOrAddMobyEntry(s, 4, m, 2, D_L01_001BADB0);
+                        record_moby_context_bytes(s, 4, m, 2, D_L01_001BADB0);
                         jet_clear_persistent((unsigned char)m[0xB0]);
                         if (I(s, 0x34) != -1) {
                             char *b = camera_points + (I(s, 0x34) << 7);
@@ -1082,7 +1082,7 @@ void bolt_crank_update(char *m) {
             F(h, 0x180) = FastAddRots(1.5707964f, f22);
         }
         }
-        StepAngleToward((float *)(D_0013E633 + 0xEB5), F(H, 0x180), 0, D_0015EE6C * 6.2831855f);
+        step_angle_toward_target((float *)(D_0013E633 + 0xEB5), F(H, 0x180), 0, D_0015EE6C * 6.2831855f);
         F(s, 0x24) = F(s, 0x24) + D_0015EE70 * 9.8f;
         F(H, 0x88) = F(H, 0x88) - (F(s, 0x24) - 2.0f);
         g = ProbeGroundHeight(HP, 0, 0.5f);
@@ -1094,7 +1094,7 @@ void bolt_crank_update(char *m) {
                 if ((unsigned char)(*(char **)(H + 0x2080))[0x53] != 0x44) {
             float hi = 1.0471976f;
             float lo = FastAddRots(0.2617994f, f22);
-            StepAngleToward((float *)(m + 0x48), lo, 0, D_0015EE6C * 3.1415927f);
+            step_angle_toward_target((float *)(m + 0x48), lo, 0, D_0015EE6C * 3.1415927f);
             if (hi < FastSubRots(F(m, 0x48), lo)) {
                 F(m, 0x48) = FastSubRots(F(m, 0x48), hi);
             } else if (FastSubRots(F(m, 0x48), lo) < -1.0471976f) {
@@ -1185,7 +1185,7 @@ void gold_weapon_case_update(struct Moby *m) {
             item = D_L01_001DEDE0[v->slot];
             price = &D_L01_001C47B0[item];
             gBolts -= price->bolts;
-            OpenVendorScreen(m, item, price);
+            initialize_vendor_screen(m, item, price);
         }
         break;
     case 3: /* sold out or done: idle */
@@ -1228,7 +1228,7 @@ void SandMouse_ComputeTarget(char *a, char *m) {
     FastVecAdd(m, &t0, &t1);
     FastVecAdd(m, m, g + 0x80);
     if (*(int *)(m + 0x68) == 0) {
-        if (CheckGroundBelow((Vs *)m, (int)a, 0, D_L01_001DEE10, 2.0f)) {
+        if (probe_vertical_ground_collision((Vs *)m, (int)a, 0, D_L01_001DEE10, 2.0f)) {
             *(float *)(m + 8) = D_L01_00174368;
         }
     } else {
@@ -1269,7 +1269,7 @@ extern int func_L00_001EFFF0_t(void *, void *, int, void *, void *) __asm__("fun
 /* Picks the best lock-on target for moby from the visible-moby list: a living, drawn class-5 enemy within range whose direction from `from`
  * is inside the yaw/pitch cone (or the wider near cone when close), scored by angle error and distance,
  * with a clear line of sight (or the blocker is the same kind of enemy). */
-void *func_L01_002E4620(void *moby, void *from, void *ang, float yawMax, float pitchMax, float range, float near,
+void *select_sand_mouse_spawn_target(void *moby, void *from, void *ang, float yawMax, float pitchMax, float range, float near,
                         float nearYaw, float nearPitch) {
     float tp[4];
     char *best = 0;
@@ -1339,7 +1339,7 @@ void update_sand_mouse_targeted_spawning(char *moby, char *state) {
     qzero(&v);
     FastVecAdd(&v, &v, moby + 0x10);
     v.f[2] = v.f[2] + (*(float *)&D_L01_001619A4);
-    e = func_L01_002E4620(moby, &v, moby + 0x40,
+    e = select_sand_mouse_spawn_target(moby, &v, moby + 0x40,
                          (*(float *)&D_L01_00161998) * 0.017453292f,
                          (*(float *)&D_L01_0016199C) * 0.017453292f,
                          (*(float *)&D_L01_00161994), 2.0f, 3.1415927f, 3.1415927f);
@@ -1364,7 +1364,7 @@ void update_sand_mouse_targeted_spawning(char *moby, char *state) {
                     c = func_L00_001FF860(q.f[0] - v.f[0], q.f[1] - v.f[1]);
                     dist = func_001F9D48(&v, &q);
                     d = -func_L00_001FF860(dist, q.f[2] - v.f[2]);
-                    Moby1633Spawn(moby, &v, a, b, c, d);
+                    spawn_sandmouse_projectile(moby, &v, a, b, c, d);
                     *(short *)(state + 0x4E) = scale_ticks((*(int *)&D_L01_00161990));
                     *(int *)(state + 0x64) = *(int *)(state + 0x64) + 1;
                 }
@@ -1468,7 +1468,7 @@ void update_hover_moby_steering(M_4BA8 *m, char *p) {
     FastVecAdd(p + 0x10, p + 0x10, v);
     if (m->state == 6)
         func_L00_001FF548(p + 0x10, p + 0x10, D_0015EE6C * 2.7f);
-    hit = MoveMobyScaledStep(m, p + 0x10, D_L01_001DEE08_E4580.count, 0, 1.0f, D_L01_001DEE08_E4580.spread);
+    hit = move_moby_with_collision_integer_radius(m, p + 0x10, D_L01_001DEE08_E4580.count, 0, 1.0f, D_L01_001DEE08_E4580.spread);
     len = FastVecLength(p + 0x10);
     if (hit != 0) {
         if (len < 0.005f) {
@@ -1815,7 +1815,7 @@ void sand_mouse_update(Moby *moby) {
             float f;
             *(u128_E5298 *)vb = 0;
             qcopy(va, ((float *)&moby->pos));
-            JitterVector(va, D_L01_001619C0);
+            add_random_offset_to_vector_xyz(va, D_L01_001619C0);
             cr = (func_001160D8() + 0x30) & 0x3F;
             cg = (func_001160D8() + 0x20) & 0x3F;
             cb = func_001160D8() & 0x2F;
@@ -1946,7 +1946,7 @@ void update_moby_motion_collision_and_burst(char *moby) {
                 hit_descriptor.b19 = 1;
                 hit_descriptor.s1A = *(u16 *)&mb->oclass;
                 hit_descriptor.b18 = 0;
-                PostHitMessageFromRecord(*(void **)(collision_result + 0x18), &hit_descriptor);
+                record_moby_hit(*(void **)(collision_result + 0x18), &hit_descriptor);
             }
             mb->state = 2;
         }
@@ -2011,7 +2011,7 @@ void large_amoeboid_update(unsigned char *moby) {
         func_L00_0025B178(moby);
         moby[0x7f] = 0x16;
     }
-    Amoeboid_HitAndSearch((char *)moby);
+    process_amoeboid_hits_and_update_targeting((char *)moby);
     target = *(char **)(data + 0x200);
     switch (moby[0x20]) {
     case 0:
@@ -2357,7 +2357,7 @@ extern const float D_L01_00161A30_c SDATA(D_L01_00161A30);
 extern const float D_L01_00161A34_c SDATA(D_L01_00161A34);
 extern const float D_0015EE6C_c __asm__("D_0015EE6C") MACRO_ADDR;
 /* Moby update: hit test against a target, hurt/debris on a hit, else path search and bob. */
-void Amoeboid_HitAndSearch(char *m) {
+void process_amoeboid_hits_and_update_targeting(char *m) {
     V_2F0040 v;
     V_2F0040 w;
     int flag;
@@ -2523,7 +2523,7 @@ void Amoeboid_HitAndSearch(char *m) {
     }
     c = *(int *)(d + 0x248);
     if (c >= 0) {
-        cand = FindNearestMoby623(m, c);
+        cand = find_nearest_class_26f_moby_in_list(m, c);
         if (cand != 0) {
             dist = func_001F9D48(m + 0x10, cand + 0x10);
             if (dist < *(float *)(d + 0x228)) {
@@ -2614,7 +2614,7 @@ extern int D_L01_00160058_m __asm__("D_L01_00160058") MACRO_ADDR;
 
 /* Returns the closest moby of type 0x26F with flag 0x1000 set and state below 0x7F, from the id list
  * D_L01_001ABFC0[idx], within a 120.0 limit; 0 if there is none. */
-char *FindNearestMoby623(char *self, int idx) {
+char *find_nearest_class_26f_moby_in_list(char *self, int idx) {
     short *list = (short *)D_L01_001ABFC0[idx];
     float best = 120.0f;
     char *res = 0;
@@ -2770,7 +2770,7 @@ void spawn_amoeboid_burst_sparks(unsigned char *moby, f32 *mode) {
 }
 extern int func_L00_002DCDA8_pt(void *, void *, void *) __asm__("func_L00_002DCDA8");
 
-int Moby_EnterGrabbedState(unsigned char *moby, void *pos, void *target)
+int process_amoeboid_suck_cannon_suction(unsigned char *moby, void *pos, void *target)
 {
     int value = func_L00_002DCDA8_pt(moby, pos, target);
     if (value != 0) {
@@ -2799,14 +2799,14 @@ int Moby_HoldStateIfFound(char *a, void *v, void *t, float h) {
     }
     return r;
 }
-int Moby_ForceHeldState(char *a) {
+int cancel_suck_cannon_suction_and_set_state_14(char *a) {
     int r = cancel_suck_cannon_suction(a);
     a[0x20] = 14;
     return r;
 }
 /* slot 4 of the class tables of large_amoeboid (572) and small_amoeboid (866): the moby's pvars + 0xC0,
    0 when there is no moby or no pvars */
-u8 *GetAmoeboidDataBlock(struct Moby *m) {
+u8 *get_moby_data_plus_0xc0(struct Moby *m) {
     if (m != 0) {
         if (m->pvars != 0) return m->pvars + 0xC0;
         return 0;
@@ -2848,8 +2848,8 @@ extern int func_L00_002DD0E0(char *, int, int, float);
 extern void func_0022ED80(int, int, char *);
 
 /* runs the moby update and sets its state byte */
-int Moby_UpdateGrabState(char *m, int a, int b, float f) {
-    char *h = Moby_GetClassRecord(m);
+int launch_suck_cannon_projectile_and_sync_moby_state(char *m, int a, int b, float f) {
+    char *h = get_moby_suck_cannon_record(m);
     int r = launch_suck_cannon_projectile(m, a, b, f);
     if (r != 0) {
         m[0x20] = 7;

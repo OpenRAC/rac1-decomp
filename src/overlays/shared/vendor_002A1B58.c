@@ -101,7 +101,7 @@ extern short D_L16_001614A8;
 extern short D_L16_001614AC;
 
 /* spawn a moby of class 0x32 thrown along a vector with random spin */
-char *SpawnThrownMoby(char *owner, char *vec, void *pos, void *vel, int c) {
+char *spawn_class_32_moby(char *owner, char *vec, void *pos, void *vel, int c) {
     char *m = (char *)func_0020D348_m(0x32);
     char *d;
     float len, x, t, y;
@@ -351,7 +351,7 @@ animate_idle:
             position = m + 0x10;
             qcopy(movement, position);
             if (mine_fall(m, d + 0x70) & 0x160) {
-                Moby_SpawnHitParticles(m, position);
+                emit_blarg_elite_commando_death_particles(m, position);
                 func_0022ED80_update(0, 0, m);
                 DeleteMoby(m);
                 return;
@@ -475,7 +475,7 @@ void update_blarg_elite_commando_damage_and_pursuit(char *m) {
     }
     response = ComputeHitResponse(m, hit, &d->health, 0, &scratch.status, &scratch.amount, 0, 4);
     if (scratch.status != 1 && ((unsigned char *)m)[0x20] != 9) {
-        Group_RandomizeTimers(m, 0x12C, 0x168);
+        randomize_blarg_elite_commando_group_pursuit_timers(m, 0x12C, 0x168);
         if (hit && *(char **)(hit + 0x20) &&
             *(short *)(*(char **)(hit + 0x20) + 0xA6) != 0x47) {
             d->reward_hits = 0;
@@ -619,7 +619,7 @@ extern void func_L00_001FF4B0(void *, void *, float);
 extern void func_001F9BD8(void *, void *, void *);
 
 /* steers the moby's vector toward the target and returns the distance */
-float SteerTowardTarget(char *moby, float *target) {
+float advance_blarg_elite_commando_base_position(char *moby, float *target) {
     char *data = *(char **)(moby + 0x78);
     char *p = data + 0x2C0;
     float d = FastVecDist(p, target);
@@ -641,7 +641,7 @@ extern int func_001FA898_timer(float) __asm__("func_001FA898");
 typedef struct {char pad00[0x2E0];int timer;} L16GroupTimer;
 typedef struct {char pad00[0x20];signed char state;unsigned char group;char pad22[0x56];L16GroupTimer *data;} L16GroupMoby;
 /* Randomize the timers of active mobys in the selected linked group. */
-void Group_RandomizeTimers(void *arg, int lower, int upper) {
+void randomize_blarg_elite_commando_group_pursuit_timers(void *arg, int lower, int upper) {
     L16GroupMoby *m = arg;
     L16GroupTimer *d;
     short *p;
@@ -692,7 +692,7 @@ extern short D_L16_0015F6B4;
 typedef struct {int values[6];} L16ParticleChoices;
 extern L16ParticleChoices D_L16_001E8600,D_L16_001E8618;
 /* Spawn randomized hit particles at joint two, with extra bursts for distant hits. */
-void Moby_SpawnHitParticles(void *m) {
+void emit_blarg_elite_commando_death_particles(void *m) {
     float delta[4],velocity[4],position[4];
     L16ParticleChoices first,second;
     float distance,range,delay;
@@ -994,7 +994,7 @@ void armed_transport_update(char *m) {
         FastVecSub(rotation.f, d + 0x70, vector.f);
         func_L00_001FF4B0(rotation.f, rotation.f, *(float *)&D_L16_00161E3C * D_0015EE6C);
         func_0022ED80_update(1, 0, m);
-        SpawnThrownMoby(m, (char *)rotation.f, vector.f, d + 0x70, scale_ticks(45));
+        spawn_class_32_moby(m, (char *)rotation.f, vector.f, d + 0x70, scale_ticks(45));
         m[0x20] = 6;
         *(int *)(d + 0x164) = scale_ticks(180);
         break;
