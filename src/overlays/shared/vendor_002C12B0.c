@@ -39,7 +39,7 @@ typedef struct {
     float f28;
 } Cam_C2A80;
 extern Cam_C2A80 D_L00_00173F40_C2A80 __asm__("D_L00_00173F40");
-/* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002bffa8.c, FUN_L00_002c1778. */
+/* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002bffa8.c, FUN_L00_002c1778. */
 void update_trespasser_pickup(void *mv) {
     unsigned char *m = mv;
     unsigned char *P;
@@ -424,7 +424,7 @@ extern int func_L00_00234718(int);
 extern void func_L00_00250800(void *, int, void *);
 
 /* Updates the grip, chooses a throw target, and handles the held moby states.
-   Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002bffa8.c, FUN_L00_002c26c8. */
+   Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002bffa8.c, FUN_L00_002c26c8. */
 void bomb_glove_update(struct Moby *moby) {
     CarrierVars_2c26c8 *vars;
     Vec4 local[4], saved, offset, rotatedOffset, pos, target, basis[3], matrix[4];
@@ -683,7 +683,7 @@ void func_L00_00260878(void *, void *);
 void func_0020D678(void *);
 extern char D_L00_001B0BB0[];
 
-/* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002bffa8.c, FUN_L00_002c3440. */
+/* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002bffa8.c, FUN_L00_002c3440. */
 void destroy_decoy_with_particles(unsigned char *m) {
     float v[4] __attribute__((aligned(16)));
     int i;
@@ -719,7 +719,7 @@ extern void func_L00_00260878(void *, void *);
 extern void func_L00_0025E210(void *);
 extern void func_L00_002607F8(void *, void *, s32);
 
-/* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002bffa8.c, FUN_L00_002c35c0. */
+/* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002bffa8.c, FUN_L00_002c35c0. */
 u8 *spawn_decoy(s32 value, u128_C48C8 *position, u128_C48C8 *other_position) {
     u8 *flags = D_0013E620;
     u8 *m;
@@ -890,7 +890,7 @@ extern void func_001F49B0(void *, void *);
 extern void func_L00_002C44C8_C4E00(void) __asm__("func_L00_002C44C8");
 
 /* Predicts where a thrown moby lands: steps the velocity (with gravity) from its start until collision_line hits ground (or a moby other than the hero and the holder), for up to `timer` steps. Stores the landing point and normal in vars and pulls the point 5% toward D_L00_00166DC0. mode 0 needs a live hit moby; mode 1 starts from the hero's hand. Returns 1 on a hit.
-   Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002bffa8.c, FUN_L00_002c3af8. */
+   Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002bffa8.c, FUN_L00_002c3af8. */
 s32 predict_thrown_moby_landing(ThrowVars *v, struct Moby *m, s32 mode)
 {
     Vec4 d, e, a, q, w;
@@ -1008,7 +1008,7 @@ typedef struct {
     s32 i68;                       /* 0x68 armed flag */
 } O_2c40a0;
 
-/* Steers a moby toward the player's follow distance, easing its height. Adapted from Lombyte (MIT) for PAL: overlays/shared/unclassified_002bffa8.c, FUN_L00_002c40a0. */
+/* Steers a moby toward the player's follow distance, easing its height. Adapted from Lombyte (GPL-3.0) for PAL: overlays/shared/unclassified_002bffa8.c, FUN_L00_002c40a0. */
 void update_decoy_proximity_motion(char *m) {
     O_2c40a0 *moby_vars = (O_2c40a0 *)((struct Moby *)m)->pvars;
     Hero *P = (Hero *)(D_0013E633 + 0xE1D);
@@ -1402,7 +1402,7 @@ extern Rec2 D_L00_001C43B0[];
 extern char *func_0020D348(int);
 extern void func_L00_00251E30(void *);
 
-/* spawns a moby of a class and initialises its data block. Adapted from Lombyte (MIT) for PAL: overlays/shared/unclassified_002bffa8.c, FUN_L00_002c52a8. */
+/* spawns a moby of a class and initialises its data block. Adapted from Lombyte (GPL-3.0) for PAL: overlays/shared/unclassified_002bffa8.c, FUN_L00_002c52a8. */
 char *spawn_on_path(void *pos, int idx, int a2, int a3) {
     char *m = 0;
     int *d;
@@ -1699,7 +1699,7 @@ extern float D_0015EE60 MACRO_ADDR;
 extern int D_L00_00161908 MACRO_ADDR;
 
 /* per-frame step of a counter moby: advances, plays sound and finishes */
-/* Adapted from Lombyte (MIT) for PAL: overlays/shared/unclassified_002bffa8.c, FUN_L00_002c5be8. */
+/* Adapted from Lombyte (GPL-3.0) for PAL: overlays/shared/unclassified_002bffa8.c, FUN_L00_002c5be8. */
 int try_collect_ammo_pickup(char *m) {
     char *p = *(char **)(m + 0x78);
     int a, b, r, d;
@@ -1739,7 +1739,7 @@ extern void func_L00_00250800(void *, int, void *);
 extern void func_001F9CA0(void *, void *, void *);
 extern char D_L00_00166EC0[];
 
-// Draws a streak of quads along the vector from the moby's joint to its target, swelling in the middle. Adapted from Lombyte (MIT) for PAL: overlays/shared/unclassified_002bffa8.c, FUN_L00_002c5dc8.
+// Draws a streak of quads along the vector from the moby's joint to its target, swelling in the middle. Adapted from Lombyte (GPL-3.0) for PAL: overlays/shared/unclassified_002bffa8.c, FUN_L00_002c5dc8.
 void draw_swingshot_cable(char *m) {
         char *d;
     Quad quad;
@@ -2086,7 +2086,7 @@ extern void func_L00_00250800_2c82e8(unsigned char *, int, void *) __asm__("func
 extern int func_001F9850_2c82e8(int) __asm__("func_001F9850") ;
 extern void func_00213DE0_2c82e8(unsigned char *, int, int, int) __asm__("func_00213DE0") ;
 extern void func_L00_00251E30_2c82e8(unsigned char *) __asm__("func_L00_00251E30") ;
-/* Spawns the type-0xD1 moby for an owner: links the owner and a float into its data, copies three quadwords of the owner's transform and finalizes it. Adapted from Lombyte (MIT) for PAL: overlays/shared/unclassified_002bffa8.c, FUN_L00_002c6f88. */
+/* Spawns the type-0xD1 moby for an owner: links the owner and a float into its data, copies three quadwords of the owner's transform and finalizes it. Adapted from Lombyte (GPL-3.0) for PAL: overlays/shared/unclassified_002bffa8.c, FUN_L00_002c6f88. */
 unsigned char *spawn_swingshot_hook(unsigned char *src, float f) {
     unsigned char *m = func_0020D348_2c82e8(0xd1);
     if (m) {
@@ -2192,7 +2192,7 @@ void swingshot_hook_update(unsigned char *m) {
 typedef struct { float x, y, z, w; } Vq __attribute__((aligned(16)));
 
 /* Aims a point near p toward q (at most range away), then fills out with a heading vector of length 8.5 * D_0015EE6C and a clamped height.
-   Adapted from Lombyte (MIT) for PAL: src/overlays/shared/unclassified_002bffa8.c, FUN_L00_002c7320. */
+   Adapted from Lombyte (GPL-3.0) for PAL: src/overlays/shared/unclassified_002bffa8.c, FUN_L00_002c7320. */
 void ComputeFollowHeading(float *pos, float *tgt, float *out, float speed, float unused, float range) {
     Vq t;
     Vq u;
@@ -2394,7 +2394,7 @@ extern void func_L00_002C96D0_2C8DB8(Vec4 *, u8 *, void *) __asm__("func_L00_002
 
 /* Carrier: keeps its grip point in front of it, hands the held moby over when the hero asks, and
  * picks a new one up when func_L00_00234718 allows.
- * Adapted from Lombyte (MIT) for PAL: overlays/shared/gameplay/entities/002bffa8.c, FUN_L00_002c7a58. */
+ * Adapted from Lombyte (GPL-3.0) for PAL: overlays/shared/gameplay/entities/002bffa8.c, FUN_L00_002c7a58. */
 void glove_of_doom_update(struct Moby *moby) {
     Vec4 pos;
     Vec4 offset;

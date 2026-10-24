@@ -19,7 +19,7 @@ extern void func_001F9EC0(void *, void *, void *);
 extern void func_001F9BD8(void *, void *, void *);
 extern int func_001FA898_r(float) __asm__("func_001FA898");
 
-/* Update a trailing moby: advance its timer, delete it when done or its owner died, else follow the owner. Adapted from Lombyte (MIT) for PAL: overlays/shared/unclassified_002d7f88.c, FUN_L00_002d7f88. */
+/* Update a trailing moby: advance its timer, delete it when done or its owner died, else follow the owner. Adapted from Lombyte (GPL-3.0) for PAL: overlays/shared/unclassified_002d7f88.c, FUN_L00_002d7f88. */
 void update_linked_moby_transform_and_lifetime(char *self) {
     D_002d7f88 *moby_data = (D_002d7f88 *)((Moby *)self)->pvars;
     Moby *o;
@@ -209,7 +209,7 @@ f32 func_001F9B88(f32);
 s32 func_001FA8A8(s32, s32, f32);
 u8 *func_L00_00273E08(void *, s32, u8, s32, s32, s32, s32, f32);
 
-/* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002d7f88.c, FUN_L00_002d8510. */
+/* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002d7f88.c, FUN_L00_002d8510. */
 s32 func_L00_002D99C0(M_2d8510 *m) {
     O_2d8510 *o;
     V_2d8510 a, b;
@@ -1053,7 +1053,7 @@ extern int func_L00_002DB508(u8 *, void *, void *, void *, void *);
 extern void func_L00_002DB690_DB810(M_da360 *) __asm__("func_L00_002DB690");
 extern void func_L00_002E0690_DB810(M_da360 *) __asm__("func_L00_002E0690");
 
-/* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002d7f88.c, FUN_L00_002da360. */
+/* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002d7f88.c, FUN_L00_002da360. */
 void update_suck_cannon_suction(u8 *p, void *q)
 {
     u8 buf[0x10] __attribute__((aligned(16)));
@@ -1107,7 +1107,7 @@ extern H_002da660 D_0013E620_002da660 __asm__("D_0013E620") __attribute__((secti
 extern char D_L00_001EA368_002da660[] __asm__("D_L00_001EA368") __attribute__((section(".data")));
 u8 *func_L00_002DCD40_002da660(u8 *) __asm__("func_L00_002DCD40");
 void func_001E9730_002da660(void *, s32, s32) __asm__("func_001E9730");
-/* Update. Adapted from Lombyte (MIT) for PAL: overlays/shared/unclassified_002d7f88.c, FUN_L00_002da660. */
+/* Update. Adapted from Lombyte (GPL-3.0) for PAL: overlays/shared/unclassified_002d7f88.c, FUN_L00_002da660. */
 void refresh_suck_cannon_slots(void) {
     s32 i;
     D_0013F450_002da660.i207C = 0;
@@ -1569,7 +1569,7 @@ done:
         if(input40.held&5) input40.used |=5;
     }
 }
-/* From Lombyte (MIT), FUN_L00_002db890 (PR #66), adapted to PAL. */
+/* From Lombyte (GPL-3.0), FUN_L00_002db890 (PR #66), adapted to PAL. */
 typedef int (*Fn2DCD40)(void *);
 typedef struct { char pad[0x10]; Fn2DCD40 f10; } Cb2DCD40;
 typedef struct { char pad[0x2C]; Cb2DCD40 *f2C; } Sub2DCD40;
@@ -1591,7 +1591,7 @@ s32 func_001F9850(s32);
 void func_00213DE0(void *, s32, s32, s32);
 f32 func_001F9D48(void *, void *);
 
-/* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002d7f88.c, FUN_L00_002db8f8. */
+/* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002d7f88.c, FUN_L00_002db8f8. */
 s32 process_moby_suck_cannon_suction(u8 *moby, u8 *position, u8 *target) {
     u8 *record = func_L00_002DCD40_DCDA8(moby);
     s16 state;
@@ -1669,7 +1669,7 @@ extern void func_L00_002584A8(void *, int, int);
 extern int func_001F9850(int);
 extern void func_00213DE0(void *, int, int, int);
 
-/* Place a moby at the given position under its owner, reset its owner's state to 4 and start the matching animation. Adapted from Lombyte (MIT) for PAL: overlays/shared/unclassified_002d7f88.c, FUN_L00_002dbb20. */
+/* Place a moby at the given position under its owner, reset its owner's state to 4 and start the matching animation. Adapted from Lombyte (GPL-3.0) for PAL: overlays/shared/unclassified_002d7f88.c, FUN_L00_002dbb20. */
 int store_moby_in_suck_cannon(unsigned char *m, void *v) {
     unsigned char *o = (unsigned char *)get_moby_suck_cannon_record((char *)m);
     int g;
@@ -1745,7 +1745,7 @@ int launch_suck_cannon_projectile(char *m, float *pos, char *other, float f) {
     }
     return 0;
 }
-/* Frees a moby's state slot and returns 1 when it is in state 4. Adapted from Lombyte (MIT) for PAL: overlays/shared/unclassified_002d7f88.c, FUN_L00_002dbe20. */
+/* Frees a moby's state slot and returns 1 when it is in state 4. Adapted from Lombyte (GPL-3.0) for PAL: overlays/shared/unclassified_002d7f88.c, FUN_L00_002dbe20. */
 int cancel_suck_cannon_suction(char *m) {
     char *s = get_moby_suck_cannon_record(m);
     int st;
@@ -2606,7 +2606,7 @@ int func_L00_0025A208(void *, s32, s32, s32);
 int func_L00_0025A2F0(void *, s32, s32, s32);
 void func_L00_00264690(void *, void *, f32, f32);
 
-/* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002d7f88.c, FUN_L00_002df3d8. */
+/* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002d7f88.c, FUN_L00_002df3d8. */
 void GroupMoby_DrawBillboards(u8 *p) {
     u8 *it[2] __attribute__((aligned(16)));
     f32 s = 1.2f;
@@ -2632,7 +2632,7 @@ typedef void (*CB09)(M09 *);
 void func_L00_002E0888_E0958(M09 *) __asm__("func_L00_002E0888");
 void func_001F49B0_E0958(CB09, M09 *) __asm__("func_001F49B0");
 
-/* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002d7f88.c, FUN_L00_002df4a8. */
+/* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002d7f88.c, FUN_L00_002df4a8. */
 void enqueue_red_orb_group_draw_if_cache_changed(M09 *m) {
     u8 b;
     s32 v;
