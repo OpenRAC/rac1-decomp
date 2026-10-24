@@ -21,7 +21,8 @@ Lombyte's FUN_LNN_xxxxxxxx against every function
 config/overlays/functions.tsv places in level NN (its shared code is
 named after level 00, as ours is). Each pair records how it was found
 ("us_map" or "sizes"). It lives in build-sn/lombyte_ntsc_pal_map.json.
-Lombyte is looked for in $LOMBYTE, else ~/Projects/Lombyte.
+Lombyte is looked for in $LOMBYTE, else ~/Projects/Lombyte, else the
+pinned checkout tools/ntsc_source.py fetches (python3 tools/ntsc_source.py fetch).
 """
 from __future__ import annotations
 import difflib
@@ -33,7 +34,14 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-LOMBYTE = Path(os.environ.get("LOMBYTE", Path.home() / "Projects/Lombyte"))
+def _default_lombyte() -> Path:
+    if (Path.home() / "Projects/Lombyte").is_dir():
+        return Path.home() / "Projects/Lombyte"
+    import ntsc_source
+    return ntsc_source.cache_root() / ntsc_source.pin()[1]
+
+
+LOMBYTE = Path(os.environ["LOMBYTE"]) if os.environ.get("LOMBYTE") else _default_lombyte()
 MAP = ROOT / "build-sn/lombyte_ntsc_pal_map.json"
 US_MAP = ROOT / "config/overlays/us_map.tsv"
 US_EXE_DELTA = 0xFF080      # SCUS-97199: vram - file offset of its one loaded segment

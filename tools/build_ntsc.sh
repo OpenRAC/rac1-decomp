@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
 # Build and verify the NTSC-U version from the NTSC decomp's own sources.
 #
-# The NTSC decomp (Lombyte's project) is a git submodule at versions/ntsc.
-# This script only drives the submodule's own entry points:
+# The NTSC decomp (Lombyte's project) is read at its pinned commit from a
+# cache outside this repository (tools/ntsc_source.py path; below $NTSC_DIR).
+# This script only drives its own entry points:
 #
-#   1. versions/ntsc/setup.sh --elf ... [--iso ...]
-#        downloads and hash-checks its pinned toolchains into versions/ntsc/tools/,
-#        builds its game compiler from source, creates versions/ntsc/.venv,
-#        copies the boot ELF into versions/ntsc/config/us/SCUS_971.99, runs
+#   1. $NTSC_DIR/setup.sh --elf ... [--iso ...]
+#        downloads and hash-checks its pinned toolchains into $NTSC_DIR/tools/,
+#        builds its game compiler from source, creates $NTSC_DIR/.venv,
+#        copies the boot ELF into $NTSC_DIR/config/us/SCUS_971.99, runs
 #        `make elf` (verify-baseline.sh: "PASS: reconstructed boot ELF matches
 #        retail") and, given a disc image, extracts the level overlays
 #        (scripts/overlay-extract.py, about 10 minutes the first time).
@@ -18,8 +19,8 @@
 #
 #   tools/build_ntsc.sh              setup + boot ELF + overlays (if a disc image is found)
 #   tools/build_ntsc.sh --elf-only   setup + boot ELF only
-#   tools/build_ntsc.sh --progress   also write the submodule's progress report
-#   tools/build_ntsc.sh --check      the submodule's ./setup.sh --check, nothing built
+#   tools/build_ntsc.sh --progress   also write the NTSC decomp's progress report
+#   tools/build_ntsc.sh --check      the NTSC decomp's ./setup.sh --check, nothing built
 #
 # Inputs (never committed; first one found wins):
 #   NTSC_ELF   boot ELF          default baserom/us/SCUS_971.99
@@ -28,8 +29,9 @@
 #              when NTSC_ELF is missing)
 #
 # Environment:
-#   NTSC_DIR         the NTSC decomp checkout (default: versions/ntsc)
-#   NTSC_WINE_SHIM   1 (the default): the submodule's configure.py runs its SN
+#   NTSC_DIR         the NTSC decomp checkout (default: `tools/ntsc_source.py path`,
+#                    the pinned commit in ~/.cache/rac1-decomp/ntsc/<commit>)
+#   NTSC_WINE_SHIM   1 (the default): the NTSC decomp's configure.py runs its SN
 #                    tools (Ps2EeAs.exe, ee-gcc.exe) as `wine ...` from PATH (it
 #                    has no RNC_WINE override any more), so the script writes a
 #                    `wine` shim into $NTSC_DIR/tools/hostbin (gitignored) and puts
@@ -55,8 +57,8 @@
 #                    l03/gameplay/entities/metropolis_train_locomotive.c at 4e1f255e)
 #                    when its own path is about 80 characters or longer, whatever
 #                    its stack size. The NTSC decomp installs it at
-#                    tools/compilers/sn-compiler/ee/bin/, which inside this
-#                    checkout's submodule is about 89 characters on a typical host.
+#                    tools/compilers/sn-compiler/ee/bin/, which inside the
+#                    cache is about 120 characters on a typical host.
 #   NTSC_PS2EEAS_STACK_MB  stack reservation of that copy (default 256; 0 keeps the
 #                    installed 64 MiB). Only the PE header's SizeOfStackReserve
 #                    differs; the objects are identical.
@@ -66,14 +68,16 @@
 #
 # Host requirements (setup.sh checks them): x86-64 Linux, glibc >= 2.38,
 # Python >= 3.10, curl git make tar xz gcc (with -m32 support) flex, and
-# Wine with 32-bit support. `ninja` comes from the submodule's .venv; when
+# Wine with 32-bit support. `ninja` comes from the NTSC decomp's .venv; when
 # it is not on PATH a shim is put in tools/hostbin for setup.sh's check.
 # setup.sh installs missing packages with sudo only on Debian/Ubuntu; on
 # other distributions it just warns, so install them yourself there.
 set -Eeuo pipefail
 
 REPO=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)
-NTSC_DIR=${NTSC_DIR:-$REPO/versions/ntsc}
+if [[ -z "${NTSC_DIR:-}" ]]; then
+    NTSC_DIR=$(cd "$REPO" && python3 tools/ntsc_source.py path) || { echo "build_ntsc: tools/ntsc_source.py path failed" >&2; exit 1; }
+fi
 case "$NTSC_DIR" in /*) ;; *) NTSC_DIR=$REPO/$NTSC_DIR ;; esac
 
 MODE=all
@@ -91,7 +95,7 @@ done
 die() { printf 'build_ntsc: %s\n' "$*" >&2; exit 1; }
 say() { printf '\033[1m== %s\033[0m\n' "$*"; }
 
-[[ -x "$NTSC_DIR/setup.sh" ]] || die "no NTSC decomp at $NTSC_DIR (run: git submodule update --init versions/ntsc)"
+[[ -x "$NTSC_DIR/setup.sh" ]] || die "no NTSC decomp at $NTSC_DIR (see tools/ntsc_source.py)"
 
 pick() { local f; for f in "$@"; do [[ -n "$f" && -f "$f" ]] && { printf '%s\n' "$f"; return; }; done; return 0; }
 ELF=$(pick "${NTSC_ELF:-}" "$REPO/baserom/us/SCUS_971.99")
@@ -100,7 +104,7 @@ ISO=$(pick "${NTSC_ISO:-}" "$REPO/baserom/SCUS_971.99.iso" "$REPO/baserom/us/SCU
 [[ -n "${NTSC_ISO:-}" && -z "$ISO" ]] && die "NTSC_ISO=$NTSC_ISO does not exist"
 
 # ------------------------------------------------------------ host shims
-HOSTBIN="$NTSC_DIR/tools/hostbin"   # tools/* is gitignored in the submodule
+HOSTBIN="$NTSC_DIR/tools/hostbin"   # tools/* is gitignored in the NTSC decomp
 
 if [[ "${NTSC_WINE_SHIM:-1}" != 0 ]]; then
     if [[ -n "${NTSC_WINE_ROOT:-}" ]]; then
@@ -204,7 +208,7 @@ if ! command -v ninja >/dev/null 2>&1; then
     mkdir -p "$HOSTBIN"
     cat > "$HOSTBIN/ninja" <<EOF
 #!/usr/bin/env bash
-# Generated by rac1-decomp tools/build_ntsc.sh: ninja from the submodule's .venv.
+# Generated by rac1-decomp tools/build_ntsc.sh: ninja from the NTSC decomp's .venv.
 exec '$NTSC_DIR/.venv/bin/ninja' "\$@"
 EOF
     chmod 0755 "$HOSTBIN/ninja"
@@ -222,7 +226,7 @@ fi
 # --------------------------------------------------------------- game compiler
 # setup.sh builds it with --jobs = all CPUs, and GCC 2.9's Makefile races at
 # high -j (flow.c before insn-flags.h exists, seen at -j32). Build it first
-# with the submodule's own script at a safe job count when setup.sh would
+# with the NTSC decomp's own script at a safe job count when setup.sh would
 # rebuild it (missing, or built from an older patch stack: provenance.json).
 # setup.sh's own check misses a patch added since the build (0064 at 6abcf077), so
 # this one also rebuilds then, before setup.sh would take the old compiler as current.
