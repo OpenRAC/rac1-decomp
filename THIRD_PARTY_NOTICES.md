@@ -861,9 +861,10 @@ hero fields, the pad button bits and the function names in their comments. `incl
 `include/rnc/gameplay/hero_state.h`, `include/rnc/gameplay/entities/moby_class_id.h` and
 `include/rnc/gameplay/camera/camera_modes.h` at 4e1f255e.
 
-Names from the NTSC decomp (Lombyte's project, the submodule `versions/ntsc`, GPL-3.0 since its commit
-a1379f57): `tools/names.py ntsc` reads the function and data names its C binds to US addresses, and its
-source file for each function, from the pinned commit at every `tools/sync_ntsc.sh`, and places them on
+Names from the NTSC decomp (Lombyte's project, by Mateusz Kłysz, GPL-3.0 since its commit a1379f57):
+`tools/names.py ntsc` reads the function and data names its C binds to US addresses, and its source
+file for each function, from the commit pinned in `config/versions/us/ntsc_decomp.txt` (fetched by
+`tools/ntsc_source.py`, never copied into this repository) at every `tools/ntsc_source.py follow`, and places them on
 this project's PAL symbols. They are listed in `config/names_ntsc.tsv` (first imported at 4e1f255e:
 1,458 names adopted in `config/names.tsv` and `include/names.h`) and `config/modules.tsv`. Only the
 names and paths are taken, no code (docs/NAMES.md).
