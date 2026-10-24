@@ -13,7 +13,7 @@ extern int *D_L12_00161240 MACRO_ADDR;
 extern char D_L12_001CBA20[];
 
 /* draw a list of effect entries into the scratchpad */
-void Effect_DrawEntryList(void *list_, int count, int tex0, int tex1) {
+void draw_textured_effect_list(void *list_, int count, int tex0, int tex1) {
     char *list = list_;
     int i;
     int *sp;
@@ -77,7 +77,7 @@ extern char D_L12_001F5740[];
 
 /* calls func_L12_002BD3D0 with two looked-up ids */
 void draw_level_12_effects(void) {
-    Effect_DrawEntryList(D_L12_001F5740, 0x2F, GetEffectTex(0x2C), GetEffectTex(0x2D));
+    draw_textured_effect_list(D_L12_001F5740, 0x2F, GetEffectTex(0x2C), GetEffectTex(0x2D));
 }
 typedef int u128_8670 __attribute__((mode(TI)));
 extern char *func_0020D348(int);

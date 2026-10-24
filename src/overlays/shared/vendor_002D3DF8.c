@@ -88,7 +88,7 @@ void scoutbot_update(Moby *moby) {
         wake_3DF8(moby);
         moby->shadow_range = 0x16;
     }
-    PathEnemyHitUpdate((char *)moby);
+    update_scoutbot_health_and_target((char *)moby);
     d->f218 = d->f1B0;
     qcopy(tgt, d->v170);
     switch (moby->state) {
@@ -266,7 +266,7 @@ void scoutbot_update(Moby *moby) {
         delete_3DF8(moby);
         return;
     }
-    SteerAlongPath((char *)moby);
+    update_scoutbot_movement((char *)moby);
     if (moby->state != 5 && (signed char)moby->state >= 0) {
         int col = 0x7F20FF20;
 
@@ -288,7 +288,7 @@ extern float func_001F9D48(void *, void *);
 extern float func_001F9B88(float);
 
 /* Takes hits (dying at 0 health), then follows the moby's path and gives up on it when too far off. */
-void PathEnemyHitUpdate(char *m) {
+void update_scoutbot_health_and_target(char *m) {
     char *d = *(char **)(m + 0x78);
     int hit;
     float dmg;
@@ -475,7 +475,7 @@ extern int func_L00_001F39B0(void *, int, int, void *, int);
 extern float D_L08_001746F0[];
 
 /* Steers a moby along its path state and lifts it clear of the ground. */
-void SteerAlongPath(char *m) {
+void update_scoutbot_movement(char *m) {
     char *s = *(char **)(m + 0x78);
     float f = FastVecLength((float *)(s + 0x40)) - D_0015EE70 * 6.0f;
     float lim = D_0015EE6C * 3.0f;
@@ -556,7 +556,7 @@ void func_001F9EE8(void *, void *, void *);
 void func_L00_001FD1D8(void *, s32, s32);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002937a0.c, FUN_L08_002d4108. */
-void DrawFacingQuad(char *arg) {
+void draw_scoutbot_glow_quad(char *arg) {
     char *data = *(char **)(arg + 0x78);
     Pk_002d4108 pk;
     float up[4];
@@ -1634,7 +1634,7 @@ extern float func_001F9CE8(void *);
 extern void func_L00_00251E30(void *);
 
 // Create a moby (class 0x50C) at pos with an orientation vector, and two ints and an angle arg stored in its data.
-char *Moby1292Spawn(char *pos, char *dir, int a2, int a3, int a4, int a5) {
+char *spawn_paratrooper_projectile(char *pos, char *dir, int a2, int a3, int a4, int a5) {
     char *m = CreateMoby(0x50C);
     if (m != 0) {
         char *d;
@@ -1723,7 +1723,7 @@ extern short D_L08_001623DC;
 extern short D_L08_001623E0;
 
 // sets up the level's scroll/tilt parameters
-void func_L08_00309050(int arg) {
+void randomize_ground_particle_scatter_parameters(int arg) {
     float a, b, c, d;
     float v[2];
     float t;
@@ -2006,7 +2006,7 @@ void spawn_moby_radial_particles(char *moby) {
                 o[1] = D_L08_001623F4 + random_float_between(-r, r);
                 o[2] = -(random_float_between(*(float *)(d + 0x18), *(float *)(d + 0x1C)) * D_0015EE6C);
                 o[3] = 0.0f;
-                SpawnKindParticle(v, *(void **)d, o, *(float *)(moby + 0x18) - *(float *)(d + 0x20));
+                spawn_span_particle(v, *(void **)d, o, *(float *)(moby + 0x18) - *(float *)(d + 0x20));
             }
         }
     }

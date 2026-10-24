@@ -40,7 +40,7 @@ extern char D_0013F450[];
 extern u8 * D_L00_00160098_E1790 __asm__("D_L00_00160098") MACRO_ADDR;
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/vendor/002df730.c, FUN_L00_002e02e0. */
-s32 func_L00_002E1790(void) {
+s32 test_hydrodisplacer_activation_flag(void) {
     char *base;
     u8 *tbl;
     s32 v;
@@ -68,7 +68,7 @@ extern void func_L00_002EC0C8(int);
 extern void func_L00_00222B80(int, int);
 /* Level camera hook for moby A: when the moby's state is 4, clears D_L00_0015F504 and the fade level and runs camera
    script 3; then, if the hero's control mode is 0x13, puts the hero back into move state 0. */
-void func_L00_002E17F0(char *a) {
+void end_hydrodisplacer_interaction(char *a) {
     if (*(unsigned char *)(a + 0x20) == 4) {
         D_L00_0015F504 = 0;
         *(int *)&gFadeLvl = 0;
@@ -124,7 +124,7 @@ void pilots_helmet_update(M_2e03a0_2e03a0 *m) {
     m->ang = FastAddRots(m->ang, D_0015EE6C * 1.5707964f);
     switch (m->state) {
     case 0:
-        DriftingSprites_Init(m);
+        initialize_moby_particle_effect(m);
         if (p->fa_2e03a0 == -1) STUB_printf(D_L00_001EA530, m->h);
         if (D_0013D5C8[7]) {
             STUB_printf(D_L00_001EA558);
@@ -152,7 +152,7 @@ void pilots_helmet_update(M_2e03a0_2e03a0 *m) {
         STUB_printf(D_L00_00161C90);
         ShowBanner(0x232A, -1);
         D_L00_0015F720 = 0xB4;
-        GiveItem(7, 1);
+        grant_inventory_item(7, 1);
         if (D_00141C08[0] == 0) Help_Request(0x2328, 0x34);
         if (p->b != -1) {
             D_L00_001BA960.arr[(*(E_2e03a0_2e03a0 * *)&D_L00_00160098)[p->b].h] = (*(E_2e03a0_2e03a0 * *)&D_L00_00160098)[p->b].b0 + 2;
@@ -275,11 +275,11 @@ int EffectSlot_Free(int id) {
             D_L00_00161CC8[i] = 0;
             D_L00_00161D58[i] = 0;
             if (D_L00_00161D08[i] != -1) {
-                light_off_67e8(D_L00_00161D08[i]);
+                release_point_light_slot(D_L00_00161D08[i]);
                 D_L00_00161D08[i] = -1;
             }
             if (D_L00_00161D18[i] != -1) {
-                light_off_67e8(D_L00_00161D18[i]);
+                release_point_light_slot(D_L00_00161D18[i]);
                 D_L00_00161D18[i] = -1;
             }
             return 1;
@@ -298,11 +298,11 @@ void release_beam_slot(int i) {
     D_L00_00161CC8[i] = 0;
     D_L00_00161D58[i] = 0;
     if (v != -1) {
-        light_off_67e8(v);
+        release_point_light_slot(v);
         D_L00_00161D08[i] = -1;
     }
     if (D_L00_00161D18[i] != -1) {
-        light_off_67e8(D_L00_00161D18[i]);
+        release_point_light_slot(D_L00_00161D18[i]);
         D_L00_00161D18[i] = -1;
     }
 }
@@ -958,7 +958,7 @@ void robot_arm_update(char *m) {
         func_001F9EC0(a20, d + 0x20, m + 0xC0);
         FastVecAdd(a20, a20, m + 0x10);
         if (*(int *)(d + 0x34) & 2) {
-            SpawnExplosionFxSwapped(m, a20, -1, *(float *)(d + 0x2C) * 0.5f, 0.0f);
+            spawn_color_swapped_explosion_burst(m, a20, -1, *(float *)(d + 0x2C) * 0.5f, 0.0f);
         } else {
             float h = *(float *)(d + 0x2C) * 0.5f;
             func_L00_0025F4A8(m, D_L00_0015F660, a20, 0.0f, 0.0f, 5, *(float *)(d + 0x2C), 3, h, 9.0f, 5, h, -1, 0.0f, 0, 0, -1, 0);
@@ -1018,7 +1018,7 @@ extern int D_L00_001601B4 MACRO_ADDR;
 extern char D_L00_00173F70[];
 
 /* Computes two adjusted points from a moby's lookup entry and its direction vector; returns 1 on success. Adapted from Lombyte (MIT) for PAL: overlays/shared/gameplay_vendor_002df730.c, FUN_L00_002e4180. */
-int func_L00_002E5630(VQ *p, float r) {
+int compute_follow_camera_radial_collision_positions(VQ *p, float r) {
     VQ a;
     VQ d;
     char *e;
@@ -1045,11 +1045,11 @@ int func_L00_002E5630(VQ *p, float r) {
 }
 typedef struct { float f[4]; } __attribute__((aligned(16))) VS;
 extern int func_L00_001EE530(VS *, float);
-/* True when point A lies inside a camera volume of the level's volume grid (FindVolumeInGrid with no margin). */
-int Cam_IsInsideVolume(VS *a) {
+/* True when point A lies inside a camera volume of the level's volume grid (find_camera_collision_volume_for_point with no margin). */
+int test_follow_camera_point_in_collision_volume(VS *a) {
     VS v;
     v = *a;
-    return FindVolumeInGrid(&v, 0.0f) != 0;
+    return find_camera_collision_volume_for_point(&v, 0.0f) != 0;
 }
 typedef float VQ_2E5770[4] __attribute__((aligned(16)));
 extern char D_L00_00166F10[];
@@ -1138,7 +1138,7 @@ extern float func_001F9FC0(float);
 extern char D_L00_00166F10[];
 
 /* angle between a direction and an axis, signed */
-float Cam_SignedAngleToAxis(char *a, float f) {
+float compute_follow_camera_signed_target_angle(char *a, float f) {
     float v0[4], v1[4], v2[4], v3[4];
     float r, len;
     char *g = camera_view;
@@ -1211,7 +1211,7 @@ extern void func_001F9BD8(void *, void *, void *);
 extern float func_001F9C78(void *, void *);
 /* OUT = the axis at D_L00_00166F40 scaled by the component along it of (hero position + F * the camera up axis
    D_L00_00166F30): the hero's height-offset point projected onto that axis. */
-void Cam_ProjectOntoAxis(void *out, float f) {
+void compute_follow_camera_offset_target_up_projection(void *out, float f) {
     Vq t0, t1;
     char *b = (char *)&D_L00_00166F00 + 0x10;
     FastVecScale(&t0, b + 0x20, f);
@@ -1284,7 +1284,7 @@ void follow_cam_update_mode(char *m) {
                 e->hit = 0;
                 x = *(float *)&D_L00_00161E28;
                 e->invTimer = inv;
-                Cam_ProjectOntoAxis(e->v30, x);
+                compute_follow_camera_offset_target_up_projection(e->v30, x);
                 qcopy(e->v20, e->v10);
             } else {
                 char *p2 = D_0013E633 + 0xE1D;
@@ -1306,7 +1306,7 @@ void follow_cam_update_mode(char *m) {
                         e->hit = 0;
                         x = *(float *)&D_L00_00161E18;
                         e->invTimer = inv;
-                        Cam_ProjectOntoAxis(e->v30, x);
+                        compute_follow_camera_offset_target_up_projection(e->v30, x);
                         qcopy(e->v20, e->v10);
                     } else {
                         char *p4 = D_0013E633 + 0xE1D;
@@ -1321,7 +1321,7 @@ void follow_cam_update_mode(char *m) {
                             e->hit = 0;
                             x = *(float *)&D_L00_00161E38;
                             e->invTimer = inv;
-                            Cam_ProjectOntoAxis(e->v30, x);
+                            compute_follow_camera_offset_target_up_projection(e->v30, x);
                             qcopy(e->v20, e->v10);
                         } else {
                             char *p5 = D_0013E633 + 0xE1D;
@@ -1351,7 +1351,7 @@ void follow_cam_update_mode(char *m) {
         e->invTimer = 1.0f;
         e->dist = y;
         e->invMove = r;
-        Cam_ProjectOntoAxis(e->v30, x);
+        compute_follow_camera_offset_target_up_projection(e->v30, x);
         qcopy(e->v20, e->v10);
         return;
     }
@@ -1374,7 +1374,7 @@ void follow_cam_update_mode(char *m) {
             e->hit = 0;
             x = *(float *)&D_L00_00161E18;
             e->invTimer = inv;
-            Cam_ProjectOntoAxis(e->v30, x);
+            compute_follow_camera_offset_target_up_projection(e->v30, x);
             qcopy(e->v20, e->v10);
             return;
         }
@@ -1411,7 +1411,7 @@ void follow_cam_update_mode(char *m) {
         e->hit = 0;
         x = *(float *)&D_L00_00161E18;
         e->invTimer = inv;
-        Cam_ProjectOntoAxis(e->v30, x);
+        compute_follow_camera_offset_target_up_projection(e->v30, x);
         qcopy(e->v20, e->v10);
         return;
     }
@@ -1535,7 +1535,7 @@ void follow_cam_focus_velocity(char *m, float *v2) {
         padb = D_0013E633 + 0xE1D;
         if (*(int *)(padb + 0x2084) == 0x11 ||
             (*(short *)(padb + 0x41E) != 0 && *(float *)(padb + 0x2DC) > 0.2f &&
-             ((y = Cam_SignedAngleToAxis(m, *(float *)(e + 0xB0))) < *(float *)&D_L00_00161DE0 ||
+             ((y = compute_follow_camera_signed_target_angle(m, *(float *)(e + 0xB0))) < *(float *)&D_L00_00161DE0 ||
               *(float *)&D_L00_00161DDC < y))) {
             int v;
             *(unsigned char *)(e + 0xC4) = 1;
@@ -2012,7 +2012,7 @@ void follow_camera_apply_overrides(O_y *o) {
         v[0] = FastCos(f);
         v[1] = FastSin(f);
         v[2] = 0.0f;
-        func_L00_002E9DC8(v, 0.20943952f, v[2]);
+        set_follow_camera_angle_blend_from_direction(v, 0.20943952f, v[2]);
         follow_camera_start_slide();
     }
     if (hero74.state.control_mode == 0x11) {
@@ -2150,7 +2150,7 @@ extern void func_001F9EC0(void *, void *, void *);
 extern float func_001F9D48(void *, void *);
 extern void func_001F9CA0(void *, void *, void *);
 // camera type 0 snap: puts the camera behind the hero, pulls it in along the line of sight, then builds its axes
-void CamType0InitSnap(int snap) {
+void rebuild_follow_camera_pose(int snap) {
     char *cams = player_camera;
     char *cam = *(char **)(cams + 0x180);
     char *track = cams + 0x190; /* the followed hero: position at 0, up vector at 0x30 */
@@ -2258,7 +2258,7 @@ extern void func_001F9BF0_E80A8(void *, void *, void *) __asm__("func_001F9BF0")
 
 /* Resets the camera rig state from the moby position when idle.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/vendor/002e5e38.c, FUN_L00_002e6bf8. */
-void Cam_ResetRigFromMoby(char *m) {
+void reset_follow_camera_state_from_position(char *m) {
     float dn[4];
     float t[4];
     char *d;
@@ -2603,7 +2603,7 @@ short func_001F9850_E85E8(int) __asm__("func_001F9850");
 void func_001F9C30(void *, void *, float);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_002df730.c, FUN_L00_002e7138. */
-int func_L00_002E85E8(unsigned char *m, void *b, int c, int d)
+int update_follow_camera_orbit_after_collision(unsigned char *m, void *b, int c, int d)
 {
     unsigned char *q = *(unsigned char **)(m + 0x70);
     unsigned char *A = q + 0x130;
@@ -2846,7 +2846,7 @@ extern float func_001F9C78(void *a, void *b);
 
 /* Only for arg1==1: true when arg2 is past the edge plane
    (D_L00_00173F60 - arg2) . (arg0->+0x70 + 0x130) < 0. */
-int Cam_IsPastEdgePlane(void *arg0, int arg1, float *arg2) {
+int reject_follow_camera_first_step_backward_hit(void *arg0, int arg1, float *arg2) {
     V diff;
     char *ptr2;
 
@@ -2889,7 +2889,7 @@ int Cam_ResolveWallCollision(char *m) {
     func_L00_001FF4B0(x, v0, 1.0f);
     i = 0;
     while (i < func_001FA898_r(*(float *)(s18 + 0x40) - 1.0f)) {
-        if (i > 0 && Cam_IsInsideVolume((VS *)v1) == 0) {
+        if (i > 0 && test_follow_camera_point_in_collision_volume((VS *)v1) == 0) {
             char *base = D_0013E633 + 0xE1D;
             if (func_L00_001F10E0_b(v1, gCamSphereMaskLvl, *(void **)(base + 0x2080), f20) != 0 &&
                 func_L00_002E8E78_f(m, i, v1, f20) == 0) {
@@ -3005,7 +3005,7 @@ void follow_camera_avoid_mobies(int mi) {
             if (nearby_moby->collision == 0) {
                 goto next;
             }
-            if (Moby_HasLinkedRecord(nearby_moby) && !any) {
+            if (test_moby_linked_record_word8(nearby_moby) && !any) {
                 goto next;
             }
             nearby_moby_type_id = nearby_moby->oclass;
@@ -3095,7 +3095,7 @@ move:
     if (CAST_func_L00_002E5740(D_L00_00173F60_x.v20)) {
         goto clear;
     }
-    if (D_L00_00173F60_x.p18 != 0 && IsMobyClass500To540(D_L00_00173F60_x.p18)) {
+    if (D_L00_00173F60_x.p18 != 0 && is_moby_in_class_range_500_to_540(D_L00_00173F60_x.p18)) {
         CAST_func_001F9BF0(&v20, (u8 *)D_L00_00173F60_x.p18 + 0x10, D_L00_00166EC0_x);
         v20.i[2] = 0;
         func_L00_001FF4B0(&v20, &v20, 1.0f);
@@ -3104,7 +3104,7 @@ move:
         hit_descriptor.b18 = 3;
         hit_descriptor.b19 = 3;
         hit_descriptor.h1A = *(u16 *)(D_0013F450_x.p2080 + 0xA6);
-        PostHitMessageFromRecord(D_L00_00173F60_x.p18, &hit_descriptor);
+        record_moby_hit(D_L00_00173F60_x.p18, &hit_descriptor);
     }
     collision->i4C++;
     if (collision->i4C >= scale_ticks(0x1E)) {
@@ -3129,7 +3129,7 @@ typedef struct { u8 pad[0x220]; s32 cur; } Owner_2E9838;
 typedef struct { u8 pad[0x70]; Owner_2E9838 *p; u8 pad2[0x86 - 0x74]; s16 f86; } Vendor_2E9838;
 extern Vendor_2E9838 *D_L00_00166F00_2E9838 __asm__("D_L00_00166F00");
 /* -1 when the vendor's +0x86 is set, else 1 after clearing its owner's +0x220 when that equals id, else 0. Adapted from Lombyte (MIT) for PAL: src/overlays/shared/gameplay/vendor/002df730.c, FUN_L00_002e8388. */
-s32 Cam_ReleaseLock(s32 id) {
+s32 clear_follow_camera_volume_if_current(s32 id) {
     Vendor_2E9838 *t = D_L00_00166F00_2E9838;
     if (t->f86 != 0) {
         return -1;
@@ -3161,7 +3161,7 @@ typedef struct {
 /* Grants camera ARG1 the lock word (+0x220) of the current camera's state: 1 when it is free or already ARG1's, or
    when ARG1's CameraInfo priority byte (camera_descriptors row + 0x1C -> + 0x1C) beats the holder's; 0 when refused;
    -1 while the current camera is not the hero camera (id at +0x86 nonzero). */
-int Cam_AcquireLock(int arg1) {
+int try_select_follow_camera_volume(int arg1) {
     void *a = D_L00_00166F00;
     C842e83c0 *cur;
     u8 x;
@@ -3286,7 +3286,7 @@ void follow_camera_start_slide(void) {
     }
 }
 /* ORs bits 0 and 1 into the flags word at +0x10 of the hero camera's +0x1A8 block while the current camera's id is 0. */
-void func_L00_002E9B30(void) {
+void set_follow_camera_blend_output_flags(void) {
     char *p = D_L00_00166F00;
     if (*(short *)(p + 0x86) == 0) {
         char *q = *(char **)(p + 0x70) + 0x1A8;
@@ -3300,7 +3300,7 @@ extern float func_L00_00258E58(float a, float b, float c, float d, float t);
 extern float func_001F9B88(float);
 
 /* Measures the signed angle between two offsets of an object's data relative to an axis, and (within the limit) stores a scaled blend in the object's data. */
-float Cam_SignedAngleBetweenOffsets(char *a0, float *a1, float lim) {
+float update_follow_camera_angle_blend_from_direction(char *a0, float *a1, float lim) {
     float b0[4];
     float b1[4];
     float b2[4];
@@ -3352,24 +3352,24 @@ float Cam_SignedAngleBetweenOffsets(char *a0, float *a1, float lim) {
 extern float func_L00_002E9B60(char *, float *, float);
 
 /* Asks the hero camera to swing toward direction A: when X is nonzero stores it at +0x1BC of the state buffer and
-   measures the swing with Cam_SignedAngleBetweenOffsets(camera, A, Y); only while the current camera's id is 0. */
-void func_L00_002E9DC8(void *a, float x, float y) {
+   measures the swing with update_follow_camera_angle_blend_from_direction(camera, A, Y); only while the current camera's id is 0. */
+void set_follow_camera_angle_blend_from_direction(void *a, float x, float y) {
     char *p = D_L00_00166F00;
     if (*(short *)(p + 0x86) == 0) {
         if (x != 0.0f) {
             *(float *)(*(char **)(p + 0x70) + 0x1BC) = x;
-            Cam_SignedAngleBetweenOffsets(p, a, y);
+            update_follow_camera_angle_blend_from_direction(p, a, y);
         }
     }
 }
 extern void func_L00_002E9D78(char *, int, float);
 /* Asks the hero camera to swing toward point A: stores X at +0x1BC of the state buffer and measures the swing with
-   Cam_SignedAngleToPoint(camera, A, Y); only while the current camera's id is 0. */
+   update_follow_camera_angle_blend_from_position(camera, A, Y); only while the current camera's id is 0. */
 void set_follow_camera_angle_blend_from_position(int a, float x, float y) {
     char *p = D_L00_00166F00;
     if (*(short *)(p + 0x86) == 0) {
         *(float *)(*(char **)(p + 0x70) + 0x1BC) = x;
-        Cam_SignedAngleToPoint(p, a, y);
+        update_follow_camera_angle_blend_from_position(p, a, y);
     }
 }
 extern s32 D_0015EE84_2E9E60 __asm__("D_0015EE84") MACRO_ADDR;
@@ -3842,7 +3842,7 @@ extern void func_001E9768(void *, float);
 extern char *D_L00_0015F080 MACRO_ADDR;
 
 // Walk the 64x64 grid of entries and call the update for each type-5 element.
-void func_L00_002EAF50(int a) {
+void run_type5_grid_record_noop_callbacks(int a) {
     int i, j, k;
     for (i = 0; i < 0x40; i++) {
         for (j = 0; j < 0x40; j++) {
@@ -3873,7 +3873,7 @@ extern void func_L00_002EA4C0(int);
    func_L00_002E91D0, aim at the target, debug dump, then func_L00_002EA4C0's final placement. */
 void update_follow_camera_pose(int a) {
     float v[2];
-    func_L00_002EAF50(a);
+    run_type5_grid_record_noop_callbacks(a);
     follow_camera_auto_turn(a);
     follow_camera_read_stick(a, &v[0], &v[1]);
     follow_camera_turn_and_pitch(a, v[0], v[1]);

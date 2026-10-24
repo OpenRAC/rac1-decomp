@@ -123,7 +123,7 @@ void HeroL05_ProcessContactType(void) {
     if (GB(0x12E5) != 0) {
         if (GW(0x300) != 0) {
             if (!(GW(0x2084) == 0x3C && GH(0x41E) == 0)) {
-                ResetHelpStateIfMode3();
+                exit_hero_vehicle_mode_if_mode_three();
                 if (GW(0x22A8) != 0) {
                     Hero_TryMoveStateL05(0x3C, 1);
                     return;
@@ -139,7 +139,7 @@ void HeroL05_ProcessContactType(void) {
     if (GB(0x12EC) != 0 && GW(0x2084) != 0x7F) {
         if (FastAbsF(GF(0x2F0) - (GF(0x88) + 0.25f)) < 1.0f
             && GF(0x2F0) - GF(0x88) > 0.0f && GF(0x108) < 0.0f) {
-            ResetHelpStateIfMode3();
+            exit_hero_vehicle_mode_if_mode_three();
             Hero_TryMoveStateL05(0x7F, 1);
             return;
         }
@@ -151,7 +151,7 @@ void HeroL05_ProcessContactType(void) {
         if (FastAbsF(GF(0x2F4) - (GF(0x88) + 0.25f)) < 1.0f
             && GF(0x2F4) - GF(0x88) > 0.0f) {
             if ((GW(0x2084) != 0x69 || GH(0x41E) != 0) && GF(0x108) < 0.0f) {
-                ResetHelpStateIfMode3();
+                exit_hero_vehicle_mode_if_mode_three();
                 if (GW(0x22A8) != 0) {
                     Hero_TryMoveStateL05(0x68, 1);
                     return;
@@ -171,7 +171,7 @@ void HeroL05_ProcessContactType(void) {
                 Hero_OnKilled();
                 return;
             }
-            ResetHelpStateIfMode3();
+            exit_hero_vehicle_mode_if_mode_three();
             Hero_TryMoveStateL05(0x7B, 1);
             return;
         }
@@ -337,7 +337,7 @@ void HeroL05_GroundProbe(void) {
         goto d1;
     }
     if (D_L05_00174340.i18 != 0) {
-        if (IsMobyClass500To540(D_L05_00174340.i18)) {
+        if (is_moby_in_class_range_500_to_540(D_L05_00174340.i18)) {
             D_0013F450_40968.xH30a = 1;
             if ((u32)(D_0013F450_40968.xI208c - 0x15) < 2) {
                 func_L00_00233D50_40968((u8 *)&D_L05_00174340.v20, (u8 *)&D_L05_00174340.v20, 1.0f);
@@ -354,7 +354,7 @@ void HeroL05_GroundProbe(void) {
         D_0013F450_40968.xF2dc = FastVecDist((u8 *)&D_0013F450_40968 + 0x80, ((u8 *)&D_0013F450_40968 + 0x2A0));
         D_0013F450_40968.xI2fc = D_L05_00174340.i18;
         func_001252C0((u8 *)&D_0013F450_40968 + 0x270, (u8 *)&D_L05_00174340.f40);
-        D_0013F450_40968.u2e0.F = ViewGetPitch((u8 *)&D_L05_00174340.f40);
+        D_0013F450_40968.u2e0.F = compute_gravity_relative_vector_inclination((u8 *)&D_L05_00174340.f40);
         D_0013F450_40968.xF2ec = func_L00_001FF860(D_L05_00174340.f40, D_L05_00174340.f44);
         FastVecSub(&v20, ((u8 *)&D_0013F450_40968 + 0x2A0), (u8 *)&D_0013F450_40968 + 0x80);
         if (0.0f < FastVecDot(&v20, (u8 *)&D_0013F450_40968 + 0x270)) {
@@ -419,8 +419,8 @@ d1:
         if (i == 1) {
             a = -a;
         }
-        PolarToWorldPoint(&v30, 0.2f, a, 0.45f);
-        PolarToWorldPoint(&v40, 0.2f, a, -0.45f);
+        transform_hero_polar_offset_to_world(&v30, 0.2f, a, 0.45f);
+        transform_hero_polar_offset_to_world(&v40, 0.2f, a, -0.45f);
         if (func_L00_001EFFF0(&v30, &v0, 0x22, D_0013F450_40968.xI2080, 0)) {
             f = D_L05_00174340.v20.f[2] - D_0013F450_40968.u2d8.F;
             D_0013F450_40968.a2c0.f[i] = f;
@@ -480,7 +480,7 @@ int Camera_MoveWithCollision(int mode) {
     m = *(int *)(a + 0x208C);
     if (m == 0x11) {
     } else if (m == 0x16) {
-        LocalToWorldPoint(tmp, 0.0f, 0.0f, 0.7f);
+        transform_hero_local_offset_to_world(tmp, 0.0f, 0.0f, 0.7f);
         FastVecSub(tmp, tmp, a + 0x80);
     } else {
         int c = *(unsigned char *)(a + 0x20B3);
@@ -671,8 +671,8 @@ void integrate_hero_motion_with_collisions(void) {
     if (magnitude < 0.0f) magnitude = 0.0f;
     func_L00_001FF4B0(horizontal, work.f, magnitude);
     qcopy(plane.f, velocity);
-    HeroScalePointXY(plane.f, plane.f, 0.0f);
-    HeroScalePointXY(vertical, vertical, 0.0f);
+    set_gravity_relative_vector_length_xy(plane.f, plane.f, 0.0f);
+    set_gravity_relative_vector_length_xy(vertical, vertical, 0.0f);
     func_L00_001FF4B0(vertical, vertical, 1.0f);
     magnitude = FastVecDot(vertical, plane.f);
     if (magnitude < 0.0f) magnitude = 0.0f;

@@ -118,7 +118,7 @@ void HeroL16_UpdateStateFlags(void) {
             if (FastAbsF(h->water_surface_z - (h->motion.pos.f[2] + 0.25f)) < 1.0f) {
                 if (h->water_surface_z - h->motion.pos.f[2] > 0.0f) {
                     if (h->motion.displacement.f[2] < 0.0f) {
-                        ResetHelpStateIfMode3();
+                        exit_hero_vehicle_mode_if_mode_three();
                         Hero_TryMoveState(HERO_STATE_SINK, 1);
                     }
                 }
@@ -289,7 +289,7 @@ void HeroL16_UpdateGroundCollision(void) {
         goto d1;
     }
     if (D_L16_001742C0.i18 != 0) {
-        if (IsMobyClass500To540(D_L16_001742C0.i18)) {
+        if (is_moby_in_class_range_500_to_540(D_L16_001742C0.i18)) {
             D_0013F450.xH30a = 1;
             if ((u32)(D_0013F450.xI208c - 0x15) < 2) {
                 func_L00_00233D50_105C8((u8 *)&D_L16_001742C0.v20, (u8 *)&D_L16_001742C0.v20, 1.0f);
@@ -306,7 +306,7 @@ void HeroL16_UpdateGroundCollision(void) {
         D_0013F450.xF2dc = FastVecDist((u8 *)&D_0013F450 + 0x80, ((u8 *)&D_0013F450 + 0x2A0));
         D_0013F450.xI2fc = D_L16_001742C0.i18;
         func_001252C0((u8 *)&D_0013F450 + 0x270, (u8 *)&D_L16_001742C0.f40);
-        D_0013F450.u2e0.F = ViewGetPitch((u8 *)&D_L16_001742C0.f40);
+        D_0013F450.u2e0.F = compute_gravity_relative_vector_inclination((u8 *)&D_L16_001742C0.f40);
         D_0013F450.xF2ec = func_L00_001FF860(D_L16_001742C0.f40, D_L16_001742C0.f44);
         FastVecSub(&v20, ((u8 *)&D_0013F450 + 0x2A0), (u8 *)&D_0013F450 + 0x80);
         if (0.0f < FastVecDot(&v20, (u8 *)&D_0013F450 + 0x270)) {
@@ -371,8 +371,8 @@ d1:
         if (i == 1) {
             a = -a;
         }
-        PolarToWorldPoint(&v30, 0.2f, a, 0.45f);
-        PolarToWorldPoint(&v40, 0.2f, a, -0.45f);
+        transform_hero_polar_offset_to_world(&v30, 0.2f, a, 0.45f);
+        transform_hero_polar_offset_to_world(&v40, 0.2f, a, -0.45f);
         if (func_L00_001EFFF0(&v30, &v0, 0x22, D_0013F450.xI2080, 0)) {
             f = D_L16_001742C0.v20.f[2] - D_0013F450.u2d8.F;
             D_0013F450.a2c0.f[i] = f;
@@ -432,7 +432,7 @@ int HeroL16_ApplyPositionOffset(int mode) {
     control_mode = hero.state.control_mode;
     if (control_mode == 0x11) {
     } else if (control_mode == 0x16) {
-        LocalToWorldPoint(&collision_position_offset, 0.0f, 0.0f, 0.7f);
+        transform_hero_local_offset_to_world(&collision_position_offset, 0.0f, 0.0f, 0.7f);
         FastVecSub(&collision_position_offset, &collision_position_offset, &hero.motion.pos);
     } else {
         int c = hero.unk20B3;
@@ -655,8 +655,8 @@ void integrate_hero_motion(void) {
     if (magnitude < 0.0f) magnitude = 0.0f;
     func_L00_001FF4B0(horizontal, work.f, magnitude);
     qcopy(plane.f, velocity);
-    HeroScalePointXY(plane.f, plane.f, 0.0f);
-    HeroScalePointXY(vertical, vertical, 0.0f);
+    set_gravity_relative_vector_length_xy(plane.f, plane.f, 0.0f);
+    set_gravity_relative_vector_length_xy(vertical, vertical, 0.0f);
     func_L00_001FF4B0(vertical, vertical, 1.0f);
     magnitude = FastVecDot(vertical, plane.f);
     if (magnitude < 0.0f) magnitude = 0.0f;

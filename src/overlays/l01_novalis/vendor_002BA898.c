@@ -284,7 +284,7 @@ void SpawnSparkBursts(SplashMoby *m, u128 *origin) {
         c1 = &inner.c[random_integer_below(6)];
         c2 = &outer.c[random_integer_below(6)];
         size = random_float_between(105000.0f, 157500.0f);
-        PartType22Spawn(&tmp, &vel, *c1, *c2, size, scale_ticks(rand_range(5, 0xF)));
+        spawn_effect_particle_with_target_scalar(&tmp, &vel, *c1, *c2, size, scale_ticks(rand_range(5, 0xF)));
     }
 }
 typedef u32 u128_E7B68 __attribute__((mode(TI), aligned(16)));
@@ -1018,7 +1018,7 @@ void birdbot_update(PeMoby *m) {
             if (func_L00_001EFFF0(&vc, &va, 0, m, 0) == 0) {
                 yaw = func_L00_001FF860(vb.f[0], vb.f[1]);
                 pitch = func_L00_001FF860(func_001F9CE8(&vb), vb.f[2]);
-                SpawnBeamMoby(m, &va, &vb, yaw, pitch, func_001FA898_r(func_001F9878(10.0f)));
+                spawn_colored_half_scale_moby(m, &va, &vb, yaw, pitch, func_001FA898_r(func_001F9878(10.0f)));
                 v->h1A4++;
             } else {
                 if (m->b53 != 0) {
@@ -1727,7 +1727,7 @@ void peckbot_update(GcMoby *m) {
         r = FastAbsF(m->pos.f[2] - tgt.pos.f[2]);
         r = r / func_001F9D48(&m->pos, &tgt);
         if (v->w21C != -1) {
-            FindClosestPointPair(m, D_L01_001B0C30[v->w21C], &tgt, &vb);
+            select_list_point_toward_target(m, D_L01_001B0C30[v->w21C], &tgt, &vb);
         } else {
             qcopy(&vb, &tgt);
         }
@@ -1811,7 +1811,7 @@ void peckbot_update(GcMoby *m) {
         float a;
 
         if (v->w21C != -1) {
-            FindClosestPointPair(m, D_L01_001B0C30[v->w21C], &v->v1D0, &vb);
+            select_list_point_toward_target(m, D_L01_001B0C30[v->w21C], &v->v1D0, &vb);
         } else {
             qcopy(&vb, &v->v1D0);
         }
@@ -1914,7 +1914,7 @@ void peckbot_update(GcMoby *m) {
         r = FastAbsF(m->pos.f[2] - tgt.pos.f[2]);
         r = r / func_001F9D48(&m->pos, &tgt);
         if (v->w21C != -1) {
-            FindClosestPointPair(m, D_L01_001B0C30[v->w21C], &v->v1D0, &vb);
+            select_list_point_toward_target(m, D_L01_001B0C30[v->w21C], &v->v1D0, &vb);
         } else {
             qcopy(&vb, &v->v1D0);
         }
@@ -2696,8 +2696,8 @@ BeamMoby *spawn_beam(void *owner, u128_t *pos, u128_t *dir, u128_t *color, int k
         qcopy(&v->color, pc);
         v->kind = kind;
         v->len = FastVecLength(pd);
-        PartType26Spawn((char *)m, 0x2F4F7F7F, scale_ticks(0x78), -1, 420000.0f);
-        PartType26Spawn((char *)m, 0x4F6F7F7F, scale_ticks(0x78), -1, 210000.0f);
+        spawn_source_attached_fading_effect_particle((char *)m, 0x2F4F7F7F, scale_ticks(0x78), -1, 420000.0f);
+        spawn_source_attached_fading_effect_particle((char *)m, 0x4F6F7F7F, scale_ticks(0x78), -1, 210000.0f);
         Moby_PlaySound(0, 0, (int)m);
         func_L00_00251E30(m);
     }
@@ -3204,7 +3204,7 @@ void apply_falling_rock_camera_overrides(char *moby) {
     u8 *camera_record = camera_points + (((FallingRockVars *)((Moby *)moby)->pvars)->idx << 7);
 
     build_look_at_matrix(rotated_vector, camera_record, camera_record + 0x20, *(float *)&D_L01_00161CB8);
-    func_L00_002E9DC8(rotated_vector, 0.13962633907794952f, 0.0f);
+    set_follow_camera_angle_blend_from_direction(rotated_vector, 0.13962633907794952f, 0.0f);
     Cam_SetDistanceGoal(*(float *)&D_L01_00161CBC, *(float *)&D_L01_00161CC8, 0);
     func_L00_002E9968(*(float *)&D_L01_00161CC0, *(float *)&D_L01_00161CC8);
     Cam_SetEyeOffset(0, *(float *)&D_L01_00161CC4, *(float *)&D_L01_00161CC8);

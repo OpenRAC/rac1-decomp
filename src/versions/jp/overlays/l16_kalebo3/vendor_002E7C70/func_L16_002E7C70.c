@@ -8,7 +8,7 @@ void gadgetron_ceo_update(L16ChallengeMoby *m) {
         func_L00_0025B178(m);
         m->distance_class = 22;
     }
-    AttachManipulatorsIfCheat(m);
+    attach_big_head_cheat_manipulator_to_matching_moby(m);
     switch (m->state) {
     case 0:
         m->opacity = 255;
@@ -72,7 +72,7 @@ void gadgetron_ceo_update(L16ChallengeMoby *m) {
             m->state = 1;
             previous = activation->previous;
             if (previous == 4) {
-                start_indexed_disc_stream(0);
+                PlayMovieEntryIfIdle(0);
                 m->state = previous;
             }
         }
@@ -80,7 +80,7 @@ void gadgetron_ceo_update(L16ChallengeMoby *m) {
     case 4:
         if (D_L16_0015F6A8 == 0) {
             m->state = 1;
-            GiveItem(31, 1);
+            grant_inventory_item(31, 1);
             memcard_Save(0, -1);
         }
         break;

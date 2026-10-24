@@ -74,7 +74,7 @@ extern int D_L00_0015F654 MACRO_ADDR;
 
 /* Starts a sound bank entry chosen by (a0, a1, a2) offset from a
    level-specific table row, the same shape as func_0022EE28. */
-int Sound_PlayLevelTableEntry(int a0, int a1, int a2, int a3, int a4) {
+int request_grouped_voice(int a0, int a1, int a2, int a3, int a4) {
     int idx = D_L00_001BDBB0[D_0015EE84_m] + a0 * 4 + a1 * 2 + a2 + D_L00_0015F654;
     int h;
 
@@ -195,7 +195,7 @@ void update_moby_proximity_interaction(unsigned char *m) {
                     *(unsigned short *)(m + 0x34) |= 0x41;
                     StartCutscene(9);
                 } else {
-                    Hud_ClosePopupIfActive(2);
+                    remove_help_message_for_selector(2);
                     D_L00_0015F710 = 1;
                     ship_index[1] = 0;
                 }
@@ -211,7 +211,7 @@ void update_moby_proximity_interaction(unsigned char *m) {
                 StartCutscene(5);
                 q[0x49] = 1;
             } else if ((q = D_0013D355 + 0x13B)[0x4A] == 0 && D_0013DE4B[8] != 0) {
-                start_indexed_disc_stream(0xB);
+                PlayMovieEntryIfIdle(0xB);
                 q[0x4A] = 1;
             } else if ((q = D_0013D355 + 0x13B)[0x4B] == 0 && D_0013DE4B[8] != 0) {
                 StartCutscene(6);

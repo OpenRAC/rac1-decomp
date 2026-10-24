@@ -177,7 +177,7 @@ void apply_level_specific_cutscene_moby_effects(void) {
                 b = random_angle_radians();
                 BuildSphericalOffset(v, random_float_between(D_0015EE6C * 0.7f, D_0015EE6C * 2.2f), a, b);
                 r = scale_ticks(0xC);
-                PartType22Spawn(buf, v, 0x80808080, 0x808080, rand_range(r, scale_ticks(0x23)), 147000.0f);
+                spawn_effect_particle_with_target_scalar(buf, v, 0x80808080, 0x808080, rand_range(r, scale_ticks(0x23)), 147000.0f);
             }
         }
     }

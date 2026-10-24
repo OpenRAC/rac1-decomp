@@ -45,7 +45,7 @@ extern void func_001FA480(void *, void *);
 extern void func_00214F78(void *);
 extern void func_0020EEE8(void *);
 
-void Moby_AttachChildToVertex(unsigned char *parent, unsigned char *child, int mode) {
+void update_moby_bone_attachment(unsigned char *parent, unsigned char *child, int mode) {
     char workspace[0x40];
     MobyTransformScaledVertex(parent, mode, workspace);
     qcopy(child + 0x10, workspace + 0x30);

@@ -257,7 +257,7 @@ collected:
     }
 frame_tail:
     speed = D_0015EE6C;
-    MobyBobZ(0.7f, speed * 1.2217305f, moby, vars + 6, vars + 5);
+    update_moby_vertical_oscillation(0.7f, speed * 1.2217305f, moby, vars + 6, vars + 5);
     if (*(float *)(moby + 0x10) < 20.0f) *(float *)(moby + 0x10) = 20.0f;
     if (1003.0f < *(float *)(moby + 0x10)) *(float *)(moby + 0x10) = 1003.0f;
     if (*(float *)(moby + 0x14) < 20.0f) *(float *)(moby + 0x14) = 20.0f;
@@ -307,7 +307,7 @@ unsigned char *spawn_ship_rocket(char *src, char *pos, char *target, char *vec, 
         *(float *)(moby + 0x2C) = *(float *)(*(char **)(moby + 0x24) + 0x24) *
                                   (*(float *)(src + 0x2C) / *(float *)(*(char **)(src + 0x24) + 0x24));
         func_L00_00251E30(moby);
-        PartType26Spawn((char *)moby, 0x60808080, arg, 0, 500000.0f);
+        spawn_source_attached_fading_effect_particle((char *)moby, 0x60808080, arg, 0, 500000.0f);
     }
     return moby;
 }

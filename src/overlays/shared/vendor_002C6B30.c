@@ -1228,7 +1228,7 @@ extern int D_0015EE84_m __asm__("D_0015EE84") MACRO_ADDR;
 extern char D_0013E633[];
 
 /* ticks down a timer against a hit check, then reacts: either ends or switches to state 2 */
-void Moby_TickHitTimer(char *moby, char *d) {
+void process_spawner_hit_record(char *moby, char *d) {
     int n;
     char *m = MobyGetHitMessage(moby, 0xC30000, 0);
     ComputeHitResponse(moby, m, d + 0x20, 0, &n, 0, 0, 4);
@@ -1255,11 +1255,11 @@ void Moby_TickHitTimer(char *moby, char *d) {
 extern int func_L01_0026EFB8(int, int);
 
 /* Counts the live level-0x75E mobys among the 20 slots at +0xB0 and returns the last slot not counted. */
-int CountLiveMoby1886Slots(int unused, char *m) {
+int refresh_spawner_population_and_find_free_slot(int unused, char *m) {
     int last = -1;
     int i;
     char **slot;
-    m[0x91] = count_group_e81e0(*(int *)(m + 0x94), -1);
+    m[0x91] = count_active_moby_group_members(*(int *)(m + 0x94), -1);
     for (i = 0, slot = (char **)(m + 0xB0); i < 20; i++, slot++) {
         char *o = *slot;
         if (o != 0 && *(short *)(o + 0xA6) == 0x75E &&
@@ -1464,7 +1464,7 @@ extern int func_001F9850(int);
 extern void func_L00_00251E30(void *);
 
 /* Spawns a moby of class 0x75E and initialises its data. */
-char *SpawnMoby1886(int owner, void *pos, void *rot, unsigned char a, unsigned char b) {
+char *spawn_spawner_egg(int owner, void *pos, void *rot, unsigned char a, unsigned char b) {
     char *m = (char *)CreateMoby(0x75E);
     if (m) {
         char *d = *(char **)(m + 0x78);

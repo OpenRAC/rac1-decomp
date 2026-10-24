@@ -75,9 +75,9 @@ void background_ship_2_update(char *moby) {
         }
         if (*(unsigned char *)(moby + 0x31) != 0) {
             if (D_0015EE84_2D9F08 != 10) {
-                SpawnJointParticles(moby, tv);
+                spawn_background_ship_2_joint_sparks(moby, tv);
             } else {
-                SpawnTwoParticles(moby, tv);
+                spawn_background_ship_2_level_10_joint_sparks(moby, tv);
             }
         }
         if (r != 0 && 0.0f < *(float *)(r + 0x2C)) {
@@ -141,6 +141,6 @@ void background_ship_2_update(char *moby) {
             *(int *)(moby + 0x90) = res;
             *(float *)(d + 0x68) = FastAddRots(*(float *)(d + 0x68), k);
         }
-        RefreshMobyAttachPoints6(moby);
+        prepare_background_ship_2_joint_draw_data(moby);
     }
 }

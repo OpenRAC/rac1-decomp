@@ -91,7 +91,7 @@ void EffectSlots_Fire(char *slots, float *position, float *direction, float dist
         FastVecScale(velocity, adjusted, random_float_between(0.0f, 1.0f));
         FastVecAdd(velocity, velocity, origin);
         if (i < first_count) fl = 1; else fl = 0;
-        shot = PartType12Spawn(velocity, offset, fl, travel);
+        shot = spawn_spinning_and_fading_effect_particle(velocity, offset, fl, travel);
         if (i == 2 && save_shot) {
             int j;
             for (j = 0; j < 7; j++) {
@@ -110,7 +110,7 @@ void EffectSlots_Fire(char *slots, float *position, float *direction, float dist
         FastVecScale(velocity, adjusted, random_float_between(0.5f, 0.1f));
         FastVecAdd(velocity, velocity, offset);
         velocity[3] = 0.0f;
-        PartType25Spawn(position, velocity, 0);
+        spawn_color_decaying_effect_particle(position, velocity, 0);
     }
 }
 extern int func_L00_001F2BE8(float, void *, int, int, int);

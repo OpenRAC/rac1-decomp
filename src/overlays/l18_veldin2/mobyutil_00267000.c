@@ -18,7 +18,7 @@ extern int func_001FA898(float);
 extern char D_0013E633[];
 
 /* Set an attached effect's alpha from distance and the supplied scale. */
-void Effect_SetAlphaByDistance(Level18Moby *moby, float scale) {
+void set_moby_attached_effect_alpha_from_distance(Level18Moby *moby, float scale) {
     Level18Effect *effect;
     int alpha;
 

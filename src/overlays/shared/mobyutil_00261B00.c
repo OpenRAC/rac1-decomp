@@ -226,7 +226,7 @@ void func_L00_00261B00(char *a, int b, int c, int flags, int idx)
             f13 = s20[2] - f12;
             f14 = s10[2] - D_L00_001B0830[idx]->points[0].f[2];
             lim = 120.0f;
-            rv = SolveQuadratic(&t70, &t74, f12, f13, f14);
+            rv = solve_quadratic_equation(&t70, &t74, f12, f13, f14);
             if (1.0f <= (float)rv) {
                 if (0.0f < t70) {
                     if (t70 < lim) {
@@ -307,7 +307,7 @@ void WanderSteer(char *moby, char *d, float a, float b) {
         *(short *)(d + 0x2A) = rand_range(*(short *)(d + 0x2C), *(short *)(d + 0x2E));
         *(short *)(d + 0x28) = 1;
     } else {
-        StepAngleToward((float *)(moby + 0x48), 0, *(float *)(d + 0x24), *(float *)(d + 0x18));
+        step_angle_toward_target((float *)(moby + 0x48), 0, *(float *)(d + 0x24), *(float *)(d + 0x18));
         if (FastDecTimer(d + 0x2A) != 0) *(short *)(d + 0x28) = 0;
         pos = moby + 0x10;
     }
@@ -328,7 +328,7 @@ void WanderSteer(char *moby, char *d, float a, float b) {
         if (dist < *(float *)(d + 0x20)) {
             char *q = g - 0x80;
             dist = dist / *(float *)(d + 0x20);
-            *(float *)(d + 0x24) = LerpAngle(*(float *)(d + 0x24), func_L00_001FF860(*(float *)(moby + 0x10) - *(float *)(q + 0x80), *(float *)(moby + 0x14) - *(float *)(q + 0x84)), dist);
+            *(float *)(d + 0x24) = interpolate_angle(*(float *)(d + 0x24), func_L00_001FF860(*(float *)(moby + 0x10) - *(float *)(q + 0x80), *(float *)(moby + 0x14) - *(float *)(q + 0x84)), dist);
         }
     }
 }
@@ -346,7 +346,7 @@ extern void func_001F9BC0_2629E0(Vec4 *) __asm__("func_001F9BC0");
 extern void func_001F9EC0_2629E0(Vec4 *, Vec4 *, Vec4 *) __asm__("func_001F9EC0");
 
 /* Adapted from Lombyte (MIT) for PAL: src/overlays/shared/gameplay/state/00261968.c, FUN_L00_00261968. */
-s32 DoesSegmentCrossPath(s32 path_index, Vec4 *start, Vec4 *end) {
+s32 test_path_segment_strict_crossing(s32 path_index, Vec4 *start, Vec4 *end) {
     Vec4 direction;
     Vec4 axis;
     Vec4 origin;
@@ -715,7 +715,7 @@ void update_moby_transform_history(S_263680 *s, int dec) {
         return;
     src = s->src;
     if (!src || src[0x20] == 0xFE || src[0x20] == 0xFD) {
-        DeleteOwnedMobys((char *)s);
+        clear_moby_transform_history((char *)s);
         return;
     }
     h = s->head;
@@ -756,13 +756,13 @@ void update_moby_transform_history(S_263680 *s, int dec) {
             }
         }
         if (done)
-            DeleteOwnedMobys((char *)s);
+            clear_moby_transform_history((char *)s);
     }
 }
 extern void func_0020D678(int);
 
 /* Deletes every moby in the owner's list and marks it inactive. */
-void DeleteOwnedMobys(char *o) {
+void clear_moby_transform_history(char *o) {
     int i;
     if (*(int *)(o + 0x13C) != 0) {
         for (i = 0; i < *(int *)(o + 0x138); i++) {
@@ -810,7 +810,7 @@ void EaseManipulatorOffsets(int m, unsigned char *p, int c, float fa, float fb) 
     SpringAngle(p + 0x48, p + 0x58, *(float *)(p + 0x68), fa, fb, 0.0f, 0);
     if (!p[1])
         AttachManipulator(m, c, p);
-    BuildEulerMatrix(p + 0x10, (float *)(p + 0x40));
+    build_quaternion_from_axis_rotations(p + 0x10, (float *)(p + 0x40));
     f = *(float *)(p + 0x70);
     *(float *)(p + 0x20) = f;
     *(float *)(p + 0x24) = f;
@@ -820,7 +820,7 @@ void EaseManipulatorOffsets(int m, unsigned char *p, int c, float fa, float fb) 
 }
 extern float func_001FA748(float, float);
 /* Bobs a's Z with a sine of phase *p, advancing the phase by y. */
-void MobyBobZ(float x, float y, char *a, float *p, float *q) {
+void update_moby_vertical_oscillation(float x, float y, char *a, float *p, float *q) {
     float t;
     *p = FastAddRots(*p, y);
     *(float *)(a + 0x18) -= *q;
@@ -830,7 +830,7 @@ void MobyBobZ(float x, float y, char *a, float *p, float *q) {
 }
 
 /* Writes a Lissajous-style offset to o[0x10] and o[0x11] and advances the angles. */
-void LissajousOffsetUpdate(float *o, float *a, float *b, float r, float l1, float l2) {
+void update_moby_rotation_oscillation(float *o, float *a, float *b, float r, float l1, float l2) {
     o[0x10] = r * FastSin(*a) * FastSin(*b);
     o[0x11] = r * FastSin(*a) * FastCos(*b);
     *a = FastAddRots(*a, l1);
@@ -848,7 +848,7 @@ extern char D_L00_001E93E0[];
 typedef struct { int v[19]; } Tbl;
 
 // Shows the banner message for planet index a (clamped to the table), copying the table locally.
-void ShowPlanetBanner(int a) {
+void queue_planet_unlock_message(int a) {
     Tbl t = *(Tbl *)D_L00_001E93E0;
     if (a < 0) a = 0;
     if (a > 18) a = 18;
@@ -969,7 +969,7 @@ extern float func_001F9CE8(void *);
 extern void func_L00_00269DB0(char *, int);
 
 /* spawns impact sparks at a point on the ground near the camera. Adapted from Lombyte (MIT) for PAL: overlays/shared/gameplay_entities_002630b8.c, FUN_L00_002634f8. */
-void SpawnImpactSparks(V *v) {
+void spawn_ground_contact_effect_particle(V *v) {
     V t, u, d;
     float k, f;
     S166D *b;
@@ -983,7 +983,7 @@ void SpawnImpactSparks(V *v) {
         u.f[2] = u.f[2] - (k + k);
         if (func_L00_001EFFF0(&t, &u, 0x12, 0, 0)) {
             FastVecSub(&d, &D_L00_00173F60, &b->pos);
-            PartType01Spawn((char *)&D_L00_00173F60, (unsigned char)(int)(func_001F9CE8(&d) / 60.0f * 191.0f + 64.0f));
+            spawn_timed_effect_particle((char *)&D_L00_00173F60, (unsigned char)(int)(func_001F9CE8(&d) / 60.0f * 191.0f + 64.0f));
         }
     }
 }
@@ -998,7 +998,7 @@ extern float D_L00_00166EC0[];
 extern float D_L00_001B07F0[];
 
 /* builds a set of four scaled vectors from a position and hands them to the draw helper */
-void DrawBillboardAt(float *p, int b, float s, float t) {
+void draw_offset_textured_effect_quad(float *p, int b, float s, float t) {
     float m[16];
     int bb[4];
     float c[8];
@@ -1222,7 +1222,7 @@ void ShowBanner(int arg0, int arg1) {
 extern char D_L00_00179218[] NOT_SDA;
 extern void func_00116248(void *, int, int);
 /* Like func_L00_00264DB8, but draws message a with parameter b. */
-void ShowBannerf(int a, int b, int c) {
+void queue_formatted_dialogue_message(int a, int b, int c) {
     if (c == -1) c = scale_ticks(0xB4);
     func_00116248(D_L00_00179218, msg_string(a), b);
     D_L00_0015F720 = c;
@@ -1233,7 +1233,7 @@ extern int func_L00_0025BCF8(void *, int, void *, void *, float);
 extern float func_00214158(void);
 
 /* Spawns a burst of effects on a moby: a fixed set at its own position, then randomly offset ones at points gathered around it. Adapted from Lombyte (MIT) for PAL: overlays/shared/gameplay_entities_002630b8.c, FUN_L00_00263e30. */
-void SpawnMobyBurstFx(char *m, int n, int cnt, int base, int range, int cnt2, int flag) {
+void spawn_moby_break_fragments(char *m, int n, int cnt, int base, int range, int cnt2, int flag) {
     char buf[256] __attribute__((aligned(16)));
     float v[4] __attribute__((aligned(16)));
     int mode = 0;
@@ -1247,7 +1247,7 @@ void SpawnMobyBurstFx(char *m, int n, int cnt, int base, int range, int cnt2, in
         }
     }
     if (n > 0 && range > 0) {
-        k = func_L00_0025BCF8(m, cnt2, buf, (void *)0xFFFF, 1000.0f);
+        k = generate_random_points_from_shape_entries(m, cnt2, buf, (void *)0xFFFF, 1000.0f);
         if (k) {
             for (i = 0; i < cnt2 && i < k; i++) {
                 clear_u64_value(v);

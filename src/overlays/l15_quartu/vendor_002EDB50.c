@@ -213,10 +213,10 @@ void ultramech_scientist_update(char *moby) {
                 }
             }
         }
-        if (count_group_e81e0(*(int *)(data + 0x144), 0x40) != 0) {
+        if (count_active_moby_group_members(*(int *)(data + 0x144), 0x40) != 0) {
             break;
         }
-        if (count_group_e81e0(*(int *)(data + 0x148), 0x40) != 0) {
+        if (count_active_moby_group_members(*(int *)(data + 0x148), 0x40) != 0) {
             break;
         }
         ((struct Moby *)moby)->state = 4;
@@ -226,7 +226,7 @@ void ultramech_scientist_update(char *moby) {
         if (func_001F9908(data + 0x15C) == 0) {
             break;
         }
-        Help_Reset();
+        restore_saved_hero_moby_and_clear_vehicle_mode();
         MobySetAnimation((char *)D_L15_00160058 + (*(int *)(data + 0x14C) << 8), 0, 0);
         *(int *)(data + 0x140) = 1;
         *(short *)(data + 0x36) = 1;
@@ -251,12 +251,12 @@ void ultramech_scientist_update(char *moby) {
         if (D_L15_0015F6A8 == 2) {
             break;
         }
-        start_indexed_disc_stream(0x10);
+        PlayMovieEntryIfIdle(0x10);
         ((struct Moby *)moby)->state = 7;
         break;
     case ULTRAMECH_SCIENTIST_START_SECOND_SCENE_AND_SAVE:
         if (D_L15_0015F6A8 != 2) {
-            ShowPlanetBanner(0x10);
+            queue_planet_unlock_message(0x10);
             StartCutscene(2);
             ((struct Moby *)moby)->state = 8;
         }
@@ -781,7 +781,7 @@ int is_hero_in_moby_follow_camera_region(char *moby) {
     int *e = *(int **)(D_L15_0015F050 + *(short *)(moby + 0x84) * 32 + 0x1C);
     int r;
     int i;
-    if (e[10] >= 0 && IsPointInCylinderVolume(D_0013E633 + 0xE9D, e[10])) {
+    if (e[10] >= 0 && test_point_in_transformed_unit_cylinder(D_0013E633 + 0xE9D, e[10])) {
         return 0;
     }
     if (e[3] >= 0) {
@@ -789,11 +789,11 @@ int is_hero_in_moby_follow_camera_region(char *moby) {
             return 1;
         }
     } else if (e[4] >= 0) {
-        if (IsPointInCylinderVolume(D_0013E633 + 0xE9D, e[4])) {
+        if (test_point_in_transformed_unit_cylinder(D_0013E633 + 0xE9D, e[4])) {
             return 1;
         }
     } else if (e[2] >= 0) {
-        if (IsPointInSphereVolume((float *)(D_0013E633 + 0xE9D), e[2])) {
+        if (test_point_in_transformed_unit_sphere((float *)(D_0013E633 + 0xE9D), e[2])) {
             return 1;
         }
     } else if (e[5] >= 0) {

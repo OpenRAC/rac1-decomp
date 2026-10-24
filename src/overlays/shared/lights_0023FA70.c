@@ -7,7 +7,7 @@ extern int D_L00_0015FD5C MACRO_ADDR;
 extern float D_L00_0015FD60 MACRO_ADDR;
 extern float D_L00_0015FD64 MACRO_ADDR;
 extern char *D_L00_0015FD68 MACRO_ADDR;
-void LoadLightHeader(char *p) {
+void load_two_int_two_float_header(char *p) {
     D_L00_0015FD58 = *(int *)p; p += 4;
     D_L00_0015FD5C = *(int *)p; p += 4;
     D_L00_0015FD60 = *(float *)p; p += 4;

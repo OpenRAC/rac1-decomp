@@ -12,7 +12,7 @@ extern char D_L01_00179FC0[];
 extern int func_L00_0020DB30(int);
 
 /* Looks up the value of the current help record, or 0/0x54 in the special cases. */
-int Help_GetRecordValue(int a) {
+int get_hero_idle_animation_index(int a) {
     char *g = (char *)D_0013E633 + 0xE1D;
     char *r;
     int n;
@@ -38,7 +38,7 @@ void request_hero_voice_if_enabled(int a0, int a1, int a2) {
         if (m != 0) {
             flag = *(short *)(m + 0xA6) == 0xAD;
         }
-        Sound_PlayLevelTableEntry(a0, a1, flag, 0, *(int *)(g + 0x2080));
+        request_grouped_voice(a0, a1, flag, 0, *(int *)(g + 0x2080));
     }
 }
 /* functional: medium. Help-menu frame update (state g[0x20A4] 3 = the panel): runs the update chain, picks a random-based colour from sin/cos of D_L01_0015F6B0 mod rand and applies it to the hero's tint (w+0x90), updates the 3 slots, the fade colour (g+0x22E4) and the sound/timer trigger (22DC/22DE). Float/clamp order hand-traced; not run. */
@@ -98,15 +98,15 @@ void HeroFrameUpdate(void) {
 
     func_L00_00232EF0();
     hero_update();
-    HeroProcessContactType();
+    update_hero_ground_material_effects();
     HeroL01_UpdateStateTransitions();
     if (GG->b20A4 == 0) return;
     update_hero_delayed_voice_requests();
     update_hero_easing_records();
     if (GG->b20A4 == 0) return;
     update_hero_vehicle_moby();
-    UpdateRampUpDown();
-    CameraShakeUpdate();
+    update_hero_scalar_pulse();
+    apply_hero_and_item_scale_sequence();
     func_L00_00248EF8(GG->a80);
     if (GG->b20A4 == 3) {
         if (gCheats[1] != 0) {
@@ -152,13 +152,13 @@ void HeroFrameUpdate(void) {
             c20 = truncate_float_to_s32(f20 * (float)c20);
         }
         GG->c22E4 = (c20 << 24) | (r18 << 16) | (r17 << 8) | r16;
-        QueueHeroDraw();
+        enqueue_hero_glow_draw_callback_once();
         GG->s22E0 = 0;
         if (GG->b20A4 == 3) {
             v2 = GG->i20B8;
             if (v2 != 0 && v2 != 0x1F) {
                 if (GG->s22DE == 0) {
-                    Hero_PlayActiveSound(0x19, 0);
+                    allocate_hero_voice_for_entry(0x19, 0);
                     GG->s22DE = 0x12;
                     GG->s22DC = 1;
                 }
@@ -168,14 +168,14 @@ void HeroFrameUpdate(void) {
                 g->i20B8 = 0;
                 if (e != 0 && g->i300 != 0 && *(unsigned char *)(gHaveMorphORay + 7) != 0 &&
                     g->s22DE == 0) {
-                    Hero_PlayActiveSound(0x19, 0);
+                    allocate_hero_voice_for_entry(0x19, 0);
                     g->s22DE = 0x12;
                     g->s22DC = 1;
                 }
             }
         }
     }
-    Hero_SteerAimAndProbe();
+    update_hero_moby_probed_height_bounds();
     func_L00_0025805C(GG->p2080);
 }
 extern unsigned char D_0013E633[];
@@ -231,32 +231,32 @@ void update_hero_frame(void) {
     }
     func_L00_00232EF0();
     hero_update();
-    HeroProcessContactType();
+    update_hero_ground_material_effects();
     update_hero_ledge_probe();
     HeroL01_UpdateStateTransitions();
     if (*(unsigned char *)(g + 0x20A4) != 0) {
         return;
     }
     update_hero_delayed_voice_requests();
-    Hero_CheckMovementThresholds();
+    update_hero_easing_targets_and_point_effects();
     update_hero_collision_ease_target();
-    Hero_UpdateBodyTilt();
-    HeroScanTargets();
-    RerollMotionParams();
+    update_hero_pitch_and_yaw_easing_targets();
+    update_hero_target_tracking();
+    update_hero_idle_random_rotation_targets();
     update_hero_rotation_targets_and_random_manipulators();
     update_hero_glow_and_extra_manipulators();
-    Hero_SetTiltJoints();
+    update_hero_transformed_negative_z_angle_parameters();
     update_hero_easing_records();
     update_hero_moby();
     update_hero_world_matrices(0);
     update_hero_equipped_items();
     begin_draw_frame();
-    UpdateRampUpDown();
-    CameraShakeUpdate();
+    update_hero_scalar_pulse();
+    apply_hero_and_item_scale_sequence();
     check_hero_item_reward_conditions();
-    HudBoltAlertShow();
+    update_hero_bolt_exclamation_hud();
     dispatch_hero_animation_timed_events();
-    Cheats_PollCodes();
+    scan_hero_input_sequences();
     Profile_Mark(*(void **)(g + 0x2080));
     if (*(int *)(g + 0x208C) != 0x16 && *(int *)(g + 0x2084) != 0x32) {
         func_L00_00248EF8(g + 0x80);
@@ -266,7 +266,7 @@ void update_hero_frame(void) {
         func_L00_0025805C(*(void **)(q + 0x2080));
     }
     update_hero_blink_and_gold_weapon_tint();
-    Hero_SteerAimAndProbe();
+    update_hero_moby_probed_height_bounds();
 }
 extern struct Hero D_0013F450_293D0 __asm__("D_0013F450");
 extern int func_001F9850_293D0(int) __asm__("func_001F9850");
@@ -317,7 +317,7 @@ extern float func_001F9B88(float);
 extern void func_L00_0020BFA8(void);
 
 // Handles a pending state change (func_L08_0021DFB8 without its state-2 flag): clears the request and sets per-state flags.
-void HeroProcessContactType(void) {
+void update_hero_ground_material_effects(void) {
     char *p = (char *)D_0013E633 + 0xE1D;
     int v;
     int x;
@@ -386,7 +386,7 @@ void HeroProcessContactType(void) {
         if (FastAbsF(*(float *)(r + 0x2F0) - (*(float *)(r + 0x88) + 0.25f)) < 1.0f) {
             if (*(float *)(r + 0x2F0) - *(float *)(r + 0x88) > 0.0f) {
                 if (*(float *)(r + 0x108) < 0.0f) {
-                    ResetHelpStateIfMode3();
+                    exit_hero_vehicle_mode_if_mode_three();
                     Hero_SetMoveState(0x7F, 1);
                 }
             }
@@ -698,18 +698,18 @@ extern void func_L00_00232EA8(void);
 extern void func_L01_0023D688(int, int);
 
 /* Starts a level scene: resets the player state, takes the new moby and sets up its flags. */
-void HeroStartScene(int a, int b, int c) {
+void enter_hero_vehicle_mode_and_set_moby(int a, int b, int c) {
     char *g;
-    Hero_ClearPendingModuleAnim();
+    cancel_hero_item_animation();
     g = (char *)D_0013E633 + 0xE1D;
     *(char *)(g + 0x20A6) = 1;
     hero_update_items();
     *(int *)(g + 0x2080) = *(int *)(g + 0xA88);
-    DeleteOwnedMobys(g + 0x1670);
+    clear_moby_transform_history(g + 0x1670);
     *(int *)(*(char **)(g + 0x2080) + 0x98) = -1;
     HeroSetObjectFlags();
-    HeroClearSoundSlots();
-    UpdateHeldObjectTable();
+    release_and_clear_hero_voice_slots();
+    reset_hero_easing_records();
     *(char *)(g + 0x20A4) = a;
     *(int *)(g + 0xA84) = c;
     *(int *)(g + 0x2080) = c;
@@ -721,7 +721,7 @@ void HeroStartScene(int a, int b, int c) {
     *(float *)(g + 0xA94) = 1.0f;
     HeroClearQueuedSequence();
     func_L00_0025805C(*(void **)(g + 0x2080));
-    CameraShakeUpdate();
+    apply_hero_and_item_scale_sequence();
     *(short *)(g + 0x22CC) = b;
     if (a == 1) {
         *(unsigned short *)(g + 0x22B0) = *(unsigned short *)(g + 0x22A8);
@@ -734,12 +734,12 @@ extern void func_L01_0023D688(int, int);
 extern int D_L01_0015F6A8 MACRO_ADDR;
 
 /* resets the hero state and default camera fields */
-void HeroEndScene(void) {
+void exit_hero_vehicle_mode_and_restore_moby(void) {
     char *g;
     char *p;
     char *m;
     char *a;
-    UpdateHeldObjectTable();
+    reset_hero_easing_records();
     g = (char *)D_0013E633 + 0xE1D;
     p = *(char **)(g + 0xA84);
     g[0x20A4] = 0;
@@ -752,7 +752,7 @@ void HeroEndScene(void) {
         DeleteMoby(m);
         *(int *)(g + 0xA8C) = 0;
     }
-    HeroClearSoundSlots();
+    release_and_clear_hero_voice_slots();
     a = *(char **)(g + 0xA88);
     *(char **)(g + 0x2080) = a;
     qcopy(a + 0x10, g + 0x80);
@@ -862,7 +862,7 @@ s32 HeroL01_TryTakeHit(s32 arg) {
     if (arg == 0) {
         return 1;
     }
-    HeroClearSoundSlots();
+    release_and_clear_hero_voice_slots();
     flag = 0;
     if (tbl->i30 & 1) {
         qcopy(&v, &tbl->v10);
@@ -907,7 +907,7 @@ s32 HeroL01_TryTakeHit(s32 arg) {
                 mob = D_0013F450_231B98.p2280;
                 if (mob != 0 && (*(s16 *)(mob + 0xA6) == 0x28F || *(s16 *)(mob + 0xA6) == 0x7B
                                  || *(s16 *)(mob + 0xA6) == 0x29D)) {
-                    Hero_PlayActiveSound(0x1C, 0);
+                    allocate_hero_voice_for_entry(0x1C, 0);
                 }
             }
             Hero_SetMoveState(0x76, 1);
@@ -1286,7 +1286,7 @@ void HeroGroundProbe(void) {
         goto d1;
     }
     if (D_L01_00174340_333D8.i18 != 0) {
-        if (IsMobyClass500To540(D_L01_00174340_333D8.i18)) {
+        if (is_moby_in_class_range_500_to_540(D_L01_00174340_333D8.i18)) {
             D_0013F450.xH30a = 1;
         }
         p = GetFlaggedPvarWord(D_L01_00174340_333D8.i18);
@@ -1300,7 +1300,7 @@ void HeroGroundProbe(void) {
         D_0013F450.xF2dc = FastVecDist((u8 *)&D_0013F450 + 0x80, ((u8 *)&D_0013F450 + 0x2A0));
         D_0013F450.xI2fc = D_L01_00174340_333D8.i18;
         func_001252C0((u8 *)&D_0013F450 + 0x270, (u8 *)&D_L01_00174340_333D8.f40);
-        D_0013F450.u2e0.F = ViewGetPitch((u8 *)&D_L01_00174340_333D8.f40);
+        D_0013F450.u2e0.F = compute_gravity_relative_vector_inclination((u8 *)&D_L01_00174340_333D8.f40);
         D_0013F450.xF2ec = func_L00_001FF860(D_L01_00174340_333D8.f40, D_L01_00174340_333D8.f44);
         FastVecSub(&v20, ((u8 *)&D_0013F450 + 0x2A0), (u8 *)&D_0013F450 + 0x80);
         if (0.0f < FastVecDot(&v20, (u8 *)&D_0013F450 + 0x270)) {
@@ -1365,8 +1365,8 @@ d1:
         if (i == 1) {
             a = -a;
         }
-        PolarToWorldPoint(&v30, 0.2f, a, 0.45f);
-        PolarToWorldPoint(&v40, 0.2f, a, -0.45f);
+        transform_hero_polar_offset_to_world(&v30, 0.2f, a, 0.45f);
+        transform_hero_polar_offset_to_world(&v40, 0.2f, a, -0.45f);
         if (func_L00_001EFFF0(&v30, &v0, 0x22, D_0013F450.xI2080, 0)) {
             f = D_L01_00174340_333D8.v20.f[2] - D_0013F450.u2d8.F;
             D_0013F450.a2c0.f[i] = f;
@@ -1401,7 +1401,7 @@ extern float func_001F9CB8(void *);
 extern void func_L00_001FF4B0(void *, void *, float);
 
 /* Checks that the hero capsule passes: sweeps the capsule toward the target, and clamps the remaining offset. */
-int HeroCanCapsulePass(int a0) {
+int resolve_hero_position_with_collision_queries(int a0) {
     char *g = (char *)D_0013E633 + 0xE1D;
     float A[4], B[4], C[4];
     int i, r;
@@ -1548,8 +1548,8 @@ void air_accel(float step) {
         char *h = (char *)&D_0013F450 + 0xE0;
         u[0] = gravity_length_xy((float *)h);
         ApproachValue(*(float *)(h + 0xB0), step, u);
-        HeroScalePointXY((float *)h, (float *)h, 0.0f);
-        HeroMoveAlongHeading(h, h, u[0]);
+        set_gravity_relative_vector_length_xy((float *)h, (float *)h, 0.0f);
+        add_hero_forward_offset(h, h, u[0]);
         break;
     }
     }
@@ -1590,7 +1590,7 @@ void update_hero_timers_and_vehicle_transitions(void) {
     s32 n8;
 
     if (D_0013F450_293D0.unk20AD == 0) {
-        Hero_EaseCameraOffsets();
+        update_hero_tilt();
     }
     D_0013F450_293D0.state_timer++;
     D_0013F450_293D0.unk19C++;
@@ -1640,7 +1640,7 @@ void update_hero_timers_and_vehicle_transitions(void) {
     if (D_0013F450_293D0.unk22DE != 0 && FastDecTimer(&D_0013F450_293D0.unk22DE) != 0 &&
         D_0013F450_293D0.health.hp != 0 && (*(s32 *)&D_L01_0015F6A8_3CE00) == 0) {
         if (D_0013F450_293D0.vehicle_mode == 3) {
-            HeroEndScene();
+            exit_hero_vehicle_mode_and_restore_moby();
             if (pad_pressed_within(0x80, scale_ticks(0x12), 0)) {
                 D_0013F450_293D0.unk20A6 = 1;
             }
@@ -1684,8 +1684,8 @@ void update_hero_timers_and_vehicle_transitions(void) {
     }
     D_0013F450_293D0.unk1E2 = 0;
 skip:
-    Hero_PushOffSupportCenter();
-    LocalToWorldPoint(&D_0013F450_293D0.motion.unkD0, 0.0f, 0.0f, 0.7f);
+    update_hero_planar_distance_spring_motion();
+    transform_hero_local_offset_to_world(&D_0013F450_293D0.motion.unkD0, 0.0f, 0.0f, 0.7f);
     if (D_0013D5C8[0x22]) {
         D_0013F450_293D0.reach_distance = 12.0f;
         D_0013F450_293D0.reach_height = 4.5f;
@@ -1706,7 +1706,7 @@ skip:
         Hero_OnKilled();
     }
 }
-void Hero_SetMoveStateFromMode(void)
+void request_hero_idle_state_for_vehicle_mode(void)
 {
     switch ((unsigned char)D_0013E633[0x2EC1]) {
     case 0:
@@ -1763,11 +1763,11 @@ void select_hero_locomotion_state(void) {
     }
     if (scale_ticks(12) < *(int *)(d + 0x418) || (*(int *)(d + 0xA98) & 2)) {
         if (hl_next(0, 0)) {
-            if (Help_GetRecordValue(0) == 0x54) {
-                n = Help_GetRecordValue(0);
+            if (get_hero_idle_animation_index(0) == 0x54) {
+                n = get_hero_idle_animation_index(0);
                 set_hero_animation(n, 0, (float)scale_ticks(15));
             } else if (*(int *)(d + 0xA98) & 2) {
-                set_hero_animation(Help_GetRecordValue(0), 0, -2.0f);
+                set_hero_animation(get_hero_idle_animation_index(0), 0, -2.0f);
             }
         }
     }

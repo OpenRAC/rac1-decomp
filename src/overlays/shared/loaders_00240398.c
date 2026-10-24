@@ -170,7 +170,7 @@ extern int D_L00_00173F40_a[] __asm__("D_L00_00173F40");
 extern const int *D_L00_0015F6F8 SDATA(D_L00_0015F6F8);
 
 // Relocates the collision header's offsets into pointers.
-void CollInit(char *p) {
+void resolve_level_asset_block_pointers(char *p) {
     const int *q;
     int i;
     int *e;
@@ -1158,7 +1158,7 @@ char *load_level_gameplay(int arg0) {
                 pack_render_command_fields(m, m->unk80, 0, 0, 0);
                 (*(int *)&m->spawn_frame) = upd;
                 if (*(int *)p != -1) {
-                    SetPlanetTableEntry((int)m, *(int *)p);
+                    store_current_level_table_value((int)m, *(int *)p);
                 }
                 count++;
             }
@@ -1561,7 +1561,7 @@ char *load_level_gameplay(int arg0) {
             MobySetAnimation(m, 1, 0);
             func_L00_00251E30(m);
             D_0013E130.f0 = m;
-            SetPlanetTableEntry((int)m, 0);
+            store_current_level_table_value((int)m, 0);
         }
     }
     if (D_L00_0015F6E0 != 0 && hdr->f8C != 0) {
@@ -1966,7 +1966,7 @@ s32 func_L00_00244AE0(s32 full, s32 keep) {
             func_00203118(base + h->v[4]);
         else
             D_L00_001605DC = 0;
-        CollInit(base + h->v[5]);
+        resolve_level_asset_block_pointers(base + h->v[5]);
         for (i = 0, q2 = (char *)h + h->v[7]; i < h->v[6]; i++, q2 += 0x20)
             func_00203E78(*(s32 *)q2 ? base + *(s32 *)q2 : 0, (char *)h + h->v[0xF], q2 + 0x10, *(s32 *)(q2 + 4));
         print_moby_class_sizes((int *)((char *)h + h->v[7]), h->v[7]);
@@ -2002,7 +2002,7 @@ s32 func_L00_00244AE0(s32 full, s32 keep) {
             D_L00_0015F540 = 0;
         }
         if (h->v[0x29]) {
-            LoadLightHeader(base + h->v[0x29]);
+            load_two_int_two_float_header(base + h->v[0x29]);
         } else {
             D_L00_0015FD58 = 0;
             D_L00_0015FD5C = 0;
@@ -2153,7 +2153,7 @@ extern void func_00217748(s32);
 
 /* streams entry i of the current sector list into the loader buffer.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/world/loaders/00240348.c, FUN_L00_002451b8. */
-s32 StreamSectorListEntry(s32 i) {
+s32 start_cutscene_chunk_read(s32 i) {
     u8 *buf = D_L00_0016C960_45B88.buf;
     s32 start;
     s32 size;

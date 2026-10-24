@@ -267,7 +267,7 @@ extern short D_L00_00161454;
 extern int D_L00_00161458 MACRO_ADDR;
 
 // Texture scroll moby update: init the scroll constants, then scroll and wrap.
-void TextureScrollUpdate(char *m) {
+void update_frame_timing_and_wrapped_value(char *m) {
     switch (*(unsigned char *)(m + 0x20)) {
     case 0: {
         float one;
@@ -486,7 +486,7 @@ void vendor_update(char *moby) {
         if (b != 0) r = try_set_help_message(1, 0x53E8) != 0;
         if (*(int *)(D_0013A5E0 + 0x2604) & 0x10) {
             if (a != 0 && r != 0) {
-                VendorOpenMenu(moby);
+                open_vendor_menu(moby);
                 *(unsigned char *)(moby + 0x20) = 3;
             }
         }
@@ -934,7 +934,7 @@ void CollectBolt(struct Moby *bolt)
     level_bolts[D_0015EE84_A7E10b] += value;
 
     k = 0.7f;
-    queue_animation_update(2, 0x754E, HudBoltsInit, HudBoltsUpdate, HudBoltsDraw,
+    queue_animation_update(2, 0x754E, initialize_bolt_counter_hud, update_bolt_counter_hud_animation_and_visibility, draw_bolt_counter_hud_panel,
                            &gBolts, 9999999);
 
     /* two sparkles 10 units out along a random direction, spinning opposite ways */
@@ -1329,7 +1329,7 @@ extern int func_001F9850(int);
 extern void func_0020D6D0_p(void *) __asm__("func_0020D6D0");
 
 /* copies a moby's animation selection from the player moby, or starts an animation */
-void CopyHeroAnimToMoby(char *m) {
+void update_wrench_animation_from_hero_state(char *m) {
     char *g = D_0013E633 + 0xE1D;
     int r;
     if (*(int *)(g + 0x2084) == 0x3B) {
@@ -1383,7 +1383,7 @@ extern float func_L00_00258C80(float, float);
 extern void func_L00_00272F00(void *, int, int, int, int, void *, float, float, float);
 
 /* Emits N pairs of particles at POS with a random velocity, jittering POS each time. */
-void SpawnSparkPairs(float *pos, int n) {
+void emit_randomized_sparkle_pairs(float *pos, int n) {
     float v[8];
     int i;
 
@@ -1448,7 +1448,7 @@ void spawn_wrench_impact_effects(char *m) {
         PartType21Spawn(p, v, 0x4F007FFF, 0x1FFFFFFF, r, 1, 20000.0f);
     }
     if (*(short *)(*(char **)(m + 0x78) + 0x78) == 0x2B)
-        SpawnSparkPairs(D_L00_00173F60, 10);
+        emit_randomized_sparkle_pairs(D_L00_00173F60, 10);
 }
 extern char *D_L00_001600A4 MACRO_ADDR;
 extern float func_001F9D10(void *, void *);
@@ -1625,7 +1625,7 @@ void wrench_update(Wrench48 *m) {
         }
         if ((m->animation_flags&2) && wplayer48()->state!=0x3B && m->current_animation!=1)
             MobyBlendAnimation(m,1,0,scale_ticks(5));
-        CopyHeroAnimToMoby((char*)m);
+        update_wrench_animation_from_hero_state((char*)m);
         {
         int current_state=wplayer48()->state;
         if (current_state!=19 && current_state!=33 && current_state!=43 && current_state!=112 && current_state!=20) {
@@ -1692,10 +1692,10 @@ void wrench_update(Wrench48 *m) {
                 }
             }
         }
-        if (wplayer48()->state==20 && Hero_IsTimeInWindow(27.0f)) {
+        if (wplayer48()->state==20 && test_hero_animation_frame_window(27.0f)) {
             Moby_PlaySound(2,0,(int)m);
             qcopy(work.v[0],wplayer48()->sweep_end); qcopy(work.v[1],work.v[0]);
-            HeroMoveUpAlongNormal(work.v[0],work.v[0],0.7f); HeroMoveUpAlongNormal(work.v[1],work.v[1],-0.9f);
+            offset_hero_position_against_gravity(work.v[0],work.v[0],0.7f); offset_hero_position_against_gravity(work.v[1],work.v[1],-0.9f);
             if (func_L00_001EFFF0(work.v[0],work.v[1],2,0,0)) spawn_wrench_impact_effects((char*)m);
         }
         if (active) {
@@ -1783,14 +1783,14 @@ void wrench_update(Wrench48 *m) {
             }
             if (arrived) {
                 int sound;
-                Hero_PlayActiveSound(5,0);
+                allocate_hero_voice_for_entry(5,0);
                 sound=wplayer48()->thrown_sound;
                 if (sound!=-1) { unsigned char *audio=waudio48(sound); if (*(Wrench48**)(audio+0x88)==wplayer48()->moby && audio[0x74]) Sound_StopSlot(sound); }
-                wplayer48()->thrown_sound=-1; DeleteOwnedMobys((char*)wplayer48()+0x17B0); wplayer48()->thrown=0; m->state=0;
+                wplayer48()->thrown_sound=-1; clear_moby_transform_history((char*)wplayer48()+0x17B0); wplayer48()->thrown=0; m->state=0;
             }
         }
         collided=0;
-        if (func_L00_001EFFF0(work.v[0],position,2,0,0) && CollType() && (!wrench_hit48.moby || !IsMobyClass500To540((int)wrench_hit48.moby))) collided=wrench_hit48.surface!=0;
+        if (func_L00_001EFFF0(work.v[0],position,2,0,0) && CollType() && (!wrench_hit48.moby || !is_moby_in_class_range_500_to_540((int)wrench_hit48.moby))) collided=wrench_hit48.surface!=0;
         if (collided || d->collision) {
             d->collision=0;
             if (!wplayer48()->attack_cooldown) { d->timer=scale_ticks(30); wplayer48()->attack_cooldown=1; Moby_PlaySound(2,0,(int)m); }
@@ -1807,7 +1807,7 @@ void wrench_update(Wrench48 *m) {
                 WDamage48 *hit=(WDamage48*)GetFlaggedPvarWord(wrench_hit48.moby);
                 if (!hit || hit->hit_count<2 || hit->hit_index!=work.shifted.query.class_id) {
                     work.q[7]=*(WQuad48*)wrench_hit48.moby->position;
-                    LerpVec4(work.v[6],work.v[5],work.v[7],0.5f); SpawnSparkPairs(work.v[6],5);
+                    LerpVec4(work.v[6],work.v[5],work.v[7],0.5f); emit_randomized_sparkle_pairs(work.v[6],5);
                     d->timer=scale_ticks(30); wplayer48()->attack_cooldown=1; Moby_PlaySound(get_wrench_hit_sound_variant(),0,(int)m);
                 }
             }
@@ -1890,7 +1890,7 @@ char *SpawnHomingBolt(void *owner, void *pos, float a, float b, float c, char *t
             qcopy(m + 0x10, &D_L00_00173F60);
         }
         func_L00_00251E30(m);
-        MobyList_AddUnique(m, D_L00_001B0AF0, 0x1F);
+        append_unique_moby_index(m, D_L00_001B0AF0, 0x1F);
         *(float *)(m + 0x2C) += *(float *)(m + 0x2C);
     }
     return m;
@@ -1932,7 +1932,7 @@ extern long D_L00_0015F438 MACRO_ADDR;
 extern long D_L00_0015F428 MACRO_ADDR;
 
 // Creates the singleton light moby and resets its globals.
-void *Moby1523Spawn(int unused, float *pos) {
+void *spawn_tracked_class_5f3_moby(int unused, float *pos) {
     char *m = CreateMoby(0x5F3);
     if (m != 0 && *(int *)&D_L00_00161490 == 0) {
         char *d;
@@ -1950,7 +1950,7 @@ void *Moby1523Spawn(int unused, float *pos) {
         D_L00_0015F420 = 0;
         D_L00_0015F430 = 0;
         *(int *)(d + 0x10) = 0;
-        *(short *)(d + 0x2C) = AllocPointLight(pos, 0.0f, 0.0f, 0);
+        *(short *)(d + 0x2C) = allocate_packed_color_point_light_slot(pos, 0.0f, 0.0f, 0);
     }
     return m;
 }
@@ -1977,7 +1977,7 @@ extern void func_L00_0023F1D0(int);
 extern void func_0020D678(void *);
 
 // Tears down the tracked moby if it is class 0x5F3 and dead, freeing its slot and clearing the pointer.
-void Moby1523Delete(void) {
+void remove_tracked_class_5f3_moby(void) {
     char *m = *(char **)&D_L00_00161490;
     if (m != 0) {
         if (*(short *)(m + 0xA6) == 0x5F3) {
@@ -1988,7 +1988,7 @@ void Moby1523Delete(void) {
             D_L00_0015F420 = 0;
             D_L00_0015F430 = 0;
             idx = *(short *)(data + 0x2C);
-            if (idx != -1) light_off_67e8(idx);
+            if (idx != -1) release_point_light_slot(idx);
             DeleteMoby(*(char **)&D_L00_00161490);
         }
         *(int *)&D_L00_00161490 = 0;

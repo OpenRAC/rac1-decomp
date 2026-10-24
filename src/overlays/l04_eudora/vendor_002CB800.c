@@ -744,7 +744,7 @@ void woodcut_bot_update(WBMoby *m) {
 
                     m->fBC |= 5;
                     MobyBlendAnimation(m, 5, 0, scale_ticks(3));
-                    WalkCycle_ResetFeet(d->f160);
+                    reset_walker_gait_helpers(d->f160);
                     m->state = 9;
                     cls = *(short *)(*(char **)(p + 0x20) + 0xA6);
                     if (cls == 0x131 || cls == 0xB0) {
@@ -763,7 +763,7 @@ void woodcut_bot_update(WBMoby *m) {
             case 4:
             case 5:
                 MobyBlendAnimation(m, 6, 0, scale_ticks(10));
-                WalkCycle_ResetFeet(d->f160);
+                reset_walker_gait_helpers(d->f160);
                 m->state = 1;
                 d->f3E4 = 2.0f / func_001F9878(15.0f);
                 *(w128 *)v = *(w128 *)(p + 0x10);
@@ -862,7 +862,7 @@ void woodcut_bot_update(WBMoby *m) {
                 } else {
                     d->f3D0 = 0.0f;
                     MobyBlendAnimation(m, 0x10, 0, scale_ticks(10));
-                    WalkCycle_ResetFeet(d->f160);
+                    reset_walker_gait_helpers(d->f160);
                     m->state = 0xA;
                     m->fBC |= 1;
                 }
@@ -934,7 +934,7 @@ void woodcut_bot_update(WBMoby *m) {
                 } else {
                     d->f3D0 = 0.0f;
                     MobyBlendAnimation(m, 0x10, 0, scale_ticks(10));
-                    WalkCycle_ResetFeet(d->f160);
+                    reset_walker_gait_helpers(d->f160);
                     m->state = 0xA;
                     m->fBC |= 1;
                 }
@@ -946,7 +946,7 @@ void woodcut_bot_update(WBMoby *m) {
         if (excited) {
             if (dist < 3.0f && adiff < 1.5707964f) {
                 MobyBlendAnimation(m, 4, 0, scale_ticks(10));
-                WalkCycle_ResetFeet(d->f160);
+                reset_walker_gait_helpers(d->f160);
                 m->state = 8;
             } else if (d->f3DC == -1 || IsPointInPolygon(tgt, D_L04_001B0930[d->f3DC] + 4, *D_L04_001B0930[d->f3DC]) != 0) {
                 m->state = 5;
@@ -954,7 +954,7 @@ void woodcut_bot_update(WBMoby *m) {
             } else if (adiff > 1.5707964f) {
                 d->f3D0 = 0.0f;
                 MobyBlendAnimation(m, 0x10, 0, scale_ticks(10));
-                WalkCycle_ResetFeet(d->f160);
+                reset_walker_gait_helpers(d->f160);
                 m->state = 0xA;
             }
         } else {
@@ -964,12 +964,12 @@ void woodcut_bot_update(WBMoby *m) {
     case 5: {
         if (m->fBC & 8) {
             m->fBC &= ~8;
-            LegRig_Init(m, d->f160);
+            reset_leg_rig_from_animation(m, d->f160);
         }
         LegWalkerUpdate(m, d->f160, D_0015EE6C * 4.0f, func_L00_001FF860(tgt[0] - m->pos[0], tgt[1] - m->pos[1]), D_0015EE70 * 20.0f);
         if (dist < 3.0f && adiff < 1.5707964f) {
             MobyBlendAnimation(m, 4, 0, scale_ticks(10));
-            WalkCycle_ResetFeet(d->f160);
+            reset_walker_gait_helpers(d->f160);
             m->state = 8;
         } else if (d->f3DC != -1) {
             float v[4];
@@ -985,7 +985,7 @@ void woodcut_bot_update(WBMoby *m) {
                 } else if (IsPointInPolygon(tgt, D_L04_001B0930[d->f3DC] + 4, *D_L04_001B0930[d->f3DC]) != 0) {
                     d->f3D0 = 0.0f;
                     MobyBlendAnimation(m, 0x10, 0, scale_ticks(10));
-                    WalkCycle_ResetFeet(d->f160);
+                    reset_walker_gait_helpers(d->f160);
                     m->state = 0xA;
                 }
             }
@@ -1000,16 +1000,16 @@ void woodcut_bot_update(WBMoby *m) {
     case 6:
         if (m->fBC & 8) {
             m->fBC &= ~8;
-            LegRig_Init(m, d->f160);
+            reset_leg_rig_from_animation(m, d->f160);
         }
         if (dist < 3.0f && adiff < 1.5707964f) {
             MobyBlendAnimation(m, 4, 0, scale_ticks(10));
-            WalkCycle_ResetFeet(d->f160);
+            reset_walker_gait_helpers(d->f160);
             m->state = 8;
         } else {
             if (m->fBC & 8) {
                 m->fBC &= ~8;
-                LegRig_Init(m, d->f160);
+                reset_leg_rig_from_animation(m, d->f160);
             }
             if (func_001F9D48(pos, d->f3B0) < 2.0f) {
                 m->state = 7;
@@ -1025,7 +1025,7 @@ void woodcut_bot_update(WBMoby *m) {
                     if (IsPointInPolygon(v, D_L04_001B0930[d->f3DC] + 4, *D_L04_001B0930[d->f3DC]) == 0) {
                         d->f3D0 = 0.0f;
                         MobyBlendAnimation(m, 0x10, 0, scale_ticks(10));
-                        WalkCycle_ResetFeet(d->f160);
+                        reset_walker_gait_helpers(d->f160);
                         m->state = 0xA;
                         m->fBC |= 0x10;
                     } else if (IsPointInPolygon(tgt, D_L04_001B0930[d->f3DC] + 4, *D_L04_001B0930[d->f3DC]) != 0) {
@@ -1038,7 +1038,7 @@ void woodcut_bot_update(WBMoby *m) {
     case 7:
         if (dist < 3.0f && adiff < 1.5707964f) {
             MobyBlendAnimation(m, 4, 0, scale_ticks(10));
-            WalkCycle_ResetFeet(d->f160);
+            reset_walker_gait_helpers(d->f160);
             m->state = 8;
         } else {
             LegWalkerUpdate(m, d->f160, D_0015EE6C * 0.0f, m->rot[2], D_0015EE70 * 20.0f);
@@ -1661,7 +1661,7 @@ void lieutenant_update(char *m) {
             *(unsigned char *)(m + 0x7F) = 0x18;
         }
     }
-    AttachManipulatorsIfCheat(m);
+    attach_big_head_cheat_manipulator_to_matching_moby(m);
     switch (*(unsigned char *)(m + 0x20)) {
     case 0:
         c = *(unsigned char *)(m + 0xB0);
@@ -2109,8 +2109,8 @@ void BreakableL04_Update(char *m) {
         break;
     case 2:
         Moby_PlaySound(0, 0, (int)m);
-        SpawnBreakFxByDistance(m);
-        SpawnMobyBurstFx(m, 0x72C, 1, 0x72C, 1, 1, 2);
+        spawn_proximity_gated_bolts(m);
+        spawn_moby_break_fragments(m, 0x72C, 1, 0x72C, 1, 1, 2);
         spawn_moby_from_placement(m, 0x72B);
         DeleteMoby(m);
         break;

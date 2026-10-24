@@ -27,7 +27,7 @@ typedef struct {
     char pad21[0xDF];
 } O_26e008;
 
-int count_group_e81e0(int i, int st) {
+int count_active_moby_group_members(int i, int st) {
     unsigned short *p;
     int n = 0;
     O_26e008 *o;
@@ -62,7 +62,7 @@ void MobyGroup_SetByteBC(int i, int v) {
 extern int D_L01_00160058_m __asm__("D_L01_00160058") MACRO_ADDR;
 
 // Walks a list of moby indices and sets the state byte of each one that is non-negative.
-void MobyGroup_SetState(int list, int state)
+void set_moby_list_state(int list, int state)
 {
     unsigned short *p;
     unsigned short *q = (unsigned short *)D_L01_001ABFC0[list];
@@ -79,7 +79,7 @@ void MobyGroup_SetState(int list, int state)
 extern void func_001F9C48(void *, void *, float);
 extern int func_L00_00200290(char *, float);
 
-void IsBSphereVisibleScaled(char *vec, float scale)
+void check_scaled_vector_bsphere(char *vec, float scale)
 {
     char scratch[16];
     scale_vector(scratch, vec, 0.0009765625f);
@@ -119,13 +119,13 @@ int compute_clear_path_point_mask(int *objs, int n, int idx, float f, float *pos
                 func_L00_001FF4B0(v, v, fz);
                 FastVecSub(w1, pos, v);
                 FastVecAdd(w2, pos, v);
-                if (DoesSegmentCrossPath(objs[j], w1, e) != 0) {
+                if (test_path_segment_strict_crossing(objs[j], w1, e) != 0) {
                     found = 1;
-                } else if (DoesSegmentCrossPath(objs[j], w2, e) != 0) {
+                } else if (test_path_segment_strict_crossing(objs[j], w2, e) != 0) {
                     found = 1;
                 }
             } else {
-                if (DoesSegmentCrossPath(objs[j], pos, t + (k * 16 + 0x10)) != 0) found = 1;
+                if (test_path_segment_strict_crossing(objs[j], pos, t + (k * 16 + 0x10)) != 0) found = 1;
             }
             if (found) break;
         }
@@ -281,7 +281,7 @@ extern void func_L00_00261B00(void *, int, int, int, int);
 extern char D_0013E633[];
 
 // Breaks an object into fragments, with a flag when it is near the origin.
-void SpawnBreakFxByDistance(char *moby)
+void spawn_proximity_gated_bolts(char *moby)
 {
     int r = 0;
     if (func_001F9D48(moby + 0x10, D_0013E633 + 0xE9D) < 7.0f) {

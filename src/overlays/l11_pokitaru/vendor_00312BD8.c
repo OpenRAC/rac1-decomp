@@ -92,7 +92,7 @@ void *select_ship_lock_on_target(void *a0, char *a1, int a2, int a3, void *a4) {
     void *list[12];
     count_active_and_visible_listed_mobys(a0, a1 + 0xE8, a1 + 0xEA);
     if (a4 != 0) {
-        if (TargetScreenDistanceSq(a0, a4) < bestd) return a4;
+        if (compute_ship_target_reticle_distance_squared(a0, a4) < bestd) return a4;
     }
     p = D_L11_001AC540[*(short *)(a1 + 0x108)];
     if (p == 0) return 0;
@@ -102,7 +102,7 @@ void *select_ship_lock_on_target(void *a0, char *a1, int a2, int a3, void *a4) {
             int n = collect_oil_tanker_chain_mobys(m, list);
             int i;
             for (i = 1; i < n; i++) {
-                float d = TargetScreenDistanceSq(a0, list[i]);
+                float d = compute_ship_target_reticle_distance_squared(a0, list[i]);
                 if (d < bestd) { best = list[i]; bestd = d; }
             }
         }
@@ -115,7 +115,7 @@ extern int func_001FA898_r(float) __asm__("func_001FA898");
 extern char D_L11_00167A60[];
 
 /* squared distance from a point to a projected target, or a large value when out of range */
-float TargetScreenDistanceSq(void *moby_v, void *o_v) {
+float compute_ship_target_reticle_distance_squared(void *moby_v, void *o_v) {
     char *moby = moby_v;
     char *o = o_v;
     char *data = *(char **)(moby + 0x78);
@@ -1541,7 +1541,7 @@ void puffoid_update(struct Moby *moby) {
         pos[2] = 0.0f;
         func_L00_001FF4B0(pos, pos, 2.5f);
         FastVecAdd(pos, pos, &moby->pos);
-        if (DoesSegmentCrossPath(d->unk230, &moby->pos, pos)) {
+        if (test_path_segment_strict_crossing(d->unk230, &moby->pos, pos)) {
             float *rz = &moby->rot.z;
             float ang = func_L00_001FF860(d->target->pos.x - moby->pos.x, d->target->pos.y - moby->pos.y);
             SteerAngleWithVelocity(rz, &d->unk250, ang,
@@ -1618,7 +1618,7 @@ void puffoid_update(struct Moby *moby) {
     case 11:
         if (mine_fall(moby, d->unk120) & 0x160) {
             clear_u64_value(pos);
-            SpawnExplosionFxSwapped(moby, &moby->pos, -1, 0.5f, 10.0f);
+            spawn_color_swapped_explosion_burst(moby, &moby->pos, -1, 0.5f, 10.0f);
             DeleteMoby(moby);
             return;
         }
@@ -1748,7 +1748,7 @@ void puffoid_update(struct Moby *moby) {
                             &moby->pos, &moby->rot);
         if (mine_fall(moby, d->unk120) & 0x160) {
             clear_u64_value(pos);
-            SpawnExplosionFxSwapped(moby, &moby->pos, -1, 0.5f, 10.0f);
+            spawn_color_swapped_explosion_burst(moby, &moby->pos, -1, 0.5f, 10.0f);
             DeleteMoby(moby);
             return;
         }
@@ -2811,7 +2811,7 @@ void Moby1297Update(unsigned char *moby) {
     char *data = *(char **)(moby + 0x78);
     float v[4];
     float *vp;
-    Moby1297_EmitRingParticles((char *)moby);
+    spawn_energy_sphere_particles((char *)moby);
     switch (moby[0x20]) {
     case 1:
         if (func_001F9908_i(data + 0x20)) {
@@ -2829,7 +2829,7 @@ void Moby1297Update(unsigned char *moby) {
         break;
     case 2: {
         char *pos = (char *)moby + 0x10;
-        Moby1297_EmitBurstParticle((char *)moby);
+        spawn_energy_sphere_spark((char *)moby);
         vp = v;
         qcopy(vp, pos);
         FastVecAdd(pos, pos, data);
@@ -2845,7 +2845,7 @@ void Moby1297Update(unsigned char *moby) {
 }
 
 /* Spawns a spark effect moby from a source moby, initialises its particle bytes and warms it up. */
-char *Moby1297_Spawn(char *src, void *pos, int ticks) {
+char *spawn_class_511_moby_with_sparks(char *src, void *pos, int ticks) {
     char *mob = CreateMoby(0x511);
     if (mob != 0) {
         char *d;
@@ -2871,12 +2871,12 @@ char *Moby1297_Spawn(char *src, void *pos, int ticks) {
             if (i * (i & 1)) p[0] = 0xFF; else p[0] = 1;
             p[4] = t;
         }
-        for (k = 0x31; k >= 0; k--) Moby1297_EmitTrailParticle(mob);
+        for (k = 0x31; k >= 0; k--) spawn_moby_radial_spark(mob);
     }
     return mob;
 }
 /* Copies the vector src into the moby's position and sets a data word to 5. */
-void Moby1297_SetPosition(char *arg, void *src) {
+void set_moby_position_and_refresh_removal_timer(char *arg, void *src) {
     char *dst = *(char **)(arg + 0x78);
     qcopy(arg + 0x10, src);
     *(int *)(dst + 0x28) = 5;
@@ -2906,7 +2906,7 @@ extern short D_L11_00162434;
 extern short D_L11_00162438;
 
 /* Builds a few direction vectors from a moby's axes and calls the 0x219780 spawner. */
-void Moby1297_EmitTrailParticle(char *m) {
+void spawn_moby_radial_spark(char *m) {
     float v0[4];
     float v1[4];
     float v2[4];
@@ -2930,7 +2930,7 @@ extern unsigned char *func_L00_00273E08(float f, void *pos, int a1, unsigned cha
 extern short D_L11_00162414, D_L11_00162410;
 
 // Spawns four particles around the moby, each rotated a step further around the offset vector.
-void Moby1297_EmitRingParticles(char *moby) {
+void spawn_energy_sphere_particles(char *moby) {
     float v0[4];
     float v1[4];
     char *data = *(char **)(moby + 0x78);
@@ -2963,7 +2963,7 @@ extern short D_L11_00162458;
 extern short D_L11_0016245C;
 
 // Spawns a two-tone effect at a moby's position using level tuning constants.
-void Moby1297_EmitBurstParticle(char *moby) {
+void spawn_energy_sphere_spark(char *moby) {
     float v0[4];
     float v1[4];
     int c1;
@@ -3282,7 +3282,7 @@ void update_moby_list_empty_dialogue_trigger(char *moby) {
     int *data = *(int **)(moby + 0x78);
     if (data[0] == -1) {
         DeleteMoby(moby);
-    } else if (data[1] != -1 && count_group_e81e0(data[1], -1) == 0) {
+    } else if (data[1] != -1 && count_active_moby_group_members(data[1], -1) == 0) {
         unsigned char *g = menu_item_enabled_115 + 1;
         if (g[0x13] == 0) {
             g[0x13] = 1;
@@ -3368,7 +3368,7 @@ void update_bubble_motion_and_scale(char *m) {
 }
 
 /* Creates a class 0x5F4 moby at position with random rotation and returns it, or 0. */
-char *Bubble_Spawn(void *position, void *vector, void *owner, float scale) {
+char *spawn_class_5f4_moby_with_random_rotation(void *position, void *vector, void *owner, float scale) {
     char *moby = CreateMoby(0x5F4);
     if (moby != 0) {
         char *data = *(char **)(moby + 0x78);
@@ -3473,8 +3473,8 @@ void Pokitaru_BreakOnHitUpdate(char *m) {
         break;
     case 2:
         Moby_PlaySound(0, 0, (int)m);
-        SpawnBreakFxByDistance(m);
-        SpawnMobyBurstFx(m, 0x745, 1, 0x745, 1, 11, 2);
+        spawn_proximity_gated_bolts(m);
+        spawn_moby_break_fragments(m, 0x745, 1, 0x745, 1, 11, 2);
         spawn_moby_from_placement(m, 0x744);
         DeleteMoby(m);
         break;
@@ -3490,7 +3490,7 @@ extern short D_L11_001625E0;
 extern short D_L11_00162600;
 
 // Runs four setup calls over parallel tables, offset by the argument.
-void DrawHudQuadGroup(int arg) {
+void emit_level11_layered_effect_batches_with_pair_offset(int arg) {
     int *a = (int *)&D_L11_001625C0;
     int *b = (int *)&D_L11_001625D0;
     int *c = (int *)&D_L11_001625E0;

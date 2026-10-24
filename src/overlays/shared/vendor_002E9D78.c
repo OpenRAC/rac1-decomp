@@ -8,9 +8,9 @@
 extern void func_001F9BF0(float *, float *, float *);
 extern float func_L00_002E9B60(char *, float *, float);
 
-void Cam_SignedAngleToPoint(char *moby, int arg, float f)
+void update_follow_camera_angle_blend_from_position(char *moby, int arg, float f)
 {
     float scratch[4];
     char *data = *(char **)(moby + 0x70);
-    Cam_SignedAngleBetweenOffsets(moby, (FastVecSub(scratch, (float *)arg, (float *)(data + 0x40)), scratch), f);
+    update_follow_camera_angle_blend_from_direction(moby, (FastVecSub(scratch, (float *)arg, (float *)(data + 0x40)), scratch), f);
 }

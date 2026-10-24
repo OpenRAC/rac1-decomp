@@ -41,7 +41,7 @@ extern void func_L00_00207948(int, int);
 extern int func_00216960(void);
 
 /* Opens the vendor screen for moby m in level lvl: sets up its camera, resets the screen state and runs it until it closes. */
-void OpenVendorScreen(char *m, int lvl) {
+void initialize_vendor_screen(char *m, int lvl) {
     char *g = D_0013E633 + 0xE1D;
     char *s = D_L01_001CABC0;
     char *c = fx_cutscene;
@@ -62,8 +62,8 @@ void OpenVendorScreen(char *m, int lvl) {
     *(int *)(s + 4) = 0;
     *(char **)(s + 0x28) = m;
     sc = s + 0xC0;
-    Hud_ResetState();
-    HelpPopup_Cancel();
+    reset_hud_and_suspend_weapon_updates();
+    clear_active_help_record();
     Hero_SetMoveState(100, 1);
     g[0x20AC] = 1;
     g[0x20A5] = 1;

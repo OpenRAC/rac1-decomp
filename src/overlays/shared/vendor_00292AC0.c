@@ -193,7 +193,7 @@ char *revive_spawner_pooled_child(char *m, float *at, int cls) {
             current_moby->scale = ((SpawnClass *)current_moby->pclass)->scale * 0.1f;
         }
         MobySetAnimation(current_moby, 0, 0);
-        target = (SpawnTarget *)Moby_GetClassRecord(current_moby);
+        target = (SpawnTarget *)get_moby_suck_cannon_record(current_moby);
         if (target != 0) {
             target->unk94 = 0;
             target->unk68 = 0;
@@ -614,10 +614,10 @@ void ChildSpawnerUpdate(Moby *moby) {
                 v40.z = 0.0f;
                 func_L00_001FF4B0(&v40, &v40, speed);
                 func_L00_001FF4B0(&v60, &v40, 0.05f);
-                JitterVector((float *)&v60, 0.025f);
+                add_random_offset_to_vector_xyz((float *)&v60, 0.025f);
                 func_L00_001FF240(&v70, &v60, &v30);
                 v40.z = jump_speed_4318(&v60, &v50, 0, speed, -(d->fDC * D_0015EE70));
-                m = SpawnMoby545((char *)moby, (float *)&v60, (float *)&v40, d->h8C, d->b83);
+                m = spawn_class_221_moby((char *)moby, (float *)&v60, (float *)&v40, d->h8C, d->b83);
                 if (m != 0) {
                     *(unsigned char *)(m + 0x30) = 0xFF;
                 }
@@ -633,7 +633,7 @@ extern int func_001F9850(int);
 extern void func_L00_00251E30(void *);
 
 // Spawns the class 0x221 moby for an owner at pos with dir, random angles and a size, copying the owner's colour.
-char *SpawnMoby545(char *owner, float *pos, float *dir, short ang, int arg)
+char *spawn_class_221_moby(char *owner, float *pos, float *dir, short ang, int arg)
 {
     char *m;
     char *d;
@@ -835,7 +835,7 @@ void Moby545Update(char *moby)
     if (1018.0f < *(float *)(moby + 0x18)) *(float *)(moby + 0x18) = 1018.0f;
 }
 /* moby state predicate: true when field 0xA6 is 0x23E and the state byte is 0xE */
-int Moby574_IsInState14(char *moby) {
+int is_moby_class_23e_in_state_14(char *moby) {
     if (*(short *)(moby + 0xA6) == 0x23E &&
         ((unsigned char *)moby)[0x20] == 0xE) {
         return 1;
@@ -1226,7 +1226,7 @@ extern float func_001F9B88(float);
 extern int func_0022ED80(int, int, int);
 
 /* Moby update: advance a timer from a collision query, switch state, aim head angles. */
-void Moby_UpdateHitHealth(char *m) {
+void handle_blarg_helicopter_hits(char *m) {
     int st;
     float fv;
     int res;
@@ -1292,7 +1292,7 @@ void statue_update(unsigned char *m) {
         z = 0.0f;
         p = D_L03_0015F660;
         pos = m + 0x10;
-        SpawnBreakFxByDistance(m);
+        spawn_proximity_gated_bolts(m);
         vel = m + 0x40;
         SpawnBreakFragment(m, 0x727, pos, vel, 0, 0, z, p, p, p);
         SpawnBreakFragment(m, 0x728, pos, vel, 0, 0, z, p, p, p);
@@ -1408,7 +1408,7 @@ void update_homing_spark_projectile(Moby *moby) {
         }
         ang = func_L00_001FF860(d->vel.x, d->vel.y);
         if (FastDiffRots(ang, func_L00_001FF860(tgt.pos.x - moby->pos.x, tgt.pos.y - moby->pos.y)) < 1.5707964f) {
-            StepAngleToward(&ang, 0, func_L00_001FF860(tgt.pos.x - moby->pos.x, tgt.pos.y - moby->pos.y), D_L03_00161BB0 * 0.017453292f * D_0015EE6C);
+            step_angle_toward_target(&ang, 0, func_L00_001FF860(tgt.pos.x - moby->pos.x, tgt.pos.y - moby->pos.y), D_L03_00161BB0 * 0.017453292f * D_0015EE6C);
             d->vel.x = FastCos(ang) * func_001F9CE8(d);
             d->vel.y = FastSin(ang) * func_001F9CE8(d);
         }
@@ -1520,7 +1520,7 @@ void update_homing_spark_projectile(Moby *moby) {
 extern struct Moby *func_0020D348_m(int) __asm__("func_0020D348");
 
 /* Spawns a class 0x350 moby and fills its data block from a position, vector and parameters. */
-char *SpawnHomingSpark(char *a, char *pos, int c, int d, float f)
+char *spawn_homing_spark_projectile(char *a, char *pos, int c, int d, float f)
 {
     char *m = (char *)func_0020D348_m(0x350);
     char *data;
@@ -1553,7 +1553,7 @@ extern unsigned char D_L03_0017C5C0[];
 extern short D_L03_00161C44;
 
 /* Re-arms the matching entry of the level's moby list in mode 2 (func_L05_003188A8 with argument 1). */
-void AttachCheatManipulatorToMatchingL03(char *a) {
+void attach_shared_manipulator_to_matching_class_moby(char *a) {
     if (D_L03_0015F6A8 == 2 && gCheats[0] != 0) {
         int i;
         for (i = 0; i < D_L03_0016C9E0.n; i++) {
@@ -1661,7 +1661,7 @@ void qwark_rilgar_update(char *m)
     case QWARK_RILGAR_WAIT_FOR_PLAYER_IN_REGION:
         if (watch_data->region_a != -1 &&
             func_00215570_E9C38b(&hero.motion.pos, watch_data->region_a)) {
-            LevelTable_SetSlotValue(m, 1);
+            set_moby_dialogue_record_value(m, 1);
             moby->state = 2;
         }
         break;
@@ -1736,7 +1736,7 @@ extern char D_L03_001DC460[];
 void update_moby_draw_callback(unsigned char *moby) {
     switch (moby[0x20]) {
     case 0:
-        ScaleTableIntoBuffer(D_L03_001DC460, 0.6666667f, 0x20);
+        prepare_scaled_float_table_with_target_byte(D_L03_001DC460, 0.6666667f, 0x20);
         moby[0x20] = 1;
         moby[0x30] = 0xFF;
         break;
@@ -1875,7 +1875,7 @@ extern int D_L03_0015F050_E9C38b __asm__("D_L03_0015F050") MACRO_ADDR;
 extern int func_00215570_E9C38b(void *arg0, int arg1) __asm__("func_00215570");
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_002de370.c, FUN_L03_002e8870. */
-int Camera_CheckActivation(char *a0, char *a1) {
+int evaluate_clip_volume_candidate(char *a0, char *a1) {
     char *entry = (char *)(D_L03_0015F050_E9C38b + (*(short *)(a0 + 0x84) << 5));
     char *sub = *(char **)(entry + 0x1C);
     char *q;
@@ -1899,7 +1899,7 @@ extern char D_0013E633[];
 extern int func_00215570(void *arg0, int arg1);
 
 // Exit camera update: in state 4, sets state 3 once the table entry check returns zero.
-void Camera_CheckDeactivation(char *moby)
+void set_transform_state_three_when_outside_clip_volume(char *moby)
 {
     char *entry = (char *)(D_L03_0015F050 + (*(short *)(moby + 0x84) << 5));
     char *sub = *(char **)(entry + 0x1C);

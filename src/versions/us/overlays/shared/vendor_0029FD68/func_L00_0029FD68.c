@@ -1,4 +1,4 @@
-void Vendor_DrawCostBox(void *m, int x, int y) {
+void draw_vendor_purchase_text(void *m, int x, int y) {
     TBox box;
     char text[256];
     int cost;

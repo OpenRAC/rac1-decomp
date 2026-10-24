@@ -268,7 +268,7 @@ void initialize_pause_menu(void) {
     } else {
         decompress_and_relocate_selected_groups(0);
     }
-    DownloadFrameBuffer((*(Menu_277208 *)D_L00_001BA070).unk10, D_0015EF84, *(int *)((char *)D_0013E15A + 0x4AA) << 11);
+    transfer_draw_buffer_chunks((*(Menu_277208 *)D_L00_001BA070).unk10, D_0015EF84, *(int *)((char *)D_0013E15A + 0x4AA) << 11);
     t = D_0015EF78;
     (*(Menu_277208 *)D_L00_001BA070).unk18 = t;
     if ((*(Menu_277208 *)D_L00_001BA070).state == 11 || (*(Menu_277208 *)D_L00_001BA070).state == 15) {
@@ -411,8 +411,8 @@ void close_pause_menu(void) {
         }
         handle = show_health_hud();
         hud_keep_visible(handle, scale_ticks(0xB4));
-        handle = queue_animation_update(2, 0x754E, HudBoltsInit, HudBoltsUpdate,
-                               HudBoltsDraw, &gBolts, 9999999);
+        handle = queue_animation_update(2, 0x754E, initialize_bolt_counter_hud, update_bolt_counter_hud_animation_and_visibility,
+                               draw_bolt_counter_hud_panel, &gBolts, 9999999);
         hud_keep_visible(handle, scale_ticks(0xB4));
         {
             char *s = D_L00_001BA070;
@@ -621,7 +621,7 @@ void update_pause_menu(void) {
             GS.unk130 = tmp;
             FadeToBlack(scale_ticks(0x10));
             D_L00_0015F6A8 = 0;
-            start_indexed_disc_stream((int)GS.unkE4);
+            PlayMovieEntryIfIdle((int)GS.unkE4);
         } else if (GS.unkC == 4) {
             tmp = D_0015EFD8;
             D_0015EFD8 = 1;
@@ -1457,7 +1457,7 @@ void restore_or_clear_level_state(void) {
     for (i = 0; (e = (char *)D_L00_00160098 + (i << 8)) < (char *)D_L00_0016009C; i++) {
         if (*(short *)(e + 0xA6) == s) {
             int *q = (int *)D_L00_001BB5C0;
-            Hero_BeginObjectControl(q[0x11], q[0x13], e);
+            enter_hero_vehicle_mode(q[0x11], q[0x13], e);
             break;
         }
     }
@@ -1473,7 +1473,7 @@ done:
 extern unsigned char *D_L00_00160098 MACRO_ADDR;
 extern unsigned char *D_L00_0016009C MACRO_ADDR;
 /* Finds the 0x100-byte record whose short at +0xB2 equals id, or 0 if none. */
-int Moby_FindByRecordId(int a, int id) {
+int find_moby_by_id(int a, int id) {
     unsigned char *p;
     for (p = D_L00_00160098; p != D_L00_0016009C; p += 0x100) {
         if (*(short *)(p + 0xB2) == id)
@@ -1490,7 +1490,7 @@ void restore_moby_state_entries(int *h) {
     int i;
 
     for (i = 0; i < *h; i++) {
-        int m = Moby_FindByRecordId(((Ent *)(h + 1))[i].b, ((Ent *)(h + 1))[i].a);
+        int m = find_moby_by_id(((Ent *)(h + 1))[i].b, ((Ent *)(h + 1))[i].a);
         if (m != 0) {
             int dst;
             if (((Ent *)(h + 1))[i].kind == 1) {

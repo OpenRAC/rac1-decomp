@@ -48,7 +48,7 @@ void update_moby_proximity_interaction(unsigned char *m) {
                     *(unsigned short *)(m + 0x34) |= 0x41;
                     StartCutscene(9);
                 } else {
-                    Hud_ClosePopupIfActive(2);
+                    remove_help_message_for_selector(2);
                     D_L00_0015F710 = 1;
                     ship_index[1] = 0;
                 }
@@ -64,7 +64,7 @@ void update_moby_proximity_interaction(unsigned char *m) {
                 StartCutscene(5);
                 q[0x49] = 1;
             } else if ((q = D_0013D355 + 0x13B)[0x4A] == 0 && D_0013DE4B[8] != 0) {
-                start_indexed_disc_stream(0xB);
+                PlayMovieEntryIfIdle(0xB);
                 q[0x4A] = 1;
             } else if ((q = D_0013D355 + 0x13B)[0x4B] == 0 && D_0013DE4B[8] != 0) {
                 StartCutscene(6);

@@ -236,7 +236,7 @@ void register_hero_hit_in_clip_volume(char *moby)
         r.c = *(unsigned short *)(moby + 0xA6);
         q = D_0013E633 + 0xE1D;
         *(int *)(q + 0x22A8) = 0;
-        PostHitMessageFromRecord(*(int *)(q + 0x2080), &r);
+        record_moby_hit(*(int *)(q + 0x2080), &r);
     }
 }
 typedef struct {
@@ -887,7 +887,7 @@ extern void func_00213DE0(void *, int, int, int);
 extern void func_L00_00251E30(void *);
 
 /* Spawn a projectile moby at a, aimed along b, with two parameters. */
-char *SpawnProjectile(void *a, float *b, int c, int d) {
+char *spawn_flying_bolt(void *a, float *b, int c, int d) {
     char *m = func_0020D348_m(0x2A9);
     if (m) {
         char *data;
@@ -1068,7 +1068,7 @@ void update_path_lightning_controller(char *m) {
         StartCutscene(0);
         p[0x68] = st;
         m[0x20] = 2;
-        Ship_ReleaseCurrent();
+        deactivate_recorded_moby();
         return;
     }
     if (st == 2) {
@@ -1860,9 +1860,9 @@ int advance_elevator_along_path(char *m) {
     }
     if (1.0f < x_rotation_blend)
         x_rotation_blend = 1.0f;
-    elevator_moby->rot.x = LerpAngle(*(float *)(moby_vars + 0xD0), rot[0], x_rotation_blend);
-    elevator_moby->rot.y = LerpAngle(*(float *)(moby_vars + 0xD4), rot[1], rotation_blend);
-    elevator_moby->rot.z = LerpAngle(*(float *)(moby_vars + 0xD8), rot[2], rotation_blend);
+    elevator_moby->rot.x = interpolate_angle(*(float *)(moby_vars + 0xD0), rot[0], x_rotation_blend);
+    elevator_moby->rot.y = interpolate_angle(*(float *)(moby_vars + 0xD4), rot[1], rotation_blend);
+    elevator_moby->rot.z = interpolate_angle(*(float *)(moby_vars + 0xD8), rot[2], rotation_blend);
     if (path_endpoint_reached != 0) {
         if (0.0f < *(float *)(moby_vars + 0xAC)) {
             int last_segment_index = *(int *)selected_path - 2;
@@ -1921,7 +1921,7 @@ typedef struct {
 } Level14VendorMoby;
 
 /* Select the vendor moby's state from its value and mark it initialized. */
-void Vendor_InitState(Level14VendorMoby *moby) {
+void enable_elevator_alternate_route(Level14VendorMoby *moby) {
     Level14VendorData *data = moby->data;
     moby->state = data->value < 0.0f ? 2 : 1;
     data->field124 = 1;
@@ -2082,7 +2082,7 @@ void TaxiUpdate(Moby *moby) {
     int flags = 0;
     qcopy(previous_position, &moby->pos);
     qcopy(previous_rotation, &moby->rot);
-    LevelTable_SetSlotValue(moby, (moby->flags ^ 1) & 1);
+    set_moby_dialogue_record_value(moby, (moby->flags ^ 1) & 1);
     switch (moby->state) {
     case TAXI_STATE_INITIALIZE:
         taxi_vars->hB0 = -1;
@@ -2471,7 +2471,7 @@ extern unsigned char D_0014171B_2FCEA8[] __asm__("D_0014171B") NOT_SDA;
  * deletes it, as state 3 does), then the aiming tail on the countdowns at data + 0x194 and 0x198. */
 void qwark_oltanis_update(char *m) {
     char *d = *(char **)(m + 0x78);
-    AttachManipulatorsIfCheat(m);
+    attach_big_head_cheat_manipulator_to_matching_moby(m);
     if (*(unsigned char *)(m + 0x31) != 0) {
         if (FastVecDist(m + 0x10, D_L14_001675C0) < 28.0f) {
             func_L00_0025B178(m);
@@ -2523,7 +2523,7 @@ void qwark_oltanis_update(char *m) {
         } else {
             ShowBanner(0x36B3, -1);
         }
-        GiveItem(0x20, 1);
+        grant_inventory_item(0x20, 1);
         mark_elevator_collected(D_L14_00160098_2FCEA8 + (*(int *)(d + 0x44) << 8));
         *(int *)(D_0014171B_2FCEA8 + 0xAB75 + (((short)*(unsigned short *)(m + 0xB2) >> 5) * 4 + (D_0015EE84_m << 8))) |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
         D_L14_001BAF60[(short)*(unsigned short *)(m + 0xB2) >> 5] |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);

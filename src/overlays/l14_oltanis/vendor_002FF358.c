@@ -460,7 +460,7 @@ extern unsigned char D_0014171B[] NOT_SDA;
  * 3 does), then the aiming tail on the countdowns at data + 0x160 and 0x164. */
 void sam_update(char *m) {
     char *d = *(char **)(m + 0x78);
-    AttachManipulatorsIfCheat(m);
+    attach_big_head_cheat_manipulator_to_matching_moby(m);
     switch (*(unsigned char *)(m + 0x20)) {
     case 0: {
         unsigned short id;
@@ -505,7 +505,7 @@ void sam_update(char *m) {
         m[0x20] = 1;
         if (*(short *)(d + 4) != 4) break;
         unlock_planet(0xF);
-        ShowPlanetBanner(0xF);
+        queue_planet_unlock_message(0xF);
         *(int *)(D_0014171B + 0xAB75 + (((short)*(unsigned short *)(m + 0xB2) >> 5) * 4 + (D_0015EE84 << 8))) |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
         D_L14_001BAF60[(short)*(unsigned short *)(m + 0xB2) >> 5] |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
         memcard_Save(0, -1);
@@ -806,7 +806,7 @@ extern short D_L14_0016215C;
 extern short D_L14_00162168;
 
 /* Spawns a moby with its data block filled from the arguments. */
-char *SpawnMoby1193(int a0, float *a1, float *a2, int a3, float f) {
+char *create_bouncing_spark(int a0, float *a1, float *a2, int a3, float f) {
     char *moby = CreateMoby(0x4A9);
     float t, u;
     unsigned short g;
@@ -843,7 +843,7 @@ extern void func_001F49B0(void (*)(void), void *);
 void update_moby_draw_registration(unsigned char *moby) {
     switch (moby[0x20]) {
     case 0:
-        ScaleTableIntoBuffer(D_L14_001E9FA0, 0.6666667f, 0x40);
+        prepare_scaled_float_table_with_target_byte(D_L14_001E9FA0, 0.6666667f, 0x40);
         moby[0x20] = 1;
         moby[0x30] = 0xFF;
         break;
@@ -899,7 +899,7 @@ void update_unlock_sequence_controller(unsigned char *moby) {
         moby[0x20] = 2;
         d[1] = scale_ticks(0x78);
         ((float *)d)[2] = 1.0f / IntToFloat(d[1]);
-        Trigger_Arm(d[4]);
+        activate_descriptor(d[4]);
         break;
     case 2:
         func_001F9908(&d[1]);
@@ -1259,7 +1259,7 @@ void update_triggered_helper_moby_sequence(Moby *moby) {
 }
 
 /* Creates a class 0x574 moby at the owner's position and returns it, or 0 if none is free. */
-char *SpawnMoby1396(char *owner)
+char *create_helper_sequence_owner_moby(char *owner)
 {
     char *moby = CreateMoby(0x574);
     if (moby != 0) {
@@ -1617,7 +1617,7 @@ extern float func_L00_001FF860(float, float);
 extern char *D_L14_001B0F30[];
 
 /* Precomputes per-point segment values of a path and snaps the moby to its first point. */
-void InitPathSegments(char *moby) {
+void initialize_flying_car_path(char *moby) {
     char *d = *(char **)(moby + 0x78);
     char *p = D_L14_001B0F30[*(int *)(d + 0x78)];
     int i;
@@ -1778,7 +1778,7 @@ extern char D_L14_001F62C0[];
 extern int func_001F4868(int);
 /* Draw callback for the 0x13-entry effect at D_L14_001F62C0. */
 void DrawQueuedEffect(void) {
-    Effect_DrawEntryList(D_L14_001F62C0, 0x13, GetEffectTex(0x2E), GetEffectTex(0x2F));
+    draw_textured_effect_list(D_L14_001F62C0, 0x13, GetEffectTex(0x2E), GetEffectTex(0x2F));
 }
 extern void func_L14_00308EB0(void);
 
@@ -1814,7 +1814,7 @@ void update_moby_list_clear_notification(unsigned char *moby) {
     unsigned v;
     int i;
     if (d[0] != -1) {
-        if (count_group_e81e0(d[0], -1) == 0) {
+        if (count_active_moby_group_members(d[0], -1) == 0) {
             if (gSkillPoints[0x17] == 0) {
                 gSkillPoints[0x17] = 1;
                 PlayBankSound(1, 0, 0);
@@ -1842,7 +1842,7 @@ void update_moby_list_clear_notification(unsigned char *moby) {
 extern char *D_L14_00167600;
 
 /* Sets the camera state block when the global camera record's descriptor is 7. */
-void BlargInterceptor_NotifyGrab(int value)
+void seed_linked_record_for_flying_car(int value)
 {
     char *moby = race_state;
     if (*(short *)(moby + 0x86) == 7) {
@@ -2215,7 +2215,7 @@ int check_camera_hero_requirements(char *camera, char *control_mode_gate_object)
         if (hero.state.control_mode != 15)
             return 0;
     }
-    if (Trigger_IsHeroInside(camera) == 0)
+    if (check_descriptor_hero_trigger(camera) == 0)
         return 0;
     required_control_mode = rec->required_control_mode;
     if (required_control_mode >= 0 && hero.state.control_mode != required_control_mode)
@@ -2603,17 +2603,17 @@ void update_path_key_camera(char *cam) {
         t = num / den;
     }
     k = D_L14_00162560;
-    x = LerpAngle(D_L14_001F67C8[st->idx].a0 * 0.017453292f, D_L14_001F67C8[st->idx + 1].a0 * 0.017453292f, t);
+    x = interpolate_angle(D_L14_001F67C8[st->idx].a0 * 0.017453292f, D_L14_001F67C8[st->idx + 1].a0 * 0.017453292f, t);
     cur->f0 = Camera_SmoothAngle(vel, cur->f0, x, k, 0.2f, 0.0f);
     k = D_L14_00162564;
-    x = LerpAngle(D_L14_001F67C8[st->idx].a4 * 0.017453292f, D_L14_001F67C8[st->idx + 1].a4 * 0.017453292f, t);
+    x = interpolate_angle(D_L14_001F67C8[st->idx].a4 * 0.017453292f, D_L14_001F67C8[st->idx + 1].a4 * 0.017453292f, t);
     cur->f4 = Camera_SmoothAngle(vel + 1, cur->f4, x, k, 0.2f, 0.0f);
     cur->f8 = Cam_InterpValues(vel + 2, cur->f8, D_L14_001F67C8[st->idx].a8 + (D_L14_001F67C8[st->idx + 1].a8 - D_L14_001F67C8[st->idx].a8) * t, D_L14_00162568, 0.2f, 0.0f);
     k = D_L14_0016256C;
-    x = LerpAngle(D_L14_001F67C8[st->idx].aC * 0.017453292f, D_L14_001F67C8[st->idx + 1].aC * 0.017453292f, t);
+    x = interpolate_angle(D_L14_001F67C8[st->idx].aC * 0.017453292f, D_L14_001F67C8[st->idx + 1].aC * 0.017453292f, t);
     cur->fC = Camera_SmoothAngle(vel + 3, cur->fC, x, k, 0.2f, 0.0f);
     k = D_L14_00162570;
-    x = LerpAngle(D_L14_001F67C8[st->idx].a10 * 0.017453292f, D_L14_001F67C8[st->idx + 1].a10 * 0.017453292f, t);
+    x = interpolate_angle(D_L14_001F67C8[st->idx].a10 * 0.017453292f, D_L14_001F67C8[st->idx + 1].a10 * 0.017453292f, t);
     cur->f10 = Camera_SmoothAngle(vel + 4, cur->f10, x, k, 0.2f, 0.0f);
     ang = FastAddRots(func_L00_001FF860(((CamHero171D0 *)(D_0013E633 + 0xE1D))->target[0x34], ((CamHero171D0 *)(D_0013E633 + 0xE1D))->target[0x35]), cur->f0);
     D_L14_0016258C = ang;
@@ -2630,16 +2630,16 @@ void update_path_key_camera(char *cam) {
     if (b == 0.0f && a == 0.0f) {
         b = (st->fC != 0.0f) ? st->fC : st->f8;
         st->f10 += (0.0f - st->f10) * D_L14_00162574;
-        ang = LerpAngle(ang, b, CubicInterpolate(1.0f, 0.0f, 1.0f, 0.0f, st->f10));
+        ang = interpolate_angle(ang, b, CubicInterpolate(1.0f, 0.0f, 1.0f, 0.0f, st->f10));
     } else {
         if (b != 0.0f) {
             st->f10 += (1.0f - st->f10) * D_L14_00162574;
-            ang = LerpAngle(ang, b, CubicInterpolate(1.0f, 0.0f, 1.0f, 0.0f, st->f10));
+            ang = interpolate_angle(ang, b, CubicInterpolate(1.0f, 0.0f, 1.0f, 0.0f, st->f10));
             st->f8 = a;
             st->fC = b;
         } else {
             st->f10 += (0.0f - st->f10) * D_L14_00162574;
-            ang = LerpAngle(ang, a, CubicInterpolate(1.0f, 0.0f, 1.0f, 0.0f, st->f10));
+            ang = interpolate_angle(ang, a, CubicInterpolate(1.0f, 0.0f, 1.0f, 0.0f, st->f10));
             st->f8 = a;
             st->fC = b;
         }
@@ -2647,7 +2647,7 @@ void update_path_key_camera(char *cam) {
     v0[1] = cur->f4;
     v0[0] = ang;
     v0[2] = cur->f8;
-    Camera_Polar3dToPos(cam + 0x30, v0, D_0013E633 + 0xE9D);
+    compute_position_from_spherical_offset(cam + 0x30, v0, D_0013E633 + 0xE9D);
     FastVecSub(v2, D_0013E633 + 0xE9D, cam + 0x30);
     FastVecScale(v3, D_0013E633 + 0xE9D + 0x210, -1.5f);
     FastVecAdd(v2, v2, v3);

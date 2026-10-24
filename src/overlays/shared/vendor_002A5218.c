@@ -15,7 +15,7 @@ extern s32 D_L02_00161328 MACRO_ADDR;
 extern s32 D_L02_0016132C MACRO_ADDR;
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002a4038.c, FUN_L02_002a4058. */
-void ScaleTableIntoBuffer(char *arg, int val, float scale) {
+void prepare_scaled_float_table_with_target_byte(char *arg, int val, float scale) {
     int i;
     float *p;
     float *q;
@@ -37,7 +37,7 @@ void ScaleTableIntoBuffer(char *arg, int val, float scale) {
 
 // Call vendor setup with a fixed value; the scale it was given goes through untouched.
 void prepare_scaled_table_with_byte_128(char *arg, float scale) {
-    ScaleTableIntoBuffer(arg, 0x80, scale);
+    prepare_scaled_float_table_with_target_byte(arg, 0x80, scale);
 }
 typedef struct Arg_2A52D0 {
     char pad0[0x1C];
@@ -309,7 +309,7 @@ extern void func_001F9C30(void *, void *, float);
 
 /* Spawn point for the moby: its slot's stored position and rotation, or, with no slot, a point beside it on the side facing the hero.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002a4038.c, FUN_L02_002d8910. */
-void GetMobySpawnPoint(float *pos, float *rot, char *moby) {
+void compute_tresspasser_pad_camera_transform(float *pos, float *rot, char *moby) {
     V2d8910 v;
     float left;
     float right;
@@ -599,7 +599,7 @@ extern float D_0015EE6C MACRO_ADDR;
 extern void func_L00_00250800(void *, int, void *);
 
 // Steer the camera yaw toward a target angle, clamped to a per-frame limit.
-void PullHeroToMoby(char *moby) {
+void align_hero_to_tresspasser_pad(char *moby) {
     float v[4];
     char *g;
     float f;
@@ -669,7 +669,7 @@ void RingMarkersDraw(char *moby) {
 
     VU1_addGSregister(0x47, 0x5380b);
     ctx.texture = GetEffectTex(0x10);
-    RingMarker_DrawQuads();
+    draw_tresspasser_puzzle_textured_quads();
     {
         int n, *q;
         for (n = 11, q = markers->v; n >= 0; --n, ++q) {
@@ -726,9 +726,9 @@ void RingMarkersDraw(char *moby) {
                     }
                 }
             }
-            RingMarker_DrawScroll(ctx.texture, FastAddRots(angle, 0.31415927f), (float)(*(int *)&D_L02_00161BE0), distance, color);
+            draw_tresspasser_puzzle_radial_strip(ctx.texture, FastAddRots(angle, 0.31415927f), (float)(*(int *)&D_L02_00161BE0), distance, color);
             if (draw_second) {
-                RingMarker_DrawScroll(ctx.texture, FastAddRots(angle, 0.31415927f), distance, (float)(*(int *)&D_L02_00161BE0), (*(int *)&D_L02_00161C44));
+                draw_tresspasser_puzzle_radial_strip(ctx.texture, FastAddRots(angle, 0.31415927f), distance, (float)(*(int *)&D_L02_00161BE0), (*(int *)&D_L02_00161C44));
             }
         }
     }
@@ -762,9 +762,9 @@ void RingMarkersDraw(char *moby) {
                     color = (*(int *)&D_L02_00161C40);
                 }
             }
-            RingMarker_DrawScroll(ctx.texture, FastAddRots(angle, 0.31415927f), (float)(*(int *)&D_L02_00161BD4), distance, color);
+            draw_tresspasser_puzzle_radial_strip(ctx.texture, FastAddRots(angle, 0.31415927f), (float)(*(int *)&D_L02_00161BD4), distance, color);
             if (draw_second) {
-                RingMarker_DrawScroll(ctx.texture, FastAddRots(angle, 0.31415927f), distance, (float)(*(int *)&D_L02_00161BD4), (*(int *)&D_L02_00161C44));
+                draw_tresspasser_puzzle_radial_strip(ctx.texture, FastAddRots(angle, 0.31415927f), distance, (float)(*(int *)&D_L02_00161BD4), (*(int *)&D_L02_00161C44));
             }
         }
     }
@@ -796,9 +796,9 @@ void RingMarkersDraw(char *moby) {
                     color = (*(int *)&D_L02_00161C40);
                 }
             }
-            RingMarker_DrawScroll(ctx.texture, FastAddRots(angle, 0.31415927f), (float)(*(int *)&D_L02_00161BC8), distance, color);
+            draw_tresspasser_puzzle_radial_strip(ctx.texture, FastAddRots(angle, 0.31415927f), (float)(*(int *)&D_L02_00161BC8), distance, color);
             if (draw_second) {
-                RingMarker_DrawScroll(ctx.texture, FastAddRots(angle, 0.31415927f), distance, (float)(*(int *)&D_L02_00161BC8), (*(int *)&D_L02_00161C44));
+                draw_tresspasser_puzzle_radial_strip(ctx.texture, FastAddRots(angle, 0.31415927f), distance, (float)(*(int *)&D_L02_00161BC8), (*(int *)&D_L02_00161C44));
             }
         }
     }
@@ -815,7 +815,7 @@ void RingMarkersDraw(char *moby) {
         } else color = (*(int *)&D_L02_00161C34);
         angle = FastAddRots(angle, (float)(i * 30) * 0.017453292f);
         phase = FastAddRots(angle, 0.5235988f);
-        DrawEllipticalArc(ctx.texture, angle, phase, (float)(*(int *)&D_L02_00161BDC), (float)(*(int *)&D_L02_00161BD8), color);
+        draw_tresspasser_puzzle_ring_arc(ctx.texture, angle, phase, (float)(*(int *)&D_L02_00161BDC), (float)(*(int *)&D_L02_00161BD8), color);
         if (first->v[(i + *(int *)(data + 0x14)) % 12] != 0) {
             if (first->v[(i + *(int *)(data + 0x14)) % 12] >= 3) {
                 DrawRadarArrow(ctx.texture, (*(int *)&D_L02_00161C38), 0, FastAddRots(angle, 0.2617994f), (float)(*(int *)&D_L02_00161BE0));
@@ -840,7 +840,7 @@ void RingMarkersDraw(char *moby) {
         } else color = (*(int *)&D_L02_00161C34);
         angle = FastAddRots(angle, (float)(i * 30) * 0.017453292f);
         phase = FastAddRots(angle, 0.5235988f);
-        DrawEllipticalArc(ctx.texture, angle, phase, (float)(*(int *)&D_L02_00161BD0), (float)(*(int *)&D_L02_00161BCC), color);
+        draw_tresspasser_puzzle_ring_arc(ctx.texture, angle, phase, (float)(*(int *)&D_L02_00161BD0), (float)(*(int *)&D_L02_00161BCC), color);
         if (second->v[(i + *(int *)(data + 0x18)) % 12] != 0) {
             if (second->v[(i + *(int *)(data + 0x18)) % 12] >= 3) {
                 DrawRadarArrow(ctx.texture, (*(int *)&D_L02_00161C38), 0, FastAddRots(angle, 0.2617994f), (float)(*(int *)&D_L02_00161BD4));
@@ -865,7 +865,7 @@ void RingMarkersDraw(char *moby) {
         } else color = (*(int *)&D_L02_00161C34);
         angle = FastAddRots(angle, (float)(i * 30) * 0.017453292f);
         phase = FastAddRots(angle, 0.5235988f);
-        DrawEllipticalArc(ctx.texture, angle, phase, (float)(*(int *)&D_L02_00161BC4), (float)(*(int *)&D_L02_00161BC0), color);
+        draw_tresspasser_puzzle_ring_arc(ctx.texture, angle, phase, (float)(*(int *)&D_L02_00161BC4), (float)(*(int *)&D_L02_00161BC0), color);
         if (third->v[(i + *(int *)(data + 0x1c)) % 12] != 0) {
             if (third->v[(i + *(int *)(data + 0x1c)) % 12] >= 3) {
                 DrawRadarArrow(ctx.texture, (*(int *)&D_L02_00161C38), 0, FastAddRots(angle, 0.2617994f), (float)(*(int *)&D_L02_00161BC8));
@@ -889,7 +889,7 @@ void RingMarkersDraw(char *moby) {
             if (value == 2) color = (*(int *)&D_L02_00161C54);
             else if (frame_counter_ref & 0x20) color = (*(int *)&D_L02_00161C50);
             else color = (*(int *)&D_L02_00161C4C);
-            DrawEllipticalArc(ctx.texture, angle, phase, (float)(*(int *)&D_L02_00161BE8), (float)(*(int *)&D_L02_00161BE4), color);
+            draw_tresspasser_puzzle_ring_arc(ctx.texture, angle, phase, (float)(*(int *)&D_L02_00161BE8), (float)(*(int *)&D_L02_00161BE4), color);
         }
     }
     }
@@ -907,7 +907,7 @@ extern void func_L02_0020BF88(void *, void *, void *, s32, s32);
 
 /* Draws an elliptical arc from angle a to b (radii rx, ry, around the screen centre) as five sprite
  * segments in colour col. */
-void DrawEllipticalArc(int tex, u32 col, float a, float b, float rx, float ry) {
+void draw_tresspasser_puzzle_ring_arc(int tex, u32 col, float a, float b, float rx, float ry) {
     long xy[4];
     u32 cols[4];
     int uv[4];
@@ -1039,7 +1039,7 @@ extern s32 func_001F4868(s32);
 typedef unsigned long u64_t;
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002a4038.c, FUN_L02_002da938. */
-void RingMarker_DrawScroll(void *unused, f32 a, f32 b, f32 c, s32 d) {
+void draw_tresspasser_puzzle_radial_strip(void *unused, f32 a, f32 b, f32 c, s32 d) {
     u64_t m[4];
     s32 a4[4];
     s32 p4[4];
@@ -1151,7 +1151,7 @@ int func_001F4868(int);
 void func_L02_0020BF88_DC2C0(Q_2dae88 *, int *, int *, u64, int) __asm__("func_L02_0020BF88");
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002a4038.c, FUN_L02_002dae88. */
-void RingMarker_DrawQuads(void) {
+void draw_tresspasser_puzzle_textured_quads(void) {
     Q_2dae88 q;
     int c[4];
     int b[4];
@@ -1369,7 +1369,7 @@ extern unsigned char D_0015EEB0[] MACRO_ADDR;
 extern Level02MobyList D_L02_0016CEE0;
 extern unsigned char D_L02_0017CAC0[];
 /* Re-arms the matching entry of the moby list when the level mode is 2. */
-void AttachManipulatorsIfCheat(char *moby) {
+void attach_big_head_cheat_manipulator_to_matching_moby(char *moby) {
     int i;
     if (D_L02_0015F6A8 == 2 && gCheats[0] != 0) {
         for (i = 0; i < talk_camera.count; i++) {
@@ -1437,7 +1437,7 @@ void tresspasser_update(char *moby) {
 
     switch (*(unsigned char *)(moby + 0x20)) {
     case 0:
-        InitRandomMobyData(moby);
+        initialize_collectible_sprite_state(moby);
         q = (unsigned char *)(discount_purchase_pricing + 5);
         k = 0.2f;
         if (q[sel] != 0) {
@@ -1482,17 +1482,17 @@ void tresspasser_update(char *moby) {
         }
         if (*(unsigned char *)(D_0013E633 + 0x2EC1) != 0) {
             if (sel == 0x16) {
-                GiveItem(0x16, 0);
+                grant_inventory_item(0x16, 0);
                 D_L02_0015F720 = 0;
             } else {
-                GiveItem(sel, 0);
+                grant_inventory_item(sel, 0);
             }
         } else {
-            GiveItem(sel, 1);
+            grant_inventory_item(sel, 1);
         }
         if (*(short *)(moby + 0xA6) == 0x3ED) {
             ShowBanner(0x7DF, -1);
-            HelpPopup_Cancel();
+            clear_active_help_record();
             Help_Request(0x7D9, 0x13);
             D_L02_0015F4FC = 1.0f;
             moby[0x20] = 4;
@@ -1564,7 +1564,7 @@ void tresspasser_update(char *moby) {
 extern int func_001F9850(int);
 
 /* Initialises a moby's data block: four random floats, fixed constants, four random ints. */
-void InitRandomMobyData(char *moby) {
+void initialize_collectible_sprite_state(char *moby) {
     float *d = *(float **)(moby + 0x78);
     int *q;
     int i;
@@ -1640,7 +1640,7 @@ extern void func_L00_00264690(void *, int, float, float);
 /* Walks the moby list matching this moby's id and pulses each match's data slots while it is bright. */
 void draw_background_ship_1_joint_billboards(char *self) {
     char *cur;
-    GroupMobyIter_Start((int *)&cur, *(unsigned char *)(self + 0x21), 0, 0);
+    get_first_moby_in_group((int *)&cur, *(unsigned char *)(self + 0x21), 0, 0);
     while (cur != 0) {
         if (*(unsigned char *)(cur + 0x31) != 0) {
             char *data = *(char **)(cur + 0x78);
@@ -1649,13 +1649,13 @@ void draw_background_ship_1_joint_billboards(char *self) {
                     char *q = data + 0x80;
                     int i;
                     for (i = 2; i >= 0; i--) {
-                        DrawBillboardAt(q, *(int *)(data + 0xB0), 0.9f, 0.45f);
+                        draw_offset_textured_effect_quad(q, *(int *)(data + 0xB0), 0.9f, 0.45f);
                         q += 0x10;
                     }
                 }
             }
         }
-        GroupMobyIter_Next((int *)&cur, (int)cur, 0, 0);
+        get_next_moby_in_group((int *)&cur, (int)cur, 0, 0);
     }
 }
 extern int D_L02_0015F6B0 MACRO_ADDR;
@@ -1663,7 +1663,7 @@ extern void func_L00_00250800(void *, int, void *);
 extern void func_001F49B0(void (*)(void), void *);
 
 /* Refreshes a moby's three sub-objects, packs its colour bytes, and queues a redraw when the global changed. */
-void RefreshMobyAttachPoints3(char *moby) {
+void prepare_background_ship_1_joint_billboards(char *moby) {
     int i;
     char *data;
     char *p;
@@ -1791,7 +1791,7 @@ void background_ship_1_update(char *moby) {
             *(int *)(moby + 0x94) = *(int *)(*(char **)(moby + 0x24) + 0x10);
         }
         if (*(unsigned char *)(moby + 0x31) != 0) {
-            SpawnThreeParticles(moby, tv);
+            spawn_background_ship_1_joint_sparks(moby, tv);
         }
         if (r != 0 && 0.0f < *(float *)(r + 0x2C)) {
             flag = 1;
@@ -1854,7 +1854,7 @@ void background_ship_1_update(char *moby) {
             *(int *)(moby + 0x90) = res;
             *(float *)(d + 0x68) = FastAddRots(*(float *)(d + 0x68), k);
         }
-        RefreshMobyAttachPoints3(moby);
+        prepare_background_ship_1_joint_billboards(moby);
     }
 }
 extern void func_001F9C30(void *, void *, float);
@@ -1881,7 +1881,7 @@ extern short D_L02_00162048;
 extern short D_L02_0016204C;
 
 /* Spawns three particles around a moby with randomized direction, speed and colour. */
-void SpawnThreeParticles(char *m, void *arg1) {
+void spawn_background_ship_1_joint_sparks(char *m, void *arg1) {
     float v10[4], v20[4], v30[4], v40[4], v50[4];
     int i;
     FastVecSub(v30, m + 0x10, arg1);
@@ -1907,7 +1907,7 @@ void SpawnThreeParticles(char *m, void *arg1) {
 /* Walks the moby list matching this moby's id and pulses each match's six data slots while it is bright. */
 void draw_matching_moby_slot_quads(char *self) {
     char *cur;
-    GroupMobyIter_Start((int *)&cur, *(unsigned char *)(self + 0x21), 0, 0);
+    get_first_moby_in_group((int *)&cur, *(unsigned char *)(self + 0x21), 0, 0);
     while (cur != 0) {
         if (*(unsigned char *)(cur + 0x31) != 0) {
             char *data = *(char **)(cur + 0x78);
@@ -1916,19 +1916,19 @@ void draw_matching_moby_slot_quads(char *self) {
                     char *q = data + 0x80;
                     int i;
                     for (i = 5; i >= 0; i--) {
-                        DrawBillboardAt(q, *(int *)(data + 0xE0), 1.2f, 0.57f);
+                        draw_offset_textured_effect_quad(q, *(int *)(data + 0xE0), 1.2f, 0.57f);
                         q += 0x10;
                     }
                 }
             }
         }
-        GroupMobyIter_Next((int *)&cur, (int)cur, 0, 0);
+        get_next_moby_in_group((int *)&cur, (int)cur, 0, 0);
     }
 }
 extern int D_L02_0015F6B0;
 
 /* refreshes a moby's six attach points and color, re-registers its draw callback */
-void RefreshMobyAttachPoints6(char *m) {
+void prepare_background_ship_2_joint_draw_data(char *m) {
     int i;
     char *data;
     char *p;
@@ -2047,9 +2047,9 @@ void background_ship_2_update(char *moby) {
         }
         if (*(unsigned char *)(moby + 0x31) != 0) {
             if (D_0015EE84_2D9F08 != 10) {
-                SpawnJointParticles(moby, tv);
+                spawn_background_ship_2_joint_sparks(moby, tv);
             } else {
-                SpawnTwoParticles(moby, tv);
+                spawn_background_ship_2_level_10_joint_sparks(moby, tv);
             }
         }
         if (r != 0 && 0.0f < *(float *)(r + 0x2C)) {
@@ -2113,7 +2113,7 @@ void background_ship_2_update(char *moby) {
             *(int *)(moby + 0x90) = res;
             *(float *)(d + 0x68) = FastAddRots(*(float *)(d + 0x68), k);
         }
-        RefreshMobyAttachPoints6(moby);
+        prepare_background_ship_2_joint_draw_data(moby);
     }
 }
 extern short D_L02_00162068;
@@ -2132,7 +2132,7 @@ extern short D_L02_00162098;
 extern short D_L02_0016209C;
 extern short D_L02_001620A0;
 // Spawns two particles at a moby, scattered away from a point.
-void SpawnJointParticles(char *m, void *arg1) {
+void spawn_background_ship_2_joint_sparks(char *m, void *arg1) {
     float v10[4], v20[4], v30[4], v40[4], v50[4];
     int i;
     FastVecSub(v30, m + 0x10, arg1);
@@ -2164,7 +2164,7 @@ extern short D_L02_001620B8;
 extern short D_L02_001620BC;
 
 /* spawns two particles around a moby with randomized parameters */
-void SpawnTwoParticles(char *moby, void *arg) {
+void spawn_background_ship_2_level_10_joint_sparks(char *moby, void *arg) {
     float v0[4];
     float v1[4];
     float mat[4];
@@ -2212,8 +2212,8 @@ void white_flower_update(char *m) {
         break;
     case 2:
         Moby_PlaySound(0, 0, (int)m);
-        SpawnBreakFxByDistance(m);
-        SpawnMobyBurstFx(m, 0x71D, 1, 0x71D, 1, 5, 2);
+        spawn_proximity_gated_bolts(m);
+        spawn_moby_break_fragments(m, 0x71D, 1, 0x71D, 1, 5, 2);
         spawn_moby_from_placement(m, 0x71C);
         DeleteMoby(m);
         break;
@@ -2246,7 +2246,7 @@ void set_nonzero_follow_camera_parameters(float x, float y, float z) {
     }
 }
 /* stores two coordinate triples in the selected object data */
-void func_L02_002F9ED8(float a, float b, float c,
+void set_selected_object_float_triplets(float a, float b, float c,
                        float d, float e, float f) {
     char *moby = D_L02_00167480;
     char *data = *(char **)(moby + 0x70);
@@ -2270,12 +2270,12 @@ extern S_2fa6d8 D_L02_00167680_FBB10 __asm__("D_L02_00167680");
 extern void func_L02_002FBB48(void);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_002ec308.c, FUN_L02_002fa6d8. */
-void CamOffsetFx_Reset(void) {
+void initialize_camera_offset_effect_state(void) {
     D_L02_00167680_FBB10.a = 0;
     D_L02_00167680_FBB10.b = 0;
     D_L02_00167680_FBB10.c = 10000.0f;
     D_L02_00167680_FBB10.d = 0;
-    D_L02_00167680_FBB10.e = CamOffsetFx_Begin;
+    D_L02_00167680_FBB10.e = apply_camera_offset_effect;
 }
 extern float D_L02_0016768C;
 extern void func_L00_002E99A0(int, float, float);
@@ -2283,7 +2283,7 @@ extern void func_L02_002FBBA8(void);
 extern void func_L02_001FC308(void (*)(void));
 
 /* Start the timed effect while its duration is nonzero. */
-void CamOffsetFx_Begin(void) {
+void apply_camera_offset_effect(void) {
     if (D_L02_0016768C != 0.0f) {
         Cam_SetEyeOffset(1, D_L02_0016768C * 0.35f + 0.0f, 0.005f);
         register_camera_update_callback(update_camera_offset_effect_state);
@@ -2319,7 +2319,7 @@ extern char D_L02_00167300[];
 extern char D_0013A5E0[];
 
 // Tracks the nearest target in front of the player that lies inside a view cone.
-void Camera_TrackNearestTarget(char *m) {
+void try_select_camera_offset_effect_moby(char *m) {
     float v[4];
     char *g = D_L02_00167300;
     char *p = *(char **)(g + 0x180);
@@ -2398,14 +2398,14 @@ int test_moby_camera_control_activation(char *moby) {
         return 1;
     }
     if (*(int *)(data + 0x10) >= 0) {
-        result = IsPointInCylinderVolume(&D_0013F450.motion.pos, *(int *)(data + 0x10));
+        result = test_point_in_transformed_unit_cylinder(&D_0013F450.motion.pos, *(int *)(data + 0x10));
         if (result == 0) {
             goto rejected;
         }
         return 1;
     }
     if (*(int *)(data + 8) >= 0) {
-        result = IsPointInSphereVolume(&D_0013F450.motion.pos, *(int *)(data + 8));
+        result = test_point_in_transformed_unit_sphere(&D_0013F450.motion.pos, *(int *)(data + 8));
         if (result == 0) {
             goto rejected;
         }

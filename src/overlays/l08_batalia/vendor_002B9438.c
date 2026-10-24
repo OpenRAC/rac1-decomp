@@ -11,7 +11,7 @@ extern short D_L08_001614F8;
 extern short D_L08_001614FC;
 
 // Initialize the moby's rotation and data block, then fetch its handle.
-void Moby152Init(char *moby) {
+void initialize_bolt_pickup(char *moby) {
     float a = *(float *)&D_L08_001614F8;
     float b = *(float *)&D_L08_001614FC;
     char *d;
@@ -182,7 +182,7 @@ extern float func_002140F8(float, float);
 extern float func_L00_001FF860(float, float);
 extern void func_L00_00251E30(void *);
 /* Spawns a moby of class 0xF8 at a position and facing derived from a vector. */
-char *BombSpawn(int arg, char *pos, char *vec) {
+char *spawn_bomb_with_velocity(int arg, char *pos, char *vec) {
     char *m = CreateMoby(0xF8);
     if (m != 0) {
         char *d = *(char **)(m + 0x78);
@@ -1295,7 +1295,7 @@ extern char D_0013E633[] NOT_SDA;
 
 /* Picks the best candidate moby from the moby's list by heading and distance.
  * Exact since tools/ps2eeas_nops.py puts the hazard nop after the shared bc1fl's label. */
-char *FindBestGroupTarget(char *moby) {
+char *select_blarg_bombthrower_waypoint(char *moby) {
     short *t = D_L08_001AC340[(unsigned char)moby[0x21]];
     char *best;
     char *p;
@@ -1507,7 +1507,7 @@ void blarg_bombthrower_update(Moby *moby) {
         d->b58 = func_001FA898_2D6C58(17.0f);
         d->b5A = func_001FA898_2D6C58(10.4f);
         clear_u64_value(d->v40);
-        d->p120 = (Moby *)FindBestGroupTarget((char *)moby);
+        d->p120 = (Moby *)select_blarg_bombthrower_waypoint((char *)moby);
         d->p120->command = 1;
         d->i128 = scale_ticks(0xB4);
         if (moby->prev_seq != 4) {
@@ -1532,7 +1532,7 @@ void blarg_bombthrower_update(Moby *moby) {
                 d->i134 = scale_ticks(0xF0);
                 {
                     Moby *o = d->p120;
-                    Moby *n = (Moby *)FindBestGroupTarget((char *)moby);
+                    Moby *n = (Moby *)select_blarg_bombthrower_waypoint((char *)moby);
                     d->p120 = n;
                     if (n == 0) {
                         d->p120 = o;
@@ -1545,7 +1545,7 @@ void blarg_bombthrower_update(Moby *moby) {
         }
         if (func_001F9908(&d->i134) != 0) {
             old = d->p120;
-            if ((d->p120 = (Moby *)FindBestGroupTarget((char *)moby)) == 0) {
+            if ((d->p120 = (Moby *)select_blarg_bombthrower_waypoint((char *)moby)) == 0) {
                 d->p120 = old;
             }
             old->command = 0;
@@ -1606,7 +1606,7 @@ void blarg_bombthrower_update(Moby *moby) {
                 || (cam = &D_L08_00167500_c,
                     0.55850536f < FastDiffRots(cam->f158, func_L00_001FF860(moby->pos.x - cam->x, moby->pos.y - cam->y)))) {
                 old = d->p120;
-                if ((d->p120 = (Moby *)FindBestGroupTarget((char *)moby)) == 0) {
+                if ((d->p120 = (Moby *)select_blarg_bombthrower_waypoint((char *)moby)) == 0) {
                     d->p120 = old;
                 }
                 old->command = 0;
@@ -1646,7 +1646,7 @@ void blarg_bombthrower_update(Moby *moby) {
             FastVecSub(v60, &target->pos, v50);
             func_L00_001FF500(v60, v60, t);
             v60[2] = jump_speed_4318(v50, v70, &out, t, -(D_0015EE70 * 15.0f));
-            p = BombSpawn((int)moby, (char *)v50, (char *)v60);
+            p = spawn_bomb_with_velocity((int)moby, (char *)v50, (char *)v60);
             d->p124 = (Moby *)p;
             if (p != 0) {
                 char *pd = *(char **)(p + 0x78);
@@ -1680,7 +1680,7 @@ void blarg_bombthrower_update(Moby *moby) {
     case 0x5D:
         if (mine_fall(moby, d->blk70) & 0x40) {
             old = d->p120;
-            if ((d->p120 = (Moby *)FindBestGroupTarget((char *)moby)) == 0) {
+            if ((d->p120 = (Moby *)select_blarg_bombthrower_waypoint((char *)moby)) == 0) {
                 d->p120 = old;
             } else {
                 old->command = 0;
@@ -1745,7 +1745,7 @@ typedef struct LiftVars {
     char manip_unk0;                   /* 0xA0 manipulator record (AttachManipulator) */
     u8 manip_set;                      /* 0xA1 0 = manipulator not attached yet */
     char pad_A2[0xE];
-    char spin_state[0x30];             /* 0xB0 rotation matrix built by BuildEulerMatrix */
+    char spin_state[0x30];             /* 0xB0 rotation matrix built by build_quaternion_from_axis_rotations */
     s16 unkE0;                         /* 0xE0 */
     char pad_E2[0x1E];
     s32 unk100;                        /* 0x100 */
@@ -1777,7 +1777,7 @@ void RoutePlatformUpdate(char *m) {
         AttachManipulator(m, 0, &vars->manip_unk0);
     }
     vars->spin.f[0] = FastAddRots(vars->spin.f[0], D_0015EE6C_2D5FA8 * 1.5707964f);
-    BuildEulerMatrix(vars->spin_state, &vars->spin);
+    build_quaternion_from_axis_rotations(vars->spin_state, &vars->spin);
     switch (moby->state) {
     case 0:
         clear_u64_value(&vars->spin);
@@ -2462,8 +2462,8 @@ void update_rocket(M46 *m) {
         return;
     }
     case 5:
-        StepAngleToward(&m->rotation[2],0,d->yaw,D_0015EE6C*0.5235988f);
-        StepAngleToward(&m->rotation[1],0,-d->pitch,D_0015EE6C*0.5235988f);
+        step_angle_toward_target(&m->rotation[2],0,d->yaw,D_0015EE6C*0.5235988f);
+        step_angle_toward_target(&m->rotation[1],0,-d->pitch,D_0015EE6C*0.5235988f);
         m->rotation[0]=FastAddRots(m->rotation[0],D_0015EE6C*6.2831855f);
         BuildSphericalOffset(d->velocity,(D_L08_00161A90+D_L08_00161A90)*D_0015EE6C,m->rotation[2],-m->rotation[1]);
         FastVecAdd(m->position,m->position,d->velocity);

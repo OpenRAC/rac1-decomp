@@ -544,7 +544,7 @@ void func_L06_002FFF70(char *m) {
                 vec2[0] = vec2[0] + FastCos(func_L00_001FF860(*(float *)(t + 0x10), *(float *)(t + 0x14))) * (D_0015EE6C * pull);
                 vec2[1] = vec2[1] + FastSin(func_L00_001FF860(*(float *)(t + 0x10), *(float *)(t + 0x14))) * (D_0015EE6C * pull);
                 vec2[2] = random_float_between(off, 8.5f) * D_0015EE6C;
-                p = SpawnRandomDebris((int)m, (char *)vv, (char *)vec2);
+                p = spawn_spinning_moby_fragment((int)m, (char *)vv, (char *)vec2);
                 if (p != 0) {
                     *(float *)(p + 0x2C) = *(float *)(p + 0x2C) * 0.4f;
                 }
@@ -595,7 +595,7 @@ extern char D_L06_00174700[];
 extern short D_L06_00162064;
 extern short D_L06_00162068;
 // Builds the sixteen-segment fan of data vectors for a moby from its yaw.
-void BuildFanVectors(char *m) {
+void initialize_blarg_space_commando_beam(char *m) {
     char *d = *(char **)(m + 0x78);
     float v[4];
     int i;
@@ -897,7 +897,7 @@ extern void upd_a(void *) __asm__("func_L00_00251E30");
 extern float D_0015EE6C MACRO_ADDR;
 
 /* Spawns a debris moby with a random class and random spin. */
-char *SpawnRandomDebris(int unused, char *pa, char *pb) {
+char *spawn_spinning_moby_fragment(int unused, char *pa, char *pb) {
     float a[4];
     float b[4];
     float *va = a;
@@ -1163,7 +1163,7 @@ void update_hit_triggered_moby_breakup(char *moby) {
         z = 0.0f;
         Moby_PlaySound(0, 0, (int)moby);
         d = D_L06_0015F660;
-        SpawnBreakFxByDistance(moby);
+        spawn_proximity_gated_bolts(moby);
         a = moby + 0x10;
         b = moby + 0x40;
         SpawnBreakFragment(moby, 0x679, a, b, 0, 0, z, d, d, d);
@@ -1205,7 +1205,7 @@ void update_timed_sprite_effect(char *m) {
 typedef int uq_b __attribute__((mode(TI)));
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_00307578.c, FUN_L06_0030bef8. */
-void SpawnMoby1898(char *src, int a1, int a2, int a3) {
+void spawn_timed_projected_sprite_effect(char *src, int a1, int a2, int a3) {
     uq_b v;
     char *vp = (char *)&v;
     unsigned char *m;

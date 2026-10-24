@@ -477,7 +477,7 @@ void veldin_robot_enemy_update(VendMoby *moby) {
     case VELDIN_ROBOT_STATE_DEATH_KNOCKBACK:
         if (mine_fall(moby, vars->unk70) & 0x140) {
             SpawnExplosionFx(moby, &moby->pos, -1, 0.75f, 13.0f);
-            SpawnMobyBurstFx(moby, 0x7AB, 1, 0x7AB, 1, 4, 0);
+            spawn_moby_break_fragments(moby, 0x7AB, 1, 0x7AB, 1, 4, 0);
             SpawnBreakFragment((char *)moby, 0x78D, (float *)&moby->pos, &moby->unk40, 0, 0, 0.0f, (float *)D_L00_0015F660, (float *)D_L00_0015F660, (float *)D_L00_0015F660);
             SpawnBreakFragment((char *)moby, 0x78E, (float *)&moby->pos, &moby->unk40, 0, 0, 0.0f, (float *)D_L00_0015F660, (float *)D_L00_0015F660, (float *)D_L00_0015F660);
             SpawnBreakFragment((char *)moby, 0x78F, (float *)&moby->pos, &moby->unk40, 0, 0, 0.0f, (float *)D_L00_0015F660, (float *)D_L00_0015F660, (float *)D_L00_0015F660);
@@ -691,12 +691,12 @@ void update_veldin_robot_effects(char *m) {
     Moby_GetJointWorldPos(m, 1, pos);
     ((float *)(vars + 0x1C0))[2] -= 0.333f;
     random_spherical_offset(vel, 0.005f, 0.03f);
-    p = PartType69Spawn(pos, vel, 0x7F, m);
+    p = spawn_mode_controlled_rotating_alpha_fade_particle(pos, vel, 0x7F, m);
     if (p != 0) {
         *(float *)(p + 0xC) = random_float_between(6000.0f, 32000.0f);
     }
     for (i = 0; i < 3; i++) {
-        p = PartType69Spawn((float *)(vars + 0x1C0), D_L00_0015F660, 0x7F, m);
+        p = spawn_mode_controlled_rotating_alpha_fade_particle((float *)(vars + 0x1C0), D_L00_0015F660, 0x7F, m);
         if (p != 0) {
             t = p + 0x20;
             if (i == 2 && random_integer_below(8) == 0) {

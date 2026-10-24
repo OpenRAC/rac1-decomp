@@ -56,7 +56,7 @@ void HeroL03_FrameUpdate(void) {
     }
     func_L00_00232EF0();
     hero_update();
-    HeroProcessContactType();
+    update_hero_ground_material_effects();
     update_hero_ledge_probe();
     update_hero_offset_rail_candidate();
     HeroL03_UpdateStateTransitions();
@@ -64,25 +64,25 @@ void HeroL03_FrameUpdate(void) {
         return;
     }
     update_hero_delayed_voice_requests();
-    Hero_CheckMovementThresholds();
+    update_hero_easing_targets_and_point_effects();
     update_hero_collision_ease_target();
-    Hero_UpdateBodyTilt();
-    HeroScanTargets();
-    RerollMotionParams();
+    update_hero_pitch_and_yaw_easing_targets();
+    update_hero_target_tracking();
+    update_hero_idle_random_rotation_targets();
     update_hero_rotation_targets_and_random_manipulators();
     update_hero_glow_and_extra_manipulators();
-    Hero_SetTiltJoints();
+    update_hero_transformed_negative_z_angle_parameters();
     update_hero_easing_records();
     update_hero_moby();
     update_hero_world_matrices(0);
     update_hero_equipped_items();
     begin_draw_frame();
-    UpdateRampUpDown();
-    CameraShakeUpdate();
+    update_hero_scalar_pulse();
+    apply_hero_and_item_scale_sequence();
     check_hero_item_reward_conditions();
-    HudBoltAlertShow();
+    update_hero_bolt_exclamation_hud();
     dispatch_hero_animation_timed_events();
-    Cheats_PollCodes();
+    scan_hero_input_sequences();
     Profile_Mark(*(void **)(g + 0x2080));
     if (*(int *)(g + 0x208C) != 0x16 && *(int *)(g + 0x2084) != 0x32) {
         func_L00_00248EF8(g + 0x80);
@@ -92,5 +92,5 @@ void HeroL03_FrameUpdate(void) {
         func_L00_0025805C(*(void **)(q + 0x2080));
     }
     update_hero_blink_and_gold_weapon_tint();
-    Hero_SteerAimAndProbe();
+    update_hero_moby_probed_height_bounds();
 }

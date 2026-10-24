@@ -42,7 +42,7 @@ extern float func_001FA888(int);
 extern int func_001FA8A8(int, int, float);
 
 // Spawns a class 0x50 fading particle at a position, with colours depending on a mode and a fade step.
-unsigned char *SpawnFadingParticle(char *pos, int mode, int step) {
+unsigned char *create_drone_flight_trail_record(char *pos, int mode, int step) {
     unsigned char *p;
     int n;
     if (mode)

@@ -279,7 +279,7 @@ extern float func_001F9C78(void *, void *);
 extern float func_001F9F90(float);
 
 /* finds the first of eight linked entries whose direction lines up with the moby */
-int FindAlignedLinkedEntry(char *m) {
+int find_batalia_cannon_aim_target(char *m) {
     float a[4];
     float b[4];
     int *p = (int *)(*(char **)(m + 0x78) + 0x60);
@@ -827,7 +827,7 @@ extern void func_L00_00251E30(void *);
 extern char D_0013E633[];
 
 // Spawns a moby of a class, copies the parent's position, and aims it at the parent's attach point.
-void *SpawnChildMobyAtJoint(char *parent, int oClass, int joint, int pjoint) {
+void *spawn_joint_aligned_moby_part(char *parent, int oClass, int joint, int pjoint) {
     unsigned char *m = CreateMoby(oClass);
     float v0[4], v10[4];
     if (m != 0) {
@@ -873,63 +873,63 @@ void spawn_gunship_parts(char *m) {
     vars->slots[0].anchor = 0;
     vars->slots[0].joint = 0;
     vars->slots[0].pjoint = 0;
-    vars->slots[3].moby = SpawnChildMobyAtJoint((char *)moby, 0x1C1, 0, 2);
+    vars->slots[3].moby = spawn_joint_aligned_moby_part((char *)moby, 0x1C1, 0, 2);
     vars->slots[3].anchor = moby;
     vars->slots[3].joint = 0;
     vars->slots[3].pjoint = 2;
-    vars->slots[1].moby = SpawnChildMobyAtJoint((char *)moby, 0x1C2, 0, 3);
+    vars->slots[1].moby = spawn_joint_aligned_moby_part((char *)moby, 0x1C2, 0, 3);
     vars->slots[1].anchor = moby;
     vars->slots[1].joint = 0;
     vars->slots[1].pjoint = c3;
-    child_moby = SpawnChildMobyAtJoint((char *)moby, 0x1C2, 0, 4);
+    child_moby = spawn_joint_aligned_moby_part((char *)moby, 0x1C2, 0, 4);
     vars->slots[2].moby = child_moby;
     child_moby->flags |= 0x8000;
     vars->slots[2].anchor = moby;
     vars->slots[2].joint = 0;
     vars->slots[2].pjoint = 4;
-    vars->slots[7].moby = SpawnChildMobyAtJoint((char *)moby, 0x1C0, 0, 0);
+    vars->slots[7].moby = spawn_joint_aligned_moby_part((char *)moby, 0x1C0, 0, 0);
     vars->slots[7].anchor = moby;
     vars->slots[7].joint = 0;
     vars->slots[7].pjoint = 0;
-    joint_moby = SpawnChildMobyAtJoint((char *)moby, 0x1C0, 1, 1);
+    joint_moby = spawn_joint_aligned_moby_part((char *)moby, 0x1C0, 1, 1);
     vars->slots[8].moby = joint_moby;
     vars->slots[8].anchor = moby;
     vars->slots[8].joint = 1;
     vars->slots[8].pjoint = 1;
-    joint_child = SpawnChildMobyAtJoint((char *)joint_moby, 0x1C0, 1, 0);
+    joint_child = spawn_joint_aligned_moby_part((char *)joint_moby, 0x1C0, 1, 0);
     vars->slots[9].moby = joint_child;
     vars->slots[9].joint = 1;
     vars->slots[9].pjoint = 0;
     vars->slots[9].anchor = vars->slots[8].moby;
-    vars->slots[5].moby = SpawnChildMobyAtJoint((char *)joint_child, 0x1BD, 0, 0);
+    vars->slots[5].moby = spawn_joint_aligned_moby_part((char *)joint_child, 0x1BD, 0, 0);
     vars->slots[5].joint = 0;
     vars->slots[5].pjoint = 0;
     vars->slots[5].anchor = vars->slots[9].moby;
-    vars->slots[6].moby = SpawnChildMobyAtJoint((char *)vars->slots[7].moby, 0x1BA, 1, 1);
+    vars->slots[6].moby = spawn_joint_aligned_moby_part((char *)vars->slots[7].moby, 0x1BA, 1, 1);
     vars->slots[6].joint = 1;
     vars->slots[6].pjoint = 1;
     vars->slots[6].anchor = vars->slots[7].moby;
-    vars->slots[4].moby = SpawnChildMobyAtJoint((char *)moby, 0x1B9, 0, 0);
+    vars->slots[4].moby = spawn_joint_aligned_moby_part((char *)moby, 0x1B9, 0, 0);
     vars->slots[4].anchor = vars->slots[6].moby;
     vars->slots[4].joint = 0;
     vars->slots[4].pjoint = 0;
     for (i = 0; i < 8; i++) {
         int j = i + 2;
-        vars->slots[10 + i].moby = SpawnChildMobyAtJoint((char *)vars->slots[7].moby, 0x1BB, 0, j);
+        vars->slots[10 + i].moby = spawn_joint_aligned_moby_part((char *)vars->slots[7].moby, 0x1BB, 0, j);
         vars->slots[10 + i].anchor = vars->slots[7].moby;
         vars->slots[10 + i].joint = 0;
         vars->slots[10 + i].pjoint = j;
     }
     for (i = 0; i < 8; i++) {
         int j = i + 2;
-        vars->slots[18 + i].moby = SpawnChildMobyAtJoint((char *)vars->slots[8].moby, 0x1BB, 0, j);
+        vars->slots[18 + i].moby = spawn_joint_aligned_moby_part((char *)vars->slots[8].moby, 0x1BB, 0, j);
         vars->slots[18 + i].anchor = vars->slots[8].moby;
         vars->slots[18 + i].joint = 0;
         vars->slots[18 + i].pjoint = j;
     }
     for (i = 0; i < 8; i++) {
         int j = i + 2;
-        vars->slots[26 + i].moby = SpawnChildMobyAtJoint((char *)vars->slots[9].moby, 0x1BB, 0, j);
+        vars->slots[26 + i].moby = spawn_joint_aligned_moby_part((char *)vars->slots[9].moby, 0x1BB, 0, j);
         vars->slots[26 + i].anchor = vars->slots[9].moby;
         vars->slots[26 + i].joint = 0;
         vars->slots[26 + i].pjoint = j;
@@ -1593,7 +1593,7 @@ void Batalia_BoltThiefUpdate(Moby *m) {
         a = func_L00_001FF860(h->motion.pos.f[0] - m->pos.x, h->motion.pos.f[1] - m->pos.y);
         MobySpringTurn((char *)m, &d->f224, a, 0.01f, 0.3f, 0.1f);
         dist = FastVecDist(&h->motion.pos, &m->pos);
-        if (dist < 17.0f || FindMobyByPvarId(m) != 0) {
+        if (dist < 17.0f || find_listed_moby_by_data_id(m) != 0) {
             Cursor_2E4168 *c;
             int next;
 
@@ -1757,13 +1757,13 @@ void update_batalia_bolt_pickup(Moby *m) {
                 a[2] = 1.0f;
             }
         }
-        SetOrientationFromDirection((char *)m, a);
+        set_batalia_bolt_pickup_surface_rotation((char *)m, a);
         d->f60 = random_angle_radians();
         d->f64 = m->rot.x;
         AimTurret((char *)m, (float *)&m->pos, (float *)&m->rot);
         if (linked != 0 && GetFlaggedPvarWord(linked) != 0) {
             d->u7C.i = linked;
-            RotateIntoMobySpace(m, linked, d->v0, d->v10, d->v20, d->v30);
+            convert_pose_to_reference_local(m, linked, d->v0, d->v10, d->v20, d->v30);
         }
         m->state = 1;
         d->s6C = 0;
@@ -1863,13 +1863,13 @@ void update_batalia_bolt_pickup(Moby *m) {
             if (scale_ticks(10) < d->i68) {
                 float t = FastAddRots(d->f60, FastSin((float)(d->i68 % 8 - 4) * 0.7854f) * 0.17453292f);
 
-                StepAngleToward(&d->f60, t, 0.5235988f, 0);
+                step_angle_toward_target(&d->f60, t, 0.5235988f, 0);
             } else {
                 float t = FastAddRots(func_L00_001FF860(((Hero *)(D_0013E633 + 0xE1D))->motion.pos.f[0] - m->pos.x,
                                                           ((Hero *)(D_0013E633 + 0xE1D))->motion.pos.f[1] - m->pos.y),
                                         1.5707964f);
 
-                StepAngleToward(&d->f60, t, 0.08726646f, 0);
+                step_angle_toward_target(&d->f60, t, 0.08726646f, 0);
                 if (func_001FA850_2E16A0(d->f60, t) < 0.08726646f) {
                     d->i68 = 0;
                 }
@@ -2046,7 +2046,7 @@ void update_batalia_bolt_pickup(Moby *m) {
                 qcopy(d->v0, cl->pos);
                 matrix_to_euler(&m->rot_row0, &m->rot);
                 func_L00_001FF4B0(a, cl->n, 1.0f);
-                SetOrientationFromDirection((char *)m, a);
+                set_batalia_bolt_pickup_surface_rotation((char *)m, a);
                 d->f60 = random_angle_radians();
                 d->f64 = random_angle_radians();
                 AimTurret((char *)m, d->v20, d->v30);
@@ -2103,7 +2103,7 @@ void update_batalia_bolt_pickup(Moby *m) {
                 if (d->u7C.i != 0) {
                     Vars_4BE8 *e = (Vars_4BE8 *)m->pvars;
 
-                    RotateIntoMobySpace(m, e->u7C.i, e->v0, e->v10, e->v20, e->v30);
+                    convert_pose_to_reference_local(m, e->u7C.i, e->v0, e->v10, e->v20, e->v30);
                 } else {
                     qcopy(&m->pos, d->v20);
                     qcopy(&m->rot, d->v30);
@@ -2141,7 +2141,7 @@ extern void func_002153E8(void *, void *);
 extern void func_001FA218(float *, float *);
 
 /* builds a basis from a direction vector and writes the orientation into the moby */
-void SetOrientationFromDirection(char *a, float *v) {
+void set_batalia_bolt_pickup_surface_rotation(char *a, float *v) {
     float m[16];
     float n[16];
     float r[4];
@@ -2318,22 +2318,22 @@ void spawn_shrub_parts(char *moby) {
     *(int *)(data + 0x64) = 0;
     *(int *)(data + 0x68) = 0;
     *(int *)(data + 0x6C) = 0;
-    *(char **)(data + 0x90) = SpawnChildMobyAtJoint(moby, 0x1C0, 1, 0);
+    *(char **)(data + 0x90) = spawn_joint_aligned_moby_part(moby, 0x1C0, 1, 0);
     *(char **)(data + 0x94) = moby;
     *(int *)(data + 0x98) = 1;
     *(int *)(data + 0x9C) = 0;
-    c = SpawnChildMobyAtJoint(moby, 0x1BD, 0, 2);
+    c = spawn_joint_aligned_moby_part(moby, 0x1BD, 0, 2);
     *(char **)(data + 0x70) = c;
     *(int *)(data + 0x7C) = 2;
     *(char **)(data + 0x74) = moby;
     *(int *)(data + 0x78) = 0;
     *(float *)(c + 0x2C) = *(float *)(*(char **)(c + 0x24) + 0x24) * 0.75f;
-    c2 = SpawnChildMobyAtJoint(moby, 0x1BA, 1, 1);
+    c2 = spawn_joint_aligned_moby_part(moby, 0x1BA, 1, 1);
     *(char **)(data + 0x80) = c2;
     *(char **)(data + 0x84) = moby;
     *(int *)(data + 0x88) = 1;
     *(int *)(data + 0x8C) = 1;
-    c3 = SpawnChildMobyAtJoint(c2, 0x1B9, 0, 0);
+    c3 = spawn_joint_aligned_moby_part(c2, 0x1B9, 0, 0);
     *(char **)(data + 0xA0) = c3;
     *(char **)(data + 0xA4) = *(char **)(data + 0x80);
     *(int *)(data + 0xA8) = 0;
@@ -2341,7 +2341,7 @@ void spawn_shrub_parts(char *moby) {
     do {
         int j = i + 2;
         i++;
-        *(char **)(e - 0xC) = SpawnChildMobyAtJoint(*(char **)(data + 0x90), 0x1BB, 0, j);
+        *(char **)(e - 0xC) = spawn_joint_aligned_moby_part(*(char **)(data + 0x90), 0x1BB, 0, j);
         *(char **)(e - 8) = *(char **)(data + 0x90);
         *(int *)(e - 4) = 0;
         *(int *)e = j;
@@ -2692,40 +2692,40 @@ void spawn_joint_linked_moby_parts(char *moby) {
     *(int *)(data + 0x64) = 0;
     *(int *)(data + 0x68) = 0;
     *(int *)(data + 0x6C) = 0;
-    *(char **)(data + 0x90) = SpawnChildMobyAtJoint(moby, 0x1C0, 0, 0);
+    *(char **)(data + 0x90) = spawn_joint_aligned_moby_part(moby, 0x1C0, 0, 0);
     *(char **)(data + 0x94) = moby;
     *(int *)(data + 0x98) = 0;
     *(int *)(data + 0x9C) = 0;
-    c = SpawnChildMobyAtJoint(moby, 0x1BD, 0, 2);
+    c = spawn_joint_aligned_moby_part(moby, 0x1BD, 0, 2);
     *(char **)(data + 0x70) = c;
     *(int *)(data + 0x7C) = 2;
     *(char **)(data + 0x74) = moby;
     *(int *)(data + 0x78) = 0;
     *(float *)(c + 0x2C) = *(float *)(*(char **)(c + 0x24) + 0x24) * 0.75f;
-    c2 = SpawnChildMobyAtJoint(*(char **)(data + 0x90), 0x1BA, 1, 1);
+    c2 = spawn_joint_aligned_moby_part(*(char **)(data + 0x90), 0x1BA, 1, 1);
     *(char **)(data + 0x80) = c2;
     *(char **)(data + 0x84) = *(char **)(data + 0x90);
     *(int *)(data + 0x88) = 1;
     *(int *)(data + 0x8C) = 1;
-    *(char **)(data + 0xA0) = SpawnChildMobyAtJoint(c2, 0x1B9, 0, 0);
+    *(char **)(data + 0xA0) = spawn_joint_aligned_moby_part(c2, 0x1B9, 0, 0);
     *(char **)(data + 0xA4) = *(char **)(data + 0x80);
     *(int *)(data + 0xA8) = 0;
     *(int *)(data + 0xAC) = 0;
-    *(char **)(data + 0xB0) = SpawnChildMobyAtJoint(moby, 0x1D0, 0, 1);
+    *(char **)(data + 0xB0) = spawn_joint_aligned_moby_part(moby, 0x1D0, 0, 1);
     *(char **)(data + 0xB4) = moby;
     *(int *)(data + 0xB8) = 0;
     *(int *)(data + 0xBC) = 1;
-    c6 = SpawnChildMobyAtJoint(moby, 0x1D0, 0, 1);
+    c6 = spawn_joint_aligned_moby_part(moby, 0x1D0, 0, 1);
     *(char **)(data + 0xC0) = c6;
     *(char **)(data + 0xC4) = moby;
     *(int *)(data + 0xC8) = 0;
     *(int *)(data + 0xCC) = 1;
     *(unsigned short *)(c6 + 0x34) |= 0x8000;
-    *(char **)(data + 0xD0) = SpawnChildMobyAtJoint(*(char **)(data + 0x80), 0x1D1, 0, 0);
+    *(char **)(data + 0xD0) = spawn_joint_aligned_moby_part(*(char **)(data + 0x80), 0x1D1, 0, 0);
     *(char **)(data + 0xD4) = *(char **)(data + 0x80);
     *(int *)(data + 0xD8) = 0;
     *(int *)(data + 0xDC) = 0;
-    c8 = SpawnChildMobyAtJoint(*(char **)(data + 0x80), 0x1D1, 0, 0);
+    c8 = spawn_joint_aligned_moby_part(*(char **)(data + 0x80), 0x1D1, 0, 0);
     *(char **)(data + 0xE0) = c8;
     *(char **)(data + 0xE4) = *(char **)(data + 0x80);
     *(int *)(data + 0xE8) = 0;
@@ -2734,7 +2734,7 @@ void spawn_joint_linked_moby_parts(char *moby) {
     do {
         int j = i + 2;
         i++;
-        *(char **)(e - 0xC) = SpawnChildMobyAtJoint(*(char **)(data + 0x90), 0x1BB, 0, j);
+        *(char **)(e - 0xC) = spawn_joint_aligned_moby_part(*(char **)(data + 0x90), 0x1BB, 0, j);
         *(char **)(e - 8) = *(char **)(data + 0x90);
         *(int *)(e - 4) = 0;
         *(int *)e = j;

@@ -4,7 +4,7 @@
 
 typedef struct { char pad[0x2C]; float f; } O_28aa68;
 
-O_28aa68 *PickMaxEntry(O_28aa68 *a, O_28aa68 *b, O_28aa68 *c, O_28aa68 *d) {
+O_28aa68 *select_candidate_by_max_float_2c(O_28aa68 *a, O_28aa68 *b, O_28aa68 *c, O_28aa68 *d) {
     O_28aa68 *r = a;
 
     if (r == 0) {
@@ -52,7 +52,7 @@ void build_symmetric_adjacency_masks(int *list, int n, int idx) {
         for (j = i + 1; j < *(int *)t; j++) {
             found = 0;
             for (k = 0; k < n; k++) {
-                if (DoesSegmentCrossPath(list[k], t + 0x10 + i * 16, t + 0x10 + j * 16) != 0) {
+                if (test_path_segment_strict_crossing(list[k], t + 0x10 + i * 16, t + 0x10 + j * 16) != 0) {
                     found = 1;
                     break;
                 }

@@ -107,7 +107,7 @@ extern s32 func_L00_001F3958_2C9820(void) __asm__("func_L00_001F3958");
 
 /* Predicts where a thrown moby lands: steps the velocity (with gravity) from its start until collision_line_2c8440 hits ground (or a moby other than the hero and the holder), for up to `timer` steps. Stores the landing point and normal in vars and pulls the point 5% toward D_L00_00166DC0_2c8440. mode 0 needs a live hit moby; mode 1 starts from the hero's hand. Returns 1 on a hit.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002c8440.c, FUN_L00_002c8440. */
-s32 ThrownObject_TracePathCopy(ThrowVars_2c8440_2C9820 *v, struct Moby *m, s32 mode)
+s32 predict_doom_bot_spawner_landing(ThrowVars_2c8440_2C9820 *v, struct Moby *m, s32 mode)
 {
     Vec4 d, e, a, q, w;
     s32 t;
@@ -262,10 +262,10 @@ void update_doom_bot_spawner(char *m) {
             FastVecLength(s) > 0.0f) {
             char *P = D_0013E633 + 0xE1D;
             if (*(int *)(P + 0x2FC) == 0 || GetFlaggedPvarWord(*(char **)(P + 0x2FC)) == 0) {
-                ThrownObject_TracePathCopy(s, m, 1);
+                predict_doom_bot_spawner_landing(s, m, 1);
             } else {
-                if (ThrownObject_TracePathCopy(s, m, 0) == 0) {
-                    ThrownObject_TracePathCopy(s, m, 2);
+                if (predict_doom_bot_spawner_landing(s, m, 0) == 0) {
+                    predict_doom_bot_spawner_landing(s, m, 2);
                 }
             }
         }
@@ -464,7 +464,7 @@ void update_doom_bot_spawner(char *m) {
     }
 }
 // resets the fields of a record (if non-null) to their defaults
-void MobyData_ResetDefaults(char *a) {
+void reset_morphoray_chicken_slot_defaults(char *a) {
     if (a != 0) {
         *(int *)(a + 0x78) = 0;
         *(float *)(a + 0x7C) = 0.05f;
@@ -595,7 +595,7 @@ char *SpawnMoby270(char *src) {
             *(unsigned short *)(m + 0x34) |= 0x1020;
             *(char **)(*(char **)(d + 0x14) + 0x70) = &D_L00_00161910;
         }
-        MobyData_ResetDefaults(*(char **)(d + 0x14));
+        reset_morphoray_chicken_slot_defaults(*(char **)(d + 0x14));
         D_L00_001DD450[*(int *)&D_L00_00161924] = (int)m;
         *(int *)&D_L00_00161924 = *(int *)&D_L00_00161924 + 1;
         n = ((DD9 *)d)->f74;
@@ -1031,8 +1031,8 @@ extern char *func_L00_002DCD40(char *);
 extern int func_L00_002DD0E0(char *, int, int, float);
 extern void func_0022ED80(int, int, char *);
 
-int CarriedMoby_StartAnimState5(char *m, int a, int b, float f) {
-    char *h = Moby_GetClassRecord(m);
+int launch_suck_cannon_projectile_and_update_moby_state(char *m, int a, int b, float f) {
+    char *h = get_moby_suck_cannon_record(m);
     int r = launch_suck_cannon_projectile(m, a, b, f);
     if (r != 0) {
         m[0x20] = 5;
@@ -1045,7 +1045,7 @@ int CarriedMoby_StartAnimState5(char *m, int a, int b, float f) {
     return r;
 }
 extern int func_L00_002DD2D0(void *);
-int CarriedMoby_ReleaseToState5(char *a) {
+int cancel_suck_cannon_suction_and_set_moby_state_5(char *a) {
     int r = cancel_suck_cannon_suction(a);
     a[0x20] = 5;
     return r;
@@ -1183,7 +1183,7 @@ char *SpawnMoby305(char *a, char *vec, char *b, float f12, float f13, float f14,
             *(float *)(m + 0x44) = -func_L00_001FF860(len, out[2]);
             return m;
         } else {
-            PartType26Spawn(m, 0x2F4F7F7F, *(short *)(d + 0x24), -1, *(float *)&D_L00_00161958);
+            spawn_source_attached_fading_effect_particle(m, 0x2F4F7F7F, *(short *)(d + 0x24), -1, *(float *)&D_L00_00161958);
             for (i = 0; i < 17; i++) {
                 q = (char *)spawn_random_size_rotated_particle(m + 0x10, (char *)D_L00_0015F660, 1, 0.0f);
                 if (q != 0) {
@@ -1514,7 +1514,7 @@ extern unsigned char D_0013E633_2CD3B8[] __asm__("D_0013E633");
 typedef struct { float pad[4]; float v10; float v14; int pad2; int r1c; float f20; int i24; float f28; float f2c; } DD;
 
 /* Spawns a debris moby with randomized spin and velocity. Adapted from Lombyte (MIT) for PAL: src/overlays/shared/unclassified_002c8440.c, FUN_L00_002cbf68. */
-char *SpawnMoby428(int unused, float *pos, float *vel) {
+char *spawn_feather_moby(int unused, float *pos, float *vel) {
     char *m = func_0020D348_2CD3B8(0x1AC);
     if (m) {
         DD *d;
@@ -2256,7 +2256,7 @@ void replenish_hero_drones(void) {
             FastVecAdd(v, p->v80, p->p2080 + 0xE0);
             FastVecAdd(v, v, p->p2080 + 0xC0);
             for (i = p->b1FF6; i < 6; i++) {
-                m = SpawnMoby479(m, v);
+                m = spawn_hero_drone(m, v);
                 if (m) {
                     qcopy(*(void **)(m + 0x78), d);
                 }
@@ -2266,7 +2266,7 @@ void replenish_hero_drones(void) {
 }
 extern int func_L00_00273478(void *, int, float, float, unsigned, unsigned);
 
-void AttachTrailEffects(char *m) {
+void ensure_drone_attached_particles(char *m) {
     char *p = *(char **)(m + 0x78);
     if (*(int *)(p + 0x4C) == 0) {
         *(int *)(p + 0x4C) = spawn_moby_point_attached_particle(m, 0, 0.05f, 0.01f, 0x80808080, 0x10808080);
@@ -2335,7 +2335,7 @@ char *Moby_FindNearestTarget(char *a, int *excl) {
         }
     skip:
         if (!(dist < best)) continue;
-        h = Moby_GetClassRecord(m);
+        h = get_moby_suck_cannon_record(m);
         if (h != 0 && *(short *)(h + 0x68) > 0) continue;
         x = (char *)GetFlaggedPvarWord(m);
         qcopy(v, m + 0x10);
@@ -2916,12 +2916,12 @@ void crate_update(struct Moby *moby) {
 
     crate_vars = (CrateVars *)moby->pvars;
     if (crate_vars->rider != 0) {
-        if (IsMobyClass500To540(crate_vars->rider) == 0) {
+        if (is_moby_in_class_range_500_to_540(crate_vars->rider) == 0) {
             crate_vars->rider = 0;
         }
     }
     if (crate_vars->below != 0) {
-        if (IsMobyClass500To540(crate_vars->below) == 0) {
+        if (is_moby_in_class_range_500_to_540(crate_vars->below) == 0) {
             crate_vars->below = 0;
         }
     }
@@ -3128,7 +3128,7 @@ void crate_update(struct Moby *moby) {
                 break;
             }
         }
-        GroupMobyIter_Start(&it, moby->group, 0, 0);
+        get_first_moby_in_group(&it, moby->group, 0, 0);
         while (it != 0) {
             if (moby != it && !(func_001F9D48(&moby->pos, &it->pos) > 0.1f) && it->state == 1) {
                 CrateVars *ipv = (CrateVars *)it->pvars;
@@ -3148,7 +3148,7 @@ void crate_update(struct Moby *moby) {
                     break;
                 }
             }
-            GroupMobyIter_Next(&it, it, 0, 0);
+            get_next_moby_in_group(&it, it, 0, 0);
         }
         if (moby->state != 1) {
             moby->pos.z = ProbeGroundHeight(&moby->pos, 0, 0.5f);

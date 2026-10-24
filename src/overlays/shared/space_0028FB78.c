@@ -15,7 +15,7 @@ void initialize_moby_state_record(char *m) {
     char *g;
     int *src;
     *(int *)&D_L00_00160600 = 1;
-    Ship_ReleaseCurrent();
+    deactivate_recorded_moby();
     if (D_0015EE84_m == 0xD) {
         char *q = D_0013E130_a;
         *(float *)(q + 0x60) = 464.66f;
@@ -36,7 +36,7 @@ void initialize_moby_state_record(char *m) {
     *(int *)(g + 0x38) = src[2];
 }
 extern char *D_0013E130;
-void Ship_ReleaseCurrent(void) {
+void deactivate_recorded_moby(void) {
     char *m = D_0013E130;
     if (m != 0) {
         *(unsigned short *)(m + 0x34) |= 3;
@@ -157,7 +157,7 @@ void ShipTakeOff(void) {
         if ((unsigned short)(h - 6) >= 2) *(short *)(p + 0x5A) = 5;
     }
     sound_update();
-    HelpPopup_Cancel();
+    clear_active_help_record();
     EnterShipMode(0);
     *(short *)(D_0013E15A + 2) = 0;
 }
@@ -224,7 +224,7 @@ void func_L00_0028FCA0(s32);
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_space_0028e8a0.c, FUN_L00_0028eed0. */
 /* Camera-follow update. Exact once the file declares D_L00_0016128C as a 4-byte MACRO_ADDR int: a `short` declaration of the same symbol makes the assembler use $gp for
  * every access to it. Joined to its trailing fragment (config/overlays/joined.tsv). */
-void Ship_BeginMapFlight(void) {
+void prepare_level_entry_transition(void) {
     int m, u;
     D_0013E130_901A8.x2c = 1;
     if (D_0013E130_901A8.x2a != 0) D_0013E130_901A8.x2a = 0;

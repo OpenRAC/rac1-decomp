@@ -425,7 +425,7 @@ extern short D_L00_00161548;
 extern short D_L00_00161550;
 
 /* update moby 166 */
-void Moby166Update(char *m) {
+void update_linked_moby_states(char *m) {
     int *p = *(int **)(m + 0x78);
     int b;
     char *r;
@@ -648,7 +648,7 @@ extern u8 *func_L00_0026DEA0(V4 *, f32, f32, f32, f32, s32, V4 *, u32);
 extern short D_L00_0015F6B0_B4F40b SDATA(D_L00_0015F6B0);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002b2100.c, FUN_L00_002b3c50. */
-void Moby_SpawnTrailParticles(X *x) {
+void emit_beam_trail_particles(X *x) {
     V4 l0;
     V4 a;
     V4 d;
@@ -730,7 +730,7 @@ void Moby_SpawnTrailParticles(X *x) {
     g->f0C = 1;
 }
 extern char *func_0020D348(int);
-char *Moby167Spawn(int a) {
+char *spawn_indexed_class_a7_moby(int a) {
     char *m = CreateMoby(0xA7);
     if (m != 0) {
         int *p = *(int **)(m + 0x78);
@@ -1383,7 +1383,7 @@ extern void func_L00_00222B80(int, int);
 extern void func_L00_002B6AE0(int, int);
 extern void func_L00_00204190(void);
 extern void func_0020D678(int);
-void Moby_EndGadgetControl(int a, int *b) {
+void terminate_visibomb_missile(int a, int *b) {
     int *p = *(int **)(*(char **)b + 0x78);
     if (p != 0) p[1] = 0;
     *(int *)(D_0013E633 + 0x2DFD) = 0;
@@ -1406,7 +1406,7 @@ typedef unsigned int u128_t __attribute__((mode(TI), aligned(16)));
 typedef struct { u128_t r[4]; } M_t;
 
 // Steers the held object's pose: eases a field toward 0.45, spins it, and rebuilds its matrix and position from the parent. Adapted from Lombyte (MIT) for PAL: overlays/shared/unclassified_002b2100.c, FUN_L00_002b5ba0.
-void HeldObject_UpdatePose(unsigned char *m, unsigned char *o) {
+void update_attached_moby_transform(unsigned char *m, unsigned char *o) {
     M_t a, b, c;
     Vec4 k, r;
     unsigned char *e = *(unsigned char **)(o + 0x20);
@@ -1447,7 +1447,7 @@ extern V6 D_L00_001E9DF0;
 extern float D_L00_0015F6B4 MACRO_ADDR;
 
 /* spawns a burst of sparks and glow flashes at a moby, scaled by its distance from the origin marker */
-void SpawnSparkBurstAtMoby(char *m, int flag) {
+void spawn_moby_particle_and_glow_burst(char *m, int flag) {
     float tmp[4];
     float d[4];
     float n[4];
@@ -1458,9 +1458,9 @@ void SpawnSparkBurstAtMoby(char *m, int flag) {
 
     qcopy(tmp, m + 0x10);
     tmp[2] += 0.3f;
-    PartType13Spawn(tmp, 1, 0x40808080, 0.3f, 1.01f, 1.075f, 0.05f, 50000.0f);
+    spawn_spinning_fade_in_out_effect_particle(tmp, 1, 0x40808080, 0.3f, 1.01f, 1.075f, 0.05f, 50000.0f);
     for (j = 4; j >= 0; j--) {
-        PartType13Spawn(tmp, 1, 0x40808080, 0.3f, 1.01f, 1.07f, 0.05f, 50000.0f);
+        spawn_spinning_fade_in_out_effect_particle(tmp, 1, 0x40808080, 0.3f, 1.01f, 1.07f, 0.05f, 50000.0f);
     }
     if (flag != 0) {
         FastVecSub(d, D_L00_00166EC0, m + 0x10);
@@ -2130,7 +2130,7 @@ void update_pyrocitor_usage_and_cleanup(unsigned char *m)
         if (*(void **)v)
             func_0020D678_B9528(*(void **)v);
         if (*(short *)(v + 0x44) != -1) {
-            light_off_67e8(*(short *)(v + 0x44));
+            release_point_light_slot(*(short *)(v + 0x44));
             *(short *)(v + 0x44) = -1;
         }
         h = *(short *)(v + 0x4A);
@@ -2231,9 +2231,9 @@ void update_pyrocitor_flame_effect_slots(char *m) {
                     v2[2] = D_0015EE6C * 4.0f;
                     v2[3] = *(float *)&D_L00_00161610;
                     c1 = FastTweenColor(*(int *)&D_L00_00161614, *(int *)&D_L00_00161618, random_float_between(0.0f, 1.0f));
-                    PermuteColorChannels(c1, q[0x10]);
+                    swap_packed_color_channels(c1, q[0x10]);
                     c2 = FastTweenColor(*(int *)&D_L00_0016161C, *(int *)&D_L00_00161620, random_float_between(0.0f, 1.0f));
-                    PermuteColorChannels(c2, q[0x10]);
+                    swap_packed_color_channels(c2, q[0x10]);
                     c3 = func_001FA898_r(func_001F9878(random_float_between((float)*(int *)&D_L00_00161624, (float)*(int *)&D_L00_00161628)));
                     c4 = func_001FA898_r(func_001F9878(random_float_between((float)*(int *)&D_L00_00161624, (float)*(int *)&D_L00_00161628)));
                     rand_vec(v3, 0.0f, f20 + f20);
@@ -2254,7 +2254,7 @@ typedef struct {
 } ListSlots8;
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b2100.c, FUN_L00_002b8798. */
-void SlotList_Add(ListSlots8 *list, s32 val) {
+void register_pyrocitor_flame_effect(ListSlots8 *list, s32 val) {
     s32 *p = list->slots;
     s32 i = 0;
     s32 *q;
@@ -2605,7 +2605,7 @@ extern int D_L00_001DBCD0[];
 
 /* Starts the beam when one is pending: lays 19 points from the moby toward its target and resets the segment state.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b2100.c, FUN_L00_002b9310. */
-void StartBeamWhenPending(char *moby) {
+void initialize_tesla_claw_beam(char *moby) {
     V2b9310 d;
     V2b9310 step;
     char *data;

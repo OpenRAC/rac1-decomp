@@ -203,7 +203,7 @@ void update_rocket_moby(char *moby) {
             }
         }
         if (moby_vars->c == moby_vars->end || movement_collision_result) {
-            Moby564_SpawnImpact(moby, movement_step);
+            spawn_rocket_explosion(moby, movement_step);
             DeleteMoby(moby);
         } else if (moby_vars->flags & 2) {
             pitch_angle_or_remaining_frames = (float)(moby_vars->end - moby_vars->c);
@@ -273,7 +273,7 @@ extern void func_L00_0025A8E8(int, float, void *, int, float, float, int, int, i
 extern void func_L00_0025F4A8_x(void *, void *, void *, float, float, int, int, int, int, int, float, float, float, float, float, int, int, int) __asm__("func_L00_0025F4A8");
 
 /* Impact effect for a projectile. */
-void Moby564_SpawnImpact(void *m, void *src) {
+void spawn_rocket_explosion(void *m, void *src) {
     char *moby = m;
     float q[4];
     float *qp = q;
@@ -918,7 +918,7 @@ extern float func_001FA850(float, float);
 typedef struct { char pad0[0x10]; float x; float y; } L18Pos;
 
 /* Returns the class 0x247 moby in list idx whose bearing from a differs most from b's, or 0. */
-void *Moby583_FindWidestBearing(float *a, float *b, int idx) {
+void *find_class_247_moby_with_largest_xy_angle_in_list(float *a, float *b, int idx) {
     short *p = (short *)D_L18_001AC540[idx];
     char *best = 0;
     float bestd = 0.0f;
@@ -1132,7 +1132,7 @@ void end_thruster_pack_lock_red_wait(unsigned char *arg) {
     }
 }
 /* Moby state check: state 3 becomes 1 and returns 1; state 2 returns -1 when data+0x6C is zero; else 0. */
-int BossTimer_Poll(char *moby) {
+int poll_moby_state_and_rearm(char *moby) {
     unsigned char st = moby[0x20];
     char *data = *(char **)(moby + 0x78);
     if (st == 3) {
@@ -1792,7 +1792,7 @@ void process_expanding_ring_collisions(char *moby) {
         b[2] += 0.5f;
         func_L00_001EFFF0(a, b, 1, *(void **)(d + 0x34), hit);
         if (*(float *)(d + 0x24) < 3.0f) {
-            SpawnSegmentSparks(moby, a, b);
+            spawn_expanding_ring_segment_particles(moby, a, b);
         }
         p = FastAddRots(p, step);
         q = FastAddRots(q, step);
@@ -1811,7 +1811,7 @@ extern short D_L18_00161D18;
 extern short D_L18_00161D20;
 
 /* Spawns sparks along the segment a1-a2 of the damage ring. */
-void SpawnSegmentSparks(char *moby, void *a1, void *a2) {
+void spawn_expanding_ring_segment_particles(char *moby, void *a1, void *a2) {
     float buf[4];
     float v[4];
     float w[4];
@@ -1865,7 +1865,7 @@ void update_class_274_ring_effect(char *moby) {
         func_L00_001FF4B0(v, v, D_0015EE6C * 4.0f);
         v[2] = D_0015EE6C * 4.0f;
         InitDirectionalHitQuery(buf, (int)moby, 0x10001, v, 1.0f);
-        PostHitMessageFromRecord(*(int *)(tgt + 0x2000), buf);
+        record_moby_hit(*(int *)(tgt + 0x2000), buf);
     }
     flag = D_L18_0015F6B0 & 4;
     d[1] = d[1] + *(float *)&D_L18_00161D30 * D_0015EE6C;
@@ -1875,7 +1875,7 @@ void update_class_274_ring_effect(char *moby) {
     AddDrawCallback(draw_class_274_ring_effect, moby);
 }
 /* Spawns a class 0x274 moby at vector with the given value and owner. */
-char *Moby628Spawn(void *owner, void *vector, float value) {
+char *create_class_274_ring_effect(void *owner, void *vector, float value) {
     char *moby = CreateMoby(0x274);
     if (moby != 0) {
         char *data = *(char **)(moby + 0x78);
@@ -2134,7 +2134,7 @@ void update_position_and_rotation_transition(char *moby) {
 extern float D_0015EE70 MACRO_ADDR;
 
 // Initialise a moby's data block from five vectors and a few parameters.
-void FinalBoss_StartMove(char *moby, void *v0, void *v1, void *v2, void *v3, void *v4, int a6, int a7, int a8) {
+void start_position_and_rotation_transition(char *moby, void *v0, void *v1, void *v2, void *v3, void *v4, int a6, int a7, int a8) {
     char *data = *(char **)(moby + 0x78);
     *(int *)(data + 0x60) = 0;
     *(int *)(data + 0x64) = 0;
@@ -2161,7 +2161,7 @@ typedef struct {
 } Level18VendorFloatMoby;
 
 /* Read the vendor moby's current float value. */
-float Moby_GetFloatValue(Level18VendorFloatMoby *moby) {
+float get_position_and_rotation_transition_progress(Level18VendorFloatMoby *moby) {
     return moby->data->value;
 }
 /* 1 when the byte at +0x20 is 2, 2 when it is 3, else 0 */
@@ -2321,7 +2321,7 @@ void update_moby_hit_response_burst_and_ballistic_flight(char *moby) {
 extern void func_L01_0026F090(char *arg, int val);
 /* Sets the state of every moby in list index arg to 2. */
 void set_moby_group_state_two(char *arg) {
-    MobyGroup_SetState(arg, 0x2);
+    set_moby_list_state(arg, 0x2);
 }
 extern void func_L15_002D9B00(char *);
 extern short D_L18_00161F60;
@@ -2357,11 +2357,11 @@ void update_moby_target_travel_and_electric_effects(char *moby) {
         float len;
         FastVecSub(buf, d, p);
         len = FastVecLength(buf);
-        HomingSpark_EmitTrail(moby);
+        spawn_sparks_along_target_direction(moby);
         rand_vec(q, *(float *)&D_L18_00161F68 * d[9], *(float *)&D_L18_00161F68 * d[9]);
         FastVecAdd(q, q, p);
         initialize_electric_bolt_effect_if_requested(moby);
-        ArcEmitterUpdate(moby);
+        update_electric_bolt_geometry_and_particles(moby);
         AddDrawCallback((void (*)(void))draw_electric_water_bolt_effect, moby);
         if (len < lim) {
             spawn_explosion_burst(moby);
@@ -2387,7 +2387,7 @@ void update_moby_target_travel_and_electric_effects(char *moby) {
     AddDrawCallback(HomingSpark_Draw, moby);
 }
 /* Spawns a class 0x3D7 homing spark at vector with the given owner and value. */
-char *HomingSpark_Spawn(void *owner, void *vector, int value) {
+char *create_class_3d7_moby(void *owner, void *vector, int value) {
     char *moby = CreateMoby(0x3D7);
     if (moby != 0) {
         char *data;
@@ -2514,7 +2514,7 @@ extern short D_L18_00161FF4;
 extern short D_L18_00161FF8;
 
 /* Trail emitter for the homing spark. */
-void HomingSpark_EmitTrail(char *moby) {
+void spawn_sparks_along_target_direction(char *moby) {
     float v10[4];
     float v20[4];
     float v30[4];
@@ -2577,7 +2577,7 @@ void spawn_explosion_burst(void *source_moby) {
     struct Moby *moby = source_moby;
     int i, j;
     *(QVec *)&velocity = *(QVec *)&moby->pos;
-    SpawnMoby1898(&velocity, scale_ticks(30), 0x80806060, 0x801010);
+    spawn_timed_projected_sprite_effect(&velocity, scale_ticks(30), 0x80806060, 0x801010);
     Sound_PlayClassSound(0x10, 0, (int)source_moby, 0x58E);
     for (i = 0; i < I(D_L18_00161FFC);) {
         float elevation, angle, scale;
@@ -2752,7 +2752,7 @@ extern short D_L18_00162160[] MACRO_ADDR;
 extern float D_L18_00167840[];
 
 /* Veldin 2 arc emitter: rebuilds the 20-point bolt and its mirror, regrows or jitters four side arcs, then spawns three particles. */
-void ArcEmitterUpdate(void *moby) {
+void update_electric_bolt_geometry_and_particles(void *moby) {
     V_ec290 s[10];
     V_ec290 d[5];
     unsigned char flag = *(unsigned char *)D_0013E633;
@@ -3078,7 +3078,7 @@ void drek_fight_missile_update(char *moby) {
         if (x < 0.87266463f) {
             x = 0.87266463f;
         }
-        StepAngleToward((float *)&m->rot.y, 0, x, D_0015EE6C * 12.566371f);
+        step_angle_toward_target((float *)&m->rot.y, 0, x, D_0015EE6C * 12.566371f);
         if (func_001F9908((int *)(missile_vars + 0x160))) {
             int i;
             char *pos = (char *)&m->pos;
@@ -3305,11 +3305,11 @@ void render_drek_fight_missile_group_effects(char *moby) {
             switch (st) {
             case 2:
             case 3:
-                DrawBillboardAt(v, t, *(float *)&D_L18_001622F8, 0.0f);
+                draw_offset_textured_effect_quad(v, t, *(float *)&D_L18_001622F8, 0.0f);
                 *(float *)(data + 0x168) = FastAddRots(*(float *)(data + 0x168), a);
                 break;
             case 4:
-                DrawBillboardAt(v, t, *(float *)&D_L18_001622F8, 0.0f);
+                draw_offset_textured_effect_quad(v, t, *(float *)&D_L18_001622F8, 0.0f);
                 *(float *)(data + 0x168) = FastAddRots(*(float *)(data + 0x168), b);
                 break;
             }

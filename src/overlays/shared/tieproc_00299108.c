@@ -32,7 +32,7 @@ extern int D_0015EF28 MACRO_ADDR;
 int func_001F9850(int);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_00295100.c, FUN_L00_00297e70. */
-void UpdateFrameCounters(void) {
+void update_game_frame_and_idle_counters(void) {
     if (D_0013CA40.busy != 0 || D_0013CA40.c != 0.0f || D_0013CA40.d != 0.0f || D_0013CA40.a != 0.0f || D_0013CA40.b != 0.0f) {
         (*(int *)&D_L00_001610B0) = 0;
     } else {
@@ -196,7 +196,7 @@ void handle_pause_input(void) {
         int x;
         x = func_L00_00235790_r();
         hud_keep_visible(x, scale_ticks(0xB4));
-        x = queue_animation_update(2, 0x754E, (int)HudBoltsInit, (int)HudBoltsUpdate, (int)HudBoltsDraw, (int)&gBolts, 9999999);
+        x = queue_animation_update(2, 0x754E, (int)initialize_bolt_counter_hud, (int)update_bolt_counter_hud_animation_and_visibility, (int)draw_bolt_counter_hud_panel, (int)&gBolts, 9999999);
         hud_keep_visible(x, scale_ticks(0xB4));
     }
     if (D_L00_00184314) {
@@ -240,7 +240,7 @@ void handle_pause_input(void) {
     update_resident_packed_direction();
     func_L00_0023B610_r(1);
     Help_Update();
-    if ((g_debug_menu.w8 & 2) || ((g_debug_menu.w8 & 0x10) && (((PadS *)(D_0013A5E0 + 0x2460))->w1A4 & 0x200))) UpdateFrameCounters();
+    if ((g_debug_menu.w8 & 2) || ((g_debug_menu.w8 & 0x10) && (((PadS *)(D_0013A5E0 + 0x2460))->w1A4 & 0x200))) update_game_frame_and_idle_counters();
     if (g_debug_menu.w18 == 2) func_001E9768_b();
     if (g_debug_menu.w18 == 3) func_001E9768_b();
     if (g_debug_menu.w18 == 4) func_001E9768_b();
@@ -317,7 +317,7 @@ void StartCutscene(int arg) {
     D_L00_0016128C = v;
     *(int *)(D_L00_0016C960 + 0x58) = D_L00_00173F00[1] + v;
     *(int *)(D_L00_0016C960 + 0x5C) = D_L00_00173F00[2] + v;
-    HelpPopup_Cancel();
+    clear_active_help_record();
     *(float *)&gFadeLvl = one;
     D_L00_0015F6A8 = 2;
     D_L00_0016C960[0x4B] = player_camera[0x394];
@@ -328,7 +328,7 @@ void StartCutscene(int arg) {
     HeroSetObjectFlags();
     if (D_L00_00179208 != 0) *(unsigned short *)(D_L00_00179208 + 0x34) |= 1;
     if (D_L00_001BA15C != 0) *(unsigned short *)(D_L00_001BA15C + 0x34) |= 1;
-    StreamSectorListEntry(0);
+    start_cutscene_chunk_read(0);
     FadeToBlack(scale_ticks(6));
     update_audio_stream_until_idle(1);
     update_world_object_animation();
@@ -347,7 +347,7 @@ void StartCutscene(int arg) {
     q = D_L00_0016C960;
     *(short *)(q + 0x46) = -3;
     ((int (*)(void))Music_ContinueStreamIfReady)();
-    ((int (*)(int))StreamSectorListEntry)(1);
+    ((int (*)(int))start_cutscene_chunk_read)(1);
     for (i = 0; *(short *)(q + 0x46) < i; i--) {
         func_00122598(0);
     }
@@ -753,7 +753,7 @@ void update_cutscene_playback(void) {
             update_audio_stream_until_idle(1);
             D_L00_0016C960_9A300.f3C++;
             update_world_object_animation();
-            StreamSectorListEntry(D_L00_0016C960_9A300.f3C + 1);
+            start_cutscene_chunk_read(D_L00_0016C960_9A300.f3C + 1);
         }
         last = func_L00_0029A158_9A300();
         for (i = 0; i < D_L00_0016C960_9A300.h44; i++) {
@@ -789,7 +789,7 @@ void update_cutscene_playback(void) {
     UpdateAllPointLights();
     update_resident_packed_direction();
     if ((D_L00_0016C158_9A300.update_flags & 2) || ((D_L00_0016C158_9A300.update_flags & 0x10) && (D_0013CBE4 & 0x200))) {
-        UpdateFrameCounters();
+        update_game_frame_and_idle_counters();
     }
 }
 extern int D_0015EE80 MACRO_ADDR;
@@ -808,7 +808,7 @@ extern void func_L00_00211908(void);
 extern void func_L00_0029A940(int, int, int);
 
 /* Dialog stream update: pick the entry's pair and start it unless one is already playing. */
-void start_indexed_disc_stream(int idx) {
+void PlayMovieEntryIfIdle(int idx) {
     int a, b;
     char *base;
     if (idx < 0) return;
@@ -900,7 +900,7 @@ void prepare_movie_playback(int sector, int size, int arg2) {
     D_L00_00161108_m.unk8 = arg2;
     D_L00_0015F6BC = 1;
     FadeToBlack(4);
-    HelpPopup_Cancel();
+    clear_active_help_record();
     D_L00_0015F6A8 = 1;
     D_L00_00161108_m.buf0 = D_L00_00173F04;
     D_L00_00161108_m.buf1 = D_L00_0015F50C;

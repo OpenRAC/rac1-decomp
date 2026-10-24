@@ -39,7 +39,7 @@ extern f32 func_001FA850(f32, f32);
 
 /* Ledge probe: steps forward from `pos` along the hero's yaw looking for a flat top (normal within 20 degrees of up, not material 9 or 12) at least `min_height` above the floor and not above pos + up, then for the wall under it. Returns 1 when the hero (facing `*dir`) faces that wall within 65 degrees and the ledge edge is found within 2.4 units along it. Constants live in locals because retail loads each one once.
    Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/help/0020c758.c, FUN_L00_0020c758. */
-int ProbeLedge(Vec4 *pos, f32 *dir)
+int probe_hero_ledge_edge(Vec4 *pos, f32 *dir)
 {
     Vec4 probe, top, low, wall, edge;
     f32 drop, fwd, up, reach, min_height;
@@ -276,8 +276,8 @@ extern void func_L00_00233EE0(float *, float, float, float);
 
 /* OUT = the camera-space point (0.3, 0, 1.34) in world space
    (func_L00_00233EE0). */
-void Hero_GetProbePoint(float *out) {
-    LocalToWorldPoint(out, 0.3f, 0.0f, 1.34f);
+void compute_hero_fixed_offset_world_position(float *out) {
+    transform_hero_local_offset_to_world(out, 0.3f, 0.0f, 1.34f);
 }
 extern char D_0013E633[];
 extern char D_0013A5E0[];
@@ -299,7 +299,7 @@ void update_hero_offset_rail_candidate(void) {
     float minimum_query_height_above_rail;
     P->unk5FC = 0;
     if (P->unk1E4 == 0) {
-        Hero_GetProbePoint(rail_query_position);
+        compute_hero_fixed_offset_world_position(rail_query_position);
         control_mode = P->state.control_mode;
         if ((control_mode == 4 && P->unk41E == 0) || control_mode == 2) {
             if (nearest_rail_point(rail_query_position, &i20, rail_point, &i24, &rail_query_value, &i2C, 0, 0)) {
@@ -363,7 +363,7 @@ int is_hero_slot_item_id_5_to_7(int arg) {
     return 0;
 }
 // Returns whether the kind of arg is 0x1C or 0x1D.
-int Hero_IsSlotModuleGroupC(int arg) {
+int is_hero_slot_item_id_28_or_29(int arg) {
     int v = hero_slot_item_id(arg);
 
     if (v >= 0x1C && v <= 0x1D) {
@@ -465,7 +465,7 @@ float Target_ScoreCandidate(void *o_v, float yaw, float range, float ylim, float
     if (0.0f < ylim && ylim < m) *out = 1;
     if (0.0f < plim && plim < p) *out = 1;
     r = d + s * d;
-    if (IsMobyClass500To540(o)) r += 7.0f;
+    if (is_moby_in_class_range_500_to_540(o)) r += 7.0f;
     return r;
 }
 extern int func_L00_0025D390(void *obj);
@@ -494,7 +494,7 @@ char *find_best_hero_heading_target(float a, float b, float c, float d) {
     return best;
 }
 /* Maps a small id to a text/sound id: 1 -> 0x79, 2 -> 0x77, 3 -> 0x75, otherwise 0. */
-int func_L00_0020E0A8(int k) {
+int select_hero_condition_animation_id(int k) {
     switch (k) {
     case 1:
         return 0x79;
@@ -540,7 +540,7 @@ void update_hero_condition_animation(void) {
         id = 0x79;
         if (c != 0) {
             if (*(unsigned char *)(c + 0x3C) != 0) {
-                id = func_L00_0020E0A8(*(unsigned char *)(c + 0x3C));
+                id = select_hero_condition_animation_id(*(unsigned char *)(c + 0x3C));
                 if (*(int *)(p + 0x208C) == 1) {
                     spd = 0.7f;
                 }
@@ -550,7 +550,7 @@ void update_hero_condition_animation(void) {
     {
         char *q = D_0013E633 + 0xE1D;
         if (*(short *)(q + 0x1DC) != 0) {
-            id = func_L00_0020E0A8(*(short *)(q + 0x22CE));
+            id = select_hero_condition_animation_id(*(short *)(q + 0x22CE));
             flag = 1;
         }
         if (*(int *)(q + 0x22A8) == 1) {
@@ -592,7 +592,7 @@ void update_hero_condition_animation(void) {
         char *w = D_0013E633 + 0xE1D;
         if (flag) {
             if (*(int *)(w + 0xD10) == 0) {
-                char *m = AllocAnimSlot(*(char **)(w + 0x2080), 0x18);
+                char *m = allocate_moby_animation_slot(*(char **)(w + 0x2080), 0x18);
                 *(char **)(w + 0xD10) = m;
                 *(int *)(m + 8) = 0;
             }
@@ -601,7 +601,7 @@ void update_hero_condition_animation(void) {
                 return;
             }
             if (ApproachValue((float *)(*(char **)(w + 0xD10) + 8), 0.0f, D_0015EE60 * 0.05f) == 0.0f) {
-                List_RemoveAndClearNode(*(void **)(w + 0x2080), w + 0xD10);
+                release_moby_animation_slot(*(void **)(w + 0x2080), w + 0xD10);
             }
         }
     }
@@ -613,7 +613,7 @@ void update_hero_condition_animation(void) {
             ApproachValue((float *)(o + 8), spd, D_0015EE60 * 0.05f);
             e = *(char **)(z + 0xD10);
             if (*(unsigned char *)(e + 0x23) != id) {
-                MobyAnim_StartBlend(*(int *)(z + 0x2080), *(void **)(z + 0xD10), id, 0, scale_ticks(8), 1);
+                initialize_moby_animation_blend(*(int *)(z + 0x2080), *(void **)(z + 0xD10), id, 0, scale_ticks(8), 1);
             } else {
                 MobyAnim_StepBlend(*(void **)(z + 0x2080), (unsigned char *)e);
             }
@@ -650,12 +650,12 @@ void create_missing_hero_item_slot_animations(int a, int b) {
             char *h;
             if (i == 1 && *(unsigned char *)(k + 0x20AB) != 2) break;
             h = (char *)D_0013E633 + 0xE1D;
-            s = AllocAnimSlot(*(void **)(h + 0x2080), *(int *)((char *)&D_L00_0015F780 + i * 4));
+            s = allocate_moby_animation_slot(*(void **)(h + 0x2080), *(int *)((char *)&D_L00_0015F780 + i * 4));
             *(void **)(h + 0xD08 - (-(i * 4))) = s;
             if (s != 0) {
                 *(int *)(h + 0xD14) = 0;
                 *(int *)(s + 8) = 0;
-                MobyAnim_StartBlend(*(int *)(h + 0x2080), s, t, 0, scale_ticks(0xF), 1);
+                initialize_moby_animation_blend(*(int *)(h + 0x2080), s, t, 0, scale_ticks(0xF), 1);
                 *(float *)(s + 0x28) = 1.0f;
             }
         }
@@ -704,7 +704,7 @@ extern void func_L00_00250418_0EB60(u8 *, u8 *, s32, s32, s32, s32) __asm__("fun
 extern void func_L00_00232C10(s32, s32, f32);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_0020c758.c, FUN_L00_0020e4c8. */
-void Hero_StartModuleAnim(void) {
+void start_equipped_item_animation(void) {
     s32 t, v19, v20, v21, i;
     u8 *o;
     PS_20e4c8 *P;
@@ -742,7 +742,7 @@ void Hero_StartModuleAnim(void) {
 extern int func_L00_00205618(int);
 extern void func_L00_00232C10(int, int, float);
 /* Handles the pending flag at D_0013F450 + 0x20A8, then clears it. */
-void Hero_ClearPendingModuleAnim(void) {
+void cancel_hero_item_animation(void) {
     unsigned char *g = (unsigned char *)D_0013F450;
     if (g[0x20A8] != 0) {
         if (*(int *)(g + 0xD08) != 0) {
@@ -773,7 +773,7 @@ void update_hero_held_items_and_orientation(void) {
 
     if (owner->unk20A8 != 0 && owner->unk20AA != 0) {
         if (get_ammo(-1) == 0) {
-            Hero_ClearPendingModuleAnim();
+            cancel_hero_item_animation();
         }
     }
 
@@ -795,7 +795,7 @@ void update_hero_held_items_and_orientation(void) {
             }
             if (animation != -1 && (*slot)[0x23] != animation) {
                 slot_owner->unk2294 = animation;
-                MobyAnim_StartBlend((u8 *)slot_owner->moby, *slot, slot_owner->unk2294, 0,
+                initialize_moby_animation_blend((u8 *)slot_owner->moby, *slot, slot_owner->unk2294, 0,
                                     scale_ticks(8), 1);
             }
         }
@@ -815,7 +815,7 @@ void update_hero_held_items_and_orientation(void) {
             if (*(float *)(*slot + 8) != 0.0f) {
                 continue;
             }
-            List_RemoveAndClearNode((void *)owner->moby, slot);
+            release_moby_animation_slot((void *)owner->moby, slot);
             return;
         } else {
             ApproachValue((float *)(*current + 8), 1.0f, D_0015EE60 * 0.2f);
@@ -964,8 +964,8 @@ void spawn_hero_item_mobies(void) {
             if (HERO->unk22D8 != 0)
                 m->flags |= 0x41;
             if (HERO->unk22D8 == 0 && HERO->items[3].item_id == 3) {
-                Moby167Spawn(0);
-                Moby167Spawn(1);
+                spawn_indexed_class_a7_moby(0);
+                spawn_indexed_class_a7_moby(1);
             }
         }
     }
@@ -1074,7 +1074,7 @@ void spawn_hero_item_mobies(void) {
 #undef INV
 extern float func_001F9B88(float);
 /* Sum of absolute differences of the first three floats of three 16-byte rows of A and B. */
-float Matrix3_SumAbsDiff(float *a, float *b) {
+float sum_basis_absolute_differences(float *a, float *b) {
     float s = 0.0f;
     int i, j;
     for (i = 0; i < 3; i++) {
@@ -1169,7 +1169,7 @@ void update_hero_item_rotation_from_history(char *arg, void *mat) {
                 char *b = D_0013E633 + 0xE1D;
                 int u = k - 15;
                 int rj = (*(int *)(b + 0x21B8) - u) % 16;
-                *(float *)((char *)fp - (-(i * 4))) += Matrix3_SumAbsDiff(
+                *(float *)((char *)fp - (-(i * 4))) += sum_basis_absolute_differences(
                     (float *)(D_0013E633 + 0xE1D + 0x12F0 + ri * 0x30),
                     (float *)(D_0013E633 + 0xE1D + 0x12F0 + rj * 0x30));
             }
@@ -1249,7 +1249,7 @@ extern int func_001F9850(int);
 
 /* For events 9, 11, 13, 16 and 23: sets the short at D_0013F450 +
    0x22CE to 3 and +0x1DC to func_001F9850(70). */
-void Hero_StartEventAnim(int id) {
+void set_hero_condition_animation_timer_for_item(int id) {
     char *base;
 
     switch (id) {
@@ -1266,7 +1266,7 @@ void Hero_StartEventAnim(int id) {
 }
 /* For events 9, 11, 13-16, 18, 19, 22, 23 and 26: sets the short at
    D_0013F450 + 0x1DA to func_001F9850(70). */
-void Hero_StartEventTimer(int id) {
+void set_hero_item_switch_timer_for_item(int id) {
     switch (id) {
     case 9:
     case 11:
@@ -1288,7 +1288,7 @@ extern int D_L00_0015F6A8 MACRO_ADDR;
 /* Returns 1 when nothing blocks the action, else 0. */
 int Hero_CanUseGadget(void) {
     char *g;
-    if (Level_GetSpecialMode() == 0 && D_L00_0015F6A8 == 0) {
+    if (get_hero_target_pose_status() == 0 && D_L00_0015F6A8 == 0) {
         g = D_0013F450;
         if (*(unsigned char *)(g + 0x20A4) == 0) {
             if (*(unsigned *)(g + 0x208C) < 3 || *(int *)(g + 0x2084) == 7 || *(int *)(g + 0x2084) == 9 || *(int *)(g + 0x2084) == 0xE) {
@@ -1536,7 +1536,7 @@ void hero_switch_item(int i) {
             if (Hero_CanUseGadget()) {
                 int v;
                 if (*(short *)((char *)g + 0x22DE) == 0) {
-                    Hero_PlayActiveSound(0x18, 0);
+                    allocate_hero_voice_for_entry(0x18, 0);
                     *(short *)((char *)g + 0x22DE) = 0x12;
                     *(short *)((char *)g + 0x22DC) = 1;
                 }
@@ -1603,10 +1603,10 @@ void hero_switch_item(int i) {
         *(int *)((char *)g + i * 0x50 + 0x10B0) = 3;
         clear_hero_idle_rotation_targets();
         *(int *)((char *)g + 0x1010) = rand_range(scale_ticks(0x32), scale_ticks(0x5A));
-        Hero_StartEventTimer(*((int *)(D_0013E633 + 0xE1D + 0x20D4) + i));
-        Hero_StartEventAnim(*((int *)(D_0013E633 + 0xE1D + 0x20D4) + i));
+        set_hero_item_switch_timer_for_item(*((int *)(D_0013E633 + 0xE1D + 0x20D4) + i));
+        set_hero_condition_animation_timer_for_item(*((int *)(D_0013E633 + 0xE1D + 0x20D4) + i));
         if (g->f20A8 != 0) {
-            Hero_ClearPendingModuleAnim();
+            cancel_hero_item_animation();
         }
         if (i == 0) {
             if (*(int *)(D_0013E633 + 0xE1D + 0x20D4) == 8) {
@@ -1724,7 +1724,7 @@ void update_hero_equipped_items(void) {
     }
     spawn_hero_item_mobies();
     func_L00_0020FC18();
-    HeroPulseAttachmentColors();
+    animate_hero_slot4_and_slot5_visuals();
     update_hero_and_equipped_item_glows();
     hero_update_items();
 }
@@ -1740,24 +1740,24 @@ extern void func_L00_00208070(void);
 extern void func_L00_00222B80(int, int);
 
 /* sets up the player/object state for a new mode (a0 = mode, a1 = id, a2 = object) */
-void Hero_BeginObjectControl(int mode, int id, char *obj) {
+void enter_hero_vehicle_mode(int mode, int id, char *obj) {
     char *p;
     char *o;
-    Hero_ClearPendingModuleAnim();
+    cancel_hero_item_animation();
     p = D_0013E633 + 0xE1D;
     p[0x20A6] = 1;
     hero_update_items();
     *(char **)(p + 0x2080) = *(char **)(p + 0xA88);
-    DeleteOwnedMobys(p + 0x1670);
+    clear_moby_transform_history(p + 0x1670);
     o = *(char **)(p + 0x2080);
     *(int *)(o + 0x98) = -1;
     HeroSetObjectFlags();
-    HeroClearSoundSlots();
-    UpdateHeldObjectTable();
+    release_and_clear_hero_voice_slots();
+    reset_hero_easing_records();
     p[0x20A4] = mode;
     *(char **)(p + 0xA84) = obj;
     *(char **)(p + 0x2080) = obj;
-    Hero_UpdateCameraFollowSpeed();
+    update_hero_collision_capsule_dimensions();
     *(float *)(p + 0x220) = *(float *)(p + 0x228);
     *(float *)(p + 0x224) = *(float *)(p + 0x22C);
     o = *(char **)(p + 0x2080);
@@ -1766,7 +1766,7 @@ void Hero_BeginObjectControl(int mode, int id, char *obj) {
     *(float *)(p + 0xA94) = 1.0f;
     HeroClearQueuedSequence();
     func_L00_0025805C(*(void **)(p + 0x2080));
-    CameraShakeUpdate();
+    apply_hero_and_item_scale_sequence();
     *(short *)(p + 0x22CC) = id;
     switch (mode) {
     case 1:
@@ -1784,7 +1784,7 @@ extern void func_L00_00207220(void);
 #define B ((char *)D_0013E633 + 0xE1D)
 
 /* Resets the help state: frees its markers, restores the camera target and closes the prompt. */
-void ResetHelpState(void) {
+void exit_hero_vehicle_mode(void) {
     char *g = B;
     char *g2;
     void *p;
@@ -1814,7 +1814,7 @@ void ResetHelpState(void) {
             *(short *)(g2 + 0x1634) = -1;
         }
     }
-    UpdateHeldObjectTable();
+    reset_hero_easing_records();
     g = B;
     q = *(unsigned short **)(g + 0xA84);
     *(unsigned char *)(g + 0x20A4) = 0;
@@ -1827,7 +1827,7 @@ void ResetHelpState(void) {
         DeleteMoby(p);
         *(int *)(g + 0xA8C) = 0;
     }
-    HeroClearSoundSlots();
+    release_and_clear_hero_voice_slots();
     r = *(char **)(g + 0xA88);
     *(char **)(g + 0x2080) = r;
     qcopy(r + 0x10, g + 0x80);
@@ -1969,7 +1969,7 @@ s32 hero_check_damage(s32 arg) {
     if (arg == 0) {
         return 1;
     }
-    HeroClearSoundSlots();
+    release_and_clear_hero_voice_slots();
     flag = 0;
     if (tbl->i30 & 1) {
         qcopy(&v, &tbl->v10);
@@ -2049,7 +2049,7 @@ s32 hero_check_damage(s32 arg) {
     case 2:
         if ((tbl->i24 & 4) || D_0013F450_113A0.i1630 <= 0) {
             HeroEnterMoveState(0x5D, 1);
-            Moby1523Delete();
+            remove_tracked_class_5f3_moby();
             if (D_0013F450_113A0.h30E == 0) {
                 func_L00_00211338_113A0(&v, flag, D_0015EE6C * 7.0f, D_0015EE6C * 3.5f);
                 break;
@@ -2086,7 +2086,7 @@ void Hero_OnKilled(void) {
     if (D_0013F450_11908.m2280 != 0 && *(s16 *)(D_0013F450_11908.m2280 + 0xA6) == 0x4D && lvl == 15) {
         D_L00_0015F684 = 1;
     }
-    ClearRecordTopBits();
+    clear_help_record_high_bits();
     m = D_0013F450_11908.m2280;
     if (m != 0 && *(u8 *)(m + 0xB0) != 0xFF) {
         D_0014EA90[D_0015EE84][*(u8 *)(m + 0xB0)]++;
@@ -2105,7 +2105,7 @@ extern float D_0015EE6C MACRO_ADDR;
 extern float func_L00_0025C918(float *p, float *v, float t, float u1, float u2, float eps);
 
 /* Updates the hero camera's follow-speed targets by mode, then eases them. Adapted from Lombyte (MIT) for PAL: overlays/shared/ui_help_0020c758.c, FUN_L00_00211380. */
-void Hero_UpdateCameraFollowSpeed(void) {
+void update_hero_collision_capsule_dimensions(void) {
     char *g = D_0013F450;
     char *h;
     char *k;
@@ -2251,7 +2251,7 @@ float get_capped_hero_stick_magnitude(void) {
 }
 /* Whether T lies in the window that ends at D_0013F450 + 0xAA8 and is
    +0xAAC long (T before the end, within that length of it). */
-int Hero_IsTimeInWindow(float t) {
+int test_hero_animation_frame_window(float t) {
     char *base = D_0013F450;
     float end = *(float *)(base + 0xAA8);
 
@@ -2264,7 +2264,7 @@ int Hero_IsTimeInWindow(float t) {
 }
 extern char D_0013E633[];
 // Clears two words in a global block.
-void Hero_ClearSpeedTargets(void) {
+void clear_hero_target_and_ground_speeds(void) {
     char *p = D_0013E633 + 0xE1D;
     *(int *)(p + 0x190) = 0;
     *(int *)(p + 0x194) = 0;
@@ -2312,7 +2312,7 @@ void stick_target(float scale, int mode) {
         char *z = PB;
         *(float *)(z + 0x190) = 0.0f;
         if (*(unsigned char *)(z + 0x20B3)) {
-            *(float *)(z + 0x180) = HeroGetHeading();
+            *(float *)(z + 0x180) = compute_hero_ground_aligned_heading();
         } else {
             *(float *)(z + 0x180) = *(float *)(z + 0x98);
         }
@@ -2526,7 +2526,7 @@ extern void func_001F9C30(void *, void *, float);
 extern void func_001F9BD8(void *, void *, void *);
 
 // Pushes the hero off a steep wall: removes the velocity component into it and drops z.
-void Hero_StopAtSteepWall(void) {
+void correct_hero_airborne_wall_velocity(void) {
     char *p = D_0013E633 + 0xE1D;
     float v[4] __attribute__((aligned(16)));
     float x;
@@ -2654,7 +2654,7 @@ void hero_get_collision_ray_endpoints(VecA16 *a, VecA16 *b, int mode, float fa, 
         func_L00_001FF4B0(&t[0], up, -fa);
         FastVecAdd(a, base, &t[0]);
         t[1] = *a;
-        Vec4_AdjustNegativeComponents(&t[1], b);
+        clip_negative_segment_endpoint_xyz(&t[1], b);
     } else {
         qcopy(&t[0], D_0013E633 + 0xE9D);
         qcopy(b, &t[0]);
@@ -2744,7 +2744,7 @@ typedef struct {
 extern HS D_L00_00173F40_12E70 __asm__("D_L00_00173F40");
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_0020c758.c, FUN_L00_002127b8. */
-void Hero_UpdateGroundCollision(void) {
+void update_hero_ground_contact_and_surface_slopes(void) {
     Vec4 v0, v10, v20, v30, v40, v50, v60;
     f32 f;
     s32 r;
@@ -2835,7 +2835,7 @@ void Hero_UpdateGroundCollision(void) {
         D_0013F450_12E70.xF2dc = FastVecDist((u8 *)&D_0013F450_12E70 + 0x80, ((u8 *)&D_0013F450_12E70 + 0x2A0));
         D_0013F450_12E70.xI2fc = D_L00_00173F40_12E70.i18;
         func_001252C0((u8 *)&D_0013F450_12E70 + 0x270, (u8 *)&D_L00_00173F40_12E70.f40);
-        D_0013F450_12E70.u2e0.F = ViewGetPitch((u8 *)&D_L00_00173F40_12E70.f40);
+        D_0013F450_12E70.u2e0.F = compute_gravity_relative_vector_inclination((u8 *)&D_L00_00173F40_12E70.f40);
         D_0013F450_12E70.xF2ec = func_L00_001FF860(D_L00_00173F40_12E70.f40, D_L00_00173F40_12E70.f44);
         func_001F9BF0_12E70(&v20, ((u8 *)&D_0013F450_12E70 + 0x2A0), (u8 *)&D_0013F450_12E70 + 0x80);
         if (0.0f < FastVecDot(&v20, (u8 *)&D_0013F450_12E70 + 0x270)) {
@@ -2900,8 +2900,8 @@ d1:
         if (i == 1) {
             a = -a;
         }
-        PolarToWorldPoint(&v30, 0.2f, a, 0.45f);
-        PolarToWorldPoint(&v40, 0.2f, a, -0.45f);
+        transform_hero_polar_offset_to_world(&v30, 0.2f, a, 0.45f);
+        transform_hero_polar_offset_to_world(&v40, 0.2f, a, -0.45f);
         if (func_L00_001EFFF0(&v30, &v0, 0x22, D_0013F450_12E70.xI2080, 0)) {
             f = D_L00_00173F40_12E70.v20.f[2] - D_0013F450_12E70.u2d8.F;
             D_0013F450_12E70.a2c0.f[i] = f;
@@ -2988,7 +2988,7 @@ void correct_hero_ground_penetration(void) {
 extern char D_0013E633[];
 extern void func_001F9BC0(void *);
 /* Builds a vector at D_0013E633 + 0x173D, scales it by a and shortens it by b. */
-void Hero_ComputeMoveOffset(float a, float b) {
+void build_scaled_hero_move_impulse(float a, float b) {
     char *p = D_0013E633 + 0x173D;
     char *q = p - 0x920;
     float v;
@@ -3232,11 +3232,11 @@ void apply_hero_motion_and_resolve_collisions(void) {
     contact_player->coll_hit_moby = 0;
     if (FastVecLength((char *)position + 0x70) <= 0.0001f) {
         resolve_hero_collisions_with_history();
-        Hero_UpdateGroundCollision();
+        update_hero_ground_contact_and_surface_slopes();
         func_001F9BF0_12E70((char *)position + 0x80, position, previous.f);
         correct_hero_ground_penetration();
     } else {
-        Hero_UpdateGroundCollision();
+        update_hero_ground_contact_and_surface_slopes();
     }
     position = (float *)(D_0013E633 + 0xF2D);
     new_position = (float *)((char *)position - 0x90);
@@ -3258,8 +3258,8 @@ void apply_hero_motion_and_resolve_collisions(void) {
     if (magnitude < 0.0f) magnitude = 0.0f;
     func_L00_001FF4B0(horizontal, work.f, magnitude);
     qcopy(plane.f, velocity);
-    HeroScalePointXY(plane.f, plane.f, 0.0f);
-    HeroScalePointXY(vertical, vertical, 0.0f);
+    set_gravity_relative_vector_length_xy(plane.f, plane.f, 0.0f);
+    set_gravity_relative_vector_length_xy(vertical, vertical, 0.0f);
     func_L00_001FF4B0(vertical, vertical, 1.0f);
     magnitude = FastVecDot(vertical, plane.f);
     if (magnitude < 0.0f) magnitude = 0.0f;
@@ -3282,7 +3282,7 @@ void apply_hero_motion_and_resolve_collisions(void) {
         clear_u64_value(contact);
         motion_player->motion.platform_delta.f[3] = saved;
         resolve_hero_collisions_with_history();
-        Hero_UpdateGroundCollision();
+        update_hero_ground_contact_and_surface_slopes();
         func_001F9BF0_12E70(external, new_position, previous.f);
         correct_hero_ground_penetration();
     }
@@ -3304,7 +3304,7 @@ void apply_hero_motion_and_resolve_collisions(void) {
     }
 }
 // Scales four vectors by s and a float field by s.
-void Hero_ScaleMotion(float s) {
+void scale_hero_motion(float s) {
     char *p = D_0013E633 + 0xF1D;
     float *f;
 
@@ -3321,7 +3321,7 @@ extern void func_L00_00233F88(void *, void *, float);
 static inline char *hero_14520(void) { return (char *)D_0013E633 + 0xE1D; }
 
 /* Moves the camera toward its follow point, faster when the hero heads away from it; modes 1/2 ease the camera instead. */
-void func_L00_00214520(float step) {
+void steer_hero_planar_velocity(float step) {
     char *g = (char *)D_0013E633 + 0xE1D;
     float v[4];
     float w[4];
@@ -3391,8 +3391,8 @@ void func_L00_00214520(float step) {
         char *v = (char *)D_0013F530;
         x = gravity_length_xy((float *)v);
         ApproachValue(&x, ((struct { char pad[0xB0]; float f; } *)v)->f, step);
-        HeroScalePointXY((float *)v, (float *)v, 0.0f);
-        HeroMoveAlongHeading(v, v, x);
+        set_gravity_relative_vector_length_xy((float *)v, (float *)v, 0.0f);
+        add_hero_forward_offset(v, v, x);
         break;
     }
     }
@@ -3425,7 +3425,7 @@ void hero_integrate_velocity(void) {
             if (hero_slot_item_id(3) == 3) {
                 char *k = D_0013E633 + 0xE1D;
                 if (*(int *)(k + 0x198) == scale_ticks(5)) {
-                    Hero_PlayActiveSound(1, 0);
+                    allocate_hero_voice_for_entry(1, 0);
                 }
             }
         }

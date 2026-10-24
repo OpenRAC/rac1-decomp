@@ -214,7 +214,7 @@ extern int D_L00_001C47B8[];
 extern int D_L00_001792B8[];
 
 /* stores a value into a table slot chosen by the current index */
-void SetPlanetTableEntry(int a, int b) {
+void store_current_level_table_value(int a, int b) {
     int i = D_0015EE84_m;
     if (i < 19) {
         b += D_L00_001C47B8[i];

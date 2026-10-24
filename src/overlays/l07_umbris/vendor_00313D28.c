@@ -152,7 +152,7 @@ void draw_and_probe_snagglebeast_rope_attack(char *moby) {
     }
 }
 /* Collects the linked-moby ids into the out array and returns the count. */
-void *CollectLinkedMobyIds(void *unused, void *dp, void *op) {
+void *collect_snagglebeast_navigation_ids(void *unused, void *dp, void *op) {
     char *data = dp;
     int *out = op;
     int n = 0;
@@ -364,13 +364,13 @@ extern char *D_L07_001B0830[];
 /* Finds where a path leaves the object's current segment and copies the point out. */
 void select_snagglebeast_chase_waypoint(char *m, char *a, void *b, void *c) {
     float v[8];
-    void *r = CollectLinkedMobyIds(m, a, v);
+    void *r = collect_snagglebeast_navigation_ids(m, a, v);
     if (func_L01_00277FD8(v, r, *(int *)(a + 0x188), 0.0f, m + 0x10, b, c)) return;
     {
-        int i = FindClosestDistanceEntry(b, D_L07_001B0830[*(int *)(a + 0x290)], 0.0f);
-        int j = FindClosestDistanceEntry(D_L07_001B0830[*(int *)(a + 0x290)] + (i * 16 + 0x10), D_L07_001B0830[*(int *)(a + 0x188)], 0.0f);
+        int i = select_point_index_by_distance(b, D_L07_001B0830[*(int *)(a + 0x290)], 0.0f);
+        int j = select_point_index_by_distance(D_L07_001B0830[*(int *)(a + 0x290)] + (i * 16 + 0x10), D_L07_001B0830[*(int *)(a + 0x188)], 0.0f);
         if (func_L01_00277FD8(v, r, *(int *)(a + 0x188), 0.0f, m + 0x10, D_L07_001B0830[*(int *)(a + 0x188)] + (j * 16 + 0x10), c)) return;
-        i = FindClosestDistanceEntry(m + 0x10, D_L07_001B0830[*(int *)(a + 0x188)], 0.0f);
+        i = select_point_index_by_distance(m + 0x10, D_L07_001B0830[*(int *)(a + 0x188)], 0.0f);
         qcopy(c, D_L07_001B0830[*(int *)(a + 0x188)] + i * 16 + 0x10);
     }
 }
@@ -399,7 +399,7 @@ int update_snagglebeast_chase_movement(char *m, char *a, void *p6, float *p7, fl
     if (thr < d) {
         r = ClassifyTargetInCone(m, a + 0x70, p7, a + 0x100);
         if (r & 2) {
-            int i = FindClosestDistanceEntry(mp, tbl, 0.0f);
+            int i = select_point_index_by_distance(mp, tbl, 0.0f);
             FastVecSub(v, tbl + (i * 16 + 0x10), mp);
             func_L00_001FF548(v, v, *(float *)(a + 0x94));
             FastVecAdd(mp, mp, v);
@@ -414,7 +414,7 @@ int update_snagglebeast_chase_movement(char *m, char *a, void *p6, float *p7, fl
     }
     if ((D_L07_0015F6B0 & 3) == 3) {
         char *mp2 = m + 0x10;
-        if (CheckGroundBelow(mp2, (int)m, 0, 0.1f, 1.0f)) {
+        if (probe_vertical_ground_collision(mp2, (int)m, 0, 0.1f, 1.0f)) {
             int *t = D_L07_00173F40;
             unsigned char *q = *(unsigned char **)(t + 6);
             if (q != 0 && t[7] > 0 && *(short *)(q + 0xA6) == 0x42D && q[0xBC] == 0) {
@@ -798,7 +798,7 @@ void snagglebeast_update(unsigned char *m) {
     if (*(float *)(d + 0x1C8) > 0.0f) AddDrawCallback(draw_snagglebeast_sphere_effect, m);
     update_snagglebeast_target_joint_animation((char *)m, (char *)d, (float *)(D_0013F450 + 0x80));
     if (m[0x20] != 0 && m[0x20] != 0xA && m[0x20] != 0x10) {
-        *(int *)(d + 0x1B0) = queue_animation_update(0x16, 0xFFFF, (int)Hud_InitElement, (int)Hud_UpdateCounter,
+        *(int *)(d + 0x1B0) = queue_animation_update(0x16, 0xFFFF, (int)reset_numeric_hud_element, (int)Hud_UpdateCounter,
                                             (int)((char *)func_L06_0024A080 + 0x20), (int)(d + 0x1B4),
                                             (*(short *)(d + 0x24) << 4) | 0xF);
     }
@@ -840,7 +840,7 @@ void snagglebeast_update(unsigned char *m) {
         *(short *)(m + 0x32) = 0xFF;
         *(int *)(d + 0x1A8) = -1;
         *(int *)(d + 0x1B0) = -1;
-        *(int *)(d + 0x1C0) = FindClosestDistanceEntry(m + 0x10, D_L07_001B0830[*(int *)(d + 0x188)], 0.0f);
+        *(int *)(d + 0x1C0) = select_point_index_by_distance(m + 0x10, D_L07_001B0830[*(int *)(d + 0x188)], 0.0f);
         suck_reset(m);
         *(float *)(m + 0x2C) *= 1.75f;
         d[0x1C7] = 0;
@@ -1047,15 +1047,15 @@ void snagglebeast_update(unsigned char *m) {
         float thr = 2.0f;
         float rot = *(float *)(m + 0x48);
         float dd;
-        CollectLinkedMobyIds(m, d, &vc);
+        collect_snagglebeast_navigation_ids(m, d, &vc);
         if (!c) {
             thr = 6.0f;
             if (*(int *)(d + 0x29C) != -1 && (d[0x19C] & 3) == 0 && is_point_inside_clip_volume(&tgt, *(int *)(d + 0x29C))) {
-                qcopy(&vb, D_L07_001B0830[*(int *)(d + 0x1A0)] + FindClosestDistanceEntry(&tgt, D_L07_001B0830[*(int *)(d + 0x1A0)], 0.0f) * 16 + 0x10);
+                qcopy(&vb, D_L07_001B0830[*(int *)(d + 0x1A0)] + select_point_index_by_distance(&tgt, D_L07_001B0830[*(int *)(d + 0x1A0)], 0.0f) * 16 + 0x10);
                 dd = func_001F9D48(m + 0x10, &vb);
             } else {
                 qcopy(&vb, &tgt);
-                qcopy(&vb, D_L07_001B0830[*(int *)(d + 0x290)] + FindClosestDistanceEntry(&vb, D_L07_001B0830[*(int *)(d + 0x290)], 0.0f) * 16 + 0x10);
+                qcopy(&vb, D_L07_001B0830[*(int *)(d + 0x290)] + select_point_index_by_distance(&vb, D_L07_001B0830[*(int *)(d + 0x290)], 0.0f) * 16 + 0x10);
                 dd = func_001F9D48(m + 0x10, &vb);
                 if (dd < *(float *)(d + 0x9C) + 1.0f) qcopy(&vb, &tgt);
             }
@@ -1245,7 +1245,7 @@ void snagglebeast_update(unsigned char *m) {
         if (MobyGetFrameValue(m) > 10.0f) {
             Moby_GetJointWorldPos(m, 0xA, &va);
             va.f[2] = 34.6f;
-            if (random_integer_below(0x1A) == 0) PartType45Spawn(&va, 0, 0x40103080, 1.6f, 14700.0f);
+            if (random_integer_below(0x1A) == 0) spawn_moving_resizing_height_snapped_alpha_fade_particle(&va, 0, 0x40103080, 1.6f, 14700.0f);
         }
         if (m[0xBC] == 8) {
             float z = *(float *)(d + 0x108);
@@ -1271,7 +1271,7 @@ void snagglebeast_update(unsigned char *m) {
         if (MobyGetFrameValue(m) < 168.0f) {
             Moby_GetJointWorldPos(m, 0xA, &va);
             va.f[2] = 34.6f;
-            if (random_integer_below(0x1A) == 0) PartType45Spawn(&va, 0, 0x40103080, 1.6f, 14700.0f);
+            if (random_integer_below(0x1A) == 0) spawn_moving_resizing_height_snapped_alpha_fade_particle(&va, 0, 0x40103080, 1.6f, 14700.0f);
         }
         if (IsFrameWithinWindow(m, 168.0f)) {
             Moby_GetJointWorldPos(m, 5, &va);
@@ -1292,7 +1292,7 @@ void snagglebeast_update(unsigned char *m) {
                     *t20 = 0.0f;
                     if (m[0x53] != 8) MobyBlendAnimation(m, 8, 0, rand_range(0xA, 0xD));
                     if (*(int *)(d + 0x1F0) != -1) {
-                        LevelTable_SetSlotValue(m, 1);
+                        set_moby_dialogue_record_value(m, 1);
                         SetDeathBits(m, 0, -1);
                         jet_clear_persistent(m[0xB0]);
                         jet_reset_camera(scene_points + (*(int *)(d + 0x1F0) << 7) + 0x30, scene_points + (*(int *)(d + 0x1F0) << 7) + 0x70);
@@ -1329,7 +1329,7 @@ void snagglebeast_update(unsigned char *m) {
                 }
                 }
                 *(int *)(d + 0x1A8) = ((SbData *)d)->b1D4[d[0x19D]];
-                build_symmetric_adjacency_masks((int *)&va, (int)CollectLinkedMobyIds(m, d, &va), *(int *)(d + 0x188));
+                build_symmetric_adjacency_masks((int *)&va, (int)collect_snagglebeast_navigation_ids(m, d, &va), *(int *)(d + 0x188));
                 m[0x20] = 0xF;
             }
         }
@@ -1451,7 +1451,7 @@ void snagglebeast_update(unsigned char *m) {
                             float pfrac = 0.0f;
                             float d1;
                             float d2;
-                            pidx = FindClosestDistanceEntry(D_0013F450 + 0x80, path, 0.0f);
+                            pidx = select_point_index_by_distance(D_0013F450 + 0x80, path, 0.0f);
                             do {
                                 *(float *)(d + 0x1AC) += 10.0f;
                                 Spline_AdvanceByDistance(path, &ve, &pidx, &pfrac, *(float *)(d + 0x1AC), 1);
@@ -1623,7 +1623,7 @@ void snagglebeast_update(unsigned char *m) {
         }
         break;
     case 16:
-        if (*(short *)(d + 0x280) != -1) light_off_67e8(*(short *)(d + 0x280));
+        if (*(short *)(d + 0x280) != -1) release_point_light_slot(*(short *)(d + 0x280));
         if (*(int *)(d + 0x1D0) == -1 || !(*(float *)(D_L07_00160058 + (*(int *)(d + 0x1D0) << 8) + 0x18) < 34.5f)) {
             DeleteMoby(m);
             return;

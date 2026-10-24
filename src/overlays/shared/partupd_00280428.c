@@ -186,7 +186,7 @@ typedef struct {
 extern float func_001F9B88(float);
 
 /* Returns the index of the entry whose distance to arg0 is closest to a target value. */
-int FindClosestDistanceEntry(void *arg0, List *arg1, float target) {
+int select_point_index_by_distance(void *arg0, List *arg1, float target) {
     int best = 0;
     int i;
     float bestDiff = 1e11f;
@@ -206,7 +206,7 @@ typedef struct {
 } List_8C3A8;
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/rendering_0027f660.c, FUN_L01_0028b5e0. */
-int FindClosestPointPair(char *a0, List_8C3A8 *list, char *pt, char *out) {
+int select_list_point_toward_target(char *a0, List_8C3A8 *list, char *pt, char *out) {
     int idx0 = -1;
     int idx1 = -1;
     float best0 = 10000.0f;

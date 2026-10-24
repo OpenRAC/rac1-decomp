@@ -24,13 +24,13 @@ void draw_level11_layered_effect_batches(void) {
     font_queue_vu_state();
     VU1_addGSregister(6, GetEffectTex(0x2C));
     VU1_addGSregister(0x42, (long)*(int *)&D_L11_00162588 << 32 | 0x44);
-    DrawHudQuadGroup(0);
+    emit_level11_layered_effect_batches_with_pair_offset(0);
     if (*(unsigned char *)&D_L11_00162620 != 0) {
         VU1_addGSregister(6, GetEffectTex(0x29));
         VU1_addGSregister(0x42, (long)((D_L11_0016258C * *(unsigned char *)&D_L11_00162620) >> 8) << 32 | 0x68);
-        DrawHudQuadGroup(1);
+        emit_level11_layered_effect_batches_with_pair_offset(1);
         VU1_addGSregister(0x42, (long)((D_L11_0016258C * *(unsigned char *)&D_L11_00162620) >> 8) << 32 | 0x62);
-        DrawHudQuadGroup(2);
+        emit_level11_layered_effect_batches_with_pair_offset(2);
     }
     VU1_addGSregister(6, GetEffectTex(0x2A));
     VU1_addGSregister(0x42, (long)*(int *)&D_L11_001625A8 << 32 | 0x48);

@@ -14,7 +14,7 @@ extern void func_L00_002C2A80(void *);
 /* Moby update that runs func_L00_002C2A80 or sets byte +0xBC from the pad input mask. */
 void trespasser_update(char *m) {
     if (*(int *)(*(char **)(m + 0x78) + 4) != 0) {
-        Moby188_StateStep(m);
+        update_trespasser_pickup(m);
     } else if (*(int *)(D_0013A5E0 + 0x2600) & *(int *)(D_0013E633 + 0x1EBD)) {
         m[0xBC] = 1;
     } else {
@@ -40,7 +40,7 @@ typedef struct {
 } Cam_C2A80;
 extern Cam_C2A80 D_L00_00173F40_C2A80 __asm__("D_L00_00173F40");
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002bffa8.c, FUN_L00_002c1778. */
-void Moby188_StateStep(void *mv) {
+void update_trespasser_pickup(void *mv) {
     unsigned char *m = mv;
     unsigned char *P;
     switch (m[0x20]) {
@@ -60,7 +60,7 @@ void Moby188_StateStep(void *mv) {
             if (*(int *)(P + 0x22A8)) {
                 if (func_001F9D48(m + 0x10, P + 0x80) < 1.0f) {
                     if (FastAbsF(*(float *)(m + 0x18) - *(float *)(P + 0x88)) < 2.0f) {
-                        GiveItem(0x1A, 1);
+                        grant_inventory_item(0x1A, 1);
                         m[0x20] = 2;
                     }
                 }
@@ -84,7 +84,7 @@ extern float func_001F9F90(float);
 extern float func_001F9FA8(float);
 
 /* computes a launch velocity that reaches a point within a limited range */
-void ComputeLaunchVelocity(float a, float b, float c, float *p, float *q, float *out) {
+void compute_mine_launch_velocity(float a, float b, float c, float *p, float *q, float *out) {
     float v[4];
     float cap = a * c * 0.5f;
     float dx, dy, d, dz, ang, t, s;
@@ -195,7 +195,7 @@ void mine_glove_update(struct Moby *moby) {
             ((D_0013CBE4 & D_0013F450_2DD8.items[0].button_mask) &&
              D_0013F450_2DD8.state.current == 0x1E && get_ammo(-1)) ||
             (D_0013F450_2DD8.state.current == 0x23 && D_0013F450_2DD8.state_timer == scale_ticks(0x10))) {
-            Hero_PlayActiveSound(0x1A, 0);
+            allocate_hero_voice_for_entry(0x1A, 0);
             use_ammo(-1, 1);
             moby->state = 3;
         }
@@ -253,7 +253,7 @@ void mine_glove_update(struct Moby *moby) {
                 }
             }
         }
-        ComputeLaunchVelocity(D_0015EE70_2DD8 * 9.8f, 1.0f, D_0013E620_2DD8.unk11 ? ((D_0013CA40_2DD8.held & 5) ? 12.0f : 4.0f) : ((D_0013CA40_2DD8.held & 5) ? 6.0f : 4.0f), pos.f, target.f, out);
+        compute_mine_launch_velocity(D_0015EE70_2DD8 * 9.8f, 1.0f, D_0013E620_2DD8.unk11 ? ((D_0013CA40_2DD8.held & 5) ? 12.0f : 4.0f) : ((D_0013CA40_2DD8.held & 5) ? 6.0f : 4.0f), pos.f, target.f, out);
     }
     switch (moby->state) {
     case 0:
@@ -278,7 +278,7 @@ void mine_glove_update(struct Moby *moby) {
                     D_00141780_2DD8.unk8A = scale_ticks(D_0015EFA4_2DD8) / 600;
             }
             D_00141780_2DD8.levels = (D_00141780_2DD8.levels | (1u << D_0015EE84_2DD8)) | 0x80000000;
-            MobyList_AddUnique(vars->held, D_L00_001B0B30, 0x3F);
+            append_unique_moby_index(vars->held, D_L00_001B0B30, 0x3F);
             vars->held = 0;
             vars->timer54 = scale_ticks(10);
         }
@@ -465,7 +465,7 @@ void bomb_glove_update(struct Moby *moby) {
             ((D_0013CBE4 & D_0013F450_C39D0.items[0].button_mask) &&
              D_0013F450_C39D0.state.current == 0x1E && get_ammo(-1)) ||
             (D_0013F450_C39D0.state.current == 0x23 && D_0013F450_C39D0.state_timer == scale_ticks(0x10))) {
-            Hero_PlayActiveSound(0x1A, 0);
+            allocate_hero_voice_for_entry(0x1A, 0);
             use_ammo(-1, 1);
             moby->state = 3;
         }
@@ -780,7 +780,7 @@ u8 *spawn_decoy(s32 value, u128_C48C8 *position, u128_C48C8 *other_position) {
         data[7] = 0x80;
         *(u16 *)(data + 0x0c) = 4;
         *(u16 *)(data + 0x0e) = 0xf;
-        MobyList_AddUnique(m, D_L00_001B0BB0_C48C8, 0x1f);
+        append_unique_moby_index(m, D_L00_001B0BB0_C48C8, 0x1f);
         if (D_0013F450_C48C8.unk20A5 != 0 || D_0013F450_C48C8.unk20AF != 0)
             *(u16 *)(m + 0x34) |= 0x41;
     }
@@ -1251,7 +1251,7 @@ void decoy_update(char *moby) {
                     Moby_PlaySound(0, 0, moby);
                     *(unsigned char *)(vars + 0x6F) = (unsigned char)scale_ticks(20);
                 } else {
-                    JitterVector(D_0015EE6C, vars + 0x10);
+                    add_random_offset_to_vector_xyz(D_0015EE6C, vars + 0x10);
                 }
             }
         }
@@ -1305,11 +1305,11 @@ void decoy_update(char *moby) {
                         wv[2] = b;
                         wv[1] = a;
                         *(u128 *)v = *(u128 *)wv;
-                        JitterVector(a, v);
+                        add_random_offset_to_vector_xyz(a, v);
                         func_L00_0025F4A8(moby, v, 0, 0.0f, 0.0f, 0, 0, 0, 4.0f, 3.0f, 9.0f, 2,
                                           1.0f, 12.0f, 1, 1, -1, active);
                         if (active != 0) {
-                            InitHitQuery(effect + effect, wv, moby, 0x810000);
+                            initialize_hit_descriptor(effect + effect, wv, moby, 0x810000);
                             *(unsigned char *)((char *)xv + 8) = 2;
                             *(unsigned char *)((char *)xv + 9) = 1;
                             *(unsigned short *)((char *)xv + 10) = *(unsigned short *)(moby + 0xA6);
@@ -1582,7 +1582,7 @@ void devestator_ammo_update(Moby *m) {
                 } else {
                     sound = ((FxAmmoRecord *)(D_L00_00179BC0_6720 + sound_idx * sizeof(FxAmmoRecord)))->sound_multiple;
                 }
-                ShowBannerf(sound, difference, -1);
+                queue_formatted_dialogue_message(sound, difference, -1);
             }
             account_idx = p->weapon;
             ((int *)(D_0013DE6E + 0xA2))[account_idx] += ((int *)(menu_item_enabled_115 + 0x21))[account_idx] - before;
@@ -1716,7 +1716,7 @@ int try_collect_ammo_pickup(char *m) {
         r = ((Rec_2C6F48 *)((char *)D_L00_00179BC0_2C6F48 + *(int *)(p + 8) * 0x4C))->b;
     else
         r = ((Rec_2C6F48 *)((char *)D_L00_00179BC0_2C6F48 + *(int *)(p + 8) * 0x4C))->a;
-    ShowBannerf(r, b - a, -1);
+    queue_formatted_dialogue_message(r, b - a, -1);
     if (f < (float)*(int *)p) {
         *(int *)(D_0013DE6E + 0xA2 + *(int *)(p + 8) * 4) += *(int *)(menu_item_enabled_115 + 0x21 + *(int *)(p + 8) * 4) - a;
         m[0x20] = 2;
@@ -1740,7 +1740,7 @@ extern void func_001F9CA0(void *, void *, void *);
 extern char D_L00_00166EC0[];
 
 // Draws a streak of quads along the vector from the moby's joint to its target, swelling in the middle. Adapted from Lombyte (MIT) for PAL: overlays/shared/unclassified_002bffa8.c, FUN_L00_002c5dc8.
-void DrawTetherStreak(char *m) {
+void draw_swingshot_cable(char *m) {
         char *d;
     Quad quad;
     V4q pos, cur, ja, diff, side, up2, up, t100, t110;
@@ -2087,7 +2087,7 @@ extern int func_001F9850_2c82e8(int) __asm__("func_001F9850") ;
 extern void func_00213DE0_2c82e8(unsigned char *, int, int, int) __asm__("func_00213DE0") ;
 extern void func_L00_00251E30_2c82e8(unsigned char *) __asm__("func_L00_00251E30") ;
 /* Spawns the type-0xD1 moby for an owner: links the owner and a float into its data, copies three quadwords of the owner's transform and finalizes it. Adapted from Lombyte (MIT) for PAL: overlays/shared/unclassified_002bffa8.c, FUN_L00_002c6f88. */
-unsigned char *SpawnMoby209(unsigned char *src, float f) {
+unsigned char *spawn_swingshot_hook(unsigned char *src, float f) {
     unsigned char *m = func_0020D348_2c82e8(0xd1);
     if (m) {
         char *q = *(char **)(m + 0x78);

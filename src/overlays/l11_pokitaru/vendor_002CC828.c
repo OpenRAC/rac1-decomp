@@ -184,7 +184,7 @@ void bob_update(char *m) {
         if (D_L11_0015F6A8 != 2) {
             moby->state = 1;
             if (moby_vars->h04 == 2) {
-                GiveItem(3, 1);
+                grant_inventory_item(3, 1);
                 func_L00_00286128_2D18D0(D_0013E633 + 0xE9D, D_0013E633 + 0xEAD);
                 memcard_Save(0, -1);
                 func_L00_00203FB8_2D18D0();
@@ -266,7 +266,7 @@ extern void func_L11_002D2670(void *);
 extern void func_L11_002D3970(void *);
 
 void resort_owner_update(unsigned char *moby) {
-    AttachManipulatorsIfCheat(moby);
+    attach_big_head_cheat_manipulator_to_matching_moby(moby);
     if (moby[0x31] && FastVecDist(moby + 0x10, camera_pos_b358) < 38.0f) {
         func_L00_0025B178(moby);
         moby[0x7F] = 30;
@@ -615,7 +615,7 @@ void update_resort_owner_state_transitions(void *mp) {
             int base;
             jet_clear_persistent(d->f10C);
             menu_item_enabled_69[3] = 1;
-            LevelTable_SetSlotValue(moby, 2);
+            set_moby_dialogue_record_value(moby, 2);
             ofs = d->fE0[d->idx] << 7;
             base = (int)D_L11_0016016C_2D2670;
             qcopy(&moby->pos, (char *)(ofs + base + 0x30));
@@ -679,7 +679,7 @@ void update_resort_owner_state_transitions(void *mp) {
         break;
     case 15:
         if (D_L11_0015F6A8 != 2) {
-            GiveItem(6, 1);
+            grant_inventory_item(6, 1);
             memcard_Save(0, -1);
             Help_Request(0x2AF8, 0x3A);
             DeleteMoby(moby);
@@ -1048,7 +1048,7 @@ void fred_pokitaru_update(char *m)
 
     moby = (struct Moby *)m;
     moby_vars = (PokSentryVars *)moby->pvars;
-    AttachManipulatorsIfCheat(m);
+    attach_big_head_cheat_manipulator_to_matching_moby(m);
     if (moby->visible != 0) {
         if (FastVecDist((char *)&moby->pos, camera_pos_b358) < 30.0f) {
             func_L00_0025B178(m);
@@ -1230,7 +1230,7 @@ void Moby318Update(struct Moby *moby) {
                 *(int *)(slots[j] + 0x94) = 0;
             }
         }
-        PlaceChildMobys(moby);
+        update_teleporter_child_transforms(moby);
         break;
     }
     case 1: {
@@ -1239,13 +1239,13 @@ void Moby318Update(struct Moby *moby) {
             break;
         if ((moby->flags & 1) && *(int *)(data + 8) >= 0 &&
             D_0014C150[*(int *)(data + 8) + D_0015EE84 * 16] == 0xFF)
-            Moby318_ShowChildren(moby);
+            restore_teleporter_visibility_and_collision(moby);
         g = D_0013F450_F3888;
         if (*(char **)(g + 0x2FC) != moby)
             break;
         if (*(short *)(g + 0x30E) != 0)
             break;
-        ShowStateHelpMessage(moby);
+        request_teleporter_help_message(moby);
         if (!(D_0013CBE4 & 0x10))
             break;
         if (D_L11_0015F674 != 0xB)
@@ -1254,12 +1254,12 @@ void Moby318Update(struct Moby *moby) {
         moby->state = 2;
         *(int *)(data + 0x28) = 0;
         *(int *)(data + 0x2C) = 0;
-        HeroSetTargetAndEnterMove(&moby->pos.x, 0, moby->rot.z);
+        request_hero_target_pose(&moby->pos.x, 0, moby->rot.z);
         MobySphereHitDirectional((int)moby, 1.5f, &moby->pos, 0x10000, 20.0f, 1.0f, 0, 1, 0);
         break;
     }
     case 2: {
-        int r = Level_GetSpecialMode();
+        int r = get_hero_target_pose_status();
         if (*(float *)(data + 0x20) < 1.0f) {
             ApproachWithVelocity((float *)(data + 0x20), (float *)(data + 0x28), 1.0f,
                                             (*(float *)&D_L11_001619A0) * D_0015EE70,
@@ -1278,7 +1278,7 @@ void Moby318Update(struct Moby *moby) {
                 moby->state = 4;
             }
         }
-        PlaceChildMobys(moby);
+        update_teleporter_child_transforms(moby);
         break;
     }
     case 3:
@@ -1300,7 +1300,7 @@ void Moby318Update(struct Moby *moby) {
             if (*(int *)(data + 0x30) != -1 && *(int *)(data + 0x34) != -1) {
                 MusicRequestTrack(*(int *)(data + 0x30), *(int *)(data + 0x34));
             }
-            Moby318_ShowChildren(t);
+            restore_teleporter_visibility_and_collision(t);
             *(unsigned char *)(t + 0x20) = 4;
             *(float *)(td + 0x3C) = 0.0f;
             *(float *)(td + 0x28) = 0.0f;
@@ -1314,7 +1314,7 @@ void Moby318Update(struct Moby *moby) {
             *(float *)(data + 0x28) = 0.0f;
             *(float *)(data + 0x2C) = 0.0f;
             *(float *)(data + 0x3C) = 1.95f;
-            PlaceChildMobys(moby);
+            update_teleporter_child_transforms(moby);
         }
         break;
     case 4:
@@ -1336,13 +1336,13 @@ void Moby318Update(struct Moby *moby) {
         } else {
             moby->state = 1;
         }
-        PlaceChildMobys(moby);
+        update_teleporter_child_transforms(moby);
         break;
     }
 }
 extern void func_00215F80(int, int);
 
-void ShowStateHelpMessage(char *moby) {
+void request_teleporter_help_message(char *moby) {
     char *data = *(char **)(moby + 0x78);
     switch (*(int *)(data + 0x10)) {
     case 0:
@@ -1434,7 +1434,7 @@ void DrawShimmeringRing(char *moby) {
         func_L00_001FD1D8(&q, m, 0);
     }
 }
-void Moby318_ShowChildren(char *moby) {
+void restore_teleporter_visibility_and_collision(char *moby) {
     char *data = *(char **)(moby + 0x78);
     char **child = (char **)(data + 0x14);
     int count;
@@ -1992,7 +1992,7 @@ void update_child_sets_controller(Moby *moby) {
         moby->state = 1;
         break;
     case 1:
-        if (data->f0 != -1 && IsMoby1179Active(D_L11_00160058_30DBF8 + (data->f0 << 8))) {
+        if (data->f0 != -1 && test_linked_moby_turn_trigger(D_L11_00160058_30DBF8 + (data->f0 << 8))) {
             moby->state = 2;
         }
         break;
@@ -2653,7 +2653,7 @@ void update_water_tile(struct Moby_pv *m) {
     case 3:
         if (m->command & 4) {
             pv[2] = 1;
-            MobyGroup_SetState(m->group, 2);
+            set_moby_list_state(m->group, 2);
         }
         m->command = 1;
         if (pv[2] != 0) {
@@ -2670,7 +2670,7 @@ void update_water_tile(struct Moby_pv *m) {
     case 2:
         if (m->command & 8) {
             pv[2] = 1;
-            MobyGroup_SetState(m->group, 3);
+            set_moby_list_state(m->group, 3);
         }
         m->command = 2;
         if (pv[2] != 0) {
@@ -2687,7 +2687,7 @@ void update_water_tile(struct Moby_pv *m) {
     }
     if (pv[1] >= 0) {
         f = 0.0f;
-        if (IsBSphereVisibleScaled(m, 64.0f) != -1) {
+        if (check_scaled_vector_bsphere(m, 64.0f) != -1) {
             f = 1.0f;
         }
         if (f == 0.0f) {
@@ -2697,13 +2697,13 @@ void update_water_tile(struct Moby_pv *m) {
         }
         if (pv[1] == 0) {
             RippleSimClock(D_L11_001DA880_pv, 20);
-            AddDrawCallback((void (*)(char *))Moby1158_DrawRipple, (char *)m);
+            AddDrawCallback((void (*)(char *))render_level_11_water_grids, (char *)m);
         }
     }
 }
 extern void func_L01_002BA380(char *, int);
 extern char D_L11_001DAB40[];
-void Moby1158_DrawRipple(void) {
+void render_level_11_water_grids(void) {
     render_water_grids(D_L11_001DAB40, 0x14);
 }
 typedef struct {
@@ -2908,7 +2908,7 @@ void update_link_triggered_moby_turn(char *moby) {
         private_data[2] = turning_moby->rot.z;
         break;
     case LINKED_TURN_STATE_WAIT_FOR_LINK:
-        if (IsMoby1179Active((char *)(D_L11_00160058_d + (*(int *)private_data << 8)))) {
+        if (test_linked_moby_turn_trigger((char *)(D_L11_00160058_d + (*(int *)private_data << 8)))) {
             if (*(int *)&level_frame > 10) {
                 D_0013D4EB = entry_state;
                 turning_moby->state = 2;
@@ -2962,7 +2962,7 @@ extern void func_L00_00250800(void *, int, void *);
 int sync_ship_pickup_child_pose(char *owner, char *data) {
  char *child;
  if (!*(char **)(data + 0x34)) {
-  *(char **)(data + 0x34) = SpawnMoby1219(owner);
+  *(char **)(data + 0x34) = spawn_ship_pickup_child(owner);
   if (!*(char **)(data + 0x34)) goto missing;
  }
  child = *(char **)(data + 0x34);
@@ -3142,7 +3142,7 @@ void ShipCollider_Update(struct Moby *pickup) {
     }
     jet_animate(pickup, 0.5f);
 }
-char *SpawnMoby1219(char *owner) {
+char *spawn_ship_pickup_child(char *owner) {
     char *moby = CreateMoby(0x4C3);
     if (moby != 0) {
         char *data;

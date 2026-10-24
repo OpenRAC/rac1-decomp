@@ -265,7 +265,7 @@ void update_moby_path_follower(char *m) {
         }
         if (((unsigned char *)m)[0x20] == 2) {
             if (d[2] < *(int *)pth - 1) {
-                int k = AdvancePathIndexByDistance(m, pth, m + 0x10, d[2], 1, D_0015EE60 * 0.25f);
+                int k = compute_advanced_moby_path_position(m, pth, m + 0x10, d[2], 1, D_0015EE60 * 0.25f);
                 d[2] = k;
                 ((float *)d)[3] = FastVecDist(m + 0x10, pth + (k * 16 + 0x10));
             } else {
@@ -391,7 +391,7 @@ void forward_moby_hits_to_owner(char *moby) {
         *(short *)(buf + 0x1A) = *(short *)(p + 0x2A);
         *(float *)(buf + 0x1C) = *(float *)(p + 0x2C);
         *(int *)(buf + 0x20) = *(int *)(p + 0x30);
-        PostHitMessageFromRecord(*(void **)(data + 0x60), buf);
+        record_moby_hit(*(void **)(data + 0x60), buf);
     }
     ((unsigned char *)moby)[0xA4] = 0xFF;
 }
@@ -566,7 +566,7 @@ void update_moby_motion_and_emit_sparks(char *moby)
         DeleteMoby(moby);
     } else if (((struct Moby *)moby)->command == 1) {
         if (func_L00_001EFFF0(&old_pos, &((struct Moby *)moby)->pos, 2, *(int *)(D_0013E633 + 0x2E9D), 0)) {
-            SpawnPartType52Near(moby);
+            spawn_type_52_particle_near_moby(moby);
             DeleteMoby(moby);
         }
     }
@@ -623,7 +623,7 @@ void Moby1805Update(void *moby) {
         break;
     case 2: {
         if (((unsigned char *)m)[0x21] != 0xFF) {
-            int r = count_group_e81e0(((unsigned char *)m)[0x21], -1);
+            int r = count_active_moby_group_members(((unsigned char *)m)[0x21], -1);
             if (r == 1) {
                 unsigned char *t = (unsigned char *)(menu_item_enabled_115 + 1);
                 if (t[0x16] == 0) {
@@ -634,13 +634,13 @@ void Moby1805Update(void *moby) {
             }
         }
         Moby_PlaySound(0, 0, (int)moby);
-        SpawnBreakFxByDistance(moby);
+        spawn_proximity_gated_bolts(moby);
             level_moby_killed[D_0015EE84][(short)*(unsigned short *)(m + 0xB2) >> 5] |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
             D_L13_001BAAE0[(short)*(unsigned short *)(m + 0xB2) >> 5] |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
         for (n = 0; n < 2; n++) {
             for (k = 0x709; k < 0x70D; k++) {
                 qzero(tmp);
-                JitterVector(tmp, 1.5f);
+                add_random_offset_to_vector_xyz(tmp, 1.5f);
                 tmp[2] += 1.7f;
                 FastVecAdd(tmp, tmp, m + 0x10);
                 SpawnBreakFragment(m, k, tmp, m + 0x40, 0, 0, D_L13_0015F660, D_L13_0015F660, 0.0f, D_L13_0015F660);

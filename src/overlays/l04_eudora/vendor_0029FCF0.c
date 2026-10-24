@@ -796,7 +796,7 @@ void big_axebot_update(M_B7B0 *moby) {
     case 5:
         if (moby->fBC & 8) {
             moby->fBC &= ~8;
-            LegRig_Init(moby, data->f1A0);
+            reset_leg_rig_from_animation(moby, data->f1A0);
         }
         data->f414 = SpringTurn(moby->rot[2], ang, &data->f410, D_0015EE70 * 6.2831855f, D_0015EE70 * 125.663704f, D_0015EE6C * 12.566371f);
         LegWalkerUpdate(moby, data->f1A0, D_0015EE6C * 4.0f, data->f414, D_0015EE70 * 20.0f);
@@ -827,7 +827,7 @@ void big_axebot_update(M_B7B0 *moby) {
 
             if (moby->fBC & 8) {
                 moby->fBC &= ~8;
-                LegRig_Init(moby, data->f1A0);
+                reset_leg_rig_from_animation(moby, data->f1A0);
             }
             a = func_L00_001FF860(data->home[0] - moby->pos[0], data->home[1] - moby->pos[1]);
             data->f414 = SpringTurn(moby->rot[2], a, &data->f410, D_0015EE70 * 6.2831855f, D_0015EE70 * 125.663704f, D_0015EE6C * 12.566371f);
@@ -1996,7 +1996,7 @@ void circular_saw_enemy_update(M_35F0 *moby) {
         alt = random_integer_below(100) & 1;
         Moby_GetJointWorldPos(moby, 0, a);
         func_001F9EC0(b, b, moby->fC0);
-        PartType22Spawn(a, b, alt ? 0x400F0F7F : 0x407F7F7F, 0x272727, random_float_between(75000.0f, 100000.0f), scale_ticks(alt ? rand_range(10, 15) : rand_range(20, 30)));
+        spawn_effect_particle_with_target_scalar(a, b, alt ? 0x400F0F7F : 0x407F7F7F, 0x272727, random_float_between(75000.0f, 100000.0f), scale_ticks(alt ? rand_range(10, 15) : rand_range(20, 30)));
         }
     }
     StepColorFade(moby, data->fB0);
@@ -2005,7 +2005,7 @@ extern char *func_L00_002DCD40(char *);
 extern int func_L00_002DD0E0(char *, int, int, float);
 extern int func_0022ED80(int, int, char *);
 int process_moby_hit_state_and_voice(char *m, int a, int b, float f) {
-    char *h = Moby_GetClassRecord(m);
+    char *h = get_moby_suck_cannon_record(m);
     int r = launch_suck_cannon_projectile(m, a, b, f);
     if (r != 0) {
         m[0x20] = 9;
@@ -2112,7 +2112,7 @@ void spawn_smoke_puff_trail_with_endpoint_bursts(void *owner, void *from, void *
 extern void func_0020D678(void *);
 extern void func_L04_002C5A50(void *);
 
-void DeleteMobyAndLinked(char *arg) {
+void destroy_blarg_trooper(char *arg) {
     char *data = *(char **)(arg + 0x78);
     void *other = *(void **)(data + 0xF8);
     if (other != 0) {
@@ -2236,7 +2236,7 @@ void BlargTrooperUpdate(char *moby) {
     e0 = *(int *)(data + 0xE0);
     if (e0 == -1 || (e4 = *(int *)(data + 0xE4), e4 == -1)) {
         STUB_printf(D_L04_001DBF80, truncate_float_to_s32((float)((moby - D_L04_00160058) >> 8)));
-        DeleteMobyAndLinked(moby);
+        destroy_blarg_trooper(moby);
         return;
     }
     bi = -1;
@@ -2617,7 +2617,7 @@ void BlargTrooperUpdate(char *moby) {
             qcopy(st.w.p.v70, st.v50);
             st.w.p.v70[2] = st.w.p.v70[2] + 0.75f;
             if (target != 0) {
-                PostHitMessageFromRecord(target, &st.w.p.blk);
+                record_moby_hit(target, &st.w.p.blk);
             }
         }
         if (*(unsigned char *)(moby + 0x70) & 2) {
@@ -2646,7 +2646,7 @@ void BlargTrooperUpdate(char *moby) {
         break;
     case 11:
         if (mine_fall(moby, data + 0x70) & 0x60) {
-            DeleteMobyAndLinked(moby);
+            destroy_blarg_trooper(moby);
             return;
         }
         break;
@@ -2712,7 +2712,7 @@ void BlargTrooperUpdate(char *moby) {
     }
     if (*(float *)(moby + 0x18) < *(float *)(data + 0xD4) - 5.0f) {
         SetDeathBits(moby, 0, -1);
-        DeleteMobyAndLinked(moby);
+        destroy_blarg_trooper(moby);
         return;
     }
     *(float *)(data + 0xD8) = alive;

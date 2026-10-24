@@ -124,7 +124,7 @@ void skids_agent_update(Moby *m) {
     Data_2E21F8 *d = *(struct Data_2E21F8 **)&m->pvars;
     float rate, head_rate;
     int tracking;
-    AttachManipulatorsIfCheat(m);
+    attach_big_head_cheat_manipulator_to_matching_moby(m);
     switch (m->state) {
     case 0:
         if (discount_purchase_pricing[0xA] != 0) goto del;
@@ -196,7 +196,7 @@ void skids_agent_update(Moby *m) {
                     d->f178->flags |= 1;
                     d->f178->visible = 0;
                 }
-                start_indexed_disc_stream(2);
+                PlayMovieEntryIfIdle(2);
                 m->state = 5;
             }
         } else {
@@ -212,7 +212,7 @@ void skids_agent_update(Moby *m) {
         }
         break;
     case 5:
-        GiveItem(5, 1);
+        grant_inventory_item(5, 1);
         memcard_Save(0, -1);
         goto del;
     case 3:
@@ -334,7 +334,7 @@ void SkidMcMarxAridiaUpdate(char *m)
     float s_delta[4];
 
     d = *(char **)(m + 0x78);
-    AttachManipulatorsIfCheat(m);
+    attach_big_head_cheat_manipulator_to_matching_moby(m);
     update_skid_mcmarx_relocation_sequence(m);
     switch (*(unsigned char *)(m + 0x20)) {
     case 0:
@@ -362,7 +362,7 @@ void SkidMcMarxAridiaUpdate(char *m)
         }
         if (*(short *)(d + 4) == 2) {
             Help_Request(0x7D0, 0xA);
-            GiveItem(0x1E, 1);
+            grant_inventory_item(0x1E, 1);
             jet_clear_persistent(*(unsigned char *)(m + 0xB0));
             jet_reset_camera((char *)&D_0013E633 + 0xE9D, (char *)&D_0013E633 + 0xEAD);
             memcard_Save(0, -1);
@@ -540,8 +540,8 @@ void update_skid_mcmarx_relocation_sequence(char *moby) {
     } else if (data->state == 0) {
         if (is_point_inside_clip_volume(gHeroPos, data->clip_volume) != 0) {
             data->state = 1;
-            data->hud_bar_b = queue_animation_update(0x15, 0x7D0, HudTileInit, update_hud_counter_transition, draw_hud_counter, &data->hud_value_a, 100);
-            data->hud_bar_a = queue_animation_update(0x17, 0x7D1, HudTileInit, update_hud_counter_transition, draw_hud_counter, &data->hud_value_b, 7);
+            data->hud_bar_b = queue_animation_update(0x15, 0x7D0, initialize_numeric_hud_timer_and_base_dimensions, update_hud_counter_transition, draw_hud_counter, &data->hud_value_a, 100);
+            data->hud_bar_a = queue_animation_update(0x17, 0x7D1, initialize_numeric_hud_timer_and_base_dimensions, update_hud_counter_transition, draw_hud_counter, &data->hud_value_b, 7);
         }
     }
 }
@@ -717,7 +717,7 @@ void ocean_aridia_update(unsigned char *moby) {
         moby[0x30] = 0xFF;
         break;
     case 1:
-        AddDrawCallback(DrawClippedParts, moby);
+        AddDrawCallback(draw_aridia_ocean_parts, moby);
         break;
     }
 }

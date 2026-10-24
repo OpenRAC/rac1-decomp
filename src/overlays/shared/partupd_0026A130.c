@@ -553,7 +553,7 @@ extern unsigned char * D_L00_001B2460;
 extern unsigned char D_0013E620[];
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/rendering/00269290.c, FUN_L00_0026b230. */
-unsigned char *PartType12Spawn(void *pos, void *vel, unsigned char flags, float size) {
+unsigned char *spawn_spinning_and_fading_effect_particle(void *pos, void *vel, unsigned char flags, float size) {
     void *source = pos;
     unsigned char *particle = create_part2(0xC, 0);
     if (particle) {
@@ -610,9 +610,9 @@ unsigned char *PartType12Spawn(void *pos, void *vel, unsigned char flags, float 
         motion[0x1F] = flags;
         if (flags & 4) {
             *(short *)(particle + 0xA) = *(short *)(particle + 0xA) * (D_0013E620[0x10] + 2) / 2;
-            PermuteColorChannels(*(int *)(particle + 4), D_0013E620[0x10]);
-            PermuteColorChannels(*(unsigned *)(motion + 0x14), D_0013E620[0x10]);
-            PermuteColorChannels(*(unsigned *)(motion + 0x18), D_0013E620[0x10]);
+            swap_packed_color_channels(*(int *)(particle + 4), D_0013E620[0x10]);
+            swap_packed_color_channels(*(unsigned *)(motion + 0x14), D_0013E620[0x10]);
+            swap_packed_color_channels(*(unsigned *)(motion + 0x18), D_0013E620[0x10]);
         }
         motion[0x1D] = particle[0xA];
     }
@@ -680,7 +680,7 @@ extern float func_002140F8(float, float);
 extern unsigned char *D_L00_001B2434;
 
 /* Spawns a type-13 particle at pos with randomised offset, sign-flipped spin and a packed colour. */
-unsigned char *PartType13Spawn(void *pos, int spin, int col, float range, float f1, float f2, float f3, float scale) {
+unsigned char *spawn_spinning_fade_in_out_effect_particle(void *pos, int spin, int col, float range, float f1, float f2, float f3, float scale) {
     unsigned char *r = create_part(0xD);
     unsigned char *u;
     if (r != 0) {
@@ -787,7 +787,7 @@ void update_attached_or_fading_effect_particle(char *m) {
 extern unsigned char *D_L00_001B243C;
 
 /* spawns a type-15 particle with given position, velocity and color */
-void *PartType15Spawn(void *pos, void *vel, int a2, int a3, int cnt, int s, int c, int col, float f) {
+void *spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns(void *pos, void *vel, int a2, int a3, int cnt, int s, int c, int col, float f) {
     char *p;
     char *q;
     if (cnt == 0) return 0;
@@ -995,7 +995,7 @@ extern void func_001F9EE8(void *, void *, void *);
 extern int func_001FA898(float);
 
 /* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/shared/rendering_00269290.c, FUN_L00_0026c3d0. */
-void PartType18Spawn(void *pos, u128_6D270 *mat) {
+void spawn_effect_particle_with_transformed_random_offset(void *pos, u128_6D270 *mat) {
     unsigned char *m = func_00218928_6D270(0x12);
     if (m) {
         float *q = (float *)(m + 0x20);
@@ -1155,7 +1155,7 @@ void update_spiraling_fade_in_out_effect_particle(M_26c860 *m) {
         a.w = zero;
         func_001F9EE8(&b, &a, &mat);
         FastVecAdd(&m->v10, &m->v10, &b);
-        if (zero < GetLocalAxisCoord(&c, r->p18 + 0xC0, &m->v10, 1)) { KillPart(m); return; }
+        if (zero < compute_transformed_delta_component(&c, r->p18 + 0xC0, &m->v10, 1)) { KillPart(m); return; }
     }
     r->f4 += D_0015EE60 * 0.011f * r->fC;
     if (r->f4 <= 0.0f || FastDecTimer(&m->hA)) {
@@ -1265,7 +1265,7 @@ extern char *D_L00_001B2458;
 extern float D_0015EE70 MACRO_ADDR;
 
 /* spawns a type 22 particle with the given position, velocity, colour and lifetime */
-void PartType22Spawn(void *pos, void *vel, int c, int d, int e, float x) {
+void spawn_effect_particle_with_target_scalar(void *pos, void *vel, int c, int d, int e, float x) {
     char *m = create_part(0x16);
     char *p;
     int r;
@@ -1437,7 +1437,7 @@ extern float func_002140F8(float, float);
 extern unsigned char *D_L00_001B2464;
 
 /* spawns a type-25 particle at a position with a velocity */
-void PartType25Spawn(char *pos, char *vel, int flag) {
+void spawn_color_decaying_effect_particle(char *pos, char *vel, int flag) {
     char *p = create_part(0x19);
     float *u;
     float one;
@@ -1556,7 +1556,7 @@ extern void func_L00_00250800(void *, int, void *);
 extern char *D_L00_001B2468;
 
 /* spawns a type 26 particle attached to a moby, with colour, lifetime and size */
-char *PartType26Spawn(char *src, int col, int w, int v, float x) {
+char *spawn_source_attached_fading_effect_particle(char *src, int col, int w, int v, float x) {
     char *m = create_part(0x1A);
     char *p;
     if (m != 0) {
@@ -2245,7 +2245,7 @@ void update_ballistic_effect_particle_with_contact_spawns(char *particle) {
         FastVecAdd(&next_position, particle_position, particle_data);
         if (func_L00_001EFFF0(particle_position, &next_position, 2, 0, 0)) {
             if (CollType() == 0) {
-                PartType45Spawn(&D_L00_00173F60, 0, -1, 0.2f, 5250.0f);
+                spawn_moving_resizing_height_snapped_alpha_fade_particle(&D_L00_00173F60, 0, -1, 0.2f, 5250.0f);
             }
             KillPart(particle);
             return;
@@ -2257,7 +2257,7 @@ void update_ballistic_effect_particle_with_contact_spawns(char *particle) {
         water_surface_z = *(float *)(D_0013E633 + 0x110D);
         if (p->pos.z < water_surface_z) {
             p->pos.z = water_surface_z;
-            PartType45Spawn(particle_position, 0, -1, 0.2f, 5250.0f);
+            spawn_moving_resizing_height_snapped_alpha_fade_particle(particle_position, 0, -1, 0.2f, 5250.0f);
             KillPart(particle);
             return;
         }

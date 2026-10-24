@@ -400,7 +400,7 @@ void metropolis_train_locomotive_update(Moby *moby) {
                 moby->command = 4;
                 D_L03_0015FE7C = 1;
                 MusicRequestTrack(4, 7);
-                LevelTable_SetSlotValue(moby, 1);
+                set_moby_dialogue_record_value(moby, 1);
                 D_L03_00160058_294040[d->f100].command = 1;
                 cd = (*(void **)&D_L03_00160058_294040[d->f100].pvars);
                 cd->f18 = func_L00_001FF860(
@@ -458,7 +458,7 @@ void metropolis_train_locomotive_update(Moby *moby) {
         }
         if (((Hero *)(D_0013E633 + 0xE1D))->ground_moby != 0) {
             if (((Hero *)(D_0013E633 + 0xE1D))->ground_moby->oclass == 0x336 || ((Hero *)(D_0013E633 + 0xE1D))->ground_moby->oclass == 0x4BA) {
-                LevelTable_SetSlotValue(((Hero *)(D_0013E633 + 0xE1D))->ground_moby, 3);
+                set_moby_dialogue_record_value(((Hero *)(D_0013E633 + 0xE1D))->ground_moby, 3);
             }
         }
         if (is_hero_on_moby(moby) != 0) {
@@ -476,7 +476,7 @@ void metropolis_train_locomotive_update(Moby *moby) {
             for (i = 0; i < 8; i++) {
                 Moby *m = &D_L03_00160058_294040[d->fE0[i]];
                 if (d->fE0[i] != -1 && m != 0 && m->state != 0xFE && m->state != 0xFD) {
-                    if (Moby574_IsInState14((char *)m) == 0) {
+                    if (is_moby_class_23e_in_state_14((char *)m) == 0) {
                         set_moby_state_14((unsigned char *)m);
                         break;
                     }
@@ -876,7 +876,7 @@ void update_moby_emitter_effects(unsigned char *moby, float *a1, int a2) {
             BuildSphericalOffset(v2, D_0015EE6C * 0.15f, a, b);
             FastVecAdd(v2, v2, vp);
             r = scale_ticks(0x14);
-            PartType22Spawn(v1, v2, 0x8040C0F0, 0x808080, 84000.0f, r);
+            spawn_effect_particle_with_target_scalar(v1, v2, 0x8040C0F0, 0x808080, 84000.0f, r);
         }
         return;
     case 0x73:
@@ -895,7 +895,7 @@ void update_moby_emitter_effects(unsigned char *moby, float *a1, int a2) {
                 BuildSphericalOffset(v2, D_0015EE6C * 0.6f, a, b);
                 FastVecAdd(v2, v2, vp);
                 r = scale_ticks(0x23);
-                PartType22Spawn(v1, v2, 0x80808080, 0x808080, 105000.0f, r);
+                spawn_effect_particle_with_target_scalar(v1, v2, 0x80808080, 0x808080, 105000.0f, r);
                 n--;
             } while (n >= 0);
         }
@@ -916,7 +916,7 @@ void update_moby_emitter_effects(unsigned char *moby, float *a1, int a2) {
                 BuildSphericalOffset(v2, D_0015EE6C * 1.2f, a, b);
                 FastVecAdd(v2, v2, vp);
                 r = scale_ticks(0x2D);
-                PartType22Spawn(v1, v2, 0x80808080, 0x808080, 168000.0f, r);
+                spawn_effect_particle_with_target_scalar(v1, v2, 0x80808080, 0x808080, 168000.0f, r);
                 n2--;
             } while (n2 >= 0);
         }
@@ -1040,7 +1040,7 @@ void func_L03_0029ED60(char *moby);
 
 /* Wreck reaction for the Kerwan train and turret classes: when hit by a qualifying attack it bursts into the class debris, starts the shake/smoke effects and arms the respawn countdown (0x14A); once that runs out the moby is hidden again unless the caller keeps it, and switches its update to the car update.
    Adapted from Lombyte (MIT) for PAL: src/overlays/l03/gameplay/entities/00292578.c, FUN_L03_0029d2e0. */
-void TrainWreckReaction(char *moby, void *vel_in, int flag) {
+void update_spline_moby_destruction_and_respawn(char *moby, void *vel_in, int flag) {
     float spot[4];
     float vel[4];
     float push[4];
@@ -1203,27 +1203,27 @@ void red_ship_1_update(char *moby) {
     if (((unsigned char *)moby)[0x21] != 0xFF && ((unsigned char *)moby)[0x20] != 0 &&
         ((unsigned char *)moby)[0x20] != 3) {
         found = 0;
-        GroupMobyIter_Start((int *)&item, ((unsigned char *)moby)[0x21], 0, 0);
+        get_first_moby_in_group((int *)&item, ((unsigned char *)moby)[0x21], 0, 0);
         if (item == moby) {
             goto test;
             for (;;) {
-                GroupMobyIter_Next((int *)&item, (int)item, 0, 0);
+                get_next_moby_in_group((int *)&item, (int)item, 0, 0);
             test:
                 if (item == 0) {
                     break;
                 }
-                if (IsBSphereVisibleScaled(item, IntToFloat(*(short *)(item + 0x32))) != -1) {
+                if (check_scaled_vector_bsphere(item, IntToFloat(*(short *)(item + 0x32))) != -1) {
                     found = 1;
                     break;
                 }
             }
             if (!found) {
-                GroupMobyIter_Start((int *)&item, ((unsigned char *)moby)[0x21], 0, 0);
+                get_first_moby_in_group((int *)&item, ((unsigned char *)moby)[0x21], 0, 0);
                 while (item != 0) {
                     d = *(char **)(item + 0x78);
                     item[0x20] = 3;
                     *(short *)(d + 0x12C) = scale_ticks(5);
-                    GroupMobyIter_Next((int *)&item, (int)item, 0, 0);
+                    get_next_moby_in_group((int *)&item, (int)item, 0, 0);
                 }
             }
         }
@@ -1260,7 +1260,7 @@ void red_ship_1_update(char *moby) {
         initialize_path_descriptor(pm);
         if (((unsigned char *)pm)[5] == 0) {
             if (*(int *)pm <= 0) {
-                r = FindClosestDistanceEntry(pos0, *(void **)(pm + 0x10), 0.0f);
+                r = select_point_index_by_distance(pos0, *(void **)(pm + 0x10), 0.0f);
                 *(int *)pm = r;
                 if (pm[4] >= 0 ? r == **(int **)(pm + 0x10) - 1 : r == 0) {
                     *(int *)pm = 0;
@@ -1354,7 +1354,7 @@ void red_ship_1_update(char *moby) {
         FastVecSub(tmp, cur, old_pos);
         *(OvlQuad *)vec = *(OvlQuad *)tmp;
         func_L03_0029DC60_9ED60(moby, vec, flag);
-        TrainWreckReaction(moby, vec, flag);
+        update_spline_moby_destruction_and_respawn(moby, vec, flag);
         break;
     }
 }
@@ -1393,7 +1393,7 @@ char *func_L03_002BC038_r(Moby *parent, int unused, int color, int a3, int a4, f
     }
     return m;
 }
-int IsMoby573State5(unsigned char *moby) {
+int is_moby_class_23d_in_state_5(unsigned char *moby) {
     if (moby && moby[0x20] != 0xFE && moby[0x20] != 0xFD && *(short *)(moby + 0xA6) == 0x23D && moby[0x20] == 5) {
         return 1;
     }
@@ -1741,7 +1741,7 @@ void Moby573Update(char *moby) {
             SpawnExplosionFx(moby, moby + 0x10, -1, 0.5f, 13.0f);
             func_L00_00265050_C6F80(moby, 0x6CE, (float *)(moby + 0x10), moby + 0x40, 0, 0, 0.0f, D_L03_0015F660, D_L03_0015F660, D_L03_0015F660);
             func_L00_00265050_C6F80(moby, 0x6CF, (float *)(moby + 0x10), moby + 0x40, 0, 0, 0.0f, D_L03_0015F660, D_L03_0015F660, D_L03_0015F660);
-            SpawnMobyBurstFx(moby, 0x77D, 1, 0x77D, 1, 3, 2);
+            spawn_moby_break_fragments(moby, 0x77D, 1, 0x77D, 1, 3, 2);
             SetDeathBits(moby, 0, -1);
             DeleteMoby(moby);
             return;
@@ -1782,7 +1782,7 @@ void update_robot_dog_hit_reaction(unsigned char *moby) {
  float vector[4]; int result; float damage; float angle;
  char *data=(char *)((struct Moby *)moby)->pvars;
  struct RobotDogHit *hit;
- if (*(int *)(data+0x38)!=0 || (*(int *)(data+0x248)!=-1 && IsMoby574Finished((unsigned char *)(D_L03_00160058+(*(int *)(data+0x248)<<8)))))
+ if (*(int *)(data+0x38)!=0 || (*(int *)(data+0x248)!=-1 && can_release_linked_robot_dog((unsigned char *)(D_L03_00160058+(*(int *)(data+0x248)<<8)))))
   *(int *)(data+0x240)=scale_ticks(240);
  if (func_001F9908((int *)(data+0x240))) *(float *)(data+0x230)=*(float *)(data+0x22C);
  else *(float *)(data+0x230)=*(float *)(data+0x22C)*2.0f;
@@ -1817,7 +1817,7 @@ void update_robot_dog_hit_reaction(unsigned char *moby) {
 }
 LINKER_REMNANT("asm/overlays", func_L03_002C8000);
 
-int IsMoby574Finished(unsigned char *moby) {
+int can_release_linked_robot_dog(unsigned char *moby) {
     unsigned char state;
     char *data;
     data = *(char **)(moby + 0x78);
@@ -1843,11 +1843,11 @@ extern int func_L03_002C8120(unsigned char *);
 int is_point_inside_clip_volume_cf(int id) {
     unsigned char *item;
     if (id == 0xFF) goto absent;
-    GroupMobyIter_Start((int *)&item, id, 0, 0);
+    get_first_moby_in_group((int *)&item, id, 0, 0);
     while (item != 0) {
         if (IsMoby574State9(item)) return 1;
-        if (IsMoby573State5(item)) return 1;
-        GroupMobyIter_Next((int *)&item, (int)item, 0, 0);
+        if (is_moby_class_23d_in_state_5(item)) return 1;
+        get_next_moby_in_group((int *)&item, (int)item, 0, 0);
     }
 absent:
     return 0;
@@ -1856,7 +1856,7 @@ extern char *D_L03_00160058 MACRO_ADDR;
 extern void func_00213DE0(void *, int, int, int);
 
 // Checks whether a moby can start an attack on a target and switches its state.
-int Moby574_TryTurnToTarget(float ang, unsigned char *moby, char *target) {
+int try_start_kerwan_path_enemy_heading_turn(float ang, unsigned char *moby, char *target) {
     char *data = *(char **)(moby + 0x78);
     int idx;
     float f20;
@@ -2110,7 +2110,7 @@ void update_kerwan_path_enemy(Moby *m) {
             m->state = 2;
         } else {
             if (dist < d->f270 || dist < d->f27C) {
-                if (Moby574_TryTurnToTarget(func_L00_001FF860(tgt.pos[0] - (*(float (*)[4])&m->pos)[0], tgt.pos[1] - (*(float (*)[4])&m->pos)[1]), (unsigned char *)m, (char *)&tgt)) {
+                if (try_start_kerwan_path_enemy_heading_turn(func_L00_001FF860(tgt.pos[0] - (*(float (*)[4])&m->pos)[0], tgt.pos[1] - (*(float (*)[4])&m->pos)[1]), (unsigned char *)m, (char *)&tgt)) {
                     break;
                 }
             }
@@ -2152,7 +2152,7 @@ void update_kerwan_path_enemy(Moby *m) {
                 d->s250 = scale_ticks(0x3C);
                 d->i284 = -1;
             } else {
-                Moby574_TryTurnToTarget(func_L00_001FF860(tgt.pos[0] - (*(float (*)[4])&m->pos)[0], tgt.pos[1] - (*(float (*)[4])&m->pos)[1]), (unsigned char *)m, (char *)&tgt);
+                try_start_kerwan_path_enemy_heading_turn(func_L00_001FF860(tgt.pos[0] - (*(float (*)[4])&m->pos)[0], tgt.pos[1] - (*(float (*)[4])&m->pos)[1]), (unsigned char *)m, (char *)&tgt);
             }
         }
         break;
@@ -2215,7 +2215,7 @@ void update_kerwan_path_enemy(Moby *m) {
             }
             FastVecScale(c, b, func_001F9878(10.0f));
             func_L00_001FF240(e, c, a);
-            func_L03_00251AC8(m, c, 0);
+            emit_radial_particle_burst(m, c, 0);
             compute_interpolated_record_value_cf(b, a, m, scale_ticks(0x82), ang, D_0015EE6C * 6.0f, 0.75f);
         }
         if (m->anim_flags & 2) {
@@ -2229,7 +2229,7 @@ void update_kerwan_path_enemy(Moby *m) {
                     MobyBlendAnimation(m, 1, 0, scale_ticks(10));
                 }
             }
-            if (Moby574_TryTurnToTarget(func_L00_001FF860(tgt.pos[0] - (*(float (*)[4])&m->pos)[0], tgt.pos[1] - (*(float (*)[4])&m->pos)[1]), (unsigned char *)m, (char *)&tgt)) {
+            if (try_start_kerwan_path_enemy_heading_turn(func_L00_001FF860(tgt.pos[0] - (*(float (*)[4])&m->pos)[0], tgt.pos[1] - (*(float (*)[4])&m->pos)[1]), (unsigned char *)m, (char *)&tgt)) {
                 break;
             }
             if (dist < d->f270 && FastAbsF(tgt.pos[2] - (*(float (*)[4])&m->pos)[2]) < 10.0f && FastDecTimer(&d->s250)
@@ -2244,7 +2244,7 @@ void update_kerwan_path_enemy(Moby *m) {
                 }
             }
         } else if (dist < 3.5f && FastAbsF(tgt.pos[2] - (*(float (*)[4])&m->pos)[2]) < 3.0f) {
-            if (Moby574_TryTurnToTarget(func_L00_001FF860(tgt.pos[0] - (*(float (*)[4])&m->pos)[0], tgt.pos[1] - (*(float (*)[4])&m->pos)[1]), (unsigned char *)m, (char *)&tgt)) {
+            if (try_start_kerwan_path_enemy_heading_turn(func_L00_001FF860(tgt.pos[0] - (*(float (*)[4])&m->pos)[0], tgt.pos[1] - (*(float (*)[4])&m->pos)[1]), (unsigned char *)m, (char *)&tgt)) {
                 break;
             }
             m->state = 6;
@@ -2298,7 +2298,7 @@ void update_kerwan_path_enemy(Moby *m) {
                 hit.b1 = 1;
                 hit.id = (*(unsigned short *)&m->oclass);
                 if (tgt.obj != 0) {
-                    PostHitMessageFromRecord(tgt.obj, &hit);
+                    record_moby_hit(tgt.obj, &hit);
                 }
             } else if (m->anim_flags & 2) {
                 if (d->i274 != 0) {
@@ -2314,7 +2314,7 @@ void update_kerwan_path_enemy(Moby *m) {
                         if (m->prev_seq != 0) {
                             MobyBlendAnimation(m, 0, 0, scale_ticks(10));
                         }
-                        Moby574_TryTurnToTarget(func_L00_001FF860(tgt.pos[0] - (*(float (*)[4])&m->pos)[0], tgt.pos[1] - (*(float (*)[4])&m->pos)[1]), (unsigned char *)m, (char *)&tgt);
+                        try_start_kerwan_path_enemy_heading_turn(func_L00_001FF860(tgt.pos[0] - (*(float (*)[4])&m->pos)[0], tgt.pos[1] - (*(float (*)[4])&m->pos)[1]), (unsigned char *)m, (char *)&tgt);
                     }
                 } else {
                     is_value_within_interpolated_window_cf(m);
@@ -2335,7 +2335,7 @@ void update_kerwan_path_enemy(Moby *m) {
         }
         {
             int off = pf->idx * 0x10;
-            if (Moby574_TryTurnToTarget(func_L00_001FF860(*(float *)(pf->path + off + 0x10) - (*(float (*)[4])&m->pos)[0], *(float *)(pf->path + off + 0x14) - (*(float (*)[4])&m->pos)[1]), (unsigned char *)m, (char *)&tgt)) {
+            if (try_start_kerwan_path_enemy_heading_turn(func_L00_001FF860(*(float *)(pf->path + off + 0x10) - (*(float (*)[4])&m->pos)[0], *(float *)(pf->path + off + 0x14) - (*(float (*)[4])&m->pos)[1]), (unsigned char *)m, (char *)&tgt)) {
                 break;
             }
         }
@@ -2356,7 +2356,7 @@ void update_kerwan_path_enemy(Moby *m) {
                     if (m->prev_seq != 0) {
                         MobyBlendAnimation(m, 0, 0, scale_ticks(10));
                     }
-                    Moby574_TryTurnToTarget(func_L00_001FF860(tgt.pos[0] - (*(float (*)[4])&m->pos)[0], tgt.pos[1] - (*(float (*)[4])&m->pos)[1]), (unsigned char *)m, (char *)&tgt);
+                    try_start_kerwan_path_enemy_heading_turn(func_L00_001FF860(tgt.pos[0] - (*(float (*)[4])&m->pos)[0], tgt.pos[1] - (*(float (*)[4])&m->pos)[1]), (unsigned char *)m, (char *)&tgt);
                 }
             } else {
                 is_value_within_interpolated_window_cf(m);
@@ -2370,7 +2370,7 @@ void update_kerwan_path_enemy(Moby *m) {
             if (m->prev_seq != 0) {
                 MobyBlendAnimation(m, 0, 0, scale_ticks(10));
             }
-            Moby574_TryTurnToTarget(func_L00_001FF860(tgt.pos[0] - (*(float (*)[4])&m->pos)[0], tgt.pos[1] - (*(float (*)[4])&m->pos)[1]), (unsigned char *)m, (char *)&tgt);
+            try_start_kerwan_path_enemy_heading_turn(func_L00_001FF860(tgt.pos[0] - (*(float (*)[4])&m->pos)[0], tgt.pos[1] - (*(float (*)[4])&m->pos)[1]), (unsigned char *)m, (char *)&tgt);
         }
         break;
     }
@@ -2394,7 +2394,7 @@ void update_kerwan_path_enemy(Moby *m) {
                 if (m->prev_seq != 0) {
                     MobyBlendAnimation(m, 0, 0, scale_ticks(10));
                 }
-                Moby574_TryTurnToTarget(func_L00_001FF860(tgt.pos[0] - (*(float (*)[4])&m->pos)[0], tgt.pos[1] - (*(float (*)[4])&m->pos)[1]), (unsigned char *)m, (char *)&tgt);
+                try_start_kerwan_path_enemy_heading_turn(func_L00_001FF860(tgt.pos[0] - (*(float (*)[4])&m->pos)[0], tgt.pos[1] - (*(float (*)[4])&m->pos)[1]), (unsigned char *)m, (char *)&tgt);
             }
         }
         break;
@@ -2424,7 +2424,7 @@ void update_kerwan_path_enemy(Moby *m) {
                     MobyBlendAnimation(m, 0, 0, scale_ticks(10));
                     m->state = 2;
                 } else {
-                    Moby574_TryTurnToTarget(func_L00_001FF860(tgt.pos[0] - (*(float (*)[4])&m->pos)[0], tgt.pos[1] - (*(float (*)[4])&m->pos)[1]), (unsigned char *)m, (char *)&tgt);
+                    try_start_kerwan_path_enemy_heading_turn(func_L00_001FF860(tgt.pos[0] - (*(float (*)[4])&m->pos)[0], tgt.pos[1] - (*(float (*)[4])&m->pos)[1]), (unsigned char *)m, (char *)&tgt);
                 }
             }
         }
@@ -2454,7 +2454,7 @@ void update_kerwan_path_enemy(Moby *m) {
                     if (m->prev_seq != 0) {
                         MobyBlendAnimation(m, 0, 0, scale_ticks(10));
                     }
-                    Moby574_TryTurnToTarget(func_L00_001FF860(tgt.pos[0] - (*(float (*)[4])&m->pos)[0], tgt.pos[1] - (*(float (*)[4])&m->pos)[1]), (unsigned char *)m, (char *)&tgt);
+                    try_start_kerwan_path_enemy_heading_turn(func_L00_001FF860(tgt.pos[0] - (*(float (*)[4])&m->pos)[0], tgt.pos[1] - (*(float (*)[4])&m->pos)[1]), (unsigned char *)m, (char *)&tgt);
                 }
             } else {
                 is_value_within_interpolated_window_cf(m);

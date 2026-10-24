@@ -183,7 +183,7 @@ void electric_water_update(unsigned char *m) {
             RELEASE_2D7C00(vars);
         }
         if (vars->light != -1) {
-            light_off_67e8(vars->light);
+            release_point_light_slot(vars->light);
             vars->light = -1;
         }
         return;
@@ -276,7 +276,7 @@ void electric_water_update(unsigned char *m) {
                     vars->bolt_start = *(Q_2D7C00 *)(CUB_2D7C00(line[0]) + 0x30);
                     vars->bolt_aim = vars->bolt_end = *(Q_2D7C00 *)(CUB_2D7C00(line[1]) + 0x30);
                     if (vars->light == -1) {
-                        vars->light = UpdatePointLight(&vars->bolt_start, 8.0f, 0.0f, 1.0f, 1.0f, 0.5f);
+                        vars->light = allocate_colored_effect_slot(&vars->bolt_start, 8.0f, 0.0f, 1.0f, 1.0f, 0.5f);
                     } else {
                         Light_2D7C00 *l = (Light_2D7C00 *)(D_L15_00180940 + (vars->light << 5));
                         qcopy(&l->pos, &vars->bolt_start);
@@ -339,7 +339,7 @@ void electric_water_update(unsigned char *m) {
             hit.v[2] = 1.0f;
             hit.v[3] = 5627.9248f;
             hit.b28 = 0;
-            PostHitMessageFromRecord(D_0013F450.moby, &hit);
+            record_moby_hit(D_0013F450.moby, &hit);
             if (moby->state == ELECTRIC_WATER_OFF) {
                 D_L15_0015F548 = vars->saved_fog[0];
                 D_L15_0015F54C = vars->saved_fog[1];
@@ -393,7 +393,7 @@ void electric_water_update(unsigned char *m) {
                 moby->state = ELECTRIC_WATER_SWITCH_DISABLED;
                 Sound_PlayClassSound(2, 0, MOBYP_2D7C00(vars->switches[sw]), 0x28F);
                 vars->armed = 0;
-            } else if (vars->switches[sw] != -1 && IsMoby1179Active(MOBYP_2D7C00(vars->switches[sw])) != 0) {
+            } else if (vars->switches[sw] != -1 && test_linked_moby_turn_trigger(MOBYP_2D7C00(vars->switches[sw])) != 0) {
                 vars->off_timer = SECS_2D7C00(vars->off_seconds);
                 moby->state = ELECTRIC_WATER_SWITCH_DISABLED;
                 Sound_PlayClassSound(2, 0, MOBYP_2D7C00(vars->switches[sw]), 0x28F);
@@ -409,7 +409,7 @@ void electric_water_update(unsigned char *m) {
             }
         }
         if (vars->light != -1) {
-            light_off_67e8(vars->light);
+            release_point_light_slot(vars->light);
             vars->light = -1;
         }
         if (vars->off_timer != 0) {
@@ -841,17 +841,17 @@ void draw_electric_water_bolt_effect(char *moby) {
     if (v <= -8.0f) {
         F(D_L15_00161CD4) = v + 8.0f;
     }
-    DrawScrollingRibbon(D_L15_001D3A20, W(D_L15_00161CBC), W(D_L15_00161CC4), 0x14,
+    draw_beam_and_arc_two_pass_quads(D_L15_001D3A20, W(D_L15_00161CBC), W(D_L15_00161CC4), 0x14,
                       F(D_L15_00161CE4), F(D_L15_00161CE8), F(D_L15_00161D1C));
-    DrawScrollingRibbon(D_L15_001D3A20 + 0x140, W(D_L15_00161CEC), W(D_L15_00161CF0), 0x14,
+    draw_beam_and_arc_two_pass_quads(D_L15_001D3A20 + 0x140, W(D_L15_00161CEC), W(D_L15_00161CF0), 0x14,
                       F(D_L15_00161CF4), F(D_L15_00161CF8), F(D_L15_00161D20));
-    DrawScrollingRibbon(D_L15_001D3E80, *(short *)&D_L15_00161D48, *(short *)&D_L15_00161D48, 5,
+    draw_beam_and_arc_two_pass_quads(D_L15_001D3E80, *(short *)&D_L15_00161D48, *(short *)&D_L15_00161D48, 5,
                       F(D_L15_00161CF4), F(D_L15_00161CF8), 0.2f);
-    DrawScrollingRibbon(D_L15_001D3E80 + 0x50, *(short *)&D_L15_00161D4A, *(short *)&D_L15_00161D4A, 5,
+    draw_beam_and_arc_two_pass_quads(D_L15_001D3E80 + 0x50, *(short *)&D_L15_00161D4A, *(short *)&D_L15_00161D4A, 5,
                       F(D_L15_00161CF4), F(D_L15_00161CF8), 0.2f);
-    DrawScrollingRibbon(D_L15_001D3E80 + 0xA0, *(short *)&D_L15_00161D4C, *(short *)&D_L15_00161D4C, 5,
+    draw_beam_and_arc_two_pass_quads(D_L15_001D3E80 + 0xA0, *(short *)&D_L15_00161D4C, *(short *)&D_L15_00161D4C, 5,
                       F(D_L15_00161CF4), F(D_L15_00161CF8), 0.2f);
-    DrawScrollingRibbon(D_L15_001D3E80 + 0xF0, *(short *)&D_L15_00161D4E, *(short *)&D_L15_00161D4E, 5,
+    draw_beam_and_arc_two_pass_quads(D_L15_001D3E80 + 0xF0, *(short *)&D_L15_00161D4E, *(short *)&D_L15_00161D4E, 5,
                       F(D_L15_00161CF4), F(D_L15_00161CF8), 0.2f);
     DrawBillboardQuadPair(moby);
 }
@@ -928,7 +928,7 @@ extern int func_L11_00310738(void *);
 
 void reset_electric_water_switch(char *moby)
 {
-    if (IsMoby1179Active(moby)) {
+    if (test_linked_moby_turn_trigger(moby)) {
         moby[0x20] = 1;
         *(float *)(moby + 0x18) += 1.5f;
     }
@@ -1003,7 +1003,7 @@ char *spawn_class_3a6_moby(char *src, float *v, char *pos) {
         *(float *)(m + 0x48) = func_L00_001FF860(v[0], v[1]);
         *(float *)(m + 0x44) = -func_L00_001FF860(func_001F9CE8(v), v[2]);
         func_L00_00251E30(m);
-        PartType26Spawn(m, 0x600040FF, 0x80, -1, 170000.0f);
+        spawn_source_attached_fading_effect_particle(m, 0x600040FF, 0x80, -1, 170000.0f);
     }
     return m;
 }
@@ -1073,7 +1073,7 @@ void underwater_ring_update(unsigned char *moby) {
             vars->distance = FastVecDist(moby + 0x10, delta);
             vars->notified_count = 0;
             vars->parent = moby;
-            GroupMobyIter_Start(&child, moby[0x21], 0, 0);
+            get_first_moby_in_group(&child, moby[0x21], 0, 0);
             while (child != 0) {
                 if ((unsigned char *)child != moby && *(short *)(child + 0xA6) == 0x4b9) {
                     RingVars_6D48 *other = *(RingVars_6D48 **)(child + 0x78);
@@ -1082,7 +1082,7 @@ void underwater_ring_update(unsigned char *moby) {
                     other->distance = vars->distance;
                 }
                 vars->notified_count++;
-                GroupMobyIter_Next(&child, child, 0, 0);
+                get_next_moby_in_group(&child, child, 0, 0);
             }
         }
         vars->timer = 0;
@@ -1101,7 +1101,7 @@ void underwater_ring_update(unsigned char *moby) {
         if (save_byte[0x454] != 0 ||
             ((((int)*(unsigned int *)(((((short)save_id >> 5) << 2) + (D_0015EE84 << 8)) + (unsigned char *)(D_0014171B + 0xAB75))) >> (save_id & 31)) & 1) != 0) {
             if (vars->enabled != 0) {
-                MobyGroup_SetState(moby[0x21], 4);
+                set_moby_list_state(moby[0x21], 4);
                 vars->timer = vars->restart_timer;
                 moby[0x20] = 4;
                 break;
@@ -1122,7 +1122,7 @@ void underwater_ring_update(unsigned char *moby) {
         }
         if (moby[0x20] == 2) {
             if (vars->child_count >= vars->notified_count) {
-                MobyGroup_SetState(moby[0x21], 4);
+                set_moby_list_state(moby[0x21], 4);
                 ((int (*)(int, int, int))Moby_PlaySound)(1, 0x31, (int)moby);
                 vars->timer = vars->restart_timer;
                 moby[0x20] = 4;
@@ -1132,7 +1132,7 @@ void underwater_ring_update(unsigned char *moby) {
                     vars->child_count = 0;
                     vars->triggered = 0;
                     Moby_PlaySound(2, 0x31, (int)moby);
-                    MobyGroup_SetState(moby[0x21], 3);
+                    set_moby_list_state(moby[0x21], 3);
                 } else if (FastDecTimer(&vars->delay) != 0) {
                     Moby_PlaySound(0, 0x31, (int)moby);
                     first = scale_ticks(0x2d);
@@ -1225,7 +1225,7 @@ void codebot_update(unsigned char *moby) {
         m->scale = m->pclass->scale * *(float *)&D_L15_00162220;
         switch (m->state) {
         case CODEBOT_INITIALIZE:
-            InitRandomMobyData(moby);
+            initialize_collectible_sprite_state(moby);
             if (D_0013D355[0x13D] != 0) {
                 DeleteMoby(moby);
             } else {
@@ -1350,7 +1350,7 @@ void giant_clank_pad_update(char *m) {
             other->unk34 = other->unk34 | 1;
             other->unk94 = 0;
             other->unk31 = 0;
-            Help_Reset();
+            restore_saved_hero_moby_and_clear_vehicle_mode();
             MobySetAnimation(other, 0, 0);
             if (D_0015EE84 == 0xF) {
                 StartCutscene(9);
@@ -1377,7 +1377,7 @@ void giant_clank_pad_update(char *m) {
         other->unk94 = *(int *)(o3 + 0x10);
         other->unk31 = 1;
         other->unk34 = other->unk34 & 0xFFFE;
-        Hero_BeginObjectControl(2, 0x5A, (char *)other);
+        enter_hero_vehicle_mode(2, 0x5A, (char *)other);
         if (D_0015EE84 == 0xF) {
             StartCutscene(8);
             *(u128_2EE458 *)D_0013F450_2EE458.unk1D00 = *(u128_2EE458 *)&D_0013F450_2EE458.motion.pos;

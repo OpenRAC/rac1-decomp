@@ -139,7 +139,7 @@ int Npc_TryStartDialog(char *p, char *q) {
         if (*(short *)(e + 4) == -1) { process_menu_entry(p, q, 1); return 1; }
         y = (char *)&D_L00_00179200;
         *(int *)(y + 8) = (int)p; *(int *)(y + 0xC) = (int)q;
-        if (*(unsigned short *)(e + 4) & 0x4000) { start_indexed_disc_stream((short)(*(unsigned short *)(e + 4) ^ 0x4000)); return 1; }
+        if (*(unsigned short *)(e + 4) & 0x4000) { PlayMovieEntryIfIdle((short)(*(unsigned short *)(e + 4) ^ 0x4000)); return 1; }
         remove_hud_item(*(int *)&bolt_hud_item);
         h4 = *(short *)(e + 4);
         *(int *)&bolt_hud_item = -1;
@@ -152,7 +152,7 @@ int Npc_TryStartDialog(char *p, char *q) {
     {
         char *e2 = (char *)*(int *)(q + 0x3C) + *(short *)(q + 0x36) * 0x1C;
         if (*(short *)(e2 + 8) == 1 || *(short *)(e2 + 8) == 6) {
-            m = queue_animation_update(2, 0x754E, (void*)HudBoltsInit, (void*)HudBoltsUpdate, (void*)HudBoltsDraw, &gBolts, 0x98967F);
+            m = queue_animation_update(2, 0x754E, (void*)initialize_bolt_counter_hud, (void*)update_bolt_counter_hud_animation_and_visibility, (void*)draw_bolt_counter_hud_panel, &gBolts, 0x98967F);
             hud_keep_visible(m, scale_ticks(0x3C));
         }
     }
@@ -184,7 +184,7 @@ extern char D_0013D605[];
 extern int func_L00_00267618(int, int);
 
 /* stores b in the d field of the slot func_L00_00267618 finds, if any. Adapted from Lombyte (MIT) for PAL: overlays/shared/audio_streaming_00266298.c, FUN_L00_00266858. */
-void LevelTable_SetSlotValue(int a, int b) {
+void set_moby_dialogue_record_value(int a, int b) {
     int i = func_L00_00267618(a, b);
     if (i != -1) {
         E00266858 *s = (E00266858 *)(D_0013D605 + 0xB3);
@@ -260,7 +260,7 @@ int pad_pressed_within(int mask, int n, int *out) {
 INCLUDE_ASM("asm/overlays", func_L00_00267C34);
 extern int func_L00_00267BA8(int, int, int *);
 extern int func_001F9B70(int);
-int PadComboWithin(int a, int b, int c, int d) {
+int check_pad_press_separation(int a, int b, int c, int d) {
     int v[2];
     int r = 0;
     if (pad_pressed_within(a, c, &v[0])) {

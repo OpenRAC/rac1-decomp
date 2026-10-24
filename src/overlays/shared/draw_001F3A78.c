@@ -1258,7 +1258,7 @@ void capture_draw_buffer(void *a) {
     func_00122598(0);
     D_L00_0015F4F8 = D_L00_0015F4F8 + 1;
     VU1_initChain();
-    DownloadFrameBuffer(a, D_0015EF84, *(int *)((char *)D_0013E15A + 0x4AA) << 11);
+    transfer_draw_buffer_chunks(a, D_0015EF84, *(int *)((char *)D_0013E15A + 0x4AA) << 11);
 }
 extern int func_001F4868(int);
 extern void func_001F6668(void *, void *, void *, void *, void *, int, unsigned char *);

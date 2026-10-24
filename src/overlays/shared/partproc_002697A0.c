@@ -238,7 +238,7 @@ extern int func_001F9850(int);
 extern unsigned char *D_L00_001B2404;
 
 /* spawns a type-1 particle at a position, fading with alpha a1 */
-void PartType01Spawn(char *pos, int a1) {
+void spawn_timed_effect_particle(char *pos, int a1) {
     unsigned char *p = create_part(1);
     if (p != 0) {
         *(float *)(pos + 8) = *(float *)(pos + 8) + 0.1f;

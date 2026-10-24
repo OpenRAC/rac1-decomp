@@ -104,7 +104,7 @@ s32 handle_hero_hit(s32 arg) {
     if (arg == 0) {
         return 1;
     }
-    HeroClearSoundSlots();
+    release_and_clear_hero_voice_slots();
     flag = 0;
     if (tbl->i30 & 1) {
         qcopy(&v, &tbl->v10);
@@ -149,7 +149,7 @@ s32 handle_hero_hit(s32 arg) {
                 mob = D_0013F450.p2280;
                 if (mob != 0 && (*(s16 *)(mob + 0xA6) == 0x28F || *(s16 *)(mob + 0xA6) == 0x7B
                                  || *(s16 *)(mob + 0xA6) == 0x29D)) {
-                    Hero_PlayActiveSound(0x1C, 0);
+                    allocate_hero_voice_for_entry(0x1C, 0);
                 }
             }
             Hero_TryMoveStateL08(0x76, 1);

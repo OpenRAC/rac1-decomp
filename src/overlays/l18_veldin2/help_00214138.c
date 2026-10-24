@@ -92,7 +92,7 @@ void HeroL18_UpdateStateFlags(void) {
                     if (0.0f < *(float *)(p + 0x2F4) - *(float *)(p + 0x88)) {
                         if (*(int *)(p + 0x2084) != 0x69 || *(short *)(p + 0x41E) != 0) {
                             if (*(float *)(p + 0x108) < 0.0f) {
-                                ResetHelpStateIfMode3();
+                                exit_hero_vehicle_mode_if_mode_three();
                                 if (*(int *)(p + 0x22A8) != 0) {
                                     HeroL18_SetMoveState(0x68, 1);
                                 } else {
@@ -116,7 +116,7 @@ void HeroL18_UpdateStateFlags(void) {
                             if ((unsigned)(*(unsigned char *)(p + 0x20A4) - 1) < 2) {
                                 Hero_OnKilled();
                             } else {
-                                ResetHelpStateIfMode3();
+                                exit_hero_vehicle_mode_if_mode_three();
                                 HeroL18_SetMoveState(0x7B, 1);
                             }
                         }
@@ -243,7 +243,7 @@ s32 HeroL18_TryTakeHit(s32 arg) {
     if (arg == 0) {
         return 1;
     }
-    HeroClearSoundSlots();
+    release_and_clear_hero_voice_slots();
     flag = 0;
     if (tbl->i30 & 1) {
         qcopy(&v, &tbl->v10);
@@ -288,7 +288,7 @@ s32 HeroL18_TryTakeHit(s32 arg) {
                 mob = D_0013F450.p2280;
                 if (mob != 0 && (*(s16 *)(mob + 0xA6) == 0x28F || *(s16 *)(mob + 0xA6) == 0x7B
                                  || *(s16 *)(mob + 0xA6) == 0x29D)) {
-                    Hero_PlayActiveSound(0x1C, 0);
+                    allocate_hero_voice_for_entry(0x1C, 0);
                 }
             }
             HeroL18_SetMoveState(0x76, 1);
@@ -319,7 +319,7 @@ s32 HeroL18_TryTakeHit(s32 arg) {
     case 2:
         if ((tbl->i24 & 4) || D_0013F450.i1630 <= 0) {
             HeroL18_SetMoveState(0x5D, 1);
-            Moby1523Delete();
+            remove_tracked_class_5f3_moby();
             if (D_0013F450.h30E == 0) {
                 hero_knockback(&v, flag, D_0015EE6C * 7.0f, D_0015EE6C * 3.5f);
                 break;

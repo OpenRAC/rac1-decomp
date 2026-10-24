@@ -56,8 +56,8 @@ void HeroL15_FrameUpdate(void) {
     if (b0[0x20A4] == 0)
         return;
     update_hero_vehicle_moby();
-    UpdateRampUpDown();
-    CameraShakeUpdate();
+    update_hero_scalar_pulse();
+    apply_hero_and_item_scale_sequence();
     func_L00_00248EF8(b0 + 0x80);
 
     if (b0[0x20A4] == 2) {
@@ -70,7 +70,7 @@ void HeroL15_FrameUpdate(void) {
         if (((*(unsigned short *)(m + 0x34) ^ 1) & 1) != 0) {
             Moby_GetJointWorldPos(m, 6, copy);
             qcopy(b0 + 0x1D80, copy);
-            QueueHeroDraw();
+            enqueue_hero_glow_draw_callback_once();
         }
         }
     }
@@ -118,13 +118,13 @@ void HeroL15_FrameUpdate(void) {
         if (*(short *)(b4 + 0x22DE) != 0)
             alpha = truncate_float_to_s32((IntToFloat(*(short *)(b4 + 0x22DE)) / IntToFloat(0x12)) * (float)alpha);
         *(unsigned int *)(b4 + 0x22E4) = (alpha << 24) | (blue << 16) | (green << 8) | red;
-        QueueHeroDraw();
+        enqueue_hero_glow_draw_callback_once();
         *(short *)(b4 + 0x22E0) = 0;
         if (b4[0x20A4] == 3) {
             int pending = *(int *)(b4 + 0x20B8);
             if (pending != 0 && pending != 0x1F) {
                 if (*(short *)(b4 + 0x22DE) == 0) {
-                    Hero_PlayActiveSound(0x19, 0);
+                    allocate_hero_voice_for_entry(0x19, 0);
                     *(short *)(b4 + 0x22DE) = 0x12;
                     *(short *)(b4 + 0x22DC) = 1;
                 }
@@ -133,14 +133,14 @@ void HeroL15_FrameUpdate(void) {
                 *(int *)(b5 + 0x20B8) = 0;
                 if (b5[0x12E7] != 0 && *(int *)(b5 + 0x300) != 0 && gHaveMorphORay[7] != 0 &&
                     *(short *)(b5 + 0x22DE) == 0) {
-                    Hero_PlayActiveSound(0x19, 0);
+                    allocate_hero_voice_for_entry(0x19, 0);
                     *(short *)(b5 + 0x22DE) = 0x12;
                     *(short *)(b5 + 0x22DC) = 1;
                 }
             }
         }
     }
-    Hero_SteerAimAndProbe();
+    update_hero_moby_probed_height_bounds();
     b6 = D_0013E633 + 0xE1D;
     func_L00_0025805C(*(void **)(b6 + 0x2080));
 }
@@ -149,7 +149,7 @@ extern unsigned char D_0013E15A[];
 extern void func_L00_00207948(int, int);
 
 /* Show the indexed help prompt when its flag and message are active. */
-void Help_ShowIndexedPrompt(void) {
+void update_enabled_item_tint_from_hero(void) {
     unsigned char *base = D_0013E633 + 0xE1D;
     int index = *(int *)(base + 0x10B8);
     if (index >= 0 && *(D_0013E15A + 0x4C6 + index) != 0) {
@@ -176,7 +176,7 @@ void update_hero_bobbing_and_target_position(void) {
         char *m;
         float v[4];
         float w[16];
-        MobyBobZ(1.1f, D_0015EE6C * 5.2359877f, *(char **)(base + 0x2080),
+        update_moby_vertical_oscillation(1.1f, D_0015EE6C * 5.2359877f, *(char **)(base + 0x2080),
                           (float *)(base + 0x6A8), (float *)(base + 0x6AC));
         m = *(char **)(base + 0x86C);
         if (m != 0) {
@@ -201,7 +201,7 @@ extern void func_L00_00232EA8(void);
 extern void func_L15_00217348(int, int);
 
 /* Reset the help prompt state and show the default message unless the level is in a special phase. */
-void Help_Reset(void) {
+void restore_saved_hero_moby_and_clear_vehicle_mode(void) {
     unsigned char *base = D_0013E633 + 0xE1D;
     unsigned char *b;
     int p;
@@ -214,7 +214,7 @@ void Help_Reset(void) {
             *(short *)(base + 0x1634) = -1;
         }
     }
-    UpdateHeldObjectTable();
+    reset_hero_easing_records();
     b = D_0013E633 + 0xE1D;
     p = *(int *)(b + 0xA84);
     b[0x20A4] = 0;
@@ -227,7 +227,7 @@ void Help_Reset(void) {
         DeleteMoby(q);
         *(int *)(b + 0xA8C) = 0;
     }
-    HeroClearSoundSlots();
+    release_and_clear_hero_voice_slots();
     m = *(char **)(b + 0xA88);
     *(char **)(b + 0x2080) = m;
     qcopy(m + 0x10, b + 0x80);
@@ -581,7 +581,7 @@ void HeroL15_ResetMotionState(void) {
         goto d1;
     }
     if (D_L15_001744C0_0ADD8.i18 != 0) {
-        if (IsMobyClass500To540(D_L15_001744C0_0ADD8.i18)) {
+        if (is_moby_in_class_range_500_to_540(D_L15_001744C0_0ADD8.i18)) {
             D_0013F450_0ADD8.xH30a = 1;
         }
         p = GetFlaggedPvarWord(D_L15_001744C0_0ADD8.i18);
@@ -595,7 +595,7 @@ void HeroL15_ResetMotionState(void) {
         D_0013F450_0ADD8.xF2dc = FastVecDist((u8 *)&D_0013F450_0ADD8 + 0x80, ((u8 *)&D_0013F450_0ADD8 + 0x2A0));
         D_0013F450_0ADD8.xI2fc = D_L15_001744C0_0ADD8.i18;
         func_001252C0((u8 *)&D_0013F450_0ADD8 + 0x270, (u8 *)&D_L15_001744C0_0ADD8.f40);
-        D_0013F450_0ADD8.u2e0.F = ViewGetPitch((u8 *)&D_L15_001744C0_0ADD8.f40);
+        D_0013F450_0ADD8.u2e0.F = compute_gravity_relative_vector_inclination((u8 *)&D_L15_001744C0_0ADD8.f40);
         D_0013F450_0ADD8.xF2ec = func_L00_001FF860(D_L15_001744C0_0ADD8.f40, D_L15_001744C0_0ADD8.f44);
         FastVecSub(&v20, ((u8 *)&D_0013F450_0ADD8 + 0x2A0), (u8 *)&D_0013F450_0ADD8 + 0x80);
         if (0.0f < FastVecDot(&v20, (u8 *)&D_0013F450_0ADD8 + 0x270)) {
@@ -661,8 +661,8 @@ d1:
         if (i == 1) {
             a = -a;
         }
-        PolarToWorldPoint(&v30, 0.2f, a, 0.45f);
-        PolarToWorldPoint(&v40, 0.2f, a, -0.45f);
+        transform_hero_polar_offset_to_world(&v30, 0.2f, a, 0.45f);
+        transform_hero_polar_offset_to_world(&v40, 0.2f, a, -0.45f);
         if (func_L00_001EFFF0(&v30, &v0, 0x22, D_0013F450_0ADD8.xI2080, 0)) {
             f = D_L15_001744C0_0ADD8.v20.f[2] - D_0013F450_0ADD8.u2d8.F;
             D_0013F450_0ADD8.a2c0.f[i] = f;
@@ -722,7 +722,7 @@ void update_hero_timers_and_auxiliary_state(void) {
     s32 n8;
 
     if (D_0013F450_16568.unk20AD == 0) {
-        Hero_EaseCameraOffsets();
+        update_hero_tilt();
     }
     D_0013F450_16568.state_timer++;
     D_0013F450_16568.unk19C++;
@@ -772,7 +772,7 @@ void update_hero_timers_and_auxiliary_state(void) {
     if (D_0013F450_16568.unk22DE != 0 && FastDecTimer(&D_0013F450_16568.unk22DE) != 0 &&
         D_0013F450_16568.health.hp != 0 && (*(s32 *)&D_L15_0015F6A8_16568) == 0) {
         if (D_0013F450_16568.vehicle_mode == 3) {
-            Help_Reset();
+            restore_saved_hero_moby_and_clear_vehicle_mode();
             if (pad_pressed_within(0x80, scale_ticks(0x12), 0)) {
                 D_0013F450_16568.unk20A6 = 1;
             }
@@ -787,7 +787,7 @@ void update_hero_timers_and_auxiliary_state(void) {
                 ((struct Moby *)D_0013F450_16568.unkA8C)->glow_color = 0;
                 ((struct Moby *)D_0013F450_16568.unkA8C)->spawn_frame = D_0013F450_16568.moby->spawn_frame;
                 func_L00_00251E30(D_0013F450_16568.unkA8C);
-                Hero_BeginObjectControl(3, 0x53, D_0013F450_16568.unkA8C);
+                enter_hero_vehicle_mode(3, 0x53, D_0013F450_16568.unkA8C);
             }
         }
     }
@@ -819,13 +819,13 @@ void update_hero_timers_and_auxiliary_state(void) {
     }
     D_0013F450_16568.unk1E2 = 0;
 skip:
-    Hero_PushOffSupportCenter();
+    update_hero_planar_distance_spring_motion();
     if (D_0013F450_16568.vehicle_mode == 2) {
-        LocalToWorldPoint(&D_0013F450_16568.motion.unkD0, 0.0f, 0.0f, 4.0f);
+        transform_hero_local_offset_to_world(&D_0013F450_16568.motion.unkD0, 0.0f, 0.0f, 4.0f);
         D_0013F450_16568.reach_distance = 15.0f;
         D_0013F450_16568.reach_height = 3.0f;
     } else {
-        LocalToWorldPoint(&D_0013F450_16568.motion.unkD0, 0.0f, 0.0f, 0.7f);
+        transform_hero_local_offset_to_world(&D_0013F450_16568.motion.unkD0, 0.0f, 0.0f, 0.7f);
         if (D_0013D5EA) {
             D_0013F450_16568.reach_distance = 12.0f;
             D_0013F450_16568.reach_height = 4.5f;

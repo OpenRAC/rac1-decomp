@@ -50,7 +50,7 @@ extern void func_002158E8(float *, int *);
 extern void func_00215A10(float *, int *);
 
 // spawns a particle moby (class 0x47) at a position and fills in its two sub-records
-unsigned char *PartType71Spawn(void *pos, float *p, float *c, int d, int e, int f, int g, int h, char *owner) {
+unsigned char *create_type_47_particle(void *pos, float *p, float *c, int d, int e, int f, int g, int h, char *owner) {
     unsigned char *r = create_part(0x47);
     if (r != 0) {
         int *q, *q2;

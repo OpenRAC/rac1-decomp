@@ -95,7 +95,7 @@ void vendor_update(char *moby) {
         if (b != 0) r = try_set_help_message(1, 0x543A) != 0;
         if (*(int *)(D_0013A5E0 + 0x2604) & 0x10) {
             if (a != 0 && r != 0) {
-                VendorOpenMenu(moby);
+                open_vendor_menu(moby);
                 *(unsigned char *)(moby + 0x20) = 3;
             }
         }

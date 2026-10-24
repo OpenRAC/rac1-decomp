@@ -7,6 +7,6 @@ extern void func_L00_0025A208(int *, int, int, int);
 /* Test whether the current moby identifier matches the requested one; the lookup arguments pass straight through from the caller. */
 int IsCurrentMobyId(int id, int idx, int a, int b) {
     int current;
-    GroupMobyIter_Start(&current, idx, a, b);
+    get_first_moby_in_group(&current, idx, a, b);
     return current == id;
 }

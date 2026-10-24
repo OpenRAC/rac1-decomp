@@ -180,7 +180,7 @@ void toxic_crab_update(Moby2E30F8 *m) {
     float from[4];
     float to[4];
 
-    ToxicCrabL10_Update(m);
+    update_toxic_crab_hit_reactions_and_targeting(m);
     t = d->tgt;
     m->f2C = *(float *)(m->p24 + 0x24) * *(float *)&D_L10_00161EA4;
     Manipulator_ApplyScale(2.5f, (int)m, 2, d->q2B0);
@@ -194,7 +194,7 @@ void toxic_crab_update(Moby2E30F8 *m) {
         see = func_L00_001EFFF0(from, to, 2, m, 0) == 0;
     }
     if (!see || (!(FastAbsF(*(float *)(t + 0x18) - m->pos[2]) < 1.0f)
-                 && IsMobyClass500To540(*(int *)(D_0013E633 + 0x1119)) == 0)) {
+                 && is_moby_in_class_range_500_to_540(*(int *)(D_0013E633 + 0x1119)) == 0)) {
         see = 0;
     }
     switch (m->state) {
@@ -253,7 +253,7 @@ void toxic_crab_update(Moby2E30F8 *m) {
                 m->state = 2;
                 d->i1A8 = scale_ticks(1);
                 if (m->b21 != 0xFF) {
-                    Group_ActivateMobys((unsigned char *)m);
+                    activate_waiting_moby_group_members((unsigned char *)m);
                 }
             }
         }
@@ -261,7 +261,7 @@ void toxic_crab_update(Moby2E30F8 *m) {
             m->state = 2;
             d->i1A8 = scale_ticks(1);
             if (m->b21 != 0xFF) {
-                Group_ActivateMobys((unsigned char *)m);
+                activate_waiting_moby_group_members((unsigned char *)m);
             }
         }
         break;
@@ -680,10 +680,10 @@ void toxic_crab_update(Moby2E30F8 *m) {
         {
             float p[4];
 
-            SpawnPartType52Near((char *)m);
+            spawn_type_52_particle_near_moby((char *)m);
             EmitMobyParticles(m);
             EmitMobyParticles(m);
-            SpawnExplosionFxSwapped(m, m->pos, -1, 1.25f, 20.0f);
+            spawn_color_swapped_explosion_burst(m, m->pos, -1, 1.25f, 20.0f);
             SpawnBreakFragment((char *)m, 0x775, m->pos, (char *)m + 0x40, 0, 2, 0.0f, D_L10_0015F660, D_L10_0015F660, D_L10_0015F660);
             SpawnBreakFragment((char *)m, 0x77A, m->pos, (char *)m + 0x40, 0, 2, 0.0f, D_L10_0015F660, D_L10_0015F660, D_L10_0015F660);
             SpawnBreakFragment((char *)m, 0x77B, m->pos, (char *)m + 0x40, 0, 2, 0.0f, D_L10_0015F660, D_L10_0015F660, D_L10_0015F660);
@@ -770,7 +770,7 @@ void EmitMobyParticles(void *p) {
     int x16, x17, x18, x19, r7;
     for (i = 0; i < n; i++) {
         { float *dst = v; char *src = arg0 + 0x10; float *d2 = dst; qcopy_nc(d2, src); }
-        JitterVector(v, (*(float *)&D_L10_00161EFC));
+        add_random_offset_to_vector_xyz(v, (*(float *)&D_L10_00161EFC));
         v[2] = v[2] + 0.55f;
         f22 = random_angle_radians();
         f20 = random_float_between((*(float *)&D_L10_00161F08), (*(float *)&D_L10_00161F0C));
@@ -795,8 +795,8 @@ void EmitMobyParticles(void *p) {
             r = random_float_between(0.5f, 1.5f);
             a[3] = r * *(float *)&D_L10_00161F1C;
             b[3] = r * *(float *)&D_L10_00161F20;
-            JitterVector(v, (*(float *)&D_L10_00161F00));
-            JitterVector(b, (*(float *)&D_L10_00161F04) * D_0015EE6C);
+            add_random_offset_to_vector_xyz(v, (*(float *)&D_L10_00161F00));
+            add_random_offset_to_vector_xyz(b, (*(float *)&D_L10_00161F04) * D_0015EE6C);
             r = random_float_between(0.0f, 1.0f);
             x19 = FastTweenColor((*(int *)&D_L10_00161F24), (*(int *)&D_L10_00161F2C), r);
             r = random_float_between(0.0f, 1.0f);
@@ -900,7 +900,7 @@ extern V_2E52B0 D_L10_00174380_2E52B0 __asm__("D_L10_00174380");
 extern Path_2E52B0 *D_L10_001B0C30_2E52B0[] __asm__("D_L10_001B0C30");
 
 /* Level 10 toxic crab: per-frame sight, target and state update. */
-void ToxicCrabL10_Update(void *mv) {
+void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
     Moby *m = mv;
     V_2E52B0 vA;
     V_2E52B0 vB;
@@ -1358,8 +1358,8 @@ void BlargShipUpdate(Ship_5E48 *m) {
                 func_L00_001FF4B0_2E52B0(&B, &B, *(float *)&D_L10_00161F68 * D_0015EE6C);
                 FastVecScale(&E, &B, func_001F9878(3.0f));
                 func_L00_001FF240(&D, &E, &C);
-                func_L03_00251AC8(m, &E, 0);
-                Moby819Spawn(&B, &C, (int)m, (int)tgt, scale_ticks(300), 1.0f);
+                emit_radial_particle_burst(m, &E, 0);
+                create_rocket(&B, &C, (int)m, (int)tgt, scale_ticks(300), 1.0f);
             }
         } else if (m->b52 == 3 && m->b53 != 2) {
             MobyBlendAnimation(m, 2, 0, scale_ticks(10));
@@ -1577,7 +1577,7 @@ void emit_moby_directional_particles(char *m) {
         }
         c1 = FastTweenColor(*(int *)&D_L10_00161F70, *(int *)&D_L10_00161F74, random_float_between(0.5f, 1.0f));
         c2 = FastTweenColor(*(int *)&D_L10_00161F74, *(int *)&D_L10_00161F74 & 0xFF000000, random_float_between(0.25f, 0.5f));
-        PartType64Spawn(pos, vel, truncate_float_to_s32(func_001F9878(pvars->life * 60.0f)), s, pvars->size, *(float *)&D_L10_00161F80 * D_0015EE70, c1, c2, variant);
+        spawn_gravity_floor_burst_particle(pos, vel, truncate_float_to_s32(func_001F9878(pvars->life * 60.0f)), s, pvars->size, *(float *)&D_L10_00161F80 * D_0015EE70, c1, c2, variant);
     }
 }
 extern void func_L00_002676A0(void *, int);
@@ -1614,7 +1614,7 @@ void nanotech_upgrade_vendor_update(char *m) {
             if (func_001F9D48(&moby->pos, &g->motion.pos) < 4.0f) {
                 if (*(int *)(d + 4) == 0) {
                     if (D_L10_0015F6A8 != 2) {
-                        LevelTable_SetSlotValue((char *)moby, 1);
+                        set_moby_dialogue_record_value((char *)moby, 1);
                         alternate_item_available = D_0013D355 + 0x13B;
                         if (alternate_item_available[4] == 0) {
                             if (gBolts > 4000) {
@@ -2038,7 +2038,7 @@ void gate_1_update(struct Moby *moby) {
         save_id = moby->save_id;
         D_L10_001BAC60[(short)save_id >> 5] |= 1 << (save_id & 31);
         if (is_point_inside_clip_volume(&D_0013F450.motion.pos, vars->clip_volume))
-            Trigger_Arm(vars->sound);
+            activate_descriptor(vars->sound);
         vars->timer = truncate_float_to_s32(func_001F9878(90.0f));
         moby->state = 2;
         return;
@@ -2203,12 +2203,12 @@ void update_configurable_particle_emitter(char *m) {
   }
   break;
  case 1:
-  if(*(int *)(d+4)==-1)EmitSparkBursts(m+0x10,(short *)(d+8),(short *)(d+0x48));
+  if(*(int *)(d+4)==-1)emit_burst_spark_particle(m+0x10,(short *)(d+8),(short *)(d+0x48));
   else {
    char *tab=D_L10_001B0C30[*(int *)(d+4)];int n=*(int *)tab;
    if(n>32)n=32;
    if(n>0) {short *burst=(short *)(d+0x48);short *timer=(short *)(d+8);char *pos=tab+0x10;int count=n;
-   do {EmitSparkBursts(pos,timer,burst);timer++;++burst;--count;pos+=0x10;}while(count);}
+   do {emit_burst_spark_particle(pos,timer,burst);timer++;++burst;--count;pos+=0x10;}while(count);}
   }
   break;
  case 2:
@@ -2221,12 +2221,12 @@ void update_configurable_particle_emitter(char *m) {
   }
   break;
  case 3:
-  if(*(int *)(d+4)==-1)EmitSmokeParticle(m+0x10,(short *)(d+8));
+  if(*(int *)(d+4)==-1)emit_timed_spark_particle(m+0x10,(short *)(d+8));
   else {
    char *tab=D_L10_001B0C30[*(int *)(d+4)];int n=*(int *)tab;
    if(n>32)n=32;
    if(n>0) {short *timer=(short *)(d+8);char *pos=tab+0x10;int count=n;
-   do {EmitSmokeParticle(pos,timer);++timer;--count;pos+=0x10;}while(count);}
+   do {emit_timed_spark_particle(pos,timer);++timer;--count;pos+=0x10;}while(count);}
   }
   break;
  }
@@ -2244,7 +2244,7 @@ extern char *func_00219780(void *, void *, void *, int, int, int, int, int, int)
 
 /* Emits sparks from pos in bursts: the burst timer alternates between a pause (counting up to 0) and an
  * active window, and during the window a particle goes out on each emit-timer tick when the camera is near. */
-void EmitSparkBursts(void *pos, short *timer, short *burst) {
+void emit_burst_spark_particle(void *pos, short *timer, short *burst) {
     float p[4];
     float vel[4];
     float acc[4];
@@ -2287,7 +2287,7 @@ extern float func_002140F8(float, float);
 extern int func_001FA898_r(float) __asm__("func_001FA898");
 
 /* Emits a smoke particle from pos on its timer, when the camera is near and the spot is visible. */
-void EmitSmokeParticle(void *pos, short *timer) {
+void emit_timed_spark_particle(void *pos, short *timer) {
     float p[4];
     float vel[4];
     float acc[4];
@@ -2405,8 +2405,8 @@ void Moby1855Update(char *m) {
         break;
     case 2:
         Moby_PlaySound(0, 0, (int)m);
-        SpawnBreakFxByDistance(m);
-        SpawnMobyBurstFx(m, 0x742, 1, 0x742, 1, 11, 2);
+        spawn_proximity_gated_bolts(m);
+        spawn_moby_break_fragments(m, 0x742, 1, 0x742, 1, 11, 2);
         DeleteMoby(m);
         break;
     }
@@ -2429,14 +2429,14 @@ void update_hit_triggered_moby_spawner(char *moby) {
         break;
     case 2:
         Moby_PlaySound(0, 0, (int)moby);
-        SpawnBreakFxByDistance(moby);
+        spawn_proximity_gated_bolts(moby);
         spawn_moby_from_placement(moby, 0x741);
         DeleteMoby(moby);
         break;
     }
 }
 /* Spawns a class 0x781 moby at the owner's position and returns it. */
-char *Moby1921Spawn(char *owner) {
+char *spawn_destruction_replacement_moby(char *owner) {
     char *moby = CreateMoby(0x781);
     if (moby != 0) {
         ((unsigned char *)moby)[0x30] = 0xFF;

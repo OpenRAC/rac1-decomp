@@ -22,7 +22,7 @@ int Hero_PickHelpMode(void)
     g = ((H_9F0 *)(D_0013E633 + 0xE1D));
     if (!(D_0015EE6C * 12.0f < g->f164)) goto L_BAC;
     f20 = 0.0f;
-    LocalToWorldPoint(v1, f20, f20, 0.75f);
+    transform_hero_local_offset_to_world(v1, f20, f20, 0.75f);
     vp = v2;
     qcopy(vp, v1);
     qcopy(v3, g->fE0);
@@ -77,7 +77,7 @@ L_BAC:
     pp = ((H_9F0 *)(D_0013E633 + 0xE1D))->p8B4;
     if (pp == 0) goto L_D68;
     vp = ((H_9F0 *)(D_0013E633 + 0xE1D))->f80;
-    r16 = FindClosestDistanceEntry(vp, pp, 0.0f);
+    r16 = select_point_index_by_distance(vp, pp, 0.0f);
     r4 = offset_path_index(((H_9F0 *)(D_0013E633 + 0xE1D))->p8B4, r16, -1, 1);
     ((H_9F0 *)(D_0013E633 + 0xE1D))->s8C8 = r16;
     if (D_0015EE84_2523C8 != 5) goto L_D68;
@@ -101,7 +101,7 @@ L_D68:
     m = ((H_9F0 *)(D_0013E633 + 0xE1D))->p2080;
     if (m[0x53] != 0x55 && m[0x53] != 0x7F) goto L_DEC;
     if (m[0x51] < 0xD) {
-        int r = Hero_GetHelpAnimId();
+        int r = select_hero_hoverboard_animation_variant();
         int t = scale_ticks(7);
         set_hero_animation(r, 14, (float)t);
     }
@@ -150,7 +150,7 @@ L_DEC:
         Hero_TryMoveStateL05(0x6B, 0);
         ee = (int)((H_9F0 *)(D_0013E633 + 0xE1D))->p2080;
         if (((unsigned char *)ee)[0x53] != 0x55 && ((unsigned char *)ee)[0x53] != 0x7F) {
-            int r = Hero_GetHelpAnimId();
+            int r = select_hero_hoverboard_animation_variant();
             int t = scale_ticks(7);
             set_hero_animation(r, 14, (float)t);
         }
@@ -158,7 +158,7 @@ L_DEC:
     }
     c = ((H_9F0 *)(D_0013E633 + 0xE1D))->p2080[0x53];
     if (c != 0x55 && c != 0x7F) {
-        int r = Hero_GetHelpAnimId();
+        int r = select_hero_hoverboard_animation_variant();
         int t = scale_ticks(7);
         set_hero_animation(r, 14, (float)t);
     }

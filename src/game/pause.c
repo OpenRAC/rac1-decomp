@@ -6883,7 +6883,7 @@ extern void func_0022ED80(int, int, int);
 /* Pause sub-menu input on the pad word D_0013CC04. One if/else-if chain
    falling to a single `return 0`; early returns in the 0x10 arm give a
    movn instead. */
-int Menu_SubmenuInput(char *arg0) {
+int handle_menu_action_buttons(char *arg0) {
     int v = D_0013CC04;
 
     if (v & 0x10) {
@@ -7034,7 +7034,7 @@ extern int D_001D48A8[];
 
 /* `D_001D48A8[(unsigned)D_0015EE84 % 19]`; the older near-miss
    predated MACRO_ADDR. */
-int Menu_SelectEntryByLevel(char *arg0) {
+int assign_pause_level_sprite_list(char *arg0) {
     *(int *)(arg0 + 0x34) = pause_level_sprite_lists[(unsigned int)D_0015EE84 % 19];
     return 0;
 }

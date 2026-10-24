@@ -299,7 +299,7 @@ void apply_hero_item_slot_selection(int i) {
             if (Hero_CanUseGadget()) {
                 int v;
                 if (*(short *)((char *)g + 0x22DE) == 0) {
-                    Hero_PlayActiveSound(0x18, 0);
+                    allocate_hero_voice_for_entry(0x18, 0);
                     *(short *)((char *)g + 0x22DE) = 0x12;
                     *(short *)((char *)g + 0x22DC) = 1;
                 }
@@ -366,10 +366,10 @@ void apply_hero_item_slot_selection(int i) {
         *(int *)((char *)g + i * 0x50 + 0x10B0) = 3;
         clear_hero_idle_rotation_targets();
         *(int *)((char *)g + 0x1010) = rand_range(scale_ticks(0x32), scale_ticks(0x5A));
-        Hero_StartEventTimer(*((int *)(D_0013E633 + 0xE1D + 0x20D4) + i));
-        Hero_StartEventAnim(*((int *)(D_0013E633 + 0xE1D + 0x20D4) + i));
+        set_hero_item_switch_timer_for_item(*((int *)(D_0013E633 + 0xE1D + 0x20D4) + i));
+        set_hero_condition_animation_timer_for_item(*((int *)(D_0013E633 + 0xE1D + 0x20D4) + i));
         if (g->f20A8 != 0) {
-            Hero_ClearPendingModuleAnim();
+            cancel_hero_item_animation();
         }
         if (i == 0) {
             if (*(int *)(D_0013E633 + 0xE1D + 0x20D4) == 8) {
@@ -595,7 +595,7 @@ int try_apply_hero_water_and_ground_transitions(void) {
 done:
     if (ret) {
         Hero_TryMoveStateL05(0x37, 1);
-        Hero_PlayActiveSound(3, 0);
+        allocate_hero_voice_for_entry(3, 0);
     }
     return ret;
 }
@@ -651,7 +651,7 @@ extern int D_0015EFA4_2523C8 __asm__("D_0015EFA4") MACRO_ADDR;
 extern int D_0015EE84_2523C8 __asm__("D_0015EE84") MACRO_ADDR;
 
 /* Gadget and weapon input for the current hero state: starts the matching move and returns 1 when the state changed. */
-int HeroL05_GadgetInput(void) {
+int process_hero_primary_item_input(void) {
     float v[4];
     int out0, out1, out2;
     int start;
@@ -829,14 +829,14 @@ int HeroL05_GadgetInput(void) {
         if (D_0013F450_h2523C8.unk22DE != 0) {
             break;
         }
-        Hero_PlayActiveSound(0x18, 0);
+        allocate_hero_voice_for_entry(0x18, 0);
         D_0013F450_h2523C8.unk22DE = 0x12;
         D_0013F450_h2523C8.unk22DC = 1;
         break;
     case 32:
         if (D_0013F450_h2523C8.state.control_mode < 3U || D_0013F450_h2523C8.state.control_mode == 4 || D_0013F450_h2523C8.state.control_mode == 5) {
             if (pad_pressed_within(mask, scale_ticks(8), 0)) {
-                VendorOpenMenu(0);
+                open_vendor_menu(0);
             }
         }
         break;
@@ -852,7 +852,7 @@ int HeroL05_GadgetInput(void) {
             if (((D_0013CA40_p2523C8.held & mask) && D_0013F450_h2523C8.items[0].unk20 > scale_ticks(5)) || (D_0013CA40_p2523C8.pressed & mask)) {
                 if (get_ammo(-1)) {
                     if (D_0013F450_h2523C8.unk20A8 == 0) {
-                        Hero_StartModuleAnim();
+                        start_equipped_item_animation();
                     }
                     break;
                 }
@@ -889,7 +889,7 @@ int HeroL05_GadgetInput(void) {
                         || (D_0013F450_h2523C8.state.control_mode == 1 && D_0013F450_h2523C8.unk229C < 0.7f)) {
                         func_L05_0024D680_2523C8(0x23, 1);
                     } else {
-                        Hero_StartModuleAnim();
+                        start_equipped_item_animation();
                     }
                     break;
                 }
@@ -919,7 +919,7 @@ int HeroL05_GadgetInput(void) {
     case 21:
         if (((Moby *)D_0013F450_h2523C8.items[0].moby) != 0) {
             if (D_0013CA40_p2523C8.pressed & mask) {
-                Hero_StartModuleAnim();
+                start_equipped_item_animation();
             }
         }
         break;
@@ -1066,12 +1066,12 @@ void update_hero_hoverboard_trick_animations(void) {
             && ((unsigned char *)*(char **)(k + 0x2080))[0x51] < *(int *)(k + 0xAB4)) {
             int t = *(short *)(k + 0x888);
             if (t > scale_ticks(0x1E)) {
-                int x = Hero_GetHelpAnimId();
+                int x = select_hero_hoverboard_animation_variant();
                 set_hero_animation(x, 9, (float)scale_ticks(0x11));
             } else {
                 t = *(short *)(k + 0x888);
                 if (t < scale_ticks(0xA)) t = scale_ticks(0xA);
-                set_hero_animation(Hero_GetHelpAnimId(), 0xD, (float)t);
+                set_hero_animation(select_hero_hoverboard_animation_variant(), 0xD, (float)t);
             }
         }
     }
@@ -1080,7 +1080,7 @@ void update_hero_hoverboard_trick_animations(void) {
         if (*(short *)(h + 0x8BC) != 0) {
             int a = ((unsigned char *)*(char **)(h + 0x2080))[0x53];
             if (a == 0x52 || a == 0x7D || a == 0x68 || a == 0x7E) {
-                int x = Hero_GetHelpAnimId();
+                int x = select_hero_hoverboard_animation_variant();
                 set_hero_animation(x, 0xB, (float)scale_ticks(0xA));
             }
         }
@@ -1088,7 +1088,7 @@ void update_hero_hoverboard_trick_animations(void) {
     {
         char *h = (char *)D_0013E633 + 0xE1D;
         if ((*(int *)(h + 0xA98) & 2) && *(short *)(h + 0x30C) != 0) {
-            int x = Hero_GetHelpAnimId();
+            int x = select_hero_hoverboard_animation_variant();
             set_hero_animation(x, 9, (float)scale_ticks(7));
         }
     }
@@ -1124,7 +1124,7 @@ void process_hero_race_object_interactions(void) {
         return;
     state = *(u8_a **)(HERO->unk86C + 0x78);
     if (*(int *)(state + 0x44) != -1) {
-        GroupMobyIter_Start((void **)&first, *(int *)(state + 0x44), 0, 0);
+        get_first_moby_in_group((void **)&first, *(int *)(state + 0x44), 0, 0);
         if (first != 0) {
             do {
                 if (*(short *)(first + 0xA6) == 0x473 && fast_subtract_rotations_cf(first + 0xBC) != 0) {
@@ -1139,7 +1139,7 @@ void process_hero_race_object_interactions(void) {
                             Moby_PlaySound(1, 0, (int)HERO->unk86C);
                     }
                 }
-                GroupMobyIter_Next((void **)&first, first, 0, 0);
+                get_next_moby_in_group((void **)&first, first, 0, 0);
             } while (first != 0);
         }
     }
@@ -1155,7 +1155,7 @@ void process_hero_race_object_interactions(void) {
         green = 0xFF;
     if (*(int *)(state + 0x48) != -1) {
         if (HERO->unk8BC == 0) {
-            GroupMobyIter_Start((void **)&second, *(int *)(state + 0x48), 0, 0);
+            get_first_moby_in_group((void **)&second, *(int *)(state + 0x48), 0, 0);
             if (second != 0) {
                 unsigned int color = (blue << 16) | (0x80000000U | (green << 8)) | red;
                 do {
@@ -1175,13 +1175,13 @@ void process_hero_race_object_interactions(void) {
                             }
                         }
                     }
-                    GroupMobyIter_Next((void **)&second, second, 0, 0);
+                    get_next_moby_in_group((void **)&second, second, 0, 0);
                 } while (second != 0);
             }
         }
     }
     if (*(int *)(state + 0x4C) != -1) {
-        GroupMobyIter_Start((void **)&third, *(int *)(state + 0x4C), 0, 0);
+        get_first_moby_in_group((void **)&third, *(int *)(state + 0x4C), 0, 0);
         if (third != 0) {
         ap = (int *)(menu_item_enabled_115 + 0x21);
         do {
@@ -1200,7 +1200,7 @@ void process_hero_race_object_interactions(void) {
                 *(int *)((u8_a *)g + 0x20B8) = 0x24;
                 ap[36]++;
             }
-            GroupMobyIter_Next((void **)&third, third, 0, 0);
+            get_next_moby_in_group((void **)&third, third, 0, 0);
         } while (third != 0);
         }
     }
@@ -1609,7 +1609,7 @@ void update_hero_hoverboard_race_progress(void) {
 }
 extern unsigned char D_0013FD1E NOT_SDA;
 // Load byte and return conditional value (swapped condition)
-int Hero_GetHelpAnimId(void) {
+int select_hero_hoverboard_animation_variant(void) {
     unsigned char b = D_0013FD1E;  // selected help mode
     int r = 0x7F;
     if (b == 0)
@@ -1722,7 +1722,7 @@ int Hero_PickHelpMode(void)
     g = ((H_9F0 *)(D_0013E633 + 0xE1D));
     if (!(D_0015EE6C * 12.0f < g->f164)) goto L_BAC;
     f20 = 0.0f;
-    LocalToWorldPoint(v1, f20, f20, 0.75f);
+    transform_hero_local_offset_to_world(v1, f20, f20, 0.75f);
     vp = v2;
     qcopy(vp, v1);
     qcopy(v3, g->fE0);
@@ -1777,7 +1777,7 @@ L_BAC:
     pp = ((H_9F0 *)(D_0013E633 + 0xE1D))->p8B4;
     if (pp == 0) goto L_D68;
     vp = ((H_9F0 *)(D_0013E633 + 0xE1D))->f80;
-    r16 = FindClosestDistanceEntry(vp, pp, 0.0f);
+    r16 = select_point_index_by_distance(vp, pp, 0.0f);
     r4 = offset_path_index(((H_9F0 *)(D_0013E633 + 0xE1D))->p8B4, r16, -1, 1);
     ((H_9F0 *)(D_0013E633 + 0xE1D))->s8C8 = r16;
     if (D_0015EE84_2523C8 != 5) goto L_D68;
@@ -1801,7 +1801,7 @@ L_D68:
     m = ((H_9F0 *)(D_0013E633 + 0xE1D))->p2080;
     if (m[0x53] != 0x55 && m[0x53] != 0x7F) goto L_DEC;
     if (m[0x51] < 0xD) {
-        int r = Hero_GetHelpAnimId();
+        int r = select_hero_hoverboard_animation_variant();
         int t = scale_ticks(7);
         set_hero_animation(r, 14, (float)t);
     }
@@ -1850,7 +1850,7 @@ L_DEC:
         Hero_TryMoveStateL05(0x6B, 0);
         ee = (int)((H_9F0 *)(D_0013E633 + 0xE1D))->p2080;
         if (((unsigned char *)ee)[0x53] != 0x55 && ((unsigned char *)ee)[0x53] != 0x7F) {
-            int r = Hero_GetHelpAnimId();
+            int r = select_hero_hoverboard_animation_variant();
             int t = scale_ticks(7);
             set_hero_animation(r, 14, (float)t);
         }
@@ -1858,7 +1858,7 @@ L_DEC:
     }
     c = ((H_9F0 *)(D_0013E633 + 0xE1D))->p2080[0x53];
     if (c != 0x55 && c != 0x7F) {
-        int r = Hero_GetHelpAnimId();
+        int r = select_hero_hoverboard_animation_variant();
         int t = scale_ticks(7);
         set_hero_animation(r, 14, (float)t);
     }

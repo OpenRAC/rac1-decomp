@@ -133,7 +133,7 @@ extern void func_L00_00259868(int, int, float, float, float, int);
 extern float func_001F9D48(void *, void *);
 
 /* Steers the moby toward a target point; returns nonzero when it is within 0.2 of it. */
-int SteerTowardPoint(char *moby, float *target, float speed) {
+int move_robot_dog_toward_position(char *moby, float *target, float speed) {
     char *data;
     float *yaw = (float *)(moby + 0x48);
     float ang;
@@ -171,7 +171,7 @@ int EnemyStunUpdate(unsigned char *moby, void *pos, void *target, float h) {
     }
     return result;
 }
-int EnemyForceStunState(char *a) {
+int cancel_suck_cannon_suction_and_set_state_12(char *a) {
     int r = cancel_suck_cannon_suction(a);
     a[0x20] = 12;
     return r;
@@ -317,7 +317,7 @@ void draw_three_moby_effect_quads(char *m) {
     char *p = *(char **)(m + 0x78) + 0x200;
     int i;
     for (i = 2; i >= 0; i--) {
-        DrawBillboardAt(p, v, 0.2f, 0.08f);
+        draw_offset_textured_effect_quad(p, v, 0.2f, 0.08f);
         p += 0x10;
     }
 }
@@ -668,7 +668,7 @@ void Moby1448Update(unsigned char *m) {
         }
         if (v->go != 0) {
             v->go = 0;
-            Hud_ClosePopupIfActive(10);
+            remove_help_message_for_selector(10);
             m[0x20] = 2;
             Moby_PlaySound(2, 0, (int)m);
             if (m[0x53] != 0) {
@@ -683,7 +683,7 @@ void Moby1448Update(unsigned char *m) {
             rot[2] = func_L00_001FF860(b[0] - a[0], b[1] - a[1]);
             rot[1] = -func_L00_001FF860(func_001F9D48(a, b), b[2] - a[2]);
             CameraScript(a, rot, 2, scale_ticks(300), 0);
-            func_L02_002F9ED8(0.001f, 1.0f, 1.0f, 0.001f, 1.0f, 1.0f);
+            set_selected_object_float_triplets(0.001f, 1.0f, 1.0f, 0.001f, 1.0f, 1.0f);
             set_camera_position(a);
             set_camera_rotation(rot);
             Hero_ResetToPosition(D_L17_0016016C + (v->cut << 7) + 0x30, D_L17_0016016C + (v->cut << 7) + 0x70, 0x72, 0);
@@ -1037,7 +1037,7 @@ void update_fleet_camera_box_watcher(char *moby) {
             *(unsigned char *)(d + 0x4C) = 1;
         }
         if (*(unsigned char *)(d + 0x4C) == 0 && is_point_inside_clip_volume(D_0013E633 + 0xE9D, *(int *)(d + 0x3C))) {
-            HelpPopup_Cancel();
+            clear_active_help_record();
             if (*(int *)(D_0014171B + 0x7A9) >= 0) {
                 Help_Request(0x4268, 0x8B);
             }
@@ -1051,7 +1051,7 @@ void update_fleet_camera_box_watcher(char *moby) {
         break;
     case 2: {
         char *cam;
-        func_L00_002E9B30();
+        set_follow_camera_blend_output_flags();
         set_follow_camera_angle_blend_from_position((int)(D_L17_0016016C + (*(int *)(d + 0x44) << 7) + 0x30), 0.02617994f, 0.0f);
         cam = D_L17_00167600;
         f = func_L00_001FF860(*(float *)(D_L17_0016016C + ((*(int *)(d + 0x44) << 7) + 0x30)) - *(float *)(cam + 0x140),
@@ -1063,7 +1063,7 @@ void update_fleet_camera_box_watcher(char *moby) {
         break;
     }
     case 3:
-        func_L00_002E9B30();
+        set_follow_camera_blend_output_flags();
         if (func_001F9908_i((int *)(d + 0x5C))) {
             char *cam;
             set_follow_camera_angle_blend_from_position((int)(D_L17_0016016C + (*(int *)(d + 0x40) << 7) + 0x30), 0.02617994f, 0.0f);
@@ -1071,7 +1071,7 @@ void update_fleet_camera_box_watcher(char *moby) {
             f = func_L00_001FF860(*(float *)(D_L17_0016016C + ((*(int *)(d + 0x40) << 7) + 0x30)) - *(float *)(cam + 0x140),
                                   *(float *)(D_L17_0016016C + ((*(int *)(d + 0x40) << 7) + 0x34)) - *(float *)(cam + 0x144));
             if (FastDiffRots(*(float *)(cam + 0x158), f) < 0.034906585f) {
-                HeroL06_SetStateFromMode();
+                enter_hero_idle_state_for_current_vehicle_mode();
                 *(unsigned char *)(d + 0x4C) = 1;
                 *(unsigned char *)(moby + 0x20) = 1;
             }
@@ -1597,9 +1597,9 @@ void Moby1873Update(unsigned char *m) {
     case 2:
         Moby_PlaySound(0, 0, (int)m);
         SetDeathBits(m, 0, -1);
-        SpawnBreakFxByDistance(m);
-        SpawnMobyBurstFx(m, 0x753, 1, 0x753, 1, 11, 2);
-        SpawnMobyBurstFx(m, 0x756, 1, 0x756, 1, 1, 2);
+        spawn_proximity_gated_bolts(m);
+        spawn_moby_break_fragments(m, 0x753, 1, 0x753, 1, 11, 2);
+        spawn_moby_break_fragments(m, 0x756, 1, 0x756, 1, 1, 2);
         spawn_moby_from_placement(m, 0x752);
         DeleteMoby(m);
         break;
@@ -1632,9 +1632,9 @@ void update_hit_triggered_fragment_and_placement_spawner(unsigned char *m) {
     case HIT_EFFECT_EMIT_AND_REMOVE:
         Moby_PlaySound(0, 0, (int)m);
         SetDeathBits(m, 0, -1);
-        SpawnBreakFxByDistance(m);
+        spawn_proximity_gated_bolts(m);
         SpawnBreakFragment((char *)m, 0x753, &((struct Moby *)m)->pos.x, &((struct Moby *)m)->rot, 0, 0, D_L17_0015F660, D_L17_0015F660, 0.0f, D_L17_0015F660);
-        SpawnMobyBurstFx(m, 0x756, 1, 0x756, 1, 1, 2);
+        spawn_moby_break_fragments(m, 0x756, 1, 0x756, 1, 1, 2);
         spawn_moby_from_placement(m, 0x755);
         DeleteMoby(m);
         break;
