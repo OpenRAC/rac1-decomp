@@ -9,7 +9,7 @@ report, and they share one C source.
 | `pal` | `SCES_509.16` | PAL (Europe) v2.00, the **primary** | `SCES_509.16.iso` (and `SCES_509.16`, the executable) | this repository (`tools/build_sn.sh`, `tools/gen_progress_report.py`), unchanged |
 | `pal_v1` | `SCES_509.16_v1` | PAL (Europe) v1.00 | `SCES_509.16_v1.00.iso` | this repository (below) |
 | `jp` | `SCPS_150.37` | NTSC-J v1.02 | `SCPS_150.37.iso` | this repository (below) |
-| `us` | `SCUS_971.99` | NTSC-U v1.00 | `SCUS_971.99.iso` | **the NTSC decomp**, Lombyte's project, as the submodule `versions/ntsc` |
+| `us` | `SCUS_971.99` | NTSC-U v1.00 | `SCUS_971.99.iso` | this repository (below); the count ByteMatch shows is **the NTSC decomp**'s own, Lombyte's project (see the end) |
 
 Both PAL discs have the same serial and boot file name (`SCES_509.16`); their builds differ, so
 v1.00's report id is `SCES_509.16_v1`. ByteMatch (bytematch.dev/OpenRAC/rac1-decomp) reads one CI
@@ -37,13 +37,14 @@ section's address, size and SHA-1; `boot_layout.json` the executable's ELF and s
 function table cuts it (`asm/versions/<K>/`, never committed), assembles it with the toolchain's
 binutils 2.10-ee (`ee-as`, a Linux program: native on Linux, through `tools/docker/run.sh` on a
 Mac), links every section at its address (`ee-ld`), puts the executable back together from its
-layout and each level from its records, and compares the SHA-1 with the disc's. On 2026-10-21 all
-20 programs of each of `pal`, `pal_v1` and `jp` give back the disc's bytes:
+layout and each level from its records, and compares the SHA-1 with the disc's. All 20 programs of
+each of `pal`, `pal_v1` and `jp` (2026-10-21) and `us` (2026-10-23) give back the disc's bytes:
 
 | Version | Executable SHA-1 | Programs that match |
 | --- | --- | --- |
 | `pal` | `79956931bd62fafd8d20fa2eae796dbaf2e15e83` | 20 of 20 |
 | `pal_v1` | `553a7f6c2c7a004d384d77b7139accbc52242149` | 20 of 20 |
+| `us` | `72fd1de379dafd8f243dceeb3be50980f3fd3cd5` | 20 of 20 |
 | `jp` | `0df83877d53e19d69ec82038e2aaa227f643178f` | 20 of 20 |
 
 The primary's own build (the C linked into the executable, `tools/build_sn.sh`; level C checked
@@ -69,7 +70,7 @@ same form.
 | `pal` | 1,692 (465,644 bytes) | 1,964 (1,196,676) | 1,468 (2,051,248) | 5,124 functions (report) |
 | `pal_v1` | 1,698 (460,224) | 1,931 (1,186,188) | 1,468 (2,047,336) | 5,097 |
 | `jp` | 1,702 (467,616) | 1,939 (1,187,792) | 1,468 (2,050,936) | 5,109 |
-| `us` | 1,701 (461,232) | 1,933 (1,186,540) | 1,468 (2,047,132) | 5,102 (our count, for the cross-check) |
+| `us` | 1,701 (461,232) | 1,933 (1,186,540) | 1,468 (2,047,132) | 5,102 |
 
 ## Checking the C against a version (`config/versions/<K>/map.tsv`)
 

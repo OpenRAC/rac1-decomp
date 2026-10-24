@@ -181,9 +181,9 @@ def run():
 def ntsc():
     """config/versions/us/carry.tsv from our check against the NTSC-U bytes and the submodule's report."""
     v = versions.get("us")
-    sub = ROOT / v.submodule
+    sub = ROOT / "versions/ntsc"
     if not (sub / "scripts/gen_progress_report.py").exists():
-        sys.exit(f"{v.submodule} is not checked out: git submodule update --init {v.submodule}")
+        sys.exit("versions/ntsc is not checked out: git submodule update --init versions/ntsc")
     subprocess.run([sys.executable, "scripts/gen_progress_report.py"], cwd=sub, check=True,
                    stdout=subprocess.DEVNULL)
     rep = json.loads((sub / "build/progress/report.json").read_text())
