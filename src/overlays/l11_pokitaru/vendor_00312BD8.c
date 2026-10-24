@@ -404,7 +404,7 @@ extern void func_L00_00250800_313a70(void *, int, void *) __asm__("func_L00_0025
 extern void func_001F9BD8_313a70(void *, void *, void *) __asm__("func_001F9BD8");
 extern void func_L00_001FF4B0_313a70(void *, void *, float) __asm__("func_L00_001FF4B0");
 void build_spherical_offset(f32 *out, f32 scale, f32 a, f32 b) __asm__("func_00215C00");
-/* Update. Adapted from Lombyte (MIT) for PAL: overlays/l11/gameplay_vendor_0030c788.c, FUN_L11_003125a8. */
+/* Update. Adapted from Lombyte (GPL-3.0) for PAL: overlays/l11/gameplay_vendor_0030c788.c, FUN_L11_003125a8. */
 void update_ship_shot_firing_and_reticle(char *moby, char *obj, float p2, float p3) {
     char a[16];
     char b[16];
@@ -1228,7 +1228,7 @@ extern float func_001FA748(float, float);
 extern float func_001FA790(float, float);
 extern unsigned char D_0013F450[];
 
-// Clamps and blends camera inputs near the edges of the movement bounds. Adapted from Lombyte (MIT) for PAL: src/overlays/l11/gameplay_vendor_0030c788.c, FUN_L11_00313f60.
+// Clamps and blends camera inputs near the edges of the movement bounds. Adapted from Lombyte (GPL-3.0) for PAL: src/overlays/l11/gameplay_vendor_0030c788.c, FUN_L11_00313f60.
 void adjust_ship_steering_for_flight_bounds(char *moby, float *a, float *b) {
     char *d = *(char **)(moby + 0x78);
     float v[4];
@@ -1387,7 +1387,7 @@ extern float func_001F9F90(float);
 extern float func_001F9FA8(float);
 
 /* Update for the class 0x4DE creature: spawns on a path or a carrier moby, wanders, chases and attacks the target, jumps between path points, and smokes while it dies.
-   Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l11/gameplay/vendor/0030c788.c, FUN_L11_00314318. */
+   Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l11/gameplay/vendor/0030c788.c, FUN_L11_00314318. */
 void puffoid_update(struct Moby *moby) {
     CreatureVars_4318 *d = (CreatureVars_4318 *)moby->pvars;
     struct Moby *target;
@@ -2120,7 +2120,7 @@ struct AnimSeq;
 extern int func_L00_002DCDA8(void *, void *, void *);
 
 /* Grabbed check: while held, park the moby in state 0x14 (remembering its state) unless it cannot be grabbed; restore the saved state once released.
-   Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l11/gameplay/vendor/00315968.c, FUN_L11_00316160. */
+   Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l11/gameplay/vendor/00315968.c, FUN_L11_00316160. */
 int Moby_ParkIfGrabbed(struct Moby *moby, void *position, void *target) {
     int r = process_moby_suck_cannon_suction(moby, position, target);
     if (r != 0) {
@@ -2612,7 +2612,7 @@ extern s32 func_001F9850_19108(s32) __asm__("func_001F9850");
 extern void func_L00_00265050_19108(char *, int, float *, char *, int, int, float *, float *, float, float *) __asm__("func_L00_00265050");
 extern void func_0020D678_19108(void *) __asm__("func_0020D678");
 
-/* Adapted from Lombyte (MIT) for PAL: src/overlays/l11/gameplay/vendor/00315968.c, FUN_L11_00317c98. */
+/* Adapted from Lombyte (GPL-3.0) for PAL: src/overlays/l11/gameplay/vendor/00315968.c, FUN_L11_00317c98. */
 void process_oil_tanker_damage_and_destruction(void *moby_v) {
     struct Moby *moby = moby_v;
     struct L11ChainVars_19108 *d = (struct L11ChainVars_19108 *)moby->pvars;
@@ -3210,7 +3210,7 @@ void FlyingCraftUpdate(unsigned char *moby) {
 extern char *D_L11_00160058_31BBC8 __asm__("D_L11_00160058") MACRO_ADDR;
 short func_L11_0031BBC8_r(int idx) __asm__("func_L11_0031BBC8");
 
-/* Counts the mobys of class 0x527 in state 5 on id list idx. Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l11/gameplay/vendor/00315968.c, FUN_L11_0031a758. */
+/* Counts the mobys of class 0x527 in state 5 on id list idx. Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l11/gameplay/vendor/00315968.c, FUN_L11_0031a758. */
 short func_L11_0031BBC8_r(int idx) {
     short *p = D_L11_001AC540[idx];
     short found = 0;

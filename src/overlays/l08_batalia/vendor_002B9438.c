@@ -848,7 +848,7 @@ typedef struct {
     float speed;
 } PathMoverVars_2d55c8;
 
-/* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l08/gameplay/entities/002b8228.c, FUN_L08_002d55c8. */
+/* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l08/gameplay/entities/002b8228.c, FUN_L08_002d55c8. */
 void advance_bomber_tank_along_path(struct Moby *moby, int path_id) {
     PathMoverVars_2d55c8 *vars = (PathMoverVars_2d55c8 *)moby->pvars;
     int *path = (int *)D_L08_001B0FB0[path_id];
@@ -1112,7 +1112,7 @@ extern void func_0020D678(void *);
 extern short * D_L08_001AC340[];
 
 /* Remove active mobys of the selected classes from this moby's linked group.
-   Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l08/gameplay/entities/002b8228.c, FUN_L08_002d6450. */
+   Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l08/gameplay/entities/002b8228.c, FUN_L08_002d6450. */
 void remove_bomber_tank_linked_debris(struct Moby *moby) {
     short *list = D_L08_001AC340[(((struct Moby *)D_L08_00160058) + *(s32 *)(moby->pvars + 0x144))->group];
     struct Moby *other;
@@ -1163,7 +1163,7 @@ extern unsigned char *func_L00_00272770_DB468(void *, void *, void *, float, flo
 extern float func_001F9878_DB468(float) __asm__("func_001F9878");
 extern s32 func_001FA898_DB468(f32) __asm__("func_001FA898");
 
-/* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l08/gameplay/entities/002b8228.c, FUN_L08_002da0f0. */
+/* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l08/gameplay/entities/002b8228.c, FUN_L08_002da0f0. */
 void update_hero_water_entry_effects(struct Moby *moby) {
     Vec4 pos;
     Vec4 v;
@@ -1230,7 +1230,7 @@ extern unsigned char *func_L00_0026DEA0(void *, float, float, float, int, void *
 extern char *func_L00_0026DA50(void *, void *, int, int, int, int, float);
 
 /* Strings count glowing puffs from one point to another, growing from size0 to size1, then bursts a spark shower at each end.
-   Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l08/gameplay/entities/002b8228.c, FUN_L08_002da3f0. */
+   Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l08/gameplay/entities/002b8228.c, FUN_L08_002da3f0. */
 void spawn_particle_line_effect(struct Moby *moby, void *from, void *to, int count, f32 size0, f32 size1) {
     Vec4 step;
     Vec4 pos;
@@ -2109,7 +2109,7 @@ typedef struct EffectRecord_2DC9A8 {
 } EffectRecord_2DC9A8;
 extern CollisionHit D_L08_001746C0;
 
-/* Adapted from Lombyte (MIT) for PAL by OpenRAC's tools/port.py: src/overlays/l08/gameplay/entities/002b8228.c, FUN_L08_002dc9a8. */
+/* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l08/gameplay/entities/002b8228.c, FUN_L08_002dc9a8. */
 void update_ballistic_projectile(struct Moby *moby) {
     char *m = (char *)moby;
     char *data = *(char **)(m + 0x78);
