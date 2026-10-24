@@ -9,7 +9,7 @@ report, and they share one C source.
 | `pal` | `SCES_509.16` | PAL (Europe) v2.00, the **primary** | `SCES_509.16.iso` (and `SCES_509.16`, the executable) | this repository (`tools/build_sn.sh`, `tools/gen_progress_report.py`), unchanged |
 | `pal_v1` | `SCES_509.16_v1` | PAL (Europe) v1.00 | `SCES_509.16_v1.00.iso` | this repository (below) |
 | `jp` | `SCPS_150.37` | NTSC-J v1.02 | `SCPS_150.37.iso` | this repository (below) |
-| `us` | `SCUS_971.99` | NTSC-U v1.00 | `SCUS_971.99.iso` | **the NTSC decomp**, Lombyte's project, as the submodule `versions/ntsc` |
+| `us` | `SCUS_971.99` | NTSC-U v1.00 | `SCUS_971.99.iso` | this repository (below); the count ByteMatch shows is **the NTSC decomp**'s own, Lombyte's project (see the end) |
 
 Both PAL discs have the same serial and boot file name (`SCES_509.16`); their builds differ, so
 v1.00's report id is `SCES_509.16_v1`. ByteMatch (bytematch.dev/OpenRAC/rac1-decomp) reads one CI
@@ -37,13 +37,14 @@ section's address, size and SHA-1; `boot_layout.json` the executable's ELF and s
 function table cuts it (`asm/versions/<K>/`, never committed), assembles it with the toolchain's
 binutils 2.10-ee (`ee-as`, a Linux program: native on Linux, through `tools/docker/run.sh` on a
 Mac), links every section at its address (`ee-ld`), puts the executable back together from its
-layout and each level from its records, and compares the SHA-1 with the disc's. On 2026-10-21 all
-20 programs of each of `pal`, `pal_v1` and `jp` give back the disc's bytes:
+layout and each level from its records, and compares the SHA-1 with the disc's. All 20 programs of
+each of `pal`, `pal_v1` and `jp` (2026-10-21) and `us` (2026-10-23) give back the disc's bytes:
 
 | Version | Executable SHA-1 | Programs that match |
 | --- | --- | --- |
 | `pal` | `79956931bd62fafd8d20fa2eae796dbaf2e15e83` | 20 of 20 |
 | `pal_v1` | `553a7f6c2c7a004d384d77b7139accbc52242149` | 20 of 20 |
+| `us` | `72fd1de379dafd8f243dceeb3be50980f3fd3cd5` | 20 of 20 |
 | `jp` | `0df83877d53e19d69ec82038e2aaa227f643178f` | 20 of 20 |
 
 The primary's own build (the C linked into the executable, `tools/build_sn.sh`; level C checked
@@ -69,7 +70,7 @@ same form.
 | `pal` | 1,692 (465,644 bytes) | 1,964 (1,196,676) | 1,468 (2,051,248) | 5,124 functions (report) |
 | `pal_v1` | 1,698 (460,224) | 1,931 (1,186,188) | 1,468 (2,047,336) | 5,097 |
 | `jp` | 1,702 (467,616) | 1,939 (1,187,792) | 1,468 (2,050,936) | 5,109 |
-| `us` | 1,701 (461,232) | 1,933 (1,186,540) | 1,468 (2,047,132) | 5,102 (our count, for the cross-check) |
+| `us` | 1,701 (461,232) | 1,933 (1,186,540) | 1,468 (2,047,132) | 5,102 |
 
 ## Checking the C against a version (`config/versions/<K>/map.tsv`)
 
@@ -147,40 +148,59 @@ rewrites the maps and the reports (`tools/version_report.py`). A new match in `s
 reaches every version where the code is the same with no further step; commit what `run` changes
 together with the C.
 
-## The NTSC-U version: the NTSC decomp
+## The NTSC decomp
 
-The NTSC-U release is the NTSC decomp, Lombyte's project, included as a git submodule at
-`versions/ntsc` (https://github.com/mateuszklysz/Lombyte), pinned to a commit. It builds and counts
-itself, with its own compilers and tools; this repository adds only the glue:
+NTSC-U is a version like PAL v1.00 and NTSC-J: the shared C, its own definitions only where its
+bytes differ (`src/versions/us/`), its build from assembly, its map and its report
+(`progress/us/report.json`, our count). Its other decompilation is **the NTSC decomp**, Lombyte's
+project by Mateusz Kłysz (https://github.com/mateuszklysz/Lombyte, GPL-3.0 since its a1379f57),
+which builds and counts itself with its own compilers and tools. ByteMatch's `SCUS_971.99` figure
+is the NTSC decomp's own count: CI generates its report from its tree and uploads it as
+`SCUS_971.99_report`. We take its names (docs/NAMES.md), and some of its structs and headers,
+credited in THIRD_PARTY_NOTICES.md.
 
-    git submodule update --init versions/ntsc
-    tools/build_ntsc.sh                 # its setup.sh, make elf and make overlays: PASS each
-    tools/sync_ntsc.sh                  # follow it: bump the submodule, rebuild, refresh, commit the bump
-    python3 tools/version_sync.py ntsc  # config/versions/us/carry.tsv
+It is not part of this repository. It is pinned to one commit in
+`config/versions/us/ntsc_decomp.txt` (`url commit`) and read from a cache outside the checkout,
+`~/.cache/rac1-decomp/ntsc/<commit>/` (`RAC1_NTSC_DECOMP` moves the cache), a shallow fetch of
+that one commit; `RAC1_NTSC_DECOMP_DIR` names a checkout of your own instead:
 
-`tools/build_ntsc.sh` runs the submodule's own entry points on Linux (its `setup.sh --elf`,
-`make elf`, `make overlays`), taking the executable from `baserom/us/SCUS_971.99` and the disc image
-from `baserom/SCUS_971.99.iso`; its header lists the settings for a host without system Wine. On
-2026-10-23, at 6abcf077, it ends in `PASS: reconstructed boot ELF matches retail` and
-`PASS: all 3002 overlay functions in C match retail` (with all 6,630 level data objects in C). CI runs the submodule's
-`scripts/gen_progress_report.py` and uploads its report as `SCUS_971.99_report`.
+    python3 tools/ntsc_source.py path       # its checkout at the pin, fetched the first time (a few seconds)
+    python3 tools/ntsc_source.py follow     # follow it: bump the pin to its HEAD and re-import (below)
+    tools/build_ntsc.sh                     # its setup.sh, make elf and make overlays: PASS each
+    python3 tools/version_sync.py ntsc      # config/versions/us/carry.tsv
 
-Nothing is committed into the submodule from here and nothing is pushed to it. The cross-version
-check is read-only towards it: `tools/version_sync.py ntsc` checks our C against the NTSC-U bytes
-(`config/versions/us/functions.tsv` and `map.tsv`, as for the other versions) and reads the
-submodule's report, and lists in `config/versions/us/carry.tsv` the functions with the same code
-matched on one side only: "to the NTSC decomp" (our C builds the NTSC-U bytes, it has not matched
-them: a pull request on its repository) and "from the NTSC decomp" (matched there, not here).
+**Following it.** `python3 tools/ntsc_source.py follow [COMMIT]` (default: its HEAD) fetches the
+new commit, writes the pin, runs `tools/build_ntsc.sh` (skip with `--no-build` on a host without
+its toolchain), `tools/version_sync.py ntsc`, and commits the pin with `carry.tsv` ("chore(ntsc):
+follow the NTSC decomp to ..."); then `tools/names.py ntsc` and `rename`, committed on their own
+("chore(names): the NTSC decomp's names at ..."). It ends by listing the functions the NTSC
+decomp newly matched that are still open here.
 
-## Totals (2026-10-21)
+`tools/build_ntsc.sh` runs the NTSC decomp's own entry points on Linux (its `setup.sh --elf`,
+`make elf`, `make overlays`) in that checkout, taking the executable from `baserom/us/SCUS_971.99`
+and the disc image from `baserom/SCUS_971.99.iso`; its header lists the settings for a host without
+system Wine. At 6abcf077 it ends in `PASS: reconstructed boot ELF matches retail` and
+`PASS: all 3002 overlay functions in C match retail` (with all 6,630 level data objects in C).
+
+Nothing is committed into the NTSC decomp from here and nothing is pushed to it.
+`tools/version_sync.py ntsc` reads its report (generated in its checkout) and our check of the C
+against the NTSC-U bytes (`config/versions/us/map.tsv`), and lists in `config/versions/us/carry.tsv`
+the functions with the same code matched on one side only: "to the NTSC decomp" (our C builds the
+NTSC-U bytes, it has not matched them: a pull request on its repository) and "from the NTSC
+decomp" (matched there, not here).
+
+## Totals (2026-10-23)
 
 | Version | Functions finished | Code finished |
 | --- | --- | --- |
-| `SCES_509.16` (PAL v2.00) | 5,073 of 5,124 | 98.38% (3,653,460 of 3,713,568 bytes) |
-| `SCES_509.16_v1` (PAL v1.00) | 4,839 of 5,097 | 76.82% (2,837,556 of 3,693,748 bytes) |
-| `SCPS_150.37` (NTSC-J v1.02) | 4,974 of 5,109 | 88.05% (3,263,480 of 3,706,344 bytes) |
-| `SCUS_971.99` (NTSC-U v1.00, the NTSC decomp's own count) | 4,218 of 4,244 | 98.72% (3,502,500 of 3,547,932 bytes) |
+| `SCES_509.16` (PAL v2.00) | 5,089 of 5,120 | 98.48% (3,656,816 of 3,713,416 bytes) |
+| `SCES_509.16_v1` (PAL v1.00) | 4,848 of 5,092 | 76.90% (2,840,248 of 3,693,592 bytes) |
+| `SCPS_150.37` (NTSC-J v1.02) | 4,983 of 5,104 | 88.13% (3,266,172 of 3,706,188 bytes) |
+| `SCUS_971.99` (NTSC-U v1.00), our count (`progress/us/report.json`) | 4,756 of 5,097 | 74.21% (2,741,936 of 3,694,748 bytes) |
+| `SCUS_971.99` (NTSC-U v1.00), the NTSC decomp's own count (on ByteMatch) | 4,221 of 4,244 | 98.93% (3,510,004 of 3,547,932 bytes) |
 
-The code share of PAL v1.00 and NTSC-J trails their function share: the functions still to do
+The NTSC decomp groups level copies and pieces differently, hence its 4,244 functions against our
+5,097, and counts its level data objects in C as well (not shown here).
+The code share of PAL v1.00, NTSC-J and our NTSC-U trails their function share: the functions still to do
 are the long ones whose size changed between releases (the menus and text code; NTSC-J's text and
 font handling for Japanese). `progress/<K>/report.json` and ByteMatch have the current numbers.

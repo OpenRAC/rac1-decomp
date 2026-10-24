@@ -56,19 +56,22 @@ in the alternatives. After `local`, run `header`, then `apply-defs` and
 
 ## The NTSC decomp's names
 
-We are converging on the NTSC decomp's conventions (Lombyte's project, the
-submodule `versions/ntsc`), so its spelling wins: its names, snake_case as
+We are converging on the NTSC decomp's conventions (Lombyte's project, read
+at the commit pinned in `config/versions/us/ntsc_decomp.txt`), so its spelling wins: its names, snake_case as
 it writes them, replace every name of ours that came from reading the code
 (`names_local.tsv`) or from another later source. A recovered name, the
 original identifier, is never replaced.
 
 ```sh
-python3 tools/names.py ntsc     # read versions/ntsc; write names_ntsc.tsv, modules.tsv, names.tsv
+python3 tools/names.py ntsc     # read the pinned NTSC decomp; write names_ntsc.tsv, modules.tsv, names.tsv
 python3 tools/names.py rename   # carry the changes into names.h and src/
 ```
 
-`tools/sync_ntsc.sh` runs both after each bump of the submodule, so the
-names follow the pinned commit; nothing of its code is copied. `ntsc` reads
+`python3 tools/ntsc_source.py follow` bumps the pin and runs both, so the
+names follow the pinned commit; nothing of its code is copied. The NTSC
+decomp is read from a cache outside the checkout
+(`~/.cache/rac1-decomp/ntsc/<commit>`, a shallow fetch of that one commit;
+`RAC1_NTSC_DECOMP_DIR` points at a checkout of your own instead). `ntsc` reads
 the names its C binds to US addresses with asm labels
 (`void f(void) __asm__("FUN_001f5f18")`, `extern s32 x __asm__("D_0015EE98")`)
 and the C files its splat config names after their function, then places

@@ -54,12 +54,6 @@ class Version:
     hz: int             # the video mode it was built for
     tag: str            # the prefix of names for functions only this version has (func_<tag>_...)
     primary: bool = False
-    submodule: str = ""  # built and counted by its own project, checked out there (docs/VERSIONS.md)
-
-    @property
-    def integrated(self) -> bool:
-        """Built, checked and reported by this repository (not a submodule's)."""
-        return not self.submodule
 
     @property
     def base(self) -> Path:
@@ -89,14 +83,14 @@ VERSIONS = (
     Version("pal_v1", "SCES_509.16_v1", "PAL v1.00", "PAL (Europe)", "SCES_509.16_v1.00.iso", "SCES_509.16",
             "553a7f6c2c7a004d384d77b7139accbc52242149", 50, "E1"),
     Version("us", "SCUS_971.99", "NTSC-U v1.00", "NTSC-U (North America)", "SCUS_971.99.iso", "SCUS_971.99",
-            "72fd1de379dafd8f243dceeb3be50980f3fd3cd5", 60, "U", submodule="versions/ntsc"),
+            "72fd1de379dafd8f243dceeb3be50980f3fd3cd5", 60, "U"),
     Version("jp", "SCPS_150.37", "NTSC-J v1.02", "NTSC-J (Japan)", "SCPS_150.37.iso", "SCPS_150.37",
             "0df83877d53e19d69ec82038e2aaa227f643178f", 60, "J"),
 )
 PRIMARY = next(v for v in VERSIONS if v.primary)
 BY_KEY = {v.key: v for v in VERSIONS}
 OTHERS = tuple(v for v in VERSIONS if not v.primary)
-INTEGRATED = tuple(v for v in VERSIONS if v.integrated)
+INTEGRATED = VERSIONS  # every version is built, checked and reported here
 
 
 def get(key: str | None) -> Version:

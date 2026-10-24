@@ -5,7 +5,7 @@ Keep the versions in step (docs/VERSIONS.md, "Keeping the versions in step").
   python3 tools/version_sync.py check     # CI and gen_progress_report.py --check: tables only, no disc
   python3 tools/version_sync.py run       # before each push: rebuild, recheck and report every version
   python3 tools/version_sync.py carry     # copy a version's own C to versions with the same code, keep what matches
-  python3 tools/version_sync.py ntsc      # the NTSC decomp (submodule): carry candidates, both ways (read only)
+  python3 tools/version_sync.py ntsc      # the NTSC decomp (tools/ntsc_source.py): carry candidates, both ways
 
 Every function has one C source for every version (src/), and a version has its own definition
 (src/versions/<K>/) only where its bytes differ. `check` fails when:
@@ -27,9 +27,10 @@ have run first; it then builds each version's own definitions, checks every C fu
 every integrated version, carries version-specific C between versions, and rewrites the maps and
 reports. Commit what it changes with the C.
 
-The NTSC-U version is the NTSC decomp, Lombyte's project, as a submodule (versions/ntsc): it builds
-and counts itself (tools/build_ntsc.sh). Nothing here writes into it. `ntsc` lists, from
-config/versions/us/ (our C checked against the NTSC-U bytes) and the submodule's own report, the
+The NTSC decomp, Lombyte's project, is the other decompilation of NTSC-U: it builds and counts
+itself (tools/build_ntsc.sh) and is read, pinned to a commit, from a cache outside the repository
+(tools/ntsc_source.py). Nothing here writes into its tree but its own report. `ntsc` lists, from
+config/versions/us/ (our C checked against the NTSC-U bytes) and the NTSC decomp's own report, the
 functions with the same code matched on one side and not on the other: config/versions/us/carry.tsv,
 candidates for pull requests to the NTSC decomp, or for matching here.
 """
@@ -179,11 +180,12 @@ def run():
 
 
 def ntsc():
-    """config/versions/us/carry.tsv from our check against the NTSC-U bytes and the submodule's report."""
+    """config/versions/us/carry.tsv from our check against the NTSC-U bytes and the NTSC decomp's report."""
+    import ntsc_source
     v = versions.get("us")
-    sub = ROOT / v.submodule
+    sub = ntsc_source.path()
     if not (sub / "scripts/gen_progress_report.py").exists():
-        sys.exit(f"{v.submodule} is not checked out: git submodule update --init {v.submodule}")
+        sys.exit(f"{sub} is not a checkout of the NTSC decomp (tools/ntsc_source.py)")
     subprocess.run([sys.executable, "scripts/gen_progress_report.py"], cwd=sub, check=True,
                    stdout=subprocess.DEVNULL)
     rep = json.loads((sub / "build/progress/report.json").read_text())
