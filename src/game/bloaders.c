@@ -113,7 +113,7 @@ extern long D_0015EFC8_m __asm__("D_0015EFC8") MACRO_ADDR;
 void LoadDebugFont(void) {
     long localbuf[3];
 
-    Load(debug_font_buffer, D_00137C80[2], D_00137C80[3]);
+    Load(debug_font_buffer, disc_table[2], disc_table[3]);
     LoadPifAsPSMT8H(debug_font_buffer, localbuf, D_0015EF88_m + 0xC0000, 0x3FFC00);
     D_0015EFC8_m = localbuf[0];
 }

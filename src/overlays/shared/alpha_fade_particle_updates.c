@@ -1959,9 +1959,9 @@ void load_misc_animations_into_stash(void) {
     int h = D_L00_00173F08;
     int i;
     for (i = 0; i < 20; i++) {
-        int sz = D_00137C80.e[i].n << 7;
+        int sz = disc_table.e[i].n << 7;
         if (sz) {
-            Load(h, D_00137C80.e[i].a, D_00137C80.e[i].n);
+            Load(h, disc_table.e[i].a, disc_table.e[i].n);
             level_menu_system.o[i] = Stash_SendData(h, sz, sz, (int)&D_L00_00160390);
         }
     }

@@ -78,7 +78,7 @@ extern int D_001941C0[];
  */
 void InitMemSlots(void) {
     int base = (int)D_0024272F & 0xFFFFC000;
-    int size = D_0016100C;
+    int size = current_vu_chain;
     int a = base + size;
     int b = a + size;
     int c = b + 0x64000;
@@ -195,8 +195,8 @@ void InitOnce(void) {
 
     base = (int)D_0024272F & 0xFFFFC000;
     tbl = (int *)(base + 0x2C0000);
-    seg = D_1FF8000 - (D_00137C80[0x4B1] << 0xB);
-    func_0012F348(D_00137C80[0x4B0], D_00137C80[0x4B1], seg);
+    seg = D_1FF8000 - (disc_table[0x4B1] << 0xB);
+    func_0012F348(disc_table[0x4B0], disc_table[0x4B1], seg);
     func_00118D80(0);
     fast_decompress(seg, tbl);
     func_00118D80(0);
@@ -215,7 +215,7 @@ void InitOnce(void) {
     func_00121490(0);
     init_pads();
     func_00123168(func_0012F308);
-    D_0016100C = 0x160000;
+    current_vu_chain = 0x160000;
     InitMemSlots();
     func_00121490(0);
     memcard_Init();

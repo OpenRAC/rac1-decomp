@@ -37,10 +37,10 @@ void initialize_moby_state_record(char *m) {
 }
 extern char *D_0013E130;
 void deactivate_recorded_moby(void) {
-    char *m = D_0013E130;
+    char *m = level_render_state;
     if (m != 0) {
         *(unsigned short *)(m + 0x34) |= 3;
-        *(int *)(D_0013E130 + 0x94) = 0;
+        *(int *)(level_render_state + 0x94) = 0;
     }
 }
 typedef struct { char pad[0x20]; unsigned char st; char pad21[0x13]; unsigned short flags; char pad36[0x70]; short type; char pada8[0x58]; } O_28e9c8;
@@ -132,7 +132,7 @@ void EnterShipMode(int a) {
     }
     z = (S_171b *)(D_0014171B + 0x100B5);
     z->x1c = t + 40000;
-    func_00205220(0);
+    parse_space_scene_chunk(0);
     while (3 != z->x5a) {
         sound_update();
         func_00122598(0);
@@ -201,7 +201,7 @@ void prepare_target_level_transition(int dest) {
         *(int *)(h + 0x34) = v;
         t = v / d;
         *(int *)(h + 0x3C) = t;
-        func_00205220(t);
+        parse_space_scene_chunk(t);
         *(int *)(h + 0x38) = *(int *)(h + 0x34) % d;
     } else {
         memcard_Save(0, dest);

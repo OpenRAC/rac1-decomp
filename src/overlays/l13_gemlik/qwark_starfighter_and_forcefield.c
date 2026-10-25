@@ -903,7 +903,7 @@ void update_qwarks_starfighter(Moby388 *moby) {
             (*(Moby388 **)(D_0013E633 + 0x240D))->bBC = 0;
         }
         moby->rot[0] = FastAddRots(moby->rot[0], g_frame_time * 4.1887903f);
-        view = D_L13_00167000;
+        view = jet_camera47;
         moby->rot[2] = *(float *)(view + 0x158);
         moby->rot[1] = *(float *)(view + 0x154);
         moby->scale *= 0.98f;
@@ -2437,7 +2437,7 @@ void BlargSpaceCommandoUpdate(struct Moby *moby) {
     target = vars->target;
     Manipulator_ApplyScale(2.5f, moby, 1, vars->unk400);
     if (moby->visible != 0 && FastVecDist(&moby->pos, gemlik_camera_pos) < 28.0f) {
-        func_L00_0025B178(moby);
+        set_ground_height_band(moby);
         moby->shadow_range = 0x16;
     }
     switch (moby->state) {

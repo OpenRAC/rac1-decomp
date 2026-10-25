@@ -1091,7 +1091,7 @@ void decoy_glove_update(unsigned char *moby) {
         *(int *)(p + 0x98) = 1;
         if (*(unsigned char *)(D_0013E633 + 6) && *(short *)(*(char **)(d + 0x50) + 0xA6) != 0x76C) {
             qzero(&loc);
-            mine_spawn_drops(*(char **)(d + 0x50), decoy_list);
+            moby_index_list_remove(*(char **)(d + 0x50), decoy_list);
             ((void (*)(void *))DeleteMoby)(*(char **)(d + 0x50));
             *(int *)(d + 0x50) = spawn_decoy(moby, d + 0x40, &loc);
         }
@@ -2076,7 +2076,7 @@ void horny_toad_update(Moby *moby) {
     func_L00_002D6610(moby);
     tgt = data->tgt;
     if (moby->visible != 0 && FastVecDist((*(Vec_5AC0 *)&moby->pos), g_debug_camera) < 26.0f) {
-        func_L00_0025B178(moby);
+        set_ground_height_band(moby);
         moby->shadow_range = 0x15;
     }
     Manipulator_ApplyScale(2.1f, (int)moby, 1, data->f200);
@@ -2667,7 +2667,7 @@ void infobot_update(struct Moby *moby)
         moby->rot.y = ((f32 (*)(f32, f32, f32, f32, f32, f32 *))SpringTurn)(moby->rot.y, 0.0f, g_frame_time_sq * 0.5235988f, g_frame_time_sq * 1.0471976f, g_frame_time * 0.7853982f, &infobot->spin[1]);
         moby->rot.x = ((f32 (*)(f32, f32, f32, f32, f32, f32 *))SpringTurn)(moby->rot.x, 0.0f, g_frame_time_sq * 1.0471976f, g_frame_time_sq * 2.0943952f, g_frame_time * 1.5707964f, &infobot->spin[0]);
         DriftingSprites_Draw((char *)moby);
-        if (D_0013DE48[infobot->planet] != 0) {
+        if (level_available[infobot->planet] != 0) {
             ((void (*)(struct Moby *))DeleteMoby)(moby);
             return;
         }
@@ -2677,7 +2677,7 @@ void infobot_update(struct Moby *moby)
         break;
     case 3:
         DriftingSprites_Draw((char *)moby);
-        if (D_0013DE48[infobot->planet] != 0) {
+        if (level_available[infobot->planet] != 0) {
             ((void (*)(struct Moby *))DeleteMoby)(moby);
             return;
         }
@@ -2703,7 +2703,7 @@ void infobot_update(struct Moby *moby)
         break;
     case 5:
         DriftingSprites_Draw((char *)moby);
-        if (D_0013DE48[infobot->planet] != 0) {
+        if (level_available[infobot->planet] != 0) {
             ((void (*)(struct Moby *))DeleteMoby)(moby);
             return;
         }

@@ -919,7 +919,7 @@ void drek_final_boss_robot_update(Moby *moby) {
         }
     }
     if (moby->visible != 0 && FastVecDist(((f32 *)&moby->pos), D_L18_00167840) < 32.0f) {
-        func_L00_0025B178(moby);
+        set_ground_height_band(moby);
         moby->shadow_range = 0x1A;
     }
     switch (moby->state) {

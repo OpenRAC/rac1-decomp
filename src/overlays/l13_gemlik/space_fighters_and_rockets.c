@@ -2511,7 +2511,7 @@ void update_linked_switch_group(char *moby) {
                 set_moby_list_state((unsigned char)moby[0x21], 4);
                 func_0022ED80_E5810(1, 0, moby);
                 data->unk70 = data->unk84;
-                STUB_printf(D_L13_001F5080, *(short *)(moby + 0xB2), ((struct Moby *)moby)->oclass, D_L13_0015F6B0);
+                STUB_printf(D_L13_001F5080, *(short *)(moby + 0xB2), ((struct Moby *)moby)->oclass, gemlik_frame_count);
                 ((struct Moby *)moby)->state = 4;
             } else {
                 if (data->unk7C >= 0) {
@@ -2522,7 +2522,7 @@ void update_linked_switch_group(char *moby) {
 
                         func_0022ED80_E5810(2, 0, moby);
                         set_moby_list_state((unsigned char)moby[0x21], 3);
-                        STUB_printf(D_L13_001F50A0, *(short *)(moby + 0xB2), ((struct Moby *)moby)->oclass, D_L13_0015F6B0);
+                        STUB_printf(D_L13_001F50A0, *(short *)(moby + 0xB2), ((struct Moby *)moby)->oclass, gemlik_frame_count);
                         ((struct Moby *)moby)->state = 3;
                     } else if (FastDecTimer(&data->unk72) != 0) {
                         func_0022ED80_E5810(0, 0, moby);
@@ -2550,7 +2550,7 @@ void update_linked_switch_group(char *moby) {
 
                 func_0022ED80_E5810(2, 0, moby);
                 set_moby_list_state((unsigned char)moby[0x21], 3);
-                STUB_printf(D_L13_001F50C0, *(short *)(moby + 0xB2), ((struct Moby *)moby)->oclass, D_L13_0015F6B0);
+                STUB_printf(D_L13_001F50C0, *(short *)(moby + 0xB2), ((struct Moby *)moby)->oclass, gemlik_frame_count);
                 ((struct Moby *)moby)->state = 3;
             } else if (FastDecTimer(&data->unk72) != 0) {
                 func_0022ED80_E5810(0, 0, moby);
@@ -2814,7 +2814,7 @@ void emit_randomized_moby_joint_effects(char *moby) {
         s = s * random_float_between(0.8f, 1.1f);
         Moby_GetJointWorldPos(moby, D_L13_001D3808[i], a);
         add_random_offset_to_vector_xyz(a, s * 1.4f);
-        if (D_L13_0015F6B0 & 1) {
+        if (gemlik_frame_count & 1) {
             r = scale_ticks(rand_range(0x14, 0x3C));
             k = func_001FA898_r(random_float_between(450.0f, 550.0f) * s);
             PartType04Spawn(a, z, 0xDF000FFF, 0xCF, r, k, -100, 1);

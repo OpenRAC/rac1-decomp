@@ -1376,7 +1376,7 @@ func_L00_0025AC00	PostHitMessage	body: ring-buffer hit entry from mask args/pos/
 func_L00_0025AD38	PostHitMessageAtPoint	body: wrapper calling PostHitMessage with global zero vector as velocity	
 func_L00_0025AD60	SweepSegmentCheck	body: interpolates two moving segments n steps and line-checks each, returns 1 on first hit	
 func_L00_0025AFA8	BuildEulerMatrix	body: three axis rotation matrices (func_L00_001FFED8) multiplied into one matrix from xyz angles	
-func_L00_0025B178	SetGroundHeightBand	body: line-checks down from moby, stores hit height +-0.2 at +0x84/+0x88 or zero	
+func_L00_0025B178	set_ground_height_band	the NTSC decomp's name is a struct field, local or alias in src/, so names.h would leave it out	clash
 func_L00_0025B478	MobyGetHitMessage	comment: returns hit record linked from moby byte 0xA4 when flags match mask	
 func_L00_0025B4D0	ComputeHitResponse	comment: picks moby animation/reaction index from hit record, health and state; callers switch on it	
 func_L00_0025BBA0	HeadingFromVector	body: Atan2 of vector xy into angle; scales two speeds by length when w marker is set	
@@ -3508,9 +3508,8 @@ D_L00_001C43B0	item_price_table	src/overlays/shared/vendor_menu.c: 24-byte per-i
 D_L16_0017AB60	kalebo3_hero_bones	src/overlays/l16_kalebo3/hero_movement.c: Bone array whose f60 rotations get clamped head/torso angles from the hero yaw.	
 D_L05_0015F660	rilgar_zero_vec	src/overlays/l05_rilgar/sharkigator_and_faucet.c: passed as the default zero velocity/rotation vector to SpawnBreakFragment and spawn_splash.	
 D_L00_001BDB70	sky_shell_matrix	src/overlays/shared/sky_particles.c: set to identity or a rotation before each SkyDrawShell call.	
-D_0015F6FC	g_space_load_in_progress	src/game/space.c: same address as space.c's space_load_in_progress define; set 1 by render setup and waited on in space.c.	
 D_001414DC	hero_control_mode	include/hero.h: g_hero + 0x208C is HeroState.control_mode; map filters compare it to 15/16.	
-D_L00_00173F58	g_coll_hit_moby	src/overlays/shared/bolts_and_wrench.c: the moby hit by the last collision query; RotateWithMoby and pvar checks read it.	
+D_L00_00173F58	g_coll_hit_moby	the NTSC decomp's name is a struct field, local or alias in src/, so names.h would leave it out	clash
 D_L07_001B0830	umbris_paths	src/overlays/l07_umbris/snagglebeast.c: pointer table of paths indexed by path id, used with select_point_index_by_distance.	
 D_L04_001B0930	eudora_paths	src/overlays/l04_eudora/big_axebot.c: pointer table of count-prefixed point lists used as paths and IsPointInPolygon areas.	
 D_L18_0016016C	veldin2_arena_nodes	src/overlays/l18_veldin2/drek_boss_fight.c: 0x80-byte node records with a position at +0x30 used for the boss arena.	
@@ -3555,14 +3554,12 @@ D_L00_001842F0	map_menu_state	level_runtime_and_menus.c:431-436 loads/decodes th
 D_001414D0	g_hero_moby	g_hero (0x13F450) + 0x2080 = Hero.moby (hero.h:737); used as ignore-moby in coll_sphere and pos at +0x10.	
 D_L18_0017B100	veldin2_hero_bones	hero_ground_movement.c:594 writes Bone[1].f60 rotations from hero roll/lean.	
 D_0015EE8C	quick_swap_item	hero_item_input_and_hud.c:210 double-tap triangle sets pending_item to it when not already equipped.	
-D_0016100C	vu_chain_buffer_size	vuchain.c:318 set from vu_chain_table[level]; help.c:63 and initonce.c:81 use it as the VU1 chain buffer length.	
 D_L00_00173F00	lvl_resource_buffers	scratch_buffer_offset.c:16 words 1/2 plus D_L00_0016128C, same as help.c with level_resource_buffers; level copy.	
 D_L17_0016016C	fleet_camera_points	robot_dog_and_shuttle.c: 128-byte entries, pos at +0x30 and rot at +0x70 for Hero_ResetToPosition; L01 copy is camera_points.	
 D_00193400	mode_freeze_info	freeze.c:69 mode_freeze_init stores reason, old game mode, args and message strings in this record.	
 D_0013DE55	gemlik_available	level_available (D_0013DE48) + 13 = level 13 (Gemlik); missionfunc.c:380 tests it as a byte flag.	
 D_001941C8	vu1_chain_buffer_2	level_resource_buffers[2] (0x1941C0+8); help.c calls [1]/[2] the two VU1 chain buffers; loaders.c:1884 adds the chain size.	
 D_L14_001675C0	oltanis_camera_pos	player_camera + 0x140 pos slot (as L11 0x167840 camera_pos); plasmabot.c:591 builds a matrix facing it.	
-D_001B3E40	g_resident_class_slot_by_id	loaders.c:981 class -> slot byte table; plain name is a macro in space.c:1835.	
 D_L06_0015F660	blarg_zero_vec	space_commando_and_door_lock.c:390 passed for SpawnBreakFragment default (zero) vectors.	
 func_L00_00200210	fast_fmod	asm: q=a/b, truncates q, returns (q-trunc(q))*b; scientist_and_hint_triggers.c wraps UV scroll by 1.0.	
 D_0013D4E5	menu_item_enabled_73	D_0013D49C + 73 in the menu_item_enabled_N byte table; resort_owner_and_water.c:1322 sets it to 1.	
@@ -3572,14 +3569,13 @@ D_0013D4F1	menu_item_enabled_85	D_0013D49C + 85 in the menu_item_enabled_N byte 
 D_L03_00160058	kerwan_mobys	taxi_and_mine_layer.c: base of 0x100-byte moby array indexed by id << 8; L07 copy is level_mobys.	
 D_L00_0015F660	veldin1_zero_vec	vendor_orb_and_robots.c:481 passed for SpawnBreakFragment default (zero) vectors.	
 D_L11_00167700	pokitaru_player_camera	homing_missile_and_water_sheet.c reads +0x140 pos; hero_movement.c Cam view has yaw f158 and matrix f350 like CameraSystem.	
-D_0013DE48	g_level_available	pause.c:2941 and crates_and_veldin_ship.c index it by level/planet; plain name is a macro in space.c:1856.	
 D_L14_00160098	oltanis_mobys	plasmabot.c:981 moby = base + (index << 8): level moby array.	
 D_001CDAE0	pad_socket_param	stream.c:668 init_pads uses it as PadSocketParam {port, slot} for pad open.	
 D_L15_0015F6B0	quartu_frame_count	sentrybot.c/electric_water.c use it modulo periods for pulses and as a frame stamp.	
-D_L08_00167640	batalia_camera_pos	player_camera (D_L08_00167500) + 0x140 pos; scoutbot_and_paratrooper.c:1150 distance checks to it.	
+D_L08_00167640	batalia_hero_pos	the NTSC decomp's name is a struct field, local or alias in src/, so names.h would leave it out	clash
 D_0013F6E0	hero_gravity_dir	g_hero + 0x290 = Hero.gravity_dir (hero.h:268); camera.c:781 crosses with it as up axis.	
 D_L17_0015F6B0	fleet_frame_count	robot_dog_and_shuttle.c:286 frame counter modulo pulse period; hero_ground_movement.c:517 timestamps.	
-D_L01_001B0C30	nav_paths	move_control_and_clear_path.c:171 table of Path (count, pts) indexed by path_index for waypoint search.	
+D_L01_001B0C30	novalis_paths	the NTSC decomp's name is a struct field, local or alias in src/, so names.h would leave it out	clash
 D_L15_0015F660	quartu_zero_vec	gates_helicopters_ultramechs.c:1007 passed for SpawnBreakFragment default (zero) vectors.	
 D_L12_00174340	hoven_coll_hit	hero_movement.c:268 collision hit result: moby at +0x18, point v20 sets water_surface_z.	
 D_L00_0016128C	lvl_vu_chain_buffer_size	scratch_buffer_offset.c:16 buffers + it like help.c with vu_chain_buffer_size; movie code reserves space from it.	
@@ -3599,7 +3595,6 @@ D_L17_0017B000	fleet_lean_state	l17 hero_ground_movement.c: per-joint Bone array
 D_L00_00161280	dma_packet_cursor	draw_buffers_and_walker_gait.c, debug_menu_and_text.c: write pointer that DMA tags and GS packets are appended through and advanced.	
 D_L16_001B0C30	kalebo3_path_table	elite_commando_and_armed_transport.c: pointer array indexed by path id; each path has a count then 16-byte points from +0x10.	
 D_00152178	background_rgbaq	game/framebuf.c: SetBackgroundColor packs r,g,b and 0x80000000 into this 64-bit word.	
-D_L00_001CA7C0	g_vendor_menu	vendor_screen_drawing.c, vendor_menu.c: the vendor menu state block (state, items, matrix); plain name is a local macro.	
 D_00141760	last_weapon_id	hero_item_input_and_hud.c: quick-swap target item when holding item 8; hero_idle sets 10 if 0, pause clears 0x24.	
 D_L15_0015F6A8	quartu_game_mode	sentrybot.c, electric_water.c: L15 copy of the game mode word at 0x15F6A8, tested against 2 (paused/cutscene) and 6.	
 D_001A0468	map_slot_use	game/map.c: the 5-entry use[] array of PadSlots inside level_map_selection; find_free_map_slot scans it.	
@@ -3609,7 +3604,6 @@ D_L14_0017AE80	oltanis_lean_state	l14 hero_movement.c: per-joint Bone array whos
 D_0014BFC0	gold_bolts_collected	l08 cannon_gunship_bolt_thief.c: [level][4] flags set when a 0x305 moby is collected; mobyutil counts up to 40.	
 D_L00_001605DC	sky_data	sky_particles.c: pointer to the level sky block (SkyData) whose layer count at +6 the sky loops walk.	
 D_0013D4B0	menu_item_enabled_20	missionfunc.c: byte in the menu_item_enabled_N row at 0x13D49C+20, read as a set/unset flag by mission conditions.	
-D_0013E130	g_level_render_state	game/space.c: render state with mode, level fade and set index; plain name is a local macro in space.c.	
 D_L08_001B0FB0	batalia_path_table	l08 bomb_and_scoutbot.c: pointer array indexed by path id; mobys copy positions from path + 0x10.	
 D_L05_0015F6B0	rilgar_frame_count	l05 electric_gate.c: L05 copy of the frame counter word at 0x15F6B0 used for timers.	
 D_L00_00197680	moby_class_headers	level_gameplay_loading.c: per-slot loaded moby class header pointers; seqs and sounds are relocated through it.	
@@ -3637,16 +3631,14 @@ func_L00_001EFFF0	coll_line	hero_update_bone_attachment.c, camera code: tests se
 D_L00_0015F6B0	level_frame_counter	level_gameplay_loading.c:1725 zeroes it at level start; hero_vehicle_and_collision.c uses %3/%5 throttles and mission_conditions.c compares it to stored frame stamps.	
 D_001997D0	g_help_state	help.c: HelpState struct (state at 0, entry count at +0x2C) switched by dismiss_help; help_state is taken as a local in src.	
 func_L00_001FF5B0	clamp_vec_length_xy	asm: XY length via vsqrt, returns 0 if zero or under the limit, else scales xy to the limit and returns 1; hero_water_and_ground_motion.c caps velocity with it.	
-D_00137C80	g_disc_table	music.c/pause.c: WAD table of contents read as SndToc/TrackDiscTable and by sector offsets; NTSC name disc_table is a local in music.c.	
 D_L01_0015F660	novalis_zero_vec	rocks_and_sandmouse.c: passed as the velocity/spin vector args to SpawnBreakFragment/PartType spawns, never written.	
-D_0013F530	g_hero_velocity	hero_knockback_voice.c: g_hero(0x13F450)+0xE0 velocity, FastVecAdd of knockback into it; hero_velocity is a local in mine_bomb_and_debris.c.	
 D_L01_001DEE08	sand_mouse_move_ctl	gold_bolts_and_teleporters.c sandmouse_update / water_pool_and_sand_mouse.c sand_mouse_update: MoveCtl_Init then speed/turn tuning fields set.	
 func_L00_001FFA40	fast_euler_to_matrix	asm: builds rotation matrix from x/y/z angles in arg1 (sin/cos per axis, skips zero axes); hero_steering_and_tilt.c makes roll/yaw matrices from it.	
 D_L02_0015F660	aridia_zero_vec	trespasser_pad_and_background_ships.c: passed as velocity/spin vectors to SpawnBreakFragment, never written.	
 D_L15_001B0DB0	quartu_paths	sentrybot.c: indexed path table, entry word 0 = point count, points at +0x10 stride 0x10, walked by patrol index.	
 D_0015EED0	vendor_stock	weapon_hud_and_counters.c init_level_item_inventory fills 12 item ids; vendor_menu.c and moby_drops_and_death.c scan up to 12 until 0xFF, id = byte & 0x3F.	
 D_L08_0017AF00	batalia_lean_state	l08 hero_movement.c: 0xB0-stride bone tweak array (f60 rotation, fA0) as L00's lean_state; hero_items_and_hud.c reads lean angles at +0x254/+0x258.	
-D_L00_00166F00	g_current_follow_cam	follow_camera.c/cutscene_and_movie_playback.c: pointer to the active follow-cam record (h86 mode); current_follow_cam is a struct field in camera_modes_and_scripts.c.	
+D_L00_00166F00	g_current_follow_cam	the NTSC decomp's name is a struct field, local or alias in src/, so names.h would leave it out	clash
 D_L05_0017ABE0	rilgar_lean_state	l05 hero_movement.c: 0xB0-stride bone tweak array (f60 lean angles clamped), same layout as L00 lean_state.	
 D_L05_001B0CB0	rilgar_paths	sharkigator_and_faucet.c: indexed table, word 0 = point count, points at +0x10, used with IsPointInPolygon and as moby path.	
 D_0013D49D	g_menu_item_enabled_1	menu.c map_filter_l01_2 tests it; water_pool_and_sand_mouse.c sets it; NTSC menu_item_enabled_1 is a macro alias in electric_gate.c.	
@@ -3679,3 +3671,14 @@ D_L00_0015F1D8	debug_int_format	debug_menu_and_text.c: format string passed to t
 D_L00_0015F840	hud_stars_width	weapon_hud_and_counters.c draw_hud_stars: sprite width paired with height D_L00_0015F844, used for rect size and draw_rotated_hud_sprite.	
 D_L18_001AC540	veldin2_moby_groups	deplanetizer_and_gadgebots.c/rockets_and_platforms.c: per-group u16 moby index lists ending at the high-bit entry, index & 0x7FFF << 8 into the moby table.	
 D_00160480	direction_perpendicular	pause.c prepare_scaled_direction_and_perpendicular: cross of dir with its reordered copy, normalised.	
+D_L05_00161F90	g_breast_growth_count	the NTSC decomp's name is a struct field, local or alias in src/, so names.h would leave it out	clash
+D_L00_00197F40	g_class_slot	the NTSC decomp's name is a struct field, local or alias in src/, so names.h would leave it out	clash
+D_L00_001D95E8	g_effects	the NTSC decomp's name is a struct field, local or alias in src/, so names.h would leave it out	clash
+D_L13_0015F6B0	gemlik_frame_count	the NTSC decomp's name is a struct field, local or alias in src/, so names.h would leave it out	clash
+D_L00_0016194C	g_jitter	the NTSC decomp's name is a struct field, local or alias in src/, so names.h would leave it out	clash
+D_L05_001CB000	g_light	the NTSC decomp's name is a struct field, local or alias in src/, so names.h would leave it out	clash
+D_L15_0016CEE0	g_mission	the NTSC decomp's name is a struct field, local or alias in src/, so names.h would leave it out	clash
+D_00160028	g_moby_vars	the NTSC decomp's name is a struct field, local or alias in src/, so names.h would leave it out	clash
+D_L00_00173F20	g_occlusion_samples	the NTSC decomp's name is a struct field, local or alias in src/, so names.h would leave it out	clash
+D_L07_0015F6A8	umbris_scene_state	the NTSC decomp's name is a struct field, local or alias in src/, so names.h would leave it out	clash
+func_L00_00260878	moby_index_list_remove	src/overlays/shared/moby_ground_collision.c: removes moby p from the count-prefixed index list a (swap with the last, count--); the NTSC name mine_spawn_drops does not fit the body	clash

@@ -126,7 +126,7 @@ int Npc_TryStartDialog(char *p, char *q) {
     x = D_L00_00179200;
     if (level_frame_counter < *(int *)(x + 0x10)) return 0;
     if (*(unsigned char *)(q + 8) != 0 || (*(int *)(D_0013A5E0 + 0x2604) & 0x10) != 0) {
-        i = func_L00_00267618(p);
+        i = get_dialogue_entry(p);
         tb = D_0013D605 + 0xB3; tb = tb + 0xC;
         ptr = (int *)(tb + (i << 4));
         if (*ptr == 0) *ptr = 1;
@@ -161,7 +161,7 @@ int Npc_TryStartDialog(char *p, char *q) {
 extern s32 D_0015EE84 MACRO_ADDR;
 extern s32 D_L00_001C47B8[];
 extern s32 D_L00_001792B8[];
-s32 func_L00_00267618(s32 p, s32 unused) {
+s32 get_dialogue_entry(s32 p, s32 unused) {
     s32 n = g_current_level_index;
     s32 lo;
     s32 hi;
@@ -185,7 +185,7 @@ extern int func_L00_00267618(int, int);
 
 /* stores b in the d field of the slot func_L00_00267618 finds, if any. Adapted from Lombyte (GPL-3.0) for PAL: overlays/shared/audio_streaming_00266298.c, FUN_L00_00266858. */
 void set_moby_dialogue_record_value(int a, int b) {
-    int i = func_L00_00267618(a, b);
+    int i = get_dialogue_entry(a, b);
     if (i != -1) {
         E00266858 *s = (E00266858 *)(D_0013D605 + 0xB3);
         ((E00266858 *)((char *)s - (-(i * 16))))->d = b;

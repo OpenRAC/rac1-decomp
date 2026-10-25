@@ -665,7 +665,7 @@ void woodcut_bot_update(WBMoby *m) {
     p120 = p;
     pos = m->pos;
     if (m->f31 != 0 && FastVecDist(pos, D_L04_00166FC0) < 27.0f) {
-        func_L00_0025B178(m);
+        set_ground_height_band(m);
         m->f7F = 0x15;
     }
     adiff = FastDiffRots(m->rot[2], fast_atan2(tgt[0] - m->pos[0], tgt[1] - m->pos[1]));
@@ -1657,7 +1657,7 @@ void lieutenant_update(char *m) {
     int c;
     if (*(unsigned char *)(m + 0x31) != 0) {
         if (FastVecDist(m + 0x10, D_L04_00166FC0) < 30.0f) {
-            func_L00_0025B178(m);
+            set_ground_height_band(m);
             *(unsigned char *)(m + 0x7F) = 0x18;
         }
     }

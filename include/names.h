@@ -301,6 +301,7 @@
 #define clear_dma_queue_entry                                              func_001F0F30
 #define print_debug_text                                                   func_001F0F78
 #define print_debug_text_centered                                          func_001F0FF8
+#define project_to_screen                                                  func_001F2418
 #define reset_graphics                                                     func_001F2568
 #define BuildViewMatrices                                                  func_001F2608
 #define configure_graphics_projection                                      func_001F3760
@@ -484,6 +485,7 @@
 #define update_menu_preview_animation_pose                                 func_00226250
 #define update_ammo_preview_transform                                      func_00226410
 #define create_menu_preview_moby                                           func_00226720
+#define delete_moby                                                        func_002267C0
 #define draw_moby_entries_from_object                                      func_00226CF8
 #define acquire_menu_stream_buffer                                         func_00226EA8
 #define release_menu_stream_buffer                                         func_00226F68
@@ -845,6 +847,7 @@
 #define DrawSkyL01                                                         func_L01_00252E80
 #define MoveCtl_Init                                                       func_L01_0026E8E0
 #define count_active_moby_group_members                                    func_L01_0026EFB8
+#define follow_path                                                        func_L01_00277FD8
 #define is_hero_on_moby                                                    func_L01_00278FA8
 #define spawn_proximity_gated_bolts                                        func_L01_00279790
 #define spawn_moby_from_placement                                          func_L01_00279E10
@@ -956,6 +959,7 @@
 #define mode_freeze_init                                                   func_001FBC80
 #define dismiss_help                                                       func_001FE438
 #define service_level_archive_load                                         func_00204C60
+#define parse_space_scene_chunk                                            func_00205220
 #define load_texture_file                                                  func_00205520
 #define register_8bit_texture                                              func_00205660
 #define save_map_coverage                                                  func_00208338
@@ -1297,6 +1301,7 @@
 #define update_triggered_gate_motion                                       func_L05_00316378
 #define ocean_rilgar_update                                                func_L05_003175D8
 #define update_triggered_moby_yaw                                          func_L05_00317B68
+#define update_hoverboard_girl_boobs_animation                             func_L05_00317CD8
 #define update_hoverboard_girl                                             func_L05_00317F80
 #define qwarks_bouncer_update                                              func_L05_00318980
 #define shady_salesman_update                                              func_L05_003195B0
@@ -1732,6 +1737,7 @@
 #define load_map_chunk                                                     func_002083E0
 #define expand_map_coverage                                                func_00208688
 #define downsample_map_coverage                                            func_00208860
+#define world_to_map_coords                                                func_00208C38
 #define draw_map_markers                                                   func_00208D38
 #define copy_level_object_positions                                        func_00208FA0
 #define load_and_initialize_level_chunk                                    func_00209DC0
@@ -2014,6 +2020,7 @@
 #define spawn_nearby_effect_without_direction                              func_L00_0025AD38
 #define sweep_hit_segment                                                  func_L00_0025AD60
 #define build_quaternion_from_axis_rotations                               func_L00_0025AFA8
+#define set_ground_height_band                                             func_L00_0025B178
 #define ComputeHitResponse                                                 func_L00_0025B4D0
 #define HeadingFromVector                                                  func_L00_0025BBA0
 #define jump_speed_4318                                                    func_L00_0025BC48
@@ -2041,7 +2048,7 @@
 #define spawn_color_swapped_explosion_burst                                func_L00_00260460
 #define ClampVectorLength                                                  func_L00_002607A8
 #define append_unique_moby_index                                           func_L00_002607F8
-#define mine_spawn_drops                                                   func_L00_00260878
+#define moby_index_list_remove                                             func_L00_00260878
 #define find_listed_moby_by_data_id                                        func_L00_002608F0
 #define add_random_offset_to_vector_xyz                                    func_L00_00260958
 #define test_point_in_transformed_unit_cylinder                            func_L00_00260AB0
@@ -2063,6 +2070,7 @@
 #define Manipulator_SetScale                                               func_L00_00264BB0
 #define Manipulator_ResetScale                                             func_L00_00264BC8
 #define Stream_SetSlotValue                                                func_L00_002670E0
+#define get_dialogue_entry                                                 func_L00_00267618
 #define read_pad_float_history                                             func_L00_00267CC8
 #define spawn_mode_controlled_rotating_alpha_fade_particle                 func_L00_002757E8
 #define spawn_texture_indexed_rotated_particle                             func_L00_00275B98
@@ -2337,6 +2345,7 @@
 #define get_moby_data_plus_0x60                                            func_L01_002F31D0
 #define apply_gunship_path_position_offsets                                func_L01_002F6418
 #define draw_two_scroll_layers                                             func_L01_002F7528
+#define spring_axis_to                                                     func_L01_002F95A0
 #define apply_falling_rock_camera_overrides                                func_L01_002FA3D8
 #define spawn_explosion_effects                                            func_L01_002FB588
 #define apply_cutscene_big_head_cheat                                      func_L01_002FC058
@@ -2376,6 +2385,7 @@
 #define update_hud_counter_transition                                      func_L02_0023D600
 #define Sky_DrawLevel02                                                    func_L02_00240980
 #define set_level02_class_1b1_moby_flag_0800                               func_L02_00240A00
+#define initialize_moby_grounding                                          func_L02_0025D750
 #define prepare_scaled_float_table_with_target_byte                        func_L02_002A5238
 #define emit_sand_shark_dust_puffs_along_segment                           func_L02_002D4E50
 #define emit_sand_shark_dust_segment                                       func_L02_002D5098
@@ -2556,6 +2566,7 @@
 #define pipe_mounted_grating_update                                        func_L05_00310A90
 #define place_marker_ring                                                  func_L05_00317438
 #define draw_ocean_grid_outside_clip_volumes                               func_L05_00317538
+#define update_hoverboard_girl_cutscene_instances                          func_L05_00317E58
 #define attach_big_head_cheat_manipulator                                  func_L05_003188A8
 #define initialize_moby_launch_motion                                      func_L05_00319B58
 #define PickNearestTargetSlot                                              func_L05_0031A718
@@ -4086,6 +4097,20 @@
 #define hud_stars_width                                                    D_L00_0015F840
 #define veldin2_moby_groups                                                D_L18_001AC540
 #define direction_perpendicular                                            D_00160480
+#define g_coll_hit_moby                                                    D_L00_00173F58
+#define batalia_hero_pos                                                   D_L08_00167640
+#define novalis_paths                                                      D_L01_001B0C30
+#define g_current_follow_cam                                               D_L00_00166F00
+#define g_breast_growth_count                                              D_L05_00161F90
+#define g_class_slot                                                       D_L00_00197F40
+#define g_effects                                                          D_L00_001D95E8
+#define gemlik_frame_count                                                 D_L13_0015F6B0
+#define g_jitter                                                           D_L00_0016194C
+#define g_light                                                            D_L05_001CB000
+#define g_mission                                                          D_L15_0016CEE0
+#define g_moby_vars                                                        D_00160028
+#define g_occlusion_samples                                                D_L00_00173F20
+#define umbris_scene_state                                                 D_L07_0015F6A8
 #define noop_callback_a                                                    func_001E9770
 #define noop_callback_d                                                    func_001E9788
 #define noop_callback_e                                                    func_001E9790
@@ -4266,7 +4291,9 @@
 #define snd_return_buffer2                                                 D_001377C0
 #define sound_read_work                                                    D_00137C00
 #define snd_cd_bank_load_request                                           D_00137C40
+#define disc_table                                                         D_00137C80
 #define scene_sounds                                                       D_0013A764
+#define pad_held                                                           D_0013CBE0
 #define first_clear_packet                                                 D_0013CD90
 #define second_clear_packet                                                D_0013CED0
 #define draw_environment                                                   D_0013D010
@@ -4304,14 +4331,17 @@
 #define menu_item_enabled_115                                              D_0013D50F
 #define weapon_ammo_counts                                                 D_0013D530
 #define items_acquired                                                     D_0013D5F0
+#define level_available                                                    D_0013DE48
 #define level_visit_state                                                  D_0013DE60
 #define level_bolts                                                        D_0013E040
+#define level_render_state                                                 D_0013E130
 #define ship_substate                                                      D_0013E150
 #define ship_index                                                         D_0013E156
 #define frame_size                                                         D_0013E604
 #define pause_sound_volume                                                 D_0013E6A0
 #define sound_probe_ignore                                                 D_0013E6BC
 #define voice_positions                                                    D_0013E6E0
+#define hero_velocity                                                      D_0013F530
 #define usage_stats                                                        D_00141948
 #define active_message_records                                             D_00141F08
 #define pause_iop_sprite_lists                                             D_00141FA0
@@ -4374,6 +4404,7 @@
 #define frm_clock_time                                                     D_0015EE40
 #define frm_vsync_cnt                                                      D_0015EE48
 #define frm_vsync_time                                                     D_0015EE50
+#define sound_bank_handle                                                  D_0015EE5C
 #define frame_delta_time                                                   D_0015EE7C
 #define selector_available                                                 D_0015EEC0
 #define invert52                                                           D_0015EEDC
@@ -4417,6 +4448,7 @@
 #define font_window_active                                                 D_0015F5A0
 #define space_load_pending                                                 D_0015F690
 #define boot_level_active                                                  D_0015F6C8
+#define space_load_in_progress                                             D_0015F6FC
 #define font_state                                                         D_0015F704
 #define level_sound_def_count                                              D_0015F710
 #define level_sound_defs                                                   D_0015F714
@@ -4436,6 +4468,7 @@
 #define num_spawnable_mobys                                                D_0015FFFC
 #define moby_anim_head                                                     D_00160014
 #define resident_object_pool                                               D_00160018
+#define moby_instance_end                                                  D_0016001C
 #define moby_instance_perm_end                                             D_00160020
 #define occl_fog_count                                                     D_00160030
 #define runtime_resource_tag                                               D_00160044
@@ -4469,6 +4502,7 @@
 #define tfrag_lod_dists_raw                                                D_00160FB0
 #define vif_chain_flags                                                    D_00160FE0
 #define vu1_chain_limit                                                    D_00161008
+#define current_vu_chain                                                   D_0016100C
 #define ties                                                               D_00161050
 #define ties_end                                                           D_00161054
 #define tie_data_table                                                     D_00161058
@@ -4553,6 +4587,7 @@
 #define moby_render_slots                                                  D_001B2F40
 #define moby_backup_buffer                                                 D_001B3200
 #define moby_class_resources                                               D_001B3580
+#define resident_class_slot_by_id                                          D_001B3E40
 #define moby_gs_loc_stash                                                  D_001B6100
 #define moby_class_rectify                                                 D_001B6880
 #define resident_class_material_maps                                       D_001B6C00
@@ -4648,6 +4683,7 @@
 #define first_record_fields                                                D_L00_0015FCCA
 #define second_record                                                      D_L00_0015FCD0
 #define second_record_fields                                               D_L00_0015FCDA
+#define record_index                                                       D_L00_0015FCE0
 #define render_archive_source_file                                         D_L00_0015FEC0
 #define suck_moby_list                                                     D_L00_001600A4
 #define bolt_hud_item                                                      D_L00_001601F0
@@ -4656,6 +4692,7 @@
 #define particle_min_ground                                                D_L00_00160320
 #define first_class_ids                                                    D_L00_00160608
 #define second_class_ids                                                   D_L00_00160618
+#define uv_scale                                                           D_L00_00161484
 #define last_frame                                                         D_L00_00161488
 #define trail_speed                                                        D_L00_00161950
 #define trail_decay                                                        D_L00_00161954
@@ -4675,6 +4712,7 @@
 #define slot_buffers                                                       D_L00_001870C0
 #define active_mobies                                                      D_L00_001ABD80
 #define effect_handlers                                                    D_L00_001B2200
+#define vendor_menu                                                        D_L00_001CA7C0
 #define vendor_extra                                                       D_L00_001CA9E0
 #define ship_vertices                                                      D_L00_001DEB00
 #define ship_quad_indices                                                  D_L00_001DF160
@@ -4693,6 +4731,7 @@
 #define pool_draw_tiles                                                    D_L01_00161350
 #define pool_draw_tex                                                      D_L01_00161354
 #define pool_draw_count                                                    D_L01_00161358
+#define pool_drip_timer                                                    D_L01_00161D14
 #define fx_prev_pos                                                        D_L01_00162100
 #define camera_pos                                                         D_L01_001672C0
 #define fx_cutscene                                                        D_L01_0016CD60
@@ -4715,6 +4754,7 @@
 #define invalid_animation_message                                          D_L04_001DB660
 #define rig_size_message                                                   D_L04_001DB6F0
 #define moby_pool_4f60                                                     D_L05_00160098
+#define race_entries                                                       D_L05_001B1E78
 #define water_records                                                      D_L05_001D6BC0
 #define level_game_mode_q                                                  D_L06_0015F6A8
 #define level_mobys_q                                                      D_L06_00160058
@@ -4733,6 +4773,7 @@
 #define spark_spread                                                       D_L06_00161DB0
 #define referencePosition                                                  D_L06_00167500
 #define scene_points                                                       D_L07_0016016C
+#define scroll_phase                                                       D_L07_00161C04
 #define row_start_phase                                                    D_L07_00161C08
 #define row_phase_step_gp                                                  D_L07_00161C0C
 #define debris_far_point                                                   D_L07_00166EC0
@@ -4758,6 +4799,7 @@
 #define path_table                                                         D_L11_001B11B0
 #define hit_moby                                                           D_L12_00174358
 #define D_L12_X_f                                                          D_L12_0017C2B8
+#define jet_camera47                                                       D_L13_00167000
 #define sphere_hits_ed158                                                  D_L13_00178280
 #define linked_state_flags                                                 D_L13_00184828
 #define Tiles_9e88                                                         D_L13_001D9E80

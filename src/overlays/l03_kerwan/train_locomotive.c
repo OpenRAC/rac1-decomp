@@ -1755,7 +1755,7 @@ void Moby573Update(char *moby) {
         break;
     }
     if (((unsigned char *)moby)[0x31] != 0 && FastVecDist(moby + 0x10, D_L03_00166F40) < 32.0f) {
-        func_L00_0025B178(moby);
+        set_ground_height_band(moby);
     }
     StepColorFade(moby, data->m110);
     ((unsigned char *)moby)[0xBC] = 0;
@@ -2673,7 +2673,7 @@ void update_kerwan_path_enemy(Moby *m) {
     }
     if (m->visible != 0) {
         if (FastVecDist((*(float (*)[4])&m->pos), D_L03_00166F40) < 36.0f) {
-            func_L00_0025B178(m);
+            set_ground_height_band(m);
         }
     }
     {

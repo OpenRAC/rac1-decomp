@@ -24,7 +24,7 @@ unsigned char *spawn_moby_offset_effect(char *a)
     if (m != 0) {
         p = a + 0x10;
         q = (char *)m + 0x20;
-        FastVecSub(v, p, D_L08_00167640);
+        FastVecSub(v, p, batalia_hero_pos);
         vec_scale_to_length(v, v, *(float *)&D_L08_00160288);
         FastVecAdd(m + 0x10, p, v);
         *(int *)(m + 4) = *(int *)&D_L08_00160284;

@@ -14,7 +14,7 @@ void JetFighterUpdateL13(Jet47 *m) {
                 if (hit->source && (unsigned int)(hit->source->class_id-0x52)<2) d->hit_class=(short)hit->source->class_id;
                 if (hit->flags&1) {
                     float weight,yaw_delta,pitch_delta;
-                    jet_camera47.flash=1.0f; jet_camera47.ticks=scale_ticks(4);
+                    jet_camera47_r.flash=1.0f; jet_camera47_r.ticks=scale_ticks(4);
                     weight=hit->damage*0.05f;
                     BuildSphericalOffset(impulse,d->speed,d->angles[2],-d->angles[1]);
                     func_L00_001FF548(hit->velocity,hit->velocity,D_0015EE6C*3.0f);
@@ -28,7 +28,7 @@ void JetFighterUpdateL13(Jet47 *m) {
             } else {
                 BuildSphericalOffset(impulse,d->speed,d->angles[2],-d->angles[1]);
                 if (hit->source && (unsigned int)(hit->source->class_id-0x52)<2) d->hit_class=(short)hit->source->class_id+10000;
-                jet_camera47.flash=0.2f; jet_camera47.ticks=scale_ticks(5);
+                jet_camera47_r.flash=0.2f; jet_camera47_r.ticks=scale_ticks(5);
                 ((JetPlayer47*)(D_0013E633+0xE1D))->health=0.0f; m->flags|=0x41;
                 func_L00_0025F4A8(m,impulse,0,0.0f,0.0f,10,3,16,4.0f,2.0f,9.0f,6,1.0f,15.0f,1,1,-1,0);
                 m->animation=0; d->death_timer=scale_ticks(240); m->state=6;

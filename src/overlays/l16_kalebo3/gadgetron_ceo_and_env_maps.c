@@ -86,7 +86,7 @@ void gadgetron_ceo_update(L16ChallengeMoby *m) {
     float rate, head_rate;
     int tracking;
     if (m->visible && FastVecDist(m->position, kalebo3_camera_pos) < 28.0f) {
-        func_L00_0025B178(m);
+        set_ground_height_band(m);
         m->distance_class = 22;
     }
     attach_big_head_cheat_manipulator_to_matching_moby(m);

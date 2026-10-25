@@ -1961,7 +1961,7 @@ void taunter_update(Moby *m)
         }
     } else {
         o->retry++;
-        if ((D_0013CBE0[0] & D_0013F450_2B8208.w10A0) != 0 || scale_ticks(0x1E) >= o->cnt18) {
+        if ((pad_held[0] & D_0013F450_2B8208.w10A0) != 0 || scale_ticks(0x1E) >= o->cnt18) {
             if (D_0013F450_2B8208.b20AC == 0) goto L7340;
         }
     }

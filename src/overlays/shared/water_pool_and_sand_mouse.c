@@ -509,7 +509,7 @@ void novalis_elevator_update(unsigned char *moby) {
     if (*(int *)(data + 0xB4) == -1) {
         return;
     }
-    path = D_L01_001B0C30[*(int *)(data + 0xB4)];
+    path = novalis_paths[*(int *)(data + 0xB4)];
     if (*(int *)(data + 0xCC) != -1) {
         if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, *(int *)(data + 0xCC)) == 0) {
             moby[0x30] = 0xFF;
@@ -2008,7 +2008,7 @@ void large_amoeboid_update(unsigned char *moby) {
     }
     Manipulator_ApplyScale(2.9f, moby, 0, data + 0x270);
     if (moby[0x31] != 0 && FastVecDist(moby + 0x10, camera_pos) < 28.0f) {
-        func_L00_0025B178(moby);
+        set_ground_height_band(moby);
         moby[0x7f] = 0x16;
     }
     process_amoeboid_hits_and_update_targeting((char *)moby);
@@ -2072,7 +2072,7 @@ void large_amoeboid_update(unsigned char *moby) {
     case 1:
         if (*(int *)(data + 0x204) != 2) {
             if (random_integer_below(4) == 0) {
-                path_hit = func_L01_00277FD8((int *)(data + 0x240), 1, *(int *)(data + 0x244),
+                path_hit = follow_path((int *)(data + 0x240), 1, *(int *)(data + 0x244),
                                             *(float *)(data + 0x250) * 0.8f,
                                             moby + 0x10, target + 0x10, move);
                 if (path_hit != 0) {
@@ -2109,7 +2109,7 @@ void large_amoeboid_update(unsigned char *moby) {
         move_w(moby, data + 0x170, move, data + 0x40, 1.0f);
         result = *(int *)(data + 0x204);
         if (result != 2 && random_integer_below(4) == 0) {
-            path_hit = func_L01_00277FD8((int *)(data + 0x240), 1, *(int *)(data + 0x244),
+            path_hit = follow_path((int *)(data + 0x240), 1, *(int *)(data + 0x244),
                                         *(float *)(data + 0x250) * 0.8f,
                                         moby + 0x10, target + 0x10, hit);
             if (path_hit != 0) {
@@ -2176,11 +2176,11 @@ void large_amoeboid_update(unsigned char *moby) {
                 MobyBlendAnimation(moby, 2, 0, scale_ticks(10));
             return;
         } else {
-            if (func_L01_00277FD8((int *)(data + 0x240), 1, *(int *)(data + 0x244),
+            if (follow_path((int *)(data + 0x240), 1, *(int *)(data + 0x244),
                                         *(float *)(data + 0x250) * 0.8f, moby + 0x10, target_position, hit) != 0)
                 path_hit = 1;
             else
-                path_hit = func_L01_00277FD8((int *)(data + 0x240), 1, *(int *)(data + 0x244),
+                path_hit = follow_path((int *)(data + 0x240), 1, *(int *)(data + 0x244),
                                             0.0f, moby + 0x10, target_position, hit) != 0;
             if (path_hit != 0) {
                 angle = fast_atan2(hit[0] - *(float *)(moby + 0x10), hit[1] - *(float *)(moby + 0x14));
@@ -2253,11 +2253,11 @@ void large_amoeboid_update(unsigned char *moby) {
         if (distance < 1.0f) {
             moby[0x20] = 1;
         } else {
-            if (func_L01_00277FD8((int *)(data + 0x240), 1, *(int *)(data + 0x244),
+            if (follow_path((int *)(data + 0x240), 1, *(int *)(data + 0x244),
                                         *(float *)(data + 0x250) * 0.8f, moby + 0x10, target_position, hit) != 0)
                 blocked = 1;
             else
-                blocked = func_L01_00277FD8((int *)(data + 0x240), 1, *(int *)(data + 0x244),
+                blocked = follow_path((int *)(data + 0x240), 1, *(int *)(data + 0x244),
                                             0.0f, target_position, target_position, hit) != 0;
         }
         if (blocked != 0) {
@@ -2281,7 +2281,7 @@ void large_amoeboid_update(unsigned char *moby) {
     case 8:
         result = mine_fall(moby, data + 0x60);
         if (result & 1) {
-            path_hit = func_L01_00277FD8((int *)(data + 0x240), 1, *(int *)(data + 0x244),
+            path_hit = follow_path((int *)(data + 0x240), 1, *(int *)(data + 0x244),
                                         *(float *)(data + 0x250) * 0.8f,
                                         moby + 0x10, data + 0x210, move);
             if (path_hit != 0) {
@@ -2512,7 +2512,7 @@ void process_amoeboid_hits_and_update_targeting(char *m) {
     }
     c260 = *(int *)(d + 0x260);
     if (c260 <= 0 || *(unsigned char *)((c260 << 8) + D_L01_00160058_x + 0xBC) != 0) {
-        e = D_L01_001B0C30[*(int *)(d + 0x24C)];
+        e = novalis_paths[*(int *)(d + 0x24C)];
         b = d + 0x1C0;
         if (FindNearestEligibleMoby(*(float *)(d + 0x228), m, b, 0, 0, e + 0x10, *(int *)e) != 2) {
             if (*(float *)(d + 0x228) < vec_distance_xy(d + 0x210, b)

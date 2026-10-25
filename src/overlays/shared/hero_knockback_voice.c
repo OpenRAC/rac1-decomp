@@ -182,7 +182,7 @@ s32 handle_hero_hit(s32 arg) {
         hero_knockback(&v, flag, g_frame_time * 5.0f, g_frame_time * 2.4f);
         break;
     }
-    FastVecAdd(D_0013F530, D_0013F530, &v);
-    FastVecAdd(D_0013F530 + 0x20, D_0013F530 + 0x20, &v);
+    FastVecAdd(hero_velocity, hero_velocity, &v);
+    FastVecAdd(hero_velocity + 0x20, hero_velocity + 0x20, &v);
     return 1;
 }

@@ -168,7 +168,7 @@ void initialize_path_descriptor(char *p)
     char *q;
     p[5] = 0;
     *(int *)(p + 8) = 0;
-    *(char **)(p + 0x10) = D_L01_001B0C30[*(int *)(p + 0x14)];
+    *(char **)(p + 0x10) = novalis_paths[*(int *)(p + 0x14)];
     for (i = 0; i < **(int **)(p + 0x10); i++) {
         q = *(char **)(p + 0x10);
         off = i << 4;

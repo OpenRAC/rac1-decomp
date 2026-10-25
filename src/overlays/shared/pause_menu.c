@@ -406,7 +406,7 @@ void close_pause_menu(void) {
         {
             int k;
             for (k = 0; k < 14; k++) {
-                menu_preview_mobys[k] = func_002267C0(menu_preview_mobys[k]);
+                menu_preview_mobys[k] = delete_moby(menu_preview_mobys[k]);
             }
         }
         handle = show_health_hud();

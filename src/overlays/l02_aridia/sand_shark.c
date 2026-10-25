@@ -271,7 +271,7 @@ void sand_shark_update(unsigned char *moby) {
     d = *(Vars_2D5250 **)(moby + 0x78);
     Manipulator_ApplyScale(2.1f, (int)moby, 0, d->blink);
     if (moby[0x31] != 0 && FastVecDist(moby + 0x10, D_L02_00167440) < 28.0f) {
-        func_L00_0025B178(moby);
+        set_ground_height_band(moby);
         moby[0x7F] = 0x16;
     }
     PathEnemy_HitAndRespawn(moby);
@@ -1360,7 +1360,7 @@ void update_level02_bot(unsigned char *raw) {
 
     Manipulator_ApplyScale(2.5f, (int)moby, 1, data->blink);
     if (moby->visible != 0 && FastVecDist(&moby->pos, D_L02_00167440) < 30.0f) {
-        func_L00_0025B178(moby);
+        set_ground_height_band(moby);
         moby->shadow_range = 0x18;
     }
     handle_level02_bot_damage_and_retargeting(moby);
@@ -1627,7 +1627,7 @@ void update_level02_bot(unsigned char *raw) {
         }
         break;
     }
-    func_L00_0025B178(moby);
+    set_ground_height_band(moby);
 }
 struct AnimSeq;
 extern int func_001FA898(float);
@@ -2080,7 +2080,7 @@ void sand_shark_nest_update(char *m)
     }
     if (((struct Moby *)m)->visible != 0) {
         if (FastVecDist(&((struct Moby *)m)->pos, D_L02_00167440) < 28.0f) {
-            func_L00_0025B178(m);
+            set_ground_height_band(m);
             ((struct Moby *)m)->shadow_range = 0x16;
         }
     }

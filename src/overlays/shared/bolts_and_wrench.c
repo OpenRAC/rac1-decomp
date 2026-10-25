@@ -1231,7 +1231,7 @@ extern char D_L00_001D95E8[];
 extern int D_L00_00161488 MACRO_ADDR;
 extern short D_L00_00161484;
 #define frame_2a7780 D_L00_0015F6B0
-#define uv_scale (*(float *)&D_L00_00161484)
+#define uv_scale_r (*(float *)&D_L00_00161484)
 #define FUN_001f44b8_2a7780 func_001F4868
 #define FUN_001fa6d0_2a7780 func_001FA898
 #define FUN_001f9a68_2a7780 func_001F9C30
@@ -1317,8 +1317,8 @@ void HeroEffect_Draw(void *op) {
             FUN_001f9a68_2a7780(&v.pos[j], &e->verts[vi], scale);
             uv = (float *)(e->idx[i][j][1] * 8 + (int)e->uv);
             w = 1.0f - r->f70 * e->f5C;
-            v.uv[j][0] = (uv[0] - 0.5f) * uv_scale + 0.5f;
-            v.uv[j][1] = (uv[1] - 0.5f) * uv_scale + 0.5f + w;
+            v.uv[j][0] = (uv[0] - 0.5f) * uv_scale_r + 0.5f;
+            v.uv[j][1] = (uv[1] - 0.5f) * uv_scale_r + 0.5f + w;
         }
         FUN_001f7d30_2a7780(&v, r, 0);
     }
@@ -1360,13 +1360,13 @@ extern char *func_L00_0025D390(void *);
 int get_wrench_hit_sound_variant(void) {
     int r = 0;
     char *x = 0;
-    if (D_L00_00173F58 != 0) x = GetFlaggedPvarWord(D_L00_00173F58);
+    if (g_coll_hit_moby != 0) x = GetFlaggedPvarWord(g_coll_hit_moby);
     if (x != 0) r = *(unsigned char *)(x + 9) == 1;
     return r;
 }
 extern char *func_L00_0025D390(void *);
 int should_trigger_wrench_hit_reaction(void) {
-    char *x = GetFlaggedPvarWord(D_L00_00173F58);
+    char *x = GetFlaggedPvarWord(g_coll_hit_moby);
     if (x != 0) {
         if (*(unsigned short *)(x + 0x1E) & 2) {
             return 1;
@@ -1725,8 +1725,8 @@ void wrench_update(Wrench48 *m) {
         }
         if (reaction) {
             HeroEnterMoveState(33,1);
-            if (D_L00_00173F58) {
-                Wrench48 *target=(Wrench48*)D_L00_00173F58;
+            if (g_coll_hit_moby) {
+                Wrench48 *target=(Wrench48*)g_coll_hit_moby;
                 wplayer48()->reaction_yaw=fast_atan2(wplayer48()->position[0]-target->position[0],wplayer48()->position[1]-target->position[1]);
             } else wplayer48()->reaction_yaw=FastAddRots(wplayer48()->yaw,3.1415927f);
         }
@@ -2261,10 +2261,10 @@ int predict_mine_impact(char *a0, char *o, int mode) {
     }
     if (x != 0) {
         if (mode == 0) {
-            if (D_L00_00173F58 == 0) return 0;
-            if (GetFlaggedPvarWord(D_L00_00173F58) == 0) return 0;
+            if (g_coll_hit_moby == 0) return 0;
+            if (GetFlaggedPvarWord(g_coll_hit_moby) == 0) return 0;
         }
-        if (mode != 2 || D_L00_00173F58 == 0 || GetFlaggedPvarWord(D_L00_00173F58) == 0) {
+        if (mode != 2 || g_coll_hit_moby == 0 || GetFlaggedPvarWord(g_coll_hit_moby) == 0) {
             AddDrawCallback(Moby_DrawSpinningQuads, o);
         }
         {

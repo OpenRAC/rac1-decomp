@@ -1421,8 +1421,8 @@ void blarg_bombthrower_update(Moby *moby) {
     damage = 0.0f;
     func_L00_00264B40_x(moby, D_L08_00161A3C, 3.0f, d->blk160);
     if (moby->visible != 0) {
-        if (FastVecDist(&moby->pos, D_L08_00167640) < 29.0f) {
-            func_L00_0025B178(moby);
+        if (FastVecDist(&moby->pos, batalia_hero_pos) < 29.0f) {
+            set_ground_height_band(moby);
             moby->shadow_range = 0x17;
         }
     }
@@ -2498,7 +2498,7 @@ Moby *spawn_class_1b3_projectile(void *pos, Moby *target, void *velocity, float 
     if (moby != 0) {
         data = (char *)moby->pvars;
         qcopy(&moby->pos, pos);
-        reference = D_L08_00167640;
+        reference = batalia_hero_pos;
         distance = func_001F9D48_DF758(reference, &moby->pos);
         reference = (float *)((char *)reference - 0x140);
         moby->rot.y = -fast_atan2(distance, reference[82] - moby->pos.z);

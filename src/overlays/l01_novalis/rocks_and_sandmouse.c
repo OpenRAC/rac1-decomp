@@ -993,7 +993,7 @@ extern u128_pool D_L01_001FA910[];
 extern u8 D_L01_001FA960[];
 extern s32 D_L01_0015F6B0 MACRO_ADDR;
 extern short D_L01_00161D14;
-#define pool_drip_timer (*(int *)&D_L01_00161D14)
+#define pool_drip_timer_r (*(int *)&D_L01_00161D14)
 extern PoolTile *D_L01_00161350 MACRO_ADDR;
 extern u8 *D_L01_00161354 MACRO_ADDR;
 extern s32 D_L01_00161358 MACRO_ADDR;
@@ -1143,13 +1143,13 @@ void update_pool_tiles_and_effects(PMoby *moby) {
         RippleSimClock(pool_tiles, 21);
         ((int (*)(void (*)(void), void *))AddDrawCallback)(Moby751Draw, moby);
         if (found == 0 || found == 6) {
-            pool_drip_timer--;
-            if (pool_drip_timer <= 0) {
+            pool_drip_timer_r--;
+            if (pool_drip_timer_r <= 0) {
                 qcopy(&v, &pool_drips[random_integer_below(5)]);
                 v.x = v.x + random_float_between(-0.15f, 0.15f);
                 v.y = v.y + random_float_between(-0.15f, 0.15f);
                 pool_drip(&v, 0.2f);
-                pool_drip_timer = rand_range(300, 1200);
+                pool_drip_timer_r = rand_range(300, 1200);
             }
         }
         if (found == 5) {
@@ -1771,11 +1771,11 @@ void update_level01_tutorial_hints(Moby *moby) {
             }
         }
         if (novalis_game_mode == 0) {
-            if (D_0013DE48[3] != 0 && D_0013DE48[2] == 0 && help_state.state == 0 && help_state.cur == -1 && help_records[4].id == 0) {
+            if (level_available[3] != 0 && level_available[2] == 0 && help_state.state == 0 && help_state.cur == -1 && help_records[4].id == 0) {
                 Help_Request(0x3E8, 4);
-            } else if (D_0013DE48[3] == 0 && D_0013DE48[2] != 0 && help_state.state == 0 && help_state.cur == -1 && help_records[5].id == 0) {
+            } else if (level_available[3] == 0 && level_available[2] != 0 && help_state.state == 0 && help_state.cur == -1 && help_records[5].id == 0) {
                 Help_Request(0x3E9, 5);
-            } else if (D_0013DE48[3] != 0 && D_0013DE48[2] != 0 && help_state.state == 0 && help_state.cur == -1 && help_records[6].id == 0 && help_records[4].id == 0) {
+            } else if (level_available[3] != 0 && level_available[2] != 0 && help_state.state == 0 && help_state.cur == -1 && help_records[6].id == 0 && help_records[4].id == 0) {
                 Help_Request(0x3EA, 6);
             }
         }

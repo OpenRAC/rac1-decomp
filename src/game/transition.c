@@ -476,9 +476,9 @@ unsigned char *initialize_level_render_state(LevelHeaderE9EC8 *hdr)
     resident_object_pool = (Ent100E9EC8 *)p;
     ((void (*)(void *, int, int))FastMemSet)(p, 0, 0x4000);
     p += 0x4000;
-    D_0016001C = resident_object_pool;
+    moby_instance_end = resident_object_pool;
     *((unsigned char *)resident_object_pool + 0x20) = 0xFF;
-    D_00160028 = p;
+    g_moby_vars = p;
     p += 0x2000;
     D_001601AC = p;
     moby_instance_perm_end = (Ent100E9EC8 *)((unsigned char *)resident_object_pool + 0x3F00);

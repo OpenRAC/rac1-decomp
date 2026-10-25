@@ -689,7 +689,7 @@ typedef struct {
 /* Projects camera-space point a1 through the camera matrix, divides by
    depth (D_0018D010 / w) and scales to x16 screen units. func_002346C0
    in tfragfunc.c builds the same matrix. */
-void func_001F2418(Vec3f *a0, float *a1) {
+void project_to_screen(Vec3f *a0, float *a1) {
     float m[4][4];
     float m2[4][4];
     float v[4];

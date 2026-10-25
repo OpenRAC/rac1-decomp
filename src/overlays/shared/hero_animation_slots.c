@@ -2062,8 +2062,8 @@ s32 hero_check_damage(s32 arg) {
         func_L00_00211338_113A0(&v, flag, g_frame_time * 5.0f, g_frame_time * 2.4f);
         break;
     }
-    FastVecAdd(D_0013F530, D_0013F530, &v);
-    FastVecAdd(D_0013F530 + 0x20, D_0013F530 + 0x20, &v);
+    FastVecAdd(hero_velocity, hero_velocity, &v);
+    FastVecAdd(hero_velocity + 0x20, hero_velocity + 0x20, &v);
     return 1;
 }
 typedef struct { char pad[0x20B1]; u8 b20B1; char pad2[0x2280 - 0x20B2]; char *m2280; } G_211250;
@@ -3372,7 +3372,7 @@ void steer_hero_planar_velocity(float step) {
                 if (t < 1.0f) t = 1.0f;
             }
         }
-        p = (char *)D_0013F530;
+        p = (char *)hero_velocity;
         step *= t;
         FastVecSub(v, v, (float *)p);
         if (step < vec_length_xy(v)) vec_set_length_xy(v, v, step);
@@ -3388,7 +3388,7 @@ void steer_hero_planar_velocity(float step) {
     case 1:
     case 2:
     {
-        char *v = (char *)D_0013F530;
+        char *v = (char *)hero_velocity;
         x = gravity_length_xy((float *)v);
         ApproachValue(&x, ((struct { char pad[0xB0]; float f; } *)v)->f, step);
         set_gravity_relative_vector_length_xy((float *)v, (float *)v, 0.0f);

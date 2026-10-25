@@ -795,10 +795,10 @@ void birdbot_update(PeMoby *m) {
             DeleteMoby(m);
             return;
         }
-        v->main.path = (PePath *)D_L01_001B0C30[v->main.path_id];
+        v->main.path = (PePath *)novalis_paths[v->main.path_id];
         c->idx = 0;
         if (v->side.path_id >= 0) {
-            v->side.path = (PePath *)D_L01_001B0C30[v->side.path_id];
+            v->side.path = (PePath *)novalis_paths[v->side.path_id];
             v->side.idx = 0;
             qcopy(&m->pos, &v->side.path->pts[0]);
         } else {
@@ -1727,7 +1727,7 @@ void peckbot_update(GcMoby *m) {
         r = FastAbsF(m->pos.f[2] - tgt.pos.f[2]);
         r = r / vec_distance_xy(&m->pos, &tgt);
         if (v->w21C != -1) {
-            select_list_point_toward_target(m, D_L01_001B0C30[v->w21C], &tgt, &vb);
+            select_list_point_toward_target(m, novalis_paths[v->w21C], &tgt, &vb);
         } else {
             qcopy(&vb, &tgt);
         }
@@ -1811,7 +1811,7 @@ void peckbot_update(GcMoby *m) {
         float a;
 
         if (v->w21C != -1) {
-            select_list_point_toward_target(m, D_L01_001B0C30[v->w21C], &v->v1D0, &vb);
+            select_list_point_toward_target(m, novalis_paths[v->w21C], &v->v1D0, &vb);
         } else {
             qcopy(&vb, &v->v1D0);
         }
@@ -1914,7 +1914,7 @@ void peckbot_update(GcMoby *m) {
         r = FastAbsF(m->pos.f[2] - tgt.pos.f[2]);
         r = r / vec_distance_xy(&m->pos, &tgt);
         if (v->w21C != -1) {
-            select_list_point_toward_target(m, D_L01_001B0C30[v->w21C], &v->v1D0, &vb);
+            select_list_point_toward_target(m, novalis_paths[v->w21C], &v->v1D0, &vb);
         } else {
             qcopy(&vb, &v->v1D0);
         }
@@ -2019,7 +2019,7 @@ void peckbot_update(GcMoby *m) {
     }
     }
     StepColorFade(m, v->x110);
-    func_L00_0025B178(m);
+    set_ground_height_band(m);
 }
 extern struct Hero D_0013F450;
 extern short D_0015EE6C_F44F8 __asm__("D_0015EE6C");
@@ -2066,7 +2066,7 @@ void water_current_update(Moby *self)
     if (v == 0 || v->path == -1) {
         return;
     }
-    path = (PePath_F44F8 *)D_L01_001B0C30[v->path];
+    path = (PePath_F44F8 *)novalis_paths[v->path];
     if (v->ready == 0) {
         /* store each segment's length in its start point's w */
         v->ready = 1;
@@ -2477,7 +2477,7 @@ void stationary_ship_update(CarrierMoby *m) {
                 D_L01_00160058_F5D38[v->camera].unkBC = 1;
             }
             if (v->path != -1) {
-                p = (PePath_F5D38 *)D_L01_001B0C30[v->path];
+                p = (PePath_F5D38 *)novalis_paths[v->path];
                 for (n = 0; n < p->count; n++) {
                     if (p->pts[n].f[3] == 1.0f) {
                         v->stop = n;
@@ -2504,7 +2504,7 @@ void stationary_ship_update(CarrierMoby *m) {
                                        g_frame_time_sq * 125.6637039f, g_frame_time * 3.1415927f);
         }
         if (v->path != -1) {
-            p = (PePath_F5D38 *)D_L01_001B0C30[v->path];
+            p = (PePath_F5D38 *)novalis_paths[v->path];
             k = v->node;
             if (k == v->stop && v->arrived == 0) {
                 if (m->prev_seq != 2) {
@@ -2814,7 +2814,7 @@ void bomber_jet_update(Moby *m) {
     do {
         if (m->state == 0) {
             if (sub->path != -1) {
-                Path_F8B00 *path = (Path_F8B00 *)D_L01_001B0C30[sub->path];
+                Path_F8B00 *path = (Path_F8B00 *)novalis_paths[sub->path];
                 j = 0;
                 d->fFC = d->fFC * 2.0f;
                 if (FastVecDist((char *)path + 0x10, (char *)path + (path->count << 4)) < 0.5f) {
@@ -2993,7 +2993,7 @@ extern float D_0015EE60 MACRO_ADDR;
 extern float func_001F9B88(float);
 
 // Moves a value toward a target with a clamped, scaled step and returns a wrapped angle difference.
-float func_L01_002F95A0(float target, float k, float a, float b, float *cur, float *vel) {
+float spring_axis_to(float target, float k, float a, float b, float *cur, float *vel) {
     float d;
     b = b * b;
     *vel = *vel * ((1.0f - a - 1.0f) * frame_scale + 1.0f);
@@ -3025,7 +3025,7 @@ extern short D_L01_00161C88_2f9640 __asm__("D_L01_00161C88") ;
 extern short D_L01_00161C8C_2f9640 __asm__("D_L01_00161C8C") ;
 extern short D_L01_00161C90_2f9640 __asm__("D_L01_00161C90") ;
 extern f32 D_0015EE70_2f9640  __asm__("D_0015EE70") MACRO_ADDR;
-extern f32 spring_axis_to(f32 *, f32, f32 *, f32, f32, f32) __asm__("func_L01_002F95A0");
+extern f32 spring_axis_to_r(f32 *, f32, f32 *, f32, f32, f32) __asm__("func_L01_002F95A0");
 extern f32 func_001F9D48_2f9640(void *, void *) __asm__("func_001F9D48") ;
 extern f32 func_001F9B88_2f9640(f32) __asm__("func_001F9B88") ;
 extern float func_001F9F90_2f9640(float) __asm__("func_001F9F90") ;
@@ -3058,8 +3058,8 @@ void water_lily_update(HoverMoby *m) {
         m->state = 1;
         break;
     case 1:
-        spring_axis_to(&m->pos.v.x, v->home_x, &v->vel_x, *(float *)&D_L01_00161C80_2f9640 * D_0015EE70_2f9640, *(float *)&D_L01_00161C84_2f9640, 3.0f);
-        spring_axis_to(&m->pos.v.y, v->home_y, &v->vel_y, *(float *)&D_L01_00161C80_2f9640 * D_0015EE70_2f9640, *(float *)&D_L01_00161C84_2f9640, 3.0f);
+        spring_axis_to_r(&m->pos.v.x, v->home_x, &v->vel_x, *(float *)&D_L01_00161C80_2f9640 * D_0015EE70_2f9640, *(float *)&D_L01_00161C84_2f9640, 3.0f);
+        spring_axis_to_r(&m->pos.v.y, v->home_y, &v->vel_y, *(float *)&D_L01_00161C80_2f9640 * D_0015EE70_2f9640, *(float *)&D_L01_00161C84_2f9640, 3.0f);
         if (func_001F9D48_2f9640(&m->pos, &D_0013F450_2f9640.pos) < *(float *)&D_L01_00161C88_2f9640) {
             if (func_001F9B88_2f9640(m->pos.v.z - D_0013F450_2f9640.pos.v.z) < 0.7f) {
                 ang = func_L00_001FF860_2f9640(m->pos.v.x - D_0013F450_2f9640.pos.v.x, m->pos.v.y - D_0013F450_2f9640.pos.v.y);

@@ -978,7 +978,7 @@ extern OrientEntry D_0019EA70[];
    D_0015EE84"; anything out of [0,0x13) collapses to row 0. Row 6 with
    the +100 variant blends against fixed constants instead of the
    generic per-row formula. */
-void func_00208C38(float *out0, float *out1, int arg2, float arg3, float arg4) {
+void world_to_map_coords(float *out0, float *out1, int arg2, float arg3, float arg4) {
     int idx;
     int flag = 0;
 
@@ -1034,7 +1034,7 @@ void draw_map_markers(int left, int top, int right, int bottom) {
         int sx;
         int sy;
 
-        func_00208C38(&nx, &ny, g_current_level_index, m->x, m->y);
+        world_to_map_coords(&nx, &ny, g_current_level_index, m->x, m->y);
         sx = left + (int)((float)(right - left) * nx);
         sy = top + (int)((float)(bottom - top) * ny);
         if (sx < -0x199 || sy < -0x199 || sx >= 0x219A || sy >= 0x1B9A) {

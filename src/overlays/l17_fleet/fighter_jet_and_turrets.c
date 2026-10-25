@@ -1348,7 +1348,7 @@ int select_fighter_jet_target_and_draw_contacts(int a, char *p, char *a2, char *
         case 0x191:
         case 0x3EB:
         case 0x504:
-            func_001F2418(v, m + 0x10);
+            project_to_screen(v, m + 0x10);
             if (*(short *)(m + 0xA6) != 0x184) {
                 if (*(unsigned char *)(m + 0x31) != 0) {
                     {
@@ -1373,7 +1373,7 @@ int select_fighter_jet_target_and_draw_contacts(int a, char *p, char *a2, char *
         case 0x15B:
             qcopy(w, m + 0x10);
             w[2] += 4.0f;
-            func_001F2418(v, w);
+            project_to_screen(v, w);
             if (*(unsigned char *)(m + 0x31) != 0) {
                 flag = 1;
                 {
@@ -1400,7 +1400,7 @@ int select_fighter_jet_target_and_draw_contacts(int a, char *p, char *a2, char *
         case 0x6F:
         case 0x4BE:
             if (!(*(unsigned short *)(m + 0x34) & 1)) {
-                func_001F2418(v, m + 0x10);
+                project_to_screen(v, m + 0x10);
                 if (*(unsigned char *)(m + 0x31) != 0) {
                     {
                         float x = (v[0] - scr[4]) * 0.0625f;
@@ -1414,7 +1414,7 @@ int select_fighter_jet_target_and_draw_contacts(int a, char *p, char *a2, char *
             break;
         case 0x4BF:
             if (!(*(unsigned short *)(m + 0x34) & 1) && *(unsigned char *)(m + 0x20) >= 2) {
-                func_001F2418(v, m + 0x10);
+                project_to_screen(v, m + 0x10);
                 if (*(unsigned char *)(m + 0x31) != 0) {
                     {
                         float x = (v[0] - scr[4]) * 0.0625f;
@@ -1447,7 +1447,7 @@ int select_fighter_jet_target_and_draw_contacts(int a, char *p, char *a2, char *
         np = near + 0x10;
         u[2] += 4.0f;
         ap = (char *)a + 0x10;
-        func_001F2418(w, u);
+        project_to_screen(w, u);
         matrix_from_basis_rows(mat, D_L17_00167950);
         FastVecSub(v, np, D_0013E633 + 0xE9D);
         transform_vector(v, v, mat);
@@ -2970,7 +2970,7 @@ void Moby1382Update(unsigned char *m) {
     tgt = d->target;
     Manipulator_SetScale(d->a230, 2.1f);
     if (m[0x31] != 0 && FastVecDist(m + 0x10, fleet_camera_pos) < 29.0f) {
-        func_L00_0025B178(m);
+        set_ground_height_band(m);
         m[0x7F] = 0x17;
     }
     switch (m[0x20]) {

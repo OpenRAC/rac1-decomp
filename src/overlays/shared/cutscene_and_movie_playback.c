@@ -127,7 +127,7 @@ void handle_pause_input(void) {
     area = g_current_level_index;
     if (area == 15 && D_L00_0015F6AC >= 8 && ((Hero *)(D_0013E633 + 0xE1D))->vehicle_mode == 2
         && ((((PadS *)(D_0013A5E0 + 0x2460))->w1A4 & 0x800) || noctl) && ((Hero *)(D_0013E633 + 0xE1D))->state.current != 0x72) {
-        if (D_L00_00166F00->h86 == 0x13) return;
+        if (g_current_follow_cam->h86 == 0x13) return;
         mode_freeze_init(4, 0, 0);
         return;
     }
@@ -137,7 +137,7 @@ void handle_pause_input(void) {
         if (k == 0x45 || k == 0x563 || k == 0x4DA) special = 1;
     }
     if (special && D_L00_0015F6AC >= 8 && ((((PadS *)(D_0013A5E0 + 0x2460))->w1A4 & 0x800) || noctl)
-        && ((Hero *)(D_0013E633 + 0xE1D))->state.current != 0x72 && D_L00_00166F00->h86 != 0x13) {
+        && ((Hero *)(D_0013E633 + 0xE1D))->state.current != 0x72 && g_current_follow_cam->h86 != 0x13) {
         mode_freeze_init(1, 0, 0);
         return;
     }
@@ -1038,16 +1038,16 @@ void start_slideshow(void) {
     slideshow[3] = lvl_resource_buffers[2] + t;
     lvl_vu_chain_buffer_size = t;
     if (pal_mode != 0) {
-        start_audio_stream_read(slideshow[2], D_00137C80.alt[((short *)slideshow)[1]].a, D_00137C80.alt[((short *)slideshow)[1]].b);
+        start_audio_stream_read(slideshow[2], disc_table.alt[((short *)slideshow)[1]].a, disc_table.alt[((short *)slideshow)[1]].b);
     } else {
-        start_audio_stream_read(slideshow[2], D_00137C80.normal[((short *)slideshow)[1]].a, D_00137C80.normal[((short *)slideshow)[1]].b);
+        start_audio_stream_read(slideshow[2], disc_table.normal[((short *)slideshow)[1]].a, disc_table.normal[((short *)slideshow)[1]].b);
     }
     update_audio_stream_until_idle(1);
     ((short *)slideshow)[1]++;
     if (pal_mode != 0) {
-        start_audio_stream_read(slideshow[3], D_00137C80.alt[((short *)slideshow)[1]].a, D_00137C80.alt[((short *)slideshow)[1]].b);
+        start_audio_stream_read(slideshow[3], disc_table.alt[((short *)slideshow)[1]].a, disc_table.alt[((short *)slideshow)[1]].b);
     } else {
-        start_audio_stream_read(slideshow[3], D_00137C80.normal[((short *)slideshow)[1]].a, D_00137C80.normal[((short *)slideshow)[1]].b);
+        start_audio_stream_read(slideshow[3], disc_table.normal[((short *)slideshow)[1]].a, disc_table.normal[((short *)slideshow)[1]].b);
     }
 }
 extern void func_00234AC8(int);
@@ -1130,9 +1130,9 @@ void update_slideshow(void) {
             IIDX = IIDX + 1;
             r = IIDX % 20;
             if (pal_mode != 0) {
-                start_audio_stream_read(slideshow[3], D_00137C80.alt[r].a, D_00137C80.alt[r].b);
+                start_audio_stream_read(slideshow[3], disc_table.alt[r].a, disc_table.alt[r].b);
             } else {
-                start_audio_stream_read(slideshow[3], D_00137C80.normal[r].a, D_00137C80.normal[r].b);
+                start_audio_stream_read(slideshow[3], disc_table.normal[r].a, disc_table.normal[r].b);
             }
         }
     }

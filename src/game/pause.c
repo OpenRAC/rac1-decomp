@@ -544,7 +544,7 @@ void close_menu_system(void) {
         int j;
         g_gs_texture_allocation_start = g3->saved_texture_start;
         for (j = 0; j < 14; j++) {
-            panel_slots[j] = func_002267C0(panel_slots[j]);
+            panel_slots[j] = delete_moby(panel_slots[j]);
         }
     }
     {
@@ -1580,7 +1580,7 @@ int render_configured_text_label(unsigned char *w) {
         DRAW(colour, text);
         if (*(int *)(w + 0x30) & 0x400) {
             int span = (win.s[7] + *(int *)&D_00160368 * 3) << 4;
-            *(int *)(w + 0x3C) += (D_0013CBE0[0] & 1) ? 10 : 3;
+            *(int *)(w + 0x3C) += (pad_held[0] & 1) ? 10 : 3;
             *(int *)(w + 0x3C) %= span;
         }
     }
@@ -2938,7 +2938,7 @@ int update_menu_mission_list(struct Menu *menu_screen) {
     }
     if (((struct PadState *)&D_0013CA40_g)->pressed_unmasked & PAD_R1) {
         for (i = ((struct MapSelection_21D4C0 *)&D_001A01F0_lv)->level + 1; i < 20; i++) {
-            if (D_0013DE48[i] != 0 || g_current_level_index == i) {
+            if (level_available[i] != 0 || g_current_level_index == i) {
                 ((struct MapSelection_21D4C0 *)&D_001A01F0_lv)->level = i;
                 break;
             }
@@ -2946,7 +2946,7 @@ int update_menu_mission_list(struct Menu *menu_screen) {
     }
     if (((struct PadState *)&D_0013CA40_g)->pressed_unmasked & PAD_L1) {
         for (i = ((struct MapSelection_21D4C0 *)&D_001A01F0_lv)->level - 1; i >= 0; i--) {
-            if (D_0013DE48[i] != 0 || g_current_level_index == i) {
+            if (level_available[i] != 0 || g_current_level_index == i) {
                 ((struct MapSelection_21D4C0 *)&D_001A01F0_lv)->level = i;
                 break;
             }
@@ -3452,8 +3452,8 @@ int enter_menu_help_text(char *arg0) {
     }
     *(int *)(arg0 + 0x50) = 0;
     if (cd_read_state[4] == 0) {
-        if (func_00217628_3(D_001D6078, D_00137C80[0x1528 / 4],
-                            D_00137C80[0x152C / 4]) != 0) {
+        if (func_00217628_3(D_001D6078, disc_table[0x1528 / 4],
+                            disc_table[0x152C / 4]) != 0) {
             *(int *)(arg0 + 0x50) = 1;
         } else {
             *(int *)(arg0 + 0x50) = 3;
@@ -3518,8 +3518,8 @@ int update_menu_help_text_load(char *arg0) {
     switch (*(int *)(arg0 + 0x50)) {
     case 0:
         if (cd_read_state[4] == 0) {
-            if (func_00217628_3(D_001D6078, D_00137C80[0x1528 / 4],
-                                D_00137C80[0x152C / 4]) != 0) {
+            if (func_00217628_3(D_001D6078, disc_table[0x1528 / 4],
+                                disc_table[0x152C / 4]) != 0) {
                 *(int *)(arg0 + 0x50) = 1;
             } else {
                 *(int *)(arg0 + 0x50) = 3;
@@ -3952,8 +3952,8 @@ int enter_item_preview(void *arg0) {
 
 /* Deletes both preview mobys (+0x44, +0x48) and clears their slots. */
 int clear_menu_preview_pair(char *arg0) {
-    *(int *)(arg0 + 0x44) = func_002267C0(*(int *)(arg0 + 0x44));
-    *(int *)(arg0 + 0x48) = func_002267C0(*(int *)(arg0 + 0x48));
+    *(int *)(arg0 + 0x44) = delete_moby(*(int *)(arg0 + 0x44));
+    *(int *)(arg0 + 0x48) = delete_moby(*(int *)(arg0 + 0x48));
     return 0;
 }
 
@@ -4018,7 +4018,7 @@ int update_item_preview_moby(char *arg0) {
             *(void **)spawned_moby->pvars = arg0;
         }
     } else if (want == -1) {
-        menu->moby = (struct Moby *)func_002267C0((int)menu->moby);
+        menu->moby = (struct Moby *)delete_moby((int)menu->moby);
     } else if (current_preview_class != want) {
         struct Moby *replacement_moby = func_00226720_a(want);
 
@@ -4032,7 +4032,7 @@ int update_item_preview_moby(char *arg0) {
             replacement_moby->update = old->update;
             *(void **)replacement_moby->pvars = arg0;
         }
-        func_002267C0((int)menu->moby);
+        delete_moby((int)menu->moby);
         menu->moby = replacement_moby;
     }
     return 0;
@@ -4373,7 +4373,7 @@ s32 update_item_preview_binding(struct ItemPreviewBinding_1F238 *preview) {
                 D_001D5F70_1F238.last_resource_table_toggle = active_decode_buffer;
                 D_001D5F70_1F238.unk140 = oclass;
                 D_001D5F70_1F238.unk120 = oclass;
-                D_001B3580_1F238[D_001B3E40[oclass]]->state_0d = 0;
+                D_001B3580_1F238[resident_class_slot_by_id[oclass]]->state_0d = 0;
             }
         }
         moby = func_00226720_1F238(oclass);
@@ -4683,7 +4683,7 @@ extern int func_002267C0(int);
 
 /* Deletes the item preview moby (+0x44) and clears its slot. */
 int release_item_preview_moby(char *arg0) {
-    *(int *)(arg0 + 0x44) = func_002267C0(*(int *)(arg0 + 0x44));
+    *(int *)(arg0 + 0x44) = delete_moby(*(int *)(arg0 + 0x44));
     return 0;
 }
 
@@ -8606,7 +8606,7 @@ int release_menu_preview_objects(void *arg0) {
 
     object_slot = &((MenuPreviewObjects_225548 *)arg0)->objects[0];
     for (objects_remaining = 23; objects_remaining >= 0; objects_remaining--) {
-        *object_slot = func_002267C0(*object_slot);
+        *object_slot = delete_moby(*object_slot);
         object_slot++;
     }
     resources = (struct MenuSystem *)menu_system;
@@ -8756,7 +8756,7 @@ s32 LoadHandGadget(HandGadgetState *hand) {
         D_001D5F70_255F8.active_decode_buffer = active_decode_buffer;
         D_001D5F70_255F8.last_requested_resource_class = selected_class;
         D_001D5F70_255F8.last_resource_request_state = active_decode_buffer;
-        D_001B3580_255F8[D_001B3E40[selected_class]][0xD] = 0;
+        D_001B3580_255F8[resident_class_slot_by_id[selected_class]][0xD] = 0;
         moby = func_00226720_255F8(selected_class);
         if (moby != 0) {
             loaded_gadget = selected_gadget;
@@ -9325,7 +9325,7 @@ extern void *func_0020D348_c(int) __asm__("func_0020D348");
 void *create_menu_preview_moby(int arg0) {
     char *o;
 
-    if (D_001B3E40[arg0] == 0xFF) {
+    if (resident_class_slot_by_id[arg0] == 0xFF) {
         return 0;
     }
     o = (char *)func_0020D348_c(arg0);
@@ -9348,7 +9348,7 @@ extern void func_0020D678(void *); /* DeleteMoby */
 
 /* Deletes moby arg0 (if any) and stamps its +0x38 with D_0015F6F0. Always
    returns 0 so callers can clear their handle with it. */
-int func_002267C0(int arg0) {
+int delete_moby(int arg0) {
     if (arg0 == 0) {
         return 0;
     }
@@ -9441,7 +9441,7 @@ int leave_streamed_moby_screen(void *arg0) {
     s32 remaining;
 
     for (remaining = 0x17; remaining >= 0; remaining--) {
-        *slot = func_002267C0(*slot);
+        *slot = delete_moby(*slot);
         slot++;
     }
     menu->data.raw.unk3C = release_menu_stream_buffer(menu->data.raw.unk3C);
@@ -9514,9 +9514,9 @@ s32 update_streamed_moby_animation(MobyAnimationStream_26978 *stream) {
         if (cd_read_active[0] != 0) {
             break;
         }
-        table_index = 0x4F000 - (D_00137C80[0x1614 / 4] << 11);
-        if (start_audio_stream_read((int)(stream->buffer + table_index), D_00137C80[0x1610 / 4],
-                                    D_00137C80[0x1614 / 4]) != 0) {
+        table_index = 0x4F000 - (disc_table[0x1614 / 4] << 11);
+        if (start_audio_stream_read((int)(stream->buffer + table_index), disc_table[0x1610 / 4],
+                                    disc_table[0x1614 / 4]) != 0) {
             stream->read_offset = table_index;
             stream->state = 1;
             animation_asset_read_active[0] = 1;
@@ -9532,7 +9532,7 @@ s32 update_streamed_moby_animation(MobyAnimationStream_26978 *stream) {
         }
         animation_asset_read_active[0] = 0;
         fast_decompress((int)(stream->buffer + stream->read_offset), (int)stream->buffer);
-        class_slot = D_001B3E40[0x7A5];
+        class_slot = resident_class_slot_by_id[0x7A5];
         classes = (StreamedClassResource_26978 **)moby_class_resources;
         header = (AnimationTableHeader_26978 *)stream->buffer;
         class_resource = &classes[class_slot];
@@ -9944,9 +9944,9 @@ int func_00227100_r(char *moby, char *m1, char *m2, char **o0, char **o1, char *
             } else if (m1 != 0) {
                 blend_moby_animation_ex(m1, D_001D6410_q[0].arg[4], 0, 10, 5);
             }
-            *o0 = (char *)func_002267C0((int)*o0);
-            *o1 = (char *)func_002267C0((int)*o1);
-            *o2 = (char *)func_002267C0((int)*o2);
+            *o0 = (char *)delete_moby((int)*o0);
+            *o1 = (char *)delete_moby((int)*o1);
+            *o2 = (char *)delete_moby((int)*o2);
             if (D_001D6410_q[0].arg[5] != -1) {
                 if ((*o0 = create_menu_preview_moby(D_001D6410_q[0].arg[5])) != 0) {
                     func_00213D28_q(*o0, D_001D6410_q[0].arg[6], 0);
@@ -10124,7 +10124,7 @@ void clear_preview_resource_bindings(void) {
 
     resource_index = D_001D5F70_27A70.resource_first;
     if (resource_index < (resource_index + D_001D5F70_27A70.resource_count)) {
-        u8 *class_slots = D_001B3E40;
+        u8 *class_slots = resident_class_slot_by_id;
         u8 *class_resources = D_001B3580_27A70;
         u8 *bindings = D_001D5D58_27A70;
 

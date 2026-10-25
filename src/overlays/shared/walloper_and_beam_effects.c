@@ -2311,7 +2311,7 @@ int compute_moby_state_from_vertical_probe(EffectSrc *a0) {
     v1.z -= 0.3f;
     v2.z += 1.0f;
     if (coll_line(&v2, &v1, 6, a0, 0) != 0) {
-        TopStruct *p = D_L00_00173F58;
+        TopStruct *p = g_coll_hit_moby;
         if (p != 0) {
             SubStruct *sub = p->sub;
             if (sub != 0) {

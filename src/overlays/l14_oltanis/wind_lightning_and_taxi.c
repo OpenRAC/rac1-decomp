@@ -2474,7 +2474,7 @@ void qwark_oltanis_update(char *m) {
     attach_big_head_cheat_manipulator_to_matching_moby(m);
     if (*(unsigned char *)(m + 0x31) != 0) {
         if (FastVecDist(m + 0x10, oltanis_camera_pos) < 28.0f) {
-            func_L00_0025B178(m);
+            set_ground_height_band(m);
             m[0x7F] = 0x16;
         }
     }

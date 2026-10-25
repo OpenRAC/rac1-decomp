@@ -352,9 +352,9 @@ void draw_light_flare(char *arg0) {
     if (func_001FA9E8(a, &alpha, 32.0f) < 0) {
         return;
     }
-    if (g_game_mode == 6 && D_0013E130.mode == 3
-        && D_0013E130.level > scale_game_frame_count(150)) {
-        alpha -= (D_0013E130.level - scale_game_frame_count(150)) * 4;
+    if (g_game_mode == 6 && level_render_state.mode == 3
+        && level_render_state.level > scale_game_frame_count(150)) {
+        alpha -= (level_render_state.level - scale_game_frame_count(150)) * 4;
         if (alpha <= 0) {
             return;
         }
@@ -374,7 +374,7 @@ void draw_light_flare(char *arg0) {
 
         q.rgba[i] = ((alpha >> 1) << 24) | 0x808080;
         v = q.v[i];
-        matrix_mul_vec3(v, D_001D9B60[D_0013E130.set][i], arg0 + 0xC0);
+        matrix_mul_vec3(v, D_001D9B60[level_render_state.set][i], arg0 + 0xC0);
         FastVecAdd(v, v, arg0 + 0x10);
         v[2] = z;
     }
@@ -811,7 +811,7 @@ void emit_six_spark_effects(char *m, float z) {
         vel[3] = 0.4f;
         qcopy(vel2, vel);
         vel2[3] = 0.6f;
-        qcopy(pos, D_001D9EF0[D_0013E130.set][i]);
+        qcopy(pos, D_001D9EF0[level_render_state.set][i]);
         matrix_mul_vec3(pos, pos, m + 0xC0);
         FastVecAdd(pos, pos, m + 0x10);
         a = scale_game_frame_count(4);
@@ -1823,8 +1823,8 @@ extern void func_0012E1C8(s32 cmd, void *arg, s64 data);
 extern void func_0022F090();
 #define sequence (*(f32 *)&D_0015F53C)
 #define D_001413D0 ((s32 *)&D_001414D0)
-#define current_vu_chain (*(s32 *)((u8 *)&D_00160000 + 0x100C))
-#define space_load_in_progress (*(s32 *)((u8 *)&D_0015F560 + 0x19C))
+#define current_vu_chain_r (*(s32 *)((u8 *)&D_00160000 + 0x100C))
+#define space_load_in_progress_r (*(s32 *)((u8 *)&D_0015F560 + 0x19C))
 #define D_0015F440 D_0015F540
 #define gs_texture_allocation_base D_0015EF8C
 #define gs_texture_allocation_cursor D_0015EF74
@@ -1832,11 +1832,11 @@ extern void func_0022F090();
 #define current_level_index (*(s32 *)&D_0015EE84)
 #define game_language D_0015EE88
 #define D_00194180 D_00194280
-#define resident_class_slot_by_id ((u8 *)&D_001B3E40)
+#define resident_class_slot_by_id_r ((u8 *)&D_001B3E40)
 #define D_001B6180 D_001B6500
 #define D_001941C0_q (*(MemInfo *)&D_001941C0)
-#define disc_table (*(DiscTable_q *)&D_00137C80)
-#define level_render_state (*(LevelRenderState_q *)&D_0013E130)
+#define disc_table_r (*(DiscTable_q *)&D_00137C80)
+#define level_render_state_r (*(LevelRenderState_q *)&D_0013E130)
 #define D_0015FF08 D_00160008
 #define D_001B5980 D_001B5D00
 #define D_0015FF00 D_00160000
@@ -1844,7 +1844,7 @@ extern void func_0022F090();
 #define D_00160588 (*(s64 *)&D_00160688)
 #define D_001D9740 D_001D9AD0
 #define D_0015FF18 D_00160018
-#define moby_instance_end D_0016001C
+#define moby_instance_end_r D_0016001C
 #define moby_vars D_00160028
 #define D_001600AC D_001601AC
 #define D_001600B4 D_001601B4
@@ -1853,11 +1853,11 @@ extern void func_0022F090();
 #define D_001CD780 D_001CDB00
 #define D_001604E0 (*(s64 *)&D_001605E0)
 #define D_001604F0 (*(s64 *)&D_001605F0)
-#define level_available D_0013DE48
+#define level_available_r D_0013DE48
 #define D_0018CB20 (*(SceneInfo *)&D_0018CC20)
 #define D_00186310 D_00186410
 #define D_00186350 D_00186450
-#define sound_bank_handle D_0015EE5C
+#define sound_bank_handle_r D_0015EE5C
 #define init_mem_slots func_00201E10
 #define fill_transfer_words ((void (*)(void *dst, s32 value, s32 size))func_001F99B0)
 #define init_view_context ((void (*)(void))func_001F3008)
@@ -1875,7 +1875,7 @@ extern void func_0022F090();
 #define clear_blocks_16 func_001F99D8
 #define reset_draw_globals func_001F3B90
 #define rand ((s32 (*)(void))func_001160D8)
-#define parse_space_scene_chunk func_00205220
+#define parse_space_scene_chunk_r func_00205220
 #define snd_bank_load_from_ee_cb func_0012E1C8
 #define store_async_sound_bank_handle func_0022F090
 #define sceGsSyncV ((s32 (*)(s32))func_00122598)
@@ -1904,25 +1904,25 @@ void initialize_level_runtime(void) {
     s32 scene_variant;
     s32 workspace_offset;
 
-    level_render_state.state = 4;
-    level_render_state.timer = -1;
+    level_render_state_r.state = 4;
+    level_render_state_r.timer = -1;
     sequence = 1.0f;
     D_001413D0[0] = 0;
-    current_vu_chain = 0x100000;
-    space_load_in_progress = 0;
+    current_vu_chain_r = 0x100000;
+    space_load_in_progress_r = 0;
     D_0015F440 = 0;
     init_mem_slots();
     gs_texture_allocation_cursor = gs_texture_allocation_base;
     gs_texture_allocation_start = gs_texture_allocation_base;
     fill_transfer_words(D_00194180, 0x87654321, 0x10);
-    fill_transfer_words(resident_class_slot_by_id, -1, 0x800);
+    fill_transfer_words(resident_class_slot_by_id_r, -1, 0x800);
     fill_transfer_words(resident_class_material_maps, -1, 0xE00);
     fill_transfer_words(D_001B6180, 0, 0xE0);
     init_view_context();
     update_view_context();
     vu1_init_chain();
-    submit_audio_stream_io_request(D_001941C0_q.buffer + 0x400000, disc_table.unk13B8.sector,
-                                   disc_table.unk13B8.size);
+    submit_audio_stream_io_request(D_001941C0_q.buffer + 0x400000, disc_table_r.unk13B8.sector,
+                                   disc_table_r.unk13B8.size);
     fade_to_black(scale_game_frames(0xC));
     sceCdSync(0);
     FlushCache(0);
@@ -1985,7 +1985,7 @@ void initialize_level_runtime(void) {
     D_0015FF18 = allocation_cursor;
     fill_transfer_words(allocation_cursor, 0, 0x4000);
     allocation_cursor += 0x4000;
-    moby_instance_end = D_0015FF18;
+    moby_instance_end_r = D_0015FF18;
     D_0015FF18[0x20] = 0xFF;
     moby_vars = allocation_cursor;
     allocation_cursor += 0x2000;
@@ -1999,25 +1999,25 @@ void initialize_level_runtime(void) {
     occl_fog_count = 0x1F4;
     part_clip_dist = 0x1F4000;
     scene_variant = (rand() >> 16) & 3;
-    level_render_state.scene_state = 0;
-    level_render_state.scene_mode = scene_variant;
-    level_render_state.history_index = 0;
-    level_render_state.history_count = 0;
+    level_render_state_r.scene_state = 0;
+    level_render_state_r.scene_mode = scene_variant;
+    level_render_state_r.history_index = 0;
+    level_render_state_r.history_count = 0;
     qcopy(&D_001604F0, &shrub_colors);
-    if (current_level_index == 0 || (current_level_index == 1 && level_available[3] == 0)) {
-        level_render_state.scene_mode = 4;
-        level_render_state.scene_state = 2;
+    if (current_level_index == 0 || (current_level_index == 1 && level_available_r[3] == 0)) {
+        level_render_state_r.scene_mode = 4;
+        level_render_state_r.scene_state = 2;
     }
     fill_transfer_words(&D_0018CB20, 0, 0x1C0);
     fill_transfer_words(D_00186310, 0, 0x40);
     fill_transfer_words(D_00186350, 0, 0x40);
     scene_offsets = header->scenes;
-    workspace_offset = D_0016100C - 0x60000;
-    scene_offset = &scene_offsets[level_render_state.scene_mode];
+    workspace_offset = current_vu_chain - 0x60000;
+    scene_offset = &scene_offsets[level_render_state_r.scene_mode];
     D_0018CB20.unk58 = D_001941C0_q.unk4 + workspace_offset;
     D_0018CB20.unk5C = D_001941C0_q.unk8 + workspace_offset;
-    D_0016100C = workspace_offset;
-    scene_chunk = (Chunk *)(data_base + header->scenes[level_render_state.scene_mode]);
+    current_vu_chain = workspace_offset;
+    scene_chunk = (Chunk *)(data_base + header->scenes[level_render_state_r.scene_mode]);
     /* The archive list is terminated by a zero size and the resident table holds 70 entries. */
     for (k = 0; k < 70 && scene_chunk->size != 0; k++) {
         {
@@ -2026,15 +2026,15 @@ void initialize_level_runtime(void) {
         }
         scene_chunk++;
     }
-    parse_space_scene_chunk(0);
-    sound_bank_handle = 0xFFFFFFFF;
+    parse_space_scene_chunk_r(0);
+    sound_bank_handle_r = 0xFFFFFFFF;
     snd_bank_load_from_ee_cb(data_base + header->sound, store_async_sound_bank_handle,
-                             (u32)&sound_bank_handle);
+                             (u32)&sound_bank_handle_r);
     do {
         FlushCache(0);
         sceGsSyncV(0);
         snd_flush_sound_commands();
-    } while (sound_bank_handle == 0xFFFFFFFF);
+    } while (sound_bank_handle_r == 0xFFFFFFFF);
     snd_resolve_bank_xrefs();
 }
 
@@ -2230,8 +2230,8 @@ void prepare_loading_slide_textures(s32 language_index, s32 first_slide, s32 sec
     archive_memory = &level_resource_buffers;
     upload_index = 0;
     Stream_SubmitRead((void *)(archive_memory->archive_base + 0x100000),
-                           D_00137C80.loading_slides[language_index].sector,
-                           D_00137C80.loading_slides[language_index].size);
+                           disc_table.loading_slides[language_index].sector,
+                           disc_table.loading_slides[language_index].size);
     func_00120F30_32B90(0);
     func_00118D80(0);
     fast_decompress(archive_memory->archive_base + 0x100000, archive_memory->archive_base);
@@ -2365,7 +2365,7 @@ void play_level_loading_slides(s32 language_index, s32 first_slide, s32 second_s
     s32 frame;
     s32 alpha;
     s32 fade_in_alpha;
-    f32 scroll_phase;
+    f32 scroll_offset;
     f32 scroll_start;
     f32 scroll_end;
 
@@ -2397,16 +2397,16 @@ void play_level_loading_slides(s32 language_index, s32 first_slide, s32 second_s
         if (duration_ticks - 0x10 < frame) {
             alpha = (duration_ticks - frame) * 8;
         }
-        scroll_phase = IntToFloat(frame % 600) * 0.0016666667f;
+        scroll_offset = IntToFloat(frame % 600) * 0.0016666667f;
         if (first_slide == second_slide) {
             func_00232A00_32EF0(0, D_0013E600_32EF0.half_height - 0x20, 0x200, 0x40,
                                            (alpha << 24) | 0x808080, shared_texture, 0.0f, 4.0f,
-                                           scroll_phase + 0.0f, scroll_phase + 0.4f);
+                                           scroll_offset + 0.0f, scroll_offset + 0.4f);
             func_001F5800_32EF0(0, D_0013E600_32EF0.half_height - 0x20, 0x200, 0x40, 0, 0, 0x200, 0x40,
                                0x80808080, first_texture);
         } else {
-            scroll_start = scroll_phase + 0.0f;
-            scroll_end = scroll_phase + 0.4f;
+            scroll_start = scroll_offset + 0.0f;
+            scroll_end = scroll_offset + 0.4f;
             func_00232A00_32EF0(0, D_0013E600_32EF0.half_height - 0x2E, 0x200, 0x40,
                                            (alpha << 24) | 0x808080, shared_texture, 0.0f, 4.0f,
                                            scroll_start, scroll_end);
@@ -2521,12 +2521,12 @@ void DoSpaceTransition(void) {
     }
     D_00194200_b.f10 |= 0x80000000;
     g_game_mode = 6;
-    D_0013E130.set = 0;
+    level_render_state.set = 0;
     if (D_0013DE48_b.f8 != 0 || D_0015F6E4 >= 8) {
-        D_0013E130.set = 1;
+        level_render_state.set = 1;
     }
     if (D_0013DE48_b.fE != 0 || D_0015F6E4 >= 14) {
-        D_0013E130.set = 2;
+        level_render_state.set = 2;
     }
     func_00118D80(0);
     func_0012F0A8(2, 0, 0, 0, 0);

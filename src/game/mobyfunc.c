@@ -188,13 +188,13 @@ extern void func_0020D440(void *, int);
 Moby *CreateMoby(int oClass) {
     Moby *m;
 
-    for (m = (Moby *)D_0016001C; m < (Moby *)moby_instance_perm_end; m++) {
+    for (m = (Moby *)moby_instance_end; m < (Moby *)moby_instance_perm_end; m++) {
         if (m->state >= 0xFE && (unsigned int)D_0015F6F0 >= m->unk38) {
             if (m->state == 0xFF) {
                 m[1].state = 0xFF;
             }
             InitMobyInstance(m, oClass);
-            m->pvars = D_00160028 + (m - (Moby *)D_0016001C) * 0x80;
+            m->pvars = g_moby_vars + (m - (Moby *)moby_instance_end) * 0x80;
             FastMemSet(m->pvars, 0, 0x80);
             if (num_spawnable_mobys != 0) {
                 num_spawnable_mobys--;
@@ -299,7 +299,7 @@ void InitMobyInstance(void *arg0, int oClass) {
     MobyIClass *pClass;
 
     FastMemSet(m, 0, 0x100);
-    c = D_001B3E40[oClass];
+    c = resident_class_slot_by_id[oClass];
     m->unk23 = 0x80;
     m->oClass = c;
     m->unkA4 = 0xFF;
@@ -381,7 +381,7 @@ extern void func_0020EA70(void *, int);
 
 /* DeleteMoby */
 void DeleteMoby(MobyDel *m) {
-    if ((char *)m < D_0016001C) {
+    if ((char *)m < moby_instance_end) {
         m->state = 0xFD;
     } else {
         m->state = 0xFE;

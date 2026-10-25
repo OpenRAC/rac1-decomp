@@ -131,7 +131,7 @@ void skids_agent_update(Moby *m) {
         d->f20 = D_L02_00161D80;
         m->state = 1;
         DialogRequest_Init(m, d);
-        func_L02_0025D750(m);
+        initialize_moby_grounding(m);
         d->f178 = (Moby *)CreateMoby(0x38);
         d->f178->draw_dist = 0x40;
         d->f178->visible = 1;
@@ -347,7 +347,7 @@ void SkidMcMarxAridiaUpdate(char *m)
         *(unsigned char *)(m + 0x20) = 1;
         *(unsigned char *)(m + 0x30) = 0xFF;
         DialogRequest_Init(m, d);
-        func_L02_0025D750(m);
+        initialize_moby_grounding(m);
         break;
     case 1:
         if (*(unsigned char *)(d + 8) == 1 &&

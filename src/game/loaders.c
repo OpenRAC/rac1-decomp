@@ -978,7 +978,7 @@ extern void func_00203B70(void *, int, int, int);
 void register_moby_class(void *arg0, int arg1, int arg2, int arg3) {
     int idx = resident_moby_class_count;
 
-    D_001B3E40[arg3] = *(unsigned char *)&resident_moby_class_count;
+    resident_class_slot_by_id[arg3] = *(unsigned char *)&resident_moby_class_count;
     resident_class_id_by_slot[idx] = arg3;
     moby_class_resources[idx] = arg0;
     if (arg0 == 0) {
@@ -1525,7 +1525,7 @@ extern int func_002175C8(int, int, int);
 /* Starts the disc read of the level chunk into the top of memory below D_1FF7FF0, sized from the
    disc table, and returns 1. */
 int load_level_chunk_from_disc(void) {
-    int *hdr = D_00137C80;
+    int *hdr = disc_table;
     int want = ((hdr[0x13F] << 11) + 0x1057) & 0xFFFFF000;
 
     level_root = (int *)(((int)D_1FF7FF0 - want) & -0x10);
@@ -1876,7 +1876,7 @@ extern int D_0016100C_m __asm__("D_0016100C") MACRO_ADDR;
    with the chunk's value as the current one meanwhile. The slot address is
    written base - (-(index * 4)), which keeps retail's base-first addu
    (adapted from Lombyte (GPL-3.0) for PAL). */
-void func_00205220(int arg0) {
+void parse_space_scene_chunk(int arg0) {
     char *base = (char *)&render_sequence;
     char *p = base - (-(arg0 * 4));
     *(int *)(base + 0x5C) = *(int *)(p + 0x60);
@@ -1938,7 +1938,7 @@ void select_world_object_resource_tables(int class_id, int buffer_index) {
     func_00118D80(0);
     ((void (*)(int, void *))fast_decompress)(compressed_class_resources[active_class_resource_index], resource_data);
     func_00118D80(0);
-    class_slot = D_001B3E40[class_id];
+    class_slot = resident_class_slot_by_id[class_id];
     resource_table = moby_class_resources;
     resource_table[class_slot] = resource_data;
     D_001B6500[class_slot] = resource_data->original_field_2c;

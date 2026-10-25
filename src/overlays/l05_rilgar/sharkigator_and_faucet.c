@@ -717,7 +717,7 @@ void extermibot_update(unsigned char *m) {
         *(unsigned short *)(m + 0x34) &= 0xFFBE;
     }
     if (m[0x31] != 0 && FastVecDist((float *)(m + 0x10), (float *)D_L05_001672C0) < 28.0f) {
-        func_L00_0025B178(m);
+        set_ground_height_band(m);
         m[0x7F] = 0x16;
     }
     FlyingEnemyUpdate((Moby *)m);
@@ -772,7 +772,7 @@ void extermibot_update(unsigned char *m) {
         break;
     case 1:
         if (*(int *)(d + 0x164) != 2 && random_integer_below(9) == 0) {
-            if (func_L01_00277FD8(d + 0x2C0, 1, *(int *)(d + 0x2C4), m + 0x10, (s32)(t + 0x10), dir,
+            if (follow_path(d + 0x2C0, 1, *(int *)(d + 0x2C4), m + 0x10, (s32)(t + 0x10), dir,
                                   (*(float *)&D_L05_00161B58) * 0.4f) != 0) {
                 if (random_integer_below(0x100) & 1) {
                     *(float *)(d + 0x298) = -*(float *)(d + 0x298);
@@ -1015,7 +1015,7 @@ void extermibot_update(unsigned char *m) {
         break;
     case 11:
         if (mine_fall(m, d + 0x70) & 0x60) {
-            if (func_L01_00277FD8(d + 0x2C0, 1, *(int *)(d + 0x2C4), m + 0x10, (s32)(d + 0x270), dir,
+            if (follow_path(d + 0x2C0, 1, *(int *)(d + 0x2C4), m + 0x10, (s32)(d + 0x270), dir,
                                   (*(float *)&D_L05_00161B58) * 0.4f) != 0) {
                 m[0x20] = 4;
                 if (m[0x53] != 1) MobyBlendAnimation(m, 1, 0, scale_ticks(10));
@@ -1343,7 +1343,7 @@ void PathWalker_StepTowardNode(struct Moby *m, s32 node, f32 side) {
     f32 dist;
 
     if ((((s32)m >> 8) & 3) == (rilgar_frame_count & 3)) {
-        if (func_L01_00277FD8(&v->path, 1, v->path_pos, &m->pos, node, &v->goal, (*(f32 *)&D_L05_00161B58) * 0.4f) == 0)
+        if (follow_path(&v->path, 1, v->path_pos, &m->pos, node, &v->goal, (*(f32 *)&D_L05_00161B58) * 0.4f) == 0)
             v->mode = 2;
     }
     qcopy(&goal, &v->goal);
@@ -1578,7 +1578,7 @@ void extermitank_update(unsigned char *m) {
     }
     if (m[0x31] != 0) {
         if (FastVecDist(m + 0x10, D_L05_001672C0) < 27.0f) {
-            func_L00_0025B178(m);
+            set_ground_height_band(m);
             m[0x7F] = 0x15;
         }
     }
@@ -2307,7 +2307,7 @@ void SkidMcMarxUpdate(Moby *moby) {
     Data_308D68 *d = (Data_308D68 *)*(void **)&moby->pvars;
 
     if (moby->visible != 0 && FastVecDist(((float *)&moby->pos), D_L05_001672C0) < 29.0f) {
-        func_L00_0025B178(moby);
+        set_ground_height_band(moby);
         moby->shadow_range = 0x17;
     }
     switch (moby->state) {
@@ -2702,22 +2702,22 @@ void WaterSurfaceUpdate(Moby *moby) {
             D_L05_00161DEC = 0;
             RipplePatchesInit(D_L05_001D6BC0_0030DED8, 0x30);
             RescaleFloatTable(1.0f);
-            D_L05_001CB000.f0 = 16.0f;
-            D_L05_001CB000.f4 = 16.0f;
-            D_L05_001CB000.f8 = -8.0f;
-            D_L05_001CB000.fC = -8.0f;
-            D_L05_001CB000.f10 = 1.0f;
-            D_L05_001CB000.f14 = 1.0f;
-            D_L05_001CB000.f18 = 0.9f;
-            D_L05_001CB000.f20 = 0.1f;
+            g_light.f0 = 16.0f;
+            g_light.f4 = 16.0f;
+            g_light.f8 = -8.0f;
+            g_light.fC = -8.0f;
+            g_light.f10 = 1.0f;
+            g_light.f14 = 1.0f;
+            g_light.f18 = 0.9f;
+            g_light.f20 = 0.1f;
             a = fast_atan2(D_L05_00180440.f10, D_L05_00180440.f14);
-            D_L05_001CB000.f30 = FastCos(a) * 0.57735002f;
-            D_L05_001CB000.f34 = FastSin(a) * 0.57735002f;
-            D_L05_001CB000.f38 = -0.57735002f;
-            D_L05_001CB000.f28 = 0x29;
-            D_L05_001CB000.f2C = 0x2A;
-            D_L05_001CB000.b3C = 0x1C;
-            D_L05_001CB000.b3D = 0x40;
+            g_light.f30 = FastCos(a) * 0.57735002f;
+            g_light.f34 = FastSin(a) * 0.57735002f;
+            g_light.f38 = -0.57735002f;
+            g_light.f28 = 0x29;
+            g_light.f2C = 0x2A;
+            g_light.b3C = 0x1C;
+            g_light.b3D = 0x40;
             D_L05_00161390 = D_L05_001D6BC0_0030DED8;
             D_L05_00161394 = D_L05_0020B780;
             D_L05_00161398 = 0x30;

@@ -276,7 +276,7 @@ void mine_layer_update(struct Moby *m) {
         }
     }
     if (m->visible != 0 && FastVecDist(&m->pos, D_L03_00166F40) < 32.0f) {
-        func_L00_0025B178(m);
+        set_ground_height_band(m);
     }
 }
 typedef u32 u128_CBBD0 __attribute__((mode(TI), aligned(16)));
@@ -624,14 +624,14 @@ void update_mine(struct Moby *m) {
         D_L03_00166E00.shake = dist < 20.0f ? 0.4f - dist * 0.0175f : 0.050000012f;
         D_L03_00166E00.shake_frames = scale_ticks(0x19);
         mine_camera_blast(&blast, &m->pos, 0, 0);
-        mine_spawn_drops(m, D_L03_001B0BB0);
+        moby_index_list_remove(m, D_L03_001B0BB0);
         func_0020D678_CD270(m);
         return;
     }
     case 5:
         m->scale *= frame_scale * -0.074f + 1.0f;
         if (m->scale < m->pclass->scale * 0.01f) {
-            mine_spawn_drops(m, D_L03_001B0BB0);
+            moby_index_list_remove(m, D_L03_001B0BB0);
             func_0020D678_CD270(m);
         }
         break;
@@ -1352,7 +1352,7 @@ void helga_update(struct Moby *m) {
         talk->script = D_L03_00161C38;
         v->talk.unk48 = 5;
         ((void (*)(struct Moby *, struct TalkState_hg *))DialogRequest_Init)(m, talk);
-        func_L02_0025D750(m);
+        initialize_moby_grounding(m);
         break;
     case 1:
         if (Npc_TryStartDialog(m, talk)) {
@@ -1712,7 +1712,7 @@ void big_al_update(struct Moby *m) {
         m->spawn_frame = *(u64 *)(*(char **)&D_0013E633[0x2E9D] + 0x38);
         m->state = 1;
         DialogRequest_Init(m, &v->talk);
-        func_L02_0025D750(m);
+        initialize_moby_grounding(m);
         if (gHaveHeliPack[0] != 0) {
             v->talk.unk36 = -1;
         }
@@ -1899,7 +1899,7 @@ void robot_qwark_update(unsigned char *m) {
     float tmp[4] __attribute__((aligned(16)));
 
     if (m[0x31] != 0 && FastVecDist(m + 0x10, D_L03_00166F40) < 26.0f) {
-        func_L00_0025B178(m);
+        set_ground_height_band(m);
         m[0x7F] = 21;
     }
     if (SAVEFLAGS->collected[(short)*(unsigned short *)(m + 0xB2)] != 0 ||

@@ -543,7 +543,7 @@ void fire_blarg_turret_projectile(char *moby)
     char *data;
     float d, x, ang;
     data = *(char **)(moby + 0x78);
-    if (D_L13_0015F6B0 % *(int *)&D_L13_00161414 == 0) {
+    if (gemlik_frame_count % *(int *)&D_L13_00161414 == 0) {
         Moby_GetJointWorldPos(moby, 0, v);
         d = vec_distance_xy(moby + 0x10, *(char **)(data + 0x40) + 0x10);
         x = (20.0f - d) / 20.0f * 5.0f + 2.5f;
@@ -988,7 +988,7 @@ void robosquawker_update(RsMoby *m) {
     Manipulator_ApplyScale(2.5f, (int)m, 0, v->x230);
     if (m->b31 != 0) {
         if (FastVecDist(&m->pos, gemlik_camera_pos) < 28.0f) {
-            func_L00_0025B178(m);
+            set_ground_height_band(m);
             m->b7F = 0x16;
         }
     }
@@ -1987,19 +1987,19 @@ int select_fighter_jet_target_and_draw_indicators(int a, char *p, char *a2, void
         case 0x191:
         case 0x3EB:
         case 0x504:
-            func_001F2418(v, m + 0x10);
+            project_to_screen(v, m + 0x10);
             if (*(short *)(m + 0xA6) != 0x184) {
                 if (*(unsigned char *)(m + 0x31) != 0) {
                     {
                         float x = (v[0] - scr[4]) * 0.0625f;
                         float y = (v[1] - scr[5]) * 0.0625f;
-                        float ang = normalize_angle(IntToFloat(D_L13_0015F6B0) / 20.0f);
+                        float ang = normalize_angle(IntToFloat(gemlik_frame_count) / 20.0f);
                         emit_transformed_2d_vertex_packet(tab, 0x1E, 0xFFFFF3, 0x500000FF, x, y, 1.0f, ang);
                     }
                     {
                         float x = (v[0] - scr[4]) * 0.0625f;
                         float y = (v[1] - scr[5]) * 0.0625f;
-                        float ang = normalize_angle(IntToFloat(D_L13_0015F6B0) / 20.0f);
+                        float ang = normalize_angle(IntToFloat(gemlik_frame_count) / 20.0f);
                         emit_transformed_2d_vertex_packet(tab, 0x1E, 0xFFFFF3, 0x500000FF, x, y, 1.3f, -ang);
                     }
                 }
@@ -2033,13 +2033,13 @@ int select_fighter_jet_target_and_draw_indicators(int a, char *p, char *a2, void
                         {
                             float x = (v[0] - scr[4]) * 0.0625f;
                             float y = (v[1] - scr[5]) * 0.0625f;
-                            float ang = normalize_angle(IntToFloat(D_L13_0015F6B0) / 20.0f);
+                            float ang = normalize_angle(IntToFloat(gemlik_frame_count) / 20.0f);
                             emit_transformed_2d_vertex_packet(tab, 0x1E, 0xFFFFF3, 0x500000FF, x, y, 1.0f, ang);
                         }
                         {
                             float x = (v[0] - scr[4]) * 0.0625f;
                             float y = (v[1] - scr[5]) * 0.0625f;
-                            float ang = normalize_angle(IntToFloat(D_L13_0015F6B0) / 20.0f);
+                            float ang = normalize_angle(IntToFloat(gemlik_frame_count) / 20.0f);
                             emit_transformed_2d_vertex_packet(tab, 0x1E, 0xFFFFF3, 0x500000FF, x, y, 1.3f, -ang);
                         }
                     } else {
@@ -2055,12 +2055,12 @@ int select_fighter_jet_target_and_draw_indicators(int a, char *p, char *a2, void
         case 0x6F:
         case 0x4BE:
             if (!(*(unsigned short *)(m + 0x34) & 1)) {
-                func_001F2418(v, m + 0x10);
+                project_to_screen(v, m + 0x10);
                 if (*(unsigned char *)(m + 0x31) != 0) {
                     {
                         float x = (v[0] - scr[4]) * 0.0625f;
                         float y = (v[1] - scr[5]) * 0.0625f;
-                        float ang = normalize_angle(IntToFloat(D_L13_0015F6B0) / 20.0f);
+                        float ang = normalize_angle(IntToFloat(gemlik_frame_count) / 20.0f);
                         emit_transformed_2d_vertex_packet(D_L13_001CBFC0, 0x1E, 0xFFFFF3, 0xFF00FF00, x, y, 1.0f, -ang);
                     }
                 }
@@ -2069,12 +2069,12 @@ int select_fighter_jet_target_and_draw_indicators(int a, char *p, char *a2, void
             break;
         case 0x4BF:
             if (!(*(unsigned short *)(m + 0x34) & 1) && *(unsigned char *)(m + 0x20) >= 2) {
-                func_001F2418(v, m + 0x10);
+                project_to_screen(v, m + 0x10);
                 if (*(unsigned char *)(m + 0x31) != 0) {
                     {
                         float x = (v[0] - scr[4]) * 0.0625f;
                         float y = (v[1] - scr[5]) * 0.0625f;
-                        float ang = normalize_angle(IntToFloat(D_L13_0015F6B0) / 20.0f);
+                        float ang = normalize_angle(IntToFloat(gemlik_frame_count) / 20.0f);
                         emit_transformed_2d_vertex_packet(D_L13_001CBFC0, 0x1E, 0xFFFFF3, 0xFF00FF00, x, y, 1.0f, -ang);
                     }
                 }
@@ -2215,7 +2215,7 @@ void DrawGemlikTurretHud(char *moby) {
             k = t * 5.0f + 1.0f;
             if (m > 1.0f) m = 1.0f;
             c = func_001FA898_r(m * 96.0f);
-            func_L13_002B9590_f(IntToFloat(sp10), IntToFloat(sp14), k, normalize_angle(IntToFloat(D_L13_0015F6B0) / 30.0f), 0, 0xFF, 0, c);
+            func_L13_002B9590_f(IntToFloat(sp10), IntToFloat(sp14), k, normalize_angle(IntToFloat(gemlik_frame_count) / 30.0f), 0, 0xFF, 0, c);
             *(int *)(d + 0xEC) = 0;
         } else {
             a = 0xFF;
@@ -2249,7 +2249,7 @@ void DrawGemlikTurretHud(char *moby) {
     append_rotated_sprite_quad(ex, ey, 40.0f, 40.0f, 0.0f, 0x3F, 0x3F, GetEffectTex(0x12), 0xFFFFF3, 0xFF20FF20, 0, 0, 0.5f, 0.5f);
     append_rotated_sprite_quad(ex, ey, 10.0f, 10.0f, 0.0f, 0x1F, 0x1F, GetEffectTex(8), 0xFFFFF3, 0xFF20FF20, 0, 0, 0.5f, 0.5f);
     b = D_0013E633 + 0xE1D;
-    if (*(float *)(b + 0x15FC) < *(float *)(b + 0x1600) / 10.0f && (D_L13_0015F6B0 / 90) & 1) {
+    if (*(float *)(b + 0x15FC) < *(float *)(b + 0x1600) / 10.0f && (gemlik_frame_count / 90) & 1) {
         func_001F6F40_c(0x100, 0x186, 0x80000080L, func_001FE540_id(0x526E), 0x64);
     }
     h = D_0013E633 + 0xE1D;
@@ -2666,7 +2666,7 @@ typedef struct { char pad0[0x10]; JVec47 velocity; Jet47 *source; int pad24,pad2
 extern float D_0015EE60 MACRO_ADDR;
 extern int D_0015EE84 MACRO_ADDR;
 extern unsigned char D_0014171B[];
-extern JetCamera47 jet_camera47 __asm__("D_L13_00167000");
+extern JetCamera47 jet_camera47_r __asm__("D_L13_00167000");
 extern float D_L13_0016CE70;
 extern JetTexture47 D_L13_0016D500[];
 extern unsigned int D_L13_0015F520 MACRO_ADDR;
@@ -2717,7 +2717,7 @@ void JetFighterUpdateL13(Jet47 *m) {
                 if (hit->source && (unsigned int)(hit->source->class_id-0x52)<2) d->hit_class=(short)hit->source->class_id;
                 if (hit->flags&1) {
                     float weight,yaw_delta,pitch_delta;
-                    jet_camera47.flash=1.0f; jet_camera47.ticks=scale_ticks(4);
+                    jet_camera47_r.flash=1.0f; jet_camera47_r.ticks=scale_ticks(4);
                     weight=hit->damage*0.05f;
                     BuildSphericalOffset(impulse,d->speed,d->angles[2],-d->angles[1]);
                     clamp_vec_length(hit->velocity,hit->velocity,g_frame_time*3.0f);
@@ -2731,7 +2731,7 @@ void JetFighterUpdateL13(Jet47 *m) {
             } else {
                 BuildSphericalOffset(impulse,d->speed,d->angles[2],-d->angles[1]);
                 if (hit->source && (unsigned int)(hit->source->class_id-0x52)<2) d->hit_class=(short)hit->source->class_id+10000;
-                jet_camera47.flash=0.2f; jet_camera47.ticks=scale_ticks(5);
+                jet_camera47_r.flash=0.2f; jet_camera47_r.ticks=scale_ticks(5);
                 ((JetPlayer47*)(D_0013E633+0xE1D))->health=0.0f; m->flags|=0x41;
                 spawn_explosion(m,impulse,0,0.0f,0.0f,10,3,16,4.0f,2.0f,9.0f,6,1.0f,15.0f,1,1,-1,0);
                 m->animation=0; d->death_timer=scale_ticks(240); m->state=6;

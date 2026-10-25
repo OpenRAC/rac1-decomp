@@ -120,7 +120,7 @@ void blarg_space_commando_update(struct Moby *moby) {
     target = vars->target;
     Manipulator_ApplyScale(moby, 1, vars->unk420, 2.5f);
     if (moby->visible != 0 && FastVecDist(&moby->pos, &D_L06_00167640) < 27.0f) {
-        func_L00_0025B178(moby);
+        set_ground_height_band(moby);
         moby->shadow_range = 0x15;
     }
     moby->anim_speed = 1.0f;
@@ -1257,7 +1257,7 @@ void draw_projected_fading_quad(char *moby) {
     if (1.0f < fade) fade = 1.0f;
     else if (fade < 0.0f) fade = 0.0f;
     VU1_addGSregister(0x47, 0x5380B);
-    func_001F2418(screen, &pos);
+    project_to_screen(screen, &pos);
     screen_center = (s32 *)(D_0013E15A + 0x4A6);
     raw_x = truncate_float_to_s32(screen[0] - (float)screen_center[4]);
     screen_offset = (float)screen_center[4];

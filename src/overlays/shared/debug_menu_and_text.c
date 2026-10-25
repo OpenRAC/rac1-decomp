@@ -721,7 +721,7 @@ void update_debug_menu(void) {
             float *p; s32 count=occlusion_sample_count;
             found=0;
             if (count > 0) {
-            p=D_L00_00173F20;
+            p=g_occlusion_samples;
             do {
                 if (p[0] < ((Camera_1F4918 *)player_camera)->x+0.5f && p[0] > ((Camera_1F4918 *)player_camera)->x-0.5f &&
                     p[1] < ((Camera_1F4918 *)player_camera)->y+0.5f && p[1] > ((Camera_1F4918 *)player_camera)->y-0.5f &&
@@ -741,7 +741,7 @@ void update_debug_menu(void) {
                 ((DebugMenu_1F4918 *)g_debug_menu)->point_timer=121;
             }
             {
-            float *p=D_L00_00173F20;
+            float *p=g_occlusion_samples;
             func_00116248(buf.points.path,dev,fmt,g_current_level_index,occlusion_samples_file_name,iso_version_suffix);
             fd=func_0011BF80(buf.points.path,0x303);
             if (fd >= 0) {

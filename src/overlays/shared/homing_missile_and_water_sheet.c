@@ -1152,7 +1152,7 @@ extern unsigned char D_0013E15A[];
 void project_world_point_to_screen_pixels(void *pt, int *outx, int *outy, int yoff) {
     float p[4];
     int *g;
-    func_001F2418(p, pt);
+    project_to_screen(p, pt);
     g = (int *)(D_0013E15A + 0x4A6);
     *outx = func_001FA898_r((p[0] - (float)g[4]) * 0.0625f);
     *outy = func_001FA898_r((p[1] - (float)g[5]) * 0.0625f) + yoff;

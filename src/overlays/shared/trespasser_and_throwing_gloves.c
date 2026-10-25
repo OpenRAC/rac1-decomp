@@ -700,7 +700,7 @@ void destroy_decoy_with_particles(unsigned char *m) {
         s = random_float_between(100000.0f, 600000.0f);
         func_L00_0026AA10_C4748(v, r, g, b, s, 0.0f, scale_ticks(func_001160D8() % 40 + 10));
     }
-    mine_spawn_drops(m, decoy_list);
+    moby_index_list_remove(m, decoy_list);
     DeleteMoby(m);
 }
 extern u8 D_0013E620[40];
@@ -768,7 +768,7 @@ u8 *spawn_decoy(s32 value, u128_C48C8 *position, u128_C48C8 *other_position) {
                 }
             }
             if (candidate != 0) {
-                mine_spawn_drops(candidate, D_L00_001B0BB0_C48C8);
+                moby_index_list_remove(candidate, D_L00_001B0BB0_C48C8);
                 candidate[0x20] = 6;
             }
         }
@@ -1110,20 +1110,20 @@ void decoy_update(char *moby) {
     if (*(float *)(moby + 0x10) < 2.0f || 1021.0f < *(float *)(moby + 0x10) ||
         *(float *)(moby + 0x14) < 2.0f || 1021.0f < *(float *)(moby + 0x14) ||
         *(float *)(moby + 0x18) < 2.0f || 1021.0f < *(float *)(moby + 0x18)) {
-        mine_spawn_drops(moby, decoy_list);
+        moby_index_list_remove(moby, decoy_list);
         DeleteMoby(moby);
         return;
     }
     {
     if (((char *)D_0013F450_C48C8.items[0].moby == 0 || *(short *)((char *)D_0013F450_C48C8.items[0].moby + 0xA6) != 0x232) &&
         *(unsigned char *)(moby + 0x20) == 1) {
-        mine_spawn_drops(moby, decoy_list);
+        moby_index_list_remove(moby, decoy_list);
         DeleteMoby(moby);
         return;
     } }
     {
     if (D_0013F450_C48C8.vehicle_mode != 0 && *(unsigned char *)(moby + 0x20) == 1) {
-        mine_spawn_drops(moby, decoy_list);
+        moby_index_list_remove(moby, decoy_list);
         DeleteMoby(moby);
         return;
     } }
@@ -1157,7 +1157,7 @@ void decoy_update(char *moby) {
             (t = (char *)D_0013F450_C48C8.items[0].moby) != 0 && *(short *)(t + 0xA6) == 0x232)
             return;
         }
-        mine_spawn_drops(moby, decoy_list);
+        moby_index_list_remove(moby, decoy_list);
         DeleteMoby(moby);
         return;
     case 2:
@@ -1315,7 +1315,7 @@ void decoy_update(char *moby) {
                             *(unsigned short *)((char *)xv + 10) = *(unsigned short *)(moby + 0xA6);
                             coll_sphere_mobys(effect * 3.0f, moby + 0x10, 0x10, moby, wv);
                         }
-                        mine_spawn_drops(moby, decoy_list);
+                        moby_index_list_remove(moby, decoy_list);
                         DeleteMoby(moby);
                         return;
                     }
@@ -1366,7 +1366,7 @@ void decoy_update(char *moby) {
             if (FastDecTimer(vars + 0x44) != 0) {
                 if (*(unsigned char *)(moby + 0x53) != 0)
                     MobyBlendAnimation(moby, 0, 0, scale_ticks(60));
-                mine_spawn_drops(moby, decoy_list);
+                moby_index_list_remove(moby, decoy_list);
                 *(unsigned char *)(moby + 0x20) = 5;
             }
         }

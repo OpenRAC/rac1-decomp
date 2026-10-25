@@ -270,7 +270,7 @@ typedef struct {
 } SndStreamBlock;
 
 void music_start_track_60000(int arg0, int arg1, int arg2) {
-    SndToc *toc = (SndToc *)D_00137C80;
+    SndToc *toc = (SndToc *)disc_table;
     int i = arg0 - 60000;
     int h;
     SndStreamBlock *s;
@@ -306,12 +306,12 @@ typedef struct {
 } TrackDiscTable;
 
 void music_start_track_50000(int track, int flags, int volume) {
-    TrackDiscTable *disc_table = (TrackDiscTable *)D_00137C80;
+    TrackDiscTable *track_disc_table = (TrackDiscTable *)disc_table;
     int i = track - 50000;
     int handle;
     TrackStreamState *music_stream_state;
 
-    handle = disc_table->music_50000[i][g_game_language];
+    handle = track_disc_table->music_50000[i][g_game_language];
     if (handle == 0) {
         return;
     }
@@ -338,7 +338,7 @@ typedef struct {
 } MusicStreamTail;
 
 void music_start_track_40000(int track, int track_flags, int volume) {
-    SndToc *toc = (SndToc *)D_00137C80;
+    SndToc *toc = (SndToc *)disc_table;
     int i = track - 40000;
     int location;
     MusicStreamTail *s;
@@ -413,7 +413,7 @@ typedef struct {
 } MusicStreamLayout;
 
 void music_start_track_20000(int track, int track_flags, int volume) {
-    SndToc *toc = (SndToc *)D_00137C80;
+    SndToc *toc = (SndToc *)disc_table;
     int index = track - 20000;
     int handle;
     MusicStreamLayout *state;
@@ -460,7 +460,7 @@ typedef struct {
 } PalStreamState;
 
 void music_start_track_10000(int track, int flags, int volume) {
-    SndToc *toc = (SndToc *)D_00137C80;
+    SndToc *toc = (SndToc *)disc_table;
     int i = track - 10000;
     int stream;
     PalStreamState *rec;
@@ -591,7 +591,7 @@ void music_PreseekTrack(int arg0, int arg1, int arg2) {
     long stream_location;
 
     if (music_stream_state->primary.handle == 0) {
-        disc_table_base = (u8 *)D_00137C80;
+        disc_table_base = (u8 *)disc_table;
         track_location_table_byte_offset = 0x2AA8;
         entry = (s32 *)(disc_table_base + track_location_table_byte_offset) + arg0;
         if (*entry != 0) {
@@ -637,7 +637,7 @@ void music_StartTrack(int arg0, int arg1, int arg2) {
     if (s->handle != 0) {
         return;
     }
-    base = (char *)D_00137C80;
+    base = (char *)disc_table;
     tbl = (int *)(base + 0x2AA8);
     if (tbl[arg0] == 0) {
         return;
@@ -682,7 +682,7 @@ void music_StartTrackBody(int arg0, int arg1, int arg2) {
     if (cur == 0 || cur == 0xFFFFFFFF) {
         return;
     }
-    base = (char *)D_00137C80;
+    base = (char *)disc_table;
     tbl = (int *)(base + 0x2AA8);
     i = arg0 + 1;
     if (tbl[i] == 0) {
@@ -741,7 +741,7 @@ int music_Transition(int arg0, int arg1, int arg2, int arg3) {
     long h;
 
     if (s->transition.handle == 0) {
-        base = (MusicTrackTable *)D_00137C80;
+        base = (MusicTrackTable *)disc_table;
         tbl = base->music_tracks;
         if (tbl[arg1] != 0) {
             s->transition.flags = arg2;

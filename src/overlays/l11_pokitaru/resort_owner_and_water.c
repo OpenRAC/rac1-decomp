@@ -268,7 +268,7 @@ extern void func_L11_002D3970(void *);
 void resort_owner_update(unsigned char *moby) {
     attach_big_head_cheat_manipulator_to_matching_moby(moby);
     if (moby[0x31] && FastVecDist(moby + 0x10, camera_pos_b358) < 38.0f) {
-        func_L00_0025B178(moby);
+        set_ground_height_band(moby);
         moby[0x7F] = 30;
     }
     update_resort_owner_state_actions(moby);
@@ -813,7 +813,7 @@ int try_update_resort_owner_path_target(char *moby, char *other) {
     default:
         break;
     }
-    return func_L01_00277FD8(buf, n, d->b[d->idx], moby + 0x10, other, d->e, 0.2f) != 0;
+    return follow_path(buf, n, d->b[d->idx], moby + 0x10, other, d->e, 0.2f) != 0;
 }
 extern short D_L11_00160074;
 extern int D_L11_00160074_m __asm__("D_L11_00160074") MACRO_ADDR;
@@ -1051,7 +1051,7 @@ void fred_pokitaru_update(char *m)
     attach_big_head_cheat_manipulator_to_matching_moby(m);
     if (moby->visible != 0) {
         if (FastVecDist((char *)&moby->pos, camera_pos_b358) < 30.0f) {
-            func_L00_0025B178(m);
+            set_ground_height_band(m);
             moby->shadow_range = 24;
         }
     }

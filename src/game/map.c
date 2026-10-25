@@ -637,7 +637,7 @@ extern void func_002008B8(s32, s32, s32, s32, s32, s32);
 extern void func_00200E38(f32, f32, f32, f32, f32, s32, s32, u64);
 extern void append_screen_rect_packet(s32, s32, s32, s32, u64, s32) __asm__("func_00201640");
 extern void format_menu_item_text(s32, void *) __asm__("func_00208AB0");
-extern void world_to_map_coords(f32 *, f32 *, s32, f32, f32) __asm__("func_00208C38");
+extern void world_to_map_coords_r(f32 *, f32 *, s32, f32, f32) __asm__("func_00208C38");
 /* EABI places floating and integer arguments in independent register banks. */
 extern void world_to_map_coords_xy_205E70(f32, f32, f32 *, f32 *, s32) __asm__("func_00208C38");
 extern void func_00208D38(s32, s32, s32, s32);
@@ -1035,7 +1035,7 @@ void draw_map_overlay(void) {
                 angle = fast_add_rotations(angle, 1.5707964f);
             }
             if (map_data_0015FE20 != 0) {
-                world_to_map_coords(&label_buffer.f[0], &label_buffer.f[1], map_data_0015EE84 + 100,
+                world_to_map_coords_r(&label_buffer.f[0], &label_buffer.f[1], map_data_0015EE84 + 100,
                                     map_data_0013F450.x, map_data_0013F450.y);
                 angle = fast_add_rotations(angle, 1.5707964f);
             } else {

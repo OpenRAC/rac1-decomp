@@ -244,9 +244,9 @@ void load_and_initialize_level_chunk(void) {
     int s1;
     int s2;
 
-    calculate_ring_buffer_bounds(D_00137C80[5] << 11, &a, &b);
+    calculate_ring_buffer_bounds(disc_table[5] << 11, &a, &b);
     update_audio_stream_until_idle(1);
-    func_002176C8_i(a, D_00137C80[4], D_00137C80[5]);
+    func_002176C8_i(a, disc_table[4], disc_table[5]);
     s2 = D_0015EEF0;
     s1 = music_volume;
     s0 = playback_mode;

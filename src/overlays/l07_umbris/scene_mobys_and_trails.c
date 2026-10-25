@@ -432,7 +432,7 @@ void update_scene_moby_effect_bursts(char *m) {
         m[0x20] = 1;
         break;
     case 1:
-        a = D_L07_0015F6A8;
+        a = umbris_scene_state;
         if (a != 2) return;
         S = D_L07_0016C960_c;
         t = *(int *)(S + 0x30) - 3;
@@ -602,7 +602,7 @@ void update_scene_moby_trails(unsigned char *moby) {
         moby[0x20] = 1;
         break;
     case 1:
-        if (D_L07_0015F6A8 == 2) {
+        if (umbris_scene_state == 2) {
             char *g = D_L07_0016C960;
             int s = *(int *)(g + 0x30);
             if (s == 1 || s == 2) {

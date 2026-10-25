@@ -356,7 +356,7 @@ extern char *func_L00_001EB578(int);
 
 /* Copies a vector into the current object's slot, switching to state 5 first. */
 void set_camera_position(char *src) {
-    char *g = D_L00_00166F00;
+    char *g = g_current_follow_cam;
     char *p;
     if (*(short *)(g + 0x86) != 5)
         p = find_camera_record_by_id(5);
@@ -366,7 +366,7 @@ void set_camera_position(char *src) {
 }
 /* Copies the vector at src into the camera record's state block. */
 void set_camera_rotation(char *src) {
-    char *g = D_L00_00166F00;
+    char *g = g_current_follow_cam;
     char *p;
     if (*(short *)(g + 0x86) != 5)
         p = find_camera_record_by_id(5);
@@ -1273,7 +1273,7 @@ extern char *D_L00_0015F050 MACRO_ADDR;
 extern float D_L00_00166ED8 MACRO_ADDR;
 extern float D_L00_00166FB4;
 extern unsigned char D_0013A5E0[];
-#define pad_held ((s32 *)(D_0013A5E0 + 0x2600))
+#define pad_held_r ((s32 *)(D_0013A5E0 + 0x2600))
 #define controller_state (*(PadSt *)(D_0013A5E0 + 0x2460))
 
 extern int func_L00_002E9870(void *);
@@ -1316,10 +1316,10 @@ void volume_camera_swing(char *arg) {
     f32 t;
 
     params = ((CamDesc *)camera_descriptors)[cam->descriptor_index].params;
-    if (params->type == 8 && FOLLOW_CAM_STATE(((struct UpdateCam *)D_L00_00166F00))->tail.mode == 0) {
+    if (params->type == 8 && FOLLOW_CAM_STATE(((struct UpdateCam *)g_current_follow_cam))->tail.mode == 0) {
         return;
     }
-    if (params->type == 6 && FOLLOW_CAM_STATE(((struct UpdateCam *)D_L00_00166F00))->tail.mode != 0) {
+    if (params->type == 6 && FOLLOW_CAM_STATE(((struct UpdateCam *)g_current_follow_cam))->tail.mode != 0) {
         return;
     }
     if (volume_camera_swing_active((void *)cam) == 0) {
@@ -1336,7 +1336,7 @@ void volume_camera_swing(char *arg) {
         && FastDiffRots(((CamDesc *)camera_descriptors)[cam->descriptor_index].yaw, D_L00_00166ED8) >= 1.3962634f) {
         goto stop;
     }
-    if (params->l_buttons_end != 0 && params->type == 5 && (pad_held[0] & 5)) {
+    if (params->l_buttons_end != 0 && params->type == 5 && (pad_held_r[0] & 5)) {
 stop:
         if (params->timer != 0) {
             params->done = 1;
@@ -1352,7 +1352,7 @@ stop:
     }
     if (*(s32 *)&params->type == 5) {
         *(s32 *)&params->swing = 0;
-        rec = ((struct UpdateCam *)D_L00_00166F00);
+        rec = ((struct UpdateCam *)g_current_follow_cam);
         rig = FOLLOW_CAM_STATE(rec);
         follow = &rig->follow;
         tail = &rig->tail;
@@ -1390,14 +1390,14 @@ stop:
     params->timer++;
     if (params->type == 10) {
         set_follow_camera_blend_output_flags();
-        FOLLOW_CAM_STATE(((struct UpdateCam *)D_L00_00166F00))->tail.mode = 0x14D;
+        FOLLOW_CAM_STATE(((struct UpdateCam *)g_current_follow_cam))->tail.mode = 0x14D;
     }
     if (params->type == 11) {
         set_follow_camera_blend_output_flags();
-        FOLLOW_CAM_STATE(((struct UpdateCam *)D_L00_00166F00))->tail.mode = 2;
+        FOLLOW_CAM_STATE(((struct UpdateCam *)g_current_follow_cam))->tail.mode = 2;
     }
     if (params->type == 2 || params->type == 4) {
-        { FollowCamFlags *ctl = &FOLLOW_CAM_STATE(((struct UpdateCam *)D_L00_00166F00))->tail.ctl; ctl->flags |= 3; }
+        { FollowCamFlags *ctl = &FOLLOW_CAM_STATE(((struct UpdateCam *)g_current_follow_cam))->tail.ctl; ctl->flags |= 3; }
         if (params->timer > scale_ticks(200)) {
             at_end = 1;
             params->timer = scale_ticks(200);
@@ -1464,10 +1464,10 @@ stop:
         func_L00_002E99F0(params->unk50 * 0.017453292f);
     }
     if (params->set_flag1 != 0) {
-        { FollowCamFlags *ctl = &FOLLOW_CAM_STATE(((struct UpdateCam *)D_L00_00166F00))->tail.ctl; ctl->flags |= 2; }
+        { FollowCamFlags *ctl = &FOLLOW_CAM_STATE(((struct UpdateCam *)g_current_follow_cam))->tail.ctl; ctl->flags |= 2; }
     }
     if (params->set_flag0 != 0) {
-        { FollowCamFlags *ctl = &FOLLOW_CAM_STATE(((struct UpdateCam *)D_L00_00166F00))->tail.ctl; ctl->flags |= 1; }
+        { FollowCamFlags *ctl = &FOLLOW_CAM_STATE(((struct UpdateCam *)g_current_follow_cam))->tail.ctl; ctl->flags |= 1; }
     }
     if (params->keep_unk10 == 0) {
         set_follow_camera_orbit_clamp_mode(0);
@@ -1594,7 +1594,7 @@ struct VolAimWorld {
 /* Returns nonzero when an object's path is blocked; otherwise marks the path entry as reached. */
 int volume_camera_aim_active(void *arg) {
     struct VolAimCam *aim_camera_record = arg;
-    struct VolAimCam *rec = (struct VolAimCam *)D_L00_00166F00;
+    struct VolAimCam *rec = (struct VolAimCam *)g_current_follow_cam;
     struct VolAimParams *params = ((struct VolAimDesc *)camera_descriptors)[aim_camera_record->descriptor_index].params;
     struct VolAimState *state = rec->saved_state;
     struct VolAimTail *tail = &state->tail;
@@ -1704,7 +1704,7 @@ void volume_camera_aim(void *cam_) {
             params->timer = 0;
             return;
         }
-        if (!(D_0013CBE0 & 5)) {
+        if (!(pad_held & 5)) {
             goto run;
         }
     }
@@ -1734,7 +1734,7 @@ run:
         } else {
             params->offset_scale = params->height - params->distance * (FastSin(angle) / FastCos(angle));
         }
-        rec = (struct UpdateCam_ee *)D_L00_00166F00;
+        rec = (struct UpdateCam_ee *)g_current_follow_cam;
         rig = (FollowCamState_ee *)rec->saved_state;
         rec_pos = &rec->pos;
         follow = &rig->follow;

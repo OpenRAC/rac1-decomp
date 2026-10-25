@@ -495,7 +495,7 @@ void update_layered_mesh_effect(unsigned char *moby) {
             w[1] = D_L08_00161E54;
             w[2] = D_L08_00161E58;
             w[3] = 1.0f;
-            FastVecSub(w, D_L08_00167640, w);
+            FastVecSub(w, batalia_hero_pos, w);
             d = FastVecLength(w);
             if (d <= 84.0f) {
                 AdvanceScrollOffsets(0);
@@ -876,8 +876,8 @@ void commando_update(char *m) {
     WD8 *commando_vars = (WD8 *)moby->pvars;
     attach_big_head_cheat_manipulator_to_matching_moby(m);
     if (moby->visible != 0) {
-        if (FastVecDist(&moby->pos, D_L08_00167640) < (float)*(int *)&D_L08_00162268) {
-            func_L00_0025B178(m);
+        if (FastVecDist(&moby->pos, batalia_hero_pos) < (float)*(int *)&D_L08_00162268) {
+            set_ground_height_band(m);
             moby->shadow_range = (*(int *)&D_L08_00162268 * 13) >> 4;
         }
     }
@@ -1076,8 +1076,8 @@ void batalia_deserter_update(char *m) {
     DeserterData_2EAF48 *deserter_data = (DeserterData_2EAF48 *)moby->pvars;
     attach_batalia_deserter_class_manipulator(m);
     if (moby->visible != 0) {
-        if (FastVecDist(&moby->pos, D_L08_00167640) < 30.0f) {
-            func_L00_0025B178(m);
+        if (FastVecDist(&moby->pos, batalia_hero_pos) < 30.0f) {
+            set_ground_height_band(m);
             moby->shadow_range = 0x18;
         }
     }
@@ -1720,7 +1720,7 @@ void update_batalia_textured_effect(unsigned char *moby) {
             w[1] = D_L08_00162414;
             w[2] = D_L08_00162418;
             w[3] = 1.0f;
-            FastVecSub(w, D_L08_00167640, w);
+            FastVecSub(w, batalia_hero_pos, w);
             d = FastVecLength(w);
             if (d <= 84.0f) {
                 AdvanceScrollOffsets(0);

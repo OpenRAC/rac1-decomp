@@ -1537,7 +1537,7 @@ void bombomatic_update(char *m) {
     d = *(char **)(m + 0x78);
     if (((unsigned char *)m)[0x31] != 0) {
         if (FastVecDist(m + 0x10, debris_far_point) < 27.0f) {
-            func_L00_0025B178(m);
+            set_ground_height_band(m);
             m[0x7F] = 0x15;
         }
     }

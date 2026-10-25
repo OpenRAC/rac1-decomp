@@ -397,8 +397,8 @@ void update_doom_bot_spawner(char *m) {
     }
     case 3: {
         f0 = ProbeGroundHeight(m + 0x10, 0, 0.5f);
-        if (f0 != 0.0f && D_L00_00173F58 != 0) {
-            RotateWithMoby((int)m, D_L00_00173F58, m + 0x10, m + 0x40, m + 0x10, m + 0x40);
+        if (f0 != 0.0f && g_coll_hit_moby != 0) {
+            RotateWithMoby((int)m, g_coll_hit_moby, m + 0x10, m + 0x40, m + 0x10, m + 0x40);
         }
         if (FastDecTimer(s + 0x38) != 0) {
             char *p = (char *)suck_moby_list;
@@ -450,8 +450,8 @@ void update_doom_bot_spawner(char *m) {
         *(unsigned char *)(m + 0x23) = *(unsigned char *)(m + 0x23) - 4;
         *(float *)(m + 0x2C) = f0;
         f0 = ProbeGroundHeight(m + 0x10, 0, 0.5f);
-        if (f0 != 0.0f && D_L00_00173F58 != 0) {
-            RotateWithMoby((int)m, D_L00_00173F58, m + 0x10, m + 0x40, m + 0x10, m + 0x40);
+        if (f0 != 0.0f && g_coll_hit_moby != 0) {
+            RotateWithMoby((int)m, g_coll_hit_moby, m + 0x10, m + 0x40, m + 0x10, m + 0x40);
         }
         if (*(unsigned char *)(m + 0x23) == 0) {
             DeleteMoby(m);
@@ -3011,7 +3011,7 @@ void crate_update(struct Moby *moby) {
             }
             if (moby->oclass != 0x1FE) {
                 moby->oclass++;
-                moby->class_slot = D_L00_00197F40[moby->oclass];
+                moby->class_slot = g_class_slot[moby->oclass];
                 moby->pclass = moby_class_headers[moby->class_slot];
                 update_moby_animation_state(moby);
                 moby->unk72 = ((Part *)moby->pclass)->unkE;

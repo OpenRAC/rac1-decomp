@@ -426,8 +426,8 @@ void mine_update(M910 *m) {
                     if (!(v->p4C != 0 && v->p4C->state != 0xFE && v->p4C->state != 0xFD)) {
                         m->bBC = 1;
                         v->p4C = 0;
-                    } else if (D_L00_00173F58 != 0) {
-                        hd = (M910 *)GetFlaggedPvarWord((unsigned char *)D_L00_00173F58);
+                    } else if (g_coll_hit_moby != 0) {
+                        hd = (M910 *)GetFlaggedPvarWord((unsigned char *)g_coll_hit_moby);
                         if (hd != 0) {
                             RotateWithMoby(m, v->p4C, &m->pos, &m->rx, &m->pos, &m->rx);
                         }
@@ -541,12 +541,12 @@ void mine_update(M910 *m) {
                         qcopy(&probe, &m->pos);
                         probe.f[2] += 0.35f;
                         if (coll_sphere_mobys(&probe, 0x10, m, &q2, 0.35f) != 0
-                            && D_L00_00173F58 != 0
-                            && D_L00_00173F58->cls != 0x363
-                            && D_L00_00173F58->cls != 0x4A
-                            && D_L00_00173F58->cls != 0x458
-                            && D_L00_00173F58->cls != 0x365
-                            && D_L00_00173F58->cls != 0x367) {
+                            && g_coll_hit_moby != 0
+                            && g_coll_hit_moby->cls != 0x363
+                            && g_coll_hit_moby->cls != 0x4A
+                            && g_coll_hit_moby->cls != 0x458
+                            && g_coll_hit_moby->cls != 0x365
+                            && g_coll_hit_moby->cls != 0x367) {
                             m->bBC = 1;
                         }
                         qcopy(&probe, &m->pos);
@@ -665,7 +665,7 @@ void mine_update(M910 *m) {
             v->i78 = 0;
             if (v->i5C < 0 || *(int *)&D_L00_001614A0 != 0) {
                 SpawnExplosionFx(m, &m->pos, -1, 0.33f, 13.0f);
-                mine_spawn_drops(m, D_L00_001B0B30);
+                moby_index_list_remove(m, D_L00_001B0B30);
                 DeleteMoby(m);
             }
             {
@@ -863,7 +863,7 @@ void mine_update(M910 *m) {
                 } else {
                     mine_camera_blast((char *)&a, (char *)&m->pos, 0, 0);
                 }
-                mine_spawn_drops(m, D_L00_001B0B30);
+                moby_index_list_remove(m, D_L00_001B0B30);
                 DeleteMoby(m);
             } else {
                 jet_animate((unsigned char *)m, 0.25f);
@@ -1382,8 +1382,8 @@ check_surface:
             break;
         }
     }
-    if (timer && (mode || (D_L00_00173F58 && GetFlaggedPvarWord((unsigned char *)D_L00_00173F58)))) {
-        if (mode != 2 || !D_L00_00173F58 || !GetFlaggedPvarWord((unsigned char *)D_L00_00173F58))
+    if (timer && (mode || (g_coll_hit_moby && GetFlaggedPvarWord((unsigned char *)g_coll_hit_moby)))) {
+        if (mode != 2 || !g_coll_hit_moby || !GetFlaggedPvarWord((unsigned char *)g_coll_hit_moby))
             AddDrawCallback((void *)draw_bomb_landing_marker, m);
         if (!object_hit && v->last_hit) {
             last = v->last_hit;
@@ -2391,7 +2391,7 @@ void gold_devastator_missile_update(M910 *m) {
     Vec4 smoke_position;
     Vec4 motion;
     Vec4 surface_motion;
-    Vec4 hero_velocity;
+    Vec4 hero_vel;
     MissilePhase1688 phase;
     Vec4 predicted;
     float basis[4][4];
@@ -2418,8 +2418,8 @@ void gold_devastator_missile_update(M910 *m) {
         float turn=IntToFloat(d->turn_time);
         turn=turn/IntToFloat(d->turn_period);
         FastVecAdd(phase.collision.dir,&hero_motion1688.current,&hero_motion1688.previous);
-        hero_velocity=phase.vectors.direction;
-        FastVecScale(&hero_velocity,&hero_velocity,turn);
+        hero_vel=phase.vectors.direction;
+        FastVecScale(&hero_vel,&hero_vel,turn);
     }
     size=IntToFloat(gold_weapon_purchased.bB)+1.0f;
     if(target && d->life<scale_ticks(300)-scale_ticks(5) && (signed char)target->state>=0) {
@@ -2430,7 +2430,7 @@ void gold_devastator_missile_update(M910 *m) {
         if(d->track_velocity) {
             float b,a,root,t1,t2,denominator,negative_b;
             FastVecSub(&phase.vectors.relative,&phase.vectors.target,&d->previous_target);
-            cross1688(&predicted,&phase.vectors.relative,&hero_velocity);
+            cross1688(&predicted,&phase.vectors.relative,&hero_vel);
             qcopy(&d->previous_target,&phase.vectors.target);
             a=dot1688(&phase.vectors.relative);
             b=(phase.vectors.relative.f[0]*phase.collision.dir[0]+phase.vectors.relative.f[1]*phase.collision.dir[1]+phase.vectors.relative.f[2]*phase.collision.dir[2])*-2.0f;
@@ -2504,10 +2504,10 @@ void gold_devastator_missile_update(M910 *m) {
         }
     }
     qcopy(&previous,(&m->pos));
-    combine_velocity1688(phase.collision.dir,&motion,&hero_velocity);
+    combine_velocity1688(phase.collision.dir,&motion,&hero_vel);
     FastVecAdd((&m->pos),(&m->pos),&motion);
     if(m->pos.f[0]<0.0f || m->pos.f[1]<0.0f || m->pos.f[2]<0.0f) {
-        mine_spawn_drops(m,D_L00_001B0AF0);
+        moby_index_list_remove(m,D_L00_001B0AF0);
         DeleteMoby(m);
         return;
     }
@@ -2553,7 +2553,7 @@ void gold_devastator_missile_update(M910 *m) {
         rotate1688(&surface_motion,&surface_motion,m->mtx);
         rotate1688(&normal,&normal,m->mtx);
         if(!gold_weapon_purchased.bB) {
-            mine_spawn_drops(m,D_L00_001B0AF0);
+            moby_index_list_remove(m,D_L00_001B0AF0);
             DeleteMoby(m);
             return;
         }
@@ -2697,7 +2697,7 @@ void gold_devastator_missile_update(M910 *m) {
         }
         d->bounce_count++;
         if(!gold_weapon_purchased.bB || d->bounce_count==3) {
-            mine_spawn_drops(m,D_L00_001B0AF0);
+            moby_index_list_remove(m,D_L00_001B0AF0);
             DeleteMoby(m);
             return;
         }

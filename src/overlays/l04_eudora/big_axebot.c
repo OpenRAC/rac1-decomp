@@ -508,7 +508,7 @@ void big_axebot_update(M_B7B0 *moby) {
     Manipulator_ApplyScale(2.5f, (int)moby, 0, (unsigned char *)&data->m120);
     if (moby->f31 != 0) {
         if (FastVecDist(moby->pos, D_L04_00166FC0) < 27.0f) {
-            func_L00_0025B178(moby);
+            set_ground_height_band(moby);
             moby->f7F = 0x15;
         }
     }
@@ -534,7 +534,7 @@ void big_axebot_update(M_B7B0 *moby) {
     qcopy(tpos, tg.pos);
     if (moby->f31 != 0) {
         if (FastVecDist(moby->pos, D_L04_00166FC0) < 32.0f) {
-            func_L00_0025B178(moby);
+            set_ground_height_band(moby);
             moby->f7F = 0x1A;
         }
     }
@@ -1488,7 +1488,7 @@ void circular_saw_enemy_update(M_35F0 *moby) {
     Manipulator_ApplyScale(2.9f, (int)moby, 7, data->f270);
     if (moby->f31 != 0) {
         if (FastVecDist(moby->pos, D_L04_00166FC0) < 27.0f) {
-            func_L00_0025B178(moby);
+            set_ground_height_band(moby);
             moby->f7F = 0x15;
         }
     }
@@ -2210,7 +2210,7 @@ void BlargTrooperUpdate(char *moby) {
     Manipulator_SetScale(data + 0x110, 3.0f);
     if (*(unsigned char *)(moby + 0x31) != 0) {
         if (FastVecDist(pos, D_L04_00166FC0) < 27.0f) {
-            func_L00_0025B178(moby);
+            set_ground_height_band(moby);
             *(unsigned char *)(moby + 0x7F) = 0x15;
         }
     }

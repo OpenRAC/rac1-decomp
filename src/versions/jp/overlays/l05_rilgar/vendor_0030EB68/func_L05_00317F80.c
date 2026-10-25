@@ -12,7 +12,7 @@ void update_hoverboard_girl(HGMoby *moby) {
     float pitch;
     float delta;
 
-    update_hoverboard_girl_cutscene_instances(moby);
+    update_hoverboard_girl_cutscene_instances_r(moby);
     switch (moby->state) {
     case 0:
         if (moby->animation != 0) {
@@ -20,14 +20,14 @@ void update_hoverboard_girl(HGMoby *moby) {
         }
         moby->position.component[2] = find_ground_height(0.5f, &moby->position, 0);
         if ((*(HGGates *)(D_0013D605 + 0xB3)).first_gate == 0 || (*(HGGates *)(D_0013D605 + 0xB3)).second_gate == 0) {
-            HGRaceEntry **entries = race_entries;
-            int entry = get_dialogue_entry(moby);
+            HGRaceEntry **entries = race_entries_r;
+            int entry = get_dialogue_entry_r(moby);
             entries[entry]->state = 13;
         }
         state->dialogue_name = race_girl_name;
         moby->state = 1;
         initialize_npc_dialogue(moby, state);
-        initialize_moby_grounding(moby);
+        initialize_moby_grounding_r(moby);
         break;
     case 1:
         if ((*(HGHero *)(D_0013E633 + 0xE1D)).state_current != 0x1D) {
@@ -181,7 +181,7 @@ void update_hoverboard_girl(HGMoby *moby) {
         }
     }
     if (game_mode != 2) {
-        update_hoverboard_girl_boobs_animation(moby, state);
+        update_hoverboard_girl_boobs_animation_r(moby, state);
         if ((gCheats[0]) != 0)
             state->joints[0].target_scale = 2.75f;
         update_joint_animation(moby, &state->joints[0], 0, rotation_step * frame_scale_sq,

@@ -3,7 +3,7 @@
 #include "include_asm.h"
 
 // Add and subtract a delta from a moby field, storing results
-void func_L02_0025D750(char *moby) {
+void initialize_moby_grounding(char *moby) {
     float delta = 0.2f;
     float val = *(float *)(moby + 0x18);
     *(float *)(moby + 0x84) = val - delta;

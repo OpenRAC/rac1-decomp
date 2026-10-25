@@ -479,7 +479,7 @@ void update_blarg_heavy_interceptor(struct Moby *m) {
     func_L14_002AEAF8_AD858(m);
     if (m->state > 0 && m->state < 7) {
         if (FastVecDist(&m->pos, oltanis_camera_pos) < 40.0f) {
-            func_L00_0025B178(m);
+            set_ground_height_band(m);
         }
         *(s16 *)(d + 0x200) = 0;
     }
@@ -2069,7 +2069,7 @@ void minibomber_update(Moby *moby) {
     if (moby->visible != 0) {
         if (FastVecDist(&moby->pos, oltanis_camera_pos) < 40.0f && moby->state != 0 && moby->state != 1 &&
             moby->state != 9) {
-            func_L00_0025B178(moby);
+            set_ground_height_band(moby);
         }
     }
     switch (moby->state) {

@@ -870,9 +870,9 @@ void update_hero_planar_movement_velocity(void) {
         }
         FastVecAdd(r, r, &v4);
     }
-    qcopy(&v3, D_0013F530);
+    qcopy(&v3, hero_velocity);
     v3.f[2] = 0.0f;
-    m = (G_167d0 *)(D_0013F530 - 0xE0);
+    m = (G_167d0 *)(hero_velocity - 0xE0);
     m->f3B0 = FastVecDot(&v3, &v0);
     k = FastVecLength(&v0);
     if (0.0f < k) {
@@ -880,7 +880,7 @@ void update_hero_planar_movement_velocity(void) {
     }
     clip_hero_velocity_against_probed_surfaces(0);
     if (m->f3B4 < 0.0174532924f && 0.0872664601f < m->f2E4) {
-        FastVecScale(D_0013F530, D_0013F530, FastCos(m->f2E4));
+        FastVecScale(hero_velocity, hero_velocity, FastCos(m->f2E4));
     }
     D_0013F450_16F58.f3B4 = D_0013F450_16F58.f2E4;
     if (FastAbsF(D_0013F450_16F58.f88 - D_0013F450_16F58.f2D8) < 0.15f) {

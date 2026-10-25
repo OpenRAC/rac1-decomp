@@ -96,7 +96,7 @@ typedef int u128 __attribute__((mode(TI)));
 // Returns a bitmask of the table's spheres that no listed object touches, testing swept offsets.
 int compute_clear_path_point_mask(int *objs, int n, int idx, float f, float *pos)
 {
-    char *t = D_L01_001B0C30[idx];
+    char *t = novalis_paths[idx];
     int mask = 0;
     int k;
     int j;
@@ -137,7 +137,7 @@ int compute_clear_path_point_mask(int *objs, int n, int idx, float f, float *pos
 // Expands a bit mask through a table of per-bit masks until it meets another mask.
 int expand_path_mask_to_intersection(int idx, int a, int mask)
 {
-    char *p = D_L01_001B0C30[idx];
+    char *p = novalis_paths[idx];
     int i;
     int j;
     int m;
@@ -177,7 +177,7 @@ s32 func_L01_00277A38_77FD8(s32 *ids, s32 n, f32 radius, s32 path_index, OvlVec4
 extern f32 func_001F9D48_77FD8(OvlVec4 *, OvlVec4 *) __asm__("func_001F9D48");
 
 /* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/state/00276a48.c, FUN_L01_00276fe8. */
-s32 func_L01_00277FD8(s32 *ids, s32 n, s32 path_index, f32 radius,
+s32 follow_path(s32 *ids, s32 n, s32 path_index, f32 radius,
                        OvlVec4 *pos, OvlVec4 *target, OvlVec4 *out) {
     OvlVec4 side;
     OvlVec4 left;

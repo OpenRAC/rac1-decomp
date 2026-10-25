@@ -1506,13 +1506,13 @@ typedef struct TrailFields_317CD8 {
 } TrailFields_317CD8;
 
 /* Updates the two trails of the moby; with the cheat counter on, they get wider and pulse. */
-void func_L05_00317CD8(char *moby, int data_addr) {
+void update_hoverboard_girl_boobs_animation(char *moby, int data_addr) {
     char *t = (char *)data_addr;
     int i;
     for (i = 0; i < 2; i++) {
         TrailFields_317CD8 *e = (TrailFields_317CD8 *)(t + i * 0x80);
-        if (*(int *)&D_L05_00161F90 != 0) {
-            float value = *(int *)&D_L05_00161F90 * 0.15f + 1.0f;
+        if (*(int *)&g_breast_growth_count != 0) {
+            float value = *(int *)&g_breast_growth_count * 0.15f + 1.0f;
             int frame;
             if (3.7f < value) value = 3.7f;
             frame = rilgar_frame_count;
@@ -1540,8 +1540,8 @@ extern void func_0020D960(char *, int, void *);
 extern void func_L05_00317CD8(char *, int);
 
 /* For every moby sharing this one's class: arms the marker record, and notifies it while the level flag is set. */
-void func_L05_00317E58(char *arg) {
-    if (rilgar_cinematic_mode == 2 && (gCheats[0] != 0 || *(int *)&D_L05_00161F90 != 0)) {
+void update_hoverboard_girl_cutscene_instances(char *arg) {
+    if (rilgar_cinematic_mode == 2 && (gCheats[0] != 0 || *(int *)&g_breast_growth_count != 0)) {
         int i;
         for (i = 0; i < D_L05_0016CD60.n; i++) {
             char *moby = D_L05_0016CD60.m[i];
@@ -1555,8 +1555,8 @@ void func_L05_00317E58(char *arg) {
                         *(float *)(q + 0x28) = 2.75f;
                     }
                 }
-                if (*(int *)&D_L05_00161F90 != 0) {
-                    func_L05_00317CD8(moby, *(int *)(arg + 0x78));
+                if (*(int *)&g_breast_growth_count != 0) {
+                    update_hoverboard_girl_boobs_animation(moby, *(int *)(arg + 0x78));
                 }
             }
         }
@@ -1652,7 +1652,7 @@ extern void func_0022EE28();
 #define breast_growth_count_gp_q (*(int*)&D_L05_00161F90)
 #define game_mode D_L05_0015F6A8
 #define frame_number D_L05_0015F6B0
-#define race_entries D_L05_001B1E78
+#define race_entries_r D_L05_001B1E78
 #define race_girl_name D_L05_00161F98
 #define race_camera_vectors D_L05_00215F00
 #define frame_scale_sq D_0015EE64
@@ -1664,9 +1664,9 @@ extern void func_0022EE28();
 #define random_remainder ((int(*)(int))(func_002140B0))
 #define blend_moby_animation ((void(*)(HGMoby *, int, int, int))(func_00213DE0))
 #define find_ground_height ((float(*)(float, HGVec *, int))(func_00214358))
-#define get_dialogue_entry ((int(*)(HGMoby *))(func_L00_00267618))
+#define get_dialogue_entry_r ((int(*)(HGMoby *))(func_L00_00267618))
 #define initialize_npc_dialogue ((void(*)(HGMoby *, HGState *))(func_L00_002676E8))
-#define initialize_moby_grounding ((void(*)(HGMoby *))(func_L02_0025D750))
+#define initialize_moby_grounding_r ((void(*)(HGMoby *))(func_L02_0025D750))
 #define update_npc_dialogue ((int(*)(HGMoby *, HGState *))(func_L00_00267290))
 #define begin_dialogue_camera_transition ((void(*)(float, HGMoby *))(func_L01_00279398))
 #define set_race_camera ((void(*)(HGVec *, HGVec *, int, int))(func_L00_00217718))
@@ -1684,8 +1684,8 @@ extern void func_0022EE28();
 #define signed_angle_difference ((float(*)(float, float))(func_001FA790))
 #define vector_length_xy ((float(*)(void *))(func_001F9CE8))
 #define update_joint_animation ((void(*)(HGMoby *, HGJoint *, int, float, float))(func_L00_00263950))
-#define update_hoverboard_girl_cutscene_instances ((void(*)(HGMoby *))(func_L05_00317E58))
-#define update_hoverboard_girl_boobs_animation ((void(*)(HGMoby *, HGState *))(func_L05_00317CD8))
+#define update_hoverboard_girl_cutscene_instances_r ((void(*)(HGMoby *))(func_L05_00317E58))
+#define update_hoverboard_girl_boobs_animation_r ((void(*)(HGMoby *, HGState *))(func_L05_00317CD8))
 #define func_0022EE28_x ((void(*)(int, int, int))(func_0022EE28))
 
 /* Moby update for the hoverboard race girl NPC. */
@@ -1703,7 +1703,7 @@ void update_hoverboard_girl(HGMoby *moby) {
     float pitch;
     float delta;
 
-    update_hoverboard_girl_cutscene_instances(moby);
+    update_hoverboard_girl_cutscene_instances_r(moby);
     switch (moby->state) {
     case 0:
         if (moby->animation != 0) {
@@ -1711,14 +1711,14 @@ void update_hoverboard_girl(HGMoby *moby) {
         }
         moby->position.component[2] = find_ground_height(0.5f, &moby->position, 0);
         if ((*(HGGates *)(D_0013D605 + 0xB3)).first_gate == 0 || (*(HGGates *)(D_0013D605 + 0xB3)).second_gate == 0) {
-            HGRaceEntry **entries = race_entries;
-            int entry = get_dialogue_entry(moby);
+            HGRaceEntry **entries = race_entries_r;
+            int entry = get_dialogue_entry_r(moby);
             entries[entry]->state = 13;
         }
         state->dialogue_name = race_girl_name;
         moby->state = 1;
         initialize_npc_dialogue(moby, state);
-        initialize_moby_grounding(moby);
+        initialize_moby_grounding_r(moby);
         break;
     case 1:
         if ((*(HGHero *)(D_0013E633 + 0xE1D)).state_current != 0x1D) {
@@ -1872,7 +1872,7 @@ void update_hoverboard_girl(HGMoby *moby) {
         }
     }
     if (game_mode != 2) {
-        update_hoverboard_girl_boobs_animation(moby, state);
+        update_hoverboard_girl_boobs_animation_r(moby, state);
         if ((gCheats[0]) != 0)
             state->joints[0].target_scale = 2.75f;
         update_joint_animation(moby, &state->joints[0], 0, rotation_step * frame_scale_sq,
@@ -1887,7 +1887,7 @@ void update_hoverboard_girl(HGMoby *moby) {
 #undef breast_growth_count_gp_q
 #undef game_mode
 #undef frame_number
-#undef race_entries
+#undef race_entries_r
 #undef race_girl_name
 #undef race_camera_vectors
 #undef frame_scale_sq
@@ -1899,9 +1899,9 @@ void update_hoverboard_girl(HGMoby *moby) {
 #undef random_remainder
 #undef blend_moby_animation
 #undef find_ground_height
-#undef get_dialogue_entry
+#undef get_dialogue_entry_r
 #undef initialize_npc_dialogue
-#undef initialize_moby_grounding
+#undef initialize_moby_grounding_r
 #undef update_npc_dialogue
 #undef begin_dialogue_camera_transition
 #undef set_race_camera
@@ -1919,8 +1919,8 @@ void update_hoverboard_girl(HGMoby *moby) {
 #undef signed_angle_difference
 #undef vector_length_xy
 #undef update_joint_animation
-#undef update_hoverboard_girl_cutscene_instances
-#undef update_hoverboard_girl_boobs_animation
+#undef update_hoverboard_girl_cutscene_instances_r
+#undef update_hoverboard_girl_boobs_animation_r
 #undef func_0022EE28_x
 extern void func_L05_003188A8(char *);
 extern int func_L00_002676E8(void *, void *);
@@ -2013,7 +2013,7 @@ void qwarks_bouncer_update(char *m)
         bouncer_moby->state = 1;
         DialogRequest_Init(m, bouncer_data);
         bouncer_data->fC = 3.7f;
-        func_L02_0025D750(m);
+        initialize_moby_grounding(m);
         break;
     case QWARKS_BOUNCER_UPDATE_DIALOGUE:
         if (Npc_TryStartDialog(m, bouncer_data))
@@ -2146,7 +2146,7 @@ void shady_salesman_update(char *m)
     attach_big_head_cheat_manipulator_to_matching_moby(m);
     if (moby->visible != 0) {
         if (FastVecDist(&moby->pos, D_L05_001672C0) < 40.0f) {
-            func_L00_0025B178(m);
+            set_ground_height_band(m);
             moby->shadow_range = 0x20;
         }
     }

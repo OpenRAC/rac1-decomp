@@ -396,10 +396,10 @@ void initialize_level_map_archive(void) {
     pp = (unsigned char *)menu_item_enabled_115 + 0xB9;
     if (pp[0x21] != 0) {
         map_menu_state[0x8C] = 1;
-        e = (int *)(D_00137C80 + 0x8B8) + map_menu_state[0x89] * 2;
+        e = (int *)(disc_table + 0x8B8) + map_menu_state[0x89] * 2;
     } else {
         map_menu_state[0x8C] = 0;
-        e = (int *)(D_00137C80 + 0x820) + map_menu_state[0x89] * 2;
+        e = (int *)(disc_table + 0x820) + map_menu_state[0x89] * 2;
     }
     if (e[1] != 0) {
         gl = map_menu_state;
@@ -617,9 +617,9 @@ void initialize_render_archive_transfer(void) {
     if (state->file_handle != -1) {
         if (state->loaded == 0 && gHaveMapOMatic != 0) {
             archive_index = state->archive_index;
-            bytes = D_00137C80.render_archives[archive_index].size << 7;
-            start_audio_stream_read(buffer, D_00137C80.render_archives[archive_index].sector,
-                         D_00137C80.render_archives[archive_index].size);
+            bytes = disc_table.render_archives[archive_index].size << 7;
+            start_audio_stream_read(buffer, disc_table.render_archives[archive_index].sector,
+                         disc_table.render_archives[archive_index].size);
             update_audio_stream_until_idle(1);
             state->loaded = 1;
             state->transfer_bytes = bytes;

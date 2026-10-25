@@ -1615,7 +1615,7 @@ void helicopter_update(HMoby_6950 *m) {
         return;
     }
     if (m->b31 != 0 && FastVecDist(&m->pos, quartu_camera_pos) < 40.0f) {
-        func_L00_0025B178(m);
+        set_ground_height_band(m);
     }
     if (m->state != 1) {
         float dz = FastAbsF(m->pos.f[2] - oldpos.f[2]);
@@ -2981,7 +2981,7 @@ void draw_quartu_cutscene_messages(void) {
     char buf[0x50];
     int flag = 0;
     int val = 0;
-    char *s = D_L15_0016CEE0;
+    char *s = g_mission;
     int n;
     char *s2;
     char *s3;
@@ -2993,7 +2993,7 @@ void draw_quartu_cutscene_messages(void) {
                 val = (*(int *)(s + 0x34) - scale_ticks(0xB5)) >> 2;
             }
         }
-        s2 = D_L15_0016CEE0;
+        s2 = g_mission;
         if (scale_ticks(0x1C2) < *(int *)(s2 + 0x34)) {
             if (*(int *)(s2 + 0x34) < scale_ticks(0x280)) {
                 flag = 1;
@@ -3001,7 +3001,7 @@ void draw_quartu_cutscene_messages(void) {
                 val = (*(int *)(s2 + 0x34) - scale_ticks(0x1C2)) >> 2;
             }
         }
-        s3 = D_L15_0016CEE0;
+        s3 = g_mission;
         if (scale_ticks(0x2EE) < *(int *)(s3 + 0x34)) {
             if (*(int *)(s3 + 0x34) < scale_ticks(0x3A2)) {
                 flag = 1;

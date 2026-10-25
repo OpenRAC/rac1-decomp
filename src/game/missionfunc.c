@@ -196,7 +196,7 @@ int check_mission_condition(short type, int arg) {
     case 0:
         return 1;
     case 1:
-        return D_0013DE48[arg] != 0;
+        return level_available[arg] != 0;
     case 2:
         return D_0013D5C8_b[arg] != 0;
     case 3:

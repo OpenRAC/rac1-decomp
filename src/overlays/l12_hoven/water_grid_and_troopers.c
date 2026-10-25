@@ -1424,7 +1424,7 @@ void miner_update(Moby *m) {
         }
         m->state = 1;
         DialogRequest_Init(m, d->activation);
-        func_L02_0025D750(m);
+        initialize_moby_grounding(m);
         break;
     case 1:
         if (((Flags_2E7FC8 *)((char *)&D_0013D355_2E7FC8 + 0x13B))->f1 == 0 && Npc_TryStartDialog(m, d->activation)) {
@@ -2771,7 +2771,7 @@ void Moby326Update(char *moby) {
         return;
     }
     if (FastVecDist(moby + 0x10, D_L12_001672C0) < 30.0f) {
-        func_L00_0025B178(moby);
+        set_ground_height_band(moby);
         M_U8(moby, 0x7F) = 0x18;
     }
 }
@@ -3014,7 +3014,7 @@ void edwina_update(char *m) {
         moby->state = 1;
         DialogRequest_Init(moby, &moby_data->activation);
         moby_data->activation.radius = 1.7f;
-        func_L02_0025D750(moby);
+        initialize_moby_grounding(moby);
         if (gHaveHeliPack[2] != 0) moby_data->activation.unk36 = -1;
         break;
     case 1:

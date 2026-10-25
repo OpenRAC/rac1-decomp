@@ -385,7 +385,7 @@ void frog_update(unsigned char *m) {
     Manipulator_ApplyScale(2.1f, (int)m, 1, (unsigned char *)(d + 0x250));
     func_L06_002EA920_x(m);
     if (m[0x31] != 0 && FastVecDist(m + 0x10, D_L06_00167640) < 14.0f) {
-        func_L00_0025B178(m);
+        set_ground_height_band(m);
         m[0x7F] = 0xB;
     }
     t = *(unsigned char **)(d + 0x1C0);
@@ -870,7 +870,7 @@ extern char D_L06_001746E0[];
 extern char D_L06_001746F0[];
 
 /* Adapted from Lombyte (GPL-3.0) for PAL: src/overlays/shared/gameplay/entities/00297d10.c, FUN_L06_002e9b60. */
-void move_frog_with_collision_resolution(void *moby, void *out, int follow_path, float scale, float threshold) {
+void move_frog_with_collision_resolution(void *moby, void *out, int use_path, float scale, float threshold) {
     float start[4];
     float end[4];
     float forward[4];
@@ -897,7 +897,7 @@ void move_frog_with_collision_resolution(void *moby, void *out, int follow_path,
             break;
         }
     }
-    if (follow_path != 0) {
+    if (use_path != 0) {
         PushPointOutsidePath(0.5f, *(int *)(*(char **)((char *)moby + 0x78) + 0x1EC), (char *)moby + 0x10, (char *)moby + 0x10);
     }
 }
@@ -1560,7 +1560,7 @@ void GadgebotUpdate(Moby *moby) {
                 if (d->f27C >= 0) {
                     int *p;
 
-                    if (func_L01_00277FD8(&d->paths.id[d->f27C], 1, d->paths.node[d->f27C], (*(float (*)[4])&moby->pos), g_hero.f80, v50, 0.1f) == 0) {
+                    if (follow_path(&d->paths.id[d->f27C], 1, d->paths.node[d->f27C], (*(float (*)[4])&moby->pos), g_hero.f80, v50, 0.1f) == 0) {
                         qcopy(v50, g_hero.f80);
                     }
                     *(u128 *)v70 = *(u128 *)(*(float (*)[4])&moby->pos);
@@ -1688,7 +1688,7 @@ void GadgebotUpdate(Moby *moby) {
                 if (d->f27C >= 0) {
                     int *p;
 
-                    if (func_L01_00277FD8(&d->paths.id[d->f27C], 1, d->paths.node[d->f27C], (*(float (*)[4])&moby->pos), (*(float (*)[4])&d->f174->pos), v40, 0.1f) == 0) {
+                    if (follow_path(&d->paths.id[d->f27C], 1, d->paths.node[d->f27C], (*(float (*)[4])&moby->pos), (*(float (*)[4])&d->f174->pos), v40, 0.1f) == 0) {
                         qcopy(v40, (*(float (*)[4])&d->f174->pos));
                     }
                     *(u128 *)v60 = *(u128 *)(*(float (*)[4])&moby->pos);
@@ -2001,7 +2001,7 @@ void GadgebotUpdate(Moby *moby) {
     }
     if (moby->visible != 0) {
         if (FastVecDist((*(float (*)[4])&moby->pos), D_L06_00167640) < 17.0f) {
-            func_L00_0025B178(moby);
+            set_ground_height_band(moby);
             moby->shadow_range = 0xD;
         }
         if (moby->visible != 0) {

@@ -721,7 +721,7 @@ void toxic_crab_update(Moby2E30F8 *m) {
     }
     if (m->b31 != 0) {
         if (FastVecDist(m->pos, D_L10_001672C0) < 18.0f) {
-            func_L00_0025B178(m);
+            set_ground_height_band(m);
             m->b7F = 0xE;
         }
     }
@@ -1457,7 +1457,7 @@ void BlargShipUpdate(Ship_5E48 *m) {
     }
     if (m->b31 != 0) {
         if (FastVecDist(&m->pos, D_L10_001672C0) < 28.0f) {
-            func_L00_0025B178(m);
+            set_ground_height_band(m);
             m->b7F = 0x16;
         }
     }

@@ -2858,7 +2858,7 @@ collision_mode:
     qcopy(&end, &start);
     end.f[2] += 0.3f;
     if (func_L00_001EFFF0_27F48(&start, &end, 2, D_0013F450_27F48.moby, 0)) {
-        if (item_available[4] != 0 && (D_0013CBE0 & 10) != 0) {
+        if (item_available[4] != 0 && (pad_held & 10) != 0) {
             state = 0x35;
             goto change_state;
         }

@@ -204,7 +204,7 @@ int func_0012F3F8(void) {
     } while (func_00121930() != 0);
 
     for (i = 0; i < 0x2960; i++) {
-        ((char *)D_00137C80)[i] = buf[i];
+        ((char *)disc_table)[i] = buf[i];
     }
     return 1;
 }

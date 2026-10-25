@@ -36,7 +36,7 @@ extern unsigned char D_L00_00197F40[] NOT_SDA;
 extern char *D_L00_00197680[] NOT_SDA;
 
 int Sound_PlayClassSound(int i, int a1, int v, int k) {
-    char *t = moby_class_headers[D_L00_00197F40[k]];
+    char *t = moby_class_headers[g_class_slot[k]];
     char *e;
     int r;
     if (t == 0) {

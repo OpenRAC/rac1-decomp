@@ -90,7 +90,7 @@ void initialize_vendor_screen(char *m, int lvl) {
     load_scene_chunks_with_fade(r);
     q = (char *)D_0014171B + 0x100B5;
     *(int *)(q + 0x1C) = 0x2734;
-    func_00205220(0);
+    parse_space_scene_chunk(0);
     while (qq = (char *)D_0014171B + 0x100B5, *(short *)(qq + 0x5A) != 3) {
         sound_update();
         func_00122598(0);

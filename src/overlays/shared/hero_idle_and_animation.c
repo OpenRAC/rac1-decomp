@@ -2586,8 +2586,8 @@ void update_hero_collision_ease_target(void) {
     if (*(unsigned char *)(g + 0x20A8) != 0) f12 = 0.699999988f;
     if (probe_hero_forward_collision(0, f12, f13) == 0) return;
     if (*(unsigned char *)(g + 0x20A8) != 0) {
-        if (D_L00_00173F58 != 0) {
-            if (is_moby_in_class_range_500_to_540(D_L00_00173F58) != 0) return;
+        if (g_coll_hit_moby != 0) {
+            if (is_moby_in_class_range_500_to_540(g_coll_hit_moby) != 0) return;
         }
     }
     s2 = g_frame_scale_sq;

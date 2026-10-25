@@ -788,7 +788,7 @@ void the_plumber_update(char *m)
     attach_cutscene_big_head_manipulator(m);
     if (plumber_moby->visible != 0) {
         if (FastVecDist(&plumber_moby->pos, camera_pos) < 32.0f) {
-            func_L00_0025B178(plumber_moby);
+            set_ground_height_band(plumber_moby);
             plumber_moby->shadow_range = 0x1A;
         }
     }
@@ -1105,7 +1105,7 @@ void update_target_outside_zone_timeout(char *m) {
         e = zone_vars->zones;
         do {
             if (e->zone != none && target_moby->pos.z > e->lo && target_moby->pos.z < e->hi) {
-                s32 *path = (s32 *)D_L01_001B0C30[e->zone];
+                s32 *path = (s32 *)novalis_paths[e->zone];
                 if (IsPointInPolygon(tp, path + 4, path[0])) {
                     zone_vars->count = 0;
                     break;

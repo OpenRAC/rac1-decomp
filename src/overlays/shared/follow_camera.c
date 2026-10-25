@@ -1213,9 +1213,9 @@ extern float func_001F9C78(void *, void *);
    D_L00_00166F30): the hero's height-offset point projected onto that axis. */
 void compute_follow_camera_offset_target_up_projection(void *out, float f) {
     Vq t0, t1;
-    char *b = (char *)&D_L00_00166F00 + 0x10;
+    char *b = (char *)&g_current_follow_cam + 0x10;
     FastVecScale(&t0, b + 0x20, f);
-    Cam_GetHeroPosition(D_L00_00166F00, &t1);
+    Cam_GetHeroPosition(g_current_follow_cam, &t1);
     FastVecAdd(&t0, &t0, &t1);
     FastVecScale(out, b + 0x30, FastVecDot(b + 0x30, &t0));
 }
@@ -3162,7 +3162,7 @@ typedef struct {
    when ARG1's CameraInfo priority byte (camera_descriptors row + 0x1C -> + 0x1C) beats the holder's; 0 when refused;
    -1 while the current camera is not the hero camera (id at +0x86 nonzero). */
 int try_select_follow_camera_volume(int arg1) {
-    void *a = D_L00_00166F00;
+    void *a = g_current_follow_cam;
     C842e83c0 *cur;
     u8 x;
     u8 y;
@@ -3194,7 +3194,7 @@ extern char *D_L00_00166F00;
 /* Requests orbit distance X for the hero camera (D_L00_00166F00, only while its id is 0): sets the request flag at
    +0x3C of the orbit block (+0x130), the goal at +0x40, the rate Y at +0x48 and, when FLAG, the default at +0x58. */
 void Cam_SetDistanceGoal(float x, float y, int flag) {
-    char *p = D_L00_00166F00;
+    char *p = g_current_follow_cam;
     if (*(short *)(p + 0x86) == 0) {
         char *q = *(char **)(p + 0x70) + 0x130;
         *(short *)(q + 0x3C) = 1;
@@ -3207,7 +3207,7 @@ void Cam_SetDistanceGoal(float x, float y, int flag) {
 }
 /* Sets the float at +0x22C of the hero camera's state buffer while the current camera is the hero camera (id 0). */
 void func_L00_002E9940(float value) {
-    char *moby = D_L00_00166F00;
+    char *moby = g_current_follow_cam;
     if (*(short *)(moby + 0x86) == 0) {
         char *data = *(char **)(moby + 0x70);
         *(float *)(data + 0x22C) = value;
@@ -3216,7 +3216,7 @@ void func_L00_002E9940(float value) {
 /* Requests orbit height X for the hero camera: flag +0x3E of the orbit block (+0x130), goal at +0x4C and rate Y at
    +0x54, only while the current camera's id is 0. */
 void follow_camera_set_height(float x, float y) {
-    char *p = D_L00_00166F00;
+    char *p = g_current_follow_cam;
     if (*(short *)(p + 0x86) == 0) {
         char *q = *(char **)(p + 0x70) + 0x130;
         *(short *)(q + 0x3E) = 1;
@@ -3229,7 +3229,7 @@ extern char *D_L00_001690C0;
 /* Sets the follow camera's offset (relative to its current one if add) and scale, unless the camera is locked.
    Adapted from Lombyte (GPL-3.0) for PAL: src/overlays/shared/gameplay/vendor/002df730.c, FUN_L00_002e84f0. */
 void Cam_SetEyeOffset(int add, float a, float b) {
-    char *p = D_L00_00166F00;
+    char *p = g_current_follow_cam;
     if (*(short *)(p + 0x86) == 0) {
         char *q = *(char **)(p + 0x70) + 0x40;
         *(short *)(q + 0xDA) = 1;
@@ -3245,7 +3245,7 @@ void Cam_SetEyeOffset(int add, float a, float b) {
 void func_L00_002E99E4(void *u, char *p, float a) { *(volatile float *)(p + 0xB4) = a; }
 /* Sets the float at +0x1CC of the hero camera's state buffer while the current camera's id is 0. */
 void func_L00_002E99F0(float value) {
-    char *moby = D_L00_00166F00;
+    char *moby = g_current_follow_cam;
     if (*(short *)(moby + 0x86) == 0) {
         char *data = *(char **)(moby + 0x70);
         *(float *)(data + 0x1CC) = value;
@@ -3254,7 +3254,7 @@ void func_L00_002E99F0(float value) {
 /* Sets the mode short at +0x10 of the hero camera's state buffer (read by follow_camera_auto_turn) while the
    current camera's id is 0. */
 void set_follow_camera_orbit_clamp_mode(int value) {
-    char *moby = D_L00_00166F00;
+    char *moby = g_current_follow_cam;
     if (*(short *)(moby + 0x86) == 0) {
         char *data = *(char **)(moby + 0x70);
         *(short *)(data + 0x10) = value;
@@ -3263,7 +3263,7 @@ void set_follow_camera_orbit_clamp_mode(int value) {
 /* Sets the target block's (+0x40) ease rates at +0xDC and +0xE0 of the hero camera's state, each only when nonzero,
    while the current camera's id is 0. */
 void follow_camera_set_lateral_spring(float a, float b) {
-    char *p = D_L00_00166F00;
+    char *p = g_current_follow_cam;
     if (*(short *)(p + 0x86) == 0) {
         char *q = *(char **)(p + 0x70) + 0x40;
         if (a != 0.0f) *(float *)(q + 0xDC) = a;
@@ -3273,21 +3273,21 @@ void follow_camera_set_lateral_spring(float a, float b) {
 extern char *D_L00_00166F00;
 /* Sets the short flag at +0x226 of the hero camera's state buffer while the current camera's id is 0. */
 void func_L00_002E9AD0(void) {
-    char *p = D_L00_00166F00;
+    char *p = g_current_follow_cam;
     if (*(short *)(p + 0x86) == 0) {
         *(short *)(*(char **)(p + 0x70) + 0x226) = 1;
     }
 }
 /* Sets the byte flag at +0x116 of the hero camera's state buffer while the current camera's id is 0. */
 void follow_camera_start_slide(void) {
-    char *p = D_L00_00166F00;
+    char *p = g_current_follow_cam;
     if (*(short *)(p + 0x86) == 0) {
         *(char *)(*(char **)(p + 0x70) + 0x116) = 1;
     }
 }
 /* ORs bits 0 and 1 into the flags word at +0x10 of the hero camera's +0x1A8 block while the current camera's id is 0. */
 void set_follow_camera_blend_output_flags(void) {
-    char *p = D_L00_00166F00;
+    char *p = g_current_follow_cam;
     if (*(short *)(p + 0x86) == 0) {
         char *q = *(char **)(p + 0x70) + 0x1A8;
         *(int *)(q + 0x10) |= 3;
@@ -3354,7 +3354,7 @@ extern float func_L00_002E9B60(char *, float *, float);
 /* Asks the hero camera to swing toward direction A: when X is nonzero stores it at +0x1BC of the state buffer and
    measures the swing with update_follow_camera_angle_blend_from_direction(camera, A, Y); only while the current camera's id is 0. */
 void set_follow_camera_angle_blend_from_direction(void *a, float x, float y) {
-    char *p = D_L00_00166F00;
+    char *p = g_current_follow_cam;
     if (*(short *)(p + 0x86) == 0) {
         if (x != 0.0f) {
             *(float *)(*(char **)(p + 0x70) + 0x1BC) = x;
@@ -3366,7 +3366,7 @@ extern void func_L00_002E9D78(char *, int, float);
 /* Asks the hero camera to swing toward point A: stores X at +0x1BC of the state buffer and measures the swing with
    update_follow_camera_angle_blend_from_position(camera, A, Y); only while the current camera's id is 0. */
 void set_follow_camera_angle_blend_from_position(int a, float x, float y) {
-    char *p = D_L00_00166F00;
+    char *p = g_current_follow_cam;
     if (*(short *)(p + 0x86) == 0) {
         *(float *)(*(char **)(p + 0x70) + 0x1BC) = x;
         update_follow_camera_angle_blend_from_position(p, a, y);

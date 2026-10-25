@@ -323,7 +323,7 @@ void veldin_robot_enemy_update(VendMoby *moby) {
         EaseManipulatorOffsets((char *)moby, (char *)vars->unk120, 2, *(float *)&D_0015EE64_s * 0.03f, *(float *)&D_0015EE64_s * 0.3f);
     }
     if (moby->unk31 != 0 && FastVecDist(&moby->pos, g_debug_camera) < 27.0f) {
-        func_L00_0025B178(moby);
+        set_ground_height_band(moby);
         moby->unk7F = 0x15;
     }
     switch (moby->state) {
@@ -437,14 +437,14 @@ void veldin_robot_enemy_update(VendMoby *moby) {
         qcopy(&probe, &moby->pos);
         probe.f[2] += 0.5f;
         if (coll_line(&mtx[3], &probe, 0, (int)moby, (int)&query) != 0 && hit != 0 &&
-            D_L00_00173F58.moby == hero.moby) {
+            g_coll_hit_moby.moby == hero.moby) {
             EffectSlot_Free(moby);
             moby->state = VELDIN_ROBOT_STATE_WAIT_TO_RETURN_TO_FACE_TARGET;
             if (moby->anim != 7) MobyBlendAnimation(moby, 7, 0, scale_ticks(10));
         }
         if (coll_line(&mtx[3], &dir, 0, (int)moby, (int)&query) != 0) {
-            qcopy(&dir, D_L00_00173F58.pos);
-            if (hit != 0 && D_L00_00173F58.moby == hero.moby) {
+            qcopy(&dir, g_coll_hit_moby.pos);
+            if (hit != 0 && g_coll_hit_moby.moby == hero.moby) {
                 EffectSlot_Free(moby);
                 moby->state = VELDIN_ROBOT_STATE_WAIT_TO_RETURN_TO_FACE_TARGET;
                 if (moby->anim != 7) MobyBlendAnimation(moby, 7, 0, scale_ticks(10));

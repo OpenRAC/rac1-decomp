@@ -2558,7 +2558,7 @@ void init_level_runtime_state(void) {
     g_gs_texture_allocation_cursor = g_gs_texture_allocation_base;
     g_gs_texture_allocation_start = g_gs_texture_allocation_base;
     FastMemSet(D_L00_00173FC0, 0x87654321, 0x10);
-    FastMemSet(D_L00_00197F40, -1, 0x800);
+    FastMemSet(g_class_slot, -1, 0x800);
     FastMemSet(D_L00_0019AD00, -1, 0xE00);
     FastMemSet(D_L00_0019A600, 0, 0xE0);
     FastMemSet(D_L00_001C5E00, -1, 0xC00);

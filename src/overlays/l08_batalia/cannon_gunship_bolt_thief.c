@@ -288,7 +288,7 @@ int find_batalia_cannon_aim_target(char *m) {
         if (p[i] != 0) {
             float d;
             BuildSphericalOffset(a, 1.0f, *(float *)(m + 0x48), -*(float *)(m + 0x44));
-            FastVecSub(b, (char *)p[i] + 0x10, D_L08_00167640);
+            FastVecSub(b, (char *)p[i] + 0x10, batalia_hero_pos);
             vec_scale_to_length(b, b, 1.0f);
             d = FastVecDot(b, a);
             if (FastCos(0.06981317f) < d) return p[i];
@@ -1386,8 +1386,8 @@ void Batalia_BoltThiefUpdate(Moby *m) {
     d = (Data_2E4168 *)m->pvars;
     Manipulator_ApplyScale(2.5f, (int)m, 1, d->x260);
     if (m->visible != 0) {
-        if (FastVecDist(&m->pos, D_L08_00167640) < 29.0f) {
-            func_L00_0025B178(m);
+        if (FastVecDist(&m->pos, batalia_hero_pos) < 29.0f) {
+            set_ground_height_band(m);
             m->shadow_range = 0x17;
         }
     }
@@ -2263,11 +2263,11 @@ void DrawScreenMarkerQuad(char *m) {
         FastVecAdd(a, a, b);
         vec_scale_to_length(b, m + 0xC0, *(float *)&D_L08_00161CF0);
         FastVecAdd(a, a, b);
-        FastVecSub(a, a, D_L08_00167640);
+        FastVecSub(a, a, batalia_hero_pos);
         len = FastVecLength(a);
         a[3] = 1.0f;
         FastVecScale(a, a, 1024.0f);
-        transform_vector(a, a, D_L08_00167640 - 0x100);
+        transform_vector(a, a, batalia_hero_pos - 0x100);
         g = D_L08_0016D2C0;
         FastVecScale(a, a, *(float *)(g + 0x210) / a[3]);
         r19 = truncate_float_to_s32(a[0] * 16.0f) + 0x8000;

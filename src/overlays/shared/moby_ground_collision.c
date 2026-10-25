@@ -872,7 +872,7 @@ void jet_animate(unsigned char *m, float s) {
     }
 }
 LINKER_REMNANT("asm/overlays", func_L00_0025B168);
-void func_L00_0025B178(char *o) {
+void set_ground_height_band(char *o) {
     float a[4];
     float b[4];
     void *p = o + 0x10;
@@ -2744,7 +2744,7 @@ void append_unique_moby_index(int a, short *list, short max) {
 extern s32 D_L00_00160098 MACRO_ADDR;
 
 /* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/math/rotations/0025d238.c, FUN_L00_0025f800. */
-void mine_spawn_drops(s32 p, s16 *a) {
+void moby_index_list_remove(s32 p, s16 *a) {
     s32 i;
     for (i = 1; i <= a[0]; i++) {
         if (moby_array_start + (a[i] << 8) == p) {
@@ -3096,11 +3096,11 @@ extern void func_L00_00263DB0(int);
 void unlock_planet(int id) {
     int n = 0;
     int i;
-    if (D_0013DE48[id] == 0) {
+    if (level_available[id] == 0) {
         for (i = 0; i < 20; i++) {
-            if (D_0013DE48[i]) n++;
+            if (level_available[i]) n++;
         }
-        D_0013DE48[id] = 1;
+        level_available[id] = 1;
         gGalaxyList[n] = id;
         if (id != g_current_level_index) queue_planet_unlock_message(id);
     }

@@ -365,11 +365,11 @@ extern char *D_L07_001B0830[];
 void select_snagglebeast_chase_waypoint(char *m, char *a, void *b, void *c) {
     float v[8];
     void *r = collect_snagglebeast_navigation_ids(m, a, v);
-    if (func_L01_00277FD8(v, r, *(int *)(a + 0x188), 0.0f, m + 0x10, b, c)) return;
+    if (follow_path(v, r, *(int *)(a + 0x188), 0.0f, m + 0x10, b, c)) return;
     {
         int i = select_point_index_by_distance(b, umbris_paths[*(int *)(a + 0x290)], 0.0f);
         int j = select_point_index_by_distance(umbris_paths[*(int *)(a + 0x290)] + (i * 16 + 0x10), umbris_paths[*(int *)(a + 0x188)], 0.0f);
-        if (func_L01_00277FD8(v, r, *(int *)(a + 0x188), 0.0f, m + 0x10, umbris_paths[*(int *)(a + 0x188)] + (j * 16 + 0x10), c)) return;
+        if (follow_path(v, r, *(int *)(a + 0x188), 0.0f, m + 0x10, umbris_paths[*(int *)(a + 0x188)] + (j * 16 + 0x10), c)) return;
         i = select_point_index_by_distance(m + 0x10, umbris_paths[*(int *)(a + 0x188)], 0.0f);
         qcopy(c, umbris_paths[*(int *)(a + 0x188)] + i * 16 + 0x10);
     }
@@ -522,7 +522,7 @@ extern void func_0020D960(char *, int, void *);
 
 /* When the level flag is 2, find the moby sharing the caller's class and restart its effect. */
 void apply_snagglebeast_big_head_cheat(char *arg) {
-    if (D_L07_0015F6A8 == 2 && gCheats[0] != 0) {
+    if (umbris_scene_state == 2 && gCheats[0] != 0) {
         int i;
         for (i = 0; i < D_L07_0016C960.count; i++) {
             char *m = D_L07_0016C960.mobs[i];
@@ -665,11 +665,11 @@ void snagglebeast_update(unsigned char *m) {
 
     Manipulator_ApplyScale(2.5f, (int)m, 0xB, d + 0x2A0);
     apply_snagglebeast_big_head_cheat((char *)m);
-    if (D_L07_0015F6A8 == 2) return;
+    if (umbris_scene_state == 2) return;
     if (*(int *)(d + 0x1A4) != -1 && !is_point_inside_clip_volume(g_hero + 0x80, *(int *)(d + 0x1A4))) return;
     if (m[0x31] != 0) {
         if (FastVecDist(m + 0x10, debris_far_point) < 35.0f) {
-            func_L00_0025B178(m);
+            set_ground_height_band(m);
             m[0x7F] = 0x1C;
         }
     }
@@ -1673,9 +1673,9 @@ void draw_rope_strips(void) {
     packet.header[2] = 0xff9000000260ULL;
     packet.header[3] = 0x8000000048ULL;
     packet.header[0] = 0;
-    phase = (*(float *)&D_L07_00161C04);
-    (*(float *)&D_L07_00161C04) += 0.001f;
-    if ((*(float *)&D_L07_00161C04) > 7.0f) (*(float *)&D_L07_00161C04) -= 7.0f;
+    phase = (*(float *)&scroll_phase);
+    (*(float *)&scroll_phase) += 0.001f;
+    if ((*(float *)&scroll_phase) > 7.0f) (*(float *)&scroll_phase) -= 7.0f;
     VU1_addGSregister(0x47, 0x5301b);
     phase_step = 0.3f;
     phase += phase_step;

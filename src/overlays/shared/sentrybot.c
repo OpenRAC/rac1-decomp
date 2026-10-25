@@ -119,7 +119,7 @@ void sentrybot_update(unsigned char *moby) {
     target = *(char **)(data + 0x110);
     Manipulator_SetScale(data + 0x1A0, 2.5f);
     if (moby[0x31] != 0 && FastVecDist(moby + 0x10, quartu_camera_pos) < 28.0f) {
-        func_L00_0025B178(moby);
+        set_ground_height_band(moby);
         moby[0x7F] = 0x16;
     }
     if (((Hero98BB8 *)(D_0013E633 + 0xE1D))->f2084 == 0x65) *(short *)(data + 0x156) = 0;
@@ -1607,7 +1607,7 @@ void update_target_leading_missile(M_29E8A0 *m) {
     }
     FastVecAdd(m->pos, m->pos, vel);
     if (m->pos[0] < 0.0f || m->pos[1] < 0.0f || m->pos[2] < 0.0f) {
-        mine_spawn_drops(m, D_L15_001B1070);
+        moby_index_list_remove(m, D_L15_001B1070);
         DeleteMoby(m);
         return;
     }
@@ -1649,7 +1649,7 @@ void update_target_leading_missile(M_29E8A0 *m) {
                 vec_scale_to_length(v80, hit + 0x40, 1.0f);
             }
         } else if (fast_dec_timer(&d->timer) != 0 || vec_distance_xy(m->pos, (float *)(hero + 0x80)) > 260.0f) {
-            mine_spawn_drops(m, D_L15_001B1070);
+            moby_index_list_remove(m, D_L15_001B1070);
             DeleteMoby(m);
             return;
         }
@@ -1791,7 +1791,7 @@ void update_target_leading_missile(M_29E8A0 *m) {
             }
             Moby_PlaySound(0, 0, (int)m);
             mine_camera_blast(&tbl, m->pos, 0, 0);
-            mine_spawn_drops(m, D_L15_001B1070);
+            moby_index_list_remove(m, D_L15_001B1070);
             DeleteMoby(m);
             }
         }

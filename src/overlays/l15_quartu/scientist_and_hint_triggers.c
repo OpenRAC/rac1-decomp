@@ -93,7 +93,7 @@ void ultramech_scientist_update(char *moby) {
     } else {
         ((struct Moby *)moby)->collision = ((struct Moby *)moby)->pclass->collision;
         ((struct Moby *)moby)->flags &= 0xFFBE;
-        func_L02_0025D750(moby);
+        initialize_moby_grounding(moby);
     }
 
     switch (((struct Moby *)moby)->state) {
@@ -573,9 +573,9 @@ void emit_cutscene_mode_moby_effects(struct Moby *m) {
         break;
     case 1:
         if (quartu_game_mode == 2) {
-            if (D_L15_0016CEE0.mode == 1 || D_L15_0016CEE0.mode == 2 || D_L15_0016CEE0.mode == 3 ||
-                D_L15_0016CEE0.mode == 4 || D_L15_0016CEE0.mode == 6) {
-                int v = D_L15_0016CEE0.mode;
+            if (g_mission.mode == 1 || g_mission.mode == 2 || g_mission.mode == 3 ||
+                g_mission.mode == 4 || g_mission.mode == 6) {
+                int v = g_mission.mode;
                 int i;
                 i = 0;
                 if (v == 1)
@@ -584,7 +584,7 @@ void emit_cutscene_mode_moby_effects(struct Moby *m) {
                     i = 2;
                 else if (v == 6)
                     i = 1;
-                cutscene_set_camera_target(D_L15_0016CEE0.slot[i]);
+                cutscene_set_camera_target(g_mission.slot[i]);
             }
         }
         break;

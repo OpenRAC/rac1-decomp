@@ -3417,7 +3417,7 @@ void chomper_update(char *m) {
     update_chomper_hit_reaction_and_target(chomper_moby);
     Manipulator_ApplyScale(2.1f, (int)chomper_moby, 1, (unsigned char *)(chomper_data + 0x220));
     if (chomper_moby->visible != 0 && FastVecDist(&chomper_moby->pos, kalebo3_camera_pos) < 29.0f) {
-        func_L00_0025B178(chomper_moby);
+        set_ground_height_band(chomper_moby);
         chomper_moby->shadow_range = 23;
     }
     switch (chomper_moby->state) {

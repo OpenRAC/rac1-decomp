@@ -898,7 +898,7 @@ void fred_update(Moby *moby) {
     int tracking;
     attach_shared_manipulator_to_matching_class_moby((char *)moby);
     if (moby->visible != 0 && FastVecDist(((float *)&moby->pos), D_L06_00167640) < 24.0f) {
-        func_L00_0025B178(moby);
+        set_ground_height_band(moby);
         moby->shadow_range = 0x13;
     }
     switch (moby->state) {

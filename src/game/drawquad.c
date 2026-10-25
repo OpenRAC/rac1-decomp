@@ -140,7 +140,7 @@ void append_billboard_batch(void) {
     Vec4f clip_position;
     f32 distance;
     f32 radius;
-    s32 record_index;
+    s32 record_idx;
     BillboardRecord *record;
     s64 color;
     s64 x;
@@ -153,9 +153,9 @@ void append_billboard_batch(void) {
     BillboardRecord *records;
 
     VU1_addGSregister(0x42, 0x8000000048);
-    for (record_index = 0; record_index < 16; record_index++) {
+    for (record_idx = 0; record_idx < 16; record_idx++) {
         records = billboard_records;
-        record = records + record_index;
+        record = records + record_idx;
         if (record->active_count <= 0) {
             continue;
         }

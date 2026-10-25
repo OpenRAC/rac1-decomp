@@ -60,8 +60,8 @@ int calculate_ring_buffer_bounds(unsigned int size, int *out1, int *out2) {
         *out2 = 0;
         return -1;
     }
-    *out1 = level_resource_buffers[1] + D_0016100C - size;
-    *out2 = level_resource_buffers[2] + D_0016100C - size;
+    *out1 = level_resource_buffers[1] + current_vu_chain - size;
+    *out2 = level_resource_buffers[2] + current_vu_chain - size;
     return 0;
 }
 
@@ -149,7 +149,7 @@ static inline s32 map_availability_FDF78(s32 level_index) {
     if (level_visit_state[level_index] != 0) {
         return 3;
     }
-    if (D_0013DE48[level_index] != 0) {
+    if (level_available[level_index] != 0) {
         return 2;
     }
     return 0;
@@ -443,7 +443,7 @@ extern PlayerHud D_001517D0;
 /* Advances the help popup's state machine: delay, open, hold, close, record stats. Adapted from Lombyte (GPL-3.0) for PAL: ui/help/update_help_state.c, update_help_state. */
 void Help_Update(void) {
     if (HS.started == 0) {
-        if (HS.delay == 0 && (D_0013CBE0 & 0xF000)) {
+        if (HS.delay == 0 && (pad_held & 0xF000)) {
             HS.delay = 1;
         }
         if (HS.delay != 0) {

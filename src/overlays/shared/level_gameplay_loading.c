@@ -644,9 +644,9 @@ char *load_level_gameplay(int arg0) {
         ship = (float *)(p + 5);
         c = p + 9;
         p += 12;
-        D_0013E130.f30 = c[0];
-        D_0013E130.f34 = c[1];
-        D_0013E130.f38 = c[2];
+        level_render_state.f30 = c[0];
+        level_render_state.f34 = c[1];
+        level_render_state.f38 = c[2];
     }
     UpdateFog();
     D_L00_00161040 = 512000.0f;
@@ -1530,14 +1530,14 @@ char *load_level_gameplay(int arg0) {
     D_L00_00160230 = 0;
     D_L00_00160238 = 0;
     FastMemZero16(D_L00_001B1C00, 0x200);
-    D_0013E130.f0 = 0;
+    level_render_state.f0 = 0;
     if (0.0f < ship[0]) {
         Moby *m;
 
-        if (g_current_level_index == 13 && D_0013E130.f26 == 2) {
+        if (g_current_level_index == 13 && level_render_state.f26 == 2) {
             if (D_L00_00160600 != 0) {
                 for (m = moby_array_start; m->state != 0xFF; m++) {
-                    if (m->oclass == first_class_ids[D_0013E130.f26]) {
+                    if (m->oclass == first_class_ids[level_render_state.f26]) {
                         initialize_moby_state_record((char *)m);
                         MobySetAnimation(m, 1, 0);
                         break;
@@ -1545,10 +1545,10 @@ char *load_level_gameplay(int arg0) {
                 }
             }
         }
-        if (D_0013E130.f0 == 0) {
+        if (level_render_state.f0 == 0) {
             float rot;
 
-            m = CreateMoby(first_class_ids[D_0013E130.f26]);
+            m = CreateMoby(first_class_ids[level_render_state.f26]);
             m->pos.x = ship[0];
             m->pos.y = ship[1];
             m->pos.z = ship[2];
@@ -1560,7 +1560,7 @@ char *load_level_gameplay(int arg0) {
             m->flags &= ~2;
             MobySetAnimation(m, 1, 0);
             moby_build_matrix(m);
-            D_0013E130.f0 = m;
+            level_render_state.f0 = m;
             store_current_level_table_value((int)m, 0);
         }
     }
@@ -1732,8 +1732,8 @@ char *load_level_gameplay(int arg0) {
         }
     }
     D_L00_0016190C = 0;
-    if (D_0013E130.f0 != 0) {
-        *(long *)((int *)&D_0013E130.f0->spawn_frame) = *(long *)((int *)&g_hero.moby->spawn_frame);
+    if (level_render_state.f0 != 0) {
+        *(long *)((int *)&level_render_state.f0->spawn_frame) = *(long *)((int *)&g_hero.moby->spawn_frame);
     }
     switch (g_current_level_index) {
     case 2:
@@ -1924,7 +1924,7 @@ s32 load_level_archive_resources(s32 full, s32 keep) {
         D_L00_0015F50C = 0;
         copy_memory_by_alignment(D_L00_0015FD48, saved_mission_state + g_current_level_index * 16, 0x10);
         upload_texture_images((char *)(src[6] + (s32)src), h->v[0], (char *)h + h->v[1]);
-        D_L00_001600C4 = D_0015EE5C;
+        D_L00_001600C4 = sound_bank_handle;
         func_00118D80(0);
         used = fast_decompress((char *)(src[0x14] + (s32)src), base);
 
@@ -1984,7 +1984,7 @@ s32 load_level_archive_resources(s32 full, s32 keep) {
             D_L00_001AFF40[m] = *(s32 *)(q + 4);
             D_L00_001AFFA0[m] = base + *(s32 *)q;
             D_L00_001B0000[m] = *(s32 *)(q + 8);
-            { s32 o = D_L00_00197F40[*(s32 *)(q + 4)] * 32 + 0x10;
+            { s32 o = g_class_slot[*(s32 *)(q + 4)] * 32 + 0x10;
             qcopy(&D_L00_001B0060[m], (char *)h + h->v[7] + o); }
         }
         for (i = 0, q2 = (char *)h + h->v[9]; i < h->v[8]; i++, q2 += 0x20)
@@ -2037,7 +2037,7 @@ s32 load_level_archive_resources(s32 full, s32 keep) {
             } else {
                 D_L00_0015F6D4[a3].sound = *(u16 *)(e + D_L00_0015F6D4[a3].sound * 4);
             }
-            D_L00_0015F6D4[a3].time = D_0015EE5C;
+            D_L00_0015F6D4[a3].time = sound_bank_handle;
         }
         end = free + 0x3F;
         span++;
@@ -2059,7 +2059,7 @@ s32 load_level_archive_resources(s32 full, s32 keep) {
                 e = tbl + span->off;
                 for (k = 0; k < moby_class_headers[ci]->count0D; k++, e += 4) {
                     moby_class_headers[ci]->f28[k].sound = *(u16 *)e;
-                    moby_class_headers[ci]->f28[k].time = D_0015EE5C;
+                    moby_class_headers[ci]->f28[k].time = sound_bank_handle;
                 }
             }
         }
@@ -2233,9 +2233,9 @@ void load_chunks_with_optional_fade(s32 i, s32 p) {
     s32 n;
     s32 *e;
     if (pal_mode == 0) {
-        func_00217628_45FE0b(D_L00_0016C960_45FE0.buf, D_00137C80.x[i].a, D_00137C80.x[i].b);
+        func_00217628_45FE0b(D_L00_0016C960_45FE0.buf, disc_table.x[i].a, disc_table.x[i].b);
     } else {
-        func_00217628_45FE0b(D_L00_0016C960_45FE0.buf, D_00137C80.y[i].a, D_00137C80.y[i].b);
+        func_00217628_45FE0b(D_L00_0016C960_45FE0.buf, disc_table.y[i].a, disc_table.y[i].b);
     }
     if (p != 0) {
         func_00217748_45FE0b(0);

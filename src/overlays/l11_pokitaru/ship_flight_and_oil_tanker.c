@@ -1401,7 +1401,7 @@ void puffoid_update(struct Moby *moby) {
     target = d->target;
     Manipulator_ApplyScale(moby, 0, d->unk280, 2.5f);
     if (moby->visible != 0 && FastVecDist(&moby->pos, (char *)camera_pos_b358) < 28.0f) {
-        func_L00_0025B178(moby);
+        set_ground_height_band(moby);
         moby->shadow_range = 0x16;
     }
     switch (moby->state) {

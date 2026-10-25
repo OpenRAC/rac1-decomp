@@ -331,7 +331,7 @@ void ChildSpawnerUpdate(Moby *moby) {
     if (moby == 0) return;
     d = (Data_2C0330 *)moby->pvars;
     if (moby->visible != 0 && FastVecDist(&moby->pos, D_L03_00166F40) < 28.0f) {
-        func_L00_0025B178(moby);
+        set_ground_height_band(moby);
         moby->shadow_range = 0x16;
     }
     if (d == 0) return;
@@ -1637,7 +1637,7 @@ void qwark_rilgar_update(char *m)
     func_L01_002FC890_m(m);
     if (moby->visible != 0) {
         if (func_001F9D10_1edff8(&moby->pos, D_L03_00166F40) < 30.0f) {
-            func_L00_0025B178(m);
+            set_ground_height_band(m);
             moby->shadow_range = 0x18;
         }
     }
