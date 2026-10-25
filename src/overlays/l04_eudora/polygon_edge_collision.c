@@ -12,7 +12,7 @@ int find_nearest_point_index_xy(char *a, char *b, int n) {
     int i;
     float m = 32767.0f;
     for (i = 0; i < n; i++) {
-        float d = func_001F9D48(a + 0x10, b + i * 0x10);
+        float d = vec_distance_xy(a + 0x10, b + i * 0x10);
         if (d < m) {
             m = d;
             best = i;
@@ -310,7 +310,7 @@ void update_moby_movement_with_sphere_collision(char *a, char *b, char *c, float
             break;
         }
     }
-    *(float *)(a + 0x48) = FastAddRots(func_L00_001FF860(*(float *)(b + 0x10), *(float *)(b + 0x14)), 3.14159265f);
+    *(float *)(a + 0x48) = FastAddRots(fast_atan2(*(float *)(b + 0x10), *(float *)(b + 0x14)), 3.14159265f);
 }
 extern void func_0022C7E0(void);
 extern int D_0015EE84_m __asm__("D_0015EE84") MACRO_ADDR;
@@ -328,5 +328,5 @@ void DrawEudoraSky(void) {
     }
     DoSkyGifPaging();
     VU1_addGSregister(0x47, 0x5360B);
-    VU1_addGSregister(0x4E, 0x1000000 | (D_0015EF88 >> 13));
+    VU1_addGSregister(0x4E, 0x1000000 | (depth_buffer_address >> 13));
 }

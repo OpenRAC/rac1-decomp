@@ -39,7 +39,7 @@ void Transition_DrawSky(void) {
     SkyLevelGeneric___maybe();
     DoSkyGifPaging();
     VU1_addGSregister(0x47, 0x5360B);
-    VU1_addGSregister(0x4E, 0x1000000 | (D_0015EF88 >> 13));
+    VU1_addGSregister(0x4E, 0x1000000 | (depth_buffer_address >> 13));
 }
 
 /* Level init from the level header hdr: loads the frame and fog constants, uploads the VU0
@@ -210,17 +210,17 @@ unsigned char *initialize_level_render_state(LevelHeaderE9EC8 *hdr)
     FRowE9EC8 *t3;
 
     p = D_001941D8;
-    ((void (*)(void *, int, int))FastMemSet)(D_0013F450, 0, 0x2310);
+    ((void (*)(void *, int, int))FastMemSet)(g_hero, 0, 0x2310);
     ((void (*)(void *, int, int))FastMemSet)(gCamera, 0, 0x3A0);
     ((void (*)(void *, int, int))FastMemSet)(D_001AADC0, 0, 0x180);
-    if (D_0015EE80 != 0) {
-        if (D_0015EE60 == 1.0f) {
+    if (pal_mode != 0) {
+        if (frame_scale == 1.0f) {
             set_video_timing(1);
         }
-    } else if (D_0015EE60 != 1.0f) {
+    } else if (frame_scale != 1.0f) {
         set_video_timing(0);
     }
-    *(unsigned char *)&requested_video_mode = *(unsigned char *)&D_0015EE80;
+    *(unsigned char *)&requested_video_mode = *(unsigned char *)&pal_mode;
     coll_output.x4 = image_clear_buffer;
     coll_output.x8 = D_00194280;
     coll_output.xC = 0;
@@ -326,7 +326,7 @@ unsigned char *initialize_level_render_state(LevelHeaderE9EC8 *hdr)
         sh->x18 = (short)id;
         sc += 0x50;
         sd->m[3].w = object_render_classes[sh->cls]->x40;
-        func_001F9EC0(sh, object_render_classes[sh->cls]->x30, sd);
+        matrix_mul_vec3(sh, object_render_classes[sh->cls]->x30, sd);
         s = FastVecLength(sd);
         len1 = FastVecLength(r1);
         s = max_float(s, len1);
@@ -434,7 +434,7 @@ unsigned char *initialize_level_render_state(LevelHeaderE9EC8 *hdr)
         td->m[0].w = (int)(((unsigned int)bl << 16) | (unsigned int)g | (unsigned int)r);
         tie->x1C = *(unsigned short *)tc;
         tc += 0x10;
-        func_001F9EC0(tie, shrub_render_classes[cls], td);
+        matrix_mul_vec3(tie, shrub_render_classes[cls], td);
         s = FastVecLength(td);
         len1 = FastVecLength(t1);
         s = max_float(s, len1);
@@ -895,7 +895,7 @@ extern void func_001F3140(void);
    a flag byte at +0xC, then X/Y/Z angles) sets the camera position and
    its orientation matrix (negated first two rows); returns the flag. */
 unsigned char Transition_UpdateMovieCamera(void) {
-    char *t = D_0018CC20;
+    char *t = render_sequence;
     char *key = *(char **)(t + 0x54) + *(int *)(t + 0x38) * 32;
     unsigned char flag = key[0xC];
     float *ang = (float *)(key + 0x10);
@@ -1148,7 +1148,7 @@ void Transition_DefaultDraw(s32 *arg0)
     append_dma_tag(0x02020000);
     DrawShrubs();
     append_dma_tag(0x02040000);
-    if (D_0015F6E8 == 3) {
+    if (g_game_mode == 3) {
         render_level_effects_and_screen_sprites();
     } else {
         DrawMobys();
@@ -1174,7 +1174,7 @@ void Transition_DefaultDraw(s32 *arg0)
                       (long)(intro_overlay_alpha << 24 | 0x808080), (*(s64 *)&D_0015F048));
     }
     if (language_intro_overlay_alpha != 0) {
-        n = (*(s32 *)&D_0015EE88) - 1;
+        n = (*(s32 *)&g_game_language) - 1;
         if (n < 0) {
             n = 0;
         }
@@ -1190,7 +1190,7 @@ void Transition_DefaultDraw(s32 *arg0)
     }
     VU0_loadMicroProgram(D_00100AE0);
     func_00118D80(0);
-    if (D_0015F6E8 == 4) {
+    if (g_game_mode == 4) {
         draw_freeze_message_box();
     }
     VU1_syncChain(2);
@@ -1216,7 +1216,7 @@ extern int D_0015F694_m __asm__("D_0015F694") MACRO_ADDR;
    through a MACRO_ADDR alias it is retail's one-register load. */
 int is_active_state_entry(int arg0, int arg1) {
     if (arg0 >= 0) {
-        char *p = D_0013E650 + arg0 * 0x70;
+        char *p = voice_pool + arg0 * 0x70;
         if (*(short *)(p + 0x7E) == arg1 + D_0015F694_m) {
             unsigned char s = p[0x74];
             if (s == 1 || s == 2) {

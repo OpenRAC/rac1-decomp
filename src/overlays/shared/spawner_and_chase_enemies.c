@@ -1483,7 +1483,7 @@ char *spawn_spawner_egg(int owner, void *pos, void *rot, unsigned char a, unsign
         d[0x1C] = b;
         d[0x1A] = a;
         d[0x1B] = 0;
-        func_L00_00251E30(m);
+        moby_build_matrix(m);
     }
     return m;
 }
@@ -1556,16 +1556,16 @@ static inline void bubble_bounce(struct Moby *moby, BubbleVars *vars) {
     CollisionHit *hit = &D_L09_00174040;
 
     if (hit->moby == 0) {
-        func_L00_001FF610(&vars->vel, &vars->vel, &hit->normal_x);
-        if (func_L00_001FF860(hit->normal_z, func_001F9CE8(&hit->normal_x)) < 0.6981317f && CollType() == -1) {
+        vec_reflect(&vars->vel, &vars->vel, &hit->normal_x);
+        if (fast_atan2(hit->normal_z, vec_length_xy(&hit->normal_x)) < 0.6981317f && CollType() == -1) {
             FastVecScale(&vars->vel, &vars->vel, 0.5f);
             if (FastVecLength(&vars->vel) < 0.025f) {
                 moby->state = 1;
             }
         }
     } else if (((struct Moby *)hit->moby)->oclass != 0x75E) {
-        func_L00_001FF610(&vars->vel, &vars->vel, &hit->normal_x);
-        if (func_L00_001FF860(hit->normal_z, func_001F9CE8(&hit->normal_x)) < 0.6981317f && CollType() == -1) {
+        vec_reflect(&vars->vel, &vars->vel, &hit->normal_x);
+        if (fast_atan2(hit->normal_z, vec_length_xy(&hit->normal_x)) < 0.6981317f && CollType() == -1) {
             FastVecScale(&vars->vel, &vars->vel, 1.2f);
         }
     } else {
@@ -1594,7 +1594,7 @@ void spawner_egg_update(struct Moby *moby) {
     qcopy(&prev, &moby->pos);
     switch (moby->state) {
     case 0:
-        moby->scale += (moby->pclass->scale - moby->scale) * (D_0015EE60 * 0.05f);
+        moby->scale += (moby->pclass->scale - moby->scale) * (frame_scale * 0.05f);
         FastVecAdd(&moby->pos, &moby->pos, &vars->vel);
         func_L00_001FF4B0(&step, &vars->vel, 0.2f);
         FastVecAdd(&step, &step, &moby->pos);
@@ -1621,7 +1621,7 @@ void spawner_egg_update(struct Moby *moby) {
                 away.f[2] = 0.0f;
                 dist = FastVecLength(&away);
                 if (dist < 1.8f) {
-                    FastVecScale(&away, &away, (1.8f - dist) * (D_0015EE60 * -0.5f + 1.0f));
+                    FastVecScale(&away, &away, (1.8f - dist) * (frame_scale * -0.5f + 1.0f));
                     FastVecAdd(&moby->pos, &moby->pos, &away);
                 }
             }
@@ -1633,9 +1633,9 @@ void spawner_egg_update(struct Moby *moby) {
         moby->rot.y = normalize_angle(vars->vel.f[1]);
         moby->collision = moby->pclass->collision;
         vars->owner->collision = vars->owner->pclass->collision;
-        vars->vel.f[2] -= D_0015EE70 * 9.8f;
-        moby->rot.x += D_0015EE60 * 0.01f;
-        moby->rot.y += D_0015EE60 * 0.02f;
+        vars->vel.f[2] -= g_frame_time_sq * 9.8f;
+        moby->rot.x += frame_scale * 0.01f;
+        moby->rot.y += frame_scale * 0.02f;
         break;
     case 1:
         moby->pos.z = ProbeGroundHeight(&moby->pos, 0, 0.5f) + 0.2f;
@@ -1645,12 +1645,12 @@ void spawner_egg_update(struct Moby *moby) {
         moby->state = 2;
         break;
     case 2:
-        rate = D_0015EE60 * 0.05f;
+        rate = frame_scale * 0.05f;
         moby->scale -= moby->scale * rate;
         if (vars->held != 0 && vars->unk1A != 0) {
             vars->held->scale += (vars->held->pclass->scale - vars->held->scale) * rate;
         }
-        if (moby->scale < moby->pclass->scale * (D_0015EE60 * 0.05f)) {
+        if (moby->scale < moby->pclass->scale * (frame_scale * 0.05f)) {
             moby->scale = 0.0001f;
             held = vars->held;
             if (held == 0 || held->state == 0xFE || held->state == 0xFD || vars->unk1A == 0 ||

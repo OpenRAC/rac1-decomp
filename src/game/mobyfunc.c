@@ -427,7 +427,7 @@ extern int func_0022ED80(int, int, int);
 void update_moby_voice(unsigned char *s) {
     if (s[0x7D] != 0xFF) {
         int id = s[0x7D];
-        char *e = D_0013E650 + id * 0x70;
+        char *e = voice_pool + id * 0x70;
         if (*(unsigned char **)(e + 0x88) != s) {
             s[0x7D] = 0xFF;
         } else if (*(short *)(e + 0x7E) != s[0x7C]) {
@@ -594,7 +594,7 @@ void transform_scaled_vertex_batch(char *arg0, int arg1, void *arg2, char *arg3)
         do {
             FastVecScale(v, v, s);
             n--;
-            func_001F9EC0(v, v, arg0 + 0xC0);
+            matrix_mul_vec3(v, v, arg0 + 0xC0);
             FastVecAdd(v, v, arg0 + 0x10);
             v += 0x10;
         } while (n != 0);
@@ -614,24 +614,24 @@ extern void func_00234E80(void);
    D_0016000C the tag slot DrawMobysSetup reserved. Every access goes
    back to the globals, because each store through them could alias. */
 void DmaMobyTextures(void) {
-    int *p = (int *)D_00161000;
+    int *p = (int *)g_render_packet_cursor;
 
-    D_00161000 += 0x10;
+    g_render_packet_cursor += 0x10;
     ((int *)D_0016000C)[0] = 0x20000000;
-    ((int *)D_0016000C)[1] = D_00161000;
+    ((int *)D_0016000C)[1] = g_render_packet_cursor;
     ((int *)D_0016000C)[2] = 0;
     ((int *)D_0016000C)[3] = 0;
     if (draw_config[10] != 0 && draw_config[9] != 0) {
-        func_00212258(D_0015EF74);
+        func_00212258(g_gs_texture_allocation_cursor);
         VU1_texFlush();
     }
-    ((int *)D_00161000)[0] = 0x20000000;
-    ((int *)D_00161000)[1] = D_0016000C + 0x10;
-    ((int *)D_00161000)[2] = 0;
-    ((int *)D_00161000)[3] = 0;
-    D_00161000 += 0x10;
+    ((int *)g_render_packet_cursor)[0] = 0x20000000;
+    ((int *)g_render_packet_cursor)[1] = D_0016000C + 0x10;
+    ((int *)g_render_packet_cursor)[2] = 0;
+    ((int *)g_render_packet_cursor)[3] = 0;
+    g_render_packet_cursor += 0x10;
     p[0] = 0x20000000;
-    p[1] = D_00161000;
+    p[1] = g_render_packet_cursor;
     p[2] = 0;
     p[3] = 0;
 }
@@ -744,23 +744,23 @@ void configure_graphics_setup_dma_chain(void) {
         ((int *)D_00160040)[3] = 0;
         return;
     }
-    t = D_00161000;
+    t = g_render_packet_cursor;
     p = (int *)t;
     t += 0x10;
-    D_00161000 = t;
+    g_render_packet_cursor = t;
     ((int *)D_00160040)[0] = 0x20000000;
-    ((int *)D_00160040)[1] = D_00161000;
+    ((int *)D_00160040)[1] = g_render_packet_cursor;
     ((int *)D_00160040)[2] = 0;
     ((int *)D_00160040)[3] = 0;
     func_00228A58();
     submit_graphics_setup_command_stream(D_001C8A00);
-    ((int *)D_00161000)[0] = 0x20000000;
-    ((int *)D_00161000)[1] = D_00160040 + 0x10;
-    ((int *)D_00161000)[2] = 0;
-    ((int *)D_00161000)[3] = 0;
-    D_00161000 += 0x10;
+    ((int *)g_render_packet_cursor)[0] = 0x20000000;
+    ((int *)g_render_packet_cursor)[1] = D_00160040 + 0x10;
+    ((int *)g_render_packet_cursor)[2] = 0;
+    ((int *)g_render_packet_cursor)[3] = 0;
+    g_render_packet_cursor += 0x10;
     p[0] = 0x20000000;
-    p[1] = D_00161000;
+    p[1] = g_render_packet_cursor;
     p[2] = 0;
     p[3] = 0;
     ProfileMarker_End(D_0015FFC0, 8);
@@ -823,11 +823,11 @@ void DrawMobysSetup(void) {
     font_state = 6;
     VU0_loadMicroProgram(D_00100080);
     VU1_addGSregister(0x47, 0x5360B);
-    p = D_00161000;
+    p = g_render_packet_cursor;
     D_0016000C = p;
-    D_0015EF74 = D_0015EF78;
+    g_gs_texture_allocation_cursor = g_gs_texture_allocation_start;
     p += 0x10;
-    D_00161000 = p;
+    g_render_packet_cursor = p;
     ProfileMarker_Begin(D_0015FFD0, 1);
     D_00160040 = 0;
     vu1_chain_limit = D_0015F71C - 0x10000;
@@ -883,7 +883,7 @@ void DrawMobys(void) {
     if (D_0018A3D8 != 0) {
         InitMobyClassDists();
         moby_anim_head = moby_proc(resident_object_pool, moby_anim_head, -1, 1);
-        if (D_00161000 > vu1_chain_limit) {
+        if (g_render_packet_cursor > vu1_chain_limit) {
             STUB_printf(vu_chain_overflow_message);
         }
     }

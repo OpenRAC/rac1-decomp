@@ -133,9 +133,9 @@ void update_class_b8_projectile(struct Moby *m)
     range = 64.0f;
     if (v->owner->oclass == 0xFF)
         range = 128.0f;
-    if ((*(s32 *)&D_0015EE84) == 12)
+    if ((*(s32 *)&g_current_level_index) == 12)
         range = 100.0f;
-    d = FastVecDist(&m->pos, &D_0013F450.motion.pos);
+    d = FastVecDist(&m->pos, &g_hero.motion.pos);
     qcopy(&old, &m->pos);
     FastVecAdd(&m->pos, &m->pos, &v->dir);
     if (v->unk28 == 0 && v->unk24 != 0 && v->hero_dist < d && d < 3.0f) {
@@ -146,7 +146,7 @@ void update_class_b8_projectile(struct Moby *m)
         v->unk24 = 1;
     v->hero_dist = d;
     if (m->pos.x < 0.0f || m->pos.y < 0.0f || m->pos.z < 0.0f
-        || range < func_001F9D48(&m->pos, D_L04_00166FC0)) {
+        || range < vec_distance_xy(&m->pos, D_L04_00166FC0)) {
         DeleteMoby(m);
         return;
     }
@@ -188,10 +188,10 @@ void update_class_b8_projectile(struct Moby *m)
             r.f[1] = random_float_between(-1.0f, 1.0f);
             r.f[2] = random_float_between(-1.0f, 1.0f);
             push.q = r.q;
-            func_L00_001FF610(&r, v, D_L04_00174080);
+            vec_reflect(&r, v, D_L04_00174080);
             func_L00_001FF4B0(&push, &push, FastVecLength(&r) * 0.5f);
             FastVecAdd(&push, &r, &push);
-            func_L00_001FF4B0(&push, &push, random_float_between(D_0015EE6C * 3.0f, D_0015EE6C * 6.0f));
+            func_L00_001FF4B0(&push, &push, random_float_between(g_frame_time * 3.0f, g_frame_time * 6.0f));
             PartType27Spawn(&m->pos, &push, 0x7F2F4F6F,
                              rand_range(scale_ticks(10), scale_ticks(15)), 30000.0f);
         }
@@ -210,12 +210,12 @@ void spawn_moby_table_segment_puffs(char *a, int i, int j, int k) {
     pi = D_L04_001D2F60 + i * 16;
     qcopy(v0, pi);
     v0[3] = 1.0f;
-    func_001F9EC0(v0, v0, a + 0xC0);
+    matrix_mul_vec3(v0, v0, a + 0xC0);
     FastVecAdd(v0, v0, a + 0x10);
     pj = D_L04_001D2F60 + j * 16;
     qcopy(v10, pj);
     v10[3] = 1.0f;
-    func_001F9EC0(v10, v10, a + 0xC0);
+    matrix_mul_vec3(v10, v10, a + 0xC0);
     FastVecAdd(v10, v10, a + 0x10);
     spawn_smoke_puff_trail_with_endpoint_bursts(a, v0, v10, k, *(float *)(pi + 0xC) * *(float *)&D_L04_00161940, *(float *)(pj + 0xC) * *(float *)&D_L04_00161940);
 }
@@ -269,7 +269,7 @@ char *spawn_moby_attachment(char *a, char *b)
         *(float *)(moby + 0x48) = *(float *)(a + 0x48);
         *(u64 *)(moby + 0x38) = *(u64 *)(a + 0x38);
         qcopy(moby + 0x10, p);
-        func_L00_00251E30(moby);
+        moby_build_matrix(moby);
     }
 
     return moby;

@@ -31,6 +31,6 @@ void draw_sky_shells_with_particles_and_rotating_shell(void) {
     rot.f[2] = (f32)(*(volatile int *)&D_L00_0015F6B0 & 0x7FFF) * 1.9174760e-4f - 3.1415927f;
     func_L00_001FFA40(D_L00_001BDB70, &rot);
     SkyDrawShell(3);
-    func_001FA190(D_L00_001BDB70);
+    set_identity_matrix(D_L00_001BDB70);
     SkyDrawShell(4);
 }

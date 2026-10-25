@@ -245,8 +245,8 @@ void update_deplanetizer_gun_sequence_effects(Moby *moby) {
                     Moby_GetJointWorldPos(m, 2, b);
                     for (j = 0; j < 12; j++) {
                         float f = IntToFloat(j) / 12.0f;
-                        func_001F9C08(x, a, D_L18_001625C0, f);
-                        func_001F9C08(e, b, D_L18_001625D0, f);
+                        lerp_vector(x, a, D_L18_001625C0, f);
+                        lerp_vector(e, b, D_L18_001625D0, f);
                         spawn_deplanetizer_gun_trail_effects(x, x, D_L18_0015F660, *(float *)&D_L18_00162560, *(float *)&D_L18_00162560 * 0.4f);
                         spawn_deplanetizer_gun_trail_effects(e, e, D_L18_0015F660, *(float *)&D_L18_00162560, *(float *)&D_L18_00162560 * 0.4f);
                     }
@@ -273,8 +273,8 @@ void update_deplanetizer_gun_sequence_effects(Moby *moby) {
                 qcopy(v->pos, b);
                 col0 = 0x207F7F;
                 col1 = 0x7F7F20;
-                v->f48 = func_L00_001FF860(moby->rot_row1.x, moby->rot_row1.y);
-                v->f4C = func_L00_001FF860(func_001F9CE8(&moby->rot_row1), moby->rot_row1.z);
+                v->f48 = fast_atan2(moby->rot_row1.x, moby->rot_row1.y);
+                v->f4C = fast_atan2(vec_length_xy(&moby->rot_row1), moby->rot_row1.z);
                 save = D_L18_001617DC;
                 D_L18_001617DC = 24.0f;
                 TeslaClawArcDraw(moby);
@@ -292,14 +292,14 @@ void update_deplanetizer_gun_sequence_effects(Moby *moby) {
             char *target;
             int i;
             target = D_L18_00167A50;
-            func_001F9EC0(a, &D_L18_00162570, target);
+            matrix_mul_vec3(a, &D_L18_00162570, target);
             FastVecAdd(a, a, target - 0x210);
             qcopy(b, D_L18_00167A50 + 0x10);
             for (i = 0; i < 32; i++) {
                 int r;
                 char *p;
                 build_look_at_matrix(c, b, D_L18_00167A50, IntToFloat(i) * 0.19634955f);
-                func_L00_001FF4B0(c, c, *(float *)&D_L18_00162580 * D_0015EE60);
+                func_L00_001FF4B0(c, c, *(float *)&D_L18_00162580 * frame_scale);
                 r = random_integer_below(16);
                 p = func_L00_0026DEA0_c(a, random_integer_below(2) ? -r : r, c, 0.0f, 1.0f, 1.01f, *(float *)&D_L18_00162584, 0x7F7F7F7F);
                 if (p != 0) {
@@ -373,7 +373,7 @@ void draw_three_scaled_camera_facing_quads(void) {
     pk.a = 0;
     VU1_addGSregister(0x4A, 0);
     VU1_addGSregister(0x47, 0x51001);
-    func_001F9EC0(mat[3], &D_L18_001625E0, D_L18_00167A50);
+    matrix_mul_vec3(mat[3], &D_L18_001625E0, D_L18_00167A50);
     target = D_L18_00167A50;
     target -= 0x210;
     FastVecAdd(mat[3], mat[3], target);
@@ -400,7 +400,7 @@ void draw_three_scaled_camera_facing_quads(void) {
     pk.col[0] = color;
     for (i = 0; i < 4; i++) {
         FastVecScale(pk.m[i], D_L18_001DFE50[i], D_L18_001625B0);
-        func_001F9EE8(pk.m[i], pk.m[i], mat);
+        transform_vector(pk.m[i], pk.m[i], mat);
     }
     func_L00_001FD1D8(&pk, 0, 0);
     color = (*(int *)&D_L18_0016258C);
@@ -410,12 +410,12 @@ void draw_three_scaled_camera_facing_quads(void) {
     pk.col[0] = color;
     for (i = 0; i < 4; i++) {
         FastVecScale(pk.m[i], D_L18_001DFE50[i], D_L18_001625B0 * 0.75f);
-        func_001F9EE8(pk.m[i], pk.m[i], mat);
+        transform_vector(pk.m[i], pk.m[i], mat);
     }
     func_L00_001FD1D8(&pk, 0, 0);
     for (i = 0; i < 4; i++) {
         FastVecScale(pk.m[i], D_L18_001DFE50[i], D_L18_001625B0 * 0.5f);
-        func_001F9EE8(pk.m[i], pk.m[i], mat);
+        transform_vector(pk.m[i], pk.m[i], mat);
     }
     func_L00_001FD1D8(&pk, 0, 0);
 }
@@ -490,7 +490,7 @@ void draw_moby_two_tint_glow_quads(struct Moby *m) {
     pk.a = 0;
     VU1_addGSregister(0x4A, 0);
     VU1_addGSregister(0x47, 0x51001);
-    func_001F9EC0(mat[3], &D_L18_001625F0, &m->rot_row0);
+    matrix_mul_vec3(mat[3], &D_L18_001625F0, &m->rot_row0);
     FastVecAdd(mat[3], mat[3], &m->pos);
     FastVecSub(mat[0], mat[3], D_L18_00167840);
     func_L00_001FF4B0(mat[0], mat[0], 1.0f);
@@ -515,7 +515,7 @@ void draw_moby_two_tint_glow_quads(struct Moby *m) {
     pk.col[0] = c;
     for (i = 0; i < 4; i++) {
         FastVecScale(pk.m[i], D_L18_001DFE50[i], (*(float *)&D_L18_00162598));
-        func_001F9EE8(pk.m[i], pk.m[i], mat);
+        transform_vector(pk.m[i], pk.m[i], mat);
     }
     func_L00_001FD1D8(&pk, 0, 0);
     c2 = (*(int *)&D_L18_001625A0) | (D_L18_001625B4 << 24);
@@ -525,7 +525,7 @@ void draw_moby_two_tint_glow_quads(struct Moby *m) {
     pk.col[0] = c2;
     for (i = 0; i < 4; i++) {
         FastVecScale(pk.m[i], D_L18_001DFE50[i], (*(float *)&D_L18_0016259C));
-        func_001F9EE8(pk.m[i], pk.m[i], mat);
+        transform_vector(pk.m[i], pk.m[i], mat);
     }
     func_L00_001FD1D8(&pk, 0, 0);
 }
@@ -559,12 +559,12 @@ void draw_moby_three_scaled_two_tint_quads(struct Moby *m) {
     pk.a = 0;
     VU1_addGSregister(0x4A, 0);
     VU1_addGSregister(0x47, 0x51001);
-    func_001F9EC0(mat[3], &D_L18_001625F0, &m->rot_row0);
+    matrix_mul_vec3(mat[3], &D_L18_001625F0, &m->rot_row0);
     FastVecAdd(mat[3], mat[3], &m->pos);
     *(u128_9c20_FB318 *)up = 0;
     up[2] = -1.0f;
     up[3] = 1.0f;
-    func_001F9EC0(mat[0], up, &m->rot_row0);
+    matrix_mul_vec3(mat[0], up, &m->rot_row0);
     FastVecSub(mat[1], mat[3], D_L18_00167840);
     FastVecCross(mat[2], mat[1], mat[0]);
     func_L00_001FF4B0(mat[2], mat[2], 1.0f);
@@ -594,7 +594,7 @@ void draw_moby_three_scaled_two_tint_quads(struct Moby *m) {
         i++;
     } while (i < 4);
     for (i = 0; i < 4; i++) {
-        func_001F9EE8(pk.m[i], &vertices[i], mat);
+        transform_vector(pk.m[i], &vertices[i], mat);
     }
     func_L00_001FD1D8(&pk, 0, 0);
 
@@ -612,7 +612,7 @@ void draw_moby_three_scaled_two_tint_quads(struct Moby *m) {
         i++;
     } while (i < 4);
     for (i = 0; i < 4; i++) {
-        func_001F9EE8(pk.m[i], &vertices[i], mat);
+        transform_vector(pk.m[i], &vertices[i], mat);
     }
     func_L00_001FD1D8(&pk, 0, 0);
 
@@ -630,7 +630,7 @@ void draw_moby_three_scaled_two_tint_quads(struct Moby *m) {
         i++;
     } while (i < 4);
     for (i = 0; i < 4; i++) {
-        func_001F9EE8(pk.m[i], &vertices[i], mat);
+        transform_vector(pk.m[i], &vertices[i], mat);
     }
     func_L00_001FD1D8(&pk, 0, 0);
 }
@@ -749,7 +749,7 @@ void update_moby_transform_and_child(char *moby) {
     if (child != 0) {
         qcopy(child + 0x10, moby + 0x10);
         qcopy(child + 0x40, moby + 0x40);
-        func_L00_00251E30(child);
+        moby_build_matrix(child);
     }
 }
 extern unsigned short *D_L18_001AC540[];
@@ -897,7 +897,7 @@ void Moby1906Update(unsigned char *m) {
         float a = 10.0f;
         float r;
         s0 = m + 0x10;
-        *(float *)(e + 0x1D8) = *(float *)(e + 0x1D8) - D_0015EE70 * a;
+        *(float *)(e + 0x1D8) = *(float *)(e + 0x1D8) - g_frame_time_sq * a;
         FastVecAdd(s0, s0, e + 0x1D0);
         qcopy(tmp, s0);
         ((float *)tmp)[2] += 1.0f;
@@ -945,10 +945,10 @@ void Moby1906Update(unsigned char *m) {
     case 4: {
         float r, k, b, d;
         s0 = m + 0x48;
-        r = func_L00_001FF860(*(float *)(e + 0x180) - *(float *)(m + 0x10), *(float *)(e + 0x184) - *(float *)(m + 0x14));
+        r = fast_atan2(*(float *)(e + 0x180) - *(float *)(m + 0x10), *(float *)(e + 0x184) - *(float *)(m + 0x14));
         k = 6.2831855f;
-        b = D_0015EE70 * k;
-        d = D_0015EE6C * k;
+        b = g_frame_time_sq * k;
+        d = g_frame_time * k;
         SteerAngleWithVelocity((float *)s0, (float *)(e + 0x1E8), r, b, b, d);
         if (IsFrameWithinWindow((char *)m, 14.0f)) collect_mobies_in_sphere_at_moby_point(m, 0.5f, 1.0f, 1.0f, 1, 1, 0, 1, 0);
         if (m[0x70] & 2) {
@@ -977,10 +977,10 @@ void Moby1906Update(unsigned char *m) {
         break;
     }
     s0 = m + 0xC0;
-    func_001FA1F8(s0, m + 0x40);
+    euler_rotation_basis(s0, m + 0x40);
     if (*(float *)(e + 0x1F4) != 0.0f) {
         float g;
-        ApproachValue((float *)(e + 0x1F4), 0.0f, D_0015EE6C * 4.0f);
+        ApproachValue((float *)(e + 0x1F4), 0.0f, g_frame_time * 4.0f);
         g = 1.0f;
         FastVecScale(m + 0xE0, m + 0xE0, *(float *)(e + 0x1F4) + g);
         g = g - *(float *)(e + 0x1F4);
@@ -1070,7 +1070,7 @@ void update_gadgebot_damage_target_and_glow(void *m_) {
     if (moby->state == 4 || moby->state == 5) {
         speed = F(D_L18_001626A8);
     }
-    sentry_vars->spin = FastAddRots(sentry_vars->spin, speed * 0.017453292f * D_0015EE6C);
+    sentry_vars->spin = FastAddRots(sentry_vars->spin, speed * 0.017453292f * g_frame_time);
     moby->glow_color = FastTweenColor((*(int *)&D_L18_0016269C), (*(int *)&D_L18_001626A0),
                                 FastSin(sentry_vars->spin) * 0.5f + 0.5f);
     if (moby->pos.z < 100.0f && moby->state != 7) {
@@ -1097,11 +1097,11 @@ void update_gadgebot_damage_target_and_glow(void *m_) {
             if (random_integer_below(2) != 0) {
                 moby->state = 6;
             } else {
-                float k = D_0015EE70;
+                float k = g_frame_time_sq;
                 float t0 = F(D_L18_001626AC) * k;
                 float t1 = F(D_L18_001626B0) * k;
-                float t2 = F(D_L18_001626B4) * D_0015EE6C;
-                float t3 = F(D_L18_001626B8) * D_0015EE6C;
+                float t2 = F(D_L18_001626B4) * g_frame_time;
+                float t3 = F(D_L18_001626B8) * g_frame_time;
                 fall_setup_value_or_path_slot_address = 0x200;
                 sentry_vars->unk90 = fall_setup_value_or_path_slot_address;
                 k = 0.5f;
@@ -1113,7 +1113,7 @@ void update_gadgebot_damage_target_and_glow(void *m_) {
                 reaction_value_or_path_address = 0x29;
                 sentry_vars->unk94 = reaction_value_or_path_address;
                 sentry_vars->unkAD = 0;
-                sentry_vars->unkBC = D_0015EE6C + D_0015EE6C;
+                sentry_vars->unkBC = g_frame_time + g_frame_time;
                 moby->flags &= ~0x1000;
                 v.q = *(u128 *)(coll + 0x10);
                 HeadingFromVector(&v, &angle, &sentry_vars->unk88, &sentry_vars->unk8C);
@@ -1163,15 +1163,15 @@ float move_gadgebot_toward_target(char *self, float *src) {
     float dist;
     *(QVec *)&a = *(QVec *)src;
     {
-        float d = FastAddRots(func_L00_001FF860(a.v[0] - *(float *)(self + 0x10), a.v[1] - *(float *)(self + 0x14)), *(float *)(o + 0x1EC));
-        SteerAngleWithVelocity((float *)(self + 0x48), (float *)(o + 0x1E8), d, D_0015EE70 * 6.2831855f, D_0015EE70 * 6.2831855f, D_0015EE6C * 6.2831855f);
+        float d = FastAddRots(fast_atan2(a.v[0] - *(float *)(self + 0x10), a.v[1] - *(float *)(self + 0x14)), *(float *)(o + 0x1EC));
+        SteerAngleWithVelocity((float *)(self + 0x48), (float *)(o + 0x1E8), d, g_frame_time_sq * 6.2831855f, g_frame_time_sq * 6.2831855f, g_frame_time * 6.2831855f);
     }
     b[0] = z;
-    dist = func_001F9D48((float *)(self + 0x10), a.v);
-    ApproachWithVelocity(b, (float *)(o + 0x1F0), dist, D_0015EE70 * 6.0f, D_0015EE70 * 6.0f, D_0015EE6C * 5.0f);
+    dist = vec_distance_xy((float *)(self + 0x10), a.v);
+    ApproachWithVelocity(b, (float *)(o + 0x1F0), dist, g_frame_time_sq * 6.0f, g_frame_time_sq * 6.0f, g_frame_time * 5.0f);
     v[0] = FastCos(*(float *)(self + 0x48)) * *(float *)(o + 0x1F0);
     v[1] = FastSin(*(float *)(self + 0x48)) * *(float *)(o + 0x1F0);
-    v[2] = -(D_0015EE6C + D_0015EE6C);
+    v[2] = -(g_frame_time + g_frame_time);
     move_4318((int)self, (int)v, h, h, z, 0);
     PushPointOutsidePath(h, *(void **)(o + 0x1E0), self + 0x10, self + 0x10);
     return dist;
@@ -1213,7 +1213,7 @@ int launch_first_idle_group_class_0772_moby(int group, void *from, void *to, flo
                 FastVecSub(v->velocity, to, from);
                 v->velocity[2] = 0.0f;
                 func_L00_001FF4B0(v->velocity, v->velocity, speed);
-                v->velocity[2] = jump_speed_4318(from, to, speed, -(D_0015EE70 * 10.0f), 0);
+                v->velocity[2] = jump_speed_4318(from, to, speed, -(g_frame_time_sq * 10.0f), 0);
                 v->spin = randf_sym(15.0f, 45.0f) * 0.017453292f;
                 return 1;
             }

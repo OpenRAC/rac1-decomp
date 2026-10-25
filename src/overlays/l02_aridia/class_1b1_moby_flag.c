@@ -22,7 +22,7 @@ extern Level02MobyList D_L02_0016CEE0;
 /* Mark every moby of class 0x1B1 in the active level. */
 void set_level02_class_1b1_moby_flag_0800(void) {
     int i;
-    if (D_0015EE84 == 2) {
+    if (g_current_level_index == 2) {
         for (i = 0; i < talk_camera.count; i++) {
             Level02Moby *moby = talk_camera.mobys[i];
             if (moby->class_id == 0x1B1) {

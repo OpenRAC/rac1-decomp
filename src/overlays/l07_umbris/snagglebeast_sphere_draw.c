@@ -51,7 +51,7 @@ void draw_snagglebeast_sphere_quad_strips(char *moby, int arg2, float fa, float 
     int color;
     float da, alpha, spin, step, ustep, angle, next, wrapped, theta, ph;
 
-    VU1_addGSregister(0x4E, (u64)(D_0015EF88 >> 13) | 0x1000000L | (0x8000L << 17));
+    VU1_addGSregister(0x4E, (u64)(depth_buffer_address >> 13) | 0x1000000L | (0x8000L << 17));
     texture = GetEffectTex(0x3C);
     ph = fd;
     color = truncate_float_to_s32(IntToFloat(0) * ph) << 24;
@@ -114,5 +114,5 @@ void draw_snagglebeast_sphere_quad_strips(char *moby, int arg2, float fa, float 
             func_L00_001FD1D8(&quad, 0, 1);
         }
     }
-    VU1_addGSregister(0x4E, (u64)(D_0015EF88 >> 13) | 0x1000000L);
+    VU1_addGSregister(0x4E, (u64)(depth_buffer_address >> 13) | 0x1000000L);
 }

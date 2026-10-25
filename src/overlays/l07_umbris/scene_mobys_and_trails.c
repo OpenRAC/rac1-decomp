@@ -44,7 +44,7 @@ void update_moby_offset_motion(struct Moby *moby) {
     u8 spawn_id;
     int no_spawn;
 
-    if (moby->mission != 0xff && D_0014C150[moby->mission + D_0015EE84 * 16] == 0xff)
+    if (moby->mission != 0xff && D_0014C150[moby->mission + g_current_level_index * 16] == 0xff)
         vars->target = -1;
     spawn_id = moby->mission;
     force_end = 0;
@@ -70,7 +70,7 @@ void update_moby_offset_motion(struct Moby *moby) {
         if (force_start)
             return;
         if (!force_end && vars->target != -1 &&
-            (target = &D_L07_00160058[vars->target]) != 0 &&
+            (target = &level_mobys[vars->target]) != 0 &&
             target->state != 0xfe && target->state != 0xfd &&
             target->state != vars->openState)
             return;
@@ -86,7 +86,7 @@ void update_moby_offset_motion(struct Moby *moby) {
         break;
     case 2:
         if (force_start || (!force_end && vars->target != -1 &&
-            (target = &D_L07_00160058[vars->target]) != 0 &&
+            (target = &level_mobys[vars->target]) != 0 &&
             target->state != 0xfe && target->state != 0xfd &&
             target->state == vars->shutState)) {
             if (vars->startSound != -1)
@@ -99,10 +99,10 @@ void update_moby_offset_motion(struct Moby *moby) {
         start.f[1] = vars->destination.y;
         start.f[2] = vars->destination.z;
         next.q = start.q;
-        func_001F9EC0(&next, &next, &moby->rot_row0);
-        func_L00_001FF4B0(&start, &next, vars->destination.w * D_0015EE6C);
+        matrix_mul_vec3(&next, &next, &moby->rot_row0);
+        func_L00_001FF4B0(&start, &next, vars->destination.w * g_frame_time);
         FastVecAdd(&moby->pos, &moby->pos, &start);
-        time = vars->home.w - vars->destination.w * D_0015EE6C;
+        time = vars->home.w - vars->destination.w * g_frame_time;
         vars->home.w = time;
         if (!(time < 0.0f))
             return;
@@ -116,7 +116,7 @@ void update_moby_offset_motion(struct Moby *moby) {
         return;
     case 3:
         if (!force_start && (force_end || vars->target == -1 ||
-            (target = &D_L07_00160058[vars->target]) == 0 ||
+            (target = &level_mobys[vars->target]) == 0 ||
             target->state == 0xfe || target->state == 0xfd ||
             target->state != vars->shutState))
             return;
@@ -127,7 +127,7 @@ void update_moby_offset_motion(struct Moby *moby) {
         break;
     case 4:
         if (!force_start && (force_end || vars->target == -1 ||
-            (target = &D_L07_00160058[vars->target]) == 0 ||
+            (target = &level_mobys[vars->target]) == 0 ||
             target->state == 0xfe || target->state == 0xfd ||
             target->state == vars->openState)) {
             if (vars->startSound != -1)
@@ -141,10 +141,10 @@ void update_moby_offset_motion(struct Moby *moby) {
         start.f[2] = vars->destination.z;
         next.q = start.q;
         distance = FastVecLength(&next);
-        func_L00_001FF4B0(&next, &next, -(vars->speed * D_0015EE6C));
-        func_001F9EC0(&start, &next, &moby->rot_row0);
+        func_L00_001FF4B0(&next, &next, -(vars->speed * g_frame_time));
+        matrix_mul_vec3(&start, &next, &moby->rot_row0);
         FastVecAdd(&moby->pos, &moby->pos, &start);
-        time = vars->home.w + vars->speed * D_0015EE6C;
+        time = vars->home.w + vars->speed * g_frame_time;
         vars->home.w = time;
         if (!(distance < time))
             return;
@@ -188,7 +188,7 @@ void update_swing_gate(EaseMoby1C7C0 *moby) {
                 return;
             }
             {
-                float dt = D_0015EE6C;
+                float dt = g_frame_time;
                 v = d->speed * dt;
             }
             d->value.f = v;
@@ -197,7 +197,7 @@ void update_swing_gate(EaseMoby1C7C0 *moby) {
             moby->state = 3;
             break;
         case 3:
-            d->value.f = FastAddRots(d->value.f, FastCos(moby->angle.f) * (d->speed * D_0015EE6C));
+            d->value.f = FastAddRots(d->value.f, FastCos(moby->angle.f) * (d->speed * g_frame_time));
             moby->angle.f = FastAddRots(moby->angle.f, d->value.f);
             o = D_L07_00160058_ease + d->target;
             d->value.f = d->value.f * d->decay;
@@ -507,7 +507,7 @@ void mushroom_update(char *m) {
             qcopy(n + 0x10, p);
             qcopy(n + 0x40, q);
             *(long *)(n + 0x38) = *(long *)(m + 0x38);
-            func_L00_00251E30(n);
+            moby_build_matrix(n);
         }
         DeleteMoby(m);
         break;

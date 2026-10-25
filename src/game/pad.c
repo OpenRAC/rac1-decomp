@@ -495,5 +495,5 @@ extern void func_00217F68(void *);
 
 /* UpdatePad(void) */
 void UpdatePad(void) {
-    poll_pad_device_state(D_0013CA40);
+    poll_pad_device_state(g_controller_state);
 }

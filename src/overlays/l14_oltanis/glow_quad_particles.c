@@ -19,7 +19,7 @@ extern void func_001F49B0(void (*)(void *), void *);
 /* Attach the callback during the six active phases of this level event. */
 void update_level14_event_moby_effects(void) {
     void *moby;
-    if (D_0015EE84 != 14 || D_L14_0016D060.state != 0) {
+    if (g_current_level_index != 14 || D_L14_0016D060.state != 0) {
         return;
     }
     moby = D_L14_0016D060.moby;

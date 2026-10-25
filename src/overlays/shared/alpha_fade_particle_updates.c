@@ -28,12 +28,12 @@ unsigned char *PartType44Spawn(void *pos, float *vec, int s, int a, int col, int
         m[8] = random_integer_below(0xFF);
         m[2] = *D_L00_001B24B0;
         *(short *)(m + 0xA) = s;
-        t = (float)n * D_0015EE60;
+        t = (float)n * frame_scale;
         *(float *)(q + 0) = vec[0];
         *(float *)(q + 4) = vec[1];
         *(float *)(q + 8) = vec[2];
         q[0x10] = truncate_float_to_s32(t);
-        d = D_0015EE60;
+        d = frame_scale;
         *(float *)(q + 0xC) = w;
         q[0x12] = col >> 8;
         *(float *)(q + 0x14) = y * d;
@@ -84,7 +84,7 @@ void update_moving_rotating_resizing_alpha_fade_particle(unsigned char *p) {
         FastVecAdd(r, r, v);
         t[0] = *(Q *)(D_0013E633 + 0xF5D);
         func_L00_001FF2C8(m, t, *(float *)(p + 0x1C));
-        func_L00_001FF240(m, r, t);
+        add_vectors(m, r, t);
         FastVecScale(m, D_0013E633 + 0xF5D + 0x150, *(float *)(q + 0xC));
         FastVecAdd(v, v, m);
         FastVecScale(v, v, *(float *)(q + 0x18));
@@ -346,7 +346,7 @@ void update_moving_height_culled_particle(unsigned char *m) {
     FastVecAdd(m + 0x10, m + 0x10, v);
     m[8] += v[0x14];
     if (m[2] == *D_L00_001B24C8) {
-        *(float *)(m + 0xC) += *(float *)&D_L00_001602D0 * D_0015EE6C * 210000.0f;
+        *(float *)(m + 0xC) += *(float *)&D_L00_001602D0 * g_frame_time * 210000.0f;
     }
     if (*(float *)(m + 0x18) < *(float *)(v + 0x10)) {
         KillPart(m);
@@ -373,8 +373,8 @@ void update_damped_fading_particle(char *m) {
     u32 faded_color;
     f32 current_size;
     func_L00_001FF2C8(&unused_vector_argument, particle_velocity, 0.95f);
-    particle_velocity->f[2] += D_0015EE70 * 5.0f;
-    func_L00_001FF240(&unused_vector_argument, &p->pos, particle_velocity);
+    particle_velocity->f[2] += g_frame_time_sq * 5.0f;
+    add_vectors(&unused_vector_argument, &p->pos, particle_velocity);
     faded_color = p->color + 0xFE000000;
     p->color = faded_color;
     if ((faded_color & 0xFF000000) - 1 > 0x5EFFFFFF || FastDecTimer(&p->life)) {
@@ -674,7 +674,7 @@ unsigned char *spawn_type58_particle(float *pos, unsigned char a1, unsigned char
         case 2: {
             float x = random_float_between(3.0f, 9.0f) * f1;
             float y, z;
-            x = x * D_0015EE6C;
+            x = x * g_frame_time;
             y = random_angle_radians();
             z = random_float_between(1.3439035f, 1.7976891f);
             BuildSphericalOffset(v, x, y, z);
@@ -741,7 +741,7 @@ void update_color_tween_emitter_particle(unsigned char *p) {
             KillPart(p);
         }
         c = D_0013E633 + 0xE9D;
-        if (func_001F9D48(p + 0x10, c) < 0.3f) {
+        if (vec_distance_xy(p + 0x10, c) < 0.3f) {
             g = (P_272bc0 *)(c - 0x80);
             if (g->f88 < *(float *)(p + 0x18) + 1.2f) {
                 FastVecSub(t, c, p + 0x10);
@@ -758,9 +758,9 @@ void update_color_tween_emitter_particle(unsigned char *p) {
         k = k / a;
         *(int *)(p + 4) = FastTweenColor((q[0x16] << 24) | 0x4060, 0x8FAFFF, k);
         if (k < 0.6f) {
-            *(float *)(p + 0xC) += D_0015EE60 * 0.043f * 210000.0f;
+            *(float *)(p + 0xC) += frame_scale * 0.043f * 210000.0f;
         } else {
-            *(float *)(p + 0xC) -= D_0015EE60 * 0.08f * 210000.0f;
+            *(float *)(p + 0xC) -= frame_scale * 0.08f * 210000.0f;
         }
         p[2] = D_L00_001B24E8[func_001160D8() & 7];
         if (((p - D_L00_0016022C) >> 6) & 1) {
@@ -919,17 +919,17 @@ void update_moby_point_attached_alpha_pulse_particle(P_p *p) {
     }
     e->hC = (e->hC + 1) & 0xF;
     if (p->fC < 159600.0f) {
-        p->fC += D_0015EE60 * 3989.99976f;
+        p->fC += frame_scale * 3989.99976f;
         if (159600.0f < p->fC) {
             p->fC = 159600.0f;
         }
     } else if (159600.0f < p->fC) {
-        p->fC -= D_0015EE60 * 15959.999f;
+        p->fC -= frame_scale * 15959.999f;
         if (p->fC < 159600.0f) {
             p->fC = 159600.0f;
         }
     }
-    e->f8 += D_0015EE60 * 0.001f;
+    e->f8 += frame_scale * 0.001f;
     p->b8 = truncate_float_to_s32(e->f8 * 255.0f);
     p->b2 = D_L00_001B24F4[e->hC];
     if (p->fC <= 159600.0f || 0.0f < e->f10) {
@@ -957,9 +957,9 @@ void update_moby_point_attached_alpha_pulse_particle(P_p *p) {
         }
     }
     p->w4 = (p->w4 & 0xFFFFFF) + (truncate_float_to_s32(e->f4 * 256.0f) << 24);
-    e->f14 += (1.0f - e->f14) * (D_0015EE60 * 0.175f);
+    e->f14 += (1.0f - e->f14) * (frame_scale * 0.175f);
     Moby_GetJointWorldPos(e->m, e->hE, a);
-    FastVecSub(v, D_L00_00166EC0, a);
+    FastVecSub(v, g_debug_camera, a);
     func_L00_001FF4B0(v, v, e->f14);
     FastVecAdd(p->pos, a, v);
 }
@@ -1015,7 +1015,7 @@ unsigned char *spawn_gravity_floor_burst_particle(void *pos, void *vel, float sc
     if (r != 0) {
         u = r + 0x20;
         qcopy(r + 0x10, pos);
-        if (func_001F9D48(D_0013E633 + 0xE9D, pos) < 80.0f) {
+        if (vec_distance_xy(D_0013E633 + 0xE9D, pos) < 80.0f) {
             r[9] = truncate_float_to_s32(1.0f) + 0x30;
         } else {
             r[9] = truncate_float_to_s32(1.0f) + 0x20;
@@ -1094,15 +1094,15 @@ void update_gravity_floor_burst_particle(struct EmberParticle *p) {
         spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns(&p->pos, &m->vel, p->color, m->color2, f, n, 0, p->tex, p->blend);
     } else {
         p->pos.f[2] = m->floor_z;
-        m->vel.f[0] += random_float_between(-5.0f, 5.0f) * D_0015EE6C;
-        m->vel.f[1] += random_float_between(-5.0f, 5.0f) * D_0015EE6C;
+        m->vel.f[0] += random_float_between(-5.0f, 5.0f) * g_frame_time;
+        m->vel.f[1] += random_float_between(-5.0f, 5.0f) * g_frame_time;
         m->vel.f[2] *= random_float_between(-0.5f, -1.0f);
         f = p->size;
         f *= 0.25f;
         n = rand_range(scale_ticks(0x1E), scale_ticks(0x3C));
         spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns(&p->pos, &m->vel, p->color, m->color2, f, n, 0, p->tex, p->blend);
     }
-    if (D_0015EE84 == 10) {
+    if (g_current_level_index == 10) {
         if (!random_integer_below(0x13)) {
             t.q = p->pos.q;
             t.f[2] += 0.1f;
@@ -1116,8 +1116,8 @@ void update_gravity_floor_burst_particle(struct EmberParticle *p) {
             m->vel.f[0] = random_float_between(-1.0f, 1.0f);
             m->vel.f[1] = random_float_between(-1.0f, 1.0f);
             m->vel.f[2] = 0.0f;
-            func_L00_001FF4B0(&m->vel, &m->vel, random_float_between(1.5f, 3.0f) * D_0015EE6C);
-            m->vel.f[2] = D_0015EE6C * 3.0f;
+            func_L00_001FF4B0(&m->vel, &m->vel, random_float_between(1.5f, 3.0f) * g_frame_time);
+            m->vel.f[2] = g_frame_time * 3.0f;
             t.q = p->pos.q;
             t.f[2] -= 1.5f;
             f = random_float_between(420000.0f, 630000.0f);
@@ -1142,13 +1142,13 @@ void update_line_collision_rgb_fading_particle(unsigned char *o) {
     if (!o) return;
     c = (float *)(o + 0x20);
     b = o + 0x10;
-    d = D_0015EE60;
+    d = frame_scale;
     c[7] += d * 0.0f;
     *(float *)(o + 0xC) += d * -100.0f;
     FastVecAdd(&out, b, c);
     if (*(float *)(o + 0x20) != 0.0f || c[1] != 0.0f || c[2] != 0.0f) {
         if (func_L00_001EFFF0(o + 0x10, &out, 2, o, 0)) {
-            *(V *)(o + 0x10) = D_L00_00173F60;
+            *(V *)(o + 0x10) = collision_hit_point;
             clear_u64_value(c);
             *(float *)(o + 0xC) += *(float *)(o + 0xC);
         } else {
@@ -1156,7 +1156,7 @@ void update_line_collision_rgb_fading_particle(unsigned char *o) {
             if (c[3] != 0.0f) {
                 c[2] += c[3];
             } else {
-                c[2] += D_0015EE64 * -0.006300000008195639f;
+                c[2] += g_frame_scale_sq * -0.006300000008195639f;
             }
         }
     }
@@ -1165,13 +1165,13 @@ void update_line_collision_rgb_fading_particle(unsigned char *o) {
         KillPart(o);
         return;
     }
-    c[4] += D_0015EE60 * -0.01f;
+    c[4] += frame_scale * -0.01f;
     if (c[4] < 0.0f) c[4] = 0.0f;
-    c[5] += D_0015EE60 * -0.030009999871253967f;
+    c[5] += frame_scale * -0.030009999871253967f;
     if (c[5] < 0.0f) c[5] = 0.0f;
-    c[6] += D_0015EE60 * -0.05f;
+    c[6] += frame_scale * -0.05f;
     if (c[6] < 0.0f) c[6] = 0.0f;
-    c[7] += D_0015EE60 * 0.0f;
+    c[7] += frame_scale * 0.0f;
     if (c[7] < 0.0f) c[7] = 0.0f;
     *(int *)(o + 4) = PackColorRGBA(c[4], c[5], c[6], c[7]);
     o[8]--;
@@ -1348,13 +1348,13 @@ void update_mode_controlled_orbiting_trail_particle(char *m) {
     *(int *)&vv[4] = 0;
     clear_u64_value((vv + 8));
     vv[9] = r->unk10;
-    func_001FA218((vv + 12), (vv + 8));
-    func_001F9EE8((vv + 4), (vv + 4), (vv + 12));
+    euler_to_matrix((vv + 12), (vv + 8));
+    transform_vector((vv + 4), (vv + 4), (vv + 12));
     FastVecAdd(vv, vv, (vv + 4));
-    func_001F9EC0(vv, vv, r->iC + 0xC0);
+    matrix_mul_vec3(vv, vv, r->iC + 0xC0);
     FastVecAdd(q, q, vv);
-    t = FastAddRots(r->unk10, D_0015EE6C * 0.9599311f);
-    u = D_0015EE6C * 4.3633232f;
+    t = FastAddRots(r->unk10, g_frame_time * 0.9599311f);
+    u = g_frame_time * 4.3633232f;
     e = r->unk14;
     r->unk10 = t;
     r->unk14 = FastAddRots(e, u);
@@ -1543,7 +1543,7 @@ void update_three_phase_motion_alpha_fade_particle(char *m) {
         load_display_text_resource_entry(y, (int *)v);
         load_display_text_resource_entry(z, (int *)(v + 4));
         f = IntToFloat(*(short *)(m + 0xA));
-        func_001F9C08(x, z, y, f / IntToFloat(*(short *)(v + 0x12)));
+        lerp_vector(x, z, y, f / IntToFloat(*(short *)(v + 0x12)));
         FastVecAdd(m + 0x10, m + 0x10, x);
         if (FastDecTimer(m + 0xA)) {
             *(short *)(v + 0x12) = 0;
@@ -1664,7 +1664,7 @@ void update_gravity_ground_culled_particle(O_275320 *o) {
     tmp.f[0] = 0.0f;
     tmp.f[1] = 0.0f;
     tmp.f[3] = 0.0f;
-    tmp.f[2] = -(D_0015EE70 * 0.5f);
+    tmp.f[2] = -(g_frame_time_sq * 0.5f);
     FastVecAdd(vel, &tmp, vel);
     vel->f[3] = h + particle_clearance;
 }
@@ -1683,7 +1683,7 @@ void update_damped_moby_relative_color_size_tween_particle(char *m) {
     int k;
     k = *(int *)(d + 0xC) - *(short *)(m + 0xA);
     r = IntToFloat(*(short *)(d + 8) * k / *(int *)(d + 0xC) + *(short *)(d + 0xA));
-    q = D_0015EE60 * -0.01999998f + 1.0f;
+    q = frame_scale * -0.01999998f + 1.0f;
     *(float *)(m + 0xC) = r * 1000.0f;
     t[0] = *(float *)(m + 0x20);
     t[1] = *(float *)(s + 4);
@@ -1701,7 +1701,7 @@ void update_damped_moby_relative_color_size_tween_particle(char *m) {
         *(float *)(s + 0x10) = u[0];
         *(float *)(s + 0x14) = u[1];
         *(float *)(s + 0x18) = u[2];
-        func_001F9EC0(w, u, *(char **)(s + 0xC) + 0xC0);
+        matrix_mul_vec3(w, u, *(char **)(s + 0xC) + 0xC0);
         FastVecAdd(m + 0x10, *(char **)(s + 0xC) + 0x10, w);
     } else {
         KillPart(m);
@@ -1725,9 +1725,9 @@ void update_gravity_damped_resizing_particle(char *m) {
     float t;
     m[8] += v[0x12];
     FastVecAdd(m + 0x10, m + 0x10, v);
-    *(float *)(v + 8) -= D_0015EE64 * 0.003f;
-    t = func_001F9CE8(v);
-    s = ((t * 0.97f - 1.0f) * D_0015EE60 + 1.0f) / t;
+    *(float *)(v + 8) -= g_frame_scale_sq * 0.003f;
+    t = vec_length_xy(v);
+    s = ((t * 0.97f - 1.0f) * frame_scale + 1.0f) / t;
     *(float *)(m + 0x20) *= s;
     *(float *)(v + 4) *= s;
     if (FastDecTimer(m + 0xA) == 0) {

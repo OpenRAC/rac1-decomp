@@ -69,13 +69,13 @@ void mode_freeze_init(int arg0, int arg1, int arg2) {
     char *s = D_00193400;
 
     *(int *)(s + 0x30) = arg2;
-    if (D_0015F6E8 != 3) {
+    if (g_game_mode != 3) {
         func_0012E528(0x1D);
         music_Pause(0);
     }
     *(int *)(s + 0x18) = arg1;
-    *(int *)(s + 0x14) = D_0015F6E8;
-    D_0015F6E8 = 4;
+    *(int *)(s + 0x14) = g_game_mode;
+    g_game_mode = 4;
     *(int *)s = arg0;
     *(int *)(s + 0x2C) = 0;
     switch (arg0) {
@@ -111,30 +111,30 @@ void mode_freeze_init(int arg0, int arg1, int arg2) {
     case 5: {
         char *p = D_00193400;
         push_help_history(0x4E2B);
-        *(int *)(p + 4) = func_001F98C0(0x1E);
+        *(int *)(p + 4) = scale_game_frame_count(0x1E);
         *(int *)(p + 0x20) = 0;
-        *(int *)(p + 0x24) = func_001F98C0(0x1E);
+        *(int *)(p + 0x24) = scale_game_frame_count(0x1E);
         break;
     }
     case 7:
     case 8: {
         char *p = D_00193400;
-        *(int *)(p + 4) = func_001F98C0(0x1E);
+        *(int *)(p + 4) = scale_game_frame_count(0x1E);
         *(int *)(p + 0x20) = -1;
-        *(int *)(p + 0x24) = func_001F98C0(0x1E);
+        *(int *)(p + 0x24) = scale_game_frame_count(0x1E);
         break;
     }
     case 3: {
         char *p = D_00193400;
-        *(int *)(p + 4) = func_001F98C0(0x1E);
+        *(int *)(p + 4) = scale_game_frame_count(0x1E);
         *(int *)(p + 0x20) = -1;
-        *(int *)(p + 0x24) = func_001F98C0(0x1E);
+        *(int *)(p + 0x24) = scale_game_frame_count(0x1E);
         D_0013D440 = 3;
-        *(int *)(p + 0x2C) = func_001F98C0(0xA);
+        *(int *)(p + 0x2C) = scale_game_frame_count(0xA);
         break;
     }
     case 6: {
-        int v = func_001F98C0(0x1E);
+        int v = scale_game_frame_count(0x1E);
         char *p = D_00193400;
         *(int *)(p + 4) = v;
         *(int *)(p + 0x1C) = 0;
@@ -248,15 +248,15 @@ static __inline__ void draw_box_p(char *text, s32 left, s32 mid, s32 right, stru
 
     font_print_window_regular(&box, 0, text, -1);
     h = box.rendered_height + 0x28;
-    y = (((ScreenP *)D_0013E600)->height - h) >> 1;
+    y = (((ScreenP *)g_screen_extent)->height - h) >> 1;
     box.bottom = y + h;
     box.anchor_y = y + 4;
     box.top = y;
-    alpha = 1.0f - (f32)((MessageBoxP *)D_00193400)->timer / (f32)func_001F98C0(30);
+    alpha = 1.0f - (f32)((MessageBoxP *)D_00193400)->timer / (f32)scale_game_frame_count(30);
     DrawUIFrame(box.top, box.bottom, 0x60, 0x1A0, (s32)(alpha * 80.0f));
     box.flags ^= 4;
     font_print_window_regular(&box, FastTweenColor(*(s32 *)&D_0015F5F0, *(s32 *)&D_0015F5F4, alpha), text, -1);
-    tint = FastTweenColor(0x20FFFF, 0x8020FFFF, 1.0f - (f32)((MessageBoxP *)D_00193400)->unk24 / (f32)func_001F98C0(30));
+    tint = FastTweenColor(0x20FFFF, 0x8020FFFF, 1.0f - (f32)((MessageBoxP *)D_00193400)->unk24 / (f32)scale_game_frame_count(30));
     if (left != 0) {
         FontPrintCenter(0xCA, box.bottom - 0x14, tint, msg_string(left), -1);
     }
@@ -280,7 +280,7 @@ void draw_freeze_message_box(void) {
     case 5: {
         f32 alpha;
 
-        alpha = 1.0f - (f32)((MessageBoxP *)D_00193400)->timer / (f32)func_001F98C0(30);
+        alpha = 1.0f - (f32)((MessageBoxP *)D_00193400)->timer / (f32)scale_game_frame_count(30);
         DrawUIFrame(0x50, 0x154, 0x60, 0x1A0, (s32)(alpha * 80.0f));
         {
             struct TextRegionP box = D_001E7BF8;
@@ -314,14 +314,14 @@ void draw_freeze_message_box(void) {
             box.flags ^= 4;
             box.anchor_y = 0x136 - box.rendered_height;
             font_print_window_regular(&box, color, (char *)p, -1);
-            tint = FastTweenColor(0x20FFFF, 0x8020FFFF, 1.0f - (f32)((MessageBoxP *)D_00193400)->unk24 / (f32)func_001F98C0(30));
+            tint = FastTweenColor(0x20FFFF, 0x8020FFFF, 1.0f - (f32)((MessageBoxP *)D_00193400)->unk24 / (f32)scale_game_frame_count(30));
             FontPrintCenter(0x100, 0x140, tint, msg_string(0x524F), -1);
             mid = (y + box.anchor_y) >> 1;
             VU1_addGSregister(0x47, 0x3004B);
             top = mid - 0x20;
             HudSprite(GetIconFrame(0x755D, 0), 0xE0, top, 0x40, 0x40, 0x80);
             pos = (f32)(mid << 4);
-            angle = (f32)(D_0015F538 % 55) * -6.2831855f / 55.0f;
+            angle = (f32)(game_frame_counter % 55) * -6.2831855f / 55.0f;
             draw_rotated_sprite(4096.0f, pos, pivot, pivot, angle, 0x40, 0x40,
                          GetFrameTex(GetIconFrame(0x755D, 1)));
         }
@@ -345,7 +345,7 @@ void draw_freeze_message_box(void) {
             } while (*p == 1);
         }
         text = (char *)p;
-        draw_box_p(text, 0, ((MessageBoxP *)D_00193400)->timer != 0 ? 0 : 0x524F, 0, (struct TextRegionP){0, ((ScreenP *)D_0013E600)->height, 0x60, 0x1A0, 0x100, 0x68, 0, 0, 0x10, 5});
+        draw_box_p(text, 0, ((MessageBoxP *)D_00193400)->timer != 0 ? 0 : 0x524F, 0, (struct TextRegionP){0, ((ScreenP *)g_screen_extent)->height, 0x60, 0x1A0, 0x100, 0x68, 0, 0, 0x10, 5});
         break;
     }
     case 8: {
@@ -355,7 +355,7 @@ void draw_freeze_message_box(void) {
             break;
         }
         text = msg_string(((MessageBoxP *)D_00193400)->unk30 != 0 ? 0x4FBD : 0x4FBC);
-        draw_box_p(text, 0, ((MessageBoxP *)D_00193400)->timer != 0 ? 0 : 0x524F, 0, (struct TextRegionP){0, ((ScreenP *)D_0013E600)->height, 0x60, 0x1A0, 0x100, 0x68, 0, 0, 0x10, 5});
+        draw_box_p(text, 0, ((MessageBoxP *)D_00193400)->timer != 0 ? 0 : 0x524F, 0, (struct TextRegionP){0, ((ScreenP *)g_screen_extent)->height, 0x60, 0x1A0, 0x100, 0x68, 0, 0, 0x10, 5});
         break;
     }
     case 3: {
@@ -375,7 +375,7 @@ void draw_freeze_message_box(void) {
         left = 0;
         mid = 0;
         right = 0;
-        switch (*(s32 *)&D_0015EFB0) {
+        switch (*(s32 *)&mode_freeze_state) {
         case 6:
             left = 0x5254;
             right = 0x5250;
@@ -478,7 +478,7 @@ void draw_freeze_message_box(void) {
             break;
         }
         if (draw) {
-            draw_box_p(text, left, mid, right, (struct TextRegionP){0, ((ScreenP *)D_0013E600)->height, 0x60, 0x1A0, 0x100, 0x68, 0, 0, 0x10, 5});
+            draw_box_p(text, left, mid, right, (struct TextRegionP){0, ((ScreenP *)g_screen_extent)->height, 0x60, 0x1A0, 0x100, 0x68, 0, 0, 0x10, 5});
         }
         break;
     }
@@ -490,7 +490,7 @@ void draw_freeze_message_box(void) {
         f32 alpha;
 
         box = D_001E7C10;
-        alpha = 1.0f - (f32)((MessageBoxP *)D_00193400)->timer / (f32)func_001F98C0(30);
+        alpha = 1.0f - (f32)((MessageBoxP *)D_00193400)->timer / (f32)scale_game_frame_count(30);
         DrawUIFrame(0x64, 0x12C, 0x60, 0x1A0, (s32)(alpha * 80.0f));
         text_color = FastTweenColor(*(s32 *)&D_0015F5F0, *(s32 *)&D_0015F5F4, alpha);
         button_color = FastTweenColor(0x20FFFF, 0x8020FFFF, alpha);
@@ -538,7 +538,7 @@ void draw_freeze_message_box(void) {
         f32 f;
 
         pulse = FastTweenColor(*(s32 *)&D_0015F624, *(s32 *)&D_0015F628,
-                       FastSin((f32)(D_0015F538 % *(s32 *)&D_0015F620) / IntToFloat(*(s32 *)&D_0015F620) * 6.28318f - 3.14159f) * 0.5f + 0.5f);
+                       FastSin((f32)(game_frame_counter % *(s32 *)&D_0015F620) / IntToFloat(*(s32 *)&D_0015F620) * 6.28318f - 3.14159f) * 0.5f + 0.5f);
         scale = (f32)((MessageBoxP *)D_00193400)->unk20 * 0.125f;
         if (scale > 1.0f) {
             scale = 1.0f;
@@ -559,7 +559,7 @@ void draw_freeze_message_box(void) {
             c2 = FastTweenColor(*(s32 *)&D_0015F634, *(s32 *)&D_0015F638, f);
             c3 = FastTweenColor(*(s32 *)&D_0015F63C, *(s32 *)&D_0015F640, f);
         }
-        if (((Hero *)D_0013F450)->unk89A < 3) {
+        if (((Hero *)g_hero)->unk89A < 3) {
             draw_outlined_rect(*(s32 *)&D_0015F5FC - truncate_float_to_s32((f32)*(s32 *)&D_0015F604 * scale),
                             *(s32 *)&D_0015F5FC + truncate_float_to_s32((f32)*(s32 *)&D_0015F604 * scale),
                             *(s32 *)&D_0015F5F8 - truncate_float_to_s32((f32)*(s32 *)&D_0015F600 * scale),
@@ -572,19 +572,19 @@ void draw_freeze_message_box(void) {
                             *(s32 *)&D_0015F610 + truncate_float_to_s32((f32)*(s32 *)&D_0015F618 * scale),
                             *(s32 *)&D_0015F60C - truncate_float_to_s32((f32)*(s32 *)&D_0015F614 * scale),
                             *(s32 *)&D_0015F60C + truncate_float_to_s32((f32)*(s32 *)&D_0015F614 * scale), pulse);
-            sel = ((Hero *)D_0013F450)->unk8C0 - 1;
+            sel = ((Hero *)g_hero)->unk8C0 - 1;
             if (!(sel < 5)) {
                 sel = 4;
             }
             func_00116248(line, D_0015F660, msg_string(sel + 0x5229), msg_string(0x5245));
-            if (((Hero *)D_0013F450)->unk8C0 == 1) {
+            if (((Hero *)g_hero)->unk8C0 == 1) {
                 FontPrintCenter(0x100, *(s32 *)&D_0015F61C, c2, line, -1);
             } else {
                 FontPrintCenter(0x100, *(s32 *)&D_0015F61C, c3, line, -1);
             }
-            best = D_0015EF58[(D_0015EE84 ^ 0x10) ? 0 : 1];
-            if (best == ((Hero *)D_0013F450)->unk894) {
-                unit = D_0015EE80 ? 3000 : 3600;
+            best = D_0015EF58[(g_current_level_index ^ 0x10) ? 0 : 1];
+            if (best == ((Hero *)g_hero)->unk894) {
+                unit = pal_mode ? 3000 : 3600;
                 per = unit / 60;
                 min = best / unit;
                 rem = best - min * unit;
@@ -598,11 +598,11 @@ void draw_freeze_message_box(void) {
                 func_00116248(line, D_0015F668, msg_string(0x50A2));
                 FontPrintCenter(0x100, *(s32 *)&D_0015F61C + 0x30, c3, line, -1);
             }
-            record = D_0015EF68[(D_0015EE84 ^ 0x10) ? 0 : 1];
-            if (record != 0 && record == ((Hero *)D_0013F450)->unk8A8) {
+            record = D_0015EF68[(g_current_level_index ^ 0x10) ? 0 : 1];
+            if (record != 0 && record == ((Hero *)g_hero)->unk8A8) {
                 func_00116248(line, D_0015F668, msg_string(0x50A5));
                 FontPrintCenter(0x100, *(s32 *)&D_0015F61C + 0x56, c2, line, -1);
-                func_00116248(line, D_0015F680, ((Hero *)D_0013F450)->unk8A8);
+                func_00116248(line, D_0015F680, ((Hero *)g_hero)->unk8A8);
                 FontPrintCenter(0x100, *(s32 *)&D_0015F61C + 0x6A, c2, line, -1);
             } else {
                 func_00116248(line, D_0015F668, msg_string(0x50A4));
@@ -616,14 +616,14 @@ void draw_freeze_message_box(void) {
     case 2:
         draw_outlined_rect(0x64, 0xA0, 0xB0, 0x150,
                         FastTweenColor(*(s32 *)&D_0015F624, *(s32 *)&D_0015F628,
-                               FastSin((f32)(D_0015F538 % *(s32 *)&D_0015F620) / IntToFloat(*(s32 *)&D_0015F620) * 6.28318f - 3.14159f) * 0.5f + 0.5f));
+                               FastSin((f32)(game_frame_counter % *(s32 *)&D_0015F620) / IntToFloat(*(s32 *)&D_0015F620) * 6.28318f - 3.14159f) * 0.5f + 0.5f));
         FontPrintCenter(0x100, 0x7A, 0x8000C0C0, ((MessageBoxP *)D_00193400)->title, -1);
         break;
     default: {
         s32 pulse;
 
         pulse = FastTweenColor(*(s32 *)&D_0015F624, *(s32 *)&D_0015F628,
-                       FastSin((f32)(D_0015F538 % *(s32 *)&D_0015F620) / IntToFloat(*(s32 *)&D_0015F620) * 6.28318f - 3.14159f) * 0.5f + 0.5f);
+                       FastSin((f32)(game_frame_counter % *(s32 *)&D_0015F620) / IntToFloat(*(s32 *)&D_0015F620) * 6.28318f - 3.14159f) * 0.5f + 0.5f);
         draw_outlined_rect(0x50, *(s32 *)&D_0015F5EC + 0x1A, 0xB0, 0x150, pulse);
         if (((MessageBoxP *)D_00193400)->title != 0) {
             FontPrintCenter(0x100, 0x5A, 0x8000C0C0, ((MessageBoxP *)D_00193400)->title, -1);

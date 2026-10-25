@@ -77,16 +77,16 @@ void EffectSlots_Fire(char *slots, float *position, float *direction, float dist
     } else {
         travel = distance;
     }
-    acceleration = D_0015EE70;
+    acceleration = g_frame_time_sq;
     ApproachWithVelocity(&speed, &travel_step, travel, 1.0f, acceleration * 48.0f,
-                  (*(float *)&D_L02_00160150) * D_0015EE6C);
+                  (*(float *)&D_L02_00160150) * g_frame_time);
     ((float (*)(void *, void *, float))func_L00_001FF4B0)(adjusted, adjusted, travel_step);
     n = (*(int *)&D_L02_00160158);
     first_count = (*(int *)&D_L02_00160154);
     if (travel < 4.0f) first_count = 1;
     for (i = 0; i < n + first_count; i++) {
         rand_vec(offset, 0.0f,
-            (((*(float *)&D_L02_0016015C) - (*(float *)&D_L02_00160160)) * (travel / distance) + (*(float *)&D_L02_00160160)) * D_0015EE6C);
+            (((*(float *)&D_L02_0016015C) - (*(float *)&D_L02_00160160)) * (travel / distance) + (*(float *)&D_L02_00160160)) * g_frame_time);
         FastVecAdd(offset, offset, adjusted);
         FastVecScale(velocity, adjusted, random_float_between(0.0f, 1.0f));
         FastVecAdd(velocity, velocity, origin);
@@ -104,9 +104,9 @@ void EffectSlots_Fire(char *slots, float *position, float *direction, float dist
     }
     if (FastDecTimer(slots + 0x1c)) {
         float sp2 = random_float_between(10.0f, 30.0f);
-        sp2 = func_001F9878(sp2);
+        sp2 = multiply_global_factor(sp2);
         ((Slots_265E88 *)slots)->timer = truncate_float_to_s32(sp2);
-        rand_vec(offset, 0.0f, D_0015EE6C + D_0015EE6C);
+        rand_vec(offset, 0.0f, g_frame_time + g_frame_time);
         FastVecScale(velocity, adjusted, random_float_between(0.5f, 0.1f));
         FastVecAdd(velocity, velocity, offset);
         velocity[3] = 0.0f;

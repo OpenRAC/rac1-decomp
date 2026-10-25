@@ -172,7 +172,7 @@ void update_hero_vehicle_attachments_and_effects(void) {
                 *(short *)(((GS_E7B8 *)(D_0013E633 + 0xE1D))->m1624 + 0x34) = 0;
                 *(float *)(((GS_E7B8 *)(D_0013E633 + 0xE1D))->m1624 + 0x2C) *= 1.7f;
                 *(unsigned short *)(((GS_E7B8 *)(D_0013E633 + 0xE1D))->m1624 + 0x34) |= 0x10;
-                func_L00_00251E30((struct Moby *)((GS_E7B8 *)(D_0013E633 + 0xE1D))->m1624);
+                moby_build_matrix((struct Moby *)((GS_E7B8 *)(D_0013E633 + 0xE1D))->m1624);
             }
         }
         if ((*(unsigned short *)(((GS_E7B8 *)(D_0013E633 + 0xE1D))->p2080 + 0x34) ^ 1) & 1) {
@@ -182,12 +182,12 @@ void update_hero_vehicle_attachments_and_effects(void) {
             if (((GS_E7B8 *)(D_0013E633 + 0xE1D))->m1624 != 0) {
                 MobyTransformScaledVertex(((GS_E7B8 *)(D_0013E633 + 0xE1D))->p2080, 7, &buf[4]);
                 qcopy_nc(((GS_E7B8 *)(D_0013E633 + 0xE1D))->m1624 + 0x10, &buf[16]);
-                func_001FA480(((GS_E7B8 *)(D_0013E633 + 0xE1D))->m1624 + 0xC0, &buf[4]);
+                matrix_copy_rows(((GS_E7B8 *)(D_0013E633 + 0xE1D))->m1624 + 0xC0, &buf[4]);
                 *(u128_E7B8 *)off = 0;
                 off[2] = 0.0257f;
-                func_001F9EC0(off, off, ((GS_E7B8 *)(D_0013E633 + 0xE1D))->m1624 + 0xC0);
+                matrix_mul_vec3(off, off, ((GS_E7B8 *)(D_0013E633 + 0xE1D))->m1624 + 0xC0);
                 *(float *)(((GS_E7B8 *)(D_0013E633 + 0xE1D))->m1624 + 0x18) -= off[2];
-                func_L00_00251E30((struct Moby *)((GS_E7B8 *)(D_0013E633 + 0xE1D))->m1624);
+                moby_build_matrix((struct Moby *)((GS_E7B8 *)(D_0013E633 + 0xE1D))->m1624);
                 k = 1.7f;
                 if (gCheats[3] != 0) k = 3.1f;
                 if (((GS_E7B8 *)(D_0013E633 + 0xE1D))->s22FC != 0) k *= 1.4f;
@@ -196,9 +196,9 @@ void update_hero_vehicle_attachments_and_effects(void) {
         }
         ca = 0x281414C8;
         cb = 0x1E00004B;
-        ((GS_E7B8 *)(D_0013E633 + 0xE1D))->f1628 = FastAddRots(((GS_E7B8 *)(D_0013E633 + 0xE1D))->f1628, D_0015EE6C * 2.96705961227417f);
+        ((GS_E7B8 *)(D_0013E633 + 0xE1D))->f1628 = FastAddRots(((GS_E7B8 *)(D_0013E633 + 0xE1D))->f1628, g_frame_time * 2.96705961227417f);
         if (FastDecTimer(&((GS_E7B8 *)(D_0013E633 + 0xE1D))->s22FC) == 0) {
-            ((GS_E7B8 *)(D_0013E633 + 0xE1D))->f1628 = FastAddRots(((GS_E7B8 *)(D_0013E633 + 0xE1D))->f1628, D_0015EE6C * 12.217304229736328f);
+            ((GS_E7B8 *)(D_0013E633 + 0xE1D))->f1628 = FastAddRots(((GS_E7B8 *)(D_0013E633 + 0xE1D))->f1628, g_frame_time * 12.217304229736328f);
             switch (((GS_E7B8 *)(D_0013E633 + 0xE1D))->s22FE) {
             case 1:
                 ca = 0x2814C814;
@@ -220,9 +220,9 @@ void update_hero_vehicle_attachments_and_effects(void) {
         }
         col = FastTweenColor(ca, cb, FastSin(((GS_E7B8 *)(D_0013E633 + 0xE1D))->f1628) * 0.5f + 0.5f);
         if (((GS_E7B8 *)(D_0013E633 + 0xE1D))->m1624 != 0) {
-            *(int *)(((GS_E7B8 *)(D_0013E633 + 0xE1D))->m1624 + 0x90) = FastTweenColor(*(int *)(((GS_E7B8 *)(D_0013E633 + 0xE1D))->m1624 + 0x90), col, D_0015EE60 * 0.1f);
+            *(int *)(((GS_E7B8 *)(D_0013E633 + 0xE1D))->m1624 + 0x90) = FastTweenColor(*(int *)(((GS_E7B8 *)(D_0013E633 + 0xE1D))->m1624 + 0x90), col, frame_scale * 0.1f);
         }
-        ((GS_E7B8 *)(D_0013E633 + 0xE1D))->i2300 = FastTweenColor(((GS_E7B8 *)(D_0013E633 + 0xE1D))->i2300, col, D_0015EE60 * 0.1f);
+        ((GS_E7B8 *)(D_0013E633 + 0xE1D))->i2300 = FastTweenColor(((GS_E7B8 *)(D_0013E633 + 0xE1D))->i2300, col, frame_scale * 0.1f);
         if (((GS_E7B8 *)(D_0013E633 + 0xE1D))->m1620 == 0) {
             m = (char *)CreateMoby(0x47A);
             ((GS_E7B8 *)(D_0013E633 + 0xE1D))->m1620 = m;
@@ -234,18 +234,18 @@ void update_hero_vehicle_attachments_and_effects(void) {
                 ((GS_E7B8 *)(D_0013E633 + 0xE1D))->m1620[0x31] = 1;
                 ((GS_E7B8 *)(D_0013E633 + 0xE1D))->m1620[0x30] = 0;
                 *(short *)(((GS_E7B8 *)(D_0013E633 + 0xE1D))->m1620 + 0x34) = 0;
-                func_L00_00251E30((struct Moby *)((GS_E7B8 *)(D_0013E633 + 0xE1D))->m1620);
+                moby_build_matrix((struct Moby *)((GS_E7B8 *)(D_0013E633 + 0xE1D))->m1620);
             }
         }
         if (((GS_E7B8 *)(D_0013E633 + 0xE1D))->m1620 != 0) {
             MobyTransformScaledVertex(((GS_E7B8 *)(D_0013E633 + 0xE1D))->p2080, 5, buf);
             qcopy_nc(((GS_E7B8 *)(D_0013E633 + 0xE1D))->m1620 + 0x10, &buf[12]);
-            func_L00_00251E30((struct Moby *)((GS_E7B8 *)(D_0013E633 + 0xE1D))->m1620);
+            moby_build_matrix((struct Moby *)((GS_E7B8 *)(D_0013E633 + 0xE1D))->m1620);
             clear_u64_value(&buf[16]);
             buf[18] = -((GS_E7B8 *)(D_0013E633 + 0xE1D))->a90[2];
-            func_001FA218(rm, &buf[16]);
+            euler_to_matrix(rm, &buf[16]);
             sce_vu0_mul_matrix(buf, buf, rm);
-            func_001FA480(((GS_E7B8 *)(D_0013E633 + 0xE1D))->m1620 + 0xC0, buf);
+            matrix_copy_rows(((GS_E7B8 *)(D_0013E633 + 0xE1D))->m1620 + 0xC0, buf);
             *(long *)(((GS_E7B8 *)(D_0013E633 + 0xE1D))->m1620 + 0x38) = *(long *)(((GS_E7B8 *)(D_0013E633 + 0xE1D))->p2080 + 0x38);
             if (((GS_E7B8 *)(D_0013E633 + 0xE1D))->i2084 == 0x4F) {
                 if (((unsigned char *)((GS_E7B8 *)(D_0013E633 + 0xE1D))->m1620)[0x53] != 1) {
@@ -344,7 +344,7 @@ extern void func_L06_00235E08(int, int);
 
 /* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_0021d0a0.c, FUN_L06_00227cf8. */
 void restore_hero_from_vehicle_mode(void) {
-    unsigned char *g = D_0013F450;
+    unsigned char *g = g_hero;
     unsigned char *m;
     if (g[0x20A4] == 1) {
         *(int *)(g + 0x22AC) = *(int *)(g + 0x22A8);
@@ -359,7 +359,7 @@ void restore_hero_from_vehicle_mode(void) {
         }
     }
     {
-    unsigned char *g2 = D_0013F450;
+    unsigned char *g2 = g_hero;
     reset_hero_easing_records();
     g2[0x20A4] = 0;
     m = *(unsigned char **)(g2 + 0xA84);
@@ -414,7 +414,7 @@ void adjust_hero_velocity_from_collision_probes(int arg) {
     int s;
     float f;
     if (*(short *)(p + 0x308) != 0) return;
-    if (gravity_length_xy((float *)(p + 0xE0)) < D_0015EE6C * 0.1f) return;
+    if (gravity_length_xy((float *)(p + 0xE0)) < g_frame_time * 0.1f) return;
     sa = 0.37f;
     sb = 0.5f;
     if ((unsigned)(*(int *)(p + 0x208C) - 0x11) < 2) {
@@ -429,7 +429,7 @@ void adjust_hero_velocity_from_collision_probes(int arg) {
     a0.z = a0.z + sa;
     qcopy(&a1, r);
     a1.z = a1.z + sa * 0.3f;
-    if (arg != 0 || func_001F9CE8(r + 0x60) < 0.01f) {
+    if (arg != 0 || vec_length_xy(r + 0x60) < 0.01f) {
         G98 *gg = (G98 *)(r - 0x80);
         u.x = FastCos(gg->ang) * sb;
         u.y = FastSin(gg->ang) * sb;
@@ -440,7 +440,7 @@ void adjust_hero_velocity_from_collision_probes(int arg) {
     } else {
         qcopy(&u, r + 0x60);
         u.z = 0.0f;
-        FastVecScale(&u, &u, sb / func_001F9CE8(&u));
+        FastVecScale(&u, &u, sb / vec_length_xy(&u));
         qcopy(&w, &u);
         FastVecScale(&w, &w, 1.4f);
     }
@@ -459,7 +459,7 @@ void adjust_hero_velocity_from_collision_probes(int arg) {
     if (func_L00_001EFFF0(&a0, &u, 4, *(int *)(g2 + 0x2080), 0) != 0) {
         char *q = D_L06_001746C0;
         if (*(int *)(q + 0x1C) > 0) {
-            f = func_L00_001FF860(*(float *)(q + 0x48), func_001F9CE8(q + 0x40));
+            f = fast_atan2(*(float *)(q + 0x48), vec_length_xy(q + 0x40));
         }
     }
     }
@@ -555,10 +555,10 @@ s32 HeroL06_ResolveCollisionStep(s32 mode) {
         mask = 0xD24;
     for (i = 0; i < 8; i++) {
         if (D_0013F450_2A868.b20B3 != 0) {
-            if (!coll_sphere(&D_0013F450_2A868.pos, mask, D_0013F450_2A868.w2080, D_0015EE60 * 0.4f))
+            if (!coll_sphere(&D_0013F450_2A868.pos, mask, D_0013F450_2A868.w2080, frame_scale * 0.4f))
                 break;
         } else if (D_0013F450_2A868.w208C == 0xF) {
-            if (!coll_sphere(&D_0013F450_2A868.pos, mask, D_0013F450_2A868.w2080, D_0015EE60 * 0.45f))
+            if (!coll_sphere(&D_0013F450_2A868.pos, mask, D_0013F450_2A868.w2080, frame_scale * 0.45f))
                 break;
         } else {
             s32 a;
@@ -647,22 +647,22 @@ void update_hero_timers_and_spatial_state(void) {
     D_0013F450_35038.unk19C++;
     D_0013F450_35038.unk1A0++;
     D_0013F450_35038.unk1A4++;
-    func_001F9908(&D_0013F450_35038.unk1C4);
-    func_001F9908(&D_0013F450_35038.invulnerable_frames);
+    fast_dec_timer(&D_0013F450_35038.unk1C4);
+    fast_dec_timer(&D_0013F450_35038.invulnerable_frames);
     FastDecTimer(&D_0013F450_35038.unk1B2);
-    func_001F9908(&D_0013F450_35038.unk1B8);
+    fast_dec_timer(&D_0013F450_35038.unk1B8);
     FastDecTimer(&D_0013F450_35038.unk1D8);
     FastDecTimer(&D_0013F450_35038.unk1DE);
-    func_001F9908(&D_0013F450_35038.unk1B4);
+    fast_dec_timer(&D_0013F450_35038.unk1B4);
     FastDecTimer(&D_0013F450_35038.unk1F0);
     FastDecTimer(&D_0013F450_35038.unk1B0);
     FastDecTimer(&D_0013F450_35038.unk1C8);
     FastDecTimer(&D_0013F450_35038.unk1CA);
     FastDecTimer(&D_0013F450_35038.unk1E4);
     FastDecTimer(&D_0013F450_35038.unk1E6);
-    func_001F9908(&D_0013F450_35038.unk1CC);
-    func_001F9908(&D_0013F450_35038.unk1D0);
-    func_001F9908(&D_0013F450_35038.unk1D4);
+    fast_dec_timer(&D_0013F450_35038.unk1CC);
+    fast_dec_timer(&D_0013F450_35038.unk1D0);
+    fast_dec_timer(&D_0013F450_35038.unk1D4);
     FastDecTimer(&D_0013F450_35038.fidget_cooldown);
     FastDecTimer(&D_0013F450_35038.unk1E0);
     FastDecTimer(&D_0013F450_35038.unk1EE);
@@ -673,7 +673,7 @@ void update_hero_timers_and_spatial_state(void) {
     FastDecTimer(&D_0013F450_35038.unk1F6);
     FastDecTimer(&D_0013F450_35038.unk1DA);
     FastDecTimer(&D_0013F450_35038.unk1F8);
-    if (!(D_0013CA40.held & 5)) {
+    if (!(g_controller_state.held & 5)) {
         D_0013F450_35038.unk1EC = 0;
     }
     if (D_0013F450_35038.unk20A8 != 0) {
@@ -681,7 +681,7 @@ void update_hero_timers_and_spatial_state(void) {
     } else {
         D_0013F450_35038.unk1BC = 0;
     }
-    if (D_0013CA40.no_direction != 0) {
+    if (g_controller_state.no_direction != 0) {
         D_0013F450_35038.unk1A8 = 0;
         D_0013F450_35038.unk1AC++;
     } else {
@@ -705,13 +705,13 @@ void update_hero_timers_and_spatial_state(void) {
                 ((struct Moby *)D_0013F450_35038.unkA8C)->visible = 1;
                 ((struct Moby *)D_0013F450_35038.unkA8C)->glow_color = 0;
                 ((struct Moby *)D_0013F450_35038.unkA8C)->spawn_frame = D_0013F450_35038.moby->spawn_frame;
-                func_L00_00251E30(D_0013F450_35038.unkA8C);
+                moby_build_matrix(D_0013F450_35038.unkA8C);
                 enter_hero_vehicle_mode_and_set_moby(3, 0x53, D_0013F450_35038.unkA8C);
             }
         }
     }
     for (i = 0; i < 5; i++) {
-        func_001F9908(&D_L06_0017A170[i].w0);
+        fast_dec_timer(&D_L06_0017A170[i].w0);
     }
     D_0013F450_35038.unk22B8 = 9999.0f;
     if (D_0013F450_35038.air_frames.s != 0 && gravity_z(&D_0013F450_35038.motion.velocity) < 0.0f) {
@@ -728,7 +728,7 @@ void update_hero_timers_and_spatial_state(void) {
             FastVecAdd(&sum, &sum, &d);
         }
         FastVecScale(&sum, &sum, 1.0f / (f32)n8);
-        if (FastVecLength(&sum) < D_0015EE6C) {
+        if (FastVecLength(&sum) < g_frame_time) {
             D_0013F450_35038.unk1E2++;
             goto skip;
         }

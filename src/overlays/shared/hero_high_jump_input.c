@@ -31,11 +31,11 @@ int pick_idle_fidget(int *index) {
     float total, pick;
 
     count = 0;
-    if (D_0013F450.fidget_cooldown != 0) return 0;
-    if (D_0013F450.health.hp == 1) {
+    if (g_hero.fidget_cooldown != 0) return 0;
+    if (g_hero.health.hp == 1) {
         *index = 4;
         if (D_L00_00179BB0 != 0) return 0;
-        if (!(D_0013F450.unkA98 & 2)) return 0;
+        if (!(g_hero.unkA98 & 2)) return 0;
         return random_float_between(0.0f, 1.0f) < 0.33f;
     }
     i = 0;
@@ -49,19 +49,19 @@ int pick_idle_fidget(int *index) {
         if (entry->interval == 0.0f) continue;
         item = hero_slot_item_id(0);
         if (entry->item_id != -1 && entry->item_id != item) continue;
-        if (entry->use_state_40 != 0 && ((int)D_0013F450.ground_moby) != 0) continue;
+        if (entry->use_state_40 != 0 && ((int)g_hero.ground_moby) != 0) continue;
         if (i == 3) {
-            if (D_0015EE84 != 12) continue;
+            if (g_current_level_index != 12) continue;
             if (hero_slot_item_id(0) == 23) continue;
-            qcopy(startp, &D_0013F450.motion.unkD0);
+            qcopy(startp, &g_hero.motion.unkD0);
             qcopy(endp, startp);
             end.f[2] += 8.0f;
-            if (func_L00_001EFFF0(startp, endp, 2, (int)D_0013F450.moby, 0)) continue;
+            if (func_L00_001EFFF0(startp, endp, 2, (int)g_hero.moby, 0)) continue;
         }
         if (i == 4) {
-            if (D_0013F450.state.prev_control_mode != 1) continue;
-            if (scale_ticks(50) < D_0013F450.state_timer) continue;
-            if (D_0013F450.health.hp >= 2) continue;
+            if (g_hero.state.prev_control_mode != 1) continue;
+            if (scale_ticks(50) < g_hero.state_timer) continue;
+            if (g_hero.health.hp >= 2) continue;
         }
         *next = i;
         count++;
@@ -71,7 +71,7 @@ int pick_idle_fidget(int *index) {
     total = 0.0f;
     for (i = 0; i < count; i++) {
         Ent *choice = &idle_fidgets[choices[i]];
-        total += 1.0f / (float)(int)(func_001F9878(choice->interval) * 60.0f);
+        total += 1.0f / (float)(int)(multiply_global_factor(choice->interval) * 60.0f);
     }
     pick = random_float_between(0.0f, 1.0f);
     if (pick < total) {
@@ -80,7 +80,7 @@ int pick_idle_fidget(int *index) {
             Ent *choice;
             *index = picked;
             choice = &idle_fidgets[picked];
-            total -= 1.0f / (float)(int)(func_001F9878(choice->interval) * 60.0f);
+            total -= 1.0f / (float)(int)(multiply_global_factor(choice->interval) * 60.0f);
             if (total < pick) break;
         }
         return 1;
@@ -136,7 +136,7 @@ void update_hero_locomotion_state(void) {
     if ((*(float *)&D_0015EE6C_229B78 * 3.0f < *(float *)(d + 0x168) && scale_ticks(3) < *(int *)(d + 0x418)) || *(int *)(d + 0x2084) == 0x10) {
         if (HeroEnterMoveState(3, 0)) {
             set_hero_animation(5, 0, -1.0f);
-            ClampVectorLength(D_0013E633 + 0xF6D, *(float *)((char *)&D_0015EE64 + 8) * 5.0f);
+            ClampVectorLength(D_0013E633 + 0xF6D, *(float *)((char *)&g_frame_scale_sq + 8) * 5.0f);
         }
         return;
     }
@@ -186,7 +186,7 @@ found:
         }
         if (hero_slot_item_id(3) == 2 && gHaveHeliPack != 0 && *(short *)(p + 0x22D8) == 0 &&
             (2.5f < *(float *)(p + 0x248) || *(float *)(p + 0x250) < 0.785398185f) &&
-            0.7f < *(float *)(p + 0x229C) && D_0015EE6C * 0.9f < *(float *)(p + 0x168)) {
+            0.7f < *(float *)(p + 0x229C) && g_frame_time * 0.9f < *(float *)(p + 0x168)) {
             m = 0xA;
             goto found;
         }
@@ -195,7 +195,7 @@ found:
             if (*(short *)(q + 0x22D8) == 0 &&
                 0.7f < *(float *)(q + 0x229C) &&
                 (2.5f < *(float *)(q + 0x248) || *(unsigned char *)(q + 0x254) != 0) &&
-                D_0015EE6C * 0.9f < *(float *)(q + 0x168)) {
+                g_frame_time * 0.9f < *(float *)(q + 0x168)) {
                 if (*(int *)(q + 0x1B8) != 0) {
                     return 1;
                 }
@@ -236,7 +236,7 @@ int CanReachPointAhead(void) {
     float t, d;
     if (*(float *)(g + 0x164) < *(float *)(g + 0x234) / (float)scale_ticks(0x14))
         return 0;
-    t = FastDiffRots(func_L00_001FF860(*(float *)(g + 0x100), *(float *)(g + 0x104)), *(float *)(g + 0x98));
+    t = FastDiffRots(fast_atan2(*(float *)(g + 0x100), *(float *)(g + 0x104)), *(float *)(g + 0x98));
     if (0.5235988f < t)
         return 0;
     qcopy(&a, g + 0x80);

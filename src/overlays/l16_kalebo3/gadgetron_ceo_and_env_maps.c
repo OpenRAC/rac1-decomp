@@ -110,7 +110,7 @@ void gadgetron_ceo_update(L16ChallengeMoby *m) {
             PlaceMarkerAheadOfMoby(3.5f, m);
             m->state = 2;
         }
-        if (!gHaveMorphORay[9] && func_001F9D48(D_0013E633 + 0xE9D, m->position) < 3.5f) {
+        if (!gHaveMorphORay[9] && vec_distance_xy(D_0013E633 + 0xE9D, m->position) < 3.5f) {
             int elapsed, period;
             char *statistics;
             elapsed = scale_ticks(D_0015EFA4);
@@ -223,19 +223,19 @@ void gadgetron_ceo_update(L16ChallengeMoby *m) {
     if (m->animation == 0) {
         char *player = (char *)&D_0013E633_challenge + 0xE9D;
         tracking = 1;
-        if (func_001F9D48(m->position, player) < 8.0f &&
+        if (vec_distance_xy(m->position, player) < 8.0f &&
             FastDiffRots(m->yaw,
-                func_L00_001FF860(((L16ChallengePlayer *)((char *)&D_0013E633_challenge + 0xE1D))->aim[0] - m->position[0],
+                fast_atan2(((L16ChallengePlayer *)((char *)&D_0013E633_challenge + 0xE1D))->aim[0] - m->position[0],
                     ((L16ChallengePlayer *)((char *)&D_0013E633_challenge + 0xE1D))->aim[1] - m->position[1])) < 1.5707964f) {
             if (FastVecLength(player + 0x80) > 0.01f) d->moving_timer = scale_ticks(120);
-            else func_001F9908(&d->moving_timer);
+            else fast_dec_timer(&d->moving_timer);
         } else if (d->moving_timer) {
             d->moving_timer = 0;
             qcopy(d->target, (char *)&D_0013E633_challenge + 0xEED);
         }
-        if (func_001F9908(&d->target_timer)) {
+        if (fast_dec_timer(&d->target_timer)) {
             float heading;
-            d->target_timer = truncate_float_to_s32(func_001F9878(random_float_between(180.0f, 300.0f)));
+            d->target_timer = truncate_float_to_s32(multiply_global_factor(random_float_between(180.0f, 300.0f)));
             heading = FastAddRots(m->yaw, random_float_between(-90.0f, 90.0f) * 0.017453292f);
             BuildSphericalOffset(d->target, 6.0f, heading, random_float_between(0.0f, 30.0f) * 0.017453292f);
             FastVecAdd(d->target, d->target, m->position);
@@ -254,8 +254,8 @@ void gadgetron_ceo_update(L16ChallengeMoby *m) {
         qcopy(scratch.eye, m->position);
         scratch.eye[2] += 1.0f;
         FastVecSub(scratch.delta, scratch.target, scratch.eye);
-        yaw = FastSubRots(func_L00_001FF860(scratch.delta[0], scratch.delta[1]), m->yaw);
-        pitch = -func_L00_001FF860(func_001F9CE8(scratch.delta), scratch.delta[2]);
+        yaw = FastSubRots(fast_atan2(scratch.delta[0], scratch.delta[1]), m->yaw);
+        pitch = -fast_atan2(vec_length_xy(scratch.delta), scratch.delta[2]);
         if (yaw > 1.5707964f) yaw = 1.5707964f;
         else if (yaw < -1.5707964f) yaw = -1.5707964f;
         if (pitch > 0.5235988f) pitch = 0.5235988f;
@@ -265,8 +265,8 @@ void gadgetron_ceo_update(L16ChallengeMoby *m) {
         d->head_yaw = yaw * 0.3f;
     }
     if (*(unsigned char *)&D_0015EEB0_challenge) *(float *)((char *)d + 0x150) = 2.75f;
-    EaseManipulatorOffsets(rate * D_0015EE64, head_rate * D_0015EE64, m, d->body, 0);
-    EaseManipulatorOffsets(rate * D_0015EE64, head_rate * D_0015EE64, m, d->head, 1);
+    EaseManipulatorOffsets(rate * g_frame_scale_sq, head_rate * g_frame_scale_sq, m, d->body, 0);
+    EaseManipulatorOffsets(rate * g_frame_scale_sq, head_rate * g_frame_scale_sq, m, d->head, 1);
 }
 extern void func_L13_00266060(int, int, int, int);
 extern void func_L16_002DF780(float f);
@@ -414,7 +414,7 @@ void update_path_walker(unsigned char *m) {
         char blocked = playing;
 
         SamplePathAt(path, d->parameter, 0, m + 0x10, (float *)(m + 0x40), 0);
-        acceleration = D_L16_00161F38 * D_0015EE70;
+        acceleration = D_L16_00161F38 * g_frame_time_sq;
         *(float *)(m + 0x18) += d->height_step;
         d->parameter += d->speed;
         ApproachValue(&d->speed, d->target_speed, acceleration);
@@ -430,7 +430,7 @@ void update_path_walker(unsigned char *m) {
             d->target_speed = theirs;
         }
         if (gap < 1.5f) {
-            step = D_0015EE70 * 50.0f;
+            step = g_frame_time_sq * 50.0f;
             ApproachValue(&d->speed, d->target_speed, step);
             ApproachValue(&other->speed, other->target_speed, step);
         }
@@ -441,7 +441,7 @@ void update_path_walker(unsigned char *m) {
                     next = other->parameter - random_float_between(D_L16_00161F28, D_L16_00161F2C);
                     d->countdown--;
                 } else {
-                    next = d->parameter + D_L16_00161F4C * D_0015EE6C;
+                    next = d->parameter + D_L16_00161F4C * g_frame_time;
                 }
                 if (next < 0.0f) {
                     next += d->period;
@@ -454,7 +454,7 @@ void update_path_walker(unsigned char *m) {
 
                     d->parameter = next;
                     d->height_step = height;
-                    d->target_speed = random * D_0015EE6C;
+                    d->target_speed = random * g_frame_time;
                 }
             }
         } else {
@@ -495,7 +495,7 @@ void emit_path_walker_particle(unsigned char *m, void *v) {
     r = FastVecDist(m + 0x10, input);
     FastVecScale(out, m + 0xC0, *(float *)&D_L16_00161F60 * r);
     size = *(float *)&D_L16_00161F64;
-    size *= D_0015EE6C;
+    size *= g_frame_time;
     func_L00_001FF4B0(offset, m + 0xC0, -0.5f);
     FastVecAdd(offset, offset, m + 0x10);
     a = random_angle_radians();
@@ -565,7 +565,7 @@ void initialize_path_walker_group(unsigned char *m) {
         data->period = period;
         previous = current;
         data->height_step = random_float_between(D_L16_00161F3C, D_L16_00161F40);
-        data->speed = random_float_between(D_L16_00161F30, D_L16_00161F34) * D_0015EE6C;
+        data->speed = random_float_between(D_L16_00161F30, D_L16_00161F34) * g_frame_time;
         data->target_speed = data->speed;
         current[0x20] = 1;
         rank--;
@@ -670,7 +670,7 @@ void ElevatorPlatformUpdate(L16PlatformMoby *m) {
             motion.q = 0;
             motion.v[2] = 1.0f;
             d->particle = -1;
-            func_001F9EC0(motion.v, motion.v, D_L16_001601BC + (d->joint << 7));
+            matrix_mul_vec3(motion.v, motion.v, D_L16_001601BC + (d->joint << 7));
             d->goal = motion.v[2] + *(float *)(D_L16_001601BC + d->joint * 0x80 + 0x38);
             m->position[2] = motion.v[2] + *(float *)(D_L16_001601BC + d->joint * 0x80 + 0x38) + D_L16_00161F6C;
             m->reverse = 1;
@@ -681,16 +681,16 @@ void ElevatorPlatformUpdate(L16PlatformMoby *m) {
                 Sound_StopSlot(d->particle);
                 d->particle = -1;
             }
-            if (func_001F9D48(position, D_0013F450.position) < 20.0f) {
+            if (vec_distance_xy(position, g_hero.position) < 20.0f) {
                 clear_u64_value(motion.v);
                 if (m->reverse) {
                     motion.v[2] = -1.0f;
                 } else {
                     motion.v[2] = 1.0f;
                 }
-                func_001F9EE8(motion.v, motion.v, D_L16_001601BC + (d->joint << 7));
+                transform_vector(motion.v, motion.v, D_L16_001601BC + (d->joint << 7));
                 motion.v[2] = motion.v[2] + *(float *)(D_L16_001601BC + d->joint * 0x80 + 0x38) + D_L16_00161F6C;
-                if (FastAbsF(D_0013F450.position[2] - motion.v[2]) < 1.0f) {
+                if (FastAbsF(g_hero.position[2] - motion.v[2]) < 1.0f) {
                     m->reverse = (m->reverse + 1) & 1;
                     d->goal = motion.v[2];
                     d->speed = 0.0f;
@@ -698,7 +698,7 @@ void ElevatorPlatformUpdate(L16PlatformMoby *m) {
                     break;
                 }
             }
-            if (D_0013F450.contact == m && D_0013F450.grounded == 0) {
+            if (g_hero.contact == m && g_hero.grounded == 0) {
                 clear_u64_value(motion.v);
                 if (m->reverse) {
                     motion.v[2] = -1.0f;
@@ -706,26 +706,26 @@ void ElevatorPlatformUpdate(L16PlatformMoby *m) {
                     motion.v[2] = 1.0f;
                 }
                 m->reverse = (m->reverse + 1) & 1;
-                func_001F9EE8(motion.v, motion.v, D_L16_001601BC + (d->joint << 7));
+                transform_vector(motion.v, motion.v, D_L16_001601BC + (d->joint << 7));
                 d->goal = motion.v[2] + *(float *)(D_L16_001601BC + d->joint * 0x80 + 0x38) + D_L16_00161F6C;
                 d->speed = 0.0f;
                 m->state = 3;
             }
             break;
         case 3: {
-            float *hero_position = D_0013F450.position;
+            float *hero_position = g_hero.position;
             float speed;
 
-            if (func_001F9D48(hero_position, D_L16_001601BC + (d->joint << 7) + 0x30) > 2.25f
+            if (vec_distance_xy(hero_position, D_L16_001601BC + (d->joint << 7) + 0x30) > 2.25f
                 || FastAbsF(m->position[2] - hero_position[2] - 2.0f) > 1.0f
                 || m->position[2] < d->goal) {
                 speed = ApproachWithVelocity(&m->position[2], &d->speed, d->goal,
-                                      D_L16_00161F7C * D_0015EE70, D_L16_00161F7C * D_0015EE70,
-                                      *(float *)&D_L16_00161F78 * D_0015EE6C);
+                                      D_L16_00161F7C * g_frame_time_sq, D_L16_00161F7C * g_frame_time_sq,
+                                      *(float *)&D_L16_00161F78 * g_frame_time);
             } else {
                 speed = ApproachWithVelocity(&m->position[2], &d->speed, m->position[2],
-                                      D_L16_00161F7C * 4.0f * D_0015EE70, D_L16_00161F7C * 4.0f * D_0015EE70,
-                                      *(float *)&D_L16_00161F78 * D_0015EE6C);
+                                      D_L16_00161F7C * 4.0f * g_frame_time_sq, D_L16_00161F7C * 4.0f * g_frame_time_sq,
+                                      *(float *)&D_L16_00161F78 * g_frame_time);
             }
             clear_u64_value(motion.v);
             motion.v[2] = speed;
@@ -738,7 +738,7 @@ void ElevatorPlatformUpdate(L16PlatformMoby *m) {
                 Sound_StopSlot(d->particle);
                 d->particle = -1;
             }
-            if (m->position[2] == d->goal && (D_0013F450.contact != m || D_0013F450.grounded != 0)) {
+            if (m->position[2] == d->goal && (g_hero.contact != m || g_hero.grounded != 0)) {
                 clear_u64_value(d->basis[1]);
                 m->state = 2;
                 break;
@@ -791,8 +791,8 @@ void DrawRingStack(char *m) {
     int i,j,sign,period;
     lower=lower-half;
     lower+=translation;
-    color=FastTweenColor((*(int *)&D_L16_00161F9C),(*(int *)&D_L16_00161FA0),FastAbsF((*(float *)((char *)d+0xB0)))/((*(float *)&D_L16_00161F78)*D_0015EE6C));
-    func_001FA460(&matrix,m+0xC0);
+    color=FastTweenColor((*(int *)&D_L16_00161F9C),(*(int *)&D_L16_00161FA0),FastAbsF((*(float *)((char *)d+0xB0)))/((*(float *)&D_L16_00161F78)*g_frame_time));
+    copy_matrix_rotation(&matrix,m+0xC0);
     qcopy(matrix.position,m+16);
     matrix.position[2]=lower; matrix.position[3]=1.0f;
     packet.texture=GetEffectTex(14);
@@ -861,7 +861,7 @@ void gadgetron_sign_update(unsigned char *moby_bytes)
         moby->scale = size;
     } break;
     case 1:
-        moby->rot.z = FastAddRots(moby->rot.z, D_0015EE6C * -0.2617993950843811f);
+        moby->rot.z = FastAddRots(moby->rot.z, g_frame_time * -0.2617993950843811f);
         break;
     }
 }
@@ -885,9 +885,9 @@ void update_target_reposition_cycle(char *moby) {
         *(int *)(data + 0xC) = scale_ticks(rand_range(0xB4, 0x168));
         break;
     case 1:
-        if (func_001F9D48(g, target + 0x10) > 3.0f) {
+        if (vec_distance_xy(g, target + 0x10) > 3.0f) {
             if (find_group_class_010e_moby_in_state_6(*(int *)data) != 0) {
-                if (func_001F9908(data + 0xC)) {
+                if (fast_dec_timer(data + 0xC)) {
                     moby[0x20] = 2;
                     request_target_reposition(target);
                     *(int *)(data + 0xC) = scale_ticks(rand_range(0xB4, 0x168));
@@ -1002,7 +1002,7 @@ void EnvMapA_Draw(void) {
     for (i = 0; i < 3; i++) {
         if (FastBSphereCheck(D_L16_001DC8D0[i], 512.0f) != -1) {
             compute_level16_reflection_map_coordinates(a[i], d[i], b[i], c[i], D_L16_001DC900);
-            func_L00_001FDE48(a[i], b[i], e[i], D_L16_001DC900, 1);
+            draw_env_overlay_mesh(a[i], b[i], e[i], D_L16_001DC900, 1);
         }
     }
 }
@@ -1088,7 +1088,7 @@ void draw_level16_visible_single_reflection_mesh(void) {
     for (i = 0; i < 1; i++) {
         if (FastBSphereCheck(p[i], 512.0f) != -1) {
             compute_level16_reflection_map_coordinates(a[i], d[i], b[i], c[i], (float *)D_L16_001DDF50);
-            func_L00_001FDE48(a[i], b[i], e[i], D_L16_001DDF50, 1);
+            draw_env_overlay_mesh(a[i], b[i], e[i], D_L16_001DDF50, 1);
         }
     }
 }
@@ -1175,7 +1175,7 @@ void draw_level16_visible_textured_batches(void) {
     for (i = 0; i < 2; i++) {
         if (FastBSphereCheck(D_L16_001DF580[i], 512.0f) != -1) {
             compute_level16_reflection_map_coordinates(a[i], d[i], b[i], c[i], D_L16_001DF5A0);
-            func_L00_001FDE48(a[i], b[i], e[i], D_L16_001DF5A0, 1);
+            draw_env_overlay_mesh(a[i], b[i], e[i], D_L16_001DF5A0, 1);
         }
     }
 }
@@ -1252,7 +1252,7 @@ void draw_level16_reflection_mesh_batch(void) {
     font_queue_vu_state();
     for (i = 0; i < 3; i++) {
         compute_level16_reflection_map_coordinates(((int *)D_L16_00162078)[i], ((int *)D_L16_001620A8)[i], ((int *)D_L16_00162088)[i], ((int *)D_L16_00162098)[i], D_L16_001E2BA0);
-        func_L00_001FDE48(((int *)D_L16_00162078)[i], ((int *)D_L16_00162088)[i], ((int *)D_L16_001620B8)[i], D_L16_001E2BA0, 1);
+        draw_env_overlay_mesh(((int *)D_L16_00162078)[i], ((int *)D_L16_00162088)[i], ((int *)D_L16_001620B8)[i], D_L16_001E2BA0, 1);
     }
 }
 void func_L16_002EA1B8(void);

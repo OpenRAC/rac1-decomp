@@ -47,7 +47,7 @@ void RotatePointAboutAxis(Q_50B88 *axis, Q_50B88 *point, float angle) {
     func_L00_001FFCF8(cos_part, skew_sq, 1.0f - FastCos(angle));
     func_L00_001FFCF8(sin_part, skew, FastSin(angle));
     func_L00_001FFDD0(sin_part, sin_part, cos_part);
-    func_001FA190(cos_part);
+    set_identity_matrix(cos_part);
     func_L00_001FFDD0(rot, sin_part, cos_part);
     matrix_to_euler(rot, point_p);
 }

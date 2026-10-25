@@ -68,12 +68,12 @@ void initialize_vendor_screen(char *m, int lvl) {
     g[0x20AC] = 1;
     g[0x20A5] = 1;
     HeroSetObjectFlags();
-    func_001F9EC0(sc, &D_L01_00161180, m + 0xC0);
+    matrix_mul_vec3(sc, &D_L01_00161180, m + 0xC0);
     FastVecAdd(sc, sc, m + 0x10);
     *(float *)(s + 0xC8) = ProbeGroundHeight(sc, 0, 0.5f);
     clear_u64_value(s + 0xB0);
     *(float *)(s + 0xB8) = FastAddRots(*(float *)(m + 0x48), -1.5707964f);
-    func_001FA1F8(s + 0x80, s + 0xB0);
+    euler_rotation_basis(s + 0x80, s + 0xB0);
     FastMemSet(c, 0, 0x1C0);
     FastMemSet(D_L01_0017C840, 0, 0x40);
     calculate_dma_transfer_address();

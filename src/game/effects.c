@@ -223,8 +223,8 @@ void render_queued_rotated_sprites(void) {
         rotated_sprite_queue.count = 0;
     }
     if (rotated_sprite_queue.count != 0) {
-        centre[0] = IntToFloat(D_0013E600[2]);
-        centre[1] = IntToFloat(D_0013E600[3]);
+        centre[0] = IntToFloat(g_screen_extent[2]);
+        centre[1] = IntToFloat(g_screen_extent[3]);
         for (i = 0; i < rotated_sprite_queue.count; i++) {
             GlowSlot *s = &rotated_sprite_queue.slot[i];
 
@@ -233,8 +233,8 @@ void render_queued_rotated_sprites(void) {
             }
             if (s->onScreen != 0) {
                 func_001F2418(pos, s);
-                pos[0] = (pos[0] - IntToFloat(D_0013E600[4])) * 0.0625f;
-                pos[1] = (pos[1] - IntToFloat(D_0013E600[5])) * 0.0625f;
+                pos[0] = (pos[0] - IntToFloat(g_screen_extent[4])) * 0.0625f;
+                pos[1] = (pos[1] - IntToFloat(g_screen_extent[5])) * 0.0625f;
             } else {
                 qcopy(pos, centre);
             }

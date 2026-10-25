@@ -49,12 +49,12 @@ int ChooseDropItem(unsigned char *m, int *item) {
     unsigned char *entry;
 
     if (*item <= 0 || (m != 0 &&
-        ((*(int *)(D_0014171B + 0xAB75 + ((short)*(unsigned short *)(m + 0xB2) >> 5) * 4 + *(int *)&D_0015EE84 * 256) >>
+        ((*(int *)(D_0014171B + 0xAB75 + ((short)*(unsigned short *)(m + 0xB2) >> 5) * 4 + *(int *)&g_current_level_index * 256) >>
           (*(unsigned short *)(m + 0xB2) & 31)) & 1))) {
         {
             for (scan_index = 0; scan_index < 12 && D_0015EED0[scan_index] != 0xFF; scan_index++) {
                 id = D_0015EED0[scan_index] & 0x3F;
-                if (D_0013D5C8[id]) {
+                if (item_available[id]) {
                     ItemCount_258250 *count = &D_L00_001C43B0[id];
                     available++;
                     if (count->count != 0) {
@@ -72,7 +72,7 @@ int ChooseDropItem(unsigned char *m, int *item) {
                 while (1) {
                     ++i;
                     id = D_0015EED0[i] & 0x3F;
-                    if (D_0013D5C8[id]) {
+                    if (item_available[id]) {
                         ItemCount_258250 *count = &D_L00_001C43B0[id];
                         scan_index -= weapon_ammo_counts[id] < count->count;
                     }
@@ -88,7 +88,7 @@ int ChooseDropItem(unsigned char *m, int *item) {
                     while (1) {
                         i++;
                         id = D_0015EED0[i] & 0x3F;
-                        if (D_0013D5C8[id]) {
+                        if (item_available[id]) {
                             ItemCount_258250 *count = &D_L00_001C43B0[id];
                             if (count->count != 0) scan_index--;
                         }
@@ -148,7 +148,7 @@ void SetDeathBits(unsigned char *m, int flags, int arg) {
     if (*(short *)(m + 0xB2) < 0) {
         return;
     }
-    lvl = D_0015EE84;
+    lvl = g_current_level_index;
     level_moby_killed[lvl][*(short *)(m + 0xB2) >> 5] |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
     D_L00_001BA860[*(short *)(m + 0xB2) >> 5] |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
     D_L00_001BA960.a[*(short *)(m + 0xB2)] = m[0xB0] + 2;
@@ -175,10 +175,10 @@ void SetDeathBits(unsigned char *m, int flags, int arg) {
     if (flags & 0x100) {
         f = 5;
     }
-    if (D_0013F450.b20B2 || (flags & 0x200)) {
+    if (g_hero.b20B2 || (flags & 0x200)) {
         f |= 2;
     }
-    if (D_0013F450.i2084 == 0x10 && FastVecDist(D_0013F450.v80, m + 0x10) < 4.0f) {
+    if (g_hero.i2084 == 0x10 && FastVecDist(g_hero.v80, m + 0x10) < 4.0f) {
         f |= 2;
     }
     cnt = D_L00_0016007C;

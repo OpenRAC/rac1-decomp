@@ -18,7 +18,7 @@ extern void func_L00_0025805C(void *);
 /* Update each moby while the level event is in phase three or four. */
 void update_level15_mission_mobys(void) {
     int i;
-    if (D_0015EE84 == 15 && (unsigned)(D_L15_0016CEE0.state - 3) < 2) {
+    if (g_current_level_index == 15 && (unsigned)(D_L15_0016CEE0.state - 3) < 2) {
         for (i = 0; i < D_L15_0016CEE0.count; i++) {
             func_L00_0025805C(D_L15_0016CEE0.mobys[i]);
         }

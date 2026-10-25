@@ -304,7 +304,7 @@ extern int D_0013D6B8 NOT_SDA;
 
 /* Predicate: true when both mission words at D_0013D6B8 are non-zero. */
 int MissionCond_Obj3FAnd40(void) {
-    char *base = (char *)&D_0013D6B8;
+    char *base = (char *)&race_gates;
     if (*(int *)(base + 0x40C) != 0 && *(int *)(base + 0x3FC) != 0) return 1;
     return 0;
 }
@@ -340,14 +340,14 @@ extern int D_0013D5C8 NOT_SDA;
 
 /* Predicate: true when two entries of the D_0013D5C8 table are both set. */
 int MissionCond_Items1FAnd21(void) {
-    unsigned char *base = (unsigned char *)&D_0013D5C8;
+    unsigned char *base = (unsigned char *)&item_available;
     if (base[0x21] != 0 && base[0x1F] != 0) return 1;
     return 0;
 }
 
 /* Returns whether entry arg0 of the D_0013D5C8 table is set. */
 int is_item_available(int arg0) {
-    unsigned char *base = (unsigned char *)&D_0013D5C8;
+    unsigned char *base = (unsigned char *)&item_available;
     return base[arg0] != 0;
 }
 
@@ -398,7 +398,7 @@ int HasHologuise(void) {
 
 /* Returns 2 or the state of another entry of the D_0013D5C8 table, depending on the first. */
 int Mission_GetHologuiseOrMapStatus(void) {
-    unsigned char *base = (unsigned char *)&D_0013D5C8;
+    unsigned char *base = (unsigned char *)&item_available;
     if (base[0x1F] != 0) return 2;
     return base[0x21] != 0;
 }

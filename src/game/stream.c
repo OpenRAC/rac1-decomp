@@ -177,7 +177,7 @@ extern int func_0012EFE8_i(void) __asm__("func_0012EFE8");
 /* func_0012EFE8 returns int (989snd.c): with the result in $v0, the
    constant goes to the register retail uses. */
 void request_audio_stream_break(void) {
-    short *p = D_001517D0;
+    short *p = cd_read_state;
     if (p[4] != 0) {
         func_0012EFE8_i();
         ((char *)p)[0xA] = 1;
@@ -214,7 +214,7 @@ extern int func_0012EE98(int, int, int, void *);
    units the caller wants, arg2 << 11; on a rejected request it reports
    the failure and returns 0. */
 int start_audio_stream_read(int arg0, int arg1, int arg2) {
-    char *d = (char *)D_001517D0;
+    char *d = (char *)cd_read_state;
 
     if (*(short *)(d + 8) != 0) {
         return 0;
@@ -272,7 +272,7 @@ int Load(int arg0, int arg1, int arg2) {
     char *d;
     int r = start_audio_stream_read(arg0, arg1, arg2);
     if (r != 0) {
-        while (d = (char *)D_001517D0, *(short *)(d + 0x8) != 0) {
+        while (d = (char *)cd_read_state, *(short *)(d + 0x8) != 0) {
             func_00122598(0);
             music_Update();
             func_0012EC40();
@@ -303,7 +303,7 @@ struct MusicStreamState {
 short update_audio_stream_until_idle(int arg0) {
     if (arg0 != 0) {
         struct MusicStreamState *d;
-        while (d = (struct MusicStreamState *)D_001517D0, d->read_state != 0) {
+        while (d = (struct MusicStreamState *)cd_read_state, d->read_state != 0) {
             func_00122598(0);
             music_Update();
             func_0012EC40();
@@ -317,7 +317,7 @@ short update_audio_stream_until_idle(int arg0) {
         func_0012EC30();
     }
     {
-        struct MusicStreamState *d = (struct MusicStreamState *)D_001517D0;
+        struct MusicStreamState *d = (struct MusicStreamState *)cd_read_state;
         return d->read_state;
     }
 }
@@ -327,7 +327,7 @@ extern int func_0012F030(void);
 void finish_audio_stream_read(int callback_value) {
     struct MusicStreamState *state;
     if (callback_value == 1) {
-        state = (struct MusicStreamState *)D_001517D0;
+        state = (struct MusicStreamState *)cd_read_state;
         state->read_state = 0;
         if (func_0012F030() != 0) {
             state->read_state = 2;
@@ -355,7 +355,7 @@ void music_secondary_start_callback(int arg0, long arg1) {
             p[5] = 2;
         }
     } else {
-        short *b = D_001517D0;
+        short *b = cd_read_state;
         music_start_track_by_id(b[0x2A], b[0x2C], b[0x2B]);
     }
 }
@@ -373,7 +373,7 @@ void music_primary_preseek_callback(int arg0, long arg1) {
             p[5] = 2;
         }
     } else {
-        short *b = D_001517D0;
+        short *b = cd_read_state;
         music_PreseekTrack(b[0x1C], b[0x1E], b[0x1D]);
     }
 }
@@ -459,7 +459,7 @@ void music_remaining_time_callback(int arg0, long arg1) {
     if (*(short *)(p + 0x10) == 0) {
         return;
     }
-    b = D_001517D0;
+    b = cd_read_state;
     if (b[0x10] != 1) {
         return;
     }
@@ -587,7 +587,7 @@ void process_menu_entry(void *arg0, Menu *menu, s32 arg2) {
             p[1] = 's';
         }
         t = vendor_item_prices[e->unkA].unk14;
-        func_00116248(num, D_00160190, t / 1000, sfx.s[D_0015EE88 % 6], t % 1000);
+        func_00116248(num, D_00160190, t / 1000, sfx.s[g_game_language % 6], t % 1000);
         func_00116248(buf, ((char *)0x70000000), num);
     } else {
         func_00116248(buf, msg_string(e->unk0));
@@ -645,7 +645,7 @@ void process_menu_entry(void *arg0, Menu *menu, s32 arg2) {
 extern char D_0013CA40[];
 
 void pad_resetState(void) {
-    char *p = D_0013CA40;
+    char *p = g_controller_state;
     *(short *)(p + 0x18E) = 0;
     *(int *)(p + 0x190) = 0;
 }
@@ -671,9 +671,9 @@ void init_pads(void) {
     func_00124B88(0);
     D_001CDAE0 = 2;
     p->slot = 0;
-    ((struct PadState *)D_0013CA40)->socket = func_00124BC8(p, D_0013CA40);
+    ((struct PadState *)g_controller_state)->socket = func_00124BC8(p, g_controller_state);
     D_001CDAE0 = 2;
     p->slot = 1;
-    ((struct PadState *)D_0013CA40)->profile_state = 0;
-    ((struct PadState *)D_0013CA40)->device_state = 0;
+    ((struct PadState *)g_controller_state)->profile_state = 0;
+    ((struct PadState *)g_controller_state)->device_state = 0;
 }

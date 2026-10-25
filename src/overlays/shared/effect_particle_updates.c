@@ -41,7 +41,7 @@ void update_three_phase_effect_particle(char *m) {
         load_display_text_resource_entry(b, (int *)(m + 0x24));
         t = IntToFloat(*(short *)(m + 0xA));
         t = t / IntToFloat(*(short *)(q + 0x12));
-        func_001F9C08(v, b, a, t);
+        lerp_vector(v, b, a, t);
         FastVecAdd(m + 0x10, m + 0x10, v);
         *(float *)(m + 0xC) = ((float)(*(short *)(q + 0x16) - *(short *)(q + 0x18)) * t +
                                (float)*(short *)(q + 0x18)) * 1000.0f;
@@ -110,10 +110,10 @@ void update_drifting_effect_particle_with_distance_fade(char *m) {
         FastVecAdd(m + 0x10, m + 0x10, p);
     }
 after:
-    q = D_L00_00166EC0;
+    q = g_debug_camera;
     B = q - 0x140;
     d = FastVecDist(m + 0x10, q);
-    a = FastSubRots(func_L00_001FF860(*(float *)(m + 0x10) - *(float *)(B + 0x140), *(float *)(m + 0x14) - *(float *)(B + 0x144)), *(float *)(B + 0x158));
+    a = FastSubRots(fast_atan2(*(float *)(m + 0x10) - *(float *)(B + 0x140), *(float *)(m + 0x14) - *(float *)(B + 0x144)), *(float *)(B + 0x158));
     if (FastAbsF(a) > 1.0471976f) {
         if ((*(int *)(p + 0x18))++ >= 6) goto kill;
         v[0] = FastCos(FastAddRots(*(float *)(B + 0x158), a > 0.0f ? -1.0471976f : 1.0471976f)) * d;
@@ -215,7 +215,7 @@ void update_damped_effect_particle(char *m) {
     O00269a70 *particle = (O00269a70 *)m;
     S00269a70 *s = &particle->s;
     particle->xc = IntToFloat(s->x18 * (s->x1c - particle->xa) / s->x1c + s->x1a) * 1000.0f;
-    FastVecScale(s, s, D_0015EE60 * -0.019999981f + 1.0f);
+    FastVecScale(s, s, frame_scale * -0.019999981f + 1.0f);
     FastVecAdd(&particle->p10, &particle->p10, s);
     particle->x8++;
     particle->x4 = DefaultVtbl_DeleteMoby(s->x14, s->x10, (float)particle->xa / IntToFloat(s->x1c));
@@ -253,7 +253,7 @@ extern void func_L00_002688A8(void *);
 void update_scalar_and_fade_effect_particle(char *m) {
     float *p;
     p = (float *)(m + 0x20);
-    if (func_001F9908(p)) {
+    if (fast_dec_timer(p)) {
         KillPart(m);
         return;
     }
@@ -316,7 +316,7 @@ extern short D_L00_00160264;
 void update_rotating_grayscale_effect_particle(char *particle) {
     int *particle_data = (int *)(particle + 0x20);
     int faded_alpha;
-    if (func_001F9908(particle_data)) {
+    if (fast_dec_timer(particle_data)) {
         KillPart(particle);
         return;
     }
@@ -355,12 +355,12 @@ void update_damped_blue_shift_effect_particle(char *m) {
     int blue_byte;
     float dt;
 
-    particle_data[7] += D_0015EE60 * -0.04f;
+    particle_data[7] += frame_scale * -0.04f;
     if (particle_data[7] <= 0.0f || FastDecTimer(&particle->timer) != 0) {
         KillPart(m);
         return;
     }
-    dt = D_0015EE60;
+    dt = frame_scale;
     particle->unk0C += dt * 12000.0f;
     if (particle_data[6] < 0.225f) {
         particle_data[6] += dt * 0.0484f;
@@ -368,7 +368,7 @@ void update_damped_blue_shift_effect_particle(char *m) {
     blue_byte = func_001FA898_r(particle_data[6] * 255.0f) & 0xFF;
     particle->color.word = particle->color.low | (blue_byte << 16) | (func_001FA898_r(particle_data[7] * 255.0f) << 24);
     FastVecAdd(&particle->pos, &particle->pos, particle_data);
-    FastVecScale(particle_data, particle_data, D_0015EE60 * -0.10000002384185791f + 1.0f);
+    FastVecScale(particle_data, particle_data, frame_scale * -0.10000002384185791f + 1.0f);
     particle->count--;
 }
 extern int func_002140B0(int);
@@ -449,7 +449,7 @@ void update_branching_and_fading_effect_particle(char *m) {
         int i;
         FastVecAdd(m + 0x10, m + 0x10, p);
         if (p[0x19] & 4) {
-            *(float *)(p + 8) += D_0015EE70 * 9.8f;
+            *(float *)(p + 8) += g_frame_time_sq * 9.8f;
         }
         {
             float s = 0.8f;
@@ -473,13 +473,13 @@ void update_branching_and_fading_effect_particle(char *m) {
             float B = (A * 8.0f - A * 3.0f * x) / (x * 8.0f * x + x * 8.0f);
             float C = (A * 3.0f + B * 8.0f * x) / (x * -8.0f);
             float F = IntToFloat(*(short *)(m + 0xA));
-            float s = func_001F9B50(B * B - C * 4.0f * (A - F));
+            float s = vec_length(B * B - C * 4.0f * (A - F));
             float r2 = (-B + s) / (C + C);
             float r1 = (-B - s) / (C + C);
             float d;
             if (r1 < r2) *(float *)(m + 0xC) = r2;
             else *(float *)(m + 0xC) = r1;
-            d = FastVecDist(m + 0x10, D_L00_00166EC0);
+            d = FastVecDist(m + 0x10, g_debug_camera);
             if (d < 10.0f) {
                 *(float *)(m + 0xC) *= d * 0.075f + 0.25f;
             }
@@ -514,7 +514,7 @@ void update_branching_and_fading_effect_particle(char *m) {
         int n1 = func_001FA898_r((float)(unsigned char)p[0x1B] * 0.75f) + 1;
         int n2 = func_001FA898_r((float)(unsigned char)p[0x1B] * 0.25f) + 1;
         int life;
-        *(float *)(p + 8) += D_0015EE70 * 3.0f;
+        *(float *)(p + 8) += g_frame_time_sq * 3.0f;
         FastVecAdd(m + 0x10, m + 0x10, p);
         FastVecScale(p, p, 0.98f);
         life = *(short *)(m + 0xA);
@@ -568,7 +568,7 @@ unsigned char *spawn_spinning_and_fading_effect_particle(void *pos, void *vel, u
             float lo = (float)(*(int *)&D_L00_001602A0);
             *(int *)(particle + 4) = (*(int *)&D_L00_00160288);
             *(float *)(particle + 0xC) = scale * 210000.0f;
-            *(short *)(particle + 0xA) = truncate_float_to_s32(func_001F9878(
+            *(short *)(particle + 0xA) = truncate_float_to_s32(multiply_global_factor(
                 random_float_between(lo, hi)));
             *(int *)(motion + 0x14) = FastTweenColor((*(int *)&D_L00_00160288), (*(int *)&D_L00_0016028C),
                                                           random_float_between(zero, one));
@@ -587,7 +587,7 @@ unsigned char *spawn_spinning_and_fading_effect_particle(void *pos, void *vel, u
             float lo = (float)(*(int *)&D_L00_00160280);
             *(int *)(particle + 4) = (*(int *)&D_L00_00160268);
             *(float *)(particle + 0xC) = scale * 210000.0f;
-            *(short *)(particle + 0xA) = truncate_float_to_s32(func_001F9878(
+            *(short *)(particle + 0xA) = truncate_float_to_s32(multiply_global_factor(
                 random_float_between(lo, hi)));
             *(int *)(motion + 0x14) = FastTweenColor((*(int *)&D_L00_00160268), (*(int *)&D_L00_0016026C),
                                                           random_float_between(zero, one));
@@ -596,7 +596,7 @@ unsigned char *spawn_spinning_and_fading_effect_particle(void *pos, void *vel, u
                                                           random_float_between(zero, one));
             if (flags & 4) {
                 offset = 8;
-                if (!D_0013E620[0x10])
+                if (!gold_weapon_purchased[0x10])
                     offset = 0;
             }
             particle[2] = D_L00_001B2430[random_integer_below(8) + offset];
@@ -609,10 +609,10 @@ unsigned char *spawn_spinning_and_fading_effect_particle(void *pos, void *vel, u
         *(float *)(motion + 0x10) = size;
         motion[0x1F] = flags;
         if (flags & 4) {
-            *(short *)(particle + 0xA) = *(short *)(particle + 0xA) * (D_0013E620[0x10] + 2) / 2;
-            swap_packed_color_channels(*(int *)(particle + 4), D_0013E620[0x10]);
-            swap_packed_color_channels(*(unsigned *)(motion + 0x14), D_0013E620[0x10]);
-            swap_packed_color_channels(*(unsigned *)(motion + 0x18), D_0013E620[0x10]);
+            *(short *)(particle + 0xA) = *(short *)(particle + 0xA) * (gold_weapon_purchased[0x10] + 2) / 2;
+            swap_packed_color_channels(*(int *)(particle + 4), gold_weapon_purchased[0x10]);
+            swap_packed_color_channels(*(unsigned *)(motion + 0x14), gold_weapon_purchased[0x10]);
+            swap_packed_color_channels(*(unsigned *)(motion + 0x18), gold_weapon_purchased[0x10]);
         }
         motion[0x1D] = particle[0xA];
     }
@@ -648,9 +648,9 @@ void update_spinning_and_fading_effect_particle(unsigned char *m) {
     }
     FastVecAdd(m + 0x10, m + 0x10, p);
     r = -FastVecLength(p);
-    ApproachWithVelocity((float *)(m + 0x30), &r, 0.0f, 0.0f, *(float *)&D_L00_001602A8 * D_0015EE70, r);
+    ApproachWithVelocity((float *)(m + 0x30), &r, 0.0f, 0.0f, *(float *)&D_L00_001602A8 * g_frame_time_sq, r);
     func_L00_001FF4B0(p, p, -r);
-    *(float *)(m + 0x18) = *(float *)(m + 0x18) + *(float *)&D_L00_001602AC * D_0015EE6C;
+    *(float *)(m + 0x18) = *(float *)(m + 0x18) + *(float *)&D_L00_001602AC * g_frame_time;
     ratio = IntToFloat(*(short *)(m + 0xA)) / IntToFloat(p[0x1D]);
     if (p[0x1F] & 1) {
         float lo = *(float *)&D_L00_0016029C * w;
@@ -773,7 +773,7 @@ void update_attached_or_fading_effect_particle(char *m) {
     if (*(int *)(p + 4) == 0) {
         q = m + 0x10;
         qcopy(q, *(char **)(p + 8) + 0x10);
-        FastVecSub(v, D_L00_00166EC0, q);
+        FastVecSub(v, g_debug_camera, q);
         func_L00_001FF4B0(v, v, 0.01f);
         FastVecAdd(q, q, v);
     } else if (FastDecTimer(m + 0xA)) {
@@ -1009,7 +1009,7 @@ void spawn_effect_particle_with_transformed_random_offset(void *pos, u128_6D270 
         v[0] = random_float_between(-0.1f, 0.1f);
         v[1] = random_float_between(-0.3f, 0.3f);
         v[2] = random_float_between(-0.3f, 0.3f);
-        func_001F9EE8(out, v, mt);
+        transform_vector(out, v, mt);
         FastVecAdd(m + 0x10, out, pos);
         *(int *)(m + 4) = 0x806040;
         m[9] = truncate_float_to_s32(4.0f) + 0x40;
@@ -1140,35 +1140,35 @@ void update_spiraling_fade_in_out_effect_particle(M_26c860 *m) {
         a.z = FastCos(r->f14) * r->f10;
         a.x = zero;
         a.w = zero;
-        func_001F9EE8(&b, &a, &mat);
+        transform_vector(&b, &a, &mat);
         FastVecSub(&m->v10, &m->v10, &b);
-        r->f1C += D_0015EE60 * 0.06001f;
+        r->f1C += frame_scale * 0.06001f;
         Moby_GetJointWorldPos(r->p18, 0, &c);
         FastVecSub(&a, &c, &m->v10);
         func_L00_001FF4B0(&a, &a, r->f1C);
         FastVecAdd(&m->v10, &m->v10, &a);
-        r->f14 = FastAddRots(r->f14, D_0015EE60 * 0.5235988f);
-        r->f10 *= D_0015EE60 * -0.10000002384185791f + 1.0f;
+        r->f14 = FastAddRots(r->f14, frame_scale * 0.5235988f);
+        r->f10 *= frame_scale * -0.10000002384185791f + 1.0f;
         a.y = FastSin(r->f14) * r->f10;
         a.z = FastCos(r->f14) * r->f10;
         a.x = zero;
         a.w = zero;
-        func_001F9EE8(&b, &a, &mat);
+        transform_vector(&b, &a, &mat);
         FastVecAdd(&m->v10, &m->v10, &b);
         if (zero < compute_transformed_delta_component(&c, r->p18 + 0xC0, &m->v10, 1)) { KillPart(m); return; }
     }
-    r->f4 += D_0015EE60 * 0.011f * r->fC;
+    r->f4 += frame_scale * 0.011f * r->fC;
     if (r->f4 <= 0.0f || FastDecTimer(&m->hA)) {
         KillPart(m);
         return;
     }
     if (1.0f <= r->f4) {
         r->fC = -r->fC;
-        r->f4 += D_0015EE60 * 0.011f * r->fC;
+        r->f4 += frame_scale * 0.011f * r->fC;
     }
-    m->fC += D_0015EE60 * -2940.0f;
+    m->fC += frame_scale * -2940.0f;
     m->i4 = (m->i4 & 0xFFFFFF) | (truncate_float_to_s32(r->f4 * 255.0f) << 24);
-    r->f8 += D_0015EE60 * 0.006f;
+    r->f8 += frame_scale * 0.006f;
     if (1.0f < r->f8) r->f8 -= 1.0f;
     m->b8 = r->f8 * 255.0f;
 }
@@ -1241,7 +1241,7 @@ void update_shrinking_effect_particle_with_secondary_spawns(char *m) {
         particle->xc = IntToFloat(particle->xa) * s->x1c / IntToFloat(s->x18);
         particle->x4 = DefaultVtbl_DeleteMoby(s->x14, s->x10, IntToFloat(particle->xa) / IntToFloat(s->x18));
         FastVecAdd(particle_position, particle_position, s);
-        s->v[2] -= D_0015EE64 * 0.001f;
+        s->v[2] -= g_frame_scale_sq * 0.001f;
         qcopy(&updated_position_copy, particle_position);
         if (s->x1a != 0 && (D_L00_0015F6B0 & 1)) {
             V4 random_direction = {0};
@@ -1286,7 +1286,7 @@ void spawn_effect_particle_with_target_scalar(void *pos, void *vel, int c, int d
         *(int *)(p + 0x14) = d;
         qcopy(p, vel);
         qcopy(m + 0x10, pos);
-        *(float *)(p + 0xC) = D_0015EE70 * 1.24f;
+        *(float *)(p + 0xC) = g_frame_time_sq * 1.24f;
     }
 }
 extern unsigned char *D_L00_001B245C;
@@ -1313,9 +1313,9 @@ void *PartType23Spawn(void *pos, int spd, void *pos2, int col, float a, float b,
         *(int *)(v + 4) = 0;
         *(int *)(p + 0x20) = col;
         if (random_integer_below(2) != 0) {
-            *(short *)(v + 8) = func_001FA898_r(D_0015EE60 * (float)spd);
+            *(short *)(v + 8) = func_001FA898_r(frame_scale * (float)spd);
         } else {
-            *(short *)(v + 8) = func_001FA898_r((float)-spd * D_0015EE60);
+            *(short *)(v + 8) = func_001FA898_r((float)-spd * frame_scale);
         }
         *(float *)(v + 0xC) = random_float_between(b, c);
         qcopy(v + 0x10, pos2);
@@ -1331,7 +1331,7 @@ void update_moving_spinning_fade_in_out_effect_particle(char *m) {
 
     m[8] += p[8];
     FastVecAdd(m + 0x10, m + 0x10, m + 0x30);
-    *(float *)(m + 0xC) *= (*(float *)(p + 0xC) - 1.0f) * D_0015EE60 + 1.0f;
+    *(float *)(m + 0xC) *= (*(float *)(p + 0xC) - 1.0f) * frame_scale + 1.0f;
     t = *(int *)(p + 4);
     if (t == 0) {
         if (FastDecTimer(m + 0xA)) {
@@ -1496,8 +1496,8 @@ void update_color_decaying_effect_particle_with_collision(PartP *particle) {
         g = -g;
         b = -b;
     }
-    s->a += D_0015EE60 * 0.0f;
-    particle->xc += D_0015EE60 * -100.0f;
+    s->a += frame_scale * 0.0f;
+    particle->xc += frame_scale * -100.0f;
     FastVecAdd(&next_position, &particle->pos, s);
     if (s->x0 != 0.0f || s->x4 != 0.0f || s->x8 != 0.0f) {
         if (func_L00_001EFFF0(&particle->pos, &next_position, 2, D_001414D0, 0)) {
@@ -1509,7 +1509,7 @@ void update_color_decaying_effect_particle_with_collision(PartP *particle) {
             if (s->xc != 0.0f)
                 s->x8 += s->xc;
             else
-                s->x8 += D_0015EE64 * -0.0063f;
+                s->x8 += g_frame_scale_sq * -0.0063f;
         }
     }
     if (s->a <= 0.0f || FastDecTimer(&particle->xa) || particle->xc < 0.0f || next_position.f[0] < 0.01f || next_position.f[1] < 0.01f ||
@@ -1518,16 +1518,16 @@ void update_color_decaying_effect_particle_with_collision(PartP *particle) {
         return;
     }
     if (!neg) {
-        r += D_0015EE60 * -0.01f;
-        dt = D_0015EE60;
+        r += frame_scale * -0.01f;
+        dt = frame_scale;
         if (r < 0.0f)
             r = 0.0f;
         g += dt * -0.03001f;
         if (g < 0.0f)
             g = 0.0f;
     } else {
-        g += D_0015EE60 * -0.01f;
-        dt = D_0015EE60;
+        g += frame_scale * -0.01f;
+        dt = frame_scale;
         if (g < 0.0f)
             g = 0.0f;
         r += dt * -0.03001f;
@@ -1572,7 +1572,7 @@ char *spawn_source_attached_fading_effect_particle(char *src, int col, int w, in
             qcopy(m + 0x10, src + 0x10);
         } else {
             Moby_GetJointWorldPos(*(void **)(m + 0x20), (short)v, a);
-            FastVecSub(b, D_L00_00166EC0, a);
+            FastVecSub(b, g_debug_camera, a);
             func_L00_001FF4B0(b, b, 0.4f);
             FastVecAdd(m + 0x10, a, b);
         }
@@ -1615,7 +1615,7 @@ void update_source_attached_fading_effect_particle(char *particle) {
         return;
     }
     Moby_GetJointWorldPos(particle_data->o, particle_data->h6, source_position);
-    FastVecSub(position_offset, D_L00_00166EC0, source_position);
+    FastVecSub(position_offset, g_debug_camera, source_position);
     func_L00_001FF4B0(position_offset, position_offset, 0.4f);
     FastVecAdd(particle + 0x10, source_position, position_offset);
 }
@@ -1649,7 +1649,7 @@ void move_and_fade_effect_particle_by_lifetime(char *a) {
     char *b = a + 0x20;
     FastVecAdd(a + 0x10, a + 0x10, b);
     *(unsigned *)(a + 4) = (*(unsigned *)(a + 4) & 0xFFFFFF) + (((*(int *)(b + 0x18) * *(int *)(b + 0x10)) / *(int *)(b + 0x14)) << 24);
-    if (func_001F9908(a + 0x30)) KillPart(a);
+    if (fast_dec_timer(a + 0x30)) KillPart(a);
 }
 typedef struct { f32 f[4]; } __attribute__((aligned(16))) V_26de90;
 typedef struct { f32 q0; f32 q4; f32 q8; f32 qC; V_26de90 v30; } Q_26de90;
@@ -1680,8 +1680,8 @@ void spawn_jittered_effect_particle_with_optional_basis(void *pos, void *dir, f3
         d.f[1] = random_float_between(-0.03f, 0.03f);
         d.f[2] = 0.0f;
         if (dir) {
-            func_001FA460(&x, dir);
-            func_001F9EE8(&a, &d, &x);
+            copy_matrix_rotation(&x, dir);
+            transform_vector(&a, &d, &x);
             FastVecAdd(&m->v10, &a, pos);
         } else {
             FastVecAdd(&m->v10, &d, pos);
@@ -1707,7 +1707,7 @@ void spawn_jittered_effect_particle_with_optional_basis(void *pos, void *dir, f3
         if (dir) {
             t.f[0] = size;
             t.f[2] = -0.0025f;
-            func_001F9EC0(&q->v30, &t, dir);
+            matrix_mul_vec3(&q->v30, &t, dir);
         } else {
             q->v30.f[0] = random_float_between(-size, size);
             q->v30.f[1] = random_float_between(-size, size);
@@ -1905,7 +1905,7 @@ void update_linked_effect_particle_with_collision_and_fade(O_26e670_26e670 *o) {
         else FastVecScale(P, P, 0.5f);
         if (P->link) FastVecScale(P, P, g);
         else FastVecScale(P, P, 0.97f);
-        P->f08 -= D_0015EE64 * 0.02f;
+        P->f08 -= g_frame_scale_sq * 0.02f;
         FastVecAdd(&t, &o->pos, P);
     } else {
         qcopy(&t, &o->pos);
@@ -1924,15 +1924,15 @@ void update_linked_effect_particle_with_collision_and_fade(O_26e670_26e670 *o) {
             P->h1C = 0;
         }
         FastVecSub(&acc, &P->tgt->pos, &D_L00_00166EC0_6F510);
-        func_001F9EE8(&acc, &acc, (u8 *)&D_L00_00166EC0_6F510 - 0x80);
+        transform_vector(&acc, &acc, (u8 *)&D_L00_00166EC0_6F510 - 0x80);
         FastVecScale(&acc, &acc, 1.0f / acc.f[3]);
         FastVecSub(&w, &t, &D_L00_00166EC0_6F510);
-        func_001F9EE8(&w, &w, (u8 *)&D_L00_00166EC0_6F510 - 0x80);
+        transform_vector(&w, &w, (u8 *)&D_L00_00166EC0_6F510 - 0x80);
         FastVecScale(&w, &w, 1.0f / w.f[3]);
         FastVecSub(&acc, &acc, &w);
-        o->b08 = truncate_float_to_s32(func_L00_001FF860(acc.f[0], acc.f[1]) * 128.0f / 3.1415927f) - 0x20;
+        o->b08 = truncate_float_to_s32(fast_atan2(acc.f[0], acc.f[1]) * 128.0f / 3.1415927f) - 0x20;
         if (P->h1C) {
-            func_L00_001FF610(P, P, &D_L00_00173F80_26F510);
+            vec_reflect(P, P, &D_L00_00173F80_26F510);
             FastVecScale(P, P, 0.95f);
         } else {
             FastVecSub(&u, &t, &o->pos);
@@ -1969,12 +1969,12 @@ void update_target_relative_two_point_effect_particle(unsigned char *p) {
     }
     FastVecSub(&a, *(unsigned char **)(p + 0x30) + 0x10, p + 0x10);
     b[0] = a;
-    FastVecScale(b, b, (*(float *)&D_L00_001602B4 - 1.0f) * D_0015EE60 + 1.0f);
+    FastVecScale(b, b, (*(float *)&D_L00_001602B4 - 1.0f) * frame_scale + 1.0f);
     FastVecAdd(&a, b, *(unsigned char **)(p + 0x30) + 0x10);
     *(V31 *)(p + 0x10) = a;
     FastVecSub(&a, *(unsigned char **)(p + 0x30) + 0x10, p + 0x20);
     b[0] = a;
-    FastVecScale(b, b, (*(float *)&D_L00_001602B8 - 1.0f) * D_0015EE60 + 1.0f);
+    FastVecScale(b, b, (*(float *)&D_L00_001602B8 - 1.0f) * frame_scale + 1.0f);
     FastVecAdd(&a, b, *(unsigned char **)(p + 0x30) + 0x10);
     *(V31 *)(p + 0x20) = a;
     if (FastVecDist(p + 0x10, p + 0x20) < 0.1f || FastVecDist(p + 0x10, *(unsigned char **)(p + 0x30) + 0x10) < 1.0f) {
@@ -1993,7 +1993,7 @@ void *spawn_moby_bound_effect_particle(void *arg0) {
     char *p = create_part(0x20);
 
     if (p != 0) {
-        float scaled = D_0015EE60 * 0.016f;
+        float scaled = frame_scale * 0.016f;
         char *q = p + 0x20;
 
         *(void **)(p + 0x20) = arg0;
@@ -2040,20 +2040,20 @@ void update_moby_bound_fade_in_out_effect_particle(char *m) {
             p[2] = -p[2];
             p[1] = p[1] + p[2];
         }
-        p[4] = p[4] + D_0015EE60 * -0.0174f;
+        p[4] = p[4] + frame_scale * -0.0174f;
         if (p[4] < 0.0f) {
             p[4] = 0.0f;
         }
-        p[5] = p[5] + D_0015EE60 * -0.01446f;
+        p[5] = p[5] + frame_scale * -0.01446f;
         if (p[5] < 0.0f) {
             p[5] = 0.0f;
         }
-        p[6] = p[6] + D_0015EE60 * -0.0015f;
+        p[6] = p[6] + frame_scale * -0.0015f;
         if (p[6] < 0.0f) {
             p[6] = 0.0f;
         }
         col = PackColorRGBA(p[4], p[5], p[6], p[1]);
-        t = D_0015EE60 * 0.0011f;
+        t = frame_scale * 0.0011f;
         *(int *)(m + 4) = col;
         p[3] = p[3] + t;
         if (p[3] > 1.0f) {
@@ -2109,12 +2109,12 @@ char *PartType34Spawn(char *vec, float *pos, float sc, float vy) {
             *(float *)(q + 0x10) = vy;
         }
         t = random_angle_radians();
-        lo = D_0015EE6C * 1.7453293f;
-        hi = D_0015EE6C * 6.981317f;
+        lo = g_frame_time * 1.7453293f;
+        hi = g_frame_time * 6.981317f;
         *(float *)(q + 0x14) = t;
         t = random_float_between(lo, hi);
-        lo = D_0015EE6C * 0.5f;
-        hi = D_0015EE6C * 1.4f;
+        lo = g_frame_time * 0.5f;
+        hi = g_frame_time * 1.4f;
         *(float *)(q + 0x18) = t;
         *(float *)(q + 0x1C) = random_float_between(lo, hi);
         *(float *)(q + 0) = pos[0];
@@ -2145,7 +2145,7 @@ void update_swaying_and_fading_effect_particle(char *m) {
         s = *(short *)(m + 0xA);
         if (scale_ticks(0xE) - 2 < s) *(short *)(m + 0xA) = scale_ticks(0xE) - 2;
     }
-    if (*(float *)(p + 0x10) < *(float *)(m + 0x18) + D_0015EE6C * 1.3f * 40.0f) {
+    if (*(float *)(p + 0x10) < *(float *)(m + 0x18) + g_frame_time * 1.3f * 40.0f) {
         if (random_integer_below(0x14) == 0) {
             int s = *(short *)(m + 0xA);
             if (scale_ticks(0xE) - 2 < s) *(short *)(m + 0xA) = scale_ticks(0xE) - 2;
@@ -2155,17 +2155,17 @@ void update_swaying_and_fading_effect_particle(char *m) {
         int r = *(unsigned char *)(m + 7);
         *(int *)(m + 4) = ((r * *(short *)(m + 0xA) / scale_ticks(0xE)) << 24) | (*(int *)(m + 4) & 0xFFFFFF);
     }
-    *(float *)(m + 0xC) += D_0015EE60 * 840.00006f;
+    *(float *)(m + 0xC) += frame_scale * 840.00006f;
     if (*(float *)(p + 0xC) < *(float *)(m + 0xC)) *(float *)(m + 0xC) = *(float *)(p + 0xC);
     v[0] = *(float *)(p + 0);
     v[1] = *(float *)(p + 4);
     v[2] = *(float *)(p + 8);
     {
-        float len = func_001F9CE8(v);
-        func_L00_001FF500(v, v, D_0015EE60 * -0.029999971f * len + len);
+        float len = vec_length_xy(v);
+        func_L00_001FF500(v, v, frame_scale * -0.029999971f * len + len);
     }
     FastVecAdd(m + 0x10, m + 0x10, v);
-    ApproachValue(v + 2, D_0015EE6C * 1.3f, D_0015EE70 * 5.0f);
+    ApproachValue(v + 2, g_frame_time * 1.3f, g_frame_time_sq * 5.0f);
     *(float *)(p + 4) = v[1];
     *(float *)(p + 0) = v[0];
     *(float *)(p + 8) = v[2];
@@ -2200,7 +2200,7 @@ void PartType35Spawn(void *pos, void *vel, int mode, int life) {
         *(int *)(q + 0x10) = mode;
         *(float *)(q + 0x18) = *(float *)(p + 0x18);
         if (mode == 2) *(int *)(q + 0x18) = 0;
-        *(float *)(q + 0x1C) = random_float_between(D_0015EE70 * 10.5f, D_0015EE70 * 18.0f);
+        *(float *)(q + 0x1C) = random_float_between(g_frame_time_sq * 10.5f, g_frame_time_sq * 18.0f);
     }
 }
 typedef struct { int a[4]; } V __attribute__((aligned(16)));
@@ -2245,7 +2245,7 @@ void update_ballistic_effect_particle_with_contact_spawns(char *particle) {
         FastVecAdd(&next_position, particle_position, particle_data);
         if (func_L00_001EFFF0(particle_position, &next_position, 2, 0, 0)) {
             if (CollType() == 0) {
-                spawn_moving_resizing_height_snapped_alpha_fade_particle(&D_L00_00173F60, 0, -1, 0.2f, 5250.0f);
+                spawn_moving_resizing_height_snapped_alpha_fade_particle(&collision_hit_point, 0, -1, 0.2f, 5250.0f);
             }
             KillPart(particle);
             return;
@@ -2306,7 +2306,7 @@ void update_flag_controlled_pulsing_effect_particle(char *m) {
     Q_26f898 *particle_data;
     float angle_sine;
     particle_data = (Q_26f898 *)(m + 0x20);
-    FastVecSub(position_offset, D_L00_00166EC0, m + 0x30);
+    FastVecSub(position_offset, g_debug_camera, m + 0x30);
     if (FastVecLength(position_offset) > 1.0f) func_L00_001FF4B0(position_offset, position_offset, 0.25f);
     else FastVecScale(position_offset, position_offset, 0.25f);
     FastVecAdd(m + 0x10, particle_data->v10, position_offset);
@@ -2374,7 +2374,7 @@ void update_damped_and_fading_effect_particle(P_26fb00 *p) {
     p->fc += q->f10;
     p->b8++;
     zero = 0.0f;
-    x = q->f14 - D_0015EE60 * 0.01f;
+    x = q->f14 - frame_scale * 0.01f;
     q->f14 = x;
     y = zero;
     if (!(x < zero)) y = x;
@@ -2387,7 +2387,7 @@ void update_damped_and_fading_effect_particle(P_26fb00 *p) {
         return;
     }
     FastVecAdd(p->v10, p->v10, q);
-    FastVecScale(q, q, D_0015EE60 * -0.019999981f + 1.0f);
+    FastVecScale(q, q, frame_scale * -0.019999981f + 1.0f);
 }
 extern short D_L00_001602C0;
 extern short D_L00_001602C4;
@@ -2424,7 +2424,7 @@ void update_animated_offset_effect_particle(char *m) {
     particle->xc = f0;
     particle->x4 = w;
     particle->x8 += *(unsigned char *)&D_L00_001602CC;
-    FastVecSub(position_offset, s->x4 + 0x10, D_L00_00166EC0);
+    FastVecSub(position_offset, s->x4 + 0x10, g_debug_camera);
     func_L00_001FF4B0(position_offset, position_offset, *(float *)&D_L00_001602C8);
     FastVecAdd(particle->p10, s->x4 + 0x10, position_offset);
     particle->x2 = D_L00_001B249C[func_001FA898_r((float)(s->x8 / 2))];
@@ -2462,11 +2462,11 @@ void *PartType40Spawn(char *a, char *b, unsigned char c, int d) {
 
             *(float *)(p + 0xC) = random_float_between(7000.0f, 10000.0f);
             rnd = func_001160D8();
-            n = (int)(8.0f / (D_0015EE60 * 0.443f));
+            n = (int)(8.0f / (frame_scale * 0.443f));
             y = n * 6 / 7;
             *(short *)(p + 0xA) = n - rnd % y;
         } else {
-            *(short *)(p + 0xA) = (int)(8.0f / (D_0015EE60 * 0.443f));
+            *(short *)(p + 0xA) = (int)(8.0f / (frame_scale * 0.443f));
             *(float *)(p + 0xC) = 10000.0f;
         }
         *(int *)(q + 0x1C) = d;
@@ -2597,7 +2597,7 @@ void update_splitting_effect_particle_with_collision_response_and_fade(Part_26ff
     hit = func_L00_001EFFF0_70DB0(pa, pb, mode, col, aux) != 0;
     if (hit) {
         func_L00_001FF4B0(v2, coll_hit_normal, 1.0f);
-        func_L00_001FF610(pv, pv, coll_hit_normal);
+        vec_reflect(pv, pv, coll_hit_normal);
         FastVecScale(pv, pv, 0.02f);
         func_L00_001FF4B0(v2, coll_hit_normal, 0.055f);
         FastVecAdd(p->posv.f, coll_hit_normal - 8, v2);
@@ -2609,7 +2609,7 @@ void update_splitting_effect_particle_with_collision_response_and_fade(Part_26ff
         qcopy(p->posv.f, v0u.f);
     }
     if (pv->f18 & 8) {
-        f32 d = D_0015EE60;
+        f32 d = frame_scale;
         f32 n;
         kk2 = 8.0f / (d * 0.443f);
         pv->f16++;
@@ -2621,13 +2621,13 @@ void update_splitting_effect_particle_with_collision_response_and_fade(Part_26ff
             return;
         }
     } else {
-        f32 d = D_0015EE60;
+        f32 d = frame_scale;
         kk2 = 8.0f / (d * 0.443f);
         p->f0C = p->f0C + 260000.0f / (f32)kk2 * d;
     }
     f = IntToFloat(pv->f14);
     {
-        f32 d = D_0015EE60;
+        f32 d = frame_scale;
         f32 kk;
         kk2 = 8.0f / (d * 0.443f);
         kk = (f32)kk2;
@@ -2639,7 +2639,7 @@ void update_splitting_effect_particle_with_collision_response_and_fade(Part_26ff
         s = s / ((f32)pv->f16 / 7.0f + 1.0f);
     }
     p->f04 = (p->f04 & 0xFFFFFF) | (truncate_float_to_s32(s * 256.0f) << 24);
-    pv->z = pv->z + D_0015EE64 * 0.008f;
+    pv->z = pv->z + g_frame_scale_sq * 0.008f;
     t = pv->f14;
     if (scale_ticks(25) < t || (pv->f18 & 8)) {
         pv->x = pv->x * 0.95f;
@@ -2649,11 +2649,11 @@ void update_splitting_effect_particle_with_collision_response_and_fade(Part_26ff
     g = -1.0f;
     if (fm & 1) g = 1.0f;
     if (fm & 8) {
-        pv->z = pv->z + D_0015EE64 * 0.008f;
+        pv->z = pv->z + g_frame_scale_sq * 0.008f;
         f = IntToFloat(pv->f16);
-        pv->t = pv->t + g * (D_0015EE60 * -0.01f) / f;
+        pv->t = pv->t + g * (frame_scale * -0.01f) / f;
     } else {
-        pv->t = pv->t + g * (D_0015EE60 * -0.01f);
+        pv->t = pv->t + g * (frame_scale * -0.01f);
     }
     if (1.0f < pv->t) pv->t = pv->t - 1.0f;
     if (pv->t < 0.0f) pv->t = pv->t + 1.0f;
@@ -2695,11 +2695,11 @@ void *PartType42Spawn(char *a, char *b, unsigned char c, int d) {
 
             *(float *)(p + 0xC) = random_float_between(7000.0f, 10000.0f);
             rnd = func_001160D8();
-            n = (int)(8.0f / (D_0015EE60 * 0.443f));
+            n = (int)(8.0f / (frame_scale * 0.443f));
             y = n * 6 / 7;
             *(short *)(p + 0xA) = n - rnd % y;
         } else {
-            *(short *)(p + 0xA) = (int)(8.0f / (D_0015EE60 * 0.443f));
+            *(short *)(p + 0xA) = (int)(8.0f / (frame_scale * 0.443f));
             *(float *)(p + 0xC) = 10000.0f;
         }
         *(int *)(q + 0x1C) = d;
@@ -2807,7 +2807,7 @@ void update_splitting_effect_particle_with_collision_and_fade(M_270948 *m) {
     if (0.08f < a) a = 0.08f;
     if (e->b18 & 8) a /= (f32)e->h16 / 7.0f + 1.0f;
     m->x4 = (m->x4 & 0xFFFFFF) | (truncate_float_to_s32(a * 256.0f) << 24);
-    e->v.f[2] += D_0015EE64 * 0.008f;
+    e->v.f[2] += g_frame_scale_sq * 0.008f;
     if (e->h14 > scale_ticks(0x19) || (e->b18 & 8)) {
         e->v.f[0] *= 0.95f;
         e->v.f[1] *= 0.95f;
@@ -2816,7 +2816,7 @@ void update_splitting_effect_particle_with_collision_and_fade(M_270948 *m) {
     s = -1.0f;
     if (f2 & 1) s = 1.0f;
     if (f2 & 8) {
-        e->v.f[2] += D_0015EE64 * 0.008f;
+        e->v.f[2] += g_frame_scale_sq * 0.008f;
         e->x10 += s * (D_0015EE60_717E8b * -0.01f) / IntToFloat(e->h16);
     } else {
         e->x10 += s * (D_0015EE60_717E8b * -0.01f);
@@ -2865,5 +2865,5 @@ void update_accelerating_fade_in_out_effect_particle(unsigned char *p) {
     }
     p[8]++;
     FastVecAdd(p + 0x10, p + 0x10, q);
-    *(float *)(q + 8) += D_0015EE64 * 0.0005f;
+    *(float *)(q + 8) += g_frame_scale_sq * 0.0005f;
 }

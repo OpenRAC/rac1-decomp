@@ -63,7 +63,7 @@ extern void *D_L00_00166F04;
 void initialize_hero_aligned_camera_pose(char *m) {
     float a[4];
     float b[4];
-    char *g = D_0013F450;
+    char *g = g_hero;
     char *p;
     int c;
     void *q;
@@ -77,7 +77,7 @@ void initialize_hero_aligned_camera_pose(char *m) {
     } else {
         FastVecScale(b, a, 1.6f);
     }
-    FastVecAdd(m + 0x30, D_0013F450 + 0x80, b);
+    FastVecAdd(m + 0x30, g_hero + 0x80, b);
     q = D_L00_00166F04;
     d = m + 0x20;
     qcopy(d, a);
@@ -137,20 +137,20 @@ void update_hero_aligned_camera_from_input(u8 *o) {
     func_L00_002EB170_EB3E8(o);
     func_L00_001FF4B0(&up, D_0013F450_EB3E8.p2080 + 0xE0, 1.0f);
     if (D_L00_00166D80_EB3E8.s270 == 0 && D_0013F450_EB3E8.b20A5 == 0) D_0013F450_EB3E8.b20A5 = 1;
-    t = -D_0013CA40.f108;
-    if (t == 0.0f) t = -D_0013CA40.f100;
-    if (t == 0.0f) t = IntToFloat((D_0013CA40.i1A0 >> 15) & 1);
-    if (t == 0.0f) t = -IntToFloat((D_0013CA40.i1A0 >> 13) & 1);
+    t = -g_controller_state.f108;
+    if (t == 0.0f) t = -g_controller_state.f100;
+    if (t == 0.0f) t = IntToFloat((g_controller_state.i1A0 >> 15) & 1);
+    if (t == 0.0f) t = -IntToFloat((g_controller_state.i1A0 >> 13) & 1);
     r = FastAbsF(st->a);
     k = (*(float *)&D_L00_00161E90) + ((*(float *)&D_L00_00161E94) - (*(float *)&D_L00_00161E90)) * r;
     st->a = r = func_001EC120_EB3E8(st->a, t, (*(float *)&D_L00_00161E98), (*(float *)&D_L00_00161E9C), (*(float *)&D_L00_00161EA0), &st->va);
     if (r != 0.0f) build_look_at_matrix(o, o, &up, k * r);
     if (D_0013F450_EB3E8.f14C != 0.0f && D_0013F450_EB3E8.s308 == 0)
         build_look_at_matrix(o, o, &up, D_0013F450_EB3E8.f14C);
-    t = -D_0013CA40.f10C;
-    if (t == 0.0f) t = -D_0013CA40.f104;
-    if (t == 0.0f) t = IntToFloat((D_0013CA40.i1A0 >> 12) & 1);
-    if (t == 0.0f) t = -IntToFloat((D_0013CA40.i1A0 >> 14) & 1);
+    t = -g_controller_state.f10C;
+    if (t == 0.0f) t = -g_controller_state.f104;
+    if (t == 0.0f) t = IntToFloat((g_controller_state.i1A0 >> 12) & 1);
+    if (t == 0.0f) t = -IntToFloat((g_controller_state.i1A0 >> 14) & 1);
     if (D_L00_00166D80_EB3E8.s270 != 0 && D_0013F450_EB3E8.i2090 == 2) t = 0.0f;
     if (invert52 == 0) t = -t;
     r = FastAbsF(st->b);
@@ -433,8 +433,8 @@ void CameraScript2(int mode) {
     if (mode == 0) {
         char *p = obj + 0x30;
         char *t = D_0013E633 + 0xEAD;
-        func_001FA218(mx, t);
-        func_001FA480(obj, mx);
+        euler_to_matrix(mx, t);
+        matrix_copy_rows(obj, mx);
         func_L00_001FF4B0(b, mx, -1.0f);
         func_L00_001FF4B0(a, mx + 8, 1.2f);
         FastVecAdd(p, t - 0x10, a);
@@ -475,8 +475,8 @@ void initialize_camera_pose_springs(char *m) {
     *(float *)(p + 0x18) = 1.0f;
     *(short *)(p + 0x1C) = 1;
     clear_u64_value(p);
-    func_001FA218(v, m + 0x40);
-    func_001FA480(m, v);
+    euler_to_matrix(v, m + 0x40);
+    matrix_copy_rows(m, v);
     *(short *)(m + 0x7E) = 0;
 }
 extern int func_001F9908(int *);
@@ -510,12 +510,12 @@ void update_camera_pose_from_targets(void *arg) {
         qcopy(m + 0x40, d + 0x90);
     } else if (t == 2) {
         float u;
-        func_001F9908((int *)c);
+        fast_dec_timer((int *)c);
         u = (float)(*(int *)(c + 4) - *(int *)(d + 0xE0)) / IntToFloat(*(int *)(c + 4));
         interpolate_vector_xyz_cosine_eased(m + 0x30, m + 0x30, b, u);
         interpolate_wrapped_rotations_cosine_eased((float *)(m + 0x40), (float *)(m + 0x40), (float *)(d + 0x90), u);
     } else if (t == 3) {
-        if (func_001F9908((int *)c) != 0) {
+        if (fast_dec_timer((int *)c) != 0) {
             qcopy(m + 0x30, b);
             qcopy(m + 0x40, d + 0x90);
         } else {
@@ -554,8 +554,8 @@ void update_camera_pose_from_targets(void *arg) {
             F(m, 0x48) = Camera_SmoothAngle(d + 0x38, F(m, 0x48), F(b, 0x18), F(a, 0x20), F(a, 0x24), F(a, 0x28));
         }
     }
-    func_001FA218(mtx, m + 0x40);
-    func_001FA480(m, mtx);
+    euler_to_matrix(mtx, m + 0x40);
+    matrix_copy_rows(m, mtx);
 }
 extern void func_L00_002EC2D0(void *);
 extern void func_L00_001EDA28(void *, float);
@@ -581,8 +581,8 @@ void initialize_orbit_camera_pose(void *arg) {
     *(float *)(a + 0x48) = FastAddRots(3.14159274101257324f, *(float *)(a + 0x50));
     *(float *)(a + 0x48) = FastAddRots(*(float *)(a + 0x48), *(float *)(a + 0x60));
     *(int *)(a + 0x4C) = 0;
-    func_001FA218(m, a + 0x40);
-    func_001FA480(a, m);
+    euler_to_matrix(m, a + 0x40);
+    matrix_copy_rows(a, m);
 }
 extern void func_L00_001EB448(void *, void *, float);
 extern void func_L00_001EB430(void *);
@@ -684,8 +684,8 @@ void update_orbit_camera_pose(char *camera_object) {
     obj->rot[1] = FastAddRots(obj->angles[1], obj->angles[3]);
     obj->rot[2] = FastAddRots(3.1415927f, obj->angles[0]);
     obj->rot[2] = FastAddRots(obj->rot[2], obj->angles[4]);
-    func_001FA218(rotation_matrix, obj->rot);
-    func_001FA480(camera_object, rotation_matrix);
+    euler_to_matrix(rotation_matrix, obj->rot);
+    matrix_copy_rows(camera_object, rotation_matrix);
 }
 typedef int u128 __attribute__((mode(TI)));
 extern void func_001F9EC0(void *, void *, void *);
@@ -718,7 +718,7 @@ int Camera_PlaceBehindMoby(char *a, char *t) {
     ((float *)v)[2] = 0.12f;
     ((float *)v)[0] = D_L00_00161EA4;
     n = *(char **)(t + 0x78);
-    func_001F9EC0(v, v, t + 0xC0);
+    matrix_mul_vec3(v, v, t + 0xC0);
     FastVecAdd(w, t + 0x10, v);
     pw = w;
     if (*(int *)(n + 0x10) == -1) {
@@ -735,13 +735,13 @@ int Camera_PlaceBehindMoby(char *a, char *t) {
     cam = D_L00_00166D80_c;
     pp = g + 0x80;
     cp = cam + 0x140;
-    ang = func_L00_001FF860(*(float *)(cam + 0x140) - *(float *)(g + 0x80), *(float *)(cam + 0x144) - *(float *)(g + 0x84));
+    ang = fast_atan2(*(float *)(cam + 0x140) - *(float *)(g + 0x80), *(float *)(cam + 0x144) - *(float *)(g + 0x84));
     ang = FastDiffRots(ang, *(float *)(cam + 0x158));
-    d1 = func_001F9D48(pp, cp);
-    if (d1 < func_001F9D48(*(char **)(g + 0x1090) + 0x10, cp)) {
-        x = func_001F9D48(pp, cp);
+    d1 = vec_distance_xy(pp, cp);
+    if (d1 < vec_distance_xy(*(char **)(g + 0x1090) + 0x10, cp)) {
+        x = vec_distance_xy(pp, cp);
     } else {
-        x = func_001F9D48(*(char **)(g + 0x1090) + 0x10, cp);
+        x = vec_distance_xy(*(char **)(g + 0x1090) + 0x10, cp);
     }
     if (x < 0.77f) {
         if (ang < 1.5707964f) {
@@ -800,7 +800,7 @@ void select_camera_mode_by_hero_alignment_and_distance(char *m) {
     char *g = D_0013E633 + 0xE1D;
     char *s = (char *)&player_camera;
     char *t = *(char **)(g + 0x2080);
-    float a = func_L00_001FF860(*(float *)(t + 0x10) - *(float *)(s + 0x140), *(float *)(t + 0x14) - *(float *)(s + 0x144));
+    float a = fast_atan2(*(float *)(t + 0x10) - *(float *)(s + 0x140), *(float *)(t + 0x14) - *(float *)(s + 0x144));
     float b = FastDiffRots(*(float *)(s + 0x158), a);
     if (b < 0.55850536f && FastVecDist(g + 0x80, s + 0x140) < 8.0f) {
         s[0x273] = 0;
@@ -816,7 +816,7 @@ extern char D_0013F450[];
 /* Camera setup from the global block at D_0013F450+0x80. */
 void initialize_orbit_camera_from_hero(void *arg) {
     char *a = arg;
-    char *g = D_0013F450 + 0x80;
+    char *g = g_hero + 0x80;
     char *p0 = *(char **)(a + 0x70);
     char *q = p0 + 0xB0;
     char *p;
@@ -839,7 +839,7 @@ extern float func_001F9FA8(float);
 void initialize_target_tracking_camera(void *arg) {
     char *m = arg;
     char *g;
-    int lvl0 = D_0015EE84;
+    int lvl0 = g_current_level_index;
     int lvl;
     char *p = *(char **)(m + 0x70) + 0x40;
     float f;
@@ -900,7 +900,7 @@ void initialize_target_tracking_camera(void *arg) {
         *(int *)(p + 0x38) = 0;
         *(int *)(p + 0x3C) = 0;
         func_L00_001FF4B0(p + 0x30, p + 0x30, 1.0f);
-        *(float *)(s19 + 0xB8) = func_L00_001FF860(*(float *)(p + 0x30), *(float *)(p + 0x34));
+        *(float *)(s19 + 0xB8) = fast_atan2(*(float *)(p + 0x30), *(float *)(p + 0x34));
         *(int *)(w + 8) = *(int *)(g + 0x964);
     }
     gg = (char *)&player_camera;
@@ -1170,7 +1170,7 @@ done:
 extern char D_0013F450[];
 /* Update check that sets state 3 when a global value no longer matches the moby's. */
 void conditionally_set_camera_state_three(char *a) {
-    char *g = D_0013F450;
+    char *g = g_hero;
     if (*(int *)(g + 0x2284) != *(short *)(a + 0x86) && *(int *)(g + 0x2084) != 6) {
         *(char *)(a + 0x7D) = 0;
         *(short *)(a + 0x7E) = 3;
@@ -1525,7 +1525,7 @@ int volume_camera_swing_check(char *m) {
         if (params->timer == 0) {
             struct Hero *hero_data = (struct Hero *)(D_0013E633 + 0xE1D);
             if (hero_data->frames_off_ground.s != 0) {
-                if (*(int *)&D_0015EE84 != 14) return 0;
+                if (*(int *)&g_current_level_index != 14) return 0;
                 if (hero_data->unk2284 != 13) return 0;
             }
         }
@@ -1722,9 +1722,9 @@ run:
             pos[2] = ((CameraDescriptor_ee *)camera_descriptors)[aim_camera_record->descriptor_index].pos[2];
         }
         *(s32 *)&pos[3] = 0;
-        FastVecSub(to_pos, pos, &(*(HeroLike_ee *)D_0013F450).motion.pos);
-        up = FastVecDot(to_pos, (*(HeroLike_ee *)D_0013F450).gravity_dir);
-        FastVecScale(gravity_offset, (*(HeroLike_ee *)D_0013F450).gravity_dir, up);
+        FastVecSub(to_pos, pos, &(*(HeroLike_ee *)g_hero).motion.pos);
+        up = FastVecDot(to_pos, (*(HeroLike_ee *)g_hero).gravity_dir);
+        FastVecScale(gravity_offset, (*(HeroLike_ee *)g_hero).gravity_dir, up);
         FastVecSub(level, to_pos, gravity_offset);
         params->distance = FastVecLength(level);
         params->height = -up;
@@ -1746,14 +1746,14 @@ run:
         tail->unk15C = params->distance;
         tail->distance = params->height;
         follow->look_height = params->offset_scale;
-        FastVecScale(gravity_offset, (*(HeroLike_ee *)D_0013F450).gravity_dir, -tail->distance);
-        FastVecAdd(state->follow.eye, &(*(HeroLike_ee *)D_0013F450).motion.pos, gravity_offset);
+        FastVecScale(gravity_offset, (*(HeroLike_ee *)g_hero).gravity_dir, -tail->distance);
+        FastVecAdd(state->follow.eye, &(*(HeroLike_ee *)g_hero).motion.pos, gravity_offset);
         FastVecSub(tail->unk130, pos, state->follow.eye);
         qcopy(state->tail.unk140, tail->unk130);
-        FastVecScale(gravity_offset, (*(HeroLike_ee *)D_0013F450).gravity_dir, -follow->look_height);
-        FastVecAdd(state->follow.look_target, &(*(HeroLike_ee *)D_0013F450).motion.pos, gravity_offset);
+        FastVecScale(gravity_offset, (*(HeroLike_ee *)g_hero).gravity_dir, -follow->look_height);
+        FastVecAdd(state->follow.look_target, &(*(HeroLike_ee *)g_hero).motion.pos, gravity_offset);
         qcopy(state->follow.unkD0, state->follow.look_target);
-        qcopy(follow->focus, &(*(HeroLike_ee *)D_0013F450).motion.pos);
+        qcopy(follow->focus, &(*(HeroLike_ee *)g_hero).motion.pos);
         qcopy(state->follow.offset, follow->focus);
         qcopy(state->position, rec_pos);
         qcopy(state->tail.snap.unk1F0, rec_pos);
@@ -1847,12 +1847,12 @@ void update_sound_emitter_playback_by_distance(u8 *m) {
     d = FastVecDist(D_L00_00166EC0_EEE00, m + 0x40);
     r = *(f32 *)(m + 0xC);
     if (d < r) {
-        E_2ed950 *e = ((E_2ed950 *)((u8 *)D_0013E650 + (s->snd) * 0x70));
+        E_2ed950 *e = ((E_2ed950 *)((u8 *)voice_pool + (s->snd) * 0x70));
         s32 fl = 0;
         s32 four = 4;
         if (D_L00_0015F6D4[s->id].b18) fl = four;
         if (e->o == m && e->b74) return;
-        if (!func_001F9908(&s->wC)) return;
+        if (!fast_dec_timer(&s->wC)) return;
         s->snd = func_L00_0028F0B0_EEE00(s->id, fl, m, 0x400);
         if (s->w8 > 0) {
             s->wC = scale_ticks(s->w4 + random_integer_below(s->w8 - s->w4)) * 60.0f;
@@ -1860,7 +1860,7 @@ void update_sound_emitter_playback_by_distance(u8 *m) {
     } else if (r + 1.0f < d) {
         s32 h = s->snd;
         if (h != -1) {
-            E_2ed950 *e = ((E_2ed950 *)((u8 *)D_0013E650 + (h) * 0x70));
+            E_2ed950 *e = ((E_2ed950 *)((u8 *)voice_pool + (h) * 0x70));
             if (e->o == m && e->b74) Sound_StopSlot(h);
         }
         s->snd = -1;
@@ -1916,23 +1916,23 @@ void update_sound_emitter_playback_at_random_position(char *m) {
         uniform_range_vector.f[1] = g;
         uniform_range_vector.f[2] = g;
     }
-    FastVecSub(reference_position_delta.f, D_L00_00166EC0, ((SoundEmitter_2edad8 *)m)->pos);
+    FastVecSub(reference_position_delta.f, g_debug_camera, ((SoundEmitter_2edad8 *)m)->pos);
     reference_position_delta.f[3] = 0;
-    func_001F9EC0(transformed_reference_position_delta.f, reference_position_delta.f, ((SoundEmitter_2edad8 *)m)->inv_basis);
-    func_001F9EC0(b.f, uniform_range_vector.f, ((SoundEmitter_2edad8 *)m)->inv_basis);
+    matrix_mul_vec3(transformed_reference_position_delta.f, reference_position_delta.f, ((SoundEmitter_2edad8 *)m)->inv_basis);
+    matrix_mul_vec3(b.f, uniform_range_vector.f, ((SoundEmitter_2edad8 *)m)->inv_basis);
     if (!(FastAbsF(transformed_reference_position_delta.f[0]) <= FastAbsF(b.f[0]) + 1.0f)) return;
     if (!(FastAbsF(transformed_reference_position_delta.f[1]) <= FastAbsF(b.f[1]) + 1.0f)) return;
     if (!(FastAbsF(transformed_reference_position_delta.f[2]) <= FastAbsF(b.f[2]) + 1.0f)) return;
     sound_slot_entry = (SoundSlot_2edad8 *)((u8 *)D_0013E633 + 0x1D + playback_state->h * 0x70);
     if (sound_slot_entry->owner == m && sound_slot_entry->flag74 != 0) return;
-    if (func_001F9908(&playback_state->timer)) {
+    if (fast_dec_timer(&playback_state->timer)) {
         playback_state->h = play_voice(playback_state->snd, 0, (int)m, 0x400);
         if (playback_state->h != -1) {
             r.f[0] = random_float_between(-1.0f, 1.0f);
             r.f[1] = random_float_between(-1.0f, 1.0f);
             r.f[2] = random_float_between(-1.0f, 1.0f);
             p = r.f;
-            func_001F9EC0(p, p, ((SoundEmitter_2edad8 *)m)->basis);
+            matrix_mul_vec3(p, p, ((SoundEmitter_2edad8 *)m)->basis);
             FastVecAdd(p, p, ((SoundEmitter_2edad8 *)m)->pos);
             qcopy(((SoundSlot_2edad8 *)((u8 *)D_0013E633 + 0x1D + playback_state->h * 0x70))->pos, p);
         }

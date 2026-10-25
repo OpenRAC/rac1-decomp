@@ -62,7 +62,7 @@ void update_triggered_moby_yaw(RotorMoby17B68 *moby) {
         } else {
             f = FastAddRots(p->angle, 0.6981317f);
         }
-        ease_rotation_317B68(&moby->rot, f, &p->velocity, D_0015EE70 * 12.566371f, D_0015EE70 * 12.566371f, D_0015EE6C * 12.566371f);
+        ease_rotation_317B68(&moby->rot, f, &p->velocity, g_frame_time_sq * 12.566371f, g_frame_time_sq * 12.566371f, g_frame_time * 12.566371f);
         break;
     }
 }

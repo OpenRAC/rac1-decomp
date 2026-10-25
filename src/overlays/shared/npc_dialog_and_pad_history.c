@@ -115,10 +115,10 @@ int Npc_TryStartDialog(char *p, char *q) {
     f = f + f;
     if (f < f0) return 0;
     if (*(unsigned char *)(q + 8) == 0) {
-        f = func_L00_001FF860(*(float *)(g + 0x80) - *(float *)(p + 0x10), *(float *)(g + 0x84) - *(float *)(p + 0x14));
+        f = fast_atan2(*(float *)(g + 0x80) - *(float *)(p + 0x10), *(float *)(g + 0x84) - *(float *)(p + 0x14));
         f = FastDiffRots(f, *(float *)(p + 0x48));
         if (*(float *)(q + 0xC) < f) return 0;
-        f = func_L00_001FF860(*(float *)(p + 0x10) - *(float *)(g + 0x80), *(float *)(p + 0x14) - *(float *)(g + 0x84));
+        f = fast_atan2(*(float *)(p + 0x10) - *(float *)(g + 0x80), *(float *)(p + 0x14) - *(float *)(g + 0x84));
         f = FastDiffRots(f, *(float *)(g + 0x98));
         if (1.5700000524520874f < f) return 0;
     }
@@ -162,7 +162,7 @@ extern s32 D_0015EE84 MACRO_ADDR;
 extern s32 D_L00_001C47B8[];
 extern s32 D_L00_001792B8[];
 s32 func_L00_00267618(s32 p, s32 unused) {
-    s32 n = D_0015EE84;
+    s32 n = g_current_level_index;
     s32 lo;
     s32 hi;
     s32 i;
@@ -236,23 +236,23 @@ s32 DialogRequest_Init(void *p, u8 *out_p)
     out->f36 = 0;
     q = D_L00_001B19F8[i];
     out->f3C = (u32)q;
-    if (D_0013D6B8[i].d != 0 && q->f08 == 0) { out->f36 = q->f06; }
+    if (race_gates[i].d != 0 && q->f08 == 0) { out->f36 = q->f06; }
     out->f08 = ((u8 *)out->f3C)[out->f36 * 0x1C + (k = 0x10)] & 1;
     return i;
 }
 typedef struct { char pad[0x18E]; s16 head; s32 count; char pad2[0x1E0-0x194]; u32 t[30]; char pad3[0x2D0-0x258]; f32 v[30]; } Hist_266e80;
 extern Hist_266e80 D_0013CA40;
 int pad_pressed_within(int mask, int n, int *out) {
-    int lim = D_0013CA40.count;
+    int lim = g_controller_state.count;
     int i;
     if (lim >= n)
         lim = n;
     for (i = 1; i < lim + 1; i++) {
-        int k = (D_0013CA40.head - i + 30) % 30;
-        if (D_0013CA40.t[k] & mask) {
+        int k = (g_controller_state.head - i + 30) % 30;
+        if (g_controller_state.t[k] & mask) {
             if (out)
                 *out = i - 1;
-            return D_0013CA40.t[k] & mask;
+            return g_controller_state.t[k] & mask;
         }
     }
     return 0;

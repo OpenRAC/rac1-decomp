@@ -160,7 +160,7 @@ void emit_render_batches_with_pair_offset(int arg) {
     int i;
     for (i = 0; i < 17; i++) {
         func_L08_00259040(D_L11_00217A30, D_L11_00215450[i], D_L11_00207BC0[i], D_L11_00217A18 + arg * 8);
-        func_L00_001FDE48(D_L11_00207BC0[i], D_L11_00215408[i], D_L11_002154E0[i], D_L11_00217A30, 1);
+        draw_env_overlay_mesh(D_L11_00207BC0[i], D_L11_00215408[i], D_L11_002154E0[i], D_L11_00217A30, 1);
     }
 }
 typedef struct { int a, b; } Pair8;
@@ -175,7 +175,7 @@ void emit_oil_tanker_render_batches_with_pair_offset(int a) {
     int i;
     for (i = 0; i < 9; i++) {
         func_L08_00259040(D_L11_00217A30, D_L11_00207B48[i], D_L11_002009E8[i], &D_L11_001626A8[a]);
-        func_L00_001FDE48(D_L11_002009E8[i], D_L11_00207B20[i], D_L11_00207B98[i], D_L11_00217A30, 1);
+        draw_env_overlay_mesh(D_L11_002009E8[i], D_L11_00207B20[i], D_L11_00207B98[i], D_L11_00217A30, 1);
     }
 }
 extern int func_00215570(void *arg0, int arg1);

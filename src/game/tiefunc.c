@@ -297,16 +297,16 @@ extern void func_00234E80(void);
 
 /* DmaTieTextures: the same splice for ties, largest size in D_00161074. */
 void DmaTieTextures(void) {
-    int *p = (int *)D_00161000;
+    int *p = (int *)g_render_packet_cursor;
     int size;
 
-    D_00161000 += 0x10;
+    g_render_packet_cursor += 0x10;
     ((int *)D_00161068)[0] = 0x20000000;
-    ((int *)D_00161068)[1] = D_00161000;
+    ((int *)D_00161068)[1] = g_render_packet_cursor;
     ((int *)D_00161068)[2] = 0;
     ((int *)D_00161068)[3] = 0;
     if (draw_config[6] != 0 && draw_config[5] != 0) {
-        size = BuildTieTextureDma(D_0015EF74);
+        size = BuildTieTextureDma(g_gs_texture_allocation_cursor);
         VU1_texFlush();
         if (size > 0x400000) {
             STUB_printf(D_001E8D80);
@@ -315,13 +315,13 @@ void DmaTieTextures(void) {
             D_00161074 = size;
         }
     }
-    ((int *)D_00161000)[0] = 0x20000000;
-    ((int *)D_00161000)[1] = D_00161068 + 0x10;
-    ((int *)D_00161000)[2] = 0;
-    ((int *)D_00161000)[3] = 0;
-    D_00161000 += 0x10;
+    ((int *)g_render_packet_cursor)[0] = 0x20000000;
+    ((int *)g_render_packet_cursor)[1] = D_00161068 + 0x10;
+    ((int *)g_render_packet_cursor)[2] = 0;
+    ((int *)g_render_packet_cursor)[3] = 0;
+    g_render_packet_cursor += 0x10;
     p[0] = 0x20000000;
-    p[1] = D_00161000;
+    p[1] = g_render_packet_cursor;
     p[2] = 0;
     p[3] = 0;
 }
@@ -382,12 +382,12 @@ extern void func_00236958(void); /* DmaTieTextures */
 /* DrawTies_1: DrawShrubs' shape, the packet pointer advanced through a
    local. */
 void DrawTies_1(void) {
-    int p = D_00161000;
+    int p = g_render_packet_cursor;
 
     D_00161068 = p;
-    D_0015EF74 = D_0015EF78;
+    g_gs_texture_allocation_cursor = g_gs_texture_allocation_start;
     p += 0x10;
-    D_00161000 = p;
+    g_render_packet_cursor = p;
     ProfileMarker_Begin(D_00161030, 1);
     if (D_0018A3C8 != 0) {
         func_00118D80(0);
@@ -396,7 +396,7 @@ void DrawTies_1(void) {
     }
     ProfileMarker_Begin(D_00161040, 5);
     DmaTieTextures();
-    FastMemCopy((void *)D_00161000, D_001DF3B0, 0x20);
+    FastMemCopy((void *)g_render_packet_cursor, D_001DF3B0, 0x20);
     ProfileMarker_End(D_00161040, 5);
 }
 
@@ -424,11 +424,11 @@ void DrawTies_2(void) {
         }
     }
     {
-        int p = D_00161000;
+        int p = g_render_packet_cursor;
         D_00161068 = p;
-        D_0015EF74 = D_0015EF78;
+        g_gs_texture_allocation_cursor = g_gs_texture_allocation_start;
         p += 0x10;
-        D_00161000 = p;
+        g_render_packet_cursor = p;
     }
     ProfileMarker_Begin(D_00161030, 1);
     {
@@ -458,11 +458,11 @@ void DrawTies_2(void) {
     }
     {
         DrawCfg_236CA8 *d = (DrawCfg_236CA8 *)draw_config;
-        int p = D_00161000;
+        int p = g_render_packet_cursor;
         D_00161068 = p;
-        D_0015EF74 = D_0015EF78;
+        g_gs_texture_allocation_cursor = g_gs_texture_allocation_start;
         p += 0x10;
-        D_00161000 = p;
+        g_render_packet_cursor = p;
         if (d->unk18 != 0) {
             func_00118D80(0);
             TieProc();
@@ -478,6 +478,6 @@ void DrawTies_2(void) {
             *(short *)(object_render_classes[i] + 0x24) &= ~8;
         }
     }
-    FastMemCopy((void *)D_00161000, D_001DF3B0, 0x20);
+    FastMemCopy((void *)g_render_packet_cursor, D_001DF3B0, 0x20);
     ProfileMarker_End(D_00161040, 5);
 }

@@ -361,11 +361,11 @@ void render_capture_scrolling_text(char *text, s32 start_x, s32 start_y, f32 sca
                     if (blink_next_glyph != 0) {
                         skip_draw = 0;
                         blink_next_glyph = 0;
-                        long_blink_period = func_001F98C0(0x1E);
-                        short_blink_period = func_001F98C0(0xA);
+                        long_blink_period = scale_game_frame_count(0x1E);
+                        short_blink_period = scale_game_frame_count(0xA);
                         blink_period = long_blink_period + short_blink_period;
-                        blink_remainder = D_0015F538 % blink_period;
-                        long_blink_period = func_001F98C0(0xA);
+                        blink_remainder = game_frame_counter % blink_period;
+                        long_blink_period = scale_game_frame_count(0xA);
                         if (blink_remainder < long_blink_period) {
                             skip_draw = 1;
                         }
@@ -919,13 +919,13 @@ void render_vendor_capture_pass_sequence(char *m) {
         FastVecSub(d1, &out[1], out);
         FastVecSub(d2, &out[2], out);
         len = FastVecLength(d1);
-        func_001F9DC0(tmp, d1, capture_bounds_adjustments[i][0]);
+        fast_vec_normalize(tmp, d1, capture_bounds_adjustments[i][0]);
         FastVecAdd(base, base, tmp);
-        func_001F9DC0(d1, d1, len - 2.0f * capture_bounds_adjustments[i][2]);
+        fast_vec_normalize(d1, d1, len - 2.0f * capture_bounds_adjustments[i][2]);
         len = FastVecLength(d2);
-        func_001F9DC0(tmp, d2, capture_bounds_adjustments[i][1]);
+        fast_vec_normalize(tmp, d2, capture_bounds_adjustments[i][1]);
         FastVecAdd(base, base, tmp);
-        func_001F9DC0(d2, d2, len - 2.0f * capture_bounds_adjustments[i][3]);
+        fast_vec_normalize(d2, d2, len - 2.0f * capture_bounds_adjustments[i][3]);
         FastVecAdd(tmp, base, d1);
         FastVecAdd(tmp, tmp, d2);
         project_graphics_bounds_float(base, tmp, &sx, &sy, &sw, &sh);
@@ -939,12 +939,12 @@ void render_vendor_capture_pass_sequence(char *m) {
             }
             len = FastVecLength(d1);
             g = 1.0f - f;
-            func_001F9DC0(tmp, d1, len * g * 0.5f);
-            func_001F9DC0(d1, d1, len * f);
+            fast_vec_normalize(tmp, d1, len * g * 0.5f);
+            fast_vec_normalize(d1, d1, len * f);
             FastVecAdd(base, base, tmp);
             len = FastVecLength(d2);
-            func_001F9DC0(tmp, d2, len * g * 0.5f);
-            func_001F9DC0(d2, d2, len * f);
+            fast_vec_normalize(tmp, d2, len * g * 0.5f);
+            fast_vec_normalize(d2, d2, len * f);
             FastVecAdd(base, base, tmp);
         }
         qcopy(&c[0], base);
@@ -984,7 +984,7 @@ void render_vendor_capture_pass_sequence(char *m) {
         func_00234C98_l(8, 5);
         VU1_texFlush();
         tex = D_0015EFD0;
-        if (D_0015EE80 != 0) {
+        if (pal_mode != 0) {
             append_subpixel_textured_screen_quad(w, h, x, y, 0, 0, (int)(sx - 1.0f),
                           func_001FA898_3AA38(sy * 0.92857146f - 1.0f),
                           0x80808080, tex);

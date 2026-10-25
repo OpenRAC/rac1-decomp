@@ -187,7 +187,7 @@ void draw_level_selection_map(s32 left, s32 right, s32 top, s32 bottom) {
                        0x80);
     VU1_addGSregister(8, 0);
     draw_hud_sprite_uv(GetIconFrame(0xE99A, 0xF), 0, 0, screen_width_subpixels,
-                       screen_height_subpixels, D_0015F538 & 0xFFF, 0, 0x80);
+                       screen_height_subpixels, game_frame_counter & 0xFFF, 0, 0x80);
     VU1_addGSregister(8, 5);
     for (level_index = 1; level_index < 20; level_index++) {
         if (level_map_markers[level_index].x == 0) {
@@ -199,13 +199,13 @@ void draw_level_selection_map(s32 left, s32 right, s32 top, s32 bottom) {
         }
         marker_x = level_map_markers[level_index].x;
         marker_y = level_map_markers[level_index].y;
-        if (D_0015EE80 != 0) {
+        if (pal_mode != 0) {
             marker_y = marker_y * 0x1C0 / 0x1A0;
         }
         if (availability == 3 ||
             (availability == 2 &&
-             D_0015F538 % (func_001F98C0(0x16) + func_001F98C0(8)) <
-                 func_001F98C0(0x16))) {
+             game_frame_counter % (scale_game_frame_count(0x16) + scale_game_frame_count(8)) <
+                 scale_game_frame_count(0x16))) {
             HudSprite(GetIconFrame(0xE99A, 0xC), marker_x - 5,
                             marker_y - 5, 10, 10, 0x80);
         }
@@ -214,7 +214,7 @@ void draw_level_selection_map(s32 left, s32 right, s32 top, s32 bottom) {
             label_y = marker_y + level_map_markers[level_index].label_offset_y;
             label_direction[1] = level_map_markers[level_index].label_offset_y;
             label_direction[0] = level_map_markers[level_index].label_offset_x;
-            direction_length = func_001F9CE8(label_direction) * 1000.0f;
+            direction_length = vec_length_xy(label_direction) * 1000.0f;
             line_fraction = direction_length - 8000;
             line_start_x = label_x + (marker_x - label_x) * line_fraction / direction_length;
             line_start_y = label_y + (marker_y - label_y) * line_fraction / direction_length;
@@ -429,12 +429,12 @@ extern PlayerHud D_001517D0;
 
 #define RECORD_COUNT()                                   \
     if (D_00141A68[HS.entry].count < 0xFFFF) {           \
-        D_00141A68[HS.entry].count++;                    \
+        help_records[HS.entry].count++;                    \
     }
 
 #define RECORD_BEST()                                    \
     if (PLAY_TIME > D_00141A68[HS.entry].best) {         \
-        D_00141A68[HS.entry].best = PLAY_TIME;           \
+        help_records[HS.entry].best = PLAY_TIME;           \
     }
 
 #define RECORD_FLAGS() \
@@ -447,13 +447,13 @@ void Help_Update(void) {
             HS.delay = 1;
         }
         if (HS.delay != 0) {
-            if (++HS.delay >= func_001F98C0(0x78)) {
+            if (++HS.delay >= scale_game_frame_count(0x78)) {
                 HS.started = 1;
             }
         }
     }
 
-    if (D_0015F6E8 != 0 || HS.started == 0) {
+    if (g_game_mode != 0 || HS.started == 0) {
         HS.pending = -1;
         HS.state = 0;
         HS.timer = 0;
@@ -498,8 +498,8 @@ void Help_Update(void) {
 
         force_help_message(5, 0);
         id = help_msgs[HS.msg].unk_08;
-        if (id >= 0 && D_001517D0.unk50 == 0 && D_001517D0.unk1C == -1) {
-            D_001517D0.unk1C = id + 0x7530;
+        if (id >= 0 && cd_read_state.unk50 == 0 && cd_read_state.unk1C == -1) {
+            cd_read_state.unk1C = id + 0x7530;
         }
         if (D_0013CBE4 & 0x10) {
             RECORD_COUNT();
@@ -524,10 +524,10 @@ void Help_Update(void) {
             HS.state = 7;
             HS.timer = 0;
             RECORD_FLAGS();
-        } else if (HS.timer >= func_001F98C0(0x18)) {
-            if (D_001517D0.unk5A == 3
+        } else if (HS.timer >= scale_game_frame_count(0x18)) {
+            if (cd_read_state.unk5A == 3
                 || (id = help_msgs[HS.msg].unk_08) == -1
-                || id != D_001517D0.unk54 - 0x7530) {
+                || id != cd_read_state.unk54 - 0x7530) {
                 HS.state = 3;
                 HS.timer = 0;
             }
@@ -561,7 +561,7 @@ void Help_Update(void) {
             HS.timer = 4 - HS.timer;
         } else if (HS.timer >= 4) {
             id = help_msgs[HS.msg].unk_08;
-            if (id != -1 && id == D_001517D0.unk54 - 0x7530 && D_001517D0.unk5A == 3) {
+            if (id != -1 && id == cd_read_state.unk54 - 0x7530 && cd_read_state.unk5A == 3) {
                 Music_ContinueStreamIfReady();
             }
             HS.state = 5;
@@ -574,10 +574,10 @@ void Help_Update(void) {
         int id;
 
         force_help_message(5, 0);
-        if ((HS.timer >= func_001F98C0(0x1A4)
+        if ((HS.timer >= scale_game_frame_count(0x1A4)
              && ((id = help_msgs[HS.msg].unk_08) == -1
-                 || id != D_001517D0.unk54 - 0x7530
-                 || (D_001517D0.unk50 == 0 && D_001517D0.unk1C == -1)))
+                 || id != cd_read_state.unk54 - 0x7530
+                 || (cd_read_state.unk50 == 0 && cd_read_state.unk1C == -1)))
             || (D_0013CBE4 & 0x10)) {
             RECORD_COUNT();
             RECORD_BEST();
@@ -600,9 +600,9 @@ void Help_Update(void) {
 
         force_help_message(5, 0);
         id = help_msgs[HS.msg].unk_08;
-        if (id != -1 && id == D_001517D0.unk54 - 0x7530
-            && (unsigned short)D_001517D0.unk5A - 6U >= 2) {
-            D_001517D0.unk5A = 5;
+        if (id != -1 && id == cd_read_state.unk54 - 0x7530
+            && (unsigned short)cd_read_state.unk5A - 6U >= 2) {
+            cd_read_state.unk5A = 5;
         }
         if (HS.timer >= 8) {
             if (HS.queued != 0) {

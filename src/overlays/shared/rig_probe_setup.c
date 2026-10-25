@@ -33,12 +33,12 @@ int rig_probe_setup(char *moby, int index, unsigned int *type, float *result,
     entry += index * 0x20 + 0x10;
     *type = *(unsigned char *)entry;
     scale = *(float *)(moby + 0x2c) * 0.0009765625f;
-    func_001FA218(matrix, moby + 0x40);
+    euler_to_matrix(matrix, moby + 0x40);
 
     if (*type < 2 || *type == 3) {
         qcopy(result, entry + 0x10);
         FastVecScale(result, result, scale);
-        func_001F9EE8(result, result, matrix);
+        transform_vector(result, result, matrix);
         FastVecAdd(result, result, moby + 0x10);
         *radius = result[3] * scale;
         if (*type < 2) {
@@ -54,7 +54,7 @@ int rig_probe_setup(char *moby, int index, unsigned int *type, float *result,
         }
         qcopy(result, (void *)(0x70000000 + *(int *)(entry + 4) * 0x10));
         FastVecScale(result, result, scale);
-        func_001F9EE8(result, result, matrix);
+        transform_vector(result, result, matrix);
         FastVecAdd(result, result, moby + 0x10);
         *radius = *(float *)(entry + 0xc) * scale;
         *distance = 0.0f;
@@ -72,7 +72,7 @@ int rig_probe_setup(char *moby, int index, unsigned int *type, float *result,
         } else {
             qcopy(result, second);
         }
-        func_001F9EE8(result, result, matrix);
+        transform_vector(result, result, matrix);
         FastVecAdd(result, result, moby + 0x10);
         *radius = *(float *)(entry + 0xc) * scale;
         FastVecSub(second, second, first);

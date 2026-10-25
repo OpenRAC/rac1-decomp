@@ -624,7 +624,7 @@ void initialize_render_archive_transfer(void) {
             state->loaded = 1;
             state->transfer_bytes = bytes;
             send_dma_to_stash_slot(state->buffer, state->file_handle, 0, bytes);
-            state->level_slot = D_0015EE84 + 0x100;
+            state->level_slot = g_current_level_index + 0x100;
             state->last_transfer_bytes = bytes;
             state->active = 1;
             state->load_state = -2;
@@ -633,7 +633,7 @@ void initialize_render_archive_transfer(void) {
         if (D_L00_001842F0.file_handle != -1) {
             D_L00_001842F0.last_transfer_bytes = D_L00_001842F0.transfer_bytes;
             stash_receive_data(D_L00_001842F0.buffer, D_L00_001842F0.file_handle, 0, D_L00_001842F0.transfer_bytes, 0);
-            D_L00_001842F0.level_slot = gHaveMapOMatic != 0 ? D_0015EE84 + 0x100 : D_0015EE84;
+            D_L00_001842F0.level_slot = gHaveMapOMatic != 0 ? g_current_level_index + 0x100 : g_current_level_index;
             D_L00_001842F0.active = 1;
             D_L00_001842F0.load_state = -2;
             return;

@@ -366,14 +366,14 @@ void update_resident_dialogue_animation_state(Moby *m) {
     }
     switch (m->state) {
     case 0:
-        if (D_001E66C0_391E8.timer > func_001F98C0(600)) {
+        if (D_001E66C0_391E8.timer > scale_game_frame_count(600)) {
             r = random_integer_below(2);
             D_001E66C0_391E8.pick = r;
             queued_dialogue_id = (r * 3 + 1) * 6 + D_001E66C0_391E8.base + 10000;
             D_001611B0 = 1;
             D_001611B4 = 0;
             if (m->prev_seq != 2) {
-                MobyBlendAnimation(m, 2, 0, func_001F98C0(0x12));
+                MobyBlendAnimation(m, 2, 0, scale_game_frame_count(0x12));
             }
             m->state = 12;
             D_001E66C0_391E8.timer = 0;
@@ -381,9 +381,9 @@ void update_resident_dialogue_animation_state(Moby *m) {
         D_001E66C0_391E8.timer++;
         break;
     case 2:
-        if (D_001E66C0_391E8.timer > func_001F98C0(600)) {
+        if (D_001E66C0_391E8.timer > scale_game_frame_count(600)) {
             if (m->prev_seq != 3) {
-                MobyBlendAnimation(m, 3, 0, func_001F98C0(0x12));
+                MobyBlendAnimation(m, 3, 0, scale_game_frame_count(0x12));
             }
             m->state = 3;
             D_001E66C0_391E8.timer = 0;
@@ -393,7 +393,7 @@ void update_resident_dialogue_animation_state(Moby *m) {
     case 3:
         if (m->anim_flags & 2) {
             if (m->prev_seq != 0) {
-                MobyBlendAnimation(m, 0, 0, func_001F98C0(0x12));
+                MobyBlendAnimation(m, 0, 0, scale_game_frame_count(0x12));
             }
             m->state = 0;
         }
@@ -406,7 +406,7 @@ void update_resident_dialogue_animation_state(Moby *m) {
         }
         if (m->anim_flags & 2) {
             if (m->prev_seq != 2) {
-                MobyBlendAnimation(m, 2, 0, func_001F98C0(0x12));
+                MobyBlendAnimation(m, 2, 0, scale_game_frame_count(0x12));
             }
             m->state = 2;
             D_001E66C0_391E8.timer = 0;
@@ -420,7 +420,7 @@ void update_resident_dialogue_animation_state(Moby *m) {
         }
         if (m->anim_flags & 2) {
             if (m->prev_seq != 2) {
-                MobyBlendAnimation(m, 2, 0, func_001F98C0(0x12));
+                MobyBlendAnimation(m, 2, 0, scale_game_frame_count(0x12));
             }
             m->state = 2;
             D_001E66C0_391E8.timer = 0;
@@ -434,7 +434,7 @@ void update_resident_dialogue_animation_state(Moby *m) {
         }
         if (m->anim_flags & 2) {
             if (m->prev_seq != 2) {
-                MobyBlendAnimation(m, 2, 0, func_001F98C0(0x12));
+                MobyBlendAnimation(m, 2, 0, scale_game_frame_count(0x12));
             }
             m->state = 2;
             D_001E66C0_391E8.timer = 0;
@@ -448,7 +448,7 @@ void update_resident_dialogue_animation_state(Moby *m) {
         if (m->anim_flags & 2) {
             a = D_001E66FC * 3 + 4;
             if (m->prev_seq != a) {
-                MobyBlendAnimation(m, a, 0, func_001F98C0(0xC));
+                MobyBlendAnimation(m, a, 0, scale_game_frame_count(0xC));
             }
             m->state = 4;
         }
@@ -459,7 +459,7 @@ void update_resident_dialogue_animation_state(Moby *m) {
             D_001611B0 = 0;
             a = D_001E66FC * 3 + 5;
             if (m->prev_seq != a) {
-                MobyBlendAnimation(m, a, 0, func_001F98C0(0x12));
+                MobyBlendAnimation(m, a, 0, scale_game_frame_count(0x12));
             }
             m->state = 5;
         }
@@ -470,7 +470,7 @@ void update_resident_dialogue_animation_state(Moby *m) {
             D_001611B0 = 0;
             a = D_001E66FC * 3 + 6;
             if (m->prev_seq != a) {
-                MobyBlendAnimation(m, a, 0, func_001F98C0(0x12));
+                MobyBlendAnimation(m, a, 0, scale_game_frame_count(0x12));
             }
             m->state = 6;
         }

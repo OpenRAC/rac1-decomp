@@ -40,7 +40,7 @@ LINKER_REMNANT("asm/overlays", func_L03_0024FA90);
 
 void trooper_set_knockback(float *p, float a, float b)
 {
-    float root = func_001F9B50((b + b) * p[4]);
+    float root = vec_length((b + b) * p[4]);
     float x = (root + root) / p[4];
     p[7] = root;
     p[6] = (a + a) / x;
@@ -105,7 +105,7 @@ void emit_radial_particle_burst(char *moby, float *position, void *extra)
             sign = -sign;
         life = rand_ticks(30, 90);
         if (extra)
-            func_L00_001FF240(tmp, vec, extra);
+            add_vectors(tmp, vec, extra);
         PartType44Spawn(p, vec, life, 30, 0xFFFFFF, sign, 60000.0f, 3000.0f, 0.85f, -0.001f, 0.85f);
     }
     for (j = 0; j < truncate_float_to_s32(6.0f); j++) {
@@ -115,7 +115,7 @@ void emit_radial_particle_burst(char *moby, float *position, void *extra)
         func_L00_001FF4B0(vec, vec, rand_speed());
         n = rand_ticks(20, 60);
         if (extra)
-            func_L00_001FF240(tmp, vec, extra);
+            add_vectors(tmp, vec, extra);
         PartType21Spawn(p, vec, 0x4F007FFF, 0x1FFFFFFF, n, 1, 10000.0f);
     }
 }

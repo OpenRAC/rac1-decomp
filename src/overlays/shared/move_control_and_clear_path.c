@@ -284,7 +284,7 @@ extern char D_0013E633[];
 void spawn_proximity_gated_bolts(char *moby)
 {
     int r = 0;
-    if (func_001F9D48(moby + 0x10, D_0013E633 + 0xE9D) < 7.0f) {
+    if (vec_distance_xy(moby + 0x10, D_0013E633 + 0xE9D) < 7.0f) {
         r = 2;
     }
     spawn_moby_bolt_drop(moby, 4, 7, r, -1);
@@ -305,6 +305,6 @@ void spawn_moby_from_placement(char *src, int oClass) {
         *(long *)(m + 0x38) = *(long *)(src + 0x38);
         m[0x30] = 0;
         *(short *)(m + 0x34) = 0;
-        func_L00_00251E30(m);
+        moby_build_matrix(m);
     }
 }

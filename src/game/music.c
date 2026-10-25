@@ -180,7 +180,7 @@ extern void func_00216270(void);
    shares one register between the word and the byte store, and leaves
    the other stores in source order, as retail has them. */
 void reset_music(void) {
-    char *s = (char *)D_001517D0;
+    char *s = (char *)cd_read_state;
 
     *(char *)(s + 0x30) = 0x20;
     *(int *)(s + 0x00) = 0;
@@ -279,7 +279,7 @@ void music_start_track_60000(int arg0, int arg1, int arg2) {
     if (h == 0) {
         return;
     }
-    s = (SndStreamBlock *)D_001517D0;
+    s = (SndStreamBlock *)cd_read_state;
     if (s->secondary.handle != 0) {
         return;
     }
@@ -311,11 +311,11 @@ void music_start_track_50000(int track, int flags, int volume) {
     int handle;
     TrackStreamState *music_stream_state;
 
-    handle = disc_table->music_50000[i][D_0015EE88];
+    handle = disc_table->music_50000[i][g_game_language];
     if (handle == 0) {
         return;
     }
-    music_stream_state = (TrackStreamState *)D_001517D0;
+    music_stream_state = (TrackStreamState *)cd_read_state;
     if (music_stream_state->secondary.handle != 0) {
         return;
     }
@@ -347,7 +347,7 @@ void music_start_track_40000(int track, int track_flags, int volume) {
     if (location == 0) {
         return;
     }
-    s = (MusicStreamTail *)D_001517D0;
+    s = (MusicStreamTail *)cd_read_state;
     if (s->secondary.handle != 0) {
         return;
     }
@@ -371,13 +371,13 @@ extern char D_00151820[];
 /* The same through a per-language table at D_0011C278; volume only
    when the D_0015EF1C flag is set. */
 void music_start_track_30000(int arg0, int arg1, int arg2) {
-    int *p = (int *)(D_0011C278 + (arg0 * 4 + D_0015EE88 * 0x258));
+    int *p = (int *)(D_0011C278 + (arg0 * 4 + g_game_language * 0x258));
     char *s;
 
     if (*p == 0) {
         return;
     }
-    s = (char *)D_001517D0;
+    s = (char *)cd_read_state;
     if (*(int *)(s + 0x50) != 0) {
         return;
     }
@@ -422,7 +422,7 @@ void music_start_track_20000(int track, int track_flags, int volume) {
     if (handle == 0) {
         return;
     }
-    state = (MusicStreamLayout *)D_001517D0;
+    state = (MusicStreamLayout *)cd_read_state;
     if (state->secondary.handle != 0) {
         return;
     }
@@ -469,7 +469,7 @@ void music_start_track_10000(int track, int flags, int volume) {
     if (stream == 0) {
         return;
     }
-    rec = (PalStreamState *)D_001517D0;
+    rec = (PalStreamState *)cd_read_state;
     if (rec->secondary.handle != 0) {
         return;
     }
@@ -525,11 +525,11 @@ void music_start_track_by_id(int track, int track_flags, int volume) {
         music_start_track_10000(track, track_flags, volume);
         return;
     }
-    handle = *(int *)((char *)scene_sounds + track * 0x250 + D_0015EE88 * 4);
+    handle = *(int *)((char *)scene_sounds + track * 0x250 + g_game_language * 4);
     if (handle == 0) {
         return;
     }
-    s = (MusicStateSecondaryView *)D_001517D0;
+    s = (MusicStateSecondaryView *)cd_read_state;
     if (s->secondary.handle != 0) {
         return;
     }
@@ -549,7 +549,7 @@ extern short D_001517D0[];
 extern void func_0012EDE0(void *);
 
 int Music_ContinueStreamIfReady(void) {
-    char *d = (char *)D_001517D0;
+    char *d = (char *)cd_read_state;
     void *p = *(void **)(d + 0x50);
     if (p != 0) {
         if (*(short *)(d + 0x5A) == 3) {
@@ -584,7 +584,7 @@ typedef struct {
 } PreseekStreamState;
 
 void music_PreseekTrack(int arg0, int arg1, int arg2) {
-    PreseekStreamState *music_stream_state = (PreseekStreamState *)D_001517D0;
+    PreseekStreamState *music_stream_state = (PreseekStreamState *)cd_read_state;
     u8 *disc_table_base;
     s32 track_location_table_byte_offset;
     s32 *entry;
@@ -629,7 +629,7 @@ typedef struct {
 } MusicPrimaryStream;
 
 void music_StartTrack(int arg0, int arg1, int arg2) {
-    MusicPrimaryStream *s = (MusicPrimaryStream *)D_001517D0;
+    MusicPrimaryStream *s = (MusicPrimaryStream *)cd_read_state;
     char *base;
     int *tbl;
     long h;
@@ -667,7 +667,7 @@ extern void func_00217970(int, long);
    register as in retail), and the 0x24/0x20 choice comes before the
    stores, which keeps arg1 in $a1. */
 void music_StartTrackBody(int arg0, int arg1, int arg2) {
-    char *s = (char *)D_001517D0;
+    char *s = (char *)cd_read_state;
     char *base;
     int *tbl;
     unsigned int cur;
@@ -735,7 +735,7 @@ typedef struct {
 } MusicTransitionBlock;
 
 int music_Transition(int arg0, int arg1, int arg2, int arg3) {
-    MusicTransitionBlock *s = (MusicTransitionBlock *)D_001517D0;
+    MusicTransitionBlock *s = (MusicTransitionBlock *)cd_read_state;
     MusicTrackTable *base;
     s32 *tbl;
     long h;
@@ -767,7 +767,7 @@ int music_Transition(int arg0, int arg1, int arg2, int arg3) {
 /* A block-local `char *e` for the final stores (%hi kept, %lo rebuilt),
    written in the order the rotation rule gives. */
 void Music_QueueTrack(int arg0, int arg1) {
-    char *d = (char *)D_001517D0;
+    char *d = (char *)cd_read_state;
 
     if (*(short *)(d + 0x38) == arg0) {
         if (*(signed char *)(d + 0x22) == -1) {
@@ -781,7 +781,7 @@ void Music_QueueTrack(int arg0, int arg1) {
         }
     }
     {
-        char *e = (char *)D_001517D0;
+        char *e = (char *)cd_read_state;
         e[0x22] = arg0;
         e[0x23] = arg1;
     }
@@ -815,19 +815,19 @@ typedef struct {
 void music_Stop(void) {
     {
         MusicStreamBlock *d;
-        while (d = (MusicStreamBlock *)D_001517D0, d->primary.handle == 0xFFFFFFFF) {
+        while (d = (MusicStreamBlock *)cd_read_state, d->primary.handle == 0xFFFFFFFF) {
             func_0012DDC0();
         }
     }
     {
         MusicStreamBlock *d;
-        while (d = (MusicStreamBlock *)D_001517D0, d->transition.handle == 0xFFFFFFFF) {
+        while (d = (MusicStreamBlock *)cd_read_state, d->transition.handle == 0xFFFFFFFF) {
             func_0012DDC0();
         }
     }
     {
         MusicStreamBlock *d;
-        while (d = (MusicStreamBlock *)D_001517D0, d->secondary.handle == 0xFFFFFFFF) {
+        while (d = (MusicStreamBlock *)cd_read_state, d->secondary.handle == 0xFFFFFFFF) {
             func_0012DDC0();
         }
     }
@@ -836,7 +836,7 @@ void music_Stop(void) {
     }
     func_0012EE70(1);
     {
-        MusicStreamBlock *s = (MusicStreamBlock *)D_001517D0;
+        MusicStreamBlock *s = (MusicStreamBlock *)cd_read_state;
         s->primary.state = 0;
         s->primary.flags = 0;
         s->primary.handle = 0;
@@ -860,18 +860,18 @@ extern short D_001517D0[];
 /* music_Pause(int) */
 void music_Pause(int arg0) {
     if (arg0 != 0) {
-        D_001517D0[0x2F] = 0;
-        D_001517D0[0x2E] = -0x8000;
+        cd_read_state[0x2F] = 0;
+        cd_read_state[0x2E] = -0x8000;
     }
-    D_001517D0[0x3D] = 0;
-    D_001517D0[0x20] = -0x8000;
-    D_001517D0[0x21] = 0;
-    D_001517D0[0x3C] = -0x8000;
+    cd_read_state[0x3D] = 0;
+    cd_read_state[0x20] = -0x8000;
+    cd_read_state[0x21] = 0;
+    cd_read_state[0x3C] = -0x8000;
 }
 
 /* music_Unpause(void) */
 void music_Unpause(void) {
-    short *p = D_001517D0;
+    short *p = cd_read_state;
     p[0x20] = 4;
     p[0x3C] = 4;
     p[0x2E] = 4;
@@ -1026,14 +1026,14 @@ void music_Update(void) {
             }
         }
     }
-    if (func_001F9908(&D_001517D0_17130.retry_timer) != 0) {
+    if (fast_dec_timer(&D_001517D0_17130.retry_timer) != 0) {
         requested_track = D_001517D0_17130.requested_track;
         if (requested_track != -1 && D_001517D0_17130.crossfade_state == 0) {
             if (D_001517D0_17130.primary.track != requested_track) {
                 if (D_001517D0_17130.requested_transition_track == -1 ||
                     music_Transition(requested_track, D_001517D0_17130.requested_transition_track,
                                      D_001517D0_17130.primary.flags, D_001517D0_17130.primary.volume) != 0) {
-                    D_001517D0_17130.retry_timer = func_001F98C0(7) * 60.0f;
+                    D_001517D0_17130.retry_timer = scale_game_frame_count(7) * 60.0f;
                 }
             } else {
                 D_001517D0_17130.requested_track = -1;

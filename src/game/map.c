@@ -111,11 +111,11 @@ long load_texture_file(char *p) {
     t.tw = log2dim(*(int *)(p + 8));
     t.th = log2dim(*(int *)(p + 0xC));
     t.pix = p + 0x20 + t.clutSize;
-    addr = D_0015EF74;
+    addr = g_gs_texture_allocation_cursor;
     cbp = addr >> 8;
     addr += 0x400;
     tbp = addr >> 8;
-    D_0015EF74 = addr + (1 << (t.tw + t.th));
+    g_gs_texture_allocation_cursor = addr + (1 << (t.tw + t.th));
     w = t.tw - 6;
     if (w < 0) {
         w = 0;
@@ -463,7 +463,7 @@ int update_map_zoom_and_pan(void) {
     int *ys;
 
     DebugEnter_Nop();
-    pad = D_0013CA40;
+    pad = g_controller_state;
     if (*(int *)(pad + 0x1A4) & 0x500) {
         return 1;
     }

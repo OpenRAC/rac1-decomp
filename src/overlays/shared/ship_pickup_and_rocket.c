@@ -51,19 +51,19 @@ void emit_transformed_2d_vertex_packet(short *pts, int n, float x0, float y0, un
     rot[2] = ang;
     D_L13_00161240 += 0x10;
     o = (unsigned long *)D_L13_00161240;
-    func_001FA218(mat, rot);
+    euler_to_matrix(mat, rot);
     for (i = 0; i < n; i++) {
         *(u128_7d50 *)v = 0;
         v[0] = IntToFloat(pts[i * 2]);
         v[1] = IntToFloat(pts[i * 2 + 1]);
         *(u128_7d50 *)w = *(u128_7d50 *)v;
-        func_001F9EE8(w, w, mat);
+        transform_vector(w, w, mat);
         FastVecScale(w, w, scale);
         w[0] += x0;
         w[1] += y0;
         x = truncate_float_to_s32(w[0] * 16.0f);
         y = truncate_float_to_s32(w[1] * 16.0f);
-        o[i] = (unsigned long)(x + D_0013E600[4] - 8) | ((unsigned long)(y + D_0013E600[5] - 8) << 16) | ((unsigned long)col << 32);
+        o[i] = (unsigned long)(x + g_screen_extent[4] - 8) | ((unsigned long)(y + g_screen_extent[5] - 8) << 16) | ((unsigned long)col << 32);
     }
     D_L13_00161240 += ((n + 1) / 2) * 16;
 }
@@ -113,7 +113,7 @@ unsigned char *spawn_ship_pickup(char *position, int moby_class)
         moby[0x20] = 0;
         moby[0xBC] = 0;
         qcopy(moby + 0x10, position);
-        func_L00_00251E30(moby);
+        moby_build_matrix(moby);
         copy_hero_spawn_frame(moby);
     }
     return moby;
@@ -136,7 +136,7 @@ extern void func_0020D678(void *);
 extern void func_L00_00263B78(float, float, void *, void *, void *);
 void ShipPickupUpdate(char *moby) {
     int *vars = *(int **)(moby + 0x78);
-    int hero_moby = ((char *)D_0013F450.ship_moby);
+    int hero_moby = ((char *)g_hero.ship_moby);
     int hit = 0;
     float distance = 100000.0f;
     float position[4];
@@ -177,7 +177,7 @@ void ShipPickupUpdate(char *moby) {
         break;
     }
     case 3:
-        if (vars[2] == -1 || func_001F9908(vars + 4)) {
+        if (vars[2] == -1 || fast_dec_timer(vars + 4)) {
             moby[0x20] = 4;
         }
         if ((unsigned char)moby[0x20] != 4) goto frame_tail;
@@ -188,7 +188,7 @@ void ShipPickupUpdate(char *moby) {
         *(float *)(moby + 0x2c) = activated_size * 0.1f;
         break;
     case 4:
-        *(float *)(moby + 0x48) = FastAddRots(*(float *)(moby + 0x48), D_0015EE6C * 0.7853982f);
+        *(float *)(moby + 0x48) = FastAddRots(*(float *)(moby + 0x48), g_frame_time * 0.7853982f);
         if (*(float *)(moby + 0x10) < 20.0f) *(float *)(moby + 0x10) = 20.0f;
         if (1003.0f < *(float *)(moby + 0x10)) *(float *)(moby + 0x10) = 1003.0f;
         if (*(float *)(moby + 0x14) < 20.0f) *(float *)(moby + 0x14) = 20.0f;
@@ -201,7 +201,7 @@ void ShipPickupUpdate(char *moby) {
             short cls = *(short *)(D_L13_001741D8 + 0xa6);
             if (cls == 0x4da || cls == 0x45 || cls == 0x563) hit = 1;
         }
-        if (D_0013F450.state.current == 0x32 && hero_moby != 0 &&
+        if (g_hero.state.current == 0x32 && hero_moby != 0 &&
             *(unsigned char *)(hero_moby + 0x20) != 0xfe && *(unsigned char *)(hero_moby + 0x20) != 0xfd) {
             short cls = *(short *)(hero_moby + 0xa6);
             if (cls == 0x4da || cls == 0x45 || cls == 0x563)
@@ -214,21 +214,21 @@ void ShipPickupUpdate(char *moby) {
             if (cls == 0xe4) goto collect_health;
             goto collected;
 collect_ammo:
-            D_0013F450.ship_ammo += 5;
-            if (((char *)D_0013F450.ship_moby) != 0 && *(unsigned char *)(((char *)D_0013F450.ship_moby) + 0x20) != 0xfe &&
-                *(unsigned char *)(((char *)D_0013F450.ship_moby) + 0x20) != 0xfd) Moby_PlaySound(4, 0, D_0013F450.ship_moby);
-            if (D_0013F450.ship_ammo_max < D_0013F450.ship_ammo) D_0013F450.ship_ammo = D_0013F450.ship_ammo_max;
+            g_hero.ship_ammo += 5;
+            if (((char *)g_hero.ship_moby) != 0 && *(unsigned char *)(((char *)g_hero.ship_moby) + 0x20) != 0xfe &&
+                *(unsigned char *)(((char *)g_hero.ship_moby) + 0x20) != 0xfd) Moby_PlaySound(4, 0, g_hero.ship_moby);
+            if (g_hero.ship_ammo_max < g_hero.ship_ammo) g_hero.ship_ammo = g_hero.ship_ammo_max;
             goto collected;
 collect_health:
-            D_0013F450.ship_hp += 10.0f;
-            if (((char *)D_0013F450.ship_moby) != 0 && *(unsigned char *)(((char *)D_0013F450.ship_moby) + 0x20) != 0xfe &&
-                *(unsigned char *)(((char *)D_0013F450.ship_moby) + 0x20) != 0xfd) Moby_PlaySound(5, 0, D_0013F450.ship_moby);
-            if (D_0013F450.ship_hp_max < D_0013F450.ship_hp) D_0013F450.ship_hp = D_0013F450.ship_hp_max;
+            g_hero.ship_hp += 10.0f;
+            if (((char *)g_hero.ship_moby) != 0 && *(unsigned char *)(((char *)g_hero.ship_moby) + 0x20) != 0xfe &&
+                *(unsigned char *)(((char *)g_hero.ship_moby) + 0x20) != 0xfd) Moby_PlaySound(5, 0, g_hero.ship_moby);
+            if (g_hero.ship_hp_max < g_hero.ship_hp) g_hero.ship_hp = g_hero.ship_hp_max;
 collected:
             moby[0x20] = 5;
             break;
         } else if (distance < 40.0f && (*(unsigned char *)(moby + 0x31)) != 0) {
-            float step = 0.8f / func_001F9B50(distance);
+            float step = 0.8f / vec_length(distance);
             FastVecSub(direction, (void *)(hero_moby + 0x10), moby + 0x10);
             func_L00_001FF4B0(direction, direction, step);
             FastVecAdd(moby + 0x10, moby + 0x10, direction);
@@ -256,7 +256,7 @@ collected:
         break;
     }
 frame_tail:
-    speed = D_0015EE6C;
+    speed = g_frame_time;
     update_moby_vertical_oscillation(0.7f, speed * 1.2217305f, moby, vars + 6, vars + 5);
     if (*(float *)(moby + 0x10) < 20.0f) *(float *)(moby + 0x10) = 20.0f;
     if (1003.0f < *(float *)(moby + 0x10)) *(float *)(moby + 0x10) = 1003.0f;
@@ -306,7 +306,7 @@ unsigned char *spawn_ship_rocket(char *src, char *pos, char *target, char *vec, 
         }
         *(float *)(moby + 0x2C) = *(float *)(*(char **)(moby + 0x24) + 0x24) *
                                   (*(float *)(src + 0x2C) / *(float *)(*(char **)(src + 0x24) + 0x24));
-        func_L00_00251E30(moby);
+        moby_build_matrix(moby);
         spawn_source_attached_fading_effect_particle((char *)moby, 0x60808080, arg, 0, 500000.0f);
     }
     return moby;

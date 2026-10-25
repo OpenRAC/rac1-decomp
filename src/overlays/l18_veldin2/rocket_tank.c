@@ -164,7 +164,7 @@ void rocket_tank_update(M1454 *m) {
                 *(int *)(t + 0x94) = 0;
             }
             MobyBlendAnimation(d->c138, 0, 0, 0);
-            func_L00_00251E30(d->c138);
+            moby_build_matrix(d->c138);
         }
         if (d->c13c == 0) {
             char *c = func_0020D348_m(0x14B);
@@ -184,7 +184,7 @@ void rocket_tank_update(M1454 *m) {
                 *(int *)(t + 0x94) = 0;
             }
             MobyBlendAnimation(d->c13c, 0, 0, 0);
-            func_L00_00251E30(d->c13c);
+            moby_build_matrix(d->c13c);
         }
         if (m->b53 != 1) {
             MobyBlendAnimation(m, 1, 0, scale_ticks(10));
@@ -204,8 +204,8 @@ void rocket_tank_update(M1454 *m) {
         break;
     case 2:
         func_L18_002F9AB8_v(m);
-        ApproachValue(&d->f130, 30.0f, D_0015EE6C * 6.0f);
-        d->f134 = FastAddRots(d->f134, D_0015EE6C * 6.2831855f);
+        ApproachValue(&d->f130, 30.0f, g_frame_time * 6.0f);
+        d->f134 = FastAddRots(d->f134, g_frame_time * 6.2831855f);
         if (IsFrameWithinWindow((char *)m, 4.0f) || IsFrameWithinWindow((char *)m, 10.0f)) {
             float v[4];
             float w[4];
@@ -217,14 +217,14 @@ void rocket_tank_update(M1454 *m) {
                 Moby_GetJointWorldPos(m, 2, w);
                 s = *(float *)&D_L18_0016250C_b;
             }
-            s *= D_0015EE6C;
+            s *= g_frame_time;
             v[0] = FastCos(d->f110) * (FastCos(d->f118) * s);
             v[1] = FastSin(d->f110) * (FastCos(d->f118) * s);
             v[2] = 0;
             v[2] = -FastSin(d->f118) * s;
             Moby_PlaySound(0, 0, (int)m);
             emit_radial_particle_burst(m, w, 0);
-            if (func_001F9D48((char *)m + 0x10, D_0013E633 + 0xE9D) > 10.0f) {
+            if (vec_distance_xy((char *)m + 0x10, D_0013E633 + 0xE9D) > 10.0f) {
                 create_class_29_moby((char *)m, w, v, 0);
             } else {
                 create_class_29_moby((char *)m, w, v, 1);
@@ -298,12 +298,12 @@ void update_rocket_tank_damage_and_aim(void *mv) {
     if (FindNearestTargetMoby(m, d + 0x70, 30.0f) != 2) {
         float *pa = (float *)(m + 0x10);
         char *pl = D_0013E633 + 0xE9D;
-        if (func_001F9D48(pa, pl) < 10.0f) {
+        if (vec_distance_xy(pa, pl) < 10.0f) {
             char *q = pl - 0x80;
             *(char **)(d + 0xB0) = *(char **)(q + 0x2080);
             qcopy(d + 0x70, *(char **)(q + 0x2080) + 0x10);
         } else if (*(char **)(d + 0xB0)) {
-            if (30.0f < func_001F9D48(pa, *(char **)(d + 0xB0) + 0x10)) {
+            if (30.0f < vec_distance_xy(pa, *(char **)(d + 0xB0) + 0x10)) {
                 *(int *)(d + 0xB4) = 2;
             }
         }
@@ -316,18 +316,18 @@ void update_rocket_tank_damage_and_aim(void *mv) {
             func_L00_001FF500(v, v, *(float *)(d + 0x130));
         }
         a = FastSin(*(float *)(d + 0x134)) * 0.08726646f;
-        a = FastAddRots(func_L00_001FF860(v[0], v[1]), a);
-        b = -func_L00_001FF860(func_001F9CE8(v), v[2]);
+        a = FastAddRots(fast_atan2(v[0], v[1]), a);
+        b = -fast_atan2(vec_length_xy(v), v[2]);
         if (b > 0.34906584f) {
             b = 0.34906584f;
         } else if (b < -0.7853982f) {
             b = -0.7853982f;
         }
-        SteerAngleWithVelocity((float *)(d + 0x110), (float *)(d + 0x114), a, D_0015EE70 * 12.566371f, D_0015EE70 * 12.566371f, D_0015EE6C * 9.424778f);
-        SteerAngleWithVelocity((float *)(d + 0x118), (float *)(d + 0x11C), b, D_0015EE70 * 12.566371f, D_0015EE70 * 12.566371f, D_0015EE6C * 9.424778f);
+        SteerAngleWithVelocity((float *)(d + 0x110), (float *)(d + 0x114), a, g_frame_time_sq * 12.566371f, g_frame_time_sq * 12.566371f, g_frame_time * 9.424778f);
+        SteerAngleWithVelocity((float *)(d + 0x118), (float *)(d + 0x11C), b, g_frame_time_sq * 12.566371f, g_frame_time_sq * 12.566371f, g_frame_time * 9.424778f);
     } else {
-        SteerAngleWithVelocity((float *)(d + 0x110), (float *)(d + 0x114), *(float *)(m + 0x48), D_0015EE70 * 12.566371f, D_0015EE70 * 12.566371f, D_0015EE6C * 9.424778f);
-        SteerAngleWithVelocity((float *)(d + 0x118), (float *)(d + 0x11C), 0.0f, D_0015EE70 * 12.566371f, D_0015EE70 * 12.566371f, D_0015EE6C * 9.424778f);
+        SteerAngleWithVelocity((float *)(d + 0x110), (float *)(d + 0x114), *(float *)(m + 0x48), g_frame_time_sq * 12.566371f, g_frame_time_sq * 12.566371f, g_frame_time * 9.424778f);
+        SteerAngleWithVelocity((float *)(d + 0x118), (float *)(d + 0x11C), 0.0f, g_frame_time_sq * 12.566371f, g_frame_time_sq * 12.566371f, g_frame_time * 9.424778f);
     }
     axis_rotation_2d48(v, 1, *(float *)(d + 0x118));
     axis_rotation_2d48(d + 0xD0, 2, FastSubRots(*(float *)(d + 0x110), *(float *)(m + 0x48)));
@@ -349,13 +349,13 @@ void Moby_TurnTowardPathNode(char *m) {
     float ang, f, z, sc;
     char *p;
     qcopy(t, (char *)D_L18_001B11B0[*(int *)(d + 0x100)] + *(int *)(d + 0x120) * 16 + 0x10);
-    ang = func_L00_001FF860(t[0] - *(float *)(m + 0x10), t[1] - *(float *)(m + 0x14));
-    SteerAngleWithVelocity((float *)(m + 0x48), (float *)(d + 0x128), ang, D_0015EE70 * 3.1415927f, D_0015EE70 * 3.1415927f, D_0015EE6C * 6.2831855f);
-    f = *(float *)&D_L18_00162508 * D_0015EE6C;
+    ang = fast_atan2(t[0] - *(float *)(m + 0x10), t[1] - *(float *)(m + 0x14));
+    SteerAngleWithVelocity((float *)(m + 0x48), (float *)(d + 0x128), ang, g_frame_time_sq * 3.1415927f, g_frame_time_sq * 3.1415927f, g_frame_time * 6.2831855f);
+    f = *(float *)&D_L18_00162508 * g_frame_time;
     if (FastDiffRots(ang, *(float *)(m + 0x48)) > 0.2617994f) {
         f = D_0015EE6C_g;
     }
-    ApproachValue((float *)(d + 0x12C), f, D_0015EE70);
+    ApproachValue((float *)(d + 0x12C), f, g_frame_time_sq);
     z = 0.0f;
     func_L00_001FF4B0(v, m + 0xC0, *(float *)(d + 0x12C));
     move_4318((int)m, (int)v, 0.5f, 0.5f, z, 0);
@@ -363,7 +363,7 @@ void Moby_TurnTowardPathNode(char *m) {
         int k = random_integer_below(*D_L18_001B11B0[*(int *)(d + 0x100)] - 1) + 1;
         *(int *)(d + 0x120) = (*(int *)(d + 0x120) + k) % *D_L18_001B11B0[*(int *)(d + 0x100)];
     }
-    sc = *(float *)(d + 0x12C) / (*(float *)&D_L18_00162510 * D_0015EE6C);
+    sc = *(float *)(d + 0x12C) / (*(float *)&D_L18_00162510 * g_frame_time);
     if (sc > 2.0f) sc = 2.0f;
     else if (sc < z) sc = z;
     p = *(char **)(d + 0x138);

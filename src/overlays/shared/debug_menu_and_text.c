@@ -66,13 +66,13 @@ void draw_debug_text(int x, int y, int color, int s_) {
         text++;
         if (texture_coordinates != -1) {
             cursor[0] = (s64)texture_coordinates;
-            cursor[1] = (s64)((x * 16) + D_0013E600[4] - 8) |
-                        ((u64)(s64)((y * 16) + D_0013E600[5] - 8) << 16) | 0xFFFFF300000000UL;
+            cursor[1] = (s64)((x * 16) + g_screen_extent[4] - 8) |
+                        ((u64)(s64)((y * 16) + g_screen_extent[5] - 8) << 16) | 0xFFFFF300000000UL;
             cursor[2] = (s64)(texture_coordinates + 0xC000A0);
             glyph_count++;
             quadwords += 2;
-            cursor[3] = (s64)(((x + 10) * 16) + D_0013E600[4] - 8) |
-                        ((u64)(s64)(((y + 12) * 16) + D_0013E600[5] - 8) << 16) |
+            cursor[3] = (s64)(((x + 10) * 16) + g_screen_extent[4] - 8) |
+                        ((u64)(s64)(((y + 12) * 16) + g_screen_extent[5] - 8) << 16) |
                         0xFFFFF300000000UL;
             D_L00_00161280 = (int *)((u64 *)D_L00_00161280 + 4);
         }
@@ -382,12 +382,12 @@ void update_hero_from_debug_camera(void) {
     *(float *)(b + 0x84) = *(float *)(g + 0x144) + FastSin(t) * *(float *)(c + 0x8C);
     *(float *)(b + 0x88) = *(float *)(g + 0x148) + *(float *)(c + 0x90);
     *(float *)(b + 0x98) = FastAddRots(*(float *)(g + 0x158), *(float *)(c + 0x84));
-    func_001FA218(b, b + 0x90);
+    euler_to_matrix(b, b + 0x90);
     m = *(char **)(b + 0x2080);
     qcopy(m + 0x10, b + 0x80);
     qcopy(m + 0x40, b + 0x90);
     func_L00_001FF040((int)(m + 0xC0), b, 0x30);
-    func_L00_00251E30(*(void **)(b + 0x2080));
+    moby_build_matrix(*(void **)(b + 0x2080));
 }
 /* NON_MATCHING func_L00_001F4918 -- src/overlays/shared/draw_001F3A78.c
  * Best so far: BYTES 169/4932 (96.6% of the bytes match), checked 2026-10-09.
@@ -487,7 +487,7 @@ void update_debug_menu(void) {
     } buf;
     s32 buttons;
     sound_update();
-    buttons = D_0013CA40.keys.word.pressed;
+    buttons = g_controller_state.keys.word.pressed;
     if (buttons & 0x500) {
         D_L00_0015F6A8 = ((DebugMenu_1F4918 *)g_debug_menu)->buffer_mode;
         SetBackgroundColor(D_L00_0016CB40.a, D_L00_0016CB40.b, D_L00_0016CB40.c);
@@ -506,10 +506,10 @@ void update_debug_menu(void) {
         if (--((DebugMenu_1F4918 *)g_debug_menu)->group < 0) ((DebugMenu_1F4918 *)g_debug_menu)->group = 2;
         else if (((DebugMenu_1F4918 *)g_debug_menu)->group == 2) ((DebugMenu_1F4918 *)g_debug_menu)->group = 5;
     }
-    if ((D_0013CA40.keys.word.pressed & 0x1000) && --((DebugMenu_1F4918 *)g_debug_menu)->item < 0) {
+    if ((g_controller_state.keys.word.pressed & 0x1000) && --((DebugMenu_1F4918 *)g_debug_menu)->item < 0) {
         if (((DebugMenu_1F4918 *)g_debug_menu)->group >= 3) ((DebugMenu_1F4918 *)g_debug_menu)->group = (((DebugMenu_1F4918 *)g_debug_menu)->group + 3) % 6;
         ((DebugMenu_1F4918 *)g_debug_menu)->item = counts.v[((DebugMenu_1F4918 *)g_debug_menu)->group] - 1;
-    } else if (D_0013CA40.keys.word.pressed & 0x4000) {
+    } else if (g_controller_state.keys.word.pressed & 0x4000) {
         if (++((DebugMenu_1F4918 *)g_debug_menu)->item >= counts.v[((DebugMenu_1F4918 *)g_debug_menu)->group]) {
             if (((DebugMenu_1F4918 *)g_debug_menu)->group < 3) ((DebugMenu_1F4918 *)g_debug_menu)->group = (((DebugMenu_1F4918 *)g_debug_menu)->group + 9) % 6;
             ((DebugMenu_1F4918 *)g_debug_menu)->item = 0;
@@ -518,7 +518,7 @@ void update_debug_menu(void) {
     if (((DebugMenu_1F4918 *)g_debug_menu)->item >= counts.v[((DebugMenu_1F4918 *)g_debug_menu)->group]) ((DebugMenu_1F4918 *)g_debug_menu)->item = counts.v[((DebugMenu_1F4918 *)g_debug_menu)->group] - 1;
     switch (((DebugMenu_1F4918 *)g_debug_menu)->group) {
     case 0:
-        if (D_0013CA40.keys.word.pressed & 0x40) {
+        if (g_controller_state.keys.word.pressed & 0x40) {
             s32 bit = 1 << ((DebugMenu_1F4918 *)g_debug_menu)->item;
             ((DebugMenu_1F4918 *)g_debug_menu)->draw_bits ^= bit;
             if (bit == 16) {
@@ -530,11 +530,11 @@ void update_debug_menu(void) {
     case 1:
         switch (((DebugMenu_1F4918 *)g_debug_menu)->item) {
         case 0:
-            if (D_0013CA40.keys.word.pressed & 0x50) {
-                if (D_0013CA40.keys.word.pressed & 0x40) {
+            if (g_controller_state.keys.word.pressed & 0x50) {
+                if (g_controller_state.keys.word.pressed & 0x40) {
                     if (++((DebugMenu_1F4918 *)g_debug_menu)->camera_mode >= 4) ((DebugMenu_1F4918 *)g_debug_menu)->camera_mode = 0;
                 }
-                if (D_0013CA40.keys.word.pressed & 0x10) {
+                if (g_controller_state.keys.word.pressed & 0x10) {
                     if (--((DebugMenu_1F4918 *)g_debug_menu)->camera_mode < 0) ((DebugMenu_1F4918 *)g_debug_menu)->camera_mode = 3;
                 }
                 switch (((DebugMenu_1F4918 *)g_debug_menu)->camera_mode) {
@@ -542,33 +542,33 @@ void update_debug_menu(void) {
                 case 1: ((DebugMenu_1F4918 *)g_debug_menu)->draw_bits = 0; break;
                 case 2:
                     ((DebugMenu_1F4918 *)g_debug_menu)->draw_bits = 0;
-                    FastVecSub(buf.points.vec, &D_0013F450.x, &((Camera_1F4918 *)player_camera)->x);
-                    ((DebugMenu_1F4918 *)g_debug_menu)->distance = func_001F9CE8(buf.points.vec);
-                    ((DebugMenu_1F4918 *)g_debug_menu)->angle = FastSubRots(func_L00_001FF860(buf.points.vec[0],buf.points.vec[1]), ((Camera_1F4918 *)player_camera)->angle);
-                    ((DebugMenu_1F4918 *)g_debug_menu)->height = D_0013F450.z - ((Camera_1F4918 *)player_camera)->z;
-                    ((DebugMenu_1F4918 *)g_debug_menu)->rot = FastSubRots(D_0013F450.angle, ((Camera_1F4918 *)player_camera)->angle);
+                    FastVecSub(buf.points.vec, &g_hero.x, &((Camera_1F4918 *)player_camera)->x);
+                    ((DebugMenu_1F4918 *)g_debug_menu)->distance = vec_length_xy(buf.points.vec);
+                    ((DebugMenu_1F4918 *)g_debug_menu)->angle = FastSubRots(fast_atan2(buf.points.vec[0],buf.points.vec[1]), ((Camera_1F4918 *)player_camera)->angle);
+                    ((DebugMenu_1F4918 *)g_debug_menu)->height = g_hero.z - ((Camera_1F4918 *)player_camera)->z;
+                    ((DebugMenu_1F4918 *)g_debug_menu)->rot = FastSubRots(g_hero.angle, ((Camera_1F4918 *)player_camera)->angle);
                     break;
                 case 3: ((DebugMenu_1F4918 *)g_debug_menu)->draw_bits = 6; break;
                 }
             }
             break;
         case 1:
-            if (D_0013CA40.keys.word.pressed & 0x40) { if (++((DebugMenu_1F4918 *)g_debug_menu)->display_mode >= 8) ((DebugMenu_1F4918 *)g_debug_menu)->display_mode = 0; }
-            if (D_0013CA40.keys.word.pressed & 0x10) { if (--((DebugMenu_1F4918 *)g_debug_menu)->display_mode < 0) ((DebugMenu_1F4918 *)g_debug_menu)->display_mode = 7; }
+            if (g_controller_state.keys.word.pressed & 0x40) { if (++((DebugMenu_1F4918 *)g_debug_menu)->display_mode >= 8) ((DebugMenu_1F4918 *)g_debug_menu)->display_mode = 0; }
+            if (g_controller_state.keys.word.pressed & 0x10) { if (--((DebugMenu_1F4918 *)g_debug_menu)->display_mode < 0) ((DebugMenu_1F4918 *)g_debug_menu)->display_mode = 7; }
             break;
         case 2:
             if (!D_L00_0015F6E0) { ((DebugMenu_1F4918 *)g_debug_menu)->occl_mode = 0; break; }
-            if (D_0013CA40.keys.word.pressed & 0x40) { if (++((DebugMenu_1F4918 *)g_debug_menu)->occl_mode >= 3) ((DebugMenu_1F4918 *)g_debug_menu)->occl_mode = 0; }
-            if (D_0013CA40.keys.word.pressed & 0x10) { if (--((DebugMenu_1F4918 *)g_debug_menu)->occl_mode < 0) ((DebugMenu_1F4918 *)g_debug_menu)->occl_mode = 2; }
+            if (g_controller_state.keys.word.pressed & 0x40) { if (++((DebugMenu_1F4918 *)g_debug_menu)->occl_mode >= 3) ((DebugMenu_1F4918 *)g_debug_menu)->occl_mode = 0; }
+            if (g_controller_state.keys.word.pressed & 0x10) { if (--((DebugMenu_1F4918 *)g_debug_menu)->occl_mode < 0) ((DebugMenu_1F4918 *)g_debug_menu)->occl_mode = 2; }
             break;
         case 3:
-            if (D_0013CA40.keys.word.pressed & 0x50) ((DebugMenu_1F4918 *)g_debug_menu)->f20 = !((DebugMenu_1F4918 *)g_debug_menu)->f20;
+            if (g_controller_state.keys.word.pressed & 0x50) ((DebugMenu_1F4918 *)g_debug_menu)->f20 = !((DebugMenu_1F4918 *)g_debug_menu)->f20;
             break;
         case 4:
-            if (D_0013CA40.keys.word.pressed & 0x50) ((DebugMenu_1F4918 *)g_debug_menu)->f24 = !((DebugMenu_1F4918 *)g_debug_menu)->f24;
+            if (g_controller_state.keys.word.pressed & 0x50) ((DebugMenu_1F4918 *)g_debug_menu)->f24 = !((DebugMenu_1F4918 *)g_debug_menu)->f24;
             break;
         case 5:
-            if (D_0013CA40.keys.word.pressed & 0x50) {
+            if (g_controller_state.keys.word.pressed & 0x50) {
                 ((DebugMenu_1F4918 *)g_debug_menu)->f28 = !((DebugMenu_1F4918 *)g_debug_menu)->f28;
                 if (((DebugMenu_1F4918 *)g_debug_menu)->f28) {
                     D_L00_00161040=65536.0f; D_L00_001610A0=64.0f; D_L00_00160564=40.0f; D_L00_001600B0=64; D_L00_0016023C=0x40000;
@@ -578,21 +578,21 @@ void update_debug_menu(void) {
             }
             break;
         case 6:
-            if (D_0013CA40.keys.word.pressed & 0x40) { if (++((DebugMenu_1F4918 *)g_debug_menu)->f2C >= 3) ((DebugMenu_1F4918 *)g_debug_menu)->f2C = 0; }
-            if (D_0013CA40.keys.word.pressed & 0x10) { if (--((DebugMenu_1F4918 *)g_debug_menu)->f2C < 0) ((DebugMenu_1F4918 *)g_debug_menu)->f2C = 2; }
+            if (g_controller_state.keys.word.pressed & 0x40) { if (++((DebugMenu_1F4918 *)g_debug_menu)->f2C >= 3) ((DebugMenu_1F4918 *)g_debug_menu)->f2C = 0; }
+            if (g_controller_state.keys.word.pressed & 0x10) { if (--((DebugMenu_1F4918 *)g_debug_menu)->f2C < 0) ((DebugMenu_1F4918 *)g_debug_menu)->f2C = 2; }
             break;
         case 7:
-            if (D_0013CA40.keys.word.pressed & 0x50) ((DebugMenu_1F4918 *)g_debug_menu)->f30 = !((DebugMenu_1F4918 *)g_debug_menu)->f30;
+            if (g_controller_state.keys.word.pressed & 0x50) ((DebugMenu_1F4918 *)g_debug_menu)->f30 = !((DebugMenu_1F4918 *)g_debug_menu)->f30;
             break;
         case 8:
-            if (D_0013CA40.keys.word.pressed & 0x50) {
+            if (g_controller_state.keys.word.pressed & 0x50) {
                 ((DebugMenu_1F4918 *)g_debug_menu)->f34 = !((DebugMenu_1F4918 *)g_debug_menu)->f34;
                 if (((DebugMenu_1F4918 *)g_debug_menu)->f34) {
-                    D_L00_0016CB40.x.f = IntToFloat(D_00151880.x) * 0.125f;
-                    D_L00_0016CB40.y.f = IntToFloat(D_00151880.y) * 0.125f;
+                    D_L00_0016CB40.x.f = IntToFloat(fs_aa_buffer.x) * 0.125f;
+                    D_L00_0016CB40.y.f = IntToFloat(fs_aa_buffer.y) * 0.125f;
                 } else {
-                    D_L00_0016CB40.x.f = IntToFloat(D_00151880.x) * 0.5f;
-                    D_L00_0016CB40.y.f = IntToFloat(D_00151880.y) * 0.5f;
+                    D_L00_0016CB40.x.f = IntToFloat(fs_aa_buffer.x) * 0.5f;
+                    D_L00_0016CB40.y.f = IntToFloat(fs_aa_buffer.y) * 0.5f;
                 }
                 {
                     float x=D_L00_0016CB40.x.f;
@@ -604,8 +604,8 @@ void update_debug_menu(void) {
             }
             break;
         case 9:
-            if (D_0013CA40.keys.word.pressed & 0x50) {
-                if (D_0013CA40.keys.word.pressed & 0x40) {
+            if (g_controller_state.keys.word.pressed & 0x50) {
+                if (g_controller_state.keys.word.pressed & 0x40) {
                     ((DebugMenu_1F4918 *)g_debug_menu)->selection++;
                     while (((DebugMenu_1F4918 *)g_debug_menu)->selection == 36) ((DebugMenu_1F4918 *)g_debug_menu)->selection = -1;
                 } else {
@@ -616,17 +616,17 @@ void update_debug_menu(void) {
             if (((DebugMenu_1F4918 *)g_debug_menu)->selection >= 0) ((DebugMenu_1F4918 *)g_debug_menu)->buffer_mode=2; else ((DebugMenu_1F4918 *)g_debug_menu)->buffer_mode=0;
             break;
         case 10:
-            if (D_0013CA40.keys.word.pressed & 0x50) {
-                if (D_0013CA40.keys.word.pressed & 0x40) {
+            if (g_controller_state.keys.word.pressed & 0x50) {
+                if (g_controller_state.keys.word.pressed & 0x40) {
                     ((DebugMenu_1F4918 *)g_debug_menu)->mission++;
                     while (((DebugMenu_1F4918 *)g_debug_menu)->mission == 16) ((DebugMenu_1F4918 *)g_debug_menu)->mission = 0;
                 } else {
                     ((DebugMenu_1F4918 *)g_debug_menu)->mission--;
                     while (((DebugMenu_1F4918 *)g_debug_menu)->mission < 0) ((DebugMenu_1F4918 *)g_debug_menu)->mission = 15;
                 }
-            } else if (D_0013CA40.keys.word.pressed & 0x20) {
+            } else if (g_controller_state.keys.word.pressed & 0x20) {
                 s32 slot = ((DebugMenu_1F4918 *)g_debug_menu)->mission;
-                s32 offset = slot + (D_0015EE84 << 4);
+                s32 offset = slot + (g_current_level_index << 4);
                 u8 *p = (u8 *)D_0014C150 + offset;
                 *p = *p ? 0 : 255;
                 D_L00_0015FD48[slot] = *p;
@@ -635,7 +635,7 @@ void update_debug_menu(void) {
         }
         break;
     case 2:
-        if (D_0013CA40.keys.word.pressed & 0x40) ((DebugMenu_1F4918 *)g_debug_menu)->bits ^= 1 << ((DebugMenu_1F4918 *)g_debug_menu)->item;
+        if (g_controller_state.keys.word.pressed & 0x40) ((DebugMenu_1F4918 *)g_debug_menu)->bits ^= 1 << ((DebugMenu_1F4918 *)g_debug_menu)->item;
         break;
     case 3: {
         s32 *value;
@@ -645,19 +645,19 @@ void update_debug_menu(void) {
             value=(s32 *)(menu_item_enabled_115 + 0x21) + id;
             limit=((Weapon_1F4918 *)(id * 24 + (char *)D_L00_001C43B0))->limit;
         } else value=&gBolts;
-        if (D_0013CA40.keys.word.held & 8) {
-            if (D_0013CA40.keys.word.pressed & 0x40) *value += 60;
-            if (D_0013CA40.keys.word.pressed & 0x20) { if (*value > 60) *value-=60; else *value=0; }
-        } else if (D_0013CA40.keys.word.held & 2) {
-            if (D_0013CA40.keys.word.pressed & 0x40) *value += 600;
-            if (D_0013CA40.keys.word.pressed & 0x20) { if (*value > 600) *value-=600; else *value=0; }
+        if (g_controller_state.keys.word.held & 8) {
+            if (g_controller_state.keys.word.pressed & 0x40) *value += 60;
+            if (g_controller_state.keys.word.pressed & 0x20) { if (*value > 60) *value-=60; else *value=0; }
+        } else if (g_controller_state.keys.word.held & 2) {
+            if (g_controller_state.keys.word.pressed & 0x40) *value += 600;
+            if (g_controller_state.keys.word.pressed & 0x20) { if (*value > 600) *value-=600; else *value=0; }
         } else {
-            if (D_0013CA40.keys.word.pressed & 0x40) *value += 1;
-            if (D_0013CA40.keys.word.pressed & 0x20) { if (*value > 0) *value-=1; }
+            if (g_controller_state.keys.word.pressed & 0x40) *value += 1;
+            if (g_controller_state.keys.word.pressed & 0x20) { if (*value > 0) *value-=1; }
         }
         if (*value > limit) *value = limit;
-        if (D_0013CA40.keys.word.pressed & 0x10) ((u8 *)D_0013E15A + 0x4C6)[((u8 *)&debug_menu_item_ids)[((DebugMenu_1F4918 *)g_debug_menu)->item]]++;
-        if (D_0013CA40.keys.word.pressed & 0x80) ((u8 *)D_0013E15A + 0x4C6)[((u8 *)&debug_menu_item_ids)[((DebugMenu_1F4918 *)g_debug_menu)->item]]--;
+        if (g_controller_state.keys.word.pressed & 0x10) ((u8 *)D_0013E15A + 0x4C6)[((u8 *)&debug_menu_item_ids)[((DebugMenu_1F4918 *)g_debug_menu)->item]]++;
+        if (g_controller_state.keys.word.pressed & 0x80) ((u8 *)D_0013E15A + 0x4C6)[((u8 *)&debug_menu_item_ids)[((DebugMenu_1F4918 *)g_debug_menu)->item]]--;
         {
             s32 id=((u8 *)&debug_menu_item_ids)[((DebugMenu_1F4918 *)g_debug_menu)->item];
             Item_1F4918 *record=D_L00_00179BC0+id;
@@ -668,51 +668,51 @@ void update_debug_menu(void) {
     }
     case 4:
         if (((DebugMenu_1F4918 *)g_debug_menu)->item == 0) {
-            u64 keys=D_0013CA40.keys.all;
+            u64 keys=g_controller_state.keys.all;
             if (keys & 0x800000040ULL) D_L00_0015F548 += 1024.0f;
             if (keys & 0x400000010ULL) D_L00_0015F548 -= 1024.0f;
             if (D_L00_0015F548 > D_L00_0015F54C) D_L00_0015F548 = D_L00_0015F54C;
             else if (D_L00_0015F548 < 0.0f) D_L00_0015F548=0.0f;
         }
         if (((DebugMenu_1F4918 *)g_debug_menu)->item == 2) {
-            u64 keys=D_0013CA40.keys.all;
+            u64 keys=g_controller_state.keys.all;
             if (keys & 0x800000040ULL) D_L00_0015F54C += 1024.0f;
             if (keys & 0x400000010ULL) D_L00_0015F54C -= 1024.0f;
             if (D_L00_0015F54C > 524288.0f) D_L00_0015F54C = 524288.0f;
             else if (D_L00_0015F54C < D_L00_0015F548) D_L00_0015F54C=D_L00_0015F548;
         }
         if (((DebugMenu_1F4918 *)g_debug_menu)->item == 1) {
-            u64 keys=D_0013CA40.keys.all;
+            u64 keys=g_controller_state.keys.all;
             if (keys & 0x800000040ULL) D_L00_0015F550 -= 2.55f;
             if (keys & 0x400000010ULL) D_L00_0015F550 += 2.55f;
             if (D_L00_0015F550 > 255.0f) D_L00_0015F550 = 255.0f;
             else if (D_L00_0015F550 < 0.0f) D_L00_0015F550=0.0f;
         }
         if (((DebugMenu_1F4918 *)g_debug_menu)->item == 3) {
-            u64 keys=D_0013CA40.keys.all;
+            u64 keys=g_controller_state.keys.all;
             if (keys & 0x800000040ULL) D_L00_0015F554 -= 2.55f;
             if (keys & 0x400000010ULL) D_L00_0015F554 += 2.55f;
             if (D_L00_0015F554 > 255.0f) D_L00_0015F554 = 255.0f;
             else if (D_L00_0015F554 < 0.0f) D_L00_0015F554=0.0f;
         }
         if (((DebugMenu_1F4918 *)g_debug_menu)->item == 4) {
-            if ((*(u8 *)&D_L00_0015F544) < 255 && (D_0013CA40.keys.all&0x800000040ULL)) ++(*(u8 *)&D_L00_0015F544);
-            if ((*(u8 *)&D_L00_0015F544) > 0 && (D_0013CA40.keys.all&0x400000010ULL)) --(*(u8 *)&D_L00_0015F544);
+            if ((*(u8 *)&D_L00_0015F544) < 255 && (g_controller_state.keys.all&0x800000040ULL)) ++(*(u8 *)&D_L00_0015F544);
+            if ((*(u8 *)&D_L00_0015F544) > 0 && (g_controller_state.keys.all&0x400000010ULL)) --(*(u8 *)&D_L00_0015F544);
         }
         if (((DebugMenu_1F4918 *)g_debug_menu)->item == 5) {
-            if ((*(u8 *)&D_L00_0015F545) < 255 && (D_0013CA40.keys.all&0x800000040ULL)) ++(*(u8 *)&D_L00_0015F545);
-            if ((*(u8 *)&D_L00_0015F545) > 0 && (D_0013CA40.keys.all&0x400000010ULL)) --(*(u8 *)&D_L00_0015F545);
+            if ((*(u8 *)&D_L00_0015F545) < 255 && (g_controller_state.keys.all&0x800000040ULL)) ++(*(u8 *)&D_L00_0015F545);
+            if ((*(u8 *)&D_L00_0015F545) > 0 && (g_controller_state.keys.all&0x400000010ULL)) --(*(u8 *)&D_L00_0015F545);
         }
         if (((DebugMenu_1F4918 *)g_debug_menu)->item == 6) {
-            if ((*(u8 *)&D_L00_0015F546) < 255 && (D_0013CA40.keys.all&0x800000040ULL)) ++(*(u8 *)&D_L00_0015F546);
-            if ((*(u8 *)&D_L00_0015F546) > 0 && (D_0013CA40.keys.all&0x400000010ULL)) --(*(u8 *)&D_L00_0015F546);
+            if ((*(u8 *)&D_L00_0015F546) < 255 && (g_controller_state.keys.all&0x800000040ULL)) ++(*(u8 *)&D_L00_0015F546);
+            if ((*(u8 *)&D_L00_0015F546) > 0 && (g_controller_state.keys.all&0x400000010ULL)) --(*(u8 *)&D_L00_0015F546);
         }
         UpdateFog();
         break;
     case 5:
-        if (((DebugMenu_1F4918 *)g_debug_menu)->item == 0 && (D_0013CA40.keys.word.pressed&0x50)) ((DebugMenu_1F4918 *)g_debug_menu)->fF0=!((DebugMenu_1F4918 *)g_debug_menu)->fF0;
-        if (((DebugMenu_1F4918 *)g_debug_menu)->item == 1 && (D_0013CA40.keys.word.pressed&0x50)) ((DebugMenu_1F4918 *)g_debug_menu)->fF4=!((DebugMenu_1F4918 *)g_debug_menu)->fF4;
-        if (((DebugMenu_1F4918 *)g_debug_menu)->item == 2 && (D_0013CA40.keys.word.pressed&0xF0)) {
+        if (((DebugMenu_1F4918 *)g_debug_menu)->item == 0 && (g_controller_state.keys.word.pressed&0x50)) ((DebugMenu_1F4918 *)g_debug_menu)->fF0=!((DebugMenu_1F4918 *)g_debug_menu)->fF0;
+        if (((DebugMenu_1F4918 *)g_debug_menu)->item == 1 && (g_controller_state.keys.word.pressed&0x50)) ((DebugMenu_1F4918 *)g_debug_menu)->fF4=!((DebugMenu_1F4918 *)g_debug_menu)->fF4;
+        if (((DebugMenu_1F4918 *)g_debug_menu)->item == 2 && (g_controller_state.keys.word.pressed&0xF0)) {
             extern char D_L00_0015F0E0;
             char *fmt=D_L00_001E7C88;
             char *dev=&D_L00_0015F0E0;
@@ -731,7 +731,7 @@ void update_debug_menu(void) {
             }
             }
             if (found) break;
-            func_00116248(buf.points.path,dev,fmt,D_0015EE84,occlusion_deltas_file_name,iso_version_suffix);
+            func_00116248(buf.points.path,dev,fmt,g_current_level_index,occlusion_deltas_file_name,iso_version_suffix);
             func_00116248(buf.points.text,add_sample_format,func_00120778(((Camera_1F4918 *)player_camera)->x),func_00120778(((Camera_1F4918 *)player_camera)->y),func_00120778(((Camera_1F4918 *)player_camera)->z));
             fd=func_0011BF80(buf.points.path,0x303);
             if (fd >= 0) {
@@ -742,7 +742,7 @@ void update_debug_menu(void) {
             }
             {
             float *p=D_L00_00173F20;
-            func_00116248(buf.points.path,dev,fmt,D_0015EE84,occlusion_samples_file_name,iso_version_suffix);
+            func_00116248(buf.points.path,dev,fmt,g_current_level_index,occlusion_samples_file_name,iso_version_suffix);
             fd=func_0011BF80(buf.points.path,0x303);
             if (fd >= 0) {
                 func_0011C388(fd,0,2);
@@ -760,10 +760,10 @@ void update_debug_menu(void) {
             }
         }
         }
-        if (((DebugMenu_1F4918 *)g_debug_menu)->item == 3 && (D_0013CA40.keys.word.pressed&0xF0)) {
+        if (((DebugMenu_1F4918 *)g_debug_menu)->item == 3 && (g_controller_state.keys.word.pressed&0xF0)) {
             extern char D_L00_0015F0E0[];
             s32 fd;
-            func_00116248(buf.saved.path,D_L00_0015F0E0,D_L00_001E7C88,D_0015EE84,occlusion_deltas_file_name,iso_version_suffix);
+            func_00116248(buf.saved.path,D_L00_0015F0E0,D_L00_001E7C88,g_current_level_index,occlusion_deltas_file_name,iso_version_suffix);
             func_00116248(buf.saved.text,start_point_format,func_00120778(((Camera_1F4918 *)player_camera)->x),func_00120778(((Camera_1F4918 *)player_camera)->y),func_00120778(((Camera_1F4918 *)player_camera)->z));
             fd=func_0011BF80(buf.saved.path,0x303);
             if (fd >= 0) {
@@ -950,7 +950,7 @@ void draw_debug_menu(void) {
         print_debug_text(0xB0, 0xD6, 0x8000C0C0, D_L00_0015F1E8);
         {
             int mission = debug_menu60.mission;
-            func_00116248(buf, D_L00_0015F1F0, mission, (D_0014171B + 0xAA35)[mission + D_0015EE84 * stride]);
+            func_00116248(buf, D_L00_0015F1F0, mission, (D_0014171B + 0xAA35)[mission + g_current_level_index * stride]);
         }
         print_debug_text(0x108, 0xD6, 0x80F0F0F0, buf);
         if (debug_menu60.group == 1) {

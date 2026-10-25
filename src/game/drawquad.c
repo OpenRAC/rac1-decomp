@@ -163,7 +163,7 @@ void append_billboard_batch(void) {
         projected_position.w = 1.0f;
         distance = FastVecLength(&projected_position);
         FastVecScale(&projected_position, &projected_position, 1024.0f);
-        func_001F9EE8(&projected_position, &projected_position, camera_position - 0x100);
+        transform_vector(&projected_position, &projected_position, camera_position - 0x100);
         multiply_vector_components(&clip_position, &projected_position,
                                    (char *)&view_context + 0x180);
         if (is_vector_outside_clip(&clip_position) != 0) {
@@ -188,15 +188,15 @@ void append_billboard_batch(void) {
                  ((24.0f - distance) * 16.0f);
         sine_offset = truncate_float_to_s32(radius * FastSin(record->angle));
         cosine_offset = truncate_float_to_s32(radius * FastCos(record->angle));
-        D_00161000.p->tag = 0x10000009;
-        D_00161000.p->addr = 0;
-        D_00161000.p->vif0 = 0;
-        D_00161000.p->vif1 = 0x50000009;
-        tag = D_00161000.p;
-        D_00161000.p = tag + 1;
+        g_render_packet_cursor.p->tag = 0x10000009;
+        g_render_packet_cursor.p->addr = 0;
+        g_render_packet_cursor.p->vif0 = 0;
+        g_render_packet_cursor.p->vif1 = 0x50000009;
+        tag = g_render_packet_cursor.p;
+        g_render_packet_cursor.p = tag + 1;
         qcopy(tag + 1, billboard_quad_header);
         packet_words = (s64 *)(tag + 2);
-        D_00161000.p = tag + 2;
+        g_render_packet_cursor.p = tag + 2;
         packet_words[0] = 5;
         packet_words[1] = func_001F4868_F9478(0x13);
         packet_words[2] = 0x154;
@@ -213,7 +213,7 @@ void append_billboard_batch(void) {
         packet_words[13] = 0x2000200;
         packet_words[14] = packed_position + (-cosine_offset << 16) - sine_offset;
         packet_words[15] = 0;
-        D_00161000.p = (struct DmaTag *)((u8 *)D_00161000.p + 0x80);
+        g_render_packet_cursor.p = (struct DmaTag *)((u8 *)g_render_packet_cursor.p + 0x80);
     }
     VU1_addGSregister(0x42, 0x8000000044);
 }

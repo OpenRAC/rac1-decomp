@@ -98,7 +98,7 @@ char *create_class_55b_moby_from_source(char *a0)
         *(char **)(m + 0xB8) = a0;
         FastMemZero16(d, 0x20);
         *(int *)(d + 0x10) = (int)(d + 0x20);
-        func_L00_00251E30(m);
+        moby_build_matrix(m);
     }
     return (char *)m;
 }
@@ -153,19 +153,19 @@ void start_blarg_commander_knockback(void *unused, struct Moby *m) {
     dir[1] = FastSin(ang);
     dir[2] = 1.0f;
     dir[3] = 5627.925f;
-    g = D_0015EE70;
+    g = g_frame_time_sq;
     d->rise = g * 40.0f;
     d->fall = g * 100.0f;
-    t1 = func_001F9B50(d->rise * 4.0f);
-    t2 = func_001F9B50(D_0015EE70 * 40.0f * 4.0f);
-    a = D_0015EE70 * 40.0f;
-    d->launch_speed = 3.0f / ((t1 + t1) / a) + D_0015EE70 * 100.0f * 0.5f * ((t2 + t2) / a);
-    d->unk3C = func_001F9B50(a * 4.0f);
+    t1 = vec_length(d->rise * 4.0f);
+    t2 = vec_length(g_frame_time_sq * 40.0f * 4.0f);
+    a = g_frame_time_sq * 40.0f;
+    d->launch_speed = 3.0f / ((t1 + t1) / a) + g_frame_time_sq * 100.0f * 0.5f * ((t2 + t2) / a);
+    d->unk3C = vec_length(a * 4.0f);
     d->unk5D = 0;
     d->unk44 = 1;
     HeadingFromVector(dir, &ang, &d->launch_speed, &d->unk3C);
     InitKnockback(ang, m, &d->arc, 1, 5, 2);
-    d->unk6C = D_0015EE6C + D_0015EE6C;
+    d->unk6C = g_frame_time + g_frame_time;
     d->unk70 = -1.0f;
     d->unk74 = -1.0f;
     m->flags &= ~0x1000;
@@ -191,8 +191,8 @@ void blarg_commander_update(char *m) {
     if (st == 1) {
         p = d + 0x20;
         r = mine_fall(m, p);
-        mo->vx = FastAddRots(mo->vx, D_0015EE6C * 4.3633232f);
-        mo->vy = FastAddRots(mo->vy, D_0015EE6C * 4.3633232f);
+        mo->vx = FastAddRots(mo->vx, g_frame_time * 4.3633232f);
+        mo->vy = FastAddRots(mo->vy, g_frame_time * 4.3633232f);
         *(unsigned short *)(m + 0x34) &= 0xEFFF;
         if (r & 0x61) {
             qcopy(v, m + 0x10);

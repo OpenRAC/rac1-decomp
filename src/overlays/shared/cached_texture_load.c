@@ -16,6 +16,6 @@ void LoadCachedTexture(void) {
     long localbuf[3];
 
     Load(D_L00_0018F040, D_00137C80[2], D_00137C80[3]);
-    LoadPifAsPSMT8H(D_L00_0018F040, localbuf, D_0015EF88 + 0xC0000, 0x3FFC00);
+    LoadPifAsPSMT8H(D_L00_0018F040, localbuf, depth_buffer_address + 0xC0000, 0x3FFC00);
     debug_font_pif_header = localbuf[0];
 }

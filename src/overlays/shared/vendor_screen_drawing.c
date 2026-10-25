@@ -264,10 +264,10 @@ void draw_vendor_hologram_cone(void) {
     s.hdr[0] = 0;
     s.hdr[1] = GetEffectTex(0x18);
     for (i = 0; i < 4; i++) {
-        func_001F9EC0(v[0], D_L00_001CA680[D_L00_001CA780[i].a], (char *)D_L00_001CA7C0[7] + 0xC0);
-        func_001F9EC0(v[1], D_L00_001CA680[*(int *)((char *)D_L00_001CA780 + i * 16 + 4)], (char *)D_L00_001CA7C0[7] + 0xC0);
-        func_001F9EC0(v[2], D_L00_001CA680[*(int *)((char *)D_L00_001CA780 + i * 16 + 8)], (char *)D_L00_001CA7C0[7] + 0xC0);
-        func_001F9EC0(v[3], D_L00_001CA680[D_L00_001CA780[i].d], (char *)D_L00_001CA7C0[7] + 0xC0);
+        matrix_mul_vec3(v[0], D_L00_001CA680[D_L00_001CA780[i].a], (char *)D_L00_001CA7C0[7] + 0xC0);
+        matrix_mul_vec3(v[1], D_L00_001CA680[*(int *)((char *)D_L00_001CA780 + i * 16 + 4)], (char *)D_L00_001CA7C0[7] + 0xC0);
+        matrix_mul_vec3(v[2], D_L00_001CA680[*(int *)((char *)D_L00_001CA780 + i * 16 + 8)], (char *)D_L00_001CA7C0[7] + 0xC0);
+        matrix_mul_vec3(v[3], D_L00_001CA680[D_L00_001CA780[i].d], (char *)D_L00_001CA7C0[7] + 0xC0);
         s.pos[0][0] = *(float *)((char *)D_L00_001CA7C0[7] + 0x10) + v[0][0];
         s.pos[0][1] = *(float *)((char *)D_L00_001CA7C0[7] + 0x14) + v[0][1];
         s.pos[0][2] = *(float *)((char *)D_L00_001CA7C0[7] + 0x18) + v[0][2];

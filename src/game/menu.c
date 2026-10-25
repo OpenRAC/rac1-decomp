@@ -107,7 +107,7 @@ extern Menu13F450 D_0013F450;
    computed before a, as retail evaluates it; the second if's own
    `arg1 >= 0xC8` is retail's second test of $a1. */
 int map_filter_l01_3(void *unused_input, int reveal_test_selector, float unused1, float unused2, float reveal_test_value) {
-    Hero *hero_ptr = (Hero *)&D_0013F450;
+    Hero *hero_ptr = (Hero *)&g_hero;
     int hero_state_blocks_high_range_reveal = hero_ptr->state.control_mode == 16;
     int hero_state_blocks_low_range_reveal = hero_ptr->state.control_mode == 17 || hero_ptr->state.control_mode == 18 || hero_ptr->base_condition == 1;
 
@@ -143,7 +143,7 @@ int map_filter_l01_4(int arg0, float unused1, float unused2, float arg1) {
    field reads. */
 int map_filter_l01_5(int reveal_test_selector, float unused1, float unused2, float reveal_test_value) {
     if (reveal_test_selector < 0x100) {
-        struct Hero *hero_ptr = (struct Hero *)&D_0013F450;
+        struct Hero *hero_ptr = (struct Hero *)&g_hero;
         return hero_ptr->state.control_mode == 17 || hero_ptr->state.control_mode == 18 || hero_ptr->base_condition == 1;
     }
     return (reveal_test_value >= 95.0f) ? 1 : 0;
@@ -255,7 +255,7 @@ extern int D_001A04A8 NOT_SDA;
    all three of a second group of boxes hit. */
 int map_filter_l07_1(int arg0, int arg1, float unused1, float unused2,
                    float arg3) {
-    Menu13F450 *s = &D_0013F450;
+    Menu13F450 *s = &g_hero;
     int a = s->unk208C == 17 || s->unk208C == 18 || s->unk12E4 == 1;
 
     if (point_is_clockwise(arg0, arg1, 0x93, 0x168, 0x182, 0x168) != 0
@@ -326,7 +326,7 @@ extern int D_001A04BC NOT_SDA;
    cross-jumped into the second one. */
 int map_filter_l07_3(int px, int py, float unused1, float unused2, float reveal_test_value) {
     if (py < 0xBB) {
-        Hero *hero_ptr = (Hero *)&D_0013F450;
+        Hero *hero_ptr = (Hero *)&g_hero;
         int hero_state_blocks_low_y_reveal = hero_ptr->state.control_mode == 17 || hero_ptr->state.control_mode == 18 || hero_ptr->base_condition == 1;
 
         if (!hero_state_blocks_low_y_reveal && D_001A04BC != 0) {
@@ -395,7 +395,7 @@ extern int func_00209048(int, int, int, int, int, int);
    arg1 < 0xC1, else `a` unless func_00209048's box test hits (which
    clears it to 0). */
 int map_filter_l07_6(int px, int py, float fparg0, float fparg1, float reveal_test_value) {
-    Hero *hero = (Hero *)&D_0013F450;
+    Hero *hero = (Hero *)&g_hero;
     int hit = hero->state.control_mode == 17 || hero->state.control_mode == 18 || hero->base_condition == 1;
     int result;
 
@@ -419,7 +419,7 @@ int map_filter_l07_6(int px, int py, float fparg0, float fparg1, float reveal_te
    blocks it, arg3 ($f14) is below 71.5, or the first box is hit, and
    then only if the second box is not. */
 s32 map_filter_l07_7(s32 px, s32 py, f32 fparg0, f32 fparg1, f32 reveal_test_value) {
-    struct Hero *hero = (struct Hero *)&D_0013F450;
+    struct Hero *hero = (struct Hero *)&g_hero;
     s32 var_4_15 = hero->state.control_mode == 17 || hero->state.control_mode == 18 || hero->base_condition == 1;
 
     if (var_4_15) {
@@ -581,7 +581,7 @@ extern unsigned char D_0013D4EA NOT_SDA;
    evaluates it before the arg0 branch), gates the arg0 < 0x15F arm; the
    other arm is func_00208160's second test with D_0013D4EA. */
 int map_filter_l11_3(int reveal_test_selector, float unused1, float unused2, float reveal_test_value) {
-    struct Hero *hero_ptr = (struct Hero *)&D_0013F450;
+    struct Hero *hero_ptr = (struct Hero *)&g_hero;
     int hero_state_allows_reveal = hero_ptr->state.control_mode == 17 || hero_ptr->state.control_mode == 18 || hero_ptr->base_condition == 1;
 
     if (reveal_test_selector < 0x15F) {
@@ -641,7 +641,7 @@ int map_filter_l15_0(int x, int y) {
 
         c[0] = 161.5f;
         c[1] = 249.0f;
-        return func_001F9D48(p, c) <= 35.0f ? 1 : 0;
+        return vec_distance_xy(p, c) <= 35.0f ? 1 : 0;
     }
     return 1;
 }
@@ -702,8 +702,8 @@ void save_map_coverage(int arg0) {
     if (n == -1) {
         downsample_map_coverage((void *)arg0);
     }
-    if (D_0013D668[D_0015EE84] < n) {
-        D_0013D668[D_0015EE84] = n;
+    if (D_0013D668[g_current_level_index] < n) {
+        D_0013D668[g_current_level_index] = n;
     }
 }
 
@@ -989,7 +989,7 @@ void func_00208C38(float *out0, float *out1, int arg2, float arg3, float arg4) {
 
     idx = arg2;
     if (idx == -1) {
-        idx = D_0015EE84;
+        idx = g_current_level_index;
     }
     if (idx < 0) {
         idx = 0;
@@ -1024,7 +1024,7 @@ extern void func_00201640(int, int, int, int, long, int);
 extern int func_00200198(int, int);
 extern void func_002008B8(int, int, int, int, int, int);
 
-void func_00208D38(int left, int top, int right, int bottom) {
+void draw_map_markers(int left, int top, int right, int bottom) {
     float nx;
     float ny;
     int n = level_map_selection[0x2C];
@@ -1034,7 +1034,7 @@ void func_00208D38(int left, int top, int right, int bottom) {
         int sx;
         int sy;
 
-        func_00208C38(&nx, &ny, D_0015EE84, m->x, m->y);
+        func_00208C38(&nx, &ny, g_current_level_index, m->x, m->y);
         sx = left + (int)((float)(right - left) * nx);
         sy = top + (int)((float)(bottom - top) * ny);
         if (sx < -0x199 || sy < -0x199 || sx >= 0x219A || sy >= 0x1B9A) {
@@ -1071,13 +1071,13 @@ extern char D_0013D6B8[];
    D_0013D6B8; the index range is D_001E06B8[i]..[i + 1]. Binding the
    two bases to locals in retail's order orders their %hi halves. */
 void copy_level_object_positions(void) {
-    int i = D_0015EE84;
+    int i = g_current_level_index;
     if ((unsigned int)i < 0x13) {
         int start = D_001E06B8[i];
         int end = D_001E06B8[i + 1];
         if (start < end) {
             void **sbase = menu_action_messages;
-            char *dbase = D_0013D6B8;
+            char *dbase = race_gates;
             float *dst = (float *)(dbase + start * 16);
             void **src = &sbase[start];
             start = end - start;
@@ -1164,18 +1164,18 @@ void Menu_RunStateHandler(void) {
     if (*(int *)(b + 0xEC) != 0 || *(int *)(b + 0x1C) != 0) {
         D_0015FF4C = 1;
     }
-    old = D_0015EFB0;
-    if (D_0015EFB4 & 0x80) {
-        D_0015EFB0 = 0x15;
-        D_0015EFB4 = (D_0015EFB4 & ~0x80) | 0x40;
+    old = mode_freeze_state;
+    if (mode_freeze_flags & 0x80) {
+        mode_freeze_state = 0x15;
+        mode_freeze_flags = (mode_freeze_flags & ~0x80) | 0x40;
     }
-    if (D_0015EFB4 & 0x100) {
-        D_0015EFB0 = 0x14;
-        D_0015EFB4 = (D_0015EFB4 & ~0x100) | 0x40;
+    if (mode_freeze_flags & 0x100) {
+        mode_freeze_state = 0x14;
+        mode_freeze_flags = (mode_freeze_flags & ~0x100) | 0x40;
     }
-    D_001A0538[D_0015EFB0]();
+    D_001A0538[mode_freeze_state]();
     D_00161380++;
-    if (D_0015EFB0 != old) {
+    if (mode_freeze_state != old) {
         D_00161380 = 0;
     }
 }
@@ -1194,7 +1194,7 @@ extern int D_0013D390_i[] __asm__("D_0013D390");
 /* Sets menu state 3, clears the record's word at +0xFC and copies +0xC4
    into +0x1C. */
 void save_card_state_init(void) {
-    D_0015EFB0 = 3;
+    mode_freeze_state = 3;
     D_0013D390_i[0x3F] = 0;
     D_0013D390_i[0x07] = D_0013D390_i[0x31];
 }
@@ -1205,36 +1205,36 @@ void save_card_state_init(void) {
    one GNU as pads as a short loop and ps2eeas did not;
    tools/ps2eeas_nops.py writes it as a .word. */
 void save_card_state_good_save(void) {
-    int flags = D_0015EFB4;
+    int flags = mode_freeze_flags;
     char *b;
     int nf;
-    D_0015EFB4 = flags & ~4;
+    mode_freeze_flags = flags & ~4;
     b = memory_card_state;
-    nf = D_0015EFB4 & ~2;
-    D_0015EFB4 = nf;
+    nf = mode_freeze_flags & ~2;
+    mode_freeze_flags = nf;
     if (*(int *)(b + 0xFC) == 0) {
-        D_0015EFB0 = 3;
+        mode_freeze_state = 3;
         return;
     }
     if (flags & 0x80) {
-        D_0015EFB0 = 0x15;
-        D_0015EFB4 = (nf ^ 0x80) | 0x40;
+        mode_freeze_state = 0x15;
+        mode_freeze_flags = (nf ^ 0x80) | 0x40;
         return;
     }
     if (flags & 0x100) {
-        D_0015EFB0 = 0x14;
-        D_0015EFB4 = (nf ^ 0x100) | 0x40;
+        mode_freeze_state = 0x14;
+        mode_freeze_flags = (nf ^ 0x100) | 0x40;
         return;
     }
     if (*(int *)(b + 0x1C) != 0) {
         *(int *)(b + 0xFC) = 0;
-        D_0015EFB4 = nf | 1;
-        D_0015EFB0 = 2;
+        mode_freeze_flags = nf | 1;
+        mode_freeze_state = 2;
         return;
     }
     if (flags & 0x200) {
-        D_0015EFB4 = nf ^ 0x200;
-        D_0015EFB0 = 0x16;
+        mode_freeze_flags = nf ^ 0x200;
+        mode_freeze_state = 0x16;
     }
 }
 
@@ -1246,8 +1246,8 @@ void save_card_state_warning(void) {
     if (*slot == 2) {
         *slot = 0;
     }
-    if ((D_0015EFB4 ^ 1) & 1) {
-        D_0015EFB0 = 3;
+    if ((mode_freeze_flags ^ 1) & 1) {
+        mode_freeze_state = 3;
     }
 }
 
@@ -1267,34 +1267,34 @@ void CardMenu_State03ClearSlots(void) {
     if (*slot == 2) {
         *slot = 0;
     }
-    D_0015EFB0 = 4;
+    mode_freeze_state = 4;
 }
 
 void CardMenu_State04AdvanceOnStatus(void) {
     char *b = memory_card_state;
     int v;
-    D_0015EFB4 &= ~0x20;
+    mode_freeze_flags &= ~0x20;
     if (*(int *)(b + 8) != 2) {
         return;
     }
     v = *(int *)(b + 0x1C);
     if (v == 0) {
-        D_0015EFB0 = 9;
+        mode_freeze_state = 9;
     } else if (v == -1) {
         *(int *)(b + 0x1C) = 0;
-        D_0015EFB0 = 9;
+        mode_freeze_state = 9;
     } else if (v == -2) {
-        D_0015EFB0 = 5;
+        mode_freeze_state = 5;
     }
 }
 
 void save_card_state_unformatted(void) {
     if (D_0013D3AC != -2) {
-        D_0015EFB0 = 3;
+        mode_freeze_state = 3;
         return;
     }
-    if (D_0015EFB4 & 2) {
-        D_0015EFB0 = 6;
+    if (mode_freeze_flags & 2) {
+        mode_freeze_state = 6;
     }
 }
 
@@ -1303,22 +1303,22 @@ extern int D_0015F6C8 MACRO_ADDR;
 void save_card_state_prompt_format(void) {
     int flags;
     if (D_0013D3AC != -2) {
-        D_0015EFB0 = 3;
+        mode_freeze_state = 3;
         return;
     }
-    flags = D_0015EFB4;
+    flags = mode_freeze_flags;
     if (flags & 0x20) {
-        D_0015EFB4 = flags ^ 0x20;
+        mode_freeze_flags = flags ^ 0x20;
         if (boot_level_active != 0) {
-            D_0015EFB0 = 0x17;
+            mode_freeze_state = 0x17;
             return;
         }
-        D_0015EFB0 = 5;
+        mode_freeze_state = 5;
         return;
     }
     if (flags & 8) {
-        D_0015EFB4 = flags ^ 8;
-        D_0015EFB0 = 7;
+        mode_freeze_flags = flags ^ 8;
+        mode_freeze_state = 7;
     }
 }
 
@@ -1329,28 +1329,28 @@ void save_card_state_format_pending(void) {
         *(int *)(s + 0xE8) = 0;
         *(int *)(s + 0xE4) = 3;
     }
-    D_0015EFB0 = 8;
+    mode_freeze_state = 8;
 }
 
 void save_card_state_formatting(void) {
     char *s = memory_card_state;
     if (*(int *)(s + 0xDC) == 2 && *(int *)(s + 0xE4) < 0) {
         if (*(int *)(s + 0xEC) != 0) {
-            D_0015EFB0 = 0x11;
-            D_0015EFB4 |= 0x40;
+            mode_freeze_state = 0x11;
+            mode_freeze_flags |= 0x40;
             return;
         }
-        D_0015EFB0 = 0xE;
+        mode_freeze_state = 0xE;
     }
 }
 
 void save_card_state_formatted(void) {
     if (D_0013D3AC != 0) {
-        D_0015EFB0 = 3;
+        mode_freeze_state = 3;
         return;
     }
-    if (D_0015EFB4 & 6) {
-        D_0015EFB0 = 0xA;
+    if (mode_freeze_flags & 6) {
+        mode_freeze_state = 0xA;
     }
 }
 
@@ -1359,7 +1359,7 @@ void save_card_state_check_save(void) {
     if (*(int *)(s + 0xDC) == 2 && *(int *)(s + 0xE4) < 0) {
         *(int *)(s + 0xE4) = 7;
         *(int *)(s + 0xE8) = 0;
-        D_0015EFB0 = 0xB;
+        mode_freeze_state = 0xB;
     }
 }
 
@@ -1387,52 +1387,52 @@ void CardMenu_State11MarkSlotChoose(void) {
     }
     b = memory_card_state;
     if (*(int *)(b + 0x1C) < -1 || *(int *)(b + 0xEC) != 0) {
-        D_0015EFB0 = 3;
+        mode_freeze_state = 3;
         return;
     }
     v = *(int *)(b + 0x14);
     if (v == -2) {
         if (*(int *)(b + 0xC) + *(int *)(b + 0xAC) < 0x15E) {
-            D_0015EFB0 = 0x13;
+            mode_freeze_state = 0x13;
         } else {
-            D_0015EFB0 = 0xC;
+            mode_freeze_state = 0xC;
         }
         return;
     }
     if (v >= -1) {
-        D_0015EFB0 = 0x10;
+        mode_freeze_state = 0x10;
     }
 }
 
 void save_card_state_no_save(void) {
     if (D_0013D3AC != 0) {
-        D_0015EFB0 = 3;
+        mode_freeze_state = 3;
         return;
     }
-    if (D_0015EFB4 & 2) {
-        D_0015EFB0 = 0xD;
+    if (mode_freeze_flags & 2) {
+        mode_freeze_state = 0xD;
     }
 }
 
 void save_card_state_prompt_create_save(void) {
     int flags;
     if (D_0013D3AC != 0) {
-        D_0015EFB0 = 3;
+        mode_freeze_state = 3;
         return;
     }
-    flags = D_0015EFB4;
+    flags = mode_freeze_flags;
     if (flags & 0x20) {
-        D_0015EFB4 = flags ^ 0x20;
+        mode_freeze_flags = flags ^ 0x20;
         if (boot_level_active != 0) {
-            D_0015EFB0 = 0x18;
+            mode_freeze_state = 0x18;
             return;
         }
-        D_0015EFB0 = 0xC;
+        mode_freeze_state = 0xC;
         return;
     }
     if (flags & 0x10) {
-        D_0015EFB4 = flags ^ 0x10;
-        D_0015EFB0 = 0xE;
+        mode_freeze_flags = flags ^ 0x10;
+        mode_freeze_state = 0xE;
     }
 }
 
@@ -1441,7 +1441,7 @@ void save_card_state_create_save_pending(void) {
     if (*(int *)(s + 0xDC) == 2 && *(int *)(s + 0xE4) < 0) {
         *(int *)(s + 0xE4) = 9;
         *(int *)(s + 0xE8) = 0;
-        D_0015EFB0 = 0xF;
+        mode_freeze_state = 0xF;
     }
 }
 
@@ -1449,15 +1449,15 @@ void save_card_state_creating_save(void) {
     char *s = memory_card_state;
     if (*(int *)(s + 0xDC) == 2 && *(int *)(s + 0xE4) < 0) {
         if (*(int *)(s + 0xEC) != 0) {
-            D_0015EFB0 = 0x12;
-            D_0015EFB4 |= 0x40;
+            mode_freeze_state = 0x12;
+            mode_freeze_flags |= 0x40;
             return;
         }
         *(int *)(s + 0xE4) = 7;
         *(int *)(s + 0xC8) = 0;
         *(int *)(s + 0x14) = 0;
         *(int *)(s + 0xE8) = 0;
-        D_0015EFB0 = 0x10;
+        mode_freeze_state = 0x10;
     }
 }
 
@@ -1467,30 +1467,30 @@ void save_card_state_creating_save(void) {
 void CardMenu_State16NextState(void) {
     int flags;
     char *b;
-    if (D_0015EFB4 & 4) {
-        D_0015EFB4 &= ~4;
+    if (mode_freeze_flags & 4) {
+        mode_freeze_flags &= ~4;
     }
-    if (D_0015EFB4 & 2) {
-        D_0015EFB4 &= ~2;
+    if (mode_freeze_flags & 2) {
+        mode_freeze_flags &= ~2;
     }
-    flags = D_0015EFB4;
+    flags = mode_freeze_flags;
     if (flags & 0x80) {
-        D_0015EFB0 = 0x15;
-        D_0015EFB4 = (flags ^ 0x80) | 0x40;
+        mode_freeze_state = 0x15;
+        mode_freeze_flags = (flags ^ 0x80) | 0x40;
         return;
     }
     if (flags & 0x100) {
-        D_0015EFB0 = 0x14;
-        D_0015EFB4 = (flags ^ 0x100) | 0x40;
+        mode_freeze_state = 0x14;
+        mode_freeze_flags = (flags ^ 0x100) | 0x40;
         return;
     }
     b = memory_card_state;
     if (*(int *)(b + 0x1C) != 0) {
-        D_0015EFB0 = 3;
+        mode_freeze_state = 3;
         return;
     }
     if (*(int *)(b + 0xFC) != 0) {
-        D_0015EFB0 = 1;
+        mode_freeze_state = 1;
     }
 }
 
@@ -1503,8 +1503,8 @@ void save_card_state_format_failed(void) {
     if (*slot == 2) {
         *slot = 0;
     }
-    if (!(D_0015EFB4 & 0x40)) {
-        D_0015EFB0 = 3;
+    if (!(mode_freeze_flags & 0x40)) {
+        mode_freeze_state = 3;
     }
 }
 
@@ -1516,14 +1516,14 @@ void save_card_state_create_failed(void) {
     if (*slot == 2) {
         *slot = 0;
     }
-    if (!(D_0015EFB4 & 0x40)) {
-        D_0015EFB0 = 3;
+    if (!(mode_freeze_flags & 0x40)) {
+        mode_freeze_state = 3;
     }
 }
 
 void save_card_state_no_room(void) {
     if (D_0013D3AC != 0) {
-        D_0015EFB0 = 3;
+        mode_freeze_state = 3;
     }
 }
 
@@ -1535,8 +1535,8 @@ void save_card_state_load_failed(void) {
     if (*slot == 2) {
         *slot = 0;
     }
-    if (!(D_0015EFB4 & 0x40)) {
-        D_0015EFB0 = 3;
+    if (!(mode_freeze_flags & 0x40)) {
+        mode_freeze_state = 3;
     }
 }
 
@@ -1548,8 +1548,8 @@ void save_card_state_save_failed(void) {
     if (*slot == 2) {
         *slot = 0;
     }
-    if (!(D_0015EFB4 & 0x40)) {
-        D_0015EFB0 = 3;
+    if (!(mode_freeze_flags & 0x40)) {
+        mode_freeze_state = 3;
     }
 }
 
@@ -1558,36 +1558,36 @@ void CardMenu_State22StartOrFinish(void) {
     if (*(int *)(b + 0xDC) < 3 && *(int *)(b + 0xE4) < 0) {
         if (*(int *)(b + 0xEC) != 0) {
             *(int *)(b + 0xFC) = 0;
-            D_0015EFB0 = 0x15;
-            D_0015EFB4 |= 0x440;
+            mode_freeze_state = 0x15;
+            mode_freeze_flags |= 0x440;
             return;
         }
-        D_0015EFB0 = 1;
+        mode_freeze_state = 1;
     }
 }
 
 void save_card_state_prompt_begin_unformatted(void) {
     int flags;
     if (D_0013D3AC != -2) {
-        D_0015EFB0 = 3;
+        mode_freeze_state = 3;
         return;
     }
-    flags = D_0015EFB4;
+    flags = mode_freeze_flags;
     if (flags & 0x20) {
-        D_0015EFB4 = flags ^ 0x20;
-        D_0015EFB0 = 5;
+        mode_freeze_flags = flags ^ 0x20;
+        mode_freeze_state = 5;
     }
 }
 
 void save_card_state_prompt_begin_no_save(void) {
     int flags;
     if (D_0013D3AC != 0) {
-        D_0015EFB0 = 3;
+        mode_freeze_state = 3;
         return;
     }
-    flags = D_0015EFB4;
+    flags = mode_freeze_flags;
     if (flags & 0x20) {
-        D_0015EFB4 = flags ^ 0x20;
-        D_0015EFB0 = 0xC;
+        mode_freeze_flags = flags ^ 0x20;
+        mode_freeze_state = 0xC;
     }
 }

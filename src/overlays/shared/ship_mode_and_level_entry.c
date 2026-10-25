@@ -146,7 +146,7 @@ extern void func_00216EF0(int);
 extern void func_L00_00203FB8(void);
 extern void func_L00_0028FCA0(int);
 void ShipTakeOff(void) {
-    char *g = D_0013F450;
+    char *g = g_hero;
     
     if (*(int *)(g + 0x22A8) <= 0) *(int *)(g + 0x22A8) = 1;
     *(int *)&D_L00_0015F6BC = 1;
@@ -196,7 +196,7 @@ void prepare_target_level_transition(int dest) {
         int v;
         int t;
         EnterShipMode(8);
-        if (D_0015EE80) d = 0x50;
+        if (pal_mode) d = 0x50;
         v = scale_ticks(((int *)&D_L00_00160630)[*(short *)(g + 0x26)]);
         *(int *)(h + 0x34) = v;
         t = v / d;
@@ -228,7 +228,7 @@ void prepare_level_entry_transition(void) {
     int m, u;
     D_0013E130_901A8.x2c = 1;
     if (D_0013E130_901A8.x2a != 0) D_0013E130_901A8.x2a = 0;
-    m = D_0015EE84;
+    m = g_current_level_index;
     if (m == 1 && D_0013DE4B == 0) { D_L00_0015F6A8 = 0; return; }
     if (m != 0) {
         if (m == 0xE) { if (D_0013D4F8[0] == 0) goto out; }
@@ -315,7 +315,7 @@ void build_variant_effect_quads(unsigned char *quad_source) {
             quad.colors[k] = col;
             FastVecScale(quad_scale, &quad.positions[k], &D_L00_001BDE00[k]);
             FastVecAdd(&quad.positions[k], &quad.positions[k], &selected_quad_offsets[i]);
-            func_001F9EC0(&quad.positions[k], &quad.positions[k], D_0013E130_902A0.p0 + 0xC0);
+            matrix_mul_vec3(&quad.positions[k], &quad.positions[k], D_0013E130_902A0.p0 + 0xC0);
             FastVecAdd(&quad.positions[k], &quad.positions[k], &quad_source_translation);
         }
         func_L00_001FD1D8(&quad, 0, 0);

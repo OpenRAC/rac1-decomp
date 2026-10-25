@@ -60,7 +60,7 @@ unsigned char *spawn_moby_point_offset_particle(void *m, short index, float amou
         *(volatile unsigned char *)(p + 1) = 0;
         *(volatile float *)(p + 0xc) = amount;
         p[2] = D_L07_001B24F4[*(short *)(q + 0xc)];
-        *(float *)(q + 0x10) = D_0015EE60 * 0.015f;
+        *(float *)(q + 0x10) = frame_scale * 0.015f;
         *(short *)(q + 0xe) = index;
         p[8] = truncate_float_to_s32(*(float *)(q + 8) * 255.0f);
         Moby_GetJointWorldPos(*(void **)q, *(short *)(q + 0xe), v);

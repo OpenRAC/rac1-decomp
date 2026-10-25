@@ -41,7 +41,7 @@ void draw_hoven_jittered_quad_layers(char *m) {
     int a, b, j, k;
     float f20;
 
-    func_001FA460(M, m + 0xC0);
+    copy_matrix_rotation(M, m + 0xC0);
     qcopy(&M[12], m + 0x10);
     M[15] = 1.0f;
     tex = GetEffectTex(0xE);

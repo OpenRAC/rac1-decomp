@@ -44,7 +44,7 @@ void emit_moby_sprite_particles(char *m) {
         } else if (h <= 0.0f) {
             p->a[i] = h + 255.0f;
         }
-        if (func_001F9908(&p->c[i])) {
+        if (fast_dec_timer(&p->c[i])) {
             p->c[i] = scale_ticks(0xFF);
         }
         f = IntToFloat(scale_ticks(0xFF) - p->c[i]);
@@ -81,9 +81,9 @@ char *create_rocket(float scale, void *vel, void *pos, int a, int b, int c) {
         *(float *)(d + 0x38) = FastVecDist(m + 0x10, D_0013E633 + 0xE9D);
         *(int *)(d + 0x30) = 0;
         *(int *)(d + 0x34) = 0;
-        *(float *)(m + 0x48) = func_L00_001FF860(*(float *)d, *(float *)(d + 4));
-        *(float *)(m + 0x44) = -func_L00_001FF860(func_001F9CE8(d), *(float *)(d + 8));
-        func_L00_00251E30(m);
+        *(float *)(m + 0x48) = fast_atan2(*(float *)d, *(float *)(d + 4));
+        *(float *)(m + 0x44) = -fast_atan2(vec_length_xy(d), *(float *)(d + 8));
+        moby_build_matrix(m);
     }
     return m;
 }
@@ -154,7 +154,7 @@ void Moby819Update(char *m) {
             (unsigned char)d->target[0x20] == 0xFD)
             m[0x20] = 2;
         p = m + 0x10;
-        g = D_0013F450;
+        g = g_hero;
         if ((unsigned char)(g[0x20A4] - 1) < 2 && (tg = d->target) == *(char **)(g + 0x2080)) {
             speed = FastVecLength(d);
             qcopy(tp, tg + 0x10);
@@ -167,7 +167,7 @@ void Moby819Update(char *m) {
             FastVecSub(diff, tp, p);
             a = speed * speed - lensq_cc2e8(hv);
             b = (hv[0] * diff[0] + hv[1] * diff[1] + hv[2] * diff[2]) * -2.0f;
-            s = func_001F9B50(b * b - a * 4.0f * -lensq_cc2e8(diff));
+            s = vec_length(b * b - a * 4.0f * -lensq_cc2e8(diff));
             r1 = (-b + s) / (a + a);
             r2 = (-b - s) / (a + a);
             if (r1 > 0.0f && r2 > 0.0f) {
@@ -185,19 +185,19 @@ void Moby819Update(char *m) {
             if (t > 0.0f) {
                 FastVecScale(aim, hv, t);
                 func_001F9BD8_CD6A8(aim, aim, diff);
-                yaw = func_L00_001FF860(aim[0], aim[1]);
-                pitch = -func_L00_001FF860(func_001F9CE8(aim), aim[2]);
+                yaw = fast_atan2(aim[0], aim[1]);
+                pitch = -fast_atan2(vec_length_xy(aim), aim[2]);
             } else {
-                yaw = func_L00_001FF860(diff[0], diff[1]);
-                pitch = -func_L00_001FF860(func_001F9CE8(diff), diff[2]);
+                yaw = fast_atan2(diff[0], diff[1]);
+                pitch = -fast_atan2(vec_length_xy(diff), diff[2]);
             }
-            ((Rot_cc2e8 *)m)->rz = SpringTurn(((Rot_cc2e8 *)m)->rz, yaw, D_0015EE70 * 6.2831855f,
-                                              D_0015EE70 * 3.1415927f, D_0015EE6C * 6.2831855f,
+            ((Rot_cc2e8 *)m)->rz = SpringTurn(((Rot_cc2e8 *)m)->rz, yaw, g_frame_time_sq * 6.2831855f,
+                                              g_frame_time_sq * 3.1415927f, g_frame_time * 6.2831855f,
                                               &d->yawSpeed);
-            ((Rot_cc2e8 *)m)->ry = SpringTurn(((Rot_cc2e8 *)m)->ry, pitch, D_0015EE70 * 6.2831855f,
-                                              D_0015EE70 * 3.1415927f, D_0015EE6C * 6.2831855f,
+            ((Rot_cc2e8 *)m)->ry = SpringTurn(((Rot_cc2e8 *)m)->ry, pitch, g_frame_time_sq * 6.2831855f,
+                                              g_frame_time_sq * 3.1415927f, g_frame_time * 6.2831855f,
                                               &d->pitchSpeed);
-            ((Rot_cc2e8 *)m)->rx = FastAddRots(((Rot_cc2e8 *)m)->rx, D_0015EE6C * 6.2831855f);
+            ((Rot_cc2e8 *)m)->rx = FastAddRots(((Rot_cc2e8 *)m)->rx, g_frame_time * 6.2831855f);
             BuildSphericalOffset(speed, ((Rot_cc2e8 *)m)->rz, -((Rot_cc2e8 *)m)->ry, d);
         }
         clear_u64_value(c);
@@ -225,11 +225,11 @@ void Moby819Update(char *m) {
                 m[0x20] = 2;
             }
         }
-        if (func_001F9908(&d->timer))
+        if (fast_dec_timer(&d->timer))
             m[0x20] = 2;
         break;
     case 2:
-        if (D_0015EE84 != 10)
+        if (g_current_level_index != 10)
             SpawnExplosionFx(m, m + 0x10, -1, 0.25f, 13.0f);
         else
             SpawnExplosionFx(m, m + 0x10, -1, 0.25f, 0.0f);
@@ -296,8 +296,8 @@ void update_hero_flag_from_moby_local_box(unsigned char *m) {
         hero = D_0013E633 + 0xE9D;
         if (FastVecDist(m + 0x10, hero) < 8.0f) {
             FastVecSub(v, hero + 0x50, m + 0x10);
-            func_001FA4A0(mtx, m + 0xC0);
-            func_001F9EE8(v, v, mtx);
+            matrix_from_basis_rows(mtx, m + 0xC0);
+            transform_vector(v, v, mtx);
             if (-5.0f < v[0] && v[0] < 5.0f && 0.0f < v[2] && v[2] < 8.0f) {
                 if (v[1] < 0.5f) {
                     hero[0x224B] = 1;
@@ -352,7 +352,7 @@ void draw_moby_animated_quad_layers(unsigned char *m) {
     Quad_2EA578 *sv;
 
     scale = *(float **)(m + 0x78);
-    func_001FA460(transform, m + 0xC0);
+    copy_matrix_rotation(transform, m + 0xC0);
     qcopy(position, m + 0x10);
     position[3] = 1.0f;
     first.tex = GetEffectTex(0x2C);
@@ -573,7 +573,7 @@ void initialize_path_camera(char *cam) {
     pos = (char *)((PathCam *)cam)->pos;
     m1 = (char *)((PathCam *)cam)->m1;
     m2 = (char *)((PathCam *)cam)->m2;
-    f = func_L00_001FF860(1.0f, *(float *)(cf + 0xB0));
+    f = fast_atan2(1.0f, *(float *)(cf + 0xB0));
     stops->fov_end = f + f;
 
     idx = rec->path;
@@ -705,7 +705,7 @@ void Camera19_Update(char *moby) {
                 v1[1] = c3[1];
                 v1[2] = c3[2];
                 v1[3] = 0.0f;
-                func_001F9EC0(v1, v1, D_L10_001674D0);
+                matrix_mul_vec3(v1, v1, D_L10_001674D0);
                 func_001F9BD8_99AF0(v2, gb + 0x10, v1);
                 FastVecSub(va, v2, pm);
             } else {
@@ -760,7 +760,7 @@ void Camera19_Update(char *moby) {
 
         g = D_L10_001B0C30[*(int *)(e + 0x20)];
         qcopy(va, (moby + 0x30));
-        rr = Spline_AdvanceByDistance(g, (moby + 0x30), (int *)f, (float *)(f + 4), *(float *)(e + 0x3C) * D_0015EE6C, 0);
+        rr = Spline_AdvanceByDistance(g, (moby + 0x30), (int *)f, (float *)(f + 4), *(float *)(e + 0x3C) * g_frame_time, 0);
         if (*(short *)(f + 0x16) != 0) {
             if (FastDecTimer(f + 0x16) != 0) {
                 rr = 1;
@@ -819,7 +819,7 @@ void Camera19_Update(char *moby) {
             v2[1] = c3[1];
             v2[2] = c3[2];
             v2[3] = 0.0f;
-            func_001F9EC0(v2, v2, D_L10_001674D0);
+            matrix_mul_vec3(v2, v2, D_L10_001674D0);
             func_001F9BD8_99AF0(v3, b17 + 0x10, v2);
             FastVecSub(v1, v3, (moby + 0x30));
         } else {

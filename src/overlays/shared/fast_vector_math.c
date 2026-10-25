@@ -141,37 +141,37 @@ void setup_fs_aa_buffer_level(int display_width, int display_height, int storage
                    int display_offset_x, int display_offset_y) {
     unsigned long *q;
 
-    active_fs_aa_buffer = &D_00151880;
-    D_00151880.display_width = display_width;
-    D_00151880.display_height = display_height;
-    D_00151880.storage_width = storage_width;
-    D_00151880.storage_height = storage_height;
-    D_00151880.display_offset_x = display_offset_x;
-    D_00151880.display_offset_y = display_offset_y;
-    D_00151880.reserved170 = 0;
-    D_00151880.storage_psm = 0;
-    D_00151880.psm = 0;
-    D_00151880.target_psm = 0;
-    D_00151880.zpsm = 0x31;
-    D_00151880.fbp1 = D_0015EF80 >> 13;
-    D_00151880.fbp0 = D_0015EF84 >> 13;
-    D_00151880.zbp = D_0015EF88 >> 13;
-    func_00121DC8(&D_00151880, 0, storage_width, storage_height, display_offset_x,
+    active_fs_aa_buffer = &fs_aa_buffer;
+    fs_aa_buffer.display_width = display_width;
+    fs_aa_buffer.display_height = display_height;
+    fs_aa_buffer.storage_width = storage_width;
+    fs_aa_buffer.storage_height = storage_height;
+    fs_aa_buffer.display_offset_x = display_offset_x;
+    fs_aa_buffer.display_offset_y = display_offset_y;
+    fs_aa_buffer.reserved170 = 0;
+    fs_aa_buffer.storage_psm = 0;
+    fs_aa_buffer.psm = 0;
+    fs_aa_buffer.target_psm = 0;
+    fs_aa_buffer.zpsm = 0x31;
+    fs_aa_buffer.fbp1 = D_0015EF80 >> 13;
+    fs_aa_buffer.fbp0 = D_0015EF84 >> 13;
+    fs_aa_buffer.zbp = depth_buffer_address >> 13;
+    func_00121DC8(&fs_aa_buffer, 0, storage_width, storage_height, display_offset_x,
                   display_offset_y);
-    FA->dispfb.FBP = D_00151880.fbp1;
-    func_001222C8(&FA->frame0, D_00151880.psm, D_00151880.display_width,
-                  D_00151880.display_height, 3, D_00151880.zpsm);
-    FA->frame0.FBP = D_00151880.fbp0;
+    FA->dispfb.FBP = fs_aa_buffer.fbp1;
+    func_001222C8(&FA->frame0, fs_aa_buffer.psm, fs_aa_buffer.display_width,
+                  fs_aa_buffer.display_height, 3, fs_aa_buffer.zpsm);
+    FA->frame0.FBP = fs_aa_buffer.fbp0;
     *(unsigned long *)&FA->draw0[1] =
-        (long)D_00151880.zbp | ((unsigned long)(D_00151880.zpsm & 0xF) << 24);
+        (long)fs_aa_buffer.zbp | ((unsigned long)(fs_aa_buffer.zpsm & 0xF) << 24);
     *(u128_FAB40 *)&FA->giftag0 = 0;
     FA->giftag0.NLOOP = 8;
     FA->giftag0.EOP = 1;
     FA->giftag0.NREG = 1;
     FA->giftag0.REGS0 = 0xE;
-    func_001222C8(&FA->frame1, D_00151880.storage_psm, D_00151880.storage_width,
-                  D_00151880.storage_height, 0, 0);
-    FA->frame1.FBP = D_00151880.fbp1;
+    func_001222C8(&FA->frame1, fs_aa_buffer.storage_psm, fs_aa_buffer.storage_width,
+                  fs_aa_buffer.storage_height, 0, 0);
+    FA->frame1.FBP = fs_aa_buffer.fbp1;
     *(unsigned long *)&FA->draw1[1] = 1UL << 32;
     *(u128_FAB40 *)&FA->giftag1 = 0;
     FA->giftag1.NLOOP = 8;

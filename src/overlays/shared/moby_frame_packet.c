@@ -45,9 +45,9 @@ void set_moby_local_table_entry(char *a, int idx, void *pos, float x, float y) {
     float v[4];
     char *e = *(char **)(a + 0x94) + (idx * 32 + 0x10);
     float s = 1024.0f / *(float *)(a + 0x2C);
-    func_001FA4A0(m, a + 0xC0);
+    matrix_from_basis_rows(m, a + 0xC0);
     FastVecSub(v, pos, a + 0x10);
-    func_001F9EE8(v, v, m);
+    transform_vector(v, v, m);
     FastVecScale(v, v, s);
     qcopy(e + 0x10, v);
     *(float *)(e + 4) = y * s;
@@ -313,7 +313,7 @@ void Moby_GetJointWorldPos(char *arg0, int arg1, void *arg2) {
     n = arg1;
     func_002116A0(arg0, 1, &n, buf);
     FastVecScale(arg2, buf + 0x30, s);
-    func_001F9EC0(arg2, arg2, arg0 + 0xC0);
+    matrix_mul_vec3(arg2, arg2, arg0 + 0xC0);
     FastVecAdd(arg2, arg2, arg0 + 0x10);
 }
 extern void func_001FA460(void *, void *);
@@ -325,7 +325,7 @@ void compute_selected_world_matrices(char *o, int n, int *arg2, char *out) {
     int i;
 
     s = *(float *)(o + 0x2C) * 0.0009765625f;
-    func_001FA460(buf, o + 0xC0);
+    copy_matrix_rotation(buf, o + 0xC0);
     func_002116A0(o, n, arg2, out);
     for (i = 0; i < n; i++) {
         sce_vu0_mul_matrix(out + i * 0x40, buf, out + i * 0x40);
@@ -395,7 +395,7 @@ extern int D_0015EE84 MACRO_ADDR;
 extern unsigned char D_0014C150[];
 void jet_clear_persistent(int idx) {
     if (idx != 0xFF) {
-        D_0014C150[idx + D_0015EE84 * 16] = 0xFF;
+        D_0014C150[idx + g_current_level_index * 16] = 0xFF;
     }
 }
 ASM_FUNC("asm/overlays", func_L00_00251328);

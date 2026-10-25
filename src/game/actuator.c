@@ -140,7 +140,7 @@ extern short D_0015EF74;
 
 void initialize_streaming_state(void) {
     texture_alloc_counter = 0;
-    *(int *)&D_0015EF74 = D_0015EF8C;
+    *(int *)&g_gs_texture_allocation_cursor = g_gs_texture_allocation_base;
 }
 __asm__(".section .text
 	nop

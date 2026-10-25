@@ -336,17 +336,17 @@ extern void func_00234E80(void);
    the largest size seen in D_00160FC4. */
 /* A copy of its twin func_00229C08. */
 void DmaTfragTextures(void) {
-    int *p = (int *)D_00161000;
+    int *p = (int *)g_render_packet_cursor;
     int size;
 
-    D_00161000 += 0x10;
+    g_render_packet_cursor += 0x10;
     ((int *)D_00160FBC)[0] = 0x20000000;
-    ((int *)D_00160FBC)[1] = D_00161000;
+    ((int *)D_00160FBC)[1] = g_render_packet_cursor;
     ((int *)D_00160FBC)[2] = 0;
     ((int *)D_00160FBC)[3] = 0;
     if (draw_config[4] != 0 && draw_config[3] != 0) {
         ComputeTfragTextureUsage();
-        size = build_tfrag_texture_dma(D_0015EF74);
+        size = build_tfrag_texture_dma(g_gs_texture_allocation_cursor);
         VU1_texFlush();
         if (size > 0x400000) {
             STUB_printf(D_001E8CE0);
@@ -355,13 +355,13 @@ void DmaTfragTextures(void) {
             D_00160FC4 = size;
         }
     }
-    ((int *)D_00161000)[0] = 0x20000000;
-    ((int *)D_00161000)[1] = D_00160FBC + 0x10;
-    ((int *)D_00161000)[2] = 0;
-    ((int *)D_00161000)[3] = 0;
-    D_00161000 += 0x10;
+    ((int *)g_render_packet_cursor)[0] = 0x20000000;
+    ((int *)g_render_packet_cursor)[1] = D_00160FBC + 0x10;
+    ((int *)g_render_packet_cursor)[2] = 0;
+    ((int *)g_render_packet_cursor)[3] = 0;
+    g_render_packet_cursor += 0x10;
     p[0] = 0x20000000;
-    p[1] = D_00161000;
+    p[1] = g_render_packet_cursor;
     p[2] = 0;
     p[3] = 0;
 }
@@ -423,14 +423,14 @@ extern void func_002344D8(void);
 /* DrawTfrag, in DrawShrubs' shape. */
 void DrawTfrag(void) {
     float m[4][4];
-    int p = D_00161000;
+    int p = g_render_packet_cursor;
 
     D_00160FBC = p;
-    D_0015EF74 = D_0015EF78;
+    g_gs_texture_allocation_cursor = g_gs_texture_allocation_start;
     p += 0x10;
-    D_00161000 = p;
+    g_render_packet_cursor = p;
     ProfileMarker_Begin(D_00160F70, 1);
-    func_001FA190(m);
+    set_identity_matrix(m);
     FastVecScale(m[3], camera_position, -1024.0f);
     m[3][3] = 1.0f;
     sce_vu0_mul_matrix(m, camera_position - 0x100, m);

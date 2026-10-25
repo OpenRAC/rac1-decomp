@@ -102,7 +102,7 @@ void ultramech_scientist_update(char *moby) {
         ((struct Moby *)moby)->update_dist = 0xFF;
         *(float *)(data + 0xC) = 20.0f;
         DialogRequest_Init(moby, data);
-        if (((unsigned char *)(D_0014171B + 0xAA35))[*(int *)(data + 0x280) + (D_0015EE84 << 4)] != 0xFF) {
+        if (((unsigned char *)(D_0014171B + 0xAA35))[*(int *)(data + 0x280) + (g_current_level_index << 4)] != 0xFF) {
             break;
         }
         if (*(unsigned char *)(D_0013DE55 + 3) != 0) {
@@ -223,7 +223,7 @@ void ultramech_scientist_update(char *moby) {
         *(int *)(data + 0x15C) = scale_ticks(120);
         break;
     case ULTRAMECH_SCIENTIST_WAIT_FOR_PRE_SCENE_DELAY:
-        if (func_001F9908(data + 0x15C) == 0) {
+        if (fast_dec_timer(data + 0x15C) == 0) {
             break;
         }
         restore_saved_hero_moby_and_clear_vehicle_mode();
@@ -288,10 +288,10 @@ void ultramech_scientist_update(char *moby) {
     ease_rate = 0.02f;
     ease_limit = 0.3f;
     aim = 1;
-    value = func_001F9D48((float *)&((struct Moby *)moby)->pos, (float *)(D_0013E633 + 0xE9D));
+    value = vec_distance_xy((float *)&((struct Moby *)moby)->pos, (float *)(D_0013E633 + 0xE9D));
     if (value < 8.0f) {
         player = D_0013E633 + 0xE1D;
-        value = func_L00_001FF860(*(float *)(player + 0xD0) - ((struct Moby *)moby)->pos.x,
+        value = fast_atan2(*(float *)(player + 0xD0) - ((struct Moby *)moby)->pos.x,
                                   *(float *)(player + 0xD4) - ((struct Moby *)moby)->pos.y);
         value = FastDiffRots(((struct Moby *)moby)->rot.z, value);
         if (value < 1.5707964f) {
@@ -299,7 +299,7 @@ void ultramech_scientist_update(char *moby) {
             if (0.01f < value) {
                 *(int *)(data + 0x274) = scale_ticks(120);
             } else {
-                func_001F9908(data + 0x274);
+                fast_dec_timer(data + 0x274);
             }
             goto wander;
         }
@@ -309,12 +309,12 @@ void ultramech_scientist_update(char *moby) {
         qcopy(data + 0x260, D_0013E633 + 0xE1D + 0xD0);
     }
 wander:
-    if (func_001F9908(data + 0x278) == 0) {
+    if (fast_dec_timer(data + 0x278) == 0) {
         goto aim_head;
     }
     deg_to_rad = 0.017453292f;
     value = random_float_between(180.0f, 300.0f);
-    value = func_001F9878(value);
+    value = multiply_global_factor(value);
     *(int *)(data + 0x278) = truncate_float_to_s32(value);
     value = random_float_between(-90.0f, 90.0f);
     heading = FastAddRots(((struct Moby *)moby)->rot.z, value * deg_to_rad);
@@ -333,10 +333,10 @@ aim_head:
     qcopy(eye, &((struct Moby *)moby)->pos);
     eye[2] = eye[2] + 1.0f;
     FastVecSub(eye_to_target_vector, target, eye);
-    value = func_L00_001FF860(eye_to_target_vector[0], eye_to_target_vector[1]);
+    value = fast_atan2(eye_to_target_vector[0], eye_to_target_vector[1]);
     yaw = FastSubRots(value, ((struct Moby *)moby)->rot.z);
-    value = func_001F9CE8(eye_to_target_vector);
-    value = func_L00_001FF860(value, eye_to_target_vector[2]);
+    value = vec_length_xy(eye_to_target_vector);
+    value = fast_atan2(value, eye_to_target_vector[2]);
     pitch = -value;
     if (yaw > 1.5707964f) {
         yaw = 1.5707964f;
@@ -355,8 +355,8 @@ aim_head:
     if (gCheats[0] != 0) {
         *(float *)(data + 0x1D0) = 2.75f;
     }
-    EaseManipulatorOffsets(moby, data + 0x160, 1, ease_rate * D_0015EE64, ease_limit * D_0015EE64);
-    EaseManipulatorOffsets(moby, data + 0x1E0, 0, ease_rate * D_0015EE64, ease_limit * D_0015EE64);
+    EaseManipulatorOffsets(moby, data + 0x160, 1, ease_rate * g_frame_scale_sq, ease_limit * g_frame_scale_sq);
+    EaseManipulatorOffsets(moby, data + 0x1E0, 0, ease_rate * g_frame_scale_sq, ease_limit * g_frame_scale_sq);
     }
 }
 typedef struct Talk_2EE7E8 {
@@ -640,20 +640,20 @@ void draw_scaled_moby_radial_ripple_mesh(char *moby) {
     int b;
     int color;
     float scale;
-    scale = IntToFloat(D_L15_0015F6B0) * (D_L15_0016227C * D_0015EE6C);
+    scale = IntToFloat(D_L15_0015F6B0) * (D_L15_0016227C * g_frame_time);
     VU1_addGSregister(6, GetEffectTex(D_L15_00162268));
     VU1_addGSregister(0x42, ((long)D_L15_00162264 << 32) | 0x44);
     VU1_addGSregister(8, 0);
     VU1_addGSregister(0x14, 0xFF9000000260L);
     data->prev = data->angle;
-    data->angle = FastAddRots(data->angle, 360.0f / func_001F9878(D_L15_00162274) * 0.017453292f * D_0015EE6C);
+    data->angle = FastAddRots(data->angle, 360.0f / multiply_global_factor(D_L15_00162274) * 0.017453292f * g_frame_time);
     get_moby_color(moby, &r, &g, &b);
     color = (D_L15_0016226C << 24) | (b << 16) | (g << 8) | r;
     for (i = 0; i < 46; i++) {
         float *template_vertex = D_L15_001DEB30[i];
         float x = template_vertex[0];
         float y = template_vertex[1];
-        float rad = func_001F9B50(x * x + y * y);
+        float rad = vec_length(x * x + y * y);
         float radius_remainder = func_L00_00200210(rad, D_L15_00162270);
         float w = FastNormalizeAngle(radius_remainder * 6.2831855f / D_L15_00162270);
         float z = FastSin(FastAddRots(w, data->angle));
@@ -670,7 +670,7 @@ void draw_scaled_moby_radial_ripple_mesh(char *moby) {
         }
         font_queue_vu_state();
         for (k = 0; k < 1; k++) {
-            func_L00_001FDE48(D_L15_00162230[k], D_L15_00162250[k], D_L15_00162260[k], (void *)D_L15_00162258[k], 1);
+            draw_env_overlay_mesh(D_L15_00162230[k], D_L15_00162250[k], D_L15_00162260[k], (void *)D_L15_00162258[k], 1);
         }
     }
 }
@@ -710,20 +710,20 @@ void draw_scaled_88_vertex_moby_radial_ripple_mesh(char *moby) {
     int b;
     int color;
     float scale;
-    scale = IntToFloat(D_L15_0015F6B0) * (D_L15_001622EC * D_0015EE6C);
+    scale = IntToFloat(D_L15_0015F6B0) * (D_L15_001622EC * g_frame_time);
     VU1_addGSregister(6, GetEffectTex(D_L15_001622D8));
     VU1_addGSregister(0x42, ((long)D_L15_001622D4 << 32) | 0x44);
     VU1_addGSregister(8, 0);
     VU1_addGSregister(0x14, 0xFF9000000260L);
     data->prev = data->angle;
-    data->angle = FastAddRots(data->angle, 360.0f / func_001F9878(D_L15_001622E4) * 0.017453292f * D_0015EE6C);
+    data->angle = FastAddRots(data->angle, 360.0f / multiply_global_factor(D_L15_001622E4) * 0.017453292f * g_frame_time);
     get_moby_color(moby, &r, &g, &b);
     color = (D_L15_001622DC << 24) | (b << 16) | (g << 8) | r;
     for (i = 0; i < 88; i++) {
         float *template_vertex = D_L15_001DF3D0[i];
         float x = template_vertex[0];
         float y = template_vertex[1];
-        float rad = func_001F9B50(x * x + y * y);
+        float rad = vec_length(x * x + y * y);
         float radius_remainder = func_L00_00200210(rad, D_L15_001622E0);
         float w = FastNormalizeAngle(radius_remainder * 6.2831855f / D_L15_001622E0);
         float z = FastSin(FastAddRots(w, data->angle));
@@ -740,7 +740,7 @@ void draw_scaled_88_vertex_moby_radial_ripple_mesh(char *moby) {
         }
         font_queue_vu_state();
         for (k = 0; k < 1; k++) {
-            func_L00_001FDE48(D_L15_001622A0[k], D_L15_001622C0[k], D_L15_001622D0[k], (void *)D_L15_001622C8[k], 1);
+            draw_env_overlay_mesh(D_L15_001622A0[k], D_L15_001622C0[k], D_L15_001622D0[k], (void *)D_L15_001622C8[k], 1);
         }
     }
 }
@@ -850,8 +850,8 @@ int check_moby_target_angular_limits(char *moby, float a, float b) {
     FastVecSub(r, *(char **)(g + 0x180), p);
     lenr = FastVecLength(r);
     if (b != 0.0f) {
-        float t1 = func_L00_001FF860(lenq, dot1);
-        float t2 = func_L00_001FF860(lenr, dot2);
+        float t1 = fast_atan2(lenq, dot1);
+        float t2 = fast_atan2(lenr, dot2);
         float t3 = FastDiffRots(t1, t2);
         if (b * 0.017453292f < t3) {
             return 0;

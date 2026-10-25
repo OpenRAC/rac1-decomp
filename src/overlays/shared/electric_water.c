@@ -121,7 +121,7 @@ extern int func_L00_0020DC00(void);
 /* A sound voice stopped if it still plays for this owner. */
 #define STOP_2D7C00(i, own)                                                                        \
     if ((i) != -1) {                                                                               \
-        unsigned char *e_ = D_0013E650 + (i) * 0x70;                                                 \
+        unsigned char *e_ = voice_pool + (i) * 0x70;                                                 \
         if (*(unsigned char **)(e_ + 0x88) == (own) && e_[0x74] != 0) {                                     \
             Sound_StopSlot(i);                                                           \
         }                                                                                          \
@@ -200,7 +200,7 @@ void electric_water_update(unsigned char *m) {
                 D_L15_001BB334[*(short *)&((struct Moby *)MOBY_2D7C00(vars->switches[reset_sw]))->save_id] = 0;
                 D_L15_001BBF94[*(short *)&((struct Moby *)MOBY_2D7C00(vars->switches[reset_sw]))->save_id] = 0;
                 save_id = ((struct Moby *)MOBY_2D7C00(vars->switches[reset_sw]))->save_id;
-                *(int *)((((short)save_id >> 5) << 2) + (D_0015EE84 << 8) + (int)level_moby_killed) &= ~(1 << (save_id & 0x1F));
+                *(int *)((((short)save_id >> 5) << 2) + (g_current_level_index << 8) + (int)level_moby_killed) &= ~(1 << (save_id & 0x1F));
                 save_id = ((struct Moby *)MOBY_2D7C00(vars->switches[reset_sw]))->save_id;
                 *(int *)((((short)save_id >> 5) << 2) + (int)D_L15_001BADE0) &= ~(1 << (save_id & 0x1F));
             } else {
@@ -236,14 +236,14 @@ void electric_water_update(unsigned char *m) {
         if (moby->state == ELECTRIC_WATER_OFF) {
             for (dim_lamp = 0; dim_lamp < 3; dim_lamp++) {
                 if (vars->lamps[dim_lamp] != -1) {
-                    func_L00_00251328(MOBYP_2D7C00(vars->lamps[dim_lamp]), 0x40, 0x40, 0x40);
+                    set_moby_color(MOBYP_2D7C00(vars->lamps[dim_lamp]), 0x40, 0x40, 0x40);
                 }
             }
         } else {
             for (lamp = 0; lamp < 3; lamp++) {
                 int v = rand_range(0x40, 0x7F);
                 if (vars->lamps[lamp] != -1) {
-                    func_L00_00251328(MOBYP_2D7C00(vars->lamps[lamp]), v, v, v);
+                    set_moby_color(MOBYP_2D7C00(vars->lamps[lamp]), v, v, v);
                 }
             }
         }
@@ -294,12 +294,12 @@ void electric_water_update(unsigned char *m) {
         }
 
         if (inside && wet) {
-            if (vars->owner != 0 && vars->owner != (struct Moby *)D_0013F450.moby) {
+            if (vars->owner != 0 && vars->owner != (struct Moby *)g_hero.moby) {
                 RELEASE_2D7C00(vars);
             }
-            vars->owner = (struct Moby *)D_0013F450.moby;
-            vars->voice0 = Sound_PlayClassSound(0, 4, D_0013F450.moby, 0x28F);
-            vars->voice1 = Sound_PlayClassSound(1, 4, D_0013F450.moby, 0x28F);
+            vars->owner = (struct Moby *)g_hero.moby;
+            vars->voice0 = Sound_PlayClassSound(0, 4, g_hero.moby, 0x28F);
+            vars->voice1 = Sound_PlayClassSound(1, 4, g_hero.moby, 0x28F);
             if (vars->shock_count == 0) {
                 vars->saved_fog[0] = D_L15_0015F548;
                 vars->saved_fog[1] = D_L15_0015F54C;
@@ -321,9 +321,9 @@ void electric_water_update(unsigned char *m) {
             theta = random_angle_radians();
             phi = random_angle_radians();
             BuildSphericalOffset(&vars->bolt_aim, radius, theta, phi);
-            func_L00_001FF240(unused_vector_argument, &vars->bolt_aim, &D_0013F450.body);
+            add_vectors(unused_vector_argument, &vars->bolt_aim, &g_hero.body);
             vars->bolt_end = vars->bolt_aim;
-            vars->bolt_start = D_0013F450.body;
+            vars->bolt_start = g_hero.body;
             initialize_electric_water_bolt_effect((char *)moby);
             update_electric_water_bolt_effect(moby);
             AddDrawCallback(draw_electric_water_bolt_effect, moby);
@@ -339,7 +339,7 @@ void electric_water_update(unsigned char *m) {
             hit.v[2] = 1.0f;
             hit.v[3] = 5627.9248f;
             hit.b28 = 0;
-            record_moby_hit(D_0013F450.moby, &hit);
+            record_moby_hit(g_hero.moby, &hit);
             if (moby->state == ELECTRIC_WATER_OFF) {
                 D_L15_0015F548 = vars->saved_fog[0];
                 D_L15_0015F54C = vars->saved_fog[1];
@@ -358,16 +358,16 @@ void electric_water_update(unsigned char *m) {
                 continue;
             }
             if (nearest != 0) {
-                distance = func_001F9D48(&nearest->pos, D_L15_00167440);
-                if (!(func_001F9D48(&((struct Moby *)MOBYP_2D7C00(vars->lamps[near_lamp]))->pos, D_L15_00167440) < distance)) {
+                distance = vec_distance_xy(&nearest->pos, D_L15_00167440);
+                if (!(vec_distance_xy(&((struct Moby *)MOBYP_2D7C00(vars->lamps[near_lamp]))->pos, D_L15_00167440) < distance)) {
                     continue;
                 }
             }
             nearest = (struct Moby *)MOBYP_2D7C00(vars->lamps[near_lamp]);
         }
         if (vars->owner == 0
-            || (distance = func_001F9D48(&vars->owner->pos, D_L15_00167440),
-                func_001F9D48(&nearest->pos, D_L15_00167440) < distance)) {
+            || (distance = vec_distance_xy(&vars->owner->pos, D_L15_00167440),
+                vec_distance_xy(&nearest->pos, D_L15_00167440) < distance)) {
             if (vars->owner != 0) {
                 RELEASE_2D7C00(vars);
             }
@@ -405,7 +405,7 @@ void electric_water_update(unsigned char *m) {
     case ELECTRIC_WATER_SWITCH_DISABLED:
         for (i = 0; i < 3; i++) {
             if (vars->lamps[i] != -1) {
-                func_L00_00251328(MOBYP_2D7C00(vars->lamps[i]), 0x40, 0x40, 0x40);
+                set_moby_color(MOBYP_2D7C00(vars->lamps[i]), 0x40, 0x40, 0x40);
             }
         }
         if (vars->light != -1) {
@@ -423,9 +423,9 @@ void electric_water_update(unsigned char *m) {
             if (vars->switches[i] == -1) {
                 continue;
             }
-            if (D_0013F450.standing != MOBYP_2D7C00(vars->switches[i])
-                || ((struct Moby *)D_0013F450.standing)->oclass != 0x33E
-                || D_0013F450.airTicks != 0) {
+            if (g_hero.standing != MOBYP_2D7C00(vars->switches[i])
+                || ((struct Moby *)g_hero.standing)->oclass != 0x33E
+                || g_hero.airTicks != 0) {
                 continue;
             }
             if (vars->armed != 0) {
@@ -439,8 +439,8 @@ void electric_water_update(unsigned char *m) {
         }
         vars->armed = armed;
         if (FastDecTimer(&vars->off_timer) == 0) {
-            if (is_point_inside_clip_volume(&D_0013F450.pos, vars->reset_area_a) == 0 || D_0013F450.airTicks != 0) {
-                if (is_point_inside_clip_volume(&D_0013F450.pos, vars->reset_area_b) == 0) {
+            if (is_point_inside_clip_volume(&g_hero.pos, vars->reset_area_a) == 0 || g_hero.airTicks != 0) {
+                if (is_point_inside_clip_volume(&g_hero.pos, vars->reset_area_b) == 0) {
                     break;
                 }
             }
@@ -683,7 +683,7 @@ void update_electric_water_bolt_effect(Moby *moby) {
         b = random_angle_radians();
         BuildSphericalOffset(&s[1], scale, a, b);
         s[1].f[2] = s[1].f[2] * 0.5f;
-        func_001F9C08(&s[2], &s[3], &s[1], *(float *)&D_L15_00161D18);
+        lerp_vector(&s[2], &s[3], &s[1], *(float *)&D_L15_00161D18);
         len0 = FastVecLength(&s[2]);
         if (len0 == 0.0f) {
             qcopy(&D_L15_001D3A20_2d8fa0[0][i], &D_L15_001D3A20_2d8fa0[0][i - 1]);
@@ -708,7 +708,7 @@ void update_electric_water_bolt_effect(Moby *moby) {
                 w = 0.1f;
             }
             FastVecScale(&s[5], &s[5], scale / len);
-            func_001F9C08(&s[3], &s[3], &s[5], w);
+            lerp_vector(&s[3], &s[3], &s[5], w);
         }
         if (i < 10) {
             float g;
@@ -722,7 +722,7 @@ void update_electric_water_bolt_effect(Moby *moby) {
             h = h * FastSin(g) + randf_sym(0.0f, 0.1f);
             D_L15_001D3A20_2d8fa0[1][i].f[2] = D_L15_001D3A20_2d8fa0[1][i].f[2] + h;
             D_L15_001D3E30[i] = h;
-            ang = FastAddRots(func_L00_001FF860(s[1].f[0], s[1].f[1]), 1.5707964f);
+            ang = FastAddRots(fast_atan2(s[1].f[0], s[1].f[1]), 1.5707964f);
             m = *(float *)&D_L15_00161CAC * FastCos(g);
             s[4].f[0] = FastCos(ang) * m;
             s[4].f[1] = FastSin(ang) * m;
@@ -797,7 +797,7 @@ void update_electric_water_bolt_effect(Moby *moby) {
     }
     scale = randf_sym(0.52359879f, 1.04719758f);
     f20 = random_float_between(-0.52359879f, 1.04719758f);
-    FastVecScale(&s[5], &s[0], *(float *)&D_L15_00161D10 * D_0015EE60);
+    FastVecScale(&s[5], &s[0], *(float *)&D_L15_00161D10 * frame_scale);
     build_look_at_matrix(&s[5], &s[5], &s[6], f20);
     build_look_at_matrix(&s[5], &s[5], &s[7], scale);
     r = rand_range(1, 8);
@@ -836,7 +836,7 @@ extern void func_L15_002DA238(char *);
 
 // Scrolls a wrapping coordinate, refreshes the two path curves and four colour curves, then runs the follow-up.
 void draw_electric_water_bolt_effect(char *moby) {
-    float v = F(D_L15_00161CD4) - F(D_L15_00161CD8) * D_0015EE60;
+    float v = F(D_L15_00161CD4) - F(D_L15_00161CD8) * frame_scale;
     F(D_L15_00161CD4) = v;
     if (v <= -8.0f) {
         F(D_L15_00161CD4) = v + 8.0f;
@@ -957,11 +957,11 @@ void update_spinning_projectile(unsigned char *m) {
     }
     if (m[0x20] != 0)
         return;
-    *(float *)(m + 0x40) = FastAddRots(*(float *)(m + 0x40), D_0015EE6C * 6.2831855f);
+    *(float *)(m + 0x40) = FastAddRots(*(float *)(m + 0x40), g_frame_time * 6.2831855f);
     FastVecAdd(next, m + 0x10, d);
     InitDirectionalHitQuery(col, m, 1, 2.0f, d);
     *(short *)(col + 0x1A) = *(short *)(m + 0xA6);
-    if (func_L00_001EFFF0(m + 0x10, next, 0, m, col) != 0 || coll_sphere(m + 0x10, 0, m, 0.3f) != 0 || func_001F9908(d + 0x38) != 0) {
+    if (func_L00_001EFFF0(m + 0x10, next, 0, m, col) != 0 || coll_sphere(m + 0x10, 0, m, 0.3f) != 0 || fast_dec_timer(d + 0x38) != 0) {
         hit = (char *)D_L15_001744D8[0];
         if (hit != 0 && (int)hit != *(int *)(d + 0x3C)) {
             if (*(short *)(hit + 0xA6) != 0x4E)
@@ -1000,9 +1000,9 @@ char *spawn_class_3a6_moby(char *src, float *v, char *pos) {
         *(char **)(p + 0x3C) = src;
         m[0x23] = 0x30;
         *(unsigned short *)(m + 0x34) |= 0x200;
-        *(float *)(m + 0x48) = func_L00_001FF860(v[0], v[1]);
-        *(float *)(m + 0x44) = -func_L00_001FF860(func_001F9CE8(v), v[2]);
-        func_L00_00251E30(m);
+        *(float *)(m + 0x48) = fast_atan2(v[0], v[1]);
+        *(float *)(m + 0x44) = -fast_atan2(vec_length_xy(v), v[2]);
+        moby_build_matrix(m);
         spawn_source_attached_fading_effect_particle(m, 0x600040FF, 0x80, -1, 170000.0f);
     }
     return m;
@@ -1061,8 +1061,8 @@ void underwater_ring_update(unsigned char *moby) {
     if ((unsigned char)(moby[0x20] - 1) < 2) {
         FastVecSub(delta, moby + 0x10, D_0013E633 + 0xE9D);
         if (FastVecLength(delta) < vars->distance) {
-            func_001FA4A0(matrix, moby + 0xC0);
-            func_001F9EE8(delta, delta, matrix);
+            matrix_from_basis_rows(matrix, moby + 0xC0);
+            transform_vector(delta, delta, matrix);
             if (*(float *)(delta + 4) < 0.2f) near_parent = 1;
         }
     }
@@ -1090,7 +1090,7 @@ void underwater_ring_update(unsigned char *moby) {
         vars->child_count = 0;
         vars->triggered = 0;
         vars->flash_timer = 0;
-        func_L00_00251328(moby, 0, 0, 0);
+        set_moby_color(moby, 0, 0, 0);
         moby[0x20] = 1;
         break;
     case 1:
@@ -1099,7 +1099,7 @@ void underwater_ring_update(unsigned char *moby) {
         save_byte = (unsigned char *)D_L15_001BBB40;
         save_byte -= -(short)save_id;
         if (save_byte[0x454] != 0 ||
-            ((((int)*(unsigned int *)(((((short)save_id >> 5) << 2) + (D_0015EE84 << 8)) + (unsigned char *)(D_0014171B + 0xAB75))) >> (save_id & 31)) & 1) != 0) {
+            ((((int)*(unsigned int *)(((((short)save_id >> 5) << 2) + (g_current_level_index << 8)) + (unsigned char *)(D_0014171B + 0xAB75))) >> (save_id & 31)) & 1) != 0) {
             if (vars->enabled != 0) {
                 set_moby_list_state(moby[0x21], 4);
                 vars->timer = vars->restart_timer;
@@ -1117,7 +1117,7 @@ void underwater_ring_update(unsigned char *moby) {
             }
             parent_vars->child_count++;
             Moby_PlaySound(3, 0x31, (int)moby);
-            func_L00_00251328(moby, 0, 0xff, 0);
+            set_moby_color(moby, 0, 0xff, 0);
             vars->triggered = 1;
         }
         if (moby[0x20] == 2) {
@@ -1151,7 +1151,7 @@ void underwater_ring_update(unsigned char *moby) {
         }
         break;
     case 3:
-        func_L00_00251328(moby, 0, 0, 0);
+        set_moby_color(moby, 0, 0, 0);
         vars->child_count = 0;
         vars->triggered = 0;
         moby[0x20] = 1;
@@ -1162,15 +1162,15 @@ void underwater_ring_update(unsigned char *moby) {
         if (FastDecTimer(&vars->flash_timer) != 0) {
             vars->flash_timer = scale_ticks(0x14);
             if (vars->flash_color != 0) {
-                func_L00_00251328(moby, 0, 0xff, 0);
+                set_moby_color(moby, 0, 0xff, 0);
                 vars->flash_color = 0;
             } else {
-                func_L00_00251328(moby, 0xff, 0xff, 0xff);
+                set_moby_color(moby, 0xff, 0xff, 0xff);
                 vars->flash_color = 1;
             }
         }
         save_id = *(unsigned short *)(moby + 0xB2);
-        bits = (unsigned int *)(((((short)save_id >> 5) << 2) + (D_0015EE84 << 8)) + (unsigned char *)(D_0014171B + 0xAB75));
+        bits = (unsigned int *)(((((short)save_id >> 5) << 2) + (g_current_level_index << 8)) + (unsigned char *)(D_0014171B + 0xAB75));
         *bits |= 1U << (save_id & 31);
         save_id = *(unsigned short *)(moby + 0xB2);
         D_L15_001BADE0[(short)save_id >> 5] |= 1U << (save_id & 31);
@@ -1186,7 +1186,7 @@ extern void func_L15_002EC080(void);
 void RippleStripsMobyUpdate(char *moby)
 {
     if (*(unsigned char *)(moby + 0x20) == 0) {
-        func_L00_00251328(moby, 0x40, 0x40, 0x40);
+        set_moby_color(moby, 0x40, 0x40, 0x40);
         moby[0x20] = 1;
     } else {
         AddDrawCallback((void *)draw_moby_radial_ripple_mesh_buffers, moby);
@@ -1220,8 +1220,8 @@ void codebot_update(unsigned char *moby) {
     };
     Moby *m = (Moby *)moby;
     unsigned char *collection_flags;
-    if (D_0015EE84 != 0xF) {
-        m->rot.z = FastAddRots(m->rot.z, D_0015EE6C * 1.5707964f);
+    if (g_current_level_index != 0xF) {
+        m->rot.z = FastAddRots(m->rot.z, g_frame_time * 1.5707964f);
         m->scale = m->pclass->scale * *(float *)&D_L15_00162220;
         switch (m->state) {
         case CODEBOT_INITIALIZE:
@@ -1235,8 +1235,8 @@ void codebot_update(unsigned char *moby) {
             break;
         case CODEBOT_CHECK_HERO_PROXIMITY:
             SparkleSpritesDrawL02(moby);
-            if (FastVecDist(&m->pos, &((Hero_2D7C00 *)&D_0013F450)->pos) < 3.0f) {
-                if (((HeroStateWord_2D7C00 *)&D_0013F450)->current != 0x32) {
+            if (FastVecDist(&m->pos, &((Hero_2D7C00 *)&g_hero)->pos) < 3.0f) {
+                if (((HeroStateWord_2D7C00 *)&g_hero)->current != 0x32) {
                     m->flags |= 0x41;
                     StartCutscene(1);
                     m->state = 2;
@@ -1320,7 +1320,7 @@ void giant_clank_pad_update(char *m) {
         p0->unk34 = p0->unk34 | 1;
         p0->unk94 = 0;
         p0->unk31 = 0;
-        if (D_0015EE84 != 0x12 || (b = (unsigned char *)D_0014171B + 0xAA35, x = b + ((unsigned char *)m)[0xB0], x[0x120] != 0xFF)) {
+        if (g_current_level_index != 0x12 || (b = (unsigned char *)D_0014171B + 0xAA35, x = b + ((unsigned char *)m)[0xB0], x[0x120] != 0xFF)) {
             ns = 1;
         } else {
             ns = 3;
@@ -1340,11 +1340,11 @@ void giant_clank_pad_update(char *m) {
         if (v == 0) {
             try_set_help_message(4, 0x3AA4);
         } else if (v == st) {
-            if (D_0015EE84 != 0x12) try_set_help_message(4, 0x3AA5);
+            if (g_current_level_index != 0x12) try_set_help_message(4, 0x3AA5);
         }
         if ((D_0013CA40_2EE458.pressed & 0x10) == 0) return;
         if (D_L15_0015F674 != 4) return;
-        if (D_0013F450_2EE458.vehicle_mode == 2 && (gm = D_0015EE84) == 0xF) {
+        if (D_0013F450_2EE458.vehicle_mode == 2 && (gm = g_current_level_index) == 0xF) {
             other = D_L15_00160058_m;
             other += *(int *)(data + 0x60);
             other->unk34 = other->unk34 | 1;
@@ -1352,7 +1352,7 @@ void giant_clank_pad_update(char *m) {
             other->unk31 = 0;
             restore_saved_hero_moby_and_clear_vehicle_mode();
             MobySetAnimation(other, 0, 0);
-            if (D_0015EE84 == 0xF) {
+            if (g_current_level_index == 0xF) {
                 StartCutscene(9);
                 MusicRequestTrack(0, 5);
             }
@@ -1371,21 +1371,21 @@ void giant_clank_pad_update(char *m) {
         *(u128_2EE458 *)V = *(u128_2EE458 *)(m + 0x10);
         f = ProbeGroundHeight(V, 0, 0.5f);
         V[2] = f + 0.1f;
-        if (D_0015EE84 == 0xF) jet_reset_camera(V, m + 0x40);
+        if (g_current_level_index == 0xF) jet_reset_camera(V, m + 0x40);
         Hero_ResetToPosition(V, m + 0x40, 0, 1);
         o3 = other->unk24;
         other->unk94 = *(int *)(o3 + 0x10);
         other->unk31 = 1;
         other->unk34 = other->unk34 & 0xFFFE;
         enter_hero_vehicle_mode(2, 0x5A, (char *)other);
-        if (D_0015EE84 == 0xF) {
+        if (g_current_level_index == 0xF) {
             StartCutscene(8);
             *(u128_2EE458 *)D_0013F450_2EE458.unk1D00 = *(u128_2EE458 *)&D_0013F450_2EE458.motion.pos;
             *(u128_2EE458 *)(D_0013F450_2EE458.unk1D00 + 0x10) = *(u128_2EE458 *)&D_0013F450_2EE458.motion.rot;
             MusicRequestTrack(2, 4);
             return;
         }
-        if (D_0015EE84 == 0x12) {
+        if (g_current_level_index == 0x12) {
             StartCutscene(6);
             *(u128_2EE458 *)D_0013F450_2EE458.unk1D00 = *(u128_2EE458 *)&D_0013F450_2EE458.motion.pos;
             *(u128_2EE458 *)(D_0013F450_2EE458.unk1D00 + 0x10) = *(u128_2EE458 *)&D_0013F450_2EE458.motion.rot;

@@ -21,7 +21,7 @@ extern void func_L00_00211908(void);
 
 // per-frame update of the state flags for the current action, and the sound/effect that goes with it
 void HeroL05_ProcessContactType(void) {
-    char *g = D_0013F450;
+    char *g = g_hero;
     unsigned char keep = GB(0x12ED);
     int s = GH(0x12E0);
     FastMemZero16(g + 0x12E0, 0x10);
@@ -42,27 +42,27 @@ void HeroL05_ProcessContactType(void) {
         }
     }
     if (s == 0xE) {
-        char *g = D_0013F450;
+        char *g = g_hero;
         GB(0x12E4) = 1;
         GF(0x22A4) = 0.2f;
         GF(0x2F0) = GF(0x2D8) + 0.2f;
     }
     if (s == 0) {
-        char *g = D_0013F450;
+        char *g = g_hero;
         float d = GF(0x2F0) - GF(0x2D8);
         GF(0x22A4) = d;
         if (d < 0.85f && 0.25f < d) {
             GB(0x20A9) = 1;
         }
-        g = D_0013F450;
+        g = g_hero;
         GB(0x12E4) = 1;
     }
     if (s == 3) {
-        char *g = D_0013F450;
+        char *g = g_hero;
         GB(0x12E6) = 1;
     }
     if (D_0015EE84_m == 0xD) {
-        char *g = D_0013F450;
+        char *g = g_hero;
         if (GW(0x2084) != 0x7B) {
             if (coll_sphere(GF(0x234) + 0.03f, g + 0xD0, 2, 0)) {
                 if (CollType() == 0xB) {
@@ -73,43 +73,43 @@ void HeroL05_ProcessContactType(void) {
         }
     }
     if (s == 0xB) {
-        char *g = D_0013F450;
+        char *g = g_hero;
         GB(0x12EB) = 1;
     }
     if (s == 5) {
-        char *g = D_0013F450;
+        char *g = g_hero;
         GB(0x12E8) = 1;
     }
     if (s == 6) {
-        char *g = D_0013F450;
+        char *g = g_hero;
         GB(0x12E9) = 1;
     }
     if (s == 4) {
-        char *g = D_0013F450;
+        char *g = g_hero;
         GB(0x12E3) = 1;
     }
     if (s == 0xD) {
-        char *g = D_0013F450;
+        char *g = g_hero;
         GB(0x12EC) = 1;
     }
     if (s == 1) {
-        char *g = D_0013F450;
+        char *g = g_hero;
         GB(0x12E5) = 1;
     }
     if (s == 8) {
-        char *g = D_0013F450;
+        char *g = g_hero;
         GB(0x12EA) = 1;
     }
     if (s == 9) {
-        char *g = D_0013F450;
+        char *g = g_hero;
         GB(0x12EE) = 1;
     }
     if (s == 0xC) {
-        char *g = D_0013F450;
+        char *g = g_hero;
         GB(0x12EA) = 1;
     }
     {
-    char *g = D_0013F450;
+    char *g = g_hero;
     if (GB(0x12E3) != 0 && GW(0x300) != 0) {
         int v = GW(0x208C);
         if (v != 0x10 && v != 0x14 && v != 7) {
@@ -119,7 +119,7 @@ void HeroL05_ProcessContactType(void) {
     }
     }
     {
-    char *g = D_0013F450;
+    char *g = g_hero;
     if (GB(0x12E5) != 0) {
         if (GW(0x300) != 0) {
             if (!(GW(0x2084) == 0x3C && GH(0x41E) == 0)) {
@@ -135,7 +135,7 @@ void HeroL05_ProcessContactType(void) {
     }
     }
     {
-    char *g = D_0013F450;
+    char *g = g_hero;
     if (GB(0x12EC) != 0 && GW(0x2084) != 0x7F) {
         if (FastAbsF(GF(0x2F0) - (GF(0x88) + 0.25f)) < 1.0f
             && GF(0x2F0) - GF(0x88) > 0.0f && GF(0x108) < 0.0f) {
@@ -146,7 +146,7 @@ void HeroL05_ProcessContactType(void) {
     }
     }
     {
-    char *g = D_0013F450;
+    char *g = g_hero;
     if (GB(0x12E6) != 0 && GW(0x2084) != 0x68 && GW(0x2084) != 0x7B) {
         if (FastAbsF(GF(0x2F4) - (GF(0x88) + 0.25f)) < 1.0f
             && GF(0x2F4) - GF(0x88) > 0.0f) {
@@ -163,7 +163,7 @@ void HeroL05_ProcessContactType(void) {
     }
     }
     {
-    char *g = D_0013F450;
+    char *g = g_hero;
     if (GB(0x12EB) != 0 && GW(0x2084) != 0x7B) {
         if (FastAbsF(GF(0x2F4) - (GF(0x88) + 0.25f)) < 1.0f
             && GF(0x2F4) - GF(0x88) > 0.0f && GF(0x108) < 0.0f) {
@@ -310,7 +310,7 @@ void HeroL05_GroundProbe(void) {
             goto d1;
         }
         r = coll_sound_class();
-        if (D_0015EE84 == 1 || D_0015EE84 == 0x12) {
+        if (g_current_level_index == 1 || g_current_level_index == 0x12) {
             r = 3;
         }
         D_0013F450_40968.xB12ed = r;
@@ -355,7 +355,7 @@ void HeroL05_GroundProbe(void) {
         D_0013F450_40968.xI2fc = D_L05_00174340.i18;
         func_001252C0((u8 *)&D_0013F450_40968 + 0x270, (u8 *)&D_L05_00174340.f40);
         D_0013F450_40968.u2e0.F = compute_gravity_relative_vector_inclination((u8 *)&D_L05_00174340.f40);
-        D_0013F450_40968.xF2ec = func_L00_001FF860(D_L05_00174340.f40, D_L05_00174340.f44);
+        D_0013F450_40968.xF2ec = fast_atan2(D_L05_00174340.f40, D_L05_00174340.f44);
         FastVecSub(&v20, ((u8 *)&D_0013F450_40968 + 0x2A0), (u8 *)&D_0013F450_40968 + 0x80);
         if (0.0f < FastVecDot(&v20, (u8 *)&D_0013F450_40968 + 0x270)) {
             D_0013F450_40968.xF2dc = -D_0013F450_40968.xF2dc;
@@ -616,7 +616,7 @@ void integrate_hero_motion_with_collisions(void) {
                     float limit;
 
                     position = player->motion.velocity.f;
-                    length = func_001F9CE8(position);
+                    length = vec_length_xy(position);
                     limit = player->unk234 - 0.02f;
                     if (limit < length) func_L00_001FF500(position, position, limit);
                 }
@@ -679,7 +679,7 @@ void integrate_hero_motion_with_collisions(void) {
     func_L00_001FF4B0(vertical, plane.f, magnitude);
     motion_player = (Hero *)((char *)delta - 0x110);
     motion_player->motion.speed_xy = FastVecLength(delta);
-    motion_player->motion.unk164 = func_001F9CE8(delta);
+    motion_player->motion.unk164 = vec_length_xy(delta);
     work.q = *(Q *)delta;
     motion_player->motion.unk168 = forward_component(work.f);
     if (motion_player->motion.unk168 < 0.0f) motion_player->motion.unk168 = 0.0f;
@@ -709,9 +709,9 @@ void integrate_hero_motion_with_collisions(void) {
         else if (motion_player->motion.unk16C < -0.5f) motion_player->motion.unk16C = -0.5f;
     }
     cap_player = (Hero *)(D_0013E633 + 0xE1D);
-    magnitude = D_0015EE6C * 52.0f;
+    magnitude = g_frame_time * 52.0f;
     if (magnitude < cap_player->motion.speed_xy) {
         FastVecScale(cap_player->motion.displacement.f, cap_player->motion.displacement.f, magnitude / cap_player->motion.speed_xy);
-        cap_player->motion.speed_xy = D_0015EE6C * 52.0f;
+        cap_player->motion.speed_xy = g_frame_time * 52.0f;
     }
 }

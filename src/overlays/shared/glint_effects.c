@@ -43,7 +43,7 @@ void update_glints(void) {
     P *p = glints;
     for (i = 15; i >= 0; i--, p++) {
         if (p->life > 0) {
-            p->f = FastSubRots(p->f, D_0015EE6C * 5.2359877f);
+            p->f = FastSubRots(p->f, g_frame_time * 5.2359877f);
             if (p->life > 12) {
                 p->ang = p->ang + 5;
             } else {

@@ -32,7 +32,7 @@ int test_point_within_moby_limits(char *a, float *b, float x, float y, float z) 
     if (FastVecDist(b, a + 0x10) > x) return 0;
     if (!(0.0f < z)) return 1;
     {
-        float r = func_L00_001FF860(b[0] - *(float *)(a + 0x10), b[1] - *(float *)(a + 0x14));
+        float r = fast_atan2(b[0] - *(float *)(a + 0x10), b[1] - *(float *)(a + 0x14));
         r = FastDiffRots(*(float *)(a + 0x48), r);
         if (r > z) return 0;
     }
@@ -50,10 +50,10 @@ void update_moby_bone_attachment(unsigned char *parent, unsigned char *child, in
     MobyTransformScaledVertex(parent, mode, workspace);
     qcopy(child + 0x10, workspace + 0x30);
     MobyAnimAdvance(child);
-    func_L00_00251E30(child);
-    func_001FA480(child + 0xC0, workspace);
+    moby_build_matrix(child);
+    matrix_copy_rows(child + 0xC0, workspace);
     normalize_vector_triplet(child + 0xC0);
-    func_0020EEE8(child);
+    moby_anim_sphere_lerp(child);
     if (*(unsigned short *)(parent + 0x34) & 1)
         *(unsigned short *)(child + 0x34) |= 0x41;
     else

@@ -259,15 +259,15 @@ extern int D_0015EFB0 MACRO_ADDR;
 extern int D_0013D390[];
 /* advances the card menu according to input and card status */
 void AdvanceCardMenu(void) {
- int old=D_0015EFB4;
+ int old=mode_freeze_flags;
  int intermediate=old&~4;
  int flags=intermediate&~2;
- D_0015EFB4=flags;
- if(memory_card_state[0xfc/4]==0) D_0015EFB0=3;
- else if(old&0x80) { D_0015EFB0=21; D_0015EFB4=(flags^0x80)|0x40; }
- else if(old&0x100) { D_0015EFB0=20; D_0015EFB4=(flags^0x100)|0x40; }
- else if(memory_card_state[7]!=0) { memory_card_state[0xfc/4]=0; D_0015EFB4=flags|1; D_0015EFB0=2; }
- else if(old&0x200) { D_0015EFB4=flags^0x200; D_0015EFB0=22; }
+ mode_freeze_flags=flags;
+ if(memory_card_state[0xfc/4]==0) mode_freeze_state=3;
+ else if(old&0x80) { mode_freeze_state=21; mode_freeze_flags=(flags^0x80)|0x40; }
+ else if(old&0x100) { mode_freeze_state=20; mode_freeze_flags=(flags^0x100)|0x40; }
+ else if(memory_card_state[7]!=0) { memory_card_state[0xfc/4]=0; mode_freeze_flags=flags|1; mode_freeze_state=2; }
+ else if(old&0x200) { mode_freeze_flags=flags^0x200; mode_freeze_state=22; }
 }
 INCLUDE_ASM("asm/overlays", func_L00_0024B788);
 INCLUDE_ASM("asm/overlays", func_L00_0024B7AC);
@@ -275,12 +275,12 @@ extern int D_0015EFB4 MACRO_ADDR;
 extern int D_0015EFB0 MACRO_ADDR;
 /* clears the menu flag and advances based on card status */
 void CardMenu_AdvanceOnStatus(void) {
- D_0015EFB4 &= ~0x20;
+ mode_freeze_flags &= ~0x20;
  if (memory_card_state[2] == 2) {
   int v = memory_card_state[7];
-  if (v == 0) D_0015EFB0 = 9;
-  else if (v == -1) { memory_card_state[7] = 0; D_0015EFB0 = 9; }
-  else if (v == -2) D_0015EFB0 = 5;
+  if (v == 0) mode_freeze_state = 9;
+  else if (v == -1) { memory_card_state[7] = 0; mode_freeze_state = 9; }
+  else if (v == -2) mode_freeze_state = 5;
  }
 }
 INCLUDE_ASM("asm/overlays", func_L00_0024B8F0);
@@ -293,11 +293,11 @@ void CardMenu_AdvanceOnCardStatus(void) {
        neighbours in this file read the same word as D_0013D390[7]; that spelling does not give retail's
        bytes here. Accepted as a last resort. */
     if (*(int *)(D_0013D355 + 0x57) != -2) {
-        D_0015EFB0 = 3;
+        mode_freeze_state = 3;
         return;
     }
-    if (D_0015EFB4 & 2) {
-        D_0015EFB0 = 6;
+    if (mode_freeze_flags & 2) {
+        mode_freeze_state = 6;
     }
 }
 INCLUDE_ASM("asm/overlays", func_L00_0024B940);
@@ -305,22 +305,22 @@ extern int D_L00_0015F688 MACRO_ADDR;
 void card_menu_advance_on_ready_flags(void) {
     int flags;
     if (*(int *)(D_0013D355 + 0x57) != -2) {
-        D_0015EFB0 = 3;
+        mode_freeze_state = 3;
         return;
     }
-    flags = D_0015EFB4;
+    flags = mode_freeze_flags;
     if (flags & 0x20) {
-        D_0015EFB4 = flags ^ 0x20;
+        mode_freeze_flags = flags ^ 0x20;
         if (D_L00_0015F688 != 0) {
-            D_0015EFB0 = 0x17;
+            mode_freeze_state = 0x17;
             return;
         }
-        D_0015EFB0 = 5;
+        mode_freeze_state = 5;
         return;
     }
     if (flags & 8) {
-        D_0015EFB4 = flags ^ 8;
-        D_0015EFB0 = 7;
+        mode_freeze_flags = flags ^ 8;
+        mode_freeze_state = 7;
     }
 }
 INCLUDE_ASM("asm/overlays", func_L00_0024B980);
@@ -333,10 +333,10 @@ void SetMenuStateFromCardStatus(void) {
     char *b = D_0013D355 + 0x3B;
     if (*(int *)(b + 0xDC) == 2 && *(int *)(b + 0xE4) < 0) {
         if (*(int *)(b + 0xEC) != 0) {
-            D_0015EFB0 = 17;
-            D_0015EFB4 |= 0x40;
+            mode_freeze_state = 17;
+            mode_freeze_flags |= 0x40;
         } else {
-            D_0015EFB0 = 14;
+            mode_freeze_state = 14;
         }
     }
 }
@@ -344,11 +344,11 @@ INCLUDE_ASM("asm/overlays", func_L00_0024BA60);
 /* sets the menu state to 3 while D_0013D390[7] is set, else to 10 when flag 2 or 4 is up */
 void CardMenu_AdvanceOnSaveByte(void) {
     if (memory_card_state[7] != 0) {
-        D_0015EFB0 = 3;
+        mode_freeze_state = 3;
         return;
     }
-    if (D_0015EFB4 & 6) {
-        D_0015EFB0 = 10;
+    if (mode_freeze_flags & 6) {
+        mode_freeze_state = 10;
     }
 }
 extern int D_0015EFB0;
@@ -359,9 +359,9 @@ void MarkSelectedCardSlot(void) {
  char *p=(char *)memory_card_state; int *item;
  if (*(int *)(p+0xDC)>=3 || *(int *)(p+0xE4)>=0) { int index=*(int *)(p+0xCC); char *r=p+0xB0; item=(int *)(index*192+r); if (*item==1) *item=2; }
  p=(char *)memory_card_state;
- if (*(int *)(p+0x1C)<-1 || *(int *)(p+0xEC)) { D_0015EFB0=3; return; }
- if (*(int *)(p+0x14)==-2) { if (*(int *)(p+0xC)+*(int *)(p+0xAC)<350) { D_0015EFB0=19; return; } D_0015EFB0=12; return; }
- if (*(int *)(p+0x14)>=-1) D_0015EFB0=16;
+ if (*(int *)(p+0x1C)<-1 || *(int *)(p+0xEC)) { mode_freeze_state=3; return; }
+ if (*(int *)(p+0x14)==-2) { if (*(int *)(p+0xC)+*(int *)(p+0xAC)<350) { mode_freeze_state=19; return; } mode_freeze_state=12; return; }
+ if (*(int *)(p+0x14)>=-1) mode_freeze_state=16;
 }
 INCLUDE_ASM("asm/overlays", func_L00_0024BB5C);
 INCLUDE_ASM("asm/overlays", func_L00_0024BB90);
@@ -373,28 +373,28 @@ void CardMenu_AdvanceOnFlags(void) {
     int flags;
 
     if (memory_card_state[7] != 0) {
-        D_0015EFB0 = 3;
+        mode_freeze_state = 3;
         return;
     }
-    flags = D_0015EFB4;
+    flags = mode_freeze_flags;
     if (flags & 0x20) {
-        D_0015EFB4 = flags ^ 0x20;
+        mode_freeze_flags = flags ^ 0x20;
         if (D_L00_0015F688 != 0) {
-            D_0015EFB0 = 24;
+            mode_freeze_state = 24;
             return;
         }
-        D_0015EFB0 = 12;
+        mode_freeze_state = 12;
         return;
     }
     if (flags & 0x10) {
-        D_0015EFB4 = flags ^ 0x10;
-        D_0015EFB0 = 14;
+        mode_freeze_flags = flags ^ 0x10;
+        mode_freeze_state = 14;
     }
 }
 INCLUDE_ASM("asm/overlays", func_L00_0024BC04);
 // Stores 12 into the word global D_0015EFB0.
 void CardMenu_SetStateTwelve(void) {
-    *(int *)&D_0015EFB0 = 12;
+    *(int *)&mode_freeze_state = 12;
 }
 INCLUDE_ASM("asm/overlays", func_L00_0024BC38);
 typedef struct { int v[60]; } MenuState;
@@ -403,19 +403,19 @@ extern int D_0015EFB4_m __asm__("D_0015EFB4") MACRO_ADDR;
 void CardMenu_AdvanceOrAlternate(void) {
  MenuState *p = &memory_card_state;
  if (p->v[55]==2 && p->v[57]<0) {
- if (p->v[59]) { D_0015EFB0=18; D_0015EFB4_m |= 64; }
- else { p->v[50]=0; p->v[57]=7; p->v[5]=0; p->v[58]=0; D_0015EFB0=16; }
+ if (p->v[59]) { mode_freeze_state=18; D_0015EFB4_m |= 64; }
+ else { p->v[50]=0; p->v[57]=7; p->v[5]=0; p->v[58]=0; mode_freeze_state=16; }
  }
 }
 INCLUDE_ASM("asm/overlays", func_L00_0024BCF0);
 /* clears the menu flags 4 and 2, then picks the card menu's next state from the flags and the card status */
 void CardMenu_NextStateFromFlags(void) {
-    if (D_0015EFB4 & 4) D_0015EFB4 &= ~4;
-    if (D_0015EFB4 & 2) D_0015EFB4 &= ~2;
-    if (D_0015EFB4 & 0x80) { D_0015EFB0 = 21; D_0015EFB4 = (D_0015EFB4 ^ 0x80) | 0x40; }
-    else if (D_0015EFB4 & 0x100) { D_0015EFB0 = 20; D_0015EFB4 = (D_0015EFB4 ^ 0x100) | 0x40; }
-    else if (memory_card_state[7] != 0) D_0015EFB0 = 3;
-    else if (memory_card_state[0xfc/4] != 0) D_0015EFB0 = 1;
+    if (mode_freeze_flags & 4) mode_freeze_flags &= ~4;
+    if (mode_freeze_flags & 2) mode_freeze_flags &= ~2;
+    if (mode_freeze_flags & 0x80) { mode_freeze_state = 21; mode_freeze_flags = (mode_freeze_flags ^ 0x80) | 0x40; }
+    else if (mode_freeze_flags & 0x100) { mode_freeze_state = 20; mode_freeze_flags = (mode_freeze_flags ^ 0x100) | 0x40; }
+    else if (memory_card_state[7] != 0) mode_freeze_state = 3;
+    else if (memory_card_state[0xfc/4] != 0) mode_freeze_state = 1;
 }
 INCLUDE_ASM("asm/overlays", func_L00_0024BD84);
 INCLUDE_ASM("asm/overlays", func_L00_0024BDB8);
@@ -425,10 +425,10 @@ void CardMenu_NextStateOnCounters(void) {
     if (memory_card_state[55] < 3 && memory_card_state[57] < 0) {
         if (memory_card_state[59] != 0) {
             memory_card_state[63] = 0;
-            D_0015EFB0 = 21;
-            D_0015EFB4 |= 0x440;
+            mode_freeze_state = 21;
+            mode_freeze_flags |= 0x440;
         } else {
-            D_0015EFB0 = 1;
+            mode_freeze_state = 1;
         }
     }
 }

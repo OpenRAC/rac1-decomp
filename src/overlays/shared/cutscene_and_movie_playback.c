@@ -34,7 +34,7 @@ int func_001F9850(int);
 
 /* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_00295100.c, FUN_L00_00297e70. */
 void update_game_frame_and_idle_counters(void) {
-    if (D_0013CA40.busy != 0 || D_0013CA40.c != 0.0f || D_0013CA40.d != 0.0f || D_0013CA40.a != 0.0f || D_0013CA40.b != 0.0f) {
+    if (g_controller_state.busy != 0 || g_controller_state.c != 0.0f || g_controller_state.d != 0.0f || g_controller_state.a != 0.0f || g_controller_state.b != 0.0f) {
         (*(int *)&D_L00_001610B0) = 0;
     } else {
         (*(int *)&D_L00_001610B0)++;
@@ -124,7 +124,7 @@ void handle_pause_input(void) {
         PauseAllSounds(0);
         return;
     }
-    area = D_0015EE84;
+    area = g_current_level_index;
     if (area == 15 && D_L00_0015F6AC >= 8 && ((Hero *)(D_0013E633 + 0xE1D))->vehicle_mode == 2
         && ((((PadS *)(D_0013A5E0 + 0x2460))->w1A4 & 0x800) || noctl) && ((Hero *)(D_0013E633 + 0xE1D))->state.current != 0x72) {
         if (D_L00_00166F00->h86 == 0x13) return;
@@ -170,7 +170,7 @@ void handle_pause_input(void) {
     }
     if (((AreaS *)(D_0013D355 + 0x3B))->wFC && !(r = (unsigned char *)(D_0013D355_b + 0x13B))[0x10] && D_L00_0015F6AC >= 8
         && !D_0015EF20 && !((Hero *)(D_0013E633 + 0xE1D))->unk20B1 && ((Hero *)(D_0013E633 + 0xE1D))->health.hp
-        && scale_ticks(0x1E) < D_L00_0015F6B0 && D_0015EE84) {
+        && scale_ticks(0x1E) < D_L00_0015F6B0 && g_current_level_index) {
         mode_freeze_init(5, 0, 0);
         r[0x10] = 1;
         return;
@@ -188,7 +188,7 @@ void handle_pause_input(void) {
         HitS *h = (HitS *)(D_0014171B + 0x22D);
         if (h->h48 < 0xFFFF) h->h48++;
         if (scale_ticks(D_0015EFA4) / 600 > h->h4A) h->h4A = scale_ticks(D_0015EFA4) / 600;
-        h->w4C = h->w4C | (1 << D_0015EE84) | 0x80000000;
+        h->w4C = h->w4C | (1 << g_current_level_index) | 0x80000000;
     }
     if (D_L00_0015F710) {
         D_L00_0015F710 = 0;
@@ -480,7 +480,7 @@ unsigned char apply_cutscene_camera_key(void) {
         b->unkB0 = f0 * D_L00_0015F67C;
     }
     UpdateViewContext();
-    c = D_L00_00166EC0;
+    c = g_debug_camera;
     qcopy(c, e);
     func_00125358(m);
     func_001254A0(m, m, e->values[0]);
@@ -724,7 +724,7 @@ void update_cutscene_playback(void) {
     done = cs->f34 >= cs->h40;
     if (cs->f34 >= scale_ticks(0x12) && D_L00_0015F4FC_9A300 == 0.0f) {
 
-        if (((*(s32 *)&D_0015EFA0) || D_0015EF20 || D_0015EFD8 || D_0015EE84 <= 0) && (D_0013CA40_9A300.buttons.w.pressed & 0x800)) {
+        if (((*(s32 *)&D_0015EFA0) || D_0015EF20 || D_0015EFD8 || g_current_level_index <= 0) && (D_0013CA40_9A300.buttons.w.pressed & 0x800)) {
             done = 1;
         } else if ((D_0013CA40_9A300.buttons.held_pressed & 0x8000000000FUL) == 0x8000000000FUL) {
             done = 1;
@@ -733,7 +733,7 @@ void update_cutscene_playback(void) {
     if (done) {
         finish_cutscene();
     } else {
-        lim = D_0015EE80 ? 0x50 : 0x60;
+        lim = pal_mode ? 0x50 : 0x60;
         if (D_L00_0016C960_9A300.f38 >= lim) {
             update_audio_stream_until_idle(1);
             D_L00_0016C960_9A300.f3C++;
@@ -756,7 +756,7 @@ void update_cutscene_playback(void) {
             FastVecScale(b, &keys[m->next_frame], m->blend);
             FastVecAdd(&m->pos, a, b);
             m->b71 = 0xFF;
-            func_L00_00251E30(m);
+            moby_build_matrix(m);
             if (m->b7F) {
                 update_moby_shadow_range(m);
             }
@@ -797,7 +797,7 @@ void PlayMovieEntryIfIdle(int idx) {
     int a, b;
     char *base;
     if (idx < 0) return;
-    if (D_0015EE80 != 0) {
+    if (pal_mode != 0) {
         b = D_00137C80_g.alt[idx].b;
         a = D_00137C80_g.alt[idx].a;
     } else {
@@ -808,7 +808,7 @@ void PlayMovieEntryIfIdle(int idx) {
     if (*(int *)(base + 0x22A8) == 0) {
         Hero_OnKilled();
     } else if (*(unsigned char *)(base + 0x20B1) == 0) {
-        prepare_movie_playback(b, a, D_0015EE88);
+        prepare_movie_playback(b, a, g_game_language);
     }
 }
 typedef struct { int b; int a; } LL7;
@@ -823,7 +823,7 @@ extern G7 D_00137C80_q __asm__("D_00137C80");
 void queue_language_zero_movie(int i) {
     int a, b;
     if (i < 0) return;
-    if (D_0015EE80) {
+    if (pal_mode) {
         b = D_00137C80_q.y[i].b; a = D_00137C80_q.y[i].a;
     } else {
         b = D_00137C80_q.x[i].b; a = D_00137C80_q.x[i].a;
@@ -842,12 +842,12 @@ extern G7_29A8D0 D_00137C80_q_29A8D0 __asm__("D_00137C80");
 void queue_movie_with_game_language(int i) {
     int a, b;
     if (i < 0) return;
-    if (D_0015EE80) {
+    if (pal_mode) {
         b = D_00137C80_q_29A8D0.y[i].b; a = D_00137C80_q_29A8D0.y[i].a;
     } else {
         b = D_00137C80_q_29A8D0.x[i].b; a = D_00137C80_q_29A8D0.x[i].a;
     }
-    prepare_movie_playback(b, a, D_0015EE88);
+    prepare_movie_playback(b, a, g_game_language);
 }
 extern char D_0013E650[];
 extern void func_00118D80(int);
@@ -876,7 +876,7 @@ extern char D_L00_001E9800[];
 void prepare_movie_playback(int sector, int size, int arg2) {
     int image[24];
     int big, small, gs_addr, src, i, j;
-    D_0013E650[0x6B] |= 8;
+    voice_pool[0x6B] |= 8;
     func_00118D80(0);
     sound_StopAllSounds();
     music_Stop();
@@ -889,8 +889,8 @@ void prepare_movie_playback(int sector, int size, int arg2) {
     D_L00_0015F6A8 = 1;
     D_L00_00161108_m.buf0 = D_L00_00173F04;
     D_L00_00161108_m.buf1 = D_L00_0015F50C;
-    big = D_0015EE80 != 0 ? 0xE : 0xD;
-    small = D_0015EE80 != 0 ? 0xE : 0x11;
+    big = pal_mode != 0 ? 0xE : 0xD;
+    small = pal_mode != 0 ? 0xE : 0x11;
     src = D_L00_00161108_m.buf1;
     gs_addr = D_0015EF78_29A940[4];
     i = 0;
@@ -937,8 +937,8 @@ void movie_exit_to_gameplay(void) {
     func_00123168(func_0012F308);
     destination = D_L00_00161118;
     source = D_0015EF78_29A940[4];
-    big = D_0015EE80 != 0 ? 0xE : 0xD;
-    small = D_0015EE80 != 0 ? 0xE : 0x11;
+    big = pal_mode != 0 ? 0xE : 0xD;
+    small = pal_mode != 0 ? 0xE : 0x11;
     i = 0;
     while (i < big) {
         func_00122818(sp, (source << 8) >> 16, 2, 1, 0, 0, 0x80, 0x80);
@@ -1037,14 +1037,14 @@ void start_slideshow(void) {
     slideshow[2] = D_L00_00173F00[1] + t;
     slideshow[3] = D_L00_00173F00[2] + t;
     D_L00_0016128C = t;
-    if (D_0015EE80 != 0) {
+    if (pal_mode != 0) {
         start_audio_stream_read(slideshow[2], D_00137C80.alt[((short *)slideshow)[1]].a, D_00137C80.alt[((short *)slideshow)[1]].b);
     } else {
         start_audio_stream_read(slideshow[2], D_00137C80.normal[((short *)slideshow)[1]].a, D_00137C80.normal[((short *)slideshow)[1]].b);
     }
     update_audio_stream_until_idle(1);
     ((short *)slideshow)[1]++;
-    if (D_0015EE80 != 0) {
+    if (pal_mode != 0) {
         start_audio_stream_read(slideshow[3], D_00137C80.alt[((short *)slideshow)[1]].a, D_00137C80.alt[((short *)slideshow)[1]].b);
     } else {
         start_audio_stream_read(slideshow[3], D_00137C80.normal[((short *)slideshow)[1]].a, D_00137C80.normal[((short *)slideshow)[1]].b);
@@ -1129,7 +1129,7 @@ void update_slideshow(void) {
             ICNT = -1;
             IIDX = IIDX + 1;
             r = IIDX % 20;
-            if (D_0015EE80 != 0) {
+            if (pal_mode != 0) {
                 start_audio_stream_read(slideshow[3], D_00137C80.alt[r].a, D_00137C80.alt[r].b);
             } else {
                 start_audio_stream_read(slideshow[3], D_00137C80.normal[r].a, D_00137C80.normal[r].b);

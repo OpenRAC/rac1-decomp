@@ -78,7 +78,7 @@ s32 *find_camera_collision_volume_for_point(q128 *v, f32 rad) {
         FastVecSub(&d, e, tp);
         f = *(f32 *)(e + 0xC);
         d.f[3] = 1.0f;
-        if (func_001F9CE8(&d) < f + rad) {
+        if (vec_length_xy(&d) < f + rad) {
             if (func_L00_001EE698_EE530(tp, (s32 *)e, rad) != 0) {
                 return (s32 *)e;
             }
@@ -113,7 +113,7 @@ int IsPointInVolume(Vec4 *pt, int *vol, float rad) {
         e += vol[5] << 7;
         FastVecSub(&d, pt, e + 0x30);
         d.i[3] = 0;
-        func_001F9EC0(&l, &d, e + 0x40);
+        matrix_mul_vec3(&l, &d, e + 0x40);
         return -1.0f <= l.f[0] && l.f[0] <= 1.0f && -1.0f <= l.f[1] && l.f[1] <= 1.0f && -1.0f <= l.f[2] && l.f[2] <= 1.0f;
     }
     case 6: {
@@ -123,8 +123,8 @@ int IsPointInVolume(Vec4 *pt, int *vol, float rad) {
         r = 0;
         FastVecSub(&d, pt, e + 0x30);
         d.i[3] = 0;
-        func_001F9EC0(&l, &d, e + 0x40);
-        if (func_001F9CE8(&l) < 1.0f && -1.0f <= l.f[2] && l.f[2] <= 1.0f) {
+        matrix_mul_vec3(&l, &d, e + 0x40);
+        if (vec_length_xy(&l) < 1.0f && -1.0f <= l.f[2] && l.f[2] <= 1.0f) {
             r = 1;
         }
         return r;
@@ -143,15 +143,15 @@ int IsPointInVolume(Vec4 *pt, int *vol, float rad) {
         e = D_L00_001601A4 + vol[5] * 0x90;
         FastVecSub(&d, pt, e + 0x30);
         d.i[3] = 0;
-        func_001F9EC0(&l, &d, e + 0x40);
-        if (func_001F9CE8(&l) < 1.0f && -1.0f <= l.f[2] && l.f[2] <= 1.0f) {
+        matrix_mul_vec3(&l, &d, e + 0x40);
+        if (vec_length_xy(&l) < 1.0f && -1.0f <= l.f[2] && l.f[2] <= 1.0f) {
             return 1;
         }
         c.i[0] = 0;
         c.i[1] = 0;
         c.f[2] = 1.0f;
         c.f[3] = 1.0f;
-        func_001F9EC0(&l, &c, e);
+        matrix_mul_vec3(&l, &c, e);
         FastVecAdd(&l, &l, e + 0x30);
         FastVecSub(&c, pt, &l);
         if (FastVecLength(&c) < *(float *)(e + 0x80)) {
@@ -161,7 +161,7 @@ int IsPointInVolume(Vec4 *pt, int *vol, float rad) {
         c.f[2] = -1.0f;
         c.i[0] = 0;
         c.i[1] = 0;
-        func_001F9EC0(&l, &c, e);
+        matrix_mul_vec3(&l, &c, e);
         FastVecAdd(&l, &l, e + 0x30);
         FastVecSub(&c, pt, &l);
         if (FastVecLength(&c) < *(float *)(e + 0x80)) {

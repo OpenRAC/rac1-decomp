@@ -970,11 +970,11 @@ int process_hero_primary_item_input(void) {
                         continue;
                     }
                     o = (Moby *)((char *)D_L05_00160098_2523C8 + (id << 8));
-                    a = FastDiffRots(D_0013F450_h2523C8.motion.rot.f[2], func_L00_001FF860(o->pos.x - D_0013F450_h2523C8.motion.pos.f[0], o->pos.y - D_0013F450_h2523C8.motion.pos.f[1]));
+                    a = FastDiffRots(D_0013F450_h2523C8.motion.rot.f[2], fast_atan2(o->pos.x - D_0013F450_h2523C8.motion.pos.f[0], o->pos.y - D_0013F450_h2523C8.motion.pos.f[1]));
                     if (!(a > 0.7853982f)) {
-                        b = FastDiffRots(func_L00_001FF860(func_001F9D48(D_0013F450_h2523C8.motion.pos.f, &o->pos), o->pos.z - D_0013F450_h2523C8.motion.pos.f[2]), 0.0f);
+                        b = FastDiffRots(fast_atan2(vec_distance_xy(D_0013F450_h2523C8.motion.pos.f, &o->pos), o->pos.z - D_0013F450_h2523C8.motion.pos.f[2]), 0.0f);
                         if (!(b > 0.7853982f)) {
-                            d = func_001F9D48(&o->pos, D_0013F450_h2523C8.motion.pos.f);
+                            d = vec_distance_xy(&o->pos, D_0013F450_h2523C8.motion.pos.f);
                             s = d;
                             s += d * a * 2.0f;
                             s += d * b * 2.0f;
@@ -1129,9 +1129,9 @@ void process_hero_race_object_interactions(void) {
             do {
                 if (*(short *)(first + 0xA6) == 0x473 && fast_subtract_rotations_cf(first + 0xBC) != 0) {
                     FastVecSub(delta, first + 0x10, (char *)D_0013E633 + 0xEED);
-                    func_001FA190(matrix);
-                    func_001FA4A0(matrix, first + 0xC0);
-                    func_001F9EE8(delta, delta, matrix);
+                    set_identity_matrix(matrix);
+                    matrix_from_basis_rows(matrix, first + 0xC0);
+                    transform_vector(delta, delta, matrix);
                     if (FastAbsF(delta[0]) < 0.5f && FastAbsF(delta[1]) < 2.9f && FastAbsF(delta[2]) < 2.9f) {
                         HERO->unk8C4 += **(int **)(first + 0x78);
                         first[0xBC] = scale_ticks(0x3C);
@@ -1164,9 +1164,9 @@ void process_hero_race_object_interactions(void) {
                         *(unsigned int *)(second + 0x90) = color;
                         if (fast_subtract_rotations_cf(second + 0xBC) != 0) {
                             FastVecSub(delta, second + 0x10, (char *)D_0013E633 + 0xE9D);
-                            func_001FA190(matrix);
-                            func_001FA4A0(matrix, second + 0xC0);
-                            func_001F9EE8(delta, delta, matrix);
+                            set_identity_matrix(matrix);
+                            matrix_from_basis_rows(matrix, second + 0xC0);
+                            transform_vector(delta, delta, matrix);
                             if (FastAbsF(delta[0]) < 2.8f && FastAbsF(delta[1]) < 1.25f && FastAbsF(delta[2]) < 1.5f) {
                                 HERO->unk8C4 += **(int **)(second + 0x78);
                                 second[0xBC] = scale_ticks(0x3C);
@@ -1229,7 +1229,7 @@ void update_hero_hoverboard_trick_score(void) {
         if (stats->attempts < 0xFFFF) stats->attempts++;
         if (scale_ticks(D_0015EFA4) / 600 > stats->best)
             stats->best = scale_ticks(D_0015EFA4) / 600;
-        stats->levels = stats->levels | (1 << D_0015EE84) | 0x80000000;
+        stats->levels = stats->levels | (1 << g_current_level_index) | 0x80000000;
     }
     for (i = 0; i < 3; i++) {
         float *a = &G->angle[i];
@@ -1263,7 +1263,7 @@ void update_hero_hoverboard_trick_score(void) {
     {
         ScoreWeights_254838 weights = D_L05_00216D68;
         G->multiplier = weights.value[G->actionCount];
-        G->actionScore = truncate_float_to_s32((float)((G->elapsed * 100) / (int)(func_001F9878(1.0f) * 60.0f)));
+        G->actionScore = truncate_float_to_s32((float)((G->elapsed * 100) / (int)(multiply_global_factor(1.0f) * 60.0f)));
         G->actionScore += G->actionCount * 25;
         G->actionScore = truncate_float_to_s32((float)G->actionScore * G->multiplier);
         G->total = G->turnScore + G->actionScore;
@@ -1295,11 +1295,11 @@ void Hero_FindNearestPathNode(float *out, float *rot) {
             char *h = (char *)D_0013E633 + 0xE1D;
             char *p = path + i * 16;
             float limit = 4.0f;
-            float angle = func_L00_001FF860(*(float *)(p + 0x10) - *(float *)(h + 0x80), *(float *)(p + 0x14) - *(float *)(h + 0x84));
+            float angle = fast_atan2(*(float *)(p + 0x10) - *(float *)(h + 0x80), *(float *)(p + 0x14) - *(float *)(h + 0x84));
             int n2 = *(int *)path + 2;
             int next = (i + n2) % *(int *)path;
             char *q = path + next * 16;
-            if (FastDiffRots(angle, func_L00_001FF860(*(float *)(q + 0x10) - *(float *)(p + 0x10), *(float *)(q + 0x14) - *(float *)(p + 0x14))) > 1.5707964f) {
+            if (FastDiffRots(angle, fast_atan2(*(float *)(q + 0x10) - *(float *)(p + 0x10), *(float *)(q + 0x14) - *(float *)(p + 0x14))) > 1.5707964f) {
                 float d;
                 if (D_0015EE84_2523C8 == 0x10 && *(char **)(h + 0x8B4) != 0) {
                     char *verts = *(char **)(h + 0x8B4);
@@ -1315,7 +1315,7 @@ void Hero_FindNearestPathNode(float *out, float *rot) {
                             goto next_point;
                     }
                 }
-                d = func_001F9D48(D_0013E633 + 0xE9D, path + i * 16 + 0x10);
+                d = vec_distance_xy(D_0013E633 + 0xE9D, path + i * 16 + 0x10);
                 if (d < distance) {
                     distance = d;
                     best = i;
@@ -1331,7 +1331,7 @@ void Hero_FindNearestPathNode(float *out, float *rot) {
     {
         float *a = (float *)(path + best * 16);
         float *b = (float *)(path + (best + 1) * 16);
-        rot[2] = func_L00_001FF860(b[4] - a[4], b[5] - a[5]);
+        rot[2] = fast_atan2(b[4] - a[4], b[5] - a[5]);
     }
 }
 typedef int u128_254DE8 __attribute__((mode(TI)));
@@ -1720,7 +1720,7 @@ int Hero_PickHelpMode(void)
     unsigned char c;
 
     g = ((H_9F0 *)(D_0013E633 + 0xE1D));
-    if (!(D_0015EE6C * 12.0f < g->f164)) goto L_BAC;
+    if (!(g_frame_time * 12.0f < g->f164)) goto L_BAC;
     f20 = 0.0f;
     transform_hero_local_offset_to_world(v1, f20, f20, 0.75f);
     vp = v2;
@@ -1734,9 +1734,9 @@ int Hero_PickHelpMode(void)
     h = (char *)&D_L05_00174340_4C558;
     if (*(int *)(h + 0x18) != 0) goto L_BAC;
     if (*(int *)(h + 0x1C) == 0) goto L_BAC;
-    if (!(1.2217305f < func_L00_001FF860(*(float *)(h + 0x48), func_001F9CE8_4C558(h + 0x40)))) goto L_BAC;
-    g->f8A4 = FastAddRots(func_L00_001FF860(*(float *)(h + 0x40), *(float *)(h + 0x44)), 3.1415927f);
-    if (!(FastDiffRots(func_L00_001FF860(g->fE0[0], g->fE0[1]), g->f8A4) < 0.7853982f)) goto L_BAC;
+    if (!(1.2217305f < fast_atan2(*(float *)(h + 0x48), func_001F9CE8_4C558(h + 0x40)))) goto L_BAC;
+    g->f8A4 = FastAddRots(fast_atan2(*(float *)(h + 0x40), *(float *)(h + 0x44)), 3.1415927f);
+    if (!(FastDiffRots(fast_atan2(g->fE0[0], g->fE0[1]), g->f8A4) < 0.7853982f)) goto L_BAC;
     if (g->f2DC < 1.0f) {
         Hero_TryMoveStateL05(0x6F, 1);
         return 1;
@@ -1786,7 +1786,7 @@ L_BAC:
     f0 = *(float *)((char *)pts + (r4 << 4) + 0x18);
     if (f1 < f0) f20 = f1;
     else f20 = f0;
-    f2 = func_001F9D48(vp, pts[r16 + 1]);
+    f2 = vec_distance_xy(vp, pts[r16 + 1]);
     if (0.5f < f20 - ((H_9F0 *)(D_0013E633 + 0xE1D))->f80[2]) {
         if (4.0f < f2) {
             Hero_TryMoveStateL05(0x6D, 1);

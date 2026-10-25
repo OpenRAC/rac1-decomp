@@ -203,8 +203,8 @@ void initialize_pause_menu(void) {
         qzero(r);
     }
     qzero((char *)D_L00_00180350 + 0x10);
-    qcopy(&(*(Menu_277208 *)D_L00_001BA070).v40, &D_L00_00166EC0[0]);
-    qcopy(&(*(Menu_277208 *)D_L00_001BA070).v50, &D_L00_00166EC0[4]);
+    qcopy(&(*(Menu_277208 *)D_L00_001BA070).v40, &g_debug_camera[0]);
+    qcopy(&(*(Menu_277208 *)D_L00_001BA070).v50, &g_debug_camera[4]);
     {
         float zfar = 524288.0f;
         float fog = 255.0f;
@@ -269,17 +269,17 @@ void initialize_pause_menu(void) {
         decompress_and_relocate_selected_groups(0);
     }
     transfer_draw_buffer_chunks((*(Menu_277208 *)D_L00_001BA070).unk10, D_0015EF84, *(int *)((char *)D_0013E15A + 0x4AA) << 11);
-    t = D_0015EF78;
+    t = g_gs_texture_allocation_start;
     (*(Menu_277208 *)D_L00_001BA070).unk18 = t;
     if ((*(Menu_277208 *)D_L00_001BA070).state == 11 || (*(Menu_277208 *)D_L00_001BA070).state == 15) {
         (*(Snd_277208 *)D_L00_001842F0).unk240 = t;
         u = t + 0x40000;
         (*(Snd_277208 *)D_L00_001842F0).unk244 = u;
-        D_0015EF78 = u + 0x400;
+        g_gs_texture_allocation_start = u + 0x400;
         for (j = 0; j < 4; j++) {
-            int v = D_0015EF78;
+            int v = g_gs_texture_allocation_start;
             (*(Snd_277208 *)D_L00_001842F0).bufs[j] = v;
-            D_0015EF78 = v + 0x4000;
+            g_gs_texture_allocation_start = v + 0x4000;
         }
     } else {
         int z;
@@ -393,7 +393,7 @@ void close_pause_menu(void) {
             int value;
             table = D_L00_0017E5D8;
             value = *(int *)(*(char **)(table + 0x18) + 0x74);
-            *(int *)&D_0015EF78 = *(int *)(state + 0x18);
+            *(int *)&g_gs_texture_allocation_start = *(int *)(state + 0x18);
             Hud_SendResidentBank(0, value, 0);
         }
         apply_group_entry_adjustment(2);
@@ -592,13 +592,13 @@ void update_pause_menu(void) {
                 return;
             }
         }
-        if (*(short *)(D_001517D0 + 8) != 0) {
+        if (*(short *)(cd_read_state + 8) != 0) {
             return;
         }
         *(int *)&D_L00_0015F658 = 0x1E000;
         calculate_dma_transfer_address();
-        qcopy(D_L00_00166EC0, &GS.v40);
-        qcopy(D_L00_00166EC0 + 4, &GS.v50);
+        qcopy(g_debug_camera, &GS.v40);
+        qcopy(g_debug_camera + 4, &GS.v50);
         D_L00_0016CBF0 = GS.unkE8;
         select_moby_context(0);
         if (GS.unk140 != 0) {
@@ -1382,9 +1382,9 @@ void jet_reset_camera(void *a0, void *a1)
     qcopy(g + 0x10, a0);
     qcopy(g + 0x20, a1);
     {
-        char *hero = D_0013F450;
-        char *stat = D_0013E650;
-        char *fb = D_001517D0;
+        char *hero = g_hero;
+        char *stat = voice_pool;
+        char *fb = cd_read_state;
         char *p = *(char **)(hero + 0x2080);
         signed char v = *(signed char *)(fb + 0x22);
 
@@ -1428,13 +1428,13 @@ void restore_or_clear_level_state(void) {
         return;
     }
     func_L00_001FF040((int)D_L00_001BA960, p, 0xC60);
-    qcopy(D_0013F450 + 0x80, p + 0x10);
-    qcopy(D_0013F450 + 0x90, p + 0x20);
-    g = (unsigned char *)D_0013F450;
+    qcopy(g_hero + 0x80, p + 0x10);
+    qcopy(g_hero + 0x90, p + 0x20);
+    g = (unsigned char *)g_hero;
     *(int *)(*(char **)(g + 0x2080) + 0x38) = *(int *)(p + 0x30);
     *(int *)(*(char **)(g + 0x2080) + 0x3C) = *(int *)(p + 0x34);
     *(int *)(*(char **)(g + 0x2080) + 0x80) = *(int *)(p + 0x38);
-    b = (unsigned char *)D_0013E650;
+    b = (unsigned char *)voice_pool;
     *(int *)(b + 0x64) = *(int *)(p + 0x3C);
     b[0x68] = p[0x40];
     b[0x69] = p[0x41];
@@ -1463,9 +1463,9 @@ void restore_or_clear_level_state(void) {
     }
 done:
     {
-        char *h = D_0013F450;
-        func_L00_00251E30(*(void **)(h + 0x2080));
-        func_001FA1F8(*(char **)(h + 0x2080) + 0xC0, h + 0x90);
+        char *h = g_hero;
+        moby_build_matrix(*(void **)(h + 0x2080));
+        euler_rotation_basis(*(char **)(h + 0x2080) + 0xC0, h + 0x90);
     }
     init_camera_system();
     register_audio_stream_callback();

@@ -184,10 +184,10 @@ void InitOnce(void) {
     func_00118D80(0);
 
     region = buf[0x33] != 0x4E;
-    pause_action_list_mode = D_0015EE80 = region;
+    pause_action_list_mode = pal_mode = region;
     memcard_get_name(buf);
 
-    func_00121B78(0, 1, (D_0015EE80 != 0) ? 3 : 2, 0);
+    func_00121B78(0, 1, (pal_mode != 0) ? 3 : 2, 0);
     InitDma();
     SetPalMode();
     VU0_loadMicroProgram(&vu0_micro_program);
@@ -238,22 +238,22 @@ void InitOnce(void) {
     lang = func_0012D380();
     switch (lang) {
     case 2:
-        D_0015EE88 = 2;
+        g_game_language = 2;
         return;
     case 4:
-        D_0015EE88 = 3;
+        g_game_language = 3;
         return;
     case 3:
-        D_0015EE88 = 4;
+        g_game_language = 4;
         return;
     case 5:
-        D_0015EE88 = 5;
+        g_game_language = 5;
         return;
     default:
         STUB_printf(unsupported_lang_message, lang);
         /* fallthrough */
     case 1:
-        D_0015EE88 = 0;
+        g_game_language = 0;
         return;
     }
 }

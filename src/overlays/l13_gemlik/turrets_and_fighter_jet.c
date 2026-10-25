@@ -224,7 +224,7 @@ void LiftL13_UpdateAlt(unsigned char *moby) {
     case ELEVATOR_STATE_BLEND_CAMERA: {
         float old = vars->blend;
         ApproachWithVelocity(&vars->blend, &vars->blend_speed, 1.0f,
-                             D_0015EE70_4B90 * 4.0f, D_0015EE70_4B90 * 4.0f, D_0015EE6C * 4.0f);
+                             D_0015EE70_4B90 * 4.0f, D_0015EE70_4B90 * 4.0f, g_frame_time * 4.0f);
         if (vars->blend < 1.0f) {
             float t = (1.0f - vars->blend) / (1.0f - old);
             char *base;
@@ -261,7 +261,7 @@ void LiftL13_UpdateAlt(unsigned char *moby) {
             target = vars->bottom;
         }
         ApproachWithVelocity(&m->pos.z, &vars->speed, target,
-                             D_0015EE70_4B90 * 8.0f, D_0015EE70_4B90 * 8.0f, D_0015EE6C * 40.0f);
+                             D_0015EE70_4B90 * 8.0f, D_0015EE70_4B90 * 8.0f, g_frame_time * 40.0f);
         if (FastAbsF(m->pos.z - target) == 0.0f) {
             if (m->state == 2) {
                 m->state = 6;
@@ -284,7 +284,7 @@ void LiftL13_UpdateAlt(unsigned char *moby) {
         }
         g = (char *)D_0013E633 + 0xE1D;
         if (*(struct Moby **)(g + 0x2FC) == m && *(short *)(g + 0x30E) == 0
-            && !(func_001F9D48(g + 0x80, &m->pos) > 0.5f)) {
+            && !(vec_distance_xy(g + 0x80, &m->pos) > 0.5f)) {
             break;
         }
         if (m->state == 7) {
@@ -300,7 +300,7 @@ void LiftL13_UpdateAlt(unsigned char *moby) {
     case ELEVATOR_STATE_WAIT_AT_BOTTOM: {
         int i;
         char *g;
-        vars->pulse = FastAddRots(vars->pulse, D_0015EE6C * 6.2831855f);
+        vars->pulse = FastAddRots(vars->pulse, g_frame_time * 6.2831855f);
         i = func_001FA898_r((FastSin(vars->pulse) * 4.0f - 3.0f) * 128.0f);
         if (i > 0x80) {
             i = 0x80;
@@ -310,13 +310,13 @@ void LiftL13_UpdateAlt(unsigned char *moby) {
         m->glow_color = 0x80000000 | (i << 16) | (i << 8) | i;
         g = (char *)D_0013E633 + 0xE1D;
         if (*(struct Moby **)(g + 0x2FC) != m || *(short *)(g + 0x30E) != 0
-            || func_001F9D48(g + 0x80, &m->pos) > 1.1f) {
+            || vec_distance_xy(g + 0x80, &m->pos) > 1.1f) {
             vars->armed = 1;
         }
         if (vars->armed != 0) {
             char *h = (char *)D_0013E633 + 0xE1D;
             if (*(struct Moby **)(h + 0x2FC) == m && *(short *)(h + 0x30E) == 0
-                && func_001F9D48(h + 0x80, &m->pos) < 0.5f) {
+                && vec_distance_xy(h + 0x80, &m->pos) < 0.5f) {
                 m->glow_color = 0x80208020;
                 if (m->state == 5) {
                     m->command = 2;
@@ -332,21 +332,21 @@ void LiftL13_UpdateAlt(unsigned char *moby) {
         }
         if (m->state == 4) {
             char *p = (char *)D_0013E633 + 0xE9D;
-            float d = func_001F9D48(&m->pos, p);
+            float d = vec_distance_xy(&m->pos, p);
             float e = FastAbsF((*(float *)(p + 0x258)) - vars->bottom);
             if (e < 2.0f && d < 32.0f && d > 5.0f) {
                 m->command = 0;
                 m->state = 3;
-                vars->speed = -(D_0015EE6C * 5.0f);
+                vars->speed = -(g_frame_time * 5.0f);
             }
         } else if (m->state == 5) {
             char *p = (char *)D_0013E633 + 0xE9D;
-            float d = func_001F9D48(&m->pos, p);
+            float d = vec_distance_xy(&m->pos, p);
             float e = FastAbsF((*(float *)(p + 0x258)) - vars->top);
             if (e < 2.0f && d < 32.0f && d > 5.0f) {
                 m->command = 0;
                 m->state = 2;
-                vars->speed = D_0015EE6C * 5.0f;
+                vars->speed = g_frame_time * 5.0f;
             }
         }
         break;
@@ -384,7 +384,7 @@ void compute_elevator_camera_pose(unsigned char *moby, float *v, float *w)
     FastVecAdd(v, v, moby + 0x10);
     clear_u64_value(w);
     x = D_0013E633 + 0xE1D;
-    w[2] = func_L00_001FF860(*(float *)(x + 0xD0) - v[0], *(float *)(x + 0xD4) - v[1]);
+    w[2] = fast_atan2(*(float *)(x + 0xD0) - v[0], *(float *)(x + 0xD4) - v[1]);
     *(int *)(w + 1) = 0;
 }
 typedef int Q_2B5368 __attribute__((mode(TI)));
@@ -545,11 +545,11 @@ void fire_blarg_turret_projectile(char *moby)
     data = *(char **)(moby + 0x78);
     if (D_L13_0015F6B0 % *(int *)&D_L13_00161414 == 0) {
         Moby_GetJointWorldPos(moby, 0, v);
-        d = func_001F9D48(moby + 0x10, *(char **)(data + 0x40) + 0x10);
+        d = vec_distance_xy(moby + 0x10, *(char **)(data + 0x40) + 0x10);
         x = (20.0f - d) / 20.0f * 5.0f + 2.5f;
         ang = FastAddRots(random_float_between(-x, x) * 0.017453292f, *(float *)(moby + 0x48));
-        v2[0] = FastCos(ang) * (*(float *)&D_L13_00161410 * D_0015EE6C);
-        v2[1] = FastSin(ang) * (*(float *)&D_L13_00161410 * D_0015EE6C);
+        v2[0] = FastCos(ang) * (*(float *)&D_L13_00161410 * g_frame_time);
+        v2[1] = FastSin(ang) * (*(float *)&D_L13_00161410 * g_frame_time);
         v2[2] = 0;
         FastVecAdd(v, v, v2);
         spawn_gemlik_projectile(*(float *)(data + 0x68), v, v2, moby);
@@ -594,7 +594,7 @@ char *spawn_blarg_turret_child(char *parent) {
         d[0x29] = 1;
         d[0x2A] = 3;
         *(float *)(d + 0x30) = 0.7f;
-        func_L00_00251E30(m);
+        moby_build_matrix(m);
         copy_hero_spawn_frame(m);
     }
     return m;
@@ -624,7 +624,7 @@ void GemLockTurret_HandleHit(char *m, char *p) {
                     *(int *)(q + 0x2C) = 0;
                     k = 1;
                 } else {
-                    float f = FastDiffRots(func_L00_001FF860(*(float *)(t + 0x10) - *(float *)(m + 0x10), *(float *)(t + 0x14) - *(float *)(m + 0x14)),
+                    float f = FastDiffRots(fast_atan2(*(float *)(t + 0x10) - *(float *)(m + 0x10), *(float *)(t + 0x14) - *(float *)(m + 0x14)),
                         *(float *)(*(char **)(*(char **)(p + 0x70) + 0x78) + 0x54));
                     if (f < 1.65806282f) {
                         *(int *)(q + 0x2C) = 0;
@@ -774,13 +774,13 @@ void update_robosquawker_ground_height(char *m,char *d) {
     float ground = ProbeGroundHeight(&moby->pos, 0, 0.5f);
     float z = moby->pos.z;
     if (ground < z + 0.3f) {
-        float vertical_step = moby_vars->vertical_step - *(float *)&D_0015EE70 * 9.8f;
+        float vertical_step = moby_vars->vertical_step - *(float *)&g_frame_time_sq * 9.8f;
         moby_vars->vertical_step = vertical_step;
         moby->pos.z = moby->pos.z + vertical_step;
         if (moby->pos.z < ground)
             moby->pos.z = ground;
     } else if (z < ground) {
-        moby->pos.z = z + *(float *)&D_0015EE70 * 9.8f;
+        moby->pos.z = z + *(float *)&g_frame_time_sq * 9.8f;
         qzero(&moby_vars->pad_120);
     } else {
         qzero(&moby_vars->pad_120);
@@ -1031,20 +1031,20 @@ void robosquawker_update(RsMoby *m) {
             MobyGroup_SetByteBC(m->b21, 1);
         }
         if (hit->f2C != 0.0f) {
-            ang = func_L00_001FF860(m->pos.f[0] - tgt.pos.f[0], m->pos.f[1] - tgt.pos.f[1]);
+            ang = fast_atan2(m->pos.f[0] - tgt.pos.f[0], m->pos.f[1] - tgt.pos.f[1]);
             v->f148 = 0.5f;
             v->w140 = 0x202;
             v->f20 -= hit->f2C;
             v->f130 = 0.0055f;
             v->f134 = 0.0011f;
-            v->f138 = D_L13_0016141C * D_0015EE6C;
-            v->f13C = D_L13_00161418 * D_0015EE6C;
+            v->f138 = D_L13_0016141C * g_frame_time;
+            v->f13C = D_L13_00161418 * g_frame_time;
             v->w144 = 9;
             v->b15D = 0;
             if (v->f20 <= 0.0f) {
                 m->h34 &= 0xEFFF;
-                v->f138 = D_0015EE6C * 10.0f;
-                v->f13C = D_0015EE6C * 5.5f;
+                v->f138 = g_frame_time * 10.0f;
+                v->f13C = g_frame_time * 5.5f;
                 va = hit->pos;
                 HeadingFromVector(&va, &ang, &v->f138, &v->f13C);
                 InitKnockback(ang, m, v->x120, (func_001160D8() & 1) + 9, 1, 0);
@@ -1101,14 +1101,14 @@ void robosquawker_update(RsMoby *m) {
         v->w180 = 0x38D;
         v->f18C = 2.0f;
         v->f188 = 2.0f;
-        v->f1A4 = v->f204 * D_0015EE6C;
+        v->f1A4 = v->f204 * g_frame_time;
         v->w1B8 |= 0x30;
         if (func_001160D8() & 1) {
             m->h34 |= 0x8000;
         }
         v->pD0 = &D_L13_00161428;
         if (v->w220 != -1) {
-            v->w224 = select_point_index_by_distance(&m->pos, D_L13_001B0AB0[v->w220], 0.0f);
+            v->w224 = select_point_index_by_distance(&m->pos, walker_paths[v->w220], 0.0f);
         }
         break;
     case 0xE: {
@@ -1118,7 +1118,7 @@ void robosquawker_update(RsMoby *m) {
         FastVecSub(&va, &tgt, &m->pos);
         d = ProbeGroundHeight(&m->pos, 0x120, 0.5f);
         if (d > 1.0f
-            && func_001F9CE8(&va) < v->f1FC + 4.0f
+            && vec_length_xy(&va) < v->f1FC + 4.0f
             && FastAbsF(m->pos.f[2] - tgt.pos.f[2]) < 10.0f
             && random_integer_below(0x13) == 0) {
             if (m->b53 != 0) {
@@ -1142,7 +1142,7 @@ void robosquawker_update(RsMoby *m) {
         } else if (v->w220 != -1) {
             char *path;
 
-            path = D_L13_001B0AB0[v->w220];
+            path = walker_paths[v->w220];
             if (FastVecDist(&m->pos, path + (v->w224 * 16 + 16)) < 0.25f) {
                 v->w224 += 1;
                 if (v->w224 >= *(int *)path) {
@@ -1180,15 +1180,15 @@ void robosquawker_update(RsMoby *m) {
     case 0xF: {
         float a;
 
-        a = func_L00_001FF860(v->v1E0.f[0] - m->pos.f[0], v->v1E0.f[1] - m->pos.f[1]);
+        a = fast_atan2(v->v1E0.f[0] - m->pos.f[0], v->v1E0.f[1] - m->pos.f[1]);
         MobySpringTurn((char *)m, &v->f1F0, a, 0.03f, 0.6f, 0.09f);
         h = FastVecLength(&v->v40);
         m->f58 = h * 20.0f + 1.0f;
         FastVecSub(&v->v40, &v->v1E0, &m->pos);
         if (FastVecLength(&v->v40) > 1.0f) {
-            ApproachValue(&h, D_0015EE6C * 4.0f, D_0015EE6C_v[1] * 6.0f);
+            ApproachValue(&h, g_frame_time * 4.0f, D_0015EE6C_v[1] * 6.0f);
         } else {
-            ApproachValue(&h, D_0015EE6C, D_0015EE6C_v[1] * 8.0f);
+            ApproachValue(&h, g_frame_time, D_0015EE6C_v[1] * 8.0f);
         }
         ClampVectorLength(&v->v40, h);
         FastVecAdd(&va, &v->v40, &m->pos);
@@ -1215,11 +1215,11 @@ void robosquawker_update(RsMoby *m) {
         float a;
         float d;
 
-        path = D_L13_001B0AB0[v->w220];
-        a = func_L00_001FF860(v->v1E0.f[0] - m->pos.f[0], v->v1E0.f[1] - m->pos.f[1]);
+        path = walker_paths[v->w220];
+        a = fast_atan2(v->v1E0.f[0] - m->pos.f[0], v->v1E0.f[1] - m->pos.f[1]);
         MobySpringTurn((char *)m, &v->f1F0, a, 0.018f, 0.8f, 0.09f);
         FastVecSub(&v->v40, &v->v1E0, &m->pos);
-        ClampVectorLength(&v->v40, D_0015EE6C * 4.0f);
+        ClampVectorLength(&v->v40, g_frame_time * 4.0f);
         FastVecAdd(&va, &v->v40, &m->pos);
         m->f58 = FastVecLength(&v->v40) * 20.0f + 1.0f;
         if (coll_sphere(1.2f, &va, 0, m) != 0) {
@@ -1260,7 +1260,7 @@ void robosquawker_update(RsMoby *m) {
             v->v1E0.f[2] = v->v1E0.f[2] + random_float_between(-0.2f, 0.2f);
             g = ProbeGroundHeight(&m->pos, 0x120, 0.5f);
             if (g > 1.0f
-                && func_001F9CE8(&vb) < v->f1FC + 4.0f
+                && vec_length_xy(&vb) < v->f1FC + 4.0f
                 && FastAbsF(m->pos.f[2] - tgt.pos.f[2]) < 10.0f
                 && random_integer_below(0x13) == 0) {
                 if (m->b53 != 0) {
@@ -1292,10 +1292,10 @@ void robosquawker_update(RsMoby *m) {
         float g;
 
         g = ProbeGroundHeight(&m->pos, 0x120, 0.5f);
-        ApproachValue(&v->v40.f[2], -(D_0015EE6C * 8.0f), D_0015EE6C_v[1] * 10.8f);
+        ApproachValue(&v->v40.f[2], -(g_frame_time * 8.0f), D_0015EE6C_v[1] * 10.8f);
         move_4318(m, &v->v40, 0.6f, 0.5f, 0.0f, 0);
         if (m->b53 != 2
-            && m->pos.f[2] - g <= D_0015EE6C * 8.0f * func_001F9878(45.0f)
+            && m->pos.f[2] - g <= g_frame_time * 8.0f * multiply_global_factor(45.0f)
             && m->b53 != 2) {
             MobyBlendAnimation(m, 2, 0, scale_ticks(5));
         }
@@ -1319,9 +1319,9 @@ void robosquawker_update(RsMoby *m) {
 
         g = ProbeGroundHeight(&m->pos, 0x120, 0.5f);
         if (m->pos.f[2] - g < 3.0f) {
-            ApproachValue(&v->v40.f[2], D_0015EE6C * 8.0f, D_0015EE6C_v[1] * 10.8f);
+            ApproachValue(&v->v40.f[2], g_frame_time * 8.0f, D_0015EE6C_v[1] * 10.8f);
         } else {
-            ApproachValue(&v->v40.f[2], D_0015EE6C, D_0015EE6C_v[1] * 10.8f);
+            ApproachValue(&v->v40.f[2], g_frame_time, D_0015EE6C_v[1] * 10.8f);
         }
         move_4318(m, &v->v40, 0.6f, 0.5f, 0.0f, 0);
         m->f58 = 6.0f - (m->pos.f[2] - g) / 6.0f * 5.0f;
@@ -1380,7 +1380,7 @@ void robosquawker_update(RsMoby *m) {
     case 0xA: {
         float a;
 
-        a = func_L00_001FF860(v->v1D0.f[0] - m->pos.f[0], v->v1D0.f[1] - m->pos.f[1]);
+        a = fast_atan2(v->v1D0.f[0] - m->pos.f[0], v->v1D0.f[1] - m->pos.f[1]);
         MobySpringTurn((char *)m, &v->f1F0, a, 0.05f, 0.3f, 0.2f);
         FastVecSub(&va, &tgt, &v->v1D0);
         if ((FastVecLength(&va) < v->f1FC && FastAbsF(v->v1D0.f[2] - tgt.pos.f[2]) < 8.0f) || m->bBC == 2) {
@@ -1392,8 +1392,8 @@ void robosquawker_update(RsMoby *m) {
             }
             v->f134 = 0.0f;
             v->f130 = D_L13_00161424;
-            v->f138 = D_L13_00161420 * D_0015EE6C;
-            v->f13C = jump_speed_4318(&m->pos, &v->v1D0, &out, D_L13_00161420 * D_0015EE6C, -D_L13_00161424);
+            v->f138 = D_L13_00161420 * g_frame_time;
+            v->f13C = jump_speed_4318(&m->pos, &v->v1D0, &out, D_L13_00161420 * g_frame_time, -D_L13_00161424);
             v->w144 = 0xD;
             v->b15D = 0;
             InitKnockback(m->rot.f[2], m, v->x120, (func_001160D8() & 1) + 9, 1, 0);
@@ -1427,7 +1427,7 @@ void robosquawker_update(RsMoby *m) {
     case 2: {
         float a;
 
-        a = func_L00_001FF860(m->pos.f[0] - tgt.pos.f[0], m->pos.f[1] - tgt.pos.f[1]);
+        a = fast_atan2(m->pos.f[0] - tgt.pos.f[0], m->pos.f[1] - tgt.pos.f[1]);
         MobySpringTurn((char *)m, &v->f1F0, a, 0.02f, 0.3f, 0.1f);
         FastVecSub(&va, &tgt, &m->pos);
         if (FastVecLength(&va) < v->f1FC
@@ -1471,13 +1471,13 @@ void robosquawker_update(RsMoby *m) {
         float d;
 
         r = FastAbsF(m->pos.f[2] - tgt.pos.f[2]);
-        r = r / func_001F9D48(&m->pos, &tgt);
+        r = r / vec_distance_xy(&m->pos, &tgt);
         if (v->w21C != -1) {
-            select_list_point_toward_target(m, D_L13_001B0AB0[v->w21C], &tgt, &vb);
+            select_list_point_toward_target(m, walker_paths[v->w21C], &tgt, &vb);
         } else {
             qcopy(&vb, &tgt);
         }
-        a = func_L00_001FF860(vb.f[0] - m->pos.f[0], vb.f[1] - m->pos.f[1]) + v->f1F4;
+        a = fast_atan2(vb.f[0] - m->pos.f[0], vb.f[1] - m->pos.f[1]) + v->f1F4;
         MobySpringTurn((char *)m, &v->f1F0, a, 0.05f, 0.3f, 0.2f);
         va.f[0] = FastCos(m->rot.f[2]) * 2.0f;
         va.f[1] = FastSin(m->rot.f[2]) * 2.0f;
@@ -1488,7 +1488,7 @@ void robosquawker_update(RsMoby *m) {
             v->f1F4 = -v->f1F4;
         }
         FastVecSub(&vc, &tgt, &v->v1D0);
-        d = func_001F9D48(&m->pos, &tgt);
+        d = vec_distance_xy(&m->pos, &tgt);
         if ((d < 1.5f
              || (tgt.moby != 0 && tgt.moby->hA6 == 0x10E && tgt.moby->state != 0xFE && tgt.moby->state != 0xFD && d < 2.3f))
             && !(res & 2)) {
@@ -1522,13 +1522,13 @@ void robosquawker_update(RsMoby *m) {
         float da;
         float g;
 
-        a = func_L00_001FF860(tgt.pos.f[0] - m->pos.f[0], tgt.pos.f[1] - m->pos.f[1]);
+        a = fast_atan2(tgt.pos.f[0] - m->pos.f[0], tgt.pos.f[1] - m->pos.f[1]);
         MobySpringTurn((char *)m, &v->f1F0, a, 0.05f, 0.3f, 0.2f);
         same = m->b52 == m->b53;
         hh = MobyGetFrameValue(m);
         dz = FastAbsF(m->pos.f[2] - tgt.pos.f[2]);
-        d = func_001F9D48(&m->pos, &tgt);
-        da = FastDiffRots(func_L00_001FF860(tgt.pos.f[0] - m->pos.f[0], tgt.pos.f[1] - m->pos.f[1]), m->rot.f[2]);
+        d = vec_distance_xy(&m->pos, &tgt);
+        da = FastDiffRots(fast_atan2(tgt.pos.f[0] - m->pos.f[0], tgt.pos.f[1] - m->pos.f[1]), m->rot.f[2]);
         if (same
             && FastAbsF(hh - 13.0f) < 0.2f
             && dz < 1.5f
@@ -1544,7 +1544,7 @@ void robosquawker_update(RsMoby *m) {
                 PostHitMessage(tm, (int)m, 1, &vb, &va, 1.0f);
             }
         }
-        if ((m->b70 & 2) && func_001F9D48(&m->pos, &tgt) > 1.5f) {
+        if ((m->b70 & 2) && vec_distance_xy(&m->pos, &tgt) > 1.5f) {
             m->state = 3;
             if (m->b53 != 5) {
                 MobyBlendAnimation(m, 5, 0, scale_ticks(3));
@@ -1565,17 +1565,17 @@ void robosquawker_update(RsMoby *m) {
         float a;
 
         if (v->w21C != -1) {
-            select_list_point_toward_target(m, D_L13_001B0AB0[v->w21C], &v->v1D0, &vb);
+            select_list_point_toward_target(m, walker_paths[v->w21C], &v->v1D0, &vb);
         } else {
             qcopy(&vb, &v->v1D0);
         }
-        a = func_L00_001FF860(vb.f[0] - m->pos.f[0], vb.f[1] - m->pos.f[1]);
+        a = fast_atan2(vb.f[0] - m->pos.f[0], vb.f[1] - m->pos.f[1]);
         MobySpringTurn((char *)m, &v->f1F0, a, 0.02f, 0.3f, 0.1f);
         va.f[0] = FastCos(m->rot.f[2]) * 2.0f;
         va.f[1] = FastSin(m->rot.f[2]) * 2.0f;
         va.f[2] = 0.0f;
         res = move_w(m, &v->w180, &va, &vb, 1.0f);
-        if (func_001F9D48(&m->pos, &v->v1D0) < 2.0f) {
+        if (vec_distance_xy(&m->pos, &v->v1D0) < 2.0f) {
             m->state = 1;
             if (m->b53 != 3) {
                 MobyBlendAnimation(m, 3, 0, scale_ticks(3));
@@ -1655,20 +1655,20 @@ void robosquawker_update(RsMoby *m) {
         float a;
 
         r = FastAbsF(m->pos.f[2] - tgt.pos.f[2]);
-        r = r / func_001F9D48(&m->pos, &tgt);
+        r = r / vec_distance_xy(&m->pos, &tgt);
         if (v->w21C != -1) {
-            select_list_point_toward_target(m, D_L13_001B0AB0[v->w21C], &v->v1D0, &vb);
+            select_list_point_toward_target(m, walker_paths[v->w21C], &v->v1D0, &vb);
         } else {
             qcopy(&vb, &v->v1D0);
         }
-        a = func_L00_001FF860(vb.f[0] - m->pos.f[0], vb.f[1] - m->pos.f[1]);
+        a = fast_atan2(vb.f[0] - m->pos.f[0], vb.f[1] - m->pos.f[1]);
         MobySpringTurn((char *)m, &v->f1F0, a, 0.05f, 0.3f, 0.2f);
         va.f[0] = FastCos(m->rot.f[2]) * 2.0f;
         va.f[1] = FastSin(m->rot.f[2]) * 2.0f;
         va.f[2] = 0.0f;
         res = move_w(m, &v->w180, &va, &vb, 1.0f);
         FastVecSub(&vc, &tgt, &v->v1D0);
-        if (func_001F9D48(&m->pos, &tgt) < 1.5f && r <= 1.0f) {
+        if (vec_distance_xy(&m->pos, &tgt) < 1.5f && r <= 1.0f) {
             m->state = 4;
             if (m->b53 != 6) {
                 MobyBlendAnimation(m, 6, 0, scale_ticks(3));
@@ -1708,8 +1708,8 @@ void robosquawker_update(RsMoby *m) {
             MobyBlendAnimation(m, 5, 0, scale_ticks(3));
         }
         v->h212 = 1;
-        va.f[0] = FastCos(m->rot.f[2]) * (v->f204 * D_0015EE6C);
-        va.f[1] = FastSin(m->rot.f[2]) * (v->f204 * D_0015EE6C);
+        va.f[0] = FastCos(m->rot.f[2]) * (v->f204 * g_frame_time);
+        va.f[1] = FastSin(m->rot.f[2]) * (v->f204 * g_frame_time);
         va.f[2] = 0.0f;
         FastVecAdd(&vb, &m->pos, &va);
         for (o = (RsOther *)D_L13_00160064; o != 0; o = o->next) {
@@ -1722,15 +1722,15 @@ void robosquawker_update(RsMoby *m) {
             if (o->hA6 != 0 && o->hA6 != 0x3F) {
                 continue;
             }
-            if (func_001F9D48(&vb, &o->pos) < 2.0f) {
+            if (vec_distance_xy(&vb, &o->pos) < 2.0f) {
                 float z;
                 float a;
                 float d;
 
                 z = m->pos.f[2];
-                a = func_L00_001FF860(o->pos.f[0] - m->pos.f[0], o->pos.f[1] - m->pos.f[1]);
+                a = fast_atan2(o->pos.f[0] - m->pos.f[0], o->pos.f[1] - m->pos.f[1]);
                 a = FastSubRots(m->rot.f[2], a);
-                d = D_0015EE6C * 1.5707964f;
+                d = g_frame_time * 1.5707964f;
                 if (!(a > 0.0f)) {
                     d = -d;
                 }
@@ -1749,7 +1749,7 @@ void robosquawker_update(RsMoby *m) {
             v->f198 = 0.0f;
             m->pos.f[2] = g;
         }
-        if (v->p218 == 0 || func_001F9D48(&m->pos, v->p218 + 0x10) > IntToFloat(v->h216)) {
+        if (v->p218 == 0 || vec_distance_xy(&m->pos, v->p218 + 0x10) > IntToFloat(v->h216)) {
             m->state = 5;
             if (m->b53 != 5) {
                 MobyBlendAnimation(m, 5, 0, scale_ticks(3));
@@ -1820,7 +1820,7 @@ void spawn_fighter_jet_joint_particles(void *moby, char *obj)
 
     for (i = 1; i < 3; i++) {
         *(u128 *)vel = 0;
-        s = *(float *)(obj + 0x64) / (D_0015EE6C * 24.0f);
+        s = *(float *)(obj + 0x64) / (g_frame_time * 24.0f);
         if (s > 1.0f) s = 1.0f;
         else if (s < 0.35f) s = 0.35f;
         Moby_GetJointWorldPos(moby, i, pos);
@@ -1831,25 +1831,25 @@ void spawn_fighter_jet_joint_particles(void *moby, char *obj)
         add_random_offset_to_vector_xyz(a, *(float *)(obj + 0xC4) * 0.02f + 0.02f);
         add_random_offset_to_vector_xyz(b, *(float *)(obj + 0xC4) * 0.02f + 0.02f);
         add_random_offset_to_vector_xyz(c, *(float *)(obj + 0xC4) * 0.01f + 0.02f);
-        vel[0] = -((random_float_between(6.0f, 7.0f) + *(float *)(obj + 0xC4) * 2.0f) * D_0015EE6C) * s;
+        vel[0] = -((random_float_between(6.0f, 7.0f) + *(float *)(obj + 0xC4) * 2.0f) * g_frame_time) * s;
         spawn_type_74_particle(moby, a, vel, &D_L13_00161468, 1);
-        vel[0] = -((random_float_between(6.0f, 7.0f) + *(float *)(obj + 0xC4) * 3.0f) * D_0015EE6C) * s;
+        vel[0] = -((random_float_between(6.0f, 7.0f) + *(float *)(obj + 0xC4) * 3.0f) * g_frame_time) * s;
         spawn_type_74_particle(moby, b, vel, &D_L13_00161478, 1);
-        vel[0] = -((random_float_between(6.0f, 7.0f) + *(float *)(obj + 0xC4) * 4.0f) * D_0015EE6C) * s;
+        vel[0] = -((random_float_between(6.0f, 7.0f) + *(float *)(obj + 0xC4) * 4.0f) * g_frame_time) * s;
         spawn_type_74_particle(moby, c, vel, &D_L13_00161488, 1);
         if (*(float *)(obj + 0xC4) > 0.5f) {
             add_random_offset_to_vector_xyz(a, *(float *)(obj + 0xC4) * 0.02f + 0.01f);
             add_random_offset_to_vector_xyz(b, *(float *)(obj + 0xC4) * 0.02f + 0.01f);
             add_random_offset_to_vector_xyz(c, *(float *)(obj + 0xC4) * 0.01f + 0.01f);
-            vel[0] = -((random_float_between(6.0f, 7.0f) + *(float *)(obj + 0xC4) * 2.0f) * D_0015EE6C) * s;
+            vel[0] = -((random_float_between(6.0f, 7.0f) + *(float *)(obj + 0xC4) * 2.0f) * g_frame_time) * s;
             spawn_type_74_particle(moby, a, vel, &D_L13_00161468, 1);
-            vel[0] = -((random_float_between(6.0f, 7.0f) + *(float *)(obj + 0xC4) * 3.0f) * D_0015EE6C) * s;
+            vel[0] = -((random_float_between(6.0f, 7.0f) + *(float *)(obj + 0xC4) * 3.0f) * g_frame_time) * s;
             spawn_type_74_particle(moby, b, vel, &D_L13_00161478, 1);
-            vel[0] = -((random_float_between(6.0f, 7.0f) + *(float *)(obj + 0xC4) * 4.0f) * D_0015EE6C) * s;
+            vel[0] = -((random_float_between(6.0f, 7.0f) + *(float *)(obj + 0xC4) * 4.0f) * g_frame_time) * s;
             spawn_type_74_particle(moby, c, vel, &D_L13_00161488, 1);
-            vel[0] = -((random_float_between(6.0f, 7.0f) + *(float *)(obj + 0xC4) * 2.0f) * D_0015EE6C) * s;
+            vel[0] = -((random_float_between(6.0f, 7.0f) + *(float *)(obj + 0xC4) * 2.0f) * g_frame_time) * s;
             spawn_type_74_particle(moby, a, vel, &D_L13_00161498, 1);
-            vel[0] = -((random_float_between(6.0f, 7.0f) + *(float *)(obj + 0xC4) * 3.0f) * D_0015EE6C) * s;
+            vel[0] = -((random_float_between(6.0f, 7.0f) + *(float *)(obj + 0xC4) * 3.0f) * g_frame_time) * s;
             spawn_type_74_particle(moby, pos, vel, &D_L13_001614A8, 1);
         }
     }
@@ -1882,10 +1882,10 @@ void draw_fighter_jet_radar_icon(char *rot, char *from, char *moby, int icon, lo
     qzero(turn);
     turn[2] = *(float *)(rot + 8);
     turn[2] = FastSubRots(1.5707964f, turn[2]);
-    func_001FA218(mat, turn);
+    euler_to_matrix(mat, turn);
     FastVecSub(delta, moby + 0x10, from);
     delta[2] = 0.0f;
-    func_001F9EE8(pos, delta, mat);
+    transform_vector(pos, delta, mat);
     FastVecScale(pos, pos, 0.0714285746f);
     len = FastVecLength(pos);
     x = func_001FA898_r(pos[0]);
@@ -1952,7 +1952,7 @@ int select_fighter_jet_target_and_draw_indicators(int a, char *p, char *a2, void
             project_world_point_to_screen_pixels(v, &tx, &ty, 0);
             tx -= sx;
             ty -= sy;
-            r = func_001FA898_r(func_001F9B50(IntToFloat(tx * tx + ty * ty))) + 0x1C;
+            r = func_001FA898_r(vec_length(IntToFloat(tx * tx + ty * ty))) + 0x1C;
             if (dx < r && dy < r) {
                 if (cur != 0) {
                     if (m == cur) {
@@ -2008,24 +2008,24 @@ int select_fighter_jet_target_and_draw_indicators(int a, char *p, char *a2, void
                 if (*(unsigned char *)(m + 0x31) == 0) {
                     char *np = m + 0x10;
                     int c;
-                    func_001FA4A0(mat, D_L13_00167350);
+                    matrix_from_basis_rows(mat, D_L13_00167350);
                     FastVecSub(u, np, D_0013E633 + 0xE9D);
-                    func_001F9EE8(u, u, mat);
+                    transform_vector(u, u, mat);
                     u[0] = -u[1];
                     u[1] = -u[2];
                     u[2] = 0.0f;
                     func_L00_001FF4B0(u, u, 160.0f);
-                    ang = FastAddRots(func_L00_001FF860(u[0], u[1]), 1.5707964f);
+                    ang = FastAddRots(fast_atan2(u[0], u[1]), 1.5707964f);
                     u[0] += 256.0f;
                     u[1] += 208.0f;
                     dist = FastVecDist((char *)a + 0x10, np);
-                    h = FastAbsF(FastSubRots(func_L00_001FF860(*(float *)(m + 0x10) - *(float *)((char *)a + 0x10),
+                    h = FastAbsF(FastSubRots(fast_atan2(*(float *)(m + 0x10) - *(float *)((char *)a + 0x10),
                                                                       *(float *)(m + 0x14) - *(float *)((char *)a + 0x14)),
                                                     *(float *)(p + 0x38)));
-                    k = FastAbsF(FastSubRots(-func_L00_001FF860(func_001F9D48((char *)a + 0x10, np),
+                    k = FastAbsF(FastSubRots(-fast_atan2(vec_distance_xy((char *)a + 0x10, np),
                                                                        *(float *)(m + 0x18) - *(float *)((char *)a + 0x18)),
                                                     *(float *)(p + 0x34)));
-                    s = func_001F9B50(h * h + k * k);
+                    s = vec_length(h * h + k * k);
                     t = FastAddRots(*(float *)(p + 0x114), 0.1f / (s / 3.1415927f));
                     *(float *)(p + 0x114) = t;
                     c = func_001FA898_r((FastSin(t) + 1.4f) * 53.0f);
@@ -2112,7 +2112,7 @@ void update_fighter_jet_target_tracking(int a, char *p) {
     char *r;
     float v[4];
     if (!(D_L13_0015F6A8 >= 3 && D_L13_0015F6A8 <= 4)) {
-        func_001F9908((int *)(p + 0x8C));
+        fast_dec_timer((int *)(p + 0x8C));
     }
     if (W(p, 0x8C) != 0 && P(p, 0x88) != 0 && H(P(p, 0x88), 0xA6) == W(p, 0x124) &&
         B(P(p, 0x88), 0x20) != 0xFE && B(P(p, 0x88), 0x20) != 0xFD) {
@@ -2287,7 +2287,7 @@ void update_fighter_jet_gun_and_aim(char *moby, char *obj, float p2, float p3) {
     char b[16];
     char c[16];
     char d[16];
-    BuildSphericalOffset(a, D_0015EE6C * 400.0f, p2, p3);
+    BuildSphericalOffset(a, g_frame_time * 400.0f, p2, p3);
     FastVecAdd(a, a, obj);
     if (func_001F9908_i(obj + 0x80) && (*(int *)(D_0013A5E0 + 0x2610) & 0x84)) {
         Moby_PlaySound(3, 0, (int)moby);
@@ -2319,7 +2319,7 @@ void fire_fighter_jet_rocket(char *moby, char *obj) {
             Moby_GetJointWorldPos(moby, t + 7, a);
             func_L00_001FF4B0(b, obj, 0.3f);
             FastVecAdd(a, a, b);
-            s = D_0015EE6C * 100.0f;
+            s = g_frame_time * 100.0f;
             h = scale_ticks(300);
             if (spawn_ship_rocket(moby, a, s, *(int *)(obj + 0xEC), pos, h) != 0) {
                 Moby_PlaySound(2, 0, (int)moby);
@@ -2392,7 +2392,7 @@ void PlayerFighterFlight(void *a0, void *a1) {
     Moby_3E8 *m = a0;
     Obj_3E8 *o = a1;
     W4_3E8 old;
-    W4_3E8 vel = { 0.0f, 0.0f, D_0015EE6C * 8.0f, 0.0f };
+    W4_3E8 vel = { 0.0f, 0.0f, g_frame_time * 8.0f, 0.0f };
     W4_3E8 dir;
     W4_3E8 side;
     W4_3E8 up = { 0.0f, 0.0f, 1.0f, 0.0f };
@@ -2442,27 +2442,27 @@ void PlayerFighterFlight(void *a0, void *a1) {
             }
             pad = (char *)D_0013A5E0 + 0x2460;
             if (*(int *)(pad + 0x1B0) & 0x40) {
-                float f = o->speed + D_0015EE60 * 0.035f;
-                float max = D_0015EE6C * 30.0f;
+                float f = o->speed + frame_scale * 0.035f;
+                float max = g_frame_time * 30.0f;
                 o->speed = f;
                 if (max < f) {
                     o->speed = max;
                 }
             } else {
-                float hi = D_0015EE6C * 24.0f;
-                float step = D_0015EE60 * 0.025f;
+                float hi = g_frame_time * 24.0f;
+                float step = frame_scale * 0.025f;
                 float cur = o->speed;
                 if (cur < hi - step) {
                     o->speed = cur + step;
                 } else if (hi < cur) {
-                    o->speed = cur + (hi - cur) * (D_0015EE60 * 0.1f);
+                    o->speed = cur + (hi - cur) * (frame_scale * 0.1f);
                 } else {
                     o->speed = hi;
                 }
             }
         } else {
             o->count += 1;
-            o->speed += D_0015EE60 * 0.003f;
+            o->speed += frame_scale * 0.003f;
         }
     } else {
         o->speed = 0.0001f;
@@ -2470,23 +2470,23 @@ void PlayerFighterFlight(void *a0, void *a1) {
 
     if (o->count > scale_ticks(5)) {
         char *h = (char *)D_0013E633 + 0xE1D;
-        ka = D_0015EE60 * 0.1f;
-        kb = D_0015EE60 * 0.25f;
+        ka = frame_scale * 0.1f;
+        kb = frame_scale * 0.25f;
         a = *(float *)(h + 0x1D20);
         b = *(float *)(h + 0x1D24);
         if (*(int *)(D_0013A5E0 + 0x2600) & 0x200) {
-            a = a / (D_0015EE60 * 0.012271847f);
-            a = a * (D_0015EE60 * 0.015707964f);
-            b = b / (D_0015EE60 * 0.012271847f);
-            b = b * (D_0015EE60 * 0.015707964f);
-            ka = D_0015EE60 * 0.08f;
-            kb = D_0015EE60 * 0.08f;
+            a = a / (frame_scale * 0.012271847f);
+            a = a * (frame_scale * 0.015707964f);
+            b = b / (frame_scale * 0.012271847f);
+            b = b * (frame_scale * 0.015707964f);
+            ka = frame_scale * 0.08f;
+            kb = frame_scale * 0.08f;
         }
-        Spring(&o->f6C, &o->f90, a, D_0015EE64 * 0.03f, D_0015EE64, ka);
-        Spring(&o->f70, &o->f94, b, D_0015EE64 * 0.03f, D_0015EE64, kb);
-        SpringAngle((char *)&o->f30, (char *)&o->f98, 0, o->f6C, D_0015EE64 * 0.05f, D_0015EE64, D_0015EE60);
-        o->f34 = FastSubRots(o->f34, o->f70 * (D_0015EE60 * 0.012271847f));
-        o->f38 = FastSubRots(o->f38, o->f6C * (D_0015EE60 * 0.012271847f));
+        Spring(&o->f6C, &o->f90, a, g_frame_scale_sq * 0.03f, g_frame_scale_sq, ka);
+        Spring(&o->f70, &o->f94, b, g_frame_scale_sq * 0.03f, g_frame_scale_sq, kb);
+        SpringAngle((char *)&o->f30, (char *)&o->f98, 0, o->f6C, g_frame_scale_sq * 0.05f, g_frame_scale_sq, frame_scale);
+        o->f34 = FastSubRots(o->f34, o->f70 * (frame_scale * 0.012271847f));
+        o->f38 = FastSubRots(o->f38, o->f6C * (frame_scale * 0.012271847f));
         if (o->f34 > 1.3962634f) {
             o->f34 = 1.3962634f;
         } else if (o->f34 < -1.3962634f) {
@@ -2512,13 +2512,13 @@ void PlayerFighterFlight(void *a0, void *a1) {
         qcopy(target, &D_L13_001614C0);
     }
 
-    d = func_001F9D48(m->pos, &D_L13_001614C0);
-    o->f38 = interpolate_value_with_repeated_squaring(1, 5, d, o->f38, func_L00_001FF860(target[0] - m->pos[0], target[1] - m->pos[1]), 50.0f, lenB);
-    m->r48 = interpolate_value_with_repeated_squaring(1, 5, d, m->r48, func_L00_001FF860(target[0] - m->pos[0], target[1] - m->pos[1]), 50.0f, lenB);
+    d = vec_distance_xy(m->pos, &D_L13_001614C0);
+    o->f38 = interpolate_value_with_repeated_squaring(1, 5, d, o->f38, fast_atan2(target[0] - m->pos[0], target[1] - m->pos[1]), 50.0f, lenB);
+    m->r48 = interpolate_value_with_repeated_squaring(1, 5, d, m->r48, fast_atan2(target[0] - m->pos[0], target[1] - m->pos[1]), 50.0f, lenB);
     e1 = FastAbsF(target[2] - m->pos[2]);
-    o->f34 = interpolate_value_with_repeated_squaring(1, 5, e1, o->f34, -func_L00_001FF860(func_001F9D48(m->pos, target), target[2] - m->pos[2]), 50.0f, lenA);
+    o->f34 = interpolate_value_with_repeated_squaring(1, 5, e1, o->f34, -fast_atan2(vec_distance_xy(m->pos, target), target[2] - m->pos[2]), 50.0f, lenA);
     e2 = FastAbsF(target[2] - m->pos[2]);
-    m->r44 = interpolate_value_with_repeated_squaring(1, 5, e2, m->r44, -func_L00_001FF860(func_001F9D48(m->pos, target), target[2] - m->pos[2]), 50.0f, lenA);
+    m->r44 = interpolate_value_with_repeated_squaring(1, 5, e2, m->r44, -fast_atan2(vec_distance_xy(m->pos, target), target[2] - m->pos[2]), 50.0f, lenA);
     BuildSphericalOffset(dir, o->speed, o->f38, -o->f34);
     func_L00_001FF4B0(o->v10, dir, 1.0f);
     qcopy(old, m->pos);
@@ -2526,9 +2526,9 @@ void PlayerFighterFlight(void *a0, void *a1) {
         FastVecAdd(m->pos, m->pos, dir);
     }
     {
-        float lo = D_0015EE6C * 24.0f;
+        float lo = g_frame_time * 24.0f;
         float sp = o->speed - lo;
-        float range = D_0015EE6C * 30.0f - lo;
+        float range = g_frame_time * 30.0f - lo;
         if (sp < 0.0f) {
             ratio = 0.0f / range;
         } else {
@@ -2553,27 +2553,27 @@ void PlayerFighterFlight(void *a0, void *a1) {
             o->fB8 = tbl[o->sel][1];
             o->fBC = tbl[o->sel][2];
         } else {
-            Spring(&o->fB4, &o->fC8, tbl[o->sel][0], D_0015EE64 * 0.15f, D_0015EE64 * 0.8f, D_0015EE60);
-            Spring(&o->fB8, &o->fCC, tbl[o->sel][1], D_0015EE64 * 0.15f, D_0015EE64 * 0.8f, D_0015EE60);
-            Spring(&o->fBC, &o->fD0, tbl[o->sel][2], D_0015EE64 * 0.15f, D_0015EE64 * 0.8f, D_0015EE60);
+            Spring(&o->fB4, &o->fC8, tbl[o->sel][0], g_frame_scale_sq * 0.15f, g_frame_scale_sq * 0.8f, frame_scale);
+            Spring(&o->fB8, &o->fCC, tbl[o->sel][1], g_frame_scale_sq * 0.15f, g_frame_scale_sq * 0.8f, frame_scale);
+            Spring(&o->fBC, &o->fD0, tbl[o->sel][2], g_frame_scale_sq * 0.15f, g_frame_scale_sq * 0.8f, frame_scale);
         }
         diff[0] = o->fB4;
         diff[1] = o->fB8;
         diff[2] = o->fBC;
         diff[3] = 0.0f;
-        func_001FA1F8(mat, (char *)&o->f30);
-        func_001F9EC0(target, diff, mat);
+        euler_rotation_basis(mat, (char *)&o->f30);
+        matrix_mul_vec3(target, diff, mat);
         FastVecAdd(w, m->pos, target);
         set_camera_position(w);
         r[0] = FastAddRots(o->f30 * 0.5f, o->f6C * 0.03125f);
-        r[1] = FastSubRots(FastAddRots(o->f34, 0.09817477f), o->f70 * (D_0015EE60 * 0.012271847f));
+        r[1] = FastSubRots(FastAddRots(o->f34, 0.09817477f), o->f70 * (frame_scale * 0.012271847f));
         r[2] = o->f38;
         if (m->state == 2) {
             qcopy(&o->f20, r);
         } else {
-            SpringAngle((char *)&o->f20, (char *)&o->fA0, 0, r[0], D_0015EE64 * 0.15f, D_0015EE64 * 0.8f, D_0015EE60);
-            SpringAngle((char *)&o->f24, (char *)&o->fA4, 0, r[1], D_0015EE64 * 0.15f, D_0015EE64 * 0.8f, D_0015EE60);
-            SpringAngle((char *)&o->f28, (char *)&o->fA8, 0, r[2], D_0015EE64 * 0.15f, D_0015EE64 * 0.8f, D_0015EE60);
+            SpringAngle((char *)&o->f20, (char *)&o->fA0, 0, r[0], g_frame_scale_sq * 0.15f, g_frame_scale_sq * 0.8f, frame_scale);
+            SpringAngle((char *)&o->f24, (char *)&o->fA4, 0, r[1], g_frame_scale_sq * 0.15f, g_frame_scale_sq * 0.8f, frame_scale);
+            SpringAngle((char *)&o->f28, (char *)&o->fA8, 0, r[2], g_frame_scale_sq * 0.15f, g_frame_scale_sq * 0.8f, frame_scale);
         }
         ang[0] = o->f20;
         ang[2] = o->f28;
@@ -2596,9 +2596,9 @@ void PlayerFighterFlight(void *a0, void *a1) {
         p = D_L13_001741C0;
         if (*(char **)(p + 0x18) == 0 || (hc = *(short *)(*(char **)(p + 0x18) + 0xA6), hc != 0 && hc != 0x192 && hc != 0x4C2 && hc != 0x4C3 && hc != 0x52 && hc != 0x53)) {
             qcopy(m->pos, p + 0x30);
-            func_L00_001FF610(dir, dir, p + 0x40);
-            o->f38 = FastAddRots(o->f38, FastSubRots(func_L00_001FF860(dir[0], dir[1]), o->f38) * (D_0015EE60 * 0.1f));
-            o->f34 = FastAddRots(o->f34, FastSubRots(-func_L00_001FF860(func_001F9CE8(dir), dir[2]), o->f34) * (D_0015EE60 * 0.1f));
+            vec_reflect(dir, dir, p + 0x40);
+            o->f38 = FastAddRots(o->f38, FastSubRots(fast_atan2(dir[0], dir[1]), o->f38) * (frame_scale * 0.1f));
+            o->f34 = FastAddRots(o->f34, FastSubRots(-fast_atan2(vec_length_xy(dir), dir[2]), o->f34) * (frame_scale * 0.1f));
             o->speed = o->speed * 0.7f;
             if (*(char **)(p + 0x18) != 0) {
                 if (o->iDC == 0) {
@@ -2607,8 +2607,8 @@ void PlayerFighterFlight(void *a0, void *a1) {
                     if (*(float *)(g + 0x15FC) < 0.0f) {
                         FastVecSub(side, p + 0x50, p + 0x60);
                         func_L00_001FF4B0(side, side, 1.0f);
-                        func_L00_001FF610(vel, dir, p + 0x40);
-                        func_L00_001FF4B0(vel, vel, D_0015EE6C + D_0015EE6C);
+                        vec_reflect(vel, dir, p + 0x40);
+                        func_L00_001FF4B0(vel, vel, g_frame_time + g_frame_time);
                         func_L00_001FF4B0(up, p + 0x40, 1.0f);
                         spawn_explosion(m, vel, 0, 8.0f, 100.0f, 0x1E, 0xA, 0x18, 16.0f, 8.0f, 9.0f, 6, 1.0f, 50.0f, 1, 1, -1, 0);
                         o->s62 = scale_ticks(240);
@@ -2707,7 +2707,7 @@ void JetFighterUpdateL13(Jet47 *m) {
     int state,initial_state;
     if (((JetPlayer47*)(D_0013E633+0xE1D))->state==0x72) return;
     d=m->data; d->hit_class=0;
-    func_001F9908((int*)&d->timer);
+    fast_dec_timer((int*)&d->timer);
     initial_state=m->state;
     if ((unsigned int)(initial_state-6)>=2 && (unsigned char)initial_state!=1 && (unsigned char)initial_state!=2) {
         JetHit47 *hit=(JetHit47*)MobyGetHitMessage(m,0x30001,0);
@@ -2720,13 +2720,13 @@ void JetFighterUpdateL13(Jet47 *m) {
                     jet_camera47.flash=1.0f; jet_camera47.ticks=scale_ticks(4);
                     weight=hit->damage*0.05f;
                     BuildSphericalOffset(impulse,d->speed,d->angles[2],-d->angles[1]);
-                    func_L00_001FF548(hit->velocity,hit->velocity,D_0015EE6C*3.0f);
+                    func_L00_001FF548(hit->velocity,hit->velocity,g_frame_time*3.0f);
                     FastVecAdd(m->position,m->position,hit->velocity);
-                    func_L00_001FF610(impulse,impulse,hit->velocity);
-                    yaw_delta=FastSubRots(func_L00_001FF860(impulse[0],impulse[1]),d->angles[2]);
-                    d->angles[2]=FastAddRots(d->angles[2],yaw_delta*(D_0015EE60*0.1f)*weight);
-                    pitch_delta=FastSubRots(func_L00_001FF860(func_001F9CE8(impulse),impulse[2]),d->angles[1]);
-                    d->angles[1]=FastAddRots(d->angles[1],pitch_delta*(D_0015EE60*0.1f)*weight);
+                    vec_reflect(impulse,impulse,hit->velocity);
+                    yaw_delta=FastSubRots(fast_atan2(impulse[0],impulse[1]),d->angles[2]);
+                    d->angles[2]=FastAddRots(d->angles[2],yaw_delta*(frame_scale*0.1f)*weight);
+                    pitch_delta=FastSubRots(fast_atan2(vec_length_xy(impulse),impulse[2]),d->angles[1]);
+                    d->angles[1]=FastAddRots(d->angles[1],pitch_delta*(frame_scale*0.1f)*weight);
                 }
             } else {
                 BuildSphericalOffset(impulse,d->speed,d->angles[2],-d->angles[1]);
@@ -2749,7 +2749,7 @@ void JetFighterUpdateL13(Jet47 *m) {
         int texture_index,initialized;
         m->state=1; d->animation_frame=0; m->scale=m->model->scale;
         *(float*)((char*)d+0x20)=d->angles[0]; *(float*)((char*)d+0x24)=d->angles[1];
-        limit=func_L00_001FF860(1.0f,D_L13_0016CE70); limit+=limit;
+        limit=fast_atan2(1.0f,D_L13_0016CE70); limit+=limit;
         d->counterC0=0; d->hit_class=0; *(float*)((char*)d+0xAC)=limit; *(float*)((char*)d+0xB0)=limit;
         qcopy(d->angles,m->rotation); qcopy(d->spawn_rotation,m->rotation); qcopy(d->spawn_position,m->position);
         texture_index=d->texture_id;
@@ -2762,7 +2762,7 @@ void JetFighterUpdateL13(Jet47 *m) {
         jet_palette47=palette;
         if (!initialized) __builtin_memcpy(D_L13_001CC0F0,palette,1024);
         jet_palette_ready47=1; d->wait_timer=1; d->energy=1;
-        if (m->persistent!=0xFF && (D_0014171B+0xAA35)[m->persistent+(D_0015EE84<<4)]==0xFF) m->state=9;
+        if (m->persistent!=0xFF && (D_0014171B+0xAA35)[m->persistent+(g_current_level_index<<4)]==0xFF) m->state=9;
         if (d->group_a>0) jet_group_state(d->group_a,0,0,0);
         if (d->group_b>0) jet_group_state(d->group_b,0,0,0);
         jet_group_switch(D_L13_001CC068,1,1,-1); jet_group_switch(&D_L13_001614D0,1,-1,-1); jet_group_flag(0x102,0);
@@ -2771,7 +2771,7 @@ void JetFighterUpdateL13(Jet47 *m) {
     }
     case 1: {
         short enter=0;
-        if (m->persistent!=0xFF && (D_0014171B+0xAA35)[m->persistent+(D_0015EE84<<4)]==0xFF) m->state=9;
+        if (m->persistent!=0xFF && (D_0014171B+0xAA35)[m->persistent+(g_current_level_index<<4)]==0xFF) m->state=9;
         else if (d->trigger!=-1 && is_point_inside_clip_volume(D_0013E633+0xE9D,d->trigger)) { d->blend=0.99f; D_L13_0015F4FC=0.99f; enter=1; }
         else if (jet_distance(m,((JetPlayer47*)(D_0013E633+0xE1D))->moby)<2.0f && ((JetPlayer47*)(D_0013E633+0xE1D))->state!=50 && ((JetPlayer47*)(D_0013E633+0xE1D))->state!=29 && !((JetPlayer47*)(D_0013E633+0xE1D))->busy) {
             int pressed=try_set_help_message(7,0x53E9)!=0;
@@ -2781,15 +2781,15 @@ void JetFighterUpdateL13(Jet47 *m) {
             float limit;
             HeroEnterMoveState(50,1); m->scale=m->model->scale;
             *(float*)((char*)d+0x20)=d->angles[0]; *(float*)((char*)d+0x24)=d->angles[1];
-            limit=func_L00_001FF860(1.0f,D_L13_0016CE70); limit+=limit;
+            limit=fast_atan2(1.0f,D_L13_0016CE70); limit+=limit;
             d->counterC0=0; d->hit_class=0; *(float*)((char*)d+0xAC)=limit; *(float*)((char*)d+0xB0)=limit;
             qcopy(d->angles,m->rotation); d->wait_timer=1; d->energy=1; m->state=2; d->lock_index=-1;
-        } else if (d->blend!=0.0f) { ApproachValue(&d->blend,0.0f,D_0015EE6C*4.0f); D_L13_0015F4FC=d->blend; }
+        } else if (d->blend!=0.0f) { ApproachValue(&d->blend,0.0f,g_frame_time*4.0f); D_L13_0015F4FC=d->blend; }
         jet_animate((unsigned char*)m,1.5f);
         break;
     }
     case 2:
-        ApproachValue(&d->blend,1.0f,D_0015EE6C*4.0f); D_L13_0015F4FC=d->blend;
+        ApproachValue(&d->blend,1.0f,g_frame_time*4.0f); D_L13_0015F4FC=d->blend;
         if (d->blend==1.0f) {
             if (d->entry_path!=-1) {
                 JetPath47 *path=&D_L13_0016016C[d->entry_path];
@@ -2801,11 +2801,11 @@ void JetFighterUpdateL13(Jet47 *m) {
                 }
             }
             CameraScript(m->position,m->rotation,0,0,0);
-            d->missile_index=0; d->counter6C=0; d->counter70=0; d->missile_timer=0; d->speed=D_0015EE60*0.1f; d->gun_timer=0;
+            d->missile_index=0; d->counter6C=0; d->counter70=0; d->missile_timer=0; d->speed=frame_scale*0.1f; d->gun_timer=0;
             m->alpha=m->render_flags=0xFF; *(int*)((char*)((JetPlayer47*)(D_0013E633+0xE1D))->moby+0x98)=-1;
             qcopy(d->previous_rotation,m->rotation);
             d->angle_a=0; d->angle_b=0; d->angle_c=0; d->angle_d=0; d->angle_e=0; d->angle_f=0; ((JetPlayer47*)(D_0013E633+0xE1D))->craft=m; { unsigned short cls=m->class_id; ((JetPlayer47*)(D_0013E633+0xE1D))->health=255.0f; ((JetPlayer47*)(D_0013E633+0xE1D))->ammo=10; ((JetPlayer47*)(D_0013E633+0xE1D))->pad160E=1; ((JetPlayer47*)(D_0013E633+0xE1D))->ammo2=20; ((JetPlayer47*)(D_0013E633+0xE1D))->class_id=cls; ((JetPlayer47*)(D_0013E633+0xE1D))->ammo3=20; d->hud_previous=255; d->hud_health=0; ((JetPlayer47*)(D_0013E633+0xE1D))->ammo4=3; ((JetPlayer47*)(D_0013E633+0xE1D))->ammo5=3; ((JetPlayer47*)(D_0013E633+0xE1D))->ammo6=3; ((JetPlayer47*)(D_0013E633+0xE1D))->pad160F=0; ((JetPlayer47*)(D_0013E633+0xE1D))->max_health=256.0f; ((JetPlayer47*)(D_0013E633+0xE1D))->health_scale=100.0f; }
-            BuildSphericalOffset(d,D_0015EE60*0.1f,d->angles[2],-d->angles[1]);
+            BuildSphericalOffset(d,frame_scale*0.1f,d->angles[2],-d->angles[1]);
             if (d->group_a>0) jet_group_state(d->group_a,1,1,1);
             if (d->group_b>0) jet_group_state(d->group_b,1,1,1);
             jet_group_switch(D_L13_001CC068,0,0,-1); jet_group_switch(&D_L13_001614D0,0,-1,-1); jet_group_flag(0x102,0);
@@ -2816,7 +2816,7 @@ void JetFighterUpdateL13(Jet47 *m) {
         break;
     case 4: {
         unsigned char *audio;
-        if (d->blend!=0.0f) { ApproachValue(&d->blend,0.0f,D_0015EE6C*4.0f); D_L13_0015F4FC=d->blend; }
+        if (d->blend!=0.0f) { ApproachValue(&d->blend,0.0f,g_frame_time*4.0f); D_L13_0015F4FC=d->blend; }
         force_help_message(6,0); D_L13_0015F6E8=2;
         audio=D_0013E633+0x1D+d->engine_sound*0x70;
         if (*(Jet47**)(audio+0x88)!=m || !audio[0x74]) { d->engine_sound=-1; d->engine_sound=Moby_PlaySound(0,4,(int)m); }
@@ -2829,7 +2829,7 @@ void JetFighterUpdateL13(Jet47 *m) {
         ((JetPlayer47*)(D_0013E633+0xE1D))->in_craft=0; *(int*)((char*)((JetPlayer47*)(D_0013E633+0xE1D))->moby+0x98)=0;
         HeroEnterMoveState(0,1); CameraScript2(0); Hud_SetBarValueById(((JetPlayer47*)(D_0013E633+0xE1D))->weapon,0);
         qcopy(m->position,d->spawn_position); qcopy(m->rotation,d->spawn_rotation);
-        m->scale=m->model->scale; func_0020EEE8(m);
+        m->scale=m->model->scale; moby_anim_sphere_lerp(m);
         if (d->group_a>0) jet_group_state(d->group_a,0,0,0);
         if (d->group_b>0) jet_group_state(d->group_b,0,0,0);
         jet_group_switch(D_L13_001CC068,1,1,-1); jet_group_switch(&D_L13_001614D0,1,-1,-1); jet_group_flag(0x102,0);
@@ -2867,7 +2867,7 @@ void JetFighterUpdateL13(Jet47 *m) {
             int active=transition->active;
             if (active==-1) {
                 Hero_OnKilled(); CameraScript2(0);
-                qcopy(m->position,d->spawn_position); qcopy(m->rotation,d->spawn_rotation); func_0020EEE8(m);
+                qcopy(m->position,d->spawn_position); qcopy(m->rotation,d->spawn_rotation); moby_anim_sphere_lerp(m);
                 {
             int id=d->engine_sound;
             unsigned char *audio;
@@ -2887,7 +2887,7 @@ void JetFighterUpdateL13(Jet47 *m) {
         ((JetPlayer47*)(D_0013E633+0xE1D))->in_craft=0; *(int*)((char*)((JetPlayer47*)(D_0013E633+0xE1D))->moby+0x98)=0; HeroEnterMoveState(0,1); CameraScript2(0);
         if (d->escape_path==-1) { STUB_printf(D_L13_001F4760); qcopy(m->position,d->spawn_position); qcopy(m->rotation,d->spawn_rotation); }
         else { int index=d->escape_path; JetPath47 *paths=D_L13_0016016C; qcopy(m->position,paths[index].position); qcopy(m->rotation,paths[index].rotation); m->position[2]+=0.57318f; }
-        m->scale=m->model->scale; func_0020EEE8(m);
+        m->scale=m->model->scale; moby_anim_sphere_lerp(m);
         if (d->destination_path==-1) STUB_printf(D_L13_001F4798);
         else {
             JetPath47 *path;

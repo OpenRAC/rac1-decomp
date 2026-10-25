@@ -81,7 +81,7 @@ extern unsigned char D_0013D5C8[];
 /* mission status from the flags of map points 20, 22 and 24 and item flag 2: 1, 2 or 0 */
 int GetMapPointMissionStatus(void) {
     if (D_0013D6B8_24F170[20].flag && !D_0013D6B8_24F170[24].flag) return 1;
-    if (D_0013D6B8_24F170[24].flag && D_0013D5C8[2] && !D_0013D6B8_24F170[22].flag) return 2;
+    if (D_0013D6B8_24F170[24].flag && item_available[2] && !D_0013D6B8_24F170[22].flag) return 2;
     return 0;
 }
 INCLUDE_ASM("asm/overlays", func_L00_0024F198);
@@ -103,8 +103,8 @@ int GetMorphORayStatus(void) {
 extern u8 D_0013D5C8[];
 /* 2 when the byte at 0x13D5E7 is set, else whether the byte at 0x13D5E9 is */
 int mission_get_hologuise_or_map_status(void) {
-    if (D_0013D5C8[0x1F]) return 2;
-    return D_0013D5C8[0x21] != 0;
+    if (item_available[0x1F]) return 2;
+    return item_available[0x21] != 0;
 }
 extern u8 * D_L00_0016009C MACRO_ADDR;
 extern u8 * D_L00_001600A0 MACRO_ADDR;

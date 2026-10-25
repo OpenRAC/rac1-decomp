@@ -348,8 +348,8 @@ void VU1_initChain(void) {
     D_00160FF8[0] = base;
     D_00160FF8[1] = level_resource_buffers[2];
     D_00161010 = 0;
-    D_00161000 = (int *)base;
-    end = (int)D_00161000 + D_0016100C_m - D_0015F698_m;
+    g_render_packet_cursor = (int *)base;
+    end = (int)g_render_packet_cursor + D_0016100C_m - D_0015F698_m;
     D_0015F718 = end;
     D_0015F71C = end - 0x2000;
 }
@@ -360,10 +360,10 @@ void VU1_swapChain(void) {
     int base = D_00160FF8[idx];
     int end;
 
-    D_00161004 = (int)D_00161000;
+    D_00161004 = (int)g_render_packet_cursor;
     D_00161010 = idx;
-    D_00161000 = (int *)base;
-    end = (int)D_00161000 + D_0016100C_m - D_0015F698_m;
+    g_render_packet_cursor = (int *)base;
+    end = (int)g_render_packet_cursor + D_0016100C_m - D_0015F698_m;
     D_0015F718 = end;
     D_0015F71C = end - 0x2000;
 }
@@ -382,7 +382,7 @@ void VU1_sendChain(void) {
     int *chan;
 
     *(volatile int *)&vif_chain_flags |= 0x1F;
-    size = (int)D_00161000 - D_00160FF8[D_00161010];
+    size = (int)g_render_packet_cursor - D_00160FF8[D_00161010];
     err = 0;
     if (D_00161014 < size) {
         D_00161014 = size;
@@ -392,10 +392,10 @@ void VU1_sendChain(void) {
         }
     }
     if (err == 0) {
-        D_00161000[0] = 0x70000000;
-        D_00161000[1] = 0;
-        D_00161000[2] = 0;
-        D_00161000[3] = 0;
+        g_render_packet_cursor[0] = 0x70000000;
+        g_render_packet_cursor[1] = 0;
+        g_render_packet_cursor[2] = 0;
+        g_render_packet_cursor[3] = 0;
         chan = func_001232E0(1);
         *chan |= 0xC0;
         func_00118D80(0);
@@ -430,33 +430,33 @@ void VU1_syncChain(int mask) {
  * copy) produces.
  */
 void VU1_addDataRef(void *data, int qwc) {
-    D_00161000[0] = qwc | 0x30000000;
-    D_00161000[1] = (int)data;
-    D_00161000[2] = 0;
-    D_00161000[3] = 0;
-    D_00161000 += 4;
+    g_render_packet_cursor[0] = qwc | 0x30000000;
+    g_render_packet_cursor[1] = (int)data;
+    g_render_packet_cursor[2] = 0;
+    g_render_packet_cursor[3] = 0;
+    g_render_packet_cursor += 4;
 }
 
 LINKER_REMNANT("asm/remnants/text", func_00234B98);
 
 void write_vif_unpack_packet(int arg0, void *src, int qwc) {
-    D_00161000[0] = qwc | 0x10000000;
-    D_00161000[1] = 0;
-    D_00161000[2] = 0x1000404;
-    D_00161000[3] = arg0 | (qwc << 16) | 0x6C000000;
-    D_00161000 += 4;
-    FastMemCopy(D_00161000, src, qwc * 16);
-    D_00161000 += qwc * 4;
+    g_render_packet_cursor[0] = qwc | 0x10000000;
+    g_render_packet_cursor[1] = 0;
+    g_render_packet_cursor[2] = 0x1000404;
+    g_render_packet_cursor[3] = arg0 | (qwc << 16) | 0x6C000000;
+    g_render_packet_cursor += 4;
+    FastMemCopy(g_render_packet_cursor, src, qwc * 16);
+    g_render_packet_cursor += qwc * 4;
 }
 
 LINKER_REMNANT("asm/remnants/text", func_00234C48);
 
 void vu1_add_vif_code(int arg0) {
-    D_00161000[0] = 0x10000000;
-    D_00161000[1] = 0;
-    D_00161000[2] = 0;
-    D_00161000[3] = arg0;
-    D_00161000 += 4;
+    g_render_packet_cursor[0] = 0x10000000;
+    g_render_packet_cursor[1] = 0;
+    g_render_packet_cursor[2] = 0;
+    g_render_packet_cursor[3] = arg0;
+    g_render_packet_cursor += 4;
 }
 
 /*
@@ -468,18 +468,18 @@ void vu1_add_vif_code(int arg0) {
  * codebase using only 2 args.
  */
 void VU1_addGSregister(int arg0, long arg1) {
-    D_00161000[0] = 0x10000002;
-    D_00161000[1] = 0;
-    D_00161000[2] = 0;
-    D_00161000[3] = 0x50000002;
-    D_00161000[4] = 0x8001;
-    D_00161000[5] = 0x10000000;
-    D_00161000[6] = 0xE;
-    D_00161000[7] = 0;
-    *(long *)((char *)D_00161000 + 0x20) = arg1;
-    D_00161000[10] = arg0;
-    D_00161000[11] = 0;
-    D_00161000 += 0xC;
+    g_render_packet_cursor[0] = 0x10000002;
+    g_render_packet_cursor[1] = 0;
+    g_render_packet_cursor[2] = 0;
+    g_render_packet_cursor[3] = 0x50000002;
+    g_render_packet_cursor[4] = 0x8001;
+    g_render_packet_cursor[5] = 0x10000000;
+    g_render_packet_cursor[6] = 0xE;
+    g_render_packet_cursor[7] = 0;
+    *(long *)((char *)g_render_packet_cursor + 0x20) = arg1;
+    g_render_packet_cursor[10] = arg0;
+    g_render_packet_cursor[11] = 0;
+    g_render_packet_cursor += 0xC;
 }
 
 LINKER_REMNANT("asm/remnants/text", func_00234D50);
@@ -498,22 +498,22 @@ extern int D_0013E600[];
    same packet VU1_addGSregister (func_00234C98) builds. */
 void VU1_setScissor(int x0, int x1, int y0, int y1) {
     x0 = x0 < 0 ? 0 : x0;
-    x1 = x1 > D_0013E600[0] - 1 ? D_0013E600[0] - 1 : x1;
+    x1 = x1 > g_screen_extent[0] - 1 ? g_screen_extent[0] - 1 : x1;
     y0 = y0 < 0 ? 0 : y0;
-    y1 = y1 > D_0013E600[1] - 1 ? D_0013E600[1] - 1 : y1;
-    D_00161000[0] = 0x10000002;
-    D_00161000[1] = 0;
-    D_00161000[2] = 0;
-    D_00161000[3] = 0x50000002;
-    D_00161000[4] = 0x8001;
-    D_00161000[5] = 0x10000000;
-    D_00161000[6] = 0xE;
-    D_00161000[7] = 0;
-    *(long *)(D_00161000 + 8) =
+    y1 = y1 > g_screen_extent[1] - 1 ? g_screen_extent[1] - 1 : y1;
+    g_render_packet_cursor[0] = 0x10000002;
+    g_render_packet_cursor[1] = 0;
+    g_render_packet_cursor[2] = 0;
+    g_render_packet_cursor[3] = 0x50000002;
+    g_render_packet_cursor[4] = 0x8001;
+    g_render_packet_cursor[5] = 0x10000000;
+    g_render_packet_cursor[6] = 0xE;
+    g_render_packet_cursor[7] = 0;
+    *(long *)(g_render_packet_cursor + 8) =
         (long)x0 | ((long)x1 << 16) | ((long)y0 << 32) | ((long)y1 << 48);
-    D_00161000[10] = 0x40;
-    D_00161000[11] = 0;
-    D_00161000 += 0xC;
+    g_render_packet_cursor[10] = 0x40;
+    g_render_packet_cursor[11] = 0;
+    g_render_packet_cursor += 0xC;
 }
 
 __asm__(".section .text\n\tnop\n");
@@ -524,32 +524,32 @@ extern char D_001DF180[];
 
 /* VU1_texFlush(void) */
 void VU1_texFlush(void) {
-    D_00161000[0] = 0x30000003;
-    D_00161000[1] = (int)vu1_gs_regs_tex_flush;
-    D_00161000[2] = 0;
-    D_00161000[3] = 0x50000003;
-    D_00161000 += 4;
+    g_render_packet_cursor[0] = 0x30000003;
+    g_render_packet_cursor[1] = (int)vu1_gs_regs_tex_flush;
+    g_render_packet_cursor[2] = 0;
+    g_render_packet_cursor[3] = 0x50000003;
+    g_render_packet_cursor += 4;
 }
 
 extern char D_001DE740[];
 
 /* VU1_gsRegsNormal(void) */
 void VU1_gsRegsNormal(void) {
-    D_00161000[0] = 0x30000003;
-    D_00161000[1] = (int)D_001DE740;
-    D_00161000[2] = 0;
-    D_00161000[3] = 0x50000003;
-    D_00161000 += 4;
+    g_render_packet_cursor[0] = 0x30000003;
+    g_render_packet_cursor[1] = (int)D_001DE740;
+    g_render_packet_cursor[2] = 0;
+    g_render_packet_cursor[3] = 0x50000003;
+    g_render_packet_cursor += 4;
 }
 
 extern char D_001DE770[];
 
 void vu1_gs_regs_alt(void) {
-    D_00161000[0] = 0x30000003;
-    D_00161000[1] = (int)D_001DE770;
-    D_00161000[2] = 0;
-    D_00161000[3] = 0x50000003;
-    D_00161000 += 4;
+    g_render_packet_cursor[0] = 0x30000003;
+    g_render_packet_cursor[1] = (int)D_001DE770;
+    g_render_packet_cursor[2] = 0;
+    g_render_packet_cursor[3] = 0x50000003;
+    g_render_packet_cursor += 4;
 }
 
 LINKER_REMNANT("asm/remnants/text", func_00234FA0);
@@ -557,11 +557,11 @@ LINKER_REMNANT("asm/remnants/text", func_00234FA0);
 extern char D_0013D010[];
 
 void vu1_gs_regs_font(void) {
-    D_00161000[0] = 0x3000000B;
-    D_00161000[1] = (int)draw_environment;
-    D_00161000[2] = 0;
-    D_00161000[3] = 0x5000000B;
-    D_00161000 += 4;
+    g_render_packet_cursor[0] = 0x3000000B;
+    g_render_packet_cursor[1] = (int)draw_environment;
+    g_render_packet_cursor[2] = 0;
+    g_render_packet_cursor[3] = 0x5000000B;
+    g_render_packet_cursor += 4;
 }
 
 LINKER_REMNANT("asm/remnants/text", func_00235008);

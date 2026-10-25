@@ -315,7 +315,7 @@ void Hud_UpdateCounter(HudElem *e) {
             d = x;
             d = d < 0 ? -d : d;
             if (d != 0) {
-                n = truncate_float_to_s32(func_001F9B50(IntToFloat(d) / 25.0f) * 5.0f);
+                n = truncate_float_to_s32(vec_length(IntToFloat(d) / 25.0f) * 5.0f);
                 n = n < d * scale_ticks(2) / scale_ticks(10) ? d * scale_ticks(2) / scale_ticks(10) : n;
                 if (n >= 0x7A) {
                     n = 0x79;
@@ -548,7 +548,7 @@ int draw_hud_stars(HudElem *rec) {
     n = *(int *)(r + 0x74);
     if (n * 3 < 10001) {
         s = scale_ticks(1);
-        f0 = func_001F9878(0.75f);
+        f0 = multiply_global_factor(0.75f);
         flagA = (D_L00_0015F4F8 - 1) % (int)((float)s * 60.0f) < (int)(f0 * 60.0f);
     } else {
         flagA = 0;
@@ -556,7 +556,7 @@ int draw_hud_stars(HudElem *rec) {
     n = *(int *)(r + 0x74);
     if (n * 3 < 10001) {
         s = scale_ticks(1);
-        f0 = func_001F9878(0.75f);
+        f0 = multiply_global_factor(0.75f);
         flagB = D_L00_0015F4F8 % (int)((float)s * 60.0f) < (int)(f0 * 60.0f);
     } else {
         flagB = 0;
@@ -763,13 +763,13 @@ int draw_hud_text_panel(char *e) {
     void *pt;
     unsigned char *opacity = (unsigned char *)e + 0x70;
 
-    if (D_0015EE80 != 0) {
+    if (pal_mode != 0) {
         y = *(int *)&D_L00_0015F850 + 0xa;
     } else {
         y = *(int *)&D_L00_0015F850 + 0x12;
     }
     fade = IntToFloat(*opacity);
-    fade /= func_001F9878(8.0f);
+    fade /= multiply_global_factor(8.0f);
     if (fade < 0.0f) fade = 0.0f;
     if (fade > 1.0f) fade = 1.0f;
     text_y = y + 8;
@@ -817,7 +817,7 @@ int draw_hud_text_panel(char *e) {
         }
         FontPrintCenter(0x100, text_y, color, D_L00_0017E630, -1);
     }
-    level = D_0015EE84;
+    level = g_current_level_index;
     if (level == 5 || level == 0x10) {
         typedef unsigned int quadword __attribute__((mode(TI), aligned(16)));
         *(quadword *)&points[0] = 0;
@@ -836,10 +836,10 @@ int draw_hud_text_panel(char *e) {
         pt = &point;
         if (FastVecDist(gHeroPos, pt) < 5.0f) {
             D_L00_0015F728 = y + 100;
-            elapsed = D_0015EF58[D_0015EE84 == 0x10 ? 1 : 0];
-            score = D_0015EF68[D_0015EE84 == 0x10 ? 1 : 0];
+            elapsed = D_0015EF58[g_current_level_index == 0x10 ? 1 : 0];
+            score = D_0015EF68[g_current_level_index == 0x10 ? 1 : 0];
             if (elapsed != 0) {
-                interval = D_0015EE80 != 0 ? 3000 : 3600;
+                interval = pal_mode != 0 ? 3000 : 3600;
                 per = interval / 60;
                 seconds = elapsed / interval;
                 rem = elapsed - seconds * interval;
@@ -873,7 +873,7 @@ void update_hud_counter_cap_and_visibility(HudElem *e) {
     } else {
         e->unk08 = 5;
     }
-    base = D_0013F450;
+    base = g_hero;
     if (*(int *)(base + 0x10B8) == 9 && *(unsigned char *)(base + 0x20A4) == 0) {
         e->unk7C = scale_ticks(0x78) + 0x1E;
     } else if (e->unk7C > 0x1E) {
@@ -1090,12 +1090,12 @@ void update_hud_item_selector_selection_and_visibility(Obj_38530 *p) {
     if (FastDecTimer(D_00141722)) D_0013CA40_38530.w1CC = 2;
     x = D_0013CA40_38530.f148;
     y = D_0013CA40_38530.f14C;
-    mag = func_001F9B50(x * x + y * y);
+    mag = vec_length(x * x + y * y);
     if (mag != 0.0f) {
         x /= mag;
         y /= mag;
     }
-    ang = func_L00_001FF860(x, y);
+    ang = fast_atan2(x, y);
     if ((p->w78 >> 24) == 0) {
         if ((D_0013CA40_38530.w1C4 & 0xF000) || mag < 0.5f || --p->w78 == -1) {
             p->w74 = -1;
@@ -1152,7 +1152,7 @@ void update_hud_item_selector_selection_and_visibility(Obj_38530 *p) {
             }
             if (scale_ticks(D_0015EFA4) / 600 > usage_stats.hA2)
                 usage_stats.hA2 = scale_ticks(D_0015EFA4) / 600;
-            usage_stats.wA4 = usage_stats.wA4 | (1 << D_0015EE84) | 0x80000000;
+            usage_stats.wA4 = usage_stats.wA4 | (1 << g_current_level_index) | 0x80000000;
             if (id == 0x18) D_0013F450_38530.b1FF5 = 1;
             else D_0013F450_38530.w20B8 = id;
             rr = &D_L00_001C43B0_38530[ri];
@@ -1394,17 +1394,17 @@ void update_hud_radial_selector_selection_and_visibility(Obj *o) {
 
     o->w7C = scale_ticks(0xB4);
     o->w6C = 0x18;
-    D_0013CA40.w1CC = 2;
-    x = D_0013CA40.f148;
-    y = D_0013CA40.f14C;
-    len = func_001F9B50(x * x + y * y);
+    g_controller_state.w1CC = 2;
+    x = g_controller_state.f148;
+    y = g_controller_state.f14C;
+    len = vec_length(x * x + y * y);
     if (len != 0.0f) {
         x /= len;
         y /= len;
     }
-    ang = func_L00_001FF860(x, y);
+    ang = fast_atan2(x, y);
     if ((o->w78 >> 24) == 0 && D_L00_0017E604 != 0) {
-        if ((D_0013CA40.w1C4 & 0xF000) || len < 0.5f || --o->w78 == -1) {
+        if ((g_controller_state.w1C4 & 0xF000) || len < 0.5f || --o->w78 == -1) {
             o->w74 = -1;
             o->w78 = 0x10000FF;
         }
@@ -1415,21 +1415,21 @@ void update_hud_radial_selector_selection_and_visibility(Obj *o) {
             n = (*(int *)&D_L00_0015FB48_39510);
             o->w74 = (int)((ang + 3.1415927f + 3.1415927f + 1.5707964f + 3.1415927f / (float)n) * ((float)n / 6.2831855f)) % n;
         }
-        if (D_0013CA40.w1C4 & 0xF000) {
+        if (g_controller_state.w1C4 & 0xF000) {
             cur = o->w74;
-            if (D_0013CA40.w1C4 & 0x1000) {
+            if (g_controller_state.w1C4 & 0x1000) {
                 if (cur == -1) t = D_L00_0017DD40; else t = D_L00_0015FB78_39510[(*(int *)&D_L00_0015F80C_39510b)][cur].f10;
                 cur = t;
             }
-            if (D_0013CA40.w1C4 & 0x4000) {
+            if (g_controller_state.w1C4 & 0x4000) {
                 if (cur == -1) t = D_L00_0017DD44; else t = D_L00_0015FB78_39510[(*(int *)&D_L00_0015F80C_39510b)][cur].f14;
                 cur = t;
             }
-            if (D_0013CA40.w1C4 & 0x8000) {
+            if (g_controller_state.w1C4 & 0x8000) {
                 if (cur == -1) t = D_L00_0017DD38; else t = D_L00_0015FB78_39510[(*(int *)&D_L00_0015F80C_39510b)][cur].f8;
                 cur = t;
             }
-            if (D_0013CA40.w1C4 & 0x2000) {
+            if (g_controller_state.w1C4 & 0x2000) {
                 if (cur == -1) t = D_L00_0017DD3C; else t = D_L00_0015FB78_39510[(*(int *)&D_L00_0015F80C_39510b)][cur].fC;
                 cur = t;
             }
@@ -1441,7 +1441,7 @@ void update_hud_radial_selector_selection_and_visibility(Obj *o) {
     } else if (c[1] < (*(int *)&D_L00_0015F860)) {
         c[1]++;
     }
-    if (!(D_0013CA40.w1C0 & 0x10)) {
+    if (!(g_controller_state.w1C0 & 0x10)) {
         if (o->w74 == -1) D_00141710[0] = 0;
         else D_00141710[0] = D_L00_0015FB78_39510[(*(int *)&D_L00_0015F80C_39510b)][o->w74].f18;
         if (c[0] != 0) c[0]--;
@@ -1958,8 +1958,8 @@ int draw_bolt_counter_hud_panel(HudElem_3A788 *m)
     font_print_right(x + (*(s32 *)&D_L00_0015F914), y + (*(s32 *)&D_L00_0015F918), color, buf, -1);
 
     /* thousands separators */
-    if (D_0015EE88 != 3)
-        apostrophe = D_0015EE88 != 5;
+    if (g_game_language != 3)
+        apostrophe = g_game_language != 5;
     func_00116248_3A788(buf, apostrophe ? D_L00_0015F938 : D_L00_0015F940);
     dy = apostrophe ? (*(s32 *)&D_L00_0015F920) : (*(s32 *)&D_L00_0015F928);
     dx = apostrophe ? (*(s32 *)&D_L00_0015F91C) : (*(s32 *)&D_L00_0015F924);
@@ -1988,7 +1988,7 @@ void update_hud_panel_visibility(HudElem *e) {
     int max;
     int t;
 
-    if (*(int *)(D_0013F450 + 0x2048) != 0) {
+    if (*(int *)(g_hero + 0x2048) != 0) {
         t = scale_ticks(10);
         max = *(int *)&D_L00_0015F8D0;
         e->unk7C = t;
@@ -2032,13 +2032,13 @@ int draw_hud_bolt_exclamation_panel(char *m) {
     int x, y, panel_right, panel_left, slide, alpha, text_alpha;
     int color, shadow, period, text_x, text_y;
     float open, text, pulse, scaled_text;
-    char *g = D_0013F450;
+    char *g = g_hero;
 
     {
-        int panel_y = D_0013E600[1] - 42;
-        int alternate_y = D_0013E600[1] - 50;
+        int panel_y = g_screen_extent[1] - 42;
+        int alternate_y = g_screen_extent[1] - 50;
         y = panel_y;
-        if (D_0015EE80 == 0)
+        if (pal_mode == 0)
             y = alternate_y;
     }
     x = *(int *)(m + 0x50);
@@ -2149,7 +2149,7 @@ int HudWeaponDraw(char *m) {
     int y = 0x12;
     int x, a, alpha, w, s16, tex, c1, wd, v74;
     float f21, f20;
-    if (D_0015EE80) y = 0xA;
+    if (pal_mode) y = 0xA;
     x = *(int *)(m + 0x50);
     if (*(unsigned char *)(m + 0x70) == 0) return *(int *)(m + 0x58);
     {
@@ -2407,12 +2407,12 @@ void draw_cropped_hud_sprite(int tex, int x, int y, int w, int h, int alpha) {
     p[3] = 0x156;
     p[4] = ((long)alpha << 24) | 0x7F7F7F;
     p[5] = 0;
-    p[6] = (x * 16 + D_0013E600[4] - 8)
-         | ((long)(y * 16 + D_0013E600[5] - 8) << 16)
+    p[6] = (x * 16 + g_screen_extent[4] - 8)
+         | ((long)(y * 16 + g_screen_extent[5] - 8) << 16)
          | ((long)*(int *)(arena + 0xC) << 32);
     p[7] = (h << 20) + w * 16;
-    p[8] = ((x + w) * 16 + D_0013E600[4] - 8)
-         | ((long)((y + h) * 16 + D_0013E600[5] - 8) << 16)
+    p[8] = ((x + w) * 16 + g_screen_extent[4] - 8)
+         | ((long)((y + h) * 16 + g_screen_extent[5] - 8) << 16)
          | ((long)*(int *)(arena + 0xC) << 32);
     p[9] = 0;
     D_L00_00161280 = (int *)((char *)D_L00_00161280 + 0x50);
@@ -2461,20 +2461,20 @@ void draw_rotated_hud_sprite(int id, int x, int y, int draw_width, int draw_heig
     packet_words[3] = 0x154;
     packet_words[4] = ((u64)alpha << 24) | 0x7F7F7F;
     packet_words[5] = ww * 16;
-    packet_words[6] = (x * 16 + D_0013E600[4] - 8)
-                    | ((u64)(y * 16 + D_0013E600[5] - 8) << 16)
+    packet_words[6] = (x * 16 + g_screen_extent[4] - 8)
+                    | ((u64)(y * 16 + g_screen_extent[5] - 8) << 16)
                     | ((u64)g->zc << 32);
     packet_words[7] = (hh << 20) + ww * 16;
-    packet_words[8] = ((x + draw_width) * 16 + D_0013E600[4] - 8)
-                    | ((u64)(y * 16 + D_0013E600[5] - 8) << 16)
+    packet_words[8] = ((x + draw_width) * 16 + g_screen_extent[4] - 8)
+                    | ((u64)(y * 16 + g_screen_extent[5] - 8) << 16)
                     | ((u64)g->zc << 32);
     packet_words[9] = 0;
-    packet_words[10] = (x * 16 + D_0013E600[4] - 8)
-                     | ((u64)((y + draw_height) * 16 + D_0013E600[5] - 8) << 16)
+    packet_words[10] = (x * 16 + g_screen_extent[4] - 8)
+                     | ((u64)((y + draw_height) * 16 + g_screen_extent[5] - 8) << 16)
                      | ((u64)g->zc << 32);
     packet_words[11] = hh << 20;
-    packet_words[12] = ((x + draw_width) * 16 + D_0013E600[4] - 8)
-                     | ((u64)((y + draw_height) * 16 + D_0013E600[5] - 8) << 16)
+    packet_words[12] = ((x + draw_width) * 16 + g_screen_extent[4] - 8)
+                     | ((u64)((y + draw_height) * 16 + g_screen_extent[5] - 8) << 16)
                      | ((u64)g->zc << 32);
     packet_words[13] = 0;
     D_L00_00161280 = (int *)((char *)D_L00_00161280 + 0x70);
@@ -2555,8 +2555,8 @@ void init_level_runtime_state(void) {
     register_audio_stream_callback();
     calculate_dma_transfer_address();
     InitMemSlots();
-    D_0015EF74 = D_0015EF8C;
-    D_0015EF78 = D_0015EF8C;
+    g_gs_texture_allocation_cursor = g_gs_texture_allocation_base;
+    g_gs_texture_allocation_start = g_gs_texture_allocation_base;
     FastMemSet(D_L00_00173FC0, 0x87654321, 0x10);
     FastMemSet(D_L00_00197F40, -1, 0x800);
     FastMemSet(D_L00_0019AD00, -1, 0xE00);
@@ -2573,8 +2573,8 @@ void init_level_runtime_state(void) {
     register_part_types();
     DMAC_VIF1_Enable();
     init_level_item_inventory();
-    if (D_0015EE84 != 0) {
-        unlock_planet(D_0015EE84);
+    if (g_current_level_index != 0) {
+        unlock_planet(g_current_level_index);
     }
     D_0015EF24 += 0xB4;
 }
@@ -2599,7 +2599,7 @@ extern void func_L00_002618D8(int, int);
 void init_level_item_inventory(void) {
     int i, j, v, k;
     unsigned char c;
-    if (D_0015EE84 >= 0x13) {
+    if (g_current_level_index >= 0x13) {
         for (k = 0; k < 0x25; k++) {
             (menu_item_enabled_115 + 0xB9)[k] = 1;
             (discount_purchase_pricing + 5)[k] = 1;
@@ -2642,7 +2642,7 @@ void init_level_item_inventory(void) {
                 D_0015EED0[i] = 0xFF;
             }
         }
-        append_level_item_if_absent(D_0015EE84);
+        append_level_item_if_absent(g_current_level_index);
     }
 }
 extern int D_L00_001C4198[];

@@ -110,7 +110,7 @@ extern int func_00120858(int, unsigned short);
 
 /* Uploads a texture and its mip levels to GS memory (with the palette for the 4/8-bit formats
    0x14/0x13) and writes the matching GS register words to regs. */
-s32 func_00202AA8(MipTexture_202AA8 *tex, u64 *regs)
+s32 upload_mip_texture(MipTexture_202AA8 *tex, u64 *regs)
 {
     MipUpload_202AA8 upload;
     LoadImage_202AA8 load_image;
@@ -166,12 +166,12 @@ s32 func_00202AA8(MipTexture_202AA8 *tex, u64 *regs)
         break;
     }
     if (tex->psm == 0x13 || tex->psm == 0x14) {
-        upload.palette_block = D_0015EF74 >> 8;
+        upload.palette_block = g_gs_texture_allocation_cursor >> 8;
         if (tex->psm == 0x14) {
-            D_0015EF74 += 0x100;
+            g_gs_texture_allocation_cursor += 0x100;
             func_00122630(&load_image, upload.palette_block, 1, tex->palette_psm, 0, 0, 8, 2);
         } else {
-            D_0015EF74 += upload.palette_size;
+            g_gs_texture_allocation_cursor += upload.palette_size;
             func_00122630(&load_image, upload.palette_block, 1, tex->palette_psm, 0, 0, 16, 16);
         }
         func_00118D80(0);
@@ -187,7 +187,7 @@ s32 func_00202AA8(MipTexture_202AA8 *tex, u64 *regs)
         if (upload.buffer_widths[i] <= 0) {
             upload.buffer_widths[i] = 1;
         }
-        upload.blocks[i] = D_0015EF74 >> 8;
+        upload.blocks[i] = g_gs_texture_allocation_cursor >> 8;
         func_00122630(&load_image, upload.blocks[i], upload.buffer_widths[i], tex->psm, 0, 0,
                       tex->width >> i, tex->height >> i);
         func_00118D80(0);
@@ -197,7 +197,7 @@ s32 func_00202AA8(MipTexture_202AA8 *tex, u64 *regs)
         if (bytes <= 0xFF) {
             bytes = 0x100;
         }
-        D_0015EF74 += bytes;
+        g_gs_texture_allocation_cursor += bytes;
     }
     tex0 = (u64)upload.blocks[0];
     tex0 |= (u64)upload.buffer_widths[0] << 14;
@@ -271,7 +271,7 @@ extern short func_001F9968_s(int) __asm__("func_001F9968");
 
 /* Unpack count point records (x, y, u, v words, 12.4 fixed point for
    x/y) into D_0018D540. Adapted from Lombyte (GPL-3.0) for PAL. */
-void func_00203038(int *src, int count) {
+void unpack_point_records(int *src, int count) {
     int x;
     int y;
     int u;
@@ -333,7 +333,7 @@ extern SkyDefL *D_0016055C_s __asm__("D_0016055C") MACRO_ADDR;
    retail reloads it after each call. The item pointer is a separate
    `sh + k` local: loop.c then reduces it to one register starting at sh
    and reaches the item at +0x20 from it, as retail does. */
-void func_00203118(SkyDefL *s) {
+void relocate_sky_definition(SkyDefL *s) {
     int i;
 
     D_0016055C_s = s;
@@ -590,7 +590,7 @@ void build_indexed_resident_render_packet(u64 *packet,
     }
     width_log2 = log2dim(texture->width);
     height_log2 = log2dim(texture->height);
-    gs_block_base = D_0015EF8C >> 8;
+    gs_block_base = g_gs_texture_allocation_base >> 8;
     mip_block_1 = texture->mip_block_offset_1 + gs_block_base;
     texture_block = texture->clut_block_offset + gs_block_base;
     mip_block_0 = texture->mip_block_offset_0 + gs_block_base;
@@ -722,15 +722,15 @@ typedef struct {
    loop pass hoists their constants into saved registers, and the pointer
    advances in the for increment so the reversed counter's decrement
    lands in FlushCache's delay slot. */
-void func_00203958(int base, int count, Chunk *list) {
+void upload_texture_images(int base, int count, Chunk *list) {
     GsLoadImage li;
     int i;
 
-    D_0015EF78 = D_0015EF74 = D_0015EF8C;
+    g_gs_texture_allocation_start = g_gs_texture_allocation_cursor = g_gs_texture_allocation_base;
     for (i = 0; i < count; i++, list++) {
         int addr = base + list->size;
         int packed = list->packed;
-        int t = D_0015EF74;
+        int t = g_gs_texture_allocation_cursor;
         int w = packed & 0xFFFF;
         int h = packed >> 16;
 
@@ -746,19 +746,19 @@ void func_00203958(int base, int count, Chunk *list) {
             if (sz < 0x100) {
                 sz = 0x100;
             }
-            D_0015EF74 += sz;
+            g_gs_texture_allocation_cursor += sz;
         } else if (list->type == 2) {
             func_00122630(&li, t >> 8, 1, 2, 0, 0, 0x10, 0x10);
-            D_0015EF74 += 0x200;
+            g_gs_texture_allocation_cursor += 0x200;
         } else if (list->type == 0) {
             func_00122630(&li, t >> 8, 1, 0, 0, 0, 0x10, 0x10);
-            D_0015EF74 += 0x400;
+            g_gs_texture_allocation_cursor += 0x400;
         }
         func_00118D80(0);
         func_00122958(&li, (void *)addr);
         func_00120858(0, 0);
     }
-    D_0015EF78 = D_0015EF74;
+    g_gs_texture_allocation_start = g_gs_texture_allocation_cursor;
 }
 
 /* Makes animation sequence idx of the class at arg0 (its seqs[] at +0x48) absolute: the pointer at
@@ -975,7 +975,7 @@ extern void func_00203B70(void *, int, int, int);
    the slot count is bumped. A non-null arg0 also has its +0x2C field
    kept in D_001B6500 and is set up by func_00203B70 once the count is
    bumped. The slot byte is D_00160000 read again as a byte. */
-void func_00203E78(void *arg0, int arg1, int arg2, int arg3) {
+void register_moby_class(void *arg0, int arg1, int arg2, int arg3) {
     int idx = resident_moby_class_count;
 
     D_001B3E40[arg3] = *(unsigned char *)&resident_moby_class_count;
@@ -1101,7 +1101,7 @@ void register_object_render_class(char *self, int a1, char *src, int a3) {
             }
             f1 = log2dim(t4 >> 16);
             F2 = log2dim(*(short *)(rec + 6));
-            K = D_0015EF8C >> 8;
+            K = g_gs_texture_allocation_base >> 8;
             c7 = *(short *)(rec + 0x0E) + K;
             c9 = *(short *)(rec + 0x0C) + K;
             t4 = *(short *)(rec + 0x0A) + K;
@@ -1297,7 +1297,7 @@ void register_shrub_render_class(ShrubRenderClass_04340 *render_class, ResidentR
             height_log2 = log2dim(mip_texture->height);
             draw_control_count = mip_texture->draw_control_count;
             texture_block = mip_texture->texture_block_offset;
-            gs_block_base = D_0015EF8C >> 8;
+            gs_block_base = g_gs_texture_allocation_base >> 8;
             palette_block = mip_texture->palette_block_offset + gs_block_base;
             mip_block_0 = mip_texture->mip_block_offset_0 + gs_block_base;
             mip_block_1 = mip_texture->mip_block_offset_1 + gs_block_base;
@@ -1377,7 +1377,7 @@ void register_shrub_render_class(ShrubRenderClass_04340 *render_class, ResidentR
                 }
                 width_log2 = log2dim(width_bits >> 16);
                 height_log2 = log2dim(texture->height);
-                gs_block_base = D_0015EF8C >> 8;
+                gs_block_base = g_gs_texture_allocation_base >> 8;
                 draw_control_count = texture->draw_control_count;
                 width_bits = texture->clut_block_offset + gs_block_base;
                 mip_block_0 = texture->mip_block_offset_0 + gs_block_base;
@@ -1491,7 +1491,7 @@ void initialize_tfrag_render_data(FontHdr_04918 *hdr, char *tbl) {
             }
             u = log2dim(t >> 16);
             v = log2dim(m->x6);
-            gs = D_0015EF8C >> 8;
+            gs = g_gs_texture_allocation_base >> 8;
             tex0 = (unsigned long)0 | ((unsigned long)a17 << 14) | ((unsigned long)0x13 << 20)
                   | ((unsigned long)u << 26) | ((unsigned long)v << 30) | ((unsigned long)1 << 34)
                   | ((unsigned long)0 << 35) | ((unsigned long)(m->xA + gs) << 37)
@@ -1829,7 +1829,7 @@ void update_world_object_animation(void *arg0) {
         sp = (int *)((unsigned char *)sp + 0xC);
         endp = (int)rec + sp[0];
         sp = (int *)((unsigned char *)sp + 4);
-        if (D_0015F6E8 == 6 && i == 0 && id == 0x215) {
+        if (g_game_mode == 6 && i == 0 && id == 0x215) {
             id = D_00160588[D_0013E130_g.slot];
         }
         mob = D_0018CC20_t.slots[i];
@@ -1877,7 +1877,7 @@ extern int D_0016100C_m __asm__("D_0016100C") MACRO_ADDR;
    written base - (-(index * 4)), which keeps retail's base-first addu
    (adapted from Lombyte (GPL-3.0) for PAL). */
 void func_00205220(int arg0) {
-    char *base = (char *)&D_0018CC20;
+    char *base = (char *)&render_sequence;
     char *p = base - (-(arg0 * 4));
     *(int *)(base + 0x5C) = *(int *)(p + 0x60);
     update_world_object_animation(p);
@@ -1957,7 +1957,7 @@ void select_world_object_resource_tables(int class_id, int buffer_index) {
             ClassResourceHeader_05270 *rh;
             ClassRenderGroup_05270 *rg;
             char *pp;
-            if (D_0013E620[vendor_item_index] == 0) return;
+            if (gold_weapon_purchased[vendor_item_index] == 0) return;
             rh = (ClassResourceHeader_05270 *)moby_class_resources[class_slot];
             if (rh->third_render_group_count == 0) return;
             rg = &rh->render_groups[rh->patch_group_index];

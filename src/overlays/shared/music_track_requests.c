@@ -5,7 +5,7 @@
 extern char D_001517D0[];
 // Requests a music track and stinger.
 void MusicRequestTrack(int track, int stinger) {
- char *b = D_001517D0;
+ char *b = cd_read_state;
  if (*(short *)(b+0x38) == track) {
   if (*(signed char *)(b+0x22) == -1) return;
  }
@@ -14,12 +14,12 @@ void MusicRequestTrack(int track, int stinger) {
  *(short *)(b+0x38)=track;
  return;
  pending:
- D_001517D0[0x22]=track;
- D_001517D0[0x23]=stinger;
+ cd_read_state[0x22]=track;
+ cd_read_state[0x23]=stinger;
 }
 INCLUDE_ASM("asm/overlays", func_L00_002664F4);
 void Music_SetActiveTrackValue(int v) {
-    char *b = D_001517D0;
+    char *b = cd_read_state;
     if (*(short *)(b + 0x40) & 0x8000) *(short *)(b + 0x42) = v;
     if (*(short *)(b + 0x78) & 0x8000) *(short *)(b + 0x7A) = v;
     if (*(short *)(b + 0x5C) & 0x8000) *(short *)(b + 0x5E) = v;

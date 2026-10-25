@@ -56,7 +56,7 @@ void HeroL18_UpdateStateFlags(void) {
         char *p = (char *)D_0013E633 + 0xE1D;
         *(unsigned char *)(p + 0x12E6) = 1;
     }
-    if (D_0015EE84 == 0xD) {
+    if (g_current_level_index == 0xD) {
         char *p = (char *)D_0013E633 + 0xE1D;
         if (*(int *)(p + 0x2084) != 0x7B) {
             if (coll_sphere(*(float *)(p + 0x234) + 0.03f, p + 0xD0, 2, 0) != 0) {
@@ -196,23 +196,23 @@ s32 HeroL18_TryTakeHit(s32 arg) {
     f32 a, b, e;
     Vec4 v;
 
-    if (D_0013F450.i208C == 0x14) {
+    if (g_hero.i208C == 0x14) {
         return 0;
     }
-    if (D_0013F450.i208C == 7) {
+    if (g_hero.i208C == 7) {
         return 0;
     }
-    if (D_0013F450.i2084 == 0x32) {
+    if (g_hero.i2084 == 0x32) {
         return 0;
     }
-    if (D_0013F450.i1C0 != 0) {
+    if (g_hero.i1C0 != 0) {
         return 0;
     }
     if (D_L18_0015F6A8 != 0) {
         return 0;
     }
-    D_0013F450.p2280 = 0;
-    m = D_0013F450.p2080;
+    g_hero.p2280 = 0;
+    m = g_hero.p2080;
     if (m[0xA4] == 0xFF) {
         return 0;
     }
@@ -220,24 +220,24 @@ s32 HeroL18_TryTakeHit(s32 arg) {
     if (tbl->p34 != m) {
         return 0;
     }
-    if (D_0013F450.b20A4 == 2) {
+    if (g_hero.b20A4 == 2) {
         if (!(tbl->i24 & 2)) {
             return 0;
         }
     } else if ((tbl->i24 ^ 1) & 1) {
         return 0;
     }
-    D_0013E090[D_0015EE84]++;
-    D_0013F450.p2280 = tbl->p20;
+    D_0013E090[g_current_level_index]++;
+    g_hero.p2280 = tbl->p20;
     D_0015EFA8++;
-    if (D_0013F450.i208C == 0xF) {
-        D_0013F450.h5BE = 1;
+    if (g_hero.i208C == 0xF) {
+        g_hero.h5BE = 1;
         return 0;
     }
-    if (D_0013F450.b20A4 == 2) {
-        D_0013F450.i1630 -= truncate_float_to_s32(tbl->f2C);
-        if (D_0013F450.i1630 < 0) {
-            D_0013F450.i1630 = 0;
+    if (g_hero.b20A4 == 2) {
+        g_hero.i1630 -= truncate_float_to_s32(tbl->f2C);
+        if (g_hero.i1630 < 0) {
+            g_hero.i1630 = 0;
         }
     }
     if (arg == 0) {
@@ -253,47 +253,47 @@ s32 HeroL18_TryTakeHit(s32 arg) {
     } else if (tbl->p20 != 0) {
         FastVecSub(&v, gHeroPos, tbl->p20 + 0x10);
     } else {
-        v.f[0] = FastCos(FastAddRots(D_0013F450.f98, 3.1415927f));
-        v.f[1] = FastSin(FastAddRots(D_0013F450.f98, 3.1415927f));
+        v.f[0] = FastCos(FastAddRots(g_hero.f98, 3.1415927f));
+        v.f[1] = FastSin(FastAddRots(g_hero.f98, 3.1415927f));
         v.i[2] = 0;
     }
-    switch (D_0013F450.b20A4) {
+    switch (g_hero.b20A4) {
     case 0:
-        mob = D_0013F450.p2280;
+        mob = g_hero.p2280;
         if (mob != 0 && (*(s16 *)(mob + 0xA6) == 0x4EB || *(s16 *)(mob + 0xA6) == 0x558)) {
             id = 0x80;
         call_ret:
             HeroL18_SetMoveState(id, 1);
             return 1;
         }
-        if (D_0013F450.i208C == 0x16) {
+        if (g_hero.i208C == 0x16) {
             HeroL18_SetMoveState(0x6D, 1);
-            D_0013F450.f128 = D_0015EE6C * 7.0f;
+            g_hero.f128 = g_frame_time * 7.0f;
             return 1;
         }
-        if (D_0013F450.i208C == 0x12) {
-            mob = D_0013F450.p2280;
+        if (g_hero.i208C == 0x12) {
+            mob = g_hero.p2280;
             if (mob != 0 && *(s16 *)(mob + 0xA6) == 0x28F) {
                 id = 0x82;
                 goto call_ret;
             }
             HeroL18_SetMoveState(0x75, 1);
-        } else if (D_0013F450.i208C == 0x11) {
-            mob = D_0013F450.p2280;
+        } else if (g_hero.i208C == 0x11) {
+            mob = g_hero.p2280;
             if (mob != 0 && *(s16 *)(mob + 0xA6) == 0x28F) {
                 id = 0x82;
                 goto call_ret;
             }
-            if (D_0015EE84 == 0xF || D_0015EE84 == 0x11) {
-                mob = D_0013F450.p2280;
+            if (g_current_level_index == 0xF || g_current_level_index == 0x11) {
+                mob = g_hero.p2280;
                 if (mob != 0 && (*(s16 *)(mob + 0xA6) == 0x28F || *(s16 *)(mob + 0xA6) == 0x7B
                                  || *(s16 *)(mob + 0xA6) == 0x29D)) {
                     allocate_hero_voice_for_entry(0x1C, 0);
                 }
             }
             HeroL18_SetMoveState(0x76, 1);
-        } else if (D_0013F450.i208C == 3) {
-            mob = D_0013F450.p2280;
+        } else if (g_hero.i208C == 3) {
+            mob = g_hero.p2280;
             if (mob != 0) {
                 id = 0x82;
                 if (*(s16 *)(mob + 0xA6) == 0x28F) {
@@ -304,10 +304,10 @@ s32 HeroL18_TryTakeHit(s32 arg) {
         } else {
             HeroL18_SetMoveState(0x16, 1);
         }
-        e = D_0015EE6C;
+        e = g_frame_time;
         a = e * 5.7f;
         b = e * 2.4f;
-        if (D_0013F450.b12E7 != 0) {
+        if (g_hero.b12E7 != 0) {
             a = 0.0f;
             b = e * 1.7f;
         }
@@ -317,11 +317,11 @@ s32 HeroL18_TryTakeHit(s32 arg) {
         }
         break;
     case 2:
-        if ((tbl->i24 & 4) || D_0013F450.i1630 <= 0) {
+        if ((tbl->i24 & 4) || g_hero.i1630 <= 0) {
             HeroL18_SetMoveState(0x5D, 1);
             remove_tracked_class_5f3_moby();
-            if (D_0013F450.h30E == 0) {
-                hero_knockback(&v, flag, D_0015EE6C * 7.0f, D_0015EE6C * 3.5f);
+            if (g_hero.h30E == 0) {
+                hero_knockback(&v, flag, g_frame_time * 7.0f, g_frame_time * 3.5f);
                 break;
             }
         }
@@ -329,7 +329,7 @@ s32 HeroL18_TryTakeHit(s32 arg) {
         break;
     case 3:
         HeroL18_SetMoveState(0x56, 1);
-        hero_knockback(&v, flag, D_0015EE6C * 5.0f, D_0015EE6C * 2.4f);
+        hero_knockback(&v, flag, g_frame_time * 5.0f, g_frame_time * 2.4f);
         break;
     }
     FastVecAdd(D_0013F530, D_0013F530, &v);

@@ -455,7 +455,7 @@ void Camera_UpdateFrame(void) {
     {
         DebugFreeCam *st = &g_debug_menu;
         if (st->active == 0) {
-            func_001FA460(m, player_camera.matrix);
+            copy_matrix_rotation(m, player_camera.matrix);
             matrix_to_euler(m, &player_camera.rot);
         }
     }
@@ -542,8 +542,8 @@ int compute_spherical_offset_from_positions(float *polar, float *pos, float *ori
     W v;
     float t;
     func_001F9BF0_3(v, pos, origin);
-    polar[1] = func_L00_001FF860(func_001F9CE8(v), v[2]);
-    t = func_L00_001FF860(v[0], v[1]);
+    polar[1] = fast_atan2(vec_length_xy(v), v[2]);
+    t = fast_atan2(v[0], v[1]);
     FastSubRots(t, polar[0]);
     polar[0] = t;
     polar[2] = FastVecLength(v);

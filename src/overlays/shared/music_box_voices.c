@@ -133,7 +133,7 @@ void update_requested_state_from_box_position(char *moby) {
     unsigned char *data = *(unsigned char **)(moby + 8);
     FastVecSub(a, D_0013E633 + 0xE9D, moby + 0x40);
     a[3] = 0;
-    func_001F9EC0(b, a, moby + 0x50);
+    matrix_mul_vec3(b, a, moby + 0x50);
     if (FastAbsF(b[0]) <= 1.0f && FastAbsF(b[1]) <= 1.0f && FastAbsF(b[2]) <= 1.0f) {
         float t = (b[0] + 1.0f) * 0.5f;
         int v = func_001FA898_r(IntToFloat(*(int *)(data + 4)) * t);
@@ -187,7 +187,7 @@ void update_music_box_exit_trigger(int *moby) {
     if (((unsigned *)p)[3] != 0xFFFFFFFF) {
         FastVecSub(v, D_0013E633 + 0xE9D, (char *)moby + 0x40);
         v[3] = 0;
-        func_001F9EC0(v + 4, v, (char *)moby + 0x50);
+        matrix_mul_vec3(v + 4, v, (char *)moby + 0x50);
         if (FastAbsF(v[4]) <= 1.0f && FastAbsF(v[5]) <= 1.0f && FastAbsF(v[6]) <= 1.0f) {
             p[2] = 1;
             return;

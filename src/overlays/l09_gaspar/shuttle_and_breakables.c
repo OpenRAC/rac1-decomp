@@ -70,7 +70,7 @@ int advance_shuttle_along_path(struct Moby *moby) {
     func_L00_001FF4B0(&step, &step, vars->speed);
     FastVecAdd(&moby->pos, &moby->pos, &step);
     interpolate_rotation_angle(&moby->rot.z, moby->rot.z,
-                     FastAddRots(func_L00_001FF860(path->node[vars->node].f[0] - moby->pos.x,
+                     FastAddRots(fast_atan2(path->node[vars->node].f[0] - moby->pos.x,
                                          path->node[vars->node].f[1] - moby->pos.y),
                                  vars->yaw_offset),
                      (1.0f - vars->lag) * 0.02f);
@@ -85,7 +85,7 @@ int advance_shuttle_along_path(struct Moby *moby) {
         }
         d = FastVecDist(&moby->pos, &path->node[path->count - 1]);
         v = 0.0f;
-        ApproachWithVelocity(d, D_0015EE70 * 3.0f, D_0015EE70 * 3.0f, D_0015EE6C * 10.0f, &v, &vars->speed);
+        ApproachWithVelocity(d, g_frame_time_sq * 3.0f, g_frame_time_sq * 3.0f, g_frame_time * 10.0f, &v, &vars->speed);
     } else {
         f32 v;
         if (FastVecDist(&target, &moby->pos) < vars->speed + vars->speed) {
@@ -95,18 +95,18 @@ int advance_shuttle_along_path(struct Moby *moby) {
         }
         d = FastVecDist(&moby->pos, &path->node[0]);
         v = 0.0f;
-        ApproachWithVelocity(d, D_0015EE70 * 3.0f, D_0015EE70 * 3.0f, D_0015EE6C * 10.0f, &v, &vars->speed);
+        ApproachWithVelocity(d, g_frame_time_sq * 3.0f, g_frame_time_sq * 3.0f, g_frame_time * 10.0f, &v, &vars->speed);
     }
     if (path->node[vars->node].f[3] == 42.0f)
         vars->yaw_offset = 0.0f;
     vars->spin = FastAddRots(vars->spin, vars->speed);
     axis_rotation_2d48(vars->unk70, 0, vars->spin);
-    if (func_001F9D48(&moby->pos, &path->node[path->count - 1]) > 8.0f &&
-        func_001F9D48(&moby->pos, &path->node[0]) > 8.0f && !random_integer_below(7)) {
+    if (vec_distance_xy(&moby->pos, &path->node[path->count - 1]) > 8.0f &&
+        vec_distance_xy(&moby->pos, &path->node[0]) > 8.0f && !random_integer_below(7)) {
         qcopy(&puff, &moby->pos);
         add_random_offset_to_vector_xyz(&puff, 0.5f);
         puff.f[2] = 25.01f;
-        spawn_moving_resizing_height_snapped_alpha_fade_particle(&puff, 0, 0x40103080, vars->speed * 3.0f / (D_0015EE6C * 10.0f), 12600.0f);
+        spawn_moving_resizing_height_snapped_alpha_fade_particle(&puff, 0, 0x40103080, vars->speed * 3.0f / (g_frame_time * 10.0f), 12600.0f);
     }
     return done;
 }

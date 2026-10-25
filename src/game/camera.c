@@ -203,7 +203,7 @@ void switch_active_camera_record(Camera *next_camera) {
             } else {
                 gCamera.blend.lerp.pos_rate_cfg = 0.018f;
                 gCamera.blend.lerp.rot_rate_cfg = 0.018f;
-                if (D_0015EE84 == 1) {
+                if (g_current_level_index == 1) {
                     gCamera.blend.lerp.pos_rate_cfg = 0.01f;
                     gCamera.blend.lerp.rot_rate_cfg = 0.01f;
                 }
@@ -310,7 +310,7 @@ int Camera_ActivationCheckPriority(Camera *cur, Camera *other) {
         break;
     }
     case 7: {
-        char *base = D_0013F450;
+        char *base = g_hero;
         short e = cur->id;
 
         if (e != *(int *)(base + 0x2284)) {
@@ -434,7 +434,7 @@ void Camera_Pos2Polar3d(float *out, void *p0, void *p1, void *dir0, void *dir1,
 
     FastVecSub(diff, p0, p1);
     d1 = FastVecDot(diff, axis);
-    func_001F9DC0(proj, axis, d1);
+    fast_vec_normalize(proj, axis, d1);
     FastVecSub(perp, diff, proj);
 
     d2 = FastVecDot(dir0, perp);
@@ -445,7 +445,7 @@ void Camera_Pos2Polar3d(float *out, void *p0, void *p1, void *dir0, void *dir1,
     angle1 = FastArcSin(d2 / lenPerp);
     a0 = 1.57079637f - angle1;
 
-    func_001F9DC0(unit, perp, 1.0f);
+    fast_vec_normalize(unit, perp, 1.0f);
     d3 = FastVecDot(dir1, unit);
     if (d3 < 0.0f) {
         a0 = -a0;
@@ -461,7 +461,7 @@ void Camera_Pos2Polar3d(float *out, void *p0, void *p1, void *dir0, void *dir1,
     angle2 = FastArcSin(d4 / lenDiff);
     a1 = -(1.57079637f - angle2);
 
-    func_001F9DC0(unit, diff, 1.0f);
+    fast_vec_normalize(unit, diff, 1.0f);
     d5 = FastVecDot(axis, unit);
     if (d5 < 0.0f) {
         a1 = 1.57079637f - angle2;
@@ -480,15 +480,15 @@ extern void func_001EC8D8(float *out, void *p0, void *p1, void *dir0, void *dir1
    builds three unit vectors from D_0013F450's +0x2080 pointer table
    (+0xC0/+0xD0/+0xE0 offsets, re-read at each call as retail does). */
 void capture_camera_orientation(void) {
-    char *g = D_0013F450;
+    char *g = g_hero;
     CamBlend *r = &gCamera.blend;
     char row0[16];
     char row1[16];
     char row2[16];
 
-    func_001F9DC0(row0, *(char **)(g + 0x2080) + 0xC0, 1.0f);
-    func_001F9DC0(row1, *(char **)(g + 0x2080) + 0xD0, 1.0f);
-    func_001F9DC0(row2, *(char **)(g + 0x2080) + 0xE0, 1.0f);
+    fast_vec_normalize(row0, *(char **)(g + 0x2080) + 0xC0, 1.0f);
+    fast_vec_normalize(row1, *(char **)(g + 0x2080) + 0xD0, 1.0f);
+    fast_vec_normalize(row2, *(char **)(g + 0x2080) + 0xE0, 1.0f);
 
     qcopy(&r->orbit.fwd, row0);
     qcopy(&r->orbit.up, row2);
@@ -559,11 +559,11 @@ void start_camera_blend(Camera *from) {
             extract_matrix_rotation_quaternion(&r->orbit.saved_rot, from);
             capture_camera_orientation();
         } else {
-            char *g = D_0013F450;
+            char *g = g_hero;
 
-            func_001F9DC0(local0, *(char **)(g + 0x2080) + 0xC0, 1.0f);
-            func_001F9DC0(local1, *(char **)(g + 0x2080) + 0xD0, 1.0f);
-            func_001F9DC0(local2, *(char **)(g + 0x2080) + 0xE0, 1.0f);
+            fast_vec_normalize(local0, *(char **)(g + 0x2080) + 0xC0, 1.0f);
+            fast_vec_normalize(local1, *(char **)(g + 0x2080) + 0xD0, 1.0f);
+            fast_vec_normalize(local2, *(char **)(g + 0x2080) + 0xE0, 1.0f);
             /* &gCamera.current->pos: the previous camera is the one the switch saved */
             Camera_Pos2Polar3d((float *)&r->orbit.yaw, &from->pos,
                           &(*(Camera **)((char *)r - 0xF0))->pos,
@@ -598,7 +598,7 @@ void start_camera_blend(Camera *from) {
         CamBlendOrbit *o = &r->orbit;
         int n = ++o->frames;
 
-        o->frames_left = func_001F98C0(n);
+        o->frames_left = scale_game_frame_count(n);
         o->inv_frames = 1.0f / IntToFloat(o->frames_left);
     }
 }
@@ -641,13 +641,13 @@ int step_camera_blend(Camera *to, CamBlendLerp *lerp) {
     func_001FA5C8(rot, &lerp->from_rot, m, t);
     quaternion_to_matrix(rot, q);
     if (st->active == 0) {
-        func_001FA480(gCamera.matrix, q);
+        matrix_copy_rows(gCamera.matrix, q);
     }
-    lerp->pos_t += lerp->pos_rate * D_0015EE60;
+    lerp->pos_t += lerp->pos_rate * frame_scale;
     if (1.0f < lerp->pos_t) {
         lerp->pos_t = 1.0f;
     }
-    lerp->rot_t += lerp->rot_rate * D_0015EE60;
+    lerp->rot_t += lerp->rot_rate * frame_scale;
     if (1.0f < lerp->rot_t) {
         lerp->rot_t = 1.0f;
     }
@@ -715,9 +715,9 @@ int advance_alternate_camera_transition(Camera *cam, CamBlendOrbit *o) {
         Camera_Pos2Polar3d(ang.v, &cam->pos, &target, &fwd, &side, &up);
     } else {
         qcopy(&target, &cam->pos);
-        g = D_0013F450;
-        func_001F9DC0(&fwd, *(char **)(g + 0x2080) + 0xC0, 1.0f);
-        func_001F9DC0(&up, *(char **)(g + 0x2080) + 0xE0, 1.0f);
+        g = g_hero;
+        fast_vec_normalize(&fwd, *(char **)(g + 0x2080) + 0xC0, 1.0f);
+        fast_vec_normalize(&up, *(char **)(g + 0x2080) + 0xE0, 1.0f);
         ang.v[2] = 0.0f;
         ang.v[1] = 0.0f;
         ang.v[0] = 3.1415927f;
@@ -727,10 +727,10 @@ int advance_alternate_camera_transition(Camera *cam, CamBlendOrbit *o) {
     dpitch = FastSubRots(ang.v[1], o->pitch);
     o->pitch = FastAddRots(o->pitch, dpitch * step);
     o->dist = o->dist + (ang.v[2] - o->dist) * step;
-    func_001F9DC0(&pos, &fwd, o->dist);
+    fast_vec_normalize(&pos, &fwd, o->dist);
     build_look_at_matrix(&pos, &pos, &up, o->yaw);
     FastVecCross(&side, &pos, &up);
-    func_001F9DC0(&side, &side, 1.0f);
+    fast_vec_normalize(&side, &side, 1.0f);
     build_look_at_matrix(&pos, &pos, &side, o->pitch);
     FastVecAdd(&o->pos, &target, &pos);
     if (occl_cam_state.active == 0) {
@@ -777,13 +777,13 @@ int advance_alternate_camera_transition(Camera *cam, CamBlendOrbit *o) {
     }
     yaw *= s2;
     build_look_at_matrix(&r0, &r0, &r1, yaw * step);
-    func_001F9DC0(&gCamera.matrix[0], &r0, 1.0f);
+    fast_vec_normalize(&gCamera.matrix[0], &r0, 1.0f);
     FastVecCross(&gCamera.matrix[1], &gCamera.matrix[0], D_0013F6E0);
-    func_001F9DC0(&gCamera.matrix[1], &gCamera.matrix[1], -1.0f);
+    fast_vec_normalize(&gCamera.matrix[1], &gCamera.matrix[1], -1.0f);
     FastVecCross(&gCamera.matrix[2], &gCamera.matrix[1], &gCamera.matrix[0]);
     extract_matrix_rotation_quaternion(&o->saved_rot, gCamera.matrix);
     extract_matrix_rotation_quaternion(&o->rot, gCamera.matrix);
-    func_001F9908(&o->frames_left);
+    fast_dec_timer(&o->frames_left);
     return 0;
 }
 
@@ -846,16 +846,16 @@ void apply_camera_shake(CameraShake *s, int along_row0) {
         if (s->frames_max < s->frames) {
             s->frames_max = s->frames;
         }
-        func_001F9908(&s->frames);
+        fast_dec_timer(&s->frames);
         ratio = IntToFloat(s->frames) / IntToFloat(s->frames_max);
         shake = s->amplitude
                 * FastCos(FastNormalizeAngle(IntToFloat(s->frames) * 2.0f))
                 * ratio * ratio;
         s->offset = shake;
         if (along_row0 == 0) {
-            func_001F9DC0(buf, &gCamera.matrix[2], shake);
+            fast_vec_normalize(buf, &gCamera.matrix[2], shake);
         } else {
-            func_001F9DC0(buf, &gCamera.matrix[0], shake);
+            fast_vec_normalize(buf, &gCamera.matrix[0], shake);
         }
         FastVecAdd(&gCamera.pos, &gCamera.pos, buf);
     } else {
@@ -888,7 +888,7 @@ void update_camera_tracking_state(void) {
     struct Moby *m;
 
     f = &gCamera.follow;
-    func_001F9DC0(&dir, &D_0013F450_ED818.gravity_dir, -1.0f);
+    fast_vec_normalize(&dir, &D_0013F450_ED818.gravity_dir, -1.0f);
     qcopy(&f->up_target_prev, &f->up_target);
     qcopy(&f->up_target, &dir);
     if (FastVecDot(&f->up, &dir) < -0.98f) {
@@ -902,13 +902,13 @@ void update_camera_tracking_state(void) {
         func_001EC120_ED818(&f->up_vel[1], f->up.f[1], dir.f[1], 0.015f, 0.2f, 0.0f);
     f->up.f[2] =
         func_001EC120_ED818(&f->up_vel[2], f->up.f[2], dir.f[2], 0.015f, 0.2f, 0.0f);
-    func_001F9DC0(&f->up, &f->up, 1.0f);
+    fast_vec_normalize(&f->up, &f->up, 1.0f);
 
     FastVecSub(&f->hero_delta, &D_0013F450_ED818.motion.pos, &f->hero_prev);
     f->hero_dist = FastVecLength(&f->hero_delta);
     d = FastVecDot(&f->hero_delta, &dir);
     f->up_dist = d;
-    func_001F9DC0(&proj, &dir, d);
+    fast_vec_normalize(&proj, &dir, d);
     qcopy(&f->hero_delta_up, &proj);
     FastVecSub(&f->hero_delta_side, &f->hero_delta, &proj);
     f->side_dist = FastVecLength(&f->hero_delta_side);
@@ -968,7 +968,7 @@ void update_camera_underwater_flag(void) {
     float b[4];
     int i;
 
-    if (cam->current->id == 6 || D_0015F6E8 != 0) {
+    if (cam->current->id == 6 || g_game_mode != 0) {
         cam->underwater = 0;
         return;
     }
@@ -1096,7 +1096,7 @@ void update_camera(void) {
     CameraShake *v;
     float m[16];
 
-    if (D_0015F6E8 == 5) {
+    if (g_game_mode == 5) {
         if (text_screen_active != 0) {
             return;
         }
@@ -1131,7 +1131,7 @@ void update_camera(void) {
     {
         DebugFreeCam *st = &occl_cam_state;
         if (st->active == 0) {
-            func_001FA460(m, camera_rows);
+            copy_matrix_rotation(m, camera_rows);
             matrix_to_euler(m, camera_rows - 0x200);
         }
     }

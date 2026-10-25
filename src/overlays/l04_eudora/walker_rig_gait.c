@@ -130,7 +130,7 @@ void initialize_leg_rig(struct Moby *moby, LegRig_p *rig) {
                     ? rig->anims[i]->phase[0].to[j] - rig->anims[i]->phase[0].from[j]
                     : rig->anims[i]->phase[0].to[j] + rig->anims[i]->len - rig->anims[i]->phase[0].from[j];
             }
-            rig->anims[i]->rate = rig->anims[i]->unk4 / func_001F9878(rig->anims[i]->len + rig->anims[i]->len);
+            rig->anims[i]->rate = rig->anims[i]->unk4 / multiply_global_factor(rig->anims[i]->len + rig->anims[i]->len);
         }
     }
     joints[0] = rig->legs[0].joint;
@@ -145,7 +145,7 @@ void initialize_leg_rig(struct Moby *moby, LegRig_p *rig) {
         MobyTransformScaledVertex(moby, ((unsigned char *)p)[0xF0], matrix[0]);
         *(int *)(p + 0x104) = 0;
         *(int *)(p + 0xFC) = 0;
-        *(float *)(p + 0xF8) = func_L00_001FF860(matrix[1][0], matrix[1][1]);
+        *(float *)(p + 0xF8) = fast_atan2(matrix[1][0], matrix[1][1]);
         if (((unsigned char *)p)[0x161] == 0)
             AttachManipulator(moby, ((unsigned char *)p)[0xF3], (LegRigManip_p *)(p + 0x160));
         if (((unsigned char *)p)[0x121] == 0)
@@ -416,23 +416,23 @@ void rig_animate(struct Moby *moby, LegRig_93F08 *rig, int flags) {
     for (i = 0; i < 2; i++) {
         leg = &rig->legs[i];
         func_0020DAF8_93F08(moby, leg->joint, joint);
-        heading = func_L00_001FF860(joint[4], joint[5]);
+        heading = fast_atan2(joint[4], joint[5]);
         twist = FastAddRots(
             FastAddRots(FastSubRots(leg->yaw, heading), leg->upper_turn),
             leg->lower_turn);
         base_yaw = FastSubRots(heading, twist);
         if (rig->unkB7 == 0 || (flags & mask) == 0) {
             leg->upper_turn = SpringTurn(leg->upper_turn, 0.0f, &rig->legs[i].upper_turn_speed, 0.1f, 0.1f,
-                                           D_0015EE60 * 0.034906585f);
+                                           frame_scale * 0.034906585f);
             leg->lower_turn = SpringTurn(leg->lower_turn, 0.0f, &rig->legs[i].lower_turn_speed, 0.1f, 0.1f,
-                                           D_0015EE60 * 0.034906585f);
+                                           frame_scale * 0.034906585f);
         } else {
             if (rig->unkB7 == 13)
                 leg->upper_turn = SpringTurn(leg->upper_turn, 0.0f, &rig->legs[i].upper_turn_speed, 0.1f, 0.1f,
-                                               D_0015EE60 * 0.034906585f);
+                                               frame_scale * 0.034906585f);
             else
                 leg->upper_turn = SpringTurn(leg->upper_turn, twist * 0.5f, &rig->legs[i].upper_turn_speed, 0.1f,
-                                               0.1f, D_0015EE60 * 0.034906585f);
+                                               0.1f, frame_scale * 0.034906585f);
             leg->lower_turn = FastSubRots(twist, leg->upper_turn);
             leg->lower_turn_speed = 0.0f;
         }
@@ -515,7 +515,7 @@ int LegWalkerUpdate(char *m, char *s, float speed, float ang, float accel) {
     }
     func_L04_00293F08_96938(m, s, flags, ang);
     *(float *)(m + 0x44) = SpringTurn(*(float *)(m + 0x44), *(float *)(s + 0xB8), (float *)(s + 0xBC),
-                                             0.005f, 0.01f, D_0015EE60 * 0.017453292f);
+                                             0.005f, 0.01f, frame_scale * 0.017453292f);
 
     ((int *)buf)[0] = *(unsigned char *)(s + 0xF0);
     ((int *)buf)[1] = *(unsigned char *)(s + 0xF1);
@@ -603,13 +603,13 @@ int LegWalkerUpdate(char *m, char *s, float speed, float ang, float accel) {
         pp = (char **)(s + 0x70);
         for (i = 0; i < 13; i++, pp++) {
             if (*((int **)(s + 0x70))[i] == *(unsigned char *)(m + 0x52)) {
-                if (!(*(float *)(s + 0xC0) < D_0015EE6C * 0.19f) ||
+                if (!(*(float *)(s + 0xC0) < g_frame_time * 0.19f) ||
                     !(FastDiffRots(*(float *)(m + 0x48), ang) > 0.092399783f) ||
-                    !(speed < D_0015EE6C * 0.19f)) {
+                    !(speed < g_frame_time * 0.19f)) {
                     f = ((float **)(s + 0x70))[i];
                     t = *(float *)(s + 0xC0);
                 } else {
-                    t = D_0015EE6C * 0.19f;
+                    t = g_frame_time * 0.19f;
                     f = (float *)*pp;
                 }
                 *(float *)(m + 0x58) = D_0015EE68 * func_001F9B88_2939E8(t / f[2]);
@@ -716,7 +716,7 @@ void reset_leg_rig_from_animation(struct Moby *m, LegRig *rig) {
         MobyTransformScaledVertex(m, rig->legs[i].joint, mtx[0]);
         rig->legs[i].unk14 = 0;
         rig->legs[i].unkC = 0;
-        rig->legs[i].yaw = func_L00_001FF860(mtx[1][0], mtx[1][1]);
+        rig->legs[i].yaw = fast_atan2(mtx[1][0], mtx[1][1]);
         if (rig->legs[i].manip_b.attached == 0)
             AttachManipulator(m, rig->legs[i].slot_b, &rig->legs[i].manip_b);
         if (rig->legs[i].manip_a.attached == 0)

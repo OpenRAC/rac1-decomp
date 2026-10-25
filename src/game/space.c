@@ -352,9 +352,9 @@ void draw_light_flare(char *arg0) {
     if (func_001FA9E8(a, &alpha, 32.0f) < 0) {
         return;
     }
-    if (D_0015F6E8 == 6 && D_0013E130.mode == 3
-        && D_0013E130.level > func_001F98C0(150)) {
-        alpha -= (D_0013E130.level - func_001F98C0(150)) * 4;
+    if (g_game_mode == 6 && D_0013E130.mode == 3
+        && D_0013E130.level > scale_game_frame_count(150)) {
+        alpha -= (D_0013E130.level - scale_game_frame_count(150)) * 4;
         if (alpha <= 0) {
             return;
         }
@@ -366,7 +366,7 @@ void draw_light_flare(char *arg0) {
     FastMemCopy(q.uv, D_001D9B40, 0x20);
     FastVecScale(b, arg0, 1.0f / 1024.0f);
     z = *(float *)(arg0 + 0x18) + 0.1f;
-    if (D_0015F6E8 == 6) {
+    if (g_game_mode == 6) {
         z = ProbeGroundHeight(arg0 + 0x10, 0, 0.5f) + 0.1f;
     }
     for (i = 0; i < 4; i++) {
@@ -374,7 +374,7 @@ void draw_light_flare(char *arg0) {
 
         q.rgba[i] = ((alpha >> 1) << 24) | 0x808080;
         v = q.v[i];
-        func_001F9EC0(v, D_001D9B60[D_0013E130.set][i], arg0 + 0xC0);
+        matrix_mul_vec3(v, D_001D9B60[D_0013E130.set][i], arg0 + 0xC0);
         FastVecAdd(v, v, arg0 + 0x10);
         v[2] = z;
     }
@@ -518,7 +518,7 @@ void build_resident_indexed_texture_warp_meshes(int unused) {
     QuadOffset_2F4C8 *position_second;
     Vec4 *normal_second;
 
-    if (D_0015F6E8 == 6 && trail_state_2F738.mode == 4) {
+    if (g_game_mode == 6 && trail_state_2F738.mode == 4) {
         q.texture = func_001F4868_2F4C8(0);
     } else {
         q.texture = func_001F4868_2F4C8(0x13);
@@ -772,7 +772,7 @@ void render_level_frame(void) {
         DrawTexturedQuad(0x2C, display_state->screen_height - 0x60, 0x40, 0x40, 0, 0, 0x40, 0x40,
                            0x80808080, texture);
         screen_y = (f32)((display_state->screen_height - 0x40) * 16);
-        rotation_angle = ((D_0015F538 % 55) * (-6.2831855f)) / 55.0f;
+        rotation_angle = ((game_frame_counter % 55) * (-6.2831855f)) / 55.0f;
         /* The frame counter contributes only the sprite angle modulo 55. */
         /* Retail passes the full texture value in a2 and the five floats in f12-f16. */
         draw_rotated_sprite(1216.0f, screen_y, quad_extent, 272.0f, 0x40, 0x40,
@@ -805,19 +805,19 @@ void emit_six_spark_effects(char *m, float z) {
     int c;
 
     for (i = 0; i < 6; i++) {
-        vel[0] = random_float_between(-D_0015EE6C, D_0015EE6C);
-        vel[1] = random_float_between(-D_0015EE6C, D_0015EE6C);
-        vel[2] = z + random_float_between(D_0015EE6C * -0.25f, D_0015EE6C * 0.25f);
+        vel[0] = random_float_between(-g_frame_time, g_frame_time);
+        vel[1] = random_float_between(-g_frame_time, g_frame_time);
+        vel[2] = z + random_float_between(g_frame_time * -0.25f, g_frame_time * 0.25f);
         vel[3] = 0.4f;
         qcopy(vel2, vel);
         vel2[3] = 0.6f;
         qcopy(pos, D_001D9EF0[D_0013E130.set][i]);
-        func_001F9EC0(pos, pos, m + 0xC0);
+        matrix_mul_vec3(pos, pos, m + 0xC0);
         FastVecAdd(pos, pos, m + 0x10);
-        a = func_001F98C0(4);
-        b = func_001F98C0(4);
-        c = func_001F98C0(4);
-        PartType02Spawn(pos, vel, vel2, 0x24C0C0C0, 0x14C0C0C0, a, b, c + random_integer_below(func_001F98C0(4)), -1);
+        a = scale_game_frame_count(4);
+        b = scale_game_frame_count(4);
+        c = scale_game_frame_count(4);
+        PartType02Spawn(pos, vel, vel2, 0x24C0C0C0, 0x14C0C0C0, a, b, c + random_integer_below(scale_game_frame_count(4)), -1);
     }
 }
 
@@ -1675,7 +1675,7 @@ void dispatch_game_state_update(void) {
             break;
         case 3:
         case 7:
-            *(int *)&D_0015F534 = 0x7F;
+            *(int *)&draw_enable_mask = 0x7F;
             DrawDebugProfiler();
             break;
         case 4:
@@ -2064,22 +2064,22 @@ void play_level_transition_movie(int id) {
     int size;
     int buf;
 
-    if (D_0015EE80 != 0) {
+    if (pal_mode != 0) {
         sector = D_00137C80_t.movie2[id].sector;
         size = D_00137C80_t.movie2[id].size;
     } else {
         sector = D_00137C80_t.movie[id].sector;
         size = D_00137C80_t.movie[id].size;
     }
-    D_0013E650[0x6B] |= 8;
+    voice_pool[0x6B] |= 8;
     buf = D_001941D4;
     Movie_Play(sector, size, (buf + 0x3F) & ~0x3F,
-                  (buf + 0x300000 + 0x3F) & ~0x3F, D_0015EE88);
+                  (buf + 0x300000 + 0x3F) & ~0x3F, g_game_language);
     func_00122598(0);
     func_00120858(0, 0);
     func_00123168(func_0012F308);
     FadeToBlack(4);
-    D_0013E650[0x6B] |= 0x10;
+    voice_pool[0x6B] |= 0x10;
 }
 
 extern int *D_00161000 MACRO_ADDR;
@@ -2098,10 +2098,10 @@ typedef union {
    fixed point relative to the viewport origin; UV pairs stay as floats. */
 void append_scrolling_textured_quad(int x, int y, int w, int h, unsigned long rgba,
                    unsigned long tex, float u0, float u1, float v0, float v1) {
-    int x0 = x * 16 + D_0013E600[4] - 8;
-    int x1 = (x + w) * 16 + D_0013E600[4] - 8;
-    int y0 = y * 16 + D_0013E600[5] - 8;
-    int y1 = (y + h) * 16 + D_0013E600[5] - 8;
+    int x0 = x * 16 + g_screen_extent[4] - 8;
+    int x1 = (x + w) * 16 + g_screen_extent[4] - 8;
+    int y0 = y * 16 + g_screen_extent[5] - 8;
+    int y1 = (y + h) * 16 + g_screen_extent[5] - 8;
     SpaceUvPair uv[4];
     long *p;
     int *base;
@@ -2115,15 +2115,15 @@ void append_scrolling_textured_quad(int x, int y, int w, int h, unsigned long rg
     uv[3].f.u = u1;
     uv[3].f.v = v1;
 
-    D_00161000[0] = 0x10000007;
-    D_00161000[1] = 0;
-    D_00161000[2] = 0;
-    D_00161000[3] = 0x50000007;
-    base = D_00161000;
-    D_00161000 = base + 4;
+    g_render_packet_cursor[0] = 0x10000007;
+    g_render_packet_cursor[1] = 0;
+    g_render_packet_cursor[2] = 0;
+    g_render_packet_cursor[3] = 0x50000007;
+    base = g_render_packet_cursor;
+    g_render_packet_cursor = base + 4;
     qcopy(base + 4, D_00160950);
     p = (long *)(base + 8);
-    D_00161000 = base + 8;
+    g_render_packet_cursor = base + 8;
     p[0] = tex;
     p[1] = 0x54;
     p[2] = (rgba & 0xFFFFFFFFL) | (0xFE00L << 46);
@@ -2136,7 +2136,7 @@ void append_scrolling_textured_quad(int x, int y, int w, int h, unsigned long rg
     p[9] = uv[3].bits;
     p[10] = x1 | ((long)y1 << 16) | ((long)0xFFFFF0 << 32);
     p[11] = 0;
-    D_00161000 = (int *)((char *)D_00161000 + 0x60);
+    g_render_packet_cursor = (int *)((char *)g_render_packet_cursor + 0x60);
 }
 
 extern s32 D_0015EF74 MACRO_ADDR;
@@ -2237,43 +2237,43 @@ void prepare_loading_slide_textures(s32 language_index, s32 first_slide, s32 sec
     func_0020C468(archive_memory->archive_base + 0x100000, archive_memory->archive_base);
     func_00118D80(0);
     archive_base = archive_memory->archive_base;
-    D_0015EF74 = D_0015EF8C;
-    D_0015EF78 = D_0015EF8C;
+    g_gs_texture_allocation_cursor = g_gs_texture_allocation_base;
+    g_gs_texture_allocation_start = g_gs_texture_allocation_base;
     texture_base_output = texture_bases;
     for (upload_index = 0; upload_index < 6; upload_index++) {
         if (upload_index == 0) {
-            func_00122630(&load_image, (D_0015EF74 << 8) >> 16, 1, 0, 0, 0,
+            func_00122630(&load_image, (g_gs_texture_allocation_cursor << 8) >> 16, 1, 0, 0, 0,
                                  0x10, 0x10);
             upload_bytes = 0x400;
             image_address = (s32)((u8 *)archive_base + *(s32 *)((u8 *)archive_base + 4)) + 0x20;
         } else if (upload_index == 1) {
-            func_00122630(&load_image, (D_0015EF74 << 8) >> 16, 1, 0x13, 0,
+            func_00122630(&load_image, (g_gs_texture_allocation_cursor << 8) >> 16, 1, 0x13, 0,
                                  0, 0x40, 0x40);
             upload_bytes = 0x1000;
             image_address = (s32)((u8 *)archive_base + *(s32 *)((u8 *)archive_base + 4)) + 0x420;
         } else if (upload_index == 2) {
-            func_00122630(&load_image, (D_0015EF74 << 8) >> 16, 1, 0, 0, 0,
+            func_00122630(&load_image, (g_gs_texture_allocation_cursor << 8) >> 16, 1, 0, 0, 0,
                                  0x10, 0x10);
             upload_bytes = 0x400;
             image_address =
                 (s32)((u8 *)archive_base + *(s32 *)((u8 *)archive_base + first_slide * 4 + 8)) +
                 0x20;
         } else if (upload_index == 3) {
-            func_00122630(&load_image, (D_0015EF74 << 8) >> 16, 8, 0x13, 0,
+            func_00122630(&load_image, (g_gs_texture_allocation_cursor << 8) >> 16, 8, 0x13, 0,
                                  0, 0x200, 0x40);
             upload_bytes = 0x8000;
             image_address =
                 (s32)((u8 *)archive_base + *(s32 *)((u8 *)archive_base + first_slide * 4 + 8)) +
                 0x420;
         } else if (upload_index == 4) {
-            func_00122630(&load_image, (D_0015EF74 << 8) >> 16, 1, 0, 0, 0,
+            func_00122630(&load_image, (g_gs_texture_allocation_cursor << 8) >> 16, 1, 0, 0, 0,
                                  0x10, 0x10);
             upload_bytes = 0x400;
             image_address =
                 (s32)((u8 *)archive_base + *(s32 *)((u8 *)archive_base + second_slide * 4 + 8)) +
                 0x20;
         } else {
-            func_00122630(&load_image, (D_0015EF74 << 8) >> 16, 8, 0x13, 0,
+            func_00122630(&load_image, (g_gs_texture_allocation_cursor << 8) >> 16, 8, 0x13, 0,
                                  0, 0x200, 0x40);
             upload_bytes = 0x8000;
             image_address =
@@ -2283,8 +2283,8 @@ void prepare_loading_slide_textures(s32 language_index, s32 first_slide, s32 sec
         func_00118D80(0);
         func_00122958(&load_image, image_address);
         func_00120858_32B90(0, 0);
-        *texture_base_output = D_0015EF74 >> 8;
-        D_0015EF74 = D_0015EF74 + upload_bytes;
+        *texture_base_output = g_gs_texture_allocation_cursor >> 8;
+        g_gs_texture_allocation_cursor = g_gs_texture_allocation_cursor + upload_bytes;
         texture_base_output++;
     }
     /* Each TEX0 combines an image base with its paired palette base. */
@@ -2372,7 +2372,7 @@ void play_level_loading_slides(s32 language_index, s32 first_slide, s32 second_s
     prepare_loading_slide_textures(language_index, first_slide, second_slide, &shared_texture,
                                    &first_texture, &second_texture);
     if (preload_level != 0) {
-        func_0012F4A8_32EF0((*(s32 *)&D_0015EE84));
+        func_0012F4A8_32EF0((*(s32 *)&g_current_level_index));
         D_0015EF48_32EF0[0] = 0;
         D_0015EF4A_32EF0[0] = 0;
     }
@@ -2515,12 +2515,12 @@ void DoSpaceTransition(void) {
     int ok;
     int done;
 
-    lvl = D_0015EE88 - 1;
+    lvl = g_game_language - 1;
     if (lvl < 0) {
         lvl = 0;
     }
     D_00194200_b.f10 |= 0x80000000;
-    D_0015F6E8 = 6;
+    g_game_mode = 6;
     D_0013E130.set = 0;
     if (D_0013DE48_b.f8 != 0 || D_0015F6E4 >= 8) {
         D_0013E130.set = 1;
@@ -2556,7 +2556,7 @@ void DoSpaceTransition(void) {
             memcard_update_state();
             Menu_RunStateHandler();
         }
-        FadeToBlack(func_001F98C0(6));
+        FadeToBlack(scale_game_frame_count(6));
         D_0015EE84_m = D_0015F6E4;
         load_level_chunk_from_disc();
         func_00120F30_i(0);
@@ -2565,48 +2565,48 @@ void DoSpaceTransition(void) {
         return;
     }
     if (D_0015F6E4 == 0 && level_visit_state[0] == 0) {
-        FadeToBlack(func_001F98C0(6));
-        play_level_loading_slides(lvl, 0, 1, func_001F98C0(240), 0);
+        FadeToBlack(scale_game_frame_count(6));
+        play_level_loading_slides(lvl, 0, 1, scale_game_frame_count(240), 0);
         play_level_transition_movie(0);
-        play_level_loading_slides(lvl, 2, 2, func_001F98C0(180), 0);
+        play_level_loading_slides(lvl, 2, 2, scale_game_frame_count(180), 0);
         play_level_transition_movie(1);
         D_0015EE84_m = D_0015F6E4;
-        play_level_loading_slides(lvl, 3, 4, func_001F98C0(240), 1);
+        play_level_loading_slides(lvl, 3, 4, scale_game_frame_count(240), 1);
         play_level_transition_movie(2);
     } else if (D_0015EE84_m == 0 && D_0015F6E4 == 1 && level_visit_state[1] == 0) {
-        FadeToBlack(func_001F98C0(6));
-        play_level_loading_slides(lvl, 5, 6, func_001F98C0(240), 0);
+        FadeToBlack(scale_game_frame_count(6));
+        play_level_loading_slides(lvl, 5, 6, scale_game_frame_count(240), 0);
         play_level_transition_movie(3);
         play_level_transition_movie(4);
-        play_level_loading_slides(lvl, 7, 7, func_001F98C0(180), 0);
+        play_level_loading_slides(lvl, 7, 7, scale_game_frame_count(180), 0);
         play_level_transition_movie(5);
         level_visit_state[D_0015EE84_m] = 2;
         D_0015EE84_m = D_0015F6E4;
-        play_level_loading_slides(lvl, 8, 8, func_001F98C0(240), 1);
+        play_level_loading_slides(lvl, 8, 8, scale_game_frame_count(240), 1);
     } else {
         if (D_0015F6E4 == 4 && level_visit_state[4] == 0) {
-            FadeToBlack(func_001F98C0(12));
-            play_level_loading_slides(lvl, 9, 10, func_001F98C0(240), 0);
+            FadeToBlack(scale_game_frame_count(12));
+            play_level_loading_slides(lvl, 9, 10, scale_game_frame_count(240), 0);
             play_level_transition_movie(6);
         }
         if (D_0015EE84_m == 7 && level_visit_state[7] != 2 && D_0013DE48_b.f8 != 0) {
-            FadeToBlack(func_001F98C0(12));
-            play_level_loading_slides(lvl, 11, 11, func_001F98C0(240), 0);
+            FadeToBlack(scale_game_frame_count(12));
+            play_level_loading_slides(lvl, 11, 11, scale_game_frame_count(240), 0);
             play_level_transition_movie(7);
         }
         if (D_0015F6E4 == 13 && level_visit_state[13] == 0) {
-            FadeToBlack(func_001F98C0(12));
-            play_level_loading_slides(lvl, 12, 13, func_001F98C0(240), 0);
+            FadeToBlack(scale_game_frame_count(12));
+            play_level_loading_slides(lvl, 12, 13, scale_game_frame_count(240), 0);
             play_level_transition_movie(8);
         }
         if (D_0015EE84_m == 14 && level_visit_state[14] != 2 && D_0013DE48_b.fF != 0) {
-            FadeToBlack(func_001F98C0(12));
-            play_level_loading_slides(lvl, 14, 14, func_001F98C0(240), 0);
+            FadeToBlack(scale_game_frame_count(12));
+            play_level_loading_slides(lvl, 14, 14, scale_game_frame_count(240), 0);
             play_level_transition_movie(9);
         }
         if (D_0015F6E4 == 16 && level_visit_state[16] == 0) {
-            FadeToBlack(func_001F98C0(12));
-            play_level_loading_slides(lvl, 15, 16, func_001F98C0(240), 0);
+            FadeToBlack(scale_game_frame_count(12));
+            play_level_loading_slides(lvl, 15, 16, scale_game_frame_count(240), 0);
             play_level_transition_movie(10);
         }
         if ((unsigned int)D_0015EE84_m < 19) {
@@ -2640,7 +2640,7 @@ void DoSpaceTransition(void) {
             Menu_RunStateHandler();
             VU1_syncChain(1);
             func_00122598_i(0);
-            D_0015F538++;
+            game_frame_counter++;
             SpaceTransition_Tick();
             if (!done) {
                 done = service_level_archive_load();
@@ -2742,7 +2742,7 @@ void render_environment_mapped_object(EnvironmentMappedObject *object) {
     indexed_quads = (((IndexedQuad * *)&environment_mesh_quads))[class_index];
     quad_count = (((s32 *)&environment_mesh_quad_counts))[class_index];
     vertex_count = (((s32 *)&environment_mesh_vertex_counts))[class_index];
-    if (D_0015F6E8 == 6 && D_0013E150_33AB8[0] == 4) {
+    if (g_game_mode == 6 && D_0013E150_33AB8[0] == 4) {
         quad_state[1] = func_001F4868_33AB8(1);
     } else {
         quad_state[1] = func_001F4868_33AB8(0x15);
@@ -2757,30 +2757,30 @@ void render_environment_mapped_object(EnvironmentMappedObject *object) {
     colors[1] = color;
     colors[0] = color;
     MobyTransformScaledVertex(object, 0, object_transform);
-    if (D_0015F6E8 != 0 || (FastAbsF(D_00187040_33AB8.position_x - object->position_x) < 16.0f &&
+    if (g_game_mode != 0 || (FastAbsF(D_00187040_33AB8.position_x - object->position_x) < 16.0f &&
                             FastAbsF(D_00187040_33AB8.position_y - object->position_y) < 16.0f)) {
         mapping_enabled = 1;
     }
-    if (D_0015F6E8 == 6 && D_0013E150_33AB8[0] == 4) {
+    if (g_game_mode == 6 && D_0013E150_33AB8[0] == 4) {
         mapping_enabled = 0;
     }
     if (mapping_enabled != 0 || (*(s32 *)&D_001605A4) == 1) {
         (*(s32 *)&D_001605A8) = 1;
-        func_001F9908(&(*(s32 *)&D_001605AC));
+        fast_dec_timer(&(*(s32 *)&D_001605AC));
         transition_fraction =
-            IntToFloat((*(s32 *)&D_001605AC)) / IntToFloat(func_001F98C0(0x3C));
+            IntToFloat((*(s32 *)&D_001605AC)) / IntToFloat(scale_game_frame_count(0x3C));
         for (element_index = 0; element_index < vertex_count; element_index++) {
-            func_001F9EE8(&D_001DC870[element_index], &positions[element_index],
+            transform_vector(&D_001DC870[element_index], &positions[element_index],
                              object_transform);
             FastVecSub(view_direction, &D_001DC870[element_index], D_00187180_33AB8);
-            func_001F9DC0(view_direction, view_direction, 1.0f);
-            func_001F9EE8(normal, &normals[element_index], object_transform);
-            func_001F9DC0(normal, normal, 0.1f);
+            fast_vec_normalize(view_direction, view_direction, 1.0f);
+            transform_vector(normal, &normals[element_index], object_transform);
+            fast_vec_normalize(normal, normal, 0.1f);
             FastVecScale(reflection, normal, FastVecDot(normal, view_direction) * 2.0f);
             FastVecSub(reflection, view_direction, reflection);
-            func_001F9DC0(reflection, reflection, 1.0f);
+            fast_vec_normalize(reflection, reflection, 1.0f);
             reflection[2] += 1.0f;
-            sphere_denominator = func_001F9B50(reflection[2] * 2.0f) * 2.0f;
+            sphere_denominator = vec_length(reflection[2] * 2.0f) * 2.0f;
             if ((*(s32 *)&D_001605A4) == 1 || (*(s32 *)&D_001605AC) == 0) {
                 D_001DCED0[element_index][0] = reflection[0] / sphere_denominator + 0.5f;
                 D_001DCED0[element_index][1] = reflection[1] / sphere_denominator + 0.5f;
@@ -2802,16 +2802,16 @@ void render_environment_mapped_object(EnvironmentMappedObject *object) {
             for (element_index = 0; element_index < vertex_count; element_index++) {
                 D_001DD200[element_index][0] = D_001DCED0[element_index][0];
                 D_001DD200[element_index][1] = D_001DCED0[element_index][1];
-                func_001F9EE8(&D_001DC870[element_index], &positions[element_index],
+                transform_vector(&D_001DC870[element_index], &positions[element_index],
                                  object_transform);
             }
         } else {
             for (element_index = 0; element_index < vertex_count; element_index++) {
-                func_001F9EE8(&D_001DC870[element_index], &positions[element_index],
+                transform_vector(&D_001DC870[element_index], &positions[element_index],
                                  object_transform);
             }
         }
-        (*(s32 *)&D_001605AC) = func_001F98C0(0x3C);
+        (*(s32 *)&D_001605AC) = scale_game_frame_count(0x3C);
     }
     for (element_index = 0; element_index < quad_count; element_index++) {
         for (corner_index = 0; corner_index < 4; corner_index++) {

@@ -229,7 +229,7 @@ void update_falling_effect_particle(FallingParticle *p)
             }
         }
     }
-    vel->f[2] -= (*(f32 *)&D_0015EE70) * 9.8f;
+    vel->f[2] -= (*(f32 *)&g_frame_time_sq) * 9.8f;
     vel->f[3] = ground + particle_clearance.value;
 }
 extern void *func_00218928(int);

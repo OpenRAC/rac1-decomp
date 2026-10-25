@@ -31,7 +31,7 @@ extern void func_L00_002BC3B8(void *);
 /* Scrolls the texture offset and refreshes the five scrolling-strip records of a moby. */
 void draw_beam_and_arc_effects(char *m) {
     char *p = *(char **)(m + 0x78);
-    float t = *(float *)&D_L00_001616BC - *(float *)&D_L00_001616C0 * D_0015EE60;
+    float t = *(float *)&D_L00_001616BC - *(float *)&D_L00_001616C0 * frame_scale;
     *(float *)&D_L00_001616BC = t;
     if (t <= -8.0f) {
         *(float *)&D_L00_001616BC = t + 8.0f;
@@ -107,7 +107,7 @@ void draw_beam_and_arc_two_pass_quads(void *m, int a, int b, int n, float sx, fl
     t.f[5] = u.f[5];
     t.f[6] = u.f[6] + *(float *)&D_L00_001616BC;
     t.f[7] = u.f[7];
-    FastVecSub(w140, m, D_L00_00166EC0);
+    FastVecSub(w140, m, g_debug_camera);
     FastVecSub(w150, &((P_2BBDE8 *)m)[1], m);
     FastVecCross(w120, w150, w140);
     len0 = FastVecLength(w120);
@@ -116,7 +116,7 @@ void draw_beam_and_arc_two_pass_quads(void *m, int a, int b, int n, float sx, fl
     FastVecAdd(q[0], m, w120);
     FastVecSub(q[1], m, w120);
     for (i = 1; i < n - 1; i++) {
-        FastVecSub(w140, &((P_2BBDE8 *)m)[i], D_L00_00166EC0);
+        FastVecSub(w140, &((P_2BBDE8 *)m)[i], g_debug_camera);
         FastVecSub(w150, &((P_2BBDE8 *)m)[i + 1], &((P_2BBDE8 *)m)[i]);
         FastVecCross(w120, w150, w140);
         len = FastVecLength(w120);
@@ -139,8 +139,8 @@ void draw_beam_and_arc_two_pass_quads(void *m, int a, int b, int n, float sx, fl
         qcopy(q[1], q[3]);
     }
     for (i = 0; i < n - 1; i++) {
-        FastVecSub(a180, &((P_2BBDE8 *)m)[i], D_L00_00166EC0);
-        FastVecSub(b190, &((P_2BBDE8 *)m)[i + 1], D_L00_00166EC0);
+        FastVecSub(a180, &((P_2BBDE8 *)m)[i], g_debug_camera);
+        FastVecSub(b190, &((P_2BBDE8 *)m)[i + 1], g_debug_camera);
         l0 = FastVecLength(a180);
         l1 = FastVecLength(b190);
         if (l1 < l0) {
@@ -150,13 +150,13 @@ void draw_beam_and_arc_two_pass_quads(void *m, int a, int b, int n, float sx, fl
             if (l0 == 0) qcopy(a180, b190);
             else FastVecScale(a180, a180, l1 / l0);
         }
-        FastVecAdd(r160, D_L00_00166EC0, a180);
-        FastVecAdd(r170, D_L00_00166EC0, b190);
+        FastVecAdd(r160, g_debug_camera, a180);
+        FastVecAdd(r170, g_debug_camera, b190);
         FastVecSub(w150, r170, r160);
         FastVecScale(s1B0, w150, sz);
         FastVecSub(r160, r160, s1B0);
         FastVecAdd(r170, r170, s1B0);
-        FastVecSub(s1A0, D_L00_00166EC0, r160);
+        FastVecSub(s1A0, g_debug_camera, r160);
         FastVecCross(w120, s1A0, w150);
         len2 = FastVecLength(w120);
         if (len2 != 0) len2 = 1.0f / len2;
@@ -214,11 +214,11 @@ void draw_beam_anchor_camera_facing_quads(void *mv) {
     quad.unk88 = 0x8000000048L;
     quad.unk80 = 0xFF9000000260L;
     quad.unk70 = 0;
-    FastVecSub(&mat[3], D_L00_00166EC0, pos);
+    FastVecSub(&mat[3], g_debug_camera, pos);
     func_L00_001FF4B0(&mat[3], &mat[3], 0.3f);
     FastVecAdd(&mat[3], &mat[3], pos);
     mat[3].f[3] = 1.0f;
-    FastVecSub(&mat[0], D_L00_00166EC0, &mat[3]);
+    FastVecSub(&mat[0], g_debug_camera, &mat[3]);
     func_L00_001FF4B0(&mat[0], &mat[0], 1.0f);
     FastVecCross(&mat[1], &mat[0], D_0013E633 + 0x10AD);
     func_L00_001FF4B0(&mat[1], &mat[1], -1.0f);
@@ -231,7 +231,7 @@ void draw_beam_anchor_camera_facing_quads(void *mv) {
     s = *(float *)&D_L00_00161718 + randf_sym(0.0f, 0.025f);
     for (i = 0; i < 4; i++) {
         FastVecScale(&quad.corner[i], &D_L00_001DB860[i], s);
-        func_001F9EE8(&quad.corner[i], &quad.corner[i], &mat[0]);
+        transform_vector(&quad.corner[i], &quad.corner[i], &mat[0]);
         quad.uv[i].u = D_L00_001DB8A0[i].u;
         quad.uv[i].v = D_L00_001DB8A0[i].v;
     }
@@ -244,7 +244,7 @@ void draw_beam_anchor_camera_facing_quads(void *mv) {
     s = *(float *)&D_L00_0016171C + randf_sym(0.0f, 0.05f);
     for (i = 0; i < 4; i++) {
         FastVecScale(&quad.corner[i], &D_L00_001DB860[i], s);
-        func_001F9EE8(&quad.corner[i], &quad.corner[i], &mat[0]);
+        transform_vector(&quad.corner[i], &quad.corner[i], &mat[0]);
         quad.uv[i].u = D_L00_001DB8A0[i].u;
         quad.uv[i].v = D_L00_001DB8A0[i].v;
     }
@@ -270,8 +270,8 @@ char *spawn_linked_moby_from_basis(char *src) {
         *(Vu *)(m + 0xC0) = *(Vu *)(src + 0xC0);
         *(Vu *)(m + 0xD0) = *(Vu *)(src + 0xD0);
         *(Vu *)(m + 0xE0) = *(Vu *)(src + 0xE0);
-        func_0020EEE8(m);
-        func_L00_00251E30(m);
+        moby_anim_sphere_lerp(m);
+        moby_build_matrix(m);
     }
     return m;
 }
@@ -317,7 +317,7 @@ void update_linked_moby_scale_and_rotation(char *m) {
     offset_moby_class_point_pairs(*(unsigned char **)(m + 0x24), 0, d);
     *(float *)(m + 0x2C) = *(float *)(*(char **)(m + 0x24) + 0x24) * *(float *)(p + 0xC) * random_float_between(0.5f, 1.0f);
     *(float *)(m + 0x44) = FastAddRots(*(float *)(m + 0x44), normalize_angle(*(float *)(p + 0xC)));
-    func_0020EEE8(m);
+    moby_anim_sphere_lerp(m);
 }
 extern short D_L00_001DC1C0[];
 extern short D_L00_001DC1D8[];
@@ -422,7 +422,7 @@ void walloper_update(char *m) {
                 sign = 1.0f;
                 for (k = 1; k < 5; k++) {
                     float ang;
-                    FastVecSub(t, D_L00_001DBE90_rows[i].point[k - 1], D_L00_00166EC0);
+                    FastVecSub(t, D_L00_001DBE90_rows[i].point[k - 1], g_debug_camera);
                     ang = random_float_between(0.17453292f, 0.7853982f) * sign;
                     sign = -sign;
                     build_look_at_matrix(vec1, vec1, t, ang);
@@ -517,7 +517,7 @@ void draw_walloper_arc_two_pass_quads(char *m, int a, int b, int n, float sx, fl
     u.c[0] = col1;
     u.f[0] = 0; u.f[1] = 0; u.f[2] = 0; u.f[3] = 1.0f; u.f[4] = 1.0f; u.f[5] = 0; u.f[6] = 1.0f; u.f[7] = 1.0f;
     t.f[0] = 0; t.f[1] = 0; t.f[2] = 0; t.f[3] = 1.0f; t.f[4] = 1.0f; t.f[5] = 0; t.f[6] = 1.0f; t.f[7] = 1.0f;
-    FastVecSub(w140, m, D_L00_00166EC0);
+    FastVecSub(w140, m, g_debug_camera);
     FastVecSub(w150, m + 0x10, m);
     FastVecCross(w120, w150, w140);
     len0 = FastVecLength(w120);
@@ -526,7 +526,7 @@ void draw_walloper_arc_two_pass_quads(char *m, int a, int b, int n, float sx, fl
     FastVecAdd(q[0], m, w120);
     FastVecSub(q[1], m, w120);
     for (i = 1; i < n - 1; i++) {
-        FastVecSub(w140, m + i * 16, D_L00_00166EC0);
+        FastVecSub(w140, m + i * 16, g_debug_camera);
         FastVecSub(w150, m + i * 16 + 16, m + i * 16);
         FastVecCross(w120, w150, w140);
         len = FastVecLength(w120);
@@ -549,8 +549,8 @@ void draw_walloper_arc_two_pass_quads(char *m, int a, int b, int n, float sx, fl
         qcopy(q[1], q[3]);
     }
     for (i = 0; i < n - 1; i++) {
-        FastVecSub(a180, m + i * 16, D_L00_00166EC0);
-        FastVecSub(b190, m + i * 16 + 16, D_L00_00166EC0);
+        FastVecSub(a180, m + i * 16, g_debug_camera);
+        FastVecSub(b190, m + i * 16 + 16, g_debug_camera);
         l0 = FastVecLength(a180);
         l1 = FastVecLength(b190);
         if (l1 < l0) {
@@ -560,13 +560,13 @@ void draw_walloper_arc_two_pass_quads(char *m, int a, int b, int n, float sx, fl
             if (l0 == 0) qcopy(a180, b190);
             else FastVecScale(a180, a180, l1 / l0);
         }
-        FastVecAdd(r160, D_L00_00166EC0, a180);
-        FastVecAdd(r170, D_L00_00166EC0, b190);
+        FastVecAdd(r160, g_debug_camera, a180);
+        FastVecAdd(r170, g_debug_camera, b190);
         FastVecSub(w150, r170, r160);
         FastVecScale(s1B0, w150, sz);
         FastVecSub(r160, r160, s1B0);
         FastVecAdd(r170, r170, s1B0);
-        FastVecSub(s1A0, D_L00_00166EC0, r160);
+        FastVecSub(s1A0, g_debug_camera, r160);
         FastVecCross(w120, s1A0, w150);
         len = FastVecLength(w120);
         if (len != 0) len = 1.0f / len;
@@ -649,7 +649,7 @@ void draw_walloper_camera_facing_quad(int arg) {
     t.c[2] = col;
     t.c[1] = col;
     t.c[0] = col;
-    FastVecSub(f, D_L00_00166EC0, bb);
+    FastVecSub(f, g_debug_camera, bb);
     func_L00_001FF4B0(cc, f, 1.0f);
     FastVecCross(d, cc, D_0013E633 + 0x10AD);
     func_L00_001FF4B0(d, d, -1.0f);
@@ -661,7 +661,7 @@ void draw_walloper_camera_facing_quad(int arg) {
     for (i = 3; i >= 0; i--) {
         FastVecScale(tmp, p, *(float *)&D_L00_00161788);
         p++;
-        func_001F9EE8(qq, tmp, c);
+        transform_vector(qq, tmp, c);
         qq += 4;
     }
     func_L00_001FD1D8(q, 0, 0);
@@ -708,7 +708,7 @@ char *Aim_FindAssistTarget(char *self, float *position, float *heading, float *p
     collision = func_L00_001EFFF0((Vec4f *)end, (Vec4f *)position, 6, m0, 0);
     res[0] = 0;
     if (collision) {
-        qcopy(position, &D_L00_00173F60);
+        qcopy(position, &collision_hit_point);
         return 0;
     }
     i = 0;
@@ -724,16 +724,16 @@ char *Aim_FindAssistTarget(char *self, float *position, float *heading, float *p
         if (!candidate || !*(char **)(candidate + 0x24) ||
             *(short *)(*(char **)(candidate + 0x24) + 0x46) != 5)
             continue;
-        angle = func_L00_001FF860(target[0] - position[0], target[1] - position[1]);
-        distance = func_001F9D48(position, target);
-        elevation = func_L00_001FF860(distance, target[2] - position[2]);
+        angle = fast_atan2(target[0] - position[0], target[1] - position[1]);
+        distance = vec_distance_xy(position, target);
+        elevation = fast_atan2(distance, target[2] - position[2]);
         headingError = FastDiffRots(*heading, angle);
         distance = FastVecDist(position, target);
         if (distance < 2.5f) {
             float toward;
             char *g1 = D_0013E633 + 0xE1D;
             moby = *(char **)(g1 + 0x2080);
-            toward = func_L00_001FF860(*(float *)(candidate + 0x10) - *(float *)(g1 + 0x80),
+            toward = fast_atan2(*(float *)(candidate + 0x10) - *(float *)(g1 + 0x80),
                                    *(float *)(candidate + 0x14) - *(float *)(g1 + 0x84));
             if (FastDiffRots(*(float *)(moby + 0x48), toward) < 1.0471976f &&
                 FastAbsF(position[2] - target[2]) < 2.0f &&
@@ -1433,7 +1433,7 @@ void draw_beam_ring_and_rail_effects(void *o) {
     float y, a, b, t;
     int c, i, j, k, off, jo;
 
-    (*(float *)&D_L00_0016185C) = (*(float *)&D_L00_0016185C) - (*(float *)&D_L00_00161860) * D_0015EE60;
+    (*(float *)&D_L00_0016185C) = (*(float *)&D_L00_0016185C) - (*(float *)&D_L00_00161860) * frame_scale;
     if ((*(float *)&D_L00_0016185C) <= -8.0f) (*(float *)&D_L00_0016185C) += 8.0f;
     func_L00_002BF380_BEF58(D_L00_001DC320, (*(int *)&D_L00_0016183C), (*(int *)&D_L00_00161840), 12, (*(float *)&D_L00_00161844), (*(float *)&D_L00_00161848), (*(float *)&D_L00_0016184C), (*(int *)&D_L00_00161854));
     func_L00_002BF380_BEF58(D_L00_001DC3E0, (*(int *)&D_L00_0016183C), (*(int *)&D_L00_00161840), 12, (*(float *)&D_L00_00161844), (*(float *)&D_L00_00161848), (*(float *)&D_L00_0016184C), (*(int *)&D_L00_00161858));
@@ -1450,9 +1450,9 @@ void draw_beam_ring_and_rail_effects(void *o) {
     quad.color[1] = c;
     quad.color[0] = c;
     y = (*(float *)&D_L00_001617E8);
-    (*(float *)&D_L00_001617E8) = y - (*(float *)&D_L00_001617EC) * D_0015EE60;
+    (*(float *)&D_L00_001617E8) = y - (*(float *)&D_L00_001617EC) * frame_scale;
     if ((*(float *)&D_L00_001617E8) <= -8.0f) (*(float *)&D_L00_001617E8) += 8.0f;
-    t = (*(float *)&D_L00_001617F8) * D_0015EE60;
+    t = (*(float *)&D_L00_001617F8) * frame_scale;
     (*(float *)&D_L00_001617F0) = (*(float *)&D_L00_001617F0) - t;
     if ((*(float *)&D_L00_001617F0) <= -7.0f) (*(float *)&D_L00_001617F0) += 7.0f;
     (*(float *)&D_L00_001617F4) = (*(float *)&D_L00_001617F4) + t;
@@ -1548,7 +1548,7 @@ void DrawScrollingRibbonColored(P_2BF380 *m, int a, int b, float sx, float sy, f
     t.f[5] = u.f[5];
     t.f[6] = u.f[6] + *(float *)&D_L00_0016185C;
     t.f[7] = u.f[7];
-    FastVecSub(w140, m, D_L00_00166EC0);
+    FastVecSub(w140, m, g_debug_camera);
     FastVecSub(w150, &m[1], m);
     FastVecCross(w120, w150, w140);
     len0 = FastVecLength(w120);
@@ -1557,7 +1557,7 @@ void DrawScrollingRibbonColored(P_2BF380 *m, int a, int b, float sx, float sy, f
     FastVecAdd(q[0], m, w120);
     FastVecSub(q[1], m, w120);
     for (i = 1; i < n - 1; i++) {
-        FastVecSub(w140, &m[i], D_L00_00166EC0);
+        FastVecSub(w140, &m[i], g_debug_camera);
         FastVecSub(w150, &m[i + 1], &m[i]);
         FastVecCross(w120, w150, w140);
         len = FastVecLength(w120);
@@ -1580,8 +1580,8 @@ void DrawScrollingRibbonColored(P_2BF380 *m, int a, int b, float sx, float sy, f
         qcopy(q[1], q[3]);
     }
     for (i = 0; i < n - 1; i++) {
-        FastVecSub(a180, &m[i], D_L00_00166EC0);
-        FastVecSub(b190, &m[i + 1], D_L00_00166EC0);
+        FastVecSub(a180, &m[i], g_debug_camera);
+        FastVecSub(b190, &m[i + 1], g_debug_camera);
         l0 = FastVecLength(a180);
         l1 = FastVecLength(b190);
         if (l1 < l0) {
@@ -1591,13 +1591,13 @@ void DrawScrollingRibbonColored(P_2BF380 *m, int a, int b, float sx, float sy, f
             if (l0 == 0) qcopy(a180, b190);
             else FastVecScale(a180, a180, l1 / l0);
         }
-        FastVecAdd(r160, D_L00_00166EC0, a180);
-        FastVecAdd(r170, D_L00_00166EC0, b190);
+        FastVecAdd(r160, g_debug_camera, a180);
+        FastVecAdd(r170, g_debug_camera, b190);
         FastVecSub(w150, r170, r160);
         FastVecScale(s1B0, w150, sz);
         FastVecSub(r160, r160, s1B0);
         FastVecAdd(r170, r170, s1B0);
-        FastVecSub(s1A0, D_L00_00166EC0, r160);
+        FastVecSub(s1A0, g_debug_camera, r160);
         FastVecCross(w120, s1A0, w150);
         len2 = FastVecLength(w120);
         if (len2 != 0) len2 = 1.0f / len2;
@@ -1671,7 +1671,7 @@ void draw_beam_pulse_quads(void *unused) {
             FastVecCross(&C, &B, &A);
             for (j = 0; j < 4; j++) {
                 FastVecScale(&E, &D_L00_001DC220[j], D_L00_001618D8[i]);
-                func_001F9EE8(&q.v[j], &E, &A);
+                transform_vector(&q.v[j], &E, &A);
             }
             func_L00_001FD1D8(&q, 0, 0);
         }
@@ -1720,14 +1720,14 @@ void draw_beam_origin_camera_facing_quads(void *mv) {
     quad.unk6C = 1.0f;
     func_L00_001FF4B0(&e, m + 0xD0, *(float *)&D_L00_00161884);
     FastVecAdd(&mat[3], &D_L00_001DC260, &e);
-    FastVecSub(&e, D_L00_00166EC0, &mat[3]);
+    FastVecSub(&e, g_debug_camera, &mat[3]);
     func_L00_001FF4B0(&mat[0], &e, 1.0f);
     FastVecCross(&mat[1], &mat[0], D_0013E633 + 0x10AD);
     func_L00_001FF4B0(&mat[1], &mat[1], -1.0f);
     FastVecCross(&mat[2], &mat[1], &mat[0]);
     for (i = 3; i >= 0; i--) {
         FastVecScale(&t, &D_L00_001DC220[3 - i], *(float *)&D_L00_0016187C);
-        func_001F9EE8(&quad.corner[3 - i], &t, &mat[0]);
+        transform_vector(&quad.corner[3 - i], &t, &mat[0]);
     }
     func_L00_001FD1D8(&quad, 0, 0);
     quad.color[3] = -1;
@@ -1736,7 +1736,7 @@ void draw_beam_origin_camera_facing_quads(void *mv) {
     quad.color[0] = -1;
     for (j = 3; j >= 0; j--) {
         FastVecScale(&t, &D_L00_001DC220[3 - j], *(float *)&D_L00_00161880);
-        func_001F9EE8(&quad.corner[3 - j], &t, &mat[0]);
+        transform_vector(&quad.corner[3 - j], &t, &mat[0]);
     }
     func_L00_001FD1D8(&quad, 0, 0);
 }
@@ -1768,7 +1768,7 @@ int probe_moby_raised_sphere_collision(char *a, int b, Vx *c) {
 }
 extern char D_0013F450[];
 void save_state_fields_to_hero(char *a) {
-    char *g = D_0013F450;
+    char *g = g_hero;
     *(float *)(g + 0x1ED0) = *(float *)(a + 0x40);
     *(float *)(g + 0x1ED4) = *(float *)(a + 0x44);
     *(float *)(g + 0x1ED8) = *(float *)(a + 0x48);
@@ -1776,7 +1776,7 @@ void save_state_fields_to_hero(char *a) {
     *(float *)(g + 0x1EE4) = *(float *)(a + 0x5C);
 }
 void restore_state_fields_from_hero(char *a) {
-    char *g = D_0013F450;
+    char *g = g_hero;
     *(float *)(a + 0x40) = *(float *)(g + 0x1ED0);
     *(float *)(a + 0x44) = *(float *)(g + 0x1ED4);
     *(float *)(a + 0x48) = *(float *)(g + 0x1ED8);
@@ -1784,7 +1784,7 @@ void restore_state_fields_from_hero(char *a) {
     *(float *)(a + 0x5C) = *(float *)(g + 0x1EE4);
 }
 void save_state_vector_and_fields_to_hero(char *a) {
-    char *g = D_0013F450;
+    char *g = g_hero;
     *(float *)(g + 0x1F20) = *(float *)(a + 0x50);
     *(float *)(g + 0x1F24) = *(float *)(a + 0x54);
     *(float *)(g + 0x1F28) = *(float *)(a + 0x58);
@@ -1793,7 +1793,7 @@ void save_state_vector_and_fields_to_hero(char *a) {
     qcopy(g + 0x1F10, a);
 }
 void restore_saved_state_fields_from_hero(char *a) {
-    char *g = D_0013F450;
+    char *g = g_hero;
     *(float *)(a + 0x50) = *(float *)(g + 0x1F20);
     *(float *)(a + 0x54) = *(float *)(g + 0x1F24);
     *(float *)(a + 0x58) = *(float *)(g + 0x1F28);
@@ -1869,9 +1869,9 @@ char *select_class5_target_or_hero(char *self, float *position, float *angles, i
             checkCollision = 0;
         qcopy(target, candidate + 0x10);
         target[2] += 0.4f;
-        angleError = FastDiffRots(angles[2], func_L00_001FF860(target[0] - position[0], target[1] - position[1]));
+        angleError = FastDiffRots(angles[2], fast_atan2(target[0] - position[0], target[1] - position[1]));
         angleError *= angleError;
-        heightError = FastDiffRots(angles[1], func_L00_001FF860(distance, target[2] - position[2]));
+        heightError = FastDiffRots(angles[1], fast_atan2(distance, target[2] - position[2]));
         heightError *= heightError;
         if (checkCollision) {
             if (8.0f < FastAbsF(*(float *)(candidate + 0x18) - *(float *)(self + 0x18)))
@@ -1899,7 +1899,7 @@ char *select_class5_target_or_hero(char *self, float *position, float *angles, i
     }
     if (best == 0) {
         char *playerPosition = gHeroPos;
-        if (func_001F9D48(self + 0x10, playerPosition) > 3.2f)
+        if (vec_distance_xy(self + 0x10, playerPosition) > 3.2f)
             best = *(char **)(playerPosition + 0x2000);
     }
     return best;
@@ -1959,7 +1959,7 @@ f32 select_moby_heading_by_collision_probes(Mob *m, Vec4 *pos, f32 *tgt, f32 *ou
     bestDiff = 6.2831855f;
     *out = bestDist;
     if (tgt != 0) {
-        cur = func_L00_001FF860(tgt[0] - m->f10, tgt[1] - m->f14);
+        cur = fast_atan2(tgt[0] - m->f10, tgt[1] - m->f14);
     } else {
         cur = ang;
     }
@@ -1987,7 +1987,7 @@ f32 select_moby_heading_by_collision_probes(Mob *m, Vec4 *pos, f32 *tgt, f32 *ou
             return cur;
         }
         best = cur;
-        bestDist = FastVecDist(&v0, &D_L00_00173F60);
+        bestDist = FastVecDist(&v0, &collision_hit_point);
         bestDiff = 0.0f;
         if (*out < bestDist) {
             *out = bestDist;
@@ -2020,7 +2020,7 @@ f32 select_moby_heading_by_collision_probes(Mob *m, Vec4 *pos, f32 *tgt, f32 *ou
                 *out = 100.0f;
                 return arc;
             }
-            d = FastVecDist(&v0, &D_L00_00173F60);
+            d = FastVecDist(&v0, &collision_hit_point);
             if (bestDist < d) {
                 best = arc;
                 bestDist = d;
@@ -2054,7 +2054,7 @@ f32 select_moby_heading_by_collision_probes(Mob *m, Vec4 *pos, f32 *tgt, f32 *ou
     v1.f[2] += 0.12f;
     if (func_L00_001EFFF0_C0358(&v0, &v1, 4, m, 0) != 0) {
         if (D_L00_00173F58_C0358 != x->p38 && !(D_L00_00173F58_C0358 != 0 && D_L00_00173F58_C0358->p24 != 0 && D_L00_00173F58_C0358->p24->h46 == 5)) {
-            d = FastVecDist(&v0, &D_L00_00173F60);
+            d = FastVecDist(&v0, &collision_hit_point);
             best = FastAddRots(best, (r2 - d) * 3.1415927f / (r2 * 3.0f));
         }
     }
@@ -2069,7 +2069,7 @@ f32 select_moby_heading_by_collision_probes(Mob *m, Vec4 *pos, f32 *tgt, f32 *ou
     v1.f[2] += 0.12f;
     if (func_L00_001EFFF0_C0358(&v0, &v1, 4, m, 0) != 0) {
         if (D_L00_00173F58_C0358 != x->p38 && !(D_L00_00173F58_C0358 != 0 && D_L00_00173F58_C0358->p24 != 0 && D_L00_00173F58_C0358->p24->h46 == 5)) {
-            d = FastVecDist(&v0, &D_L00_00173F60);
+            d = FastVecDist(&v0, &collision_hit_point);
             best = FastSubRots(best, (r2 - d) * 3.1415927f / (r2 * 3.0f));
         }
     }
@@ -2108,14 +2108,14 @@ void initialize_moby_hop_trajectory(unsigned char *m, unsigned char *o, void *sr
 #define F2BF(p, x) (*(float *)((p) + (x)))
     *(int *)(o + 0x30) = 0;
     qcopy(o, src);
-    s = func_001F9D48(m + 0x10, o);
+    s = vec_distance_xy(m + 0x10, o);
     s = s * s;
     t = F2BF(o, 0x1C) * 35.0f * F2BF(o, 0x20) / (FastAbsF(F2BF(o, 8) - F2BF(m, 0x18)) + 1.0f) * (s + 0.25f);
     F2BF(o, 0x14) = t;
     if (F2BF(o, 0x20) < t) F2BF(o, 0x14) = F2BF(o, 0x20);
-    F2BF(o, 0x18) = func_L00_001FF860(F2BF(o, 0) - F2BF(m, 0x10), F2BF(o, 4) - F2BF(m, 0x14));
+    F2BF(o, 0x18) = fast_atan2(F2BF(o, 0) - F2BF(m, 0x10), F2BF(o, 4) - F2BF(m, 0x14));
     r = jump_speed_4318(m + 0x10, o, 0, F2BF(o, 0x14), -F2BF(o, 0x1C));
-    lim = D_0015EE6C * 7.0f;
+    lim = g_frame_time * 7.0f;
     F2BF(o, 0x10) = r;
     if (lim < r) F2BF(o, 0x10) = lim;
     o[0x2F] = 0;
@@ -2267,7 +2267,7 @@ char *spawn_doom_bot(int owner, void *pos, void *rot) {
         qcopy(m + 0x10, pos);
         qcopy(p + 0x10, rot);
         *(int *)(p + 0x60) = owner;
-        func_L00_00251E30(m);
+        moby_build_matrix(m);
         copy_hero_spawn_frame(m);
         *(float *)(m + 0x2C) = *(float *)(*(char **)(m + 0x24) + 0x24) * 0.1f;
     }

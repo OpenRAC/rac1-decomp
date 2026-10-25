@@ -386,7 +386,7 @@ void SkyLevelGeneric___maybe(void) {
     s16 *angles;
 
     D_0016055C_2C188->relocation_state = 0;
-    func_001FA190(sky_matrix);
+    set_identity_matrix(sky_matrix);
     SkyDrawShell(0);
     SkyDrawShell(1);
     if (D_0016055C_2C188->effect_count == 0) {
@@ -600,13 +600,13 @@ void SetupSkyGifPaging(void) {
     SkyDef *s;
     int i;
 
-    p = D_00161000;
+    p = g_render_packet_cursor;
     D_00160570 = p;
     p += 0x10;
-    D_00161000 = p;
+    g_render_packet_cursor = p;
     ProfileMarker_Begin(D_00160550, 1);
     s = level_sky_effect_data;
-    D_0015EF74 = D_0015EF78;
+    g_gs_texture_allocation_cursor = g_gs_texture_allocation_start;
     D_0015F558 = 0;
     for (i = 0; i < s->npages; i++) {
         s->pages[i].tag = 0;
@@ -650,7 +650,7 @@ void DoSkyGifPaging(void) {
     D_00160574[1] = (int)D_00161000_p;
     D_00160574[2] = 0;
     D_00160574[3] = 0;
-    D_0015EF74 = D_0015EF78;
+    g_gs_texture_allocation_cursor = g_gs_texture_allocation_start;
 }
 
 /* Retail carries 4 bytes of inter-function padding after this endlabel. */

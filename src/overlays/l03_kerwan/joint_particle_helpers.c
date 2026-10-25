@@ -20,7 +20,7 @@ void emit_level3_state5_moby_effects(void) {
  char *g;
  char *moby;
  int i;
- if (D_0015EE84 != 3) return;
+ if (g_current_level_index != 3) return;
  g = (char *)&D_L03_0016C9E0;
  if (*(int *)(g + 0x30) != 5) return;
  if (scale_ticks(900) >= *(int *)(g + 0x34)) return;
@@ -34,7 +34,7 @@ void emit_level3_state5_moby_effects(void) {
   Moby_GetJointWorldPos(moby, i % 2, position);
   a = random_angle_radians();
   b = random_angle_radians();
-  size = random_float_between(D_0015EE6C * 0.7f, D_0015EE6C * 2.2f);
+  size = random_float_between(g_frame_time * 0.7f, g_frame_time * 2.2f);
   BuildSphericalOffset(direction, size, a, b);
   lo = scale_ticks(12);
   hi = scale_ticks(35);

@@ -439,7 +439,7 @@ float resolve_camera_surface_height(float *pos, void *out) {
         }
     }
     if (D_0016129C != 0 && FastAbsF(pos[2] - D_001612A0[2]) < 0.5f
-        && func_001F9D48(pos, D_001612A0) < D_001612A0[3]) {
+        && vec_distance_xy(pos, D_001612A0) < D_001612A0[3]) {
         if (out != 0) {
             set_vector_unit_z(out);
         }
@@ -488,7 +488,7 @@ void update_moby_shadow_range(char *m) {
         a[2] = a[2] + *(float *)(m + 0xC) * 0.00048828125f;
         a[0] = a[0] + dir[0] * *(float *)(m + 0xC) * 0.000732421875f;
         a[1] = a[1] + dir[1] * *(float *)(m + 0xC) * 0.000732421875f;
-        func_001F9DC0(dir, dir, (a[2] - h1) / -dir[2]);
+        fast_vec_normalize(dir, dir, (a[2] - h1) / -dir[2]);
         FastVecAdd(b, a, dir);
         h2 = h1;
         if (func_001EFE10_a(a, b, 0x22, 0, 0) != 0) {
@@ -574,14 +574,14 @@ int select_damage_reaction(char *a, char *B, char *an, unsigned int btn, int *ou
         a22 = *(unsigned short *)(B + 0x2A);
         *(float *)(B + 0x1C) = 5627.9248f;
         if (a22 == 0x47) {
-            char *h = D_0013F450;
+            char *h = g_hero;
 
             v[0] = FastCos(func_001FA058(*(float *)(a + 0x10) - *(float *)(h + 0x80),
                                                *(float *)(a + 0x14) - *(float *)(h + 0x84)));
             v[1] = FastSin(func_001FA058(*(float *)(a + 0x10) - *(float *)(h + 0x80),
                                                *(float *)(a + 0x14) - *(float *)(h + 0x84)));
             v[2] = 1.0f;
-            func_001F9DC0(v, v, FastVecLength(B + 0x10) * 0.7f);
+            fast_vec_normalize(v, v, FastVecLength(B + 0x10) * 0.7f);
             FastVecScale(B + 0x10, B + 0x10, 0.3f);
             FastVecAdd(w, B + 0x10, v);
             *(Q_214778 *)(B + 0x10) = *(Q_214778 *)w;
@@ -681,25 +681,25 @@ int select_damage_reaction(char *a, char *B, char *an, unsigned int btn, int *ou
     if (FastDecTimer(an + 0x1C) != 0) {
         switch (s21) {
         case 0:
-            *(short *)(an + 0x1C) = func_001F98C0(0x25);
+            *(short *)(an + 0x1C) = scale_game_frame_count(0x25);
             break;
         case 1:
-            *(short *)(an + 0x1C) = func_001F98C0(0xF);
+            *(short *)(an + 0x1C) = scale_game_frame_count(0xF);
             break;
         case 4:
-            *(short *)(an + 0x1C) = func_001F98C0(0x3C);
+            *(short *)(an + 0x1C) = scale_game_frame_count(0x3C);
             break;
         case 7:
             if (D_0013E633[0] != 0)
-                *(short *)(an + 0x1C) = func_001F98C0(0x2D);
+                *(short *)(an + 0x1C) = scale_game_frame_count(0x2D);
             else
-                *(short *)(an + 0x1C) = func_001F98C0(0x3C);
+                *(short *)(an + 0x1C) = scale_game_frame_count(0x3C);
             break;
         case 11:
-            *(short *)(an + 0x1C) = func_001F98C0(0x3C);
+            *(short *)(an + 0x1C) = scale_game_frame_count(0x3C);
             break;
         default:
-            *(short *)(an + 0x1C) = func_001F98C0(0x1E);
+            *(short *)(an + 0x1C) = scale_game_frame_count(0x1E);
             break;
         }
     } else {
@@ -793,7 +793,7 @@ float ApproachWithVelocity(float *p1, float *p2, float a, float b, float c, floa
                 ApproachValue(p2, 0.0f, c * 1.1f);
             }
         } else {
-            float speed = func_001F9B50((c + c) * diff);
+            float speed = vec_length((c + c) * diff);
 
             if (d < speed) {
                 speed = d;
@@ -925,7 +925,7 @@ void MatrixToQuaternion(void *arg0, void *arg1) {
 
     trace = m[0][0] + m[1][1] + m[2][2];
     if (trace > 0.0f) {
-        s = func_001F9B50(trace + 1.0f);
+        s = vec_length(trace + 1.0f);
         q[3] = s * 0.5f;
         s = 0.5f / s;
         q[0] = (m[2][1] - m[1][2]) * s;
@@ -950,7 +950,7 @@ void MatrixToQuaternion(void *arg0, void *arg1) {
         }
         j = n.next[i];
         k = n.next[j];
-        s = func_001F9B50(mat[i][i] - (mat[j][j] + mat[k][k]) + 1.0f);
+        s = vec_length(mat[i][i] - (mat[j][j] + mat[k][k]) + 1.0f);
         q[i] = s * 0.5f;
         if (s != 0.0f) {
             s = 0.5f / s;
@@ -971,7 +971,7 @@ void extract_matrix_rotation_quaternion(void *arg0, void *arg1) {
     char buf[0x40];
     func_001FA460_2(buf, arg1);
     MatrixToQuaternion(arg0, buf);
-    func_001FA480(arg1, buf);
+    matrix_copy_rows(arg1, buf);
 }
 
 LINKER_REMNANT("asm/remnants/text", func_00215378);
@@ -1018,7 +1018,7 @@ void matrix_to_euler(Mtx44 *src, float *out) {
     v[0] = 0.0f;
     v[1] = 0.0f;
     v[2] = -z;
-    func_001FA218(rot, v);
+    euler_to_matrix(rot, v);
     sce_vu0_mul_matrix(&m, rot, &m);
     y = func_001FA058(m.m[0][0], -m.m[0][2]);
     v[0] = 0.0f;
@@ -1062,7 +1062,7 @@ int is_point_inside_clip_volume(void *arg0, int arg1) {
     m = &D_00160134[arg1];
     FastVecSub(d, arg0, m->pos);
     d[3] = 0.0f;
-    func_001F9EC0(v, d, m->mtx);
+    matrix_mul_vec3(v, d, m->mtx);
     if (v[0] >= -1.0f && v[0] <= 1.0f && v[1] >= -1.0f && v[1] <= 1.0f
         && v[2] >= -1.0f && v[2] <= 1.0f) {
         return 1;
@@ -1103,7 +1103,7 @@ void build_look_at_matrix(void *dst, void *vec, void *axis, float angle) {
         qcopy(dst, vec);
         return;
     }
-    func_001F9DC0(q, axis, 1.0f);
+    fast_vec_normalize(q, axis, 1.0f);
     build_quaternion_from_axis_angle(q, q, angle);
     rotate_vector_by_quaternion(dst, vec, q);
 }
@@ -1124,22 +1124,22 @@ extern int D_0015EE80 MACRO_ADDR;
    a delay slot, where check_macro_slots.py makes it $gp-relative. */
 void set_video_timing(int pal) {
     if (pal == 0) {
-        D_0015EE80 = 0;
-        D_0015EE60 = 1.0f;
-        D_0015EE64 = 1.0f;
+        pal_mode = 0;
+        frame_scale = 1.0f;
+        g_frame_scale_sq = 1.0f;
         D_0015EE68 = 1.0f;
-        D_0015EE6C = 0.01666666753590106964111328125f;
-        D_0015EE70 = 0.000277777784503996372222900390625f;
+        g_frame_time = 0.01666666753590106964111328125f;
+        g_frame_time_sq = 0.000277777784503996372222900390625f;
         D_0015EE74 = 0.00000462962952951784245669841766357421875f;
         D_0015EE78 = 5;
         frame_delta_time = 0.01666666753590106964111328125f;
     } else {
-        D_0015EE80 = 1;
-        D_0015EE60 = 1.2000000476837158203125f;
-        D_0015EE64 = 1.440000057220458984375f;
+        pal_mode = 1;
+        frame_scale = 1.2000000476837158203125f;
+        g_frame_scale_sq = 1.440000057220458984375f;
         D_0015EE68 = 0.833333313465118408203125f;
-        D_0015EE6C = 0.02000000141561031341552734375f;
-        D_0015EE70 = 0.00040000001899898052215576171875f;
+        g_frame_time = 0.02000000141561031341552734375f;
+        g_frame_time_sq = 0.00040000001899898052215576171875f;
         D_0015EE74 = 0.0000079999999798019416630268096923828125f;
         D_0015EE78 = 6;
         frame_delta_time = 0.0199999995529651641845703125f;
@@ -1306,13 +1306,13 @@ void SamplePathAt(Path *path, int wrap, void *pos, float *rot, int flags, float 
     roll2 = 0.0f;
     qcopy(&a, &path->pts[i]);
     qcopy(&b, &path->pts[j]);
-    func_001F9C08(pos, &a, &b, f);
+    lerp_vector(pos, &a, &b, f);
     if (flags & 1) {
         return;
     }
     FastVecSub(&d, &b, &a);
     yaw = func_001FA058(d.v[0], d.v[1]);
-    pitch = func_001FA058(func_001F9CE8(&d), d.v[2]);
+    pitch = func_001FA058(vec_length_xy(&d), d.v[2]);
     roll = a.v[3];
     if (clamp) {
         yaw2 = yaw;
@@ -1322,7 +1322,7 @@ void SamplePathAt(Path *path, int wrap, void *pos, float *rot, int flags, float 
         qcopy(&c, &path->pts[k]);
         FastVecSub(&d, &c, &b);
         yaw2 = func_001FA058(d.v[0], d.v[1]);
-        pitch2 = func_001FA058(func_001F9CE8(&d), d.v[2]);
+        pitch2 = func_001FA058(vec_length_xy(&d), d.v[2]);
         roll2 = b.v[3];
     }
     rot[0] = 0.0f;
@@ -1411,7 +1411,7 @@ int count_nonzero_entries_up_to_10(void) {
     int count = 0;
     int i;
     for (i = 0; i < 0x25; i++) {
-        if (D_0013E620[i] != 0) count = count + 1;
+        if (gold_weapon_purchased[i] != 0) count = count + 1;
     }
     if (count < 0) count = 0;
     return (count < 0xB) ? count : 0xA;

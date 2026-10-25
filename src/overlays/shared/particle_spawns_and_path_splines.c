@@ -147,8 +147,8 @@ unsigned char *spawn_type_74_particle(char *m,char *pos,float *vel,char *cfg,int
  *(float *)q=vel[0]; *(float *)(q+4)=vel[1]; *(float *)(q+8)=vel[2];
  FastVecSub(v,pos,m+0x10);
  qzero(mat);qzero(mat+4);qzero(mat+8);qzero(mat+12);
- func_001FA4A0(mat,m+0xc0);
- func_001F9EE8(v,v,mat);
+ matrix_from_basis_rows(mat,m+0xc0);
+ transform_vector(v,v,mat);
  *(float *)(q+0x10)=v[0]; *(float *)(q+0x14)=v[1]; *(float *)(q+0x18)=v[2];
  *(char **)(q+0xc)=m; *(char **)(q+0x1c)=cfg;
  *(short *)(p+0xa)=*(unsigned short *)(cfg+0xc);

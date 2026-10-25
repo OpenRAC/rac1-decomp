@@ -596,7 +596,7 @@ char *load_level_gameplay(int arg0) {
     hdr = D_L00_00173F00.f4;
     mem = D_L00_00173F00.f18;
     if (arg0 == 0) {
-        if (D_0015EE80 != 0) {
+        if (pal_mode != 0) {
             func_002176C8_422D8(mem, D_00137C80_422D8.f2978, D_00137C80_422D8.f297C);
         } else {
             func_002176C8_422D8(mem, D_00137C80_422D8.f2970, D_00137C80_422D8.f2974);
@@ -606,16 +606,16 @@ char *load_level_gameplay(int arg0) {
     func_00118D80(0);
     func_0020C468(D_0015EF4C_422D8[1], hdr);
     func_00118D80(0);
-    FastMemSet(&D_0013F450, 0, 0x2310);
+    FastMemSet(&g_hero, 0, 0x2310);
     FastMemSet(player_camera, 0, 0x3A0);
     FastMemSet(D_L00_0018EEC0, 0, 0x180);
     func_001160C8(0x4D2);
-    if (D_0015EE80 != 0) {
-        if (D_0015EE60 == 1.0f) {
+    if (pal_mode != 0) {
+        if (frame_scale == 1.0f) {
             SetUpdateModeTiming(1);
         }
     } else {
-        if (D_0015EE60 != 1.0f) {
+        if (frame_scale != 1.0f) {
             SetUpdateModeTiming(0);
         }
     }
@@ -720,7 +720,7 @@ char *load_level_gameplay(int arg0) {
         }
     }
     if (hdr->f10[0] != 0) {
-        int lang = D_0015EE88 * 4;
+        int lang = g_game_language * 4;
         char *p = (char *)hdr + *(int *)((char *)hdr + lang + 0x10);
         int size;
         int i;
@@ -788,7 +788,7 @@ char *load_level_gameplay(int arg0) {
             inst->f18 = id;
             p += 0x50;
             mtx->f3C = D_L00_001C5B00[inst->f1A]->f40;
-            func_001F9EC0(inst, D_L00_001C5B00[inst->f1A]->f30, mtx);
+            matrix_mul_vec3(inst, D_L00_001C5B00[inst->f1A]->f30, mtx);
             scale = FastVecLength(mtx);
             scale = max_float(scale, FastVecLength(mtx->m1));
             inst->fC = D_L00_001C5B00[inst->f1A]->f3C * max_float(scale, FastVecLength(mtx->m2));
@@ -906,7 +906,7 @@ char *load_level_gameplay(int arg0) {
             }
             inst->f1C = *(unsigned short *)p;
             p += 0x10;
-            func_001F9EC0(inst, D_L00_001BC3C0[cls], mtx);
+            matrix_mul_vec3(inst, D_L00_001BC3C0[cls], mtx);
             scale = FastVecLength(mtx);
             scale = max_float(scale, FastVecLength(mtx->m1));
             inst->fC = D_L00_001BC3C0[cls]->fC * max_float(scale, FastVecLength(mtx->m2));
@@ -980,24 +980,24 @@ char *load_level_gameplay(int arg0) {
         int n = *(int *)p;
 
         p += 0x10;
-        D_0013E650.fD90 = n;
+        voice_pool.fD90 = n;
         if (n != 0) {
             int size = n * 0x90;
             int i;
 
-            D_0013E650.fD94 = (SndInst_422D8 *)mem;
+            voice_pool.fD94 = (SndInst_422D8 *)mem;
             mem += size;
             mem = (char *)(((u32)mem + 0x3F) & 0xFFFFFFC0);
-            FastMemSet(D_0013E650.fD94, 0, size);
-            for (i = 0; i < D_0013E650.fD90; i++) {
-                SndInst_422D8 *e = D_0013E650.fD94 + i;
+            FastMemSet(voice_pool.fD94, 0, size);
+            for (i = 0; i < voice_pool.fD90; i++) {
+                SndInst_422D8 *e = voice_pool.fD94 + i;
 
                 func_L00_001FF040(e, p, 0x90);
                 p += 0x90;
                 resolve_lookup_record((short *)e);
             }
         } else {
-            D_0013E650.fD94 = 0;
+            voice_pool.fD94 = 0;
         }
     }
     {
@@ -1040,7 +1040,7 @@ char *load_level_gameplay(int arg0) {
             b1 = bolts;
             b2 = b1;
             if (flags != 0) {
-                tmp = D_0015EE84; /* read before the test: see the group loop */
+                tmp = g_current_level_index; /* read before the test: see the group loop */
                 if (flags & 0x10) {
                     vis = find_or_assign_bolt_source_slot(tmp, uid);
                 } else {
@@ -1062,7 +1062,7 @@ char *load_level_gameplay(int arg0) {
                         }
                     } else {
                         if (flags & 1) {
-                            if ((level_moby_killed[D_0015EE84][uid >> 5] >> (uid & 0x1F)) & 1) {
+                            if ((level_moby_killed[g_current_level_index][uid >> 5] >> (uid & 0x1F)) & 1) {
                                 b2 = (bolts + 1) / 2;
                             }
                         } else {
@@ -1074,7 +1074,7 @@ char *load_level_gameplay(int arg0) {
                         skip = 1;
                     }
                 } else if ((flags & 0xC) == 4) {
-                    if ((level_moby_killed[D_0015EE84][uid >> 5] >> (uid & 0x1F)) & 1) {
+                    if ((level_moby_killed[g_current_level_index][uid >> 5] >> (uid & 0x1F)) & 1) {
                         skip = 1;
                     }
                 }
@@ -1144,7 +1144,7 @@ char *load_level_gameplay(int arg0) {
                 m->flags |= *(unsigned short *)p;
                 p += 4;
                 if (m->pclass != 0) {
-                    func_L00_00251E30(m);
+                    moby_build_matrix(m);
                 }
                 c0 = *(int *)p;
                 p += 4;
@@ -1193,16 +1193,16 @@ char *load_level_gameplay(int arg0) {
                 mem += size;
             }
         }
-        for (i = 0; i < D_0013E650.fD90; i++) {
-            int k = D_0013E650.fD94[i].f8;
+        for (i = 0; i < voice_pool.fD90; i++) {
+            int k = voice_pool.fD94[i].f8;
 
             if (k < 0) {
-                D_0013E650.fD94[i].f8 = 0;
+                voice_pool.fD94[i].f8 = 0;
             } else {
                 int size = tbl[k].f4;
                 char *src = pv + tbl[k].f0;
 
-                D_0013E650.fD94[i].f8 = (int)mem;
+                voice_pool.fD94[i].f8 = (int)mem;
                 FastMemCopy(mem, src, size);
                 tbl[k].f0 = (int)mem;
                 mem += size;
@@ -1534,7 +1534,7 @@ char *load_level_gameplay(int arg0) {
     if (0.0f < ship[0]) {
         Moby *m;
 
-        if (D_0015EE84 == 13 && D_0013E130.f26 == 2) {
+        if (g_current_level_index == 13 && D_0013E130.f26 == 2) {
             if (D_L00_00160600 != 0) {
                 for (m = D_L00_00160098; m->state != 0xFF; m++) {
                     if (m->oclass == first_class_ids[D_0013E130.f26]) {
@@ -1559,7 +1559,7 @@ char *load_level_gameplay(int arg0) {
             m->update_dist = 0x10;
             m->flags &= ~2;
             MobySetAnimation(m, 1, 0);
-            func_L00_00251E30(m);
+            moby_build_matrix(m);
             D_0013E130.f0 = m;
             store_current_level_table_value((int)m, 0);
         }
@@ -1733,9 +1733,9 @@ char *load_level_gameplay(int arg0) {
     }
     D_L00_0016190C = 0;
     if (D_0013E130.f0 != 0) {
-        *(long *)((int *)&D_0013E130.f0->spawn_frame) = *(long *)((int *)&D_0013F450.moby->spawn_frame);
+        *(long *)((int *)&D_0013E130.f0->spawn_frame) = *(long *)((int *)&g_hero.moby->spawn_frame);
     }
-    switch (D_0015EE84) {
+    switch (g_current_level_index) {
     case 2:
     case 5:
     case 6:
@@ -1922,20 +1922,20 @@ s32 load_level_archive_resources(s32 full, s32 keep) {
     if (full) {
         FastMemCopy(h, (char *)(src[4] + (s32)src), src[5]);
         D_L00_0015F50C = 0;
-        func_L00_001FF040(D_L00_0015FD48, D_0014C150 + D_0015EE84 * 16, 0x10);
+        func_L00_001FF040(D_L00_0015FD48, D_0014C150 + g_current_level_index * 16, 0x10);
         upload_texture_images((char *)(src[6] + (s32)src), h->v[0], (char *)h + h->v[1]);
         D_L00_001600C4 = D_0015EE5C;
         func_00118D80(0);
         used = func_0020C468((char *)(src[0x14] + (s32)src), base);
 
         D_L00_0015F50C = (s32)(base + h->v[0x18]);
-        D_L00_001828C0[0] = (((u64)((D_0015EF8C + h->v[0x24]) >> 8) | ((u64)(2) << 14) | ((u64)(0x13) << 20) | ((u64)(7) << 26) | ((u64)(7) << 30) | ((u64)(1) << 34) | ((u64)(0) << 35) | ((u64)((D_0015EF8C + h->v[0x25]) >> 8) << 37) | ((u64)(0) << 51) | ((u64)(0) << 55) | ((u64)(0) << 56) | ((u64)(4) << 61)));
+        D_L00_001828C0[0] = (((u64)((g_gs_texture_allocation_base + h->v[0x24]) >> 8) | ((u64)(2) << 14) | ((u64)(0x13) << 20) | ((u64)(7) << 26) | ((u64)(7) << 30) | ((u64)(1) << 34) | ((u64)(0) << 35) | ((u64)((g_gs_texture_allocation_base + h->v[0x25]) >> 8) << 37) | ((u64)(0) << 51) | ((u64)(0) << 55) | ((u64)(0) << 56) | ((u64)(4) << 61)));
         D_L00_001828C0[1] = 0x0000FFA0000000E0;
         D_L00_001828C0[2] = 0x0040000400004000;
-        D_L00_001828D8[0] = (((u64)((D_0015EF8C + h->v[0x26]) >> 8) | ((u64)(1) << 14) | ((u64)(0x13) << 20) | ((u64)(6) << 26) | ((u64)(6) << 30) | ((u64)(1) << 34) | ((u64)(0) << 35) | ((u64)((D_0015EF8C + h->v[0x27]) >> 8) << 37) | ((u64)(0) << 51) | ((u64)(0) << 55) | ((u64)(0) << 56) | ((u64)(4) << 61)));
+        D_L00_001828D8[0] = (((u64)((g_gs_texture_allocation_base + h->v[0x26]) >> 8) | ((u64)(1) << 14) | ((u64)(0x13) << 20) | ((u64)(6) << 26) | ((u64)(6) << 30) | ((u64)(1) << 34) | ((u64)(0) << 35) | ((u64)((g_gs_texture_allocation_base + h->v[0x27]) >> 8) << 37) | ((u64)(0) << 51) | ((u64)(0) << 55) | ((u64)(0) << 56) | ((u64)(4) << 61)));
         D_L00_001828D8[1] = 0x0000FFA0000000E0;
         D_L00_001828D8[2] = 0x0040000400004000;
-        D_L00_001828F0[0] = (((u64)((D_0015EF8C + h->v[0x30]) >> 8) | ((u64)(2) << 14) | ((u64)(0x13) << 20) | ((u64)(7) << 26) | ((u64)(7) << 30) | ((u64)(1) << 34) | ((u64)(0) << 35) | ((u64)((D_0015EF8C + h->v[0x31]) >> 8) << 37) | ((u64)(0) << 51) | ((u64)(0) << 55) | ((u64)(0) << 56) | ((u64)(4) << 61)));
+        D_L00_001828F0[0] = (((u64)((g_gs_texture_allocation_base + h->v[0x30]) >> 8) | ((u64)(2) << 14) | ((u64)(0x13) << 20) | ((u64)(7) << 26) | ((u64)(7) << 30) | ((u64)(1) << 34) | ((u64)(0) << 35) | ((u64)((g_gs_texture_allocation_base + h->v[0x31]) >> 8) << 37) | ((u64)(0) << 51) | ((u64)(0) << 55) | ((u64)(0) << 56) | ((u64)(4) << 61)));
         D_L00_001828F0[1] = 0x0000FFA0000000E0;
         D_L00_001828F0[2] = 0x0040000400004000;
 
@@ -2158,7 +2158,7 @@ s32 start_cutscene_chunk_read(s32 i) {
     s32 start;
     s32 size;
 
-    if (D_0015EE80 != 0) {
+    if (pal_mode != 0) {
         size = D_00137C80_45B88.lists[D_L00_0016C960_45B88.list].y[i + 1] - D_00137C80_45B88.lists[D_L00_0016C960_45B88.list].y[i];
         start = D_00137C80_45B88.lists[D_L00_0016C960_45B88.list].y[i];
     } else {
@@ -2196,7 +2196,7 @@ extern void func_001F4E08(int);
 void load_scene_chunks_with_fade(int arg) {
     int *q;
     int i;
-    if (D_0015EE80 == 0) {
+    if (pal_mode == 0) {
         start_audio_stream_read((int)D_L00_0016C960.base, D_00137C80_g.normal[arg].a, D_00137C80_g.normal[arg].b);
     } else {
         start_audio_stream_read((int)D_L00_0016C960.base, D_00137C80_g.alt[arg].a, D_00137C80_g.alt[arg].b);
@@ -2232,7 +2232,7 @@ void func_001F4E08_45FE0b(s32) __asm__("func_001F4E08");
 void load_chunks_with_optional_fade(s32 i, s32 p) {
     s32 n;
     s32 *e;
-    if (D_0015EE80 == 0) {
+    if (pal_mode == 0) {
         func_00217628_45FE0b(D_L00_0016C960_45FE0.buf, D_00137C80.x[i].a, D_00137C80.x[i].b);
     } else {
         func_00217628_45FE0b(D_L00_0016C960_45FE0.buf, D_00137C80.y[i].a, D_00137C80.y[i].b);

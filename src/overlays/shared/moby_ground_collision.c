@@ -209,7 +209,7 @@ int MoveKeepingOverGround(void *ign, Vec4 *to, Vec4 *pos, int flags, float h, fl
         c = D_94C8_40;
         if (*(int *)(c + 0x1C) > 0) {
             nrm = (float *)(c + 0x40);
-            if (slope <= func_L00_001FF860(*(float *)(c + 0x48), func_001F9CE8(nrm))) {
+            if (slope <= fast_atan2(*(float *)(c + 0x48), vec_length_xy(nrm))) {
                 *(int *)(c + 0x48) = 0;
                 func_001252C0(nrm, nrm);
                 {
@@ -235,7 +235,7 @@ int MoveKeepingOverGround(void *ign, Vec4 *to, Vec4 *pos, int flags, float h, fl
             if (!func_L00_001F10E0_l(&t, r, 0x24, ign)) {
                 break;
             }
-            ang = func_L00_001FF860(func_001F9D48_f(pos, q60), *(float *)(q40 + 0x28) - pos->f[2]);
+            ang = fast_atan2(func_001F9D48_f(pos, q60), *(float *)(q40 + 0x28) - pos->f[2]);
             if (*(int *)(q40 + 0x18) != 0 || slope < ang) {
                 qcopy(pos, &D_L00_00173F70);
                 ok = 0;
@@ -305,7 +305,7 @@ int move_4318(char *m, char *v, int flags, float a, float b, float c) {
         if (D_L00_00173F40[7] > 0) {
             float g;
             r |= 2;
-            g = func_L00_001FF860(*(float *)((char *)D_L00_00173F40 + 0x48), func_001F9CE8((char *)D_L00_00173F40 + 0x40));
+            g = fast_atan2(*(float *)((char *)D_L00_00173F40 + 0x48), vec_length_xy((char *)D_L00_00173F40 + 0x40));
             if (g > 0.5f) {
                 r |= 4;
             }
@@ -393,7 +393,7 @@ s32 move_w(Obj *m, Ctl *c, void *v, Vec4 *out, f32 f) {
     sp = c->f1C * f;
     lim = c->f24 * f;
     FastVecSub(&d, v, &m->pos);
-    len = func_001F9CE8(&d);
+    len = vec_length_xy(&d);
     save.q = m->pos.q;
     t = sp * len;
     if (sp < t) t = sp;
@@ -412,23 +412,23 @@ s32 move_w(Obj *m, Ctl *c, void *v, Vec4 *out, f32 f) {
         d.f[2] = 0.0f;
     } else {
         d.f[2] = c->f18;
-        c->f18 = c->f18 - (*(f32 *)&D_0015EE70) * 9.0f;
+        c->f18 = c->f18 - (*(f32 *)&g_frame_time_sq) * 9.0f;
     }
     lim = m->pos.f[2] + 0.04f;
     FastVecAdd(&p, &m->pos, &d);
     p.f[2] = m->pos.f[2] - c->f30;
     if (func_L00_00259428_59B88(&p, m, c->i38 & 0x20, c->f08, c->f0C)) {
         g = &D_L00_00173F40_59B88;
-        a = func_L00_001FF860(g->v40.f[2], func_001F9CE8(&g->v40));
+        a = fast_atan2(g->v40.f[2], vec_length_xy(&g->v40));
         h1 = g->f28;
-        if (0.5f < a && 0.1f < func_001F9CE8(&d)) {
+        if (0.5f < a && 0.1f < vec_length_xy(&d)) {
             {
                 func_L00_001FF4B0(&q, &d, 0.57f);
                 FastVecAdd(&q, &q, &m->pos);
                 q.f[2] = m->pos.f[2] - c->f30;
                 if (func_L00_00259428_59B88(&q, m, c->i38 & 0x20, c->f08, c->f0C)) {
                     h2 = g->f28;
-                    if (!(0.5f <= func_L00_001FF860(g->v40.f[2], func_001F9CE8(&g->v40)))) goto done;
+                    if (!(0.5f <= fast_atan2(g->v40.f[2], vec_length_xy(&g->v40)))) goto done;
                     mask = 0x22;
                     if (!(c->i38 & 8)) goto done;
                     if (!(h2 < lim)) goto done;
@@ -444,10 +444,10 @@ s32 move_w(Obj *m, Ctl *c, void *v, Vec4 *out, f32 f) {
     }
 done:
     if (!(mask & 2)) {
-        l2 = func_001F9CE8(&d);
+        l2 = vec_length_xy(&d);
         FastVecScale(&p, &d, 1.0f / l2);
         r = func_L00_00259B08_59B88(m, &d, c->f04, c->i00, c->f30, c->i38);
-        if (r & 2) c->f18 = (*(f32 *)&D_0015EE60) * -0.01f;
+        if (r & 2) c->f18 = (*(f32 *)&frame_scale) * -0.01f;
         if (r & 1) {
             mask |= 1;
             if (d.f[0] * p.f[0] + d.f[1] * p.f[1] < l2 * 0.2f) mask |= 2;
@@ -459,7 +459,7 @@ done:
         }
         qcopy(out, &d);
     } else {
-        if ((c->i38 ^ 1) & 1) c->f18 = (*(f32 *)&D_0015EE60) * -0.01f;
+        if ((c->i38 ^ 1) & 1) c->f18 = (*(f32 *)&frame_scale) * -0.01f;
     }
     if (len < c->f2C) mask |= 4;
     return mask;
@@ -479,13 +479,13 @@ int ClassifyTargetInCone(char *m, char *p, float *pos, char *v) {
     if (func_001F9D10_f(m + 0x10, pos) < *(float *)(p + 0x2C)) {
         flags = 4;
     }
-    a = func_L00_001FF860(pos[0] - *(float *)(m + 0x10), pos[1] - *(float *)(m + 0x14));
+    a = fast_atan2(pos[0] - *(float *)(m + 0x10), pos[1] - *(float *)(m + 0x14));
     MobySpringTurn(m, p + 0x14, a, *(float *)(p + 0x3C), *(float *)(p + 0x40), *(float *)(p + 0x44));
     b = FastDiffRots(a, *(float *)(m + 0x48));
     if (*(float *)(p + 0x28) <= b) {
         flags |= 0x10;
     }
-    func_001F9908((int *)(p + 0x48));
+    fast_dec_timer((int *)(p + 0x48));
     if (b < *(float *)(p + 0x28)) {
         if (*(int *)(p + 0x48) < scale_ticks(4)) {
             *(int *)(p + 0x48) = scale_ticks(4);
@@ -641,7 +641,7 @@ int solve_quadratic_equation(float *r0, float *r1, float a, float b, float c) {
         *r0 = -b / (a + a);
         return 1;
     }
-    s = func_001F9B50(FastAbsF(d));
+    s = vec_length(FastAbsF(d));
     x = (-b + s) / (a + a);
     y = (-b - s) / (a + a);
     *r0 = x;
@@ -992,8 +992,8 @@ int ComputeHitResponse(O_25a478 *obj, P_25a478 *p, Q_25a478 *q, unsigned int fla
         kind = p->kind;
         p->u.s.f1C = 5627.9248f;
         if (kind == 0x47) {
-            v.f[0] = FastCos(func_L00_001FF860(obj->x - G_25a478v.x, obj->y - G_25a478v.y));
-            v.f[1] = FastSin(func_L00_001FF860(obj->x - G_25a478v.x, obj->y - G_25a478v.y));
+            v.f[0] = FastCos(fast_atan2(obj->x - G_25a478v.x, obj->y - G_25a478v.y));
+            v.f[1] = FastSin(fast_atan2(obj->x - G_25a478v.x, obj->y - G_25a478v.y));
             v.f[2] = 1.0f;
             func_L00_001FF4B0(&v, &v, FastVecLength(pv) * 0.7f);
             FastVecScale(pv, pv, 0.3f);
@@ -1126,7 +1126,7 @@ void SendRadialMessageToMobys(char *self, Q4 *pos, char **list, int n, char *ski
         l.m.i30 = k;
         l.m.b28 = c0;
         l.m.b29 = c1;
-        a = func_L00_001FF860(*(float *)(e + 0x10) - pp[0], *(float *)(e + 0x14) - pp[1]);
+        a = fast_atan2(*(float *)(e + 0x10) - pp[0], *(float *)(e + 0x14) - pp[1]);
         l.m.x = FastCos(a) * spd;
         l.m.y = FastSin(a) * spd;
         l.m.z = z;
@@ -1141,11 +1141,11 @@ void HeadingFromVector(Q25BBA0 *v, float *ang, float *s1, float *s2) {
     Q25BBA0 t;
     t = *v;
     if (t.f[3] != 5627.9248046875f) {
-        *ang = func_L00_001FF860(t.f[0], t.f[1]);
+        *ang = fast_atan2(t.f[0], t.f[1]);
         return;
     }
-    *ang = func_L00_001FF860(t.f[0], t.f[1]);
-    *s1 *= func_001F9CE8(&t);
+    *ang = fast_atan2(t.f[0], t.f[1]);
+    *s1 *= vec_length_xy(&t);
     t.f[3] = 0;
     *s2 *= t.f[2];
 }
@@ -1157,7 +1157,7 @@ float jump_speed_4318(float *a, float *b, float *out, float speed, float g) {
     Vc0 d;
     float t;
     FastVecSub(&d, b, a);
-    t = func_001F9CE8(&d) / speed;
+    t = vec_length_xy(&d) / speed;
     if (out) {
         *out = t;
     }
@@ -1439,7 +1439,7 @@ int update_arc_motion(char *m, char *p) {
         v = arc_motion_state->f10 - arc_motion_state->f1C;
         arc_motion_state->f10 = v;
         if (v < 0.0f) {
-            prediction_time = func_001F9878(arc_motion_state->f28 + arc_motion_state->f28 + 10.0f);
+            prediction_time = multiply_global_factor(arc_motion_state->f28 + arc_motion_state->f28 + 10.0f);
             if (moving_object->pos.f[2] <= arc_motion_state->f8 - (arc_motion_state->f10 * prediction_time - arc_motion_state->f1C * 0.5f * prediction_time * prediction_time)) {
                 MobyBlendAnimation(moving_object, arc_motion_state->b2E, 0, 10);
                 arc_motion_state->state = DESCEND_TO_GROUND;
@@ -1582,7 +1582,7 @@ float SteerAngleWithVelocity(float *p, float *v, float a, float b, float c, floa
                 ApproachValue(v, 0.0f, c * 1.1f);
             }
         } else {
-            float g = func_001F9B50((c + c) * r);
+            float g = vec_length((c + c) * r);
             if (d < g) g = d;
             if (r < 0.0f) {
                 step_angle_toward_target(v, 0, -g, b);
@@ -1632,8 +1632,8 @@ float compute_transformed_delta_component(void *a, void *b, void *c, int d) {
     float v0[4], v1[4], v2[16];
     float *w = v1;
     FastVecSub(v0, c, a);
-    func_001FA4A0(v2, b);
-    func_001F9EE8(w, v0, v2);
+    matrix_from_basis_rows(v2, b);
+    transform_vector(w, v0, v2);
     return w[d];
 }
 typedef struct { int a[4]; } Vq __attribute__((aligned(16)));
@@ -1682,9 +1682,9 @@ void spawn_particles_at_shape_points(void *a0, void *a1, void *a2) {
         unsigned char *flag = D_0013E15A + 0x4C6;
         int a, b;
 
-        BuildSphericalOffset(tmp, D_0015EE6C * 1.8f, y, z);
+        BuildSphericalOffset(tmp, g_frame_time * 1.8f, y, z);
         FastVecAdd(tmp, tmp, a1);
-        tmp[2] += D_0015EE6C * 0.9f;
+        tmp[2] += g_frame_time * 0.9f;
         if (flag[0x10]) {
             a = scale_ticks(rand_range(20, 35));
             b = rand_range(40, 60);
@@ -1753,7 +1753,7 @@ int mine_fall(char *moby, char *st) {
         }
     }
 
-    f60 = func_001F9CE8(st);
+    f60 = vec_length_xy(st);
     t = (*(short *)(st + 0x3E) == 2) ? 0.0f : *(float *)(st + 0x4C);
     ApproachValue(&f60, t, *(float *)(st + 0x14));
     func_L00_001FF500((float *)st, (float *)st, f60);
@@ -1983,7 +1983,7 @@ void StepColorFade(void *a, unsigned char *s) {
     if (*(short *)s == 0) return;
     if (FastDecTimer(s)) {
         if (*(short *)(s + 2) != 0) {
-            func_L00_00251328(a, s[4], s[5], s[6]);
+            set_moby_color(a, s[4], s[5], s[6]);
             return;
         }
         *(short *)(s + 2) = 1;
@@ -2026,7 +2026,7 @@ void StepColorFade(void *a, unsigned char *s) {
             cb = s[6];
         }
     }
-    func_L00_00251328(a, cr, cg, cb);
+    set_moby_color(a, cr, cg, cb);
 }
 // Advances an index with wrapping or directional clamping.
 int offset_path_index(int *limit, int index, int delta, int wrap) {
@@ -2153,8 +2153,8 @@ void project_level_path_point_onto_segment(float *out, float *v, float *a, float
         }
     }
     if (i < 2) {
-        float da = ((float (*)(void *, void *))func_001F9D48)(out, a);
-        float db = ((float (*)(void *, void *))func_001F9D48)(out, b);
+        float da = ((float (*)(void *, void *))vec_distance_xy)(out, a);
+        float db = ((float (*)(void *, void *))vec_distance_xy)(out, b);
         if (da < db) {
             qcopy(out, a);
             out[2] = 0.0f;
@@ -2163,7 +2163,7 @@ void project_level_path_point_onto_segment(float *out, float *v, float *a, float
             out[2] = 0.0f;
         }
     }
-    func_001F9D48(v, out);
+    vec_distance_xy(v, out);
 }
 typedef int u128_ED30 __attribute__((mode(TI)));
 extern float func_L00_0025EB58_f(void *, void *, void *, void *) __asm__("func_L00_0025EB58");
@@ -2630,7 +2630,7 @@ void SpawnExplosionFx(char *a, char *b, int snd, float sc, float fl) {
     for (i = 2; i >= 0; i--) {
         S6y10_60108 c0;
         S6y10_60108 c1;
-        sp = random_float_between(8.0f, 10.0f) * D_0015EE6C;
+        sp = random_float_between(8.0f, 10.0f) * g_frame_time;
         big = sc * 400000.0f;
         c0 = D_L00_001E93B0_60108;
         c1 = D_L00_001E93C8_60108;
@@ -2690,7 +2690,7 @@ void spawn_color_swapped_explosion_burst(char *a, char *b, float sc, float fl) {
     float sp, big, t1, t2;
     clear_u64_value(&m);
     for (i = 2; i >= 0; i--) {
-        sp = random_float_between(8.0f, 10.0f) * D_0015EE6C;
+        sp = random_float_between(8.0f, 10.0f) * g_frame_time;
         big = sc * 500000.0f;
         c0 = D_L00_001E93B0;
         c1 = D_L00_001E93C8;
@@ -2798,8 +2798,8 @@ int test_point_in_transformed_unit_cylinder(void *p, int i) {
     e = D_L00_001601BC + i * 128;
     FastVecSub(&a, p, e + 0x30);
     a.w = 0;
-    func_001F9EC0(&b, &a, e + 0x40);
-    if (func_001F9CE8(&b) < 1.0f) {
+    matrix_mul_vec3(&b, &a, e + 0x40);
+    if (vec_length_xy(&b) < 1.0f) {
         if (-1.0f <= b.z && b.z <= 1.0f) {
             return 1;
         }
@@ -2815,7 +2815,7 @@ int test_point_in_transformed_unit_sphere(float *p, int idx) {
         e = (char *)D_L00_001601B4 + idx * 128;
         FastVecSub(a, p, e + 0x30);
         a[3] = 0;
-        func_001F9EC0(b, a, e + 0x40);
+        matrix_mul_vec3(b, a, e + 0x40);
         if (FastVecLength(b) < 1.0f) return 1;
     }
     return 0;
@@ -2827,7 +2827,7 @@ extern float func_001F9D48_60D30(void *, void *) __asm__("func_001F9D48");
 
 /* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/rendering_view_0025fcb8.c, FUN_L00_0025fcb8. */
 int FindNearestTargetMoby(char *a, char *o, float best) {
-    char *g = D_0013F450;
+    char *g = g_hero;
     char *m;
     char *p;
     int res;
@@ -2873,7 +2873,7 @@ int FindNearestTargetMoby(char *a, char *o, float best) {
         *(char **)(o + 0x40) = m;
         qcopy(o, m + 0x10);
         qcopy(o + 0x10, m + 0x40);
-        g = D_0013F450;
+        g = g_hero;
         if (m == *(char **)(g + 0x2080)) {
             qcopy(o + 0x20, g + 0xC0);
             qcopy(o + 0x30, g + 0xD0);
@@ -2897,7 +2897,7 @@ extern int func_L00_0025A778_00260FB0(void *, void *, int) __asm__("func_L00_002
 
 /* Picks the nearest eligible moby to A within BEST that passes the id list or the volume test, fills the record O and returns 0, 1 or 2. */
 int FindNearestEligibleMoby(char *a, char *o, float best, int *list, int n, float *v, int nv) {
-    char *g = D_0013F450;
+    char *g = g_hero;
     char *m;
     char *p;
     char *q;
@@ -2915,14 +2915,14 @@ int FindNearestEligibleMoby(char *a, char *o, float best, int *list, int n, floa
         res = 2;
     } else if (n > 0) {
         for (k = 0; k < n - 1; k++) {
-            if (func_00215570_00260FB0(D_0013F450 + 0x80, list[k]) != 0) {
+            if (func_00215570_00260FB0(g_hero + 0x80, list[k]) != 0) {
                 m = 0;
                 res = 2;
                 break;
             }
         }
     } else if (v != 0 && nv > 0) {
-        if (func_L00_0025A778_00260FB0(D_0013F450 + 0x80, v, nv) == 0) {
+        if (func_L00_0025A778_00260FB0(g_hero + 0x80, v, nv) == 0) {
             m = 0;
             res = 2;
         }
@@ -2985,7 +2985,7 @@ int FindNearestEligibleMoby(char *a, char *o, float best, int *list, int n, floa
         *(char **)(o + 0x40) = m;
         qcopy(o, m + 0x10);
         qcopy(o + 0x10, m + 0x40);
-        g = D_0013F450;
+        g = g_hero;
         if (m == *(char **)(g + 0x2080)) {
             qcopy(o + 0x20, g + 0xC0);
             qcopy(o + 0x30, g + 0xD0);
@@ -3019,12 +3019,12 @@ int RotateWithMoby(int unused, char *m, char *a, void *b, char *c, void *d) {
         return 0;
     }
     p = m + 0x10;
-    func_001FA218(t0, r);
+    euler_to_matrix(t0, r);
     FastVecAdd(c, a, r + 0x10);
     FastVecSub(c, c, p);
-    func_001F9EC0(c, c, t0);
+    matrix_mul_vec3(c, c, t0);
     FastVecAdd(c, c, p);
-    func_001FA218(t1, b);
+    euler_to_matrix(t1, b);
     sce_vu0_mul_matrix(t1, t0, t1);
     matrix_to_euler(t1, d);
     return 1;
@@ -3040,10 +3040,10 @@ int transform_attachment_pose(int x, char *o, float *p, float *q, float *r, floa
     float v[4] __attribute__((aligned(16)));
     char *e = (char *)GetFlaggedPvarWord(o);
     if (e == 0) return 0;
-    func_001F9EC0(r, p, o + 0xC0);
+    matrix_mul_vec3(r, p, o + 0xC0);
     FastVecAdd(r, r, o + 0x10);
-    func_001FA218(m1, q);
-    func_001FA460(m0, o + 0xC0);
+    euler_to_matrix(m1, q);
+    copy_matrix_rotation(m0, o + 0xC0);
     sce_vu0_mul_matrix(m1, m0, m1);
     matrix_to_euler(m1, s);
     if (*(int *)(e + 0x3C) & 4) {
@@ -3069,9 +3069,9 @@ int convert_pose_to_reference_local(int x, char *o, float *a, float *c, float *b
     float pad[12];
     if (GetFlaggedPvarWord(o) == 0) return 0;
     FastVecSub(v, a, o + 0x10);
-    func_001FA4A0(m, o + 0xC0);
-    func_001F9EE8(b, v, m);
-    func_001FA218(w, c);
+    matrix_from_basis_rows(m, o + 0xC0);
+    transform_vector(b, v, m);
+    euler_to_matrix(w, c);
     sce_vu0_mul_matrix(w, m, w);
     matrix_to_euler(w, d);
     return 1;
@@ -3080,9 +3080,9 @@ typedef struct { int a[16]; } Mx __attribute__((aligned(16)));
 typedef struct { int a[4]; } Vx __attribute__((aligned(16)));
 void update_entity_matrix(char *a, Vx *b, void *c, void *d) {
     Mx t0, t1, t2;
-    func_001FA218(&t0, c);
-    func_001FA4A0(&t0, &t0);
-    func_001FA218(&t1, d);
+    euler_to_matrix(&t0, c);
+    matrix_from_basis_rows(&t0, &t0);
+    euler_to_matrix(&t1, d);
     sce_vu0_mul_matrix(&t2, &t0, &t1);
     matrix_to_euler(&t2, a);
     qcopy(a + 0x10, b);
@@ -3102,7 +3102,7 @@ void unlock_planet(int id) {
         }
         D_0013DE48[id] = 1;
         gGalaxyList[n] = id;
-        if (id != D_0015EE84) queue_planet_unlock_message(id);
+        if (id != g_current_level_index) queue_planet_unlock_message(id);
     }
 }
 extern unsigned char D_0013D5C8[] NOT_SDA;
@@ -3121,7 +3121,7 @@ extern void func_L00_00264DB8(int arg0, int arg1);
 
 /* Gives item ID to the player: plays its sound, raises its count and records it in the slot lists. */
 void grant_inventory_item(int id, int flag) {
-    unsigned char *pa = &D_0013D5C8[id];
+    unsigned char *pa = &item_available[id];
     unsigned char *pb = &items_acquired[id];
     int idx = id + 0x25;
     int *p;

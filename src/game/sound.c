@@ -343,8 +343,8 @@ void calculate_voice_pan(void *arg0, void *arg1, void *arg2) {
     float t;
 
     func_001F9BF0_a(v, arg1, D_00187180_a);
-    func_001F9EE8(v, v, arg2);
-    t = clamp_float(func_001F9CE8(v) - 1.0f, 0.0f, 1.0f);
+    transform_vector(v, v, arg2);
+    t = clamp_float(vec_length_xy(v) - 1.0f, 0.0f, 1.0f);
     truncate_float_to_s32(-func_001FA058_a(v[0], v[1]) * 180.0f * t * 0.31830987f);
 }
 
@@ -380,11 +380,11 @@ void initialize_gameplay_sound_system(void) {
     s32 v;
 
     for (i = 0; i < 4; i++) {
-        qzero(&((SndState_2DBE8 *)D_0013E650)->q[i]);
+        qzero(&((SndState_2DBE8 *)voice_pool)->q[i]);
     }
-    ((SndState_2DBE8 *)D_0013E650)->x40 = 0;
-    ((SndState_2DBE8 *)D_0013E650)->x44 = 0;
-    p = (s32)D_0013E650;
+    ((SndState_2DBE8 *)voice_pool)->x40 = 0;
+    ((SndState_2DBE8 *)voice_pool)->x44 = 0;
+    p = (s32)voice_pool;
     end = p + 0xD20;
     do {
         ((SndVoice_2DBE8 *)p)[1].x0 = 0;
@@ -399,19 +399,19 @@ void initialize_gameplay_sound_system(void) {
     func_0012E3F8(2, 0x18, 0x2F);
     func_0012E3F8(4, 0x18, 0x2F);
     v = D_0015EEF0;
-    ((SndState_2DBE8 *)D_0013E650)->vol[0] = (v * 8) / 10;
-    ((SndState_2DBE8 *)D_0013E650)->vol[1] = music_volume;
-    ((SndState_2DBE8 *)D_0013E650)->vol[2] = (v * 8) / 10;
-    ((SndState_2DBE8 *)D_0013E650)->vol[3] = (v * 7) / 10;
-    ((SndState_2DBE8 *)D_0013E650)->vol[4] = (v * 7) / 10;
-    ((SndState_2DBE8 *)D_0013E650)->vol[5] = v;
+    ((SndState_2DBE8 *)voice_pool)->vol[0] = (v * 8) / 10;
+    ((SndState_2DBE8 *)voice_pool)->vol[1] = music_volume;
+    ((SndState_2DBE8 *)voice_pool)->vol[2] = (v * 8) / 10;
+    ((SndState_2DBE8 *)voice_pool)->vol[3] = (v * 7) / 10;
+    ((SndState_2DBE8 *)voice_pool)->vol[4] = (v * 7) / 10;
+    ((SndState_2DBE8 *)voice_pool)->vol[5] = v;
     reset_music();
-    func_0012E348(0, ((SndState_2DBE8 *)D_0013E650)->vol[0]);
-    func_0012E348(1, ((SndState_2DBE8 *)D_0013E650)->vol[1]);
-    func_0012E348(2, ((SndState_2DBE8 *)D_0013E650)->vol[2]);
-    func_0012E348(3, ((SndState_2DBE8 *)D_0013E650)->vol[3]);
-    func_0012E348(4, ((SndState_2DBE8 *)D_0013E650)->vol[4]);
-    func_0012E348(5, ((SndState_2DBE8 *)D_0013E650)->vol[5]);
+    func_0012E348(0, ((SndState_2DBE8 *)voice_pool)->vol[0]);
+    func_0012E348(1, ((SndState_2DBE8 *)voice_pool)->vol[1]);
+    func_0012E348(2, ((SndState_2DBE8 *)voice_pool)->vol[2]);
+    func_0012E348(3, ((SndState_2DBE8 *)voice_pool)->vol[3]);
+    func_0012E348(4, ((SndState_2DBE8 *)voice_pool)->vol[4]);
+    func_0012E348(5, ((SndState_2DBE8 *)voice_pool)->vol[5]);
 }
 
 typedef unsigned int u128_DD68 __attribute__((mode(TI), aligned(16)));
@@ -897,7 +897,7 @@ extern void func_0012E2E8(void);
    returns int: a value call resets $v0's readers, which lets the
    capture sink into its slot. */
 int load_audio_bank_by_location(void *arg0) {
-    char *base = D_0013E650;
+    char *base = voice_pool;
     int r = 0;
 
     if (*(int *)(base + 0x44) == 0) {
@@ -917,7 +917,7 @@ __asm__(".section .text\n\tnop\n\tnop\n\tnop\n");
 
 void sound_KillChannel(int idx) {
     if (idx >= 0) {
-        char *e = D_0013E650 + idx * 0x70;
+        char *e = voice_pool + idx * 0x70;
         unsigned char st = *(unsigned char *)(e + 0x74);
         if (st == 7) {
             *(int *)(e + 0x88) = 0;
@@ -1139,7 +1139,7 @@ int Moby_PlaySound(int idx, int arg1, int arg2) {
     }
     h = allocate_voice_slot(tbl + idx * 32, arg1, arg2, 0, 0x400);
     if (h >= 0) {
-        char *rec = D_0013E650 + h * 0x70;
+        char *rec = voice_pool + h * 0x70;
         *(int *)(rec + 0x88) = arg2;
         *(short *)(rec + 0x7E) = idx;
     }
@@ -1156,7 +1156,7 @@ int PlayBankSound(int idx, int arg1, int arg2) {
     }
     h = allocate_voice_slot(level_sound_defs + idx * 32, arg1, arg2, 0, 0x400);
     if (h >= 0) {
-        char *rec = D_0013E650 + h * 0x70;
+        char *rec = voice_pool + h * 0x70;
         *(int *)(rec + 0x88) = arg2;
         *(short *)(rec + 0x7E) = idx;
     }
@@ -1183,7 +1183,7 @@ int allocate_voice_for_group_entry(int group_entry_index, int flags, int owner) 
     }
     slot_index = allocate_voice_slot(level_sound_defs + entry_index * 32, flags, owner, 0, 0x400);
     if (slot_index >= 0) {
-        slot = (struct VoiceGroupEntryWindow *)(D_0013E650 + slot_index * 0x70);
+        slot = (struct VoiceGroupEntryWindow *)(voice_pool + slot_index * 0x70);
         slot->owner = owner;
         slot->linked_index = entry_index;
     }
@@ -1193,7 +1193,7 @@ int allocate_voice_for_group_entry(int group_entry_index, int flags, int owner) 
 LINKER_REMNANT("asm/remnants/text", func_0022EF50);
 
 static inline char *SndSys(void) {
-    return D_0013E650;
+    return voice_pool;
 }
 
 typedef struct VoiceRequest {

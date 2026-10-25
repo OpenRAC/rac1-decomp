@@ -266,11 +266,11 @@ void PauseAllSounds(int arg0) {
     }
     {
         char *g = menu_system;
-        *(int *)(g + 0x134) = D_0015EE84 == 0xD || D_0014171B != 0;
+        *(int *)(g + 0x134) = g_current_level_index == 0xD || D_0014171B != 0;
     }
     {
         char *g = menu_system;
-        *(int *)(g + 0x138) = D_0015EE84 == 0 || D_0015EE84 == 0xE;
+        *(int *)(g + 0x138) = g_current_level_index == 0 || g_current_level_index == 0xE;
     }
     {
         char *g = menu_system;
@@ -290,14 +290,14 @@ void PauseAllSounds(int arg0) {
     }
     {
         char *g = menu_system;
-        D_0015F6E8 = 3;
+        g_game_mode = 3;
         *(int *)g = arg0;
         *(int *)(g + 0xC) = 0;
         *(int *)(g + 0x10) = 0;
         *(int *)(g + 0x110) = 0;
     }
-    if (D_0015EE84 < 0x13) {
-        selected_level_index = D_0015EE84;
+    if (g_current_level_index < 0x13) {
+        selected_level_index = g_current_level_index;
     } else {
         selected_level_index = 0;
     }
@@ -316,7 +316,7 @@ LINKER_REMNANT("asm/remnants/text", func_00219E48);
 /* Switches to game mode 3 and puts the menu system in state 0x2D, clearing its +0xC, +0x10 and +0x110 words. */
 void initialize_transfer_command(void) {
     char *p = menu_system;
-    D_0015F6E8 = 3;
+    g_game_mode = 3;
     *(int *)p = 0x2D;
     *(int *)(p + 0xC) = 0;
     *(int *)(p + 0x10) = 0;
@@ -542,7 +542,7 @@ void close_menu_system(void) {
     {
         struct MenuSystem *g3 = (struct MenuSystem *)menu_system;
         int j;
-        D_0015EF78 = g3->saved_texture_start;
+        g_gs_texture_allocation_start = g3->saved_texture_start;
         for (j = 0; j < 14; j++) {
             panel_slots[j] = func_002267C0(panel_slots[j]);
         }
@@ -1091,7 +1091,7 @@ int Pause_PageInput(int arg0) {
         return 0;
     }
     {
-        char *pad = D_0013CA40;
+        char *pad = g_controller_state;
         if (*(int *)(pad + 0x1C4) & 0xD00) {
             if (*(int *)(g + 0x124) == 0) {
                 return 1;
@@ -1099,7 +1099,7 @@ int Pause_PageInput(int arg0) {
         }
     }
     {
-        char *pad2 = D_0013CA40;
+        char *pad2 = g_controller_state;
         if (*(int *)(pad2 + 0x1C4) & 0x10) {
             char *g2 = menu_system;
             int t = *(int *)(*(char **)(g2 + 4) + 0x38);
@@ -1127,7 +1127,7 @@ extern void func_0022ED80(int, int, int);
    after the clamp, and each arm stores the bar position itself. */
 int update_menu_icon_list(char *arg0) {
     {
-        char *pad = D_0013CA40;
+        char *pad = g_controller_state;
         if (*(int *)(pad + 0x1C4) & 0xD00) {
             if (D_001D6094 == 0) {
                 return 1;
@@ -1135,7 +1135,7 @@ int update_menu_icon_list(char *arg0) {
         }
     }
     {
-        char *pad2 = D_0013CA40;
+        char *pad2 = g_controller_state;
         if (*(int *)(pad2 + 0x1C4) & 0x10) {
             char *g = menu_system;
             int t = *(int *)(*(char **)(g + 4) + 0x38);
@@ -1149,7 +1149,7 @@ int update_menu_icon_list(char *arg0) {
         }
     }
     {
-        char *pad3 = D_0013CA40;
+        char *pad3 = g_controller_state;
         int v = *(int *)(pad3 + 0x1C4);
         int old = *(int *)(arg0 + 0x3C);
         if ((v & 0x1000) && old != 0) {
@@ -1215,7 +1215,7 @@ int draw_menu_icon_list(char *arg0) {
 
         if (*(int *)(arg0 + 0x3C) == i) {
             draw_hud_rect_blended(x - 0x30, y - 0x30, x + 0x230, y + 0x230,
-                          (unsigned int)((subtract_integer_with_clamp((D_0015F538 & 0x3F) - 0x20) + 0x40)
+                          (unsigned int)((subtract_integer_with_clamp((game_frame_counter & 0x3F) - 0x20) + 0x40)
                                          * 0x10202 | 0x80000000), 1);
             draw_hud_rect_blended(x - 0x10, y - 0x10, x + 0x210, y + 0x210,
                           *(int *)&D_001602B0, 1);
@@ -1395,16 +1395,16 @@ int render_configured_text_label(unsigned char *w) {
 
     flags = *(int *)(w + 0x30);
     if (flags & 0x20) {
-        content = D_0015EE84 - 1;
+        content = g_current_level_index - 1;
         if ((unsigned int)content >= 0x12) {
             content = -1;
         }
     } else if (flags & 0x40) {
         content = selected_level_index - 1;
     } else if (flags & 4) {
-        t = func_001F98C0(*(int *)&menu_fade_duration);
+        t = scale_game_frame_count(*(int *)&menu_fade_duration);
         if (*(int *)(w + 0x44) < t) {
-            *(int *)(w + 0x44) = func_001F98C0(*(int *)&menu_fade_duration);
+            *(int *)(w + 0x44) = scale_game_frame_count(*(int *)&menu_fade_duration);
         }
         content = 0;
         *(int *)(w + 0x48) = 0;
@@ -1412,7 +1412,7 @@ int render_configured_text_label(unsigned char *w) {
     } else if (flags & 0x80) {
         content = *(int *)(ST + 0x40);
         if (flags & 0x8000) {
-            variant = D_0015EE80 != 0;
+            variant = pal_mode != 0;
         }
     } else if (flags & 0x100) {
         char *cell;
@@ -1420,7 +1420,7 @@ int render_configured_text_label(unsigned char *w) {
         content = *(int *)(ST + 0x3C);
         cell = *(char **)(ST + 0x48) + content * 10;
         if (*(short *)(cell + 4) == 0) {
-            tbl = (unsigned char *)&D_0013D5C8;
+            tbl = (unsigned char *)&item_available;
             id = tbl[*(short *)(cell + 6)];
         } else {
             tbl = gSpecialItems;
@@ -1441,19 +1441,19 @@ int render_configured_text_label(unsigned char *w) {
         int k;
         cell = (char *)(*(int *)(ST + 0x3C) * 10 + *(int *)(ST + 0x48));
         k = *(short *)(cell + 6);
-        variant = D_0013E620[k] != 0;
+        variant = gold_weapon_purchased[k] != 0;
         content = k;
     }
 
     if (*(int *)(w + 0x44) == -1) {
-        *(int *)(w + 0x44) = func_001F98C0(*(int *)&menu_fade_duration);
+        *(int *)(w + 0x44) = scale_game_frame_count(*(int *)&menu_fade_duration);
         *(int *)(w + 0x48) = content;
         *(int *)(w + 0x4C) = variant;
     }
     if (content != *(int *)(w + 0x48)) {
-        t = func_001F98C0(*(int *)&menu_fade_duration);
+        t = scale_game_frame_count(*(int *)&menu_fade_duration);
         if (t < *(int *)(w + 0x44)) {
-            *(int *)(w + 0x44) = func_001F98C0(*(int *)&menu_fade_duration);
+            *(int *)(w + 0x44) = scale_game_frame_count(*(int *)&menu_fade_duration);
         }
         t = *(int *)(w + 0x44);
         t = t < 1 ? 0 : t - 1;
@@ -1491,7 +1491,7 @@ int render_configured_text_label(unsigned char *w) {
         char *table = *(char **)(w + 0x34);
         text = TEXT(*(int *)(at + (unsigned int)(table + variant * 4)));
     }
-    if ((*(int *)(w + 0x30) & 0x11E4) == 0 && ((unsigned char *)&D_0013D5C8)[content] == 0) {
+    if ((*(int *)(w + 0x30) & 0x11E4) == 0 && ((unsigned char *)&item_available)[content] == 0) {
         text = D_00160378;
     }
     if (*(int *)(w + 0x30) & 0x200) {
@@ -2106,9 +2106,9 @@ int fade_menu_color(int start, int col1, int col2) {
     if (col2 == -1) {
         col2 = 0x8020FFFF;
     }
-    if (func_001F98C0(*(int *)&menu_fade_duration) >= start) {
-        int a = func_001F98C0(*(int *)&menu_fade_duration);
-        t = 1.0f - (float)(a - start) / (float)func_001F98C0(*(int *)&menu_fade_duration);
+    if (scale_game_frame_count(*(int *)&menu_fade_duration) >= start) {
+        int a = scale_game_frame_count(*(int *)&menu_fade_duration);
+        t = 1.0f - (float)(a - start) / (float)scale_game_frame_count(*(int *)&menu_fade_duration);
     } else {
         t = 1.0f;
     }
@@ -2436,7 +2436,7 @@ extern short D_001517D0[];
 int leave_map_screen(void) {
     int cur;
 
-    if (D_001517D0[4] == 0) {
+    if (cd_read_state[4] == 0) {
         cur = D_001A01F0_slots.sel;
         if (cur != -1) {
             animation_asset_read_active[0] = 0;
@@ -2444,7 +2444,7 @@ int leave_map_screen(void) {
             D_001A01F0_slots.sel = -1;
         }
     }
-    if (D_001517D0[4] != 0) {
+    if (cd_read_state[4] != 0) {
         char *g = menu_system;
         if (*(unsigned char *)(g + 0xCB) != 0) {
             request_audio_stream_break();
@@ -2938,7 +2938,7 @@ int update_menu_mission_list(struct Menu *menu_screen) {
     }
     if (((struct PadState *)&D_0013CA40_g)->pressed_unmasked & PAD_R1) {
         for (i = ((struct MapSelection_21D4C0 *)&D_001A01F0_lv)->level + 1; i < 20; i++) {
-            if (D_0013DE48[i] != 0 || D_0015EE84 == i) {
+            if (D_0013DE48[i] != 0 || g_current_level_index == i) {
                 ((struct MapSelection_21D4C0 *)&D_001A01F0_lv)->level = i;
                 break;
             }
@@ -2946,7 +2946,7 @@ int update_menu_mission_list(struct Menu *menu_screen) {
     }
     if (((struct PadState *)&D_0013CA40_g)->pressed_unmasked & PAD_L1) {
         for (i = ((struct MapSelection_21D4C0 *)&D_001A01F0_lv)->level - 1; i >= 0; i--) {
-            if (D_0013DE48[i] != 0 || D_0015EE84 == i) {
+            if (D_0013DE48[i] != 0 || g_current_level_index == i) {
                 ((struct MapSelection_21D4C0 *)&D_001A01F0_lv)->level = i;
                 break;
             }
@@ -3016,7 +3016,7 @@ int update_menu_item_slots(SelList_0021D7A0 *arg0) {
     char *q = *(char **)(D_001D5F74 + 0x40);
     int item = *(short *)(*(int *)(q + 0x3C) * 10 + *(char **)(q + 0x48) + 6);
     int old = arg0->idx;
-    char *pad = D_0013CA40;
+    char *pad = g_controller_state;
     int i;
 
     if (*(int *)(pad + 0x1C4) & 8) {
@@ -3028,17 +3028,17 @@ int update_menu_item_slots(SelList_0021D7A0 *arg0) {
     if (arg0->idx != old) {
         Moby_PlaySound(1, 0x11, arg0->id);
     }
-    if (item != 0 && ((unsigned char *)&D_0013D5C8)[item] != 0
+    if (item != 0 && ((unsigned char *)&item_available)[item] != 0
         && (*(int *)(pad + 0x1C4) & 0x40)) {
         Stats_0021D7A0 *s = &usage_stats;
 
         if (s->count <= 0xFFFE) {
             s->count++;
         }
-        if (func_001F98C0(D_0015EFA4) / 600 > s->best) {
-            s->best = func_001F98C0(D_0015EFA4) / 600;
+        if (scale_game_frame_count(D_0015EFA4) / 600 > s->best) {
+            s->best = scale_game_frame_count(D_0015EFA4) / 600;
         }
-        s->mask = s->mask | (1 << D_0015EE84) | 0x80000000;
+        s->mask = s->mask | (1 << g_current_level_index) | 0x80000000;
         for (i = 0; i < 8; i++) {
             if (arg0->list[i] == item) {
                 break;
@@ -3451,7 +3451,7 @@ int enter_menu_help_text(char *arg0) {
         }
     }
     *(int *)(arg0 + 0x50) = 0;
-    if (D_001517D0[4] == 0) {
+    if (cd_read_state[4] == 0) {
         if (func_00217628_3(D_001D6078, D_00137C80[0x1528 / 4],
                             D_00137C80[0x152C / 4]) != 0) {
             *(int *)(arg0 + 0x50) = 1;
@@ -3478,7 +3478,7 @@ struct MenuHelpTextState {
 /* Leave hook for the help text screen: breaks a running help audio stream,
    resets the stream buffers and restores the saved help text table. */
 int restore_menu_help_text(int arg0) {
-    if (D_001517D0[4] != 0 && ((struct MenuHelpTextState *)arg0)->load_state == 1) {
+    if (cd_read_state[4] != 0 && ((struct MenuHelpTextState *)arg0)->load_state == 1) {
         request_audio_stream_break();
     }
     initialize_menu_stream_buffers(1);
@@ -3517,7 +3517,7 @@ static inline int pauseSlotCount(void) {
 int update_menu_help_text_load(char *arg0) {
     switch (*(int *)(arg0 + 0x50)) {
     case 0:
-        if (D_001517D0[4] == 0) {
+        if (cd_read_state[4] == 0) {
             if (func_00217628_3(D_001D6078, D_00137C80[0x1528 / 4],
                                 D_00137C80[0x152C / 4]) != 0) {
                 *(int *)(arg0 + 0x50) = 1;
@@ -3527,10 +3527,10 @@ int update_menu_help_text_load(char *arg0) {
         }
         break;
     case 1:
-        if (D_001517D0[4] == 0) {
+        if (cd_read_state[4] == 0) {
             char *g = menu_system;
             int *tbl = *(int **)(g + 0x108);
-            int *p = (int *)((char *)tbl + tbl[D_0015EE88]);
+            int *p = (int *)((char *)tbl + tbl[g_game_language]);
             int n = *p++;
             int sz = *p++;
             char *b;
@@ -3677,7 +3677,7 @@ int draw_menu_text_list(Menu *menu) {
                 draw_menu_selection_marker(0xF, box.s[5] + 9, gSkillPoints[i] != 0);
             }
             if (menu->flags & 0x800) {
-                draw_menu_selection_marker(0xF, box.s[5] + 9, D_0015EE88 == menu->items[i].id);
+                draw_menu_selection_marker(0xF, box.s[5] + 9, g_game_language == menu->items[i].id);
             }
             box.s[5] += box.s[7];
             if (menu->items[i].subtext != 0) {
@@ -3828,7 +3828,7 @@ s32 draw_menu_item_grid(MenuItemGrid *grid) {
             left = scale * x;
             right = left + icon_width;
             if (focused && grid->selected_cell == cell - grid->cells) {
-                color = ((subtract_integer_with_clamp((D_0015F538 & 0x3F) - 0x20) + 0x40) * 0x10202) | 0x80000000;
+                color = ((subtract_integer_with_clamp((game_frame_counter & 0x3F) - 0x20) + 0x40) * 0x10202) | 0x80000000;
                 func_00201640_1E950(left - 0x30, top - 0x30, right + 0x30, bottom + 0x30, color, 1);
                 func_00201640_1E950(left - 0x10, top - 0x10, right + 0x10, bottom + 0x10, (*(s32 *)&D_001602B0), 1);
             }
@@ -3840,7 +3840,7 @@ s32 draw_menu_item_grid(MenuItemGrid *grid) {
                         frame_offset = 1;
                     }
                     if (frame_offset == 0) {
-                        frame_offset = D_0013E620[id] ? 4 : 0;
+                        frame_offset = gold_weapon_purchased[id] ? 4 : 0;
                     }
                     if (D_001D5F70_1E950.unk134 != 0 && (grid->flags & 8)) {
                         frame_offset = 2;
@@ -4052,7 +4052,7 @@ int draw_item_preview_screen(char *arg0) {
     short buf[10];
     char *p = *(char **)(D_001D5F74 + 0x40);
 
-    if (((unsigned char *)&D_0013D5C8)[*(short *)(*(int *)(p + 0x3C) * 10 + *(char **)(p + 0x48) + 6)] == 0) {
+    if (((unsigned char *)&item_available)[*(short *)(*(int *)(p + 0x3C) * 10 + *(char **)(p + 0x48) + 6)] == 0) {
         return 0;
     }
     if (*(int *)(arg0 + 0x44) != 0) {
@@ -4384,7 +4384,7 @@ s32 update_item_preview_binding(struct ItemPreviewBinding_1F238 *preview) {
             animation_index = 1;
         }
         if (moby != 0) {
-            if (load_class && D_0013E620[item_index] != 0) {
+            if (load_class && gold_weapon_purchased[item_index] != 0) {
                 func_001E97F8_1F238(moby, preview->variant);
             }
             preview->primary_moby = moby;
@@ -4463,7 +4463,7 @@ int draw_available_item_preview_mobys(char *arg0) {
     s32 secondary_moby;
 
     grid = (PreviewGridScreen *)((struct MenuPage *)D_001D5F74)->focus;
-    if (((unsigned char *)&D_0013D5C8)[grid->cells[grid->selected_cell].id] == 0) {
+    if (((unsigned char *)&item_available)[grid->cells[grid->selected_cell].id] == 0) {
         return 0;
     }
     primary_moby = ((PreviewScreenWords_21F610 *)arg0)->moby;
@@ -4557,12 +4557,12 @@ extern int D_0015F690 MACRO_ADDR;
    each block that reads the pad word gives retail's pattern: the %hi
    kept in a register and the %lo rebuilt before each use. */
 int Menu_BackInput(char *arg0) {
-    char *pad = D_0013CA40;
+    char *pad = g_controller_state;
     int v = *(int *)(pad + 0x1C4);
 
     if (v & 0xD00) {
         if (*(int *)(arg0 + 0x30) & 0x20) {
-            selected_level_index = D_0015EE84;
+            selected_level_index = g_current_level_index;
         }
         return -1;
     }
@@ -4570,7 +4570,7 @@ int Menu_BackInput(char *arg0) {
         char *g;
         int t;
         if (*(int *)(arg0 + 0x30) & 0x20) {
-            selected_level_index = D_0015EE84;
+            selected_level_index = g_current_level_index;
         }
         g = menu_system;
         t = *(int *)(*(char **)(g + 4) + 0x38);
@@ -4583,7 +4583,7 @@ int Menu_BackInput(char *arg0) {
         }
     }
     {
-        char *pad2 = D_0013CA40;
+        char *pad2 = g_controller_state;
         if (*(int *)(pad2 + 0x1C4) & 0x20) {
             D_0013D48C = 0;
             D_0015F6E4 = -1;
@@ -4875,9 +4875,9 @@ int DrawGBsShipMenu__maybe(char *arg0) {
     }
     func_00116248(buf, D_001603A8, func_001FE540_id(0x4F4F), count,
                   func_001FE540_id(0x4F53), D_001E0B88[level_map_selection[0x89]]);
-    func_001F6CF8_c(*(int *)(arg0 + 0x20) - 0x10, (D_0013E600[1] >> 1) - 8,
+    func_001F6CF8_c(*(int *)(arg0 + 0x20) - 0x10, (g_screen_extent[1] >> 1) - 8,
                     0x80000000L, buf, -1);
-    func_001F6CF8_c(*(int *)(arg0 + 0x20) - 0x11, (D_0013E600[1] >> 1) - 9,
+    func_001F6CF8_c(*(int *)(arg0 + 0x20) - 0x11, (g_screen_extent[1] >> 1) - 9,
                     0x80FFA888L, buf, -1);
     DoGifPaging();
     if (0) {
@@ -4921,7 +4921,7 @@ int draw_selected_item_ammo(char *arg0) {
     int have, total;
     char *rec;
 
-    if (((unsigned char *)&D_0013D5C8)[id] == 0) {
+    if (((unsigned char *)&item_available)[id] == 0) {
         return 0;
     }
     have = weapon_ammo_counts[id];
@@ -4988,7 +4988,7 @@ int DrawMissionsMenu(char *arg0) {
     if (text_width >= w) {
         w = text_width;
     }
-    if (D_0015EE84 != 0) {
+    if (g_current_level_index != 0) {
         text_width = measure_text_width_small(func_001FE540_id(0x4EEF), -1);
         if (text_width >= w) {
             w = text_width;
@@ -5010,11 +5010,11 @@ int DrawMissionsMenu(char *arg0) {
     if (x < 2) {
         x = 2;
     }
-    step = ((Menu *)arg0)->height / (D_0015EE84 != 0 ? 7 : 6);
+    step = ((Menu *)arg0)->height / (g_current_level_index != 0 ? 7 : 6);
     Font_DisableColorCodes();
     y = step - 6;
     func_001F6968_c(x, y, 0x80FFA888L, func_001FE540_id(0x4EEE), -1);
-    if (D_0015EE84 != 0) {
+    if (g_current_level_index != 0) {
         y += step;
         func_001F6968_c(x, y, 0x80FFA888L, func_001FE540_id(0x4EEF), -1);
     }
@@ -5513,7 +5513,7 @@ int draw_transition_overlay(void *arg0) {
     if (*(int *)((char *)arg0 + 0x44) < 2) {
         return 0;
     }
-    DrawTexturedQuad(0, 0, D_00151880[0xB0], D_00151880[0xB1], 0, 0,
+    DrawTexturedQuad(0, 0, fs_aa_buffer[0xB0], fs_aa_buffer[0xB1], 0, 0,
                   *(int *)((char *)arg0 + 0x38),
                   *(int *)((char *)arg0 + 0x3C), 0x80808080L, D_001A0448);
     return 0x10;
@@ -6136,7 +6136,7 @@ int draw_checking_memory_card_data_menu(struct Stream_21380 *menu) {
     if (menu->flags & 4) {
         first = state < 4;
         entry = &((struct MS_21380 *)menu_system)->current->focus->cells[menu->loaded_entry[first ^ 1]];
-        if (entry->kind == 0 && (tp = (unsigned char *)&D_0013D5C8, tp[entry->id] == 0)) {
+        if (entry->kind == 0 && (tp = (unsigned char *)&item_available, tp[entry->id] == 0)) {
             return 1;
         }
         if (entry->kind == 1 && gSpecialItems[entry->id] == 0) {
@@ -6149,7 +6149,7 @@ int draw_checking_memory_card_data_menu(struct Stream_21380 *menu) {
     } else {
         texture = load_texture_file(menu->buffer[1]);
     }
-    DrawTexturedQuad(0, 0, D_00151880[0xB0], D_00151880[0xB1], 0, 0, menu->tw, menu->th, 0x80808080L, texture);
+    DrawTexturedQuad(0, 0, fs_aa_buffer[0xB0], fs_aa_buffer[0xB1], 0, 0, menu->tw, menu->th, 0x80808080L, texture);
     DoGifPaging();
     return 0x10;
 done:
@@ -6177,10 +6177,10 @@ extern int D_0015EE88 MACRO_ADDR;
 int advance_audio_stream_state(char *arg0) {
     switch (*(int *)(arg0 + 0x44)) {
     case 0:
-        if (*(int *)(arg0 + 0x48) != 0 && D_001517D0[4] == 0) {
+        if (*(int *)(arg0 + 0x48) != 0 && cd_read_state[4] == 0) {
             if (func_00217628_3(*(int *)(arg0 + 0x48),
-                                D_00137C80_t.req0[D_0015EE88].a,
-                                D_00137C80_t.req0[D_0015EE88].b) != 0) {
+                                D_00137C80_t.req0[g_game_language].a,
+                                D_00137C80_t.req0[g_game_language].b) != 0) {
                 *(int *)(arg0 + 0x44) += 1;
             } else {
                 *(int *)(arg0 + 0x44) = -1;
@@ -6188,15 +6188,15 @@ int advance_audio_stream_state(char *arg0) {
         }
         break;
     case 1:
-        if (D_001517D0[4] == 0) {
+        if (cd_read_state[4] == 0) {
             *(int *)(arg0 + 0x44) = 2;
         }
         break;
     case 2:
-        if (*(int *)(arg0 + 0x4C) != 0 && D_001517D0[4] == 0) {
+        if (*(int *)(arg0 + 0x4C) != 0 && cd_read_state[4] == 0) {
             if (func_00217628_3(*(int *)(arg0 + 0x4C),
-                                D_00137C80_t.req2[D_0015EE88].a,
-                                D_00137C80_t.req2[D_0015EE88].b) != 0) {
+                                D_00137C80_t.req2[g_game_language].a,
+                                D_00137C80_t.req2[g_game_language].b) != 0) {
                 *(int *)(arg0 + 0x44) += 1;
             } else {
                 *(int *)(arg0 + 0x44) = -1;
@@ -6204,7 +6204,7 @@ int advance_audio_stream_state(char *arg0) {
         }
         break;
     case 3:
-        if (D_001517D0[4] == 0) {
+        if (cd_read_state[4] == 0) {
             *(int *)(arg0 + 0x44) = 4;
         }
         break;
@@ -6287,18 +6287,18 @@ int draw_map_screen_layers(void) {
         append_power_of_two_textured_screen_sprite(g2->tex0, 0, 0, 7, 7,
                       fb->target_width << 4, fb->target_height << 4, 0, 0, 0x80);
         func_00234C98_l(0x47, 0x360B);
-        if (D_0015F538 % 60 < 40) {
+        if (game_frame_counter % 60 < 40) {
             append_power_of_two_textured_screen_sprite(g2->tex1, 0, 0, 7, 7,
                           fb->target_width << 4, fb->target_height << 4, 0, 0, 0x80);
         }
-        if (D_0015F538 % 150 < 90) {
+        if (game_frame_counter % 150 < 90) {
             append_power_of_two_textured_screen_sprite(g2->tex2, 0, 0, 7, 7,
                           fb->target_width << 4, fb->target_height << 4, 0, 0, 0x80);
         }
     } else {
         FsAaBuffer *fb;
 
-        map_adjusted_frame_count = D_0015F538 + loaded_map_index * 0x2AB;
+        map_adjusted_frame_count = game_frame_counter + loaded_map_index * 0x2AB;
         size = D_001DE2E8[loaded_map_index];
         screen_extent_reduction = size * 2;
         ph = map_adjusted_frame_count % 0x800;
@@ -6393,7 +6393,7 @@ int draw_pause_ring(char *arg0) {
         x = cx + FastCos(slot_angle) * radius;
         y = cy + FastSin(slot_angle) * radius;
         if (i == pause_state->sel) {
-            unsigned int color = ((subtract_integer_with_clamp((D_0015F538 & 0x3F) - 0x20) + 0x40) * 0x10202) | 0x80000000;
+            unsigned int color = ((subtract_integer_with_clamp((game_frame_counter & 0x3F) - 0x20) + 0x40) * 0x10202) | 0x80000000;
 
             draw_hud_rect_blended((int)x - 0x13, (int)y - 0x13, (int)x + 0x13, (int)y + 0x13, color, 0);
             draw_hud_rect_blended((int)x - 0x12, (int)y - 0x12, (int)x + 0x12, (int)y + 0x12, *(int *)&D_001602B0, 0);
@@ -6402,7 +6402,7 @@ int draw_pause_ring(char *arg0) {
         if (icon_entry_index == 0) {
             draw_hud_rect_blended((int)x - 0xF, (int)y - 0xF, (int)x + 0xF, (int)y + 0xF, 0x40404040L, 0);
         } else {
-            int id = GetIconFrame(iconTab[icon_entry_index].unk38, D_0013E620[icon_entry_index] == 0 ? 0 : 4);
+            int id = GetIconFrame(iconTab[icon_entry_index].unk38, gold_weapon_purchased[icon_entry_index] == 0 ? 0 : 4);
 
             HudSprite(id, (int)x - 0x11, (int)y - 0x11, 0x20, 0x20, 0x80);
         }
@@ -6452,7 +6452,7 @@ int update_menu_option_list(char *arg0) {
         return 0;
     }
     {
-        char *pad = D_0013CA40;
+        char *pad = g_controller_state;
         if (*(int *)(pad + 0x1C4) & 0xD00) {
             if (*(int *)(g + 0x124) == 0) {
                 return 1;
@@ -6460,7 +6460,7 @@ int update_menu_option_list(char *arg0) {
         }
     }
     {
-        char *pad2 = D_0013CA40;
+        char *pad2 = g_controller_state;
         if (*(int *)(pad2 + 0x1C4) & 0x10) {
             char *g2 = menu_system;
             int t = *(int *)(*(char **)(g2 + 4) + 0x38);
@@ -6474,13 +6474,13 @@ int update_menu_option_list(char *arg0) {
         }
     }
     {
-        char *pad3 = D_0013CA40;
+        char *pad3 = g_controller_state;
         int old = *(int *)(arg0 + 0x38);
         if ((*(int *)(pad3 + 0x1C4) & 0x1000) && old != 0) {
             *(int *)(arg0 + 0x38) = old - 1;
         }
         {
-            char *pad4 = D_0013CA40;
+            char *pad4 = g_controller_state;
             if (*(int *)(pad4 + 0x1C4) & 0x4000) {
                 int c = *(int *)(arg0 + 0x38);
                 if ((*(Row14 **)(arg0 + 0x34))[c + 1].w0 != 0) {
@@ -6489,7 +6489,7 @@ int update_menu_option_list(char *arg0) {
             }
         }
         {
-            char *pad5 = D_0013CA40;
+            char *pad5 = g_controller_state;
             if (*(int *)(pad5 + 0x1C4) & 0x40) {
                 Moby_PlaySound(0, 0x11, *(int *)(arg0 + 0x14));
                 if ((*(Row14 **)(arg0 + 0x34))[*(int *)(arg0 + 0x38)].flags & 1) {
@@ -6498,7 +6498,7 @@ int update_menu_option_list(char *arg0) {
                         mode_freeze_init(6, *(void **)(g3 + 4), 0);
                     } else {
                         FadeToBlack(4);
-                        *(int *)(arg0 + 0x3C) = func_001F98C0(0x10);
+                        *(int *)(arg0 + 0x3C) = scale_game_frame_count(0x10);
                         *(unsigned char *)&D_0016044C_i = !*(unsigned char *)&D_0016044C_i;
                     }
                 } else {
@@ -6623,7 +6623,7 @@ int update_menu_choice_list(char *arg0) {
         return 0;
     }
     {
-        char *pad = D_0013CA40;
+        char *pad = g_controller_state;
         if (*(int *)(pad + 0x1C4) & 0xD00) {
             if (*(int *)(g + 0x124) == 0) {
                 return 1;
@@ -6631,7 +6631,7 @@ int update_menu_choice_list(char *arg0) {
         }
     }
     {
-        char *pad2 = D_0013CA40;
+        char *pad2 = g_controller_state;
         if (*(int *)(pad2 + 0x1C4) & 0x10) {
             char *g2 = menu_system;
             int t = *(int *)(*(char **)(g2 + 4) + 0x38);
@@ -6645,13 +6645,13 @@ int update_menu_choice_list(char *arg0) {
         }
     }
     {
-        char *pad3 = D_0013CA40;
+        char *pad3 = g_controller_state;
         int old = *(int *)(arg0 + 0x38);
         if ((*(int *)(pad3 + 0x1C4) & 0x1000) && old != 0) {
             *(int *)(arg0 + 0x38) = old - 1;
         }
         {
-            char *pad4 = D_0013CA40;
+            char *pad4 = g_controller_state;
             if (*(int *)(pad4 + 0x1C4) & 0x4000) {
                 int c = *(int *)(arg0 + 0x38);
                 if ((*(Row18 **)(arg0 + 0x34))[c + 1].w0 != 0) {
@@ -6675,7 +6675,7 @@ int update_menu_choice_list(char *arg0) {
                 n++;
             } while (e[n] != 0 && n < 4);
         }
-        pad5 = D_0013CA40;
+        pad5 = g_controller_state;
         if (*(int *)(pad5 + 0x1C4) & 0x40) {
             unsigned char *buf = rec->buf;
             if (buf != 0) {
@@ -6747,10 +6747,10 @@ int build_pause_item_list(void) {
 
     for (i = 0; i < 15; i++) {
         int id = D_001CF4A0[i].id;
-        if (((unsigned char *)&D_0013D5C8)[id] != 0) {
+        if (((unsigned char *)&item_available)[id] != 0) {
             Item0A *out = &D_001D6470[n];
             char *rec = D_001864D0 + id * 0x4C;
-            unsigned char b = D_0013E620[id];
+            unsigned char b = gold_weapon_purchased[id];
             int f = b != 0;
             out->a = *(unsigned short *)(rec + 0x38);
             out->b = f << 2;
@@ -6812,7 +6812,7 @@ int build_filtered_menu_item_list(void) {
         } else {
             id = D_001CF020[i - 12].id;
         }
-        if (((unsigned char *)&D_0013D5C8)[id] != 0) {
+        if (((unsigned char *)&item_available)[id] != 0) {
             item_info = &((struct Info *)D_001864D0)[id];
             D_001D6548[filtered_item_count].a = item_info->icon;
             D_001D6548[filtered_item_count].b = 0;
@@ -6930,7 +6930,7 @@ int handle_menu_action_buttons(char *arg0) {
             return -1;
         }
     } else if (v & 0x800) {
-        selected_level_index = D_0015EE84;
+        selected_level_index = g_current_level_index;
         return 1;
     } else if (v & 0x40) {
         Moby_PlaySound(0, 0x11, *(int *)(arg0 + 0x14));
@@ -7074,7 +7074,7 @@ extern int D_001D48A8[];
 /* `D_001D48A8[(unsigned)D_0015EE84 % 19]`; the older near-miss
    predated MACRO_ADDR. */
 int assign_pause_level_sprite_list(char *arg0) {
-    *(int *)(arg0 + 0x34) = pause_level_sprite_lists[(unsigned int)D_0015EE84 % 19];
+    *(int *)(arg0 + 0x34) = pause_level_sprite_lists[(unsigned int)g_current_level_index % 19];
     return 0;
 }
 
@@ -7083,7 +7083,7 @@ extern void func_0022ED80(int, int, int);
 /* Pause sub-menu with a 30-entry wrapping cursor at arg0+0x40, in
    func_0021F7D0's shape. */
 int handle_cyclic_menu_selection_input(char *arg0) {
-    char *pad = D_0013CA40;
+    char *pad = g_controller_state;
     int w, old;
 
     if (*(int *)(pad + 0x1C4) & 0xD00) {
@@ -7092,7 +7092,7 @@ int handle_cyclic_menu_selection_input(char *arg0) {
         }
     }
     {
-        char *pad2 = D_0013CA40;
+        char *pad2 = g_controller_state;
         if (*(int *)(pad2 + 0x1C4) & 0x10) {
             char *g = menu_system;
             int t = *(int *)(*(char **)(g + 4) + 0x38);
@@ -7106,7 +7106,7 @@ int handle_cyclic_menu_selection_input(char *arg0) {
         }
     }
     {
-        char *pad3 = D_0013CA40;
+        char *pad3 = g_controller_state;
         w = *(int *)(pad3 + 0x1A4);
     }
     old = *(int *)(arg0 + 0x40);
@@ -7125,7 +7125,7 @@ extern void func_0022ED80(int, int, int);
 
 /* func_00222DB0's twin with a 12-entry cursor at arg0+0x54. */
 int update_menu_cycle_selection(char *arg0) {
-    char *pad = D_0013CA40;
+    char *pad = g_controller_state;
     int w;
 
     if (*(int *)(pad + 0x1C4) & 0xD00) {
@@ -7134,7 +7134,7 @@ int update_menu_cycle_selection(char *arg0) {
         }
     }
     {
-        char *pad2 = D_0013CA40;
+        char *pad2 = g_controller_state;
         if (*(int *)(pad2 + 0x1C4) & 0x10) {
             char *g = menu_system;
             int t = *(int *)(*(char **)(g + 4) + 0x38);
@@ -7148,7 +7148,7 @@ int update_menu_cycle_selection(char *arg0) {
         }
     }
     {
-        char *pad3 = D_0013CA40;
+        char *pad3 = g_controller_state;
         w = *(int *)(pad3 + 0x1A4);
     }
     if (w & 0x2040) {
@@ -7289,8 +7289,8 @@ int process_global_state_flags(void) {
         D_0015F6CC = 0;
         memcard_Save(0, -1);
         clear_scene_state_buffers();
-        FadeToBlack(func_001F98C0(0x10));
-        D_0013F450[0x20B1] = 1;
+        FadeToBlack(scale_game_frame_count(0x10));
+        g_hero[0x20B1] = 1;
         return -1;
     }
     return 0;
@@ -7320,7 +7320,7 @@ extern char D_001D5630[];
    written out in each case: cross-jumping merges it, leaving each
    case's own argument load in its branch's delay slot. */
 int update_timed_menu_sequence(char *arg0) {
-    char *pad = D_0013CA40;
+    char *pad = g_controller_state;
     char *g = menu_system;
     int fast = (*(long *)(pad + 0x1A0) & 0xF) == 0xF;
     int x;
@@ -7332,7 +7332,7 @@ int update_timed_menu_sequence(char *arg0) {
             }
         }
         {
-            char *pad2 = D_0013CA40;
+            char *pad2 = g_controller_state;
             if (*(int *)(pad2 + 0x1C4) & 0x10) {
                 char *g2 = menu_system;
                 int t = *(int *)(*(char **)(g2 + 4) + 0x38);
@@ -7357,7 +7357,7 @@ int update_timed_menu_sequence(char *arg0) {
     switch (*(int *)(arg0 + 0x50)) {
     case 0:
         *(int *)(arg0 + 0x50) = *(int *)(arg0 + 0x50) + 1;
-        *(int *)(arg0 + 0x40) = func_001F98C0(0xB4);
+        *(int *)(arg0 + 0x40) = scale_game_frame_count(0xB4);
         *(int *)(arg0 + 0x3C) = 0;
         D_001D2E74 = 0x50A9;
         *(char **)(arg0 + 0x34) = D_001D5418;
@@ -7386,7 +7386,7 @@ int update_timed_menu_sequence(char *arg0) {
         if (*(int *)(arg0 + 0x54) == 0) {
             return 0;
         }
-        *(int *)(arg0 + 0x40) = func_001F98C0(0xB4);
+        *(int *)(arg0 + 0x40) = scale_game_frame_count(0xB4);
         *(int *)(arg0 + 0x50) = *(int *)(arg0 + 0x50) + 1;
         break;
     case 4:
@@ -7394,7 +7394,7 @@ int update_timed_menu_sequence(char *arg0) {
             return 0;
         }
         *(int *)(arg0 + 0x50) = 5;
-        *(int *)(arg0 + 0x40) = func_001F98C0(0xB4);
+        *(int *)(arg0 + 0x40) = scale_game_frame_count(0xB4);
         *(int *)(arg0 + 0x3C) = 0;
         D_001D2E74 = 0x50D6;
         *(char **)(arg0 + 0x34) = D_001D54C8;
@@ -7405,7 +7405,7 @@ int update_timed_menu_sequence(char *arg0) {
         }
         D_001D2E74 = 0x50D4;
         *(int *)(arg0 + 0x34) = 0x50D5;
-        *(int *)(arg0 + 0x40) = func_001F98C0(0xF0);
+        *(int *)(arg0 + 0x40) = scale_game_frame_count(0xF0);
         *(int *)(arg0 + 0x3C) = 0;
         *(int *)(arg0 + 0x50) = *(int *)(arg0 + 0x50) + 1;
         break;
@@ -7415,7 +7415,7 @@ int update_timed_menu_sequence(char *arg0) {
         }
         D_001D2E74 = 0x510B;
         *(char **)(arg0 + 0x34) = D_001D5588;
-        *(int *)(arg0 + 0x40) = func_001F98C0(0xF0);
+        *(int *)(arg0 + 0x40) = scale_game_frame_count(0xF0);
         *(int *)(arg0 + 0x3C) = 0;
         *(int *)(arg0 + 0x50) = *(int *)(arg0 + 0x50) + 1;
         break;
@@ -7425,7 +7425,7 @@ int update_timed_menu_sequence(char *arg0) {
         }
         D_001D2E74 = 0x513B;
         *(int *)(arg0 + 0x34) = 0x513C;
-        *(int *)(arg0 + 0x40) = func_001F98C0(0xF0);
+        *(int *)(arg0 + 0x40) = scale_game_frame_count(0xF0);
         *(int *)(arg0 + 0x3C) = 0;
         *(int *)(arg0 + 0x50) = *(int *)(arg0 + 0x50) + 1;
         break;
@@ -7433,7 +7433,7 @@ int update_timed_menu_sequence(char *arg0) {
         if (*(int *)(arg0 + 0x40) != 0) {
             return 0;
         }
-        *(int *)(arg0 + 0x40) = func_001F98C0(0xB4);
+        *(int *)(arg0 + 0x40) = scale_game_frame_count(0xB4);
         *(int *)(arg0 + 0x3C) = 0;
         D_001D2E74 = 0x513D;
         *(char **)(arg0 + 0x34) = D_001D5618;
@@ -7445,7 +7445,7 @@ int update_timed_menu_sequence(char *arg0) {
         }
         D_001D2E74 = 0;
         *(int *)(arg0 + 0x34) = 0x5148;
-        *(int *)(arg0 + 0x40) = func_001F98C0(0xF0);
+        *(int *)(arg0 + 0x40) = scale_game_frame_count(0xF0);
         *(int *)(arg0 + 0x3C) = 0;
         *(int *)(arg0 + 0x50) = *(int *)(arg0 + 0x50) + 1;
         break;
@@ -7453,7 +7453,7 @@ int update_timed_menu_sequence(char *arg0) {
         if (*(int *)(arg0 + 0x40) != 0) {
             return 0;
         }
-        *(int *)(arg0 + 0x40) = func_001F98C0(0xB4);
+        *(int *)(arg0 + 0x40) = scale_game_frame_count(0xB4);
         *(int *)(arg0 + 0x3C) = 0;
         D_001D2E74 = 0x5149;
         *(char **)(arg0 + 0x34) = D_001D5630;
@@ -7466,7 +7466,7 @@ int update_timed_menu_sequence(char *arg0) {
         D_001D2E74 = 0;
         *(int *)(arg0 + 0x34) = 0x517A;
         *(int *)(arg0 + 0x50) = *(int *)(arg0 + 0x50) + 1;
-        *(int *)(arg0 + 0x40) = func_001F98C0(300);
+        *(int *)(arg0 + 0x40) = scale_game_frame_count(300);
         break;
     case 19:
         if (*(int *)(arg0 + 0x40) != 0) {
@@ -7812,7 +7812,7 @@ int saving_data_menu(char *arg0) {
         }
     }
     {
-        char *pad = D_0013CA40;
+        char *pad = g_controller_state;
         if (*(int *)(pad + 0x1C4) & 0xD00) {
             char *g2 = menu_system;
             if (*(int *)(g2 + 0x124) == 0) {
@@ -7821,7 +7821,7 @@ int saving_data_menu(char *arg0) {
         }
     }
     {
-        char *pad = D_0013CA40;
+        char *pad = g_controller_state;
         if (*(int *)(pad + 0x1C4) & 0x10) {
             char *g2 = menu_system;
             int t = *(int *)(*(char **)(g2 + 4) + 0x38);
@@ -7860,10 +7860,10 @@ int saving_data_menu(char *arg0) {
             return 0;
         }
         if (*(int *)(arg0 + 0x30) & 1) {
-            char *pad = D_0013CA40;
+            char *pad = g_controller_state;
             p = *(int *)(pad + 0x1B4);
         } else {
-            char *pad = D_0013CA40;
+            char *pad = g_controller_state;
             p = *(int *)(pad + 0x1A4);
         }
         x = D_0015EF34;
@@ -7929,7 +7929,7 @@ int loading_data_menu(char *arg0) {
         }
         {
             int t = D_0015EEF0;
-            char *s = D_0013E650;
+            char *s = voice_pool;
 
             *(int *)(d + 0xFC) = 1;
             *(int *)(s + 0x48) = t * 8 / 10;
@@ -7939,13 +7939,13 @@ int loading_data_menu(char *arg0) {
             *(int *)(s + 0x58) = t * 7 / 10;
             *(int *)(s + 0x5C) = t;
             func_0012E380_1DB30(D_0015EEE8_1DB30 == 0);
-            initialize_global_state_entry(D_0015EE84);
+            initialize_global_state_entry(g_current_level_index);
             *(short *)D_0013E15A_43E8 = 0;
             return 0;
         }
     }
     {
-        char *pad = D_0013CA40;
+        char *pad = g_controller_state;
         if (*(int *)(pad + 0x1C4) & 0xD00) {
             if (*(int *)(g + 0x124) == 0) {
                 return 1;
@@ -7953,7 +7953,7 @@ int loading_data_menu(char *arg0) {
         }
     }
     {
-        char *pad = D_0013CA40;
+        char *pad = g_controller_state;
         if (*(int *)(pad + 0x1C4) & 0x10) {
             char *g2 = menu_system;
             int t = *(int *)(*(char **)(g2 + 4) + 0x38);
@@ -7992,10 +7992,10 @@ int loading_data_menu(char *arg0) {
             return 0;
         }
         if (*(int *)(arg0 + 0x30) & 1) {
-            char *pad = D_0013CA40;
+            char *pad = g_controller_state;
             p = *(int *)(pad + 0x1B4);
         } else {
-            char *pad = D_0013CA40;
+            char *pad = g_controller_state;
             p = *(int *)(pad + 0x1C4);
         }
         x = D_0015EF34;
@@ -8760,7 +8760,7 @@ s32 LoadHandGadget(HandGadgetState *hand) {
         moby = func_00226720_255F8(selected_class);
         if (moby != 0) {
             loaded_gadget = selected_gadget;
-            if (D_0013E620[loaded_gadget]) {
+            if (gold_weapon_purchased[loaded_gadget]) {
                 noop_callback_r(moby, hand->source_moby_address);
             }
             *((void **)moby->pvars) = hand;
@@ -9034,11 +9034,11 @@ void update_menu_preview_class_pose(void *arg0) {
     qcopy(m->pos, &mtx[12]);
     func_0020ED48(m);
     still = D_001864D0_r[i].still == 0;
-    func_001FA480(m->mtx, mtx);
+    matrix_copy_rows(m->mtx, mtx);
     if (!still) {
         normalize_vector_triplet(m->mtx);
     }
-    func_0020EEE8(m);
+    moby_anim_sphere_lerp(m);
     sync = 0;
     s = (unsigned char *)class_pose_manipulator;
     if (s[1] != 0) {
@@ -9073,9 +9073,9 @@ void update_menu_preview_animation_transform(PauseMoby *m) {
     func_0020ED48(m);
     MobyTransformScaledVertex(id, 4, mtx);
     qcopy(m->pos, &mtx[12]);
-    func_001FA480(m->mtx, mtx);
+    matrix_copy_rows(m->mtx, mtx);
     normalize_vector_triplet(m->mtx);
-    func_0020EEE8(m);
+    moby_anim_sphere_lerp(m);
     if (m->oclass == 0x1B1) {
         noop_callback_s(D_001864D0_a, D_001864D0, m->sound, 6, id);
     } else {
@@ -9122,9 +9122,9 @@ void update_menu_preview_pose_and_attachments(void *preview) {
     is_second_preview_moby = moby == *(PauseMoby_260A8 **)(*preview_vars + 0x5C);
     MobyTransformScaledVertex(source_moby_address, is_second_preview_moby ? 3 : 2, transform);
     qcopy(moby->pos, &transform[12]);
-    func_001FA480(moby->basis, transform);
+    matrix_copy_rows(moby->basis, transform);
     normalize_vector_triplet(moby->basis);
-    func_0020EEE8(moby);
+    moby_anim_sphere_lerp(moby);
     first_attachment_active = 0;
     second_attachment_active = 0;
     if ((unsigned char)second_attachment_manipulator[1] != 0) {
@@ -9192,9 +9192,9 @@ void update_menu_preview_animation_pose(void *arg0) {
     }
     MobyTransformScaledVertex(id, 5, mtx);
     qcopy(m->pos, &mtx[12]);
-    func_001FA480(m->mtx, mtx);
+    matrix_copy_rows(m->mtx, mtx);
     normalize_vector_triplet(m->mtx);
-    func_0020EEE8(m);
+    moby_anim_sphere_lerp(m);
 }
 
 /* func_00225FB8's sibling: refresh the matrix from bone 0x1E (class 0x197) or 0x1D, copy its translation row to the position and re-register. func_0020E3D0 takes the moby, and the bone test is written == 0x197 so the movn picks 0x1D as retail does. */
@@ -9206,9 +9206,9 @@ void update_menu_preview_class_transform(PauseMoby *m) {
     func_0020ED48(m);
     MobyTransformScaledVertex(id, m->oclass == 0x197 ? 0x1E : 0x1D, mtx);
     qcopy(m->pos, &mtx[12]);
-    func_001FA480(m->mtx, mtx);
+    matrix_copy_rows(m->mtx, mtx);
     normalize_vector_triplet(m->mtx);
-    func_0020EEE8(m);
+    moby_anim_sphere_lerp(m);
 }
 
 struct AmmoPreviewMoby;
@@ -9271,7 +9271,7 @@ void update_ammo_preview_transform(struct AmmoPreviewMoby *moby) {
     func_0020ED48(moby);
     qcopy(moby->position, source_moby->position);
     basis = moby->basis;
-    func_001FA480(basis, source_moby->basis);
+    matrix_copy_rows(basis, source_moby->basis);
     normalize_vector_triplet(basis);
     moby->scale = moby->resource->scale;
     if (moby->slot < 3U) {
@@ -9279,10 +9279,10 @@ void update_ammo_preview_transform(struct AmmoPreviewMoby *moby) {
     } else {
         phase_index = (moby->slot * 2 + 1) % 6;
     }
-    orbit_angle = (((f32)(D_0015F538 % 200) / IntToFloat(200)) * 6.28318f) - 3.14159f;
+    orbit_angle = (((f32)(game_frame_counter % 200) / IntToFloat(200)) * 6.28318f) - 3.14159f;
     phase = (f32)phase_index;
     phase_angle = ((phase * 6.28318f) / IntToFloat(6)) - 3.14159f;
-    bob_angle = (((f32)(D_0015F538 % 170) / IntToFloat(170)) * 6.28318f) - 3.14159f;
+    bob_angle = (((f32)(game_frame_counter % 170) / IntToFloat(170)) * 6.28318f) - 3.14159f;
     double_phase = (phase * 12.56636f) / IntToFloat(6);
     func_001FA7D8_26410(double_phase);
     zero = 0.0f;
@@ -9291,19 +9291,19 @@ void update_ammo_preview_transform(struct AmmoPreviewMoby *moby) {
     if (ammo_preview_offsets[moby->slot] != zero) {
         ApproachWithVelocity(&ammo_preview_offsets[moby->slot],
                                   &ammo_preview_velocities[moby->slot],
-                                  zero, 1.0f, (*(f32 *)&D_0015EE70) * 6.0f, D_0015EE6C * 6.0f);
+                                  zero, 1.0f, (*(f32 *)&g_frame_time_sq) * 6.0f, g_frame_time * 6.0f);
     }
     offset[0] = FastCos(orbit_angle);
     offset[1] = FastSin(orbit_angle);
     offset[2] = zero;
     offset[2] = FastSin(bob_angle) * 0.25f + 0.5f + ammo_preview_offsets[moby->slot];
-    func_001F9EC0(offset, offset, source_moby->basis);
+    matrix_mul_vec3(offset, offset, source_moby->basis);
     FastVecAdd(moby->position, moby->position, offset);
     clear_u64_value(angles);
     angles[2] = FastAddRots(orbit_angle, 1.5707964f);
-    func_001FA1F8(rotation_basis, angles);
+    euler_rotation_basis(rotation_basis, angles);
     func_001FA4F0(moby->basis, rotation_basis, moby->basis);
-    func_0020EEE8(moby);
+    moby_anim_sphere_lerp(moby);
 }
 
 /* Hoisted from the func_00227A70 block below so this earlier caller can
@@ -9445,7 +9445,7 @@ int leave_streamed_moby_screen(void *arg0) {
         slot++;
     }
     menu->data.raw.unk3C = release_menu_stream_buffer(menu->data.raw.unk3C);
-    music = (MusicStreamState *)D_001517D0;
+    music = (MusicStreamState *)cd_read_state;
     if ((u32)(music->secondary.state - 6) >= 2U) {
         music->secondary.state = 5;
     }
@@ -9556,7 +9556,7 @@ s32 update_streamed_moby_animation(MobyAnimationStream_26978 *stream) {
         case 0:
         case 2:
         case 4:
-            dialogue_column = D_0015EE88 - 1;
+            dialogue_column = g_game_language - 1;
             if (dialogue_column < 0) {
                 dialogue_column = 0;
             }
@@ -9565,10 +9565,10 @@ s32 update_streamed_moby_animation(MobyAnimationStream_26978 *stream) {
                 queued_dialogue_id[0] = animation_index * 6 + dialogue_column + 60000;
             }
             moby->animation_frame_counter++;
-            if (moby->animation_frame_counter > func_001F98C0(0x78)) {
-                moby->animation_frame_counter = func_001F98C0(0x78);
+            if (moby->animation_frame_counter > scale_game_frame_count(0x78)) {
+                moby->animation_frame_counter = scale_game_frame_count(0x78);
             }
-            if (moby->animation_frame_counter < func_001F98C0(0x78)) {
+            if (moby->animation_frame_counter < scale_game_frame_count(0x78)) {
                 return 0;
             }
             if (dialogue_playback_phase[0] != 3) {
@@ -9576,7 +9576,7 @@ s32 update_streamed_moby_animation(MobyAnimationStream_26978 *stream) {
             }
             moby->animation_frame_counter = 0;
             moby->moby_state++;
-            MobyBlendAnimation(moby, animation_index + 1, 0, func_001F98C0(0x18));
+            MobyBlendAnimation(moby, animation_index + 1, 0, scale_game_frame_count(0x18));
             break;
         case 1:
         case 3:
@@ -9593,16 +9593,16 @@ s32 update_streamed_moby_animation(MobyAnimationStream_26978 *stream) {
                     moby->moby_state = 6;
                 }
                 moby->animation_frame_counter = 0;
-                MobyBlendAnimation(moby, 0, 0, func_001F98C0(0x18));
+                MobyBlendAnimation(moby, 0, 0, scale_game_frame_count(0x18));
                 break;
             }
             break;
         case 6:
             moby->animation_frame_counter++;
-            if (moby->animation_frame_counter > func_001F98C0(0xF0)) {
-                moby->animation_frame_counter = func_001F98C0(0xF0);
+            if (moby->animation_frame_counter > scale_game_frame_count(0xF0)) {
+                moby->animation_frame_counter = scale_game_frame_count(0xF0);
             }
-            if (moby->animation_frame_counter < func_001F98C0(0xF0)) {
+            if (moby->animation_frame_counter < scale_game_frame_count(0xF0)) {
                 return 0;
             }
             if (D_0015EF20 == 0) {
@@ -10047,7 +10047,7 @@ extern int D_001D641C;
 
 /* Breaks a pending preview audio stream and clears the preview animation queue. */
 int clear_preview_animation_queue(void) {
-    if (D_001517D0[4] != 0) {
+    if (cd_read_state[4] != 0) {
         char *g = menu_system;
         if (*(unsigned char *)(g + 0xCB) != 0) {
             request_audio_stream_break();
@@ -10229,7 +10229,7 @@ void prepare_save_game(int arg0, int arg1) {
     func_00121A80(D_0015EF98);
     func_0012D818(D_0015EF98);
     copy_level_object_positions();
-    save_map_coverage(D_00141FC0 + (D_0015EE84 << 11));
+    save_map_coverage(D_00141FC0 + (g_current_level_index << 11));
     memcard_MakeWholeSave((char *)arg0);
     *(int *)(b + 0xF4) = arg0;
     *(int *)(b + 0x14) = arg1;
@@ -10398,7 +10398,7 @@ void SpaceTransition_Tick(void) {
     }
     t = D_0015EF24;
     D_0015EF24 = t + 1;
-    if ((t + 1) % 50 == 0 && D_0015EE80 != 0) {
+    if ((t + 1) % 50 == 0 && pal_mode != 0) {
         D_0015EF24 = t + 0xB;
     }
 }
@@ -10569,11 +10569,11 @@ extern void func_002298B0(int, int);
 /* Emits a DMA tag pair for packet n of D_001D8120, then sends graphics entry idx
    of D_00160460 through func_002298B0. */
 void emit_selected_graphics_dma_packets(int arg0, int idx, int n) {
-    D_00161000[0] = 0x30000003;
-    D_00161000[1] = (int)(D_001D8120 + n * 0x30);
-    D_00161000[2] = 0x13000000;
-    D_00161000[3] = 0x50000003;
-    D_00161000 += 4;
+    g_render_packet_cursor[0] = 0x30000003;
+    g_render_packet_cursor[1] = (int)(D_001D8120 + n * 0x30);
+    g_render_packet_cursor[2] = 0x13000000;
+    g_render_packet_cursor[3] = 0x50000003;
+    g_render_packet_cursor += 4;
     func_002298B0(arg0, ((int *)&D_00160460)[idx]);
 }
 

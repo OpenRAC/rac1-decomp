@@ -15,16 +15,16 @@ void capture_linked_moby_relative_transforms(char *moby, char *arr, int n) {
     float m1[16];
     float m2[16];
     int i;
-    func_001FA1F8(m0, moby + 0x40);
-    func_001FA4A0(m1, m0);
+    euler_rotation_basis(m0, moby + 0x40);
+    matrix_from_basis_rows(m1, m0);
     for (i = 0; i < n; i++) {
         char *p = arr + i * 0x30;
         int idx = *(int *)(p + 0x20);
         if (idx != -1) {
             char *o = D_L12_00160058 + (idx << 8);
             FastVecSub(p, o + 0x10, moby + 0x10);
-            func_001F9EE8(p, p, m1);
-            func_001FA218(m2, o + 0x40);
+            transform_vector(p, p, m1);
+            euler_to_matrix(m2, o + 0x40);
             sce_vu0_mul_matrix(m2, m1, m2);
             matrix_to_euler(m2, p + 0x10);
         }
@@ -41,17 +41,17 @@ void apply_linked_moby_relative_transforms(char *parent, char *list, int n) {
     float m2[4];
     char *p;
     int i;
-    func_001FA218(m0, (float *)(parent + 0x40));
+    euler_to_matrix(m0, (float *)(parent + 0x40));
     for (i = 0; i < n; i++) {
         int idx = *(int *)(list + i * 0x30 + 0x20);
         if (idx != -1) {
             p = D_L12_00160058 + idx * 256;
-            func_001FA218(m1, (float *)(list + i * 0x30 + 0x10));
+            euler_to_matrix(m1, (float *)(list + i * 0x30 + 0x10));
             sce_vu0_mul_matrix(m1, m0, m1);
             matrix_to_euler(m1, p + 0x40);
-            func_001F9EE8(m2, list + i * 0x30, m0);
+            transform_vector(m2, list + i * 0x30, m0);
             FastVecAdd(p + 0x10, parent + 0x10, m2);
-            func_L00_00251E30(p);
+            moby_build_matrix(p);
         }
     }
 }

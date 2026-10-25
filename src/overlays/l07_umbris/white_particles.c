@@ -57,7 +57,7 @@ float select_segment_point_near_sphere_surface(char *dst, char *a1, char *a2, ch
     r1 = FastVecDist(v + 2, a2);
     if (r1 < f) {
         ap = f * f - r1 * r1;
-        t20 = func_001F9B50(ap);
+        t20 = vec_length(ap);
         t20 = t20 / FastVecLength(v + 1);
         lo = f21 - t20;
         if (lo < 0) lo = 0;

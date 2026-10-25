@@ -102,12 +102,12 @@ int read_mpeg(char *vd, char *rb, int *file) {
         D_00161314 = 6;
         if (D_0015EFD8 != -1) {
             D_00161314 = 7;
-            if (D_0015EFD8 == 2 && D_0013CA40.f1A4 != 0) {
+            if (D_0015EFD8 == 2 && g_controller_state.f1A4 != 0) {
                 hit = 1;
-            } else if ((D_0015EFA0 || D_0015EF20 || D_0015EFD8 || D_0015EE84 <= 0)
-                       && (D_0013CA40.f1A4 & 0x800)) {
+            } else if ((D_0015EFA0 || D_0015EF20 || D_0015EFD8 || g_current_level_index <= 0)
+                       && (g_controller_state.f1A4 & 0x800)) {
                 hit = 1;
-            } else if ((D_0013CA40.f1A0 & 0xF) == 0xF && (D_0013CA40.f1A4 & 0x800)) {
+            } else if ((g_controller_state.f1A0 & 0xF) == 0xF && (g_controller_state.f1A4 & 0x800)) {
                 hit = 1;
             } else {
                 hit = 0;
@@ -169,7 +169,7 @@ int read_mpeg(char *vd, char *rb, int *file) {
     }
     endDisplay();
     audioDecReset(decoder_state + 0xD9100);
-    func_0012E348(5, D_0013E650.f5C);
+    func_0012E348(5, voice_pool.f5C);
     func_0012DDC0();
     D_00161314 = 0;
     D_00161318 = 0;

@@ -51,7 +51,7 @@ void update_hero_motion_and_collision_probes(void) {
         D_0013F450_21A98.unk254 = 0;
         D_0013F450_21A98.unk255 = 0;
         if (probe_hero_forward_collision(&D_0013F450_21A98.wall_probe_distance, 0.7f, 4.0f)) {
-            D_0013F450_21A98.unk250 = func_L00_001FF860(D_L00_00173F40.normal_z, func_001F9CE8(&D_L00_00173F40.normal_x));
+            D_0013F450_21A98.unk250 = fast_atan2(D_L00_00173F40.normal_z, vec_length_xy(&D_L00_00173F40.normal_x));
             if (D_L00_00173F40.moby != 0) {
                 D_0013F450_21A98.unk255 = 1;
                 if (is_moby_in_class_range_500_to_540(D_L00_00173F40.moby)) {
@@ -299,8 +299,8 @@ void update_hero_planar_distance_spring_motion(void) {
 
     if (*(unsigned char *)(q + 0x257) != 0
         && *(float *)(q + 0x2DC) > 0.0f
-        && *(float *)(q + 0x160) < D_0015EE6C * 3.0f
-        && FastVecLength(q + 0xE0) < D_0015EE6C * 3.0f
+        && *(float *)(q + 0x160) < g_frame_time * 3.0f
+        && FastVecLength(q + 0xE0) < g_frame_time * 3.0f
         && *(float *)(q + 0x229C) < 0.2f) {
         s = *(int *)(q + 0x208C);
         if (s == 0 || s == 2 || s == 4 || s == 10 || s == 1) {
@@ -311,15 +311,15 @@ void update_hero_planar_distance_spring_motion(void) {
     }
     p = (char *)D_0013E633 + 0xE1D;
     if (*(short *)(p + 0x1EA) != 0) {
-        d = func_001F9D48(p + 0x80, p + 0x210);
+        d = vec_distance_xy(p + 0x80, p + 0x210);
         lim = *(float *)(p + 0x234) * 0.9f;
         if (d < lim) {
-            ang = func_L00_001FF860(*(float *)(p + 0x80) - *(float *)(p + 0x210), *(float *)(p + 0x84) - *(float *)(p + 0x214));
+            ang = fast_atan2(*(float *)(p + 0x80) - *(float *)(p + 0x210), *(float *)(p + 0x84) - *(float *)(p + 0x214));
             if (d < *(float *)(p + 0x234) * 0.05f) {
                 ang = *(float *)(p + 0x98);
             }
             t0 = d - lim;
-            Spring(&t0, (float *)(p + 0x244), 0.0f, D_0015EE64 * 0.03f, D_0015EE64 * 0.3f, D_0015EE6C * 2.8f);
+            Spring(&t0, (float *)(p + 0x244), 0.0f, g_frame_scale_sq * 0.03f, g_frame_scale_sq * 0.3f, g_frame_time * 2.8f);
             *(float *)(p + 0xF0) = FastCos(ang) * *(float *)(p + 0x244);
             *(float *)(p + 0xF4) = FastSin(ang) * *(float *)(p + 0x244);
             *(float *)(p + 0xF8) = 0.0f;
@@ -498,7 +498,7 @@ int select_hero_grapple_target(void) {
         if (out != 0)
             continue;
         hero_pos = (char *)&gb->motion.pos;
-        if (func_001F9D48(hero_pos, (char *)&candidate_moby->pos) < 4.0f)
+        if (vec_distance_xy(hero_pos, (char *)&candidate_moby->pos) < 4.0f)
             continue;
         if (candidate_moby->visible == 0)
             target_score += 10.0f;
@@ -662,7 +662,7 @@ int HeroEnterMoveState(int a, int b) {
             return 1;
         }
         qcopy(p + 0x150, p + 0x110);
-        if (*(unsigned char *)(p + 0x12E2) != 0 && func_001F9CE8(p + 0x150) > D_0015EE6C * 0.5f) {
+        if (*(unsigned char *)(p + 0x12E2) != 0 && vec_length_xy(p + 0x150) > g_frame_time * 0.5f) {
             HeroEnterMoveState(0x2F, 1);
             return 0;
         }
@@ -726,7 +726,7 @@ int HeroEnterMoveState(int a, int b) {
         *(int *)(p + 0x2284) = 0;
         *(int *)(p + 0x22A8) = 0;
         qcopy(p + 0x150, p + 0x110);
-        ClampVectorLength(p + 0x150, D_0015EE6C * 3.5f);
+        ClampVectorLength(p + 0x150, g_frame_time * 3.5f);
         if (b) set_hero_animation(0x7C, 0, (float)scale_ticks(0xC));
         break;
     }
@@ -737,7 +737,7 @@ int HeroEnterMoveState(int a, int b) {
         *(int *)(p + 0x22A8) = 0;
         *(float *)(p + 0x694) = *(float *)(p + 0x108) * 0.2f;
         *(float *)(p + 0x69C) = *(float *)(p + 0x2F0) - 0.37f;
-        if (*(float *)(p + 0x694) < D_0015EE6C * -7.0f) ((H694_222B80 *)p)->f694 = D_0015EE6C * -7.0f;
+        if (*(float *)(p + 0x694) < g_frame_time * -7.0f) ((H694_222B80 *)p)->f694 = g_frame_time * -7.0f;
         *(unsigned char *)(p + 0x20A7) = 1;
         *(int *)(p + 0x6A0) = 0;
         *(float *)(p + 0x690) = *(float *)(p + 0x88) - *(float *)(p + 0x69C);
@@ -808,7 +808,7 @@ int HeroEnterMoveState(int a, int b) {
             if (D_L00_00161390 != 0) {
                 RippleDisturb(D_L00_00161390, D_L00_00161398, 0, *(float *)(p + 0x80), *(float *)(p + 0x84), 0.4f, 0.3f);
             }
-        } else if (*(float *)(p + 0x108) < D_0015EE6C * -0.5f) {
+        } else if (*(float *)(p + 0x108) < g_frame_time * -0.5f) {
             int n = truncate_float_to_s32(FastAbsF(*(float *)(p + 0x108)) * 300.0f);
             emit_hero_surface_effect_burst(3, n < 0x28 ? n : 0x28, 1);
             if (D_L00_00161390 != 0) {
@@ -840,13 +840,13 @@ int HeroEnterMoveState(int a, int b) {
         {
             char *s = (char *)D_0013E633 + 0xE1D;
             *(float *)(s + 0x694) = *(float *)(s + 0x108) * 0.37f;
-            if (*(float *)(s + 0x694) < D_0015EE6C * -7.0f) *(float *)(s + 0x694) = D_0015EE6C * -7.0f;
+            if (*(float *)(s + 0x694) < g_frame_time * -7.0f) *(float *)(s + 0x694) = g_frame_time * -7.0f;
             *(float *)(s + 0x69C) = *(float *)(s + 0x2F0);
             *(int *)(s + 0x6A0) = 0;
             *(float *)(s + 0x690) = *(float *)(s + 0x88) - *(float *)(s + 0x69C) - -0.12f;
             qcopy(s + 0x150, s + 0x110);
             *(float *)(s + 0x158) = 0.0f;
-            ClampVectorLength(s + 0x150, D_0015EE6C * 5.5f);
+            ClampVectorLength(s + 0x150, g_frame_time * 5.5f);
             *(int *)(s + 0xFF8) = 0x68;
             if (b) set_hero_animation(0x3A, 0, (float)scale_ticks(0x16));
         }
@@ -915,7 +915,7 @@ int HeroEnterMoveState(int a, int b) {
             }
             {
                 char *q = (char *)D_0013E633 + 0xE1D;
-                *(unsigned int *)(h + 0x64) = *(unsigned int *)(h + 0x64) | (1 << D_0015EE84) | 0x80000000;
+                *(unsigned int *)(h + 0x64) = *(unsigned int *)(h + 0x64) | (1 << g_current_level_index) | 0x80000000;
                 if (*(int *)(q + 0x910) >= 3) {
                     if (*(unsigned short *)(h + 0xE8) <= 0xFFFE) {
                         *(unsigned short *)(h + 0xE8) = *(unsigned short *)(h + 0xE8) + 1;
@@ -928,7 +928,7 @@ int HeroEnterMoveState(int a, int b) {
             if (scale_ticks(D_0015EFA4) / 600 > *(unsigned short *)(h + 0xEA)) {
                 *(unsigned short *)(h + 0xEA) = scale_ticks(D_0015EFA4) / 600;
             }
-            *(unsigned int *)(h + 0xEC) = *(unsigned int *)(h + 0xEC) | (1 << D_0015EE84) | 0x80000000;
+            *(unsigned int *)(h + 0xEC) = *(unsigned int *)(h + 0xEC) | (1 << g_current_level_index) | 0x80000000;
         }
         {
             char *v = (char *)D_0013E633 + 0xF6D;
@@ -1004,7 +1004,7 @@ int HeroEnterMoveState(int a, int b) {
         char *p = (char *)D_0013E633 + 0xE1D;
         *(int *)(p + 0x208C) = 1;
         *(int *)(p + 0x2284) = 0;
-        *(float *)(p + 0x194) = func_001F9CE8(p + 0x100);
+        *(float *)(p + 0x194) = vec_length_xy(p + 0x100);
         *(int *)(p + 0x2088) = 0;
         *(short *)(p + 0x3B8) = 0;
         *(short *)(p + 0x3BC) = 0;
@@ -1019,11 +1019,11 @@ int HeroEnterMoveState(int a, int b) {
         *(int *)(p + 0x208C) = 1;
         *(int *)(p + 0x2284) = 0;
         if (*(int *)(p + 0x2094) != 4 && *(int *)(p + 0x20A0) != 4) {
-            *(float *)(p + 0x194) = func_001F9CE8(p + 0x110);
+            *(float *)(p + 0x194) = vec_length_xy(p + 0x110);
         }
         {
             char *q = (char *)D_0013E633 + 0xE1D;
-            if (D_0015EE6C * 7.0f < *(float *)(q + 0x194)) *(float *)(q + 0x194) = D_0015EE6C * 7.0f;
+            if (g_frame_time * 7.0f < *(float *)(q + 0x194)) *(float *)(q + 0x194) = g_frame_time * 7.0f;
             *(short *)(q + 0x3BE) = 0;
             stick_target(0, 1.0f);
             if (1.5707964f < FastDiffRots(*(float *)(q + 0x98), *(float *)(q + 0x180))) {
@@ -1044,9 +1044,9 @@ int HeroEnterMoveState(int a, int b) {
         {
             char *t = (char *)D_0013E633 + 0xE1D;
             if (*(unsigned char *)(t + 0x12E2) != 0 || *(int *)(t + 0x2084) == 0x2F) {
-                if (D_0015EE6C * 7.7f < *(float *)(t + 0x194)) ((H194_222B80 *)t)->f194 = D_0015EE6C * 7.7f;
+                if (g_frame_time * 7.7f < *(float *)(t + 0x194)) ((H194_222B80 *)t)->f194 = g_frame_time * 7.7f;
                 *(float *)(t + 0xE8) = 0.0f;
-                ClampVectorLength(t + 0xE0, D_0015EE6C * 7.7f);
+                ClampVectorLength(t + 0xE0, g_frame_time * 7.7f);
                 *(int *)(t + 0x3B4) = 0;
                 *(int *)(t + 0x2084) = 0x2F;
                 set_hero_animation(0x37, 0, (float)scale_ticks(8));
@@ -1094,7 +1094,7 @@ int HeroEnterMoveState(int a, int b) {
         char *p = (char *)D_0013E633 + 0xE1D;
         *(int *)(p + 0x208C) = 1;
         *(int *)(p + 0x2284) = 0;
-        *(float *)(p + 0x194) = func_001F9CE8(p + 0x110);
+        *(float *)(p + 0x194) = vec_length_xy(p + 0x110);
         *(unsigned char *)(p + 0x20AC) = 1;
         if (*(unsigned char *)(p + 0x20A4) == 0) cancel_hero_item_animation();
         if (b) {
@@ -1166,8 +1166,8 @@ int HeroEnterMoveState(int a, int b) {
         char *p = (char *)D_0013E633 + 0xE1D;
         *(int *)(p + 0x208C) = 0xC;
         *(int *)(p + 0x2284) = 0;
-        *(float *)(p + 0x194) = func_001F9CE8(p + 0x110);
-        if (D_0015EE6C * 7.0f < *(float *)(p + 0x194)) *(float *)(p + 0x194) = D_0015EE6C * 7.0f;
+        *(float *)(p + 0x194) = vec_length_xy(p + 0x110);
+        if (g_frame_time * 7.0f < *(float *)(p + 0x194)) *(float *)(p + 0x194) = g_frame_time * 7.0f;
         if (*(unsigned char *)(p + 0x12EA) != 0 && *(short *)(p + 0x30C) == 0) {
             HeroEnterMoveState(0x79, 1);
             return 0;
@@ -1176,8 +1176,8 @@ int HeroEnterMoveState(int a, int b) {
             char *q = (char *)D_0013E633 + 0xE1D;
             *(int *)(q + 0xFF8) = 0x68;
             qcopy(q + 0x150, q + 0x110);
-            ClampVectorLength(q + 0x150, D_0015EE6C * 7.0f);
-            if (D_0015EE6C * 3.5f < *(float *)(q + 0x168)) allocate_hero_voice_for_entry(0xC, 0);
+            ClampVectorLength(q + 0x150, g_frame_time * 7.0f);
+            if (g_frame_time * 3.5f < *(float *)(q + 0x168)) allocate_hero_voice_for_entry(0xC, 0);
             if (b) {
                 if (*(unsigned char *)(*(char **)(q + 0x2080) + 0x52) == hero_idle_sequence(0)) {
                     set_hero_animation(0xD, 2, (float)scale_ticks(9));
@@ -1201,9 +1201,9 @@ int HeroEnterMoveState(int a, int b) {
             if (scale_ticks(D_0015EFA4) / 600 > *(unsigned short *)(h + 0x62)) {
                 *(unsigned short *)(h + 0x62) = scale_ticks(D_0015EFA4) / 600;
             }
-            *(unsigned int *)(h + 0x64) = *(unsigned int *)(h + 0x64) | (1 << D_0015EE84) | 0x80000000;
+            *(unsigned int *)(h + 0x64) = *(unsigned int *)(h + 0x64) | (1 << g_current_level_index) | 0x80000000;
         }
-        *(float *)(p + 0x180) = func_L00_001FF860(*(float *)(*(char **)(p + 0x964) + 0x10) - *(float *)(p + 0x80), *(float *)(*(char **)(p + 0x964) + 0x14) - *(float *)(p + 0x84));
+        *(float *)(p + 0x180) = fast_atan2(*(float *)(*(char **)(p + 0x964) + 0x10) - *(float *)(p + 0x80), *(float *)(*(char **)(p + 0x964) + 0x14) - *(float *)(p + 0x84));
         if (b) {
             set_hero_animation(0x2F, 2, (float)scale_ticks(5));
             HeroQueueSequence(0xA, 0xE);
@@ -1244,7 +1244,7 @@ int HeroEnterMoveState(int a, int b) {
             if (scale_ticks(D_0015EFA4) / 600 > *(unsigned short *)(h + 0x62)) {
                 *(unsigned short *)(h + 0x62) = scale_ticks(D_0015EFA4) / 600;
             }
-            *(unsigned int *)(h + 0x64) = *(unsigned int *)(h + 0x64) | (1 << D_0015EE84) | 0x80000000;
+            *(unsigned int *)(h + 0x64) = *(unsigned int *)(h + 0x64) | (1 << g_current_level_index) | 0x80000000;
         }
         *(short *)(p + 0x9BE) = 1;
         *(float *)(p + 0x9A8) = 0.0f;
@@ -1263,17 +1263,17 @@ int HeroEnterMoveState(int a, int b) {
         }
         {
             char *q = (char *)D_0013E633 + 0xE1D;
-            *(float *)(q + 0x9C4) = D_0015EE64 * 0.025f;
-            *(float *)(q + 0x9C8) = D_0015EE64 * 0.33f;
-            *(float *)(q + 0x9CC) = D_0015EE6C * 11.0f;
+            *(float *)(q + 0x9C4) = g_frame_scale_sq * 0.025f;
+            *(float *)(q + 0x9C8) = g_frame_scale_sq * 0.33f;
+            *(float *)(q + 0x9CC) = g_frame_time * 11.0f;
             clear_u64_value(q + 0xA0);
             *(short *)(q + 0x1E6) = scale_ticks(0x28);
             if (*(float *)(d + 0x24) != 0.0f) *(float *)(q + 0x9C4) = *(float *)(d + 0x24);
             if (*(float *)(d + 0x28) != 0.0f) *(float *)(q + 0x9C8) = *(float *)(d + 0x28);
             if (*(float *)(d + 0x2C) != 0.0f) *(float *)(q + 0x9CC) = *(float *)(d + 0x2C);
-            *(float *)(q + 0x9AC) = func_L00_001FF860(*(float *)(*(char **)(q + 0x994) + 0x10) - *(float *)(q + 0x80), *(float *)(*(char **)(q + 0x994) + 0x14) - *(float *)(q + 0x84));
+            *(float *)(q + 0x9AC) = fast_atan2(*(float *)(*(char **)(q + 0x994) + 0x10) - *(float *)(q + 0x80), *(float *)(*(char **)(q + 0x994) + 0x14) - *(float *)(q + 0x84));
             *(float *)(q + 0x9A4) = FastVecDist(q + 0x80, *(char **)(q + 0x994) + 0x10);
-            *(float *)(q + 0x9B0) = D_0015EE70 * 27.0f;
+            *(float *)(q + 0x9B0) = g_frame_time_sq * 27.0f;
             if (*(int *)(q + 0x2094) == 4) {
                 *(float *)(q + 0x9B0) = *(float *)(q + 0x4A0);
             } else if (*(int *)(q + 0x2094) == 2) {
@@ -1305,7 +1305,7 @@ int HeroEnterMoveState(int a, int b) {
         *(int *)(p + 0x2284) = 0x50;
         *(int *)(p + 0x4B8) = 0;
         *(int *)(p + 0x4C4) = 0;
-        *(float *)(p + 0x4B0) = D_0015EE70 * 100.0f;
+        *(float *)(p + 0x4B0) = g_frame_time_sq * 100.0f;
         if (b) set_hero_animation(0x2A, 0, (float)scale_ticks(6));
         break;
     }
@@ -1344,7 +1344,7 @@ int HeroEnterMoveState(int a, int b) {
         {
             char *q = (char *)D_0013E633 + 0xE1D;
             if (*(char **)(q + 0x5D8) != 0) {
-                if (1.5707964f < FastDiffRots(func_L00_001FF860(*(float *)(*(char **)(q + 0x5D8) + 0x10) - *(float *)(q + 0x80), *(float *)(*(char **)(q + 0x5D8) + 0x14) - *(float *)(q + 0x84)), FastAddRots(*(float *)(q + 0x588), func_L00_001FF860(d.x, d.y)))) {
+                if (1.5707964f < FastDiffRots(fast_atan2(*(float *)(*(char **)(q + 0x5D8) + 0x10) - *(float *)(q + 0x80), *(float *)(*(char **)(q + 0x5D8) + 0x14) - *(float *)(q + 0x84)), FastAddRots(*(float *)(q + 0x588), fast_atan2(d.x, d.y)))) {
                     *(float *)(q + 0x588) = 1.5707964f;
                     *(int *)(q + 0x58C) = 1;
                 }
@@ -1385,7 +1385,7 @@ int HeroEnterMoveState(int a, int b) {
         char *p = (char *)D_0013E633 + 0xE1D;
         *(int *)(p + 0x208C) = 3;
         *(int *)(p + 0x2284) = 0xD;
-        *(float *)(p + 0x4EC) = D_0015EE70 * 24.0f;
+        *(float *)(p + 0x4EC) = g_frame_time_sq * 24.0f;
         *(float *)(p + 0x4F0) = *(float *)(p + 0x88);
         if (*(int *)(p + 0x2094) == 4) {
             *(float *)(p + 0x4EC) = *(float *)(p + 0x4A0);
@@ -1393,7 +1393,7 @@ int HeroEnterMoveState(int a, int b) {
         }
         *(unsigned char *)(p + 0x20A7) = 1;
         if (b) {
-            if (D_0015EE6C * 3.5f < *(float *)(p + 0x164)) {
+            if (g_frame_time * 3.5f < *(float *)(p + 0x164)) {
                 set_hero_animation(0x20, 0, (float)scale_ticks(9));
             } else {
                 set_hero_animation(0x20, 1, (float)(scale_ticks(9) + 2));
@@ -1439,14 +1439,14 @@ int HeroEnterMoveState(int a, int b) {
         char *p = (char *)D_0013E633 + 0xE1D;
         *(int *)(p + 0x208C) = 2;
         *(int *)(p + 0x2284) = 0;
-        *(float *)(p + 0x940) = D_0015EE70 * 24.0f;
-        *(float *)(p + 0x944) = D_0015EE70 * 7.0f;
+        *(float *)(p + 0x940) = g_frame_time_sq * 24.0f;
+        *(float *)(p + 0x944) = g_frame_time_sq * 7.0f;
         if (*(int *)(p + 0x2084) == 0x77) {
             if (*(unsigned char *)(p + 0x20A4) == 0) {
                 *(short *)(p + 0x22B2) = allocate_hero_voice_for_entry(0x17, 0x20);
             }
-            *(float *)(p + 0x950) = randf_sym(D_0015EE6C * 3.1415927f, D_0015EE6C * 4.3633232f);
-            *(float *)(p + 0x954) = randf_sym(D_0015EE6C * 3.1415927f, D_0015EE6C * 4.3633232f);
+            *(float *)(p + 0x950) = randf_sym(g_frame_time * 3.1415927f, g_frame_time * 4.3633232f);
+            *(float *)(p + 0x954) = randf_sym(g_frame_time * 3.1415927f, g_frame_time * 4.3633232f);
         }
         {
             char *q = (char *)D_0013E633 + 0xE1D;
@@ -1479,8 +1479,8 @@ int HeroEnterMoveState(int a, int b) {
         *(unsigned char *)(p + 0x22CA) = 1;
         *(int *)(p + 0xFF8) = 0x68;
         *(int *)(p + 0x2284) = 0;
-        if (D_0015EE6C * 4.5f < *(float *)(p + 0x160)) {
-            scale_hero_motion(D_0015EE6C * 4.5f / *(float *)(p + 0x160));
+        if (g_frame_time * 4.5f < *(float *)(p + 0x160)) {
+            scale_hero_motion(g_frame_time * 4.5f / *(float *)(p + 0x160));
         }
         qcopy(p + 0xE0, p + 0x110);
         if (b) {
@@ -1494,8 +1494,8 @@ int HeroEnterMoveState(int a, int b) {
         *(int *)(p + 0x208C) = 5;
         *(int *)(p + 0xFF8) = 0x68;
         *(int *)(p + 0x2284) = 0;
-        if (D_0015EE6C * 4.5f < *(float *)(p + 0x160)) {
-            scale_hero_motion(D_0015EE6C * 4.5f / *(float *)(p + 0x160));
+        if (g_frame_time * 4.5f < *(float *)(p + 0x160)) {
+            scale_hero_motion(g_frame_time * 4.5f / *(float *)(p + 0x160));
         }
         qcopy(p + 0xE0, p + 0x100);
         if (b) {
@@ -1550,10 +1550,10 @@ int HeroEnterMoveState(int a, int b) {
             char *u = (char *)D_0013E633 + 0xE1D;
             if (*(int *)(u + 0x2084) == 0x69) allocate_hero_voice_for_entry(0xA, 0);
             *(float *)(u + 0x410) = *(float *)(u + 0x88);
-            *(float *)(u + 0x4A0) = D_0015EE70 * 29.7f;
+            *(float *)(u + 0x4A0) = g_frame_time_sq * 29.7f;
             *(int *)(u + 0x3E8) = -1;
-            *(float *)(u + 0x480) = D_0015EE70 * 20.0f;
-            *(float *)(u + 0x484) = D_0015EE70 * 11.0f;
+            *(float *)(u + 0x480) = g_frame_time_sq * 20.0f;
+            *(float *)(u + 0x484) = g_frame_time_sq * 11.0f;
             *(short *)(u + 0x4A8) = *(unsigned char *)(u + 0x12E2);
             *(short *)(u + 0x41E) = 0;
             *(int *)(u + 0x418) = 0;
@@ -1569,8 +1569,8 @@ int HeroEnterMoveState(int a, int b) {
             *(short *)(u + 0x4AA) = scale_ticks(0x46);
             *(short *)(u + 0x4A6) = 0;
             *(float *)(u + 0x494) = 0.5f;
-            *(float *)(u + 0x424) = D_0015EE6C * 5.7f;
-            *(float *)(u + 0x414) = D_0015EE6C * 15.0098314f;
+            *(float *)(u + 0x424) = g_frame_time * 5.7f;
+            *(float *)(u + 0x414) = g_frame_time * 15.0098314f;
             *(float *)(u + 0x3F8) = 0.0f;
             *(int *)(u + 0x22B4) = 0;
             if (*(int *)(u + 0x2084) == 7) {
@@ -1628,11 +1628,11 @@ int HeroEnterMoveState(int a, int b) {
                 *(short *)(u + 0x498) = scale_ticks(2);
                 *(short *)(u + 0x49A) = scale_ticks(0x78);
                 hero_change_health(1);
-                if (D_0015EE84 == 0xA) {
+                if (g_current_level_index == 0xA) {
                     HeroEnterMoveState(0x7C, 1);
                     return 0;
                 }
-                if (D_0015EE84 != 6) {
+                if (g_current_level_index != 6) {
                     if (*(int *)(u + 0x2090) == 0x3C || *(int *)(u + 0x209C) == 0x3C || *(int *)(u + 0x22A8) == 0) {
                         char *w = (char *)D_0013E633 + 0xE1D;
                         *(int *)(w + 0x1660) = *(int *)(w + 0x1660) + 1;
@@ -1647,7 +1647,7 @@ int HeroEnterMoveState(int a, int b) {
                 {
                     char *w = (char *)D_0013E633 + 0xE1D;
                     *(short *)(w + 0x4AA) = scale_ticks(0x96);
-                    *(float *)(w + 0x4A0) = D_0015EE70 * 15.0f;
+                    *(float *)(w + 0x4A0) = g_frame_time_sq * 15.0f;
                     *(short *)(w + 0x49C) = scale_ticks(5);
                     *(short *)(w + 0x49E) = scale_ticks(4);
                 }
@@ -1681,7 +1681,7 @@ int HeroEnterMoveState(int a, int b) {
                 *(float *)(u + 0x48C) = 2.45f;
                 *(float *)(u + 0x488) = 2.4f;
                 *(short *)(u + 0x498) = scale_ticks(0x11);
-                *(float *)(u + 0x4A0) = D_0015EE70 * 27.0f;
+                *(float *)(u + 0x4A0) = g_frame_time_sq * 27.0f;
                 *(int *)(u + 0x208C) = 0xF;
                 *(int *)(u + 0x5C4) = 0;
                 if (*(unsigned char *)(u + 0x12E8) != 0) {
@@ -1689,7 +1689,7 @@ int HeroEnterMoveState(int a, int b) {
                     *(float *)(u + 0x430) += h;
                     *(float *)(u + 0x488) += h;
                     *(float *)(u + 0x48C) += h;
-                    *(float *)(u + 0x4A0) = D_0015EE70 * 14.0f;
+                    *(float *)(u + 0x4A0) = g_frame_time_sq * 14.0f;
                     d = (Vec4A){ 331.0f, 104.0f, 145.0f };
                     if (FastVecDist(u + 0x80, &d) < 10.0f) {
                         h = 0.7f;
@@ -1708,7 +1708,7 @@ int HeroEnterMoveState(int a, int b) {
                 *(float *)(u + 0x48C) = 2.55f;
                 *(float *)(u + 0x488) = 2.5f;
                 *(short *)(u + 0x498) = scale_ticks(0xA);
-                *(float *)(u + 0x4A0) = D_0015EE70 * 24.0f;
+                *(float *)(u + 0x4A0) = g_frame_time_sq * 24.0f;
                 *(int *)(u + 0x208C) = 0xF;
                 *(int *)(u + 0x5C4) = 0;
             } else if (*(int *)(u + 0x2084) == 9) {
@@ -1721,7 +1721,7 @@ int HeroEnterMoveState(int a, int b) {
                 *(float *)(u + 0x48C) = 2.7f;
                 *(float *)(u + 0x488) = 1.0f;
                 *(short *)(u + 0x498) = scale_ticks(0xF);
-                *(float *)(u + 0x424) = D_0015EE6C * 5.7f;
+                *(float *)(u + 0x424) = g_frame_time * 5.7f;
                 *(short *)(u + 0x4AC) = 1;
                 *(unsigned char *)(u + 0x4AE) = 1;
                 *(unsigned char *)(u + 0x4AF) = 1;
@@ -1735,11 +1735,11 @@ int HeroEnterMoveState(int a, int b) {
                 *(float *)(u + 0x48C) = 4.3f;
                 *(float *)(u + 0x488) = 4.2f;
                 *(short *)(u + 0x498) = scale_ticks(0xF);
-                *(float *)(u + 0x4A0) = D_0015EE70 * 30.0f;
-                *(float *)(u + 0x414) = D_0015EE6C * 4.3633232f;
-                *(float *)(u + 0x3F8) = D_0015EE70 * 50.0f;
+                *(float *)(u + 0x4A0) = g_frame_time_sq * 30.0f;
+                *(float *)(u + 0x414) = g_frame_time * 4.3633232f;
+                *(float *)(u + 0x3F8) = g_frame_time_sq * 50.0f;
                 *(float *)(u + 0x494) = 2.0f;
-                *(float *)(u + 0x424) = D_0015EE6C * 4.0f;
+                *(float *)(u + 0x424) = g_frame_time * 4.0f;
             } else if (*(int *)(u + 0x2084) == 0x49) {
                 *(float *)(u + 0x430) = 1.3f;
                 *(int *)(u + 0x420) = scale_ticks(5);
@@ -1750,9 +1750,9 @@ int HeroEnterMoveState(int a, int b) {
                 *(float *)(u + 0x48C) = 1.35f;
                 *(float *)(u + 0x488) = 1.3f;
                 *(short *)(u + 0x498) = scale_ticks(0xE);
-                *(float *)(u + 0x4A0) = D_0015EE70 * 25.0f;
-                *(float *)(u + 0x424) = D_0015EE6C * 2.0f;
-                *(float *)(u + 0x484) = D_0015EE70 * 50.0f;
+                *(float *)(u + 0x4A0) = g_frame_time_sq * 25.0f;
+                *(float *)(u + 0x424) = g_frame_time * 2.0f;
+                *(float *)(u + 0x484) = g_frame_time_sq * 50.0f;
             } else if (*(int *)(u + 0x2084) == 0xA) {
                 *(float *)(u + 0x430) = 1.9f;
                 *(int *)(u + 0x420) = scale_ticks(5);
@@ -1764,7 +1764,7 @@ int HeroEnterMoveState(int a, int b) {
                 *(float *)(u + 0x488) = 1.9f;
                 *(short *)(u + 0x498) = scale_ticks(0xE);
                 *(unsigned char *)(u + 0x4AE) = 1;
-                *(float *)(u + 0x4A0) = D_0015EE70 * 11.0f;
+                *(float *)(u + 0x4A0) = g_frame_time_sq * 11.0f;
                 *(short *)(u + 0x49A) = scale_ticks(0x78);
                 *(short *)(u + 0x4AA) = scale_ticks(0x5A);
                 *(short *)(u + 0x4A6) = scale_ticks(0x46);
@@ -1787,11 +1787,11 @@ int HeroEnterMoveState(int a, int b) {
                 create_moby_transform_history_entry(x, 0x14, 4);
                 create_moby_transform_history_entry(x, 0xA, 6);
                 *(unsigned char *)(u + 0x4AE) = 1;
-                *(float *)(u + 0x3F4) = D_0015EE6C * 11.5f;
-                if (1.4f < *(float *)(u + 0x2DC)) *(float *)(u + 0x3F4) = D_0015EE6C * 5.7f;
-                *(float *)(u + 0x4A0) = D_0015EE70 * 8.5f;
-                *(float *)(u + 0x480) = D_0015EE70 * 44.0f;
-                *(float *)(u + 0x484) = D_0015EE70 * 50.0f;
+                *(float *)(u + 0x3F4) = g_frame_time * 11.5f;
+                if (1.4f < *(float *)(u + 0x2DC)) *(float *)(u + 0x3F4) = g_frame_time * 5.7f;
+                *(float *)(u + 0x4A0) = g_frame_time_sq * 8.5f;
+                *(float *)(u + 0x480) = g_frame_time_sq * 44.0f;
+                *(float *)(u + 0x484) = g_frame_time_sq * 50.0f;
             } else if (*(int *)(u + 0x2084) == 0x1C) {
                 *(float *)(u + 0x430) = 2.0f;
                 *(int *)(u + 0x420) = scale_ticks(0xA);
@@ -1803,7 +1803,7 @@ int HeroEnterMoveState(int a, int b) {
                 *(float *)(u + 0x488) = 2.0f;
                 *(short *)(u + 0x498) = scale_ticks(1);
                 *(float *)(u + 0x494) = 1.0f;
-                *(float *)(u + 0x4A0) = D_0015EE70 * 25.0f;
+                *(float *)(u + 0x4A0) = g_frame_time_sq * 25.0f;
                 *(int *)(u + 0x45C) = 0;
                 *(unsigned char *)(u + 0x20A7) = 1;
                 *(unsigned char *)(u + 0x4AE) = 1;
@@ -1817,7 +1817,7 @@ int HeroEnterMoveState(int a, int b) {
                 *(float *)(u + 0x48C) = 1.59f;
                 *(float *)(u + 0x488) = 1.55f;
                 *(short *)(u + 0x498) = scale_ticks(1);
-                *(float *)(u + 0x4A0) = D_0015EE70 * 28.0f;
+                *(float *)(u + 0x4A0) = g_frame_time_sq * 28.0f;
                 *(int *)(u + 0x45C) = 0;
             } else if (*(int *)(u + 0x2084) == 0x11) {
                 *(float *)(u + 0x430) = 3.3f;
@@ -1830,7 +1830,7 @@ int HeroEnterMoveState(int a, int b) {
                 *(float *)(u + 0x488) = 3.3f;
                 *(short *)(u + 0x498) = scale_ticks(0xC);
                 *(short *)(u + 0x4AA) = scale_ticks(0x50);
-                *(float *)(u + 0x4A0) = D_0015EE70 * 29.0f;
+                *(float *)(u + 0x4A0) = g_frame_time_sq * 29.0f;
                 qcopy(u + 0x470, u + 0x460);
                 *(int *)(u + 0x22B4) = 1;
                 *(unsigned char *)(u + 0x20A7) = 1;
@@ -1848,7 +1848,7 @@ int HeroEnterMoveState(int a, int b) {
                 *(short *)(u + 0x498) = scale_ticks(0xE);
                 *(float *)(u + 0x490) = 4.5f;
                 *(short *)(u + 0x49A) = scale_ticks(0x78);
-                *(float *)(u + 0x424) = D_0015EE6C * 1.9f;
+                *(float *)(u + 0x424) = g_frame_time * 1.9f;
                 initialize_moby_transform_history(*(int *)(u + 0x2080), x);
                 create_moby_transform_history_entry(x, 0x28, 3);
                 create_moby_transform_history_entry(x, 0x14, 5);
@@ -1872,11 +1872,11 @@ int HeroEnterMoveState(int a, int b) {
                 *(short *)(u + 0x498) = scale_ticks(5);
                 *(float *)(u + 0x490) = 4.5f;
                 *(short *)(u + 0x49A) = scale_ticks(0x82);
-                *(float *)(u + 0x424) = D_0015EE6C * 3.3f;
+                *(float *)(u + 0x424) = g_frame_time * 3.3f;
                 *(short *)(u + 0x4A6) = scale_ticks(0x55);
                 *(short *)(u + 0x1B0) = scale_ticks(0x46);
                 *(short *)(u + 0x41C) = 1;
-                if (D_0015EE80 != 0) {
+                if (pal_mode != 0) {
                     *(int *)(u + 0x3D0) = scale_ticks(0x22);
                 } else {
                     *(int *)(u + 0x3D0) = scale_ticks(0x23);
@@ -1903,7 +1903,7 @@ int HeroEnterMoveState(int a, int b) {
                 *(int *)(u + 0x420) = -1;
                 *(short *)(u + 0x498) = scale_ticks(0xE);
                 *(float *)(u + 0x494) = 1.0f;
-                *(float *)(u + 0x424) = D_0015EE6C * 3.5f;
+                *(float *)(u + 0x424) = g_frame_time * 3.5f;
                 *(short *)(u + 0x4A6) = scale_ticks(0x1E);
             } else if (*(int *)(u + 0x2084) == 0xB) {
                 *(float *)(u + 0x430) = 3.2f;
@@ -1921,7 +1921,7 @@ int HeroEnterMoveState(int a, int b) {
                 *(float *)(u + 0x43C) = get_hero_yaw_history(scale_ticks(0xA));
                 *(int *)(u + 0x450) = stick_direction_vs_facing();
                 *(float *)(u + 0x438) = *(float *)(u + 0x180);
-                if (D_0015EE6C * 1.5f < *(float *)(u + 0x164)) {
+                if (g_frame_time * 1.5f < *(float *)(u + 0x164)) {
                     *(float *)(u + 0x454) = *(float *)(u + 0x164);
                 } else {
                     *(float *)(u + 0x454) = 0.0f;
@@ -1951,7 +1951,7 @@ int HeroEnterMoveState(int a, int b) {
                     set_hero_animation(0x50, 4, (float)scale_ticks(5));
                 } else if (s == 0x2A) {
                     int id = 0x1E;
-                    if (1.5707964f < FastDiffRots(*(float *)(q + 0x98), func_L00_001FF860(*(float *)(q + 0x500) - *(float *)(q + 0x540), *(float *)(q + 0x504) - *(float *)(q + 0x544)))) id = 0x1F;
+                    if (1.5707964f < FastDiffRots(*(float *)(q + 0x98), fast_atan2(*(float *)(q + 0x500) - *(float *)(q + 0x540), *(float *)(q + 0x504) - *(float *)(q + 0x544)))) id = 0x1F;
                     set_hero_animation(id, 0, (float)scale_ticks(5));
                 } else if (s == 9) {
                     int id = 8;
@@ -1981,7 +1981,7 @@ int HeroEnterMoveState(int a, int b) {
                     set_hero_animation(0x11, 0, (float)scale_ticks(5));
                 } else if (s == 0xE) {
                     set_hero_animation(0x16, 3, (float)scale_ticks(7));
-                    *(float *)(q + 0xA90) = D_0015EE60 * 0.8f;
+                    *(float *)(q + 0xA90) = frame_scale * 0.8f;
                 } else if (s == 0xF) {
                     set_hero_animation(0x15, 0, (float)scale_ticks(5));
                 } else if (s == 0xB) {
@@ -2032,7 +2032,7 @@ int HeroEnterMoveState(int a, int b) {
             if (scale_ticks(D_0015EFA4) / 600 > *(unsigned short *)(h + 2)) {
                 *(unsigned short *)(h + 2) = scale_ticks(D_0015EFA4) / 600;
             }
-            *(unsigned int *)(h + 4) = *(unsigned int *)(h + 4) | (1 << D_0015EE84) | 0x80000000;
+            *(unsigned int *)(h + 4) = *(unsigned int *)(h + 4) | (1 << g_current_level_index) | 0x80000000;
             q = (char *)D_0013E633 + 0xE1D;
             *(int *)(q + 0x2284) = 0x50;
             *(int *)(q + 0xA60) = 4;
@@ -2060,15 +2060,15 @@ int HeroEnterMoveState(int a, int b) {
             if (scale_ticks(D_0015EFA4) / 600 > *(unsigned short *)(h + 0xA)) {
                 *(unsigned short *)(h + 0xA) = scale_ticks(D_0015EFA4) / 600;
             }
-            *(unsigned int *)(h + 0xC) = *(unsigned int *)(h + 0xC) | (1 << D_0015EE84) | 0x80000000;
-            h2 = D_00141780;
+            *(unsigned int *)(h + 0xC) = *(unsigned int *)(h + 0xC) | (1 << g_current_level_index) | 0x80000000;
+            h2 = item_usage;
             if (*(unsigned short *)(h2 + 0x128) <= 0xFFFE) {
                 *(unsigned short *)(h2 + 0x128) = *(unsigned short *)(h2 + 0x128) + 1;
             }
             if (scale_ticks(D_0015EFA4) / 600 > *(unsigned short *)(h2 + 0x12A)) {
                 *(unsigned short *)(h2 + 0x12A) = scale_ticks(D_0015EFA4) / 600;
             }
-            *(unsigned int *)(h2 + 0x12C) = *(unsigned int *)(h2 + 0x12C) | (1 << D_0015EE84) | 0x80000000;
+            *(unsigned int *)(h2 + 0x12C) = *(unsigned int *)(h2 + 0x12C) | (1 << g_current_level_index) | 0x80000000;
             q = (char *)D_0013E633 + 0xE1D;
             *(int *)(q + 0xA60) = 3;
             *(int *)(q + 0x20F0) = 0;
@@ -2105,7 +2105,7 @@ int HeroEnterMoveState(int a, int b) {
                 *(unsigned short *)(h + 0x42) = scale_ticks(D_0015EFA4) / 600;
             }
             q = (char *)D_0013E633 + 0xE1D;
-            *(unsigned int *)(h + 0x44) = *(unsigned int *)(h + 0x44) | (1 << D_0015EE84) | 0x80000000;
+            *(unsigned int *)(h + 0x44) = *(unsigned int *)(h + 0x44) | (1 << g_current_level_index) | 0x80000000;
             e = &attack_records[*(int *)(q + 0xA60)];
             *(int *)(q + 0x20F0) = 0;
             k = 0;
@@ -2172,7 +2172,7 @@ int HeroEnterMoveState(int a, int b) {
             q = (char *)D_0013E633 + 0xE1D;
             if (*(int *)(q + 0x10B8) == 0xA && *(char **)(q + 0xA50) != 0) {
                 *(int *)(q + 0xA58) = 1;
-                *(float *)(q + 0xA5C) = func_L00_001FF860(*(float *)(*(char **)(q + 0xA50) + 0x10) - *(float *)(q + 0x80), *(float *)(*(char **)(q + 0xA50) + 0x14) - *(float *)(q + 0x84));
+                *(float *)(q + 0xA5C) = fast_atan2(*(float *)(*(char **)(q + 0xA50) + 0x10) - *(float *)(q + 0x80), *(float *)(*(char **)(q + 0xA50) + 0x14) - *(float *)(q + 0x84));
             }
             break;
         }
@@ -2227,7 +2227,7 @@ int HeroEnterMoveState(int a, int b) {
         char *p = (char *)D_0013E633 + 0xE1D;
         *(int *)(p + 0x208C) = 0xA;
         *(int *)(p + 0x2284) = 0;
-        *(float *)(p + 0x194) = D_0015EE6C * 9.0f;
+        *(float *)(p + 0x194) = g_frame_time * 9.0f;
         if (b) {
             char *m;
             T2C_222B80 *e = &attack_records[*(int *)(p + 0xA60)];
@@ -2246,7 +2246,7 @@ int HeroEnterMoveState(int a, int b) {
         *(int *)(p + 0x208C) = 0xA;
         *(int *)(p + 0x2284) = 0;
         *(float *)(p + 0xA68) = FastAddRots(*(float *)(p + 0x98), 3.1415927f);
-        *(float *)(p + 0x194) = D_0015EE6C * 9.0f;
+        *(float *)(p + 0x194) = g_frame_time * 9.0f;
         if (b) set_hero_animation(0x29, 5, (float)scale_ticks(8));
         break;
     }
@@ -2258,7 +2258,7 @@ int HeroEnterMoveState(int a, int b) {
         scale_hero_motion(0.5f);
         *(short *)(p + 0x1EE) = scale_ticks(0x2D);
         qcopy(p + 0xE0, p + 0x110);
-        ClampVectorLength(p + 0xE0, D_0015EE6C * 7.0f);
+        ClampVectorLength(p + 0xE0, g_frame_time * 7.0f);
         r = MobyGetHitMessage(*(void **)(p + 0x2080), 1, 0);
         if (r != 0) {
             hero_change_health(truncate_float_to_s32(*(float *)(r + 0x2C)));
@@ -2299,7 +2299,7 @@ int HeroEnterMoveState(int a, int b) {
         char *p = (char *)D_0013E633 + 0xE1D;
         *(int *)(p + 0x208C) = 0x19;
         *(int *)(p + 0x2284) = 0;
-        if (D_0015EE84 == 0xF) spawn_hero_radial_particle_burst();
+        if (g_current_level_index == 0xF) spawn_hero_radial_particle_burst();
         *(int *)(p + 0x1CC) = 0x2710;
         allocate_hero_voice_for_entry(9, 0);
         *(int *)(p + 0xFF8) = 0x68;
@@ -2307,7 +2307,7 @@ int HeroEnterMoveState(int a, int b) {
         break;
     }
     case 0x7C: {
-        if (D_0015EE84 == 6) {
+        if (g_current_level_index == 6) {
             int c0;
             int c1;
             int c2;
@@ -2361,8 +2361,8 @@ int HeroEnterMoveState(int a, int b) {
         char *p = (char *)D_0013E633 + 0xE1D;
         *(int *)(p + 0x208C) = 5;
         *(int *)(p + 0x2284) = 0;
-        if (D_0015EE6C * 4.5f < *(float *)(p + 0x160)) {
-            scale_hero_motion(D_0015EE6C * 4.5f / *(float *)(p + 0x160));
+        if (g_frame_time * 4.5f < *(float *)(p + 0x160)) {
+            scale_hero_motion(g_frame_time * 4.5f / *(float *)(p + 0x160));
         }
         qcopy(p + 0xE0, p + 0x100);
         if (b) set_hero_animation(0xE, 0, (float)scale_ticks(0xC));
@@ -2372,7 +2372,7 @@ int HeroEnterMoveState(int a, int b) {
         char *p = (char *)D_0013E633 + 0xE1D;
         *(int *)(p + 0x208C) = 2;
         *(int *)(p + 0x2284) = 0;
-        *(float *)(p + 0x944) = D_0015EE70 * 7.0f;
+        *(float *)(p + 0x944) = g_frame_time_sq * 7.0f;
         qcopy(p + 0xE0, p + 0x110);
         if (b) set_hero_animation(4, 0, (float)scale_ticks(8));
         break;
@@ -2391,7 +2391,7 @@ int HeroEnterMoveState(int a, int b) {
         *(int *)(p + 0x2284) = 0;
         scale_hero_motion(0.5f);
         qcopy(p + 0xE0, p + 0x110);
-        ClampVectorLength(p + 0xE0, D_0015EE6C * 5.0f);
+        ClampVectorLength(p + 0xE0, g_frame_time * 5.0f);
         hero_change_health(1);
         *(short *)(p + 0x1EE) = scale_ticks(0x2D);
         *(int *)(p + 0x1C0) = scale_ticks(0x32);
@@ -2411,9 +2411,9 @@ int HeroEnterMoveState(int a, int b) {
             char *q = (char *)D_0013E633 + 0xE1D;
             *(int *)(q + 0x208C) = 1;
             *(int *)(q + 0x2284) = 0;
-            *(float *)(q + 0x194) = func_001F9CE8(q + 0x110);
+            *(float *)(q + 0x194) = vec_length_xy(q + 0x110);
             if (*(int *)(q + 0x2090) == 3) *(float *)(q + 0x194) = 0.0f;
-            if (*(int *)(q + 0x2094) == 0) *(float *)(q + 0x194) = func_001F9CE8(q + 0x150);
+            if (*(int *)(q + 0x2094) == 0) *(float *)(q + 0x194) = vec_length_xy(q + 0x150);
             *(short *)(q + 0x3B8) = 0;
             if (b) set_hero_animation(2, 0, (float)scale_ticks(8));
         }
@@ -2432,7 +2432,7 @@ int HeroEnterMoveState(int a, int b) {
         char *p = (char *)D_0013E633 + 0xE1D;
         *(int *)(p + 0x208C) = 3;
         *(int *)(p + 0x2284) = 0xD;
-        *(float *)(p + 0x4EC) = D_0015EE70 * 12.0f;
+        *(float *)(p + 0x4EC) = g_frame_time_sq * 12.0f;
         *(float *)(p + 0x4F0) = *(float *)(p + 0x88);
         if (*(int *)(p + 0x2094) == 4) {
             *(float *)(p + 0x4EC) = *(float *)(p + 0x4A0);
@@ -2505,8 +2505,8 @@ int HeroEnterMoveState(int a, int b) {
         char *p = (char *)D_0013E633 + 0xE1D;
         *(int *)(p + 0x208C) = 2;
         *(int *)(p + 0x2284) = 0;
-        *(float *)(p + 0x940) = D_0015EE70 * 24.0f;
-        *(float *)(p + 0x944) = D_0015EE70 * 7.0f;
+        *(float *)(p + 0x940) = g_frame_time_sq * 24.0f;
+        *(float *)(p + 0x944) = g_frame_time_sq * 7.0f;
         qcopy(p + 0xE0, p + 0x110);
         if (b) {
             if (2.5f < *(float *)(p + 0x2DC)) {
@@ -2521,7 +2521,7 @@ int HeroEnterMoveState(int a, int b) {
         char *p = (char *)D_0013E633 + 0xE1D;
         *(int *)(p + 0x208C) = 1;
         *(int *)(p + 0x2284) = 0;
-        *(float *)(p + 0x194) = func_001F9CE8(p + 0x110);
+        *(float *)(p + 0x194) = vec_length_xy(p + 0x110);
         *(short *)(p + 0x3B8) = 0;
         if (b) set_hero_animation(3, 0x12, (float)scale_ticks(8));
         break;
@@ -2540,7 +2540,7 @@ int HeroEnterMoveState(int a, int b) {
         *(int *)(p + 0x2284) = 0;
         scale_hero_motion(0.5f);
         qcopy(p + 0xE0, p + 0x110);
-        ClampVectorLength(p + 0xE0, D_0015EE6C * 7.0f);
+        ClampVectorLength(p + 0xE0, g_frame_time * 7.0f);
         *(int *)(p + 0x1C0) = scale_ticks(0x4D);
         if (b) {
             set_hero_animation(6, 3, -3.0f);
@@ -2581,8 +2581,8 @@ int HeroEnterMoveState(int a, int b) {
         char *p = (char *)D_0013E633 + 0xE1D;
         *(int *)(p + 0x208C) = 2;
         *(int *)(p + 0x2284) = 0;
-        *(float *)(p + 0x940) = D_0015EE70 * 24.0f;
-        *(float *)(p + 0x944) = D_0015EE70 * 7.0f;
+        *(float *)(p + 0x940) = g_frame_time_sq * 24.0f;
+        *(float *)(p + 0x944) = g_frame_time_sq * 7.0f;
         qcopy(p + 0xE0, p + 0x110);
         if (b) set_hero_animation(6, 0, (float)scale_ticks(7));
         break;
@@ -2598,10 +2598,10 @@ int HeroEnterMoveState(int a, int b) {
         {
             char *v = (char *)D_0013E633 + 0xF2D;
             char *g;
-            float r = func_001F9CE8(v);
+            float r = vec_length_xy(v);
             g = v - 0x110;
             *(float *)(g + 0x194) = r;
-            if (D_0015EE6C * 1.5f < r) *(float *)(g + 0x194) = D_0015EE6C * 1.5f;
+            if (g_frame_time * 1.5f < r) *(float *)(g + 0x194) = g_frame_time * 1.5f;
             *(short *)(g + 0x3B8) = 0;
             if (b) set_hero_animation(1, 0, (float)scale_ticks(8));
         }
@@ -2621,7 +2621,7 @@ int HeroEnterMoveState(int a, int b) {
         *(int *)(p + 0x2284) = 0;
         scale_hero_motion(0.5f);
         qcopy(p + 0xE0, p + 0x110);
-        ClampVectorLength(p + 0xE0, D_0015EE6C * 5.0f);
+        ClampVectorLength(p + 0xE0, g_frame_time * 5.0f);
         hero_change_health(1);
         *(int *)(p + 0x1C0) = scale_ticks(0x4D);
         if (b) {
@@ -2636,12 +2636,12 @@ int HeroEnterMoveState(int a, int b) {
         *(int *)(p + 0x2284) = 0;
         if (*(int *)(p + 0x570) == 0) hero_change_health(1);
         *(int *)(p + 0x1C0) = scale_ticks(0x4D);
-        *(float *)(p + 0x5CC) = D_0015EE6C * 2.5f;
-        if (D_0015EE6C * 2.5f < *(float *)(p + 0x5B0)) *(float *)(p + 0x5B0) = D_0015EE6C * 2.5f;
+        *(float *)(p + 0x5CC) = g_frame_time * 2.5f;
+        if (g_frame_time * 2.5f < *(float *)(p + 0x5B0)) *(float *)(p + 0x5B0) = g_frame_time * 2.5f;
         *(int *)(p + 0x5AC) = 0;
         clear_u64_value(p + 0xE0);
         clear_u64_value(p + 0x100);
-        *(float *)(p + 0xE8) = D_0015EE6C * 10.0f;
+        *(float *)(p + 0xE8) = g_frame_time * 10.0f;
         if (b) set_hero_animation(0x10, 2, -3.0f);
         break;
     }
@@ -2823,7 +2823,7 @@ int try_transition_hero_water_state(void) {
     int state;
 
     if (D_0013F450_27F48.state.control_mode == 0x11) {
-        if (D_0013D5C8[6] != 0) {
+        if (item_available[6] != 0) {
             decrement = 0;
         } else {
             decrement = 10000 / (scale_ticks(0x3C) * 15);
@@ -2858,7 +2858,7 @@ collision_mode:
     qcopy(&end, &start);
     end.f[2] += 0.3f;
     if (func_L00_001EFFF0_27F48(&start, &end, 2, D_0013F450_27F48.moby, 0)) {
-        if (D_0013D5C8[4] != 0 && (D_0013CBE0 & 10) != 0) {
+        if (item_available[4] != 0 && (D_0013CBE0 & 10) != 0) {
             state = 0x35;
             goto change_state;
         }
@@ -2973,13 +2973,13 @@ void update_hero_water_height_and_bobbing(void) {
         char *u = (char *)D_0013E633 + 0xE1D;
         if (*(int *)(u + 0x2084) == 0x36) {
             Spring((float *)(u + 0x690), (float *)(u + 0x8FC), 0.0f,
-                              D_0015EE64 * 0.03f, D_0015EE64 * 0.3f,
-                              D_0015EE6C * 1.5f);
+                              g_frame_scale_sq * 0.03f, g_frame_scale_sq * 0.3f,
+                              g_frame_time * 1.5f);
             *(float *)(u + 0x694) = 0.0f;
         } else {
             *(float *)(u + 0x694) = *(float *)(u + 0x694) -
-                (D_0015EE64 * 0.005f * *(float *)(u + 0x690) +
-                 D_0015EE60 * 0.045f * *(float *)(u + 0x694));
+                (g_frame_scale_sq * 0.005f * *(float *)(u + 0x690) +
+                 frame_scale * 0.045f * *(float *)(u + 0x694));
             if (FastAbsF(*(float *)(u + 0x690)) < 0.001f && *(float *)(u + 0x694) < 0.0001f) {
                 *(float *)(u + 0x694) = 0.0f;
             }
@@ -2993,7 +2993,7 @@ void update_hero_water_height_and_bobbing(void) {
             if (0.0f < *(float *)(q + 0x694)) {
                 *(float *)(q + 0x694) = 0.0f;
             }
-            ApproachValue((float *)(q + 0x690), 0.0f, D_0015EE6C * 0.7f);
+            ApproachValue((float *)(q + 0x690), 0.0f, g_frame_time * 0.7f);
         }
     }
     }
@@ -3005,7 +3005,7 @@ void update_hero_water_height_and_bobbing(void) {
             a = *(float *)(r + 0x8A0);
         }
         Spring((float *)(r + 0x69C), (float *)(r + 0x6A0), a,
-                          D_0015EE64 * 0.027f, D_0015EE64 * 0.3f, 0.0f);
+                          g_frame_scale_sq * 0.027f, g_frame_scale_sq * 0.3f, 0.0f);
     }
     }
     {
@@ -3399,12 +3399,12 @@ void update_hero_animation_for_movement_speed(void) {
         float *hp;
         if (scale_ticks(4) < *(int *)(p + 0x1A0) && *(short *)(p + 0x3BC) == 0) {
             idx = *(int *)(p + 0x2088);
-            flag = *(float *)(p + 0x194) < D_L00_0017BEB8[idx].lo * D_0015EE6C;
-            if (flag || D_L00_0017BEB8[idx].hi * D_0015EE6C < *(float *)(p + 0x194)) {
+            flag = *(float *)(p + 0x194) < D_L00_0017BEB8[idx].lo * g_frame_time;
+            if (flag || D_L00_0017BEB8[idx].hi * g_frame_time < *(float *)(p + 0x194)) {
                 if (scale_ticks(4) < *(int *)(p + 0x1A0) && *(short *)(p + 0x3BC) == 0) {
                     old = *(int *)(p + 0x2088);
                     if (flag) {
-                        float kk = D_0015EE6C;
+                        float kk = g_frame_time;
                         if (*(float *)(p + 0x194) < D_L00_0017BEB8[old].lo * kk) {
                             char *pd;
                             struct T *td;
@@ -3415,7 +3415,7 @@ void update_hero_animation_for_movement_speed(void) {
                             } while (*(float *)(p + 0x194) < td[*(int *)(pd + 0x2088)].lo * kk);
                         }
                     } else {
-                        float kk = D_0015EE6C;
+                        float kk = g_frame_time;
                         hp = &D_L00_0017BEB8[0].hi;
                         if (hp[old * 4] * kk < *(float *)(p + 0x194)) {
                             float *hq;
@@ -3472,7 +3472,7 @@ extern void func_0020D678(void *); /* DeleteMoby */
    flag bits 0x41 on the two moby pointers cached at +0x1180 and +0x1184,
    when set. */
 void remove_hero_cached_moby_and_clear_slot_three_moby_flags(void) {
-    char *g = D_0013F450;
+    char *g = g_hero;
     void *m;
     void *a;
     void *b;

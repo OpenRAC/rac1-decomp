@@ -13,11 +13,11 @@ void reorient_position_about_pivot(void *a0, void *a1, void *a2, void *a3, void 
     float m0[16];
     float m1[16];
     float v[4];
-    func_001FA218(m0, a3);
-    func_001FA4A0(m0, m0);
-    func_001FA218(m1, a4);
+    euler_to_matrix(m0, a3);
+    matrix_from_basis_rows(m0, m0);
+    euler_to_matrix(m1, a4);
     FastVecSub(v, a0, a2);
-    func_001F9EE8(v, v, m0);
-    func_001F9EE8(v, v, m1);
+    transform_vector(v, v, m0);
+    transform_vector(v, v, m1);
     FastVecAdd(a1, v, a2);
 }

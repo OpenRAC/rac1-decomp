@@ -102,7 +102,7 @@ s32 draw_hud_counter(HudElem *m) {
         x = (*(s32 *)&D_L02_0015FA20);
     }
     bottom = frame_size[0];
-    y = D_0015EE80 != 0 ? bottom - 0x2A : bottom - 0x32;
+    y = pal_mode != 0 ? bottom - 0x2A : bottom - 0x32;
     grow = IntToFloat(fade[0]) / IntToFloat((*(s32 *)&D_L02_0015F9F4));
     if (1.0f < grow) {
         grow = 1.0f;
@@ -173,5 +173,5 @@ void Sky_DrawLevel02(void) {
     }
     DoSkyGifPaging();
     VU1_addGSregister(0x47, 0x5360B);
-    VU1_addGSregister(0x4E, 0x1000000 | (D_0015EF88 >> 13));
+    VU1_addGSregister(0x4E, 0x1000000 | (depth_buffer_address >> 13));
 }

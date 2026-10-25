@@ -99,7 +99,7 @@ float compute_walker_time_to_landing(char *a, char *b) {
     float d = c * c + (s + s) * gap;
     float res;
     if (d > 0.0f) {
-        d = func_001F9B50(d);
+        d = vec_length(d);
         if (d <= c) {
             res = c - d;
         } else {
@@ -216,7 +216,7 @@ void WalkCycleStep(WalkMoby *m, WalkData *d, int flags, float speed, float ang, 
             d->bB7 = 0xD;
             d->bB6 = walker_gait_mask(d->anim[7], (float)d->anim[7]->i14);
             d->sEC = 0;
-        } else if (speed > D_0015EE6C * 0.21f || FastDiffRots(m->f48, ang) > 0.10471976f) {
+        } else if (speed > g_frame_time * 0.21f || FastDiffRots(m->f48, ang) > 0.10471976f) {
             d->sEC++;
             if (d->sEC >= 4) {
                 {
@@ -246,7 +246,7 @@ void WalkCycleStep(WalkMoby *m, WalkData *d, int flags, float speed, float ang, 
     case 10:
     case 11: {
         int idx = D_L00_001CAA60[d->bB7];
-        if (m->f58 < 0.25f && FastDiffRots(m->f48, ang) < 0.09239978f && speed < D_0015EE6C * 0.19f) {
+        if (m->f58 < 0.25f && FastDiffRots(m->f48, ang) < 0.09239978f && speed < g_frame_time * 0.19f) {
             MobyBlendAnimation(m, d->bB0, 0, 10);
             reset_walker_gait_helpers((char *)d);
             d->bB7 = 0;
@@ -685,11 +685,11 @@ void WalkCycleStep(WalkMoby *m, WalkData *d, int flags, float speed, float ang, 
         break;
     case 15:
         if (flags & 0x30) {
-            float dist = func_001F9D48(m->pos, d->v60);
+            float dist = vec_distance_xy(m->pos, d->v60);
             STUB_printf(D_L00_001612A0, dist);
             d->fD8 = jump_speed_4318(m->pos, d->v60, 0, d->fC0, -d->fDC);
             d->uEE |= 4;
-            d->f6C = func_L00_001FF860(d->v60[0] - m->pos[0], d->v60[1] - m->pos[1]);
+            d->f6C = fast_atan2(d->v60[0] - m->pos[0], d->v60[1] - m->pos[1]);
         }
         if (MobyGetFrameValue(m) >= d->anim[11]->f0C + d->anim[11]->f10 - m->f58) {
             MobyBlendAnimation(m, d->bB3, 0, 10);
@@ -719,7 +719,7 @@ void WalkCycleStep(WalkMoby *m, WalkData *d, int flags, float speed, float ang, 
             STUB_printf(D_L00_001612A0, dist);
             d->fD8 = jump_speed_4318(m->pos, d->v60, 0, d->fC0, -d->fDC);
             d->uEE |= 4;
-            d->f6C = func_L00_001FF860(d->v60[0] - m->pos[0], d->v60[1] - m->pos[1]);
+            d->f6C = fast_atan2(d->v60[0] - m->pos[0], d->v60[1] - m->pos[1]);
         }
         if (MobyGetFrameValue(m) >= d->anim[9]->f0C + d->anim[9]->f10 - m->f58) {
             MobyBlendAnimation(m, d->bB3, 0, 10);

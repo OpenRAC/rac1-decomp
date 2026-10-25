@@ -208,7 +208,7 @@ void door_update(u8 *moby)
     typedef u32 quadword __attribute__((mode(TI), aligned(16)));
 
     if (moby[0xb0] != 0xff &&
-        D_0014C150[moby[0xb0] + D_0015EE84 * 16] == 0xff)
+        D_0014C150[moby[0xb0] + g_current_level_index * 16] == 0xff)
         *(s32 *)(data + 0x10) = -1;
 
     state = moby[0x20];
@@ -224,7 +224,7 @@ void door_update(u8 *moby)
         if (*(s32 *)(data + 0x38) != -1)
             D_L07_001845A8[*(s32 *)(data + 0x38)] = 0;
         if (*(s32 *)(data + 0x10) != -1) {
-            other = D_L07_00160058 + *(s32 *)(data + 0x10) * 0x100;
+            other = level_mobys + *(s32 *)(data + 0x10) * 0x100;
             if (other != 0 && other[0x20] != 0xfe && other[0x20] != 0xfd &&
                 other[0x20] != *(u32 *)(data + 0x14))
                 return;
@@ -243,7 +243,7 @@ void door_update(u8 *moby)
         if (*(s32 *)(data + 0x38) != -1)
             D_L07_001845A8[*(s32 *)(data + 0x38)] = 1;
         if (*(s32 *)(data + 0x10) != -1) {
-            other = D_L07_00160058 + *(s32 *)(data + 0x10) * 0x100;
+            other = level_mobys + *(s32 *)(data + 0x10) * 0x100;
             if (other != 0 && other[0x20] != 0xfe && other[0x20] != 0xfd &&
                 other[0x20] == *(u32 *)(data + 0x18)) {
                 if (*(s32 *)(data + 0x30) != -1)
@@ -257,10 +257,10 @@ void door_update(u8 *moby)
         vectors[5] = *(f32 *)(data + 0x20);
         vectors[6] = *(f32 *)(data + 0x24);
         *(quadword *)vectors = *(quadword *)(vectors + 4);
-        func_001F9EC0(vectors, vectors, moby + 0xc0);
-        func_L00_001FF4B0(*(f32 *)(data + 0x28) * D_0015EE6C, vectors + 4, vectors);
+        matrix_mul_vec3(vectors, vectors, moby + 0xc0);
+        func_L00_001FF4B0(*(f32 *)(data + 0x28) * g_frame_time, vectors + 4, vectors);
         FastVecAdd(moby + 0x10, moby + 0x10, vectors + 4);
-        *(f32 *)(data + 0x0c) -= *(f32 *)(data + 0x28) * D_0015EE6C;
+        *(f32 *)(data + 0x0c) -= *(f32 *)(data + 0x28) * g_frame_time;
         if (!(*(f32 *)(data + 0x0c) < 0.0f))
             return;
         FastVecAdd(moby + 0x10, data, vectors);
@@ -274,7 +274,7 @@ void door_update(u8 *moby)
             D_L07_001845A8[*(s32 *)(data + 0x38)] = 1;
         if (*(s32 *)(data + 0x10) == -1)
             return;
-        other = D_L07_00160058 + *(s32 *)(data + 0x10) * 0x100;
+        other = level_mobys + *(s32 *)(data + 0x10) * 0x100;
         if (other == 0 || other[0x20] == 0xfe || other[0x20] == 0xfd ||
             other[0x20] != *(u32 *)(data + 0x18))
             return;
@@ -287,7 +287,7 @@ void door_update(u8 *moby)
         if (*(s32 *)(data + 0x38) != -1)
             D_L07_001845A8[*(s32 *)(data + 0x38)] = 0;
         if (*(s32 *)(data + 0x10) == -1 ||
-            (other = D_L07_00160058 + *(s32 *)(data + 0x10) * 0x100) == 0 ||
+            (other = level_mobys + *(s32 *)(data + 0x10) * 0x100) == 0 ||
             other[0x20] == 0xfe || other[0x20] == 0xfd ||
             other[0x20] == *(u32 *)(data + 0x14)) {
             if (*(s32 *)(data + 0x30) != -1)
@@ -300,10 +300,10 @@ void door_update(u8 *moby)
             vectors[6] = *(f32 *)(data + 0x24);
             *(quadword *)vectors = *(quadword *)(vectors + 4);
             distance = FastVecLength(vectors);
-            func_L00_001FF4B0(-(*(f32 *)(data + 0x2c) * D_0015EE6C), vectors, vectors);
-            func_001F9EC0(vectors + 4, vectors, moby + 0xc0);
+            func_L00_001FF4B0(-(*(f32 *)(data + 0x2c) * g_frame_time), vectors, vectors);
+            matrix_mul_vec3(vectors + 4, vectors, moby + 0xc0);
             FastVecAdd(moby + 0x10, moby + 0x10, vectors + 4);
-            *(f32 *)(data + 0x0c) += *(f32 *)(data + 0x2c) * D_0015EE6C;
+            *(f32 *)(data + 0x0c) += *(f32 *)(data + 0x2c) * g_frame_time;
             if (!(distance < *(f32 *)(data + 0x0c)))
                 return;
             qcopy(moby + 0x10, data);
@@ -348,7 +348,7 @@ void bridge_update(u8 *moby)
     qcopy(old_rotation, moby + 0x40);
 
     if (moby[0xb0] != 0xff &&
-        D_0014C150[moby[0xb0] + D_0015EE84 * 16] == 0xff)
+        D_0014C150[moby[0xb0] + g_current_level_index * 16] == 0xff)
         *(s32 *)(data + 0xb0) = -1;
 
     state = moby[0x20];
@@ -362,7 +362,7 @@ void bridge_update(u8 *moby)
         break;
     case 1:
         if (*(s32 *)(data + 0xb0) != -1) {
-            other = D_L07_00160058 + *(s32 *)(data + 0xb0) * 0x100;
+            other = level_mobys + *(s32 *)(data + 0xb0) * 0x100;
             if (other != 0 && other[0x20] != 0xfe && other[0x20] != 0xfd &&
                 other[0x20] != *(u32 *)(data + 0xb4))
                 break;
@@ -379,7 +379,7 @@ void bridge_update(u8 *moby)
         break;
     case 2:
         if (*(s32 *)(data + 0xb0) != -1) {
-            other = D_L07_00160058 + *(s32 *)(data + 0xb0) * 0x100;
+            other = level_mobys + *(s32 *)(data + 0xb0) * 0x100;
             if (other != 0 && other[0x20] != 0xfe && other[0x20] != 0xfd &&
                 other[0x20] == *(u32 *)(data + 0xb8)) {
                 if (*(s32 *)(data + 0xd0) != -1)
@@ -393,10 +393,10 @@ void bridge_update(u8 *moby)
         vectors[5] = *(f32 *)(data + 0xc0);
         vectors[6] = *(f32 *)(data + 0xc4);
         *(quadword *)vectors = *(quadword *)(vectors + 4);
-        func_001F9EC0(vectors, vectors, moby + 0xc0);
-        func_L00_001FF4B0(*(f32 *)(data + 0xc8) * D_0015EE6C, vectors + 4, vectors);
+        matrix_mul_vec3(vectors, vectors, moby + 0xc0);
+        func_L00_001FF4B0(*(f32 *)(data + 0xc8) * g_frame_time, vectors + 4, vectors);
         FastVecAdd(moby + 0x10, moby + 0x10, vectors + 4);
-        *(f32 *)(data + 0xac) -= *(f32 *)(data + 0xc8) * D_0015EE6C;
+        *(f32 *)(data + 0xac) -= *(f32 *)(data + 0xc8) * g_frame_time;
         if (*(f32 *)(data + 0xac) < 0.0f) {
             FastVecAdd(moby + 0x10, data + 0xa0, vectors);
             *(f32 *)(data + 0xac) = 0.0f;
@@ -409,7 +409,7 @@ void bridge_update(u8 *moby)
         break;
     case 3:
         if (*(s32 *)(data + 0xb0) != -1) {
-            other = D_L07_00160058 + *(s32 *)(data + 0xb0) * 0x100;
+            other = level_mobys + *(s32 *)(data + 0xb0) * 0x100;
             if (other != 0 && other[0x20] != 0xfe && other[0x20] != 0xfd &&
                 other[0x20] == *(u32 *)(data + 0xb8)) {
                 *(s32 *)(data + 0xac) = 0;
@@ -421,7 +421,7 @@ void bridge_update(u8 *moby)
         break;
     case 4:
         if (*(s32 *)(data + 0xb0) == -1 ||
-            (other = D_L07_00160058 + *(s32 *)(data + 0xb0) * 0x100) == 0 ||
+            (other = level_mobys + *(s32 *)(data + 0xb0) * 0x100) == 0 ||
             other[0x20] == 0xfe || other[0x20] == 0xfd ||
             other[0x20] == *(u32 *)(data + 0xb4)) {
             if (*(s32 *)(data + 0xd0) != -1)
@@ -434,10 +434,10 @@ void bridge_update(u8 *moby)
             vectors[6] = *(f32 *)(data + 0xc4);
             *(quadword *)vectors = *(quadword *)(vectors + 4);
                 distance = FastVecLength(vectors);
-            func_L00_001FF4B0(-(*(f32 *)(data + 0xcc) * D_0015EE6C), vectors, vectors);
-            func_001F9EC0(vectors + 4, vectors, moby + 0xc0);
+            func_L00_001FF4B0(-(*(f32 *)(data + 0xcc) * g_frame_time), vectors, vectors);
+            matrix_mul_vec3(vectors + 4, vectors, moby + 0xc0);
             FastVecAdd(moby + 0x10, moby + 0x10, vectors + 4);
-            *(f32 *)(data + 0xac) += *(f32 *)(data + 0xcc) * D_0015EE6C;
+            *(f32 *)(data + 0xac) += *(f32 *)(data + 0xcc) * g_frame_time;
             if (distance < *(f32 *)(data + 0xac)) {
                 qcopy(moby + 0x10, data + 0xa0);
                 if (*(s32 *)(data + 0xd0) != -1)
