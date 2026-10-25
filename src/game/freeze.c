@@ -1,4 +1,5 @@
 #include "common.h"
+#include "hero.h"
 #include "callees.h"
 #include "records.h"
 #include "structs.h"
@@ -177,16 +178,6 @@ typedef struct {
     s32 unk2C;
     s32 unk30;
 } MessageBoxP;
-typedef struct {
-    u8 pad0[0x894];
-    s32 unk894;
-    u8 pad898[2];
-    s16 unk89A;
-    u8 pad89C[0xC];
-    s32 unk8A8;
-    u8 pad8AC[0x14];
-    s32 unk8C0;
-} HeroP;
 typedef struct { s16 pad0; s16 pad2; s32 height; } ScreenP;
 extern short D_0015F620;
 extern short D_0015F5E8;
@@ -568,7 +559,7 @@ void func_001FBE80(void) {
             c2 = FastTweenColor(*(s32 *)&D_0015F634, *(s32 *)&D_0015F638, f);
             c3 = FastTweenColor(*(s32 *)&D_0015F63C, *(s32 *)&D_0015F640, f);
         }
-        if (((HeroP *)D_0013F450)->unk89A < 3) {
+        if (((Hero *)D_0013F450)->unk89A < 3) {
             draw_outlined_rect(*(s32 *)&D_0015F5FC - truncate_float_to_s32((f32)*(s32 *)&D_0015F604 * scale),
                             *(s32 *)&D_0015F5FC + truncate_float_to_s32((f32)*(s32 *)&D_0015F604 * scale),
                             *(s32 *)&D_0015F5F8 - truncate_float_to_s32((f32)*(s32 *)&D_0015F600 * scale),
@@ -581,18 +572,18 @@ void func_001FBE80(void) {
                             *(s32 *)&D_0015F610 + truncate_float_to_s32((f32)*(s32 *)&D_0015F618 * scale),
                             *(s32 *)&D_0015F60C - truncate_float_to_s32((f32)*(s32 *)&D_0015F614 * scale),
                             *(s32 *)&D_0015F60C + truncate_float_to_s32((f32)*(s32 *)&D_0015F614 * scale), pulse);
-            sel = ((HeroP *)D_0013F450)->unk8C0 - 1;
+            sel = ((Hero *)D_0013F450)->unk8C0 - 1;
             if (!(sel < 5)) {
                 sel = 4;
             }
             func_00116248(line, D_0015F660, msg_string(sel + 0x5229), msg_string(0x5245));
-            if (((HeroP *)D_0013F450)->unk8C0 == 1) {
+            if (((Hero *)D_0013F450)->unk8C0 == 1) {
                 FontPrintCenter(0x100, *(s32 *)&D_0015F61C, c2, line, -1);
             } else {
                 FontPrintCenter(0x100, *(s32 *)&D_0015F61C, c3, line, -1);
             }
             best = D_0015EF58[(D_0015EE84 ^ 0x10) ? 0 : 1];
-            if (best == ((HeroP *)D_0013F450)->unk894) {
+            if (best == ((Hero *)D_0013F450)->unk894) {
                 unit = D_0015EE80 ? 3000 : 3600;
                 per = unit / 60;
                 min = best / unit;
@@ -608,10 +599,10 @@ void func_001FBE80(void) {
                 FontPrintCenter(0x100, *(s32 *)&D_0015F61C + 0x30, c3, line, -1);
             }
             record = D_0015EF68[(D_0015EE84 ^ 0x10) ? 0 : 1];
-            if (record != 0 && record == ((HeroP *)D_0013F450)->unk8A8) {
+            if (record != 0 && record == ((Hero *)D_0013F450)->unk8A8) {
                 func_00116248(line, D_0015F668, msg_string(0x50A5));
                 FontPrintCenter(0x100, *(s32 *)&D_0015F61C + 0x56, c2, line, -1);
-                func_00116248(line, D_0015F680, ((HeroP *)D_0013F450)->unk8A8);
+                func_00116248(line, D_0015F680, ((Hero *)D_0013F450)->unk8A8);
                 FontPrintCenter(0x100, *(s32 *)&D_0015F61C + 0x6A, c2, line, -1);
             } else {
                 func_00116248(line, D_0015F668, msg_string(0x50A4));

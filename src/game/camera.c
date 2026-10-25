@@ -864,21 +864,7 @@ void apply_camera_shake(CameraShake *s, int along_row0) {
 }
 __asm__(".section .text\n\tnop\n");
 
-struct Player {
-    u8 pad0[0x80];
-    Vec4 pos;
-    u8 pad90[0x8];
-    f32 unk98;
-    u8 pad9C[0x1F4];
-    Vec4 unk290;
-    u8 pad2A0[0x5C];
-    struct Moby *unk2FC;
-    u8 pad300[0x1D84];
-    s32 unk2084;
-    u8 pad2088[0x1FC];
-    s32 unk2284;
-};
-extern struct Player D_0013F450_ED818 __asm__("D_0013F450");
+extern struct Hero D_0013F450_ED818 __asm__("D_0013F450");
 extern f32 func_001EC120_ED818(f32 *vel, f32 from, f32 to, f32 stiffness, f32 damping, f32 max) __asm__("func_001EC120");
 extern float func_001F9B88(float input);
 extern void func_001F9BF0(void *out, void *a, void *b);
@@ -902,7 +888,7 @@ void update_camera_tracking_state(void) {
     struct Moby *m;
 
     f = &gCamera.follow;
-    func_001F9DC0(&dir, &D_0013F450_ED818.unk290, -1.0f);
+    func_001F9DC0(&dir, &D_0013F450_ED818.gravity_dir, -1.0f);
     qcopy(&f->up_target_prev, &f->up_target);
     qcopy(&f->up_target, &dir);
     if (FastVecDot(&f->up, &dir) < -0.98f) {
@@ -918,7 +904,7 @@ void update_camera_tracking_state(void) {
         func_001EC120_ED818(&f->up_vel[2], f->up.f[2], dir.f[2], 0.015f, 0.2f, 0.0f);
     func_001F9DC0(&f->up, &f->up, 1.0f);
 
-    FastVecSub(&f->hero_delta, &D_0013F450_ED818.pos, &f->hero_prev);
+    FastVecSub(&f->hero_delta, &D_0013F450_ED818.motion.pos, &f->hero_prev);
     f->hero_dist = FastVecLength(&f->hero_delta);
     d = FastVecDot(&f->hero_delta, &dir);
     f->up_dist = d;
@@ -927,25 +913,25 @@ void update_camera_tracking_state(void) {
     FastVecSub(&f->hero_delta_side, &f->hero_delta, &proj);
     f->side_dist = FastVecLength(&f->hero_delta_side);
     FastVecScale(&f->hero_delta_side, &f->hero_delta_side, 1.0f / f->side_dist);
-    qcopy(&f->hero_prev, &D_0013F450_ED818.pos);
+    qcopy(&f->hero_prev, &D_0013F450_ED818.motion.pos);
 
-    if (D_0013F450_ED818.unk2284 != 0x50 || D_0013F450_ED818.unk2084 == 0x11) {
-        f->pos.f[0] = D_0013F450_ED818.pos.f[0];
-        f->pos.f[1] = D_0013F450_ED818.pos.f[1];
+    if (D_0013F450_ED818.unk2284 != 0x50 || D_0013F450_ED818.state.current == 0x11) {
+        f->pos.f[0] = D_0013F450_ED818.motion.pos.f[0];
+        f->pos.f[1] = D_0013F450_ED818.motion.pos.f[1];
         f->pos.f[2] =
-            func_001EC120_ED818(&f->z_vel, f->pos.f[2], D_0013F450_ED818.pos.f[2], 0.0075f, 0.175f, 0.0f);
-        f->pos.f[3] = D_0013F450_ED818.pos.f[2];
+            func_001EC120_ED818(&f->z_vel, f->pos.f[2], D_0013F450_ED818.motion.pos.f[2], 0.0075f, 0.175f, 0.0f);
+        f->pos.f[3] = D_0013F450_ED818.motion.pos.f[2];
     } else {
-        f->pos.f[0] = D_0013F450_ED818.pos.f[0];
-        f->pos.f[1] = D_0013F450_ED818.pos.f[1];
+        f->pos.f[0] = D_0013F450_ED818.motion.pos.f[0];
+        f->pos.f[1] = D_0013F450_ED818.motion.pos.f[1];
     }
 
     for (i = 0; i < 4; i++) {
         f->yaw_hist[i] = f->yaw_hist[i + 1];
     }
-    f->yaw_hist[i] = D_0013F450_ED818.unk98;
+    f->yaw_hist[i] = D_0013F450_ED818.motion.rot.f[2];
 
-    m = D_0013F450_ED818.unk2FC;
+    m = D_0013F450_ED818.ground_moby;
     if (m != 0 && m->oclass != 0x4BA && m->oclass != 0x336) {
         if (m == f->ground_moby) {
             f->ground_dz = m->pos.z - f->ground_z;
@@ -961,7 +947,7 @@ void update_camera_tracking_state(void) {
     } else {
         f->ground_dz = 0.0f;
         f->ground_moby = 0;
-        f->ground_z = D_0013F450_ED818.pos.f[2];
+        f->ground_z = D_0013F450_ED818.motion.pos.f[2];
     }
 }
 

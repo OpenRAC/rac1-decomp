@@ -1,4 +1,5 @@
 #include "common.h"
+#include "hero.h"
 #include "vector.h"
 #include "callees.h"
 #include "records.h"
@@ -131,12 +132,7 @@ typedef struct {
 } Cam1088;
 extern Cam1088 D_00187040;
 
-typedef struct {
-    char pad0[0x80];
-    float pos[4];    /* 0x80 */
-    float rot[4];    /* 0x90 */
-} Hero1088;
-extern Hero1088 D_0013F450;
+extern Hero D_0013F450;
 
 extern FogPreset D_0015F584 MACRO_ADDR;
 extern unsigned char D_0015F585[] MACRO_ADDR;
@@ -294,11 +290,11 @@ void func_001F10C8(void) {
                 case 2: {
                     float v[4];
                     occl_cam_state.flags8 = 0;
-                    FastVecSub(v, D_0013F450.pos, gCamera.pos);
+                    FastVecSub(v, D_0013F450.motion.pos.f, gCamera.pos);
                     occl_cam_state.f8C = func_001F9CE8(v);
                     occl_cam_state.f88 = FastSubRots(func_001FA058(v[0], v[1]), gCamera.rot[2]);
-                    occl_cam_state.f90 = D_0013F450.pos[2] - gCamera.pos[2];
-                    occl_cam_state.f84 = FastSubRots(D_0013F450.rot[2], gCamera.rot[2]);
+                    occl_cam_state.f90 = D_0013F450.motion.pos.f[2] - gCamera.pos[2];
+                    occl_cam_state.f84 = FastSubRots(D_0013F450.motion.rot.f[2], gCamera.rot[2]);
                     break;
                 }
                 case 3:
