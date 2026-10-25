@@ -52,7 +52,7 @@ void update_fleet_camera_box_watcher(char *moby) {
                 *(int *)(d + 0x74) += 1;
             }
             n = *(int *)(d + 0x70) + 1;
-            wrap = fleet_mobys + (n << 8) < D_L17_0016005C;
+            wrap = fleet_mobys + (n << 8) < fleet_mobys_end;
             *(int *)(d + 0x70) = n;
             if (!wrap) {
                 if (*(int *)(d + 0x74) == 0 && sk[0x1B] == 0) {
@@ -72,7 +72,7 @@ void update_fleet_camera_box_watcher(char *moby) {
         *(int *)(d + 0x38) = scale_ticks(600);
         *(unsigned char *)(d + 0x4C) = 0;
         if (*(int *)(d + 0x44) == -1 || *(int *)(d + 0x40) == -1 || *(int *)(d + 0x3C) == -1 || *(int *)(d + 0x48) == -1) {
-            STUB_printf(D_L17_001E7300, *(int *)(d + 0x3C), *(int *)(d + 0x48), *(int *)(d + 0x40), *(int *)(d + 0x44));
+            STUB_printf(fleet_camera_box_missing_ids_msg, *(int *)(d + 0x3C), *(int *)(d + 0x48), *(int *)(d + 0x40), *(int *)(d + 0x44));
             *(unsigned char *)(d + 0x4C) = 1;
         }
         *(unsigned char *)(moby + 0x20) = 1;
@@ -109,7 +109,7 @@ void update_fleet_camera_box_watcher(char *moby) {
         }
         if (*(int *)(d + 0xC) > *(int *)(d + 0x38) && tgt != -1
             && ((unsigned int)*(int *)(D_0013E633 + 0x2EA9) < 2 || *(int *)(D_0013E633 + 0x2EA9) == 9)
-            && D_L17_00179D90[0] == 0 && D_L17_00179D90[9] == -1 && gHaveHologuise != 0) {
+            && fleet_help_popup_state[0] == 0 && fleet_help_popup_state[9] == -1 && gHaveHologuise != 0) {
             *(int *)(d + 0x38) = scale_ticks(0x708);
             if (*(int *)(D_0014171B + 0x739) >= 0) {
                 Help_Request(0x3A9A, 0x7D);
@@ -118,8 +118,8 @@ void update_fleet_camera_box_watcher(char *moby) {
             *(int *)(d + 0xC) = 0;
         }
     skip1:
-        if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, *(int *)(d + 0x20)) && D_L17_00179D90[0] == 0
-            && D_L17_00179D90[9] == -1 && gHaveHeliPack[2] == 0) {
+        if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, *(int *)(d + 0x20)) && fleet_help_popup_state[0] == 0
+            && fleet_help_popup_state[9] == -1 && gHaveHeliPack[2] == 0) {
             int w = *(int *)(D_0014171B + 0x761);
             mask = 1 << g_current_level_index;
             if (!(w & mask)) {
@@ -144,7 +144,7 @@ void update_fleet_camera_box_watcher(char *moby) {
             *(int *)(d + 0x30) = -1;
         }
         if (scale_ticks(0xE10) < *(int *)(d + 0x2C) && tgt != -1 && Hero_IsInSpecialState()
-            && D_L17_00179D90[0] == 0 && D_L17_00179D90[9] == -1 && gHaveHeliPack[2] != 0) {
+            && fleet_help_popup_state[0] == 0 && fleet_help_popup_state[9] == -1 && gHaveHeliPack[2] != 0) {
             Help_Request(0x4E2E, 0x78);
             *(int *)(d + 0x30) = tgt;
             *(int *)(d + 0x2C) = 0;
@@ -158,7 +158,7 @@ void update_fleet_camera_box_watcher(char *moby) {
             if (*(int *)(D_0014171B + 0x7A9) >= 0) {
                 Help_Request(0x4268, 0x8B);
             }
-            if (D_L17_00179D90[0] != 0 || D_L17_00179D90[9] != -1) {
+            if (fleet_help_popup_state[0] != 0 || fleet_help_popup_state[9] != -1) {
                 *(int *)(d + 0x50) = 0;
                 *(unsigned char *)(moby + 0x20) = 2;
                 *(int *)(d + 0x5C) = scale_ticks(0xB4);

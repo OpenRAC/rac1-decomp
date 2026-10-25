@@ -41,7 +41,7 @@ void draw_ship_hud(char *moby) {
                 int cnt = collect_oil_tanker_chain_mobys(o, list);
                 int w;
                 for (w = 0; w < cnt; w++) {
-                    draw_ship_radar_moby_icon((char *)D_L11_00167850, (char *)(D_L11_00167850 - 4), list[w], 0, 0x75808080);
+                    draw_ship_radar_moby_icon((char *)pokitaru_camera_rot, (char *)(pokitaru_camera_rot - 4), list[w], 0, 0x75808080);
                 }
             }
         } while (*p++ >= 0);
@@ -54,9 +54,9 @@ void draw_ship_hud(char *moby) {
         do {
             g = (unsigned char *)D_0013E633 + 0xE1D;
             if (i < g[0x15F6]) {
-                append_scaled_screen_triangle_strip(x, y, 0.5f, D_L11_001F0FB8, 0x19, 0xFFFFF3, 0x50008F00);
+                append_scaled_screen_triangle_strip(x, y, 0.5f, ship_hud_missile_pip, 0x19, 0xFFFFF3, 0x50008F00);
             } else {
-                append_scaled_screen_triangle_strip(x, y, 0.5f, D_L11_001F0FB8, 0x19, 0xFFFFF3, 0x20004F00);
+                append_scaled_screen_triangle_strip(x, y, 0.5f, ship_hud_missile_pip, 0x19, 0xFFFFF3, 0x20004F00);
             }
             n = g[0x15F7];
             if (i == n >> 1) {
@@ -150,9 +150,9 @@ void draw_ship_hud(char *moby) {
     for (j = lo; j <= hi; j++) {
         idx = (j & 0xE7) | ((j & 0x10) >> 1) | ((j & 8) << 1);
         if (j < v) {
-            (*(int **)&D_L11_001621FC)[idx] = D_L11_001F1348[idx];
+            (*(int **)&ship_hud_clut)[idx] = ship_hud_clut_backup[idx];
         } else {
-            (*(int **)&D_L11_001621FC)[idx] = 0x80000000;
+            (*(int **)&ship_hud_clut)[idx] = 0x80000000;
         }
     }
     *(int *)(d + 0xF4) = v;

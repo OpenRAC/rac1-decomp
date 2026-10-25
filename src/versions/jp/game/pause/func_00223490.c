@@ -39,7 +39,7 @@ int update_timed_menu_sequence(char *arg0) {
         *(int *)(arg0 + 0x40) = scale_game_frame_count(0xB4);
         *(int *)(arg0 + 0x3C) = 0;
         timed_sequence_title_id = 0x50AA;
-        *(char **)(arg0 + 0x34) = D_001D5418;
+        *(char **)(arg0 + 0x34) = timed_sequence_page1;
         break;
     case 1:
     case 5:
@@ -76,7 +76,7 @@ int update_timed_menu_sequence(char *arg0) {
         *(int *)(arg0 + 0x40) = scale_game_frame_count(0xB4);
         *(int *)(arg0 + 0x3C) = 0;
         timed_sequence_title_id = 0x50D7;
-        *(char **)(arg0 + 0x34) = D_001D54C8;
+        *(char **)(arg0 + 0x34) = timed_sequence_page2;
         break;
     case 3:
         if (*(int *)(arg0 + 0x40) != 0) {
@@ -93,7 +93,7 @@ int update_timed_menu_sequence(char *arg0) {
             return 0;
         }
         timed_sequence_title_id = 0x5107;
-        *(char **)(arg0 + 0x34) = D_001D5588;
+        *(char **)(arg0 + 0x34) = timed_sequence_page3;
         *(int *)(arg0 + 0x40) = scale_game_frame_count(0xF0);
         *(int *)(arg0 + 0x3C) = 0;
         *(int *)(arg0 + 0x50) = *(int *)(arg0 + 0x50) + 1;
@@ -115,7 +115,7 @@ int update_timed_menu_sequence(char *arg0) {
         *(int *)(arg0 + 0x40) = scale_game_frame_count(0xB4);
         *(int *)(arg0 + 0x3C) = 0;
         timed_sequence_title_id = 0x518E;
-        *(char **)(arg0 + 0x34) = D_001D5618;
+        *(char **)(arg0 + 0x34) = timed_sequence_page4;
         *(int *)(arg0 + 0x50) = 12;
         break;
     case 14:
@@ -135,7 +135,7 @@ int update_timed_menu_sequence(char *arg0) {
         *(int *)(arg0 + 0x40) = scale_game_frame_count(0xB4);
         *(int *)(arg0 + 0x3C) = 0;
         timed_sequence_title_id = 0x519A;
-        *(char **)(arg0 + 0x34) = D_001D5630;
+        *(char **)(arg0 + 0x34) = timed_sequence_page5;
         *(int *)(arg0 + 0x50) = 16;
         break;
     case 18:

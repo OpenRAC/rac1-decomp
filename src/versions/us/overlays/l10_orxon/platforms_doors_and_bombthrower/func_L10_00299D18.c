@@ -32,7 +32,7 @@ void update_hero_relocation_trigger(char *m) {
             *(unsigned short *)((*(int *)d << 8) + (int)bs + 0x34) |= 2;
             *(int *)((*(int *)d << 8) + (int)bs + 0x94) = 0;
         } else {
-            if (*(int *)&D_L10_0015F6A8 == 0) {
+            if (*(int *)&orxon_cinematic_mode == 0) {
                 unsigned char *T = D_0014171B + 0x22D;
                 unsigned short t0 = *(unsigned short *)(T + 0x100);
                 int r = scale_ticks(0x12C);

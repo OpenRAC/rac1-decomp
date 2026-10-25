@@ -5,7 +5,7 @@ int draw_prompt_box(char *arg0) {
     func_00234C98_l(0x42, 0x44);
     func_00234C98_l(0x47, 0x2004B);
     SetupGifPaging(0);
-    text = D_001603E8;
+    text = str_error_text;
     v = D_001D6044;
     switch (v) {
     case 0:

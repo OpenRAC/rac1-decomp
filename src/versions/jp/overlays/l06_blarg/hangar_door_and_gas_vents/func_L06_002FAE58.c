@@ -101,7 +101,7 @@ void alien_queen_update(unsigned char *moby)
         }
         if (func_L06_002FCA98_q(moby) != 0) {
             moby[0x20] = 4;
-            func_L06_002FCCA0(moby);
+            finish_alien_queen_first_recovery(moby);
             return;
         }
         break;
@@ -110,9 +110,9 @@ void alien_queen_update(unsigned char *moby)
             func_00213DE0_q(moby, 1, 0, func_001F9850_q(0x14));
             func_L06_002FADE0_q(*(int *)(data + 0xF4));
         }
-        if (func_L06_002FCE58(moby) != 0) {
+        if (update_alien_queen_second_recovery_camera(moby) != 0) {
             moby[0x20] = 6;
-            func_L06_002FD060(moby);
+            finish_alien_queen_second_recovery(moby);
         }
         break;
     case 4:
@@ -144,12 +144,12 @@ void alien_queen_update(unsigned char *moby)
                                                 *(float *)(target + 0x14) - *(float *)(moby + 0x14)),
                             (float *)(data + 0xE0), D_0015EE70_q * 6.2831855f, D_0015EE70_q * 6.2831855f,
                             D_0015EE6C_q * 3.1415927f);
-        if (turn < 0.7853982f && *(float *)&D_L06_00161F90 < dist) {
-            func_00214D28_q((float *)(data + 0xE8), *(float *)&D_L06_00161F84 * D_0015EE6C_q,
-                            *(float *)&D_L06_00161F8C * D_0015EE70_q);
-        } else if (dist < *(float *)&D_L06_00161F94) {
-            func_00214D28_q((float *)(data + 0xE8), -(*(float *)&D_L06_00161F84 * D_0015EE6C_q),
-                            *(float *)&D_L06_00161F8C * D_0015EE70_q);
+        if (turn < 0.7853982f && *(float *)&alien_queen_attack_range < dist) {
+            func_00214D28_q((float *)(data + 0xE8), *(float *)&alien_queen_walk_speed * D_0015EE6C_q,
+                            *(float *)&alien_queen_walk_accel * D_0015EE70_q);
+        } else if (dist < *(float *)&alien_queen_back_off_range) {
+            func_00214D28_q((float *)(data + 0xE8), -(*(float *)&alien_queen_walk_speed * D_0015EE6C_q),
+                            *(float *)&alien_queen_walk_accel * D_0015EE70_q);
         } else {
             func_00214D28_q((float *)(data + 0xE8), 0.0f, D_0015EE70_q * 8.0f);
         }
@@ -167,7 +167,7 @@ void alien_queen_update(unsigned char *moby)
             moby[0x20] = 0xC;
             break;
         }
-        if (dist < *(float *)&D_L06_00161F90 && turn < *(float *)&D_L06_00161F98 * 0.017453292f) {
+        if (dist < *(float *)&alien_queen_attack_range && turn < *(float *)&alien_queen_attack_arc * 0.017453292f) {
             moby[0x20] = 9;
             moby[0xBC] = 7;
             if ((unsigned char)moby[0x53] != 4) {
@@ -262,7 +262,7 @@ void alien_queen_update(unsigned char *moby)
         if (turn < 0.7853982f) {
             func_001F9BF0_q(v, home, pos);
             v[2] = 0.0f;
-            func_L00_001FF4B0_q(v, v, *(float *)&D_L06_00161F84 * D_0015EE6C_q);
+            func_L00_001FF4B0_q(v, v, *(float *)&alien_queen_walk_speed * D_0015EE6C_q);
             func_001F9BD8_q(pos, pos, v);
             func_L00_00262DF0_q(*(int *)(data + 0xEC), pos, 1.0f, pos);
         }

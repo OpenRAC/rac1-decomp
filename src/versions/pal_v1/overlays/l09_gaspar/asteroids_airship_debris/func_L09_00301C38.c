@@ -4,19 +4,19 @@ void update_level09_item_unlock_and_frame_record(char *moby) {
     unsigned char *b;
     unsigned short *tp;
     int n;
-    if (D_L09_0015F6B0 > 0) {
-        if (D_L09_00161450 == 0) {
+    if (gaspar_frame_count > 0) {
+        if (airship_parts_alive_count == 0) {
             q = menu_item_enabled_115 + 1;
             if (q[0xE] == 0) {
                 q[0xE] = 1;
                 PlayBankSound(1, 0, 0);
                 ShowBanner(0x53D6, -1);
-                D_L09_00161450 = 0;
+                airship_parts_alive_count = 0;
             } else {
-                D_L09_00161450 = 0;
+                airship_parts_alive_count = 0;
             }
         } else {
-            D_L09_00161450 = 0;
+            airship_parts_alive_count = 0;
         }
     }
     b = D_0014171B + 0x34D;

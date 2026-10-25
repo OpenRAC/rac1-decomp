@@ -19,14 +19,14 @@ int draw_selected_item_ammo(char *arg0) {
     } else {
         char *q;
         if (have < 1000) {
-            q = text + func_00116248(text, D_001603B8, have);
+            q = text + func_00116248(text, fmt_ammo_have, have);
         } else {
-            q = text + func_00116248(text, D_001603C0, have / 1000, have % 1000);
+            q = text + func_00116248(text, fmt_ammo_have_thousands, have / 1000, have % 1000);
         }
         if (total < 1000) {
-            func_00116248(q, D_001603A0, total);
+            func_00116248(q, fmt_decimal, total);
         } else {
-            func_00116248(q, D_001603D0, total / 1000, total % 1000);
+            func_00116248(q, fmt_number_thousands, total / 1000, total % 1000);
         }
     }
     SetupGifPaging(0);

@@ -20,8 +20,8 @@ int DrawGBsShipMenu__maybe(char *arg0) {
             }
         }
     }
-    func_00116248(buf, D_001603A8, func_001FE540_id(0x4F50), count,
-                  func_001FE540_id(0x4F54), D_001E0B88[level_map_selection[0x89]]);
+    func_00116248(buf, fmt_gold_bolt_count_line, func_001FE540_id(0x4F50), count,
+                  func_001FE540_id(0x4F54), map_gold_bolt_totals[level_map_selection[0x89]]);
     func_001F6CF8_c(*(int *)(arg0 + 0x20) - 0x10, (g_screen_extent[1] >> 1) - 8,
                     0x80000000L, buf, -1);
     func_001F6CF8_c(*(int *)(arg0 + 0x20) - 0x11, (g_screen_extent[1] >> 1) - 9,

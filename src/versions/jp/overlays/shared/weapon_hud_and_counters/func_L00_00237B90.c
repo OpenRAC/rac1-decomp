@@ -9,9 +9,9 @@ int draw_hud_text_panel(char *e) {
     unsigned char *opacity = (unsigned char *)e + 0x70;
 
     if (pal_mode != 0) {
-        y = *(int *)&D_L00_0015F850 + 0xa;
+        y = *(int *)&hud_text_panel_y + 0xa;
     } else {
-        y = *(int *)&D_L00_0015F850 + 0x12;
+        y = *(int *)&hud_text_panel_y + 0x12;
     }
     fade = IntToFloat(*opacity);
     fade /= multiply_global_factor(8.0f);
@@ -90,10 +90,10 @@ int draw_hud_text_panel(char *e) {
                 rem = elapsed - seconds * interval;
                 minutes = rem / per;
                 rem = (rem - minutes * per) * 100 / per;
-                func_00116248(text, D_L00_001E8840, msg_string(0x5372), seconds, minutes, rem);
+                func_00116248(text, hud_text_panel_time_format, msg_string(0x5372), seconds, minutes, rem);
                 draw_framed_text(0x100, y + 0x28, color, text);
                 if (score != 0) {
-                    func_00116248(text, D_L00_0015F858, msg_string(0x5373), score);
+                    func_00116248(text, hud_text_panel_score_format, msg_string(0x5373), score);
                     draw_framed_text(0x100, y + 0x48, color, text);
                 }
             }

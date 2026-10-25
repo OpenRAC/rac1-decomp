@@ -19,7 +19,7 @@ void qwark_oltanis_update(char *m) {
             DeleteMoby(m);
             return;
         }
-        *(char **)(d + 0x20) = D_L14_00161FF0;
+        *(char **)(d + 0x20) = qwark_oltanis_dialogue_name;
         DialogRequest_Init(m, d);
         d[8] = 1;
         m[0x20] = 1;
