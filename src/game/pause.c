@@ -1220,7 +1220,7 @@ int draw_menu_icon_list(char *arg0) {
             draw_hud_rect_blended(x - 0x10, y - 0x10, x + 0x210, y + 0x210,
                           *(int *)&D_001602B0, 1);
         }
-        func_002008B8(GetIconFrame(*(unsigned short *)e, *(short *)(e + 2)), x, y,
+        draw_hud_sprite_subpixel(GetIconFrame(*(unsigned short *)e, *(short *)(e + 2)), x, y,
                       0x200, 0x200, 0x80);
         y += 0x252;
     }
@@ -3849,7 +3849,7 @@ s32 draw_menu_item_grid(MenuItemGrid *grid) {
                         frame_offset = 2;
                     }
                 }
-                func_002008B8(GetIconFrame(cell->icon, cell->frame + frame_offset), left, top, icon_width, icon_height, 0x80);
+                draw_hud_sprite_subpixel(GetIconFrame(cell->icon, cell->frame + frame_offset), left, top, icon_width, icon_height, 0x80);
             }
             cell++;
             x += column_step;
@@ -5101,7 +5101,7 @@ int MissionMenu_DrawObjectives(char *arg) {
             if (sel) Font_DisableColorCodes();
             t.f[5] = y;
             t.f[4] = 0x10;
-            func_001F75D0(t.f, color, MSGS(*ids), -1);
+            font_print_window_small(t.f, color, MSGS(*ids), -1);
             if (sel) Font_EnableColorCodes();
             h = (short)t.f[7];
             h = h / (short)t.f[8];
@@ -5115,7 +5115,7 @@ int MissionMenu_DrawObjectives(char *arg) {
         t.f[9] = 1;
         t.f[5] = y + 8;
         t.f[4] = *(int *)(arg + 0x24) >> 1;
-        func_001F75D0(t.f, 0x8020FFFFL, MSGS(0x5242), -1);
+        font_print_window_small(t.f, 0x8020FFFFL, MSGS(0x5242), -1);
     }
     DoGifPaging();
     return 2;
@@ -6119,17 +6119,17 @@ int draw_checking_memory_card_data_menu(struct Stream_21380 *menu) {
         window_fields[8] = 16;
         window_fields[9] = 5;
         text_window = *(FontWindow_21380 *)window_fields;
-        func_001F75D0(&text_window, 0x80000000L, text, -1);
+        font_print_window_small(&text_window, 0x80000000L, text, -1);
         text_window.anchor_y = (menu->height - text_window.rendered_height) >> 1;
         text_window.flags ^= 4;
-        func_001F75D0(&text_window, 0x80000000L, text, -1);
+        font_print_window_small(&text_window, 0x80000000L, text, -1);
         text_window.top--;
         text_window.bottom--;
         text_window.left--;
         text_window.right--;
         text_window.anchor_x--;
         text_window.anchor_y--;
-        func_001F75D0(&text_window, 0x80FFA888L, text, -1);
+        font_print_window_small(&text_window, 0x80FFA888L, text, -1);
         DoGifPaging();
         goto done;
     }
@@ -7053,17 +7053,17 @@ int draw_prompt_box(char *arg0) {
         TextBox c = { { 1, *(int *)(arg0 + 0x24) + 1, 1, *(int *)(arg0 + 0x20) + 1,
                         *(int *)(arg0 + 0x20) >> 1, 5, 0, 0, 0x10, 5 } };
 
-        func_001F75D0(&c, 0x80000000L, text, -1);
+        font_print_window_small(&c, 0x80000000L, text, -1);
         c.s[5] = (*(int *)(arg0 + 0x24) - c.s[7]) >> 1;
         c.s[9] ^= 4;
-        func_001F75D0(&c, 0x80000000L, text, -1);
+        font_print_window_small(&c, 0x80000000L, text, -1);
         c.s[0]--;
         c.s[1]--;
         c.s[2]--;
         c.s[3]--;
         c.s[4]--;
         c.s[5]--;
-        func_001F75D0(&c, 0x80FFA888L, text, -1);
+        font_print_window_small(&c, 0x80FFA888L, text, -1);
     }
     DoGifPaging();
     return 2;
@@ -8446,7 +8446,7 @@ void draw_menu_flashing_panel(struct MenuPanelOwner *owner) {
     }
     func_00234C98_250B8(8, 0);
     func_00234C98_250B8(0x42, 0x8000000044ULL);
-    func_002008B8(GetIconFrame(0xE99E, 7), x << 4, y << 4, width << 4, height << 4, 0x80);
+    draw_hud_sprite_subpixel(GetIconFrame(0xE99E, 7), x << 4, y << 4, width << 4, height << 4, 0x80);
     if (panel->active) {
         panel->time += 2;
         u = random_integer_below(200);

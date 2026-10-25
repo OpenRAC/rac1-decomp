@@ -1154,10 +1154,10 @@ void scan_hero_input_sequences(void) {
                 int c = *(int *)(g + 0x450);
                 if (c == 0) {
                     s = 1;
-                    if (D_0015EEB4[0]) s = 2;
+                    if (draw_map51[0]) s = 2;
                 } else if (c == 1) {
                     s = 2;
-                    if (D_0015EEB4[0]) s = 1;
+                    if (draw_map51[0]) s = 1;
                 } else if (c == 3) {
                     s = 3;
                 }

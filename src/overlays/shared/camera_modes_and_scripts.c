@@ -152,7 +152,7 @@ void update_hero_aligned_camera_from_input(u8 *o) {
     if (t == 0.0f) t = IntToFloat((D_0013CA40.i1A0 >> 12) & 1);
     if (t == 0.0f) t = -IntToFloat((D_0013CA40.i1A0 >> 14) & 1);
     if (D_L00_00166D80_EB3E8.s270 != 0 && D_0013F450_EB3E8.i2090 == 2) t = 0.0f;
-    if (D_0015EEDC == 0) t = -t;
+    if (invert52 == 0) t = -t;
     r = FastAbsF(st->b);
     k = (*(float *)&D_L00_00161E90) + ((*(float *)&D_L00_00161E94) - (*(float *)&D_L00_00161E90)) * r;
     st->b = func_001EC120_EB3E8(st->b, t, (*(float *)&D_L00_00161E98), (*(float *)&D_L00_00161E9C), (*(float *)&D_L00_00161EA0), &st->vb);

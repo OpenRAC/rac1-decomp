@@ -188,7 +188,7 @@ extern void func_0020D440(void *, int);
 Moby *CreateMoby(int oClass) {
     Moby *m;
 
-    for (m = (Moby *)D_0016001C; m < (Moby *)D_00160020; m++) {
+    for (m = (Moby *)D_0016001C; m < (Moby *)moby_instance_perm_end; m++) {
         if (m->state >= 0xFE && (unsigned int)D_0015F6F0 >= m->unk38) {
             if (m->state == 0xFF) {
                 m[1].state = 0xFF;

@@ -300,6 +300,7 @@
 #define update_camera_environment_from_regions                             func_001EE858
 #define clear_dma_queue_entry                                              func_001F0F30
 #define print_debug_text                                                   func_001F0F78
+#define print_debug_text_centered                                          func_001F0FF8
 #define reset_graphics                                                     func_001F2568
 #define BuildViewMatrices                                                  func_001F2608
 #define configure_graphics_projection                                      func_001F3760
@@ -359,16 +360,22 @@
 #define update_hud                                                         func_001FFFB8
 #define HudSprite                                                          func_00200468
 #define draw_hud_sprite_flipped                                            func_00200650
+#define draw_hud_sprite_subpixel                                           func_002008B8
 #define draw_hud_sprite_uv                                                 func_00200A90
+#define draw_rotated_sprite                                                func_00200E38
 #define draw_hud_sprite_rect                                               func_00201190
 #define draw_hud_rect                                                      func_002014B8
 #define draw_hud_rect_depth                                                func_002017C8
 #define draw_stretchable_ui_frame                                          func_00201960
 #define draw_framed_text                                                   func_00201A38
 #define draw_boot_image                                                    func_00201AF0
+#define unpack_point_records                                               func_00203038
+#define relocate_sky_definition                                            func_00203118
 #define build_indexed_resident_render_packet                               func_002035B0
+#define upload_texture_images                                              func_00203958
 #define relocateObjectPointers                                             func_00203B18
 #define prepare_resident_class_render_data                                 func_00203B70
+#define register_moby_class                                                func_00203E78
 #define register_object_render_class                                       func_00203F68
 #define register_shrub_render_class                                        func_00204340
 #define initialize_tfrag_render_data                                       func_00204918
@@ -920,6 +927,7 @@
 #define gBolts                                                             D_0015EE98
 #define hero_max_health                                                    D_0015EEA0
 #define gCheats                                                            D_0015EEB0
+#define draw_map51                                                         D_0015EEB4
 #define playback_mode                                                      D_0015EEE8
 #define gHelpDeskVoice                                                     D_0015EF1C
 #define gHelpDeskText                                                      D_0015EF1D
@@ -1701,6 +1709,7 @@
 #define refresh_camera_control_flags                                       func_001EDCE8
 #define Font_EnableColorCodes                                              func_001F6598
 #define Font_DisableColorCodes                                             func_001F65A8
+#define font_print_window_small                                            func_001F75D0
 #define configure_graphics_render_target_and_projection                    func_001F7A50
 #define draw_debug_font                                                    func_001F7B70
 #define append_billboard_batch                                             func_001F9478
@@ -1708,9 +1717,11 @@
 #define calculate_ring_buffer_bounds                                       func_001FDF10
 #define draw_level_selection_map                                           func_001FDF78
 #define update_resource_counter                                            func_001FFFA0
+#define upload_mip_texture                                                 func_00202AA8
 #define load_map_chunk                                                     func_002083E0
 #define expand_map_coverage                                                func_00208688
 #define downsample_map_coverage                                            func_00208860
+#define draw_map_markers                                                   func_00208D38
 #define copy_level_object_positions                                        func_00208FA0
 #define load_and_initialize_level_chunk                                    func_00209DC0
 #define update_resident_packed_direction                                   func_0020DE20
@@ -4140,6 +4151,7 @@
 #define frm_vsync_time                                                     D_0015EE50
 #define frame_delta_time                                                   D_0015EE7C
 #define selector_available                                                 D_0015EEC0
+#define invert52                                                           D_0015EEDC
 #define music_volume                                                       D_0015EEEC
 #define active_message_record_count                                        D_0015EF30
 #define level_root                                                         D_0015EF4C
@@ -4161,6 +4173,7 @@
 #define screen_color_effect_now                                            D_0015F450
 #define occl_debug_overlay_enabled                                         D_0015F470
 #define effect_tex_cnt                                                     D_0015F55C
+#define level_texture_payload_address                                      D_0015F560
 #define draw_callback_count                                                D_0015F564
 #define draw_callback2_count                                               D_0015F568
 #define draw_callback3_count                                               D_0015F56C
@@ -4198,10 +4211,13 @@
 #define num_spawnable_mobys                                                D_0015FFFC
 #define moby_anim_head                                                     D_00160014
 #define resident_object_pool                                               D_00160018
+#define moby_instance_perm_end                                             D_00160020
+#define occl_fog_count                                                     D_00160030
 #define runtime_resource_tag                                               D_00160044
 #define class_resource_count                                               D_00160048
 #define active_class_resource_index                                        D_0016004C
 #define active_decode_buffer                                               D_00160050
+#define part_clip_dist                                                     D_001601BC
 #define menu_fade_duration                                                 D_001602B4
 #define requested_video_mode                                               D_0016044C
 #define graphics_setup_word                                                D_001604A0
@@ -4295,7 +4311,11 @@
 #define hud_chan_slots                                                     D_00199C60
 #define message_text_buffer                                                D_0019A540
 #define camera_environment_regions                                         D_0019AEC0
+#define dir_lights                                                         D_0019BEC0
+#define point_lights                                                       D_0019C2C0
+#define point_light_data                                                   D_0019C4C0
 #define resident_material_templates                                        D_0019E640
+#define special_material_template                                          D_0019E7C0
 #define alternate_special_material_template                                D_0019E7D8
 #define gold_weapon_texture_state                                          D_0019E7F0
 #define level_map_transforms                                               D_0019EA70
@@ -4310,7 +4330,9 @@
 #define moby_class_resources                                               D_001B3580
 #define moby_gs_loc_stash                                                  D_001B6100
 #define moby_class_rectify                                                 D_001B6880
+#define resident_class_material_maps                                       D_001B6C00
 #define moby_grids                                                         D_001B7A60
+#define resident_indexed_textures                                          D_001CAE40
 #define class_resource_ids                                                 D_001CBE40
 #define compressed_class_resources                                         D_001CBEA0
 #define class_material_maps                                                D_001CBF60
@@ -4351,6 +4373,8 @@
 #define level_map_labels                                                   D_001DE0C4
 #define level_map_markers                                                  D_001DE1A8
 #define vu_chain_table                                                     D_001DE338
+#define tfrag_vu_const_block                                               D_001DEAC0
+#define shrub_vu1_constants                                                D_001DED30
 #define vu1_gs_regs_tex_flush                                              D_001DF180
 #define normal_font_metrics                                                D_001DF3D0
 #define small_font_metrics                                                 D_001DF770
@@ -4407,6 +4431,7 @@
 #define particle_min_ground                                                D_L00_00160320
 #define first_class_ids                                                    D_L00_00160608
 #define second_class_ids                                                   D_L00_00160618
+#define last_frame                                                         D_L00_00161488
 #define trail_speed                                                        D_L00_00161950
 #define trail_decay                                                        D_L00_00161954
 #define suck_fire_tuning                                                   D_L00_00161C00

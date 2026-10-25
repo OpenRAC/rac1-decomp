@@ -775,7 +775,7 @@ void render_level_frame(void) {
         rotation_angle = ((D_0015F538 % 55) * (-6.2831855f)) / 55.0f;
         /* The frame counter contributes only the sprite angle modulo 55. */
         /* Retail passes the full texture value in a2 and the five floats in f12-f16. */
-        func_00200E38(1216.0f, screen_y, quad_extent, 272.0f, 0x40, 0x40,
+        draw_rotated_sprite(1216.0f, screen_y, quad_extent, 272.0f, 0x40, 0x40,
                             func_001F4868_305A0(3), rotation_angle);
     }
     DoGifPaging();
@@ -1833,34 +1833,24 @@ extern void func_0022F090();
 #define game_language D_0015EE88
 #define D_00194180 D_00194280
 #define resident_class_slot_by_id ((u8 *)&D_001B3E40)
-#define resident_class_material_maps D_001B6C00
 #define D_001B6180 D_001B6500
 #define D_001941C0_q (*(MemInfo *)&D_001941C0)
 #define disc_table (*(DiscTable_q *)&D_00137C80)
 #define level_render_state (*(LevelRenderState_q *)&D_0013E130)
-#define special_material_template D_0019E7C0
 #define D_0015FF08 D_00160008
 #define D_001B5980 D_001B5D00
 #define D_0015FF00 D_00160000
-#define level_texture_payload_address D_0015F560
-#define resident_indexed_textures D_001CAE40
 #define D_00160580 (*(u64 *)&D_00160680)
 #define D_00160588 (*(s64 *)&D_00160688)
-#define point_lights D_0019C2C0
-#define point_light_data D_0019C4C0
-#define dir_lights D_0019BEC0
 #define D_001D9740 D_001D9AD0
 #define D_0015FF18 D_00160018
 #define moby_instance_end D_0016001C
 #define moby_vars D_00160028
 #define D_001600AC D_001601AC
 #define D_001600B4 D_001601B4
-#define moby_instance_perm_end D_00160020
 #define D_001600B0 D_001601B0
 #define D_001600B8 D_001601B8
 #define D_001CD780 D_001CDB00
-#define occl_fog_count D_00160030
-#define part_clip_dist D_001601BC
 #define D_001604E0 (*(s64 *)&D_001605E0)
 #define D_001604F0 (*(s64 *)&D_001605F0)
 #define level_available D_0013DE48
@@ -1879,14 +1869,9 @@ extern void func_0022F090();
 #define sceCdSync ((s32 (*)(s32))func_00120F30)
 #define FlushCache ((void (*)(s32))func_00118D80)
 #define func_0020B618(a, b) func_0020C468((s32)(a), (s32)(b))
-#define upload_texture_images func_00203958
 #define highest_set_bit_index func_001F9968
 #define copy_blocks_16_forward ((void (*)(void *, void *, s32))func_001F9A98)
-#define relocate_sky_definition func_00203118
-#define register_moby_class func_00203E78
-#define unpack_point_records func_00203038
 #define parse_particle_textures func_00202F00
-#define upload_mip_texture func_00202AA8
 #define clear_blocks_16 func_001F99D8
 #define reset_draw_globals func_001F3B90
 #define rand ((s32 (*)(void))func_001160D8)

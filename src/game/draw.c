@@ -347,14 +347,14 @@ void update_render_debug_menu(void) {
                     D_00160FC0 = 65536.0f;
                     D_00161070 = 64.0f;
                     occl_fog_density_set = 40.0f;
-                    D_00160030 = 0x40;
-                    D_001601BC = 0x40000;
+                    occl_fog_count = 0x40;
+                    part_clip_dist = 0x40000;
                 } else {
                     D_00160FC0 = 512000.0f;
                     D_00161070 = 720.0f;
                     occl_fog_density_set = 500.0f;
-                    D_00160030 = 500;
-                    D_001601BC = 0x1F4000;
+                    occl_fog_count = 500;
+                    part_clip_dist = 0x1F4000;
                 }
             }
             break;
@@ -874,7 +874,7 @@ void UpdateFog(void) {
         *(float *)&view_context[0x87] = D_001611C4.f[1];
         *(float *)&view_context[0x8A] = D_001611C4.f[2];
         *(float *)&view_context[0x8B] = D_001611C4.f[3];
-        D_001601BC = 0x40000;
+        part_clip_dist = 0x40000;
     } else {
         view_context[0x8C] = fog_color_red.r;
         view_context[0x8D] = fog_color_red.g;
@@ -883,7 +883,7 @@ void UpdateFog(void) {
         *(float *)&view_context[0x87] = fog_color_red.f[1];
         *(float *)&view_context[0x8A] = fog_color_red.f[2];
         *(float *)&view_context[0x8B] = fog_color_red.f[3];
-        D_001601BC = 0x1F4000;
+        part_clip_dist = 0x1F4000;
     }
     UpdateViewContext();
     level_fog_mode = 0;
@@ -1139,7 +1139,6 @@ extern f32 D_00160C30 MACRO_ADDR;
 extern f32 D_001E0250[];
 extern f32 D_001E6E70[];
 extern struct FogRegs2P D_001DED30;
-#define shrub_vu1_constants D_001DED30
 extern struct FogRegs2P D_001DED80;
 extern Vec4P D_001DEDC0[2];
 extern Vec4P D_001DEA90[3];
@@ -1154,7 +1153,6 @@ extern struct {
     s32 x;
     s32 y;
 } D_001DEAC0;
-#define tfrag_vu_const_block D_001DEAC0
 
 extern f32 func_001FA058(f32, f32);
 extern f32 func_001F9F90(f32);
@@ -1349,8 +1347,6 @@ void UpdateViewContext(void) {
 
 #undef view_context_p
 #undef pal_mode_p
-#undef shrub_vu1_constants
-#undef tfrag_vu_const_block
 #undef fast_cos
 #undef set_tfrag_dists
 

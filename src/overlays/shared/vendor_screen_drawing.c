@@ -61,7 +61,7 @@ void draw_vendor_purchase_text(void *m, int x, int y) {
     DrawMobyList(MENU.f20 + 0x500, 1);
     box.half_y = 6;
     box.style = 1;
-    func_001F75D0((void *)&box, 0x80f0f0f0L, msg_string(0x523C), -1);
+    font_print_window_small((void *)&box, 0x80f0f0f0L, msg_string(0x523C), -1);
     func_00116248(text, D_L00_00161220, D_L00_00161F30);
     if (D_L00_00161F30 >= 100)
         text_x = 0x17;
@@ -88,7 +88,7 @@ quantity_done:
 no_money:
     message_id = 0x523D;
 message:
-    func_001F75D0((void *)&box, 0x80f0f0f0L, msg_string(message_id), -1);
+    font_print_window_small((void *)&box, 0x80f0f0f0L, msg_string(message_id), -1);
     return;
 purchase:
     cost = discount_purchase_pricing ? D_L00_001C43B0[MENU.rows[MENU.f58].fD0].i4 : D_L00_001C43B0[MENU.rows[MENU.f58].fD0].i0;
@@ -97,7 +97,7 @@ purchase:
         FontPrintSmall(2, 0x20, 0x80f0f0f0L, msg_string(0x5239), -1);
         FontPrintSmall(2, 0x3e, 0x80f0f0f0L, msg_string(0x5250), -1);
     } else {
-        func_001F75D0((void *)&box, 0x80f0f0f0L, msg_string(0x523D), -1);
+        font_print_window_small((void *)&box, 0x80f0f0f0L, msg_string(0x523D), -1);
     }
 }
 typedef struct {

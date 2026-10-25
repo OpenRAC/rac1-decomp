@@ -1230,7 +1230,6 @@ extern char D_L00_001D95E8[];
 #define effects ((E_2a7780 *)D_L00_001D95E8)
 extern int D_L00_00161488 MACRO_ADDR;
 extern short D_L00_00161484;
-#define last_frame D_L00_00161488
 #define frame_2a7780 D_L00_0015F6B0
 #define uv_scale (*(float *)&D_L00_00161484)
 #define FUN_001f44b8_2a7780 func_001F4868
@@ -1525,7 +1524,7 @@ typedef struct {
     char pad20B4[0x168]; int thrown_sound;
 } WPlayer48;
 typedef struct { char pad0[0x140]; WVec48 position; float pad150,pitch,yaw; } WCamera48;
-typedef struct { int pad0,side; char pad8[0x14]; int first_frame,last_frame; char pad24[8]; } WAttack48;
+typedef struct { int pad0,side; char pad8[0x14]; int first_frame,D_L00_00161488; char pad24[8]; } WAttack48;
 typedef struct { char pad0[0x18]; Wrench48 *moby; int surface; WVec48 position; } WHit48;
 typedef struct { char pad0[0x14]; short hit_index; char pad16[6]; short hit_count; } WDamage48;
 typedef struct {

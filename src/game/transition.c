@@ -250,13 +250,13 @@ unsigned char *initialize_level_render_state(LevelHeaderE9EC8 *hdr)
     D_00160FC0 = 512000.0f;
     D_00161070 = 720.0f;
     occl_fog_density_set = 500.0f;
-    D_00160030 = 500;
-    D_001601BC = 0x1F4000;
+    occl_fog_count = 500;
+    part_clip_dist = 0x1F4000;
     SetBackgroundColor(view_context.x23C, view_context.x240, view_context.x244);
     ((void (*)(void *))VU0_loadMicroProgram)(D_00100AE0);
-    FastMemZero16(D_0019C2C0, 0x100);
-    FastMemZero16(D_0019C4C0, 0x180);
-    FastMemZero16(D_0019BEC0, 0x400);
+    FastMemZero16(point_lights, 0x100);
+    FastMemZero16(point_light_data, 0x180);
+    FastMemZero16(dir_lights, 0x400);
 
     lc = (unsigned char *)hdr + hdr->x4;
     n = *(int *)lc;
@@ -266,7 +266,7 @@ unsigned char *initialize_level_render_state(LevelHeaderE9EC8 *hdr)
         n = 12;
     }
     if (n != 0) {
-        copy_memory_aligned(D_0019BEC0, lc, n << 6);
+        copy_memory_aligned(dir_lights, lc, n << 6);
     }
 
     for (i0 = 0; i0 < tfrag_render_record_count; i0++) {
@@ -481,13 +481,13 @@ unsigned char *initialize_level_render_state(LevelHeaderE9EC8 *hdr)
     D_00160028 = p;
     p += 0x2000;
     D_001601AC = p;
-    D_00160020 = (Ent100E9EC8 *)((unsigned char *)resident_object_pool + 0x3F00);
+    moby_instance_perm_end = (Ent100E9EC8 *)((unsigned char *)resident_object_pool + 0x3F00);
     p += 0x20000;
     D_001601B4 = -1;
     D_001601B0 = 0;
     D_001601B8 = 0;
     FastMemZero16(D_001CDB00, 0x200);
-    for (e = resident_object_pool; e != D_00160020; e++) {
+    for (e = resident_object_pool; e != moby_instance_perm_end; e++) {
         e->x36 = 0x7F80;
     }
     for (o = ties; o != ties_end; o++) {

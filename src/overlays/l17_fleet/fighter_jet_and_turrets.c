@@ -1242,7 +1242,7 @@ void draw_fighter_jet_radar_contact_icon(char *rot, char *from, char *moby, int 
     FastVecScale(pos, pos, 0.0714285746f);
     len = FastVecLength(pos);
     side = 1.0f;
-    if (D_0015EEB4[0] != 0) {
+    if (draw_map51[0] != 0) {
         side = -1.0f;
     }
     x = func_001FA898_r(side * pos[0]);

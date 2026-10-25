@@ -1923,7 +1923,7 @@ s32 load_level_archive_resources(s32 full, s32 keep) {
         FastMemCopy(h, (char *)(src[4] + (s32)src), src[5]);
         D_L00_0015F50C = 0;
         func_L00_001FF040(D_L00_0015FD48, D_0014C150 + D_0015EE84 * 16, 0x10);
-        func_00203958((char *)(src[6] + (s32)src), h->v[0], (char *)h + h->v[1]);
+        upload_texture_images((char *)(src[6] + (s32)src), h->v[0], (char *)h + h->v[1]);
         D_L00_001600C4 = D_0015EE5C;
         func_00118D80(0);
         used = func_0020C468((char *)(src[0x14] + (s32)src), base);
@@ -1963,12 +1963,12 @@ s32 load_level_archive_resources(s32 full, s32 keep) {
         else
             D_L00_0015F6E0 = 0;
         if (h->v[4])
-            func_00203118(base + h->v[4]);
+            relocate_sky_definition(base + h->v[4]);
         else
             D_L00_001605DC = 0;
         resolve_level_asset_block_pointers(base + h->v[5]);
         for (i = 0, q2 = (char *)h + h->v[7]; i < h->v[6]; i++, q2 += 0x20)
-            func_00203E78(*(s32 *)q2 ? base + *(s32 *)q2 : 0, (char *)h + h->v[0xF], q2 + 0x10, *(s32 *)(q2 + 4));
+            register_moby_class(*(s32 *)q2 ? base + *(s32 *)q2 : 0, (char *)h + h->v[0xF], q2 + 0x10, *(s32 *)(q2 + 4));
         print_moby_class_sizes((int *)((char *)h + h->v[7]), h->v[7]);
         for (sq = 0, p = (char *)h + h->v[0x1E]; sq < D_L00_00197680[0]->seq_count; sq++, p += 4) {
             if (*(s32 *)p) {
@@ -1993,7 +1993,7 @@ s32 load_level_archive_resources(s32 full, s32 keep) {
         for (i = 0, q2 = (char *)h + h->v[0xB]; i < h->v[0xA]; i++, q2 += 0x30)
             register_shrub_render_class(base + *(s32 *)q2, (char *)h + h->v[0x13], q2 + 0x10, q2 + 0x20, *(s32 *)(q2 + 4));
         D_L00_0015F520 = base + h->v[0x1A];
-        func_00203038((char *)h + h->v[0x17], h->v[0x16]);
+        unpack_point_records((char *)h + h->v[0x17], h->v[0x16]);
         if (h->v[0x28]) {
             relocate_counted_pointer_table(base + h->v[0x28]);
         } else {

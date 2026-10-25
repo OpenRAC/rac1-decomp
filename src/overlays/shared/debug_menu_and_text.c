@@ -902,8 +902,8 @@ void draw_debug_menu(void) {
 
     append_gif_transfer_packet();
     if (D_L00_0015F6BC == 0) {
-        func_001F0FF8(0x100, 0x10, 0x80C0C000, D_L00_0015F108);
-        func_001F0FF8(0x100, 0x18, 0x80C0C000, D_L00_0015F110);
+        print_debug_text_centered(0x100, 0x10, 0x80C0C000, D_L00_0015F108);
+        print_debug_text_centered(0x100, 0x18, 0x80C0C000, D_L00_0015F110);
         print_debug_text(0xC, 0x2C, 0x8000C000, D_L00_0015F120);
         print_debug_text(0xC, 0x32, 0x8000C000, D_L00_0015F128);
         print_debug_text(0x14, 0x40, 0x8000C0C0, D_L00_0015F130);

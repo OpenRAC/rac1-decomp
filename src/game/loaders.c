@@ -663,7 +663,7 @@ void SetUpVisGifViewer(long *out, int arg1, int arg2, int arg3, int arg4, int ar
         *out = f0;
         out[2] = f2;
     } else if (arg5 < -1) {
-        long *tpl = D_0019E7C0;
+        long *tpl = special_material_template;
 
         if (arg5 == -3) {
             tpl = alternate_special_material_template;
@@ -1942,7 +1942,7 @@ void select_world_object_resource_tables(int class_id, int buffer_index) {
     resource_table = moby_class_resources;
     resource_table[class_slot] = resource_data;
     D_001B6500[class_slot] = resource_data->original_field_2c;
-    ((void (*)(void *, void *, void *, int))prepare_resident_class_render_data)(resource_data, D_001CAE40, class_material_maps[active_class_resource_index], class_id);
+    ((void (*)(void *, void *, void *, int))prepare_resident_class_render_data)(resource_data, resident_indexed_textures, class_material_maps[active_class_resource_index], class_id);
     resource_table_index = active_class_resource_index;
     resource_tag = runtime_resource_tag;
     for (runtime_index = 0; runtime_index < 16; runtime_index++) {

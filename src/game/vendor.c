@@ -674,10 +674,10 @@ void render_vendor_buy_label_pass(char *unused, int x, int y) {
     }
     if (m != 0) {
         *(unsigned short *)(sp + 0x12) |= 4;
-        func_001F75D0(sp, 0x80F0F0F0L, func_001FE540_id(m), -1);
+        font_print_window_small(sp, 0x80F0F0F0L, func_001FE540_id(m), -1);
         *(unsigned short *)(sp + 0x12) ^= 4;
         *(short *)(sp + 0xA) = (y - *(short *)(sp + 0xE)) >> 1;
-        func_001F75D0(sp, 0x80F0F0F0L, func_001FE540_id(m), -1);
+        font_print_window_small(sp, 0x80F0F0F0L, func_001FE540_id(m), -1);
     }
 }
 

@@ -358,7 +358,7 @@ void link_localized_display_text(void) {
     idx = ((HelpState *)D_001997D0)->pad[6];
     text = help_msgs[idx].text;
     FontSetWindow((void *)win, 0xF0, 0x1E0, 0x2C, 0x1D4, 0x100, 0x168, 0x10, 7);
-    func_001F75D0((void *)win, 0x80FFA888L, text, -1);
+    font_print_window_small((void *)win, 0x80FFA888L, text, -1);
 
     screenY = frame_size;
     w = win[6];
@@ -732,7 +732,7 @@ void draw_help(void) {
             text = help_msgs[((HelpState *)D_001997D0)->pad[6]].text;
             FontSetWindow((void *)win, 0xF0, 0x1E0, 0x2C, 0x1D4, 0x100,
                           ((HelpState *)D_001997D0)->pad[3], 0x10, 3);
-            func_001F75D0((void *)win, col, text, -1);
+            font_print_window_small((void *)win, col, text, -1);
         }
         break;
     case 7:

@@ -624,23 +624,23 @@ extern f32 map_data_0015FE50 SDATA(D_0015FE50);
 extern f32 map_data_0015FE54 SDATA(D_0015FE54);
 extern u8 map_data_001E8398[] __asm__("D_001E8398");
 
-extern s32 print_debug_text_centered(s32, s32, s32, u8 *) __asm__("func_001F0FF8");
+extern s32 func_001F0FF8(s32, s32, s32, u8 *);
 extern void setup_gif_paging(s32) __asm__("func_001F4630");
 extern void do_gif_paging(void) __asm__("func_001F4748");
 extern void draw_ui_frame(s32, s32, s32, s32, s32) __asm__("func_001F62C8");
-extern void font_print_window_small(void *, u64, void *, s32) __asm__("func_001F75D0");
+extern void func_001F75D0(void *, u64, void *, s32);
 extern f32 fast_add_rotations(f32, f32) __asm__("func_001FA748");
 extern f32 fast_subtract_rotations(f32, f32) __asm__("func_001FA790");
 extern s32 get_icon_frame(s32, s32) __asm__("func_00200198");
 extern u64 get_frame_texture(s32) __asm__("func_00200248");
-extern void draw_hud_sprite_subpixel(s32, s32, s32, s32, s32, s32) __asm__("func_002008B8");
-extern void draw_rotated_sprite(f32, f32, f32, f32, f32, s32, s32, u64) __asm__("func_00200E38");
+extern void func_002008B8(s32, s32, s32, s32, s32, s32);
+extern void func_00200E38(f32, f32, f32, f32, f32, s32, s32, u64);
 extern void append_screen_rect_packet(s32, s32, s32, s32, u64, s32) __asm__("func_00201640");
 extern void format_menu_item_text(s32, void *) __asm__("func_00208AB0");
 extern void world_to_map_coords(f32 *, f32 *, s32, f32, f32) __asm__("func_00208C38");
 /* EABI places floating and integer arguments in independent register banks. */
 extern void world_to_map_coords_xy_205E70(f32, f32, f32 *, f32 *, s32) __asm__("func_00208C38");
-extern void draw_map_markers(s32, s32, s32, s32) __asm__("func_00208D38");
+extern void func_00208D38(s32, s32, s32, s32);
 extern void vu1_add_g_sregister(s32, s64) __asm__("func_00234C98");
 extern void *map_memset_205E70(void *, s32, u32) __asm__("func_001153FC");
 

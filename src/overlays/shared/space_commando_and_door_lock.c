@@ -1079,7 +1079,7 @@ void bot_door_lock_update(char *moby) {
                 if (data->cnt < 10) {
                     PartType41Spawn(pos, moby, data->cnt + 2, color, 0x7f, 4, 0xff, 0.5f);
                 } else {
-                    if (*(unsigned char *)&D_0015EEB4) {
+                    if (*(unsigned char *)&draw_map51) {
                         angle = FastAddRots(*(float *)(moby + 0x48), 1.5707964f);
                         offset[0] = FastCos(angle) * 0.15f;
                         angle = FastAddRots(*(float *)(moby + 0x48), 1.5707964f);

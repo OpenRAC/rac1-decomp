@@ -78,7 +78,7 @@ extern void func_00202790(int);
    D_0019C2C0) that has moved more than 8 units is re-placed and either
    created (state 1 -> 2) or refreshed (state 2). */
 void UpdateAllPointLights(void) {
-    char *l = D_0019BEC0;
+    char *l = dir_lights;
     float ang;
     int i;
 
@@ -92,8 +92,8 @@ void UpdateAllPointLights(void) {
     *(float *)(l + 0x358) = -0.5f;
     *(int *)(l + 0x35C) = 0;
     for (i = 0; i < 8; i++) {
-        char *src = D_0019C2C0 + i * 0x20;
-        char *dst = D_0019C4C0 + i * 0x30;
+        char *src = point_lights + i * 0x20;
+        char *dst = point_light_data + i * 0x30;
 
         if (*(int *)(dst + 0x10) != 0 && FastVecDist(src + 0x10, dst + 0x20) > 8.0f) {
             qcopy(dst + 0x20, src + 0x10);
@@ -161,10 +161,10 @@ void CreatePointLight(int i) {
     int n3;
     unsigned int v;
 
-    slot = &((LtSlot *)D_0019C4C0)[i];
+    slot = &((LtSlot *)point_light_data)[i];
     p = slot->buf;
     end = p + 0x200;
-    def = &((LtDef *)D_0019C2C0)[i];
+    def = &((LtDef *)point_lights)[i];
     qcopy(&sphere, &def->sphere);
     sphere.v[3] += 8.0f;
     if (p < end) {
@@ -324,7 +324,7 @@ void DetachPointLight(s32 arg0) {
     struct PointLightLinks *links;
 
     firstNibble = arg0 & 0xFFFF;
-    links = (arg0 * 0x30) + D_0019C4C0;
+    links = (arg0 * 0x30) + point_light_data;
     secondNibble = (arg0 * 0x10) & 0xFFFF;
     thirdNibble = (arg0 << 8) & 0xFFFF;
     firstLinks = links->unkC + (links->unk0 * 2);

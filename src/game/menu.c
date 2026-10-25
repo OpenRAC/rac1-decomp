@@ -1054,7 +1054,7 @@ void func_00208D38(int left, int top, int right, int bottom) {
             float scale = (2.0f * sc[st[0x89]] + 5.0f) / 13.0f;
             float w = scale * (float)(1 << (e[6] + 4));
 
-            func_002008B8(tex, sx - (int)(scale * (float)(1 << (e[6] + 3))),
+            draw_hud_sprite_subpixel(tex, sx - (int)(scale * (float)(1 << (e[6] + 3))),
                           sy - (int)(scale * (float)(1 << (e[7] + 3))),
                           (int)w, (int)(scale * (float)(1 << (e[7] + 4))), 0x80);
         }

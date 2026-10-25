@@ -638,7 +638,7 @@ int draw_hud_stars(HudElem *rec) {
         if (f21 < D_L00_0017E760[i][1]) continue;
         func_L00_001FF2F8(v50, D_L00_0017E760[i], v0);
         FastVecAdd(v50, v50, v10);
-        func_002008B8(t21, (int)v50[0], (int)v50[1], w, w, 0x80);
+        draw_hud_sprite_subpixel(t21, (int)v50[0], (int)v50[1], w, w, 0x80);
     }
     return *(int *)(r + 0x58);
 }
@@ -718,7 +718,7 @@ int draw_morphoray_progress_hud(HudElem *e) {
         if (t < D_L00_0017E760[i][1]) continue;
         func_L00_001FF2F8(v5, D_L00_0017E760[i], v0);
         FastVecAdd(v5, v5, v1);
-        func_002008B8(tex, (int)v5[0], (int)v5[1], sz, sz, 0x80);
+        draw_hud_sprite_subpixel(tex, (int)v5[0], (int)v5[1], sz, sz, 0x80);
     }
     return e->w;
 }

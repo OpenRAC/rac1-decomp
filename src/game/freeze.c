@@ -322,7 +322,7 @@ void draw_freeze_message_box(void) {
             HudSprite(GetIconFrame(0x755D, 0), 0xE0, top, 0x40, 0x40, 0x80);
             pos = (f32)(mid << 4);
             angle = (f32)(D_0015F538 % 55) * -6.2831855f / 55.0f;
-            func_00200E38(4096.0f, pos, pivot, pivot, angle, 0x40, 0x40,
+            draw_rotated_sprite(4096.0f, pos, pivot, pivot, angle, 0x40, 0x40,
                          GetFrameTex(GetIconFrame(0x755D, 1)));
         }
         break;

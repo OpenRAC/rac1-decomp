@@ -926,7 +926,7 @@ void update_tutorial_hint_triggers(unsigned char *moby) {
                 Help_Request(0x4E22, 0x4C);
             }
         }
-        if (D_0015EEDC[0] != 0 && D_0015EEE0[0] != 0) {
+        if (invert52[0] != 0 && D_0015EEE0[0] != 0) {
             char *b = D_0014171B + 0x34D;
             if (!(*(unsigned int *)(b + 0x3B4) & (1 << D_0015EE84))) {
                 Help_Request(0x4E2C, 0x76);

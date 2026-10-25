@@ -1076,7 +1076,7 @@ void bolt_crank_update(char *m) {
         func_L00_001FF4B0(V90, V90, *(float *)&D_L01_00161930);
         FastVecAdd(h + 0x80, h + 0x80, V90);
         F(h, 0x88) = hy;
-        if (D_0015EEB4[1]) {
+        if (draw_map51[1]) {
             F(h, 0x180) = FastAddRots(-1.5707964f, f22);
         } else {
             F(h, 0x180) = FastAddRots(1.5707964f, f22);
