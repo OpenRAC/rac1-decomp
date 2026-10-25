@@ -456,7 +456,7 @@ void process_blarg_space_commando_hits(char *m) {
     float lo, hi, spd, off, pull;
 
     d = *(char **)(m + 0x78);
-    *(float *)(m + 0x2C) = *(float *)(*(char **)(m + 0x24) + 0x24) * *(float *)&D_L06_00162038;
+    *(float *)(m + 0x2C) = *(float *)(*(char **)(m + 0x24) + 0x24) * *(float *)&space_commando_scale;
     update_blarg_space_commando_beam(m);
     if (*(int *)(d + 0x38) != 0) {
         *(int *)(d + 0x188) = truncate_float_to_s32(multiply_global_factor(random_float_between(180.0f, 240.0f)));
@@ -494,8 +494,8 @@ void process_blarg_space_commando_hits(char *m) {
             m[0x20] = 0xF;
             q = d + 0x60;
             n = scale_ticks(0x3C);
-            a = *(float *)&D_L06_00162040 * g_frame_time;
-            b = *(float *)&D_L06_00162044 * g_frame_time;
+            a = *(float *)&space_commando_hit_knockback_speed * g_frame_time;
+            b = *(float *)&space_commando_hit_knockback_lift * g_frame_time;
             *(short *)(d + 0x26) = n;
             *(float *)(d + 0x7C) = b;
             *(float *)(d + 0x78) = a;
@@ -512,8 +512,8 @@ void process_blarg_space_commando_hits(char *m) {
             float a, b;
             m[0x20] = 0x10;
             q = d + 0x60;
-            a = *(float *)&D_L06_00162048 * g_frame_time;
-            b = *(float *)&D_L06_0016204C * g_frame_time;
+            a = *(float *)&space_commando_death_knockback_speed * g_frame_time;
+            b = *(float *)&space_commando_death_knockback_lift * g_frame_time;
             *(unsigned short *)(m + 0x34) &= 0xEFFF;
             *(float *)(d + 0x78) = a;
             *(float *)(d + 0x7C) = b;
@@ -563,9 +563,9 @@ void process_blarg_space_commando_hits(char *m) {
     *(unsigned char *)(m + 0xA4) = 0xFF;
     StepColorFade(m, d + 0x110);
     if (*(int *)(d + 0x188) != 0) {
-        *(float *)(d + 0x198) = *(float *)&D_L06_0016203C + 6.0f;
+        *(float *)(d + 0x198) = *(float *)&space_commando_sight_range + 6.0f;
     } else {
-        *(float *)(d + 0x198) = *(float *)&D_L06_0016203C;
+        *(float *)(d + 0x198) = *(float *)&space_commando_sight_range;
     }
     {
     char *q = d + 0x120;
@@ -605,7 +605,7 @@ void initialize_blarg_space_commando_beam(char *m) {
     *(float *)(d + 0x218) = *(float *)(m + 0x18);
     for (i = 0; i < 16; i++) {
         float f = IntToFloat(i) * 0.0625f - 0.5f;
-        f = f * (*(float *)&D_L06_00162064 * 0.017453292f);
+        f = f * (*(float *)&space_commando_beam_fan_degrees * 0.017453292f);
         v[0] = FastCos(FastAddRots(f, *(float *)(m + 0x48))) * 0.2f;
         v[1] = FastSin(FastAddRots(f, *(float *)(m + 0x48))) * 0.2f;
         v[2] = 0.15f;
@@ -617,7 +617,7 @@ void initialize_blarg_space_commando_beam(char *m) {
             *(float *)(d + 0x23C + i * 16) = 1.0f;
         }
     }
-    *(float *)(d + 0x21C) = (float)scale_ticks(*(int *)&D_L06_00162068);
+    *(float *)(d + 0x21C) = (float)scale_ticks(*(int *)&space_commando_beam_ticks);
 }
 extern void func_001F9BF0(void *dst, void *a, void *b);
 extern float func_001F9C78(void *a, void *b);
@@ -668,9 +668,9 @@ void update_blarg_space_commando_beam(void *arg) {
     for (i = 0; i < 16; i++) {
         char *e;
         if (g_hero.vehicle_mode == 1) {
-            scale = (*(float *)&D_L06_00162060 * g_frame_time) * 0.5f;
+            scale = (*(float *)&space_commando_beam_spread_speed * g_frame_time) * 0.5f;
         } else {
-            scale = *(float *)&D_L06_00162060 * g_frame_time;
+            scale = *(float *)&space_commando_beam_spread_speed * g_frame_time;
         }
         FastVecSub(A, &data->pts[i], &data->base);
         A[2] = 0.0f;
@@ -762,13 +762,13 @@ void DrawBeam(char *moby) {
 
     VU1_addGSregister(0x47, 0x5380B);
     i = 0;
-    pk[0].tag[1] = GetEffectTex((*(s32 *)&D_L06_00162080));
-    pk[1].tag[1] = GetEffectTex((*(s32 *)&D_L06_00162080));
-    regs = (*(s32 *)&D_L06_0016206C);
-    regs |= (u64)(*(s32 *)&D_L06_00162070) << 2;
-    regs |= (u64)(*(s32 *)&D_L06_00162074) << 4;
-    regs |= (u64)(*(s32 *)&D_L06_00162078) << 6;
-    regs |= (u64)(*(s32 *)&D_L06_0016207C) << 32;
+    pk[0].tag[1] = GetEffectTex((*(s32 *)&space_commando_beam_texture));
+    pk[1].tag[1] = GetEffectTex((*(s32 *)&space_commando_beam_texture));
+    regs = (*(s32 *)&space_commando_beam_alpha_a);
+    regs |= (u64)(*(s32 *)&space_commando_beam_alpha_b) << 2;
+    regs |= (u64)(*(s32 *)&space_commando_beam_alpha_c) << 4;
+    regs |= (u64)(*(s32 *)&space_commando_beam_alpha_d) << 6;
+    regs |= (u64)(*(s32 *)&space_commando_beam_alpha_fix) << 32;
     /* Store order is load-bearing: it sets which register keeps regs. */
     pk[1].tag[2] = 0x0000FF9000000260ULL;
     pk[0].tag[2] = 0x0000FF9000000260ULL;
@@ -778,8 +778,8 @@ void DrawBeam(char *moby) {
     pk[0].tag[3] = regs;
     set_identity_matrix(mat);
     do {
-        D_L06_001F31E0[1][1] = D_L06_001F31E0[3][1];
-        D_L06_001F31E0[3][1] = random_float_between(0.0f, 0.2f);
+        space_commando_beam_uvs[1][1] = space_commando_beam_uvs[3][1];
+        space_commando_beam_uvs[3][1] = random_float_between(0.0f, 0.2f);
         for (j = 0; j < 4; j++) {
             v = pk[0].pos[j];
             off = (i + j / 2) * 16;
@@ -792,16 +792,16 @@ void DrawBeam(char *moby) {
                 vec_scale_to_length(tmp, tmp, 0.5f);
                 FastVecSub(v, v, tmp);
                 v[2] -= 0.125f;
-                pk[0].col[j] = func_001FA8A8_00AB0(*(f32 *)(data + off + 0x23C), (*(s32 *)&D_L06_0016208C),
-                                                (*(s32 *)&D_L06_00162090));
+                pk[0].col[j] = func_001FA8A8_00AB0(*(f32 *)(data + off + 0x23C), (*(s32 *)&space_commando_beam_inner_color_a),
+                                                (*(s32 *)&space_commando_beam_inner_color_b));
             } else {
-                pk[0].col[j] = func_001FA8A8_00AB0(*(f32 *)(data + off + 0x23C), (*(s32 *)&D_L06_00162084),
-                                                (*(s32 *)&D_L06_00162088));
+                pk[0].col[j] = func_001FA8A8_00AB0(*(f32 *)(data + off + 0x23C), (*(s32 *)&space_commando_beam_outer_color_a),
+                                                (*(s32 *)&space_commando_beam_outer_color_b));
             }
-            pk[0].uv[j][0] = D_L06_001F31E0[j][0];
-            pk[0].uv[j][1] = D_L06_001F31E0[j][1];
-            pk[1].uv[j][0] = D_L06_001F31E0[j][0];
-            pk[1].uv[j][1] = D_L06_001F31E0[j][1];
+            pk[0].uv[j][0] = space_commando_beam_uvs[j][0];
+            pk[0].uv[j][1] = space_commando_beam_uvs[j][1];
+            pk[1].uv[j][0] = space_commando_beam_uvs[j][0];
+            pk[1].uv[j][1] = space_commando_beam_uvs[j][1];
         }
         draw_world_quad(pk, mat, 0);
         for (j = 0; j < 4; j++) {
@@ -840,27 +840,27 @@ void spawn_blarg_space_commando_beam_sparks(char *moby) {
         int off = i * 16;
         n = i + 1;
         if (*(float *)(data + off + 0x23C) < 0.99f && *(float *)(data - (-(n * 16)) + 0x23C) < 0.99f) { continue; }
-        if (*(float *)&D_L06_001620CC < random_float_between(0.0f, 1.0f)) { continue; }
+        if (*(float *)&space_commando_beam_spark_chance < random_float_between(0.0f, 1.0f)) { continue; }
         f21 = random_angle_radians();
         f22 = random_angle_radians();
-        v[0] = FastCos(f21) * random_float_between(*(float *)&D_L06_001620BC, *(float *)&D_L06_001620C0);
-        v[1] = FastSin(f21) * random_float_between(*(float *)&D_L06_001620BC, *(float *)&D_L06_001620C0);
+        v[0] = FastCos(f21) * random_float_between(*(float *)&space_commando_beam_spark_speed_min, *(float *)&space_commando_beam_spark_speed_max);
+        v[1] = FastSin(f21) * random_float_between(*(float *)&space_commando_beam_spark_speed_min, *(float *)&space_commando_beam_spark_speed_max);
         v[2] = 0;
-        w[0] = FastCos(f22) * random_float_between(*(float *)&D_L06_001620BC, *(float *)&D_L06_001620C0);
-        w[1] = FastSin(f22) * random_float_between(*(float *)&D_L06_001620BC, *(float *)&D_L06_001620C0);
+        w[0] = FastCos(f22) * random_float_between(*(float *)&space_commando_beam_spark_speed_min, *(float *)&space_commando_beam_spark_speed_max);
+        w[1] = FastSin(f22) * random_float_between(*(float *)&space_commando_beam_spark_speed_min, *(float *)&space_commando_beam_spark_speed_max);
         w[2] = 0;
-        v[2] = random_float_between(*(float *)&D_L06_001620C4, *(float *)&D_L06_001620C8);
-        w[2] = random_float_between(*(float *)&D_L06_001620C4, *(float *)&D_L06_001620C8);
-        s18 = func_001FA898_r(multiply_global_factor(random_float_between(*(float *)&D_L06_001620A4, *(float *)&D_L06_001620A8)));
-        s19 = func_001FA898_r(multiply_global_factor(random_float_between(*(float *)&D_L06_001620AC, *(float *)&D_L06_001620B0)));
-        s17 = func_001FA898_r(multiply_global_factor(random_float_between(*(float *)&D_L06_001620B4, *(float *)&D_L06_001620B8)));
+        v[2] = random_float_between(*(float *)&space_commando_beam_spark_lift_min, *(float *)&space_commando_beam_spark_lift_max);
+        w[2] = random_float_between(*(float *)&space_commando_beam_spark_lift_min, *(float *)&space_commando_beam_spark_lift_max);
+        s18 = func_001FA898_r(multiply_global_factor(random_float_between(*(float *)&space_commando_beam_spark_time_a_min, *(float *)&space_commando_beam_spark_time_a_max)));
+        s19 = func_001FA898_r(multiply_global_factor(random_float_between(*(float *)&space_commando_beam_spark_time_b_min, *(float *)&space_commando_beam_spark_time_b_max)));
+        s17 = func_001FA898_r(multiply_global_factor(random_float_between(*(float *)&space_commando_beam_spark_time_c_min, *(float *)&space_commando_beam_spark_time_c_max)));
         FastVecScale(v, v, 1.0f / (float)s18);
-        v[3] = *(float *)&D_L06_0016209C;
+        v[3] = *(float *)&space_commando_beam_spark_start_w;
         FastVecScale(w, w, 1.0f / (float)s17);
-        w[3] = *(float *)&D_L06_001620A0;
+        w[3] = *(float *)&space_commando_beam_spark_end_w;
         p = data + (off + 0x230);
         lerp_vector(s10, p, p, random_float_between(0.0f, 1.0f));
-        PartType02Spawn(s10, v, w, *(int *)&D_L06_00162094, *(int *)&D_L06_00162098, s18, s19, s17, *(int *)&D_L06_001620D0);
+        PartType02Spawn(s10, v, w, *(int *)&space_commando_beam_spark_lower, *(int *)&space_commando_beam_spark_upper, s18, s19, s17, *(int *)&space_commando_beam_spark_texture);
     }
 }
 extern void func_0020D678(void *);
@@ -878,7 +878,7 @@ void update_falling_spinning_moby(char *moby) {
     struct Moby *m = (struct Moby *)moby;
     FallingSpinVars *data;
     float vertical_velocity_decrement = g_frame_time_sq * 15.0f;
-    m->scale = m->pclass->scale * *(float *)&D_L06_00162110;
+    m->scale = m->pclass->scale * *(float *)&spinning_fragment_scale;
     data = (FallingSpinVars *)m->pvars;
     data->vel.z -= vertical_velocity_decrement;
     FastVecAdd(&m->pos.x, &m->pos.x, &data->vel.x);
@@ -908,7 +908,7 @@ char *spawn_spinning_moby_fragment(int unused, char *pa, char *pb) {
     *(u128 *)b = *(u128 *)pb;
     m = mk_a(rnd_a(random_float_between(1085.0f, 1089.0f)));
     if (m != 0) {
-        *(float *)(m + 0x2C) = *(float *)(*(char **)(m + 0x24) + 0x24) * *(float *)&D_L06_00162110;
+        *(float *)(m + 0x2C) = *(float *)(*(char **)(m + 0x24) + 0x24) * *(float *)&spinning_fragment_scale;
         ((unsigned char *)m)[0x30] = 0xFF;
         *(short *)(m + 0x32) = 0x7E;
         m[0x31] = 1;
@@ -950,15 +950,15 @@ void draw_pulsing_timer_display(char *moby) {
     float v;
     int col;
 
-    DrawUIFrame(W(D_L06_00162168) + W(D_L06_0016215C), W(D_L06_0016216C) + W(D_L06_0016215C),
-                  W(D_L06_00162170) + W(D_L06_00162158), W(D_L06_00162174) + W(D_L06_00162158), W(D_L06_00162178));
+    DrawUIFrame(W(blarg_timer_frame_y0_offset) + W(blarg_timer_display_y), W(blarg_timer_frame_y1_offset) + W(blarg_timer_display_y),
+                  W(blarg_timer_frame_x0_offset) + W(blarg_timer_display_x), W(blarg_timer_frame_x1_offset) + W(blarg_timer_display_x), W(blarg_timer_frame_alpha));
     v = FastSin(IntToFloat(blarg_frame_count % 60) / 60.0f * 6.28318f) * 3.0f + 0.5f;
     if (v > 1.0f) {
         v = 1.0f;
     } else if (v < 0.0f) {
         v = 0.0f;
     }
-    col = FastTweenColor(W(D_L06_00162160), W(D_L06_00162164), v);
+    col = FastTweenColor(W(blarg_timer_pulse_color_a), W(blarg_timer_pulse_color_b), v);
     buf[0] = 0x30;
     buf[1] = *(int *)(data + 0xB4) / scale_ticks(0xE10) + 0x30;
     buf[2] = 0x3A;
@@ -967,7 +967,7 @@ void draw_pulsing_timer_display(char *moby) {
     buf[5] = 0x3A;
     buf[6] = *(int *)(data + 0xB4) % scale_ticks(0x3C) / scale_ticks(6) + 0x30;
     buf[7] = func_001FA898_r((float)random_integer_below(10)) + 0x30;
-    FontPrintCenterLarge(W(D_L06_00162158), W(D_L06_0016215C), col, (int)buf, 8);
+    FontPrintCenterLarge(W(blarg_timer_display_x), W(blarg_timer_display_y), col, (int)buf, 8);
 }
 // Sets offset 0x20 to 2
 void set_moby_state_two(char *arg) {
@@ -1046,7 +1046,7 @@ void bot_door_lock_update(char *moby) {
     int i;
 
     if (data->id[0] == -1) return;
-    data->f10 = FastAddRots(data->f10, (360.0f / (*(float *)&D_L06_00162374)) * 0.017453292f * g_frame_time);
+    data->f10 = FastAddRots(data->f10, (360.0f / (*(float *)&bot_door_lock_pulse_period)) * 0.017453292f * g_frame_time);
     *(unsigned int *)(moby + 0x90) = ((unsigned int (*)(float, int, int))FastTweenColor)((FastCos(data->f10) + 1.0f) * 0.5f, 0x80464646, 0x80828282);
     switch ((unsigned char)moby[0x20]) {
     case 0:
@@ -1054,13 +1054,13 @@ void bot_door_lock_update(char *moby) {
         data->f6 = random_angle_radians();
         data->f10 = random_angle_radians();
         moby[0x20] = 1;
-        data->f9 = (*(float *)&D_L06_0016237C);
+        data->f9 = (*(float *)&bot_door_lock_fade_max);
         return;
     case 1:
         *(OvlQuad_p *)pos = *(OvlQuad_p *)(moby + 0x10);
         pos[2] += 2.75f;
         if (FastVecDist(((float *)&D_L06_00167640), moby + 0x10) < 32.0f) {
-            float lim = (*(float *)&D_L06_0016237C);
+            float lim = (*(float *)&bot_door_lock_fade_max);
             data->f9 += g_frame_time + g_frame_time;
             if (lim < data->f9) data->f9 = lim;
         } else if (36.0f < FastVecDist(((float *)&D_L06_00167640), moby + 0x10)) {
@@ -1068,10 +1068,10 @@ void bot_door_lock_update(char *moby) {
             if (data->f9 < 0.0f) data->f9 = 0.0f;
         }
         if (0.0f < data->f9) {
-            AddDrawCallback((void *)func_L06_003089B8, moby);
-            data->f6 = FastAddRots(data->f6, (360.0f / (*(float *)&D_L06_00162370)) * 0.017453292f * g_frame_time);
-            pos[2] += (*(float *)&D_L06_0016236C) * FastCos(data->f6);
-            value = truncate_float_to_s32((*(float *)&D_L06_00162378) * FastCos(data->f10));
+            AddDrawCallback((void *)draw_bot_door_lock_glow, moby);
+            data->f6 = FastAddRots(data->f6, (360.0f / (*(float *)&bot_door_lock_bob_period)) * 0.017453292f * g_frame_time);
+            pos[2] += (*(float *)&bot_door_lock_bob_height) * FastCos(data->f6);
+            value = truncate_float_to_s32((*(float *)&bot_door_lock_glow_amplitude) * FastCos(data->f10));
             color_channels = (value / 2 + 120) * 0x100 | 0x20000000U;
             color_channels = or_blue_channel_p(value / 3 + 13, color_channels);
             color = color_channels | (value + 150U);
@@ -1123,7 +1123,7 @@ void bot_door_lock_update(char *moby) {
     case 2:
         data->f9 -= g_frame_time + g_frame_time;
         if (data->f9 < 0.0f) data->f9 = 0.0f;
-        if (0.0f < data->f9) AddDrawCallback((void *)func_L06_003089B8, moby);
+        if (0.0f < data->f9) AddDrawCallback((void *)draw_bot_door_lock_glow, moby);
         return;
     default:
         return;

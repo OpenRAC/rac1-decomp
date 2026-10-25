@@ -7047,3 +7047,593 @@ D_L00_00161BB0	nanotech_halo_color	draw_nanotech_ball: rgb of the halo, pulse al
 D_L00_00161BB4	nanotech_reflection_texture	draw_nanotech_ball: effect texture of the second (owner-aligned) pass	
 D_L00_00161BB8	nanotech_reflection_uv_scale	draw_nanotech_ball: xy length of the view dir used as uv	
 D_L00_00161BBC	nanotech_halo_outer_scale	draw_nanotech_ball: outer halo radius = inner radius times this	
+D_L08_001AC340	batalia_moby_groups	indexed by moby group, gives a short list of moby indices (same table as blarg_moby_groups)	
+D_L08_00161AB4	batalia_rocket_exhaust_start_size	rocket PartType04Spawn start size and velocity w	
+D_L08_00161AB8	batalia_rocket_exhaust_end_size	rocket PartType04Spawn end size and accel w	
+D_L08_00161A60	batalia_bombthrower_fade_ticks	bomb thrower state 100 fades alpha over this many ticks	
+D_L08_00161AF0	batalia_motion_spark_time_jitter	+- random fraction applied to the spark's 2nd/3rd frame counts	
+D_L08_00161A90	batalia_rocket_flight_speed	rocket state 5 flies at twice this per frame	
+D_L08_00161A94	batalia_rocket_steer_accel_max	clamps the rocket's velocity correction per frame squared	
+D_L08_00161AA4	batalia_rocket_exhaust_spread_max	random radial speed of the rocket exhaust particles	
+D_L08_00161AB0	batalia_rocket_exhaust_life_ticks	scale_ticks life of the rocket exhaust particle	
+D_L08_00161ABC	batalia_rocket_exhaust_start_color	rocket PartType04Spawn first color	
+D_L08_00161AC0	batalia_rocket_exhaust_end_color	rocket PartType04Spawn second color	
+D_L08_00161938	batalia_bomber_tank_shot_speed	scales the bomber tank projectile launch velocity	
+D_L08_00161A28	batalia_line_puff_rise_speed_max	upper bound of the random z velocity of line puffs	
+D_L08_00161A38	batalia_line_puff_life_frames	stored as the puff and tail lifetime	
+D_L08_00161A3C	batalia_bombthrower_scale	bomb thrower Manipulator_ApplyScale scale	
+D_L08_00161A1C	batalia_bombthrower_knockback_speed	knockback block horizontal speed (s[6] in InitKnockback)	
+D_L08_00161A20	batalia_bombthrower_knockback_lift	knockback block vertical speed (s[7] in InitKnockback)	
+D_L08_00161A08	batalia_bombthrower_walk_speed_max	move control speed limit f24 set in bomb thrower init	
+D_L08_00161A0C	batalia_bombthrower_throw_speed	bomb flight time = distance / this	
+D_L08_00161A18	batalia_bombthrower_throw_short_rate	throw aims short of the target by this times flight time plus 2	
+D_L08_001746D8	batalia_coll_hit_moby	collision result moby, checked after coll_sphere; same slot as blarg_coll_hit_moby	
+D_L08_00161A98	batalia_rocket_route_speed	rocket step along its route per frame	
+D_L08_00161A9C	batalia_rocket_hit_distance	rocket damages the target within this distance	
+D_L08_00161AC4	batalia_1b3_projectile_red	set_moby_color red of the class 0x1B3 projectile	
+D_L08_00161AC8	batalia_1b3_projectile_green	set_moby_color green of the class 0x1B3 projectile	
+D_L08_00161ACC	batalia_1b3_projectile_blue	set_moby_color blue of the class 0x1B3 projectile	
+D_L08_00161AD0	batalia_1b3_projectile_scale	multiplies the class scale of the class 0x1B3 projectile	
+D_L08_001614F8	batalia_bolt_spin_min	random_float_between low bound of the bolt pickup spin step	
+D_L08_001614FC	batalia_bolt_spin_max	random_float_between high bound of the bolt pickup spin step	
+D_L08_001618F8	batalia_bomb_spark_colors	four colors picked at random for the bomb fuse sparks	
+D_L08_001618F0	batalia_bomb_gravity	subtracted from the bomb's z velocity each frame	
+D_L08_00161930	batalia_bomber_tank_anim_ref_speed	tank speed / this gives the linked parts' animation scale	
+D_L08_00161A30	batalia_line_puff_size	PartType23Spawn size of the line puffs	
+D_L08_001DB540	batalia_shuttle_stop_local_points	eight local points transformed by the shuttle matrix into the path entry	
+D_L08_00161AD4	batalia_path_mover_speed	path follower step = this * frame time / segment length	
+D_L08_00161AD8	batalia_motion_spark_vel_scale	scales the offset into the spark velocity	
+D_L08_00161ADC	batalia_motion_spark_accel_scale	scales the offset into the spark acceleration	
+D_L08_00161AE0	batalia_motion_spark_accel_jitter	random vector length added to the spark acceleration	
+D_L08_00161AE4	batalia_motion_spark_time1_range	random span of the spark's first frame count	
+D_L08_00161AE8	batalia_motion_spark_time2_base	base of the spark's second frame count	
+D_L08_00161AEC	batalia_motion_spark_time3_base	base of the spark's third frame count	
+D_L08_00161AF4	batalia_motion_spark_vel_w_min	random low bound of the spark velocity w	
+D_L08_00161AF8	batalia_motion_spark_vel_w_max	random high bound of the spark velocity w	
+D_L08_00161AFC	batalia_motion_spark_accel_w_min	random low bound of the spark acceleration w	
+D_L08_00161B00	batalia_motion_spark_accel_w_max	random high bound of the spark acceleration w	
+D_L08_00161B04	batalia_motion_spark_color1_from	FastTweenColor start of the spark first color	
+D_L08_00161B08	batalia_motion_spark_color1_to	FastTweenColor end of the spark first color	
+D_L08_00161B0C	batalia_motion_spark_color2_from	FastTweenColor start of the spark second color	
+D_L08_00161B10	batalia_motion_spark_color2_to	FastTweenColor end of the spark second color	
+D_L08_001614DC	batalia_bolt_pickup_radius	bolt pickup ray offset and landing lift; speed cap is 1.8x this	
+D_L08_001614E8	batalia_bolt_bounce_min_speed	below this speed the bolt stops instead of bouncing	
+D_L08_001614EC	batalia_bolt_bounce_speed_loss	subtracted from the reflected bolt speed on a bounce	
+D_L08_001614F0	batalia_bolt_bob_period	ticks per bob cycle of the bolt pickup	
+D_L08_001614F4	batalia_bolt_bob_height	sine bob amplitude added to the bolt z	
+D_L08_00161964	batalia_bomber_tank_spark_start_color	PartType02Spawn color1 of the bomber tank joint particles	
+D_L08_00161968	batalia_bomber_tank_spark_end_color	PartType02Spawn color2 of the bomber tank joint particles	
+D_L08_0016196C	batalia_bomber_tank_spark_speed	random velocity length of the joint particles	
+D_L08_00161970	batalia_bomber_tank_spark_accel_z	z acceleration of the joint particles	
+D_L08_00161978	batalia_bomber_tank_spark_spread	random xy acceleration of the joint particles	
+D_L08_0016197C	batalia_bomber_tank_spark_time1	base of the joint particle first frame count	
+D_L08_00161980	batalia_bomber_tank_spark_time2	base of the joint particle second frame count	
+D_L08_00161984	batalia_bomber_tank_spark_time3	base of the joint particle third frame count	
+D_L08_00161988	batalia_bomber_tank_spark_vel_w	w of the joint particle velocity	
+D_L08_0016198C	batalia_bomber_tank_spark_accel_w	w of the joint particle acceleration	
+D_L08_00161A00	batalia_water_entry_table_ready	once flag before preparing the water entry table	
+D_L05_0015FB8C	trick_combo_spins	copied from hero+0x70C, shown times 360 and scales the trick combo score	
+D_L05_0015FB90	trick_combo_trick_count	copied from hero+0x6F0; picks singular/plural text and the score row	
+D_L05_0015F9A4	trick_combo_result_x	x of the two trick combo result lines	
+D_L05_0015F9A8	trick_combo_result_y	y of the trick combo result lines (first line 0x18 above)	
+D_L05_0015FBA8	trick_combo_recent	history of the last four scored trick indices; repeats divide the score	
+D_L05_0015F95C	trick_combo_flash_ticks	reload of the trick combo flash countdown, tween divisor	
+D_L05_0015F940	rilgar_fmt_number	sprintf format taking one int (spins, scores, counter)	
+D_L05_0015F998	trick_combo_spin_text_y	y of the spin readout line (shadow at +1)	
+D_L05_0015F994	trick_combo_spin_text_x	x of the spin readout line (shadow at +1)	
+D_L05_0015FA58	rilgar_hud_held_bar_id	hud bar id released and reset to -1 by Hud_ReleaseHeldElement	
+D_L05_0015FBB4	trick_combo_recent3	oldest slot of trick_combo_recent, reset to -1 in init	
+D_L05_0015FBB0	trick_combo_recent2	third slot of trick_combo_recent	
+D_L05_0015FBAC	trick_combo_recent1	second slot of trick_combo_recent	
+D_L05_0015F9B8	rilgar_fmt_string	sprintf format taking one string (trick name, rank name)	
+D_L05_0015F99C	trick_combo_count_text_x	x of the trick count line	
+D_L05_0015F9A0	trick_combo_count_text_y	y of the trick count line	
+D_L05_0015F984	trick_combo_banner_x	x of the pulsing message 0x531F banner	
+D_L05_0015F988	trick_combo_banner_y	y of the pulsing message 0x531F banner	
+D_L05_0015FA50	rilgar_hud_release_count	bumped each time Hud_ReleaseHeldElement runs	
+D_L05_0015FA70	rilgar_progress_label_color	text color of the progress and rank labels	
+D_L05_0015FA74	rilgar_progress_value_color	text color of the progress number and rank name	
+D_L05_0015FBA4	trick_combo_trick_flag3	fourth per-trick flag copied from hero+0x6E0	
+D_L05_0015F9B0	rilgar_fmt_count_and_word	sprintf format taking an int and a singular/plural word	
+D_L05_0015F9C0	rilgar_fmt_single_trick_line	sprintf format: trick name, spin count, word	
+D_L05_00216FC0	rilgar_fmt_double_trick_line	sprintf format: two trick names and a spin count	
+D_L05_0017EA18	trick_combo_score_table	score per trick index (kind + spin tier * 5)	
+D_L05_0015FBA0	trick_combo_trick_flag2	third per-trick flag copied from hero+0x6E0	
+D_L05_0015FB9C	trick_combo_trick_flag1	second per-trick flag copied from hero+0x6E0	
+D_L05_0015F980	trick_combo_text_color	result text color when not flashing	
+D_L05_0015F974	trick_combo_flash_color_from	FastTweenColor start of the flashing trick text	
+D_L05_0015F978	trick_combo_flash_color_to	FastTweenColor end of the flashing trick text	
+D_L05_0015F98C	trick_combo_banner_color_from	pulse color start of the banner text	
+D_L05_0015F990	trick_combo_banner_color_to	pulse color end of the banner text	
+D_L05_0015FA54	rilgar_hud_hold_active	flag cleared by Hud_ReleaseHeldElement	
+D_L05_0015FA5C	rilgar_progress_frame_x	x of the progress HUD frame	
+D_L05_0015FA60	rilgar_progress_frame_bottom	frame y is screen height minus this and the margin	
+D_L05_0015FA64	rilgar_progress_frame_width	width of the progress HUD frame	
+D_L05_0015FA68	rilgar_progress_frame_height	height of the progress HUD frame	
+D_L05_0015FA6C	rilgar_progress_frame_alpha	alpha of the progress HUD frame	
+D_L05_0015FA78	rilgar_progress_label_x	x where the progress label starts	
+D_L05_0015FA7C	rilgar_progress_text_bottom	text y is screen height minus this and the margin	
+D_L05_0015FA88	rilgar_progress_rank_right_x	right edge the rank text is aligned to	
+D_L05_0015FA98	rilgar_counter_box_alt_x	counter box x when the 0x13B flag is set	
+D_L05_0015FA9C	rilgar_counter_box_alt_y	counter box y when the 0x13B flag is set	
+D_L05_0015FAA0	rilgar_counter_frame_width	width of the counter box frame	
+D_L05_0015FAB0	rilgar_fmt_label	sprintf format for a label string drawn before its value	
+D_L05_0015FAB8	rilgar_fmt_progress_number	sprintf format for the capped progress number	
+D_L05_0015FAC0	rilgar_fmt_rank_label	sprintf format for the label left of the rank name	
+D_L05_0015FACC	rilgar_race_timer_frame_x	x of the race timer frame	
+D_L05_0015FAD0	rilgar_race_timer_frame_bottom	frame y is screen height minus this and the margin	
+D_L05_0015FAD4	rilgar_race_timer_frame_width	width of the race timer frame	
+D_L05_0015FAD8	rilgar_race_timer_frame_height	height of the race timer frame	
+D_L05_0015FADC	rilgar_race_timer_frame_alpha	alpha of the race timer frame	
+D_L05_0015FAE0	rilgar_race_timer_label_color	text color of the lap and time labels	
+D_L05_0015FAE4	rilgar_race_timer_value_color	text color of the lap count and time	
+D_L05_0015FAE8	rilgar_race_timer_center_x	timer lines are centered on this x	
+D_L05_0015FAEC	rilgar_race_timer_lap_bottom	lap line y is screen height minus this and the margin	
+D_L05_0015FAFC	rilgar_race_timer_time_bottom	time line y is screen height minus this and the margin	
+D_L05_0015FB98	trick_combo_trick_flags	four per-trick flags copied from hero+0x6E0, cleared on reset	
+D_L18_00162554	deplanetizer_streak_start_tick	tick the three streak quads start growing (0xBE)	
+D_L18_001625B8	deplanetizer_class_59b_moby	class 0x59B moby found in the moby list; glow and streak quads draw on it	
+D_L18_00167A50	veldin2_camera_matrix	rotation matrix whose rows place the flare; veldin2_camera_pos sits 0x210 before it	
+D_L18_0016252C	deplanetizer_camera_quad_ramp_end_tick	camera quad scale ramps until this tick, then holds 10.0	
+D_L18_00162550	deplanetizer_glow_end_tick	glow alpha ramps from glow start to this tick	
+D_L18_00162558	deplanetizer_streak_end_tick	streak quad x scale ramps until this tick	
+D_L18_00162520	deplanetizer_camera_quad_scale_from	start value of the camera quad scale ramp	
+D_L18_00162560	deplanetizer_trail_size	draw size of the gun trail effects (second size is 0.4x)	
+D_L18_001617DC	veldin2_beam_ring_radius_end	ring end radius read by the shared beam effect; set to 24 around the call	
+D_L18_001625C0	deplanetizer_trail_prev_tip_a	last joint 0 position, lerped to the new one for the trail	
+D_L18_001625D0	deplanetizer_trail_prev_tip_b	last joint 2 position, lerped to the new one for the trail	
+D_L18_001DFE90	veldin2_streak_quad_corners	four vertex vectors copied, z/x scaled, for each streak quad	
+D_L18_00160064	veldin2_moby_list	moby list head walked by m->next to find a class	
+D_L18_00162524	deplanetizer_camera_quad_scale_to	end value of the camera quad scale ramp	
+D_L18_00162530	deplanetizer_quads_end_tick	camera quads draw until this tick	
+D_L18_001625E0	deplanetizer_flare_cam_offset	camera-space vector (1, 0, tilt, 1) placing the flare quads	
+D_L18_00162594	deplanetizer_glow_tint_a	color of the first glow quad and the first streak quad	
+D_L18_00162694	gadgebot_glows_queued_frame	frame the joint glow draw callback was last queued	
+D_L18_001F2F10	deplanetizer_part_trail_sizes	five trail sizes for cutscene objects 3..7	
+D_L18_00161884	deplanetizer_beam_color_a	set to 0x207F7F after the beam effect update	
+D_L18_00161888	deplanetizer_beam_color_b	set to 0x7F7F20 after the beam effect update	
+D_L18_00162534	deplanetizer_shot2_glow_start_tick	state 7 reload of deplanetizer_glow_start_tick	
+D_L18_00162538	deplanetizer_shot2_glow_end_tick	state 7 reload of deplanetizer_glow_end_tick	
+D_L18_0016253C	deplanetizer_shot2_streak_start_tick	state 7 reload of deplanetizer_streak_start_tick	
+D_L18_00162540	deplanetizer_shot2_streak_end_tick	state 7 reload of deplanetizer_streak_end_tick	
+D_L18_00162544	deplanetizer_shot2_quads_start_tick	state 7 reload of deplanetizer_quads_start_tick	
+D_L18_00162548	deplanetizer_shot2_camera_quad_ramp_end_tick	state 7 reload of the camera quad ramp end tick	
+D_L18_00162570	deplanetizer_burst_cam_offset	camera-space offset of the 32-puff burst origin	
+D_L18_00162580	deplanetizer_burst_speed	velocity length of each burst puff	
+D_L18_00162584	deplanetizer_burst_puff_growth	growth argument of the burst PartType23Spawn	
+D_L18_001625E4	deplanetizer_flare_cam_offset_y	y of deplanetizer_flare_cam_offset, set to 0	
+D_L18_001625E8	deplanetizer_flare_cam_offset_z	z of deplanetizer_flare_cam_offset, set to +-0.15 tilt	
+D_L18_001625EC	deplanetizer_flare_cam_offset_w	w of deplanetizer_flare_cam_offset, set to 1	
+D_L18_00162588	deplanetizer_flare_outer_color	color of the full-size flare quad	
+D_L18_0016258C	deplanetizer_flare_inner_color	color of the 0.75x and 0.5x flare quads	
+D_L18_00162598	deplanetizer_glow_quad_a_scale	corner scale of the first glow quad	
+D_L18_0016259C	deplanetizer_glow_quad_b_scale	corner scale of the second glow quad	
+D_L18_001625A0	deplanetizer_glow_tint_b	color of the second glow quad and the later streak quads	
+D_L18_001625A4	deplanetizer_streak1_z_scale	z scale of the first streak quad vertices	
+D_L18_001625A8	deplanetizer_streak2_z_scale	z scale of the second streak quad vertices	
+D_L18_001625AC	deplanetizer_streak3_z_scale	z scale of the third streak quad vertices	
+D_L18_00162608	veldin2_joint_trail_offset	length of the joint 8-9 direction given to draw_trail	
+D_L18_0016260C	veldin2_joint_trail_size_a	first draw_trail size of the cutscene joint trail	
+D_L18_00162610	veldin2_joint_trail_size_b	second draw_trail size of the cutscene joint trail	
+D_L18_00162690	gadgebot_close_anim_start_frame	start frame of sequence 2 when the gadgebot is within 1.5	
+D_L18_001626A4	gadgebot_glow_spin_rate	degrees per second of the glow color cycle	
+D_L18_001626A8	gadgebot_glow_spin_rate_attack	glow cycle rate in states 4 and 5	
+D_L18_0016269C	gadgebot_glow_color_from	FastTweenColor start of the gadgebot glow	
+D_L18_001626A0	gadgebot_glow_color_to	FastTweenColor end of the gadgebot glow	
+D_L18_0016268C	gadgebot_scale	multiplies the class scale every update	
+D_L18_001626AC	gadgebot_knockback_gravity	knockback block z velocity decrement (fall+0x10)	
+D_L18_001626B0	gadgebot_knockback_drag	knockback block xy speed approach rate (fall+0x14)	
+D_L18_001626B4	gadgebot_knockback_speed	knockback block horizontal speed (fall+0x18)	
+D_L18_001626B8	gadgebot_knockback_lift	knockback block vertical speed (fall+0x1C)	
+D_L18_001626E4	gadgebot_joint_glow_alpha	alpha byte of the class 0x772 joint glow quads	
+func_L18_002FDCC4	count_listed_class_0772_mobys_in_state_8	asm walks a moby index list until a negative entry, counting class 0x772 in state 8	
+D_001DCED0	env_map_uvs	per-vertex sphere-map uv computed from the reflected view vector	
+func_001F7EF8	draw_world_quad_packet	handwritten; draws a 4-vertex quad packet (verts, rgba, uv, gs words)	
+D_001DC870	env_map_world_positions	per-vertex positions transformed by the object matrix for the env-mapped mesh	
+D_001605A4	env_map_first_frame	1 forces fresh uvs once, then set to 2	
+D_001605AC	env_map_blend_timer	counts down from 60 frames; blends saved uvs into new ones	
+D_001DD200	env_map_saved_uvs	uvs saved when mapping turns off; blended from when it resumes	
+D_001605A8	env_map_was_active	set while mapping runs; on the off frame the uvs are saved	
+func_001FA9E8	bsphere_check_alpha	handwritten; calls fast_bsphere_check, writes a 0..0x80 alpha through a1	
+D_001D9B40	quad_default_uvs	0x20 bytes of uv pairs copied into flare and resident quads	
+D_00160680	resident_quad_texture	GS texture word of the level mip texture, drawn by draw_resident_textured_quad	
+D_001605F0	resident_quad_pos	center added to the resident quad corners; copied at level load	
+D_00160688	resident_banner_texture	GS texture word of the language mip texture, drawn by the banner	
+D_001D9B60	light_flare_corners	per flare set, four corner vectors of the light flare quad	
+D_001D9E20	resident_quad_level_scales	per-level scale of the resident quad corners (19 levels)	
+D_001D9DE0	resident_quad_corners	four corner vectors of the resident textured quad	
+D_001D9EF0	flare_spark_offsets	per flare set, six local positions of the spark particles	
+D_00160008	resident_indexed_texture_count	header class count; loop bound for the class entries copied into resident_indexed_textures	
+D_001B5D00	resident_indexed_texture_addrs	per entry: class data base + offset + log2(id) << 28	
+D_001D9AD0	default_dir_lights	0x40 bytes copied into dir_lights at level load	
+D_00160950	textured_quad_giftag	GIF tag quadword copied into each scrolling textured quad packet	
+D_001E8CB8	unloaded_sound_bank_format	printf string "unloaded sound bank %#010x\n"	
+D_00160610	scene_variant_durations	per scene variant, frame count for render_sequence time	
+D_L00_001B2430	part_type12_textures	entry 12 of the D_L00_001B2400 texture-list table; spinning particles (create_part2 0xC) pick from it	
+D_L00_00160264	rotating_gray_particle_fade_ticks	fade in/out window of the rotating grayscale particle alpha	
+D_L00_001CBAC0	level_wind_state	ambience block: angle f4 and strength f14 eased by update_ambience_target_cycle; drifts particles	
+D_L00_001B2420	part_type08_textures	entry 8 of the D_L00_001B2400 texture-list table	
+D_L00_001B245C	part_type23_textures	entry 23 of the texture-list table, read by PartType23Spawn	
+D_L00_00160268	spin_particle_start_color_from	FastTweenColor range low of the spinning particle start color	
+D_L00_00160278	spin_particle_start_size	spinning particle size at spawn (ratio 1)	
+D_L00_00160288	spin_particle_alt_start_color_from	flag 1 variant of spin_particle_start_color_from	
+D_L00_00160298	spin_particle_alt_start_size	flag 1 variant of spin_particle_start_size	
+D_L00_001B2410	part_type04_textures	entry 4 of the texture-list table, read by PartType04Spawn	
+D_L00_001B2414	part_type05_textures	entry 5 of the texture-list table, read by PartType05Spawn	
+D_L00_001B242C	part_type11_textures	entry 11 of the texture-list table, read by PartType11Spawn	
+D_L00_0016026C	spin_particle_start_color_to	FastTweenColor range high of the spinning particle start color	
+D_L00_00160270	spin_particle_end_color_from	FastTweenColor range low of the spinning particle end color	
+D_L00_00160274	spin_particle_end_color_to	FastTweenColor range high of the spinning particle end color	
+D_L00_00160280	spin_particle_life_min	random low bound of the spinning particle life	
+D_L00_00160284	spin_particle_life_max	random high bound of the spinning particle life	
+D_L00_0016028C	spin_particle_alt_start_color_to	flag 1 variant of spin_particle_start_color_to	
+D_L00_00160290	spin_particle_alt_end_color_from	flag 1 variant of spin_particle_end_color_from	
+D_L00_00160294	spin_particle_alt_end_color_to	flag 1 variant of spin_particle_end_color_to	
+D_L00_001602A0	spin_particle_alt_life_min	flag 1 variant of spin_particle_life_min	
+D_L00_001602A4	spin_particle_alt_life_max	flag 1 variant of spin_particle_life_max	
+D_L00_001B2460	part_type24_textures	entry 24 of the texture-list table; flag 1 spinning particles use it	
+D_L00_001602A8	spin_particle_speed_decay	rate the spinning particle speed eases to zero	
+D_L00_001602AC	spin_particle_rise_speed	added to the spinning particle z each frame	
+D_L00_0016029C	spin_particle_alt_end_size	flag 1 variant of spin_particle_end_size	
+D_L00_0016027C	spin_particle_end_size	spinning particle size at the end of its life (ratio 0)	
+D_L00_001B2434	part_type13_textures	entry 13 of the texture-list table	
+D_L00_001B243C	part_type15_textures	entry 15 of the texture-list table	
+D_L00_001B2440	part_type16_textures	entry 16 of the texture-list table, read by mine_debris	
+D_L00_001B2448	part_type18_textures	entry 18 of the texture-list table	
+D_L00_001B244C	part_type19_textures	entry 19 of the texture-list table	
+D_L00_001B2454	part_type21_textures	entry 21 of the texture-list table, read by PartType21Spawn	
+D_L00_001B2458	part_type22_textures	entry 22 of the texture-list table	
+D_L00_001B2464	part_type25_textures	entry 25 of the texture-list table	
+D_L00_001B2468	part_type26_textures	entry 26 of the texture-list table	
+D_L00_001B246C	part_type27_textures	entry 27 of the texture-list table, read by PartType27Spawn	
+D_L00_001B2470	part_type28_textures	entry 28 of the texture-list table	
+D_L00_001B2474	part_type29_textures	entry 29 of the texture-list table, indexed by frame	
+D_L00_001602B4	two_point_particle_head_pull	per-frame scale of the first point's offset from the target	
+D_L00_001602B8	two_point_particle_tail_pull	per-frame scale of the second point's offset from the target	
+D_L00_001B2488	part_type34_textures	entry 34 of the texture-list table, read by PartType34Spawn	
+D_L00_001B248C	part_type35_textures	entry 35 of the texture-list table, read by PartType35Spawn	
+D_L00_001602C0	offset_particle_size	size written to the camera-offset particle each frame	
+D_L00_001602C4	offset_particle_color	color written to the camera-offset particle each frame	
+D_L00_001602C8	offset_particle_camera_offset	distance from the target toward the camera	
+D_L00_001602CC	offset_particle_spin_step	added to the particle rotation byte each frame	
+D_L00_001B249C	part_type39_textures	entry 39 of the texture-list table, cycled by frame	
+func_L00_0026ABC0	update_colliding_effect_particle	particle type 6 update (register_part_types slot 6); moves with coll_line and coll_hit_normal, kills on timer	
+D_L15_0015F050	quartu_camera_descriptors	32-byte entries indexed by moby+0x84, +0x1C sub data; same slot as the other levels' camera_descriptors	
+D_L15_00162280	quartu_ripple_vertex_scale	scales the 46 template vertices of the ripple mesh	
+D_L15_001622F0	quartu_ripple88_vertex_scale	scales the template vertices of the 88-vertex ripple mesh	
+D_L15_00167480	quartu_camera_moby	pointer at quartu_player_camera+0x180; same slot as aridia_camera_moby	
+D_L15_001DEF80	quartu_ripple_world_verts	ripple mesh vertices placed at the moby with the wave z	
+D_L15_001DFC10	quartu_ripple88_world_verts	88-vertex ripple vertices placed at the moby with the wave z	
+D_L15_001622E0	quartu_ripple88_wavelength	radial wavelength of the 88-vertex ripple wave	
+D_L15_001DF1A8	quartu_ripple_scrolled_uvs	base uvs plus the scroll offset, drawn by the ripple mesh	
+D_L15_00162230	quartu_ripple_mesh_counts	per strip, count passed to draw_env_overlay_mesh	
+D_L15_00162250	quartu_ripple_mesh_positions	per strip, vertex pointer passed to draw_env_overlay_mesh	
+D_L15_00162258	quartu_ripple_mesh_uvs	per strip, uv pointer passed to draw_env_overlay_mesh	
+D_L15_00162260	quartu_ripple_mesh_colors	per strip, color pointer passed to draw_env_overlay_mesh	
+D_L15_00162264	quartu_ripple_alpha_blend	high word of GS register 0x42 (alpha) for the ripple	
+D_L15_00162274	quartu_ripple_spin_period	one turn of the ripple angle takes this long	
+D_L15_001DF7F0	quartu_ripple88_base_uvs	base uvs of the 88-vertex ripple before scrolling	
+D_L15_001E0030	quartu_ripple88_scrolled_uvs	base uvs plus scroll offset for the 88-vertex ripple	
+D_L15_001622A0	quartu_ripple88_mesh_counts	per strip, count passed to draw_env_overlay_mesh	
+D_L15_001622C0	quartu_ripple88_mesh_positions	per strip, vertex pointer passed to draw_env_overlay_mesh	
+D_L15_001622C8	quartu_ripple88_mesh_uvs	per strip, uv pointer passed to draw_env_overlay_mesh	
+D_L15_001622D0	quartu_ripple88_mesh_colors	per strip, color pointer passed to draw_env_overlay_mesh	
+D_L15_001622D4	quartu_ripple88_alpha_blend	high word of GS register 0x42 (alpha) for the 88-vertex ripple	
+D_L15_001622D8	quartu_ripple88_texture	GetEffectTex index of the 88-vertex ripple	
+D_L15_001622DC	quartu_ripple88_alpha	alpha byte of the 88-vertex ripple color	
+D_L15_001622E4	quartu_ripple88_spin_period	one turn of the 88-vertex ripple angle takes this long	
+D_L15_001622E8	quartu_ripple88_wave_height	z amplitude of the 88-vertex ripple wave	
+D_L15_001622EC	quartu_ripple88_uv_scroll_rate	frame count times this gives the 88-vertex uv scroll	
+D_L15_001DF318	quartu_ripple_vertex_colors	per-vertex color of the ripple mesh	
+D_L15_001DF3D0	quartu_ripple88_template_verts	template vertices of the 88-vertex ripple mesh	
+D_L15_001E02F0	quartu_ripple88_vertex_colors	per-vertex color of the 88-vertex ripple mesh	
+D_L15_001622F8	quartu_ripple88_uv_scroll_factors	four uv pairs multiplied by the 88-vertex scroll amount	
+D_L16_00161E54	kalebo3_path_spring_stiffness	Spring() stiffness for crate platform and bolt thief path follow	
+D_L16_00161E58	kalebo3_path_spring_damping	Spring() damping for crate platform and bolt thief path follow	
+D_L16_001D9A20	grindrail_gate_trigger_box	min/max xyz box hero offset is tested against in update_grindrail_gate	
+D_L16_001D9A38	bounds_trigger_box	min/max xyz box tested in update_local_bounds_command_trigger	
+D_L16_00161A88	test_dummy_hold_joint	joint index where test dummy holds its child object	
+D_L16_00161ACC	hoverboard_dummy_spray_final_color	second color arg of hoverboard dummy spray/dust particles	
+D_L16_00161B48	last_test_dummy_door_sound_request_frame	frame stamp limiting test dummy door sound; matches existing candidate	
+D_L16_00161AC8	hoverboard_dummy_spray_initial_color	first color arg of hoverboard dummy spray particles; existing candidate	
+D_L16_00161A4C	conveyor_belt_base_speed	conveyor target speed times frame time; existing candidate	
+D_L16_001D32C0	conveyor_belt_pulse_uvs	4 uv pairs for the first conveyor strip packet	
+D_L16_001D32E0	conveyor_belt_scrolling_uvs	4 uv pairs for the scrolling conveyor strip packet	
+D_L16_001D3300	conveyor_belt_quad_points	4 corner points copied into both conveyor strip packets	
+D_L16_00161A58	conveyor_belt_alpha_blend_a_selector	GS alpha A field of conveyor strip mode	
+D_L16_00161A5C	conveyor_belt_alpha_blend_b_selector	GS alpha B field (<<2) of conveyor strip mode	
+D_L16_00161A60	conveyor_belt_alpha_blend_c_selector	GS alpha C field (<<4) of conveyor strip mode	
+D_L16_00161A64	conveyor_belt_alpha_blend_d_selector	GS alpha D field (<<6) of conveyor strip mode	
+D_L16_00161A8C	test_dummy_bomb_horizontal_launch_speed	throw speed times frame time in test_dummy_update; existing candidate	
+D_L16_00161A90	test_dummy_move_step_limit	ClampVectorLength step toward path node per frame	
+D_L16_00161A94	test_dummy_shot_distance	distance arg of EffectSlots_Fire in test_dummy_update	
+D_L16_00161AA0	test_dummy_glow_pulse_color_start	color blend start in draw_test_dummy_group_glows; existing candidate	
+D_L16_00161AA4	test_dummy_glow_pulse_color_end	color blend end in draw_test_dummy_group_glows; existing candidate	
+D_L16_001D3480	linked_pair_ribbon_uvs	4 uv pairs in draw_linked_pair_ribbons	
+D_0015EF3C	kalebo3_hoverboard_races_finished	counter bumped when level index is 16, slows hoverboard dummies	
+D_L16_00161B40	class_0287_group_activation_value	stored to data[5]/[6] of each class 0x287 group moby; existing candidate	
+D_L16_001D9990	help_desk_hero_reset_pose	position+rotation passed to Hero_ResetToPosition by help desk lady	
+D_L16_001601AC	kalebo3_level_cuboids	0x80-stride cuboid table, matches L00 level_cuboids	
+D_L16_00161F14	chomper_knockback_gravity	hit reaction value times dt squared; existing candidate	
+D_L16_00161F18	chomper_knockback_horizontal_speed_approach_rate	hit reaction value times dt squared; existing candidate	
+D_L16_00161F1C	chomper_knockback_vertical_speed	hit reaction value times dt; existing candidate	
+D_L16_00161F20	chomper_knockback_horizontal_speed	hit reaction value times dt; existing candidate	
+D_L16_001619A8	reposition_effect_velocity_elevation_degrees	degrees angle for reposition effect velocity; existing candidate	
+D_L16_001619AC	reposition_effect_velocity_scale_range_start	random speed min; existing candidate	
+D_L16_001619B0	reposition_effect_velocity_scale_range_end	random speed max; existing candidate	
+D_L16_001619B4	reposition_effect_spawn_z_offset	z added to effect position; existing candidate	
+D_L16_001619B8	reposition_effect_radius_range_start	random radius min; existing candidate	
+D_L16_001619BC	reposition_effect_radius_range_end	random radius max; existing candidate	
+D_L16_00161A68	conveyor_belt_pulse_color_start	color blend start in draw_conveyor_belt_strips; existing candidate	
+D_L16_00161A6C	conveyor_belt_pulse_color_end	color blend end in draw_conveyor_belt_strips; existing candidate	
+D_L16_00161A50	conveyor_belt_pulse_texture_id	effect texture of first strip; existing candidate	
+D_L16_00161A70	conveyor_belt_scrolling_vertex_color	strip vertex color; existing candidate	
+D_L16_00161A54	conveyor_belt_scrolling_texture_id	effect texture of scrolling strip; existing candidate	
+D_L16_001D3400	test_dummy_glow_quad_points	4 corner points scaled by 0.2 in draw_test_dummy_group_glows	
+D_L16_001D3440	linked_pair_ribbon_points	4 corner points in draw_linked_pair_ribbons	
+D_L16_00161B44	test_dummy_door_height_offset	added to door base height when open; existing candidate	
+D_L16_00161B4C	triggered_scene_rotation_y	written to out rotation [1]; existing candidate	
+D_L16_00161D34	kalebo3_challenge_layout_value	set to 76 in challenge, 100 on restore by Challenge_SetLayoutParam	
+D_L16_001E89A0	crate_platform_no_path_msg	printf when crate platform path is -1	
+D_L16_001E89D8	crate_platform_empty_path_msg	printf when crate platform path is empty	
+D_L16_001E8A20	crate_platform_no_other_path_msg	printf when crate platform second path is -1	
+D_L16_001E8A58	crate_platform_empty_other_path_msg	printf when crate platform second path is empty	
+D_L16_001E8AA0	crate_platform_no_trigger_msg	printf when crate platform trigger is -1	
+D_L16_00161E50	bolt_thief_path_speed	path advance per frame in advance_bolt_thief_path; existing candidate	
+D_L16_001D99B0	path_seven_point_local_offsets	7 local vectors transformed into a 7-point path table entry	
+D_L16_00161E98	grindrail_gate_command_ticks	command timer length after hero enters gate box	
+D_L16_00161E9C	grindrail_gate_glow_color_start	glow tween color start	
+D_L16_00161EA0	grindrail_gate_glow_color_end	glow tween color end	
+D_L16_00161EA4	bounds_trigger_command_ticks	command timer length after entering trigger box	
+D_L16_00161EA8	bounds_trigger_glow_color_start	glow tween color start	
+D_L16_00161EAC	bounds_trigger_glow_color_end	glow tween color end	
+D_L16_00161EB0	grindrail_button_local_offset	vector rotated by button matrix to find press point	
+D_L16_001601BC	kalebo3_level_cylinders	0x80-stride table, matches L00 level_cylinders	
+D_L16_00161FA8	elevator_ring_segment_angle_degrees	ring segment step angle; existing candidate	
+D_L16_00161FC0	envmap_a_vertex_bufs	per-mesh vertex arrays for EnvMapA_Draw	
+D_L16_00162058	envmap_c_vertex_bufs	per-mesh vertex arrays for draw_level16_visible_textured_batches	
+D_L16_001D9B30	gadgetron_ceo_hero_return_pose	hero reset pose when challenge ends and environment restores	
+D_L16_00161F78	elevator_max_speed	speed limit times dt in ElevatorPlatformUpdate and ring color	
+D_L16_001620D8	envmap_e_vertex_bufs	per-mesh vertex arrays in update_level16_three_mesh_bounds_and_callback	
+D_L16_00161F28	path_walker_gap_range_start	existing candidate, gap compare in path walker	
+D_L16_00161F2C	path_walker_gap_range_end	existing candidate	
+D_L16_00161F30	path_walker_speed_range_start	existing candidate	
+D_L16_00161F34	path_walker_speed_range_end	existing candidate	
+D_L16_00161F3C	path_walker_height_range_start	existing candidate	
+D_L16_00161F40	path_walker_height_range_end	existing candidate	
+D_L16_00161F50	path_walker_draw_distance	existing candidate, FastBSphereCheck radius	
+D_L16_00161FB0	envmap_a_vertex_counts	per-mesh vertex counts for EnvMapA_Draw	
+D_L16_00162050	envmap_c_vertex_counts	per-mesh vertex counts for textured batches	
+D_L16_001D9B10	gadgetron_ceo_hero_and_camera_pose	hero pose plus camera pos/rot set on challenge exit	
+D_L16_00161F38	path_walker_speed_approach_acceleration	existing candidate	
+D_L16_00161F4C	path_walker_reposition_advance_rate	existing candidate	
+D_L16_00161F88	elevator_ring_half_height	existing candidate	
+D_L16_00161F84	elevator_ring_outer_radius	existing candidate	
+D_L16_001DC900	envmap_a_uvs	reflection uv output for EnvMapA_Draw	
+D_L16_001DDF50	envmap_b_uvs	reflection uv output for single reflection mesh	
+D_L16_001DF5A0	envmap_c_uvs	reflection uv output for textured batches	
+D_L16_00162078	envmap_d_vertex_counts	per-mesh vertex counts in draw_level16_reflection_mesh_batch	
+D_L16_00162088	envmap_d_vertex_bufs	per-mesh vertex arrays in draw_level16_reflection_mesh_batch	
+D_L16_001E2BA0	envmap_d_uvs	reflection uv output in draw_level16_reflection_mesh_batch	
+D_L16_001620C8	envmap_e_vertex_counts	per-mesh vertex counts in update_level16_three_mesh_bounds_and_callback	
+D_L16_001E5660	envmap_e_bounding_spheres	spheres computed from envmap e vertices	
+D_L16_00161F58	path_walker_particle_color_start	first color arg of path walker particle emit	
+D_L16_00161F5C	path_walker_particle_color_end	second color arg of path walker particle emit	
+D_L16_00161F60	path_walker_particle_movement_velocity_scale	existing candidate	
+D_L16_00161F64	path_walker_particle_random_velocity_scale	existing candidate	
+D_L16_00161F68	path_walker_particle_target_scalar_scale	existing candidate	
+D_L16_001D9B50	elevator_ring_uvs	uv pairs per ring vertex in DrawRingStack	
+D_L16_00161F9C	elevator_ring_color_start	tween color by elevator speed in DrawRingStack	
+D_L16_00161FA0	elevator_ring_color_end	tween color by elevator speed in DrawRingStack	
+D_L16_00161F90	elevator_ring_alpha_blend_b_selector	GS alpha B field (<<2)	
+D_L16_00161F8C	elevator_ring_alpha_blend_a_selector	GS alpha A field	
+D_L16_00161F94	elevator_ring_alpha_blend_c_selector	GS alpha C field (<<4)	
+D_L16_00161F98	elevator_ring_alpha_blend_d_selector	GS alpha D field (<<6)	
+D_L16_00161FE0	envmap_a_normal_bufs	normals fed to reflection uv code for EnvMapA_Draw	
+D_L16_00161FF0	envmap_a_color_bufs	color arrays passed to draw_env_overlay_mesh	
+D_L16_001DC8D0	envmap_a_bounding_spheres	FastBSphereCheck spheres for env map a meshes	
+D_L16_00162000	envmap_b_vertex_counts	per-mesh vertex counts for single reflection mesh	
+D_L16_00162020	envmap_b_vertex_bufs	per-mesh vertex arrays for single reflection mesh	
+D_L16_00162030	envmap_b_normal_bufs	normals for single reflection mesh uvs	
+D_L16_00162038	envmap_b_color_bufs	color arrays for single reflection mesh draw	
+D_L16_001DF580	envmap_c_bounding_spheres	FastBSphereCheck spheres for textured batches	
+D_L16_00162068	envmap_c_normal_bufs	normals for textured batch uvs	
+D_L16_00162070	envmap_c_color_bufs	color arrays for textured batch draw	
+D_L16_001620A8	envmap_d_normal_bufs	normals for reflection batch uvs	
+D_L16_001620B8	envmap_d_color_bufs	color arrays for reflection batch draw	
+D_L06_00162038	space_commando_scale	multiplies class scale for the commando moby scale and move control	
+D_L06_0016203C	space_commando_sight_range	search radius for FindNearestEligibleMoby, +6 while alerted	
+D_L06_00162040	space_commando_hit_knockback_speed	horizontal knockback speed on a stagger hit	
+D_L06_00162044	space_commando_hit_knockback_lift	vertical knockback speed on a stagger hit	
+D_L06_00162048	space_commando_death_knockback_speed	horizontal knockback speed on the death hit	
+D_L06_0016204C	space_commando_death_knockback_lift	vertical knockback speed on the death hit	
+D_L06_00162050	space_commando_aim_ticks	aim timer before the beam fires (state 4)	
+D_L06_00162054	space_commando_melee_range	closer than this the commando switches to melee state 5	
+D_L06_00162058	space_commando_move_speed	move control speed times frame time	
+D_L06_0016205C	space_commando_vehicle_melee_anim_speed	melee anim speed when hero vehicle_mode is 1	
+D_L06_00162060	space_commando_beam_spread_speed	per-frame outward step of the 16 beam points	
+D_L06_00162064	space_commando_beam_fan_degrees	fan angle in degrees of the 16 beam points	
+D_L06_00162068	space_commando_beam_ticks	beam lifetime timer set at beam start	
+D_L06_0016206C	space_commando_beam_alpha_a	GS alpha field A in DrawBeam	
+D_L06_00162070	space_commando_beam_alpha_b	GS alpha field B in DrawBeam	
+D_L06_00162074	space_commando_beam_alpha_c	GS alpha field C in DrawBeam	
+D_L06_00162078	space_commando_beam_alpha_d	GS alpha field D in DrawBeam	
+D_L06_0016207C	space_commando_beam_alpha_fix	GS alpha FIX field in DrawBeam	
+D_L06_00162080	space_commando_beam_texture	effect texture of the beam quads	
+D_L06_00162084	space_commando_beam_outer_color_a	tween colour start for outer beam vertices	
+D_L06_00162088	space_commando_beam_outer_color_b	tween colour end for outer beam vertices	
+D_L06_0016208C	space_commando_beam_inner_color_a	tween colour start for inner beam vertices	
+D_L06_00162090	space_commando_beam_inner_color_b	tween colour end for inner beam vertices	
+D_L06_00162094	space_commando_beam_spark_lower	PartType02Spawn first colour of beam sparks	
+D_L06_00162098	space_commando_beam_spark_upper	PartType02Spawn second colour of beam sparks	
+D_L06_0016209C	space_commando_beam_spark_start_w	w of spark start vector	
+D_L06_001620A0	space_commando_beam_spark_end_w	w of spark end vector	
+D_L06_001620A4	space_commando_beam_spark_time_a_min	random min of spark time a	
+D_L06_001620A8	space_commando_beam_spark_time_a_max	random max of spark time a	
+D_L06_001620AC	space_commando_beam_spark_time_b_min	random min of spark time b	
+D_L06_001620B0	space_commando_beam_spark_time_b_max	random max of spark time b	
+D_L06_001620B4	space_commando_beam_spark_time_c_min	random min of spark time c	
+D_L06_001620B8	space_commando_beam_spark_time_c_max	random max of spark time c	
+D_L06_001620BC	space_commando_beam_spark_speed_min	random min of spark horizontal speed	
+D_L06_001620C0	space_commando_beam_spark_speed_max	random max of spark horizontal speed	
+D_L06_001620C4	space_commando_beam_spark_lift_min	random min of spark z speed	
+D_L06_001620C8	space_commando_beam_spark_lift_max	random max of spark z speed	
+D_L06_001620CC	space_commando_beam_spark_chance	spark skipped when random 0..1 exceeds it	
+D_L06_001620D0	space_commando_beam_spark_texture	last PartType02Spawn arg (texture index)	
+D_L06_001F31E0	space_commando_beam_uvs	float[4][2] uv table of beam quads, v rerolled per draw	
+func_L06_003089B8	draw_bot_door_lock_glow	draw callback of bot_door_lock_update; draws two world quads faded by f9	
+D_L06_00162110	spinning_fragment_scale	scale factor of spinning fragment mobies	
+D_L06_00162158	blarg_timer_display_x	x of FontPrintCenterLarge for the timer text	
+D_L06_0016215C	blarg_timer_display_y	y of FontPrintCenterLarge for the timer text	
+D_L06_00162160	blarg_timer_pulse_color_a	tween colour start of pulsing timer text	
+D_L06_00162164	blarg_timer_pulse_color_b	tween colour end of pulsing timer text	
+D_L06_00162168	blarg_timer_frame_y0_offset	frame bound offset added to timer y	
+D_L06_0016216C	blarg_timer_frame_y1_offset	frame bound offset added to timer y	
+D_L06_00162170	blarg_timer_frame_x0_offset	frame bound offset added to timer x	
+D_L06_00162174	blarg_timer_frame_x1_offset	frame bound offset added to timer x	
+D_L06_00162178	blarg_timer_frame_alpha	alpha byte arg of DrawUIFrame	
+D_L06_0016236C	bot_door_lock_bob_height	z bob amplitude of the lock marker	
+D_L06_00162370	bot_door_lock_bob_period	seconds per bob cycle	
+D_L06_00162374	bot_door_lock_pulse_period	seconds per colour pulse cycle	
+D_L06_00162378	bot_door_lock_glow_amplitude	colour pulse amplitude of the particles	
+D_L06_0016237C	bot_door_lock_fade_max	max of the near-hero fade value f9	
+D_L06_001624A4	projected_fading_quad_texture	GetEffectTex arg in draw_projected_fading_quad	
+D_L06_001624A8	projected_fading_quad_radius	screen radius scaled by size	
+D_L06_001624AC	projected_fading_quad_uv0	uv word 0 of the quad	
+D_L06_001624B0	projected_fading_quad_uv1	uv word 1 of the quad	
+D_L06_001624B4	projected_fading_quad_uv2	uv word 2 of the quad	
+D_L06_001624B8	projected_fading_quad_uv3	uv word 3 of the quad	
+D_L00_001DB8C0	tesla_beam_points	20 beam points laid toward the target	
+D_L00_00161660	tesla_beam_start_pending	set by the claw update, cleared when the beam starts	
+D_L00_001616F4	tesla_beam_initial_frames	ticks for tesla_beam_scaled_initial_frame_count	
+D_L00_00161664	tesla_beam_length	beam length split into 20 steps	
+D_L00_00161548	linked_moby_trigger_ticks	interval timer that flips linked mobies 0x50 to 0x51	
+D_L00_00161550	linked_moby_hit_cooldown	cooldown ticks after each hit of moby 166	
+D_L00_0016156C	visibomb_missile_cruise_speed	target speed when the button is not held	
+D_L00_00161570	visibomb_missile_boost_speed	target speed and cap while pad 0x40 held	
+D_L00_00161574	visibomb_missile_speed_blend	blend rate of target speed into f48	
+D_L00_00161578	visibomb_missile_speed_follow	blend rate of f48 into current speed f4	
+D_L00_00161568	visibomb_missile_pitch_range	scales Sound_SetPitchBend by speed fraction	
+D_L00_001E9DD8	glow_burst_spark_colors_a	6-entry colour table, first PartType11Spawn colour	
+D_L00_001E9DF0	glow_burst_spark_colors_b	6-entry colour table, second PartType11Spawn colour	
+D_L00_001DB740	taunter_effect_slots	10 ring slots aged and drawn by the taunter	
+D_L00_001615A0	taunter_effect_spawn_timer	timer before the next ring slot spawns	
+D_L00_001615AC	taunter_effect_inv_lifetime	1/lifetime, turns slot age into 0..1	
+D_L00_001615B0	taunter_effect_origin	joint 0 world position, ring origin	
+D_L00_0016158C	taunter_effect_alpha	max alpha of the ring quads	
+D_L00_00161590	taunter_effect_color	rgb of the ring quads	
+D_L00_00161594	taunter_effect_end_size	ring size at end of life	
+D_L00_00161598	taunter_effect_start_size	ring size at start of life	
+D_L00_001DB700	taunter_effect_quad_corners	4 corner vectors scaled by ring size	
+D_L00_0016162C	pyrocitor_flame_particle_count	particles per type-10 flame slot	
+D_L00_00161608	pyrocitor_flame_particle_drift	random velocity radius times frame time	
+D_L00_0016160C	pyrocitor_flame_particle_start_w	w of particle start vector	
+D_L00_00161610	pyrocitor_flame_particle_end_w	w of particle end vector	
+D_L00_00161614	pyrocitor_flame_particle_start_color_a	tween range of first colour	
+D_L00_00161618	pyrocitor_flame_particle_start_color_b	tween range of first colour	
+D_L00_0016161C	pyrocitor_flame_particle_end_color_a	tween range of second colour	
+D_L00_00161620	pyrocitor_flame_particle_end_color_b	tween range of second colour	
+D_L00_00161624	pyrocitor_flame_particle_time_min	random min of particle times	
+D_L00_00161628	pyrocitor_flame_particle_time_max	random max of particle times	
+D_L00_001615FC	pyrocitor_flame_particle_texture	last PartType02Spawn arg	
+D_L00_00182740	vis_gif_tex_regs_table	SetupVisGifViewer reads three u64 GIF words per idx	
+D_L00_001828C0	level_tex0_regs_128a	load_level_archive_resources builds 128x128 PSMT8 TEX0 words; SetupVisGifViewer idx -2	
+D_L00_001828D8	level_tex0_regs_64	load_level_archive_resources builds 64x64 PSMT8 TEX0 words; SetupVisGifViewer idx -3	
+D_L00_001828F0	level_tex0_regs_128b	load_level_archive_resources builds a second 128x128 PSMT8 TEX0 set	
+D_L00_0015FD40	mem_report_separator_msg	printed with no args between the memory report totals	
+D_L00_0015FC80	level_circle_zone_grid	64-wide 16-unit xy grid of offsets to zone lists, read by func_L00_00257F4C	
+D_L00_0015FC40	level_circle_zones	32-byte xy centre+radius records tested in func_L00_00257FB4	
+D_L00_001E8BF8	mem_report_base_data_fmt	prints base buffer up to occlusion or sky data in KB	
+D_L00_0019BB60	coll_cell_grid	0x10000 bytes, cleared at load; coll_sphere indexes 4-byte cells then 32-byte lists at +0x4000	
+D_L00_0015FC10	level_circle_zone_count	count from header f7C, size of level_circle_zones	
+D_L00_0015F71C	primary_nanotech_ball_moby	nanotech_ball_update stores the first ball moby here; cleared at level load	
+D_L00_001E8B98	mem_report_buffer1_fmt	prints overlay end up to resource buffer f0 in KB	
+D_L00_001E8BB0	mem_report_buffer2_fmt	prints resource buffer f0 up to fC in KB	
+D_L00_001E8BC8	mem_report_buffer3_fmt	prints resource buffer fC up to f10 in KB	
+D_L00_001E8BE0	mem_report_buffer4_fmt	prints resource buffer f10 up to f14 in KB	
+D_L00_001E8C10	mem_report_no_base_data_msg	printed when neither occlusion grid nor sky data exist	
+D_L00_001E8C78	mem_report_texture_data_fmt	prints level texture data size in KB	
+D_L00_001E8D08	mem_report_moby_seqs_fmt	prints moby seqs up to tie instances in KB	
+D_L00_001E8D68	mem_report_moby_pvars_fmt	prints moby pvar pool up to path data in KB	
+D_L00_001E8D80	mem_report_paths_fmt	prints path data up to particle pool in KB	
+D_L00_001E8D98	mem_report_particles_fmt	printed with 128.0, the 0x20000 particle pool in KB	
+D_L00_001E8DB0	mem_report_particle_pool_end_fmt	prints particle pool end address in MB	
+D_L00_001E8DC8	mem_report_total_used_fmt	prints gameplay memory end minus buffer start in MB	
+func_L00_00240D80	setup_vis_gif_viewer_level_tex	SetupVisGifViewer tail for idx < -1: copies level_tex0 words	
+func_L00_00240DE0	setup_vis_gif_viewer_fallback	SetupVisGifViewer tail for idx -1: writes fixed GIF words	
+func_L00_002513F8	get_moby_light_color	reads moby+0x38 index bytes, returns a vec from the D_L00_0017FFC0 light table	
+D_0013E190	hero_spawn_pose	initialize_hero copies hero start pos and rot into two Vec4s	
+D_L00_00179800	cheat_input_sequences	12 zero-ended 16-byte button sequences matched against the input ring to toggle gCheats	
+D_L00_00179548	jet_camera_mode_latch	halfword cleared by clear_jet_camera_mode_latch	
+D_L00_00179550	help_id_pair_table	150 short pairs searched by lookup_help_id_pair	
+D_L00_0017C140	hero_random_manip_quats	quats copied into 7 hero manipulators on the random timer	
+D_L00_0017C1B0	hero_random_manip_scales	scales copied into 7 hero manipulators on the random timer	
+D_L00_0017C220	hero_random_manip_offsets	translations copied into 7 hero manipulators on the random timer	
+D_L00_0017C2C0	hero_random_manip_joints	joint ids for the 7 random-timer hero manipulators	
+D_L00_0017C290	hero_random_manip_blend_curve	per-tick manipulator weight indexed by rand_timer.fired (0..11)	
+D_L00_0017C2E0	hero_extra_manip_quats	quats for the 4 extra hero manipulators	
+D_L00_0017C320	hero_extra_manip_scales	scales for the 4 extra hero manipulators	
+D_L00_0017C360	hero_extra_manip_offsets	translations for the 4 extra hero manipulators, scaled by moby scale	
+D_L00_0017C3A0	hero_extra_manip_blend_curve	per-tick weight indexed by the extra timer (0..21)	
+D_L00_0017A7C0	hero_bob_attach_euler	apply_hero_vertical_oscillation: euler angles rotating the attached object offset	
+D_L00_001798D8	hero_scale_sequence_table	apply_hero_and_item_scale_sequence reads per-tick scales until -1	
+D_L00_001AEF10	hero_height_probe_dir	update_hero_moby_probed_height_bounds stores its probe direction	
+D_L00_0017C400	hero_height_probe_offsets	four xyz offsets for the height probe rays	
+D_L00_001E7F90	hero_world_matrix_joints	nine joint ids passed to compute_selected_world_matrices	
+func_L00_00203ED8	help_popup_close_flip_case	HelpPopup_StepClose tail: state 6, f4 = 4 - f4	
+func_L00_00203F08	help_popup_close_reset_case	HelpPopup_StepClose tail: state 6, f4 = 0	
+func_L00_00205158	lookup_help_id_pair_loop_tail	loop tail of lookup_help_id_pair over 150 entries	
+func_L00_00205754	hero_easing_moby_kind1_tail	get_hero_easing_moby_by_kind tail returning the mode 1 moby	
+func_L00_00205768	hero_easing_moby_kind5_check	get_hero_easing_moby_by_kind tail testing mode 5	
+func_L00_00205778	hero_easing_moby_kind5_tail	get_hero_easing_moby_by_kind tail returning the mode 5 moby	
+D_0015EE74	g_frame_time_cube	set_video_timing: (1/60)^3 NTSC, 0.02^3 PAL	
+func_001FA238	euler_to_matrix_ee	EE-FPU variant of euler_to_matrix (VU0 one is func_001FA218); matrix_to_euler builds Y rotation	
+D_001E8F00	moby_class_data_table	{class id, a, b} table ended by -1, read by assign_moby_class_data	
+func_0020FC38	capture_moby_blend_pose	VU0 pose evaluator called with blend slot|flags before the pose snapshot into the slot	
+func_001F9E10	vec_scale_xy_to_length	VU0 rsqrt: scales xy of src to length arg2, zero xy if degenerate	
+D_001B3900	resident_moby_class_data	per resident class word set from moby_class_data_table.a	
+D_0016129C	local_surface_region_enabled	gates the local_surface_region disc test in resolve_camera_surface_height; cleared in draw.c	
+D_0015F6B0	help_message_keepalive	set to 2 whenever try/force_help_message shows a message	
+D_0015F6B4	help_message_owner	requester id holding the help message slot	
+D_00161388	help_message_id	message id shown by try/force_help_message	
+D_001B2F80	moby_blend_slot_poses	16-byte per-slot pose vector copied from moby+0xF0 in MobyBlendAnimation	
+D_001CC400	damage_reaction_code_table	byte table [an[8] + reaction*4] in select_damage_reaction	
+D_001CC448	damage_reaction_scale_table	float [k][B+0x28] scaling the hit vector in select_damage_reaction	
+D_001600D8	quat_next_axis_table	{1,2,0} successor table in MatrixToQuaternion	
+D_00160134	clip_volume_table	ViewBox array tested by is_point_inside_clip_volume	
+D_L13_0015F6A8	gemlik_game_mode	same global as other levels' game_mode; 2 stops robosquawker, 3-4 freezes jet lock timer	
+D_L13_0015F4FC	gemlik_fade_level	set from the jet's blend (0.99 on enter/exit); other levels name it fade level	
+D_L13_0016CE70	gemlik_view_tan_half_fov	tan(fov/2) written by the jet camera, read back as jet aim limit	
+D_L13_001CC068	jet_boarding_group_ids	id list passed to jet_group_switch on idle (1) and boarding (0)	
+D_L13_0015F6E8	gemlik_play_mode	set to 2 while flying the jet; other levels' play_mode	
+D_L13_001614D0	jet_boarding_group_ids_b	second id list switched with jet_boarding_group_ids	
+D_L13_00161420	robosquawker_jump_speed	times g_frame_time as the jump speed to jump_speed_4318	
+D_L13_00161424	robosquawker_jump_gravity	f130 and negated gravity arg of jump_speed_4318	
+D_L13_001CBFC0	jet_target_marker_shape	0x1E-vertex packet drawn around targets	
+D_L13_00161450	jet_hud_palette	palette pointer whose entries the jet HUD bar fills or blanks	
+D_L13_00161410	gemlik_turret_shot_speed	times g_frame_time as the turret projectile velocity	
+D_L13_00160064	gemlik_moby_list	head of the moby list walked by robosquawker and jet targeting; other levels' moby_list	
+D_L13_00161418	robosquawker_knockback_lift	times g_frame_time into f13C on a hit	
+D_L13_0016141C	robosquawker_knockback_speed	times g_frame_time into f138 on a hit	
+D_L13_00161468	jet_exhaust_particle_a	particle def for joint stream a in spawn_fighter_jet_joint_particles	
+D_L13_00161478	jet_exhaust_particle_b	particle def for joint stream b	
+D_L13_00161488	jet_exhaust_particle_c	particle def for joint stream c	
+D_L13_00167360	gemlik_view_basis_row1	row after gemlik_view_basis; scaled by moby size as marker offset	
+D_L13_00167150	gemlik_camera_rot	gemlik_camera_pos+0x10; its z yaw turns the jet radar	
+D_L13_001CBEE0	gemlik_turret_hud_pip_strip	triangle strip drawn per pip in DrawGemlikTurretHud	
+D_L13_001CC0F0	jet_hud_palette_backup	1024-byte copy of the palette made once at jet init	
+D_L13_001614C0	jet_camera_home_target	camera target used when no path point is set	
+D_L13_001F44E8	volume_trigger_bad_target_msg	printf string with moby uid when trigger data is -1	
+D_L13_00161414	gemlik_turret_fire_interval	frame-count modulus between turret shots	
+D_L13_00161438	robosquawker_explosion_slots	3-slot frame table gating mine explosions	
+D_L13_00161498	jet_exhaust_particle_d	particle def for the extra high-intensity stream	
+D_L13_001614A8	jet_exhaust_particle_e	particle def for the joint-centre high-intensity stream	
+D_L13_001CC038	jet_radar_icon_table	IconEC5D0 entries indexed by icon in draw_fighter_jet_radar_icon	
+D_L13_00167350	gemlik_view_basis	matrix rows fed to matrix_from_basis_rows for off-screen arrows	
+D_L13_00161458	jet_offscreen_arrow_shape	3-vertex packet pointed at off-screen targets	
+D_L13_001F4740	jet_camera_mode_warning_msg	printed when camera mode is not 5 before CameraScript	
+D_L13_0016D500	gemlik_texture_table	JetTexture47 table indexed by texture_id+40 for its palette	
+D_L13_0015F520	gemlik_palette_data_base	base address added to palette<<4 to find the jet palette	
+D_L13_001F4760	jet_no_escape_path_msg	printed when escape_path is -1	
+D_L13_001F4798	jet_no_destination_path_msg	printed when destination_path is -1	
+D_L13_00161454	jet_hud_palette_ready	set after the palette backup is taken	

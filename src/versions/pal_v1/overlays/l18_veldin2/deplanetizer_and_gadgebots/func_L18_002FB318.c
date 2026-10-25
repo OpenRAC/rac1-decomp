@@ -24,7 +24,7 @@ void draw_moby_three_scaled_two_tint_quads(struct Moby *m) {
     vec_scale_to_length(mat[2], mat[2], 1.0f);
     FastVecCross(mat[1], mat[0], mat[2]);
 
-    color = (*(int *)&D_L18_00162594) | 0xFF000000;
+    color = (*(int *)&deplanetizer_glow_tint_a) | 0xFF000000;
     pk.uv[0] = 1.0f;
     pk.uv[1] = 1.0f;
     pk.uv[2] = 0.0f;
@@ -42,7 +42,7 @@ void draw_moby_three_scaled_two_tint_quads(struct Moby *m) {
     do {
         qcopy_nc(&vertices[i], D_E1_L18_001DFAD0[i]);
         {
-            vertices[i].f[2] *= (*(float *)&D_L18_001625A4);
+            vertices[i].f[2] *= (*(float *)&deplanetizer_streak1_z_scale);
             vertices[i].f[0] *= deplanetizer_three_quad_local_x_scale;
         }
         i++;
@@ -52,7 +52,7 @@ void draw_moby_three_scaled_two_tint_quads(struct Moby *m) {
     }
     draw_world_quad(&pk, 0, 0);
 
-    pk.col[3] = (*(int *)&D_L18_001625A0) | 0x7F000000;
+    pk.col[3] = (*(int *)&deplanetizer_glow_tint_b) | 0x7F000000;
     pk.col[2] = pk.col[3];
     pk.col[1] = pk.col[3];
     pk.col[0] = pk.col[3];
@@ -60,7 +60,7 @@ void draw_moby_three_scaled_two_tint_quads(struct Moby *m) {
     do {
         qcopy_nc(&vertices[i], D_E1_L18_001DFAD0[i]);
         {
-            vertices[i].f[2] *= (*(float *)&D_L18_001625A8);
+            vertices[i].f[2] *= (*(float *)&deplanetizer_streak2_z_scale);
             vertices[i].f[0] *= deplanetizer_three_quad_local_x_scale;
         }
         i++;
@@ -70,7 +70,7 @@ void draw_moby_three_scaled_two_tint_quads(struct Moby *m) {
     }
     draw_world_quad(&pk, 0, 0);
 
-    pk.col[3] = (*(int *)&D_L18_001625A0) | 0x7F000000;
+    pk.col[3] = (*(int *)&deplanetizer_glow_tint_b) | 0x7F000000;
     pk.col[2] = pk.col[3];
     pk.col[1] = pk.col[3];
     pk.col[0] = pk.col[3];
@@ -78,7 +78,7 @@ void draw_moby_three_scaled_two_tint_quads(struct Moby *m) {
     do {
         qcopy_nc(&vertices[i], D_E1_L18_001DFAD0[i]);
         {
-            vertices[i].f[2] *= (*(float *)&D_L18_001625AC);
+            vertices[i].f[2] *= (*(float *)&deplanetizer_streak3_z_scale);
             vertices[i].f[0] *= deplanetizer_three_quad_local_x_scale;
         }
         i++;

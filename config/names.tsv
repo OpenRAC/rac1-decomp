@@ -733,7 +733,7 @@ func_L00_0026A7F8	PartType04Spawn	descriptive	config/names_local.tsv	particle ty
 func_L00_0026A910	update_damped_effect_particle	descriptive	the NTSC decomp	update_damped_effect_particle at US level 00 0x00269A70 (src/overlays/shared/rendering/00269290.c); US function table counterpart	PartType04Update
 func_L00_0026AA10	PartType05Spawn	descriptive	config/names_local.tsv	particle type 05 callback: index/type in the RegisterPartTypes table and the body (5spawn)	spawn_particle
 func_L00_0026AB10	update_scalar_and_fade_effect_particle	descriptive	the NTSC decomp	update_scalar_and_fade_effect_particle at US level 00 0x00269C70 (src/overlays/shared/rendering/00269290.c); US function table counterpart	PartType05Update,PartType07Update
-func_L00_0026ABC0	PartType06Update	candidate	ReRAC doc_names.csv	suggested at US level 01 0x27EB08 (docs/plan/particles.md:60): coined: particle type 6 update fn from RegisterPartTypes table (data-driven emitter particle); fingerprint	
+func_L00_0026ABC0	update_colliding_effect_particle	descriptive	config/names_local.tsv	particle type 6 update (register_part_types slot 6); moves with coll_line and coll_hit_normal, kills on timer	PartType06Update
 func_L00_0026B368	spawn_particle_alt_9768	descriptive	the NTSC decomp	spawn_particle_alt_9768 at US level 00 0x0026A4C8 (src/overlays/l18/gameplay/entities/rocket.c); US function table counterpart	PartType08Spawn
 func_L00_0026B458	update_animated_fading_effect_particle	descriptive	the NTSC decomp	update_animated_fading_effect_particle at US level 00 0x0026A5B8 (src/overlays/shared/rendering/00269290.c); US function table counterpart	PartType08Update
 func_L00_0026B590	update_rotating_grayscale_effect_particle	descriptive	the NTSC decomp	update_rotating_grayscale_effect_particle at US level 00 0x0026A6F0 (src/overlays/shared/rendering/00269290.c); US function table counterpart	PartType09Update
@@ -7563,6 +7563,595 @@ D_L00_00161BB0	nanotech_halo_color	descriptive	config/names_local.tsv	draw_nanot
 D_L00_00161BB4	nanotech_reflection_texture	descriptive	config/names_local.tsv	draw_nanotech_ball: effect texture of the second (owner-aligned) pass	
 D_L00_00161BB8	nanotech_reflection_uv_scale	descriptive	config/names_local.tsv	draw_nanotech_ball: xy length of the view dir used as uv	
 D_L00_00161BBC	nanotech_halo_outer_scale	descriptive	config/names_local.tsv	draw_nanotech_ball: outer halo radius = inner radius times this	
+D_L08_001AC340	batalia_moby_groups	descriptive	config/names_local.tsv	indexed by moby group, gives a short list of moby indices (same table as blarg_moby_groups)	
+D_L08_00161AB4	batalia_rocket_exhaust_start_size	descriptive	config/names_local.tsv	rocket PartType04Spawn start size and velocity w	
+D_L08_00161AB8	batalia_rocket_exhaust_end_size	descriptive	config/names_local.tsv	rocket PartType04Spawn end size and accel w	
+D_L08_00161A60	batalia_bombthrower_fade_ticks	descriptive	config/names_local.tsv	bomb thrower state 100 fades alpha over this many ticks	
+D_L08_00161AF0	batalia_motion_spark_time_jitter	descriptive	config/names_local.tsv	+- random fraction applied to the spark's 2nd/3rd frame counts	moby_motion_spark_frame_count_variation_extent
+D_L08_00161A90	batalia_rocket_flight_speed	descriptive	config/names_local.tsv	rocket state 5 flies at twice this per frame	
+D_L08_00161A94	batalia_rocket_steer_accel_max	descriptive	config/names_local.tsv	clamps the rocket's velocity correction per frame squared	rocket_guidance_velocity_correction_limit
+D_L08_00161AA4	batalia_rocket_exhaust_spread_max	descriptive	config/names_local.tsv	random radial speed of the rocket exhaust particles	rocket_effect_radial_speed_range_end
+D_L08_00161AB0	batalia_rocket_exhaust_life_ticks	descriptive	config/names_local.tsv	scale_ticks life of the rocket exhaust particle	
+D_L08_00161ABC	batalia_rocket_exhaust_start_color	descriptive	config/names_local.tsv	rocket PartType04Spawn first color	
+D_L08_00161AC0	batalia_rocket_exhaust_end_color	descriptive	config/names_local.tsv	rocket PartType04Spawn second color	
+D_L08_00161938	batalia_bomber_tank_shot_speed	descriptive	config/names_local.tsv	scales the bomber tank projectile launch velocity	bomber_tank_projectile_speed
+D_L08_00161A28	batalia_line_puff_rise_speed_max	descriptive	config/names_local.tsv	upper bound of the random z velocity of line puffs	line_puff_initial_z_velocity_range_end
+D_L08_00161A38	batalia_line_puff_life_frames	descriptive	config/names_local.tsv	stored as the puff and tail lifetime	line_puff_duration_frames
+D_L08_00161A3C	batalia_bombthrower_scale	descriptive	config/names_local.tsv	bomb thrower Manipulator_ApplyScale scale	
+D_L08_00161A1C	batalia_bombthrower_knockback_speed	descriptive	config/names_local.tsv	knockback block horizontal speed (s[6] in InitKnockback)	
+D_L08_00161A20	batalia_bombthrower_knockback_lift	descriptive	config/names_local.tsv	knockback block vertical speed (s[7] in InitKnockback)	
+D_L08_00161A08	batalia_bombthrower_walk_speed_max	descriptive	config/names_local.tsv	move control speed limit f24 set in bomb thrower init	
+D_L08_00161A0C	batalia_bombthrower_throw_speed	descriptive	config/names_local.tsv	bomb flight time = distance / this	
+D_L08_00161A18	batalia_bombthrower_throw_short_rate	descriptive	config/names_local.tsv	throw aims short of the target by this times flight time plus 2	
+D_L08_001746D8	batalia_coll_hit_moby	descriptive	config/names_local.tsv	collision result moby, checked after coll_sphere; same slot as blarg_coll_hit_moby	
+D_L08_00161A98	batalia_rocket_route_speed	descriptive	config/names_local.tsv	rocket step along its route per frame	rocket_route_speed
+D_L08_00161A9C	batalia_rocket_hit_distance	descriptive	config/names_local.tsv	rocket damages the target within this distance	rocket_target_hit_distance
+D_L08_00161AC4	batalia_1b3_projectile_red	descriptive	config/names_local.tsv	set_moby_color red of the class 0x1B3 projectile	class_1b3_projectile_color_red
+D_L08_00161AC8	batalia_1b3_projectile_green	descriptive	config/names_local.tsv	set_moby_color green of the class 0x1B3 projectile	class_1b3_projectile_color_green
+D_L08_00161ACC	batalia_1b3_projectile_blue	descriptive	config/names_local.tsv	set_moby_color blue of the class 0x1B3 projectile	class_1b3_projectile_color_blue
+D_L08_00161AD0	batalia_1b3_projectile_scale	descriptive	config/names_local.tsv	multiplies the class scale of the class 0x1B3 projectile	class_1b3_projectile_scale_multiplier
+D_L08_001614F8	batalia_bolt_spin_min	descriptive	config/names_local.tsv	random_float_between low bound of the bolt pickup spin step	bolt_pickup_spin_increment_range_start
+D_L08_001614FC	batalia_bolt_spin_max	descriptive	config/names_local.tsv	random_float_between high bound of the bolt pickup spin step	bolt_pickup_spin_increment_range_end
+D_L08_001618F8	batalia_bomb_spark_colors	descriptive	config/names_local.tsv	four colors picked at random for the bomb fuse sparks	
+D_L08_001618F0	batalia_bomb_gravity	descriptive	config/names_local.tsv	subtracted from the bomb's z velocity each frame	bomb_downward_acceleration
+D_L08_00161930	batalia_bomber_tank_anim_ref_speed	descriptive	config/names_local.tsv	tank speed / this gives the linked parts' animation scale	bomber_tank_part_reference_speed
+D_L08_00161A30	batalia_line_puff_size	descriptive	config/names_local.tsv	PartType23Spawn size of the line puffs	line_puff_position_jitter_range_end
+D_L08_001DB540	batalia_shuttle_stop_local_points	descriptive	config/names_local.tsv	eight local points transformed by the shuttle matrix into the path entry	
+D_L08_00161AD4	batalia_path_mover_speed	descriptive	config/names_local.tsv	path follower step = this * frame time / segment length	
+D_L08_00161AD8	batalia_motion_spark_vel_scale	descriptive	config/names_local.tsv	scales the offset into the spark velocity	moby_motion_spark_first_displacement_scale
+D_L08_00161ADC	batalia_motion_spark_accel_scale	descriptive	config/names_local.tsv	scales the offset into the spark acceleration	moby_motion_spark_second_displacement_scale
+D_L08_00161AE0	batalia_motion_spark_accel_jitter	descriptive	config/names_local.tsv	random vector length added to the spark acceleration	moby_motion_spark_jitter_magnitude_range_end
+D_L08_00161AE4	batalia_motion_spark_time1_range	descriptive	config/names_local.tsv	random span of the spark's first frame count	moby_motion_spark_frame_count_random_span
+D_L08_00161AE8	batalia_motion_spark_time2_base	descriptive	config/names_local.tsv	base of the spark's second frame count	moby_motion_spark_second_frame_count_base
+D_L08_00161AEC	batalia_motion_spark_time3_base	descriptive	config/names_local.tsv	base of the spark's third frame count	moby_motion_spark_third_frame_count_base
+D_L08_00161AF4	batalia_motion_spark_vel_w_min	descriptive	config/names_local.tsv	random low bound of the spark velocity w	moby_motion_spark_first_vector_w_range_start
+D_L08_00161AF8	batalia_motion_spark_vel_w_max	descriptive	config/names_local.tsv	random high bound of the spark velocity w	moby_motion_spark_first_vector_w_range_end
+D_L08_00161AFC	batalia_motion_spark_accel_w_min	descriptive	config/names_local.tsv	random low bound of the spark acceleration w	moby_motion_spark_second_vector_w_range_start
+D_L08_00161B00	batalia_motion_spark_accel_w_max	descriptive	config/names_local.tsv	random high bound of the spark acceleration w	moby_motion_spark_second_vector_w_range_end
+D_L08_00161B04	batalia_motion_spark_color1_from	descriptive	config/names_local.tsv	FastTweenColor start of the spark first color	moby_motion_spark_initial_color_start
+D_L08_00161B08	batalia_motion_spark_color1_to	descriptive	config/names_local.tsv	FastTweenColor end of the spark first color	moby_motion_spark_initial_color_end
+D_L08_00161B0C	batalia_motion_spark_color2_from	descriptive	config/names_local.tsv	FastTweenColor start of the spark second color	moby_motion_spark_second_color_start
+D_L08_00161B10	batalia_motion_spark_color2_to	descriptive	config/names_local.tsv	FastTweenColor end of the spark second color	moby_motion_spark_second_color_end
+D_L08_001614DC	batalia_bolt_pickup_radius	descriptive	config/names_local.tsv	bolt pickup ray offset and landing lift; speed cap is 1.8x this	
+D_L08_001614E8	batalia_bolt_bounce_min_speed	descriptive	config/names_local.tsv	below this speed the bolt stops instead of bouncing	bolt_pickup_collision_stop_speed_threshold
+D_L08_001614EC	batalia_bolt_bounce_speed_loss	descriptive	config/names_local.tsv	subtracted from the reflected bolt speed on a bounce	bolt_pickup_collision_speed_reduction
+D_L08_001614F0	batalia_bolt_bob_period	descriptive	config/names_local.tsv	ticks per bob cycle of the bolt pickup	bolt_pickup_bob_period_ticks
+D_L08_001614F4	batalia_bolt_bob_height	descriptive	config/names_local.tsv	sine bob amplitude added to the bolt z	bolt_pickup_bob_amplitude
+D_L08_00161964	batalia_bomber_tank_spark_start_color	descriptive	config/names_local.tsv	PartType02Spawn color1 of the bomber tank joint particles	
+D_L08_00161968	batalia_bomber_tank_spark_end_color	descriptive	config/names_local.tsv	PartType02Spawn color2 of the bomber tank joint particles	
+D_L08_0016196C	batalia_bomber_tank_spark_speed	descriptive	config/names_local.tsv	random velocity length of the joint particles	bomber_tank_joint_particle_jitter_magnitude_base
+D_L08_00161970	batalia_bomber_tank_spark_accel_z	descriptive	config/names_local.tsv	z acceleration of the joint particles	bomber_tank_joint_particle_vertical_spread
+D_L08_00161978	batalia_bomber_tank_spark_spread	descriptive	config/names_local.tsv	random xy acceleration of the joint particles	bomber_tank_joint_particle_horizontal_spread_range_end
+D_L08_0016197C	batalia_bomber_tank_spark_time1	descriptive	config/names_local.tsv	base of the joint particle first frame count	
+D_L08_00161980	batalia_bomber_tank_spark_time2	descriptive	config/names_local.tsv	base of the joint particle second frame count	
+D_L08_00161984	batalia_bomber_tank_spark_time3	descriptive	config/names_local.tsv	base of the joint particle third frame count	
+D_L08_00161988	batalia_bomber_tank_spark_vel_w	descriptive	config/names_local.tsv	w of the joint particle velocity	
+D_L08_0016198C	batalia_bomber_tank_spark_accel_w	descriptive	config/names_local.tsv	w of the joint particle acceleration	
+D_L08_00161A00	batalia_water_entry_table_ready	descriptive	config/names_local.tsv	once flag before preparing the water entry table	water_entry_plane_initialized
+D_L05_0015FB8C	trick_combo_spins	descriptive	config/names_local.tsv	copied from hero+0x70C, shown times 360 and scales the trick combo score	
+D_L05_0015FB90	trick_combo_trick_count	descriptive	config/names_local.tsv	copied from hero+0x6F0; picks singular/plural text and the score row	
+D_L05_0015F9A4	trick_combo_result_x	descriptive	config/names_local.tsv	x of the two trick combo result lines	
+D_L05_0015F9A8	trick_combo_result_y	descriptive	config/names_local.tsv	y of the trick combo result lines (first line 0x18 above)	
+D_L05_0015FBA8	trick_combo_recent	descriptive	config/names_local.tsv	history of the last four scored trick indices; repeats divide the score	
+D_L05_0015F95C	trick_combo_flash_ticks	descriptive	config/names_local.tsv	reload of the trick combo flash countdown, tween divisor	trick_combo_hud_delay_reload
+D_L05_0015F940	rilgar_fmt_number	descriptive	config/names_local.tsv	sprintf format taking one int (spins, scores, counter)	
+D_L05_0015F998	trick_combo_spin_text_y	descriptive	config/names_local.tsv	y of the spin readout line (shadow at +1)	
+D_L05_0015F994	trick_combo_spin_text_x	descriptive	config/names_local.tsv	x of the spin readout line (shadow at +1)	
+D_L05_0015FA58	rilgar_hud_held_bar_id	descriptive	config/names_local.tsv	hud bar id released and reset to -1 by Hud_ReleaseHeldElement	
+D_L05_0015FBB4	trick_combo_recent3	descriptive	config/names_local.tsv	oldest slot of trick_combo_recent, reset to -1 in init	
+D_L05_0015FBB0	trick_combo_recent2	descriptive	config/names_local.tsv	third slot of trick_combo_recent	
+D_L05_0015FBAC	trick_combo_recent1	descriptive	config/names_local.tsv	second slot of trick_combo_recent	
+D_L05_0015F9B8	rilgar_fmt_string	descriptive	config/names_local.tsv	sprintf format taking one string (trick name, rank name)	
+D_L05_0015F99C	trick_combo_count_text_x	descriptive	config/names_local.tsv	x of the trick count line	
+D_L05_0015F9A0	trick_combo_count_text_y	descriptive	config/names_local.tsv	y of the trick count line	
+D_L05_0015F984	trick_combo_banner_x	descriptive	config/names_local.tsv	x of the pulsing message 0x531F banner	
+D_L05_0015F988	trick_combo_banner_y	descriptive	config/names_local.tsv	y of the pulsing message 0x531F banner	
+D_L05_0015FA50	rilgar_hud_release_count	descriptive	config/names_local.tsv	bumped each time Hud_ReleaseHeldElement runs	
+D_L05_0015FA70	rilgar_progress_label_color	descriptive	config/names_local.tsv	text color of the progress and rank labels	
+D_L05_0015FA74	rilgar_progress_value_color	descriptive	config/names_local.tsv	text color of the progress number and rank name	
+D_L05_0015FBA4	trick_combo_trick_flag3	descriptive	config/names_local.tsv	fourth per-trick flag copied from hero+0x6E0	
+D_L05_0015F9B0	rilgar_fmt_count_and_word	descriptive	config/names_local.tsv	sprintf format taking an int and a singular/plural word	
+D_L05_0015F9C0	rilgar_fmt_single_trick_line	descriptive	config/names_local.tsv	sprintf format: trick name, spin count, word	
+D_L05_00216FC0	rilgar_fmt_double_trick_line	descriptive	config/names_local.tsv	sprintf format: two trick names and a spin count	
+D_L05_0017EA18	trick_combo_score_table	descriptive	config/names_local.tsv	score per trick index (kind + spin tier * 5)	
+D_L05_0015FBA0	trick_combo_trick_flag2	descriptive	config/names_local.tsv	third per-trick flag copied from hero+0x6E0	
+D_L05_0015FB9C	trick_combo_trick_flag1	descriptive	config/names_local.tsv	second per-trick flag copied from hero+0x6E0	
+D_L05_0015F980	trick_combo_text_color	descriptive	config/names_local.tsv	result text color when not flashing	
+D_L05_0015F974	trick_combo_flash_color_from	descriptive	config/names_local.tsv	FastTweenColor start of the flashing trick text	
+D_L05_0015F978	trick_combo_flash_color_to	descriptive	config/names_local.tsv	FastTweenColor end of the flashing trick text	
+D_L05_0015F98C	trick_combo_banner_color_from	descriptive	config/names_local.tsv	pulse color start of the banner text	
+D_L05_0015F990	trick_combo_banner_color_to	descriptive	config/names_local.tsv	pulse color end of the banner text	
+D_L05_0015FA54	rilgar_hud_hold_active	descriptive	config/names_local.tsv	flag cleared by Hud_ReleaseHeldElement	
+D_L05_0015FA5C	rilgar_progress_frame_x	descriptive	config/names_local.tsv	x of the progress HUD frame	
+D_L05_0015FA60	rilgar_progress_frame_bottom	descriptive	config/names_local.tsv	frame y is screen height minus this and the margin	
+D_L05_0015FA64	rilgar_progress_frame_width	descriptive	config/names_local.tsv	width of the progress HUD frame	
+D_L05_0015FA68	rilgar_progress_frame_height	descriptive	config/names_local.tsv	height of the progress HUD frame	
+D_L05_0015FA6C	rilgar_progress_frame_alpha	descriptive	config/names_local.tsv	alpha of the progress HUD frame	
+D_L05_0015FA78	rilgar_progress_label_x	descriptive	config/names_local.tsv	x where the progress label starts	
+D_L05_0015FA7C	rilgar_progress_text_bottom	descriptive	config/names_local.tsv	text y is screen height minus this and the margin	
+D_L05_0015FA88	rilgar_progress_rank_right_x	descriptive	config/names_local.tsv	right edge the rank text is aligned to	
+D_L05_0015FA98	rilgar_counter_box_alt_x	descriptive	config/names_local.tsv	counter box x when the 0x13B flag is set	
+D_L05_0015FA9C	rilgar_counter_box_alt_y	descriptive	config/names_local.tsv	counter box y when the 0x13B flag is set	
+D_L05_0015FAA0	rilgar_counter_frame_width	descriptive	config/names_local.tsv	width of the counter box frame	
+D_L05_0015FAB0	rilgar_fmt_label	descriptive	config/names_local.tsv	sprintf format for a label string drawn before its value	
+D_L05_0015FAB8	rilgar_fmt_progress_number	descriptive	config/names_local.tsv	sprintf format for the capped progress number	
+D_L05_0015FAC0	rilgar_fmt_rank_label	descriptive	config/names_local.tsv	sprintf format for the label left of the rank name	
+D_L05_0015FACC	rilgar_race_timer_frame_x	descriptive	config/names_local.tsv	x of the race timer frame	
+D_L05_0015FAD0	rilgar_race_timer_frame_bottom	descriptive	config/names_local.tsv	frame y is screen height minus this and the margin	
+D_L05_0015FAD4	rilgar_race_timer_frame_width	descriptive	config/names_local.tsv	width of the race timer frame	
+D_L05_0015FAD8	rilgar_race_timer_frame_height	descriptive	config/names_local.tsv	height of the race timer frame	
+D_L05_0015FADC	rilgar_race_timer_frame_alpha	descriptive	config/names_local.tsv	alpha of the race timer frame	
+D_L05_0015FAE0	rilgar_race_timer_label_color	descriptive	config/names_local.tsv	text color of the lap and time labels	
+D_L05_0015FAE4	rilgar_race_timer_value_color	descriptive	config/names_local.tsv	text color of the lap count and time	
+D_L05_0015FAE8	rilgar_race_timer_center_x	descriptive	config/names_local.tsv	timer lines are centered on this x	
+D_L05_0015FAEC	rilgar_race_timer_lap_bottom	descriptive	config/names_local.tsv	lap line y is screen height minus this and the margin	
+D_L05_0015FAFC	rilgar_race_timer_time_bottom	descriptive	config/names_local.tsv	time line y is screen height minus this and the margin	
+D_L05_0015FB98	trick_combo_trick_flags	descriptive	config/names_local.tsv	four per-trick flags copied from hero+0x6E0, cleared on reset	
+D_L18_00162554	deplanetizer_streak_start_tick	descriptive	config/names_local.tsv	tick the three streak quads start growing (0xBE)	deplanetizer_three_quad_scale_ramp_start_frame
+D_L18_001625B8	deplanetizer_class_59b_moby	descriptive	config/names_local.tsv	class 0x59B moby found in the moby list; glow and streak quads draw on it	
+D_L18_00167A50	veldin2_camera_matrix	descriptive	config/names_local.tsv	rotation matrix whose rows place the flare; veldin2_camera_pos sits 0x210 before it	
+D_L18_0016252C	deplanetizer_camera_quad_ramp_end_tick	descriptive	config/names_local.tsv	camera quad scale ramps until this tick, then holds 10.0	deplanetizer_camera_quad_scale_ramp_end_frame
+D_L18_00162550	deplanetizer_glow_end_tick	descriptive	config/names_local.tsv	glow alpha ramps from glow start to this tick	deplanetizer_glow_alpha_ramp_end_frame
+D_L18_00162558	deplanetizer_streak_end_tick	descriptive	config/names_local.tsv	streak quad x scale ramps until this tick	deplanetizer_three_quad_scale_ramp_end_frame
+D_L18_00162520	deplanetizer_camera_quad_scale_from	descriptive	config/names_local.tsv	start value of the camera quad scale ramp	deplanetizer_camera_quad_scale_ramp_start_value
+D_L18_00162560	deplanetizer_trail_size	descriptive	config/names_local.tsv	draw size of the gun trail effects (second size is 0.4x)	
+D_L18_001617DC	veldin2_beam_ring_radius_end	descriptive	config/names_local.tsv	ring end radius read by the shared beam effect; set to 24 around the call	
+D_L18_001625C0	deplanetizer_trail_prev_tip_a	descriptive	config/names_local.tsv	last joint 0 position, lerped to the new one for the trail	
+D_L18_001625D0	deplanetizer_trail_prev_tip_b	descriptive	config/names_local.tsv	last joint 2 position, lerped to the new one for the trail	
+D_L18_001DFE90	veldin2_streak_quad_corners	descriptive	config/names_local.tsv	four vertex vectors copied, z/x scaled, for each streak quad	
+D_L18_00160064	veldin2_moby_list	descriptive	config/names_local.tsv	moby list head walked by m->next to find a class	
+D_L18_00162524	deplanetizer_camera_quad_scale_to	descriptive	config/names_local.tsv	end value of the camera quad scale ramp	deplanetizer_camera_quad_scale_ramp_end_value
+D_L18_00162530	deplanetizer_quads_end_tick	descriptive	config/names_local.tsv	camera quads draw until this tick	deplanetizer_camera_quad_end_frame
+D_L18_001625E0	deplanetizer_flare_cam_offset	descriptive	config/names_local.tsv	camera-space vector (1, 0, tilt, 1) placing the flare quads	
+D_L18_00162594	deplanetizer_glow_tint_a	descriptive	config/names_local.tsv	color of the first glow quad and the first streak quad	deplanetizer_glow_first_quad_base_tint
+D_L18_00162694	gadgebot_glows_queued_frame	descriptive	config/names_local.tsv	frame the joint glow draw callback was last queued	gadgebot_joint_glows_last_queued_frame
+D_L18_001F2F10	deplanetizer_part_trail_sizes	descriptive	config/names_local.tsv	five trail sizes for cutscene objects 3..7	
+D_L18_00161884	deplanetizer_beam_color_a	descriptive	config/names_local.tsv	set to 0x207F7F after the beam effect update	
+D_L18_00161888	deplanetizer_beam_color_b	descriptive	config/names_local.tsv	set to 0x7F7F20 after the beam effect update	
+D_L18_00162534	deplanetizer_shot2_glow_start_tick	descriptive	config/names_local.tsv	state 7 reload of deplanetizer_glow_start_tick	
+D_L18_00162538	deplanetizer_shot2_glow_end_tick	descriptive	config/names_local.tsv	state 7 reload of deplanetizer_glow_end_tick	
+D_L18_0016253C	deplanetizer_shot2_streak_start_tick	descriptive	config/names_local.tsv	state 7 reload of deplanetizer_streak_start_tick	
+D_L18_00162540	deplanetizer_shot2_streak_end_tick	descriptive	config/names_local.tsv	state 7 reload of deplanetizer_streak_end_tick	
+D_L18_00162544	deplanetizer_shot2_quads_start_tick	descriptive	config/names_local.tsv	state 7 reload of deplanetizer_quads_start_tick	
+D_L18_00162548	deplanetizer_shot2_camera_quad_ramp_end_tick	descriptive	config/names_local.tsv	state 7 reload of the camera quad ramp end tick	
+D_L18_00162570	deplanetizer_burst_cam_offset	descriptive	config/names_local.tsv	camera-space offset of the 32-puff burst origin	
+D_L18_00162580	deplanetizer_burst_speed	descriptive	config/names_local.tsv	velocity length of each burst puff	
+D_L18_00162584	deplanetizer_burst_puff_growth	descriptive	config/names_local.tsv	growth argument of the burst PartType23Spawn	
+D_L18_001625E4	deplanetizer_flare_cam_offset_y	descriptive	config/names_local.tsv	y of deplanetizer_flare_cam_offset, set to 0	
+D_L18_001625E8	deplanetizer_flare_cam_offset_z	descriptive	config/names_local.tsv	z of deplanetizer_flare_cam_offset, set to +-0.15 tilt	
+D_L18_001625EC	deplanetizer_flare_cam_offset_w	descriptive	config/names_local.tsv	w of deplanetizer_flare_cam_offset, set to 1	
+D_L18_00162588	deplanetizer_flare_outer_color	descriptive	config/names_local.tsv	color of the full-size flare quad	deplanetizer_camera_quad_first_color
+D_L18_0016258C	deplanetizer_flare_inner_color	descriptive	config/names_local.tsv	color of the 0.75x and 0.5x flare quads	deplanetizer_camera_quad_smaller_color
+D_L18_00162598	deplanetizer_glow_quad_a_scale	descriptive	config/names_local.tsv	corner scale of the first glow quad	deplanetizer_glow_first_quad_scale
+D_L18_0016259C	deplanetizer_glow_quad_b_scale	descriptive	config/names_local.tsv	corner scale of the second glow quad	deplanetizer_glow_second_quad_scale
+D_L18_001625A0	deplanetizer_glow_tint_b	descriptive	config/names_local.tsv	color of the second glow quad and the later streak quads	deplanetizer_glow_second_quad_base_tint
+D_L18_001625A4	deplanetizer_streak1_z_scale	descriptive	config/names_local.tsv	z scale of the first streak quad vertices	deplanetizer_first_quad_local_z_scale
+D_L18_001625A8	deplanetizer_streak2_z_scale	descriptive	config/names_local.tsv	z scale of the second streak quad vertices	deplanetizer_second_quad_local_z_scale
+D_L18_001625AC	deplanetizer_streak3_z_scale	descriptive	config/names_local.tsv	z scale of the third streak quad vertices	deplanetizer_third_quad_local_z_scale
+D_L18_00162608	veldin2_joint_trail_offset	descriptive	config/names_local.tsv	length of the joint 8-9 direction given to draw_trail	
+D_L18_0016260C	veldin2_joint_trail_size_a	descriptive	config/names_local.tsv	first draw_trail size of the cutscene joint trail	
+D_L18_00162610	veldin2_joint_trail_size_b	descriptive	config/names_local.tsv	second draw_trail size of the cutscene joint trail	
+D_L18_00162690	gadgebot_close_anim_start_frame	descriptive	config/names_local.tsv	start frame of sequence 2 when the gadgebot is within 1.5	
+D_L18_001626A4	gadgebot_glow_spin_rate	descriptive	config/names_local.tsv	degrees per second of the glow color cycle	gadgebot_glow_default_phase_speed_degrees_per_second
+D_L18_001626A8	gadgebot_glow_spin_rate_attack	descriptive	config/names_local.tsv	glow cycle rate in states 4 and 5	gadgebot_glow_state_4_or_5_phase_speed_degrees_per_second
+D_L18_0016269C	gadgebot_glow_color_from	descriptive	config/names_local.tsv	FastTweenColor start of the gadgebot glow	gadgebot_glow_tint_start
+D_L18_001626A0	gadgebot_glow_color_to	descriptive	config/names_local.tsv	FastTweenColor end of the gadgebot glow	gadgebot_glow_tint_end
+D_L18_0016268C	gadgebot_scale	descriptive	config/names_local.tsv	multiplies the class scale every update	
+D_L18_001626AC	gadgebot_knockback_gravity	descriptive	config/names_local.tsv	knockback block z velocity decrement (fall+0x10)	
+D_L18_001626B0	gadgebot_knockback_drag	descriptive	config/names_local.tsv	knockback block xy speed approach rate (fall+0x14)	
+D_L18_001626B4	gadgebot_knockback_speed	descriptive	config/names_local.tsv	knockback block horizontal speed (fall+0x18)	
+D_L18_001626B8	gadgebot_knockback_lift	descriptive	config/names_local.tsv	knockback block vertical speed (fall+0x1C)	
+D_L18_001626E4	gadgebot_joint_glow_alpha	descriptive	config/names_local.tsv	alpha byte of the class 0x772 joint glow quads	
+func_L18_002FDCC4	count_listed_class_0772_mobys_in_state_8	descriptive	config/names_local.tsv	asm walks a moby index list until a negative entry, counting class 0x772 in state 8	
+D_001DCED0	env_map_uvs	descriptive	config/names_local.tsv	per-vertex sphere-map uv computed from the reflected view vector	
+func_001F7EF8	draw_world_quad_packet	descriptive	config/names_local.tsv	handwritten; draws a 4-vertex quad packet (verts, rgba, uv, gs words)	fast_draw_quad_real
+D_001DC870	env_map_world_positions	descriptive	config/names_local.tsv	per-vertex positions transformed by the object matrix for the env-mapped mesh	
+D_001605A4	env_map_first_frame	descriptive	config/names_local.tsv	1 forces fresh uvs once, then set to 2	
+D_001605AC	env_map_blend_timer	descriptive	config/names_local.tsv	counts down from 60 frames; blends saved uvs into new ones	
+D_001DD200	env_map_saved_uvs	descriptive	config/names_local.tsv	uvs saved when mapping turns off; blended from when it resumes	
+D_001605A8	env_map_was_active	descriptive	config/names_local.tsv	set while mapping runs; on the off frame the uvs are saved	environment_mapping_was_active
+func_001FA9E8	bsphere_check_alpha	descriptive	config/names_local.tsv	handwritten; calls fast_bsphere_check, writes a 0..0x80 alpha through a1	
+D_001D9B40	quad_default_uvs	descriptive	config/names_local.tsv	0x20 bytes of uv pairs copied into flare and resident quads	
+D_00160680	resident_quad_texture	descriptive	config/names_local.tsv	GS texture word of the level mip texture, drawn by draw_resident_textured_quad	
+D_001605F0	resident_quad_pos	descriptive	config/names_local.tsv	center added to the resident quad corners; copied at level load	
+D_00160688	resident_banner_texture	descriptive	config/names_local.tsv	GS texture word of the language mip texture, drawn by the banner	
+D_001D9B60	light_flare_corners	descriptive	config/names_local.tsv	per flare set, four corner vectors of the light flare quad	
+D_001D9E20	resident_quad_level_scales	descriptive	config/names_local.tsv	per-level scale of the resident quad corners (19 levels)	
+D_001D9DE0	resident_quad_corners	descriptive	config/names_local.tsv	four corner vectors of the resident textured quad	
+D_001D9EF0	flare_spark_offsets	descriptive	config/names_local.tsv	per flare set, six local positions of the spark particles	
+D_00160008	resident_indexed_texture_count	descriptive	config/names_local.tsv	header class count; loop bound for the class entries copied into resident_indexed_textures	
+D_001B5D00	resident_indexed_texture_addrs	descriptive	config/names_local.tsv	per entry: class data base + offset + log2(id) << 28	
+D_001D9AD0	default_dir_lights	descriptive	config/names_local.tsv	0x40 bytes copied into dir_lights at level load	
+D_00160950	textured_quad_giftag	descriptive	config/names_local.tsv	GIF tag quadword copied into each scrolling textured quad packet	
+D_001E8CB8	unloaded_sound_bank_format	descriptive	config/names_local.tsv	printf string "unloaded sound bank %#010x\n"	
+D_00160610	scene_variant_durations	descriptive	config/names_local.tsv	per scene variant, frame count for render_sequence time	
+D_L00_001B2430	part_type12_textures	descriptive	config/names_local.tsv	entry 12 of the D_L00_001B2400 texture-list table; spinning particles (create_part2 0xC) pick from it	
+D_L00_00160264	rotating_gray_particle_fade_ticks	descriptive	config/names_local.tsv	fade in/out window of the rotating grayscale particle alpha	rotating_grayscale_particle_fade_reference_duration
+D_L00_001CBAC0	level_wind_state	descriptive	config/names_local.tsv	ambience block: angle f4 and strength f14 eased by update_ambience_target_cycle; drifts particles	
+D_L00_001B2420	part_type08_textures	descriptive	config/names_local.tsv	entry 8 of the D_L00_001B2400 texture-list table	
+D_L00_001B245C	part_type23_textures	descriptive	config/names_local.tsv	entry 23 of the texture-list table, read by PartType23Spawn	
+D_L00_00160268	spin_particle_start_color_from	descriptive	config/names_local.tsv	FastTweenColor range low of the spinning particle start color	spinning_particle_default_initial_color_blend_source
+D_L00_00160278	spin_particle_start_size	descriptive	config/names_local.tsv	spinning particle size at spawn (ratio 1)	
+D_L00_00160288	spin_particle_alt_start_color_from	descriptive	config/names_local.tsv	flag 1 variant of spin_particle_start_color_from	spinning_particle_alternate_initial_color_blend_source
+D_L00_00160298	spin_particle_alt_start_size	descriptive	config/names_local.tsv	flag 1 variant of spin_particle_start_size	
+D_L00_001B2410	part_type04_textures	descriptive	config/names_local.tsv	entry 4 of the texture-list table, read by PartType04Spawn	
+D_L00_001B2414	part_type05_textures	descriptive	config/names_local.tsv	entry 5 of the texture-list table, read by PartType05Spawn	
+D_L00_001B242C	part_type11_textures	descriptive	config/names_local.tsv	entry 11 of the texture-list table, read by PartType11Spawn	
+D_L00_0016026C	spin_particle_start_color_to	descriptive	config/names_local.tsv	FastTweenColor range high of the spinning particle start color	spinning_particle_default_initial_color_blend_target
+D_L00_00160270	spin_particle_end_color_from	descriptive	config/names_local.tsv	FastTweenColor range low of the spinning particle end color	spinning_particle_default_final_color_blend_source
+D_L00_00160274	spin_particle_end_color_to	descriptive	config/names_local.tsv	FastTweenColor range high of the spinning particle end color	spinning_particle_default_final_color_blend_target
+D_L00_00160280	spin_particle_life_min	descriptive	config/names_local.tsv	random low bound of the spinning particle life	spinning_particle_default_lifetime_lower_bound
+D_L00_00160284	spin_particle_life_max	descriptive	config/names_local.tsv	random high bound of the spinning particle life	spinning_particle_default_lifetime_upper_bound
+D_L00_0016028C	spin_particle_alt_start_color_to	descriptive	config/names_local.tsv	flag 1 variant of spin_particle_start_color_to	spinning_particle_alternate_initial_color_blend_target
+D_L00_00160290	spin_particle_alt_end_color_from	descriptive	config/names_local.tsv	flag 1 variant of spin_particle_end_color_from	spinning_particle_alternate_final_color_blend_source
+D_L00_00160294	spin_particle_alt_end_color_to	descriptive	config/names_local.tsv	flag 1 variant of spin_particle_end_color_to	spinning_particle_alternate_final_color_blend_target
+D_L00_001602A0	spin_particle_alt_life_min	descriptive	config/names_local.tsv	flag 1 variant of spin_particle_life_min	spinning_particle_alternate_lifetime_lower_bound
+D_L00_001602A4	spin_particle_alt_life_max	descriptive	config/names_local.tsv	flag 1 variant of spin_particle_life_max	spinning_particle_alternate_lifetime_upper_bound
+D_L00_001B2460	part_type24_textures	descriptive	config/names_local.tsv	entry 24 of the texture-list table; flag 1 spinning particles use it	
+D_L00_001602A8	spin_particle_speed_decay	descriptive	config/names_local.tsv	rate the spinning particle speed eases to zero	
+D_L00_001602AC	spin_particle_rise_speed	descriptive	config/names_local.tsv	added to the spinning particle z each frame	spinning_particle_vertical_step_scale
+D_L00_0016029C	spin_particle_alt_end_size	descriptive	config/names_local.tsv	flag 1 variant of spin_particle_end_size	spinning_particle_alternate_final_size
+D_L00_0016027C	spin_particle_end_size	descriptive	config/names_local.tsv	spinning particle size at the end of its life (ratio 0)	spinning_particle_default_final_size
+D_L00_001B2434	part_type13_textures	descriptive	config/names_local.tsv	entry 13 of the texture-list table	
+D_L00_001B243C	part_type15_textures	descriptive	config/names_local.tsv	entry 15 of the texture-list table	
+D_L00_001B2440	part_type16_textures	descriptive	config/names_local.tsv	entry 16 of the texture-list table, read by mine_debris	
+D_L00_001B2448	part_type18_textures	descriptive	config/names_local.tsv	entry 18 of the texture-list table	
+D_L00_001B244C	part_type19_textures	descriptive	config/names_local.tsv	entry 19 of the texture-list table	
+D_L00_001B2454	part_type21_textures	descriptive	config/names_local.tsv	entry 21 of the texture-list table, read by PartType21Spawn	
+D_L00_001B2458	part_type22_textures	descriptive	config/names_local.tsv	entry 22 of the texture-list table	
+D_L00_001B2464	part_type25_textures	descriptive	config/names_local.tsv	entry 25 of the texture-list table	
+D_L00_001B2468	part_type26_textures	descriptive	config/names_local.tsv	entry 26 of the texture-list table	
+D_L00_001B246C	part_type27_textures	descriptive	config/names_local.tsv	entry 27 of the texture-list table, read by PartType27Spawn	
+D_L00_001B2470	part_type28_textures	descriptive	config/names_local.tsv	entry 28 of the texture-list table	
+D_L00_001B2474	part_type29_textures	descriptive	config/names_local.tsv	entry 29 of the texture-list table, indexed by frame	
+D_L00_001602B4	two_point_particle_head_pull	descriptive	config/names_local.tsv	per-frame scale of the first point's offset from the target	two_point_particle_first_point_target_offset_scale
+D_L00_001602B8	two_point_particle_tail_pull	descriptive	config/names_local.tsv	per-frame scale of the second point's offset from the target	two_point_particle_second_point_target_offset_scale
+D_L00_001B2488	part_type34_textures	descriptive	config/names_local.tsv	entry 34 of the texture-list table, read by PartType34Spawn	
+D_L00_001B248C	part_type35_textures	descriptive	config/names_local.tsv	entry 35 of the texture-list table, read by PartType35Spawn	
+D_L00_001602C0	offset_particle_size	descriptive	config/names_local.tsv	size written to the camera-offset particle each frame	animated_offset_particle_scalar
+D_L00_001602C4	offset_particle_color	descriptive	config/names_local.tsv	color written to the camera-offset particle each frame	animated_offset_particle_packed_color
+D_L00_001602C8	offset_particle_camera_offset	descriptive	config/names_local.tsv	distance from the target toward the camera	animated_offset_particle_offset_distance
+D_L00_001602CC	offset_particle_spin_step	descriptive	config/names_local.tsv	added to the particle rotation byte each frame	animated_offset_particle_rotation_step
+D_L00_001B249C	part_type39_textures	descriptive	config/names_local.tsv	entry 39 of the texture-list table, cycled by frame	
+D_L15_0015F050	quartu_camera_descriptors	descriptive	config/names_local.tsv	32-byte entries indexed by moby+0x84, +0x1C sub data; same slot as the other levels' camera_descriptors	
+D_L15_00162280	quartu_ripple_vertex_scale	descriptive	config/names_local.tsv	scales the 46 template vertices of the ripple mesh	scaled_ripple_template_vertex_scale
+D_L15_001622F0	quartu_ripple88_vertex_scale	descriptive	config/names_local.tsv	scales the template vertices of the 88-vertex ripple mesh	ripple_88_template_vertex_scale
+D_L15_00167480	quartu_camera_moby	descriptive	config/names_local.tsv	pointer at quartu_player_camera+0x180; same slot as aridia_camera_moby	
+D_L15_001DEF80	quartu_ripple_world_verts	descriptive	config/names_local.tsv	ripple mesh vertices placed at the moby with the wave z	
+D_L15_001DFC10	quartu_ripple88_world_verts	descriptive	config/names_local.tsv	88-vertex ripple vertices placed at the moby with the wave z	
+D_L15_001622E0	quartu_ripple88_wavelength	descriptive	config/names_local.tsv	radial wavelength of the 88-vertex ripple wave	ripple_88_radial_wavelength
+D_L15_001DF1A8	quartu_ripple_scrolled_uvs	descriptive	config/names_local.tsv	base uvs plus the scroll offset, drawn by the ripple mesh	
+D_L15_00162230	quartu_ripple_mesh_counts	descriptive	config/names_local.tsv	per strip, count passed to draw_env_overlay_mesh	
+D_L15_00162250	quartu_ripple_mesh_positions	descriptive	config/names_local.tsv	per strip, vertex pointer passed to draw_env_overlay_mesh	
+D_L15_00162258	quartu_ripple_mesh_uvs	descriptive	config/names_local.tsv	per strip, uv pointer passed to draw_env_overlay_mesh	
+D_L15_00162260	quartu_ripple_mesh_colors	descriptive	config/names_local.tsv	per strip, color pointer passed to draw_env_overlay_mesh	
+D_L15_00162264	quartu_ripple_alpha_blend	descriptive	config/names_local.tsv	high word of GS register 0x42 (alpha) for the ripple	
+D_L15_00162274	quartu_ripple_spin_period	descriptive	config/names_local.tsv	one turn of the ripple angle takes this long	
+D_L15_001DF7F0	quartu_ripple88_base_uvs	descriptive	config/names_local.tsv	base uvs of the 88-vertex ripple before scrolling	
+D_L15_001E0030	quartu_ripple88_scrolled_uvs	descriptive	config/names_local.tsv	base uvs plus scroll offset for the 88-vertex ripple	
+D_L15_001622A0	quartu_ripple88_mesh_counts	descriptive	config/names_local.tsv	per strip, count passed to draw_env_overlay_mesh	
+D_L15_001622C0	quartu_ripple88_mesh_positions	descriptive	config/names_local.tsv	per strip, vertex pointer passed to draw_env_overlay_mesh	
+D_L15_001622C8	quartu_ripple88_mesh_uvs	descriptive	config/names_local.tsv	per strip, uv pointer passed to draw_env_overlay_mesh	
+D_L15_001622D0	quartu_ripple88_mesh_colors	descriptive	config/names_local.tsv	per strip, color pointer passed to draw_env_overlay_mesh	
+D_L15_001622D4	quartu_ripple88_alpha_blend	descriptive	config/names_local.tsv	high word of GS register 0x42 (alpha) for the 88-vertex ripple	
+D_L15_001622D8	quartu_ripple88_texture	descriptive	config/names_local.tsv	GetEffectTex index of the 88-vertex ripple	
+D_L15_001622DC	quartu_ripple88_alpha	descriptive	config/names_local.tsv	alpha byte of the 88-vertex ripple color	
+D_L15_001622E4	quartu_ripple88_spin_period	descriptive	config/names_local.tsv	one turn of the 88-vertex ripple angle takes this long	
+D_L15_001622E8	quartu_ripple88_wave_height	descriptive	config/names_local.tsv	z amplitude of the 88-vertex ripple wave	ripple_88_z_amplitude
+D_L15_001622EC	quartu_ripple88_uv_scroll_rate	descriptive	config/names_local.tsv	frame count times this gives the 88-vertex uv scroll	ripple_88_uv_scroll_rate
+D_L15_001DF318	quartu_ripple_vertex_colors	descriptive	config/names_local.tsv	per-vertex color of the ripple mesh	
+D_L15_001DF3D0	quartu_ripple88_template_verts	descriptive	config/names_local.tsv	template vertices of the 88-vertex ripple mesh	
+D_L15_001E02F0	quartu_ripple88_vertex_colors	descriptive	config/names_local.tsv	per-vertex color of the 88-vertex ripple mesh	
+D_L15_001622F8	quartu_ripple88_uv_scroll_factors	descriptive	config/names_local.tsv	four uv pairs multiplied by the 88-vertex scroll amount	
+D_L16_00161E54	kalebo3_path_spring_stiffness	descriptive	config/names_local.tsv	Spring() stiffness for crate platform and bolt thief path follow	
+D_L16_00161E58	kalebo3_path_spring_damping	descriptive	config/names_local.tsv	Spring() damping for crate platform and bolt thief path follow	
+D_L16_001D9A20	grindrail_gate_trigger_box	descriptive	config/names_local.tsv	min/max xyz box hero offset is tested against in update_grindrail_gate	
+D_L16_001D9A38	bounds_trigger_box	descriptive	config/names_local.tsv	min/max xyz box tested in update_local_bounds_command_trigger	
+D_L16_00161A88	test_dummy_hold_joint	descriptive	config/names_local.tsv	joint index where test dummy holds its child object	
+D_L16_00161ACC	hoverboard_dummy_spray_final_color	descriptive	config/names_local.tsv	second color arg of hoverboard dummy spray/dust particles	
+D_L16_00161B48	last_test_dummy_door_sound_request_frame	descriptive	config/names_local.tsv	frame stamp limiting test dummy door sound; matches existing candidate	
+D_L16_00161AC8	hoverboard_dummy_spray_initial_color	descriptive	config/names_local.tsv	first color arg of hoverboard dummy spray particles; existing candidate	
+D_L16_00161A4C	conveyor_belt_base_speed	descriptive	config/names_local.tsv	conveyor target speed times frame time; existing candidate	
+D_L16_001D32C0	conveyor_belt_pulse_uvs	descriptive	config/names_local.tsv	4 uv pairs for the first conveyor strip packet	
+D_L16_001D32E0	conveyor_belt_scrolling_uvs	descriptive	config/names_local.tsv	4 uv pairs for the scrolling conveyor strip packet	
+D_L16_001D3300	conveyor_belt_quad_points	descriptive	config/names_local.tsv	4 corner points copied into both conveyor strip packets	
+D_L16_00161A58	conveyor_belt_alpha_blend_a_selector	descriptive	config/names_local.tsv	GS alpha A field of conveyor strip mode	
+D_L16_00161A5C	conveyor_belt_alpha_blend_b_selector	descriptive	config/names_local.tsv	GS alpha B field (<<2) of conveyor strip mode	
+D_L16_00161A60	conveyor_belt_alpha_blend_c_selector	descriptive	config/names_local.tsv	GS alpha C field (<<4) of conveyor strip mode	
+D_L16_00161A64	conveyor_belt_alpha_blend_d_selector	descriptive	config/names_local.tsv	GS alpha D field (<<6) of conveyor strip mode	
+D_L16_00161A8C	test_dummy_bomb_horizontal_launch_speed	descriptive	config/names_local.tsv	throw speed times frame time in test_dummy_update; existing candidate	
+D_L16_00161A90	test_dummy_move_step_limit	descriptive	config/names_local.tsv	ClampVectorLength step toward path node per frame	
+D_L16_00161A94	test_dummy_shot_distance	descriptive	config/names_local.tsv	distance arg of EffectSlots_Fire in test_dummy_update	
+D_L16_00161AA0	test_dummy_glow_pulse_color_start	descriptive	config/names_local.tsv	color blend start in draw_test_dummy_group_glows; existing candidate	
+D_L16_00161AA4	test_dummy_glow_pulse_color_end	descriptive	config/names_local.tsv	color blend end in draw_test_dummy_group_glows; existing candidate	
+D_L16_001D3480	linked_pair_ribbon_uvs	descriptive	config/names_local.tsv	4 uv pairs in draw_linked_pair_ribbons	
+D_0015EF3C	kalebo3_hoverboard_races_finished	descriptive	config/names_local.tsv	counter bumped when level index is 16, slows hoverboard dummies	
+D_L16_00161B40	class_0287_group_activation_value	descriptive	config/names_local.tsv	stored to data[5]/[6] of each class 0x287 group moby; existing candidate	
+D_L16_001D9990	help_desk_hero_reset_pose	descriptive	config/names_local.tsv	position+rotation passed to Hero_ResetToPosition by help desk lady	
+D_L16_001601AC	kalebo3_level_cuboids	descriptive	config/names_local.tsv	0x80-stride cuboid table, matches L00 level_cuboids	
+D_L16_00161F14	chomper_knockback_gravity	descriptive	config/names_local.tsv	hit reaction value times dt squared; existing candidate	
+D_L16_00161F18	chomper_knockback_horizontal_speed_approach_rate	descriptive	config/names_local.tsv	hit reaction value times dt squared; existing candidate	
+D_L16_00161F1C	chomper_knockback_vertical_speed	descriptive	config/names_local.tsv	hit reaction value times dt; existing candidate	
+D_L16_00161F20	chomper_knockback_horizontal_speed	descriptive	config/names_local.tsv	hit reaction value times dt; existing candidate	
+D_L16_001619A8	reposition_effect_velocity_elevation_degrees	descriptive	config/names_local.tsv	degrees angle for reposition effect velocity; existing candidate	
+D_L16_001619AC	reposition_effect_velocity_scale_range_start	descriptive	config/names_local.tsv	random speed min; existing candidate	
+D_L16_001619B0	reposition_effect_velocity_scale_range_end	descriptive	config/names_local.tsv	random speed max; existing candidate	
+D_L16_001619B4	reposition_effect_spawn_z_offset	descriptive	config/names_local.tsv	z added to effect position; existing candidate	
+D_L16_001619B8	reposition_effect_radius_range_start	descriptive	config/names_local.tsv	random radius min; existing candidate	
+D_L16_001619BC	reposition_effect_radius_range_end	descriptive	config/names_local.tsv	random radius max; existing candidate	
+D_L16_00161A68	conveyor_belt_pulse_color_start	descriptive	config/names_local.tsv	color blend start in draw_conveyor_belt_strips; existing candidate	
+D_L16_00161A6C	conveyor_belt_pulse_color_end	descriptive	config/names_local.tsv	color blend end in draw_conveyor_belt_strips; existing candidate	
+D_L16_00161A50	conveyor_belt_pulse_texture_id	descriptive	config/names_local.tsv	effect texture of first strip; existing candidate	
+D_L16_00161A70	conveyor_belt_scrolling_vertex_color	descriptive	config/names_local.tsv	strip vertex color; existing candidate	
+D_L16_00161A54	conveyor_belt_scrolling_texture_id	descriptive	config/names_local.tsv	effect texture of scrolling strip; existing candidate	
+D_L16_001D3400	test_dummy_glow_quad_points	descriptive	config/names_local.tsv	4 corner points scaled by 0.2 in draw_test_dummy_group_glows	
+D_L16_001D3440	linked_pair_ribbon_points	descriptive	config/names_local.tsv	4 corner points in draw_linked_pair_ribbons	
+D_L16_00161B44	test_dummy_door_height_offset	descriptive	config/names_local.tsv	added to door base height when open; existing candidate	
+D_L16_00161B4C	triggered_scene_rotation_y	descriptive	config/names_local.tsv	written to out rotation [1]; existing candidate	
+D_L16_00161D34	kalebo3_challenge_layout_value	descriptive	config/names_local.tsv	set to 76 in challenge, 100 on restore by Challenge_SetLayoutParam	
+D_L16_001E89A0	crate_platform_no_path_msg	descriptive	config/names_local.tsv	printf when crate platform path is -1	
+D_L16_001E89D8	crate_platform_empty_path_msg	descriptive	config/names_local.tsv	printf when crate platform path is empty	
+D_L16_001E8A20	crate_platform_no_other_path_msg	descriptive	config/names_local.tsv	printf when crate platform second path is -1	
+D_L16_001E8A58	crate_platform_empty_other_path_msg	descriptive	config/names_local.tsv	printf when crate platform second path is empty	
+D_L16_001E8AA0	crate_platform_no_trigger_msg	descriptive	config/names_local.tsv	printf when crate platform trigger is -1	
+D_L16_00161E50	bolt_thief_path_speed	descriptive	config/names_local.tsv	path advance per frame in advance_bolt_thief_path; existing candidate	
+D_L16_001D99B0	path_seven_point_local_offsets	descriptive	config/names_local.tsv	7 local vectors transformed into a 7-point path table entry	
+D_L16_00161E98	grindrail_gate_command_ticks	descriptive	config/names_local.tsv	command timer length after hero enters gate box	
+D_L16_00161E9C	grindrail_gate_glow_color_start	descriptive	config/names_local.tsv	glow tween color start	
+D_L16_00161EA0	grindrail_gate_glow_color_end	descriptive	config/names_local.tsv	glow tween color end	
+D_L16_00161EA4	bounds_trigger_command_ticks	descriptive	config/names_local.tsv	command timer length after entering trigger box	
+D_L16_00161EA8	bounds_trigger_glow_color_start	descriptive	config/names_local.tsv	glow tween color start	
+D_L16_00161EAC	bounds_trigger_glow_color_end	descriptive	config/names_local.tsv	glow tween color end	
+D_L16_00161EB0	grindrail_button_local_offset	descriptive	config/names_local.tsv	vector rotated by button matrix to find press point	
+D_L16_001601BC	kalebo3_level_cylinders	descriptive	config/names_local.tsv	0x80-stride table, matches L00 level_cylinders	
+D_L16_00161FA8	elevator_ring_segment_angle_degrees	descriptive	config/names_local.tsv	ring segment step angle; existing candidate	
+D_L16_00161FC0	envmap_a_vertex_bufs	descriptive	config/names_local.tsv	per-mesh vertex arrays for EnvMapA_Draw	
+D_L16_00162058	envmap_c_vertex_bufs	descriptive	config/names_local.tsv	per-mesh vertex arrays for draw_level16_visible_textured_batches	
+D_L16_001D9B30	gadgetron_ceo_hero_return_pose	descriptive	config/names_local.tsv	hero reset pose when challenge ends and environment restores	
+D_L16_00161F78	elevator_max_speed	descriptive	config/names_local.tsv	speed limit times dt in ElevatorPlatformUpdate and ring color	
+D_L16_001620D8	envmap_e_vertex_bufs	descriptive	config/names_local.tsv	per-mesh vertex arrays in update_level16_three_mesh_bounds_and_callback	
+D_L16_00161F28	path_walker_gap_range_start	descriptive	config/names_local.tsv	existing candidate, gap compare in path walker	
+D_L16_00161F2C	path_walker_gap_range_end	descriptive	config/names_local.tsv	existing candidate	
+D_L16_00161F30	path_walker_speed_range_start	descriptive	config/names_local.tsv	existing candidate	
+D_L16_00161F34	path_walker_speed_range_end	descriptive	config/names_local.tsv	existing candidate	
+D_L16_00161F3C	path_walker_height_range_start	descriptive	config/names_local.tsv	existing candidate	
+D_L16_00161F40	path_walker_height_range_end	descriptive	config/names_local.tsv	existing candidate	
+D_L16_00161F50	path_walker_draw_distance	descriptive	config/names_local.tsv	existing candidate, FastBSphereCheck radius	
+D_L16_00161FB0	envmap_a_vertex_counts	descriptive	config/names_local.tsv	per-mesh vertex counts for EnvMapA_Draw	
+D_L16_00162050	envmap_c_vertex_counts	descriptive	config/names_local.tsv	per-mesh vertex counts for textured batches	
+D_L16_001D9B10	gadgetron_ceo_hero_and_camera_pose	descriptive	config/names_local.tsv	hero pose plus camera pos/rot set on challenge exit	
+D_L16_00161F38	path_walker_speed_approach_acceleration	descriptive	config/names_local.tsv	existing candidate	
+D_L16_00161F4C	path_walker_reposition_advance_rate	descriptive	config/names_local.tsv	existing candidate	
+D_L16_00161F88	elevator_ring_half_height	descriptive	config/names_local.tsv	existing candidate	
+D_L16_00161F84	elevator_ring_outer_radius	descriptive	config/names_local.tsv	existing candidate	
+D_L16_001DC900	envmap_a_uvs	descriptive	config/names_local.tsv	reflection uv output for EnvMapA_Draw	
+D_L16_001DDF50	envmap_b_uvs	descriptive	config/names_local.tsv	reflection uv output for single reflection mesh	
+D_L16_001DF5A0	envmap_c_uvs	descriptive	config/names_local.tsv	reflection uv output for textured batches	
+D_L16_00162078	envmap_d_vertex_counts	descriptive	config/names_local.tsv	per-mesh vertex counts in draw_level16_reflection_mesh_batch	
+D_L16_00162088	envmap_d_vertex_bufs	descriptive	config/names_local.tsv	per-mesh vertex arrays in draw_level16_reflection_mesh_batch	
+D_L16_001E2BA0	envmap_d_uvs	descriptive	config/names_local.tsv	reflection uv output in draw_level16_reflection_mesh_batch	
+D_L16_001620C8	envmap_e_vertex_counts	descriptive	config/names_local.tsv	per-mesh vertex counts in update_level16_three_mesh_bounds_and_callback	
+D_L16_001E5660	envmap_e_bounding_spheres	descriptive	config/names_local.tsv	spheres computed from envmap e vertices	
+D_L16_00161F58	path_walker_particle_color_start	descriptive	config/names_local.tsv	first color arg of path walker particle emit	
+D_L16_00161F5C	path_walker_particle_color_end	descriptive	config/names_local.tsv	second color arg of path walker particle emit	
+D_L16_00161F60	path_walker_particle_movement_velocity_scale	descriptive	config/names_local.tsv	existing candidate	
+D_L16_00161F64	path_walker_particle_random_velocity_scale	descriptive	config/names_local.tsv	existing candidate	
+D_L16_00161F68	path_walker_particle_target_scalar_scale	descriptive	config/names_local.tsv	existing candidate	
+D_L16_001D9B50	elevator_ring_uvs	descriptive	config/names_local.tsv	uv pairs per ring vertex in DrawRingStack	
+D_L16_00161F9C	elevator_ring_color_start	descriptive	config/names_local.tsv	tween color by elevator speed in DrawRingStack	
+D_L16_00161FA0	elevator_ring_color_end	descriptive	config/names_local.tsv	tween color by elevator speed in DrawRingStack	
+D_L16_00161F90	elevator_ring_alpha_blend_b_selector	descriptive	config/names_local.tsv	GS alpha B field (<<2)	
+D_L16_00161F8C	elevator_ring_alpha_blend_a_selector	descriptive	config/names_local.tsv	GS alpha A field	
+D_L16_00161F94	elevator_ring_alpha_blend_c_selector	descriptive	config/names_local.tsv	GS alpha C field (<<4)	
+D_L16_00161F98	elevator_ring_alpha_blend_d_selector	descriptive	config/names_local.tsv	GS alpha D field (<<6)	
+D_L16_00161FE0	envmap_a_normal_bufs	descriptive	config/names_local.tsv	normals fed to reflection uv code for EnvMapA_Draw	
+D_L16_00161FF0	envmap_a_color_bufs	descriptive	config/names_local.tsv	color arrays passed to draw_env_overlay_mesh	
+D_L16_001DC8D0	envmap_a_bounding_spheres	descriptive	config/names_local.tsv	FastBSphereCheck spheres for env map a meshes	
+D_L16_00162000	envmap_b_vertex_counts	descriptive	config/names_local.tsv	per-mesh vertex counts for single reflection mesh	
+D_L16_00162020	envmap_b_vertex_bufs	descriptive	config/names_local.tsv	per-mesh vertex arrays for single reflection mesh	
+D_L16_00162030	envmap_b_normal_bufs	descriptive	config/names_local.tsv	normals for single reflection mesh uvs	
+D_L16_00162038	envmap_b_color_bufs	descriptive	config/names_local.tsv	color arrays for single reflection mesh draw	
+D_L16_001DF580	envmap_c_bounding_spheres	descriptive	config/names_local.tsv	FastBSphereCheck spheres for textured batches	
+D_L16_00162068	envmap_c_normal_bufs	descriptive	config/names_local.tsv	normals for textured batch uvs	
+D_L16_00162070	envmap_c_color_bufs	descriptive	config/names_local.tsv	color arrays for textured batch draw	
+D_L16_001620A8	envmap_d_normal_bufs	descriptive	config/names_local.tsv	normals for reflection batch uvs	
+D_L16_001620B8	envmap_d_color_bufs	descriptive	config/names_local.tsv	color arrays for reflection batch draw	
+D_L06_00162038	space_commando_scale	descriptive	config/names_local.tsv	multiplies class scale for the commando moby scale and move control	
+D_L06_0016203C	space_commando_sight_range	descriptive	config/names_local.tsv	search radius for FindNearestEligibleMoby, +6 while alerted	
+D_L06_00162040	space_commando_hit_knockback_speed	descriptive	config/names_local.tsv	horizontal knockback speed on a stagger hit	
+D_L06_00162044	space_commando_hit_knockback_lift	descriptive	config/names_local.tsv	vertical knockback speed on a stagger hit	
+D_L06_00162048	space_commando_death_knockback_speed	descriptive	config/names_local.tsv	horizontal knockback speed on the death hit	
+D_L06_0016204C	space_commando_death_knockback_lift	descriptive	config/names_local.tsv	vertical knockback speed on the death hit	
+D_L06_00162050	space_commando_aim_ticks	descriptive	config/names_local.tsv	aim timer before the beam fires (state 4)	ranged_attack_cooldown_frames
+D_L06_00162054	space_commando_melee_range	descriptive	config/names_local.tsv	closer than this the commando switches to melee state 5	melee_attack_distance_threshold
+D_L06_00162058	space_commando_move_speed	descriptive	config/names_local.tsv	move control speed times frame time	
+D_L06_0016205C	space_commando_vehicle_melee_anim_speed	descriptive	config/names_local.tsv	melee anim speed when hero vehicle_mode is 1	vehicle_melee_windup_animation_speed
+D_L06_00162060	space_commando_beam_spread_speed	descriptive	config/names_local.tsv	per-frame outward step of the 16 beam points	beam_point_horizontal_speed
+D_L06_00162064	space_commando_beam_fan_degrees	descriptive	config/names_local.tsv	fan angle in degrees of the 16 beam points	beam_spread_degrees
+D_L06_00162068	space_commando_beam_ticks	descriptive	config/names_local.tsv	beam lifetime timer set at beam start	beam_duration_frames
+D_L06_0016206C	space_commando_beam_alpha_a	descriptive	config/names_local.tsv	GS alpha field A in DrawBeam	
+D_L06_00162070	space_commando_beam_alpha_b	descriptive	config/names_local.tsv	GS alpha field B in DrawBeam	
+D_L06_00162074	space_commando_beam_alpha_c	descriptive	config/names_local.tsv	GS alpha field C in DrawBeam	
+D_L06_00162078	space_commando_beam_alpha_d	descriptive	config/names_local.tsv	GS alpha field D in DrawBeam	
+D_L06_0016207C	space_commando_beam_alpha_fix	descriptive	config/names_local.tsv	GS alpha FIX field in DrawBeam	
+D_L06_00162080	space_commando_beam_texture	descriptive	config/names_local.tsv	effect texture of the beam quads	beam_effect_texture_index
+D_L06_00162084	space_commando_beam_outer_color_a	descriptive	config/names_local.tsv	tween colour start for outer beam vertices	beam_outer_corner_color_at_zero_weight
+D_L06_00162088	space_commando_beam_outer_color_b	descriptive	config/names_local.tsv	tween colour end for outer beam vertices	beam_outer_corner_color_at_unit_weight
+D_L06_0016208C	space_commando_beam_inner_color_a	descriptive	config/names_local.tsv	tween colour start for inner beam vertices	beam_inset_corner_color_at_zero_weight
+D_L06_00162090	space_commando_beam_inner_color_b	descriptive	config/names_local.tsv	tween colour end for inner beam vertices	beam_inset_corner_color_at_unit_weight
+D_L06_00162094	space_commando_beam_spark_lower	descriptive	config/names_local.tsv	PartType02Spawn first colour of beam sparks	
+D_L06_00162098	space_commando_beam_spark_upper	descriptive	config/names_local.tsv	PartType02Spawn second colour of beam sparks	
+D_L06_0016209C	space_commando_beam_spark_start_w	descriptive	config/names_local.tsv	w of spark start vector	beam_spark_first_vector_w
+D_L06_001620A0	space_commando_beam_spark_end_w	descriptive	config/names_local.tsv	w of spark end vector	beam_spark_second_vector_w
+D_L06_001620A4	space_commando_beam_spark_time_a_min	descriptive	config/names_local.tsv	random min of spark time a	beam_spark_frame_count_range_start
+D_L06_001620A8	space_commando_beam_spark_time_a_max	descriptive	config/names_local.tsv	random max of spark time a	beam_spark_frame_count_range_end
+D_L06_001620AC	space_commando_beam_spark_time_b_min	descriptive	config/names_local.tsv	random min of spark time b	beam_spark_second_frame_count_range_start
+D_L06_001620B0	space_commando_beam_spark_time_b_max	descriptive	config/names_local.tsv	random max of spark time b	beam_spark_second_frame_count_range_end
+D_L06_001620B4	space_commando_beam_spark_time_c_min	descriptive	config/names_local.tsv	random min of spark time c	beam_spark_third_frame_count_range_start
+D_L06_001620B8	space_commando_beam_spark_time_c_max	descriptive	config/names_local.tsv	random max of spark time c	beam_spark_third_frame_count_range_end
+D_L06_001620BC	space_commando_beam_spark_speed_min	descriptive	config/names_local.tsv	random min of spark horizontal speed	beam_spark_horizontal_scale_range_start
+D_L06_001620C0	space_commando_beam_spark_speed_max	descriptive	config/names_local.tsv	random max of spark horizontal speed	beam_spark_horizontal_scale_range_end
+D_L06_001620C4	space_commando_beam_spark_lift_min	descriptive	config/names_local.tsv	random min of spark z speed	beam_spark_vector_z_range_start
+D_L06_001620C8	space_commando_beam_spark_lift_max	descriptive	config/names_local.tsv	random max of spark z speed	beam_spark_vector_z_range_end
+D_L06_001620CC	space_commando_beam_spark_chance	descriptive	config/names_local.tsv	spark skipped when random 0..1 exceeds it	beam_spark_spawn_probability
+D_L06_001620D0	space_commando_beam_spark_texture	descriptive	config/names_local.tsv	last PartType02Spawn arg (texture index)	
+D_L06_001F31E0	space_commando_beam_uvs	descriptive	config/names_local.tsv	float[4][2] uv table of beam quads, v rerolled per draw	
+func_L06_003089B8	draw_bot_door_lock_glow	descriptive	config/names_local.tsv	draw callback of bot_door_lock_update; draws two world quads faded by f9	
+D_L06_00162110	spinning_fragment_scale	descriptive	config/names_local.tsv	scale factor of spinning fragment mobies	
+D_L06_00162158	blarg_timer_display_x	descriptive	config/names_local.tsv	x of FontPrintCenterLarge for the timer text	
+D_L06_0016215C	blarg_timer_display_y	descriptive	config/names_local.tsv	y of FontPrintCenterLarge for the timer text	
+D_L06_00162160	blarg_timer_pulse_color_a	descriptive	config/names_local.tsv	tween colour start of pulsing timer text	
+D_L06_00162164	blarg_timer_pulse_color_b	descriptive	config/names_local.tsv	tween colour end of pulsing timer text	
+D_L06_00162168	blarg_timer_frame_y0_offset	descriptive	config/names_local.tsv	frame bound offset added to timer y	
+D_L06_0016216C	blarg_timer_frame_y1_offset	descriptive	config/names_local.tsv	frame bound offset added to timer y	
+D_L06_00162170	blarg_timer_frame_x0_offset	descriptive	config/names_local.tsv	frame bound offset added to timer x	
+D_L06_00162174	blarg_timer_frame_x1_offset	descriptive	config/names_local.tsv	frame bound offset added to timer x	
+D_L06_00162178	blarg_timer_frame_alpha	descriptive	config/names_local.tsv	alpha byte arg of DrawUIFrame	
+D_L06_0016236C	bot_door_lock_bob_height	descriptive	config/names_local.tsv	z bob amplitude of the lock marker	bot_door_lock_number_bob_amplitude
+D_L06_00162370	bot_door_lock_bob_period	descriptive	config/names_local.tsv	seconds per bob cycle	bot_door_lock_number_bob_period
+D_L06_00162374	bot_door_lock_pulse_period	descriptive	config/names_local.tsv	seconds per colour pulse cycle	bot_door_lock_color_pulse_period
+D_L06_00162378	bot_door_lock_glow_amplitude	descriptive	config/names_local.tsv	colour pulse amplitude of the particles	bot_door_lock_number_color_pulse_amplitude
+D_L06_0016237C	bot_door_lock_fade_max	descriptive	config/names_local.tsv	max of the near-hero fade value f9	bot_door_lock_max_effect_horizontal_scale
+D_L06_001624A4	projected_fading_quad_texture	descriptive	config/names_local.tsv	GetEffectTex arg in draw_projected_fading_quad	projected_quad_texture_selector
+D_L06_001624A8	projected_fading_quad_radius	descriptive	config/names_local.tsv	screen radius scaled by size	projected_quad_base_radius
+D_L06_001624AC	projected_fading_quad_uv0	descriptive	config/names_local.tsv	uv word 0 of the quad	projected_quad_top_right_uv
+D_L06_001624B0	projected_fading_quad_uv1	descriptive	config/names_local.tsv	uv word 1 of the quad	projected_quad_top_left_uv
+D_L06_001624B4	projected_fading_quad_uv2	descriptive	config/names_local.tsv	uv word 2 of the quad	projected_quad_bottom_right_uv
+D_L06_001624B8	projected_fading_quad_uv3	descriptive	config/names_local.tsv	uv word 3 of the quad	projected_quad_bottom_left_uv
+D_L00_001DB8C0	tesla_beam_points	descriptive	config/names_local.tsv	20 beam points laid toward the target	
+D_L00_00161660	tesla_beam_start_pending	descriptive	config/names_local.tsv	set by the claw update, cleared when the beam starts	
+D_L00_001616F4	tesla_beam_initial_frames	descriptive	config/names_local.tsv	ticks for tesla_beam_scaled_initial_frame_count	tesla_beam_initial_frame_count
+D_L00_00161664	tesla_beam_length	descriptive	config/names_local.tsv	beam length split into 20 steps	
+D_L00_00161548	linked_moby_trigger_ticks	descriptive	config/names_local.tsv	interval timer that flips linked mobies 0x50 to 0x51	linked_moby_selection_delay
+D_L00_00161550	linked_moby_hit_cooldown	descriptive	config/names_local.tsv	cooldown ticks after each hit of moby 166	owned_record_cooldown
+D_L00_0016156C	visibomb_missile_cruise_speed	descriptive	config/names_local.tsv	target speed when the button is not held	visibomb_missile_default_speed
+D_L00_00161570	visibomb_missile_boost_speed	descriptive	config/names_local.tsv	target speed and cap while pad 0x40 held	
+D_L00_00161574	visibomb_missile_speed_blend	descriptive	config/names_local.tsv	blend rate of target speed into f48	
+D_L00_00161578	visibomb_missile_speed_follow	descriptive	config/names_local.tsv	blend rate of f48 into current speed f4	
+D_L00_00161568	visibomb_missile_pitch_range	descriptive	config/names_local.tsv	scales Sound_SetPitchBend by speed fraction	
+D_L00_001E9DD8	glow_burst_spark_colors_a	descriptive	config/names_local.tsv	6-entry colour table, first PartType11Spawn colour	
+D_L00_001E9DF0	glow_burst_spark_colors_b	descriptive	config/names_local.tsv	6-entry colour table, second PartType11Spawn colour	
+D_L00_001DB740	taunter_effect_slots	descriptive	config/names_local.tsv	10 ring slots aged and drawn by the taunter	
+D_L00_001615A0	taunter_effect_spawn_timer	descriptive	config/names_local.tsv	timer before the next ring slot spawns	
+D_L00_001615AC	taunter_effect_inv_lifetime	descriptive	config/names_local.tsv	1/lifetime, turns slot age into 0..1	
+D_L00_001615B0	taunter_effect_origin	descriptive	config/names_local.tsv	joint 0 world position, ring origin	
+D_L00_0016158C	taunter_effect_alpha	descriptive	config/names_local.tsv	max alpha of the ring quads	
+D_L00_00161590	taunter_effect_color	descriptive	config/names_local.tsv	rgb of the ring quads	taunter_effect_quad_rgb
+D_L00_00161594	taunter_effect_end_size	descriptive	config/names_local.tsv	ring size at end of life	taunter_effect_quad_initial_scale
+D_L00_00161598	taunter_effect_start_size	descriptive	config/names_local.tsv	ring size at start of life	taunter_effect_quad_final_scale
+D_L00_001DB700	taunter_effect_quad_corners	descriptive	config/names_local.tsv	4 corner vectors scaled by ring size	
+D_L00_0016162C	pyrocitor_flame_particle_count	descriptive	config/names_local.tsv	particles per type-10 flame slot	
+D_L00_00161608	pyrocitor_flame_particle_drift	descriptive	config/names_local.tsv	random velocity radius times frame time	
+D_L00_0016160C	pyrocitor_flame_particle_start_w	descriptive	config/names_local.tsv	w of particle start vector	
+D_L00_00161610	pyrocitor_flame_particle_end_w	descriptive	config/names_local.tsv	w of particle end vector	
+D_L00_00161614	pyrocitor_flame_particle_start_color_a	descriptive	config/names_local.tsv	tween range of first colour	
+D_L00_00161618	pyrocitor_flame_particle_start_color_b	descriptive	config/names_local.tsv	tween range of first colour	
+D_L00_0016161C	pyrocitor_flame_particle_end_color_a	descriptive	config/names_local.tsv	tween range of second colour	
+D_L00_00161620	pyrocitor_flame_particle_end_color_b	descriptive	config/names_local.tsv	tween range of second colour	
+D_L00_00161624	pyrocitor_flame_particle_time_min	descriptive	config/names_local.tsv	random min of particle times	
+D_L00_00161628	pyrocitor_flame_particle_time_max	descriptive	config/names_local.tsv	random max of particle times	
+D_L00_001615FC	pyrocitor_flame_particle_texture	descriptive	config/names_local.tsv	last PartType02Spawn arg	
+D_L00_00182740	vis_gif_tex_regs_table	descriptive	config/names_local.tsv	SetupVisGifViewer reads three u64 GIF words per idx	
+D_L00_001828C0	level_tex0_regs_128a	descriptive	config/names_local.tsv	load_level_archive_resources builds 128x128 PSMT8 TEX0 words; SetupVisGifViewer idx -2	
+D_L00_001828D8	level_tex0_regs_64	descriptive	config/names_local.tsv	load_level_archive_resources builds 64x64 PSMT8 TEX0 words; SetupVisGifViewer idx -3	
+D_L00_001828F0	level_tex0_regs_128b	descriptive	config/names_local.tsv	load_level_archive_resources builds a second 128x128 PSMT8 TEX0 set	
+D_L00_0015FD40	mem_report_separator_msg	descriptive	config/names_local.tsv	printed with no args between the memory report totals	
+D_L00_0015FC80	level_circle_zone_grid	descriptive	config/names_local.tsv	64-wide 16-unit xy grid of offsets to zone lists, read by func_L00_00257F4C	
+D_L00_0015FC40	level_circle_zones	descriptive	config/names_local.tsv	32-byte xy centre+radius records tested in func_L00_00257FB4	
+D_L00_001E8BF8	mem_report_base_data_fmt	descriptive	config/names_local.tsv	prints base buffer up to occlusion or sky data in KB	
+D_L00_0019BB60	coll_cell_grid	descriptive	config/names_local.tsv	0x10000 bytes, cleared at load; coll_sphere indexes 4-byte cells then 32-byte lists at +0x4000	
+D_L00_0015FC10	level_circle_zone_count	descriptive	config/names_local.tsv	count from header f7C, size of level_circle_zones	
+D_L00_0015F71C	primary_nanotech_ball_moby	descriptive	config/names_local.tsv	nanotech_ball_update stores the first ball moby here; cleared at level load	
+D_L00_001E8B98	mem_report_buffer1_fmt	descriptive	config/names_local.tsv	prints overlay end up to resource buffer f0 in KB	
+D_L00_001E8BB0	mem_report_buffer2_fmt	descriptive	config/names_local.tsv	prints resource buffer f0 up to fC in KB	
+D_L00_001E8BC8	mem_report_buffer3_fmt	descriptive	config/names_local.tsv	prints resource buffer fC up to f10 in KB	
+D_L00_001E8BE0	mem_report_buffer4_fmt	descriptive	config/names_local.tsv	prints resource buffer f10 up to f14 in KB	
+D_L00_001E8C10	mem_report_no_base_data_msg	descriptive	config/names_local.tsv	printed when neither occlusion grid nor sky data exist	
+D_L00_001E8C78	mem_report_texture_data_fmt	descriptive	config/names_local.tsv	prints level texture data size in KB	
+D_L00_001E8D08	mem_report_moby_seqs_fmt	descriptive	config/names_local.tsv	prints moby seqs up to tie instances in KB	
+D_L00_001E8D68	mem_report_moby_pvars_fmt	descriptive	config/names_local.tsv	prints moby pvar pool up to path data in KB	
+D_L00_001E8D80	mem_report_paths_fmt	descriptive	config/names_local.tsv	prints path data up to particle pool in KB	
+D_L00_001E8D98	mem_report_particles_fmt	descriptive	config/names_local.tsv	printed with 128.0, the 0x20000 particle pool in KB	
+D_L00_001E8DB0	mem_report_particle_pool_end_fmt	descriptive	config/names_local.tsv	prints particle pool end address in MB	
+D_L00_001E8DC8	mem_report_total_used_fmt	descriptive	config/names_local.tsv	prints gameplay memory end minus buffer start in MB	
+func_L00_00240D80	setup_vis_gif_viewer_level_tex	descriptive	config/names_local.tsv	SetupVisGifViewer tail for idx < -1: copies level_tex0 words	
+func_L00_00240DE0	setup_vis_gif_viewer_fallback	descriptive	config/names_local.tsv	SetupVisGifViewer tail for idx -1: writes fixed GIF words	
+func_L00_002513F8	get_moby_light_color	descriptive	config/names_local.tsv	reads moby+0x38 index bytes, returns a vec from the D_L00_0017FFC0 light table	
+D_0013E190	hero_spawn_pose	descriptive	config/names_local.tsv	initialize_hero copies hero start pos and rot into two Vec4s	
+D_L00_00179800	cheat_input_sequences	descriptive	config/names_local.tsv	12 zero-ended 16-byte button sequences matched against the input ring to toggle gCheats	
+D_L00_00179548	jet_camera_mode_latch	descriptive	config/names_local.tsv	halfword cleared by clear_jet_camera_mode_latch	
+D_L00_00179550	help_id_pair_table	descriptive	config/names_local.tsv	150 short pairs searched by lookup_help_id_pair	
+D_L00_0017C140	hero_random_manip_quats	descriptive	config/names_local.tsv	quats copied into 7 hero manipulators on the random timer	
+D_L00_0017C1B0	hero_random_manip_scales	descriptive	config/names_local.tsv	scales copied into 7 hero manipulators on the random timer	
+D_L00_0017C220	hero_random_manip_offsets	descriptive	config/names_local.tsv	translations copied into 7 hero manipulators on the random timer	
+D_L00_0017C2C0	hero_random_manip_joints	descriptive	config/names_local.tsv	joint ids for the 7 random-timer hero manipulators	
+D_L00_0017C290	hero_random_manip_blend_curve	descriptive	config/names_local.tsv	per-tick manipulator weight indexed by rand_timer.fired (0..11)	
+D_L00_0017C2E0	hero_extra_manip_quats	descriptive	config/names_local.tsv	quats for the 4 extra hero manipulators	
+D_L00_0017C320	hero_extra_manip_scales	descriptive	config/names_local.tsv	scales for the 4 extra hero manipulators	
+D_L00_0017C360	hero_extra_manip_offsets	descriptive	config/names_local.tsv	translations for the 4 extra hero manipulators, scaled by moby scale	
+D_L00_0017C3A0	hero_extra_manip_blend_curve	descriptive	config/names_local.tsv	per-tick weight indexed by the extra timer (0..21)	
+D_L00_0017A7C0	hero_bob_attach_euler	descriptive	config/names_local.tsv	apply_hero_vertical_oscillation: euler angles rotating the attached object offset	
+D_L00_001798D8	hero_scale_sequence_table	descriptive	config/names_local.tsv	apply_hero_and_item_scale_sequence reads per-tick scales until -1	
+D_L00_001AEF10	hero_height_probe_dir	descriptive	config/names_local.tsv	update_hero_moby_probed_height_bounds stores its probe direction	
+D_L00_0017C400	hero_height_probe_offsets	descriptive	config/names_local.tsv	four xyz offsets for the height probe rays	
+D_L00_001E7F90	hero_world_matrix_joints	descriptive	config/names_local.tsv	nine joint ids passed to compute_selected_world_matrices	
+func_L00_00203ED8	help_popup_close_flip_case	descriptive	config/names_local.tsv	HelpPopup_StepClose tail: state 6, f4 = 4 - f4	
+func_L00_00203F08	help_popup_close_reset_case	descriptive	config/names_local.tsv	HelpPopup_StepClose tail: state 6, f4 = 0	
+func_L00_00205158	lookup_help_id_pair_loop_tail	descriptive	config/names_local.tsv	loop tail of lookup_help_id_pair over 150 entries	
+func_L00_00205754	hero_easing_moby_kind1_tail	descriptive	config/names_local.tsv	get_hero_easing_moby_by_kind tail returning the mode 1 moby	
+func_L00_00205768	hero_easing_moby_kind5_check	descriptive	config/names_local.tsv	get_hero_easing_moby_by_kind tail testing mode 5	
+func_L00_00205778	hero_easing_moby_kind5_tail	descriptive	config/names_local.tsv	get_hero_easing_moby_by_kind tail returning the mode 5 moby	
+D_0015EE74	g_frame_time_cube	descriptive	config/names_local.tsv	set_video_timing: (1/60)^3 NTSC, 0.02^3 PAL	frame_time_cube
+func_001FA238	euler_to_matrix_ee	descriptive	config/names_local.tsv	EE-FPU variant of euler_to_matrix (VU0 one is func_001FA218); matrix_to_euler builds Y rotation	
+D_001E8F00	moby_class_data_table	descriptive	config/names_local.tsv	{class id, a, b} table ended by -1, read by assign_moby_class_data	
+func_0020FC38	capture_moby_blend_pose	descriptive	config/names_local.tsv	VU0 pose evaluator called with blend slot|flags before the pose snapshot into the slot	
+func_001F9E10	vec_scale_xy_to_length	descriptive	config/names_local.tsv	VU0 rsqrt: scales xy of src to length arg2, zero xy if degenerate	set_vector_length_xy
+D_001B3900	resident_moby_class_data	descriptive	config/names_local.tsv	per resident class word set from moby_class_data_table.a	
+D_0016129C	local_surface_region_enabled	descriptive	config/names_local.tsv	gates the local_surface_region disc test in resolve_camera_surface_height; cleared in draw.c	moby_occl_cluster_count
+D_0015F6B0	help_message_keepalive	descriptive	config/names_local.tsv	set to 2 whenever try/force_help_message shows a message	
+D_0015F6B4	help_message_owner	descriptive	config/names_local.tsv	requester id holding the help message slot	
+D_00161388	help_message_id	descriptive	config/names_local.tsv	message id shown by try/force_help_message	
+D_001B2F80	moby_blend_slot_poses	descriptive	config/names_local.tsv	16-byte per-slot pose vector copied from moby+0xF0 in MobyBlendAnimation	
+D_001CC400	damage_reaction_code_table	descriptive	config/names_local.tsv	byte table [an[8] + reaction*4] in select_damage_reaction	
+D_001CC448	damage_reaction_scale_table	descriptive	config/names_local.tsv	float [k][B+0x28] scaling the hit vector in select_damage_reaction	
+D_001600D8	quat_next_axis_table	descriptive	config/names_local.tsv	{1,2,0} successor table in MatrixToQuaternion	
+D_00160134	clip_volume_table	descriptive	config/names_local.tsv	ViewBox array tested by is_point_inside_clip_volume	
+D_L13_0015F6A8	gemlik_game_mode	descriptive	config/names_local.tsv	same global as other levels' game_mode; 2 stops robosquawker, 3-4 freezes jet lock timer	
+D_L13_0015F4FC	gemlik_fade_level	descriptive	config/names_local.tsv	set from the jet's blend (0.99 on enter/exit); other levels name it fade level	
+D_L13_0016CE70	gemlik_view_tan_half_fov	descriptive	config/names_local.tsv	tan(fov/2) written by the jet camera, read back as jet aim limit	
+D_L13_001CC068	jet_boarding_group_ids	descriptive	config/names_local.tsv	id list passed to jet_group_switch on idle (1) and boarding (0)	
+D_L13_0015F6E8	gemlik_play_mode	descriptive	config/names_local.tsv	set to 2 while flying the jet; other levels' play_mode	
+D_L13_001614D0	jet_boarding_group_ids_b	descriptive	config/names_local.tsv	second id list switched with jet_boarding_group_ids	
+D_L13_00161420	robosquawker_jump_speed	descriptive	config/names_local.tsv	times g_frame_time as the jump speed to jump_speed_4318	
+D_L13_00161424	robosquawker_jump_gravity	descriptive	config/names_local.tsv	f130 and negated gravity arg of jump_speed_4318	
+D_L13_001CBFC0	jet_target_marker_shape	descriptive	config/names_local.tsv	0x1E-vertex packet drawn around targets	
+D_L13_00161450	jet_hud_palette	descriptive	config/names_local.tsv	palette pointer whose entries the jet HUD bar fills or blanks	
+D_L13_00161410	gemlik_turret_shot_speed	descriptive	config/names_local.tsv	times g_frame_time as the turret projectile velocity	blarg_turret_launch_displacement_scale
+D_L13_00160064	gemlik_moby_list	descriptive	config/names_local.tsv	head of the moby list walked by robosquawker and jet targeting; other levels' moby_list	
+D_L13_00161418	robosquawker_knockback_lift	descriptive	config/names_local.tsv	times g_frame_time into f13C on a hit	
+D_L13_0016141C	robosquawker_knockback_speed	descriptive	config/names_local.tsv	times g_frame_time into f138 on a hit	
+D_L13_00161468	jet_exhaust_particle_a	descriptive	config/names_local.tsv	particle def for joint stream a in spawn_fighter_jet_joint_particles	
+D_L13_00161478	jet_exhaust_particle_b	descriptive	config/names_local.tsv	particle def for joint stream b	
+D_L13_00161488	jet_exhaust_particle_c	descriptive	config/names_local.tsv	particle def for joint stream c	
+D_L13_00167360	gemlik_view_basis_row1	descriptive	config/names_local.tsv	row after gemlik_view_basis; scaled by moby size as marker offset	
+D_L13_00167150	gemlik_camera_rot	descriptive	config/names_local.tsv	gemlik_camera_pos+0x10; its z yaw turns the jet radar	
+D_L13_001CBEE0	gemlik_turret_hud_pip_strip	descriptive	config/names_local.tsv	triangle strip drawn per pip in DrawGemlikTurretHud	
+D_L13_001CC0F0	jet_hud_palette_backup	descriptive	config/names_local.tsv	1024-byte copy of the palette made once at jet init	
+D_L13_001614C0	jet_camera_home_target	descriptive	config/names_local.tsv	camera target used when no path point is set	
+D_L13_001F44E8	volume_trigger_bad_target_msg	descriptive	config/names_local.tsv	printf string with moby uid when trigger data is -1	
+D_L13_00161414	gemlik_turret_fire_interval	descriptive	config/names_local.tsv	frame-count modulus between turret shots	
+D_L13_00161438	robosquawker_explosion_slots	descriptive	config/names_local.tsv	3-slot frame table gating mine explosions	
+D_L13_00161498	jet_exhaust_particle_d	descriptive	config/names_local.tsv	particle def for the extra high-intensity stream	
+D_L13_001614A8	jet_exhaust_particle_e	descriptive	config/names_local.tsv	particle def for the joint-centre high-intensity stream	
+D_L13_001CC038	jet_radar_icon_table	descriptive	config/names_local.tsv	IconEC5D0 entries indexed by icon in draw_fighter_jet_radar_icon	
+D_L13_00167350	gemlik_view_basis	descriptive	config/names_local.tsv	matrix rows fed to matrix_from_basis_rows for off-screen arrows	
+D_L13_00161458	jet_offscreen_arrow_shape	descriptive	config/names_local.tsv	3-vertex packet pointed at off-screen targets	
+D_L13_001F4740	jet_camera_mode_warning_msg	descriptive	config/names_local.tsv	printed when camera mode is not 5 before CameraScript	
+D_L13_0016D500	gemlik_texture_table	descriptive	config/names_local.tsv	JetTexture47 table indexed by texture_id+40 for its palette	
+D_L13_0015F520	gemlik_palette_data_base	descriptive	config/names_local.tsv	base address added to palette<<4 to find the jet palette	
+D_L13_001F4760	jet_no_escape_path_msg	descriptive	config/names_local.tsv	printed when escape_path is -1	
+D_L13_001F4798	jet_no_destination_path_msg	descriptive	config/names_local.tsv	printed when destination_path is -1	
+D_L13_00161454	jet_hud_palette_ready	descriptive	config/names_local.tsv	set after the palette backup is taken	
 func_001E9770	noop_callback_a	descriptive	the NTSC decomp	noop_callback_a at US boot 0x001E93F0 (src/gameplay/update_resident_gameplay_state.c); US function table counterpart	
 func_001E9788	noop_callback_d	descriptive	the NTSC decomp	noop_callback_d at US boot 0x001E9408 (src/gameplay/update_resident_gameplay_state.c); US function table counterpart	
 func_001E9790	noop_callback_e	descriptive	the NTSC decomp	noop_callback_e at US boot 0x001E9410 (src/gameplay/state/update_gameplay_frame.c); US function table counterpart	
@@ -8415,21 +9004,16 @@ D_L18_001625FC	deplanetizer_glow_local_offset_w	descriptive	the NTSC decomp	depl
 D_L18_001D3900	sparkle_quad_corners	descriptive	the NTSC decomp	sparkle_quad_corners at US level 18 0x001D3630 (src/overlays/l18/gameplay/entities/rocket.c); US/PAL address translation (code of both refers to it)	
 D_L18_001D3940	sparkle_quad_uvs	descriptive	the NTSC decomp	sparkle_quad_uvs at US level 18 0x001D3670 (src/overlays/l18/gameplay/entities/rocket.c); US/PAL address translation (code of both refers to it)	
 func_001F0F00	collision_hit_material	candidate	the NTSC decomp	held-alias: collision_hit_material at US boot 0x001F0B58 (src/assembly/textbin/world/collision/collision_hit_material.c); US function table counterpart	ground_material_8d10
-func_001F7EF8	fast_draw_quad_real	candidate	the NTSC decomp	held-alias: fast_draw_quad_real at US boot 0x001F7D30 (src/assembly/textbin/fast_draw_quad_real.c); US function table counterpart	draw_9780,draw_9c20,draw_b,draw_e,draw_ec130,draw_g,draw_geometry_quad,draw_geometry_quad_7920,draw_geometry_quad_alt,draw_geometry_quad_bfa8,draw_geometry_quad_l12,draw_m,draw_packet,draw_quad_1fd8,draw_quad_dba20,draw_quad_dc4b8,draw_quad_packet
-func_001F9E10	set_vector_length_xy	candidate	the NTSC decomp	held-alias: set_vector_length_xy at US boot 0x001F9C48 (src/assembly/textbin/math/vectors/set_vector_length_xy.c); US function table counterpart	bolt_normalize_xy,cap_0e00,normalize_vector_xy,scale_collision_vector,scale_vector_4318,scale_vector_5e80,transform_vector,trooper_scale,vdir_cc2e8
 func_001F9E58	clamp_vector_length	candidate	the NTSC decomp	held-alias: clamp_vector_length at US boot 0x001F9C90 (src/assembly/textbin/math/vectors/clamp_vector_length.c); US function table counterpart	jet_scale_vector,scale_vector_xyz_1638
 func_001FA648	quaternion_to_rotation_basis	candidate	the NTSC decomp	held-alias: quaternion_to_rotation_basis at US boot 0x001FA480 (src/assembly/textbin/math/quaternions/quaternion_to_rotation_basis.c); US function table counterpart	quaternion_rotation_basis
 func_001FA8F0	fast_bsphere_check	candidate	the NTSC decomp	held-alias: fast_bsphere_check at US boot 0x001FA728 (src/assembly/textbin/fast_bsphere_check.c); US function table counterpart	sphere_in_view,sphere_in_view_7920,sphere_visible,sphere_visible_ff640
 D_0012F86C	GlobalStatePointer	candidate	the NTSC decomp	held-alias: GlobalStatePointer at US boot 0x0012F76C (src/runtime/resources/get_state_resource_wrapper.c); US/PAL address translation (code of both refers to it)	GlobalRandomState,GlobalReent,GlobalStateResource
 D_0013E6C0	voice_volume_records	candidate	the NTSC decomp	held-alias: voice_volume_records at US boot 0x0013E5C0 (src/audio/voices/allocate_voice_slot.c); US/PAL address translation (code of both refers to it)	voice_volume_records_macro
 D_00155080	LookupTable	candidate	the NTSC decomp	held-alias: LookupTable at US boot 0x00154F80 (src/sdk/rpc/sce_sif_init_cmd.c); US/PAL address translation (code of both refers to it)	LookupTable_lui
-D_0015EE74	frame_time_cube	candidate	the NTSC decomp	held-alias: frame_time_cube at US boot 0x0015ED74 (include/rnc/globals.h); US/PAL address translation (code of both refers to it)	frame_time_cube_macro
 D_0015EF20	alternate_animation_sequence	candidate	the NTSC decomp	held-alias: alternate_animation_sequence at US boot 0x0015EE20 (include/rnc/gameplay/state/options.h); US/PAL address translation (code of both refers to it)	alternate_animation_sequence_gp,alternate_animation_sequence_macro
 D_0015FABC	hud_bank_main_start	candidate	the NTSC decomp	held-alias: hud_bank_main_start at US boot 0x0015FA04 (include/rnc/ui/hud/init_hud_globals.h); US/PAL address translation (code of both refers to it)	hud_bank_main_start_gp
 D_00160170	menu_help_hud_item	candidate	the NTSC decomp	held-alias: menu_help_hud_item at US boot 0x00160070 (include/rnc/ui/menus/process_menu_entry_globals.h); US/PAL address translation (code of both refers to it)	menu_help_hud_item_gp
-D_001605A8	environment_mapping_was_active	candidate	the NTSC decomp	held-alias: environment_mapping_was_active at US boot 0x001604A8 (include/rnc/rendering/render_environment_mapped_object_globals.h); US/PAL address translation (code of both refers to it)	environment_mapping_was_active_gp
 D_00160600	mode4_render_vector_delta	candidate	the NTSC decomp	held-alias: mode4_render_vector_delta at US boot 0x00160500 (include/rnc/gameplay/state/update_level_gameplay_frame_globals.h); US/PAL address translation (code of both refers to it)	mode4_render_vector_delta_gp
-D_0016129C	moby_occl_cluster_count	candidate	the NTSC decomp	held-alias: moby_occl_cluster_count at US boot 0x0016119C (include/rnc/gameplay/state/game_globals.h); US/PAL address translation (code of both refers to it)	moby_occl_cluster_count_gp
 D_00161310	decoder_thread	candidate	the NTSC decomp	held-alias: decoder_thread at US boot 0x00161210 (include/rnc/video/decoder/decoder_globals.h); US/PAL address translation (code of both refers to it)	decoder_thread_id
 D_L00_0015F75C	hero_scalar_pulse_step	candidate	the NTSC decomp	held-alias: hero_scalar_pulse_step at US level 00 0x0015F67C (include/rnc/overlay/shared/gameplay/hero/hero_idle_sequence_globals.h); US/PAL address translation (code of both refers to it)	hero_scalar_pulse_step_gp
 D_L00_0015F760	hero_scalar_pulse_active	candidate	the NTSC decomp	held-alias: hero_scalar_pulse_active at US level 00 0x0015F680 (include/rnc/overlay/shared/gameplay/hero/hero_idle_sequence_globals.h); US/PAL address translation (code of both refers to it)	hero_scalar_pulse_active_gp
@@ -8437,28 +9021,6 @@ D_L00_0015F764	hero_scalar_pulse_phase	candidate	the NTSC decomp	held-alias: her
 D_L00_0015F774	hero_item_rotation_history_target_window_size	candidate	the NTSC decomp	held-alias: hero_item_rotation_history_target_window_size at US level 00 0x0015F694 (include/rnc/overlay/shared/gameplay/hero/hero_check_damage_globals.h); US/PAL address translation (code of both refers to it)	hero_item_rotation_history_target_window_size_gp
 D_L00_0015F7D8	hero_extra_manipulator_attachment_indices	candidate	the NTSC decomp	held-alias: hero_extra_manipulator_attachment_indices at US level 00 0x0015F6F8 (include/rnc/overlay/shared/gameplay/hero/hero_idle_sequence_globals.h); US/PAL address translation (code of both refers to it)	hero_extra_manipulator_attachment_indices_gp
 D_L00_0015F818	eight_slot_hud_selector_table_pointer	candidate	the NTSC decomp	held-alias: eight_slot_hud_selector_table_pointer at US level 00 0x0015F738 (include/rnc/overlay/shared/ui/text/002377b8_globals.h); US/PAL address translation (code of both refers to it)	eight_slot_hud_selector_table_pointer_gp
-D_L00_00160264	rotating_grayscale_particle_fade_reference_duration	candidate	the NTSC decomp	held-alias: rotating_grayscale_particle_fade_reference_duration at US level 00 0x001601A4 (include/rnc/overlay/shared/rendering/00269290_globals.h); US/PAL address translation (code of both refers to it)	rotating_grayscale_particle_fade_reference_duration_gp
-D_L00_00160268	spinning_particle_default_initial_color_blend_source	candidate	the NTSC decomp	held-alias: spinning_particle_default_initial_color_blend_source at US level 00 0x001601A8 (include/rnc/overlay/shared/rendering/00269290_globals.h); US/PAL address translation (code of both refers to it)	spinning_particle_default_initial_color_blend_source_gp
-D_L00_0016026C	spinning_particle_default_initial_color_blend_target	candidate	the NTSC decomp	held-alias: spinning_particle_default_initial_color_blend_target at US level 00 0x001601AC (include/rnc/overlay/shared/rendering/00269290_globals.h); US/PAL address translation (code of both refers to it)	spinning_particle_default_initial_color_blend_target_gp
-D_L00_00160270	spinning_particle_default_final_color_blend_source	candidate	the NTSC decomp	held-alias: spinning_particle_default_final_color_blend_source at US level 00 0x001601B0 (include/rnc/overlay/shared/rendering/00269290_globals.h); US/PAL address translation (code of both refers to it)	spinning_particle_default_final_color_blend_source_gp
-D_L00_00160274	spinning_particle_default_final_color_blend_target	candidate	the NTSC decomp	held-alias: spinning_particle_default_final_color_blend_target at US level 00 0x001601B4 (include/rnc/overlay/shared/rendering/00269290_globals.h); US/PAL address translation (code of both refers to it)	spinning_particle_default_final_color_blend_target_gp
-D_L00_0016027C	spinning_particle_default_final_size	candidate	the NTSC decomp	held-alias: spinning_particle_default_final_size at US level 00 0x001601BC (include/rnc/overlay/shared/rendering/00269290_globals.h); US/PAL address translation (code of both refers to it)	spinning_particle_default_final_size_gp
-D_L00_00160280	spinning_particle_default_lifetime_lower_bound	candidate	the NTSC decomp	held-alias: spinning_particle_default_lifetime_lower_bound at US level 00 0x001601C0 (include/rnc/overlay/shared/rendering/00269290_globals.h); US/PAL address translation (code of both refers to it)	spinning_particle_default_lifetime_lower_bound_gp
-D_L00_00160284	spinning_particle_default_lifetime_upper_bound	candidate	the NTSC decomp	held-alias: spinning_particle_default_lifetime_upper_bound at US level 00 0x001601C4 (include/rnc/overlay/shared/rendering/00269290_globals.h); US/PAL address translation (code of both refers to it)	spinning_particle_default_lifetime_upper_bound_gp
-D_L00_00160288	spinning_particle_alternate_initial_color_blend_source	candidate	the NTSC decomp	held-alias: spinning_particle_alternate_initial_color_blend_source at US level 00 0x001601C8 (include/rnc/overlay/shared/rendering/00269290_globals.h); US/PAL address translation (code of both refers to it)	spinning_particle_alternate_initial_color_blend_source_gp
-D_L00_0016028C	spinning_particle_alternate_initial_color_blend_target	candidate	the NTSC decomp	held-alias: spinning_particle_alternate_initial_color_blend_target at US level 00 0x001601CC (include/rnc/overlay/shared/rendering/00269290_globals.h); US/PAL address translation (code of both refers to it)	spinning_particle_alternate_initial_color_blend_target_gp
-D_L00_00160290	spinning_particle_alternate_final_color_blend_source	candidate	the NTSC decomp	held-alias: spinning_particle_alternate_final_color_blend_source at US level 00 0x001601D0 (include/rnc/overlay/shared/rendering/00269290_globals.h); US/PAL address translation (code of both refers to it)	spinning_particle_alternate_final_color_blend_source_gp
-D_L00_00160294	spinning_particle_alternate_final_color_blend_target	candidate	the NTSC decomp	held-alias: spinning_particle_alternate_final_color_blend_target at US level 00 0x001601D4 (include/rnc/overlay/shared/rendering/00269290_globals.h); US/PAL address translation (code of both refers to it)	spinning_particle_alternate_final_color_blend_target_gp
-D_L00_0016029C	spinning_particle_alternate_final_size	candidate	the NTSC decomp	held-alias: spinning_particle_alternate_final_size at US level 00 0x001601DC (include/rnc/overlay/shared/rendering/00269290_globals.h); US/PAL address translation (code of both refers to it)	spinning_particle_alternate_final_size_gp
-D_L00_001602A0	spinning_particle_alternate_lifetime_lower_bound	candidate	the NTSC decomp	held-alias: spinning_particle_alternate_lifetime_lower_bound at US level 00 0x001601E0 (include/rnc/overlay/shared/rendering/00269290_globals.h); US/PAL address translation (code of both refers to it)	spinning_particle_alternate_lifetime_lower_bound_gp
-D_L00_001602A4	spinning_particle_alternate_lifetime_upper_bound	candidate	the NTSC decomp	held-alias: spinning_particle_alternate_lifetime_upper_bound at US level 00 0x001601E4 (include/rnc/overlay/shared/rendering/00269290_globals.h); US/PAL address translation (code of both refers to it)	spinning_particle_alternate_lifetime_upper_bound_gp
-D_L00_001602AC	spinning_particle_vertical_step_scale	candidate	the NTSC decomp	held-alias: spinning_particle_vertical_step_scale at US level 00 0x001601EC (include/rnc/overlay/shared/rendering/00269290_globals.h); US/PAL address translation (code of both refers to it)	spinning_particle_vertical_step_scale_gp
-D_L00_001602B4	two_point_particle_first_point_target_offset_scale	candidate	the NTSC decomp	held-alias: two_point_particle_first_point_target_offset_scale at US level 00 0x001601F4 (include/rnc/overlay/shared/rendering/00269290_globals.h); US/PAL address translation (code of both refers to it)	two_point_particle_first_point_target_offset_scale_gp
-D_L00_001602B8	two_point_particle_second_point_target_offset_scale	candidate	the NTSC decomp	held-alias: two_point_particle_second_point_target_offset_scale at US level 00 0x001601F8 (include/rnc/overlay/shared/rendering/00269290_globals.h); US/PAL address translation (code of both refers to it)	two_point_particle_second_point_target_offset_scale_gp
-D_L00_001602C0	animated_offset_particle_scalar	candidate	the NTSC decomp	held-alias: animated_offset_particle_scalar at US level 00 0x00160200 (include/rnc/overlay/shared/rendering/00269290_globals.h); US/PAL address translation (code of both refers to it)	animated_offset_particle_scalar_gp
-D_L00_001602C4	animated_offset_particle_packed_color	candidate	the NTSC decomp	held-alias: animated_offset_particle_packed_color at US level 00 0x00160204 (include/rnc/overlay/shared/rendering/00269290_globals.h); US/PAL address translation (code of both refers to it)	animated_offset_particle_packed_color_gp
-D_L00_001602C8	animated_offset_particle_offset_distance	candidate	the NTSC decomp	held-alias: animated_offset_particle_offset_distance at US level 00 0x00160208 (include/rnc/overlay/shared/rendering/00269290_globals.h); US/PAL address translation (code of both refers to it)	animated_offset_particle_offset_distance_gp
-D_L00_001602CC	animated_offset_particle_rotation_step	candidate	the NTSC decomp	held-alias: animated_offset_particle_rotation_step at US level 00 0x0016020C (include/rnc/overlay/shared/rendering/00269290_globals.h); US/PAL address translation (code of both refers to it)	animated_offset_particle_rotation_step_gp
 D_L00_001602D0	height_culled_particle_size_rate	candidate	the NTSC decomp	held-alias: height_culled_particle_size_rate at US level 00 0x00160210 (include/rnc/overlay/shared/rendering/002712b8_globals.h); US/PAL address translation (code of both refers to it)	height_culled_particle_size_rate_gp
 D_L00_001602E8	large_floor_burst_random_limit_plus_one	candidate	the NTSC decomp	held-alias: large_floor_burst_random_limit_plus_one at US level 00 0x00160228 (include/rnc/overlay/shared/rendering/002712b8_globals.h); US/PAL address translation (code of both refers to it)	large_floor_burst_random_limit_plus_one_gp
 D_L00_00160300	timed_particle_alpha_decrement	candidate	the NTSC decomp	held-alias: timed_particle_alpha_decrement at US level 00 0x00160240 (include/rnc/overlay/shared/rendering/002712b8_globals.h); US/PAL address translation (code of both refers to it)	timed_particle_alpha_decrement_gp
@@ -8475,16 +9037,9 @@ D_L00_00161440	wrapped_value_decrement_rate	candidate	the NTSC decomp	held-alias
 D_L00_00161470	bolt_spin_angle_limit_degrees	candidate	the NTSC decomp	held-alias: bolt_spin_angle_limit_degrees at US level 00 0x001613A8 (include/rnc/overlay/shared/gameplay/entities/camera_object_globals.h); US/PAL address translation (code of both refers to it)	bolt_spin_angle_limit_degrees_gp
 D_L00_00161474	last_bolt_attraction_sound_frame	candidate	the NTSC decomp	held-alias: last_bolt_attraction_sound_frame at US level 00 0x001613AC (include/rnc/overlay/shared/gameplay/entities/camera_object_globals.h); US/PAL address translation (code of both refers to it)	last_bolt_attraction_sound_frame_gp
 D_L00_001614B0	spin_angles	candidate	the NTSC decomp	held-alias: spin_angles at US level 00 0x001613E0 (src/overlays/shared/gameplay/entities/camera_object.c); US/PAL address translation (code of both refers to it)	spin_angles_x
-D_L00_00161548	linked_moby_selection_delay	candidate	the NTSC decomp	held-alias: linked_moby_selection_delay at US level 00 0x00161478 (include/rnc/overlay/shared/gameplay/entities/devastator_globals.h); US/PAL address translation (code of both refers to it)	linked_moby_selection_delay_gp
-D_L00_00161550	owned_record_cooldown	candidate	the NTSC decomp	held-alias: owned_record_cooldown at US level 00 0x00161480 (include/rnc/overlay/shared/gameplay/entities/devastator_globals.h); US/PAL address translation (code of both refers to it)	owned_record_cooldown_gp
-D_L00_0016156C	visibomb_missile_default_speed	candidate	the NTSC decomp	held-alias: visibomb_missile_default_speed at US level 00 0x0016149C (include/rnc/overlay/shared/gameplay/entities/devastator_globals.h); US/PAL address translation (code of both refers to it)	visibomb_missile_default_speed_gp
 D_L00_00161580	taunter_effect_spawn_interval_frames	candidate	the NTSC decomp	held-alias: taunter_effect_spawn_interval_frames at US level 00 0x001614B0 (include/rnc/overlay/shared/gameplay/entities/devastator_globals.h); US/PAL address translation (code of both refers to it)	taunter_effect_spawn_interval_frames_gp
 D_L00_00161584	taunter_effect_travel_distance	candidate	the NTSC decomp	held-alias: taunter_effect_travel_distance at US level 00 0x001614B4 (include/rnc/overlay/shared/gameplay/entities/devastator_globals.h); US/PAL address translation (code of both refers to it)	taunter_effect_travel_distance_gp
 D_L00_00161588	taunter_effect_travel_speed	candidate	the NTSC decomp	held-alias: taunter_effect_travel_speed at US level 00 0x001614B8 (include/rnc/overlay/shared/gameplay/entities/devastator_globals.h); US/PAL address translation (code of both refers to it)	taunter_effect_travel_speed_gp
-D_L00_00161590	taunter_effect_quad_rgb	candidate	the NTSC decomp	held-alias: taunter_effect_quad_rgb at US level 00 0x001614C0 (include/rnc/overlay/shared/gameplay/entities/devastator_globals.h); US/PAL address translation (code of both refers to it)	taunter_effect_quad_rgb_gp
-D_L00_00161594	taunter_effect_quad_initial_scale	candidate	the NTSC decomp	held-alias: taunter_effect_quad_initial_scale at US level 00 0x001614C4 (include/rnc/overlay/shared/gameplay/entities/devastator_globals.h); US/PAL address translation (code of both refers to it)	taunter_effect_quad_initial_scale_gp
-D_L00_00161598	taunter_effect_quad_final_scale	candidate	the NTSC decomp	held-alias: taunter_effect_quad_final_scale at US level 00 0x001614C8 (include/rnc/overlay/shared/gameplay/entities/devastator_globals.h); US/PAL address translation (code of both refers to it)	taunter_effect_quad_final_scale_gp
-D_L00_001616F4	tesla_beam_initial_frame_count	candidate	the NTSC decomp	held-alias: tesla_beam_initial_frame_count at US level 00 0x00161624 (include/rnc/overlay/shared/gameplay/entities/devastator_globals.h); US/PAL address translation (code of both refers to it)	tesla_beam_initial_frame_count_gp
 D_L00_00161900	trespasser_pickup_z_rotation_step	candidate	the NTSC decomp	held-alias: trespasser_pickup_z_rotation_step at US level 00 0x00161830 (include/rnc/overlay/shared/gameplay/entities/trespasser_globals.h); US/PAL address translation (code of both refers to it)	trespasser_pickup_z_rotation_step_gp
 D_L00_00161970	feather_scale_multiplier	candidate	the NTSC decomp	held-alias: feather_scale_multiplier at US level 00 0x001618A0 (include/rnc/overlay/shared/gameplay/entities/bomb_globals.h); US/PAL address translation (code of both refers to it)	feather_scale_multiplier_gp
 D_L00_00161974	feather_base_lifetime	candidate	the NTSC decomp	held-alias: feather_base_lifetime at US level 00 0x001618A4 (include/rnc/overlay/shared/gameplay/entities/bomb_globals.h); US/PAL address translation (code of both refers to it)	feather_base_lifetime_gp
@@ -8553,7 +9108,6 @@ D_L03_00161C68	moby_rotation_oscillation_second_phase_rate	candidate	the NTSC de
 D_L04_00160058	moby_array	candidate	the NTSC decomp	held-alias: moby_array at US level 04 0x0015FFD8 (include/rnc/overlay/level_labels.h); US/PAL address translation (code of both refers to it)	level_moby_table,level_mobys
 D_L04_00161914	circular_saw_flock_separation_weight	candidate	the NTSC decomp	held-alias: circular_saw_flock_separation_weight at US level 04 0x00161884 (include/rnc/overlay/l04/gameplay/entities/big_axebot_globals.h); US/PAL address translation (code of both refers to it)	circular_saw_flock_separation_weight_gp
 D_L04_00161944	smoke_trail_puff_vertical_velocity_scale	candidate	the NTSC decomp	held-alias: smoke_trail_puff_vertical_velocity_scale at US level 04 0x001618B4 (include/rnc/overlay/l04/gameplay/entities/big_axebot_globals.h); US/PAL address translation (code of both refers to it)	smoke_trail_puff_vertical_velocity_scale_gp
-D_L05_0015F95C	trick_combo_hud_delay_reload	candidate	the NTSC decomp	held-alias: trick_combo_hud_delay_reload at US level 05 0x0015F87C (include/rnc/overlay/shared/ui/text/00262ae8_globals.h); US/PAL address translation (code of both refers to it)	trick_combo_hud_delay_reload_gp
 D_L05_00161DB4	wobble_quad_blend_a_selector	candidate	the NTSC decomp	held-alias: wobble_quad_blend_a_selector at US level 05 0x00161CF4 (include/rnc/overlay/shared/gameplay/entities/hydrodisplacer_faucet_globals.h); US/PAL address translation (code of both refers to it)	wobble_quad_blend_a_selector_gp
 D_L05_00161DB8	wobble_quad_blend_b_selector	candidate	the NTSC decomp	held-alias: wobble_quad_blend_b_selector at US level 05 0x00161CF8 (include/rnc/overlay/shared/gameplay/entities/hydrodisplacer_faucet_globals.h); US/PAL address translation (code of both refers to it)	wobble_quad_blend_b_selector_gp
 D_L05_00161DBC	wobble_quad_blend_c_selector	candidate	the NTSC decomp	held-alias: wobble_quad_blend_c_selector at US level 05 0x00161CFC (include/rnc/overlay/shared/gameplay/entities/hydrodisplacer_faucet_globals.h); US/PAL address translation (code of both refers to it)	wobble_quad_blend_c_selector_gp
@@ -8563,87 +9117,13 @@ D_L05_00161DC8	wobble_quad_end_color	candidate	the NTSC decomp	held-alias: wobbl
 D_L05_00161DCC	wobble_quad_texture_index	candidate	the NTSC decomp	held-alias: wobble_quad_texture_index at US level 05 0x00161D0C (include/rnc/overlay/shared/gameplay/entities/hydrodisplacer_faucet_globals.h); US/PAL address translation (code of both refers to it)	wobble_quad_texture_index_gp
 D_L05_00162090	debris_axis_launch_speed	candidate	the NTSC decomp	held-alias: debris_axis_launch_speed at US level 05 0x00161FD0 (include/rnc/overlay/shared/gameplay/entities/hoverboard_ring_globals.h); US/PAL address translation (code of both refers to it)	debris_axis_launch_speed_gp
 D_L05_00162094	debris_upward_launch_speed	candidate	the NTSC decomp	held-alias: debris_upward_launch_speed at US level 05 0x00161FD4 (include/rnc/overlay/shared/gameplay/entities/hoverboard_ring_globals.h); US/PAL address translation (code of both refers to it)	debris_upward_launch_speed_gp
-D_L06_00162050	ranged_attack_cooldown_frames	candidate	the NTSC decomp	held-alias: ranged_attack_cooldown_frames at US level 06 0x00161FC0 (include/rnc/overlay/shared/gameplay/entities/blarg_space_commando_globals.h); US/PAL address translation (code of both refers to it)	ranged_attack_cooldown_frames_gp
-D_L06_00162054	melee_attack_distance_threshold	candidate	the NTSC decomp	held-alias: melee_attack_distance_threshold at US level 06 0x00161FC4 (include/rnc/overlay/shared/gameplay/entities/blarg_space_commando_globals.h); US/PAL address translation (code of both refers to it)	melee_attack_distance_threshold_gp
-D_L06_0016205C	vehicle_melee_windup_animation_speed	candidate	the NTSC decomp	held-alias: vehicle_melee_windup_animation_speed at US level 06 0x00161FCC (include/rnc/overlay/shared/gameplay/entities/blarg_space_commando_globals.h); US/PAL address translation (code of both refers to it)	vehicle_melee_windup_animation_speed_gp
-D_L06_00162060	beam_point_horizontal_speed	candidate	the NTSC decomp	held-alias: beam_point_horizontal_speed at US level 06 0x00161FD0 (include/rnc/overlay/shared/gameplay/entities/blarg_space_commando_globals.h); US/PAL address translation (code of both refers to it)	beam_point_horizontal_speed_gp
-D_L06_00162064	beam_spread_degrees	candidate	the NTSC decomp	held-alias: beam_spread_degrees at US level 06 0x00161FD4 (include/rnc/overlay/shared/gameplay/entities/blarg_space_commando_globals.h); US/PAL address translation (code of both refers to it)	beam_spread_degrees_gp
-D_L06_00162068	beam_duration_frames	candidate	the NTSC decomp	held-alias: beam_duration_frames at US level 06 0x00161FD8 (include/rnc/overlay/shared/gameplay/entities/blarg_space_commando_globals.h); US/PAL address translation (code of both refers to it)	beam_duration_frames_gp
-D_L06_00162080	beam_effect_texture_index	candidate	the NTSC decomp	held-alias: beam_effect_texture_index at US level 06 0x00161FF0 (include/rnc/overlay/shared/gameplay/entities/blarg_space_commando_globals.h); US/PAL address translation (code of both refers to it)	beam_effect_texture_index_gp
-D_L06_00162084	beam_outer_corner_color_at_zero_weight	candidate	the NTSC decomp	held-alias: beam_outer_corner_color_at_zero_weight at US level 06 0x00161FF4 (include/rnc/overlay/shared/gameplay/entities/blarg_space_commando_globals.h); US/PAL address translation (code of both refers to it)	beam_outer_corner_color_at_zero_weight_gp
-D_L06_00162088	beam_outer_corner_color_at_unit_weight	candidate	the NTSC decomp	held-alias: beam_outer_corner_color_at_unit_weight at US level 06 0x00161FF8 (include/rnc/overlay/shared/gameplay/entities/blarg_space_commando_globals.h); US/PAL address translation (code of both refers to it)	beam_outer_corner_color_at_unit_weight_gp
-D_L06_0016208C	beam_inset_corner_color_at_zero_weight	candidate	the NTSC decomp	held-alias: beam_inset_corner_color_at_zero_weight at US level 06 0x00161FFC (include/rnc/overlay/shared/gameplay/entities/blarg_space_commando_globals.h); US/PAL address translation (code of both refers to it)	beam_inset_corner_color_at_zero_weight_gp
-D_L06_00162090	beam_inset_corner_color_at_unit_weight	candidate	the NTSC decomp	held-alias: beam_inset_corner_color_at_unit_weight at US level 06 0x00162000 (include/rnc/overlay/shared/gameplay/entities/blarg_space_commando_globals.h); US/PAL address translation (code of both refers to it)	beam_inset_corner_color_at_unit_weight_gp
-D_L06_0016209C	beam_spark_first_vector_w	candidate	the NTSC decomp	held-alias: beam_spark_first_vector_w at US level 06 0x0016200C (include/rnc/overlay/shared/gameplay/entities/blarg_space_commando_globals.h); US/PAL address translation (code of both refers to it)	beam_spark_first_vector_w_gp
-D_L06_001620A0	beam_spark_second_vector_w	candidate	the NTSC decomp	held-alias: beam_spark_second_vector_w at US level 06 0x00162010 (include/rnc/overlay/shared/gameplay/entities/blarg_space_commando_globals.h); US/PAL address translation (code of both refers to it)	beam_spark_second_vector_w_gp
-D_L06_001620A4	beam_spark_frame_count_range_start	candidate	the NTSC decomp	held-alias: beam_spark_frame_count_range_start at US level 06 0x00162014 (include/rnc/overlay/shared/gameplay/entities/blarg_space_commando_globals.h); US/PAL address translation (code of both refers to it)	beam_spark_frame_count_range_start_gp
-D_L06_001620A8	beam_spark_frame_count_range_end	candidate	the NTSC decomp	held-alias: beam_spark_frame_count_range_end at US level 06 0x00162018 (include/rnc/overlay/shared/gameplay/entities/blarg_space_commando_globals.h); US/PAL address translation (code of both refers to it)	beam_spark_frame_count_range_end_gp
-D_L06_001620AC	beam_spark_second_frame_count_range_start	candidate	the NTSC decomp	held-alias: beam_spark_second_frame_count_range_start at US level 06 0x0016201C (include/rnc/overlay/shared/gameplay/entities/blarg_space_commando_globals.h); US/PAL address translation (code of both refers to it)	beam_spark_second_frame_count_range_start_gp
-D_L06_001620B0	beam_spark_second_frame_count_range_end	candidate	the NTSC decomp	held-alias: beam_spark_second_frame_count_range_end at US level 06 0x00162020 (include/rnc/overlay/shared/gameplay/entities/blarg_space_commando_globals.h); US/PAL address translation (code of both refers to it)	beam_spark_second_frame_count_range_end_gp
-D_L06_001620B4	beam_spark_third_frame_count_range_start	candidate	the NTSC decomp	held-alias: beam_spark_third_frame_count_range_start at US level 06 0x00162024 (include/rnc/overlay/shared/gameplay/entities/blarg_space_commando_globals.h); US/PAL address translation (code of both refers to it)	beam_spark_third_frame_count_range_start_gp
-D_L06_001620B8	beam_spark_third_frame_count_range_end	candidate	the NTSC decomp	held-alias: beam_spark_third_frame_count_range_end at US level 06 0x00162028 (include/rnc/overlay/shared/gameplay/entities/blarg_space_commando_globals.h); US/PAL address translation (code of both refers to it)	beam_spark_third_frame_count_range_end_gp
-D_L06_001620BC	beam_spark_horizontal_scale_range_start	candidate	the NTSC decomp	held-alias: beam_spark_horizontal_scale_range_start at US level 06 0x0016202C (include/rnc/overlay/shared/gameplay/entities/blarg_space_commando_globals.h); US/PAL address translation (code of both refers to it)	beam_spark_horizontal_scale_range_start_gp
-D_L06_001620C0	beam_spark_horizontal_scale_range_end	candidate	the NTSC decomp	held-alias: beam_spark_horizontal_scale_range_end at US level 06 0x00162030 (include/rnc/overlay/shared/gameplay/entities/blarg_space_commando_globals.h); US/PAL address translation (code of both refers to it)	beam_spark_horizontal_scale_range_end_gp
-D_L06_001620C4	beam_spark_vector_z_range_start	candidate	the NTSC decomp	held-alias: beam_spark_vector_z_range_start at US level 06 0x00162034 (include/rnc/overlay/shared/gameplay/entities/blarg_space_commando_globals.h); US/PAL address translation (code of both refers to it)	beam_spark_vector_z_range_start_gp
-D_L06_001620C8	beam_spark_vector_z_range_end	candidate	the NTSC decomp	held-alias: beam_spark_vector_z_range_end at US level 06 0x00162038 (include/rnc/overlay/shared/gameplay/entities/blarg_space_commando_globals.h); US/PAL address translation (code of both refers to it)	beam_spark_vector_z_range_end_gp
-D_L06_001620CC	beam_spark_spawn_probability	candidate	the NTSC decomp	held-alias: beam_spark_spawn_probability at US level 06 0x0016203C (include/rnc/overlay/shared/gameplay/entities/blarg_space_commando_globals.h); US/PAL address translation (code of both refers to it)	beam_spark_spawn_probability_gp
 D_L06_00162284	vector_stream_texture_u_step	candidate	the NTSC decomp	held-alias: vector_stream_texture_u_step at US level 06 0x001621F4 (include/rnc/overlay/l06/gameplay/entities/fred_globals.h); US/PAL address translation (code of both refers to it)	vector_stream_texture_u_step_gp
-D_L06_0016236C	bot_door_lock_number_bob_amplitude	candidate	the NTSC decomp	held-alias: bot_door_lock_number_bob_amplitude at US level 06 0x001622DC (include/rnc/overlay/shared/gameplay/entities/bot_door_lock_globals.h); US/PAL address translation (code of both refers to it)	bot_door_lock_number_bob_amplitude_gp
-D_L06_00162370	bot_door_lock_number_bob_period	candidate	the NTSC decomp	held-alias: bot_door_lock_number_bob_period at US level 06 0x001622E0 (include/rnc/overlay/shared/gameplay/entities/bot_door_lock_globals.h); US/PAL address translation (code of both refers to it)	bot_door_lock_number_bob_period_gp
-D_L06_00162374	bot_door_lock_color_pulse_period	candidate	the NTSC decomp	held-alias: bot_door_lock_color_pulse_period at US level 06 0x001622E4 (include/rnc/overlay/shared/gameplay/entities/bot_door_lock_globals.h); US/PAL address translation (code of both refers to it)	bot_door_lock_color_pulse_period_gp
-D_L06_00162378	bot_door_lock_number_color_pulse_amplitude	candidate	the NTSC decomp	held-alias: bot_door_lock_number_color_pulse_amplitude at US level 06 0x001622E8 (include/rnc/overlay/shared/gameplay/entities/bot_door_lock_globals.h); US/PAL address translation (code of both refers to it)	bot_door_lock_number_color_pulse_amplitude_gp
-D_L06_0016237C	bot_door_lock_max_effect_horizontal_scale	candidate	the NTSC decomp	held-alias: bot_door_lock_max_effect_horizontal_scale at US level 06 0x001622EC (include/rnc/overlay/shared/gameplay/entities/bot_door_lock_globals.h); US/PAL address translation (code of both refers to it)	bot_door_lock_max_effect_horizontal_scale_gp
 D_L06_0016238C	spark_burst_vector_scale_variation	candidate	the NTSC decomp	held-alias: spark_burst_vector_scale_variation at US level 06 0x001622FC (include/rnc/overlay/l06/gameplay/vendor/003083b0_globals.h); US/PAL address translation (code of both refers to it)	spark_burst_vector_scale_variation_gp
 D_L06_001623C8	spark_spray_z_subtraction_rate	candidate	the NTSC decomp	held-alias: spark_spray_z_subtraction_rate at US level 06 0x00162338 (include/rnc/overlay/l06/gameplay/vendor/003083b0_globals.h); US/PAL address translation (code of both refers to it)	spark_spray_z_subtraction_rate_gp
 D_L06_001623CC	spark_spray_vector_scale_variation	candidate	the NTSC decomp	held-alias: spark_spray_vector_scale_variation at US level 06 0x0016233C (include/rnc/overlay/l06/gameplay/vendor/003083b0_globals.h); US/PAL address translation (code of both refers to it)	spark_spray_vector_scale_variation_gp
 D_L06_00162404	spark_spray_timer_range_start	candidate	the NTSC decomp	held-alias: spark_spray_timer_range_start at US level 06 0x00162374 (include/rnc/overlay/l06/gameplay/vendor/003083b0_globals.h); US/PAL address translation (code of both refers to it)	spark_spray_timer_range_start_gp
 D_L06_00162408	spark_spray_timer_range_end	candidate	the NTSC decomp	held-alias: spark_spray_timer_range_end at US level 06 0x00162378 (include/rnc/overlay/l06/gameplay/vendor/003083b0_globals.h); US/PAL address translation (code of both refers to it)	spark_spray_timer_range_end_gp
-D_L06_001624A4	projected_quad_texture_selector	candidate	the NTSC decomp	held-alias: projected_quad_texture_selector at US level 06 0x00162414 (include/rnc/overlay/shared/gameplay/entities/bot_door_lock_globals.h); US/PAL address translation (code of both refers to it)	projected_quad_texture_selector_gp
-D_L06_001624A8	projected_quad_base_radius	candidate	the NTSC decomp	held-alias: projected_quad_base_radius at US level 06 0x00162418 (include/rnc/overlay/shared/gameplay/entities/bot_door_lock_globals.h); US/PAL address translation (code of both refers to it)	projected_quad_base_radius_gp
-D_L06_001624AC	projected_quad_top_right_uv	candidate	the NTSC decomp	held-alias: projected_quad_top_right_uv at US level 06 0x0016241C (include/rnc/overlay/shared/gameplay/entities/bot_door_lock_globals.h); US/PAL address translation (code of both refers to it)	projected_quad_top_right_uv_gp
-D_L06_001624B0	projected_quad_top_left_uv	candidate	the NTSC decomp	held-alias: projected_quad_top_left_uv at US level 06 0x00162420 (include/rnc/overlay/shared/gameplay/entities/bot_door_lock_globals.h); US/PAL address translation (code of both refers to it)	projected_quad_top_left_uv_gp
-D_L06_001624B4	projected_quad_bottom_right_uv	candidate	the NTSC decomp	held-alias: projected_quad_bottom_right_uv at US level 06 0x00162424 (include/rnc/overlay/shared/gameplay/entities/bot_door_lock_globals.h); US/PAL address translation (code of both refers to it)	projected_quad_bottom_right_uv_gp
-D_L06_001624B8	projected_quad_bottom_left_uv	candidate	the NTSC decomp	held-alias: projected_quad_bottom_left_uv at US level 06 0x00162428 (include/rnc/overlay/shared/gameplay/entities/bot_door_lock_globals.h); US/PAL address translation (code of both refers to it)	projected_quad_bottom_left_uv_gp
 D_L07_0020DDC0	rope_points	candidate	the NTSC decomp	held-alias: rope_points at US level 07 0x0020DB00 (src/overlays/l07/gameplay/entities/snagglebeast.c); US/PAL address translation (code of both refers to it)	rope_points_lui
-D_L08_001614E8	bolt_pickup_collision_stop_speed_threshold	candidate	the NTSC decomp	held-alias: bolt_pickup_collision_stop_speed_threshold at US level 08 0x00161458 (include/rnc/overlay/l08/gameplay/entities/bomb_globals.h); US/PAL address translation (code of both refers to it)	bolt_pickup_collision_stop_speed_threshold_gp
-D_L08_001614EC	bolt_pickup_collision_speed_reduction	candidate	the NTSC decomp	held-alias: bolt_pickup_collision_speed_reduction at US level 08 0x0016145C (include/rnc/overlay/l08/gameplay/entities/bomb_globals.h); US/PAL address translation (code of both refers to it)	bolt_pickup_collision_speed_reduction_gp
-D_L08_001614F0	bolt_pickup_bob_period_ticks	candidate	the NTSC decomp	held-alias: bolt_pickup_bob_period_ticks at US level 08 0x00161460 (include/rnc/overlay/l08/gameplay/entities/bomb_globals.h); US/PAL address translation (code of both refers to it)	bolt_pickup_bob_period_ticks_gp
-D_L08_001614F4	bolt_pickup_bob_amplitude	candidate	the NTSC decomp	held-alias: bolt_pickup_bob_amplitude at US level 08 0x00161464 (include/rnc/overlay/l08/gameplay/entities/bomb_globals.h); US/PAL address translation (code of both refers to it)	bolt_pickup_bob_amplitude_gp
-D_L08_001614F8	bolt_pickup_spin_increment_range_start	candidate	the NTSC decomp	held-alias: bolt_pickup_spin_increment_range_start at US level 08 0x00161468 (include/rnc/overlay/l08/gameplay/entities/bomb_globals.h); US/PAL address translation (code of both refers to it)	bolt_pickup_spin_increment_range_start_gp
-D_L08_001614FC	bolt_pickup_spin_increment_range_end	candidate	the NTSC decomp	held-alias: bolt_pickup_spin_increment_range_end at US level 08 0x0016146C (include/rnc/overlay/l08/gameplay/entities/bomb_globals.h); US/PAL address translation (code of both refers to it)	bolt_pickup_spin_increment_range_end_gp
-D_L08_001618F0	bomb_downward_acceleration	candidate	the NTSC decomp	held-alias: bomb_downward_acceleration at US level 08 0x00161860 (include/rnc/overlay/l08/gameplay/entities/bomb_globals.h); US/PAL address translation (code of both refers to it)	bomb_downward_acceleration_gp
-D_L08_00161930	bomber_tank_part_reference_speed	candidate	the NTSC decomp	held-alias: bomber_tank_part_reference_speed at US level 08 0x001618A0 (include/rnc/overlay/l08/gameplay/entities/bomb_globals.h); US/PAL address translation (code of both refers to it)	bomber_tank_part_reference_speed_gp
-D_L08_00161938	bomber_tank_projectile_speed	candidate	the NTSC decomp	held-alias: bomber_tank_projectile_speed at US level 08 0x001618A8 (include/rnc/overlay/l08/gameplay/entities/bomb_globals.h); US/PAL address translation (code of both refers to it)	bomber_tank_projectile_speed_gp
-D_L08_0016196C	bomber_tank_joint_particle_jitter_magnitude_base	candidate	the NTSC decomp	held-alias: bomber_tank_joint_particle_jitter_magnitude_base at US level 08 0x001618DC (include/rnc/overlay/l08/gameplay/entities/bomb_globals.h); US/PAL address translation (code of both refers to it)	bomber_tank_joint_particle_jitter_magnitude_base_gp
-D_L08_00161970	bomber_tank_joint_particle_vertical_spread	candidate	the NTSC decomp	held-alias: bomber_tank_joint_particle_vertical_spread at US level 08 0x001618E0 (include/rnc/overlay/l08/gameplay/entities/bomb_globals.h); US/PAL address translation (code of both refers to it)	bomber_tank_joint_particle_vertical_spread_gp
-D_L08_00161978	bomber_tank_joint_particle_horizontal_spread_range_end	candidate	the NTSC decomp	held-alias: bomber_tank_joint_particle_horizontal_spread_range_end at US level 08 0x001618E8 (include/rnc/overlay/l08/gameplay/entities/bomb_globals.h); US/PAL address translation (code of both refers to it)	bomber_tank_joint_particle_horizontal_spread_range_end_gp
-D_L08_00161A00	water_entry_plane_initialized	candidate	the NTSC decomp	held-alias: water_entry_plane_initialized at US level 08 0x00161970 (include/rnc/overlay/l08/gameplay/entities/bomb_globals.h); US/PAL address translation (code of both refers to it)	water_entry_plane_initialized_gp
-D_L08_00161A28	line_puff_initial_z_velocity_range_end	candidate	the NTSC decomp	held-alias: line_puff_initial_z_velocity_range_end at US level 08 0x00161998 (include/rnc/overlay/l08/gameplay/entities/bomb_globals.h); US/PAL address translation (code of both refers to it)	line_puff_initial_z_velocity_range_end_gp
-D_L08_00161A30	line_puff_position_jitter_range_end	candidate	the NTSC decomp	held-alias: line_puff_position_jitter_range_end at US level 08 0x001619A0 (include/rnc/overlay/l08/gameplay/entities/bomb_globals.h); US/PAL address translation (code of both refers to it)	line_puff_position_jitter_range_end_gp
-D_L08_00161A38	line_puff_duration_frames	candidate	the NTSC decomp	held-alias: line_puff_duration_frames at US level 08 0x001619A8 (include/rnc/overlay/l08/gameplay/entities/bomb_globals.h); US/PAL address translation (code of both refers to it)	line_puff_duration_frames_gp
-D_L08_00161A94	rocket_guidance_velocity_correction_limit	candidate	the NTSC decomp	held-alias: rocket_guidance_velocity_correction_limit at US level 08 0x00161A04 (include/rnc/overlay/l08/gameplay/entities/bomb_globals.h); US/PAL address translation (code of both refers to it)	rocket_guidance_velocity_correction_limit_gp
-D_L08_00161A98	rocket_route_speed	candidate	the NTSC decomp	held-alias: rocket_route_speed at US level 08 0x00161A08 (include/rnc/overlay/l08/gameplay/entities/bomb_globals.h); US/PAL address translation (code of both refers to it)	rocket_route_speed_gp
-D_L08_00161A9C	rocket_target_hit_distance	candidate	the NTSC decomp	held-alias: rocket_target_hit_distance at US level 08 0x00161A0C (include/rnc/overlay/l08/gameplay/entities/bomb_globals.h); US/PAL address translation (code of both refers to it)	rocket_target_hit_distance_gp
-D_L08_00161AA4	rocket_effect_radial_speed_range_end	candidate	the NTSC decomp	held-alias: rocket_effect_radial_speed_range_end at US level 08 0x00161A14 (include/rnc/overlay/l08/gameplay/entities/bomb_globals.h); US/PAL address translation (code of both refers to it)	rocket_effect_radial_speed_range_end_gp
-D_L08_00161AC4	class_1b3_projectile_color_red	candidate	the NTSC decomp	held-alias: class_1b3_projectile_color_red at US level 08 0x00161A34 (include/rnc/overlay/l08/gameplay/entities/bomb_globals.h); US/PAL address translation (code of both refers to it)	class_1b3_projectile_color_red_gp
-D_L08_00161AC8	class_1b3_projectile_color_green	candidate	the NTSC decomp	held-alias: class_1b3_projectile_color_green at US level 08 0x00161A38 (include/rnc/overlay/l08/gameplay/entities/bomb_globals.h); US/PAL address translation (code of both refers to it)	class_1b3_projectile_color_green_gp
-D_L08_00161ACC	class_1b3_projectile_color_blue	candidate	the NTSC decomp	held-alias: class_1b3_projectile_color_blue at US level 08 0x00161A3C (include/rnc/overlay/l08/gameplay/entities/bomb_globals.h); US/PAL address translation (code of both refers to it)	class_1b3_projectile_color_blue_gp
-D_L08_00161AD0	class_1b3_projectile_scale_multiplier	candidate	the NTSC decomp	held-alias: class_1b3_projectile_scale_multiplier at US level 08 0x00161A40 (include/rnc/overlay/l08/gameplay/entities/bomb_globals.h); US/PAL address translation (code of both refers to it)	class_1b3_projectile_scale_multiplier_gp
-D_L08_00161AD8	moby_motion_spark_first_displacement_scale	candidate	the NTSC decomp	held-alias: moby_motion_spark_first_displacement_scale at US level 08 0x00161A48 (include/rnc/overlay/l08/gameplay/entities/bomb_globals.h); US/PAL address translation (code of both refers to it)	moby_motion_spark_first_displacement_scale_gp
-D_L08_00161ADC	moby_motion_spark_second_displacement_scale	candidate	the NTSC decomp	held-alias: moby_motion_spark_second_displacement_scale at US level 08 0x00161A4C (include/rnc/overlay/l08/gameplay/entities/bomb_globals.h); US/PAL address translation (code of both refers to it)	moby_motion_spark_second_displacement_scale_gp
-D_L08_00161AE0	moby_motion_spark_jitter_magnitude_range_end	candidate	the NTSC decomp	held-alias: moby_motion_spark_jitter_magnitude_range_end at US level 08 0x00161A50 (include/rnc/overlay/l08/gameplay/entities/bomb_globals.h); US/PAL address translation (code of both refers to it)	moby_motion_spark_jitter_magnitude_range_end_gp
-D_L08_00161AE4	moby_motion_spark_frame_count_random_span	candidate	the NTSC decomp	held-alias: moby_motion_spark_frame_count_random_span at US level 08 0x00161A54 (include/rnc/overlay/l08/gameplay/entities/bomb_globals.h); US/PAL address translation (code of both refers to it)	moby_motion_spark_frame_count_random_span_gp
-D_L08_00161AE8	moby_motion_spark_second_frame_count_base	candidate	the NTSC decomp	held-alias: moby_motion_spark_second_frame_count_base at US level 08 0x00161A58 (include/rnc/overlay/l08/gameplay/entities/bomb_globals.h); US/PAL address translation (code of both refers to it)	moby_motion_spark_second_frame_count_base_gp
-D_L08_00161AEC	moby_motion_spark_third_frame_count_base	candidate	the NTSC decomp	held-alias: moby_motion_spark_third_frame_count_base at US level 08 0x00161A5C (include/rnc/overlay/l08/gameplay/entities/bomb_globals.h); US/PAL address translation (code of both refers to it)	moby_motion_spark_third_frame_count_base_gp
-D_L08_00161AF0	moby_motion_spark_frame_count_variation_extent	candidate	the NTSC decomp	held-alias: moby_motion_spark_frame_count_variation_extent at US level 08 0x00161A60 (include/rnc/overlay/l08/gameplay/entities/bomb_globals.h); US/PAL address translation (code of both refers to it)	moby_motion_spark_frame_count_variation_extent_gp
-D_L08_00161AF4	moby_motion_spark_first_vector_w_range_start	candidate	the NTSC decomp	held-alias: moby_motion_spark_first_vector_w_range_start at US level 08 0x00161A64 (include/rnc/overlay/l08/gameplay/entities/bomb_globals.h); US/PAL address translation (code of both refers to it)	moby_motion_spark_first_vector_w_range_start_gp
-D_L08_00161AF8	moby_motion_spark_first_vector_w_range_end	candidate	the NTSC decomp	held-alias: moby_motion_spark_first_vector_w_range_end at US level 08 0x00161A68 (include/rnc/overlay/l08/gameplay/entities/bomb_globals.h); US/PAL address translation (code of both refers to it)	moby_motion_spark_first_vector_w_range_end_gp
-D_L08_00161AFC	moby_motion_spark_second_vector_w_range_start	candidate	the NTSC decomp	held-alias: moby_motion_spark_second_vector_w_range_start at US level 08 0x00161A6C (include/rnc/overlay/l08/gameplay/entities/bomb_globals.h); US/PAL address translation (code of both refers to it)	moby_motion_spark_second_vector_w_range_start_gp
-D_L08_00161B00	moby_motion_spark_second_vector_w_range_end	candidate	the NTSC decomp	held-alias: moby_motion_spark_second_vector_w_range_end at US level 08 0x00161A70 (include/rnc/overlay/l08/gameplay/entities/bomb_globals.h); US/PAL address translation (code of both refers to it)	moby_motion_spark_second_vector_w_range_end_gp
-D_L08_00161B04	moby_motion_spark_initial_color_start	candidate	the NTSC decomp	held-alias: moby_motion_spark_initial_color_start at US level 08 0x00161A74 (include/rnc/overlay/l08/gameplay/entities/bomb_globals.h); US/PAL address translation (code of both refers to it)	moby_motion_spark_initial_color_start_gp
-D_L08_00161B08	moby_motion_spark_initial_color_end	candidate	the NTSC decomp	held-alias: moby_motion_spark_initial_color_end at US level 08 0x00161A78 (include/rnc/overlay/l08/gameplay/entities/bomb_globals.h); US/PAL address translation (code of both refers to it)	moby_motion_spark_initial_color_end_gp
-D_L08_00161B0C	moby_motion_spark_second_color_start	candidate	the NTSC decomp	held-alias: moby_motion_spark_second_color_start at US level 08 0x00161A7C (include/rnc/overlay/l08/gameplay/entities/bomb_globals.h); US/PAL address translation (code of both refers to it)	moby_motion_spark_second_color_start_gp
-D_L08_00161B10	moby_motion_spark_second_color_end	candidate	the NTSC decomp	held-alias: moby_motion_spark_second_color_end at US level 08 0x00161A80 (include/rnc/overlay/l08/gameplay/entities/bomb_globals.h); US/PAL address translation (code of both refers to it)	moby_motion_spark_second_color_end_gp
 D_L08_00161DC4	swarm_path_movement_speed	candidate	the NTSC decomp	held-alias: swarm_path_movement_speed at US level 08 0x00161D34 (include/rnc/overlay/l08/gameplay/entities/commando_globals.h); US/PAL address translation (code of both refers to it)	swarm_path_movement_speed_gp
 D_L08_00161DD0	swarm_update_disabled	candidate	the NTSC decomp	held-alias: swarm_update_disabled at US level 08 0x00161D40 (include/rnc/overlay/l08/gameplay/entities/commando_globals.h); US/PAL address translation (code of both refers to it)	swarm_update_disabled_gp
 D_L08_00161E60	scrolled_mesh_unscaled_fixed_alpha	candidate	the NTSC decomp	held-alias: scrolled_mesh_unscaled_fixed_alpha at US level 08 0x00161DD0 (include/rnc/overlay/l08/gameplay/entities/commando_globals.h); US/PAL address translation (code of both refers to it)	scrolled_mesh_unscaled_fixed_alpha_gp
@@ -8711,7 +9191,6 @@ D_L12_00162050	hoven_jittered_second_packet_blend_subtrahend_selector	candidate	
 D_L12_00162054	hoven_jittered_second_packet_blend_alpha_factor_selector	candidate	the NTSC decomp	held-alias: hoven_jittered_second_packet_blend_alpha_factor_selector at US level 12 0x00161FD4 (include/rnc/overlay/l12/gameplay/entities/003054b0_globals.h); US/PAL address translation (code of both refers to it)	hoven_jittered_second_packet_blend_alpha_factor_selector_gp
 D_L12_00162058	hoven_jittered_second_packet_blend_addend_selector	candidate	the NTSC decomp	held-alias: hoven_jittered_second_packet_blend_addend_selector at US level 12 0x00161FD8 (include/rnc/overlay/l12/gameplay/entities/003054b0_globals.h); US/PAL address translation (code of both refers to it)	hoven_jittered_second_packet_blend_addend_selector_gp
 D_L12_001620BC	hoven_jittered_first_packet_blend_minuend_selector	candidate	the NTSC decomp	held-alias: hoven_jittered_first_packet_blend_minuend_selector at US level 12 0x00161FBC (include/rnc/overlay/l12/gameplay/entities/003054b0_globals.h); US/PAL address translation (code of both refers to it)	hoven_jittered_first_packet_blend_minuend_selector_gp
-D_L13_00161410	blarg_turret_launch_displacement_scale	candidate	the NTSC decomp	held-alias: blarg_turret_launch_displacement_scale at US level 13 0x00161388 (include/rnc/overlay/l13/gameplay/entities/elevator_globals.h); US/PAL address translation (code of both refers to it)	blarg_turret_launch_displacement_scale_gp
 D_L13_00161520	hovering_rocket_attacker_scale_multiplier	candidate	the NTSC decomp	held-alias: hovering_rocket_attacker_scale_multiplier at US level 13 0x00161490 (include/rnc/overlay/l13/gameplay/entities/blarg_space_fighter_globals.h); US/PAL address translation (code of both refers to it)	hovering_rocket_attacker_scale_multiplier_gp
 D_L13_0016152C	hovering_rocket_attacker_launch_vector_speed	candidate	the NTSC decomp	held-alias: hovering_rocket_attacker_launch_vector_speed at US level 13 0x0016149C (include/rnc/overlay/l13/gameplay/entities/blarg_space_fighter_globals.h); US/PAL address translation (code of both refers to it)	hovering_rocket_attacker_launch_vector_speed_gp
 D_L13_00161EBC	poison_vessel_blast_duration_frames	candidate	the NTSC decomp	held-alias: poison_vessel_blast_duration_frames at US level 13 0x00161E2C (include/rnc/overlay/l13/gameplay/entities/rocket_globals.h); US/PAL address translation (code of both refers to it)	poison_vessel_blast_duration_frames_gp
@@ -8778,55 +9257,10 @@ D_L15_001620BC	poison_vessel_gravity	candidate	the NTSC decomp	held-alias: poiso
 D_L15_00162270	scaled_ripple_radial_wavelength	candidate	the NTSC decomp	held-alias: scaled_ripple_radial_wavelength at US level 15 0x001621F0 (include/rnc/overlay/l15/gameplay/entities/conveyor_belt_globals.h); US/PAL address translation (code of both refers to it)	scaled_ripple_radial_wavelength_gp
 D_L15_00162278	scaled_ripple_z_amplitude	candidate	the NTSC decomp	held-alias: scaled_ripple_z_amplitude at US level 15 0x001621F8 (include/rnc/overlay/l15/gameplay/entities/conveyor_belt_globals.h); US/PAL address translation (code of both refers to it)	scaled_ripple_z_amplitude_gp
 D_L15_0016227C	scaled_ripple_uv_scroll_rate	candidate	the NTSC decomp	held-alias: scaled_ripple_uv_scroll_rate at US level 15 0x001621FC (include/rnc/overlay/l15/gameplay/entities/conveyor_belt_globals.h); US/PAL address translation (code of both refers to it)	scaled_ripple_uv_scroll_rate_gp
-D_L15_00162280	scaled_ripple_template_vertex_scale	candidate	the NTSC decomp	held-alias: scaled_ripple_template_vertex_scale at US level 15 0x00162200 (include/rnc/overlay/l15/gameplay/entities/conveyor_belt_globals.h); US/PAL address translation (code of both refers to it)	scaled_ripple_template_vertex_scale_gp
-D_L15_001622E0	ripple_88_radial_wavelength	candidate	the NTSC decomp	held-alias: ripple_88_radial_wavelength at US level 15 0x00162260 (include/rnc/overlay/l15/gameplay/entities/conveyor_belt_globals.h); US/PAL address translation (code of both refers to it)	ripple_88_radial_wavelength_gp
-D_L15_001622E8	ripple_88_z_amplitude	candidate	the NTSC decomp	held-alias: ripple_88_z_amplitude at US level 15 0x00162268 (include/rnc/overlay/l15/gameplay/entities/conveyor_belt_globals.h); US/PAL address translation (code of both refers to it)	ripple_88_z_amplitude_gp
-D_L15_001622EC	ripple_88_uv_scroll_rate	candidate	the NTSC decomp	held-alias: ripple_88_uv_scroll_rate at US level 15 0x0016226C (include/rnc/overlay/l15/gameplay/entities/conveyor_belt_globals.h); US/PAL address translation (code of both refers to it)	ripple_88_uv_scroll_rate_gp
-D_L15_001622F0	ripple_88_template_vertex_scale	candidate	the NTSC decomp	held-alias: ripple_88_template_vertex_scale at US level 15 0x00162270 (include/rnc/overlay/l15/gameplay/entities/conveyor_belt_globals.h); US/PAL address translation (code of both refers to it)	ripple_88_template_vertex_scale_gp
 D_L15_001744C0	HH	candidate	the NTSC decomp	held-alias: HH at US level 15 0x00174440 (src/overlays/shared/ui/help/001fe778.c); US/PAL address translation (code of both refers to it)	coll_hit
 D_L16_001614A8	class_32_symmetric_angle_bound_degrees	candidate	the NTSC decomp	held-alias: class_32_symmetric_angle_bound_degrees at US level 16 0x001613E0 (include/rnc/overlay/shared/gameplay/entities/blarg_elite_commando_globals.h); US/PAL address translation (code of both refers to it)	class_32_symmetric_angle_bound_degrees_gp
 D_L16_001614AC	class_32_zero_based_angle_bound_degrees	candidate	the NTSC decomp	held-alias: class_32_zero_based_angle_bound_degrees at US level 16 0x001613E4 (include/rnc/overlay/shared/gameplay/entities/blarg_elite_commando_globals.h); US/PAL address translation (code of both refers to it)	class_32_zero_based_angle_bound_degrees_gp
-D_L16_001619A8	reposition_effect_velocity_elevation_degrees	candidate	the NTSC decomp	held-alias: reposition_effect_velocity_elevation_degrees at US level 16 0x001618E8 (include/rnc/overlay/l16/gameplay/entities/rocket_globals.h); US/PAL address translation (code of both refers to it)	reposition_effect_velocity_elevation_degrees_gp
-D_L16_001619AC	reposition_effect_velocity_scale_range_start	candidate	the NTSC decomp	held-alias: reposition_effect_velocity_scale_range_start at US level 16 0x001618EC (include/rnc/overlay/l16/gameplay/entities/rocket_globals.h); US/PAL address translation (code of both refers to it)	reposition_effect_velocity_scale_range_start_gp
-D_L16_001619B0	reposition_effect_velocity_scale_range_end	candidate	the NTSC decomp	held-alias: reposition_effect_velocity_scale_range_end at US level 16 0x001618F0 (include/rnc/overlay/l16/gameplay/entities/rocket_globals.h); US/PAL address translation (code of both refers to it)	reposition_effect_velocity_scale_range_end_gp
-D_L16_001619B4	reposition_effect_spawn_z_offset	candidate	the NTSC decomp	held-alias: reposition_effect_spawn_z_offset at US level 16 0x001618F4 (include/rnc/overlay/l16/gameplay/entities/rocket_globals.h); US/PAL address translation (code of both refers to it)	reposition_effect_spawn_z_offset_gp
-D_L16_001619B8	reposition_effect_radius_range_start	candidate	the NTSC decomp	held-alias: reposition_effect_radius_range_start at US level 16 0x001618F8 (include/rnc/overlay/l16/gameplay/entities/rocket_globals.h); US/PAL address translation (code of both refers to it)	reposition_effect_radius_range_start_gp
-D_L16_001619BC	reposition_effect_radius_range_end	candidate	the NTSC decomp	held-alias: reposition_effect_radius_range_end at US level 16 0x001618FC (include/rnc/overlay/l16/gameplay/entities/rocket_globals.h); US/PAL address translation (code of both refers to it)	reposition_effect_radius_range_end_gp
-D_L16_00161A4C	conveyor_belt_base_speed	candidate	the NTSC decomp	held-alias: conveyor_belt_base_speed at US level 16 0x0016198C (include/rnc/overlay/l16/gameplay/entities/rocket_globals.h); US/PAL address translation (code of both refers to it)	conveyor_belt_base_speed_gp
-D_L16_00161A50	conveyor_belt_pulse_texture_id	candidate	the NTSC decomp	held-alias: conveyor_belt_pulse_texture_id at US level 16 0x00161990 (include/rnc/overlay/l16/gameplay/entities/rocket_globals.h); US/PAL address translation (code of both refers to it)	conveyor_belt_pulse_texture_id_gp
-D_L16_00161A54	conveyor_belt_scrolling_texture_id	candidate	the NTSC decomp	held-alias: conveyor_belt_scrolling_texture_id at US level 16 0x00161994 (include/rnc/overlay/l16/gameplay/entities/rocket_globals.h); US/PAL address translation (code of both refers to it)	conveyor_belt_scrolling_texture_id_gp
-D_L16_00161A68	conveyor_belt_pulse_color_start	candidate	the NTSC decomp	held-alias: conveyor_belt_pulse_color_start at US level 16 0x001619A8 (include/rnc/overlay/l16/gameplay/entities/rocket_globals.h); US/PAL address translation (code of both refers to it)	conveyor_belt_pulse_color_start_gp
-D_L16_00161A6C	conveyor_belt_pulse_color_end	candidate	the NTSC decomp	held-alias: conveyor_belt_pulse_color_end at US level 16 0x001619AC (include/rnc/overlay/l16/gameplay/entities/rocket_globals.h); US/PAL address translation (code of both refers to it)	conveyor_belt_pulse_color_end_gp
-D_L16_00161A70	conveyor_belt_scrolling_vertex_color	candidate	the NTSC decomp	held-alias: conveyor_belt_scrolling_vertex_color at US level 16 0x001619B0 (include/rnc/overlay/l16/gameplay/entities/rocket_globals.h); US/PAL address translation (code of both refers to it)	conveyor_belt_scrolling_vertex_color_gp
-D_L16_00161A8C	test_dummy_bomb_horizontal_launch_speed	candidate	the NTSC decomp	held-alias: test_dummy_bomb_horizontal_launch_speed at US level 16 0x001619CC (include/rnc/overlay/l16/gameplay/entities/rocket_globals.h); US/PAL address translation (code of both refers to it)	test_dummy_bomb_horizontal_launch_speed_gp
-D_L16_00161AA0	test_dummy_glow_pulse_color_start	candidate	the NTSC decomp	held-alias: test_dummy_glow_pulse_color_start at US level 16 0x001619E0 (include/rnc/overlay/l16/gameplay/entities/rocket_globals.h); US/PAL address translation (code of both refers to it)	test_dummy_glow_pulse_color_start_gp
-D_L16_00161AA4	test_dummy_glow_pulse_color_end	candidate	the NTSC decomp	held-alias: test_dummy_glow_pulse_color_end at US level 16 0x001619E4 (include/rnc/overlay/l16/gameplay/entities/rocket_globals.h); US/PAL address translation (code of both refers to it)	test_dummy_glow_pulse_color_end_gp
-D_L16_00161AC8	hoverboard_dummy_spray_initial_color	candidate	the NTSC decomp	held-alias: hoverboard_dummy_spray_initial_color at US level 16 0x00161A08 (include/rnc/overlay/l16/gameplay/entities/rocket_globals.h); US/PAL address translation (code of both refers to it)	hoverboard_dummy_spray_initial_color_gp
-D_L16_00161B40	class_0287_group_activation_value	candidate	the NTSC decomp	held-alias: class_0287_group_activation_value at US level 16 0x00161A80 (include/rnc/overlay/l16/gameplay/entities/rocket_globals.h); US/PAL address translation (code of both refers to it)	class_0287_group_activation_value_gp
-D_L16_00161B44	test_dummy_door_height_offset	candidate	the NTSC decomp	held-alias: test_dummy_door_height_offset at US level 16 0x00161A84 (include/rnc/overlay/l16/gameplay/entities/rocket_globals.h); US/PAL address translation (code of both refers to it)	test_dummy_door_height_offset_gp
-D_L16_00161B48	last_test_dummy_door_sound_request_frame	candidate	the NTSC decomp	held-alias: last_test_dummy_door_sound_request_frame at US level 16 0x00161A88 (include/rnc/overlay/l16/gameplay/entities/rocket_globals.h); US/PAL address translation (code of both refers to it)	last_test_dummy_door_sound_request_frame_gp
-D_L16_00161B4C	triggered_scene_rotation_y	candidate	the NTSC decomp	held-alias: triggered_scene_rotation_y at US level 16 0x00161A8C (include/rnc/overlay/l16/gameplay/entities/rocket_globals.h); US/PAL address translation (code of both refers to it)	triggered_scene_rotation_y_gp
 D_L16_00161E44	armed_transport_path_acceleration_coefficient	candidate	the NTSC decomp	held-alias: armed_transport_path_acceleration_coefficient at US level 16 0x00161D84 (include/rnc/overlay/shared/gameplay/entities/armed_transport_globals.h); US/PAL address translation (code of both refers to it)	armed_transport_path_acceleration_coefficient_gp
-D_L16_00161E50	bolt_thief_path_speed	candidate	the NTSC decomp	held-alias: bolt_thief_path_speed at US level 16 0x00161D90 (include/rnc/overlay/l16/gameplay/entities/grindrail_gate_globals.h); US/PAL address translation (code of both refers to it)	bolt_thief_path_speed_gp
-D_L16_00161F14	chomper_knockback_gravity	candidate	the NTSC decomp	held-alias: chomper_knockback_gravity at US level 16 0x00161E54 (include/rnc/overlay/l16/gameplay/entities/grindrail_gate_globals.h); US/PAL address translation (code of both refers to it)	chomper_knockback_gravity_gp
-D_L16_00161F18	chomper_knockback_horizontal_speed_approach_rate	candidate	the NTSC decomp	held-alias: chomper_knockback_horizontal_speed_approach_rate at US level 16 0x00161E58 (include/rnc/overlay/l16/gameplay/entities/grindrail_gate_globals.h); US/PAL address translation (code of both refers to it)	chomper_knockback_horizontal_speed_approach_rate_gp
-D_L16_00161F1C	chomper_knockback_vertical_speed	candidate	the NTSC decomp	held-alias: chomper_knockback_vertical_speed at US level 16 0x00161E5C (include/rnc/overlay/l16/gameplay/entities/grindrail_gate_globals.h); US/PAL address translation (code of both refers to it)	chomper_knockback_vertical_speed_gp
-D_L16_00161F20	chomper_knockback_horizontal_speed	candidate	the NTSC decomp	held-alias: chomper_knockback_horizontal_speed at US level 16 0x00161E60 (include/rnc/overlay/l16/gameplay/entities/grindrail_gate_globals.h); US/PAL address translation (code of both refers to it)	chomper_knockback_horizontal_speed_gp
-D_L16_00161F28	path_walker_gap_range_start	candidate	the NTSC decomp	held-alias: path_walker_gap_range_start at US level 16 0x00161E68 (include/rnc/overlay/l16/gameplay/entities/grindrail_gate_globals.h); US/PAL address translation (code of both refers to it)	path_walker_gap_range_start_gp
-D_L16_00161F2C	path_walker_gap_range_end	candidate	the NTSC decomp	held-alias: path_walker_gap_range_end at US level 16 0x00161E6C (include/rnc/overlay/l16/gameplay/entities/grindrail_gate_globals.h); US/PAL address translation (code of both refers to it)	path_walker_gap_range_end_gp
-D_L16_00161F30	path_walker_speed_range_start	candidate	the NTSC decomp	held-alias: path_walker_speed_range_start at US level 16 0x00161E70 (include/rnc/overlay/l16/gameplay/entities/grindrail_gate_globals.h); US/PAL address translation (code of both refers to it)	path_walker_speed_range_start_gp
-D_L16_00161F34	path_walker_speed_range_end	candidate	the NTSC decomp	held-alias: path_walker_speed_range_end at US level 16 0x00161E74 (include/rnc/overlay/l16/gameplay/entities/grindrail_gate_globals.h); US/PAL address translation (code of both refers to it)	path_walker_speed_range_end_gp
-D_L16_00161F38	path_walker_speed_approach_acceleration	candidate	the NTSC decomp	held-alias: path_walker_speed_approach_acceleration at US level 16 0x00161E78 (include/rnc/overlay/l16/gameplay/entities/grindrail_gate_globals.h); US/PAL address translation (code of both refers to it)	path_walker_speed_approach_acceleration_gp
-D_L16_00161F3C	path_walker_height_range_start	candidate	the NTSC decomp	held-alias: path_walker_height_range_start at US level 16 0x00161E7C (include/rnc/overlay/l16/gameplay/entities/grindrail_gate_globals.h); US/PAL address translation (code of both refers to it)	path_walker_height_range_start_gp
-D_L16_00161F40	path_walker_height_range_end	candidate	the NTSC decomp	held-alias: path_walker_height_range_end at US level 16 0x00161E80 (include/rnc/overlay/l16/gameplay/entities/grindrail_gate_globals.h); US/PAL address translation (code of both refers to it)	path_walker_height_range_end_gp
-D_L16_00161F4C	path_walker_reposition_advance_rate	candidate	the NTSC decomp	held-alias: path_walker_reposition_advance_rate at US level 16 0x00161E8C (include/rnc/overlay/l16/gameplay/entities/grindrail_gate_globals.h); US/PAL address translation (code of both refers to it)	path_walker_reposition_advance_rate_gp
-D_L16_00161F50	path_walker_draw_distance	candidate	the NTSC decomp	held-alias: path_walker_draw_distance at US level 16 0x00161E90 (include/rnc/overlay/l16/gameplay/entities/grindrail_gate_globals.h); US/PAL address translation (code of both refers to it)	path_walker_draw_distance_gp
-D_L16_00161F60	path_walker_particle_movement_velocity_scale	candidate	the NTSC decomp	held-alias: path_walker_particle_movement_velocity_scale at US level 16 0x00161EA0 (include/rnc/overlay/l16/gameplay/entities/grindrail_gate_globals.h); US/PAL address translation (code of both refers to it)	path_walker_particle_movement_velocity_scale_gp
-D_L16_00161F64	path_walker_particle_random_velocity_scale	candidate	the NTSC decomp	held-alias: path_walker_particle_random_velocity_scale at US level 16 0x00161EA4 (include/rnc/overlay/l16/gameplay/entities/grindrail_gate_globals.h); US/PAL address translation (code of both refers to it)	path_walker_particle_random_velocity_scale_gp
-D_L16_00161F68	path_walker_particle_target_scalar_scale	candidate	the NTSC decomp	held-alias: path_walker_particle_target_scalar_scale at US level 16 0x00161EA8 (include/rnc/overlay/l16/gameplay/entities/grindrail_gate_globals.h); US/PAL address translation (code of both refers to it)	path_walker_particle_target_scalar_scale_gp
-D_L16_00161F84	elevator_ring_outer_radius	candidate	the NTSC decomp	held-alias: elevator_ring_outer_radius at US level 16 0x00161EC4 (include/rnc/overlay/l16/gameplay/entities/grindrail_gate_globals.h); US/PAL address translation (code of both refers to it)	elevator_ring_outer_radius_gp
-D_L16_00161F88	elevator_ring_half_height	candidate	the NTSC decomp	held-alias: elevator_ring_half_height at US level 16 0x00161EC8 (include/rnc/overlay/l16/gameplay/entities/grindrail_gate_globals.h); US/PAL address translation (code of both refers to it)	elevator_ring_half_height_gp
-D_L16_00161FA8	elevator_ring_segment_angle_degrees	candidate	the NTSC decomp	held-alias: elevator_ring_segment_angle_degrees at US level 16 0x00161EE8 (include/rnc/overlay/l16/gameplay/entities/grindrail_gate_globals.h); US/PAL address translation (code of both refers to it)	elevator_ring_segment_angle_degrees_gp
 D_L18_00161CEC	expanding_projectile_ring_color_start	candidate	the NTSC decomp	held-alias: expanding_projectile_ring_color_start at US level 18 0x00161C5C (include/rnc/overlay/l18/gameplay/entities/rocket_globals.h); US/PAL address translation (code of both refers to it)	expanding_projectile_ring_color_start_gp
 D_L18_00161CF0	expanding_projectile_ring_color_end	candidate	the NTSC decomp	held-alias: expanding_projectile_ring_color_end at US level 18 0x00161C60 (include/rnc/overlay/l18/gameplay/entities/rocket_globals.h); US/PAL address translation (code of both refers to it)	expanding_projectile_ring_color_end_gp
 D_L18_00161CF4	expanding_projectile_ring_segment_angle_degrees	candidate	the NTSC decomp	held-alias: expanding_projectile_ring_segment_angle_degrees at US level 18 0x00161C64 (include/rnc/overlay/l18/gameplay/entities/rocket_globals.h); US/PAL address translation (code of both refers to it)	expanding_projectile_ring_segment_angle_degrees_gp
@@ -8838,27 +9272,6 @@ D_L18_00161D50	class_274_ring_segment_angle_degrees	candidate	the NTSC decomp	he
 D_L18_00161D54	class_274_ring_draw_height_offset	candidate	the NTSC decomp	held-alias: class_274_ring_draw_height_offset at US level 18 0x00161CC4 (include/rnc/overlay/l18/gameplay/entities/rocket_globals.h); US/PAL address translation (code of both refers to it)	class_274_ring_draw_height_offset_gp
 D_L18_00161D5C	class_274_ring_layer_radius_offset	candidate	the NTSC decomp	held-alias: class_274_ring_layer_radius_offset at US level 18 0x00161CCC (include/rnc/overlay/l18/gameplay/entities/rocket_globals.h); US/PAL address translation (code of both refers to it)	class_274_ring_layer_radius_offset_gp
 D_L18_0016207C	electric_bolt_initialization_requested	candidate	the NTSC decomp	held-alias: electric_bolt_initialization_requested at US level 18 0x00161FEC (include/rnc/overlay/l18/gameplay/entities/rocket_globals.h); US/PAL address translation (code of both refers to it)	electric_bolt_initialization_requested_gp
-D_L18_00162520	deplanetizer_camera_quad_scale_ramp_start_value	candidate	the NTSC decomp	held-alias: deplanetizer_camera_quad_scale_ramp_start_value at US level 18 0x00162490 (include/rnc/overlay/l18/gameplay/entities/deplanetizer_gun_globals.h); US/PAL address translation (code of both refers to it)	deplanetizer_camera_quad_scale_ramp_start_value_gp
-D_L18_00162524	deplanetizer_camera_quad_scale_ramp_end_value	candidate	the NTSC decomp	held-alias: deplanetizer_camera_quad_scale_ramp_end_value at US level 18 0x00162494 (include/rnc/overlay/l18/gameplay/entities/deplanetizer_gun_globals.h); US/PAL address translation (code of both refers to it)	deplanetizer_camera_quad_scale_ramp_end_value_gp
-D_L18_0016252C	deplanetizer_camera_quad_scale_ramp_end_frame	candidate	the NTSC decomp	held-alias: deplanetizer_camera_quad_scale_ramp_end_frame at US level 18 0x0016249C (include/rnc/overlay/l18/gameplay/entities/deplanetizer_gun_globals.h); US/PAL address translation (code of both refers to it)	deplanetizer_camera_quad_scale_ramp_end_frame_gp
-D_L18_00162530	deplanetizer_camera_quad_end_frame	candidate	the NTSC decomp	held-alias: deplanetizer_camera_quad_end_frame at US level 18 0x001624A0 (include/rnc/overlay/l18/gameplay/entities/deplanetizer_gun_globals.h); US/PAL address translation (code of both refers to it)	deplanetizer_camera_quad_end_frame_gp
-D_L18_00162550	deplanetizer_glow_alpha_ramp_end_frame	candidate	the NTSC decomp	held-alias: deplanetizer_glow_alpha_ramp_end_frame at US level 18 0x001624C0 (include/rnc/overlay/l18/gameplay/entities/deplanetizer_gun_globals.h); US/PAL address translation (code of both refers to it)	deplanetizer_glow_alpha_ramp_end_frame_gp
-D_L18_00162554	deplanetizer_three_quad_scale_ramp_start_frame	candidate	the NTSC decomp	held-alias: deplanetizer_three_quad_scale_ramp_start_frame at US level 18 0x001624C4 (include/rnc/overlay/l18/gameplay/entities/deplanetizer_gun_globals.h); US/PAL address translation (code of both refers to it)	deplanetizer_three_quad_scale_ramp_start_frame_gp
-D_L18_00162558	deplanetizer_three_quad_scale_ramp_end_frame	candidate	the NTSC decomp	held-alias: deplanetizer_three_quad_scale_ramp_end_frame at US level 18 0x001624C8 (include/rnc/overlay/l18/gameplay/entities/deplanetizer_gun_globals.h); US/PAL address translation (code of both refers to it)	deplanetizer_three_quad_scale_ramp_end_frame_gp
-D_L18_00162588	deplanetizer_camera_quad_first_color	candidate	the NTSC decomp	held-alias: deplanetizer_camera_quad_first_color at US level 18 0x001624F8 (include/rnc/overlay/l18/gameplay/entities/deplanetizer_gun_globals.h); US/PAL address translation (code of both refers to it)	deplanetizer_camera_quad_first_color_gp
-D_L18_0016258C	deplanetizer_camera_quad_smaller_color	candidate	the NTSC decomp	held-alias: deplanetizer_camera_quad_smaller_color at US level 18 0x001624FC (include/rnc/overlay/l18/gameplay/entities/deplanetizer_gun_globals.h); US/PAL address translation (code of both refers to it)	deplanetizer_camera_quad_smaller_color_gp
-D_L18_00162594	deplanetizer_glow_first_quad_base_tint	candidate	the NTSC decomp	held-alias: deplanetizer_glow_first_quad_base_tint at US level 18 0x00162504 (include/rnc/overlay/l18/gameplay/entities/deplanetizer_gun_globals.h); US/PAL address translation (code of both refers to it)	deplanetizer_glow_first_quad_base_tint_gp
-D_L18_00162598	deplanetizer_glow_first_quad_scale	candidate	the NTSC decomp	held-alias: deplanetizer_glow_first_quad_scale at US level 18 0x00162508 (include/rnc/overlay/l18/gameplay/entities/deplanetizer_gun_globals.h); US/PAL address translation (code of both refers to it)	deplanetizer_glow_first_quad_scale_gp
-D_L18_0016259C	deplanetizer_glow_second_quad_scale	candidate	the NTSC decomp	held-alias: deplanetizer_glow_second_quad_scale at US level 18 0x0016250C (include/rnc/overlay/l18/gameplay/entities/deplanetizer_gun_globals.h); US/PAL address translation (code of both refers to it)	deplanetizer_glow_second_quad_scale_gp
-D_L18_001625A0	deplanetizer_glow_second_quad_base_tint	candidate	the NTSC decomp	held-alias: deplanetizer_glow_second_quad_base_tint at US level 18 0x00162510 (include/rnc/overlay/l18/gameplay/entities/deplanetizer_gun_globals.h); US/PAL address translation (code of both refers to it)	deplanetizer_glow_second_quad_base_tint_gp
-D_L18_001625A4	deplanetizer_first_quad_local_z_scale	candidate	the NTSC decomp	held-alias: deplanetizer_first_quad_local_z_scale at US level 18 0x00162514 (include/rnc/overlay/l18/gameplay/entities/deplanetizer_gun_globals.h); US/PAL address translation (code of both refers to it)	deplanetizer_first_quad_local_z_scale_gp
-D_L18_001625A8	deplanetizer_second_quad_local_z_scale	candidate	the NTSC decomp	held-alias: deplanetizer_second_quad_local_z_scale at US level 18 0x00162518 (include/rnc/overlay/l18/gameplay/entities/deplanetizer_gun_globals.h); US/PAL address translation (code of both refers to it)	deplanetizer_second_quad_local_z_scale_gp
-D_L18_001625AC	deplanetizer_third_quad_local_z_scale	candidate	the NTSC decomp	held-alias: deplanetizer_third_quad_local_z_scale at US level 18 0x0016251C (include/rnc/overlay/l18/gameplay/entities/deplanetizer_gun_globals.h); US/PAL address translation (code of both refers to it)	deplanetizer_third_quad_local_z_scale_gp
-D_L18_00162694	gadgebot_joint_glows_last_queued_frame	candidate	the NTSC decomp	held-alias: gadgebot_joint_glows_last_queued_frame at US level 18 0x00162604 (include/rnc/overlay/l18/gameplay/entities/deplanetizer_gun_globals.h); US/PAL address translation (code of both refers to it)	gadgebot_joint_glows_last_queued_frame_gp
-D_L18_0016269C	gadgebot_glow_tint_start	candidate	the NTSC decomp	held-alias: gadgebot_glow_tint_start at US level 18 0x0016260C (include/rnc/overlay/l18/gameplay/entities/deplanetizer_gun_globals.h); US/PAL address translation (code of both refers to it)	gadgebot_glow_tint_start_gp
-D_L18_001626A0	gadgebot_glow_tint_end	candidate	the NTSC decomp	held-alias: gadgebot_glow_tint_end at US level 18 0x00162610 (include/rnc/overlay/l18/gameplay/entities/deplanetizer_gun_globals.h); US/PAL address translation (code of both refers to it)	gadgebot_glow_tint_end_gp
-D_L18_001626A4	gadgebot_glow_default_phase_speed_degrees_per_second	candidate	the NTSC decomp	held-alias: gadgebot_glow_default_phase_speed_degrees_per_second at US level 18 0x00162614 (include/rnc/overlay/l18/gameplay/entities/deplanetizer_gun_globals.h); US/PAL address translation (code of both refers to it)	gadgebot_glow_default_phase_speed_degrees_per_second_gp
-D_L18_001626A8	gadgebot_glow_state_4_or_5_phase_speed_degrees_per_second	candidate	the NTSC decomp	held-alias: gadgebot_glow_state_4_or_5_phase_speed_degrees_per_second at US level 18 0x00162618 (include/rnc/overlay/l18/gameplay/entities/deplanetizer_gun_globals.h); US/PAL address translation (code of both refers to it)	gadgebot_glow_state_4_or_5_phase_speed_degrees_per_second_gp
 D_L18_001626BC	gadgebot_launch_glow_blend_minuend_selector	candidate	the NTSC decomp	held-alias: gadgebot_launch_glow_blend_minuend_selector at US level 18 0x0016262C (include/rnc/overlay/l18/gameplay/entities/deplanetizer_gun_globals.h); US/PAL address translation (code of both refers to it)	gadgebot_launch_glow_blend_minuend_selector_gp
 D_L18_001626C0	gadgebot_launch_glow_blend_subtrahend_selector	candidate	the NTSC decomp	held-alias: gadgebot_launch_glow_blend_subtrahend_selector at US level 18 0x00162630 (include/rnc/overlay/l18/gameplay/entities/deplanetizer_gun_globals.h); US/PAL address translation (code of both refers to it)	gadgebot_launch_glow_blend_subtrahend_selector_gp
 D_L18_001626C4	gadgebot_launch_glow_blend_alpha_factor_selector	candidate	the NTSC decomp	held-alias: gadgebot_launch_glow_blend_alpha_factor_selector at US level 18 0x00162634 (include/rnc/overlay/l18/gameplay/entities/deplanetizer_gun_globals.h); US/PAL address translation (code of both refers to it)	gadgebot_launch_glow_blend_alpha_factor_selector_gp

@@ -36,9 +36,9 @@ void draw_beam_and_arc_effects(char *m) {
     if (t <= -8.0f) {
         *(float *)&beam_arc_tex_scroll = t + 8.0f;
     }
-    draw_beam_and_arc_two_pass_quads(D_L00_001DB8C0, *(int *)&beam_arc_main_inner_alpha, *(int *)&beam_arc_main_outer_alpha, *(short *)(p + 0x3E),
+    draw_beam_and_arc_two_pass_quads(tesla_beam_points, *(int *)&beam_arc_main_inner_alpha, *(int *)&beam_arc_main_outer_alpha, *(short *)(p + 0x3E),
         *(float *)&beam_arc_main_half_width, *(float *)&beam_arc_main_outer_half_width, *(float *)&beam_arc_main_end_extension);
-    draw_beam_and_arc_two_pass_quads(D_L00_001DB8C0 + 0x140, *(int *)&beam_arc_second_inner_alpha, *(int *)&beam_arc_second_outer_alpha, *(short *)(p + 0x3E),
+    draw_beam_and_arc_two_pass_quads(tesla_beam_points + 0x140, *(int *)&beam_arc_second_inner_alpha, *(int *)&beam_arc_second_outer_alpha, *(short *)(p + 0x3E),
         *(float *)&beam_arc_bolt_half_width, *(float *)&beam_arc_bolt_outer_half_width, *(float *)&beam_arc_second_end_extension);
     draw_beam_and_arc_two_pass_quads(beam_arc_bolt_points, *(short *)&beam_arc_bolt0_alpha, *(short *)&beam_arc_bolt0_alpha, 5,
         *(float *)&beam_arc_bolt_half_width, *(float *)&beam_arc_bolt_outer_half_width, 0.2f);

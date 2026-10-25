@@ -186,12 +186,12 @@ void assign_moby_class_data(int id) {
     int i = 0;
 
     class_resource = moby_class_resources[resident_moby_class_count];
-    while (D_001E8F00[i].key != -1 && D_001E8F00[i].key != id) {
+    while (moby_class_data_table[i].key != -1 && moby_class_data_table[i].key != id) {
         i++;
     }
-    D_001B3900[resident_moby_class_count] = D_001E8F00[i].a;
+    resident_moby_class_data[resident_moby_class_count] = moby_class_data_table[i].a;
     if (class_resource != 0) {
-        ((struct Obj *)moby_class_resources[resident_moby_class_count])->extra = D_001E8F00[i].b;
+        ((struct Obj *)moby_class_resources[resident_moby_class_count])->extra = moby_class_data_table[i].b;
     }
 }
 
@@ -271,8 +271,8 @@ void MobyBlendAnimation(MobyAnim *arg0, int arg1, int arg2, int arg3) {
         *(int *)((char *)arg0 + 0x64) != 0) {
         slot = find_or_allocate_id_slot((int)arg0);
         if (slot >= 0) {
-            func_0020FC38(arg0, slot | 0x300);
-            qcopy(D_001B2F80 + slot * 0x10, (char *)arg0 + 0xF0);
+            capture_moby_blend_pose(arg0, slot | 0x300);
+            qcopy(moby_blend_slot_poses + slot * 0x10, (char *)arg0 + 0xF0);
             oldSeq = arg0->seq;
             if (oldSeq != 0xFF) {
                 *(unsigned char *)((char *)arg0 + 0xA5) = oldSeq;
@@ -316,8 +316,8 @@ void blend_moby_animation_ex(MobyAnim *arg0, int arg1, int arg2, int arg3, int a
         slot = find_or_allocate_id_slot((int)arg0);
         if (slot >= 0) {
             flags = (arg4 & 1) ? (slot | 0x100) : slot;
-            func_0020FC38(arg0, (arg4 & 2) ? (flags | 0x200) : flags);
-            qcopy(D_001B2F80 + slot * 0x10, (char *)arg0 + 0xF0);
+            capture_moby_blend_pose(arg0, (arg4 & 2) ? (flags | 0x200) : flags);
+            qcopy(moby_blend_slot_poses + slot * 0x10, (char *)arg0 + 0xF0);
             oldSeq = arg0->seq;
             if (oldSeq != 0xFF) {
                 *(unsigned char *)((char *)arg0 + 0xA5) = oldSeq;
@@ -438,7 +438,7 @@ float resolve_camera_surface_height(float *pos, void *out) {
             return h;
         }
     }
-    if (D_0016129C != 0 && FastAbsF(pos[2] - local_surface_region_center_x[2]) < 0.5f
+    if (local_surface_region_enabled != 0 && FastAbsF(pos[2] - local_surface_region_center_x[2]) < 0.5f
         && vec_distance_xy(pos, local_surface_region_center_x) < local_surface_region_center_x[3]) {
         if (out != 0) {
             set_vector_unit_z(out);
@@ -474,7 +474,7 @@ void update_moby_shadow_range(char *m) {
     char *hit;
 
     qcopy(dir, shadow_light_dir);
-    func_001F9E10(dir, dir, 1.0f);
+    vec_scale_xy_to_length(dir, dir, 1.0f);
     FastVecScale(p, m, 0.0009765625f);
     qcopy(a, p);
     a[0] -= dir[0] * *(float *)(m + 0xC) * 0.000732421875f;
@@ -570,7 +570,7 @@ int select_damage_reaction(char *a, char *B, char *an, unsigned int btn, int *ou
     }
 
     if (*(float *)(B + 0x1C) == 5627.9248f) {
-        FastVecScale(B + 0x10, B + 0x10, *(float *)(D_001CC448 + (unsigned char)B[0x28] * 4 + k * 32));
+        FastVecScale(B + 0x10, B + 0x10, *(float *)(damage_reaction_scale_table + (unsigned char)B[0x28] * 4 + k * 32));
         a22 = *(unsigned short *)(B + 0x2A);
         *(float *)(B + 0x1C) = 5627.9248f;
         if (a22 == 0x47) {
@@ -585,7 +585,7 @@ int select_damage_reaction(char *a, char *B, char *an, unsigned int btn, int *ou
             FastVecScale(B + 0x10, B + 0x10, 0.3f);
             FastVecAdd(w, B + 0x10, v);
             *(Q_214778 *)(B + 0x10) = *(Q_214778 *)w;
-            func_001F9E10((float *)(B + 0x10), (float *)(B + 0x10), 1.0f);
+            vec_scale_xy_to_length((float *)(B + 0x10), (float *)(B + 0x10), 1.0f);
         }
     } else {
         if (*(char **)(B + 0x20) == 0) {
@@ -674,7 +674,7 @@ int select_damage_reaction(char *a, char *B, char *an, unsigned int btn, int *ou
     if (outI != 0)
         *outI = a22;
 
-    u17 = D_001CC400[(unsigned char)an[8] + s21 * 4];
+    u17 = damage_reaction_code_table[(unsigned char)an[8] + s21 * 4];
     if (*(short *)(an + 0x14) != a22)
         *(short *)(an + 0x1C) = 0;
 
@@ -917,7 +917,7 @@ extern QuatNext D_001600D8;
 void MatrixToQuaternion(void *arg0, void *arg1) {
     float *q = arg0;
     float (*m)[4] = arg1;
-    QuatNext n = D_001600D8;
+    QuatNext n = quat_next_axis_table;
     float mat[3][3];
     float trace;
     float s;
@@ -1024,7 +1024,7 @@ void matrix_to_euler(Mtx44 *src, float *out) {
     v[0] = 0.0f;
     v[2] = 0.0f;
     v[1] = -y;
-    func_001FA238(rot, v);
+    euler_to_matrix_ee(rot, v);
     sce_vu0_mul_matrix(&m, rot, &m);
     x = fast_arc_tan(m.m[1][1], m.m[1][2]);
     v[1] = 0.0f;
@@ -1059,7 +1059,7 @@ int is_point_inside_clip_volume(void *arg0, int arg1) {
     if (arg1 == -1) {
         return 0;
     }
-    m = &D_00160134[arg1];
+    m = &clip_volume_table[arg1];
     FastVecSub(d, arg0, m->pos);
     d[3] = 0.0f;
     matrix_mul_vec3(v, d, m->mtx);
@@ -1130,7 +1130,7 @@ void set_video_timing(int pal) {
         inv_frame_scale = 1.0f;
         g_frame_time = 0.01666666753590106964111328125f;
         g_frame_time_sq = 0.000277777784503996372222900390625f;
-        D_0015EE74 = 0.00000462962952951784245669841766357421875f;
+        g_frame_time_cube = 0.00000462962952951784245669841766357421875f;
         D_0015EE78 = 5;
         frame_delta_time = 0.01666666753590106964111328125f;
     } else {
@@ -1140,7 +1140,7 @@ void set_video_timing(int pal) {
         inv_frame_scale = 0.833333313465118408203125f;
         g_frame_time = 0.02000000141561031341552734375f;
         g_frame_time_sq = 0.00040000001899898052215576171875f;
-        D_0015EE74 = 0.0000079999999798019416630268096923828125f;
+        g_frame_time_cube = 0.0000079999999798019416630268096923828125f;
         D_0015EE78 = 6;
         frame_delta_time = 0.0199999995529651641845703125f;
     }
@@ -1344,23 +1344,23 @@ extern int D_00161388 MACRO_ADDR;
    arg0 takes it, 0 if someone else holds it. The failure return goes
    last, which lets the scheduler put `li $2,1` before the last store. */
 int try_set_help_message(int arg0, int arg1) {
-    int cur = D_0015F6B4;
+    int cur = help_message_owner;
 
     if (cur == arg0) {
         if (arg1 != 0) {
             copy_text_to_shared_buffer(msg_string(arg1));
         }
-        D_00161388 = arg1;
-        D_0015F6B0 = 2;
+        help_message_id = arg1;
+        help_message_keepalive = 2;
         return 2;
     }
     if (cur == 0) {
         if (arg1 != 0) {
             copy_text_to_shared_buffer(msg_string(arg1));
         }
-        D_0015F6B4 = arg0;
-        D_0015F6B0 = 2;
-        D_00161388 = arg1;
+        help_message_owner = arg0;
+        help_message_keepalive = 2;
+        help_message_id = arg1;
         return 1;
     }
     return 0;
@@ -1374,9 +1374,9 @@ int force_help_message(int arg0, int arg1) {
     if (arg1 != 0) {
         copy_text_to_shared_buffer(msg_string(arg1));
     }
-    D_0015F6B4 = arg0;
-    D_0015F6B0 = 2;
-    D_00161388 = arg1;
+    help_message_owner = arg0;
+    help_message_keepalive = 2;
+    help_message_id = arg1;
     return 3;
 }
 

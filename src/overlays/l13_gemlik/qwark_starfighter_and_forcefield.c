@@ -1395,7 +1395,7 @@ void update_linked_moby_statistics_and_hero_volume_flag(char *moby) {
     data = *(char **)(moby + 0x78);
     if (D_L13_00179790[0] == 0 && D_L13_00179790[9] == -1) {
         unsigned int v = *(unsigned int *)(D_0013E633 + 0x2EA9);
-        if ((v < 2 || v == 9) ? D_L13_0015F6A8 == 0 : 0) {
+        if ((v < 2 || v == 9) ? gemlik_game_mode == 0 : 0) {
             int idx = *(int *)(data + 4);
             char *m;
             if (idx != -1) {

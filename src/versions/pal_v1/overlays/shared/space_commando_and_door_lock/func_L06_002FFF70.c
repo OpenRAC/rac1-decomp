@@ -15,7 +15,7 @@ void process_blarg_space_commando_hits(char *m) {
     float lo, hi, spd, off, pull;
 
     d = *(char **)(m + 0x78);
-    *(float *)(m + 0x2C) = *(float *)(*(char **)(m + 0x24) + 0x24) * *(float *)&D_L06_00162038;
+    *(float *)(m + 0x2C) = *(float *)(*(char **)(m + 0x24) + 0x24) * *(float *)&space_commando_scale;
     update_blarg_space_commando_beam(m);
     if (*(int *)(d + 0x38) != 0) {
         *(int *)(d + 0x188) = truncate_float_to_s32(multiply_global_factor(random_float_between(180.0f, 240.0f)));
@@ -53,8 +53,8 @@ void process_blarg_space_commando_hits(char *m) {
             m[0x20] = 0xF;
             q = d + 0x60;
             n = scale_ticks(0x3C);
-            a = *(float *)&D_L06_00162040 * g_frame_time;
-            b = *(float *)&D_L06_00162044 * g_frame_time;
+            a = *(float *)&space_commando_hit_knockback_speed * g_frame_time;
+            b = *(float *)&space_commando_hit_knockback_lift * g_frame_time;
             *(short *)(d + 0x26) = n;
             *(float *)(d + 0x7C) = b;
             *(float *)(d + 0x78) = a;
@@ -71,8 +71,8 @@ void process_blarg_space_commando_hits(char *m) {
             float a, b;
             m[0x20] = 0x10;
             q = d + 0x60;
-            a = *(float *)&D_L06_00162048 * g_frame_time;
-            b = *(float *)&D_L06_0016204C * g_frame_time;
+            a = *(float *)&space_commando_death_knockback_speed * g_frame_time;
+            b = *(float *)&space_commando_death_knockback_lift * g_frame_time;
             *(unsigned short *)(m + 0x34) &= 0xEFFF;
             *(float *)(d + 0x78) = a;
             *(float *)(d + 0x7C) = b;
@@ -122,9 +122,9 @@ void process_blarg_space_commando_hits(char *m) {
     *(unsigned char *)(m + 0xA4) = 0xFF;
     StepColorFade(m, d + 0x110);
     if (*(int *)(d + 0x188) != 0) {
-        *(float *)(d + 0x198) = *(float *)&D_L06_0016203C + 6.0f;
+        *(float *)(d + 0x198) = *(float *)&space_commando_sight_range + 6.0f;
     } else {
-        *(float *)(d + 0x198) = *(float *)&D_L06_0016203C;
+        *(float *)(d + 0x198) = *(float *)&space_commando_sight_range;
     }
     {
     char *q = d + 0x120;

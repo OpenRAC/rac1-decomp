@@ -290,7 +290,7 @@ void update_cutscene_target_effects(unsigned char *moby)
         moby[0x20] = 1;
         break;
     case 1:
-        if (D_L13_0015F6A8 == 2 && D_L13_0016CBE0.state == 2) {
+        if (gemlik_game_mode == 2 && D_L13_0016CBE0.state == 2) {
             cutscene_set_camera_target(D_L13_0016CBE0.target);
         }
         break;

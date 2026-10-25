@@ -247,7 +247,7 @@ void update_moby_height_from_driver(char *m)
     unsigned char *g = D_0013D355 + 0x13B;
     unsigned char *g2;
     if (g[0x2E] != 0 && *(int *)(d + 8) < 0) {
-        o = (char *)&D_L08_001AC340[*(unsigned char *)(m + 0x21)];
+        o = (char *)&batalia_moby_groups[*(unsigned char *)(m + 0x21)];
         p = *(unsigned short **)o;
         k = 0x1D8;
         if (p == 0)

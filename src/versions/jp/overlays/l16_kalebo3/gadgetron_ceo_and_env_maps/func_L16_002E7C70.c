@@ -51,7 +51,7 @@ void gadgetron_ceo_update(L16ChallengeMoby *m) {
             activation->mode = 2;
             activation->pending = pending;
             m->event = 0;
-            pose = D_L16_001D9B10;
+            pose = gadgetron_ceo_hero_and_camera_pose;
             Hero_ResetToPosition(pose, pose + 0x10, 0, 1);
             camera = D_0013E633 + 0x2B1D;
             qcopy(camera, pose + 0x20);
@@ -104,7 +104,7 @@ void gadgetron_ceo_update(L16ChallengeMoby *m) {
         event = m->event;
         if (event == 1) {
             m->state = event;
-            Hero_ResetToPosition(D_L16_001D9B30, D_L16_001D9B30 + 0x10, 0, 1);
+            Hero_ResetToPosition(gadgetron_ceo_hero_return_pose, gadgetron_ceo_hero_return_pose + 0x10, 0, 1);
             m->event = 0;
             if (!D_0013D605[0xA]) {
                 int pending;
@@ -120,13 +120,13 @@ void gadgetron_ceo_update(L16ChallengeMoby *m) {
         }
         if (m->event == 2) {
             m->state = 1;
-            Hero_ResetToPosition(D_L16_001D9B30, D_L16_001D9B30 + 0x10, 0, 1);
+            Hero_ResetToPosition(gadgetron_ceo_hero_return_pose, gadgetron_ceo_hero_return_pose + 0x10, 0, 1);
             m->event = 0;
             restore_gadgetron_ceo_non_challenge_environment((char *)m);
         }
         if (m->event == 3) {
             char *camera;
-            char *pose = D_L16_001D9B10;
+            char *pose = gadgetron_ceo_hero_and_camera_pose;
             m->event = 0;
             Hero_ResetToPosition(pose, pose + 0x10, 0, 1);
             camera = D_0013E633 + 0x2B1D;

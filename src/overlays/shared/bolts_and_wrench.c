@@ -159,7 +159,7 @@ extern struct Amb D_L00_001CBAC0;
 
 /* per-frame level ambience (wind/sway) state machine: picks a random target, then eases toward it */
 void update_ambience_target_cycle(void) {
-    struct Amb *s = &D_L00_001CBAC0;
+    struct Amb *s = &level_wind_state;
     float a, b, c, d, e;
     switch (s->hC) {
     case 1:
@@ -1760,7 +1760,7 @@ void wrench_update(Wrench48 *m) {
             FastVecScale(work.v[1],work.v[1],0.7f);
             FastVecAdd(position,position,work.v[1]);
             vec_scale_to_length(work.v[1],d->direction,d->speed); FastVecAdd(position,position,work.v[1]);
-            d->acceleration+=D_0015EE74*170.0f;
+            d->acceleration+=g_frame_time_cube*170.0f;
             ApproachValue(&d->speed,0.0f,d->acceleration);
             if (d->speed==0.0f) m->state=11;
         } else {

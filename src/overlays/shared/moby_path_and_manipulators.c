@@ -273,9 +273,9 @@ extern int D_0015EE80 MACRO_ADDR;
 /* selects timing constants for the active update mode */
 void SetUpdateModeTiming(int mode) {
  if(!mode) {
- pal_mode=0; frame_scale=1.0f; g_frame_scale_sq=1.0f; inv_frame_scale=1.0f; g_frame_time_sq=0.00027777778450399637f; D_0015EE74=0.0000046296295295178425f; D_0015EE78=5; g_frame_time=0.01666666753590107f; frame_delta_time=0.01666666753590107f;
+ pal_mode=0; frame_scale=1.0f; g_frame_scale_sq=1.0f; inv_frame_scale=1.0f; g_frame_time_sq=0.00027777778450399637f; g_frame_time_cube=0.0000046296295295178425f; D_0015EE78=5; g_frame_time=0.01666666753590107f; frame_delta_time=0.01666666753590107f;
  } else {
- pal_mode=1; frame_scale=1.2f; g_frame_scale_sq=1.44f; inv_frame_scale=0.8333333134651184f; g_frame_time=0.020000001415610313f; g_frame_time_sq=0.0004000000189989805f; D_0015EE74=0.000007999999979801942f; D_0015EE78=6; frame_delta_time=0.019999999552965164f;
+ pal_mode=1; frame_scale=1.2f; g_frame_scale_sq=1.44f; inv_frame_scale=0.8333333134651184f; g_frame_time=0.020000001415610313f; g_frame_time_sq=0.0004000000189989805f; g_frame_time_cube=0.000007999999979801942f; D_0015EE78=6; frame_delta_time=0.019999999552965164f;
  }
 }
 INCLUDE_ASM("asm/overlays", func_L00_00262450);

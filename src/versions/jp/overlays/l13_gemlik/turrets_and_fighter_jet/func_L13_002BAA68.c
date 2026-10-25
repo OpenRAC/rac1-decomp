@@ -53,9 +53,9 @@ void DrawGemlikTurretHud(char *moby) {
     for (i = 0; i < n; i++) {
         g = D_0013E633 + 0xE1D;
         if (i < g[0x15F6]) {
-            append_scaled_screen_triangle_strip(x, y, 0.5f, D_L13_001CBEE0, 0x19, 0xFFFFF3, 0x50008F00);
+            append_scaled_screen_triangle_strip(x, y, 0.5f, gemlik_turret_hud_pip_strip, 0x19, 0xFFFFF3, 0x50008F00);
         } else {
-            append_scaled_screen_triangle_strip(x, y, 0.5f, D_L13_001CBEE0, 0x19, 0xFFFFF3, 0x20004F00);
+            append_scaled_screen_triangle_strip(x, y, 0.5f, gemlik_turret_hud_pip_strip, 0x19, 0xFFFFF3, 0x20004F00);
         }
         n = g[0x15F7];
         if (i == n >> 1) {
@@ -88,9 +88,9 @@ void DrawGemlikTurretHud(char *moby) {
     for (j = lo; j <= hi; j++) {
         idx = (j & 0xE7) | ((j & 0x10) >> 1) | ((j & 8) << 1);
         if (j < v) {
-            (*(int **)&D_L13_00161450)[idx] = D_L13_001CC0F0[idx];
+            (*(int **)&jet_hud_palette)[idx] = jet_hud_palette_backup[idx];
         } else {
-            (*(int **)&D_L13_00161450)[idx] = 0x80000000;
+            (*(int **)&jet_hud_palette)[idx] = 0x80000000;
         }
     }
     s = (char *)D_0013E15A + 0x4A6;

@@ -548,7 +548,7 @@ void draw_sky_shells(void) {
                 shell_scale = 2.0f;
                 break;
             }
-            func_001FA238(&D_001D9A70_2C5A0, rotation_angles);
+            euler_to_matrix_ee(&D_001D9A70_2C5A0, rotation_angles);
             transform_row = (u8 *)&D_001D9A70_2C5A0;
             scale_vector(transform_row, transform_row, shell_scale);
             scale_vector(transform_row + 0x10, transform_row + 0x10, shell_scale);

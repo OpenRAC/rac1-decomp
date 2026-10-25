@@ -12,8 +12,8 @@ extern short D_L08_001614FC;
 
 // Initialize the moby's rotation and data block, then fetch its handle.
 void initialize_bolt_pickup(char *moby) {
-    float a = *(float *)&D_L08_001614F8;
-    float b = *(float *)&D_L08_001614FC;
+    float a = *(float *)&batalia_bolt_spin_min;
+    float b = *(float *)&batalia_bolt_spin_max;
     char *d;
     *(float *)(moby + 0x40) = 0.0f;
     *(float *)(moby + 0x44) = 0.5235988f;
@@ -270,7 +270,7 @@ void update_bomb(char *moby) {
             float lo = -1.0f;
             float hi = 1.0f;
             int *q;
-            t70 = D_L08_001618F8;
+            t70 = batalia_bomb_spark_colors;
             *(v128_36F8 *)t90 = 0;
             t90[0] = random_float_between(lo, hi);
             t90[1] = random_float_between(lo, hi);
@@ -284,7 +284,7 @@ void update_bomb(char *moby) {
         f20 = 0.16f;
         c.r.start[2] -= f20;
         FastVecAdd((moby + 0x10), (moby + 0x10), (d + 0x10));
-        *(float *)(d + 0x18) -= *(float *)&D_L08_001618F0 * D_0015EE70_2B94B0;
+        *(float *)(d + 0x18) -= *(float *)&batalia_bomb_gravity * D_0015EE70_2B94B0;
         qcopy(c.r.end, moby + 0x10);
         c.r.end[2] -= f20;
         c.r.x.moby = moby;
@@ -530,7 +530,7 @@ void update_bomber_tank(Moby *moby) {
             } else {
                 func_L00_00250800_55E0(moby, 2, tmp);
             }
-            k = D_L08_00161938 * D_0015EE6C_36F8;
+            k = batalia_bomber_tank_shot_speed * D_0015EE6C_36F8;
             vel[0] = FastCos(FastAddRots(*(float *)(d + 0x170), moby->rot.z)) * (FastCos(*(float *)(d + 0x178)) * k);
             vel[1] = FastSin(FastAddRots(*(float *)(d + 0x170), moby->rot.z)) * (FastCos(*(float *)(d + 0x178)) * k);
             vel[2] = 0.0f;
@@ -873,7 +873,7 @@ void advance_bomber_tank_along_path(struct Moby *moby, int path_id) {
     if (vec_distance_xy(&moby->pos, point) < 0.5f) {
         vars->point = (vars->point + 1) % *path;
     }
-    scale = vars->speed / ((*(float *)&D_L08_00161930) * g_frame_time);
+    scale = vars->speed / ((*(float *)&batalia_bomber_tank_anim_ref_speed) * g_frame_time);
     if (scale > 2.0f) {
         scale = 2.0f;
     } else if (scale < 0.0f) {
@@ -1009,7 +1009,7 @@ void scatter_bomber_tank_linked_debris(char *moby) {
     float b[4];
     float c[4];
     char *d = *(char **)(moby + 0x78);
-    short *list = D_L08_001AC340[((Blk_7010 *)batalia_mobys + *(int *)(d + 0x144))->group];
+    short *list = batalia_moby_groups[((Blk_7010 *)batalia_mobys + *(int *)(d + 0x144))->group];
     char *other;
     unsigned short index;
     int i;
@@ -1114,7 +1114,7 @@ extern short * D_L08_001AC340[];
 /* Remove active mobys of the selected classes from this moby's linked group.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l08/gameplay/entities/002b8228.c, FUN_L08_002d6450. */
 void remove_bomber_tank_linked_debris(struct Moby *moby) {
-    short *list = D_L08_001AC340[(((struct Moby *)batalia_mobys) + *(s32 *)(moby->pvars + 0x144))->group];
+    short *list = batalia_moby_groups[(((struct Moby *)batalia_mobys) + *(s32 *)(moby->pvars + 0x144))->group];
     struct Moby *other;
     u16 index;
 
@@ -1253,12 +1253,12 @@ void spawn_particle_line_effect(struct Moby *moby, void *from, void *to, int cou
         FastVecAdd(&pos, from, &pos);
         vel.f[0] = randf_sym(0.0f, 0.005f);
         vel.f[1] = randf_sym(0.0f, 0.005f);
-        vel.f[2] = random_float_between((*(float *)&D_L08_00161A28) * 0.1f, (*(float *)&D_L08_00161A28));
+        vel.f[2] = random_float_between((*(float *)&batalia_line_puff_rise_speed_max) * 0.1f, (*(float *)&batalia_line_puff_rise_speed_max));
         alpha = rand_range(0x30, 0x70);
         grey = rand_range(0x30, 0x7F);
         grey |= (grey << 16) | (grey << 8);
         size = random_float_between(1.0f, 1.02f);
-        puff = PartType23Spawn(&pos, (*(float *)&D_L08_00161A30), 1.0f, size, rand_range(-2, 2), &vel,
+        puff = PartType23Spawn(&pos, (*(float *)&batalia_line_puff_size), 1.0f, size, rand_range(-2, 2), &vel,
                                 grow + size0 * 210000.0f, (alpha << 24) | grey);
         if (puff) {
             tail = puff + 0x20;
@@ -1268,10 +1268,10 @@ void spawn_particle_line_effect(struct Moby *moby, void *from, void *to, int cou
                 grey |= (grey << 16) | (grey << 8);
                 *(u32 *)(puff + 4) = (alpha << 24) | grey;
             }
-            *(u16 *)(puff + 0xA) = D_L08_00161A38;
+            *(u16 *)(puff + 0xA) = batalia_line_puff_life_frames;
             *(s32 *)(tail + 4) = 2;
             tail[0xA] = alpha;
-            tail[0xB] = D_L08_00161A38;
+            tail[0xB] = batalia_line_puff_life_frames;
         }
     }
     vel.f[0] = FastCos(random_angle_radians()) * 0.05f;
@@ -1296,7 +1296,7 @@ extern char D_0013E633[] NOT_SDA;
 /* Picks the best candidate moby from the moby's list by heading and distance.
  * Exact since tools/ps2eeas_nops.py puts the hazard nop after the shared bc1fl's label. */
 char *select_blarg_bombthrower_waypoint(char *moby) {
-    short *t = D_L08_001AC340[(unsigned char)moby[0x21]];
+    short *t = batalia_moby_groups[(unsigned char)moby[0x21]];
     char *best;
     char *p;
     float bestD, bestA;
@@ -1419,7 +1419,7 @@ void blarg_bombthrower_update(Moby *moby) {
     Moby *old;
 
     damage = 0.0f;
-    func_L00_00264B40_x(moby, D_L08_00161A3C, 3.0f, d->blk160);
+    func_L00_00264B40_x(moby, batalia_bombthrower_scale, 3.0f, d->blk160);
     if (moby->visible != 0) {
         if (FastVecDist(&moby->pos, batalia_hero_pos) < 29.0f) {
             set_ground_height_band(moby);
@@ -1432,9 +1432,9 @@ void blarg_bombthrower_update(Moby *moby) {
         moby->flags |= 0x400;
     }
     if (moby->state == 100) {
-        float t = IntToFloat(D_L08_00161A60);
+        float t = IntToFloat(batalia_bombthrower_fade_ticks);
         int c = d->s132;
-        moby->alpha = func_001FA898_2D6C58((float)c + (float)-c * ((float)(D_L08_00161A60 - d->s130) / t));
+        moby->alpha = func_001FA898_2D6C58((float)c + (float)-c * ((float)(batalia_bombthrower_fade_ticks - d->s130) / t));
         spawn_moby_table_puff_pattern(moby);
         return;
     }
@@ -1468,8 +1468,8 @@ void blarg_bombthrower_update(Moby *moby) {
             d->i94 = 9;
             d->f84 = 0.0005f;
             d->f80 = g_frame_time_sq * 30.0f;
-            d->f88 = D_L08_00161A1C * g_frame_time;
-            d->f8C = D_L08_00161A20 * g_frame_time;
+            d->f88 = batalia_bombthrower_knockback_speed * g_frame_time;
+            d->f8C = batalia_bombthrower_knockback_lift * g_frame_time;
             d->bAD = 0;
             base = D_0013E633 + 0xE1D;
             InitKnockback(moby, d->blk70,
@@ -1503,7 +1503,7 @@ void blarg_bombthrower_update(Moby *moby) {
         d->f10C = 0.03f;
         d->f110 = 0.3f;
         d->f114 = 0.25f;
-        d->fF4 = D_L08_00161A08 * g_frame_time;
+        d->fF4 = batalia_bombthrower_walk_speed_max * g_frame_time;
         d->b58 = func_001FA898_2D6C58(17.0f);
         d->b5A = func_001FA898_2D6C58(10.4f);
         clear_u64_value(d->v40);
@@ -1633,8 +1633,8 @@ void blarg_bombthrower_update(Moby *moby) {
             FastVecSub(v70, &target->pos, &moby->pos);
             v70[2] = 0.0f;
             len = FastVecLength(v70);
-            t = len / multiply_global_factor(D_L08_00161A0C);
-            len = len - (D_L08_00161A18 * t + 2.0f);
+            t = len / multiply_global_factor(batalia_bombthrower_throw_speed);
+            len = len - (batalia_bombthrower_throw_short_rate * t + 2.0f);
             if (10.0f < len) {
                 len = 10.0f;
             } else if (len < 3.0f) {
@@ -1703,7 +1703,7 @@ void blarg_bombthrower_update(Moby *moby) {
             moby->state = 100;
             moby->collision = 0;
             d->s132 = 0x28;
-            d->s130 = D_L08_00161A60;
+            d->s130 = batalia_bombthrower_fade_ticks;
             spawn_moby_table_puff_pattern(moby);
             DeleteMoby(moby);
             return;
@@ -1841,7 +1841,7 @@ void update_shuttle_stop_world_points(char *moby) {
     char *data = *(char **)(moby + 0x78);
     int *t = (int *)batalia_path_table[*(int *)(data + 0x8C)];
     if (*t == 8) {
-        char *q = D_L08_001DB540;
+        char *q = batalia_shuttle_stop_local_points;
         char *mat = moby + 0xC0;
         char *pos = moby + 0x10;
         char *p = (char *)t + 0x10;
@@ -2124,8 +2124,8 @@ void update_ballistic_projectile(struct Moby *moby) {
     float angle;
 
     if (coll_sphere_mobys(m + 0x10, 0.5f, 0, m, 0) != 0 &&
-        D_L08_001746D8 != 0 &&
-        (D_L08_001746D8 != *(int *)(data + 0x20) || *(int *)(data + 0x14) != 0)) {
+        batalia_coll_hit_moby != 0 &&
+        (batalia_coll_hit_moby != *(int *)(data + 0x20) || *(int *)(data + 0x14) != 0)) {
         m[0x20] = 99;
     }
     switch ((unsigned char)m[0x20]) {
@@ -2299,7 +2299,7 @@ void update_rocket(M46 *m) {
         char *persistence_base=D_0013D355+0x13B;
         Persistent46 *state=(Persistent46*)(persistence_base+d->persistent);
         if (state->active) {
-            short *p=D_L08_001AC340[m->group];
+            short *p=batalia_moby_groups[m->group];
             do { DeleteMoby(batalia_mobys+((*(unsigned short*)p&0x7FFF)<<8)); } while (*p++>=-1);
             return;
         }
@@ -2321,21 +2321,21 @@ void update_rocket(M46 *m) {
         FastVecSub(delta,target,m->position);
         ClampVectorLength(delta,t->speed*g_frame_time);
         FastVecSub(accel,delta,d->velocity);
-        ClampVectorLength(accel,D_L08_00161A94*g_frame_time_sq);
+        ClampVectorLength(accel,batalia_rocket_steer_accel_max*g_frame_time_sq);
         FastVecAdd(d->velocity,d->velocity,accel);
         FastVecAdd(m->position,m->position,d->velocity);
         m->rotation[1]=-fast_atan2(vec_length_xy(d->velocity),d->velocity[2]);
         m->rotation[2]=fast_atan2(d->velocity[0],d->velocity[1]);
         if (FastDiffRots(yaw,d->yaw)<0.08726646f && FastDiffRots(pitch,d->pitch)<0.08726646f) m->state=2;
-        radius=random_float_between(0.0f,D_L08_00161AA4)*g_frame_time;
+        radius=random_float_between(0.0f,batalia_rocket_exhaust_spread_max)*g_frame_time;
         angle=random_angle_radians();
         vec_scale_to_length(effect,m->matrix[2],radius*FastCos(angle));
         vec_scale_to_length(aux,m->matrix[1],radius*FastSin(angle));
         FastVecAdd(effect,effect,aux); qcopy(aux,aux);
-        effect[3]=D_L08_00161AB4; aux[3]=D_L08_00161AB8;
-        life=scale_ticks(D_L08_00161AB0);
-        size0=func_001FA898_r(D_L08_00161AB4); size1=func_001FA898_r(D_L08_00161AB8);
-        PartType04Spawn(m->position,effect,D_L08_00161ABC,D_L08_00161AC0,life,size0,size1,1);
+        effect[3]=batalia_rocket_exhaust_start_size; aux[3]=batalia_rocket_exhaust_end_size;
+        life=scale_ticks(batalia_rocket_exhaust_life_ticks);
+        size0=func_001FA898_r(batalia_rocket_exhaust_start_size); size1=func_001FA898_r(batalia_rocket_exhaust_end_size);
+        PartType04Spawn(m->position,effect,batalia_rocket_exhaust_start_color,batalia_rocket_exhaust_end_color,life,size0,size1,1);
         return;
     }
     case 2: {
@@ -2349,23 +2349,23 @@ void update_rocket(M46 *m) {
         FastVecSub(delta,target,m->position);
         ClampVectorLength(delta,t->speed*g_frame_time);
         FastVecSub(accel,delta,d->velocity);
-        ClampVectorLength(accel,D_L08_00161A94*4.0f*g_frame_time_sq);
+        ClampVectorLength(accel,batalia_rocket_steer_accel_max*4.0f*g_frame_time_sq);
         FastVecAdd(d->velocity,d->velocity,accel);
         FastVecAdd(m->position,m->position,d->velocity);
         m->rotation[1]=-fast_atan2(vec_length_xy(d->velocity),d->velocity[2]);
         m->rotation[2]=fast_atan2(d->velocity[0],d->velocity[1]);
-        if (FastVecDist(m->position,d->target->position)<D_L08_00161A9C) {
+        if (FastVecDist(m->position,d->target->position)<batalia_rocket_hit_distance) {
             t->health-=60; clear_u64_value(d->velocity); Moby_PlaySound(0,0,m); m->state=6;
         }
-        radius=random_float_between(0.0f,D_L08_00161AA4)*g_frame_time;
+        radius=random_float_between(0.0f,batalia_rocket_exhaust_spread_max)*g_frame_time;
         angle=random_angle_radians();
         vec_scale_to_length(effect,m->matrix[2],radius*FastCos(angle));
         vec_scale_to_length(aux,m->matrix[1],radius*FastSin(angle));
         FastVecAdd(effect,effect,aux); qcopy(aux,aux);
-        effect[3]=D_L08_00161AB4; aux[3]=D_L08_00161AB8;
-        life=scale_ticks(D_L08_00161AB0);
-        size0=func_001FA898_r(D_L08_00161AB4); size1=func_001FA898_r(D_L08_00161AB8);
-        PartType04Spawn(m->position,effect,D_L08_00161ABC,D_L08_00161AC0,life,size0,size1,1);
+        effect[3]=batalia_rocket_exhaust_start_size; aux[3]=batalia_rocket_exhaust_end_size;
+        life=scale_ticks(batalia_rocket_exhaust_life_ticks);
+        size0=func_001FA898_r(batalia_rocket_exhaust_start_size); size1=func_001FA898_r(batalia_rocket_exhaust_end_size);
+        PartType04Spawn(m->position,effect,batalia_rocket_exhaust_start_color,batalia_rocket_exhaust_end_color,life,size0,size1,1);
         return;
     }
     case 3:
@@ -2390,7 +2390,7 @@ void update_rocket(M46 *m) {
         if (route->waypoint!=route->path->count-1) {
             int life0,life1,size1;
             FastVecSub(delta,target,m->position);
-            vec_scale_to_length(delta,delta,D_L08_00161A98*g_frame_time);
+            vec_scale_to_length(delta,delta,batalia_rocket_route_speed*g_frame_time);
             FastVecAdd(m->position,m->position,delta);
             if (FastVecDist(m->position,target)<0.5f) route->waypoint=next;
             *(Q46*)effect=(Q46)0;
@@ -2407,7 +2407,7 @@ void update_rocket(M46 *m) {
             PartType04Spawn(m->position,effect,0x1FFFFFFF,0x4F4F4F,life1,40,size1,0);
             return;
         } else {
-            short *p=D_L08_001AC340[m->group];
+            short *p=batalia_moby_groups[m->group];
             long special=0;
             int index;
             M46 *other;
@@ -2465,7 +2465,7 @@ void update_rocket(M46 *m) {
         step_angle_toward_target(&m->rotation[2],0,d->yaw,g_frame_time*0.5235988f);
         step_angle_toward_target(&m->rotation[1],0,-d->pitch,g_frame_time*0.5235988f);
         m->rotation[0]=FastAddRots(m->rotation[0],g_frame_time*6.2831855f);
-        BuildSphericalOffset(d->velocity,(D_L08_00161A90+D_L08_00161A90)*g_frame_time,m->rotation[2],-m->rotation[1]);
+        BuildSphericalOffset(d->velocity,(batalia_rocket_flight_speed+batalia_rocket_flight_speed)*g_frame_time,m->rotation[2],-m->rotation[1]);
         FastVecAdd(m->position,m->position,d->velocity);
         if (coll_point_query_stub(m->position,0x400,2,m,0) || m->position[0]<5.0f || m->position[0]>500.0f || m->position[1]<5.0f || m->position[1]>500.0f || m->position[2]<5.0f || m->position[2]>500.0f || FastVecDist(D_0013E633+0xE9D,m->position)<16.0f) m->state=6;
         return;
@@ -2505,13 +2505,13 @@ Moby *spawn_class_1b3_projectile(void *pos, Moby *target, void *velocity, float 
         *(volatile float *)&moby->rot.z = fast_atan2(reference[80] - moby->pos.x,
                                                              reference[81] - moby->pos.y);
         scale = moby->pclass->scale;
-        scale *= D_L08_00161AD0;
+        scale *= batalia_1b3_projectile_scale;
         moby->update_dist = 0xFF;
         moby->visible = 1;
         *(volatile u8 *)&moby->state = 1;
         moby->draw_dist = 0xFF;
         moby->scale = scale;
-        set_moby_color(moby, D_L08_00161AC4, D_L08_00161AC8, D_L08_00161ACC);
+        set_moby_color(moby, batalia_1b3_projectile_red, batalia_1b3_projectile_green, batalia_1b3_projectile_blue);
         *(float *)(data + 0x40) = pitch;
         *(float *)(data + 0x48) = 70.0f;
         *(float *)(data + 0x44) = yaw;
@@ -2598,7 +2598,7 @@ void update_path_following_moby(char *m) {
         {
             float l0 = FastVecDist((char *)t + 0x10, (char *)t + 0x20);
             FastVecDist((char *)t + 0x10, (char *)t + (*t << 4));
-            *(float *)(d + 8) = *(float *)&D_L08_00161AD4 * g_frame_time / l0;
+            *(float *)(d + 8) = *(float *)&batalia_path_mover_speed * g_frame_time / l0;
             *(float *)(d + 4) = *(float *)(d + 4) * (float)*t;
             *(float *)(d + 0xC) = randf_sym(0.0f, 5.0f);
         }
@@ -2704,17 +2704,17 @@ void spawn_moby_motion_spark(char *m, char *pos) {
     v60[2] = 0.3f;
     matrix_mul_vec3(v50, v60, m + 0xC0);
     FastVecAdd(v50, v50, m + 0x10);
-    FastVecScale(v10, v30, *(float *)&D_L08_00161AD8);
-    FastVecScale(v20, v30, *(float *)&D_L08_00161ADC);
-    rand_vec(v40, 0.0f, *(float *)&D_L08_00161AE0 * g_frame_time);
+    FastVecScale(v10, v30, *(float *)&batalia_motion_spark_vel_scale);
+    FastVecScale(v20, v30, *(float *)&batalia_motion_spark_accel_scale);
+    rand_vec(v40, 0.0f, *(float *)&batalia_motion_spark_accel_jitter * g_frame_time);
     FastVecAdd(v20, v20, v40);
-    v10[3] = random_float_between(*(float *)&D_L08_00161AF4, *(float *)&D_L08_00161AF8);
-    v20[3] = random_float_between(*(float *)&D_L08_00161AFC, *(float *)&D_L08_00161B00);
-    a = FastTweenColor(*(int *)&D_L08_00161B04, *(int *)&D_L08_00161B08, random_float_between(0.0f, 1.0f));
-    b = FastTweenColor(*(int *)&D_L08_00161B0C, *(int *)&D_L08_00161B10, random_float_between(0.0f, 1.0f));
-    c = func_001FA898_r(multiply_global_factor((float)*(int *)&D_L08_00161AE4 * random_float_between(0.0f, 1.0f) + 1.0f));
-    d = func_001FA898_r(multiply_global_factor((float)*(int *)&D_L08_00161AE8 * (random_float_between(-*(float *)&D_L08_00161AF0, *(float *)&D_L08_00161AF0) + 1.0f)));
-    e = func_001FA898_r(multiply_global_factor((float)*(int *)&D_L08_00161AEC * (random_float_between(-*(float *)&D_L08_00161AF0, *(float *)&D_L08_00161AF0) + 1.0f)));
+    v10[3] = random_float_between(*(float *)&batalia_motion_spark_vel_w_min, *(float *)&batalia_motion_spark_vel_w_max);
+    v20[3] = random_float_between(*(float *)&batalia_motion_spark_accel_w_min, *(float *)&batalia_motion_spark_accel_w_max);
+    a = FastTweenColor(*(int *)&batalia_motion_spark_color1_from, *(int *)&batalia_motion_spark_color1_to, random_float_between(0.0f, 1.0f));
+    b = FastTweenColor(*(int *)&batalia_motion_spark_color2_from, *(int *)&batalia_motion_spark_color2_to, random_float_between(0.0f, 1.0f));
+    c = func_001FA898_r(multiply_global_factor((float)*(int *)&batalia_motion_spark_time1_range * random_float_between(0.0f, 1.0f) + 1.0f));
+    d = func_001FA898_r(multiply_global_factor((float)*(int *)&batalia_motion_spark_time2_base * (random_float_between(-*(float *)&batalia_motion_spark_time_jitter, *(float *)&batalia_motion_spark_time_jitter) + 1.0f)));
+    e = func_001FA898_r(multiply_global_factor((float)*(int *)&batalia_motion_spark_time3_base * (random_float_between(-*(float *)&batalia_motion_spark_time_jitter, *(float *)&batalia_motion_spark_time_jitter) + 1.0f)));
     r = PartType02Spawn(v50, v10, v20, a, b, c, d, e, -1);
     if (r != 0) {
         r[9] = func_001FA898_r(8.0f) - 0x70;

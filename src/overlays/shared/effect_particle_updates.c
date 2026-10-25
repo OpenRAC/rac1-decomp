@@ -103,7 +103,7 @@ void update_drifting_effect_particle_with_distance_fade(char *m) {
         *(int *)(p + 0x1C) = t + 1;
     }
     if (*(int *)(p + 0x1C) >= 0) {
-        g = D_L00_001CBAC0;
+        g = level_wind_state;
         *(float *)p = FastCos(g[1]) * g[5] / 2.5f;
         *(float *)(p + 4) = FastSin(g[1]) * g[5] / 2.5f;
         *(int *)(p + 8) = 0;
@@ -168,7 +168,7 @@ void PartType04Spawn(void *a, void *b, int c, int d, int n, int s1, int s2, int 
         m[9] = func_001FA898_r(4.0f) - 0x60;
         m[3] = flag ? 0x48 : 0x44;
         m[1] = 0;
-        m[2] = *D_L00_001B2410;
+        m[2] = *part_type04_textures;
         m[8] = func_001160D8();
         e = (int *)(m + 0x20);
         *(int *)(m + 0xc) = 0;
@@ -238,7 +238,7 @@ void PartType05Spawn(void *pos, unsigned char c0, unsigned char c1, unsigned cha
             *(float *)(p + 0xC) = b;
             p[1] = 0;
             p[8] = 0;
-            p[2] = **(unsigned char **)&D_L00_001B2414;
+            p[2] = **(unsigned char **)&part_type05_textures;
             *(int *)(p + 0x20) = tgt;
             q[1] = a / IntToFloat(tgt);
         }
@@ -283,7 +283,7 @@ void spawn_particle_alt_9768(void *pos, void *vel, int color, int tag, int life,
             p[1] = 0;
             *(int *)(p + 0xC) = 0;
             p[8] = 0;
-            p[2] = *D_L00_001B2420;
+            p[2] = *part_type08_textures;
             qcopy(q, vel);
             *(short *)(p + 0xA) = life;
             *(int *)(q + 0x18) = life;
@@ -308,7 +308,7 @@ void update_animated_fading_effect_particle(char *m) {
         int a = *(unsigned char *)(m + 7);
         *(int *)(m + 4) = (*(int *)(m + 4) & 0xFFFFFF) | ((*(short *)(m + 0xA) * a / scale_ticks(6)) << 24);
     }
-    m[2] = D_L00_001B2420[(*(int *)(p + 0x18) - *(short *)(m + 0xA)) * 10 / *(int *)(p + 0x18)];
+    m[2] = part_type08_textures[(*(int *)(p + 0x18) - *(short *)(m + 0xA)) * 10 / *(int *)(p + 0x18)];
 }
 extern short D_L00_00160264;
 
@@ -322,11 +322,11 @@ void update_rotating_grayscale_effect_particle(char *particle) {
     }
     *(float *)&particle_data[3] = FastAddRots(*(float *)&particle_data[3], *(float *)&particle_data[2]);
     particle[8] = func_001FA898_r(*(float *)&particle_data[3] * 128.0f / 3.1415927f) - 0x80;
-    if (scale_ticks(*(int *)&D_L00_00160264) * 3 / 4 < particle_data[0]) {
-        int scaled_fade_duration = scale_ticks(*(int *)&D_L00_00160264);
-        faded_alpha = particle_data[4] * (scaled_fade_duration - particle_data[0]) / (scale_ticks(*(int *)&D_L00_00160264) / 4);
-    } else if (particle_data[0] < scale_ticks(*(int *)&D_L00_00160264) / 4) {
-        faded_alpha = particle_data[4] * particle_data[0] / (scale_ticks(*(int *)&D_L00_00160264) / 4);
+    if (scale_ticks(*(int *)&rotating_gray_particle_fade_ticks) * 3 / 4 < particle_data[0]) {
+        int scaled_fade_duration = scale_ticks(*(int *)&rotating_gray_particle_fade_ticks);
+        faded_alpha = particle_data[4] * (scaled_fade_duration - particle_data[0]) / (scale_ticks(*(int *)&rotating_gray_particle_fade_ticks) / 4);
+    } else if (particle_data[0] < scale_ticks(*(int *)&rotating_gray_particle_fade_ticks) / 4) {
+        faded_alpha = particle_data[4] * particle_data[0] / (scale_ticks(*(int *)&rotating_gray_particle_fade_ticks) / 4);
     } else {
         faded_alpha = particle_data[4];
     }
@@ -416,7 +416,7 @@ void PartType11Spawn(void *pos, void *dir, int col, int d, int n, int b1A, int b
     q = m + 0x20;
     *(int *)(m + 0xC) = 0;
     m[8] = func_001160D8();
-    m[2] = *D_L00_001B242C;
+    m[2] = *part_type11_textures;
     v.q = 0;
     v.f[0] = random_float_between(-1.0f, 1.0f);
     v.f[1] = random_float_between(-1.0f, 1.0f);
@@ -563,43 +563,43 @@ unsigned char *spawn_spinning_and_fading_effect_particle(void *pos, void *vel, u
         if (flags & 1) {
             float one = 1.0f;
             float zero = 0.0f;
-            float scale = (*(float *)&D_L00_00160298);
-            float hi = (float)(*(int *)&D_L00_001602A4);
-            float lo = (float)(*(int *)&D_L00_001602A0);
-            *(int *)(particle + 4) = (*(int *)&D_L00_00160288);
+            float scale = (*(float *)&spin_particle_alt_start_size);
+            float hi = (float)(*(int *)&spin_particle_alt_life_max);
+            float lo = (float)(*(int *)&spin_particle_alt_life_min);
+            *(int *)(particle + 4) = (*(int *)&spin_particle_alt_start_color_from);
             *(float *)(particle + 0xC) = scale * 210000.0f;
             *(short *)(particle + 0xA) = truncate_float_to_s32(multiply_global_factor(
                 random_float_between(lo, hi)));
-            *(int *)(motion + 0x14) = FastTweenColor((*(int *)&D_L00_00160288), (*(int *)&D_L00_0016028C),
+            *(int *)(motion + 0x14) = FastTweenColor((*(int *)&spin_particle_alt_start_color_from), (*(int *)&spin_particle_alt_start_color_to),
                                                           random_float_between(zero, one));
-            *(int *)(motion + 0x18) = FastTweenColor((*(int *)&D_L00_00160290),
-                                                          (*(int *)&D_L00_00160294),
+            *(int *)(motion + 0x18) = FastTweenColor((*(int *)&spin_particle_alt_end_color_from),
+                                                          (*(int *)&spin_particle_alt_end_color_to),
                                                           random_float_between(zero, one));
-            { unsigned char texture = *D_L00_001B2460;
+            { unsigned char texture = *part_type24_textures;
               particle[3] = 0x48;
               particle[2] = texture; }
         } else {
             int offset = 0;
             float one = 1.0f;
             float zero = 0.0f;
-            float scale = (*(float *)&D_L00_00160278);
-            float hi = (float)(*(int *)&D_L00_00160284);
-            float lo = (float)(*(int *)&D_L00_00160280);
-            *(int *)(particle + 4) = (*(int *)&D_L00_00160268);
+            float scale = (*(float *)&spin_particle_start_size);
+            float hi = (float)(*(int *)&spin_particle_life_max);
+            float lo = (float)(*(int *)&spin_particle_life_min);
+            *(int *)(particle + 4) = (*(int *)&spin_particle_start_color_from);
             *(float *)(particle + 0xC) = scale * 210000.0f;
             *(short *)(particle + 0xA) = truncate_float_to_s32(multiply_global_factor(
                 random_float_between(lo, hi)));
-            *(int *)(motion + 0x14) = FastTweenColor((*(int *)&D_L00_00160268), (*(int *)&D_L00_0016026C),
+            *(int *)(motion + 0x14) = FastTweenColor((*(int *)&spin_particle_start_color_from), (*(int *)&spin_particle_start_color_to),
                                                           random_float_between(zero, one));
-            *(int *)(motion + 0x18) = FastTweenColor((*(int *)&D_L00_00160270),
-                                                          (*(int *)&D_L00_00160274),
+            *(int *)(motion + 0x18) = FastTweenColor((*(int *)&spin_particle_end_color_from),
+                                                          (*(int *)&spin_particle_end_color_to),
                                                           random_float_between(zero, one));
             if (flags & 4) {
                 offset = 8;
                 if (!gold_weapon_purchased[0x10])
                     offset = 0;
             }
-            particle[2] = D_L00_001B2430[random_integer_below(8) + offset];
+            particle[2] = part_type12_textures[random_integer_below(8) + offset];
             particle[3] = 0x44;
         }
         particle[9] = truncate_float_to_s32(4.0f) + 0x40;
@@ -648,16 +648,16 @@ void update_spinning_and_fading_effect_particle(unsigned char *m) {
     }
     FastVecAdd(m + 0x10, m + 0x10, p);
     r = -FastVecLength(p);
-    ApproachWithVelocity((float *)(m + 0x30), &r, 0.0f, 0.0f, *(float *)&D_L00_001602A8 * g_frame_time_sq, r);
+    ApproachWithVelocity((float *)(m + 0x30), &r, 0.0f, 0.0f, *(float *)&spin_particle_speed_decay * g_frame_time_sq, r);
     vec_scale_to_length(p, p, -r);
-    *(float *)(m + 0x18) = *(float *)(m + 0x18) + *(float *)&D_L00_001602AC * g_frame_time;
+    *(float *)(m + 0x18) = *(float *)(m + 0x18) + *(float *)&spin_particle_rise_speed * g_frame_time;
     ratio = IntToFloat(*(short *)(m + 0xA)) / IntToFloat(p[0x1D]);
     if (p[0x1F] & 1) {
-        float lo = *(float *)&D_L00_0016029C * w;
-        *(float *)(m + 0xC) = ((*(float *)&D_L00_00160298 - lo) * ratio + lo) * 210000.0f;
+        float lo = *(float *)&spin_particle_alt_end_size * w;
+        *(float *)(m + 0xC) = ((*(float *)&spin_particle_alt_start_size - lo) * ratio + lo) * 210000.0f;
     } else {
-        float lo = *(float *)&D_L00_0016027C * w;
-        *(float *)(m + 0xC) = ((*(float *)&D_L00_00160278 - lo) * ratio + lo) * 210000.0f;
+        float lo = *(float *)&spin_particle_end_size * w;
+        *(float *)(m + 0xC) = ((*(float *)&spin_particle_start_size - lo) * ratio + lo) * 210000.0f;
     }
     *(int *)(m + 4) = FastTweenColor(*(int *)(p + 0x18), *(int *)(p + 0x14), ratio);
     if (*(short *)(m + 0xA) < scale_ticks(15)) {
@@ -692,7 +692,7 @@ unsigned char *spawn_spinning_fade_in_out_effect_particle(void *pos, int spin, i
         *(float *)(r + 0xC) = scale;
         r[1] = 0;
         r[8] = 0;
-        r[2] = *D_L00_001B2434;
+        r[2] = *part_type13_textures;
         *(float *)(r + 0x10) += randf_sym(0.0f, range);
         *(float *)(r + 0x14) += randf_sym(0.0f, range);
         *(float *)(r + 0x18) += randf_sym(0.0f, range);
@@ -805,7 +805,7 @@ void *spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns(void *po
         *(float *)(p + 0xC) = f;
         *(unsigned char *)(p + 8) = func_001160D8();
         if (c == -1) {
-            *(unsigned char *)(p + 2) = *D_L00_001B243C;
+            *(unsigned char *)(p + 2) = *part_type15_textures;
         } else {
             *(unsigned char *)(p + 2) = c;
         }
@@ -895,7 +895,7 @@ char *mine_debris(float f, char *a, char *b, int c, int d, int e, int g) {
         p[9] = r + 0x40;
         p[8] = func_001160D8();
         q = p + 0x20;
-        t = D_L00_001B2440;
+        t = part_type16_textures;
         s = t + g;
         if (g == 3) s = t;
         p[2] = *s;
@@ -1016,7 +1016,7 @@ void spawn_effect_particle_with_transformed_random_offset(void *pos, u128_6D270 
         m[1] = 0;
         m[3] = 0x48;
         m[8] = func_001160D8();
-        m[2] = *D_L00_001B2448;
+        m[2] = *part_type18_textures;
         q[1] = 0.08f;
         *(float *)(m + 0xC) = random_float_between(27993.002f, 49980.0f);
         *(s16 *)(m + 0xA) = scale_ticks(0xD2);
@@ -1085,7 +1085,7 @@ void spawn_two_point_effect_particle(char *pos, char *vel) {
         p[9] = func_001FA898_r(2.0f) + 0x20;
         p[3] = 0x48;
         p[1] = 3;
-        p[2] = *D_L00_001B244C;
+        p[2] = *part_type19_textures;
         qcopy(p + 0x10, pos);
         qcopy(p + 0x30, vel);
         FastVecSub(p + 0x20, pos, p + 0x30);
@@ -1191,7 +1191,7 @@ char *PartType21Spawn(void *pos, void *dir, int c, int d, int n, int k, float f)
         p[9] = v;
         p[8] = func_001160D8();
         q = p + 0x20;
-        p[2] = *D_L00_001B2454;
+        p[2] = *part_type21_textures;
         *(short *)(p + 0xA) = n;
         *(short *)(q + 0x18) = n;
         *(float *)(q + 0x1C) = f;
@@ -1278,7 +1278,7 @@ void spawn_effect_particle_with_target_scalar(void *pos, void *vel, int c, int d
         m[9] = r;
         *(float *)(m + 0xC) = x * 0.2f;
         m[8] = func_001160D8();
-        m[2] = *D_L00_001B2458;
+        m[2] = *part_type22_textures;
         *(short *)(m + 0xA) = e;
         *(short *)(p + 0x18) = e;
         *(float *)(p + 0x1C) = (x - *(float *)(m + 0xC)) / IntToFloat(e);
@@ -1305,7 +1305,7 @@ void *PartType23Spawn(void *pos, int spd, void *pos2, int col, float a, float b,
         *(float *)(p + 0xC) = d;
         p[1] = 0;
         p[8] = 0;
-        p[2] = *D_L00_001B245C;
+        p[2] = *part_type23_textures;
         *(float *)(p + 0x10) += randf_sym(0.0f, a);
         *(float *)(p + 0x14) += randf_sym(0.0f, a);
         *(float *)(p + 0x18) += randf_sym(0.0f, a);
@@ -1461,7 +1461,7 @@ void spawn_color_decaying_effect_particle(char *pos, char *vel, int flag) {
         p[3] = 0x48;
         *(float *)(p + 0xC) = random_float_between(5000.0f, 30000.0f);
         p[8] = 0;
-        p[2] = *D_L00_001B2464;
+        p[2] = *part_type25_textures;
         u[7] = 0.6f;
         *(short *)(p + 0xA) = scale_ticks(0x50);
         qcopy(u, vel);
@@ -1582,7 +1582,7 @@ char *spawn_source_attached_fading_effect_particle(char *src, int col, int w, in
         m[3] = 0x48;
         *(float *)(m + 0xC) = x;
         m[1] = 0;
-        m[2] = *D_L00_001B2468;
+        m[2] = *part_type26_textures;
     }
     return m;
 }
@@ -1635,7 +1635,7 @@ char *PartType27Spawn(char *pos, char *vel, int c, int d, float f) {
         p[3] = 0x48;
         *(float *)(p + 0xC) = f;
         p[1] = 0;
-        p[2] = *D_L00_001B246C;
+        p[2] = *part_type27_textures;
         *(int *)(q + 0x18) = p[7];
         qcopy(q, vel);
         *(int *)(q + 0x10) = d;
@@ -1697,7 +1697,7 @@ void spawn_jittered_effect_particle_with_optional_basis(void *pos, void *dir, f3
         m->b3 = 0x48;
         m->b1 = 0;
         m->b8 = 0;
-        m->b2 = *D_L00_001B2470;
+        m->b2 = *part_type28_textures;
         q->q4 = random_float_between(0.0f, 0.0223456f) + 1e-05f;
         m->fC = random_float_between(10080.0f, 19950.0f);
         q->q8 = 0.0f;
@@ -1812,7 +1812,7 @@ void update_animated_source_attached_fade_in_out_effect_particle(P_26e3a8 *p) {
     }
     e->f8 += D_0015EE60_6F248b * 0.001f;
     p->b8 = truncate_float_to_s32(e->f8 * 255.0f);
-    p->b2 = D_L00_001B2474[e->hC];
+    p->b2 = part_type29_textures[e->hC];
     if (p->fC <= 159600.0f || 0.0f < e->f10) {
         f32 *q = &e->f4;
         *q += q[3];
@@ -1969,12 +1969,12 @@ void update_target_relative_two_point_effect_particle(unsigned char *p) {
     }
     FastVecSub(&a, *(unsigned char **)(p + 0x30) + 0x10, p + 0x10);
     b[0] = a;
-    FastVecScale(b, b, (*(float *)&D_L00_001602B4 - 1.0f) * frame_scale + 1.0f);
+    FastVecScale(b, b, (*(float *)&two_point_particle_head_pull - 1.0f) * frame_scale + 1.0f);
     FastVecAdd(&a, b, *(unsigned char **)(p + 0x30) + 0x10);
     *(V31 *)(p + 0x10) = a;
     FastVecSub(&a, *(unsigned char **)(p + 0x30) + 0x10, p + 0x20);
     b[0] = a;
-    FastVecScale(b, b, (*(float *)&D_L00_001602B8 - 1.0f) * frame_scale + 1.0f);
+    FastVecScale(b, b, (*(float *)&two_point_particle_tail_pull - 1.0f) * frame_scale + 1.0f);
     FastVecAdd(&a, b, *(unsigned char **)(p + 0x30) + 0x10);
     *(V31 *)(p + 0x20) = a;
     if (FastVecDist(p + 0x10, p + 0x20) < 0.1f || FastVecDist(p + 0x10, *(unsigned char **)(p + 0x30) + 0x10) < 1.0f) {
@@ -2011,7 +2011,7 @@ void *spawn_moby_bound_effect_particle(void *arg0) {
         p[3] = 0x48;
         *(float *)(p + 0xC) = random_float_between(50000.0f, 50000.0f);
         p[8] = (char)func_001FA898_r(*(float *)(q + 0xC) * 255.0f);
-        p[2] = *D_L00_001B2420;
+        p[2] = *part_type08_textures;
     }
 
     return p;
@@ -2094,7 +2094,7 @@ char *PartType34Spawn(char *vec, float *pos, float sc, float vy) {
         *(float *)(p + 0xC) = 5250.0f;
         r = rand_range(-10, 10);
         p[8] = r - 0x80;
-        p[2] = *D_L00_001B2488;
+        p[2] = *part_type34_textures;
         a = scale_ticks(0x46);
         b = scale_ticks(0x8C);
         *(short *)(p + 0xA) = rand_range(a, b);
@@ -2194,7 +2194,7 @@ void PartType35Spawn(void *pos, void *vel, int mode, int life) {
         p[1] = 0;
         p[3] = 0x44;
         *(float *)(p + 0xC) = random_float_between(10500.0f, 16800.0f);
-        p[2] = *D_L00_001B248C;
+        p[2] = *part_type35_textures;
         qcopy(q, vel);
         *(int *)(q + 0x14) = life;
         *(int *)(q + 0x10) = mode;
@@ -2419,15 +2419,15 @@ void update_animated_offset_effect_particle(char *m) {
     float position_offset[4];
     O0026fc38 *particle = (O0026fc38 *)m;
     S0026fc38 *s = &particle->s;
-    float f0 = *(float *)&D_L00_001602C0;
-    int w = *(int *)&D_L00_001602C4;
+    float f0 = *(float *)&offset_particle_size;
+    int w = *(int *)&offset_particle_color;
     particle->xc = f0;
     particle->x4 = w;
-    particle->x8 += *(unsigned char *)&D_L00_001602CC;
+    particle->x8 += *(unsigned char *)&offset_particle_spin_step;
     FastVecSub(position_offset, s->x4 + 0x10, g_debug_camera);
-    vec_scale_to_length(position_offset, position_offset, *(float *)&D_L00_001602C8);
+    vec_scale_to_length(position_offset, position_offset, *(float *)&offset_particle_camera_offset);
     FastVecAdd(particle->p10, s->x4 + 0x10, position_offset);
-    particle->x2 = D_L00_001B249C[func_001FA898_r((float)(s->x8 / 2))];
+    particle->x2 = part_type39_textures[func_001FA898_r((float)(s->x8 / 2))];
     s->x8 += 1;
     if (s->x8 >= 0x1F) s->x8 = 0;
     if (particle->xa == 0) KillPart(m);
@@ -2452,7 +2452,7 @@ void *spawn_splitting_effect_particle_with_collision_response_and_fade(char *a, 
         f = random_angle_radians();
         *(float *)(q + 0x10) = f;
         p[8] = (char)(int)(f * 256.0f);
-        p[2] = D_L00_001B2430[func_001160D8() & 7];
+        p[2] = part_type12_textures[func_001160D8() & 7];
         q[0x18] = c;
         *(short *)(q + 0x14) = 0;
         *(short *)(q + 0x16) = 0;
@@ -2562,7 +2562,7 @@ void update_splitting_effect_particle_with_collision_response_and_fade(Part_26ff
         p->posv.f[1] = p->posv.f[1] + random_float_between(nsp, sp);
         p->posv.f[2] = p->posv.f[2] + random_float_between(nsp, sp);
     }
-    tab = D_L00_001B2430;
+    tab = part_type12_textures;
     p->b02 = tab[(p->h0A + pv->f16 + (p->b02 - tab[0])) & 7];
     FastVecAdd(v0u.f, p->posv.f, pv);
     k = pv->f14;
@@ -2685,7 +2685,7 @@ void *spawn_splitting_effect_particle_with_collision_and_fade(char *a, char *b, 
         f = random_float_between(0.0f, 1.0f);
         *(float *)(q + 0x10) = f;
         p[8] = (char)(int)(f * 256.0f);
-        p[2] = D_L00_001B2430[func_001160D8() & 7];
+        p[2] = part_type12_textures[func_001160D8() & 7];
         q[0x18] = c;
         *(short *)(q + 0x14) = 0;
         *(short *)(q + 0x16) = 0;

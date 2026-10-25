@@ -642,11 +642,11 @@ void draw_scaled_moby_radial_ripple_mesh(char *moby) {
     float scale;
     scale = IntToFloat(quartu_frame_count) * (D_L15_0016227C * g_frame_time);
     VU1_addGSregister(6, GetEffectTex(D_L15_00162268));
-    VU1_addGSregister(0x42, ((long)D_L15_00162264 << 32) | 0x44);
+    VU1_addGSregister(0x42, ((long)quartu_ripple_alpha_blend << 32) | 0x44);
     VU1_addGSregister(8, 0);
     VU1_addGSregister(0x14, 0xFF9000000260L);
     data->prev = data->angle;
-    data->angle = FastAddRots(data->angle, 360.0f / multiply_global_factor(D_L15_00162274) * 0.017453292f * g_frame_time);
+    data->angle = FastAddRots(data->angle, 360.0f / multiply_global_factor(quartu_ripple_spin_period) * 0.017453292f * g_frame_time);
     get_moby_color(moby, &r, &g, &b);
     color = (D_L15_0016226C << 24) | (b << 16) | (g << 8) | r;
     for (i = 0; i < 46; i++) {
@@ -657,20 +657,20 @@ void draw_scaled_moby_radial_ripple_mesh(char *moby) {
         float radius_remainder = fast_fmod(rad, D_L15_00162270);
         float w = FastNormalizeAngle(radius_remainder * 6.2831855f / D_L15_00162270);
         float z = FastSin(FastAddRots(w, data->angle));
-        D_L15_001DEF80[i][0] = D_L15_00162280 * template_vertex[0] + m->pos.x;
-        D_L15_001DEF80[i][1] = D_L15_00162280 * template_vertex[1] + m->pos.y;
-        D_L15_001DEF80[i][2] = D_L15_00162280 * template_vertex[2] + m->pos.z + D_L15_00162278 * z;
-        D_L15_001DF318[i] = color;
+        quartu_ripple_world_verts[i][0] = quartu_ripple_vertex_scale * template_vertex[0] + m->pos.x;
+        quartu_ripple_world_verts[i][1] = quartu_ripple_vertex_scale * template_vertex[1] + m->pos.y;
+        quartu_ripple_world_verts[i][2] = quartu_ripple_vertex_scale * template_vertex[2] + m->pos.z + D_L15_00162278 * z;
+        quartu_ripple_vertex_colors[i] = color;
     }
     for (j = 0; j < 2; j++) {
         for (uv_vertex_index = 0; uv_vertex_index < 46; uv_vertex_index++) {
             Quad4_2EF030 uv_scroll_factors = D_L15_00162288;
-            D_L15_001DF1A8[uv_vertex_index][0] = D_L15_001DED58[uv_vertex_index][0] + fast_fmod(scale * uv_scroll_factors.f[j][0], 1.0f);
-            D_L15_001DF1A8[uv_vertex_index][1] = D_L15_001DED58[uv_vertex_index][1] + fast_fmod(scale * uv_scroll_factors.f[j][1], 1.0f);
+            quartu_ripple_scrolled_uvs[uv_vertex_index][0] = D_L15_001DED58[uv_vertex_index][0] + fast_fmod(scale * uv_scroll_factors.f[j][0], 1.0f);
+            quartu_ripple_scrolled_uvs[uv_vertex_index][1] = D_L15_001DED58[uv_vertex_index][1] + fast_fmod(scale * uv_scroll_factors.f[j][1], 1.0f);
         }
         font_queue_vu_state();
         for (k = 0; k < 1; k++) {
-            draw_env_overlay_mesh(D_L15_00162230[k], D_L15_00162250[k], D_L15_00162260[k], (void *)D_L15_00162258[k], 1);
+            draw_env_overlay_mesh(quartu_ripple_mesh_counts[k], quartu_ripple_mesh_positions[k], quartu_ripple_mesh_colors[k], (void *)quartu_ripple_mesh_uvs[k], 1);
         }
     }
 }
@@ -710,37 +710,37 @@ void draw_scaled_88_vertex_moby_radial_ripple_mesh(char *moby) {
     int b;
     int color;
     float scale;
-    scale = IntToFloat(quartu_frame_count) * (D_L15_001622EC * g_frame_time);
-    VU1_addGSregister(6, GetEffectTex(D_L15_001622D8));
-    VU1_addGSregister(0x42, ((long)D_L15_001622D4 << 32) | 0x44);
+    scale = IntToFloat(quartu_frame_count) * (quartu_ripple88_uv_scroll_rate * g_frame_time);
+    VU1_addGSregister(6, GetEffectTex(quartu_ripple88_texture));
+    VU1_addGSregister(0x42, ((long)quartu_ripple88_alpha_blend << 32) | 0x44);
     VU1_addGSregister(8, 0);
     VU1_addGSregister(0x14, 0xFF9000000260L);
     data->prev = data->angle;
-    data->angle = FastAddRots(data->angle, 360.0f / multiply_global_factor(D_L15_001622E4) * 0.017453292f * g_frame_time);
+    data->angle = FastAddRots(data->angle, 360.0f / multiply_global_factor(quartu_ripple88_spin_period) * 0.017453292f * g_frame_time);
     get_moby_color(moby, &r, &g, &b);
-    color = (D_L15_001622DC << 24) | (b << 16) | (g << 8) | r;
+    color = (quartu_ripple88_alpha << 24) | (b << 16) | (g << 8) | r;
     for (i = 0; i < 88; i++) {
-        float *template_vertex = D_L15_001DF3D0[i];
+        float *template_vertex = quartu_ripple88_template_verts[i];
         float x = template_vertex[0];
         float y = template_vertex[1];
         float rad = vec_length(x * x + y * y);
-        float radius_remainder = fast_fmod(rad, D_L15_001622E0);
-        float w = FastNormalizeAngle(radius_remainder * 6.2831855f / D_L15_001622E0);
+        float radius_remainder = fast_fmod(rad, quartu_ripple88_wavelength);
+        float w = FastNormalizeAngle(radius_remainder * 6.2831855f / quartu_ripple88_wavelength);
         float z = FastSin(FastAddRots(w, data->angle));
-        D_L15_001DFC10[i][0] = D_L15_001622F0 * template_vertex[0] + ((struct Moby *)moby)->pos.x;
-        D_L15_001DFC10[i][1] = D_L15_001622F0 * template_vertex[1] + ((struct Moby *)moby)->pos.y;
-        D_L15_001DFC10[i][2] = D_L15_001622F0 * template_vertex[2] + ((struct Moby *)moby)->pos.z + D_L15_001622E8 * z;
-        D_L15_001E02F0[i] = color;
+        quartu_ripple88_world_verts[i][0] = quartu_ripple88_vertex_scale * template_vertex[0] + ((struct Moby *)moby)->pos.x;
+        quartu_ripple88_world_verts[i][1] = quartu_ripple88_vertex_scale * template_vertex[1] + ((struct Moby *)moby)->pos.y;
+        quartu_ripple88_world_verts[i][2] = quartu_ripple88_vertex_scale * template_vertex[2] + ((struct Moby *)moby)->pos.z + quartu_ripple88_wave_height * z;
+        quartu_ripple88_vertex_colors[i] = color;
     }
     for (j = 0; j < 2; j++) {
         for (uv_vertex_index = 0; uv_vertex_index < 88; uv_vertex_index++) {
-            Quad4_2EF410 uv_scroll_factors = D_L15_001622F8;
-            D_L15_001E0030[uv_vertex_index][0] = D_L15_001DF7F0[uv_vertex_index][0] + fast_fmod(scale * uv_scroll_factors.f[j][0], 1.0f);
-            D_L15_001E0030[uv_vertex_index][1] = D_L15_001DF7F0[uv_vertex_index][1] + fast_fmod(scale * uv_scroll_factors.f[j][1], 1.0f);
+            Quad4_2EF410 uv_scroll_factors = quartu_ripple88_uv_scroll_factors;
+            quartu_ripple88_scrolled_uvs[uv_vertex_index][0] = quartu_ripple88_base_uvs[uv_vertex_index][0] + fast_fmod(scale * uv_scroll_factors.f[j][0], 1.0f);
+            quartu_ripple88_scrolled_uvs[uv_vertex_index][1] = quartu_ripple88_base_uvs[uv_vertex_index][1] + fast_fmod(scale * uv_scroll_factors.f[j][1], 1.0f);
         }
         font_queue_vu_state();
         for (k = 0; k < 1; k++) {
-            draw_env_overlay_mesh(D_L15_001622A0[k], D_L15_001622C0[k], D_L15_001622D0[k], (void *)D_L15_001622C8[k], 1);
+            draw_env_overlay_mesh(quartu_ripple88_mesh_counts[k], quartu_ripple88_mesh_positions[k], quartu_ripple88_mesh_colors[k], (void *)quartu_ripple88_mesh_uvs[k], 1);
         }
     }
 }
@@ -755,13 +755,13 @@ typedef struct {
 
 /* Tests whether the selected vendor entry is available (joined with func_L15_002F8D9C). */
 int can_spawn_codebot_slot_effect(int index) {
-    char *other = D_L15_00167480;
+    char *other = quartu_camera_moby;
     Entry_F8D30 *entries;
     char *sub;
     char *moby;
     char *data;
     if (*(short *)(other + 0x86) != 0x13) return 1;
-    entries = (Entry_F8D30 *)D_L15_0015F050;
+    entries = (Entry_F8D30 *)quartu_camera_descriptors;
     sub = entries[index].sub;
     moby = *(char **)(sub + 4);
     data = *(char **)(moby + 0x70) + 0x40;
@@ -778,7 +778,7 @@ extern char *D_L15_0015F050 MACRO_ADDR;
 extern int *D_L15_001B0DB0[];
 /* tests several indexed conditions of a moby's entry in the table */
 int is_hero_in_moby_follow_camera_region(char *moby) {
-    int *e = *(int **)(D_L15_0015F050 + *(short *)(moby + 0x84) * 32 + 0x1C);
+    int *e = *(int **)(quartu_camera_descriptors + *(short *)(moby + 0x84) * 32 + 0x1C);
     int r;
     int i;
     if (e[10] >= 0 && test_point_in_transformed_unit_cylinder(D_0013E633 + 0xE9D, e[10])) {
@@ -831,7 +831,7 @@ int check_moby_target_angular_limits(char *moby, float a, float b) {
     float lenr;
     float dot3;
     float den;
-    char *tbl = D_L15_0015F050;
+    char *tbl = quartu_camera_descriptors;
     char *src;
 
     data = *(char **)(tbl + *(short *)(moby + 0x84) * 32 + 0x1C);

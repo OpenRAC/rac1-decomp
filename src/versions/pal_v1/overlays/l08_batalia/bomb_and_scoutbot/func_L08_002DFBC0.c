@@ -15,7 +15,7 @@ void update_path_following_moby(char *m) {
         {
             float l0 = FastVecDist((char *)t + 0x10, (char *)t + 0x20);
             FastVecDist((char *)t + 0x10, (char *)t + (*t << 4));
-            *(float *)(d + 8) = *(float *)&D_L08_00161AD4 * g_frame_time / l0;
+            *(float *)(d + 8) = *(float *)&batalia_path_mover_speed * g_frame_time / l0;
             *(float *)(d + 4) = *(float *)(d + 4) * (float)*t;
             *(float *)(d + 0xC) = randf_sym(0.0f, 5.0f);
         }

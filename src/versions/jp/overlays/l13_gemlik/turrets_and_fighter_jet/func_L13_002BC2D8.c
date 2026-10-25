@@ -46,30 +46,30 @@ void JetFighterUpdateL13(Jet47 *m) {
         int texture_index,initialized;
         m->state=1; d->animation_frame=0; m->scale=m->model->scale;
         *(float*)((char*)d+0x20)=d->angles[0]; *(float*)((char*)d+0x24)=d->angles[1];
-        limit=fast_atan2(1.0f,D_L13_0016CE70); limit+=limit;
+        limit=fast_atan2(1.0f,gemlik_view_tan_half_fov); limit+=limit;
         d->counterC0=0; d->hit_class=0; *(float*)((char*)d+0xAC)=limit; *(float*)((char*)d+0xB0)=limit;
         qcopy(d->angles,m->rotation); qcopy(d->spawn_rotation,m->rotation); qcopy(d->spawn_position,m->position);
         texture_index=d->texture_id;
-        texture_table=D_L13_0016D500;
+        texture_table=gemlik_texture_table;
         d->blend=0.0f;
         texture_index+=40;
-        palette_data=D_L13_0015F520;
+        palette_data=gemlik_palette_data_base;
         initialized=jet_palette_ready47;
         palette=(int*)(palette_data+(texture_table[texture_index].palette<<4));
         jet_palette47=palette;
-        if (!initialized) __builtin_memcpy(D_L13_001CC0F0,palette,1024);
+        if (!initialized) __builtin_memcpy(jet_hud_palette_backup,palette,1024);
         jet_palette_ready47=1; d->wait_timer=1; d->energy=1;
         if (m->persistent!=0xFF && (D_0014171B+0xAA35)[m->persistent+(g_current_level_index<<4)]==0xFF) m->state=9;
         if (d->group_a>0) jet_group_state(d->group_a,0,0,0);
         if (d->group_b>0) jet_group_state(d->group_b,0,0,0);
-        jet_group_switch(D_L13_001CC068,1,1,-1); jet_group_switch(&D_L13_001614D0,1,-1,-1); jet_group_flag(0x102,0);
+        jet_group_switch(jet_boarding_group_ids,1,1,-1); jet_group_switch(&jet_boarding_group_ids_b,1,-1,-1); jet_group_flag(0x102,0);
         d->lock_index=-1; d->start_timer=scale_ticks(575);
         break;
     }
     case 1: {
         short enter=0;
         if (m->persistent!=0xFF && (D_0014171B+0xAA35)[m->persistent+(g_current_level_index<<4)]==0xFF) m->state=9;
-        else if (d->trigger!=-1 && is_point_inside_clip_volume(D_0013E633+0xE9D,d->trigger)) { d->blend=0.99f; D_L13_0015F4FC=0.99f; enter=1; }
+        else if (d->trigger!=-1 && is_point_inside_clip_volume(D_0013E633+0xE9D,d->trigger)) { d->blend=0.99f; gemlik_fade_level=0.99f; enter=1; }
         else if (jet_distance(m,((JetPlayer47*)(D_0013E633+0xE1D))->moby)<2.0f && ((JetPlayer47*)(D_0013E633+0xE1D))->state!=50 && ((JetPlayer47*)(D_0013E633+0xE1D))->state!=29 && !((JetPlayer47*)(D_0013E633+0xE1D))->busy) {
             int pressed=try_set_help_message(7,0x543B)!=0;
             if (*(int*)(D_0013A5E0+0x2604)&0x10) enter=pressed;
@@ -78,15 +78,15 @@ void JetFighterUpdateL13(Jet47 *m) {
             float limit;
             HeroEnterMoveState(50,1); m->scale=m->model->scale;
             *(float*)((char*)d+0x20)=d->angles[0]; *(float*)((char*)d+0x24)=d->angles[1];
-            limit=fast_atan2(1.0f,D_L13_0016CE70); limit+=limit;
+            limit=fast_atan2(1.0f,gemlik_view_tan_half_fov); limit+=limit;
             d->counterC0=0; d->hit_class=0; *(float*)((char*)d+0xAC)=limit; *(float*)((char*)d+0xB0)=limit;
             qcopy(d->angles,m->rotation); d->wait_timer=1; d->energy=1; m->state=2; d->lock_index=-1;
-        } else if (d->blend!=0.0f) { ApproachValue(&d->blend,0.0f,g_frame_time*4.0f); D_L13_0015F4FC=d->blend; }
+        } else if (d->blend!=0.0f) { ApproachValue(&d->blend,0.0f,g_frame_time*4.0f); gemlik_fade_level=d->blend; }
         jet_animate((unsigned char*)m,1.5f);
         break;
     }
     case 2:
-        ApproachValue(&d->blend,1.0f,g_frame_time*4.0f); D_L13_0015F4FC=d->blend;
+        ApproachValue(&d->blend,1.0f,g_frame_time*4.0f); gemlik_fade_level=d->blend;
         if (d->blend==1.0f) {
             if (d->entry_path!=-1) {
                 JetPath47 *path=&gemlik_scene_points[d->entry_path];
@@ -105,16 +105,16 @@ void JetFighterUpdateL13(Jet47 *m) {
             BuildSphericalOffset(d,frame_scale*0.1f,d->angles[2],-d->angles[1]);
             if (d->group_a>0) jet_group_state(d->group_a,1,1,1);
             if (d->group_b>0) jet_group_state(d->group_b,1,1,1);
-            jet_group_switch(D_L13_001CC068,0,0,-1); jet_group_switch(&D_L13_001614D0,0,-1,-1); jet_group_flag(0x102,0);
+            jet_group_switch(jet_boarding_group_ids,0,0,-1); jet_group_switch(&jet_boarding_group_ids_b,0,-1,-1); jet_group_flag(0x102,0);
             m->position[2]+=3.0f; m->scale=m->model->scale*0.25f; ((JetPlayer47*)(D_0013E633+0xE1D))->in_craft=1;
             if (d->engine_sound==-1) d->engine_sound=Moby_PlaySound(0,4,(int)m);
-            D_L13_0015F6E8=2; PlayerFighterFlight(m,d); jet_camera_mode(); MusicRequestTrack(2,4); m->state=4;
+            gemlik_play_mode=2; PlayerFighterFlight(m,d); jet_camera_mode(); MusicRequestTrack(2,4); m->state=4;
         }
         break;
     case 4: {
         unsigned char *audio;
-        if (d->blend!=0.0f) { ApproachValue(&d->blend,0.0f,g_frame_time*4.0f); D_L13_0015F4FC=d->blend; }
-        force_help_message(6,0); D_L13_0015F6E8=2;
+        if (d->blend!=0.0f) { ApproachValue(&d->blend,0.0f,g_frame_time*4.0f); gemlik_fade_level=d->blend; }
+        force_help_message(6,0); gemlik_play_mode=2;
         audio=D_0013E633+0x1D+d->engine_sound*0x70;
         if (*(Jet47**)(audio+0x88)!=m || !audio[0x74]) { d->engine_sound=-1; d->engine_sound=Moby_PlaySound(0,4,(int)m); }
         PlayerFighterFlight(m,d);
@@ -129,7 +129,7 @@ void JetFighterUpdateL13(Jet47 *m) {
         m->scale=m->model->scale; moby_anim_sphere_lerp(m);
         if (d->group_a>0) jet_group_state(d->group_a,0,0,0);
         if (d->group_b>0) jet_group_state(d->group_b,0,0,0);
-        jet_group_switch(D_L13_001CC068,1,1,-1); jet_group_switch(&D_L13_001614D0,1,-1,-1); jet_group_flag(0x102,0);
+        jet_group_switch(jet_boarding_group_ids,1,1,-1); jet_group_switch(&jet_boarding_group_ids_b,1,-1,-1); jet_group_flag(0x102,0);
         if (d->exit_path!=-1) { JetPath47 *path=&gemlik_scene_points[d->exit_path]; Hero_ResetToPosition(path->position,path->rotation,0,1); }
         else Hero_ResetToPosition(d->spawn_position,gemlik_scene_points[d->destination_path].rotation,0,1);
         {
@@ -141,10 +141,10 @@ void JetFighterUpdateL13(Jet47 *m) {
             if (id!=-1) { audio=D_0013E633+0x1D+id*0x70; if (*(Jet47**)(audio+0x88)==m && audio[0x74]) Sound_StopSlot(id); }
             d->weapon_sound=-1;
         }
-        MusicRequestTrack(0,5); d->blend=0.99f; D_L13_0015F4FC=0.99f; m->state=1;
+        MusicRequestTrack(0,5); d->blend=0.99f; gemlik_fade_level=0.99f; m->state=1;
         break;
     case 6:
-        D_L13_0015F6E8=2;
+        gemlik_play_mode=2;
         {
             int id=d->engine_sound;
             unsigned char *audio;
@@ -157,7 +157,7 @@ void JetFighterUpdateL13(Jet47 *m) {
         m->state=7; break;
     case 7: {
         JetTransition47 *transition;
-        D_L13_0015F6E8=2;
+        gemlik_play_mode=2;
         if (FastDecTimer(&d->death_timer)) {
             transition=(JetTransition47*)(D_0014171B+0x100B5);
             if (!transition->pending) {
@@ -182,15 +182,15 @@ void JetFighterUpdateL13(Jet47 *m) {
     }
     case 8:
         ((JetPlayer47*)(D_0013E633+0xE1D))->in_craft=0; *(int*)((char*)((JetPlayer47*)(D_0013E633+0xE1D))->moby+0x98)=0; HeroEnterMoveState(0,1); CameraScript2(0);
-        if (d->escape_path==-1) { STUB_printf(D_L13_001F4760); qcopy(m->position,d->spawn_position); qcopy(m->rotation,d->spawn_rotation); }
+        if (d->escape_path==-1) { STUB_printf(jet_no_escape_path_msg); qcopy(m->position,d->spawn_position); qcopy(m->rotation,d->spawn_rotation); }
         else { int index=d->escape_path; JetPath47 *paths=gemlik_scene_points; qcopy(m->position,paths[index].position); qcopy(m->rotation,paths[index].rotation); m->position[2]+=0.57318f; }
         m->scale=m->model->scale; moby_anim_sphere_lerp(m);
-        if (d->destination_path==-1) STUB_printf(D_L13_001F4798);
+        if (d->destination_path==-1) STUB_printf(jet_no_destination_path_msg);
         else {
             JetPath47 *path;
             if (d->group_a>0) jet_group_state(d->group_a,0,0,0);
             if (d->group_b>0) jet_group_state(d->group_b,0,0,0);
-            jet_group_switch(D_L13_001CC068,1,1,-1); jet_group_switch(&D_L13_001614D0,1,-1,-1); jet_group_flag(0x102,0);
+            jet_group_switch(jet_boarding_group_ids,1,1,-1); jet_group_switch(&jet_boarding_group_ids_b,1,-1,-1); jet_group_flag(0x102,0);
             path=&gemlik_scene_points[d->destination_path]; Hero_ResetToPosition(path->position,path->rotation,0,1);
         }
         if (m->persistent!=0xFF) jet_clear_persistent(m->persistent);

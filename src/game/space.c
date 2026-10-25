@@ -349,7 +349,7 @@ void draw_light_flare(char *arg0) {
 
     alpha = 0;
     scale_vector(a, arg0, 1.0f / 1024.0f);
-    if (func_001FA9E8(a, &alpha, 32.0f) < 0) {
+    if (bsphere_check_alpha(a, &alpha, 32.0f) < 0) {
         return;
     }
     if (g_game_mode == 6 && level_render_state.mode == 3
@@ -363,7 +363,7 @@ void draw_light_flare(char *arg0) {
     q.gs[2] = 0xFF9000000260;
     q.gs[3] = 0x8000000044;
     q.gs[0] = 0;
-    FastMemCopy(q.uv, D_001D9B40, 0x20);
+    FastMemCopy(q.uv, quad_default_uvs, 0x20);
     FastVecScale(b, arg0, 1.0f / 1024.0f);
     z = *(float *)(arg0 + 0x18) + 0.1f;
     if (g_game_mode == 6) {
@@ -374,11 +374,11 @@ void draw_light_flare(char *arg0) {
 
         q.rgba[i] = ((alpha >> 1) << 24) | 0x808080;
         v = q.v[i];
-        matrix_mul_vec3(v, D_001D9B60[level_render_state.set][i], arg0 + 0xC0);
+        matrix_mul_vec3(v, light_flare_corners[level_render_state.set][i], arg0 + 0xC0);
         FastVecAdd(v, v, arg0 + 0x10);
         v[2] = z;
     }
-    func_001F7EF8(&q, 0, 0);
+    draw_world_quad_packet(&q, 0, 0);
 }
 
 /* The five nops of padding after func_0022F258 (they sat after
@@ -634,17 +634,17 @@ void draw_resident_textured_quad(void) {
     func_00234C98_l(0x47, 0x31801);
     s = 1.0f;
     q.gs[0] = 0;
-    q.gs[1] = D_00160680;
+    q.gs[1] = resident_quad_texture;
     q.gs[2] = 0xFF9000000260;
     q.gs[3] = 0x8000000044;
-    FastMemCopy(q.uv, D_001D9B40, 0x20);
-    if ((unsigned)D_0015EE84_m < 0x13) s = D_001D9E20[D_0015EE84_m];
+    FastMemCopy(q.uv, quad_default_uvs, 0x20);
+    if ((unsigned)D_0015EE84_m < 0x13) s = resident_quad_level_scales[D_0015EE84_m];
     for (i = 0; i < 4; i++) {
         q.rgba[i] = 0x80808080;
-        FastVecScale(q.v[i], D_001D9DE0[i], s);
-        FastVecAdd(q.v[i], q.v[i], &D_001605F0);
+        FastVecScale(q.v[i], resident_quad_corners[i], s);
+        FastVecAdd(q.v[i], q.v[i], &resident_quad_pos);
     }
-    func_001F7EF8(&q, 0, 0);
+    draw_world_quad_packet(&q, 0, 0);
     func_00234C98_l(0x47, 0x5360B);
 }
 
@@ -660,7 +660,7 @@ void draw_resident_textured_banner(int arg0) {
     func_00234C98_l(0x47, 0x31801);
     func_00234C98_l(0x42, ((long)0x8000 << 24) | 0x44);
     DrawTexturedQuad(0x20, frame_size - 0x58, 0x100, 0x20, 0, 0, 0x100, 0x20,
-                  (arg0 << 24) | 0x808080, D_00160688);
+                  (arg0 << 24) | 0x808080, resident_banner_texture);
     func_00234C98_l(0x47, 0x5360B);
 }
 
@@ -811,7 +811,7 @@ void emit_six_spark_effects(char *m, float z) {
         vel[3] = 0.4f;
         qcopy(vel2, vel);
         vel2[3] = 0.6f;
-        qcopy(pos, D_001D9EF0[level_render_state.set][i]);
+        qcopy(pos, flare_spark_offsets[level_render_state.set][i]);
         matrix_mul_vec3(pos, pos, m + 0xC0);
         FastVecAdd(pos, pos, m + 0x10);
         a = scale_game_frame_count(4);
@@ -2121,7 +2121,7 @@ void append_scrolling_textured_quad(int x, int y, int w, int h, unsigned long rg
     g_render_packet_cursor[3] = 0x50000007;
     base = g_render_packet_cursor;
     g_render_packet_cursor = base + 4;
-    qcopy(base + 4, D_00160950);
+    qcopy(base + 4, textured_quad_giftag);
     p = (long *)(base + 8);
     g_render_packet_cursor = base + 8;
     p[0] = tex;
@@ -2538,7 +2538,7 @@ void DoSpaceTransition(void) {
     if (level_sound_defs != 0) {
         func_0012E318(*(int *)(level_sound_defs + 0x1C));
         func_0012E2E8();
-        STUB_printf(D_001E8CB8, *(int *)(level_sound_defs + 0x1C));
+        STUB_printf(unloaded_sound_bank_format, *(int *)(level_sound_defs + 0x1C));
     }
     D_0015EE5C_m = 0;
     func_0012F068(0);
@@ -2764,15 +2764,15 @@ void render_environment_mapped_object(EnvironmentMappedObject *object) {
     if (g_game_mode == 6 && D_0013E150_33AB8[0] == 4) {
         mapping_enabled = 0;
     }
-    if (mapping_enabled != 0 || (*(s32 *)&D_001605A4) == 1) {
-        (*(s32 *)&D_001605A8) = 1;
-        fast_dec_timer(&(*(s32 *)&D_001605AC));
+    if (mapping_enabled != 0 || (*(s32 *)&env_map_first_frame) == 1) {
+        (*(s32 *)&env_map_was_active) = 1;
+        fast_dec_timer(&(*(s32 *)&env_map_blend_timer));
         transition_fraction =
-            IntToFloat((*(s32 *)&D_001605AC)) / IntToFloat(scale_game_frame_count(0x3C));
+            IntToFloat((*(s32 *)&env_map_blend_timer)) / IntToFloat(scale_game_frame_count(0x3C));
         for (element_index = 0; element_index < vertex_count; element_index++) {
-            transform_vector(&D_001DC870[element_index], &positions[element_index],
+            transform_vector(&env_map_world_positions[element_index], &positions[element_index],
                              object_transform);
-            FastVecSub(view_direction, &D_001DC870[element_index], D_00187180_33AB8);
+            FastVecSub(view_direction, &env_map_world_positions[element_index], D_00187180_33AB8);
             fast_vec_normalize(view_direction, view_direction, 1.0f);
             transform_vector(normal, &normals[element_index], object_transform);
             fast_vec_normalize(normal, normal, 0.1f);
@@ -2781,46 +2781,46 @@ void render_environment_mapped_object(EnvironmentMappedObject *object) {
             fast_vec_normalize(reflection, reflection, 1.0f);
             reflection[2] += 1.0f;
             sphere_denominator = vec_length(reflection[2] * 2.0f) * 2.0f;
-            if ((*(s32 *)&D_001605A4) == 1 || (*(s32 *)&D_001605AC) == 0) {
-                D_001DCED0[element_index][0] = reflection[0] / sphere_denominator + 0.5f;
-                D_001DCED0[element_index][1] = reflection[1] / sphere_denominator + 0.5f;
+            if ((*(s32 *)&env_map_first_frame) == 1 || (*(s32 *)&env_map_blend_timer) == 0) {
+                env_map_uvs[element_index][0] = reflection[0] / sphere_denominator + 0.5f;
+                env_map_uvs[element_index][1] = reflection[1] / sphere_denominator + 0.5f;
             } else {
                 coordinate = reflection[0] / sphere_denominator + 0.5f;
-                D_001DCED0[element_index][0] =
-                    coordinate + (D_001DD200[element_index][0] - coordinate) * transition_fraction;
+                env_map_uvs[element_index][0] =
+                    coordinate + (env_map_saved_uvs[element_index][0] - coordinate) * transition_fraction;
                 coordinate = reflection[1] / sphere_denominator + 0.5f;
-                D_001DCED0[element_index][1] =
-                    coordinate + (D_001DD200[element_index][1] - coordinate) * transition_fraction;
+                env_map_uvs[element_index][1] =
+                    coordinate + (env_map_saved_uvs[element_index][1] - coordinate) * transition_fraction;
             }
         }
-        if ((*(s32 *)&D_001605A4) == 1) {
-            (*(s32 *)&D_001605A4) = 2;
+        if ((*(s32 *)&env_map_first_frame) == 1) {
+            (*(s32 *)&env_map_first_frame) = 2;
         }
     } else {
-        if ((*(s32 *)&D_001605A8) == 1) {
-            (*(s32 *)&D_001605A8) = 0;
+        if ((*(s32 *)&env_map_was_active) == 1) {
+            (*(s32 *)&env_map_was_active) = 0;
             for (element_index = 0; element_index < vertex_count; element_index++) {
-                D_001DD200[element_index][0] = D_001DCED0[element_index][0];
-                D_001DD200[element_index][1] = D_001DCED0[element_index][1];
-                transform_vector(&D_001DC870[element_index], &positions[element_index],
+                env_map_saved_uvs[element_index][0] = env_map_uvs[element_index][0];
+                env_map_saved_uvs[element_index][1] = env_map_uvs[element_index][1];
+                transform_vector(&env_map_world_positions[element_index], &positions[element_index],
                                  object_transform);
             }
         } else {
             for (element_index = 0; element_index < vertex_count; element_index++) {
-                transform_vector(&D_001DC870[element_index], &positions[element_index],
+                transform_vector(&env_map_world_positions[element_index], &positions[element_index],
                                  object_transform);
             }
         }
-        (*(s32 *)&D_001605AC) = scale_game_frame_count(0x3C);
+        (*(s32 *)&env_map_blend_timer) = scale_game_frame_count(0x3C);
     }
     for (element_index = 0; element_index < quad_count; element_index++) {
         for (corner_index = 0; corner_index < 4; corner_index++) {
             int vertex_index = indexed_quads[element_index].corners[corner_index].vertex_index;
 
-            qcopy(&quad_positions[corner_index], &D_001DC870[vertex_index]);
-            texture_coordinates[corner_index][0] = D_001DCED0[vertex_index][0];
-            texture_coordinates[corner_index][1] = D_001DCED0[vertex_index][1];
+            qcopy(&quad_positions[corner_index], &env_map_world_positions[vertex_index]);
+            texture_coordinates[corner_index][0] = env_map_uvs[vertex_index][0];
+            texture_coordinates[corner_index][1] = env_map_uvs[vertex_index][1];
         }
-        func_001F7EF8(quad_positions, 0, 0);
+        draw_world_quad_packet(quad_positions, 0, 0);
     }
 }

@@ -436,7 +436,7 @@ void update_linked_moby_states(char *m) {
     case 0:
         *(unsigned char *)(m + 0x20) = 1;
         b = moby_array_start;
-        p[1] = *(int *)&D_L00_00161548;
+        p[1] = *(int *)&linked_moby_trigger_ticks;
         p[2] = 3;
         p[0x20 / 4] = b + (p[4] << 8);
         p[0x24 / 4] = b + (p[5] << 8);
@@ -448,7 +448,7 @@ void update_linked_moby_states(char *m) {
         fast_dec_timer(p + 3);
         if (r != 0 && p[3] == 0) {
             *(unsigned char *)(m + 0xA4) = 0xFF;
-            p[3] = *(int *)&D_L00_00161550;
+            p[3] = *(int *)&linked_moby_hit_cooldown;
             p[2] = p[2] - 1;
             if (p[2] <= 0) {
                 DeleteMoby((int)m);
@@ -460,7 +460,7 @@ void update_linked_moby_states(char *m) {
             || *(unsigned char *)(*(char **)&p[10] + 0x20) == 0x50
             || *(unsigned char *)(*(char **)&p[11] + 0x20) == 0x50) {
             if (fast_dec_timer(p + 1)) {
-                p[1] = *(int *)&D_L00_00161548;
+                p[1] = *(int *)&linked_moby_trigger_ticks;
                 q = (char **)(p + 8);
                 i = 0;
                 do {
@@ -1479,8 +1479,8 @@ void spawn_moby_particle_and_glow_burst(char *m, int flag) {
             int *pa, *pb;
             int a, b;
             sc = random_float_between(8.0f, 10.0f) * g_frame_time - extra * g_frame_time;
-            A = D_L00_001E9DD8;
-            B = D_L00_001E9DF0;
+            A = glow_burst_spark_colors_a;
+            B = glow_burst_spark_colors_b;
             pa = A.v + random_integer_below(6);
             pb = B.v + random_integer_below(6);
             a = rand_range(scale_ticks(15), scale_ticks(20));
@@ -2006,19 +2006,19 @@ void update_taunter_effect_slots(Moby *arg) {
     if (taunter_effect_reset_pending != 0) {
         for (i = 9; i >= 0; i--) D_L00_001DB740_b[i].c = 0;
         taunter_effect_reset_pending = 0;
-        D_L00_001615A0 = 0;
+        taunter_effect_spawn_timer = 0;
         r = func_001FA898_r(*(float *)&D_L00_00161584_g / (*(float *)&D_L00_00161588_g * g_frame_time));
         *(int *)&D_L00_001615A8_g = r;
-        D_L00_001615AC = 1.0f / IntToFloat(r);
+        taunter_effect_inv_lifetime = 1.0f / IntToFloat(r);
     }
     if (taunter_effect_emission_disabled == 0) {
-        if (fast_dec_timer(&D_L00_001615A0) != 0) {
+        if (fast_dec_timer(&taunter_effect_spawn_timer) != 0) {
             i = 0;
             do {
                 p = &D_L00_001DB740_b[i];
                 if (p->c == 0) {
-                    D_L00_001615A0 = scale_ticks(*(int *)&D_L00_00161580_g);
-                    av = *(unsigned short *)(&D_L00_001615A0 + 2);
+                    taunter_effect_spawn_timer = scale_ticks(*(int *)&D_L00_00161580_g);
+                    av = *(unsigned short *)(&taunter_effect_spawn_timer + 2);
                     p->b = *(unsigned short *)&D_L00_0016158C_g;
                     p->c = 1;
                     p->a = av;
@@ -2082,25 +2082,25 @@ void draw_taunter_effect_quads(char *m) {
     pk.uv[7] = 1.0f;
     vec_scale_to_length(f, m + 0xD0, -1.0f);
     for (i = 0; i < 10; i++) {
-        if (D_L00_001DB740[i].s8 != 0) {
-            FastVecScale(g, f, D_L00_001DB740[i].f);
-            FastVecAdd(d, D_L00_001615B0, g);
+        if (taunter_effect_slots[i].s8 != 0) {
+            FastVecScale(g, f, taunter_effect_slots[i].f);
+            FastVecAdd(d, taunter_effect_origin, g);
             qcopy(a, f);
             FastVecScale(c, D_0013E633 + 0x10AD, -1.0f);
             FastVecCross(b, a, c);
             vec_scale_to_length(b, b, 1.0f);
             FastVecCross(c, b, a);
-            t = IntToFloat(D_L00_001DB740[i].s4) * D_L00_001615AC;
+            t = IntToFloat(taunter_effect_slots[i].s4) * taunter_effect_inv_lifetime;
             if (t > 1.0f) t = 1.0f;
-            s = *(float *)&D_L00_00161598 + (*(float *)&D_L00_00161594 - *(float *)&D_L00_00161598) * t;
-            u = (IntToFloat(*(int *)&D_L00_0016158C) - 0.0f) * t + 0.0f;
+            s = *(float *)&taunter_effect_start_size + (*(float *)&taunter_effect_end_size - *(float *)&taunter_effect_start_size) * t;
+            u = (IntToFloat(*(int *)&taunter_effect_alpha) - 0.0f) * t + 0.0f;
             j = func_001FA898_r(u);
-            pk.col[3] = (*(int *)&D_L00_00161590 & 0xFFFFFF) | (j << 24);
+            pk.col[3] = (*(int *)&taunter_effect_color & 0xFFFFFF) | (j << 24);
             pk.col[2] = pk.col[3];
             pk.col[1] = pk.col[3];
             pk.col[0] = pk.col[3];
             for (j = 0; j < 4; j++) {
-                FastVecScale(e, &D_L00_001DB700[j * 4], s);
+                FastVecScale(e, &taunter_effect_quad_corners[j * 4], s);
                 transform_vector(pk.v[j], e, a);
             }
             draw_world_quad(&pk, 0, 0);
@@ -2220,25 +2220,25 @@ void update_pyrocitor_flame_effect_slots(char *m) {
             type = *(short *)(o + 0xA);
             if (type == 10) {
                 int j;
-                for (j = 0; j < *(int *)&D_L00_0016162C; j++) {
+                for (j = 0; j < *(int *)&pyrocitor_flame_particle_count; j++) {
                     int c1;
                     int c2;
                     int c3;
                     int c4;
                     qcopy(qv, src);
-                    rand_vec(v2, 0.0f, *(float *)&D_L00_00161608 * g_frame_time);
-                    *(float *)(qv + 0xC) = *(float *)&D_L00_0016160C;
+                    rand_vec(v2, 0.0f, *(float *)&pyrocitor_flame_particle_drift * g_frame_time);
+                    *(float *)(qv + 0xC) = *(float *)&pyrocitor_flame_particle_start_w;
                     v2[2] = g_frame_time * 4.0f;
-                    v2[3] = *(float *)&D_L00_00161610;
-                    c1 = FastTweenColor(*(int *)&D_L00_00161614, *(int *)&D_L00_00161618, random_float_between(0.0f, 1.0f));
+                    v2[3] = *(float *)&pyrocitor_flame_particle_end_w;
+                    c1 = FastTweenColor(*(int *)&pyrocitor_flame_particle_start_color_a, *(int *)&pyrocitor_flame_particle_start_color_b, random_float_between(0.0f, 1.0f));
                     swap_packed_color_channels(c1, q[0x10]);
-                    c2 = FastTweenColor(*(int *)&D_L00_0016161C, *(int *)&D_L00_00161620, random_float_between(0.0f, 1.0f));
+                    c2 = FastTweenColor(*(int *)&pyrocitor_flame_particle_end_color_a, *(int *)&pyrocitor_flame_particle_end_color_b, random_float_between(0.0f, 1.0f));
                     swap_packed_color_channels(c2, q[0x10]);
-                    c3 = func_001FA898_r(multiply_global_factor(random_float_between((float)*(int *)&D_L00_00161624, (float)*(int *)&D_L00_00161628)));
-                    c4 = func_001FA898_r(multiply_global_factor(random_float_between((float)*(int *)&D_L00_00161624, (float)*(int *)&D_L00_00161628)));
+                    c3 = func_001FA898_r(multiply_global_factor(random_float_between((float)*(int *)&pyrocitor_flame_particle_time_min, (float)*(int *)&pyrocitor_flame_particle_time_max)));
+                    c4 = func_001FA898_r(multiply_global_factor(random_float_between((float)*(int *)&pyrocitor_flame_particle_time_min, (float)*(int *)&pyrocitor_flame_particle_time_max)));
                     rand_vec(v3, 0.0f, f20 + f20);
                     FastVecAdd(v3, v3, (o + 0x10));
-                    PartType02Spawn(v3, qv, v2, c1, c2, 0xA, c3, c4, *(int *)&D_L00_001615FC);
+                    PartType02Spawn(v3, qv, v2, c1, c2, 0xA, c3, c4, *(int *)&pyrocitor_flame_particle_texture);
                 }
             } else if (type < 2) {
                 *(int *)(base - (-(i * 4))) = 0;
@@ -2613,18 +2613,18 @@ void initialize_tesla_claw_beam(char *moby) {
     int j;
 
     data = *(char **)(moby + 0x78);
-    if ((*(int *)&D_L00_00161660) == 0) {
+    if ((*(int *)&tesla_beam_start_pending) == 0) {
         return;
     }
-    (*(int *)&D_L00_00161660) = 0;
+    (*(int *)&tesla_beam_start_pending) = 0;
     (*(int *)&D_L00_0016174C) = 0;
-    tesla_beam_scaled_initial_frame_count = scale_ticks((*(int *)&D_L00_001616F4));
+    tesla_beam_scaled_initial_frame_count = scale_ticks((*(int *)&tesla_beam_initial_frames));
     (*(int *)&beam_arc_outer_color) = 0x7F2020;
     FastVecSub(&d, data + 0x10, data);
-    vec_scale_to_length(&step, &d, (*(float *)&D_L00_00161664) / 20.0f);
-    qcopy(D_L00_001DB8C0, data);
+    vec_scale_to_length(&step, &d, (*(float *)&tesla_beam_length) / 20.0f);
+    qcopy(tesla_beam_points, data);
     for (i = 1; i < 20; i++) {
-        FastVecAdd(&D_L00_001DB8C0[i], &D_L00_001DB8B0[i], &step);
+        FastVecAdd(&tesla_beam_points[i], &D_L00_001DB8B0[i], &step);
         D_L00_001DBB40[i] = 0;
         clear_u64_value(&D_L00_001DBB90[i]);
         D_L00_001DBCD0[i] = 0;

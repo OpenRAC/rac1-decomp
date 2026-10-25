@@ -1562,7 +1562,7 @@ void ResetDrawGlobals(void) {
     surface_height_tiles = 0;
     occl_cell_table = 0;
     occl_cell_count = 0;
-    D_0016129C = 0;
+    local_surface_region_enabled = 0;
 }
 
 extern int *D_00161000 MACRO_ADDR;
@@ -2239,7 +2239,7 @@ void draw_light_quads(void) {
             m[k].v[1] += (cy - dir.v[1] * d) * s;
             m[k].v[2] -= dir.v[2] * d * s;
         }
-        func_001F7EF8(m, 0, 0);
+        draw_world_quad_packet(m, 0, 0);
     }
 }
 

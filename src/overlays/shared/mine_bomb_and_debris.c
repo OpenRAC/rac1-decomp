@@ -2492,7 +2492,7 @@ void gold_devastator_missile_update(M910 *m) {
         vec_scale_to_length(&smoke_position,&motion,random_float_between(0.0f,1.0f)*d->speed);
         FastVecAdd(&smoke_position,&smoke_position,(&m->pos));
         p=smoke1688(&smoke_position,phase.collision.dir,scale_ticks(40),50,0x505050,3,40000.0f,1000.0f,1.0f,-0.0002f,0.0f);
-        if(p) { unsigned char texture=*D_L00_001B245C; p[3]=0x44; p[2]=texture; }
+        if(p) { unsigned char texture=*part_type23_textures; p[3]=0x44; p[2]=texture; }
         smoke1688((&m->pos),phase.collision.dir,scale_ticks(7),127,0xB0B0B0,3,40000.0f,1000.0f,1.0f,-0.0004f,0.0f);
         phase.vectors.relative.q=0;
         phase.vectors.relative.f[2]=0.02f;

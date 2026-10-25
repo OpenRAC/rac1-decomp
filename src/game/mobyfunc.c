@@ -319,7 +319,7 @@ void InitMobyInstance(void *arg0, int oClass) {
     m->unk7D = 0xFF;
     m->unkA1 = 0x7F;
     m->unkA3 = 0x80;
-    m->unk74 = D_001B3900[m->oClass];
+    m->unk74 = resident_moby_class_data[m->oClass];
     if (m->unk74 == 0) {
         m->flags |= 2;
     }

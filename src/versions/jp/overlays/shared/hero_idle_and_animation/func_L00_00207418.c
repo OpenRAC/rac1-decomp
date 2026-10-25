@@ -57,12 +57,12 @@ void scan_hero_input_sequences(void) {
         int n = 0;
         int j;
         int k;
-        while (D_L00_00179800[i][n] != 0) n++;
+        while (cheat_input_sequences[i][n] != 0) n++;
         if (n == 0) continue;
         k = *(int *)(g2 + 0x21D4) - n;
         if (k < 0) k += 16;
         for (j = 0; j < n; j++) {
-            if (*(unsigned char *)(k + (int)b) != D_L00_00179800[i][j]) {
+            if (*(unsigned char *)(k + (int)b) != cheat_input_sequences[i][j]) {
                 j = -1;
                 break;
             }

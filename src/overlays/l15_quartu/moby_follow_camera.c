@@ -13,8 +13,8 @@ extern void func_L15_002F9D38(void *);
 
 int dispatch_moby_follow_camera_update(char *moby)
 {
-    char *entry = D_L15_0015F050 + (*(short *)(moby + 0x84) << 5);
-    char *other = D_L15_00167480;
+    char *entry = quartu_camera_descriptors + (*(short *)(moby + 0x84) << 5);
+    char *other = quartu_camera_moby;
     char *sub = *(char **)(entry + 0x1C);
     if (*(short *)(other + 0x86) == 0 && *(short *)(sub + 0x20) >= 0 && (unsigned char)D_0013E633[0x2EC1] == 2) {
         update_moby_follow_camera(moby);

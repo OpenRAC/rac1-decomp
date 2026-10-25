@@ -22,7 +22,7 @@ void initialize_trick_combo_hud(HudElemX *e) {
     e->unk48 = 0;
     e->unk4A = 0;
     i = 3;
-    p = &D_L05_0015FBB4;
+    p = &trick_combo_recent3;
     for (; i >= 0; i--) {
         *p-- = -1;
     }
@@ -67,16 +67,16 @@ void update_trick_combo_hud(char *a) {
         if (!((float)v >= 1.0f)) {
             return;
         }
-        D_L05_0015FB8C = v;
-        D_L05_0015FB90 = 0;
+        trick_combo_spins = v;
+        trick_combo_trick_count = 0;
         {
             int k;
             for (k = 3; k >= 0; k--) {
-                (&D_L05_0015FB98)[k] = 0;
+                (&trick_combo_trick_flags)[k] = 0;
             }
         }
         u[2] = 1;
-        u[1] = *(unsigned char *)&D_L05_0015F95C;
+        u[1] = *(unsigned char *)&trick_combo_flash_ticks;
         u[0] = 0;
         break;
     }
@@ -91,17 +91,17 @@ void update_trick_combo_hud(char *a) {
             u[1]--;
         }
         T = D_0013E633 + 0xE1D;
-        D_L05_0015FB90 = *(int *)(T + 0x6F0);
+        trick_combo_trick_count = *(int *)(T + 0x6F0);
         {
             int k;
             for (k = 0; k < 4; k++) {
-                (&D_L05_0015FB98)[k] = ((int *)(T + 0x6E0))[k];
+                (&trick_combo_trick_flags)[k] = ((int *)(T + 0x6E0))[k];
             }
         }
         H = D_0013E633 + 0xE1D;
-        if (D_L05_0015FB8C < *(int *)(H + 0x70C)) {
-            D_L05_0015FB8C = *(int *)(H + 0x70C);
-            u[1] = *(unsigned char *)&D_L05_0015F95C;
+        if (trick_combo_spins < *(int *)(H + 0x70C)) {
+            trick_combo_spins = *(int *)(H + 0x70C);
+            u[1] = *(unsigned char *)&trick_combo_flash_ticks;
         }
         if (*(int *)(H + 0x300) == 0) {
             if (!(*(int *)(H + 0x2084) >= 0x6D && *(int *)(H + 0x2084) <= 0x6F)) {
@@ -127,18 +127,18 @@ void update_trick_combo_hud(char *a) {
         {
         char *K = D_0013E633 + 0xE1D;
         if (*(int *)(K + 0x2084) == 0x6B) {
-            if (D_L05_0015FB90 >= 3) {
-                D_L05_0015FBB4 = D_L05_0015FBB0;
-                D_L05_0015FBB0 = D_L05_0015FBAC;
-                D_L05_0015FBAC = D_L05_0015FBA8;
-                D_L05_0015FBA8 = -1;
+            if (trick_combo_trick_count >= 3) {
+                trick_combo_recent3 = trick_combo_recent2;
+                trick_combo_recent2 = trick_combo_recent1;
+                trick_combo_recent1 = trick_combo_recent;
+                trick_combo_recent = -1;
             }
             u[2] = 3;
-            u[1] = *(unsigned char *)&D_L05_0015F95C;
+            u[1] = *(unsigned char *)&trick_combo_flash_ticks;
             u[0] = scale_ticks(0x78);
         } else {
             u[2] = 2;
-            u[1] = *(unsigned char *)&D_L05_0015F95C;
+            u[1] = *(unsigned char *)&trick_combo_flash_ticks;
             u[0] = scale_ticks(0x3C);
         }
         }
@@ -148,12 +148,12 @@ void update_trick_combo_hud(char *a) {
     case 3:
         if (u[0] == 0) {
             trick_combo_score = 0;
-            D_L05_0015FB8C = 0;
-            D_L05_0015FB90 = 0;
+            trick_combo_spins = 0;
+            trick_combo_trick_count = 0;
             {
                 int k;
                 for (k = 3; k >= 0; k--) {
-                    (&D_L05_0015FB98)[k] = 0;
+                    (&trick_combo_trick_flags)[k] = 0;
                 }
             }
             u[2] = 0;
@@ -224,82 +224,82 @@ int draw_trick_combo_hud(char *a) {
         return *(int *)(a + 0x58);
     }
     if (u[2] != 0) {
-        func_00116248_002670A0(buf, D_L05_0015F940, D_L05_0015FB8C * 0x168);
+        func_00116248_002670A0(buf, rilgar_fmt_number, trick_combo_spins * 0x168);
         f20 = IntToFloat(u[1]);
-        r = scale_ticks(*(int *)&D_L05_0015F95C);
+        r = scale_ticks(*(int *)&trick_combo_flash_ticks);
         f12 = f20 / (float)r;
         if (u[2] == 1 || u[2] == 3) {
-            acc = FastTweenColor(*(int *)&D_L05_0015F974, *(int *)&D_L05_0015F978, f12);
+            acc = FastTweenColor(*(int *)&trick_combo_flash_color_from, *(int *)&trick_combo_flash_color_to, f12);
         } else {
-            acc = *(int *)&D_L05_0015F980;
+            acc = *(int *)&trick_combo_text_color;
         }
         h = func_001FA898_r(f21 * 128.0f) << 24;
         acc += h;
         if (u[2] == 1 || u[2] == 2) {
-            func_001F6FD8_x(*(int *)&D_L05_0015F994 + 1, *(int *)&D_L05_0015F998 + 1, h, (int)buf, -1);
-            func_001F6FD8_x(*(int *)&D_L05_0015F994, *(int *)&D_L05_0015F998, acc, (int)buf, -1);
-            func_00116248_002670A0(buf, D_L05_0015F9B0, D_L05_0015FB90,
-                                   func_001FE540_002670A0(D_L05_0015FB90 == 1 ? 0x517C : 0x517D));
-            func_001F6FD8_x(*(int *)&D_L05_0015F99C + 1, *(int *)&D_L05_0015F9A0 + 1, h, (int)buf, -1);
-            func_001F6FD8_x(*(int *)&D_L05_0015F99C, *(int *)&D_L05_0015F9A0, acc, (int)buf, -1);
+            func_001F6FD8_x(*(int *)&trick_combo_spin_text_x + 1, *(int *)&trick_combo_spin_text_y + 1, h, (int)buf, -1);
+            func_001F6FD8_x(*(int *)&trick_combo_spin_text_x, *(int *)&trick_combo_spin_text_y, acc, (int)buf, -1);
+            func_00116248_002670A0(buf, rilgar_fmt_count_and_word, trick_combo_trick_count,
+                                   func_001FE540_002670A0(trick_combo_trick_count == 1 ? 0x517C : 0x517D));
+            func_001F6FD8_x(*(int *)&trick_combo_count_text_x + 1, *(int *)&trick_combo_count_text_y + 1, h, (int)buf, -1);
+            func_001F6FD8_x(*(int *)&trick_combo_count_text_x, *(int *)&trick_combo_count_text_y, acc, (int)buf, -1);
         } else if (u[2] == 3) {
             sel = -1;
-            if (D_L05_0015FB90 == 3) {
+            if (trick_combo_trick_count == 3) {
                 sel = 0;
-                if (D_L05_0015FBA4 != 0) {
+                if (trick_combo_trick_flag3 != 0) {
                     sel = 2;
-                    if (D_L05_0015FBA0 == 0) {
+                    if (trick_combo_trick_flag2 == 0) {
                         sel = 1;
-                    } else if (D_L05_0015FB9C != 0) {
+                    } else if (trick_combo_trick_flag1 != 0) {
                         sel = 3;
                     }
                 }
-            } else if (D_L05_0015FB90 == 4) {
+            } else if (trick_combo_trick_count == 4) {
                 sel = 4;
             }
             if (sel >= 0) {
-                if (D_L05_0015FB8C >= 4) {
+                if (trick_combo_spins >= 4) {
                     k = 2;
                 } else {
-                    k = D_L05_0015FB8C >= 2;
+                    k = trick_combo_spins >= 2;
                 }
                 idx = sel + k * 5;
-                D_L05_0015FBA8 = idx;
-                trick_combo_score = D_L05_0017EA18[idx];
+                trick_combo_recent = idx;
+                trick_combo_score = trick_combo_score_table[idx];
                 cnt = 1;
                 for (i = 1; i < 4; i++) {
-                    if ((&D_L05_0015FBA8)[i] == D_L05_0015FBA8) {
+                    if ((&trick_combo_recent)[i] == trick_combo_recent) {
                         cnt++;
                     }
                 }
                 trick_combo_score = trick_combo_score / cnt;
-                func_00116248_002670A0(buf, D_L05_0015F940, trick_combo_score);
-                draw_framed_text(*(int *)&D_L05_0015F9A4, *(int *)&D_L05_0015F9A8 - 0x18, acc, (int)buf);
-                func_00116248_002670A0(buf, D_L05_0015F9B8, func_001FE540_002670A0(idx + 0x5092));
-                draw_framed_text(*(int *)&D_L05_0015F9A4, *(int *)&D_L05_0015F9A8, acc, (int)buf);
-            } else if (D_L05_0015FB90 > 0) {
+                func_00116248_002670A0(buf, rilgar_fmt_number, trick_combo_score);
+                draw_framed_text(*(int *)&trick_combo_result_x, *(int *)&trick_combo_result_y - 0x18, acc, (int)buf);
+                func_00116248_002670A0(buf, rilgar_fmt_string, func_001FE540_002670A0(idx + 0x5092));
+                draw_framed_text(*(int *)&trick_combo_result_x, *(int *)&trick_combo_result_y, acc, (int)buf);
+            } else if (trick_combo_trick_count > 0) {
                 int n = 0;
                 int m;
-                for (m = 0; m < 4 && n < D_L05_0015FB90; m++) {
-                    if ((&D_L05_0015FB98)[m] != 0) {
+                for (m = 0; m < 4 && n < trick_combo_trick_count; m++) {
+                    if ((&trick_combo_trick_flags)[m] != 0) {
                         out[n] = m;
                         n++;
                     }
                 }
-                if (D_L05_0015FB90 == 1) {
-                    trick_combo_score = D_L05_0015FB8C * 10;
-                    func_00116248_002670A0(buf, D_L05_0015F940, trick_combo_score);
-                    draw_framed_text(*(int *)&D_L05_0015F9A4, *(int *)&D_L05_0015F9A8 - 0x18, acc, (int)buf);
-                    func_00116248_002670A0(buf, D_L05_0015F9C0, func_001FE540_002670A0(out[0] + 0x5183), D_L05_0015FB8C,
-                                           func_001FE540_002670A0(D_L05_0015FB8C == 0x168 ? 0x50A7 : 0x50A8));
-                    draw_framed_text(*(int *)&D_L05_0015F9A4, *(int *)&D_L05_0015F9A8, acc, (int)buf);
+                if (trick_combo_trick_count == 1) {
+                    trick_combo_score = trick_combo_spins * 10;
+                    func_00116248_002670A0(buf, rilgar_fmt_number, trick_combo_score);
+                    draw_framed_text(*(int *)&trick_combo_result_x, *(int *)&trick_combo_result_y - 0x18, acc, (int)buf);
+                    func_00116248_002670A0(buf, rilgar_fmt_single_trick_line, func_001FE540_002670A0(out[0] + 0x5183), trick_combo_spins,
+                                           func_001FE540_002670A0(trick_combo_spins == 0x168 ? 0x50A7 : 0x50A8));
+                    draw_framed_text(*(int *)&trick_combo_result_x, *(int *)&trick_combo_result_y, acc, (int)buf);
                 } else {
-                    trick_combo_score = D_L05_0015FB8C * 20;
-                    func_00116248_002670A0(buf, D_L05_0015F940, trick_combo_score);
-                    draw_framed_text(*(int *)&D_L05_0015F9A4, *(int *)&D_L05_0015F9A8 - 0x18, acc, (int)buf);
-                    func_00116248_002670A0(buf, D_L05_00216FC0, func_001FE540_002670A0(out[0] + 0x5183),
-                                           func_001FE540_002670A0(out[1] + 0x5183), D_L05_0015FB8C);
-                    draw_framed_text(*(int *)&D_L05_0015F9A4, *(int *)&D_L05_0015F9A8, acc, (int)buf);
+                    trick_combo_score = trick_combo_spins * 20;
+                    func_00116248_002670A0(buf, rilgar_fmt_number, trick_combo_score);
+                    draw_framed_text(*(int *)&trick_combo_result_x, *(int *)&trick_combo_result_y - 0x18, acc, (int)buf);
+                    func_00116248_002670A0(buf, rilgar_fmt_double_trick_line, func_001FE540_002670A0(out[0] + 0x5183),
+                                           func_001FE540_002670A0(out[1] + 0x5183), trick_combo_spins);
+                    draw_framed_text(*(int *)&trick_combo_result_x, *(int *)&trick_combo_result_y, acc, (int)buf);
                 }
             }
         }
@@ -321,10 +321,10 @@ int draw_trick_combo_hud(char *a) {
         r3 = scale_ticks(0x3C);
         f0 = IntToFloat(rilgar_frame_count % r3) / (float)r3;
         f0 = FastSin(f0 * 6.283180236816406f - 3.141590118408203f);
-        r3 = FastTweenColor(*(int *)&D_L05_0015F98C, *(int *)&D_L05_0015F990, f0 * 0.5f + 0.5f);
+        r3 = FastTweenColor(*(int *)&trick_combo_banner_color_from, *(int *)&trick_combo_banner_color_to, f0 * 0.5f + 0.5f);
         func_00116248_002670A0(buf, func_001FE540_002670A0(0x531F));
-        draw_framed_text(*(int *)&D_L05_0015F984 + 1, *(int *)&D_L05_0015F988 + 1, 0x80000000, (int)buf);
-        draw_framed_text(*(int *)&D_L05_0015F984, *(int *)&D_L05_0015F988, r3, (int)buf);
+        draw_framed_text(*(int *)&trick_combo_banner_x + 1, *(int *)&trick_combo_banner_y + 1, 0x80000000, (int)buf);
+        draw_framed_text(*(int *)&trick_combo_banner_x, *(int *)&trick_combo_banner_y, r3, (int)buf);
     }
     return *(int *)(a + 0x58);
 }
@@ -334,12 +334,12 @@ extern int D_L05_0015FA54 MACRO_ADDR;
 extern short D_L05_0015FA50;
 // Releases the held hud element if any, clears a flag and bumps a counter.
 void Hud_ReleaseHeldElement(void) {
-    if (D_L05_0015FA58 != -1) {
-        Hud_SetBarValueById(D_L05_0015FA58, 0);
-        D_L05_0015FA58 = -1;
+    if (rilgar_hud_held_bar_id != -1) {
+        Hud_SetBarValueById(rilgar_hud_held_bar_id, 0);
+        rilgar_hud_held_bar_id = -1;
     }
-    D_L05_0015FA54 = 0;
-    *(int *)&D_L05_0015FA50 = *(int *)&D_L05_0015FA50 + 1;
+    rilgar_hud_hold_active = 0;
+    *(int *)&rilgar_hud_release_count = *(int *)&rilgar_hud_release_count + 1;
 }
 extern int func_001F9850(int);
 
@@ -424,52 +424,52 @@ int draw_hud_progress_and_rank(char *e) {
     if (*(int *)(e + 0x6C) <= 0)
         return 0;
     pal = pal_mode;
-    x = hud_sub_66D10(g_screen_extent[1], pal, &D_L05_0015FA60);
-    y = hud_sub_66D10(g_screen_extent[1], pal, &D_L05_0015FA7C);
+    x = hud_sub_66D10(g_screen_extent[1], pal, &rilgar_progress_frame_bottom);
+    y = hud_sub_66D10(g_screen_extent[1], pal, &rilgar_progress_text_bottom);
     hd = D_0013E633 + 0xE1D;
     y1 = y + 1;
-    draw_stretchable_ui_frame(*(int *)&(D_L05_0015FA5C), x, *(int *)&(D_L05_0015FA64), *(int *)&(D_L05_0015FA68), *(int *)&(D_L05_0015FA6C));
-    tx = *(int *)&(D_L05_0015FA78);
-    func_00116248(buf, D_L05_0015FAB0, msg_string(0x5244));
+    draw_stretchable_ui_frame(*(int *)&(rilgar_progress_frame_x), x, *(int *)&(rilgar_progress_frame_width), *(int *)&(rilgar_progress_frame_height), *(int *)&(rilgar_progress_frame_alpha));
+    tx = *(int *)&(rilgar_progress_label_x);
+    func_00116248(buf, rilgar_fmt_label, msg_string(0x5244));
     print_text_with_texture_3(tx - 1, y1, 0x80000000L, buf, -1);
-    print_text_with_texture_3(tx, y, *(int *)&(D_L05_0015FA70), buf, -1);
+    print_text_with_texture_3(tx, y, *(int *)&(rilgar_progress_label_color), buf, -1);
     w = measure_text_width_regular(buf, -1);
     tx = tx + w;
     {
         int n = *(short *)(hd + 0x89A) + 1;
         if (!(n < 4)) n = 3;
-        func_00116248(buf, D_L05_0015FAB8, n);
+        func_00116248(buf, rilgar_fmt_progress_number, n);
     }
     print_text_with_texture_3(tx - 1, y + 2, 0x80000000L, buf, -1);
-    print_text_with_texture_3(tx, y, *(int *)&(D_L05_0015FA74), buf, -1);
+    print_text_with_texture_3(tx, y, *(int *)&(rilgar_progress_value_color), buf, -1);
     {
         int n = *(int *)(hd + 0x8C0);
-        tx = *(int *)&(D_L05_0015FA88);
+        tx = *(int *)&(rilgar_progress_rank_right_x);
         n = n - 1;
         if (!(n < 5)) n = 4;
-        func_00116248(buf, D_L05_0015F9B8, msg_string(n + 0x5229));
+        func_00116248(buf, rilgar_fmt_string, msg_string(n + 0x5229));
     }
     w = measure_text_width_regular(buf, -1);
     tx = tx - w;
     print_text_with_texture_3(tx + 1, y1, 0x80000000L, buf, -1);
-    print_text_with_texture_3(tx, y, *(int *)&(D_L05_0015FA74), buf, -1);
-    func_00116248(buf, D_L05_0015FAC0, msg_string(0x5245));
+    print_text_with_texture_3(tx, y, *(int *)&(rilgar_progress_value_color), buf, -1);
+    func_00116248(buf, rilgar_fmt_rank_label, msg_string(0x5245));
     w = measure_text_width_regular(buf, -1);
     tx = tx - w;
     print_text_with_texture_3(tx + 1, y1, 0x80000000L, buf, -1);
-    print_text_with_texture_3(tx, y, *(int *)&(D_L05_0015FA70), buf, -1);
+    print_text_with_texture_3(tx, y, *(int *)&(rilgar_progress_label_color), buf, -1);
     if (g_current_level_index != 0x10)
         return *(int *)(e + 0x58);
-    func_00116248(buf + 0x40, D_L05_0015F940, *(unsigned char *)(hd + 0x8CE));
+    func_00116248(buf + 0x40, rilgar_fmt_number, *(unsigned char *)(hd + 0x8CE));
     py = pal_mode ? 0xA : 0x12;
     px = *(int *)(e + 0x50);
     if (*(unsigned char *)(D_0013D355 + 0x13B) == 0) {
         py = pal_mode ? 0xA : 0x12;
     } else {
-        px = *(int *)&(D_L05_0015FA98);
-        py = *(int *)&(D_L05_0015FA9C);
+        px = *(int *)&(rilgar_counter_box_alt_x);
+        py = *(int *)&(rilgar_counter_box_alt_y);
     }
-    draw_stretchable_ui_frame(px - 0x18, py, *(int *)&(D_L05_0015FAA0), 0x20, 0x60);
+    draw_stretchable_ui_frame(px - 0x18, py, *(int *)&(rilgar_counter_frame_width), 0x20, 0x60);
     w = GetIconFrame(0x7558, 2);
     HudSprite(w, px, py, 0x20, 0x20, 0x80);
     print_text_with_texture_3(px + 0x29, py + 8, 0x80000000L, buf + 0x40, -1);

@@ -106,12 +106,12 @@ void jet_camera_mode(void) {
 extern char D_L00_00179548[];
 // Clears a halfword global.
 void clear_jet_camera_mode_latch(void) {
-    *(short *)D_L00_00179548 = 0;
+    *(short *)jet_camera_mode_latch = 0;
 }
 extern unsigned char D_L00_00179550[];
 
 int lookup_help_id_pair(short id, int a1, unsigned short *out) {
-    char *base = (char *)D_L00_00179550;
+    char *base = (char *)help_id_pair_table;
     int off;
     int i;
     for (i = 0, off = 2; i < 150; off += 4, i++) {
@@ -178,8 +178,8 @@ void initialize_hero(void) {
             update_hero_ground_contact_and_surface_slopes();
             update_hero_moby();
             if (D_L00_00160600 == 0) {
-                qcopy(&D_0013E190[0], &D_0013F450_05278.motion.pos);
-                qcopy(&D_0013E190[1], &D_0013F450_05278.motion.rot);
+                qcopy(&hero_spawn_pose[0], &D_0013F450_05278.motion.pos);
+                qcopy(&hero_spawn_pose[1], &D_0013F450_05278.motion.rot);
             }
             break;
         }
@@ -485,15 +485,15 @@ void update_hero_rotation_targets_and_random_manipulators(void) {
             s32 j;
             for (i = 0; i < 7; i++) {
                 if (D_0013F450_05CC0.manipulators[i].attached == 0) {
-                    func_0020D960_05CC0((s32)D_0013F450_05CC0.moby, D_L00_0017C2C0[i], &D_0013F450_05CC0.manipulators[i]);
+                    func_0020D960_05CC0((s32)D_0013F450_05CC0.moby, hero_random_manip_joints[i], &D_0013F450_05CC0.manipulators[i]);
                     D_0013F450_05CC0.manipulators[i].unk3 = 1;
-                    qcopy(&D_0013F450_05CC0.manipulators[i].quat, &D_L00_0017C140[i]);
-                    qcopy(&D_0013F450_05CC0.manipulators[i].scale3, &D_L00_0017C1B0[i]);
-                    qcopy(&D_0013F450_05CC0.manipulators[i].translation, &D_L00_0017C220[i]);
+                    qcopy(&D_0013F450_05CC0.manipulators[i].quat, &hero_random_manip_quats[i]);
+                    qcopy(&D_0013F450_05CC0.manipulators[i].scale3, &hero_random_manip_scales[i]);
+                    qcopy(&D_0013F450_05CC0.manipulators[i].translation, &hero_random_manip_offsets[i]);
                 }
             }
             for (j = 0; j < 7; j++)
-                D_0013F450_05CC0.manipulators[j].unkC = D_L00_0017C290[D_0013F450_05CC0.rand_timer.fired];
+                D_0013F450_05CC0.manipulators[j].unkC = hero_random_manip_blend_curve[D_0013F450_05CC0.rand_timer.fired];
         }
     }
 }
@@ -608,14 +608,14 @@ void update_hero_glow_and_extra_manipulators(void) {
             if (HM[i].attached == 0) {
                 func_0020D960_05CC0((s32)moby, ((s32 *)&D_L00_0015F7D8)[i], &HM[i]);
                 HM[i].unk3 = 1;
-                qcopy(&HM[i].quat, &D_L00_0017C2E0[i]);
-                qcopy(&HM[i].scale3, &D_L00_0017C320[i]);
-                qcopy(&HM[i].translation, &D_L00_0017C360[i]);
+                qcopy(&HM[i].quat, &hero_extra_manip_quats[i]);
+                qcopy(&HM[i].scale3, &hero_extra_manip_scales[i]);
+                qcopy(&HM[i].translation, &hero_extra_manip_offsets[i]);
                 FastVecScale(&HM[i].translation, &HM[i].translation, *(f32 *)(moby + 0x2C));
             }
         }
         for (j = 0; j < 4; j++)
-            HM[j].unkC = D_L00_0017C3A0[HV->timer];
+            HM[j].unkC = hero_extra_manip_blend_curve[HV->timer];
     }
 }
 extern unsigned char D_0013D5DD[] NOT_SDA;
@@ -1199,12 +1199,12 @@ void scan_hero_input_sequences(void) {
         int n = 0;
         int j;
         int k;
-        while (D_L00_00179800[i][n] != 0) n++;
+        while (cheat_input_sequences[i][n] != 0) n++;
         if (n == 0) continue;
         k = *(int *)(g2 + 0x21D4) - n;
         if (k < 0) k += 16;
         for (j = 0; j < n; j++) {
-            if (*(unsigned char *)(k + (int)b) != D_L00_00179800[i][j]) {
+            if (*(unsigned char *)(k + (int)b) != cheat_input_sequences[i][j]) {
                 j = -1;
                 break;
             }
@@ -1347,7 +1347,7 @@ void update_item_tint_from_hero(void *a, char *m) {
     int c = q[4] + q[5] + q[6];
     pack_render_command_fields(a, c * 4 / 10 + ((c * 3 / 10) << 8), 12, 12, 0);
     func_L00_00251388(m, D_L00_001802D0);
-    func_L00_002513F8(m, &v);
+    get_moby_light_color(m, &v);
     f = (float *)(D_L00_001802D0 - 0x310);
     s = v.x + v.y + v.z;
     f[0xC0] = s * 0.5f;
@@ -1511,7 +1511,7 @@ void apply_hero_vertical_oscillation(void) {
             v.q = 0;
             v.f[2] = 0.21f;
             matrix_mul_vec3(&v, &v, s + 0xC0);
-            euler_to_matrix(m, D_L00_0017A7C0);
+            euler_to_matrix(m, hero_bob_attach_euler);
             transform_vector(&v, &v, m);
             FastVecAdd(P->o86C + 0x10, P->o86C + 0x10, &v);
         }
@@ -1543,7 +1543,7 @@ void apply_hero_and_item_scale_sequence(void) {
     char *u;
     if (*(short *)(base + 0x22DC) == 0) return;
     *(short *)(base + 0x22DC) += 1;
-    f = D_L00_001798D8[*(short *)(base + 0x22DC)];
+    f = hero_scale_sequence_table[*(short *)(base + 0x22DC)];
     if (f == -1.0f) {
         *(short *)(base + 0x22DC) = 0;
         return;
@@ -2024,7 +2024,7 @@ void update_hero_moby_probed_height_bounds(void) {
     v.f[1] = s * e;
     }
     v.f[2] = -FastSin(D_0013F450_091D8.fD20);
-    qcopy(&D_L00_001AEF10, &v);
+    qcopy(&hero_height_probe_dir, &v);
     h = D_0013F450_091D8.f2D8;
     if (h < 1.0f) {
         f32 t = D_0013F450_091D8.f2F0;
@@ -2034,7 +2034,7 @@ void update_hero_moby_probed_height_bounds(void) {
     hi = h;
     lo = hi;
     pw = &w; px = &x;
-    t = D_L00_0017C400;
+    t = hero_height_probe_offsets;
     collision=&coll_hit_result;
     for (i = 3; i >= 0; i--, t++) {
         M_208b60 *m = ((G_208b60 *)(D_0013E633_probe_091D8+0xE1D))->m2080;
@@ -2181,7 +2181,7 @@ extern void func_L00_00250928(int, int, void *, void *);
 void update_hero_world_matrices(int a) {
     T t;
     if (a == 0) a = *(int *)(D_0013E633 + 0x2E9D);
-    t = D_L00_001E7F90;
+    t = hero_world_matrix_joints;
     compute_selected_world_matrices(a, 9, &t, D_0013E633 + 0x18DD);
 }
 extern unsigned long func_L00_001FF718(int, float);

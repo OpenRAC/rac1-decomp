@@ -75,10 +75,10 @@ void update_deplanetizer_gun_sequence_effects(Moby *moby) {
     case 0:
         *(int *)&deplanetizer_quads_start_tick = 0x163;
         *(int *)&deplanetizer_glow_start_tick = 0x3C;
-        *(int *)&D_L18_00162550 = 0xC8;
-        *(int *)&D_L18_00162554 = 0xBE;
-        *(int *)&D_L18_0016252C = 0x16D;
-        *(int *)&D_L18_00162558 = 0x16D;
+        *(int *)&deplanetizer_glow_end_tick = 0xC8;
+        *(int *)&deplanetizer_streak_start_tick = 0xBE;
+        *(int *)&deplanetizer_camera_quad_ramp_end_tick = 0x16D;
+        *(int *)&deplanetizer_streak_end_tick = 0x16D;
         moby->update_dist = 0xFF;
         moby->state = 1;
         break;
@@ -87,9 +87,9 @@ void update_deplanetizer_gun_sequence_effects(Moby *moby) {
         if (D_L18_0016D2E0_9D48.state == 4) {
             if (D_L18_0016D2E0_9D48.timer == 1) {
                 Moby *m;
-                for (m = D_L18_00160064; m != 0; m = m->next) {
+                for (m = veldin2_moby_list; m != 0; m = m->next) {
                     if (m->oclass == 0x59B) {
-                        D_L18_001625B8 = m;
+                        deplanetizer_class_59b_moby = m;
                         break;
                     }
                 }
@@ -98,7 +98,7 @@ void update_deplanetizer_gun_sequence_effects(Moby *moby) {
                 union { F5_9D48 s; float a[8]; } t;
                 float v[4];
                 int k;
-                t.s = D_L18_001F2F10;
+                t.s = deplanetizer_part_trail_sizes;
                 for (k = 3; k < 8; k++) {
                     float f;
                     if (D_L18_0016D2E0_9D48.objs[k] == 0) continue;
@@ -165,26 +165,26 @@ void update_deplanetizer_gun_sequence_effects(Moby *moby) {
                 up[2] = 1.0f;
                 spawn_explosion(moby, up, pos, 0.0f, 0.0f, 0x12C, 0xC8, 0xC8, 12.0f, 6.0f, 9.0f, 1.0f, -1, 60.0f, 0, 0x3C, -1, 0);
             }
-            if (D_L18_0016D2E0_9D48.timer >= scale_ticks(*(int *)&deplanetizer_glow_start_tick) && D_L18_0016D2E0_9D48.timer < scale_ticks(*(int *)&D_L18_00162550)) {
+            if (D_L18_0016D2E0_9D48.timer >= scale_ticks(*(int *)&deplanetizer_glow_start_tick) && D_L18_0016D2E0_9D48.timer < scale_ticks(*(int *)&deplanetizer_glow_end_tick)) {
                 float f = IntToFloat(D_L18_0016D2E0_9D48.timer - scale_ticks(*(int *)&deplanetizer_glow_start_tick));
-                f = f / IntToFloat(scale_ticks(*(int *)&D_L18_00162550 - *(int *)&deplanetizer_glow_start_tick));
+                f = f / IntToFloat(scale_ticks(*(int *)&deplanetizer_glow_end_tick - *(int *)&deplanetizer_glow_start_tick));
                 deplanetizer_glow_quad_alpha = func_001FA898_r(f * 255.0f);
-                AddDrawCallback(draw_moby_two_tint_glow_quads, D_L18_001625B8);
+                AddDrawCallback(draw_moby_two_tint_glow_quads, deplanetizer_class_59b_moby);
             }
-            if (D_L18_0016D2E0_9D48.timer >= scale_ticks(*(int *)&D_L18_00162554) && D_L18_0016D2E0_9D48.timer < scale_ticks(*(int *)&D_L18_00162558)) {
-                float f = IntToFloat(D_L18_0016D2E0_9D48.timer - scale_ticks(*(int *)&D_L18_00162554));
-                f = f / IntToFloat(scale_ticks(*(int *)&D_L18_00162558 - *(int *)&D_L18_00162554));
+            if (D_L18_0016D2E0_9D48.timer >= scale_ticks(*(int *)&deplanetizer_streak_start_tick) && D_L18_0016D2E0_9D48.timer < scale_ticks(*(int *)&deplanetizer_streak_end_tick)) {
+                float f = IntToFloat(D_L18_0016D2E0_9D48.timer - scale_ticks(*(int *)&deplanetizer_streak_start_tick));
+                f = f / IntToFloat(scale_ticks(*(int *)&deplanetizer_streak_end_tick - *(int *)&deplanetizer_streak_start_tick));
                 deplanetizer_three_quad_local_x_scale = f * 200.0f + 0.25f;
-                AddDrawCallback(func_L18_002FB318_9D48, D_L18_001625B8);
+                AddDrawCallback(func_L18_002FB318_9D48, deplanetizer_class_59b_moby);
             }
-            if (D_L18_0016D2E0_9D48.timer >= scale_ticks(*(int *)&deplanetizer_quads_start_tick) && D_L18_0016D2E0_9D48.timer < scale_ticks(*(int *)&D_L18_00162530)) {
+            if (D_L18_0016D2E0_9D48.timer >= scale_ticks(*(int *)&deplanetizer_quads_start_tick) && D_L18_0016D2E0_9D48.timer < scale_ticks(*(int *)&deplanetizer_quads_end_tick)) {
                 AddDrawCallback(draw_three_scaled_camera_facing_quads, D_L18_0016D2E0_9D48.objs[0]);
-                if (D_L18_0016D2E0_9D48.timer >= scale_ticks(*(int *)&D_L18_0016252C)) {
+                if (D_L18_0016D2E0_9D48.timer >= scale_ticks(*(int *)&deplanetizer_camera_quad_ramp_end_tick)) {
                     deplanetizer_camera_quad_base_scale = 10.0f;
                 } else {
                     float f = IntToFloat(D_L18_0016D2E0_9D48.timer - scale_ticks(*(int *)&deplanetizer_quads_start_tick));
-                    f = f / IntToFloat(scale_ticks(*(int *)&D_L18_0016252C - *(int *)&deplanetizer_quads_start_tick));
-                    deplanetizer_camera_quad_base_scale = *(float *)&D_L18_00162520 + (*(float *)&D_L18_00162524 - *(float *)&D_L18_00162520) * f;
+                    f = f / IntToFloat(scale_ticks(*(int *)&deplanetizer_camera_quad_ramp_end_tick - *(int *)&deplanetizer_quads_start_tick));
+                    deplanetizer_camera_quad_base_scale = *(float *)&deplanetizer_camera_quad_scale_from + (*(float *)&deplanetizer_camera_quad_scale_to - *(float *)&deplanetizer_camera_quad_scale_from) * f;
                 }
             }
         }
@@ -195,39 +195,39 @@ void update_deplanetizer_gun_sequence_effects(Moby *moby) {
         if (D_L18_0016D2E0_9D48.state == 7) {
             if (D_L18_0016D2E0_9D48.timer == 1) {
                 Moby *m;
-                *(int *)&deplanetizer_glow_start_tick = *(int *)&D_L18_00162534;
-                *(int *)&D_L18_00162550 = *(int *)&D_L18_00162538;
-                *(int *)&D_L18_00162554 = *(int *)&D_L18_0016253C;
-                *(int *)&D_L18_00162558 = *(int *)&D_L18_00162540;
-                *(int *)&deplanetizer_quads_start_tick = *(int *)&D_L18_00162544;
-                *(int *)&D_L18_0016252C = *(int *)&D_L18_00162548;
-                for (m = D_L18_00160064; m != 0; m = m->next) {
+                *(int *)&deplanetizer_glow_start_tick = *(int *)&deplanetizer_shot2_glow_start_tick;
+                *(int *)&deplanetizer_glow_end_tick = *(int *)&deplanetizer_shot2_glow_end_tick;
+                *(int *)&deplanetizer_streak_start_tick = *(int *)&deplanetizer_shot2_streak_start_tick;
+                *(int *)&deplanetizer_streak_end_tick = *(int *)&deplanetizer_shot2_streak_end_tick;
+                *(int *)&deplanetizer_quads_start_tick = *(int *)&deplanetizer_shot2_quads_start_tick;
+                *(int *)&deplanetizer_camera_quad_ramp_end_tick = *(int *)&deplanetizer_shot2_camera_quad_ramp_end_tick;
+                for (m = veldin2_moby_list; m != 0; m = m->next) {
                     if (m->oclass == 0x59B) {
-                        D_L18_001625B8 = m;
+                        deplanetizer_class_59b_moby = m;
                         break;
                     }
                 }
             }
-            if (D_L18_0016D2E0_9D48.timer >= scale_ticks(*(int *)&deplanetizer_glow_start_tick) && D_L18_0016D2E0_9D48.timer < scale_ticks(*(int *)&D_L18_00162550)) {
+            if (D_L18_0016D2E0_9D48.timer >= scale_ticks(*(int *)&deplanetizer_glow_start_tick) && D_L18_0016D2E0_9D48.timer < scale_ticks(*(int *)&deplanetizer_glow_end_tick)) {
                 float f = IntToFloat(D_L18_0016D2E0_9D48.timer - *(int *)&deplanetizer_glow_start_tick);
-                f = f / IntToFloat(*(int *)&D_L18_00162550 - *(int *)&deplanetizer_glow_start_tick);
+                f = f / IntToFloat(*(int *)&deplanetizer_glow_end_tick - *(int *)&deplanetizer_glow_start_tick);
                 deplanetizer_glow_quad_alpha = func_001FA898_r(f * 255.0f);
-                AddDrawCallback(draw_moby_two_tint_glow_quads, D_L18_001625B8);
+                AddDrawCallback(draw_moby_two_tint_glow_quads, deplanetizer_class_59b_moby);
             }
-            if (D_L18_0016D2E0_9D48.timer >= scale_ticks(*(int *)&D_L18_00162554) && D_L18_0016D2E0_9D48.timer < scale_ticks(*(int *)&D_L18_00162558)) {
-                float f = IntToFloat(D_L18_0016D2E0_9D48.timer - *(int *)&D_L18_00162554);
-                f = f / IntToFloat(*(int *)&D_L18_00162558 - *(int *)&D_L18_00162554);
+            if (D_L18_0016D2E0_9D48.timer >= scale_ticks(*(int *)&deplanetizer_streak_start_tick) && D_L18_0016D2E0_9D48.timer < scale_ticks(*(int *)&deplanetizer_streak_end_tick)) {
+                float f = IntToFloat(D_L18_0016D2E0_9D48.timer - *(int *)&deplanetizer_streak_start_tick);
+                f = f / IntToFloat(*(int *)&deplanetizer_streak_end_tick - *(int *)&deplanetizer_streak_start_tick);
                 deplanetizer_three_quad_local_x_scale = f * 200.0f + 0.25f;
-                AddDrawCallback(func_L18_002FB318_9D48, D_L18_001625B8);
+                AddDrawCallback(func_L18_002FB318_9D48, deplanetizer_class_59b_moby);
             }
-            if (D_L18_0016D2E0_9D48.timer >= scale_ticks(*(int *)&deplanetizer_quads_start_tick) && D_L18_0016D2E0_9D48.timer < scale_ticks(*(int *)&D_L18_00162530)) {
+            if (D_L18_0016D2E0_9D48.timer >= scale_ticks(*(int *)&deplanetizer_quads_start_tick) && D_L18_0016D2E0_9D48.timer < scale_ticks(*(int *)&deplanetizer_quads_end_tick)) {
                 AddDrawCallback(draw_three_scaled_camera_facing_quads, D_L18_0016D2E0_9D48.objs[0]);
-                if (D_L18_0016D2E0_9D48.timer >= *(int *)&D_L18_0016252C) {
+                if (D_L18_0016D2E0_9D48.timer >= *(int *)&deplanetizer_camera_quad_ramp_end_tick) {
                     deplanetizer_camera_quad_base_scale = 10.0f;
                 } else {
                     float f = IntToFloat(D_L18_0016D2E0_9D48.timer - *(int *)&deplanetizer_quads_start_tick);
-                    f = f / IntToFloat(*(int *)&D_L18_0016252C - *(int *)&deplanetizer_quads_start_tick);
-                    deplanetizer_camera_quad_base_scale = *(float *)&D_L18_00162520 + (*(float *)&D_L18_00162524 - *(float *)&D_L18_00162520) * f;
+                    f = f / IntToFloat(*(int *)&deplanetizer_camera_quad_ramp_end_tick - *(int *)&deplanetizer_quads_start_tick);
+                    deplanetizer_camera_quad_base_scale = *(float *)&deplanetizer_camera_quad_scale_from + (*(float *)&deplanetizer_camera_quad_scale_to - *(float *)&deplanetizer_camera_quad_scale_from) * f;
                 }
             }
         }
@@ -245,16 +245,16 @@ void update_deplanetizer_gun_sequence_effects(Moby *moby) {
                     Moby_GetJointWorldPos(m, 2, b);
                     for (j = 0; j < 12; j++) {
                         float f = IntToFloat(j) / 12.0f;
-                        lerp_vector(x, a, D_L18_001625C0, f);
-                        lerp_vector(e, b, D_L18_001625D0, f);
-                        spawn_deplanetizer_gun_trail_effects(x, x, veldin2_zero_vec, *(float *)&D_L18_00162560, *(float *)&D_L18_00162560 * 0.4f);
-                        spawn_deplanetizer_gun_trail_effects(e, e, veldin2_zero_vec, *(float *)&D_L18_00162560, *(float *)&D_L18_00162560 * 0.4f);
+                        lerp_vector(x, a, deplanetizer_trail_prev_tip_a, f);
+                        lerp_vector(e, b, deplanetizer_trail_prev_tip_b, f);
+                        spawn_deplanetizer_gun_trail_effects(x, x, veldin2_zero_vec, *(float *)&deplanetizer_trail_size, *(float *)&deplanetizer_trail_size * 0.4f);
+                        spawn_deplanetizer_gun_trail_effects(e, e, veldin2_zero_vec, *(float *)&deplanetizer_trail_size, *(float *)&deplanetizer_trail_size * 0.4f);
                     }
-                    qcopy(D_L18_001625C0, a);
-                    qcopy(D_L18_001625D0, b);
+                    qcopy(deplanetizer_trail_prev_tip_a, a);
+                    qcopy(deplanetizer_trail_prev_tip_b, b);
                 } else {
-                    Moby_GetJointWorldPos(m, 0, D_L18_001625C0);
-                    Moby_GetJointWorldPos(m, 2, D_L18_001625D0);
+                    Moby_GetJointWorldPos(m, 0, deplanetizer_trail_prev_tip_a);
+                    Moby_GetJointWorldPos(m, 2, deplanetizer_trail_prev_tip_b);
                 }
             }
         }
@@ -275,12 +275,12 @@ void update_deplanetizer_gun_sequence_effects(Moby *moby) {
                 col1 = 0x7F7F20;
                 v->f48 = fast_atan2(moby->rot_row1.x, moby->rot_row1.y);
                 v->f4C = fast_atan2(vec_length_xy(&moby->rot_row1), moby->rot_row1.z);
-                save = D_L18_001617DC;
-                D_L18_001617DC = 24.0f;
+                save = veldin2_beam_ring_radius_end;
+                veldin2_beam_ring_radius_end = 24.0f;
                 update_beam_ring_rail_and_pulse_effects(moby);
-                D_L18_001617DC = save;
-                D_L18_00161884 = col0;
-                D_L18_00161888 = col1;
+                veldin2_beam_ring_radius_end = save;
+                deplanetizer_beam_color_a = col0;
+                deplanetizer_beam_color_b = col1;
             }
         }
         if (D_L18_0016D2E0_9D48.state == 2 || D_L18_0016D2E0_9D48.state == 0 || (D_L18_0016D2E0_9D48.state == 3 && D_L18_0016D2E0_9D48.timer < scale_ticks(0x24A))) {
@@ -291,17 +291,17 @@ void update_deplanetizer_gun_sequence_effects(Moby *moby) {
         if (D_L18_0016D2E0_9D48.state == 3 && D_L18_0016D2E0_9D48.timer == scale_ticks(0x24A)) {
             char *target;
             int i;
-            target = D_L18_00167A50;
-            matrix_mul_vec3(a, &D_L18_00162570, target);
+            target = veldin2_camera_matrix;
+            matrix_mul_vec3(a, &deplanetizer_burst_cam_offset, target);
             FastVecAdd(a, a, target - 0x210);
-            qcopy(b, D_L18_00167A50 + 0x10);
+            qcopy(b, veldin2_camera_matrix + 0x10);
             for (i = 0; i < 32; i++) {
                 int r;
                 char *p;
-                build_look_at_matrix(c, b, D_L18_00167A50, IntToFloat(i) * 0.19634955f);
-                vec_scale_to_length(c, c, *(float *)&D_L18_00162580 * frame_scale);
+                build_look_at_matrix(c, b, veldin2_camera_matrix, IntToFloat(i) * 0.19634955f);
+                vec_scale_to_length(c, c, *(float *)&deplanetizer_burst_speed * frame_scale);
                 r = random_integer_below(16);
-                p = func_L00_0026DEA0_c(a, random_integer_below(2) ? -r : r, c, 0.0f, 1.0f, 1.01f, *(float *)&D_L18_00162584, 0x7F7F7F7F);
+                p = func_L00_0026DEA0_c(a, random_integer_below(2) ? -r : r, c, 0.0f, 1.0f, 1.01f, *(float *)&deplanetizer_burst_puff_growth, 0x7F7F7F7F);
                 if (p != 0) {
                     char *e = p + 0x20;
                     *(short *)(p + 0xA) = scale_ticks(0x3C);
@@ -357,15 +357,15 @@ void draw_three_scaled_camera_facing_quads(void) {
     char *target;
 
     if (veldin2_cutscene_state.n == scale_ticks((*(int *)&deplanetizer_quads_start_tick) + 1)) {
-        D_L18_001625E0 = 1.0f;
-        D_L18_001625E4 = 0.0f;
+        deplanetizer_flare_cam_offset = 1.0f;
+        deplanetizer_flare_cam_offset_y = 0.0f;
         if (veldin2_cutscene_state.state == 7) {
             tilt = -0.15f;
         } else {
             tilt = 0.15f;
         }
-        D_L18_001625E8 = tilt;
-        D_L18_001625EC = 1.0f;
+        deplanetizer_flare_cam_offset_z = tilt;
+        deplanetizer_flare_cam_offset_w = 1.0f;
     }
     pk.b = GetEffectTex(0xB);
     pk.c = 0x0000FF9000000260ULL;
@@ -373,8 +373,8 @@ void draw_three_scaled_camera_facing_quads(void) {
     pk.a = 0;
     VU1_addGSregister(0x4A, 0);
     VU1_addGSregister(0x47, 0x51001);
-    matrix_mul_vec3(mat[3], &D_L18_001625E0, D_L18_00167A50);
-    target = D_L18_00167A50;
+    matrix_mul_vec3(mat[3], &deplanetizer_flare_cam_offset, veldin2_camera_matrix);
+    target = veldin2_camera_matrix;
     target -= 0x210;
     FastVecAdd(mat[3], mat[3], target);
     FastVecSub(mat[0], mat[3], target);
@@ -393,7 +393,7 @@ void draw_three_scaled_camera_facing_quads(void) {
     pk.uv[5] = 0.0f;
     pk.uv[6] = 0.0f;
     pk.uv[7] = 0.0f;
-    color = (*(int *)&D_L18_00162588);
+    color = (*(int *)&deplanetizer_flare_outer_color);
     pk.col[3] = color;
     pk.col[2] = color;
     pk.col[1] = color;
@@ -403,7 +403,7 @@ void draw_three_scaled_camera_facing_quads(void) {
         transform_vector(pk.m[i], pk.m[i], mat);
     }
     draw_world_quad(&pk, 0, 0);
-    color = (*(int *)&D_L18_0016258C);
+    color = (*(int *)&deplanetizer_flare_inner_color);
     pk.col[3] = color;
     pk.col[2] = color;
     pk.col[1] = color;
@@ -500,7 +500,7 @@ void draw_moby_two_tint_glow_quads(struct Moby *m) {
     FastVecCross(mat[1], mat[0], up);
     vec_scale_to_length(mat[1], mat[1], 1.0f);
     FastVecCross(mat[2], mat[1], mat[0]);
-    c = (*(int *)&D_L18_00162594) | (deplanetizer_glow_quad_alpha << 24);
+    c = (*(int *)&deplanetizer_glow_tint_a) | (deplanetizer_glow_quad_alpha << 24);
     pk.uv[0] = 1.0f;
     pk.uv[1] = 1.0f;
     pk.uv[2] = 0.0f;
@@ -514,17 +514,17 @@ void draw_moby_two_tint_glow_quads(struct Moby *m) {
     pk.col[1] = c;
     pk.col[0] = c;
     for (i = 0; i < 4; i++) {
-        FastVecScale(pk.m[i], D_L18_001DFE50[i], (*(float *)&D_L18_00162598));
+        FastVecScale(pk.m[i], D_L18_001DFE50[i], (*(float *)&deplanetizer_glow_quad_a_scale));
         transform_vector(pk.m[i], pk.m[i], mat);
     }
     draw_world_quad(&pk, 0, 0);
-    c2 = (*(int *)&D_L18_001625A0) | (deplanetizer_glow_quad_alpha << 24);
+    c2 = (*(int *)&deplanetizer_glow_tint_b) | (deplanetizer_glow_quad_alpha << 24);
     pk.col[3] = c2;
     pk.col[2] = c2;
     pk.col[1] = c2;
     pk.col[0] = c2;
     for (i = 0; i < 4; i++) {
-        FastVecScale(pk.m[i], D_L18_001DFE50[i], (*(float *)&D_L18_0016259C));
+        FastVecScale(pk.m[i], D_L18_001DFE50[i], (*(float *)&deplanetizer_glow_quad_b_scale));
         transform_vector(pk.m[i], pk.m[i], mat);
     }
     draw_world_quad(&pk, 0, 0);
@@ -570,7 +570,7 @@ void draw_moby_three_scaled_two_tint_quads(struct Moby *m) {
     vec_scale_to_length(mat[2], mat[2], 1.0f);
     FastVecCross(mat[1], mat[0], mat[2]);
 
-    color = (*(int *)&D_L18_00162594) | 0xFF000000;
+    color = (*(int *)&deplanetizer_glow_tint_a) | 0xFF000000;
     pk.uv[0] = 1.0f;
     pk.uv[1] = 1.0f;
     pk.uv[2] = 0.0f;
@@ -586,9 +586,9 @@ void draw_moby_three_scaled_two_tint_quads(struct Moby *m) {
     pk.col[0] = color;
     i = 0;
     do {
-        qcopy_nc(&vertices[i], D_L18_001DFE90[i]);
+        qcopy_nc(&vertices[i], veldin2_streak_quad_corners[i]);
         {
-            vertices[i].f[2] *= (*(float *)&D_L18_001625A4);
+            vertices[i].f[2] *= (*(float *)&deplanetizer_streak1_z_scale);
             vertices[i].f[0] *= deplanetizer_three_quad_local_x_scale;
         }
         i++;
@@ -598,15 +598,15 @@ void draw_moby_three_scaled_two_tint_quads(struct Moby *m) {
     }
     draw_world_quad(&pk, 0, 0);
 
-    pk.col[3] = (*(int *)&D_L18_001625A0) | 0x7F000000;
+    pk.col[3] = (*(int *)&deplanetizer_glow_tint_b) | 0x7F000000;
     pk.col[2] = pk.col[3];
     pk.col[1] = pk.col[3];
     pk.col[0] = pk.col[3];
     i = 0;
     do {
-        qcopy_nc(&vertices[i], D_L18_001DFE90[i]);
+        qcopy_nc(&vertices[i], veldin2_streak_quad_corners[i]);
         {
-            vertices[i].f[2] *= (*(float *)&D_L18_001625A8);
+            vertices[i].f[2] *= (*(float *)&deplanetizer_streak2_z_scale);
             vertices[i].f[0] *= deplanetizer_three_quad_local_x_scale;
         }
         i++;
@@ -616,15 +616,15 @@ void draw_moby_three_scaled_two_tint_quads(struct Moby *m) {
     }
     draw_world_quad(&pk, 0, 0);
 
-    pk.col[3] = (*(int *)&D_L18_001625A0) | 0x7F000000;
+    pk.col[3] = (*(int *)&deplanetizer_glow_tint_b) | 0x7F000000;
     pk.col[2] = pk.col[3];
     pk.col[1] = pk.col[3];
     pk.col[0] = pk.col[3];
     i = 0;
     do {
-        qcopy_nc(&vertices[i], D_L18_001DFE90[i]);
+        qcopy_nc(&vertices[i], veldin2_streak_quad_corners[i]);
         {
-            vertices[i].f[2] *= (*(float *)&D_L18_001625AC);
+            vertices[i].f[2] *= (*(float *)&deplanetizer_streak3_z_scale);
             vertices[i].f[0] *= deplanetizer_three_quad_local_x_scale;
         }
         i++;
@@ -830,8 +830,8 @@ void update_selected_moby_joint_trail(M2 *m) {
                 Moby_GetJointWorldPos(p, 8, buf);
                 Moby_GetJointWorldPos(p, 9, buf2);
                 FastVecSub(buf3, buf, buf2);
-                vec_scale_to_length(buf3, buf3, *(float *)&D_L18_00162608);
-                draw_trail(buf, buf, buf3, *(float *)&D_L18_0016260C, *(float *)&D_L18_00162610);
+                vec_scale_to_length(buf3, buf3, *(float *)&veldin2_joint_trail_offset);
+                draw_trail(buf, buf, buf3, *(float *)&veldin2_joint_trail_size_a, *(float *)&veldin2_joint_trail_size_b);
             }
         }
         break;
@@ -936,7 +936,7 @@ void Moby1906Update(unsigned char *m) {
         if (f < 1.5f) {
             m[0x20] = 4;
             if (m[0x53] != 2) {
-                int v = (int)*(float *)&D_L18_00162690;
+                int v = (int)*(float *)&gadgebot_close_anim_start_frame;
                 MobyBlendAnimation(m, 2, v, scale_ticks(5));
             }
         }
@@ -1062,21 +1062,21 @@ void update_gadgebot_damage_target_and_glow(void *m_) {
     if (moby->state == 0 || moby->state == 8) {
         return;
     }
-    if (moby->state != 7 && (*(int *)&veldin2_frame_count) != (*(int *)&D_L18_00162694)) {
-        (*(int *)&D_L18_00162694) = (*(int *)&veldin2_frame_count);
+    if (moby->state != 7 && (*(int *)&veldin2_frame_count) != (*(int *)&gadgebot_glows_queued_frame)) {
+        (*(int *)&gadgebot_glows_queued_frame) = (*(int *)&veldin2_frame_count);
         AddDrawCallback((void *)draw_group_class_0772_joint_glows, moby);
     }
-    speed = F(D_L18_001626A4);
+    speed = F(gadgebot_glow_spin_rate);
     if (moby->state == 4 || moby->state == 5) {
-        speed = F(D_L18_001626A8);
+        speed = F(gadgebot_glow_spin_rate_attack);
     }
     sentry_vars->spin = FastAddRots(sentry_vars->spin, speed * 0.017453292f * g_frame_time);
-    moby->glow_color = FastTweenColor((*(int *)&D_L18_0016269C), (*(int *)&D_L18_001626A0),
+    moby->glow_color = FastTweenColor((*(int *)&gadgebot_glow_color_from), (*(int *)&gadgebot_glow_color_to),
                                 FastSin(sentry_vars->spin) * 0.5f + 0.5f);
     if (moby->pos.z < 100.0f && moby->state != 7) {
         moby->state = 6;
     }
-    moby->scale = moby->pclass->scale * F(D_L18_0016268C);
+    moby->scale = moby->pclass->scale * F(gadgebot_scale);
     if (hero.state.current == 0x72 || veldin2_cinematic_mode == 2) {
         if (moby->state != 7) {
             moby->state = 8;
@@ -1098,10 +1098,10 @@ void update_gadgebot_damage_target_and_glow(void *m_) {
                 moby->state = 6;
             } else {
                 float k = g_frame_time_sq;
-                float t0 = F(D_L18_001626AC) * k;
-                float t1 = F(D_L18_001626B0) * k;
-                float t2 = F(D_L18_001626B4) * g_frame_time;
-                float t3 = F(D_L18_001626B8) * g_frame_time;
+                float t0 = F(gadgebot_knockback_gravity) * k;
+                float t1 = F(gadgebot_knockback_drag) * k;
+                float t2 = F(gadgebot_knockback_speed) * g_frame_time;
+                float t3 = F(gadgebot_knockback_lift) * g_frame_time;
                 fall_setup_value_or_path_slot_address = 0x200;
                 sentry_vars->unk90 = fall_setup_value_or_path_slot_address;
                 k = 0.5f;
@@ -1325,7 +1325,7 @@ void draw_group_class_0772_joint_glows(unsigned char *moby) {
             unsigned short *next = p + 1;
             if (*(short *)(obj + 0xA6) == 0x772 && obj[0x20] != 0 && obj[0x20] < 6) {
                 int i;
-                int col = (*(int *)(obj + 0x90) & 0xFFFFFF) + (*(int *)&D_L18_001626E4 << 24);
+                int col = (*(int *)(obj + 0x90) & 0xFFFFFF) + (*(int *)&gadgebot_joint_glow_alpha << 24);
                 float v[4];
                 for (i = 2; i < 5; i++) {
                     Moby_GetJointWorldPos(obj, i, v);

@@ -16,82 +16,82 @@ int draw_trick_combo_hud(char *a) {
         return *(int *)(a + 0x58);
     }
     if (u[2] != 0) {
-        func_00116248_002670A0(buf, D_L05_0015F940, D_L05_0015FB8C * 0x168);
+        func_00116248_002670A0(buf, rilgar_fmt_number, trick_combo_spins * 0x168);
         f20 = IntToFloat(u[1]);
-        r = scale_ticks(*(int *)&D_L05_0015F95C);
+        r = scale_ticks(*(int *)&trick_combo_flash_ticks);
         f12 = f20 / (float)r;
         if (u[2] == 1 || u[2] == 3) {
-            acc = FastTweenColor(*(int *)&D_L05_0015F974, *(int *)&D_L05_0015F978, f12);
+            acc = FastTweenColor(*(int *)&trick_combo_flash_color_from, *(int *)&trick_combo_flash_color_to, f12);
         } else {
-            acc = *(int *)&D_L05_0015F980;
+            acc = *(int *)&trick_combo_text_color;
         }
         h = func_001FA898_r(f21 * 128.0f) << 24;
         acc += h;
         if (u[2] == 1 || u[2] == 2) {
-            func_001F6FD8_x(*(int *)&D_L05_0015F994 + 1, *(int *)&D_L05_0015F998 + 1, h, (int)buf, -1);
-            func_001F6FD8_x(*(int *)&D_L05_0015F994, *(int *)&D_L05_0015F998, acc, (int)buf, -1);
-            func_00116248_002670A0(buf, D_L05_0015F9B0, D_L05_0015FB90,
-                                   func_001FE540_002670A0(D_L05_0015FB90 == 1 ? 0x51CD : 0x51CE));
-            func_001F6FD8_x(*(int *)&D_L05_0015F99C + 1, *(int *)&D_L05_0015F9A0 + 1, h, (int)buf, -1);
-            func_001F6FD8_x(*(int *)&D_L05_0015F99C, *(int *)&D_L05_0015F9A0, acc, (int)buf, -1);
+            func_001F6FD8_x(*(int *)&trick_combo_spin_text_x + 1, *(int *)&trick_combo_spin_text_y + 1, h, (int)buf, -1);
+            func_001F6FD8_x(*(int *)&trick_combo_spin_text_x, *(int *)&trick_combo_spin_text_y, acc, (int)buf, -1);
+            func_00116248_002670A0(buf, rilgar_fmt_count_and_word, trick_combo_trick_count,
+                                   func_001FE540_002670A0(trick_combo_trick_count == 1 ? 0x51CD : 0x51CE));
+            func_001F6FD8_x(*(int *)&trick_combo_count_text_x + 1, *(int *)&trick_combo_count_text_y + 1, h, (int)buf, -1);
+            func_001F6FD8_x(*(int *)&trick_combo_count_text_x, *(int *)&trick_combo_count_text_y, acc, (int)buf, -1);
         } else if (u[2] == 3) {
             sel = -1;
-            if (D_L05_0015FB90 == 3) {
+            if (trick_combo_trick_count == 3) {
                 sel = 0;
-                if (D_L05_0015FBA4 != 0) {
+                if (trick_combo_trick_flag3 != 0) {
                     sel = 2;
-                    if (D_L05_0015FBA0 == 0) {
+                    if (trick_combo_trick_flag2 == 0) {
                         sel = 1;
-                    } else if (D_L05_0015FB9C != 0) {
+                    } else if (trick_combo_trick_flag1 != 0) {
                         sel = 3;
                     }
                 }
-            } else if (D_L05_0015FB90 == 4) {
+            } else if (trick_combo_trick_count == 4) {
                 sel = 4;
             }
             if (sel >= 0) {
-                if (D_L05_0015FB8C >= 4) {
+                if (trick_combo_spins >= 4) {
                     k = 2;
                 } else {
-                    k = D_L05_0015FB8C >= 2;
+                    k = trick_combo_spins >= 2;
                 }
                 idx = sel + k * 5;
-                D_L05_0015FBA8 = idx;
-                trick_combo_score = D_L05_0017EA18[idx];
+                trick_combo_recent = idx;
+                trick_combo_score = trick_combo_score_table[idx];
                 cnt = 1;
                 for (i = 1; i < 4; i++) {
-                    if ((&D_L05_0015FBA8)[i] == D_L05_0015FBA8) {
+                    if ((&trick_combo_recent)[i] == trick_combo_recent) {
                         cnt++;
                     }
                 }
                 trick_combo_score = trick_combo_score / cnt;
-                func_00116248_002670A0(buf, D_L05_0015F940, trick_combo_score);
-                draw_framed_text(*(int *)&D_L05_0015F9A4, *(int *)&D_L05_0015F9A8 - 0x18, acc, (int)buf);
-                func_00116248_002670A0(buf, D_L05_0015F9B8, func_001FE540_002670A0(idx + 0x5093));
-                draw_framed_text(*(int *)&D_L05_0015F9A4, *(int *)&D_L05_0015F9A8, acc, (int)buf);
-            } else if (D_L05_0015FB90 > 0) {
+                func_00116248_002670A0(buf, rilgar_fmt_number, trick_combo_score);
+                draw_framed_text(*(int *)&trick_combo_result_x, *(int *)&trick_combo_result_y - 0x18, acc, (int)buf);
+                func_00116248_002670A0(buf, rilgar_fmt_string, func_001FE540_002670A0(idx + 0x5093));
+                draw_framed_text(*(int *)&trick_combo_result_x, *(int *)&trick_combo_result_y, acc, (int)buf);
+            } else if (trick_combo_trick_count > 0) {
                 int n = 0;
                 int m;
-                for (m = 0; m < 4 && n < D_L05_0015FB90; m++) {
-                    if ((&D_L05_0015FB98)[m] != 0) {
+                for (m = 0; m < 4 && n < trick_combo_trick_count; m++) {
+                    if ((&trick_combo_trick_flags)[m] != 0) {
                         out[n] = m;
                         n++;
                     }
                 }
-                if (D_L05_0015FB90 == 1) {
-                    trick_combo_score = D_L05_0015FB8C * 10;
-                    func_00116248_002670A0(buf, D_L05_0015F940, trick_combo_score);
-                    draw_framed_text(*(int *)&D_L05_0015F9A4, *(int *)&D_L05_0015F9A8 - 0x18, acc, (int)buf);
-                    func_00116248_002670A0(buf, D_L05_0015F9C0, func_001FE540_002670A0(out[0] + 0x51D4), D_L05_0015FB8C,
-                                           func_001FE540_002670A0(D_L05_0015FB8C == 0x168 ? 0x50A8 : 0x50A9));
-                    draw_framed_text(*(int *)&D_L05_0015F9A4, *(int *)&D_L05_0015F9A8, acc, (int)buf);
+                if (trick_combo_trick_count == 1) {
+                    trick_combo_score = trick_combo_spins * 10;
+                    func_00116248_002670A0(buf, rilgar_fmt_number, trick_combo_score);
+                    draw_framed_text(*(int *)&trick_combo_result_x, *(int *)&trick_combo_result_y - 0x18, acc, (int)buf);
+                    func_00116248_002670A0(buf, rilgar_fmt_single_trick_line, func_001FE540_002670A0(out[0] + 0x51D4), trick_combo_spins,
+                                           func_001FE540_002670A0(trick_combo_spins == 0x168 ? 0x50A8 : 0x50A9));
+                    draw_framed_text(*(int *)&trick_combo_result_x, *(int *)&trick_combo_result_y, acc, (int)buf);
                 } else {
-                    trick_combo_score = D_L05_0015FB8C * 20;
-                    func_00116248_002670A0(buf, D_L05_0015F940, trick_combo_score);
-                    draw_framed_text(*(int *)&D_L05_0015F9A4, *(int *)&D_L05_0015F9A8 - 0x18, acc, (int)buf);
-                    func_00116248_002670A0(buf, D_L05_00216FC0, func_001FE540_002670A0(out[0] + 0x51D4),
-                                           func_001FE540_002670A0(out[1] + 0x51D4), D_L05_0015FB8C);
-                    draw_framed_text(*(int *)&D_L05_0015F9A4, *(int *)&D_L05_0015F9A8, acc, (int)buf);
+                    trick_combo_score = trick_combo_spins * 20;
+                    func_00116248_002670A0(buf, rilgar_fmt_number, trick_combo_score);
+                    draw_framed_text(*(int *)&trick_combo_result_x, *(int *)&trick_combo_result_y - 0x18, acc, (int)buf);
+                    func_00116248_002670A0(buf, rilgar_fmt_double_trick_line, func_001FE540_002670A0(out[0] + 0x51D4),
+                                           func_001FE540_002670A0(out[1] + 0x51D4), trick_combo_spins);
+                    draw_framed_text(*(int *)&trick_combo_result_x, *(int *)&trick_combo_result_y, acc, (int)buf);
                 }
             }
         }
@@ -113,10 +113,10 @@ int draw_trick_combo_hud(char *a) {
         r3 = scale_ticks(0x3C);
         f0 = IntToFloat(rilgar_frame_count % r3) / (float)r3;
         f0 = FastSin(f0 * 6.283180236816406f - 3.141590118408203f);
-        r3 = FastTweenColor(*(int *)&D_L05_0015F98C, *(int *)&D_L05_0015F990, f0 * 0.5f + 0.5f);
+        r3 = FastTweenColor(*(int *)&trick_combo_banner_color_from, *(int *)&trick_combo_banner_color_to, f0 * 0.5f + 0.5f);
         func_00116248_002670A0(buf, func_001FE540_002670A0(0x5371));
-        draw_framed_text(*(int *)&D_L05_0015F984 + 1, *(int *)&D_L05_0015F988 + 1, 0x80000000, (int)buf);
-        draw_framed_text(*(int *)&D_L05_0015F984, *(int *)&D_L05_0015F988, r3, (int)buf);
+        draw_framed_text(*(int *)&trick_combo_banner_x + 1, *(int *)&trick_combo_banner_y + 1, 0x80000000, (int)buf);
+        draw_framed_text(*(int *)&trick_combo_banner_x, *(int *)&trick_combo_banner_y, r3, (int)buf);
     }
     return *(int *)(a + 0x58);
 }

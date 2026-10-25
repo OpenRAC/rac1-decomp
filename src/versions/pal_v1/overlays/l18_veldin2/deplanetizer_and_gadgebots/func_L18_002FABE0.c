@@ -26,14 +26,14 @@ void draw_three_scaled_camera_facing_quads(void) {
     char *target;
 
     if (veldin2_cutscene_state.n == scale_ticks((*(int *)&deplanetizer_quads_start_tick) + 1)) {
-        D_L18_001625E0 = 1.0f;
-        D_L18_001625E4 = 0.0f;
+        deplanetizer_flare_cam_offset = 1.0f;
+        deplanetizer_flare_cam_offset_y = 0.0f;
         if (veldin2_cutscene_state.state == 7) {
             tilt = -0.15f;
         } else {
             tilt = 0.15f;
         }
-        D_L18_001625E8 = tilt;
+        deplanetizer_flare_cam_offset_z = tilt;
         D_E1_L18_001624DC = 1.0f;
     }
     pk.b = GetEffectTex(0xB);
@@ -42,8 +42,8 @@ void draw_three_scaled_camera_facing_quads(void) {
     pk.a = 0;
     VU1_addGSregister(0x4A, 0);
     VU1_addGSregister(0x47, 0x51001);
-    matrix_mul_vec3(mat[3], &D_L18_001625E0, D_L18_00167A50);
-    target = D_L18_00167A50;
+    matrix_mul_vec3(mat[3], &deplanetizer_flare_cam_offset, veldin2_camera_matrix);
+    target = veldin2_camera_matrix;
     target -= 0x210;
     FastVecAdd(mat[3], mat[3], target);
     FastVecSub(mat[0], mat[3], target);
@@ -62,7 +62,7 @@ void draw_three_scaled_camera_facing_quads(void) {
     pk.uv[5] = 0.0f;
     pk.uv[6] = 0.0f;
     pk.uv[7] = 0.0f;
-    color = (*(int *)&D_L18_00162588);
+    color = (*(int *)&deplanetizer_flare_outer_color);
     pk.col[3] = color;
     pk.col[2] = color;
     pk.col[1] = color;
@@ -72,7 +72,7 @@ void draw_three_scaled_camera_facing_quads(void) {
         transform_vector(pk.m[i], pk.m[i], mat);
     }
     draw_world_quad(&pk, 0, 0);
-    color = (*(int *)&D_L18_0016258C);
+    color = (*(int *)&deplanetizer_flare_inner_color);
     pk.col[3] = color;
     pk.col[2] = color;
     pk.col[1] = color;
