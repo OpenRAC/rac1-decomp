@@ -110,7 +110,7 @@ void update_level11_layered_effect_and_queue_draw(unsigned char *moby) {
         }
         break;
     case EFFECT_UPDATE_AND_QUEUE_DRAW:
-        reference_position_base = D_L11_00167700;
+        reference_position_base = pokitaru_player_camera;
         if (*(float *)(reference_position_base + 0x148) < 170.0f)
             break;
         effect_bounds[0] = *(float *)&D_L11_00162578;
@@ -199,7 +199,7 @@ void PokitaruSurfaceFarDraw(char *m) {
     VU1_addGSregister(0x14, 0xFF9000000260L);
     VU1_addGSregister(0x47, 0x513F1L);
     font_queue_vu_state();
-    cam = D_L11_00167700;
+    cam = pokitaru_player_camera;
     if (*(float *)(cam + 0x148) > 255.0f
         || is_point_inside_clip_volume(cam + 0x140, d[0])
         || is_point_inside_clip_volume(cam + 0x140, d[1])
@@ -286,7 +286,7 @@ void update_level11_distance_faded_effect_and_queue_draw(unsigned char *moby) {
         }
         break;
     case EFFECT_UPDATE_AND_QUEUE_DRAW:
-        reference_position_base = (struct Level11Reference *)D_L11_00167700;
+        reference_position_base = (struct Level11Reference *)pokitaru_player_camera;
         if (!(reference_position_base->pos[2] < 170.0f)) {
             effect_bounds[0] = *(float *)&D_L11_00162648;
             effect_bounds[1] = D_L11_0016264C;

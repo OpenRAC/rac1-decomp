@@ -91,7 +91,7 @@ void draw_hoven_jittered_quad_layers(char *m) {
             P[0].corner[2][1] = f0;
             P[0].corner[3][1] = f0;
             b = nb;
-            func_L00_001FD1D8(&P[0], M, 0);
+            draw_world_quad(&P[0], M, 0);
         } while (b < 3);
     }
 }

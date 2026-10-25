@@ -146,12 +146,12 @@ int probe_vertical_ground_collision(Vs *p, int x, int y, float f, float g) {
     if (t1.a[2] < 0.0f) {
         t1.a[2] = 0.0f;
     }
-    r = func_L00_001EFFF0(&t0, &t1, 0x22, x, 0);
-    if (D_L00_00173F40[7] < 0) {
+    r = coll_line(&t0, &t1, 0x22, x, 0);
+    if (coll_hit_result[7] < 0) {
         r = 0;
     }
     if (y) {
-        if (D_L00_00173F40[6]) {
+        if (coll_hit_result[6]) {
             r = 0;
         }
     }
@@ -200,7 +200,7 @@ int MoveKeepingOverGround(void *ign, Vec4 *to, Vec4 *pos, int flags, float h, fl
         }
     }
     FastVecSub(&d, pos, to);
-    func_L00_001FF4B0(&n, &d, r * 1.2f);
+    vec_scale_to_length(&n, &d, r * 1.2f);
     up.q = 0;
     up.f[2] = h;
     FastVecAdd(&a, to, &up);
@@ -237,7 +237,7 @@ int MoveKeepingOverGround(void *ign, Vec4 *to, Vec4 *pos, int flags, float h, fl
             }
             ang = fast_atan2(func_001F9D48_f(pos, q60), *(float *)(q40 + 0x28) - pos->f[2]);
             if (*(int *)(q40 + 0x18) != 0 || slope < ang) {
-                qcopy(pos, &D_L00_00173F70);
+                qcopy(pos, &coll_resolved_pos);
                 ok = 0;
                 pos->f[2] -= zz;
             }
@@ -276,10 +276,10 @@ int move_4318(char *m, char *v, int flags, float a, float b, float c) {
     if (b < FastVecLength(v)) {
         qcopy(&t1, &t0);
         t1.a[2] += a;
-        func_L00_001FF4B0(&t3, v, b);
+        vec_scale_to_length(&t3, v, b);
         FastVecAdd(&t2, &t3, p);
         t2.a[2] += a;
-        if (func_L00_001EFFF0(&t1, &t2, fl, (int)m, 0)) {
+        if (coll_line(&t1, &t2, fl, (int)m, 0)) {
             FastVecSub(p, (char *)&D_94C8_60, &t3);
             r = 1;
             *(float *)(m + 0x18) -= a;
@@ -289,7 +289,7 @@ int move_4318(char *m, char *v, int flags, float a, float b, float c) {
         qcopy(&t1, q);
         t1.a[2] += a;
         if (func_L00_001F10E0_l(&t1, b, fl | 4, m)) {
-            qcopy(q, &D_L00_00173F70);
+            qcopy(q, &coll_resolved_pos);
             r |= 1;
             *(float *)(m + 0x18) -= a;
         } else {
@@ -301,15 +301,15 @@ int move_4318(char *m, char *v, int flags, float a, float b, float c) {
     qcopy(&t2, q);
     t1.a[2] += a;
     t2.a[2] = b - 0.05f;
-    if (func_L00_001EFFF0(&t1, &t2, fl | 2, (int)m, 0)) {
-        if (D_L00_00173F40[7] > 0) {
+    if (coll_line(&t1, &t2, fl | 2, (int)m, 0)) {
+        if (coll_hit_result[7] > 0) {
             float g;
             r |= 2;
-            g = fast_atan2(*(float *)((char *)D_L00_00173F40 + 0x48), vec_length_xy((char *)D_L00_00173F40 + 0x40));
+            g = fast_atan2(*(float *)((char *)coll_hit_result + 0x48), vec_length_xy((char *)coll_hit_result + 0x40));
             if (g > 0.5f) {
                 r |= 4;
             }
-            g = *(float *)((char *)D_L00_00173F40 + 0x28);
+            g = *(float *)((char *)coll_hit_result + 0x28);
             if (b < g) {
                 *(float *)(m + 0x18) += (g - b) * 0.3f;
             }
@@ -423,7 +423,7 @@ s32 move_w(Obj *m, Ctl *c, void *v, Vec4 *out, f32 f) {
         h1 = g->f28;
         if (0.5f < a && 0.1f < vec_length_xy(&d)) {
             {
-                func_L00_001FF4B0(&q, &d, 0.57f);
+                vec_scale_to_length(&q, &d, 0.57f);
                 FastVecAdd(&q, &q, &m->pos);
                 q.f[2] = m->pos.f[2] - c->f30;
                 if (func_L00_00259428_59B88(&q, m, c->i38 & 0x20, c->f08, c->f0C)) {
@@ -740,7 +740,7 @@ extern T_t D_T_00178200[] __asm__("D_L00_00178200");
 /* Records a timed effect entry for a moby unless a fresher one of its own is still live. Adapted from Lombyte (GPL-3.0) for PAL: overlays/shared/gameplay_entities_00259710.c, FUN_L00_00259a88. */
 void record_moby_hit(unsigned char *m, L_t *src) {
     L_t l;
-    int i = D_L00_00173F40[5];
+    int i = coll_hit_result[5];
     T_t *e;
     ((u128_t *)&l)[0] = ((u128_t *)src)[0];
     ((u128_t *)&l)[1] = ((u128_t *)src)[1];
@@ -763,7 +763,7 @@ void record_moby_hit(unsigned char *m, L_t *src) {
     e->owner = m;
     e->z = 0;
     m[0xA4] = i;
-    D_L00_00173F40[5] = (i + 1) & 0x3F;
+    coll_hit_result[5] = (i + 1) & 0x3F;
 }
 typedef struct { char pos[16]; char vel[16]; int a; int b; int c; float t; int on; char *owner; int z; int pad; } E;
 extern E D_L00_00178200[];
@@ -771,7 +771,7 @@ extern float func_001F9CB8(void *);
 
 /* record a timed effect entry for a moby unless a fresher one is still live */
 void PostHitMessage(char *m, float t, int a, int b, void *pos, void *vel) {
-    int i = D_L00_00173F40[5];
+    int i = coll_hit_result[5];
     E *e;
     if (*(unsigned char *)(m + 0xA4) != 0xFF) {
         E *p = moby_hits + *(unsigned char *)(m + 0xA4);
@@ -793,14 +793,14 @@ void PostHitMessage(char *m, float t, int a, int b, void *pos, void *vel) {
     qcopy(&moby_hits[i], pos);
     qcopy(moby_hits[i].vel, vel);
     *(unsigned char *)(m + 0xA4) = i;
-    D_L00_00173F40[5] = (i + 1) & 0x3F;
+    coll_hit_result[5] = (i + 1) & 0x3F;
 }
 extern char D_L00_0015F660[] MACRO_ADDR;
 extern void func_L00_0025AC00_5AD38(unsigned char *, int, int, void *, void *, float) __asm__("func_L00_0025AC00");
 
 /* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_entities_0024c7f0.c, FUN_L10_0024c7f0. */
 void spawn_nearby_effect_without_direction(unsigned char *m, int x, int y, void *p, float f) {
-    func_L00_0025AC00_5AD38(m, x, y, p, D_L00_0015F660, f);
+    func_L00_0025AC00_5AD38(m, x, y, p, veldin1_zero_vec, f);
 }
 extern void func_001F9BF0(void *, void *, void *);
 
@@ -823,7 +823,7 @@ int sweep_hit_segment(void *a, void *b, void *c, void *d, int e, int f, int n) {
         FastVecScale(q, db, t);
         FastVecAdd(p, p, c);
         FastVecAdd(q, q, d);
-        if (func_L00_001EFFF0(p, q, 0, e, f)) {
+        if (coll_line(p, q, 0, e, f)) {
             return 1;
         }
         t += step;
@@ -883,8 +883,8 @@ void func_L00_0025B178(char *o) {
     }
     qcopy(b, p);
     b[2] = b[2] + 0.5f;
-    if (func_L00_001EFFF0(b, a, 0x22, 0, 0) != 0) {
-        float *t = (float *)D_L00_00173F40;
+    if (coll_line(b, a, 0x22, 0, 0) != 0) {
+        float *t = (float *)coll_hit_result;
         *(float *)(o + 0x84) = t[10] - 0.2f;
         *(float *)(o + 0x88) = t[10] + 0.2f;
     } else {
@@ -995,11 +995,11 @@ int ComputeHitResponse(O_25a478 *obj, P_25a478 *p, Q_25a478 *q, unsigned int fla
             v.f[0] = FastCos(fast_atan2(obj->x - G_25a478v.x, obj->y - G_25a478v.y));
             v.f[1] = FastSin(fast_atan2(obj->x - G_25a478v.x, obj->y - G_25a478v.y));
             v.f[2] = 1.0f;
-            func_L00_001FF4B0(&v, &v, FastVecLength(pv) * 0.7f);
+            vec_scale_to_length(&v, &v, FastVecLength(pv) * 0.7f);
             FastVecScale(pv, pv, 0.3f);
             FastVecAdd(&t, pv, &v);
             pv->q = t.q;
-            func_L00_001FF500((float *)pv, (float *)pv, 1.0f);
+            vec_set_length_xy((float *)pv, (float *)pv, 1.0f);
         }
     } else {
         if (!p->tgt) { p->state = 8; kind = 0x47; }
@@ -1642,7 +1642,7 @@ extern float func_001F9C78(void *, void *);
 extern void func_001F9BF0(void *dst, void *a, void *b);
 void subtract_homogeneous_scaled_vector_xyz(void *a, void *b, void *c, float s) {
     Vq t0, t1;
-    func_L00_001FF4B0(&t1, c, 1.0f);
+    vec_scale_to_length(&t1, c, 1.0f);
     FastVecScale(&t0, &t1, FastVecDot(&t1, b) * s);
     FastVecSub(a, b, &t0);
 }
@@ -1756,7 +1756,7 @@ int mine_fall(char *moby, char *st) {
     f60 = vec_length_xy(st);
     t = (*(short *)(st + 0x3E) == 2) ? 0.0f : *(float *)(st + 0x4C);
     ApproachValue(&f60, t, *(float *)(st + 0x14));
-    func_L00_001FF500((float *)st, (float *)st, f60);
+    vec_set_length_xy((float *)st, (float *)st, f60);
     if (*(float *)(st + 0x1C) < *(float *)(st + 0x8)) {
         *(float *)(st + 0x8) = *(float *)(st + 0x1C);
     }
@@ -1775,7 +1775,7 @@ int mine_fall(char *moby, char *st) {
         if ((*(int *)(st + 0x24) & 0x10) || *(short *)(st + 0x3E) == 2) {
             FastVecAdd(v20, (moby + 0x10), st);
             if (func_L00_0025A748_f(v20) < f21 - 0.25f) {
-                func_L00_001FF500((float *)st, (float *)st, 0.0f);
+                vec_set_length_xy((float *)st, (float *)st, 0.0f);
             }
         }
     }
@@ -1855,7 +1855,7 @@ int mine_fall(char *moby, char *st) {
     FastVecAdd(v30, v20, st);
     n = func_L00_001F2BE8_d6f0(IntToFloat(*(int *)(st + 0x20)) * 0.0010742187732830644f, v30, 16, moby, 0);
     if (i < n) {
-        int **pp = D_L00_00178000;
+        int **pp = coll_sphere_moby_hits;
         int k = n;
         do {
             if (is_moby_in_class_range_500_to_540(*pp) == 0) {
@@ -1879,11 +1879,11 @@ int mine_fall(char *moby, char *st) {
     }
     if (func_L00_001F10E0_l(v20, IntToFloat(*(int *)(st + 0x20)) * sc, 36, moby) != 0) {
         flags |= 2;
-        g = &D_L00_00173F70;
+        g = &coll_resolved_pos;
         qcopy((moby + 0x10), g);
         one = 1.0f;
         *(float *)(moby + 0x18) = *(float *)(moby + 0x18) - *(float *)(st + 0x28);
-        func_L00_001FF4B0(v40, (char *)g + 0x10, one);
+        vec_scale_to_length(v40, (char *)g + 0x10, one);
         if (0.7070000171661377f <= v40[2]) {
             float e = FastVecDot(st, v40);
             if (e < 0.0f) {
@@ -1892,19 +1892,19 @@ int mine_fall(char *moby, char *st) {
                     flags |= 1;
                     *(short *)(st + 0x3E) = 2;
                 }
-                func_L00_001FF4B0(v50, v40, e);
+                vec_scale_to_length(v50, v40, e);
                 FastVecSub(st, st, v50);
                 if (*(short *)(st + 0x3E) == 2) {
                     f6c = FastVecLength(st);
                     ApproachValue(&f6c, 0.0f, *(float *)(st + 0x10));
-                    func_L00_001FF4B0(st, st, f6c);
+                    vec_scale_to_length(st, st, f6c);
                 }
             }
         } else {
             float d = FastVecDot(st, v40);
             if (d < 0.0f) {
                 d = d * -(*(float *)(st + 0x30) + one);
-                func_L00_001FF4B0(v50, v40, d);
+                vec_scale_to_length(v50, v40, d);
                 FastVecAdd(st, st, v50);
             }
         }
@@ -1924,7 +1924,7 @@ extern u8 D_001414D0[];
 
 /* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/0025d1b8.c, FUN_L00_0025d1b8. */
 void copy_hero_spawn_frame(S *p, s64 v) {
-    v = (*(S **)&D_001414D0[0])->v;
+    v = (*(S **)&g_hero_moby[0])->v;
     p->v = v;
 }
 extern void func_001F9BF0_25e290(void *, void *, void *) __asm__("func_001F9BF0");
@@ -2106,7 +2106,7 @@ int Spline_AdvanceByDistance(Spline_0025E860 *s, float *out, int *idx, float *t,
         j %= s->n;
     }
     FastVecSub(v, &s->pt[j], &s->pt[i]);
-    func_L00_001FF4B0(v, v, *t);
+    vec_scale_to_length(v, v, *t);
     FastVecAdd(out, out, v);
     return ret;
 }
@@ -2142,7 +2142,7 @@ void project_level_path_point_onto_segment(float *out, float *v, float *a, float
     n[2] = 0.0f;
     qcopy(q, a);
     q[2] = 0.0f;
-    func_L00_001FF500(n, n, 1.0f);
+    vec_set_length_xy(n, n, 1.0f);
     f = -FastVecDot(n, q) + (n[0] * v[0] + n[1] * v[1]);
     out[0] = v[0] - f * n[0];
     out[1] = v[1] - f * n[1];
@@ -2192,7 +2192,7 @@ float resolve_level_path_segment_point(u128_ED30 *out, u128_ED30 *p, u128_ED30 *
     }
     FastVecSub(d, b, a);
     d[1] = *a;
-    func_L00_001FF4B0(d, d, 1.0f);
+    vec_scale_to_length(d, d, 1.0f);
     qcopy(c, d);
     t = -FastVecDot(p, d);
     u = FastVecDot(&d[1], c);
@@ -2356,7 +2356,7 @@ int is_moby_in_class_range_500_to_540(void *moby) {
     if (moby == 0) {
         return 0;
     }
-    if ((unsigned int)moby < (unsigned int)D_L00_00160098 ||
+    if ((unsigned int)moby < (unsigned int)moby_array_start ||
         (unsigned int)D_L00_001600A0 < (unsigned int)moby) {
         return 0;
     }
@@ -2725,13 +2725,13 @@ extern float func_001F9CB8(void *);
 extern void func_L00_001FF4B0(void *, void *, float);
 void ClampVectorLength(void *a, float x) {
     if (x < FastVecLength(a)) {
-        func_L00_001FF4B0(a, a, x);
+        vec_scale_to_length(a, a, x);
     }
 }
 extern int D_L00_00160098 MACRO_ADDR;
 
 void append_unique_moby_index(int a, short *list, short max) {
-    int k = ((a - D_L00_00160098) << 8) >> 16;
+    int k = ((a - moby_array_start) << 8) >> 16;
     int i;
     for (i = 1; i <= list[0]; i++) {
         if (list[i] == k) return;
@@ -2747,7 +2747,7 @@ extern s32 D_L00_00160098 MACRO_ADDR;
 void mine_spawn_drops(s32 p, s16 *a) {
     s32 i;
     for (i = 1; i <= a[0]; i++) {
-        if (D_L00_00160098 + (a[i] << 8) == p) {
+        if (moby_array_start + (a[i] << 8) == p) {
             a[i] = a[a[0]];
             a[0]--;
             return;
@@ -2841,8 +2841,8 @@ int FindNearestTargetMoby(char *a, char *o, float best) {
         m = 0;
         res = 2;
     }
-    for (i = 1; i <= D_L00_001B0BB0[0]; i++) {
-        p = D_L00_00160098_5A208 + (D_L00_001B0BB0[i] << 8);
+    for (i = 1; i <= decoy_list[0]; i++) {
+        p = D_L00_00160098_5A208 + (decoy_list[i] << 8);
         if (p == 0) continue;
         if (*(short *)(p + 0xA6) != 0xCB && *(short *)(p + 0xA6) != 0x76C) continue;
         if (*(unsigned char *)(p + 0x20) == 0xFE) continue;
@@ -2927,8 +2927,8 @@ int FindNearestEligibleMoby(char *a, char *o, float best, int *list, int n, floa
             res = 2;
         }
     }
-    for (i = 1; i <= D_L00_001B0BB0[0]; i++) {
-        p = D_L00_00160098_5A208 + (D_L00_001B0BB0[i] << 8);
+    for (i = 1; i <= decoy_list[0]; i++) {
+        p = D_L00_00160098_5A208 + (decoy_list[i] << 8);
         if (p == 0) continue;
         if (*(short *)(p + 0xA6) != 0xCB && *(short *)(p + 0xA6) != 0x76C) continue;
         if (*(unsigned char *)(p + 0x20) == 0xFE) continue;
@@ -3138,7 +3138,7 @@ void grant_inventory_item(int id, int flag) {
     if (*pa == 0) {
         ItemRec *r;
         *pa = 1;
-        r = &D_L00_001C43B0[id];
+        r = &item_price_table[id];
         *pb = 1;
         if (r->a != 0) {
             int *q = &weapon_ammo_counts[id];
@@ -3152,9 +3152,9 @@ void grant_inventory_item(int id, int flag) {
             if (id != 0 && D_L00_001C4198[i] == id) {
                 int j;
                 for (j = 0;; j++) {
-                    unsigned char b = D_0015EED0[j];
+                    unsigned char b = vendor_stock[j];
                     if ((b & 0x3F) == id || b == 0xFF) {
-                        D_0015EED0[j] = id | 0x40;
+                        vendor_stock[j] = id | 0x40;
                         break;
                     }
                 }
@@ -3162,7 +3162,7 @@ void grant_inventory_item(int id, int flag) {
             }
         }
         if (flag != 0) {
-            int t = D_L00_00179BC0[id].t;
+            int t = item_defs[id].t;
             if (t == 0) {
                 *(int *)(D_001414F5 + 0x13) = id;
             } else if (t == 3) {
@@ -3171,7 +3171,7 @@ void grant_inventory_item(int id, int flag) {
                 *(int *)(D_001414F5 + 0x1B) = id;
             }
         }
-        if (D_L00_00179BC0[id].t == 0) {
+        if (item_defs[id].t == 0) {
             for (i = 0; i < 8 && pause_iop_sprite_lists[i] != 0; i++) {
             }
             if (i < 8) {

@@ -46,16 +46,16 @@ void draw_vendor_purchase_text(void *m, int x, int y) {
     box.y = (short)y;
     box.x = (short)x;
 
-    if (MENU.rows[MENU.f58].fD4 == 1 && weapon_ammo_counts[MENU.rows[MENU.f58].fD0] >= D_L00_001C43B0[MENU.rows[MENU.f58].fD0].hE) {
+    if (MENU.rows[MENU.f58].fD4 == 1 && weapon_ammo_counts[MENU.rows[MENU.f58].fD0] >= item_price_table[MENU.rows[MENU.f58].fD0].hE) {
         message_id = 0x523B;
         goto message;
     }
     if (MENU.rows[MENU.f58].fD4 != 1)
         goto purchase;
     if (MENU.f40)
-        ammo_cost = D_L00_001C43B0[MENU.rows[MENU.f58].fD0].hA;
+        ammo_cost = item_price_table[MENU.rows[MENU.f58].fD0].hA;
     else
-        ammo_cost = D_L00_001C43B0[MENU.rows[MENU.f58].fD0].h8;
+        ammo_cost = item_price_table[MENU.rows[MENU.f58].fD0].h8;
     if (gBolts < ammo_cost)
         goto no_money;
     DrawMobyList(MENU.f20 + 0x500, 1);
@@ -79,9 +79,9 @@ quantity_done:
     FontPrintSmall(0x40, 0x32, 0x80f0f0f0L, D_L00_00161230, -1);
     fmt = D_L00_00161220;
     if (MENU.f40)
-        total = D_L00_00161F30 * D_L00_001C43B0[MENU.rows[MENU.f58].fD0].hA;
+        total = D_L00_00161F30 * item_price_table[MENU.rows[MENU.f58].fD0].hA;
     else
-        total = D_L00_00161F30 * D_L00_001C43B0[MENU.rows[MENU.f58].fD0].h8;
+        total = D_L00_00161F30 * item_price_table[MENU.rows[MENU.f58].fD0].h8;
     func_00116248(text, fmt, total);
     font_print_right_small(0x40, 0x4c, 0x80f0f0f0L, text, -1);
     return;
@@ -91,7 +91,7 @@ message:
     font_print_window_small((void *)&box, 0x80f0f0f0L, msg_string(message_id), -1);
     return;
 purchase:
-    cost = discount_purchase_pricing ? D_L00_001C43B0[MENU.rows[MENU.f58].fD0].i4 : D_L00_001C43B0[MENU.rows[MENU.f58].fD0].i0;
+    cost = discount_purchase_pricing ? item_price_table[MENU.rows[MENU.f58].fD0].i4 : item_price_table[MENU.rows[MENU.f58].fD0].i0;
     if (gBolts >= cost) {
         FontPrintSmall(6, 6, 0x80f0f0f0L, msg_string(0x523E), -1);
         FontPrintSmall(2, 0x20, 0x80f0f0f0L, msg_string(0x5239), -1);
@@ -141,13 +141,13 @@ void draw_vendor_inset_quads(char *m) {
         FastVecSub(A, P[1], P[0]);
         FastVecSub(B, P[2], P[0]);
         f = FastVecLength(A);
-        func_L00_001FF4B0(E, A, D_L00_001CA618[i][0]);
+        vec_scale_to_length(E, A, D_L00_001CA618[i][0]);
         FastVecAdd(C, C, E);
-        func_L00_001FF4B0(A, A, f - D_L00_001CA618[i][2] * 2.0f);
+        vec_scale_to_length(A, A, f - D_L00_001CA618[i][2] * 2.0f);
         f = FastVecLength(B);
-        func_L00_001FF4B0(E, B, D_L00_001CA618[i][1]);
+        vec_scale_to_length(E, B, D_L00_001CA618[i][1]);
         FastVecAdd(C, C, E);
-        func_L00_001FF4B0(B, B, f - D_L00_001CA618[i][3] * 2.0f);
+        vec_scale_to_length(B, B, f - D_L00_001CA618[i][3] * 2.0f);
         FastVecAdd(E, C, A);
         FastVecAdd(E, E, B);
         project_graphics_bounds_float(C, E, &g[0], &g[1], &g[2], &g[3]);
@@ -176,7 +176,7 @@ void draw_vendor_inset_quads(char *m) {
         q.uv[3][0] = uvv;
         q.uv[3][1] = uvv;
         VU1_addGSregister(0x47, 0x32003);
-        func_L00_001FD1D8(&q, 0, 1);
+        draw_world_quad(&q, 0, 1);
     }
 }
 typedef int q2A __attribute__((mode(TI)));
@@ -211,13 +211,13 @@ void draw_vendor_purchase_panel(void *m) {
     FastVecSub(d1, &out[1], out);
     FastVecSub(d2, &out[2], out);
     len = FastVecLength(d1);
-    func_L00_001FF4B0(tmp, d1, 0.03f);
+    vec_scale_to_length(tmp, d1, 0.03f);
     FastVecAdd(base, base, tmp);
-    func_L00_001FF4B0(d1, d1, len - 0.06f);
+    vec_scale_to_length(d1, d1, len - 0.06f);
     len = FastVecLength(d2);
-    func_L00_001FF4B0(tmp, d2, 0.04f);
+    vec_scale_to_length(tmp, d2, 0.04f);
     FastVecAdd(base, base, tmp);
-    func_L00_001FF4B0(d2, d2, len - 0.04f);
+    vec_scale_to_length(d2, d2, len - 0.04f);
     qcopy(&c[0], base);
     FastVecAdd(&c[1], base, d1);
     FastVecAdd(&c[2], base, d2);
@@ -292,7 +292,7 @@ void draw_vendor_hologram_cone(void) {
         s.uv[2][1] = D_L00_001CA710[*(int *)((char *)D_L00_001CA780 + i * 16 + 8)][1] + *(float *)&D_L00_00161244;
         s.uv[3][0] = D_L00_001CA710[D_L00_001CA780[i].d][0];
         s.uv[3][1] = D_L00_001CA710[D_L00_001CA780[i].d][1] + *(float *)&D_L00_00161244;
-        func_L00_001FD1D8(&s, 0, 1);
+        draw_world_quad(&s, 0, 1);
     }
 }
 typedef int u128_2A1540 __attribute__((mode(TI)));

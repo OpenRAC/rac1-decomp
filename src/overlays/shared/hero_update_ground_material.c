@@ -176,7 +176,7 @@ void HeroFrameUpdate(void) {
         }
     }
     update_hero_moby_probed_height_bounds();
-    func_L00_0025805C(GG->p2080);
+    apply_env_zone_lighting(GG->p2080);
 }
 extern unsigned char D_0013E633[];
 extern int func_001F9850(int);
@@ -263,7 +263,7 @@ void update_hero_frame(void) {
     }
     {
         char *q = (char *)D_0013E633 + 0xE1D;
-        func_L00_0025805C(*(void **)(q + 0x2080));
+        apply_env_zone_lighting(*(void **)(q + 0x2080));
     }
     update_hero_blink_and_gold_weapon_tint();
     update_hero_moby_probed_height_bounds();
@@ -720,7 +720,7 @@ void enter_hero_vehicle_mode_and_set_moby(int a, int b, int c) {
     *(float *)(g + 0xA90) = 1.0f;
     *(float *)(g + 0xA94) = 1.0f;
     HeroClearQueuedSequence();
-    func_L00_0025805C(*(void **)(g + 0x2080));
+    apply_env_zone_lighting(*(void **)(g + 0x2080));
     apply_hero_and_item_scale_sequence();
     *(short *)(g + 0x22CC) = b;
     if (a == 1) {
@@ -760,8 +760,8 @@ void exit_hero_vehicle_mode_and_restore_moby(void) {
     *(float *)(g + 0xA94) = 1.0f;
     HeroClearQueuedSequence();
     if (*(int *)(g + 0x2084) == 0x64) {
-        if (D_L01_0015F6A8 == 2) return;
-        if (D_L01_0015F6A8 == 6) return;
+        if (novalis_game_mode == 2) return;
+        if (novalis_game_mode == 6) return;
     }
     Hero_SetMoveState(0, 1);
 }
@@ -841,7 +841,7 @@ s32 HeroL01_TryTakeHit(s32 arg) {
     if (D_0013F450_231B98.i1C0 != 0) {
         return 0;
     }
-    if (D_L01_0015F6A8 != 0) {
+    if (novalis_game_mode != 0) {
         return 0;
     }
     D_0013F450_231B98.p2280 = 0;
@@ -1111,22 +1111,22 @@ void clip_hero_horizontal_velocity(int flag) {
     k = -1;
     FastVecAdd(q, q, t);
     h1 = (char *)D_0013E633 + 0xE1D;
-    if (func_L00_001EFFF0(t, q, 4, *(int *)(h1 + 0x2080), 0) != 0) {
+    if (coll_line(t, q, 4, *(int *)(h1 + 0x2080), 0) != 0) {
         if (D_L01_0017435C > 0) {
             k = CollType();
         }
     }
     f20 = 0.0f;
     h2 = (char *)D_0013E633 + 0xE1D;
-    if (func_L00_001EFFF0(s, p, 4, *(int *)(h2 + 0x2080), 0) != 0) {
-        w = D_L01_00174340;
+    if (coll_line(s, p, 4, *(int *)(h2 + 0x2080), 0) != 0) {
+        w = novalis_coll_hit;
         if (*(int *)(w + 0x1C) > 0) {
             f20 = fast_atan2(*(float *)(w + 0x48), vec_length_xy(w + 0x40));
         }
     }
     if (f20 >= 0.87266463f || k == 8 || k == 12) {
         h3 = (char *)D_0013E633 + 0xE1D;
-        w3 = D_L01_00174340;
+        w3 = novalis_coll_hit;
         u = (float *)(w3 + 0x40);
         *(int *)(w3 + 0x48) = 0;
         *(int *)(h3 + 0x240) = *(int *)(w3 + 0x18);
@@ -1251,7 +1251,7 @@ void HeroGroundProbe(void) {
         g = g_hero.xF234 * 2.9f;
     }
     hero_get_collision_ray_endpoints(&v10, &v0, k, g, -48.0f);
-    if (func_L00_001EFFF0(&v10, &v0, 2, g_hero.xI2080, 0) == 0) {
+    if (coll_line(&v10, &v0, 2, g_hero.xI2080, 0) == 0) {
         goto tail;
     }
     r = coll_sound_class();
@@ -1265,7 +1265,7 @@ void HeroGroundProbe(void) {
         if (g_hero.xF88 < g_hero.xF2f0 && g_hero.xI2f8 <= 0) {
             g_hero.xI2f8 = 1;
         }
-        if (func_L00_001EFFF0(&v10, &v0, 0x24, g_hero.xI2080, 0) == 0) {
+        if (coll_line(&v10, &v0, 0x24, g_hero.xI2080, 0) == 0) {
             goto d1;
         }
         r = coll_sound_class();
@@ -1277,7 +1277,7 @@ void HeroGroundProbe(void) {
     if (g_hero.xH12e0 == 0xD) {
         g_hero.xF2f0 = D_L01_00174340_333D8.v20.f[2];
         v10.f[2] = D_L01_00174340_333D8.v20.f[2] - 0.01f;
-        if (func_L00_001EFFF0(&v10, &v0, 4, g_hero.xI2080, 0) == 0) {
+        if (coll_line(&v10, &v0, 4, g_hero.xI2080, 0) == 0) {
             goto d1;
         }
     }
@@ -1336,7 +1336,7 @@ d1:
         break;
     case 2:
         FastVecSub(((u8 *)&g_hero + 0x290), ((u8 *)&g_hero + 0x290) - 0x1E0, ((u8 *)&g_hero + 0x290) - 0x210);
-        func_L00_001FF4B0(((u8 *)&g_hero + 0x290), ((u8 *)&g_hero + 0x290), 1.0f);
+        vec_scale_to_length(((u8 *)&g_hero + 0x290), ((u8 *)&g_hero + 0x290), 1.0f);
         break;
     }
     g_hero.u2e4.I = 0;
@@ -1367,7 +1367,7 @@ d1:
         }
         transform_hero_polar_offset_to_world(&v30, 0.2f, a, 0.45f);
         transform_hero_polar_offset_to_world(&v40, 0.2f, a, -0.45f);
-        if (func_L00_001EFFF0(&v30, &v0, 0x22, g_hero.xI2080, 0)) {
+        if (coll_line(&v30, &v0, 0x22, g_hero.xI2080, 0)) {
             f = D_L01_00174340_333D8.v20.f[2] - g_hero.u2d8.F;
             g_hero.a2c0.f[i] = f;
             if (0.4f < FastAbsF(f)) {
@@ -1463,7 +1463,7 @@ int resolve_hero_position_with_collision_queries(int a0) {
         if (C[2] > 512.0f) C[2] = 512.0f;
         else if (C[2] < -512.0f) C[2] = -512.0f;
         g = (char *)D_0013E633 + 0xE1D;
-        func_L00_001FF4B0(C, C, *(float *)(g + 0x234));
+        vec_scale_to_length(C, C, *(float *)(g + 0x234));
         FastVecAdd(g + 0x80, A, C);
         }
         return -1;
@@ -1533,7 +1533,7 @@ void air_accel(float step) {
         h = (char *)&g_hero + 0xE0;
         step = step * d;
         FastVecSub(v, v, h);
-        if (step < vec_length_xy(v)) func_L00_001FF500(v, v, step);
+        if (step < vec_length_xy(v)) vec_set_length_xy(v, v, step);
         FastVecAdd(h, h, v);
         *(u128_34970 *)w = *(u128_34970 *)(h + 0x840);
         {

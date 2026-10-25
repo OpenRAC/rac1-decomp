@@ -116,7 +116,7 @@ int compute_clear_path_point_mask(int *objs, int n, int idx, float f, float *pos
                 zv[2] = 1.0f;
                 FastVecSub(v, pos, e);
                 FastVecCross(v, v, zv);
-                func_L00_001FF4B0(v, v, fz);
+                vec_scale_to_length(v, v, fz);
                 FastVecSub(w1, pos, v);
                 FastVecAdd(w2, pos, v);
                 if (test_path_segment_strict_crossing(objs[j], w1, e) != 0) {

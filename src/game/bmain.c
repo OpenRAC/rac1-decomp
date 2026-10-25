@@ -59,7 +59,7 @@ void start_level(int level) {
         b = D_00137C80_g.normal[level].b;
         a = D_00137C80_g.normal[level].a;
     }
-    D_0015EFD8 = 2;
+    decode_mode = 2;
     voice_pool[0x6B] |= 8;
     func_00118D80(0);
     sound_StopAllSounds();
@@ -87,7 +87,7 @@ void start_level(int level) {
     func_00120858(0, 0);
     func_00123168(func_0012F308);
     Hud_sendTexture(0x1000000, depth_buffer_address, 0x1B, 6, 6, 1);
-    D_0015EFD8 = 0;
+    decode_mode = 0;
     FadeToBlack(4);
     g_game_mode = 0;
     voice_pool[0x6B] |= 0x10;

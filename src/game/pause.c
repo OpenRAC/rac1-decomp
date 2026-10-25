@@ -261,8 +261,8 @@ void PauseAllSounds(int arg0) {
         D_0015F754 = 1;
         return;
     }
-    if (D_00141760 == 0x24) {
-        D_00141760 = 0;
+    if (last_weapon_id == 0x24) {
+        last_weapon_id = 0;
     }
     {
         char *g = menu_system;
@@ -959,7 +959,7 @@ void render_level_effects_and_screen_sprites(void) {
         projected_frame->projected_width = projected_width;
         projected_frame->projected_height = projected_height;
         {
-            s32 *clr_src = (s32 *)&D_001602B0;
+            s32 *clr_src = (s32 *)&panel_clear_color;
             __builtin_memcpy(&clr, clr_src, 4);
         }
         draw_hud_rect_blended(screen_x + 1, screen_y + 1, screen_x + projected_width - 1,
@@ -1015,7 +1015,7 @@ void render_level_effects_and_screen_sprites(void) {
             configure_graphics_render_target_and_projection(texture_width_log2, texture_height_log2, pass != 0, 1.0f);
             texture_width = 1 << texture_width_log2;
             texture_height = 1 << texture_height_log2;
-            draw_hud_rect_depth(0, 0, texture_width, texture_height, *(s32 *)&D_001602B0, 0, 0);
+            draw_hud_rect_depth(0, 0, texture_width, texture_height, *(s32 *)&panel_clear_color, 0, 0);
             draw_result = panels[draw_slot_index]->draw(panels[draw_slot_index]);
             begin_draw_frame();
             if (draw_result & 1) {
@@ -1218,19 +1218,19 @@ int draw_menu_icon_list(char *arg0) {
                           (unsigned int)((subtract_integer_with_clamp((game_frame_counter & 0x3F) - 0x20) + 0x40)
                                          * 0x10202 | 0x80000000), 1);
             draw_hud_rect_blended(x - 0x10, y - 0x10, x + 0x210, y + 0x210,
-                          *(int *)&D_001602B0, 1);
+                          *(int *)&panel_clear_color, 1);
         }
         draw_hud_sprite_subpixel(GetIconFrame(*(unsigned short *)e, *(short *)(e + 2)), x, y,
                       0x200, 0x200, 0x80);
         y += 0x252;
     }
     if (top < 0) {
-        draw_hud_rect_blended(0, 0, *(int *)(arg0 + 0x20), 0x14, *(int *)&D_001602B0, 0);
+        draw_hud_rect_blended(0, 0, *(int *)(arg0 + 0x20), 0x14, *(int *)&panel_clear_color, 0);
         HudSprite(GetIconFrame(0xE99E, 6), x >> 4, 2, 0x20, 0x10, 0x80);
     }
     if (*(int *)(arg0 + 0x24) * 16 < y) {
         draw_hud_rect_blended(0, *(int *)(arg0 + 0x24) - 0x14, *(int *)(arg0 + 0x20),
-                      *(int *)(arg0 + 0x24), *(int *)&D_001602B0, 0);
+                      *(int *)(arg0 + 0x24), *(int *)&panel_clear_color, 0);
         draw_hud_sprite_flipped(GetIconFrame(0xE99E, 6), x >> 4, *(int *)(arg0 + 0x24) - 0x12,
                       0x20, 0x10, 0x80);
     }
@@ -1543,7 +1543,7 @@ int render_configured_text_label(unsigned char *w) {
     if (*(int *)(w + 0x30) & 0x10000) {
         win.s[1] = *(unsigned short *)(w + 0x24) - 1;
     }
-    colour = fade_menu_color(*(int *)(w + 0x44), FastTweenColor(*(int *)&D_001602B0, 0x80FFA888, 0.5f), 0x80FFA888);
+    colour = fade_menu_color(*(int *)(w + 0x44), FastTweenColor(*(int *)&panel_clear_color, 0x80FFA888, 0.5f), 0x80FFA888);
     win.s[9] |= 4;
     DRAW(colour, text);
     win.s[9] ^= 4;
@@ -2854,8 +2854,8 @@ int enter_menu_mission_list(void *arg0) {
     p = (int *)((char *)arg0 + 0x30);
     p += selected_level_index;
     if (*p != -1) {
-        D_001CFBF4 = ((int *)0x70000000)[*p];
-        D_001CFAD8 = ((int *)0x70000100)[*p];
+        selected_mission_id = ((int *)0x70000000)[*p];
+        selected_mission_index = ((int *)0x70000100)[*p];
     }
     return 0;
 }
@@ -2972,8 +2972,8 @@ int update_menu_mission_list(struct Menu *menu_screen) {
         if ((pad & (PAD_UP | PAD_DOWN)) || ((struct MapSelection_21D4C0 *)&D_001A01F0_lv)->level != old) {
             menu_screen->count = collect_mission_ids((void *)(7 << 28), (void *)0, (void *)((7 << 28) + 0x100), 1);
             mission_choice_ptr = &ch[((struct MapSelection_21D4C0 *)&D_001A01F0_lv)->level];
-            D_001CFBF4 = ((unsigned int *)(7 << 28))[*mission_choice_ptr];
-            D_001CFAD8 = ((unsigned int *)((7 << 28) + 0x100))[*mission_choice_ptr];
+            selected_mission_id = ((unsigned int *)(7 << 28))[*mission_choice_ptr];
+            selected_mission_index = ((unsigned int *)((7 << 28) + 0x100))[*mission_choice_ptr];
         }
     }
     if (((struct PadState *)&D_0013CA40_g)->pressed_unmasked & PAD_TRIANGLE) {
@@ -3013,7 +3013,7 @@ typedef struct {
    advances. The three conditions are one `&&` (one shared exit) and the
    time is compared call-first, as retail evaluates them. */
 int update_menu_item_slots(SelList_0021D7A0 *arg0) {
-    char *q = *(char **)(D_001D5F74 + 0x40);
+    char *q = *(char **)(current_menu_page + 0x40);
     int item = *(short *)(*(int *)(q + 0x3C) * 10 + *(char **)(q + 0x48) + 6);
     int old = arg0->idx;
     char *pad = g_controller_state;
@@ -3035,8 +3035,8 @@ int update_menu_item_slots(SelList_0021D7A0 *arg0) {
         if (s->count <= 0xFFFE) {
             s->count++;
         }
-        if (scale_game_frame_count(D_0015EFA4) / 600 > s->best) {
-            s->best = scale_game_frame_count(D_0015EFA4) / 600;
+        if (scale_game_frame_count(play_time_ticks) / 600 > s->best) {
+            s->best = scale_game_frame_count(play_time_ticks) / 600;
         }
         s->mask = s->mask | (1 << g_current_level_index) | 0x80000000;
         for (i = 0; i < 8; i++) {
@@ -3500,7 +3500,7 @@ extern void func_001F9A00(void *, void *, int);
 /* The slot count at D_001997D0+0x2C, read through its own base pointer:
    retail's loop keeps a separate copy of the D_001997D0 address. */
 static inline int pauseSlotCount(void) {
-    char *b = D_001997D0;
+    char *b = g_help_state;
     return *(int *)(b + 0x2C);
 }
 
@@ -3538,7 +3538,7 @@ int update_menu_help_text_load(char *arg0) {
             int i;
 
             copy_memory_aligned(tbl, p, ((sz + 3) & ~3) - 8);
-            b = D_001997D0;
+            b = g_help_state;
             *(int *)(arg0 + 0x54) = D_0015F780_m;
             *(int *)(arg0 + 0x38) = *(int *)(b + 0x2C);
             *(int *)(b + 0x2C) = n;
@@ -3612,7 +3612,7 @@ int draw_menu_text_list(Menu *menu) {
     size = 12;
     kind = 1;
     font = normal_font_metrics;
-    focused = *(Menu **)(D_001D5F74 + 0x40) == menu;
+    focused = *(Menu **)(current_menu_page + 0x40) == menu;
     if (menu->flags & 4) {
         size = 14;
         kind = 3;
@@ -3830,7 +3830,7 @@ s32 draw_menu_item_grid(MenuItemGrid *grid) {
             if (focused && grid->selected_cell == cell - grid->cells) {
                 color = ((subtract_integer_with_clamp((game_frame_counter & 0x3F) - 0x20) + 0x40) * 0x10202) | 0x80000000;
                 func_00201640_1E950(left - 0x30, top - 0x30, right + 0x30, bottom + 0x30, color, 1);
-                func_00201640_1E950(left - 0x10, top - 0x10, right + 0x10, bottom + 0x10, (*(s32 *)&D_001602B0), 1);
+                func_00201640_1E950(left - 0x10, top - 0x10, right + 0x10, bottom + 0x10, (*(s32 *)&panel_clear_color), 1);
             }
             if (cell->kind == 0 ? D_0013D5C8_1E950[cell->id] : gSpecialItems[cell->id]) {
                 frame_offset = 0;
@@ -3866,7 +3866,7 @@ extern unsigned char D_001414F4 NOT_SDA;
    HImode, which has no movcc pattern, so jump.c cannot turn it into the
    xori/movz a promoted `short` local gets. */
 static inline short pauseFlagState(void) {
-    if (D_001414F4 != 1) {
+    if (hero_vehicle_mode != 1) {
         return 3;
     }
     return 0;
@@ -3993,14 +3993,14 @@ typedef struct ItemPreviewCamera {
 
 int update_item_preview_moby(char *arg0) {
     ItemPreviewScreen *menu = (ItemPreviewScreen *)arg0;
-    PreviewGridScreen *grid = *(PreviewGridScreen **)(D_001D5F74 + 0x40);
+    PreviewGridScreen *grid = *(PreviewGridScreen **)(current_menu_page + 0x40);
     int item = grid->cells[grid->selected_cell].id;
     short current_preview_class;
     ItemPreviewInfo *rec;
     short want;
 
     current_preview_class = menu->moby != 0 ? menu->moby->oclass : -1;
-    rec = (ItemPreviewInfo *)D_001864D0 + item;
+    rec = (ItemPreviewInfo *)item_info_table + item;
     want = rec->preview_class;
     if (want != -1 && current_preview_class == -1) {
         struct Moby *spawned_moby = func_00226720_a(want);
@@ -4050,7 +4050,7 @@ extern void func_001F7560(void *, long, void *, int);
    written inline in the index; a `char *e` local leaves an addu swap. */
 int draw_item_preview_screen(char *arg0) {
     short buf[10];
-    char *p = *(char **)(D_001D5F74 + 0x40);
+    char *p = *(char **)(current_menu_page + 0x40);
 
     if (((unsigned char *)&item_available)[*(short *)(*(int *)(p + 0x3C) * 10 + *(char **)(p + 0x48) + 6)] == 0) {
         return 0;
@@ -4462,7 +4462,7 @@ int draw_available_item_preview_mobys(char *arg0) {
     s32 primary_moby;
     s32 secondary_moby;
 
-    grid = (PreviewGridScreen *)((struct MenuPage *)D_001D5F74)->focus;
+    grid = (PreviewGridScreen *)((struct MenuPage *)current_menu_page)->focus;
     if (((unsigned char *)&item_available)[grid->cells[grid->selected_cell].id] == 0) {
         return 0;
     }
@@ -4868,7 +4868,7 @@ int DrawGBsShipMenu__maybe(char *arg0) {
     {
         int k;
         for (k = 0; k < 4; k++) {
-            if (D_0014BFC0[level_map_selection[0x89] * 4 + k] != 0) {
+            if (gold_bolts_collected[level_map_selection[0x89] * 4 + k] != 0) {
                 count = count + 1;
             }
         }
@@ -4916,7 +4916,7 @@ extern char D_001603D0[]; /* "%d,%03d" */
 int draw_selected_item_ammo(char *arg0) {
     char text[0x50];
     short box[10];
-    char *p = *(char **)(D_001D5F74 + 0x40);
+    char *p = *(char **)(current_menu_page + 0x40);
     int id = *(short *)(*(int *)(p + 0x3C) * 10 + *(char **)(p + 0x48) + 6);
     int have, total;
     char *rec;
@@ -5130,7 +5130,7 @@ extern void func_00200468(int, int, int, int, int, int);
    marker icon above it when flag is set. */
 void draw_menu_selection_marker(int x, int y, int flag) {
     draw_hud_rect_blended(x - 5, y - 5, x + 5, y + 5, 0x80FFA888L, 0);
-    draw_hud_rect_blended(x - 4, y - 4, x + 4, y + 4, *(int *)&D_001602B0, 0);
+    draw_hud_rect_blended(x - 4, y - 4, x + 4, y + 4, *(int *)&panel_clear_color, 0);
     if (flag != 0) {
         int c = GetIconFrame(0xE99E, 1);
         HudSprite(c, x - 0xD, y - 0x12, 0x1E, 0x1E, 0x80);
@@ -6370,7 +6370,7 @@ int draw_pause_ring(char *arg0) {
 
     SetupGifPaging(0);
     viewport_dimension = pause_state->w;
-    iconTab = (struct MenuItemInfo *)D_001864D0;
+    iconTab = (struct MenuItemInfo *)item_info_table;
     viewport_height = pause_state->h;
     flag = viewport_dimension < viewport_height;
     /* v1 doubles as `selected`: retail's movz reuses the same register
@@ -6396,7 +6396,7 @@ int draw_pause_ring(char *arg0) {
             unsigned int color = ((subtract_integer_with_clamp((game_frame_counter & 0x3F) - 0x20) + 0x40) * 0x10202) | 0x80000000;
 
             draw_hud_rect_blended((int)x - 0x13, (int)y - 0x13, (int)x + 0x13, (int)y + 0x13, color, 0);
-            draw_hud_rect_blended((int)x - 0x12, (int)y - 0x12, (int)x + 0x12, (int)y + 0x12, *(int *)&D_001602B0, 0);
+            draw_hud_rect_blended((int)x - 0x12, (int)y - 0x12, (int)x + 0x12, (int)y + 0x12, *(int *)&panel_clear_color, 0);
         }
         icon_entry_index = pause_state->slots[i];
         if (icon_entry_index == 0) {
@@ -6749,7 +6749,7 @@ int build_pause_item_list(void) {
         int id = D_001CF4A0[i].id;
         if (((unsigned char *)&item_available)[id] != 0) {
             Item0A *out = &D_001D6470[n];
-            char *rec = D_001864D0 + id * 0x4C;
+            char *rec = item_info_table + id * 0x4C;
             unsigned char b = gold_weapon_purchased[id];
             int f = b != 0;
             out->a = *(unsigned short *)(rec + 0x38);
@@ -6813,7 +6813,7 @@ int build_filtered_menu_item_list(void) {
             id = D_001CF020[i - 12].id;
         }
         if (((unsigned char *)&item_available)[id] != 0) {
-            item_info = &((struct Info *)D_001864D0)[id];
+            item_info = &((struct Info *)item_info_table)[id];
             D_001D6548[filtered_item_count].a = item_info->icon;
             D_001D6548[filtered_item_count].b = 0;
             D_001D6548[filtered_item_count].c = 0;
@@ -6898,7 +6898,7 @@ extern char *D_001D5F78 NOT_SDA;
 
 /* Map screen tick: on pad bit 0x40 switches back to the default action list. */
 int update_level_selection_map_screen(void) {
-    if (D_0013CC04 & 0x40) {
+    if (pad0_pressed_unmasked & 0x40) {
         pause_current_action_list = pause_default_action_list;
     }
     return 0;
@@ -6919,7 +6919,7 @@ extern void func_0022ED80(int, int, int);
    falling to a single `return 0`; early returns in the 0x10 arm give a
    movn instead. */
 int handle_menu_action_buttons(char *arg0) {
-    int v = D_0013CC04;
+    int v = pad0_pressed_unmasked;
 
     if (v & 0x10) {
         char *g = menu_system;
@@ -6951,7 +6951,7 @@ extern char *D_001D5F74 NOT_SDA;
 
 /* Enter hook for the prompt screen: clears the page's +0x84 word and takes a stream buffer. */
 int enter_menu_prompt(void *arg0) {
-    *(int *)(D_001D5F74 + 0x84) = 0;
+    *(int *)(current_menu_page + 0x84) = 0;
     *(int *)((char *)arg0 + 0x54) = acquire_menu_stream_buffer(0);
     return 0;
 }
@@ -6998,7 +6998,7 @@ int Menu_ConfirmPromptInput(void) {
         return 0;
     }
     {
-        int v = D_0013CBE4;
+        int v = pad0_pressed;
         if (v & 0x20) {
             char *g = menu_system;
             *(int *)(g + 0xD4) = 0;
@@ -7209,7 +7209,7 @@ extern void func_001F6EA8(int, int, long, void *, int);
    arguments inline: gcc evaluates them in order, so x and y are computed
    before the nested func_001FE540 call. */
 int draw_selected_menu_item_text(char *arg0) {
-    char *p = *(char **)(D_001D5F74 + 0x40);
+    char *p = *(char **)(current_menu_page + 0x40);
     int row = *(int *)(*(char **)(p + 0x34) + *(int *)(p + 0x40) * 12 + 4);
 
     SetupGifPaging(0);
@@ -7249,7 +7249,7 @@ extern void func_00228268(void);
    used as bases get a `char *` local per block, so retail keeps only the
    D_0013D510 %hi across the calls. */
 int process_global_state_flags(void) {
-    int v = D_0013CBE4;
+    int v = pad0_pressed;
 
     if (v & 0x20) {
         D_0015EFB4_m |= 2;
@@ -9046,10 +9046,10 @@ void update_menu_preview_class_pose(void *arg0) {
         DetachManipulator(id, s);
     }
     if (still) {
-        noop_callback_s(D_001864D0_a, D_001864D0, m->sound, 0, id);
-        m->x68 = D_001864D0;
+        noop_callback_s(D_001864D0_a, item_info_table, m->sound, 0, id);
+        m->x68 = item_info_table;
         m->x54 = 0;
-        m->x6C = D_001864D0;
+        m->x6C = item_info_table;
         *(int *)(b + 0x58) = 0;
         m->x50 = 0;
     }
@@ -9077,14 +9077,14 @@ void update_menu_preview_animation_transform(PauseMoby *m) {
     normalize_vector_triplet(m->mtx);
     moby_anim_sphere_lerp(m);
     if (m->oclass == 0x1B1) {
-        noop_callback_s(D_001864D0_a, D_001864D0, m->sound, 6, id);
+        noop_callback_s(D_001864D0_a, item_info_table, m->sound, 6, id);
     } else {
-        noop_callback_s(D_001864D0_a, D_001864D0, m->sound, 0, id);
+        noop_callback_s(D_001864D0_a, item_info_table, m->sound, 0, id);
     }
     m->x50 = 0;
-    m->x68 = D_001864D0;
+    m->x68 = item_info_table;
     m->x54 = 0;
-    m->x6C = D_001864D0;
+    m->x6C = item_info_table;
 }
 
 typedef struct {
@@ -9136,12 +9136,12 @@ void update_menu_preview_pose_and_attachments(void *preview) {
         DetachManipulator(source_moby_address, first_attachment_manipulator);
     }
     if (!is_second_preview_moby) {
-        noop_callback_s(D_001864D0_a, D_001864D0,
+        noop_callback_s(D_001864D0_a, item_info_table,
                         moby->resource_address, 0, source_moby_address);
-        moby->primary_binding = D_001864D0;
-        moby->secondary_binding = D_001864D0;
+        moby->primary_binding = item_info_table;
+        moby->secondary_binding = item_info_table;
     } else {
-        noop_callback_s(D_001864D0, D_001864D0_a,
+        noop_callback_s(item_info_table, D_001864D0_a,
                         moby->resource_address, 0, source_moby_address);
         moby->primary_binding = D_001864D0_a;
         moby->secondary_binding = D_001864D0_a;
@@ -9531,7 +9531,7 @@ s32 update_streamed_moby_animation(MobyAnimationStream_26978 *stream) {
             break;
         }
         animation_asset_read_active[0] = 0;
-        func_0020C468((int)(stream->buffer + stream->read_offset), (int)stream->buffer);
+        fast_decompress((int)(stream->buffer + stream->read_offset), (int)stream->buffer);
         class_slot = D_001B3E40[0x7A5];
         classes = (StreamedClassResource_26978 **)moby_class_resources;
         header = (AnimationTableHeader_26978 *)stream->buffer;
@@ -9868,7 +9868,7 @@ int func_00227100_r(char *moby, char *m1, char *m2, char **o0, char **o1, char *
                     int n = D_001D5F70_q[0].pending - 1;
                     int *slot = D_001D5F70_q[0].buf + n;
                     int buf = *slot;
-                    func_0020C468(buf + D_001D5F70_q[0].readOff, buf);
+                    fast_decompress(buf + D_001D5F70_q[0].readOff, buf);
                     D_001D5F70_q[0].readOff = 0;
                     clear_menu_stream_buffer_read_active(buf);
                     D_001D5F70_q[0].loaded[n] = D_001D5F70_q[0].streamed;
@@ -10508,25 +10508,25 @@ void prepare_scaled_direction_and_perpendicular(PauseVec_282D0 *dir, f32 scale) 
     D_00160490_282D0[2] = D_00160470[2] * scale;
     if (v[0] < v[1]) {
         if (v[0] < v[2]) {
-            D_00160480[0] = v[0];
-            D_00160480[1] = v[2];
-            D_00160480[2] = v[1];
+            direction_perpendicular[0] = v[0];
+            direction_perpendicular[1] = v[2];
+            direction_perpendicular[2] = v[1];
         } else {
-            D_00160480[0] = v[1];
-            D_00160480[1] = v[0];
-            D_00160480[2] = v[2];
+            direction_perpendicular[0] = v[1];
+            direction_perpendicular[1] = v[0];
+            direction_perpendicular[2] = v[2];
         }
     } else if (v[1] < v[2]) {
-        D_00160480[0] = v[2];
-        D_00160480[1] = v[1];
-        D_00160480[2] = v[0];
+        direction_perpendicular[0] = v[2];
+        direction_perpendicular[1] = v[1];
+        direction_perpendicular[2] = v[0];
     } else {
-        D_00160480[0] = v[1];
-        D_00160480[1] = v[0];
-        D_00160480[2] = v[2];
+        direction_perpendicular[0] = v[1];
+        direction_perpendicular[1] = v[0];
+        direction_perpendicular[2] = v[2];
     }
-    FastVecCross(D_00160480, D_00160480, D_00160470);
-    func_001F9DC0_282D0(D_00160480, D_00160480, 1.0f);
+    FastVecCross(direction_perpendicular, direction_perpendicular, D_00160470);
+    func_001F9DC0_282D0(direction_perpendicular, direction_perpendicular, 1.0f);
 }
 
 /*

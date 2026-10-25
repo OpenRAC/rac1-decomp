@@ -324,8 +324,8 @@ void HeroL08_UpdateStatePhysics(void) {
                             if (usage_stats.f90 < 0xFFFF) {
                                 usage_stats.f90++;
                             }
-                            if (scale_ticks(D_0015EFA4) / 600 > usage_stats.f92) {
-                                usage_stats.f92 = scale_ticks(D_0015EFA4) / 600;
+                            if (scale_ticks(play_time_ticks) / 600 > usage_stats.f92) {
+                                usage_stats.f92 = scale_ticks(play_time_ticks) / 600;
                             }
                             usage_stats.f94 = usage_stats.f94 | (1 << D_0015EE84_m) | 0x80000000;
                             *(int *)&D_L08_0015F768 = -1;
@@ -470,7 +470,7 @@ void HeroL08_UpdateStatePhysics(void) {
             float len;
 
             len = vec_length_xy(g_hero.motion.velocity.f);
-            func_L00_001FF5B0(frame_scale * -0.07999998f * len + len, g_hero.motion.velocity.f, g_hero.motion.velocity.f);
+            clamp_vec_length_xy(frame_scale * -0.07999998f * len + len, g_hero.motion.velocity.f, g_hero.motion.velocity.f);
         }
         update_hero_water_height_and_bobbing();
         break;
@@ -594,8 +594,8 @@ void HeroL08_UpdateStatePhysics(void) {
                             usage_stats.f58++;
                         }
                     }
-                    if (scale_ticks(D_0015EFA4) / 600 > usage_stats.f5A) {
-                        usage_stats.f5A = scale_ticks(D_0015EFA4) / 600;
+                    if (scale_ticks(play_time_ticks) / 600 > usage_stats.f5A) {
+                        usage_stats.f5A = scale_ticks(play_time_ticks) / 600;
                     }
                     usage_stats.f5C = usage_stats.f5C | (1 << D_0015EE84_m) | 0x80000000;
                 } else {
@@ -669,7 +669,7 @@ void HeroL08_UpdateStatePhysics(void) {
                 matrix_mul_vec3(vec[2], vec[2], ((float *)&g_hero.moby->rot_row0));
                 FastVecAdd(vec[0], vec[0], vec[2]);
                 qcopy(vec[1], g_hero.motion.displacement.f);
-                func_L00_001FF4B0(vec[2], vec[2], g_frame_time * 1.5f);
+                vec_scale_to_length(vec[2], vec[2], g_frame_time * 1.5f);
                 FastVecAdd(vec[1], vec[1], vec[2]);
                 vec[1][2] += g_frame_time * 2.0f;
                 PartType34Spawn(vec[0], vec[1], 25200.0f, -1.0f);
@@ -731,7 +731,7 @@ void HeroL08_UpdateStatePhysics(void) {
                 } else {
                     ApproachValue(&len, 0.0f, g_frame_time_sq * 4.0f);
                 }
-                func_L00_001FF4B0(g_hero.motion.unk150.f, g_hero.motion.unk150.f, len);
+                vec_scale_to_length(g_hero.motion.unk150.f, g_hero.motion.unk150.f, len);
                 qcopy(g_hero.motion.velocity.f, g_hero.motion.unk150.f);
             }
             clip_hero_horizontal_velocity(0);
@@ -740,13 +740,13 @@ void HeroL08_UpdateStatePhysics(void) {
             Hero_SetTiltSpringParams(0.009f, 0.22f);
             Hero_SetTiltSpringParams(0.04f, 0.2f);
             Hero_SetTiltSpringParams(0.02f, 0.2f);
-            D_L08_0017AF00[1].f60[1] = roll * 47.0f;
-            D_L08_0017AF00[1].f60[2] = lean * 1.5f;
-            D_L08_0017AF00[1].f60[0] = lean * 1.4f;
-            if (D_L08_0017AF00[1].f60[1] > 0.87266463f) {
-                D_L08_0017AF00[1].f60[1] = 0.87266463f;
-            } else if (D_L08_0017AF00[1].f60[1] < -0.87266463f) {
-                D_L08_0017AF00[1].f60[1] = -0.87266463f;
+            batalia_lean_state[1].f60[1] = roll * 47.0f;
+            batalia_lean_state[1].f60[2] = lean * 1.5f;
+            batalia_lean_state[1].f60[0] = lean * 1.4f;
+            if (batalia_lean_state[1].f60[1] > 0.87266463f) {
+                batalia_lean_state[1].f60[1] = 0.87266463f;
+            } else if (batalia_lean_state[1].f60[1] < -0.87266463f) {
+                batalia_lean_state[1].f60[1] = -0.87266463f;
             }
             {
                 float ry;
@@ -754,14 +754,14 @@ void HeroL08_UpdateStatePhysics(void) {
 
                 ry = roll * 40.0f;
                 lz = lean * 1.1f;
-                D_L08_0017AF00[4].fA0[1] = 0.03f;
-                D_L08_0017AF00[4].fA0[2] = 0.22f;
-                D_L08_0017AF00[4].f60[1] = ry;
-                D_L08_0017AF00[4].f60[2] = lz;
-                D_L08_0017AF00[5].fA0[1] = 0.03f;
-                D_L08_0017AF00[5].fA0[2] = 0.22f;
-                D_L08_0017AF00[5].f60[1] = ry;
-                D_L08_0017AF00[5].f60[2] = lz;
+                batalia_lean_state[4].fA0[1] = 0.03f;
+                batalia_lean_state[4].fA0[2] = 0.22f;
+                batalia_lean_state[4].f60[1] = ry;
+                batalia_lean_state[4].f60[2] = lz;
+                batalia_lean_state[5].fA0[1] = 0.03f;
+                batalia_lean_state[5].fA0[2] = 0.22f;
+                batalia_lean_state[5].f60[1] = ry;
+                batalia_lean_state[5].f60[2] = lz;
             }
         }
         break;
@@ -779,7 +779,7 @@ void HeroL08_UpdateStatePhysics(void) {
                 float len;
 
                 len = vec_length_xy(g_hero.motion.velocity.f);
-                func_L00_001FF5B0(frame_scale * -0.07999998f * len + len, g_hero.motion.velocity.f, g_hero.motion.velocity.f);
+                clamp_vec_length_xy(frame_scale * -0.07999998f * len + len, g_hero.motion.velocity.f, g_hero.motion.velocity.f);
             }
             clip_hero_horizontal_velocity(0);
         }
@@ -791,7 +791,7 @@ void HeroL08_UpdateStatePhysics(void) {
             float len;
 
             len = vec_length_xy(g_hero.motion.velocity.f);
-            func_L00_001FF5B0(frame_scale * -0.07999998f * len + len, g_hero.motion.velocity.f, g_hero.motion.velocity.f);
+            clamp_vec_length_xy(frame_scale * -0.07999998f * len + len, g_hero.motion.velocity.f, g_hero.motion.velocity.f);
         }
         clip_hero_horizontal_velocity(0);
         update_hero_water_height_and_bobbing();
@@ -803,7 +803,7 @@ void HeroL08_UpdateStatePhysics(void) {
 
             len = FastVecLength(g_hero.motion.unk150.f);
             ApproachValue(&len, 0.0f, g_frame_time_sq * 4.0f);
-            func_L00_001FF4B0(g_hero.motion.unk150.f, g_hero.motion.unk150.f, len);
+            vec_scale_to_length(g_hero.motion.unk150.f, g_hero.motion.unk150.f, len);
             qcopy(g_hero.motion.velocity.f, g_hero.motion.unk150.f);
             if (fast_dec_timer(&g_hero.unk8F0) == 2) {
                 Moby_GetJointWorldPos(g_hero.moby, 4, vec[0]);
@@ -812,7 +812,7 @@ void HeroL08_UpdateStatePhysics(void) {
                 matrix_mul_vec3(vec[2], vec[2], ((float *)&g_hero.moby->rot_row0));
                 FastVecAdd(vec[0], vec[0], vec[2]);
                 qcopy(vec[1], g_hero.motion.displacement.f);
-                func_L00_001FF4B0(vec[2], vec[2], g_frame_time * 1.5f);
+                vec_scale_to_length(vec[2], vec[2], g_frame_time * 1.5f);
                 FastVecAdd(vec[1], vec[1], vec[2]);
                 vec[1][2] += g_frame_time * 2.0f;
                 PartType34Spawn(vec[0], vec[1], 25200.0f, -1.0f);
@@ -970,7 +970,7 @@ void HeroL08_UpdateStatePhysics(void) {
             vec[2][2] = 0.0f;
             FastVecAdd(vec[2], vec[2], g_hero.motion.pos.f);
             FastVecSub(vec[1], ((float *)&g_hero.unk964->pos), vec[2]);
-            func_L00_001FF4B0(g_hero.motion.velocity.f, vec[1], g_hero.unk960);
+            vec_scale_to_length(g_hero.motion.velocity.f, vec[1], g_hero.unk960);
             if (g_hero.unk96C < scale_ticks(0x1E)) {
                 float d;
 
@@ -990,7 +990,7 @@ void HeroL08_UpdateStatePhysics(void) {
             g_hero.unk970 = FastVecDist(g_hero.motion.pos.f, vec[0]);
             FastVecAdd(vec[1], g_hero.motion.pos.f, g_hero.motion.velocity.f);
             FastVecSub(vec[3], vec[1], vec[0]);
-            func_L00_001FF4B0(vec[3], vec[3], g_hero.unk97C);
+            vec_scale_to_length(vec[3], vec[3], g_hero.unk97C);
             FastVecAdd(vec[2], vec[0], vec[3]);
             FastVecSub(g_hero.motion.velocity.f, vec[2], g_hero.motion.pos.f);
         }
@@ -1017,7 +1017,7 @@ void HeroL08_UpdateStatePhysics(void) {
             g_hero.motion.move_yaw = g_hero.unk9AC;
             turn_to(0, g_frame_scale_sq * 0.02f, g_frame_scale_sq * 0.3f, g_frame_time * 4.712389f);
             FastVecSub(vec[0], ((float *)&g_hero.unk994->pos), g_hero.motion.pos.f);
-            func_L00_001FF4B0(vec[0], vec[0], 1.0f);
+            vec_scale_to_length(vec[0], vec[0], 1.0f);
             if (vec[0][2] < 0.23f) {
                 vec[0][2] = 0.23f;
             }
@@ -1061,7 +1061,7 @@ void HeroL08_UpdateStatePhysics(void) {
                 }
                 k = FastVecLength(g_hero.motion.velocity.f) * (g_frame_time * 0.015f);
                 FastVecScale(vec[3], g_hero.motion.velocity.f, -1.0f);
-                func_L00_001FF4B0(vec[3], vec[3], k);
+                vec_scale_to_length(vec[3], vec[3], k);
                 FastVecAdd(g_hero.motion.velocity.f, g_hero.motion.velocity.f, vec[3]);
             }
             if (g_hero.unk994 != 0) {
@@ -1078,7 +1078,7 @@ void HeroL08_UpdateStatePhysics(void) {
                     len = cur;
                     if (lim < cur) {
                         ApproachValue(&len, lim, g_frame_time_sq * 15.0f);
-                        func_L00_001FF4B0(g_hero.motion.velocity.f, g_hero.motion.velocity.f, len);
+                        vec_scale_to_length(g_hero.motion.velocity.f, g_hero.motion.velocity.f, len);
                     }
                 }
             }
@@ -1092,7 +1092,7 @@ void HeroL08_UpdateStatePhysics(void) {
                 FastVecAdd(vec[13], vec[13], g_hero.motion.pos.f);
                 FastVecAdd(vec[3], vec[13], g_hero.motion.velocity.f);
                 FastVecSub(vec[12], vec[3], ((float *)&g_hero.unk994->pos));
-                func_L00_001FF4B0(vec[12], vec[12], g_hero.unk9A4);
+                vec_scale_to_length(vec[12], vec[12], g_hero.unk9A4);
                 FastVecAdd(vec[3], ((float *)&g_hero.unk994->pos), vec[12]);
                 FastVecSub(g_hero.motion.velocity.f, vec[3], vec[13]);
             }
@@ -1103,7 +1103,7 @@ void HeroL08_UpdateStatePhysics(void) {
                 Spring(&g_hero.unk9A4, &g_hero.unk9A8, g_hero.unk9A0, g_hero.unk9C4, g_hero.unk9C8, g_hero.unk9CC);
                 d = g_hero.unk9A4 - d;
                 if (g_hero.unk9A4 < FastVecLength(vec[12])) {
-                    func_L00_001FF4B0(vec[12], vec[12], d);
+                    vec_scale_to_length(vec[12], vec[12], d);
                     FastVecAdd(g_hero.motion.pos.f, g_hero.motion.pos.f, vec[12]);
                 }
             }
@@ -1755,8 +1755,8 @@ void HeroL08_UpdateStatePhysics(void) {
             Hero_SetTiltSpringParams(0.009f, 0.22f);
             Hero_SetTiltSpringParams(0.04f, 0.2f);
             Hero_SetTiltSpringParams(0.02f, 0.2f);
-            D_L08_0017AF00[1].f60[2] = lean * 2.1f;
-            D_L08_0017AF00[1].f60[0] = lean * 3.5f;
+            batalia_lean_state[1].f60[2] = lean * 2.1f;
+            batalia_lean_state[1].f60[0] = lean * 3.5f;
         }
         break;
     case 0x28:
@@ -1885,25 +1885,25 @@ void HeroL08_UpdateStatePhysics(void) {
                         a = fast_atan2(vec[2][0], vec[2][1]);
                         if (g_hero.moby->seq == 0x31) {
                             a = FastSubRots(a, 1.5707964f);
-                            D_L08_0017AF00[3].f60[2] = a * 0.3f;
-                            D_L08_0017AF00[2].f60[2] = a * 0.2f;
+                            batalia_lean_state[3].f60[2] = a * 0.3f;
+                            batalia_lean_state[2].f60[2] = a * 0.2f;
                         } else {
                             a = FastSubRots(a, -1.5707964f);
-                            D_L08_0017AF00[3].f60[2] = a * 0.3f;
-                            D_L08_0017AF00[2].f60[2] = a * 0.5f;
+                            batalia_lean_state[3].f60[2] = a * 0.3f;
+                            batalia_lean_state[2].f60[2] = a * 0.5f;
                         }
                     } else if (g_hero.moby->prev_seq == 0x31) {
-                        D_L08_0017AF00[3].f60[2] = FastAddRots(-0.82030475f, g_hero.unk5D0);
-                        D_L08_0017AF00[1].f60[2] = FastAddRots(0.7330383f, g_hero.unk5D0 / 1.7f);
-                        D_L08_0017AF00[2].f60[2] = FastAddRots(0.7330383f, g_hero.unk5D0 / 1.7f);
+                        batalia_lean_state[3].f60[2] = FastAddRots(-0.82030475f, g_hero.unk5D0);
+                        batalia_lean_state[1].f60[2] = FastAddRots(0.7330383f, g_hero.unk5D0 / 1.7f);
+                        batalia_lean_state[2].f60[2] = FastAddRots(0.7330383f, g_hero.unk5D0 / 1.7f);
                     } else if (g_hero.moby->prev_seq == 0x4B) {
-                        D_L08_0017AF00[3].f60[2] = FastAddRots(0.13962634f, g_hero.unk5D0);
-                        D_L08_0017AF00[1].f60[2] = FastAddRots(-0.06981317f, g_hero.unk5D0 * 0.5f);
-                        D_L08_0017AF00[2].f60[2] = FastAddRots(-0.06981317f, g_hero.unk5D0 * 0.5f);
+                        batalia_lean_state[3].f60[2] = FastAddRots(0.13962634f, g_hero.unk5D0);
+                        batalia_lean_state[1].f60[2] = FastAddRots(-0.06981317f, g_hero.unk5D0 * 0.5f);
+                        batalia_lean_state[2].f60[2] = FastAddRots(-0.06981317f, g_hero.unk5D0 * 0.5f);
                     } else if (g_hero.moby->prev_seq == 0x4A) {
-                        D_L08_0017AF00[3].f60[2] = FastAddRots(-0.82030475f, g_hero.unk5D0);
-                        D_L08_0017AF00[1].f60[2] = FastAddRots(0.7330383f, g_hero.unk5D0 / 1.7f);
-                        D_L08_0017AF00[2].f60[2] = FastAddRots(0.7330383f, g_hero.unk5D0 / 1.7f);
+                        batalia_lean_state[3].f60[2] = FastAddRots(-0.82030475f, g_hero.unk5D0);
+                        batalia_lean_state[1].f60[2] = FastAddRots(0.7330383f, g_hero.unk5D0 / 1.7f);
+                        batalia_lean_state[2].f60[2] = FastAddRots(0.7330383f, g_hero.unk5D0 / 1.7f);
                     }
                 }
                 {
@@ -1964,7 +1964,7 @@ void HeroL08_UpdateStatePhysics(void) {
                             FastVecSub(vec[3], g_hero.unk500.f, g_hero.motion.pos.f);
                             vec[3][2] = 0.0f;
                             if (FastVecLength(vec[3]) > g_frame_time) {
-                                func_L00_001FF4B0(vec[3], vec[3], g_frame_time);
+                                vec_scale_to_length(vec[3], vec[3], g_frame_time);
                             }
                             g_hero.motion.pos.f[0] += vec[3][0];
                             g_hero.motion.pos.f[1] += vec[3][1];
@@ -2063,7 +2063,7 @@ void HeroL08_UpdateStatePhysics(void) {
                                 g_hero.unk5DC = len;
                             }
                             if (g_hero.unk5DC < len) {
-                                func_L00_001FF4B0(vec[2], vec[2], g_hero.unk5DC);
+                                vec_scale_to_length(vec[2], vec[2], g_hero.unk5DC);
                             }
                         }
                         FastVecAdd(g_hero.motion.pos.f, g_hero.motion.pos.f, vec[2]);
@@ -2142,7 +2142,7 @@ void HeroL08_UpdateStatePhysics(void) {
                         spd = g_hero.motion.unk164;
                         ApproachValue(&spd, g_hero.target_speed * g_frame_time, g_frame_time_sq * 5.0f);
                         FastVecSub(g_hero.motion.velocity.f, vec[5], g_hero.motion.pos.f);
-                        func_L00_001FF500(g_hero.motion.velocity.f, g_hero.motion.velocity.f, D_L08_001C4730[truncate_float_to_s32(g_hero.anim_frame)] * 0.5f);
+                        vec_set_length_xy(g_hero.motion.velocity.f, g_hero.motion.velocity.f, D_L08_001C4730[truncate_float_to_s32(g_hero.anim_frame)] * 0.5f);
                     }
                 }
             }
@@ -2191,7 +2191,7 @@ void HeroL08_UpdateStatePhysics(void) {
             float len;
 
             len = vec_length_xy(g_hero.motion.velocity.f);
-            func_L00_001FF5B0(frame_scale * -0.100000024f * len + len, g_hero.motion.velocity.f, g_hero.motion.velocity.f);
+            clamp_vec_length_xy(frame_scale * -0.100000024f * len + len, g_hero.motion.velocity.f, g_hero.motion.velocity.f);
         }
         HeroMoveDownAlongNormal(g_hero.motion.velocity.f, g_hero.motion.velocity.f, g_hero.unk940);
         if (gravity_z(g_hero.motion.velocity.f) < -(g_frame_time * 50.0f)) {
@@ -2377,7 +2377,7 @@ void HeroL08_UpdateStatePhysics(void) {
                         qcopy(vec[1], vec[0]);
                         vec[1][0] += FastCos(g_hero.motion.rot.f[2]) * 0.85f;
                         vec[1][1] += FastSin(g_hero.motion.rot.f[2]) * 0.85f;
-                        if (func_L00_001EFFF0(vec[0], vec[1], 4, (int)g_hero.moby, 0)) {
+                        if (coll_line(vec[0], vec[1], 4, (int)g_hero.moby, 0)) {
                             g_hero.unk4A4 = 1;
                         }
                     }
@@ -2391,7 +2391,7 @@ void HeroL08_UpdateStatePhysics(void) {
                     if (len > g_frame_time * 3.7f) {
                         len = g_frame_time * 3.7f;
                     }
-                    func_L00_001FF500(g_hero.motion.velocity.f, g_hero.motion.velocity.f, len);
+                    vec_set_length_xy(g_hero.motion.velocity.f, g_hero.motion.velocity.f, len);
                 }
             }
         }
@@ -2457,7 +2457,7 @@ void HeroL08_UpdateStatePhysics(void) {
             if (g_hero.unk12E7 != 0) {
                 stop_hero_motion_without_forward_support(3.7f, 0.0f);
             }
-            func_L00_001FF500(g_hero.motion.velocity.f, g_hero.motion.velocity.f, len);
+            vec_set_length_xy(g_hero.motion.velocity.f, g_hero.motion.velocity.f, len);
             HeroMoveDownAlongNormal(g_hero.motion.velocity.f, g_hero.motion.velocity.f, 0.004f);
         }
         break;
@@ -2610,7 +2610,7 @@ void HeroL08_UpdateStatePhysics(void) {
 
             vel = g_hero.motion.velocity.f;
             len = vec_length_xy(vel);
-            func_L00_001FF5B0((g_hero.air_frames.s != 0 ? frame_scale * -0.00999999f : frame_scale * -0.07999998f) * len + len, g_hero.motion.velocity.f, g_hero.motion.velocity.f);
+            clamp_vec_length_xy((g_hero.air_frames.s != 0 ? frame_scale * -0.00999999f : frame_scale * -0.07999998f) * len + len, g_hero.motion.velocity.f, g_hero.motion.velocity.f);
             g_hero.motion.velocity.f[2] = 0.0f;
             if (g_hero.air_frames.s != 0) {
                 HeroMoveDownAlongNormal(g_hero.motion.velocity.f, g_hero.motion.unk110.f, g_frame_time_sq * 24.0f);

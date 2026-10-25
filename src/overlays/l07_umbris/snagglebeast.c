@@ -60,7 +60,7 @@ void draw_snagglebeast_rope_attack_layer(void *mobyp, float radius, int phase, f
     float wrapped;
     u64 texture;
 
-    spin = IntToFloat(D_L07_0015F6B0 + phase) * speed;
+    spin = IntToFloat(umbris_frame_count + phase) * speed;
     if (*(int *)(vars + 0x164) == 4) {
         float alpha = IntToFloat(color >> 24);
         float fade = IntToFloat(*(int *)(vars + 0x160));
@@ -112,10 +112,10 @@ void draw_snagglebeast_rope_attack_layer(void *mobyp, float radius, int phase, f
         matrix_mul_vec3(offset, offset, moby + 0xC0);
         FastVecAdd(&quad.positions[3], vars + 0x140, offset);
         if (angle != -3.1415927f) {
-            func_L00_001FD1D8(&quad, 0, 1);
+            draw_world_quad(&quad, 0, 1);
             qcopy(&inner.positions[2], &quad.positions[2]);
             qcopy(&inner.positions[3], &quad.positions[3]);
-            func_L00_001FD1D8(&inner, 0, 0);
+            draw_world_quad(&inner, 0, 0);
         }
     }
 }
@@ -137,17 +137,17 @@ void draw_and_probe_snagglebeast_rope_attack(char *moby) {
     qzero(displacement);
     origin = data + 0x110;
     position = data + 0x120;
-    func_L00_001FF4B0(displacement, data + 0x130, *(float *)(data + 0x16C) * 0.8f);
+    vec_scale_to_length(displacement, data + 0x130, *(float *)(data + 0x16C) * 0.8f);
     FastVecAdd(data + 0x140, displacement, origin);
-    func_L00_001FF4B0(displacement, displacement, *(float *)(data + 0x16C));
+    vec_scale_to_length(displacement, displacement, *(float *)(data + 0x16C));
     FastVecAdd(position, displacement, origin);
     draw_snagglebeast_rope_attack_layer(moby, 1.0f, 0, 1.0f, 0x20000080);
     draw_snagglebeast_rope_attack_layer(moby, 0.7f, 10, 2.0f, 0x28008080);
     draw_snagglebeast_rope_attack_layer(moby, 0.4f, 20, 3.0f, 0x30B0FFFF);
     FastVecSub(direction, position, origin);
-    func_L00_001FF4B0(direction, direction, 1.0f);
+    vec_scale_to_length(direction, direction, 1.0f);
     InitDirectionalHitQuery(hit, moby, 0x30000, 1.000123f, direction);
-    if (!func_L00_001EFFF0(origin, position, 0, (int)moby, (int)hit)) {
+    if (!coll_line(origin, position, 0, (int)moby, (int)hit)) {
         coll_sphere_mobys(0.5f, position, 0, moby, hit);
     }
 }
@@ -367,11 +367,11 @@ void select_snagglebeast_chase_waypoint(char *m, char *a, void *b, void *c) {
     void *r = collect_snagglebeast_navigation_ids(m, a, v);
     if (func_L01_00277FD8(v, r, *(int *)(a + 0x188), 0.0f, m + 0x10, b, c)) return;
     {
-        int i = select_point_index_by_distance(b, D_L07_001B0830[*(int *)(a + 0x290)], 0.0f);
-        int j = select_point_index_by_distance(D_L07_001B0830[*(int *)(a + 0x290)] + (i * 16 + 0x10), D_L07_001B0830[*(int *)(a + 0x188)], 0.0f);
-        if (func_L01_00277FD8(v, r, *(int *)(a + 0x188), 0.0f, m + 0x10, D_L07_001B0830[*(int *)(a + 0x188)] + (j * 16 + 0x10), c)) return;
-        i = select_point_index_by_distance(m + 0x10, D_L07_001B0830[*(int *)(a + 0x188)], 0.0f);
-        qcopy(c, D_L07_001B0830[*(int *)(a + 0x188)] + i * 16 + 0x10);
+        int i = select_point_index_by_distance(b, umbris_paths[*(int *)(a + 0x290)], 0.0f);
+        int j = select_point_index_by_distance(umbris_paths[*(int *)(a + 0x290)] + (i * 16 + 0x10), umbris_paths[*(int *)(a + 0x188)], 0.0f);
+        if (func_L01_00277FD8(v, r, *(int *)(a + 0x188), 0.0f, m + 0x10, umbris_paths[*(int *)(a + 0x188)] + (j * 16 + 0x10), c)) return;
+        i = select_point_index_by_distance(m + 0x10, umbris_paths[*(int *)(a + 0x188)], 0.0f);
+        qcopy(c, umbris_paths[*(int *)(a + 0x188)] + i * 16 + 0x10);
     }
 }
 extern unsigned char D_0013F450[] NOT_SDA;
@@ -395,13 +395,13 @@ int update_snagglebeast_chase_movement(char *m, char *a, void *p6, float *p7, fl
     char *mp = m + 0x10;
     float d = vec_distance_xy(mp, p6);
     int r = 4;
-    char *tbl = D_L07_001B0830[*(int *)(a + 0x290)];
+    char *tbl = umbris_paths[*(int *)(a + 0x290)];
     if (thr < d) {
         r = ClassifyTargetInCone(m, a + 0x70, p7, a + 0x100);
         if (r & 2) {
             int i = select_point_index_by_distance(mp, tbl, 0.0f);
             FastVecSub(v, tbl + (i * 16 + 0x10), mp);
-            func_L00_001FF548(v, v, *(float *)(a + 0x94));
+            clamp_vec_length(v, v, *(float *)(a + 0x94));
             FastVecAdd(mp, mp, v);
         }
     } else {
@@ -412,7 +412,7 @@ int update_snagglebeast_chase_movement(char *m, char *a, void *p6, float *p7, fl
         h = fast_atan2(dx, dy);
         MobySpringTurn(m, h, (float *)(a + 0x168), g_frame_time_sq * 2.0943952f, g_frame_time_sq * 0.6981317f, g_frame_time * 2.0943952f);
     }
-    if ((D_L07_0015F6B0 & 3) == 3) {
+    if ((umbris_frame_count & 3) == 3) {
         char *mp2 = m + 0x10;
         if (probe_vertical_ground_collision(mp2, (int)m, 0, 0.1f, 1.0f)) {
             int *t = D_L07_00173F40;
@@ -811,15 +811,15 @@ void snagglebeast_update(unsigned char *m) {
         *(float *)(d + 0x190) = 0.0f;
         if (*(int *)(d + 0x18C) != -1) {
             int i;
-            for (i = 0; i < *(int *)D_L07_001B0830[*(int *)(d + 0x18C)]; i++) {
-                ((SbPath *)D_L07_001B0830[*(int *)(d + 0x18C)])->pts[i][3] =
-                    FastVecDist(D_L07_001B0830[*(int *)(d + 0x18C)] + (i * 16 + 0x10),
-                                  D_L07_001B0830[*(int *)(d + 0x18C)] + (((i + 1) % *(int *)D_L07_001B0830[*(int *)(d + 0x18C)]) * 16 + 0x10));
-                *(float *)(d + 0x190) += ((SbPath *)D_L07_001B0830[*(int *)(d + 0x18C)])->pts[i][3];
+            for (i = 0; i < *(int *)umbris_paths[*(int *)(d + 0x18C)]; i++) {
+                ((SbPath *)umbris_paths[*(int *)(d + 0x18C)])->pts[i][3] =
+                    FastVecDist(umbris_paths[*(int *)(d + 0x18C)] + (i * 16 + 0x10),
+                                  umbris_paths[*(int *)(d + 0x18C)] + (((i + 1) % *(int *)umbris_paths[*(int *)(d + 0x18C)]) * 16 + 0x10));
+                *(float *)(d + 0x190) += ((SbPath *)umbris_paths[*(int *)(d + 0x18C)])->pts[i][3];
             }
         }
         if (*(int *)(d + 0x290) != -1) {
-            char *tbl = D_L07_001B0830[*(int *)(d + 0x290)];
+            char *tbl = umbris_paths[*(int *)(d + 0x290)];
             int i;
             for (i = 0; i < *(int *)tbl; i++) {
                 ((SbPath *)tbl)->pts[i][3] = FastVecDist(tbl + (i * 16 + 0x10), tbl + (((i + 1) % *(int *)tbl) * 16 + 0x10));
@@ -827,8 +827,8 @@ void snagglebeast_update(unsigned char *m) {
         }
         if (*(int *)(d + 0x188) != -1) {
             int i;
-            for (i = 0; i < *(int *)D_L07_001B0830[*(int *)(d + 0x188)]; i++) {
-                int k = truncate_float_to_s32(((SbPath *)D_L07_001B0830[*(int *)(d + 0x188)])->pts[i][3]);
+            for (i = 0; i < *(int *)umbris_paths[*(int *)(d + 0x188)]; i++) {
+                int k = truncate_float_to_s32(((SbPath *)umbris_paths[*(int *)(d + 0x188)])->pts[i][3]);
                 if ((unsigned int)k < 4) ((SbData *)d)->b1D4[k] = i;
             }
         }
@@ -840,7 +840,7 @@ void snagglebeast_update(unsigned char *m) {
         *(short *)(m + 0x32) = 0xFF;
         *(int *)(d + 0x1A8) = -1;
         *(int *)(d + 0x1B0) = -1;
-        *(int *)(d + 0x1C0) = select_point_index_by_distance(m + 0x10, D_L07_001B0830[*(int *)(d + 0x188)], 0.0f);
+        *(int *)(d + 0x1C0) = select_point_index_by_distance(m + 0x10, umbris_paths[*(int *)(d + 0x188)], 0.0f);
         suck_reset(m);
         *(float *)(m + 0x2C) *= 1.75f;
         d[0x1C7] = 0;
@@ -911,8 +911,8 @@ void snagglebeast_update(unsigned char *m) {
     case 2: {
         float rot;
         rot = *(float *)(m + 0x48);
-        if (D_L07_0015F6B0 % 6 == 0) spawn_moby_point_offset_particle((char *)m, 0, 600000.0f, 5.0f);
-        if ((D_L07_0015F6B0 - 2) % 6 == 0) spawn_moby_point_offset_particle((char *)m, 1, 600000.0f, 5.0f);
+        if (umbris_frame_count % 6 == 0) spawn_moby_point_offset_particle((char *)m, 0, 600000.0f, 5.0f);
+        if ((umbris_frame_count - 2) % 6 == 0) spawn_moby_point_offset_particle((char *)m, 1, 600000.0f, 5.0f);
         if (start_snagglebeast_turn_toward_target(m, d, (float *)(g_hero + 0x80), 9, 0)) break;
         MobySpringTurn((char *)m, ang, (float *)(d + 0x168), g_frame_time_sq * 2.0943952f, g_frame_time_sq * 0.6981317f, g_frame_time * 2.0943952f);
         if (FastDiffRots(*(float *)(m + 0x48), rot) > g_frame_time * 0.17453292f) {
@@ -949,7 +949,7 @@ void snagglebeast_update(unsigned char *m) {
                 float r1 = random_angle_radians();
                 float r2 = random_float_between(0.3926991f, 0.78539819f);
                 BuildSphericalOffset(&vb, g_frame_time * 5.0f, r1, r2);
-                func_L00_001FF4B0(&vc, &vb, 0.75f);
+                vec_scale_to_length(&vc, &vb, 0.75f);
                 vc.f[2] += 0.1f;
                 FastVecAdd(&vc, &vc, &va);
                 *(int *)&vb.f[3] = 0;
@@ -980,8 +980,8 @@ void snagglebeast_update(unsigned char *m) {
         if (*(int *)(d + 0x160) < scale_ticks(0x3C) / 2) {
             Moby_GetJointWorldPos(m, 2, &va);
             func_L07_00313298_f(m, d, 2, &va, scale_ticks(0x1E), 0x800060FF, 0, 10.0f);
-            if ((D_L07_0015F6B0 & 7) == 0) spawn_moby_point_offset_particle((char *)m, 2, 0.0f, 0.2f);
-            if (((D_L07_0015F6B0 - 4) & 7) == 0) spawn_moby_point_offset_particle((char *)m, 3, 0.0f, 0.2f);
+            if ((umbris_frame_count & 7) == 0) spawn_moby_point_offset_particle((char *)m, 2, 0.0f, 0.2f);
+            if (((umbris_frame_count - 4) & 7) == 0) spawn_moby_point_offset_particle((char *)m, 3, 0.0f, 0.2f);
         }
         if (m[0x52] == 5) {
             qcopy(&va, &tgt);
@@ -990,24 +990,24 @@ void snagglebeast_update(unsigned char *m) {
             if (*(int *)(d + 0x164) == 0) {
                 FastVecSub(&vb, m + 0x10, &va);
                 vb.f[2] = 0.0f;
-                func_L00_001FF4B0(&vb, &vb, 1.0f);
-                func_L00_001FF4B0(&vg, &vb, 0.075f);
+                vec_scale_to_length(&vb, &vb, 1.0f);
+                vec_scale_to_length(&vg, &vb, 0.075f);
                 vc.f[0] = FastCos(tgt.v10.f[2]);
                 vc.f[1] = FastSin(tgt.v10.f[2]);
                 vc.f[2] = 0.0f;
                 {
                     float s = FastVecDot(&vc, &vb);
-                    func_L00_001FF4B0(&vh, &vb, s);
+                    vec_scale_to_length(&vh, &vb, s);
                 }
                 FastVecSub(&vc, &vc, &vh);
                 vc.f[2] = 0.0f;
-                func_L00_001FF4B0(&ve, &vb, 8.0f);
-                func_L00_001FF4B0(&vc, &vc, 4.0f);
+                vec_scale_to_length(&ve, &vb, 8.0f);
+                vec_scale_to_length(&vc, &vc, 4.0f);
                 FastVecAdd(&ve, &ve, &va);
                 FastVecSub(&ve, &ve, &vc);
-                func_L00_001FF4B0(&vc, &vc, 8.0f);
+                vec_scale_to_length(&vc, &vc, 8.0f);
                 FastVecAdd(&vc, &vc, &va);
-                func_L00_001FF4B0(&vb, &vb, 2.0f);
+                vec_scale_to_length(&vb, &vb, 2.0f);
                 FastVecSub(&vc, &vc, &vb);
                 qcopy(&vh, g_hero + 0x100);
                 vh.f[2] = 0.0f;
@@ -1051,16 +1051,16 @@ void snagglebeast_update(unsigned char *m) {
         if (!c) {
             thr = 6.0f;
             if (*(int *)(d + 0x29C) != -1 && (d[0x19C] & 3) == 0 && is_point_inside_clip_volume(&tgt, *(int *)(d + 0x29C))) {
-                qcopy(&vb, D_L07_001B0830[*(int *)(d + 0x1A0)] + select_point_index_by_distance(&tgt, D_L07_001B0830[*(int *)(d + 0x1A0)], 0.0f) * 16 + 0x10);
+                qcopy(&vb, umbris_paths[*(int *)(d + 0x1A0)] + select_point_index_by_distance(&tgt, umbris_paths[*(int *)(d + 0x1A0)], 0.0f) * 16 + 0x10);
                 dd = vec_distance_xy(m + 0x10, &vb);
             } else {
                 qcopy(&vb, &tgt);
-                qcopy(&vb, D_L07_001B0830[*(int *)(d + 0x290)] + select_point_index_by_distance(&vb, D_L07_001B0830[*(int *)(d + 0x290)], 0.0f) * 16 + 0x10);
+                qcopy(&vb, umbris_paths[*(int *)(d + 0x290)] + select_point_index_by_distance(&vb, umbris_paths[*(int *)(d + 0x290)], 0.0f) * 16 + 0x10);
                 dd = vec_distance_xy(m + 0x10, &vb);
                 if (dd < *(float *)(d + 0x9C) + 1.0f) qcopy(&vb, &tgt);
             }
         } else {
-            qcopy(&vb, D_L07_001B0830[*(int *)(d + 0x188)] + *(int *)(d + 0x1A8) * 16 + 0x10);
+            qcopy(&vb, umbris_paths[*(int *)(d + 0x188)] + *(int *)(d + 0x1A8) * 16 + 0x10);
             dd = vec_distance_xy(m + 0x10, &vb);
         }
         update_snagglebeast_chase_speed(m, d, dd, thr, 1.5f);
@@ -1310,19 +1310,19 @@ void snagglebeast_update(unsigned char *m) {
             if (fast_dec_timer((int *)(d + 0x160))) {
                 switch (d[0x19D]) {
                 case 0:
-                    qcopy(d + 0x120, D_L07_001B0830[*(int *)(d + 0x1A0)] + 0x10);
+                    qcopy(d + 0x120, umbris_paths[*(int *)(d + 0x1A0)] + 0x10);
                     d[0x19C] &= 0xFE;
                     break;
                 case 1:
-                    qcopy(d + 0x120, D_L07_001B0830[*(int *)(d + 0x1A0)] + 0x20);
+                    qcopy(d + 0x120, umbris_paths[*(int *)(d + 0x1A0)] + 0x20);
                     d[0x19C] &= 0xFD;
                     break;
                 case 2: {
-                    float d1 = vec_distance_xy(g_hero + 0x80, D_L07_001B0830[*(int *)(d + 0x1A0)] + 0x30);
-                    if (vec_distance_xy(g_hero + 0x80, D_L07_001B0830[*(int *)(d + 0x1A0)] + 0x40) < d1) {
-                        qcopy(d + 0x120, D_L07_001B0830[*(int *)(d + 0x1A0)] + 0x30);
+                    float d1 = vec_distance_xy(g_hero + 0x80, umbris_paths[*(int *)(d + 0x1A0)] + 0x30);
+                    if (vec_distance_xy(g_hero + 0x80, umbris_paths[*(int *)(d + 0x1A0)] + 0x40) < d1) {
+                        qcopy(d + 0x120, umbris_paths[*(int *)(d + 0x1A0)] + 0x30);
                     } else {
-                        qcopy(d + 0x120, D_L07_001B0830[*(int *)(d + 0x1A0)] + 0x40);
+                        qcopy(d + 0x120, umbris_paths[*(int *)(d + 0x1A0)] + 0x40);
                     }
                     d[0x19C] &= 0xFB;
                     break;
@@ -1443,10 +1443,10 @@ void snagglebeast_update(unsigned char *m) {
                         if (*(int *)(d + 0x18C) == -1) {
                             rand_vec((float *)&vb, g_frame_time * 4.0f, g_frame_time * 10.0f);
                             if (vb.f[2] < g_frame_time * 2.0f) vb.f[2] = random_float_between(g_frame_time * 3.0f, g_frame_time * 6.0f);
-                            func_L00_001FF4B0(&vc, &vb, 0.9f);
+                            vec_scale_to_length(&vc, &vb, 0.9f);
                             FastVecAdd(&vc, &vc, g_hero + 0x80);
                         } else {
-                            char *path = D_L07_001B0830[*(int *)(d + 0x18C)];
+                            char *path = umbris_paths[*(int *)(d + 0x18C)];
                             int pidx = 0;
                             float pfrac = 0.0f;
                             float d1;
@@ -1461,10 +1461,10 @@ void snagglebeast_update(unsigned char *m) {
                             add_random_xy_offset((float *)&ve, 0.5f);
                             FastVecSub(&vc, &ve, g_hero + 0x80);
                             zv = ve.f[2];
-                            func_L00_001FF4B0(&vc, &vc, 0.9f);
+                            vec_scale_to_length(&vc, &vc, 0.9f);
                             qcopy(&vb, &vc);
                             vb.f[2] = 0.0f;
-                            func_L00_001FF4B0(&vb, &vb, g_frame_time * 15.0f);
+                            vec_scale_to_length(&vb, &vb, g_frame_time * 15.0f);
                             FastVecAdd(&vc, &vc, g_hero + 0x80);
                             vb.f[2] = jump_speed_4318(&vc, &ve, 0, g_frame_time * 15.0f, g_frame_time_sq * -9.8f);
                             *(float *)(d + 0x1AC) += random_float_between(0.7f, 2.0f);
@@ -1542,7 +1542,7 @@ void snagglebeast_update(unsigned char *m) {
                     FastVecScale(&va, &va, 0.5f);
                     qcopy(d + 0x110, &va);
                     FastVecSub(d + 0x130, d + 0x150, d + 0x110);
-                    func_L00_001FF4B0(d + 0x130, d + 0x130, frame_scale);
+                    vec_scale_to_length(d + 0x130, d + 0x130, frame_scale);
                     *(int *)(d + 0x164) = 2;
                 }
             }
@@ -1572,7 +1572,7 @@ void snagglebeast_update(unsigned char *m) {
         }
         case 4:
             FastVecSub(&va, d + 0x120, d + 0x110);
-            func_L00_001FF4B0(&va, &va, frame_scale);
+            vec_scale_to_length(&va, &va, frame_scale);
             FastVecAdd(d + 0x110, d + 0x110, &va);
             func_L07_00313298_f(m, d, 3, d + 0x110, scale_ticks(0x1E), 0x800060FF, 0, 10.0f);
             if (*(int *)(d + 0x164) != 0) {
@@ -1599,7 +1599,7 @@ void snagglebeast_update(unsigned char *m) {
             *(int *)(d + 0x1B0) = -1;
         }
         if (m[0x70] & 2) {
-            func_L00_001FF4B0(d + 0x100, d + 0x100, 1.0f);
+            vec_scale_to_length(d + 0x100, d + 0x100, 1.0f);
             *(float *)(d + 0x108) = 1.0f;
             qcopy(&va, m + 0x10);
             va.f[2] = *(float *)(d + 0x1B8) + 1.0f;
@@ -1715,7 +1715,7 @@ void draw_rope_strips(void) {
             packet.uv[6] = phase - phase_step;
             packet.uv[7] = end_phase;
             row_phase = end_phase;
-            func_L00_001FD1D8(&packet, 0, 0);
+            draw_world_quad(&packet, 0, 0);
         }
         phase += phase_step;
     }
@@ -2167,7 +2167,7 @@ void detach_snagglebeast_rope_particles(int arg0) {
             FastVecScale(a, a, rope_particles[i].f / len);
             FastVecAdd(b, D_L07_0020DDC0_v + rope_particles[i].idx * 16, a);
             FastVecSub(c, m + 0x10, b);
-            func_L00_001FF4B0(c, c, 0.03f);
+            vec_scale_to_length(c, c, 0.03f);
             FastVecScale(a, a, 0.1f / len);
             FastVecAdd(m + 0x30, c, a);
             *(short *)(m + 0xA) = 0x46;

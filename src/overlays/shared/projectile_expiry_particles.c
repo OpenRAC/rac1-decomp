@@ -65,7 +65,7 @@ unsigned char *spawn_moby_point_offset_particle(void *m, short index, float amou
         p[8] = truncate_float_to_s32(*(float *)(q + 8) * 255.0f);
         Moby_GetJointWorldPos(*(void **)q, *(short *)(q + 0xe), v);
         FastVecSub(t, debris_far_point, v);
-        func_L00_001FF4B0(t, t, *(float *)(q + 0x14));
+        vec_scale_to_length(t, t, *(float *)(q + 0x14));
         FastVecAdd(p + 0x10, v, t);
     }
     return p;

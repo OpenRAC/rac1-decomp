@@ -7,7 +7,7 @@ extern char *D_L13_00160060 MACRO_ADDR;
 
 /* updates matching objects in the selected object range */
 void jet_group_flag(int id, int state) {
-    char *moby = D_L13_00160058;
+    char *moby = gemlik_moby_array_start;
     if ((unsigned long)D_L13_00160060 >= (unsigned long)moby) {
         do {
             if (*(short *)(moby + 0xA6) == id) {
@@ -21,7 +21,7 @@ void jet_group_flag(int id, int state) {
 // Sets flag bits and a data pointer on every live object in the pool whose id appears in a zero-terminated list.
 void jet_group_switch(short *ids, int a, int b, int c) {
     char *m;
-    for (m = D_L13_00160058; m <= D_L13_00160060; m += 0x100) {
+    for (m = gemlik_moby_array_start; m <= D_L13_00160060; m += 0x100) {
         int n;
         for (n = 0; ids[n] != 0 && ids[n] < 0x800 && n < 0xE0; n++) {
             if (*(short *)(m + 0xA6) == ids[n] && m[0x20] >= 0) {

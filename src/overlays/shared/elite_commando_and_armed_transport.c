@@ -62,7 +62,7 @@ void HomingProjectileUpdate(char *m) {
     char *d=*(char**)(m+0x78);
     void *remaining;
     float yaw,pitch;
-    if(*(int*)(d+0x34)==0 && func_001F9D10_2E7198(m+0x10,D_L16_00167240)<15.0f) {
+    if(*(int*)(d+0x34)==0 && func_001F9D10_2E7198(m+0x10,kalebo3_camera_pos)<15.0f) {
         *(int*)(d+0x34)=1;Sound_PlayClassSound(5,0,(int)m,0x54C);
     }
     if(*(unsigned char*)(m+0x20)!=0) return;
@@ -87,7 +87,7 @@ void HomingProjectileUpdate(char *m) {
         *(float *)(m+0x48)=yaw;*(float *)(m+0x44)=pitch;
     }
     remaining=delta;
-    if(func_L00_001EFFF0((m+0x10),next,0,m,0)!=0 || FastVecLength(remaining)<*(float *)(d+0x24)) {
+    if(coll_line((m+0x10),next,0,m,0)!=0 || FastVecLength(remaining)<*(float *)(d+0x24)) {
         if(*(unsigned char*)(D_0013E633+0x2EC1)==2) MobySphereHitDirectional((int)m,2.0f,(m+0x10),3,2.0f,1.0f,0,1,0);
         Sound_PlayClassSound(4,0,(int)m,0x54C);
         spawn_explosion(m,d,(m+0x10),4.0f,4.0f,10,3,16,4.0f,2.0f,9.0f,-1,1.0f,15.0f,1,1,-1,0);
@@ -210,9 +210,9 @@ void blarg_elite_commando_update(char *m) {
         {
             char *position = m + 0x10;
             if (*(int *)(d + 0x120) >= 0) {
-                int node = truncate_float_to_s32(random_float_between(0.0f, (float)(*(int *)D_L16_001B0C30[*(int *)(d + 0x120)] - 1)));
+                int node = truncate_float_to_s32(random_float_between(0.0f, (float)(*(int *)kalebo3_path_table[*(int *)(d + 0x120)] - 1)));
                 *(short *)(d + 0x300) = node;
-                qcopy(position, D_L16_001B0C30[*(int *)(d + 0x120)] + (short)node * 16 + 0x10);
+                qcopy(position, kalebo3_path_table[*(int *)(d + 0x120)] + (short)node * 16 + 0x10);
             }
             *(int *)(d + 0x308) = 1;
             qcopy(d + 0x2C0, position);
@@ -240,7 +240,7 @@ void blarg_elite_commando_update(char *m) {
         break;
     case 1:
         if (!FastDecTimer(d + 0x2DC)) {
-            func_L00_001FF4B0(temp, m + 0xC0, *(short *)(d + 0x2DC) * 0.1f);
+            vec_scale_to_length(temp, m + 0xC0, *(short *)(d + 0x2DC) * 0.1f);
             FastVecAdd(temp, temp, m + 0x10);
             func_L16_002D5280_update(m, temp, 1);
         } else {
@@ -276,7 +276,7 @@ void blarg_elite_commando_update(char *m) {
         }
         break;
     case 3: {
-        float path_distance = func_L16_002D5280_update(m, D_L16_001B0C30[*(int *)(d + 0x120)] + (*(short *)(d + 0x300) * 16 + 0x10), 1);
+        float path_distance = func_L16_002D5280_update(m, kalebo3_path_table[*(int *)(d + 0x120)] + (*(short *)(d + 0x300) * 16 + 0x10), 1);
         if (path_distance < 0.01f) {
             m[0x20] = 2;
             if (((unsigned char *)m)[0x53] != 0) MobyBlendAnimation(m, 0, 0, scale_ticks(10));
@@ -307,7 +307,7 @@ void blarg_elite_commando_update(char *m) {
         if (IsFrameWithinWindow(m, 2.0f) || IsFrameWithinWindow(m, 17.0f) || IsFrameWithinWindow(m, 32.0f)) {
             Moby_GetJointWorldPos(m, 0, temp);
             FastVecSub(delta, target, temp);
-            func_L00_001FF4B0(delta, delta, g_frame_time * 20.0f);
+            vec_scale_to_length(delta, delta, g_frame_time * 20.0f);
             spawn_blarg_elite_commando_rocket(m, delta, (char *)temp);
         } else if (IsFrameWithinWindow(m, 10.0f)) {
             int count = *(unsigned short *)(d + 0x2DE) + 1;
@@ -321,7 +321,7 @@ void blarg_elite_commando_update(char *m) {
         }
         break;
     case 7:
-        distance = func_L16_002D5280_update(m, D_L16_001B0C30[*(int *)(d + 0x120)] + (*(short *)(d + 0x300) * 16 + 0x10), 1);
+        distance = func_L16_002D5280_update(m, kalebo3_path_table[*(int *)(d + 0x120)] + (*(short *)(d + 0x300) * 16 + 0x10), 1);
         FastDecTimer(d + 0x2DC);
         if (distance < 0.01f || *(short *)(d + 0x2DC) == 0) {
             m[0x20] = 4;
@@ -340,7 +340,7 @@ animate_idle:
                 MobyBlendAnimation(m, 0, 0, scale_ticks(ticks));
             }
         } else {
-            func_L00_001FF4B0(temp, m + 0xC0, -g_frame_time);
+            vec_scale_to_length(temp, m + 0xC0, -g_frame_time);
             FastVecAdd(m + 0x10, m + 0x10, temp);
         }
         break;
@@ -375,7 +375,7 @@ animate_idle:
             *(float *)(m + 0x14) = *(float *)(d + 0x2C4) + *(float *)(d + 0x2EC) * FastSin(*(float *)(d + 0x2FC));
             *(float *)(m + 0x18) = *(float *)(d + 0x2C8) + *(float *)(d + 0x2EC) * FastSin(*(float *)(d + 0x2E8));
         }
-        if (func_001F9D10_update(m + 0x10, D_L16_00167240) < 32.0f && !Sound_IsPlaying(m, *(int *)(d + 0x304)))
+        if (func_001F9D10_update(m + 0x10, kalebo3_camera_pos) < 32.0f && !Sound_IsPlaying(m, *(int *)(d + 0x304)))
             *(int *)(d + 0x304) = func_0022ED80_update(7, 4, m);
     }
     if (*(int *)&D_L16_00161B38) update_blarg_elite_commando_joint_aim(m);
@@ -579,7 +579,7 @@ void update_blarg_elite_commando_damage_and_pursuit(char *m) {
     if (((L16DamageResident *)((char *)&D_L16DamageState + 0xE1D))->mode == 22) {
         d->pursuit_mode = 2;
     } else if (d->path_index >= 0 && d->pursuit_timer == 0) {
-        char *path = D_L16_001B0C30[d->path_index];
+        char *path = kalebo3_path_table[d->path_index];
         FindNearestEligibleMoby(24.0f, m, d->target, 0, 0, path + 0x10, *(int *)path);
     } else {
         FindNearestTargetMoby(24.0f, m, d->target);
@@ -629,7 +629,7 @@ float advance_blarg_elite_commando_base_position(char *moby, float *target) {
     zero[0] = 0;
     ApproachWithVelocity((float *)zero, (float *)(data + 0x2D4), d, b, b, g_frame_time * 5.0f);
     FastVecSub(vec, target, p);
-    func_L00_001FF4B0(vec, vec, *(float *)(data + 0x2D4));
+    vec_scale_to_length(vec, vec, *(float *)(data + 0x2D4));
     FastVecAdd(p, p, vec);
     return d;
 }
@@ -650,9 +650,9 @@ void randomize_blarg_elite_commando_group_pursuit_timers(void *arg, int lower, i
         d->timer=func_001FA898_timer(func_001F9878_timer(random_float_between((float)lower,(float)upper)));
     } else {
         L16GroupMoby *other;
-        p=D_L16_001ABFC0[m->group];
+        p=kalebo3_moby_groups[m->group];
 next:
-        other=(L16GroupMoby *)(((*(unsigned short *)p&0x7FFF)<<8)+(int)D_L16_00160098);
+        other=(L16GroupMoby *)(((*(unsigned short *)p&0x7FFF)<<8)+(int)kalebo3_moby_array);
         if (other->state>=0) {
             d=other->data;
             d->timer=func_001FA898_timer(func_001F9878_timer(random_float_between((float)lower,(float)upper)));
@@ -664,7 +664,7 @@ extern float func_L00_001FF860(float, float);
 extern float func_001FA790(float, float);
 void select_blarg_elite_commando_movement_animation(char *moby) {
     char *data = *(char **)(moby + 0x78);
-    char *target = D_L16_001B0C30[*(int *)(data + 0x120)] + (*(short *)(data + 0x300) << 4);
+    char *target = kalebo3_path_table[*(int *)(data + 0x120)] + (*(short *)(data + 0x300) << 4);
     float angle = fast_atan2(*(float *)(target + 0x10) - *(float *)(moby + 0x10), *(float *)(target + 0x14) - *(float *)(moby + 0x14));
     float delta = FastSubRots(angle, *(float *)(moby + 0x48));
     if (delta < 0.78539819f && -0.78539819f < delta) {
@@ -701,7 +701,7 @@ void emit_blarg_elite_commando_death_particles(void *m) {
     float *joint=position;
     void *movement;
     Moby_GetJointWorldPos(m,2,joint);
-    FastVecSub(delta,D_L16_00167240,joint);
+    FastVecSub(delta,kalebo3_camera_pos,joint);
     clear_u64_value(velocity);
     distance=FastVecLength(delta);
     if(distance<8.0f) count=truncate_float_to_s32(distance)+2;
@@ -772,8 +772,8 @@ void update_blarg_elite_commando_joint_aim(char *m) {
         *(float *)(d+0x198)=halfYaw;*(float *)(d+0x194)=halfPitch;*(float *)(d+0x218)=halfYaw;*(float *)(d+0x214)=halfPitch;}
         if((unsigned int)(*(unsigned char*)(m+0x20)-4)<2) {
             float yaw2,pitch2,bound;
-            func_L00_001FF4B0(aim,m+0xC0,1.0f);
-            func_L00_001FF4B0(velocity,m+0xD0,0.5f);
+            vec_scale_to_length(aim,m+0xC0,1.0f);
+            vec_scale_to_length(velocity,m+0xD0,0.5f);
             FastVecAdd(aim,aim,position);
             FastVecAdd(aim,aim,velocity);
             FastVecSub(aimDelta,savedTarget,aim);
@@ -809,7 +809,7 @@ void emit_blarg_elite_commando_joint_sparks(char *m) {
         if(random_float_between(0.0f,1.0f)>0.75f) continue;
         MobyTransformScaledVertex(m,i+4,matrix);
         speed=(random_float_between(-0.2f,0.2f)+1.0f)*-3.0f*g_frame_time;
-        func_L00_001FF4B0(velocity,matrix+8,speed);
+        vec_scale_to_length(velocity,matrix+8,speed);
         {float component=(random_float_between(-0.2f,0.2f)+1.0f)*-2.0f;
         z=component*g_frame_time;}
         clear_u64_value(acceleration);
@@ -857,8 +857,8 @@ void armed_transport_update(char *m) {
         *(float *)(d + 0x20) = 12.0f;
         *(short *)(d + 0x24) = 12;
         d[0x28] = 3;
-        if (*(int *)(d + 0xD8) != -1) compute_armed_transport_path_headings(D_L16_001B0C30[*(int *)(d + 0xD8)]);
-        if (*(int *)(d + 0xDC) != -1) compute_armed_transport_path_headings(D_L16_001B0C30[*(int *)(d + 0xDC)]);
+        if (*(int *)(d + 0xD8) != -1) compute_armed_transport_path_headings(kalebo3_path_table[*(int *)(d + 0xD8)]);
+        if (*(int *)(d + 0xDC) != -1) compute_armed_transport_path_headings(kalebo3_path_table[*(int *)(d + 0xDC)]);
         speed = *(float *)&D_L16_00161E40 * g_frame_time;
         *(int *)(d + 0x16C) = 0;
         *(int *)(d + 0x168) = 0;
@@ -868,7 +868,7 @@ void armed_transport_update(char *m) {
             m[0x20] = 6;
             break;
         }
-        path = D_L16_001B0C30[*(int *)(d + 0xD8)];
+        path = kalebo3_path_table[*(int *)(d + 0xD8)];
         *(float *)(d + 0x174) = func_001F9D10_update(path + 0x10, path + 0x20);
         qcopy(m + 0x10, path + 0x10);
         m[0x20] = 1;
@@ -882,8 +882,8 @@ void armed_transport_update(char *m) {
 
         if (D_L16_0015F6A8 == 0
             && (*(int *)(d + 0xD4) == -1
-                || IsPointInPolygon(gHeroPos, D_L16_001B0C30[*(int *)(d + 0xD4)] + 0x10,
-                                     *(int *)D_L16_001B0C30[*(int *)(d + 0xD4)]))) {
+                || IsPointInPolygon(gHeroPos, kalebo3_path_table[*(int *)(d + 0xD4)] + 0x10,
+                                     *(int *)kalebo3_path_table[*(int *)(d + 0xD4)]))) {
             m[0x20] = 2;
             *(unsigned short *)(m + 0x34) &= 0xFFFE;
             m[0x31] = 1;
@@ -893,7 +893,7 @@ void armed_transport_update(char *m) {
             vector.f[2] = 3.14159f;
             for (i = 0; i < 4; i++) {
                 if (((int *)(d + 0xC0))[i] >= 0) {
-                    set_blarg_elite_commando_parent_transform(D_L16_00160098 + (((int *)(d + 0xC0))[i] << 8), m, D_L16_001D9950,
+                    set_blarg_elite_commando_parent_transform(kalebo3_moby_array + (((int *)(d + 0xC0))[i] << 8), m, D_L16_001D9950,
                                       (char *)vector.f);
                 }
             }
@@ -907,7 +907,7 @@ void armed_transport_update(char *m) {
         for (i = 0; i < 4; i++) {
             if (((int *)(d + 0xC0))[i] >= 0) loaded = 1;
         }
-        path = D_L16_001B0C30[*(int *)(d + 0xD8)];
+        path = kalebo3_path_table[*(int *)(d + 0xD8)];
         if (loaded && (float)(*(int *)path - *(int *)(d + 0x168)) * *(float *)(d + 0x174) < 16.0f) {
             ApproachWithVelocity((float *)(d + 0x17C), (float *)(d + 0x180), 1.5707964f, g_frame_time_sq * 12.566371f,
                           g_frame_time_sq * 12.566371f, g_frame_time * 6.2831855f);
@@ -930,7 +930,7 @@ void armed_transport_update(char *m) {
         slot = (int *)(d + 0xC0);
         for (i = 0; i < 4; i++, slot++) {
             if (((int *)(d + 0xC0))[i] >= 0) {
-                char *passenger = D_L16_00160098 + (((int *)(d + 0xC0))[i] << 8);
+                char *passenger = kalebo3_moby_array + (((int *)(d + 0xC0))[i] << 8);
 
                 clear_u64_value(rotation.f);
                 rotation.f[2] = FastAddRots(*(float *)(m + 0x48), 3.14159f);
@@ -952,7 +952,7 @@ void armed_transport_update(char *m) {
         break;
     }
     case 4: {
-        float heading = *(float *)(D_L16_001B0C30[*(int *)(d + 0xDC)] + 0x1C);
+        float heading = *(float *)(kalebo3_path_table[*(int *)(d + 0xDC)] + 0x1C);
 
         ApproachWithVelocity((float *)(m + 0x48), (float *)(d + 0x178), heading, g_frame_time_sq * 6.2831855f,
                       g_frame_time_sq * 6.2831855f, g_frame_time * 6.2831855f);
@@ -966,7 +966,7 @@ void armed_transport_update(char *m) {
     case 5:
         ApproachWithVelocity((float *)(d + 0x17C), (float *)(d + 0x180), 0.0f, g_frame_time_sq * 12.566371f,
                       g_frame_time_sq * 12.566371f, g_frame_time * 6.2831855f);
-        if (advance_armed_transport_along_path(m, D_L16_001B0C30[*(int *)(d + 0xDC)])) {
+        if (advance_armed_transport_along_path(m, kalebo3_path_table[*(int *)(d + 0xDC)])) {
             if (*(int *)(d + 0xD0) == -1) {
                 DeleteMoby(m);
                 return;
@@ -992,7 +992,7 @@ void armed_transport_update(char *m) {
     case 7:
         Moby_GetJointWorldPos(m, 1, vector.f);
         FastVecSub(rotation.f, d + 0x70, vector.f);
-        func_L00_001FF4B0(rotation.f, rotation.f, *(float *)&D_L16_00161E3C * g_frame_time);
+        vec_scale_to_length(rotation.f, rotation.f, *(float *)&D_L16_00161E3C * g_frame_time);
         func_0022ED80_update(1, 0, m);
         spawn_class_32_moby(m, (char *)rotation.f, vector.f, d + 0x70, scale_ticks(45));
         m[0x20] = 6;
@@ -1003,7 +1003,7 @@ void armed_transport_update(char *m) {
 
         *(float *)(d + 0x194) -= dt + dt;
         *(float *)(m + 0x40) += dt * 0.2617994f;
-        if (fast_dec_timer((int *)(d + 0x160)) || D_001414F4[0] == 2) {
+        if (fast_dec_timer((int *)(d + 0x160)) || hero_vehicle_mode[0] == 2) {
             spawn_explosion(m, D_L16_0015F660, m + 0x10, 0.0f, 0.0f, 20, 12, 8, 4.0f, 2.5f, 9.0f, -1, 2.0f, 0.0f,
                               0, 0, -1, 0);
             SpawnBreakFragment(m, 0x634, (float *)(m + 0x10), m + 0x40, 0, 0, 0.0f, D_L16_0015F660, D_L16_0015F660,
@@ -1073,7 +1073,7 @@ void update_armed_transport_damage_and_targeting(char *m) {
                 if((*(unsigned char*)((char*)(D_0013E633)+(0x2EC1)))!=2) func_0022ED80_6B70(2,0,m);
                 {int *child=(int*)(d+0xC0),count=3;
                 do {
-                    char *pool=D_L16_00160098;
+                    char *pool=kalebo3_moby_array;
                     if(*child>=0) DeleteMoby(pool+(*child<<8));
                     child++;
                 } while(--count>=0);
@@ -1087,7 +1087,7 @@ void update_armed_transport_damage_and_targeting(char *m) {
     (*(unsigned char*)((char*)(m)+(0xA4)))=255;
     StepColorFade(m,d+0x60);
     if((*(int*)((char*)(d)+(0xD0)))!=-1 && (*(int*)((char*)(D_0013E633)+(0x2EA9)))!=22) {
-        char *path=D_L16_001B0C30[(*(int*)((char*)(d)+(0xD0)))];
+        char *path=kalebo3_path_table[(*(int*)((char*)(d)+(0xD0)))];
         FindNearestEligibleMoby(128.0f,m,d+0x70,0,0,path+0x10,*(int*)path);
     } else (*(int*)((char*)(d)+(0xB4)))=2;
     if((*(int*)((char*)(d)+(0xB0)))==0) {
@@ -1286,7 +1286,7 @@ void RingEffectDraw(char *m) {
         for (j = 1; j >= 0; --j) color_base[j] = color;
         phase += phase_step;
         if (phase > 1.0f) phase -= 1.0f;
-        func_L00_001FD1D8(&quad, transform, 0);
+        draw_world_quad(&quad, transform, 0);
     }
     quad.texture = GetEffectTex(*(int *)&D_L16_00161EFC);
     {
@@ -1304,17 +1304,17 @@ void RingEffectDraw(char *m) {
         for (count = 3; count >= 0; --count) {
             rotation[0] = angles[3 - count];
             euler_rotation_basis(transform, rotation);
-            func_L00_001FD1D8(&quad, transform, 0);
+            draw_world_quad(&quad, transform, 0);
         }
     }
 }
 /* 1 when every moby in list IDX has its byte at 0xBC set; the list ends at the entry with the top
  * bit set. The catalogue cuts this function in three (config/overlays/joined.tsv). */
 int check_grindrail_barrier_release_condition(int idx) {
-    short *p = D_L16_001ABFC0[idx];
+    short *p = kalebo3_moby_groups[idx];
     if (p == 0) return 0;
     do {
-        if (*(unsigned char *)(((*(unsigned short *)p & 0x7FFF) << 8) + (int)D_L16_00160098 + 0xBC) == 0) return 0;
+        if (*(unsigned char *)(((*(unsigned short *)p & 0x7FFF) << 8) + (int)kalebo3_moby_array + 0xBC) == 0) return 0;
     } while (*p++ >= 0);
     return 1;
 }
@@ -1325,12 +1325,12 @@ extern void func_0022ED80(int, int, int);
 
 /* picks the nearest moby in a list (skipping class 0x5A3) and acts on it */
 void Group_TriggerNearest(int idx) {
-    short *p = D_L16_001ABFC0[idx];
+    short *p = kalebo3_moby_groups[idx];
     char *best = 0;
     float bestd = 50000.0f;
     if (p != 0) {
         do {
-            char *m = D_L16_00160098 + ((*(unsigned short *)p & 0x7FFF) << 8);
+            char *m = kalebo3_moby_array + ((*(unsigned short *)p & 0x7FFF) << 8);
             if (*(short *)(m + 0xA6) != 0x5A3) {
                 float d = func_001F9D10_2E7198(D_0013E633 + 0xE9D, m + 0x10);
                 if (d < bestd) {

@@ -504,7 +504,7 @@ void update_timed_sphere_probed_particle(unsigned char *m) {
     }
     r = coll_sphere_mobys(0.15f, pos, 0x10, q->p14, 0);
     t = *pos;
-    SendRadialMessageToMobys(q->p14, (void *)&t, D_L00_00178000, r, 0, 0x810001, 2, 1, 2.0f, 1.0f, 1.0f);
+    SendRadialMessageToMobys(q->p14, (void *)&t, coll_sphere_moby_hits, r, 0, 0x810001, 2, 1, 2.0f, 1.0f, 1.0f);
 }
 int func_001FA898(float);
 typedef struct { u8 *o; u8 *b; s32 k; f32 f; } S_2725d8;
@@ -745,7 +745,7 @@ void update_color_tween_emitter_particle(unsigned char *p) {
             g = (P_272bc0 *)(c - 0x80);
             if (g->f88 < *(float *)(p + 0x18) + 1.2f) {
                 FastVecSub(t, c, p + 0x10);
-                func_L00_001FF4B0(t, t, 1.0f);
+                vec_scale_to_length(t, t, 1.0f);
                 t[2] = 1.0f;
                 PostHitMessage(g->i2080, *(int *)(q + 0x18), 1, p + 0x10, t, *(float *)(q + 0x1C));
             }
@@ -960,7 +960,7 @@ void update_moby_point_attached_alpha_pulse_particle(P_p *p) {
     e->f14 += (1.0f - e->f14) * (frame_scale * 0.175f);
     Moby_GetJointWorldPos(e->m, e->hE, a);
     FastVecSub(v, g_debug_camera, a);
-    func_L00_001FF4B0(v, v, e->f14);
+    vec_scale_to_length(v, v, e->f14);
     FastVecAdd(p->pos, a, v);
 }
 extern unsigned char *D_L00_001B24F8;
@@ -1116,7 +1116,7 @@ void update_gravity_floor_burst_particle(struct EmberParticle *p) {
             m->vel.f[0] = random_float_between(-1.0f, 1.0f);
             m->vel.f[1] = random_float_between(-1.0f, 1.0f);
             m->vel.f[2] = 0.0f;
-            func_L00_001FF4B0(&m->vel, &m->vel, random_float_between(1.5f, 3.0f) * g_frame_time);
+            vec_scale_to_length(&m->vel, &m->vel, random_float_between(1.5f, 3.0f) * g_frame_time);
             m->vel.f[2] = g_frame_time * 3.0f;
             t.q = p->pos.q;
             t.f[2] -= 1.5f;
@@ -1147,7 +1147,7 @@ void update_line_collision_rgb_fading_particle(unsigned char *o) {
     *(float *)(o + 0xC) += d * -100.0f;
     FastVecAdd(&out, b, c);
     if (*(float *)(o + 0x20) != 0.0f || c[1] != 0.0f || c[2] != 0.0f) {
-        if (func_L00_001EFFF0(o + 0x10, &out, 2, o, 0)) {
+        if (coll_line(o + 0x10, &out, 2, o, 0)) {
             *(V *)(o + 0x10) = collision_hit_point;
             clear_u64_value(c);
             *(float *)(o + 0xC) += *(float *)(o + 0xC);
@@ -1381,7 +1381,7 @@ void update_randomized_moby_point_attached_particle(char *m) {
     MobyTransformScaledVertex(*(void **)(m + 0x30), p[4], v);
     f = IntToFloat(p[5]);
     f = (random_float_between(-f, f) / 100.0f - 1.0f) * *(float *)(p + 0xC);
-    func_L00_001FF4B0(v2, v, f);
+    vec_scale_to_length(v2, v, f);
     FastVecAdd(m + 0x20, m + 0x10, v2);
     *(float *)(m + 0x1C) = a;
     *(float *)(m + 0x2C) = b;
@@ -1506,17 +1506,17 @@ void update_three_phase_motion_alpha_fade_particle(char *m) {
     float z[4] __attribute__((aligned(16)));
     char *v = m + 0x20;
     float f;
-    if (D_L00_0015F6B0 & 1) m[8]++;
+    if (level_frame_counter & 1) m[8]++;
     f = FastVecDist(m + 0x10, D_0013E633 + 0xEED);
     if (f < 5.0f) {
         char *t = *(char **)(v + 0x18);
         if (0.0f < *(float *)(t + 8)) {
             FastVecSub(y, t, m + 0x10);
             if (0.5f < FastVecLength(y)) {
-                func_L00_001FF4B0(y, y, 0.1f / f);
+                vec_scale_to_length(y, y, 0.1f / f);
                 FastVecAdd(m + 0x10, m + 0x10, y);
             } else {
-                func_L00_001FF4B0(y, y, 0.005f);
+                vec_scale_to_length(y, y, 0.005f);
                 pack_vector_xyz_with_shared_scale(y, (int *)(m + 0x24));
             }
         }
@@ -1864,12 +1864,12 @@ void update_proximity_corrected_size_alpha_tween_particle(char *m) {
         FastVecSub(d, *(char **)(v + 0x18) + 0x10, p);
         if (d[0] <= 2.0f && d[1] <= 2.0f) {
             FastVecCross(e, d, D_0013E633 + 0x10AD);
-            func_L00_001FF4B0(e, e, *(float *)&D_L00_0016030C);
+            vec_scale_to_length(e, e, *(float *)&D_L00_0016030C);
             FastVecAdd(p, p, e);
             if (d[0] <= 0.5f && d[1] <= 0.5f) {
-                func_L00_001FF4B0(a, d, 0.03f);
+                vec_scale_to_length(a, d, 0.03f);
             } else {
-                func_L00_001FF4B0(a, d, FastVecLength(a));
+                vec_scale_to_length(a, d, FastVecLength(a));
             }
             w = (float *)(v + 0xC);
             *(float *)(v + 0xC) = a[0];
@@ -1962,7 +1962,7 @@ void load_misc_animations_into_stash(void) {
         int sz = D_00137C80.e[i].n << 7;
         if (sz) {
             Load(h, D_00137C80.e[i].a, D_00137C80.e[i].n);
-            D_L00_001BA070.o[i] = Stash_SendData(h, sz, sz, (int)&D_L00_00160390);
+            level_menu_system.o[i] = Stash_SendData(h, sz, sz, (int)&D_L00_00160390);
         }
     }
 }

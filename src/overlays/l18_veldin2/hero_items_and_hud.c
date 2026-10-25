@@ -188,16 +188,16 @@ void HeroStateTransitions(void) {
                 if (g_hero.unk22D6 == 0) {
                     g_hero.unk22D6 = scale_ticks(0x14);
                 } else {
-                    int next = D_0015EE8C;
+                    int next = quick_swap_item;
                     if (g_hero.items[0].item_id == 8) {
-                        next = D_00141760;
+                        next = last_weapon_id;
                     }
-                    if (next != 0 && g_hero.items[0].item_id != D_0015EE8C) {
+                    if (next != 0 && g_hero.items[0].item_id != quick_swap_item) {
                         if (usage_stats.fF8 < 0xFFFF) {
                             usage_stats.fF8++;
                         }
-                        if (scale_ticks(D_0015EFA4) / 600 > usage_stats.fFA) {
-                            usage_stats.fFA = scale_ticks(D_0015EFA4) / 600;
+                        if (scale_ticks(play_time_ticks) / 600 > usage_stats.fFA) {
+                            usage_stats.fFA = scale_ticks(play_time_ticks) / 600;
                         }
                         usage_stats.fFC = usage_stats.fFC | (1 << D_0015EE84_m) | 0x80000000;
                         g_hero.pending_item[0] = next;
@@ -244,7 +244,7 @@ void HeroStateTransitions(void) {
                                 MobyBlendAnimation(m, 1, 0, scale_ticks(7));
                             }
                         }
-                        if (0.61086524f < D_L18_0017B100.f258 || D_L18_0017B100.f254 > 0.43633232f) {
+                        if (0.61086524f < veldin2_hero_bones.f258 || veldin2_hero_bones.f254 > 0.43633232f) {
                             m = (unsigned char *)g_hero.items[3].moby;
                             if (m != 0 && m[0x53] != 1) {
                                 MobyBlendAnimation(m, 1, 0, scale_ticks(0xC));
@@ -289,7 +289,7 @@ void HeroStateTransitions(void) {
                     if (scale_ticks(0xA) < g_hero.state_timer) {
                         if (((unsigned char *)g_hero.items[3].moby2) != 0 && ((unsigned char *)g_hero.items[3].moby2)[0x53] == 1) {
                             if (func_001F9908_r(&g_hero.unk22C4)) {
-                                if (0.55850536f > D_L18_0017B100.f258 && D_L18_0017B100.f254 < 0.34906584f && g_hero.items[3].state == 2) {
+                                if (0.55850536f > veldin2_hero_bones.f258 && veldin2_hero_bones.f254 < 0.34906584f && g_hero.items[3].state == 2) {
                                     g_hero.unk22C4 = rand_range(scale_ticks(0x6E), scale_ticks(0x10E));
                                     blend_hero_slot3_animation_pair();
                                 }
@@ -1164,7 +1164,7 @@ void HeroStateTransitions(void) {
                                 v1[1] = FastSin(g_hero.unk57C) * 5.0f;
                                 v1[2] = 0.0f;
                                 FastVecAdd(v1, v1, v0);
-                                if (func_L00_001EFFF0(v0, v1, 2, 0, 0)) {
+                                if (coll_line(v0, v1, 2, 0, 0)) {
                                     ok = 0;
                                 }
                             }
@@ -2117,8 +2117,8 @@ void HeroStateTransitions(void) {
                         int fr;
 
                         g_hero.unk418 = scale_ticks(1);
-                        D_L18_00167700.f160 = 0.15f;
-                        D_L18_00167700.f168 = scale_ticks(0x1E);
+                        veldin2_player_camera.f160 = 0.15f;
+                        veldin2_player_camera.f168 = scale_ticks(0x1E);
                         fr = truncate_float_to_s32(g_hero.unk448) + 3;
                         if (g_hero.anim_frame < g_hero.unk444) {
                             set_hero_animation(moby[0x53], fr, scale_ticks(6));

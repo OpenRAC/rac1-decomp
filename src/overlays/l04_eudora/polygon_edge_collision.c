@@ -297,7 +297,7 @@ void update_moby_movement_with_sphere_collision(char *a, char *b, char *c, float
     float v[4];
     char *p = b + 0x10;
     FastVecAdd(p, p, b);
-    func_L00_001FF4B0(p, p, *(float *)(c + 0x1C));
+    vec_scale_to_length(p, p, *(float *)(c + 0x1C));
     *(float *)(b + 0x18) = *(float *)(b + 0x18) / *(float *)(b + 0x48);
     FastVecAdd(a + 0x10, a + 0x10, p);
     for (i = 0; i < 6; i++) {

@@ -56,7 +56,7 @@ int pick_idle_fidget(int *index) {
             qcopy(startp, &g_hero.motion.unkD0);
             qcopy(endp, startp);
             end.f[2] += 8.0f;
-            if (func_L00_001EFFF0(startp, endp, 2, (int)g_hero.moby, 0)) continue;
+            if (coll_line(startp, endp, 2, (int)g_hero.moby, 0)) continue;
         }
         if (i == 4) {
             if (g_hero.state.prev_control_mode != 1) continue;
@@ -245,7 +245,7 @@ int CanReachPointAhead(void) {
     qcopy(&b, &a);
     a.z += 0.47f;
     b.z -= 1.0f;
-    if (func_L00_001EFFF0(&a, &b, 2, *(int *)(g + 0x2080), 0)) {
+    if (coll_line(&a, &b, 2, *(int *)(g + 0x2080), 0)) {
         d = D_L00_00173F68 - *(float *)(g + 0x88);
         if (d < 0.37f && -1.0f < d)
             return 1;
@@ -268,7 +268,7 @@ int try_start_hero_item_idle_animation(void) {
             cancel_hero_item_animation();
             return 0;
         }
-        v = D_L00_00179BC0[i].v;
+        v = item_defs[i].v;
         if (HeroEnterMoveState(0, 0) == 0) return 0;
         set_hero_animation(v, 0, (float)scale_ticks(11));
         if (*(int *)(p + 0xD08) != 0) *(int *)(p + 0xD14) = 1;

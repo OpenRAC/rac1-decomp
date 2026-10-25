@@ -84,18 +84,18 @@ void EnterShipMode(int a) {
     FastMemSet(D_L00_0017C440, 0, 0x40);
     FastMemSet(D_L00_0017C480, 0, 0x40);
     calculate_dma_transfer_address();
-    u = D_L00_0016128C - 0x60000;
+    u = lvl_vu_chain_buffer_size - 0x60000;
     D_L00_0016C960_s.x58 = D_L00_00173F00_s.x4 + u;
     D_L00_0016C960_s.x5c = D_L00_00173F00_s.x8 + u;
     gFadeLvl = 1.0f;
-    D_L00_0015F6A8 = 6;
-    D_L00_0016128C = u;
+    cinematic_mode = 6;
+    lvl_vu_chain_buffer_size = u;
     D_L00_0015F500 = 0;
     HeroEnterMoveState(100, 2);
     D_001414F5[0] = 1;
     HeroSetObjectFlags();
     D_0013E130_s.x0->flags |= 1;
-    for (o = D_L00_0016009C; o->st != 0xFF; o++) {
+    for (o = level_mobys_end; o->st != 0xFF; o++) {
         if (!(o->st & 0x80) && (o->type == 0x4A || o->type == 0xCB)) o->flags |= 0x80;
     }
     if (a == 0) {
@@ -149,7 +149,7 @@ void ShipTakeOff(void) {
     char *g = g_hero;
     
     if (*(int *)(g + 0x22A8) <= 0) *(int *)(g + 0x22A8) = 1;
-    *(int *)&D_L00_0015F6BC = 1;
+    *(int *)&skip_frame = 1;
     music_Pause(0);
     {
         char *p = (char *)D_0014171B + 0x100B5;
@@ -179,18 +179,18 @@ void prepare_target_level_transition(int dest) {
     int base;
     int *q;
     D_L00_0015F6B8[1] = 1;
-    D_L00_0015F6A8 = 6;
+    cinematic_mode = 6;
     gFadeLvl = 1.0f;
     D_L00_0015F500 = 0;
     *(int *)(g + 0x20) = 0;
     *(short *)(g + 0x24) = -1;
     calculate_dma_transfer_address();
     base = D_L00_00161288[1] - 0x60000;
-    q = (int *)D_L00_00173F00;
-    h = D_L00_0016C960;
+    q = (int *)lvl_resource_buffers;
+    h = cutscene_state;
     *(int *)(h + 0x58) = q[1] + base;
     *(int *)(h + 0x5C) = q[2] + base;
-    *(int *)&D_L00_0016128C = base;
+    *(int *)&lvl_vu_chain_buffer_size = base;
     if (D_0015EE84_m == dest) {
         int d = 0x60;
         int v;
@@ -229,16 +229,16 @@ void prepare_level_entry_transition(void) {
     D_0013E130_901A8.x2c = 1;
     if (D_0013E130_901A8.x2a != 0) D_0013E130_901A8.x2a = 0;
     m = g_current_level_index;
-    if (m == 1 && D_0013DE4B == 0) { D_L00_0015F6A8 = 0; return; }
+    if (m == 1 && D_0013DE4B == 0) { cinematic_mode = 0; return; }
     if (m != 0) {
         if (m == 0xE) { if (D_0013D4F8[0] == 0) goto out; }
         if (m < 0x14) goto in;
     }
 out:
-    D_L00_0015F6A8 = 0; return;
+    cinematic_mode = 0; return;
 in:
     D_0013E130_901A8.x24 = -1;
-    D_L00_0015F6A8 = 6;
+    cinematic_mode = 6;
     gFadeLvl = 1.0f;
     D_0013E130_901A8.x20 = 0;
     calculate_dma_transfer_address();
@@ -318,6 +318,6 @@ void build_variant_effect_quads(unsigned char *quad_source) {
             matrix_mul_vec3(&quad.positions[k], &quad.positions[k], D_0013E130_902A0.p0 + 0xC0);
             FastVecAdd(&quad.positions[k], &quad.positions[k], &quad_source_translation);
         }
-        func_L00_001FD1D8(&quad, 0, 0);
+        draw_world_quad(&quad, 0, 0);
     }
 }

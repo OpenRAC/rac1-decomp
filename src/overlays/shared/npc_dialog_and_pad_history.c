@@ -106,7 +106,7 @@ int Npc_TryStartDialog(char *p, char *q) {
     int h4; float f, f0; int r, i, m; int *ptr;
     if (*(int *)(g + 0x2084) == 0x1D || *(int *)(g + 0x22A8) == 0) return 0;
     if (*(unsigned char *)(q + 9) == 0) DialogRequest_Init(p, q);
-    if (D_L00_0015F6A8 != 0) return 0;
+    if (cinematic_mode != 0) return 0;
     if (q == 0) return 0;
     if (*(short *)(q + 0x36) == -1) return 0;
     if (*(unsigned char *)(q + 8) == 0xFF) return 0;
@@ -124,7 +124,7 @@ int Npc_TryStartDialog(char *p, char *q) {
     }
     process_menu_entry(p, q, 0);
     x = D_L00_00179200;
-    if (D_L00_0015F6B0 < *(int *)(x + 0x10)) return 0;
+    if (level_frame_counter < *(int *)(x + 0x10)) return 0;
     if (*(unsigned char *)(q + 8) != 0 || (*(int *)(D_0013A5E0 + 0x2604) & 0x10) != 0) {
         i = func_L00_00267618(p);
         tb = D_0013D605 + 0xB3; tb = tb + 0xC;
@@ -133,7 +133,7 @@ int Npc_TryStartDialog(char *p, char *q) {
         *(int *)(x + 8) = (int)p; *(int *)(x + 0xC) = (int)q;
         e = (char *)*(int *)(q + 0x3C) + *(short *)(q + 0x36) * 0x1C;
         if (*(unsigned short *)(e + 0x10) & 8) {
-            if (*(short *)(e + 8) == 1) gBolts = gBolts - *(int *)(D_L00_001C43B0 + *(short *)(e + 0xA) * 0x18);
+            if (*(short *)(e + 8) == 1) gBolts = gBolts - *(int *)(item_price_table + *(short *)(e + 0xA) * 0x18);
             else if (*(short *)(e + 8) == 4) { tb2 = D_0013D355 + 0x13B; tb2[*(short *)(e + 0xA)] = 0; }
         }
         if (*(short *)(e + 4) == -1) { process_menu_entry(p, q, 1); return 1; }
@@ -231,7 +231,7 @@ s32 DialogRequest_Init(void *p, u8 *out_p)
     if (i == -1) { return -1; }
     if (D_L00_001B19F8[i] == 0) { return -1; }
     out->f09 = 1;
-    out->f38 = D_L00_0015F6B0;
+    out->f38 = level_frame_counter;
     out->f04 = -1;
     out->f36 = 0;
     q = D_L00_001B19F8[i];

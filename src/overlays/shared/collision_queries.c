@@ -10,7 +10,7 @@ extern int D_L00_00169140[];
 void EffectQueue_Add(int a0, int a1, float f12, float f13, int *a2, int a3, int t0, float f14) {
     int *e;
     int n;
-    if (D_L00_0015F6A8 == 2) return;
+    if (cinematic_mode == 2) return;
     n = D_L00_00169140[0xC0 / 4];
     if (n >= 3) return;
     e = D_L00_00169140 + n * 12;

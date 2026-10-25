@@ -337,7 +337,7 @@ void compute_tresspasser_pad_camera_transform(float *pos, float *rot, char *moby
         rot[1] = 0;
         rot[2] = FastAddRots(pick, 3.14159274f);
     } else {
-        base = D_L02_0016016C;
+        base = aridia_scene_points;
         qcopy(pos, base + idx * 128 + 0x30);
         qcopy(rot, base + idx * 128 + 0x70);
     }
@@ -1327,9 +1327,9 @@ void swingshot_versatarget_update(char *m) {
                     int particle_lifetime;
                     if (D_L02_0015F6B0_2A52D0 & 4)
                         direction_sign = -1.0f;
-                    func_L00_001FF4B0(particle_position, &((struct Moby *)m)->rot_row1,
+                    vec_scale_to_length(particle_position, &((struct Moby *)m)->rot_row1,
                                       direction_sign * *(float *)&D_L02_00161D4C);
-                    func_L00_001FF4B0(particle_velocity, particle_position,
+                    vec_scale_to_length(particle_velocity, particle_position,
                                       -2.0f / multiply_global_factor(*(float *)&D_L02_00161D40));
                     FastVecAdd(particle_position, particle_position, &((struct Moby *)m)->pos);
                     particle_lifetime = truncate_float_to_s32(multiply_global_factor(*(float *)&D_L02_00161D40)) & 0xFF;
@@ -1611,8 +1611,8 @@ void SparkleSpritesDrawL02(char *m) {
 
     *(float *)(m + 0x18) += 0.5f;
     FastVecSub(d, D_L02_00167440, m + 0x10);
-    func_L00_001FF4B0(d, d, -0.3f);
-    func_L00_001FF4B0(e, d, 0.1f);
+    vec_scale_to_length(d, d, -0.3f);
+    vec_scale_to_length(e, d, 0.1f);
     FastVecAdd(d, d, m + 0x10);
     *(float *)(m + 0x18) -= 0.5f;
     for (i = 0; i < 4; i++) {
@@ -1738,7 +1738,7 @@ void background_ship_1_update(char *moby) {
     int r2;
     int r3;
     d = *(char **)(moby + 0x78);
-    t = D_L02_001B0DB0[*(int *)(d + 0x60)];
+    t = aridia_paths[*(int *)(d + 0x60)];
     r = (int)MobyGetHitMessage(moby, 0x10000, 0);
     switch (*(unsigned char *)(moby + 0x20)) {
     case 0: {
@@ -1751,16 +1751,16 @@ void background_ship_1_update(char *moby) {
             DeleteMoby(moby);
             return;
         }
-        if (*(int *)D_L02_001B0DB0[*(int *)(d + 0x60)] == 0) {
+        if (*(int *)aridia_paths[*(int *)(d + 0x60)] == 0) {
             STUB_printf(D_L02_001FB070, *(short *)(moby + 0xB2));
             DeleteMoby(moby);
             return;
         }
-        f70 = FastVecDist(D_L02_001B0DB0[*(int *)(d + 0x60)] + 0x10, D_L02_001B0DB0[*(int *)(d + 0x60)] + 0x20);
+        f70 = FastVecDist(aridia_paths[*(int *)(d + 0x60)] + 0x10, aridia_paths[*(int *)(d + 0x60)] + 0x20);
         *(unsigned char *)(d + 0x2C) = 0x28;
         *(float *)(d + 0x70) = f70;
         *(unsigned char *)(d + 0x2B) = 1;
-        qcopy(moby + 0x10, D_L02_001B0DB0[*(int *)(d + 0x60)] + 0x10);
+        qcopy(moby + 0x10, aridia_paths[*(int *)(d + 0x60)] + 0x10);
         *(float *)(d + 0x68) = random_angle_radians();
         *(int *)(d + 0x6C) = m1;
         *(unsigned char *)(moby + 0x20) = 1;
@@ -1829,11 +1829,11 @@ void background_ship_1_update(char *moby) {
         FastVecScale(tv, moby + 0xC0, *(float *)&D_L02_0016200C * frame_scale);
         tv[2] = tv[2] + *(float *)&D_L02_00162010 * frame_scale;
         r1 = scale_ticks(90);
-        SpawnBreakFragment(moby, 0x5F2, (float *)(moby + 0x10), (void *)(moby + 0x40), r1, 0, g_frame_time_sq * 12.0f, tv, D_L02_0015F660, D_L02_0015F660);
+        SpawnBreakFragment(moby, 0x5F2, (float *)(moby + 0x10), (void *)(moby + 0x40), r1, 0, g_frame_time_sq * 12.0f, tv, aridia_zero_vec, aridia_zero_vec);
         r2 = scale_ticks(90);
-        SpawnBreakFragment(moby, 0x5F5, (float *)(moby + 0x10), (void *)(moby + 0x40), r2, 0, g_frame_time_sq * 12.0f, tv, D_L02_0015F660, D_L02_0015F660);
+        SpawnBreakFragment(moby, 0x5F5, (float *)(moby + 0x10), (void *)(moby + 0x40), r2, 0, g_frame_time_sq * 12.0f, tv, aridia_zero_vec, aridia_zero_vec);
         r3 = scale_ticks(90);
-        SpawnBreakFragment(moby, 0x790, (float *)(moby + 0x10), (void *)(moby + 0x40), r3, 0, g_frame_time_sq * 12.0f, tv, D_L02_0015F660, D_L02_0015F660);
+        SpawnBreakFragment(moby, 0x790, (float *)(moby + 0x10), (void *)(moby + 0x40), r3, 0, g_frame_time_sq * 12.0f, tv, aridia_zero_vec, aridia_zero_vec);
         DeleteMoby(moby);
         break;
     default:
@@ -1983,7 +1983,7 @@ void background_ship_2_update(char *moby) {
     int r2;
     int r3;
     d = *(char **)(moby + 0x78);
-    t = D_L02_001B0DB0[*(int *)(d + 0x60)];
+    t = aridia_paths[*(int *)(d + 0x60)];
     r = (int)MobyGetHitMessage(moby, 0x10000, 0);
     switch (*(unsigned char *)(moby + 0x20)) {
     case 0: {
@@ -1999,16 +1999,16 @@ void background_ship_2_update(char *moby) {
             DeleteMoby(moby);
             return;
         }
-        if (*(int *)D_L02_001B0DB0[*(int *)(d + 0x60)] == 0) {
+        if (*(int *)aridia_paths[*(int *)(d + 0x60)] == 0) {
             STUB_printf(D_L02_001FB0C0, *(short *)(moby + 0xB2));
             DeleteMoby(moby);
             return;
         }
-        f70 = FastVecDist(D_L02_001B0DB0[*(int *)(d + 0x60)] + 0x10, D_L02_001B0DB0[*(int *)(d + 0x60)] + 0x20);
+        f70 = FastVecDist(aridia_paths[*(int *)(d + 0x60)] + 0x10, aridia_paths[*(int *)(d + 0x60)] + 0x20);
         *(unsigned char *)(d + 0x2C) = 0x28;
         *(float *)(d + 0x70) = f70;
         *(unsigned char *)(d + 0x2B) = 1;
-        qcopy(moby + 0x10, D_L02_001B0DB0[*(int *)(d + 0x60)] + 0x10);
+        qcopy(moby + 0x10, aridia_paths[*(int *)(d + 0x60)] + 0x10);
         *(float *)(d + 0x68) = random_angle_radians();
         *(int *)(d + 0x6C) = m1;
         *(unsigned char *)(moby + 0x20) = 1;
@@ -2088,11 +2088,11 @@ void background_ship_2_update(char *moby) {
         FastVecScale(tv, moby + 0xC0, *(float *)&D_L02_00162060 * frame_scale);
         tv[2] = tv[2] + *(float *)&D_L02_00162064 * frame_scale;
         r1 = scale_ticks(90);
-        SpawnBreakFragment(moby, 0x5F6, (float *)(moby + 0x10), (void *)(moby + 0x40), r1, 0, g_frame_time_sq * 12.0f, tv, D_L02_0015F660, D_L02_0015F660);
+        SpawnBreakFragment(moby, 0x5F6, (float *)(moby + 0x10), (void *)(moby + 0x40), r1, 0, g_frame_time_sq * 12.0f, tv, aridia_zero_vec, aridia_zero_vec);
         r2 = scale_ticks(90);
-        SpawnBreakFragment(moby, 0x5F8, (float *)(moby + 0x10), (void *)(moby + 0x40), r2, 0, g_frame_time_sq * 12.0f, tv, D_L02_0015F660, D_L02_0015F660);
+        SpawnBreakFragment(moby, 0x5F8, (float *)(moby + 0x10), (void *)(moby + 0x40), r2, 0, g_frame_time_sq * 12.0f, tv, aridia_zero_vec, aridia_zero_vec);
         r3 = scale_ticks(90);
-        SpawnBreakFragment(moby, 0x5F9, (float *)(moby + 0x10), (void *)(moby + 0x40), r3, 0, g_frame_time_sq * 12.0f, tv, D_L02_0015F660, D_L02_0015F660);
+        SpawnBreakFragment(moby, 0x5F9, (float *)(moby + 0x10), (void *)(moby + 0x40), r3, 0, g_frame_time_sq * 12.0f, tv, aridia_zero_vec, aridia_zero_vec);
         DeleteMoby(moby);
         return;
     default:
@@ -2414,7 +2414,7 @@ int test_moby_camera_control_activation(char *moby) {
     if (*(int *)(data + 0x14) < 0) {
         goto rejected;
     }
-    entry = (int *)D_L02_001B0DB0[*(int *)(data + 0x14)];
+    entry = (int *)aridia_paths[*(int *)(data + 0x14)];
     result = IsPointInPolygon(&g_hero.motion.pos, entry + 4, *entry);
     if (result == 0) {
         goto rejected;

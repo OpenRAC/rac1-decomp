@@ -1151,7 +1151,7 @@ extern char *D_0015F714 MACRO_ADDR;
 int PlayBankSound(int idx, int arg1, int arg2) {
     int h;
 
-    if (idx >= D_0015F694) {
+    if (idx >= bank_sound_count) {
         return -1;
     }
     h = allocate_voice_slot(level_sound_defs + idx * 32, arg1, arg2, 0, 0x400);
@@ -1177,7 +1177,7 @@ int allocate_voice_for_group_entry(int group_entry_index, int flags, int owner) 
     int slot_index;
     struct VoiceGroupEntryWindow *slot;
 
-    entry_index = group_entry_index + D_0015F694;
+    entry_index = group_entry_index + bank_sound_count;
     if (entry_index >= level_sound_def_count) {
         return -1;
     }

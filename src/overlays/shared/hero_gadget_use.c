@@ -578,17 +578,17 @@ int try_apply_hero_water_and_ground_transitions(void) {
         int s2;
         if ((unsigned)(kk - 0x11) < 2 || kk == 7 || kk == 0x14 || *(int *)(p + 0x2084) == 0x12)
             goto done;
-        t = *(int *)&D_L05_0015F6B0;
+        t = *(int *)&rilgar_frame_count;
         if (t & 0xF) goto done;
         f12v = 4.0f;
         if ((t & 0x3F) == 0) f12v = 16.0f;
         hero_get_collision_ray_endpoints(a, b, 0, f12v, 1.3f);
-        if (func_L00_001EFFF0(a, b, 2, *(int *)(p + 0x2080), 0) == 0) goto done;
+        if (coll_line(a, b, 2, *(int *)(p + 0x2080), 0) == 0) goto done;
         s2 = CollType();
         *(short *)(p + 0x12E0) = s2;
         if ((s2 << 16) != 0) goto done;
         a[2] = D_L05_00174368 - 0.01f;
-        if (func_L00_001EFFF0(a, b, 2, *(int *)(p + 0x2080), 0) != 0) goto done;
+        if (coll_line(a, b, 2, *(int *)(p + 0x2080), 0) != 0) goto done;
         Hero_TryMoveStateL05(0x34, 1);
         return 1;
     }
@@ -1145,7 +1145,7 @@ void process_hero_race_object_interactions(void) {
     }
     count = scale_ticks(0x32);
     period = IntToFloat(count);
-    ratio = (float)(*(int *)&D_L05_0015F6B0 % count) / period;
+    ratio = (float)(*(int *)&rilgar_frame_count % count) / period;
     ratio += ratio;
     wave = FastSin(ratio * 3.1415927f + -3.1415927f);
     red = truncate_float_to_s32(wave * 48.0f) + 0x68;
@@ -1227,8 +1227,8 @@ void update_hero_hoverboard_trick_score(void) {
     if (((ScoreState_254838 *)(D_0013E633 + 0xE1D))->active != 0) {
         ScoreStats_254838 *stats = (ScoreStats_254838 *)(D_0014171B + 0x22D);
         if (stats->attempts < 0xFFFF) stats->attempts++;
-        if (scale_ticks(D_0015EFA4) / 600 > stats->best)
-            stats->best = scale_ticks(D_0015EFA4) / 600;
+        if (scale_ticks(play_time_ticks) / 600 > stats->best)
+            stats->best = scale_ticks(play_time_ticks) / 600;
         stats->levels = stats->levels | (1 << g_current_level_index) | 0x80000000;
     }
     for (i = 0; i < 3; i++) {
@@ -1726,11 +1726,11 @@ int Hero_PickHelpMode(void)
     vp = v2;
     qcopy(vp, v1);
     qcopy(v3, g->fE0);
-    func_L00_001FF4B0(v3, v3, 0.55f);
+    vec_scale_to_length(v3, v3, 0.55f);
     func_001F9BD8_4C558(v3, v3, g->fE0);
     v3[2] = f20;
     func_001F9BD8_4C558(vp, v1, v3);
-    if (!func_L00_001EFFF0(v1, vp, 2, 0, 0)) goto L_BAC;
+    if (!coll_line(v1, vp, 2, 0, 0)) goto L_BAC;
     h = (char *)&D_L05_00174340_4C558;
     if (*(int *)(h + 0x18) != 0) goto L_BAC;
     if (*(int *)(h + 0x1C) == 0) goto L_BAC;

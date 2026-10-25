@@ -71,8 +71,8 @@ void electric_gate_update(char *m) {
         **(int **)(data + 4) = -1;
         break;
     case 1:
-        if (*(int *)&D_L05_00161DF8 != D_L05_0015F6B0) {
-            *(int *)&D_L05_00161DF8 = D_L05_0015F6B0;
+        if (*(int *)&D_L05_00161DF8 != rilgar_frame_count) {
+            *(int *)&D_L05_00161DF8 = rilgar_frame_count;
             AddDrawCallback(draw_electric_gate_beams, m);
         }
         pos = m + 0x10;
@@ -155,7 +155,7 @@ void draw_electric_gate_beams(char *a) {
     unsigned short *nxt;
     short cur;
 
-    ang = IntToFloat(D_L05_0015F6B0 & 0x3F) / 63.0f * 6.28318f;
+    ang = IntToFloat(rilgar_frame_count & 0x3F) / 63.0f * 6.28318f;
     i = 0;
     do {
         nx = i + 1;
@@ -206,8 +206,8 @@ void draw_electric_gate_beams(char *a) {
             qcopy(tmp + 0x30, (char *)(off + (int)D_L05_00160098_0F130) + 0x10);
             *(float *)(tmp + 0x3C) = 1.0f;
             for (k = 0; k < 5; k++) {
-                func_L00_001FD1D8(&arr[0][k], tmp, 0);
-                func_L00_001FD1D8(&arr[1][k], tmp, 0);
+                draw_world_quad(&arr[0][k], tmp, 0);
+                draw_world_quad(&arr[1][k], tmp, 0);
             }
         }
         cur = *(short *)p;
@@ -518,7 +518,7 @@ void drain_cover_update(Moby *moby) {
         break;
     case 1:
         update_drain_cover_tilt((char *)moby, 0.0f, 8.0f);
-        if (D_L05_0015F6A8 == 0 && vec_distance_xy(&moby->pos, D_0013E633 + 0xE9D) < 24.0f && fast_dec_timer(&d->timer) != 0) {
+        if (rilgar_cinematic_mode == 0 && vec_distance_xy(&moby->pos, D_0013E633 + 0xE9D) < 24.0f && fast_dec_timer(&d->timer) != 0) {
             moby->state = 2;
             clear_u64_value(d->vel);
             d->vel[2] = vec_length(d->f80 * 2.0f * (D_L05_00161E6C * g_frame_time_sq));
@@ -536,9 +536,9 @@ void drain_cover_update(Moby *moby) {
                     v60[0] = FastCos(ang) * 0.75f;
                     v60[1] = FastSin(ang) * 0.75f;
                     v60[2] = 0.0f;
-                    func_L00_001FF4B0(v40, v60, random_float_between(D_L05_00161EAC, D_L05_00161EB0) * g_frame_time);
+                    vec_scale_to_length(v40, v60, random_float_between(D_L05_00161EAC, D_L05_00161EB0) * g_frame_time);
                     v40[2] = random_float_between(0.0f, D_L05_00161EBC) * g_frame_time;
-                    func_L00_001FF500(v50, v40, 0.0f);
+                    vec_set_length_xy(v50, v40, 0.0f);
                     FastVecAdd(v60, &moby->pos, v60);
                     v60[2] = random_float_between(moby->pos.z - 0.25f, moby->pos.z + 0.5f);
                     v40[3] = v50[3] = random_float_between(0.5f, 1.0f);
@@ -548,7 +548,7 @@ void drain_cover_update(Moby *moby) {
         }
         break;
     case 2:
-        if ((D_L05_0015F6B0 & 3) == 0) {
+        if ((rilgar_frame_count & 3) == 0) {
             MobySphereHitDirectional((int)moby, 1.0f, &moby->pos, 0x10000, 2.0f, 1.0f, 0, 1, 0);
         }
         emit_drain_cover_particles((char *)moby, d->home[2], d->vel[2] * (float)scale_ticks(*(int *)&D_L05_00161E78) * 0.5f + moby->pos.z);
@@ -1273,7 +1273,7 @@ extern short D_L05_00161F84;
 // Positions the camera-relative point and fills the output angles.
 void lift_camera_view(char *a, char *b, char *c) {
     float t;
-    func_L00_001FF4B0(b, a + 0xC0, *(float *)&D_L05_00161F88);
+    vec_scale_to_length(b, a + 0xC0, *(float *)&D_L05_00161F88);
     FastVecAdd(b, b, a + 0x10);
     *(float *)(b + 8) = *(float *)(b + 8) + *(float *)&D_L05_00161F80;
     clear_u64_value(c);
@@ -1290,7 +1290,7 @@ extern char *D_L05_001B0CB0[];
 void place_marker_ring(char *moby) {
     int i = 0;
     char *data = *(char **)(moby + 0x78);
-    char *tab = D_L05_001B0CB0[*(int *)(data + 0x68)];
+    char *tab = rilgar_paths[*(int *)(data + 0x68)];
     float ang = 0.0f;
     float step = 6.28318f / (float)(*(int *)tab - 1);
     for (; i < *(int *)tab; i++) {
@@ -1341,9 +1341,9 @@ void ocean_rilgar_update(char *moby) {
         break;
     case OCEAN_RILGAR_UPDATE_BOBBING:
         if (((Hero *)(D_0013E633 + 0xE1D))->state.control_mode == 0x16) {
-            D_L05_00211E60_3175D8[2] = FastSin((float)(*(int *)&D_L05_0015F6B0 % 360) * 0.017444444f - 3.14f) * 0.25f + 61.5f;
+            D_L05_00211E60_3175D8[2] = FastSin((float)(*(int *)&rilgar_frame_count % 360) * 0.017444444f - 3.14f) * 0.25f + 61.5f;
         } else {
-            D_L05_00211E60_3175D8[2] = FastSin((float)(*(int *)&D_L05_0015F6B0 % 360) * 0.017444444f - 3.14f) * 0.25f + 59.5f;
+            D_L05_00211E60_3175D8[2] = FastSin((float)(*(int *)&rilgar_frame_count % 360) * 0.017444444f - 3.14f) * 0.25f + 59.5f;
         }
         AddDrawCallback(func_L05_00317538_3175D8, moby);
         break;
@@ -1409,7 +1409,7 @@ void update_triggered_moby_motion_and_manipulator_angle(char *moby) {
             data->unk60 = 0.5934119f;
             axis_rotation_2d48(&data->unk20, 0, 0.5934119f);
         }
-        *(long *)&m->spawn_frame = *(long *)(D_001414D0 + 0x38);
+        *(long *)&m->spawn_frame = *(long *)(g_hero_moby + 0x38);
         break;
     case MOBY_WAIT_FOR_TRIGGER:
     case MOBY_WAIT_TO_RETURN_TO_SAVED_POSITION:
@@ -1474,7 +1474,7 @@ void update_triggered_moby_motion_and_manipulator_angle(char *moby) {
                                    g_frame_time_sq * 12.0f, g_frame_time * 10.0f,
                                    &stopped, &data->unk5C);
         FastVecSub(delta, target, &m->pos);
-        func_L00_001FF4B0(delta, delta, data->unk5C);
+        vec_scale_to_length(delta, delta, data->unk5C);
         FastVecAdd(&m->pos, &m->pos, delta);
         if (!(FastVecDist(&m->pos, target) < 0.0001f))
             return;
@@ -1515,7 +1515,7 @@ void func_L05_00317CD8(char *moby, int data_addr) {
             float value = *(int *)&D_L05_00161F90 * 0.15f + 1.0f;
             int frame;
             if (3.7f < value) value = 3.7f;
-            frame = D_L05_0015F6B0;
+            frame = rilgar_frame_count;
             e->trail.width = value;
             value = (float)(frame & 0x7F);
             value *= 0.0078125f;
@@ -1541,7 +1541,7 @@ extern void func_L05_00317CD8(char *, int);
 
 /* For every moby sharing this one's class: arms the marker record, and notifies it while the level flag is set. */
 void func_L05_00317E58(char *arg) {
-    if (D_L05_0015F6A8 == 2 && (gCheats[0] != 0 || *(int *)&D_L05_00161F90 != 0)) {
+    if (rilgar_cinematic_mode == 2 && (gCheats[0] != 0 || *(int *)&D_L05_00161F90 != 0)) {
         int i;
         for (i = 0; i < D_L05_0016CD60.n; i++) {
             char *moby = D_L05_0016CD60.m[i];
@@ -2298,7 +2298,7 @@ void television_update(unsigned char *moby) {
         *(float *)(data + 4) = m->pos.z;
         break;
     case TELEVISION_UPDATE_BOBBING:
-        g = D_L05_0015F6A8;
+        g = rilgar_cinematic_mode;
         if (g == 2) {
             m->visible = 0;
             m->flags |= 1;
@@ -2494,7 +2494,7 @@ void PickNearestTargetSlot(char *moby) {
     }
     switch (*(short *)(data + 0xB4)) {
     case 2:
-        if (D_0014C150[g_current_level_index][*(int *)(data + 0xB8)] == 0xFF || D_0014C150[g_current_level_index][*(int *)(data + 0xBC)] == 0xFF) {
+        if (saved_mission_state[g_current_level_index][*(int *)(data + 0xB8)] == 0xFF || saved_mission_state[g_current_level_index][*(int *)(data + 0xBC)] == 0xFF) {
             int v = *(int *)(*(char **)(moby + 0x24) + 0x10);
             moby[0x31] = 1;
             *(int *)(moby + 0x94) = v;
@@ -2539,28 +2539,28 @@ void select_taxi_route(char *moby) {
     float inv, a, b, r;
     switch (*(short *)(d + 0xB4)) {
     case 0:
-        *(char **)(d + 0xAC) = D_L05_001B0CB0[*(int *)(d + 0x94)];
+        *(char **)(d + 0xAC) = rilgar_paths[*(int *)(d + 0x94)];
         *(short *)(d + 0xB6) = 1;
         break;
     case 1:
-        *(char **)(d + 0xAC) = D_L05_001B0CB0[*(int *)(d + 0x98)];
+        *(char **)(d + 0xAC) = rilgar_paths[*(int *)(d + 0x98)];
         *(short *)(d + 0xB6) = 0;
         break;
     case 2:
-        if (D_0014C150[g_current_level_index][*(int *)(d + 0xB8)] != 0xFF) {
-            *(char **)(d + 0xAC) = D_L05_001B0CB0[*(int *)(d + 0x9C)];
+        if (saved_mission_state[g_current_level_index][*(int *)(d + 0xB8)] != 0xFF) {
+            *(char **)(d + 0xAC) = rilgar_paths[*(int *)(d + 0x9C)];
             *(short *)(d + 0xB6) = 3;
         } else {
-            *(char **)(d + 0xAC) = D_L05_001B0CB0[*(int *)(d + 0xA4)];
+            *(char **)(d + 0xAC) = rilgar_paths[*(int *)(d + 0xA4)];
             *(short *)(d + 0xB6) = 4;
         }
         break;
     case 3:
-        *(char **)(d + 0xAC) = D_L05_001B0CB0[*(int *)(d + 0xA0)];
+        *(char **)(d + 0xAC) = rilgar_paths[*(int *)(d + 0xA0)];
         *(short *)(d + 0xB6) = 2;
         break;
     case 4:
-        *(char **)(d + 0xAC) = D_L05_001B0CB0[*(int *)(d + 0xA8)];
+        *(char **)(d + 0xAC) = rilgar_paths[*(int *)(d + 0xA8)];
         *(short *)(d + 0xB6) = 2;
         break;
     }
@@ -2576,7 +2576,7 @@ void select_taxi_route(char *moby) {
 }
 // Updates trailer visibility and flag bit from the current mode.
 void qwarks_trailer_update(char *moby) {
-    if (D_L05_0015F6A8 == 2) {
+    if (rilgar_cinematic_mode == 2) {
         moby[0x31] = 0;
         *(unsigned short *)(moby + 0x34) |= 1;
     } else {
@@ -2769,7 +2769,7 @@ void update_moby_gameplay_events(unsigned char *moby) {
         if (D_001413DC == 0x13) D_00141A88 = -1;
     }
     if (D_00141A98 < 2) {
-        if (D_0014C150[D_L05_0015ED84][data[8]] == 0xff) {
+        if (saved_mission_state[D_L05_0015ED84][data[8]] == 0xff) {
             if (D_00141A90 < 0xffff)
                 D_00141A90 = D_00141A90 + 1;
             value = scale_game_frames(D_L05_0015EEA4) / 600;
@@ -2819,8 +2819,8 @@ void update_moby_gameplay_events(unsigned char *moby) {
         is_point_inside_clip_volume(D_0013F3D0, data[18]) && D_0013D464 >= 20)
         FUN_L00_00203908(20000, 0x4a);
     value = data[21];
-    if (value != -1 && D_0014C150[D_L05_0015ED84][data[22]] == 0xff &&
-        D_0014C150[D_L05_0015ED84][data[8]] == 0xff &&
+    if (value != -1 && saved_mission_state[D_L05_0015ED84][data[22]] == 0xff &&
+        saved_mission_state[D_L05_0015ED84][data[8]] == 0xff &&
         (frame_number < 5 || (D_0013F64C &&
           (((struct Moby *)D_0013F64C)->oclass == 0x3e6 || ((struct Moby *)D_0013F64C)->oclass == 0x33e)))) {
         FUN_L00_002d5830((void *)(D_L05_0015FFD8 + value * 256));
@@ -2846,7 +2846,7 @@ void update_selected_moby_effects(unsigned char *m) {
         m[0x20] = 1;
         break;
     case 1:
-        if (D_L05_0015F6A8 == 2) {
+        if (rilgar_cinematic_mode == 2) {
             g = &D_L05_0016CD60;
             t = *(int *)((char *)g + 0x30) - 10;
             if (t < 2) {

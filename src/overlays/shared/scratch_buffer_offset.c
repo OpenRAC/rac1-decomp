@@ -13,8 +13,8 @@ int func_L00_00203970(unsigned int off, int *a, int *b) {
         *b = 0;
         return -1;
     }
-    *a = D_L00_00173F00[1] + D_L00_0016128C - off;
-    *b = D_L00_00173F00[2] + D_L00_0016128C - off;
+    *a = lvl_resource_buffers[1] + lvl_vu_chain_buffer_size - off;
+    *b = lvl_resource_buffers[2] + lvl_vu_chain_buffer_size - off;
     return 0;
 }
 // clears two out-parameters and returns -1

@@ -345,8 +345,8 @@ void draw_ship_hud(char *moby) {
             ((HelpTab_313218 *)(D_0014171B + 0x34D))->r[0x58].count++;
         }
         per = 600;
-        if (scale_ticks(D_0015EFA4) / per > ((HelpTab_313218 *)(D_0014171B + 0x34D))->r[0x58].best) {
-            ((HelpTab_313218 *)(D_0014171B + 0x34D))->r[0x58].best = scale_ticks(D_0015EFA4) / 600;
+        if (scale_ticks(play_time_ticks) / per > ((HelpTab_313218 *)(D_0014171B + 0x34D))->r[0x58].best) {
+            ((HelpTab_313218 *)(D_0014171B + 0x34D))->r[0x58].best = scale_ticks(play_time_ticks) / 600;
         }
         ((HelpTab_313218 *)(D_0014171B + 0x34D))->r[0x58].flags = ((HelpTab_313218 *)(D_0014171B + 0x34D))->r[0x58].flags | (1 << g_current_level_index) | 0x80000000;
         *(int *)(d + 0x11C) = 0;
@@ -451,7 +451,7 @@ void try_fire_ship_projectile(char *moby, char *d) {
             int v = (*(unsigned short *)(d + 0x6A) + 1) & 3;
             *(unsigned short *)(d + 0x6A) = v;
             Moby_GetJointWorldPos(moby, v + 7, a);
-            func_L00_001FF4B0(b, d, 0.3f);
+            vec_scale_to_length(b, d, 0.3f);
             FastVecAdd(a, a, b);
             if (*(int *)(d + 0x88) != 0 && !(500 < *(int *)(d + 0x8C))) t = *(int *)(d + 0x88);
             if (spawn_ship_projectile(moby, a, t, moby + 0x40, *(float *)&D_L11_001620F4 * *(float *)&D_L11_00162120, scale_ticks(300))) {
@@ -981,7 +981,7 @@ void jet_fighter_update(Moby *moby) {
             d->tF8 = 1;
             d->hE8 = 1;
             d->f130 = 0.0f;
-            if (moby->mission != 0xFF && D_0014C150[g_current_level_index][moby->mission] == 0xFF) {
+            if (moby->mission != 0xFF && saved_mission_state[g_current_level_index][moby->mission] == 0xFF) {
                 moby->state = 9;
                 *(int *)&moby->collision = 0;
                 moby->flags |= 1;
@@ -996,14 +996,14 @@ void jet_fighter_update(Moby *moby) {
                 } else {
                     int elapsed, period;
                     char *statistics;
-                    elapsed = scale_ticks(D_0015EFA4);
+                    elapsed = scale_ticks(play_time_ticks);
                     period = 600;
                     statistics = D_0014171B + 0x34D;
                     elapsed -= *(unsigned short *)(statistics + 0x1E2) * period;
                     if (elapsed > (int)((float)scale_ticks(18) * 60.0f) || *(unsigned short *)(statistics + 0x1E2) * period == 0) {
                         Help_Request(0x2AFA, 0x3C);
-                    } else if (scale_ticks(D_0015EFA4) / 600 > *(unsigned short *)(statistics + 0x1E2)) {
-                        *(unsigned short *)(statistics + 0x1E2) = scale_ticks(D_0015EFA4) / 600;
+                    } else if (scale_ticks(play_time_ticks) / 600 > *(unsigned short *)(statistics + 0x1E2)) {
+                        *(unsigned short *)(statistics + 0x1E2) = scale_ticks(play_time_ticks) / 600;
                     }
                 }
                 if (item_available[7] != 0 && (*(int *)(D_0013A5E0 + 0x2604) & 0x10)) {
@@ -1461,7 +1461,7 @@ void puffoid_update(struct Moby *moby) {
                 MobyBlendAnimation(moby, 0, 0, 5);
             }
             FastVecSub(d->vel, ((char **)path_table)[d->path] + 0x20, &moby->pos);
-            func_L00_001FF500(d->vel, d->vel, (*(float *)&D_L11_0016237C) * g_frame_time);
+            vec_set_length_xy(d->vel, d->vel, (*(float *)&D_L11_0016237C) * g_frame_time);
             d->vel[2] = jump_speed_4318(&moby->pos, ((char **)path_table)[d->path] + 0x20, 0,
                                         (*(float *)&D_L11_0016237C) * g_frame_time, -((*(float *)&D_L11_00162380) * g_frame_time_sq));
         }
@@ -1539,7 +1539,7 @@ void puffoid_update(struct Moby *moby) {
     case 10:
         FastVecSub(pos, d->unk1D0, &moby->pos);
         pos[2] = 0.0f;
-        func_L00_001FF4B0(pos, pos, 2.5f);
+        vec_scale_to_length(pos, pos, 2.5f);
         FastVecAdd(pos, pos, &moby->pos);
         if (test_path_segment_strict_crossing(d->unk230, &moby->pos, pos)) {
             float *rz = &moby->rot.z;
@@ -1651,7 +1651,7 @@ void puffoid_update(struct Moby *moby) {
                 FastVecSub(d->vel, dest, &moby->pos);
                 n = scale_ticks(0x3C);
                 { float len = FastVecLength(d->vel); float kk = (*(float *)&D_L11_0016237C) * g_frame_time; moby->anim_speed = (float)n * kk / len;
-                func_L00_001FF500(d->vel, d->vel, kk); }
+                vec_set_length_xy(d->vel, d->vel, kk); }
                 d->vel[2] = jump_speed_4318(&moby->pos, dest, 0, (*(float *)&D_L11_0016237C) * g_frame_time,
                                             -((*(float *)&D_L11_00162380) * g_frame_time_sq));
                 moby->rot.z = fast_atan2(d->vel[0], d->vel[1]);
@@ -2251,7 +2251,7 @@ void update_two_door_gate(struct PMoby *moby) {
     case 2:
         ApproachWithVelocity(&d->t, &d->speed, 1.0f, g_frame_time_sq * 8.0f, g_frame_time_sq * 16.0f,
                                    g_frame_time * 8.0f);
-        func_L00_001FF4B0(v, &moby->rot_row0, 0.5f);
+        vec_scale_to_length(v, &moby->rot_row0, 0.5f);
         FastVecAdd(&d->left->pos, &moby->pos, v);
         d->left->pos.z = moby->pos.z + d->t * 4.0f - 4.0f;
         FastVecAdd(&d->right->pos, &moby->pos, v);
@@ -2298,7 +2298,7 @@ void update_two_door_gate(struct PMoby *moby) {
     case 5:
         break;
     case 6:
-        func_L00_001FF4B0(v, &moby->rot_row0, 0.5f);
+        vec_scale_to_length(v, &moby->rot_row0, 0.5f);
         FastVecAdd(&d->left->pos, &moby->pos, v);
         { float pz = moby->pos.z + (*(float *)&D_L11_00162398); float qx = (*(float *)&D_L11_0016239C) * 0.017453292f; float qy = (*(float *)&D_L11_001623A0) * 0.017453292f;
         d->left->pos.z = pz;
@@ -2510,7 +2510,7 @@ void update_oil_tanker_link_path_poses(void *mv) {
     float spacing_reference_position[4];
     int i;
 
-    func_L00_001FF4B0(spacing_reference_position, &moby->rot_row0, (*(float *)&D_L11_001623B8));
+    vec_scale_to_length(spacing_reference_position, &moby->rot_row0, (*(float *)&D_L11_001623B8));
     FastVecAdd(spacing_reference_position, spacing_reference_position, &moby->pos);
     for (i = 0; i < chain_vars->count; i++) {
         int segment_start_index = chain_vars->offsets[i];
@@ -2580,7 +2580,7 @@ void update_oil_tanker_link_path_poses(void *mv) {
             pitch0);
         ((struct Moby *)chain_vars->links[i])->rot.z = FastAddRots(FastSubRots(yaw1, yaw0) * segment_fraction, yaw0);
         moby_build_matrix(chain_vars->links[i]);
-        func_L00_001FF4B0(spacing_reference_position, &((struct Moby *)chain_vars->links[i])->rot_row0, (*(float *)&D_L11_001623B8));
+        vec_scale_to_length(spacing_reference_position, &((struct Moby *)chain_vars->links[i])->rot_row0, (*(float *)&D_L11_001623B8));
         FastVecAdd(spacing_reference_position, spacing_reference_position, &((struct Moby *)chain_vars->links[i])->pos);
     }
 }
@@ -2834,7 +2834,7 @@ void Moby1297Update(unsigned char *moby) {
         qcopy(vp, pos);
         FastVecAdd(pos, pos, data);
         if (func_001F9908_i(data + 0x20) ||
-            func_L00_001EFFF0(vp, (char *)moby + 0x10, 0, moby, 0) ||
+            coll_line(vp, (char *)moby + 0x10, 0, moby, 0) ||
             coll_sphere_mobys(0.333f, (char *)moby + 0x10, 0, *(void **)(data + 0x24), 0)) {
             spawn_explosion(moby, data, (char *)moby + 0x10, 1.5f, 2.0f, 10, 3, 16, 4.0f, 2.0f, 9.0f, -1, 1.0f, 15.0f, 1, 1, -1, 0);
             DeleteMoby(moby);
@@ -2914,8 +2914,8 @@ void spawn_moby_radial_spark(char *m) {
     float v4[4];
     float s = random_float_between(2.5f, 3.0f);
     float a = random_angle_radians();
-    func_L00_001FF4B0(v2, m + 0xD0, s * FastSin(a));
-    func_L00_001FF4B0(v1, m + 0xE0, s * FastCos(a));
+    vec_scale_to_length(v2, m + 0xD0, s * FastSin(a));
+    vec_scale_to_length(v1, m + 0xE0, s * FastCos(a));
     FastVecAdd(v1, v1, v2);
     FastVecSub(v0, m + 0x10, v1);
     FastVecScale(v3, v1, 1.0f / (float)scale_ticks(*(int *)&D_L11_00162424 + *(int *)&D_L11_00162428 + *(int *)&D_L11_0016242C));
@@ -2939,8 +2939,8 @@ void spawn_energy_sphere_particles(char *moby) {
     int i;
     FastVecSub(v0, camera_pos_b358, p);
     q = (unsigned char *)(data + 0x10);
-    func_L00_001FF4B0(v0, v0, -0.3f);
-    func_L00_001FF4B0(v1, v0, 0.1f);
+    vec_scale_to_length(v0, v0, -0.3f);
+    vec_scale_to_length(v1, v0, 0.1f);
     FastVecAdd(v0, v0, p);
     for (i = 0; i < 4; i++) {
         int a = FastTweenColor(*(int *)&D_L11_00162410, *(int *)&D_L11_00162414, (float)i * 0.333f);
@@ -3125,11 +3125,11 @@ void FlyingCraftUpdate(unsigned char *moby) {
         qcopy(&moby_vars->hero_prev, &((Hero *)(D_0013E633 + 0xE1D))->motion.pos);
         FastVecAdd((float *)&((Moby *)moby)->pos, (float *)&((Moby *)moby)->pos, hero_position_delta);
         placement_angle = FastAddRots(0.7853982f, (float)moby_vars->angle_index * 1.5707964f);
-        func_L00_001FF4B0(scratch_vector, basis_row1, FastSin(placement_angle) * 8.0f);
+        vec_scale_to_length(scratch_vector, basis_row1, FastSin(placement_angle) * 8.0f);
         FastVecAdd(target_position, camera_pos_b358, scratch_vector);
-        func_L00_001FF4B0(scratch_vector, basis_row2, FastCos(placement_angle) * 8.0f);
+        vec_scale_to_length(scratch_vector, basis_row2, FastCos(placement_angle) * 8.0f);
         FastVecAdd(target_position, target_position, scratch_vector);
-        func_L00_001FF4B0(scratch_vector, basis_row0, 20.0f);
+        vec_scale_to_length(scratch_vector, basis_row0, 20.0f);
         FastVecAdd(target_position, target_position, scratch_vector);
         FastVecSub(scratch_vector, target_position, &((Moby *)moby)->pos);
         distance_to_target = FastVecLength(scratch_vector);
@@ -3164,7 +3164,7 @@ void FlyingCraftUpdate(unsigned char *moby) {
             if (level_frame % 10 == 0) {
                 Moby_PlaySound(2, 0, (int)moby);
                 ApproachValue(&moby_vars->lead, 0.0f, 0.25f);
-                func_L00_001FF4B0(sB0, hero_position_delta, moby_vars->lead);
+                vec_scale_to_length(sB0, hero_position_delta, moby_vars->lead);
                 FastVecAdd(sB0, sB0, hero_position);
                 if (level_frame % 20 == 0) {
                     matrix_mul_vec3(sA0, D_L11_001F1770, &((Moby *)moby)->rot_row0);
@@ -3173,7 +3173,7 @@ void FlyingCraftUpdate(unsigned char *moby) {
                 }
                 FastVecAdd(sA0, sA0, (float *)&((Moby *)moby)->pos);
                 FastVecSub(shot_displacement, sB0, sA0);
-                func_L00_001FF4B0(shot_velocity, shot_displacement, *(float *)&D_L11_00162460 * g_frame_time);
+                vec_scale_to_length(shot_velocity, shot_displacement, *(float *)&D_L11_00162460 * g_frame_time);
                 FastVecAdd(shot_velocity, shot_velocity, hero_position_delta);
                 spawned_shot = spawn_class_3f9_moby((int)moby, shot_velocity, sA0, 128.0f, -1.0f, 10.0f);
                 if (spawned_shot) {
@@ -3251,11 +3251,11 @@ char *activate_listed_blarg_ship(int idx) {
             else if (v2[1] < -0.17453292f) v2[1] = -0.17453292f;
             euler_rotation_basis(v3, v2);
             a = FastAddRots(0.7853982f, (float)*(int *)(d + 0x88) * 1.5707964f);
-            func_L00_001FF4B0(v0, v4, FastSin(a) * 12.0f);
+            vec_scale_to_length(v0, v4, FastSin(a) * 12.0f);
             FastVecAdd(v1, camera_pos_b358, v0);
-            func_L00_001FF4B0(v0, v5, FastCos(a) * 12.0f);
+            vec_scale_to_length(v0, v5, FastCos(a) * 12.0f);
             FastVecAdd(v1, v1, v0);
-            func_L00_001FF4B0(v0, v3, 6.0f);
+            vec_scale_to_length(v0, v3, 6.0f);
             FastVecAdd(v1, v1, v0);
             qcopy(d + 0xB0, D_0013E633 + 0xE9D);
             qcopy(m + 0x10, v1);
@@ -3364,7 +3364,7 @@ void update_bubble_motion_and_scale(char *m) {
     FastVecAdd(&bubble_moby->pos, &bubble_moby->pos, bubble_vars);
     horizontal_speed = vec_length_xy(bubble_vars);
     ApproachValue(&horizontal_speed, 0.0f, *(float *)&D_L11_00162498 * g_frame_time_sq);
-    func_L00_001FF500(bubble_vars, bubble_vars, horizontal_speed);
+    vec_set_length_xy(bubble_vars, bubble_vars, horizontal_speed);
 }
 
 /* Creates a class 0x5F4 moby at position with random rotation and returns it, or 0. */

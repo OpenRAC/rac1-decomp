@@ -332,7 +332,7 @@ skip:
         }
     }
     update_hero_moby_probed_height_bounds();
-    func_L00_0025805C(((GS_E7B8 *)(D_0013E633 + 0xE1D))->p2080);
+    apply_env_zone_lighting(((GS_E7B8 *)(D_0013E633 + 0xE1D))->p2080);
 }
 extern unsigned char D_0013F450[];
 extern s32 D_L06_0015F6A8 MACRO_ADDR;
@@ -449,15 +449,15 @@ void adjust_hero_velocity_from_collision_probes(int arg) {
     FastVecAdd(&w, &w, &a1);
     {
         char *g1 = (char *)D_0013E633 + 0xE1D;
-        if (func_L00_001EFFF0(&a1, &w, 4, *(int *)(g1 + 0x2080), 0) != 0 && D_L06_001746DC > 0) {
+        if (coll_line(&a1, &w, 4, *(int *)(g1 + 0x2080), 0) != 0 && D_L06_001746DC > 0) {
             s = CollType();
         }
     }
     f = 0.0f;
     {
     char *g2 = (char *)D_0013E633 + 0xE1D;
-    if (func_L00_001EFFF0(&a0, &u, 4, *(int *)(g2 + 0x2080), 0) != 0) {
-        char *q = D_L06_001746C0;
+    if (coll_line(&a0, &u, 4, *(int *)(g2 + 0x2080), 0) != 0) {
+        char *q = blarg_coll_hit;
         if (*(int *)(q + 0x1C) > 0) {
             f = fast_atan2(*(float *)(q + 0x48), vec_length_xy(q + 0x40));
         }
@@ -465,7 +465,7 @@ void adjust_hero_velocity_from_collision_probes(int arg) {
     }
     if (f >= 0.87266463f || s == 8 || s == 12) {
         char *g = (char *)D_0013E633 + 0xE1D;
-        char *q = D_L06_001746C0;
+        char *q = blarg_coll_hit;
         float d;
         *(int *)(g + 0x240) = *(int *)(q + 0x18);
         *(int *)(q + 0x48) = 0;
@@ -594,7 +594,7 @@ s32 HeroL06_ResolveCollisionStep(s32 mode) {
                 w.f[2] = 512.0f;
             else if (w.f[2] < -512.0f)
                 w.f[2] = -512.0f;
-            func_L00_001FF4B0(&w, &w, D_0013F450_2A868.f234);
+            vec_scale_to_length(&w, &w, D_0013F450_2A868.f234);
             FastVecAdd(&D_0013F450_2A868.pos, &old, &w);
         }
         return -1;
@@ -810,7 +810,7 @@ f32 calculate_hero_motion_prediction_time(f32 a, f32 b, f32 c) {
             v.q = (&D_0013F450_431A0)->v80.q;
             clip_negative_segment_endpoint_xyz(&v, t);
             qcopy(&v, &(&D_0013F450_431A0)->v80);
-            if (func_L00_001EFFF0(&v, t, 0xd24, 0, 0) != 0) {
+            if (coll_line(&v, t, 0xd24, 0, 0) != 0) {
                 if (compute_gravity_relative_vector_inclination((f32 *)D_L06_00174700) <= 0.87266463f) {
                     c = *(f32 *)(D_L06_00174700 - 0x18);
                 }
@@ -826,7 +826,7 @@ f32 calculate_hero_motion_prediction_time(f32 a, f32 b, f32 c) {
         break;
     case 1:
         qcopy(&v, &(&D_0013F450_431A0)->v270);
-        func_L00_001FF4B0(&v, &v, b);
+        vec_scale_to_length(&v, &v, b);
         FastVecScale(&v, &v, -1.0f);
         FastVecScale(t, &(&D_0013F450_431A0)->vE0, a);
         FastVecScale(&t1, &v, ((a * a + a) * 0.5f) * b);
@@ -834,7 +834,7 @@ f32 calculate_hero_motion_prediction_time(f32 a, f32 b, f32 c) {
         FastVecAdd(t, &(&D_0013F450_431A0)->v80, t);
         v2.q = (&D_0013F450_431A0)->v80.q;
         clip_negative_segment_endpoint_xyz(&v2, t);
-        if (func_L00_001EFFF0(&(&D_0013F450_431A0)->v80, t, 0xd24, 0, 0) != 0) {
+        if (coll_line(&(&D_0013F450_431A0)->v80, t, 0xd24, 0, 0) != 0) {
             f32 nb;
             nb = b * -0.5f;
             z = gravity_z(&(&D_0013F450_431A0)->vE0) - nb;
@@ -850,7 +850,7 @@ f32 calculate_hero_motion_prediction_time(f32 a, f32 b, f32 c) {
         t1.f[1] = 100.0f;
         t1.f[0] = 100.0f;
         FastVecSub(&v, &(&D_0013F450_431A0)->v80, &t1);
-        func_L00_001FF4B0(&v, &v, b);
+        vec_scale_to_length(&v, &v, b);
         FastVecScale(&v, &v, -1.0f);
         FastVecScale(t, &(&D_0013F450_431A0)->vE0, a);
         FastVecScale(&t1, &v, ((a * a + a) * 0.5f) * b);
@@ -858,7 +858,7 @@ f32 calculate_hero_motion_prediction_time(f32 a, f32 b, f32 c) {
         FastVecAdd(t, &(&D_0013F450_431A0)->v80, t);
         v2.q = (&D_0013F450_431A0)->v80.q;
         clip_negative_segment_endpoint_xyz(&v2, t);
-        if (func_L00_001EFFF0(&(&D_0013F450_431A0)->v80, t, 0xd24, 0, 0) != 0) {
+        if (coll_line(&(&D_0013F450_431A0)->v80, t, 0xd24, 0, 0) != 0) {
             f32 nb;
             nb = b * -0.5f;
             z = gravity_z(&(&D_0013F450_431A0)->vE0) - nb;

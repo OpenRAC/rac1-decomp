@@ -310,7 +310,7 @@ void remove_moby_when_tracked_count_below_threshold(struct Moby *m) {
         char *base;
         int i;
         m->state = 1;
-        base = (char *)D_L13_00160058;
+        base = (char *)gemlik_moby_array_start;
         for (i = 0; i < 8; i++) {
             unsigned char *o = (unsigned char *)(base + (ids[i] << 8));
             if (o != 0 && o[0x20] != 0xFE && o[0x20] != 0xFD)
@@ -323,7 +323,7 @@ void remove_moby_when_tracked_count_below_threshold(struct Moby *m) {
     } else if (m->state == 1) {
         int *ids = d + 4;
         int *cls = d + 12;
-        char *base = (char *)D_L13_00160058;
+        char *base = (char *)gemlik_moby_array_start;
         int n = 0;
         int i;
         for (i = 0; i < 8; i++) {
@@ -565,7 +565,7 @@ void update_moby_motion_and_emit_sparks(char *moby)
     if (FastDecTimer(&data->life) != 0) {
         DeleteMoby(moby);
     } else if (((struct Moby *)moby)->command == 1) {
-        if (func_L00_001EFFF0(&old_pos, &((struct Moby *)moby)->pos, 2, *(int *)(D_0013E633 + 0x2E9D), 0)) {
+        if (coll_line(&old_pos, &((struct Moby *)moby)->pos, 2, *(int *)(D_0013E633 + 0x2E9D), 0)) {
             spawn_type_52_particle_near_moby(moby);
             DeleteMoby(moby);
         }

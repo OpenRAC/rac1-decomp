@@ -90,7 +90,7 @@ extern u8 D_0013D4B0 NOT_SDA;
 /* 0 when the word at 0x13D9B4 is 0, else 1 or 2 by whether the byte at 0x13D4B0 is set */
 int mission_cond_obj2f_variant(void) {
     if (D_0013D9B4 == 0) return 0;
-    if (D_0013D4B0 == 0) return 1;
+    if (menu_item_enabled_20 == 0) return 1;
     return 2;
 }
 extern u8 D_0013D5DD NOT_SDA;
@@ -116,8 +116,8 @@ void CountExpiredMobys(void) {
     u8 *p;
     s32 flag = 0;
     D_L00_0016007C = 0;
-    for (p = D_L00_0016009C; p < D_L00_001600A0; p += 0x100) {
-        if ((p[0x20] >= 0xFE && D_L00_0015F6B0 >= *(u64 *)(p + 0x38)) || flag) {
+    for (p = level_mobys_end; p < D_L00_001600A0; p += 0x100) {
+        if ((p[0x20] >= 0xFE && level_frame_counter >= *(u64 *)(p + 0x38)) || flag) {
             D_L00_0016007C++;
             if (p[0x20] == 0xFF) flag = 1;
         }

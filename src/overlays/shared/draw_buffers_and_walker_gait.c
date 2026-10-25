@@ -33,20 +33,20 @@ void append_draw_buffer_upload_packets(int a, int b, int n) {
     int k = (n + 0x3FFF) & -0x4000;
     for (i = 0; k > 0; ) {
         int *p;
-        D_L00_00161280[0] = 0x10000006;
-        D_L00_00161280[1] = 0;
-        D_L00_00161280[2] = 0;
-        D_L00_00161280[3] = 0x50000006;
+        dma_packet_cursor[0] = 0x10000006;
+        dma_packet_cursor[1] = 0;
+        dma_packet_cursor[2] = 0;
+        dma_packet_cursor[3] = 0x50000006;
         k -= 0x4000;
-        func_00122630(D_L00_00161280 = D_L00_00161280 + 4, (b + i) >> 8, 1, 0, 0, 0, 0x40, 0x40);
-        p = D_L00_00161280;
-        D_L00_00161280 = p + 0x18;
+        func_00122630(dma_packet_cursor = dma_packet_cursor + 4, (b + i) >> 8, 1, 0, 0, 0, 0x40, 0x40);
+        p = dma_packet_cursor;
+        dma_packet_cursor = p + 0x18;
         p[0x18] = 0x30000400;
-        D_L00_00161280[1] = a + i;
+        dma_packet_cursor[1] = a + i;
         i += 0x4000;
-        D_L00_00161280[2] = 0;
-        D_L00_00161280[3] = 0x50000400;
-        D_L00_00161280 = D_L00_00161280 + 4;
+        dma_packet_cursor[2] = 0;
+        dma_packet_cursor[3] = 0x50000400;
+        dma_packet_cursor = dma_packet_cursor + 4;
     }
 }
 LINKER_REMNANT("asm/overlays", func_L00_002A2668);

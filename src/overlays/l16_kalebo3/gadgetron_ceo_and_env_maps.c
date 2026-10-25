@@ -85,7 +85,7 @@ void gadgetron_ceo_update(L16ChallengeMoby *m) {
     L16ChallengeActivation *activation = (L16ChallengeActivation *)d->activation;
     float rate, head_rate;
     int tracking;
-    if (m->visible && FastVecDist(m->position, D_L16_00167240) < 28.0f) {
+    if (m->visible && FastVecDist(m->position, kalebo3_camera_pos) < 28.0f) {
         func_L00_0025B178(m);
         m->distance_class = 22;
     }
@@ -113,21 +113,21 @@ void gadgetron_ceo_update(L16ChallengeMoby *m) {
         if (!gHaveMorphORay[9] && vec_distance_xy(D_0013E633 + 0xE9D, m->position) < 3.5f) {
             int elapsed, period;
             char *statistics;
-            elapsed = scale_ticks(D_0015EFA4);
+            elapsed = scale_ticks(play_time_ticks);
             period = 600;
             statistics = D_0014171B + 0x34D;
             elapsed -= *(unsigned short *)(statistics + 0x43A) * period;
             if (elapsed > (int)((float)scale_ticks(18) * 60.0f) || *(unsigned short *)(statistics + 0x43A) * period == 0) {
                 Help_Request(0x3E83, 0x87);
-            } else if (scale_ticks(D_0015EFA4) / 600 > *(unsigned short *)(statistics + 0x43A)) {
-                *(unsigned short *)(statistics + 0x43A) = scale_ticks(D_0015EFA4) / 600;
+            } else if (scale_ticks(play_time_ticks) / 600 > *(unsigned short *)(statistics + 0x43A)) {
+                *(unsigned short *)(statistics + 0x43A) = scale_ticks(play_time_ticks) / 600;
             }
         }
         if (activation->mode == 3) {
             char *camera;
             char *pose;
             int pending;
-            pending = D_L16_0015F6B0;
+            pending = kalebo3_frame_count;
             activation->previous = (unsigned short)activation->mode;
             activation->mode = 2;
             activation->pending = pending;
@@ -191,7 +191,7 @@ void gadgetron_ceo_update(L16ChallengeMoby *m) {
                 int pending;
                 unsigned short previous;
                 previous = activation->mode;
-                pending = D_L16_0015F6B0;
+                pending = kalebo3_frame_count;
                 activation->previous = previous;
                 activation->mode = 4;
                 activation->pending = pending;
@@ -385,7 +385,7 @@ void update_path_walker(unsigned char *m) {
     int playing = 0;
 
     d = *(L16WalkerData **)(m + 0x78);
-    path = D_L16_001B0C30[d->path_index];
+    path = kalebo3_path_table[d->path_index];
     if (((*(unsigned short *)(m + 0xA6) ^ 1) & 1) != 0) {
         if (Sound_IsPlaying(m, d->sound) == 0) {
             d->sound = Moby_PlaySound(0, 4, (int)m);
@@ -490,13 +490,13 @@ void emit_path_walker_particle(unsigned char *m, void *v) {
     float a, b, size, r, final_size;
     *(u128 *)input = *(u128 *)v;
     if ((unsigned char)m[0x31] == 0) return;
-    if ((D_L16_0015F6B0 & 1) != (((int)m >> 8) & 1)) return;
-    if (!(FastVecDist(m + 0x10, D_L16_00167240) < 75.0f)) return;
+    if ((kalebo3_frame_count & 1) != (((int)m >> 8) & 1)) return;
+    if (!(FastVecDist(m + 0x10, kalebo3_camera_pos) < 75.0f)) return;
     r = FastVecDist(m + 0x10, input);
     FastVecScale(out, m + 0xC0, *(float *)&D_L16_00161F60 * r);
     size = *(float *)&D_L16_00161F64;
     size *= g_frame_time;
-    func_L00_001FF4B0(offset, m + 0xC0, -0.5f);
+    vec_scale_to_length(offset, m + 0xC0, -0.5f);
     FastVecAdd(offset, offset, m + 0x10);
     a = random_angle_radians();
     b = random_angle_radians();
@@ -518,7 +518,7 @@ void initialize_path_walker_group(unsigned char *m) {
     unsigned char *objects[16];
     unsigned char *previous;
     L16WalkerData *d = *(L16WalkerData **)(m + 0x78);
-    short *list = D_L16_001ABFC0[m[0x21]];
+    short *list = kalebo3_moby_groups[m[0x21]];
     short count = 0, rank;
     int i;
     float period;
@@ -526,9 +526,9 @@ void initialize_path_walker_group(unsigned char *m) {
     if (list == 0 || d->path_index == -1) {
         return;
     }
-    period = (float)*(int *)D_L16_001B0C30[d->path_index] - 1.0f;
+    period = (float)*(int *)kalebo3_path_table[d->path_index] - 1.0f;
     do {
-        objects[count] = (unsigned char *)(D_L16_00160098 + ((*(unsigned short *)list & 0x7FFF) << 8));
+        objects[count] = (unsigned char *)(kalebo3_moby_array + ((*(unsigned short *)list & 0x7FFF) << 8));
         count++;
     } while (*list++ >= 0);
     previous = objects[count - 1];
@@ -595,12 +595,12 @@ void update_paired_joint_particle_trails(char *moby) {
             Moby_GetJointWorldPos(p, 6, a);
             Moby_GetJointWorldPos(p, 4, c);
             FastVecSub(e, a, c);
-            func_L00_001FF4B0(e, e, k1);
+            vec_scale_to_length(e, e, k1);
             draw_trail(a, a, e, k2, k3);
             Moby_GetJointWorldPos(p, 7, b);
             Moby_GetJointWorldPos(p, 5, d);
             FastVecSub(f, b, d);
-            func_L00_001FF4B0(f, f, j1);
+            vec_scale_to_length(f, f, j1);
             draw_trail(b, b, f, j2, j3);
         }
         }
@@ -815,7 +815,7 @@ void DrawRingStack(char *m) {
     if(matrix.position[2]<upper) {
         period=120;
         do {
-        phase=(float)(D_L16_0015F6B0%period)*0.02617991715669632f;
+        phase=(float)(kalebo3_frame_count%period)*0.02617991715669632f;
         sign=-sign;
         for(j=0;(float)j<360.0f/(*(float *)&D_L16_00161FA8);j++) {
             matrix.basis[0][0]=FastCos(FastNormalizeAngle(((*(float *)&D_L16_00161FA8)*0.017453292f)*(float)j+phase*(float)sign));
@@ -825,7 +825,7 @@ void DrawRingStack(char *m) {
             matrix.basis[1][1]=FastSin(FastNormalizeAngle(((*(float *)&D_L16_00161FA8)*0.017453292f)*(float)j+1.5707964f+phase*(float)sign));
             matrix.basis[1][2]=0.0f; matrix.basis[2][2]=1.0f;
             packet.color[3]=color;packet.color[2]=color;packet.color[1]=color;packet.color[0]=color;
-            func_L00_001FD1D8(&packet,transform,0);
+            draw_world_quad(&packet,transform,0);
         }
         matrix.position[2]+=(*(float *)((char *)d+0xBC));
         } while(matrix.position[2]<upper);
@@ -878,7 +878,7 @@ void update_target_reposition_cycle(char *moby) {
     int n;
     float pos[4];
     if (!is_point_inside_clip_volume(g, *(int *)(data + 8))) return;
-    target = D_L16_00160098 + (*(int *)(data + 4) << 8);
+    target = kalebo3_moby_array + (*(int *)(data + 4) << 8);
     switch ((unsigned char)moby[0x20]) {
     case 0:
         moby[0x20] = 1;
@@ -922,12 +922,12 @@ extern int func_L16_002C5A08(void *);
 // Finds the first moby of type 0x10E in a level's id list that passes the check.
 char *find_group_class_010e_moby_in_state_6(int idx)
 {
-    short *p = D_L16_001ABFC0[idx];
+    short *p = kalebo3_moby_groups[idx];
     char *moby;
     if (p == 0)
         return 0;
     for (;;) {
-        moby = D_L16_00160098 + ((*(unsigned short *)p & 0x7FFF) << 8);
+        moby = kalebo3_moby_array + ((*(unsigned short *)p & 0x7FFF) << 8);
         if (*(short *)(moby + 0xA6) == 0x10E && is_moby_in_state_6(moby))
             return moby;
         if (*p++ < 0)
@@ -955,17 +955,17 @@ void compute_level16_reflection_map_coordinates(int n, Vec3f *p1, Vec3f *p2, int
         v[0] = p2[i].x;
         v[1] = p2[i].y;
         v[2] = p2[i].z;
-        FastVecSub(a, v, D_L16_00167240);
-        func_L00_001FF4B0(a, a, 1.0f);
+        FastVecSub(a, v, kalebo3_camera_pos);
+        vec_scale_to_length(a, a, 1.0f);
         w[3] = 1.0f;
         w[0] = p1[i].x;
         w[1] = p1[i].y;
         w[2] = p1[i].z;
-        func_L00_001FF4B0(w, w, 1.0f);
+        vec_scale_to_length(w, w, 1.0f);
         d = FastVecDot(w, a);
         FastVecScale(t, w, d + d);
         FastVecSub(t, a, t);
-        func_L00_001FF4B0(t, t, 1.0f);
+        vec_scale_to_length(t, t, 1.0f);
         t[2] = t[2] + 1.0f;
         len = FastVecLength(t);
         len = len + len;

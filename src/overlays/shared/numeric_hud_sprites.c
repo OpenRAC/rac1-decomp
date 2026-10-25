@@ -319,7 +319,7 @@ int draw_trick_combo_hud(char *a) {
     t = (unsigned char)E[0x8AE];
     if (scale_ticks(0x78) < t) {
         r3 = scale_ticks(0x3C);
-        f0 = IntToFloat(D_L05_0015F6B0 % r3) / (float)r3;
+        f0 = IntToFloat(rilgar_frame_count % r3) / (float)r3;
         f0 = FastSin(f0 * 6.283180236816406f - 3.141590118408203f);
         r3 = FastTweenColor(*(int *)&D_L05_0015F98C, *(int *)&D_L05_0015F990, f0 * 0.5f + 0.5f);
         func_00116248_002670A0(buf, func_001FE540_002670A0(0x531F));

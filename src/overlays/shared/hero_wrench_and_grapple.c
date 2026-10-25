@@ -82,7 +82,7 @@ void Hero_ApplyMotionCollisionL02(void) {
             start = (float *)((char *)start + 0x60);
             length = gravity_length_xy(start);
             limit = ((Hero *)position)->unk234 - 0.02f;
-            if (limit < length) func_L00_001FF4B0(start, start, limit);
+            if (limit < length) vec_scale_to_length(start, start, limit);
         }
         position = (float *)(D_0013E633 + 0xEFD);
         magnitude = gravity_z(position);
@@ -100,7 +100,7 @@ void Hero_ApplyMotionCollisionL02(void) {
                 start = (float *)((char *)start + 0x60);
                 length = FastVecLength(start);
                 limit = ((Hero *)position)->unk234 - 0.02f;
-                if (limit < length) func_L00_001FF4B0(start, start, limit);
+                if (limit < length) vec_scale_to_length(start, start, limit);
             }
         }
     }
@@ -128,24 +128,24 @@ void Hero_ApplyMotionCollisionL02(void) {
     start = (float *)((char *)position + 0x10);
     qcopy(start, position);
     velocity = (float *)((char *)position - 0x30);
-    func_L00_001FF4B0(position, position, 1.0f);
+    vec_scale_to_length(position, position, 1.0f);
     magnitude = FastVecDot(position, velocity);
     if (magnitude < 0.0f) magnitude = 0.0f;
-    func_L00_001FF4B0(position, velocity, magnitude);
+    vec_scale_to_length(position, velocity, magnitude);
     qcopy(work.f, velocity);
     gravity_flatten(work.f, work.f);
     gravity_flatten(horizontal, horizontal);
-    func_L00_001FF4B0(horizontal, horizontal, 1.0f);
+    vec_scale_to_length(horizontal, horizontal, 1.0f);
     magnitude = FastVecDot(horizontal, work.f);
     if (magnitude < 0.0f) magnitude = 0.0f;
-    func_L00_001FF4B0(horizontal, work.f, magnitude);
+    vec_scale_to_length(horizontal, work.f, magnitude);
     qcopy(plane.f, velocity);
     set_gravity_relative_vector_length_xy(plane.f, plane.f, 0.0f);
     set_gravity_relative_vector_length_xy(start, start, 0.0f);
-    func_L00_001FF4B0(start, start, 1.0f);
+    vec_scale_to_length(start, start, 1.0f);
     magnitude = FastVecDot(start, plane.f);
     if (magnitude < 0.0f) magnitude = 0.0f;
-    func_L00_001FF4B0(start, plane.f, magnitude);
+    vec_scale_to_length(start, plane.f, magnitude);
     motion_player = (Hero *)((char *)position - 0x110);
     motion_player->motion.speed_xy = FastVecLength(position);
     magnitude = vec_length_xy(position);
@@ -290,7 +290,7 @@ void Hero_UpdateHopVelocity(void) {
                 g_hero.motion.velocity.f[1] = FastSin(g_hero.motion.move_yaw) * (g_frame_time * 4.9f);
             } else {
                 set_gravity_relative_vector_length_xy(g_hero.motion.velocity.f, g_hero.motion.velocity.f, 0.0f);
-                func_L00_001FF4B0(&tmp, &g_hero.motion.unk170, g_frame_time * 4.9f);
+                vec_scale_to_length(&tmp, &g_hero.motion.unk170, g_frame_time * 4.9f);
                 FastVecAdd(&g_hero.motion.velocity, &g_hero.motion.velocity, &tmp);
             }
         }
@@ -312,7 +312,7 @@ void Hero_UpdateHopVelocity(void) {
                 d = g_hero.unk944;
                 speed = vec_length_xy(&g_hero.motion.velocity);
                 ApproachValue(&speed, 0.0f, d);
-                func_L00_001FF500(g_hero.motion.velocity.f, g_hero.motion.velocity.f, speed);
+                vec_set_length_xy(g_hero.motion.velocity.f, g_hero.motion.velocity.f, speed);
                 return;
             }
             if (g_hero.unk30A != 0) {

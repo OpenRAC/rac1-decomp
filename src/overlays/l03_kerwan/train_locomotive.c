@@ -162,7 +162,7 @@ void update_metropolis_train_motion(char *moby) {
         gunship_follow_path(coupling);
         BuildSphericalOffset(delta, data->fC8,
                              FastAddRots(m->rot.z, 3.14159265f), m->rot.y);
-        func_L00_001FF4B0(delta, delta, data->fC8);
+        vec_scale_to_length(delta, delta, data->fC8);
         FastVecAdd(&m->pos, &m->pos, delta);
         target_angle = FastAddRots(
             fast_atan2(coupling->pos.x - m->pos.x, coupling->pos.y - m->pos.y),
@@ -191,12 +191,12 @@ void update_metropolis_train_motion(char *moby) {
             car_data = (Car292890 *)car->pvars;
             Moby_GetJointWorldPos(car, 0, rear);
             FastVecSub(hitch, rear, front);
-            func_L00_001FF500(hitch, hitch, *(float *)&D_L03_001613F0);
+            vec_set_length_xy(hitch, hitch, *(float *)&D_L03_001613F0);
             FastVecAdd(hitch, hitch, front);
             hitch[2] = front[2];
             FastVecSub(car_position_adjustment, hitch, &car->pos);
             hitch_len = FastVecLength(car_position_adjustment);
-            func_L00_001FF4B0(car_position_adjustment, car_position_adjustment,
+            vec_scale_to_length(car_position_adjustment, car_position_adjustment,
                               hitch_len - car_data->fC4);
             FastVecAdd(&car->pos, car_position_adjustment, &car->pos);
             car->rot.z = FastAddRots(
@@ -1072,39 +1072,39 @@ void update_spline_moby_destruction_and_respawn(char *moby, void *vel_in, int fl
         push[2] += frame_scale * 0.08f;
         switch (*(short *)(moby + 0xA6)) {
         case 0x73:
-            spawn_debris_0029E498(moby, 0x6A9, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, D_L03_0015F660, D_L03_0015F660);
-            spawn_debris_0029E498(moby, 0x6AA, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, D_L03_0015F660, D_L03_0015F660);
-            spawn_debris_0029E498(moby, 0x6AB, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, D_L03_0015F660, D_L03_0015F660);
+            spawn_debris_0029E498(moby, 0x6A9, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, kerwan_zero_vec, kerwan_zero_vec);
+            spawn_debris_0029E498(moby, 0x6AA, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, kerwan_zero_vec, kerwan_zero_vec);
+            spawn_debris_0029E498(moby, 0x6AB, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, kerwan_zero_vec, kerwan_zero_vec);
             break;
         case 0x74:
-            spawn_debris_0029E498(moby, 0x6AC, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, D_L03_0015F660, D_L03_0015F660);
-            spawn_debris_0029E498(moby, 0x6AD, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, D_L03_0015F660, D_L03_0015F660);
-            spawn_debris_0029E498(moby, 0x6AE, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, D_L03_0015F660, D_L03_0015F660);
+            spawn_debris_0029E498(moby, 0x6AC, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, kerwan_zero_vec, kerwan_zero_vec);
+            spawn_debris_0029E498(moby, 0x6AD, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, kerwan_zero_vec, kerwan_zero_vec);
+            spawn_debris_0029E498(moby, 0x6AE, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, kerwan_zero_vec, kerwan_zero_vec);
             break;
         case 0x75:
-            spawn_debris_0029E498(moby, 0x6AF, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, D_L03_0015F660, D_L03_0015F660);
-            spawn_debris_0029E498(moby, 0x6B0, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, D_L03_0015F660, D_L03_0015F660);
-            spawn_debris_0029E498(moby, 0x6B1, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, D_L03_0015F660, D_L03_0015F660);
+            spawn_debris_0029E498(moby, 0x6AF, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, kerwan_zero_vec, kerwan_zero_vec);
+            spawn_debris_0029E498(moby, 0x6B0, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, kerwan_zero_vec, kerwan_zero_vec);
+            spawn_debris_0029E498(moby, 0x6B1, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, kerwan_zero_vec, kerwan_zero_vec);
             break;
         case 0x76:
-            spawn_debris_0029E498(moby, 0x6B2, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, D_L03_0015F660, D_L03_0015F660);
-            spawn_debris_0029E498(moby, 0x6B3, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, D_L03_0015F660, D_L03_0015F660);
-            spawn_debris_0029E498(moby, 0x6B4, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, D_L03_0015F660, D_L03_0015F660);
+            spawn_debris_0029E498(moby, 0x6B2, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, kerwan_zero_vec, kerwan_zero_vec);
+            spawn_debris_0029E498(moby, 0x6B3, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, kerwan_zero_vec, kerwan_zero_vec);
+            spawn_debris_0029E498(moby, 0x6B4, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, kerwan_zero_vec, kerwan_zero_vec);
             break;
         case 0x77:
-            spawn_debris_0029E498(moby, 0x6B5, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, D_L03_0015F660, D_L03_0015F660);
-            spawn_debris_0029E498(moby, 0x6B6, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, D_L03_0015F660, D_L03_0015F660);
-            spawn_debris_0029E498(moby, 0x6B7, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, D_L03_0015F660, D_L03_0015F660);
+            spawn_debris_0029E498(moby, 0x6B5, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, kerwan_zero_vec, kerwan_zero_vec);
+            spawn_debris_0029E498(moby, 0x6B6, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, kerwan_zero_vec, kerwan_zero_vec);
+            spawn_debris_0029E498(moby, 0x6B7, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, kerwan_zero_vec, kerwan_zero_vec);
             break;
         case 0x78:
-            spawn_debris_0029E498(moby, 0x6B8, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, D_L03_0015F660, D_L03_0015F660);
-            spawn_debris_0029E498(moby, 0x6B9, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, D_L03_0015F660, D_L03_0015F660);
-            spawn_debris_0029E498(moby, 0x6BA, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, D_L03_0015F660, D_L03_0015F660);
+            spawn_debris_0029E498(moby, 0x6B8, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, kerwan_zero_vec, kerwan_zero_vec);
+            spawn_debris_0029E498(moby, 0x6B9, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, kerwan_zero_vec, kerwan_zero_vec);
+            spawn_debris_0029E498(moby, 0x6BA, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, kerwan_zero_vec, kerwan_zero_vec);
             break;
         case 0x84:
-            spawn_debris_0029E498(moby, 0x6BC, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, D_L03_0015F660, D_L03_0015F660);
-            spawn_debris_0029E498(moby, 0x6BE, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, D_L03_0015F660, D_L03_0015F660);
-            spawn_debris_0029E498(moby, 0x6BF, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, D_L03_0015F660, D_L03_0015F660);
+            spawn_debris_0029E498(moby, 0x6BC, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, kerwan_zero_vec, kerwan_zero_vec);
+            spawn_debris_0029E498(moby, 0x6BE, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, kerwan_zero_vec, kerwan_zero_vec);
+            spawn_debris_0029E498(moby, 0x6BF, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, kerwan_zero_vec, kerwan_zero_vec);
             break;
         }
         if (*(short *)(moby + 0xA6) == 0x31B && D_0013D510_0029E498[4] == 0) {
@@ -1240,7 +1240,7 @@ void red_ship_1_update(char *moby) {
             }
         } else {
             func_001E9730_9ED60(D_L03_001E2D18, *(short *)(moby + 0xA6),
-                         truncate_float_to_s32((moby - D_L03_00160058) >> 8));
+                         truncate_float_to_s32((moby - kerwan_mobys) >> 8));
         }
         ((unsigned char *)moby)[0x30] = 0xFF;
         data[0x2B] = 1;
@@ -1256,7 +1256,7 @@ void red_ship_1_update(char *moby) {
             break;
         }
         pos0 = moby + 0x10;
-        data[0x131] = ((moby - D_L03_00160058) >> 8) / 2 % 7;
+        data[0x131] = ((moby - kerwan_mobys) >> 8) / 2 % 7;
         initialize_path_descriptor(pm);
         if (((unsigned char *)pm)[5] == 0) {
             if (*(int *)pm <= 0) {
@@ -1739,8 +1739,8 @@ void Moby573Update(char *moby) {
         if (mine_fall(moby, data->m120) & 0x60) {
             clear_u64_value(dir);
             SpawnExplosionFx(moby, moby + 0x10, -1, 0.5f, 13.0f);
-            func_L00_00265050_C6F80(moby, 0x6CE, (float *)(moby + 0x10), moby + 0x40, 0, 0, 0.0f, D_L03_0015F660, D_L03_0015F660, D_L03_0015F660);
-            func_L00_00265050_C6F80(moby, 0x6CF, (float *)(moby + 0x10), moby + 0x40, 0, 0, 0.0f, D_L03_0015F660, D_L03_0015F660, D_L03_0015F660);
+            func_L00_00265050_C6F80(moby, 0x6CE, (float *)(moby + 0x10), moby + 0x40, 0, 0, 0.0f, kerwan_zero_vec, kerwan_zero_vec, kerwan_zero_vec);
+            func_L00_00265050_C6F80(moby, 0x6CF, (float *)(moby + 0x10), moby + 0x40, 0, 0, 0.0f, kerwan_zero_vec, kerwan_zero_vec, kerwan_zero_vec);
             spawn_moby_break_fragments(moby, 0x77D, 1, 0x77D, 1, 3, 2);
             SetDeathBits(moby, 0, -1);
             DeleteMoby(moby);
@@ -1782,7 +1782,7 @@ void update_robot_dog_hit_reaction(unsigned char *moby) {
  float vector[4]; int result; float damage; float angle;
  char *data=(char *)((struct Moby *)moby)->pvars;
  struct RobotDogHit *hit;
- if (*(int *)(data+0x38)!=0 || (*(int *)(data+0x248)!=-1 && can_release_linked_robot_dog((unsigned char *)(D_L03_00160058+(*(int *)(data+0x248)<<8)))))
+ if (*(int *)(data+0x38)!=0 || (*(int *)(data+0x248)!=-1 && can_release_linked_robot_dog((unsigned char *)(kerwan_mobys+(*(int *)(data+0x248)<<8)))))
   *(int *)(data+0x240)=scale_ticks(240);
  if (fast_dec_timer((int *)(data+0x240))) *(float *)(data+0x230)=*(float *)(data+0x22C);
  else *(float *)(data+0x230)=*(float *)(data+0x22C)*2.0f;
@@ -1864,7 +1864,7 @@ int try_start_kerwan_path_enemy_heading_turn(float ang, unsigned char *moby, cha
     if (*(int *)(target + 0x40) != 0) {
         idx = *(int *)(data + 0x264);
         if (idx != -1) {
-            char *e = (char *)(idx << 8) + (int)*(char **)&D_L03_00160058;
+            char *e = (char *)(idx << 8) + (int)*(char **)&kerwan_mobys;
             if (*(short *)(e + 0xA6) == 0x336) {
                 if ((unsigned char)e[0xBC] != 4) return 0;
             }
@@ -2198,7 +2198,7 @@ void update_kerwan_path_enemy(Moby *m) {
             d->b254++;
             Moby_GetJointWorldPos(m, 0, a);
             FastVecSub(b, tgt.dir, a);
-            func_L00_001FF4B0(b, b, g_frame_time * 6.0f);
+            vec_scale_to_length(b, b, g_frame_time * 6.0f);
             b[2] *= 0.5f;
             ang = fast_atan2(b[0], b[1]);
             df = FastSubRots(ang, (*(float (*)[4])&m->rot)[2]);
@@ -2291,7 +2291,7 @@ void update_kerwan_path_enemy(Moby *m) {
                 hit.v[0] = FastCos((*(float (*)[4])&m->rot)[2]) * 0.2f;
                 hit.v[1] = FastSin((*(float (*)[4])&m->rot)[2]) * 0.2f;
                 hit.v[2] = 0.0f;
-                func_L00_001FF500(hit.v, hit.v, 1.0f);
+                vec_set_length_xy(hit.v, hit.v, 1.0f);
                 hit.v[2] = 1.0f;
                 hit.v[3] = 5627.925f;
                 hit.b0 = 0;
@@ -2469,9 +2469,9 @@ void update_kerwan_path_enemy(Moby *m) {
                 qcopy(v, (*(float (*)[4])&m->pos));
                 v[2] += 1.0f;
                 spawn_explosion(m, d->v40, v, 0.0f, 0.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, 6, 1.0f, 15.0f, 1, 1, -1, 0);
-                SpawnBreakFragment((char *)m, 0x6D0, (*(float (*)[4])&m->pos), (*(float (*)[4])&m->rot), 0, 0, 0.0f, D_L03_0015F660, D_L03_0015F660, D_L03_0015F660);
-                SpawnBreakFragment((char *)m, 0x6D1, (*(float (*)[4])&m->pos), (*(float (*)[4])&m->rot), 0, 0, 0.0f, D_L03_0015F660, D_L03_0015F660, D_L03_0015F660);
-                SpawnBreakFragment((char *)m, 0x6D2, (*(float (*)[4])&m->pos), (*(float (*)[4])&m->rot), 0, 0, 0.0f, D_L03_0015F660, D_L03_0015F660, D_L03_0015F660);
+                SpawnBreakFragment((char *)m, 0x6D0, (*(float (*)[4])&m->pos), (*(float (*)[4])&m->rot), 0, 0, 0.0f, kerwan_zero_vec, kerwan_zero_vec, kerwan_zero_vec);
+                SpawnBreakFragment((char *)m, 0x6D1, (*(float (*)[4])&m->pos), (*(float (*)[4])&m->rot), 0, 0, 0.0f, kerwan_zero_vec, kerwan_zero_vec, kerwan_zero_vec);
+                SpawnBreakFragment((char *)m, 0x6D2, (*(float (*)[4])&m->pos), (*(float (*)[4])&m->rot), 0, 0, 0.0f, kerwan_zero_vec, kerwan_zero_vec, kerwan_zero_vec);
                 SetDeathBits(m, 0, -1);
                 if (d->i264 == -1) {
                     DeleteMoby(m);
@@ -2510,14 +2510,14 @@ void update_kerwan_path_enemy(Moby *m) {
                 want = q->f4C;
             }
             ApproachValue(&speed, want, q->f14);
-            func_L00_001FF500(q, q, speed);
+            vec_set_length_xy(q, q, speed);
             qcopy(a, (*(float (*)[4])&m->pos));
             a[2] += q->f28;
             FastVecAdd((*(float (*)[4])&m->pos), (*(float (*)[4])&m->pos), q);
             qcopy(b, (*(float (*)[4])&m->pos));
             b[2] += q->f28;
             if (FastVecLength(q) > (float)q->i20) {
-                func_L00_001EFFF0(a, b, 0x24, m, 0);
+                coll_line(a, b, 0x24, m, 0);
                 qcopy(b, D_L03_00173FE0);
             }
             if (coll_sphere(IntToFloat(q->i20) * 0.0009765625f, b, 0x24, m)) {
@@ -2530,9 +2530,9 @@ void update_kerwan_path_enemy(Moby *m) {
                     qcopy(v, (*(float (*)[4])&m->pos));
                     v[2] += 1.0f;
                     spawn_explosion(m, d->v40, v, 0.0f, 0.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, 6, 1.0f, 15.0f, 1, 1, -1, 0);
-                    SpawnBreakFragment((char *)m, 0x6D0, (*(float (*)[4])&m->pos), (*(float (*)[4])&m->rot), 0, 0, 0.0f, D_L03_0015F660, D_L03_0015F660, D_L03_0015F660);
-                    SpawnBreakFragment((char *)m, 0x6D1, (*(float (*)[4])&m->pos), (*(float (*)[4])&m->rot), 0, 0, 0.0f, D_L03_0015F660, D_L03_0015F660, D_L03_0015F660);
-                    SpawnBreakFragment((char *)m, 0x6D2, (*(float (*)[4])&m->pos), (*(float (*)[4])&m->rot), 0, 0, 0.0f, D_L03_0015F660, D_L03_0015F660, D_L03_0015F660);
+                    SpawnBreakFragment((char *)m, 0x6D0, (*(float (*)[4])&m->pos), (*(float (*)[4])&m->rot), 0, 0, 0.0f, kerwan_zero_vec, kerwan_zero_vec, kerwan_zero_vec);
+                    SpawnBreakFragment((char *)m, 0x6D1, (*(float (*)[4])&m->pos), (*(float (*)[4])&m->rot), 0, 0, 0.0f, kerwan_zero_vec, kerwan_zero_vec, kerwan_zero_vec);
+                    SpawnBreakFragment((char *)m, 0x6D2, (*(float (*)[4])&m->pos), (*(float (*)[4])&m->rot), 0, 0, 0.0f, kerwan_zero_vec, kerwan_zero_vec, kerwan_zero_vec);
                     SetDeathBits(m, 0x200, -1);
                     if (d->i264 == -1) {
                         DeleteMoby(m);
@@ -2615,9 +2615,9 @@ void update_kerwan_path_enemy(Moby *m) {
                 qcopy(v, (*(float (*)[4])&m->pos));
                 v[2] += 1.0f;
                 spawn_explosion(m, d->v40, v, 0.0f, 0.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, 6, 1.0f, 15.0f, 1, 1, -1, 0);
-                SpawnBreakFragment((char *)m, 0x6D0, (*(float (*)[4])&m->pos), (*(float (*)[4])&m->rot), 0, 0, 0.0f, D_L03_0015F660, D_L03_0015F660, D_L03_0015F660);
-                SpawnBreakFragment((char *)m, 0x6D1, (*(float (*)[4])&m->pos), (*(float (*)[4])&m->rot), 0, 0, 0.0f, D_L03_0015F660, D_L03_0015F660, D_L03_0015F660);
-                SpawnBreakFragment((char *)m, 0x6D2, (*(float (*)[4])&m->pos), (*(float (*)[4])&m->rot), 0, 0, 0.0f, D_L03_0015F660, D_L03_0015F660, D_L03_0015F660);
+                SpawnBreakFragment((char *)m, 0x6D0, (*(float (*)[4])&m->pos), (*(float (*)[4])&m->rot), 0, 0, 0.0f, kerwan_zero_vec, kerwan_zero_vec, kerwan_zero_vec);
+                SpawnBreakFragment((char *)m, 0x6D1, (*(float (*)[4])&m->pos), (*(float (*)[4])&m->rot), 0, 0, 0.0f, kerwan_zero_vec, kerwan_zero_vec, kerwan_zero_vec);
+                SpawnBreakFragment((char *)m, 0x6D2, (*(float (*)[4])&m->pos), (*(float (*)[4])&m->rot), 0, 0, 0.0f, kerwan_zero_vec, kerwan_zero_vec, kerwan_zero_vec);
                 SetDeathBits(m, 0, -1);
                 if (d->i264 == -1) {
                     DeleteMoby(m);
@@ -2716,7 +2716,7 @@ void update_kerwan_path_enemy(Moby *m) {
         g = ProbeGroundHeight((*(float (*)[4])&m->pos), 0, 0.5f);
         (*(float (*)[4])&m->pos)[2] = (*(float (*)[4])&m->pos)[2] - 2.0f;
         if ((*(float (*)[4])&m->pos)[2] < g) {
-            char *h = D_L03_00173FC0;
+            char *h = kerwan_coll_hit;
             if (*(int *)(h + 0x18) != 0 && GetFlaggedPvarWord(*(int *)(h + 0x18)) != 0) {
                 d->i280 = *(Moby **)(h + 0x18) - D_L03_00160058_294040;
             } else if (d->i280 != -1) {
@@ -2754,9 +2754,9 @@ void update_kerwan_path_enemy(Moby *m) {
                 qcopy(p, (*(float (*)[4])&m->pos));
                 p[2] += 1.0f;
                 spawn_explosion(m, d->v40, p, 0.0f, 0.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, 6, 1.0f, 15.0f, 1, 1, -1, 0);
-                SpawnBreakFragment((char *)m, 0x6D0, (*(float (*)[4])&m->pos), (*(float (*)[4])&m->rot), 0, 0, 0.0f, D_L03_0015F660, D_L03_0015F660, D_L03_0015F660);
-                SpawnBreakFragment((char *)m, 0x6D1, (*(float (*)[4])&m->pos), (*(float (*)[4])&m->rot), 0, 0, 0.0f, D_L03_0015F660, D_L03_0015F660, D_L03_0015F660);
-                SpawnBreakFragment((char *)m, 0x6D2, (*(float (*)[4])&m->pos), (*(float (*)[4])&m->rot), 0, 0, 0.0f, D_L03_0015F660, D_L03_0015F660, D_L03_0015F660);
+                SpawnBreakFragment((char *)m, 0x6D0, (*(float (*)[4])&m->pos), (*(float (*)[4])&m->rot), 0, 0, 0.0f, kerwan_zero_vec, kerwan_zero_vec, kerwan_zero_vec);
+                SpawnBreakFragment((char *)m, 0x6D1, (*(float (*)[4])&m->pos), (*(float (*)[4])&m->rot), 0, 0, 0.0f, kerwan_zero_vec, kerwan_zero_vec, kerwan_zero_vec);
+                SpawnBreakFragment((char *)m, 0x6D2, (*(float (*)[4])&m->pos), (*(float (*)[4])&m->rot), 0, 0, 0.0f, kerwan_zero_vec, kerwan_zero_vec, kerwan_zero_vec);
                 SetDeathBits(m, 0x200, -1);
                 if (d->i264 == -1) {
                     DeleteMoby(m);

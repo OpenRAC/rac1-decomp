@@ -20,10 +20,10 @@ void decompress_and_relocate_vendor_moby_assets(void) {
     int v;
     v = D_L00_001CA7C0[6] + 0x80000;
     func_00118D80(0);
-    func_0020C468(v, D_L00_001CA7C0[6]);
+    fast_decompress(v, D_L00_001CA7C0[6]);
     func_00118D80(0);
     p = (int *)D_L00_001CA7C0[6];
-    base = D_L00_00197680[D_L00_00197F4C];
+    base = moby_class_headers[D_L00_00197F4C];
     for (i = 0; i < 16; i++) {
         int e = *p++;
         if (e) {
@@ -71,17 +71,17 @@ void VendorBuildItemList(s32 skip_unflagged) {
     s32 count, i, j, value, item, k;
 
     count = 0;
-    if (D_0015EED0[0] != 0xFF) {
-        do count++; while (count < 12 && D_0015EED0[count] != 0xFF);
+    if (vendor_stock[0] != 0xFF) {
+        do count++; while (count < 12 && vendor_stock[count] != 0xFF);
     }
     D_L00_001CA7C0_9B770.count = 0;
     for (i = 0; i < count; i++) {
-        value = D_0015EED0[i];
+        value = vendor_stock[i];
         if (value == 0xFF) continue;
         item = value & 0x3F;
         if (value & 0x40) {
             s32 sound;
-            if (D_L00_001C43B0[item].h8 == 0) continue;
+            if (item_price_table[item].h8 == 0) continue;
             sound = D_L00_001C2488[item].sound;
             D_L00_001CA7C0_9B770.entries[D_L00_001CA7C0_9B770.count].item = item;
             D_L00_001CA7C0_9B770.entries[D_L00_001CA7C0_9B770.count].selected = 1;
@@ -102,7 +102,7 @@ void VendorBuildItemList(s32 skip_unflagged) {
     for (k = 0; k < 37; k++) {
         s32 sound;
         if (!item_available[k]) continue;
-        if (!D_L00_001C43B0[k].h8) continue;
+        if (!item_price_table[k].h8) continue;
         for (j = 0; j < D_L00_001CA7C0_9B770.count; j++) {
             if (D_L00_001CA7C0_9B770.entries[j].item == k) break;
         }
@@ -283,12 +283,12 @@ void open_vendor_menu(VendorMoby_pv *m) {
 
         VP.item_text = queue_animation_update(0x30, item + 0xEA60, initialize_numeric_hud_timer_and_base_dimensions,
                                                   Hud_UpdateCounter, HudWeaponDraw,
-                                                  &weapon_ammo_counts[item], D_L00_001C43B0[item].hE);
+                                                  &weapon_ammo_counts[item], item_price_table[item].hE);
     }
-    D_L00_0015F6BC = 1;
+    skip_frame = 1;
     VP.f0 = 0;
-    VP.f10 = D_L00_00173F00[2] + 0x60000;
-    VP.f14 = D_L00_00173F00[1] + 0x60000;
+    VP.f10 = lvl_resource_buffers[2] + 0x60000;
+    VP.f14 = lvl_resource_buffers[1] + 0x60000;
     VP.f8 = 0;
     VP.moby = (char *)m;
     Moby_PlaySound(3, 0, m);
@@ -297,7 +297,7 @@ void open_vendor_menu(VendorMoby_pv *m) {
     }
     clear_active_help_record();
     *(f32 *)&gFadeLvl = 1.0f;
-    *(s32 *)((char *)&D_L00_0015F6BC - 0x14) = 5;
+    *(s32 *)((char *)&skip_frame - 0x14) = 5;
     *(s32 *)&D_L00_0015F500 = 0;
     HeroEnterMoveState(100, 1);
     {
@@ -395,8 +395,8 @@ void close_vendor_menu(int exit_cutscene_completed) {
     vendor_state_base->hud_bar_54 = -1;
     vendor_state_base->hud_bar_50 = -1;
     update_resource_counter();
-    D_L00_0015F6BC = 1;
-    *(int *)&D_L00_0015F6A8 = 0;
+    skip_frame = 1;
+    *(int *)&cinematic_mode = 0;
     HeroEnterMoveState(0, 1);
     D_001414F5[0] = 0;
     HeroClearObjectFlags();
@@ -528,7 +528,7 @@ void start_vendor_exit_cutscene(void) {
     if ((u16)(cd_read_state.mode - 6) >= 2)
         cd_read_state.mode = 5;
     g = &D_L00_001CA7C0_9C070;
-    D_L00_0015F6BC = 1;
+    skip_frame = 1;
     ((VendorMoby_29a6b0 *)g->moby)->state = 1;
     g->f0 = 3;
     g->f4 = 0;
@@ -541,16 +541,16 @@ void start_vendor_exit_cutscene(void) {
     clear_u64_value((char *)g + 0xB0);
     *(f32 *)((char *)g + 0xB8) = FastAddRots(((VendorMoby_29a6b0 *)g->moby)->rot.f[2], 3.1415927f);
     euler_rotation_basis((char *)g + 0x80, (char *)g + 0xB0);
-    FastMemSet(&D_L00_0016C960, 0, 0x1C0);
+    FastMemSet(&cutscene_state, 0, 0x1C0);
     FastMemSet(D_L00_0017C440, 0, 0x40);
     VU1_syncChain(1);
     calculate_dma_transfer_address();
     selected = (s32 *)((char *)g + 0x48);
-    offset = D_L00_0016128C - 0x40000;
-    D_L00_0016128C = offset;
+    offset = lvl_vu_chain_buffer_size - 0x40000;
+    lvl_vu_chain_buffer_size = offset;
     index = D_L00_001CA7C0_9C070.f48;
-    D_L00_0016C960.x58 = D_L00_00173F00.x4 + offset;
-    D_L00_0016C960.x5c = D_L00_00173F00.x8 + offset;
+    cutscene_state.x58 = lvl_resource_buffers.x4 + offset;
+    cutscene_state.x5c = lvl_resource_buffers.x8 + offset;
     item = D_L00_001CA320[index];
     gFadeLvl = 0;
     (*(s32 *)&D_L00_0015F500) = 0;
@@ -595,8 +595,8 @@ void restore_hero_after_vendor_exit_cutscene(void) {
     Vec4f euler_rotation;
     VendorExitState *vendor_state_base;
     MusicModeBlock *mode_block;
-    D_L00_0015F6BC = 1;
-    *(int *)&D_L00_0015F6A8 = 0;
+    skip_frame = 1;
+    *(int *)&cinematic_mode = 0;
     HeroEnterMoveState(0, 1);
     D_001414F5[0] = 0;
     HeroClearObjectFlags();
@@ -638,8 +638,8 @@ void handle_vendor_auxiliary_moby_event(int a) {
         s = m[0x20];
         if (s == 2 || s == 0) {
             if (random_integer_below(4) == 0) {
-                if (*(int *)(b + 0x30) + scale_ticks(0x168) < D_L00_0015F4F8) {
-                    *(int *)(b + 0x30) = D_L00_0015F4F8;
+                if (*(int *)(b + 0x30) + scale_ticks(0x168) < rendered_frame_count) {
+                    *(int *)(b + 0x30) = rendered_frame_count;
                     r0 = random_integer_below(2);
                     *(int *)(b + 0x3C) = r0;
                     D_L00_00161250 = 1;
@@ -705,7 +705,7 @@ void initialize_vendor_selected_item_mobys(void) {
     int k;
     int cls;
     k = TA;
-    cls = D_L00_00179BC0[k].pad[4];
+    cls = item_defs[k].pad[4];
     if (k == 0x18) {
         cls = 0x1DF;
     } else {
@@ -835,19 +835,19 @@ void update_vendor_purchase(void) {
         pack_render_command_fields(D_L00_001CA7C0_9CDE0.obj + 0x400, 0x101010, 0xE, 0xE, 0);
         D_L00_00161F10 = 0;
         if (D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].sel == 1
-            && weapon_ammo_counts[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item] >= D_L00_001C43B0[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].hE) {
+            && weapon_ammo_counts[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item] >= item_price_table[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].hE) {
             Moby_PlaySound(2, 0, D_L00_001CA7C0_9CDE0.cam);
         } else if (D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].sel == 1) {
-            pr1 = D_L00_001CA7C0_9CDE0.f40 ? D_L00_001C43B0[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].hA
-                                             : D_L00_001C43B0[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].h8;
+            pr1 = D_L00_001CA7C0_9CDE0.f40 ? item_price_table[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].hA
+                                             : item_price_table[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].h8;
             if (gBolts < pr1) {
                 Moby_PlaySound(2, 0, D_L00_001CA7C0_9CDE0.cam);
             } else {
                 D_L00_00161F10 = 1;
             }
         } else {
-            pr1 = discount_purchase_pricing[0] ? D_L00_001C43B0[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].f4
-                                  : D_L00_001C43B0[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].f0;
+            pr1 = discount_purchase_pricing[0] ? item_price_table[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].f4
+                                  : item_price_table[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].f0;
             if (gBolts < pr1) {
                 Moby_PlaySound(2, 0, D_L00_001CA7C0_9CDE0.cam);
             }
@@ -871,11 +871,11 @@ void update_vendor_purchase(void) {
             }
             if ((D_0013CA40_9CDE0.pressed & 0x2000)
                 || (D_L00_00161F2C >= 16 && !(D_L00_00161F2C & 7)) || D_L00_00161F2C >= 48) {
-                if ((D_L00_001CA7C0_9CDE0.f40 ? D_L00_001C43B0[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].hA
-                                              : D_L00_001C43B0[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].h8) > 0) {
-                    n2 = D_L00_001CA7C0_9CDE0.f40 ? gBolts / D_L00_001C43B0[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].hA
-                                                 : gBolts / D_L00_001C43B0[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].h8;
-                    room = D_L00_001C43B0[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].hE
+                if ((D_L00_001CA7C0_9CDE0.f40 ? item_price_table[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].hA
+                                              : item_price_table[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].h8) > 0) {
+                    n2 = D_L00_001CA7C0_9CDE0.f40 ? gBolts / item_price_table[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].hA
+                                                 : gBolts / item_price_table[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].h8;
+                    room = item_price_table[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].hE
                          - weapon_ammo_counts[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item];
                     if (room < n2) n2 = room;
                     if (D_L00_00161F30 < n2) {
@@ -921,27 +921,27 @@ void update_vendor_purchase(void) {
             if (D_L00_00161F0C == 1) {
                 if (D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].sel == 1) {
                     cost = D_L00_001CA7C0_9CDE0.f40
-                        ? D_L00_001C43B0[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].hA * D_L00_00161F30
-                        : D_L00_001C43B0[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].h8 * D_L00_00161F30;
+                        ? item_price_table[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].hA * D_L00_00161F30
+                        : item_price_table[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].h8 * D_L00_00161F30;
                 } else {
-                    cost = discount_purchase_pricing[0] ? D_L00_001C43B0[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].f4
-                                          : D_L00_001C43B0[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].f0;
+                    cost = discount_purchase_pricing[0] ? item_price_table[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].f4
+                                          : item_price_table[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].f0;
                 }
                 if (gBolts < cost
-                    && weapon_ammo_counts[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item] >= D_L00_001C43B0[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].hE) {
+                    && weapon_ammo_counts[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item] >= item_price_table[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].hE) {
                     Moby_PlaySound(0, 0, D_L00_001CA7C0_9CDE0.cam);
                 } else if (D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].sel == 1) {
-                    if (weapon_ammo_counts[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item] < D_L00_001C43B0[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].hE) {
-                        price = (D_L00_001CA7C0_9CDE0.f40 ? D_L00_001C43B0[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].hA
-                                                          : D_L00_001C43B0[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].h8) * D_L00_00161F30;
+                    if (weapon_ammo_counts[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item] < item_price_table[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].hE) {
+                        price = (D_L00_001CA7C0_9CDE0.f40 ? item_price_table[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].hA
+                                                          : item_price_table[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].h8) * D_L00_00161F30;
                         if (gBolts >= price) {
-                            if (weapon_ammo_counts[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item] > D_L00_001C43B0[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].hE) {
-                                weapon_ammo_counts[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item] = D_L00_001C43B0[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].hE;
+                            if (weapon_ammo_counts[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item] > item_price_table[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].hE) {
+                                weapon_ammo_counts[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item] = item_price_table[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].hE;
                             }
                             n = D_L00_00161F30;
                             n -= add_ammo(D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item, n);
-                            price = (D_L00_001CA7C0_9CDE0.f40 ? D_L00_001C43B0[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].hA
-                                                              : D_L00_001C43B0[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].h8) * n;
+                            price = (D_L00_001CA7C0_9CDE0.f40 ? item_price_table[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].hA
+                                                              : item_price_table[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].h8) * n;
                             ((int *)(D_0013DE6E + 0xA))[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item] += n;
                             handle_vendor_auxiliary_moby_event(3);
                             gBolts = gBolts - price;
@@ -956,8 +956,8 @@ void update_vendor_purchase(void) {
                         Moby_PlaySound(0, 0, D_L00_001CA7C0_9CDE0.cam);
                     }
                 } else {
-                    price = discount_purchase_pricing[0] ? D_L00_001C43B0[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].f4
-                                          : D_L00_001C43B0[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].f0;
+                    price = discount_purchase_pricing[0] ? item_price_table[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].f4
+                                          : item_price_table[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].f0;
                     if (gBolts >= price) {
                         handle_vendor_auxiliary_moby_event(2);
                         grant_inventory_item(D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item, 1);
@@ -973,7 +973,7 @@ void update_vendor_purchase(void) {
                             D_L00_001CA7C0_9CDE0.f50 = queue_animation_update(0x30, D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item + 0xEA60,
                                                                      initialize_numeric_hud_timer_and_base_dimensions, Hud_UpdateCounter, HudWeaponDraw,
                                                                      &weapon_ammo_counts[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item],
-                                                                     D_L00_001C43B0[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].hE);
+                                                                     item_price_table[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].hE);
                         } else {
                             if (D_L00_001CA7C0_9CDE0.count - 1 < D_L00_001CA7C0_9CDE0.idx) {
                                 D_L00_001CA7C0_9CDE0.idx = D_L00_001CA7C0_9CDE0.count - 1;
@@ -1411,7 +1411,7 @@ void func_L00_0029D988_r(void) {
                         }
                         vendor_menu.f50 = -1;
                         if ((vendor_menu.fD0[vendor_menu.f58]).fD4 == 1) {
-                            vendor_menu.f50 = d_meter(0x30, (vendor_menu.fD0[vendor_menu.f58]).fD0 + 0xEA60, d_cb1, d_cb2, d_cb3, &((*(s32 *)(menu_item_enabled_115 + 0x21 + ((vendor_menu.fD0[vendor_menu.f58]).fD0) * 4))), D_L00_001C43B0[(vendor_menu.fD0[vendor_menu.f58]).fD0].hE);
+                            vendor_menu.f50 = d_meter(0x30, (vendor_menu.fD0[vendor_menu.f58]).fD0 + 0xEA60, d_cb1, d_cb2, d_cb3, &((*(s32 *)(menu_item_enabled_115 + 0x21 + ((vendor_menu.fD0[vendor_menu.f58]).fD0) * 4))), item_price_table[(vendor_menu.fD0[vendor_menu.f58]).fD0].hE);
                         }
                     }
                 }
@@ -1427,7 +1427,7 @@ void func_L00_0029D988_r(void) {
                         }
                         vendor_menu.f50 = -1;
                         if ((vendor_menu.fD0[vendor_menu.f58]).fD4 == 1) {
-                            vendor_menu.f50 = d_meter(0x30, (vendor_menu.fD0[vendor_menu.f58]).fD0 + 0xEA60, d_cb1, d_cb2, d_cb3, &((*(s32 *)(menu_item_enabled_115 + 0x21 + ((vendor_menu.fD0[vendor_menu.f58]).fD0) * 4))), D_L00_001C43B0[(vendor_menu.fD0[vendor_menu.f58]).fD0].hE);
+                            vendor_menu.f50 = d_meter(0x30, (vendor_menu.fD0[vendor_menu.f58]).fD0 + 0xEA60, d_cb1, d_cb2, d_cb3, &((*(s32 *)(menu_item_enabled_115 + 0x21 + ((vendor_menu.fD0[vendor_menu.f58]).fD0) * 4))), item_price_table[(vendor_menu.fD0[vendor_menu.f58]).fD0].hE);
                         }
                     }
                 }
@@ -1449,7 +1449,7 @@ void func_L00_0029D988_r(void) {
                         }
                         vendor_menu.f50 = -1;
                         if ((vendor_menu.fD0[vendor_menu.f58]).fD4 == 1) {
-                            vendor_menu.f50 = d_meter(0x30, (vendor_menu.fD0[vendor_menu.f58]).fD0 + 0xEA60, d_cb1, d_cb2, d_cb3, &((*(s32 *)(menu_item_enabled_115 + 0x21 + ((vendor_menu.fD0[vendor_menu.f58]).fD0) * 4))), D_L00_001C43B0[(vendor_menu.fD0[vendor_menu.f58]).fD0].hE);
+                            vendor_menu.f50 = d_meter(0x30, (vendor_menu.fD0[vendor_menu.f58]).fD0 + 0xEA60, d_cb1, d_cb2, d_cb3, &((*(s32 *)(menu_item_enabled_115 + 0x21 + ((vendor_menu.fD0[vendor_menu.f58]).fD0) * 4))), item_price_table[(vendor_menu.fD0[vendor_menu.f58]).fD0].hE);
                         }
                     }
                 }
@@ -1470,7 +1470,7 @@ void func_L00_0029D988_r(void) {
                         }
                         vendor_menu.f50 = -1;
                         if ((vendor_menu.fD0[vendor_menu.f58]).fD4 == 1) {
-                            vendor_menu.f50 = d_meter(0x30, (vendor_menu.fD0[vendor_menu.f58]).fD0 + 0xEA60, d_cb1, d_cb2, d_cb3, &((*(s32 *)(menu_item_enabled_115 + 0x21 + ((vendor_menu.fD0[vendor_menu.f58]).fD0) * 4))), D_L00_001C43B0[(vendor_menu.fD0[vendor_menu.f58]).fD0].hE);
+                            vendor_menu.f50 = d_meter(0x30, (vendor_menu.fD0[vendor_menu.f58]).fD0 + 0xEA60, d_cb1, d_cb2, d_cb3, &((*(s32 *)(menu_item_enabled_115 + 0x21 + ((vendor_menu.fD0[vendor_menu.f58]).fD0) * 4))), item_price_table[(vendor_menu.fD0[vendor_menu.f58]).fD0].hE);
                         }
                     }
                 }

@@ -473,7 +473,7 @@ void update_moby_shadow_range(char *m) {
     float t;
     char *hit;
 
-    qcopy(dir, D_001CAE00);
+    qcopy(dir, shadow_light_dir);
     func_001F9E10(dir, dir, 1.0f);
     FastVecScale(p, m, 0.0009765625f);
     qcopy(a, p);
@@ -1394,7 +1394,7 @@ int count_nonzero_entries_up_to_40(void) {
     int count = 0;
     int row;
     for (row = 0; row < 0x14; row++) {
-        unsigned char *p = &D_0014BFC0[row * 4];
+        unsigned char *p = &gold_bolts_collected[row * 4];
         int k;
         for (k = 3; k >= 0; k--) {
             if (*p != 0) count = count + 1;

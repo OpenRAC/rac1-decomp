@@ -411,8 +411,8 @@ int HeroL02_SetMoveState(int a, int b) {
             if (*(unsigned short *)(h + 0x60) <= 0xFFFE) {
                 *(unsigned short *)(h + 0x60) = *(unsigned short *)(h + 0x60) + 1;
             }
-            if (scale_ticks(D_0015EFA4) / 600 > *(unsigned short *)(h + 0x62)) {
-                *(unsigned short *)(h + 0x62) = scale_ticks(D_0015EFA4) / 600;
+            if (scale_ticks(play_time_ticks) / 600 > *(unsigned short *)(h + 0x62)) {
+                *(unsigned short *)(h + 0x62) = scale_ticks(play_time_ticks) / 600;
             }
             *(unsigned int *)(h + 0x64) = *(unsigned int *)(h + 0x64) | (1 << g_current_level_index) | 0x80000000;
         }
@@ -454,8 +454,8 @@ int HeroL02_SetMoveState(int a, int b) {
             if (*(unsigned short *)(h + 0x60) <= 0xFFFE) {
                 *(unsigned short *)(h + 0x60) = *(unsigned short *)(h + 0x60) + 1;
             }
-            if (scale_ticks(D_0015EFA4) / 600 > *(unsigned short *)(h + 0x62)) {
-                *(unsigned short *)(h + 0x62) = scale_ticks(D_0015EFA4) / 600;
+            if (scale_ticks(play_time_ticks) / 600 > *(unsigned short *)(h + 0x62)) {
+                *(unsigned short *)(h + 0x62) = scale_ticks(play_time_ticks) / 600;
             }
             *(unsigned int *)(h + 0x64) = *(unsigned int *)(h + 0x64) | (1 << g_current_level_index) | 0x80000000;
         }
@@ -1006,8 +1006,8 @@ int HeroL02_SetMoveState(int a, int b) {
             if (*(unsigned short *)(h + 0) <= 0xFFFE) {
                 *(unsigned short *)(h + 0) = *(unsigned short *)(h + 0) + 1;
             }
-            if (scale_ticks(D_0015EFA4) / 600 > *(unsigned short *)(h + 2)) {
-                *(unsigned short *)(h + 2) = scale_ticks(D_0015EFA4) / 600;
+            if (scale_ticks(play_time_ticks) / 600 > *(unsigned short *)(h + 2)) {
+                *(unsigned short *)(h + 2) = scale_ticks(play_time_ticks) / 600;
             }
             *(unsigned int *)(h + 4) = *(unsigned int *)(h + 4) | (1 << g_current_level_index) | 0x80000000;
             q = D_0013E633 + 0xE1D;
@@ -1034,16 +1034,16 @@ int HeroL02_SetMoveState(int a, int b) {
             if (*(unsigned short *)(h + 8) <= 0xFFFE) {
                 *(unsigned short *)(h + 8) = *(unsigned short *)(h + 8) + 1;
             }
-            if (scale_ticks(D_0015EFA4) / 600 > *(unsigned short *)(h + 0xA)) {
-                *(unsigned short *)(h + 0xA) = scale_ticks(D_0015EFA4) / 600;
+            if (scale_ticks(play_time_ticks) / 600 > *(unsigned short *)(h + 0xA)) {
+                *(unsigned short *)(h + 0xA) = scale_ticks(play_time_ticks) / 600;
             }
             *(unsigned int *)(h + 0xC) = *(unsigned int *)(h + 0xC) | (1 << g_current_level_index) | 0x80000000;
             h2 = item_usage;
             if (*(unsigned short *)(h2 + 0x128) <= 0xFFFE) {
                 *(unsigned short *)(h2 + 0x128) = *(unsigned short *)(h2 + 0x128) + 1;
             }
-            if (scale_ticks(D_0015EFA4) / 600 > *(unsigned short *)(h2 + 0x12A)) {
-                *(unsigned short *)(h2 + 0x12A) = scale_ticks(D_0015EFA4) / 600;
+            if (scale_ticks(play_time_ticks) / 600 > *(unsigned short *)(h2 + 0x12A)) {
+                *(unsigned short *)(h2 + 0x12A) = scale_ticks(play_time_ticks) / 600;
             }
             *(unsigned int *)(h2 + 0x12C) = *(unsigned int *)(h2 + 0x12C) | (1 << g_current_level_index) | 0x80000000;
             q = D_0013E633 + 0xE1D;
@@ -1078,8 +1078,8 @@ int HeroL02_SetMoveState(int a, int b) {
             if (*(unsigned short *)(h + 0x40) <= 0xFFFE) {
                 *(unsigned short *)(h + 0x40) = *(unsigned short *)(h + 0x40) + 1;
             }
-            if (scale_ticks(D_0015EFA4) / 600 > *(unsigned short *)(h + 0x42)) {
-                *(unsigned short *)(h + 0x42) = scale_ticks(D_0015EFA4) / 600;
+            if (scale_ticks(play_time_ticks) / 600 > *(unsigned short *)(h + 0x42)) {
+                *(unsigned short *)(h + 0x42) = scale_ticks(play_time_ticks) / 600;
             }
             q = D_0013E633 + 0xE1D;
             *(unsigned int *)(h + 0x44) = *(unsigned int *)(h + 0x44) | (1 << g_current_level_index) | 0x80000000;
@@ -1580,16 +1580,16 @@ void HeroL02_UpdateStateTransitions(void) {
                 if (g_hero.unk22D6 == 0) {
                     g_hero.unk22D6 = scale_ticks(0x14);
                 } else {
-                    int next = D_0015EE8C;
+                    int next = quick_swap_item;
                     if (g_hero.items[0].item_id == 8) {
-                        next = D_00141760;
+                        next = last_weapon_id;
                     }
-                    if (next != 0 && g_hero.items[0].item_id != D_0015EE8C) {
+                    if (next != 0 && g_hero.items[0].item_id != quick_swap_item) {
                         if (usage_stats.fF8 < 0xFFFF) {
                             usage_stats.fF8++;
                         }
-                        if (scale_ticks(D_0015EFA4) / 600 > usage_stats.fFA) {
-                            usage_stats.fFA = scale_ticks(D_0015EFA4) / 600;
+                        if (scale_ticks(play_time_ticks) / 600 > usage_stats.fFA) {
+                            usage_stats.fFA = scale_ticks(play_time_ticks) / 600;
                         }
                         usage_stats.fFC = usage_stats.fFC | (1 << D_0015EE84_m) | 0x80000000;
                         g_hero.pending_item[0] = next;
@@ -3207,7 +3207,7 @@ f32 resolve_hero_trajectory_parameter(f32 a, f32 b, f32 c) {
             v.q = (&D_0013F450_368E8)->v80.q;
             clip_negative_segment_endpoint_xyz(&v, t);
             qcopy(&v, &(&D_0013F450_368E8)->v80);
-            if (func_L00_001EFFF0(&v, t, 0x324, 0, 0) != 0) {
+            if (coll_line(&v, t, 0x324, 0, 0) != 0) {
                 if (compute_gravity_relative_vector_inclination((f32 *)D_L02_00174500) <= 0.87266463f) {
                     c = *(f32 *)(D_L02_00174500 - 0x18);
                 }
@@ -3223,7 +3223,7 @@ f32 resolve_hero_trajectory_parameter(f32 a, f32 b, f32 c) {
         break;
     case 1:
         qcopy(&v, &(&D_0013F450_368E8)->v270);
-        func_L00_001FF4B0(&v, &v, b);
+        vec_scale_to_length(&v, &v, b);
         FastVecScale(&v, &v, -1.0f);
         FastVecScale(t, &(&D_0013F450_368E8)->vE0, a);
         FastVecScale(&t1, &v, ((a * a + a) * 0.5f) * b);
@@ -3231,7 +3231,7 @@ f32 resolve_hero_trajectory_parameter(f32 a, f32 b, f32 c) {
         FastVecAdd(t, &(&D_0013F450_368E8)->v80, t);
         v2.q = (&D_0013F450_368E8)->v80.q;
         clip_negative_segment_endpoint_xyz(&v2, t);
-        if (func_L00_001EFFF0(&(&D_0013F450_368E8)->v80, t, 0x324, 0, 0) != 0) {
+        if (coll_line(&(&D_0013F450_368E8)->v80, t, 0x324, 0, 0) != 0) {
             f32 nb;
             nb = b * -0.5f;
             z = func_L00_002342F8_368E8(&(&D_0013F450_368E8)->vE0) - nb;
@@ -3247,7 +3247,7 @@ f32 resolve_hero_trajectory_parameter(f32 a, f32 b, f32 c) {
         t1.f[1] = 100.0f;
         t1.f[0] = 100.0f;
         FastVecSub(&v, &(&D_0013F450_368E8)->v80, &t1);
-        func_L00_001FF4B0(&v, &v, b);
+        vec_scale_to_length(&v, &v, b);
         FastVecScale(&v, &v, -1.0f);
         FastVecScale(t, &(&D_0013F450_368E8)->vE0, a);
         FastVecScale(&t1, &v, ((a * a + a) * 0.5f) * b);
@@ -3255,7 +3255,7 @@ f32 resolve_hero_trajectory_parameter(f32 a, f32 b, f32 c) {
         FastVecAdd(t, &(&D_0013F450_368E8)->v80, t);
         v2.q = (&D_0013F450_368E8)->v80.q;
         clip_negative_segment_endpoint_xyz(&v2, t);
-        if (func_L00_001EFFF0(&(&D_0013F450_368E8)->v80, t, 0x324, 0, 0) != 0) {
+        if (coll_line(&(&D_0013F450_368E8)->v80, t, 0x324, 0, 0) != 0) {
             f32 nb;
             nb = b * -0.5f;
             z = func_L00_002342F8_368E8(&(&D_0013F450_368E8)->vE0) - nb;

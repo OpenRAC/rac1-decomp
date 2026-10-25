@@ -121,13 +121,13 @@ void update_level_13_homing_rocket(Moby *m) {
     dir.y = random_float_between(-1.0f, 1.0f);
     dir.z = random_float_between(-1.0f, 1.0f);
     vel = dir;
-    func_L00_001FF4B0(&vel, &vel, random_float_between(0.1f, 0.2f) * g_frame_time);
-    func_L00_001FF4B0(&tmp, d, -random_float_between(g_frame_time * 0.1f, g_frame_time));
+    vec_scale_to_length(&vel, &vel, random_float_between(0.1f, 0.2f) * g_frame_time);
+    vec_scale_to_length(&tmp, d, -random_float_between(g_frame_time * 0.1f, g_frame_time));
     FastVecAdd(&vel, &vel, &tmp);
     PartType44Spawn(&m->pos, (float *)&vel, scale_ticks(6), 0x7F, 0xB0B0B0, 3, 80000.0f, 1000.0f, 1.0f, -0.0004f, 0.0f);
     for (t = 0.0f; t < 1.0f; t += 0.33333334f) {
         unsigned char *p;
-        func_L00_001FF4B0(&tmp, d, random_float_between(t, t + 0.33333334f) * d->speed);
+        vec_scale_to_length(&tmp, d, random_float_between(t, t + 0.33333334f) * d->speed);
         FastVecAdd(&tmp, &tmp, &m->pos);
         p = PartType44Spawn(&tmp, (float *)&vel, scale_ticks(0x3C), 0x7F, 0x606060, 3, 80000.0f, 1000.0f, 1.0f, -0.0002f, 0.0f);
         if (p != 0) {
@@ -188,7 +188,7 @@ void update_level_13_homing_rocket(Moby *m) {
         return;
     }
     Moby_GetJointWorldPos(m, 1, &hitpos);
-    if (func_L00_001EFFF0(&old, &hitpos, 0, m, 0) != 0) {
+    if (coll_line(&old, &hitpos, 0, m, 0) != 0) {
         Moby *o = D_L13_001741D8;
         if (o == 0 || (o != d->owner && o->oclass != 0x504 && o->oclass != 0x534 && o->oclass != 0x535
                        && o->oclass != 0x536 && o->oclass != 0x537 && o->oclass != 0x538 && o->oclass != 0x539
@@ -515,7 +515,7 @@ void update_hovering_rocket_attacker(char *m) {
         }
         FastVecSub(scratch_vector, D_L13_0016016C + (d->table_index << 7) + 0x30, moby_position);
         ApproachWithVelocity(&z40, distance_to_target, &d->approach_vel, g_frame_time_sq * 10.0f, g_frame_time_sq * 10.0f, g_frame_time * 20.0f);
-        func_L00_001FF4B0(scratch_vector, scratch_vector, d->approach_vel);
+        vec_scale_to_length(scratch_vector, scratch_vector, d->approach_vel);
         FastVecAdd(moby_position, moby_position, scratch_vector);
         if (!(distance_to_target < 0.1f)) {
             return;
@@ -577,7 +577,7 @@ void update_hovering_rocket_attacker(char *m) {
                 }
                 pv = shot_direction_vector;
                 FastVecSub(pv, &target->pos, scratch_vector);
-                func_L00_001FF4B0(pv, pv, *(float *)&D_L13_0016152C * g_frame_time);
+                vec_scale_to_length(pv, pv, *(float *)&D_L13_0016152C * g_frame_time);
                 if (d->fire_side != 0) {
                     if (d->rocket_1) {
                         launch_attached_rocket(d->rocket_1, pv, (int)target, d->shot_range);
@@ -907,7 +907,7 @@ void BlargFighter_TakeHit(unsigned char *moby, unsigned char *d, float *fp) {
                 d[0x67] = 0xFA;
                 *(short *)(d + 0x26) = scale_ticks(0x3C);
                 RerollEffectCounter(moby, (short *)(d + 0x60));
-                func_L00_001FF4B0(vec, t + 0x10, 0.1f);
+                vec_scale_to_length(vec, t + 0x10, 0.1f);
                 FastVecAdd(moby + 0x10, moby + 0x10, vec);
                 rand_vec(vec, -0.1f, 0.1f);
                 FastVecAdd(moby + 0x10, moby + 0x10, vec);
@@ -1020,10 +1020,10 @@ int advance_blarg_space_fighter_along_path(char *m, char *d, int aim) {
         steering_blend_factor = 1.0f;
     FastVecScale(&moby_data->steer, &moby_data->steer, 1.0f - steering_blend_factor);
     FastVecSub(target_node_steering_vector, path + (moby_data->node.s * 16 + 0x10), &moby->pos);
-    func_L00_001FF4B0(target_node_steering_vector, target_node_steering_vector, moby_data->step);
+    vec_scale_to_length(target_node_steering_vector, target_node_steering_vector, moby_data->step);
     FastVecScale(target_node_steering_vector, target_node_steering_vector, steering_blend_factor);
     FastVecAdd(&moby_data->steer, &moby_data->steer, target_node_steering_vector);
-    func_L00_001FF4B0(&moby_data->steer, &moby_data->steer, moby_data->step);
+    vec_scale_to_length(&moby_data->steer, &moby_data->steer, moby_data->step);
     FastVecAdd(&moby->pos, &moby->pos, &moby_data->steer);
     if (aim != 0) {
         float yaw = fast_atan2(hero.motion.pos.f[0] - moby->pos.x,
@@ -1089,18 +1089,18 @@ int PathVehicle_ControlSpeed(char *moby, char *vars, int aim) {
     veh = *(char **)(D_0013E633 + 0x240D);
     if (veh != 0 && *(short *)(veh + 0xA6) == 0x45) {
         if (*(int *)(vars + 0xBC) != -1 &&
-            (linked = D_L13_00160058 + (*(int *)(vars + 0xBC) << 8)) != 0 &&
+            (linked = gemlik_moby_array_start + (*(int *)(vars + 0xBC) << 8)) != 0 &&
             (unsigned char)linked[0x20] != 0xFE && (unsigned char)linked[0x20] != 0xFD) {
             FastVecSub(point, veh + 0x10, linked + 0x10);
             FastVecScale(point, point, 0.5f);
-            func_L00_001FF548(point, point, 100.0f);
+            clamp_vec_length(point, point, 100.0f);
             FastVecAdd(point, point, linked + 0x10);
         } else {
             predict_hero_vehicle_position((char *)point, 140.0f);
         }
     } else {
         if (*(int *)(vars + 0xBC) == -1 ||
-            (linked = D_L13_00160058 + (*(int *)(vars + 0xBC) << 8)) == 0 ||
+            (linked = gemlik_moby_array_start + (*(int *)(vars + 0xBC) << 8)) == 0 ||
             (unsigned char)linked[0x20] == 0xFE || (unsigned char)linked[0x20] == 0xFD) {
             qcopy(point, D_0013E633 + 0xE9D);
         } else {
@@ -1275,10 +1275,10 @@ void update_blarg_space_fighter(Moby *moby) {
         break;
     case 1: {
         Moby *p;
-        if (d->fBC == -1 || (p = (Moby *)(D_L13_00160058 + (d->fBC << 8))) == 0 || p->state == 0xFE
+        if (d->fBC == -1 || (p = (Moby *)(gemlik_moby_array_start + (d->fBC << 8))) == 0 || p->state == 0xFE
             || p->state == 0xFD || p->command == 4) {
-            func_L00_001FF4B0(v30, D_L13_00167140 + 0x84, 40.0f);
-            FastVecSub(v30, D_L13_00167140, v30);
+            vec_scale_to_length(v30, gemlik_camera_pos + 0x84, 40.0f);
+            FastVecSub(v30, gemlik_camera_pos, v30);
             d->hB6 = d->hB4 = select_point_index_by_distance(v30, path, 0.0f);
             qcopy(&d->v90, path + (d->hB6 * 16 + 0x10));
             qcopy(&moby->pos, &d->v90);
@@ -1316,7 +1316,7 @@ void update_blarg_space_fighter(Moby *moby) {
         boss = 0;
         bossd = 0;
         if (d->fBC != -1) {
-            Moby *p = (Moby *)(D_L13_00160058 + (d->fBC << 8));
+            Moby *p = (Moby *)(gemlik_moby_array_start + (d->fBC << 8));
             if (p != 0 && p->state != 0xFE && p->state != 0xFD) {
                 boss = p;
                 bossd = (void *)p->pvars;
@@ -1370,16 +1370,16 @@ void update_blarg_space_fighter(Moby *moby) {
 
                         FastVecCross(v70, &vehd->vel, up);
                         FastVecCross(up, v70, &vehd->vel);
-                        func_L00_001FF4B0(up, up, d->fAC * 5.0f * FastSin(d->fB0));
-                        func_L00_001FF4B0(v70, v70, d->fAC * 5.0f * FastCos(d->fB0));
+                        vec_scale_to_length(up, up, d->fAC * 5.0f * FastSin(d->fB0));
+                        vec_scale_to_length(v70, v70, d->fAC * 5.0f * FastCos(d->fB0));
                         FastVecAdd(v30, hpos, up);
                         FastVecAdd(v30, v30, v70);
                         add_random_offset_to_vector_xyz(v30, 0.6f);
                         lead = vec_distance_xy(&moby->pos, D_0013E633 + 0xE9D);
-                        func_L00_001FF4B0(v50, &vehd->vel, vehd->f64 * (lead / (vehd->f64 + g_frame_time * 50.0f)));
+                        vec_scale_to_length(v50, &vehd->vel, vehd->f64 * (lead / (vehd->f64 + g_frame_time * 50.0f)));
                         FastVecAdd(v30, v30, v50);
                         FastVecSub(v30, v30, &moby->pos);
-                        func_L00_001FF4B0(v40, v30, 2.6f);
+                        vec_scale_to_length(v40, v30, 2.6f);
                         FastVecAdd(v40, v40, &moby->pos);
                         spawn_class_3f9_moby((int)moby, v30, v40, 121.0f, g_frame_time * 50.0f, 5.0f);
                         func_0022ED80_s(0, 0, (int)moby);
@@ -1412,9 +1412,9 @@ void update_blarg_space_fighter(Moby *moby) {
             }
             d->fD4 = -1;
         }
-        FastVecSub(v30, D_L13_00167140, &moby->pos);
+        FastVecSub(v30, gemlik_camera_pos, &moby->pos);
         func_L00_0025F4A8_alt(moby, v30, 0, 0.0f, 0.0f, 5, 3, 10, 4.0f, 3.0f, 9.0f, 1.1f, -1, 20.0f, 0, 1, -1, 0);
-        func_L00_001FF4B0(v30, v30, 4.0f);
+        vec_scale_to_length(v30, v30, 4.0f);
         FastVecSub(v40, &moby->pos, v30);
         FastVecScale(v30, &d->vel, 0.5f);
         switch (func_001160D8() % 10) {
@@ -1437,7 +1437,7 @@ void update_blarg_space_fighter(Moby *moby) {
         boss = 0;
         bossd = 0;
         if (d->fBC != -1) {
-            Moby *p = (Moby *)(D_L13_00160058 + (d->fBC << 8));
+            Moby *p = (Moby *)(gemlik_moby_array_start + (d->fBC << 8));
             if (p != 0 && p->state != 0xFE && p->state != 0xFD) {
                 boss = p;
                 bossd = (void *)p->pvars;
@@ -1455,7 +1455,7 @@ void update_blarg_space_fighter(Moby *moby) {
     }
     case 4: {
         Moby *p;
-        if (d->fBC != -1 && (p = (Moby *)(D_L13_00160058 + (d->fBC << 8))) != 0 && p->state != 0xFE
+        if (d->fBC != -1 && (p = (Moby *)(gemlik_moby_array_start + (d->fBC << 8))) != 0 && p->state != 0xFE
             && p->state != 0xFD && p->command != 4) {
             d->f20 = d->h24;
             moby->state = 0;
@@ -1692,7 +1692,7 @@ void emit_forcefield_tower_destruction_effects(unsigned char *a0, void *a1, int 
         *(u128z *)vD = *(u128z *)vC;
         FastVecAdd(vD, vD, vB);
         FastVecSub(vE, vD, pA);
-        func_L00_001FF4B0(vE, vE, random_float_between(0.025f, 0.23f));
+        vec_scale_to_length(vE, vE, random_float_between(0.025f, 0.23f));
         spawn_crate_debris(a0, vE, vD, D_L13_0015F660, 0x162, 0, 0.90000004f, 2.1f);
     }
     for (k = 0; k < 4; k++) {
@@ -1703,14 +1703,14 @@ void emit_forcefield_tower_destruction_effects(unsigned char *a0, void *a1, int 
         *(u128z *)vD = *(u128z *)vC;
         FastVecAdd(vD, vD, vB);
         FastVecSub(vE, vD, pA);
-        func_L00_001FF4B0(vE, vE, random_float_between(0.025f, 0.23f));
+        vec_scale_to_length(vE, vE, random_float_between(0.025f, 0.23f));
         t = random_integer_below(2);
         spawn_crate_debris(a0, vE, vD, D_L13_0015F660, t + 0x163, 0, 1.2f, 2.4f);
     }
     if (a2 == 0) {
         return;
     }
-    FastVecSub(vD, D_L13_00167140, pA);
+    FastVecSub(vD, gemlik_camera_pos, pA);
     clear_u64_value(vC);
     len = FastVecLength(vD);
     n = (len < 8.0f) ? func_001FA898_s(len) + 2 : 10;
@@ -2062,7 +2062,7 @@ void BlobHit(char *m, char *d, float s) {
             rand_vec(v, g_frame_time * 5.0f, g_frame_time * 10.0f);
             FastVecScale(d, d, 0.75f);
             FastVecAdd(v, v, d);
-            func_L00_001FF4B0(p, v, 0.5f);
+            vec_scale_to_length(p, v, 0.5f);
             FastVecAdd(p, p, m + 0x10);
             FastVecAdd(p, p, v);
             spawn_asteroid_fragment(m, (char *)p, (char *)v, *(short *)(d + 0x4E) - 1, part);
@@ -2945,10 +2945,10 @@ int Moby_SteerAlongPathFacing(char *m, char *d, int idx, int turn) {
     if (1.0f < t) t = 1.0f;
     FastVecScale(d + 0x70, d + 0x70, 1.0f - t);
     FastVecSub(v, path + (*(short *)(d + 0x9C) * 16 + 0x10), m + 0x10);
-    func_L00_001FF4B0(v, v, *(float *)(d + 0xAC));
+    vec_scale_to_length(v, v, *(float *)(d + 0xAC));
     FastVecScale(v, v, t);
     FastVecAdd(d + 0x70, d + 0x70, v);
-    func_L00_001FF4B0(d + 0x70, d + 0x70, *(float *)(d + 0xAC));
+    vec_scale_to_length(d + 0x70, d + 0x70, *(float *)(d + 0xAC));
     FastVecAdd(m + 0x10, m + 0x10, d + 0x70);
     yaw = fast_atan2(v[0], v[1]);
     pitch = -fast_atan2(vec_length_xy(v), v[2]);
@@ -3095,7 +3095,7 @@ void start_space_fighter_defeat_path(struct Moby *moby, char *vars, int *result)
     scale = g_frame_time * 10.0f;
     velocity = D_L13_0016016C + (*(int *)(vars + 0x130) << 7);
     *(short *)(vars + 0x9C) = 0;
-    func_L00_001FF4B0(vars + 0x70, velocity, scale);
+    vec_scale_to_length(vars + 0x70, velocity, scale);
     {
         int index = *(short *)(vars + 0x9C);
         int *path_id = (int *)path_ids + (unsigned char)vars[0x13B];
@@ -3133,7 +3133,7 @@ void start_space_fighter_defeat_path(struct Moby *moby, char *vars, int *result)
         moby->rot.y = -fast_atan2(horizontal, dz);
     }
     vars[0x10C] = 1;
-    mobys = (struct Moby *)D_L13_00160058;
+    mobys = (struct Moby *)gemlik_moby_array_start;
     mobys[*(int *)(vars + 0x134)].flags |= 2;
     mobys[*(int *)(vars + 0x134)].flags |= 1;
     mobys[*(int *)(vars + 0x134)].visible = 0;
@@ -3537,11 +3537,11 @@ unsigned char *fire_class_53_projectile(char *a, char *b) {
     if (*(char **)(x + 0x15F0) != 0 && *(short *)(*(char **)(x + 0x15F0) + 0xA6) == 0x45) {
         predict_hero_ship_projectile_lead_position((char *)v2, (char *)v0, g_frame_time * 20.0f);
         FastVecSub(v3, v2, v0);
-        func_L00_001FF4B0(v1, v3, g_frame_time * 20.0f);
-        func_L00_001FF4B0(v4, *(char **)(x + 0x15F0) + 0xD0, random_float_between(-(g_frame_time * 30.0f), g_frame_time * 30.0f));
-        func_L00_001FF4B0(v3, *(char **)(x + 0x15F0) + 0xE0, random_float_between(-(g_frame_time * 30.0f), g_frame_time * 30.0f));
+        vec_scale_to_length(v1, v3, g_frame_time * 20.0f);
+        vec_scale_to_length(v4, *(char **)(x + 0x15F0) + 0xD0, random_float_between(-(g_frame_time * 30.0f), g_frame_time * 30.0f));
+        vec_scale_to_length(v3, *(char **)(x + 0x15F0) + 0xE0, random_float_between(-(g_frame_time * 30.0f), g_frame_time * 30.0f));
         FastVecAdd(v4, v4, v3);
-        func_L00_001FF4B0(v4, v4, random_float_between(g_frame_time * 5.0f, g_frame_time * 30.0f));
+        vec_scale_to_length(v4, v4, random_float_between(g_frame_time * 5.0f, g_frame_time * 30.0f));
         FastVecAdd(v1, v1, v4);
     } else {
         rand_vec(v1, g_frame_time * 0.0f, g_frame_time * 30.0f);

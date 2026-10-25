@@ -43,7 +43,7 @@ void setup_level_cameras(void) {
     p1 = &g1->follow.up;
     g1->previous = 0;
     g1->blend.phase = 0;
-    func_L00_001FF4B0(p1, (char *)(*(int *)(base + 0x2080) + 0xE0), 1.0f);
+    vec_scale_to_length(p1, (char *)(*(int *)(base + 0x2080) + 0xE0), 1.0f);
     qcopy(&g1->follow.up_target, p1);
     qcopy(&g1->follow.up_target_prev, p1);
     clear_u64_value(g1->follow.up_vel);

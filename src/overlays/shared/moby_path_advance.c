@@ -39,7 +39,7 @@ s32 compute_advanced_moby_path_position(struct Moby *m, PathPoints *path, Vec4 *
     next = path_next(path, i, dir);
     FastVecSub(&seg, &path->point[next], &path->point[i]);
     len = FastVecLength(&seg);
-    func_L00_001FF4B0(&seg, &seg, 1.0f);
+    vec_scale_to_length(&seg, &seg, 1.0f);
     FastVecSub(&rel, &m->pos, &path->point[i]);
     along = FastVecDot(&rel, &seg) + dist;
     if (len < along) {
@@ -47,9 +47,9 @@ s32 compute_advanced_moby_path_position(struct Moby *m, PathPoints *path, Vec4 *
         next = path_next(path, i, dir);
         FastVecSub(&seg, &path->point[next], &path->point[i]);
         along = along - len;
-        func_L00_001FF4B0(&seg, &seg, 1.0f);
+        vec_scale_to_length(&seg, &seg, 1.0f);
     }
-    func_L00_001FF4B0(&seg, &seg, along);
+    vec_scale_to_length(&seg, &seg, along);
     FastVecAdd(out, &seg, &path->point[i]);
     return i;
 }

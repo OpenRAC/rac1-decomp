@@ -64,7 +64,7 @@ void draw_snagglebeast_sphere_quad_strips(char *moby, int arg2, float fa, float 
     quad.texture_state = ts;
     quad.primitive = prim;
     quad.reserved = 0;
-    spin = IntToFloat(D_L07_0015F6B0 + arg2) * fa;
+    spin = IntToFloat(umbris_frame_count + arg2) * fa;
     Moby_GetJointWorldPos(moby, 9, v90);
     qcopy(vA0, v90);
     vA0[2] = vA0[2] - (fb - 0.8f);
@@ -111,7 +111,7 @@ void draw_snagglebeast_sphere_quad_strips(char *moby, int arg2, float fa, float 
             }
             FastVecAdd(&quad.pos[2], &quad.pos[2], v90);
             FastVecAdd(&quad.pos[3], &quad.pos[3], v90);
-            func_L00_001FD1D8(&quad, 0, 1);
+            draw_world_quad(&quad, 0, 1);
         }
     }
     VU1_addGSregister(0x4E, (u64)(depth_buffer_address >> 13) | 0x1000000L);

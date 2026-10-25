@@ -198,7 +198,7 @@ void InitOnce(void) {
     seg = D_1FF8000 - (D_00137C80[0x4B1] << 0xB);
     func_0012F348(D_00137C80[0x4B0], D_00137C80[0x4B1], seg);
     func_00118D80(0);
-    func_0020C468(seg, tbl);
+    fast_decompress(seg, tbl);
     func_00118D80(0);
     LoadIRXModule((void *)(tbl[0x1C] + (int)tbl), (void *)(int)tbl[0x1D]);
     LoadIRXModule((void *)(tbl[0x1E] + (int)tbl), (void *)(int)tbl[0x1F]);

@@ -491,14 +491,14 @@ void update_resort_owner_state_transitions(void *mp) {
         clear_u64_value(d->f130);
         clear_u64_value(d->f140);
         if (discount_purchase_pricing[0xB] != 0) {
-            if (D_0014C150[d->f10C + (g_current_level_index << 4)] == 0xFF) {
+            if (saved_mission_state[d->f10C + (g_current_level_index << 4)] == 0xFF) {
                 func_L11_0030BC10_2D2670((char *)D_L11_00160058_d + (d->fF0[0] << 8));
                 func_L11_0030BC10_2D2670((char *)D_L11_00160058_d + (d->fF0[1] << 8));
                 func_L11_002CCB50_2D2670((char *)D_L11_00160058_d + (d->f104 << 8));
                 DeleteMoby(moby);
                 return;
             }
-        } else if (D_0014C150[d->f10C + (g_current_level_index << 4)] == 0xFF) {
+        } else if (saved_mission_state[d->f10C + (g_current_level_index << 4)] == 0xFF) {
             int ofs;
             int base;
             d->idx = 3;
@@ -513,7 +513,7 @@ void update_resort_owner_state_transitions(void *mp) {
             func_L11_0030BC10_2D2670((char *)D_L11_00160058_d + (d->fF0[1] << 8));
             return;
         }
-        if (D_0014C150[d->f108 + (g_current_level_index << 4)] == 0xFF
+        if (saved_mission_state[d->f108 + (g_current_level_index << 4)] == 0xFF
             && FastVecDist(D_0013E633 + 0xE9D, D_L11_0016016C_2D2670[d->fE0[1]].pos) < 12.0f) {
             int ofs;
             int base;
@@ -670,7 +670,7 @@ void update_resort_owner_state_transitions(void *mp) {
         }
         break;
     case 14:
-        if (D_0014C150[d->f118 + (g_current_level_index << 4)] == 0xFF
+        if (saved_mission_state[d->f118 + (g_current_level_index << 4)] == 0xFF
             && ((Hero *)(D_0013E633 + 0xE1D))->state.current != 0x32
             && Npc_TryStartDialog(moby, d->f20)) {
             PlaceMarkerAheadOfMoby(2.5f, moby);
@@ -890,7 +890,7 @@ int try_find_resort_owner_jump_target(char *m, float *out) {
     if (found) {
         float *pos = &moby->pos.x;
         FastVecSub(candidate_position, out, pos);
-        if (FastVecLength(candidate_position) > 4.0f) func_L00_001FF4B0(candidate_position, candidate_position, 4.0f);
+        if (FastVecLength(candidate_position) > 4.0f) vec_scale_to_length(candidate_position, candidate_position, 4.0f);
         FastVecAdd(candidate_position, candidate_position, pos);
         {
             int *path_entry = path_table[*(int *)(pvars - (-(*(int *)(pvars + 0x158) * 4)) + 0x60)];
@@ -901,7 +901,7 @@ int try_find_resort_owner_jump_target(char *m, float *out) {
                     qcopy(collision_start_position, pos);
                     collision_start_position[2] += 0.15f;
                     candidate_position[2] = landing_ground_height + 0.15f;
-                    if (func_L00_001EFFF0(collision_start_position, candidate_position, 2, m, 0)) {
+                    if (coll_line(collision_start_position, candidate_position, 2, m, 0)) {
                         candidate_position[2] = landing_ground_height;
                         qcopy(out, candidate_position);
                         return 1;
@@ -1086,7 +1086,7 @@ void fred_pokitaru_update(char *m)
                 stats->f432 = scale_ticks(D_0015EFA4_2F21B0) / 600;
             }
         }
-        if (D_0014C150[moby->mission + (g_current_level_index << 4)] != 0xFF) {
+        if (saved_mission_state[moby->mission + (g_current_level_index << 4)] != 0xFF) {
             char *h = (char *)&D_0013E633 + 0xE9D;
             if (FastVecDist(h, (char *)&moby->pos) < 4.0f &&
                 FastAbsF(((Vec4f *)h)->z - moby->pos.z) < 4.0f) {
@@ -1220,7 +1220,7 @@ void Moby318Update(struct Moby *moby) {
             *(float *)(slots[i] + 0x48) =
                 FastAddRots(*(float *)(c + 0x48), (float)i * 2.0943952f);
         }
-        if (*(int *)(data + 8) >= 0 && D_0014C150[*(int *)(data + 8) + g_current_level_index * 16] != 0xFF) {
+        if (*(int *)(data + 8) >= 0 && saved_mission_state[*(int *)(data + 8) + g_current_level_index * 16] != 0xFF) {
             moby->visible = 0;
             moby->flags |= 1;
             moby->collision = 0;
@@ -1238,7 +1238,7 @@ void Moby318Update(struct Moby *moby) {
         if (*(int *)data == -1)
             break;
         if ((moby->flags & 1) && *(int *)(data + 8) >= 0 &&
-            D_0014C150[*(int *)(data + 8) + g_current_level_index * 16] == 0xFF)
+            saved_mission_state[*(int *)(data + 8) + g_current_level_index * 16] == 0xFF)
             restore_teleporter_visibility_and_collision(moby);
         g = D_0013F450_F3888;
         if (*(char **)(g + 0x2FC) != moby)
@@ -1246,7 +1246,7 @@ void Moby318Update(struct Moby *moby) {
         if (*(short *)(g + 0x30E) != 0)
             break;
         request_teleporter_help_message(moby);
-        if (!(D_0013CBE4 & 0x10))
+        if (!(pad0_pressed & 0x10))
             break;
         if (D_L11_0015F674 != 0xB)
             break;
@@ -1290,7 +1290,7 @@ void Moby318Update(struct Moby *moby) {
             char *td;
             float v[4];
             if (*(int *)(data + 4) != -1 &&
-                D_0014C150[*(int *)(data + 0xC) + g_current_level_index * 16] == 0xFF)
+                saved_mission_state[*(int *)(data + 0xC) + g_current_level_index * 16] == 0xFF)
                 t = D_L11_00160058 + (*(int *)(data + 4) << 8);
             td = *(char **)(t + 0x78);
             qcopy(v, t + 0x10);
@@ -1319,7 +1319,7 @@ void Moby318Update(struct Moby *moby) {
         break;
     case 4:
         if (D_0013F4D8 < 138.0f)
-            D_0013D4E5 = 1;
+            menu_item_enabled_73 = 1;
         if (*(float *)(data + 0x3C) < 1.95f) {
             AddDrawCallback(DrawShimmeringRing, moby);
             func_00214D28_F3888((float *)(data + 0x3C), 1.95f, g_frame_time * 4.0f);
@@ -1431,7 +1431,7 @@ void DrawShimmeringRing(char *moby) {
             p[3] = 1.0f;
             p += 4;
         }
-        func_L00_001FD1D8(&q, m, 0);
+        draw_world_quad(&q, m, 0);
     }
 }
 void restore_teleporter_visibility_and_collision(char *moby) {
@@ -2422,8 +2422,8 @@ void update_child_grid_poses(struct Moby *m) {
 
     data = m->pvars;
     grid = (struct Moby *(*)[6])data;
-    func_L00_001FF4B0(&v0, &m->rot_row0, (*(float *)&D_L11_00161FD0));
-    func_L00_001FF4B0(&v1, &m->rot_row1, (*(float *)&D_L11_00161FD4));
+    vec_scale_to_length(&v0, &m->rot_row0, (*(float *)&D_L11_00161FD0));
+    vec_scale_to_length(&v1, &m->rot_row1, (*(float *)&D_L11_00161FD4));
     progress = *(float *)(data + 0x6C);
     hi = 90.0f - progress * 180.0f;
     if (hi < -90.0f) {
@@ -2464,7 +2464,7 @@ void update_child_grid_poses(struct Moby *m) {
             }
             grid[row][col]->rot.z = FastAddRots(grid[row][col]->rot.z, angle);
             euler_rotation_basis(&grid[row][col]->rot_row0, &grid[row][col]->rot);
-            func_L00_001FF4B0(&v2, &grid[row][col]->rot_row1, -(*(float *)&D_L11_00161FD8));
+            vec_scale_to_length(&v2, &grid[row][col]->rot_row1, -(*(float *)&D_L11_00161FD8));
             if (row & 1) {
                 FastVecAdd(&v2, &v2, &v1);
             } else {
@@ -3095,7 +3095,7 @@ void ShipCollider_Update(struct Moby *pickup) {
         if (dist < 40.0f && pickup->visible != 0) {
             k = k / vec_length(dist);
             FastVecSub(&pickup_vector_scratch, &ship->pos, &pickup->pos);
-            func_L00_001FF4B0(&pickup_vector_scratch, &pickup_vector_scratch, k);
+            vec_scale_to_length(&pickup_vector_scratch, &pickup_vector_scratch, k);
             FastVecAdd(&pv->vel, &pv->vel, &pickup_vector_scratch);
         }
         FastVecAdd(&pv->drift, &pv->drift, &pv->vel);

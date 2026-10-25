@@ -163,7 +163,7 @@ void update_class_b8_projectile(struct Moby *m)
         }
         pr.unk20 = 1;
         qcopy(&pr.dir, &v->dir);
-        func_L00_001FF500(&pr.dir, &pr.dir, 1.0f);
+        vec_set_length_xy(&pr.dir, &pr.dir, 1.0f);
         probe = &pr;
         pr.dir.v.z = 1.0f;
         pr.dir.v.w = 5627.9248f;
@@ -177,7 +177,7 @@ void update_class_b8_projectile(struct Moby *m)
         DeleteMoby(m);
         return;
     }
-    if (func_L00_001EFFF0(&old, &m->pos, 0, v->owner, probe) == 0)
+    if (coll_line(&old, &m->pos, 0, v->owner, probe) == 0)
         return;
 
     qcopy(&m->pos, &D_L04_00174060);
@@ -189,9 +189,9 @@ void update_class_b8_projectile(struct Moby *m)
             r.f[2] = random_float_between(-1.0f, 1.0f);
             push.q = r.q;
             vec_reflect(&r, v, D_L04_00174080);
-            func_L00_001FF4B0(&push, &push, FastVecLength(&r) * 0.5f);
+            vec_scale_to_length(&push, &push, FastVecLength(&r) * 0.5f);
             FastVecAdd(&push, &r, &push);
-            func_L00_001FF4B0(&push, &push, random_float_between(g_frame_time * 3.0f, g_frame_time * 6.0f));
+            vec_scale_to_length(&push, &push, random_float_between(g_frame_time * 3.0f, g_frame_time * 6.0f));
             PartType27Spawn(&m->pos, &push, 0x7F2F4F6F,
                              rand_range(scale_ticks(10), scale_ticks(15)), 30000.0f);
         }

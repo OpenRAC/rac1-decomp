@@ -48,7 +48,7 @@ void destroy_gadgebot_spawn_container(void *moby_ptr, void *target_ptr) {
     if (target != 0) {
         qcopy(displacement, target + 0x10);
     } else {
-        FastVecSub(displacement, moby + 0x10, D_001414D0 + 0x10);
+        FastVecSub(displacement, moby + 0x10, g_hero_moby + 0x10);
     }
     for (j = 9; j >= 0; j--) {
         qcopy(pos, moby + 0x10);
@@ -215,13 +215,13 @@ void draw_gadgebot_spawn_container(char *moby) {
         for (i = 0; i < 57; i++) {
             transform_vector(D_L06_001D4880[i], D_L06_001D35E0[i], matrix);
             FastVecSub(direction, D_L06_001D4880[i], D_L06_00167640);
-            func_L00_001FF4B0(direction, direction, 1.0f);
+            vec_scale_to_length(direction, direction, 1.0f);
             transform_vector(normal, D_L06_001D4080[i], matrix);
-            func_L00_001FF4B0(normal, normal, *(float *)&D_L06_0016191C);
+            vec_scale_to_length(normal, normal, *(float *)&D_L06_0016191C);
             scale = FastVecDot(normal, direction);
             FastVecScale(projected, normal, scale + scale);
             FastVecSub(projected, direction, projected);
-            func_L00_001FF4B0(projected, projected, 1.0f);
+            vec_scale_to_length(projected, projected, 1.0f);
             projected[2] += 1.0f;
             scale = vec_length(projected[2] + projected[2]);
             uv[0] = projected[0] / (scale + scale) + 0.5f;
@@ -248,7 +248,7 @@ void draw_gadgebot_spawn_container(char *moby) {
         float *center = facePos;
         TransformPoint(center, D_L06_001D4410[i], matrix);
         FastVecSub(direction, center, D_L06_00167640);
-        func_L00_001FF4B0(direction, direction, 1.0f);
+        vec_scale_to_length(direction, direction, 1.0f);
         matrix_mul_vec3(center, D_L06_001D3DE0[i], matrix);
         if (!(0.0f < FastVecDot(direction, center))) {
             short *idx = D_L06_001D3970[i];
@@ -264,7 +264,7 @@ void draw_gadgebot_spawn_container(char *moby) {
                     quad.uv[j][1] = D_L06_001D3C10[idx[1]][1];
                 }
             }
-            func_L00_001FD1D8(&quad, 0, 0);
+            draw_world_quad(&quad, 0, 0);
         }
         i++;
     } while (i < 42);
@@ -468,17 +468,17 @@ void frog_update(unsigned char *m) {
     case 4: {
         int *p;
         int n;
-        qcopy(B, (char *)D_L06_001B0FB0[*(int *)(d + 0x1F8)] + *(short *)(d + 0x208) * 16 + 0x10);
+        qcopy(B, (char *)blarg_paths[*(int *)(d + 0x1F8)] + *(short *)(d + 0x208) * 16 + 0x10);
         FastVecSub(A, B, m + 0x10);
         probe_frog_local_z_collision((char *)m);
         blend_frog_rotation_to_facing_frame((char *)m, (float *)D_L06_00174700, A);
-        func_L00_001FF4B0(C, m + 0xC0, *(float *)(d + 0x1E4) * g_frame_time);
+        vec_scale_to_length(C, m + 0xC0, *(float *)(d + 0x1E4) * g_frame_time);
         move_frog_with_collision_resolution(m, C, 0, 0.3f, 0.3f);
         matrix_mul_vec3(A, A, m + 0xC0);
         if (vec_length_xy(A) < 0.5f) {
             float k;
             float dist;
-            p = D_L06_001B0FB0[*(int *)(d + 0x1F8)];
+            p = blarg_paths[*(int *)(d + 0x1F8)];
             n = *p;
             if (*(short *)(d + 0x208) < n - 2) {
                 *(short *)(d + 0x208) = *(short *)(d + 0x208) + 1;
@@ -542,7 +542,7 @@ void frog_update(unsigned char *m) {
             FastVecSub(C, d + 0x230, m + 0x10);
             probe_frog_local_z_collision((char *)m);
             blend_frog_rotation_to_facing_frame((char *)m, (float *)D_L06_00174700, C);
-            func_L00_001FF4B0(B, m + 0xC0, *(float *)(d + 0x1E4) * g_frame_time);
+            vec_scale_to_length(B, m + 0xC0, *(float *)(d + 0x1E4) * g_frame_time);
             move_frog_with_collision_resolution(m, B, 1, 0.3f, 0.3f);
         }
         if (*(int *)(d + 0x1C4) != 2 && random_integer_below(9) == 0) {
@@ -562,7 +562,7 @@ void frog_update(unsigned char *m) {
         B[2] = 0.0f;
         probe_frog_local_z_collision((char *)m);
         blend_frog_rotation_to_facing_frame((char *)m, (float *)D_L06_00174700, B);
-        func_L00_001FF4B0(A, m + 0xC0, *(float *)(d + 0x1E4) * g_frame_time);
+        vec_scale_to_length(A, m + 0xC0, *(float *)(d + 0x1E4) * g_frame_time);
         move_frog_with_collision_resolution(m, A, 1, 0.3f, 0.3f);
         if (vec_distance_xy(m + 0x10, t + 0x10) < 2.0f) {
             m[0x20] = 0xC;
@@ -582,7 +582,7 @@ void frog_update(unsigned char *m) {
         near = 0;
         probe_frog_local_z_collision((char *)m);
         blend_frog_rotation_to_facing_frame((char *)m, (float *)D_L06_00174700, B);
-        func_L00_001FF4B0(A, m + 0xC0, *(float *)(d + 0x1E4) * g_frame_time);
+        vec_scale_to_length(A, m + 0xC0, *(float *)(d + 0x1E4) * g_frame_time);
         move_frog_with_collision_resolution(m, A, 1, 0.3f, 0.3f);
         if (SegmentCrossPolyline(*(int *)(d + 0x1EC), m + 0x10, t + 0x10, D) != 0
             && FastVecDist(m + 0x10, D) < *(float *)(d + 0x244)) {
@@ -613,7 +613,7 @@ void frog_update(unsigned char *m) {
         blend_frog_rotation_to_facing_frame((char *)m, (float *)(m + 0xE0), B);
         f = MobyGetFrameValue(m);
         if (m[0x52] == m[0x53] && f >= 10.0f && f <= 15.0f && *(int *)(D_0013E633 + 0x2EA1) != 0x51) {
-            func_L00_001FF4B0(A, m + 0xC0, (*(float *)(d + 0x1E4) + *(float *)(d + 0x1E4)) * g_frame_time);
+            vec_scale_to_length(A, m + 0xC0, (*(float *)(d + 0x1E4) + *(float *)(d + 0x1E4)) * g_frame_time);
             move_frog_with_collision_resolution(m, A, 1, 0.3f, 0.3f);
             collect_mobies_in_sphere_at_moby_point(m, 0, 1, 0.333f, 1.0f, 1.0f, 0, 1, 0);
             return;
@@ -628,7 +628,7 @@ void frog_update(unsigned char *m) {
         FastVecSub(B, d + 0x210, m + 0x10);
         probe_frog_local_z_collision((char *)m);
         blend_frog_rotation_to_facing_frame((char *)m, (float *)D_L06_00174700, B);
-        func_L00_001FF4B0(A, m + 0xC0, *(float *)(d + 0x1E4) * g_frame_time);
+        vec_scale_to_length(A, m + 0xC0, *(float *)(d + 0x1E4) * g_frame_time);
         move_frog_with_collision_resolution(m, A, 1, 0.3f, 0.3f);
         if (vec_distance_xy(m + 0x10, d + 0x210) < 2.0f) {
             m[0x20] = 8;
@@ -730,7 +730,7 @@ void RespawnMobyUpdate(struct Moby *moby) {
     if (vars->carried != 0) {
         hit = func_L00_0025B478_EA920(vars->carried, 0x330000, 0);
         if (hit != 0 && (hit->source == 0 || hit->source->oclass != 0xAF)) {
-            func_L06_002EB5C8_EA920(moby, (Vec4 *)D_L06_0015F660);
+            func_L06_002EB5C8_EA920(moby, (Vec4 *)blarg_zero_vec);
             func_L06_002EB360_EA920(moby);
             SetDeathBits(moby, 0, -1);
             goto remove;
@@ -793,13 +793,13 @@ void RespawnMobyUpdate(struct Moby *moby) {
         vars->target_mode = 1;
         vars->target = target;
         qcopy(&vars->target_pos, &target->pos);
-    } else if (D_001414F4[0] == 1) {
+    } else if (hero_vehicle_mode[0] == 1) {
         if (D_L06_0015F6B0 % 8 == vars->frame_slot) {
             select_hero_or_gadgebot_target((char *)moby, (char **)&vars->target, vars->range);
             if (vars->target == 0) {
                 vars->target_mode = 2;
             } else {
-                int *path = D_L06_001B0FB0[vars->path];
+                int *path = blarg_paths[vars->path];
                 if (IsPointInPolygon(&vars->target->pos, path + 4, *path) == 0 ||
                     (vars->target->oclass == 0x359 && 2.0f < vec_distance_xy(&moby->pos, &vars->target->pos))) {
                     vars->target = 0;
@@ -811,7 +811,7 @@ void RespawnMobyUpdate(struct Moby *moby) {
         }
     } else {
         Vec4f *goal = &vars->target_pos;
-        int *path = D_L06_001B0FB0[vars->path];
+        int *path = blarg_paths[vars->path];
         if (FindNearestEligibleMoby(moby, goal, vars->range, 0, 0, path + 4, *path) != 2) {
             if (vars->range < vec_distance_xy(&vars->spawn_pos, goal) ||
                 3.0f < FastAbsF(moby->pos.z - vars->target_pos.z)) {
@@ -833,11 +833,11 @@ extern short D_L06_00161C90;
 void blend_frog_rotation_to_facing_frame(char *m, float *a1, float *a2) {
     float d;
     float A[4], B[4], C[4], D[4], E[4], F[4], G[4], H[4];
-    func_L00_001FF4B0(C, a1, 1.0f);
+    vec_scale_to_length(C, a1, 1.0f);
     d = FastVecDot(C, a2);
-    func_L00_001FF4B0(E, C, d);
+    vec_scale_to_length(E, C, d);
     FastVecSub(D, a2, E);
-    func_L00_001FF4B0(D, D, 1.0f);
+    vec_scale_to_length(D, D, 1.0f);
     qcopy(H, C);
     qcopy(F, D);
     FastVecCross(G, F, H);
@@ -856,12 +856,12 @@ void probe_frog_local_z_collision(char *moby) {
     float b[4];
     float c[4];
     qcopy(b, moby + 0x10);
-    func_L00_001FF4B0(c, moby + 0xE0, 1.0f);
+    vec_scale_to_length(c, moby + 0xE0, 1.0f);
     FastVecAdd(b, b, c);
     qcopy(a, moby + 0x10);
-    func_L00_001FF4B0(c, moby + 0xE0, -1.0f);
+    vec_scale_to_length(c, moby + 0xE0, -1.0f);
     FastVecAdd(a, a, c);
-    func_L00_001EFFF0(b, a, 2, 0, 0);
+    coll_line(b, a, 2, 0, 0);
 }
 extern float func_001F9CB8(void *);
 extern int coll_sphere_L06(void *, float, int, void *) __asm__("func_L00_001F10E0");
@@ -877,15 +877,15 @@ void move_frog_with_collision_resolution(void *moby, void *out, int follow_path,
     float backward[4];
     int i;
 
-    func_L00_001FF4B0(forward, (char *)moby + 0xE0, scale);
-    func_L00_001FF4B0(backward, forward, -g_frame_time);
+    vec_scale_to_length(forward, (char *)moby + 0xE0, scale);
+    vec_scale_to_length(backward, forward, -g_frame_time);
     FastVecAdd(out, out, backward);
     qcopy(start, (char *)moby + 0x10);
     FastVecAdd(start, start, forward);
     FastVecAdd((char *)moby + 0x10, (char *)moby + 0x10, out);
     FastVecAdd(end, (char *)moby + 0x10, forward);
 
-    if (threshold < FastVecLength(out) && func_L00_001EFFF0(start, end, 0, (int)moby, 0) != 0) {
+    if (threshold < FastVecLength(out) && coll_line(start, end, 0, (int)moby, 0) != 0) {
         qcopy(end, D_L06_001746E0);
         FastVecSub((char *)moby + 0x10, end, forward);
     }
@@ -931,9 +931,9 @@ void SpawnDeathParticlesAndRemove(struct Moby *moby) {
         offset[1] = random_float_between(-0.625f, 0.625f);
         offset[2] = random_float_between(0.0f, 1.25f);
         *(u128_EB360 *)pos = *(u128_EB360 *)offset;
-        func_L00_001FF4B0(vel, pos, speed);
+        vec_scale_to_length(vel, pos, speed);
         FastVecAdd(pos, pos, origin);
-        spawn_crate_debris(*(void **)(vars + 0x20C), vel, pos, D_L06_0015F660, 0x165, 0, 0.3f, 0.6f);
+        spawn_crate_debris(*(void **)(vars + 0x20C), vel, pos, blarg_zero_vec, 0x165, 0, 0.3f, 0.6f);
     }
     for (j = 7; j >= 0; j--) {
         float speed = random_float_between(1.0f, 4.0f) * g_frame_time;
@@ -942,9 +942,9 @@ void SpawnDeathParticlesAndRemove(struct Moby *moby) {
         offset[1] = random_float_between(-0.625f, 0.625f);
         offset[2] = random_float_between(0.0f, 1.25f);
         *(u128_EB360 *)pos = *(u128_EB360 *)offset;
-        func_L00_001FF4B0(vel, pos, speed);
+        vec_scale_to_length(vel, pos, speed);
         FastVecAdd(pos, pos, origin);
-        spawn_crate_debris(*(void **)(vars + 0x20C), vel, pos, D_L06_0015F660,
+        spawn_crate_debris(*(void **)(vars + 0x20C), vel, pos, blarg_zero_vec,
                          random_integer_below(2) + 0x166, 0, 0.5f, 0.7f);
     }
     DeleteMoby(*(void **)(vars + 0x20C));
@@ -1410,7 +1410,7 @@ void GadgebotUpdate(Moby *moby) {
         (*(float (*)[4])&moby->pos)[2] = ProbeGroundHeight((*(float (*)[4])&moby->pos), 0, 0.5f);
         spawn_gadgebot_pad((char *)moby);
         d->f2F0.q = d->f2E0.q = *(u128 *)(*(float (*)[4])&moby->pos);
-        if (D_0014C150[moby->mission + g_current_level_index * 16] == 0xFF) {
+        if (saved_mission_state[moby->mission + g_current_level_index * 16] == 0xFF) {
             DeleteMoby(moby);
             return;
         }
@@ -1470,7 +1470,7 @@ void GadgebotUpdate(Moby *moby) {
             (*(int *)&moby->collision) = (*(GbClass **)&moby->pclass)->f10;
             moby->state = 3;
         } else {
-            if (D_001414F4[0] == 0) {
+            if (hero_vehicle_mode[0] == 0) {
                 moby->flags |= 0x41;
                 d->f170->flags |= 0x41;
                 moby->flags &= 0xEFFF;
@@ -1506,10 +1506,10 @@ void GadgebotUpdate(Moby *moby) {
 
                 for (i = 0; i < 16; i++) {
                     if (d->paths.id[i] >= 0) {
-                        int *p = D_L06_001B0FB0[d->paths.id[i]];
+                        int *p = blarg_paths[d->paths.id[i]];
 
                         if (IsPointInPolygon(g_hero.f80, p + 4, *p) != 0) {
-                            int *q = D_L06_001B0FB0[d->paths.id[i]];
+                            int *q = blarg_paths[d->paths.id[i]];
 
                             if (IsPointInPolygon((*(float (*)[4])&moby->pos), q + 4, *q) != 0) {
                                 d->f27C = i;
@@ -1565,7 +1565,7 @@ void GadgebotUpdate(Moby *moby) {
                     }
                     *(u128 *)v70 = *(u128 *)(*(float (*)[4])&moby->pos);
                     PushPointOutsidePath(0.17f, d->paths.id[d->f27C], (*(float (*)[4])&moby->pos), v70);
-                    p = D_L06_001B0FB0[d->paths.id[d->f27C]];
+                    p = blarg_paths[d->paths.id[d->f27C]];
                     if (IsPointInPolygon(v70, p + 4, *p) != 0) {
                         *(u128 *)(*(float (*)[4])&moby->pos) = *(u128 *)v70;
                     }
@@ -1654,10 +1654,10 @@ void GadgebotUpdate(Moby *moby) {
             d->f27C = -1;
             for (i = 0; i < 16; i++) {
                 if (d->paths.id[i] >= 0) {
-                    int *p = D_L06_001B0FB0[d->paths.id[i]];
+                    int *p = blarg_paths[d->paths.id[i]];
 
                     if (IsPointInPolygon(g_hero.f80, p + 4, *p) != 0) {
-                        int *q = D_L06_001B0FB0[d->paths.id[i]];
+                        int *q = blarg_paths[d->paths.id[i]];
 
                         if (IsPointInPolygon((*(float (*)[4])&moby->pos), q + 4, *q) != 0) {
                             d->f27C = i;
@@ -1693,7 +1693,7 @@ void GadgebotUpdate(Moby *moby) {
                     }
                     *(u128 *)v60 = *(u128 *)(*(float (*)[4])&moby->pos);
                     PushPointOutsidePath(0.17f, d->paths.id[d->f27C], (*(float (*)[4])&moby->pos), v60);
-                    p = D_L06_001B0FB0[d->paths.id[d->f27C]];
+                    p = blarg_paths[d->paths.id[d->f27C]];
                     if (IsPointInPolygon(v60, p + 4, *p) != 0) {
                         *(u128 *)(*(float (*)[4])&moby->pos) = *(u128 *)v60;
                     }
@@ -1722,7 +1722,7 @@ void GadgebotUpdate(Moby *moby) {
                     qcopy(v80, v70);
                     v70[0] += FastCos(moby->rot.z) * 0.3f;
                     v70[1] += FastSin(moby->rot.z) * 0.3f;
-                    if (func_L00_001EFFF0(v70, v80, 0, (int)moby, 0) != 0 && D_L06_001746D8 == d->f174) {
+                    if (coll_line(v70, v80, 0, (int)moby, 0) != 0 && D_L06_001746D8 == d->f174) {
                         moby->command = 2;
                     }
                 }
@@ -1877,7 +1877,7 @@ void GadgebotUpdate(Moby *moby) {
                 v50[2] = 0.0f;
                 v50[2] += random_float_between(0.0f, 0.5f);
                 add_vectors(v60, v50, (*(float (*)[4])&moby->pos));
-                func_L00_001FF4B0(v40, v40, random_float_between(0.0f, g_frame_time));
+                vec_scale_to_length(v40, v40, random_float_between(0.0f, g_frame_time));
                 v40[2] = random_float_between(g_frame_time * 2.5f, g_frame_time * 5.0f);
                 t = scale_ticks(rand_range(0xF, 0x1E));
                 ga = (cg << 8) | 0x7F000000;
@@ -1914,7 +1914,7 @@ void GadgebotUpdate(Moby *moby) {
 
             FastVecSub(v50, (*(float (*)[4])&moby->pos), v40);
             if (FastVecLength(v50) < 0.25f) {
-                func_L00_001FF4B0(v50, v50, 0.25f);
+                vec_scale_to_length(v50, v50, 0.25f);
             }
             qcopy((*(float (*)[4])&moby->pos), v40);
             max = g_frame_time * 3.0f;
@@ -1925,7 +1925,7 @@ void GadgebotUpdate(Moby *moby) {
                 d->f284 = len;
             }
             if (d->f284 < len) {
-                func_L00_001FF4B0(v50, v50, d->f284);
+                vec_scale_to_length(v50, v50, d->f284);
             }
             FastVecAdd((*(float (*)[4])&moby->pos), (*(float (*)[4])&moby->pos), v50);
         } else {
@@ -1937,7 +1937,7 @@ void GadgebotUpdate(Moby *moby) {
 
             if (r == 0) {
                 float z = (*(float (*)[4])&moby->pos)[2];
-                float *hp = D_L06_001746C0.f30;
+                float *hp = blarg_coll_hit.f30;
                 int i;
 
                 i = 0;
@@ -1947,7 +1947,7 @@ void GadgebotUpdate(Moby *moby) {
                     if (coll_sphere(IntToFloat(d->ctl.i00) * 0.0009765625f, v50, 6, moby) == 0) {
                         break;
                     }
-                    if (fast_atan2(D_L06_001746C0.f48, vec_length_xy(D_L06_001746C0.f40)) > 0.5235988f) {
+                    if (fast_atan2(blarg_coll_hit.f48, vec_length_xy(blarg_coll_hit.f40)) > 0.5235988f) {
                         qcopy((*(float (*)[4])&moby->pos), hp);
                         (*(float (*)[4])&moby->pos)[2] -= d->ctl.f04;
                     }
@@ -1983,8 +1983,8 @@ void GadgebotUpdate(Moby *moby) {
             return;
         }
     }
-    if (D_L06_001746C0.f18 != 0 && D_L06_001746C0.f1C > 0) {
-        d->f19C = D_L06_001746C0.f18;
+    if (blarg_coll_hit.f18 != 0 && blarg_coll_hit.f1C > 0) {
+        d->f19C = blarg_coll_hit.f18;
     } else {
         d->f19C = 0;
     }
@@ -1995,8 +1995,8 @@ void GadgebotUpdate(Moby *moby) {
     }
     *(u128 *)v50 = *(u128 *)(*(float (*)[4])&moby->pos);
     v50[2] += 1.0f;
-    if (func_L00_001EFFF0(v50, v40, 0, (int)moby, 0) != 0 && D_L06_001746C0.f18 != 0
-        && (D_L06_001746C0.f18->oclass == 0x409 || D_L06_001746C0.f18->oclass == 0x359 || is_moby_in_class_range_500_to_540(D_L06_001746C0.f18) != 0)) {
+    if (coll_line(v50, v40, 0, (int)moby, 0) != 0 && blarg_coll_hit.f18 != 0
+        && (blarg_coll_hit.f18->oclass == 0x409 || blarg_coll_hit.f18->oclass == 0x359 || is_moby_in_class_range_500_to_540(blarg_coll_hit.f18) != 0)) {
         *(u128 *)(*(float (*)[4])&moby->pos) = *(u128 *)save0;
     }
     if (moby->visible != 0) {
@@ -2112,8 +2112,8 @@ void assign_gadgebot_attack_targets(void) {
             *(u128 *)vD = *(u128 *)(q + 0x10);
             *(float *)(vE + 8) += 0.25f;
             *(float *)(vD + 8) += 0.25f;
-            if (func_L00_001EFFF0(vE, vD, 2, (int)pi, 0) != 0 &&
-                (char *)((GbHit *)(void *)&D_L06_001746C0)->f18 != q) continue;
+            if (coll_line(vE, vD, 2, (int)pi, 0) != 0 &&
+                (char *)((GbHit *)(void *)&blarg_coll_hit)->f18 != q) continue;
             dist = score_gadgebot_target_candidate(pi, q, 5);
             for (k = 0; k < S16(d, 0x192); k++) {
                 if (dist < DST(d)[k]) {
@@ -2366,7 +2366,7 @@ int process_gadgebot_interaction_candidate(char *ctx, char *ow, char *moby, int 
             vA[2] = f1;
             add_vectors(vC, vA, ctx + 0x10);
             f0 = random_float_between(0.0f, *(float *)&g_frame_time);
-            func_L00_001FF4B0(vB, vB, f0);
+            vec_scale_to_length(vB, vB, f0);
             f0 = random_float_between(*(float *)&g_frame_time * 2.5f, *(float *)&g_frame_time * 5.0f);
             vB[2] = f0;
             r2 = scale_ticks(rand_range(0xF, 0x1E));
@@ -2399,7 +2399,7 @@ int process_gadgebot_interaction_candidate(char *ctx, char *ow, char *moby, int 
             vC[2] = f1;
             add_vectors(vD, vC, ctx + 0x10);
             f0 = random_float_between(0.0f, *(float *)&g_frame_time);
-            func_L00_001FF4B0(vA, vA, f0);
+            vec_scale_to_length(vA, vA, f0);
             f0 = random_float_between(*(float *)&g_frame_time * 2.5f, *(float *)&g_frame_time * 5.0f);
             vA[2] = f0;
             r2 = scale_ticks(rand_range(0xF, 0x1E));
@@ -2725,7 +2725,7 @@ void update_moby_rotation_group(Moby *m) {
         d->f10 = (*(float (*)[4])&m->rot)[0];
         qcopy(d->pos, (*(float (*)[4])&m->pos));
         m->state = 3;
-        func_L00_001FF4B0(tmp, (*(float (*)[4])&m->rot_row2), D_L06_00161DD8);
+        vec_scale_to_length(tmp, (*(float (*)[4])&m->rot_row2), D_L06_00161DD8);
         FastVecAdd((*(float (*)[4])&m->pos), tmp, d);
         break;
     case 2:
@@ -2764,7 +2764,7 @@ void update_moby_rotation_group(Moby *m) {
             }
         }
     case 3:
-        func_L00_001FF4B0(tmp, (*(float (*)[4])&m->rot_row2), D_L06_00161DD8);
+        vec_scale_to_length(tmp, (*(float (*)[4])&m->rot_row2), D_L06_00161DD8);
         FastVecAdd((*(float (*)[4])&m->pos), tmp, d);
         break;
     case 4:
@@ -2913,8 +2913,8 @@ void update_energy_sphere_holder_beam_effects(char *m) {
     Beam_2f8a58 *d = *(Beam_2f8a58 **)(m + 0x78);
     int i;
     FastVecSub(pos, D_L06_00167640, d->tgt + 0x10);
-    func_L00_001FF4B0(pos, pos, -0.3f);
-    func_L00_001FF4B0(step, pos, 0.1f);
+    vec_scale_to_length(pos, pos, -0.3f);
+    vec_scale_to_length(step, pos, 0.1f);
     FastVecAdd(pos, pos, d->tgt + 0x10);
     for (i = 0; i < 4; i++) {
         float f;
@@ -2939,7 +2939,7 @@ void update_energy_sphere_holder_beam_effects(char *m) {
         if (D_L06_0015F6B0 & 4) sgn = -1.0f;
         clear_u64_value(a);
         a[2] += sgn * 0.9f;
-        func_L00_001FF4B0(b, a, -2.0f / (float)scale_ticks(*(int *)&D_L06_00161F00));
+        vec_scale_to_length(b, a, -2.0f / (float)scale_ticks(*(int *)&D_L06_00161F00));
         FastVecAdd(a, a, m + 0x10);
         a[2] += 0.85f;
         func_L00_00273F80_g(a, b, *(int *)&D_L06_00161EF8, (unsigned char)func_001FA898_g((float)scale_ticks(*(int *)&D_L06_00161F00)),

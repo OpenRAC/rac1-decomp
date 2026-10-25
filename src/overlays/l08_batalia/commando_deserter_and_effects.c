@@ -281,7 +281,7 @@ void update_moby_height_from_driver(char *m)
         extern short D_L08_00160058;
         i = *(int *)(d + 8);
         if (i < 0) break;
-        o = (char *)((i << 8) + *(int *)&D_L08_00160058);
+        o = (char *)((i << 8) + *(int *)&batalia_mobys);
         }
         if (*(short *)(o + 0xA6) == 0x267 || *(short *)(o + 0xA6) == 0x23F) {
             if (*(unsigned char *)(o + 0x20) != 4) break;
@@ -471,8 +471,8 @@ void update_layered_mesh_effect(unsigned char *moby) {
         }
         moby[0x20] = 1;
         for (i = 0; i < 3; i++) {
-            D_L08_001E8608[i].a = 0;
-            D_L08_001E8608[i].b = 0;
+            batalia_uv_scroll[i].a = 0;
+            batalia_uv_scroll[i].b = 0;
             D_L08_00161EB8_p[0].a = 0;
             D_L08_00161EB8_p[0].b = 0;
         }
@@ -606,7 +606,7 @@ void update_path_following_moby_with_fade(struct Moby *moby)
         qcopy(&point, &follower->path->points[waypoint]);
         if (waypoint != 0) {
             FastVecSub(&step, &point, &moby->pos);
-            func_L00_001FF4B0(&step, &step, g_frame_time * 3.0f);
+            vec_scale_to_length(&step, &step, g_frame_time * 3.0f);
             FastVecAdd(&moby->pos, &moby->pos, &step);
         } else {
             distance = vec_distance_xy(&moby->pos, gHeroPos);
@@ -1024,12 +1024,12 @@ extern void func_0020D960(char *, int, void *);
 void attach_batalia_deserter_class_manipulator(char *moby) {
     int i;
     if (D_L08_0015F6A8 == 2 && gCheats[0]) {
-        if (D_L08_0016D0E0.a == 3 && D_L08_0016D0E0.b >= 0x1BA && D_L08_0016D0E0.b < 0x284) {
+        if (batalia_cutscene_state.a == 3 && batalia_cutscene_state.b >= 0x1BA && batalia_cutscene_state.b < 0x284) {
             D_L08_0015F67C = 1.0f;
             D_L08_0015F680 = -0.3f;
         }
-        for (i = 0; i < D_L08_0016D0E0.n; i++) {
-            char *o = D_L08_0016D0E0.objs[i];
+        for (i = 0; i < batalia_cutscene_state.n; i++) {
+            char *o = batalia_cutscene_state.objs[i];
             if (*(short *)(o + 0xA6) == *(short *)(moby + 0xA6) && D_L08_0017CCC0[1] == 0) {
                 AttachManipulator(o, 0, D_L08_0017CCC0);
                 *(float *)(D_L08_0017CCC0 + 0x20) = 2.75f;
@@ -1192,20 +1192,20 @@ extern short D_L08_00162390;
 void attach_batalia_plumber_class_manipulator(char *moby) {
     int i;
     if (D_L08_0015F6A8 == 2 && gCheats[0]) {
-        if (D_L08_0016D0E0.a == 6 && D_L08_0016D0E0.b >= 0x26C && D_L08_0016D0E0.b < 0x2CC) {
+        if (batalia_cutscene_state.a == 6 && batalia_cutscene_state.b >= 0x26C && batalia_cutscene_state.b < 0x2CC) {
             D_L08_0015F67C = 1.0f;
             D_L08_0015F680 = -0.2f;
         }
-        if (D_L08_0016D0E0.a == 6 && D_L08_0016D0E0.b >= 0x47E && D_L08_0016D0E0.b < 0x5F1) {
+        if (batalia_cutscene_state.a == 6 && batalia_cutscene_state.b >= 0x47E && batalia_cutscene_state.b < 0x5F1) {
             D_L08_0015F67C = 1.0f;
             D_L08_0015F680 = 0.5f;
         }
-        if (D_L08_0016D0E0.a == 6 && D_L08_0016D0E0.b >= 0x5FA && D_L08_0016D0E0.b < 0x6AE) {
+        if (batalia_cutscene_state.a == 6 && batalia_cutscene_state.b >= 0x5FA && batalia_cutscene_state.b < 0x6AE) {
             D_L08_0015F67C = 1.0f;
             D_L08_0015F680 = -0.1f;
         }
-        for (i = 0; i < D_L08_0016D0E0.n; i++) {
-            char *o = D_L08_0016D0E0.objs[i];
+        for (i = 0; i < batalia_cutscene_state.n; i++) {
+            char *o = batalia_cutscene_state.objs[i];
             if (*(short *)(o + 0xA6) == *(short *)(moby + 0xA6) || *(short *)(o + 0xA6) == 0x306) {
                 if (D_L08_0017CCC0[1] == 0) {
                     float f;
@@ -1294,7 +1294,7 @@ void the_plumber_batalia_update(char *m) {
             char *t = D_L08_0016016C + (d->i48 << 7);
             jet_reset_camera(t + 0x30, t + 0x70);
             ((struct Moby *)m)->state = v;
-            request_batalia_cannon_mount(D_L08_00160058 + (d->i50 << 8));
+            request_batalia_cannon_mount(batalia_mobys + (d->i50 << 8));
         }
         if (d->sub == 3) {
             PlayMovieEntryIfIdle(1);
@@ -1447,45 +1447,45 @@ void update_batalia_item_triggers_and_help(char *m) {
     }
     if (ia_p[29] == 0) {
         if (is_point_inside_clip_volume(&hero_p.motion.pos, data->first)) {
-            elapsed = scale_ticks(D_0015EFA4) - HR[48].best * 600;
+            elapsed = scale_ticks(play_time_ticks) - HR[48].best * 600;
             if ((int)((float)scale_ticks(18) * 60.0f) < elapsed || HR[48].best * 600 == 0) {
                 Help_Request(8000, 0x30);
             } else {
-                time = scale_ticks(D_0015EFA4) / 600;
+                time = scale_ticks(play_time_ticks) / 600;
                 if (HR[48].best < time)
-                    HR[48].best = scale_ticks(D_0015EFA4) / 600;
+                    HR[48].best = scale_ticks(play_time_ticks) / 600;
             }
         }
     }
     if (ia_p[29] != 0) {
         if (is_point_inside_clip_volume(&hero_p.motion.pos, data->first) && alt_p[0x2F] == 0) {
             if (HR[49].count != 0) {
-                elapsed = scale_ticks(D_0015EFA4) - HR[49].best * 600;
+                elapsed = scale_ticks(play_time_ticks) - HR[49].best * 600;
                 if ((int)((float)scale_ticks(18) * 60.0f) < elapsed || HR[49].best * 600 == 0) {
                     Help_Request(8001, 0x31);
                 } else {
-                    time = scale_ticks(D_0015EFA4) / 600;
+                    time = scale_ticks(play_time_ticks) / 600;
                     if (HR[49].best < time)
-                        HR[49].best = scale_ticks(D_0015EFA4) / 600;
+                        HR[49].best = scale_ticks(play_time_ticks) / 600;
                 }
             } else {
                 HR[49].count++;
-                time = scale_ticks(D_0015EFA4) / 600;
+                time = scale_ticks(play_time_ticks) / 600;
                 if (HR[49].best < time)
-                    HR[49].best = scale_ticks(D_0015EFA4) / 600;
+                    HR[49].best = scale_ticks(play_time_ticks) / 600;
                 HR[49].flags = HR[49].flags | (1 << g_current_level_index) | 0x80000000;
             }
         }
     }
     if (ia_p[28] == 0) {
         if (is_point_inside_clip_volume(&hero_p.motion.pos, data->second) && D_0013DE4B[7] != 0) {
-            elapsed = scale_ticks(D_0015EFA4) - HR[50].best * 600;
+            elapsed = scale_ticks(play_time_ticks) - HR[50].best * 600;
             if ((int)((float)scale_ticks(18) * 60.0f) < elapsed || HR[50].best * 600 == 0) {
                 Help_Request(8002, 0x32);
             } else {
-                time = scale_ticks(D_0015EFA4) / 600;
+                time = scale_ticks(play_time_ticks) / 600;
                 if (HR[50].best < time)
-                    HR[50].best = scale_ticks(D_0015EFA4) / 600;
+                    HR[50].best = scale_ticks(play_time_ticks) / 600;
             }
             goto sample_volume;
         }
@@ -1493,19 +1493,19 @@ void update_batalia_item_triggers_and_help(char *m) {
     if (ia_p[28] != 0) {
         if (is_point_inside_clip_volume(&hero_p.motion.pos, data->second) && D_0013DE4B[7] != 0) {
             if (HR[112].count != 0) {
-                elapsed = scale_ticks(D_0015EFA4) - HR[112].best * 600;
+                elapsed = scale_ticks(play_time_ticks) - HR[112].best * 600;
                 if ((int)((float)scale_ticks(18) * 60.0f) < elapsed || HR[112].best * 600 == 0) {
                     Help_Request(8005, 0x70);
                 } else {
-                    time = scale_ticks(D_0015EFA4) / 600;
+                    time = scale_ticks(play_time_ticks) / 600;
                     if (HR[112].best < time)
-                        HR[112].best = scale_ticks(D_0015EFA4) / 600;
+                        HR[112].best = scale_ticks(play_time_ticks) / 600;
                 }
             } else {
                 HR[112].count++;
-                time = scale_ticks(D_0015EFA4) / 600;
+                time = scale_ticks(play_time_ticks) / 600;
                 if (HR[112].best < time)
-                    HR[112].best = scale_ticks(D_0015EFA4) / 600;
+                    HR[112].best = scale_ticks(play_time_ticks) / 600;
                 HR[112].flags = HR[112].flags | (1 << g_current_level_index) | 0x80000000;
             }
         }
@@ -1529,13 +1529,13 @@ void update_batalia_selected_moby_effects(char *moby) {
         break;
     case 1:
         if (D_L08_0015F6A8 == 2) {
-            int t = D_L08_0016D0E0.a;
+            int t = batalia_cutscene_state.a;
             if ((t >= 1 && t <= 2) || t == 4 || t == 5) {
-                if (D_L08_0016D0E0.a != 1 || scale_ticks(0x8CE) < D_L08_0016D0E0.b) {
+                if (batalia_cutscene_state.a != 1 || scale_ticks(0x8CE) < batalia_cutscene_state.b) {
                     k = 0;
-                    if (D_L08_0016D0E0.a == 1 || D_L08_0016D0E0.a == 4) k = 3;
-                    else if (D_L08_0016D0E0.a == 2 || D_L08_0016D0E0.a == 5) k = 2;
-                    cutscene_set_camera_target((int)D_L08_0016D0E0.objs[k]);
+                    if (batalia_cutscene_state.a == 1 || batalia_cutscene_state.a == 4) k = 3;
+                    else if (batalia_cutscene_state.a == 2 || batalia_cutscene_state.a == 5) k = 2;
+                    cutscene_set_camera_target((int)batalia_cutscene_state.objs[k]);
                 }
             }
         }

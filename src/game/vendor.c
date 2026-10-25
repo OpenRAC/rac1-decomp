@@ -496,7 +496,7 @@ void render_vendor_item_icon_strip_pass(void) {
         if (D_001E66C0_ui.slotCount > 0) {
             do {
                 slotKind = (s32 *) (void *) ((u8 *)&D_001E66C0_ui + 0xD4 + itemIndex * 0x14);
-                itemIconId = ((struct VendorItemResource *) (void *) ((u8 *)D_001864D0 + slotKind[-1] * 0x4C))->iconId;
+                itemIconId = ((struct VendorItemResource *) (void *) ((u8 *)item_info_table + slotKind[-1] * 0x4C))->iconId;
                 if (slotKind[0] == 1) {
                     itemIcon = GetIconFrame(itemIconId, 2);
                 } else {
@@ -521,7 +521,7 @@ void render_vendor_item_icon_strip_pass(void) {
         do {
             selectedMinusThree = D_001E66C0_ui.selectedIndex - 3;
             slotOffset = ((s32) ((D_001E66C0_ui.slotCount * 2) + i + selectedMinusThree) % (s32) D_001E66C0_ui.slotCount) * 0x14;
-            displayIconId = ((struct VendorItemResource *) (void *) ((u8 *)D_001864D0 + *(s32 *)(void *)(slotOffset + ((u8 *)&D_001E66C0_ui + 0xD0)) * 0x4C))->iconId;
+            displayIconId = ((struct VendorItemResource *) (void *) ((u8 *)item_info_table + *(s32 *)(void *)(slotOffset + ((u8 *)&D_001E66C0_ui + 0xD0)) * 0x4C))->iconId;
             if (*(s32 *)(void *)(slotOffset + ((u8 *)&D_001E66C0_ui + 0xD4)) == 1) {
                 displayIcon = GetIconFrame(displayIconId, 2);
             } else {

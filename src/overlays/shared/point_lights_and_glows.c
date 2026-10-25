@@ -57,7 +57,7 @@ void GlowQuadsDraw(char *moby)
     sc = 4.0f;
     build_look_at_matrix(m[0], m[0], m[1], -0.34906584f);
     FastVecCross(m[1], m[0], m[2]);
-    func_L00_001FF4B0(m[1], m[1], 1.0f);
+    vec_scale_to_length(m[1], m[1], 1.0f);
     FastVecCross(m[2], m[1], m[0]);
     m[3][3] = 1.0f;
     FastVecScale(a, m[0], sc);
@@ -82,7 +82,7 @@ void GlowQuadsDraw(char *moby)
     q[3][2] = q[3][2] + 0.25f;
     q[3][3] = 1.0f;
     q[3][0] = c[3] * sc;
-    func_L00_001FD1D8(q, m, 1);
+    draw_world_quad(q, m, 1);
     for (i = 1; i < 4; i += 2) {
         p = q[i];
         if (i < 2) {
@@ -93,7 +93,7 @@ void GlowQuadsDraw(char *moby)
             p[2] = p[2] + -0.25f;
         }
     }
-    func_L00_001FD1D8(q, m, 1);
+    draw_world_quad(q, m, 1);
 
     qcopy(q[0], c);
     x = sc * c[3];
@@ -113,7 +113,7 @@ void GlowQuadsDraw(char *moby)
     q[3][0] = y;
     q[3][2] = q[3][2] + 0.25f;
     q[3][3] = 1.0f;
-    func_L00_001FD1D8(q, m, 1);
+    draw_world_quad(q, m, 1);
     for (i = 0; i < 4; i++) {
         p = q[i];
         if (i < 2) {
@@ -124,7 +124,7 @@ void GlowQuadsDraw(char *moby)
             p[2] = p[2] + -0.25f;
         }
     }
-    func_L00_001FD1D8(q, m, 1);
+    draw_world_quad(q, m, 1);
 
     qcopy(q[0], d);
     q[0][2] = q[0][2] + -0.25f;
@@ -142,7 +142,7 @@ void GlowQuadsDraw(char *moby)
     q[3][3] = 1.0f;
     q[3][2] = 0.0f;
     q[3][0] = sc * c[3] * 3.0f;
-    func_L00_001FD1D8(q, m, 1);
+    draw_world_quad(q, m, 1);
     for (i = 0; i < 4; i += 2) {
         p = q[i];
         if (i < 2) {
@@ -153,7 +153,7 @@ void GlowQuadsDraw(char *moby)
             p[2] = p[2] + -0.25f;
         }
     }
-    func_L00_001FD1D8(q, m, 1);
+    draw_world_quad(q, m, 1);
 }
 typedef int ti_23e008 __attribute__((mode(TI)));
 extern float D_0015EE60_23e008 __asm__("D_0015EE60") MACRO_ADDR;

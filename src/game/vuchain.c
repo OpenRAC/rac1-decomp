@@ -350,8 +350,8 @@ void VU1_initChain(void) {
     D_00161010 = 0;
     g_render_packet_cursor = (int *)base;
     end = (int)g_render_packet_cursor + D_0016100C_m - D_0015F698_m;
-    D_0015F718 = end;
-    D_0015F71C = end - 0x2000;
+    render_packet_end = end;
+    vu1_chain_safe_end = end - 0x2000;
 }
 
 /* VU1_swapChain(void) */
@@ -364,8 +364,8 @@ void VU1_swapChain(void) {
     D_00161010 = idx;
     g_render_packet_cursor = (int *)base;
     end = (int)g_render_packet_cursor + D_0016100C_m - D_0015F698_m;
-    D_0015F718 = end;
-    D_0015F71C = end - 0x2000;
+    render_packet_end = end;
+    vu1_chain_safe_end = end - 0x2000;
 }
 
 extern int D_00161014 MACRO_ADDR;

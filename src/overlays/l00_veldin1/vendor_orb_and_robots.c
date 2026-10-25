@@ -39,7 +39,7 @@ typedef struct {
 void clank_cutscene_trigger_update(M *m) {
     unsigned char *g, *h;
     E *e = (E *)m->ext;
-    if (D_L00_0015F6A8 == 2) {
+    if (cinematic_mode == 2) {
         m->c31 = 0;
         m->flags |= 1;
     } else {
@@ -75,11 +75,11 @@ void clank_cutscene_trigger_update(M *m) {
             m->state = 2;
             e->f2c = 3.0f;
         }
-        if (e->s24 >= 4 && D_L00_0015F6A8 != 6)
+        if (e->s24 >= 4 && cinematic_mode != 6)
             initialize_global_state_entry(1);
         break;
     case 2:
-        if (D_L00_0015F6A8 == 2)
+        if (cinematic_mode == 2)
             ;
         else
             m->state = 1;
@@ -163,7 +163,7 @@ void update_level_help_controller(unsigned char *moby) {
     do {
         s32 id = *target_index_ptr;
         if (id != k) {
-            target_moby = (HelpTarget *)((unsigned char *)D_L00_00160098 + (id << 8));
+            target_moby = (HelpTarget *)((unsigned char *)moby_array_start + (id << 8));
             if (target_moby == 0 || target_moby->state == e || target_moby->state == d) {
                 if (hero_ptr->health.hp < 4) Help_Request(1, 1);
                 else Help_Request(2, 2);
@@ -344,7 +344,7 @@ void veldin_robot_enemy_update(VendMoby *moby) {
                 DeleteMoby(moby);
                 return;
             }
-            qcopy(&moby->pos, &D_L00_001B0830[vars->pathIdx]->pts[0]);
+            qcopy(&moby->pos, &level_paths[vars->pathIdx]->pts[0]);
             moby->state = VELDIN_ROBOT_STATE_WAIT_TO_FOLLOW_PATH;
             if (moby->anim != 1) MobyBlendAnimation(moby, 1, 0, 5);
         } else {
@@ -367,7 +367,7 @@ void veldin_robot_enemy_update(VendMoby *moby) {
         break;
     case VELDIN_ROBOT_STATE_FOLLOW_PATH:
         vel = 0.0f;
-        path = D_L00_001B0830[vars->pathIdx];
+        path = level_paths[vars->pathIdx];
         qcopy(&delta, &path->pts[vars->pathPt]);
         SteerAngleWithVelocity(&moby->unk40.f[2], fast_atan2(delta.f[0] - moby->pos.f[0], delta.f[1] - moby->pos.f[1]), &vars->turnVel, g_frame_time_sq * (12.566371f), g_frame_time_sq * (12.566371f), g_frame_time * 12.566371f);
         FastVecSub(&dir, &delta, &moby->pos);
@@ -379,7 +379,7 @@ void veldin_robot_enemy_update(VendMoby *moby) {
                 if (moby->anim != 1) MobyBlendAnimation(moby, 1, 0, scale_ticks(10));
             }
         }
-        func_L00_001FF4B0(&dir, &dir, vars->speed);
+        vec_scale_to_length(&dir, &dir, vars->speed);
         FastVecAdd(&moby->pos, &moby->pos, &dir);
         break;
     case VELDIN_ROBOT_STATE_FACE_TARGET:
@@ -416,7 +416,7 @@ void veldin_robot_enemy_update(VendMoby *moby) {
         MobyTransformScaledVertex((char *)moby, 0, (char *)mtx);
         qcopy(&delta, &moby->unkC0);
         delta.f[2] = 0.0f;
-        func_L00_001FF4B0(&delta, &delta, *(float *)&D_L00_00161CB4);
+        vec_scale_to_length(&delta, &delta, *(float *)&D_L00_00161CB4);
         FastVecAdd(&dir, &mtx[3], &delta);
         hit = 0;
         query.flags = 0x10000;
@@ -436,13 +436,13 @@ void veldin_robot_enemy_update(VendMoby *moby) {
         }
         qcopy(&probe, &moby->pos);
         probe.f[2] += 0.5f;
-        if (func_L00_001EFFF0(&mtx[3], &probe, 0, (int)moby, (int)&query) != 0 && hit != 0 &&
+        if (coll_line(&mtx[3], &probe, 0, (int)moby, (int)&query) != 0 && hit != 0 &&
             D_L00_00173F58.moby == hero.moby) {
             EffectSlot_Free(moby);
             moby->state = VELDIN_ROBOT_STATE_WAIT_TO_RETURN_TO_FACE_TARGET;
             if (moby->anim != 7) MobyBlendAnimation(moby, 7, 0, scale_ticks(10));
         }
-        if (func_L00_001EFFF0(&mtx[3], &dir, 0, (int)moby, (int)&query) != 0) {
+        if (coll_line(&mtx[3], &dir, 0, (int)moby, (int)&query) != 0) {
             qcopy(&dir, D_L00_00173F58.pos);
             if (hit != 0 && D_L00_00173F58.moby == hero.moby) {
                 EffectSlot_Free(moby);
@@ -478,9 +478,9 @@ void veldin_robot_enemy_update(VendMoby *moby) {
         if (mine_fall(moby, vars->unk70) & 0x140) {
             SpawnExplosionFx(moby, &moby->pos, -1, 0.75f, 13.0f);
             spawn_moby_break_fragments(moby, 0x7AB, 1, 0x7AB, 1, 4, 0);
-            SpawnBreakFragment((char *)moby, 0x78D, (float *)&moby->pos, &moby->unk40, 0, 0, 0.0f, (float *)D_L00_0015F660, (float *)D_L00_0015F660, (float *)D_L00_0015F660);
-            SpawnBreakFragment((char *)moby, 0x78E, (float *)&moby->pos, &moby->unk40, 0, 0, 0.0f, (float *)D_L00_0015F660, (float *)D_L00_0015F660, (float *)D_L00_0015F660);
-            SpawnBreakFragment((char *)moby, 0x78F, (float *)&moby->pos, &moby->unk40, 0, 0, 0.0f, (float *)D_L00_0015F660, (float *)D_L00_0015F660, (float *)D_L00_0015F660);
+            SpawnBreakFragment((char *)moby, 0x78D, (float *)&moby->pos, &moby->unk40, 0, 0, 0.0f, (float *)veldin1_zero_vec, (float *)veldin1_zero_vec, (float *)veldin1_zero_vec);
+            SpawnBreakFragment((char *)moby, 0x78E, (float *)&moby->pos, &moby->unk40, 0, 0, 0.0f, (float *)veldin1_zero_vec, (float *)veldin1_zero_vec, (float *)veldin1_zero_vec);
+            SpawnBreakFragment((char *)moby, 0x78F, (float *)&moby->pos, &moby->unk40, 0, 0, 0.0f, (float *)veldin1_zero_vec, (float *)veldin1_zero_vec, (float *)veldin1_zero_vec);
             DeleteMoby(moby);
             return;
         }
@@ -636,7 +636,7 @@ void update_veldin_robot_damage_and_targeting(void *mv) {
     m->unkA4 = 0xFF;
     StepColorFade(m, anim);
     if (m->state == 1) {
-        path = D_L00_001B0830[vars->unk1B4];
+        path = level_paths[vars->unk1B4];
         FindNearestEligibleMoby(64.0f, (char *)m, &vars->target, 0, 0, path->pts, path->count);
     } else if (m->state != 5) {
         range = D_L00_00161CA0;
@@ -653,7 +653,7 @@ void update_veldin_robot_damage_and_targeting(void *mv) {
         qcopy(&vars->target, g + 0x80);
     }
     if (vars->unk1BC >= 0) {
-        t = (TrollMoby *)(D_L00_00160098 + (vars->unk1BC << 8));
+        t = (TrollMoby *)(moby_array_start + (vars->unk1BC << 8));
         if (t == 0 || t->state == 0xFE || t->state == 0xFD) {
             vars->unk1BC = -1;
         } else {
@@ -696,7 +696,7 @@ void update_veldin_robot_effects(char *m) {
         *(float *)(p + 0xC) = random_float_between(6000.0f, 32000.0f);
     }
     for (i = 0; i < 3; i++) {
-        p = spawn_mode_controlled_rotating_alpha_fade_particle((float *)(vars + 0x1C0), D_L00_0015F660, 0x7F, m);
+        p = spawn_mode_controlled_rotating_alpha_fade_particle((float *)(vars + 0x1C0), veldin1_zero_vec, 0x7F, m);
         if (p != 0) {
             t = p + 0x20;
             if (i == 2 && random_integer_below(8) == 0) {
@@ -739,9 +739,9 @@ void draw_veldin_robot_effect_quad(char *m) {
     qcopy(bb, *(char **)(m + 0x78) + 0x1C0);
     bb[3] = 1.0f;
     FastVecSub(c, g_debug_camera, bb);
-    func_L00_001FF4B0(c, c, 1.0f);
+    vec_scale_to_length(c, c, 1.0f);
     FastVecCross(d, c, D_0013E633 + 0x10AD);
-    func_L00_001FF4B0(d, d, -1.0f);
+    vec_scale_to_length(d, d, -1.0f);
     FastVecCross(e, d, c);
     t.q0 = GetEffectTex(11);
     t.q2 = 0x8000000048L;
@@ -766,7 +766,7 @@ void draw_veldin_robot_effect_quad(char *m) {
         p++;
         qq += 4;
     }
-    func_L00_001FD1D8(q, c, 0);
+    draw_world_quad(q, c, 0);
 }
 extern int D_L00_00161D58[] MACRO_ADDR;
 extern int D_L00_00161CC8[] MACRO_ADDR;
@@ -836,19 +836,19 @@ void update_phase_effect_controller(M2 *m) {
         m->state = 1;
         break;
     case 1:
-        if (D_L00_0015F6A8 == 2) {
-            if ((D_L00_0016C960.a == 2 && D_L00_0016C960.b >= scale_ticks(0x618)) || (D_L00_0015F6A8 == 2 && D_L00_0016C960.a == 3)) {
-                idx = -1; if (D_L00_0016C960.a == 2) idx = 3; else if (D_L00_0016C960.a == 3) idx = 2;
-                cutscene_set_camera_target(D_L00_0016C960.arr[idx]);
+        if (cinematic_mode == 2) {
+            if ((cutscene_state.a == 2 && cutscene_state.b >= scale_ticks(0x618)) || (cinematic_mode == 2 && cutscene_state.a == 3)) {
+                idx = -1; if (cutscene_state.a == 2) idx = 3; else if (cutscene_state.a == 3) idx = 2;
+                cutscene_set_camera_target(cutscene_state.arr[idx]);
             }
-            if (D_L00_0015F6A8 == 2) {
-                if (D_L00_0016C960.a == 4) {
-                    p = (char *)D_L00_0016C960.arr[3];
+            if (cinematic_mode == 2) {
+                if (cutscene_state.a == 4) {
+                    p = (char *)cutscene_state.arr[3];
                     if (p == 0) return;
-                    if (D_L00_0016C960.b < scale_ticks(0x96)) return;
-                    if (scale_ticks(0xDC) < D_L00_0016C960.b) return;
+                    if (cutscene_state.b < scale_ticks(0x96)) return;
+                    if (scale_ticks(0xDC) < cutscene_state.b) return;
                     Moby_GetJointWorldPos(p, 0, buf);
-                    draw_trail(buf, buf, D_L00_0015F660, 120000.0f, 50000.0f);
+                    draw_trail(buf, buf, veldin1_zero_vec, 120000.0f, 50000.0f);
                     for (i = 0; i < 10; i++) {
                         col = (rand_range(0x40, 0x80) << 24) | 0x787878;
                         h = rand_range(0, 4);

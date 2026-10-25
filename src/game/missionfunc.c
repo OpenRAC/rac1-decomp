@@ -212,7 +212,7 @@ int check_mission_condition(short type, int arg) {
     case 7:
         return ((int (*)(void))arg)() != 0;
     case 8:
-        return D_0014BFC0[arg >> 16][arg & 0xFFFF] != 0;
+        return gold_bolts_collected[arg >> 16][arg & 0xFFFF] != 0;
     case 9:
         break;
     }
@@ -287,7 +287,7 @@ extern unsigned char D_0013D4A8 NOT_SDA;
 
 /* Predicate: true when D_0013D844 and the flag byte D_0013D4A8 are both set. */
 int MissionCond_Obj18AndSpecial18(void) {
-    if (D_0013D844 != 0 && D_0013D4A8 != 0) return 1;
+    if (D_0013D844 != 0 && menu_item_enabled_12 != 0) return 1;
     return 0;
 }
 
@@ -314,7 +314,7 @@ extern unsigned char D_0013D4E5 NOT_SDA;
 
 /* Predicate: true when D_0013DAE4 and the flag byte D_0013D4E5 are both set. */
 int MissionCond_Obj42AndSpecial55(void) {
-    if (D_0013DAE4 != 0 && D_0013D4E5 != 0) return 1;
+    if (D_0013DAE4 != 0 && menu_item_enabled_73 != 0) return 1;
     return 0;
 }
 
@@ -323,7 +323,7 @@ extern unsigned char D_0013D4F1 NOT_SDA;
 
 /* Predicate: true when D_0013DB24 and the flag byte D_0013D4F1 are both set. */
 int MissionCond_Obj46AndSpecial61(void) {
-    if (D_0013DB24 != 0 && D_0013D4F1 != 0) return 1;
+    if (D_0013DB24 != 0 && menu_item_enabled_85 != 0) return 1;
     return 0;
 }
 
@@ -368,7 +368,7 @@ extern unsigned char D_0013D4B0 NOT_SDA;
 /* Returns 0 when D_0013D9B4 is clear, else 2 or 1 depending on D_0013D4B0. */
 int MissionCond_Obj2FVariant(void) {
     if (D_0013D9B4 != 0) {
-        return D_0013D4B0 ? 2 : 1;
+        return menu_item_enabled_20 ? 2 : 1;
     }
     return 0;
 }
@@ -377,7 +377,7 @@ extern unsigned char D_0013DE55 NOT_SDA;
 
 /* Predicate: true when both D_0013D4F1 and D_0013DE55 are set. */
 int MissionCond_Special61AndFlag0D(void) {
-    if (D_0013D4F1 != 0 && D_0013DE55 != 0) return 1;
+    if (menu_item_enabled_85 != 0 && gemlik_available != 0) return 1;
     return 0;
 }
 

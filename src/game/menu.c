@@ -86,7 +86,7 @@ int map_filter_l01_1(void) {
 extern unsigned char D_0013D49D NOT_SDA;
 
 int map_filter_l01_2(void) {
-    return D_0013D49D != 0;
+    return g_menu_item_enabled_1 != 0;
 }
 
 extern unsigned char D_0013D4A5 NOT_SDA;
@@ -439,7 +439,7 @@ extern int D_001414DC NOT_SDA;
 
 int map_filter_l08_0(int arg0, int arg1) {
     if (arg1 >= 0x101) {
-        return D_001414DC == 0xF;
+        return hero_control_mode == 0xF;
     }
     return menu_item_enabled_41 != 0;
 }
@@ -698,12 +698,12 @@ void save_map_coverage(int arg0) {
         FastMemSet((void *)arg0, 0, 0x800);
         return;
     }
-    n = func_001FAA28((void *)arg0, 0x800, level_map_selection[5], level_map_selection[3]);
+    n = compress_map_coverage((void *)arg0, 0x800, level_map_selection[5], level_map_selection[3]);
     if (n == -1) {
         downsample_map_coverage((void *)arg0);
     }
-    if (D_0013D668[g_current_level_index] < n) {
-        D_0013D668[g_current_level_index] = n;
+    if (max_map_coverage_size[g_current_level_index] < n) {
+        max_map_coverage_size[g_current_level_index] = n;
     }
 }
 
@@ -716,7 +716,7 @@ void load_map_chunk(void *arg0, unsigned char *arg1, int arg2) {
        still hold our own incoming arguments across it, which is why retail
        saves them into $16-$18 rather than reloading. */
     DebugEnter_Nop();
-    if (!D_001A0218[0]) {
+    if (!map_coverage_active[0]) {
         return;
     }
     if (*arg1 & 1) {

@@ -641,7 +641,7 @@ void create_missing_hero_item_slot_animations(int a, int b) {
     if (a != 0) return;
     if (b == 0) return;
     i = hero_slot_item_id(0);
-    t = D_L00_00179BC0[i].v;
+    t = item_defs[i].v;
     if (t == -1) return;
     i = 0;
     while (i < 2) {
@@ -908,7 +908,7 @@ void spawn_hero_item_mobies(void) {
     int id3;
     int t;
 
-    if (HERO->items[0].moby == 0 && D_L00_0015F4F8 > HERO->items[0].unk14 &&
+    if (HERO->items[0].moby == 0 && rendered_frame_count > HERO->items[0].unk14 &&
         (HERO->pending_item[0] == 0 || HERO->pending_item[0] == 0x24)) {
         id = HERO->selected_item[0];
         if (id == 0) {
@@ -1288,7 +1288,7 @@ extern int D_L00_0015F6A8 MACRO_ADDR;
 /* Returns 1 when nothing blocks the action, else 0. */
 int Hero_CanUseGadget(void) {
     char *g;
-    if (get_hero_target_pose_status() == 0 && D_L00_0015F6A8 == 0) {
+    if (get_hero_target_pose_status() == 0 && cinematic_mode == 0) {
         g = g_hero;
         if (*(unsigned char *)(g + 0x20A4) == 0) {
             if (*(unsigned *)(g + 0x208C) < 3 || *(int *)(g + 0x2084) == 7 || *(int *)(g + 0x2084) == 9 || *(int *)(g + 0x2084) == 0xE) {
@@ -1680,7 +1680,7 @@ void hero_update_items(void) {
             case 3:
                 SLOT(i)->items[0].unk1B++;
                 if ((*(unsigned char *)(obj + 0x70) & 2) || i == 1 || i == 0) {
-                    clear_hero_item_slot(i, D_L00_0015F4F8 + 2);
+                    clear_hero_item_slot(i, rendered_frame_count + 2);
                 }
                 break;
             }
@@ -1765,7 +1765,7 @@ void enter_hero_vehicle_mode(int mode, int id, char *obj) {
     *(float *)(p + 0xA90) = 1.0f;
     *(float *)(p + 0xA94) = 1.0f;
     HeroClearQueuedSequence();
-    func_L00_0025805C(*(void **)(p + 0x2080));
+    apply_env_zone_lighting(*(void **)(p + 0x2080));
     apply_hero_and_item_scale_sequence();
     *(short *)(p + 0x22CC) = id;
     switch (mode) {
@@ -1834,7 +1834,7 @@ void exit_hero_vehicle_mode(void) {
     *(int *)(r + 0x98) = 0;
     *(float *)(g + 0xA94) = 1.0f;
     HeroClearQueuedSequence();
-    if (*(int *)(g + 0x2084) != 100 || (D_L00_0015F6A8 != 2 && D_L00_0015F6A8 != 6)) {
+    if (*(int *)(g + 0x2084) != 100 || (cinematic_mode != 2 && cinematic_mode != 6)) {
         HeroEnterMoveState(0, 1);
     }
 }
@@ -1848,7 +1848,7 @@ void hero_knockback(float *v, int each, float s, float z) {
         v[1] *= s;
         v[2] *= z;
     } else {
-        func_L00_001FF500(v, v, s);
+        vec_set_length_xy(v, v, s);
         v[2] = z;
     }
 }
@@ -1934,7 +1934,7 @@ s32 hero_check_damage(s32 arg) {
     if (D_0013F450_113A0.i1C0 != 0) {
         return 0;
     }
-    if (D_L00_0015F6A8 != 0) {
+    if (cinematic_mode != 0) {
         return 0;
     }
     D_0013F450_113A0.p2280 = 0;
@@ -2363,10 +2363,10 @@ void update_hero_target_speed_from_stick(void) {
         return;
     }
     if (0.0f < *(float *)(x + 0x190)) {
-        if (*(float *)(x + 0x190) < D_L00_0017BEB8[3]) {
-            *(float *)(x + 0x190) = D_L00_0017BEB8[2] * g_frame_time;
+        if (*(float *)(x + 0x190) < hero_speed_bands[3]) {
+            *(float *)(x + 0x190) = hero_speed_bands[2] * g_frame_time;
         } else {
-            *(float *)(x + 0x190) = D_L00_0017BEB8[6] * g_frame_time;
+            *(float *)(x + 0x190) = hero_speed_bands[6] * g_frame_time;
         }
     }
     {
@@ -2608,15 +2608,15 @@ void clip_hero_velocity_against_probed_surfaces(int arg) {
         r = -1;
         FastVecAdd(secondary_probe_offset_or_end.f, secondary_probe_offset_or_end.f, b.f);
         h2 = (struct Hero *)(D_0013E633 + 0xE1D);
-        if (func_L00_001EFFF0(b.f, secondary_probe_offset_or_end.f, 4, (int)h2->moby, 0)) {
+        if (coll_line(b.f, secondary_probe_offset_or_end.f, 4, (int)h2->moby, 0)) {
             if (D_L00_00173F5C > 0) {
                 r = CollType();
             }
         }
         primary_hit_normal_angle = 0.0f;
         h3 = (struct Hero *)(D_0013E633 + 0xE1D);
-        if (func_L00_001EFFF0(primary_probe_start.f, primary_probe_offset_or_end.f, 4, (int)h3->moby, 0)) {
-            pos_base = (char *)D_L00_00173F40;
+        if (coll_line(primary_probe_start.f, primary_probe_offset_or_end.f, 4, (int)h3->moby, 0)) {
+            pos_base = (char *)coll_hit_result;
             if (((CollisionHit *)pos_base)->unk1C > 0) {
                 primary_hit_normal_angle = fast_atan2(((CollisionHit *)pos_base)->normal_z,
                                                              vec_length_xy(&((CollisionHit *)pos_base)->normal_x));
@@ -2624,7 +2624,7 @@ void clip_hero_velocity_against_probed_surfaces(int arg) {
         }
         if (primary_hit_normal_angle >= 0.87266463f || r == 8 || r == 12) {
             h4 = (struct Hero *)(D_0013E633 + 0xE1D);
-            hit = (CollisionHit *)D_L00_00173F40;
+            hit = (CollisionHit *)coll_hit_result;
             *(s32 *)&hit->normal_z = 0;
             h4->unk240 = hit->moby;
             func_001252C0(&hit->normal_x, &hit->normal_x);
@@ -2649,9 +2649,9 @@ void hero_get_collision_ray_endpoints(VecA16 *a, VecA16 *b, int mode, float fa, 
     if (mode) {
         char *up = D_0013E633 + 0x10AD;
         char *base = up - 0x210;
-        func_L00_001FF4B0(&t[0], up, -fb);
+        vec_scale_to_length(&t[0], up, -fb);
         FastVecAdd(b, base, &t[0]);
-        func_L00_001FF4B0(&t[0], up, -fa);
+        vec_scale_to_length(&t[0], up, -fa);
         FastVecAdd(a, base, &t[0]);
         t[1] = *a;
         clip_negative_segment_endpoint_xyz(&t[1], b);
@@ -2776,7 +2776,7 @@ void update_hero_ground_contact_and_surface_slopes(void) {
         g = D_0013F450_12E70.xF234 * 2.9f;
     }
     func_L00_00212D70_12E70(&v10, &v0, k, g, -48.0f);
-    if (func_L00_001EFFF0(&v10, &v0, 2, D_0013F450_12E70.xI2080, 0) == 0) {
+    if (coll_line(&v10, &v0, 2, D_0013F450_12E70.xI2080, 0) == 0) {
         goto tail;
     }
     r = coll_sound_class();
@@ -2790,7 +2790,7 @@ void update_hero_ground_contact_and_surface_slopes(void) {
         if (D_0013F450_12E70.xF88 < D_0013F450_12E70.xF2f0 && D_0013F450_12E70.xI2f8 <= 0) {
             D_0013F450_12E70.xI2f8 = 1;
         }
-        if (func_L00_001EFFF0(&v10, &v0, 0x24, D_0013F450_12E70.xI2080, 0) == 0) {
+        if (coll_line(&v10, &v0, 0x24, D_0013F450_12E70.xI2080, 0) == 0) {
             goto d1;
         }
         r = coll_sound_class();
@@ -2802,14 +2802,14 @@ void update_hero_ground_contact_and_surface_slopes(void) {
     if (D_0013F450_12E70.xH12e0 == 0xD) {
         D_0013F450_12E70.xF2f0 = D_L00_00173F68;
         v10.f[2] = D_L00_00173F68 - 0.01f;
-        if (func_L00_001EFFF0(&v10, &v0, 4, D_0013F450_12E70.xI2080, 0) == 0) {
+        if (coll_line(&v10, &v0, 4, D_0013F450_12E70.xI2080, 0) == 0) {
             goto d1;
         }
     }
     if (D_0013F450_12E70.xH12e0 == 3) {
         D_0013F450_12E70.xF2f4 = D_L00_00173F68;
         v10.f[2] = D_L00_00173F68 - 0.01f;
-        if (func_L00_001EFFF0(&v10, &v0, 4, D_0013F450_12E70.xI2080, 0) == 0) {
+        if (coll_line(&v10, &v0, 4, D_0013F450_12E70.xI2080, 0) == 0) {
             goto d1;
         }
     }
@@ -2871,7 +2871,7 @@ d1:
         break;
     case 2:
         func_001F9BF0_12E70(((u8 *)&D_0013F450_12E70 + 0x290), ((u8 *)&D_0013F450_12E70 + 0x290) - 0x1E0, ((u8 *)&D_0013F450_12E70 + 0x290) - 0x210);
-        func_L00_001FF4B0(((u8 *)&D_0013F450_12E70 + 0x290), ((u8 *)&D_0013F450_12E70 + 0x290), 1.0f);
+        vec_scale_to_length(((u8 *)&D_0013F450_12E70 + 0x290), ((u8 *)&D_0013F450_12E70 + 0x290), 1.0f);
         break;
     }
     D_0013F450_12E70.u2e4.I = 0;
@@ -2902,7 +2902,7 @@ d1:
         }
         transform_hero_polar_offset_to_world(&v30, 0.2f, a, 0.45f);
         transform_hero_polar_offset_to_world(&v40, 0.2f, a, -0.45f);
-        if (func_L00_001EFFF0(&v30, &v0, 0x22, D_0013F450_12E70.xI2080, 0)) {
+        if (coll_line(&v30, &v0, 0x22, D_0013F450_12E70.xI2080, 0)) {
             f = D_L00_00173F40_12E70.v20.f[2] - D_0013F450_12E70.u2d8.F;
             D_0013F450_12E70.a2c0.f[i] = f;
             if (0.4f < FastAbsF(f)) {
@@ -2949,7 +2949,7 @@ void correct_hero_ground_penetration(void) {
         } else {
             len = len * 0.5f;
         }
-        func_L00_001FF4B0(v, v, len);
+        vec_scale_to_length(v, v, len);
         FastVecAdd(D_0013E633 + 0xE9D, D_0013E633 + 0xE9D, v);
     } else {
         if (*(short *)(g + 0x30E) == 0 && *(float *)(g + 0x88) < *(float *)(g + 0x2D8)) {
@@ -2998,7 +2998,7 @@ void build_scaled_hero_move_impulse(float a, float b) {
     if (v <= b) {
         clear_u64_value(p);
     } else {
-        func_L00_001FF4B0(p, p, v - b);
+        vec_scale_to_length(p, p, v - b);
     }
 }
 
@@ -3082,12 +3082,12 @@ int Hero_ResolveCollisionStep(int arg) {
             }
         }
         p = (char *)D_0013E633 + 0xE9D;
-        qcopy(p, D_L00_00173F70);
-        qcopy(p + 0x180, D_L00_00173F70 + 0x10);
-        qcopy(p + 0x190, D_L00_00173F70 - 0x10);
+        qcopy(p, coll_resolved_pos);
+        qcopy(p + 0x180, coll_resolved_pos + 0x10);
+        qcopy(p + 0x190, coll_resolved_pos - 0x10);
         q = p - 0x80;
         *(unsigned char *)(q + 0x257) = 1;
-        *(int *)(q + 0x23C) = *(int *)(D_L00_00173F70 - 0x18);
+        *(int *)(q + 0x23C) = *(int *)(coll_resolved_pos - 0x18);
     }
     g = (char *)D_0013E633 + 0xE9D;
     FastVecSub((float *)g, (float *)g, v1);
@@ -3102,7 +3102,7 @@ int Hero_ResolveCollisionStep(int arg) {
         if (v2[2] > 512.0f) v2[2] = 512.0f;
         else if (v2[2] < -512.0f) v2[2] = -512.0f;
         g = (char *)D_0013E633 + 0xE1D;
-        func_L00_001FF4B0(v2, v2, *(float *)(g + 0x234));
+        vec_scale_to_length(v2, v2, *(float *)(g + 0x234));
         FastVecAdd(g + 0x80, v0, v2);
         }
         return -1;
@@ -3190,7 +3190,7 @@ void apply_hero_motion_and_resolve_collisions(void) {
             contact = (float *)((char *)base + 0x60);
             length = gravity_length_xy(contact);
             limit = ((Hero *)position)->unk234 - 0.02f;
-            if (limit < length) func_L00_001FF4B0(contact, contact, limit);
+            if (limit < length) vec_scale_to_length(contact, contact, limit);
         }
         position = (float *)(D_0013E633 + 0xEFD);
         magnitude = gravity_z(position);
@@ -3207,7 +3207,7 @@ void apply_hero_motion_and_resolve_collisions(void) {
             vertical = (float *)((char *)base + 0x60);
             length = vec_length_xy(vertical);
             limit = ((Hero *)position)->unk234 - 0.02f;
-            if (limit < length) func_L00_001FF500(vertical, vertical, limit);
+            if (limit < length) vec_set_length_xy(vertical, vertical, limit);
         }
     } else if (((Hero *)position)->state.control_mode != 13) {
         if (((Hero *)position)->state.control_mode != 14) {
@@ -3218,7 +3218,7 @@ void apply_hero_motion_and_resolve_collisions(void) {
                 vertical = (float *)((char *)base + 0x60);
                 length = FastVecLength(vertical);
                 limit = ((Hero *)position)->unk234 - 0.02f;
-                if (limit < length) func_L00_001FF4B0(vertical, vertical, limit);
+                if (limit < length) vec_scale_to_length(vertical, vertical, limit);
             }
         }
     }
@@ -3246,24 +3246,24 @@ void apply_hero_motion_and_resolve_collisions(void) {
     vertical = (float *)((char *)position + 0x10);
     qcopy(vertical, position);
     velocity = (float *)((char *)position - 0x30);
-    func_L00_001FF4B0(position, position, 1.0f);
+    vec_scale_to_length(position, position, 1.0f);
     magnitude = FastVecDot(position, velocity);
     if (magnitude < 0.0f) magnitude = 0.0f;
-    func_L00_001FF4B0(position, velocity, magnitude);
+    vec_scale_to_length(position, velocity, magnitude);
     qcopy(work.f, velocity);
     gravity_flatten(work.f, work.f);
     gravity_flatten(horizontal, horizontal);
-    func_L00_001FF4B0(horizontal, horizontal, 1.0f);
+    vec_scale_to_length(horizontal, horizontal, 1.0f);
     magnitude = FastVecDot(horizontal, work.f);
     if (magnitude < 0.0f) magnitude = 0.0f;
-    func_L00_001FF4B0(horizontal, work.f, magnitude);
+    vec_scale_to_length(horizontal, work.f, magnitude);
     qcopy(plane.f, velocity);
     set_gravity_relative_vector_length_xy(plane.f, plane.f, 0.0f);
     set_gravity_relative_vector_length_xy(vertical, vertical, 0.0f);
-    func_L00_001FF4B0(vertical, vertical, 1.0f);
+    vec_scale_to_length(vertical, vertical, 1.0f);
     magnitude = FastVecDot(vertical, plane.f);
     if (magnitude < 0.0f) magnitude = 0.0f;
-    func_L00_001FF4B0(vertical, plane.f, magnitude);
+    vec_scale_to_length(vertical, plane.f, magnitude);
     motion_player = (Hero *)((char *)position - 0x110);
     motion_player->motion.speed_xy = FastVecLength(position);
     magnitude = vec_length_xy(position);
@@ -3375,7 +3375,7 @@ void steer_hero_planar_velocity(float step) {
         p = (char *)D_0013F530;
         step *= t;
         FastVecSub(v, v, (float *)p);
-        if (step < vec_length_xy(v)) func_L00_001FF500(v, v, step);
+        if (step < vec_length_xy(v)) vec_set_length_xy(v, v, step);
         FastVecAdd(p, p, v);
         qcopy(p + 0x50, p);
         *(Q_14520 *)w = *(Q_14520 *)(p + 0x840);

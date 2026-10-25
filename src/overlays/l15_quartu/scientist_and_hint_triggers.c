@@ -76,7 +76,7 @@ void ultramech_scientist_update(char *moby) {
     {
         char *player = D_0013E633 + 0xE1D;
         if (*(unsigned char *)(player + 0x20A4) != 2) {
-            int mobys = D_L15_00160058;
+            int mobys = quartu_moby_array;
             *(int *)((*(int *)(data + 0x14C) << 8) + mobys + 0x94) = 0;
             *(unsigned short *)((*(int *)(data + 0x14C) << 8) + mobys + 0x34) |= 0x41;
         }
@@ -87,7 +87,7 @@ void ultramech_scientist_update(char *moby) {
         ((struct Moby *)moby)->flags |= 0x41;
         return;
     }
-    if (D_L15_0015F6A8 == 2) {
+    if (quartu_game_mode == 2) {
         ((struct Moby *)moby)->collision = 0;
         ((struct Moby *)moby)->flags |= 0x41;
     } else {
@@ -105,7 +105,7 @@ void ultramech_scientist_update(char *moby) {
         if (((unsigned char *)(D_0014171B + 0xAA35))[*(int *)(data + 0x280) + (g_current_level_index << 4)] != 0xFF) {
             break;
         }
-        if (*(unsigned char *)(D_0013DE55 + 3) != 0) {
+        if (*(unsigned char *)(gemlik_available + 3) != 0) {
             ((struct Moby *)moby)->state = 9;
             break;
         }
@@ -180,7 +180,7 @@ void ultramech_scientist_update(char *moby) {
         }
         break;
     case ULTRAMECH_SCIENTIST_RESUME_AFTER_DIALOGUE:
-        if (D_L15_0015F6A8 == 2) {
+        if (quartu_game_mode == 2) {
             break;
         }
         ((struct Moby *)moby)->anim_speed = 1.0f;
@@ -202,7 +202,7 @@ void ultramech_scientist_update(char *moby) {
             }
         }
         if (*(int *)(data + 0x158) != -1) {
-            char *spawned = (char *)D_L15_00160058 + (*(int *)(data + 0x158) << 8);
+            char *spawned = (char *)quartu_moby_array + (*(int *)(data + 0x158) << 8);
             if (spawned != 0) {
                 int state = *(unsigned char *)(spawned + 0x20);
                 if (state != 0xFE) {
@@ -227,7 +227,7 @@ void ultramech_scientist_update(char *moby) {
             break;
         }
         restore_saved_hero_moby_and_clear_vehicle_mode();
-        MobySetAnimation((char *)D_L15_00160058 + (*(int *)(data + 0x14C) << 8), 0, 0);
+        MobySetAnimation((char *)quartu_moby_array + (*(int *)(data + 0x14C) << 8), 0, 0);
         *(int *)(data + 0x140) = 1;
         *(short *)(data + 0x36) = 1;
         *(unsigned char *)(data + 0x8) = 1;
@@ -248,14 +248,14 @@ void ultramech_scientist_update(char *moby) {
         ((struct Moby *)moby)->state = 6;
         break;
     case ULTRAMECH_SCIENTIST_WAIT_FOR_FIRST_SCENE:
-        if (D_L15_0015F6A8 == 2) {
+        if (quartu_game_mode == 2) {
             break;
         }
         PlayMovieEntryIfIdle(0x10);
         ((struct Moby *)moby)->state = 7;
         break;
     case ULTRAMECH_SCIENTIST_START_SECOND_SCENE_AND_SAVE:
-        if (D_L15_0015F6A8 != 2) {
+        if (quartu_game_mode != 2) {
             queue_planet_unlock_message(0x10);
             StartCutscene(2);
             ((struct Moby *)moby)->state = 8;
@@ -572,7 +572,7 @@ void emit_cutscene_mode_moby_effects(struct Moby *m) {
         m->state = 1;
         break;
     case 1:
-        if (D_L15_0015F6A8 == 2) {
+        if (quartu_game_mode == 2) {
             if (D_L15_0016CEE0.mode == 1 || D_L15_0016CEE0.mode == 2 || D_L15_0016CEE0.mode == 3 ||
                 D_L15_0016CEE0.mode == 4 || D_L15_0016CEE0.mode == 6) {
                 int v = D_L15_0016CEE0.mode;
@@ -640,7 +640,7 @@ void draw_scaled_moby_radial_ripple_mesh(char *moby) {
     int b;
     int color;
     float scale;
-    scale = IntToFloat(D_L15_0015F6B0) * (D_L15_0016227C * g_frame_time);
+    scale = IntToFloat(quartu_frame_count) * (D_L15_0016227C * g_frame_time);
     VU1_addGSregister(6, GetEffectTex(D_L15_00162268));
     VU1_addGSregister(0x42, ((long)D_L15_00162264 << 32) | 0x44);
     VU1_addGSregister(8, 0);
@@ -654,7 +654,7 @@ void draw_scaled_moby_radial_ripple_mesh(char *moby) {
         float x = template_vertex[0];
         float y = template_vertex[1];
         float rad = vec_length(x * x + y * y);
-        float radius_remainder = func_L00_00200210(rad, D_L15_00162270);
+        float radius_remainder = fast_fmod(rad, D_L15_00162270);
         float w = FastNormalizeAngle(radius_remainder * 6.2831855f / D_L15_00162270);
         float z = FastSin(FastAddRots(w, data->angle));
         D_L15_001DEF80[i][0] = D_L15_00162280 * template_vertex[0] + m->pos.x;
@@ -665,8 +665,8 @@ void draw_scaled_moby_radial_ripple_mesh(char *moby) {
     for (j = 0; j < 2; j++) {
         for (uv_vertex_index = 0; uv_vertex_index < 46; uv_vertex_index++) {
             Quad4_2EF030 uv_scroll_factors = D_L15_00162288;
-            D_L15_001DF1A8[uv_vertex_index][0] = D_L15_001DED58[uv_vertex_index][0] + func_L00_00200210(scale * uv_scroll_factors.f[j][0], 1.0f);
-            D_L15_001DF1A8[uv_vertex_index][1] = D_L15_001DED58[uv_vertex_index][1] + func_L00_00200210(scale * uv_scroll_factors.f[j][1], 1.0f);
+            D_L15_001DF1A8[uv_vertex_index][0] = D_L15_001DED58[uv_vertex_index][0] + fast_fmod(scale * uv_scroll_factors.f[j][0], 1.0f);
+            D_L15_001DF1A8[uv_vertex_index][1] = D_L15_001DED58[uv_vertex_index][1] + fast_fmod(scale * uv_scroll_factors.f[j][1], 1.0f);
         }
         font_queue_vu_state();
         for (k = 0; k < 1; k++) {
@@ -710,7 +710,7 @@ void draw_scaled_88_vertex_moby_radial_ripple_mesh(char *moby) {
     int b;
     int color;
     float scale;
-    scale = IntToFloat(D_L15_0015F6B0) * (D_L15_001622EC * g_frame_time);
+    scale = IntToFloat(quartu_frame_count) * (D_L15_001622EC * g_frame_time);
     VU1_addGSregister(6, GetEffectTex(D_L15_001622D8));
     VU1_addGSregister(0x42, ((long)D_L15_001622D4 << 32) | 0x44);
     VU1_addGSregister(8, 0);
@@ -724,7 +724,7 @@ void draw_scaled_88_vertex_moby_radial_ripple_mesh(char *moby) {
         float x = template_vertex[0];
         float y = template_vertex[1];
         float rad = vec_length(x * x + y * y);
-        float radius_remainder = func_L00_00200210(rad, D_L15_001622E0);
+        float radius_remainder = fast_fmod(rad, D_L15_001622E0);
         float w = FastNormalizeAngle(radius_remainder * 6.2831855f / D_L15_001622E0);
         float z = FastSin(FastAddRots(w, data->angle));
         D_L15_001DFC10[i][0] = D_L15_001622F0 * template_vertex[0] + ((struct Moby *)moby)->pos.x;
@@ -735,8 +735,8 @@ void draw_scaled_88_vertex_moby_radial_ripple_mesh(char *moby) {
     for (j = 0; j < 2; j++) {
         for (uv_vertex_index = 0; uv_vertex_index < 88; uv_vertex_index++) {
             Quad4_2EF410 uv_scroll_factors = D_L15_001622F8;
-            D_L15_001E0030[uv_vertex_index][0] = D_L15_001DF7F0[uv_vertex_index][0] + func_L00_00200210(scale * uv_scroll_factors.f[j][0], 1.0f);
-            D_L15_001E0030[uv_vertex_index][1] = D_L15_001DF7F0[uv_vertex_index][1] + func_L00_00200210(scale * uv_scroll_factors.f[j][1], 1.0f);
+            D_L15_001E0030[uv_vertex_index][0] = D_L15_001DF7F0[uv_vertex_index][0] + fast_fmod(scale * uv_scroll_factors.f[j][0], 1.0f);
+            D_L15_001E0030[uv_vertex_index][1] = D_L15_001DF7F0[uv_vertex_index][1] + fast_fmod(scale * uv_scroll_factors.f[j][1], 1.0f);
         }
         font_queue_vu_state();
         for (k = 0; k < 1; k++) {
@@ -798,7 +798,7 @@ int is_hero_in_moby_follow_camera_region(char *moby) {
         }
     } else if (e[5] >= 0) {
         i = e[5];
-        if (IsPointInPolygon((float *)(D_0013E633 + 0xE9D), (float *)(D_L15_001B0DB0[i] + 4), D_L15_001B0DB0[i][0])) {
+        if (IsPointInPolygon((float *)(D_0013E633 + 0xE9D), (float *)(quartu_paths[i] + 4), quartu_paths[i][0])) {
             return 1;
         }
     }

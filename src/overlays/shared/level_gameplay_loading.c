@@ -593,8 +593,8 @@ char *load_level_gameplay(int arg0) {
     short *idx = D_L00_001ACB00; /* moby index by file order; a pointer local, so its address is formed at each use */
     int tmp; /* scratch int: the level number in the moby loop, a group's offset and end flag in the group loop */
 
-    hdr = D_L00_00173F00.f4;
-    mem = D_L00_00173F00.f18;
+    hdr = lvl_resource_buffers.f4;
+    mem = lvl_resource_buffers.f18;
     if (arg0 == 0) {
         if (pal_mode != 0) {
             func_002176C8_422D8(mem, D_00137C80_422D8.f2978, D_00137C80_422D8.f297C);
@@ -604,7 +604,7 @@ char *load_level_gameplay(int arg0) {
         D_0015EF4C_422D8[1] = mem; /* D_0015EF50 */
     }
     func_00118D80(0);
-    func_0020C468(D_0015EF4C_422D8[1], hdr);
+    fast_decompress(D_0015EF4C_422D8[1], hdr);
     func_00118D80(0);
     FastMemSet(&g_hero, 0, 0x2310);
     FastMemSet(player_camera, 0, 0x3A0);
@@ -619,20 +619,20 @@ char *load_level_gameplay(int arg0) {
             SetUpdateModeTiming(0);
         }
     }
-    D_L00_00173F40.f4 = D_L00_00174000;
-    D_L00_00173F40.f8 = D_L00_00173FC0;
-    D_L00_00173F40.fC = 0;
-    D_L00_00173F40.f10 = 0;
-    D_L00_00173F40.f14 = 0;
+    coll_hit_result.f4 = D_L00_00174000;
+    coll_hit_result.f8 = D_L00_00173FC0;
+    coll_hit_result.fC = 0;
+    coll_hit_result.f10 = 0;
+    coll_hit_result.f14 = 0;
     FastMemZero16(D_L00_0019BB60, 0x10000);
     FastMemZero16(D_L00_001ABB60, 0x60);
     {
         int *p = (int *)((char *)hdr + hdr->f0);
         int *c;
 
-        D_L00_0016CB40.f23C = *p++;
-        D_L00_0016CB40.f240 = *p++;
-        D_L00_0016CB40.f244 = *p++;
+        render_view_params.f23C = *p++;
+        render_view_params.f240 = *p++;
+        render_view_params.f244 = *p++;
         *(unsigned char *)&D_L00_0015F544 = *p++;
         *(unsigned char *)&D_L00_0015F545 = *p++;
         *(unsigned char *)&D_L00_0015F546 = *p++;
@@ -654,7 +654,7 @@ char *load_level_gameplay(int arg0) {
     D_L00_00160564 = 500.0f;
     D_L00_001600B0 = 500;
     D_L00_0016023C = 0x1F4000;
-    SetBackgroundColor(D_L00_0016CB40.f23C, D_L00_0016CB40.f240, D_L00_0016CB40.f244);
+    SetBackgroundColor(render_view_params.f23C, render_view_params.f240, render_view_params.f244);
     VU0_loadMicroProgram(D_00100AE0);
     FastMemZero16(D_L00_001803C0, 0x100);
     FastMemZero16(D_L00_001805C0, 0x180);
@@ -669,7 +669,7 @@ char *load_level_gameplay(int arg0) {
             n = 12;
         }
         if (n != 0) {
-            func_L00_001FF040(D_L00_0017FFC0, p, n << 6);
+            copy_memory_by_alignment(D_L00_0017FFC0, p, n << 6);
         }
     }
     if (hdr->f80 != 0) {
@@ -681,8 +681,8 @@ char *load_level_gameplay(int arg0) {
             Light_422D8 *l;
             int i;
 
-            func_L00_001FF040(D_L00_0017EDC0, p, D_L00_0015FC84 << 4);
-            func_L00_001FF040(D_L00_0017EFC0, p + (D_L00_0015FC84 << 4), D_L00_0015FC84 << 7);
+            copy_memory_by_alignment(D_L00_0017EDC0, p, D_L00_0015FC84 << 4);
+            copy_memory_by_alignment(D_L00_0017EFC0, p + (D_L00_0015FC84 << 4), D_L00_0015FC84 << 7);
             for (i = 0; i < D_L00_0015FC84; i++) {
                 l = &D_L00_0017EFC0[i];
                 if (l->f48 < 0) {
@@ -725,7 +725,7 @@ char *load_level_gameplay(int arg0) {
         int size;
         int i;
 
-        D_L00_00179510.f2C = *(int *)p;
+        help_popup_state.f2C = *(int *)p;
         p += 4;
         size = *(int *)p;
         p += 4;
@@ -733,8 +733,8 @@ char *load_level_gameplay(int arg0) {
         size += 3;
         size &= ~3;
         size -= 8;
-        func_L00_001FF040(mem, p, size);
-        for (i = 0; i < D_L00_00179510.f2C; i++) {
+        copy_memory_by_alignment(mem, p, size);
+        for (i = 0; i < help_popup_state.f2C; i++) {
             int delta = (int)D_L00_0015F740 - 8;
 
             D_L00_0015F740[i].f0 += delta;
@@ -797,7 +797,7 @@ char *load_level_gameplay(int arg0) {
             D_L00_00161088[i].fC = 1.0f / FastVecLength(&D_L00_00161088[i]);
             D_L00_00161088[i].f1C = 1.0f / FastVecLength(D_L00_00161088[i].m1);
             D_L00_00161088[i].f2C = 1.0f / FastVecLength(D_L00_00161088[i].m2);
-            func_L00_001FF040(mtx->f140, p, 0x80);
+            copy_memory_by_alignment(mtx->f140, p, 0x80);
             p += 0x80;
             inst->f1C = *(unsigned short *)p;
             p += 0x10;
@@ -992,7 +992,7 @@ char *load_level_gameplay(int arg0) {
             for (i = 0; i < voice_pool.fD90; i++) {
                 SndInst_422D8 *e = voice_pool.fD94 + i;
 
-                func_L00_001FF040(e, p, 0x90);
+                copy_memory_by_alignment(e, p, 0x90);
                 p += 0x90;
                 resolve_lookup_record((short *)e);
             }
@@ -1012,7 +1012,7 @@ char *load_level_gameplay(int arg0) {
         p += 4;
         n2 = *(int *)p;
         p += 0xC;
-        D_L00_00160098 = (Moby *)mem;
+        moby_array_start = (Moby *)mem;
         FastMemSet(mem, 0, (n + n2) << 8);
         for (i = 0; i < n; i++) {
             int mission;
@@ -1092,7 +1092,7 @@ char *load_level_gameplay(int arg0) {
                 int upd;
 
                 idx[i] = count;
-                m = D_L00_00160098 + count;
+                m = moby_array_start + count;
                 InitMobyInstance(m, *(int *)p);
                 p += 4;
                 m->unkB1 = vis;
@@ -1164,13 +1164,13 @@ char *load_level_gameplay(int arg0) {
             }
             p = next;
         }
-        D_L00_0016009C = D_L00_00160098 + count;
-        D_L00_0016009C->state = 0xFF;
+        level_mobys_end = moby_array_start + count;
+        level_mobys_end->state = 0xFF;
         mem += (count + n2) << 8;
         D_L00_001600A8 = mem;
         mem += n2 << 7;
         mem = (char *)(((u32)mem + 0x3F) & 0xFFFFFFC0);
-        D_L00_001600A0 = (Moby *)((int)D_L00_00160098 + ((count + n2) << 8) - 0x100);
+        D_L00_001600A0 = (Moby *)((int)moby_array_start + ((count + n2) << 8) - 0x100);
     }
     if (hdr->f58 != 0) {
         char *pv = (char *)hdr + hdr->f58;
@@ -1208,7 +1208,7 @@ char *load_level_gameplay(int arg0) {
                 mem += size;
             }
         }
-        for (m = D_L00_00160098; m != D_L00_0016009C; m++) {
+        for (m = moby_array_start; m != level_mobys_end; m++) {
             int k = (*(int *)&m->pvars);
 
             if (k < 0) {
@@ -1361,7 +1361,7 @@ char *load_level_gameplay(int arg0) {
             FastMemCopy(D_L00_001601C8, src, size);
         }
         for (i = 0; i < D_L00_001601C4; i++) {
-            D_L00_001B0830[i] = D_L00_001601C8 + *(int *)q;
+            level_paths[i] = D_L00_001601C8 + *(int *)q;
             q += 4;
         }
     }
@@ -1418,7 +1418,7 @@ char *load_level_gameplay(int arg0) {
             FastMemSet(D_L00_001601A4, 0, n * 0x90);
         }
         for (i = 0; i < D_L00_001601A8; i++) {
-            func_L00_001FF040(D_L00_001601A4 + i * 0x90, q, 0x90);
+            copy_memory_by_alignment(D_L00_001601A4 + i * 0x90, q, 0x90);
             q += 0x80;
         }
     }
@@ -1436,7 +1436,7 @@ char *load_level_gameplay(int arg0) {
             FastMemSet(D_L00_001601AC, 0, n << 7);
         }
         for (i = 0; i < D_L00_001601B0; i++) {
-            func_L00_001FF040(D_L00_001601AC + (i << 7), q, 0x80);
+            copy_memory_by_alignment(D_L00_001601AC + (i << 7), q, 0x80);
             q += 0x80;
         }
     }
@@ -1454,7 +1454,7 @@ char *load_level_gameplay(int arg0) {
             FastMemSet(D_L00_001601B4, 0, n << 7);
         }
         for (i = 0; i < D_L00_001601B8; i++) {
-            func_L00_001FF040(D_L00_001601B4 + (i << 7), q, 0x80);
+            copy_memory_by_alignment(D_L00_001601B4 + (i << 7), q, 0x80);
             q += 0x80;
         }
     }
@@ -1472,7 +1472,7 @@ char *load_level_gameplay(int arg0) {
             FastMemSet(D_L00_001601BC, 0, n << 7);
         }
         for (i = 0; i < D_L00_001601C0; i++) {
-            func_L00_001FF040(D_L00_001601BC + (i << 7), q, 0x80);
+            copy_memory_by_alignment(D_L00_001601BC + (i << 7), q, 0x80);
             q += 0x80;
         }
     }
@@ -1484,7 +1484,7 @@ char *load_level_gameplay(int arg0) {
         q += 0x10;
         size += 0x4000;
         mem += size;
-        func_L00_001FF040(D_L00_0015F080, q, size);
+        copy_memory_by_alignment(D_L00_0015F080, q, size);
         mem = (char *)(((u32)mem + 0x3F) & 0xFFFFFFC0);
     }
     if (hdr->f78 != 0) {
@@ -1495,7 +1495,7 @@ char *load_level_gameplay(int arg0) {
         q += 0x10;
         size += 0x4000;
         mem += size;
-        func_L00_001FF040(D_L00_0015FC80, q, size);
+        copy_memory_by_alignment(D_L00_0015FC80, q, size);
         mem = (char *)(((u32)mem + 0x3F) & 0xFFFFFFC0);
     }
     if (hdr->f7C != 0) {
@@ -1508,7 +1508,7 @@ char *load_level_gameplay(int arg0) {
         mem += n << 5;
         mem = (char *)(((u32)mem + 0x3F) & 0xFFFFFFC0);
         if (n != 0) {
-            func_L00_001FF040(D_L00_0015FC40, q, n << 5);
+            copy_memory_by_alignment(D_L00_0015FC40, q, n << 5);
         }
     }
     if (hdr->f88 != 0) {
@@ -1521,7 +1521,7 @@ char *load_level_gameplay(int arg0) {
         mem += n * 0x30;
         mem = (char *)(((u32)mem + 0x3F) & 0xFFFFFFC0);
         if (n != 0) {
-            func_L00_001FF040(D_L00_00160100, q, n * 0x30);
+            copy_memory_by_alignment(D_L00_00160100, q, n * 0x30);
         }
     }
     D_L00_0016022C = mem;
@@ -1536,7 +1536,7 @@ char *load_level_gameplay(int arg0) {
 
         if (g_current_level_index == 13 && D_0013E130.f26 == 2) {
             if (D_L00_00160600 != 0) {
-                for (m = D_L00_00160098; m->state != 0xFF; m++) {
+                for (m = moby_array_start; m->state != 0xFF; m++) {
                     if (m->oclass == first_class_ids[D_0013E130.f26]) {
                         initialize_moby_state_record((char *)m);
                         MobySetAnimation(m, 1, 0);
@@ -1613,7 +1613,7 @@ char *load_level_gameplay(int arg0) {
             int cnt = 0;
             int k = 0;
 
-            for (m = D_L00_00160098; m->state != 0xFF; m++) {
+            for (m = moby_array_start; m->state != 0xFF; m++) {
                 if (m->occlusion != 0x7F80) {
                     int uid = (*(short *)&m->save_id);
                     int j;
@@ -1701,7 +1701,7 @@ char *load_level_gameplay(int arg0) {
         int i;
 
         STUB_printf(D_L00_001E8AC0);
-        for (m = D_L00_00160098; m != D_L00_001600A0; m++) {
+        for (m = moby_array_start; m != D_L00_001600A0; m++) {
             m->occlusion = 0x7F80;
         }
         for (t = D_L00_00161080; t != D_L00_00161084; t++) {
@@ -1721,8 +1721,8 @@ char *load_level_gameplay(int arg0) {
     Font_EnableColorCodes();
     D_L00_001B0AF0[0] = 0;
     D_L00_001B0B30[0] = 0;
-    D_L00_001B0BB0[0] = 0;
-    D_L00_0015F6B0 = 0;
+    decoy_list[0] = 0;
+    level_frame_counter = 0;
     D_L00_0015F71C = 0;
     {
         int i;
@@ -1884,7 +1884,7 @@ extern void func_L00_002657B8(UpdD244 *);
 /* level archive load state; the shared header pointer at +4 is D_0015EF4C */
 extern struct { u16 stage; s16 busy; s32 *shared; } D_0015EF48 MACRO_ADDR;
 s32 load_level_archive_resources(s32 full, s32 keep) {
-    Load244110 *ld = ((Load244110 *)&D_L00_00173F00);
+    Load244110 *ld = ((Load244110 *)&lvl_resource_buffers);
     Hdr244 *h = (Hdr244 *)ld->f4;
     s32 *src = D_0015EF48.shared;
     char *base;
@@ -1922,11 +1922,11 @@ s32 load_level_archive_resources(s32 full, s32 keep) {
     if (full) {
         FastMemCopy(h, (char *)(src[4] + (s32)src), src[5]);
         D_L00_0015F50C = 0;
-        func_L00_001FF040(D_L00_0015FD48, D_0014C150 + g_current_level_index * 16, 0x10);
+        copy_memory_by_alignment(D_L00_0015FD48, saved_mission_state + g_current_level_index * 16, 0x10);
         upload_texture_images((char *)(src[6] + (s32)src), h->v[0], (char *)h + h->v[1]);
         D_L00_001600C4 = D_0015EE5C;
         func_00118D80(0);
-        used = func_0020C468((char *)(src[0x14] + (s32)src), base);
+        used = fast_decompress((char *)(src[0x14] + (s32)src), base);
 
         D_L00_0015F50C = (s32)(base + h->v[0x18]);
         D_L00_001828C0[0] = (((u64)((g_gs_texture_allocation_base + h->v[0x24]) >> 8) | ((u64)(2) << 14) | ((u64)(0x13) << 20) | ((u64)(7) << 26) | ((u64)(7) << 30) | ((u64)(1) << 34) | ((u64)(0) << 35) | ((u64)((g_gs_texture_allocation_base + h->v[0x25]) >> 8) << 37) | ((u64)(0) << 51) | ((u64)(0) << 55) | ((u64)(0) << 56) | ((u64)(4) << 61)));
@@ -1965,15 +1965,15 @@ s32 load_level_archive_resources(s32 full, s32 keep) {
         if (h->v[4])
             relocate_sky_definition(base + h->v[4]);
         else
-            D_L00_001605DC = 0;
+            sky_data = 0;
         resolve_level_asset_block_pointers(base + h->v[5]);
         for (i = 0, q2 = (char *)h + h->v[7]; i < h->v[6]; i++, q2 += 0x20)
             register_moby_class(*(s32 *)q2 ? base + *(s32 *)q2 : 0, (char *)h + h->v[0xF], q2 + 0x10, *(s32 *)(q2 + 4));
         print_moby_class_sizes((int *)((char *)h + h->v[7]), h->v[7]);
-        for (sq = 0, p = (char *)h + h->v[0x1E]; sq < D_L00_00197680[0]->seq_count; sq++, p += 4) {
+        for (sq = 0, p = (char *)h + h->v[0x1E]; sq < moby_class_headers[0]->seq_count; sq++, p += 4) {
             if (*(s32 *)p) {
-                D_L00_00197680[0]->seqs[sq] = base + *(s32 *)p;
-                relocateObjectPointers(D_L00_00197680[0], sq);
+                moby_class_headers[0]->seqs[sq] = base + *(s32 *)p;
+                relocateObjectPointers(moby_class_headers[0], sq);
             }
         }
         D_L00_001600CC = -1;
@@ -2026,7 +2026,7 @@ s32 load_level_archive_resources(s32 full, s32 keep) {
         n = span->count;
         D_L00_0015F6D4 = (Slot244110 *)free;
         D_L00_0015F6D0 = n;
-        func_L00_001FF040(free, tbl + span->off, n * 32);
+        copy_memory_by_alignment(free, tbl + span->off, n * 32);
         span++;
         free += n * 32;
         e = tbl + span->off;
@@ -2042,7 +2042,7 @@ s32 load_level_archive_resources(s32 full, s32 keep) {
         end = free + 0x3F;
         span++;
         for (ci = 0; ci < D_L00_00160080; ci++, span++) {
-            Class244110 *cls = D_L00_00197680[ci];
+            Class244110 *cls = moby_class_headers[ci];
             if (cls == 0) {
                 for (j = 0; j < D_L00_001600C8; j++)
                     if (D_L00_001AFF40[j] == D_L00_00197D80[ci])
@@ -2057,54 +2057,54 @@ s32 load_level_archive_resources(s32 full, s32 keep) {
                 if (span->count != cls->count0D)
                     ((void (*)())STUB_printf)(D_L00_001E8B20, D_L00_00197D80[ci]);
                 e = tbl + span->off;
-                for (k = 0; k < D_L00_00197680[ci]->count0D; k++, e += 4) {
-                    D_L00_00197680[ci]->f28[k].sound = *(u16 *)e;
-                    D_L00_00197680[ci]->f28[k].time = D_0015EE5C;
+                for (k = 0; k < moby_class_headers[ci]->count0D; k++, e += 4) {
+                    moby_class_headers[ci]->f28[k].sound = *(u16 *)e;
+                    moby_class_headers[ci]->f28[k].time = D_0015EE5C;
                 }
             }
         }
-        ((Load244110 *)&D_L00_00173F00)->f18 = load_level_texture_bank((char *)((u32)end & ~0x3F), (s32 *)h);
+        ((Load244110 *)&lvl_resource_buffers)->f18 = load_level_texture_bank((char *)((u32)end & ~0x3F), (s32 *)h);
     }
-    ((Load244110 *)&D_L00_00173F00)->f1C = load_level_gameplay(full);
+    ((Load244110 *)&lvl_resource_buffers)->f1C = load_level_gameplay(full);
     if (full) {
         char *top;
         ((void (*)())STUB_printf)(D_L00_001E8B50);
         ((void (*)())STUB_printf)(D_L00_001E8B68, (((*(f64 (*)(f32))func_00120778)(IntToFloat((s32)(0x100000)) * (1.0f / 1024.0f)))));
         top = D_L00_002F2298;
         ((void (*)())STUB_printf)(D_L00_001E8B80, (((*(f64 (*)(f32))func_00120778)(IntToFloat((s32)(top - 0x100000)) * (1.0f / 1024.0f)))));
-        ((void (*)())STUB_printf)(D_L00_001E8B98, (((*(f64 (*)(f32))func_00120778)(IntToFloat((s32)(((Load244110 *)&D_L00_00173F00)->f0 - top)) * (1.0f / 1024.0f)))));
-        ((void (*)())STUB_printf)(D_L00_001E8BB0, (((*(f64 (*)(f32))func_00120778)(IntToFloat((s32)(((Load244110 *)&D_L00_00173F00)->fC - ((Load244110 *)&D_L00_00173F00)->f0)) * (1.0f / 1024.0f)))));
-        ((void (*)())STUB_printf)(D_L00_001E8BC8, (((*(f64 (*)(f32))func_00120778)(IntToFloat((s32)(((Load244110 *)&D_L00_00173F00)->f10 - ((Load244110 *)&D_L00_00173F00)->fC)) * (1.0f / 1024.0f)))));
-        ((void (*)())STUB_printf)(D_L00_001E8BE0, (((*(f64 (*)(f32))func_00120778)(IntToFloat((s32)(((Load244110 *)&D_L00_00173F00)->f14 - ((Load244110 *)&D_L00_00173F00)->f10)) * (1.0f / 1024.0f)))));
+        ((void (*)())STUB_printf)(D_L00_001E8B98, (((*(f64 (*)(f32))func_00120778)(IntToFloat((s32)(((Load244110 *)&lvl_resource_buffers)->f0 - top)) * (1.0f / 1024.0f)))));
+        ((void (*)())STUB_printf)(D_L00_001E8BB0, (((*(f64 (*)(f32))func_00120778)(IntToFloat((s32)(((Load244110 *)&lvl_resource_buffers)->fC - ((Load244110 *)&lvl_resource_buffers)->f0)) * (1.0f / 1024.0f)))));
+        ((void (*)())STUB_printf)(D_L00_001E8BC8, (((*(f64 (*)(f32))func_00120778)(IntToFloat((s32)(((Load244110 *)&lvl_resource_buffers)->f10 - ((Load244110 *)&lvl_resource_buffers)->fC)) * (1.0f / 1024.0f)))));
+        ((void (*)())STUB_printf)(D_L00_001E8BE0, (((*(f64 (*)(f32))func_00120778)(IntToFloat((s32)(((Load244110 *)&lvl_resource_buffers)->f14 - ((Load244110 *)&lvl_resource_buffers)->f10)) * (1.0f / 1024.0f)))));
         if (D_L00_0015F6E0 != 0)
-            ((void (*)())STUB_printf)(D_L00_001E8BF8, (((*(f64 (*)(f32))func_00120778)(IntToFloat((s32)((char *)D_L00_0015F6E0 - ((Load244110 *)&D_L00_00173F00)->f14)) * (1.0f / 1024.0f)))));
-        else if (D_L00_001605DC != 0)
-            ((void (*)())STUB_printf)(D_L00_001E8BF8, (((*(f64 (*)(f32))func_00120778)(IntToFloat((s32)((char *)D_L00_001605DC - ((Load244110 *)&D_L00_00173F00)->f14)) * (1.0f / 1024.0f)))));
+            ((void (*)())STUB_printf)(D_L00_001E8BF8, (((*(f64 (*)(f32))func_00120778)(IntToFloat((s32)((char *)D_L00_0015F6E0 - ((Load244110 *)&lvl_resource_buffers)->f14)) * (1.0f / 1024.0f)))));
+        else if (sky_data != 0)
+            ((void (*)())STUB_printf)(D_L00_001E8BF8, (((*(f64 (*)(f32))func_00120778)(IntToFloat((s32)((char *)sky_data - ((Load244110 *)&lvl_resource_buffers)->f14)) * (1.0f / 1024.0f)))));
         else
             ((void (*)())STUB_printf)(D_L00_001E8C10);
         if (D_L00_0015F6E0 != 0) {
-            if (D_L00_001605DC != 0)
-                ((void (*)())STUB_printf)(D_L00_001E8C30, (((*(f64 (*)(f32))func_00120778)(IntToFloat((s32)(D_L00_001605DC - (s32)D_L00_0015F6E0)) * (1.0f / 1024.0f)))));
+            if (sky_data != 0)
+                ((void (*)())STUB_printf)(D_L00_001E8C30, (((*(f64 (*)(f32))func_00120778)(IntToFloat((s32)(sky_data - (s32)D_L00_0015F6E0)) * (1.0f / 1024.0f)))));
             else
-                ((void (*)())STUB_printf)(D_L00_001E8C30, (((*(f64 (*)(f32))func_00120778)(IntToFloat((s32)(((char *)D_L00_00173F40.f0) - (s32)D_L00_0015F6E0)) * (1.0f / 1024.0f)))));
+                ((void (*)())STUB_printf)(D_L00_001E8C30, (((*(f64 (*)(f32))func_00120778)(IntToFloat((s32)(((char *)coll_hit_result.f0) - (s32)D_L00_0015F6E0)) * (1.0f / 1024.0f)))));
         }
         if (h->v[4])
-            ((void (*)())STUB_printf)(D_L00_001E8C48, (((*(f64 (*)(f32))func_00120778)(IntToFloat((s32)(((char *)D_L00_00173F40.f0) - (char *)D_L00_001605DC)) * (1.0f / 1024.0f)))));
-        ((void (*)())STUB_printf)(D_L00_001E8C60, (((*(f64 (*)(f32))func_00120778)(IntToFloat((s32)(D_L00_0015F50C - (s32)((char *)D_L00_00173F40.f0))) * (1.0f / 1024.0f)))));
+            ((void (*)())STUB_printf)(D_L00_001E8C48, (((*(f64 (*)(f32))func_00120778)(IntToFloat((s32)(((char *)coll_hit_result.f0) - (char *)sky_data)) * (1.0f / 1024.0f)))));
+        ((void (*)())STUB_printf)(D_L00_001E8C60, (((*(f64 (*)(f32))func_00120778)(IntToFloat((s32)(D_L00_0015F50C - (s32)((char *)coll_hit_result.f0))) * (1.0f / 1024.0f)))));
         ((void (*)())STUB_printf)(D_L00_001E8C78, (((*(f64 (*)(f32))func_00120778)(IntToFloat((s32)((D_L00_001B1E00[1] >> 4) - D_L00_0015F50C)) * (1.0f / 1024.0f)))));
         ((void (*)())STUB_printf)(D_L00_001E8C90, (((*(f64 (*)(f32))func_00120778)(IntToFloat((s32)((s32)D_L00_0015F520 - (D_L00_001B1E00[1] >> 4))) * (1.0f / 1024.0f)))));
-        ((void (*)())STUB_printf)(D_L00_001E8CA8, (((*(f64 (*)(f32))func_00120778)(IntToFloat((s32)((char *)D_L00_00197680[0] - D_L00_0015F520)) * (1.0f / 1024.0f)))));
-        ((void (*)())STUB_printf)(D_L00_001E8CC0, (((*(f64 (*)(f32))func_00120778)(IntToFloat((s32)(((char *)D_L00_001C5B00[0]) - (char *)D_L00_00197680[0])) * (1.0f / 1024.0f)))));
+        ((void (*)())STUB_printf)(D_L00_001E8CA8, (((*(f64 (*)(f32))func_00120778)(IntToFloat((s32)((char *)moby_class_headers[0] - D_L00_0015F520)) * (1.0f / 1024.0f)))));
+        ((void (*)())STUB_printf)(D_L00_001E8CC0, (((*(f64 (*)(f32))func_00120778)(IntToFloat((s32)(((char *)D_L00_001C5B00[0]) - (char *)moby_class_headers[0])) * (1.0f / 1024.0f)))));
         if (h->v[0xA])
             ((void (*)())STUB_printf)(D_L00_001E8CD8, (((*(f64 (*)(f32))func_00120778)(IntToFloat((s32)(((char *)D_L00_001BC3C0[0]) - ((char *)D_L00_001C5B00[0]))) * (1.0f / 1024.0f)))));
         else
             ((void (*)())STUB_printf)(D_L00_001E8CD8, (((*(f64 (*)(f32))func_00120778)(IntToFloat((s32)(((char *)D_L00_00161080) - ((char *)D_L00_001C5B00[0]))) * (1.0f / 1024.0f)))));
         if (h->v[0xA])
-            ((void (*)())STUB_printf)(D_L00_001E8CF0, (((*(f64 (*)(f32))func_00120778)(IntToFloat((s32)(D_L00_00197680[0]->seqs[0] - ((char *)D_L00_001BC3C0[0]))) * (1.0f / 1024.0f)))));
-        ((void (*)())STUB_printf)(D_L00_001E8D08, (((*(f64 (*)(f32))func_00120778)(IntToFloat((s32)(((char *)D_L00_00161080) - D_L00_00197680[0]->seqs[0])) * (1.0f / 1024.0f)))));
+            ((void (*)())STUB_printf)(D_L00_001E8CF0, (((*(f64 (*)(f32))func_00120778)(IntToFloat((s32)(moby_class_headers[0]->seqs[0] - ((char *)D_L00_001BC3C0[0]))) * (1.0f / 1024.0f)))));
+        ((void (*)())STUB_printf)(D_L00_001E8D08, (((*(f64 (*)(f32))func_00120778)(IntToFloat((s32)(((char *)D_L00_00161080) - moby_class_headers[0]->seqs[0])) * (1.0f / 1024.0f)))));
         ((void (*)())STUB_printf)(D_L00_001E8D20, (((*(f64 (*)(f32))func_00120778)(IntToFloat((s32)(((char *)D_L00_00160554) - ((char *)D_L00_00161080))) * (1.0f / 1024.0f)))));
-        ((void (*)())STUB_printf)(D_L00_001E8D38, (((*(f64 (*)(f32))func_00120778)(IntToFloat((s32)(((char *)D_L00_00160098) - ((char *)D_L00_00160554))) * (1.0f / 1024.0f)))));
-        ((void (*)())STUB_printf)(D_L00_001E8D50, (((*(f64 (*)(f32))func_00120778)(IntToFloat((s32)(D_L00_001600A8 - ((char *)D_L00_00160098))) * (1.0f / 1024.0f)))));
+        ((void (*)())STUB_printf)(D_L00_001E8D38, (((*(f64 (*)(f32))func_00120778)(IntToFloat((s32)(((char *)moby_array_start) - ((char *)D_L00_00160554))) * (1.0f / 1024.0f)))));
+        ((void (*)())STUB_printf)(D_L00_001E8D50, (((*(f64 (*)(f32))func_00120778)(IntToFloat((s32)(D_L00_001600A8 - ((char *)moby_array_start))) * (1.0f / 1024.0f)))));
         ((void (*)())STUB_printf)(D_L00_001E8D68, (((*(f64 (*)(f32))func_00120778)(IntToFloat((s32)(D_L00_001601C8 - D_L00_001600A8)) * (1.0f / 1024.0f)))));
         ((void (*)())STUB_printf)(D_L00_001E8D80, (((*(f64 (*)(f32))func_00120778)(IntToFloat((s32)(D_L00_0016022C - D_L00_001601C8)) * (1.0f / 1024.0f)))));
         ((void (*)())STUB_printf)(D_L00_001E8D98, 128.0);
@@ -2112,8 +2112,8 @@ s32 load_level_archive_resources(s32 full, s32 keep) {
         ((void (*)())STUB_printf)(D_L00_001E8DB0, (*(f64 (*)(f32))func_00120778)(IntToFloat((s32)D_L00_0016022C + 0x20000) * (1.0f / 1048576.0f)));
         ((void (*)())STUB_printf)(D_L00_0015FD40);
         {
-            char *lo = ((Load244110 *)&D_L00_00173F00)->f0 - 0x2D0000;
-            ((void (*)())STUB_printf)(D_L00_001E8DC8, (*(f64 (*)(f32))func_00120778)(IntToFloat(((Load244110 *)&D_L00_00173F00)->f1C - lo) * (1.0f / 1048576.0f)));
+            char *lo = ((Load244110 *)&lvl_resource_buffers)->f0 - 0x2D0000;
+            ((void (*)())STUB_printf)(D_L00_001E8DC8, (*(f64 (*)(f32))func_00120778)(IntToFloat(((Load244110 *)&lvl_resource_buffers)->f1C - lo) * (1.0f / 1048576.0f)));
         }
         ((void (*)())STUB_printf)(D_L00_0015FD40);
     }
@@ -2128,7 +2128,7 @@ s32 load_level_archive_resources(s32 full, s32 keep) {
     *(s32 *)&D_L00_00179200.f8 = 0;
     *(s32 *)&D_L00_00179200.fC = 0;
     ((void (*)(void))func_L00_002657B8)();
-    D_L00_0015F6B0++;
+    level_frame_counter++;
     return 0;
 }
 struct SectorListPair {
@@ -2197,19 +2197,19 @@ void load_scene_chunks_with_fade(int arg) {
     int *q;
     int i;
     if (pal_mode == 0) {
-        start_audio_stream_read((int)D_L00_0016C960.base, D_00137C80_g.normal[arg].a, D_00137C80_g.normal[arg].b);
+        start_audio_stream_read((int)cutscene_state.base, D_00137C80_g.normal[arg].a, D_00137C80_g.normal[arg].b);
     } else {
-        start_audio_stream_read((int)D_L00_0016C960.base, D_00137C80_g.alt[arg].a, D_00137C80_g.alt[arg].b);
+        start_audio_stream_read((int)cutscene_state.base, D_00137C80_g.alt[arg].a, D_00137C80_g.alt[arg].b);
     }
     update_audio_stream_until_idle(0);
     FadeToBlack(4);
     update_audio_stream_until_idle(1);
-    q = (int *)D_L00_0016C960.base;
+    q = (int *)cutscene_state.base;
     i = 0;
     if (q[1] != 0) {
         do {
             int off = q[0] + 0x800;
-            D_L00_0016C960.out[i] = (int)D_L00_0016C960.base + off;
+            cutscene_state.out[i] = (int)cutscene_state.base + off;
             i++;
             q += 2;
         } while (i < 0x46 && q[1] != 0);

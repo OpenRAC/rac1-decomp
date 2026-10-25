@@ -147,7 +147,7 @@ void Hero_UpdateHopMovement(void) {
                 D_0013F450_s.motion.velocity.f[1] = FastSin(D_0013F450_s.motion.move_yaw) * (g_frame_time * 4.9f);
             } else {
                 set_gravity_relative_vector_length_xy(D_0013F450_s.motion.velocity.f, D_0013F450_s.motion.velocity.f, 0.0f);
-                func_L00_001FF4B0(&tmp, &D_0013F450_s.motion.unk170, g_frame_time * 4.9f);
+                vec_scale_to_length(&tmp, &D_0013F450_s.motion.unk170, g_frame_time * 4.9f);
                 FastVecAdd(&D_0013F450_s.motion.velocity, &D_0013F450_s.motion.velocity, &tmp);
             }
         }
@@ -170,7 +170,7 @@ void Hero_UpdateHopMovement(void) {
                 if (D_0013F450_s.unk12E2) d = g_frame_time_sq * 0.17f;
                 speed = vec_length_xy(&D_0013F450_s.motion.velocity);
                 ApproachValue(&speed, 0.0f, d);
-                func_L00_001FF500(D_0013F450_s.motion.velocity.f, D_0013F450_s.motion.velocity.f, speed);
+                vec_set_length_xy(D_0013F450_s.motion.velocity.f, D_0013F450_s.motion.velocity.f, speed);
                 return;
             }
             if (D_0013F450_s.unk30A != 0) {

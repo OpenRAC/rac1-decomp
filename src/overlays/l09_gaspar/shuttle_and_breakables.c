@@ -67,7 +67,7 @@ int advance_shuttle_along_path(struct Moby *moby) {
     qcopy(&target, &path->node[vars->node]);
     target.f[2] += vars->speed * (*(f32 *)&D_L09_00161E78);
     FastVecSub(&step, &target, &moby->pos);
-    func_L00_001FF4B0(&step, &step, vars->speed);
+    vec_scale_to_length(&step, &step, vars->speed);
     FastVecAdd(&moby->pos, &moby->pos, &step);
     interpolate_rotation_angle(&moby->rot.z, moby->rot.z,
                      FastAddRots(fast_atan2(path->node[vars->node].f[0] - moby->pos.x,

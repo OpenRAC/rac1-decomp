@@ -230,24 +230,24 @@ void update_explosive_projectile(Moby *moby) {
     float fade;
 
     div = 2;
-    if (D_L01_0015F504 != 0) {
+    if (cutscene_active != 0) {
         div = 4;
     }
     d = (*(void **)&moby->pvars);
     qcopy(&old, &(*(Vec_2F7E08 *)&moby->pos));
     FastVecAdd(&(*(Vec_2F7E08 *)&moby->pos), &(*(Vec_2F7E08 *)&moby->pos), d);
     len = FastVecLength(d);
-    for (i = 0; D_L01_0015F504 != 0 ? i < 2 : i < 4; i++) {
+    for (i = 0; cutscene_active != 0 ? i < 2 : i < 4; i++) {
         Vec_2F7E08 b = { random_float_between(-1.0f, 1.0f), random_float_between(-1.0f, 1.0f), random_float_between(-1.0f, 1.0f) };
         {
-            func_L00_001FF4B0(&b, &b, random_float_between(0.5f, 1.0f) * g_frame_time);
-            func_L00_001FF4B0(&a, d, -random_float_between(g_frame_time * 0.1f, g_frame_time));
+            vec_scale_to_length(&b, &b, random_float_between(0.5f, 1.0f) * g_frame_time);
+            vec_scale_to_length(&a, d, -random_float_between(g_frame_time * 0.1f, g_frame_time));
             FastVecAdd(&b, &b, &a);
-            func_L00_001FF4B0(&a, d, random_float_between(0.0f, 1.0f) * len);
+            vec_scale_to_length(&a, d, random_float_between(0.0f, 1.0f) * len);
             FastVecAdd(&a, &a, &(*(Vec_2F7E08 *)&moby->pos));
             PartType04Spawn(&a, &b, 0x6F00AFFF, 0xFF, scale_ticks(rand_range(0x1E, 0x2D)) / div, 0x50,
                               rand_range(0x50, 0x8C) / div, 1);
-            func_L00_001FF4B0(&a, d, random_float_between(0.0f, 1.0f) * len);
+            vec_scale_to_length(&a, d, random_float_between(0.0f, 1.0f) * len);
             FastVecAdd(&a, &a, &(*(Vec_2F7E08 *)&moby->pos));
             PartType04Spawn(&a, &b, 0x1FFFFFFF, 0x4F4F4F, scale_ticks(rand_range(0x3C, 0x78)) / div, 0x50,
                               rand_range(0xC8, 0x12C) / div, 0);
@@ -264,11 +264,11 @@ void update_explosive_projectile(Moby *moby) {
     if (moby->state != 0) {
         s = 8.0f;
         camdist = FastVecDist(camera_pos, &(*(Vec_2F7E08 *)&moby->pos));
-        if (D_L01_0015F504 != 0) {
+        if (cutscene_active != 0) {
             s = 4.0f;
         }
         FastVecScale(d, d, -0.55f);
-        if (D_L01_0015F504 != 0) {
+        if (cutscene_active != 0) {
             Dmg_2F7E08 dmg;
             {
                 dmg.owner = moby;
@@ -286,7 +286,7 @@ void update_explosive_projectile(Moby *moby) {
         }
         dist = FastVecDist(&(*(Vec_2F7E08 *)&moby->pos), camera_pos);
         k = 5;
-        if (D_L01_0015F504 != 0) {
+        if (cutscene_active != 0) {
             k = 2;
         }
         if (dist < IntToFloat(k) * 2.0f) {
@@ -315,7 +315,7 @@ void update_explosive_projectile(Moby *moby) {
             Cols_2F7E08 c2 = D_L01_0020B778;
             Vec_2F7E08 vel = { random_float_between(-1.0f, 1.0f), random_float_between(-1.0f, 1.0f), random_float_between(-1.0f, 1.0f) };
             {
-                func_L00_001FF4B0(&vel, &vel, s * (random_float_between(0.0f, 3.0f) * g_frame_time));
+                vec_scale_to_length(&vel, &vel, s * (random_float_between(0.0f, 3.0f) * g_frame_time));
                 spawn_particle_alt_9768(&(*(Vec_2F7E08 *)&moby->pos), &vel, c1.c[random_integer_below(6)], c2.c[random_integer_below(6)],
                                   rand_range(scale_ticks(0xF), scale_ticks(0x14)) / div, 200000.0f);
             }
@@ -334,14 +334,14 @@ void update_explosive_projectile(Moby *moby) {
             spawn_glow_particle(moby, &(*(Vec_2F7E08 *)&moby->pos), d, 30.0f, scale_ticks(0x14), 0x7F, 0x7F, 0, 0x30);
             spawn_glow_particle(moby, &(*(Vec_2F7E08 *)&moby->pos), d, 15.0f, scale_ticks(0x13), 0xFF, 0xFF, 0xFF, 0x20);
         }
-        for (q = 0; D_L01_0015F504 != 0 ? q < 10 : q < 40; q++) {
+        for (q = 0; cutscene_active != 0 ? q < 10 : q < 40; q++) {
             Vec_2F7E08 b = { random_float_between(-1.0f, 1.0f), random_float_between(-1.0f, 1.0f), random_float_between(-1.0f, 1.0f) };
                 float sp = random_float_between(10.0f, 40.0f) * g_frame_time;
                 float sz;
-                func_L00_001FF4B0(&b, &b, D_L01_0015F504 != 0 ? sp * 0.2f : sp);
+                vec_scale_to_length(&b, &b, cutscene_active != 0 ? sp * 0.2f : sp);
                 sz = 105000.0f;
                 FastVecAdd(&b, &b, d);
-                if (D_L01_0015F504 != 0) {
+                if (cutscene_active != 0) {
                     sz = 21000.0f;
                 }
                 spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns(&(*(Vec_2F7E08 *)&moby->pos), &b, 0x4F007FFF, 0x1F00007F, sz,
@@ -358,7 +358,7 @@ void update_explosive_projectile(Moby *moby) {
             }
         }
         for (r = 0; r < 4; r++) {
-            if (D_L01_0015F504 == 0 && d->ids[r] != -1) {
+            if (cutscene_active == 0 && d->ids[r] != -1) {
                 if (((Moby *)D_L01_00160058)[d->ids[r]].oclass == 0x2BC) {
                     Tgt_2F7E08 *e = (*(void **)&((Moby *)D_L01_00160058)[d->ids[r]].pvars);
                     if (e->h4 == 0 && e->timer == 0 && is_point_inside_clip_volume(D_0013E633 + 0xE9D, e->vol) != 0
@@ -499,7 +499,7 @@ void rock_update(struct Moby *m) {
         return;
     }
     if (fast_dec_timer(&d->life)) {
-        if (func_L00_001EFFF0(&old, &m->pos, 0, m, 0) != 0 || coll_sphere(d->scale, &m->pos, 0, m) != 0) {
+        if (coll_line(&old, &m->pos, 0, m, 0) != 0 || coll_sphere(d->scale, &m->pos, 0, m) != 0) {
             ang = fast_atan2(d->vel.x, d->vel.y);
             v.f[0] = FastCos(FastAddRots(ang, random_float_between(-3.1415927f, 3.1415927f))) *
                      random_float_between(0.0f, d->vel.z * 0.35f);
@@ -509,11 +509,11 @@ void rock_update(struct Moby *m) {
             m->rot.x = random_float_between(-3.1415927f, 3.1415927f);
             m->rot.y = random_float_between(-3.1415927f, 3.1415927f);
             m->rot.z = random_float_between(-3.1415927f, 3.1415927f);
-            vec_reflect(&d->vel, &d->vel, &D_L01_00174340.normal_x);
+            vec_reflect(&d->vel, &d->vel, &novalis_coll_hit.normal_x);
             FastVecScale(&d->vel, &d->vel, random_float_between(0.07f, 0.13f));
             FastVecAdd(&d->vel, &d->vel, &v);
-            func_L00_001FF4B0(&D_L01_00174340.normal_x, &D_L01_00174340.normal_x, 0.1f);
-            FastVecAdd(&m->pos, &D_L01_00174340.normal_x, &D_L01_00174340.point);
+            vec_scale_to_length(&novalis_coll_hit.normal_x, &novalis_coll_hit.normal_x, 0.1f);
+            FastVecAdd(&m->pos, &novalis_coll_hit.normal_x, &novalis_coll_hit.point);
             spin = random_float_between(g_frame_time * 1.5707964f, g_frame_time * 6.2831855f);
             if (0.0f < d->spin) {
                 spin = -spin;
@@ -541,9 +541,9 @@ void rock_update(struct Moby *m) {
             t.f[1] = random_float_between(-1.0f, 1.0f);
             t.f[2] = random_float_between(-1.0f, 1.0f);
             p.q = t.q;
-            func_L00_001FF4B0(&p, &p, random_float_between(0.0f, 0.5f));
+            vec_scale_to_length(&p, &p, random_float_between(0.0f, 0.5f));
             FastVecAdd(&p, &p, &m->pos);
-            func_L00_001FF4B0(&v, &v, random_float_between(0.0f, 0.5f) * g_frame_time);
+            vec_scale_to_length(&v, &v, random_float_between(0.0f, 0.5f) * g_frame_time);
             FastVecAdd(&v, &v, &d->vel);
             spawn_effect_particle_with_target_scalar(&p, &v, 0x1F0C1820, 0x81020, random_float_between(70000.0f, 140000.0f),
                              scale_ticks(rand_range(20, 60)));
@@ -569,7 +569,7 @@ extern void func_0020D960(char *, int, void *);
 
 /* Arms the marker record once for mobys of class 0x398 or 0x1BF, while the level flag is 2. */
 void attach_cutscene_fixed_scale_manipulator(void) {
-    if (D_L01_0015F6A8 == 2 && gCheats[0] != 0) {
+    if (novalis_game_mode == 2 && gCheats[0] != 0) {
         int i;
         for (i = 0; i < fx_cutscene.n; i++) {
             char *moby = fx_cutscene.m[i];
@@ -655,7 +655,7 @@ void update_cutscene_trigger(char *m) {
             char *o = D_L01_0016016C_c + *(int *)(d + 0x24) * 128;
             CameraScript(o + 0x30, o + 0x70, 0, 0, 0);
         }
-        D_L01_0015F504 = 1;
+        cutscene_active = 1;
         m[0x20] = 2;
         m[0xBC] = 1;
         {
@@ -674,7 +674,7 @@ void update_cutscene_trigger(char *m) {
                 CameraScript2(0);
             }
             request_hero_idle_state_for_vehicle_mode();
-            D_L01_0015F504 = 0;
+            cutscene_active = 0;
             m[0x20] = 3;
             m[0xBC] = 0;
         } else {
@@ -698,7 +698,7 @@ extern short D_L01_00161DC0;
 
 /* Resets the marker record's scale once, for mobys of the caller's class or class 0x32B. */
 void attach_cutscene_big_head_manipulator(char *a) {
-    if (D_L01_0015F6A8 == 2 && gCheats[0] != 0) {
+    if (novalis_game_mode == 2 && gCheats[0] != 0) {
         int i;
         for (i = 0; i < fx_cutscene.n; i++) {
             char *moby = fx_cutscene.m[i];
@@ -819,8 +819,8 @@ void the_plumber_update(char *m)
         }
         break;
     case 2:
-        if (D_L01_0015F6A8 != 2) {
-            if (*(unsigned char *)(plumber_moby->mission + (D_0015EE84_c << 4) + (int)D_0014C150) != 0xFF) {
+        if (novalis_game_mode != 2) {
+            if (*(unsigned char *)(plumber_moby->mission + (D_0015EE84_c << 4) + (int)saved_mission_state) != 0xFF) {
                 jet_clear_persistent(plumber_moby->mission);
                 if (plumber_vars->i4C != -1) {
                     char *t = D_L01_0016016C_c + (plumber_vars->i4C << 7);
@@ -847,7 +847,7 @@ void the_plumber_update(char *m)
         }
         break;
     case 5:
-        if (D_L01_0015F6A8 != 2) {
+        if (novalis_game_mode != 2) {
             if (plumber_vars->h6 == 2) {
                 Hero *h = &hero_F7700;
                 h->motion.pos.f[0] = 130.5f;
@@ -1436,8 +1436,8 @@ void DrawGlowRings(char *m) {
         if (1.0f < scale) scale = 1.0f;
     }
     FastVecSub(dir, camera_pos, pos);
-    func_L00_001FF4B0(dir, dir, -0.3f);
-    func_L00_001FF4B0(step, dir, 0.1f);
+    vec_scale_to_length(dir, dir, -0.3f);
+    vec_scale_to_length(step, dir, 0.1f);
     FastVecAdd(dir, dir, pos);
     ang = (float *)(d + 0x20);
     spd = (float *)(d + 0x30);
@@ -1785,7 +1785,7 @@ void update_teleporter_child_transforms(char *m) {
         *(float *)(*p + 0x44) = u;
         t = *(float *)(d + 0x20) * 2.4f - 1.2f;
         euler_rotation_basis(*p + 0xC0, *p + 0x40);
-        func_L00_001FF4B0(v, *p + 0xC0, t);
+        vec_scale_to_length(v, *p + 0xC0, t);
         FastVecAdd(*p + 0x10, *p + 0x10, v);
         *(float *)(*p + 0x44) = *(float *)(d + 0x24) * -1.0471976f - 0.34906584f;
         euler_rotation_basis(*p + 0xC0, *p + 0x40);
@@ -1898,7 +1898,7 @@ void draw_moby_radius_ring(char *moby) {
             p[3] = 1.0f;
             p += 4;
         }
-        func_L00_001FD1D8(&q, m, 0);
+        draw_world_quad(&q, m, 0);
     }
 }
 typedef struct L01Moby L01Moby;
@@ -2140,10 +2140,10 @@ void draw_moby_offset_textured_quad(char *m) {
     src = &local.basis.mat0;
     FastVecAdd(&local.basis.point, &local.basis.offset, m + 0x10);
     FastVecSub(src, camera_pos, &local.basis.point);
-    func_L00_001FF4B0(src, src, one);
+    vec_scale_to_length(src, src, one);
     dst = &local.basis.mat1;
-    FastVecCross(dst, src, D_0013F6E0);
-    func_L00_001FF4B0(dst, dst, -1.0f);
+    FastVecCross(dst, src, hero_gravity_dir);
+    vec_scale_to_length(dst, dst, -1.0f);
     FastVecCross(&local.basis.mat2, dst, src);
     basis = src;
 
@@ -2160,7 +2160,7 @@ void draw_moby_offset_textured_quad(char *m) {
         dst++;
         i--;
     } while (i >= 0);
-    func_L00_001FD1D8(&local.quad, 0, 0);
+    draw_world_quad(&local.quad, 0, 0);
 }
 typedef int uq __attribute__((mode(TI)));
 
@@ -2278,7 +2278,7 @@ void update_sandmouse_projectile(char *m) {
     probe.scale = 0.5f;
     probe.count = 1;
     FastVecSub(&probe.dir, pos, &D_0013F4D0_0DD80);
-    func_L00_001FF500(&probe.dir, &probe.dir, 1.0f);
+    vec_set_length_xy(&probe.dir, &probe.dir, 1.0f);
     ((f32 *)&probe.dir)[2] = 1.0f;
     ((f32 *)&probe.dir)[3] = 5627.9248f;
     probe.b28 = 1;
@@ -2309,8 +2309,8 @@ void compute_sandmouse_follow_goal(void *unused, float *p) {
     float a[4];
     float b[4];
     char *g = D_0013E633 + 0xE1D;
-    func_L00_001FF4B0(a, *(char **)(g + 0x2080) + 0xD0, 1.1f);
-    func_L00_001FF4B0(b, *(char **)(g + 0x2080) + 0xE0, 1.0f);
+    vec_scale_to_length(a, *(char **)(g + 0x2080) + 0xD0, 1.1f);
+    vec_scale_to_length(b, *(char **)(g + 0x2080) + 0xE0, 1.0f);
     FastVecAdd(p, a, b);
     FastVecAdd(p, p, g + 0x80);
     p[2] = p[2] + 1.0f;
@@ -2419,7 +2419,7 @@ void try_fire_sandmouse_projectile(char *moby, char *state) {
                     if (r != 0) q.f[2] = q.f[2] + *(float *)(r + 0x10);
                     else q.f[2] = q.f[2] + (*(float *)&D_L01_00162124);
                     FastVecSub(&p, &q, &v);
-                    func_L00_001FF4B0(&p, &p, (*(float *)&D_L01_00162120));
+                    vec_scale_to_length(&p, &p, (*(float *)&D_L01_00162120));
                     FastVecAdd(&v, &v, &p);
                     a = fast_atan2(q.f[0] - v.f[0], q.f[1] - v.f[1]);
                     dist = vec_distance_xy(&v, &q);
@@ -2725,22 +2725,22 @@ void sandmouse_update(Moby *m) {
         }
         qcopy(&p->a20, &m->pos);
         qcopy(&p->a30, &m->pos);
-        MoveCtl_Init(&D_L01_001DEE08);
-        D_L01_001DEE08.f0 = 500;
-        D_L01_001DEE08.f8 = 0.15f;
-        D_L01_001DEE08.fC = 0.15f;
-        D_L01_001DEE08.f14 = frame_scale * 0.4f;
-        D_L01_001DEE08.f10 = frame_scale * 0.01f;
-        D_L01_001DEE08.f24 = g_frame_time * 2.7f;
-        D_L01_001DEE08.f1C = frame_scale * 0.01f;
-        D_L01_001DEE08.f4 = 0.3f;
-        D_L01_001DEE08.f30 = 0.005f;
-        D_L01_001DEE08.f38 |= 8;
-        D_L01_001DEE08.f3C = g_frame_time_sq * 6.2831855f;
-        D_L01_001DEE08.f40 = g_frame_time_sq * 3.1415927f;
-        D_L01_001DEE08.f44 = g_frame_time * 11.519173f;
-        D_L01_001DEE08.f48 = scale_ticks(4);
-        D_L01_001DEE08.f28 = 3.1415927f;
+        MoveCtl_Init(&sand_mouse_move_ctl);
+        sand_mouse_move_ctl.f0 = 500;
+        sand_mouse_move_ctl.f8 = 0.15f;
+        sand_mouse_move_ctl.fC = 0.15f;
+        sand_mouse_move_ctl.f14 = frame_scale * 0.4f;
+        sand_mouse_move_ctl.f10 = frame_scale * 0.01f;
+        sand_mouse_move_ctl.f24 = g_frame_time * 2.7f;
+        sand_mouse_move_ctl.f1C = frame_scale * 0.01f;
+        sand_mouse_move_ctl.f4 = 0.3f;
+        sand_mouse_move_ctl.f30 = 0.005f;
+        sand_mouse_move_ctl.f38 |= 8;
+        sand_mouse_move_ctl.f3C = g_frame_time_sq * 6.2831855f;
+        sand_mouse_move_ctl.f40 = g_frame_time_sq * 3.1415927f;
+        sand_mouse_move_ctl.f44 = g_frame_time * 11.519173f;
+        sand_mouse_move_ctl.f48 = scale_ticks(4);
+        sand_mouse_move_ctl.f28 = 3.1415927f;
         m->state = 1;
         m->draw_dist = 0;
         break;
@@ -2779,7 +2779,7 @@ void sandmouse_update(Moby *m) {
                 qcopy(&b, h + 0x80);
                 b.f[2] += 0.2f;
                 if (is_point_inside_clip_volume(h + 0x80, p->radius) == 0) break;
-                if (func_L00_001EFFF0(&a, &b, 0, m, 0)) {
+                if (coll_line(&a, &b, 0, m, 0)) {
                     if (D_L01_00174358 != *(Moby **)(h + 0x2080)) break;
                 }
                 compute_sand_mouse_approach_target(m, p);
@@ -2835,7 +2835,7 @@ void sandmouse_update(Moby *m) {
             }
         }
         if (0.6f < vec_distance_xy(&m->pos, &p->a30) && p->timer == 0) {
-            D_L01_001DEE08.f4 = 0.7f;
+            sand_mouse_move_ctl.f4 = 0.7f;
             compute_sandmouse_follow_goal(m, p);
             update_sandmouse_hover_movement(m, p);
             r = p->stuck < 0x15;
@@ -2843,10 +2843,10 @@ void sandmouse_update(Moby *m) {
         } else {
             compute_sand_mouse_approach_target(m, p);
             ang = fast_atan2(p->goal.f[0] - m->pos.x, p->goal.f[1] - m->pos.y);
-            MobySpringTurn(m, ang, &D_L01_001DEE08.f14,
+            MobySpringTurn(m, ang, &sand_mouse_move_ctl.f14,
                 g_frame_time_sq * 6.2831855f, g_frame_time_sq * 3.1415927f, g_frame_time * 11.519173f);
             p->vel.f[2] = 0;
-            r = ClassifyTargetInCone(m, &D_L01_001DEE08, p, &p->vel);
+            r = ClassifyTargetInCone(m, &sand_mouse_move_ctl, p, &p->vel);
         }
         if ((r & 6) != 0 || FastVecDist(&m->pos, p) < 0.25f) {
             if (m->prev_seq != 2) {
@@ -2972,9 +2972,9 @@ void sandmouse_update(Moby *m) {
         p->slot = -1;
         qzero(&p->vel);
         qcopy(p, &LNK(p->link)->pos);
-        D_L01_001DEE08.owner = 0;
+        sand_mouse_move_ctl.owner = 0;
         ang = fast_atan2(p->goal.f[0] - m->pos.x, p->goal.f[1] - m->pos.y);
-        MobySpringTurn(m, ang, &D_L01_001DEE08.f14,
+        MobySpringTurn(m, ang, &sand_mouse_move_ctl.f14,
             g_frame_time_sq * 6.2831855f, g_frame_time_sq * 3.1415927f, g_frame_time * 11.519173f);
         if (m->prev_seq != 0) {
             MobyBlendAnimation(m, 0, 0, scale_ticks(6));
@@ -3332,7 +3332,7 @@ void update_camera_position_and_orientation_from_paths(Cam_316730 *cam) {
         path = D_L01_001B0C30_316730[pi];
         dist = path->nodes[seg].w * (frac / ((Path_316730 *)((Hero *)(D_0013E633 + 0xE1D))->unk560)->nodes[seg].w);
         FastVecSub(v50, &path->nodes[seg + 1], &path->nodes[seg]);
-        func_L00_001FF4B0(v40, v50, dist);
+        vec_scale_to_length(v40, v50, dist);
         FastVecAdd(v60, &path->nodes[seg], v40);
         cam->pos[0] = Cam_InterpValues(cam->pos[0], v60[0], &d->vel[0], k, 0.175f, 0.0f);
         cam->pos[1] = Cam_InterpValues(cam->pos[1], v60[1], &d->vel[1], k, 0.175f, 0.0f);
@@ -3456,7 +3456,7 @@ void update_camera_position_and_orientation_from_paths(Cam_316730 *cam) {
         hfrac = ((Hero *)(D_0013E633 + 0xE1D))->unk568;
         Spline_AdvanceByDistance((Path_316730 *)((Hero *)(D_0013E633 + 0xE1D))->unk560, v40, &hseg, &hfrac, spd, 1);
     }
-    func_L00_001FF4B0(v10, D_L01_00167330, b->f4C);
+    vec_scale_to_length(v10, D_L01_00167330, b->f4C);
     FastVecAdd(v30, v10, v40);
     FastVecSub(v20, v30, cam->pos);
     len = FastVecLength(v20);
@@ -3476,10 +3476,10 @@ void update_camera_position_and_orientation_from_paths(Cam_316730 *cam) {
     rot = Camera_SmoothAngle(&a->f34, 0.0f, ang, a->f20, 0.175f, 0.0f);
     FastVecCross(v50, v20, cam->f40);
     build_look_at_matrix(cam->f0, cam->f40, v50, rot);
-    func_L00_001FF4B0(cam->f40, cam->f0, 1.0f);
-    func_L00_001FF4B0(cam->f0, cam->f0, 1.0f);
+    vec_scale_to_length(cam->f40, cam->f0, 1.0f);
+    vec_scale_to_length(cam->f0, cam->f0, 1.0f);
     FastVecCross(cam->f10, cam->f0, D_L01_00167330);
-    func_L00_001FF4B0(cam->f10, cam->f10, 1.0f);
+    vec_scale_to_length(cam->f10, cam->f10, 1.0f);
     FastVecCross(cam->f20, cam->f10, cam->f0);
 }
 typedef u32 u128_171B8 __attribute__((mode(TI), aligned(16)));
@@ -3620,7 +3620,7 @@ void initialize_camera_transform_and_paths(Camera_171B8 *cam) {
             if (next >= count) next = count - 1;
             FastVecSub(&delta, &path->pts[next], &path->pts[seg]);
             if (FastVecLength(&delta) != 0.0f && next != seg) {
-                func_L00_001FF4B0(&delta, &delta, 1.0f);
+                vec_scale_to_length(&delta, &delta, 1.0f);
                 FastVecSub(&to_camera, (char *)cam + 0x30, &D_0013F4D0_171B8);
                 if (0.0f < FastVecDot(&to_camera, &delta))
                     *(s16 *)((char *)s + 0x36) = 1;

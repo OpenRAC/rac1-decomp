@@ -395,8 +395,8 @@ int HeroL17_SetMoveState(int a, int b) {
         }
         {
             char *h = D_0014171B + 0x22D;
-            if (scale_ticks(D_0015EFA4) / 600 > *(unsigned short *)(h + 0x62)) {
-                *(unsigned short *)(h + 0x62) = scale_ticks(D_0015EFA4) / 600;
+            if (scale_ticks(play_time_ticks) / 600 > *(unsigned short *)(h + 0x62)) {
+                *(unsigned short *)(h + 0x62) = scale_ticks(play_time_ticks) / 600;
             }
             {
                 char *q = (char *)D_0013E633 + 0xE1D;
@@ -410,8 +410,8 @@ int HeroL17_SetMoveState(int a, int b) {
         }
         {
             char *h = D_0014171B + 0x22D;
-            if (scale_ticks(D_0015EFA4) / 600 > *(unsigned short *)(h + 0xEA)) {
-                *(unsigned short *)(h + 0xEA) = scale_ticks(D_0015EFA4) / 600;
+            if (scale_ticks(play_time_ticks) / 600 > *(unsigned short *)(h + 0xEA)) {
+                *(unsigned short *)(h + 0xEA) = scale_ticks(play_time_ticks) / 600;
             }
             *(unsigned int *)(h + 0xEC) = *(unsigned int *)(h + 0xEC) | (1 << g_current_level_index) | 0x80000000;
         }
@@ -683,8 +683,8 @@ int HeroL17_SetMoveState(int a, int b) {
             if (*(unsigned short *)(h + 0x60) <= 0xFFFE) {
                 *(unsigned short *)(h + 0x60) = *(unsigned short *)(h + 0x60) + 1;
             }
-            if (scale_ticks(D_0015EFA4) / 600 > *(unsigned short *)(h + 0x62)) {
-                *(unsigned short *)(h + 0x62) = scale_ticks(D_0015EFA4) / 600;
+            if (scale_ticks(play_time_ticks) / 600 > *(unsigned short *)(h + 0x62)) {
+                *(unsigned short *)(h + 0x62) = scale_ticks(play_time_ticks) / 600;
             }
             *(unsigned int *)(h + 0x64) = *(unsigned int *)(h + 0x64) | (1 << g_current_level_index) | 0x80000000;
         }
@@ -726,8 +726,8 @@ int HeroL17_SetMoveState(int a, int b) {
             if (*(unsigned short *)(h + 0x60) <= 0xFFFE) {
                 *(unsigned short *)(h + 0x60) = *(unsigned short *)(h + 0x60) + 1;
             }
-            if (scale_ticks(D_0015EFA4) / 600 > *(unsigned short *)(h + 0x62)) {
-                *(unsigned short *)(h + 0x62) = scale_ticks(D_0015EFA4) / 600;
+            if (scale_ticks(play_time_ticks) / 600 > *(unsigned short *)(h + 0x62)) {
+                *(unsigned short *)(h + 0x62) = scale_ticks(play_time_ticks) / 600;
             }
             *(unsigned int *)(h + 0x64) = *(unsigned int *)(h + 0x64) | (1 << g_current_level_index) | 0x80000000;
         }
@@ -821,7 +821,7 @@ int HeroL17_SetMoveState(int a, int b) {
         Spline_AdvanceByDistance(*(int *)(p + 0x560), (char *)&out, (char *)&i, (char *)&f, *(int *)(p + 0x584), 1.0f);
         FastVecSub(&d, &out, p + 0x80);
         if (0.001f < FastVecLength(&d)) {
-            func_L00_001FF4B0(&d, &d, 1.0f);
+            vec_scale_to_length(&d, &d, 1.0f);
             if (*(int *)(p + 0x2094) != 0xF) {
                 *(float *)(p + 0x5B0) = FastVecDot(p + 0x100, &d);
             }
@@ -858,7 +858,7 @@ int HeroL17_SetMoveState(int a, int b) {
         Spline_AdvanceByDistance(*(int *)(p + 0x5F0), (char *)&out, (char *)&i, (char *)&f, *(int *)(p + 0x60C), 1.0f);
         FastVecSub(&d, &out, p + 0x80);
         if (0.001f < FastVecLength(&d)) {
-            func_L00_001FF4B0(&d, &d, 1.0f);
+            vec_scale_to_length(&d, &d, 1.0f);
             *(float *)(p + 0x604) = FastVecDot(p + 0x100, &d);
         }
         *(float *)(p + 0x604) = *(float *)(p + 0x604) * 0.5f;
@@ -1497,8 +1497,8 @@ int HeroL17_SetMoveState(int a, int b) {
             if (*(unsigned short *)(h + 0) <= 0xFFFE) {
                 *(unsigned short *)(h + 0) = *(unsigned short *)(h + 0) + 1;
             }
-            if (scale_ticks(D_0015EFA4) / 600 > *(unsigned short *)(h + 2)) {
-                *(unsigned short *)(h + 2) = scale_ticks(D_0015EFA4) / 600;
+            if (scale_ticks(play_time_ticks) / 600 > *(unsigned short *)(h + 2)) {
+                *(unsigned short *)(h + 2) = scale_ticks(play_time_ticks) / 600;
             }
             *(unsigned int *)(h + 4) = *(unsigned int *)(h + 4) | (1 << g_current_level_index) | 0x80000000;
             q = (char *)D_0013E633 + 0xE1D;
@@ -1525,16 +1525,16 @@ int HeroL17_SetMoveState(int a, int b) {
             if (*(unsigned short *)(h + 8) <= 0xFFFE) {
                 *(unsigned short *)(h + 8) = *(unsigned short *)(h + 8) + 1;
             }
-            if (scale_ticks(D_0015EFA4) / 600 > *(unsigned short *)(h + 0xA)) {
-                *(unsigned short *)(h + 0xA) = scale_ticks(D_0015EFA4) / 600;
+            if (scale_ticks(play_time_ticks) / 600 > *(unsigned short *)(h + 0xA)) {
+                *(unsigned short *)(h + 0xA) = scale_ticks(play_time_ticks) / 600;
             }
             *(unsigned int *)(h + 0xC) = *(unsigned int *)(h + 0xC) | (1 << g_current_level_index) | 0x80000000;
             h2 = item_usage;
             if (*(unsigned short *)(h2 + 0x128) <= 0xFFFE) {
                 *(unsigned short *)(h2 + 0x128) = *(unsigned short *)(h2 + 0x128) + 1;
             }
-            if (scale_ticks(D_0015EFA4) / 600 > *(unsigned short *)(h2 + 0x12A)) {
-                *(unsigned short *)(h2 + 0x12A) = scale_ticks(D_0015EFA4) / 600;
+            if (scale_ticks(play_time_ticks) / 600 > *(unsigned short *)(h2 + 0x12A)) {
+                *(unsigned short *)(h2 + 0x12A) = scale_ticks(play_time_ticks) / 600;
             }
             *(unsigned int *)(h2 + 0x12C) = *(unsigned int *)(h2 + 0x12C) | (1 << g_current_level_index) | 0x80000000;
             q = (char *)D_0013E633 + 0xE1D;
@@ -1569,8 +1569,8 @@ int HeroL17_SetMoveState(int a, int b) {
             if (*(unsigned short *)(h + 0x40) <= 0xFFFE) {
                 *(unsigned short *)(h + 0x40) = *(unsigned short *)(h + 0x40) + 1;
             }
-            if (scale_ticks(D_0015EFA4) / 600 > *(unsigned short *)(h + 0x42)) {
-                *(unsigned short *)(h + 0x42) = scale_ticks(D_0015EFA4) / 600;
+            if (scale_ticks(play_time_ticks) / 600 > *(unsigned short *)(h + 0x42)) {
+                *(unsigned short *)(h + 0x42) = scale_ticks(play_time_ticks) / 600;
             }
             q = (char *)D_0013E633 + 0xE1D;
             *(unsigned int *)(h + 0x44) = *(unsigned int *)(h + 0x44) | (1 << g_current_level_index) | 0x80000000;

@@ -1596,19 +1596,19 @@ void spawner_egg_update(struct Moby *moby) {
     case 0:
         moby->scale += (moby->pclass->scale - moby->scale) * (frame_scale * 0.05f);
         FastVecAdd(&moby->pos, &moby->pos, &vars->vel);
-        func_L00_001FF4B0(&step, &vars->vel, 0.2f);
+        vec_scale_to_length(&step, &vars->vel, 0.2f);
         FastVecAdd(&step, &step, &moby->pos);
         moby->collision = 0;
         vars->owner->collision = 0;
-        if (func_L00_001EFFF0(&prev, &step, 4, moby, 0) != 0) {
+        if (coll_line(&prev, &step, 4, moby, 0) != 0) {
             FastVecSub(&step, &D_L09_00174040.point, &step);
-            func_L00_001FF4B0(&step, &step, 0.215f);
+            vec_scale_to_length(&step, &step, 0.215f);
             FastVecAdd(&moby->pos, &moby->pos, &step);
             bubble_bounce(moby, vars);
         }
         if (coll_sphere(0.2f, &moby->pos, 4, moby) != 0) {
             FastVecSub(&step, &D_L09_00174040.point, D_L09_00174040.pad30);
-            func_L00_001FF4B0(&step, &step, 0.015f);
+            vec_scale_to_length(&step, &step, 0.015f);
             FastVecAdd(&moby->pos, D_L09_00174040.pad30, &step);
             bubble_bounce(moby, vars);
         }

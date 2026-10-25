@@ -25,7 +25,7 @@ unsigned char *spawn_moby_offset_effect(char *a)
         p = a + 0x10;
         q = (char *)m + 0x20;
         FastVecSub(v, p, D_L08_00167640);
-        func_L00_001FF4B0(v, v, *(float *)&D_L08_00160288);
+        vec_scale_to_length(v, v, *(float *)&D_L08_00160288);
         FastVecAdd(m + 0x10, p, v);
         *(int *)(m + 4) = *(int *)&D_L08_00160284;
         m[9] = func_001FA898_r(4.0f) + 0x40;

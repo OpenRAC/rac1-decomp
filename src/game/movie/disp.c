@@ -23,7 +23,7 @@ void setImageTag(unsigned long *p, unsigned int image, int w, int h) {
     p[1] = 0;
     p[2] = 0x1000000000000002;
     p[3] = 0xE;
-    p[4] = ((long)(D_0015EF84 >> 8) << 32) | 0x0008000000000000;
+    p[4] = ((long)(draw_buffer_address >> 8) << 32) | 0x0008000000000000;
     p[5] = 0x50;
     p[6] = 0x0000001000000010;
     p[7] = 0x52;

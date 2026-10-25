@@ -2234,7 +2234,7 @@ void prepare_loading_slide_textures(s32 language_index, s32 first_slide, s32 sec
                            D_00137C80.loading_slides[language_index].size);
     func_00120F30_32B90(0);
     func_00118D80(0);
-    func_0020C468(archive_memory->archive_base + 0x100000, archive_memory->archive_base);
+    fast_decompress(archive_memory->archive_base + 0x100000, archive_memory->archive_base);
     func_00118D80(0);
     archive_base = archive_memory->archive_base;
     g_gs_texture_allocation_cursor = g_gs_texture_allocation_base;

@@ -106,27 +106,27 @@ void DropMobyToGround(D9668Moby *m) {
     P.z = P.z + 0.5f;
     qcopy(&Q, &P);
     Q.z = Q.z - 1.5f;
-    if (func_L00_001EFFF0(&P, &Q, 2, (int)m, 0)) {
+    if (coll_line(&P, &Q, 2, (int)m, 0)) {
         hit = 1;
         ground = D_L00_00173F68;
     } else {
         ground = Q.z;
     }
     if (hit) {
-        if (D_L00_00173F40[6] != 0) {
-            if (is_moby_in_class_range_500_to_540((void *)D_L00_00173F40[6])) {
-                m->x = d->x = ((D9668Moby *)D_L00_00173F40[6])->x;
-                m->y = d->y = ((D9668Moby *)D_L00_00173F40[6])->y;
-                d->z = (m->z = *(float *)&D_L00_00173F40[10]) + 0.5f;
+        if (coll_hit_result[6] != 0) {
+            if (is_moby_in_class_range_500_to_540((void *)coll_hit_result[6])) {
+                m->x = d->x = ((D9668Moby *)coll_hit_result[6])->x;
+                m->y = d->y = ((D9668Moby *)coll_hit_result[6])->y;
+                d->z = (m->z = *(float *)&coll_hit_result[10]) + 0.5f;
             } else if (d->s != 0) {
-                m->x = d->x = ((D9668Moby *)D_L00_00173F40[6])->x + d->ox;
-                m->y = d->y = ((D9668Moby *)D_L00_00173F40[6])->y + d->oy;
-                d->z = (m->z = ((D9668Moby *)D_L00_00173F40[6])->z + d->oz) + 0.5f;
+                m->x = d->x = ((D9668Moby *)coll_hit_result[6])->x + d->ox;
+                m->y = d->y = ((D9668Moby *)coll_hit_result[6])->y + d->oy;
+                d->z = (m->z = ((D9668Moby *)coll_hit_result[6])->z + d->oz) + 0.5f;
             } else {
                 d->s = 1;
-                d->ox = m->x - ((D9668Moby *)D_L00_00173F40[6])->x;
-                d->oy = m->y - ((D9668Moby *)D_L00_00173F40[6])->y;
-                d->oz = m->z - ((D9668Moby *)D_L00_00173F40[6])->z;
+                d->ox = m->x - ((D9668Moby *)coll_hit_result[6])->x;
+                d->oy = m->y - ((D9668Moby *)coll_hit_result[6])->y;
+                d->oz = m->z - ((D9668Moby *)coll_hit_result[6])->z;
             }
         }
     }
@@ -219,8 +219,8 @@ s32 spawn_nanotech_ball_glow_rings(M_2d8510 *m) {
     o = m->p78;
     FastVecSub(&a, &D_L00_00166EC0_D99C0, &m->v10);
     ret = 0;
-    func_L00_001FF4B0(&a, &a, -0.3f);
-    func_L00_001FF4B0(&b, &a, 0.1f);
+    vec_scale_to_length(&a, &a, -0.3f);
+    vec_scale_to_length(&b, &a, 0.1f);
     FastVecAdd(&a, &a, &m->v10);
     z = a.z;
     for (i = 0; i < 4; i++) {
@@ -258,7 +258,7 @@ void compute_nanotech_ball_slot_position(char *m, float *out, int i) {
     build_look_at_matrix(&v, D_L00_001E3FF0 + i * 16, *(float *)(pv + 0x2C), pv + 0x20);
     o = *(char **)(pv + (i << 2) + 0x30);
     if (o != 0 && *(unsigned char *)(m + 0x20) == 2) {
-        func_L00_001FF4B0(&v, &v, *(float *)(o + 0x28));
+        vec_scale_to_length(&v, &v, *(float *)(o + 0x28));
     }
     FastVecAdd(out, pv + 0x10, &v);
     out[2] += *(float *)pv;
@@ -272,7 +272,7 @@ void update_nanotech_ball_slot_offsets(void) {
     int i;
     for (i = 0; i < 8; i++) {
         build_look_at_matrix(D_L00_001E3FF0 + i * 16, D_L00_001E3FF0 + i * 16, *(float *)&D_L00_00161AC0, D_L00_001E4070 + i * 16);
-        func_L00_001FF4B0(D_L00_001E3FF0 + i * 16, D_L00_001E3FF0 + i * 16, *(float *)&D_L00_00161AE4);
+        vec_scale_to_length(D_L00_001E3FF0 + i * 16, D_L00_001E3FF0 + i * 16, *(float *)&D_L00_00161AE4);
     }
 }
 extern char D_0013E633[] NOT_SDA;
@@ -285,7 +285,7 @@ int is_nanotech_ball_target_line_clear(char *m) {
     a.z += 0.5f;
     qcopy(&b, *(char **)(D_0013E633 + 0x2E9D) + 0x10);
     b.z += 0.5f;
-    return func_L00_001EFFF0(&a, &b, 0x12, 0, 0) == 0;
+    return coll_line(&a, &b, 0x12, 0, 0) == 0;
 }
 typedef struct { float x, y, z, w; } __attribute__((aligned(16))) V_2D9EA0;
 typedef struct { float x, y, z; } V3_2D9EA0;
@@ -1321,8 +1321,8 @@ void suckcannon_update(M40 *self) {
             data->cooldown = scale_ticks(10);
             stats = (Stats40 *)(D_0014171B + 0x65);
             if (stats->uses < 65535) stats->uses++;
-            if (scale_ticks(D_0015EFA4)/600 > stats->longest)
-                stats->longest = scale_ticks(D_0015EFA4)/600;
+            if (scale_ticks(play_time_ticks)/600 > stats->longest)
+                stats->longest = scale_ticks(play_time_ticks)/600;
             stats->levels = (stats->levels | (1 << g_current_level_index)) | 0x80000000;
             self->state = 2;
         }
@@ -1409,8 +1409,8 @@ void suckcannon_update(M40 *self) {
             matrix_from_basis_rows(&work.aim.inverse,&work.aim.rotation);
             transform_vector(&work.aim.velocity,&work.aim.velocity,&work.aim.inverse);
             FastVecAdd(&work.aim.end,eye,&work.aim.velocity);
-            if(func_L00_001EFFF0(eye,&work.aim.end,0,(int)self,0)) {
-                hit=(Hit40 *)D_L00_00173F40;
+            if(coll_line(eye,&work.aim.end,0,(int)self,0)) {
+                hit=(Hit40 *)coll_hit_result;
                 if(hit->moby && (hit->moby->flags&0x1000)) {
                     data->target=hit->moby;
                     data->target_timer=scale_ticks(20);
@@ -1440,8 +1440,8 @@ void suckcannon_update(M40 *self) {
             data->cooldown=scale_ticks(25);
             stats=(Stats40 *)(D_0014171B+0x65);
             if(stats->uses<65535) stats->uses++;
-            if(scale_ticks(D_0015EFA4)/600>stats->longest)
-                stats->longest=scale_ticks(D_0015EFA4)/600;
+            if(scale_ticks(play_time_ticks)/600>stats->longest)
+                stats->longest=scale_ticks(play_time_ticks)/600;
             stats->levels = (stats->levels | (1 << g_current_level_index)) | 0x80000000;
             self->state=5;
         }
@@ -1523,7 +1523,7 @@ void suckcannon_update(M40 *self) {
                                     if(radius<distance) offangle-=adjustment;
                                 }
                                 if(offangle<0.4537856f) {
-                                    if(func_L00_001EFFF0(g_debug_camera,&work.fire.point,6,(int)self,0)) break;
+                                    if(coll_line(g_debug_camera,&work.fire.point,6,(int)self,0)) break;
                                     limit=distance;
                                     pitch=-tpitch;
                                     if(dyaw<0.17453292f) {
@@ -1844,11 +1844,11 @@ void spawn_suck_cannon_projectile_explosion(char *self, char *q) {
         g[1] = random_float_between(-1.0f, 1.0f);
         *(u128_DD3D8 *)e = *(u128_DD3D8 *)g;
         dt = FastVecDot(e, c);
-        func_L00_001FF4B0(d, c, dt);
+        vec_scale_to_length(d, c, dt);
         FastVecSub(e, e, d);
-        func_L00_001FF4B0(d, c, random_float_between(0.0f, 1.0f));
+        vec_scale_to_length(d, c, random_float_between(0.0f, 1.0f));
         FastVecAdd(e, e, d);
-        func_L00_001FF4B0(e, e, f22 * random_float_between(3.5f, 6.5f) * g_frame_time);
+        vec_scale_to_length(e, e, f22 * random_float_between(3.5f, 6.5f) * g_frame_time);
         FastVecAdd(e, e, b);
         {
             int h = scale_ticks(60);
@@ -1861,11 +1861,11 @@ void spawn_suck_cannon_projectile_explosion(char *self, char *q) {
         g[1] = random_float_between(-1.0f, 1.0f);
         *(u128_DD3D8 *)e = *(u128_DD3D8 *)g;
         dt = FastVecDot(e, c);
-        func_L00_001FF4B0(d, c, dt);
+        vec_scale_to_length(d, c, dt);
         FastVecSub(e, e, d);
-        func_L00_001FF4B0(d, c, random_float_between(0.0f, 1.0f));
+        vec_scale_to_length(d, c, random_float_between(0.0f, 1.0f));
         FastVecAdd(e, e, d);
-        func_L00_001FF4B0(e, e, f22 * random_float_between(6.5f, 10.0f) * g_frame_time);
+        vec_scale_to_length(e, e, f22 * random_float_between(6.5f, 10.0f) * g_frame_time);
         FastVecAdd(e, e, b);
         {
             int h = scale_ticks(60);
@@ -1878,10 +1878,10 @@ void spawn_suck_cannon_projectile_explosion(char *self, char *q) {
     g[2] = random_float_between(-1.0f, 1.0f);
     *(u128_DD3D8 *)e = *(u128_DD3D8 *)g;
     a[2] += f23 * 0.5f;
-    func_L00_001FF4B0(e, e, f23 / 5.0f * g_frame_time);
-    func_L00_001FF4B0(a, a, (f23 + f23) * g_frame_time);
+    vec_scale_to_length(e, e, f23 / 5.0f * g_frame_time);
+    vec_scale_to_length(a, a, (f23 + f23) * g_frame_time);
     FastVecAdd(e, e, a);
-    func_L00_001FF548(e, e, g_frame_time * 10.0f);
+    clamp_vec_length(e, e, g_frame_time * 10.0f);
     {
         int h = scale_ticks(60);
         SpawnFallingSpark(self + 0x10, (char *)e, rand_range(h, scale_ticks(90)), 1, (&gold_weapon_purchased)->b9);
@@ -1950,7 +1950,7 @@ void spawn_suck_cannon_projectile_explosion(char *self, char *q) {
     if ((&gold_weapon_purchased)->b9) {
         k = func_L00_001F2BE8_DD3D8(3.0f, self + 0x10, 0x10, self, 0);
         *(u128_DD3D8 *)e = *(u128_DD3D8 *)(self + 0x10);
-        SendRadialMessageToMobys(self, e, D_L00_00178000, k, 0, 0x830000, 2, 1, 2.0f, 1.0f, 1.0f);
+        SendRadialMessageToMobys(self, e, coll_sphere_moby_hits, k, 0, 0x830000, 2, 1, 2.0f, 1.0f, 1.0f);
     }
 }
 typedef struct { int v[16]; } __attribute__((aligned(16))) Mtx2DDDE8;
@@ -2434,7 +2434,7 @@ void SuckBeam_DrawMesh(void) {
                 s.x3 = am;
                 s.y3 = b2;
                 b = b2;
-                func_L00_001FD1D8(&s, 0, 0);
+                draw_world_quad(&s, 0, 0);
             }
         }
         a = a2;
@@ -2492,8 +2492,8 @@ void SuckBeam_Build(char *a, char *b) {
             v = (char *)s + 0x20;
         }
     }
-    func_L00_001FF4B0((char *)s + 0x30, s, D_L00_00161C54);
-    func_L00_001FF4B0((char *)s + 0x40, v, 1.0f);
+    vec_scale_to_length((char *)s + 0x30, s, D_L00_00161C54);
+    vec_scale_to_length((char *)s + 0x40, v, 1.0f);
     qcopy(D_L00_001E6290, b);
     D_L00_001E6358[0] = 0;
     for (i = 1; i < 10; i++) {
@@ -2561,7 +2561,7 @@ void stop_suck_cannon_suction_effect(int arg0) {
             FastVecScale(a, a, D_L00_001E4FD0[i].f / len);
             FastVecAdd(b, D_L00_001E6290 + D_L00_001E4FD0[i].idx * 16, a);
             FastVecSub(c, p + 0x10, b);
-            func_L00_001FF4B0(c, c, 0.03f);
+            vec_scale_to_length(c, c, 0.03f);
             FastVecScale(a, a, 0.1f / len);
             FastVecAdd(p + 0x30, c, a);
             *(short *)(p + 0xA) = 0x46;
@@ -2640,7 +2640,7 @@ void enqueue_red_orb_group_draw_if_cache_changed(M09 *m) {
     b = m->pad[0x21];
     if (b == 0xFF) return;
     s = m->s;
-    v = (*(s32 *)&D_L00_0015F6B0);
+    v = (*(s32 *)&level_frame_counter);
     if (v == 0) return;
     if (v != *s->p) {
         *s->p = v;

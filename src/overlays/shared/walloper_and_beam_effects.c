@@ -134,7 +134,7 @@ void draw_beam_and_arc_two_pass_quads(void *m, int a, int b, int n, float sx, fl
             t.c[1] = col0;
             t.c[0] = col0;
         }
-        func_L00_001FD1D8(q, 0, 0);
+        draw_world_quad(q, 0, 0);
         qcopy(q[0], q[2]);
         qcopy(q[1], q[3]);
     }
@@ -175,7 +175,7 @@ void draw_beam_and_arc_two_pass_quads(void *m, int a, int b, int n, float sx, fl
             u.c[1] = col1;
             u.c[0] = col1;
         }
-        func_L00_001FD1D8(q2, 0, 0);
+        draw_world_quad(q2, 0, 0);
     }
     VU1_addGSregister(0x47, 0x5360B);
 }
@@ -215,13 +215,13 @@ void draw_beam_anchor_camera_facing_quads(void *mv) {
     quad.unk80 = 0xFF9000000260L;
     quad.unk70 = 0;
     FastVecSub(&mat[3], g_debug_camera, pos);
-    func_L00_001FF4B0(&mat[3], &mat[3], 0.3f);
+    vec_scale_to_length(&mat[3], &mat[3], 0.3f);
     FastVecAdd(&mat[3], &mat[3], pos);
     mat[3].f[3] = 1.0f;
     FastVecSub(&mat[0], g_debug_camera, &mat[3]);
-    func_L00_001FF4B0(&mat[0], &mat[0], 1.0f);
+    vec_scale_to_length(&mat[0], &mat[0], 1.0f);
     FastVecCross(&mat[1], &mat[0], D_0013E633 + 0x10AD);
-    func_L00_001FF4B0(&mat[1], &mat[1], -1.0f);
+    vec_scale_to_length(&mat[1], &mat[1], -1.0f);
     FastVecCross(&mat[2], &mat[1], &mat[0]);
     c = *(int *)&D_L00_00161710;
     quad.color[3] = c;
@@ -235,7 +235,7 @@ void draw_beam_anchor_camera_facing_quads(void *mv) {
         quad.uv[i].u = D_L00_001DB8A0[i].u;
         quad.uv[i].v = D_L00_001DB8A0[i].v;
     }
-    func_L00_001FD1D8(&quad, 0, 0);
+    draw_world_quad(&quad, 0, 0);
     c = *(int *)&D_L00_001616C8;
     quad.color[3] = c;
     quad.color[2] = c;
@@ -248,7 +248,7 @@ void draw_beam_anchor_camera_facing_quads(void *mv) {
         quad.uv[i].u = D_L00_001DB8A0[i].u;
         quad.uv[i].v = D_L00_001DB8A0[i].v;
     }
-    func_L00_001FD1D8(&quad, 0, 0);
+    draw_world_quad(&quad, 0, 0);
 }
 typedef struct { int a[4]; } Vu __attribute__((aligned(16)));
 extern char *func_0020D348(int);
@@ -544,7 +544,7 @@ void draw_walloper_arc_two_pass_quads(char *m, int a, int b, int n, float sx, fl
             t.c[1] = col0;
             t.c[0] = col0;
         }
-        func_L00_001FD1D8(q, 0, 0);
+        draw_world_quad(q, 0, 0);
         qcopy(q[0], q[2]);
         qcopy(q[1], q[3]);
     }
@@ -585,7 +585,7 @@ void draw_walloper_arc_two_pass_quads(char *m, int a, int b, int n, float sx, fl
             u.c[1] = col1;
             u.c[0] = col1;
         }
-        func_L00_001FD1D8(q2, 0, 0);
+        draw_world_quad(q2, 0, 0);
     }
     VU1_addGSregister(0x47, 0x5360B);
 }
@@ -650,9 +650,9 @@ void draw_walloper_camera_facing_quad(int arg) {
     t.c[1] = col;
     t.c[0] = col;
     FastVecSub(f, g_debug_camera, bb);
-    func_L00_001FF4B0(cc, f, 1.0f);
+    vec_scale_to_length(cc, f, 1.0f);
     FastVecCross(d, cc, D_0013E633 + 0x10AD);
-    func_L00_001FF4B0(d, d, -1.0f);
+    vec_scale_to_length(d, d, -1.0f);
     FastVecCross(e, d, cc);
     FastVecScale(f, cc, 0.2f);
     FastVecAdd(bb, bb, f);
@@ -664,7 +664,7 @@ void draw_walloper_camera_facing_quad(int arg) {
         transform_vector(qq, tmp, c);
         qq += 4;
     }
-    func_L00_001FD1D8(q, 0, 0);
+    draw_world_quad(q, 0, 0);
 }
 extern char *D_L00_001ABD80[];
 extern short D_L00_001617AC;
@@ -705,7 +705,7 @@ char *Aim_FindAssistTarget(char *self, float *position, float *heading, float *p
     *(VecQuad *)end = *(VecQuad *)(m0 + 0x10);
     position = start;
     end[2] = position[2];
-    collision = func_L00_001EFFF0((Vec4f *)end, (Vec4f *)position, 6, m0, 0);
+    collision = coll_line((Vec4f *)end, (Vec4f *)position, 6, m0, 0);
     res[0] = 0;
     if (collision) {
         qcopy(position, &collision_hit_point);
@@ -737,7 +737,7 @@ char *Aim_FindAssistTarget(char *self, float *position, float *heading, float *p
                                    *(float *)(candidate + 0x14) - *(float *)(g1 + 0x84));
             if (FastDiffRots(*(float *)(moby + 0x48), toward) < 1.0471976f &&
                 FastAbsF(position[2] - target[2]) < 2.0f &&
-                !func_L00_001EFFF0((Vec4f *)position, (Vec4f *)target, 6, *(char **)(g1 + 0x2080), 0)) {
+                !coll_line((Vec4f *)position, (Vec4f *)target, 6, *(char **)(g1 + 0x2080), 0)) {
                 res[0] = (int)candidate;
                 *pitch = -elevation;
                 *heading = angle;
@@ -767,8 +767,8 @@ char *Aim_FindAssistTarget(char *self, float *position, float *heading, float *p
         }
         if (apparentAngle < *(float *)&D_L00_001617A8 * 0.017453292f) {
             int valid = 1;
-            if (func_L00_001EFFF0((Vec4f *)position, (Vec4f *)target, 6, self, 0)) {
-                if (!D_L00_00173F40[6] || (char *)D_L00_00173F40[6] != candidate)
+            if (coll_line((Vec4f *)position, (Vec4f *)target, 6, self, 0)) {
+                if (!coll_hit_result[6] || (char *)coll_hit_result[6] != candidate)
                     valid = 0;
             }
             if (valid) {
@@ -1485,7 +1485,7 @@ void draw_beam_ring_and_rail_effects(void *o) {
                 quad.uv[7] = a + (*(float *)&D_L00_001617E4);
                 quad.uv[6] = y - (*(float *)&D_L00_001617E0);
                 a = a + (*(float *)&D_L00_001617E4);
-                func_L00_001FD1D8(&quad, 0, 0);
+                draw_world_quad(&quad, 0, 0);
                 quad.uv[0] = y;
                 quad.uv[1] = b;
                 quad.uv[2] = y;
@@ -1495,7 +1495,7 @@ void draw_beam_ring_and_rail_effects(void *o) {
                 quad.uv[6] = y - (*(float *)&D_L00_001617E0);
                 quad.uv[7] = b + (*(float *)&D_L00_001617E4);
                 b = b + (*(float *)&D_L00_001617E4);
-                func_L00_001FD1D8(&quad, 0, 0);
+                draw_world_quad(&quad, 0, 0);
             }
         }
         y += (*(float *)&D_L00_001617E0);
@@ -1575,7 +1575,7 @@ void DrawScrollingRibbonColored(P_2BF380 *m, int a, int b, float sx, float sy, f
             t.c[1] = col0;
             t.c[0] = col0;
         }
-        func_L00_001FD1D8(q, 0, 0);
+        draw_world_quad(q, 0, 0);
         qcopy(q[0], q[2]);
         qcopy(q[1], q[3]);
     }
@@ -1616,7 +1616,7 @@ void DrawScrollingRibbonColored(P_2BF380 *m, int a, int b, float sx, float sy, f
             u.c[1] = col1;
             u.c[0] = col1;
         }
-        func_L00_001FD1D8(q2, 0, 0);
+        draw_world_quad(q2, 0, 0);
     }
     VU1_addGSregister(0x47, 0x5360B);
 }
@@ -1667,13 +1667,13 @@ void draw_beam_pulse_quads(void *unused) {
             qcopy(&A, &D_L00_001DD3D0[i]);
             FastVecScale(&C, D_0013E633 + 0x10AD, -1.0f);
             FastVecCross(&B, &A, &C);
-            func_L00_001FF4B0(&B, &B, 1.0f);
+            vec_scale_to_length(&B, &B, 1.0f);
             FastVecCross(&C, &B, &A);
             for (j = 0; j < 4; j++) {
                 FastVecScale(&E, &D_L00_001DC220[j], D_L00_001618D8[i]);
                 transform_vector(&q.v[j], &E, &A);
             }
-            func_L00_001FD1D8(&q, 0, 0);
+            draw_world_quad(&q, 0, 0);
         }
     }
 }
@@ -1718,18 +1718,18 @@ void draw_beam_origin_camera_facing_quads(void *mv) {
     quad.unk64 = 0;
     quad.unk68 = 1.0f;
     quad.unk6C = 1.0f;
-    func_L00_001FF4B0(&e, m + 0xD0, *(float *)&D_L00_00161884);
+    vec_scale_to_length(&e, m + 0xD0, *(float *)&D_L00_00161884);
     FastVecAdd(&mat[3], &D_L00_001DC260, &e);
     FastVecSub(&e, g_debug_camera, &mat[3]);
-    func_L00_001FF4B0(&mat[0], &e, 1.0f);
+    vec_scale_to_length(&mat[0], &e, 1.0f);
     FastVecCross(&mat[1], &mat[0], D_0013E633 + 0x10AD);
-    func_L00_001FF4B0(&mat[1], &mat[1], -1.0f);
+    vec_scale_to_length(&mat[1], &mat[1], -1.0f);
     FastVecCross(&mat[2], &mat[1], &mat[0]);
     for (i = 3; i >= 0; i--) {
         FastVecScale(&t, &D_L00_001DC220[3 - i], *(float *)&D_L00_0016187C);
         transform_vector(&quad.corner[3 - i], &t, &mat[0]);
     }
-    func_L00_001FD1D8(&quad, 0, 0);
+    draw_world_quad(&quad, 0, 0);
     quad.color[3] = -1;
     quad.color[2] = -1;
     quad.color[1] = -1;
@@ -1738,7 +1738,7 @@ void draw_beam_origin_camera_facing_quads(void *mv) {
         FastVecScale(&t, &D_L00_001DC220[3 - j], *(float *)&D_L00_00161880);
         transform_vector(&quad.corner[3 - j], &t, &mat[0]);
     }
-    func_L00_001FD1D8(&quad, 0, 0);
+    draw_world_quad(&quad, 0, 0);
 }
 typedef struct { float x, y, z, w; } Vx __attribute__((aligned(16)));
 extern char D_0013E633[] NOT_SDA;
@@ -1761,7 +1761,7 @@ int probe_moby_raised_sphere_collision(char *a, int b, Vx *c) {
     v.z = v.z + t;
     r = coll_sphere(s * 0.1999f, &v, b, a);
     if (r != 0) {
-        float *g = (float *)D_L00_00173F40;
+        float *g = (float *)coll_hit_result;
         g[14] -= t;
     }
     return r;
@@ -1818,7 +1818,7 @@ float probe_moby_landing_height(Vx *a, void *b) {
     else z = t;
     v1.z = z;
     v2.z = z + 6.0f;
-    if (func_L00_001EFFF0(&v2, &v1, 6, b, 0) != 0) {
+    if (coll_line(&v2, &v1, 6, b, 0) != 0) {
         TopS *p = D_L00_00173F40_s.o18;
         if (p != 0 && p->sub != 0 && p->sub->f46 == 5) {
             return D_L00_00173F40_s.f28;
@@ -2310,7 +2310,7 @@ int compute_moby_state_from_vertical_probe(EffectSrc *a0) {
     qcopy(&v2, &a0->vec);
     v1.z -= 0.3f;
     v2.z += 1.0f;
-    if (func_L00_001EFFF0(&v2, &v1, 6, a0, 0) != 0) {
+    if (coll_line(&v2, &v1, 6, a0, 0) != 0) {
         TopStruct *p = D_L00_00173F58;
         if (p != 0) {
             SubStruct *sub = p->sub;

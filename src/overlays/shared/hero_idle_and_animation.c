@@ -46,15 +46,15 @@ extern void func_001FF560(int);
 int Help_Request(int a, int b) {
     int c;
     unsigned char *h;
-    if (*(int *)D_L00_00179510 != 0) return 0;
-    c = *(int *)(D_L00_00179510 + 0x24);
+    if (*(int *)help_popup_state != 0) return 0;
+    c = *(int *)(help_popup_state + 0x24);
     if (c != -1) return 0;
     h = D_0014171B + 0x100B5;
     if (*(int *)(h + 0x50) != 0) return 0;
     if (*(int *)(h + 0x1C) != c) return 0;
     if (*(unsigned short *)(D_0014171B + 0x34D + b * 8) == 0xFFFF) return 0;
-    *(int *)(D_L00_00179510 + 0x28) = b;
-    *(int *)(D_L00_00179510 + 0x24) = a;
+    *(int *)(help_popup_state + 0x28) = b;
+    *(int *)(help_popup_state + 0x24) = a;
     push_help_history(a);
     return 1;
 }
@@ -62,8 +62,8 @@ extern char D_L00_00179510[] NOT_SDA;
 extern char *D_L00_0015F740 MACRO_ADDR;
 /* Cancels the active help popup and resets its state. */
 void clear_active_help_record(void) {
-    if (*(int *)(D_L00_00179510) != 0) {
-        int v = *(int *)((char *)(*(int *)(D_L00_00179510 + 0x20) << 4) + (int)D_L00_0015F740 + 8);
+    if (*(int *)(help_popup_state) != 0) {
+        int v = *(int *)((char *)(*(int *)(help_popup_state + 0x20) << 4) + (int)D_L00_0015F740 + 8);
         if (v != -1) {
             char *g = (char *)D_0014171B + 0x100B5;
             if (v == *(short *)(g + 0x54) - 0x7530) {
@@ -71,10 +71,10 @@ void clear_active_help_record(void) {
                     *(short *)(g + 0x5A) = 5;
             }
         }
-        *(int *)(D_L00_00179510) = 0;
-        *(int *)(D_L00_00179510 + 0x24) = -1;
-        *(int *)(D_L00_00179510 + 0x20) = -1;
-        *(int *)(D_L00_00179510 + 4) = 0;
+        *(int *)(help_popup_state) = 0;
+        *(int *)(help_popup_state + 0x24) = -1;
+        *(int *)(help_popup_state + 0x20) = -1;
+        *(int *)(help_popup_state + 4) = 0;
     }
 }
 /* clears the top bit of the second word in each of 0x94 eight-byte records */
@@ -95,7 +95,7 @@ extern int func_001F9850(int);
 extern void func_L00_00203E98(void);
 /* Asks the help popup to dismiss. */
 void jet_camera_mode(void) {
-    char *g = D_L00_00179510;
+    char *g = help_popup_state;
     if (*(short *)(g + 0x38) == 0) {
         *(short *)(g + 0x38) = 1;
         *(int *)(g + 0x3C) = scale_ticks(0x3C);
@@ -164,8 +164,8 @@ void initialize_hero(void) {
     for (i = 0; i < 7; i++)
         save[i] = D_0013F450_05278.items[i].item_id;
 
-    for (i = 0; &D_L00_00160098[i] < D_L00_0016009C; i++) {
-        m = &D_L00_00160098[i];
+    for (i = 0; &moby_array_start[i] < level_mobys_end; i++) {
+        m = &moby_array_start[i];
         if (m->oclass == 0) {
             D_0013F450_05278.moby = m;
             z = func_00214358_05278(&m->pos, 0, 0.5f);
@@ -184,8 +184,8 @@ void initialize_hero(void) {
             break;
         }
     }
-    if (D_00141760 == 0)
-        D_00141760 = 10;
+    if (last_weapon_id == 0)
+        last_weapon_id = 10;
 
     for (i = 0; i < 31; i++) {
         D_L00_0017A780_05278[i].attached = 0;
@@ -261,7 +261,7 @@ int hero_idle_sequence(int a) {
     }
     {
         int i = hero_slot_item_id(0);
-        return D_L00_00179BC0[i].v;
+        return item_defs[i].v;
     }
 }
 // Returns first argument
@@ -288,7 +288,7 @@ extern int D_001405D4;
 extern int D_001404E0;
 // Selects a help status by mode.
 int get_hero_easing_moby_by_kind(int mode) {
- if (mode == 0 || mode == 2 || mode == 3 || mode == 4) return D_001414D0;
+ if (mode == 0 || mode == 2 || mode == 3 || mode == 4) return g_hero_moby;
  if (mode == 1) return D_001405D4;
  if (mode == 5) { return D_001404E0; } else { return 0; }
 }
@@ -415,14 +415,14 @@ void update_hero_random_timer(void) {
     struct Hero *hero_random_timer_owner = &D_0013F450_05CC0;
     if (hero_random_timer_owner->rand_timer.fired == 0) {
         if (hero_random_timer_owner->rand_timer.range == 0) {
-            hero_random_timer_owner->rand_timer.deadline = D_L00_0015F6B0 + scale_ticks(30);
-        } else if (D_L00_0015F6B0 > hero_random_timer_owner->rand_timer.deadline) {
+            hero_random_timer_owner->rand_timer.deadline = level_frame_counter + scale_ticks(30);
+        } else if (level_frame_counter > hero_random_timer_owner->rand_timer.deadline) {
             int base_delay_frames, first_random_delay_frames;
             hero_random_timer_owner->rand_timer.fired = 1;
             base_delay_frames = scale_ticks(20);
             first_random_delay_frames = random_integer_below(hero_random_timer_owner->rand_timer.range);
             hero_random_timer_owner->rand_timer.deadline =
-                D_L00_0015F6B0 + base_delay_frames + first_random_delay_frames + random_integer_below(hero_random_timer_owner->rand_timer.range);
+                level_frame_counter + base_delay_frames + first_random_delay_frames + random_integer_below(hero_random_timer_owner->rand_timer.range);
         }
     }
 }
@@ -547,7 +547,7 @@ void update_hero_glow_and_extra_manipulators(void) {
         r = gc;
     period = scale_ticks(0x6E);
     fp = IntToFloat(period);
-    fa = (f32)(D_L00_0015F6B0 % period) / fp;
+    fa = (f32)(level_frame_counter % period) / fp;
     fa = fa + fa;
     fa = fa * 3.1415927f;
     s = FastSin(fa + -3.1415927f);
@@ -991,7 +991,7 @@ skip:
             v = scale_ticks(0x5A);
         }
         f0 = IntToFloat(v);
-        ang = (float)(D_L00_0015F6B0 % v) / f0;
+        ang = (float)(level_frame_counter % v) / f0;
         ang = ang + ang;
         ang = ang * 3.14159274f;
         f20 = FastSin(ang + -3.14159274f);
@@ -1046,7 +1046,7 @@ skip:
         }
     }
     update_hero_moby_probed_height_bounds();
-    func_L00_0025805C(((GS_68C8 *)(D_0013E633 + 0xE1D))->p2080);
+    apply_env_zone_lighting(((GS_68C8 *)(D_0013E633 + 0xE1D))->p2080);
 }
 typedef struct { char p0[0x74]; unsigned char f74; char p1[0x13]; Moby *f88; } Row_207220;
 typedef struct { char pad0[0x2080]; Moby *moby; char pad1[0x2218 - 0x2084]; int idx[8]; Moby *mob[8]; } HS_207220;
@@ -1112,13 +1112,13 @@ void check_hero_item_reward_conditions(void) {
     if (help_records.x3c0 == 0 && item_available[4] != 0 && Hero_IsInSpecialState() != 0) {
         Help_Request(0x4E2E, 0x78);
     }
-    if (D_L00_0015F6B0 <= 0) return;
-    if (D_L00_0015F6B0 & 0x7F) return;
+    if (level_frame_counter <= 0) return;
+    if (level_frame_counter & 0x7F) return;
     if (help_records.x280 != 0) return;
     if (D_001419F0 != 0) return;
     n = 0;
     for (i = 0; i < 0x25; i++) {
-        if (((E00207310 *)D_L00_00179BC0)[i].x8 == 0 && i != 8 && i != 0x18 && item_available[i] != 0) n++;
+        if (((E00207310 *)item_defs)[i].x8 == 0 && i != 8 && i != 0x18 && item_available[i] != 0) n++;
     }
     if (n >= 9) Help_Request(0x4E26, 0x50);
 }
@@ -1310,7 +1310,7 @@ void coordinate_hero_frame_update(void) {
     }
     {
         char *q = (char *)D_0013E633 + 0xE1D;
-        func_L00_0025805C(*(void **)(q + 0x2080));
+        apply_env_zone_lighting(*(void **)(q + 0x2080));
     }
     update_hero_color_and_item_tint();
     update_hero_moby_probed_height_bounds();
@@ -1379,7 +1379,7 @@ void update_moby_pulsing_glow_effects(char *m) {
     float f;
     *(unsigned short *)(m + 0x34) |= 0x10;
     r = scale_ticks(0x64);
-    a = (float)(D_L00_0015F6B0 % r) / IntToFloat(r);
+    a = (float)(level_frame_counter % r) / IntToFloat(r);
     a = a + a;
     a = a * 3.1415927f + -3.1415927f;
     s = FastSin(a);
@@ -1630,7 +1630,7 @@ void draw_hero_glow_quads(void) {
     int i;
     float f;
     float u;
-    if (D_L00_0015F6A8 == 2 || D_L00_0015F6A8 == 6) {
+    if (cinematic_mode == 2 || cinematic_mode == 6) {
         for (i = 0; i < ((DrawQ *)(D_0013E633 + 0xE1D))->n; i++) {
             draw_offset_textured_effect_quad(&((DrawQ *)(D_0013E633 + 0xE1D))->vec[i], ((DrawQ *)(D_0013E633 + 0xE1D))->val[i], ((DrawQ *)(D_0013E633 + 0xE1D))->f0[i], ((DrawQ *)(D_0013E633 + 0xE1D))->f1[i]);
         }
@@ -1907,7 +1907,7 @@ void update_hero_moby(void) {
     apply_hero_vertical_oscillation();
     qcopy(*(char **)(g + 0x2080) + 0x40, g + 0x90);
     apply_hero_rotation_oscillation();
-    func_L00_001FF040((int)(*(char **)(g + 0x2080) + 0xC0), g, 0x30);
+    copy_memory_by_alignment((int)(*(char **)(g + 0x2080) + 0xC0), g, 0x30);
     moby_build_matrix(*(void **)(g + 0x2080));
     if (*(int *)(g + 0x1CC) == 0 && *(int *)(*(char **)(g + 0x2080) + 0x94) != 0) {
         qcopy(&v, g + 0x80);
@@ -1957,7 +1957,7 @@ void update_hero_vehicle_moby(void) {
     m = *(char **)(g + 0x2080);
     qcopy(m + 0x10, g + 0x80);
     qcopy(m + 0x40, g + 0x90);
-    func_L00_001FF040((int)(m + 0xC0), g, 0x30);
+    copy_memory_by_alignment((int)(m + 0xC0), g, 0x30);
     moby_build_matrix(*(void **)(g + 0x2080));
     if (*(int *)(g + 0x1CC) == 0 && *(int *)(*(char **)(g + 0x2080) + 0x94) != 0) {
         qcopy(v, g + 0x80);
@@ -2035,7 +2035,7 @@ void update_hero_moby_probed_height_bounds(void) {
     lo = hi;
     pw = &w; px = &x;
     t = D_L00_0017C400;
-    collision=&D_L00_00173F40;
+    collision=&coll_hit_result;
     for (i = 3; i >= 0; i--, t++) {
         M_208b60 *m = ((G_208b60 *)(D_0013E633_probe_091D8+0xE1D))->m2080;
         sc = m->fC * 0.0009765625f;
@@ -2043,7 +2043,7 @@ void update_hero_moby_probed_height_bounds(void) {
         w.f[0] += c * t->x * sc;
         w.f[1] += s * t->y * sc;
         w.f[2] += t->z * sc;
-        func_L00_001FF4B0(px, &v, ((w.f[2] - h) + 0.5f) / -v.f[2]);
+        vec_scale_to_length(px, &v, ((w.f[2] - h) + 0.5f) / -v.f[2]);
         func_001F9BD8_091D8(px, pw, px);
         if (func_L00_001EFFF0_091D8(pw, px, 0x22, 0, 0)) {
             lo = min_float(lo, collision->f28);
@@ -2550,7 +2550,7 @@ int probe_hero_forward_collision(int outp, float a, float b) {
     Vec4f q;
     transform_hero_polar_offset_to_world(&p, *(float *)(g + 0x234) - 0.02f, 0.0f, a);
     transform_hero_polar_offset_to_world(&q, b, 0.0f, a);
-    if (func_L00_001EFFF0(&p, &q, 2, 0, 0)) {
+    if (coll_line(&p, &q, 2, 0, 0)) {
         if (out != 0) *out = vec_distance_xy(g + 0x80, D_00173F60_alias);
         return 1;
     }
@@ -2795,7 +2795,7 @@ void update_hero_target_tracking(void) {
     }
     g2 = (char *)D_0013E633 + 0xE1D;
     if (*(unsigned char *)(*(int *)(g2 + 0x2080) + 0x53) == 0x54) return;
-    if (D_L00_0015F6B0 % 7 == 0) {
+    if (level_frame_counter % 7 == 0) {
         bestDist = 100000000.0f;
         bestPri = 0.0f;
         best = 0;
@@ -2833,7 +2833,7 @@ void update_hero_target_tracking(void) {
     q = (char *)&v[4];
     qcopy(q, *(char **)(g5 + 0x2274) + 0x10);
     v[6] += 0.5f;
-    if (func_L00_001EFFF0(v, q, 2, 0, 0)) *(int *)(g5 + 0x2274) = 0;
+    if (coll_line(v, q, 2, 0, 0)) *(int *)(g5 + 0x2274) = 0;
     t = *(char **)(g5 + 0x2274);
     if (t == 0) return;
     qcopy(v, t + 0x10);

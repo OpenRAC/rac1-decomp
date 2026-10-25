@@ -429,7 +429,7 @@ void update_render_debug_menu(void) {
                 }
             } else if (g_controller_state.pressed & 0x20) {
                 int i = occl_cam_state.a3C;
-                unsigned char *e = &D_0014C150[i + g_current_level_index * 16];
+                unsigned char *e = &saved_mission_state[i + g_current_level_index * 16];
                 *e = (*e == 0) ? 0xFF : 0;
                 D_0015FCC8[i] = *e;
             }
@@ -495,7 +495,7 @@ void update_render_debug_menu(void) {
         {
             unsigned char k = ((unsigned char *)&D_0015F110)[occl_cam_state.cursor];
             unsigned char *c = &gold_weapon_purchased[k];
-            Gadget1088 *g = &D_001864D0[k];
+            Gadget1088 *g = &item_info_table[k];
             if (g->cap < *c) {
                 *c = g->cap;
             }
@@ -1467,13 +1467,13 @@ void SetPalMode(void) {
 
     func_00118D80(0);
     if (pal_mode != 0) {
-        D_0015EF84 = 0x100000;
+        draw_buffer_address = 0x100000;
         depth_buffer_address = 0x1E0000;
         D_0015EF80 = 0;
         g_gs_texture_allocation_base = 0x2C0000;
         SetupFS_AA_buffer(0x200, 0x1C0, 0x200, 0x200, 4, 0);
     } else {
-        D_0015EF84 = 0xE0000;
+        draw_buffer_address = 0xE0000;
         depth_buffer_address = 0x1B0000;
         D_0015EF80 = 0;
         g_gs_texture_allocation_base = 0x280000;
@@ -1489,7 +1489,7 @@ void SetPalMode(void) {
     screen_extent_3890.bottom = (screen_extent_3890.half_height + 0x800) << 4;
     func_00118D80(0);
     func_00120858(0, 0);
-    frame = (D_0015EF84 >> 13) | ((u64)(screen_extent_3890.width >> 6) << 16);
+    frame = (draw_buffer_address >> 13) | ((u64)(screen_extent_3890.width >> 6) << 16);
     g_gs_texture_allocation_cursor = g_gs_texture_allocation_base;
     draw_env_3890.frame1 = frame;
     g_gs_texture_allocation_start = g_gs_texture_allocation_base;
@@ -1944,7 +1944,7 @@ void SetupGifPaging(int arg0) {
     p += 4;
     g_render_packet_cursor = p;
     g_gs_texture_allocation_cursor = g_gs_texture_allocation_start;
-    D_0015F558 = 0;
+    pending_texture_upload_count = 0;
     {
         int k;
 
@@ -3415,7 +3415,7 @@ extern int D_0013E604[];
 /* Uploads a block to the GS in DMA packets. */
 void queue_framebuffer_upload(unsigned int source) {
     int remaining = frame_size[0];
-    int destination = D_0015EF84 >> 8;
+    int destination = draw_buffer_address >> 8;
     unsigned long count;
     unsigned long transfer;
     unsigned char *packet;

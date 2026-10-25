@@ -41,7 +41,7 @@ void spawn_sharkigator_surface_effects(char *moby) {
             FastVecScale(v, a, random_float_between(-0.5f, 0.5f));
             FastVecAdd(v, v, b);
             v[2] = D_L05_001613A8_m + 0.05f;
-            r = spawn_splash(v, D_L05_0015F660, d,
+            r = spawn_splash(v, rilgar_zero_vec, d,
                                   random_float_between(0.7f, 1.0f), i == 0 ? 2.0f : -2.0f);
             if (r != 0) {
                 *(short *)(r + 0xA) = scale_ticks(0xF);
@@ -89,7 +89,7 @@ void spawn_sharkigator_splash_effects(int unused, char *p) {
         rand_vec(v, 1.0f, 1.0f);
         FastVecAdd(v, v, p);
         v[2] = D_L05_001613A8_m + 0.05f;
-        q = spawn_splash(v, D_L05_0015F660, base, random_float_between(0.7f, 1.0f), i == 0 ? 2.0f : -2.0f);
+        q = spawn_splash(v, rilgar_zero_vec, base, random_float_between(0.7f, 1.0f), i == 0 ? 2.0f : -2.0f);
         if (q) {
             *(short *)(q + 0xA) = func_001FA898_r(multiply_global_factor(random_float_between(30.0f, 60.0f)));
         }
@@ -141,7 +141,7 @@ void update_moby_glow_and_queue_draw(char *moby) {
         }
         *(float *)(data + 0x368) = FastAddRots(*(float *)(data + 0x368), g_frame_time * 1.9198622f);
         col = FastTweenColor(0x1E1EB4, 0x1EB41E, FastSin(*(float *)(data + 0x368)) * 0.5f + 0.5f);
-        v = D_L05_0015F6B0;
+        v = rilgar_frame_count;
         *(int *)(moby + 0x90) = col;
         hi = (col & 0xFF0000) | 0x30000000;
         *(int *)(data + 0x360) = hi | (col & 0xFF00) | (col & 0xFF);
@@ -421,7 +421,7 @@ void DrawRibbonTrails(char *moby) {
         p->flags = (u64)*(int *)&D_L05_001614B8 | ((u64)*(int *)&D_L05_001614BC << 2) |
                    ((u64)*(int *)&D_L05_001614C0 << 4) | ((u64)*(int *)&D_L05_001614C4 << 6) |
                    0x8000000000ULL;
-        phase = IntToFloat((D_L05_0015F6B0 + 3) & 3) / (*(float *)&D_L05_001614A0 * 4.0f);
+        phase = IntToFloat((rilgar_frame_count + 3) & 3) / (*(float *)&D_L05_001614A0 * 4.0f);
         for (j = 0; j < 4; j++) {
             packet[i].uv[j][0] = D_L05_001CE070[j][0];
             packet[i].uv[j][1] = D_L05_001CE070[j][1];
@@ -458,7 +458,7 @@ void DrawRibbonTrails(char *moby) {
                                               points + (index << 4),
                                               (char *)matrix + (k & 1) * 0x10);
                             }
-                            func_L00_001FD1D8(&packet[frame], 0, 0);
+                            draw_world_quad(&packet[frame], 0, 0);
                         }
                     }
                 }
@@ -709,10 +709,10 @@ void extermibot_update(unsigned char *m) {
     extern float func_001F9D10(void *, void *);
 
     Manipulator_SetScale(d + 0x170, 2.5f);
-    if (D_L05_0015F6A8 == 2 && ((*(unsigned short *)(m + 0x34) ^ 1) & 1)) {
+    if (rilgar_cinematic_mode == 2 && ((*(unsigned short *)(m + 0x34) ^ 1) & 1)) {
         *(int *)(d + 0x2DC) = 1;
         *(unsigned short *)(m + 0x34) |= 0x41;
-    } else if (*(int *)(d + 0x2DC) != 0 && D_L05_0015F6A8 == 0) {
+    } else if (*(int *)(d + 0x2DC) != 0 && rilgar_cinematic_mode == 0) {
         *(int *)(d + 0x2DC) = 0;
         *(unsigned short *)(m + 0x34) &= 0xFFBE;
     }
@@ -1039,9 +1039,9 @@ void extermibot_update(unsigned char *m) {
     case 14:
         if (mine_fall(m, d + 0x70) & 0x60) {
             SpawnExplosionFx(m, m + 0x10, -1, 0.5f, 13.0f);
-            SpawnBreakFragment(m, 0x6DA, m + 0x10, m + 0x40, 0, 0, 0.0f, D_L05_0015F660, D_L05_0015F660, D_L05_0015F660);
-            SpawnBreakFragment(m, 0x6DB, m + 0x10, m + 0x40, 0, 0, 0.0f, D_L05_0015F660, D_L05_0015F660, D_L05_0015F660);
-            SpawnBreakFragment(m, 0x6DC, m + 0x10, m + 0x40, 0, 0, 0.0f, D_L05_0015F660, D_L05_0015F660, D_L05_0015F660);
+            SpawnBreakFragment(m, 0x6DA, m + 0x10, m + 0x40, 0, 0, 0.0f, rilgar_zero_vec, rilgar_zero_vec, rilgar_zero_vec);
+            SpawnBreakFragment(m, 0x6DB, m + 0x10, m + 0x40, 0, 0, 0.0f, rilgar_zero_vec, rilgar_zero_vec, rilgar_zero_vec);
+            SpawnBreakFragment(m, 0x6DC, m + 0x10, m + 0x40, 0, 0, 0.0f, rilgar_zero_vec, rilgar_zero_vec, rilgar_zero_vec);
             DeleteMoby(m);
             return;
         }
@@ -1342,7 +1342,7 @@ void PathWalker_StepTowardNode(struct Moby *m, s32 node, f32 side) {
     f32 a;
     f32 dist;
 
-    if ((((s32)m >> 8) & 3) == (D_L05_0015F6B0 & 3)) {
+    if ((((s32)m >> 8) & 3) == (rilgar_frame_count & 3)) {
         if (func_L01_00277FD8(&v->path, 1, v->path_pos, &m->pos, node, &v->goal, (*(f32 *)&D_L05_00161B58) * 0.4f) == 0)
             v->mode = 2;
     }
@@ -1390,7 +1390,7 @@ int test_extermibot_offset_path_clearance(char *moby, float *goal, float s)
     *(int *)&v[2] = 0;
     func_001F9BD8_052A8(v, v, (float *)(moby + 0x10));
     func_001F9BF0_052A8(w, v, goal);
-    func_L00_001FF4B0(w, w, s);
+    vec_scale_to_length(w, w, s);
     func_001F9BD8_052A8(w, w, (float *)(moby + 0x10));
     return test_path_segment_strict_crossing(*(int *)(d + 0x2C0), v, w) == 0;
 }
@@ -1628,7 +1628,7 @@ void extermitank_update(unsigned char *m) {
         *(float *)(d + 0xAC) = 0.01f;
         *(float *)(d + 0xB0) = 0.3f;
         *(float *)(d + 0xB4) = 0.1f;
-        *(char **)(d + 0xD0) = D_L05_001B0CB0[*(int *)(d + 0xD4)];
+        *(char **)(d + 0xD0) = rilgar_paths[*(int *)(d + 0xD4)];
         *(int *)(d + 0xC0) = 1;
         qcopy(m + 0x10, *(char **)(d + 0xD0) + 0x10);
         m[0x20] = 1;
@@ -1676,11 +1676,11 @@ void extermitank_update(unsigned char *m) {
         if (vec_distance_xy(m + 0x10, h) < *(float *)(d + 0x174)) {
             if (FastAbsF(*(float *)(m + 0x18) - *(float *)(h + 8)) < 4.0f) {
                 if (*(int *)(d + 0x190) == -1
-                    || IsPointInPolygon(h, D_L05_001B0CB0[*(int *)(d + 0x190)] + 0x10,
-                                         *(int *)D_L05_001B0CB0[*(int *)(d + 0x190)]) != 0) {
+                    || IsPointInPolygon(h, rilgar_paths[*(int *)(d + 0x190)] + 0x10,
+                                         *(int *)rilgar_paths[*(int *)(d + 0x190)]) != 0) {
                     qcopy(v10, m + 0x10);
                     v10[2] = v10[2] + 3.0f;
-                    if (func_L00_001EFFF0(v10, h + 0x50, 2, m, 0) == 0) {
+                    if (coll_line(v10, h + 0x50, 2, m, 0) == 0) {
                         if (m[0x53] != 0) MobyBlendAnimation(m, 0, 0, 3);
                         m[0x20] = 2;
                     }
@@ -1747,7 +1747,7 @@ void extermitank_update(unsigned char *m) {
             b = truncate_float_to_s32(multiply_global_factor(random_float_between(*(float *)&D_L05_00161BD8, *(float *)&D_L05_00161BD8 * 1.2f)));
             e = truncate_float_to_s32(multiply_global_factor(random_float_between(*(float *)&D_L05_00161BDC, *(float *)&D_L05_00161BDC * 1.2f)));
             r = ((Spawn_305778)PartType02Spawn)(v40, v20, v30, *(int *)&D_L05_00161BCC, *(int *)&D_L05_00161BD0, a, b, e, -1);
-            if ((D_L05_0015F6B0 & 7) == 0 && r != 0 && i == 0) {
+            if ((rilgar_frame_count & 7) == 0 && r != 0 && i == 0) {
                 int j;
                 for (j = 0; j < 8; j++) {
                     int o = j * 4;
@@ -1789,9 +1789,9 @@ void extermitank_update(unsigned char *m) {
         if (*(float *)(d + 0x174) < vec_distance_xy(m + 0x10, h)
             || 4.0f <= FastAbsF(*(float *)(m + 0x18) - *(float *)(h + 8))
             || (*(int *)(d + 0x190) != -1
-                && IsPointInPolygon(h, D_L05_001B0CB0[*(int *)(d + 0x190)] + 0x10,
-                                     *(int *)D_L05_001B0CB0[*(int *)(d + 0x190)]) == 0)
-            || func_L00_001EFFF0(v40, D_0013E633_3047E8 + 0xEED, 2, m, 0) != 0) {
+                && IsPointInPolygon(h, rilgar_paths[*(int *)(d + 0x190)] + 0x10,
+                                     *(int *)rilgar_paths[*(int *)(d + 0x190)]) == 0)
+            || coll_line(v40, D_0013E633_3047E8 + 0xEED, 2, m, 0) != 0) {
             if (m[0x53] != 0) MobyBlendAnimation(m, 0, 0, 3);
             m[0x20] = 1;
         }
@@ -1899,21 +1899,21 @@ void handle_extermitank_hits_and_sync_children(char *moby) {
             clear_u64_value(effect_data);
             *(float *)(effect_data + 8) = *(float *)(data + 0x194);
             SpawnBreakFragment(moby, 0x6dd, moby + 0x10, moby + 0x40, 0, 0, 0.0f,
-                              D_L05_0015F660, D_L05_0015F660, D_L05_0015F660);
+                              rilgar_zero_vec, rilgar_zero_vec, rilgar_zero_vec);
             SpawnBreakFragment(moby, 0x6df, moby + 0x10, moby + 0x40, 0, 0, 0.0f,
-                              D_L05_0015F660, D_L05_0015F660, D_L05_0015F660);
+                              rilgar_zero_vec, rilgar_zero_vec, rilgar_zero_vec);
             SpawnBreakFragment(moby, 0x6e0, moby + 0x10, moby + 0x40, 0, 0, 0.0f,
-                              D_L05_0015F660, D_L05_0015F660, D_L05_0015F660);
+                              rilgar_zero_vec, rilgar_zero_vec, rilgar_zero_vec);
             SpawnBreakFragment(moby, 0x6fe, moby + 0x10, moby + 0x40, 0, 0, 0.0f,
-                              D_L05_0015F660, D_L05_0015F660, D_L05_0015F660);
+                              rilgar_zero_vec, rilgar_zero_vec, rilgar_zero_vec);
             SpawnBreakFragment(moby, 0x6fe, moby + 0x10, moby + 0x40, 0, 0, 0.0f,
-                              D_L05_0015F660, D_L05_0015F660, D_L05_0015F660);
+                              rilgar_zero_vec, rilgar_zero_vec, rilgar_zero_vec);
             SpawnBreakFragment(moby, 0x6ff, moby + 0x10, moby + 0x40, 0, 0, 0.0f,
-                              D_L05_0015F660, D_L05_0015F660, D_L05_0015F660);
+                              rilgar_zero_vec, rilgar_zero_vec, rilgar_zero_vec);
             SpawnBreakFragment(moby, 0x6ff, moby + 0x10, moby + 0x40, 0, 0, 0.0f,
-                              D_L05_0015F660, D_L05_0015F660, D_L05_0015F660);
+                              rilgar_zero_vec, rilgar_zero_vec, rilgar_zero_vec);
             SpawnBreakFragment(moby, 0x6ff, moby + 0x10, moby + 0x40, 0, 0, 0.0f,
-                              D_L05_0015F660, D_L05_0015F660, D_L05_0015F660);
+                              rilgar_zero_vec, rilgar_zero_vec, rilgar_zero_vec);
             return;
         }
     }
@@ -2004,7 +2004,7 @@ void process_extermitank_particle_hits(char *m) {
     h.x1C = 1.0f;
     FastVecSub(h.v, base + 0x80, m + 0x10);
     h.v[2] = 0.0f;
-    func_L00_001FF500(h.v, h.v, 1.5f);
+    vec_set_length_xy(h.v, h.v, 1.5f);
     h.v[2] = 1.0f;
     h.v[3] = 5627.9248f;
     h.x19 = 1;
@@ -2063,7 +2063,7 @@ void advance_racer_path_node(char *moby) {
         }
         path = *(L05Path **)(d + 0x244);
         *(short *)(d + 0x258) = (*(short *)(d + 0x258) + 1) % path->count;
-        base = (L05Path *)D_L05_001B0CB0[*(int *)(d + 0x220)];
+        base = (L05Path *)rilgar_paths[*(int *)(d + 0x220)];
         if (path != base) {
             if (*(short *)(d + 0x258) == path->count - 1) {
                 *(L05Path **)(d + 0x244) = base;
@@ -2076,7 +2076,7 @@ void advance_racer_path_node(char *moby) {
             branch = func_001FA898_r(((L05Path *)*(char **)(d + 0x244))->points[*(short *)(d + 0x258)][3]) - 1;
 
             e = d + branch * 4;
-            *(char **)(d + 0x244) = D_L05_001B0CB0[*(int *)(e + 0x224)];
+            *(char **)(d + 0x244) = rilgar_paths[*(int *)(e + 0x224)];
             *(short *)(d + 0x258) = 0;
         }
         copy_racer_path_node(moby, *(short *)(d + 0x258), target);
@@ -2091,7 +2091,7 @@ void start_racer_branch_jump(char *moby) {
     char *cur = *(char **)(d + 0x244);
     int idx;
     int off;
-    if (cur != D_L05_001B0CB0[*(int *)(d + 0x220)]) {
+    if (cur != rilgar_paths[*(int *)(d + 0x220)]) {
         if (*(float *)(d + 0x24C) <= 0.0f) {
             idx = *(short *)(d + 0x258);
             off = idx * 16;
@@ -2316,7 +2316,7 @@ void SkidMcMarxUpdate(Moby *moby) {
 
         moby->update_dist = 0x18;
         moby->flags |= 0x41;
-        p = (Path_308D68 *)D_L05_001B0CB0[d->f234];
+        p = (Path_308D68 *)rilgar_paths[d->f234];
         d->path = p;
         copy_racer_path_node((char *)moby, 0, v0);
         qcopy(((float *)&moby->pos), v0);
@@ -2687,7 +2687,7 @@ extern void func_L05_0030EB40(void);
 void WaterSurfaceUpdate(Moby *moby) {
     Data_0030DED8 *d = *(Data_0030DED8 **)&moby->pvars;
 
-    if (D_L05_0015F6A8 == 2) {
+    if (rilgar_cinematic_mode == 2) {
         return;
     }
     switch (moby->state) {

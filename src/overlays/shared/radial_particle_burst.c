@@ -20,7 +20,7 @@ void rotate_vector_by_scaled_angle_between_vectors(float t, float *dst, float *a
     float q[4];
     float d, l, ang;
     FastVecCross(q, b, a);
-    func_L00_001FF4B0(q, q, 1.0f);
+    vec_scale_to_length(q, q, 1.0f);
     d = FastVecDot(a, b);
     if (flag == 0) {
         l = FastVecLength(a);
@@ -99,7 +99,7 @@ void emit_radial_particle_burst(char *moby, float *position, void *extra)
         int sign, life;
         angle = rand_jitter(0.1308997f);
         build_look_at_matrix(vec, moby + 0xE0, moby + 0xC0, (float)i * 0.2617994f + angle);
-        func_L00_001FF4B0(vec, vec, rand_speed());
+        vec_scale_to_length(vec, vec, rand_speed());
         sign = rand_spin();
         if (coin_flip())
             sign = -sign;
@@ -112,7 +112,7 @@ void emit_radial_particle_burst(char *moby, float *position, void *extra)
         int n;
         float angle = random_float_between(0.0f, 0.7853982f);
         build_look_at_matrix(vec, moby + 0xE0, moby + 0xC0, (float)j * 1.0471976f + angle);
-        func_L00_001FF4B0(vec, vec, rand_speed());
+        vec_scale_to_length(vec, vec, rand_speed());
         n = rand_ticks(20, 60);
         if (extra)
             add_vectors(tmp, vec, extra);

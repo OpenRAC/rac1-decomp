@@ -175,7 +175,7 @@ void draw_water_reservoir(char *moby) {
             q.v[2] = FastCos(a * *(float *)&D_L12_00161AA4);
             q.v[6] = FastCos(b * *(float *)&D_L12_00161AA4);
         }
-        func_L00_001FD1D8(&q, m, 0);
+        draw_world_quad(&q, m, 0);
     }
 }
 extern char *func_0020D348(int);
@@ -285,15 +285,15 @@ void HovenShotUpdate(struct Moby *moby) {
         moby->rot.z = vars->yaw;
         moby->rot.x = FastAddRots(moby->rot.x, g_frame_time * 6.2831855f);
         f20 = 0.2f;
-        func_L00_001FF4B0(side, vars, f20);
-        func_L00_001FF4B0(back, vars, -0.2f);
+        vec_scale_to_length(side, vars, f20);
+        vec_scale_to_length(back, vars, -0.2f);
         add_vectors(trail, back, &moby->pos);
         PartType04Spawn(back, side, 0x6F00AFFF, 0xFF, scale_ticks(rand_range(15, 22)), 40,
                          rand_range(20, 35), 1);
         PartType04Spawn(back, side, 0x1FFFFFFF, 0x4F4F4F, scale_ticks(rand_range(30, 60)), 40,
                          rand_range(50, 75), 0);
-        if (func_L00_001EFFF0(&moby->pos, old_pos, 0, moby, 0) || coll_sphere(&moby->pos, 0, (struct Moby *)moby, f20)) {
-            if (D_L12_00174340.moby != 0 && D_L12_00174340.moby != (int)vars->owner) {
+        if (coll_line(&moby->pos, old_pos, 0, moby, 0) || coll_sphere(&moby->pos, 0, (struct Moby *)moby, f20)) {
+            if (hoven_coll_hit.moby != 0 && hoven_coll_hit.moby != (int)vars->owner) {
                 damage = 1;
                 if (D_0015EE84_e == 12 && D_001414D4 == 50) {
                     damage = D_L12_00161FA0 >= 16 ? 2 : 3;
@@ -306,7 +306,7 @@ void HovenShotUpdate(struct Moby *moby) {
                 hit.unk18 = 1;
                 hit.unk19 = 1;
                 hit.oclass = moby->oclass;
-                record_moby_hit(D_L12_00174340.moby, &hit);
+                record_moby_hit(hoven_coll_hit.moby, &hit);
             }
             moby->state = 2;
         }
@@ -317,7 +317,7 @@ void HovenShotUpdate(struct Moby *moby) {
     }
     case 2:
         FastVecSub(old_pos, &moby->pos, D_L12_001672C0);
-        func_L00_001FF4B0(old_pos, old_pos, 0.4f);
+        vec_scale_to_length(old_pos, old_pos, 0.4f);
         FastVecAdd(&moby->pos, &moby->pos, old_pos);
         if (D_0015EE84_e == 12 && D_001414D4 == 50) {
             char *camera = D_L12_001672C0 - 0x140;
@@ -1109,12 +1109,12 @@ void hoven_turret_update(Moby *moby) {
                     rnd[1] = random_float_between(-1.0f, 1.0f);
                     rnd[2] = random_float_between(-1.0f, 1.0f);
                     *(u128 *)vel = *(u128 *)rnd;
-                    func_L00_001FF4B0(vel, vel, FastVecLength(dir) * (frame_scale * (0.65f - 1.0f) + 1.0f));
+                    vec_scale_to_length(vel, vel, FastVecLength(dir) * (frame_scale * (0.65f - 1.0f) + 1.0f));
                     FastVecAdd(vel, dir, vel);
-                    func_L00_001FF4B0(vel, vel, random_float_between(g_frame_time * 3.0f, g_frame_time * 6.0f));
+                    vec_scale_to_length(vel, vel, random_float_between(g_frame_time * 3.0f, g_frame_time * 6.0f));
                     PartType27Spawn(muz, vel, 0x5F2F4F6F, rand_range(scale_ticks(5), scale_ticks(0xA)), 50000.0f);
                 }
-                func_L00_001FF4B0(dir, dir, g_frame_time * 0.5f);
+                vec_scale_to_length(dir, dir, g_frame_time * 0.5f);
                 PartType27Spawn(muz, dir, 0x2F4F7F7F, rand_range(scale_ticks(4), scale_ticks(7)), 500000.0f);
             }
             if (D_L12_00161A20 == 0) {
@@ -2118,7 +2118,7 @@ void planetbuster_maximus_part_update(char *moby) {
         }
         nx = (*(short *)(d + 0x5F8) + 1) % *(int *)path;
         FastVecSub(v, &path[nx + 1], &path[*(short *)(d + 0x5F8) + 1]);
-        func_L00_001FF4B0(v, v, *(float *)(d + 0x5F0));
+        vec_scale_to_length(v, v, *(float *)(d + 0x5F0));
         FastVecAdd(moby + 0x10, moby + 0x10, v);
         f = fast_atan2(*(float *)((char *)path + (nx << 4) + 0x10) - *(float *)((char *)path + (*(short *)(d + 0x5F8) << 4) + 0x10),
                               *(float *)((char *)path + (nx << 4) + 0x14) - *(float *)((char *)path + (*(short *)(d + 0x5F8) << 4) + 0x14));
@@ -2384,7 +2384,7 @@ void update_moby_draw_and_monitor_linked_state(struct Moby *m) {
 
     switch (st) {
     case 0:
-        if (m->mission != 0xFF && D_0014C150[m->mission + (*(s32 *)&g_current_level_index) * 16] == 0xFF) {
+        if (m->mission != 0xFF && saved_mission_state[m->mission + (*(s32 *)&g_current_level_index) * 16] == 0xFF) {
             DeleteMoby(m);
             break;
         }

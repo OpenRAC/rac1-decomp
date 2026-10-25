@@ -191,7 +191,7 @@ void toxic_crab_update(Moby2E30F8 *m) {
     if (FastVecDist(from, to) < 15.0f
         && !(from[0] < 2.0f || 1021.0f < from[0] || from[1] < 2.0f || 1021.0f < from[1] || from[2] < 2.0f || 1021.0f < from[2])
         && !(to[0] < 2.0f || 1021.0f < to[0] || to[1] < 2.0f || 1021.0f < to[1] || to[2] < 2.0f || 1021.0f < to[2])) {
-        see = func_L00_001EFFF0(from, to, 2, m, 0) == 0;
+        see = coll_line(from, to, 2, m, 0) == 0;
     }
     if (!see || (!(FastAbsF(*(float *)(t + 0x18) - m->pos[2]) < 1.0f)
                  && is_moby_in_class_range_500_to_540(*(int *)(D_0013E633 + 0x1119)) == 0)) {
@@ -377,7 +377,7 @@ void toxic_crab_update(Moby2E30F8 *m) {
                     from2[2] += 1.0f;
                     *(u128_2E30F8 *)to2 = *(u128_2E30F8 *)(t + 0x10);
                     to2[2] += 1.0f;
-                    if (func_L00_001EFFF0(from2, to2, 2, m, 0)) {
+                    if (coll_line(from2, to2, 2, m, 0)) {
                         char *h = ground_hit;
                         if ((*(char **)(h + 0x18) == 0 || *(short *)(*(char **)(h + 0x18) + 0xA6) != 0x31A)
                             && FastVecDist(from2, h + 0x20) < *(float *)&D_L10_00161EB4) {
@@ -467,7 +467,7 @@ void toxic_crab_update(Moby2E30F8 *m) {
             from2[2] += 1.0f;
             *(u128_2E30F8 *)to2 = *(u128_2E30F8 *)(t + 0x10);
             to2[2] += 1.0f;
-            if (func_L00_001EFFF0(from2, to2, 2, m, 0)) {
+            if (coll_line(from2, to2, 2, m, 0)) {
                 char *h = ground_hit;
                 if ((*(char **)(h + 0x18) == 0 || *(short *)(*(char **)(h + 0x18) + 0xA6) != 0x31A)
                     && FastVecDist(from2, h + 0x20) < *(float *)&D_L10_00161EB4) {
@@ -529,13 +529,13 @@ void toxic_crab_update(Moby2E30F8 *m) {
                 coll_sphere_mobys(v, 0.75f, 0, m, &hit);
                 v[2] += 0.5f;
                 coll_sphere_mobys(v, 0.75f, 0, m, &hit);
-                func_L00_001EFFF0(pos, v, 9, m, &hit);
+                coll_line(pos, v, 9, m, &hit);
             } else {
                 Moby_GetJointWorldPos(m, 1, v);
                 coll_sphere_mobys(v, 0.75f, 0, m, &hit);
                 v[2] += 0.5f;
                 coll_sphere_mobys(v, 0.75f, 0, m, &hit);
-                func_L00_001EFFF0(pos, v, 9, m, &hit);
+                coll_line(pos, v, 9, m, &hit);
             }
         } else if (m->anim >= 6 && m->anim <= 7 && (m->b70 & 2)) {
             float home = FastVecDist(m->pos, d->v170);
@@ -684,16 +684,16 @@ void toxic_crab_update(Moby2E30F8 *m) {
             EmitMobyParticles(m);
             EmitMobyParticles(m);
             spawn_color_swapped_explosion_burst(m, m->pos, -1, 1.25f, 20.0f);
-            SpawnBreakFragment((char *)m, 0x775, m->pos, (char *)m + 0x40, 0, 2, 0.0f, D_L10_0015F660, D_L10_0015F660, D_L10_0015F660);
-            SpawnBreakFragment((char *)m, 0x77A, m->pos, (char *)m + 0x40, 0, 2, 0.0f, D_L10_0015F660, D_L10_0015F660, D_L10_0015F660);
-            SpawnBreakFragment((char *)m, 0x77B, m->pos, (char *)m + 0x40, 0, 2, 0.0f, D_L10_0015F660, D_L10_0015F660, D_L10_0015F660);
-            SpawnBreakFragment((char *)m, 0x77C, m->pos, (char *)m + 0x40, 0, 2, 0.0f, D_L10_0015F660, D_L10_0015F660, D_L10_0015F660);
+            SpawnBreakFragment((char *)m, 0x775, m->pos, (char *)m + 0x40, 0, 2, 0.0f, orxon_zero_vec, orxon_zero_vec, orxon_zero_vec);
+            SpawnBreakFragment((char *)m, 0x77A, m->pos, (char *)m + 0x40, 0, 2, 0.0f, orxon_zero_vec, orxon_zero_vec, orxon_zero_vec);
+            SpawnBreakFragment((char *)m, 0x77B, m->pos, (char *)m + 0x40, 0, 2, 0.0f, orxon_zero_vec, orxon_zero_vec, orxon_zero_vec);
+            SpawnBreakFragment((char *)m, 0x77C, m->pos, (char *)m + 0x40, 0, 2, 0.0f, orxon_zero_vec, orxon_zero_vec, orxon_zero_vec);
             qcopy(p, m->pos);
             p[2] += 0.55f;
             p[0] += randf_sym(0.0f, 0.3f);
             p[1] += randf_sym(0.0f, 0.3f);
-            SpawnBreakFragment((char *)m, 0x623, m->pos, (char *)m + 0x40, 0, 2, 0.0f, D_L10_0015F660, D_L10_0015F660, D_L10_0015F660);
-            SpawnBreakFragment((char *)m, 0x624, m->pos, (char *)m + 0x40, 0, 2, 0.0f, D_L10_0015F660, D_L10_0015F660, D_L10_0015F660);
+            SpawnBreakFragment((char *)m, 0x623, m->pos, (char *)m + 0x40, 0, 2, 0.0f, orxon_zero_vec, orxon_zero_vec, orxon_zero_vec);
+            SpawnBreakFragment((char *)m, 0x624, m->pos, (char *)m + 0x40, 0, 2, 0.0f, orxon_zero_vec, orxon_zero_vec, orxon_zero_vec);
             SetDeathBits(m, 0, -1);
             DeleteMoby(m);
             return;
@@ -1328,7 +1328,7 @@ void BlargShipUpdate(Ship_5E48 *m) {
         *(u128_2E52B0 *)&A = *(u128_2E52B0 *)&tgt->pos;
         if (((struct Hero *)(D_0013E633 + 0xE1D))->vehicle_mode != 1) {
             *(u128_2E52B0 *)&A = *(u128_2E52B0 *)&d->vF0;
-            func_L00_001EFFF0(&m->pos, &A, 0, m, 0);
+            coll_line(&m->pos, &A, 0, m, 0);
         } else {
             if ((Ship_5E48 *)((struct Hero *)(D_0013E633 + 0xE1D))->moby == tgt) {
                 FastVecScale(&C, &((struct Hero *)(D_0013E633 + 0xE1D))->motion.displacement, (float)scale_ticks(20));
@@ -1386,7 +1386,7 @@ void BlargShipUpdate(Ship_5E48 *m) {
         *(u128_2E52B0 *)&A = *(u128_2E52B0 *)&tgt->pos;
         if (((struct Hero *)(D_0013E633 + 0xE1D))->vehicle_mode != 1) {
             *(u128_2E52B0 *)&A = *(u128_2E52B0 *)&d->vF0;
-            func_L00_001EFFF0(&m->pos, &A, 0, m, 0);
+            coll_line(&m->pos, &A, 0, m, 0);
         } else {
             if ((Ship_5E48 *)((struct Hero *)(D_0013E633 + 0xE1D))->moby == tgt) {
                 FastVecScale(&C, &((struct Hero *)(D_0013E633 + 0xE1D))->motion.displacement, (float)scale_ticks(20));
@@ -1446,8 +1446,8 @@ void BlargShipUpdate(Ship_5E48 *m) {
         float z = 0.0f;
         spawn_explosion(m, d->a40, &m->pos, z, z, 5, 2, 4, 2.0f, 1.0f, 9.0f, 1.0f, 5, 15.0f, 1, 1, -1, 0);
         SetDeathBits(m, 0, -1);
-        SpawnBreakFragment((char *)m, 0x5FD, (float *)&m->pos, (char *)m + 0x40, 0, 0, 0.0f, D_L10_0015F660, D_L10_0015F660, D_L10_0015F660);
-        SpawnBreakFragment((char *)m, 0x5FE, (float *)&m->pos, (char *)m + 0x40, 0, 0, 0.0f, D_L10_0015F660, D_L10_0015F660, D_L10_0015F660);
+        SpawnBreakFragment((char *)m, 0x5FD, (float *)&m->pos, (char *)m + 0x40, 0, 0, 0.0f, orxon_zero_vec, orxon_zero_vec, orxon_zero_vec);
+        SpawnBreakFragment((char *)m, 0x5FE, (float *)&m->pos, (char *)m + 0x40, 0, 0, 0.0f, orxon_zero_vec, orxon_zero_vec, orxon_zero_vec);
         DeleteMoby(m);
         return;
     del:
@@ -1510,12 +1510,12 @@ void Enemy_ProcessHit(char *m) {
  if(hero[0x20a4]==1) {
   char *v;select_hero_or_gadgebot_target(101.0f,m,d+0x110);
   if(*(char **)(d+0x110)==0) *(int *)(d+0x114)=2;
-  else {v=D_L10_001B0C30[*(int *)(d+0x190)];
+  else {v=orxon_paths[*(int *)(d+0x190)];
    if(!IsPointInPolygon(*(char **)(d+0x110)+0x10,v+0x10,*(int *)v)) {*(int *)(d+0x110)=0;*(int *)(d+0x114)=2;}
    else {*(int *)(d+0x114)=0;goto finaltarget;}
   }
  } else {
-  char *v=D_L10_001B0C30[*(int *)(d+0x190)];
+  char *v=orxon_paths[*(int *)(d+0x190)];
   if(FindNearestEligibleMoby(101.0f,m,d+0xd0,0,0,v+0x10,*(int *)v)!=2 && ((unsigned char *)m)[0x31]==0) *(int *)(d+0x114)=2;
  }
 finaltarget:
@@ -2006,7 +2006,7 @@ void gate_1_update(struct Moby *moby) {
     switch (moby->state) {
     case 0:
         moby->update_dist = 0xFF;
-        if (D_001414F4[0] == 0) {
+        if (hero_vehicle_mode[0] == 0) {
             save_id = moby->save_id;
             if (D_L10_001BB9C0.collected[(short)save_id] == 0 &&
                 ((level_moby_killed[g_current_level_index][(short)save_id >> 5] >> (save_id & 31)) & 1) == 0) {
@@ -2048,7 +2048,7 @@ void gate_1_update(struct Moby *moby) {
             moby->state = 3;
         return;
     case 3:
-        if (D_001414F4[0] != 0)
+        if (hero_vehicle_mode[0] != 0)
             return;
         save_id = moby->save_id;
         if (D_L10_001BB9C0.collected[(short)save_id] != 0)
@@ -2191,7 +2191,7 @@ void update_configurable_particle_emitter(char *m) {
   case 0:m[0x20]=1;break;
   case 1:
    if(*(int *)(d+4)!=-1) {
-    char *tab=D_L10_001B0C30[*(int *)(d+4)];
+    char *tab=orxon_paths[*(int *)(d+4)];
     char *pos=tab+0x10;
     int n=*(int *)tab;
     if(n>32)n=32;
@@ -2205,7 +2205,7 @@ void update_configurable_particle_emitter(char *m) {
  case 1:
   if(*(int *)(d+4)==-1)emit_burst_spark_particle(m+0x10,(short *)(d+8),(short *)(d+0x48));
   else {
-   char *tab=D_L10_001B0C30[*(int *)(d+4)];int n=*(int *)tab;
+   char *tab=orxon_paths[*(int *)(d+4)];int n=*(int *)tab;
    if(n>32)n=32;
    if(n>0) {short *burst=(short *)(d+0x48);short *timer=(short *)(d+8);char *pos=tab+0x10;int count=n;
    do {emit_burst_spark_particle(pos,timer,burst);timer++;++burst;--count;pos+=0x10;}while(count);}
@@ -2214,7 +2214,7 @@ void update_configurable_particle_emitter(char *m) {
  case 2:
   if(*(int *)(d+4)==-1)func_L10_002EBDC8_a01(*(float *)(d+0x88),m+0x10,(short *)(d+8),(short *)(d+0x48));
   else {
-   char *tab=D_L10_001B0C30[*(int *)(d+4)];int n=*(int *)tab;
+   char *tab=orxon_paths[*(int *)(d+4)];int n=*(int *)tab;
    if(n>32)n=32;
    if(n>0) {float *height=(float *)(tab+0x1C);short *burst=(short *)(d+0x48);short *timer=(short *)(d+8);char *pos=tab+0x10;int count=n;
    do {func_L10_002EBDC8_a01(*height,pos,timer,burst);height+=4;++burst;++timer;--count;pos+=0x10;}while(count);}
@@ -2223,7 +2223,7 @@ void update_configurable_particle_emitter(char *m) {
  case 3:
   if(*(int *)(d+4)==-1)emit_timed_spark_particle(m+0x10,(short *)(d+8));
   else {
-   char *tab=D_L10_001B0C30[*(int *)(d+4)];int n=*(int *)tab;
+   char *tab=orxon_paths[*(int *)(d+4)];int n=*(int *)tab;
    if(n>32)n=32;
    if(n>0) {short *timer=(short *)(d+8);char *pos=tab+0x10;int count=n;
    do {emit_timed_spark_particle(pos,timer);++timer;--count;pos+=0x10;}while(count);}

@@ -219,12 +219,12 @@ void spawn_moby_bolt_drop(char *a, int b, int c, int flags, int idx)
         s30[0] = s20[0];
         s30[1] = s20[1];
         s30[2] = 0.0f;
-        func_L00_001FF4B0(s30, s30, 0.5f);
+        vec_scale_to_length(s30, s30, 0.5f);
         FastVecAdd(s10, s10, s30);
         if (idx >= 0) {
             f12 = g_frame_time_sq * 10.8f * -0.5f;
             f13 = s20[2] - f12;
-            f14 = s10[2] - D_L00_001B0830[idx]->points[0].f[2];
+            f14 = s10[2] - level_paths[idx]->points[0].f[2];
             lim = 120.0f;
             rv = solve_quadratic_equation(&t70, &t74, f12, f13, f14);
             if (1.0f <= (float)rv) {
@@ -239,7 +239,7 @@ void spawn_moby_bolt_drop(char *a, int b, int c, int flags, int idx)
             rv = SegmentCrossPolyline(idx, a + 0x10, s40, s50);
             FastVecSub(s40, s50, s10);
             s40[2] = 0.0f;
-            func_L00_001FF4B0(s60, s40, 0.25f);
+            vec_scale_to_length(s60, s40, 0.25f);
             FastVecSub(s40, s40, s60);
             FastVecScale(s40, s40, 1.0f / lim);
             s20[0] = s40[0];
@@ -413,7 +413,7 @@ int SegmentCrossPolyline(int idx, void *a, void *b, void *c) {
     float *cur;
     FastVecSub(v, b, a);
     v[2] = 0;
-    func_L00_001FF4B0(v, v, 1.0f / FastVecLength(v));
+    vec_scale_to_length(v, v, 1.0f / FastVecLength(v));
     clear_u64_value(w);
     w[0] = v[1];
     w[1] = -v[0];
@@ -474,8 +474,8 @@ s32 PushPointOutsidePath(f32 distance, s32 path_index, Vec4 *point, Vec4 *out) {
 
     found = 0;
     qcopy_nc(&working, point);
-    for (i = 0; i < D_L00_001B0830[path_index]->count - 1; i++) {
-        entry = &D_L00_001B0830[path_index];
+    for (i = 0; i < level_paths[path_index]->count - 1; i++) {
+        entry = &level_paths[path_index];
         if ((*entry)->points[i].f[3] == 0.0f && (*entry)->points[i + 1].f[3] == 0.0f)
             continue;
         func_001F9BF0_62DF0(&difference, &working, &(*entry)->points[i]);
@@ -551,7 +551,7 @@ s32 resolve_point_path_segment_clearance(f32 distance, s32 path_index, Vec4 *poi
     saved_out = out;
     qcopy(&working, point);
     entry = D_L00_001B0830_630A8[path_index];
-    offset = (s32)&D_0013F6E0;
+    offset = (s32)&hero_gravity_dir;
     original_height = func_001F9C78_630A8(&working, (Vec4 *)offset);
     i = 0;
     if (entry->count - 1 > found) {
@@ -597,8 +597,8 @@ next_segment_262030:
         } while (i < entry->count - 1);
     }
     if ((i = found)) {
-        projection = func_001F9C78_630A8(&working, &D_0013F6E0);
-        func_L00_001FF4B0_630A8(original_height - projection, &segment, &D_0013F6E0);
+        projection = func_001F9C78_630A8(&working, &hero_gravity_dir);
+        func_L00_001FF4B0_630A8(original_height - projection, &segment, &hero_gravity_dir);
         func_001F9BD8_630A8(saved_out, &working, &segment);
     }
     return found;
@@ -637,7 +637,7 @@ void PathSampleAtDistance(PointPath *path, s32 *seg_out, f32 *along, Vec4 *out, 
     *along = dist - IntToFloat(seg) * spacing;
     FastVecSub(&tmp, &path->points[*seg_out + 1], &path->points[*seg_out]);
     out->q = tmp.q;
-    func_L00_001FF4B0(out, out, *along);
+    vec_scale_to_length(out, out, *along);
     FastVecAdd(&tmp, out, &path->points[*seg_out]);
     out->q = tmp.q;
 }
@@ -981,7 +981,7 @@ void spawn_ground_contact_effect_particle(V *v) {
     if (f < b->pos.f[2] + 5.0f) {
         u = t;
         u.f[2] = u.f[2] - (k + k);
-        if (func_L00_001EFFF0(&t, &u, 0x12, 0, 0)) {
+        if (coll_line(&t, &u, 0x12, 0, 0)) {
             FastVecSub(&d, &collision_hit_point, &b->pos);
             spawn_timed_effect_particle((char *)&collision_hit_point, (unsigned char)(int)(vec_length_xy(&d) / 60.0f * 191.0f + 64.0f));
         }
@@ -1018,9 +1018,9 @@ void draw_offset_textured_effect_quad(float *p, int b, float s, float t) {
     c[0] = 0; c[1] = 0; c[2] = 0; c[3] = one; c[4] = one; c[5] = 0; c[6] = one; c[7] = one;
     qcopy(v4, p);
     FastVecSub(v0, g_debug_camera, v4);
-    func_L00_001FF4B0(v0, v0, one);
+    vec_scale_to_length(v0, v0, one);
     FastVecCross(v1, v0, up);
-    func_L00_001FF4B0(v1, v1, one);
+    vec_scale_to_length(v1, v1, one);
     FastVecCross(v2, v1, v0);
     FastVecScale(v3, v0, t);
     FastVecAdd(v4, v4, v3);
@@ -1033,7 +1033,7 @@ void draw_offset_textured_effect_quad(float *p, int b, float s, float t) {
         transform_vector(r, r, v0);
         r += 4;
     }
-    func_L00_001FD1D8(m, 0, 0);
+    draw_world_quad(m, 0, 0);
 }
 LINKER_REMNANT("asm/overlays", func_L00_00264860);
 typedef u32 u128_64870 __attribute__((mode(TI), aligned(16)));
@@ -1079,7 +1079,7 @@ void cutscene_set_camera_target(u8 *m) {
             lifetime = fraction * 44000.0f + 6000.0f;
             size = fraction * 0.02f + 0.01f;
             w24 = 2;
-            func_L00_001FF4B0(&scaled, &vectors[2], scale);
+            vec_scale_to_length(&scaled, &vectors[2], scale);
             FastVecAdd(&pos, &vectors[3], &scaled);
             b2A = 0x50;
             count = 1;
@@ -1107,7 +1107,7 @@ void cutscene_set_camera_target(u8 *m) {
             size = fraction * 0.015000001f + 0.01f;
             w24 = 2;
             b2A = 0x7f;
-            func_L00_001FF4B0(&scaled, &vectors[2], scale);
+            vec_scale_to_length(&scaled, &vectors[2], scale);
             FastVecAdd(&pos, &vectors[3], &scaled);
             count = 4;
             do {
@@ -1243,7 +1243,7 @@ void spawn_moby_break_fragments(char *m, int n, int cnt, int base, int range, in
     }
     if (n > 0) {
         if (cnt > 0) for (i = 0; i < cnt; i++) {
-            SpawnBreakFragment(m, n + i, (float *)(m + 0x10), m + 0x40, 0, mode, D_L00_0015F660, D_L00_0015F660, 0.0f, D_L00_0015F660);
+            SpawnBreakFragment(m, n + i, (float *)(m + 0x10), m + 0x40, 0, mode, veldin1_zero_vec, veldin1_zero_vec, 0.0f, veldin1_zero_vec);
         }
     }
     if (n > 0 && range > 0) {
@@ -1254,7 +1254,7 @@ void spawn_moby_break_fragments(char *m, int n, int cnt, int base, int range, in
                 v[0] = random_angle_radians();
                 v[1] = random_angle_radians();
                 v[2] = random_angle_radians();
-                SpawnBreakFragment(m, base + random_integer_below(range), (float *)(buf + i * 16), v, 0, mode, D_L00_0015F660, D_L00_0015F660, 0.0f, D_L00_0015F660);
+                SpawnBreakFragment(m, base + random_integer_below(range), (float *)(buf + i * 16), v, 0, mode, veldin1_zero_vec, veldin1_zero_vec, 0.0f, veldin1_zero_vec);
             }
         }
     }

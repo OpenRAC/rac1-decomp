@@ -245,9 +245,9 @@ void Camera_CaptureHeroRelativeView(void) {
     char *g = D_0013E633 + 0xE1D;
     CamBlend *d = &player_camera.blend;
 
-    func_L00_001FF4B0(a, *(char **)(g + 0x2080) + 0xC0, 1.0f);
-    func_L00_001FF4B0(b, *(char **)(g + 0x2080) + 0xD0, 1.0f);
-    func_L00_001FF4B0(c, *(char **)(g + 0x2080) + 0xE0, 1.0f);
+    vec_scale_to_length(a, *(char **)(g + 0x2080) + 0xC0, 1.0f);
+    vec_scale_to_length(b, *(char **)(g + 0x2080) + 0xD0, 1.0f);
+    vec_scale_to_length(c, *(char **)(g + 0x2080) + 0xE0, 1.0f);
     qcopy(&d->orbit.fwd, a);
     qcopy(&d->orbit.up, c);
     Camera_Pos2Polar3d(&d->orbit.yaw, &d->orbit.pos, g + 0x80, a, b, c);
@@ -287,9 +287,9 @@ void Camera_CaptureTransform(Camera *from) {
         } else {
             char *g = D_0013E633 + 0xE1D;
 
-            func_L00_001FF4B0(local0, *(char **)(g + 0x2080) + 0xC0, 1.0f);
-            func_L00_001FF4B0(local1, *(char **)(g + 0x2080) + 0xD0, 1.0f);
-            func_L00_001FF4B0(local2, *(char **)(g + 0x2080) + 0xE0, 1.0f);
+            vec_scale_to_length(local0, *(char **)(g + 0x2080) + 0xC0, 1.0f);
+            vec_scale_to_length(local1, *(char **)(g + 0x2080) + 0xD0, 1.0f);
+            vec_scale_to_length(local2, *(char **)(g + 0x2080) + 0xE0, 1.0f);
             Camera_Pos2Polar3d(&r->orbit.yaw, &from->pos,
                           &(*(Camera **)((char *)r - 0xF0))->pos, /* player_camera.current */
                           local0, local1, local2);
@@ -420,7 +420,7 @@ void Camera_UpdateFrame(void) {
     CameraShake *v;
     float m[16];
 
-    if (D_L00_0015F6A8 == 5) {
+    if (cinematic_mode == 5) {
         if (D_L00_001CA800 != 0) {
             return;
         }
@@ -582,7 +582,7 @@ void resolve_camera_movement_collisions(float *pos, float r) {
     divide_vector_xyz(d, d, IntToFloat(n));
     qcopy(pos, v);
     for (i = 0; i < n; i++) {
-        q = D_L00_00173F70;
+        q = coll_resolved_pos;
         FastVecAdd(pos, pos, d);
         base = D_0013E633 + 0xE1D;
         for (j = 0; j < 6 && func_L00_001F10E0_f(pos, *(int *)&gCamSphereMaskLvl, *(void **)(base + 0x2080), r); j++) {

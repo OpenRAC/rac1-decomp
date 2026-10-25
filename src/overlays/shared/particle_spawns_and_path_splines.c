@@ -325,7 +325,7 @@ void compute_path_node_tangent(void *out, int *l, int idx, float a, float b) {
     m = m * 1.1f;
     len = FastVecLength(v3);
     if (m < len) {
-        func_L00_001FF4B0(out, v3, m);
+        vec_scale_to_length(out, v3, m);
     } else {
         *(u128 *)out = *(u128 *)v3;
     }

@@ -16,7 +16,7 @@ extern void func_L00_002E72E8(void *);
 /* Update for the camera moby. */
 void follow_camera_update(char *m) {
     char *p = *(char **)(m + 0x70) + 0x1D0;
-    *(float *)&D_L00_0015F044 = ((float *)&D_L00_00161E80)[D_0015EED0[5]];
+    *(float *)&D_L00_0015F044 = ((float *)&D_L00_00161E80)[vendor_stock[5]];
     apply_follow_camera_translation(m);
     follow_camera_apply_overrides(m);
     Profile_Mark(m);
@@ -37,7 +37,7 @@ void update_hero_aligned_camera_position(char *p) {
     char b[16] __attribute__((aligned(16)));
     char *g = D_0013E633 + 0xE1D;
     int m;
-    func_L00_001FF4B0(a, *(char **)(g + 0x2080) + 0xE0, 1.0f);
+    vec_scale_to_length(a, *(char **)(g + 0x2080) + 0xE0, 1.0f);
     m = *(unsigned char *)(g + 0x20A4);
     if (m == 2) {
         FastVecScale(b, a, 9.5f);
@@ -68,7 +68,7 @@ void initialize_hero_aligned_camera_pose(char *m) {
     int c;
     void *q;
     char *d;
-    func_L00_001FF4B0(a, *(char **)(g + 0x2080) + 0xE0, 1.0f);
+    vec_scale_to_length(a, *(char **)(g + 0x2080) + 0xE0, 1.0f);
     c = *(unsigned char *)(g + 0x20A4);
     if (c == 2) {
         FastVecScale(b, a, 9.5f);
@@ -83,7 +83,7 @@ void initialize_hero_aligned_camera_pose(char *m) {
     qcopy(d, a);
     p = m + 0x10;
     FastVecCross(p, q, a);
-    func_L00_001FF4B0(p, p, 1.0f);
+    vec_scale_to_length(p, p, 1.0f);
     FastVecCross(m, a, p);
     qcopy(m + 0x40, m);
 }
@@ -135,7 +135,7 @@ void update_hero_aligned_camera_from_input(u8 *o) {
     float t, r, k;
     st = *(S_9f38 **)(o + 0x70);
     func_L00_002EB170_EB3E8(o);
-    func_L00_001FF4B0(&up, D_0013F450_EB3E8.p2080 + 0xE0, 1.0f);
+    vec_scale_to_length(&up, D_0013F450_EB3E8.p2080 + 0xE0, 1.0f);
     if (D_L00_00166D80_EB3E8.s270 == 0 && D_0013F450_EB3E8.b20A5 == 0) D_0013F450_EB3E8.b20A5 = 1;
     t = -g_controller_state.f108;
     if (t == 0.0f) t = -g_controller_state.f100;
@@ -172,7 +172,7 @@ void update_hero_aligned_camera_from_input(u8 *o) {
         d.f[1] = *(float *)(o + 4);
         d.f[3] = z;
         d.f[2] = z;
-        func_L00_001FF4B0(&d, &d, st->z);
+        vec_scale_to_length(&d, &d, st->z);
         FastVecAdd(o + 0x30, o + 0x30, &d);
         if (coll_sphere(o + 0x30, 0x12, D_0013F450_EB3E8.p2080, 0.3f))
             st->z = func_001EC120_EB3E8(st->z, z, 0.005f, 0.2f, z, &st->vz);
@@ -182,9 +182,9 @@ void update_hero_aligned_camera_from_input(u8 *o) {
         build_look_at_matrix(o, o, &side, a);
         st->ang = FastAddRots(st->ang, a);
     }
-    func_L00_001FF4B0(o, o, 1.0f);
+    vec_scale_to_length(o, o, 1.0f);
     FastVecCross(o + 0x10, o, &up);
-    func_L00_001FF4B0(o + 0x10, o + 0x10, 1.0f);
+    vec_scale_to_length(o + 0x10, o + 0x10, 1.0f);
     FastVecCross(o + 0x20, o + 0x10, o);
 }
 typedef int q_2eb938 __attribute__((mode(TI)));
@@ -435,8 +435,8 @@ void CameraScript2(int mode) {
         char *t = D_0013E633 + 0xEAD;
         euler_to_matrix(mx, t);
         matrix_copy_rows(obj, mx);
-        func_L00_001FF4B0(b, mx, -1.0f);
-        func_L00_001FF4B0(a, mx + 8, 1.2f);
+        vec_scale_to_length(b, mx, -1.0f);
+        vec_scale_to_length(a, mx + 8, 1.2f);
         FastVecAdd(p, t - 0x10, a);
         FastVecAdd(p, p, b);
         *(short *)(*(char **)(g + 0x180) + 0x8A) = 1;
@@ -899,7 +899,7 @@ void initialize_target_tracking_camera(void *arg) {
         FastVecSub(p + 0x30, *(char **)(g + 0x964) + 0x10, m + 0x30);
         *(int *)(p + 0x38) = 0;
         *(int *)(p + 0x3C) = 0;
-        func_L00_001FF4B0(p + 0x30, p + 0x30, 1.0f);
+        vec_scale_to_length(p + 0x30, p + 0x30, 1.0f);
         *(float *)(s19 + 0xB8) = fast_atan2(*(float *)(p + 0x30), *(float *)(p + 0x34));
         *(int *)(w + 8) = *(int *)(g + 0x964);
     }
@@ -1073,7 +1073,7 @@ void turn_camera_view_toward_hero(char *m) {
     qcopy(a, g);
     a[2] += *(float *)(q + 0x4C);
     FastVecSub(b, a, m + 0x30);
-    func_L00_001FF4B0(b, b, 1.0f);
+    vec_scale_to_length(b, b, 1.0f);
     t = 1.5707964f - FastArcSin(FastVecDot(b, m));
     if (*(int *)(g + 0x2004) == 0x25) {
         *s = *s + 0.017f;
@@ -1084,10 +1084,10 @@ void turn_camera_view_toward_hero(char *m) {
     }
     FastVecCross(c, b, m + 0x40);
     build_look_at_matrix(m, m + 0x40, c, ang);
-    func_L00_001FF4B0(m + 0x40, m, 1.0f);
+    vec_scale_to_length(m + 0x40, m, 1.0f);
     qcopy(m, m + 0x40);
     FastVecCross(m + 0x10, m, D_L00_00166F30);
-    func_L00_001FF4B0(m + 0x10, m + 0x10, 1.0f);
+    vec_scale_to_length(m + 0x10, m + 0x10, 1.0f);
     FastVecCross(m + 0x20, m + 0x10, m);
 }
 /* Two stripped store-word slots; InitCamera_7 begins at +0x10 and is
@@ -1214,7 +1214,7 @@ s32 volume_camera_swing_active(A_2ec7e8 *a) {
         return 0;
     }
     w = *(u16 *)&o->f2C;
-    if (o->f2C == 2 && D_001414DC[0] == 0x1A && o->f2E > 0) {
+    if (o->f2C == 2 && hero_control_mode[0] == 0x1A && o->f2E > 0) {
         v17 = 1;
     } else if ((s16)w == 4 && D_001416D4[0] == 3) {
         v17 = 0 < o->f2E;
@@ -1223,7 +1223,7 @@ s32 volume_camera_swing_active(A_2ec7e8 *a) {
     if (o->f4C >= 0 && (v17 || is_point_inside_clip_volume(&gHeroPos[0], o->f4C))) return 1;
     if (o->f10 >= 0 && (v17 || test_point_in_transformed_unit_cylinder(&gHeroPos[0], o->f10))) return 1;
     if (o->f08 >= 0 && (v17 || func_L00_00260B68_EDC98(&gHeroPos[0], o->f08))) return 1;
-    if (o->f14 >= 0 && (v17 || IsPointInPolygon(&gHeroPos[0], D_L00_001B0830[o->f14] + 0x10, *(s32 *)D_L00_001B0830[o->f14]))) return 1;
+    if (o->f14 >= 0 && (v17 || IsPointInPolygon(&gHeroPos[0], level_paths[o->f14] + 0x10, *(s32 *)level_paths[o->f14]))) return 1;
     return 0;
 }
 typedef float CameraVec[4] __attribute__((aligned(16)));
@@ -1359,7 +1359,7 @@ stop:
         snap = &rig->tail.snap;
         state = rig;
         reset = &state->reset;
-        func_L00_001FF4B0(tail->unk130, tail->unk130, params->distance);
+        vec_scale_to_length(tail->unk130, tail->unk130, params->distance);
         tail->unk15C = params->distance;
         tail->distance = params->height;
         follow->look_height = params->offset_scale;
@@ -1816,7 +1816,7 @@ int volume_camera_check(char *a) {
     VolCamParams *params = ((VolCamDesc *)camera_descriptors)[aim_camera_record->descriptor_index].params;
     if (params->done != 0)
         return 0;
-    if (D_L00_0015F6A8 != 0) {
+    if (cinematic_mode != 0) {
         if (volume_camera_aim_active(aim_camera_record) != 0) {
             params->done = 0;
             params->timer = 0;

@@ -535,7 +535,7 @@ void LoadCompressedHudBank(int idx, int size) {
     if (((size + 0xF) & 0xFFFFFFF0) != 0) {
         int *base = level_root;
         int off = idx * 8;
-        func_0020C468(*(int *)((char *)base + off + 0x28) + (int)base, (size + 0xF) & 0xFFFFFFF0);
+        fast_decompress(*(int *)((char *)base + off + 0x28) + (int)base, (size + 0xF) & 0xFFFFFFF0);
     }
     {
         int off = idx * 4;
@@ -1881,7 +1881,7 @@ void func_00205220(int arg0) {
     char *p = base - (-(arg0 * 4));
     *(int *)(base + 0x5C) = *(int *)(p + 0x60);
     update_world_object_animation(p);
-    *(int *)(base + 0x5C) = D_001941C8 + D_0016100C_m;
+    *(int *)(base + 0x5C) = vu1_chain_buffer_2 + D_0016100C_m;
 }
 
 typedef struct { char pad00[0x10]; int class_id; char pad14[0x38]; } GadgetRec_05270;
@@ -1936,7 +1936,7 @@ void select_world_object_resource_tables(int class_id, int buffer_index) {
     active_decode_buffer = buffer_index;
     resource_data = (ClassResourceHeader_05270 *)((char *)level_resource_buffers[4] + buffer_index * 0x18000);
     func_00118D80(0);
-    ((void (*)(int, void *))func_0020C468)(compressed_class_resources[active_class_resource_index], resource_data);
+    ((void (*)(int, void *))fast_decompress)(compressed_class_resources[active_class_resource_index], resource_data);
     func_00118D80(0);
     class_slot = D_001B3E40[class_id];
     resource_table = moby_class_resources;
@@ -1953,7 +1953,7 @@ void select_world_object_resource_tables(int class_id, int buffer_index) {
         }
     }
     for (vendor_item_index = 0; vendor_item_index < 0x25; vendor_item_index++) {
-        if (((GadgetRec_05270 *)((char *)D_001864D0 + 0x10 - 0x10))[vendor_item_index].class_id == class_id) {
+        if (((GadgetRec_05270 *)((char *)item_info_table + 0x10 - 0x10))[vendor_item_index].class_id == class_id) {
             ClassResourceHeader_05270 *rh;
             ClassRenderGroup_05270 *rg;
             char *pp;

@@ -376,8 +376,8 @@ void visibomb_update(char *m) {
                                     char *v = g2 + 0x350;
                                     f20 = fast_atan2(*(float *)(g2 + 0x350), *(float *)(g2 + 0x354));
                                     f21 = -fast_atan2(vec_length_xy(v), *(float *)(g2 + 0x358));
-                                    func_L00_001FF4B0(t0, v, 0.3f);
-                                    func_L00_001FF4B0(t1, g2 + 0x370, -0.35f);
+                                    vec_scale_to_length(t0, v, 0.3f);
+                                    vec_scale_to_length(t1, g2 + 0x370, -0.35f);
                                     FastVecAdd(t0, t0, t1);
                                     FastVecAdd(t0, t0, g2 + 0x140);
                                 } else {
@@ -399,8 +399,8 @@ void visibomb_update(char *m) {
                                     if (*(unsigned short *)(h + 0x68) <= 0xFFFE) {
                                         *(unsigned short *)(h + 0x68) = *(unsigned short *)(h + 0x68) + 1;
                                     }
-                                    if (scale_ticks(D_0015EFA4) / 600 > *(unsigned short *)(h + 0x6A)) {
-                                        *(unsigned short *)(h + 0x6A) = scale_ticks(D_0015EFA4) / 600;
+                                    if (scale_ticks(play_time_ticks) / 600 > *(unsigned short *)(h + 0x6A)) {
+                                        *(unsigned short *)(h + 0x6A) = scale_ticks(play_time_ticks) / 600;
                                     }
                                     *(unsigned int *)(h + 0x6C) = *(unsigned int *)(h + 0x6C) | (1 << g_current_level_index) | 0x80000000;
                                     p[0] = scale_ticks(0x3C);
@@ -435,7 +435,7 @@ void update_linked_moby_states(char *m) {
     switch (*(unsigned char *)(m + 0x20)) {
     case 0:
         *(unsigned char *)(m + 0x20) = 1;
-        b = D_L00_00160098;
+        b = moby_array_start;
         p[1] = *(int *)&D_L00_00161548;
         p[2] = 3;
         p[0x20 / 4] = b + (p[4] << 8);
@@ -929,7 +929,7 @@ unsigned char *Aim_RefineTarget(int ign, Vec4 *from, float *yaw, float *pitch) {
             }
         }
         if (e < 0.15707964f) {
-            if (func_L00_001EFFF0(g_debug_camera, &tp, 6, ign, 0) || func_L00_001EFFF0(from, &tp, 6, ign, 0)) {
+            if (coll_line(g_debug_camera, &tp, 6, ign, 0) || coll_line(from, &tp, 6, ign, 0)) {
                 return best;
             }
             *pitch = -b;
@@ -1291,7 +1291,7 @@ void Moby_RestoreGlobalsState(int m_, int flag) {
         D_L00_001600B0_m = 500;
         D_L00_0016023C_m = 0x1F4000;
     }
-    d = D_L00_0016CB40;
+    d = render_view_params;
     SetBackgroundColor(*(int *)(d + 0x23C), *(int *)(d + 0x240), *(int *)(d + 0x244));
 }
 typedef struct { u8 p0[0x2084]; s32 i2084; } G;
@@ -1824,7 +1824,7 @@ int func_L00_002B7EC0_r(char *m, float r) {
                     if (FastDiffRots(*(float *)(g + 0x98), fast_atan2(*(float *)(e + 0x10) - *(float *)(g + 0x80), *(float *)(e + 0x14) - *(float *)(g + 0x84))) < 0.9599311f) {
                         if (d[5] == lim) {
                             FastVecSub(&q, e + 0x10, m + 0x10);
-                            func_L00_001FF4B0(&q, &q, 1.5f);
+                            vec_scale_to_length(&q, &q, 1.5f);
                             PostHitMessage(e, (int)m, 0x10000, g + 0x80, &q, 1.0f);
                             d[4] = scale_ticks(rand_range(5, 0x2D));
                         }
@@ -1850,7 +1850,7 @@ int func_L00_002B7EC0_r(char *m, float r) {
         }
     }
     for (i = 1; i <= D_L00_001B0B30[0]; i++) {
-        char *mob = *(char **)&D_L00_00160098 + (D_L00_001B0B30[i] << 8);
+        char *mob = *(char **)&moby_array_start + (D_L00_001B0B30[i] << 8);
         if (mob) {
             if (mob[0x20] >= 0) {
                 char *h2 = *(char **)(mob + 0x78);
@@ -1936,9 +1936,9 @@ void taunter_update(Moby *m)
                 o->frame = scale_ticks(rand_range(0xF, 0x2D));
             }
             if (item_usage.cnt < 0xFFFF) item_usage.cnt++;
-            v2 = scale_ticks(D_0015EFA4) / 600;
+            v2 = scale_ticks(play_time_ticks) / 600;
             if (item_usage.last < v2) {
-                item_usage.last = scale_ticks(D_0015EFA4) / 600;
+                item_usage.last = scale_ticks(play_time_ticks) / 600;
             }
             item_usage.flags |= 1 << g_current_level_index;
             item_usage.flags |= 0x80000000;
@@ -2080,7 +2080,7 @@ void DrawBillboardLitQuads(char *m) {
     pk.uv[5] = 0.0f;
     pk.uv[6] = 1.0f;
     pk.uv[7] = 1.0f;
-    func_L00_001FF4B0(f, m + 0xD0, -1.0f);
+    vec_scale_to_length(f, m + 0xD0, -1.0f);
     for (i = 0; i < 10; i++) {
         if (D_L00_001DB740[i].s8 != 0) {
             FastVecScale(g, f, D_L00_001DB740[i].f);
@@ -2088,7 +2088,7 @@ void DrawBillboardLitQuads(char *m) {
             qcopy(a, f);
             FastVecScale(c, D_0013E633 + 0x10AD, -1.0f);
             FastVecCross(b, a, c);
-            func_L00_001FF4B0(b, b, 1.0f);
+            vec_scale_to_length(b, b, 1.0f);
             FastVecCross(c, b, a);
             t = IntToFloat(D_L00_001DB740[i].s4) * D_L00_001615AC;
             if (t > 1.0f) t = 1.0f;
@@ -2103,7 +2103,7 @@ void DrawBillboardLitQuads(char *m) {
                 FastVecScale(e, &D_L00_001DB700[j * 4], s);
                 transform_vector(pk.v[j], e, a);
             }
-            func_L00_001FD1D8(&pk, 0, 0);
+            draw_world_quad(&pk, 0, 0);
         }
     }
 }
@@ -2157,9 +2157,9 @@ void update_pyrocitor_usage_and_cleanup(unsigned char *m)
     if (scale_ticks(0x78) < c) {
         if (*(unsigned short *)(P + 0x50) <= 0xFFFE)
             (*(unsigned short *)(P + 0x50))++;
-        h = scale_ticks(D_0015EFA4) / 600;
+        h = scale_ticks(play_time_ticks) / 600;
         if (*(unsigned short *)(P + 0x52) < h)
-            *(unsigned short *)(P + 0x52) = scale_ticks(D_0015EFA4) / 600;
+            *(unsigned short *)(P + 0x52) = scale_ticks(play_time_ticks) / 600;
         *(int *)(P + 0x54) = *(int *)(P + 0x54) | (1 << g_current_level_index) | 0x80000000;
     } else if (*(short *)(v + 0x50) < scale_ticks(0x1E)) {
         D_0013F450_2B9528[0x20B4]++;
@@ -2209,7 +2209,7 @@ void update_pyrocitor_flame_effect_slots(char *m) {
             float f20 = *(float *)(o + 0xC) / 210000.0f * 0.5f;
             char *src = o + 0x20;
             int type;
-            func_L00_001FF500(vec, src, 1.0f);
+            vec_set_length_xy(vec, src, 1.0f);
             vec[2] = 1.0f;
             vec[3] = 5627.9248046875f;
             InitDirectionalHitQuery(buf, (int)m, 0x10000, vec, IntToFloat(q[0x10]) + 1.0f);
@@ -2621,7 +2621,7 @@ void initialize_tesla_claw_beam(char *moby) {
     D_L00_00161748 = scale_ticks((*(int *)&D_L00_001616F4));
     (*(int *)&D_L00_001616C8) = 0x7F2020;
     FastVecSub(&d, data + 0x10, data);
-    func_L00_001FF4B0(&step, &d, (*(float *)&D_L00_00161664) / 20.0f);
+    vec_scale_to_length(&step, &d, (*(float *)&D_L00_00161664) / 20.0f);
     qcopy(D_L00_001DB8C0, data);
     for (i = 1; i < 20; i++) {
         FastVecAdd(&D_L00_001DB8C0[i], &D_L00_001DB8B0[i], &step);

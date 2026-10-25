@@ -118,7 +118,7 @@ void update_robot_dog_hit_reaction_and_target_detection(Moby *moby, int arg) {
         yaw = FastDiffRots(moby->rot.z, ang2);
         qcopy(tmp, &moby->pos);
         tmp[2] += 1.0f;
-        r = func_L00_001EFFF0(tmp, D_0013E633 + 0xEED, 2, 0, 0) == 0;
+        r = coll_line(tmp, D_0013E633 + 0xEED, 2, 0, 0) == 0;
         d->b1E4 = r;
         if (yaw < 1.0471976f) {
             d->b1E4 = r << 1;
@@ -283,7 +283,7 @@ void update_robot_dog_glow_effects(unsigned char *moby) {
         } else if (mode == 1) {
             glow_pulse_period_frames = scale_ticks(0x5A);
         }
-        glow_pulse_sine = FastSin(((float)(D_L17_0015F6B0 % glow_pulse_period_frames) / IntToFloat(glow_pulse_period_frames)) * 2.0f * 3.1415927f +
+        glow_pulse_sine = FastSin(((float)(fleet_frame_count % glow_pulse_period_frames) / IntToFloat(glow_pulse_period_frames)) * 2.0f * 3.1415927f +
                      -3.1415927f);
         x = func_001FA898_r(glow_pulse_sine * 20.0f);
         y = func_001FA898_r(glow_pulse_sine * 70.0f);
@@ -356,7 +356,7 @@ void draw_moby_radial_ripple_mesh_pair(char *moby) {
     int color;
     int i, j, uv_strip_index, uv_vertex_index, draw_strip_index;
 
-    scale = IntToFloat(D_L17_0015F6B0) * (D_L17_001622E0 * g_frame_time);
+    scale = IntToFloat(fleet_frame_count) * (D_L17_001622E0 * g_frame_time);
     VU1_addGSregister(6, GetEffectTex(D_L17_001622CC));
     VU1_addGSregister(0x42, ((long)D_L17_001622C8 << 32) | 0x44);
     VU1_addGSregister(8, 0);
@@ -371,7 +371,7 @@ void draw_moby_radial_ripple_mesh_pair(char *moby) {
             float *p = (float *)(*template_vertex_array_slot + j * 12);
             float t = D_L17_001622DC *
                 FastSin(FastAddRots(FastNormalizeAngle(
-                    func_L00_00200210(vec_length(p[0] * p[0] + p[1] * p[1]), D_L17_001622D4)
+                    fast_fmod(vec_length(p[0] * p[0] + p[1] * p[1]), D_L17_001622D4)
                         * 6.2831855f / D_L17_001622D4), ripple_vars->f4));
             *(float *)(j * 12 + ((int *)&D_L17_00162298)[i]) = p[0] + moby_obj->pos.x;
             *(float *)(j * 12 + ((int *)&D_L17_00162298)[i] + 4) = p[1] + moby_obj->pos.y;
@@ -385,10 +385,10 @@ void draw_moby_radial_ripple_mesh_pair(char *moby) {
                 T4 uv_scroll_factors = D_L17_001622E8;
                 *(float *)(uv_vertex_index * 8 + ((int *)&D_L17_001622A0)[uv_strip_index]) =
                     *(float *)(uv_vertex_index * 8 + ((int *)&D_L17_001622B8)[uv_strip_index])
-                    + func_L00_00200210(scale * uv_scroll_factors.p[i].v[0], 1.0f);
+                    + fast_fmod(scale * uv_scroll_factors.p[i].v[0], 1.0f);
                 *(float *)(uv_vertex_index * 8 + ((int *)&D_L17_001622A0)[uv_strip_index] + 4) =
                     *(float *)(uv_vertex_index * 8 + ((int *)&D_L17_001622B8)[uv_strip_index] + 4)
-                    + func_L00_00200210(scale * uv_scroll_factors.p[i].v[1], 1.0f);
+                    + fast_fmod(scale * uv_scroll_factors.p[i].v[1], 1.0f);
             }
         }
         font_queue_vu_state();
@@ -426,7 +426,7 @@ void DrawRippleRing(char *moby) {
     int color;
     int i, j, n, k;
 
-    scale = IntToFloat(D_L17_0015F6B0) * (D_L17_0016234C * g_frame_time);
+    scale = IntToFloat(fleet_frame_count) * (D_L17_0016234C * g_frame_time);
     VU1_addGSregister(6, GetEffectTex(D_L17_00162338));
     VU1_addGSregister(0x42, ((long)D_L17_00162334 << 32) | 0x44);
     VU1_addGSregister(8, 0);
@@ -439,7 +439,7 @@ void DrawRippleRing(char *moby) {
         RingPt *p = &D_L17_001DC0F0[i];
         float w = D_L17_00162348 *
             FastSin(FastAddRots(FastNormalizeAngle(
-                func_L00_00200210(vec_length(p->x * p->x + p->y * p->y), D_L17_00162340)
+                fast_fmod(vec_length(p->x * p->x + p->y * p->y), D_L17_00162340)
                     * 6.2831855f / D_L17_00162340), d->f4));
         D_L17_001DC950[i].x = p->x + *(float *)(moby + 0x10);
         D_L17_001DC950[i].y = p->y + *(float *)(moby + 0x14);
@@ -449,8 +449,8 @@ void DrawRippleRing(char *moby) {
     for (j = 0; j < 2; j++) {
         for (n = 0; n < D_L17_00162300[0]; n++) {
             t = D_L17_00162350;
-            D_L17_001DCD80[n][0] = D_L17_001DC520[n][0] + func_L00_00200210(scale * t.p[j].v[0], 1.0f);
-            D_L17_001DCD80[n][1] = D_L17_001DC520[n][1] + func_L00_00200210(scale * t.p[j].v[1], 1.0f);
+            D_L17_001DCD80[n][0] = D_L17_001DC520[n][0] + fast_fmod(scale * t.p[j].v[0], 1.0f);
+            D_L17_001DCD80[n][1] = D_L17_001DC520[n][1] + fast_fmod(scale * t.p[j].v[1], 1.0f);
         }
         font_queue_vu_state();
         for (k = 0; k < 1; k++) {
@@ -497,7 +497,7 @@ void DrawLightRing(char *moby) {
     float scale;
     Quad4 *v_scroll_factors;
     float *output_vertex;
-    scale = IntToFloat(D_L17_0015F6B0) * (D_L17_0016240C * g_frame_time);
+    scale = IntToFloat(fleet_frame_count) * (D_L17_0016240C * g_frame_time);
     VU1_addGSregister(6, GetEffectTex(D_L17_001623F8));
     VU1_addGSregister(0x42, ((long)D_L17_001623F4 << 32) | 0x44);
     VU1_addGSregister(8, 0);
@@ -514,7 +514,7 @@ void DrawLightRing(char *moby) {
         float x = template_vertex[0];
         float y = template_vertex[1];
         float rad = vec_length(x * x + y * y);
-        float radial_phase_input = func_L00_00200210(rad, D_L17_00162400);
+        float radial_phase_input = fast_fmod(rad, D_L17_00162400);
         float w = FastNormalizeAngle(radial_phase_input * 6.2831855f / D_L17_00162400);
         float z = FastSin(FastAddRots(w, data->angle));
         output_vertex[0] = template_vertex[0] + ((Moby *)moby)->pos.x;
@@ -529,9 +529,9 @@ void DrawLightRing(char *moby) {
         for (uv_vertex_index = 0; uv_vertex_index < 45; uv_vertex_index++) {
             uv_scroll_factors = D_L17_00162410;
             D_L17_001DE090[uv_vertex_index][0] =
-                D_L17_001DDC50[uv_vertex_index][0] + func_L00_00200210(scale * uv_scroll_factors.f[j * 2], 1.0f);
+                D_L17_001DDC50[uv_vertex_index][0] + fast_fmod(scale * uv_scroll_factors.f[j * 2], 1.0f);
             D_L17_001DE090[uv_vertex_index][1] =
-                D_L17_001DDC50[uv_vertex_index][1] + func_L00_00200210(scale * v_scroll_factors->f[j * 2], 1.0f);
+                D_L17_001DDC50[uv_vertex_index][1] + fast_fmod(scale * v_scroll_factors->f[j * 2], 1.0f);
         }
         font_queue_vu_state();
         for (k = 0; k < 1; k++) {
@@ -622,7 +622,7 @@ void Moby1448Update(unsigned char *m) {
             MobyBlendAnimation(m, 2, 0, 0);
         }
         {
-            int base = (int)D_L17_0016016C;
+            int base = (int)fleet_camera_points;
             v->sel = 1;
             v->side = 1;
             v->dir = 1;
@@ -677,8 +677,8 @@ void Moby1448Update(unsigned char *m) {
             FadeToBlack(scale_ticks(10));
             v->w88 = 0;
             idx = v->side;
-            qcopy(a, ((char **)D_L17_001B10B0)[v->a[idx]] + 0x10);
-            qcopy(b, ((char **)D_L17_001B10B0)[v->b[idx]] + 0x10);
+            qcopy(a, ((char **)fleet_paths)[v->a[idx]] + 0x10);
+            qcopy(b, ((char **)fleet_paths)[v->b[idx]] + 0x10);
             clear_u64_value(rot);
             rot[2] = fast_atan2(b[0] - a[0], b[1] - a[1]);
             rot[1] = -fast_atan2(vec_distance_xy(a, b), b[2] - a[2]);
@@ -686,18 +686,18 @@ void Moby1448Update(unsigned char *m) {
             set_selected_object_float_triplets(0.001f, 1.0f, 1.0f, 0.001f, 1.0f, 1.0f);
             set_camera_position(a);
             set_camera_rotation(rot);
-            Hero_ResetToPosition(D_L17_0016016C + (v->cut << 7) + 0x30, D_L17_0016016C + (v->cut << 7) + 0x70, 0x72, 0);
+            Hero_ResetToPosition(fleet_camera_points + (v->cut << 7) + 0x30, fleet_camera_points + (v->cut << 7) + 0x70, 0x72, 0);
         } else if (D_L17_001BBE40.collected[(short)*(unsigned short *)(m + 0xB2)] != 0
                    || (*(int *)(D_0014171B + 0xAB75 + (((short)*(unsigned short *)(m + 0xB2) >> 5) * 4 + (D_0015EE84_m << 8))) >> (*(unsigned short *)(m + 0xB2) & 0x1F)) & 1) {
-            float d = vec_distance_xy(D_0013E633 + 0xE9D, D_L17_0016016C + (v->cam[v->sel] << 7) + 0x30);
-            if (vec_distance_xy(D_0013E633 + 0xE9D, D_L17_0016016C + (v->cam[v->sel ^ 1] << 7) + 0x30) < d) {
+            float d = vec_distance_xy(D_0013E633 + 0xE9D, fleet_camera_points + (v->cam[v->sel] << 7) + 0x30);
+            if (vec_distance_xy(D_0013E633 + 0xE9D, fleet_camera_points + (v->cam[v->sel ^ 1] << 7) + 0x30) < d) {
                 int base;
                 int ofs;
                 t = v->sel ^ 1;
                 v->dir ^= 1;
                 v->side ^= 1;
                 v->sel = t;
-                base = (int)D_L17_0016016C;
+                base = (int)fleet_camera_points;
                 ofs = v->cam[t] << 7;
                 qcopy(m + 0x10, (char *)(ofs + base + 0x30));
                 qcopy(m + 0x40, (char *)(ofs + base + 0x70));
@@ -713,13 +713,13 @@ void Moby1448Update(unsigned char *m) {
             m[0x20] = 3;
             v->wA4 = 0;
             ofs = v->cam[v->sel] << 7;
-            base = (int)D_L17_0016016C;
+            base = (int)fleet_camera_points;
             qcopy(m + 0x10, (char *)(ofs + base + 0x30));
             qcopy(m + 0x40, (char *)(ofs + base + 0x70));
             euler_rotation_basis(m + 0xC0, m + 0x40);
             *(float *)(m + 0x2C) = *(float *)(*(char **)(m + 0x24) + 0x24);
             qcopy(b, m + 0x10);
-            func_L00_001FF4B0(a, m + 0xC0, -2.0f);
+            vec_scale_to_length(a, m + 0xC0, -2.0f);
             FastVecAdd(a, a, m + 0xE0);
             FastVecAdd(b, b, a);
             clear_u64_value(rot);
@@ -804,9 +804,9 @@ struct Dat_3CC0 {
 int update_shuttle_travel_and_camera(char *moby, int idx) {
     float m[4], pos[4];
     struct Dat_3CC0 *d = *(struct Dat_3CC0 **)(moby + 0x78);
-    Path_3CC0 *c1 = ((Path_3CC0 **)D_L17_001B10B0)[d->a[idx]];
-    Path_3CC0 *c2 = ((Path_3CC0 **)D_L17_001B10B0)[d->b[idx]];
-    Path_3CC0 *c3 = ((Path_3CC0 **)D_L17_001B10B0)[d->c[idx]];
+    Path_3CC0 *c1 = ((Path_3CC0 **)fleet_paths)[d->a[idx]];
+    Path_3CC0 *c2 = ((Path_3CC0 **)fleet_paths)[d->b[idx]];
+    Path_3CC0 *c3 = ((Path_3CC0 **)fleet_paths)[d->c[idx]];
     float t, f, t1, t2, t3, ang, turn;
     int i1, i2, i3;
 
@@ -827,7 +827,7 @@ int update_shuttle_travel_and_camera(char *moby, int idx) {
     lerp_vector(moby + 0x10, &c3->p[i3], &c3->p[i3 + 1], t3);
     set_camera_position(pos);
     {
-        char *base = D_L17_0016016C + (d->e84 << 7);
+        char *base = fleet_camera_points + (d->e84 << 7);
         Hero_ResetToPosition(base + 0x30, base + 0x70, 0x72, 0);
     }
     if (i3 > 0) {
@@ -1052,10 +1052,10 @@ void update_fleet_camera_box_watcher(char *moby) {
     case 2: {
         char *cam;
         set_follow_camera_blend_output_flags();
-        set_follow_camera_angle_blend_from_position((int)(D_L17_0016016C + (*(int *)(d + 0x44) << 7) + 0x30), 0.02617994f, 0.0f);
+        set_follow_camera_angle_blend_from_position((int)(fleet_camera_points + (*(int *)(d + 0x44) << 7) + 0x30), 0.02617994f, 0.0f);
         cam = D_L17_00167600;
-        f = fast_atan2(*(float *)(D_L17_0016016C + ((*(int *)(d + 0x44) << 7) + 0x30)) - *(float *)(cam + 0x140),
-                              *(float *)(D_L17_0016016C + ((*(int *)(d + 0x44) << 7) + 0x34)) - *(float *)(cam + 0x144));
+        f = fast_atan2(*(float *)(fleet_camera_points + ((*(int *)(d + 0x44) << 7) + 0x30)) - *(float *)(cam + 0x140),
+                              *(float *)(fleet_camera_points + ((*(int *)(d + 0x44) << 7) + 0x34)) - *(float *)(cam + 0x144));
         if (FastDiffRots(*(float *)(cam + 0x158), f) < 0.034906585f) {
             *(unsigned char *)(moby + 0x20) = 3;
             *(int *)(d + 0x5C) = scale_ticks(0x3C);
@@ -1066,10 +1066,10 @@ void update_fleet_camera_box_watcher(char *moby) {
         set_follow_camera_blend_output_flags();
         if (func_001F9908_i((int *)(d + 0x5C))) {
             char *cam;
-            set_follow_camera_angle_blend_from_position((int)(D_L17_0016016C + (*(int *)(d + 0x40) << 7) + 0x30), 0.02617994f, 0.0f);
+            set_follow_camera_angle_blend_from_position((int)(fleet_camera_points + (*(int *)(d + 0x40) << 7) + 0x30), 0.02617994f, 0.0f);
             cam = D_L17_00167600;
-            f = fast_atan2(*(float *)(D_L17_0016016C + ((*(int *)(d + 0x40) << 7) + 0x30)) - *(float *)(cam + 0x140),
-                                  *(float *)(D_L17_0016016C + ((*(int *)(d + 0x40) << 7) + 0x34)) - *(float *)(cam + 0x144));
+            f = fast_atan2(*(float *)(fleet_camera_points + ((*(int *)(d + 0x40) << 7) + 0x30)) - *(float *)(cam + 0x140),
+                                  *(float *)(fleet_camera_points + ((*(int *)(d + 0x40) << 7) + 0x34)) - *(float *)(cam + 0x144));
             if (FastDiffRots(*(float *)(cam + 0x158), f) < 0.034906585f) {
                 enter_hero_idle_state_for_current_vehicle_mode();
                 *(unsigned char *)(d + 0x4C) = 1;
@@ -1153,12 +1153,12 @@ void FleetReflectionDraw(char *moby) {
     *(float *)(data + 0x14) = -8000.0f;
     for (i = 0; i < 2; i++) {
         FastVecSub(vb, data, pos);
-        FastVecSub(&vv[0], data, D_L17_00167740);
-        FastVecSub(&vv[1], pos, D_L17_00167740);
+        FastVecSub(&vv[0], data, fleet_camera_pos);
+        FastVecSub(&vv[1], pos, fleet_camera_pos);
         FastVecCross(&vv[0], &vv[0], vb);
-        func_L00_001FF4B0(&vv[0], &vv[0], D_L17_001DE388[i]);
+        vec_scale_to_length(&vv[0], &vv[0], D_L17_001DE388[i]);
         FastVecCross(&vv[1], &vv[1], vb);
-        func_L00_001FF4B0(&vv[1], &vv[1], *(float *)(data + 0x28));
+        vec_scale_to_length(&vv[1], &vv[1], *(float *)(data + 0x28));
         *(long *)&pkt.q[4] = 0x0000FF9000000260LL;
         *(long *)&pkt.q[6] = 0x0000008000000048LL;
         *(long *)&pkt.q[0] = 0;
@@ -1189,7 +1189,7 @@ void FleetReflectionDraw(char *moby) {
             pv[j * 2] = D_L17_001E7340[j * 2 + 1];
         }
         D_L17_001DE370[i] += *(float *)((char *)&D_L17_00162440 + i * 4) * frame_delta_time;
-        func_L00_001FD1D8(&pkt, 0, 0);
+        draw_world_quad(&pkt, 0, 0);
     }
     *(long *)&pkt.q[2] = GetEffectTex(0x2F);
     for (k = 0; k < 5; k++) {
@@ -1228,7 +1228,7 @@ void FleetReflectionDraw(char *moby) {
             pkt.col[1] = c;
             pkt.col[0] = c;
         }
-        func_L00_001FD1D8(&pkt, 0, 0);
+        draw_world_quad(&pkt, 0, 0);
     }
     VU1_addGSregister(0x47, 0x5360B);
 }
@@ -1381,12 +1381,12 @@ void Moby1843Update(unsigned char *moby) {
         if (*(float *)(moby_pvars + 0x68) > 1.0f) {
             *(float *)(moby_pvars + 0x68) -= 1.0f;
             *(int *)(moby_pvars + 0x64) =
-                (*(int *)(moby_pvars + 0x64) + 1) % **(int **)(D_L17_001B10B0 + *(int *)(moby_pvars + 0x60) * 4);
+                (*(int *)(moby_pvars + 0x64) + 1) % **(int **)(fleet_paths + *(int *)(moby_pvars + 0x60) * 4);
         } else if (*(float *)(moby_pvars + 0x68) < 0.0f) {
             *(float *)(moby_pvars + 0x68) += 1.0f;
             *(int *)(moby_pvars + 0x64) =
-                (*(int *)(moby_pvars + 0x64) + **(int **)(D_L17_001B10B0 + *(int *)(moby_pvars + 0x60) * 4) - 1) %
-                **(int **)(D_L17_001B10B0 + *(int *)(moby_pvars + 0x60) * 4);
+                (*(int *)(moby_pvars + 0x64) + **(int **)(fleet_paths + *(int *)(moby_pvars + 0x60) * 4) - 1) %
+                **(int **)(fleet_paths + *(int *)(moby_pvars + 0x60) * 4);
         }
         FastAddRots(*(float *)(moby_pvars + 0x70), *(float *)(moby_pvars + 0x74));
         update_moby_path_transform(moby);
@@ -1446,11 +1446,11 @@ void Moby1843Update(unsigned char *moby) {
         qcopy(moby_pvars + 0xB0, D_0013E633 + 0xE9D);
         FastVecAdd(&((Moby *)moby)->pos, &((Moby *)moby)->pos, hero_position_delta);
         offset_angle = FastAddRots(0.7853982f, (float)*(int *)(moby_pvars + 0x88) * 1.5707964f);
-        func_L00_001FF4B0(scratch_vector, rotation_basis_row1, FastSin(offset_angle) * 8.0f);
-        FastVecAdd(movement_target_position, D_L17_00167740, scratch_vector);
-        func_L00_001FF4B0(scratch_vector, rotation_basis_row2, FastCos(offset_angle) * 8.0f);
+        vec_scale_to_length(scratch_vector, rotation_basis_row1, FastSin(offset_angle) * 8.0f);
+        FastVecAdd(movement_target_position, fleet_camera_pos, scratch_vector);
+        vec_scale_to_length(scratch_vector, rotation_basis_row2, FastCos(offset_angle) * 8.0f);
         FastVecAdd(movement_target_position, movement_target_position, scratch_vector);
-        func_L00_001FF4B0(scratch_vector, rotation_basis_row0, 20.0f);
+        vec_scale_to_length(scratch_vector, rotation_basis_row0, 20.0f);
         FastVecAdd(movement_target_position, movement_target_position, scratch_vector);
         FastVecSub(scratch_vector, movement_target_position, &((Moby *)moby)->pos);
         len = FastVecLength(scratch_vector);
@@ -1487,19 +1487,19 @@ void Moby1843Update(unsigned char *moby) {
             ang = -fast_atan2(vec_length_xy(hero_relative_position), hero_relative_position[2]);
             SteerAngleWithVelocity(pitch, (float *)(moby_pvars + 0x90), ang, g_frame_time_sq * 12.566371f,
                                    g_frame_time_sq * 12.566371f, g_frame_time * 12.566371f);
-            if (D_L17_0015F6B0 % 10 == 0) {
+            if (fleet_frame_count % 10 == 0) {
                 Moby_PlaySound(2, 0, (int)moby);
                 ApproachValue((float *)(moby_pvars + 0x94), 0.0f, 0.25f);
-                func_L00_001FF4B0(sB0, hero_position_delta, *(float *)(moby_pvars + 0x94));
+                vec_scale_to_length(sB0, hero_position_delta, *(float *)(moby_pvars + 0x94));
                 FastVecAdd(sB0, sB0, tgt);
-                if (D_L17_0015F6B0 % 20 == 0) {
+                if (fleet_frame_count % 20 == 0) {
                     matrix_mul_vec3(sA0, D_L17_001DE3E0, &((Moby *)moby)->rot_row0);
                 } else {
                     matrix_mul_vec3(sA0, D_L17_001DE3F0, &((Moby *)moby)->rot_row0);
                 }
                 FastVecAdd(sA0, sA0, (float *)&((Moby *)moby)->pos);
                 FastVecSub(firing_target_delta, sB0, sA0);
-                func_L00_001FF4B0(firing_direction, firing_target_delta, *(float *)&D_L17_00162468 * g_frame_time);
+                vec_scale_to_length(firing_direction, firing_target_delta, *(float *)&D_L17_00162468 * g_frame_time);
                 FastVecAdd(firing_direction, firing_direction, hero_position_delta);
                 firing_moby = spawn_class_3f9_moby((int)moby, firing_direction, sA0, 128.0f, -1.0f, 10.0f);
                 if (firing_moby) {
@@ -1556,12 +1556,12 @@ char *try_activate_blarg_ship_from_list(int list) {
         euler_rotation_basis(D, C);
         {
             float f = FastAddRots(0.7853982f, (float)*(int *)(d + 0x88) * 1.5707964f);
-            func_L00_001FF4B0(A, E, FastSin(f) * 12.0f);
-            FastVecAdd(B, D_L17_00167740, A);
-            func_L00_001FF4B0(A, F, FastCos(f) * 12.0f);
+            vec_scale_to_length(A, E, FastSin(f) * 12.0f);
+            FastVecAdd(B, fleet_camera_pos, A);
+            vec_scale_to_length(A, F, FastCos(f) * 12.0f);
         }
         FastVecAdd(B, B, A);
-        func_L00_001FF4B0(A, D, 6.0f);
+        vec_scale_to_length(A, D, 6.0f);
         FastVecAdd(B, B, A);
         qcopy(d + 0xB0, D_0013E633 + 0xE9D);
         qcopy(m + 0x10, B);
@@ -1660,17 +1660,17 @@ void compute_reflection_sphere_map_uvs(int n, V3 *b, V3 *a, int unused, float *o
         p.v.x = a[i].x;
         p.v.y = a[i].y;
         p.v.z = a[i].z;
-        FastVecSub(&v0, &p, D_L17_00167740);
-        func_L00_001FF4B0(&v0, &v0, 1.0f);
+        FastVecSub(&v0, &p, fleet_camera_pos);
+        vec_scale_to_length(&v0, &v0, 1.0f);
         q.w = 1.0f;
         q.v.x = b[i].x;
         q.v.y = b[i].y;
         q.v.z = b[i].z;
-        func_L00_001FF4B0(&q, &q, 1.0f);
+        vec_scale_to_length(&q, &q, 1.0f);
         d = FastVecDot(&q, &v0);
         FastVecScale(&r, &q, d + d);
         FastVecSub(&r, &v0, &r);
-        func_L00_001FF4B0(&r, &r, 1.0f);
+        vec_scale_to_length(&r, &r, 1.0f);
         r.v.z = r.v.z + 1.0f;
         len = FastVecLength(&r);
         len = len + len;
@@ -1737,17 +1737,17 @@ void compute_vertex_to_reference_sphere_map_uvs(int n, char *nrm, char *pos, int
         t[0] = p[0];
         t[1] = p[1];
         t[2] = p[2];
-        FastVecSub(a, D_L17_00167740, t);
-        func_L00_001FF4B0(a, a, 1.0f);
+        FastVecSub(a, fleet_camera_pos, t);
+        vec_scale_to_length(a, a, 1.0f);
         c[3] = 1.0f;
         q = (float *)(i * 12 + (int)nrm);
         c[0] = q[0];
         c[1] = q[1];
         c[2] = q[2];
-        func_L00_001FF4B0(c, c, 1.0f);
+        vec_scale_to_length(c, c, 1.0f);
         FastVecScale(r, c, FastVecDot(c, a) * 2.0f);
         FastVecSub(r, a, r);
-        func_L00_001FF4B0(r, r, 1.0f);
+        vec_scale_to_length(r, r, 1.0f);
         r[2] += 1.0f;
         len = FastVecLength(r) * 2.0f;
         out[i * 2] = (r[0] / len + 0.5f) * 4.0f;

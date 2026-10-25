@@ -255,26 +255,26 @@ extern char D_001997D0[];
    through the global, and cases 6 and 7 are spelled out: the jump table
    has eight entries. */
 void dismiss_help(void) {
-    switch (((HelpState *)D_001997D0)->state) {
+    switch (((HelpState *)g_help_state)->state) {
     case 0:
-        ((HelpState *)D_001997D0)->x24 = -1;
+        ((HelpState *)g_help_state)->x24 = -1;
         break;
     case 1:
     case 2:
-        ((HelpState *)D_001997D0)->state = 7;
-        ((HelpState *)D_001997D0)->x04 = 0;
+        ((HelpState *)g_help_state)->state = 7;
+        ((HelpState *)g_help_state)->x04 = 0;
         break;
     case 3:
-        ((HelpState *)D_001997D0)->state = 7;
-        ((HelpState *)D_001997D0)->x04 = 0;
+        ((HelpState *)g_help_state)->state = 7;
+        ((HelpState *)g_help_state)->x04 = 0;
         break;
     case 4:
-        ((HelpState *)D_001997D0)->state = 6;
-        ((HelpState *)D_001997D0)->x04 = 4 - ((HelpState *)D_001997D0)->x04;
+        ((HelpState *)g_help_state)->state = 6;
+        ((HelpState *)g_help_state)->x04 = 4 - ((HelpState *)g_help_state)->x04;
         break;
     case 5:
-        ((HelpState *)D_001997D0)->state = 6;
-        ((HelpState *)D_001997D0)->x04 = 0;
+        ((HelpState *)g_help_state)->state = 6;
+        ((HelpState *)g_help_state)->x04 = 0;
         break;
     case 6:
     case 7:
@@ -300,7 +300,7 @@ int Help_FindIndex(int id) {
     int r = -1;
     int i;
 
-    for (i = 0; i < ((HelpState *)D_001997D0)->count; i++) {
+    for (i = 0; i < ((HelpState *)g_help_state)->count; i++) {
         if (help_msgs[i].id == id) {
             r = i;
             break;
@@ -349,13 +349,13 @@ void link_localized_display_text(void) {
     short w, h;
     int hHalf5;
 
-    ((HelpState *)D_001997D0)->state = 1;
-    ((HelpState *)D_001997D0)->x04 = 0;
+    ((HelpState *)g_help_state)->state = 1;
+    ((HelpState *)g_help_state)->x04 = 0;
     if (D_0015EF1D_b || D_0015EF1C_b) {
         PlayBankSound(0, 1, 0);
     }
 
-    idx = ((HelpState *)D_001997D0)->pad[6];
+    idx = ((HelpState *)g_help_state)->pad[6];
     text = help_msgs[idx].text;
     FontSetWindow((void *)win, 0xF0, 0x1E0, 0x2C, 0x1D4, 0x100, 0x168, 0x10, 7);
     font_print_window_small((void *)win, 0x80FFA888L, text, -1);
@@ -366,14 +366,14 @@ void link_localized_display_text(void) {
     hHalf5 = (h >> 1) + 5;
     y0 = screenY - 0x3C;
 
-    ((HelpState *)D_001997D0)->pad[0] = (w >> 1) + 10;
-    ((HelpState *)D_001997D0)->pad[1] = hHalf5;
-    ((HelpState *)D_001997D0)->pad[2] = 0x100;
-    ((HelpState *)D_001997D0)->pad[4] = 8;
-    ((HelpState *)D_001997D0)->pad[5] = 8;
-    ((HelpState *)D_001997D0)->pad[3] = y0;
+    ((HelpState *)g_help_state)->pad[0] = (w >> 1) + 10;
+    ((HelpState *)g_help_state)->pad[1] = hHalf5;
+    ((HelpState *)g_help_state)->pad[2] = 0x100;
+    ((HelpState *)g_help_state)->pad[4] = 8;
+    ((HelpState *)g_help_state)->pad[5] = 8;
+    ((HelpState *)g_help_state)->pad[3] = y0;
     if (screenY - 0xC < y0 + hHalf5) {
-        ((HelpState *)D_001997D0)->pad[3] = screenY - 0xC - hHalf5;
+        ((HelpState *)g_help_state)->pad[3] = screenY - 0xC - hHalf5;
     }
 }
 
@@ -501,7 +501,7 @@ void Help_Update(void) {
         if (id >= 0 && cd_read_state.unk50 == 0 && cd_read_state.unk1C == -1) {
             cd_read_state.unk1C = id + 0x7530;
         }
-        if (D_0013CBE4 & 0x10) {
+        if (pad0_pressed & 0x10) {
             RECORD_COUNT();
             RECORD_BEST();
             RECORD_FLAGS();
@@ -518,7 +518,7 @@ void Help_Update(void) {
         int id;
 
         force_help_message(5, 0);
-        if (D_0013CBE4 & 0x10) {
+        if (pad0_pressed & 0x10) {
             RECORD_COUNT();
             RECORD_BEST();
             HS.state = 7;
@@ -537,7 +537,7 @@ void Help_Update(void) {
 
     case 3:
         force_help_message(5, 0);
-        if (D_0013CBE4 & 0x10) {
+        if (pad0_pressed & 0x10) {
             RECORD_COUNT();
             RECORD_BEST();
             HS.state = 7;
@@ -553,7 +553,7 @@ void Help_Update(void) {
         int id;
 
         force_help_message(5, 0);
-        if (D_0013CBE4 & 0x10) {
+        if (pad0_pressed & 0x10) {
             RECORD_COUNT();
             RECORD_BEST();
             HS.state = 6;
@@ -578,7 +578,7 @@ void Help_Update(void) {
              && ((id = help_msgs[HS.msg].unk_08) == -1
                  || id != cd_read_state.unk54 - 0x7530
                  || (cd_read_state.unk50 == 0 && cd_read_state.unk1C == -1)))
-            || (D_0013CBE4 & 0x10)) {
+            || (pad0_pressed & 0x10)) {
             RECORD_COUNT();
             RECORD_BEST();
             HS.state = 6;
@@ -589,7 +589,7 @@ void Help_Update(void) {
     }
 
     case 6:
-        if (D_0015EF1D_b == 0 || HS.timer >= 4 || (D_0013CBE4 & 0x10)) {
+        if (D_0015EF1D_b == 0 || HS.timer >= 4 || (pad0_pressed & 0x10)) {
             HS.state = 7;
             HS.timer = 0;
         }
@@ -633,22 +633,22 @@ extern long func_001F4868_l(int) __asm__("func_001F4868");
 void Help_DrawPrompt(void) {
     int alpha;
 
-    ((HelpState *)D_001997D0)->pad[4] = 0x20;
-    ((HelpState *)D_001997D0)->pad[5] = 0x20;
-    DrawUIFrame(((HelpState *)D_001997D0)->pad[3] - 0x20,
-                  ((HelpState *)D_001997D0)->pad[3] + 0x20,
-                  ((HelpState *)D_001997D0)->pad[2] - 0x20,
-                  ((HelpState *)D_001997D0)->pad[2] + 0x20, 0x60);
-    if (((HelpState *)D_001997D0)->state == 1 || ((HelpState *)D_001997D0)->state == 7) {
-        alpha = ((HelpState *)D_001997D0)->x04 * 0x15;
+    ((HelpState *)g_help_state)->pad[4] = 0x20;
+    ((HelpState *)g_help_state)->pad[5] = 0x20;
+    DrawUIFrame(((HelpState *)g_help_state)->pad[3] - 0x20,
+                  ((HelpState *)g_help_state)->pad[3] + 0x20,
+                  ((HelpState *)g_help_state)->pad[2] - 0x20,
+                  ((HelpState *)g_help_state)->pad[2] + 0x20, 0x60);
+    if (((HelpState *)g_help_state)->state == 1 || ((HelpState *)g_help_state)->state == 7) {
+        alpha = ((HelpState *)g_help_state)->x04 * 0x15;
     } else {
         alpha = 0x7E;
     }
     if (alpha > 0x80) {
         alpha = 0x80;
     }
-    DrawTexturedQuad(((HelpState *)D_001997D0)->pad[2] - 0x20,
-                  ((HelpState *)D_001997D0)->pad[3] - 0x20, 0x40, 0x40, 0, 0, 0x40, 0x40,
+    DrawTexturedQuad(((HelpState *)g_help_state)->pad[2] - 0x20,
+                  ((HelpState *)g_help_state)->pad[3] - 0x20, 0x40, 0x40, 0, 0, 0x40, 0x40,
                   (alpha << 24) | 0x808080, func_001F4868_l(4));
 }
 
@@ -662,26 +662,26 @@ __asm__(".section .text\n\tnop\n");
    colour's alpha (4, 5, 6), or the closing frame (7). The fade flag is
    re-read in each case, as retail's per-case andi shows. */
 void draw_help(void) {
-    if (((HelpState *)D_001997D0)->state == 0) {
+    if (((HelpState *)g_help_state)->state == 0) {
         return;
     }
-    if (*(int *)(D_001997D0 + 0x30) == 0) {
+    if (*(int *)(g_help_state + 0x30) == 0) {
         return;
     }
     if (D_0015EF1D_b == 0 && D_0015EF1C_b == 0) {
         return;
     }
-    switch (((HelpState *)D_001997D0)->state) {
+    switch (((HelpState *)g_help_state)->state) {
     case 1:
         if (D_0015EF1D_b) {
-            int s = ((HelpState *)D_001997D0)->x04 * 4 + 8;
+            int s = ((HelpState *)g_help_state)->x04 * 4 + 8;
 
-            ((HelpState *)D_001997D0)->pad[4] = s;
-            ((HelpState *)D_001997D0)->pad[5] = s;
-            DrawUIFrame(((HelpState *)D_001997D0)->pad[3] - s,
-                          ((HelpState *)D_001997D0)->pad[3] + s,
-                          ((HelpState *)D_001997D0)->pad[2] - s,
-                          ((HelpState *)D_001997D0)->pad[2] + s, 0x60);
+            ((HelpState *)g_help_state)->pad[4] = s;
+            ((HelpState *)g_help_state)->pad[5] = s;
+            DrawUIFrame(((HelpState *)g_help_state)->pad[3] - s,
+                          ((HelpState *)g_help_state)->pad[3] + s,
+                          ((HelpState *)g_help_state)->pad[2] - s,
+                          ((HelpState *)g_help_state)->pad[2] + s, 0x60);
         }
         break;
     case 2:
@@ -691,22 +691,22 @@ void draw_help(void) {
         break;
     case 3:
         if (D_0015EF1D_b) {
-            int a = (((HelpState *)D_001997D0)->pad[0] - 0x20) * ((HelpState *)D_001997D0)->x04 / 8 + 0x20;
-            int b = (((HelpState *)D_001997D0)->pad[1] - 0x20) * ((HelpState *)D_001997D0)->x04 / 8 + 0x20;
+            int a = (((HelpState *)g_help_state)->pad[0] - 0x20) * ((HelpState *)g_help_state)->x04 / 8 + 0x20;
+            int b = (((HelpState *)g_help_state)->pad[1] - 0x20) * ((HelpState *)g_help_state)->x04 / 8 + 0x20;
             int alpha;
 
-            ((HelpState *)D_001997D0)->pad[4] = a;
-            ((HelpState *)D_001997D0)->pad[5] = b;
-            DrawUIFrame(((HelpState *)D_001997D0)->pad[3] - b,
-                          ((HelpState *)D_001997D0)->pad[3] + b,
-                          ((HelpState *)D_001997D0)->pad[2] - a,
-                          ((HelpState *)D_001997D0)->pad[2] + a, 0x60);
-            alpha = (8 - ((HelpState *)D_001997D0)->x04) * 16;
+            ((HelpState *)g_help_state)->pad[4] = a;
+            ((HelpState *)g_help_state)->pad[5] = b;
+            DrawUIFrame(((HelpState *)g_help_state)->pad[3] - b,
+                          ((HelpState *)g_help_state)->pad[3] + b,
+                          ((HelpState *)g_help_state)->pad[2] - a,
+                          ((HelpState *)g_help_state)->pad[2] + a, 0x60);
+            alpha = (8 - ((HelpState *)g_help_state)->x04) * 16;
             if (alpha < 0) {
                 alpha = 0;
             }
-            DrawTexturedQuad(((HelpState *)D_001997D0)->pad[2] - 0x20,
-                          ((HelpState *)D_001997D0)->pad[3] - 0x20, 0x40, 0x40, 0, 0, 0x40, 0x40,
+            DrawTexturedQuad(((HelpState *)g_help_state)->pad[2] - 0x20,
+                          ((HelpState *)g_help_state)->pad[3] - 0x20, 0x40, 0x40, 0, 0, 0x40, 0x40,
                           (alpha << 24) | 0x808080, func_001F4868_l(4));
         }
         break;
@@ -718,35 +718,35 @@ void draw_help(void) {
             int col = 0x80FFA888;
             char *text;
 
-            ((HelpState *)D_001997D0)->pad[4] = ((HelpState *)D_001997D0)->pad[0];
-            ((HelpState *)D_001997D0)->pad[5] = ((HelpState *)D_001997D0)->pad[1];
-            DrawUIFrame(((HelpState *)D_001997D0)->pad[3] - ((HelpState *)D_001997D0)->pad[1],
-                          ((HelpState *)D_001997D0)->pad[3] + ((HelpState *)D_001997D0)->pad[1],
-                          ((HelpState *)D_001997D0)->pad[2] - ((HelpState *)D_001997D0)->pad[0],
-                          ((HelpState *)D_001997D0)->pad[2] + ((HelpState *)D_001997D0)->pad[0], 0x60);
-            if (((HelpState *)D_001997D0)->state == 4) {
-                col = 0xFFA888 | (((HelpState *)D_001997D0)->x04 << 29);
-            } else if (((HelpState *)D_001997D0)->state == 6) {
-                col = ((4 - ((HelpState *)D_001997D0)->x04) << 29) | 0xFFA888;
+            ((HelpState *)g_help_state)->pad[4] = ((HelpState *)g_help_state)->pad[0];
+            ((HelpState *)g_help_state)->pad[5] = ((HelpState *)g_help_state)->pad[1];
+            DrawUIFrame(((HelpState *)g_help_state)->pad[3] - ((HelpState *)g_help_state)->pad[1],
+                          ((HelpState *)g_help_state)->pad[3] + ((HelpState *)g_help_state)->pad[1],
+                          ((HelpState *)g_help_state)->pad[2] - ((HelpState *)g_help_state)->pad[0],
+                          ((HelpState *)g_help_state)->pad[2] + ((HelpState *)g_help_state)->pad[0], 0x60);
+            if (((HelpState *)g_help_state)->state == 4) {
+                col = 0xFFA888 | (((HelpState *)g_help_state)->x04 << 29);
+            } else if (((HelpState *)g_help_state)->state == 6) {
+                col = ((4 - ((HelpState *)g_help_state)->x04) << 29) | 0xFFA888;
             }
-            text = help_msgs[((HelpState *)D_001997D0)->pad[6]].text;
+            text = help_msgs[((HelpState *)g_help_state)->pad[6]].text;
             FontSetWindow((void *)win, 0xF0, 0x1E0, 0x2C, 0x1D4, 0x100,
-                          ((HelpState *)D_001997D0)->pad[3], 0x10, 3);
+                          ((HelpState *)g_help_state)->pad[3], 0x10, 3);
             font_print_window_small((void *)win, col, text, -1);
         }
         break;
     case 7:
         if (D_0015EF1D_b) {
-            int b = ((HelpState *)D_001997D0)->pad[4]
-                  - (((HelpState *)D_001997D0)->pad[4] - 8) * ((HelpState *)D_001997D0)->x04 / 8;
-            int a = ((HelpState *)D_001997D0)->pad[5]
-                  - (((HelpState *)D_001997D0)->pad[5] - 8) * ((HelpState *)D_001997D0)->x04 / 8;
+            int b = ((HelpState *)g_help_state)->pad[4]
+                  - (((HelpState *)g_help_state)->pad[4] - 8) * ((HelpState *)g_help_state)->x04 / 8;
+            int a = ((HelpState *)g_help_state)->pad[5]
+                  - (((HelpState *)g_help_state)->pad[5] - 8) * ((HelpState *)g_help_state)->x04 / 8;
 
-            DrawUIFrame(((HelpState *)D_001997D0)->pad[3] - a,
-                          ((HelpState *)D_001997D0)->pad[3] + a,
-                          ((HelpState *)D_001997D0)->pad[2] - b,
-                          ((HelpState *)D_001997D0)->pad[2] + b,
-                          (8 - ((HelpState *)D_001997D0)->x04) * 12);
+            DrawUIFrame(((HelpState *)g_help_state)->pad[3] - a,
+                          ((HelpState *)g_help_state)->pad[3] + a,
+                          ((HelpState *)g_help_state)->pad[2] - b,
+                          ((HelpState *)g_help_state)->pad[2] + b,
+                          (8 - ((HelpState *)g_help_state)->x04) * 12);
         }
         break;
     }

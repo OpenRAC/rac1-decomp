@@ -148,7 +148,7 @@ void SetupFS_AA_buffer(int display_width, int display_height, int storage_width,
     fs_aa_buffer.target_psm = 0;
     fs_aa_buffer.zpsm = 0x31;
     fs_aa_buffer.fbp1 = D_0015EF80 >> 13;
-    fs_aa_buffer.fbp0 = D_0015EF84 >> 13;
+    fs_aa_buffer.fbp0 = draw_buffer_address >> 13;
     fs_aa_buffer.zbp = depth_buffer_address >> 13;
     func_00121DC8(&fs_aa_buffer, 0, storage_width, storage_height, display_offset_x,
                   display_offset_y);
@@ -298,7 +298,7 @@ void SetupFS_AA_buffer(int display_width, int display_height, int storage_width,
 extern long D_00152178 NOT_SDA;
 
 void SetBackgroundColor(int arg0, int arg1, int arg2) {
-    D_00152178 = (long)arg0 | ((long)arg1 << 8) | ((long)arg2 << 16) | 0x80000000L;
+    background_rgbaq = (long)arg0 | ((long)arg1 << 8) | ((long)arg2 << 16) | 0x80000000L;
 }
 
 extern void *D_0015EFB8 MACRO_ADDR;

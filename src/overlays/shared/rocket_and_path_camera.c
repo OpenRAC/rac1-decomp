@@ -32,8 +32,8 @@ void emit_moby_sprite_particles(char *m) {
 
     *(float *)(m + 0x18) += 0.5f;
     FastVecSub(d, D_L10_001672C0, m + 0x10);
-    func_L00_001FF4B0(d, d, -0.3f);
-    func_L00_001FF4B0(e, d, 0.1f);
+    vec_scale_to_length(d, d, -0.3f);
+    vec_scale_to_length(e, d, 0.1f);
     func_001F9BD8_99AF0(d, d, m + 0x10);
     *(float *)(m + 0x18) -= 0.5f;
     for (i = 0; i < 4; i++) {
@@ -214,11 +214,11 @@ void Moby819Update(char *m) {
         if (dist < d->dist)
             d->passed = 1;
         d->dist = dist;
-        if (func_L00_001EFFF0(p, pos0, 0x10, d->owner, 0)) {
+        if (coll_line(p, pos0, 0x10, d->owner, 0)) {
             tb = ground_hit;
             if (*(int *)(tb + 0x18) != d->owner) {
                 if (*(int *)(tb + 0x18) != 0) {
-                    func_L00_001FF500(diff, d, 1.0f);
+                    vec_set_length_xy(diff, d, 1.0f);
                     d->vel[2] = 1.0f;
                     PostHitMessage(1.0f, *(int *)(tb + 0x18), m, 0x10003, tb + 0x20, diff);
                 }
@@ -415,8 +415,8 @@ void draw_moby_animated_quad_layers(unsigned char *m) {
             second.uv[2][c] = first.uv[3][c];
             second.uv[3][c] = first.uv[3][c] + step;
         }
-        func_L00_001FD1D8(&first, transform, 0);
-        func_L00_001FD1D8(sv, transform, 0);
+        draw_world_quad(&first, transform, 0);
+        draw_world_quad(sv, transform, 0);
         {
             float *q = (float *)sv;
             float *p = (float *)&first;
@@ -458,8 +458,8 @@ int check_descriptor_hero_trigger(char *moby, char *unused)
     } else if (*(int *)(e + 0x14) >= 0) {
         int i = *(int *)(e + 0x14);
         if (IsPointInPolygon((float *)gHeroPos,
-                                  (float *)(D_L10_001B0C30[i] + 0x10),
-                                  *(int *)D_L10_001B0C30[i])) return 1;
+                                  (float *)(orxon_paths[i] + 0x10),
+                                  *(int *)orxon_paths[i])) return 1;
     } else if (e[0x38] != 0 && e[0x39] == 0) {
         return 1;
     }
@@ -578,7 +578,7 @@ void initialize_path_camera(char *cam) {
 
     idx = rec->path;
     if (idx >= 0) {
-        path = D_L10_001B0C30[idx];
+        path = orxon_paths[idx];
         {
             for (i = 0, n = 0; i < *(int *)path; i++) {
                 f = *(float *)(path + (i << 4) + 0x1C);
@@ -606,7 +606,7 @@ void initialize_path_camera(char *cam) {
 
     idx = rec->look_path;
     if (idx >= 0) {
-        char *path2 = D_L10_001B0C30[idx];
+        char *path2 = orxon_paths[idx];
         {
             int i2, off2, k2;
             for (i2 = 0; i2 < *(int *)path2; i2++) {
@@ -690,8 +690,8 @@ void Camera19_Update(char *moby) {
         float *c3;
         D_L10_0015F4FC += 0.05f;
         if (1.0f <= D_L10_0015F4FC) {
-            a = D_L10_001B0C30[*(int *)(e + 0x20)];
-            b = D_L10_001B0C30[*(int *)(e + 0x24)];
+            a = orxon_paths[*(int *)(e + 0x20)];
+            b = orxon_paths[*(int *)(e + 0x24)];
             pm = moby + 0x30;
             D_L10_0015F4FC = 1.0f;
             a = a + 0x10;
@@ -712,9 +712,9 @@ void Camera19_Update(char *moby) {
                 FastVecSub(va, b + 0x10, pm);
             }
             FastVecScale(v1, D_0013E633 + 0x10AD, -1.0f);
-            func_L00_001FF4B0(moby, va, 1.0f);
+            vec_scale_to_length(moby, va, 1.0f);
             FastVecCross(moby + 0x10, moby, v1);
-            func_L00_001FF4B0(moby + 0x10, moby + 0x10, 1.0f);
+            vec_scale_to_length(moby + 0x10, moby + 0x10, 1.0f);
             FastVecCross(moby + 0x20, moby + 0x10, moby);
         }
         return;
@@ -758,7 +758,7 @@ void Camera19_Update(char *moby) {
         int rr;
         int i;
 
-        g = D_L10_001B0C30[*(int *)(e + 0x20)];
+        g = orxon_paths[*(int *)(e + 0x20)];
         qcopy(va, (moby + 0x30));
         rr = Spline_AdvanceByDistance(g, (moby + 0x30), (int *)f, (float *)(f + 4), *(float *)(e + 0x3C) * g_frame_time, 0);
         if (*(short *)(f + 0x16) != 0) {
@@ -825,7 +825,7 @@ void Camera19_Update(char *moby) {
         } else {
             char *h;
             d = (nv / *(float *)(f + 8)) * *(float *)(f + 0xC);
-            h = D_L10_001B0C30[*(int *)(e + 0x24)];
+            h = orxon_paths[*(int *)(e + 0x24)];
             ia = 0;
             ib = 0.0f;
             Spline_AdvanceByDistance(h, v2, &ia, &ib, d, 0);
@@ -834,9 +834,9 @@ void Camera19_Update(char *moby) {
             FastVecSub(v1, v2, (moby + 0x30));
         }
         FastVecScale(v2, D_0013E633 + 0x10AD, -1.0f);
-        func_L00_001FF4B0(moby, v1, 1.0f);
+        vec_scale_to_length(moby, v1, 1.0f);
         FastVecCross(moby + 0x10, moby, v2);
-        func_L00_001FF4B0(moby + 0x10, moby + 0x10, 1.0f);
+        vec_scale_to_length(moby + 0x10, moby + 0x10, 1.0f);
         FastVecCross(moby + 0x20, moby + 0x10, moby);
     }
 }

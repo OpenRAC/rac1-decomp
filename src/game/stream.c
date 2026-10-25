@@ -223,7 +223,7 @@ int start_audio_stream_read(int arg0, int arg1, int arg2) {
         return 0;
     }
     if (func_0012EE98(arg1, arg2, arg0, d + 0x30) == 0) {
-        STUB_printf(D_001E8980);
+        STUB_printf(load_file_start_failed_string);
         raise_kernel_trap();
         return 0;
     }
@@ -665,14 +665,14 @@ typedef struct {
 } PadSocketParam;
 
 void init_pads(void) {
-    PadSocketParam *p = (PadSocketParam *)&D_001CDAE0;
+    PadSocketParam *p = (PadSocketParam *)&pad_socket_param;
 
     func_00124650();
     func_00124B88(0);
-    D_001CDAE0 = 2;
+    pad_socket_param = 2;
     p->slot = 0;
     ((struct PadState *)g_controller_state)->socket = func_00124BC8(p, g_controller_state);
-    D_001CDAE0 = 2;
+    pad_socket_param = 2;
     p->slot = 1;
     ((struct PadState *)g_controller_state)->profile_state = 0;
     ((struct PadState *)g_controller_state)->device_state = 0;

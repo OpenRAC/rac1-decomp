@@ -40,7 +40,7 @@ extern int func_L00_002629E0(int, void *, void *);
 
 /* Build a symmetric adjacency bitmask over a table's entries from pairwise tests. */
 void build_symmetric_adjacency_masks(int *list, int n, int idx) {
-    char *t = D_L05_001B0CB0[idx];
+    char *t = rilgar_paths[idx];
     int i, j, k, found;
     {
         int c;

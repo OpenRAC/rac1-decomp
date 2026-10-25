@@ -183,7 +183,7 @@ void blarg_space_commando_update(struct Moby *moby) {
         if (moby->prev_seq != 1) {
             MobyBlendAnimation(moby, 1, 0, scale_ticks(12));
         }
-        route = D_L06_001B0FB0[vars->route];
+        route = blarg_paths[vars->route];
         qcopy(&a, &route[*route * 4]);
         dist = vec_distance_xy(&moby->pos, &a);
         if (dist < 0.25f) {
@@ -387,12 +387,12 @@ void blarg_space_commando_update(struct Moby *moby) {
             a.f[2] += 1.0f;
             none = -1;
             spawn_explosion(moby, &vars->unk40, &a, 0.0f, 0.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, 1.0f, -1, 15.0f, 1, 1, none, 0);
-            func_L00_00265050_FF000(moby, 0x6A6, &moby->pos, &moby->rot, 0, 0, 0.0f, D_L06_0015F660, D_L06_0015F660,
-                             D_L06_0015F660);
-            func_L00_00265050_FF000(moby, 0x6A7, &moby->pos, &moby->rot, 0, 0, 0.0f, D_L06_0015F660, D_L06_0015F660,
-                             D_L06_0015F660);
-            func_L00_00265050_FF000(moby, 0x6A8, &moby->pos, &moby->rot, 0, 0, 0.0f, D_L06_0015F660, D_L06_0015F660,
-                             D_L06_0015F660);
+            func_L00_00265050_FF000(moby, 0x6A6, &moby->pos, &moby->rot, 0, 0, 0.0f, blarg_zero_vec, blarg_zero_vec,
+                             blarg_zero_vec);
+            func_L00_00265050_FF000(moby, 0x6A7, &moby->pos, &moby->rot, 0, 0, 0.0f, blarg_zero_vec, blarg_zero_vec,
+                             blarg_zero_vec);
+            func_L00_00265050_FF000(moby, 0x6A8, &moby->pos, &moby->rot, 0, 0, 0.0f, blarg_zero_vec, blarg_zero_vec,
+                             blarg_zero_vec);
             func_0020D678_FF000(moby);
         }
         break;
@@ -569,7 +569,7 @@ void update_blarg_space_commando_state(char *m) {
     }
     {
     char *q = d + 0x120;
-    e = D_L06_001B0FB0[*(int *)(d + 0x180)];
+    e = blarg_paths[*(int *)(d + 0x180)];
     if (FindNearestEligibleMoby(*(float *)(d + 0x198), m, q, 0, 0, e + 4, *e) != 2) {
         if (*(float *)(d + 0x198) < vec_distance_xy(d + 0x170, d + 0x120)) {
             *(int *)(d + 0x164) = 2;
@@ -600,7 +600,7 @@ void initialize_blarg_space_commando_beam(char *m) {
     float v[4];
     int i;
     ProbeGroundHeight(m + 0x10, 0, 0.5f);
-    func_L00_001FF4B0(d + 0x220, D_L06_00174700, 1.0f);
+    vec_scale_to_length(d + 0x220, D_L06_00174700, 1.0f);
     Moby_GetJointWorldPos(m, 0, d + 0x210);
     *(float *)(d + 0x218) = *(float *)(m + 0x18);
     for (i = 0; i < 16; i++) {
@@ -674,7 +674,7 @@ void update_blarg_space_commando_beam(void *arg) {
         }
         FastVecSub(A, &data->pts[i], &data->base);
         A[2] = 0.0f;
-        func_L00_001FF4B0(A, A, scale);
+        vec_scale_to_length(A, A, scale);
         FastVecAdd(A, (float *)&data->pts[i], A);
         FastVecSub(W, A, moby + 0x10);
         t = FastVecDot(W, &data->dir);
@@ -684,7 +684,7 @@ void update_blarg_space_commando_beam(void *arg) {
             A[2] = A[2] + (g_frame_time + g_frame_time);
         }
         e = (char *)data + i * 16;
-        if (1.0f <= *(float *)(e + 0x23C) && func_L00_001EFFF0(&data->pts[i], A, 2, 0, 0)) {
+        if (1.0f <= *(float *)(e + 0x23C) && coll_line(&data->pts[i], A, 2, 0, 0)) {
             A[3] = 0.98f;
         } else if (A[3] < 1.0f) {
             ApproachValue(&A[3], 0.0f, g_frame_time + g_frame_time);
@@ -712,7 +712,7 @@ void update_blarg_space_commando_beam(void *arg) {
                 rec.oclass = *(s16 *)(moby + 0xA6);
                 rec.unk18 = 0;
                 rec.unk19 = 1;
-                func_L00_001EFFF0(&data->pts[j], &data->pts[j + 1], 0, moby, &rec);
+                coll_line(&data->pts[j], &data->pts[j + 1], 0, moby, &rec);
             }
         }
         j = k;
@@ -789,7 +789,7 @@ void DrawBeam(char *moby) {
                leaves the address add in each arm. */
             if (j & 1) {
                 FastVecSub(tmp, v, data + 0x210);
-                func_L00_001FF4B0(tmp, tmp, 0.5f);
+                vec_scale_to_length(tmp, tmp, 0.5f);
                 FastVecSub(v, v, tmp);
                 v[2] -= 0.125f;
                 pk[0].col[j] = func_001FA8A8_00AB0(*(f32 *)(data + off + 0x23C), (*(s32 *)&D_L06_0016208C),
@@ -803,7 +803,7 @@ void DrawBeam(char *moby) {
             pk[1].uv[j][0] = D_L06_001F31E0[j][0];
             pk[1].uv[j][1] = D_L06_001F31E0[j][1];
         }
-        func_L00_001FD1D8(pk, mat, 0);
+        draw_world_quad(pk, mat, 0);
         for (j = 0; j < 4; j++) {
             v = pk[0].pos[j];
             if (j & 1) {
@@ -811,7 +811,7 @@ void DrawBeam(char *moby) {
             }
         }
         i++;
-        func_L00_001FD1D8(pk, mat, 0);
+        draw_world_quad(pk, mat, 0);
     } while (i < 15);
     VU1_addGSregister(0x47, 0x5360B);
 }
@@ -1075,7 +1075,7 @@ void bot_door_lock_update(char *moby) {
             color_channels = (value / 2 + 120) * 0x100 | 0x20000000U;
             color_channels = or_blue_channel_p(value / 3 + 13, color_channels);
             color = color_channels | (value + 150U);
-            if (D_001414F4 == 1) {
+            if (hero_vehicle_mode == 1) {
                 if (data->cnt < 10) {
                     PartType41Spawn(pos, moby, data->cnt + 2, color, 0x7f, 4, 0xff, 0.5f);
                 } else {
@@ -1113,7 +1113,7 @@ void bot_door_lock_update(char *moby) {
                 }
             }
         }
-        if (data->cnt < 1 || D_0014C150[(unsigned char)moby[0xb0] + (*(int *)&g_current_level_index) * 16] == 0xff) {
+        if (data->cnt < 1 || saved_mission_state[(unsigned char)moby[0xb0] + (*(int *)&g_current_level_index) * 16] == 0xff) {
             for (i = 0; i < 4; i++) {
                 if (data->id[i] != -1) activate_bot_door_lock_target((unsigned char *)moby, (unsigned char *)((*(int *)&level_mobys_q) + data->id[i] * 0x100));
             }
@@ -1162,7 +1162,7 @@ void update_hit_triggered_moby_breakup(char *moby) {
     case 2:
         z = 0.0f;
         Moby_PlaySound(0, 0, (int)moby);
-        d = D_L06_0015F660;
+        d = blarg_zero_vec;
         spawn_proximity_gated_bolts(moby);
         a = moby + 0x10;
         b = moby + 0x40;

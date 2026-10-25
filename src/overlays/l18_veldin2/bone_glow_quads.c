@@ -31,7 +31,7 @@ void draw_moby_color_cycling_bone_glows(void *moby) {
     char d[16];
     char e[16];
     int n = scale_ticks(D_L18_001624F0);
-    float f = IntToFloat(D_L18_0015F6B0 % n);
+    float f = IntToFloat(veldin2_frame_count % n);
     int h;
     f = f / IntToFloat(n);
     f = f * 6.18318f;

@@ -65,7 +65,7 @@ void draw_vendor_beam(char *m) {
     euler_to_matrix(M1, ((Frame_03430 *)D_L14_001601AC)[d->idx].v[7]);
     matrix_from_basis_rows(M2, M1);
     qcopy_nc(&M1[12], ((Frame_03430 *)D_L14_001601AC)[d->idx].v[3]);
-    FastVecSub(v230, D_L14_001675C0, ((Frame_03430 *)D_L14_001601AC)[d->idx].v[3]);
+    FastVecSub(v230, oltanis_camera_pos, ((Frame_03430 *)D_L14_001601AC)[d->idx].v[3]);
     matrix_mul_vec3(v230, v230, M2);
     tex = GetEffectTex(*(int *)&D_L14_001621AC);
     flags = (long)*(int *)&D_L14_001621B0 | ((long)*(int *)&D_L14_001621B4 << 2) | ((long)*(int *)&D_L14_001621B8 << 4)
@@ -102,7 +102,7 @@ void draw_vendor_beam(char *m) {
                 FastVecSub(v270, d->pts[i], d->pts[i + 2]);
                 FastVecSub(v260, d->pts[i + 1], v230);
                 FastVecCross(v250, v260, v270);
-                func_L00_001FF4B0(v250, v250, 0.1f);
+                vec_scale_to_length(v250, v250, 0.1f);
             } else {
                 clear_u64_value(v250);
             }
@@ -118,7 +118,7 @@ void draw_vendor_beam(char *m) {
                 }
                 P[0].uv[k][0] = D_L14_001E6320[k][0] + IntToFloat(i - i / 4 * 4) * 0.25f;
             }
-            func_L00_001FD1D8(&P[0], M1, 0);
+            draw_world_quad(&P[0], M1, 0);
         }
     }
     for (j = 0; j < 4; j++) {
@@ -132,7 +132,7 @@ void draw_vendor_beam(char *m) {
                 FastVecSub(v270, d->seg[n][j], d->seg[n + 2][j]);
                 FastVecSub(v260, d->seg[n + 1][j], v230);
                 FastVecCross(v250, v260, v270);
-                func_L00_001FF4B0(v250, v250, 0.1f);
+                vec_scale_to_length(v250, v250, 0.1f);
             } else {
                 clear_u64_value(v250);
             }
@@ -149,7 +149,7 @@ void draw_vendor_beam(char *m) {
                 }
                 P[0].uv[k][0] = D_L14_001E6320[k][0] + IntToFloat(n - n / 4 * 4) * 0.25f;
             }
-            func_L00_001FD1D8(&P[0], M1, 0);
+            draw_world_quad(&P[0], M1, 0);
         }
     }
 }

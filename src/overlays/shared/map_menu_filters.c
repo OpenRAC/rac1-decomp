@@ -13,7 +13,7 @@ static inline unsigned char is_set_249720(unsigned char v) {
 /* item < 256: whether D_0013D49E is set; else 58 <= x <= 86 while the hero's control mode
    (D_001414DC) is not 16 (the joined tail) */
 int ovl_map_filter_l01_4(int item, float a, float b, float x) {
-    int locked = D_001414DC == 16;
+    int locked = hero_control_mode == 16;
 
     if (item < 256) {
         return is_set_249720(menu_item_enabled_2[0]);
@@ -67,7 +67,7 @@ extern unsigned char D_0013D4C5 NOT_SDA;
 extern int D_001414DC;
 // Checks a menu flag for small values and mode 15 for larger values.
 int ovl_map_filter_l08_0(int unused, int value) {
-    if (value >= 257) return D_001414DC == 15;
+    if (value >= 257) return hero_control_mode == 15;
     return menu_item_enabled_41 != 0;
 }
 INCLUDE_ASM("asm/overlays", func_L00_0024A12C);
@@ -175,15 +175,15 @@ int ensure_menu_cache_entry(int key) {
     MenuCacheQuad *other;
     MenuCacheQuad temp;
 
-    if (!D_L00_001842F0.active) {
+    if (!map_menu_state.active) {
         return 0;
     }
     miss = 0;
     victim = 0;
     i = 0;
-    if (D_L00_001842F0.e[0].key != key) {
-        times = &D_L00_001842F0.e[0].stamp;
-        entry = &D_L00_001842F0.e[0].key;
+    if (map_menu_state.e[0].key != key) {
+        times = &map_menu_state.e[0].stamp;
+        entry = &map_menu_state.e[0].key;
         do { do {
             if (entry[1] < times[victim * 4]) {
                 victim = i;
@@ -193,20 +193,20 @@ int ensure_menu_cache_entry(int key) {
         } while (i < 8 && *entry != key); } while (0);
     }
     if (i == 8) {
-        decode_map_rle_row(D_L00_001842F0.e[victim].dst, key, D_L00_001842F0.src, D_L00_001842F0.offs);
-        D_L00_001842F0.e[victim].key = key;
+        decode_map_rle_row(map_menu_state.e[victim].dst, key, map_menu_state.src, map_menu_state.offs);
+        map_menu_state.e[victim].key = key;
         i = victim;
         miss = 1;
     }
     if (i != 0) {
-        base = (MenuCacheQuad *)&D_L00_001842F0.e[0];
+        base = (MenuCacheQuad *)&map_menu_state.e[0];
         other = base + i;
         temp = *other;
         miss++; miss--;
         *other = *base;
         *base = temp;
     }
-    D_L00_001842F0.e[0].stamp = D_L00_0015F4F8;
+    map_menu_state.e[0].stamp = rendered_frame_count;
     return miss;
 }
 extern int D_0015EE84_m __asm__("D_0015EE84") MACRO_ADDR;

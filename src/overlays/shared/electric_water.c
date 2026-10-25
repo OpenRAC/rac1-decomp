@@ -278,7 +278,7 @@ void electric_water_update(unsigned char *m) {
                     if (vars->light == -1) {
                         vars->light = allocate_colored_effect_slot(&vars->bolt_start, 8.0f, 0.0f, 1.0f, 1.0f, 0.5f);
                     } else {
-                        Light_2D7C00 *l = (Light_2D7C00 *)(D_L15_00180940 + (vars->light << 5));
+                        Light_2D7C00 *l = (Light_2D7C00 *)(quartu_lights + (vars->light << 5));
                         qcopy(&l->pos, &vars->bolt_start);
                         *(float *)((char *)l + 0x1C) = 8.0f;
                         l->f0 = 1.0f;
@@ -333,7 +333,7 @@ void electric_water_update(unsigned char *m) {
             hit.v[0] = FastCos(moby->rot.z) * 0.2f;
             hit.v[1] = FastSin(moby->rot.z) * 0.2f;
             *(s32 *)&hit.v[2] = 0;
-            func_L00_001FF500(hit.v, hit.v, 1.0f);
+            vec_set_length_xy(hit.v, hit.v, 1.0f);
             hit.b29 = 1;
             hit.oclass = *(u16 *)&moby->oclass;
             hit.v[2] = 1.0f;
@@ -358,16 +358,16 @@ void electric_water_update(unsigned char *m) {
                 continue;
             }
             if (nearest != 0) {
-                distance = vec_distance_xy(&nearest->pos, D_L15_00167440);
-                if (!(vec_distance_xy(&((struct Moby *)MOBYP_2D7C00(vars->lamps[near_lamp]))->pos, D_L15_00167440) < distance)) {
+                distance = vec_distance_xy(&nearest->pos, quartu_camera_pos);
+                if (!(vec_distance_xy(&((struct Moby *)MOBYP_2D7C00(vars->lamps[near_lamp]))->pos, quartu_camera_pos) < distance)) {
                     continue;
                 }
             }
             nearest = (struct Moby *)MOBYP_2D7C00(vars->lamps[near_lamp]);
         }
         if (vars->owner == 0
-            || (distance = vec_distance_xy(&vars->owner->pos, D_L15_00167440),
-                vec_distance_xy(&nearest->pos, D_L15_00167440) < distance)) {
+            || (distance = vec_distance_xy(&vars->owner->pos, quartu_camera_pos),
+                vec_distance_xy(&nearest->pos, quartu_camera_pos) < distance)) {
             if (vars->owner != 0) {
                 RELEASE_2D7C00(vars);
             }
@@ -501,7 +501,7 @@ void draw_electric_water_countdown(char *moby) {
 
     DrawUIFrame(W(D_L15_00161C64) + W(D_L15_00161C58), W(D_L15_00161C68) + W(D_L15_00161C58),
                   W(D_L15_00161C6C) + W(D_L15_00161C54), W(D_L15_00161C70) + W(D_L15_00161C54), W(D_L15_00161C74));
-    v = FastSin(IntToFloat(D_L15_0015F6B0 % 60) / 60.0f * 6.28318f) * 3.0f + 0.5f;
+    v = FastSin(IntToFloat(quartu_frame_count % 60) / 60.0f * 6.28318f) * 3.0f + 0.5f;
     if (v > 1.0f) {
         v = 1.0f;
     } else if (v < 0.0f) {
@@ -559,7 +559,7 @@ void initialize_electric_water_bolt_effect(char *m) {
         D_L15_00161D60 = scale_ticks((*(int *)&D_L15_00161D0C));
         (*(int *)&D_L15_00161CE0) = 0x7F2020;
         FastVecSub(v, d + 0x100, d + 0xF0);
-        func_L00_001FF4B0(step, v, (*(float *)&D_L15_00161C7C) / 20.0f);
+        vec_scale_to_length(step, v, (*(float *)&D_L15_00161C7C) / 20.0f);
         qcopy(D_L15_001D3A20_D8DD8, d + 0xF0);
         for (i = 1; i < 20; i++) {
             FastVecAdd(D_L15_001D3A20_D8DD8[i], D_L15_001D3A10_D8DD8[i], step);
@@ -661,7 +661,7 @@ void update_electric_water_bolt_effect(Moby *moby) {
         *(int *)&D_L15_00161CE0_2d8fa0 = 0x7F2020;
     }
     FastVecSub(&s[0], &data->b, &data->a);
-    func_L00_001FF4B0(&s[0], &s[0], 1.0f);
+    vec_scale_to_length(&s[0], &s[0], 1.0f);
     FastVecCross(&s[1], &s[0], D_0013F6E0_2d8fa0);
     build_look_at_matrix(&s[0], &s[0], &s[1], 0.17453292f);
     FastVecScale(&s[3], &s[0], scale);
@@ -738,8 +738,8 @@ void update_electric_water_bolt_effect(Moby *moby) {
         }
     }
     FastVecCross(&s[6], &s[0], D_0013F6E0_2d8fa0);
-    func_L00_001FF4B0(&s[6], &s[6], 1.0f);
-    func_L00_001FF4B0(&s[7], D_0013F6E0_2d8fa0, 1.0f);
+    vec_scale_to_length(&s[6], &s[6], 1.0f);
+    vec_scale_to_length(&s[7], D_0013F6E0_2d8fa0, 1.0f);
     for (k = 0; k < 4; k++) {
         float t;
         if (k < 2) {
@@ -888,13 +888,13 @@ void DrawBillboardQuadPair(char *mv) {
     quad.unk88 = 0x8000000048L;
     quad.unk80 = 0xFF9000000260L;
     quad.unk70 = 0;
-    vsub_2d8e48(&mat[3], &D_L15_00167440, pos);
+    vsub_2d8e48(&mat[3], &quartu_camera_pos, pos);
     vscl_2d8e48(&mat[3], &mat[3], 0.3f);
     vadd_2d8e48(&mat[3], &mat[3], pos);
     mat[3].f[3] = 1.0f;
-    vsub_2d8e48(&mat[0], &D_L15_00167440, &mat[3]);
+    vsub_2d8e48(&mat[0], &quartu_camera_pos, &mat[3]);
     vscl_2d8e48(&mat[0], &mat[0], 1.0f);
-    cross_2d8e48(&mat[1], &mat[0], &D_0013F6E0);
+    cross_2d8e48(&mat[1], &mat[0], &hero_gravity_dir);
     vscl_2d8e48(&mat[1], &mat[1], -1.0f);
     cross_2d8e48(&mat[2], &mat[1], &mat[0]);
     c = *(unsigned int *)&D_L15_00161D2C_2da238;
@@ -961,7 +961,7 @@ void update_spinning_projectile(unsigned char *m) {
     FastVecAdd(next, m + 0x10, d);
     InitDirectionalHitQuery(col, m, 1, 2.0f, d);
     *(short *)(col + 0x1A) = *(short *)(m + 0xA6);
-    if (func_L00_001EFFF0(m + 0x10, next, 0, m, col) != 0 || coll_sphere(m + 0x10, 0, m, 0.3f) != 0 || fast_dec_timer(d + 0x38) != 0) {
+    if (coll_line(m + 0x10, next, 0, m, col) != 0 || coll_sphere(m + 0x10, 0, m, 0.3f) != 0 || fast_dec_timer(d + 0x38) != 0) {
         hit = (char *)D_L15_001744D8[0];
         if (hit != 0 && (int)hit != *(int *)(d + 0x3C)) {
             if (*(short *)(hit + 0xA6) != 0x4E)
@@ -973,7 +973,7 @@ void update_spinning_projectile(unsigned char *m) {
         }
     }
     qcopy(m + 0x10, next);
-    if (D_L15_0015F6B0 % 3 == 0)
+    if (quartu_frame_count % 3 == 0)
         spawn_moby_point_offset_particle(m, 30000.0f, 0, 0.1f);
 }
 extern char *func_0020D348(int);
@@ -1244,7 +1244,7 @@ void codebot_update(unsigned char *moby) {
             }
             break;
         case CODEBOT_RECORD_COLLECTION:
-            if (D_L15_0015F6A8 != 2) {
+            if (quartu_game_mode != 2) {
                 ShowBanner(0x426A, -1);
                 D_L15_0015F720 = scale_ticks(0xB4);
                 collection_flags = D_0013D355 + 0x13B;
@@ -1334,7 +1334,7 @@ void giant_clank_pad_update(char *m) {
     case 2:
         if ((char *)D_0013F450_2EE458.ground_moby != m) break;
         if (D_0013F450_2EE458.air_frames.s != 0) break;
-        if (D_L15_0015F6A8 == st) break;
+        if (quartu_game_mode == st) break;
         if (D_0013F450_2EE458.state.current == 0x1D) break;
         v = D_0013F450_2EE458.vehicle_mode;
         if (v == 0) {

@@ -69,9 +69,9 @@ void EffectSlots_Fire(char *slots, float *position, float *direction, float dist
         save_shot = phase == 0;
     }
     qcopy(origin, position);
-    func_L00_001FF4B0(adjusted, direction, distance + 0.75f);
+    vec_scale_to_length(adjusted, direction, distance + 0.75f);
     FastVecAdd(end, adjusted, origin);
-    if (func_L00_001EFFF0(origin, end, 2, 0, 0)) {
+    if (coll_line(origin, end, 2, 0, 0)) {
         travel = FastVecDist(origin, D_L02_001744E0) - 0.75f;
         if (travel < 0.0f) travel = 0.0f;
     } else {
@@ -80,7 +80,7 @@ void EffectSlots_Fire(char *slots, float *position, float *direction, float dist
     acceleration = g_frame_time_sq;
     ApproachWithVelocity(&speed, &travel_step, travel, 1.0f, acceleration * 48.0f,
                   (*(float *)&D_L02_00160150) * g_frame_time);
-    ((float (*)(void *, void *, float))func_L00_001FF4B0)(adjusted, adjusted, travel_step);
+    ((float (*)(void *, void *, float))vec_scale_to_length)(adjusted, adjusted, travel_step);
     n = (*(int *)&D_L02_00160158);
     first_count = (*(int *)&D_L02_00160154);
     if (travel < 4.0f) first_count = 1;

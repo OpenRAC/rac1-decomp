@@ -395,7 +395,7 @@ extern int D_0015EE84 MACRO_ADDR;
 extern unsigned char D_0014C150[];
 void jet_clear_persistent(int idx) {
     if (idx != 0xFF) {
-        D_0014C150[idx + g_current_level_index * 16] = 0xFF;
+        saved_mission_state[idx + g_current_level_index * 16] = 0xFF;
     }
 }
 ASM_FUNC("asm/overlays", func_L00_00251328);

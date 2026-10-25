@@ -127,7 +127,7 @@ void HeroMoveStateVelocity(void) {
                 D_0013F450_s.motion.velocity.f[1] = FastSin(D_0013F450_s.motion.move_yaw) * (g_frame_time * 4.9f);
             } else {
                 set_gravity_relative_vector_length_xy(D_0013F450_s.motion.velocity.f, D_0013F450_s.motion.velocity.f, 0.0f);
-                func_L00_001FF4B0(&tmp, &D_0013F450_s.motion.unk170, g_frame_time * 4.9f);
+                vec_scale_to_length(&tmp, &D_0013F450_s.motion.unk170, g_frame_time * 4.9f);
                 FastVecAdd(&D_0013F450_s.motion.velocity, &D_0013F450_s.motion.velocity, &tmp);
             }
         }
@@ -150,7 +150,7 @@ void HeroMoveStateVelocity(void) {
                 if (D_0013F450_s.unk12E2) d = g_frame_time_sq * 0.17f;
                 speed = vec_length_xy(&D_0013F450_s.motion.velocity);
                 ApproachValue(&speed, 0.0f, d);
-                func_L00_001FF500(D_0013F450_s.motion.velocity.f, D_0013F450_s.motion.velocity.f, speed);
+                vec_set_length_xy(D_0013F450_s.motion.velocity.f, D_0013F450_s.motion.velocity.f, speed);
                 return;
             }
             if (D_0013F450_s.unk30A != 0) {
@@ -579,14 +579,14 @@ void CameraLookAtMatrix(V_c *v, M_c *m, void *p, float a, float b, float c) {
         r.f[0] = 0.0f;
         r.f[1] = 0.0f;
         r.f[2] = -roll;
-        func_L00_001FFA40(&m1, &r);
+        fast_euler_to_matrix(&m1, &r);
         sce_vu0_mul_matrix(m, &m1, m);
         transform_vector(&x, &x, &m1);
         yaw = fast_atan2(x.f[2], x.f[0]);
         r.f[0] = 0.0f;
         r.f[2] = 0.0f;
         r.f[1] = -yaw;
-        func_L00_001FFA40(&m0, &r);
+        fast_euler_to_matrix(&m0, &r);
         sce_vu0_mul_matrix(m, &m0, m);
         transform_vector(&x, &x, &m0);
     } else {
@@ -602,15 +602,15 @@ void CameraLookAtMatrix(V_c *v, M_c *m, void *p, float a, float b, float c) {
         r.f[2] = t;
     }
     r.f[1] = 0.0f;
-    func_L00_001FFA40(&m1, &r);
+    fast_euler_to_matrix(&m1, &r);
     sce_vu0_mul_matrix(m, &m1, m);
     r.f[1] = yaw;
     r.f[2] = 0.0f;
-    func_L00_001FFA40(&m0, &r);
+    fast_euler_to_matrix(&m0, &r);
     sce_vu0_mul_matrix(m, &m0, m);
     r.f[2] = roll;
     r.f[1] = 0.0f;
-    func_L00_001FFA40(&m1, &r);
+    fast_euler_to_matrix(&m1, &r);
     sce_vu0_mul_matrix(m, &m1, m);
     if (p) matrix_to_euler(m, p);
     else matrix_to_euler(m, D_0013E633 + 0xEAD);
@@ -848,7 +848,7 @@ void update_hero_planar_movement_velocity(void) {
     FastVecSub(&v3, &v0, D_0013F580);
     v3.f[2] = 0.0f;
     if (f21 < FastVecLength(&v3)) {
-        func_L00_001FF4B0(&v3, &v3, f21);
+        vec_scale_to_length(&v3, &v3, f21);
     }
     r = (V4 *)(D_0013F580 - 0x50);
     FastVecAdd(r, D_0013F580, &v3);
@@ -866,7 +866,7 @@ void update_hero_planar_movement_velocity(void) {
         FastVecSub(&v4, &v3, r);
         v4.f[2] = 0.0f;
         if (f22 < FastVecLength(&v4)) {
-            func_L00_001FF4B0(&v4, &v4, f22);
+            vec_scale_to_length(&v4, &v4, f22);
         }
         FastVecAdd(r, r, &v4);
     }
@@ -1071,8 +1071,8 @@ void stop_hero_motion_without_forward_support(float a, float b)
         k = -0.7f;
     HeroOffsetAlongViewZ(u, u, k);
     r = 1.0f;
-    if (func_L00_001EFFF0(t, u, 4, *(void **)(D_0013F450_178A0 + 0x2080), 0)) {
-        e = D_L00_00173F40;
+    if (coll_line(t, u, 4, *(void **)(D_0013F450_178A0 + 0x2080), 0)) {
+        e = coll_hit_result;
         if (*(int *)(e + 0x1C) > 0 && compute_gravity_relative_vector_inclination(e + 0x40) <= 0.87266463f)
             r = 0.0f;
     }
@@ -1093,11 +1093,11 @@ void Hero_HitMobySparks(int a, int n) {
             *(int *)(d + 0xA64) = 1;
         }
         for (i = 0; i < n; i++) {
-            int *m = D_L00_00178000[i];
+            int *m = coll_sphere_moby_hits[i];
             int t = (m && (m = (int *)m[9])) ? *(short *)((char *)m + 0x46) : 0;
             if (t == 5 || t == 9) {
                 float v[4] __attribute__((aligned(16)));
-                qcopy(v, (char *)D_L00_00178000[i] + 0x10);
+                qcopy(v, (char *)coll_sphere_moby_hits[i] + 0x10);
                 offset_hero_position_against_gravity(v, v, 0.5f);
                 emit_randomized_sparkle_pairs(v, 4);
             }

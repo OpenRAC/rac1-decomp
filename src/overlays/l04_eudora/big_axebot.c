@@ -177,7 +177,7 @@ void update_class_55_swarm_controller(struct PMoby *moby) {
         }
         speed = 0.0f;
         if (distance < 3.0f) speed = 3.0f - distance;
-        data->direction = Path_AdvanceMoby((struct Moby *)moby, (PathPoints_eb20_9FCF0 *)D_L04_001B0930[data->path_index], data->direction, 1, speed);
+        data->direction = Path_AdvanceMoby((struct Moby *)moby, (PathPoints_eb20_9FCF0 *)eudora_paths[data->path_index], data->direction, 1, speed);
     }
     if (data->initialized == 0) {
         s32 i;
@@ -931,9 +931,9 @@ void big_axebot_update(M_B7B0 *moby) {
                 DeleteMoby(data->f424);
             }
             SetDeathBits(moby, 0, -1);
-            SpawnBreakFragment((char *)moby, 0x798, moby->pos, moby->rot, 0, 0, 0.0f, D_L04_0015F660, D_L04_0015F660, D_L04_0015F660);
-            SpawnBreakFragment((char *)moby, 0x799, moby->pos, moby->rot, 0, 0, 0.0f, D_L04_0015F660, D_L04_0015F660, D_L04_0015F660);
-            SpawnBreakFragment((char *)moby, 0x79A, moby->pos, moby->rot, 0, 0, 0.0f, D_L04_0015F660, D_L04_0015F660, D_L04_0015F660);
+            SpawnBreakFragment((char *)moby, 0x798, moby->pos, moby->rot, 0, 0, 0.0f, eudora_zero_vector, eudora_zero_vector, eudora_zero_vector);
+            SpawnBreakFragment((char *)moby, 0x799, moby->pos, moby->rot, 0, 0, 0.0f, eudora_zero_vector, eudora_zero_vector, eudora_zero_vector);
+            SpawnBreakFragment((char *)moby, 0x79A, moby->pos, moby->rot, 0, 0, 0.0f, eudora_zero_vector, eudora_zero_vector, eudora_zero_vector);
             DeleteMoby(moby);
             return;
         }
@@ -1263,7 +1263,7 @@ float FlockSteer(void *m, void *out, float speed) {
         } else {
             k = 0.0f;
         }
-        func_L00_001FF4B0(sep, sep, k * 10.0f);
+        vec_scale_to_length(sep, sep, k * 10.0f);
         w += 10.0f;
         FastVecAdd(out, out, sep);
         FastVecScale(out, out, 1.0f / w);
@@ -1599,7 +1599,7 @@ void circular_saw_enemy_update(M_35F0 *moby) {
             p.f14 = 0x10001;
             p.f1C = 1.0f;
             FastVecSub(p.v, D_0013E633 + 0xE9D, moby->pos);
-            func_L00_001FF4B0(p.v, p.v, g_frame_time * 10.0f);
+            vec_scale_to_length(p.v, p.v, g_frame_time * 10.0f);
             p.f20 = 1;
             coll_sphere_mobys(jp, 0x10, moby, &p, 0.5f);
             if (D_L04_00174040.f18 == tgt) {
@@ -2242,7 +2242,7 @@ void BlargTrooperUpdate(char *moby) {
     bi = -1;
     best = 0.0f;
     qcopy(st.v50, &st.tgt[8]);
-    path = D_L04_001B0930[*(short *)(data + 0xE8) != 0 ? e0 : e4];
+    path = eudora_paths[*(short *)(data + 0xE8) != 0 ? e0 : e4];
     for (i = 0; i < path->count; i++) {
         float d = vec_distance_xy(st.v50, path->pts[i]);
         if (d > best) {
@@ -2411,7 +2411,7 @@ void BlargTrooperUpdate(char *moby) {
                 st.w.p.v90[2] = 0.5f;
                 FastVecAdd(st.w.p.v70, pos, st.w.p.v90);
                 FastVecAdd(st.w.p.v80, st.v50, st.w.p.v90);
-                if (func_L00_001EFFF0(st.w.p.v70, st.w.p.v80, 0, moby, 0) != 0 && D_L04_00174058 == target) {
+                if (coll_line(st.w.p.v70, st.w.p.v80, 0, moby, 0) != 0 && D_L04_00174058 == target) {
                     *(unsigned char *)(moby + 0x20) = 5;
                     MobyBlendAnimation(moby, (void *)3, 0, (void *)scale_ticks(7));
                 }
@@ -2608,7 +2608,7 @@ void BlargTrooperUpdate(char *moby) {
             st.w.p.blk.p10 = moby;
             st.w.p.blk.v14 = 1;
             st.w.p.blk.f1C = 1.0f;
-            func_L00_001FF500(&st.w.p.blk, &st.w.p.blk, 1.0f);
+            vec_set_length_xy(&st.w.p.blk, &st.w.p.blk, 1.0f);
             st.w.p.blk.f8 = 1.0f;
             st.w.p.blk.fC = 5627.925f;
             st.w.p.blk.c19 = 1;

@@ -464,7 +464,7 @@ void ChildSpawnerUpdate(Moby *moby) {
         float *p;
         Vec4A *vel;
         z = 0.0f;
-        p = D_L03_0015F660;
+        p = kerwan_zero_vec;
         spawn_explosion(moby, d->f70, 0, 0.0f, 0.0f, 0x1E, 8, 0x14, 8.0f, 4.0f, 18.0f, 1.0f, 1, 15.0f, 1, 1, -1, 0);
         vel = (Vec4A *)&moby->rot;
         SpawnBreakFragment(moby, 0x6C5, &moby->pos, vel, 0, 0, z, p, p, p);
@@ -498,7 +498,7 @@ void ChildSpawnerUpdate(Moby *moby) {
                 v40.x = FastCos(ang) * rad;
                 v40.y = FastSin(ang) * rad;
                 v40.z = 0.0f;
-                func_L00_001FF548(&v40, &v40, d->f90);
+                clamp_vec_length(&v40, &v40, d->f90);
                 FastVecAdd(&v50, &v30, &v40);
                 h = ProbeGroundHeight(&v50, 0, 0.5f);
                 if (h != 0.0f) {
@@ -513,12 +513,12 @@ void ChildSpawnerUpdate(Moby *moby) {
                 FastVecScale(&v40, &v40, 0.5f);
                 len = FastVecLength(&v40);
                 if (d->b83 & 8) {
-                    func_L00_001FF4B0(&v40, &v40, random_float_between(len, 3.0f));
+                    vec_scale_to_length(&v40, &v40, random_float_between(len, 3.0f));
                 }
                 if (FastVecLength(&v40) < 3.0f) {
-                    func_L00_001FF4B0(&v40, &v40, 3.0f);
+                    vec_scale_to_length(&v40, &v40, 3.0f);
                 }
-                func_L00_001FF548(&v40, &v40, d->f90);
+                clamp_vec_length(&v40, &v40, d->f90);
                 FastVecAdd(&v50, &v30, &v40);
                 h = ProbeGroundHeight(&v50, 0, 0.5f);
                 if (h != 0.0f) {
@@ -548,7 +548,7 @@ void ChildSpawnerUpdate(Moby *moby) {
                 FastVecSub(&v40, &v60, &v30);
                 len = FastVecLength(&v40);
                 if (d->b83 & 8) {
-                    func_L00_001FF4B0(&v40, &v40, random_float_between(len, 3.0f));
+                    vec_scale_to_length(&v40, &v40, random_float_between(len, 3.0f));
                 }
                 qcopy(&v50, &v60);
                 break;
@@ -573,7 +573,7 @@ void ChildSpawnerUpdate(Moby *moby) {
                 FastVecSub(&v40, &v60, &v30);
                 len = FastVecLength(&v40);
                 if (d->b83 & 8) {
-                    func_L00_001FF4B0(&v40, &v40, random_float_between(len, 3.0f));
+                    vec_scale_to_length(&v40, &v40, random_float_between(len, 3.0f));
                 }
                 qcopy(&v50, &v60);
                 break;
@@ -599,7 +599,7 @@ void ChildSpawnerUpdate(Moby *moby) {
                 FastVecSub(&v40, &v60, &v30);
                 len = FastVecLength(&v40);
                 if (d->b83 & 8) {
-                    func_L00_001FF4B0(&v40, &v40, random_float_between(len, 3.0f));
+                    vec_scale_to_length(&v40, &v40, random_float_between(len, 3.0f));
                 }
                 qcopy(&v50, &v60);
                 break;
@@ -612,8 +612,8 @@ void ChildSpawnerUpdate(Moby *moby) {
                 char *m;
                 speed = FastVecLength(&v40) * (d->fE4 * frame_scale);
                 v40.z = 0.0f;
-                func_L00_001FF4B0(&v40, &v40, speed);
-                func_L00_001FF4B0(&v60, &v40, 0.05f);
+                vec_scale_to_length(&v40, &v40, speed);
+                vec_scale_to_length(&v60, &v40, 0.05f);
                 add_random_offset_to_vector_xyz((float *)&v60, 0.025f);
                 add_vectors(&v70, &v60, &v30);
                 v40.z = jump_speed_4318(&v60, &v50, 0, speed, -(d->fDC * g_frame_time_sq));
@@ -698,7 +698,7 @@ void Moby545Update(char *moby)
     case 0: {
             *(float *)(moby + 0x2C) += (*(float *)(*(char **)(moby + 0x24) + 0x24) - *(float *)(moby + 0x2C)) * (frame_scale * 0.05f);
             FastVecAdd(pos, pos, d);
-            func_L00_001FF4B0(t, d, 0.2f);
+            vec_scale_to_length(t, d, 0.2f);
             FastVecAdd(t, t, pos);
             sv0 = *(int *)(moby + 0x98);
             sv2 = *(int *)(moby + 0x94);
@@ -708,23 +708,23 @@ void Moby545Update(char *moby)
             *(int *)(*(char **)(d + 0x10) + 0x98) = -1;
             *(int *)(moby + 0x94) = 0;
             *(int *)(*(char **)(d + 0x10) + 0x94) = 0;
-            if (func_L00_001EFFF0(a, t, 4, moby, 0)) {
-                FastVecSub(t, D_L03_00173FC0.point, t);
-                func_L00_001FF4B0(t, t, 0.215f);
+            if (coll_line(a, t, 4, moby, 0)) {
+                FastVecSub(t, kerwan_coll_hit.point, t);
+                vec_scale_to_length(t, t, 0.215f);
                 FastVecAdd(pos, pos, t);
-                if (D_L03_00173FC0.moby == 0) {
-                    vec_reflect(d, d, &D_L03_00173FC0.normal_x);
-                    f0 = vec_length_xy(&D_L03_00173FC0.normal_x);
-                    if (fast_atan2(D_L03_00173FC0.normal_z, f0) < 0.6981317f) {
+                if (kerwan_coll_hit.moby == 0) {
+                    vec_reflect(d, d, &kerwan_coll_hit.normal_x);
+                    f0 = vec_length_xy(&kerwan_coll_hit.normal_x);
+                    if (fast_atan2(kerwan_coll_hit.normal_z, f0) < 0.6981317f) {
                         if (CollType() == -1) {
                             FastVecScale(d, d, 0.5f);
                             if (FastVecLength(d) < 0.025f) ((unsigned char *)moby)[0x20] = 1;
                         }
                     }
-                } else if (*(short *)(D_L03_00173FC0.moby + 0xA6) != 0x221) {
-                    vec_reflect(d, d, &D_L03_00173FC0.normal_x);
-                    f0 = vec_length_xy(&D_L03_00173FC0.normal_x);
-                    if (fast_atan2(D_L03_00173FC0.normal_z, f0) < 0.6981317f) {
+                } else if (*(short *)(kerwan_coll_hit.moby + 0xA6) != 0x221) {
+                    vec_reflect(d, d, &kerwan_coll_hit.normal_x);
+                    f0 = vec_length_xy(&kerwan_coll_hit.normal_x);
+                    if (fast_atan2(kerwan_coll_hit.normal_z, f0) < 0.6981317f) {
                         if (CollType() == -1) {
                             FastVecScale(d, d, 1.2f);
                         }
@@ -739,22 +739,22 @@ void Moby545Update(char *moby)
                 }
             }
             if (coll_sphere(0.2f, (moby + 0x10), 4, moby)) {
-                FastVecSub(t, D_L03_00173FC0.point, D_L03_00173FC0.pad30);
-                func_L00_001FF4B0(t, t, 0.015f);
-                FastVecAdd((moby + 0x10), D_L03_00173FC0.pad30, t);
-                if (D_L03_00173FC0.moby == 0) {
-                    vec_reflect(d, d, &D_L03_00173FC0.normal_x);
-                    f0 = vec_length_xy(&D_L03_00173FC0.normal_x);
-                    if (fast_atan2(D_L03_00173FC0.normal_z, f0) < 0.6981317f) {
+                FastVecSub(t, kerwan_coll_hit.point, kerwan_coll_hit.pad30);
+                vec_scale_to_length(t, t, 0.015f);
+                FastVecAdd((moby + 0x10), kerwan_coll_hit.pad30, t);
+                if (kerwan_coll_hit.moby == 0) {
+                    vec_reflect(d, d, &kerwan_coll_hit.normal_x);
+                    f0 = vec_length_xy(&kerwan_coll_hit.normal_x);
+                    if (fast_atan2(kerwan_coll_hit.normal_z, f0) < 0.6981317f) {
                         if (CollType() == -1) {
                             FastVecScale(d, d, 0.5f);
                             if (FastVecLength(d) < 0.025f) ((unsigned char *)moby)[0x20] = 1;
                         }
                     }
-                } else if (*(short *)(D_L03_00173FC0.moby + 0xA6) != 0x221) {
-                    vec_reflect(d, d, &D_L03_00173FC0.normal_x);
-                    f0 = vec_length_xy(&D_L03_00173FC0.normal_x);
-                    if (fast_atan2(D_L03_00173FC0.normal_z, f0) < 0.6981317f) {
+                } else if (*(short *)(kerwan_coll_hit.moby + 0xA6) != 0x221) {
+                    vec_reflect(d, d, &kerwan_coll_hit.normal_x);
+                    f0 = vec_length_xy(&kerwan_coll_hit.normal_x);
+                    if (fast_atan2(kerwan_coll_hit.normal_z, f0) < 0.6981317f) {
                         if (CollType() == -1) {
                             FastVecScale(d, d, 1.2f);
                         }
@@ -1290,7 +1290,7 @@ void statue_update(unsigned char *m) {
     case 2:
         Moby_PlaySound(0, 0, (int)m);
         z = 0.0f;
-        p = D_L03_0015F660;
+        p = kerwan_zero_vec;
         pos = m + 0x10;
         spawn_proximity_gated_bolts(m);
         vel = m + 0x40;
@@ -1389,10 +1389,10 @@ void update_homing_spark_projectile(Moby *moby) {
     state = moby->state;
     switch (state) {
     case 1:
-        func_L00_001FF500(&v90, d, 1.0f);
+        vec_set_length_xy(&v90, d, 1.0f);
         d->vel.z = 1.0f;
         InitDirectionalHitQuery(&hit, moby, 0x10003, 2.0f, &v90);
-        func_L00_001FF500(&hit, &hit, 1.0f);
+        vec_set_length_xy(&hit, &hit, 1.0f);
         hit.dir.z = 1.0f;
         hit.dir.w = 5627.9248f;
         hit.b18 = state;
@@ -1447,26 +1447,26 @@ void update_homing_spark_projectile(Moby *moby) {
                     v100.y = random_float_between(-1.0f, 1.0f);
                     v100.z = random_float_between(-1.0f, 1.0f);
                     vF0 = v100;
-                    func_L00_001FF4B0(&vF0, &vF0, FastVecLength(&vB0) * 0.65f);
+                    vec_scale_to_length(&vF0, &vF0, FastVecLength(&vB0) * 0.65f);
                     FastVecAdd(&vF0, &vB0, &vF0);
-                    func_L00_001FF4B0(&vF0, &vF0, random_float_between(g_frame_time * 5.0f, g_frame_time * 15.0f));
+                    vec_scale_to_length(&vF0, &vF0, random_float_between(g_frame_time * 5.0f, g_frame_time * 15.0f));
                     PartType27Spawn(&vA0, &vF0, 0x5F2F4F6F, rand_range(scale_ticks(5), scale_ticks(10)), 50000.0f);
                 }
-                func_L00_001FF4B0(&vB0, &vB0, g_frame_time * 0.5f);
+                vec_scale_to_length(&vB0, &vB0, g_frame_time * 0.5f);
                 PartType27Spawn(&vA0, &vB0, 0x2F4F7F7F, rand_range(scale_ticks(4), scale_ticks(7)), 400000.0f);
                 FastVecScale(&v100, d, multiply_global_factor(6.0f));
                 FastVecAdd(&v100, &v100, &moby->pos);
                 FastVecSub(&v100, &v100, &vD0);
                 FastVecSub(&v110, &v100, &vA0);
-                func_L00_001FF4B0(&v100, &v110, 2.0f);
+                vec_scale_to_length(&v100, &v110, 2.0f);
                 FastVecSub(&v120, &vA0, &v100);
                 vF0 = v120;
                 FastVecAdd(&v100, &v100, &vF0);
-                func_L00_001FF4B0(&v110, &v110, g_frame_time * 100.0f);
+                vec_scale_to_length(&v110, &v110, g_frame_time * 100.0f);
                 create_type_31_part(d->target, &vF0, &v100, &v110, scale_ticks(0x2D));
-                if (func_L00_001EFFF0(&vA0, &vC0, 0, d->target, 0) != 0) {
+                if (coll_line(&vA0, &vC0, 0, d->target, 0) != 0) {
                     qcopy(&vA0, D_L03_00173FE0);
-                    func_L00_001FF4B0(&vB0, &vB0, g_frame_time * 10.0f);
+                    vec_scale_to_length(&vB0, &vB0, g_frame_time * 10.0f);
                     for (j = 0; j < 10; j++) {
                         *(u128_2D5B88 *)&v100 = 0;
                         v100.x = random_float_between(-1.0f, 1.0f);
@@ -1474,20 +1474,20 @@ void update_homing_spark_projectile(Moby *moby) {
                         v100.z = random_float_between(-1.0f, 1.0f);
                         vF0 = v100;
                         vec_reflect(&v100, &vB0, D_L03_00174000);
-                        func_L00_001FF4B0(&vF0, &vF0, FastVecLength(&v100) * 0.5f);
+                        vec_scale_to_length(&vF0, &vF0, FastVecLength(&v100) * 0.5f);
                         FastVecAdd(&v100, &v100, &vF0);
-                        func_L00_001FF4B0(&v100, &v100, random_float_between(g_frame_time * 3.0f, g_frame_time * 6.0f));
+                        vec_scale_to_length(&v100, &v100, random_float_between(g_frame_time * 3.0f, g_frame_time * 6.0f));
                         PartType27Spawn(&vA0, &v100, 0x7F2F4F6F, rand_range(scale_ticks(0xF), scale_ticks(0x14)), 30000.0f);
                     }
-                    func_L00_001FF4B0(&vB0, &vB0, -1.0f);
+                    vec_scale_to_length(&vB0, &vB0, -1.0f);
                     FastVecAdd(&vC0, &vA0, &vB0);
-                    if (func_L00_001EFFF0(&vA0, &vC0, 0x10, d->target, &hit) != 0 && D_L03_00173FD8 != 0
+                    if (coll_line(&vA0, &vC0, 0x10, d->target, &hit) != 0 && D_L03_00173FD8 != 0
                         && (D_L03_00173FD8 == ((Hero *)(D_0013E633 + 0xE1D))->moby || D_L03_00173FD8->oclass == 0x1DF)) {
                         moby->state = 2;
                     }
                     qcopy(&vC0, &vA0);
                     vC0.z += 2.0f;
-                    if (func_L00_001EFFF0(&vA0, &vC0, 0x10, d->target, &hit) != 0 && D_L03_00173FD8 != 0
+                    if (coll_line(&vA0, &vC0, 0x10, d->target, &hit) != 0 && D_L03_00173FD8 != 0
                         && (D_L03_00173FD8 == ((Hero *)(D_0013E633 + 0xE1D))->moby || D_L03_00173FD8->oclass == 0x1DF)) {
                         moby->state = 2;
                     }
@@ -1860,12 +1860,12 @@ void smooth_transform_orientation_toward_hero(char *m) {
  float position[4] __attribute__((aligned(16))); float direction[4] __attribute__((aligned(16)));
  char *data=*(char **)(m+0x70); float *height=(float *)(data+0x10); char *result; float angle,t;
  qcopy(position,gHeroPos); position[2]+=height[19];
- result=m+0x40; FastVecSub(direction,position,m+0x30); func_L00_001FF4B0(direction,direction,1.0f);
+ result=m+0x40; FastVecSub(direction,position,m+0x30); vec_scale_to_length(direction,direction,1.0f);
  angle=FastArcSin(FastVecDot(direction,m));
  t=Camera_SmoothAngle(data,0.0f,1.57079637f-angle,*(float *)(data+4),*(float *)(data+8),*(float *)(data+12));
- rotate_vector_by_scaled_angle_between_vectors(t,(float *)m,(float *)result,direction,1); func_L00_001FF4B0(result,m,1.0f);
+ rotate_vector_by_scaled_angle_between_vectors(t,(float *)m,(float *)result,direction,1); vec_scale_to_length(result,m,1.0f);
  qcopy(m,result);
- FastVecCross(m+0x10,m,D_L03_00166FB0); func_L00_001FF4B0(m+0x10,m+0x10,1.0f); FastVecCross(m+0x20,m+0x10,m);
+ FastVecCross(m+0x10,m,D_L03_00166FB0); vec_scale_to_length(m+0x10,m+0x10,1.0f); FastVecCross(m+0x20,m+0x10,m);
 }
 extern char D_0013E633[];
 extern int D_L03_0015F050 MACRO_ADDR;

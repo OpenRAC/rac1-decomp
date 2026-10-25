@@ -91,10 +91,10 @@ void select_moby_context(int state) {
     int oldState = (*(volatile int *)&D_L00_0015F808);
     if (state != oldState) {
         int old70, old74, old78, old7C, oldDC, oldE0, oldE8;
-        oldDC = D_L00_00160098;
+        oldDC = moby_array_start;
         old70 = D_L00_0015FB28;
         D_L00_0015FB28 = oldDC;
-        oldDC = D_L00_0016009C;
+        oldDC = level_mobys_end;
         old74 = D_L00_0015FB2C;
         D_L00_0015FB2C = oldDC;
         oldDC = D_L00_001600A0;
@@ -102,8 +102,8 @@ void select_moby_context(int state) {
         oldE8 = D_L00_001600A8;
         old7C = D_L00_0015FB34;
         (*(volatile int *)&D_L00_0015F808) = oldState ^ 1;
-        *(volatile int *)&D_L00_00160098 = old70;
-        D_L00_0016009C = old74;
+        *(volatile int *)&moby_array_start = old70;
+        level_mobys_end = old74;
         D_L00_001600A0 = old78;
         D_L00_0015FB30 = oldDC;
         D_L00_001600A8 = old7C;
@@ -453,7 +453,7 @@ void Hud_UpdateParticles(HudElem *e) {
     float *p;
 
     func_L00_00236830_v(e);
-    cnt = D_L00_0015F4F8;
+    cnt = rendered_frame_count;
     par = cnt - (cnt / 2) * 2;
     p = D_L00_0017E760[par];
     for (i = par; i < 100; i += 2) {
@@ -517,12 +517,12 @@ int draw_hud_stars(HudElem *rec) {
     float f0, f20, f21, f22;
 
     {
-        int ww = *(int *)&D_L00_0015F840;
+        int ww = *(int *)&hud_stars_width;
         x = rec->unk50;
         y = rec->unk54;
         rec->w = ww;
         {
-            int *src = (int *)&D_L00_0015F844;
+            int *src = (int *)&hud_star_height;
             int *dst = &rec->h;
             __builtin_memcpy(dst, src, 4);
         }
@@ -531,10 +531,10 @@ int draw_hud_stars(HudElem *rec) {
     apply_hud_slide_offset(rec, &x, &y, *(int *)(r + 0x6C), 0);
 
     {
-        int w = *(int *)&D_L00_0015F840 * 0xD0;
-        int h = *(int *)&D_L00_0015F844 * 0xA0;
-        int bh = *(int *)&D_L00_0015F840 * 0x260;
-        int bottom = *(int *)&D_L00_0015F844 * 0xEA0;
+        int w = *(int *)&hud_stars_width * 0xD0;
+        int h = *(int *)&hud_star_height * 0xA0;
+        int bh = *(int *)&hud_stars_width * 0x260;
+        int bottom = *(int *)&hud_star_height * 0xEA0;
         int left = (x + rec->unk48) << 4;
         int top = (y + rec->unk4A) << 4;
         int right;
@@ -549,7 +549,7 @@ int draw_hud_stars(HudElem *rec) {
     if (n * 3 < 10001) {
         s = scale_ticks(1);
         f0 = multiply_global_factor(0.75f);
-        flagA = (D_L00_0015F4F8 - 1) % (int)((float)s * 60.0f) < (int)(f0 * 60.0f);
+        flagA = (rendered_frame_count - 1) % (int)((float)s * 60.0f) < (int)(f0 * 60.0f);
     } else {
         flagA = 0;
     }
@@ -557,7 +557,7 @@ int draw_hud_stars(HudElem *rec) {
     if (n * 3 < 10001) {
         s = scale_ticks(1);
         f0 = multiply_global_factor(0.75f);
-        flagB = D_L00_0015F4F8 % (int)((float)s * 60.0f) < (int)(f0 * 60.0f);
+        flagB = rendered_frame_count % (int)((float)s * 60.0f) < (int)(f0 * 60.0f);
     } else {
         flagB = 0;
     }
@@ -568,18 +568,18 @@ int draw_hud_stars(HudElem *rec) {
     tex = GetIconFrame(*(int *)r, flagB);
     f20 = 16.0f;
     f22 = 32.0f;
-    draw_rotated_hud_sprite(tex, x + rec->unk48, y + rec->unk4A, (*(int *)&D_L00_0015F840), (*(int *)&D_L00_0015F844), 0x80);
+    draw_rotated_hud_sprite(tex, x + rec->unk48, y + rec->unk4A, (*(int *)&hud_stars_width), (*(int *)&hud_star_height), 0x80);
 
     {
         float cx, cy, ox, oy;
-        ox = (*(int *)&D_L00_0015F840 * *(float *)&D_L00_0015F848 * 0.5f) / 17.0f;
-        oy = -(*(int *)&D_L00_0015F844 * *(float *)&D_L00_0015F84C * 0.5f) / 116.0f;
+        ox = (*(int *)&hud_stars_width * *(float *)&D_L00_0015F848 * 0.5f) / 17.0f;
+        oy = -(*(int *)&hud_star_height * *(float *)&D_L00_0015F84C * 0.5f) / 116.0f;
         v0[2] = 1.0f;
         v0[3] = 1.0f;
-        cx = *(int *)&D_L00_0015F840 * *(float *)&D_L00_0015F848 * 0.5f + (x + rec->unk48);
-        cy = *(int *)&D_L00_0015F844 * *(float *)&D_L00_0015F84C * 0.5f + (y + rec->unk4A);
-        v10[0] = (cx + (1.0f - *(float *)&D_L00_0015F848) * 0.5f * *(int *)&D_L00_0015F840) * f20;
-        v10[1] = (cy + (1.0f - *(float *)&D_L00_0015F84C) * 0.5f * *(int *)&D_L00_0015F844) * f20;
+        cx = *(int *)&hud_stars_width * *(float *)&D_L00_0015F848 * 0.5f + (x + rec->unk48);
+        cy = *(int *)&hud_star_height * *(float *)&D_L00_0015F84C * 0.5f + (y + rec->unk4A);
+        v10[0] = (cx + (1.0f - *(float *)&D_L00_0015F848) * 0.5f * *(int *)&hud_stars_width) * f20;
+        v10[1] = (cy + (1.0f - *(float *)&D_L00_0015F84C) * 0.5f * *(int *)&hud_star_height) * f20;
         v10[2] = 0.0f;
         v10[3] = 0.0f;
         v0[0] = ox * f20;
@@ -670,12 +670,12 @@ int draw_morphoray_progress_hud(HudElem *e) {
     int tex, sz, i;
 
     {
-        int ww = *(int *)&D_L00_0015F840;
+        int ww = *(int *)&hud_stars_width;
         x = e->unk50;
         y = e->unk54;
         e->w = ww;
         {
-            int *src = (int *)&D_L00_0015F844;
+            int *src = (int *)&hud_star_height;
             int *dst = &e->h;
             __builtin_memcpy(dst, src, 4);
         }
@@ -683,17 +683,17 @@ int draw_morphoray_progress_hud(HudElem *e) {
     hud_screen_position(e, &x, &y);
     apply_hud_slide_offset(e, &x, &y, e->unk6C, 0);
     tex = GetIconFrame(*(int *)e, 0);
-    draw_rotated_hud_sprite(tex, x + e->unk48, y + e->unk4A, *(int *)&D_L00_0015F840, *(int *)&D_L00_0015F844, 0x80);
+    draw_rotated_hud_sprite(tex, x + e->unk48, y + e->unk4A, *(int *)&hud_stars_width, *(int *)&hud_star_height, 0x80);
     {
         float cx, cy, ox, oy;
-        ox = (*(int *)&D_L00_0015F840 * *(float *)&D_L00_0015F848 * 0.5f) / 17.0f;
-        oy = -(*(int *)&D_L00_0015F844 * *(float *)&D_L00_0015F84C * 0.5f) / 116.0f;
+        ox = (*(int *)&hud_stars_width * *(float *)&D_L00_0015F848 * 0.5f) / 17.0f;
+        oy = -(*(int *)&hud_star_height * *(float *)&D_L00_0015F84C * 0.5f) / 116.0f;
         v0[2] = 1.0f;
         v0[3] = 1.0f;
-        cx = *(int *)&D_L00_0015F840 * *(float *)&D_L00_0015F848 * 0.5f + (x + e->unk48);
-        cy = *(int *)&D_L00_0015F844 * *(float *)&D_L00_0015F84C * 0.5f + (y + e->unk4A);
-        v1[0] = (cx + (1.0f - *(float *)&D_L00_0015F848) * 0.5f * *(int *)&D_L00_0015F840) * 16.0f;
-        v1[1] = (cy + (1.0f - *(float *)&D_L00_0015F84C) * 0.5f * *(int *)&D_L00_0015F844) * 16.0f;
+        cx = *(int *)&hud_stars_width * *(float *)&D_L00_0015F848 * 0.5f + (x + e->unk48);
+        cy = *(int *)&hud_star_height * *(float *)&D_L00_0015F84C * 0.5f + (y + e->unk4A);
+        v1[0] = (cx + (1.0f - *(float *)&D_L00_0015F848) * 0.5f * *(int *)&hud_stars_width) * 16.0f;
+        v1[1] = (cy + (1.0f - *(float *)&D_L00_0015F84C) * 0.5f * *(int *)&hud_star_height) * 16.0f;
         v1[2] = 0.0f;
         v1[3] = 0.0f;
         v0[0] = ox * 16.0f;
@@ -897,22 +897,22 @@ int Hud_DrawGaugeFrame(HudElem *e) {
     int pos[2];
     int left, top, right, bottom, w, h, bh, step, i;
     {
-        int ww = *(int *)&D_L00_0015F840;
+        int ww = *(int *)&hud_stars_width;
         pos[0] = e->unk50;
         pos[1] = e->unk54;
         e->w = ww;
         {
-            int *src = (int *)&D_L00_0015F844;
+            int *src = (int *)&hud_star_height;
             int *dst = &e->h;
             __builtin_memcpy(dst, src, 4);
         }
     }
     hud_screen_position(e, &pos[0], &pos[1]);
     apply_hud_slide_offset(e, &pos[0], &pos[1], e->unk6C, 0);
-    w = *(int *)&D_L00_0015F840 * 0xD0;
-    h = *(int *)&D_L00_0015F844 * 0xA0;
-    bh = *(int *)&D_L00_0015F840 * 0x260;
-    bottom = *(int *)&D_L00_0015F844 * 0xEA0;
+    w = *(int *)&hud_stars_width * 0xD0;
+    h = *(int *)&hud_star_height * 0xA0;
+    bh = *(int *)&hud_stars_width * 0x260;
+    bottom = *(int *)&hud_star_height * 0xEA0;
     left = (pos[0] + e->unk48) << 4;
     top = (pos[1] + e->unk4A) << 4;
     left += w / 64;
@@ -921,8 +921,8 @@ int Hud_DrawGaugeFrame(HudElem *e) {
     bottom = top + bottom / 256;
     draw_hud_rect_blended(left, top, right, bottom, 0x80000000, 1);
     {
-        int st = *(int *)&D_L00_0015F844 * 0xEA0;
-        h = *(int *)&D_L00_0015F844;
+        int st = *(int *)&hud_star_height * 0xEA0;
+        h = *(int *)&hud_star_height;
         top = (pos[1] + e->unk4A) << 4;
         top += (h * 0xF40) / 256;
         bh = (e->unk74 * st) / (e->unk08 << 8);
@@ -930,10 +930,10 @@ int Hud_DrawGaugeFrame(HudElem *e) {
     }
     i = 1;
     if (i < e->unk74) do {
-        int hh = *(int *)&D_L00_0015F844;
+        int hh = *(int *)&hud_star_height;
         top = (pos[1] + e->unk4A) << 4;
         top += (hh * 0xF40) / 256;
-        step = *(int *)&D_L00_0015F844 * 0xEA0;
+        step = *(int *)&hud_star_height * 0xEA0;
         step = i * step / (e->unk08 << 8);
         i++;
         top -= step;
@@ -941,7 +941,7 @@ int Hud_DrawGaugeFrame(HudElem *e) {
         draw_hud_rect_blended(left, top, right, top + 32, 0x80000000, 1);
     } while (i < e->unk74);
     w = GetIconFrame(*(int *)e, 0);
-    draw_rotated_hud_sprite(w, pos[0] + e->unk48, pos[1] + e->unk4A, *(int *)&D_L00_0015F840, *(int *)&D_L00_0015F844, 0x80);
+    draw_rotated_hud_sprite(w, pos[0] + e->unk48, pos[1] + e->unk4A, *(int *)&hud_stars_width, *(int *)&hud_star_height, 0x80);
     return e->w;
 }
 typedef struct {
@@ -994,7 +994,7 @@ void initialize_eight_slot_hud_selector(Obj238478 *o) {
     o->x70 = 0;
     *(int *)&D_L00_0015F80C = 0;
     d = D_L00_0017DBC0;
-    tab = D_L00_00179BC0;
+    tab = item_defs;
     s = (int *)((char *)D_0014171B_i + 0x885);
     for (i = 7; i >= 0; i--) {
         d->x18 = *s;
@@ -1150,8 +1150,8 @@ void update_hud_item_selector_selection_and_visibility(Obj_38530 *p) {
             if (D_0013F450_38530.w10B8 != id) {
                 if (usage_stats.hA0 < 0xFFFF) usage_stats.hA0++;
             }
-            if (scale_ticks(D_0015EFA4) / 600 > usage_stats.hA2)
-                usage_stats.hA2 = scale_ticks(D_0015EFA4) / 600;
+            if (scale_ticks(play_time_ticks) / 600 > usage_stats.hA2)
+                usage_stats.hA2 = scale_ticks(play_time_ticks) / 600;
             usage_stats.wA4 = usage_stats.wA4 | (1 << g_current_level_index) | 0x80000000;
             if (id == 0x18) D_0013F450_38530.b1FF5 = 1;
             else D_0013F450_38530.w20B8 = id;
@@ -1169,7 +1169,7 @@ void update_hud_item_selector_selection_and_visibility(Obj_38530 *p) {
         }
         remove_hud_item(p->w64);
         p->w6C = -6;
-        D_L00_0015FB4C = D_L00_0015F4F8;
+        D_L00_0015FB4C = rendered_frame_count;
     }
 }
 typedef struct { int id; char pad[0x14]; int item; } E_238C30;
@@ -1231,7 +1231,7 @@ int draw_hud_item_selector_panel(HudElem *rec) {
     else if (fade < 0.0f) fade = 0.0f;
     {
         float phase, angle, radius;
-        phase = IntToFloat(D_L00_0015F6B0 % GI(D_L00_0015F890));
+        phase = IntToFloat(level_frame_counter % GI(D_L00_0015F890));
         phase /= IntToFloat(GI(D_L00_0015F890));
         phase *= 6.28318f;
         angle = FastSin(phase - 3.14159f);
@@ -1279,7 +1279,7 @@ int draw_hud_item_selector_panel(HudElem *rec) {
         {
         int id;
         id = *(int *)((char *)D_0014171B_i + 0x885 + selected * 4);
-        wr = D_L00_001C43B0 + id * 24;
+        wr = item_price_table + id * 24;
         if (*(unsigned short *)(wr + 8) != 0) {
             int shadow, item;
             item = *(int *)(menu_item_enabled_115 + 0x21 + id * 4);
@@ -1298,9 +1298,9 @@ int draw_hud_item_selector_panel(HudElem *rec) {
             int item, id;
             item = *(int *)(((char **)D_L00_0015FB78)[GI(D_L00_0015F80C)] + selected * 0x1C + 0x18);
             if (((unsigned char *)D_0013E15A + 0x4C6)[item])
-                id = ((TI_238C30 *)D_L00_00179BC0)[item].h48;
+                id = ((TI_238C30 *)item_defs)[item].h48;
             else
-                id = ((TI_238C30 *)D_L00_00179BC0)[item].h46;
+                id = ((TI_238C30 *)item_defs)[item].h46;
             text = msg_string(id);
         }
         if (text == 0) return rec->w;
@@ -1331,7 +1331,7 @@ int draw_hud_item_selector_panel(HudElem *rec) {
         int id;
         char *wr;
         id = *(int *)((char *)D_0014171B_i + 0x885 + selected * 4);
-        wr = D_L00_001C43B0 + id * 24;
+        wr = item_price_table + id * 24;
         if (*(unsigned short *)(wr + 8) != 0)
             text_y += GI(D_L00_0015F894);
         else if (prefix_length != 0)
@@ -1452,7 +1452,7 @@ void update_hud_radial_selector_selection_and_visibility(Obj *o) {
         { int a = o->w78; int b = o->w74; D_L00_0015FB54_export = b; D_L00_0015FB50 = a; }
         remove_hud_item(o->w64);
         o->w6C = -6;
-        D_L00_0015FB4C = D_L00_0015F4F8;
+        D_L00_0015FB4C = rendered_frame_count;
     }
 }
 typedef struct { int f0, f4, f8, fC, f10, f14, f18; } Ent_239918;
@@ -2069,13 +2069,13 @@ int draw_hud_bolt_exclamation_panel(char *m) {
     panel_left = panel_right - slide;
     HudSprite(GetIconFrame(0x7580, 0), panel_left, y, slide + 16, 32, alpha);
     HudSprite(GetIconFrame(0x7580, 1), panel_left - 32, y, 32, 32, alpha);
-    HudFrame(m, GetIconFrame(0x754f, D_L00_0015F6B0 % 60 >> 1), x - 32, y, 0, text_alpha);
+    HudFrame(m, GetIconFrame(0x754f, level_frame_counter % 60 >> 1), x - 32, y, 0, text_alpha);
 
     func_00116248(buf, D_L00_0015F9F0);
     text_x = x + *(int *)&D_L00_0015F9D8;
     text_y = y + *(int *)&D_L00_0015F9DC;
     period = scale_ticks(*(int *)&D_L00_0015F9E8);
-    pulse = FastSin((float)(D_L00_0015F6B0 % period) /
+    pulse = FastSin((float)(level_frame_counter % period) /
                      IntToFloat(period) * 6.28318f - 3.14159f) * 4.0f - 3.0f;
     if (pulse < 0.0f)
         pulse = 0.0f;
@@ -2202,10 +2202,10 @@ int update_hud_animation_frame(char *p) {
             break;
         case 1:
             r = *(unsigned short *)(e + 4) +
-                (D_L00_0015F6B0 - *(int *)(p + 12)) / *(unsigned char *)(e + 7) % *(unsigned short *)(e + 2);
+                (level_frame_counter - *(int *)(p + 12)) / *(unsigned char *)(e + 7) % *(unsigned short *)(e + 2);
             break;
         case 2:
-            r = (D_L00_0015F6B0 - *(int *)(p + 12)) / *(unsigned char *)(e + 7) % (*(unsigned short *)(e + 2) * 2 - 2);
+            r = (level_frame_counter - *(int *)(p + 12)) / *(unsigned char *)(e + 7) % (*(unsigned short *)(e + 2) * 2 - 2);
             if (r >= *(unsigned short *)(e + 2)) {
                 int t = r + 2;
                 r = *(unsigned short *)(e + 2) * 2 - t;
@@ -2214,8 +2214,8 @@ int update_hud_animation_frame(char *p) {
             break;
         case 3: {
             int t = *(int *)(p + 12);
-            if (t < D_L00_0015F6B0) {
-                r = (D_L00_0015F6B0 - t) / *(unsigned char *)(e + 7);
+            if (t < level_frame_counter) {
+                r = (level_frame_counter - t) / *(unsigned char *)(e + 7);
                 if (r < *(unsigned short *)(e + 2) * 2 - 2) {
                     if (r >= *(unsigned short *)(e + 2)) {
                         int t = r + 2;
@@ -2301,7 +2301,7 @@ void update_weapon_hud_state(void) {
         base = D_0013E633 + 0xE1D;
         w = *(int *)(base + 0x10B8);
         mode = *(unsigned char *)(base + 0x20A4);
-        if (((WeaponRec *)((char *)D_L00_001C43B0 + w * 24))->unk8 == 0) {
+        if (((WeaponRec *)((char *)item_price_table + w * 24))->unk8 == 0) {
             w = 0;
         }
         if (mode != 0) {
@@ -2311,7 +2311,7 @@ void update_weapon_hud_state(void) {
             D_hud_pair[0] = w;
             D_hud_pair[1] = queue_animation_update(0x10, w + 60000, (int)initialize_numeric_hud_timer_and_base_dimensions, (int)HudWeaponUpdate,
                                            (int)HudWeaponDraw, (int)(menu_item_enabled_115 + 0x21 + w * 4),
-                                           D_L00_001C43B0[w].unkE);
+                                           item_price_table[w].unkE);
         } else if (mode == 2) {
             if (D_hud_pair[1] != -1) {
                 Hud_SetBarValueById(D_hud_pair[1], 0);
@@ -2392,14 +2392,14 @@ void draw_cropped_hud_sprite(int tex, int x, int y, int w, int h, int alpha) {
     int *base;
     long *p;
 
-    D_L00_00161280[0] = 0x10000005;
-    D_L00_00161280[1] = 0;
-    D_L00_00161280[2] = 0;
-    D_L00_00161280[3] = 0x50000005;
+    dma_packet_cursor[0] = 0x10000005;
+    dma_packet_cursor[1] = 0;
+    dma_packet_cursor[2] = 0;
+    dma_packet_cursor[3] = 0x50000005;
 
-    base = D_L00_00161280;
-    D_L00_00161280 = base + 4;
-    p = (long *)D_L00_00161280;
+    base = dma_packet_cursor;
+    dma_packet_cursor = base + 4;
+    p = (long *)dma_packet_cursor;
     p[0] = 0x7400000000008001L;
     p[1] = 0x5353106;
     p[2] = GetFrameTex(tex);
@@ -2415,7 +2415,7 @@ void draw_cropped_hud_sprite(int tex, int x, int y, int w, int h, int alpha) {
          | ((long)((y + h) * 16 + g_screen_extent[5] - 8) << 16)
          | ((long)*(int *)(arena + 0xC) << 32);
     p[9] = 0;
-    D_L00_00161280 = (int *)((char *)D_L00_00161280 + 0x50);
+    dma_packet_cursor = (int *)((char *)dma_packet_cursor + 0x50);
 }
 extern int *D_L00_00161280 __attribute__((section(".sdata")));
 
@@ -2447,14 +2447,14 @@ void draw_rotated_hud_sprite(int id, int x, int y, int draw_width, int draw_heig
     int *base;
     u64 *packet_words;
 
-    D_L00_00161280[0] = 0x10000007;
-    D_L00_00161280[1] = 0;
-    D_L00_00161280[2] = 0;
-    D_L00_00161280[3] = 0x50000007;
+    dma_packet_cursor[0] = 0x10000007;
+    dma_packet_cursor[1] = 0;
+    dma_packet_cursor[2] = 0;
+    dma_packet_cursor[3] = 0x50000007;
 
-    base = D_L00_00161280;
-    D_L00_00161280 = base + 4;
-    packet_words = (u64 *)D_L00_00161280;
+    base = dma_packet_cursor;
+    dma_packet_cursor = base + 4;
+    packet_words = (u64 *)dma_packet_cursor;
     packet_words[0] = 0xB400000000008001UL;
     packet_words[1] = 0x53535353106UL;
     packet_words[2] = GetFrameTex(id);
@@ -2477,7 +2477,7 @@ void draw_rotated_hud_sprite(int id, int x, int y, int draw_width, int draw_heig
                      | ((u64)((y + draw_height) * 16 + g_screen_extent[5] - 8) << 16)
                      | ((u64)g->zc << 32);
     packet_words[13] = 0;
-    D_L00_00161280 = (int *)((char *)D_L00_00161280 + 0x70);
+    dma_packet_cursor = (int *)((char *)dma_packet_cursor + 0x70);
 }
 typedef struct O23D750 {
     u8 pad0[0x8];
@@ -2604,18 +2604,18 @@ void init_level_item_inventory(void) {
             (menu_item_enabled_115 + 0xB9)[k] = 1;
             (discount_purchase_pricing + 5)[k] = 1;
         }
-        D_0015EED0[0] = 0x4A;
-        D_0015EED0[1] = 0x50;
-        D_0015EED0[2] = 0x4F;
-        D_0015EED0[3] = 0x54;
-        D_0015EED0[4] = 0x51;
-        D_0015EED0[5] = 0x4E;
-        D_0015EED0[6] = 0x4B;
-        D_0015EED0[7] = 0x52;
-        D_0015EED0[8] = 0x4D;
-        D_0015EED0[9] = 0x59;
-        D_0015EED0[10] = 0x58;
-        D_0015EED0[11] = 0x53;
+        vendor_stock[0] = 0x4A;
+        vendor_stock[1] = 0x50;
+        vendor_stock[2] = 0x4F;
+        vendor_stock[3] = 0x54;
+        vendor_stock[4] = 0x51;
+        vendor_stock[5] = 0x4E;
+        vendor_stock[6] = 0x4B;
+        vendor_stock[7] = 0x52;
+        vendor_stock[8] = 0x4D;
+        vendor_stock[9] = 0x59;
+        vendor_stock[10] = 0x58;
+        vendor_stock[11] = 0x53;
         *(int *)(D_0014171B + 0x885) = 0xF;
         *(int *)(D_0014171B + 0x889) = 0xC;
         *(int *)(D_0014171B + 0x88D) = 0xD;
@@ -2627,11 +2627,11 @@ void init_level_item_inventory(void) {
     } else {
         if (gHaveHeliPack[8] == 0) {
             grant_inventory_item(0xA, 1);
-            D_0015EED0[0] = 0x4A;
+            vendor_stock[0] = 0x4A;
             *(int *)(D_0014171B + 0x45) = 0xA;
         }
         for (i = 0; i < 12; i++) {
-            c = D_0015EED0[i];
+            c = vendor_stock[i];
             if (c == 0xFF) continue;
             v = c & 0x3F;
             if (v == 10) continue;
@@ -2639,7 +2639,7 @@ void init_level_item_inventory(void) {
                 if (D_L00_001C4198[j] == v) break;
             }
             if (j == 19 || v == 0) {
-                D_0015EED0[i] = 0xFF;
+                vendor_stock[i] = 0xFF;
             }
         }
         append_level_item_if_absent(g_current_level_index);
@@ -2659,9 +2659,9 @@ void append_level_item_if_absent(int idx) {
     if (id == 0) {
         return;
     }
-    for (i = 0; (D_0015EED0[i] & 0x3F) != id && D_0015EED0[i] != 0xFF; i++) {
+    for (i = 0; (vendor_stock[i] & 0x3F) != id && vendor_stock[i] != 0xFF; i++) {
     }
-    if (D_0015EED0[i] == 0xFF) {
-        D_0015EED0[i] = id;
+    if (vendor_stock[i] == 0xFF) {
+        vendor_stock[i] = id;
     }
 }

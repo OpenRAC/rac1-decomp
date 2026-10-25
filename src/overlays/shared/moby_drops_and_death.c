@@ -52,10 +52,10 @@ int ChooseDropItem(unsigned char *m, int *item) {
         ((*(int *)(D_0014171B + 0xAB75 + ((short)*(unsigned short *)(m + 0xB2) >> 5) * 4 + *(int *)&g_current_level_index * 256) >>
           (*(unsigned short *)(m + 0xB2) & 31)) & 1))) {
         {
-            for (scan_index = 0; scan_index < 12 && D_0015EED0[scan_index] != 0xFF; scan_index++) {
-                id = D_0015EED0[scan_index] & 0x3F;
+            for (scan_index = 0; scan_index < 12 && vendor_stock[scan_index] != 0xFF; scan_index++) {
+                id = vendor_stock[scan_index] & 0x3F;
                 if (item_available[id]) {
-                    ItemCount_258250 *count = &D_L00_001C43B0[id];
+                    ItemCount_258250 *count = &item_price_table[id];
                     available++;
                     if (count->count != 0) {
                         stocked++;
@@ -71,15 +71,15 @@ int ChooseDropItem(unsigned char *m, int *item) {
                 i = -1;
                 while (1) {
                     ++i;
-                    id = D_0015EED0[i] & 0x3F;
+                    id = vendor_stock[i] & 0x3F;
                     if (item_available[id]) {
-                        ItemCount_258250 *count = &D_L00_001C43B0[id];
+                        ItemCount_258250 *count = &item_price_table[id];
                         scan_index -= weapon_ammo_counts[id] < count->count;
                     }
                     if (scan_index < 0) break;
                 }
             }
-            *item = D_0015EED0[i] & 0x3F;
+            *item = vendor_stock[i] & 0x3F;
         } else if (available != 0) {
             {
                 scan_index = random_integer_below(stocked);
@@ -87,15 +87,15 @@ int ChooseDropItem(unsigned char *m, int *item) {
                     i = -1;
                     while (1) {
                         i++;
-                        id = D_0015EED0[i] & 0x3F;
+                        id = vendor_stock[i] & 0x3F;
                         if (item_available[id]) {
-                            ItemCount_258250 *count = &D_L00_001C43B0[id];
+                            ItemCount_258250 *count = &item_price_table[id];
                             if (count->count != 0) scan_index--;
                         }
                         if (scan_index < 0) break;
                     }
                 }
-                *item = D_0015EED0[i] & 0x3F;
+                *item = vendor_stock[i] & 0x3F;
             }
         } else {
             *item = 10;
@@ -154,7 +154,7 @@ void SetDeathBits(unsigned char *m, int flags, int arg) {
     D_L00_001BA960.a[*(short *)(m + 0xB2)] = m[0xB0] + 2;
     k = m[0xB0];
     {unsigned int u = k & 0xFF;
-    if (k == 0xFF || (D_L00_0015FD48[u] != 0xFF && D_0014C150[lvl][u] == 0xFF)) {
+    if (k == 0xFF || (D_L00_0015FD48[u] != 0xFF && saved_mission_state[lvl][u] == 0xFF)) {
         D_L00_001BB5C0.a[*(short *)(m + 0xB2)] = k + 2;
     }}
     if ((signed char)m[0xB1] >= 0) {

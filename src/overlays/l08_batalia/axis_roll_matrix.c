@@ -32,12 +32,12 @@ void build_axis_roll_matrix(void *out, void *dir, float roll) {
     ang[0] = 0.0f;
     ang[2] = 0.0f;
     ang[1] = a;
-    func_L00_001FFA40(Ry, ang);
+    fast_euler_to_matrix(Ry, ang);
     transform_vector(d, d, Ry);
     ang[2] = roll;
     ang[0] = 0.0f;
     ang[1] = 0.0f;
-    func_L00_001FFA40(Rx, ang);
+    fast_euler_to_matrix(Rx, ang);
     sce_vu0_mul_matrix(M, Rz, M);
     sce_vu0_mul_matrix(M, Ry, M);
     sce_vu0_mul_matrix(M, Rx, M);

@@ -124,15 +124,15 @@ long load_texture_file(char *p) {
     reg = (long)tbp | ((long)w << 14) | ((long)0x13 << 20)
         | ((long)t.tw << 26) | ((long)t.th << 30) | ((long)1 << 34)
         | ((long)cbp << 37) | ((long)4 << 61);
-    if (D_0015F558 < 0x40) {
-        pending_texture_uploads[D_0015F558].addr = (int)t.clut;
-        pending_texture_uploads[D_0015F558].cbp = cbp;
-        pending_texture_uploads[D_0015F558].unk4 = 0;
-        pending_texture_uploads[D_0015F558].unk8 = (int)t.pix;
-        pending_texture_uploads[D_0015F558].tw = t.tw;
-        pending_texture_uploads[D_0015F558].th = t.th;
-        pending_texture_uploads[D_0015F558].tbp = tbp;
-        D_0015F558++;
+    if (pending_texture_upload_count < 0x40) {
+        pending_texture_uploads[pending_texture_upload_count].addr = (int)t.clut;
+        pending_texture_uploads[pending_texture_upload_count].cbp = cbp;
+        pending_texture_uploads[pending_texture_upload_count].unk4 = 0;
+        pending_texture_uploads[pending_texture_upload_count].unk8 = (int)t.pix;
+        pending_texture_uploads[pending_texture_upload_count].tw = t.tw;
+        pending_texture_uploads[pending_texture_upload_count].th = t.th;
+        pending_texture_uploads[pending_texture_upload_count].tbp = tbp;
+        pending_texture_upload_count++;
     }
     return reg;
 }
@@ -155,16 +155,16 @@ long register_8bit_texture(int tw, int th, int a2, int a3, int clut, int tex) {
     reg = (long)tbp | ((long)w << 14) | ((long)0x13 << 20)
         | ((long)tw << 26) | ((long)th << 30) | ((long)1 << 34)
         | ((long)cbp << 37) | ((long)4 << 61);
-    if (D_0015F558 < 0x40) {
+    if (pending_texture_upload_count < 0x40) {
 
-        pending_texture_uploads[D_0015F558].addr = a2;
-        pending_texture_uploads[D_0015F558].cbp = cbp;
-        pending_texture_uploads[D_0015F558].unk4 = 0;
-        pending_texture_uploads[D_0015F558].unk8 = a3;
-        pending_texture_uploads[D_0015F558].tw = tw;
-        pending_texture_uploads[D_0015F558].th = th;
-        pending_texture_uploads[D_0015F558].tbp = tbp;
-        D_0015F558++;
+        pending_texture_uploads[pending_texture_upload_count].addr = a2;
+        pending_texture_uploads[pending_texture_upload_count].cbp = cbp;
+        pending_texture_uploads[pending_texture_upload_count].unk4 = 0;
+        pending_texture_uploads[pending_texture_upload_count].unk8 = a3;
+        pending_texture_uploads[pending_texture_upload_count].tw = tw;
+        pending_texture_uploads[pending_texture_upload_count].th = th;
+        pending_texture_uploads[pending_texture_upload_count].tbp = tbp;
+        pending_texture_upload_count++;
     }
     return reg;
 }
@@ -173,8 +173,8 @@ __asm__(".section .text\n\tnop\n");
 extern int D_001A0468[];
 
 int find_free_map_slot(int arg0) {
-    int *a = D_001A0468;
-    int *b = D_001A0468 + 5;
+    int *a = map_slot_use;
+    int *b = map_slot_use + 5;
     int i = 0;
     do {
         int idx = 4 - i;

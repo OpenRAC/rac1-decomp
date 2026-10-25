@@ -152,23 +152,23 @@ void apply_level_specific_cutscene_moby_effects(void) {
     f32 v[4];
 
     if (D_0015EE84_m == 0) {
-        for (i = 0; i < D_L00_0016C960.count; i++) {
-            if (D_L00_0016C960.mobys[i]->oClass == 0x212) {
-                AddDrawCallback((void *)render_environment_mapped_object, (void *)D_L00_0016C960.mobys[i]);
+        for (i = 0; i < cutscene_state.count; i++) {
+            if (cutscene_state.mobys[i]->oClass == 0x212) {
+                AddDrawCallback((void *)render_environment_mapped_object, (void *)cutscene_state.mobys[i]);
             }
         }
     }
     if (D_0015EE84_m == 2) {
-        for (j = 0; j < D_L00_0016C960.count; j++) {
-            mb = D_L00_0016C960.mobys[j];
+        for (j = 0; j < cutscene_state.count; j++) {
+            mb = cutscene_state.mobys[j];
             if (mb->oClass == 0x1B1) {
                 mb->flags |= 0x800;
             }
         }
     }
-    if (D_0015EE84_m == 3 && D_L00_0016C960.state == 5 && scale_ticks(900) < D_L00_0016C960.timer
-        && D_L00_0016C960.timer < scale_ticks(1100)) {
-        src = D_L00_0016C960.unk184;
+    if (D_0015EE84_m == 3 && cutscene_state.state == 5 && scale_ticks(900) < cutscene_state.timer
+        && cutscene_state.timer < scale_ticks(1100)) {
+        src = cutscene_state.unk184;
         if (src != 0) {
             for (n = 0; n < 4; n++) {
                 clear_u64_value(v);
@@ -181,20 +181,20 @@ void apply_level_specific_cutscene_moby_effects(void) {
             }
         }
     }
-    if (D_0015EE84_m == 7 && D_L00_0016C960.state == 4 && D_L00_0016C960.unk188 != 0
-        && D_L00_0016C960.unk188->oClass == 0x214) {
-        AddDrawCallback((void *)render_environment_mapped_object, (void *)D_L00_0016C960.unk188);
+    if (D_0015EE84_m == 7 && cutscene_state.state == 4 && cutscene_state.unk188 != 0
+        && cutscene_state.unk188->oClass == 0x214) {
+        AddDrawCallback((void *)render_environment_mapped_object, (void *)cutscene_state.unk188);
     }
-    if (D_0015EE84_m == 14 && D_L00_0016C960.state == 0) {
-        m = D_L00_0016C960.unk17C;
-        if (m != 0 && (u32)(D_L00_0016C960.timer - 0x1C) < 6) {
+    if (D_0015EE84_m == 14 && cutscene_state.state == 0) {
+        m = cutscene_state.unk17C;
+        if (m != 0 && (u32)(cutscene_state.timer - 0x1C) < 6) {
             emit_moby_particle_pairs(m);
             AddDrawCallback((void *)GlowQuadsDraw, (void *)m);
         }
     }
-    if (D_0015EE84_m == 15 && (u32)(D_L00_0016C960.state - 3) < 2) {
-        for (k = 0; k < D_L00_0016C960.count; k++) {
-            func_L00_0025805C(D_L00_0016C960.mobys[k]);
+    if (D_0015EE84_m == 15 && (u32)(cutscene_state.state - 3) < 2) {
+        for (k = 0; k < cutscene_state.count; k++) {
+            apply_env_zone_lighting(cutscene_state.mobys[k]);
         }
     }
 }

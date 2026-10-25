@@ -372,16 +372,16 @@ void initialize_level_map_archive(void) {
     extern int D_L00_001842F0[];
     extern char D_00137C80[];
 
-    D_L00_001842F0[4] = 1;
+    map_menu_state[4] = 1;
     { int i;
     for (i = 0; i < 20; i++) {
-        D_L00_001842F0[0x41 + i] = D_L00_00183FF0[i * 2];
-        ((float *)D_L00_001842F0)[0x2D + i] = 0.65f;
-        D_L00_001842F0[0x55 + i] = D_L00_00183FF0[i * 2 + 1];
+        map_menu_state[0x41 + i] = D_L00_00183FF0[i * 2];
+        ((float *)map_menu_state)[0x2D + i] = 0.65f;
+        map_menu_state[0x55 + i] = D_L00_00183FF0[i * 2 + 1];
     } }
     v = D_0015EE84_2465F8;
-    D_L00_001842F0[0x8B] = -1;
-    D_L00_001842F0[0x89] = v > 18 ? 0 : v;
+    map_menu_state[0x8B] = -1;
+    map_menu_state[0x89] = v > 18 ? 0 : v;
     { int i;
     for (i = 0; i < 19; i++) {
         float a = map_points[i * 8], b = map_points[i * 8 + 1], c = map_points[i * 8 + 2], dd = map_points[i * 8 + 3];
@@ -395,14 +395,14 @@ void initialize_level_map_archive(void) {
     } }
     pp = (unsigned char *)menu_item_enabled_115 + 0xB9;
     if (pp[0x21] != 0) {
-        D_L00_001842F0[0x8C] = 1;
-        e = (int *)(D_00137C80 + 0x8B8) + D_L00_001842F0[0x89] * 2;
+        map_menu_state[0x8C] = 1;
+        e = (int *)(D_00137C80 + 0x8B8) + map_menu_state[0x89] * 2;
     } else {
-        D_L00_001842F0[0x8C] = 0;
-        e = (int *)(D_00137C80 + 0x820) + D_L00_001842F0[0x89] * 2;
+        map_menu_state[0x8C] = 0;
+        e = (int *)(D_00137C80 + 0x820) + map_menu_state[0x89] * 2;
     }
     if (e[1] != 0) {
-        gl = D_L00_001842F0;
+        gl = map_menu_state;
         gl[10] = 1;
         heap_tag = (int)render_archive_source_file;
         archive_base = D_L00_00173F08;
@@ -411,7 +411,7 @@ void initialize_level_map_archive(void) {
         Load(archive, e[0], e[1]);
         gl[0x8B] = Stash_SendData((int)archive, scratch, 0x4800, (int)D_L00_001E8E80);
         gl[0x8D] = scratch;
-        func_0020C468((int)archive, (int)archive_base);
+        fast_decompress((int)archive, (int)archive_base);
         archive = archive_base;
         first_size = archive[1] - archive[0];
         gl[0] = Hud_HeapAlloc(first_size, 0, (char *)heap_tag, 0x2DB);
@@ -423,17 +423,17 @@ void initialize_level_map_archive(void) {
         FastMemCopy((void *)gl[5], (char *)archive + archive[1], second_size);
         gl[2] = Hud_HeapAlloc(0x1000, 0, (char *)heap_tag, 0x2F3);
         for (i = 0; i < 8; i++) {
-            D_L00_001842F0[12 + i * 4] = -1;
-            D_L00_001842F0[13 + i * 4] = -1;
-            D_L00_001842F0[14 + i * 4] = D_L00_001842F0[2] + i * 0x200;
+            map_menu_state[12 + i * 4] = -1;
+            map_menu_state[13 + i * 4] = -1;
+            map_menu_state[14 + i * 4] = map_menu_state[2] + i * 0x200;
         }
         w = Hud_HeapAlloc(0x8000, 0, render_archive_source_file, 0x2FC);
-        level_data = D_0014171B + 0x8A5 + D_L00_001842F0[0x89] * 0x800;
-        D_L00_001842F0[3] = w;
+        level_data = D_0014171B + 0x8A5 + map_menu_state[0x89] * 0x800;
+        map_menu_state[3] = w;
         if (level_data[0] != 0) {
-            load_map_chunk((void *)D_L00_001842F0[3], level_data, D_L00_001842F0[5]);
+            load_map_chunk((void *)map_menu_state[3], level_data, map_menu_state[5]);
         } else {
-            decode_map_mask((int *)D_L00_001842F0[3], (unsigned char *)D_L00_001842F0[0], (short *)D_L00_001842F0[1]);
+            decode_map_mask((int *)map_menu_state[3], (unsigned char *)map_menu_state[0], (short *)map_menu_state[1]);
         }
         lim = 256.0f;
         for (y = 0; y < 32; y++) {
@@ -445,11 +445,11 @@ void initialize_level_map_archive(void) {
             }
         }
     } else {
-        D_L00_001842F0[0] = 0;
-        D_L00_001842F0[2] = 0;
-        D_L00_001842F0[3] = 0;
-        D_L00_001842F0[1] = 0;
-        D_L00_001842F0[10] = 0;
+        map_menu_state[0] = 0;
+        map_menu_state[2] = 0;
+        map_menu_state[3] = 0;
+        map_menu_state[1] = 0;
+        map_menu_state[10] = 0;
     }
 }
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
@@ -593,19 +593,19 @@ void initialize_render_archive_transfer(void) {
     s32 buffer;
     s32 bytes;
     s32 archive_index;
-    RenderArchiveState *state = &D_L00_001842F0;
+    RenderArchiveState *state = &map_menu_state;
 
     Profile_Mark();
     update_map_icons(state->archive_index, 1);
-    first_base = D_L00_001BA070.first_base;
-    second_base = D_L00_001BA070.second_base;
+    first_base = level_menu_system.first_base;
+    second_base = level_menu_system.second_base;
     buffer = first_base + 0x9a800;
-    D_L00_001BA070.first_base = buffer + 0x48000;
-    D_L00_001842F0.old_base = first_base;
-    D_L00_001842F0.start = 0;
-    D_L00_001842F0.buffer = buffer;
-    D_L00_001842F0.old_end = second_base;
-    D_L00_001BA070.second_base = second_base + 0x48000;
+    level_menu_system.first_base = buffer + 0x48000;
+    map_menu_state.old_base = first_base;
+    map_menu_state.start = 0;
+    map_menu_state.buffer = buffer;
+    map_menu_state.old_end = second_base;
+    level_menu_system.second_base = second_base + 0x48000;
     state->zero_284 = 0;
     state->zero_288 = 0;
     state->slot_28c = -1;
@@ -630,16 +630,16 @@ void initialize_render_archive_transfer(void) {
             state->load_state = -2;
             return;
         }
-        if (D_L00_001842F0.file_handle != -1) {
-            D_L00_001842F0.last_transfer_bytes = D_L00_001842F0.transfer_bytes;
-            stash_receive_data(D_L00_001842F0.buffer, D_L00_001842F0.file_handle, 0, D_L00_001842F0.transfer_bytes, 0);
-            D_L00_001842F0.level_slot = gHaveMapOMatic != 0 ? g_current_level_index + 0x100 : g_current_level_index;
-            D_L00_001842F0.active = 1;
-            D_L00_001842F0.load_state = -2;
+        if (map_menu_state.file_handle != -1) {
+            map_menu_state.last_transfer_bytes = map_menu_state.transfer_bytes;
+            stash_receive_data(map_menu_state.buffer, map_menu_state.file_handle, 0, map_menu_state.transfer_bytes, 0);
+            map_menu_state.level_slot = gHaveMapOMatic != 0 ? g_current_level_index + 0x100 : g_current_level_index;
+            map_menu_state.active = 1;
+            map_menu_state.load_state = -2;
             return;
         }
     }
-    D_L00_001842F0.active = 0;
+    map_menu_state.active = 0;
 }
 extern int D_L00_00184568[];
 

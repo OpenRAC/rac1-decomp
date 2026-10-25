@@ -16,7 +16,7 @@ float probe_leg_rig_ground_height(float *pos) {
     if (a[2] < 0.1f) a[2] = 0.1f;
     qcopy(b, pos);
     b[2] = b[2] + 0.75f;
-    if (func_L00_001EFFF0(b, a, 2, 0, 0) != 0) return D_L04_00174068;
+    if (coll_line(b, a, 2, 0, 0) != 0) return D_L04_00174068;
     return 0.0f;
 }
 /* Writes the four joint angle limits of a leg-rig block. */

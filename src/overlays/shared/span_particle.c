@@ -48,7 +48,7 @@ void spawn_span_particle(float *pos, int kind, float *vec, float scale) {
             break;
         }
         *(u128 *)w = *(u128 *)vp;
-        func_L00_001FF4B0(w, w, s);
+        vec_scale_to_length(w, w, s);
         *(short *)(p + 0xA) = k2;
         *(int *)(p + 4) = ((c >> 2) << 24) | 0x606060;
         *(int *)(p + 0xC) = (c << 24) | 0x907070;

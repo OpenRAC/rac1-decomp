@@ -283,7 +283,7 @@ void sand_shark_update(unsigned char *moby) {
             DeleteMoby(moby);
             return;
         }
-        if (*(int *)D_L02_001B0DB0[d->i290] == 0) {
+        if (*(int *)aridia_paths[d->i290] == 0) {
             STUB_printf(D_L02_001FABB0, *(short *)(moby + 0xB2));
             DeleteMoby(moby);
             return;
@@ -610,7 +610,7 @@ void sand_shark_update(unsigned char *moby) {
         a = fast_atan2(d->tgt[0] - *(float *)(moby + 0x10), d->tgt[1] - *(float *)(moby + 0x14));
         MobySpringTurn((char *)moby, a, &d->f240, 0.05f, 0.3f, 0.2f);
         if (moby[0x52] == moby[0x53] && IsFrameWithinWindow((char *)moby, 13.0f)) {
-            func_L00_001FF4B0(v0, moby + 0xC0, 0.75f);
+            vec_scale_to_length(v0, moby + 0xC0, 0.75f);
             FastVecAdd(v0, v0, moby + 0x10);
             v0[2] += 0.5f;
             MobySphereHitDirectional(moby, 0.5f, v0, 1, 1.0f, 1.0f, 0, 1, 0);
@@ -713,7 +713,7 @@ void sand_shark_update(unsigned char *moby) {
             d->i274 = -1;
             break;
         }
-        func_L00_001FF4B0(v4, moby + 0xC0, g_frame_time * 0.5f);
+        vec_scale_to_length(v4, moby + 0xC0, g_frame_time * 0.5f);
         FastVecAdd(moby + 0x10, moby + 0x10, v4);
         break;
     case 8:
@@ -753,7 +753,7 @@ void sand_shark_update(unsigned char *moby) {
             k = vec_distance_xy(d->home, m + 0x10) / ft;
             FastVecSub(d->vel, d->home, m + 0x10);
             d->vel[2] = 0.0f;
-            func_L00_001FF4B0(d->vel, d->vel, k);
+            vec_scale_to_length(d->vel, d->vel, k);
             d->vel[2] = vz;
             qcopy(moby + 0x10, m + 0x10);
             *(int *)(moby + 0x94) = *(int *)(*(char **)(moby + 0x24) + 0x10);
@@ -1226,7 +1226,7 @@ extern int func_001F9850(int);
 
 void begin_sand_shark_return_home_if_outside_path(unsigned char *moby) {
     char *data = *(char **)(moby + 0x78);
-    char *entry = D_L02_001B0DB0[*(int *)(data + 0x290)];
+    char *entry = aridia_paths[*(int *)(data + 0x290)];
     if (IsPointInPolygon(moby + 0x10, entry + 0x10, *(int *)entry) == 0) {
         moby[0x20] = 0x12;
         if (moby[0x53]) {
@@ -1429,7 +1429,7 @@ void update_level02_bot(unsigned char *raw) {
         angle = fast_atan2(target->pos.x - moby->pos.x,
                                   target->pos.y - moby->pos.y);
         MobySpringTurn((char *)moby, angle, &data->turn_speed, 0.02f, 0.3f, g_frame_time * 1.5707964f);
-        FastVecSub(position, D_L02_0016016C + data->post * 0x80 + 0x30, &moby->pos);
+        FastVecSub(position, aridia_scene_points + data->post * 0x80 + 0x30, &moby->pos);
         position[2] = 0.0f;
         ClampVectorLength(position, g_frame_time * 6.0f);
         FastVecAdd(&moby->pos, &moby->pos, position);
@@ -1452,7 +1452,7 @@ void update_level02_bot(unsigned char *raw) {
         }
         break;
     case L02_BOT_MOVE_TO_POST:
-        if (ClassifyTargetInCone((char *)moby, data->walk, (float *)(D_L02_0016016C + data->post * 0x80 + 0x30), (char *)data->velocity) == 4) {
+        if (ClassifyTargetInCone((char *)moby, data->walk, (float *)(aridia_scene_points + data->post * 0x80 + 0x30), (char *)data->velocity) == 4) {
             if (moby->prev_seq != 0) {
                 MobyBlendAnimation(moby, 0, 0, scale_ticks(30));
             }
@@ -1465,7 +1465,7 @@ void update_level02_bot(unsigned char *raw) {
                 MobyBlendAnimation(moby, 0, 0, scale_ticks(10));
             }
             moby->state = 7;
-        } else if (FastVecDist(&((struct Moby *)data->target)->pos, D_L02_0016016C + data->post * 0x80 + 0x30) < data->attack_range
+        } else if (FastVecDist(&((struct Moby *)data->target)->pos, aridia_scene_points + data->post * 0x80 + 0x30) < data->attack_range
                    && FastAbsF(((struct Moby *)data->target)->pos.z - moby->pos.z) < 4.0f) {
             moby->state = 5;
             if (moby->prev_seq != 6) {
@@ -1474,9 +1474,9 @@ void update_level02_bot(unsigned char *raw) {
         }
         break;
     case L02_BOT_SELECT_ATTACK_OR_WANDER:
-        if (FastVecDist(&((struct Moby *)data->target)->pos, D_L02_0016016C + data->post * 0x80 + 0x30) < data->attack_range
+        if (FastVecDist(&((struct Moby *)data->target)->pos, aridia_scene_points + data->post * 0x80 + 0x30) < data->attack_range
             && FastAbsF(((struct Moby *)data->target)->pos.z - moby->pos.z) < 4.0f) {
-            if (FastVecDist(&moby->pos, D_L02_0016016C + data->post * 0x80 + 0x30) < 1.0f) {
+            if (FastVecDist(&moby->pos, aridia_scene_points + data->post * 0x80 + 0x30) < 1.0f) {
                 target = (struct Moby *)data->target;
                 angle = fast_atan2(target->pos.x - moby->pos.x,
                                           target->pos.y - moby->pos.y);
@@ -1498,7 +1498,7 @@ void update_level02_bot(unsigned char *raw) {
             data->wander[0] = FastCos(wander_heading) * random_float_between(1.0f, 2.0f);
             data->wander[1] = FastSin(wander_heading) * random_float_between(1.0f, 2.0f);
             data->wander[2] = 0.0f;
-            FastVecAdd(data->wander, data->wander, D_L02_0016016C + data->post * 0x80 + 0x30);
+            FastVecAdd(data->wander, data->wander, aridia_scene_points + data->post * 0x80 + 0x30);
             moby->state = 6;
             if (moby->prev_seq != 6) {
                 MobyBlendAnimation(moby, 6, 0, scale_ticks(10));
@@ -1521,7 +1521,7 @@ void update_level02_bot(unsigned char *raw) {
         triggered = 0;
         if (data->wake_volume >= 0) {
             triggered = is_point_inside_clip_volume(D_0013E633 + 0x10BD, data->wake_volume) != 0;
-        } else if (FastVecDist(D_0013E633 + 0xE9D, D_L02_0016016C + data->post * 0x80 + 0x30) < data->wake_range) {
+        } else if (FastVecDist(D_0013E633 + 0xE9D, aridia_scene_points + data->post * 0x80 + 0x30) < data->wake_range) {
             triggered = 1;
         }
         if (triggered) {
@@ -1617,11 +1617,11 @@ void update_level02_bot(unsigned char *raw) {
             position[2] += 1.0f;
             SetDeathBits(moby, 0, -1);
             spawn_explosion(moby, data->velocity, position, 0.0f, 0.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, -1, 1.0f, 15.0f, 1, 1, -1, 0);
-            SpawnBreakFragment((char *)moby, 0x6D7, (float *)(&moby->pos), &moby->rot, 0, 0, 0.0f, D_L02_0015F660, D_L02_0015F660, D_L02_0015F660);
-            SpawnBreakFragment((char *)moby, 0x6D8, (float *)(&moby->pos), &moby->rot, 0, 0, 0.0f, D_L02_0015F660, D_L02_0015F660, D_L02_0015F660);
-            SpawnBreakFragment((char *)moby, 0x6D9, (float *)(&moby->pos), &moby->rot, 0, 0, 0.0f, D_L02_0015F660, D_L02_0015F660, D_L02_0015F660);
-            SpawnBreakFragment((char *)moby, 0x6E9, (float *)(&moby->pos), &moby->rot, 0, 0, 0.0f, D_L02_0015F660, D_L02_0015F660, D_L02_0015F660);
-            SpawnBreakFragment((char *)moby, 0x782, (float *)(&moby->pos), &moby->rot, 0, 0, 0.0f, D_L02_0015F660, D_L02_0015F660, D_L02_0015F660);
+            SpawnBreakFragment((char *)moby, 0x6D7, (float *)(&moby->pos), &moby->rot, 0, 0, 0.0f, aridia_zero_vec, aridia_zero_vec, aridia_zero_vec);
+            SpawnBreakFragment((char *)moby, 0x6D8, (float *)(&moby->pos), &moby->rot, 0, 0, 0.0f, aridia_zero_vec, aridia_zero_vec, aridia_zero_vec);
+            SpawnBreakFragment((char *)moby, 0x6D9, (float *)(&moby->pos), &moby->rot, 0, 0, 0.0f, aridia_zero_vec, aridia_zero_vec, aridia_zero_vec);
+            SpawnBreakFragment((char *)moby, 0x6E9, (float *)(&moby->pos), &moby->rot, 0, 0, 0.0f, aridia_zero_vec, aridia_zero_vec, aridia_zero_vec);
+            SpawnBreakFragment((char *)moby, 0x782, (float *)(&moby->pos), &moby->rot, 0, 0, 0.0f, aridia_zero_vec, aridia_zero_vec, aridia_zero_vec);
             DeleteMoby(moby);
             return;
         }
@@ -1742,7 +1742,7 @@ void handle_level02_bot_damage_and_retargeting(void *arg) {
         d->target = (char *)target[16];
     }
     if (d->target == 0) {
-        d->target = *(char **)D_001414D0;
+        d->target = *(char **)g_hero_moby;
     }
     StepColorFade(moby, d->anim);
 }
@@ -2002,7 +2002,7 @@ void DrawRotatingQuadRing(char *m) {
                 packet.color[2] = color;
                 packet.color[1] = color;
                 packet.color[0] = color;
-                func_L00_001FD1D8(&packet, &matrix, 0);
+                draw_world_quad(&packet, &matrix, 0);
             }
             matrix.position[2] += *(float *)&D_L02_00161C78;
         } while (matrix.position[2] < upper);
@@ -2157,7 +2157,7 @@ void sand_shark_nest_update(char *m)
             qcopy(launch_position, &((struct Moby *)m)->pos);
             launch_position[2] = launch_position[2] + 1.5f;
             FastVecSub(launch_velocity, od + 0x220, &((struct Moby *)m)->pos);
-            func_L00_001FF500(launch_velocity, launch_velocity, g_frame_time + g_frame_time);
+            vec_set_length_xy(launch_velocity, launch_velocity, g_frame_time + g_frame_time);
             launch_velocity[2] = g_frame_time * 6.0f;
             launch_sand_shark((unsigned char *)launched_shark, launch_position, launch_velocity);
         }
@@ -2186,10 +2186,10 @@ void sand_shark_nest_update(char *m)
         }
         qcopy(explosion_position, &((struct Moby *)m)->pos);
         spawn_explosion(m, nest_vars->vel, explosion_position, 0.0f, 0.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, -1, 1.0f, 15.0f, 1, 1, -1, 0);
-        SpawnBreakFragment(m, 0x6E4, (float *)&((struct Moby *)m)->pos, &((struct Moby *)m)->rot, 0, 0, 0.0f, D_L02_0015F660, D_L02_0015F660, D_L02_0015F660);
-        SpawnBreakFragment(m, 0x6E4, (float *)&((struct Moby *)m)->pos, &((struct Moby *)m)->rot, 0, 0, 0.0f, D_L02_0015F660, D_L02_0015F660, D_L02_0015F660);
-        SpawnBreakFragment(m, 0x6E5, (float *)&((struct Moby *)m)->pos, &((struct Moby *)m)->rot, 0, 0, 0.0f, D_L02_0015F660, D_L02_0015F660, D_L02_0015F660);
-        SpawnBreakFragment(m, 0x6E5, (float *)&((struct Moby *)m)->pos, &((struct Moby *)m)->rot, 0, 0, 0.0f, D_L02_0015F660, D_L02_0015F660, D_L02_0015F660);
+        SpawnBreakFragment(m, 0x6E4, (float *)&((struct Moby *)m)->pos, &((struct Moby *)m)->rot, 0, 0, 0.0f, aridia_zero_vec, aridia_zero_vec, aridia_zero_vec);
+        SpawnBreakFragment(m, 0x6E4, (float *)&((struct Moby *)m)->pos, &((struct Moby *)m)->rot, 0, 0, 0.0f, aridia_zero_vec, aridia_zero_vec, aridia_zero_vec);
+        SpawnBreakFragment(m, 0x6E5, (float *)&((struct Moby *)m)->pos, &((struct Moby *)m)->rot, 0, 0, 0.0f, aridia_zero_vec, aridia_zero_vec, aridia_zero_vec);
+        SpawnBreakFragment(m, 0x6E5, (float *)&((struct Moby *)m)->pos, &((struct Moby *)m)->rot, 0, 0, 0.0f, aridia_zero_vec, aridia_zero_vec, aridia_zero_vec);
         DeleteMoby(m);
         return;
     }
@@ -2458,8 +2458,8 @@ void transport_pod_update(unsigned char *moby) {
     FastVecScale(delta, moby + 0x10, -1.0f);
     qcopy(rot, moby + 0x40);
     if ((*(float *)&D_L02_00161CD4) != 0.0f) {
-        for (i = 0; i < *(int *)D_L02_001B0DB0[transport_pod_vars->path]; i++) {
-            qcopy(a, D_L02_001B0DB0[transport_pod_vars->path] + i * 0x10 + 0x10);
+        for (i = 0; i < *(int *)aridia_paths[transport_pod_vars->path]; i++) {
+            qcopy(a, aridia_paths[transport_pod_vars->path] + i * 0x10 + 0x10);
             PartType41Spawn(a, moby, 4, 0x800000FF, 0x7F, 2, 0xFF, 0.1f);
         }
     }
@@ -2486,8 +2486,8 @@ void transport_pod_update(unsigned char *moby) {
         qcopy_nc(transport_pod_vars->rail_b + 0x40, moby + 0x40);
         transport_pod_vars->rail_a_off = -1.0f;
         transport_pod_vars->rail_b_off = -1.0f;
-        transport_pod_vars->cam_max = g_frame_time_sq * 0.1f * (float)*(int *)D_L02_001B0DB0[transport_pod_vars->path];
-        transport_pod_vars->cam_accel = g_frame_time * 0.3f * (float)*(int *)D_L02_001B0DB0[transport_pod_vars->path];
+        transport_pod_vars->cam_max = g_frame_time_sq * 0.1f * (float)*(int *)aridia_paths[transport_pod_vars->path];
+        transport_pod_vars->cam_accel = g_frame_time * 0.3f * (float)*(int *)aridia_paths[transport_pod_vars->path];
         snap_transport_pod_rails_to_offsets((char *)moby);
         break;
     case TRANSPORT_POD_WAIT_FOR_GEAR_MOVEMENT_TRIGGER:
@@ -2498,13 +2498,13 @@ void transport_pod_update(unsigned char *moby) {
         break;
     case TRANSPORT_POD_TIMED_GEAR_MOVEMENT:
         s = g_frame_time * 5.0f;
-        func_L00_001FF4B0(a, G(transport_pod_vars->gear[0]) + 0xC0, -s);
+        vec_scale_to_length(a, G(transport_pod_vars->gear[0]) + 0xC0, -s);
         FastVecAdd(G(transport_pod_vars->gear[0]) + 0x10, G(transport_pod_vars->gear[0]) + 0x10, a);
-        func_L00_001FF4B0(a, G(transport_pod_vars->gear[1]) + 0xC0, s);
+        vec_scale_to_length(a, G(transport_pod_vars->gear[1]) + 0xC0, s);
         FastVecAdd(G(transport_pod_vars->gear[1]) + 0x10, G(transport_pod_vars->gear[1]) + 0x10, a);
-        func_L00_001FF4B0(a, G(transport_pod_vars->gear[2]) + 0xC0, -s);
+        vec_scale_to_length(a, G(transport_pod_vars->gear[2]) + 0xC0, -s);
         FastVecAdd(G(transport_pod_vars->gear[2]) + 0x10, G(transport_pod_vars->gear[2]) + 0x10, a);
-        func_L00_001FF4B0(a, G(transport_pod_vars->gear[3]) + 0xC0, s);
+        vec_scale_to_length(a, G(transport_pod_vars->gear[3]) + 0xC0, s);
         FastVecAdd(G(transport_pod_vars->gear[3]) + 0x10, G(transport_pod_vars->gear[3]) + 0x10, a);
         moby_build_matrix(G(transport_pod_vars->gear[0]));
         moby_build_matrix(G(transport_pod_vars->gear[1]));
@@ -2536,7 +2536,7 @@ void transport_pod_update(unsigned char *moby) {
         break;
     case TRANSPORT_POD_WAIT_FOR_RIDER_OR_RECALL:
         if (((struct Moby *)moby)->command == 0 &&
-            vec_distance_xy(HP, (void *)(D_L02_0016016C + ((transport_pod_vars->node_b) << 7) + 0x30)) < 16.0f) {
+            vec_distance_xy(HP, (void *)(aridia_scene_points + ((transport_pod_vars->node_b) << 7) + 0x30)) < 16.0f) {
             qcopy(moby + 0x10, NODE(transport_pod_vars->node_b)[0].pos);
             ((struct Moby *)moby)->pos.z -= 6.0f;
             transport_pod_vars->rail_a_off = -1.0f;
@@ -2546,7 +2546,7 @@ void transport_pod_update(unsigned char *moby) {
             ((struct Moby *)moby)->command = 1;
             Moby_PlaySound(1, 0, (int)moby);
         } else if (((struct Moby *)moby)->command == 1 &&
-                   vec_distance_xy(HP, (void *)(D_L02_0016016C + ((transport_pod_vars->node_a) << 7) + 0x30)) < 16.0f) {
+                   vec_distance_xy(HP, (void *)(aridia_scene_points + ((transport_pod_vars->node_a) << 7) + 0x30)) < 16.0f) {
             qcopy(moby + 0x10, NODE(transport_pod_vars->node_a)[0].pos);
             ((struct Moby *)moby)->pos.z -= 6.0f;
             transport_pod_vars->rail_a_off = -1.0f;
@@ -2561,17 +2561,17 @@ void transport_pod_update(unsigned char *moby) {
             b[2] += 2.0f;
             if (((struct Moby *)moby)->command == 0) {
                 transport_pod_vars->cam_goal = 0;
-                transport_pod_vars->cam_pos = (float)(*(int *)D_L02_001B0DB0[transport_pod_vars->path] - 1);
+                transport_pod_vars->cam_pos = (float)(*(int *)aridia_paths[transport_pod_vars->path] - 1);
                 qcopy_nc(a, NODE(transport_pod_vars->node_a)[0].look);
-                qcopy(camera_position_or_stop_look, D_L02_001B0DB0[transport_pod_vars->path] + truncate_float_to_s32(transport_pod_vars->cam_pos) * 0x10 + 0x10);
+                qcopy(camera_position_or_stop_look, aridia_paths[transport_pod_vars->path] + truncate_float_to_s32(transport_pod_vars->cam_pos) * 0x10 + 0x10);
                 clear_u64_value(initial_camera_rotation);
                 initial_camera_rotation[2] = fast_atan2(b[0] - camera_position_or_stop_look[0], b[1] - camera_position_or_stop_look[1]);
                 initial_camera_rotation[1] = -fast_atan2(vec_distance_xy(camera_position_or_stop_look, b), b[2] - camera_position_or_stop_look[2]);
             } else {
-                transport_pod_vars->cam_goal = *(int *)D_L02_001B0DB0[transport_pod_vars->path] - 1;
+                transport_pod_vars->cam_goal = *(int *)aridia_paths[transport_pod_vars->path] - 1;
                 transport_pod_vars->cam_pos = 0.0f;
                 qcopy_nc(a, NODE(transport_pod_vars->node_b)[0].look);
-                qcopy(camera_position_or_stop_look, D_L02_001B0DB0[transport_pod_vars->path] + truncate_float_to_s32(transport_pod_vars->cam_pos) * 0x10 + 0x10);
+                qcopy(camera_position_or_stop_look, aridia_paths[transport_pod_vars->path] + truncate_float_to_s32(transport_pod_vars->cam_pos) * 0x10 + 0x10);
                 clear_u64_value(initial_camera_rotation);
                 initial_camera_rotation[2] = fast_atan2(b[0] - camera_position_or_stop_look[0], b[1] - camera_position_or_stop_look[1]);
                 initial_camera_rotation[1] = -fast_atan2(vec_distance_xy(camera_position_or_stop_look, b), b[2] - camera_position_or_stop_look[2]);
@@ -2622,12 +2622,12 @@ void transport_pod_update(unsigned char *moby) {
                 ((struct Moby *)moby)->command = 1;
                 qcopy_nc(moby + 0x10, NODE(transport_pod_vars->node_b)[0].pos);
                 qcopy_nc(camera_position_or_stop_look, NODE(transport_pod_vars->node_b)[0].look);
-                FastVecSub(a, D_L02_0016016C + (transport_pod_vars->node_b << 7) + 0x30, D_L02_0016016C + (transport_pod_vars->node_a << 7) + 0x30);
+                FastVecSub(a, aridia_scene_points + (transport_pod_vars->node_b << 7) + 0x30, aridia_scene_points + (transport_pod_vars->node_a << 7) + 0x30);
             } else {
                 ((struct Moby *)moby)->command = 0;
                 qcopy_nc(moby + 0x10, NODE(transport_pod_vars->node_a)[0].pos);
                 qcopy_nc(camera_position_or_stop_look, NODE(transport_pod_vars->node_a)[0].look);
-                FastVecSub(a, D_L02_0016016C + (transport_pod_vars->node_a << 7) + 0x30, D_L02_0016016C + (transport_pod_vars->node_b << 7) + 0x30);
+                FastVecSub(a, aridia_scene_points + (transport_pod_vars->node_a << 7) + 0x30, aridia_scene_points + (transport_pod_vars->node_b << 7) + 0x30);
             }
             ((struct Moby *)moby)->pos.z -= 6.0f;
             FastVecAdd(b, HP, a);
@@ -2642,7 +2642,7 @@ void transport_pod_update(unsigned char *moby) {
         if (transport_pod_vars->cam_goal != 0 ? (float)transport_pod_vars->cam_goal <= transport_pod_vars->cam_pos : transport_pod_vars->cam_pos <= (float)transport_pod_vars->cam_goal) {
             moby[0x20] = 10;
         }
-        SamplePathAt(D_L02_001B0DB0[transport_pod_vars->path], 0, camera_position_or_stop_look, b, 0, transport_pod_vars->cam_pos);
+        SamplePathAt(aridia_paths[transport_pod_vars->path], 0, camera_position_or_stop_look, b, 0, transport_pod_vars->cam_pos);
         qcopy(a, moby + 0x10);
         a[2] += 8.0f;
         clear_u64_value(b);
@@ -2669,7 +2669,7 @@ void transport_pod_update(unsigned char *moby) {
             FastAbsF(((struct Moby *)transport_pod_vars->rail_b)->pos.z - ((struct Moby *)moby)->pos.z + 4.0f) < 0.01f) {
             {
                 extern unsigned short D_00141992[];
-                adjusted_help_ticks = scale_ticks(D_0015EFA4) - D_00141992[0] * 600;
+                adjusted_help_ticks = scale_ticks(play_time_ticks) - D_00141992[0] * 600;
             }
             lim = scale_ticks(3600) * 60.0f;
             if (!(lim < adjusted_help_ticks) || (*(unsigned int *)(D_0014171B + 0x591) & (1 << g_current_level_index))) {
@@ -2975,7 +2975,7 @@ void rocket_launcher_update(unsigned char *m) {
             Moby_GetJointWorldPos(m, 1, v30);
             Moby_GetJointWorldPos(m, 0, v20);
             FastVecSub(v20, v30, v20);
-            func_L00_001FF4B0(v20, v20, *(float *)&D_L02_00161CFC * g_frame_time);
+            vec_scale_to_length(v20, v20, *(float *)&D_L02_00161CFC * g_frame_time);
             spawn_explosion(m, v20, v30, 0.0f, 0.0f, 0, 6, 32, 7.0f, 4.0f, 1.0f, -1, 3.0f, 30.0f, 0, 1, -1, 0);
             spawn_projectile_moby((char *)m, v30, v20);
         }
@@ -3059,7 +3059,7 @@ void rocket_door1_update(struct Moby *m) {
     case 0:
         qcopy(&v->start, &m->rot);
         v->start.f[3] = 0.0f;
-        if (D_0014C150[g_current_level_index][m->mission] == 0xFF) {
+        if (saved_mission_state[g_current_level_index][m->mission] == 0xFF) {
             m->rot.x = v->goal.f[0] * 0.017453292f;
             m->rot.y = v->goal.f[1] * 0.017453292f;
             m->rot.z = v->goal.f[2] * 0.017453292f;
@@ -3120,7 +3120,7 @@ void tresspasser_door1_update(unsigned char *moby) {
         }
         break;
     case 2:
-        func_L00_001FF4B0(a, moby + 0xD0, 2.0f);
+        vec_scale_to_length(a, moby + 0xD0, 2.0f);
         FastVecAdd(a, d, a);
         FastVecSub(b, a, moby + 0x10);
         ClampVectorLength(b, g_frame_time + g_frame_time);
@@ -3155,7 +3155,7 @@ void tresspasser_door2_update(char *moby) {
         float a[4];
         float b[4];
         char *pos = moby + 0x10;
-        func_L00_001FF4B0(a, moby + 0xD0, -2.0f);
+        vec_scale_to_length(a, moby + 0xD0, -2.0f);
         FastVecAdd(a, data, a);
         FastVecSub(b, a, pos);
         ClampVectorLength(b, g_frame_time + g_frame_time);

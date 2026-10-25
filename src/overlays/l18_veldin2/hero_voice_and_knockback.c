@@ -208,7 +208,7 @@ s32 HeroL18_TryTakeHit(s32 arg) {
     if (g_hero.i1C0 != 0) {
         return 0;
     }
-    if (D_L18_0015F6A8 != 0) {
+    if (veldin2_cinematic_mode != 0) {
         return 0;
     }
     g_hero.p2280 = 0;

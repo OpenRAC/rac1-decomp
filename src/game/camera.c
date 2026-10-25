@@ -778,7 +778,7 @@ int advance_alternate_camera_transition(Camera *cam, CamBlendOrbit *o) {
     yaw *= s2;
     build_look_at_matrix(&r0, &r0, &r1, yaw * step);
     fast_vec_normalize(&gCamera.matrix[0], &r0, 1.0f);
-    FastVecCross(&gCamera.matrix[1], &gCamera.matrix[0], D_0013F6E0);
+    FastVecCross(&gCamera.matrix[1], &gCamera.matrix[0], hero_gravity_dir);
     fast_vec_normalize(&gCamera.matrix[1], &gCamera.matrix[1], -1.0f);
     FastVecCross(&gCamera.matrix[2], &gCamera.matrix[1], &gCamera.matrix[0]);
     extract_matrix_rotation_quaternion(&o->saved_rot, gCamera.matrix);

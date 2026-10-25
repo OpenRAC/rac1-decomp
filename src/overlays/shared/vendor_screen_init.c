@@ -58,7 +58,7 @@ void initialize_vendor_screen(char *m, int lvl) {
     D_L01_0015F6BC = 1;
     FastMemSet(s, 0, 0x220);
     *(int *)D_L01_001CABC0 = 3;
-    D_L01_0015F6A8 = 5;
+    novalis_game_mode = 5;
     *(int *)(s + 4) = 0;
     *(char **)(s + 0x28) = m;
     sc = s + 0xC0;

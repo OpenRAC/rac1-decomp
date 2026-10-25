@@ -36,7 +36,7 @@ extern unsigned char D_L00_00197F40[] NOT_SDA;
 extern char *D_L00_00197680[] NOT_SDA;
 
 int Sound_PlayClassSound(int i, int a1, int v, int k) {
-    char *t = D_L00_00197680[D_L00_00197F40[k]];
+    char *t = moby_class_headers[D_L00_00197F40[k]];
     char *e;
     int r;
     if (t == 0) {
@@ -202,7 +202,7 @@ void update_moby_proximity_interaction(unsigned char *m) {
             }
         }
     } else {
-        if (D_L00_0015F6A8 != 2) {
+        if (cinematic_mode != 2) {
             q = D_0013D355 + 0x13B;
             if (q[0x48] == 0 && gHaveMorphORay[7] != 0) {
                 StartCutscene(4);

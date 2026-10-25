@@ -39,8 +39,8 @@ void update_game_frame_and_idle_counters(void) {
     } else {
         (*(int *)&D_L00_001610B0)++;
     }
-    D_L00_0015F6B0++;
-    D_0015EFA4++;
+    level_frame_counter++;
+    play_time_ticks++;
     if (D_L00_0015F678) {
         if ((*(int *)&D_L00_001610B0) < (int)((float)scale_ticks(15) * 60.0f)) {
             D_0015EF28++;
@@ -114,7 +114,7 @@ void handle_pause_input(void) {
         ((PadS *)(D_0013A5E0 + 0x2460))->w1A8 = ~((PadS *)(D_0013A5E0 + 0x2460))->w1A0 & g_debug_menu.wA0;
         g_debug_menu.wA0 = ((PadS *)(D_0013A5E0 + 0x2460))->w1A0 & ~0x200;
     }
-    lvl = D_L00_0015F6A8;
+    lvl = cinematic_mode;
     if (lvl == 0 && (D_0015EFB4_m & 0x401) && D_L00_0015F6AC >= 8 && ((Hero *)(D_0013E633 + 0xE1D))->state.current != 0x1D) {
         mode_freeze_init(3, 0, 0);
         return;
@@ -170,7 +170,7 @@ void handle_pause_input(void) {
     }
     if (((AreaS *)(D_0013D355 + 0x3B))->wFC && !(r = (unsigned char *)(D_0013D355_b + 0x13B))[0x10] && D_L00_0015F6AC >= 8
         && !D_0015EF20 && !((Hero *)(D_0013E633 + 0xE1D))->unk20B1 && ((Hero *)(D_0013E633 + 0xE1D))->health.hp
-        && scale_ticks(0x1E) < D_L00_0015F6B0 && g_current_level_index) {
+        && scale_ticks(0x1E) < level_frame_counter && g_current_level_index) {
         mode_freeze_init(5, 0, 0);
         r[0x10] = 1;
         return;
@@ -187,7 +187,7 @@ void handle_pause_input(void) {
     if (D_L00_00184314) {
         HitS *h = (HitS *)(D_0014171B + 0x22D);
         if (h->h48 < 0xFFFF) h->h48++;
-        if (scale_ticks(D_0015EFA4) / 600 > h->h4A) h->h4A = scale_ticks(D_0015EFA4) / 600;
+        if (scale_ticks(play_time_ticks) / 600 > h->h4A) h->h4A = scale_ticks(play_time_ticks) / 600;
         h->w4C = h->w4C | (1 << g_current_level_index) | 0x80000000;
     }
     if (D_L00_0015F710) {
@@ -277,7 +277,7 @@ void StartCutscene(int arg) {
     int v;
     float one;
     if (arg < 0) return;
-    if (D_L00_0015F6A8 == 2) return;
+    if (cinematic_mode == 2) return;
     d = (char *)D_0013E633 + 0xE1D;
     if (*(int *)(d + 0x22A8) == 0) {
         Hero_OnKilled();
@@ -285,27 +285,27 @@ void StartCutscene(int arg) {
     }
     music_Pause(0);
     update_audio_stream_until_idle(0);
-    D_L00_0015F6BC = 1;
-    FastMemSet(D_L00_0016C960, 0, 0x1C0);
+    skip_frame = 1;
+    FastMemSet(cutscene_state, 0, 0x1C0);
     FastMemSet(D_L00_0017C540, 0, 0x40);
     FastMemSet(D_L00_0017C440, 0, 0x40);
     FastMemSet(D_L00_0017C480, 0, 0x40);
     FastMemSet(D_L00_0017C500, 0, 0x40);
     FastMemSet(D_L00_0017C4C0, 0, 0x40);
-    *(int *)(D_L00_0016C960 + 0x30) = arg;
-    v = D_L00_0016128C - 0x3C000;
+    *(int *)(cutscene_state + 0x30) = arg;
+    v = lvl_vu_chain_buffer_size - 0x3C000;
     one = 1.0f;
     D_L00_0015F67C = one;
     *(int *)((char *)&D_L00_0015F67C + 4) = 0;
-    *(int *)(D_L00_0016C960 + 0x34) = 0;
-    *(int *)(D_L00_0016C960 + 0x3C) = 0;
-    D_L00_0016128C = v;
-    *(int *)(D_L00_0016C960 + 0x58) = D_L00_00173F00[1] + v;
-    *(int *)(D_L00_0016C960 + 0x5C) = D_L00_00173F00[2] + v;
+    *(int *)(cutscene_state + 0x34) = 0;
+    *(int *)(cutscene_state + 0x3C) = 0;
+    lvl_vu_chain_buffer_size = v;
+    *(int *)(cutscene_state + 0x58) = lvl_resource_buffers[1] + v;
+    *(int *)(cutscene_state + 0x5C) = lvl_resource_buffers[2] + v;
     clear_active_help_record();
     *(float *)&gFadeLvl = one;
-    D_L00_0015F6A8 = 2;
-    D_L00_0016C960[0x4B] = player_camera[0x394];
+    cinematic_mode = 2;
+    cutscene_state[0x4B] = player_camera[0x394];
     *(int *)(player_camera + 0x394) = 0;
     D_L00_0015F500 = 0;
     HeroEnterMoveState(0x64, 2);
@@ -317,19 +317,19 @@ void StartCutscene(int arg) {
     FadeToBlack(scale_ticks(6));
     update_audio_stream_until_idle(1);
     update_world_object_animation();
-    for (p = D_L00_0016009C; p->st != 0xFF; p++) {
+    for (p = level_mobys_end; p->st != 0xFF; p++) {
         if (p->st & 0x80) continue;
         if (p->type == 0x4A || p->type == 0xCB) {
             p->flags |= 0x80;
         }
     }
     h = (char *)D_0014171B + 0x100B5;
-    *(int *)(h + 0x1C) = ((Vd *)D_L00_0016C960)->a30;
+    *(int *)(h + 0x1C) = ((Vd *)cutscene_state)->a30;
     while (qq = (char *)D_0014171B + 0x100B5, *(short *)(qq + 0x5A) != 3) {
         sound_update();
         func_00122598(0);
     }
-    q = D_L00_0016C960;
+    q = cutscene_state;
     *(short *)(q + 0x46) = -3;
     ((int (*)(void))Music_ContinueStreamIfReady)();
     ((int (*)(int))start_cutscene_chunk_read)(1);
@@ -376,13 +376,13 @@ void finish_cutscene(void) {
     float g, f;
     int i;
     if ((unsigned short)(h->x5a - 6) >= 2) h->x5a = 5;
-    D_L00_0015F6BC = 1;
+    skip_frame = 1;
     calculate_dma_transfer_address();
     FadeToBlack(12);
     ResetFrameCounters();
     D_L00_00167114 = D_L00_0016C960_c.x4b;
     D_L00_0016CBF0 = 0.63f;
-    D_L00_0015F6A8 = 0;
+    cinematic_mode = 0;
     gFadeLvl = 0;
     UpdateViewContext();
     for (i = 0; i < D_L00_0016C960_c.n; i++) {
@@ -393,7 +393,7 @@ void finish_cutscene(void) {
             DeleteMoby(m);
         }
     }
-    for (o = D_L00_0016009C; o->st != 0xFF; o++) {
+    for (o = level_mobys_end; o->st != 0xFF; o++) {
         if (!(o->st & 0x80) && (o->type == 0x4A || o->type == 0xCB)) o->flags &= 0xFF7F;
     }
     p = D_0013E633 + 0xE9D;
@@ -412,9 +412,9 @@ void finish_cutscene(void) {
         Hero_ResetToPosition(D_L00_0016C970, D_L00_0016C970 + 0x10, 0, 1);
     }
     if (D_L00_00179200.a) D_L00_00179200.a->flags &= ~1;
-    if (D_L00_001BA070.p) {
-        D_L00_001BA070.p->flags &= ~1;
-        D_L00_001BA070.p = 0;
+    if (level_menu_system.p) {
+        level_menu_system.p->flags &= ~1;
+        level_menu_system.p = 0;
     }
     if (D_L00_00179200.a) {
         Fl *a = D_L00_00179200.a;
@@ -462,13 +462,13 @@ typedef struct {
 
 /* Builds the camera view matrices from the current camera entry and returns the entry's flag byte. */
 unsigned char apply_cutscene_camera_key(void) {
-    CutsceneCamCtl *d = (CutsceneCamCtl *)D_L00_0016C960;
+    CutsceneCamCtl *d = (CutsceneCamCtl *)cutscene_state;
     int idx = d->key_index;
     CutsceneCamKey *e = d->keys + idx;
     f32 *p = e->values;
     CameraBlock *cc;
     float f0;
-    CutsceneCamVars *b = (CutsceneCamVars *)D_L00_0016CB40;
+    CutsceneCamVars *b = (CutsceneCamVars *)render_view_params;
     char *c;
     unsigned char r;
     float m[16];
@@ -503,7 +503,7 @@ unsigned char apply_cutscene_camera_key(void) {
         float f = *(float *)&D_L00_0015F680;
         if (f != 0.0f) {
             qcopy(v, c + 0x210);
-            func_L00_001FF4B0(v, v, f);
+            vec_scale_to_length(v, v, f);
             FastVecSub(c, c, v);
         }
     }
@@ -691,22 +691,22 @@ void update_cutscene_playback(void) {
     f32 a[4] __attribute__((aligned(16)));
     f32 b[4] __attribute__((aligned(16)));
 
-    if ((D_L00_0016C158_9A300.update_flags & 2) || ((D_L00_0016C158_9A300.update_flags & 0x10) && (D_0013CBE4 & 0x200))) {
+    if ((D_L00_0016C158_9A300.update_flags & 2) || ((D_L00_0016C158_9A300.update_flags & 0x10) && (pad0_pressed & 0x200))) {
         ResetFrameCounters();
     }
-    if (!(D_L00_0016C158_9A300.update_flags & 0x10) || (D_0013CBE4 & 0x220)) {
+    if (!(D_L00_0016C158_9A300.update_flags & 0x10) || (pad0_pressed & 0x220)) {
         apply_level_specific_cutscene_moby_effects();
     }
-    if ((D_L00_0016C158_9A300.update_flags & 2) || ((D_L00_0016C158_9A300.update_flags & 0x10) && (D_0013CBE4 & 0x200))) {
+    if ((D_L00_0016C158_9A300.update_flags & 2) || ((D_L00_0016C158_9A300.update_flags & 0x10) && (pad0_pressed & 0x200))) {
         update_visible_resident_objects();
         enqueue_voice_request();
     }
     Profile_Mark(D_L00_001610B8_9A300, 3);
-    if ((D_L00_0016C158_9A300.update_flags & 1) || ((D_L00_0016C158_9A300.update_flags & 0x10) && (D_0013CBE4 & 0x200))) {
+    if ((D_L00_0016C158_9A300.update_flags & 1) || ((D_L00_0016C158_9A300.update_flags & 0x10) && (pad0_pressed & 0x200))) {
         coordinate_hero_frame_update();
     }
     Profile_Mark(D_L00_001610C8_9A300, 7);
-    if ((D_L00_0016C158_9A300.update_flags & 4) || ((D_L00_0016C158_9A300.update_flags & 0x10) && (D_0013CBE4 & 0x200))) {
+    if ((D_L00_0016C158_9A300.update_flags & 4) || ((D_L00_0016C158_9A300.update_flags & 0x10) && (pad0_pressed & 0x200))) {
         UpdateParts();
     }
     Profile_Mark(D_L00_001610D8_9A300, 5);
@@ -724,7 +724,7 @@ void update_cutscene_playback(void) {
     done = cs->f34 >= cs->h40;
     if (cs->f34 >= scale_ticks(0x12) && D_L00_0015F4FC_9A300 == 0.0f) {
 
-        if (((*(s32 *)&D_0015EFA0) || D_0015EF20 || D_0015EFD8 || g_current_level_index <= 0) && (D_0013CA40_9A300.buttons.w.pressed & 0x800)) {
+        if (((*(s32 *)&D_0015EFA0) || D_0015EF20 || decode_mode || g_current_level_index <= 0) && (D_0013CA40_9A300.buttons.w.pressed & 0x800)) {
             done = 1;
         } else if ((D_0013CA40_9A300.buttons.held_pressed & 0x8000000000FUL) == 0x8000000000FUL) {
             done = 1;
@@ -773,7 +773,7 @@ void update_cutscene_playback(void) {
     Profile_Mark(D_L00_001610F8_9A300, 6);
     UpdateAllPointLights();
     update_resident_packed_direction();
-    if ((D_L00_0016C158_9A300.update_flags & 2) || ((D_L00_0016C158_9A300.update_flags & 0x10) && (D_0013CBE4 & 0x200))) {
+    if ((D_L00_0016C158_9A300.update_flags & 2) || ((D_L00_0016C158_9A300.update_flags & 0x10) && (pad0_pressed & 0x200))) {
         update_game_frame_and_idle_counters();
     }
 }
@@ -883,10 +883,10 @@ void prepare_movie_playback(int sector, int size, int arg2) {
     D_L00_00161108_m.sector = sector;
     D_L00_00161108_m.size = size;
     D_L00_00161108_m.unk8 = arg2;
-    D_L00_0015F6BC = 1;
+    skip_frame = 1;
     FadeToBlack(4);
     clear_active_help_record();
-    D_L00_0015F6A8 = 1;
+    cinematic_mode = 1;
     D_L00_00161108_m.buf0 = D_L00_00173F04;
     D_L00_00161108_m.buf1 = D_L00_0015F50C;
     big = pal_mode != 0 ? 0xE : 0xD;
@@ -931,7 +931,7 @@ void movie_exit_to_gameplay(void) {
     int source, destination, big, small, i, j;
     AB *cb;
 
-    D_L00_0015F6BC = 1;
+    skip_frame = 1;
     func_00122598(0);
     ((void (*)(int, int))func_00120858)(0, 0);
     func_00123168(func_0012F308);
@@ -960,14 +960,14 @@ void movie_exit_to_gameplay(void) {
         destination += 0x4000;
         ((void (*)(int, int))func_00120858)(0, 0);
     }
-    if (D_0015EFD8 == 2)
-        D_0015EFD8 = 0;
+    if (decode_mode == 2)
+        decode_mode = 0;
     FadeToBlack(4);
     {
         char *hh = (char *)D_0014171B + 0x100B5;
         music_StartTrack(*(short *)(hh + 0x38), 1, 0x400);
     }
-    D_L00_0015F6A8 = 0;
+    cinematic_mode = 0;
     cb = &D_L00_00179200;
     if (cb->a != 0) {
         Fl *a = cb->a;
@@ -1029,14 +1029,14 @@ void start_slideshow(void) {
     int t;
     update_audio_stream_until_idle(0);
     FadeToBlack(8);
-    D_L00_0015F6BC = 1;
+    skip_frame = 1;
     *(float *)&gFadeLvl = 1.0f;
-    D_L00_0015F6A8 = 7;
+    cinematic_mode = 7;
     FastMemSet(slideshow, 0, 16);
-    t = D_L00_0016128C - 0xE0000;
-    slideshow[2] = D_L00_00173F00[1] + t;
-    slideshow[3] = D_L00_00173F00[2] + t;
-    D_L00_0016128C = t;
+    t = lvl_vu_chain_buffer_size - 0xE0000;
+    slideshow[2] = lvl_resource_buffers[1] + t;
+    slideshow[3] = lvl_resource_buffers[2] + t;
+    lvl_vu_chain_buffer_size = t;
     if (pal_mode != 0) {
         start_audio_stream_read(slideshow[2], D_00137C80.alt[((short *)slideshow)[1]].a, D_00137C80.alt[((short *)slideshow)[1]].b);
     } else {
@@ -1057,8 +1057,8 @@ void end_slideshow(void) {
     VU1_syncChain(1);
     FadeToBlack(0xC);
     request_audio_stream_break();
-    D_L00_0015F6A8 = 0;
-    D_L00_0015F6BC = 1;
+    cinematic_mode = 0;
+    skip_frame = 1;
     gFadeLvl = 0;
     calculate_dma_transfer_address();
 }

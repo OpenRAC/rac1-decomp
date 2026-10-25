@@ -692,7 +692,7 @@ func_L00_00254218	MobyCollXformCached	candidate	ReRAC doc_names.csv	suggested at
 func_L00_00255B90	MobyAnimDecodeLocalPose	candidate	ReRAC doc_names.csv	suggested at US level 01 0x269938 (docs/formats/moby_rac1.md:81): coined: Ratchet decoded local pose; fingerprint	
 func_L00_002569F8	MobyProc	descriptive	ReRAC doc_names.csv	verified at US level 01 0x26A7A0 (docs/plan/moby_untextured.md:33): also docs/plan/render_pipeline.md; fingerprint	
 func_L00_00257E18	EnvZoneLookup	candidate	ReRAC doc_names.csv	suggested at US level 01 0x26BBC0 (docs/plan/world_animation.md:200): coined: env zone lookup returning index and t; fingerprint	
-func_L00_0025805C	HeroEnvLighting	candidate	ReRAC doc_names.csv	suggested at US level 01 0x26BE04 (docs/plan/world_animation.md:215): coined: env zone hero light-bank cross-fade; fingerprint	
+func_L00_0025805C	apply_env_zone_lighting	descriptive	config/names_local.tsv	asm: EnvZoneLookup on moby pos, then blends the zone colors from D_L00_0017EFC0 into moby +0x38/+0x80; called on the hero moby each frame.	HeroEnvLighting
 func_L00_002584A8	SetDeathBits	descriptive	config/names_local.tsv	body: sets the moby's collected bit in D_0014C290/D_L00_001BA860 tables per its id, records mission/stage	mark_moby_for_removal_cf
 func_L00_00258BC8	rand_range	descriptive	ReRAC doc_names.csv	verified at US level 01 0x26C970 (docs/plan/particles.md:141): r % (b-a+1) + a; fingerprint	random_int_between
 func_L00_00258C80	randf_sym	descriptive	ReRAC doc_names.csv	verified at US level 01 0x26CA28 (docs/plan/particles.md:143): 12-bit random float; sign from bit 16; fingerprint	
@@ -4024,6 +4024,184 @@ D_0015EF8C	g_gs_texture_allocation_base	descriptive	config/names_local.tsv	held-
 D_0015F538	game_frame_counter	descriptive	config/names_local.tsv	held-alias symbol: the NTSC decomp names it game_frame_counter among others; this name is free in src (g_ when a local takes the plain word)	
 D_001602E0	menu_level_indices	descriptive	config/names_local.tsv	held-alias symbol: the NTSC decomp names it menu_level_indices among others; this name is free in src (g_ when a local takes the plain word)	
 D_0013D6B8	race_gates	descriptive	config/names_local.tsv	held-alias symbol: the NTSC decomp names it race_gates among others; this name is free in src (g_ when a local takes the plain word)	
+func_L00_001FF4B0	vec_scale_to_length	descriptive	config/names_local.tsv	src/overlays/shared/fast_vector_math.c asm: scales the vector by len/sqrt(dot) (vrsqrt), so the output has the given length; callers pass 1.0f to normalize.	
+func_L00_001FD1D8	draw_world_quad	descriptive	config/names_local.tsv	src/overlays/shared/point_lights_and_glows.c: takes a 4-point quad and optional matrix, transforms, subtracts camera pos, frustum-clips (vclip) and draws it.	
+D_L14_001B0F30	oltanis_paths	descriptive	config/names_local.tsv	src/overlays/l14_oltanis/bolt_thief_and_path_cameras.c: pointer table indexed by path id; each entry starts with a point count and 16-byte points.	
+D_L00_0015F6A8	cinematic_mode	descriptive	config/names_local.tsv	src/overlays/shared/cutscene_and_movie_playback.c: set 1 for movies, 2 for cutscenes, 6 for ship entry, 7 for slideshows, 0 when done.	
+D_L00_001C43B0	item_price_table	descriptive	config/names_local.tsv	src/overlays/shared/vendor_menu.c: 24-byte per-item records with price, discounted price, ammo costs and max ammo.	
+D_L16_0017AB60	kalebo3_hero_bones	descriptive	config/names_local.tsv	src/overlays/l16_kalebo3/hero_movement.c: Bone array whose f60 rotations get clamped head/torso angles from the hero yaw.	
+D_L05_0015F660	rilgar_zero_vec	descriptive	config/names_local.tsv	src/overlays/l05_rilgar/sharkigator_and_faucet.c: passed as the default zero velocity/rotation vector to SpawnBreakFragment and spawn_splash.	
+D_L00_001BDB70	sky_shell_matrix	descriptive	config/names_local.tsv	src/overlays/shared/sky_particles.c: set to identity or a rotation before each SkyDrawShell call.	
+D_0015F6FC	space_load_in_progress	descriptive	the NTSC decomp	space_load_in_progress at US boot 0x0015F618 (include/rnc/gameplay/state/game_globals.h); US/PAL address translation (code of both refers to it)	g_space_load_in_progress
+D_001414DC	hero_control_mode	descriptive	config/names_local.tsv	include/hero.h: g_hero + 0x208C is HeroState.control_mode; map filters compare it to 15/16.	
+D_L00_00173F58	coll_hit_moby	descriptive	the NTSC decomp	coll_hit_moby at US level 00 0x00173E58 (src/overlays/shared/gameplay/entities/devastator.c); US/PAL address translation (code of both refers to it)	g_coll_hit_moby
+D_L07_001B0830	umbris_paths	descriptive	config/names_local.tsv	src/overlays/l07_umbris/snagglebeast.c: pointer table of paths indexed by path id, used with select_point_index_by_distance.	
+D_L04_001B0930	eudora_paths	descriptive	config/names_local.tsv	src/overlays/l04_eudora/big_axebot.c: pointer table of count-prefixed point lists used as paths and IsPointInPolygon areas.	
+D_L18_0016016C	veldin2_arena_nodes	descriptive	config/names_local.tsv	src/overlays/l18_veldin2/drek_boss_fight.c: 0x80-byte node records with a position at +0x30 used for the boss arena.	
+D_L15_0017AD00	quartu_hero_bones	descriptive	config/names_local.tsv	src/overlays/l15_quartu/hero_movement.c: Bone array of hero bone rotations clamped from lean and yaw.	
+func_L00_001FF040	copy_memory_by_alignment	descriptive	config/names_local.tsv	asm: dst/src/size copy that picks a quadword, word or byte loop from the alignment of all three.	
+func_001FAA28	compress_map_coverage	descriptive	config/names_local.tsv	src/game/menu.c: save_map_coverage packs the 0x40000-bit map into an RLE buffer of 0x800 bytes; -1 on overflow.	
+D_L00_0016CB40	render_view_params	descriptive	config/names_local.tsv	src/overlays/shared/pause_menu.c: view settings (fov scale at 0xB0, far z, fog, background color, screen offset) read by the renderer.	
+D_001A0218	map_coverage_active	descriptive	config/names_local.tsv	src/game/menu.c: level_map_selection[10]; load_map_chunk and save_map_coverage skip when it is 0.	
+D_001602B0	panel_clear_color	descriptive	config/names_local.tsv	src/game/pause.c: color word passed to draw_hud_rect_blended for panel backgrounds.	panel_clear_color_gp
+D_L12_0017AB80	hoven_hero_bones	descriptive	config/names_local.tsv	src/overlays/l12_hoven/hero_movement.c: Bone array of hero bone rotations clamped from lean and yaw.	
+D_0015F718	render_packet_end	descriptive	config/names_local.tsv	src/game/vuchain.c: VU1_initChain/swapChain set it to the end of the render packet buffer; D_0015F71C is end - 0x2000.	
+D_L15_00167440	quartu_camera_pos	descriptive	config/names_local.tsv	src/overlays/shared/electric_water.c: camera struct +0x140 position; billboards face it and distances are measured from it.	
+D_L18_0015F6A8	veldin2_cinematic_mode	descriptive	config/names_local.tsv	src/overlays/l18_veldin2/drek_boss_fight.c: same slot as the shared cinematic mode; 2 means a cutscene is playing.	
+D_L06_001B0FB0	blarg_paths	descriptive	config/names_local.tsv	src/overlays/l06_blarg/hangar_door_and_gas_vents.c: pointer table of count-prefixed paths indexed by path id.	
+D_0013D4A8	menu_item_enabled_12	descriptive	config/names_local.tsv	src/game/missionfunc.c: flag byte at menu_item_enabled_0 + 12, same series as menu_item_enabled_16.	
+D_L00_00179BC0	item_defs	descriptive	config/names_local.tsv	src/overlays/shared/hero_animation_slots.c: per-item definition records with animation ids at 0x24/0x28/0x2C.	
+D_L00_0017BEB8	hero_speed_bands	descriptive	config/names_local.tsv	src/overlays/shared/hero_vehicle_and_collision.c: 16-byte lo/hi speed limits; the hero band index steps up/down to fit its speed.	
+D_L18_00160058	veldin2_moby_table	descriptive	config/names_local.tsv	src/overlays/l18_veldin2/rockets_and_platforms.c: base of the 0x100-byte moby array, indexed by (id & 0x7FFF) << 8.	moby_table
+D_L10_001B0C30	orxon_paths	descriptive	config/names_local.tsv	src/overlays/l10_orxon/toxic_crabs_and_gates.c: pointer table of count-prefixed paths indexed by path id.	
+D_L18_001D9FD0	electric_bolt_points	descriptive	config/names_local.tsv	src/overlays/l18_veldin2/rockets_and_platforms.c: two rows of 20 points rebuilt each frame for the arc bolt and its mirror.	
+D_001414F4	hero_vehicle_mode	descriptive	config/names_local.tsv	include/hero.h: g_hero + 0x20A4 is vehicle_mode; enemies check it for 1/2.	
+D_L03_00173FC0	kerwan_coll_hit	descriptive	config/names_local.tsv	src/overlays/shared/helicopter_gunship_and_spawners.c: collision result with hit point, normal and moby.	
+D_L03_0017A800	kerwan_hero_bones	descriptive	config/names_local.tsv	src/overlays/l03_kerwan/hero_movement.c: Bone array of hero bone rotations clamped from lean and roll.	
+D_L00_0016009C	level_mobys_end	descriptive	config/names_local.tsv	src/overlays/shared/level_gameplay_loading.c: set to moby_table + count after placing level mobys, marked 0xFF; spawned ones follow.	
+D_L16_0015F6B0	kalebo3_frame_count	descriptive	config/names_local.tsv	src/overlays/l16_kalebo3/gadgetron_ceo_and_env_maps.c: frame counter used for glow phases and generation stamps.	
+func_0020C468	fast_decompress	descriptive	config/names_local.tsv	src/game/loaders.c: decompresses a packed resource (src) into a buffer and returns the bytes used.	
+D_L08_001E8608	batalia_uv_scroll	descriptive	config/names_local.tsv	src/overlays/shared/scoutbot_and_paratrooper.c: float pairs moved by speed*frame time and wrapped to -1..1, passed to scrolled mesh drawing.	
+D_L11_0017B100	pokitaru_hero_bones	descriptive	config/names_local.tsv	src/overlays/l11_pokitaru/hero_movement.c: Bone array of hero bone rotations clamped from lean and yaw.	
+D_0015EF84	draw_buffer_address	descriptive	config/names_local.tsv	src/game/framebuf.c: frame buffer address; shifted >>13 for FBP and >>8 for transfers.	
+D_L16_001ABFC0	kalebo3_moby_groups	descriptive	config/names_local.tsv	src/overlays/l16_kalebo3/test_dummies_and_conveyors.c: per-group short lists of moby ids (high bit ends list).	
+D_L07_0015F660	umbris_zero_vec	descriptive	config/names_local.tsv	src/overlays/l07_umbris/scene_mobys_and_trails.c: passed as the zero velocity/rotation vector to SpawnBreakFragment.	
+D_L17_00167740	fleet_camera_pos	descriptive	config/names_local.tsv	src/overlays/l17_fleet/fighter_jet_and_turrets.c: camera struct +0x140 position (rotation at base+0x154); clip-volume and distance checks use it.	
+D_L05_0015F6A8	rilgar_cinematic_mode	descriptive	config/names_local.tsv	src/overlays/l05_rilgar/electric_gate.c: same slot as the shared cinematic mode; code skips when it is 2 (cutscene).	game_mode
+D_L00_00160CD8	debug_on_off_strings	descriptive	config/names_local.tsv	src/overlays/shared/debug_menu_and_text.c: two string pointers picked by a flag bit for each debug menu row.	
+D_001CFBF4	selected_mission_id	descriptive	config/names_local.tsv	src/game/pause.c: loaded from the mission id list for the selected level (D_001CFAD8 gets its number).	
+D_0015EFA4	play_time_ticks	descriptive	config/names_local.tsv	cutscene_and_movie_playback.c:43 increments it each frame; help.c PLAY_TIME and stat updates use scale_ticks(it)/600 as play time.	
+func_L00_001FF500	vec_set_length_xy	descriptive	config/names_local.tsv	asm: rsqrt of x*x+y*y, scales xy of src by len/|xy| into dst; hero_update_ground_material.c:1536 clamps velocity xy to step.	
+D_L00_00173F40	coll_hit_result	descriptive	config/names_local.tsv	hero_vehicle_and_collision.c:54 reads it as CollisionHit (normal, moby, point); coll_hit_moby/coll_hit_normal are its fields; plain coll_hit is also proposed for L01/L03 rows.	coll_hit
+D_L03_0015F660	kerwan_zero_vec	descriptive	config/names_local.tsv	train_locomotive.c: passed for the vector args of SpawnBreakFragment, which uses defaults when the vector length is 0.	
+D_L00_001BA070	level_menu_system	descriptive	config/names_local.tsv	pause_menu.c:993 menu_system_p view (current/next page, state, queued); level copy of menu_system (D_001D5F70).	
+D_L00_001842F0	map_menu_state	descriptive	config/names_local.tsv	level_runtime_and_menus.c:431-436 loads/decodes the map chunk and mask; map_menu_filters.c:178 uses it as the map row cache.	
+D_001414D0	g_hero_moby	descriptive	config/names_local.tsv	g_hero (0x13F450) + 0x2080 = Hero.moby (hero.h:737); used as ignore-moby in coll_sphere and pos at +0x10.	
+D_L18_0017B100	veldin2_hero_bones	descriptive	config/names_local.tsv	hero_ground_movement.c:594 writes Bone[1].f60 rotations from hero roll/lean.	
+D_0015EE8C	quick_swap_item	descriptive	config/names_local.tsv	hero_item_input_and_hud.c:210 double-tap triangle sets pending_item to it when not already equipped.	
+D_0016100C	current_vu_chain	descriptive	the NTSC decomp	current_vu_chain at US boot 0x00160F0C (include/rnc/rendering/render_globals.h); US/PAL address translation (code of both refers to it)	vu_chain_buffer_size
+D_L00_00173F00	lvl_resource_buffers	descriptive	config/names_local.tsv	scratch_buffer_offset.c:16 words 1/2 plus D_L00_0016128C, same as help.c with level_resource_buffers; level copy.	
+D_L17_0016016C	fleet_camera_points	descriptive	config/names_local.tsv	robot_dog_and_shuttle.c: 128-byte entries, pos at +0x30 and rot at +0x70 for Hero_ResetToPosition; L01 copy is camera_points.	
+D_00193400	mode_freeze_info	descriptive	config/names_local.tsv	freeze.c:69 mode_freeze_init stores reason, old game mode, args and message strings in this record.	
+D_0013DE55	gemlik_available	descriptive	config/names_local.tsv	level_available (D_0013DE48) + 13 = level 13 (Gemlik); missionfunc.c:380 tests it as a byte flag.	
+D_001941C8	vu1_chain_buffer_2	descriptive	config/names_local.tsv	level_resource_buffers[2] (0x1941C0+8); help.c calls [1]/[2] the two VU1 chain buffers; loaders.c:1884 adds the chain size.	
+D_L14_001675C0	oltanis_camera_pos	descriptive	config/names_local.tsv	player_camera + 0x140 pos slot (as L11 0x167840 camera_pos); plasmabot.c:591 builds a matrix facing it.	
+D_001B3E40	resident_class_slot_by_id	descriptive	the NTSC decomp	resident_class_slot_by_id at US boot 0x001B3AC0 (include/rnc/gameplay/entities/moby_class_tables.h); US/PAL address translation (code of both refers to it)	g_resident_class_slot_by_id
+D_L06_0015F660	blarg_zero_vec	descriptive	config/names_local.tsv	space_commando_and_door_lock.c:390 passed for SpawnBreakFragment default (zero) vectors.	
+func_L00_00200210	fast_fmod	descriptive	config/names_local.tsv	asm: q=a/b, truncates q, returns (q-trunc(q))*b; scientist_and_hint_triggers.c wraps UV scroll by 1.0.	
+D_0013D4E5	menu_item_enabled_73	descriptive	config/names_local.tsv	D_0013D49C + 73 in the menu_item_enabled_N byte table; resort_owner_and_water.c:1322 sets it to 1.	
+D_0015F71C	vu1_chain_safe_end	descriptive	config/names_local.tsv	vuchain.c:354 set to chain end (D_0015F718) - 0x2000; mobyfunc.c:833 derives vu1_chain_limit from it.	
+D_L00_001BA220	menu_preview_mobys	descriptive	config/names_local.tsv	pause_menu.c:302 fills 14 slots with create_menu_preview_moby(0x472).	
+D_0013D4F1	menu_item_enabled_85	descriptive	config/names_local.tsv	D_0013D49C + 85 in the menu_item_enabled_N byte table; missionfunc.c:326 tests it as a flag.	
+D_L03_00160058	kerwan_mobys	descriptive	config/names_local.tsv	taxi_and_mine_layer.c: base of 0x100-byte moby array indexed by id << 8; L07 copy is level_mobys.	
+D_L00_0015F660	veldin1_zero_vec	descriptive	config/names_local.tsv	vendor_orb_and_robots.c:481 passed for SpawnBreakFragment default (zero) vectors.	
+D_L11_00167700	pokitaru_player_camera	descriptive	config/names_local.tsv	homing_missile_and_water_sheet.c reads +0x140 pos; hero_movement.c Cam view has yaw f158 and matrix f350 like CameraSystem.	
+D_0013DE48	level_available	descriptive	the NTSC decomp	level_available at US boot 0x0013DD40 (include/rnc/gameplay/state/level_state.h); US/PAL address translation (code of both refers to it)	g_level_available
+D_L14_00160098	oltanis_mobys	descriptive	config/names_local.tsv	plasmabot.c:981 moby = base + (index << 8): level moby array.	
+D_001CDAE0	pad_socket_param	descriptive	config/names_local.tsv	stream.c:668 init_pads uses it as PadSocketParam {port, slot} for pad open.	
+D_L15_0015F6B0	quartu_frame_count	descriptive	config/names_local.tsv	sentrybot.c/electric_water.c use it modulo periods for pulses and as a frame stamp.	
+D_L08_00167640	hero_pos_3DF8	descriptive	the NTSC decomp	hero_pos_3DF8 at US level 08 0x001675C0 (src/overlays/shared/gameplay/entities/scoutbot.c); US/PAL address translation (code of both refers to it)	batalia_camera_pos
+D_0013F6E0	hero_gravity_dir	descriptive	config/names_local.tsv	g_hero + 0x290 = Hero.gravity_dir (hero.h:268); camera.c:781 crosses with it as up axis.	
+D_L17_0015F6B0	fleet_frame_count	descriptive	config/names_local.tsv	robot_dog_and_shuttle.c:286 frame counter modulo pulse period; hero_ground_movement.c:517 timestamps.	
+D_L01_001B0C30	paths	descriptive	the NTSC decomp	paths at US level 01 0x001B0930 (include/rnc/overlay/level_labels.h); US/PAL address translation (code of both refers to it)	nav_paths
+D_L15_0015F660	quartu_zero_vec	descriptive	config/names_local.tsv	gates_helicopters_ultramechs.c:1007 passed for SpawnBreakFragment default (zero) vectors.	
+D_L12_00174340	hoven_coll_hit	descriptive	config/names_local.tsv	hero_movement.c:268 collision hit result: moby at +0x18, point v20 sets water_surface_z.	HH
+D_L00_0016128C	lvl_vu_chain_buffer_size	descriptive	config/names_local.tsv	scratch_buffer_offset.c:16 buffers + it like help.c with vu_chain_buffer_size; movie code reserves space from it.	
+D_L15_00180940	quartu_lights	descriptive	config/names_local.tsv	sentrybot.c:1954 0x20-byte light entries indexed by d->light, pos at +0x10.	
+D_L08_00160058	batalia_mobys	descriptive	config/names_local.tsv	bomb_and_scoutbot.c:1123 (struct Moby *)base + index: level moby array.	
+D_L18_00167700	veldin2_player_camera	descriptive	config/names_local.tsv	hero_ground_movement.c:212 move_yaw = f158 and matrix f350, as shared code does with player_camera.	
+D_L05_00174340	rilgar_coll_hit	descriptive	config/names_local.tsv	hero_collision.c:339 collision hit result: moby at +0x18, point v20.	HH
+D_L01_0015F504	cutscene_active	descriptive	config/names_local.tsv	gold_bolts_and_teleporters.c:658 set to 1 when a CameraScript starts, 0 when it ends; halves effect counts while set.	
+D_L06_0017AF00	blarg_hero_bones	descriptive	config/names_local.tsv	hero_movement.c:1906 writes Bone[2]/[3].f60 rotations from hero lean.	
+D_001CFAD8	selected_mission_index	descriptive	config/names_local.tsv	pause.c:2858 set from collect_mission_ids nums (base + sel) for the selected level's mission.	
+D_0014C150	saved_mission_state	descriptive	config/names_local.tsv	level_gameplay_loading.c: 16-byte row per level copied into mission_state on load; 0xFF entries mark done items (doors, drops, pause map).	visited52
+D_L04_0015F660	eudora_zero_vector	descriptive	config/names_local.tsv	l04 snow_plow_and_woodcut_bot.c: passed as the rest/velocity vectors of SpawnBreakFragment next to zero scalars.	
+D_L00_0016C960	cutscene_state	descriptive	config/names_local.tsv	cutscene_and_movie_playback.c: 0x1C0 block cleared on cutscene start; +0x30 scene id, +0x44 moby count, +0x178 moby list.	
+D_L00_00160098	moby_array_start	descriptive	config/names_local.tsv	level_gameplay_loading.c: set to the allocated moby array; loops walk Moby entries from it until state 0xFF or the end pointer.	moby_table
+D_0015F694	bank_sound_count	descriptive	config/names_local.tsv	game/sound.c: PlayBankSound rejects idx >= it; group sound entries are indexed after it.	
+D_L17_0017B000	fleet_lean_state	descriptive	config/names_local.tsv	l17 hero_ground_movement.c: per-joint Bone array whose f60 tilt angles are set from roll/lean, the L17 copy of lean_state.	
+D_L00_00161280	dma_packet_cursor	descriptive	config/names_local.tsv	draw_buffers_and_walker_gait.c, debug_menu_and_text.c: write pointer that DMA tags and GS packets are appended through and advanced.	
+D_L16_001B0C30	kalebo3_path_table	descriptive	config/names_local.tsv	elite_commando_and_armed_transport.c: pointer array indexed by path id; each path has a count then 16-byte points from +0x10.	
+D_00152178	background_rgbaq	descriptive	config/names_local.tsv	game/framebuf.c: SetBackgroundColor packs r,g,b and 0x80000000 into this 64-bit word.	
+D_L00_001CA7C0	vendor_menu	descriptive	the NTSC decomp	vendor_menu at US level 00 0x001CA4C0 (src/overlays/shared/gameplay/entities/00295100.c); US/PAL address translation (code of both refers to it)	g_vendor_menu
+D_00141760	last_weapon_id	descriptive	config/names_local.tsv	hero_item_input_and_hud.c: quick-swap target item when holding item 8; hero_idle sets 10 if 0, pause clears 0x24.	
+D_L15_0015F6A8	quartu_game_mode	descriptive	config/names_local.tsv	sentrybot.c, electric_water.c: L15 copy of the game mode word at 0x15F6A8, tested against 2 (paused/cutscene) and 6.	
+D_001A0468	map_slot_use	descriptive	config/names_local.tsv	game/map.c: the 5-entry use[] array of PadSlots inside level_map_selection; find_free_map_slot scans it.	
+D_L14_001F67C8	oltanis_path_camera_keys	descriptive	config/names_local.tsv	l14 bolt_thief_and_path_cameras.c: CamKey array whose t24/t28/t2C times are interpolated against the path timer.	
+D_L06_001746C0	blarg_coll_hit	descriptive	config/names_local.tsv	gadgebot_containers_and_frog.c: collision result after coll_sphere/ray: f18 hit moby, f30 push-out pos, f40 normal.	HH
+D_L14_0017AE80	oltanis_lean_state	descriptive	config/names_local.tsv	l14 hero_movement.c: per-joint Bone array whose f60 tilt angles are set from lean, the L14 copy of lean_state.	
+D_0014BFC0	gold_bolts_collected	descriptive	config/names_local.tsv	l08 cannon_gunship_bolt_thief.c: [level][4] flags set when a 0x305 moby is collected; mobyutil counts up to 40.	
+D_L00_001605DC	sky_data	descriptive	config/names_local.tsv	sky_particles.c: pointer to the level sky block (SkyData) whose layer count at +6 the sky loops walk.	
+D_0013D4B0	menu_item_enabled_20	descriptive	config/names_local.tsv	missionfunc.c: byte in the menu_item_enabled_N row at 0x13D49C+20, read as a set/unset flag by mission conditions.	
+D_0013E130	level_render_state	descriptive	the NTSC decomp	level_render_state at US boot 0x0013E030 (include/rnc/rendering/level_render_state.h); US/PAL address translation (code of both refers to it)	g_level_render_state
+D_L08_001B0FB0	batalia_path_table	descriptive	config/names_local.tsv	l08 bomb_and_scoutbot.c: pointer array indexed by path id; mobys copy positions from path + 0x10.	
+D_L05_0015F6B0	rilgar_frame_count	descriptive	config/names_local.tsv	l05 electric_gate.c: L05 copy of the frame counter word at 0x15F6B0 used for timers.	frame_number
+D_L00_00197680	moby_class_headers	descriptive	config/names_local.tsv	level_gameplay_loading.c: per-slot loaded moby class header pointers; seqs and sounds are relocated through it.	
+D_0013CBE4	pad0_pressed	descriptive	config/names_local.tsv	help.c, cutscene_and_movie_playback.c: g_controller_state+0x1A4, the newly pressed button mask tested for 0x10/0x200.	
+D_L08_0016D0E0	batalia_cutscene_state	descriptive	config/names_local.tsv	l08 commando_deserter_and_effects.c: cutscene block with scene id +0x30, frame +0x34, moby count and list, like cutscene_state.	
+D_L11_00161240	pokitaru_dma_packet_cursor	descriptive	config/names_local.tsv	homing_missile_and_water_sheet.c: L11 packet write pointer; DMA tags written then advanced by 0x10.	
+D_0015EFD8	decode_mode	descriptive	config/names_local.tsv	game/bmain.c, movie.c: movie playback mode; 2 lets any pressed button skip, -1 disables the skip check.	
+D_L01_0015F6A8	novalis_game_mode	descriptive	config/names_local.tsv	gold_bolts_and_teleporters.c, l01 rocks_and_sandmouse.c: L01 copy of the game mode word at 0x15F6A8.	cutscene_mode
+D_L00_0015F844	hud_star_height	descriptive	config/names_local.tsv	weapon_hud_and_counters.c: draw_hud_stars uses it as sprite height next to the width at 0x15F840.	
+D_L00_00173F70	coll_resolved_pos	descriptive	config/names_local.tsv	trespasser_and_throwing_gloves.c, camera_switch_and_update.c: coll_hit+0x30, position copied back after coll_sphere hits.	
+D_L14_0015F660	oltanis_zero_vector	descriptive	config/names_local.tsv	plasmabot.c: passed as the velocity vector of PartType21/23Spawn particle spawns.	
+D_L18_0016D2E0	veldin2_cutscene_state	descriptive	config/names_local.tsv	l18 drek_boss_fight.c: cutscene block with scene id +0x30, frame +0x34, moby count and list, like cutscene_state.	
+D_L16_00167240	kalebo3_camera_pos	descriptive	config/names_local.tsv	l16 gadgetron_ceo_and_env_maps.c: vector mobys measure distance to for camera-near checks, at player camera +0x140.	
+D_L06_001AC340	blarg_moby_groups	descriptive	config/names_local.tsv	l06 hangar_door_and_gas_vents.c: array of moby index lists (high bit ends) walked to set states per group.	
+D_L13_00167140	gemlik_camera_pos	descriptive	config/names_local.tsv	l13 turrets_and_fighter_jet.c: camera position at camera block +0x140, used in FastVecSub/CameraScript.	
+D_L00_0015F4F8	rendered_frame_count	descriptive	config/names_local.tsv	pause_menu.c: incremented after each VU1 sync; HUD blink and item timers compare against it.	
+D_L02_001744C0	aridia_coll_hit	descriptive	config/names_local.tsv	l02 hero_movement.c: collision result block; v20 z gives the water surface height after a probe.	HH
+D_L12_001CC1C0	hoven_ripple_patches	descriptive	config/names_local.tsv	l12 water_grid_and_troopers.c: 0x11 slots of 0x1190 bytes passed to RipplePatchesInit, moby pos written per slot.	
+D_L13_00160058	gemlik_moby_array_start	descriptive	config/names_local.tsv	l13 moby_group_switches.c: L13 moby array base; loops step 0x100 per moby.	moby_base
+D_L07_001845A8	umbris_indicator_states	descriptive	config/names_local.tsv	l07 scene_mobys_and_trails.c, doors_and_bridges.c: int per indicator index, set 0/1 as mobys open and close.	
+D_L00_00179510	help_popup_state	descriptive	config/names_local.tsv	hero_idle_and_animation.c: Help_Request and HelpPopup_StepClose drive its state, message id +0x24 and slot +0x28.	
+D_L18_0015F6B0	veldin2_frame_count	descriptive	config/names_local.tsv	l18 rockets_and_platforms.c: L18 copy of the frame counter word at 0x15F6B0.	game_frame
+D_0013CC04	pad0_pressed_unmasked	descriptive	config/names_local.tsv	game/pause.c: g_controller_state+0x1C4, the pressed_unmasked mask pause sub-menus test.	
+func_L00_001EFFF0	coll_line	descriptive	config/names_local.tsv	hero_update_bone_attachment.c, camera code: tests segment from->to with a flag mask and ignore-moby, returns hit; sits beside coll_sphere/coll_capsule in collision_queries.c.	
+D_L00_0015F6B0	level_frame_counter	descriptive	config/names_local.tsv	level_gameplay_loading.c:1725 zeroes it at level start; hero_vehicle_and_collision.c uses %3/%5 throttles and mission_conditions.c compares it to stored frame stamps.	game_frame
+D_001997D0	g_help_state	descriptive	config/names_local.tsv	help.c: HelpState struct (state at 0, entry count at +0x2C) switched by dismiss_help; help_state is taken as a local in src.	
+func_L00_001FF5B0	clamp_vec_length_xy	descriptive	config/names_local.tsv	asm: XY length via vsqrt, returns 0 if zero or under the limit, else scales xy to the limit and returns 1; hero_water_and_ground_motion.c caps velocity with it.	
+D_00137C80	disc_table	descriptive	the NTSC decomp	disc_table at US boot 0x00137B80 (include/rnc/storage/disc_table.h); US/PAL address translation (code of both refers to it)	g_disc_table
+D_L01_0015F660	novalis_zero_vec	descriptive	config/names_local.tsv	rocks_and_sandmouse.c: passed as the velocity/spin vector args to SpawnBreakFragment/PartType spawns, never written.	
+D_0013F530	hero_velocity	descriptive	the NTSC decomp	hero_velocity at US boot 0x0013F430 (src/overlays/shared/gameplay/hero/hero_check_damage.c); US/PAL address translation (code of both refers to it)	g_hero_velocity
+D_L01_001DEE08	sand_mouse_move_ctl	descriptive	config/names_local.tsv	gold_bolts_and_teleporters.c sandmouse_update / water_pool_and_sand_mouse.c sand_mouse_update: MoveCtl_Init then speed/turn tuning fields set.	
+func_L00_001FFA40	fast_euler_to_matrix	descriptive	config/names_local.tsv	asm: builds rotation matrix from x/y/z angles in arg1 (sin/cos per axis, skips zero axes); hero_steering_and_tilt.c makes roll/yaw matrices from it.	
+D_L02_0015F660	aridia_zero_vec	descriptive	config/names_local.tsv	trespasser_pad_and_background_ships.c: passed as velocity/spin vectors to SpawnBreakFragment, never written.	
+D_L15_001B0DB0	quartu_paths	descriptive	config/names_local.tsv	sentrybot.c: indexed path table, entry word 0 = point count, points at +0x10 stride 0x10, walked by patrol index.	
+D_0015EED0	vendor_stock	descriptive	config/names_local.tsv	weapon_hud_and_counters.c init_level_item_inventory fills 12 item ids; vendor_menu.c and moby_drops_and_death.c scan up to 12 until 0xFF, id = byte & 0x3F.	
+D_L08_0017AF00	batalia_lean_state	descriptive	config/names_local.tsv	l08 hero_movement.c: 0xB0-stride bone tweak array (f60 rotation, fA0) as L00's lean_state; hero_items_and_hud.c reads lean angles at +0x254/+0x258.	
+D_L00_00166F00	current_follow_cam	descriptive	the NTSC decomp	current_follow_cam at US level 00 0x00166E00 (include/rnc/gameplay/camera/follow_cam.h); US/PAL address translation (code of both refers to it)	g_current_follow_cam
+D_L05_0017ABE0	rilgar_lean_state	descriptive	config/names_local.tsv	l05 hero_movement.c: 0xB0-stride bone tweak array (f60 lean angles clamped), same layout as L00 lean_state.	
+D_L05_001B0CB0	rilgar_paths	descriptive	config/names_local.tsv	sharkigator_and_faucet.c: indexed table, word 0 = point count, points at +0x10, used with IsPointInPolygon and as moby path.	
+D_0013D49D	g_menu_item_enabled_1	descriptive	config/names_local.tsv	menu.c map_filter_l01_2 tests it; water_pool_and_sand_mouse.c sets it; NTSC menu_item_enabled_1 is a macro alias in electric_gate.c.	menu_item_enabled_1
+D_0013D668	max_map_coverage_size	descriptive	config/names_local.tsv	menu.c save_map_coverage: per-level int array keeping the largest size returned by the map coverage encoder.	
+D_L00_0015F6BC	skip_frame	descriptive	config/names_local.tsv	level_runtime_and_menus.c: cleared each main loop pass, and when set the rest of the frame is skipped; set by level reset, death, ship mode and pause actions.	
+D_001D5F74	current_menu_page	descriptive	config/names_local.tsv	pause.c: pointer to the active menu page, focus menu read at +0x40, +0x84 cleared; follows menu_system at D_001D5F70.	
+D_L16_00160098	kalebo3_moby_array	descriptive	config/names_local.tsv	elite_commando_and_armed_transport.c: base of the level moby array, index << 8 gives a moby.	
+D_001CAE00	shadow_light_dir	descriptive	config/names_local.tsv	mobyfunc.c update_resident_packed_direction writes cos/sin*0.14,-0.99; mobyutil.c update_moby_shadow_range casts shadow rays along it.	
+D_00161314	movie_play_step	descriptive	config/names_local.tsv	movie.c: Movie_Play/read_mpeg store 0,1,2,3 to record the playback step reached.	
+D_L06_0016016C	blarg_scene_points	descriptive	config/names_local.tsv	hangar_door_and_gas_vents.c: 0x80-stride point records with position at +0x30, indexed by moby data, like L07 scene_points.	
+D_L00_001B0830	level_paths	descriptive	config/names_local.tsv	level_gameplay_loading.c fills it from the gameplay header path block; moby_path_and_manipulators.c reads ->count and ->points.	vend_paths
+D_001864D0	item_info_table	descriptive	config/names_local.tsv	vendor.c/draw.c/loaders.c: 0x4C-byte per-item records with icon id at +0x38, class id at +0x3A, cap at +0x3E.	preview_binding_table_alias
+D_L02_001B0DB0	aridia_paths	descriptive	config/names_local.tsv	trespasser_pad_and_background_ships.c: indexed table, word 0 = point count, points at +0x10, moby placed on the first point.	
+func_L00_001FF548	clamp_vec_length	descriptive	config/names_local.tsv	asm: 3D twin of the xy clamp; returns 0 if zero or under the limit, else scales xyz to the limit and returns 1.	
+D_L10_0015F660	orxon_zero_vec	descriptive	config/names_local.tsv	toxic_crabs_and_gates.c: passed as all three vector args to SpawnBreakFragment, never written.	
+D_L00_00178000	coll_sphere_moby_hits	descriptive	config/names_local.tsv	moby_ground_collision.c and hero_steering_and_tilt.c: moby list filled by coll_sphere_mobys, walked for n hits and passed to SendRadialMessageToMobys.	
+D_L09_00166FC0	gaspar_camera_pos	descriptive	config/names_local.tsv	asteroids_airship_debris.c: after BuildViewMatrices it gives the -1024 scaled view offset, view matrices sit before it, and debris is kept within 100 units of it.	
+D_0015F558	pending_texture_upload_count	descriptive	config/names_local.tsv	map.c indexes pending_texture_uploads with it (max 0x40); draw.c and skyfunc.c reset it to 0.	
+D_L02_0016016C	aridia_scene_points	descriptive	config/names_local.tsv	sand_shark.c: 0x80-stride point records with position at +0x30, used as the shark's post.	
+D_L01_0017AB80	novalis_lean_state	descriptive	config/names_local.tsv	l01 hero_movement.c: 0xB0-stride bone tweak array, same layout as L00 lean_state; hero_items_and_hud.c reads lean angles at +0x254/+0x258.	
+D_001E8980	load_file_start_failed_string	descriptive	config/names_local.tsv	data.data.s: "****Load file failed to start!****"; stream.c prints it before a trap.	
+D_L15_00160058	quartu_moby_array	descriptive	config/names_local.tsv	sentrybot.c/electric_water.c: base of the level moby array, index << 8 gives a moby.	moby_array
+D_L07_0015F6B0	umbris_frame_count	descriptive	config/names_local.tsv	taxi_platform.c/snagglebeast.c: the per-level frame counter at the same slot as level_frame_counter.	level_frame_count
+D_L17_001B10B0	fleet_paths	descriptive	config/names_local.tsv	fighter_jet_and_turrets.c: indexed path table, word 0 = point count, points at +0x10, used with IsPointInPolygon and as flight path.	
+D_L01_00174340	novalis_coll_hit	descriptive	config/names_local.tsv	hero_update_ground_material.c: collision hit record (moby at +0x18, normal at +0x40) read after collision queries, like L00 coll_hit.	coll_hit
+D_L16_001742C0	kalebo3_coll_hit	descriptive	config/names_local.tsv	l16 hero_collision.c: collision hit record (moby at +0x18, point at +0x20) copied into the hero ground state.	HH
+D_L00_001B0BB0	decoy_list	descriptive	config/names_local.tsv	trespasser_and_throwing_gloves.c spawn_decoy appends to this count-prefixed s16 moby index list (max 0x1F, trims to 6); decoy_update removes entries.	
+D_L00_0015F1D8	debug_int_format	descriptive	config/names_local.tsv	debug_menu_and_text.c: format string passed to the sprintf helper with one int (selection, weapon order, ammo).	
+D_L00_0015F840	hud_stars_width	descriptive	config/names_local.tsv	weapon_hud_and_counters.c draw_hud_stars: sprite width paired with height D_L00_0015F844, used for rect size and draw_rotated_hud_sprite.	
+D_L18_001AC540	veldin2_moby_groups	descriptive	config/names_local.tsv	deplanetizer_and_gadgebots.c/rockets_and_platforms.c: per-group u16 moby index lists ending at the high-bit entry, index & 0x7FFF << 8 into the moby table.	
+D_00160480	direction_perpendicular	descriptive	config/names_local.tsv	pause.c prepare_scaled_direction_and_perpendicular: cross of dir with its reordered copy, normalised.	
 func_001E9770	noop_callback_a	descriptive	the NTSC decomp	noop_callback_a at US boot 0x001E93F0 (src/gameplay/update_resident_gameplay_state.c); US function table counterpart	
 func_001E9788	noop_callback_d	descriptive	the NTSC decomp	noop_callback_d at US boot 0x001E9408 (src/gameplay/update_resident_gameplay_state.c); US function table counterpart	
 func_001E9790	noop_callback_e	descriptive	the NTSC decomp	noop_callback_e at US boot 0x001E9410 (src/gameplay/state/update_gameplay_frame.c); US function table counterpart	
@@ -4204,7 +4382,6 @@ D_00137380	snd_return_buffer1	descriptive	the NTSC decomp	snd_return_buffer1 at 
 D_001377C0	snd_return_buffer2	descriptive	the NTSC decomp	snd_return_buffer2 at US boot 0x001376C0 (src/textbin/audio/snd_start_sound_system.c); US/PAL address translation (code of both refers to it)	
 D_00137C00	sound_read_work	descriptive	the NTSC decomp	sound_read_work at US boot 0x00137B00 (include/rnc/audio/sound_read_work.h); US/PAL address translation (code of both refers to it)	
 D_00137C40	snd_cd_bank_load_request	descriptive	the NTSC decomp	snd_cd_bank_load_request at US boot 0x00137B40 (src/audio/banks/snd_bank_load_by_loc.c); US/PAL address translation (code of both refers to it)	
-D_00137C80	disc_table	descriptive	the NTSC decomp	disc_table at US boot 0x00137B80 (include/rnc/storage/disc_table.h); US/PAL address translation (code of both refers to it)	
 D_0013A764	scene_sounds	descriptive	the NTSC decomp	scene_sounds at US boot 0x0013A664 (src/audio/music/music_start_track_by_id.c); US/PAL address translation (code of both refers to it)	
 D_0013CBE0	pad_held	descriptive	the NTSC decomp	pad_held at US boot 0x0013CAE0 (include/rnc/input/pad_globals.h); US/PAL address translation (code of both refers to it)	
 D_0013CD90	first_clear_packet	descriptive	the NTSC decomp	first_clear_packet at US boot 0x0013CC90 (include/rnc/rendering/fs_aa_packets.h); US/PAL address translation (code of both refers to it)	
@@ -4244,17 +4421,14 @@ D_0013D505	menu_item_enabled_105	descriptive	the NTSC decomp	menu_item_enabled_1
 D_0013D50F	menu_item_enabled_115	descriptive	the NTSC decomp	menu_item_enabled_115 at US boot 0x0013D407 (src/overlays/l13/gameplay/entities/qwarks_starfighter_part.c); US/PAL address translation (code of both refers to it)	
 D_0013D530	weapon_ammo_counts	descriptive	the NTSC decomp	weapon_ammo_counts at US boot 0x0013D428 (include/rnc/gameplay/state/item_state.h); US/PAL address translation (code of both refers to it)	
 D_0013D5F0	items_acquired	descriptive	the NTSC decomp	items_acquired at US boot 0x0013D4E8 (include/rnc/gameplay/state/item_state.h); US/PAL address translation (code of both refers to it)	
-D_0013DE48	level_available	descriptive	the NTSC decomp	level_available at US boot 0x0013DD40 (include/rnc/gameplay/state/level_state.h); US/PAL address translation (code of both refers to it)	
 D_0013DE60	level_visit_state	descriptive	the NTSC decomp	level_visit_state at US boot 0x0013DD58 (include/rnc/gameplay/state/level_state.h); US/PAL address translation (code of both refers to it)	
 D_0013E040	level_bolts	descriptive	the NTSC decomp	level_bolts at US boot 0x0013DF38 (src/overlays/l08/gameplay/entities/bolt_thief.c); US/PAL address translation (code of both refers to it)	
-D_0013E130	level_render_state	descriptive	the NTSC decomp	level_render_state at US boot 0x0013E030 (include/rnc/rendering/level_render_state.h); US/PAL address translation (code of both refers to it)	
 D_0013E150	ship_substate	descriptive	the NTSC decomp	ship_substate at US boot 0x0013E050 (include/rnc/gameplay/state/game_globals.h); US/PAL address translation (code of both refers to it)	
 D_0013E156	ship_index	descriptive	the NTSC decomp	ship_index at US boot 0x0013E056 (include/rnc/gameplay/state/game_globals.h); US/PAL address translation (code of both refers to it)	
 D_0013E604	frame_size	descriptive	the NTSC decomp	frame_size at US boot 0x0013E504 (src/overlays/l02/ui/text/0023ccc8.c); US/PAL address translation (code of both refers to it)	
 D_0013E6A0	pause_sound_volume	descriptive	the NTSC decomp	pause_sound_volume at US boot 0x0013E5A0 (include/rnc/gameplay/state/options.h); US/PAL address translation (code of both refers to it)	
 D_0013E6BC	sound_probe_ignore	descriptive	the NTSC decomp	sound_probe_ignore at US boot 0x0013E5BC (src/overlays/l09/gameplay/entities/elevator.c); US/PAL address translation (code of both refers to it)	
 D_0013E6E0	voice_positions	descriptive	the NTSC decomp	voice_positions at US boot 0x0013E5E0 (include/rnc/audio/sound_state.h); US/PAL address translation (code of both refers to it)	
-D_0013F530	hero_velocity	descriptive	the NTSC decomp	hero_velocity at US boot 0x0013F430 (src/overlays/shared/gameplay/hero/hero_check_damage.c); US/PAL address translation (code of both refers to it)	
 D_00141948	usage_stats	descriptive	the NTSC decomp	usage_stats at US boot 0x00141848 (include/rnc/gameplay/state/usage_stats.h); US/PAL address translation (code of both refers to it)	
 D_00141F08	active_message_records	descriptive	the NTSC decomp	active_message_records at US boot 0x00141E08 (include/rnc/ui/help/message_state.h); US/PAL address translation (code of both refers to it)	
 D_00141FA0	pause_iop_sprite_lists	descriptive	the NTSC decomp	pause_iop_sprite_lists at US boot 0x00141EA0 (include/rnc/gameplay/state/item_state.h); US/PAL address translation (code of both refers to it)	
@@ -4361,7 +4535,6 @@ D_0015F59C	GlobalStateFlag	descriptive	the NTSC decomp	GlobalStateFlag at US boo
 D_0015F5A0	font_window_active	descriptive	the NTSC decomp	font_window_active at US boot 0x0015F4A0 (include/rnc/ui/text/font_state.h); US/PAL address translation (code of both refers to it)	
 D_0015F690	space_load_pending	descriptive	the NTSC decomp	space_load_pending at US boot 0x0015F5B0 (include/rnc/gameplay/state/game_globals.h); US/PAL address translation (code of both refers to it)	
 D_0015F6C8	boot_level_active	descriptive	the NTSC decomp	boot_level_active at US boot 0x0015F5E8 (include/rnc/gameplay/state/options.h); US/PAL address translation (code of both refers to it)	
-D_0015F6FC	space_load_in_progress	descriptive	the NTSC decomp	space_load_in_progress at US boot 0x0015F618 (include/rnc/gameplay/state/game_globals.h); US/PAL address translation (code of both refers to it)	
 D_0015F704	font_state	descriptive	the NTSC decomp	font_state at US boot 0x0015F620 (include/rnc/ui/text/font_state.h); US/PAL address translation (code of both refers to it)	
 D_0015F710	level_sound_def_count	descriptive	the NTSC decomp	level_sound_def_count at US boot 0x0015F630 (include/rnc/audio/sound_state.h); US/PAL address translation (code of both refers to it)	
 D_0015F714	level_sound_defs	descriptive	the NTSC decomp	level_sound_defs at US boot 0x0015F634 (include/rnc/audio/sound_state.h); US/PAL address translation (code of both refers to it)	
@@ -4416,7 +4589,6 @@ D_00160FA0	tfrag_render_ranges	descriptive	the NTSC decomp	tfrag_render_ranges a
 D_00160FB0	tfrag_lod_dists_raw	descriptive	the NTSC decomp	tfrag_lod_dists_raw at US boot 0x00160EB0 (src/rendering/set_tfrag_dists.c); US/PAL address translation (code of both refers to it)	
 D_00160FE0	vif_chain_flags	descriptive	the NTSC decomp	vif_chain_flags at US boot 0x00160EE0 (src/rendering/state/reset_graphics.c); US/PAL address translation (code of both refers to it)	
 D_00161008	vu1_chain_limit	descriptive	the NTSC decomp	vu1_chain_limit at US boot 0x00160F08 (src/gameplay/entities/draw_mobys_setup.c); US/PAL address translation (code of both refers to it)	
-D_0016100C	current_vu_chain	descriptive	the NTSC decomp	current_vu_chain at US boot 0x00160F0C (include/rnc/rendering/render_globals.h); US/PAL address translation (code of both refers to it)	
 D_00161050	ties	descriptive	the NTSC decomp	ties at US boot 0x00160F50 (include/rnc/rendering/tie_instance.h); US/PAL address translation (code of both refers to it)	
 D_00161054	ties_end	descriptive	the NTSC decomp	ties_end at US boot 0x00160F54 (include/rnc/rendering/tie_instance.h); US/PAL address translation (code of both refers to it)	
 D_00161058	tie_data_table	descriptive	the NTSC decomp	tie_data_table at US boot 0x00160F58 (src/gameplay/state/initialize_level_render_state.c); US/PAL address translation (code of both refers to it)	
@@ -4501,7 +4673,6 @@ D_001AAF40	debug_font_buffer	descriptive	the NTSC decomp	debug_font_buffer at US
 D_001B2F40	moby_render_slots	descriptive	the NTSC decomp	moby_render_slots at US boot 0x001B2BC0 (include/rnc/gameplay/state/game_globals.h); US/PAL address translation (code of both refers to it)	
 D_001B3200	moby_backup_buffer	descriptive	the NTSC decomp	moby_backup_buffer at US boot 0x001B2E80 (include/rnc/gameplay/state/game_globals.h); US/PAL address translation (code of both refers to it)	
 D_001B3580	moby_class_resources	descriptive	the NTSC decomp	moby_class_resources at US boot 0x001B3200 (include/rnc/gameplay/entities/moby_class_tables.h); US/PAL address translation (code of both refers to it)	
-D_001B3E40	resident_class_slot_by_id	descriptive	the NTSC decomp	resident_class_slot_by_id at US boot 0x001B3AC0 (include/rnc/gameplay/entities/moby_class_tables.h); US/PAL address translation (code of both refers to it)	
 D_001B6100	moby_gs_loc_stash	descriptive	the NTSC decomp	moby_gs_loc_stash at US boot 0x001B5D80 (src/gameplay/entities/patch_moby_gifs.c); US/PAL address translation (code of both refers to it)	
 D_001B6880	moby_class_rectify	descriptive	the NTSC decomp	moby_class_rectify at US boot 0x001B6500 (src/gameplay/entities/patch_moby_gifs.c); US/PAL address translation (code of both refers to it)	
 D_001B6C00	resident_class_material_maps	descriptive	the NTSC decomp	resident_class_material_maps at US boot 0x001B6880 (include/rnc/rendering/resident_class.h); US/PAL address translation (code of both refers to it)	
@@ -4614,11 +4785,9 @@ D_L00_00161954	trail_decay	descriptive	the NTSC decomp	trail_decay at US level 0
 D_L00_00161C00	suck_fire_tuning	descriptive	the NTSC decomp	suck_fire_tuning at US level 00 0x00161B30 (src/overlays/shared/gameplay/entities/nanotech_ball.c); US/PAL address translation (code of both refers to it)	
 D_L00_00161DA8	follow_cam_min_distance_gp	descriptive	the NTSC decomp	follow_cam_min_distance_gp at US level 00 0x00161CD8 (src/overlays/shared/gameplay/camera/follow_camera_setup.c); US/PAL address translation (code of both refers to it)	
 D_L00_00161DF0	follow_cam_blend_frames	descriptive	the NTSC decomp	follow_cam_blend_frames at US level 00 0x00161D20 (src/overlays/shared/gameplay/entities/vendor_orb.c); US/PAL address translation (code of both refers to it)	
-D_L00_00166F00	current_follow_cam	descriptive	the NTSC decomp	current_follow_cam at US level 00 0x00166E00 (include/rnc/gameplay/camera/follow_cam.h); US/PAL address translation (code of both refers to it)	
 D_L00_00166F10	camera_view	descriptive	the NTSC decomp	camera_view at US level 00 0x00166E10 (src/overlays/shared/gameplay/entities/vendor_orb.c); US/PAL address translation (code of both refers to it)	
 D_L00_0016EB40	glints	descriptive	the NTSC decomp	glints at US level 00 0x0016EA40 (src/overlays/shared/gameplay/entities/camera_object.c); US/PAL address translation (code of both refers to it)	
 D_L00_00173F20	occlusion_samples	descriptive	the NTSC decomp	occlusion_samples at US level 00 0x00173E20 (src/overlays/shared/rendering/debug/001f36f8.c); US/PAL address translation (code of both refers to it)	
-D_L00_00173F58	coll_hit_moby	descriptive	the NTSC decomp	coll_hit_moby at US level 00 0x00173E58 (src/overlays/shared/gameplay/entities/devastator.c); US/PAL address translation (code of both refers to it)	
 D_L00_00173F80	coll_hit_normal	descriptive	the NTSC decomp	coll_hit_normal at US level 00 0x00173E80 (src/overlays/shared/gameplay/entities/mine.c); US/PAL address translation (code of both refers to it)	
 D_L00_00178200	moby_hits	descriptive	the NTSC decomp	moby_hits at US level 00 0x00178100 (src/overlays/shared/gameplay/entities/find_moby_hit.c); US/PAL address translation (code of both refers to it)	
 D_L00_00179990	idle_fidgets	descriptive	the NTSC decomp	idle_fidgets at US level 00 0x00179890 (src/overlays/shared/gameplay/hero/hero_handle_jump_press.c); US/PAL address translation (code of both refers to it)	
@@ -4631,7 +4800,6 @@ D_L00_001870C0	slot_buffers	descriptive	the NTSC decomp	slot_buffers at US level
 D_L00_00197F40	class_slot	descriptive	the NTSC decomp	class_slot at US level 00 0x00197BC0 (include/rnc/overlay/level_labels.h); US/PAL address translation (code of both refers to it)	
 D_L00_001ABD80	active_mobies	descriptive	the NTSC decomp	active_mobies at US level 00 0x001ABA00 (src/overlays/shared/gameplay/entities/00264740.c); US/PAL address translation (code of both refers to it)	
 D_L00_001B2200	effect_handlers	descriptive	the NTSC decomp	effect_handlers at US level 00 0x001B1E80 (src/overlays/shared/rendering/effects/register_part_types.c); US/PAL address translation (code of both refers to it)	
-D_L00_001CA7C0	vendor_menu	descriptive	the NTSC decomp	vendor_menu at US level 00 0x001CA4C0 (src/overlays/shared/gameplay/entities/00295100.c); US/PAL address translation (code of both refers to it)	
 D_L00_001CA9E0	vendor_extra	descriptive	the NTSC decomp	vendor_extra at US level 00 0x001CA6E0 (src/overlays/shared/gameplay/entities/00295100.c); US/PAL address translation (code of both refers to it)	
 D_L00_001D95E8	effects	descriptive	the NTSC decomp	effects at US level 00 0x001D92E8 (src/overlays/shared/gameplay/entities/camera_object.c); US/PAL address translation (code of both refers to it)	
 D_L00_001DEB00	ship_vertices	descriptive	the NTSC decomp	ship_vertices at US level 00 0x001DE7B0 (src/overlays/shared/gameplay/entities/veldin_ship.c); US/PAL address translation (code of both refers to it)	
@@ -4657,7 +4825,6 @@ D_L01_001672C0	camera_pos	descriptive	the NTSC decomp	camera_pos at US level 01 
 D_L01_0016CD60	fx_cutscene	descriptive	the NTSC decomp	fx_cutscene at US level 01 0x0016CCE0 (src/overlays/l01/gameplay/entities/rock_formation.c); US/PAL address translation (code of both refers to it)	
 D_L01_00179910	help_state	descriptive	the NTSC decomp	help_state at US level 01 0x00179890 (src/overlays/l01/gameplay/entities/tall_shroom.c); US/PAL address translation (code of both refers to it)	
 D_L01_001803C0	pool_sun	descriptive	the NTSC decomp	pool_sun at US level 01 0x00180340 (src/overlays/l01/gameplay/entities/rock_formation.c); US/PAL address translation (code of both refers to it)	
-D_L01_001B0C30	paths	descriptive	the NTSC decomp	paths at US level 01 0x001B0930 (include/rnc/overlay/level_labels.h); US/PAL address translation (code of both refers to it)	
 D_L01_001BAC60	moby_killed	descriptive	the NTSC decomp	moby_killed at US level 01 0x001BA950 (include/rnc/overlay/level_labels.h); US/PAL address translation (code of both refers to it)	
 D_L01_001CAF80	pool_light	descriptive	the NTSC decomp	pool_light at US level 01 0x001CAD00 (include/rnc/overlay/level_labels.h); US/PAL address translation (code of both refers to it)	
 D_L01_001E3780	pool_tiles	descriptive	the NTSC decomp	pool_tiles at US level 01 0x001E34C0 (src/overlays/l01/gameplay/entities/rock_formation.c); US/PAL address translation (code of both refers to it)	
@@ -4707,7 +4874,6 @@ D_L07_0020DDB0	rope_previous_points	descriptive	the NTSC decomp	rope_previous_po
 D_L07_0020DEA0	rope_grid	descriptive	the NTSC decomp	rope_grid at US level 07 0x0020DBE0 (src/overlays/l07/gameplay/entities/snagglebeast.c); US/PAL address translation (code of both refers to it)	
 D_L08_00161EA0	scroll_pos_x	descriptive	the NTSC decomp	scroll_pos_x at US level 08 0x00161E10 (src/overlays/shared/gameplay/entities/scoutbot.c); US/PAL address translation (code of both refers to it)	
 D_L08_00161EA4	scroll_pos_y	descriptive	the NTSC decomp	scroll_pos_y at US level 08 0x00161E14 (src/overlays/shared/gameplay/entities/scoutbot.c); US/PAL address translation (code of both refers to it)	
-D_L08_00167640	hero_pos_3DF8	descriptive	the NTSC decomp	hero_pos_3DF8 at US level 08 0x001675C0 (src/overlays/shared/gameplay/entities/scoutbot.c); US/PAL address translation (code of both refers to it)	
 D_L09_0015F520	texture_vertices	descriptive	the NTSC decomp	texture_vertices at US level 09 0x0015F420 (src/overlays/l09/gameplay/entities/asteroid.c); US/PAL address translation (code of both refers to it)	
 D_L09_00161240	l09_packet	descriptive	the NTSC decomp	l09_packet at US level 09 0x001611C0 (src/overlays/l09/gameplay/entities/asteroid.c); US/PAL address translation (code of both refers to it)	
 D_L10_00174340	ground_hit	descriptive	the NTSC decomp	ground_hit at US level 10 0x001742C0 (include/rnc/overlay/level_labels.h); US/PAL address translation (code of both refers to it)	
@@ -4753,14 +4919,11 @@ func_001FA588	multiply_quaternions	candidate	the NTSC decomp	held-alias: multipl
 func_001FA5C8	quaternion_nlerp	candidate	the NTSC decomp	held-alias: quaternion_nlerp at US boot 0x001FA400 (src/assembly/textbin/math/quaternions/quaternion_nlerp.c); US function table counterpart	slerp_67e8
 func_001FA648	quaternion_to_rotation_basis	candidate	the NTSC decomp	held-alias: quaternion_to_rotation_basis at US boot 0x001FA480 (src/assembly/textbin/math/quaternions/quaternion_to_rotation_basis.c); US function table counterpart	quaternion_rotation_basis
 func_001FA8F0	fast_bsphere_check	candidate	the NTSC decomp	held-alias: fast_bsphere_check at US boot 0x001FA728 (src/assembly/textbin/fast_bsphere_check.c); US function table counterpart	sphere_in_view,sphere_in_view_7920,sphere_visible,sphere_visible_ff640
-func_0020C468	fast_decompress	candidate	the NTSC decomp	held-alias: fast_decompress at US boot 0x0020B618 (src/assembly/textbin/fast_decompress.c); US function table counterpart	decompress_wad
 func_0020E3D0	advance_moby_animation	candidate	the NTSC decomp	held-alias: advance_moby_animation at US boot 0x0020D580 (src/assembly/textbin/gameplay/animation/advance_moby_animation.c); US function table counterpart	advance_moby_animation_alt,advance_resident_object_animation
 func_0020ED48	refresh_moby_spatial_bounds	candidate	the NTSC decomp	held-alias: refresh_moby_spatial_bounds at US boot 0x0020DEF8 (src/assembly/textbin/gameplay/entities/refresh_moby_spatial_bounds.c); US function table counterpart	refresh_resident_object_spatial_bounds
 D_0012F86C	GlobalStatePointer	candidate	the NTSC decomp	held-alias: GlobalStatePointer at US boot 0x0012F76C (src/runtime/resources/get_state_resource_wrapper.c); US/PAL address translation (code of both refers to it)	GlobalRandomState,GlobalReent,GlobalStateResource
-D_0013D49D	menu_item_enabled_1	candidate	the NTSC decomp	held-alias: menu_item_enabled_1 at US boot 0x0013D395 (src/overlays/l05/gameplay/vendor/0031bf40.c); US/PAL address translation (code of both refers to it)	menu_item_enabled_1_lui
 D_0013E6C0	voice_volume_records	candidate	the NTSC decomp	held-alias: voice_volume_records at US boot 0x0013E5C0 (src/audio/voices/allocate_voice_slot.c); US/PAL address translation (code of both refers to it)	voice_volume_records_macro
 D_001414D4	camera_secondary_mode	candidate	the NTSC decomp	held-alias: camera_secondary_mode at US boot 0x001413D4 (include/rnc/gameplay/camera/camera_globals.h); US/PAL address translation (code of both refers to it)	camera_secondary_mode_ece00
-D_0014C150	visited52	candidate	the NTSC decomp	held-alias: visited52 at US boot 0x0014C050 (include/rnc/gameplay/state/game_globals.h); US/PAL address translation (code of both refers to it)	visited52_lui
 D_00155080	LookupTable	candidate	the NTSC decomp	held-alias: LookupTable at US boot 0x00154F80 (src/sdk/rpc/sce_sif_init_cmd.c); US/PAL address translation (code of both refers to it)	LookupTable_lui
 D_0015EE68	frame_scale_inv_macro	candidate	the NTSC decomp	held-alias: frame_scale_inv_macro at US boot 0x0015ED68 (src/overlays/shared/gameplay/entities/trespasser.c); US/PAL address translation (code of both refers to it)	D_6C_e,frame_scale_inv
 D_0015EE74	frame_time_cube	candidate	the NTSC decomp	held-alias: frame_time_cube at US boot 0x0015ED74 (include/rnc/globals.h); US/PAL address translation (code of both refers to it)	frame_time_cube_macro
@@ -4768,67 +4931,42 @@ D_0015EEE0	opt_cam_invert	candidate	the NTSC decomp	held-alias: opt_cam_invert a
 D_0015EEF0	sound_volume	candidate	the NTSC decomp	held-alias: sound_volume at US boot 0x0015EDF0 (include/rnc/gameplay/state/options.h); US/PAL address translation (code of both refers to it)	sound_volume_macro
 D_0015EF20	alternate_animation_sequence	candidate	the NTSC decomp	held-alias: alternate_animation_sequence at US boot 0x0015EE20 (include/rnc/gameplay/state/options.h); US/PAL address translation (code of both refers to it)	alternate_animation_sequence_gp,alternate_animation_sequence_macro
 D_0015EF80	display_buffer_address	candidate	the NTSC decomp	held-alias: display_buffer_address at US boot 0x0015EE80 (src/video/display/set_pal_mode.c); US/PAL address translation (code of both refers to it)	display_buffer_address_macro
-D_0015EF84	draw_buffer_address	candidate	the NTSC decomp	held-alias: draw_buffer_address at US boot 0x0015EE84 (include/rnc/rendering/render_globals.h); US/PAL address translation (code of both refers to it)	draw_buffer_address_macro
 D_0015EFD0	capture_texture_tex0	candidate	the NTSC decomp	held-alias: capture_texture_tex0 at US boot 0x0015EED0 (src/overlays/shared/audio/voices/00276368.c); US/PAL address translation (code of both refers to it)	capture_texture_tex0_macro
-D_0015EFD8	decode_mode	candidate	the NTSC decomp	held-alias: decode_mode at US boot 0x0015EED8 (include/rnc/video/decoder/decoder_globals.h); US/PAL address translation (code of both refers to it)	decode_mode_macro
 D_0015F544	occl_chain_active	candidate	the NTSC decomp	held-alias: occl_chain_active at US boot 0x0015F444 (include/rnc/rendering/render_globals.h); US/PAL address translation (code of both refers to it)	occl_chain_active_macro
 D_0015F548	occl_chain_frames	candidate	the NTSC decomp	held-alias: occl_chain_frames at US boot 0x0015F448 (include/rnc/rendering/render_globals.h); US/PAL address translation (code of both refers to it)	occl_chain_frames_macro
 D_0015F550	gif_page_marker	candidate	the NTSC decomp	held-alias: gif_page_marker at US boot 0x0015F450 (src/rendering/do_gif_paging.c); US/PAL address translation (code of both refers to it)	gif_page_marker_a
-D_0015F558	pending_texture_upload_count	candidate	the NTSC decomp	held-alias: pending_texture_upload_count at US boot 0x0015F458 (include/rnc/rendering/render_globals.h); US/PAL address translation (code of both refers to it)	pending_texture_upload_count_macro
 D_0015F6E4	space_load	candidate	the NTSC decomp	held-alias: space_load at US boot 0x0015F600 (include/rnc/gameplay/state/game_globals.h); US/PAL address translation (code of both refers to it)	space_load_macro
 D_0015F6F0	world_update_time	candidate	the NTSC decomp	held-alias: world_update_time at US boot 0x0015F60C (include/rnc/gameplay/state/game_globals.h); US/PAL address translation (code of both refers to it)	world_update_time_macro
-D_001602B0	panel_clear_color_gp	candidate	the NTSC decomp	held-alias: panel_clear_color_gp at US boot 0x001601B0 (src/ui/menus/render_configured_text_label.c); US/PAL address translation (code of both refers to it)	panel_clear_color
 D_001602B8	text_shadow_x	candidate	the NTSC decomp	held-alias: text_shadow_x at US boot 0x001601B8 (include/rnc/ui/text/font_state.h); US/PAL address translation (code of both refers to it)	text_shadow_x_gp
 D_001602BC	text_shadow_y	candidate	the NTSC decomp	held-alias: text_shadow_y at US boot 0x001601BC (include/rnc/ui/text/font_state.h); US/PAL address translation (code of both refers to it)	text_shadow_y_gp
 D_00160450	preview_request_count	candidate	the NTSC decomp	held-alias: preview_request_count at US boot 0x00160350 (include/rnc/ui/menus/menu_globals.h); US/PAL address translation (code of both refers to it)	preview_request_count_macro
 D_0016104C	registered_object_render_class_count	candidate	the NTSC decomp	held-alias: registered_object_render_class_count at US boot 0x00160F4C (src/gameplay/state/transition_load_wad.c); US/PAL address translation (code of both refers to it)	registered_object_render_class_count_macro
 D_0016129C	moby_occl_cluster_count	candidate	the NTSC decomp	held-alias: moby_occl_cluster_count at US boot 0x0016119C (include/rnc/gameplay/state/game_globals.h); US/PAL address translation (code of both refers to it)	moby_occl_cluster_count_gp
 D_00161310	decoder_thread	candidate	the NTSC decomp	held-alias: decoder_thread at US boot 0x00161210 (include/rnc/video/decoder/decoder_globals.h); US/PAL address translation (code of both refers to it)	decoder_thread_id
-D_001864D0	preview_binding_table_alias	candidate	the NTSC decomp	held-alias: preview_binding_table_alias at US boot 0x001863D0 (src/ui/menus/item_preview/update_menu_preview_pose_and_attachments.c); US/PAL address translation (code of both refers to it)	gadget_definitions,menu_item_info,preview_class_records,preview_item_definitions,vendor_item_definitions
 D_L00_0015F0E0	level_file_path_format	candidate	the NTSC decomp	held-alias: level_file_path_format at US level 00 0x0015EFE0 (src/overlays/shared/rendering/debug/001f36f8.c); US/PAL address translation (code of both refers to it)	level_file_path_format_gp
 D_L00_0015FD48	mission_state	candidate	the NTSC decomp	held-alias: mission_state at US level 00 0x0015FC88 (src/overlays/shared/gameplay/entities/veldin_ship.c); US/PAL address translation (code of both refers to it)	mission_state_macro
 D_L00_00160088	texture_count	candidate	the NTSC decomp	held-alias: texture_count at US level 00 0x0015FFC8 (src/overlays/shared/world/loaders/load_level_gameplay.c); US/PAL address translation (code of both refers to it)	texture_count_macro
 D_L00_001614B0	spin_angles	candidate	the NTSC decomp	held-alias: spin_angles at US level 00 0x001613E0 (src/overlays/shared/gameplay/entities/camera_object.c); US/PAL address translation (code of both refers to it)	spin_angles_x
-D_L00_00173F40	coll_hit	candidate	the NTSC decomp	held-alias: coll_hit at US level 00 0x00173E40 (src/overlays/l00/gameplay/entities/veldin_robot_enemy.c); US/PAL address translation (code of both refers to it)	HH,collision_hit,impact1688,level_load
 D_L00_00179200	active_scene_trigger	candidate	the NTSC decomp	held-alias: active_scene_trigger at US level 00 0x00179100 (include/rnc/gameplay/state/scene_trigger.h); US/PAL address translation (code of both refers to it)	active_scene_trigger_lui
-D_L00_00179BC0	item_defs	candidate	the NTSC decomp	held-alias: item_defs at US level 00 0x00179AC0 (src/overlays/shared/gameplay/hero/hero_check_damage.c); US/PAL address translation (code of both refers to it)	item_defs_ea80,item_defs_lui
-D_L00_001B0830	vend_paths	candidate	the NTSC decomp	held-alias: vend_paths at US level 00 0x001B04B0 (src/overlays/shared/gameplay/entities/vendor_orb.c); US/PAL address translation (code of both refers to it)	toad_paths
 D_L00_001E7C88	level_directory	candidate	the NTSC decomp	held-alias: level_directory at US level 00 0x001E7938 (src/overlays/shared/rendering/debug/001f36f8.c); US/PAL address translation (code of both refers to it)	level_directory_macro
-D_L01_0015F504	cutscene_active	candidate	the NTSC decomp	held-alias: cutscene_active at US level 01 0x0015F404 (src/overlays/l01/gameplay/entities/birdbot.c); US/PAL address translation (code of both refers to it)	cutscene_active_macro
-D_L01_0015F6A8	cutscene_mode	candidate	the NTSC decomp	held-alias: cutscene_mode at US level 01 0x0015F5C4 (include/rnc/overlay/level_labels.h); US/PAL address translation (code of both refers to it)	cutscene_mode_gp,cutscene_mode_macro
 D_L01_00160058	ents	candidate	the NTSC decomp	held-alias: ents at US level 01 0x0015FFD8 (include/rnc/overlay/level_labels.h); US/PAL address translation (code of both refers to it)	moby_array
-D_L01_00174340	coll_hit	candidate	the NTSC decomp	held-alias: coll_hit at US level 01 0x001742C0 (src/overlays/shared/gameplay/hero/air_accel.c); US/PAL address translation (code of both refers to it)	HH,collision_hit
 D_L02_0015F6A8	level_game_mode	candidate	the NTSC decomp	held-alias: level_game_mode at US level 02 0x0015F5C4 (include/rnc/overlay/level_labels.h); US/PAL address translation (code of both refers to it)	level_game_mode_macro
 D_L04_00160058	moby_array	candidate	the NTSC decomp	held-alias: moby_array at US level 04 0x0015FFD8 (include/rnc/overlay/level_labels.h); US/PAL address translation (code of both refers to it)	level_moby_table,level_mobys
-D_L05_0015F6A8	game_mode	candidate	the NTSC decomp	held-alias: game_mode at US level 05 0x0015F5C4 (src/overlays/l05/hoverboard_girl.c); US/PAL address translation (code of both refers to it)	game_mode_absolute
-D_L05_0015F6B0	frame_number	candidate	the NTSC decomp	held-alias: frame_number at US level 05 0x0015F5CC (src/overlays/l05/gameplay/entities/electric_gate.c); US/PAL address translation (code of both refers to it)	frame_number_gp
 D_L06_0015F6B0	level_frame_count	candidate	the NTSC decomp	held-alias: level_frame_count at US level 06 0x0015F5CC (src/overlays/l06/gameplay/entities/hangar_door.c); US/PAL address translation (code of both refers to it)	GB_FRAME_gp
-D_L07_0015F6B0	level_frame_count	candidate	the NTSC decomp	held-alias: level_frame_count at US level 07 0x0015F5CC (src/overlays/l07/gameplay/entities/snagglebeast.c); US/PAL address translation (code of both refers to it)	level_frame_count_lui
 D_L07_0020DDC0	rope_points	candidate	the NTSC decomp	held-alias: rope_points at US level 07 0x0020DB00 (src/overlays/l07/gameplay/entities/snagglebeast.c); US/PAL address translation (code of both refers to it)	rope_points_lui
 D_L08_00167500	cannon_camera52	candidate	the NTSC decomp	held-alias: cannon_camera52 at US level 08 0x00167480 (src/overlays/l08/gameplay/entities/bolt_thief.c); US/PAL address translation (code of both refers to it)	camera_state_bytes
 D_L11_00161EA8	tide_level	candidate	the NTSC decomp	held-alias: tide_level at US level 11 0x00161E18 (include/rnc/overlay/level_labels.h); US/PAL address translation (code of both refers to it)	tide_level_macro
-D_L13_00160058	moby_base	candidate	the NTSC decomp	held-alias: moby_base at US level 13 0x0015FFD8 (include/rnc/overlay/level_labels.h); US/PAL address translation (code of both refers to it)	moby_base_1638,moby_pool_1cc8
 D_L13_001741C0	coll_hit_8d10	candidate	the NTSC decomp	held-alias: coll_hit_8d10 at US level 13 0x00174140 (src/overlays/l13/gameplay/entities/rocket.c); US/PAL address translation (code of both refers to it)	coll_hit_1638
 D_L14_0015F7EC	race_paths	candidate	the NTSC decomp	held-alias: race_paths at US level 14 0x0015F70C (src/overlays/l14/gameplay/entities/blarg_heavy_interceptor.c); US/PAL address translation (code of both refers to it)	race_paths_dfd10
 D_L15_001744C0	HH	candidate	the NTSC decomp	held-alias: HH at US level 15 0x00174440 (src/overlays/shared/ui/help/001fe778.c); US/PAL address translation (code of both refers to it)	coll_hit
-D_L16_001742C0	HH	candidate	the NTSC decomp	held-alias: HH at US level 16 0x00174240 (src/overlays/l16/gameplay/hero/002097a0.c); US/PAL address translation (code of both refers to it)	D_L16_hitN
 func_L05_002D28D0	sharkigator_update	candidate	the NTSC decomp	held-several-symbols: sharkigator_update at US level 05 0x002D1688 (src/overlays/l05/gameplay/entities/sharkigator.c); US function table counterpart	
 D_0015F770	large_font_height	candidate	the NTSC decomp	held-several-symbols: large_font_height at US boot 0x0015F690 (src/ui/map/draw_level_selection_map.c); US/PAL address translation (code of both refers to it)	
-D_L00_0015F6B0	game_frame	candidate	the NTSC decomp	held-several-symbols: game_frame at US level 00 0x0015F5CC (src/overlays/shared/audio/streaming/00266298.c); US/PAL address translation (code of both refers to it)	
 D_L00_0015F770	large_font_height	candidate	the NTSC decomp	held-several-symbols: large_font_height at US level 00 0x0015F690 (src/overlays/shared/gameplay/hero/hero_check_damage.c); US/PAL address translation (code of both refers to it)	
-D_L00_00160098	moby_table	candidate	the NTSC decomp	held-several-symbols: moby_table at US level 00 0x0015FFD8 (src/overlays/shared/gameplay/entities/devastator.c); US/PAL address translation (code of both refers to it)	
 D_L01_0015F6B0	level_frame_count	candidate	the NTSC decomp	held-several-symbols: level_frame_count at US level 01 0x0015F5CC (src/overlays/l01/gameplay/entities/rock_formation.c); US/PAL address translation (code of both refers to it)	
 D_L01_00160064	moby_list	candidate	the NTSC decomp	held-several-symbols: moby_list at US level 01 0x0015FFE4 (src/overlays/l01/gameplay/entities/tall_shroom.c); US/PAL address translation (code of both refers to it)	
-D_L02_001744C0	HH	candidate	the NTSC decomp	held-several-symbols: HH at US level 02 0x00174440 (src/overlays/l02/gameplay/hero/0021b698.c); US/PAL address translation (code of both refers to it)	
 D_L03_00173FE0	coll_hit	candidate	the NTSC decomp	held-several-symbols: coll_hit at US level 03 0x00173F60 (src/overlays/l03/gameplay/entities/taxi.c); US/PAL address translation (code of both refers to it)	
-D_L05_00174340	HH	candidate	the NTSC decomp	held-several-symbols: HH at US level 05 0x00174240 (src/overlays/l05/gameplay/hero/00239fc0.c); US/PAL address translation (code of both refers to it)	
-D_L06_001746C0	HH	candidate	the NTSC decomp	held-several-symbols: HH at US level 06 0x001745C0 (src/overlays/l06/gameplay/hero/00222fb8.c); US/PAL address translation (code of both refers to it)	
 D_L08_0015F6A8	level_game_mode	candidate	the NTSC decomp	held-several-symbols: level_game_mode at US level 08 0x0015F5C4 (src/overlays/shared/gameplay/entities/scoutbot.c); US/PAL address translation (code of both refers to it)	
 D_L09_00160058	moby_list	candidate	the NTSC decomp	held-several-symbols: moby_list at US level 09 0x0015FFD8 (src/overlays/l09/gameplay/entities/elevator.c); US/PAL address translation (code of both refers to it)	
-D_L12_00174340	HH	candidate	the NTSC decomp	held-several-symbols: HH at US level 12 0x001742C0 (src/overlays/l12/gameplay/hero/0022de30.c); US/PAL address translation (code of both refers to it)	
-D_L15_00160058	moby_array	candidate	the NTSC decomp	held-several-symbols: moby_array at US level 15 0x0015FFD8 (src/overlays/shared/gameplay/entities/002d6810.c); US/PAL address translation (code of both refers to it)	
-D_L18_0015F6B0	game_frame	candidate	the NTSC decomp	held-several-symbols: game_frame at US level 18 0x0015F5CC (include/rnc/overlay/level_labels.h); US/PAL address translation (code of both refers to it)	
-D_L18_00160058	moby_table	candidate	the NTSC decomp	held-several-symbols: moby_table at US level 18 0x0015FFD8 (src/overlays/l18/gameplay/entities/deplanetizer_gun.c); US/PAL address translation (code of both refers to it)	
 D_0012A718	csc_dma_chunk_handler	candidate	the NTSC decomp	held-unreferenced: csc_dma_chunk_handler at US boot 0x0012A5D8 (src/sdk/dma/csc_store_ref_image.c); US/PAL address translation (code of both refers to it)	
 D_00140150	hero_slots	candidate	the NTSC decomp	held-unreferenced: hero_slots at US boot 0x00140050 (src/overlays/shared/gameplay/hero/hero_check_damage.c); US/PAL address translation (code of both refers to it)	
 D_0015EEB5	opt_mirror_anim	candidate	the NTSC decomp	held-unreferenced: opt_mirror_anim at US boot 0x0015EDB5 (include/rnc/gameplay/state/options.h); US/PAL address translation (code of both refers to it)	

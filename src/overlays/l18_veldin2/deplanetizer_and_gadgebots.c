@@ -83,7 +83,7 @@ void update_deplanetizer_gun_sequence_effects(Moby *moby) {
         moby->state = 1;
         break;
     case 1:
-        if (D_L18_0015F6A8 != 2) break;
+        if (veldin2_cinematic_mode != 2) break;
         if (D_L18_0016D2E0_9D48.state == 4) {
             if (D_L18_0016D2E0_9D48.timer == 1) {
                 Moby *m;
@@ -269,7 +269,7 @@ void update_deplanetizer_gun_sequence_effects(Moby *moby) {
                 Moby_GetJointWorldPos(m, 3, a);
                 Moby_GetJointWorldPos(m, 10, b);
                 FastVecSub(c, b, a);
-                func_L00_001FF4B0(&moby->rot_row1, c, 1.0f);
+                vec_scale_to_length(&moby->rot_row1, c, 1.0f);
                 qcopy(v->pos, b);
                 col0 = 0x207F7F;
                 col1 = 0x7F7F20;
@@ -299,7 +299,7 @@ void update_deplanetizer_gun_sequence_effects(Moby *moby) {
                 int r;
                 char *p;
                 build_look_at_matrix(c, b, D_L18_00167A50, IntToFloat(i) * 0.19634955f);
-                func_L00_001FF4B0(c, c, *(float *)&D_L18_00162580 * frame_scale);
+                vec_scale_to_length(c, c, *(float *)&D_L18_00162580 * frame_scale);
                 r = random_integer_below(16);
                 p = func_L00_0026DEA0_c(a, random_integer_below(2) ? -r : r, c, 0.0f, 1.0f, 1.01f, *(float *)&D_L18_00162584, 0x7F7F7F7F);
                 if (p != 0) {
@@ -356,10 +356,10 @@ void draw_three_scaled_camera_facing_quads(void) {
     float tilt;
     char *target;
 
-    if (D_L18_0016D2E0.n == scale_ticks((*(int *)&D_L18_00162528) + 1)) {
+    if (veldin2_cutscene_state.n == scale_ticks((*(int *)&D_L18_00162528) + 1)) {
         D_L18_001625E0 = 1.0f;
         D_L18_001625E4 = 0.0f;
-        if (D_L18_0016D2E0.state == 7) {
+        if (veldin2_cutscene_state.state == 7) {
             tilt = -0.15f;
         } else {
             tilt = 0.15f;
@@ -378,12 +378,12 @@ void draw_three_scaled_camera_facing_quads(void) {
     target -= 0x210;
     FastVecAdd(mat[3], mat[3], target);
     FastVecSub(mat[0], mat[3], target);
-    func_L00_001FF4B0(mat[0], mat[0], 1.0f);
+    vec_scale_to_length(mat[0], mat[0], 1.0f);
     *(u128_9780 *)up = 0;
     up[2] = 1.0f;
     up[3] = 1.0f;
     FastVecCross(mat[1], mat[0], up);
-    func_L00_001FF4B0(mat[1], mat[1], 1.0f);
+    vec_scale_to_length(mat[1], mat[1], 1.0f);
     FastVecCross(mat[2], mat[1], mat[0]);
     pk.uv[0] = 1.0f;
     pk.uv[1] = 1.0f;
@@ -402,7 +402,7 @@ void draw_three_scaled_camera_facing_quads(void) {
         FastVecScale(pk.m[i], D_L18_001DFE50[i], D_L18_001625B0);
         transform_vector(pk.m[i], pk.m[i], mat);
     }
-    func_L00_001FD1D8(&pk, 0, 0);
+    draw_world_quad(&pk, 0, 0);
     color = (*(int *)&D_L18_0016258C);
     pk.col[3] = color;
     pk.col[2] = color;
@@ -412,12 +412,12 @@ void draw_three_scaled_camera_facing_quads(void) {
         FastVecScale(pk.m[i], D_L18_001DFE50[i], D_L18_001625B0 * 0.75f);
         transform_vector(pk.m[i], pk.m[i], mat);
     }
-    func_L00_001FD1D8(&pk, 0, 0);
+    draw_world_quad(&pk, 0, 0);
     for (i = 0; i < 4; i++) {
         FastVecScale(pk.m[i], D_L18_001DFE50[i], D_L18_001625B0 * 0.5f);
         transform_vector(pk.m[i], pk.m[i], mat);
     }
-    func_L00_001FD1D8(&pk, 0, 0);
+    draw_world_quad(&pk, 0, 0);
 }
 extern int func_001F9850(int);
 extern float func_001FA888(int);
@@ -493,12 +493,12 @@ void draw_moby_two_tint_glow_quads(struct Moby *m) {
     matrix_mul_vec3(mat[3], &D_L18_001625F0, &m->rot_row0);
     FastVecAdd(mat[3], mat[3], &m->pos);
     FastVecSub(mat[0], mat[3], D_L18_00167840);
-    func_L00_001FF4B0(mat[0], mat[0], 1.0f);
+    vec_scale_to_length(mat[0], mat[0], 1.0f);
     *(u128_9c20 *)up = 0;
     up[2] = 1.0f;
     up[3] = 1.0f;
     FastVecCross(mat[1], mat[0], up);
-    func_L00_001FF4B0(mat[1], mat[1], 1.0f);
+    vec_scale_to_length(mat[1], mat[1], 1.0f);
     FastVecCross(mat[2], mat[1], mat[0]);
     c = (*(int *)&D_L18_00162594) | (D_L18_001625B4 << 24);
     pk.uv[0] = 1.0f;
@@ -517,7 +517,7 @@ void draw_moby_two_tint_glow_quads(struct Moby *m) {
         FastVecScale(pk.m[i], D_L18_001DFE50[i], (*(float *)&D_L18_00162598));
         transform_vector(pk.m[i], pk.m[i], mat);
     }
-    func_L00_001FD1D8(&pk, 0, 0);
+    draw_world_quad(&pk, 0, 0);
     c2 = (*(int *)&D_L18_001625A0) | (D_L18_001625B4 << 24);
     pk.col[3] = c2;
     pk.col[2] = c2;
@@ -527,7 +527,7 @@ void draw_moby_two_tint_glow_quads(struct Moby *m) {
         FastVecScale(pk.m[i], D_L18_001DFE50[i], (*(float *)&D_L18_0016259C));
         transform_vector(pk.m[i], pk.m[i], mat);
     }
-    func_L00_001FD1D8(&pk, 0, 0);
+    draw_world_quad(&pk, 0, 0);
 }
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
 extern float D_L18_001625BC MACRO_ADDR;
@@ -567,7 +567,7 @@ void draw_moby_three_scaled_two_tint_quads(struct Moby *m) {
     matrix_mul_vec3(mat[0], up, &m->rot_row0);
     FastVecSub(mat[1], mat[3], D_L18_00167840);
     FastVecCross(mat[2], mat[1], mat[0]);
-    func_L00_001FF4B0(mat[2], mat[2], 1.0f);
+    vec_scale_to_length(mat[2], mat[2], 1.0f);
     FastVecCross(mat[1], mat[0], mat[2]);
 
     color = (*(int *)&D_L18_00162594) | 0xFF000000;
@@ -596,7 +596,7 @@ void draw_moby_three_scaled_two_tint_quads(struct Moby *m) {
     for (i = 0; i < 4; i++) {
         transform_vector(pk.m[i], &vertices[i], mat);
     }
-    func_L00_001FD1D8(&pk, 0, 0);
+    draw_world_quad(&pk, 0, 0);
 
     pk.col[3] = (*(int *)&D_L18_001625A0) | 0x7F000000;
     pk.col[2] = pk.col[3];
@@ -614,7 +614,7 @@ void draw_moby_three_scaled_two_tint_quads(struct Moby *m) {
     for (i = 0; i < 4; i++) {
         transform_vector(pk.m[i], &vertices[i], mat);
     }
-    func_L00_001FD1D8(&pk, 0, 0);
+    draw_world_quad(&pk, 0, 0);
 
     pk.col[3] = (*(int *)&D_L18_001625A0) | 0x7F000000;
     pk.col[2] = pk.col[3];
@@ -632,7 +632,7 @@ void draw_moby_three_scaled_two_tint_quads(struct Moby *m) {
     for (i = 0; i < 4; i++) {
         transform_vector(pk.m[i], &vertices[i], mat);
     }
-    func_L00_001FD1D8(&pk, 0, 0);
+    draw_world_quad(&pk, 0, 0);
 }
 extern int func_002140B0(int);
 extern int func_001FA898_r(float) __asm__("func_001FA898");
@@ -696,7 +696,7 @@ void update_moby_visibility_and_half_turn(char *moby) {
         ((struct Moby *)moby)->state = 1;
         break;
     case WAIT_TO_HIDE_AND_TURN:
-        if (D_L18_0015F6A8 == 2 && D_L18_0016D310 == 3) {
+        if (veldin2_cinematic_mode == 2 && D_L18_0016D310 == 3) {
             ((struct Moby *)moby)->flags |= 1;
             ((struct Moby *)moby)->visible = 0;
             ((struct Moby *)moby)->rot.x = FastAddRots(((struct Moby *)moby)->rot.x, 3.1415927f);
@@ -704,7 +704,7 @@ void update_moby_visibility_and_half_turn(char *moby) {
         }
         break;
     case HIDDEN_WAIT_TO_SHOW:
-        if (D_L18_0015F6A8 != 2) {
+        if (veldin2_cinematic_mode != 2) {
             unsigned short fl = ((struct Moby *)moby)->flags;
             ((struct Moby *)moby)->state = 3;
             fl &= 0xFFFE;
@@ -758,7 +758,7 @@ extern unsigned char *D_L18_00160058_m __asm__("D_L18_00160058") MACRO_ADDR;
 /* Sets the byte at +0xBC to value on every class 0x630 moby in list idx. */
 void set_group_class_0630_moby_byte_bc(int idx, int value)
 {
-    unsigned short *table = D_L18_001AC540[idx];
+    unsigned short *table = veldin2_moby_groups[idx];
     if (table != 0) {
         unsigned short *p = table;
         do {
@@ -821,16 +821,16 @@ void update_selected_moby_joint_trail(M2 *m) {
         m->state = 1;
         break;
     case 1:
-        if (D_L18_0015F6A8 == 2) {
-            if (D_L18_0016D2E0.n < 4) {
+        if (veldin2_cinematic_mode == 2) {
+            if (veldin2_cutscene_state.n < 4) {
                 idx = 0;
-                if (D_L18_0016D2E0.n == 0 || D_L18_0016D2E0.n == D_L18_0015F6A8 || D_L18_0016D2E0.n == 3) idx = 3;
-                if (D_L18_0016D2E0.n == 1) idx = 4;
-                p = D_L18_0016D2E0.arr[idx];
+                if (veldin2_cutscene_state.n == 0 || veldin2_cutscene_state.n == veldin2_cinematic_mode || veldin2_cutscene_state.n == 3) idx = 3;
+                if (veldin2_cutscene_state.n == 1) idx = 4;
+                p = veldin2_cutscene_state.arr[idx];
                 Moby_GetJointWorldPos(p, 8, buf);
                 Moby_GetJointWorldPos(p, 9, buf2);
                 FastVecSub(buf3, buf, buf2);
-                func_L00_001FF4B0(buf3, buf3, *(float *)&D_L18_00162608);
+                vec_scale_to_length(buf3, buf3, *(float *)&D_L18_00162608);
                 draw_trail(buf, buf, buf3, *(float *)&D_L18_0016260C, *(float *)&D_L18_00162610);
             }
         }
@@ -1062,8 +1062,8 @@ void update_gadgebot_damage_target_and_glow(void *m_) {
     if (moby->state == 0 || moby->state == 8) {
         return;
     }
-    if (moby->state != 7 && (*(int *)&D_L18_0015F6B0) != (*(int *)&D_L18_00162694)) {
-        (*(int *)&D_L18_00162694) = (*(int *)&D_L18_0015F6B0);
+    if (moby->state != 7 && (*(int *)&veldin2_frame_count) != (*(int *)&D_L18_00162694)) {
+        (*(int *)&D_L18_00162694) = (*(int *)&veldin2_frame_count);
         AddDrawCallback((void *)draw_group_class_0772_joint_glows, moby);
     }
     speed = F(D_L18_001626A4);
@@ -1077,7 +1077,7 @@ void update_gadgebot_damage_target_and_glow(void *m_) {
         moby->state = 6;
     }
     moby->scale = moby->pclass->scale * F(D_L18_0016268C);
-    if (hero.state.current == 0x72 || D_L18_0015F6A8 == 2) {
+    if (hero.state.current == 0x72 || veldin2_cinematic_mode == 2) {
         if (moby->state != 7) {
             moby->state = 8;
             if (moby->prev_seq != 0) {
@@ -1198,7 +1198,7 @@ int launch_first_idle_group_class_0772_moby(int group, void *from, void *to, flo
 
     if (p == 0)
         return 0;
-    table = D_L18_00160058;
+    table = veldin2_moby_table;
     for (;;) {
         moby = &table[*p & 0x7FFF];
         if (moby->oclass == 0x772) {
@@ -1212,7 +1212,7 @@ int launch_first_idle_group_class_0772_moby(int group, void *from, void *to, flo
                 v->unk1F4 = 1.0f;
                 FastVecSub(v->velocity, to, from);
                 v->velocity[2] = 0.0f;
-                func_L00_001FF4B0(v->velocity, v->velocity, speed);
+                vec_scale_to_length(v->velocity, v->velocity, speed);
                 v->velocity[2] = jump_speed_4318(from, to, speed, -(g_frame_time_sq * 10.0f), 0);
                 v->spin = randf_sym(15.0f, 45.0f) * 0.017453292f;
                 return 1;
@@ -1224,12 +1224,12 @@ int launch_first_idle_group_class_0772_moby(int group, void *from, void *to, flo
 }
 /* Counts the class 0x772 mobys in list idx that are not inactive. */
 short count_group_class_0772_mobys_not_in_state_8(int idx) {
-    unsigned short *p = D_L18_001AC540[idx];
+    unsigned short *p = veldin2_moby_groups[idx];
     short n = 0;
     int base;
     if (p == 0)
         return 0;
-    base = (int)D_L18_00160058;
+    base = (int)veldin2_moby_table;
     while (1) {
         unsigned char *moby = (unsigned char *)(base + ((p[0] & 0x7FFF) << 8));
         if (*(short *)(moby + 0xA6) == 0x772 && moby[0x20] != 8)
@@ -1318,7 +1318,7 @@ extern short D_L18_001626E4;
 
 /* For each listed moby of matching type, spawns effects at five points. */
 void draw_group_class_0772_joint_glows(unsigned char *moby) {
-    unsigned short *p = D_L18_001AC540[moby[0x21]];
+    unsigned short *p = veldin2_moby_groups[moby[0x21]];
     if (p != 0) {
         while (1) {
             unsigned char *obj = D_L18_00160058_m + ((p[0] & 0x7FFF) << 8);

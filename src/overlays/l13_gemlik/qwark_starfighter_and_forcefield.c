@@ -609,10 +609,10 @@ void update_qwarks_starfighter(Moby388 *moby) {
                 char *ship = (char *)hero->ship_moby->d;
                 int elapsed;
                 if (D_L13_001619E4 == -1) {
-                    D_L13_001619E4 = D_0015EFA4;
-                    STUB_printf(D_L13_001F51E0, D_0015EFA4, D_0015EFA4 / 60, D_0015EFA4 / 360);
+                    D_L13_001619E4 = play_time_ticks;
+                    STUB_printf(D_L13_001F51E0, play_time_ticks, play_time_ticks / 60, play_time_ticks / 360);
                 }
-                elapsed = (unsigned int)(D_0015EFA4 - D_L13_001619E4) / 360;
+                elapsed = (unsigned int)(play_time_ticks - D_L13_001619E4) / 360;
                 if (elapsed >= 0x29) {
                     STUB_printf(D_L13_001619E8);
                     data->s24 = 0x66;
@@ -717,7 +717,7 @@ void update_qwarks_starfighter(Moby388 *moby) {
             data->fAC += (g_frame_time * 30.0f - data->fAC) * 0.1f;
             if (g_frame_time * 40.0f < hero_distance) {
                 FastVecSub(offset, D_0013E633 + 0xE9D, data->v80);
-                func_L00_001FF4B0(offset, offset, g_frame_time * 40.0f);
+                vec_scale_to_length(offset, offset, g_frame_time * 40.0f);
                 FastVecAdd(data->v80, data->v80, offset);
             } else {
                 qcopy(offset, D_0013E633 + 0xE9D);
@@ -742,9 +742,9 @@ void update_qwarks_starfighter(Moby388 *moby) {
                 }
             }
             FastVecSub(ray_start, data->v80, joint);
-            func_L00_001FF4B0(ray_start, ray_start, 8.0f);
+            vec_scale_to_length(ray_start, ray_start, 8.0f);
             FastVecAdd(ray_start, ray_start, joint);
-            if (func_L00_001EFFF0(ray_start, data->v80, 0, moby, 0) != 0) {
+            if (coll_line(ray_start, data->v80, 0, moby, 0) != 0) {
                 if (D_L13_001741D8 == 0 || D_L13_001741D8->cls_id == 0xD4) {
                     data->i100 = 0;
                 }
@@ -772,12 +772,12 @@ void update_qwarks_starfighter(Moby388 *moby) {
             FastVecDist(moby->pos, D_0013E633 + 0xE9D);
             Moby_GetJointWorldPos(moby, 0x13, probe);
             FastVecSub(ray_start, data->v80, probe);
-            func_L00_001FF4B0(ray_start, ray_start, 30.0f);
+            vec_scale_to_length(ray_start, ray_start, 30.0f);
             FastVecAdd(ray_start, ray_start, probe);
             FastVecSub(offset, ray_start, data->v80);
             distance = FastVecDist(ray_start, D_0013E633 + 0xE9D);
             if (distance != 30.0f) {
-                func_L00_001FF4B0(offset, offset, (g_frame_time * 15.0f < distance) ? g_frame_time * 15.0f : distance);
+                vec_scale_to_length(offset, offset, (g_frame_time * 15.0f < distance) ? g_frame_time * 15.0f : distance);
                 FastVecAdd(data->v80, data->v80, offset);
             }
             {
@@ -873,11 +873,11 @@ void update_qwarks_starfighter(Moby388 *moby) {
         data->fAC *= 0.9992f;
         if (random_integer_below(0x11) == 0) {
             float size_ratio = moby->scale / (((struct MobyClass *)moby->cls)->scale * 3.0f);
-            func_L00_001FF4B0(joint, moby->mat[0], random_float_between(-5.0f, 5.0f) * size_ratio);
+            vec_scale_to_length(joint, moby->mat[0], random_float_between(-5.0f, 5.0f) * size_ratio);
             FastVecAdd(offset, moby->pos, joint);
-            func_L00_001FF4B0(joint, moby->mat[1], random_float_between(-4.0f, 4.0f) * size_ratio);
+            vec_scale_to_length(joint, moby->mat[1], random_float_between(-4.0f, 4.0f) * size_ratio);
             FastVecAdd(offset, offset, joint);
-            func_L00_001FF4B0(joint, moby->mat[2], random_float_between(-4.0f, 4.0f) * size_ratio);
+            vec_scale_to_length(joint, moby->mat[2], random_float_between(-4.0f, 4.0f) * size_ratio);
             FastVecAdd(offset, offset, joint);
             SpawnExplosionFx(moby, offset, -1, size_ratio * 1.6f, 13.0f);
         }
@@ -1064,7 +1064,7 @@ void update_qwarks_starfighter(Moby388 *moby) {
         data->snd114 = Moby_PlaySound(0, 4, (int)moby);
     have114:
         matrix_mul_vec3(offset, D_L13_001606E0, moby->mat[0]);
-        func_L00_001FF4B0(offset, offset, 7.0f);
+        vec_scale_to_length(offset, offset, 7.0f);
         FastVecSub(offset, moby->pos, offset);
         offset[3] = 50.0f;
         if (data->light120 == -1) {
@@ -1414,8 +1414,8 @@ void update_linked_moby_statistics_and_hero_volume_flag(char *moby) {
                 if (h <= 0xFFFE) {
                     *(unsigned short *)(q + 0x378) = h + 1;
                 }
-                if (scale_ticks(D_0015EFA4) / 600 > *(unsigned short *)(q + 0x37A)) {
-                    *(unsigned short *)(q + 0x37A) = scale_ticks(D_0015EFA4) / 600;
+                if (scale_ticks(play_time_ticks) / 600 > *(unsigned short *)(q + 0x37A)) {
+                    *(unsigned short *)(q + 0x37A) = scale_ticks(play_time_ticks) / 600;
                 }
                 *(unsigned int *)(q + 0x37C) = *(unsigned int *)(q + 0x37C) | (1 << g_current_level_index) | 0x80000000;
             } else {
@@ -1950,13 +1950,13 @@ void update_gemlik_projectile(struct Moby *moby) {
     FastVecAdd(&moby->pos, &moby->pos, data);
     qcopy(&work.velocity, data);
     work.velocity.z = 0.0f;
-    func_L00_001FF500(&work.velocity, &work.velocity, 1.0f);
+    vec_set_length_xy(&work.velocity, &work.velocity, 1.0f);
     work.velocity.z = 1.0f;
     flags = 0x10001;
     base = (unsigned char *)D_0013E633 + 0xE1D;
     if (base[0x1FF6] != 0 && *(float *)(data + 0xC) != 31337.6015625f &&
         FastVecDist(&moby->pos, base + 0x80) < 2.0f) {
-        func_L00_001FF4B0(data, data, 0.5f);
+        vec_scale_to_length(data, data, 0.5f);
         FastVecSub(&moby->pos, &moby->pos, data);
         qzero(data);
         *(int *)(data + 0x2C) = 5;
@@ -1998,16 +1998,16 @@ void update_gemlik_projectile(struct Moby *moby) {
                 work.random_direction.y = random_float_between(-1.0f, 1.0f);
                 work.random_direction.z = random_float_between(-1.0f, 1.0f);
                 *(OvlQuad_p *)&work.direction = *(OvlQuad_p *)&work.random_direction;
-                func_L00_001FF4B0(&work.direction, &work.direction, FastVecLength(&work.random_direction) * 0.1f);
+                vec_scale_to_length(&work.direction, &work.direction, FastVecLength(&work.random_direction) * 0.1f);
                 FastVecAdd(&work.direction, &work.random_direction, &work.direction);
-                func_L00_001FF4B0(&work.direction, &work.direction,
+                vec_scale_to_length(&work.direction, &work.direction,
                     random_float_between(g_frame_time + g_frame_time, g_frame_time * 4.0f));
                 spawn_projectile_expiry_particle(&moby->pos, &work.direction);
             }
         }
         goto remove;
     }
-    if (func_L00_001EFFF0(&work.old_pos, &moby->pos, stationary, *(void **)(data + 0x20), work.hit) == 0)
+    if (coll_line(&work.old_pos, &moby->pos, stationary, *(void **)(data + 0x20), work.hit) == 0)
         goto bounds;
     qcopy(&moby->pos, &(*(L13Hit_p *)D_L13_001741C0).pos);
     if (moby->visible != 0) {
@@ -2019,9 +2019,9 @@ void update_gemlik_projectile(struct Moby *moby) {
             work.random_direction.z = random_float_between(-1.0f, 1.0f);
             *(OvlQuad_p *)&work.direction = *(OvlQuad_p *)&work.random_direction;
             vec_reflect(&work.random_direction, data, &(*(L13Hit_p *)D_L13_001741C0).matrix);
-            func_L00_001FF4B0(&work.direction, &work.direction, FastVecLength(&work.random_direction) * 0.5f);
+            vec_scale_to_length(&work.direction, &work.direction, FastVecLength(&work.random_direction) * 0.5f);
             FastVecAdd(&work.direction, &work.random_direction, &work.direction);
-            func_L00_001FF4B0(&work.direction, &work.direction,
+            vec_scale_to_length(&work.direction, &work.direction,
                 random_float_between(g_frame_time * 3.0f, g_frame_time * 6.0f));
             PartType27Spawn(&moby->pos, &work.direction, 0x7F2F4F6F,
                 rand_range(scale_ticks(10), scale_ticks(15)), 30000.0f);
@@ -2098,7 +2098,7 @@ void spawn_poison_vessel_destruction_effects(void *moby, void *data) {
     qcopy(pos, &((struct Moby *)moby)->pos);
     pos[2] = pos[2] + 1.0f;
     FastVecScale(velocity, velocity, scale);
-    FastVecSub(direction, D_L13_00167140, pos);
+    FastVecSub(direction, gemlik_camera_pos, pos);
     distance = FastVecLength(direction);
 
     for (i = 0; i < 10; i++) {
@@ -2107,13 +2107,13 @@ void spawn_poison_vessel_destruction_effects(void *moby, void *data) {
         random_vector[1] = random_float_between(-1.0f, 1.0f);
         *(V4A *)random_direction = *(V4A *)random_vector;
         amount = FastVecDot(random_direction, axis);
-        func_L00_001FF4B0(offset, axis, amount);
+        vec_scale_to_length(offset, axis, amount);
         FastVecSub(random_direction, random_direction, offset);
         radius = random_float_between(0.0f, 1.0f);
-        func_L00_001FF4B0(offset, axis, radius);
+        vec_scale_to_length(offset, axis, radius);
         FastVecAdd(random_direction, random_direction, offset);
         radius = scale * random_float_between(3.5f, 6.5f);
-        func_L00_001FF4B0(random_direction, random_direction, radius * g_frame_time);
+        vec_scale_to_length(random_direction, random_direction, radius * g_frame_time);
         FastVecAdd(random_direction, random_direction, velocity);
         lo = scale_ticks(0x3C);
         hi = scale_ticks(0x78);
@@ -2127,13 +2127,13 @@ void spawn_poison_vessel_destruction_effects(void *moby, void *data) {
         random_vector[1] = random_float_between(-1.0f, 1.0f);
         *(V4A *)random_direction = *(V4A *)random_vector;
         amount = FastVecDot(random_direction, axis);
-        func_L00_001FF4B0(offset, axis, amount);
+        vec_scale_to_length(offset, axis, amount);
         FastVecSub(random_direction, random_direction, offset);
         radius = random_float_between(0.0f, 1.0f);
-        func_L00_001FF4B0(offset, axis, radius);
+        vec_scale_to_length(offset, axis, radius);
         FastVecAdd(random_direction, random_direction, offset);
         radius = scale * random_float_between(6.5f, 10.0f);
-        func_L00_001FF4B0(random_direction, random_direction, radius * g_frame_time);
+        vec_scale_to_length(random_direction, random_direction, radius * g_frame_time);
         FastVecAdd(random_direction, random_direction, velocity);
         lo2 = scale_ticks(0x3C);
         hi = scale_ticks(0x5A);
@@ -2146,10 +2146,10 @@ void spawn_poison_vessel_destruction_effects(void *moby, void *data) {
     random_vector[2] = random_float_between(-1.0f, 1.0f);
     direction[2] = direction[2] + distance * 0.5f;
     *(V4A *)random_direction = *(V4A *)random_vector;
-    func_L00_001FF4B0(random_direction, random_direction, (distance / 5.0f) * g_frame_time);
-    func_L00_001FF4B0(direction, direction, lift * g_frame_time);
+    vec_scale_to_length(random_direction, random_direction, (distance / 5.0f) * g_frame_time);
+    vec_scale_to_length(direction, direction, lift * g_frame_time);
     FastVecAdd(random_direction, random_direction, direction);
-    func_L00_001FF548(random_direction, random_direction, 10.0f * g_frame_time);
+    clamp_vec_length(random_direction, random_direction, 10.0f * g_frame_time);
     lo3 = scale_ticks(0x3C);
     hi = scale_ticks(0x5A);
     spawn_poison_vessel_effect_moby(pos, random_direction, rand_range(lo3, hi), 1);
@@ -2436,7 +2436,7 @@ void BlargSpaceCommandoUpdate(struct Moby *moby) {
     RopeWalkerUpdate(moby);
     target = vars->target;
     Manipulator_ApplyScale(2.5f, moby, 1, vars->unk400);
-    if (moby->visible != 0 && FastVecDist(&moby->pos, D_L13_00167140) < 28.0f) {
+    if (moby->visible != 0 && FastVecDist(&moby->pos, gemlik_camera_pos) < 28.0f) {
         func_L00_0025B178(moby);
         moby->shadow_range = 0x16;
     }
@@ -2889,7 +2889,7 @@ void RopeWalkerUpdate(Moby *moby)
                 char *g = D_L13_001741C0;
 
                 if (fast_atan2(*(float *)(g + 0x48), vec_length_xy(g + 0x40)) > 0.6981317f) {
-                    func_L00_001FF4B0(push, g + 0x40, 0.05f);
+                    vec_scale_to_length(push, g + 0x40, 0.05f);
                     FastVecAdd(&moby->pos, &moby->pos, push);
                 }
                 if (ground < moby->pos.z) {
@@ -2929,7 +2929,7 @@ extern short D_L13_00161F10,D_L13_00161F14;
 void initialize_gemlik_trail(char *m) {
  float v[4]; int i; char *d=*(char **)(m+0x78);
  ProbeGroundHeight(m+0x10,0,0.5f);
- func_L00_001FF4B0(d+0x200,D_L13_00174200,1.0f);
+ vec_scale_to_length(d+0x200,D_L13_00174200,1.0f);
  Moby_GetJointWorldPos(m,0,d+0x1f0);
  for(i=0;i<16;i++) {
  float angle=(IntToFloat(i)*0.0625f-0.5f)*(*(float *)&D_L13_00161F10*0.017453292f);
@@ -3424,8 +3424,8 @@ void update_lift(char *mobyp) {
             float remaining_blend_ratio = (1.0f - vars->blend.f) / (1.0f - old);
             char *base;
             compute_lift_mount_transform(mobyp, mount_transform_work, mount_rotation);
-            FastVecSub(mount_position_work, D_L13_00167140, mount_transform_work);
-            base = D_L13_00167140 - 0x140;
+            FastVecSub(mount_position_work, gemlik_camera_pos, mount_transform_work);
+            base = gemlik_camera_pos - 0x140;
             FastVecScale(mount_position_work, mount_position_work, remaining_blend_ratio);
             FastVecAdd(mount_transform_work, mount_transform_work, mount_position_work);
             mount_rotation[1] = FastAddRots(FastSubRots(*(float *)(base + 0x154), mount_rotation[1]) * remaining_blend_ratio, mount_rotation[1]);
@@ -3510,7 +3510,7 @@ void update_lift(char *mobyp) {
             }
             moby->state = 1;
             HeroEnterMoveState(0x72, 1);
-            CameraScript(D_L13_00167140, D_L13_00167140 + 0x10, 1, 0, 0);
+            CameraScript(gemlik_camera_pos, gemlik_camera_pos + 0x10, 1, 0, 0);
             vars->blend.i = 0;
         } else if (moby->state == 4) {
             struct LiftHeroMotion *p = (struct LiftHeroMotion *)((char *)D_0013E633 + 0xE9D);

@@ -712,11 +712,11 @@ void update_resident_packed_direction(void) {
     float buf[4];
     float a;
 
-    func_0020E360((void *)D_001414D0, buf);
+    func_0020E360((void *)g_hero_moby, buf);
     a = func_001FA058(buf[0], buf[1]);
-    D_001CAE00[0] = FastCos(a) * 0.14f;
-    D_001CAE00[1] = FastSin(a) * 0.14f;
-    D_001CAE00[2] = -0.99f;
+    shadow_light_dir[0] = FastCos(a) * 0.14f;
+    shadow_light_dir[1] = FastSin(a) * 0.14f;
+    shadow_light_dir[2] = -0.99f;
 }
 
 extern int D_0016003C MACRO_ADDR;
@@ -777,7 +777,7 @@ extern int D_0015F71C MACRO_ADDR;
 void ProcessMobyAnimData(void) {
     func_00118D80(0);
     FastMemCopy((void *)0x70003800, normal_lut, 0x800);
-    MobyAnimProc(D_0015F718, D_0015F71C);
+    MobyAnimProc(render_packet_end, vu1_chain_safe_end);
 }
 
 
@@ -830,8 +830,8 @@ void DrawMobysSetup(void) {
     g_render_packet_cursor = p;
     ProfileMarker_Begin(D_0015FFD0, 1);
     D_00160040 = 0;
-    vu1_chain_limit = D_0015F71C - 0x10000;
-    moby_anim_head = D_0015F718;
+    vu1_chain_limit = vu1_chain_safe_end - 0x10000;
+    moby_anim_head = render_packet_end;
 }
 
 extern int func_00212658(int, int, int, int);

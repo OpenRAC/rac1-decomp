@@ -550,7 +550,7 @@ void advance_hero_animation(void) {
             Sound_StopSlot(m->sound_slot);
             m->sound_slot = 0xFF;
         }
-    } else if (m->unk7C != 0xFF && D_L00_0015F6A8 != 2 && D_L00_0015F6A8 != 6) {
+    } else if (m->unk7C != 0xFF && cinematic_mode != 2 && cinematic_mode != 6) {
         m->sound_slot = Moby_PlaySound(m->unk7C, 4, m);
     }
     sync_hero_slot3_animation_speed();
@@ -608,7 +608,7 @@ f32 predict_hero_trajectory_intercept_time(f32 a, f32 b, f32 c) {
             v.q = (&D_0013F450_33410)->v80.q;
             clip_negative_segment_endpoint_xyz(&v, t);
             qcopy(&v, &(&D_0013F450_33410)->v80);
-            if (func_L00_001EFFF0(&v, t, 0x24, 0, 0) != 0) {
+            if (coll_line(&v, t, 0x24, 0, 0) != 0) {
                 if (func_L00_002345B0_33410((f32 *)coll_hit_normal) <= 0.87266463f) {
                     c = *(f32 *)(coll_hit_normal - 0x18);
                 }
@@ -623,7 +623,7 @@ f32 predict_hero_trajectory_intercept_time(f32 a, f32 b, f32 c) {
         break;
     case 1:
         qcopy(&v, &(&D_0013F450_33410)->v270);
-        func_L00_001FF4B0(&v, &v, b);
+        vec_scale_to_length(&v, &v, b);
         FastVecScale(&v, &v, -1.0f);
         FastVecScale(t, &(&D_0013F450_33410)->vE0, a);
         FastVecScale(&t1, &v, ((a * a + a) * 0.5f) * b);
@@ -631,7 +631,7 @@ f32 predict_hero_trajectory_intercept_time(f32 a, f32 b, f32 c) {
         FastVecAdd(t, &(&D_0013F450_33410)->v80, t);
         v2.q = (&D_0013F450_33410)->v80.q;
         clip_negative_segment_endpoint_xyz(&v2, t);
-        if (func_L00_001EFFF0(&(&D_0013F450_33410)->v80, t, 0x24, 0, 0) != 0) {
+        if (coll_line(&(&D_0013F450_33410)->v80, t, 0x24, 0, 0) != 0) {
             f32 nb;
             nb = b * -0.5f;
             z = func_L00_002342F8_33410(&(&D_0013F450_33410)->vE0) - nb;
@@ -648,7 +648,7 @@ f32 predict_hero_trajectory_intercept_time(f32 a, f32 b, f32 c) {
         t1.f[1] = 100.0f;
         t1.f[0] = 100.0f;
         FastVecSub(&v, &(&D_0013F450_33410)->v80, &t1);
-        func_L00_001FF4B0(&v, &v, b);
+        vec_scale_to_length(&v, &v, b);
         FastVecScale(&v, &v, -1.0f);
         FastVecScale(t, &(&D_0013F450_33410)->vE0, a);
         FastVecScale(&t1, &v, ((a * a + a) * 0.5f) * b);
@@ -656,7 +656,7 @@ f32 predict_hero_trajectory_intercept_time(f32 a, f32 b, f32 c) {
         FastVecAdd(t, &(&D_0013F450_33410)->v80, t);
         v2.q = (&D_0013F450_33410)->v80.q;
         clip_negative_segment_endpoint_xyz(&v2, t);
-        if (func_L00_001EFFF0(&(&D_0013F450_33410)->v80, t, 0x24, 0, 0) != 0) {
+        if (coll_line(&(&D_0013F450_33410)->v80, t, 0x24, 0, 0) != 0) {
             f32 nb;
             nb = b * -0.5f;
             z = func_L00_002342F8_33410(&(&D_0013F450_33410)->vE0) - nb;
@@ -717,7 +717,7 @@ void HeroSetObjectFlags(void) {
     last = g_hero;
     if (*(int *)(last + 0x10B8) == 8) {
         obj = ((ObjPair *)(last + 0x1090))[0].a;
-        if (obj != 0 && D_L00_0015F6A8 == 0 && *(unsigned char *)(obj + 0x20) != 0) {
+        if (obj != 0 && cinematic_mode == 0 && *(unsigned char *)(obj + 0x20) != 0) {
             *(unsigned short *)(obj + 0x34) &= ~0x41;
         }
     }
@@ -904,14 +904,14 @@ void HeroMoveDownAlongNormal(float *dst, float *src, float h) {
         dst[2] = src[2] - h;
         break;
     case 1:
-        func_L00_001FF4B0(d, base + 0x270, -h);
+        vec_scale_to_length(d, base + 0x270, -h);
         FastVecAdd(dst, src, d);
         break;
     case 2:
         if (*(int *)(base + 0x2084) == 0x3E && *(short *)(base + 0x30E) == 0) {
-            func_L00_001FF4B0(d, base + 0x270, -h);
+            vec_scale_to_length(d, base + 0x270, -h);
         } else {
-            func_L00_001FF4B0(d, g_hero + 0x290, h);
+            vec_scale_to_length(d, g_hero + 0x290, h);
         }
         FastVecAdd(dst, src, d);
         break;
@@ -1033,7 +1033,7 @@ void gravity_flatten(float *dst, float *src) {
         dst[2] = 0.0f;
         break;
     case 1:
-        func_L00_001FF4B0(n, base + 0x270, 1.0f);
+        vec_scale_to_length(n, base + 0x270, 1.0f);
         FastVecScale(n, n, FastVecDot(n, src));
         FastVecSub(dst, src, n);
         break;
@@ -1126,12 +1126,12 @@ void set_gravity_relative_vector_length_xy(float *dst, float *src, float z) {
 
     switch (*(unsigned char *)(base + 0x20B3)) {
     case 0:
-        func_L00_001FF500(dst, src, z);
+        vec_set_length_xy(dst, src, z);
         break;
     case 1:
     case 2:
         transform_vector(dst, src, base + 0x40);
-        func_L00_001FF500(dst, dst, z);
+        vec_set_length_xy(dst, dst, z);
         transform_vector(dst, dst, base);
         break;
     }
@@ -1202,7 +1202,7 @@ extern int D_0013DFA8[];
 int use_ammo(int id, int amount) {
     AmmoInfo *e;
     if (id == -1) id = D_00140508;
-    e = &D_L00_001C43B0[id];
+    e = &item_price_table[id];
     if (e->max == 0) return 1;
     if (weapon_ammo_counts[id] < amount) return 0;
     weapon_ammo_counts[id] -= amount;
@@ -1214,7 +1214,7 @@ INCLUDE_ASM("asm/overlays", func_L00_00234674);
    returns the overflow that did not fit, 0 when it all fit or the weapon has no ammo limit. */
 int add_ammo(int a, int b) {
     int *p = &weapon_ammo_counts[a];
-    unsigned short *q = (unsigned short *)((char *)D_L00_001C43B0 + a * 0x18);
+    unsigned short *q = (unsigned short *)((char *)item_price_table + a * 0x18);
     int v = *p + b;
     unsigned short t = q[7];
     *p = v;
@@ -1232,7 +1232,7 @@ int add_ammo(int a, int b) {
 int get_ammo(int id) {
     AmmoInfo *e;
     if (id == -1) id = D_00140508;
-    e = &D_L00_001C43B0[id];
+    e = &item_price_table[id];
     if (e->max == 0) return 1;
     return weapon_ammo_counts[id];
 }
@@ -1500,13 +1500,13 @@ void animate_hero_slot4_and_slot5_visuals(void) {
     f32 t;
     m0 = D_0013F450_35088.m11D0;
     if (m0) {
-        if (D_L00_0015F6A8 == 2) D_0013F450_35088.f22E8 = FastAddRots(D_0013F450_35088.f22E8, (*(f32 *)&g_frame_time) * 1.2217305f);
+        if (cinematic_mode == 2) D_0013F450_35088.f22E8 = FastAddRots(D_0013F450_35088.f22E8, (*(f32 *)&g_frame_time) * 1.2217305f);
         else D_0013F450_35088.f22E8 = FastAddRots(D_0013F450_35088.f22E8, (*(f32 *)&g_frame_time) * 2.0943952f);
         *(s32 *)(m0 + 0x90) = FastTweenColor(0xD2D2D2, 0x285050, FastSin(D_0013F450_35088.f22E8) * 0.5f + 0.5f);
     }
     m1 = D_0013F450_35088.m11D4;
     if (m1) {
-        if (D_L00_0015F6A8 != 2) {
+        if (cinematic_mode != 2) {
             f32 v;
             D_0013F450_35088.f22EC = v = FastAddRots(D_0013F450_35088.f22EC, (*(f32 *)&g_frame_time) * 2.9670596f);
             b = 0x1EE628;
@@ -1520,7 +1520,7 @@ void animate_hero_slot4_and_slot5_visuals(void) {
     }
     m2 = D_0013F450_35088.m1220;
     if (m2) {
-        if (D_L00_0015F6A8 == 2) D_0013F450_35088.f22F0 = FastAddRots(D_0013F450_35088.f22EC, (*(f32 *)&g_frame_time) * 1.3962634f);
+        if (cinematic_mode == 2) D_0013F450_35088.f22F0 = FastAddRots(D_0013F450_35088.f22EC, (*(f32 *)&g_frame_time) * 1.3962634f);
         else D_0013F450_35088.f22F0 = FastAddRots(D_0013F450_35088.f22EC, (*(f32 *)&g_frame_time) * 1.9198622f);
             *(s32 *)(m2 + 0x90) = FastTweenColor(0xAAC8AA, 0x965050, FastSin(D_0013F450_35088.f22F0) * 0.5f + 0.5f);
         if (m2) {
@@ -1541,8 +1541,8 @@ void update_hero_slot4_and_slot5_mobys(int a0) {
     char *o;
     char *t;
     int i;
-    if (D_L00_0015F6A8 == 2 || D_L00_0015F6A8 == 6) {
-        d = D_L00_0016C960;
+    if (cinematic_mode == 2 || cinematic_mode == 6) {
+        d = cutscene_state;
         for (i = 0; i < *(short *)(d + 0x44); i++) {
             o = *(char **)(d + 0x178 + i * 4);
             if ((unsigned short)(*(unsigned short *)(o + 0xA6) - 0x509) < 2) {
@@ -1583,7 +1583,7 @@ void HeroAttachManipulators(char *obj) {
     char *b;
     int c1, c0;
     float t;
-    if (D_L00_0015F6A8 == 6) {
+    if (cinematic_mode == 6) {
         if (1.33f < f20) f20 = 1.33f;
     }
     s0 = D_L00_0017C440;
@@ -1596,8 +1596,8 @@ void HeroAttachManipulators(char *obj) {
     if (g_current_level_index == 2 || g_current_level_index == 9 || g_current_level_index == 0xB || g_current_level_index == 0xD) {
         int i;
                 char *qq;
-        for (i = 0; qq = D_L00_0016C960, i < *(short *)(qq + 0x44); i++) {
-            char *m = ((char **)(D_L00_0016C960 + 0x178))[i];
+        for (i = 0; qq = cutscene_state, i < *(short *)(qq + 0x44); i++) {
+            char *m = ((char **)(cutscene_state + 0x178))[i];
             if (m != 0) {
                 int h = *(short *)(m + 0xA6);
                 if (h == 0x1B1 || h == 0x50A || h == 0x509) {
@@ -1611,7 +1611,7 @@ void HeroAttachManipulators(char *obj) {
     c0 = 0x805A3232;
     *(float *)(q + 0x1628) = FastAddRots(*(float *)(q + 0x1628), g_frame_time * 2.0943951f);
     if (g_current_level_index == 0) {
-        b = D_L00_0016C960;
+        b = cutscene_state;
         if (*(int *)(b + 0x30) == 0) {
             if (*(int *)(b + 0x34) >= scale_ticks(0x343)) {
                 if (*(int *)(b + 0x34) <= scale_ticks(0x438)) {

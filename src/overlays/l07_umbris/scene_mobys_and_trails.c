@@ -44,7 +44,7 @@ void update_moby_offset_motion(struct Moby *moby) {
     u8 spawn_id;
     int no_spawn;
 
-    if (moby->mission != 0xff && D_0014C150[moby->mission + g_current_level_index * 16] == 0xff)
+    if (moby->mission != 0xff && saved_mission_state[moby->mission + g_current_level_index * 16] == 0xff)
         vars->target = -1;
     spawn_id = moby->mission;
     force_end = 0;
@@ -62,7 +62,7 @@ void update_moby_offset_motion(struct Moby *moby) {
     case 0:
         qcopy(&vars->home, &moby->pos);
         if (vars->indicator != -1)
-            D_L07_001845A8[vars->indicator] = 0;
+            umbris_indicator_states[vars->indicator] = 0;
         moby->state = 1;
         vars->home.w = 0;
         return;
@@ -100,7 +100,7 @@ void update_moby_offset_motion(struct Moby *moby) {
         start.f[2] = vars->destination.z;
         next.q = start.q;
         matrix_mul_vec3(&next, &next, &moby->rot_row0);
-        func_L00_001FF4B0(&start, &next, vars->destination.w * g_frame_time);
+        vec_scale_to_length(&start, &next, vars->destination.w * g_frame_time);
         FastVecAdd(&moby->pos, &moby->pos, &start);
         time = vars->home.w - vars->destination.w * g_frame_time;
         vars->home.w = time;
@@ -109,7 +109,7 @@ void update_moby_offset_motion(struct Moby *moby) {
         FastVecAdd(&moby->pos, &vars->home, &next);
         vars->home.w = 0;
         if (vars->indicator != -1)
-            D_L07_001845A8[vars->indicator] = 1;
+            umbris_indicator_states[vars->indicator] = 1;
         moby->state = 3;
         if (vars->endSound != -1)
             Moby_PlaySound(vars->startSound, 0, (int)moby);
@@ -141,7 +141,7 @@ void update_moby_offset_motion(struct Moby *moby) {
         start.f[2] = vars->destination.z;
         next.q = start.q;
         distance = FastVecLength(&next);
-        func_L00_001FF4B0(&next, &next, -(vars->speed * g_frame_time));
+        vec_scale_to_length(&next, &next, -(vars->speed * g_frame_time));
         matrix_mul_vec3(&start, &next, &moby->rot_row0);
         FastVecAdd(&moby->pos, &moby->pos, &start);
         time = vars->home.w + vars->speed * g_frame_time;
@@ -152,7 +152,7 @@ void update_moby_offset_motion(struct Moby *moby) {
         if (vars->startSound != -1)
             Moby_PlaySound(vars->endSound, 0, (int)moby);
         if (vars->indicator != -1)
-            D_L07_001845A8[vars->indicator] = 0;
+            umbris_indicator_states[vars->indicator] = 0;
         moby->state = 1;
         break;
     case 5:
@@ -455,7 +455,7 @@ void update_scene_moby_effect_bursts(char *m) {
                     char *p;
                     char *q;
                     if (random_integer_below(2) != 0) v = -v;
-                    p = func_L00_0026DEA0_c(buf, v, D_L07_0015F660, col, 0.6f, 1.0f, 1.01f, d);
+                    p = func_L00_0026DEA0_c(buf, v, umbris_zero_vec, col, 0.6f, 1.0f, 1.01f, d);
                     if (p != 0) {
                         q = p + 0x20;
                         *(short *)(p + 0xA) = scale_ticks(rand_range(0x3C, 0x5A));
@@ -493,7 +493,7 @@ void mushroom_update(char *m) {
         break;
     case 2:
         Moby_PlaySound(0, 0, (int)m);
-        d = D_L07_0015F660;
+        d = umbris_zero_vec;
         spawn_proximity_gated_bolts(m);
         p = m + 0x10;
         q = m + 0x40;
@@ -536,9 +536,9 @@ void robot_head_update(char *self) {
         char *m;
         Moby_PlaySound(0, 0, (int)self);
         spawn_proximity_gated_bolts(self);
-        SpawnBreakFragment(self, 0x68E, self + 0x10, self + 0x40, 0, 0, 0.0f, D_L07_0015F660, D_L07_0015F660, D_L07_0015F660);
-        SpawnBreakFragment(self, 0x68F, self + 0x10, self + 0x40, 0, 0, 0.0f, D_L07_0015F660, D_L07_0015F660, D_L07_0015F660);
-        SpawnBreakFragment(self, 0x690, self + 0x10, self + 0x40, 0, 0, 0.0f, D_L07_0015F660, D_L07_0015F660, D_L07_0015F660);
+        SpawnBreakFragment(self, 0x68E, self + 0x10, self + 0x40, 0, 0, 0.0f, umbris_zero_vec, umbris_zero_vec, umbris_zero_vec);
+        SpawnBreakFragment(self, 0x68F, self + 0x10, self + 0x40, 0, 0, 0.0f, umbris_zero_vec, umbris_zero_vec, umbris_zero_vec);
+        SpawnBreakFragment(self, 0x690, self + 0x10, self + 0x40, 0, 0, 0.0f, umbris_zero_vec, umbris_zero_vec, umbris_zero_vec);
         m = mk_a(0x68D);
         if (m != 0) {
             m[0x31] = 1;
@@ -573,7 +573,7 @@ void seashell_update(unsigned char *m) {
     case 2:
         Moby_PlaySound(0, 0, (int)m);
         z = 0.0f;
-        p = D_L07_0015F660;
+        p = umbris_zero_vec;
         pos = m + 0x10;
         spawn_proximity_gated_bolts(m);
         vel = m + 0x40;
@@ -615,17 +615,17 @@ void update_scene_moby_trails(unsigned char *moby) {
                 Moby_GetJointWorldPos(o, 0, a0);
                 Moby_GetJointWorldPos(o, 3, b0);
                 FastVecSub(c0, a0, b0);
-                func_L00_001FF4B0(c0, c0, *(float *)&D_L07_00161D68);
+                vec_scale_to_length(c0, c0, *(float *)&D_L07_00161D68);
                 draw_trail(a0, a0, c0, *(float *)&D_L07_00161D6C, *(float *)&D_L07_00161D70);
                 Moby_GetJointWorldPos(o, 1, a1);
                 Moby_GetJointWorldPos(o, 4, b1);
                 FastVecSub(c1, a1, b1);
-                func_L00_001FF4B0(c1, c1, *(float *)&D_L07_00161D68);
+                vec_scale_to_length(c1, c1, *(float *)&D_L07_00161D68);
                 draw_trail(a1, a1, c1, *(float *)&D_L07_00161D6C, *(float *)&D_L07_00161D70);
                 Moby_GetJointWorldPos(o, 2, a2);
                 Moby_GetJointWorldPos(o, 5, b2);
                 FastVecSub(c2, a2, b2);
-                func_L00_001FF4B0(c2, c2, *(float *)&D_L07_00161D68);
+                vec_scale_to_length(c2, c2, *(float *)&D_L07_00161D68);
                 draw_trail(a2, a2, c2, *(float *)&D_L07_00161D6C, *(float *)&D_L07_00161D70);
             }
         }

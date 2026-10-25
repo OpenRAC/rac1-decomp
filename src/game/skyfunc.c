@@ -607,7 +607,7 @@ void SetupSkyGifPaging(void) {
     ProfileMarker_Begin(D_00160550, 1);
     s = level_sky_effect_data;
     g_gs_texture_allocation_cursor = g_gs_texture_allocation_start;
-    D_0015F558 = 0;
+    pending_texture_upload_count = 0;
     for (i = 0; i < s->npages; i++) {
         s->pages[i].tag = 0;
     }

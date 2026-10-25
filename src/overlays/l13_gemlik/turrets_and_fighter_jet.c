@@ -229,8 +229,8 @@ void LiftL13_UpdateAlt(unsigned char *moby) {
             float t = (1.0f - vars->blend) / (1.0f - old);
             char *base;
             compute_elevator_camera_pose(moby, camera_pose_scratch, blended_camera_rotation);
-            FastVecSub(camera_position_scratch, D_L13_00167140, camera_pose_scratch);
-            base = (char *)D_L13_00167140 - 0x140;
+            FastVecSub(camera_position_scratch, gemlik_camera_pos, camera_pose_scratch);
+            base = (char *)gemlik_camera_pos - 0x140;
             FastVecScale(camera_position_scratch, camera_position_scratch, t);
             FastVecAdd(camera_pose_scratch, camera_pose_scratch, camera_position_scratch);
             blended_camera_rotation[1] = FastAddRots(FastSubRots((*(float *)(base + 0x154)), blended_camera_rotation[1]) * t, blended_camera_rotation[1]);
@@ -325,7 +325,7 @@ void LiftL13_UpdateAlt(unsigned char *moby) {
                 }
                 m->state = 1;
                 HeroEnterMoveState(0x72, 1);
-                CameraScript(D_L13_00167140, D_L13_00167140 + 4, 1, 0, 0);
+                CameraScript(gemlik_camera_pos, gemlik_camera_pos + 4, 1, 0, 0);
                 (*(int *)((char *)vars + 0x70)) = 0;
                 break;
             }
@@ -721,7 +721,7 @@ void blarg_gunner_update(unsigned char *raw) {
         break;
     case BLARG_GUNNER_STATE_DESTROY:
         if (moby->anim_flags & 2) {
-            FastVecSub(explosion_offset, D_L13_00167140, &moby->pos);
+            FastVecSub(explosion_offset, gemlik_camera_pos, &moby->pos);
             Moby_GetJointWorldPos(moby, 0, explosion_spawn_position);
             spawn_explosion(moby, explosion_offset, explosion_spawn_position, 0.0f, 0.0f, 0x14, 9, 0x20, 10.0f, 7.0f, 20.0f, -1, 2.0f, 40.0f, 0, 1, -1, 0);
             DeleteMoby(moby);
@@ -987,7 +987,7 @@ void robosquawker_update(RsMoby *m) {
     v = m->vars;
     Manipulator_ApplyScale(2.5f, (int)m, 0, v->x230);
     if (m->b31 != 0) {
-        if (FastVecDist(&m->pos, D_L13_00167140) < 28.0f) {
+        if (FastVecDist(&m->pos, gemlik_camera_pos) < 28.0f) {
             func_L00_0025B178(m);
             m->b7F = 0x16;
         }
@@ -1736,7 +1736,7 @@ void robosquawker_update(RsMoby *m) {
                 }
                 m->rot.f[2] = FastAddRots(m->rot.f[2], d);
                 FastVecSub(&vb, &m->pos, &o->pos);
-                func_L00_001FF4B0(&vb, &vb, 2.0f);
+                vec_scale_to_length(&vb, &vb, 2.0f);
                 FastVecAdd(&vb, &vb, &o->pos);
                 vb.f[2] = z;
             }
@@ -2014,7 +2014,7 @@ int select_fighter_jet_target_and_draw_indicators(int a, char *p, char *a2, void
                     u[0] = -u[1];
                     u[1] = -u[2];
                     u[2] = 0.0f;
-                    func_L00_001FF4B0(u, u, 160.0f);
+                    vec_scale_to_length(u, u, 160.0f);
                     ang = FastAddRots(fast_atan2(u[0], u[1]), 1.5707964f);
                     u[0] += 256.0f;
                     u[1] += 208.0f;
@@ -2291,14 +2291,14 @@ void update_fighter_jet_gun_and_aim(char *moby, char *obj, float p2, float p3) {
     FastVecAdd(a, a, obj);
     if (func_001F9908_i(obj + 0x80) && (*(int *)(D_0013A5E0 + 0x2610) & 0x84)) {
         Moby_PlaySound(3, 0, (int)moby);
-        func_L00_001FF4B0(c, a, 2.2f);
+        vec_scale_to_length(c, a, 2.2f);
         Moby_GetJointWorldPos(moby, 3 + (obj[0x61] & 1), b);
         FastVecAdd(b, b, c);
         spawn_class_3f1_moby(moby, a, b, 200.0f, -1.0f);
         *(int *)(obj + 0x80) = scale_ticks(4);
         obj[0x61] ^= 1;
     }
-    func_L00_001FF4B0(a, a, 23.0f);
+    vec_scale_to_length(a, a, 23.0f);
     FastVecAdd(d, a, moby + 0x10);
     project_world_point_to_screen_pixels(d, obj + 0xE0, obj + 0xE4, 0);
 }
@@ -2317,7 +2317,7 @@ void fire_fighter_jet_rocket(char *moby, char *obj) {
             short t = (*(unsigned short *)(obj + 0x6A) + 1) & 3;
             *(short *)(obj + 0x6A) = t;
             Moby_GetJointWorldPos(moby, t + 7, a);
-            func_L00_001FF4B0(b, obj, 0.3f);
+            vec_scale_to_length(b, obj, 0.3f);
             FastVecAdd(a, a, b);
             s = g_frame_time * 100.0f;
             h = scale_ticks(300);
@@ -2520,7 +2520,7 @@ void PlayerFighterFlight(void *a0, void *a1) {
     e2 = FastAbsF(target[2] - m->pos[2]);
     m->r44 = interpolate_value_with_repeated_squaring(1, 5, e2, m->r44, -fast_atan2(vec_distance_xy(m->pos, target), target[2] - m->pos[2]), 50.0f, lenA);
     BuildSphericalOffset(dir, o->speed, o->f38, -o->f34);
-    func_L00_001FF4B0(o->v10, dir, 1.0f);
+    vec_scale_to_length(o->v10, dir, 1.0f);
     qcopy(old, m->pos);
     if (m->bc == 0) {
         FastVecAdd(m->pos, m->pos, dir);
@@ -2606,10 +2606,10 @@ void PlayerFighterFlight(void *a0, void *a1) {
                     *(float *)(g + 0x15FC) = *(float *)(g + 0x15FC) - 5.0f;
                     if (*(float *)(g + 0x15FC) < 0.0f) {
                         FastVecSub(side, p + 0x50, p + 0x60);
-                        func_L00_001FF4B0(side, side, 1.0f);
+                        vec_scale_to_length(side, side, 1.0f);
                         vec_reflect(vel, dir, p + 0x40);
-                        func_L00_001FF4B0(vel, vel, g_frame_time + g_frame_time);
-                        func_L00_001FF4B0(up, p + 0x40, 1.0f);
+                        vec_scale_to_length(vel, vel, g_frame_time + g_frame_time);
+                        vec_scale_to_length(up, p + 0x40, 1.0f);
                         spawn_explosion(m, vel, 0, 8.0f, 100.0f, 0x1E, 0xA, 0x18, 16.0f, 8.0f, 9.0f, 6, 1.0f, 50.0f, 1, 1, -1, 0);
                         o->s62 = scale_ticks(240);
                         m->state = 6;
@@ -2720,7 +2720,7 @@ void JetFighterUpdateL13(Jet47 *m) {
                     jet_camera47.flash=1.0f; jet_camera47.ticks=scale_ticks(4);
                     weight=hit->damage*0.05f;
                     BuildSphericalOffset(impulse,d->speed,d->angles[2],-d->angles[1]);
-                    func_L00_001FF548(hit->velocity,hit->velocity,g_frame_time*3.0f);
+                    clamp_vec_length(hit->velocity,hit->velocity,g_frame_time*3.0f);
                     FastVecAdd(m->position,m->position,hit->velocity);
                     vec_reflect(impulse,impulse,hit->velocity);
                     yaw_delta=FastSubRots(fast_atan2(impulse[0],impulse[1]),d->angles[2]);

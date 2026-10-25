@@ -85,7 +85,7 @@ void HeroL15_FrameUpdate(void) {
             period = scale_ticks(0x32);
         else if (*(short *)(b1 + 0x22E0) == 1)
             period = scale_ticks(0x5A);
-        pulse = FastSin((((float)(D_L15_0015F6B0 % period) / IntToFloat(period)) * 2.0f) * 3.1415927f + -3.1415927f);
+        pulse = FastSin((((float)(quartu_frame_count % period) / IntToFloat(period)) * 2.0f) * 3.1415927f + -3.1415927f);
         red = truncate_float_to_s32(pulse * 20.0f) + 0x32;
         green = truncate_float_to_s32(pulse * 70.0f) + 0xB4;
         blue = truncate_float_to_s32(pulse * 10.0f);
@@ -142,7 +142,7 @@ void HeroL15_FrameUpdate(void) {
     }
     update_hero_moby_probed_height_bounds();
     b6 = D_0013E633 + 0xE1D;
-    func_L00_0025805C(*(void **)(b6 + 0x2080));
+    apply_env_zone_lighting(*(void **)(b6 + 0x2080));
 }
 extern unsigned char D_0013E633[];
 extern unsigned char D_0013E15A[];
@@ -234,7 +234,7 @@ void restore_saved_hero_moby_and_clear_vehicle_mode(void) {
     *(int *)(m + 0x98) = 0;
     *(float *)(b + 0xA94) = 1.0f;
     HeroClearQueuedSequence();
-    if (*(int *)(b + 0x2084) != 100 || (D_L15_0015F6A8 != 2 && D_L15_0015F6A8 != 6)) {
+    if (*(int *)(b + 0x2084) != 100 || (quartu_game_mode != 2 && quartu_game_mode != 6)) {
         HeroQuartu_TrySetMoveState(0, 1);
     }
 }
@@ -379,12 +379,12 @@ void adjust_hero_planar_velocity_from_probes(int arg) {
     r18 = -1;
     FastVecAdd(d, d, b);
     b2 = D_0013E633 + 0xE1D;
-    if (func_L00_001EFFF0(b, d, 4, *(int *)(b2 + 0x2080), 0)) {
+    if (coll_line(b, d, 4, *(int *)(b2 + 0x2080), 0)) {
         if (*(int *)D_L15_001744DC > 0) r18 = CollType();
     }
     f20 = 0.0f;
     b2 = D_0013E633 + 0xE1D;
-    if (func_L00_001EFFF0(a, c, 4, *(int *)(b2 + 0x2080), 0)) {
+    if (coll_line(a, c, 4, *(int *)(b2 + 0x2080), 0)) {
         char *q = D_L15_001744C0;
         if (*(int *)(q + 0x1C) > 0)
             f20 = fast_atan2(*(float *)(q + 0x48), vec_length_xy(q + 0x40));
@@ -546,7 +546,7 @@ void HeroL15_ResetMotionState(void) {
         g = D_0013F450_0ADD8.xF234 * 2.9f;
     }
     hero_get_collision_ray_endpoints(&v10, &v0, k, g, -48.0f);
-    if (func_L00_001EFFF0(&v10, &v0, 2, D_0013F450_0ADD8.xI2080, 0) == 0) {
+    if (coll_line(&v10, &v0, 2, D_0013F450_0ADD8.xI2080, 0) == 0) {
         goto tail;
     }
     r = coll_sound_class();
@@ -560,7 +560,7 @@ void HeroL15_ResetMotionState(void) {
         if (D_0013F450_0ADD8.xF88 < D_0013F450_0ADD8.xF2f0 && D_0013F450_0ADD8.xI2f8 <= 0) {
             D_0013F450_0ADD8.xI2f8 = 1;
         }
-        if (func_L00_001EFFF0(&v10, &v0, 0x24, D_0013F450_0ADD8.xI2080, 0) == 0) {
+        if (coll_line(&v10, &v0, 0x24, D_0013F450_0ADD8.xI2080, 0) == 0) {
             goto d1;
         }
         r = coll_sound_class();
@@ -572,7 +572,7 @@ void HeroL15_ResetMotionState(void) {
     if (D_0013F450_0ADD8.xH12e0 == 0x3) {
         D_0013F450_0ADD8.xF2f4 = D_L15_001744C0_0ADD8.v20.f[2];
         v10.f[2] = D_L15_001744C0_0ADD8.v20.f[2] - 0.01f;
-        if (func_L00_001EFFF0(&v10, &v0, 4, D_0013F450_0ADD8.xI2080, 0) == 0) {
+        if (coll_line(&v10, &v0, 4, D_0013F450_0ADD8.xI2080, 0) == 0) {
             goto d1;
         }
     }
@@ -631,7 +631,7 @@ d1:
         break;
     case 2:
         FastVecSub(((u8 *)&D_0013F450_0ADD8 + 0x290), ((u8 *)&D_0013F450_0ADD8 + 0x290) - 0x1E0, ((u8 *)&D_0013F450_0ADD8 + 0x290) - 0x210);
-        func_L00_001FF4B0(((u8 *)&D_0013F450_0ADD8 + 0x290), ((u8 *)&D_0013F450_0ADD8 + 0x290), 1.0f);
+        vec_scale_to_length(((u8 *)&D_0013F450_0ADD8 + 0x290), ((u8 *)&D_0013F450_0ADD8 + 0x290), 1.0f);
         break;
     }
     D_0013F450_0ADD8.u2e4.I = 0;
@@ -663,7 +663,7 @@ d1:
         }
         transform_hero_polar_offset_to_world(&v30, 0.2f, a, 0.45f);
         transform_hero_polar_offset_to_world(&v40, 0.2f, a, -0.45f);
-        if (func_L00_001EFFF0(&v30, &v0, 0x22, D_0013F450_0ADD8.xI2080, 0)) {
+        if (coll_line(&v30, &v0, 0x22, D_0013F450_0ADD8.xI2080, 0)) {
             f = D_L15_001744C0_0ADD8.v20.f[2] - D_0013F450_0ADD8.u2d8.F;
             D_0013F450_0ADD8.a2c0.f[i] = f;
             if (0.4f < FastAbsF(f)) {

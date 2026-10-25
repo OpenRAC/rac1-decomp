@@ -167,7 +167,7 @@ void ShipPickupUpdate(char *moby) {
         break;
     case 2: {
         int target_index = vars[0];
-        int target_base = (int)D_L13_00160058;
+        int target_base = (int)gemlik_moby_array_start;
         struct Moby *target = (struct Moby *)(target_base + target_index * 0x100);
         if (target != 0 && target->state != 0xfe && target->state != 0xfd &&
             vars[1] != -1 && target->state != vars[1]) {
@@ -230,7 +230,7 @@ collected:
         } else if (distance < 40.0f && (*(unsigned char *)(moby + 0x31)) != 0) {
             float step = 0.8f / vec_length(distance);
             FastVecSub(direction, (void *)(hero_moby + 0x10), moby + 0x10);
-            func_L00_001FF4B0(direction, direction, step);
+            vec_scale_to_length(direction, direction, step);
             FastVecAdd(moby + 0x10, moby + 0x10, direction);
         }
         goto frame_tail;

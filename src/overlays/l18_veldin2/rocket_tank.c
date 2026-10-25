@@ -74,8 +74,8 @@ void update_moby_scene_visibility_and_height_reflection(M *moby) {
     case 0:
         moby->state = 1;
     case 1:
-        if ((D_L18_0015F6A8 == 2 && D_L18_0016D310 == 3) ||
-            (D_L18_0015F6B0 < 5 && D_L18_00162430 != 0 && moby->f40 == 0.0f)) {
+        if ((veldin2_cinematic_mode == 2 && D_L18_0016D310 == 3) ||
+            (veldin2_frame_count < 5 && D_L18_00162430 != 0 && moby->f40 == 0.0f)) {
             moby->state = 2;
             moby->flags |= 1;
             moby->substate = 0;
@@ -87,7 +87,7 @@ void update_moby_scene_visibility_and_height_reflection(M *moby) {
             moby->f40 = FastAddRots(moby->f40, 3.14159274f);
             moby->f18 += d + d;
         }
-        if (D_L18_0015F6A8 != 2) {
+        if (veldin2_cinematic_mode != 2) {
             moby->substate = 1;
             moby->state = 1;
             moby->flags &= 0xFFFE;
@@ -313,7 +313,7 @@ void update_rocket_tank_damage_and_aim(void *mv) {
         FastVecSub(v, d + 0x70, m + 0x10);
         v[2] = v[2] - 3.0f;
         if (FastVecLength(v) > *(float *)(d + 0x130)) {
-            func_L00_001FF500(v, v, *(float *)(d + 0x130));
+            vec_set_length_xy(v, v, *(float *)(d + 0x130));
         }
         a = FastSin(*(float *)(d + 0x134)) * 0.08726646f;
         a = FastAddRots(fast_atan2(v[0], v[1]), a);
@@ -357,7 +357,7 @@ void Moby_TurnTowardPathNode(char *m) {
     }
     ApproachValue((float *)(d + 0x12C), f, g_frame_time_sq);
     z = 0.0f;
-    func_L00_001FF4B0(v, m + 0xC0, *(float *)(d + 0x12C));
+    vec_scale_to_length(v, m + 0xC0, *(float *)(d + 0x12C));
     move_4318((int)m, (int)v, 0.5f, 0.5f, z, 0);
     if (FastVecDist(m + 0x10, t) < 1.0f) {
         int k = random_integer_below(*D_L18_001B11B0[*(int *)(d + 0x100)] - 1) + 1;

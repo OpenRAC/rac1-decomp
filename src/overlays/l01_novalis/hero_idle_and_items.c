@@ -81,7 +81,7 @@ int Hero_SetMoveState(int a, int b) {
         char *p = D_0013E633 + 0xE1D;
         if (*(int *)(p + 0x208C) == 0x14 && (a != 0x64 || b != 2)) return 0;
     }
-    if ((D_L01_0015F6A8 == 2 || D_L01_0015F6A8 == 6) && b != 2) return 0;
+    if ((novalis_game_mode == 2 || novalis_game_mode == 6) && b != 2) return 0;
     {
         char *p = D_0013E633 + 0xE1D;
         if (*(int *)(p + 0x22A8) == 0 && (*(int *)(p + 0x208C) == 2 || *(int *)(p + 0x208C) == 7)
@@ -377,8 +377,8 @@ int Hero_SetMoveState(int a, int b) {
         }
         {
             char *h = D_0014171B + 0x22D;
-            if (scale_ticks(D_0015EFA4) / 600 > *(unsigned short *)(h + 0x62)) {
-                *(unsigned short *)(h + 0x62) = scale_ticks(D_0015EFA4) / 600;
+            if (scale_ticks(play_time_ticks) / 600 > *(unsigned short *)(h + 0x62)) {
+                *(unsigned short *)(h + 0x62) = scale_ticks(play_time_ticks) / 600;
             }
             {
                 char *q = D_0013E633 + 0xE1D;
@@ -392,8 +392,8 @@ int Hero_SetMoveState(int a, int b) {
         }
         {
             char *h = D_0014171B + 0x22D;
-            if (scale_ticks(D_0015EFA4) / 600 > *(unsigned short *)(h + 0xEA)) {
-                *(unsigned short *)(h + 0xEA) = scale_ticks(D_0015EFA4) / 600;
+            if (scale_ticks(play_time_ticks) / 600 > *(unsigned short *)(h + 0xEA)) {
+                *(unsigned short *)(h + 0xEA) = scale_ticks(play_time_ticks) / 600;
             }
             *(unsigned int *)(h + 0xEC) = *(unsigned int *)(h + 0xEC) | (1 << g_current_level_index) | 0x80000000;
         }
@@ -1110,8 +1110,8 @@ int Hero_SetMoveState(int a, int b) {
             if (*(unsigned short *)(h + 0) <= 0xFFFE) {
                 *(unsigned short *)(h + 0) = *(unsigned short *)(h + 0) + 1;
             }
-            if (scale_ticks(D_0015EFA4) / 600 > *(unsigned short *)(h + 2)) {
-                *(unsigned short *)(h + 2) = scale_ticks(D_0015EFA4) / 600;
+            if (scale_ticks(play_time_ticks) / 600 > *(unsigned short *)(h + 2)) {
+                *(unsigned short *)(h + 2) = scale_ticks(play_time_ticks) / 600;
             }
             *(unsigned int *)(h + 4) = *(unsigned int *)(h + 4) | (1 << g_current_level_index) | 0x80000000;
             q = D_0013E633 + 0xE1D;
@@ -1138,16 +1138,16 @@ int Hero_SetMoveState(int a, int b) {
             if (*(unsigned short *)(h + 8) <= 0xFFFE) {
                 *(unsigned short *)(h + 8) = *(unsigned short *)(h + 8) + 1;
             }
-            if (scale_ticks(D_0015EFA4) / 600 > *(unsigned short *)(h + 0xA)) {
-                *(unsigned short *)(h + 0xA) = scale_ticks(D_0015EFA4) / 600;
+            if (scale_ticks(play_time_ticks) / 600 > *(unsigned short *)(h + 0xA)) {
+                *(unsigned short *)(h + 0xA) = scale_ticks(play_time_ticks) / 600;
             }
             *(unsigned int *)(h + 0xC) = *(unsigned int *)(h + 0xC) | (1 << g_current_level_index) | 0x80000000;
             h2 = item_usage;
             if (*(unsigned short *)(h2 + 0x128) <= 0xFFFE) {
                 *(unsigned short *)(h2 + 0x128) = *(unsigned short *)(h2 + 0x128) + 1;
             }
-            if (scale_ticks(D_0015EFA4) / 600 > *(unsigned short *)(h2 + 0x12A)) {
-                *(unsigned short *)(h2 + 0x12A) = scale_ticks(D_0015EFA4) / 600;
+            if (scale_ticks(play_time_ticks) / 600 > *(unsigned short *)(h2 + 0x12A)) {
+                *(unsigned short *)(h2 + 0x12A) = scale_ticks(play_time_ticks) / 600;
             }
             *(unsigned int *)(h2 + 0x12C) = *(unsigned int *)(h2 + 0x12C) | (1 << g_current_level_index) | 0x80000000;
             q = D_0013E633 + 0xE1D;
@@ -1182,8 +1182,8 @@ int Hero_SetMoveState(int a, int b) {
             if (*(unsigned short *)(h + 0x40) <= 0xFFFE) {
                 *(unsigned short *)(h + 0x40) = *(unsigned short *)(h + 0x40) + 1;
             }
-            if (scale_ticks(D_0015EFA4) / 600 > *(unsigned short *)(h + 0x42)) {
-                *(unsigned short *)(h + 0x42) = scale_ticks(D_0015EFA4) / 600;
+            if (scale_ticks(play_time_ticks) / 600 > *(unsigned short *)(h + 0x42)) {
+                *(unsigned short *)(h + 0x42) = scale_ticks(play_time_ticks) / 600;
             }
             q = D_0013E633 + 0xE1D;
             *(unsigned int *)(h + 0x44) = *(unsigned int *)(h + 0x44) | (1 << g_current_level_index) | 0x80000000;

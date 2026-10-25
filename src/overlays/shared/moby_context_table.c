@@ -36,7 +36,7 @@ void record_moby_context_bytes(char *a0, int a1, char *p, int mode, Table *t) {
         if (e->key == key && e->a == a1 && v20 == e->c && v19 == e->d) {
             mode = e->flag;
             if (mode) {
-                func_L00_001FF040((int)&e->pad4, a0, a1);
+                copy_memory_by_alignment((int)&e->pad4, a0, a1);
                 return;
             }
         }
@@ -44,7 +44,7 @@ void record_moby_context_bytes(char *a0, int a1, char *p, int mode, Table *t) {
     ne = &t->e[t->n];
     t->n = t->n + 1;
     ne->key = key;
-    func_L00_001FF040((int)&ne->pad4, a0, a1);
+    copy_memory_by_alignment((int)&ne->pad4, a0, a1);
     ne->a = a1;
     ne->flag = mode;
     ne->c = v20;

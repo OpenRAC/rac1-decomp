@@ -220,11 +220,11 @@ void mine_layer_update(struct Moby *m) {
             func_L00_0028EF68_CB280(1, 0, m, 0x273);
             for (i = -2; i < 3; i++) {
                 scale = IntToFloat(i) * random_float_between(0.9f, 1.1f);
-                func_L00_001FF500(muzzle, &m->rot_row1, (float)i * 0.5f);
+                vec_set_length_xy(muzzle, &m->rot_row1, (float)i * 0.5f);
                 FastVecAdd(muzzle, muzzle, &m->pos);
                 muzzle[2] += 2.0f;
-                func_L00_001FF500(spread, &m->rot_row0, random_float_between(-1.0f, 1.0f) * g_frame_time);
-                func_L00_001FF500(vel, &m->rot_row1, D_L03_00161990_CB280 * g_frame_time);
+                vec_set_length_xy(spread, &m->rot_row0, random_float_between(-1.0f, 1.0f) * g_frame_time);
+                vec_set_length_xy(vel, &m->rot_row1, D_L03_00161990_CB280 * g_frame_time);
                 FastVecScale(vel, vel, scale);
                 FastVecAdd(vel, vel, spread);
                 vel[2] = D_L03_00161994_CB280 * g_frame_time * random_float_between(0.9f, 1.1f);
@@ -536,7 +536,7 @@ void update_mine(struct Moby *m) {
             func_0020D678_CD270(m);
             return;
         }
-        func_L00_001FF4B0(tmp, tmp, g_frame_time * 14.0f);
+        vec_scale_to_length(tmp, tmp, g_frame_time * 14.0f);
         tmp[2] += g_frame_time * 4.0f;
         FastVecAdd(&m->pos, &m->pos, tmp);
         break;
@@ -851,7 +851,7 @@ void update_rail_taxi(struct Moby *m) {
                             D_L03_00161B98_D4560 * 0.017453292f * g_frame_time_sq, g_frame_time * 12.566371f);
         if (D_0013F450_CBBD0.ground_moby == m && D_0013F450_CBBD0.air_frames.s == 0) {
             request_taxi_return_help_message(m, v->help[m->command]);
-            if ((D_0013CBE4 & 0x10) && D_L03_0015F674_D4560 == 8) {
+            if ((pad0_pressed & 0x10) && D_L03_0015F674_D4560 == 8) {
                 request_hero_target_pose(&m->pos, m->rot.z, 0);
                 m->state = 4;
                 v->idx = 1;
@@ -963,7 +963,7 @@ int advance_moby_along_rail_path(char *moby, int pathIndex, int *sound) {
     distance = FastVecDist(position, (char *)*pp + ((*pp)->count << 4));
     accel = D_L03_00161B8C * g_frame_time_sq;
     ApproachWithVelocity(&acc, &rail_flyer_vars->speed, distance, accel, accel, D_L03_00161B88 * g_frame_time);
-    func_L00_001FF4B0(&movement_delta, &movement_delta, rail_flyer_vars->speed);
+    vec_scale_to_length(&movement_delta, &movement_delta, rail_flyer_vars->speed);
     FastVecAdd(position, &movement_delta, position);
     target_pitch = -fast_atan2(vec_length_xy(&movement_delta), movement_delta.z);
     if (target_pitch > 0.261799395f)
@@ -1071,7 +1071,7 @@ char *compute_interpolated_record_value_cf(char *a, char *pos, char *parent, int
         *(int *)(d + 0x28) = 0;
         *(u128 *)v = *(u128 *)(parent + 0x10);
         v[2] = *(float *)(pos + 8);
-        if (func_L00_001EFFF0(v, pos, 2, parent, 0) != 0) {
+        if (coll_line(v, pos, 2, parent, 0) != 0) {
             *(int *)(d + 0x14) = 0;
             *(u128 *)(m + 0x10) = *(u128 *)D_L03_00173FE0;
             *(int *)(d + 0x24) = 0;
@@ -1380,9 +1380,9 @@ void helga_update(struct Moby *m) {
                 grant_inventory_item(0xC, 1);
                 ShowBanner(0xBC8, -1);
                 if (v->reward != -1) {
-                    D_L03_001BA9E0.collected[(s16)((struct Moby *)((v->reward << 8) + (int)D_L03_00160058))->save_id] =
-                        ((struct Moby *)((v->reward << 8) + (int)D_L03_00160058))->mission + 2;
-                    o = (struct Moby *)((v->reward << 8) + (int)D_L03_00160058);
+                    D_L03_001BA9E0.collected[(s16)((struct Moby *)((v->reward << 8) + (int)kerwan_mobys))->save_id] =
+                        ((struct Moby *)((v->reward << 8) + (int)kerwan_mobys))->mission + 2;
+                    o = (struct Moby *)((v->reward << 8) + (int)kerwan_mobys);
                     if (o->mission == 0xFF)
                         goto record;
                     do {
@@ -1394,10 +1394,10 @@ void helga_update(struct Moby *m) {
                             D_L03_001BB640.collected[(s16)o->save_id] = o->mission + 2;
                         } while (0);
                     }
-                    DeleteMoby(D_L03_00160058 + (v->reward << 8));
+                    DeleteMoby(kerwan_mobys + (v->reward << 8));
                 }
                 if (v->link != -1) {
-                    t = (struct Moby *)((v->link << 8) + (int)D_L03_00160058);
+                    t = (struct Moby *)((v->link << 8) + (int)kerwan_mobys);
                     if (t->oclass == 0x3F4) {
                         u8 *tv = t->pvars;
                         *(s32 *)(tv + 0x7C) = 0;
@@ -1410,7 +1410,7 @@ void helga_update(struct Moby *m) {
                 return;
             }
         } else if (v->talk.unk36 == 2 && v->link != -1) {
-            t = (struct Moby *)((v->link << 8) + (int)D_L03_00160058);
+            t = (struct Moby *)((v->link << 8) + (int)kerwan_mobys);
             if (t->oclass == 0x3F4) {
                 u8 *tv = t->pvars;
                 *(s32 *)(tv + 0x7C) = 0;
@@ -1704,7 +1704,7 @@ void big_al_update(struct Moby *m) {
             v->turned = 1;
         }
         if (stage[m->mission + (g_current_level_index << 4)] == 0xFF && v->link != -1) {
-            t = (struct Moby *)((v->link << 8) + (int)D_L03_00160058);
+            t = (struct Moby *)((v->link << 8) + (int)kerwan_mobys);
             if (t->oclass == 0x3F4) {
                 *(s32 *)(t->pvars + 0x8C) = 1;
             }
@@ -1721,12 +1721,12 @@ void big_al_update(struct Moby *m) {
     {
         if (flag2() != 0) {
         if (v->reward != -1) {
-            t = (struct Moby *)((v->reward << 8) + (int)D_L03_00160058);
+            t = (struct Moby *)((v->reward << 8) + (int)kerwan_mobys);
             if (t->oclass == 0x3E5 && t->state == 0) {
                 t->state = 1;
-                D_L03_001BA9E0.collected[(s16)((struct Moby *)((v->reward << 8) + (int)D_L03_00160058))->save_id] =
-                    ((struct Moby *)((v->reward << 8) + (int)D_L03_00160058))->mission + 2;
-                o = (struct Moby *)((v->reward << 8) + (int)D_L03_00160058);
+                D_L03_001BA9E0.collected[(s16)((struct Moby *)((v->reward << 8) + (int)kerwan_mobys))->save_id] =
+                    ((struct Moby *)((v->reward << 8) + (int)kerwan_mobys))->mission + 2;
+                o = (struct Moby *)((v->reward << 8) + (int)kerwan_mobys);
                 {
                     s32 k = o->mission;
                     u32 u = k & 0xFF;
@@ -1759,7 +1759,7 @@ void big_al_update(struct Moby *m) {
         if (v->talk.mode != 2) {
             jet_clear_persistent(m->mission);
             if (v->link != -1) {
-                t = (struct Moby *)((v->link << 8) + (int)D_L03_00160058);
+                t = (struct Moby *)((v->link << 8) + (int)kerwan_mobys);
                 if (t->oclass == 0x3F4) {
                     *(s32 *)(t->pvars + 0x8C) = 1;
                 }
@@ -1775,12 +1775,12 @@ void big_al_update(struct Moby *m) {
         grant_inventory_item(2, 1);
         ShowBanner(0xBC7, -1);
         if (v->reward != -1) {
-            t = (struct Moby *)((v->reward << 8) + (int)D_L03_00160058);
+            t = (struct Moby *)((v->reward << 8) + (int)kerwan_mobys);
             if (t->oclass == 0x3E5 && t->state == 0) {
                 t->state = 1;
-                D_L03_001BA9E0.collected[(s16)((struct Moby *)((v->reward << 8) + (int)D_L03_00160058))->save_id] =
-                    ((struct Moby *)((v->reward << 8) + (int)D_L03_00160058))->mission + 2;
-                o = (struct Moby *)((v->reward << 8) + (int)D_L03_00160058);
+                D_L03_001BA9E0.collected[(s16)((struct Moby *)((v->reward << 8) + (int)kerwan_mobys))->save_id] =
+                    ((struct Moby *)((v->reward << 8) + (int)kerwan_mobys))->mission + 2;
+                o = (struct Moby *)((v->reward << 8) + (int)kerwan_mobys);
                 if (o->mission == 0xFF)
                     goto rec2;
                 do {
@@ -1934,7 +1934,7 @@ void robot_qwark_update(unsigned char *m) {
     }
     switch (m[0x20]) {
     case 0:
-        *(unsigned long *)(m + 0x38) = *(unsigned long *)(D_001414D0[0] + 0x38);
+        *(unsigned long *)(m + 0x38) = *(unsigned long *)(g_hero_moby[0] + 0x38);
         m[0x20] = 1;
         DialogRequest_Init(m, (unsigned char *)d);
         if (menu_item_enabled_9[4] != 0) {
@@ -2303,9 +2303,9 @@ void update_kerwan_tutorial_hints(Moby *moby) {
                 && (((unsigned int)((Hero *)(D_0013E633 + 0xE1D))->state.control_mode) < 2 || ((unsigned int)((Hero *)(D_0013E633 + 0xE1D))->state.control_mode) == 9)) {
                 int n;
                 h[3].count++;
-                n = scale_ticks(D_0015EFA4) / 600;
+                n = scale_ticks(play_time_ticks) / 600;
                 if (h[3].time < n) {
-                    h[3].time = scale_ticks(D_0015EFA4) / 600;
+                    h[3].time = scale_ticks(play_time_ticks) / 600;
                 }
                 h[3].mask = h[3].mask | (1 << g_current_level_index) | 0x80000000;
             }
@@ -2337,7 +2337,7 @@ void update_kerwan_tutorial_hints(Moby *moby) {
             && D_L03_00179590[0] == 0 && D_L03_00179590[9] == -1) {
             Help_2E08E8 *b = D_00141A68_2E08E8;
             if (b[0x18].count == 0) {
-                int t = scale_ticks(D_0015EFA4) - D_00141948_2E08E8[9].time * 600;
+                int t = scale_ticks(play_time_ticks) - D_00141948_2E08E8[9].time * 600;
                 if (scale_ticks(0x34BC0) < t) {
                     Help_Request(0xBBC, 0x18);
                 }
@@ -2369,8 +2369,8 @@ void update_kerwan_tutorial_hints(Moby *moby) {
                 if (c <= 0xFFFE) {
                     h[0x13].count = c + 1;
                 }
-                if (scale_ticks(D_0015EFA4) / 600 > h[0x13].time) {
-                    h[0x13].time = scale_ticks(D_0015EFA4) / 600;
+                if (scale_ticks(play_time_ticks) / 600 > h[0x13].time) {
+                    h[0x13].time = scale_ticks(play_time_ticks) / 600;
                 }
                 h[0x13].mask = h[0x13].mask | (1 << g_current_level_index) | 0x80000000;
             }
@@ -2420,9 +2420,9 @@ void update_kerwan_tutorial_hints(Moby *moby) {
                 && (((unsigned int)((Hero *)(D_0013E633 + 0xE1D))->state.control_mode) < 2 || ((unsigned int)((Hero *)(D_0013E633 + 0xE1D))->state.control_mode) == 9)) {
                 int n;
                 h[0xF].count++;
-                n = scale_ticks(D_0015EFA4) / 600;
+                n = scale_ticks(play_time_ticks) / 600;
                 if (h[0xF].time < n) {
-                    h[0xF].time = scale_ticks(D_0015EFA4) / 600;
+                    h[0xF].time = scale_ticks(play_time_ticks) / 600;
                 }
                 h[0xF].mask = h[0xF].mask | (1 << g_current_level_index) | 0x80000000;
             }
@@ -2447,9 +2447,9 @@ void update_kerwan_tutorial_hints(Moby *moby) {
             if (h[0x10].count == 0) {
                 int n;
                 h[0x10].count++;
-                n = scale_ticks(D_0015EFA4) / 600;
+                n = scale_ticks(play_time_ticks) / 600;
                 if (h[0x10].time < n) {
-                    h[0x10].time = scale_ticks(D_0015EFA4) / 600;
+                    h[0x10].time = scale_ticks(play_time_ticks) / 600;
                 }
                 h[0x10].mask = h[0x10].mask | (1 << g_current_level_index) | 0x80000000;
             }
@@ -2737,8 +2737,8 @@ void update_smoothed_hero_relative_camera_position(void *arg) {
     if (*(int *)(g + 0x2284) != 0x50 || *(int *)(g + 0x2084) == 0x11) {
         *(float *)(b + 0x34) = *(float *)(g + 0x88);
     }
-    func_L00_001FF4B0(v1, D_0013E633 + 0x10AD, -*(float *)(a + 0x10));
-    func_L00_001FF4B0(v3, b, -*(float *)a);
+    vec_scale_to_length(v1, D_0013E633 + 0x10AD, -*(float *)(a + 0x10));
+    vec_scale_to_length(v3, b, -*(float *)a);
     h = D_0013E633 + 0xE1D;
     *(float *)d = Cam_InterpValues(d + 0x10, *(float *)d, *(float *)(h + 0x80), *(float *)(d + 0x20), *(float *)(d + 0x24), *(float *)(d + 0x28));
     *(float *)(d + 4) = Cam_InterpValues(d + 0x14, *(float *)(d + 4), *(float *)(h + 0x84), *(float *)(d + 0x20), *(float *)(d + 0x24), *(float *)(d + 0x28));
@@ -2767,13 +2767,13 @@ void rebuild_camera_orientation_axes(void *arg) {
     float c[4];
     qcopy(b, d);
     p[2] = Cam_InterpValues(d + 0xBC, p[2], *(float *)(D_0013E633 + 0xEA5), *(float *)&D_L03_00161EF0, *(float *)&D_L03_00161EF4, 0.0f);
-    func_L00_001FF4B0(c, D_L03_00166FC0, p[5]);
+    vec_scale_to_length(c, D_L03_00166FC0, p[5]);
     FastVecAdd(b, c, b);
     FastVecSub(a, b, m + 0x30);
-    func_L00_001FF4B0(m, a, 1.0f);
+    vec_scale_to_length(m, a, 1.0f);
     qcopy(m + 0x40, m);
     FastVecCross(m + 0x10, m, D_L03_00166FC0 - 0x10);
-    func_L00_001FF4B0(m + 0x10, m + 0x10, 1.0f);
+    vec_scale_to_length(m + 0x10, m + 0x10, 1.0f);
     FastVecCross(m + 0x20, m + 0x10, m);
 }
 int func_L03_002ED138(void) {

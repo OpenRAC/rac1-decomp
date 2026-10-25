@@ -89,7 +89,7 @@ void HeroL03_FrameUpdate(void) {
     }
     {
         char *q = (char *)D_0013E633 + 0xE1D;
-        func_L00_0025805C(*(void **)(q + 0x2080));
+        apply_env_zone_lighting(*(void **)(q + 0x2080));
     }
     update_hero_blink_and_gold_weapon_tint();
     update_hero_moby_probed_height_bounds();

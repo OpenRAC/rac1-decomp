@@ -146,7 +146,7 @@ void update_plasmabot(char *m) {
                 STUB_printf(D_L14_001FBED0, *(short *)(m + 0xB2));
                 { call_D678(m); return; }
             }
-            if (*D_L14_001B0F30[*(int *)(data + 0x240)] == 0) {
+            if (*oltanis_paths[*(int *)(data + 0x240)] == 0) {
                 STUB_printf(D_L14_001FBF10, *(short *)(m + 0xB2));
                 { call_D678(m); return; }
             }
@@ -155,7 +155,7 @@ void update_plasmabot(char *m) {
             STUB_printf(D_L14_001FBF68, *(short *)(m + 0xB2));
             { call_D678(m); return; }
         }
-        if (*D_L14_001B0F30[*(int *)(data + 0x244)] == 0) {
+        if (*oltanis_paths[*(int *)(data + 0x244)] == 0) {
             STUB_printf(D_L14_001FBFA8, *(short *)(m + 0xB2));
             { call_D678(m); return; }
         }
@@ -168,7 +168,7 @@ void update_plasmabot(char *m) {
         }
         initialize_plasmabot_path_state(m);
         if (*(int *)(data + 0x240) != -1) {
-            qcopy(m + 0x10, (char *)D_L14_001B0F30[*(int *)(data + 0x240)] + 0x10);
+            qcopy(m + 0x10, (char *)oltanis_paths[*(int *)(data + 0x240)] + 0x10);
         }
         data[0x28] = 1;
         data[0x29] = 0;
@@ -216,7 +216,7 @@ void update_plasmabot(char *m) {
         activate_plasmabot(m);
         ((unsigned char *)m)[0x20] = 2;
         MobySetAnimation(m, 1, 0);
-        p = (float *)D_L14_001B0F30[*(int *)(data + 0x240)];
+        p = (float *)oltanis_paths[*(int *)(data + 0x240)];
         *(float *)(m + 0x48) = fast_atan2(p[8] - p[4], p[9] - p[5]);
         *(int *)(data + 0x268) = 0;
         *(float *)(data + 0x27C) = 1.0f;
@@ -241,7 +241,7 @@ void update_plasmabot(char *m) {
         }
         break;
     case 9: {
-        float *p = (float *)D_L14_001B0F30[*(int *)(data + 0x240)];
+        float *p = (float *)oltanis_paths[*(int *)(data + 0x240)];
         Spring((float *)(m + 0x10), (float *)(data + 0x254), p[4], 0.01f, 0.2f, 0.0f);
         Spring((float *)(m + 0x14), (float *)(data + 0x258), p[5], 0.01f, 0.2f, 0.0f);
         if ((m[0x70] & 2) && ((unsigned char *)m)[0x52] == ((unsigned char *)m)[0x53]) {
@@ -314,7 +314,7 @@ void update_plasmabot(char *m) {
                 int n = *(int *)(data + 0x24C) - 1;
                 char *pe;
                 *(int *)(data + 0x24C) = n;
-                pe = (char *)D_L14_001B0F30[*(int *)(data + 0x240)];
+                pe = (char *)oltanis_paths[*(int *)(data + 0x240)];
                 *(float *)(data + 0x250) = *(float *)(pe + (n << 4) + 0x1C);
             }
             *(float *)(data + 0x27C) = -1.0f;
@@ -373,9 +373,9 @@ void update_plasmabot(char *m) {
         if (flag == 0) {
             v[2] = 0.0f;
         }
-        func_L00_001FF4B0(v, v, *(float *)&D_L14_001615AC);
+        vec_scale_to_length(v, v, *(float *)&D_L14_001615AC);
         FastVecAdd(hit, mat[3], v);
-        func_L00_001FF4B0(v, v, *(float *)&D_L14_001615BC);
+        vec_scale_to_length(v, v, *(float *)&D_L14_001615BC);
         FastVecAdd(mat[3], mat[3], v);
         ray.moby = m;
         ray.flags = 0x10001;
@@ -388,7 +388,7 @@ void update_plasmabot(char *m) {
         ray.b99 = 1;
         ray.cls = *(unsigned short *)(m + 0xA6);
         ray.b98 = 0;
-        if (func_L00_001EFFF0(mat[3], hit, 0, m, &ray) != 0) {
+        if (coll_line(mat[3], hit, 0, m, &ray) != 0) {
             qcopy(hit, D_L14_00174660);
         }
         set_beam_origin_transform_and_endpoint(m, mat, hit);
@@ -588,10 +588,10 @@ void BeamMoby_DrawLines(char *moby) {
 
     qcopy(&m[3], data + 0x1E0);
     m[3].f[3] = 1.0f;
-    FastVecSub(&m[0], D_L14_001675C0, &m[3]);
-    func_L00_001FF4B0(&m[0], &m[0], 1.0f);
+    FastVecSub(&m[0], oltanis_camera_pos, &m[3]);
+    vec_scale_to_length(&m[0], &m[0], 1.0f);
     FastVecCross(&m[1], &m[0], D_0013E633 + 0x10AD);
-    func_L00_001FF4B0(&m[1], &m[1], -1.0f);
+    vec_scale_to_length(&m[1], &m[1], -1.0f);
     FastVecCross(&m[2], &m[1], &m[0]);
     pk.t[1] = GetEffectTex(11);
     pk.t[3] = 0x8000000048ULL;
@@ -613,16 +613,16 @@ void BeamMoby_DrawLines(char *moby) {
         FastVecScale(&pk.o[i], &D_L14_001D8B50[i], 0.4f);
         transform_vector(&pk.o[i], &pk.o[i], &m[0]);
     }
-    func_L00_001FD1D8(&pk, 0, 0);
+    draw_world_quad(&pk, 0, 0);
 
     qcopy(&m[3], data + 0x200);
     pp = data + 0x220;
-    FastVecSub(&m[0], D_L14_001675C0, &m[3]);
+    FastVecSub(&m[0], oltanis_camera_pos, &m[3]);
     r = data + 0x210;
     q = data + 0x1F0;
-    func_L00_001FF4B0(&m[0], &m[0], 1.0f);
+    vec_scale_to_length(&m[0], &m[0], 1.0f);
     FastVecCross(&m[1], &m[0], D_0013E633 + 0x10AD);
-    func_L00_001FF4B0(&m[1], &m[1], -1.0f);
+    vec_scale_to_length(&m[1], &m[1], -1.0f);
     FastVecCross(&m[2], &m[1], &m[0]);
     pk.c[3] = 0x202020FF;
     pk.c[2] = 0x202020FF;
@@ -632,13 +632,13 @@ void BeamMoby_DrawLines(char *moby) {
         FastVecScale(&pk.o[j], &D_L14_001D8B50[j], 0.2f);
         transform_vector(&pk.o[j], &pk.o[j], &m[0]);
     }
-    func_L00_001FD1D8(&pk, 0, 0);
+    draw_world_quad(&pk, 0, 0);
 
     qcopy(&m[3], q);
-    FastVecSub(&m[0], D_L14_001675C0, &m[3]);
-    func_L00_001FF4B0(&m[0], &m[0], 1.0f);
+    FastVecSub(&m[0], oltanis_camera_pos, &m[3]);
+    vec_scale_to_length(&m[0], &m[0], 1.0f);
     FastVecCross(&m[1], &m[0], D_0013E633 + 0x10AD);
-    func_L00_001FF4B0(&m[1], &m[1], -1.0f);
+    vec_scale_to_length(&m[1], &m[1], -1.0f);
     FastVecCross(&m[2], &m[1], &m[0]);
     FastVecScale(&w, &m[0], D_L14_00161574_3B78);
     FastVecAdd(&m[3], &m[3], &w);
@@ -651,13 +651,13 @@ void BeamMoby_DrawLines(char *moby) {
         FastVecScale(&pk.o[j], &D_L14_001D8B50[j], 0.2f);
         transform_vector(&pk.o[j], &pk.o[j], &m[0]);
     }
-    func_L00_001FD1D8(&pk, 0, 0);
+    draw_world_quad(&pk, 0, 0);
 
     qcopy(&m[3], r);
-    FastVecSub(&m[0], D_L14_001675C0, &m[3]);
-    func_L00_001FF4B0(&m[0], &m[0], 1.0f);
+    FastVecSub(&m[0], oltanis_camera_pos, &m[3]);
+    vec_scale_to_length(&m[0], &m[0], 1.0f);
     FastVecCross(&m[1], &m[0], D_0013E633 + 0x10AD);
-    func_L00_001FF4B0(&m[1], &m[1], -1.0f);
+    vec_scale_to_length(&m[1], &m[1], -1.0f);
     FastVecCross(&m[2], &m[1], &m[0]);
     FastVecScale(&w, &m[0], D_L14_00161584_3B78);
     FastVecAdd(&m[3], &m[3], &w);
@@ -669,13 +669,13 @@ void BeamMoby_DrawLines(char *moby) {
         FastVecScale(&pk.o[j], &D_L14_001D8B50[j], D_L14_00161588_3B78);
         transform_vector(&pk.o[j], &pk.o[j], &m[0]);
     }
-    func_L00_001FD1D8(&pk, 0, 0);
+    draw_world_quad(&pk, 0, 0);
 
     qcopy(&m[3], pp);
-    FastVecSub(&m[0], D_L14_001675C0, &m[3]);
-    func_L00_001FF4B0(&m[0], &m[0], 1.0f);
+    FastVecSub(&m[0], oltanis_camera_pos, &m[3]);
+    vec_scale_to_length(&m[0], &m[0], 1.0f);
     FastVecCross(&m[1], &m[0], D_0013E633 + 0x10AD);
-    func_L00_001FF4B0(&m[1], &m[1], -1.0f);
+    vec_scale_to_length(&m[1], &m[1], -1.0f);
     FastVecCross(&m[2], &m[1], &m[0]);
     FastVecScale(&w, &m[0], D_L14_00161584_3B78);
     FastVecAdd(&m[3], &m[3], &w);
@@ -687,7 +687,7 @@ void BeamMoby_DrawLines(char *moby) {
         FastVecScale(&pk.o[j], &D_L14_001D8B50[j], D_L14_00161588_3B78);
         transform_vector(&pk.o[j], &pk.o[j], &m[0]);
     }
-    func_L00_001FD1D8(&pk, 0, 0);
+    draw_world_quad(&pk, 0, 0);
 }
 typedef struct {
     u8 pad00[0x38];
@@ -822,7 +822,7 @@ extern float func_001F9D48(void *, void *);
 // Checks the moby's distance against its radius and latches state fields.
 void update_plasmabot_target(char *moby) {
     char *data = *(char **)(moby + 0x78);
-    int *tbl = D_L14_001B0F30[*(int *)(data + 0x244)];
+    int *tbl = oltanis_paths[*(int *)(data + 0x244)];
     if (FindNearestEligibleMoby(moby, data + 0xD0, *(float *)(data + 0x234), 0, 0, tbl + 4, *tbl) != 2) {
         if (*(float *)(data + 0x234) < vec_distance_xy(moby + 0x10, data + 0xD0)) {
             *(int *)(data + 0x114) = 2;
@@ -860,7 +860,7 @@ void initialize_plasmabot_path_state(char *moby) {
     *(float *)(d + 0x258) = *(float *)(d + 0x250);
     *(float *)(d + 0x254) = *(float *)(d + 0x250);
     if (*(int *)(d + 0x240) == -1) return;
-    p = (char *)D_L14_001B0F30[*(int *)(d + 0x240)];
+    p = (char *)oltanis_paths[*(int *)(d + 0x240)];
     for (i = 0; i < *(int *)p; i++) {
         int o = i * 16;
         *(float *)(p + o + 0x1C) = FastVecDist(p + (o + 0x10), p + (((i + 1) % *(int *)p) * 16 + 0x10));
@@ -880,7 +880,7 @@ int follow_plasmabot_path(char *moby) {
     float b[4];
     float c[4];
     char *data = *(char **)(moby + 0x78);
-    int r = Spline_AdvanceByDistance(D_L14_001B0F30[*(int *)(data + 0x240)], a, data + 0x24C, data + 0x250, 0,
+    int r = Spline_AdvanceByDistance(oltanis_paths[*(int *)(data + 0x240)], a, data + 0x24C, data + 0x250, 0,
                               *(float *)&D_L14_001615A0 * g_frame_time * *(float *)(data + 0x27C));
     float ang;
     float k;
@@ -978,7 +978,7 @@ void Group_ResetClass28Timers(int idx) {
         p = D_L14_001AC2C0[idx];
         if (p != 0) {
             do {
-                char *moby = D_L14_00160098 + ((*(unsigned short *)p & 0x7FFF) << 8);
+                char *moby = oltanis_mobys + ((*(unsigned short *)p & 0x7FFF) << 8);
                 char *data = *(char **)(moby + 0x78);
                 if (*(short *)(moby + 0xA6) == 0x1C) {
                     *(short *)(data + 0x260) = scale_ticks(*(int *)&D_L14_001615A8);
@@ -993,7 +993,7 @@ int count_listed_plasmabots_preparing_or_sweeping_beam(int index) {
  if (index == -1) return 0;
  ids=(unsigned short *)D_L14_001AC2C0[index];
  if (!ids) return 0;
- base=D_L14_00160098;
+ base=oltanis_mobys;
  do { char *m; id=*ids; m=base+(id&0x7FFF)*256;
  if (*(short *)(m+0xA6)==28 && (unsigned char)((unsigned char)m[0x20]-5)<=1) ++count;
  ++ids; } while ((short)id>=0);
@@ -1006,7 +1006,7 @@ int check_listed_plasmabots_not_starting_path_traversal(unsigned char *m) {
     if (*(volatile unsigned char *)(m + 0x21) == 0xFF || (p = (unsigned short *)D_L14_001AC2C0[m[0x21]]) == 0)
         return 1;
     do {
-        char *moby = D_L14_00160098 + ((*p & 0x7FFF) << 8);
+        char *moby = oltanis_mobys + ((*p & 0x7FFF) << 8);
         if (*(short *)(moby + 0xA6) == 0x1C && *(unsigned char *)(moby + 0x20) == 2)
             return 0;
     } while ((short)*p++ >= 0);
@@ -1051,7 +1051,7 @@ void draw_plasmabot_glow_quad(char *m) {
     pk.a = 0;
     VU1_addGSregister(0x4A, 0);
     VU1_addGSregister(0x47, 0x51001);
-    FastVecSub(v, D_L14_001675C0, pos);
+    FastVecSub(v, oltanis_camera_pos, pos);
     len = FastVecLength(v);
     if (0.0f < len) {
         float s = *(float *)&D_L14_001615C4;
@@ -1060,7 +1060,7 @@ void draw_plasmabot_glow_quad(char *m) {
             s = f;
             if (f < 0.0f) s = 0.0f;
         }
-        func_L00_001FF4B0(w, v, s);
+        vec_scale_to_length(w, v, s);
         FastVecAdd(pos, pos, w);
     }
     pk.uv[0] = 1.0f;
@@ -1080,7 +1080,7 @@ void draw_plasmabot_glow_quad(char *m) {
         FastVecScale(pk.m[j], D_L14_001D8B90[j], *(float *)&D_L14_001615C0);
         FastVecAdd(pk.m[j], pk.m[j], pos);
     }
-    func_L00_001FD1D8(&pk, 0, 0);
+    draw_world_quad(&pk, 0, 0);
 }
 extern u8 D_001414F4[];
 extern u8 * D_L14_00167600;
@@ -1108,7 +1108,7 @@ void plasmabot_hatch_update(char *moby) {
     };
     struct Moby *m = (struct Moby *)moby;
     PlasmabotHatchVars *data = (PlasmabotHatchVars *)m->pvars;
-    if (D_001414F4[0] == 2) {
+    if (hero_vehicle_mode[0] == 2) {
         m->collision = 0;
     } else {
         m->collision = m->pclass->collision;
@@ -1165,7 +1165,7 @@ extern void func_00213D28(void *, int, int);
 // Starts a moby in state 5 if idle, then stores a random value and returns whether it was in state 6.
 int MobyL14_Activate(int i)
 {
-    unsigned char *moby = (unsigned char *)(D_L14_00160098 + i * 256);
+    unsigned char *moby = (unsigned char *)(oltanis_mobys + i * 256);
     int *data = *(int **)(moby + 0x78);
     int r = 0;
     if (moby[0x20] == 0) {
@@ -1249,7 +1249,7 @@ void update_spinning_moby_with_particle_trail(struct MobyDf *moby) {
         DeleteMoby((struct Moby *)moby);
         return;
     }
-    PartType21Spawn(&moby->pos, D_L14_0015F660, 0x4F007FFF, 0x1FFFFFFF,
+    PartType21Spawn(&moby->pos, oltanis_zero_vector, 0x4F007FFF, 0x1FFFFFFF,
                          rand_range(scale_ticks(10), scale_ticks(20)), 1, 60000.0f);
     for (i = 0; i < 2; i++) {
         n = random_integer_below(6);
@@ -1258,7 +1258,7 @@ void update_spinning_moby_with_particle_trail(struct MobyDf *moby) {
         color = rand_range(0x30, 0xFF);
         alpha = 0x60000000;
         particle = (unsigned char *)PartType23Spawn(&moby->pos, 0.025f, 1.0f, 1.0f, n,
-                                        D_L14_0015F660, size,
+                                        oltanis_zero_vector, size,
                                         color | ((color << 16) | ((color << 8) | alpha)));
         if (particle != 0) {
             particle[3] = 0x44;
@@ -1302,7 +1302,7 @@ unsigned char *spawn_plasmabot_death_debris(char *owner, char *pos) {
         FastVecSub(vec, m + 0x10, g);
         g = g + 0x210;
         vec[2] = 0.0f;
-        func_L00_001FF4B0(vec, vec, random_float_between(*(float *)&D_L14_00161BD8 * frame_scale, *(float *)&D_L14_00161BDC * frame_scale));
+        vec_scale_to_length(vec, vec, random_float_between(*(float *)&D_L14_00161BD8 * frame_scale, *(float *)&D_L14_00161BDC * frame_scale));
         FastVecCross(vec + 4, g, vec);
         build_look_at_matrix(d, vec, g, randf_sym(0.34906584f, 1.0471976f));
         *(float *)(d + 8) = random_float_between(*(float *)&D_L14_00161BE0 * frame_scale, *(float *)&D_L14_00161BE4 * frame_scale);
@@ -1373,12 +1373,12 @@ void update_path_or_ballistic_debris(struct Moby *moby) {
         func_L14_002E17B8_E1110(moby);
         if (func_001F9908_E1110(&data->timer) == 0)
             return;
-        func_L00_001FF4B0(vec, vec, 0.5f);
+        vec_scale_to_length(vec, vec, 0.5f);
         qcopy(&probe, &moby->pos);
         probe.f[2] += 0.25f;
         Sound_PlayClassSound(1, 0, moby, data->owner->oclass);
         func_L00_0025F4A8_E1110(moby, vec, &probe, 0.0f, 0.0f, 5, 2, 4, 1.0f, 0.5f, 9.0f, 1.0f, -1, 15.0f, 0, 3, -1, 0);
-        coll_sphere(1.0f, &moby->pos, 0, (void *)D_001414D0);
+        coll_sphere(1.0f, &moby->pos, 0, (void *)g_hero_moby);
         func_0020D678_E1110(moby);
         return;
     }
@@ -1402,12 +1402,12 @@ void update_path_or_ballistic_debris(struct Moby *moby) {
         func_0020D678_E1110(moby);
         return;
     }
-    func_L00_001FF4B0(vec, &moby->rot_row2, 0.52f);
+    vec_scale_to_length(vec, &moby->rot_row2, 0.52f);
     FastVecAdd(&probe, &moby->pos, vec);
     if (func_001F9908_E1110(&data->timer) != 0 || coll_sphere(0.5f, &probe, 0, data->owner) != 0) {
         Sound_PlayClassSound(0, 0, moby, data->owner->oclass);
         func_L00_0025F4A8_E1110(moby, velocity, &moby->pos, 0.0f, 0.0f, 5, 2, 4, 1.0f, 0.5f, 9.0f, 1.0f, -1, 15.0f, 0, 3, -1, 0);
-        coll_sphere(1.0f, &moby->pos, 0, (void *)D_001414D0);
+        coll_sphere(1.0f, &moby->pos, 0, (void *)g_hero_moby);
         func_0020D678_E1110(moby);
         return;
     }
@@ -1455,7 +1455,7 @@ unsigned char *spawn_path_or_ballistic_debris(char *owner, float *scale, int mod
             *(int *)(d + 4) = scale_ticks(200);
             FastVecSub(vec, pos, D_0013E633 + 0xE9D);
             vec[2] = 0.0f;
-            func_L00_001FF4B0(vec, vec,
+            vec_scale_to_length(vec, vec,
                 random_float_between(*(float *)&D_L14_00161C00 * frame_scale,
                               *(float *)&D_L14_00161C04 * frame_scale));
             FastVecCross(vec + 4, D_0013E633 + 0xE9D + 0x210, vec);
@@ -1604,7 +1604,7 @@ void initialize_moby_path_state(char *moby) {
     char *data = *(char **)(moby + 0x78);
     char *p;
     int i;
-    p = D_L14_001B0F30[*(int *)(data + 0xD8)];
+    p = oltanis_paths[*(int *)(data + 0xD8)];
     for (i = 0; i < *(int *)p - 1; i++) {
         *(float *)(p + 0x1C + i * 0x10) = FastVecDist(p + 0x10 + i * 0x10, p + 0x20 + i * 0x10);
     }
@@ -1614,7 +1614,7 @@ void initialize_moby_path_state(char *moby) {
     *(float *)(moby + 0x48) = fast_atan2(*(float *)(p + 0x20) - *(float *)(p + 0x10), *(float *)(p + 0x24) - *(float *)(p + 0x14));
     *(float *)(data + 0xF0) = *(float *)(data + 0xE4) = *(float *)(data + 0xE8) = *(float *)(data + 0xEC) = 0.0f;
     if (*(int *)(data + 0xFC) != 1) {
-        p = D_L14_001B0F30[*(int *)(data + 0xDC)];
+        p = oltanis_paths[*(int *)(data + 0xDC)];
         for (i = 0; i < *(int *)p - 1; i++) {
             *(float *)(p + 0x1C + i * 0x10) = FastVecDist(p + 0x10 + i * 0x10, p + 0x20 + i * 0x10);
         }
@@ -1631,9 +1631,9 @@ void update_linked_moby_position(char *moby) {
     float tmp[4];
     if (*(char **)(data + 0xF4) != 0) {
         char *p;
-        func_L00_001FF4B0(tmp, moby + 0xC0, *(float *)&D_L14_00162094);
+        vec_scale_to_length(tmp, moby + 0xC0, *(float *)&D_L14_00162094);
         FastVecAdd(*(char **)(data + 0xF4) + 0x10, moby + 0x10, tmp);
-        func_L00_001FF4B0(tmp, moby + 0xE0, *(float *)&D_L14_00162098);
+        vec_scale_to_length(tmp, moby + 0xE0, *(float *)&D_L14_00162098);
         p = *(char **)(data + 0xF4) + 0x10;
         FastVecAdd(p, p, tmp);
     }
@@ -1679,7 +1679,7 @@ void emit_moby_offset_particles(unsigned char *m) {
         P_eca8 *part;
         T_eca8 *tail;
         n = random_integer_below(0x10);
-        part = PartType23Spawn(pos, 0.2f, 1.0f, 0.9f, random_integer_below(2) == 0 ? n : -n, D_L14_0015F660, 100000.0f, (*(int *)&D_L14_001620B4));
+        part = PartType23Spawn(pos, 0.2f, 1.0f, 0.9f, random_integer_below(2) == 0 ? n : -n, oltanis_zero_vector, 100000.0f, (*(int *)&D_L14_001620B4));
         if (part) {
             tail = &part->tail;
             part->hA = scale_ticks(0xC);
@@ -1698,7 +1698,7 @@ void emit_moby_offset_particles(unsigned char *m) {
     for (j = 0; j < 3; j++) {
         P_eca8 *part;
         T_eca8 *tail;
-        part = PartType23Spawn(pos, 0.05f, 1.0f, 1.0f, n, D_L14_0015F660, size, 0x7FFFFFFF);
+        part = PartType23Spawn(pos, 0.05f, 1.0f, 1.0f, n, oltanis_zero_vector, size, 0x7FFFFFFF);
         if (part) {
             tail = &part->tail;
             part->hA = life;
@@ -2092,7 +2092,7 @@ void start_vendor_beam_pulse(char *moby) {
         }
     }
 
-    if (vec_distance_xy(D_L14_001601AC + (beam->idx << 7) + 0x30, D_L14_001675C0) >= 4.0f) {
+    if (vec_distance_xy(D_L14_001601AC + (beam->idx << 7) + 0x30, oltanis_camera_pos) >= 4.0f) {
         int s17;
         int l;
         euler_to_matrix(matrix, D_L14_001601AC + (beam->idx << 7) + 0x70);
