@@ -75,14 +75,14 @@ void update_moby_scene_visibility_and_height_reflection(M *moby) {
         moby->state = 1;
     case 1:
         if ((veldin2_cinematic_mode == 2 && veldin2_cinematic_step == 3) ||
-            (veldin2_frame_count < 5 && D_L18_00162430 != 0 && moby->f40 == 0.0f)) {
+            (veldin2_frame_count < 5 && drek_boss_camera_reset_done != 0 && moby->f40 == 0.0f)) {
             moby->state = 2;
             moby->flags |= 1;
             moby->substate = 0;
         }
         break;
     case 2:
-        if (D_L18_00162430 != 0 && moby->f40 == 0.0f) {
+        if (drek_boss_camera_reset_done != 0 && moby->f40 == 0.0f) {
             float d = 101.6f - moby->f18;
             moby->f40 = FastAddRots(moby->f40, 3.14159274f);
             moby->f18 += d + d;

@@ -9302,7 +9302,7 @@ void update_ammo_preview_transform(struct AmmoPreviewMoby *moby) {
     clear_u64_value(angles);
     angles[2] = FastAddRots(orbit_angle, 1.5707964f);
     euler_rotation_basis(rotation_basis, angles);
-    func_001FA4F0(moby->basis, rotation_basis, moby->basis);
+    multiply_matrix3x3(moby->basis, rotation_basis, moby->basis);
     moby_anim_sphere_lerp(moby);
 }
 

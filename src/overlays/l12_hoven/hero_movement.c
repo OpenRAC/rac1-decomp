@@ -851,10 +851,10 @@ void Hero_UpdateStatePhysicsL12(void) {
                 g_hero.unk90C = 0;
             }
             if (g_controller_state.pressed & 0x40) {
-                if (D_L12_0015F6B0 - g_hero.unk914 < scale_ticks(0x46)) {
+                if (hoven_frame_count - g_hero.unk914 < scale_ticks(0x46)) {
                     g_hero.unk910++;
                 }
-                g_hero.unk914 = D_L12_0015F6B0;
+                g_hero.unk914 = hoven_frame_count;
             }
             if (g_hero.unk90E > scale_ticks(0x46)) {
                 g_hero.unk910 = 0;

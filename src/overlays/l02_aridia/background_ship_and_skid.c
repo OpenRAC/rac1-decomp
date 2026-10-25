@@ -530,7 +530,7 @@ void update_skid_mcmarx_relocation_sequence(char *moby) {
         {
             int i0 = data->slot_a;
             int i1 = data->slot_b;
-            mobys = D_L02_00160058;
+            mobys = aridia_mobys;
             *(unsigned char *)(mobys + (i0 << 8) + 0xBC) = 1;
             mobys += i1 << 8;
             ((struct Moby *)mobys)->command = 1;

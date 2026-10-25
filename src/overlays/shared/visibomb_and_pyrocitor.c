@@ -2619,7 +2619,7 @@ void initialize_tesla_claw_beam(char *moby) {
     (*(int *)&D_L00_00161660) = 0;
     (*(int *)&D_L00_0016174C) = 0;
     tesla_beam_scaled_initial_frame_count = scale_ticks((*(int *)&D_L00_001616F4));
-    (*(int *)&D_L00_001616C8) = 0x7F2020;
+    (*(int *)&beam_arc_outer_color) = 0x7F2020;
     FastVecSub(&d, data + 0x10, data);
     vec_scale_to_length(&step, &d, (*(float *)&D_L00_00161664) / 20.0f);
     qcopy(D_L00_001DB8C0, data);

@@ -2470,7 +2470,7 @@ void update_rocket(M46 *m) {
         if (func_L00_001F39B0(m->position,0x400,2,m,0) || m->position[0]<5.0f || m->position[0]>500.0f || m->position[1]<5.0f || m->position[1]>500.0f || m->position[2]<5.0f || m->position[2]>500.0f || FastVecDist(D_0013E633+0xE9D,m->position)<16.0f) m->state=6;
         return;
     case 6:
-        if (D_L08_0016005C<(unsigned int)m) spawn_explosion(m,d->velocity,m->position,0.0f,0.0f,15,10,10,3.0f,2.0f,9.0f,1.0f,-1,15.0f,1,1,-1,0);
+        if (batalia_mobys_last<(unsigned int)m) spawn_explosion(m,d->velocity,m->position,0.0f,0.0f,15,10,10,3.0f,2.0f,9.0f,1.0f,-1,15.0f,1,1,-1,0);
         DeleteMoby(m);
         break;
     default: break;

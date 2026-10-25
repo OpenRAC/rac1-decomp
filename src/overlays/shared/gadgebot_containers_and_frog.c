@@ -1363,7 +1363,7 @@ void GadgebotUpdate(Moby *moby) {
             }
             if (ok) {
                 D_L06_0017ED58.f2C++;
-                switch (D_00141710[0]) {
+                switch (radial_select_choice[0]) {
                 case 1:
                     if (moby->state != 3) {
                         moby->state = 3;

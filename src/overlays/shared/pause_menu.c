@@ -391,7 +391,7 @@ void close_pause_menu(void) {
         {
             char *state = level_menu_system;
             int value;
-            table = D_L00_0017E5D8;
+            table = texture_group_header;
             value = *(int *)(*(char **)(table + 0x18) + 0x74);
             *(int *)&g_gs_texture_allocation_start = *(int *)(state + 0x18);
             Hud_SendResidentBank(0, value, 0);

@@ -976,7 +976,7 @@ void robot_arm_update(char *m) {
     s23 = d + 0x10;
     euler_rotation_basis(a30, s23);
     matrix_mul_vec3(a20, d + 0x20, m + 0xC0);
-    func_001FA4F0(m + 0xC0, a30, m + 0xC0);
+    multiply_matrix3x3(m + 0xC0, a30, m + 0xC0);
     matrix_mul_vec3(a60, d + 0x20, m + 0xC0);
     FastVecSub(a70, a60, a20);
     FastVecSub((float *)(m + 0x10), (float *)(m + 0x10), a70);

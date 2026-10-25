@@ -999,7 +999,7 @@ void update_bolt_grounded_pose(char *moby, void *out1, void *out2) {
     v60[1] = c2;
     euler_rotation_basis(m0, v60);
     euler_rotation_basis(m1, B);
-    func_001FA4F0(moby + 0xC0, m1, m0);
+    multiply_matrix3x3(moby + 0xC0, m1, m0);
     FastVecScale(moby + 0x10, &m1[8], c3);
     FastVecScale(v70, moby + 0xC0, c4);
     FastVecAdd(moby + 0x10, moby + 0x10, v70);

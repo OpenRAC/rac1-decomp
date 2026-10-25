@@ -1059,7 +1059,7 @@ void thruster_pack_lock_red_update(struct Moby *moby) {
         } else if (D_0013F450_D8F10.state.current != 0x72) {
             AddDrawCallback(func_L18_002D9488_D8F10, moby);
             if (fast_dec_timer((int *)(data + 0x6C)) != 0)
-                (*(unsigned int *)&D_L18_00162420) = 1;
+                (*(unsigned int *)&drek_boss_camera_move_request) = 1;
         }
         break;
     case 4:

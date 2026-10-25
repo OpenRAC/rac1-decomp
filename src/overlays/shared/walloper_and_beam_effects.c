@@ -31,23 +31,23 @@ extern void func_L00_002BC3B8(void *);
 /* Scrolls the texture offset and refreshes the five scrolling-strip records of a moby. */
 void draw_beam_and_arc_effects(char *m) {
     char *p = *(char **)(m + 0x78);
-    float t = *(float *)&D_L00_001616BC - *(float *)&D_L00_001616C0 * frame_scale;
-    *(float *)&D_L00_001616BC = t;
+    float t = *(float *)&beam_arc_tex_scroll - *(float *)&beam_arc_tex_scroll_speed * frame_scale;
+    *(float *)&beam_arc_tex_scroll = t;
     if (t <= -8.0f) {
-        *(float *)&D_L00_001616BC = t + 8.0f;
+        *(float *)&beam_arc_tex_scroll = t + 8.0f;
     }
-    draw_beam_and_arc_two_pass_quads(D_L00_001DB8C0, *(int *)&D_L00_001616A4, *(int *)&D_L00_001616AC, *(short *)(p + 0x3E),
-        *(float *)&D_L00_001616CC, *(float *)&D_L00_001616D0, *(float *)&D_L00_00161700);
-    draw_beam_and_arc_two_pass_quads(D_L00_001DB8C0 + 0x140, *(int *)&D_L00_001616D4, *(int *)&D_L00_001616D8, *(short *)(p + 0x3E),
-        *(float *)&D_L00_001616DC, *(float *)&D_L00_001616E0, *(float *)&D_L00_00161704);
-    draw_beam_and_arc_two_pass_quads(D_L00_001DBD20, *(short *)&D_L00_00161730, *(short *)&D_L00_00161730, 5,
-        *(float *)&D_L00_001616DC, *(float *)&D_L00_001616E0, 0.2f);
-    draw_beam_and_arc_two_pass_quads(D_L00_001DBD20 + 0x50, *(short *)&beam_arc_second_row_alpha, *(short *)&beam_arc_second_row_alpha, 5,
-        *(float *)&D_L00_001616DC, *(float *)&D_L00_001616E0, 0.2f);
-    draw_beam_and_arc_two_pass_quads(D_L00_001DBD20 + 0xA0, *(short *)&beam_arc_third_row_alpha, *(short *)&beam_arc_third_row_alpha, 5,
-        *(float *)&D_L00_001616DC, *(float *)&D_L00_001616E0, 0.2f);
-    draw_beam_and_arc_two_pass_quads(D_L00_001DBD20 + 0xF0, *(short *)&beam_arc_fourth_row_alpha, *(short *)&beam_arc_fourth_row_alpha, 5,
-        *(float *)&D_L00_001616DC, *(float *)&D_L00_001616E0, 0.2f);
+    draw_beam_and_arc_two_pass_quads(D_L00_001DB8C0, *(int *)&beam_arc_main_inner_alpha, *(int *)&beam_arc_main_outer_alpha, *(short *)(p + 0x3E),
+        *(float *)&beam_arc_main_half_width, *(float *)&beam_arc_main_outer_half_width, *(float *)&beam_arc_main_end_extension);
+    draw_beam_and_arc_two_pass_quads(D_L00_001DB8C0 + 0x140, *(int *)&beam_arc_second_inner_alpha, *(int *)&beam_arc_second_outer_alpha, *(short *)(p + 0x3E),
+        *(float *)&beam_arc_bolt_half_width, *(float *)&beam_arc_bolt_outer_half_width, *(float *)&beam_arc_second_end_extension);
+    draw_beam_and_arc_two_pass_quads(beam_arc_bolt_points, *(short *)&beam_arc_bolt0_alpha, *(short *)&beam_arc_bolt0_alpha, 5,
+        *(float *)&beam_arc_bolt_half_width, *(float *)&beam_arc_bolt_outer_half_width, 0.2f);
+    draw_beam_and_arc_two_pass_quads(beam_arc_bolt_points + 0x50, *(short *)&beam_arc_second_row_alpha, *(short *)&beam_arc_second_row_alpha, 5,
+        *(float *)&beam_arc_bolt_half_width, *(float *)&beam_arc_bolt_outer_half_width, 0.2f);
+    draw_beam_and_arc_two_pass_quads(beam_arc_bolt_points + 0xA0, *(short *)&beam_arc_third_row_alpha, *(short *)&beam_arc_third_row_alpha, 5,
+        *(float *)&beam_arc_bolt_half_width, *(float *)&beam_arc_bolt_outer_half_width, 0.2f);
+    draw_beam_and_arc_two_pass_quads(beam_arc_bolt_points + 0xF0, *(short *)&beam_arc_fourth_row_alpha, *(short *)&beam_arc_fourth_row_alpha, 5,
+        *(float *)&beam_arc_bolt_half_width, *(float *)&beam_arc_bolt_outer_half_width, 0.2f);
     draw_beam_anchor_camera_facing_quads(m);
 }
 extern int func_001F4868(int);
@@ -80,8 +80,8 @@ void draw_beam_and_arc_two_pass_quads(void *m, int a, int b, int n, float sx, fl
     RW_2BBDE8 w120, w130, w140, w150, r160, r170, a180, b190, s1A0, s1B0;
     int i, col0, col1;
     float len, len0, len2, l0, l1;
-    t.q0 = GetEffectTex(*(int *)&D_L00_00161708);
-    col0 = *(int *)&D_L00_001616C4 | (a << 24);
+    t.q0 = GetEffectTex(*(int *)&beam_arc_inner_tex);
+    col0 = *(int *)&beam_arc_inner_color | (a << 24);
     t.q2 = 0x8000000048L;
     t.q1 = 0xFF9000000260L;
     t.z4 = 0;
@@ -89,8 +89,8 @@ void draw_beam_and_arc_two_pass_quads(void *m, int a, int b, int n, float sx, fl
     t.c[2] = col0;
     t.c[1] = col0;
     t.c[0] = col0;
-    u.q0 = GetEffectTex(*(int *)&D_L00_0016170C);
-    col1 = *(int *)&D_L00_001616C8 | (b << 24);
+    u.q0 = GetEffectTex(*(int *)&beam_arc_outer_tex);
+    col1 = *(int *)&beam_arc_outer_color | (b << 24);
     u.q2 = t.q2;
     u.q1 = t.q1;
     u.z4 = t.z4;
@@ -99,20 +99,20 @@ void draw_beam_and_arc_two_pass_quads(void *m, int a, int b, int n, float sx, fl
     u.c[1] = col1;
     u.c[0] = col1;
     u.f[0] = 0; u.f[1] = 0; u.f[2] = 0; u.f[3] = 1.0f; u.f[4] = 1.0f; u.f[5] = 0; u.f[6] = 1.0f; u.f[7] = 1.0f;
-    t.f[0] = u.f[0] + *(float *)&D_L00_001616BC;
+    t.f[0] = u.f[0] + *(float *)&beam_arc_tex_scroll;
     t.f[1] = u.f[1];
-    t.f[2] = u.f[2] + *(float *)&D_L00_001616BC;
+    t.f[2] = u.f[2] + *(float *)&beam_arc_tex_scroll;
     t.f[3] = u.f[3];
-    t.f[4] = u.f[4] + *(float *)&D_L00_001616BC;
+    t.f[4] = u.f[4] + *(float *)&beam_arc_tex_scroll;
     t.f[5] = u.f[5];
-    t.f[6] = u.f[6] + *(float *)&D_L00_001616BC;
+    t.f[6] = u.f[6] + *(float *)&beam_arc_tex_scroll;
     t.f[7] = u.f[7];
     FastVecSub(w140, m, g_debug_camera);
     FastVecSub(w150, &((P_2BBDE8 *)m)[1], m);
     FastVecCross(w120, w150, w140);
     len0 = FastVecLength(w120);
     if (len0 != 0) len0 = 1.0f / len0;
-    FastVecScale(w120, w120, *(float *)&D_L00_001616CC * len0);
+    FastVecScale(w120, w120, *(float *)&beam_arc_main_half_width * len0);
     FastVecAdd(q[0], m, w120);
     FastVecSub(q[1], m, w120);
     for (i = 1; i < n - 1; i++) {
@@ -121,15 +121,15 @@ void draw_beam_and_arc_two_pass_quads(void *m, int a, int b, int n, float sx, fl
         FastVecCross(w120, w150, w140);
         len = FastVecLength(w120);
         if (len != 0) len = 1.0f / len;
-        FastVecScale(w120, w120, *(float *)&D_L00_001616CC * len);
+        FastVecScale(w120, w120, *(float *)&beam_arc_main_half_width * len);
         FastVecAdd(q[2], &((P_2BBDE8 *)m)[i], w120);
         FastVecSub(q[3], &((P_2BBDE8 *)m)[i], w120);
         if (i == 1) {
-            t.c[1] = *(int *)&D_L00_001616C4;
-            t.c[0] = *(int *)&D_L00_001616C4;
+            t.c[1] = *(int *)&beam_arc_inner_color;
+            t.c[0] = *(int *)&beam_arc_inner_color;
         } else if (i == n - 2) {
-            t.c[3] = *(int *)&D_L00_001616C4;
-            t.c[2] = *(int *)&D_L00_001616C4;
+            t.c[3] = *(int *)&beam_arc_inner_color;
+            t.c[2] = *(int *)&beam_arc_inner_color;
         } else if (i == 2) {
             t.c[1] = col0;
             t.c[0] = col0;
@@ -166,11 +166,11 @@ void draw_beam_and_arc_two_pass_quads(void *m, int a, int b, int n, float sx, fl
         FastVecAdd(q2[2], r170, w130);
         FastVecSub(q2[3], r170, w130);
         if (i == 0) {
-            u.c[1] = *(int *)&D_L00_001616C8;
-            u.c[0] = *(int *)&D_L00_001616C8;
+            u.c[1] = *(int *)&beam_arc_outer_color;
+            u.c[0] = *(int *)&beam_arc_outer_color;
         } else if (i == n - 2) {
-            u.c[3] = *(int *)&D_L00_001616C8;
-            u.c[2] = *(int *)&D_L00_001616C8;
+            u.c[3] = *(int *)&beam_arc_outer_color;
+            u.c[2] = *(int *)&beam_arc_outer_color;
         } else if (i == 1) {
             u.c[1] = col1;
             u.c[0] = col1;
@@ -223,30 +223,30 @@ void draw_beam_anchor_camera_facing_quads(void *mv) {
     FastVecCross(&mat[1], &mat[0], D_0013E633 + 0x10AD);
     vec_scale_to_length(&mat[1], &mat[1], -1.0f);
     FastVecCross(&mat[2], &mat[1], &mat[0]);
-    c = *(int *)&D_L00_00161710;
+    c = *(int *)&beam_anchor_quad_color;
     quad.color[3] = c;
     quad.color[2] = c;
     quad.color[1] = c;
     quad.color[0] = c;
-    s = *(float *)&D_L00_00161718 + randf_sym(0.0f, 0.025f);
+    s = *(float *)&beam_anchor_quad_size + randf_sym(0.0f, 0.025f);
     for (i = 0; i < 4; i++) {
-        FastVecScale(&quad.corner[i], &D_L00_001DB860[i], s);
+        FastVecScale(&quad.corner[i], &beam_anchor_quad_corners[i], s);
         transform_vector(&quad.corner[i], &quad.corner[i], &mat[0]);
-        quad.uv[i].u = D_L00_001DB8A0[i].u;
-        quad.uv[i].v = D_L00_001DB8A0[i].v;
+        quad.uv[i].u = beam_anchor_quad_uvs[i].u;
+        quad.uv[i].v = beam_anchor_quad_uvs[i].v;
     }
     draw_world_quad(&quad, 0, 0);
-    c = *(int *)&D_L00_001616C8;
+    c = *(int *)&beam_arc_outer_color;
     quad.color[3] = c;
     quad.color[2] = c;
     quad.color[1] = c;
     quad.color[0] = c;
-    s = *(float *)&D_L00_0016171C + randf_sym(0.0f, 0.05f);
+    s = *(float *)&beam_anchor_outer_quad_size + randf_sym(0.0f, 0.05f);
     for (i = 0; i < 4; i++) {
-        FastVecScale(&quad.corner[i], &D_L00_001DB860[i], s);
+        FastVecScale(&quad.corner[i], &beam_anchor_quad_corners[i], s);
         transform_vector(&quad.corner[i], &quad.corner[i], &mat[0]);
-        quad.uv[i].u = D_L00_001DB8A0[i].u;
-        quad.uv[i].v = D_L00_001DB8A0[i].v;
+        quad.uv[i].u = beam_anchor_quad_uvs[i].u;
+        quad.uv[i].v = beam_anchor_quad_uvs[i].v;
     }
     draw_world_quad(&quad, 0, 0);
 }
@@ -367,33 +367,33 @@ void walloper_update(char *m) {
             D_L00_001DC1F0[q] = 2;
             D_L00_001DC208[q] = 1;
         }
-        D_L00_0016179C = scale_ticks(*(int *)&D_L00_00161778);
-        D_L00_001617A0 = scale_ticks(*(int *)&D_L00_0016177C);
+        walloper_fade_in_timer = scale_ticks(*(int *)&walloper_fade_in_ticks);
+        walloper_fade_out_timer = scale_ticks(*(int *)&walloper_fade_out_ticks);
         break;
     case 2:
         if (*(int *)(g + 0x2084) == 0x20) {
             float f = MobyGetFrameValue(m);
             if (6.0f <= f) {
                 flag = 1;
-                if (func_001F9908_r(&D_L00_0016179C) == 0) {
-                    float a = IntToFloat(D_L00_0016179C);
-                    a = a / IntToFloat(scale_ticks(*(int *)&D_L00_00161778));
-                    D_L00_001617A4 = 1.0f - a;
+                if (func_001F9908_r(&walloper_fade_in_timer) == 0) {
+                    float a = IntToFloat(walloper_fade_in_timer);
+                    a = a / IntToFloat(scale_ticks(*(int *)&walloper_fade_in_ticks));
+                    walloper_effect_fade = 1.0f - a;
                 } else if (12.0f <= f) {
-                    if (func_001F9908_r(&D_L00_001617A0) == 0) {
-                        float a = IntToFloat(D_L00_001617A0);
-                        a = a / IntToFloat(scale_ticks(*(int *)&D_L00_0016177C));
-                        D_L00_001617A4 = a;
+                    if (func_001F9908_r(&walloper_fade_out_timer) == 0) {
+                        float a = IntToFloat(walloper_fade_out_timer);
+                        a = a / IntToFloat(scale_ticks(*(int *)&walloper_fade_out_ticks));
+                        walloper_effect_fade = a;
                     } else {
-                        D_L00_001617A4 = 0.0f;
+                        walloper_effect_fade = 0.0f;
                     }
                 } else {
-                    D_L00_001617A4 = 1.0f;
+                    walloper_effect_fade = 1.0f;
                 }
             }
         } else {
-            D_L00_0016179C = scale_ticks(*(int *)&D_L00_00161778);
-            D_L00_001617A0 = scale_ticks(*(int *)&D_L00_0016177C);
+            walloper_fade_in_timer = scale_ticks(*(int *)&walloper_fade_in_ticks);
+            walloper_fade_out_timer = scale_ticks(*(int *)&walloper_fade_out_ticks);
             MobyBlendAnimation(m, 1, 0, scale_ticks(12));
         }
     }
@@ -415,9 +415,9 @@ void walloper_update(char *m) {
                 float sign;
                 int k;
                 walloper_arc_timers[i] = 2;
-                D_L00_001DC1D8[i] = 0x40;
-                random_spherical_offset(vec1, *(float *)&D_L00_00161774, *(float *)&D_L00_00161774);
-                qcopy(D_L00_001DBEA0 + i * 0x50, vec0);
+                walloper_arc_alpha[i] = 0x40;
+                random_spherical_offset(vec1, *(float *)&walloper_arc_spread, *(float *)&walloper_arc_spread);
+                qcopy(walloper_arc_points + i * 0x50, vec0);
                 n = i + 1;
                 sign = 1.0f;
                 for (k = 1; k < 5; k++) {
@@ -426,7 +426,7 @@ void walloper_update(char *m) {
                     ang = random_float_between(0.17453292f, 0.7853982f) * sign;
                     sign = -sign;
                     build_look_at_matrix(vec1, vec1, t, ang);
-                    FastVecAdd(((float (*)[4])(D_L00_001DBEA0+i*0x50))[k], D_L00_001DBE90_rows[i].point[k - 1], vec1);
+                    FastVecAdd(((float (*)[4])(walloper_arc_points+i*0x50))[k], D_L00_001DBE90_rows[i].point[k - 1], vec1);
                 }
             } else {
                 n = i + 1;
@@ -436,18 +436,18 @@ void walloper_update(char *m) {
             float (*workspace)[4] = w;
             for (k = 1; k < 5; k++) {
                 float *v = workspace[k];
-                FastVecSub(v, ((float (*)[4])(D_L00_001DBEA0+i*0x50))[k], D_L00_001DBE90_rows[i].point[k - 1]);
+                FastVecSub(v, ((float (*)[4])(walloper_arc_points+i*0x50))[k], D_L00_001DBE90_rows[i].point[k - 1]);
                 v[0] += randf_sym(0.0f, 0.1f);
                 v[1] += randf_sym(0.0f, 0.1f);
                 v[2] += randf_sym(0.0f, 0.1f);
             }
             n = i + 1;
-            qcopy(D_L00_001DBEA0 + i * 0x50, vec0);
+            qcopy(walloper_arc_points + i * 0x50, vec0);
             for (k = 1; k < 5; k++) {
-                FastVecAdd(((float (*)[4])(D_L00_001DBEA0+i*0x50))[k], D_L00_001DBE90_rows[i].point[k - 1], workspace[k]);
+                FastVecAdd(((float (*)[4])(walloper_arc_points+i*0x50))[k], D_L00_001DBE90_rows[i].point[k - 1], workspace[k]);
             }
-            if (walloper_arc_timers[i] > 0) D_L00_001DC1D8[i] = 0x20;
-            else D_L00_001DC1D8[i] = 0;
+            if (walloper_arc_timers[i] > 0) walloper_arc_alpha[i] = 0x20;
+            else walloper_arc_alpha[i] = 0;
         }
     }
     AddDrawCallback(draw_walloper_arc_and_quad_effects, m);
@@ -465,8 +465,8 @@ void draw_walloper_arc_and_quad_effects(int arg) {
     int i;
     for (i = 9; i >= 0; i--) {
         if (walloper_arc_timers[9 - i] != 0) {
-            int r = func_001FA898_r(IntToFloat(D_L00_001DC1D8[9 - i]) * D_L00_001617A4_m);
-            draw_walloper_arc_two_pass_quads(D_L00_001DBEA0 + (9 - i) * 0x50, r, r, 5, *(float *)&D_L00_00161760, *(float *)&D_L00_00161764, 0.2f);
+            int r = func_001FA898_r(IntToFloat(walloper_arc_alpha[9 - i]) * D_L00_001617A4_m);
+            draw_walloper_arc_two_pass_quads(walloper_arc_points + (9 - i) * 0x50, r, r, 5, *(float *)&walloper_arc_half_width, *(float *)&walloper_arc_outer_half_width, 0.2f);
         }
     }
     draw_walloper_camera_facing_quad(arg);
@@ -497,8 +497,8 @@ void draw_walloper_arc_two_pass_quads(char *m, int a, int b, int n, float sx, fl
     RW w120, w130, w140, w150, r160, r170, a180, b190, s1A0, s1B0;
     int i, col0, col1;
     float len, len0, l0, l1;
-    t.q0 = GetEffectTex(*(int *)&D_L00_00161780);
-    col0 = *(int *)&D_L00_00161750 | (a << 24);
+    t.q0 = GetEffectTex(*(int *)&walloper_arc_inner_tex);
+    col0 = *(int *)&walloper_arc_inner_color | (a << 24);
     t.q2 = 0x8000000048L;
     t.q1 = 0xFF9000000260L;
     t.z4 = 0;
@@ -506,8 +506,8 @@ void draw_walloper_arc_two_pass_quads(char *m, int a, int b, int n, float sx, fl
     t.c[2] = col0;
     t.c[1] = col0;
     t.c[0] = col0;
-    u.q0 = GetEffectTex(*(int *)&D_L00_00161784);
-    col1 = *(int *)&D_L00_00161754 | (b << 24);
+    u.q0 = GetEffectTex(*(int *)&walloper_arc_outer_tex);
+    col1 = *(int *)&walloper_arc_outer_color | (b << 24);
     u.q2 = t.q2;
     u.q1 = t.q1;
     u.z4 = t.z4;
@@ -535,11 +535,11 @@ void draw_walloper_arc_two_pass_quads(char *m, int a, int b, int n, float sx, fl
         FastVecAdd(q[2], m + i * 16, w120);
         FastVecSub(q[3], m + i * 16, w120);
         if (i == 1) {
-            t.c[1] = *(int *)&D_L00_00161750;
-            t.c[0] = *(int *)&D_L00_00161750;
+            t.c[1] = *(int *)&walloper_arc_inner_color;
+            t.c[0] = *(int *)&walloper_arc_inner_color;
         } else if (i == n - 2) {
-            t.c[3] = *(int *)&D_L00_00161750;
-            t.c[2] = *(int *)&D_L00_00161750;
+            t.c[3] = *(int *)&walloper_arc_inner_color;
+            t.c[2] = *(int *)&walloper_arc_inner_color;
         } else if (i == 2) {
             t.c[1] = col0;
             t.c[0] = col0;
@@ -576,11 +576,11 @@ void draw_walloper_arc_two_pass_quads(char *m, int a, int b, int n, float sx, fl
         FastVecAdd(q2[2], r170, w130);
         FastVecSub(q2[3], r170, w130);
         if (i == 0) {
-            u.c[1] = *(int *)&D_L00_00161754;
-            u.c[0] = *(int *)&D_L00_00161754;
+            u.c[1] = *(int *)&walloper_arc_outer_color;
+            u.c[0] = *(int *)&walloper_arc_outer_color;
         } else if (i == n - 2) {
-            u.c[3] = *(int *)&D_L00_00161754;
-            u.c[2] = *(int *)&D_L00_00161754;
+            u.c[3] = *(int *)&walloper_arc_outer_color;
+            u.c[2] = *(int *)&walloper_arc_outer_color;
         } else if (i == 1) {
             u.c[1] = col1;
             u.c[0] = col1;
@@ -623,9 +623,9 @@ void draw_walloper_camera_facing_quad(int arg) {
     int i, col, r;
     float *qq;
     float *cc;
-    FastVecScale(a, m + 0xD0, *(float *)&D_L00_0016178C);
+    FastVecScale(a, m + 0xD0, *(float *)&walloper_glow_forward_offset);
     FastVecAdd(bb, a, m + 0x10);
-    t.q0 = GetEffectTex(*(int *)&D_L00_00161798);
+    t.q0 = GetEffectTex(*(int *)&walloper_glow_tex);
     t.q2 = 0x8000000048L;
     t.q1 = 0xFF9000000260L;
     t.z4 = 0;
@@ -638,9 +638,9 @@ void draw_walloper_camera_facing_quad(int arg) {
     t.f2 = 1.0f;
     t.f3 = 1.0f;
     if (random_integer_below(4) == 0) {
-        col = *(int *)&D_L00_00161794;
+        col = *(int *)&walloper_glow_flicker_color;
     } else {
-        col = *(int *)&D_L00_00161790;
+        col = *(int *)&walloper_glow_color;
     }
     r = func_001FA898_r(IntToFloat(col >> 24) * D_L00_001617A4_m);
     col = (col & 0xFFFFFF) | (r << 24);
@@ -656,10 +656,10 @@ void draw_walloper_camera_facing_quad(int arg) {
     FastVecCross(e, d, cc);
     FastVecScale(f, cc, 0.2f);
     FastVecAdd(bb, bb, f);
-    p = D_L00_001DBE60;
+    p = walloper_glow_quad_corners;
     qq = q[0];
     for (i = 3; i >= 0; i--) {
-        FastVecScale(tmp, p, *(float *)&D_L00_00161788);
+        FastVecScale(tmp, p, *(float *)&walloper_glow_quad_size);
         p++;
         transform_vector(qq, tmp, c);
         qq += 4;
@@ -697,7 +697,7 @@ char *select_morphoray_target_and_adjust_aim(char *self, float *position, float 
     char *g;
     char *m0;
 
-    limit = *(float *)&D_L00_001617AC;
+    limit = *(float *)&tesla_arc_range;
     a0s[0] = (int)self;
     *(VecQuad *)start = *(VecQuad *)position;
     g = D_0013E633 + 0xE1D;
@@ -753,7 +753,7 @@ char *select_morphoray_target_and_adjust_aim(char *self, float *position, float 
         FastVecAdd(offset, offset, position);
         apparentAngle = FastArcSin(FastVecDist(offset, target) / (distance + distance));
         apparentAngle += apparentAngle;
-        if (*(float *)&D_L00_001617A8 * 0.017453292f < apparentAngle) {
+        if (*(float *)&aim_assist_cone_degrees * 0.017453292f < apparentAngle) {
             data = (char *)GetFlaggedPvarWord(candidate);
             if (data) {
                 radius = IntToFloat(*(unsigned char *)(data + 10)) * 0.125f;
@@ -765,7 +765,7 @@ char *select_morphoray_target_and_adjust_aim(char *self, float *position, float 
                 }
             }
         }
-        if (apparentAngle < *(float *)&D_L00_001617A8 * 0.017453292f) {
+        if (apparentAngle < *(float *)&aim_assist_cone_degrees * 0.017453292f) {
             int valid = 1;
             if (coll_line((Vec4f *)position, (Vec4f *)target, 6, self, 0)) {
                 if (!coll_hit_result[6] || (char *)coll_hit_result[6] != candidate)
@@ -1064,26 +1064,26 @@ extern Vec4A D_L00_001DD3D0[];
 /* rebuilds the camera tables from a moby's matrix */
 void reset_beam_chain_and_pulse_state(char *m) {
     char *p = *(char **)(m + 0x78);
-    if (D_L00_0016188C != 0) {
+    if (tesla_chain_reset_pending != 0) {
         float f;
         char v[16];
         int i, j;
-        D_L00_0016188C = 0;
-        f = *(float *)&D_L00_001617AC / IntToFloat(12);
-        D_L00_0016189C = f;
+        tesla_chain_reset_pending = 0;
+        f = *(float *)&tesla_arc_range / IntToFloat(12);
+        tesla_chain_segment_length = f;
         FastVecScale(v, m + 0xD0, -f);
-        qcopy(&D_L00_001DC260, p);
+        qcopy(&tesla_chain_points, p);
         for (i = 10; i >= 0; i--) {
-            FastVecAdd((char *)&D_L00_001DC260 + 16 * (11 - i), D_L00_001DC250 + 16 * (11 - i), v);
+            FastVecAdd((char *)&tesla_chain_points + 16 * (11 - i), D_L00_001DC250 + 16 * (11 - i), v);
         }
-        *(int *)&D_L00_001617E8 = 0;
-        *(int *)&D_L00_001617F0 = 0;
-        *(int *)&D_L00_001617F4 = 0;
-        D_L00_001618A0 = 0;
-        D_L00_001618F4 = 0;
+        *(int *)&tesla_ring_tex_v_scroll = 0;
+        *(int *)&tesla_ring_tex_u_scroll_a = 0;
+        *(int *)&tesla_ring_tex_u_scroll_b = 0;
+        tesla_rail_twist_phase = 0;
+        tesla_pulse_spawn_timer = 0;
         for (j = 0; j < 3; j++) {
-            D_L00_001618E8[j] = 0;
-            qcopy(&D_L00_001DD3D0[j], v);
+            tesla_pulse_active[j] = 0;
+            qcopy(&tesla_pulse_dir[j], v);
         }
     }
 }
@@ -1433,15 +1433,15 @@ void draw_beam_ring_and_rail_effects(void *o) {
     float y, a, b, t;
     int c, i, j, k, off, jo;
 
-    (*(float *)&D_L00_0016185C) = (*(float *)&D_L00_0016185C) - (*(float *)&D_L00_00161860) * frame_scale;
-    if ((*(float *)&D_L00_0016185C) <= -8.0f) (*(float *)&D_L00_0016185C) += 8.0f;
-    func_L00_002BF380_BEF58(D_L00_001DC320, (*(int *)&D_L00_0016183C), (*(int *)&D_L00_00161840), 12, (*(float *)&D_L00_00161844), (*(float *)&D_L00_00161848), (*(float *)&D_L00_0016184C), (*(int *)&D_L00_00161854));
-    func_L00_002BF380_BEF58(D_L00_001DC3E0, (*(int *)&D_L00_0016183C), (*(int *)&D_L00_00161840), 12, (*(float *)&D_L00_00161844), (*(float *)&D_L00_00161848), (*(float *)&D_L00_0016184C), (*(int *)&D_L00_00161858));
+    (*(float *)&tesla_rail_tex_scroll) = (*(float *)&tesla_rail_tex_scroll) - (*(float *)&tesla_rail_tex_scroll_speed) * frame_scale;
+    if ((*(float *)&tesla_rail_tex_scroll) <= -8.0f) (*(float *)&tesla_rail_tex_scroll) += 8.0f;
+    func_L00_002BF380_BEF58(tesla_rail0_points, (*(int *)&tesla_rail_inner_alpha), (*(int *)&tesla_rail_outer_alpha), 12, (*(float *)&tesla_rail_half_width), (*(float *)&tesla_rail_outer_half_width), (*(float *)&tesla_rail_end_extension), (*(int *)&tesla_rail0_outer_color));
+    func_L00_002BF380_BEF58(tesla_rail1_points, (*(int *)&tesla_rail_inner_alpha), (*(int *)&tesla_rail_outer_alpha), 12, (*(float *)&tesla_rail_half_width), (*(float *)&tesla_rail_outer_half_width), (*(float *)&tesla_rail_end_extension), (*(int *)&tesla_rail1_outer_color));
     draw_beam_pulse_quads(o);
     draw_beam_origin_camera_facing_quads(o);
     k = D_0013E635;
-    c = k ? (*(int *)&D_L00_00161868) : (*(int *)&D_L00_00161864);
-    quad.tex = func_001F4868_BEF58((*(int *)&D_L00_0016186C));
+    c = k ? (*(int *)&tesla_ring_alt_color) : (*(int *)&tesla_ring_color);
+    quad.tex = func_001F4868_BEF58((*(int *)&tesla_ring_tex));
     quad.unk80 = 0xFF9000000260L;
     quad.unk88 = 0x8000000048L;
     quad.unk70 = 0;
@@ -1449,20 +1449,20 @@ void draw_beam_ring_and_rail_effects(void *o) {
     quad.color[2] = c;
     quad.color[1] = c;
     quad.color[0] = c;
-    y = (*(float *)&D_L00_001617E8);
-    (*(float *)&D_L00_001617E8) = y - (*(float *)&D_L00_001617EC) * frame_scale;
-    if ((*(float *)&D_L00_001617E8) <= -8.0f) (*(float *)&D_L00_001617E8) += 8.0f;
-    t = (*(float *)&D_L00_001617F8) * frame_scale;
-    (*(float *)&D_L00_001617F0) = (*(float *)&D_L00_001617F0) - t;
-    if ((*(float *)&D_L00_001617F0) <= -7.0f) (*(float *)&D_L00_001617F0) += 7.0f;
-    (*(float *)&D_L00_001617F4) = (*(float *)&D_L00_001617F4) + t;
-    if ((*(float *)&D_L00_001617F4) >= 5.0f) (*(float *)&D_L00_001617F4) -= 5.0f;
+    y = (*(float *)&tesla_ring_tex_v_scroll);
+    (*(float *)&tesla_ring_tex_v_scroll) = y - (*(float *)&tesla_ring_tex_v_scroll_speed) * frame_scale;
+    if ((*(float *)&tesla_ring_tex_v_scroll) <= -8.0f) (*(float *)&tesla_ring_tex_v_scroll) += 8.0f;
+    t = (*(float *)&tesla_ring_tex_u_scroll_speed) * frame_scale;
+    (*(float *)&tesla_ring_tex_u_scroll_a) = (*(float *)&tesla_ring_tex_u_scroll_a) - t;
+    if ((*(float *)&tesla_ring_tex_u_scroll_a) <= -7.0f) (*(float *)&tesla_ring_tex_u_scroll_a) += 7.0f;
+    (*(float *)&tesla_ring_tex_u_scroll_b) = (*(float *)&tesla_ring_tex_u_scroll_b) + t;
+    if ((*(float *)&tesla_ring_tex_u_scroll_b) >= 5.0f) (*(float *)&tesla_ring_tex_u_scroll_b) -= 5.0f;
     for (i = 2; i < 12; i++) {
-        a = (*(float *)&D_L00_001617F0);
-        b = (*(float *)&D_L00_001617F4);
+        a = (*(float *)&tesla_ring_tex_u_scroll_a);
+        b = (*(float *)&tesla_ring_tex_u_scroll_b);
         for (j = 0; j < 20; j++) {
-            qcopy(&quad.corner[0], &D_L00_001DC4A0[i][j]);
-            qcopy(&quad.corner[1], &D_L00_001DC4A0[i][(j + 1) % 20]);
+            qcopy(&quad.corner[0], &tesla_ring_vertices[i][j]);
+            qcopy(&quad.corner[1], &tesla_ring_vertices[i][(j + 1) % 20]);
             qcopy(&quad.corner[2], &D_L00_001DC360[i][j]);
             qcopy(&quad.corner[3], &D_L00_001DC360[i][(j + 1) % 20]);
             FastVecSub(&d1, &quad.corner[0], &quad.corner[1]);
@@ -1470,35 +1470,35 @@ void draw_beam_ring_and_rail_effects(void *o) {
             FastVecCross(&n, &d2, &d1);
             FastVecSub(&e, &quad.corner[1], &D_L00_00166EC0_BEF58);
             if (FastVecDot(&n, &e) >= 0.0f) {
-                a += (*(float *)&D_L00_001617E4);
-                b += (*(float *)&D_L00_001617E4);
+                a += (*(float *)&tesla_ring_tex_u_step);
+                b += (*(float *)&tesla_ring_tex_u_step);
             } else {
                 if (i == 11) {
-                    quad.color[0] = quad.color[1] = (*(int *)&D_L00_00161864) & 0xFFFFFF;
+                    quad.color[0] = quad.color[1] = (*(int *)&tesla_ring_color) & 0xFFFFFF;
                 }
                 quad.uv[5] = a;
                 quad.uv[1] = a;
-                quad.uv[3] = a + (*(float *)&D_L00_001617E4);
-                quad.uv[4] = y - (*(float *)&D_L00_001617E0);
+                quad.uv[3] = a + (*(float *)&tesla_ring_tex_u_step);
+                quad.uv[4] = y - (*(float *)&tesla_ring_tex_v_step);
                 quad.uv[0] = y;
                 quad.uv[2] = y;
-                quad.uv[7] = a + (*(float *)&D_L00_001617E4);
-                quad.uv[6] = y - (*(float *)&D_L00_001617E0);
-                a = a + (*(float *)&D_L00_001617E4);
+                quad.uv[7] = a + (*(float *)&tesla_ring_tex_u_step);
+                quad.uv[6] = y - (*(float *)&tesla_ring_tex_v_step);
+                a = a + (*(float *)&tesla_ring_tex_u_step);
                 draw_world_quad(&quad, 0, 0);
                 quad.uv[0] = y;
                 quad.uv[1] = b;
                 quad.uv[2] = y;
-                quad.uv[3] = b + (*(float *)&D_L00_001617E4);
+                quad.uv[3] = b + (*(float *)&tesla_ring_tex_u_step);
                 quad.uv[5] = b;
-                quad.uv[4] = y - (*(float *)&D_L00_001617E0);
-                quad.uv[6] = y - (*(float *)&D_L00_001617E0);
-                quad.uv[7] = b + (*(float *)&D_L00_001617E4);
-                b = b + (*(float *)&D_L00_001617E4);
+                quad.uv[4] = y - (*(float *)&tesla_ring_tex_v_step);
+                quad.uv[6] = y - (*(float *)&tesla_ring_tex_v_step);
+                quad.uv[7] = b + (*(float *)&tesla_ring_tex_u_step);
+                b = b + (*(float *)&tesla_ring_tex_u_step);
                 draw_world_quad(&quad, 0, 0);
             }
         }
-        y += (*(float *)&D_L00_001617E0);
+        y += (*(float *)&tesla_ring_tex_v_step);
     }
 }
 extern short D_L00_00161874;
@@ -1521,8 +1521,8 @@ void DrawScrollingRibbonColored(P_2BF380 *m, int a, int b, float sx, float sy, f
     RW_2BF380 w120, w130, w140, w150, r160, r170, a180, b190, s1A0, s1B0;
     int i, col0, col1;
     float len, len0, len2, l0, l1;
-    t.q0 = GetEffectTex(*(int *)&D_L00_00161874);
-    col0 = *(int *)&D_L00_00161850 | (a << 24);
+    t.q0 = GetEffectTex(*(int *)&tesla_rail_inner_tex);
+    col0 = *(int *)&tesla_rail_inner_color | (a << 24);
     t.q2 = 0x8000000048L;
     t.q1 = 0xFF9000000260L;
     t.z4 = 0;
@@ -1530,7 +1530,7 @@ void DrawScrollingRibbonColored(P_2BF380 *m, int a, int b, float sx, float sy, f
     t.c[2] = col0;
     t.c[1] = col0;
     t.c[0] = col0;
-    u.q0 = GetEffectTex(*(int *)&D_L00_00161878);
+    u.q0 = GetEffectTex(*(int *)&tesla_rail_outer_tex);
     col1 = col | (b << 24);
     u.q2 = t.q2;
     u.q1 = t.q1;
@@ -1540,20 +1540,20 @@ void DrawScrollingRibbonColored(P_2BF380 *m, int a, int b, float sx, float sy, f
     u.c[1] = col1;
     u.c[0] = col1;
     u.f[0] = 0; u.f[1] = 0; u.f[2] = 0; u.f[3] = 1.0f; u.f[4] = 1.0f; u.f[5] = 0; u.f[6] = 1.0f; u.f[7] = 1.0f;
-    t.f[0] = u.f[0] + *(float *)&D_L00_0016185C;
+    t.f[0] = u.f[0] + *(float *)&tesla_rail_tex_scroll;
     t.f[1] = u.f[1];
-    t.f[2] = u.f[2] + *(float *)&D_L00_0016185C;
+    t.f[2] = u.f[2] + *(float *)&tesla_rail_tex_scroll;
     t.f[3] = u.f[3];
-    t.f[4] = u.f[4] + *(float *)&D_L00_0016185C;
+    t.f[4] = u.f[4] + *(float *)&tesla_rail_tex_scroll;
     t.f[5] = u.f[5];
-    t.f[6] = u.f[6] + *(float *)&D_L00_0016185C;
+    t.f[6] = u.f[6] + *(float *)&tesla_rail_tex_scroll;
     t.f[7] = u.f[7];
     FastVecSub(w140, m, g_debug_camera);
     FastVecSub(w150, &m[1], m);
     FastVecCross(w120, w150, w140);
     len0 = FastVecLength(w120);
     if (len0 != 0) len0 = 1.0f / len0;
-    FastVecScale(w120, w120, *(float *)&D_L00_00161844 * len0);
+    FastVecScale(w120, w120, *(float *)&tesla_rail_half_width * len0);
     FastVecAdd(q[0], m, w120);
     FastVecSub(q[1], m, w120);
     for (i = 1; i < n - 1; i++) {
@@ -1562,15 +1562,15 @@ void DrawScrollingRibbonColored(P_2BF380 *m, int a, int b, float sx, float sy, f
         FastVecCross(w120, w150, w140);
         len = FastVecLength(w120);
         if (len != 0) len = 1.0f / len;
-        FastVecScale(w120, w120, *(float *)&D_L00_00161844 * len);
+        FastVecScale(w120, w120, *(float *)&tesla_rail_half_width * len);
         FastVecAdd(q[2], &m[i], w120);
         FastVecSub(q[3], &m[i], w120);
         if (i == 1) {
-            t.c[1] = *(int *)&D_L00_00161850;
-            t.c[0] = *(int *)&D_L00_00161850;
+            t.c[1] = *(int *)&tesla_rail_inner_color;
+            t.c[0] = *(int *)&tesla_rail_inner_color;
         } else if (i == n - 2) {
-            t.c[3] = *(int *)&D_L00_00161850;
-            t.c[2] = *(int *)&D_L00_00161850;
+            t.c[3] = *(int *)&tesla_rail_inner_color;
+            t.c[2] = *(int *)&tesla_rail_inner_color;
         } else if (i == 2) {
             t.c[1] = col0;
             t.c[0] = col0;
@@ -1651,26 +1651,26 @@ void draw_beam_pulse_quads(void *unused) {
     q.uv[2][0] = 1.0f; q.uv[2][1] = 0;
     q.uv[3][0] = 1.0f; q.uv[3][1] = 1.0f;
     {
-        int c = ((unsigned char)D_0013E633[2] != 0) ? *(int *)&D_L00_00161834 : *(int *)&D_L00_00161830;
+        int c = ((unsigned char)D_0013E633[2] != 0) ? *(int *)&tesla_pulse_alt_color : *(int *)&tesla_pulse_color;
         base = c & 0xFFFFFF;
     }
     pd = &D;
     for (i = 0; i < 3; i++) {
         int col;
-        if (D_L00_001618E8[i] != 0) {
-            col = base | (func_001FA898_r(D_L00_001618B8[i]) << 24);
+        if (tesla_pulse_active[i] != 0) {
+            col = base | (func_001FA898_r(tesla_pulse_alpha[i]) << 24);
             q.rgba[3] = col;
             q.rgba[2] = col;
             q.rgba[1] = col;
             q.rgba[0] = col;
-            qcopy(pd, &D_L00_001DD3A0[i]);
-            qcopy(&A, &D_L00_001DD3D0[i]);
+            qcopy(pd, &tesla_pulse_pos[i]);
+            qcopy(&A, &tesla_pulse_dir[i]);
             FastVecScale(&C, D_0013E633 + 0x10AD, -1.0f);
             FastVecCross(&B, &A, &C);
             vec_scale_to_length(&B, &B, 1.0f);
             FastVecCross(&C, &B, &A);
             for (j = 0; j < 4; j++) {
-                FastVecScale(&E, &D_L00_001DC220[j], D_L00_001618D8[i]);
+                FastVecScale(&E, &tesla_quad_corners[j], tesla_pulse_size[i]);
                 transform_vector(&q.v[j], &E, &A);
             }
             draw_world_quad(&q, 0, 0);
@@ -1702,7 +1702,7 @@ void draw_beam_origin_camera_facing_quads(void *mv) {
     int c;
     int i, j;
     quad.tex = GetEffectTex(11);
-    c = *(int *)&D_L00_00161888;
+    c = *(int *)&tesla_origin_quad_color;
     quad.unk88 = 0x8000000048L;
     quad.unk80 = 0xFF9000000260L;
     quad.unk70 = 0;
@@ -1718,15 +1718,15 @@ void draw_beam_origin_camera_facing_quads(void *mv) {
     quad.unk64 = 0;
     quad.unk68 = 1.0f;
     quad.unk6C = 1.0f;
-    vec_scale_to_length(&e, m + 0xD0, *(float *)&D_L00_00161884);
-    FastVecAdd(&mat[3], &D_L00_001DC260, &e);
+    vec_scale_to_length(&e, m + 0xD0, *(float *)&tesla_origin_forward_offset);
+    FastVecAdd(&mat[3], &tesla_chain_points, &e);
     FastVecSub(&e, g_debug_camera, &mat[3]);
     vec_scale_to_length(&mat[0], &e, 1.0f);
     FastVecCross(&mat[1], &mat[0], D_0013E633 + 0x10AD);
     vec_scale_to_length(&mat[1], &mat[1], -1.0f);
     FastVecCross(&mat[2], &mat[1], &mat[0]);
     for (i = 3; i >= 0; i--) {
-        FastVecScale(&t, &D_L00_001DC220[3 - i], *(float *)&D_L00_0016187C);
+        FastVecScale(&t, &tesla_quad_corners[3 - i], *(float *)&tesla_origin_quad_size);
         transform_vector(&quad.corner[3 - i], &t, &mat[0]);
     }
     draw_world_quad(&quad, 0, 0);
@@ -1735,7 +1735,7 @@ void draw_beam_origin_camera_facing_quads(void *mv) {
     quad.color[1] = -1;
     quad.color[0] = -1;
     for (j = 3; j >= 0; j--) {
-        FastVecScale(&t, &D_L00_001DC220[3 - j], *(float *)&D_L00_00161880);
+        FastVecScale(&t, &tesla_quad_corners[3 - j], *(float *)&tesla_origin_core_quad_size);
         transform_vector(&quad.corner[3 - j], &t, &mat[0]);
     }
     draw_world_quad(&quad, 0, 0);

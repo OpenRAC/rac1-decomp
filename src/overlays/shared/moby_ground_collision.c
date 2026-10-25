@@ -3149,7 +3149,7 @@ void grant_inventory_item(int id, int flag) {
             *q = v;
         }
         for (i = 0; i < 20; i++) {
-            if (id != 0 && D_L00_001C4198[i] == id) {
+            if (id != 0 && level_item_ids[i] == id) {
                 int j;
                 for (j = 0;; j++) {
                     unsigned char b = vendor_stock[j];

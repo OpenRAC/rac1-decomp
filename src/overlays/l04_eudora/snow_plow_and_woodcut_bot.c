@@ -1924,7 +1924,7 @@ void update_eudora_tutorial_hints_and_stats(Moby *moby) {
         if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, data->f50) != 0
             && (((unsigned int)((Hero *)(D_0013E633 + 0xE1D))->state.control_mode) < 2 || ((unsigned int)((Hero *)(D_0013E633 + 0xE1D))->state.control_mode) == 9)
             && eudora_help_popup_state[0] == 0 && eudora_help_popup_state[9] == -1) {
-            int t = scale_ticks(gameplay_event_frame_count) - D_00141992 * 600;
+            int t = scale_ticks(gameplay_event_frame_count) - g_help_play_time_offset * 600;
             if (scale_ticks(0x34BC0) < t) {
                 Help_2E57F8 *b = (Help_2E57F8 *)(D_0014171B + 0x34D);
                 if (!(b[0x43].mask & (1 << g_current_level_index))) {

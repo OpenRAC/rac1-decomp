@@ -633,8 +633,8 @@ char *load_level_gameplay(int arg0) {
         render_view_params.f23C = *p++;
         render_view_params.f240 = *p++;
         render_view_params.f244 = *p++;
-        *(unsigned char *)&D_L00_0015F544 = *p++;
-        *(unsigned char *)&D_L00_0015F545 = *p++;
+        *(unsigned char *)&level_fog_color_red = *p++;
+        *(unsigned char *)&level_fog_color_green = *p++;
         *(unsigned char *)&level_fog_color_blue = *p++;
         level_fog_near_distance = ((float *)p)[0];
         level_fog_far_distance = ((float *)p)[1];

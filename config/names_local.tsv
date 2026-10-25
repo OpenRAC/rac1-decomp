@@ -4681,3 +4681,1155 @@ D_L05_00215F00	rilgar_race_camera_vectors	hoverboard girl update: macro race_cam
 D_L05_00161FB0	qwarks_bouncer_dialogue_name	qwarks_bouncer_update: stored in the dialogue state +0x20 (dialogue_name)	
 D_L05_00161FB8	shady_salesman_dialogue_name	shady_salesman_update: stored in the dialogue state +0x20 (dialogue_name)	
 D_L05_00161FC8	television_scale	television_update: times the class scale into moby scale	
+D_L10_0015F6A8	orxon_cinematic_mode	vendor/help/dispatcher skip work when it is 2; level copy like pokitaru_cinematic_mode	
+D_L10_0016CD60	orxon_cutscene_state	update_level_mode_dispatcher: scene mode +0x30 and moby slots +0x178, like other levels' cutscene_state	
+D_L10_00161ECC	toxic_crab_turn_threshold_deg	toxic_crab_update: degrees (x pi/180) compared with facing diff before turning/attacking	
+D_L10_00161EA4	toxic_crab_scale	toxic_crab_update: class scale times it gives moby scale; also move-control size	
+D_L10_00161EC0	toxic_crab_aggro_radius	toxic_crab_update: hero xy distance below it starts the chase; stored as f1A0	
+D_L10_00174358	blarg_ship_locked_target	BlargShipUpdate: set to the ship's target while aiming; rockets fire only when it equals target	
+D_L10_00161F6C	blarg_ship_fire_anim_speed	BlargShipUpdate: anim speed f58 set when the ship faces its target to fire	
+D_L10_00161F74	orxon_vent_puff_color_b	emit_moby_directional_particles: second color tween end for vent puffs	
+D_L10_00161F78	orxon_vent_puff_speed_max	emit_moby_directional_particles: random puff speed max	
+D_L10_00161F7C	orxon_vent_puff_speed_min	emit_moby_directional_particles: random puff speed min	
+D_L10_00161EB4	toxic_crab_blocked_distance	toxic_crab_update: line-of-sight hit closer than this blocks the chase	
+D_L10_00161F38	toxic_crab_debris_time2	EmitMobyParticles: time2 ticks for PartType02Spawn, also the gravity duration	
+D_L10_00161F3C	toxic_crab_debris_time3	EmitMobyParticles: base of the 0.5x..2.5x random time3	
+D_L10_00161EC8	toxic_crab_group_spread_deg	compute_toxic_crab_group_approach_angle: +- degree range for the group approach angle	
+D_L10_00179910	orxon_help_state	BlargShipUpdate/help messages: f0 == 0 and f24 == -1 checked before Help_Request; like help_state	
+D_L10_00162010	orxon_spark_time_spread	emit_burst_spark_particle: +- random factor on spark times	
+D_L10_00162064	orxon_smoke_time_spread	emit_timed_spark_particle: +- random factor on smoke times	
+D_L10_00162080	orxon_drip_gravity	EmitDripBursts: gravity on drips; also sets drip life from fall height	
+D_L10_001620A0	orxon_drip_time_spread	EmitDripBursts: +- random factor on drip times	
+D_L10_00161EA8	toxic_crab_fall_gravity	toxic_crab_update: gravity f80 set when the crab drops off	
+D_L10_00161EC4	toxic_crab_backoff_distance	toxic_crab_update: past this distance from target the backing-off crab attacks again	
+D_L10_00161EF4	toxic_crab_debris_burst_count	EmitMobyParticles: outer loop count of debris bursts	
+D_L10_00161EF8	toxic_crab_debris_per_burst	EmitMobyParticles: particles spawned per burst	
+D_L10_00161EFC	toxic_crab_debris_origin_jitter	EmitMobyParticles: random offset on each burst origin	
+D_L10_00161F00	toxic_crab_debris_pos_jitter	EmitMobyParticles: random offset on each particle position	
+D_L10_00161F04	toxic_crab_debris_vel_jitter	EmitMobyParticles: random offset on end velocity (x frame time)	
+D_L10_00161F08	toxic_crab_debris_xy_speed_min	EmitMobyParticles: random horizontal speed min	
+D_L10_00161F0C	toxic_crab_debris_xy_speed_max	EmitMobyParticles: random horizontal speed max	
+D_L10_00161F10	toxic_crab_debris_z_speed_min	EmitMobyParticles: random upward speed min	
+D_L10_00161F14	toxic_crab_debris_z_speed_max	EmitMobyParticles: random upward speed max	
+D_L10_00161F18	toxic_crab_debris_gravity	EmitMobyParticles: gravity subtracted from end velocity z	
+D_L10_00161F1C	toxic_crab_debris_start_size	EmitMobyParticles: start size times random 0.5..1.5	
+D_L10_00161F20	toxic_crab_debris_end_size	EmitMobyParticles: end size times the same random	
+D_L10_00161F24	toxic_crab_debris_start_color_a	EmitMobyParticles: start color tween end a	
+D_L10_00161F28	toxic_crab_debris_end_color_a	EmitMobyParticles: end color tween end a	
+D_L10_00161F2C	toxic_crab_debris_start_color_b	EmitMobyParticles: start color tween end b	
+D_L10_00161F30	toxic_crab_debris_end_color_b	EmitMobyParticles: end color tween end b	
+D_L10_00161F34	toxic_crab_debris_time1	EmitMobyParticles: time1 ticks for PartType02Spawn	
+D_L10_001DD690	blarg_ship_missing_path_format	BlargShipUpdate: printf format (class, id) used when path index is -1, then deletes	
+D_L10_00161F68	blarg_ship_rocket_speed	BlargShipUpdate: rocket direction scaled to it x frame time before create_rocket	
+D_L10_00161F70	orxon_vent_puff_color_a	emit_moby_directional_particles: first color tween end for vent puffs	
+D_L10_00161F80	orxon_vent_puff_gravity	emit_moby_directional_particles: gravity passed to spawn_gravity_floor_burst_particle	
+D_L10_00161F84	orxon_vent_spark_percent	emit_moby_directional_particles: percent chance a puff is a small fast spark	
+D_0013DE54	hoven_available	gate: level_available (D_0013DE48) + 12 = level 12 (Hoven) byte flag	
+D_L10_00161FE8	orxon_spark_start_speed_z	emit_burst_spark_particle: start velocity z x frame time	
+D_L10_00161FEC	orxon_spark_end_speed_z	emit_burst_spark_particle: added to end velocity z	
+D_L10_00161FF0	orxon_spark_jitter	emit_burst_spark_particle: rand_vec range on end velocity	
+D_L10_00161FF4	orxon_spark_start_size_min	emit_burst_spark_particle: start size random min	
+D_L10_00161FF8	orxon_spark_start_size_max	emit_burst_spark_particle: start size random max	
+D_L10_00161FFC	orxon_spark_end_size_min	emit_burst_spark_particle: end size random min	
+D_L10_00162000	orxon_spark_end_size_max	emit_burst_spark_particle: end size random max	
+D_L10_00162004	orxon_spark_time1	emit_burst_spark_particle: time1 ticks for PartType02Spawn	
+D_L10_00162008	orxon_spark_time2	emit_burst_spark_particle: time2 ticks for PartType02Spawn	
+D_L10_0016200C	orxon_spark_time3	emit_burst_spark_particle: time3 ticks for PartType02Spawn	
+D_L10_00162014	orxon_spark_start_color_a	emit_burst_spark_particle: start color tween end a	
+D_L10_00162018	orxon_spark_start_color_b	emit_burst_spark_particle: start color tween end b	
+D_L10_0016201C	orxon_spark_end_color_a	emit_burst_spark_particle: end color tween end a	
+D_L10_00162020	orxon_spark_end_color_b	emit_burst_spark_particle: end color tween end b	
+D_L10_00162024	orxon_spark_interval_min	emit_burst_spark_particle: emit timer random min ticks	
+D_L10_00162028	orxon_spark_interval_max	emit_burst_spark_particle: emit timer random max ticks	
+D_L10_0016202C	orxon_spark_burst_ticks_min	emit_burst_spark_particle: active burst window random min	
+D_L10_00162030	orxon_spark_burst_ticks_max	emit_burst_spark_particle: active burst window random max	
+D_L10_00162034	orxon_spark_pause_ticks_min	emit_burst_spark_particle: pause between bursts random min	
+D_L10_00162038	orxon_spark_pause_ticks_max	emit_burst_spark_particle: pause between bursts random max	
+D_L10_0016203C	orxon_smoke_start_speed_z	emit_timed_spark_particle: start velocity z x frame time	
+D_L10_00162040	orxon_smoke_end_speed_z	emit_timed_spark_particle: added to end velocity z	
+D_L10_00162044	orxon_smoke_jitter	emit_timed_spark_particle: rand_vec range on end velocity	
+D_L10_00162048	orxon_smoke_start_size_min	emit_timed_spark_particle: start size random min	
+D_L10_0016204C	orxon_smoke_start_size_max	emit_timed_spark_particle: start size random max	
+D_L10_00162050	orxon_smoke_end_size_min	emit_timed_spark_particle: end size random min	
+D_L10_00162054	orxon_smoke_end_size_max	emit_timed_spark_particle: end size random max	
+D_L10_00162058	orxon_smoke_time1	emit_timed_spark_particle: time1 ticks for PartType02Spawn	
+D_L10_0016205C	orxon_smoke_time2	emit_timed_spark_particle: time2 ticks for PartType02Spawn	
+D_L10_00162060	orxon_smoke_time3	emit_timed_spark_particle: time3 ticks for PartType02Spawn	
+D_L10_00162068	orxon_smoke_start_color_a	emit_timed_spark_particle: start color tween end a	
+D_L10_0016206C	orxon_smoke_start_color_b	emit_timed_spark_particle: start color tween end b	
+D_L10_00162070	orxon_smoke_end_color_a	emit_timed_spark_particle: end color tween end a	
+D_L10_00162074	orxon_smoke_end_color_b	emit_timed_spark_particle: end color tween end b	
+D_L10_00162078	orxon_smoke_interval_min	emit_timed_spark_particle: emit timer random min ticks	
+D_L10_0016207C	orxon_smoke_interval_max	emit_timed_spark_particle: emit timer random max ticks	
+D_L10_00162084	orxon_drip_jitter	EmitDripBursts: rand_vec range on end velocity	
+D_L10_00162088	orxon_drip_start_size_min	EmitDripBursts: start size random min	
+D_L10_0016208C	orxon_drip_start_size_max	EmitDripBursts: start size random max	
+D_L10_00162090	orxon_drip_end_size_min	EmitDripBursts: end size random min	
+D_L10_00162094	orxon_drip_end_size_max	EmitDripBursts: end size random max	
+D_L10_00162098	orxon_drip_time1	EmitDripBursts: time1 ticks for PartType02Spawn	
+D_L10_0016209C	orxon_drip_time3	EmitDripBursts: time3 ticks for PartType02Spawn (time2 is the fall time)	
+D_L10_001620A4	orxon_drip_start_color_a	EmitDripBursts: start color tween end a	
+D_L10_001620A8	orxon_drip_start_color_b	EmitDripBursts: start color tween end b	
+D_L10_001620AC	orxon_drip_end_color_a	EmitDripBursts: end color tween end a	
+D_L10_001620B0	orxon_drip_end_color_b	EmitDripBursts: end color tween end b	
+D_L10_001620B4	orxon_drip_interval_min	EmitDripBursts: emit timer random min ticks	
+D_L10_001620B8	orxon_drip_interval_max	EmitDripBursts: emit timer random max ticks	
+D_L10_001620BC	orxon_drip_burst_ticks_min	EmitDripBursts: active burst window random min	
+D_L10_001620C0	orxon_drip_burst_ticks_max	EmitDripBursts: active burst window random max	
+D_L10_001620C4	orxon_drip_pause_ticks_min	EmitDripBursts: pause between bursts random min	
+D_L10_001620C8	orxon_drip_pause_ticks_max	EmitDripBursts: pause between bursts random max	
+D_L10_001620CC	orxon_drip_texture	EmitDripBursts: texture index (last arg) for PartType02Spawn	
+D_L10_001620D0	orxon_drip_life_scale	EmitDripBursts: scales the fall time used as drip time2	
+D_L10_00161EAC	toxic_crab_hit_gravity	update_toxic_crab_hit_reactions_and_targeting: f80 gravity times D_0015EE70 on hit knockback	
+D_L11_00162378	puffoid_heading_jitter_deg	puffoid_update: +- random degrees stored as the heading offset unk24C	
+D_L11_00167850	pokitaru_camera_rot	draw_ship_hud/update_ship_lock_on_target/FlyingCraftUpdate: camera rotation angles copied and pitch-clamped; next to camera_pos_b358	
+D_L11_0016211C	ship_camera_offset_scale	update_player_ship_flight/jet_fighter_update: scales the chase camera offset and the ship moby scale	
+D_L11_001623A0	two_door_gate_open_angle_deg	update_two_door_gate: door rot.y in degrees, eased to 0 as the gate opens	
+D_L11_001621FC	ship_hud_clut	jet_fighter_update/draw_ship_hud: pointer to a 256-entry palette; hp bar entries rewritten with CLUT swizzle	
+D_L11_0016235C	puffoid_scale	update_puffoid_damage_and_path_goal: class scale times it; also sphere-hit radius	
+D_L11_00162374	puffoid_attack_range	puffoid_update: xy distance to target that switches between chase and attack states	
+D_L11_0016237C	puffoid_jump_speed	puffoid_update: xy speed of the path jumps, fed to jump_speed_4318	
+D_L11_00162380	puffoid_jump_gravity	puffoid_update: gravity subtracted from jump velocity z	
+D_L11_0016239C	two_door_gate_tilt_deg	update_two_door_gate: +- door rot.x in degrees	
+D_L11_001620B4	ship_camera_back_offset	update_player_ship_flight: base x of the chase camera offset (times ship_camera_offset_scale)	
+D_L11_001620B8	ship_camera_up_offset	update_player_ship_flight: base z of the chase camera offset	
+D_L11_0015F6E8	pokitaru_play_mode	jet_fighter_update: set to 2 while the ship flies; like fleet_play_mode	
+D_L11_00162104	ship_max_hp	jet_fighter_update: hp bar value is hp / it * 200; stored as g->f1600	
+D_L11_001623B4	oil_tanker_link_follow_distance	update_oil_tanker_link_path_poses: path distance from the previous hitch to each link	
+D_L11_001F0FB8	ship_hud_missile_pip	draw_ship_hud: screen strip drawn once per missile, bright when loaded	
+D_L11_001F1348	ship_hud_clut_backup	jet_fighter_update/draw_ship_hud: 0x400-byte copy of ship_hud_clut restored into the hp bar	
+D_L11_00162120	ship_speed_scale	update_player_ship_flight/try_fire_ship_projectile: multiplies all ship speeds and shot speeds	
+D_L11_00162108	ship_hit_deflect_scale	jet_fighter_update: damage times it scales the turn away after a hit	
+D_L11_00162200	ship_hud_clut_saved	jet_fighter_update: set to 1 after ship_hud_clut is first copied to the backup	
+D_L11_001620E8	ship_max_missiles	jet_fighter_update: max missile count (g 0x15F7/0x15F8) on boarding	
+D_L11_001620D8	ship_start_hp	jet_fighter_update: hp g->t set on boarding	
+D_L11_00162064	ship_start_speed	jet_fighter_update: flight speed f64 set on boarding	
+D_L11_0016238C	puffoid_walk_speed	update_puffoid_damage_and_path_goal: move speed f1A4 times D_0015EE6C	
+D_L11_00162398	two_door_gate_door_height	update_two_door_gate: z offset of both doors above the gate	
+D_L11_001623B8	oil_tanker_link_hitch_offset	update_oil_tanker_link_path_poses: forward offset from each link to its hitch point	
+D_L11_00162418	energy_sphere_glow_size	Moby1297Update: glow size data+0x1C eases toward it	
+D_L11_00162424	energy_sphere_spawn_spark_time1	spawn_moby_radial_spark: time1 ticks; sum of times sets the inward speed	
+D_L11_00162428	energy_sphere_spawn_spark_time2	spawn_moby_radial_spark: time2 ticks for PartType02Spawn	
+D_L11_0016242C	energy_sphere_spawn_spark_time3	spawn_moby_radial_spark: time3 ticks for PartType02Spawn	
+D_L11_00162438	energy_sphere_spark_texture	spawn_moby_radial_spark/spawn_energy_sphere_spark: texture index for PartType02Spawn	
+D_L11_0016243C	energy_sphere_spark_speed_min	spawn_energy_sphere_spark: rand_vec min length x frame time	
+D_L11_00162440	energy_sphere_spark_speed_max	spawn_energy_sphere_spark: rand_vec max length x frame time	
+D_L11_0016244C	energy_sphere_spark_color_a	spawn_energy_sphere_spark: color tween end a	
+D_L11_00162450	energy_sphere_spark_color_b	spawn_energy_sphere_spark: color tween end b	
+D_L11_001624DC	bubble_trail_time1	Bubble_EmitParticle: time1 ticks, +-20% random	
+D_L11_001624E0	bubble_trail_time2	Bubble_EmitParticle: time2 ticks, +-20% random	
+D_L11_001624E4	bubble_trail_time3	Bubble_EmitParticle: time3 ticks, +-20% random	
+D_L11_001FFA30	pokitaru_layered_scrolled_uvs	emit_level11_layered_effect_batches_with_pair_offset: dst of add_uv_scroll_offset, then drawn by draw_env_overlay_mesh	
+D_L11_001F1318	ship_radar_icons	draw_ship_radar_moby_icon: icon table (x, y, w, h, u, v, tex) indexed by icon	
+D_L11_001620F4	ship_missile_speed	try_fire_ship_projectile: missile speed (times ship_speed_scale)	
+D_L11_001620F8	ship_missile_cooldown	try_fire_ship_projectile: refire timer d+0x84 set after a missile	
+D_L11_0021B900	jet_fighter_missing_park_point_format	jet_fighter_update: printf when the park path point index is -1	
+D_L11_0021B938	jet_fighter_missing_hero_point_format	jet_fighter_update: printf when the hero reset point index is -1	
+D_L11_00162060	ship_board_radius	jet_fighter_update: hero distance below it lets the hero board	
+D_L11_001620E4	ship_start_missiles	jet_fighter_update: missile count g 0x15F6 set on boarding	
+D_L11_001621F8	ship_mission_end_ticks	jet_fighter_update: timer set when all targets are down, before the fade-out	
+D_L11_001623B0	oil_tanker_path_step	oil_tanker_front_update: per-frame step of the path fraction	
+D_L11_001623D0	oil_tanker_link_bubble_chance	update_oil_tanker_link_effects_and_destruction: 1-in-N chance per frame to puff a bubble	
+D_L11_001623E0	oil_tanker_link_bubble_offset	update_oil_tanker_link_effects_and_destruction: local vector rotated by the link matrix for the bubble spot	
+D_L11_001623F0	oil_tanker_link_bubble_scale_min	update_oil_tanker_link_effects_and_destruction: random bubble scale min	
+D_L11_001623F4	oil_tanker_link_bubble_scale_max	update_oil_tanker_link_effects_and_destruction: random bubble scale max	
+D_L11_001623F8	oil_tanker_link_bubble_jitter	update_oil_tanker_link_effects_and_destruction: rand_vec range on bubble velocity	
+D_L11_001623FC	oil_tanker_link_debris_speed	update_oil_tanker_link_effects_and_destruction: debris velocity along the link axis	
+D_L11_0016241C	energy_sphere_spawn_spark_start_color	spawn_moby_radial_spark: start color for PartType02Spawn	
+D_L11_00162420	energy_sphere_spawn_spark_end_color	spawn_moby_radial_spark: end color for PartType02Spawn	
+D_L11_00162430	energy_sphere_spawn_spark_start_size	spawn_moby_radial_spark: start size (v3[3])	
+D_L11_00162434	energy_sphere_spawn_spark_end_size	spawn_moby_radial_spark: end size (v4[3])	
+D_L11_00162410	energy_sphere_glow_color_a	spawn_energy_sphere_particles: color tween end a over the four glows	
+D_L11_00162414	energy_sphere_glow_color_b	spawn_energy_sphere_particles: color tween end b over the four glows	
+D_L11_00162444	energy_sphere_spark_start_size	spawn_energy_sphere_spark: start size (v0[3])	
+D_L11_00162448	energy_sphere_spark_end_size	spawn_energy_sphere_spark: end size (v1[3])	
+D_L11_00162454	energy_sphere_spark_time1	spawn_energy_sphere_spark: time1 ticks for PartType02Spawn	
+D_L11_00162458	energy_sphere_spark_time2	spawn_energy_sphere_spark: time2 ticks for PartType02Spawn	
+D_L11_0016245C	energy_sphere_spark_time3	spawn_energy_sphere_spark: time3 ticks for PartType02Spawn	
+D_L11_001F1770	flying_craft_gun_offset_a	FlyingCraftUpdate: local muzzle offset used every 20th frame	
+D_L11_001F1780	flying_craft_gun_offset_b	FlyingCraftUpdate: local muzzle offset used on the other shots	
+D_L11_00162460	flying_craft_shot_speed	FlyingCraftUpdate: shot velocity length x frame time	
+D_L11_00162490	bubble_gravity	update_bubble_motion_and_scale: subtracted from velocity z before the surface	
+D_L11_00162494	bubble_surface_gravity	update_bubble_motion_and_scale: subtracted from velocity z after the surface	
+D_L11_00162498	bubble_drag	update_bubble_motion_and_scale: xy speed eased to 0 by it	
+D_L11_0016249C	bubble_surface_speed_scale	update_bubble_motion_and_scale: velocity scaled when the bubble crosses the surface	
+D_L11_001624A0	bubble_trail_chance	update_bubble_motion_and_scale: 1-in-N chance per frame for Bubble_EmitParticle	
+D_L11_001624A4	bubble_foam_size	update_bubble_motion_and_scale: size passed to PartType34Spawn at the surface	
+D_L11_001624A8	bubble_foam_color_a	update_bubble_motion_and_scale: foam color tween end a	
+D_L11_001624AC	bubble_foam_color_b	update_bubble_motion_and_scale: foam color tween end b	
+D_L11_001624B0	bubble_splash_color_a	spawn_bubble_surface_effects: splash color tween end a	
+D_L11_001624B4	bubble_splash_color_b	spawn_bubble_surface_effects: splash color tween end b	
+D_L11_001624B8	bubble_trail_jitter	Bubble_EmitParticle: rand_vec range added to start velocity	
+D_L11_001624BC	bubble_trail_rise_min	Bubble_EmitParticle: end velocity z random min	
+D_L11_001624C0	bubble_trail_rise_max	Bubble_EmitParticle: end velocity z random max	
+D_L11_001624C4	bubble_trail_start_size	Bubble_EmitParticle: start size (v1[3])	
+D_L11_001624C8	bubble_trail_end_size	Bubble_EmitParticle: end size (v2[3])	
+D_L11_001624CC	bubble_trail_start_color_a	Bubble_EmitParticle: start color tween end a	
+D_L11_001624D0	bubble_trail_start_color_b	Bubble_EmitParticle: start color tween end b	
+D_L11_001624D4	bubble_trail_end_color_a	Bubble_EmitParticle: end color tween end a	
+D_L11_001624D8	bubble_trail_end_color_b	Bubble_EmitParticle: end color tween end b	
+D_L11_001625E0	pokitaru_layered_uv_sources	emit_level11_layered_effect_batches_with_pair_offset: per-batch source UV for add_uv_scroll_offset	
+D_L11_00162080	ship_launch_frames	update_player_ship_flight: frames of launch acceleration before boost/cruise control	
+D_L11_00162094	ship_steer_start_frames	update_player_ship_flight: frame count after which stick steering starts	
+D_L11_001621DC	ship_bump_cooldown	update_player_ship_flight: ticks tDC set after a wall bump costs hp	
+D_L11_00162078	ship_launch_accel	update_player_ship_flight: speed added per launch frame	
+D_L11_0016207C	ship_cruise_accel	update_player_ship_flight: speed step toward cruise speed	
+D_L11_00162088	ship_boost_speed	update_player_ship_flight: top speed while boost is held	
+D_L11_0016208C	ship_boost_accel	update_player_ship_flight: speed added per frame while boosting	
+D_L11_00162090	ship_slowdown_rate	update_player_ship_flight: fraction to ease from above cruise speed	
+D_L11_001620A4	ship_pitch_rate	update_player_ship_flight: stick y times it turns pitch f34	
+D_L11_001620A8	ship_yaw_rate	update_player_ship_flight: stick x times it turns heading f38	
+D_L11_001620AC	ship_alt_pitch_rate	update_player_ship_flight: pitch rate while pad bit 0x200 is held	
+D_L11_001620B0	ship_alt_yaw_rate	update_player_ship_flight: yaw rate while pad bit 0x200 is held	
+D_L11_001620C4	ship_camera_roll_stick	update_player_ship_flight: stick x share of the camera roll	
+D_L11_001620C8	ship_camera_roll_follow	update_player_ship_flight: ship bank share of the camera roll	
+D_L11_001620CC	ship_camera_pitch_offset	update_player_ship_flight: angle added to the camera pitch	
+D_L11_001620DC	ship_bump_speed_scale	update_player_ship_flight: speed multiplied by it on a wall bump	
+D_L11_001620E0	ship_bump_damage	update_player_ship_flight: hp lost on a wall bump	
+D_L11_0016210C	ship_bank_angle	update_player_ship_flight: stick x times it is the bank target f30	
+D_L11_00162110	ship_camera_side_shift	update_player_ship_flight: stick x times it is the camera offset y	
+D_L11_0016212C	ship_stick_x_spring_stiffness	update_player_ship_flight: Spring stiffness of smoothed stick x	
+D_L11_00162130	ship_stick_x_spring_damping	update_player_ship_flight: Spring damping of smoothed stick x	
+D_L11_00162134	ship_stick_x_spring_max_speed	update_player_ship_flight: Spring max rate of stick x	
+D_L11_00162138	ship_stick_x_spring_max_speed_alt	update_player_ship_flight: stick x Spring max rate while pad bit 0x200 is held	
+D_L11_0016213C	ship_stick_y_spring_stiffness	update_player_ship_flight: Spring stiffness of smoothed stick y	
+D_L11_00162140	ship_stick_y_spring_damping	update_player_ship_flight: Spring damping of smoothed stick y	
+D_L11_00162144	ship_stick_y_spring_max_speed	update_player_ship_flight: Spring max rate of stick y	
+D_L11_00162148	ship_stick_y_spring_max_speed_alt	update_player_ship_flight: stick y Spring max rate while pad bit 0x200 is held	
+D_L11_0016214C	ship_bank_spring_stiffness	update_player_ship_flight: SpringAngle stiffness of the bank f30	
+D_L11_00162150	ship_bank_spring_damping	update_player_ship_flight: SpringAngle damping of the bank f30	
+D_L11_00162154	ship_bank_spring_max_speed	update_player_ship_flight: SpringAngle max rate of the bank f30	
+D_L11_00162170	ship_camera_roll_spring_stiffness	update_player_ship_flight: SpringAngle stiffness of camera roll	
+D_L11_00162174	ship_camera_roll_spring_damping	update_player_ship_flight: SpringAngle damping of camera roll	
+D_L11_00162178	ship_camera_roll_spring_max_speed	update_player_ship_flight: SpringAngle max rate of camera roll	
+D_L11_0016217C	ship_camera_pitch_spring_stiffness	update_player_ship_flight: SpringAngle stiffness of camera pitch	
+D_L11_00162180	ship_camera_pitch_spring_damping	update_player_ship_flight: SpringAngle damping of camera pitch	
+D_L11_00162184	ship_camera_pitch_spring_max_speed	update_player_ship_flight: SpringAngle max rate of camera pitch	
+D_L11_00162188	ship_camera_yaw_spring_stiffness	update_player_ship_flight: SpringAngle stiffness of camera yaw	
+D_L11_0016218C	ship_camera_yaw_spring_damping	update_player_ship_flight: SpringAngle damping of camera yaw	
+D_L11_00162190	ship_camera_yaw_spring_max_speed	update_player_ship_flight: SpringAngle max rate of camera yaw	
+D_L11_00162194	ship_camera_x_spring_stiffness	update_player_ship_flight: Spring stiffness of camera offset x	
+D_L11_00162198	ship_camera_x_spring_damping	update_player_ship_flight: Spring damping of camera offset x	
+D_L11_0016219C	ship_camera_x_spring_max_speed	update_player_ship_flight: Spring max rate of camera offset x	
+D_L11_001621A0	ship_camera_y_spring_stiffness	update_player_ship_flight: Spring stiffness of camera offset y	
+D_L11_001621A4	ship_camera_y_spring_damping	update_player_ship_flight: Spring damping of camera offset y	
+D_L11_001621A8	ship_camera_y_spring_max_speed	update_player_ship_flight: Spring max rate of camera offset y	
+D_L11_001621AC	ship_camera_z_spring_stiffness	update_player_ship_flight: Spring stiffness of camera offset z	
+D_L11_001621B0	ship_camera_z_spring_damping	update_player_ship_flight: Spring damping of camera offset z	
+D_L11_001621B4	ship_camera_z_spring_max_speed	update_player_ship_flight: Spring max rate of camera offset z	
+D_L11_001621B8	ship_camera_pitch_back_shift	update_player_ship_flight: smoothed stick y times it pulls camera offset x	
+D_L11_001621BC	ship_camera_pitch_up_shift	update_player_ship_flight: smoothed stick y times it adds to camera offset z	
+D_L11_001621C0	ship_camera_speed_back_shift	update_player_ship_flight: speed fraction times it pulls camera offset x	
+D_L11_001621C4	ship_fov	update_player_ship_flight: fov target without boost	
+D_L11_001621C8	ship_boost_fov	update_player_ship_flight: fov target while boost is held	
+D_L11_001621E0	ship_model_roll_tilt	update_player_ship_flight: stick x share added to moby rot.x	
+D_L11_001621E4	ship_model_pitch_tilt	update_player_ship_flight: stick y share added to moby rot.y	
+D_L11_001621E8	ship_model_yaw_tilt	update_player_ship_flight: stick x share added to moby rot.z	
+D_L11_00162098	ship_bounce_yaw_scale	update_player_ship_flight/jet_fighter_update: share of the reflected heading taken on a bounce	
+D_L11_0016209C	ship_bounce_pitch_scale	update_player_ship_flight/jet_fighter_update: share of the reflected pitch taken on a bounce	
+D_L11_00162360	puffoid_hit_gravity	update_puffoid_damage_and_path_goal: knockback gravity f130 times D_0015EE70	
+D_L11_00162364	puffoid_hit_knock_speed_z	update_puffoid_damage_and_path_goal: vertical knock speed f13C on a light hit	
+D_L11_00162368	puffoid_hit_knock_speed_xy	update_puffoid_damage_and_path_goal: horizontal knock speed f138 on a light hit	
+D_L11_0016236C	puffoid_kill_knock_speed_z	update_puffoid_damage_and_path_goal: vertical knock speed f13C on a kill	
+D_L11_00162370	puffoid_kill_knock_speed_xy	update_puffoid_damage_and_path_goal: horizontal knock speed f138 on a kill	
+D_L11_001623C0	oil_tanker_debris_speed	process_oil_tanker_damage_and_destruction: debris velocity along the tanker axis	
+D_L11_001623BC	oil_tanker_link_sound_ticks	update_oil_tanker_link_path_poses: sound cooldown set at marked path points	
+D_L02_00161CC4	transport_pod_accel	transport_pod_update/advance_transport_pod_rails_to_offsets: ApproachWithVelocity accel (x frame_time_sq) of the pod and rails	
+D_L02_00161CA0	aridia_elevator_ring_quad_angle	DrawRotatingQuadRing: degrees per quad; 360/it quads per ring	
+D_L02_00161CC0	transport_pod_max_speed	transport_pod_update/advance_transport_pod_rails_to_offsets: ApproachWithVelocity max speed (x frame_time)	
+D_L02_00161C60	aridia_elevator_stop_offset	ElevatorUpdate: added to the volume end height to get the elevator stop height	
+D_L02_00161C70	aridia_elevator_accel	ElevatorUpdate: ApproachWithVelocity accel/decel (x frame_time_sq)	
+D_L02_00160058	aridia_mobys	sand_shark.c: base of the 0x100-byte moby array indexed by id << 8, like other levels' <planet>_mobys	
+D_L02_00161CCC	transport_pod_rail_twist	advance/snap_transport_pod_rails_to_offsets: degrees of rail yaw per unit of height difference	
+D_L02_00161A64	sand_shark_dust_rise_speed	emit_sand_shark_dust_puffs_along_segment: puff z speed is random in 0.1x..x of it	
+D_L02_00161A70	sand_shark_dust_puff_ticks	emit_sand_shark_dust_puffs_along_segment: stored in the particle hA and tail b2B (lifetime ticks)	
+D_L02_001AC140	aridia_moby_groups	select_group_class_29c_moby etc: table indexed by moby byte 0x21 of short moby-id lists ending with a negative id	
+D_L02_00161B14	aridia_bot_gravity	update_level02_bot / bot damage: z approach rate and knockback gravity (x frame_time_sq)	
+D_L02_00161B18	aridia_bot_spray_color	update_level02_bot: both colour args of the PartType21Spawn spray while waiting	
+D_L02_00161C6C	aridia_elevator_max_speed	ElevatorUpdate: ApproachWithVelocity max speed; ring colour tweens by speed / it	
+D_L02_00161CD0	transport_pod_cycle_rails	transport_pod_update: nonzero keeps the rails cycling between heights in states 15-17	
+D_00141992	g_help_play_time_offset	sand_shark.c/snow_plow_and_woodcut_bot.c: x600 subtracted from play time before the help-popup time check	
+D_L02_00161A6C	sand_shark_dust_puff_size	emit_sand_shark_dust_puffs_along_segment: size arg of PartType23Spawn	
+D_L02_001D3500	sand_shark_dust_points	emit_sand_shark_dust_segment: vec4 table, xyz point pairs and w life factor	
+D_L02_00161A50	sand_shark_dust_point_origin	emit_sand_shark_dust_segment: vector subtracted from each table point before the moby transform	
+D_L02_00161A60	sand_shark_dust_life_scale	emit_sand_shark_dust_segment: scales each point's w into the puff lifetime factor	
+D_L02_00161A84	sand_shark_dust_puffs_seg2_3	emit_sand_shark_dust_burst: puff count for point pairs 4-5 and 6-7	
+D_L02_001619C0	sand_shark_burst_spread_min	emit_sand_shark_radial_particles: min radial xy speed	
+D_L02_001619C4	sand_shark_burst_spread_max	emit_sand_shark_radial_particles: max radial xy speed	
+D_L02_00161A04	sand_shark_trail_spread_min	SpawnRandomParticle: min radial xy speed	
+D_L02_00161A08	sand_shark_trail_spread_max	SpawnRandomParticle: max radial xy speed	
+D_L02_00161998	sand_shark_death_knock_lift	PathEnemy_HitAndRespawn: knock s[7], the vertical launch speed on death	
+D_L02_0016199C	sand_shark_death_knock_speed	PathEnemy_HitAndRespawn: knock s[6], the horizontal launch speed on death	
+D_L02_001619A4	sand_shark_death_knock_gravity	PathEnemy_HitAndRespawn: knock +0x10, taken off z speed each frame by mine_fall	
+D_L02_001619A8	sand_shark_death_knock_drag	PathEnemy_HitAndRespawn: knock +0x14, ApproachValue rate of the slide speed in mine_fall	
+D_L02_00161B10	aridia_bot_shot_range	update_level02_bot: distance arg of EffectSlots_Fire	
+D_L02_00161B20	aridia_bot_spray_ticks_min	update_level02_bot: min lifetime ticks of the spray particle	
+D_L02_00161B24	aridia_bot_spray_ticks_max	update_level02_bot: max lifetime ticks of the spray particle	
+D_L02_00161B28	aridia_bot_spray_spread	update_level02_bot: max random xy speed of the spray particle	
+D_L02_00161C7C	aridia_elevator_ring_radius	DrawRotatingQuadRing: outer radius of the ring quads (inner is 0.05 less)	
+D_L02_00161C80	aridia_elevator_ring_half_height	DrawRotatingQuadRing: +/- z of the quad corners	
+D_L02_00161CC8	transport_pod_rail_decel	advance_transport_pod_rails_to_offsets: ApproachWithVelocity decel of the rails	
+D_L02_00161D18	rocket_launcher_near_sound_start	play_rocket_launcher_delayed_shot_sounds: distance where the first sound's bend starts falling	
+D_L02_00161D20	rocket_launcher_far_sound_start	play_rocket_launcher_delayed_shot_sounds: distance where the second sound's bend starts rising	
+D_L02_001CB680	aridia_spr_upload_block	begin_animated_frame_rendering: DMA'd to scratchpad 0x2800, 0xF8 qwords	
+D_L02_00161A80	sand_shark_dust_puffs_seg0	emit_sand_shark_dust_burst: puff count for point pair 0-1	
+D_L02_00161A7C	sand_shark_dust_puffs_seg1	emit_sand_shark_dust_burst: puff count for point pair 2-3	
+D_L02_00161A88	sand_shark_dust_puffs_seg4	emit_sand_shark_dust_burst: puff count for point pair 8-9	
+D_L02_001FAB90	sand_shark_no_path_fmt	sand_shark_update: printf with the moby uid before deleting a shark with path -1	
+D_L02_001FABB0	sand_shark_empty_path_fmt	sand_shark_update: printf with the moby uid before deleting a shark whose path has no points	
+D_L02_00161A38	sand_shark_updates_disabled	sand_shark_update: returns at once when this int is nonzero	
+D_L02_00161A74	sand_shark_puff_start_color	sand_shark_update state 0x1B: start colour of PartType04Spawn	
+D_L02_00161A78	sand_shark_puff_end_color	sand_shark_update state 0x1B: end colour of PartType04Spawn	
+D_L02_001619B0	sand_shark_burst_rise_min	emit_sand_shark_radial_particles: min z speed of the first vector	
+D_L02_001619B4	sand_shark_burst_rise_max	emit_sand_shark_radial_particles: max z speed of the first vector	
+D_L02_001619B8	sand_shark_burst_end_rise_min	emit_sand_shark_radial_particles: min z speed of the second vector	
+D_L02_001619BC	sand_shark_burst_end_rise_max	emit_sand_shark_radial_particles: max z speed of the second vector	
+D_L02_001619C8	sand_shark_burst_start_scale	emit_sand_shark_radial_particles: w of the first vector (PartType02 start size)	
+D_L02_001619CC	sand_shark_burst_end_scale	emit_sand_shark_radial_particles: w of the second vector (PartType02 end size)	
+D_L02_001619D0	sand_shark_burst_life_min	emit_sand_shark_radial_particles: min of PartType02 arg5 (particle hA lifetime)	
+D_L02_001619D4	sand_shark_burst_life_max	emit_sand_shark_radial_particles: max of PartType02 arg5 (lifetime)	
+D_L02_001619D8	sand_shark_burst_stage2_min	emit_sand_shark_radial_particles: min of PartType02 arg6	
+D_L02_001619DC	sand_shark_burst_stage2_max	emit_sand_shark_radial_particles: max of PartType02 arg6	
+D_L02_001619E0	sand_shark_burst_stage3_min	emit_sand_shark_radial_particles: min of PartType02 arg7	
+D_L02_001619E4	sand_shark_burst_stage3_max	emit_sand_shark_radial_particles: max of PartType02 arg7	
+D_L02_001619E8	sand_shark_burst_start_color	emit_sand_shark_radial_particles: PartType02 arg3 colour	
+D_L02_001619EC	sand_shark_burst_end_color	emit_sand_shark_radial_particles: PartType02 arg4 colour	
+D_L02_001619F0	sand_shark_burst_sprite	emit_sand_shark_radial_particles: PartType02 arg8, index into the sprite table	
+D_L02_001619F4	sand_shark_trail_rise_min	SpawnRandomParticle: min z speed of the first vector	
+D_L02_001619F8	sand_shark_trail_rise_max	SpawnRandomParticle: max z speed of the first vector	
+D_L02_001619FC	sand_shark_trail_end_rise_min	SpawnRandomParticle: min z speed of the second vector	
+D_L02_00161A00	sand_shark_trail_end_rise_max	SpawnRandomParticle: max z speed of the second vector	
+D_L02_00161A0C	sand_shark_trail_start_scale	SpawnRandomParticle: w of the first vector (start size)	
+D_L02_00161A10	sand_shark_trail_end_scale	SpawnRandomParticle: w of the second vector (end size)	
+D_L02_00161A14	sand_shark_trail_life_min	SpawnRandomParticle: min of PartType02 arg5 (lifetime)	
+D_L02_00161A18	sand_shark_trail_life_max	SpawnRandomParticle: max of PartType02 arg5 (lifetime)	
+D_L02_00161A1C	sand_shark_trail_stage2_min	SpawnRandomParticle: min of PartType02 arg6	
+D_L02_00161A20	sand_shark_trail_stage2_max	SpawnRandomParticle: max of PartType02 arg6	
+D_L02_00161A24	sand_shark_trail_stage3_min	SpawnRandomParticle: min of PartType02 arg7	
+D_L02_00161A28	sand_shark_trail_stage3_max	SpawnRandomParticle: max of PartType02 arg7	
+D_L02_00161A2C	sand_shark_trail_start_color	SpawnRandomParticle: PartType02 arg3 colour	
+D_L02_00161A30	sand_shark_trail_end_color	SpawnRandomParticle: PartType02 arg4 colour	
+D_L02_00161A34	sand_shark_trail_sprite	SpawnRandomParticle: PartType02 arg8 sprite index	
+D_L02_0016017C	aridia_elevator_volumes	ElevatorUpdate/DrawRotatingQuadRing: 0x80-byte records with a matrix, half height +0x28 and z +0x38, indexed by the elevator joint	
+D_L02_00161C78	aridia_elevator_ring_spacing	DrawRotatingQuadRing: z step between stacked rings	
+D_L02_00161C84	aridia_elevator_ring_blend_a	DrawRotatingQuadRing: alpha-blend field A of the packet mode	
+D_L02_00161C88	aridia_elevator_ring_blend_b	DrawRotatingQuadRing: alpha-blend field B (<<2)	
+D_L02_00161C8C	aridia_elevator_ring_blend_c	DrawRotatingQuadRing: alpha-blend field C (<<4)	
+D_L02_00161C90	aridia_elevator_ring_blend_d	DrawRotatingQuadRing: alpha-blend field D (<<6)	
+D_L02_00161C94	aridia_elevator_ring_slow_color	DrawRotatingQuadRing: ring colour at zero speed	
+D_L02_00161C98	aridia_elevator_ring_fast_color	DrawRotatingQuadRing: ring colour at max speed	
+D_L02_001D4220	aridia_elevator_ring_uvs	DrawRotatingQuadRing: four u,v pairs of the ring quad	
+D_L02_00161CB0	transport_pod_rail_a_offset	transport_pod_update state 15: configured height offset of the first rail	
+D_L02_00161CB4	transport_pod_rail_b_offset	transport_pod_update state 15: configured height offset of the second rail	
+D_L02_00161CD4	transport_pod_show_path	transport_pod_update: nonzero spawns a marker particle on every path point	
+D_L02_00161CD8	transport_pod_camera_param_1	transport_pod_update: arg 1 of set_selected_object_float_triplets (camera moby data +0x14)	
+D_L02_00161CDC	transport_pod_camera_param_2	transport_pod_update: arg 2 (camera moby data +0x10)	
+D_L02_00161CE0	transport_pod_camera_param_3	transport_pod_update: arg 3 (camera moby data +0x18)	
+D_L02_00161CE4	transport_pod_camera_param_4	transport_pod_update: arg 4 (camera moby data +0x54)	
+D_L02_00161CE8	transport_pod_camera_param_5	transport_pod_update: arg 5 (camera moby data +0x50)	
+D_L02_00161CF0	transport_pod_camera_param_6	transport_pod_update: arg 6 (camera moby data +0x58)	
+D_L02_00161CF8	aridia_crane_anim_speed	crane_update: set as the moby anim_speed every frame	
+D_L02_00161D00	rocket_launcher_turn_accel	rocket_launcher_update: degrees, SteerAngleWithVelocity accel (x frame_time_sq)	
+D_L02_00161D04	rocket_launcher_turn_speed	rocket_launcher_update: degrees, SteerAngleWithVelocity max speed (x frame_time)	
+D_L02_00161D14	rocket_launcher_recoil	rocket_launcher_update: stored in the vars recoil when it fires	
+D_L02_00161CFC	rocket_launcher_shot_speed	rocket_launcher_update: length of the projectile velocity (x frame_time)	
+D_L02_00161D08	rocket_launcher_glow_start_color	rocket_launcher_update: glow colour tween start after firing	
+D_L02_00161D0C	rocket_launcher_glow_end_color	rocket_launcher_update: glow colour tween end	
+D_L02_00161D10	rocket_launcher_sound_wave_speed	play_rocket_launcher_delayed_shot_sounds: growth of the range that must reach the camera	
+D_L02_00161D1C	rocket_launcher_near_sound_end	play_rocket_launcher_delayed_shot_sounds: distance where the first sound's bend reaches 0	
+D_L02_00161D24	rocket_launcher_far_sound_end	play_rocket_launcher_delayed_shot_sounds: distance where the second sound's bend reaches 1024	
+D_L02_00161D2C	sandshark_egg_dust_start_color	sandshark_egg_update: start colour of PartType04Spawn	
+D_L02_00161D30	sandshark_egg_dust_end_color	sandshark_egg_update: end colour of PartType04Spawn	
+D_L02_00161AF4	aridia_bot_death_knock_speed	handle_level02_bot_damage_and_retargeting: knock s[6] horizontal speed on death	
+D_L02_00161AF8	aridia_bot_death_knock_lift	handle_level02_bot_damage_and_retargeting: knock s[7] vertical speed on death	
+D_L02_00161AFC	aridia_bot_flinch_knock_speed	handle_level02_bot_damage_and_retargeting: knock s[6] horizontal speed on a hard hit	
+D_L02_00161B00	aridia_bot_flinch_knock_lift	handle_level02_bot_damage_and_retargeting: knock s[7] vertical speed on a hard hit	
+D_L02_00161B04	aridia_bot_death_knock_drag	handle_level02_bot_damage_and_retargeting: knock +0x14 slide-speed rate on death	
+D_L02_00161B08	aridia_bot_flinch_knock_drag	handle_level02_bot_damage_and_retargeting: knock +0x14 slide-speed rate on a hard hit	
+D_L02_00161B2C	aridia_bot_knock_slide_speed	handle_level02_bot_damage_and_retargeting: knock +0x4C, the slide speed mine_fall approaches	
+D_L02_00161D54	aridia_rocks_dust_start_color	rocks_update: first colour arg of spawn_effect_particle_with_target_scalar	
+D_L02_00161D58	aridia_rocks_dust_end_color	rocks_update: second colour arg of spawn_effect_particle_with_target_scalar	
+D_L06_001DBBC0	beam_barrier_strand_drift	animate_beam_barrier_strands: [4][30] per-point drift added each frame, rebuilt from averaged jitter	
+D_L06_00162008	blarg_lift_cutscene_seen	update_hero_triggered_moby_height_cycle: -1 at start, set 1 when the item is owned or the lift cutscene starts	
+D_L06_00161D80	toxic_gas_vent_reach	check_oscillating/timed_toxic_gas_vent_collisions: max reach of the gas, caps the spark distance	
+D_L06_00161EE0	beam_barrier_strand_life	update_beam_barrier/animate_beam_barrier_strands: strand timer reset value, first draw param	
+D_L06_00161F8C	alien_queen_walk_accel	alien_queen_update/Circler_UpdateMovement: ApproachValue rate of the walk speed (x frame_time_sq)	
+func_L06_00216B38	blarg_draw_strand_strip	draw_beam_barrier_segments and fred_and_commando.c: VU strip draw of strand points with the param block, once per segment matrix	
+func_L06_002172B0	set_vec_to_origin_point	one sqc2 of vf0: stores (0,0,0,1) to the vector; used to reset strand points	
+D_L06_001DB440	beam_barrier_strand_points	animate/draw_beam_barrier_segments: [4][30] Vec4 strand points	
+D_L06_00161DE0	drawbridge_row_a_offset	update_drawbridge_segment_transforms: local offset of the a/c piece rows, rotated by the moby matrix	
+D_L06_00161DF0	drawbridge_row_b_offset	update_drawbridge_segment_transforms: local offset of the b/d piece rows	
+D_L06_00161EE4	beam_barrier_strand_fade_ticks	update_beam_barrier/draw_beam_barrier_segments: second draw param, timer split for the colour fade	
+D_L06_00161E9C	beam_barrier_draw_scale	update_beam_barrier/draw_beam_barrier_segments: set_scale_matrix factor of the barrier base matrix	
+D_L06_001DB3B0	beam_barrier_segment_rotations	update_beam_barrier/draw_beam_barrier_segments: euler rotation per segment, 16-byte stride	
+D_L06_001DB320	beam_barrier_segment_offsets	update_beam_barrier/draw_beam_barrier_segments: local offset per segment, 16-byte stride	
+D_L06_00161F84	alien_queen_walk_speed	alien_queen_update: target speed toward or away from the target and back home (x frame_time)	
+D_L06_00161FAC	blarg_slide_pair_open_a	update_moby_pair_transforms: open distance of the first moby along the axis	
+D_L06_00161FB0	blarg_slide_pair_open_b	update_moby_pair_transforms: open distance of the partner moby, opposite way	
+D_L06_00161FB4	blarg_slide_pair_stutter_a	update_moby_pair_transforms state 4: stutter target distance of the first moby	
+D_L06_00161FB8	blarg_slide_pair_stutter_b	update_moby_pair_transforms state 4: stutter target distance of the partner	
+D_L06_00161E00	drawbridge_upper_min_slide	update_drawbridge_segment_transforms: base of the lowest slide of the upper pieces	
+D_L06_00161E04	drawbridge_upper_slide_step	update_drawbridge_segment_transforms: added per upper piece (4 - j) to that base	
+D_L06_00161E98	beam_barrier_strand_length	update_beam_barrier/animate_beam_barrier_strands: strand length, split into 30 steps around 0	
+D_L06_00161EA8	beam_barrier_hit_line_drop	update_beam_barrier: z drop of the collision line below the beam position	
+D_L06_00161E80	beam_barrier_strand_color	draw_beam_barrier_segments: colour faded in by pvars +0x18	
+D_L06_00161E8C	beam_barrier_uv_phase	animate_beam_barrier_strands: 0..1 phase stepped each frame, last draw param	
+D_L06_00161F68	alien_snapper_steer_half_arc	Snapper_GetSteerAngle: +/- degrees of the allowed steer range	
+D_L06_00161F90	alien_queen_attack_range	alien_queen_update: chases beyond it, attacks inside it within the attack arc	
+D_L06_00161FC4	blarg_slide_pair_accel	update_moby_pair_transforms: ApproachWithVelocity accel of the slide	
+D_L06_00161FC8	blarg_slide_pair_decel	update_moby_pair_transforms: ApproachWithVelocity decel (x frame_time_sq)	
+D_L06_00161FCC	blarg_slide_pair_max_speed	update_moby_pair_transforms: ApproachWithVelocity max speed (x frame_time)	
+D_L06_00161FD0	blarg_slide_pair_rot_accel	update_moby_pair_transforms: degrees, rotation accel	
+D_L06_00161FD4	blarg_slide_pair_rot_decel	update_moby_pair_transforms: degrees, rotation decel	
+D_L06_00161FD8	blarg_slide_pair_rot_max_speed	update_moby_pair_transforms: degrees, rotation max speed	
+D_L06_00161FF0	blarg_lift_scale	update_hero_triggered_moby_height_cycle: times the class scale gives the lift scale	
+D_L06_00161FF4	blarg_lift_max_speed	update_hero_triggered_moby_height_cycle: ApproachWithVelocity max speed (x frame_time)	
+D_L06_00161FF8	blarg_lift_accel	update_hero_triggered_moby_height_cycle: ApproachWithVelocity accel/decel (x frame_time_sq)	
+D_L06_00161FFC	blarg_lift_idle_glow_a	update_hero_triggered_moby_height_cycle: first pulse colour while idle	
+D_L06_00162000	blarg_lift_idle_glow_b	update_hero_triggered_moby_height_cycle: second pulse colour while idle	
+D_L06_00162004	blarg_lift_moving_glow	update_hero_triggered_moby_height_cycle: glow colour in states 5-8 (moving)	
+D_L06_00161EAC	beam_barrier_spark_color_a	update_beam_barrier: first end of the random spark colour tween	
+D_L06_00161EB0	beam_barrier_spark_color_b	update_beam_barrier: second end of the random spark colour tween	
+D_L06_00161EB4	beam_barrier_spark_size_min	update_beam_barrier: min size arg of PartType60Spawn	
+D_L06_00161EB8	beam_barrier_spark_size_max	update_beam_barrier: max size arg of PartType60Spawn	
+D_L06_00161EBC	beam_barrier_spark_ticks_min	update_beam_barrier: min spark lifetime ticks	
+D_L06_00161EC0	beam_barrier_spark_ticks_max	update_beam_barrier: max spark lifetime ticks	
+D_L06_00161EC4	beam_barrier_spark_speed_min	update_beam_barrier: rand_vec min speed (x frame_time)	
+D_L06_00161EC8	beam_barrier_spark_speed_max	update_beam_barrier: rand_vec max speed (x frame_time)	
+D_L06_00161E60	beam_barrier_blend_a	draw_beam_barrier_segments: alpha-blend field A of GS register 0x42	
+D_L06_00161E64	beam_barrier_blend_b	draw_beam_barrier_segments: alpha-blend field B (<<2)	
+D_L06_00161E68	beam_barrier_blend_c	draw_beam_barrier_segments: alpha-blend field C (<<4)	
+D_L06_00161E6C	beam_barrier_blend_d	draw_beam_barrier_segments: alpha-blend field D (<<6)	
+D_L06_00161E84	beam_barrier_strand_end_color	draw_beam_barrier_segments: param +0x10, the colour the strand colour blends to by its timer	
+D_L06_00161E88	beam_barrier_strand_u_step	draw_beam_barrier_segments: param +0x1C, added to the strip u per point	
+D_L06_00161F60	alien_snapper_wake_range	alien_snapper_update/Snapper_ApplyDamage: hero distance that wakes it; also its f1A0	
+func_L06_002FCCA0	finish_alien_queen_first_recovery	alien_queen_update state 4: same code as finish_alien_queen_intro, run when the first recovery camera ends	
+func_L06_002FD060	finish_alien_queen_second_recovery	alien_queen_update state 5: same code as finish_alien_queen_intro, run when the second recovery camera ends	
+func_L06_002FCE58	update_alien_queen_second_recovery_camera	alien_queen_update state 5: same code as update_alien_queen_first_recovery_camera	
+D_L06_00161F94	alien_queen_back_off_range	alien_queen_update: walks away from the target when closer than this	
+D_L06_00161F98	alien_queen_attack_arc	alien_queen_update: degrees; attacks only when the turn left is below it	
+D_L06_00161F9C	alien_queen_glow_pulse_speed	AlienQueen_ApplyDamage: degrees per frame of the glow pulse angle	
+D_L06_00161FA0	alien_queen_glow_color_a	AlienQueen_ApplyDamage: first end of the pulsing glow colour	
+D_L06_00161FA4	alien_queen_glow_color_b	AlienQueen_ApplyDamage: second end of the pulsing glow colour	
+func_L06_002FC938	start_alien_queen_first_recovery	AlienQueen_ApplyDamage: same code as start_alien_queen_intro, run on the state 3 recovery	
+func_L06_002FCCF8	start_alien_queen_second_recovery	AlienQueen_ApplyDamage: same code as start_alien_queen_intro, run on the state 5 recovery	
+D_L06_00161F88	circler_max_speed	Circler_UpdateMovement: target speed toward the goal point (x frame_time)	
+D_L06_00161FBC	blarg_slide_pair_stutter_rot_a	update_moby_pair_transforms phase 2: target rotation of the first moby	
+D_L06_00161FC0	blarg_slide_pair_stutter_rot_b	update_moby_pair_transforms phase 2: target rotation of the partner	
+D_L06_00161FDC	blarg_slide_pair_hold_ticks_min	update_moby_pair_transforms: min ticks before the next phase after phase 2	
+D_L06_00161FE0	blarg_slide_pair_hold_ticks_max	update_moby_pair_transforms: max ticks after phase 2	
+D_L06_00161FE4	blarg_slide_pair_move_ticks_min	update_moby_pair_transforms: min ticks before the next phase after phase 1	
+D_L06_00161FE8	blarg_slide_pair_move_ticks_max	update_moby_pair_transforms: max ticks after phase 1	
+D_L06_00161FEC	blarg_slide_pair_reset	update_moby_pair_transforms state 5: nonzero sends the pair back to its start	
+D_L06_00161E08	drawbridge_slide	update_drawbridge: stage 1 progress 0..20, pieces slide out by it	
+D_L06_00161E0C	drawbridge_fold_angle	update_drawbridge: stage 2 progress, degrees for the lower pieces, done at 1000	
+D_L06_00161E10	drawbridge_upper_fold_angle	update_drawbridge: stage 3 progress, degrees for the upper pieces, done at 1000	
+D_L06_00161E14	drawbridge_slide_max_speed	update_drawbridge: ApproachWithVelocity max speed of stage 1	
+D_L06_00161E18	drawbridge_fold_max_speed	update_drawbridge: ApproachWithVelocity max speed of stage 2	
+D_L06_00161E1C	drawbridge_upper_fold_max_speed	update_drawbridge: ApproachWithVelocity max speed of stage 3	
+D_L06_00161E20	drawbridge_slide_accel	update_drawbridge: ApproachWithVelocity accel of stage 1	
+D_L06_00161E24	drawbridge_fold_accel	update_drawbridge: ApproachWithVelocity accel of stage 2	
+D_L06_00161E28	drawbridge_upper_fold_accel	update_drawbridge: ApproachWithVelocity accel of stage 3	
+D_L06_00161E2C	drawbridge_slide_vel	update_drawbridge: velocity of stage 1	
+D_L06_00161E30	drawbridge_fold_vel	update_drawbridge: velocity of stage 2, also the hinge lag per piece	
+D_L06_00161E34	drawbridge_upper_fold_vel	update_drawbridge: velocity of stage 3, also the hinge lag per piece	
+D_L06_00161E3C	drawbridge_fold_start	update_drawbridge: stage 2 starts once the slide passes it	
+D_L06_00161E40	drawbridge_upper_fold_start	update_drawbridge: stage 3 starts once the fold angle passes it	
+D_L06_00161EA0	beam_barrier_spin_speed	animate_beam_barrier_strands: degrees per frame added to rot.x	
+D_L06_00161E90	beam_barrier_uv_scroll_speed	animate_beam_barrier_strands: added to the uv phase each frame (x frame_time)	
+D_L06_00161EA4	beam_barrier_scale	animate_beam_barrier_strands: times the class scale gives the moby scale	
+D_L06_00161E94	beam_barrier_strand_jitter	animate_beam_barrier_strands: max random jitter per point when a strand is rebuilt	
+D_L06_00161F40	alien_snapper_scale	alien_snapper_update: times the class scale; also the walk record size	
+D_L06_00161F44	alien_snapper_knock_gravity	alien_snapper_update: knock +0x10 (pvars +0x80), x frame_time_sq	
+D_L06_00161F54	alien_snapper_attack_range	alien_snapper_update: circling distance cap and the bite range	
+D_L06_00161F58	alien_snapper_leash_range	alien_snapper_update: goes home when farther than this from home	
+D_L06_00161F64	alien_snapper_chase_break_range	alien_snapper_update: stops the chase when the target is farther than this	
+D_L06_00161F6C	alien_snapper_use_retreat_frame	alien_snapper_update: nonzero uses alien_snapper_retreat_frame for the seq 4 blend	
+D_L06_00161F70	alien_snapper_retreat_frame	alien_snapper_update: third arg of the seq 4 MobyBlendAnimation when the flag is set	
+D_L06_00161F74	alien_snapper_glow_pulse_speed	Snapper_ApplyDamage: degrees per frame of the glow pulse angle	
+D_L06_00161F78	alien_snapper_glow_color_a	Snapper_ApplyDamage: first end of the pulsing glow colour	
+D_L06_00161F7C	alien_snapper_glow_color_b	Snapper_ApplyDamage: second end of the pulsing glow colour	
+D_L00_0015F544	level_fog_color_red	update_debug_menu/draw_debug_menu: first fog colour byte stepped 0..255, beside level_fog_color_blue	
+D_L00_0015F545	level_fog_color_green	update_debug_menu/draw_debug_menu: second fog colour byte stepped 0..255	
+D_L00_0015F160	debug_menu_cursor	draw_debug_menu: drawn at the selected item row of the active group	
+D_L00_0016A940	debug_text_queue	flush_debug_text_queue: {x, y, colour, text} records drawn and then cleared	
+D_L00_0015F170	debug_menu_header_underline	draw_debug_menu: drawn 6 px under the group 1, 2, 3 and 5 headers	
+D_L00_0015F348	debug_fog_value_format	draw_debug_menu: sprintf format of the four fog distance/intensity floats	
+D_L00_0015F0E0	level_file_path_format	update_debug_menu: sprintf format with directory, level index, file name and iso suffix	
+D_L00_0015F4F4	debug_profiler_color	draw_debug_profiler_if_enabled/draw_dialog_background_and_text: 0x100FF, or 0x7F in mode 3, before DrawDebugProfiler	
+D_L00_0015F0C4	debug_text_queue_count	flush_debug_text_queue: number of queued debug text records, cleared after the flush	
+D_L00_001E7C88	level_directory	update_debug_menu: first string arg of level_file_path_format	
+D_L00_0015F0C0	debug_text_queue_cursor	flush_debug_text_queue: reset to the text buffer after the flush	
+D_L00_0016A140	debug_text_queue_buffer	flush_debug_text_queue: text storage the queue cursor is reset to	
+D_L00_00169A80	debug_font_glyph_uvs	draw_debug_text: per-glyph texture coordinate word, -1 for no quad	
+D_L00_00169C00	debug_font_glyph_widths	draw_debug_text: per-glyph x advance	
+D_L00_001E7C70	debug_menu_group_item_counts	update_debug_menu: six ints, item count of each menu group	
+D_L00_0015F108	debug_menu_title	draw_debug_menu: centred at the top of the menu	
+D_L00_0015F110	debug_menu_title_underline	draw_debug_menu: centred 8 px under the title	
+D_L00_0015F120	debug_menu_update_header	draw_debug_menu: group 0 header (label per config/strings.tsv at +0x40)	
+D_L00_0015F128	debug_menu_update_underline	draw_debug_menu: drawn under the group 0 header	
+D_L00_0015F130	debug_label_ratchet	draw_debug_menu: group 0 label for draw_bits bit 0 (strings.tsv at +0x40)	
+D_L00_0015F140	debug_label_update_bit1	draw_debug_menu: group 0 label for draw_bits bit 1	
+D_L00_0015F148	debug_label_parts	draw_debug_menu: group 0 label for draw_bits bit 2 (strings.tsv at +0x40)	
+D_L00_0015F150	debug_label_camera	draw_debug_menu: group 0 label for draw_bits bit 3 (strings.tsv at +0x40)	
+D_L00_0015F158	debug_label_update_bit4	draw_debug_menu: group 0 label for draw_bits bit 4	
+D_L00_0015F168	debug_menu_group1_header	draw_debug_menu: header of the camera/display/occlusion group	
+D_L00_0015F178	debug_label_control	draw_debug_menu: label of the camera_mode item (strings.tsv at +0x40)	
+D_L00_0015F180	debug_label_profile	draw_debug_menu: label of the display_mode item (strings.tsv at +0x40)	
+D_L00_0015F188	debug_label_occlusion_mode	draw_debug_menu: label of the occl_mode item	
+D_L00_0015F190	debug_label_bookmark	draw_debug_menu: label of the f20 on/off item (strings.tsv at +0x40)	
+D_L00_0015F1A0	debug_label_invincible	draw_debug_menu: label of the f24 on/off item (strings.tsv at +0x40)	
+D_L00_0015F1A8	debug_label_drawdist	draw_debug_menu: label of item 5, the toggle that sets the draw distances (strings.tsv at +0x40)	
+D_L00_0015F1B8	debug_label_group1_item6	draw_debug_menu: label of the f2C item	
+D_L00_0015F1C0	debug_label_tv_mode	draw_debug_menu: label of the f30 item (strings.tsv at +0x40)	
+D_L00_0015F1C8	debug_label_screen	draw_debug_menu: label of the f34 item (strings.tsv at +0x40)	
+D_L00_0015F1D0	debug_label_scene	draw_debug_menu: label of the selection item (strings.tsv at +0x40)	
+D_L00_0015F1E0	debug_scene_none_text	draw_debug_menu: shown instead of the number when the selection is negative	
+D_L00_0015F1E8	debug_label_segment	draw_debug_menu: label of the mission item (strings.tsv at +0x40)	
+D_L00_0015F1F0	debug_segment_format	draw_debug_menu: sprintf format with mission index and its state byte	
+D_L00_0015F1F8	debug_menu_group2_header	draw_debug_menu: header of the collision/darken toggle group	
+D_L00_0015F200	debug_label_darken	draw_debug_menu: group 2 label for bits bit 0 (strings.tsv at +0x40)	
+D_L00_0015F208	debug_label_env_coll	draw_debug_menu: group 2 label for bits bit 1 (strings.tsv at +0x40)	
+D_L00_0015F218	debug_label_moby_coll	draw_debug_menu: group 2 label for bits bit 2 (strings.tsv at +0x40)	
+D_L00_0015F228	debug_label_hero_coll	draw_debug_menu: group 2 label for bits bit 3 (strings.tsv at +0x40)	
+D_L00_0015F238	debug_label_bspheres	draw_debug_menu: group 2 label for bits bit 4 (strings.tsv at +0x40)	
+D_L00_0015F248	debug_label_cameras	draw_debug_menu: group 2 label for bits bit 5 (strings.tsv at +0x40)	
+D_L00_0015F250	debug_label_cuboids	draw_debug_menu: group 2 label for bits bit 6 (strings.tsv at +0x40)	
+D_L00_0015F258	debug_label_samples	draw_debug_menu: group 2 label for bits bit 7 (strings.tsv at +0x40)	
+D_L00_0015F260	debug_label_group2_bit8	draw_debug_menu: group 2 label for bits bit 8	
+D_L00_0015F268	debug_menu_weapon_header	draw_debug_menu: header of group 3, the weapon ammo and order rows	
+D_L00_0015F270	debug_label_suck_cannon	draw_debug_menu: weapon row label (strings.tsv at +0x40)	
+D_L00_0015F280	debug_label_morph_o_ray	draw_debug_menu: weapon row label (strings.tsv at +0x40)	
+D_L00_0015F290	debug_label_inflato	draw_debug_menu: weapon row label (strings.tsv at +0x40)	
+D_L00_0015F2A0	debug_label_weapon_row3	draw_debug_menu: fourth weapon row label (ammo +0x5C)	
+D_L00_0015F2B0	debug_label_d_droids	draw_debug_menu: weapon row label (strings.tsv at +0x40)	
+D_L00_0015F2C0	debug_label_weapon_row5	draw_debug_menu: sixth weapon row label (ammo +0x28)	
+D_L00_0015F2C8	debug_label_devastator	draw_debug_menu: weapon row label (strings.tsv at +0x40)	
+D_L00_0015F2D8	debug_label_visibomb	draw_debug_menu: weapon row label (strings.tsv at +0x40)	
+D_L00_0015F2E8	debug_label_agents	draw_debug_menu: weapon row label (strings.tsv at +0x40)	
+D_L00_0015F2F0	debug_label_pyrocitor	draw_debug_menu: weapon row label (strings.tsv at +0x40)	
+D_L00_0015F300	debug_label_tesla_claw	draw_debug_menu: weapon row label (strings.tsv at +0x40)	
+D_L00_0015F310	debug_label_mine_glove	draw_debug_menu: weapon row label (strings.tsv at +0x40)	
+D_L00_0015F320	debug_label_blaster	draw_debug_menu: weapon row label (strings.tsv at +0x40)	
+D_L00_0015F328	debug_label_bolts	draw_debug_menu: label of the gBolts row (strings.tsv at +0x40)	
+D_L00_0015F330	debug_menu_fog_header	draw_debug_menu: header of group 4, the fog rows	
+D_L00_0015F338	debug_menu_fog_underline	draw_debug_menu: drawn under the fog header	
+D_L00_0015F340	debug_label_near_dist	draw_debug_menu: label of the fog near distance row	
+D_L00_0015F350	debug_label_near_int	draw_debug_menu: label of the fog near intensity row	
+D_L00_0015F358	debug_label_far_dist	draw_debug_menu: label of the fog far distance row	
+D_L00_0015F360	debug_label_far_int	draw_debug_menu: label of the fog far intensity row	
+D_L00_0015F368	debug_label_color_r	draw_debug_menu: label of the fog red byte row	
+D_L00_0015F370	debug_label_color_g	draw_debug_menu: label of the fog green byte row	
+D_L00_0015F378	debug_label_color_b	draw_debug_menu: label of the fog blue byte row	
+D_L00_0015F380	debug_menu_samples_header	draw_debug_menu: header of group 5, the occlusion sample rows	
+D_L00_0015F388	debug_label_battle_cam	draw_debug_menu: label of the fF0 on/off row (strings.tsv at +0x40)	
+D_L00_0015F398	debug_label_actuator	draw_debug_menu: label of the fF4 on/off row (strings.tsv at +0x40)	
+D_L00_0015F3A8	debug_label_add_sample	draw_debug_menu: label of the point_timer row (strings.tsv at +0x40)	
+D_L00_0015F3B8	debug_label_add_start	draw_debug_menu: label of the saved_timer row (strings.tsv at +0x40)	
+D_L00_00160D00	debug_camera_mode_names	draw_debug_menu: string table indexed by camera_mode	
+D_L00_00160D68	debug_drawdist_names	draw_debug_menu: string table indexed by the Drawdist flag f28	
+D_L00_00160D80	debug_group1_item6_names	draw_debug_menu: string table indexed by f2C	
+D_L00_00160DA0	debug_tv_mode_names	draw_debug_menu: string table indexed by f30 (Tv Mode row)	
+D_L00_00160DB0	debug_screen_names	draw_debug_menu: string table indexed by f34 (Screen row)	
+D_L00_00160DC8	debug_occlusion_mode_names	draw_debug_menu: string table indexed by occl_mode	
+D_L00_001C4128	debug_display_mode_names	draw_debug_menu: string table indexed by display_mode	
+D_L00_00173180	timed_text_records	draw_framebuffer_with_timed_text: records drawn by draw_timed_text until a negative key	
+D_L00_001C3C10	effect3_font_metrics	print_text_with_texture_3: font metrics table passed to FontPrint, like normal_font_metrics	
+D_L00_0015F40C	level_globals_saved	Moby_SaveGlobalsState/RestoreGlobalsState: 1 while the fog and draw globals are saved in a moby	
+D_L00_001616BC	beam_arc_tex_scroll	draw_beam_and_arc_effects: texture offset lowered by speed*frame_scale, wraps at -8	
+D_L00_001616C0	beam_arc_tex_scroll_speed	draw_beam_and_arc_effects: rate subtracted from the arc texture scroll each frame	
+D_L00_001616C4	beam_arc_inner_color	draw_beam_and_arc_two_pass_quads: first-pass RGB, alpha arg OR'd in at bit 24	
+D_L00_001616C8	beam_arc_outer_color	draw_beam_and_arc_two_pass_quads: second-pass RGB, alpha arg OR'd in at bit 24	
+D_L00_00161708	beam_arc_inner_tex	draw_beam_and_arc_two_pass_quads: GetEffectTex id of the first pass	
+D_L00_0016170C	beam_arc_outer_tex	draw_beam_and_arc_two_pass_quads: GetEffectTex id of the second pass	
+D_L00_001616A4	beam_arc_main_inner_alpha	draw_beam_and_arc_effects: first-pass alpha for the main strip at 0x001DB8C0	
+D_L00_001616AC	beam_arc_main_outer_alpha	draw_beam_and_arc_effects: second-pass alpha for the main strip at 0x001DB8C0	
+D_L00_001616CC	beam_arc_main_half_width	draw_beam_and_arc_two_pass_quads: scales the camera-cross vector for the first-pass ribbon edges	
+D_L00_001616D0	beam_arc_main_outer_half_width	draw_beam_and_arc_effects: sy arg (second-pass edge scale) for the main strip	
+D_L00_00161700	beam_arc_main_end_extension	draw_beam_and_arc_effects: sz arg (end-segment extension) for the main strip	
+D_L00_001616D4	beam_arc_second_inner_alpha	draw_beam_and_arc_effects: first-pass alpha for the strip at 0x001DB8C0+0x140	
+D_L00_001616D8	beam_arc_second_outer_alpha	draw_beam_and_arc_effects: second-pass alpha for the strip at 0x001DB8C0+0x140	
+D_L00_001616DC	beam_arc_bolt_half_width	draw_beam_and_arc_effects: sx arg for the second strip and all four arc bolts	
+D_L00_001616E0	beam_arc_bolt_outer_half_width	draw_beam_and_arc_effects: sy arg for the second strip and all four arc bolts	
+D_L00_00161704	beam_arc_second_end_extension	draw_beam_and_arc_effects: sz arg for the strip at 0x001DB8C0+0x140	
+D_L00_001DBD20	beam_arc_bolt_points	draw_beam_and_arc_effects: four 5-point (0x50) bolt polylines drawn as ribbons	
+D_L00_00161730	beam_arc_bolt0_alpha	draw_beam_and_arc_effects: short alpha of bolt 0 (both passes)	
+D_L00_00161710	beam_anchor_quad_color	draw_beam_anchor_camera_facing_quads: colour of the first camera-facing quad	
+D_L00_00161718	beam_anchor_quad_size	draw_beam_anchor_camera_facing_quads: base scale (+random 0.025) of the first quad	
+D_L00_0016171C	beam_anchor_outer_quad_size	draw_beam_anchor_camera_facing_quads: base scale (+random 0.05) of the second quad	
+D_L00_001DB860	beam_anchor_quad_corners	draw_beam_anchor_camera_facing_quads: unit corner vectors scaled by the quad size	
+D_L00_001DB8A0	beam_anchor_quad_uvs	draw_beam_anchor_camera_facing_quads: per-corner u,v copied into the quad	
+func_L00_002BA7C8	build_beam_and_arc_points	called per frame before draw_beam_and_arc_effects is queued; its asm fills the 0x001DB8C0 strips and 0x001DBD20 bolt points	
+D_L00_001DBEA0	walloper_arc_points	walloper_update: ten 5-point (0x50) arc polylines, rebuilt when an arc timer expires	
+D_L00_001DC1D8	walloper_arc_alpha	walloper_update: per-arc short alpha (0x40 new, 0x20 decaying, 0), scaled by the fade in draw	
+D_L00_0016179C	walloper_fade_in_timer	walloper_update: countdown; fade = 1 - left/total while running	
+D_L00_001617A0	walloper_fade_out_timer	walloper_update: countdown after frame 12; fade = left/total while running	
+D_L00_00161778	walloper_fade_in_ticks	walloper_update: scale_ticks length loaded into the fade-in timer	
+D_L00_0016177C	walloper_fade_out_ticks	walloper_update: scale_ticks length loaded into the fade-out timer	
+D_L00_001617A4	walloper_effect_fade	walloper_update: 0..1 fade that scales arc and glow quad alpha	
+D_L00_00161774	walloper_arc_spread	walloper_update: radius passed to random_spherical_offset for new arc points	
+D_L00_00161760	walloper_arc_half_width	draw_walloper_arc_and_quad_effects: sx arg for each arc ribbon	
+D_L00_00161764	walloper_arc_outer_half_width	draw_walloper_arc_and_quad_effects: sy arg for each arc ribbon	
+D_L00_00161750	walloper_arc_inner_color	draw_walloper_arc_two_pass_quads: first-pass RGB, alpha OR'd in at bit 24	
+D_L00_00161754	walloper_arc_outer_color	draw_walloper_arc_two_pass_quads: second-pass RGB, alpha OR'd in at bit 24	
+D_L00_00161780	walloper_arc_inner_tex	draw_walloper_arc_two_pass_quads: GetEffectTex id of the first pass	
+D_L00_00161784	walloper_arc_outer_tex	draw_walloper_arc_two_pass_quads: GetEffectTex id of the second pass	
+D_L00_00161788	walloper_glow_quad_size	draw_walloper_camera_facing_quad: scales the corner vectors of the glow quad	
+D_L00_0016178C	walloper_glow_forward_offset	draw_walloper_camera_facing_quad: moby forward axis scale for the quad centre	
+D_L00_00161790	walloper_glow_color	draw_walloper_camera_facing_quad: quad colour on 3 of 4 random picks	
+D_L00_00161794	walloper_glow_flicker_color	draw_walloper_camera_facing_quad: quad colour when random_integer_below(4) == 0	
+D_L00_00161798	walloper_glow_tex	draw_walloper_camera_facing_quad: GetEffectTex id of the glow quad	
+D_L00_001DBE60	walloper_glow_quad_corners	draw_walloper_camera_facing_quad: four corner vectors scaled and transformed into the quad	
+D_L00_001617A8	aim_assist_cone_degrees	Aim_FindAssistTarget: degree limit (x pi/180) on a candidate's apparent angle	
+D_L00_001617AC	tesla_arc_range	Aim_FindAssistTarget search limit; TeslaClawArcDraw untargeted beam length and pulse travel	
+D_L00_001617B0	morphoray_drain_rate	MorphorayUpdate: per-frame amount taken from the target's remaining morph time	
+D_L00_001617BC	morphoray_sound_value	MorphorayUpdate: 10000 - progress*10000, passed by pointer to the loop sound	
+D_L00_0016188C	tesla_chain_reset_pending	set by MorphorayUpdate when the beam drops; reset_beam_chain_and_pulse_state rebuilds the chain and clears it	
+D_L00_0016189C	tesla_chain_segment_length	reset/TeslaClawArcDraw: beam length times segment ratio, step between chain points	
+D_L00_001DC260	tesla_chain_points	TeslaClawArcDraw: 12 beam chain points from the moby to the target	
+D_L00_001617C0	tesla_chain_segment_ratio	TeslaClawArcDraw: beam length times this gives the segment length; also i*ratio blend factor	
+D_L00_001617C4	tesla_homing_start_segment	TeslaClawArcDraw: chain points past this index bend toward the target	
+D_L00_001617C8	tesla_rail_twist_speed	TeslaClawArcDraw: added to the twist phase each frame (angle-wrapped)	
+D_L00_001618A0	tesla_rail_twist_phase	TeslaClawArcDraw: running angle for the side-rail spiral; cleared on reset	
+D_L00_001617CC	tesla_rail_twist_per_segment	TeslaClawArcDraw: phase added per chain index for the rail offset angle	
+D_L00_001617D4	tesla_ring_angle_step	TeslaClawArcDraw: angle between the 20 vertices of each ring	
+D_L00_001617D8	tesla_ring_radius_start	TeslaClawArcDraw: ring radius at the beam start (lerp by t)	
+D_L00_001617DC	tesla_ring_radius_end	TeslaClawArcDraw: ring radius at the beam end (lerp by t)	
+D_L00_001617FC	tesla_rail_offset_start	TeslaClawArcDraw: side-rail distance at the beam start (lerp by t)	
+D_L00_00161800	tesla_rail_offset_end	TeslaClawArcDraw: side-rail distance at the beam end (lerp by t)	
+D_L00_00161804	tesla_spark_spacing	TeslaClawArcDraw: spark step along the beam; spark count = len*1.2/spacing	
+D_L00_0016180C	tesla_spark_spread_angle	TeslaClawArcDraw: max random angle for the spark direction	
+D_L00_00161810	tesla_spark_side_offset	TeslaClawArcDraw: moby side-axis scale for the spark start	
+D_L00_00161814	tesla_pulse_spawn_ticks	TeslaClawArcDraw: reload of the pulse spawn timer	
+D_L00_001618F4	tesla_pulse_spawn_timer	TeslaClawArcDraw: countdown; on expiry a free pulse slot is started	
+D_L00_0016181C	tesla_pulse_life_ticks	TeslaClawArcDraw: life timer given to a new pulse	
+D_L00_00161820	tesla_pulse_fade_ticks	TeslaClawArcDraw: below this life the pulse alpha drops each frame	
+D_L00_00161838	tesla_pulse_fade_step	TeslaClawArcDraw: alpha taken from a fading pulse each frame	
+D_L00_00161818	tesla_pulse_speed	TeslaClawArcDraw: distance a pulse moves per frame (x frame scale)	
+D_L00_0016182C	tesla_pulse_start_size	TeslaClawArcDraw: pulse size at spawn (lerp start)	
+D_L00_00161828	tesla_pulse_end_size	TeslaClawArcDraw: pulse size at full travel (lerp end)	
+D_L00_001618E8	tesla_pulse_active	TeslaClawArcDraw/draw_beam_pulse_quads: 3 pulse in-use flags	
+D_L00_001618B8	tesla_pulse_alpha	TeslaClawArcDraw/draw_beam_pulse_quads: 3 pulse alphas	
+D_L00_001618D8	tesla_pulse_size	TeslaClawArcDraw/draw_beam_pulse_quads: 3 pulse quad sizes	
+D_L00_001DD3A0	tesla_pulse_pos	TeslaClawArcDraw/draw_beam_pulse_quads: 3 pulse positions	
+D_L00_001DD3D0	tesla_pulse_dir	TeslaClawArcDraw: 3 pulse travel directions (unit first chain segment)	
+D_L00_001DC220	tesla_quad_corners	draw_beam_pulse_quads/draw_beam_origin_camera_facing_quads: four corner vectors scaled by quad size	
+D_L00_00161830	tesla_pulse_color	draw_beam_pulse_quads: pulse colour when the D_0013E633[2] byte is 0	
+D_L00_00161834	tesla_pulse_alt_color	draw_beam_pulse_quads: pulse colour when the D_0013E633[2] byte is set	
+D_L00_00161888	tesla_origin_quad_color	draw_beam_origin_camera_facing_quads: colour of the first origin quad	
+D_L00_00161884	tesla_origin_forward_offset	draw_beam_origin_camera_facing_quads: forward distance from the first chain point	
+D_L00_0016187C	tesla_origin_quad_size	draw_beam_origin_camera_facing_quads: corner scale of the coloured quad	
+D_L00_00161880	tesla_origin_core_quad_size	draw_beam_origin_camera_facing_quads: corner scale of the white quad	
+D_L00_0016185C	tesla_rail_tex_scroll	draw_beam_ring_and_rail_effects: rail texture offset, wraps at -8	
+D_L00_00161860	tesla_rail_tex_scroll_speed	draw_beam_ring_and_rail_effects: rate subtracted from the rail texture scroll	
+D_L00_0016183C	tesla_rail_inner_alpha	draw_beam_ring_and_rail_effects: first-pass alpha of both side rails	
+D_L00_00161840	tesla_rail_outer_alpha	draw_beam_ring_and_rail_effects: second-pass alpha of both side rails	
+D_L00_00161844	tesla_rail_half_width	DrawScrollingRibbonColored: first-pass edge scale of the rail ribbon	
+D_L00_00161848	tesla_rail_outer_half_width	draw_beam_ring_and_rail_effects: sy arg for both rails	
+D_L00_0016184C	tesla_rail_end_extension	draw_beam_ring_and_rail_effects: sz arg for both rails	
+D_L00_00161854	tesla_rail0_outer_color	draw_beam_ring_and_rail_effects: second-pass colour of rail 0	
+D_L00_00161858	tesla_rail1_outer_color	draw_beam_ring_and_rail_effects: second-pass colour of rail 1	
+D_L00_001DC320	tesla_rail0_points	TeslaClawArcDraw: 12 points offset to one side of the chain (+z offset)	
+D_L00_001DC3E0	tesla_rail1_points	TeslaClawArcDraw: 12 points mirrored to the other side (-z offset)	
+D_L00_00161850	tesla_rail_inner_color	DrawScrollingRibbonColored: first-pass RGB, alpha OR'd in at bit 24	
+D_L00_00161874	tesla_rail_inner_tex	DrawScrollingRibbonColored: GetEffectTex id of the first pass	
+D_L00_00161878	tesla_rail_outer_tex	DrawScrollingRibbonColored: GetEffectTex id of the second pass	
+D_L00_00161864	tesla_ring_color	draw_beam_ring_and_rail_effects: ring quad colour (alpha cleared on the last ring)	
+D_L00_00161868	tesla_ring_alt_color	draw_beam_ring_and_rail_effects: ring colour when byte D_0013E635 is set	
+D_L00_0016186C	tesla_ring_tex	draw_beam_ring_and_rail_effects: texture id of the ring quads	
+D_L00_001617E8	tesla_ring_tex_v_scroll	draw_beam_ring_and_rail_effects: ring v offset, wraps at -8; cleared on reset	
+D_L00_001617EC	tesla_ring_tex_v_scroll_speed	draw_beam_ring_and_rail_effects: rate taken from the ring v scroll	
+D_L00_001617F0	tesla_ring_tex_u_scroll_a	draw_beam_ring_and_rail_effects: first u offset, decreases, wraps at -7	
+D_L00_001617F4	tesla_ring_tex_u_scroll_b	draw_beam_ring_and_rail_effects: second u offset, increases, wraps at 5	
+D_L00_001617F8	tesla_ring_tex_u_scroll_speed	draw_beam_ring_and_rail_effects: rate applied to both ring u scrolls	
+D_L00_001617E4	tesla_ring_tex_u_step	draw_beam_ring_and_rail_effects: u width of one ring quad	
+D_L00_001617E0	tesla_ring_tex_v_step	draw_beam_ring_and_rail_effects: v height of one ring row	
+D_L00_001DC4A0	tesla_ring_vertices	TeslaClawArcDraw: 12 rings x 20 vertices around the chain points	
+D_L00_0015F8FC	health_hud_cap_size	draw_health_hud_panel: width and height of the backing end-cap sprites	
+D_L00_0015F848	hud_stars_scale_x	draw_hud_stars/draw_morphoray_progress_hud: fraction of hud_stars_width used for the centre and margin	
+D_L00_0015F84C	hud_stars_scale_y	draw_hud_stars/draw_morphoray_progress_hud: fraction of hud_star_height used for the centre and margin	
+D_L00_0015F860	quick_select_fade_steps	both selectors: cap of the open/fade counters, divisor for the 0..1 fades	
+D_L00_0015F8D0	health_hud_fade_steps	health and bolt-exclamation panels: cap of the open/text counters, divisor for the fades	
+D_L00_0017E5D8	texture_group_header	decompress_and_relocate_selected_groups/apply_group_entry_adjustment: block whose +0x18 table gives group sizes and data uploaded per group	
+D_L00_0015F7F8	quick_select_width	selector init/draw: panel width (x+w, w/2 corner sprites)	
+D_L00_0015F7FC	quick_select_height	selector init/draw: panel height (y+h, h/2 corner sprites)	
+D_L00_001C4198	level_item_ids	init_level_item_inventory/append_level_item_if_absent: item id per index, searched and appended to a 0xFF-terminated list	
+D_L00_0015F804	quick_select_center_y	selector draws: y of the icon ring centre and text, partner of quick_select_center_x	
+D_L00_0015FB68	health_hud_wobble_counter	initialize_hud_element_with_counters: four shorts at +0x80 of the health element, set 0,0,0,1	
+func_L00_001FF2F8	vec_mul_components	asm: out.xyz = a.xyz * b.xyz (vmul.xyz); used on star particle positions	
+D_00141710	radial_select_choice	update_hud_radial_selector: slot item stored on release (0 if none); gadgebot code switches on it	
+D_L00_0015F890	quick_select_pulse_period	selector draws: level_frame_counter period of the marker pulse	
+D_L00_0015F86C	quick_select_ring_radius	selector draws: radius of the icon ring (cos/sin of slot angle)	
+D_L00_0015F8A8	hud_ammo_format	draw_hud_item_selector_panel/HudWeaponDraw: sprintf format given ammo and max ammo	
+D_L00_0015FB28	alt_moby_array_start	select_moby_context: swapped with moby_array_start when the context flips	
+D_L00_0015FB2C	alt_level_mobys_end	select_moby_context: swapped with level_mobys_end when the context flips	
+D_L00_0015FB30	alt_moby_array_last	select_moby_context: swapped with moby_array_last when the context flips	
+D_L00_0015FB34	alt_moby_spawn_pvar_pool	select_moby_context: swapped with moby_spawn_pvar_pool when the context flips	
+D_L00_0015F808	moby_context_index	select_moby_context: current context (0/1), toggled when the requested one differs	
+D_L00_0015F850	hud_text_panel_y	draw_hud_text_panel: base y (+0xA PAL, +0x12 NTSC)	
+D_L00_0015FB50	quick_select_last_state	both selector updates: w78 state word saved when the selector closes	
+D_L00_0015FB4C	quick_select_close_frame	both selector updates: rendered_frame_count when the selector closed	
+D_L00_0015F868	quick_select_snap_margin	update_hud_item_selector: slot fraction near a boundary that snaps to the next slot	
+D_L00_0015F864	quick_select_slot_angle_offset	update_hud_item_selector: stick angle minus the chosen slot's centre angle	
+D_L00_0015F8A4	quick_select_ring_aspect	selector draws: x scale of the icon ring radius	
+D_L00_0015F8A0	quick_select_unselected_alpha_scale	selector draws: alpha factor for icons other than the selected one	
+D_L00_0015F8E8	health_hud_y	draw_health_hud_panel: base y (+0xA PAL, +0x12 NTSC)	
+D_L00_0015FB70	bolt_counter_icon_tick	initialize_bolt_counter_hud: short at +0x80, stepped mod 60 for the bolt icon frame	
+D_L00_0015F914	bolt_count_text_x	draw_bolt_counter_hud_panel: x offset of the right-aligned count	
+D_L00_0015F918	bolt_count_text_y	draw_bolt_counter_hud_panel: y offset of the right-aligned count	
+D_L00_0015F9F4	weapon_hud_open_steps	HudWeaponDraw/func_L00_0023D750_r: cap of the open counter, divisor of the panel fade	
+D_L00_0015F9F8	weapon_hud_text_fade_steps	HudWeaponDraw/func_L00_0023D750_r: cap of the text counter, divisor of the text fade	
+D_L00_0015FA14	weapon_hud_text_x	HudWeaponDraw: x offset (after panel width) of the ammo text	
+D_L00_0015FA18	weapon_hud_text_y	HudWeaponDraw: y offset of the ammo text	
+D_L00_0015FA40	weapon_hud_suspended	update_weapon_hud_state runs only while 0; reset_hud_and_suspend_weapon_updates sets 1	
+D_L00_0017E4A0	hud_slide_ramp_timed	apply_hud_slide_offset: 24-step offset ramp used while the element timer runs	
+D_L00_0017E500	hud_slide_ramp_idle	apply_hud_slide_offset: 24-step offset ramp used once the element timer is 0	
+D_L00_0015F83C	hud_star_column_count	Hud_InitParticles: number of columns the 100 star particles are spread over	
+D_L00_001E8840	hud_text_panel_time_format	draw_hud_text_panel: format for label, seconds, minutes, hundredths	
+D_L00_0015F858	hud_text_panel_score_format	draw_hud_text_panel: format for label and score	
+D_L00_0017DBC0	quick_select_slot_entries	initialize_eight_slot_hud_selector: 8 slot records filled from item ids and item_defs	
+D_L00_0017DD18	quick_select_default_left_slot	update_hud_item_selector: slot picked by pad 0x8000 (left) with nothing selected	
+D_L00_0017DD1C	quick_select_default_right_slot	update_hud_item_selector: slot picked by pad 0x2000 (right) with nothing selected	
+D_L00_0017DD20	quick_select_default_up_slot	update_hud_item_selector: slot picked by pad 0x1000 (up) with nothing selected	
+D_L00_0017DD24	quick_select_default_down_slot	update_hud_item_selector: slot picked by pad 0x4000 (down) with nothing selected	
+D_L00_0015F870	quick_select_name_color_from	draw_hud_item_selector_panel: item-name front colour tween start	
+D_L00_0015F874	quick_select_name_color_to	draw_hud_item_selector_panel: item-name front colour tween end	
+D_L00_0015F878	quick_select_text_shadow_from	draw_hud_item_selector_panel: colour of the +1 offset text copy, tween start	
+D_L00_0015F880	quick_select_empty_ammo_color_from	draw_hud_item_selector_panel: ammo text colour tween start when ammo is 0	
+D_L00_0015F884	quick_select_empty_ammo_color_to	draw_hud_item_selector_panel: ammo text colour tween end when ammo is 0	
+D_L00_0015F888	quick_select_ammo_color_from	draw_hud_item_selector_panel: ammo text colour tween start when ammo is nonzero	
+D_L00_0015F89C	quick_select_name_y_single	draw_hud_item_selector_panel: name text y offset for a one-line name	
+D_L00_0015F820	radial_select_slot_tables	initialize_four_slot_hud_selector: slot-table set given to hud_selector_slot_tables	
+D_L00_0017DD38	radial_select_default_left_slot	update_hud_radial_selector: slot picked by pad 0x8000 (left) with nothing selected	
+D_L00_0017DD3C	radial_select_default_right_slot	update_hud_radial_selector: slot picked by pad 0x2000 (right) with nothing selected	
+D_L00_0017DD40	radial_select_default_up_slot	update_hud_radial_selector: slot picked by pad 0x1000 (up) with nothing selected	
+D_L00_0017DD44	radial_select_default_down_slot	update_hud_radial_selector: slot picked by pad 0x4000 (down) with nothing selected	
+D_L00_0015F900	health_hud_backing_alpha	draw_health_hud_panel: backing sprite alpha, scaled by the open fade	
+D_L00_0015F8F0	health_hud_backing_y_offset	draw_health_hud_panel: y of the backing strip below the base y	
+D_L00_0015F8EC	health_hud_second_row_y_offset	draw_health_hud_panel: y step to the second backing strip	
+D_L00_0015F8D8	health_hud_icon_offsets	draw_health_hud_panel: x,y offset pairs of the health icons for other max-health counts	
+D_L00_0017E578	health_hud_icon_offsets_8	draw_health_hud_panel: x,y offset pairs used when max health is 8	
+D_L00_0017E560	health_hud_icon_offsets_5	draw_health_hud_panel: x,y offset pairs used when max health is 5	
+D_L00_0015F91C	bolt_separator_x	draw_bolt_counter_hud_panel: thousands-separator x offset (most languages)	
+D_L00_0015F920	bolt_separator_y	draw_bolt_counter_hud_panel: thousands-separator y offset (most languages)	
+D_L00_0015F924	bolt_separator_alt_x	draw_bolt_counter_hud_panel: separator x offset for languages 3 and 5	
+D_L00_0015F928	bolt_separator_alt_y	draw_bolt_counter_hud_panel: separator y offset for languages 3 and 5	
+D_L00_0015F938	bolt_separator_string	draw_bolt_counter_hud_panel: separator text (most languages)	
+D_L00_0015F940	bolt_separator_alt_string	draw_bolt_counter_hud_panel: separator text for languages 3 and 5	
+D_L00_0015F9CC	bolt_exclamation_panel_alpha	draw_hud_bolt_exclamation_panel: panel alpha, scaled by the open fade	
+D_L00_0015F9D0	bolt_exclamation_panel_width	draw_hud_bolt_exclamation_panel: middle strip width, scaled by the open fade	
+D_L00_0015F9D4	bolt_exclamation_panel_right_x	draw_hud_bolt_exclamation_panel: x offset of the panel right edge	
+D_L00_0015F9D8	bolt_exclamation_text_x	draw_hud_bolt_exclamation_panel: x offset of the text	
+D_L00_0015F9DC	bolt_exclamation_text_y	draw_hud_bolt_exclamation_panel: y offset of the text	
+D_L00_0015F9E0	bolt_exclamation_color_from	draw_hud_bolt_exclamation_panel: text colour tween start	
+D_L00_0015F9E4	bolt_exclamation_color_to	draw_hud_bolt_exclamation_panel: text colour tween end	
+D_L00_0015F9E8	bolt_exclamation_pulse_ticks	draw_hud_bolt_exclamation_panel: scale_ticks period of the text pulse	
+D_L00_0015F9F0	bolt_exclamation_format	draw_hud_bolt_exclamation_panel: format string printed into the text buffer	
+D_L00_0015F9FC	weapon_hud_panel_width	HudWeaponDraw: panel width when max ammo is below 100	
+D_L00_0015FA00	weapon_hud_wide_panel_width	HudWeaponDraw: panel width when max ammo is 100 or more	
+D_L00_0015FA04	weapon_hud_ammo_color_from	HudWeaponDraw: ammo text colour tween start when ammo is nonzero	
+D_L00_0015FA08	weapon_hud_ammo_color_to	HudWeaponDraw: ammo text colour tween end when ammo is nonzero	
+D_L00_0015FA0C	weapon_hud_empty_color_from	HudWeaponDraw: ammo text colour tween start when ammo is 0	
+D_L00_0015FA10	weapon_hud_empty_color_to	HudWeaponDraw: ammo text colour tween end when ammo is 0	
+D_L00_0017E5F4	hud_anim_sequences	update_hud_animation_frame: 8-byte sequence records indexed by the element's anim id	
+D_L00_0015FA44	weapon_hud_item	update_weapon_hud_state: weapon id shown (D_hud_pair[0]); reset to 0	
+D_L00_0015FA48	weapon_hud_handle	update_weapon_hud_state: queued HUD element handle (D_hud_pair[1]); -1 when none	
+D_L00_0015FB54	quick_select_last_slot	both selector updates: selected slot saved when the selector closes	
+D_L12_00161FA0	hoven_turret_attempts	hoven_turret_update: +1 on mounting, -1 when killed above 100 hp; shot damage and planetbuster gun spread/delay scale with it	
+D_L12_0015F660	hoven_zero_vec	passed as the zero vector args of spawn_explosion and particle spawns, never written	
+D_L12_00161E98	hoven_turret_gauge_center_y	DrawGauge: screen y centre of the gauge frame, health ring and markers	
+D_L12_00161E94	hoven_turret_gauge_center_x	DrawGauge: screen x centre of the gauge frame, health ring and markers	
+D_L12_00161EC8	hoven_turret_gauge_marker_radius_y	DrawGauge: y corner radius (sin) of the rotating yaw and pitch marker quads	
+D_L12_00161EC4	hoven_turret_gauge_marker_radius_x	DrawGauge: x corner radius (cos) of the rotating yaw and pitch marker quads	
+D_L12_00161F80	hoven_turret_manned	hoven_turret_update: 1 while the hero drives the turret (state 4), else 0; planetbuster guns aim at the turret then	
+D_L12_0015F6B0	hoven_frame_count	L12 copy of the level frame counter; glow phase modulo and scene trigger guard	
+D_L12_00161A20	planetbuster_death_cam_active	set 1 when the planetbuster death camera starts; hoven_turret_update then stops control and the gauge	
+D_L12_00161A34	planetbuster_engaged	planetbuster_maximus_part_update: 1 once the hero enters its clip volume or mans the turret, 0 at start/end	
+D_L12_00162178	hoven_layer_uv_scroll	update_hoven_scrolling_texture_layers: u,v scroll pairs of two layers, wrapped to -1..1	
+D_L12_00161FB4	planetbuster_aggro_timer	update_planetbuster_maximus_guns: guns fire at the hero once above scale_ticks(1200) and near; reset when far, set high when hit	
+D_L12_00161FC0	planetbuster_fall_pos	update_planetbuster_maximus_detached_parts: falling hull position (-1 = unset), copied into the moby each frame	
+D_L12_00161AA4	water_reservoir_curve_scale	draw_water_reservoir: scales the strip coordinate inside FastCos for the bowl shape	
+D_L12_00161E78	electric_arc_tex_scroll	ElectricArcUpdate: u scroll, advanced by speed*frame time and wrapped at 1; added in DrawRingQuads	
+D_L12_00161F30	hoven_turret_gauge_frame_color	DrawGauge: colour of the four gauge frame quads	
+D_L12_00161FA4	planetbuster_defeated	set 1 when the planetbuster hull hp reaches 0; turret can no longer be destroyed then	
+D_L12_00161F84	hoven_turret_destroyed	hoven_turret_update: set 1 when turret hp drops to 0; planetbuster guns stop then	
+D_L12_00161F28	hoven_turret_pitch_min	hoven_turret_update: lower clamp of the turret pitch (f74)	
+D_L12_00161F2C	hoven_turret_pitch_max	hoven_turret_update: upper clamp of the turret pitch (f74)	
+D_L12_00161FA8	planetbuster_sway_rate_a	planetbuster_maximus_part_update: deg/s step of the first angle of update_moby_rotation_oscillation	
+D_L12_00161FAC	planetbuster_sway_rate_b	planetbuster_maximus_part_update: deg/s step of the second angle of update_moby_rotation_oscillation	
+D_L12_00161FB0	planetbuster_sway_amplitude	planetbuster_maximus_part_update: radius r of update_moby_rotation_oscillation	
+D_L12_001FBFD0	hoven_overlay_piece_vertex_counts	draw/update_hoven_scrolling_texture_layers: per-piece counts for the 10 overlay pieces	
+D_L12_00161F50	hoven_turret_yaw_speed	hoven_turret_update: max yaw rate (deg x frame time) from stick x	
+D_L12_00161F54	hoven_turret_pitch_speed	hoven_turret_update: max pitch rate (deg x frame time) from stick y	
+D_L12_00161F58	hoven_turret_yaw_accel	hoven_turret_update: ApproachValue step while yaw rate grows toward the target	
+D_L12_00161F5C	hoven_turret_pitch_accel	hoven_turret_update: ApproachValue step while pitch rate grows toward the target	
+D_L12_00161F60	hoven_turret_yaw_brake	hoven_turret_update: ApproachValue step while yaw rate falls or reverses	
+D_L12_00161F64	hoven_turret_pitch_brake	hoven_turret_update: ApproachValue step while pitch rate falls or reverses	
+D_L12_00161F68	hoven_turret_shot_speed	hoven_turret_update: shot velocity length (x frame time) for Moby458Spawn	
+D_L12_00161EE0	hoven_turret_wreck_blast_dist_min	hoven_turret_update state 7: min distance of the random explosions around the camera	
+D_L12_00161EE4	hoven_turret_wreck_blast_dist_max	hoven_turret_update state 7: max distance of the random explosions around the camera	
+D_L12_00161EA0	hoven_turret_gauge_frame_half_height	DrawGauge: y offset (x +-1) of the four frame quads from the centre	
+D_L12_00161E9C	hoven_turret_gauge_frame_half_width	DrawGauge: x offset (x +-1) of the four frame quads from the centre	
+D_L12_00161EA4	hoven_turret_gauge_ring_radius_x	DrawGauge: x radius of the 32-segment health ring	
+D_L12_00161EA8	hoven_turret_gauge_ring_radius_y	DrawGauge: y radius of the 32-segment health ring	
+D_L12_001FB930	planetbuster_gun_part_index	update_planetbuster_maximus_guns: gun i to linked part index (0x11 = the hull itself)	
+D_L12_00161FE0	planetbuster_path_pos	planetbuster_maximus_part_update: saved moby position restored while parts fall	
+D_L12_00161FF0	planetbuster_path_rot	planetbuster_maximus_part_update: saved moby rotation restored while parts fall	
+D_L12_0015F504	hoven_cutscene_active	planetbuster_maximus_part_update: 1 while the death camera shot runs, 0 when CameraScript2 takes over	
+D_L12_00208DC0	hoven_overlay_uv_buffer	draw_hoven_scrolling_texture_layers: scrolled UVs written by add_uv_scroll_offset, read by draw_env_overlay_mesh	
+D_L12_00205D18	hoven_overlay_piece_colors	draw/update_hoven_scrolling_texture_layers: per-piece RGBA tables, scaled once by scale_rgba_tables	
+D_L12_001F5DE0	water_reservoir_quad_corners	draw_water_reservoir: four vertex vectors copied into the strip quad	
+D_L12_00161A8C	water_reservoir_blend_a	draw_water_reservoir: ALPHA register field A (bits 0-1)	
+D_L12_00161A90	water_reservoir_blend_b	draw_water_reservoir: ALPHA register field B (bits 2-3)	
+D_L12_00161A94	water_reservoir_blend_c	draw_water_reservoir: ALPHA register field C (bits 4-5)	
+D_L12_00161A98	water_reservoir_blend_d	draw_water_reservoir: ALPHA register field D (bits 6-7)	
+D_L12_00161A9C	water_reservoir_color_from	draw_water_reservoir: colour tween start (sin of the spin angle)	
+D_L12_00161AA0	water_reservoir_color_to	draw_water_reservoir: colour tween end (sin of the spin angle)	
+D_L12_00161E7C	electric_arc_tex_scroll_speed	ElectricArcUpdate: rate added to electric_arc_tex_scroll	
+D_L12_00161E80	electric_arc_jitter	ElectricArcUpdate: rand_vec radius (x frame time) of the arc point drift	
+D_L12_00161F70	hoven_turret_camera_offset	update_hoven_turret_camera: vector rotated by the turret matrix and added to its position	
+D_L12_00161F94	hoven_turret_gauge_frame_uv3	DrawGauge: fourth packed uv of the frame quads	
+D_L12_00161F88	hoven_turret_gauge_frame_uv0	DrawGauge: first packed uv of the frame quads	
+D_L12_00161F8C	hoven_turret_gauge_frame_uv1	DrawGauge: second packed uv of the frame quads	
+D_L12_00161F90	hoven_turret_gauge_frame_uv2	DrawGauge: third packed uv of the frame quads	
+D_L12_00161EDC	hoven_turret_gauge_frame_tex	DrawGauge: texture index (+0x28) of the frame quads	
+D_L12_00161EAC	hoven_turret_gauge_ring_uv0	DrawGauge: first packed uv of the health ring segments	
+D_L12_00161EB0	hoven_turret_gauge_ring_uv1	DrawGauge: second packed uv of the health ring segments	
+D_L12_00161EB4	hoven_turret_gauge_ring_uv2	DrawGauge: third packed uv of the health ring segments	
+D_L12_00161EB8	hoven_turret_gauge_ring_uv3	DrawGauge: fourth packed uv of the health ring segments	
+D_L12_00161ECC	hoven_turret_gauge_marker_uv0	DrawGauge: first packed uv of the yaw/pitch marker quads	
+D_L12_00161ED0	hoven_turret_gauge_marker_uv1	DrawGauge: second packed uv of the yaw/pitch marker quads	
+D_L12_00161ED4	hoven_turret_gauge_marker_uv2	DrawGauge: third packed uv of the yaw/pitch marker quads	
+D_L12_00161ED8	hoven_turret_gauge_marker_uv3	DrawGauge: fourth packed uv of the yaw/pitch marker quads	
+D_L12_00161EBC	hoven_turret_gauge_yaw_marker_tex	DrawGauge: effect texture of the marker rotated by turret yaw	
+D_L12_00161EC0	hoven_turret_gauge_pitch_marker_tex	DrawGauge: effect texture of the marker rotated by turret pitch	
+D_L12_00162188	hoven_overlay_uv_scroll	update/draw_hoven_scrolling_texture_layers: u,v scroll of the 10-piece overlay, wrapped to -1..1	
+D_L12_00205CC8	hoven_overlay_piece_uvs	draw_hoven_scrolling_texture_layers: per-piece source UVs passed to add_uv_scroll_offset	
+D_L12_00205CA0	hoven_overlay_piece_meshes	draw_hoven_scrolling_texture_layers: per-piece mesh data passed to draw_env_overlay_mesh	
+D_L12_00208DA0	hoven_front_piece_colors	update_hoven_scrolling_texture_layers: RGBA tables of 5 pieces scaled once by scale_rgba_tables	
+D_L12_00205D40	hoven_front_piece_vertex_counts	update_hoven_scrolling_texture_layers: counts for the 5 front-piece colour tables	
+D_L12_00161A4C	water_reservoir_spin_speed	water_reservoir_update: deg rate added to the reservoir angle	
+D_L12_00161A50	water_reservoir_flow_ticks	water_reservoir_update: timer length on fill/drain commands; spray chance follows timer/length	
+D_L12_00161A54	water_reservoir_spray_spread	water_reservoir_update: rand_vec radius for the three spray control points	
+D_L12_00161A6C	water_reservoir_drop_life_ticks	water_reservoir_update: PartType02Spawn life (scale_ticks) and 2/n velocity step	
+D_L12_00161A74	water_reservoir_drop_color	water_reservoir_update: PartType02Spawn start and end colour	
+D_L12_00161A78	water_reservoir_drop_tex	water_reservoir_update: PartType02Spawn texture slot (arg 8)	
+D_L12_00161A7C	water_reservoir_spray_z_low	water_reservoir_update: lowest spray point height (start when filling)	
+D_L12_00161A80	water_reservoir_spray_z_mid	water_reservoir_update: middle spray point height	
+D_L12_00161A84	water_reservoir_spray_z_high	water_reservoir_update: highest spray point height (start when draining)	
+D_L12_00161A88	water_reservoir_level_speed	water_reservoir_update: ApproachValue rate of the water level	
+D_L12_00161E4C	electric_arc_blend_a	DrawRingQuads: ALPHA register field A (bits 0-1)	
+D_L12_00161E50	electric_arc_blend_b	DrawRingQuads: ALPHA register field B (bits 2-3)	
+D_L12_00161E54	electric_arc_blend_c	DrawRingQuads: ALPHA register field C (bits 4-5)	
+D_L12_00161E58	electric_arc_blend_d	DrawRingQuads: ALPHA register field D (bits 6-7)	
+D_L12_00161E6C	electric_arc_color_from	DrawRingQuads: strip colour tween start by phase	
+D_L12_00161E70	electric_arc_color_to	DrawRingQuads: strip colour tween end by phase	
+D_L12_00161E74	electric_arc_tex_u_step	DrawRingQuads: u added per strip segment, wrapped at 1	
+D_L12_00162170	hoven_layer_colors_scaled	update_hoven_scrolling_texture_layers: once-flag set after scaling the colour tables	
+D_L12_00162160	hoven_layer_uv_scroll_speed	update_hoven_scrolling_texture_layers: u,v speed pairs for hoven_layer_uv_scroll	
+D_L12_00162158	hoven_overlay_uv_scroll_speed	update_hoven_scrolling_texture_layers: u,v speed for hoven_overlay_uv_scroll	
+D_L08_00161C30	batalia_cannon_hud_frame_tex_base	texture id (+0x28) for the four outer and inner HUD frame quads in DrawCannonHud	
+D_L08_00161C34	batalia_cannon_hud_marker_tex	texture id for target markers and health dial segments in DrawCannonHud	
+D_L08_00161C38	batalia_cannon_hud_yaw_needle_tex	texture of the needle rotated by rot.z*4 in DrawCannonHud	
+D_L08_00161C3C	batalia_cannon_hud_pitch_needle_tex	texture of the needle rotated by rot.y*8 in DrawCannonHud	
+D_L08_00161C40	batalia_cannon_hud_frame_uv0	uv word 0 of the HUD frame quads	
+D_L08_00161C44	batalia_cannon_hud_frame_uv1	uv word 1 of the HUD frame quads	
+D_L08_00161C48	batalia_cannon_hud_frame_uv2	uv word 2 of the HUD frame quads	
+D_L08_00161C4C	batalia_cannon_hud_frame_uv3	uv word 3 of the HUD frame quads	
+D_L08_00161C50	batalia_cannon_hud_marker_uv0	uv word 0 of the HUD target marker quads	
+D_L08_00161C54	batalia_cannon_hud_marker_uv1	uv word 1 of the HUD target marker quads	
+D_L08_00161C58	batalia_cannon_hud_marker_uv2	uv word 2 of the HUD target marker quads	
+D_L08_00161C5C	batalia_cannon_hud_marker_uv3	uv word 3 of the HUD target marker quads	
+D_L08_00161C60	batalia_cannon_hud_dial_uv0	uv word 0 of the 32 health dial segments	
+D_L08_00161C64	batalia_cannon_hud_dial_uv1	uv word 1 of the 32 health dial segments	
+D_L08_00161C68	batalia_cannon_hud_dial_uv2	uv word 2 of the 32 health dial segments	
+D_L08_00161C6C	batalia_cannon_hud_dial_uv3	uv word 3 of the 32 health dial segments	
+D_L08_00161C70	batalia_cannon_hud_needle_uv0	uv word 0 of the two rotating needle quads	
+D_L08_00161C74	batalia_cannon_hud_needle_uv1	uv word 1 of the two rotating needle quads	
+D_L08_00161C78	batalia_cannon_hud_needle_uv2	uv word 2 of the two rotating needle quads	
+D_L08_00161C7C	batalia_cannon_hud_needle_uv3	uv word 3 of the two rotating needle quads	
+D_L08_00161B58	batalia_cannon_hud_frame_color	color of all HUD frame quads	
+D_L08_00161B64	batalia_cannon_hud_blink_marker_color	linked target marker color when state 2, blinking with frame bit 0x10	
+D_L08_00161B6C	batalia_cannon_hud_linked_marker_color	marker color of live linked targets not in state 2	
+D_L08_00161B68	batalia_cannon_hud_indexed_marker_color	marker color of the four indexed targets	
+D_L08_00161B50	batalia_cannon_hud_radar_scale	scales target distance into marker offset on the HUD	
+D_L08_00161C10	batalia_cannon_hud_outer_center_x	x center of the outer frame and radar markers	
+D_L08_00161C14	batalia_cannon_hud_outer_center_y	y center of the outer frame and radar markers	
+D_L08_00161C18	batalia_cannon_hud_outer_half_width	outer frame quad x extent, signed per corner	
+D_L08_00161C1C	batalia_cannon_hud_outer_half_height	outer frame quad y extent, signed per corner	
+D_L08_00161C20	batalia_cannon_hud_linked_marker_half_width	x half size of linked target markers	
+D_L08_00161C24	batalia_cannon_hud_linked_marker_half_height	y half size of linked target markers	
+D_L08_00161C28	batalia_cannon_hud_indexed_marker_half_width	x half size of indexed target markers	
+D_L08_00161C2C	batalia_cannon_hud_indexed_marker_half_height	y half size of indexed target markers	
+D_L08_00161BF0	batalia_cannon_hud_inner_center_x	x center of inner frame and health dial	
+D_L08_00161BF4	batalia_cannon_hud_inner_center_y	y center of inner frame and health dial	
+D_L08_00161BF8	batalia_cannon_hud_inner_half_width	inner frame quad x extent, signed per corner	
+D_L08_00161BFC	batalia_cannon_hud_inner_half_height	inner frame quad y extent, signed per corner	
+D_L08_00161C00	batalia_cannon_hud_dial_radius_x	x radius of the 32-segment health dial	
+D_L08_00161C04	batalia_cannon_hud_dial_radius_y	y radius of the 32-segment health dial	
+D_L08_00161C08	batalia_cannon_hud_needle_extent_x	x length of the rotating needle corners	
+D_L08_00161C0C	batalia_cannon_hud_needle_extent_y	y length of the rotating needle corners	
+D_L08_00161B20	batalia_cannon_dismount_offset	local offset where the hero is placed when leaving the cannon	
+D_L08_00161BA0	batalia_cannon_left_gun_offset	local mount offset of guns[0]	
+D_L08_00161BB0	batalia_cannon_right_gun_offset	local mount offset of guns[1]	
+D_L08_00161BC0	batalia_cannon_left_muzzle_offset	shot origin when barrel 1 fires guns[0]	
+D_L08_00161BD0	batalia_cannon_right_muzzle_offset	shot origin when barrel 0 fires guns[1]	
+D_L08_00161BE0	batalia_cannon_camera_offset	local offset of the mounted cannon camera position	
+D_L08_00161C80	batalia_cannon_visual_offset	local offset of the attached visual moby 0x710	
+D_L08_00161B78	batalia_cannon_max_yaw_speed	degrees scale of stick x into target yaw step	
+D_L08_00161B7C	batalia_cannon_max_pitch_speed	degrees scale of stick y into target pitch step	
+D_L08_00161B80	batalia_cannon_yaw_accel	yaw step approach rate while speeding up	
+D_L08_00161B84	batalia_cannon_pitch_accel	pitch step approach rate while speeding up	
+D_L08_00161B88	batalia_cannon_yaw_decel	yaw step approach rate while slowing down	
+D_L08_00161B8C	batalia_cannon_pitch_decel	pitch step approach rate while slowing down	
+D_L08_00161B90	batalia_cannon_shot_speed	length of the shot direction vector for both barrels	
+func_001FA4F0	multiply_matrix3x3	VU0 asm: three rows of arg1 times the 3x3 of arg2 stored to arg0; used to rotate rot_row0	
+D_L08_00161C90	falling_debris_burst_count	loop count of PartType02Spawn bursts when debris drops below z 15.2	
+D_L08_00161C94	falling_debris_burst_lower	fourth arg (lower) of each PartType02Spawn burst	
+D_L08_00161C98	falling_debris_burst_upper	fifth arg (upper) of each PartType02Spawn burst	
+D_L08_00161C9C	falling_debris_burst_rise_speed	z of the first burst velocity, times frame time	
+D_L08_00161CA0	falling_debris_burst_end_rise_speed	z of the second burst vector, times frame time	
+D_L08_00161CA4	falling_debris_burst_spread_speed	radial cos/sin scale of the first burst velocity	
+D_L08_00161CA8	falling_debris_burst_end_spread_speed	radial cos/sin scale of the second burst vector	
+D_L08_00161CAC	falling_debris_burst_time_a	base of first random tick range (x..2x) of the burst	
+D_L08_00161CB0	falling_debris_burst_time_b	base of second random tick range (x..2x) of the burst	
+D_L08_00161CB4	falling_debris_burst_time_c	base of third random tick range (x..2x) of the burst	
+D_L08_00161CB8	falling_debris_burst_start_w	w component of the first burst vector	
+D_L08_00161CBC	falling_debris_burst_end_w	w component of the second burst vector	
+D_L08_00161CC0	falling_debris_smoke_choices	pair of values, one picked at random for the PartType11Spawn smoke trail	
+D_L08_00161CCC	gunship_rotor_spin_speed	degrees per frame-time spin added to rot.x of linked parts 7, 8 (negated) and 9	
+D_L08_00161CDC	gunship_update_disabled	when nonzero update_gunship returns at once	
+D_L08_00161CC8	gunship_fly_speed	max step per frame-time toward the path point; doubled for shot speed	
+D_L08_00161CD4	gunship_turn_accel	degrees accel/decel for SteerAngleWithVelocity while circling	
+D_L08_00161CD8	gunship_max_turn_speed	degrees max turn rate for SteerAngleWithVelocity while circling	
+D_L08_00161CE0	bolt_thief_move_speed	step length times frame time along the bolt thief path in Batalia_BoltThiefUpdate	
+D_L08_00161D44	batalia_bolt_scale	pclass scale factor of class 0x279 bolts; also scales its AimTurret offsets and collect shrink	
+D_L08_00161D48	batalia_bolt5_scale	pclass scale factor of class 0x3DC (5-bolt) pickups	
+D_L08_00161D4C	batalia_bolt10_scale	pclass scale factor of class 0x3DD (10-bolt) pickups	
+D_L08_00161D64	batalia_bolt_sound_frame	frame stamp of last pickup sound; sound only if 3 ticks passed	
+D_L08_0016005C	batalia_mobys_last	moby pointer bound: pickups below it write kill records, above it are deleted off screen	
+D_L08_00161D5C	batalia_bolt_glint_color	initial glint color word, alpha stepped by 0x5000000 while glinting	
+D_L08_00161D54	batalia_bolt_collect_shrink_enabled	when nonzero scale shrinks with distance while a bolt is pulled in	
+D_L08_00161D24	batalia_bolt_collect_spin_speed	degrees roll rate set when a bolt starts flying to the hero	
+D_L08_00161D28	batalia_bolt_drop_spin_speed	degrees roll rate when the bolt's carrier moby dies and it drops	
+D_L08_00161D30	batalia_bolt_idle_tilt_speed	degrees per frame-time spin of f64 for 1-bolt pickups	
+D_L08_00161D34	batalia_bolt5_idle_yaw_speed	degrees per frame-time spin of f60 for 0x3DC pickups	
+D_L08_00161D3C	batalia_bolt10_idle_yaw_speed	degrees per frame-time spin of f60 for 0x3DD pickups	
+D_L08_00161D18	batalia_bolt_attract_speed	target pull speed toward the hero, times frame time	
+D_L08_00161D1C	batalia_bolt_attract_accel	pull speed approach rate and velocity clamp, times frame time squared	
+D_L08_00161D60	batalia_bolt_bounce_ticks	base tick count (+-10) of the hop after a dropped bolt lands	
+D_L08_00161CF4	batalia_bolt_tilt_deg	degrees tilt of the pickup frame for class 0x279 in AimTurret	
+D_L08_00161CF8	batalia_bolt5_tilt_deg	degrees tilt of the pickup frame for class 0x3DC in AimTurret	
+D_L08_00161CFC	batalia_bolt10_tilt_deg	degrees tilt of the pickup frame for class 0x3DD in AimTurret	
+D_L08_00161D00	batalia_bolt_lift	offset along the surface normal for class 0x279 in AimTurret	
+D_L08_00161D04	batalia_bolt5_lift	offset along the surface normal for class 0x3DC in AimTurret	
+D_L08_00161D08	batalia_bolt10_lift	offset along the surface normal for class 0x3DD in AimTurret	
+D_L08_00161D0C	batalia_bolt_forward_offset	offset along the facing direction for class 0x279 in AimTurret	
+D_L08_00161D10	batalia_bolt5_forward_offset	offset along the facing direction for class 0x3DC in AimTurret	
+D_L08_00161D14	batalia_bolt10_forward_offset	offset along the facing direction for class 0x3DD in AimTurret	
+D_L08_00161CEC	batalia_bolt_glint_up_offset	marker offset along rot_row2 in DrawScreenMarkerQuad	
+D_L08_00161CF0	batalia_bolt_glint_side_offset	marker offset along rot_row0 in DrawScreenMarkerQuad	
+D_L08_00161DB8	shrub_part_spin_speed	degrees per frame-time rot.x spin of the part at data+0x90 in update_shrub_parts	
+D_L08_00161DC0	shrub_update_disabled	when nonzero shrub_update returns at once	
+D_L08_00161DB4	shrub_fly_speed	max step per frame-time toward the path point in shrub_update; doubled for shots	
+D_L08_00161DC8	commando_part_spin_speed	degrees per frame-time rot.x spin of the part at data+0x90 in update_commando_parts	
+D_L18_00162318	veldin2_moby_group_move_enabled	when nonzero the linked group's progress f330 is driven by ApproachWithVelocity	
+D_L18_00162320	veldin2_moby_group_accel	ApproachWithVelocity accel (times frame time sq) while progress < 1.5	
+D_L18_00162324	veldin2_moby_group_decel	ApproachWithVelocity decel (times frame time sq) while progress < 1.5	
+D_L18_00162328	veldin2_moby_group_max_speed	ApproachWithVelocity max speed (times frame time) while progress < 1.5	
+D_L18_0016232C	veldin2_moby_group_late_accel	ApproachWithVelocity accel toward 2.0 once progress >= 1.5	
+D_L18_00162330	veldin2_moby_group_late_decel	ApproachWithVelocity decel toward 2.0 once progress >= 1.5	
+D_L18_00162334	veldin2_moby_group_late_max_speed	ApproachWithVelocity max speed toward 2.0 once progress >= 1.5	
+D_L18_00162344	veldin2_moby_group_fall_progress	progress above which a flagged group goes to the falling state 4	
+D_L18_00162348	veldin2_moby_group_debris_progress	progress above which debris rain starts	
+D_L18_0016234C	veldin2_moby_group_debris_start_rate	initial value of the debris rain counter f344	
+D_L18_00162350	veldin2_moby_group_debris_scale	scale arg of spawn_debris_moby for the 0x2B8 debris rain	
+D_L18_001C6480	veldin2_tie_classes	tie class pointers: count at +0x26, instance list at +0x28; same layout as level_tie_classes 0x300 below its slot table	
+D_L18_001C6780	veldin2_tie_class_slot_by_id	byte table from tie class id (0x802, 0x908, 0x954) to veldin2_tie_classes slot	
+D_L18_00162370	veldin2_glow_scroll_speed	per frame-time advance of the glow uv scroll, wrapped at 1.0	
+D_L18_00162374	veldin2_glow_blend_a	alpha blend field A (bits 0-1) of the glow quads	
+D_L18_00162378	veldin2_glow_blend_b	alpha blend field B (bits 2-3) of the glow quads	
+D_L18_0016237C	veldin2_glow_blend_c	alpha blend field C (bits 4-5) of the glow quads	
+D_L18_00162380	veldin2_glow_blend_d	alpha blend field D (bits 6-7) of the glow quads	
+D_L18_00162358	veldin2_glow_color_start	first FastTweenColor color of the glow layers	
+D_L18_0016235C	veldin2_glow_color_end	second FastTweenColor color of the glow layers	
+D_L18_00162364	veldin2_glow_height_spread	z offset per phase added/subtracted on the glow quad corners	
+D_L18_00162360	veldin2_glow_layer_spacing	z step of the matrix between the three glow passes	
+D_L18_001DA620	veldin2_glow_quad_uvs	4 uv pairs of each glow quad	
+D_L18_001DA640	veldin2_glow_quad_corners	4 corner positions of each glow quad	
+D_L18_00162388	veldin2_lift_count	lift init stores it as the lift index then increments; reset to 0	
+D_L18_0016238C	veldin2_lift_raised_flag	set 1 when the lift leaves state 2, 0 when it leaves state 3; copied to save byte D_001414F5[0xB]	
+D_L18_00162398	veldin2_lift_uv_scroll	uv offset added to all lift mesh quads, wrapped at 1.0	
+D_L18_0016239C	veldin2_lift_uv_scroll_speed	per frame-time advance of veldin2_lift_uv_scroll	
+D_L18_001623A0	veldin2_lift_mesh_blend_a	alpha blend field A (bits 0-1) of the lift meshes	
+D_L18_001623A4	veldin2_lift_mesh_blend_b	alpha blend field B (bits 2-3) of the lift meshes	
+D_L18_001623A8	veldin2_lift_mesh_blend_c	alpha blend field C (bits 4-5) of the lift meshes	
+D_L18_001623AC	veldin2_lift_mesh_blend_d	alpha blend field D (bits 6-7) of the lift meshes	
+D_L18_001623B0	veldin2_lift_mesh_blend_fix	alpha blend FIX field (bits 32+) of the lift meshes	
+D_L18_001623B4	veldin2_lift_mesh_tex	GetEffectTex id of the lift meshes	
+D_L18_001DA680	veldin2_lift25_vertices	vertex positions of the 25-quad lift mesh	
+D_L18_001DA8D0	veldin2_lift25_quads	vertex/uv index pairs of the 25-quad lift mesh	
+D_L18_001DAA60	veldin2_lift25_uvs	uv pairs of the 25-quad lift mesh	
+D_L18_001DAB90	veldin2_lift38_vertices	vertex positions of the 38-quad lift mesh	
+D_L18_001DAEE0	veldin2_lift38_quads	vertex/uv index pairs of the 38-quad lift mesh	
+D_L18_001DB140	veldin2_lift38_uvs	uv pairs of the 38-quad lift mesh	
+D_L18_001DB2F0	veldin2_lift22_vertices	vertex positions of the 22-quad lift mesh	
+D_L18_001DB500	veldin2_lift22_quads	vertex/uv index pairs of the 22-quad lift mesh	
+D_L18_001DB660	veldin2_lift22_uvs	uv pairs of the 22-quad lift mesh	
+D_L18_0017CEC0	veldin2_big_head_manipulator	manipulator block attached to class 0x4E1 under the big head cheat	
+D_L18_00162434	veldin2_big_head_scale	scale set into the big head manipulator and Manipulator_ApplyScale	
+D_L18_00162430	drek_boss_camera_reset_done	set once jet_reset_camera ran for the boss; cleared at the end	
+D_L18_001623F0	drek_boss_intro_started	set when state 4 starts cutscene 2; picks state 4 or 0x15 later	
+D_L18_00162420	drek_boss_camera_move_request	when set the boss goes to state 5 which starts the camera transition and clears it	
+D_L18_00162424	drek_boss_camera_move_ticks	duration ticks (a6) of start_position_and_rotation_transition in state 5	
+D_L18_00162428	drek_boss_camera_move_hold_ticks	hold ticks (a7) of start_position_and_rotation_transition in state 5	
+D_L18_0016242C	drek_boss_class_3d7_ticks	ticks value passed to create_class_3d7_moby from joint 1	
+D_L18_00162408	drek_boss_arena_radius	clamp of the hero offset from the arena node; firing and action range checks	
+D_L18_0016240C	drek_boss_arena_radius_mode_f	clamp of the hero offset when hero control mode is 0xF	
+D_L18_001623DC	drek_boss_follow_distance	target xy distance in update_drek_boss_hero_follow_movement	
+D_L18_001623E0	drek_boss_circle_fast_speed	circle speed when the hero is at the near distance	
+D_L18_001623E4	drek_boss_circle_slow_speed	circle speed when the hero is at the far distance	
+D_L18_001623E8	drek_boss_circle_far_dist	upper hero distance clamp for the circle speed blend	
+D_L18_001623EC	drek_boss_circle_near_dist	lower hero distance clamp for the circle speed blend	
+D_L18_00162400	drek_boss_circle_radius_state2	circle radius around the arena node in state 2	
+D_L18_00162404	drek_boss_circle_radius	circle radius around the arena node in other states	
+D_L18_001623C0	drek_boss_scale	pclass scale factor applied every damage update	
+D_L18_0016241C	drek_boss_phase_reset_request	when set the phase index is reset to 0 and the flag cleared	
+D_L18_00162414	drek_boss_phase_camera_ticks	duration ticks of the camera transition at a phase change	
+D_L18_00162418	drek_boss_phase_camera_hold_ticks	hold ticks of the camera transition at a phase change	
+D_L18_001623C8	drek_boss_platform_target_radius	xy radius in which class 0x24B platforms tilt and can be targeted	
+D_L18_001623CC	drek_boss_platform_tilt_ticks	second ticks arg of request_floating_platform_tilt	
+D_L18_001DFE00	drek_boss_action_allowed	6 shorts per phase: whether each random action may be picked	
+D_L18_0015F050	veldin2_camera_descriptors	32-byte camera records, +0x1C camera block; L00 copy is camera_descriptors	
+D_L18_00162440	drek_boss_cam_max_speed	max speed of the camera distance/height approach	
+D_L18_00162444	drek_boss_cam_accel	accel/decel of the camera distance/height approach	
+D_L18_00162448	drek_boss_cam_range_near	lower hero distance clamp of the camera blend	
+D_L18_0016244C	drek_boss_cam_range_far	upper hero distance clamp of the camera blend	
+D_L18_00162450	drek_boss_cam_dist_far	camera distance when the hero is far	
+D_L18_00162454	drek_boss_cam_height_far	camera height when the hero is far	
+D_L18_00162458	drek_boss_cam_dist_near	camera distance when the hero is near	
+D_L18_0016245C	drek_boss_cam_height_near	camera height when the hero is near	
+D_L18_00162460	drek_boss_cam_attack_dist	camera distance in state 0x13 when the attack conditions hold	
+D_L18_00162464	drek_boss_cam_attack_height	camera height in state 0x13 when the attack conditions hold	
+D_L18_00162468	drek_boss_cam_node_dist	camera distance in state 0x13 when the hero is within 28 of the node	
+D_L18_0016246C	drek_boss_cam_node_height	camera height in state 0x13 when the hero is within 28 of the node	
+D_L18_00162470	drek_boss_cam_state9_dist	camera distance in states 9 and 6; Cam_SetDistanceGoal value	
+D_L18_00162474	drek_boss_cam_state9_height	camera height in states 9 and 6; follow_camera_set_height value	
+D_L18_00162498	drek_boss_fire_spark_count	loop count of PartType44Spawn sparks	
+D_L18_0016249C	drek_boss_fire_spark_speed_min	lower random spark speed	
+D_L18_001624A0	drek_boss_fire_spark_speed_max	upper random spark speed	
+D_L18_001624A4	drek_boss_fire_spark_size	PartType44 size	
+D_L18_001624A8	drek_boss_fire_spark_grow_rate	PartType44 size change per frame	
+D_L18_001624AC	drek_boss_fire_spark_gravity	PartType44 scale of the global vector added to velocity	
+D_L18_001624C0	drek_boss_fire_spark_damping	PartType44 per-frame velocity scale	
+D_L18_001624B0	drek_boss_fire_spark_spin_min	lower random rotation step of the sparks	
+D_L18_001624B4	drek_boss_fire_spark_spin_max	upper random rotation step of the sparks	
+D_L18_001624B8	drek_boss_fire_spark_life_min	lower random life ticks of the sparks	
+D_L18_001624BC	drek_boss_fire_spark_life_max	upper random life ticks of the sparks	
+D_L18_001624C8	drek_boss_fire_puff_count	loop count of PartType21Spawn puffs	
+D_L18_001624CC	drek_boss_fire_puff_speed_min	lower random puff speed	
+D_L18_001624D0	drek_boss_fire_puff_speed_max	upper random puff speed	
+D_L18_0016247C	drek_boss_fire_puff_color	PartType21 start color	
+D_L18_00162480	drek_boss_fire_puff_end_color	PartType21 second color	
+D_L18_001624D4	drek_boss_fire_puff_life_min	lower random life ticks of the puffs	
+D_L18_001624D8	drek_boss_fire_puff_life_max	upper random life ticks of the puffs	
+D_L18_001624DC	drek_boss_fire_puff_size	PartType21 size	
+D_L18_001624E0	drek_boss_rider_glow_size	size of the glows on joints 1 and 2 of the attached moby p3A0	
+D_L18_001624E4	drek_boss_rider_glow_offset	camera offset of the glows on joints 1 and 2 of p3A0	
+D_L18_001624F4	drek_boss_charge_glow_size	size of the joint 5/6 glows during anim states 11-13	
+D_L18_001624F8	drek_boss_charge_glow_offset	camera offset of the joint 5/6 glows	
+D_L18_001624FC	drek_boss_charge_glow_color_a	first pulse color of the joint 5/6 glows	
+D_L18_00162500	drek_boss_charge_glow_color_b	second pulse color of the joint 5/6 glows	
+D_L18_00162504	drek_boss_charge_glow_period	pulse period ticks of the joint 5/6 glows	
+func_L05_002D28D0	rilgar_sharkigator_update	asm: moby state machine on rilgar_paths calling spawn_sharkigator_surface/splash_effects, Hero_OnKilled, Hero_ResetToPosition	
+D_L05_001613A8	rilgar_water_surface_z	water height read as z (+0.05) for sharkigator splash and surface effects	
+D_L05_00161494	rilgar_scenery_ship_scale	pclass scale factor set in scenery_ship_update state 0	
+D_L05_00161498	rilgar_scenery_ship_color_a	first glow color tweened onto moby+0x90 while flying	
+D_L05_0016149C	rilgar_scenery_ship_color_b	second glow color tweened onto moby+0x90 while flying	
+D_L05_001614A0	rilgar_ship_trail_length	ribbon trail frame count limit; DrawRibbonTrails sets 5, or 16 with gCheats[2]	
+D_L05_001614A4	rilgar_scenery_ship_glow_enabled	when nonzero scenery_ship_update calls update_moby_glow_and_queue_draw	
+D_L05_001614A8	rilgar_scenery_ship_wreck_push	rot_row0 scale of the wreck explosion velocity	
+D_L05_001614AC	rilgar_scenery_ship_wreck_lift	z added to the wreck explosion velocity	
+D_L05_00161490	rilgar_scenery_ship_speed	path parameter step per frame-time (divided by segment length)	
+D_L05_001614B0	rilgar_ship_trails_disabled	when nonzero DrawRibbonTrails returns at once	
+D_L05_001614B4	rilgar_ship_trail_quads_hidden	when nonzero DrawRibbonTrails skips draw_world_quad	
+D_L05_001614B8	rilgar_ship_trail_blend_a	alpha blend field A (bits 0-1) of the ribbon quads	
+D_L05_001614BC	rilgar_ship_trail_blend_b	alpha blend field B (bits 2-3) of the ribbon quads	
+D_L05_001614C0	rilgar_ship_trail_blend_c	alpha blend field C (bits 4-5) of the ribbon quads	
+D_L05_001614C4	rilgar_ship_trail_blend_d	alpha blend field D (bits 6-7) of the ribbon quads	
+D_L05_001614C8	rilgar_ship_trail_color_head	ribbon color at ratio 0 (newest segment)	
+D_L05_001614CC	rilgar_ship_trail_color_tail	ribbon color at ratio 1 (oldest segment)	
+D_L05_001CE070	rilgar_ship_trail_uvs	4 uv pairs of each ribbon quad	
+D_L05_00161B88	extermibot_strike_ticks	timer d+0x2D0 set when the extermibot enters strike state 7	
+D_L05_00161B78	extermibot_spark_speed	forward speed (times frame time) of the spark burst	
+D_L05_00161B80	extermibot_spark_start_w	w of the spark start vector; tenth for the second burst	
+D_L05_00161B84	extermibot_spark_end_w	w of the spark end vector; tenth for the second burst	
+D_L05_00161B7C	extermibot_spark_z_spread	random vertical spread (times frame time) of the sparks	
+D_L05_00161B6C	extermibot_spark_time_a	base of first random tick range (x..2x) of the sparks	
+D_L05_00161B70	extermibot_spark_time_b	base of second random tick range (x..1.2x) of the sparks	
+D_L05_00161B74	extermibot_spark_time_c	base of third random tick range (x..1.2x) of the sparks	
+D_L05_00161B5C	extermibot_spark_lower	PartType02Spawn lower arg of the first burst	
+D_L05_00161B60	extermibot_spark_upper	PartType02Spawn upper arg of the first burst	
+D_L05_00161B64	extermibot_spark2_lower	PartType02Spawn lower arg of the second burst	
+D_L05_00161B68	extermibot_spark2_upper	PartType02Spawn upper arg of the second burst	
+D_L05_00161B44	extermibot_timer0_stamp	stores the EE timer 0 count (0x10000000) at the end of extermibot_update	
+D_L05_00161B90	flying_enemy_hit_knock_accel	f80 (times frame time sq) set on a non-lethal hit	
+D_L05_00161B94	flying_enemy_kill_knock_accel	f80 (times frame time sq) set on a killing hit	
+D_L05_00161B48	flying_enemy_hit_knock_speed	f88 knockback speed (times frame time) on hit results 3-8	
+D_L05_00161B4C	flying_enemy_hit_knock_lift	f8C knockback lift (times frame time) on hit results 3-8	
+D_L05_00161B50	flying_enemy_kill_knock_speed	f88 knockback speed (times frame time) on hit results 1-2	
+D_L05_00161B54	flying_enemy_kill_knock_lift	f8C knockback lift (times frame time) on hit results 1-2	
+D_L05_00161B34	flying_enemy_glow_color_a	first glow color tweened by a sine onto glow_color	
+D_L05_00161B38	flying_enemy_glow_color_b	second glow color tweened by a sine onto glow_color	
+D_L05_00161BB8	extermitank_move_speed	d+0x94 speed (times frame time) set at init	
+D_L05_00161BB0	extermitank_tread_speed_ref	divides the tank speed into the two tread children's +0x58 rate	
+D_L05_00161BB4	extermitank_tread_turn_scale	turn value times this added/subtracted on the two tread rates	
+D_L05_00161C34	extermitank_death_ticks	timer d+0x19E set after the death explosion	
+D_L05_00161BCC	extermitank_spray_lower	PartType02Spawn lower arg of the joint 2 spray	
+D_L05_00161BD0	extermitank_spray_upper	PartType02Spawn upper arg of the joint 2 spray	
+D_L05_00161BD4	extermitank_spray_time_a	base of first random tick range (x..2x) of the spray	
+D_L05_00161BD8	extermitank_spray_time_b	base of second random tick range (x..1.2x) of the spray	
+D_L05_00161BDC	extermitank_spray_time_c	base of third random tick range (x..1.2x) of the spray	
+D_L05_00161BE0	extermitank_spray_speed	forward speed of the spray start vector	
+D_L05_00161BE4	extermitank_spray_rise	vertical speed (0.9-1.1x) of the spray start vector	
+D_L05_00161BE8	extermitank_spray_end_speed	forward speed of the spray end vector	
+D_L05_00161BEC	extermitank_spray_end_rise	vertical speed (0.9-1.1x) of the spray end vector	
+D_L05_00161BF0	extermitank_spray_start_w	w of the spray start vector	
+D_L05_00161BF4	extermitank_spray_end_w	w of the spray end vector	
+D_L05_00161BF8	extermitank_spray_end_spread_deg	random degrees spread of the spray end direction	
+D_L05_00161BFC	extermitank_spray2_lower	PartType02Spawn lower arg of the second spray	
+D_L05_00161C00	extermitank_spray2_upper	PartType02Spawn upper arg of the second spray	
+D_L05_00161C04	extermitank_spray2_time_a	base of first random tick range (x..2x) of the second spray	
+D_L05_00161C08	extermitank_spray2_time_b	base of second random tick range (x..1.2x) of the second spray	
+D_L05_00161C0C	extermitank_spray2_time_c	base of third random tick range (x..1.2x) of the second spray	
+D_L05_00161C10	extermitank_spray2_speed	forward speed of the second spray start vector	
+D_L05_00161C14	extermitank_spray2_rise	vertical speed (0.7-1.5x) of the second spray start vector	
+D_L05_00161C18	extermitank_spray2_end_speed	forward speed of the second spray end vector	
+D_L05_00161C1C	extermitank_spray2_end_rise	vertical speed (0.7-1.5x) of the second spray end vector	
+D_L05_00161C20	extermitank_spray2_start_w	w of the second spray start vector	
+D_L05_00161C24	extermitank_spray2_end_w	w of the second spray end vector	
+D_L05_00161C2C	extermitank_spray2_spread_deg	random degrees spread of the second spray start direction	
+D_L05_00161C28	extermitank_spray2_end_spread_deg	random degrees spread of the second spray end direction	
+D_0015EF38	rilgar_hoverboard_races_finished	incremented when a race finishes on level 5; scales racer speeds down to 0.77	
+D_L05_00161D94	rilgar_floating_platform_pitch_rate	degrees per frame-time advance of the pitch sway phase	
+D_L05_00161D98	rilgar_floating_platform_roll_rate	degrees per frame-time advance of the roll sway phase	
+D_L05_00161D9C	rilgar_floating_platform_pitch_amp	degrees amplitude of rot.y sway	
+D_L05_00161DA0	rilgar_floating_platform_roll_amp	degrees amplitude of rot.x sway	
+D_L05_00161DA4	rilgar_floating_platform_sound_min	lower random ticks between platform sounds	
+D_L05_00161DA8	rilgar_floating_platform_sound_max	upper random ticks between platform sounds	
+D_L05_00161DE8	rilgar_flood_water_z	z of the rising water, set from the moby in states 0 and 8	
+D_L05_00161DE0	rilgar_flood_stage	index 0-5 into the flood rise tick and speed tables	
+D_L05_00161DEC	rilgar_flood_checkpoint_reached	set once when the hero is near (211,338,25) in the rise	
+D_L05_00161DE4	rilgar_flood_skip_height	if the water is above it at the checkpoint the stage jumps to 5	
+D_L05_00161DDC	rilgar_flood_slowdown_count	counts hero state 0x6A events; above 1 it stretches the rise ticks and slows speeds (max 1.4x)	
+D_L05_00161DF0	rilgar_water_gate_accel	ApproachWithVelocity accel/decel (times frame time sq) of the water level in states 1-2	
+D_L05_00161DF4	rilgar_water_gate_max_speed	ApproachWithVelocity max speed (times frame time) of the water level in states 1-2	
+D_L05_00161DD0	rilgar_water_override_patch	patch index whose h1E is forced to rilgar_water_override_value	
+D_L05_00161DD4	rilgar_water_override_value	h1E value forced on the override patch	
+D_L05_0020B6C0	rilgar_water_patch_h1e	per-patch h1E value restored when the patch is visible	
+D_L05_0020B720	rilgar_flood_stage_ticks	6 ticks per flood stage, base values scaled by the slowdown	
+D_L05_0020B738	rilgar_flood_stage_speeds	6 rise speeds per flood stage, base values divided by the slowdown	
+D_L05_0020B750	rilgar_flood_stage_base_ticks	unscaled source of rilgar_flood_stage_ticks	
+D_L05_0020B768	rilgar_flood_stage_base_speeds	unscaled source of rilgar_flood_stage_speeds	
+D_L05_0020B780	rilgar_water_patch_positions	48 int[4] records converted with RipplePatch_ToFixedPoint; pointer kept in 0x161394	
+D_L05_00161394	rilgar_water_patch_position_table	set to rilgar_water_patch_positions next to rilgar_water_patches and count 0x30	

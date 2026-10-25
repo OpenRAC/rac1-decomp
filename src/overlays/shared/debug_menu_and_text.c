@@ -15,11 +15,11 @@ void flush_debug_text_queue(void) {
     s32 i;
     E001f36f8 *p;
 
-    for (i = 0; i < (*(s32 *)&D_L00_0015F0C4); i++) {
-        draw_debug_text(D_L00_0016A940[i].a, D_L00_0016A940[i].b, D_L00_0016A940[i].c, D_L00_0016A940[i].d);
+    for (i = 0; i < (*(s32 *)&debug_text_queue_count); i++) {
+        draw_debug_text(debug_text_queue[i].a, debug_text_queue[i].b, debug_text_queue[i].c, debug_text_queue[i].d);
     }
-    (*(s32 *)&D_L00_0015F0C4) = 0;
-    (*(void * *)&D_L00_0015F0C0) = D_L00_0016A140;
+    (*(s32 *)&debug_text_queue_count) = 0;
+    (*(void * *)&debug_text_queue_cursor) = debug_text_queue_buffer;
 }
 extern void func_00234C98(int, long);
 extern int *D_L00_00161280 MACRO_ADDR;
@@ -62,7 +62,7 @@ void draw_debug_text(int x, int y, int color, int s_) {
         glyph = (u8)(*text - 0x20);
         if (glyph >= 0x60)
             glyph = 0x20;
-        texture_coordinates = D_L00_00169A80[glyph];
+        texture_coordinates = debug_font_glyph_uvs[glyph];
         text++;
         if (texture_coordinates != -1) {
             cursor[0] = (s64)texture_coordinates;
@@ -76,7 +76,7 @@ void draw_debug_text(int x, int y, int color, int s_) {
                         0xFFFFF300000000UL;
             dma_packet_cursor = (int *)((u64 *)dma_packet_cursor + 4);
         }
-        x += D_L00_00169C00[glyph];
+        x += debug_font_glyph_widths[glyph];
     }
     ((u32 *)packet)[0] = quadwords | 0x10000000;
     ((u32 *)packet)[1] = 0;
@@ -498,7 +498,7 @@ void update_debug_menu(void) {
         ((DebugMenu_1F4918 *)g_debug_menu)->z = (s32)((Camera_1F4918 *)player_camera)->z >> 2;
         return;
     }
-    counts = D_L00_001E7C70;
+    counts = debug_menu_group_item_counts;
     if (buttons & 0x2000) {
         if (++((DebugMenu_1F4918 *)g_debug_menu)->group == 3) ((DebugMenu_1F4918 *)g_debug_menu)->group = 0;
         else if (((DebugMenu_1F4918 *)g_debug_menu)->group == 6) ((DebugMenu_1F4918 *)g_debug_menu)->group = 3;
@@ -696,12 +696,12 @@ void update_debug_menu(void) {
             else if (level_fog_far_intensity < 0.0f) level_fog_far_intensity=0.0f;
         }
         if (((DebugMenu_1F4918 *)g_debug_menu)->item == 4) {
-            if ((*(u8 *)&D_L00_0015F544) < 255 && (g_controller_state.keys.all&0x800000040ULL)) ++(*(u8 *)&D_L00_0015F544);
-            if ((*(u8 *)&D_L00_0015F544) > 0 && (g_controller_state.keys.all&0x400000010ULL)) --(*(u8 *)&D_L00_0015F544);
+            if ((*(u8 *)&level_fog_color_red) < 255 && (g_controller_state.keys.all&0x800000040ULL)) ++(*(u8 *)&level_fog_color_red);
+            if ((*(u8 *)&level_fog_color_red) > 0 && (g_controller_state.keys.all&0x400000010ULL)) --(*(u8 *)&level_fog_color_red);
         }
         if (((DebugMenu_1F4918 *)g_debug_menu)->item == 5) {
-            if ((*(u8 *)&D_L00_0015F545) < 255 && (g_controller_state.keys.all&0x800000040ULL)) ++(*(u8 *)&D_L00_0015F545);
-            if ((*(u8 *)&D_L00_0015F545) > 0 && (g_controller_state.keys.all&0x400000010ULL)) --(*(u8 *)&D_L00_0015F545);
+            if ((*(u8 *)&level_fog_color_green) < 255 && (g_controller_state.keys.all&0x800000040ULL)) ++(*(u8 *)&level_fog_color_green);
+            if ((*(u8 *)&level_fog_color_green) > 0 && (g_controller_state.keys.all&0x400000010ULL)) --(*(u8 *)&level_fog_color_green);
         }
         if (((DebugMenu_1F4918 *)g_debug_menu)->item == 6) {
             if ((*(u8 *)&level_fog_color_blue) < 255 && (g_controller_state.keys.all&0x800000040ULL)) ++(*(u8 *)&level_fog_color_blue);
@@ -714,8 +714,8 @@ void update_debug_menu(void) {
         if (((DebugMenu_1F4918 *)g_debug_menu)->item == 1 && (g_controller_state.keys.word.pressed&0x50)) ((DebugMenu_1F4918 *)g_debug_menu)->fF4=!((DebugMenu_1F4918 *)g_debug_menu)->fF4;
         if (((DebugMenu_1F4918 *)g_debug_menu)->item == 2 && (g_controller_state.keys.word.pressed&0xF0)) {
             extern char D_L00_0015F0E0;
-            char *fmt=D_L00_001E7C88;
-            char *dev=&D_L00_0015F0E0;
+            char *fmt=level_directory;
+            char *dev=&level_file_path_format;
             s32 i=0, found, fd, size;
             {
             float *p; s32 count=occlusion_sample_count;
@@ -763,7 +763,7 @@ void update_debug_menu(void) {
         if (((DebugMenu_1F4918 *)g_debug_menu)->item == 3 && (g_controller_state.keys.word.pressed&0xF0)) {
             extern char D_L00_0015F0E0[];
             s32 fd;
-            func_00116248(buf.saved.path,D_L00_0015F0E0,D_L00_001E7C88,g_current_level_index,occlusion_deltas_file_name,iso_version_suffix);
+            func_00116248(buf.saved.path,level_file_path_format,level_directory,g_current_level_index,occlusion_deltas_file_name,iso_version_suffix);
             func_00116248(buf.saved.text,start_point_format,func_00120778(((Camera_1F4918 *)player_camera)->x),func_00120778(((Camera_1F4918 *)player_camera)->y),func_00120778(((Camera_1F4918 *)player_camera)->z));
             fd=func_0011BF80(buf.saved.path,0x303);
             if (fd >= 0) {
@@ -902,186 +902,186 @@ void draw_debug_menu(void) {
 
     append_gif_transfer_packet();
     if (skip_frame == 0) {
-        print_debug_text_centered(0x100, 0x10, 0x80C0C000, D_L00_0015F108);
-        print_debug_text_centered(0x100, 0x18, 0x80C0C000, D_L00_0015F110);
-        print_debug_text(0xC, 0x2C, 0x8000C000, D_L00_0015F120);
-        print_debug_text(0xC, 0x32, 0x8000C000, D_L00_0015F128);
-        print_debug_text(0x14, 0x40, 0x8000C0C0, D_L00_0015F130);
+        print_debug_text_centered(0x100, 0x10, 0x80C0C000, debug_menu_title);
+        print_debug_text_centered(0x100, 0x18, 0x80C0C000, debug_menu_title_underline);
+        print_debug_text(0xC, 0x2C, 0x8000C000, debug_menu_update_header);
+        print_debug_text(0xC, 0x32, 0x8000C000, debug_menu_update_underline);
+        print_debug_text(0x14, 0x40, 0x8000C0C0, debug_label_ratchet);
         print_debug_text(0x6C, 0x40, 0x80F0F0F0, *(char **)((char *)debug_on_off_strings + flag_offset60(debug_menu60.draw_bits & 1)));
-        print_debug_text(0x14, 0x4F, 0x8000C0C0, D_L00_0015F140);
+        print_debug_text(0x14, 0x4F, 0x8000C0C0, debug_label_update_bit1);
         print_debug_text(0x6C, 0x4F, 0x80F0F0F0, *(char **)((char *)debug_on_off_strings + flag_offset60(debug_menu60.draw_bits & 2)));
-        print_debug_text(0x14, 0x5E, 0x8000C0C0, D_L00_0015F148);
+        print_debug_text(0x14, 0x5E, 0x8000C0C0, debug_label_parts);
         print_debug_text(0x6C, 0x5E, 0x80F0F0F0, *(char **)((char *)debug_on_off_strings + flag_offset60(debug_menu60.draw_bits & 4)));
-        print_debug_text(0x14, 0x6D, 0x8000C0C0, D_L00_0015F150);
+        print_debug_text(0x14, 0x6D, 0x8000C0C0, debug_label_camera);
         print_debug_text(0x6C, 0x6D, 0x80F0F0F0, *(char **)((char *)debug_on_off_strings + flag_offset60(debug_menu60.draw_bits & 8)));
-        print_debug_text(0x14, 0x7C, 0x8000C0C0, D_L00_0015F158);
+        print_debug_text(0x14, 0x7C, 0x8000C0C0, debug_label_update_bit4);
         print_debug_text(0x6C, 0x7C, 0x80F0F0F0, *(char **)((char *)debug_on_off_strings + flag_offset60(debug_menu60.draw_bits & 0x10)));
         if (debug_menu60.group == 0) {
-            print_debug_text(9, (debug_menu60.item * 0xF) + 0x40, 0x800000C0, D_L00_0015F160);
+            print_debug_text(9, (debug_menu60.item * 0xF) + 0x40, 0x800000C0, debug_menu_cursor);
         }
-        print_debug_text(0xA8, 0x2C, 0x8000C000, D_L00_0015F168);
-        print_debug_text(0xA8, 0x32, 0x8000C000, D_L00_0015F170);
-        print_debug_text(0xB0, 0x40, 0x8000C0C0, D_L00_0015F178);
-        print_debug_text(0x108, 0x40, 0x80F0F0F0, D_L00_00160D00[debug_menu60.camera_mode]);
-        print_debug_text(0xB0, 0x4F, 0x8000C0C0, D_L00_0015F180);
-        print_debug_text(0x108, 0x4F, 0x80F0F0F0, D_L00_001C4128[debug_menu60.display_mode]);
-        print_debug_text(0xB0, 0x5E, 0x8000C0C0, D_L00_0015F188);
-        print_debug_text(0x108, 0x5E, 0x80F0F0F0, D_L00_00160DC8[debug_menu60.occl_mode]);
-        print_debug_text(0xB0, 0x6D, 0x8000C0C0, D_L00_0015F190);
+        print_debug_text(0xA8, 0x2C, 0x8000C000, debug_menu_group1_header);
+        print_debug_text(0xA8, 0x32, 0x8000C000, debug_menu_header_underline);
+        print_debug_text(0xB0, 0x40, 0x8000C0C0, debug_label_control);
+        print_debug_text(0x108, 0x40, 0x80F0F0F0, debug_camera_mode_names[debug_menu60.camera_mode]);
+        print_debug_text(0xB0, 0x4F, 0x8000C0C0, debug_label_profile);
+        print_debug_text(0x108, 0x4F, 0x80F0F0F0, debug_display_mode_names[debug_menu60.display_mode]);
+        print_debug_text(0xB0, 0x5E, 0x8000C0C0, debug_label_occlusion_mode);
+        print_debug_text(0x108, 0x5E, 0x80F0F0F0, debug_occlusion_mode_names[debug_menu60.occl_mode]);
+        print_debug_text(0xB0, 0x6D, 0x8000C0C0, debug_label_bookmark);
         print_debug_text(0x108, 0x6D, 0x80F0F0F0, debug_on_off_strings[(debug_menu60.f20 != 0) ? 0 : 1]);
-        print_debug_text(0xB0, 0x7C, 0x8000C0C0, D_L00_0015F1A0);
+        print_debug_text(0xB0, 0x7C, 0x8000C0C0, debug_label_invincible);
         print_debug_text(0x108, 0x7C, 0x80F0F0F0, debug_on_off_strings[debug_menu60.f24]);
-        print_debug_text(0xB0, 0x8B, 0x8000C0C0, D_L00_0015F1A8);
-        print_debug_text(0x108, 0x8B, 0x80F0F0F0, D_L00_00160D68[debug_menu60.f28]);
-        print_debug_text(0xB0, 0x9A, 0x8000C0C0, D_L00_0015F1B8);
-        print_debug_text(0x108, 0x9A, 0x80F0F0F0, D_L00_00160D80[debug_menu60.f2C]);
-        print_debug_text(0xB0, 0xA9, 0x8000C0C0, D_L00_0015F1C0);
-        print_debug_text(0x108, 0xA9, 0x80F0F0F0, D_L00_00160DA0[debug_menu60.f30]);
-        print_debug_text(0xB0, 0xB8, 0x8000C0C0, D_L00_0015F1C8);
-        print_debug_text(0x108, 0xB8, 0x80F0F0F0, D_L00_00160DB0[debug_menu60.f34]);
-        print_debug_text(0xB0, 0xC7, 0x8000C0C0, D_L00_0015F1D0);
+        print_debug_text(0xB0, 0x8B, 0x8000C0C0, debug_label_drawdist);
+        print_debug_text(0x108, 0x8B, 0x80F0F0F0, debug_drawdist_names[debug_menu60.f28]);
+        print_debug_text(0xB0, 0x9A, 0x8000C0C0, debug_label_group1_item6);
+        print_debug_text(0x108, 0x9A, 0x80F0F0F0, debug_group1_item6_names[debug_menu60.f2C]);
+        print_debug_text(0xB0, 0xA9, 0x8000C0C0, debug_label_tv_mode);
+        print_debug_text(0x108, 0xA9, 0x80F0F0F0, debug_tv_mode_names[debug_menu60.f30]);
+        print_debug_text(0xB0, 0xB8, 0x8000C0C0, debug_label_screen);
+        print_debug_text(0x108, 0xB8, 0x80F0F0F0, debug_screen_names[debug_menu60.f34]);
+        print_debug_text(0xB0, 0xC7, 0x8000C0C0, debug_label_scene);
         if (debug_menu60.selection >= 0) {
             func_00116248(buf, debug_int_format, debug_menu60.selection);
             print_debug_text(0x108, 0xC7, 0x80F0F0F0, buf);
         } else {
-            print_debug_text(0x108, 0xC7, 0x80F0F0F0, D_L00_0015F1E0);
+            print_debug_text(0x108, 0xC7, 0x80F0F0F0, debug_scene_none_text);
         }
         stride = 16;
-        print_debug_text(0xB0, 0xD6, 0x8000C0C0, D_L00_0015F1E8);
+        print_debug_text(0xB0, 0xD6, 0x8000C0C0, debug_label_segment);
         {
             int mission = debug_menu60.mission;
-            func_00116248(buf, D_L00_0015F1F0, mission, (D_0014171B + 0xAA35)[mission + g_current_level_index * stride]);
+            func_00116248(buf, debug_segment_format, mission, (D_0014171B + 0xAA35)[mission + g_current_level_index * stride]);
         }
         print_debug_text(0x108, 0xD6, 0x80F0F0F0, buf);
         if (debug_menu60.group == 1) {
-            print_debug_text(0xA5, (debug_menu60.item * 0xF) + 0x40, 0x800000C0, D_L00_0015F160);
+            print_debug_text(0xA5, (debug_menu60.item * 0xF) + 0x40, 0x800000C0, debug_menu_cursor);
         }
-        print_debug_text(0x158, 0x2C, 0x8000C000, D_L00_0015F1F8);
-        print_debug_text(0x158, 0x32, 0x8000C000, D_L00_0015F170);
-        print_debug_text(0x160, 0x40, 0x8000C0C0, D_L00_0015F200);
+        print_debug_text(0x158, 0x2C, 0x8000C000, debug_menu_group2_header);
+        print_debug_text(0x158, 0x32, 0x8000C000, debug_menu_header_underline);
+        print_debug_text(0x160, 0x40, 0x8000C0C0, debug_label_darken);
         print_debug_text(0x1CC, 0x40, 0x80F0F0F0, *(char **)((char *)debug_on_off_strings + flag_offset60(debug_menu60.bits & 1)));
-        print_debug_text(0x160, 0x4F, 0x8000C0C0, D_L00_0015F208);
+        print_debug_text(0x160, 0x4F, 0x8000C0C0, debug_label_env_coll);
         print_debug_text(0x1CC, 0x4F, 0x80F0F0F0, *(char **)((char *)debug_on_off_strings + flag_offset60(debug_menu60.bits & 2)));
-        print_debug_text(0x160, 0x5E, 0x8000C0C0, D_L00_0015F218);
+        print_debug_text(0x160, 0x5E, 0x8000C0C0, debug_label_moby_coll);
         print_debug_text(0x1CC, 0x5E, 0x80F0F0F0, *(char **)((char *)debug_on_off_strings + flag_offset60(debug_menu60.bits & 4)));
-        print_debug_text(0x160, 0x6D, 0x8000C0C0, D_L00_0015F228);
+        print_debug_text(0x160, 0x6D, 0x8000C0C0, debug_label_hero_coll);
         print_debug_text(0x1CC, 0x6D, 0x80F0F0F0, *(char **)((char *)debug_on_off_strings + flag_offset60(debug_menu60.bits & 8)));
-        print_debug_text(0x160, 0x7C, 0x8000C0C0, D_L00_0015F238);
+        print_debug_text(0x160, 0x7C, 0x8000C0C0, debug_label_bspheres);
         print_debug_text(0x1CC, 0x7C, 0x80F0F0F0, *(char **)((char *)debug_on_off_strings + flag_offset60(debug_menu60.bits & 0x10)));
-        print_debug_text(0x160, 0x8B, 0x8000C0C0, D_L00_0015F248);
+        print_debug_text(0x160, 0x8B, 0x8000C0C0, debug_label_cameras);
         print_debug_text(0x1CC, 0x8B, 0x80F0F0F0, *(char **)((char *)debug_on_off_strings + flag_offset60(debug_menu60.bits & 0x20)));
-        print_debug_text(0x160, 0x9A, 0x8000C0C0, D_L00_0015F250);
+        print_debug_text(0x160, 0x9A, 0x8000C0C0, debug_label_cuboids);
         print_debug_text(0x1CC, 0x9A, 0x80F0F0F0, *(char **)((char *)debug_on_off_strings + flag_offset60(debug_menu60.bits & 0x40)));
-        print_debug_text(0x160, 0xA9, 0x8000C0C0, D_L00_0015F258);
+        print_debug_text(0x160, 0xA9, 0x8000C0C0, debug_label_samples);
         print_debug_text(0x1CC, 0xA9, 0x80F0F0F0, *(char **)((char *)debug_on_off_strings + flag_offset60(debug_menu60.bits & 0x80)));
-        print_debug_text(0x160, 0xB8, 0x8000C0C0, D_L00_0015F260);
+        print_debug_text(0x160, 0xB8, 0x8000C0C0, debug_label_group2_bit8);
         print_debug_text(0x1CC, 0xB8, 0x80F0F0F0, *(char **)((char *)debug_on_off_strings + flag_offset60(debug_menu60.bits & 0x100)));
         if (debug_menu60.group == 2) {
-            print_debug_text(0x155, (debug_menu60.item * 0xF) + 0x3E, 0x800000C0, D_L00_0015F160);
+            print_debug_text(0x155, (debug_menu60.item * 0xF) + 0x3E, 0x800000C0, debug_menu_cursor);
         }
-        print_debug_text(0xC, 0xA6, 0x8000C000, D_L00_0015F268);
-        print_debug_text(0xC, 0xAC, 0x8000C000, D_L00_0015F170);
+        print_debug_text(0xC, 0xA6, 0x8000C000, debug_menu_weapon_header);
+        print_debug_text(0xC, 0xAC, 0x8000C000, debug_menu_header_underline);
         if (debug_menu60.group == 3) {
-            print_debug_text(9, (debug_menu60.item * 0xF) + 0xB8, 0x800000C0, D_L00_0015F160);
+            print_debug_text(9, (debug_menu60.item * 0xF) + 0xB8, 0x800000C0, debug_menu_cursor);
         }
-        print_debug_text(0x14, 0xBA, 0x8000C0C0, D_L00_0015F270);
+        print_debug_text(0x14, 0xBA, 0x8000C0C0, debug_label_suck_cannon);
         weapon_order = (u8 *)D_0013E15A + 0x4C6;
         func_00116248(buf, debug_int_format, (s32) weapon_order[0x9]);
         print_debug_text(0x7A, 0xBA, 0x80406080, buf);
-        print_debug_text(0x14, 0xC9, 0x8000C0C0, D_L00_0015F280);
+        print_debug_text(0x14, 0xC9, 0x8000C0C0, debug_label_morph_o_ray);
         func_00116248(buf, debug_int_format, (s32) weapon_order[0x15]);
         print_debug_text(0x7A, 0xC9, 0x80406080, buf);
-        print_debug_text(0x14, 0xD8, 0x8000C0C0, D_L00_0015F290);
+        print_debug_text(0x14, 0xD8, 0x8000C0C0, debug_label_inflato);
         func_00116248(buf, debug_int_format, (s32) weapon_order[0x19]);
         print_debug_text(0x7A, 0xD8, 0x80406080, buf);
-        print_debug_text(0x14, 0xE7, 0x8000C0C0, D_L00_0015F2A0);
+        print_debug_text(0x14, 0xE7, 0x8000C0C0, debug_label_weapon_row3);
         ammo = (AmmoDisplay60 *)(menu_item_enabled_115 + 0x21);
         func_00116248(buf, debug_int_format, ammo->ammo5C);
         print_debug_text(0x8C, 0xE7, 0x80F0F0F0, buf);
-        print_debug_text(0x14, 0xF6, 0x8000C0C0, D_L00_0015F2B0);
+        print_debug_text(0x14, 0xF6, 0x8000C0C0, debug_label_d_droids);
         func_00116248(buf, debug_int_format, ammo->ammo60);
         print_debug_text(0x8C, 0xF6, 0x80F0F0F0, buf);
-        print_debug_text(0x14, 0x105, 0x8000C0C0, D_L00_0015F2C0);
+        print_debug_text(0x14, 0x105, 0x8000C0C0, debug_label_weapon_row5);
         func_00116248(buf, debug_int_format, ammo->ammo28);
         print_debug_text(0x8C, 0x105, 0x80F0F0F0, buf);
         func_00116248(buf, debug_int_format, (s32) weapon_order[0xA]);
         print_debug_text(0x7A, 0x105, 0x80406080, buf);
-        print_debug_text(0x14, 0x114, 0x8000C0C0, D_L00_0015F2C8);
+        print_debug_text(0x14, 0x114, 0x8000C0C0, debug_label_devastator);
         func_00116248(buf, debug_int_format, ammo->ammo2C);
         print_debug_text(0x8C, 0x114, 0x80F0F0F0, buf);
         func_00116248(buf, debug_int_format, (s32) weapon_order[0xB]);
         print_debug_text(0x7A, 0x114, 0x80406080, buf);
-        print_debug_text(0x14, 0x123, 0x8000C0C0, D_L00_0015F2D8);
+        print_debug_text(0x14, 0x123, 0x8000C0C0, debug_label_visibomb);
         func_00116248(buf, debug_int_format, ammo->ammo34);
         print_debug_text(0x8C, 0x123, 0x80F0F0F0, buf);
-        print_debug_text(0x14, 0x132, 0x8000C0C0, D_L00_0015F2E8);
+        print_debug_text(0x14, 0x132, 0x8000C0C0, debug_label_agents);
         func_00116248(buf, debug_int_format, ammo->ammo50);
         print_debug_text(0x8C, 0x132, 0x80F0F0F0, buf);
         func_00116248(buf, debug_int_format, (s32) weapon_order[0x14]);
         print_debug_text(0x7A, 0x132, 0x80406080, buf);
-        print_debug_text(0x14, 0x141, 0x8000C0C0, D_L00_0015F2F0);
+        print_debug_text(0x14, 0x141, 0x8000C0C0, debug_label_pyrocitor);
         func_00116248(buf, debug_int_format, ammo->ammo40);
         print_debug_text(0x8C, 0x141, 0x80F0F0F0, buf);
         func_00116248(buf, debug_int_format, (s32) weapon_order[0x10]);
         print_debug_text(0x7A, 0x141, 0x80406080, buf);
-        print_debug_text(0x14, 0x150, 0x8000C0C0, D_L00_0015F300);
+        print_debug_text(0x14, 0x150, 0x8000C0C0, debug_label_tesla_claw);
         func_00116248(buf, debug_int_format, ammo->ammo4C);
         print_debug_text(0x8C, 0x150, 0x80F0F0F0, buf);
         func_00116248(buf, debug_int_format, (s32) weapon_order[0x13]);
         print_debug_text(0x7A, 0x150, 0x80406080, buf);
-        print_debug_text(0x14, 0x15F, 0x8000C0C0, D_L00_0015F310);
+        print_debug_text(0x14, 0x15F, 0x8000C0C0, debug_label_mine_glove);
         func_00116248(buf, fmt = debug_int_format, ammo->ammo44);
         print_debug_text(0x8C, 0x15F, 0x80F0F0F0, buf);
         func_00116248(buf, fmt, (s32) weapon_order[0x11]);
         print_debug_text(0x7A, 0x15F, 0x80406080, buf);
-        print_debug_text(0x14, 0x16E, 0x8000C0C0, D_L00_0015F320);
+        print_debug_text(0x14, 0x16E, 0x8000C0C0, debug_label_blaster);
         func_00116248(buf, fmt, ammo->ammo3C);
         print_debug_text(0x8C, 0x16E, 0x80F0F0F0, buf);
         func_00116248(buf, fmt, (s32) weapon_order[0xF]);
         print_debug_text(0x7A, 0x16E, 0x80406080, buf);
-        print_debug_text(0x14, 0x17D, 0x8000C0C0, D_L00_0015F328);
+        print_debug_text(0x14, 0x17D, 0x8000C0C0, debug_label_bolts);
         func_00116248(buf, fmt, gBolts);
         print_debug_text(0x8C, 0x17D, 0x80F0F0F0, buf);
-        print_debug_text(0xBC, 0x100, 0x8000C000, D_L00_0015F330);
-        print_debug_text(0xBC, 0x106, 0x8000C000, D_L00_0015F338);
+        print_debug_text(0xBC, 0x100, 0x8000C000, debug_menu_fog_header);
+        print_debug_text(0xBC, 0x106, 0x8000C000, debug_menu_fog_underline);
         if (debug_menu60.group == 4) {
-            print_debug_text(0xB9, (debug_menu60.item * 0xF) + 0x112, 0x800000C0, D_L00_0015F160);
+            print_debug_text(0xB9, (debug_menu60.item * 0xF) + 0x112, 0x800000C0, debug_menu_cursor);
         }
-        print_debug_text(0xC4, 0x114, 0x8000C0C0, D_L00_0015F340);
-        func_00116248(buf, D_L00_0015F348, promote_float60(level_fog_near_distance * 0.0009765625f));
+        print_debug_text(0xC4, 0x114, 0x8000C0C0, debug_label_near_dist);
+        func_00116248(buf, debug_fog_value_format, promote_float60(level_fog_near_distance * 0.0009765625f));
         print_debug_text(0x11C, 0x114, 0x80F0F0F0, buf);
-        print_debug_text(0xC4, 0x123, 0x8000C0C0, D_L00_0015F350);
-        func_00116248(buf, D_L00_0015F348, promote_float60(100.0f - (level_fog_near_intensity / 2.55f)));
+        print_debug_text(0xC4, 0x123, 0x8000C0C0, debug_label_near_int);
+        func_00116248(buf, debug_fog_value_format, promote_float60(100.0f - (level_fog_near_intensity / 2.55f)));
         print_debug_text(0x11C, 0x123, 0x80F0F0F0, buf);
-        print_debug_text(0xC4, 0x132, 0x8000C0C0, D_L00_0015F358);
-        func_00116248(buf, D_L00_0015F348, promote_float60(level_fog_far_distance * 0.0009765625f));
+        print_debug_text(0xC4, 0x132, 0x8000C0C0, debug_label_far_dist);
+        func_00116248(buf, debug_fog_value_format, promote_float60(level_fog_far_distance * 0.0009765625f));
         print_debug_text(0x11C, 0x132, 0x80F0F0F0, buf);
-        print_debug_text(0xC4, 0x141, 0x8000C0C0, D_L00_0015F360);
-        func_00116248(buf, D_L00_0015F348, promote_float60(100.0f - (level_fog_far_intensity / 2.55f)));
+        print_debug_text(0xC4, 0x141, 0x8000C0C0, debug_label_far_int);
+        func_00116248(buf, debug_fog_value_format, promote_float60(100.0f - (level_fog_far_intensity / 2.55f)));
         print_debug_text(0x11C, 0x141, 0x80F0F0F0, buf);
-        print_debug_text(0xC4, 0x150, 0x8000C0C0, D_L00_0015F368);
-        func_00116248(buf, fmt, (s32) D_L00_0015F544[0]);
+        print_debug_text(0xC4, 0x150, 0x8000C0C0, debug_label_color_r);
+        func_00116248(buf, fmt, (s32) level_fog_color_red[0]);
         print_debug_text(0x11C, 0x150, 0x80F0F0F0, buf);
-        print_debug_text(0xC4, 0x15F, 0x8000C0C0, D_L00_0015F370);
-        func_00116248(buf, fmt, (s32) D_L00_0015F545[0]);
+        print_debug_text(0xC4, 0x15F, 0x8000C0C0, debug_label_color_g);
+        func_00116248(buf, fmt, (s32) level_fog_color_green[0]);
         print_debug_text(0x11C, 0x15F, 0x80F0F0F0, buf);
-        print_debug_text(0xC4, 0x16E, 0x8000C0C0, D_L00_0015F378);
+        print_debug_text(0xC4, 0x16E, 0x8000C0C0, debug_label_color_b);
         func_00116248(buf, fmt, (s32) level_fog_color_blue[0]);
         print_debug_text(0x11C, 0x16E, 0x80F0F0F0, buf);
-        print_debug_text(0x160, 0x100, 0x8000C000, D_L00_0015F380);
-        print_debug_text(0x160, 0x106, 0x8000C000, D_L00_0015F170);
+        print_debug_text(0x160, 0x100, 0x8000C000, debug_menu_samples_header);
+        print_debug_text(0x160, 0x106, 0x8000C000, debug_menu_header_underline);
         if (debug_menu60.group == 5) {
-            print_debug_text(0x15D, (debug_menu60.item * 0xF) + 0x112, 0x800000C0, D_L00_0015F160);
+            print_debug_text(0x15D, (debug_menu60.item * 0xF) + 0x112, 0x800000C0, debug_menu_cursor);
         }
-        print_debug_text(0x168, 0x114, 0x8000C0C0, D_L00_0015F388);
+        print_debug_text(0x168, 0x114, 0x8000C0C0, debug_label_battle_cam);
         print_debug_text(0x1CA, 0x114, 0x80F0F0F0, debug_on_off_strings[(debug_menu60.fF0 != 0) ? 0 : 1]);
-        print_debug_text(0x168, 0x123, 0x8000C0C0, D_L00_0015F398);
+        print_debug_text(0x168, 0x123, 0x8000C0C0, debug_label_actuator);
         print_debug_text(0x1CA, 0x123, 0x80F0F0F0, debug_on_off_strings[debug_menu60.fF4]);
-        print_debug_text(0x168, 0x132, 0x8000C0C0, D_L00_0015F3A8);
+        print_debug_text(0x168, 0x132, 0x8000C0C0, debug_label_add_sample);
         buf[1] = 0;
         buf[0] = debug_menu60.point_timer;
         print_debug_text(0x1CA, 0x132, 0x80F0F0F0, buf);
-        print_debug_text(0x168, 0x141, 0x8000C0C0, D_L00_0015F3B8);
+        print_debug_text(0x168, 0x141, 0x8000C0C0, debug_label_add_start);
         buf[1] = 0;
         buf[0] = debug_menu60.saved_timer;
         print_debug_text(0x1CA, 0x141, 0x80F0F0F0, buf);
@@ -1178,8 +1178,8 @@ extern void func_001F3D78(void);
    picks the profiler colour word D_L00_0015F4F4 (0x7F in display mode 3, else 0x100FF) and draws the debug profiler. */
 void draw_debug_profiler_if_enabled(void) {
     if (skip_frame == 0 && D_001414F5[0xC] == 0) {
-        D_L00_0015F4F4 = 0x100FF;
-        if (cinematic_mode == 3) D_L00_0015F4F4 = 0x7F;
+        debug_profiler_color = 0x100FF;
+        if (cinematic_mode == 3) debug_profiler_color = 0x7F;
         DrawDebugProfiler();
     }
 }
@@ -1193,7 +1193,7 @@ void draw_dialog_background_and_text(void) {
     if (skip_frame == 0) {
         if (get_global_state_pointer() == 0) {
             append_gif_transfer_packet();
-            D_L00_0015F4F4 = 0x100FF;
+            debug_profiler_color = 0x100FF;
             DrawDebugProfiler();
         } else {
             if (get_global_state_pointer() == 3) draw_pause_menu_pages(1);
@@ -1233,7 +1233,7 @@ void draw_framebuffer_with_timed_text(void) {
         }
         ResetGsRegisters();
         ((int (*)(int))SetupGifPaging)(0);
-        p = D_L00_00173180;
+        p = timed_text_records;
         if (p->key >= 0) {
             q = p;
             do {
@@ -1268,7 +1268,7 @@ extern unsigned char D_L00_001C3C10[];
 void print_text_with_texture_3(void *a, void *b, void *c, void *d, void *e) {
     int mode = GetEffectTex(3);
 
-    FontPrint(a, b, c, d, e, mode, D_L00_001C3C10);
+    FontPrint(a, b, c, d, e, mode, effect3_font_metrics);
 }
 extern int func_001F6600(unsigned char *, int);
 extern int func_001FA898_r(float) __asm__("func_001FA898");

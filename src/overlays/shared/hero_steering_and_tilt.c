@@ -1235,9 +1235,9 @@ void launch_hero_wrench(void) {
         dir[1] = player_camera[0x154 / 4];
         dir[2] = player_camera[0x158 / 4];
         euler_rotation_basis(cam_mat, dir);
-        func_001FA4F0(mat, cam_mat, mat);
+        multiply_matrix3x3(mat, cam_mat, mat);
     } else {
-        func_001FA4F0(mat, &D_0013F450_15A90.moby->rot_row0, mat);
+        multiply_matrix3x3(mat, &D_0013F450_15A90.moby->rot_row0, mat);
     }
     copy_matrix_rotation(out_mat, mat);
     matrix_to_euler(out_mat, &item->rot);

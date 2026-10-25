@@ -2390,7 +2390,7 @@ void update_moby_vector_streams_and_particle_burst(char *moby)
         for (i = 0; i < 4; i++) {
             if (d->timer[i] == 0) {
                 for (j = 0; j < 30; j++) {
-                    func_L06_002172B0(d->a[i][j]);
+                    set_vec_to_origin_point(d->a[i][j]);
                     d->a[i][j][0] = f20;
                     rand_vec(u.tmp[j], 0.0f, vector_stream_jitter * g_frame_time);
                     f20 += f21;
@@ -2563,7 +2563,7 @@ void draw_moby_vector_streams(char *m) {
     s[6] = (int)data;
     pp = m0;
     for (j = 3; j >= 0; j--) {
-        func_L06_00216B38(sp, pp);
+        blarg_draw_strand_strip(sp, pp);
         pp += 16;
     }
 }

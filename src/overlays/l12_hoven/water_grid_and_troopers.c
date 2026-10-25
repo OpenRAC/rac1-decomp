@@ -1821,7 +1821,7 @@ void Moby294Update(char *moby) {
             v50[1] = v50[1] + ((float (*)(float))FastSin)(M_F(moby, 0x48));
             n = coll_sphere_mobys(v50, 0, moby, 0, 1.5f);
             if (n != 0) {
-                COPY4(v60, D_L12_0015F660);
+                COPY4(v60, hoven_zero_vec);
                 if (n > 0) {
                     pp = D_L12_00178400;
                     B = ((char *)D_0013E633) + 0xE1D;
@@ -2417,7 +2417,7 @@ void Moby326Update(char *moby) {
 
     lvl = g_current_level_index;
     flagC0 = M_I(data, 0xC0);
-    if (lvl == 12 && D_L12_00161F80 != 0) {
+    if (lvl == 12 && hoven_turret_manned != 0) {
         if (flagC0 == 0) {
             char *X = hoven_player_camera;
             if (M_P(X, 0x25C) == moby) {
@@ -2447,7 +2447,7 @@ void Moby326Update(char *moby) {
         }
     }
     if (flagC0 != 0) {
-        if (D_L12_00161A20 != 0) {
+        if (planetbuster_death_cam_active != 0) {
             char *o = M_P(data, 0xAC);
             if (o != 0) {
                 start_blarg_commander_knockback(moby, o);
@@ -2489,7 +2489,7 @@ void Moby326Update(char *moby) {
             t = scale_ticks(0xF0);
             s = scale_ticks(0x190);
             S_I(data, 0xC4) = rand_range(t, s);
-            n = D_L12_00161FA0 - 1;
+            n = hoven_turret_attempts - 1;
             if (n >= 11) {
                 n = 10;
             }
@@ -2507,7 +2507,7 @@ void Moby326Update(char *moby) {
         int r = 0;
         int n;
         if (M_I(data, 0xC0) != 0) {
-            if (D_L12_00161F80 != 0) {
+            if (hoven_turret_manned != 0) {
                 r = (fast_dec_timer(data + 0xC4) != 0);
             }
         }
@@ -2544,7 +2544,7 @@ void Moby326Update(char *moby) {
         }
         if (M_I(data, 0xC0) != 0) {
             int n, h;
-            n = D_L12_00161FA0 - 3;
+            n = hoven_turret_attempts - 3;
             if (n >= 6) {
                 n = 5;
             }
@@ -2632,7 +2632,7 @@ void Moby326Update(char *moby) {
                 }
                 limit = 4;
                 if (M_I(data, 0xC0) != 0) {
-                    int l = D_L12_00161FA0;
+                    int l = hoven_turret_attempts;
                     if (l >= 11) {
                         limit = 2;
                     }
@@ -2713,7 +2713,7 @@ void Moby326Update(char *moby) {
                 M_I(data, 0xAC) = 0;
             }
         }
-        spawn_explosion(moby, D_L12_0015F660, moby + 0x10, 0.0f, 0.0f, 0x14, 3, 4, 4.0f, 2.0f, 100000.0f, 2, 3.0f, 15.0f, 1, 1, -1, 0);
+        spawn_explosion(moby, hoven_zero_vec, moby + 0x10, 0.0f, 0.0f, 0x14, 3, 4, 4.0f, 2.0f, 100000.0f, 2, 3.0f, 15.0f, 1, 1, -1, 0);
         if (M_I(data, 0xC0) == 0) {
             SetDeathBits(moby, 0, -1);
         }
@@ -3197,12 +3197,12 @@ void process_helicopter_hits_and_reactivation(char *m, int flag) {
         spawn_explosion(m, b, a, 0.0f, 0.0f, 0x14, 3, 4, 4.0f, 2.0f, 100000.0f, -1, 3.0f, 15.0f, 1, 1, -1, 0);
     }
     *(unsigned char *)(m + 0xA4) = 0xFF;
-    if (*(int *)&D_L12_00161A34 != 0 && flag != 0) {
+    if (*(int *)&planetbuster_engaged != 0 && flag != 0) {
         *(int *)(m + 0x94) = 0;
         *(unsigned short *)(m + 0x34) = (*(unsigned short *)(m + 0x34) | 0x41) & 0xEFFF;
     }
     if (*(int *)(d + 0xA4) == 0 && (*(unsigned short *)(m + 0x34) & 1) == 0) return;
-    if (fast_dec_timer((int *)(d + 0xA4)) != 0 && flag != 0 && *(int *)&D_L12_00161A34 == 0) {
+    if (fast_dec_timer((int *)(d + 0xA4)) != 0 && flag != 0 && *(int *)&planetbuster_engaged == 0) {
         *(int *)(m + 0x94) = *(int *)(*(char **)(m + 0x24) + 0x10);
         *(unsigned short *)(m + 0x34) = (*(unsigned short *)(m + 0x34) & 0xFFBE) | 0x1000;
     } else {
