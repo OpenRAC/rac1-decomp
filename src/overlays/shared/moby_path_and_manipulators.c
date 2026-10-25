@@ -958,7 +958,7 @@ float ground_height_at(V *p) {
     V v = *p;
     int y = (int)v.f[1];
     int x = (int)v.f[0];
-    float t = (float)(D_L00_0015FD68 + D_L00_0015FD58 * y)[x] / 255.0f;
+    float t = (float)(height_map_data + height_map_width * y)[x] / 255.0f;
     return (height_map_max_height - height_map_min_height) * (1.0f - t) + height_map_min_height;
 }
 typedef struct { char pad[0x140]; V pos; } S166D;

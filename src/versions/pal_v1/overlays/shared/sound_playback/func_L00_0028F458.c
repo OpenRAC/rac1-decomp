@@ -22,7 +22,7 @@ void update_moby_proximity_interaction(unsigned char *m) {
         }
         p = (float *)(m + 0x10);
         if (*(short *)(d + 0xC) != 0) {
-            matrix_mul_vec3(tmp, D_L00_001BDC10 + ship_index[0] * 16, m + 0xC0);
+            matrix_mul_vec3(tmp, ship_entry_point_offsets + ship_index[0] * 16, m + 0xC0);
             FastVecAdd(tmp, tmp, p);
             if (FastVecDist(tmp, D_0013E633 + 0xE9D) > 4.1f) {
                 *(short *)(d + 0xC) = 0;
@@ -30,7 +30,7 @@ void update_moby_proximity_interaction(unsigned char *m) {
         } else {
             q = (unsigned char *)D_0013E633 + 0xE9D;
             if (vec_distance_xy(p, q) < 6.0f) {
-                matrix_mul_vec3(tmp, D_L00_001BDC10 + ship_index[0] * 16, m + 0xC0);
+                matrix_mul_vec3(tmp, ship_entry_point_offsets + ship_index[0] * 16, m + 0xC0);
                 FastVecAdd(tmp, tmp, p);
                 if (FastVecDist(tmp, q) < 4.0f) {
                     *(short *)(d + 0xC) = 1;
@@ -49,7 +49,7 @@ void update_moby_proximity_interaction(unsigned char *m) {
                     StartCutscene(9);
                 } else {
                     remove_help_message_for_selector(2);
-                    D_L00_0015F710 = 1;
+                    ship_level_exit_requested = 1;
                     ship_index[1] = 0;
                 }
             }
@@ -74,7 +74,7 @@ void update_moby_proximity_interaction(unsigned char *m) {
                 *(unsigned short *)(m + 0x34) &= 0xFFBE;
                 one = 1;
                 ship_index[1] = one;
-                D_L00_0015F710 = one;
+                ship_level_exit_requested = one;
             }
         }
     }

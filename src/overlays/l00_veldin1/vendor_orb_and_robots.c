@@ -408,15 +408,15 @@ void veldin_robot_enemy_update(VendMoby *moby) {
 
         desired_heading = fast_atan2(vars->homeX - moby->pos.f[0], vars->homeY - moby->pos.f[1]);
         if (moby->flags34 & 0x8000) {
-            desired_heading = FastAddRots(desired_heading, *(float *)&D_L00_00161CBC);
+            desired_heading = FastAddRots(desired_heading, *(float *)&veldin1_robot_beam_sweep_angle);
         } else {
-            desired_heading = FastSubRots(desired_heading, *(float *)&D_L00_00161CBC);
+            desired_heading = FastSubRots(desired_heading, *(float *)&veldin1_robot_beam_sweep_angle);
         }
         SteerAngleWithVelocity(&moby->unk40.f[2], desired_heading, &vars->turnVel, g_frame_time_sq * (1.5707964f), g_frame_time_sq * (1.5707964f), g_frame_time * 12.566371f);
         MobyTransformScaledVertex((char *)moby, 0, (char *)mtx);
         qcopy(&delta, &moby->unkC0);
         delta.f[2] = 0.0f;
-        vec_scale_to_length(&delta, &delta, *(float *)&D_L00_00161CB4);
+        vec_scale_to_length(&delta, &delta, *(float *)&veldin1_robot_beam_origin_offset);
         FastVecAdd(&dir, &mtx[3], &delta);
         hit = 0;
         query.flags = 0x10000;
@@ -452,7 +452,7 @@ void veldin_robot_enemy_update(VendMoby *moby) {
         }
         set_beam_origin_transform_and_endpoint(moby, mtx, &dir);
         if (moby->unk70 & 2) {
-            lim = *(int *)&D_L00_00161CB8;
+            lim = *(int *)&veldin1_robot_beam_sweep_cycles;
             if (vars->timer++ == lim) {
                 release_beam_slot_by_id(moby);
                 moby->state = VELDIN_ROBOT_STATE_WAIT_TO_RETURN_TO_FACE_TARGET;
@@ -597,10 +597,10 @@ void update_veldin_robot_damage_and_targeting(void *mv) {
     if (hit != 1 && m->state != 8 && dmg != 0.0f) {
         vars->health -= dmg;
         vars->unk90 = 0x200;
-        vars->unk80 = D_L00_00161CA4 * g_frame_time_sq;
-        vars->unk84 = D_L00_00161CA8 * g_frame_time_sq;
-        vars->unk88 = D_L00_00161CAC * g_frame_time;
-        vars->unk8C = D_L00_00161CB0 * g_frame_time;
+        vars->unk80 = veldin1_robot_hit_knock_gravity * g_frame_time_sq;
+        vars->unk84 = veldin1_robot_hit_knock_drag * g_frame_time_sq;
+        vars->unk88 = veldin1_robot_hit_knock_speed * g_frame_time;
+        vars->unk8C = veldin1_robot_hit_knock_lift * g_frame_time;
         vars->unkAD = 0;
         vars->unk94 = 9;
         vars->unkBC = g_frame_time + g_frame_time;
@@ -620,8 +620,8 @@ void update_veldin_robot_damage_and_targeting(void *mv) {
             SetDeathBits(m, 0, -1);
         } else {
             pp = vars->unk70;
-            vars->unk88 = D_L00_00161CAC * g_frame_time * 0.35f;
-            vars->unk8C = D_L00_00161CB0 * g_frame_time * 0.5f;
+            vars->unk88 = veldin1_robot_hit_knock_speed * g_frame_time * 0.35f;
+            vars->unk8C = veldin1_robot_hit_knock_lift * g_frame_time * 0.5f;
             v.q = coll->pos.q;
             HeadingFromVector(&v, &unused, &vars->unk88, &vars->unk8C);
             InitKnockback(m, pp, fast_atan2(coll->pos.f[0], coll->pos.f[1]), 8, 1, 0);
@@ -639,7 +639,7 @@ void update_veldin_robot_damage_and_targeting(void *mv) {
         path = level_paths[vars->unk1B4];
         FindNearestEligibleMoby(64.0f, (char *)m, &vars->target, 0, 0, path->pts, path->count);
     } else if (m->state != 5) {
-        range = D_L00_00161CA0;
+        range = veldin1_robot_target_range;
         if (vars->unk1DA != 0) {
             range = 37.0f;
         }
@@ -759,7 +759,7 @@ void draw_veldin_robot_effect_quad(char *m) {
     t.z3 = 0;
     t.f2 = 1.0f;
     t.f3 = 1.0f;
-    p = D_L00_001E6FF0;
+    p = veldin1_robot_effect_quad_corners;
     qq = q[0];
     for (i = 3; i >= 0; i--) {
         FastVecScale(qq, p, 0.2f);

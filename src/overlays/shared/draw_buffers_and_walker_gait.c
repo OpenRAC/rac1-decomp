@@ -245,7 +245,7 @@ void WalkCycleStep(WalkMoby *m, WalkData *d, int flags, float speed, float ang, 
     case 9:
     case 10:
     case 11: {
-        int idx = D_L00_001CAA60[d->bB7];
+        int idx = walker_state_anim_slots[d->bB7];
         if (m->f58 < 0.25f && FastDiffRots(m->f48, ang) < 0.09239978f && speed < g_frame_time * 0.19f) {
             MobyBlendAnimation(m, d->bB0, 0, 10);
             reset_walker_gait_helpers((char *)d);
@@ -686,7 +686,7 @@ void WalkCycleStep(WalkMoby *m, WalkData *d, int flags, float speed, float ang, 
     case 15:
         if (flags & 0x30) {
             float dist = vec_distance_xy(m->pos, d->v60);
-            STUB_printf(D_L00_001612A0, dist);
+            STUB_printf(str_walker_jump_dist_fmt, dist);
             d->fD8 = jump_speed_4318(m->pos, d->v60, 0, d->fC0, -d->fDC);
             d->uEE |= 4;
             d->f6C = fast_atan2(d->v60[0] - m->pos[0], d->v60[1] - m->pos[1]);
@@ -716,7 +716,7 @@ void WalkCycleStep(WalkMoby *m, WalkData *d, int flags, float speed, float ang, 
     case 14:
         if (flags & 0x30) {
             float dist = FastVecDist(m->pos, d->v60);
-            STUB_printf(D_L00_001612A0, dist);
+            STUB_printf(str_walker_jump_dist_fmt, dist);
             d->fD8 = jump_speed_4318(m->pos, d->v60, 0, d->fC0, -d->fDC);
             d->uEE |= 4;
             d->f6C = fast_atan2(d->v60[0] - m->pos[0], d->v60[1] - m->pos[1]);

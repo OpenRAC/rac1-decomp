@@ -304,7 +304,7 @@ void update_moby_movement_with_sphere_collision(char *a, char *b, char *c, float
         qcopy(v, a + 0x10);
         v[2] = v[2] + f;
         if (coll_sphere(*(float *)(c + 0x10) * 0.25f, v, 4, a)) {
-            qcopy(a + 0x10, D_L04_00174070);
+            qcopy(a + 0x10, eudora_coll_resolved_pos);
             *(float *)(a + 0x18) = *(float *)(a + 0x18) - f;
         } else {
             break;

@@ -23,7 +23,7 @@ int get_hero_idle_animation_index(int a) {
     if (*(unsigned char *)(g + 0x20AA) == 0) return 0;
     if (*(short *)(g + 0x22C8) != 0) return 0;
     n = hero_slot_item_id(0);
-    r = D_L01_00179FC0 - (-(n * 0x4C));
+    r = novalis_item_defs - (-(n * 0x4C));
     return *(int *)(r + 0x24);
 }
 extern unsigned char D_0013E633[];
@@ -849,7 +849,7 @@ s32 HeroL01_TryTakeHit(s32 arg) {
     if (m[0xA4] == 0xFF) {
         return 0;
     }
-    tbl = &D_L01_00178600[m[0xA4]];
+    tbl = &novalis_moby_hit_records[m[0xA4]];
     if (tbl->p34 != m) {
         return 0;
     }
@@ -1112,7 +1112,7 @@ void clip_hero_horizontal_velocity(int flag) {
     FastVecAdd(q, q, t);
     h1 = (char *)D_0013E633 + 0xE1D;
     if (coll_line(t, q, 4, *(int *)(h1 + 0x2080), 0) != 0) {
-        if (D_L01_0017435C > 0) {
+        if (novalis_coll_hit_type > 0) {
             k = CollType();
         }
     }
@@ -1748,7 +1748,7 @@ void select_hero_locomotion_state(void) {
             *(int *)(c + 0x2088) = 1;
             n = scale_ticks(8);
             if (scale_ticks(5) < *(int *)(c + 0x418)) n = scale_ticks(14);
-            set_hero_animation(4, D_L01_0015F7BC, (float)n);
+            set_hero_animation(4, novalis_hero_run_step1_start_frame, (float)n);
             *(short *)(c + 0x3BC) = 1;
         }
         return;

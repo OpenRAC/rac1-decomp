@@ -344,7 +344,7 @@ void DetachPointLight(s32 arg0) {
             } else if ((firstPacked & 0xF000) == fourthNibble) {
                 firstPacked |= 0xF000;
             } else {
-                STUB_printf(D_001E7E80);
+                STUB_printf(str_bad_point_light_tie);
             }
             firstLinks += 1;
             if (firstPacked == 0xFFFF) {
@@ -371,7 +371,7 @@ void DetachPointLight(s32 arg0) {
             } else if ((secondPacked & 0xF000) == fourthNibble) {
                 secondPacked |= 0xF000;
             } else {
-                STUB_printf(D_001E7EA0);
+                STUB_printf(str_bad_point_light_tfrag);
             }
             secondLinks += 1;
             if (secondPacked == 0xFFFF) {
@@ -398,7 +398,7 @@ void DetachPointLight(s32 arg0) {
             } else if ((thirdPacked & 0xF000) == fourthNibble) {
                 thirdPacked |= 0xF000;
             } else {
-                STUB_printf(D_001E7EC8);
+                STUB_printf(str_bad_point_light_shrub);
             }
             thirdLinks += 1;
             if (thirdPacked == 0xFFFF) {

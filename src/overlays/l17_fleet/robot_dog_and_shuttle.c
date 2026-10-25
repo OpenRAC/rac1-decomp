@@ -639,7 +639,7 @@ void Moby1448Update(unsigned char *m) {
         if (*(unsigned char **)(pl + 0x2FC) == m && *(short *)(pl + 0x30E) == 0
             && scale_ticks(30) < v->timer) {
             update_shuttle_help_message(m);
-            if ((*(int *)(D_0013A5E0 + 0x2604) & 0x10) && *(int *)&D_L17_0015F674 == 10) {
+            if ((*(int *)(D_0013A5E0 + 0x2604) & 0x10) && *(int *)&fleet_shown_help_message == 10) {
                 int s = v->dir;
                 if (s >= 0) {
                     v->go = 1;

@@ -73,7 +73,7 @@ void startDisplay(int field) {
     while (func_00122598(0) == field) {
     }
     movie_display_active = 1;
-    D_001612E4 = 0;
+    movie_vblank_count = 0;
 }
 /* endDisplay(void) -- clears the display-active flag. */
 void endDisplay(void) {

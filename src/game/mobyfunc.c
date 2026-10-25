@@ -589,7 +589,7 @@ void transform_scaled_vertex_batch(char *arg0, int arg1, void *arg2, char *arg3)
     float s;
 
     s = *(float *)(arg0 + 0x2C) * 0.0009765625f;
-    func_00211548(arg0, arg1, arg2, arg3);
+    get_moby_joint_matrices_batch(arg0, arg1, arg2, arg3);
     if (n > 0) {
         do {
             FastVecScale(v, v, s);

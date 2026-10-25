@@ -77,7 +77,7 @@ extern int D_001941C0[];
  * emitted last. The allocation follows the schedule.
  */
 void InitMemSlots(void) {
-    int base = (int)D_0024272F & 0xFFFFC000;
+    int base = (int)image_end_round_16k & 0xFFFFC000;
     int size = current_vu_chain;
     int a = base + size;
     int b = a + size;
@@ -193,7 +193,7 @@ void InitOnce(void) {
     VU0_loadMicroProgram(&vu0_micro_program);
     func_0012F3F8();
 
-    base = (int)D_0024272F & 0xFFFFC000;
+    base = (int)image_end_round_16k & 0xFFFFC000;
     tbl = (int *)(base + 0x2C0000);
     seg = D_1FF8000 - (disc_table[0x4B1] << 0xB);
     func_0012F348(disc_table[0x4B0], disc_table[0x4B1], seg);

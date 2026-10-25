@@ -34,7 +34,7 @@ unsigned char *SpawnTrailParticle(char *parent, void *pos, float *vec) {
         *(float *)(p + 0xC) = 42000.0f;
         p[8] = b;
         p[1] = 0;
-        p[2] = *D_L17_001B2D54;
+        p[2] = *fleet_trail_texture_ptr;
     }
     return p;
 }
@@ -78,7 +78,7 @@ unsigned char *create_drone_flight_trail_record(char *pos, int mode, int step) {
             }
             p[1] = 0;
             p[8] = random_integer_below(0xFF);
-            p[2] = *D_L17_001B2D54;
+            p[2] = *fleet_trail_texture_ptr;
         }
         return p;
     }

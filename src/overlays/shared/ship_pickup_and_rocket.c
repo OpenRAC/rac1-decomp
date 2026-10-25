@@ -32,7 +32,7 @@ void emit_transformed_2d_vertex_packet(short *pts, int n, float x0, float y0, un
     {
         char *t1 = (char *)gemlik_dma_packet_cursor;
         gemlik_dma_packet_cursor = (int)(t1 + 0x10);
-        qcopy((void *)gemlik_dma_packet_cursor, &D_L13_00160960);
+        qcopy((void *)gemlik_dma_packet_cursor, &gemlik_2d_prim_giftag);
         *(short *)(t1 + 0x10) = -0x7FFF;
     }
     {
@@ -44,7 +44,7 @@ void emit_transformed_2d_vertex_packet(short *pts, int n, float x0, float y0, un
     {
         char *t3 = (char *)gemlik_dma_packet_cursor;
         gemlik_dma_packet_cursor = (int)(t3 + 0x10);
-        qcopy((void *)gemlik_dma_packet_cursor, &D_L13_00160970);
+        qcopy((void *)gemlik_dma_packet_cursor, &gemlik_2d_vertex_giftag);
         *(short *)(t3 + 0x10) = n - 0x8000;
     }
     *(u128_7d50 *)rot = 0;
@@ -431,8 +431,8 @@ extern Level13VendorCurrentMoby *D_L13_00167180;
 extern Level13VendorRecord *D_L13_0015F050 MACRO_ADDR;
 /* marks a vendor item for the current moby class */
 void flag_vendor_item(int index) {
- Level13VendorCurrentMoby *m=D_L13_00167180;
- Level13VendorRecord *rec=(Level13VendorRecord *)(index*32+(int)D_L13_0015F050);
+ Level13VendorCurrentMoby *m=gemlik_player_camera;
+ Level13VendorRecord *rec=(Level13VendorRecord *)(index*32+(int)gemlik_camera_descriptors);
  Level13VendorItem *item=rec->item;
  if(m->class_id==0x13) item->field39=1;
 }

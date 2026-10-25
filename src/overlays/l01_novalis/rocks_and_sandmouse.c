@@ -1788,13 +1788,13 @@ void update_level01_tutorial_hints(Moby *moby) {
             }
         }
         if (is_point_inside_clip_volume(&g_hero.motion.pos, data[14]) &&
-            ((u32)g_hero.state.control_mode < 2 || g_hero.state.control_mode == 9) && D_L01_0015F76C < 3 &&
+            ((u32)g_hero.state.control_mode < 2 || g_hero.state.control_mode == 9) && novalis_look_stat_count < 3 &&
             help_state.state == 0 && help_state.cur == -1 && help_records[0x40].id == 0) {
             Help_Request(0x3EC, 0x40);
         }
         if (is_point_inside_clip_volume(&g_hero.motion.pos, data[14]) &&
             ((u32)g_hero.state.control_mode < 2 || g_hero.state.control_mode == 9) && g_hero.state.current == 1 &&
-            D_L01_0015F768 == -1 && help_state.state == 0 && help_state.cur == -1 &&
+            novalis_look_stat_timer == -1 && help_state.state == 0 && help_state.cur == -1 &&
             help_records[0x40].id != 0 && help_records[0x41].id == 0) {
             Help_Request(0x3ED, 0x41);
         }

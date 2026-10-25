@@ -13,10 +13,10 @@ void register_camera_update_callback(int fn) {
 
     if (camera_update_callback_count < 16) {
         for (i = 0; i < camera_update_callback_count; i++) {
-            if (fn == D_L02_00169670[i]) {
+            if (fn == camera_update_callbacks[i]) {
                 return;
             }
         }
-        D_L02_00169670[camera_update_callback_count++] = fn;
+        camera_update_callbacks[camera_update_callback_count++] = fn;
     }
 }

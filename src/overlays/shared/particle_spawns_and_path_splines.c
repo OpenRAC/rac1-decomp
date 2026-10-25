@@ -21,7 +21,7 @@ void spawn_type_10_particle(char *pos, char *vel) {
         p[3] = 0x48;
         *(float *)(p + 0xC) = random_float_between(60900.0f, 90300.0f);
         p[8] = 0;
-        p[2] = *D_L01_001B280C;
+        p[2] = *novalis_part_type10_textures;
         *(float *)(q + 0x10) = 0.425f;
         *(float *)(q + 0x14) = 0.425f;
         *(float *)(q + 0x18) = 0.225f;
@@ -51,7 +51,7 @@ char *spawn_type_14_particle(int a, char *b) {
         p[3] = 0x48;
         *(float *)(p + 0xC) = 29400.0f;
         p[8] = random_integer_below(0xFF);
-        p[2] = *D_L01_001B2838;
+        p[2] = *novalis_part_type14_textures;
         *(short *)(p + 0xA) = scale_ticks(6);
         q = (int *)(p + 0x20);
         q[2] = (int)b;
@@ -90,7 +90,7 @@ char *PartType41Spawn(float scale, void *pos, int a, int idx, int b, unsigned ch
             r[3] = kind;
         }
         r[1] = 0;
-        r[2] = D_L01_001B28A4[0][idx];
+        r[2] = novalis_part_type41_textures[0][idx];
         *(float *)(r + 0xC) = scale * 210000.0f;
         *(short *)(r + 0xA) = h;
         ((unsigned char *)r)[8] = 0xA0;
@@ -114,7 +114,7 @@ unsigned char *spawn_type_52_particle(void *a, int b, int c, int d, float f, flo
         r[3] = 0x44;
         r[9] = truncate_float_to_s32(4.0f) + 0x20;
         r[1] = 1;
-        r[2] = *D_L01_001B28D0;
+        r[2] = *novalis_part_type52_textures;
         *(short *)(r + 0xA) = d;
         *(float *)(r + 0xC) = f * 210000.0f;
         r[8] = random_integer_below(0xFF);

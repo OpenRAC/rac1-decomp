@@ -247,7 +247,7 @@ void spawn_timed_effect_particle(char *pos, int a1) {
         p[9] = func_001FA898_r(2.0f) + 0x40;
         p[3] = 0x48;
         p[1] = 0;
-        p[2] = D_L00_001B2404[0];
+        p[2] = part_type01_textures[0];
         *(float *)(p + 0xC) = 31500.002f;
         p[8] = 0xA0;
         *(short *)(p + 0xA) = scale_ticks(0x1B);
@@ -265,6 +265,6 @@ void update_timed_effect_particle(char *m) {
         KillPart(m);
     } else {
         a = scale_ticks(0x1B);
-        m[2] = D_L00_001B2404[(a - *(short *)(m + 0xA)) * 9 / scale_ticks(0x1B)];
+        m[2] = part_type01_textures[(a - *(short *)(m + 0xA)) * 9 / scale_ticks(0x1B)];
     }
 }

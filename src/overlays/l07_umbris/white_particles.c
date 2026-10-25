@@ -22,7 +22,7 @@ void spawn_white_particle_with_payload(void *pos, void *pos2) {
         p[3] = 0x48;
         *(float *)(p + 0xC) = random_float_between(20000.0f, 120000.0f);
         p[8] = 0;
-        p[2] = *D_L07_001B2464;
+        p[2] = *umbris_part_type65_textures;
         f[4] = 1.0f;
         f[5] = 1.0f;
         f[6] = 1.0f;

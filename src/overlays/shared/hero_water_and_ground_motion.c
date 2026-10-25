@@ -224,8 +224,8 @@ void hero_update_movement(void) {
                     matrix_mul_vec3(g_hero.motion.unk170.f, vec[0], player_camera.f350);
                     g_hero.motion.move_yaw = player_camera.f158;
                     turn_to(0, g_frame_scale_sq, g_frame_scale_sq * 0.0f, g_frame_time * 174.53293f);
-                    if (*(int *)&D_L00_0015F768 > 0) {
-                        if (fast_dec_timer((int *)&D_L00_0015F768)) {
+                    if (*(int *)&veldin1_look_stat_timer > 0) {
+                        if (fast_dec_timer((int *)&veldin1_look_stat_timer)) {
                             if (usage_stats.f90 < 0xFFFF) {
                                 usage_stats.f90++;
                             }
@@ -233,8 +233,8 @@ void hero_update_movement(void) {
                                 usage_stats.f92 = scale_ticks(gameplay_event_frame_count) / 600;
                             }
                             usage_stats.f94 = usage_stats.f94 | (1 << g_current_level_index) | 0x80000000;
-                            *(int *)&D_L00_0015F768 = -1;
-                            (*(int *)&D_L00_0015F76C)++;
+                            *(int *)&veldin1_look_stat_timer = -1;
+                            (*(int *)&veldin1_look_stat_count)++;
                         }
                     }
                 }
@@ -627,7 +627,7 @@ void hero_update_movement(void) {
             } else if (g_hero.state.current == 0x33) {
                 float v;
 
-                v = g_hero.ground_speed * vector_length_xyz_cf(D_L00_0017C0C0, 0x1E) * 5.0f;
+                v = g_hero.ground_speed * vector_length_xyz_cf(veldin1_hero_stride_speeds, 0x1E) * 5.0f;
                 if (g_hero.state.prev == 0x35 && g_hero.state_timer < scale_ticks(0xF)) {
                     if (v < g_frame_time * 4.5f) {
                         v = g_frame_time * 4.5f;
@@ -781,7 +781,7 @@ void hero_update_movement(void) {
                 g_hero.target_speed = 0.0f;
             }
             speed_step(g_frame_time_sq * 4.0f, g_frame_time_sq * 5.0f);
-            v = g_hero.ground_speed * vector_length_xyz_cf(D_L00_0017C0C0, 0x1E) * 5.5f;
+            v = g_hero.ground_speed * vector_length_xyz_cf(veldin1_hero_stride_speeds, 0x1E) * 5.5f;
             g_hero.motion.velocity.f[0] = FastCos(g_hero.motion.rot.f[2]) * v;
             g_hero.motion.velocity.f[1] = FastSin(g_hero.motion.rot.f[2]) * v;
             g_hero.motion.velocity.f[2] = 0.0f;
@@ -1647,7 +1647,7 @@ void hero_update_movement(void) {
                         k = 0.0f;
                     }
                 }
-                if (sp > D_L00_0017BEC4) {
+                if (sp > veldin1_hero_run_turn_stick_threshold) {
                     turn_hero_toward_move_direction_with_stick_scale();
                 } else {
                     float t;
@@ -1894,14 +1894,14 @@ void hero_update_movement(void) {
                         }
                         set_first_hero_easing_parameters(0.03f, 0.2f);
                         if (g_hero.unk58C != 0) {
-                            D_L00_0017A7E0[1] = -tilt;
+                            veldin1_hero_spline_tilt[1] = -tilt;
                         } else {
-                            D_L00_0017A7E0[1] = tilt;
+                            veldin1_hero_spline_tilt[1] = tilt;
                         }
                     }
                 }
                 if (g_hero.state.current != 0x29 && g_hero.state.current != 0x42 && g_hero.state.current != 0x2A) {
-                    D_L00_0017A7E0[0] = fast_atan2(vec_length_xy(g_hero.motion.displacement.f), g_hero.motion.displacement.f[2]);
+                    veldin1_hero_spline_tilt[0] = fast_atan2(vec_length_xy(g_hero.motion.displacement.f), g_hero.motion.displacement.f[2]);
                 }
                 if (hasW) {
                     set_first_hero_easing_parameters(g_frame_scale_sq * 0.017f, g_frame_scale_sq * 0.3f);
@@ -2245,7 +2245,7 @@ void hero_update_movement(void) {
                         spd = g_hero.motion.unk164;
                         ApproachValue(&spd, g_hero.target_speed * g_frame_time, g_frame_time_sq * 5.0f);
                         FastVecSub(g_hero.motion.velocity.f, vec[5], g_hero.motion.pos.f);
-                        vec_set_length_xy(g_hero.motion.velocity.f, g_hero.motion.velocity.f, D_L00_001C3FB0[truncate_float_to_s32(g_hero.anim_frame)] * 0.5f);
+                        vec_set_length_xy(g_hero.motion.velocity.f, g_hero.motion.velocity.f, veldin1_hero_ledge_shimmy_frame_speeds[truncate_float_to_s32(g_hero.anim_frame)] * 0.5f);
                     }
                 }
             }
@@ -2886,7 +2886,7 @@ void hero_update_movement(void) {
                         spd = g_hero.motion.unk164;
                         ApproachValue(&spd, g_hero.target_speed * g_frame_time, g_frame_time_sq * 5.0f);
                         FastVecSub(g_hero.motion.velocity.f, vec[5], g_hero.motion.pos.f);
-                        vec_scale_to_length(g_hero.motion.velocity.f, g_hero.motion.velocity.f, D_L00_001C3FF0[truncate_float_to_s32(g_hero.anim_frame)] * 0.5f);
+                        vec_scale_to_length(g_hero.motion.velocity.f, g_hero.motion.velocity.f, veldin1_hero_state4e_step_lengths[truncate_float_to_s32(g_hero.anim_frame)] * 0.5f);
                     }
                 }
             }

@@ -340,23 +340,23 @@ void DmaTfragTextures(void) {
     int size;
 
     g_render_packet_cursor += 0x10;
-    ((int *)D_00160FBC)[0] = 0x20000000;
-    ((int *)D_00160FBC)[1] = g_render_packet_cursor;
-    ((int *)D_00160FBC)[2] = 0;
-    ((int *)D_00160FBC)[3] = 0;
+    ((int *)tfrag_tex_dma_tag_slot)[0] = 0x20000000;
+    ((int *)tfrag_tex_dma_tag_slot)[1] = g_render_packet_cursor;
+    ((int *)tfrag_tex_dma_tag_slot)[2] = 0;
+    ((int *)tfrag_tex_dma_tag_slot)[3] = 0;
     if (draw_config[4] != 0 && draw_config[3] != 0) {
         ComputeTfragTextureUsage();
         size = build_tfrag_texture_dma(g_gs_texture_allocation_cursor);
         VU1_texFlush();
         if (size > 0x400000) {
-            STUB_printf(D_001E8CE0);
+            STUB_printf(str_tfrag_texture_overflow);
         }
         if (max_tfrag_texture_dma_size < size) {
             max_tfrag_texture_dma_size = size;
         }
     }
     ((int *)g_render_packet_cursor)[0] = 0x20000000;
-    ((int *)g_render_packet_cursor)[1] = D_00160FBC + 0x10;
+    ((int *)g_render_packet_cursor)[1] = tfrag_tex_dma_tag_slot + 0x10;
     ((int *)g_render_packet_cursor)[2] = 0;
     ((int *)g_render_packet_cursor)[3] = 0;
     g_render_packet_cursor += 0x10;
@@ -391,12 +391,12 @@ void PatchTfragGifs(void) {
     int i;
     int n;
 
-    c = D_001E1200;
+    c = tfrag_gif_chunk_list;
     while (c->items != 0) {
         n = c->count;
         r = c->items;
         for (i = 0; i < n; i++) {
-            e = &D_001E0F00[*(unsigned char *)(r + 0x23)];
+            e = &tfrag_tex_remap_table[*(unsigned char *)(r + 0x23)];
             if (e->a != 0) {
                 *(int *)r = (*(int *)r & 0xFFFFC000) | e->a;
             }
@@ -425,11 +425,11 @@ void DrawTfrag(void) {
     float m[4][4];
     int p = g_render_packet_cursor;
 
-    D_00160FBC = p;
+    tfrag_tex_dma_tag_slot = p;
     g_gs_texture_allocation_cursor = g_gs_texture_allocation_start;
     p += 0x10;
     g_render_packet_cursor = p;
-    ProfileMarker_Begin(D_00160F70, 1);
+    ProfileMarker_Begin(str_tfrag_texs, 1);
     set_identity_matrix(m);
     FastVecScale(m[3], camera_position, -1024.0f);
     m[3][3] = 1.0f;
@@ -440,12 +440,12 @@ void DrawTfrag(void) {
         func_00118D80(0);
         TfragProc();
     }
-    ProfileMarker_Begin(D_00160F80, 2);
+    ProfileMarker_Begin(str_tfrag_draw, 2);
     DmaTfragTextures();
     if (draw_config[4] != 0) {
-        write_dma_channel(D_001E1600, 0x3000, 0x40);
+        write_dma_channel(tfrag_dma_block, 0x3000, 0x40);
     }
-    ProfileMarker_End(D_00160F80, 2);
+    ProfileMarker_End(str_tfrag_draw, 2);
 }
 
 /* The last function in the object: retail pads to 16 bytes after it

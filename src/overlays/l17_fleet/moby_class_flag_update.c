@@ -29,7 +29,7 @@ extern Level17Moby *D_L17_00160060 MACRO_ADDR;
 /* Apply three optional state changes to live mobys of one class. */
 void update_moby_class_flags_and_link(int class_id, int flag2, int flag1, int link_mode) {
     Level17Moby *moby;
-    for (moby = fleet_mobys; moby <= D_L17_00160060; moby++) {
+    for (moby = fleet_mobys; moby <= fleet_last_moby; moby++) {
         if (moby->class_id == class_id && moby->state >= 0) {
             if (flag2 != -1) {
                 if (flag2 != 0) moby->flags &= ~2;

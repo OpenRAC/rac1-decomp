@@ -32,10 +32,10 @@ int count_active_moby_group_members(int i, int st) {
     int n = 0;
     O_26e008 *o;
 
-    if (D_L01_001ABFC0[i] == 0) {
+    if (novalis_moby_groups[i] == 0) {
         return 0;
     }
-    p = D_L01_001ABFC0[i];
+    p = novalis_moby_groups[i];
     do {
         o = (O_26e008 *)(((*p & 0x7FFF) << 8) + (int)novalis_mobys);
         if (o->state >= 0 && (st == -1 || (unsigned char)o->state != st)) {
@@ -50,7 +50,7 @@ extern char *D_L01_00160058 MACRO_ADDR;
 
 // Set byte 0xBC of each entry in a negative-terminated index list.
 void MobyGroup_SetByteBC(int i, int v) {
-    unsigned short *t = D_L01_001ABFC0[i];
+    unsigned short *t = novalis_moby_groups[i];
     unsigned short *p;
     if (t != 0) {
         p = t;
@@ -65,7 +65,7 @@ extern int D_L01_00160058_m __asm__("D_L01_00160058") MACRO_ADDR;
 void set_moby_list_state(int list, int state)
 {
     unsigned short *p;
-    unsigned short *q = (unsigned short *)D_L01_001ABFC0[list];
+    unsigned short *q = (unsigned short *)novalis_moby_groups[list];
     if (q != 0) {
         p = q;
         do {

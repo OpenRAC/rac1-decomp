@@ -287,7 +287,7 @@ void activate_gadgetron_ceo_challenge_environment(char *moby) {
         jet_group_state(*p, 0, 0, 0);
         p++;
     }
-    *(float *)&D_L16_0015F718 = 74.0f;
+    *(float *)&kalebo3_hero_fall_state_height = 74.0f;
     Challenge_SetLayoutParam(76.0f);
     MusicRequestTrack(2, 6);
 }

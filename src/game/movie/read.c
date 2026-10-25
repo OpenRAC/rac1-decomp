@@ -25,7 +25,7 @@ int videoCallback(void *unused, char *entry, char *buffer) {
                           source, first, buffer, remaining);
     if (copied > 0) {
         if (!videoDecPutTs(decoder_state + 0xD9048, *(long *)(entry + 0x10), *(long *)(entry + 0x18), spans.p1, copied)) {
-            ErrMessage(D_001E8E38);
+            ErrMessage(str_pts_buffer_overflow);
         }
     }
     videoDecEndPut(decoder_state + 0xD9048, copied);

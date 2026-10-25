@@ -2615,7 +2615,7 @@ extern int D_L01_00160058_m __asm__("D_L01_00160058") MACRO_ADDR;
 /* Returns the closest moby of type 0x26F with flag 0x1000 set and state below 0x7F, from the id list
  * D_L01_001ABFC0[idx], within a 120.0 limit; 0 if there is none. */
 char *find_nearest_class_26f_moby_in_list(char *self, int idx) {
-    short *list = (short *)D_L01_001ABFC0[idx];
+    short *list = (short *)novalis_moby_groups[idx];
     float best = 120.0f;
     char *res = 0;
     if (list == 0) {

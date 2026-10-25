@@ -1468,13 +1468,13 @@ void update_hero_hoverboard_race_progress(void) {
     if (near != 0 || (func_001FA850_254DE8(((Hero *)(D_0013E633 + 0xE1D))->motion.rot.f[2], dir) > 1.5707964f && ((Hero *)(D_0013E633 + 0xE1D))->unk88D == 0)) {
         ((Hero *)(D_0013E633 + 0xE1D))->unk8AE++;
         if (((Hero *)(D_0013E633 + 0xE1D))->unk8AE > scale_ticks(0xB4)) {
-            if (D_L05_0015F760 == 0) {
-                D_L05_0015F760 = 1;
-                D_L05_0015F764 = 0;
-                D_L05_0015F75C = D_0015EE60_254DE8 * 0.08f;
+            if (rilgar_off_course_reset_started == 0) {
+                rilgar_off_course_reset_started = 1;
+                rilgar_off_course_reset_ready = 0;
+                rilgar_off_course_reset_rate = D_0015EE60_254DE8 * 0.08f;
             }
             ((Hero *)(D_0013E633 + 0xE1D))->unk8AF = 1;
-            if (D_L05_0015F764 == 1) {
+            if (rilgar_off_course_reset_ready == 1) {
                 ((Hero *)(D_0013E633 + 0xE1D))->unk8AF = 0;
                 func_L05_00254B38_254DE8(v0, v1);
                 ((Hero *)(D_0013E633 + 0xE1D))->unk8AE = 0;

@@ -35,7 +35,7 @@ int Hero_GetGadgetAnimId(int a) {
         return 0;
     }
     i = hero_slot_item_id(0) * 0x4C;
-    p = D_L12_00179FC0 - (-i);
+    p = hoven_item_defs - (-i);
     return *(int *)(p + 0x24);
 }
 typedef int u128 __attribute__((mode(TI)));

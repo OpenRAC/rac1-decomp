@@ -132,7 +132,7 @@ void GlowQuadsDraw(char *moby)
     q[0][0] = sc * d[3];
     clear_u64_value(q[1]);
     q[1][3] = 1.0f;
-    q[1][2] = q[1][2] + D_L00_0015FBC0;
+    q[1][2] = q[1][2] + glow_quad_z_offset;
     q[1][0] = sc * c[3] * 3.0f;
     qcopy(q[2], d);
     q[2][2] = q[2][2] + 0.25f;
@@ -212,7 +212,7 @@ int allocate_packed_color_point_light_slot(float *pos, float radius, float inten
         return -1;
     }
     for (i = 0; i < 8; i++) {
-        q = D_L00_001805C0 + i * 0x30;
+        q = level_point_light_data + i * 0x30;
         if (*(int *)(q + 0x10) == 0) {
             break;
         }
@@ -220,8 +220,8 @@ int allocate_packed_color_point_light_slot(float *pos, float radius, float inten
     if (i == 8) {
         return -1;
     }
-    e = D_L00_001803C0 + i * 0x20;
-    s = D_L00_001805C0 + i * 0x30;
+    e = level_point_lights + i * 0x20;
+    s = level_point_light_data + i * 0x30;
     qcopy(e + 0x10, pos);
     *(float *)(e + 0x1C) = radius;
     *(float *)(e + 0) = IntToFloat(color & 0xFF) * 0.0078125f;
@@ -230,7 +230,7 @@ int allocate_packed_color_point_light_slot(float *pos, float radius, float inten
     *(float *)(e + 0xC) = intensity;
     FastMemZero16(s, 0x30);
     *(int *)(s + 0x10) = 1;
-    *(int *)(s + 0xC) = (int)(D_L00_00180740 + i * 0x400);
+    *(int *)(s + 0xC) = (int)(level_point_light_link_buffers + i * 0x400);
     return i;
 }
 typedef unsigned int u128_pt __attribute__((mode(TI)));
@@ -272,6 +272,6 @@ extern unsigned char D_L00_001805C0[];
 void release_point_light_slot(int index)
 {
     DetachPointLight(index);
-    FastMemZero16(D_L00_001803C0 + index * 0x20, 0x20);
-    FastMemZero16(D_L00_001805C0 + index * 0x30, 0x30);
+    FastMemZero16(level_point_lights + index * 0x20, 0x20);
+    FastMemZero16(level_point_light_data + index * 0x30, 0x30);
 }

@@ -163,7 +163,7 @@ int func_001195A0(void) {
     tp.entry = func_001194C8;
     tp.stack = D_00154200;
     tp.stackSize = 0x400;
-    tp.gpReg = D_00166D00;
+    tp.gpReg = gp_base;
     tp.initPriority = 0;
     tid = func_00118B50(&tp);
     top_thread_id = tid;

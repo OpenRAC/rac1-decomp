@@ -62,7 +62,7 @@ void draw_vendor_purchase_text(void *m, int x, int y) {
     box.half_y = 6;
     box.style = 1;
     font_print_window_small((void *)&box, 0x80f0f0f0L, msg_string(0x523C), -1);
-    func_00116248(text, D_L00_00161220, vendor_buy_quantity);
+    func_00116248(text, vendor_quantity_format, vendor_buy_quantity);
     if (vendor_buy_quantity >= 100)
         text_x = 0x17;
     else {
@@ -75,9 +75,9 @@ void draw_vendor_purchase_text(void *m, int x, int y) {
 quantity_small:
     FontPrintSmall(0x25, 0x32, 0x80f0f0f0L, text, -1);
 quantity_done:
-    FontPrintSmall(0xc, 0x32, 0x80f0f0f0L, D_L00_00161228, -1);
-    FontPrintSmall(0x40, 0x32, 0x80f0f0f0L, D_L00_00161230, -1);
-    fmt = D_L00_00161220;
+    FontPrintSmall(0xc, 0x32, 0x80f0f0f0L, vendor_quantity_left_label, -1);
+    FontPrintSmall(0x40, 0x32, 0x80f0f0f0L, vendor_quantity_right_label, -1);
+    fmt = vendor_quantity_format;
     if (MENU.f40)
         total = vendor_buy_quantity * item_price_table[MENU.rows[MENU.f58].fD0].hA;
     else
@@ -141,13 +141,13 @@ void draw_vendor_inset_quads(char *m) {
         FastVecSub(A, P[1], P[0]);
         FastVecSub(B, P[2], P[0]);
         f = FastVecLength(A);
-        vec_scale_to_length(E, A, D_L00_001CA618[i][0]);
+        vec_scale_to_length(E, A, vendor_inset_quad_margins[i][0]);
         FastVecAdd(C, C, E);
-        vec_scale_to_length(A, A, f - D_L00_001CA618[i][2] * 2.0f);
+        vec_scale_to_length(A, A, f - vendor_inset_quad_margins[i][2] * 2.0f);
         f = FastVecLength(B);
-        vec_scale_to_length(E, B, D_L00_001CA618[i][1]);
+        vec_scale_to_length(E, B, vendor_inset_quad_margins[i][1]);
         FastVecAdd(C, C, E);
-        vec_scale_to_length(B, B, f - D_L00_001CA618[i][3] * 2.0f);
+        vec_scale_to_length(B, B, f - vendor_inset_quad_margins[i][3] * 2.0f);
         FastVecAdd(E, C, A);
         FastVecAdd(E, E, B);
         project_graphics_bounds_float(C, E, &g[0], &g[1], &g[2], &g[3]);
@@ -205,7 +205,7 @@ void draw_vendor_purchase_panel(void *m) {
     q2A a, b;
     int x, y, w, h;
     float len;
-    ids = D_L00_00161238;
+    ids = vendor_purchase_panel_joint_ids;
     transform_scaled_vertex_batch(m, 3, &ids, out);
     qcopy(base, out);
     FastVecSub(d1, &out[1], out);
@@ -264,10 +264,10 @@ void draw_vendor_hologram_cone(void) {
     s.hdr[0] = 0;
     s.hdr[1] = GetEffectTex(0x18);
     for (i = 0; i < 4; i++) {
-        matrix_mul_vec3(v[0], D_L00_001CA680[vendor_hologram_cone_quads[i].a], (char *)vendor_menu[7] + 0xC0);
-        matrix_mul_vec3(v[1], D_L00_001CA680[*(int *)((char *)vendor_hologram_cone_quads + i * 16 + 4)], (char *)vendor_menu[7] + 0xC0);
-        matrix_mul_vec3(v[2], D_L00_001CA680[*(int *)((char *)vendor_hologram_cone_quads + i * 16 + 8)], (char *)vendor_menu[7] + 0xC0);
-        matrix_mul_vec3(v[3], D_L00_001CA680[vendor_hologram_cone_quads[i].d], (char *)vendor_menu[7] + 0xC0);
+        matrix_mul_vec3(v[0], vendor_hologram_cone_vertices[vendor_hologram_cone_quads[i].a], (char *)vendor_menu[7] + 0xC0);
+        matrix_mul_vec3(v[1], vendor_hologram_cone_vertices[*(int *)((char *)vendor_hologram_cone_quads + i * 16 + 4)], (char *)vendor_menu[7] + 0xC0);
+        matrix_mul_vec3(v[2], vendor_hologram_cone_vertices[*(int *)((char *)vendor_hologram_cone_quads + i * 16 + 8)], (char *)vendor_menu[7] + 0xC0);
+        matrix_mul_vec3(v[3], vendor_hologram_cone_vertices[vendor_hologram_cone_quads[i].d], (char *)vendor_menu[7] + 0xC0);
         s.pos[0][0] = *(float *)((char *)vendor_menu[7] + 0x10) + v[0][0];
         s.pos[0][1] = *(float *)((char *)vendor_menu[7] + 0x14) + v[0][1];
         s.pos[0][2] = *(float *)((char *)vendor_menu[7] + 0x18) + v[0][2];
@@ -280,18 +280,18 @@ void draw_vendor_hologram_cone(void) {
         s.pos[3][0] = *(float *)((char *)vendor_menu[7] + 0x10) + v[3][0];
         s.pos[3][1] = *(float *)((char *)vendor_menu[7] + 0x14) + v[3][1];
         s.pos[3][2] = *(float *)((char *)vendor_menu[7] + 0x18) + v[3][2];
-        s.col[0] = D_L00_001CA758[vendor_hologram_cone_quads[i].a];
-        s.col[1] = D_L00_001CA758[*(int *)((char *)vendor_hologram_cone_quads + i * 16 + 4)];
-        s.col[2] = D_L00_001CA758[*(int *)((char *)vendor_hologram_cone_quads + i * 16 + 8)];
-        s.col[3] = D_L00_001CA758[vendor_hologram_cone_quads[i].d];
-        s.uv[0][0] = D_L00_001CA710[vendor_hologram_cone_quads[i].a][0];
-        s.uv[0][1] = D_L00_001CA710[vendor_hologram_cone_quads[i].a][1] + *(float *)&vendor_screen_uv_scroll;
-        s.uv[1][0] = D_L00_001CA710[*(int *)((char *)vendor_hologram_cone_quads + i * 16 + 4)][0];
-        s.uv[1][1] = D_L00_001CA710[*(int *)((char *)vendor_hologram_cone_quads + i * 16 + 4)][1] + *(float *)&vendor_screen_uv_scroll;
-        s.uv[2][0] = D_L00_001CA710[*(int *)((char *)vendor_hologram_cone_quads + i * 16 + 8)][0];
-        s.uv[2][1] = D_L00_001CA710[*(int *)((char *)vendor_hologram_cone_quads + i * 16 + 8)][1] + *(float *)&vendor_screen_uv_scroll;
-        s.uv[3][0] = D_L00_001CA710[vendor_hologram_cone_quads[i].d][0];
-        s.uv[3][1] = D_L00_001CA710[vendor_hologram_cone_quads[i].d][1] + *(float *)&vendor_screen_uv_scroll;
+        s.col[0] = vendor_hologram_cone_colors[vendor_hologram_cone_quads[i].a];
+        s.col[1] = vendor_hologram_cone_colors[*(int *)((char *)vendor_hologram_cone_quads + i * 16 + 4)];
+        s.col[2] = vendor_hologram_cone_colors[*(int *)((char *)vendor_hologram_cone_quads + i * 16 + 8)];
+        s.col[3] = vendor_hologram_cone_colors[vendor_hologram_cone_quads[i].d];
+        s.uv[0][0] = vendor_hologram_cone_uvs[vendor_hologram_cone_quads[i].a][0];
+        s.uv[0][1] = vendor_hologram_cone_uvs[vendor_hologram_cone_quads[i].a][1] + *(float *)&vendor_screen_uv_scroll;
+        s.uv[1][0] = vendor_hologram_cone_uvs[*(int *)((char *)vendor_hologram_cone_quads + i * 16 + 4)][0];
+        s.uv[1][1] = vendor_hologram_cone_uvs[*(int *)((char *)vendor_hologram_cone_quads + i * 16 + 4)][1] + *(float *)&vendor_screen_uv_scroll;
+        s.uv[2][0] = vendor_hologram_cone_uvs[*(int *)((char *)vendor_hologram_cone_quads + i * 16 + 8)][0];
+        s.uv[2][1] = vendor_hologram_cone_uvs[*(int *)((char *)vendor_hologram_cone_quads + i * 16 + 8)][1] + *(float *)&vendor_screen_uv_scroll;
+        s.uv[3][0] = vendor_hologram_cone_uvs[vendor_hologram_cone_quads[i].d][0];
+        s.uv[3][1] = vendor_hologram_cone_uvs[vendor_hologram_cone_quads[i].d][1] + *(float *)&vendor_screen_uv_scroll;
         draw_world_quad(&s, 0, 1);
     }
 }

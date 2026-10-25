@@ -371,7 +371,7 @@ extern char D_00151820[];
 /* The same through a per-language table at D_0011C278; volume only
    when the D_0015EF1C flag is set. */
 void music_start_track_30000(int arg0, int arg1, int arg2) {
-    int *p = (int *)(D_0011C278 + (arg0 * 4 + g_game_language * 0x258));
+    int *p = (int *)(dialogue_track_table_by_lang + (arg0 * 4 + g_game_language * 0x258));
     char *s;
 
     if (*p == 0) {

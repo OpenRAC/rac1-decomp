@@ -68,7 +68,7 @@ void draw_three_scaled_camera_facing_quads(void) {
     pk.col[1] = color;
     pk.col[0] = color;
     for (i = 0; i < 4; i++) {
-        FastVecScale(pk.m[i], D_L18_001DFE50[i], deplanetizer_camera_quad_base_scale);
+        FastVecScale(pk.m[i], veldin2_deplanetizer_quad_corners[i], deplanetizer_camera_quad_base_scale);
         transform_vector(pk.m[i], pk.m[i], mat);
     }
     draw_world_quad(&pk, 0, 0);
@@ -78,12 +78,12 @@ void draw_three_scaled_camera_facing_quads(void) {
     pk.col[1] = color;
     pk.col[0] = color;
     for (i = 0; i < 4; i++) {
-        FastVecScale(pk.m[i], D_L18_001DFE50[i], deplanetizer_camera_quad_base_scale * 0.75f);
+        FastVecScale(pk.m[i], veldin2_deplanetizer_quad_corners[i], deplanetizer_camera_quad_base_scale * 0.75f);
         transform_vector(pk.m[i], pk.m[i], mat);
     }
     draw_world_quad(&pk, 0, 0);
     for (i = 0; i < 4; i++) {
-        FastVecScale(pk.m[i], D_L18_001DFE50[i], deplanetizer_camera_quad_base_scale * 0.5f);
+        FastVecScale(pk.m[i], veldin2_deplanetizer_quad_corners[i], deplanetizer_camera_quad_base_scale * 0.5f);
         transform_vector(pk.m[i], pk.m[i], mat);
     }
     draw_world_quad(&pk, 0, 0);

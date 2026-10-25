@@ -481,7 +481,7 @@ void advance_hero_animation(void) {
     if (m->seq == m->prev_seq) {
         m->anim_time = t0 + ((Hero *)g_hero)->anim_speed * ((Hero *)g_hero)->unkA94;
     } else if (((Hero *)g_hero)->unkAA0 >= 0) {
-        m->anim_time = D_L00_0017BEF0[((Hero *)g_hero)->unkAA0][((Hero *)g_hero)->unkAA4++];
+        m->anim_time = hero_anim_blend_curves[((Hero *)g_hero)->unkAA0][((Hero *)g_hero)->unkAA4++];
     } else {
         m->anim_time = t0 + ((Hero *)g_hero)->unkA94;
     }

@@ -1481,7 +1481,7 @@ void ShuttleUpdate(Moby *moby) {
             || shuttle_forced_departure != 0) {
             update_shuttle_route_selection_and_prompt((char *)moby);
             now = shuttle_forced_departure;
-            if (now != 0 || ((*(int *)(D_0013A5E0_3039B8 + 0x2604) & 0x10) && D_L06_0015F674 == 10 && d->f9C >= 0)) {
+            if (now != 0 || ((*(int *)(D_0013A5E0_3039B8 + 0x2604) & 0x10) && blarg_shown_help_message == 10 && d->f9C >= 0)) {
                 d->go = 1;
                 blarg_shuttle_at_second_stop = 0;
                 if (now != 0) {

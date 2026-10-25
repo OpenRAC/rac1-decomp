@@ -1842,7 +1842,7 @@ void DrawDebugProfiler(void) {
         }
         func_001F2560_a(profile_mark_after_fades, 0xA);
     }
-    VU0_loadMicroProgram(D_00100AE0);
+    VU0_loadMicroProgram(frame_vu0_micro_program);
     func_00118D80(0);
     t = IntToFloat(*(volatile int *)0x10000800);
     draw_frame_time_ratio = t / (pal_mode != 0 ? 11520.0f : 9600.0f);
@@ -1850,7 +1850,7 @@ void DrawDebugProfiler(void) {
     func_001F2558_a(profile_mark_vu1_sync, 0x11);
     if (D_0015F534_f & 2) {
         if (draw_config[0x10 / 4] != 0) {
-            LightTfrags(D_001E1600);
+            LightTfrags(tfrag_dma_block);
             PatchTfragGifs();
         }
         func_001F2558_a(profile_mark_tfrag_lighting, 2);
@@ -1873,7 +1873,7 @@ void DrawDebugProfiler(void) {
     func_001F2558_a(profile_mark_vu1_sync, 0x11);
     if (D_0015F534_f & 8) {
         if (draw_config[0x20 / 4] != 0) {
-            LightShrubs(D_001D9240);
+            LightShrubs(shrub_scratchpad_copy);
             patch_shrub_gifs();
         }
         func_001F2558_a(profile_mark_shrub_lighting, 7);
@@ -1998,7 +1998,7 @@ void DoGifPaging(void) {
     gif_paging_head_tag[2] = 0;
     gif_paging_head_tag[3] = 0;
     if (D_0018A3DC != 0) {
-        func_0020C2F8();
+        flush_pending_texture_uploads();
         VU1_texFlush();
     }
     g_render_packet_cursor[0] = 0x20000000;

@@ -168,7 +168,7 @@ void HeroL17_UpdateStateTransitions(void) {
             HeroL17_SetMoveState(0x3D, 1);
         } else if (process_hero_equipped_item_input() == 0 && try_enter_hero_water_state() == 0 && try_transition_hero_water_state() == 0 && try_start_hero_weapon_fire_state() == 0) {
             if ((g_controller_state.pressed & 0x10) || (((int)g_controller_state.pressed_unmasked) & 0x10)) {
-                if (g_hero.items[0].unk1C != 2 && D_L17_0015F674 == 0
+                if (g_hero.items[0].unk1C != 2 && fleet_shown_help_message == 0
                     && (g_hero.unk20AC == 0 || g_hero.vehicle_mode == 1 || g_hero.unk1B2 != 0)
                     && (g_hero.unk20A7 == 0 || g_hero.vehicle_mode == 1 || g_hero.unk1B2 != 0)) {
                     switch (g_hero.vehicle_mode) {
@@ -222,7 +222,7 @@ void HeroL17_UpdateStateTransitions(void) {
                     }
                 }
             }
-            if (D_L17_0015F718 > g_hero.motion.pos.f[2] && g_hero.ground_distance > 2.0f && g_hero.vehicle_mode != 2 && g_hero.state.current != 0x77) {
+            if (fleet_hero_fall_state_height > g_hero.motion.pos.f[2] && g_hero.ground_distance > 2.0f && g_hero.vehicle_mode != 2 && g_hero.state.current != 0x77) {
                 HeroL17_SetMoveState(0x77, 1);
             } else {
                 switch (g_hero.state.current) {
@@ -279,7 +279,7 @@ void HeroL17_UpdateStateTransitions(void) {
                                 Rec70 *rec;
 
                                 g_hero.unk2270 = sp20;
-                                rec = &D_L17_0017A210[sp20];
+                                rec = &fleet_idle_fidgets[sp20];
                                 g_hero.fidget_cooldown = scale_ticks(0x78);
                                 rec->f60 = multiply_global_factor(rec->f5C) * 60.0f;
                                 if (rec->f44 != 0) {
@@ -320,7 +320,7 @@ void HeroL17_UpdateStateTransitions(void) {
                         if (id != g_hero.unk2298) {
                             cancel_hero_item_animation();
                         } else {
-                            int anim = D_L17_0017A440[id].f24;
+                            int anim = fleet_item_defs[id].f24;
                             if (((unsigned char *)g_hero.moby)[0x53] != anim) {
                                 if (((int)g_hero.unkD08[0]) != 0) {
                                     g_hero.unkD14 = 1;
@@ -1742,15 +1742,15 @@ void HeroL17_UpdateStateTransitions(void) {
                     {
                         int both = 0;
 
-                        func_001F9908_r((int *)&D_L17_0015F758);
-                        if (*(int *)&D_L17_0015F758 != 0) {
+                        func_001F9908_r((int *)&fleet_hero_double_tap_timer);
+                        if (*(int *)&fleet_hero_double_tap_timer != 0) {
                             both = 1;
                             if (!((g_controller_state.held & 8) && (g_controller_state.pressed & 8))) {
                                 both = 0;
                             }
                         }
                         if (g_controller_state.pressed & 8) {
-                            *(int *)&D_L17_0015F758 = scale_ticks(0x1E);
+                            *(int *)&fleet_hero_double_tap_timer = scale_ticks(0x1E);
                         }
                         if (!(g_hero.state_timer > scale_ticks(0x14))) {
                             break;
@@ -1838,7 +1838,7 @@ void HeroL17_UpdateStateTransitions(void) {
                         HeroL17_SetMoveState(2, 0);
                         if (g_hero.state.current == 2) {
                             g_hero.state.step = 1;
-                            set_hero_animation(4, D_L17_0015F7BC, scale_ticks(0xC));
+                            set_hero_animation(4, fleet_hero_run_start_anim_mode, scale_ticks(0xC));
                         }
                         configure_hero_point_effect_emission(0.016f, 0.002f, 5, 2, 1, 0);
                         break;

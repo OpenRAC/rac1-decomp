@@ -25,14 +25,14 @@ unsigned char *spawn_moby_offset_effect(char *a)
         p = a + 0x10;
         q = (char *)m + 0x20;
         FastVecSub(v, p, batalia_hero_pos);
-        vec_scale_to_length(v, v, *(float *)&D_L08_00160288);
+        vec_scale_to_length(v, v, *(float *)&batalia_offset_effect_push_dist);
         FastVecAdd(m + 0x10, p, v);
-        *(int *)(m + 4) = *(int *)&D_L08_00160284;
+        *(int *)(m + 4) = *(int *)&batalia_offset_effect_color;
         m[9] = func_001FA898_r(4.0f) + 0x40;
         m[3] = 0x48;
         m[1] = 0;
-        m[2] = *D_L08_001B2C1C;
-        *(float *)(m + 0xC) = *(float *)&D_L08_00160280;
+        m[2] = *batalia_part_type39_textures;
+        *(float *)(m + 0xC) = *(float *)&batalia_offset_effect_size;
         *(short *)(m + 0xA) = scale_ticks(0x1E);
         *(float *)(m + 0x20) = 255.0f;
         *(char **)(q + 4) = a;
@@ -63,7 +63,7 @@ unsigned char *spawn_colored_effect(int owner, void *pos, void *vec, short ticks
         m[3] = 0x48;
         m[1] = 0;
         m[8] = func_001160D8();
-        m[2] = *D_L08_001B2C2C;
+        m[2] = *batalia_part_type43_textures;
         *(float *)(m + 0xC) = size;
         *(short *)(m + 0xA) = 0;
         *(short *)(q + 0x18) = scale_ticks(ticks);
@@ -87,7 +87,7 @@ void spawn_effect_with_initial_motion(char *a, char *b, int c, float f) {
         m[9] = func_001FA898_r(2.0f) + 0x40;
         m[3] = 0x48;
         m[1] = 0;
-        m[2] = *D_L08_001B2CB4;
+        m[2] = *batalia_part_type77_textures;
         m[8] = 0xA0;
         *(float *)(m + 0xC) = f * 210000.0f;
         t = scale_ticks(c);

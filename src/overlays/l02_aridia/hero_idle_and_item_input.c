@@ -211,7 +211,7 @@ int HeroL02_SetMoveState(int a, int b) {
         int t;
         *(int *)(p + 0x208C) = 0;
         *(int *)(p + 0x2284) = 4;
-        *(int *)&D_L02_0015F768 = scale_ticks(0x3C);
+        *(int *)&aridia_usage_event_timer = scale_ticks(0x3C);
         if (*(unsigned char *)(p + 0x20AA) == 0) {
             t = get_hero_idle_animation_index(1);
             if (*(unsigned char *)(*(char **)(p + 0x2080) + 0x53) != t && b) {
@@ -1083,7 +1083,7 @@ int HeroL02_SetMoveState(int a, int b) {
             }
             q = D_0013E633 + 0xE1D;
             *(unsigned int *)(h + 0x44) = *(unsigned int *)(h + 0x44) | (1 << g_current_level_index) | 0x80000000;
-            e = &D_L02_0017C2A8[*(int *)(q + 0xA60)];
+            e = &aridia_attack_records[*(int *)(q + 0xA60)];
             *(int *)(q + 0x20F0) = 0;
             k = 0;
             if (*(int *)(q + 0x2094) == 6 && e->a == 0 && *(float *)(q + 0xAA8) < (float)e->c) {
@@ -1139,14 +1139,14 @@ int HeroL02_SetMoveState(int a, int b) {
         *(int *)(p + 0xA64) = 0;
         if (*(int *)(p + 0x2090) == 0x70) {
             int v = 5;
-            if (D_L02_0017C2A8[*(int *)(p + 0xA60)].b == 0) v = 6;
+            if (aridia_attack_records[*(int *)(p + 0xA60)].b == 0) v = 6;
             *(int *)(p + 0xA60) = v;
         } else {
             *(int *)(p + 0xA60) = 5;
         }
         {
             char *q = D_0013E633 + 0xE1D;
-            int e = D_L02_0017C2A8[*(int *)(q + 0xA60)].b;
+            int e = aridia_attack_records[*(int *)(q + 0xA60)].b;
             if (b) {
                 char *m;
                 int z = e == 0;
@@ -1165,7 +1165,7 @@ int HeroL02_SetMoveState(int a, int b) {
         *(float *)(p + 0x194) = g_frame_time * 9.0f;
         if (b) {
             char *m;
-            T2C_22BE40 *e = &D_L02_0017C2A8[*(int *)(p + 0xA60)];
+            T2C_22BE40 *e = &aridia_attack_records[*(int *)(p + 0xA60)];
             int k = e->b;
             int n;
             if (e->a == 1) k = 2;
@@ -1553,7 +1553,7 @@ void HeroL02_UpdateStateTransitions(void) {
             HeroL02_SetMoveState(0x3D, 1);
         } else if (process_hero_item_action_input() == 0 && try_start_hero_weapon_fire_state() == 0) {
             if ((g_controller_state.pressed & 0x10) || (((int)g_controller_state.pressed_unmasked) & 0x10)) {
-                if (g_hero.items[0].unk1C != 2 && D_L02_0015F674 == 0
+                if (g_hero.items[0].unk1C != 2 && aridia_shown_help_message == 0
                     && (g_hero.unk20AC == 0 || g_hero.vehicle_mode == 1 || g_hero.unk1B2 != 0)
                     && (g_hero.unk20A7 == 0 || g_hero.vehicle_mode == 1 || g_hero.unk1B2 != 0)
                     && (g_hero.vehicle_mode == 0 || g_hero.vehicle_mode == 3)) {

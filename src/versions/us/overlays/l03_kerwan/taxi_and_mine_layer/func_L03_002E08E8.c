@@ -229,7 +229,7 @@ void update_kerwan_tutorial_hints(Moby *moby) {
                 int count = 0;
                 int i;
                 for (i = 0; i < 37; i++) {
-                    if (D_L03_00179C40[i].active == 0 && i != 8 && i != 24) {
+                    if (kerwan_item_defs[i].active == 0 && i != 8 && i != 24) {
                         if ((menu_item_enabled_115 + 0xB9)[i] != 0) {
                             count++;
                         }

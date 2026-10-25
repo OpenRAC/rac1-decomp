@@ -30,19 +30,19 @@ void draw_moby_color_cycling_bone_glows(void *moby) {
     char c[16];
     char d[16];
     char e[16];
-    int n = scale_ticks(D_L18_001624F0);
+    int n = scale_ticks(drek_boss_rider_glow_period);
     float f = IntToFloat(veldin2_frame_count % n);
     int h;
     f = f / IntToFloat(n);
     f = f * 6.18318f;
     f = FastSin(f - 3.14159f);
-    h = FastTweenColor(D_L18_001624E8, D_L18_001624EC, f * 0.5f + 0.5f);
+    h = FastTweenColor(drek_boss_rider_glow_color_a, drek_boss_rider_glow_color_b, f * 0.5f + 0.5f);
     MobyTransformScaledVertex(moby, 1, b);
-    FastVecScale(e, c, *(float*)&D_L18_00162590);
+    FastVecScale(e, c, *(float*)&veldin2_bone_glow_axis_offset);
     FastVecSub(a, d, e);
     draw_offset_textured_effect_quad(a, h, drek_boss_rider_glow_size, drek_boss_rider_glow_offset);
     MobyTransformScaledVertex(moby, 2, b);
-    FastVecScale(e, c, *(float*)&D_L18_00162590);
+    FastVecScale(e, c, *(float*)&veldin2_bone_glow_axis_offset);
     FastVecSub(a, d, e);
     draw_offset_textured_effect_quad(a, h, D_L18_001624E0_b, D_L18_001624E4_b);
 }

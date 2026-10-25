@@ -22,7 +22,7 @@ unsigned char *create_moby_joint_particle(char *moby, unsigned char a, int b, in
         e[9] = (((short)*(unsigned short *)(moby + 0x32) >> 5) << 4) + v;
         e[3] = 0x48;
         e[1] = 3;
-        e[2] = *D_L13_001B2790;
+        e[2] = *gemlik_part_type68_textures;
         Moby_GetJointWorldPos(moby, a, p);
         qcopy(e + 0x20, p);
         *(float *)(e + 0x2C) = y;

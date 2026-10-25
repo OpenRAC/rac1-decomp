@@ -2410,7 +2410,7 @@ void update_moby_draw_and_monitor_linked_state(struct Moby *m) {
                     Sound_StopSlot(i);
                 }
             }
-            e = (char *)((d[0] << 8) + (int)D_L12_00160058);
+            e = (char *)((d[0] << 8) + (int)hoven_mobys);
             d[1] = -1;
             if (*(unsigned char *)(e + 0x20) == 7) {
                 if (m->mission != 0xFF) {
@@ -2480,11 +2480,11 @@ void emit_phase_selected_moby_effects(unsigned char *moby) {
         break;
     case 1:
         if (hoven_cinematic_mode == 2) {
-            list = &D_L12_0016CD60;
+            list = &hoven_cutscene_state;
             cur = list->current;
             if (cur == 1 || cur == 7) {
                 k = func_L12_pick(cur);
-                l2 = &D_L12_0016CD60;
+                l2 = &hoven_cutscene_state;
                 cutscene_set_camera_target((int)l2->mobys[k]);
             }
         }

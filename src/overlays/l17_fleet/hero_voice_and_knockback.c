@@ -40,7 +40,7 @@ int select_hero_help_value(int a) {
     }
     {
         int i = hero_slot_item_id(0);
-        return D_L17_0017A440[i].v;
+        return fleet_item_defs[i].v;
     }
 }
 typedef int Q_8 __attribute__((mode(TI)));
@@ -127,7 +127,7 @@ s32 HeroL17_TryTakeHit(s32 arg) {
     if (m[0xA4] == 0xFF) {
         return 0;
     }
-    tbl = &D_L17_00178A80[m[0xA4]];
+    tbl = &fleet_moby_hits[m[0xA4]];
     if (tbl->p34 != m) {
         return 0;
     }

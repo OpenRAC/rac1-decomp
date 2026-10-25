@@ -1802,7 +1802,7 @@ void RoutePlatformUpdate(char *m) {
                 func_L00_00262DF0_i(vars->stop.i, hero_position_probe, 0.5f, hero_position_probe);
                 if (FastVecDist(&q->motion.pos, hero_position_probe) < 0.001f) {
                     try_set_shuttle_departure_help_message(m);
-                    if ((D_0013A5E0_d[0x2604 / 4] & 0x10) && q->air_frames.s == 0 && D_L08_0015F674 == 10) {
+                    if ((D_0013A5E0_d[0x2604 / 4] & 0x10) && q->air_frames.s == 0 && batalia_help_message_selector == 10) {
                         moby->state = 3;
                     }
                 }

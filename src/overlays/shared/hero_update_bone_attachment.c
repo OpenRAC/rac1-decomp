@@ -380,19 +380,19 @@ void adjust_hero_planar_velocity_from_probes(int arg) {
     FastVecAdd(d, d, b);
     b2 = D_0013E633 + 0xE1D;
     if (coll_line(b, d, 4, *(int *)(b2 + 0x2080), 0)) {
-        if (*(int *)D_L15_001744DC > 0) r18 = CollType();
+        if (*(int *)quartu_coll_hit_type > 0) r18 = CollType();
     }
     f20 = 0.0f;
     b2 = D_0013E633 + 0xE1D;
     if (coll_line(a, c, 4, *(int *)(b2 + 0x2080), 0)) {
-        char *q = D_L15_001744C0;
+        char *q = quartu_coll_hit;
         if (*(int *)(q + 0x1C) > 0)
             f20 = fast_atan2(*(float *)(q + 0x48), vec_length_xy(q + 0x40));
     }
     if (f20 >= 0.87266463f || r18 == 8 || r18 == 12) {
         float f;
         char *b3 = D_0013E633 + 0xE1D;
-        char *q2 = D_L15_001744C0;
+        char *q2 = quartu_coll_hit;
         *(float *)(q2 + 0x48) = 0.0f;
         *(int *)(b3 + 0x240) = *(int *)(q2 + 0x18);
         func_001252C0(q2 + 0x40, q2 + 0x40);
@@ -556,7 +556,7 @@ void HeroL15_ResetMotionState(void) {
     D_0013F450_0ADD8.xB12ed = r;
     D_0013F450_0ADD8.xH12e0 = CollType();
     if (D_0013F450_0ADD8.xH12e0 == 0) {
-        D_0013F450_0ADD8.xF2f0 = resolve_camera_surface_height(D_L15_001744E0, (u8 *)&D_0013F450_0ADD8 + 0x280);
+        D_0013F450_0ADD8.xF2f0 = resolve_camera_surface_height(quartu_coll_hit_point, (u8 *)&D_0013F450_0ADD8 + 0x280);
         if (D_0013F450_0ADD8.xF88 < D_0013F450_0ADD8.xF2f0 && D_0013F450_0ADD8.xI2f8 <= 0) {
             D_0013F450_0ADD8.xI2f8 = 1;
         }

@@ -15,7 +15,7 @@ extern MissionNode_0024EEF0 *D_L00_001870A0;
 
 // Lists the current objectives: ids (or 0x5243 when done) to out, done bits to *mask, base + sel to nums; returns the count.
 int CollectMissionNodes(int *out, int *mask, int *nums, int arg3) {
-    MissionNode_0024EEF0 *p = D_L00_001870A0;
+    MissionNode_0024EEF0 *p = mission_node_list;
     int count = 0;
     int all = 1;
 

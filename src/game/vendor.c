@@ -415,7 +415,7 @@ void update_scrolling_status_message(void) {
     if (func_00116810_s(*(char **)(v + 0x2C)) - *(int *)(v + 0x44) / 20 > 0) {
         *(int *)(v + 0x44) += 2;
     } else {
-        set_scrolling_status_message(func_001FE540_id(D_001E62B8[random_integer_below(0x18)]));
+        set_scrolling_status_message(func_001FE540_id(status_message_text_ids[random_integer_below(0x18)]));
     }
     w = vendor_state;
     render_capture_scrolling_text(*(char **)(w + 0x2C), -*(int *)(w + 0x44), 8, 2.0f);
@@ -428,8 +428,8 @@ extern int D_001E66E4;
 
 void render_capture_effect_pass(void) {
     draw_framebuffer_rect(0, 0, 0x200, 0x80, 0x200, 0x80, 0);
-    if (D_001611A8 == 1) {
-        DrawMobyList(D_001E66E4, 1);
+    if (capture_moby_pass_enabled == 1) {
+        DrawMobyList(capture_moby_list, 1);
     }
 }
 
@@ -440,9 +440,9 @@ extern void func_00116248();
 
 void format_scaled_display_value(void *arg0, int arg1) {
     if (arg1 >= 1000) {
-        func_00116248(arg0, D_00161178, arg1 / 1000, arg1 % 1000);
+        func_00116248(arg0, fmt_thousands_grouped_int, arg1 / 1000, arg1 % 1000);
     } else {
-        func_00116248(arg0, D_00161180, arg1);
+        func_00116248(arg0, fmt_plain_int, arg1);
     }
 }
 
@@ -1200,7 +1200,7 @@ void update_instance_attachment_points_and_lengths(char *arg0) {
     Cfg16 cfg;
     char *p = *(char **)(arg0 + 0x78);
 
-    cfg = D_00160FD0;
+    cfg = attachment_vertex_indices;
     transform_scaled_vertex_batch(arg0, 4, &cfg, p);
     func_001F9BF0_b(a, p + 0x10, p);
     func_001F9BF0_b(b, p + 0x20, p);

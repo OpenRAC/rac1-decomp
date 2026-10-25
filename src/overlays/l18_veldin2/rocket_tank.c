@@ -212,7 +212,7 @@ void rocket_tank_update(M1454 *m) {
             float s;
             if (MobyGetFrameValue(m) < 7.0f) {
                 Moby_GetJointWorldPos(m, 1, w);
-                s = *(float *)&D_L18_0016250C;
+                s = *(float *)&rocket_tank_shot_speed;
             } else {
                 Moby_GetJointWorldPos(m, 2, w);
                 s = *(float *)&D_L18_0016250C_b;
@@ -351,7 +351,7 @@ void update_rocket_tank_path_movement(char *m) {
     qcopy(t, (char *)veldin2_paths[*(int *)(d + 0x100)] + *(int *)(d + 0x120) * 16 + 0x10);
     ang = fast_atan2(t[0] - *(float *)(m + 0x10), t[1] - *(float *)(m + 0x14));
     SteerAngleWithVelocity((float *)(m + 0x48), (float *)(d + 0x128), ang, g_frame_time_sq * 3.1415927f, g_frame_time_sq * 3.1415927f, g_frame_time * 6.2831855f);
-    f = *(float *)&D_L18_00162508 * g_frame_time;
+    f = *(float *)&rocket_tank_path_speed * g_frame_time;
     if (FastDiffRots(ang, *(float *)(m + 0x48)) > 0.2617994f) {
         f = D_0015EE6C_g;
     }
@@ -363,7 +363,7 @@ void update_rocket_tank_path_movement(char *m) {
         int k = random_integer_below(*veldin2_paths[*(int *)(d + 0x100)] - 1) + 1;
         *(int *)(d + 0x120) = (*(int *)(d + 0x120) + k) % *veldin2_paths[*(int *)(d + 0x100)];
     }
-    sc = *(float *)(d + 0x12C) / (*(float *)&D_L18_00162510 * g_frame_time);
+    sc = *(float *)(d + 0x12C) / (*(float *)&rocket_tank_child_anim_ref_speed * g_frame_time);
     if (sc > 2.0f) sc = 2.0f;
     else if (sc < z) sc = z;
     p = *(char **)(d + 0x138);

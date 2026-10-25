@@ -225,7 +225,7 @@ void hero_update_transitions(void) {
                     }
                 }
             }
-            if (D_L00_0015F718 > g_hero.motion.pos.f[2] && g_hero.ground_distance > 2.0f && g_hero.vehicle_mode != 2 && g_hero.state.current != 0x77) {
+            if (veldin1_hero_fall_state_height > g_hero.motion.pos.f[2] && g_hero.ground_distance > 2.0f && g_hero.vehicle_mode != 2 && g_hero.state.current != 0x77) {
                 HeroEnterMoveState(0x77, 1);
             } else {
                 switch (g_hero.state.current) {
@@ -1745,15 +1745,15 @@ void hero_update_transitions(void) {
                     {
                         int both = 0;
 
-                        func_001F9908_r((int *)&D_L00_0015F758);
-                        if (*(int *)&D_L00_0015F758 != 0) {
+                        func_001F9908_r((int *)&veldin1_hero_double_tap_timer);
+                        if (*(int *)&veldin1_hero_double_tap_timer != 0) {
                             both = 1;
                             if (!((g_controller_state.held & 8) && (g_controller_state.pressed & 8))) {
                                 both = 0;
                             }
                         }
                         if (g_controller_state.pressed & 8) {
-                            *(int *)&D_L00_0015F758 = scale_ticks(0x1E);
+                            *(int *)&veldin1_hero_double_tap_timer = scale_ticks(0x1E);
                         }
                         if (!(g_hero.state_timer > scale_ticks(0x14))) {
                             break;

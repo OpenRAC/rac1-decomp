@@ -640,33 +640,33 @@ void draw_scaled_moby_radial_ripple_mesh(char *moby) {
     int b;
     int color;
     float scale;
-    scale = IntToFloat(quartu_frame_count) * (D_L15_0016227C * g_frame_time);
-    VU1_addGSregister(6, GetEffectTex(D_L15_00162268));
+    scale = IntToFloat(quartu_frame_count) * (quartu_ripple_mesh_uv_scroll_rate * g_frame_time);
+    VU1_addGSregister(6, GetEffectTex(quartu_ripple_mesh_texture));
     VU1_addGSregister(0x42, ((long)quartu_ripple_alpha_blend << 32) | 0x44);
     VU1_addGSregister(8, 0);
     VU1_addGSregister(0x14, 0xFF9000000260L);
     data->prev = data->angle;
     data->angle = FastAddRots(data->angle, 360.0f / multiply_global_factor(quartu_ripple_spin_period) * 0.017453292f * g_frame_time);
     get_moby_color(moby, &r, &g, &b);
-    color = (D_L15_0016226C << 24) | (b << 16) | (g << 8) | r;
+    color = (quartu_ripple_mesh_alpha << 24) | (b << 16) | (g << 8) | r;
     for (i = 0; i < 46; i++) {
-        float *template_vertex = D_L15_001DEB30[i];
+        float *template_vertex = quartu_ripple_mesh_template_verts[i];
         float x = template_vertex[0];
         float y = template_vertex[1];
         float rad = vec_length(x * x + y * y);
-        float radius_remainder = fast_fmod(rad, D_L15_00162270);
-        float w = FastNormalizeAngle(radius_remainder * 6.2831855f / D_L15_00162270);
+        float radius_remainder = fast_fmod(rad, quartu_ripple_mesh_wavelength);
+        float w = FastNormalizeAngle(radius_remainder * 6.2831855f / quartu_ripple_mesh_wavelength);
         float z = FastSin(FastAddRots(w, data->angle));
         quartu_ripple_world_verts[i][0] = quartu_ripple_vertex_scale * template_vertex[0] + m->pos.x;
         quartu_ripple_world_verts[i][1] = quartu_ripple_vertex_scale * template_vertex[1] + m->pos.y;
-        quartu_ripple_world_verts[i][2] = quartu_ripple_vertex_scale * template_vertex[2] + m->pos.z + D_L15_00162278 * z;
+        quartu_ripple_world_verts[i][2] = quartu_ripple_vertex_scale * template_vertex[2] + m->pos.z + quartu_ripple_mesh_wave_height * z;
         quartu_ripple_vertex_colors[i] = color;
     }
     for (j = 0; j < 2; j++) {
         for (uv_vertex_index = 0; uv_vertex_index < 46; uv_vertex_index++) {
-            Quad4_2EF030 uv_scroll_factors = D_L15_00162288;
-            quartu_ripple_scrolled_uvs[uv_vertex_index][0] = D_L15_001DED58[uv_vertex_index][0] + fast_fmod(scale * uv_scroll_factors.f[j][0], 1.0f);
-            quartu_ripple_scrolled_uvs[uv_vertex_index][1] = D_L15_001DED58[uv_vertex_index][1] + fast_fmod(scale * uv_scroll_factors.f[j][1], 1.0f);
+            Quad4_2EF030 uv_scroll_factors = quartu_ripple_mesh_uv_scroll_factors;
+            quartu_ripple_scrolled_uvs[uv_vertex_index][0] = quartu_ripple_mesh_base_uvs[uv_vertex_index][0] + fast_fmod(scale * uv_scroll_factors.f[j][0], 1.0f);
+            quartu_ripple_scrolled_uvs[uv_vertex_index][1] = quartu_ripple_mesh_base_uvs[uv_vertex_index][1] + fast_fmod(scale * uv_scroll_factors.f[j][1], 1.0f);
         }
         font_queue_vu_state();
         for (k = 0; k < 1; k++) {

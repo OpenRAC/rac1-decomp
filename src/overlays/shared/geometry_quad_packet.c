@@ -16,7 +16,7 @@ void draw_geometry_quad_5188(long *a, int *b, int *c, long d, int on) {
     l02_packet[3] = 0x50000009;
     t = l02_packet;
     l02_packet = t + 4;
-    qcopy(t + 4, D_L02_00160A20);
+    qcopy(t + 4, aridia_geometry_quad_giftag);
     w = (long *)(t + 8);
     l02_packet = (int *)w;
     if (on != 0) {

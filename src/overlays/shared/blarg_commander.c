@@ -20,11 +20,11 @@ void draw_textured_effect_list(void *list_, int count, int tex0, int tex1) {
     int idx;
     VU1_addGSregister(6, tex0);
     VU1_addGSregister(7, tex1);
-    D_L12_00161240[0] = 0x30000009;
-    D_L12_00161240[1] = (int)D_L12_001CBA20;
-    D_L12_00161240[2] = 0;
-    D_L12_00161240[3] = 0x50000009;
-    D_L12_00161240 += 4;
+    hoven_dma_packet_cursor[0] = 0x30000009;
+    hoven_dma_packet_cursor[1] = (int)hoven_effect_list_setup_packet;
+    hoven_dma_packet_cursor[2] = 0;
+    hoven_dma_packet_cursor[3] = 0x50000009;
+    hoven_dma_packet_cursor += 4;
     font_queue_vu_state();
     sp = (int *)0x70000000;
     for (i = 0xB3; i >= 0; i--) {
@@ -34,8 +34,8 @@ void draw_textured_effect_list(void *list_, int count, int tex0, int tex1) {
         for (i = count; i != 0; i--) {
             idx = FastBSphereCheck(list, 256.0f);
             if (idx != -1) {
-                func_L12_002677B4(*(int *)(list + 0x1C), *(int *)(list + 0x10), *(int *)(list + 0x18), 0x70001000);
-                func_L01_0021F9C8(*(int *)(list + 0x1C), *(int *)(list + 0x10), 0x70000000, *(int *)(list + 0x14), 0x70001000, idx == 0);
+                compute_reflection_env_uvs(*(int *)(list + 0x1C), *(int *)(list + 0x10), *(int *)(list + 0x18), 0x70001000);
+                emit_textured_strip_packet(*(int *)(list + 0x1C), *(int *)(list + 0x10), 0x70000000, *(int *)(list + 0x14), 0x70001000, idx == 0);
             }
             list += 0x20;
         }
@@ -57,10 +57,10 @@ extern unsigned char D_L12_0017C940[];
 void apply_npc_big_head_cheat(char *moby) {
     int i;
     if (hoven_cinematic_mode == 2 && gCheats[0] != 0) {
-        for (i = 0; i < D_L12_0016CD60.count; i++) {
-            char *e = D_L12_0016CD60.mobys[i];
+        for (i = 0; i < hoven_cutscene_state.count; i++) {
+            char *e = hoven_cutscene_state.mobys[i];
             if (*(short *)(e + 0xA6) == *(short *)(moby + 0xA6)) {
-                unsigned char *s = D_L12_0017C940;
+                unsigned char *s = hoven_big_head_cheat_manipulator;
                 if (s[1] == 0) {
                     AttachManipulator(e, 1, s);
                     *(float *)(s + 0x20) = 2.75f;
@@ -77,7 +77,7 @@ extern char D_L12_001F5740[];
 
 /* calls func_L12_002BD3D0 with two looked-up ids */
 void draw_level_12_effects(void) {
-    draw_textured_effect_list(D_L12_001F5740, 0x2F, GetEffectTex(0x2C), GetEffectTex(0x2D));
+    draw_textured_effect_list(hoven_textured_effect_entries, 0x2F, GetEffectTex(0x2C), GetEffectTex(0x2D));
 }
 typedef int u128_8670 __attribute__((mode(TI)));
 extern char *func_0020D348(int);

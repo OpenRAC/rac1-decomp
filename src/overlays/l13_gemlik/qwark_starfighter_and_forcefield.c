@@ -3571,7 +3571,7 @@ extern char *func_L00_002DCD40(char *);
 // Counts the mobys of a list that are alive and idle, optionally ignoring those in a given state.
 int count_eligible_mobies_in_list(int idx, int arg)
 {
-    short *q = D_L13_001ABE40[idx];
+    short *q = gemlik_moby_groups[idx];
     short *p;
     int count = 0;
     if (q == 0) return 0;

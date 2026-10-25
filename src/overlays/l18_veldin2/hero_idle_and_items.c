@@ -334,7 +334,7 @@ int HeroL18_SetMoveState(int a, int b) {
                 }
                 {
                     char *w = D_0013E633 + 0xE1D;
-                    *(float *)(*(char **)(w + 0x2080) + 0x54) = D_L18_0017C870[*(int *)(w + 0xAA0)][(*(int *)(w + 0xAA4))++];
+                    *(float *)(*(char **)(w + 0x2080) + 0x54) = veldin2_hero_anim_time_curves[*(int *)(w + 0xAA0)][(*(int *)(w + 0xAA4))++];
                 }
             }
         }
@@ -516,7 +516,7 @@ int HeroL18_SetMoveState(int a, int b) {
                 }
                 if (b) {
                     char *v = D_0013E633 + 0xE1D;
-                    set_hero_animation(*(int *)(v + 0x2088) + 3, ((int *)&D_L18_0015F7B8)[*(int *)(v + 0x2088)], (float)n);
+                    set_hero_animation(*(int *)(v + 0x2088) + 3, ((int *)&veldin2_hero_idle_anim_modes)[*(int *)(v + 0x2088)], (float)n);
                 }
             }
         }
@@ -548,7 +548,7 @@ int HeroL18_SetMoveState(int a, int b) {
             } else if (*(unsigned char *)(p + 0x20A4) == 1) {
                 set_hero_animation(2, 0, (float)scale_ticks(8));
             } else if (*(unsigned char *)(p + 0x20A4) == 0) {
-                set_hero_animation(*(int *)(p + 0x2088) + 3, ((int *)&D_L18_0015F7B8)[*(int *)(p + 0x2088)], (float)scale_ticks(8));
+                set_hero_animation(*(int *)(p + 0x2088) + 3, ((int *)&veldin2_hero_idle_anim_modes)[*(int *)(p + 0x2088)], (float)scale_ticks(8));
             }
         }
         break;
@@ -1022,7 +1022,7 @@ int HeroL18_SetMoveState(int a, int b) {
                     *(float *)(u + 0x3D8) = 0.0f;
                     *(float *)(u + 0x3DC) = 18.0f;
                     *(int *)(u + 0x3E0) = scale_ticks(0x28);
-                    *(char **)(u + 0x3E4) = D_L18_0017C9E0;
+                    *(char **)(u + 0x3E4) = veldin2_hero_state_12_jump_velocity_keys;
                 }
                 {
                     char *w = D_0013E633 + 0xE1D;
@@ -1213,7 +1213,7 @@ int HeroL18_SetMoveState(int a, int b) {
                 *(float *)(u + 0x3DC) = 26.0f;
                 *(float *)(u + 0x3D8) = 0.0f;
                 *(int *)(u + 0x3E0) = scale_ticks(0x2D);
-                *(char **)(u + 0x3E4) = D_L18_0017C9A0;
+                *(char **)(u + 0x3E4) = veldin2_hero_state_d_jump_velocity_keys;
                 *(unsigned char *)(u + 0x4AE) = 1;
             } else if (*(int *)(u + 0x2084) == 0xF) {
                 *(float *)(u + 0x430) = 1.9f;
@@ -1242,7 +1242,7 @@ int HeroL18_SetMoveState(int a, int b) {
                     *(float *)(w + 0x3D8) = 29.0f;
                     *(float *)(w + 0x3DC) = 50.0f;
                     *(int *)(w + 0x3E0) = scale_ticks(0x56);
-                    *(char **)(w + 0x3E4) = (char *)&D_L18_0015F7C8;
+                    *(char **)(w + 0x3E4) = (char *)&veldin2_hero_state_f_jump_velocity_keys;
                     *(unsigned char *)(w + 0x4AE) = 1;
                 }
             } else if (*(int *)(u + 0x2084) == 0xE) {
@@ -1309,7 +1309,7 @@ int HeroL18_SetMoveState(int a, int b) {
                 } else if (s == 9) {
                     int id = 8;
                     int n = truncate_float_to_s32(*(float *)(q + 0xAA8));
-                    if (return_hero_animation_id_unchanged(*(unsigned char *)(moby + 0x52)) == 4) id = D_L18_0017C858[n];
+                    if (return_hero_animation_id_unchanged(*(unsigned char *)(moby + 0x52)) == 4) id = veldin2_hero_run_jump_land_anim_by_frame[n];
                     set_hero_animation(id, 0, (float)scale_ticks(5));
                 } else if (s == 0x5E) {
                     set_hero_animation(4, 0, (float)scale_ticks(8));
@@ -1596,7 +1596,7 @@ int HeroL18_SetMoveState(int a, int b) {
             *(int *)(q + 0x1C0) = scale_ticks(0x4D);
             if (b) {
                 set_hero_animation(0x10, 3, -3.0f);
-                *(float *)(*(char **)(q + 0x2080) + 0x54) = D_L18_0017C870[*(int *)(q + 0xAA0)][(*(int *)(q + 0xAA4))++];
+                *(float *)(*(char **)(q + 0x2080) + 0x54) = veldin2_hero_anim_time_curves[*(int *)(q + 0xAA0)][(*(int *)(q + 0xAA4))++];
             }
         }
         break;
@@ -1714,7 +1714,7 @@ int HeroL18_SetMoveState(int a, int b) {
         *(int *)(p + 0x1C0) = scale_ticks(0x4D);
         if (b) {
             set_hero_animation(6, 3, -3.0f);
-            *(float *)(*(char **)(p + 0x2080) + 0x54) = D_L18_0017C870[*(int *)(p + 0xAA0)][(*(int *)(p + 0xAA4))++];
+            *(float *)(*(char **)(p + 0x2080) + 0x54) = veldin2_hero_anim_time_curves[*(int *)(p + 0xAA0)][(*(int *)(p + 0xAA4))++];
         }
         break;
     }
@@ -1796,7 +1796,7 @@ int HeroL18_SetMoveState(int a, int b) {
         *(int *)(p + 0x1C0) = scale_ticks(0x4D);
         if (b) {
             set_hero_animation(2, 3, -3.0f);
-            *(float *)(*(char **)(p + 0x2080) + 0x54) = D_L18_0017C870[*(int *)(p + 0xAA0)][(*(int *)(p + 0xAA4))++];
+            *(float *)(*(char **)(p + 0x2080) + 0x54) = veldin2_hero_anim_time_curves[*(int *)(p + 0xAA0)][(*(int *)(p + 0xAA4))++];
         }
         break;
     }

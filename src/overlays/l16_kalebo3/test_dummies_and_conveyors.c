@@ -2947,7 +2947,7 @@ void PathPickup_Update(char *moby) {
             if (FastAbsF(v70[1]) < 1.2f) {
                 prepare_taxi_departure_path(moby);
                 request_moby_help_message(moby);
-                if ((*(int *)(D_0013A5E0 + 0x2604) & 0x10) && *(int *)&D_L16_0015F674 == 8) {
+                if ((*(int *)(D_0013A5E0 + 0x2604) & 0x10) && *(int *)&kalebo3_help_message_selector == 8) {
                     moby[0x20] = 3;
                     m = FindMobyByDataId(moby, *(short *)(d + 0xAE));
                     if (m != 0) {

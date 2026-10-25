@@ -1626,7 +1626,7 @@ void update_target_leading_missile(M_29E8A0 *m) {
         coll.v[2] = 1.0f;
         coll.one = 1;
         if (coll_line(v60, m->pos, 0, *(char **)(hero + 0x2080), &coll) != 0) {
-            char *hit = D_L15_001744C0;
+            char *hit = quartu_coll_hit;
             char *hm = *(char **)(hit + 0x18);
             if (hm != 0) {
                 if (hm != *(char **)(hero + 0x2080) && hm != d->owner) {
@@ -2724,7 +2724,7 @@ void spiderbot_update(unsigned char *moby) {
         *(u128_2A8090 *)C = *(u128_2A8090 *)T2;
         coll_line(moby + 0x10, A, 9, moby, &R);
         if (coll_line(moby + 0x10, A, 2, 0, 0)) {
-            *(u128_2A8090 *)(d + 0x10) = *(u128_2A8090 *)D_L15_001744E0;
+            *(u128_2A8090 *)(d + 0x10) = *(u128_2A8090 *)quartu_coll_hit_point;
         } else {
             *(u128_2A8090 *)(d + 0x10) = *(u128_2A8090 *)A;
         }

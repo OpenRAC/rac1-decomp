@@ -1693,7 +1693,7 @@ void emit_forcefield_tower_destruction_effects(unsigned char *a0, void *a1, int 
         FastVecAdd(vD, vD, vB);
         FastVecSub(vE, vD, pA);
         vec_scale_to_length(vE, vE, random_float_between(0.025f, 0.23f));
-        spawn_crate_debris(a0, vE, vD, D_L13_0015F660, 0x162, 0, 0.90000004f, 2.1f);
+        spawn_crate_debris(a0, vE, vD, gemlik_zero_vec, 0x162, 0, 0.90000004f, 2.1f);
     }
     for (k = 0; k < 4; k++) {
         *(u128z *)vC = 0;
@@ -1705,7 +1705,7 @@ void emit_forcefield_tower_destruction_effects(unsigned char *a0, void *a1, int 
         FastVecSub(vE, vD, pA);
         vec_scale_to_length(vE, vE, random_float_between(0.025f, 0.23f));
         t = random_integer_below(2);
-        spawn_crate_debris(a0, vE, vD, D_L13_0015F660, t + 0x163, 0, 1.2f, 2.4f);
+        spawn_crate_debris(a0, vE, vD, gemlik_zero_vec, t + 0x163, 0, 1.2f, 2.4f);
     }
     if (a2 == 0) {
         return;

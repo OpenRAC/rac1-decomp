@@ -579,7 +579,7 @@ int LegWalkerUpdate(char *m, char *s, float speed, float ang, float accel) {
         a98 = a98 - *(float *)(s + 0xE8);
         FastVecSub(buf + 4, m + 0x10, buf);
         for (k = 0; k < 8 && coll_capsule(a94, a98, buf, 4, m); k++) {
-            qcopy(buf, D_L04_00174070);
+            qcopy(buf, eudora_coll_resolved_pos);
             res |= 1;
         }
         FastVecSub(v20, buf, m + 0x10);

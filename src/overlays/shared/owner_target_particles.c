@@ -38,7 +38,7 @@ void spawn_owner_target_particle(int a0, void *a1, char *a2) {
         p->type = 0x44;
         p->flags = 2;
         {
-            p->life = scale_ticks(D_L15_0016027C);
+            p->life = scale_ticks(quartu_owner_target_particle_life);
             p->owner = owner;
         }
         }
@@ -64,7 +64,7 @@ unsigned char *create_type_47_particle(void *pos, float *p, float *c, int d, int
         r[1] = 0;
         *(float *)(r + 0xC) = func_001FA898_r(p[3] * 210000.0f);
         r[8] = random_integer_below(0xFF);
-        r[2] = *(unsigned char *)D_L15_001B2A70;
+        r[2] = *(unsigned char *)quartu_part_type71_textures;
         *(short *)(r + 0xA) = f;
         pack_vector_xyz_with_shared_scale(p, q);
         pack_vector_xyz_with_shared_scale(c, q2);

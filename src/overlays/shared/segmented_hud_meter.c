@@ -23,7 +23,7 @@ int draw_segmented_hud_meter(unsigned char *p) {
     int level;
     int segments = 3;
     int x, start_x, inner, i, color, remaining, tile_count, k;
-    int center_x = *(int *)&D_L06_0015F9BC;
+    int center_x = *(int *)&blarg_hud_meter_center_x;
     float alpha, scaled_alpha, fill, step, limit;
 
     ntsc_y = frame_size - 50;
@@ -59,11 +59,11 @@ int draw_segmented_hud_meter(unsigned char *p) {
             limit = remaining * step;
             if (limit < fill) {
                 fill -= limit;
-                fill *= *(float *)&D_L06_0015F9C4;
+                fill *= *(float *)&blarg_hud_meter_last_segment_fill_scale;
                 fill += limit;
             } else if (fill < step) {
                 fill -= step;
-                fill *= *(float *)&D_L06_0015F9C8;
+                fill *= *(float *)&blarg_hud_meter_first_segment_fill_scale;
                 fill += step;
             }
             x = truncate_float_to_s32((float)(segments << 5) * fill);

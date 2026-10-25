@@ -177,7 +177,7 @@ s32 process_hero_hit_reaction(s32 arg) {
     if (m[0xA4] == 0xFF) {
         return 0;
     }
-    tbl = &D_L14_00178900[m[0xA4]];
+    tbl = &oltanis_moby_hits[m[0xA4]];
     if (tbl->p34 != m) {
         return 0;
     }
@@ -506,8 +506,8 @@ void HeroL14_UpdateStatePhysics(void) {
                     matrix_mul_vec3(g_hero.motion.unk170.f, vec[0], oltanis_player_camera.f350);
                     g_hero.motion.move_yaw = oltanis_player_camera.f158;
                     turn_to(0, g_frame_scale_sq, g_frame_scale_sq * 0.0f, g_frame_time * 174.53293f);
-                    if (*(int *)&D_L14_0015F768 > 0) {
-                        if (fast_dec_timer((int *)&D_L14_0015F768)) {
+                    if (*(int *)&oltanis_look_stat_timer > 0) {
+                        if (fast_dec_timer((int *)&oltanis_look_stat_timer)) {
                             if (usage_stats.f90 < 0xFFFF) {
                                 usage_stats.f90++;
                             }
@@ -515,8 +515,8 @@ void HeroL14_UpdateStatePhysics(void) {
                                 usage_stats.f92 = scale_ticks(gameplay_event_frame_count) / 600;
                             }
                             usage_stats.f94 = usage_stats.f94 | (1 << D_0015EE84_m) | 0x80000000;
-                            *(int *)&D_L14_0015F768 = -1;
-                            (*(int *)&D_L14_0015F76C)++;
+                            *(int *)&oltanis_look_stat_timer = -1;
+                            (*(int *)&oltanis_look_stat_count)++;
                         }
                     }
                 }
@@ -1604,7 +1604,7 @@ void HeroL14_UpdateStatePhysics(void) {
                 vec[1][3] = -(g_frame_time_sq * 30.0f);
                 spawn_color_decaying_effect_particle((char *)vec[0], (char *)vec[1], 0);
             }
-            hasW = D_L14_0017A2C0[g_hero.items[0].item_id].f18 != 0;
+            hasW = oltanis_item_defs[g_hero.items[0].item_id].f18 != 0;
             if (g_hero.items[0].item_id == 0xC) {
                 hasW = 0;
             }
@@ -1671,14 +1671,14 @@ void HeroL14_UpdateStatePhysics(void) {
                         }
                         set_first_hero_easing_parameters(0.03f, 0.2f);
                         if (g_hero.unk58C != 0) {
-                            D_L14_0017AEE0[1] = -tilt;
+                            oltanis_hero_spline_tilt[1] = -tilt;
                         } else {
-                            D_L14_0017AEE0[1] = tilt;
+                            oltanis_hero_spline_tilt[1] = tilt;
                         }
                     }
                 }
                 if (g_hero.state.current != 0x29 && g_hero.state.current != 0x42 && g_hero.state.current != 0x2A) {
-                    D_L14_0017AEE0[0] = fast_atan2(vec_length_xy(g_hero.motion.displacement.f), g_hero.motion.displacement.f[2]);
+                    oltanis_hero_spline_tilt[0] = fast_atan2(vec_length_xy(g_hero.motion.displacement.f), g_hero.motion.displacement.f[2]);
                 }
                 if (hasW) {
                     set_first_hero_easing_parameters(g_frame_scale_sq * 0.017f, g_frame_scale_sq * 0.3f);
@@ -1949,7 +1949,7 @@ void HeroL14_UpdateStatePhysics(void) {
                         spd = g_hero.motion.unk164;
                         ApproachValue(&spd, g_hero.target_speed * g_frame_time, g_frame_time_sq * 5.0f);
                         FastVecSub(g_hero.motion.velocity.f, vec[5], g_hero.motion.pos.f);
-                        vec_set_length_xy(g_hero.motion.velocity.f, g_hero.motion.velocity.f, D_L14_001C46B0[truncate_float_to_s32(g_hero.anim_frame)] * 0.5f);
+                        vec_set_length_xy(g_hero.motion.velocity.f, g_hero.motion.velocity.f, oltanis_hero_ledge_shimmy_frame_speeds[truncate_float_to_s32(g_hero.anim_frame)] * 0.5f);
                     }
                 }
             }
@@ -2234,8 +2234,8 @@ void HeroL14_UpdateStatePhysics(void) {
 
                     FastVecScale(vec[1], g_hero.motion.displacement.f, 7.0f);
                     for (i = 0; i < n; i++) {
-                        if (is_moby_in_class_range_500_to_540((int)D_L14_00178700[i])) {
-                            PostHitMessage(D_L14_00178700[i], (int)g_hero.moby, 0x10000, g_hero.motion.pos.f, vec[1], 1.0f);
+                        if (is_moby_in_class_range_500_to_540((int)oltanis_coll_sphere_moby_hits[i])) {
+                            PostHitMessage(oltanis_coll_sphere_moby_hits[i], (int)g_hero.moby, 0x10000, g_hero.motion.pos.f, vec[1], 1.0f);
                         }
                     }
                 }

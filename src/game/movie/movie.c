@@ -97,7 +97,7 @@ int read_mpeg(char *vd, char *rb, int *file) {
         int hit;
 
         movie_play_step = 5;
-        D_00161318++;
+        movie_frame_count++;
         UpdatePad();
         movie_play_step = 6;
         if (decode_mode != -1) {
@@ -172,7 +172,7 @@ int read_mpeg(char *vd, char *rb, int *file) {
     func_0012E348(5, voice_pool.f5C);
     func_0012DDC0();
     movie_play_step = 0;
-    D_00161318 = 0;
+    movie_frame_count = 0;
     return aborted;
 }
 extern int func_00118BC0(int);
@@ -248,10 +248,10 @@ int initAll(int stream_source, int source_mode, int callback_context) {
     decoder_thread.entry = videoDecMain;
     decoder_thread.stack_size = 0x4000;
     decoder_thread.priority = 1;
-    decoder_thread.gp = D_00166D00;
+    decoder_thread.gp = gp_base;
     decoder_thread.gs_tag = 0;
     thread_id = func_00118B50(&decoder_thread);
-    D_00161310 = thread_id;
+    movie_decoder_thread_id = thread_id;
     func_00118B70(thread_id, ((char *)decoder_state) + 0xD9048);
     if (set_state_fields(((char *)decoder_state) + 0xD9040, stream_source, source_mode) == 0) {
         opened = 0;

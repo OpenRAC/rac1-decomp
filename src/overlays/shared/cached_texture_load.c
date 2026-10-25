@@ -15,7 +15,7 @@ extern long D_0015EFC8 MACRO_ADDR;
 void LoadCachedTexture(void) {
     long localbuf[3];
 
-    Load(D_L00_0018F040, disc_table[2], disc_table[3]);
-    LoadPifAsPSMT8H(D_L00_0018F040, localbuf, depth_buffer_address + 0xC0000, 0x3FFC00);
+    Load(debug_font_pif_buffer, disc_table[2], disc_table[3]);
+    LoadPifAsPSMT8H(debug_font_pif_buffer, localbuf, depth_buffer_address + 0xC0000, 0x3FFC00);
     debug_font_pif_header = localbuf[0];
 }

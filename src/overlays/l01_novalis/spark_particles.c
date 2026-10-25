@@ -30,7 +30,7 @@ void create_spark_particle(int owner, float *pos, int snd, unsigned char arg, un
                 p[3] = mode;
             }
             p[1] = 0;
-            p[2] = *D_L01_001B2800[idx];
+            p[2] = *novalis_part_type_textures[idx];
             *(float *)u = x;
             *(float *)(u + 4) = y;
             *(float *)(u + 8) = z;
@@ -63,7 +63,7 @@ unsigned char *pool_bubble(void *a, void *b, float f) {
         r[9] = func_001FA898_r(4.0f) + 0x20;
         r[3] = 0x48;
         r[1] = 0;
-        r[2] = *(unsigned char *)D_L01_001B28E0;
+        r[2] = *(unsigned char *)novalis_part_type56_textures;
         *(float *)(r + 0xC) = f;
         qcopy(r + 0x20, b);
         r[8] = random_integer_below(0x100);
@@ -86,7 +86,7 @@ unsigned char *pool_bubbles(void *a, void *b, float f, float g) {
         r[9] = func_001FA898_r(12.0f) + 0x20;
         r[3] = 0x48;
         r[1] = 1;
-        r[2] = *(unsigned char *)D_L01_001B28E4;
+        r[2] = *(unsigned char *)novalis_part_type57_textures;
         *(short *)(r + 0xA) = 0x80;
         *(float *)(r + 0xC) = f * 210000.0f;
         qcopy(q, b);

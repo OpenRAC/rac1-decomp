@@ -67,9 +67,9 @@ void draw_vendor_beam(char *m) {
     qcopy_nc(&M1[12], ((Frame_03430 *)oltanis_clip_volumes)[d->idx].v[3]);
     FastVecSub(v230, oltanis_camera_pos, ((Frame_03430 *)oltanis_clip_volumes)[d->idx].v[3]);
     matrix_mul_vec3(v230, v230, M2);
-    tex = GetEffectTex(*(int *)&D_L14_001621AC);
-    flags = (long)*(int *)&D_L14_001621B0 | ((long)*(int *)&D_L14_001621B4 << 2) | ((long)*(int *)&D_L14_001621B8 << 4)
-            | ((long)*(int *)&D_L14_001621BC << 6) | (0x8000L << 24);
+    tex = GetEffectTex(*(int *)&oltanis_vendor_beam_tex_index);
+    flags = (long)*(int *)&oltanis_vendor_beam_alpha_a | ((long)*(int *)&oltanis_vendor_beam_alpha_b << 2) | ((long)*(int *)&oltanis_vendor_beam_alpha_c << 4)
+            | ((long)*(int *)&oltanis_vendor_beam_alpha_d << 6) | (0x8000L << 24);
     P[2].state = 0xFF9000000260L;
     P[1].state = 0xFF9000000260L;
     P[0].state = 0xFF9000000260L;
@@ -83,7 +83,7 @@ void draw_vendor_beam(char *m) {
     P[1].flags = flags;
     P[0].flags = flags;
     for (t = 0; t < 4; t++) {
-        float v = D_L14_001E6320[t][1];
+        float v = oltanis_vendor_beam_quad_uvs[t][1];
         int col;
         P[2].uv[t][1] = v;
         P[1].uv[t][1] = v;
@@ -116,7 +116,7 @@ void draw_vendor_beam(char *m) {
                     if (k & 1) FastVecAdd(P[0].corner[k], P[0].corner[k], v250);
                     else FastVecSub(P[0].corner[k], P[0].corner[k], v250);
                 }
-                P[0].uv[k][0] = D_L14_001E6320[k][0] + IntToFloat(i - i / 4 * 4) * 0.25f;
+                P[0].uv[k][0] = oltanis_vendor_beam_quad_uvs[k][0] + IntToFloat(i - i / 4 * 4) * 0.25f;
             }
             draw_world_quad(&P[0], M1, 0);
         }
@@ -147,7 +147,7 @@ void draw_vendor_beam(char *m) {
                     if (k & 1) FastVecAdd(P[0].corner[k], P[0].corner[k], v250);
                     else FastVecSub(P[0].corner[k], P[0].corner[k], v250);
                 }
-                P[0].uv[k][0] = D_L14_001E6320[k][0] + IntToFloat(n - n / 4 * 4) * 0.25f;
+                P[0].uv[k][0] = oltanis_vendor_beam_quad_uvs[k][0] + IntToFloat(n - n / 4 * 4) * 0.25f;
             }
             draw_world_quad(&P[0], M1, 0);
         }

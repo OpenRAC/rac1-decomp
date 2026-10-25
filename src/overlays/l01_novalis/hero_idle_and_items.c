@@ -346,7 +346,7 @@ int Hero_SetMoveState(int a, int b) {
                 }
                 {
                     char *w = D_0013E633 + 0xE1D;
-                    *(float *)(*(char **)(w + 0x2080) + 0x54) = D_L01_0017C2F0[*(int *)(w + 0xAA0)][(*(int *)(w + 0xAA4))++];
+                    *(float *)(*(char **)(w + 0x2080) + 0x54) = novalis_hero_anim_time_curves[*(int *)(w + 0xAA0)][(*(int *)(w + 0xAA4))++];
                 }
             }
         }
@@ -419,7 +419,7 @@ int Hero_SetMoveState(int a, int b) {
         int t;
         *(int *)(p + 0x208C) = 0;
         *(int *)(p + 0x2284) = 4;
-        *(int *)&D_L01_0015F768 = scale_ticks(0x3C);
+        *(int *)&novalis_look_stat_timer = scale_ticks(0x3C);
         if (*(unsigned char *)(p + 0x20AA) == 0) {
             t = get_hero_idle_animation_index(1);
             if (*(unsigned char *)(*(char **)(p + 0x2080) + 0x53) != t && b) {
@@ -506,7 +506,7 @@ int Hero_SetMoveState(int a, int b) {
                 }
                 if (b) {
                     char *v = D_0013E633 + 0xE1D;
-                    set_hero_animation(*(int *)(v + 0x2088) + 3, ((int *)&D_L01_0015F7B8)[*(int *)(v + 0x2088)], (float)n);
+                    set_hero_animation(*(int *)(v + 0x2088) + 3, ((int *)&novalis_hero_step_anim_modes)[*(int *)(v + 0x2088)], (float)n);
                 }
             }
         }
@@ -525,7 +525,7 @@ int Hero_SetMoveState(int a, int b) {
             } else if (*(unsigned char *)(p + 0x20A4) == 1) {
                 set_hero_animation(2, 0, (float)scale_ticks(8));
             } else if (*(unsigned char *)(p + 0x20A4) == 0) {
-                set_hero_animation(*(int *)(p + 0x2088) + 3, ((int *)&D_L01_0015F7B8)[*(int *)(p + 0x2088)], (float)scale_ticks(8));
+                set_hero_animation(*(int *)(p + 0x2088) + 3, ((int *)&novalis_hero_step_anim_modes)[*(int *)(p + 0x2088)], (float)scale_ticks(8));
             }
         }
         break;
@@ -842,7 +842,7 @@ int Hero_SetMoveState(int a, int b) {
                     *(float *)(u + 0x3D8) = 0.0f;
                     *(float *)(u + 0x3DC) = 18.0f;
                     *(int *)(u + 0x3E0) = scale_ticks(0x28);
-                    *(char **)(u + 0x3E4) = D_L01_0017C460;
+                    *(char **)(u + 0x3E4) = novalis_hero_state_12_jump_velocity_keys;
                 }
                 {
                     char *w = D_0013E633 + 0xE1D;
@@ -955,7 +955,7 @@ int Hero_SetMoveState(int a, int b) {
                 *(float *)(u + 0x3DC) = 26.0f;
                 *(float *)(u + 0x3D8) = 0.0f;
                 *(int *)(u + 0x3E0) = scale_ticks(0x2D);
-                *(char **)(u + 0x3E4) = D_L01_0017C420;
+                *(char **)(u + 0x3E4) = novalis_hero_state_d_jump_velocity_keys;
                 *(unsigned char *)(u + 0x4AE) = 1;
             } else if (*(int *)(u + 0x2084) == 0xF) {
                 *(float *)(u + 0x430) = 1.9f;
@@ -984,7 +984,7 @@ int Hero_SetMoveState(int a, int b) {
                     *(float *)(w + 0x3D8) = 29.0f;
                     *(float *)(w + 0x3DC) = 50.0f;
                     *(int *)(w + 0x3E0) = scale_ticks(0x56);
-                    *(char **)(w + 0x3E4) = (char *)&D_L01_0015F7C8;
+                    *(char **)(w + 0x3E4) = (char *)&novalis_hero_state_f_jump_velocity_keys;
                     *(unsigned char *)(w + 0x4AE) = 1;
                 }
             } else if (*(int *)(u + 0x2084) == 0xE) {
@@ -1043,7 +1043,7 @@ int Hero_SetMoveState(int a, int b) {
                 } else if (s == 9) {
                     int id = 8;
                     int n = truncate_float_to_s32(*(float *)(q + 0xAA8));
-                    if (return_hero_animation_id_unchanged(*(unsigned char *)(moby + 0x52)) == 4) id = D_L01_0017C2D8[n];
+                    if (return_hero_animation_id_unchanged(*(unsigned char *)(moby + 0x52)) == 4) id = novalis_hero_run_jump_land_anim_by_frame[n];
                     set_hero_animation(id, 0, (float)scale_ticks(5));
                 } else if (s == 0xA) {
                     set_hero_animation(0x12, 0, (float)scale_ticks(5));
@@ -1187,7 +1187,7 @@ int Hero_SetMoveState(int a, int b) {
             }
             q = D_0013E633 + 0xE1D;
             *(unsigned int *)(h + 0x44) = *(unsigned int *)(h + 0x44) | (1 << g_current_level_index) | 0x80000000;
-            e = &D_L01_0017C128[*(int *)(q + 0xA60)];
+            e = &novalis_attack_records[*(int *)(q + 0xA60)];
             *(int *)(q + 0x20F0) = 0;
             k = 0;
             if (*(int *)(q + 0x2094) == 6 && e->a == 0 && *(float *)(q + 0xAA8) < (float)e->c) {
@@ -1244,7 +1244,7 @@ int Hero_SetMoveState(int a, int b) {
         *(float *)(p + 0x194) = g_frame_time * 9.0f;
         if (b) {
             char *m;
-            T2C_23D688 *e = &D_L01_0017C128[*(int *)(p + 0xA60)];
+            T2C_23D688 *e = &novalis_attack_records[*(int *)(p + 0xA60)];
             int k = e->b;
             int n;
             if (e->a == 1) k = 2;
@@ -1284,7 +1284,7 @@ int Hero_SetMoveState(int a, int b) {
             *(int *)(q + 0x1C0) = scale_ticks(0x4D);
             if (b) {
                 set_hero_animation(0x10, 3, -3.0f);
-                *(float *)(*(char **)(q + 0x2080) + 0x54) = D_L01_0017C2F0[*(int *)(q + 0xAA0)][(*(int *)(q + 0xAA4))++];
+                *(float *)(*(char **)(q + 0x2080) + 0x54) = novalis_hero_anim_time_curves[*(int *)(q + 0xAA0)][(*(int *)(q + 0xAA4))++];
             }
         }
         break;
@@ -1367,7 +1367,7 @@ int Hero_SetMoveState(int a, int b) {
         *(int *)(p + 0x1C0) = scale_ticks(0x4D);
         if (b) {
             set_hero_animation(2, 3, -3.0f);
-            *(float *)(*(char **)(p + 0x2080) + 0x54) = D_L01_0017C2F0[*(int *)(p + 0xAA0)][(*(int *)(p + 0xAA4))++];
+            *(float *)(*(char **)(p + 0x2080) + 0x54) = novalis_hero_anim_time_curves[*(int *)(p + 0xAA0)][(*(int *)(p + 0xAA4))++];
         }
         break;
     }

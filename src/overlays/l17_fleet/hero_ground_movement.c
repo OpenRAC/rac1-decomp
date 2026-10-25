@@ -1823,7 +1823,7 @@ void HeroL17_UpdateStatePhysics(void) {
                 vec[1][3] = -(g_frame_time_sq * 30.0f);
                 spawn_color_decaying_effect_particle((char *)vec[0], (char *)vec[1], 0);
             }
-            hasW = D_L17_0017A440[g_hero.items[0].item_id].f18 != 0;
+            hasW = fleet_item_defs[g_hero.items[0].item_id].f18 != 0;
             if (g_hero.items[0].item_id == 0xC) {
                 hasW = 0;
             }

@@ -36,7 +36,7 @@ void create_type_49_particle(void *pos, int kind, void *vel, float f) {
         p[9] = func_001FA898_r(4.0f) + 0x20;
         p[3] = 0x48;
         p[1] = 0;
-        p[2] = D_L08_001B2CA4[kind];
+        p[2] = batalia_part_type49_textures[kind];
         *(float *)(p + 0xC) = s * 210000.0f;
         p[8] = (int)random_float_between(0.0f, 360.0f);
         *(u128 *)(p + 0x10) = *(u128 *)pos;

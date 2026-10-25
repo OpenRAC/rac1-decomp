@@ -326,7 +326,7 @@ int Camera_ActivationCheckPriority(Camera *cur, Camera *other) {
             CameraDef *rec = &gCameraDefs[cur->def_index];
             int g = rec->info->rule7_index;
 
-            if (g < 0 || (*(int *)(base + 0x560) == D_0015F040[g].unk10
+            if (g < 0 || (*(int *)(base + 0x560) == cam_activation_rule7_table[g].unk10
                           && *(int *)(base + 0x570) == 0)) {
                 return 1;
             }
@@ -736,7 +736,7 @@ int advance_alternate_camera_transition(Camera *cam, CamBlendOrbit *o) {
     if (occl_cam_state.active == 0) {
         qcopy(&gCamera.pos, &o->pos);
     }
-    func_001FA648(&o->rot, m);
+    quaternion_to_rotation_basis(&o->rot, m);
     d = FastVecDot(&m[2], cam);
     FastVecScale(&proj, &m[2], d);
     FastVecSub(&diff, cam, &proj);
@@ -978,7 +978,7 @@ void update_camera_underwater_flag(void) {
     b[2] -= 0.75f;
     i = 0;
     while (i < 6 && coll_line_fix(a, b, 0x12, 0, 0) != 0) {
-        if (func_001F0F00() == 0) {
+        if (coll_hit_material() == 0) {
             float h = resolve_camera_surface_height(coll_hit_pos, 0) + 0.04f;
             CameraSystem *c2 = &gCamera;
 

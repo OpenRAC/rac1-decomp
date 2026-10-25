@@ -8910,3 +8910,469 @@ D_001E89B0	menu_time_suffixes	per-language suffix strings (6) used in the menu t
 D_00160188	menu_entry_find_token	token searched with find_substring in the entry text; the char after it becomes 's'	
 D_00160190	menu_time_value_format	sprintf format for seconds, suffix and milliseconds	
 func_L00_001FF468	bsphere_gap_squared	VU0: |a-b|^2 over xyz minus (a.w+b.w)^2 for two bounding spheres	
+D_0015F040	cam_activation_rule7_table	camera.c:329 rule-7 rows of 0x20; +0x10 compared with hero+0x560	
+func_001F0F00	coll_hit_material	asm reads coll_output+0x1C &0x1F, -1 if none; camera.c:981 water test	
+func_001EFD70	coll_grid_cell_lookup	handwritten; three nested (start,count) index tables, returns cell or 0; called by coll line test func_001EFE10	
+D_0024272F	image_end_round_16k	initonce.c:80 &~0x3FFF gives the memory slot base past the image	
+D_001E7E80	str_bad_point_light_tie	string "screwed up point light on tie"	
+D_001E7EA0	str_bad_point_light_tfrag	string "screwed up point light on tfrag"	
+D_001E7EC8	str_bad_point_light_shrub	string "screwed up point light on shrub"	
+D_00161310	movie_decoder_thread_id	movie.c:254 stores the decoder thread id; later deleted/terminated	
+D_00161318	movie_frame_count	movie.c:100 ++ per playback loop, 0 at end	
+D_00166D00	gp_base	&_gp given as gpReg to new threads (movie.c:251, 00119328.c:166)	
+D_0011C278	dialogue_track_table_by_lang	music.c:374 int per track, 0x258 bytes per language, starts dialogue stream	
+D_00160F70	str_tfrag_texs	string "tfrag texs", profile marker in DrawTfrag	
+D_00160F80	str_tfrag_draw	string "tfrag draw", profile marker in DrawTfrag	
+D_00160FBC	tfrag_tex_dma_tag_slot	DrawTfrag reserves a packet qword here; DmaTfragTextures fills it as a DMA tag	
+D_001E0F00	tfrag_tex_remap_table	PatchTfragGifs: (a,b) halves indexed by record byte +0x23	
+D_001E1200	tfrag_gif_chunk_list	PatchTfragGifs: null-terminated (items,count) chunk list	
+D_001E1600	tfrag_dma_block	DrawTfrag: 0x3000 bytes sent by write_dma_channel after TfragProc	
+D_001E8CE0	str_tfrag_texture_overflow	string "tfrag texture overflow"	
+D_00161030	str_tie_texs	string "tie texs", profile marker in DrawTies	
+D_00161040	str_tie_draw	string "tie draw", profile marker in DrawTies	
+D_00161068	tie_tex_dma_tag_slot	DrawTies reserves a packet qword here; DmaTieTextures fills it as a DMA tag	
+D_001DF3B0	tie_packet_tail_tags	0x20 bytes of DMA tags copied to the packet end in DrawTies	
+D_001E2D00	tie_tex_remap_table	PatchTieGifs: 4-byte entries indexed by record byte +0x33; 0x400 bytes	
+D_001E3300	tie_gif_patch_list	PatchTieGifs: -1-terminated tie index list; 0x200 bytes	
+D_001E4100	tie_tex_remap_table_saved	0x400 copy of tie_tex_remap_table swapped in by DrawTies_2	
+D_001E4500	tie_gif_patch_list_saved	0x200 copy of tie_gif_patch_list swapped in by DrawTies_2	
+D_001E8D80	str_tie_texture_overflow	string "tie texture overflow"	
+D_L00_0015F754	hero_r1_double_tap_timer	hero_vehicle_and_collision.c:3330 set to 30 ticks on R1, R1 again while running enters state 0x81	
+D_L00_0015F7A8	hero_run_step_switch_frames	hero_vehicle_and_collision.c:3442 [old][new] frame offset when the run speed step changes	
+D_L00_0015F7B8	hero_run_step_start_frames	set_hero_animation(step+3, table[step], ...) start frame per run step	
+D_L00_0015F7C8	hero_state_f_jump_velocity_keys	HeroVelocityKey list put in hero+0x3E4 on entering state 0xF	
+D_L00_0017BED8	hero_run_jump_anim_ids	state 9: anim id byte indexed by truncated hero+0xAA8	
+D_L00_0017BEF0	hero_anim_blend_curves	[preset][frame] float written to hero moby +0x54 per frame (preset = hero+0xAA0)	
+D_L00_0017C020	hero_state_d_jump_velocity_keys	HeroVelocityKey list put in hero+0x3E4 on entering state 0xD	
+D_L00_0017C060	hero_state_12_jump_velocity_keys	HeroVelocityKey list put in hero+0x3E4 on entering state 0x12	
+D_L05_0015F7C8	rilgar_hero_run_step_start_frames	L05 copy of hero_run_step_start_frames	
+D_L05_0015F7D8	rilgar_hero_state_f_jump_velocity_keys	L05 copy: hero+0x3E4 keys for state 0xF	
+D_L05_0017C338	rilgar_hero_run_jump_anim_ids	L05 copy of hero_run_jump_anim_ids (state 9)	
+D_L05_0017C350	rilgar_hero_anim_blend_curves	L05 copy of hero_anim_blend_curves	
+D_L05_0017C480	rilgar_hero_state_d_jump_velocity_keys	L05 copy: hero+0x3E4 keys for state 0xD	
+D_L05_0017C4C0	rilgar_hero_state_12_jump_velocity_keys	L05 copy: hero+0x3E4 keys for state 0x12	
+D_L08_0015F674	batalia_help_message_selector	hero triangle input ignored unless 0; same slot as quartu_help_message_selector	
+D_L08_0015F718	batalia_hero_fall_state_height	hero z below this with ground far enters state 0x77 (as aridia_hero_fall_state_height)	
+D_L08_0015F758	batalia_hero_double_tap_timer	30-tick window set on pad 8 press; second press enters state 0x81	
+D_L08_0015F7BC	batalia_hero_run_step1_start_frame	set_hero_animation(4, it, ...) when run starts at step 1; [1] of the run step start-frame table	
+D_L08_0017A110	batalia_idle_fidgets	Rec70 records indexed by pick_idle_fidget result (as idle_fidgets)	
+D_L12_0015F674	hoven_help_message_selector	hero triangle input ignored unless 0; same slot as quartu_help_message_selector	
+D_L12_0015F718	hoven_hero_fall_state_height	hero z below this with ground far enters state 0x77 (as aridia_hero_fall_state_height)	
+D_L12_0015F758	hoven_hero_double_tap_timer	30-tick window set on pad 8 press; second press enters state 0x81	
+D_L12_0015F7BC	hoven_hero_run_step1_start_frame	set_hero_animation(4, it, ...) when run starts at step 1; [1] of the run step start-frame table	
+D_L12_00179D90	hoven_idle_fidgets	Rec70 records indexed by pick_idle_fidget result (as idle_fidgets)	
+D_L16_0015F674	kalebo3_help_message_selector	hero triangle input ignored unless 0; same slot as quartu_help_message_selector	
+D_L16_0015F718	kalebo3_hero_fall_state_height	hero z below this with ground far enters state 0x77 (as aridia_hero_fall_state_height)	
+D_L16_0015F758	kalebo3_hero_double_tap_timer	30-tick window set on pad 8 press; second press enters state 0x81	
+D_L16_0015F7CC	kalebo3_hero_run_step1_start_frame	set_hero_animation(4, it, ...) when run starts at step 1; [1] of the run step start-frame table	
+D_L16_00179D70	kalebo3_idle_fidgets	Rec70 records indexed by pick_idle_fidget result (as idle_fidgets)	
+D_L18_0015F674	veldin2_help_message_selector	hero triangle input ignored unless 0; same slot as quartu_help_message_selector	
+D_L18_0015F718	veldin2_hero_fall_state_height	hero z below this with ground far enters state 0x77 (as aridia_hero_fall_state_height)	
+D_L18_0015F758	veldin2_hero_double_tap_timer	30-tick window set on pad 8 press; second press enters state 0x81	
+D_L18_0015F7BC	veldin2_hero_run_step1_start_frame	set_hero_animation(4, it, ...) when run starts at step 1; [1] of the run step start-frame table	
+D_L18_0017A310	veldin2_idle_fidgets	Rec70 records indexed by pick_idle_fidget result (as idle_fidgets)	
+D_L05_001B2940	rilgar_velocity_particle_texture_ptr	byte it points to is the texture of the velocity/lifetime particle	
+D_L05_001B2948	rilgar_random_particle_textures_ptr	byte table it points to gives the particle texture, indexed by arg3	
+D_L09_00161E78	gaspar_shuttle_climb_scale	advance_shuttle_along_path: target z += speed * it	
+D_L11_0015F768	pokitaru_look_stat_timer	look-state countdown; at 0 bumps usage_stats f90 and is set to -1 (as veldin2_look_stat_timer)	
+D_L11_0015F76C	pokitaru_look_stat_count	incremented when pokitaru_look_stat_timer runs out	
+D_L11_00161358	pokitaru_pool_draw_count	RippleDisturb count arg with pokitaru_pool_draw_tiles; L01 pool_draw_count slot	
+D_L11_00178980	pokitaru_coll_sphere_moby_hits	moby list from coll_sphere_mobys sent hit messages (as veldin2_coll_sphere_moby_hits)	
+D_L11_0017C6A8	pokitaru_attack_records	Rec2C indexed by g_hero.attack_record, f18/f20 against anim_frame	
+D_L11_0017CA40	pokitaru_hero_swim_frame_speeds	30-entry table read by vector_length_xyz_cf in swim state 0x33	
+D_L11_001C4930	pokitaru_hero_ledge_shimmy_frame_speeds	per-anim-frame speed *0.5 in ledge shimmy state 0x1A	
+D_L13_0015F660	gemlik_zero_vec	scene_controller.c:646 passed as the zero vector args of SpawnBreakFragment, like other levels' zero_vec	
+D_L14_0015F7B8	oltanis_hero_run_step_start_frames	L14 copy of hero_run_step_start_frames	
+D_L14_0015F7C8	oltanis_hero_state_f_jump_velocity_keys	L14 copy: hero+0x3E4 keys for state 0xF	
+D_L14_0017C5D8	oltanis_hero_run_jump_anim_ids	L14 copy of hero_run_jump_anim_ids (state 9)	
+D_L14_0017C5F0	oltanis_hero_anim_blend_curves	L14 copy of hero_anim_blend_curves	
+D_L14_0017C720	oltanis_hero_state_d_jump_velocity_keys	L14 copy: hero+0x3E4 keys for state 0xD	
+D_L17_0015F520	fleet_palette_data_base	base added to palette<<4 for the health clut (as gemlik_palette_data_base)	
+D_L17_0016DB00	fleet_texture_table	16-byte texture records indexed by texture id+0x28 for the palette at +0xA (as gemlik_texture_table)	
+D_L18_001624E8	drek_boss_rider_glow_color_a	first FastTweenColor color of the joint 1/2 glows (render_drek_boss_joint_glows)	
+D_L18_001624EC	drek_boss_rider_glow_color_b	second FastTweenColor color of the joint 1/2 glows	
+D_L18_001624F0	drek_boss_rider_glow_period	ticks of the sine colour pulse of the joint 1/2 glows	
+D_L18_00162590	veldin2_bone_glow_axis_offset	bone_glow_quads.c:41 scales the bone vector subtracted from the glow position	
+func_L00_0024EBF8	dma_wait_channel_str	handwritten: spins while bit 0x100 (STR) of the word at $3 is set	
+func_L00_0024EC20	debug_trap	handwritten: two unconditional teq traps then return	
+D_L08_00178980	batalia_moby_hit_records	0x40-byte records indexed by moby byte 0xA4, as moby_hits in hero_animation_slots.c	
+D_L15_001744DC	quartu_coll_hit_type	coll block +0x1C (as coll_output+0x1C in coll_hit_material); >0 gates CollType()	
+D_L15_001744E0	quartu_coll_hit_point	coll block +0x20 hit point passed to resolve_camera_surface_height (as aridia_coll_hit_point)	
+D_L01_0015F7BC	novalis_hero_run_step1_start_frame	set_hero_animation(4, it, ...) when run starts at step 1; [1] of the run step start-frame table	
+D_L01_0017435C	novalis_coll_hit_type	novalis_coll_hit+0x1C; >0 gates CollType() after coll_line (as coll_output+0x1C)	
+D_L01_00178600	novalis_moby_hit_records	0x40-byte records indexed by moby byte 0xA4, as moby_hits	
+D_L01_00179FC0	novalis_item_defs	0x4C-byte per-item records, +0x24 idle anim id (as item_defs)	
+D_L12_00160058	hoven_mobys	base of the 0x100-byte moby array indexed by idx<<8 (as batalia_mobys)	
+D_L00_0015FBC0	glow_quad_z_offset	GlowQuadsDraw: added to z of the second vector of the last quad batch	
+D_L00_001803C0	level_point_lights	8 x 0x20 point light records (color, intensity, pos, radius) filled by allocate_*_point_light_slot	
+D_L00_001805C0	level_point_light_data	8 x 0x30 slot records, used flag +0x10 and buffer +0xC; level copy of point_light_data	
+D_L00_00180740	level_point_light_link_buffers	0x400-byte buffer per point light slot, stored at slot +0xC	
+D_0013D4F8	menu_item_enabled_92	D_0013D49C + 92 in the menu_item_enabled_N byte table; level 0xE entry needs it	
+D_L00_00160630	level_transition_ticks_by_variant	int per level_render_state+0x26 variant, scale_ticks -> cutscene frame count at level transition	
+D_L00_00160640	variant_effect_quad_counts	build_variant_effect_quads: quad count per variant (+0x26)	
+D_L00_001BDD20	variant_effect_quad_uvs	build_variant_effect_quads: 4 uv pairs	
+D_L00_001BDD40	variant_effect_quad_offsets	build_variant_effect_quads: offset rows for variant 0 (w scales size)	
+D_L00_001BDDC0	variant_effect_quad_offsets_1	build_variant_effect_quads: offset rows for variant 1	
+D_L00_001BDDE0	variant_effect_quad_offsets_2	build_variant_effect_quads: offset rows for variant 2	
+D_L00_001BDE00	variant_effect_quad_corners	build_variant_effect_quads: 4 corner vectors scaled per quad	
+D_L02_00160150	aridia_shot_stream_max_speed	EffectSlots_Fire: max speed (*g_frame_time) of the ApproachWithVelocity reach	
+D_L02_00160154	aridia_shot_stream_lead_count	EffectSlots_Fire: particles spawned with flag 1 per call (1 when travel < 4)	
+D_L02_00160158	aridia_shot_stream_extra_count	EffectSlots_Fire: extra particles spawned with flag 0 per call	
+D_L02_0016015C	aridia_shot_stream_spread_far	EffectSlots_Fire: rand_vec spread at full distance	
+D_L02_00160160	aridia_shot_stream_spread_near	EffectSlots_Fire: rand_vec spread at zero travel	
+func_L00_0028D958	sky_point_screen_cull	handwritten VU0: points (stride 0x20) through sky_shell_matrix, writes a visible byte per point	
+func_L00_00254218	moby_joints_to_scratchpad	handwritten: builds moby joint transforms up to the given joint into scratchpad 0x70000000; callers then read joint vectors there	
+func_L00_002689B0	update_color_fade_velocity_particle	handwritten: life-1 at +0xA, pos += vel, colour lerp of +0x30/+0x34 by life, size += growth; at 0 kills	
+func_L01_00262BB0	novalis_debug_trap	handwritten: two unconditional teq traps then return	
+D_L08_001B2B80	batalia_span_particle_textures_ptr	byte table it points to gives the span particle texture, indexed by kind	
+D_L15_0017A140	quartu_item_defs	0x4C-byte records indexed by hero slot-0 item id, +0x24 idle anim (as item_defs)	
+func_0020E990	moby_grid_free_slots	clears count bits from start in bitmap D_001C7A60, traps if a bit was already clear; update_moby_grids frees a moby grid run	
+func_0020E9F0	moby_grid_alloc_slots	finds a run of n clear bits in D_001C7A60, sets them, returns start index; update_moby_grids reallocates	
+func_00211548	get_moby_joint_matrices_batch	transform_scaled_vertex_batch calls it where the single form calls get_moby_joint_matrices(obj,1,...)	
+D_001613B8	movie_adpcm_staging_buf	audioDecCreate stores the staging buffer; sendADPCM fills 0x400 bytes there and sends it to the SPU	
+D_001612E4	movie_vblank_count	vblank handler increments it while display is active; startDisplay zeroes it	
+D_00161320	mpeg_sequence_end_code	bytes 00 00 01 B7 that videoDecFlush writes into the stream	
+D_001E8E68	str_decode_thread_aborted	string "decode thread: aborted"	
+D_001E8E80	str_mpeg_get_picture_error	string "sceMpegGetPicture() decode error"	
+D_001604B0	str_shrub_texs	profile marker string "shrub texs" in DrawShrubs	
+D_001604C0	str_shrub_draw	profile marker string "shrub draw" around DmaShrubTextures	
+D_001604F0	shrub_tex_dma_tag	DrawShrubs reserves a 0x10 packet slot here; DmaShrubTextures writes a DMA tag into it	
+D_0018A3D0	shrub_draw_enabled	DrawShrubs runs ShrubProc and the scratchpad copy only when nonzero	
+D_001D9140	shrub_class_index_list	-1 terminated list of shrub_render_classes indices walked by patch_shrub_gifs and BuildShrubTextureDma	
+D_001D9240	shrub_scratchpad_copy	0x3200-byte DMA copy target in DrawShrubs, passed to LightShrubs in place of scratchpad 0x70000000	
+D_001E8C00	str_shrub_texture_overflow	string "shrub texture overflow" printed when the texture DMA exceeds 0x400000	
+D_00160500	sky_shell_scroll_step	float added to each sky shell scroll value times a per-shell rate (0.55..0.8)	
+D_00160504	sky_shell_base_rot_z	base z rotation each sky shell adds its own spin to in draw_sky_shells	
+D_00160508	sky_tile_spr_buffers	two scratchpad destinations 0x70000000/0x70001000 the sky tiles are DMAd into in turn	
+D_00160510	sky_tile_buffer_index	toggled 1-x before each sky tile DMA to pick the sky_tile_spr_buffers slot	
+D_00160550	str_sky_texs	profile marker string "sky texs" in SetupSkyGifPaging	
+D_00160570	sky_gif_paging_tag	SetupSkyGifPaging reserves a 0x10 packet slot here; DoSkyGifPaging fills its DMA tag	
+D_00160574	sky_gif_paging_start	DoSkyGifPaging saves the packet start here and later writes a DMA tag to the end	
+func_0020C2F8	flush_pending_texture_uploads	walks pending_texture_uploads building GIF image transfer packets; called before VU1_texFlush	
+D_00161130	resident_stream_resume_frames_s4	per-pick frame window pair; state 4 continues the music stream when the anim is inside it	
+D_00161138	resident_stream_resume_frames_s5	per-pick frame window pair; state 5 continues the music stream when the anim is inside it	
+D_00161140	resident_stream_resume_frames_s6	per-pick frame window pair; state 6 continues the music stream when the anim is inside it	
+D_001611B0	resident_dialogue_started	set when a dialogue line is queued; cleared once dialogue_playback_phase reaches 3	
+D_001E68E0	resident_cheat_scale_manip	manipulator attached with 2.37 xyz scale while gCheats[0] is set, detached otherwise	
+D_001E8DA0	str_scrolling_status_fmt	padded "%s" format set_scrolling_status_message prints the message with	
+D_L00_00161CA0	veldin1_robot_target_range	search range passed to FindNearestTargetMoby (37.0 while the reroll timer runs)	
+D_L00_00161CA4	veldin1_robot_hit_knock_gravity	knock +0x80 times g_frame_time_sq when the robot takes damage	
+D_L00_00161CA8	veldin1_robot_hit_knock_drag	knock +0x84 times g_frame_time_sq when the robot takes damage	
+D_L00_00161CAC	veldin1_robot_hit_knock_speed	knock +0x88 times g_frame_time, scaled 0.35 on a non-lethal hit	
+D_L00_00161CB0	veldin1_robot_hit_knock_lift	knock +0x8C times g_frame_time, scaled 0.5 on a non-lethal hit	
+D_L00_00161CB4	veldin1_robot_beam_origin_offset	length of the forward offset from the joint to the beam ray start	
+D_L00_00161CB8	veldin1_robot_beam_sweep_cycles	anim loops the beam sweep state lasts before releasing the beam slot	
+D_L00_00161CBC	veldin1_robot_beam_sweep_angle	heading offset added or subtracted from the home direction while the beam sweeps	
+D_L00_001E6FF0	veldin1_robot_effect_quad_corners	four corner vectors scaled 0.2 into the quad draw_veldin_robot_effect_quad draws	
+D_L02_0015F674	aridia_shown_help_message	idle item input only acts when it is 0, like pokitaru_shown_help_message	
+D_L05_0015F674	rilgar_shown_help_message	idle item input only acts when it is 0, like pokitaru_shown_help_message	
+D_L05_0015F718	rilgar_hero_fall_state_height	hero z below this with ground far enters state 0x77, like aridia_hero_fall_state_height	
+D_L05_0015F758	rilgar_hero_double_tap_timer	30-tick window set on pad 8 press; a second press inside it counts as both	
+D_L05_00179DF0	rilgar_idle_fidgets	Rec70 table indexed by pick_idle_fidget, like aridia_idle_fidgets	
+D_L14_0015F674	oltanis_shown_help_message	idle item input needs 0, taxi needs 4, like pokitaru_shown_help_message	
+D_L14_0015F718	oltanis_hero_fall_state_height	hero z below this with ground far enters state 0x77	
+D_L14_0015F758	oltanis_hero_double_tap_timer	30-tick window set on pad 8 press; a second press inside it counts as both	
+D_L14_0017A090	oltanis_idle_fidgets	Rec70 table indexed by pick_idle_fidget	
+D_L15_0015F718	quartu_hero_fall_state_height	hero z below this with ground far enters state 0x77	
+D_L15_0015F758	quartu_hero_double_tap_timer	30-tick window set on pad 8 press; a second press inside it counts as both	
+D_L15_00179F10	quartu_idle_fidgets	Rec70 table indexed by pick_idle_fidget	
+D_L06_0015F7C8	blarg_hero_state_f_jump_velocity_keys	hero unk3E4 velocity keys set when the jump starts from state 0xF, like aridia_hero_state_f_jump_velocity_keys	
+D_L06_0017C658	blarg_hero_run_jump_land_anim_by_frame	byte table indexed by anim_frame giving the anim id state 9 blends to from anim 4	
+D_L06_0017C670	blarg_hero_anim_time_curves	[preset][25] anim_time steps written to the hero moby +0x54 for negative-time set_hero_animation	
+D_L06_0017C7A0	blarg_hero_state_d_jump_velocity_keys	hero unk3E4 velocity keys set when the jump starts from state 0xD	
+D_L17_0015F7C8	fleet_hero_state_f_jump_velocity_keys	hero unk3E4 velocity keys set when the jump starts from state 0xF	
+D_L17_0017C758	fleet_hero_run_jump_land_anim_by_frame	byte table indexed by anim_frame giving the anim id state 9 blends to from anim 4	
+D_L17_0017C770	fleet_hero_anim_time_curves	[preset][25] anim_time steps written to the hero moby +0x54 for negative-time set_hero_animation	
+D_L17_0017C8A0	fleet_hero_state_d_jump_velocity_keys	hero unk3E4 velocity keys set when the jump starts from state 0xD	
+D_L17_0017C8E0	fleet_hero_state_12_jump_velocity_keys	hero unk3E4 velocity keys set when the jump starts from state 0x12	
+D_L12_0015F768	hoven_look_stat_timer	look-state countdown; at 0 bumps usage_stats f90 and hoven_look_stat_count, like kalebo3_look_stat_timer	
+D_L12_0015F76C	hoven_look_stat_count	incremented when hoven_look_stat_timer runs out	
+D_L12_00161358	hoven_water_patch_count	count passed with hoven_water_patches to RippleDisturb, like water_patch_count	
+D_L12_00178400	hoven_nearby_mobys	coll_sphere_mobys result list, same slot as rilgar_nearby_mobys	
+D_L12_0017C4C0	hoven_hero_swim_frame_speeds	30-entry per-frame table scaling ground_speed in HERO_STATE_SWIM and WATER_SURFACE_MOVE, like kalebo3_hero_swim_frame_speeds	
+D_L12_001C43B0	hoven_hero_ledge_shimmy_frame_speeds	per anim_frame speed for the ledge shimmy states, like kalebo3_hero_ledge_shimmy_frame_speeds	
+D_L07_0016C960	umbris_cutscene_state	same slot as L00 cutscene_state; +0x30 scene state, moby at +0x188 gets the env-map draw callback	
+D_L08_00160280	batalia_offset_effect_size	particle size (+0xC) of the type 0x27 effect spawn_moby_offset_effect makes	
+D_L08_00160284	batalia_offset_effect_color	packed rgb (+0x4) of the spawn_moby_offset_effect particle	
+D_L08_00160288	batalia_offset_effect_push_dist	length the effect is moved from the moby away from the hero	
+D_L08_001B2C1C	batalia_part_type39_textures	entry 0x27 of the L08 particle texture-list table (base 0x1B2B80), read for create_part(0x27)	
+D_L08_001B2C2C	batalia_part_type43_textures	entry 0x2B of the L08 particle texture-list table, read for create_part(0x2B)	
+D_L08_001B2CB4	batalia_part_type77_textures	entry 0x4D of the L08 particle texture-list table, read for the class 0x4D particle	
+D_L09_0016EB20	gaspar_strip_gs_setup_packet	9-qword block sent by DMA ref plus VIF DIRECT 9 before the scrolling textured strips	
+D_L17_00160060	fleet_last_moby	inclusive end pointer of the fleet_mobys walk in update_moby_class_flags_and_link	
+D_L18_001DFE50	veldin2_deplanetizer_quad_corners	four corner vectors scaled into the deplanetizer camera and glow quads	
+D_L18_00162508	rocket_tank_path_speed	target speed times g_frame_time the tank approaches along its path when facing the next point	
+D_L18_0016250C	rocket_tank_shot_speed	launch speed times g_frame_time of the shot fired from joint 1 or 2	
+D_L18_00162510	rocket_tank_child_anim_ref_speed	path speed is divided by it to give the 0..2 anim rate of the attached child mobys	
+D_L04_00197780	eudora_moby_class_headers	per-slot class header pointers whose +0x48 seq table gives animation_start/end frames, like moby_class_headers	
+D_L00_0018F040	debug_font_pif_buffer	LoadCachedTexture loads the disc file here and uploads it as the debug font PIF	
+D_L00_001612A0	str_walker_jump_dist_fmt	debug printf format WalkCycleStep prints the jump distance with	
+D_L00_001CAA60	walker_state_anim_slots	maps walk state bB7 to the d->anim[] slot whose frame window the turn states check	
+D_L00_00173154	debug_overlay_mode	returned by get_global_state_pointer; 0 draws the profiler, 3 the pause-menu pages	
+D_L00_001E8E80	map_archive_stash_comment	comment string passed to Stash_SendData when the map archive is stashed, like misc_animations_stash_comment	
+D_L00_001870A0	mission_node_list	pointer to the id-0-terminated mission node array CollectMissionNodes walks for current objectives	
+D_L15_0016027C	quartu_owner_target_particle_life	tick count scaled into the life of the type 0x1F particle spawn_owner_target_particle makes	
+D_L15_001B2A70	quartu_part_type71_textures	entry 0x47 of the L15 particle texture-list table, read by create_type_47_particle (create_part 0x47)	
+D_L00_0015F6D0	level_sound_slot_count	play_voice and request_grouped_voice return -1 for indices at or above it in level_sound_slots	
+D_L00_0015F710	ship_level_exit_requested	set when the hero boards the ship; the frame update clears it and starts the level transition	
+D_L00_001BDBB0	grouped_voice_level_rows	byte per level index giving the base row request_grouped_voice adds a0*4+a1*2+a2 to	
+D_L00_001BDC10	ship_entry_point_offsets	per-ship_index vector rotated by the ship moby to find the boarding point checked within 4.0	
+D_L00_001EAD00	lookup_record_key_values	key/value pairs ended by key -1 that resolve_lookup_record searches	
+D_L00_001618F8	trespasser_pickup_hover_height	added to the ground hit z to place the trespasser pickup on its first frame	
+D_L00_00161900	trespasser_pickup_spin_step	angle added to the trespasser pickup z rotation each frame	
+D_L00_00161908	ammo_pickup_sound_frame	level_frame_counter of the last ammo pickup sound 0xD5; replays only after 10 ticks	
+D_L00_0016190C	glove_of_doom_ring_index	next slot in glove_of_doom_ring, wraps at 20	
+D_L00_001DD400	glove_of_doom_ring	20-entry ring of class 0xE6 mobys; the oldest is told to die when its slot is reused	
+D_L14_001621AC	oltanis_vendor_beam_tex_index	effect texture index draw_vendor_beam passes to GetEffectTex	
+D_L14_001621B0	oltanis_vendor_beam_alpha_a	GS ALPHA field A (bits 0-1) of the vendor beam quads	
+D_L14_001621B4	oltanis_vendor_beam_alpha_b	GS ALPHA field B (bits 2-3) of the vendor beam quads	
+D_L14_001621B8	oltanis_vendor_beam_alpha_c	GS ALPHA field C (bits 4-5) of the vendor beam quads	
+D_L14_001621BC	oltanis_vendor_beam_alpha_d	GS ALPHA field D (bits 6-7) of the vendor beam quads, FIX 0x80	
+D_L14_001E6320	oltanis_vendor_beam_quad_uvs	four u,v corner pairs for the vendor beam quads; u steps by 0.25 per frame cell	
+func_00218930	alloc_part_slot	create_part tail-calls it: takes a free bit from the D_001CDB00 slot bitmap, zeroes the 0x40-byte slot and stores the type byte	
+func_001F9840	scale_by_frame_scale	returns frame_scale (gp -0x7EA0 = D_0015EE60) * x	
+func_001F9888	scale_ticks_by_frame_scale_sq	int x * g_frame_scale_sq + 0.5, truncated to int; twin of scale_ticks	
+func_001F98E8	scale_by_frame_time	returns g_frame_time (gp -0x7E94 = D_0015EE6C) * x	
+func_001F9BA0	min3_int	pminw of three int args	
+func_001F9E58	clamp_vector_length	scales vec arg1 into arg0 to length arg2 when longer; returns 1 if clamped	
+func_001FA168	set_identity_rotation_rows	stores rows (1,0,0,0),(0,1,0,0),(0,0,1,0) to arg0	
+func_001FA648	quaternion_to_rotation_basis	VU0 quaternion arg0 to 3 matrix rows at arg1	
+func_001FA8F0	fast_bsphere_check	sphere vs sky_view_mtx frustum, returns -1/0/1	
+D_00100AE0	frame_vu0_micro_program	VU0 program reloaded at end of frame draw, transition draw and level init	
+D_0015F048	intro_overlay_tex0	s64 GS TEX0 built at level load; texture of the intro overlay quad	
+D_00160BB0	shrub_color_dma_ref_tag	rodata DMA tag block; x4 is set to shrub_colors at level init	
+D_0018A3E8	transition_draw_particles	Transition_DefaultDraw runs PartProc only when nonzero	
+D_001C7A60	moby_slot_bitmap	0x60-byte bitmap zeroed at level init; mobyproc handwritten alloc/free bit runs in it	
+D_001E79D8	str_too_many_dir_lights	"Too many directional lights" printf string	
+D_0015FE20	map_use_alt_level_layout	when set, map marker coords use level + 100 and rotate 90 deg	
+D_0015FE40	map_icon_flag800_width	sprite width scale for map icons with flag 0x800	
+D_0015FE44	map_icon_flag800_height	sprite height scale for map icons with flag 0x800	
+D_0015FE48	map_icon_flag400_width	sprite width scale for map icons with flag 0x400	
+D_0015FE4C	map_icon_flag400_height	sprite height scale for map icons with flag 0x400	
+D_0015FE50	map_icon_flag1000_width	sprite width scale for map icons with flag 0x1000	
+D_0015FE54	map_icon_flag1000_height	sprite height scale for map icons with flag 0x1000	
+D_001E8E38	str_pts_buffer_overflow	"pts buffer overflow" ErrMessage string in videoCallback	
+func_00229098	build_shadow_sphere_outline	record type 0: ring of n segments around sphere at +0x10 into scratchpad, count to D_001604A0	
+func_002291E8	build_shadow_capsule_outline	record type 1: same outline for two spheres at +0x10/+0x20	
+func_0022D2AC	sky_transform_vertices	SkyDrawShell* pass tile verts to scratchpad 0x70002000; 0 means draw	
+func_0022D3F8	sky_build_gif_gouraud	called by SkyDrawShellGouraud after sky_transform_vertices	
+func_0022D520	sky_build_gif_textured	called by SkyDrawShellTextured; writes UVs with vitof12	
+D_L01_0015F768	novalis_look_stat_timer	states 1/0x1E countdown; on expiry bumps usage_stats f90 and the count, set to -1	
+D_L01_0015F76C	novalis_look_stat_count	incremented when novalis_look_stat_timer runs out	
+D_L01_00178400	novalis_coll_sphere_moby_hits	moby list from coll_sphere_mobys, sent hit messages in state 0x10	
+D_L01_0017C128	novalis_attack_records	indexed by g_hero.attack_record; f18/f20 anim frame limits	
+D_L01_0017C4C0	novalis_hero_stride_speeds	30-entry curve sampled by vector_length_xyz_cf, scales ground speed in state 0x33	
+D_L01_001C43B0	novalis_hero_ledge_shimmy_frame_speeds	per-anim-frame speed in ledge states 0x19-0x1B	
+D_L01_0015F7B8	novalis_hero_step_anim_modes	int per hero step; set_hero_animation mode arg (stored at moby +0x51)	
+D_L01_0015F7C8	novalis_hero_state_f_jump_velocity_keys	hero unk3E4 velocity keys set when the jump starts from state 0xF	
+D_L01_0017C2D8	novalis_hero_run_jump_land_anim_by_frame	landing anim id by anim frame after a run jump (state 9)	
+D_L01_0017C2F0	novalis_hero_anim_time_curves	[hero+0xAA0][hero+0xAA4++] written to the moby anim time	
+D_L01_0017C420	novalis_hero_state_d_jump_velocity_keys	hero unk3E4 velocity keys set when the jump starts from state 0xD	
+D_L01_0017C460	novalis_hero_state_12_jump_velocity_keys	hero unk3E4 velocity keys set when the jump starts from state 0x12	
+D_L11_0015F7B8	pokitaru_hero_step_anim_modes	int per hero step; set_hero_animation mode arg (stored at moby +0x51)	
+D_L11_0015F7C8	pokitaru_hero_state_f_jump_velocity_keys	hero unk3E4 velocity keys set when the jump starts from state 0xF	
+D_L11_0017C858	pokitaru_hero_run_jump_land_anim_by_frame	landing anim id by anim frame after a run jump (state 9)	
+D_L11_0017C870	pokitaru_hero_anim_time_curves	[hero+0xAA0][hero+0xAA4++] written to the moby anim time	
+D_L11_0017C9A0	pokitaru_hero_state_d_jump_velocity_keys	hero unk3E4 velocity keys set when the jump starts from state 0xD	
+D_L11_0017C9E0	pokitaru_hero_state_12_jump_velocity_keys	hero unk3E4 velocity keys set when the jump starts from state 0x12	
+D_L15_0015F7B8	quartu_hero_step_anim_modes	int per hero step; set_hero_animation mode arg (stored at moby +0x51)	
+D_L15_0015F7C8	quartu_hero_state_f_jump_velocity_keys	hero unk3E4 velocity keys set when the jump starts from state 0xF	
+D_L15_0017C458	quartu_hero_run_jump_land_anim_by_frame	landing anim id by anim frame after a run jump (state 9)	
+D_L15_0017C470	quartu_hero_anim_time_curves	[hero+0xAA0][hero+0xAA4++] written to the moby anim time	
+D_L15_0017C5A0	quartu_hero_state_d_jump_velocity_keys	hero unk3E4 velocity keys set when the jump starts from state 0xD	
+D_L15_0017C5E0	quartu_hero_state_12_jump_velocity_keys	hero unk3E4 velocity keys set when the jump starts from state 0x12	
+D_L14_0015F768	oltanis_look_stat_timer	states 1/0x1E countdown; on expiry bumps usage_stats f90 and the count, set to -1	
+D_L14_0015F76C	oltanis_look_stat_count	incremented when oltanis_look_stat_timer runs out	
+D_L14_00178700	oltanis_coll_sphere_moby_hits	moby list from coll_sphere_mobys, sent hit messages	
+D_L14_00178900	oltanis_moby_hits	hit records indexed by moby +0xA4, moby at p34; like L00 moby_hits	
+D_L14_0017A2C0	oltanis_item_defs	per-item records indexed by item_id (.f18, .f24 anim), like item_defs	
+D_L14_0017AEE0	oltanis_hero_spline_tilt	[0] pitch from displacement, [1] clamped roll toward the spline direction	
+D_L14_001C46B0	oltanis_hero_ledge_shimmy_frame_speeds	per-anim-frame speed in ledge states 0x1A/0x1B	
+D_L00_0015F768	veldin1_look_stat_timer	states 1/0x1E countdown; on expiry bumps usage_stats f90 and the count, set to -1	
+D_L00_0015F76C	veldin1_look_stat_count	incremented when veldin1_look_stat_timer runs out	
+D_L00_0017A7E0	veldin1_hero_spline_tilt	[0] pitch from displacement, [1] clamped roll toward the spline direction	
+D_L00_0017BEC4	veldin1_hero_run_turn_stick_threshold	stick amount (unk229C) above which the hero turns toward the move direction	
+D_L00_0017C0C0	veldin1_hero_stride_speeds	30-entry curve sampled by vector_length_xyz_cf, scales ground speed in state 0x33	
+D_L00_001C3FB0	veldin1_hero_ledge_shimmy_frame_speeds	per-anim-frame speed in ledge states 0x1A/0x1B	
+D_L00_001C3FF0	veldin1_hero_state4e_step_lengths	per-anim-frame velocity length (*0.5) in states 0x46/0x4E	
+D_L12_00179FC0	hoven_item_defs	0x4C-byte records by hero_slot_item_id, +0x24 anim id, like item_defs	
+D_L01_0015F718	novalis_hero_fall_state_height	hero z below this with ground far enters state 0x77	
+D_L01_0015F758	novalis_hero_double_tap_timer	30-tick window set on pad 8 press; a second press inside it counts as both	
+D_L01_00179D90	novalis_idle_fidgets	Rec70 table indexed by pick_idle_fidget result, like idle_fidgets	
+D_L06_0015F674	blarg_shown_help_message	pad 0x10 item action blocked while nonzero; compared with help ids (4, 10) elsewhere	
+D_L06_0015F718	blarg_hero_fall_state_height	hero z below this with ground far enters state 0x77	
+D_L06_0015F758	blarg_hero_double_tap_timer	30-tick window set on pad 8 press; a second press inside it counts as both	
+D_L06_0015F7BC	blarg_hero_run_start_anim_mode	mode arg of set_hero_animation(4, ...) when the run state 2 starts	
+D_L17_0015F674	fleet_shown_help_message	pad 0x10 item action blocked while nonzero; compared with help ids (4, 10) elsewhere	
+D_L17_0015F718	fleet_hero_fall_state_height	hero z below this with ground far enters state 0x77	
+D_L17_0015F758	fleet_hero_double_tap_timer	30-tick window set on pad 8 press; a second press inside it counts as both	
+D_L17_0015F7BC	fleet_hero_run_start_anim_mode	mode arg of set_hero_animation(4, ...) when the run state 2 starts	
+D_L17_0017A210	fleet_idle_fidgets	Rec70 table indexed by pick_idle_fidget result, like idle_fidgets	
+D_L00_0015F718	veldin1_hero_fall_state_height	hero z below this with ground far enters state 0x77	
+D_L00_0015F758	veldin1_hero_double_tap_timer	30-tick window set on pad 8 press; a second press inside it counts as both	
+D_L17_00178A80	fleet_moby_hits	hit records indexed by moby +0xA4, moby at p34; like L00 moby_hits	
+D_L17_0017A440	fleet_item_defs	per-item records by item_id (.f18, .f24 anim), like item_defs	
+D_L02_0015F930	aridia_hud_counter_format	format passed with m->unk74 to build the counter panel text	
+D_L02_0015F9F4	aridia_hud_counter_open_steps	fade[0] / this gives the panel grow factor, like weapon_hud_open_steps	
+D_L02_0015F9F8	aridia_hud_counter_text_fade_steps	fade[1] / this gives the text shade, like weapon_hud_text_fade_steps	
+D_L02_0015FA1C	aridia_hud_counter_left_x	panel x when the anchor is on the left half (x < 0x101)	
+D_L02_0015FA20	aridia_hud_counter_right_x	panel x when the anchor is on the right half	
+D_L02_0015FA28	aridia_hud_counter_color_from	FastTweenColor start of the counter text color	
+D_L02_0015FA2C	aridia_hud_counter_color_to	FastTweenColor end of the counter text color	
+D_L02_0015FA30	aridia_hud_counter_panel_width	bar length when m->unk08 < 10	
+D_L02_0015FA34	aridia_hud_counter_wide_panel_width	bar length when m->unk08 >= 10	
+D_L03_001BA9E0	kerwan_current_level_state	live level block, .collected[save_id] set on reward; like L00 current_level_state	
+D_L03_001BB640	kerwan_checkpoint_level_state	saved level block (.collected checked at spawn); like L00 checkpoint_level_state	
+D_L04_00174070	eudora_coll_resolved_pos	position copied back after coll_sphere/coll_capsule push-out; like L00 coll_resolved_pos	
+D_L15_001744C0	quartu_coll_hit	CollisionHit block (normal, resolved pos at +0x30); like the other levels' coll_hit	
+D_L07_0015FD08	umbris_mission_group_state	u8 per mission group, 0xFF means none; like kerwan_mission_group_state	
+D_L07_00161D30	umbris_ammo_ratio_item_ids	-1-terminated item id list; each item's ammo/max ratio is checked against lo/hi percent	
+D_L07_00161D68	umbris_scene_trail_speed	joint-to-joint vector scaled to this length as the trail particle velocity	
+D_L07_00161D6C	umbris_scene_trail_glow_size	draw_trail size arg a for the outer particles	
+D_L07_00161D70	umbris_scene_trail_core_size	draw_trail size arg b for the core particles	
+D_L07_001842F0	umbris_map_menu_state	.p is the map row bit grid cleared by clear_bit_grid_rectangle; like L00 map_menu_state	
+D_L13_00160060	gemlik_moby_array_last	upper bound of the moby walk from gemlik_moby_array_start in jet_group_*; like moby_array_last	
+D_L14_0016D060	oltanis_cutscene_state	level event block (state +0x30, phase +0x34, moby, camera targets v178); like cutscene_state	
+D_L17_001B2D54	fleet_trail_texture_ptr	SpawnTrailParticle writes the byte it points to as the type 0x4F particle texture	
+D_L02_00169670	camera_update_callbacks	16-entry fn queue, count camera_update_callback_count	
+D_L07_001D36C0	umbris_ambient_stream_scaled_table	table set up by prepare_scaled_float_table_with_target_byte in AmbientStreamL07Update	
+func_L00_001FE688	prepare_textured_sphere_draws	loops level_textured_spheres: sphere check, distance alpha, TEX0 and texture upload entry	
+D_L00_00161F04	timed_hud_handle	hud item id of the timed help message; removed and set to -1 by remove_help_message_for_selector	
+D_L00_0015FD58	height_map_width	row stride of height_map_data in ground_height_at	
+D_L00_0015FD5C	height_map_rows	second int of the height map header after the width	
+D_L00_0015FD68	height_map_data	byte heights after the header; ground_height_at samples [y * width + x]	
+D_L00_0015F538	level_textured_sphere_count	record count set by relocate_counted_pointer_table	
+D_L00_0015F53C	level_textured_spheres	0x20-byte records (pos/radius, alpha at +0x14, TEX0 at +0x18)	
+D_L00_0015F540	level_textured_sphere_textures	relocated pointer table, one texture header per record	
+D_L00_001C1668	stash_slots	64 StashBlock entries (qwc, ram) used by send_dma_to_stash_slot/GetStashSlotSize	
+D_L08_001B2CA4	batalia_part_type49_textures	texture byte per kind written by create_type_49_particle	
+D_L07_001B24CC	umbris_part_type51_textures	first byte is the texture of the type 0x33 projectile expiry particle	
+D_L07_001B24F4	umbris_part_type61_textures	texture table indexed for type 0x3D particles; like L00 part_type61_textures	
+D_L00_001605C0	sky_star_colors	4 colors picked at random for the type 0 sky star particles (index >= 0xF0)	
+D_L00_001605B0	sky_pair_particle_colors	color per pair k of the six type 2 sky particles (0xEA..0xEF), flickered at draw	
+D_L00_001BDB40	sky_pair_particle_positions	quadword position per pair k copied into the type 2 sky particles	
+D_L00_001C47B8	dialogue_entry_level_starts	[level] and [level+1] bound the dialogue_entry_ids range searched by get_dialogue_entry	
+D_L00_001B19F8	dialogue_entry_scripts	per dialogue entry pointer stored as the request script by DialogRequest_Init (0 means none)	
+D_L01_001B280C	novalis_part_type10_textures	first byte is the texture of the type 10 particle	
+D_L01_001B2838	novalis_part_type14_textures	first byte is the texture of the type 0xE particle	
+D_L01_001B28A4	novalis_part_type41_textures	[0][idx] texture of the type 0x29 particle in PartType41Spawn	
+D_L01_001B28D0	novalis_part_type52_textures	first byte is the texture of the type 0x34 particle	
+D_L00_00161220	vendor_quantity_format	format for vendor_buy_quantity and the total in draw_vendor_purchase_text	
+D_L00_00161228	vendor_quantity_left_label	string printed at x 0xC beside the buy quantity	
+D_L00_00161230	vendor_quantity_right_label	string printed at x 0x40 beside the buy quantity	
+D_L00_00161238	vendor_purchase_panel_joint_ids	3 joint ids passed to transform_scaled_vertex_batch in draw_vendor_purchase_panel	
+D_L00_001CA618	vendor_inset_quad_margins	per quad 4 floats: edge offsets and insets in draw_vendor_inset_quads	
+D_L00_001CA680	vendor_hologram_cone_vertices	vertex per index of vendor_hologram_cone_quads, transformed by the vendor matrix	
+D_L00_001CA710	vendor_hologram_cone_uvs	uv pair per vertex index, v scrolled by vendor_screen_uv_scroll	
+D_L00_001CA758	vendor_hologram_cone_colors	color per vertex index of the hologram cone quads	
+D_00160FD0	attachment_vertex_indices	16-byte {0,1,2,3} parameter copied into transform_scaled_vertex_batch in update_instance_attachment_points_and_lengths	
+D_00161178	fmt_thousands_grouped_int	string "%d,%03d" used by format_scaled_display_value for values >= 1000	
+D_00161180	fmt_plain_int	string "%d" used by format_scaled_display_value for values < 1000	
+D_001611A8	capture_moby_pass_enabled	compared ==1 to gate DrawMobyList in render_capture_effect_pass	
+D_001E62B8	status_message_text_ids	24 text ids, one picked at random for set_scrolling_status_message	
+D_001E66E4	capture_moby_list	moby list passed to DrawMobyList in render_capture_effect_pass	
+func_001EE9F8	cmecpu_process	the one handwritten function of cmecpu.cpp, called from MobyAnimProc	
+func_001F7DD8	lerp_clip_vertex	VU0 lerp of two vertices' position, uv and packed rgba by t, called by ScisAndRender after FastIntersectVert	
+func_0020C738	fast_decompress_spr_dma_start	starts a 0x200-qword toSPR DMA chunk (CHCR=0x100) for fast_decompress and flips the SPR half	
+func_0020C758	fast_decompress_spr_dma_wait	spins while the toSPR channel's CHCR start bit 0x100 is set, used by fast_decompress	
+D_0015F770	map_label_text_y_offset	value 17 subtracted from label_y before FontPrintLarge of the level map labels	
+D_001A2EF0	planet_mission_lists	per-planet pointers to 0x28-byte mission node lists, indexed by level_map_selection[0x89]	
+D_001A2F90	mission_list_state	block with +0xC open-objective count and +0x10 current mission list, written by update_mission_list	
+D_001E8E50	vibuf_dma_not_active_msg	string "DMA ADD not active\n" passed to ErrMessage in vibuf	
+D_L01_001B2800	novalis_part_type_textures	table of per-part-type texture lists; [type 0x38]/[0x39] entries are read by pool_bubble/pool_bubbles, [idx] by create_spark_particle	
+D_L01_001B28E0	novalis_part_type56_textures	entry 0x38 of the part texture table, texture byte for the type 0x38 particle in pool_bubble	
+D_L01_001B28E4	novalis_part_type57_textures	entry 0x39 of the part texture table, texture byte for the type 0x39 particle in pool_bubbles	
+func_L01_002635C8	build_overlay_layer_wave_vertices	VU0 sin/cos (vcallms) wave offsets written per vertex to scratchpad; called by update_and_draw_scrolling_overlay_layers	
+D_L02_0015F768	aridia_usage_event_timer	countdown; at 0 bumps usage_stats f90 and is set to -1 (as batalia_usage_event_timer)	
+D_L02_0015F76C	aridia_usage_event_count	incremented when aridia_usage_event_timer runs out	
+D_L02_00167300	aridia_player_camera	camera matrix f350 and yaw f158 steer the hero (as batalia_player_camera)	
+D_L02_00178580	aridia_coll_sphere_moby_hits	moby list from coll_sphere_mobys, each sent PostHitMessage	
+D_L02_00178780	aridia_moby_hits	0x40-byte hit records indexed by moby byte 0xA4, owner at +0x34 (as quartu_moby_hits)	
+D_L02_0017C2A8	aridia_attack_records	indexed by g_hero.attack_record for frame windows f18/f20 (as batalia_attack_records)	
+D_L02_001C4530	aridia_hero_anim_frame_speeds	speed by anim frame, * 0.5, set as planar velocity (as batalia_hero_anim_frame_speeds)	
+D_L15_0015F768	quartu_usage_event_timer	countdown; at 0 bumps usage_stats f90 and is set to -1 (as batalia_usage_event_timer)	
+D_L15_0015F76C	quartu_usage_event_count	incremented when quartu_usage_event_timer runs out	
+D_L15_00161350	quartu_pool_draw_tiles	tile pointer passed to RippleDisturb when nonzero (L01 pool_draw_tiles slot)	
+D_L15_00161358	quartu_pool_draw_count	count arg of RippleDisturb next to quartu_pool_draw_tiles	
+D_L15_0017C2A8	quartu_attack_records	indexed by g_hero.attack_record for frame windows f18/f20 (as batalia_attack_records)	
+D_L15_0017C444	quartu_hero_run_turn_stick_threshold	speed above which the hero turns toward the move direction (as veldin2_hero_run_turn_stick_threshold)	
+D_L15_0017C640	quartu_hero_anim_speed_curve	30 floats sampled by anim frame via vector_length_xyz_cf (as batalia_hero_anim_speed_curve)	
+D_L15_001C4530	quartu_hero_anim_frame_speeds	speed by anim frame, * 0.5, set as planar velocity	
+D_L15_00162268	quartu_ripple_mesh_texture	GetEffectTex index set as GS TEX0 in draw_scaled_moby_radial_ripple_mesh	
+D_L15_0016226C	quartu_ripple_mesh_alpha	alpha byte of the vertex color in draw_scaled_moby_radial_ripple_mesh	
+D_L15_00162270	quartu_ripple_mesh_wavelength	radius fmod'ed by it gives the wave phase in draw_scaled_moby_radial_ripple_mesh	
+D_L15_00162278	quartu_ripple_mesh_wave_height	z amplitude of the wave added to quartu_ripple_world_verts	
+D_L15_0016227C	quartu_ripple_mesh_uv_scroll_rate	frame count * this * g_frame_time gives the uv scroll scale	
+D_L15_00162288	quartu_ripple_mesh_uv_scroll_factors	per-pass u/v scroll factor pairs copied as Quad4 in draw_scaled_moby_radial_ripple_mesh	
+D_L15_001DEB30	quartu_ripple_mesh_template_verts	46 template xyz vertices scaled and placed at the moby	
+D_L15_001DED58	quartu_ripple_mesh_base_uvs	base uvs that the scroll is added to for quartu_ripple_scrolled_uvs	
+D_L03_0015F7B8	kerwan_hero_idle_anim_modes	per-step mode passed with anim step+3 to set_hero_animation in the idle code	
+D_L03_0015F7C8	kerwan_hero_state_f_jump_velocity_keys	hero +0x3E4 velocity keys set when the jump starts from state 0xF (as aridia_hero_state_f_jump_velocity_keys)	
+D_L03_0017BF58	kerwan_hero_run_jump_land_anim_by_frame	landing anim id picked by anim frame after a run jump (state 9), as the aridia table	
+D_L03_0017BF70	kerwan_hero_anim_time_curves	[hero+0xAA0][hero+0xAA4++] values written to the moby anim time (+0x54)	
+D_L03_0017C0A0	kerwan_hero_state_d_jump_velocity_keys	hero +0x3E4 velocity keys set when the jump starts from state 0xD (as aridia_hero_state_d_jump_velocity_keys)	
+D_L03_0017C0E0	kerwan_hero_state_12_jump_velocity_keys	hero +0x3E4 velocity keys set in the state 0x12 jump branch	
+D_L08_0015F7B8	batalia_hero_idle_anim_modes	per-step mode passed with anim step+3 to set_hero_animation in the idle code	
+D_L08_0015F7C8	batalia_hero_state_f_jump_velocity_keys	hero +0x3E4 velocity keys set when the jump starts from state 0xF (as aridia_hero_state_f_jump_velocity_keys)	
+D_L08_0017C658	batalia_hero_run_jump_land_anim_by_frame	landing anim id picked by anim frame after a run jump (state 9), as the aridia table	
+D_L08_0017C670	batalia_hero_anim_time_curves	[hero+0xAA0][hero+0xAA4++] values written to the moby anim time (+0x54)	
+D_L08_0017C7A0	batalia_hero_state_d_jump_velocity_keys	hero +0x3E4 velocity keys set when the jump starts from state 0xD (as aridia_hero_state_d_jump_velocity_keys)	
+D_L08_0017C7E0	batalia_hero_state_12_jump_velocity_keys	hero +0x3E4 velocity keys set in the state 0x12 jump branch	
+D_L12_0015F7B8	hoven_hero_idle_anim_modes	per-step mode passed with anim step+3 to set_hero_animation in the idle code	
+D_L12_0015F7C8	hoven_hero_state_f_jump_velocity_keys	hero +0x3E4 velocity keys set when the jump starts from state 0xF (as aridia_hero_state_f_jump_velocity_keys)	
+D_L12_0017C2D8	hoven_hero_run_jump_land_anim_by_frame	landing anim id picked by anim frame after a run jump (state 9), as the aridia table	
+D_L12_0017C2F0	hoven_hero_anim_time_curves	[hero+0xAA0][hero+0xAA4++] values written to the moby anim time (+0x54)	
+D_L12_0017C420	hoven_hero_state_d_jump_velocity_keys	hero +0x3E4 velocity keys set when the jump starts from state 0xD (as aridia_hero_state_d_jump_velocity_keys)	
+D_L12_0017C460	hoven_hero_state_12_jump_velocity_keys	hero +0x3E4 velocity keys set in the state 0x12 jump branch	
+D_L16_0015F7C8	kalebo3_hero_idle_anim_modes	per-step mode passed with anim step+3 to set_hero_animation in the idle code	
+D_L16_0015F7D8	kalebo3_hero_state_f_jump_velocity_keys	hero +0x3E4 velocity keys set when the jump starts from state 0xF (as aridia_hero_state_f_jump_velocity_keys)	
+D_L16_0017C2B8	kalebo3_hero_run_jump_land_anim_by_frame	landing anim id picked by anim frame after a run jump (state 9), as the aridia table	
+D_L16_0017C2D0	kalebo3_hero_anim_time_curves	[hero+0xAA0][hero+0xAA4++] values written to the moby anim time (+0x54)	
+D_L16_0017C400	kalebo3_hero_state_d_jump_velocity_keys	hero +0x3E4 velocity keys set when the jump starts from state 0xD (as aridia_hero_state_d_jump_velocity_keys)	
+D_L16_0017C440	kalebo3_hero_state_12_jump_velocity_keys	hero +0x3E4 velocity keys set in the state 0x12 jump branch	
+D_L18_0015F7B8	veldin2_hero_idle_anim_modes	per-step mode passed with anim step+3 to set_hero_animation in the idle code	
+D_L18_0015F7C8	veldin2_hero_state_f_jump_velocity_keys	hero +0x3E4 velocity keys set when the jump starts from state 0xF (as aridia_hero_state_f_jump_velocity_keys)	
+D_L18_0017C858	veldin2_hero_run_jump_land_anim_by_frame	landing anim id picked by anim frame after a run jump (state 9), as the aridia table	
+D_L18_0017C870	veldin2_hero_anim_time_curves	[hero+0xAA0][hero+0xAA4++] values written to the moby anim time (+0x54)	
+D_L18_0017C9A0	veldin2_hero_state_d_jump_velocity_keys	hero +0x3E4 velocity keys set when the jump starts from state 0xD (as aridia_hero_state_d_jump_velocity_keys)	
+D_L18_0017C9E0	veldin2_hero_state_12_jump_velocity_keys	hero +0x3E4 velocity keys set in the state 0x12 jump branch	
+D_L03_0015F674	kerwan_help_message_selector	square press acts only when it is 0 here and == 8 in taxi_and_mine_layer.c (as quartu_help_message_selector)	
+D_L03_0015F718	kerwan_hero_fall_state_height	hero z below this with ground far enters state 0x77 (as aridia_hero_fall_state_height)	
+D_L03_0015F758	kerwan_hero_double_tap_timer	30-tick window reset after a press, decremented by func_001F9908 (as aridia_hero_double_tap_timer)	
+D_L03_00179A10	kerwan_idle_fidgets	0x70-byte records picked by pick_idle_fidget, as idle_fidgets	
+D_L03_00179C40	kerwan_item_defs	0x4C-byte per-item records read as [id].f24 for the animation, as item_defs	
+D_L11_0015F718	pokitaru_hero_fall_state_height	hero z below this with ground far enters state 0x77 (as aridia_hero_fall_state_height)	
+D_L11_0015F758	pokitaru_hero_double_tap_timer	30-tick window reset after a press (as aridia_hero_double_tap_timer)	
+D_L11_0017A310	pokitaru_idle_fidgets	0x70-byte records picked by pick_idle_fidget, as idle_fidgets	
+D_L11_0017A540	pokitaru_item_defs	0x4C-byte per-item records read as [id].f24 for the animation, as item_defs	
+D_L06_0017A340	blarg_item_defs	0x4C-byte per-item records, +0x24 returned by get_hero_help_value, as item_defs	
+D_L12_00161240	hoven_dma_packet_cursor	packet write pointer; DMA ref tags written then advanced by 0x10 (as pokitaru_dma_packet_cursor)	
+D_L12_0016CD60	hoven_cutscene_state	moby count +0x44 and moby list +0x178 walked by apply_npc_big_head_cheat, as cutscene_state	
+D_L12_0017C940	hoven_big_head_cheat_manipulator	AttachManipulator record given 2.75 xyz scale under gCheats[0] (as novalis_big_head_cheat_manipulator)	
+D_L12_001CBA20	hoven_effect_list_setup_packet	9-qword block sent by DMA ref tag 0x30000009 at the start of draw_textured_effect_list	
+D_L12_001F5740	hoven_textured_effect_entries	0x2F 0x20-byte entries drawn by draw_level_12_effects via draw_textured_effect_list	
+func_L12_002677B4	compute_reflection_env_uvs	VU0: reflects camera-to-vertex direction about each normal, writes xy*0.45+0.5 as uv pairs	
+func_L01_0021F9C8	emit_textured_strip_packet	copies a 5-qword GIF header plus count positions/colors/uvs into the render packet; used by effect and strip drawers	
+D_L13_0015F050	gemlik_camera_descriptors	32-byte records indexed by arg with a pointer at +0x1C, same slot as the other levels' camera_descriptors	
+D_L13_00160960	gemlik_2d_prim_giftag	qword GIF tag copied into the packet before the prim register write in emit_transformed_2d_vertex_packet	
+D_L13_00160970	gemlik_2d_vertex_giftag	qword GIF tag copied before the vertex data, its NLOOP set to the vertex count	
+D_L13_00167180	gemlik_player_camera	read through the pointer at the slot of the other levels' player_camera	
+D_L01_0015F4FC	novalis_fade_level	set to 1.0 when the vendor screen opens; the L01 copy of gFadeLvl (as aridia_fade_level)	
+D_L01_0015F6BC	novalis_skip_frame	set to 1 when the vendor screen opens; L01 copy of skip_frame	
+D_L01_00161180	novalis_vendor_screen_anchor_offset	local offset rotated by the vendor moby matrix and added to its position, then ground-probed	
+D_L01_00174300	novalis_scene_buffer_offsets	[1]/[2] added to the relocated base and stored at fx_cutscene +0x58/+0x5C	
+D_L01_001CA720	novalis_vendor_scene_chunk_ids	per-level value passed to load_scene_chunks_with_fade when the vendor screen opens	
+D_L01_001CABC0	novalis_vendor_screen_state	0x220-byte block cleared on open: [0]=3, +0x28 vendor moby, +0x80 basis, +0xC0 anchor position	
+D_L05_0015F75C	rilgar_off_course_reset_rate	set to frame_scale * 0.08 when the off-course reset starts (hero faced >90 deg off the path for 180 ticks)	
+D_L05_0015F760	rilgar_off_course_reset_started	latch set to 1 once when the off-course reset starts	
+D_L05_0015F764	rilgar_off_course_reset_ready	cleared at start; when 1 the hero is placed back on the path	
+D_L01_001ABFC0	novalis_moby_groups	per-group pointers to negative-terminated moby index lists walked by the moby group helpers (as kalebo3_moby_groups)	
+D_L13_001ABE40	gemlik_moby_groups	per-group moby index lists walked by jet_group_state (as kalebo3_moby_groups)	
+D_L00_001B2404	part_type01_textures	entry 1 of part_type_textures; texture bytes of the type 1 particle in spawn_timed_effect_particle	
+D_L02_00160A20	aridia_geometry_quad_giftag	constant qword copied into the packet after the DMA tag in draw_geometry_quad_5188	
+D_L06_0015F9BC	blarg_hud_meter_center_x	x centre of the segmented meter in draw_segmented_hud_meter	
+D_L06_0015F9C4	blarg_hud_meter_last_segment_fill_scale	scales the fill inside the last segment of the segmented meter	
+D_L06_0015F9C8	blarg_hud_meter_first_segment_fill_scale	scales the fill inside the first segment of the segmented meter	
+D_L07_001B2464	umbris_part_type65_textures	part texture list read for the type 0x41 particle in white_particles.c	
+D_L13_001B2790	gemlik_part_type68_textures	part texture list read for the type 0x44 particle in create_moby_joint_particle	
+D_L18_00178B80	veldin2_moby_hits	0x40-byte hit records indexed by moby byte 0xA4 (as quartu_moby_hits)	

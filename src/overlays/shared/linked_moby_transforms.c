@@ -21,7 +21,7 @@ void capture_linked_moby_relative_transforms(char *moby, char *arr, int n) {
         char *p = arr + i * 0x30;
         int idx = *(int *)(p + 0x20);
         if (idx != -1) {
-            char *o = D_L12_00160058 + (idx << 8);
+            char *o = hoven_mobys + (idx << 8);
             FastVecSub(p, o + 0x10, moby + 0x10);
             transform_vector(p, p, m1);
             euler_to_matrix(m2, o + 0x40);
@@ -45,7 +45,7 @@ void apply_linked_moby_relative_transforms(char *parent, char *list, int n) {
     for (i = 0; i < n; i++) {
         int idx = *(int *)(list + i * 0x30 + 0x20);
         if (idx != -1) {
-            p = D_L12_00160058 + idx * 256;
+            p = hoven_mobys + idx * 256;
             euler_to_matrix(m1, (float *)(list + i * 0x30 + 0x10));
             sce_vu0_mul_matrix(m1, m0, m1);
             matrix_to_euler(m1, p + 0x40);

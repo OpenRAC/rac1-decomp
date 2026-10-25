@@ -2099,7 +2099,7 @@ void TaxiUpdate(Moby *moby) {
             if (FastAbsF(hero_relative_position[1]) < 1.2f) {
                 prepare_taxi_route((char *)moby);
                 request_taxi_stop_prompt((char *)moby);
-                if ((D_0013CA40_2F19C0.pressed & button) && D_L14_0015F674 == 4) {
+                if ((D_0013CA40_2F19C0.pressed & button) && oltanis_shown_help_message == 4) {
                     Moby *m;
                     moby->state = 3;
                     m = find_group_moby_by_tag((char *)moby, taxi_vars->dst);

@@ -2003,7 +2003,7 @@ void initialize_level_runtime(void) {
     level_render_state_r.scene_mode = scene_variant;
     level_render_state_r.history_index = 0;
     level_render_state_r.history_count = 0;
-    qcopy(&D_001604F0, &shrub_colors);
+    qcopy(&shrub_tex_dma_tag, &shrub_colors);
     if (current_level_index == 0 || (current_level_index == 1 && level_available_r[3] == 0)) {
         level_render_state_r.scene_mode = 4;
         level_render_state_r.scene_state = 2;

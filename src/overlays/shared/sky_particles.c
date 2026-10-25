@@ -368,7 +368,7 @@ void draw_three_sky_shells_with_three_particle_types(void) {
                 p->b3 = 0x48;
                 p->b2 = 1;
                 p->f1C = 0.18f;
-                p->col = (((u32 *)&D_L00_001605C0))[(func_001160D8() >> 16) & 3];
+                p->col = (((u32 *)&sky_star_colors))[(func_001160D8() >> 16) & 3];
             } else if (i >= 0xEA) {
                 r = i - 0xEA;
                 p->b2 = 2;
@@ -379,8 +379,8 @@ void draw_three_sky_shells_with_three_particle_types(void) {
                 p->type = 2;
                 {
                     s32 paletteOffset=k*4;
-                    u32 *paletteWord=(u32 *)(paletteOffset+(char *)&D_L00_001605B0);
-                    void *source=k*16+D_L00_001BDB40;
+                    u32 *paletteWord=(u32 *)(paletteOffset+(char *)&sky_pair_particle_colors);
+                    void *source=k*16+sky_pair_particle_positions;
                     void *destination=&p->f10;
                     p->col=*paletteWord;
                     qcopy(destination,source);
@@ -441,7 +441,7 @@ void draw_three_sky_shells_with_three_particle_types(void) {
             {
             s32 rr = func_001160D8() >> 16;
             u32 x;
-            x = (((u32 *)&D_L00_001605B0))[p2->u.c.c0];
+            x = (((u32 *)&sky_pair_particle_colors))[p2->u.c.c0];
             x += (rr & 0xF00) << 8;
             x += (rr & 0xF0) << 4;
             x += rr & 0xF;
@@ -659,7 +659,7 @@ void render_three_shell_particle_sky(void) {
                 s->f1C = 0.18f;
                 {
                     int k = ((func_001160D8() >> 16) & 3) * 4;
-                    s->color = *(u32 *)((char *)&D_L00_001605C0 + k);
+                    s->color = *(u32 *)((char *)&sky_star_colors + k);
                 }
             } else {
                 s->type = 1;

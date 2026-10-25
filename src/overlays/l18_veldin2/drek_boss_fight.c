@@ -2726,14 +2726,14 @@ void render_drek_boss_joint_glows(char *moby) {
     char a[16];
     char b[16];
     L18Q *q = *(L18Q **)(moby + 0x78);
-    int n = scale_ticks(*(int*)&D_L18_001624F0);
+    int n = scale_ticks(*(int*)&drek_boss_rider_glow_period);
     float f = IntToFloat(veldin2_frame_count % n);
     int h;
     int i;
     f = f / IntToFloat(n);
     f = f * 6.18318f;
     f = FastSin(f - 3.14159f);
-    h = FastTweenColor(*(int*)&D_L18_001624E8, *(int*)&D_L18_001624EC, f * 0.5f + 0.5f);
+    h = FastTweenColor(*(int*)&drek_boss_rider_glow_color_a, *(int*)&drek_boss_rider_glow_color_b, f * 0.5f + 0.5f);
     Moby_GetJointWorldPos(q->p3A0, 1, a);
     draw_offset_textured_effect_quad(a, h, *(float*)&drek_boss_rider_glow_size, *(float*)&drek_boss_rider_glow_offset);
     Moby_GetJointWorldPos(q->p3A0, 2, a);

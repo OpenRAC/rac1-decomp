@@ -1975,7 +1975,7 @@ void update_animated_point_light_moby(unsigned char *m) {
             float kk = IntToFloat(o[0x24]) / 100.0f;
             *(int *)(o + 0x50) = allocate_colored_effect_slot((float *)v21, *(float *)(o + 0x60), kk, *(float *)(o + 0x54), *(float *)(o + 0x58), *(float *)(o + 0x5C));
         } else {
-            unsigned char *e = D_L00_001803C0 + (r << 5);
+            unsigned char *e = level_point_lights + (r << 5);
             qcopy(e + 0x10, v21);
             *(float *)(e + 0x1C) = *(float *)(o + 0x60);
             *(float *)(e + 0x0) = *(float *)(o + 0x54);

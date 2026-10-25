@@ -52,7 +52,7 @@ void update_trespasser_pickup(void *mv) {
         m[0x20] = 1;
         break;
     case 1: {
-        float r = FastAddRots(*(float *)(m + 0x48), (*(float *)&D_L00_00161900));
+        float r = FastAddRots(*(float *)(m + 0x48), (*(float *)&trespasser_pickup_spin_step));
         int t = D_L00_0015F6B0_C2A80;
         *(float *)(m + 0x48) = r;
         if (t % 10 == 0) {
@@ -1589,12 +1589,12 @@ void devestator_ammo_update(Moby *m) {
             m->state = 2;
             m->scale *= frame_scale * 0.20000005f + 1.0f;
             clear_u64_value(&p->velocity);
-            elapsed = level_frame_counter - D_L00_00161908;
+            elapsed = level_frame_counter - ammo_pickup_sound_frame;
             p->rise_speed = g_frame_time * 8.0f;
             random = subtract_integer_with_clamp(elapsed);
             if (scale_ticks(10) < random) {
                 Sound_PlayClassSound(0, 0, (int)m, 0xD5);
-                D_L00_00161908 = level_frame_counter;
+                ammo_pickup_sound_frame = level_frame_counter;
             }
             return;
         }
@@ -1722,13 +1722,13 @@ int try_collect_ammo_pickup(char *m) {
         m[0x20] = 2;
         *(float *)(m + 0x2C) *= frame_scale * 0.20000005f + 1.0f;
         clear_u64_value(p + 0x10);
-        d = level_frame_counter - D_L00_00161908;
+        d = level_frame_counter - ammo_pickup_sound_frame;
         *(float *)(p + 0x24) = g_frame_time * 8.0f;
         {
             int r = subtract_integer_with_clamp(d);
             if (scale_ticks(10) < r) {
                 Sound_PlayClassSound(0, 0, (int)m, 0xD5);
-                D_L00_00161908 = level_frame_counter;
+                ammo_pickup_sound_frame = level_frame_counter;
             }
         }
     }
@@ -2546,14 +2546,14 @@ char *spawn_glove_of_doom_held_moby(int a0, char *pos, char *vec) {
         if (*(unsigned char *)(g + 0x20A5) != 0 || *(unsigned char *)(g + 0x20AF) != 0) {
             *(unsigned short *)(m + 0x34) |= 0x41;
         }
-        old = (char *)D_L00_001DD400[*(int *)&D_L00_0016190C];
+        old = (char *)glove_of_doom_ring[*(int *)&glove_of_doom_ring_index];
         if (old != 0) {
             if (*(short *)(old + 0xA6) == 0xE6 && (unsigned char)old[0x20] != 0xFE && (unsigned char)old[0x20] != 0xFD) {
                 old[0x20] = 4;
             }
         }
-        D_L00_001DD400[(*(int *)&D_L00_0016190C)++] = (int)m;
-        *(int *)&D_L00_0016190C = *(int *)&D_L00_0016190C % 20;
+        glove_of_doom_ring[(*(int *)&glove_of_doom_ring_index)++] = (int)m;
+        *(int *)&glove_of_doom_ring_index = *(int *)&glove_of_doom_ring_index % 20;
     }
     return m;
 }

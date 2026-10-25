@@ -51,7 +51,7 @@ void update_moby_offset_motion(struct Moby *moby) {
     /* Fakematch: the 0xFF compare needs its own variable for retail register order. */
     no_spawn = 0xff;
     force_start = 0;
-    if (D_L07_0015FD08[spawn_id] == no_spawn) {
+    if (umbris_mission_group_state[spawn_id] == no_spawn) {
         if (vars->forceReturn != 0)
             force_end = 1;
         else
@@ -603,7 +603,7 @@ void update_scene_moby_trails(unsigned char *moby) {
         break;
     case 1:
         if (umbris_scene_state == 2) {
-            char *g = D_L07_0016C960;
+            char *g = umbris_cutscene_state;
             int s = *(int *)(g + 0x30);
             if (s == 1 || s == 2) {
                 float a0[4], a1[4], a2[4], b0[4], b1[4], b2[4], c0[4], c1[4], c2[4];
@@ -615,18 +615,18 @@ void update_scene_moby_trails(unsigned char *moby) {
                 Moby_GetJointWorldPos(o, 0, a0);
                 Moby_GetJointWorldPos(o, 3, b0);
                 FastVecSub(c0, a0, b0);
-                vec_scale_to_length(c0, c0, *(float *)&D_L07_00161D68);
-                draw_trail(a0, a0, c0, *(float *)&D_L07_00161D6C, *(float *)&D_L07_00161D70);
+                vec_scale_to_length(c0, c0, *(float *)&umbris_scene_trail_speed);
+                draw_trail(a0, a0, c0, *(float *)&umbris_scene_trail_glow_size, *(float *)&umbris_scene_trail_core_size);
                 Moby_GetJointWorldPos(o, 1, a1);
                 Moby_GetJointWorldPos(o, 4, b1);
                 FastVecSub(c1, a1, b1);
-                vec_scale_to_length(c1, c1, *(float *)&D_L07_00161D68);
-                draw_trail(a1, a1, c1, *(float *)&D_L07_00161D6C, *(float *)&D_L07_00161D70);
+                vec_scale_to_length(c1, c1, *(float *)&umbris_scene_trail_speed);
+                draw_trail(a1, a1, c1, *(float *)&umbris_scene_trail_glow_size, *(float *)&umbris_scene_trail_core_size);
                 Moby_GetJointWorldPos(o, 2, a2);
                 Moby_GetJointWorldPos(o, 5, b2);
                 FastVecSub(c2, a2, b2);
-                vec_scale_to_length(c2, c2, *(float *)&D_L07_00161D68);
-                draw_trail(a2, a2, c2, *(float *)&D_L07_00161D6C, *(float *)&D_L07_00161D70);
+                vec_scale_to_length(c2, c2, *(float *)&umbris_scene_trail_speed);
+                draw_trail(a2, a2, c2, *(float *)&umbris_scene_trail_glow_size, *(float *)&umbris_scene_trail_core_size);
             }
         }
         break;

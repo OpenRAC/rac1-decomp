@@ -19,7 +19,7 @@ unsigned char *spawn_projectile_expiry_particle(char *pos, char *vec) {
         p[3] = 0x48;
         p[1] = 0;
         p[8] = 0;
-        p[2] = *D_L07_001B24CC;
+        p[2] = *umbris_part_type51_textures;
         *(short *)(p + 0xA) = 0x78;
         *(float *)(p + 0xC) = 6300.0f;
     }
@@ -59,7 +59,7 @@ unsigned char *spawn_moby_point_offset_particle(void *m, short index, float amou
         *(volatile unsigned char *)(p + 3) = 0x48;
         *(volatile unsigned char *)(p + 1) = 0;
         *(volatile float *)(p + 0xc) = amount;
-        p[2] = D_L07_001B24F4[*(short *)(q + 0xc)];
+        p[2] = umbris_part_type61_textures[*(short *)(q + 0xc)];
         *(float *)(q + 0x10) = frame_scale * 0.015f;
         *(short *)(q + 0xe) = index;
         p[8] = truncate_float_to_s32(*(float *)(q + 8) * 255.0f);

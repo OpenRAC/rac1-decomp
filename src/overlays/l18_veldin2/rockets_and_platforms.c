@@ -1331,7 +1331,7 @@ void SinkingPlatformUpdate(struct Moby *moby) {
         *(float *)(data + 0x64) += *(float *)(data + 0x70);
         if (moby->pos.z < *(float *)(data + 0x60) - 10.0f) {
             if (D_0013F450_D96B0.ground_moby == moby && D_0013F450_D96B0.air_frames.s == 0) {
-                if (D_0013F450_D96B0.motion.pos.f[2] < (*(float *)&D_L18_0015F718) && D_0013F450_D96B0.state.current != 0x77) {
+                if (D_0013F450_D96B0.motion.pos.f[2] < (*(float *)&veldin2_hero_fall_state_height) && D_0013F450_D96B0.state.current != 0x77) {
                     HeroL18_SetMoveState(0x77, 1);
                 }
             }

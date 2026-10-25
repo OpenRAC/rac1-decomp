@@ -120,7 +120,7 @@ void update_level_12_water_tile(char *moby) {
             *(unsigned char *)((char *)P + 0x3D) = 0x40;
             *(int *)&hoven_water_patches = (int)hoven_ripple_patches;
             *(int *)&hoven_water_patch_fixed_ptr = (int)hoven_ripple_patch_fixed;
-            *(int *)&D_L12_00161358 = 0x11;
+            *(int *)&hoven_water_patch_count = 0x11;
             D_L12_0016128C = 32768.0f;
             D_L12_00161290 = 255.0f;
             D_L12_00161294 = 48.0f;
@@ -1823,7 +1823,7 @@ void Moby294Update(char *moby) {
             if (n != 0) {
                 COPY4(v60, hoven_zero_vec);
                 if (n > 0) {
-                    pp = D_L12_00178400;
+                    pp = hoven_nearby_mobys;
                     B = ((char *)D_0013E633) + 0xE1D;
                     i = n;
                     do {

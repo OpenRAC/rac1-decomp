@@ -19,11 +19,11 @@ extern void func_001F49B0(void (*)(void *), void *);
 /* Attach the callback during the six active phases of this level event. */
 void update_level14_event_moby_effects(void) {
     void *moby;
-    if (g_current_level_index != 14 || D_L14_0016D060.state != 0) {
+    if (g_current_level_index != 14 || oltanis_cutscene_state.state != 0) {
         return;
     }
-    moby = D_L14_0016D060.moby;
-    if (moby != 0 && (unsigned)(D_L14_0016D060.phase - 0x1C) < 6) {
+    moby = oltanis_cutscene_state.moby;
+    if (moby != 0 && (unsigned)(oltanis_cutscene_state.phase - 0x1C) < 6) {
         emit_moby_particle_pairs(moby);
         AddDrawCallback(GlowQuadsDraw, moby);
     }

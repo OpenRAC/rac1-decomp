@@ -191,8 +191,8 @@ void handle_pause_input(void) {
         if (scale_ticks(gameplay_event_frame_count) / 600 > h->h4A) h->h4A = scale_ticks(gameplay_event_frame_count) / 600;
         h->w4C = h->w4C | (1 << g_current_level_index) | 0x80000000;
     }
-    if (D_L00_0015F710) {
-        D_L00_0015F710 = 0;
+    if (ship_level_exit_requested) {
+        ship_level_exit_requested = 0;
         if (((Hero *)(D_0013E633 + 0xE1D))->health.hp) {
             prepare_level_transition_with_help_cleanup();
             return;

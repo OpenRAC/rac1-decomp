@@ -2627,7 +2627,7 @@ void update_water_tile(struct Moby_pv *m) {
             l->unk3D = 0x40;
             pokitaru_pool_draw_tiles = D_L11_001DA880_pv;
             pokitaru_pool_draw_tex = D_L11_001DA740_pv;
-            D_L11_00161358 = 20;
+            pokitaru_pool_draw_count = 20;
             D_L11_0016128C = 32768.0f;
             D_L11_00161290 = 255.0f;
             D_L11_00161294 = 48.0f;

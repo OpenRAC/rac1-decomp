@@ -197,7 +197,7 @@ void prepare_target_level_transition(int dest) {
         int t;
         initialize_level_transition_with_audio(8);
         if (pal_mode) d = 0x50;
-        v = scale_ticks(((int *)&D_L00_00160630)[*(short *)(g + 0x26)]);
+        v = scale_ticks(((int *)&level_transition_ticks_by_variant)[*(short *)(g + 0x26)]);
         *(int *)(h + 0x34) = v;
         t = v / d;
         *(int *)(h + 0x3C) = t;
@@ -231,7 +231,7 @@ void prepare_level_entry_transition(void) {
     m = g_current_level_index;
     if (m == 1 && D_0013DE4B == 0) { cinematic_mode = 0; return; }
     if (m != 0) {
-        if (m == 0xE) { if (D_0013D4F8[0] == 0) goto out; }
+        if (m == 0xE) { if (menu_item_enabled_92[0] == 0) goto out; }
         if (m < 0x14) goto in;
     }
 out:
@@ -291,19 +291,19 @@ void build_variant_effect_quads(unsigned char *quad_source) {
     QuadOffset quad_source_translation;
     QuadOffset *selected_quad_offsets;
     int i, j, k;
-    selected_quad_offsets = D_L00_001BDD40;
-    if (D_0013E130_902A0.h26 == 1) selected_quad_offsets = D_L00_001BDDC0;
-    else if (D_0013E130_902A0.h26 == 2) selected_quad_offsets = D_L00_001BDDE0;
+    selected_quad_offsets = variant_effect_quad_offsets;
+    if (D_0013E130_902A0.h26 == 1) selected_quad_offsets = variant_effect_quad_offsets_1;
+    else if (D_0013E130_902A0.h26 == 2) selected_quad_offsets = variant_effect_quad_offsets_2;
     quad.texture = GetEffectTex(5);
     quad.texture_state = 0xFF9000000260L;
     quad.primitive = 0x8000000048L;
     quad.reserved = 0;
     for (j = 0; j < 4; j++) {
-        quad.texture_coordinates[j][0] = ((float (*)[2])D_L00_001BDD20)[j][0];
-        quad.texture_coordinates[j][1] = ((float (*)[2])D_L00_001BDD20)[j][1];
+        quad.texture_coordinates[j][0] = ((float (*)[2])variant_effect_quad_uvs)[j][0];
+        quad.texture_coordinates[j][1] = ((float (*)[2])variant_effect_quad_uvs)[j][1];
     }
     FastVecScale(0.0009765625f, &quad_source_translation, quad_source);
-    for (i = 0; i < (((int *)&D_L00_00160640))[D_0013E130_902A0.h26]; i++) {
+    for (i = 0; i < (((int *)&variant_effect_quad_counts))[D_0013E130_902A0.h26]; i++) {
         int quad_alpha = quad_source[0xBC];
         u32 col;
         float quad_scale;
@@ -313,7 +313,7 @@ void build_variant_effect_quads(unsigned char *quad_source) {
         if (*(short *)(quad_source + 0xA6) == 0x215) col = (quad_alpha << 24) | 0x308000;
         for (k = 0; k < 4; k++) {
             quad.colors[k] = col;
-            FastVecScale(quad_scale, &quad.positions[k], &D_L00_001BDE00[k]);
+            FastVecScale(quad_scale, &quad.positions[k], &variant_effect_quad_corners[k]);
             FastVecAdd(&quad.positions[k], &quad.positions[k], &selected_quad_offsets[i]);
             matrix_mul_vec3(&quad.positions[k], &quad.positions[k], D_0013E130_902A0.p0 + 0xC0);
             FastVecAdd(&quad.positions[k], &quad.positions[k], &quad_source_translation);

@@ -10,7 +10,7 @@ float animation_start(int a, unsigned int b)
     char *entry;
     char *nested;
     if (b >= 0xFF) return 0.0f;
-    entry = D_L04_00197780[a] + b * 4;
+    entry = eudora_moby_class_headers[a] + b * 4;
     nested = *(char **)(entry + 0x48);
     return IntToFloat(*(short *)(*(char **)(nested + 0x1C) + 4)) * 0.0625f;
 }
@@ -19,7 +19,7 @@ float animation_end(int a, unsigned int b)
     char *entry;
     char *nested;
     if (b >= 0xFF) return 0.0f;
-    entry = D_L04_00197780[a] + b * 4;
+    entry = eudora_moby_class_headers[a] + b * 4;
     nested = *(char **)(entry + 0x48);
     nested += ((unsigned char)nested[0x10] - 1) * 4;
     return IntToFloat(*(short *)(*(char **)(nested + 0x1C) + 4)) * 0.0625f;

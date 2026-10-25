@@ -805,7 +805,7 @@ void update_rail_taxi(struct Moby *m) {
         v->route = -1;
         m->state = 1;
         m->collision = 0;
-        if (D_L03_001BB640.collected[(s16)m->save_id] != 0 ||
+        if (kerwan_checkpoint_level_state.collected[(s16)m->save_id] != 0 ||
             (level_moby_killed[D_0015EE84_D4560][(s16)m->save_id >> 5] >> (m->save_id & 0x1F)) & 1) {
             func_0020D678_D4560(m);
             return;
@@ -1380,7 +1380,7 @@ void helga_update(struct Moby *m) {
                 grant_inventory_item(0xC, 1);
                 ShowBanner(0xBC8, -1);
                 if (v->reward != -1) {
-                    D_L03_001BA9E0.collected[(s16)((struct Moby *)((v->reward << 8) + (int)kerwan_mobys))->save_id] =
+                    kerwan_current_level_state.collected[(s16)((struct Moby *)((v->reward << 8) + (int)kerwan_mobys))->save_id] =
                         ((struct Moby *)((v->reward << 8) + (int)kerwan_mobys))->mission + 2;
                     o = (struct Moby *)((v->reward << 8) + (int)kerwan_mobys);
                     if (o->mission == 0xFF)
@@ -1391,7 +1391,7 @@ void helga_update(struct Moby *m) {
                     if (kerwan_mission_group_state[group] != 0xFF && (D_0014171B + 0xAA35)[group + (g_current_level_index << 4)] == 0xFF) {
                         do {
                         record:
-                            D_L03_001BB640.collected[(s16)o->save_id] = o->mission + 2;
+                            kerwan_checkpoint_level_state.collected[(s16)o->save_id] = o->mission + 2;
                         } while (0);
                     }
                     DeleteMoby(kerwan_mobys + (v->reward << 8));
@@ -1724,14 +1724,14 @@ void big_al_update(struct Moby *m) {
             t = (struct Moby *)((v->reward << 8) + (int)kerwan_mobys);
             if (t->oclass == 0x3E5 && t->state == 0) {
                 t->state = 1;
-                D_L03_001BA9E0.collected[(s16)((struct Moby *)((v->reward << 8) + (int)kerwan_mobys))->save_id] =
+                kerwan_current_level_state.collected[(s16)((struct Moby *)((v->reward << 8) + (int)kerwan_mobys))->save_id] =
                     ((struct Moby *)((v->reward << 8) + (int)kerwan_mobys))->mission + 2;
                 o = (struct Moby *)((v->reward << 8) + (int)kerwan_mobys);
                 {
                     s32 k = o->mission;
                     u32 u = k & 0xFF;
                     if (k == 0xFF || (kerwan_mission_group_state[u] != 0xFF && stage[u + (g_current_level_index << 4)] == 0xFF)) {
-                        D_L03_001BB640.collected[(s16)o->save_id] = k + 2;
+                        kerwan_checkpoint_level_state.collected[(s16)o->save_id] = k + 2;
                     }
                 }
             }
@@ -1778,7 +1778,7 @@ void big_al_update(struct Moby *m) {
             t = (struct Moby *)((v->reward << 8) + (int)kerwan_mobys);
             if (t->oclass == 0x3E5 && t->state == 0) {
                 t->state = 1;
-                D_L03_001BA9E0.collected[(s16)((struct Moby *)((v->reward << 8) + (int)kerwan_mobys))->save_id] =
+                kerwan_current_level_state.collected[(s16)((struct Moby *)((v->reward << 8) + (int)kerwan_mobys))->save_id] =
                     ((struct Moby *)((v->reward << 8) + (int)kerwan_mobys))->mission + 2;
                 o = (struct Moby *)((v->reward << 8) + (int)kerwan_mobys);
                 if (o->mission == 0xFF)
@@ -1788,7 +1788,7 @@ void big_al_update(struct Moby *m) {
                 } while (0);
                 if (kerwan_mission_group_state[group] != 0xFF && stage[group + (g_current_level_index << 4)] == 0xFF) {
                 rec2:
-                    D_L03_001BB640.collected[(s16)o->save_id] = o->mission + 2;
+                    kerwan_checkpoint_level_state.collected[(s16)o->save_id] = o->mission + 2;
                 }
             }
         }
@@ -2480,7 +2480,7 @@ void update_kerwan_tutorial_hints(Moby *moby) {
                 int count = 0;
                 int i;
                 for (i = 0; i < 37; i++) {
-                    if (D_L03_00179C40[i].active == 0 && i != 8 && i != 24) {
+                    if (kerwan_item_defs[i].active == 0 && i != 8 && i != 24) {
                         if ((menu_item_enabled_115 + 0xB9)[i] != 0) {
                             count++;
                         }

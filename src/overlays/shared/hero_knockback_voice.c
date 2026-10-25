@@ -87,7 +87,7 @@ s32 handle_hero_hit(s32 arg) {
     if (m[0xA4] == 0xFF) {
         return 0;
     }
-    tbl = &D_L08_00178980[m[0xA4]];
+    tbl = &batalia_moby_hit_records[m[0xA4]];
     if (tbl->p34 != m) {
         return 0;
     }

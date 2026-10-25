@@ -186,7 +186,7 @@ void HeroL15_UpdateStateTransitions(void) {
                     }
                 }
             }
-            if (D_L15_0015F718 > g_hero.motion.pos.f[2] && g_hero.ground_distance > 2.0f && g_hero.vehicle_mode != 2 && g_hero.state.current != 0x77) {
+            if (quartu_hero_fall_state_height > g_hero.motion.pos.f[2] && g_hero.ground_distance > 2.0f && g_hero.vehicle_mode != 2 && g_hero.state.current != 0x77) {
                 HeroQuartu_TrySetMoveState(0x77, 1);
             } else {
                 switch (g_hero.state.current) {
@@ -240,7 +240,7 @@ void HeroL15_UpdateStateTransitions(void) {
                                 Rec70 *rec;
 
                                 g_hero.unk2270 = sp20;
-                                rec = &D_L15_00179F10[sp20];
+                                rec = &quartu_idle_fidgets[sp20];
                                 g_hero.fidget_cooldown = scale_ticks(0x78);
                                 rec->f60 = multiply_global_factor(rec->f5C) * 60.0f;
                                 if (rec->f44 != 0) {
@@ -281,7 +281,7 @@ void HeroL15_UpdateStateTransitions(void) {
                         if (id != g_hero.unk2298) {
                             cancel_hero_item_animation();
                         } else {
-                            int anim = D_L15_0017A140[id].f24;
+                            int anim = quartu_item_defs[id].f24;
                             if (((unsigned char *)g_hero.moby)[0x53] != anim) {
                                 if (((int)g_hero.unkD08[0]) != 0) {
                                     g_hero.unkD14 = 1;
@@ -653,7 +653,7 @@ void HeroL15_UpdateStateTransitions(void) {
                         }
                     }
                     {
-                        Rec2C *rec = &D_L15_0017C2A8[g_hero.attack_record];
+                        Rec2C *rec = &quartu_attack_records[g_hero.attack_record];
                         int t = (truncate_float_to_s32(g_hero.anim_frame) - rec->fC) * 2;
                         if ((float)rec->f14 < g_hero.anim_frame && g_hero.unkA9C == 0 && !(g_hero.state.current == 0x15 && g_hero.unk308 != 0)) {
                             if (pad_pressed_within(0x40, t, 0)) {
@@ -1261,15 +1261,15 @@ void HeroL15_UpdateStateTransitions(void) {
                     {
                         int both = 0;
 
-                        func_001F9908_r((int *)&D_L15_0015F758);
-                        if (*(int *)&D_L15_0015F758 != 0) {
+                        func_001F9908_r((int *)&quartu_hero_double_tap_timer);
+                        if (*(int *)&quartu_hero_double_tap_timer != 0) {
                             both = 1;
                             if (!((g_controller_state.held & 8) && (g_controller_state.pressed & 8))) {
                                 both = 0;
                             }
                         }
                         if (g_controller_state.pressed & 8) {
-                            *(int *)&D_L15_0015F758 = scale_ticks(0x1E);
+                            *(int *)&quartu_hero_double_tap_timer = scale_ticks(0x1E);
                         }
                         if (!(g_hero.state_timer > scale_ticks(0x14))) {
                             break;

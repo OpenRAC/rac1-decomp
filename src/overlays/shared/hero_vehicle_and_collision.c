@@ -879,7 +879,7 @@ int HeroEnterMoveState(int a, int b) {
                 }
                 {
                     char *w = (char *)D_0013E633 + 0xE1D;
-                    *(float *)(*(char **)(w + 0x2080) + 0x54) = D_L00_0017BEF0[*(int *)(w + 0xAA0)][(*(int *)(w + 0xAA4))++];
+                    *(float *)(*(char **)(w + 0x2080) + 0x54) = hero_anim_blend_curves[*(int *)(w + 0xAA0)][(*(int *)(w + 0xAA4))++];
                 }
             }
         }
@@ -973,7 +973,7 @@ int HeroEnterMoveState(int a, int b) {
         int t;
         *(int *)(p + 0x208C) = 0;
         *(int *)(p + 0x2284) = 4;
-        *(int *)&D_L00_0015F768 = scale_ticks(0x3C);
+        *(int *)&veldin1_look_stat_timer = scale_ticks(0x3C);
         if (*(unsigned char *)(p + 0x20AA) == 0) {
             t = hero_idle_sequence(1);
             if (*(unsigned char *)(*(char **)(p + 0x2080) + 0x53) != t && b) {
@@ -1071,7 +1071,7 @@ int HeroEnterMoveState(int a, int b) {
                 }
                 if (b) {
                     char *v = (char *)D_0013E633 + 0xE1D;
-                    set_hero_animation(*(int *)(v + 0x2088) + 3, ((int *)&D_L00_0015F7B8)[*(int *)(v + 0x2088)], (float)n);
+                    set_hero_animation(*(int *)(v + 0x2088) + 3, ((int *)&hero_run_step_start_frames)[*(int *)(v + 0x2088)], (float)n);
                 }
             }
         }
@@ -1103,7 +1103,7 @@ int HeroEnterMoveState(int a, int b) {
             } else if (*(unsigned char *)(p + 0x20A4) == 1) {
                 set_hero_animation(2, 0, (float)scale_ticks(8));
             } else if (*(unsigned char *)(p + 0x20A4) == 0) {
-                set_hero_animation(*(int *)(p + 0x2088) + 3, ((int *)&D_L00_0015F7B8)[*(int *)(p + 0x2088)], (float)scale_ticks(8));
+                set_hero_animation(*(int *)(p + 0x2088) + 3, ((int *)&hero_run_step_start_frames)[*(int *)(p + 0x2088)], (float)scale_ticks(8));
             }
         }
         break;
@@ -1610,7 +1610,7 @@ int HeroEnterMoveState(int a, int b) {
                     *(float *)(u + 0x3D8) = 0.0f;
                     *(float *)(u + 0x3DC) = 18.0f;
                     *(int *)(u + 0x3E0) = scale_ticks(0x28);
-                    *(char **)(u + 0x3E4) = D_L00_0017C060;
+                    *(char **)(u + 0x3E4) = hero_state_12_jump_velocity_keys;
                 }
                 {
                     char *w = (char *)D_0013E633 + 0xE1D;
@@ -1858,7 +1858,7 @@ int HeroEnterMoveState(int a, int b) {
                 *(float *)(u + 0x3DC) = 26.0f;
                 *(float *)(u + 0x3D8) = 0.0f;
                 *(int *)(u + 0x3E0) = scale_ticks(0x2D);
-                *(char **)(u + 0x3E4) = D_L00_0017C020;
+                *(char **)(u + 0x3E4) = hero_state_d_jump_velocity_keys;
                 *(unsigned char *)(u + 0x4AE) = 1;
             } else if (*(int *)(u + 0x2084) == 0xF) {
                 *(float *)(u + 0x430) = 1.9f;
@@ -1887,7 +1887,7 @@ int HeroEnterMoveState(int a, int b) {
                     *(float *)(w + 0x3D8) = 29.0f;
                     *(float *)(w + 0x3DC) = 50.0f;
                     *(int *)(w + 0x3E0) = scale_ticks(0x56);
-                    *(char **)(w + 0x3E4) = (char *)&D_L00_0015F7C8;
+                    *(char **)(w + 0x3E4) = (char *)&hero_state_f_jump_velocity_keys;
                     *(unsigned char *)(w + 0x4AE) = 1;
                 }
             } else if (*(int *)(u + 0x2084) == 0xE) {
@@ -1956,7 +1956,7 @@ int HeroEnterMoveState(int a, int b) {
                 } else if (s == 9) {
                     int id = 8;
                     int n = truncate_float_to_s32(*(float *)(q + 0xAA8));
-                    if (return_hero_animation_id_unchanged(*(unsigned char *)(moby + 0x52)) == 4) id = D_L00_0017BED8[n];
+                    if (return_hero_animation_id_unchanged(*(unsigned char *)(moby + 0x52)) == 4) id = hero_run_jump_anim_ids[n];
                     set_hero_animation(id, 0, (float)scale_ticks(5));
                 } else if (s == 0x5E) {
                     set_hero_animation(4, 0, (float)scale_ticks(8));
@@ -2270,7 +2270,7 @@ int HeroEnterMoveState(int a, int b) {
             *(int *)(q + 0x1C0) = scale_ticks(0x4D);
             if (b) {
                 set_hero_animation(0x10, 3, -3.0f);
-                *(float *)(*(char **)(q + 0x2080) + 0x54) = D_L00_0017BEF0[*(int *)(q + 0xAA0)][(*(int *)(q + 0xAA4))++];
+                *(float *)(*(char **)(q + 0x2080) + 0x54) = hero_anim_blend_curves[*(int *)(q + 0xAA0)][(*(int *)(q + 0xAA4))++];
             }
         }
         break;
@@ -2397,7 +2397,7 @@ int HeroEnterMoveState(int a, int b) {
         *(int *)(p + 0x1C0) = scale_ticks(0x32);
         if (b) {
             set_hero_animation(6, 3, -3.0f);
-            *(float *)(*(char **)(p + 0x2080) + 0x54) = D_L00_0017BEF0[*(int *)(p + 0xAA0)][(*(int *)(p + 0xAA4))++];
+            *(float *)(*(char **)(p + 0x2080) + 0x54) = hero_anim_blend_curves[*(int *)(p + 0xAA0)][(*(int *)(p + 0xAA4))++];
         }
         break;
     }
@@ -2544,7 +2544,7 @@ int HeroEnterMoveState(int a, int b) {
         *(int *)(p + 0x1C0) = scale_ticks(0x4D);
         if (b) {
             set_hero_animation(6, 3, -3.0f);
-            *(float *)(*(char **)(p + 0x2080) + 0x54) = D_L00_0017BEF0[*(int *)(p + 0xAA0)][(*(int *)(p + 0xAA4))++];
+            *(float *)(*(char **)(p + 0x2080) + 0x54) = hero_anim_blend_curves[*(int *)(p + 0xAA0)][(*(int *)(p + 0xAA4))++];
         }
         break;
     }
@@ -2626,7 +2626,7 @@ int HeroEnterMoveState(int a, int b) {
         *(int *)(p + 0x1C0) = scale_ticks(0x4D);
         if (b) {
             set_hero_animation(2, 3, -3.0f);
-            *(float *)(*(char **)(p + 0x2080) + 0x54) = D_L00_0017BEF0[*(int *)(p + 0xAA0)][(*(int *)(p + 0xAA4))++];
+            *(float *)(*(char **)(p + 0x2080) + 0x54) = hero_anim_blend_curves[*(int *)(p + 0xAA0)][(*(int *)(p + 0xAA4))++];
         }
         break;
     }
@@ -3317,8 +3317,8 @@ int process_hero_equipped_item_input(void) {
     if (D_0013F450_h228770.state_timer == start) {
         if (hero_slot_item_id(3) == 3 && D_0013F450_h228770.state.current != 0x81 && (D_0013F450_h228770.unk308 == 0 || D_0013D5C8_228770[0x1C] == 0)
             && D_0013F450_h228770.unk22D8 == 0) {
-            func_001F9908_228770(&D_L00_0015F754);
-            if (D_L00_0015F754 != 0) {
+            func_001F9908_228770(&hero_r1_double_tap_timer);
+            if (hero_r1_double_tap_timer != 0) {
                 if (D_0013F450_h228770.state.control_mode < 2U || D_0013F450_h228770.state.control_mode == 0xC
                     || ((D_0013F450_h228770.state.control_mode == 2 || D_0013F450_h228770.state.control_mode == 4) && D_0013F450_h228770.grounded_frames != 0)) {
                     if ((D_0013CA40_p228770.held & 8) && (D_0013CA40_p228770.pressed & 8)) {
@@ -3327,7 +3327,7 @@ int process_hero_equipped_item_input(void) {
                 }
             }
             if ((D_0013CA40_p228770.pressed & 8) && D_0013F450_h228770.state.current != 0x81) {
-                D_L00_0015F754 = scale_ticks(0x1E);
+                hero_r1_double_tap_timer = scale_ticks(0x1E);
             }
         } else if (D_0013F450_h228770.state.current != 0x13 && D_0013F450_h228770.state.current != 0x81 && D_0013F450_h228770.state.current != 0x15 && D_0013F450_h228770.state.current != 0x16) {
             D_0013F450_h228770.unk22CA = 0;
@@ -3439,7 +3439,7 @@ void update_hero_animation_for_movement_speed(void) {
                         int e1 = *(unsigned char *)(o + 0x51);
                         unsigned char *a = tb->e[k];
                         unsigned char *c = tb->e[j];
-                        int tv = *(int *)((char *)&D_L00_0015F7A8 + n * 4 + old * 8);
+                        int tv = *(int *)((char *)&hero_run_step_switch_frames + n * 4 + old * 8);
                         int rr = ((e1 * a[0x10]) / c[0x10] + tv) % a[0x10];
                         set_hero_animation(k, rr, (float)scale_ticks(8));
                     }

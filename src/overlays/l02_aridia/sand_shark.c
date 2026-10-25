@@ -3089,7 +3089,7 @@ void rocket_door1_update(struct Moby *m) {
     case 2:
         SteerAngleWithVelocity(&v->t, &v->speed, 1.0f, g_frame_time_sq * 0.5f, g_frame_time_sq * 0.5f, g_frame_time);
         quat_nlerp(&qx, &v->start, &v->goal, v->t);
-        func_001FA648(&qx, &m->rot_row0);
+        quaternion_to_rotation_basis(&qx, &m->rot_row0);
         break;
     }
 }

@@ -191,7 +191,7 @@ s32 HeroL02_TryKnockback(s32 arg) {
     if (m[0xA4] == 0xFF) {
         return 0;
     }
-    tbl = &D_L02_00178780[m[0xA4]];
+    tbl = &aridia_moby_hits[m[0xA4]];
     if (tbl->p34 != m) {
         return 0;
     }
@@ -772,11 +772,11 @@ void update_hero_state_motion(void) {
 
                     *(u128 *)vec[0] = 0;
                     vec[0][0] = 1.0f;
-                    matrix_mul_vec3(g_hero.motion.unk170.f, vec[0], D_L02_00167300.f350);
-                    g_hero.motion.move_yaw = D_L02_00167300.f158;
+                    matrix_mul_vec3(g_hero.motion.unk170.f, vec[0], aridia_player_camera.f350);
+                    g_hero.motion.move_yaw = aridia_player_camera.f158;
                     turn_to(0, g_frame_scale_sq, g_frame_scale_sq * 0.0f, g_frame_time * 174.53293f);
-                    if (*(int *)&D_L02_0015F768 > 0) {
-                        if (fast_dec_timer((int *)&D_L02_0015F768)) {
+                    if (*(int *)&aridia_usage_event_timer > 0) {
+                        if (fast_dec_timer((int *)&aridia_usage_event_timer)) {
                             if (usage_stats.f90 < 0xFFFF) {
                                 usage_stats.f90++;
                             }
@@ -784,8 +784,8 @@ void update_hero_state_motion(void) {
                                 usage_stats.f92 = scale_ticks(gameplay_event_frame_count) / 600;
                             }
                             usage_stats.f94 = usage_stats.f94 | (1 << g_current_level_index) | 0x80000000;
-                            *(int *)&D_L02_0015F768 = -1;
-                            (*(int *)&D_L02_0015F76C)++;
+                            *(int *)&aridia_usage_event_timer = -1;
+                            (*(int *)&aridia_usage_event_count)++;
                         }
                     }
                 }
@@ -1240,8 +1240,8 @@ void update_hero_state_motion(void) {
             if (g_hero.unk4B8 != 0.0f) {
                 if (g_hero.air_frames.s == 0) {
                     if (g_hero.unk4C4 == 0) {
-                        D_L02_00167300.f160 = 0.2f;
-                        D_L02_00167300.f168 = scale_ticks(0x28);
+                        aridia_player_camera.f160 = 0.2f;
+                        aridia_player_camera.f168 = scale_ticks(0x28);
                     }
                     g_hero.unk4C4++;
                 }
@@ -1255,7 +1255,7 @@ void update_hero_state_motion(void) {
             float v;
             float acc;
 
-            if (g_hero.unkA9C != 0 || g_hero.anim_frame < D_L02_0017C2A8[g_hero.attack_record].f18) {
+            if (g_hero.unkA9C != 0 || g_hero.anim_frame < aridia_attack_records[g_hero.attack_record].f18) {
                 g_hero.items[0].timer = 2;
             }
             g_hero.target_speed = 0.0f;
@@ -1325,7 +1325,7 @@ void update_hero_state_motion(void) {
             int skip;
 
             g_hero.target_speed = 0.0f;
-            if (g_hero.unkA9C != 0 || g_hero.anim_frame < D_L02_0017C2A8[g_hero.attack_record].f18) {
+            if (g_hero.unkA9C != 0 || g_hero.anim_frame < aridia_attack_records[g_hero.attack_record].f18) {
                 g_hero.items[0].timer = 2;
             }
             skip = 0;
@@ -1388,11 +1388,11 @@ void update_hero_state_motion(void) {
         {
             Rec2C *r;
 
-            if (g_hero.unkA9C != 0 || g_hero.anim_frame < D_L02_0017C2A8[g_hero.attack_record].f20) {
+            if (g_hero.unkA9C != 0 || g_hero.anim_frame < aridia_attack_records[g_hero.attack_record].f20) {
                 g_hero.items[0].timer = 2;
             }
             g_hero.target_speed = 0.0f;
-            r = &D_L02_0017C2A8[g_hero.attack_record];
+            r = &aridia_attack_records[g_hero.attack_record];
             if (g_hero.unkA54 != 0 && g_hero.state_timer < scale_ticks(4)) {
                 float d;
                 float off;
@@ -1788,7 +1788,7 @@ void update_hero_state_motion(void) {
                         spd = g_hero.motion.unk164;
                         ApproachValue(&spd, g_hero.target_speed * g_frame_time, g_frame_time_sq * 5.0f);
                         FastVecSub(g_hero.motion.velocity.f, vec[5], g_hero.motion.pos.f);
-                        vec_set_length_xy(g_hero.motion.velocity.f, g_hero.motion.velocity.f, D_L02_001C4530[truncate_float_to_s32(g_hero.anim_frame)] * 0.5f);
+                        vec_set_length_xy(g_hero.motion.velocity.f, g_hero.motion.velocity.f, aridia_hero_anim_frame_speeds[truncate_float_to_s32(g_hero.anim_frame)] * 0.5f);
                     }
                 }
             }
@@ -2054,8 +2054,8 @@ void update_hero_state_motion(void) {
 
                     FastVecScale(vec[1], g_hero.motion.displacement.f, 7.0f);
                     for (i = 0; i < n; i++) {
-                        if (is_moby_in_class_range_500_to_540((int)D_L02_00178580[i])) {
-                            PostHitMessage(D_L02_00178580[i], (int)g_hero.moby, 0x10000, g_hero.motion.pos.f, vec[1], 1.0f);
+                        if (is_moby_in_class_range_500_to_540((int)aridia_coll_sphere_moby_hits[i])) {
+                            PostHitMessage(aridia_coll_sphere_moby_hits[i], (int)g_hero.moby, 0x10000, g_hero.motion.pos.f, vec[1], 1.0f);
                         }
                     }
                 }

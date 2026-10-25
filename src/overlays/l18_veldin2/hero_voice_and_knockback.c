@@ -216,7 +216,7 @@ s32 HeroL18_TryTakeHit(s32 arg) {
     if (m[0xA4] == 0xFF) {
         return 0;
     }
-    tbl = &D_L18_00178B80[m[0xA4]];
+    tbl = &veldin2_moby_hits[m[0xA4]];
     if (tbl->p34 != m) {
         return 0;
     }

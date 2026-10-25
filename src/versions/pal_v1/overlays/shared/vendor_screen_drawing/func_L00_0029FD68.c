@@ -35,7 +35,7 @@ void draw_vendor_purchase_text(void *m, int x, int y) {
     box.half_y = 6;
     box.style = 1;
     font_print_window_small((void *)&box, 0x80f0f0f0L, msg_string(0x5237), -1);
-    func_00116248(text, D_L00_00161220, vendor_buy_quantity);
+    func_00116248(text, vendor_quantity_format, vendor_buy_quantity);
     if (vendor_buy_quantity >= 100)
         text_x = 0x17;
     else {
@@ -48,9 +48,9 @@ void draw_vendor_purchase_text(void *m, int x, int y) {
 quantity_small:
     FontPrintSmall(0x25, 0x32, 0x80f0f0f0L, text, -1);
 quantity_done:
-    FontPrintSmall(0xc, 0x32, 0x80f0f0f0L, D_L00_00161228, -1);
-    FontPrintSmall(0x40, 0x32, 0x80f0f0f0L, D_L00_00161230, -1);
-    fmt = D_L00_00161220;
+    FontPrintSmall(0xc, 0x32, 0x80f0f0f0L, vendor_quantity_left_label, -1);
+    FontPrintSmall(0x40, 0x32, 0x80f0f0f0L, vendor_quantity_right_label, -1);
+    fmt = vendor_quantity_format;
     if (MENU.f40)
         total = vendor_buy_quantity * item_price_table[MENU.rows[MENU.f58].fD0].hA;
     else

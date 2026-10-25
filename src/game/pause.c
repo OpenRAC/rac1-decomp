@@ -10552,10 +10552,10 @@ void prepare_scaled_direction_and_perpendicular(PauseVec_282D0 *dir, f32 scale) 
 void *parse_typed_resource_record(char *p) {
     short v = *(short *)p;
     if (v == 0) {
-        func_00229098(p);
+        build_shadow_sphere_outline(p);
         p += 0x20;
     } else if (v == 1) {
-        func_002291E8(p);
+        build_shadow_capsule_outline(p);
         p += 0x30;
     }
     return p;

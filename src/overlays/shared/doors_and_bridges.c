@@ -15,7 +15,7 @@ void AmbientStreamL07Update(unsigned char *moby)
     case 0:
         moby[0x20] = 1;
         moby[0x30] = 0xFF;
-        prepare_scaled_float_table_with_target_byte(D_L07_001D36C0, 0x80, 1.0f);
+        prepare_scaled_float_table_with_target_byte(umbris_ambient_stream_scaled_table, 0x80, 1.0f);
         break;
     case 1:
         AddDrawCallback(register_audio_stream_callback, moby);

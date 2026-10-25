@@ -45,7 +45,7 @@ int get_hero_help_value(int a) {
     }
     {
         int i = hero_slot_item_id(0);
-        return D_L06_0017A340[i].v;
+        return blarg_item_defs[i].v;
     }
 }
 extern void func_L00_00232EF0(void);

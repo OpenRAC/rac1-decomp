@@ -140,8 +140,8 @@ int update_mission_list(void) {
     char *node;
 
     {
-        char *p = D_001A2F90;
-        *(char **)(p + 0x10) = D_001A2EF0[level_map_selection[0x89]];
+        char *p = mission_list_state;
+        *(char **)(p + 0x10) = planet_mission_lists[level_map_selection[0x89]];
         if (*(char **)(p + 0x10) == 0) {
             return 0;
         }
@@ -160,7 +160,7 @@ int update_mission_list(void) {
         node += 0x28;
     }
     {
-        char *p = D_001A2F90;
+        char *p = mission_list_state;
         for (node = *(char **)(p + 0x10); *(short *)node != 0; node += 0x28) {
             if (*(int (**)(int))(node + 0x1C) != 0) {
                 *(short *)(node + 0x26) = (*(int (**)(int))(node + 0x1C))(*(int *)(node + 0x20));
@@ -168,7 +168,7 @@ int update_mission_list(void) {
         }
     }
     {
-        char *p = D_001A2F90;
+        char *p = mission_list_state;
         *(int *)(p + 0xC) = 0;
         for (node = *(char **)(p + 0x10); *(short *)node != 0; node += 0x28) {
             if (*(short *)(node + 0x24) == 1 && !(*(unsigned short *)(node + 0x10) & 2)) {
@@ -177,7 +177,7 @@ int update_mission_list(void) {
         }
     }
     {
-        char *p = D_001A2F90;
+        char *p = mission_list_state;
         return *(int *)(p + 0xC) == 0;
     }
 }

@@ -57,7 +57,7 @@ extern int D_L00_0015F6D0 MACRO_ADDR;
 extern char *D_L00_0015F6D4 MACRO_ADDR;
 int play_voice(int a, int b, int c, int d) {
     int r;
-    if (a >= D_L00_0015F6D0) return -1;
+    if (a >= level_sound_slot_count) return -1;
     r = allocate_voice_slot(level_sound_slots + a * 32, b, 0, c + 0x40, d);
     if (r >= 0) {
         char *e = D_0013E633 + 0x1D + r * 0x70;
@@ -75,10 +75,10 @@ extern int D_L00_0015F654 MACRO_ADDR;
 /* Starts a sound bank entry chosen by (a0, a1, a2) offset from a
    level-specific table row, the same shape as func_0022EE28. */
 int request_grouped_voice(int a0, int a1, int a2, int a3, int a4) {
-    int idx = D_L00_001BDBB0[D_0015EE84_m] + a0 * 4 + a1 * 2 + a2 + grouped_voice_definition_base_index;
+    int idx = grouped_voice_level_rows[D_0015EE84_m] + a0 * 4 + a1 * 2 + a2 + grouped_voice_definition_base_index;
     int h;
 
-    if (idx >= D_L00_0015F6D0) {
+    if (idx >= level_sound_slot_count) {
         return -1;
     }
     h = allocate_voice_slot(level_sound_slots + idx * 32, a3, a4, 0, 0x400);
@@ -101,10 +101,10 @@ extern TE D_L00_001EAD00[];
 
 void resolve_lookup_record(short *a) {
     int i;
-    for (i = 0; D_L00_001EAD00[i].k != -1 && D_L00_001EAD00[i].k != a[0]; i++) {
+    for (i = 0; lookup_record_key_values[i].k != -1 && lookup_record_key_values[i].k != a[0]; i++) {
     }
     a[1] = i;
-    *(int *)(a + 2) = D_L00_001EAD00[i].v;
+    *(int *)(a + 2) = lookup_record_key_values[i].v;
 }
 /* stores a sound value and transitions or clears its entry */
 void Sound_SetEntryValue(int value, long long address) {
@@ -169,7 +169,7 @@ void update_moby_proximity_interaction(unsigned char *m) {
         }
         p = (float *)(m + 0x10);
         if (*(short *)(d + 0xC) != 0) {
-            matrix_mul_vec3(tmp, D_L00_001BDC10 + ship_index[0] * 16, m + 0xC0);
+            matrix_mul_vec3(tmp, ship_entry_point_offsets + ship_index[0] * 16, m + 0xC0);
             FastVecAdd(tmp, tmp, p);
             if (FastVecDist(tmp, D_0013E633 + 0xE9D) > 4.1f) {
                 *(short *)(d + 0xC) = 0;
@@ -177,7 +177,7 @@ void update_moby_proximity_interaction(unsigned char *m) {
         } else {
             q = (unsigned char *)D_0013E633 + 0xE9D;
             if (vec_distance_xy(p, q) < 6.0f) {
-                matrix_mul_vec3(tmp, D_L00_001BDC10 + ship_index[0] * 16, m + 0xC0);
+                matrix_mul_vec3(tmp, ship_entry_point_offsets + ship_index[0] * 16, m + 0xC0);
                 FastVecAdd(tmp, tmp, p);
                 if (FastVecDist(tmp, q) < 4.0f) {
                     *(short *)(d + 0xC) = 1;
@@ -196,7 +196,7 @@ void update_moby_proximity_interaction(unsigned char *m) {
                     StartCutscene(9);
                 } else {
                     remove_help_message_for_selector(2);
-                    D_L00_0015F710 = 1;
+                    ship_level_exit_requested = 1;
                     ship_index[1] = 0;
                 }
             }
@@ -221,7 +221,7 @@ void update_moby_proximity_interaction(unsigned char *m) {
                 *(unsigned short *)(m + 0x34) &= 0xFFBE;
                 one = 1;
                 ship_index[1] = one;
-                D_L00_0015F710 = one;
+                ship_level_exit_requested = one;
             }
         }
     }

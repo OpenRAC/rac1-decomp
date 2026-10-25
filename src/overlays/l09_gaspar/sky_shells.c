@@ -112,7 +112,7 @@ void draw_level09_scrolling_textured_strips(char *list, float t, int count, long
     float s1;
     func_L09_0021E410_t(tex0, tex1, t);
     l09_packet[0] = 0x30000009;
-    l09_packet[1] = (int)D_L09_0016EB20;
+    l09_packet[1] = (int)gaspar_strip_gs_setup_packet;
     l09_packet[2] = 0;
     l09_packet[3] = 0x50000009;
     l09_packet += 4;
@@ -141,7 +141,7 @@ void draw_level09_scrolling_textured_strips(char *list, float t, int count, long
                 *a++ = *src + s0;
                 *b++ = *src++ + s1;
             }
-            func_L01_0021F9C8(n, *(int *)(e + 0x10) + ((Strip *)e)->idx[j] * 12, 0x70000000, 0x70001000, 0x70002000, idx == 0);
+            emit_textured_strip_packet(n, *(int *)(e + 0x10) + ((Strip *)e)->idx[j] * 12, 0x70000000, 0x70001000, 0x70002000, idx == 0);
         }
     }
 }

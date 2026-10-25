@@ -65,7 +65,7 @@ int advance_shuttle_along_path(struct Moby *moby) {
     path = (PathNodes *)gaspar_paths[vars->path];
     vars->lag += (0.0f - vars->lag) * 0.005f;
     qcopy(&target, &path->node[vars->node]);
-    target.f[2] += vars->speed * (*(f32 *)&D_L09_00161E78);
+    target.f[2] += vars->speed * (*(f32 *)&gaspar_shuttle_climb_scale);
     FastVecSub(&step, &target, &moby->pos);
     vec_scale_to_length(&step, &step, vars->speed);
     FastVecAdd(&moby->pos, &moby->pos, &step);

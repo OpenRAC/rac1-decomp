@@ -50,7 +50,7 @@ int rig_probe_setup(char *moby, int index, unsigned int *type, float *result,
     } else if (*type == 2) {
         short joint = *(short *)(*(char **)(moby + 0x94) + 2);
         if (joint != 0) {
-            func_L00_00254218(moby, joint, 0);
+            moby_joints_to_scratchpad(moby, joint, 0);
         }
         qcopy(result, (void *)(0x70000000 + *(int *)(entry + 4) * 0x10));
         FastVecScale(result, result, scale);
@@ -62,7 +62,7 @@ int rig_probe_setup(char *moby, int index, unsigned int *type, float *result,
     } else if (*type == 4) {
         short joint = *(short *)(*(char **)(moby + 0x94) + 2);
         if (joint != 0) {
-            func_L00_00254218(moby, joint, 0);
+            moby_joints_to_scratchpad(moby, joint, 0);
         }
         joints = (short *)(entry + 4);
         scale_vector(scale, first, (void *)(0x70000000 + joints[0] * 0x10));

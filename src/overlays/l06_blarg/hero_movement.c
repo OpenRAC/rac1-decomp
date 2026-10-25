@@ -1815,7 +1815,7 @@ void HeroL06_UpdateMovement(void) {
                 vec[1][3] = -(g_frame_time_sq * 30.0f);
                 spawn_color_decaying_effect_particle((char *)vec[0], (char *)vec[1], 0);
             }
-            hasW = D_L06_0017A340[((Hero *)&g_hero)->items[0].item_id].f18 != 0;
+            hasW = blarg_item_defs[((Hero *)&g_hero)->items[0].item_id].f18 != 0;
             if (((Hero *)&g_hero)->items[0].item_id == 0xC) {
                 hasW = 0;
             }

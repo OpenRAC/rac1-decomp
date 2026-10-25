@@ -169,8 +169,8 @@ s32 get_dialogue_entry(s32 p, s32 unused) {
     if ((u32)n >= 0x13) {
         return 0;
     }
-    lo = D_L00_001C47B8[n];
-    hi = D_L00_001C47B8[n + 1];
+    lo = dialogue_entry_level_starts[n];
+    hi = dialogue_entry_level_starts[n + 1];
     for (i = lo; i < hi; i++) {
         if (dialogue_entry_ids[i] == p) {
             return i;
@@ -229,12 +229,12 @@ s32 DialogRequest_Init(void *p, u8 *out_p)
     out = (Out002668a0 *)out_p;
     i = func_L00_00267618_676E8(p);
     if (i == -1) { return -1; }
-    if (D_L00_001B19F8[i] == 0) { return -1; }
+    if (dialogue_entry_scripts[i] == 0) { return -1; }
     out->f09 = 1;
     out->f38 = level_frame_counter;
     out->f04 = -1;
     out->f36 = 0;
-    q = D_L00_001B19F8[i];
+    q = dialogue_entry_scripts[i];
     out->f3C = (u32)q;
     if (race_gates[i].d != 0 && q->f08 == 0) { out->f36 = q->f06; }
     out->f08 = ((u8 *)out->f3C)[out->f36 * 0x1C + (k = 0x10)] & 1;

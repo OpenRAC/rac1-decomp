@@ -7,7 +7,7 @@ extern char *D_L13_00160058_m __asm__("D_L13_00160058") MACRO_ADDR;
 
 // Sets flag/bit fields on every moby in a zero-terminated index list.
 void jet_group_state(int idx, int a, int b, int c) {
-    short *list = D_L13_001ABE40[idx];
+    short *list = gemlik_moby_groups[idx];
     if (list) {
         short *p = list;
         do {

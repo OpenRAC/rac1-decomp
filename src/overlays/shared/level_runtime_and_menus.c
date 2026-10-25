@@ -409,7 +409,7 @@ void initialize_level_map_archive(void) {
         archive = (int *)((int)archive_base + 0x9A800);
         scratch = e[1] << 7;
         Load(archive, e[0], e[1]);
-        gl[0x8B] = Stash_SendData((int)archive, scratch, 0x4800, (int)D_L00_001E8E80);
+        gl[0x8B] = Stash_SendData((int)archive, scratch, 0x4800, (int)map_archive_stash_comment);
         gl[0x8D] = scratch;
         fast_decompress((int)archive, (int)archive_base);
         archive = archive_base;

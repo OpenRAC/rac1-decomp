@@ -18,11 +18,11 @@ void update_moby_list_clear_notification(unsigned char *moby) {
         break;
     case 1:
         if (oltanis_game_mode == 2) {
-            v = D_L14_0016D060.state - 3;
+            v = oltanis_cutscene_state.state - 3;
             if (v < 3) {
                 i = 0;
                 if (v <= oltanis_game_mode) i = moby[0x20];
-                cutscene_set_camera_target(D_L14_0016D060.v178[i]);
+                cutscene_set_camera_target(oltanis_cutscene_state.v178[i]);
             }
         }
         break;

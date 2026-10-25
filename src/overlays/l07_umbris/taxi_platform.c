@@ -188,7 +188,7 @@ void update_mission_gated_taxi_platform(unsigned char *moby) {
     char *data = (char *)m->pvars;
     char *path;
     float orig[4], delta[4], path_segment_offset[4];
-    if (D_L07_0015FD08[m->mission] != 0xFF) {
+    if (umbris_mission_group_state[m->mission] != 0xFF) {
         m->collision = 0;
         m->flags |= 0x41;
         return;

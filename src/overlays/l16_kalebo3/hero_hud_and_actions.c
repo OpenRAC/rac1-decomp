@@ -164,7 +164,7 @@ void Hero_ChooseStateTransition(void) {
             Hero_TryMoveState(0x3D, 1);
         } else if (process_hero_primary_item_input() == 0 && try_apply_hero_water_and_ground_transitions() == 0 && try_transition_hero_water_state() == 0 && try_start_hero_weapon_fire_state() == 0) {
             if ((g_controller_state.pressed & 0x10) || (((int)g_controller_state.pressed_unmasked) & 0x10)) {
-                if (g_hero.items[0].unk1C != 2 && D_L16_0015F674 == 0
+                if (g_hero.items[0].unk1C != 2 && kalebo3_help_message_selector == 0
                     && (g_hero.unk20AC == 0 || g_hero.vehicle_mode == 1 || g_hero.unk1B2 != 0)
                     && (g_hero.unk20A7 == 0 || g_hero.vehicle_mode == 1 || g_hero.unk1B2 != 0)
                     && (g_hero.vehicle_mode == 0 || g_hero.vehicle_mode == 3)) {
@@ -209,7 +209,7 @@ void Hero_ChooseStateTransition(void) {
                     }
                 }
             }
-            if (D_L16_0015F718 > g_hero.motion.pos.f[2] && g_hero.ground_distance > 2.0f && g_hero.vehicle_mode != 2 && g_hero.state.current != 0x77) {
+            if (kalebo3_hero_fall_state_height > g_hero.motion.pos.f[2] && g_hero.ground_distance > 2.0f && g_hero.vehicle_mode != 2 && g_hero.state.current != 0x77) {
                 Hero_TryMoveState(0x77, 1);
             } else {
                 switch (g_hero.state.current) {
@@ -263,7 +263,7 @@ void Hero_ChooseStateTransition(void) {
                                 Rec70 *rec;
 
                                 g_hero.unk2270 = sp20;
-                                rec = &D_L16_00179D70[sp20];
+                                rec = &kalebo3_idle_fidgets[sp20];
                                 g_hero.fidget_cooldown = scale_ticks(0x78);
                                 rec->f60 = multiply_global_factor(rec->f5C) * 60.0f;
                                 if (rec->f44 != 0) {
@@ -1607,15 +1607,15 @@ void Hero_ChooseStateTransition(void) {
                     {
                         int both = 0;
 
-                        func_001F9908_r((int *)&D_L16_0015F758);
-                        if (*(int *)&D_L16_0015F758 != 0) {
+                        func_001F9908_r((int *)&kalebo3_hero_double_tap_timer);
+                        if (*(int *)&kalebo3_hero_double_tap_timer != 0) {
                             both = 1;
                             if (!((g_controller_state.held & 8) && (g_controller_state.pressed & 8))) {
                                 both = 0;
                             }
                         }
                         if (g_controller_state.pressed & 8) {
-                            *(int *)&D_L16_0015F758 = scale_ticks(0x1E);
+                            *(int *)&kalebo3_hero_double_tap_timer = scale_ticks(0x1E);
                         }
                         if (!(g_hero.state_timer > scale_ticks(0x14))) {
                             break;
@@ -1703,7 +1703,7 @@ void Hero_ChooseStateTransition(void) {
                         Hero_TryMoveState(2, 0);
                         if (g_hero.state.current == 2) {
                             g_hero.state.step = 1;
-                            set_hero_animation(4, D_L16_0015F7CC, scale_ticks(0xC));
+                            set_hero_animation(4, kalebo3_hero_run_step1_start_frame, scale_ticks(0xC));
                         }
                         configure_hero_point_effect_emission(0.016f, 0.002f, 5, 2, 1, 0);
                         break;

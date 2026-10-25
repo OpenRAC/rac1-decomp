@@ -24,7 +24,7 @@ unsigned char *create_particle_with_velocity_and_lifetime(void *pos, void *vel, 
         p[9] = func_001FA898_r(two) + 0x10;
         p[3] = 0x44;
         p[1] = 0;
-        p[2] = *D_L05_001B2940;
+        p[2] = *rilgar_velocity_particle_texture_ptr;
         *(float *)(p + 0xC) = a * 210000.0f;
         p[8] = random_integer_below(0x100);
         qcopy(q, vel);
@@ -50,7 +50,7 @@ unsigned char *create_particle_with_velocity_and_randomized_parameters(void *pos
         p[9] = func_001FA898_r(1.0f) + 0x40;
         p[3] = 0x44;
         p[1] = 0;
-        p[2] = D_L05_001B2948[arg3];
+        p[2] = rilgar_random_particle_textures_ptr[arg3];
         *(int *)(p + 4) = arg2;
         *(float *)(p + 0xC) = a * 210000.0f;
         p[8] = (int)random_float_between(0.0f, 255.0f);

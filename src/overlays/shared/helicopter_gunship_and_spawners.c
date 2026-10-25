@@ -1763,7 +1763,7 @@ void RiseWhenCollectedUpdate(struct Moby *m)
         target->q = ((Vec4 *)&m->pos)->q;
         id = m->save_id;
         idx = id;
-        if (D_L03_001BB640.collected[idx] == 0) {
+        if (kerwan_checkpoint_level_state.collected[idx] == 0) {
             if (!((level_moby_killed[g_current_level_index][idx >> 5] >> (id & 0x1F)) & 1))
                 return;
         }

@@ -8,11 +8,11 @@ extern float D_L00_0015FD60 MACRO_ADDR;
 extern float D_L00_0015FD64 MACRO_ADDR;
 extern char *D_L00_0015FD68 MACRO_ADDR;
 void load_two_int_two_float_header(char *p) {
-    D_L00_0015FD58 = *(int *)p; p += 4;
-    D_L00_0015FD5C = *(int *)p; p += 4;
+    height_map_width = *(int *)p; p += 4;
+    height_map_rows = *(int *)p; p += 4;
     height_map_min_height = *(float *)p; p += 4;
     height_map_max_height = *(float *)p; p += 4;
-    D_L00_0015FD68 = p;
+    height_map_data = p;
 }
 extern u32 D_L00_0015F53C MACRO_ADDR;
 extern s32 D_L00_0015F538 MACRO_ADDR;
@@ -24,14 +24,14 @@ void relocate_counted_pointer_table(s32 *p) {
     s32 n;
     n = *p;
     p += 4;
-    D_L00_0015F53C = (u32)p;
+    level_textured_spheres = (u32)p;
     p = (s32 *)((u8 *)p + (n << 5));
-    D_L00_0015F538 = n;
-    D_L00_0015F540 = (u32)p;
-    for (i = 0; i < D_L00_0015F538; i++) {
-        *(u32 *)(D_L00_0015F540 + i * 4) += D_L00_0015F540;
+    level_textured_sphere_count = n;
+    level_textured_sphere_textures = (u32)p;
+    for (i = 0; i < level_textured_sphere_count; i++) {
+        *(u32 *)(level_textured_sphere_textures + i * 4) += level_textured_sphere_textures;
     }
-    for (j = 0; j < D_L00_0015F538; j++) {
-        *(u32 *)(*(u32 *)(D_L00_0015F540 + j * 4) + 4) += D_L00_0015F540;
+    for (j = 0; j < level_textured_sphere_count; j++) {
+        *(u32 *)(*(u32 *)(level_textured_sphere_textures + j * 4) + 4) += level_textured_sphere_textures;
     }
 }

@@ -280,7 +280,7 @@ int test_voice_occlusion(void *arg0, void *arg1) {
 
     FastVecSub(v, (char *)arg0 + 0x20, camera_position);
     FastVecScale(v, v, 0.75f);
-    func_001F9E58(v, v, 64.0f);
+    clamp_vector_length(v, v, 64.0f);
     FastVecAdd(v, v, camera_position);
     return func_001EFE10_a(arg1, v, 0x82, *(int *)((char *)arg0 + 0x18), 0);
 }

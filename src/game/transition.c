@@ -227,7 +227,7 @@ unsigned char *initialize_level_render_state(LevelHeaderE9EC8 *hdr)
     coll_output.x10 = 0;
     coll_output.x14 = 0;
     FastMemZero16(moby_grids, 0x10000);
-    FastMemZero16(D_001C7A60, 0x60);
+    FastMemZero16(moby_slot_bitmap, 0x60);
 
     c = (unsigned char *)hdr + hdr->x0;
     view_context.x23C = *(int *)c;
@@ -253,7 +253,7 @@ unsigned char *initialize_level_render_state(LevelHeaderE9EC8 *hdr)
     occl_fog_count = 500;
     part_clip_dist = 0x1F4000;
     SetBackgroundColor(view_context.x23C, view_context.x240, view_context.x244);
-    ((void (*)(void *))VU0_loadMicroProgram)(D_00100AE0);
+    ((void (*)(void *))VU0_loadMicroProgram)(frame_vu0_micro_program);
     FastMemZero16(point_lights, 0x100);
     FastMemZero16(point_light_data, 0x180);
     FastMemZero16(dir_lights, 0x400);
@@ -262,7 +262,7 @@ unsigned char *initialize_level_render_state(LevelHeaderE9EC8 *hdr)
     n = *(int *)lc;
     lc += 0x10;
     if (n >= 12) {
-        STUB_printf(D_001E79D8);
+        STUB_printf(str_too_many_dir_lights);
         n = 12;
     }
     if (n != 0) {
@@ -374,7 +374,7 @@ unsigned char *initialize_level_render_state(LevelHeaderE9EC8 *hdr)
         ((void (*)(void *, int, int))FastMemSet)(shrub_colors, 0, size4);
     }
     lastTie = -1;
-    D_00160BB0.x4 = shrub_colors;
+    shrub_color_dma_ref_tag.x4 = shrub_colors;
     shrubs_end = shrubs + shrub_count;
 
     for (i = 0; i < shrub_count; i++) {
@@ -1160,7 +1160,7 @@ void Transition_DefaultDraw(s32 *arg0)
         dispatch_callback_list_1();
     }
     vu1_gs_regs_alt();
-    if (D_0018A3E8[0] != 0) {
+    if (transition_draw_particles[0] != 0) {
         func_00234C98_EB7C0(8, 5);
         vu1_gs_regs_alt();
         func_00118D80(0);
@@ -1171,7 +1171,7 @@ void Transition_DefaultDraw(s32 *arg0)
     ResetGsRegisters();
     if (intro_overlay_alpha != 0) {
         DrawTexturedQuad(0xEC, 0x10, 0x100, 0x80, 0, 0, 0x100, 0x80,
-                      (long)(intro_overlay_alpha << 24 | 0x808080), (*(s64 *)&D_0015F048));
+                      (long)(intro_overlay_alpha << 24 | 0x808080), (*(s64 *)&intro_overlay_tex0));
     }
     if (language_intro_overlay_alpha != 0) {
         n = (*(s32 *)&g_game_language) - 1;
@@ -1188,19 +1188,19 @@ void Transition_DefaultDraw(s32 *arg0)
         }
         emit_rgba_draw_packet(0, 0, 0, truncate_float_to_s32(gFade * 128.0f));
     }
-    VU0_loadMicroProgram(D_00100AE0);
+    VU0_loadMicroProgram(frame_vu0_micro_program);
     func_00118D80(0);
     if (g_game_mode == 4) {
         draw_freeze_message_box();
     }
     VU1_syncChain(2);
-    LightTfrags(D_001E1600);
+    LightTfrags(tfrag_dma_block);
     PatchTfragGifs();
     VU1_syncChain(4);
     LightTies(tie_light_data);
     PatchTieGifs();
     VU1_syncChain(8);
-    LightShrubs(D_001D9240);
+    LightShrubs(shrub_scratchpad_copy);
     patch_shrub_gifs();
     VU1_syncChain(0x10);
     PatchMobyGifs();

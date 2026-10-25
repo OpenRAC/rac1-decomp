@@ -217,7 +217,7 @@ extern int D_L00_001792B8[];
 void store_current_level_table_value(int a, int b) {
     int i = D_0015EE84_m;
     if (i < 19) {
-        b += D_L00_001C47B8[i];
+        b += dialogue_entry_level_starts[i];
         dialogue_entry_ids[b] = a;
     }
 }

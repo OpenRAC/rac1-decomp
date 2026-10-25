@@ -55,7 +55,7 @@ void spawn_span_particle(float *pos, int kind, float *vec, float scale) {
         p[9] = func_001FA898_r(4.0f) + 0x60;
         p[3] = 0x44;
         p[1] = 3;
-        p[2] = D_L08_001B2B80[k];
+        p[2] = batalia_span_particle_textures_ptr[k];
         *(u128 *)(p + 0x10) = *(u128 *)pos;
         FastVecAdd(u, pos, w);
         *(u128 *)(p + 0x20) = *(u128 *)u;

@@ -97,30 +97,30 @@ s32 draw_hud_counter(HudElem *m) {
     hud_screen_position(m, &x, &y);
     left = x < 0x101;
     if (left) {
-        x = (*(s32 *)&D_L02_0015FA1C);
+        x = (*(s32 *)&aridia_hud_counter_left_x);
     } else {
-        x = (*(s32 *)&D_L02_0015FA20);
+        x = (*(s32 *)&aridia_hud_counter_right_x);
     }
     bottom = frame_size[0];
     y = pal_mode != 0 ? bottom - 0x2A : bottom - 0x32;
-    grow = IntToFloat(fade[0]) / IntToFloat((*(s32 *)&D_L02_0015F9F4));
+    grow = IntToFloat(fade[0]) / IntToFloat((*(s32 *)&aridia_hud_counter_open_steps));
     if (1.0f < grow) {
         grow = 1.0f;
     } else if (grow < 0.0f) {
         grow = 0.0f;
     }
-    shade = IntToFloat(fade[1]) / IntToFloat((*(s32 *)&D_L02_0015F9F8));
+    shade = IntToFloat(fade[1]) / IntToFloat((*(s32 *)&aridia_hud_counter_text_fade_steps));
     if (1.0f < shade) {
         shade = 1.0f;
     } else if (shade < 0.0f) {
         shade = 0.0f;
     }
-    func_00116248(text, D_L02_0015F930, m->unk74);
+    func_00116248(text, aridia_hud_counter_format, m->unk74);
     alpha = truncate_float_to_s32((f32)truncate_float_to_s32(grow * 128.0f) * 0.7f);
     if (m->unk08 < 10) {
-        len = (*(s32 *)&D_L02_0015FA30);
+        len = (*(s32 *)&aridia_hud_counter_panel_width);
     } else {
-        len = (*(s32 *)&D_L02_0015FA34);
+        len = (*(s32 *)&aridia_hud_counter_wide_panel_width);
     }
     px = x;
     bar = px + 4;
@@ -146,7 +146,7 @@ s32 draw_hud_counter(HudElem *m) {
     } else {
         HudFrame(m, m->icon, x - 0x16, y, 0, 0x80);
     }
-    bright = FastTweenColor((*(s32 *)&D_L02_0015FA28), (*(s32 *)&D_L02_0015FA2C), shade);
+    bright = FastTweenColor((*(s32 *)&aridia_hud_counter_color_from), (*(s32 *)&aridia_hud_counter_color_to), shade);
     dark = FastTweenColor(0, 0x80000000, shade);
     if (left) {
         font_print_right(x + 0x43, y + 9, dark, text, -1);

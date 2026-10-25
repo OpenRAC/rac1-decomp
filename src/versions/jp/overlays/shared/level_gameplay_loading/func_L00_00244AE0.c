@@ -113,18 +113,18 @@ s32 load_level_archive_resources(s32 full, s32 keep) {
         if (h->v[0x28]) {
             relocate_counted_pointer_table(base + h->v[0x28]);
         } else {
-            D_L00_0015F538 = 0;
-            D_L00_0015F53C = 0;
-            D_L00_0015F540 = 0;
+            level_textured_sphere_count = 0;
+            level_textured_spheres = 0;
+            level_textured_sphere_textures = 0;
         }
         if (h->v[0x29]) {
             load_two_int_two_float_header(base + h->v[0x29]);
         } else {
-            D_L00_0015FD58 = 0;
-            D_L00_0015FD5C = 0;
+            height_map_width = 0;
+            height_map_rows = 0;
             height_map_max_height = 0;
             height_map_min_height = 0;
-            D_L00_0015FD68 = 0;
+            height_map_data = 0;
         }
         if (h->v[0x2A])
             D_L00_0015F6E4 = base + h->v[0x2A];
@@ -141,12 +141,12 @@ s32 load_level_archive_resources(s32 full, s32 keep) {
         free = (char *)((u32)(base + used + 0x3F) & ~0x3F);
         n = span->count;
         level_sound_slots = (Slot244110 *)free;
-        D_L00_0015F6D0 = n;
+        level_sound_slot_count = n;
         copy_memory_by_alignment(free, tbl + span->off, n * 32);
         span++;
         free += n * 32;
         e = tbl + span->off;
-        for (a3 = 0; a3 < D_L00_0015F6D0; a3++) {
+        for (a3 = 0; a3 < level_sound_slot_count; a3++) {
             if (level_sound_slots[a3].sound >= span->count) {
                 ((void (*)())STUB_printf)(sound_slot_out_of_range_msg);
                 level_sound_slots[a3].sound = -1;

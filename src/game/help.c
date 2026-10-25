@@ -229,11 +229,11 @@ void draw_level_selection_map(s32 left, s32 right, s32 top, s32 bottom) {
                           0);
             draw_hud_rect(label_x + 1, label_y + 1, line_end_x + 1, label_y + 1, 0x80000000, 0);
             text_x = (line_end_x < label_x) ? line_end_x : label_x;
-            FontPrintLarge(text_x + 1, label_y - (*(s32 *)&D_0015F770) + 1, 0x80000000, label_text,
+            FontPrintLarge(text_x + 1, label_y - (*(s32 *)&map_label_text_y_offset) + 1, 0x80000000, label_text,
                              -1);
             draw_hud_rect(line_start_x, line_start_y, label_x, label_y, 0x80F0F0F0, 0);
             draw_hud_rect(label_x, label_y, line_end_x, label_y, 0x80F0F0F0, 0);
-            FontPrintLarge(text_x, label_y - (*(s32 *)&D_0015F770), 0x80F0F0F0, label_text, -1);
+            FontPrintLarge(text_x, label_y - (*(s32 *)&map_label_text_y_offset), 0x80F0F0F0, label_text, -1);
             HudSprite(GetIconFrame(0xE99A, 0xD), marker_x - 10,
                             marker_y - 10, 20, 20, 0x80);
         }

@@ -79,14 +79,14 @@ void EffectSlots_Fire(char *slots, float *position, float *direction, float dist
     }
     acceleration = g_frame_time_sq;
     ApproachWithVelocity(&speed, &travel_step, travel, 1.0f, acceleration * 48.0f,
-                  (*(float *)&D_L02_00160150) * g_frame_time);
+                  (*(float *)&aridia_shot_stream_max_speed) * g_frame_time);
     ((float (*)(void *, void *, float))vec_scale_to_length)(adjusted, adjusted, travel_step);
-    n = (*(int *)&D_L02_00160158);
-    first_count = (*(int *)&D_L02_00160154);
+    n = (*(int *)&aridia_shot_stream_extra_count);
+    first_count = (*(int *)&aridia_shot_stream_lead_count);
     if (travel < 4.0f) first_count = 1;
     for (i = 0; i < n + first_count; i++) {
         rand_vec(offset, 0.0f,
-            (((*(float *)&D_L02_0016015C) - (*(float *)&D_L02_00160160)) * (travel / distance) + (*(float *)&D_L02_00160160)) * g_frame_time);
+            (((*(float *)&aridia_shot_stream_spread_far) - (*(float *)&aridia_shot_stream_spread_near)) * (travel / distance) + (*(float *)&aridia_shot_stream_spread_near)) * g_frame_time);
         FastVecAdd(offset, offset, adjusted);
         FastVecScale(velocity, adjusted, random_float_between(0.0f, 1.0f));
         FastVecAdd(velocity, velocity, origin);

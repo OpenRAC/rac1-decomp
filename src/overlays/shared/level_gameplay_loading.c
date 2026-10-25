@@ -640,7 +640,7 @@ char *load_level_gameplay(int arg0) {
         level_fog_far_distance = ((float *)p)[1];
         level_fog_near_intensity = ((float *)p)[2];
         level_fog_far_intensity = ((float *)p)[3];
-        D_L00_0015F718 = ((float *)p)[4];
+        veldin1_hero_fall_state_height = ((float *)p)[4];
         ship = (float *)(p + 5);
         c = p + 9;
         p += 12;
@@ -655,9 +655,9 @@ char *load_level_gameplay(int arg0) {
     D_L00_001600B0 = 500;
     D_L00_0016023C = 0x1F4000;
     SetBackgroundColor(render_view_params.f23C, render_view_params.f240, render_view_params.f244);
-    VU0_loadMicroProgram(D_00100AE0);
-    FastMemZero16(D_L00_001803C0, 0x100);
-    FastMemZero16(D_L00_001805C0, 0x180);
+    VU0_loadMicroProgram(frame_vu0_micro_program);
+    FastMemZero16(level_point_lights, 0x100);
+    FastMemZero16(level_point_light_data, 0x180);
     FastMemZero16(level_moby_lights, 0x400);
     {
         char *p = (char *)hdr + hdr->f4;
@@ -1728,10 +1728,10 @@ char *load_level_gameplay(int arg0) {
         int i;
 
         for (i = 19; i >= 0; i--) {
-            D_L00_001DD400[i] = 0;
+            glove_of_doom_ring[i] = 0;
         }
     }
-    D_L00_0016190C = 0;
+    glove_of_doom_ring_index = 0;
     if (level_render_state.f0 != 0) {
         *(long *)((int *)&level_render_state.f0->spawn_frame) = *(long *)((int *)&g_hero.moby->spawn_frame);
     }
@@ -1997,18 +1997,18 @@ s32 load_level_archive_resources(s32 full, s32 keep) {
         if (h->v[0x28]) {
             relocate_counted_pointer_table(base + h->v[0x28]);
         } else {
-            D_L00_0015F538 = 0;
-            D_L00_0015F53C = 0;
-            D_L00_0015F540 = 0;
+            level_textured_sphere_count = 0;
+            level_textured_spheres = 0;
+            level_textured_sphere_textures = 0;
         }
         if (h->v[0x29]) {
             load_two_int_two_float_header(base + h->v[0x29]);
         } else {
-            D_L00_0015FD58 = 0;
-            D_L00_0015FD5C = 0;
+            height_map_width = 0;
+            height_map_rows = 0;
             height_map_max_height = 0;
             height_map_min_height = 0;
-            D_L00_0015FD68 = 0;
+            height_map_data = 0;
         }
         if (h->v[0x2A])
             D_L00_0015F6E4 = base + h->v[0x2A];
@@ -2025,12 +2025,12 @@ s32 load_level_archive_resources(s32 full, s32 keep) {
         free = (char *)((u32)(base + used + 0x3F) & ~0x3F);
         n = span->count;
         level_sound_slots = (Slot244110 *)free;
-        D_L00_0015F6D0 = n;
+        level_sound_slot_count = n;
         copy_memory_by_alignment(free, tbl + span->off, n * 32);
         span++;
         free += n * 32;
         e = tbl + span->off;
-        for (a3 = 0; a3 < D_L00_0015F6D0; a3++) {
+        for (a3 = 0; a3 < level_sound_slot_count; a3++) {
             if (level_sound_slots[a3].sound >= span->count) {
                 ((void (*)())STUB_printf)(sound_slot_out_of_range_msg);
                 level_sound_slots[a3].sound = -1;

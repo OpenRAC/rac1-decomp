@@ -2321,7 +2321,7 @@ extern char D_0013A5E0[];
 // Tracks the nearest target in front of the player that lies inside a view cone.
 void try_select_camera_offset_effect_moby(char *m) {
     float v[4];
-    char *g = D_L02_00167300;
+    char *g = aridia_player_camera;
     char *p = *(char **)(g + 0x180);
     char *h;
     float d;
@@ -2452,7 +2452,7 @@ int test_moby_camera_target_angle_limits(char *moby, float a, float b) {
     if (a == 0.0f && b == 0.0f) {
         return 1;
     }
-    g = D_L02_00167300;
+    g = aridia_player_camera;
     FastVecSub(d, src + 0x10, *(char **)(g + 0x180) + 0x30);
     dot1 = FastVecDot(d, (vec + 0x30));
     FastVecScale(p, (vec + 0x30), dot1);

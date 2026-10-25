@@ -43,7 +43,7 @@ extern int func_00216960(void);
 /* Opens the vendor screen for moby m in level lvl: sets up its camera, resets the screen state and runs it until it closes. */
 void initialize_vendor_screen(char *m, int lvl) {
     char *g = D_0013E633 + 0xE1D;
-    char *s = D_L01_001CABC0;
+    char *s = novalis_vendor_screen_state;
     char *c = fx_cutscene;
     char *sc;
     char *c2;
@@ -55,9 +55,9 @@ void initialize_vendor_screen(char *m, int lvl) {
     func_0012E528(0x1D);
     music_Pause(0);
     func_0012DDC0();
-    D_L01_0015F6BC = 1;
+    novalis_skip_frame = 1;
     FastMemSet(s, 0, 0x220);
-    *(int *)D_L01_001CABC0 = 3;
+    *(int *)novalis_vendor_screen_state = 3;
     novalis_game_mode = 5;
     *(int *)(s + 4) = 0;
     *(char **)(s + 0x28) = m;
@@ -68,7 +68,7 @@ void initialize_vendor_screen(char *m, int lvl) {
     g[0x20AC] = 1;
     g[0x20A5] = 1;
     HeroSetObjectFlags();
-    matrix_mul_vec3(sc, &D_L01_00161180, m + 0xC0);
+    matrix_mul_vec3(sc, &novalis_vendor_screen_anchor_offset, m + 0xC0);
     FastVecAdd(sc, sc, m + 0x10);
     *(float *)(s + 0xC8) = ProbeGroundHeight(sc, 0, 0.5f);
     clear_u64_value(s + 0xB0);
@@ -78,15 +78,15 @@ void initialize_vendor_screen(char *m, int lvl) {
     FastMemSet(D_L01_0017C840, 0, 0x40);
     calculate_dma_transfer_address();
     n = relocated_address_base + (int)0xFFFC0000;
-    *(int *)(c + 0x58) = D_L01_00174300[1] + n;
-    r = D_L01_001CA720[lvl];
-    *(int *)(c + 0x5C) = D_L01_00174300[2] + n;
-    D_L01_0015F4FC = 1.0f;
+    *(int *)(c + 0x58) = novalis_scene_buffer_offsets[1] + n;
+    r = novalis_vendor_scene_chunk_ids[lvl];
+    *(int *)(c + 0x5C) = novalis_scene_buffer_offsets[2] + n;
+    novalis_fade_level = 1.0f;
     relocated_address_base = n;
     *(int *)&D_L01_0015F500 = 0;
     clear_hero_item_slot(0, 0);
     *(int *)(g + 0x20B8) = lvl;
-    select_world_object_resource_tables(D_L01_00179FC0[lvl].f10, -1);
+    select_world_object_resource_tables(novalis_item_defs[lvl].f10, -1);
     load_scene_chunks_with_fade(r);
     q = (char *)D_0014171B + 0x100B5;
     *(int *)(q + 0x1C) = 0x2734;

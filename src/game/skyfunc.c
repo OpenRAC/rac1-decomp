@@ -601,10 +601,10 @@ void SetupSkyGifPaging(void) {
     int i;
 
     p = g_render_packet_cursor;
-    D_00160570 = p;
+    sky_gif_paging_tag = p;
     p += 0x10;
     g_render_packet_cursor = p;
-    ProfileMarker_Begin(D_00160550, 1);
+    ProfileMarker_Begin(str_sky_texs, 1);
     s = level_sky_effect_data;
     g_gs_texture_allocation_cursor = g_gs_texture_allocation_start;
     pending_texture_upload_count = 0;
@@ -630,7 +630,7 @@ extern void func_00234E80(void);
 void DoSkyGifPaging(void) {
     int *p = D_00161000_p;
 
-    D_00160574 = p;
+    sky_gif_paging_start = p;
     p += 4;
     D_00161000_p = p;
     D_00160570_p[0] = 0x20000000;
@@ -638,7 +638,7 @@ void DoSkyGifPaging(void) {
     D_00160570_p[2] = 0;
     D_00160570_p[3] = 0;
     if (draw_config[1] != 0) {
-        func_0020C2F8();
+        flush_pending_texture_uploads();
         VU1_texFlush();
     }
     D_00161000_p[0] = 0x20000000;
@@ -646,10 +646,10 @@ void DoSkyGifPaging(void) {
     D_00161000_p[2] = 0;
     D_00161000_p[3] = 0;
     D_00161000_p += 4;
-    D_00160574[0] = 0x20000000;
-    D_00160574[1] = (int)D_00161000_p;
-    D_00160574[2] = 0;
-    D_00160574[3] = 0;
+    sky_gif_paging_start[0] = 0x20000000;
+    sky_gif_paging_start[1] = (int)D_00161000_p;
+    sky_gif_paging_start[2] = 0;
+    sky_gif_paging_start[3] = 0;
     g_gs_texture_allocation_cursor = g_gs_texture_allocation_start;
 }
 
@@ -747,7 +747,7 @@ void func_0022CA00_r(struct Shell_2CA00 *shell) {
     D_00160510_2CA00 = 1 - D_00160510_2CA00;
     if (visibility[0] == 1) {
         func_0020C210_2CA00(shell->tiles[0].address, shell->tiles[0].unkE >> 4,
-                                 (((s32 *)&D_00160508))[D_00160510_2CA00]);
+                                 (((s32 *)&sky_tile_spr_buffers))[D_00160510_2CA00]);
     }
 
     for (i = 0; i < shell->count; i++) {
@@ -759,11 +759,11 @@ void func_0022CA00_r(struct Shell_2CA00 *shell) {
         D_00160510_2CA00 = 1 - D_00160510_2CA00;
         if (next < shell->count && visibility[next] == 1) {
             func_0020C210_2CA00(shell->tiles[next].address, shell->tiles[next].unkE >> 4,
-                                     (((s32 *)&D_00160508))[D_00160510_2CA00]);
+                                     (((s32 *)&sky_tile_spr_buffers))[D_00160510_2CA00]);
         }
 
         if (visibility[i] == 1) {
-            dest = (((s32 *)&D_00160508))[1 - D_00160510_2CA00];
+            dest = (((s32 *)&sky_tile_spr_buffers))[1 - D_00160510_2CA00];
             c_dest = dest + shell->tiles[i].unkC;
             a_dest = dest + shell->tiles[i].unkA;
             if (func_0022D2AC_2CA00(dest + shell->tiles[i].unk8, 0x70002000, shell->tiles[i].unk4,
@@ -840,7 +840,7 @@ void func_0022CC40_r(struct Shell_2CC40 *shell) {
     D_00160510_2CC40 = 1 - D_00160510_2CC40;
     if (visibility[0] == 1) {
         func_0020C210_2CC40(shell->tiles[0].address, shell->tiles[0].unkE >> 4,
-                                 (((s32 *)&D_00160508))[D_00160510_2CC40]);
+                                 (((s32 *)&sky_tile_spr_buffers))[D_00160510_2CC40]);
     }
 
     for (i = 0; i < shell->count; i++) {
@@ -852,11 +852,11 @@ void func_0022CC40_r(struct Shell_2CC40 *shell) {
         D_00160510_2CC40 = 1 - D_00160510_2CC40;
         if (next < shell->count && visibility[next] == 1) {
             func_0020C210_2CC40(shell->tiles[next].address, shell->tiles[next].unkE >> 4,
-                                     (((s32 *)&D_00160508))[D_00160510_2CC40]);
+                                     (((s32 *)&sky_tile_spr_buffers))[D_00160510_2CC40]);
         }
 
         if (visibility[i] == 1) {
-            dest = (((s32 *)&D_00160508))[1 - D_00160510_2CC40];
+            dest = (((s32 *)&sky_tile_spr_buffers))[1 - D_00160510_2CC40];
             c_dest = dest + shell->tiles[i].unkC;
             a_dest = dest + shell->tiles[i].unkA;
             if (func_0022D2AC_2CC40(dest + shell->tiles[i].unk8, 0x70002000, shell->tiles[i].unk4,

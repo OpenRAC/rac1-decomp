@@ -10,11 +10,11 @@ int send_dma_to_stash_slot(int arg, unsigned int slot, int off, int size) {
     int req[4];
     int lim;
     if (slot >= 0x40) return -3;
-    lim = D_L00_001C1668[slot].qwc;
+    lim = stash_slots[slot].qwc;
     if (lim == 0) return -3;
     if (lim < off + size) return -1;
     req[0] = arg;
-    req[1] = (int)((char *)D_L00_001C1668[slot].ram + off * 16);
+    req[1] = (int)((char *)stash_slots[slot].ram + off * 16);
     req[2] = size * 16;
     req[3] = 0;
     func_00118E20(req, IOP_STASH_FETCH);
@@ -24,7 +24,7 @@ int send_dma_to_stash_slot(int arg, unsigned int slot, int off, int size) {
  * the `return -3` off as func_L00_002951C8 (config/overlays/joined.tsv). */
 int GetStashSlotSize(unsigned int slot) {
     if (slot >= 0x40) return -3;
-    return D_L00_001C1668[slot].qwc;
+    return stash_slots[slot].qwc;
 }
 // Returns the constant -3.
 int GetStashSlotSize_Tail(void) {

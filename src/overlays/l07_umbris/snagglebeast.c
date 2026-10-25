@@ -524,8 +524,8 @@ extern void func_0020D960(char *, int, void *);
 void apply_snagglebeast_big_head_cheat(char *arg) {
     if (umbris_scene_state == 2 && gCheats[0] != 0) {
         int i;
-        for (i = 0; i < D_L07_0016C960.count; i++) {
-            char *m = D_L07_0016C960.mobs[i];
+        for (i = 0; i < umbris_cutscene_state.count; i++) {
+            char *m = umbris_cutscene_state.mobs[i];
             if (*(short *)(m + 0xA6) == *(short *)(arg + 0xA6)) {
                 if (gCheats[0] != 0) {
                     unsigned char *p = snagglebeast_big_head_manipulator;
