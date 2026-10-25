@@ -377,8 +377,18 @@ def read_local() -> list[tuple[str, str, str, bool]]:
         sym, name, evidence, flag = (line.split("\t") + ["", "", "", ""])[:4]
         if not SYMBOL.match(sym) or not IDENT.match(name):
             sys.exit(f"{LOCAL.name}: bad row: {line!r}")
-        out.append((sym, name, evidence, flag.strip() == "override"))
+        out.append((sym, name, evidence, flag.strip() in ("override", "clash")))
     return out
+
+
+def local_clashes() -> set[str]:
+    """Symbols whose config/names_local.tsv row is flagged `clash`: the NTSC decomp's name is
+    already an identifier in src/ (a struct field, a local, a label), so names.h would leave it
+    out; the local name is kept over the adopted one."""
+    if not LOCAL.exists():
+        return set()
+    return {l.split("\t")[0] for l in LOCAL.read_text().splitlines()
+            if not l.startswith("#") and (l.split("\t") + ["", "", "", ""])[3].strip() == "clash"}
 
 
 def merge_local(rows: list[dict]) -> list[dict]:
@@ -846,9 +856,13 @@ def merge_ntsc(rows: list[dict], entries=None) -> list[dict]:
     (tier descriptive, the old one goes to the alternatives); a held or kept-original name is
     listed among the alternatives, or as a candidate where the symbol has no name."""
     by_sym = {r["symbol"]: r for r in rows}
+    overridden = local_clashes()
     for e in ntsc_order(read_ntsc_table() if entries is None else entries):
         old = by_sym.get(e["symbol"])
-        if e["status"] == ADOPT:
+        if e["status"] == ADOPT and e["symbol"] in overridden and old:
+            if e["name"] != old["name"]:
+                old["alts"] = ",".join(sorted(set([a for a in old["alts"].split(",") if a] + [e["name"]])))
+        elif e["status"] == ADOPT:
             new = {"symbol": e["symbol"], "name": e["name"], "tier": "descriptive", "source": NTSC_SOURCE,
                    "evidence": e["evidence"], "alts": ""}
             if old:
