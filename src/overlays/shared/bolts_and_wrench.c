@@ -293,7 +293,7 @@ void update_frame_timing_and_wrapped_value(char *m) {
     }
 }
 /* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002a4830.c, FUN_L00_002a4dc8. */
-int FetchAddCounter(int a) { int t = D_L00_00161458; D_L00_00161458 = t + a; return t; }
+int fetch_and_add_global_accumulator(int a) { int t = D_L00_00161458; D_L00_00161458 = t + a; return t; }
 extern void *func_0020D348(int oClass);
 extern void func_L00_00251E30(void *);
 
@@ -897,9 +897,9 @@ extern s32 func_002140B0(s32);
 extern f32 func_002140F8(f32, f32);
 extern u8 *func_L00_00272F00_A7E10(void *pos, s32 life, f32 size0, f32 size1, s32 color, s32 mode, s32 spin, void *vel, f32 f2) __asm__("func_L00_00272F00");
 
-/* CollectBolt: adds the bolt moby's value (1, or 5 / 20 / 50 for classes 0xE / 0xF / 0x10) to the bolt count, the level's total and its source's stats, shows the bolt counter and spawns two sparkles at the bolt.
+/* collect_bolt: adds the bolt moby's value (1, or 5 / 20 / 50 for classes 0xE / 0xF / 0x10) to the bolt count, the level's total and its source's stats, shows the bolt counter and spawns two sparkles at the bolt.
    Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002a4830.c, FUN_L00_002a6b70. */
-void CollectBolt(struct Moby *bolt)
+void collect_bolt(struct Moby *bolt)
 {
     Vec4 vel;
     Vec4 pos;
@@ -956,7 +956,7 @@ extern char *func_L00_0025D390(void *);
 extern void func_L00_001FF4B0(float *, float *, float);
 
 /* Steers a thrown moby along its path: builds its orientation from the data's angles and, when done, releases the held target. */
-void ThrownMobyOrient(char *moby, void *out1, void *out2) {
+void update_bolt_grounded_pose(char *moby, void *out1, void *out2) {
     char *data = *(char **)(moby + 0x78);
     float m0[12];
     float m1[12];
@@ -1043,7 +1043,7 @@ extern void func_001F9CA0(void *, void *, void *);
 extern void func_00215380(void *arg0, void *axis, float angle);
 
 // Starts the moby's tumble: picks default spin rates, builds its basis and launches it.
-int Moby_StartTumble(void *moby_v, int target_i, float sx, float sy) {
+int begin_bolt_attraction(void *moby_v, int target_i, float sx, float sy) {
     char *moby = moby_v;
     char *target = (char *)target_i;
     float v[12];
@@ -1092,7 +1092,7 @@ typedef struct {
     u8 pad_00[0x20];
     f32 vel[4] __attribute__((aligned(16))); /* 0x20 */
     f32 spin[4] __attribute__((aligned(16))); /* 0x30: per-frame rotation (quaternion) */
-    u8 counted; /* 0x40: CollectBolt also adds the bolt to D_0015EE2C */
+    u8 counted; /* 0x40: collect_bolt also adds the bolt to D_0015EE2C */
     u8 pad_41[0xF];
     f32 unk50; /* random angle */
     u8 pad_54;
@@ -1237,7 +1237,7 @@ extern short D_L00_00161484;
 #define FUN_001f9a68_2a7780 func_001F9C30
 #define FUN_001f7d30_2a7780 func_L00_001FD1D8
 
-void HeroEffect_Draw(void *op) {
+void draw_wrench_swing_effect(void *op) {
     O_2a7780 *o = (O_2a7780 *)op;
     R_2a7780 *r;
     E_2a7780 *e;
@@ -1468,10 +1468,10 @@ void process_mobies_near_returning_wrench(char *a) {
             if (m != 0 && *(char **)(m + 0x24) != 0 && *(short *)(*(char **)(m + 0x24) + 0x46) == 0x13) {
                 if (FastVecDist(m + 0x10, a + 0x10) < 2.7f) {
                     float f = random_float_between(-30.0f, 30.0f);
-                    if (Moby_StartTumble(m, *(int *)(g + 0x2080), f * 0.017453292f, 0.0f)) return;
+                    if (begin_bolt_attraction(m, *(int *)(g + 0x2080), f * 0.017453292f, 0.0f)) return;
                 }
             } else {
-                if (IsMobyScatterClass(m) != 0) {
+                if (is_moby_class_e2_cc_de_3ee_d6_e1_d5_or_df(m) != 0) {
                     if (FastVecDist(m + 0x10, a + 0x10) < 2.7f) {
                         if (try_collect_ammo_pickup(m)) return;
                     }
@@ -1607,7 +1607,7 @@ void wrench_update(Wrench48 *m) {
                 d->aim_hit=player_state; qcopy(d->target,collision_hit_point);
             }
         }
-        AddDrawCallback(HeroEffect_Draw,m);
+        AddDrawCallback(draw_wrench_swing_effect,m);
         anim=m->current_animation;
         if ((unsigned char)anim!=0) {
             if ((unsigned char)anim==14) {
@@ -1682,7 +1682,7 @@ void wrench_update(Wrench48 *m) {
             work.v[2][0]=FastCos(angle)*1.4f; work.v[2][1]=FastSin(angle)*1.4f; work.v[2][2]=0.0f;
             scale_wrench_collision_vector_by_heading(work.v[2]); FastVecAdd(work.v[1],work.v[1],work.v[2]);
             if (!sweepp48()->attack_cooldown && coll_line(work.v[0],work.v[1],2,0,0) && CollType()) {
-                if (!wrench_hit48.moby || IsMobyClass502OrOutsideRange((char*)wrench_hit48.moby)) {
+                if (!wrench_hit48.moby || is_nonnull_moby_outside_table_or_class_range_500_to_540_or_class_502((char*)wrench_hit48.moby)) {
                     sweepp48()->attack_cooldown=1; Moby_PlaySound(2,0,(int)m); spawn_wrench_impact_effects((char*)m);
                     if (wrench_hit48.moby) {
                         work.v[3][0]=FastCos(yaw); work.v[3][1]=FastSin(yaw); work.v[3][2]=0.0f;
@@ -2265,7 +2265,7 @@ int predict_mine_impact(char *a0, char *o, int mode) {
             if (GetFlaggedPvarWord(g_coll_hit_moby) == 0) return 0;
         }
         if (mode != 2 || g_coll_hit_moby == 0 || GetFlaggedPvarWord(g_coll_hit_moby) == 0) {
-            AddDrawCallback(Moby_DrawSpinningQuads, o);
+            AddDrawCallback(draw_mine_predicted_impact_marker, o);
         }
         {
             char *g = (char *)&g_debug_camera;

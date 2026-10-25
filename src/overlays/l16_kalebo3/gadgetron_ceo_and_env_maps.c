@@ -113,14 +113,14 @@ void gadgetron_ceo_update(L16ChallengeMoby *m) {
         if (!gHaveMorphORay[9] && vec_distance_xy(D_0013E633 + 0xE9D, m->position) < 3.5f) {
             int elapsed, period;
             char *statistics;
-            elapsed = scale_ticks(play_time_ticks);
+            elapsed = scale_ticks(gameplay_event_frame_count);
             period = 600;
             statistics = D_0014171B + 0x34D;
             elapsed -= *(unsigned short *)(statistics + 0x43A) * period;
             if (elapsed > (int)((float)scale_ticks(18) * 60.0f) || *(unsigned short *)(statistics + 0x43A) * period == 0) {
                 Help_Request(0x3E83, 0x87);
-            } else if (scale_ticks(play_time_ticks) / 600 > *(unsigned short *)(statistics + 0x43A)) {
-                *(unsigned short *)(statistics + 0x43A) = scale_ticks(play_time_ticks) / 600;
+            } else if (scale_ticks(gameplay_event_frame_count) / 600 > *(unsigned short *)(statistics + 0x43A)) {
+                *(unsigned short *)(statistics + 0x43A) = scale_ticks(gameplay_event_frame_count) / 600;
             }
         }
         if (activation->mode == 3) {
@@ -556,7 +556,7 @@ void initialize_path_walker_group(unsigned char *m) {
         }
         flags = D_L16_00161F50;
         current[0x30] = 255;
-        *(float *)(current + 0x2C) *= D_L16_00161F54;
+        *(float *)(current + 0x2C) *= path_walker_initial_scale_multiplier;
         *(int *)(current + 0x94) = 0;
         *(unsigned short *)(current + 0x32) = flags;
         data = *(L16WalkerData **)(current + 0x78);
@@ -672,7 +672,7 @@ void ElevatorPlatformUpdate(L16PlatformMoby *m) {
             d->particle = -1;
             matrix_mul_vec3(motion.v, motion.v, D_L16_001601BC + (d->joint << 7));
             d->goal = motion.v[2] + *(float *)(D_L16_001601BC + d->joint * 0x80 + 0x38);
-            m->position[2] = motion.v[2] + *(float *)(D_L16_001601BC + d->joint * 0x80 + 0x38) + D_L16_00161F6C;
+            m->position[2] = motion.v[2] + *(float *)(D_L16_001601BC + d->joint * 0x80 + 0x38) + elevator_height_offset;
             m->reverse = 1;
             m->state = 2;
             break;
@@ -689,7 +689,7 @@ void ElevatorPlatformUpdate(L16PlatformMoby *m) {
                     motion.v[2] = 1.0f;
                 }
                 transform_vector(motion.v, motion.v, D_L16_001601BC + (d->joint << 7));
-                motion.v[2] = motion.v[2] + *(float *)(D_L16_001601BC + d->joint * 0x80 + 0x38) + D_L16_00161F6C;
+                motion.v[2] = motion.v[2] + *(float *)(D_L16_001601BC + d->joint * 0x80 + 0x38) + elevator_height_offset;
                 if (FastAbsF(g_hero.position[2] - motion.v[2]) < 1.0f) {
                     m->reverse = (m->reverse + 1) & 1;
                     d->goal = motion.v[2];
@@ -707,7 +707,7 @@ void ElevatorPlatformUpdate(L16PlatformMoby *m) {
                 }
                 m->reverse = (m->reverse + 1) & 1;
                 transform_vector(motion.v, motion.v, D_L16_001601BC + (d->joint << 7));
-                d->goal = motion.v[2] + *(float *)(D_L16_001601BC + d->joint * 0x80 + 0x38) + D_L16_00161F6C;
+                d->goal = motion.v[2] + *(float *)(D_L16_001601BC + d->joint * 0x80 + 0x38) + elevator_height_offset;
                 d->speed = 0.0f;
                 m->state = 3;
             }
@@ -720,11 +720,11 @@ void ElevatorPlatformUpdate(L16PlatformMoby *m) {
                 || FastAbsF(m->position[2] - hero_position[2] - 2.0f) > 1.0f
                 || m->position[2] < d->goal) {
                 speed = ApproachWithVelocity(&m->position[2], &d->speed, d->goal,
-                                      D_L16_00161F7C * g_frame_time_sq, D_L16_00161F7C * g_frame_time_sq,
+                                      elevator_height_acceleration * g_frame_time_sq, elevator_height_acceleration * g_frame_time_sq,
                                       *(float *)&D_L16_00161F78 * g_frame_time);
             } else {
                 speed = ApproachWithVelocity(&m->position[2], &d->speed, m->position[2],
-                                      D_L16_00161F7C * 4.0f * g_frame_time_sq, D_L16_00161F7C * 4.0f * g_frame_time_sq,
+                                      elevator_height_acceleration * 4.0f * g_frame_time_sq, elevator_height_acceleration * 4.0f * g_frame_time_sq,
                                       *(float *)&D_L16_00161F78 * g_frame_time);
             }
             clear_u64_value(motion.v);

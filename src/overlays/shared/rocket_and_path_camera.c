@@ -398,7 +398,7 @@ void draw_moby_animated_quad_layers(unsigned char *m) {
         for (i = 0; i < 4; i++) {
             for (axis = 0; axis < 2; axis++) {
                 int limit = truncate_float_to_s32(D_L10_001DA540[pass][axis] * 360.0f);
-                float angle = IntToFloat(D_L10_0015F4F8 % limit) / D_L10_001DA540[pass][axis] - 180.0f;
+                float angle = IntToFloat(quad_uv_animation_phase_input % limit) / D_L10_001DA540[pass][axis] - 180.0f;
                 float delta;
                 if (D_L10_001DA580[pass][axis] != 0) {
                     delta = FastCos(angle * 0.017453292f);

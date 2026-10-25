@@ -306,7 +306,7 @@ void gadgebot_spawn_pad_update(char *moby) {
 extern void func_L00_002D80A0(char *);
 
 /* Sets the moby to state 2 and calls func_L00_002D80A0. */
-void DriftingSprites_Activate(char *moby)
+void initialize_moby_particle_effect_state(char *moby)
 {
     moby[0x20] = 2;
     *(unsigned short *)(moby + 0x34) &= 0xFFBE;
@@ -718,7 +718,7 @@ extern void func_0020D678_EA920(struct Moby *) __asm__("func_0020D678");
 extern struct Moby * D_001414D0_EA920 __asm__("D_001414D0");
 
 /* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/00297d10.c, FUN_L06_002e94f0. */
-void RespawnMobyUpdate(struct Moby *moby) {
+void update_frog_health_respawn_and_target(struct Moby *moby) {
     struct RespawnVars *vars;
     struct MobyHit *hit;
     int kind;
@@ -898,7 +898,7 @@ void move_frog_with_collision_resolution(void *moby, void *out, int use_path, fl
         }
     }
     if (use_path != 0) {
-        PushPointOutsidePath(0.5f, *(int *)(*(char **)((char *)moby + 0x78) + 0x1EC), (char *)moby + 0x10, (char *)moby + 0x10);
+        resolve_point_path_segment_xy_clearance(0.5f, *(int *)(*(char **)((char *)moby + 0x78) + 0x1EC), (char *)moby + 0x10, (char *)moby + 0x10);
     }
 }
 typedef u32 u128_EB360 __attribute__((mode(TI), aligned(16)));
@@ -911,7 +911,7 @@ extern f32 D_L06_0015F660[] MACRO_ADDR;
 
 /* Bursts 4 then 8 particles up from the moby, then removes the moby stored at vars+0x20C.
    Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/00297d10.c, FUN_L06_002e9f30. */
-void SpawnDeathParticlesAndRemove(struct Moby *moby) {
+void destroy_frog_child_moby(struct Moby *moby) {
     float origin[4];
     float vel[4];
     float pos[4];
@@ -1493,7 +1493,7 @@ void GadgebotUpdate(Moby *moby) {
         if (moby->prev_seq != 1) {
             MobyBlendAnimation(moby, 1, 0, scale_ticks(7));
         }
-        WanderSteer((char *)moby, (char *)d, 0.35f, 0.25f);
+        update_object_wander_movement((char *)moby, (char *)d, 0.35f, 0.25f);
         break;
     case 3: {
         int j;
@@ -1564,7 +1564,7 @@ void GadgebotUpdate(Moby *moby) {
                         qcopy(v50, g_hero.f80);
                     }
                     *(u128 *)v70 = *(u128 *)(*(float (*)[4])&moby->pos);
-                    PushPointOutsidePath(0.17f, d->paths.id[d->f27C], (*(float (*)[4])&moby->pos), v70);
+                    resolve_point_path_segment_xy_clearance(0.17f, d->paths.id[d->f27C], (*(float (*)[4])&moby->pos), v70);
                     p = blarg_paths[d->paths.id[d->f27C]];
                     if (IsPointInPolygon(v70, p + 4, *p) != 0) {
                         *(u128 *)(*(float (*)[4])&moby->pos) = *(u128 *)v70;
@@ -1692,7 +1692,7 @@ void GadgebotUpdate(Moby *moby) {
                         qcopy(v40, (*(float (*)[4])&d->f174->pos));
                     }
                     *(u128 *)v60 = *(u128 *)(*(float (*)[4])&moby->pos);
-                    PushPointOutsidePath(0.17f, d->paths.id[d->f27C], (*(float (*)[4])&moby->pos), v60);
+                    resolve_point_path_segment_xy_clearance(0.17f, d->paths.id[d->f27C], (*(float (*)[4])&moby->pos), v60);
                     p = blarg_paths[d->paths.id[d->f27C]];
                     if (IsPointInPolygon(v60, p + 4, *p) != 0) {
                         *(u128 *)(*(float (*)[4])&moby->pos) = *(u128 *)v60;
@@ -3106,6 +3106,6 @@ void spawn_energy_sphere_destruction_particles(char *m) {
         }
         c = D_L06_00161F24;
         v = random_integer_below(0xFF);
-        PartType60Spawn(m + 0x10, f, buf, r, c, (unsigned char)v, 0);
+        spawn_moving_hero_relative_alpha_fade_particle(m + 0x10, f, buf, r, c, (unsigned char)v, 0);
     }
 }

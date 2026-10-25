@@ -230,7 +230,7 @@ extern int func_L00_001EFFF0(void *, void *, int, int, int);
 extern float D_L00_00173F68;
 
 /* Test whether the player can reach the point in front of him. */
-int CanReachPointAhead(void) {
+int check_hero_forward_collision_height(void) {
     char *g = (char *)D_0013E633 + 0xE1D;
     Vec4A a, b;
     float t, d;

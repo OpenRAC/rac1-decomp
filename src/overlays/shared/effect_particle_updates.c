@@ -2435,7 +2435,7 @@ void update_animated_offset_effect_particle(char *m) {
 extern unsigned char *D_L00_001B2430;
 
 /* Spawns a particle at a with velocity b, colour class c and tag d. */
-void *PartType40Spawn(char *a, char *b, unsigned char c, int d) {
+void *spawn_splitting_effect_particle_with_collision_response_and_fade(char *a, char *b, unsigned char c, int d) {
     char *p = create_part(0x28);
 
     if (p != 0) {
@@ -2668,7 +2668,7 @@ void tick_finite_effect_particle_lifetime(char *a) {
     }
 }
 /* Spawns a particle of type 0x2A at a with velocity b, class c and tag d. */
-void *PartType42Spawn(char *a, char *b, unsigned char c, int d) {
+void *spawn_splitting_effect_particle_with_collision_and_fade(char *a, char *b, unsigned char c, int d) {
     char *p = create_part(0x2A);
 
     if (p != 0) {

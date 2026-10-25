@@ -411,8 +411,8 @@ int HeroL02_SetMoveState(int a, int b) {
             if (*(unsigned short *)(h + 0x60) <= 0xFFFE) {
                 *(unsigned short *)(h + 0x60) = *(unsigned short *)(h + 0x60) + 1;
             }
-            if (scale_ticks(play_time_ticks) / 600 > *(unsigned short *)(h + 0x62)) {
-                *(unsigned short *)(h + 0x62) = scale_ticks(play_time_ticks) / 600;
+            if (scale_ticks(gameplay_event_frame_count) / 600 > *(unsigned short *)(h + 0x62)) {
+                *(unsigned short *)(h + 0x62) = scale_ticks(gameplay_event_frame_count) / 600;
             }
             *(unsigned int *)(h + 0x64) = *(unsigned int *)(h + 0x64) | (1 << g_current_level_index) | 0x80000000;
         }
@@ -454,8 +454,8 @@ int HeroL02_SetMoveState(int a, int b) {
             if (*(unsigned short *)(h + 0x60) <= 0xFFFE) {
                 *(unsigned short *)(h + 0x60) = *(unsigned short *)(h + 0x60) + 1;
             }
-            if (scale_ticks(play_time_ticks) / 600 > *(unsigned short *)(h + 0x62)) {
-                *(unsigned short *)(h + 0x62) = scale_ticks(play_time_ticks) / 600;
+            if (scale_ticks(gameplay_event_frame_count) / 600 > *(unsigned short *)(h + 0x62)) {
+                *(unsigned short *)(h + 0x62) = scale_ticks(gameplay_event_frame_count) / 600;
             }
             *(unsigned int *)(h + 0x64) = *(unsigned int *)(h + 0x64) | (1 << g_current_level_index) | 0x80000000;
         }
@@ -1006,8 +1006,8 @@ int HeroL02_SetMoveState(int a, int b) {
             if (*(unsigned short *)(h + 0) <= 0xFFFE) {
                 *(unsigned short *)(h + 0) = *(unsigned short *)(h + 0) + 1;
             }
-            if (scale_ticks(play_time_ticks) / 600 > *(unsigned short *)(h + 2)) {
-                *(unsigned short *)(h + 2) = scale_ticks(play_time_ticks) / 600;
+            if (scale_ticks(gameplay_event_frame_count) / 600 > *(unsigned short *)(h + 2)) {
+                *(unsigned short *)(h + 2) = scale_ticks(gameplay_event_frame_count) / 600;
             }
             *(unsigned int *)(h + 4) = *(unsigned int *)(h + 4) | (1 << g_current_level_index) | 0x80000000;
             q = D_0013E633 + 0xE1D;
@@ -1034,16 +1034,16 @@ int HeroL02_SetMoveState(int a, int b) {
             if (*(unsigned short *)(h + 8) <= 0xFFFE) {
                 *(unsigned short *)(h + 8) = *(unsigned short *)(h + 8) + 1;
             }
-            if (scale_ticks(play_time_ticks) / 600 > *(unsigned short *)(h + 0xA)) {
-                *(unsigned short *)(h + 0xA) = scale_ticks(play_time_ticks) / 600;
+            if (scale_ticks(gameplay_event_frame_count) / 600 > *(unsigned short *)(h + 0xA)) {
+                *(unsigned short *)(h + 0xA) = scale_ticks(gameplay_event_frame_count) / 600;
             }
             *(unsigned int *)(h + 0xC) = *(unsigned int *)(h + 0xC) | (1 << g_current_level_index) | 0x80000000;
             h2 = item_usage;
             if (*(unsigned short *)(h2 + 0x128) <= 0xFFFE) {
                 *(unsigned short *)(h2 + 0x128) = *(unsigned short *)(h2 + 0x128) + 1;
             }
-            if (scale_ticks(play_time_ticks) / 600 > *(unsigned short *)(h2 + 0x12A)) {
-                *(unsigned short *)(h2 + 0x12A) = scale_ticks(play_time_ticks) / 600;
+            if (scale_ticks(gameplay_event_frame_count) / 600 > *(unsigned short *)(h2 + 0x12A)) {
+                *(unsigned short *)(h2 + 0x12A) = scale_ticks(gameplay_event_frame_count) / 600;
             }
             *(unsigned int *)(h2 + 0x12C) = *(unsigned int *)(h2 + 0x12C) | (1 << g_current_level_index) | 0x80000000;
             q = D_0013E633 + 0xE1D;
@@ -1078,8 +1078,8 @@ int HeroL02_SetMoveState(int a, int b) {
             if (*(unsigned short *)(h + 0x40) <= 0xFFFE) {
                 *(unsigned short *)(h + 0x40) = *(unsigned short *)(h + 0x40) + 1;
             }
-            if (scale_ticks(play_time_ticks) / 600 > *(unsigned short *)(h + 0x42)) {
-                *(unsigned short *)(h + 0x42) = scale_ticks(play_time_ticks) / 600;
+            if (scale_ticks(gameplay_event_frame_count) / 600 > *(unsigned short *)(h + 0x42)) {
+                *(unsigned short *)(h + 0x42) = scale_ticks(gameplay_event_frame_count) / 600;
             }
             q = D_0013E633 + 0xE1D;
             *(unsigned int *)(h + 0x44) = *(unsigned int *)(h + 0x44) | (1 << g_current_level_index) | 0x80000000;
@@ -1588,8 +1588,8 @@ void HeroL02_UpdateStateTransitions(void) {
                         if (usage_stats.fF8 < 0xFFFF) {
                             usage_stats.fF8++;
                         }
-                        if (scale_ticks(play_time_ticks) / 600 > usage_stats.fFA) {
-                            usage_stats.fFA = scale_ticks(play_time_ticks) / 600;
+                        if (scale_ticks(gameplay_event_frame_count) / 600 > usage_stats.fFA) {
+                            usage_stats.fFA = scale_ticks(gameplay_event_frame_count) / 600;
                         }
                         usage_stats.fFC = usage_stats.fFC | (1 << D_0015EE84_m) | 0x80000000;
                         g_hero.pending_item[0] = next;
@@ -1607,7 +1607,7 @@ void HeroL02_UpdateStateTransitions(void) {
                         HeroL02_SetMoveState(1, 1);
                         break;
                     }
-                    HeroClearQueuedSequence();
+                    clear_hero_queued_animation();
                     if (g_hero.unk22CA != 0) {
                         if (g_hero.unk308 == 0 || item_available[0x1C] == 0) {
                             HeroL02_SetMoveState(0x81, 1);
@@ -1988,7 +1988,7 @@ void HeroL02_UpdateStateTransitions(void) {
                         break;
                     }
                     if (!(g_hero.air_frames.s < scale_ticks(5)) && !(g_hero.state.prev_control_mode == 0x12 && g_hero.unk20A9 != 0) && g_hero.ground_distance > 1.35f) {
-                        if (CanReachPointAhead() == 0) {
+                        if (check_hero_forward_collision_height() == 0) {
                             HeroL02_SetMoveState(6, 1);
                             break;
                         }

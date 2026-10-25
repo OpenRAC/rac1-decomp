@@ -207,7 +207,7 @@ void update_rocket_moby(char *moby) {
             DeleteMoby(moby);
         } else if (moby_vars->flags & 2) {
             pitch_angle_or_remaining_frames = (float)(moby_vars->end - moby_vars->c);
-            if (pitch_angle_or_remaining_frames <= multiply_global_factor(*(float *)&rocket_target_pulse_frames)) {
+            if (pitch_angle_or_remaining_frames <= multiply_global_factor(*(float *)&rocket_target_pulse_lead_time)) {
                 AddDrawCallback(draw_rocket_target_pulse_quad, moby);
             }
         }
@@ -705,13 +705,13 @@ void update_path_junction_selection(struct Moby *moby) {
         moby->update_dist = 0xFF;
         n = 0;
         do {
-            for (i = 0; i < veldin2_rail_count; i++) {
+            for (i = 0; i < path_link_count; i++) {
                 if (veldin2_rails[i].weight == 0.0f) {
                     continue;
                 }
                 vars->pair[n].first = &veldin2_rails[i];
                 vars->weight[n].first = veldin2_rails[i].weight;
-                for (j = 0; j < veldin2_rail_count; j++) {
+                for (j = 0; j < path_link_count; j++) {
                     if (veldin2_rails[j].weight == 0.0f) {
                         continue;
                     }
@@ -1075,16 +1075,16 @@ void thruster_pack_lock_red_update(struct Moby *moby) {
             int one = 1;
             if ((help[0x2B02].level_mask & (one << g_current_level_index)) == 0) {
                 if (help[0x71].count != 0) {
-                    if (scale_ticks((*(unsigned int *)&play_time_ticks)) - help[0x71].unk2 * 600 > (int)((float)scale_ticks(0x12) * 60.0f) ||
+                    if (scale_ticks((*(unsigned int *)&gameplay_event_frame_count)) - help[0x71].unk2 * 600 > (int)((float)scale_ticks(0x12) * 60.0f) ||
                         help[0x71].unk2 * 600 == 0) {
                         Help_Request(0x2B02, 0x71);
-                    } else if (scale_ticks((*(unsigned int *)&play_time_ticks)) / 600 > help[0x71].unk2) {
-                        help[0x71].unk2 = scale_ticks((*(unsigned int *)&play_time_ticks)) / 600;
+                    } else if (scale_ticks((*(unsigned int *)&gameplay_event_frame_count)) / 600 > help[0x71].unk2) {
+                        help[0x71].unk2 = scale_ticks((*(unsigned int *)&gameplay_event_frame_count)) / 600;
                     }
                 } else {
                     help[0x71].count++;
-                    if (scale_ticks((*(unsigned int *)&play_time_ticks)) / 600 > help[0x71].unk2) {
-                        help[0x71].unk2 = scale_ticks((*(unsigned int *)&play_time_ticks)) / 600;
+                    if (scale_ticks((*(unsigned int *)&gameplay_event_frame_count)) / 600 > help[0x71].unk2) {
+                        help[0x71].unk2 = scale_ticks((*(unsigned int *)&gameplay_event_frame_count)) / 600;
                     }
                     help[0x71].level_mask = help[0x71].level_mask | (one << g_current_level_index) | 0x80000000;
                 }
@@ -1534,7 +1534,7 @@ void update_ballistic_ring_projectile(char *moby) {
             clear_u64_value(second_spark_vector);
             first_spark_vector[3] = random_float_between(*(float *)&ring_projectile_spark_start_size_min, *(float *)&ring_projectile_spark_start_size_max);
             second_spark_vector[3] = random_float_between(*(float *)&ring_projectile_spark_end_size_min, *(float *)&ring_projectile_spark_end_size_max);
-            i0 = FastTweenColor(*(int *)&ring_projectile_spark_start_color_a, *(int *)&ring_projectile_spark_start_color_b, random_float_between(0.0f, 1.0f));
+            i0 = FastTweenColor(*(int *)&ring_projectile_spark_start_color_a, *(int *)&ballistic_ring_trail_initial_color_end, random_float_between(0.0f, 1.0f));
             i1 = FastTweenColor(*(int *)&ring_projectile_spark_end_color_a, *(int *)&ring_projectile_spark_end_color_b, random_float_between(0.0f, 1.0f));
             i2 = func_001FA898_r(multiply_global_factor((float)*(int *)&ring_projectile_spark_life * random_float_between(0.0f, 1.0f) + 1.0f));
             i3 = func_001FA898_r(multiply_global_factor((float)*(int *)&ring_projectile_spark_time2 * (random_float_between(-*(float *)&ring_projectile_spark_time_spread, *(float *)&ring_projectile_spark_time_spread) + 1.0f)));
@@ -1828,10 +1828,10 @@ void spawn_expanding_ring_segment_particles(char *moby, void *a1, void *a2) {
         FastVecSub(w, v, moby + 0x10);
         vec_scale_to_length(w, w, *(float *)(d + 0x20));
         col = FastTweenColor(*(int *)&expanding_ring_particle_color_a, *(int *)&expanding_ring_particle_color_b, random_float_between(0.0f, 1.0f));
-        PartType60Spawn(v, w, col, scale_ticks(*(int *)&expanding_ring_particle_life) & 0xFF,
+        spawn_moving_hero_relative_alpha_fade_particle(v, w, col, scale_ticks(*(int *)&expanding_ring_particle_life) & 0xFF,
                           random_integer_below(0xFF) & 0xFF, 0, *(float *)&expanding_ring_particle_scale);
         w[2] = 0.0f;
-        PartType60Spawn(v, w, col, scale_ticks(*(int *)&expanding_ring_flat_particle_life) & 0xFF,
+        spawn_moving_hero_relative_alpha_fade_particle(v, w, col, scale_ticks(*(int *)&expanding_ring_flat_particle_life) & 0xFF,
                           random_integer_below(0xFF) & 0xFF, 0, *(float *)&expanding_ring_particle_scale);
     }
 }
@@ -2038,7 +2038,7 @@ void update_position_and_rotation_transition(char *moby) {
             veldin2_screen_fade = t;
         }
         if (1.0f <= t) {
-            veldin2_transition_warp_active = 1;
+            position_and_rotation_transition_active = 1;
             clear_u64_value(v);
             v[2] = *(float *)(data + 0x4C);
             Hero_ResetToPosition(data + 0x40, v, 0x72, 1);
@@ -2070,7 +2070,7 @@ void update_position_and_rotation_transition(char *moby) {
         float d = *(float *)(data + 0x60);
         veldin2_screen_fade = *(float *)(data + 0x6C);
         if (1.0f <= d) {
-            veldin2_transition_warp_active = 0;
+            position_and_rotation_transition_active = 0;
             clear_u64_value(v + 8);
             v[10] = *(float *)(data + 0x4C);
             Hero_ResetToPosition(data + 0x40, v + 8, 0, 0);
@@ -2103,7 +2103,7 @@ void update_position_and_rotation_transition(char *moby) {
             t = *(float *)(data + 0x6C);
             veldin2_screen_fade = t;
             if (1.0f <= t) {
-                veldin2_transition_warp_active = 0;
+                position_and_rotation_transition_active = 0;
                 *(float *)(data + 0x60) = 1.0f;
                 clear_u64_value(v + 8);
                 v[10] = *(float *)(data + 0x4C);
@@ -2165,7 +2165,7 @@ float get_position_and_rotation_transition_progress(Level18VendorFloatMoby *moby
     return moby->data->value;
 }
 /* 1 when the byte at +0x20 is 2, 2 when it is 3, else 0 */
-int FinalBoss_GetMoveStatus(u8 *p) {
+int classify_moby_state_two_or_three(u8 *p) {
     int c = p[0x20];
     if (c == 2) return 1;
     if (c == 3) return 2;

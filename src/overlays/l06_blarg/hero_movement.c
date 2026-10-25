@@ -861,8 +861,8 @@ void HeroL06_UpdateMovement(void) {
                             if (usage_stats.f90 < 0xFFFF) {
                                 usage_stats.f90++;
                             }
-                            if (scale_ticks(play_time_ticks) / 600 > usage_stats.f92) {
-                                usage_stats.f92 = scale_ticks(play_time_ticks) / 600;
+                            if (scale_ticks(gameplay_event_frame_count) / 600 > usage_stats.f92) {
+                                usage_stats.f92 = scale_ticks(gameplay_event_frame_count) / 600;
                             }
                             usage_stats.f94 = usage_stats.f94 | (1 << g_current_level_index) | 0x80000000;
                             *(int *)&D_L06_0015F768 = -1;
@@ -1640,19 +1640,19 @@ void HeroL06_UpdateMovement(void) {
                         vec[4][1] = FastSin(yaw) * 0.8f;
                         vec[4][2] = 0.55f;
                         FastVecAdd(vec[4], vec[4], ((Hero *)&g_hero)->motion.pos.f);
-                        Hero_HitMobySparks((int)w, coll_sphere_mobys(0.8f, vec[4], 0, w, vec[0]));
+                        emit_filtered_entry_sparkles((int)w, coll_sphere_mobys(0.8f, vec[4], 0, w, vec[0]));
                         yaw = FastAddRots(((Hero *)&g_hero)->motion.rot.f[2], -0.87266463f);
                         vec[4][0] = FastCos(yaw) * 0.8f;
                         vec[4][1] = FastSin(yaw) * 0.8f;
                         vec[4][2] = 0.55f;
                         FastVecAdd(vec[4], vec[4], ((Hero *)&g_hero)->motion.pos.f);
-                        Hero_HitMobySparks((int)w, coll_sphere_mobys(0.8f, vec[4], 0, ((Hero *)&g_hero)->moby, vec[0]));
+                        emit_filtered_entry_sparkles((int)w, coll_sphere_mobys(0.8f, vec[4], 0, ((Hero *)&g_hero)->moby, vec[0]));
                         yaw = FastAddRots(((Hero *)&g_hero)->motion.rot.f[2], 0.87266463f);
                         vec[4][0] = FastCos(yaw) * 0.8f;
                         vec[4][1] = FastSin(yaw) * 0.8f;
                         vec[4][2] = 0.55f;
                         FastVecAdd(vec[4], vec[4], ((Hero *)&g_hero)->motion.pos.f);
-                        Hero_HitMobySparks((int)w, coll_sphere_mobys(0.8f, vec[4], 0, w, vec[0]));
+                        emit_filtered_entry_sparkles((int)w, coll_sphere_mobys(0.8f, vec[4], 0, w, vec[0]));
                     }
                 }
             }
@@ -1880,7 +1880,7 @@ void HeroL06_UpdateMovement(void) {
                         if (tilt < -0.7853982f) {
                             tilt = -0.7853982f;
                         }
-                        Hero_SetTiltSpringParams(0.03f, 0.2f);
+                        set_first_hero_easing_parameters(0.03f, 0.2f);
                         if (((Hero *)&g_hero)->unk58C != 0) {
                             D_L06_0017AF60[1] = -tilt;
                         } else {
@@ -1892,9 +1892,9 @@ void HeroL06_UpdateMovement(void) {
                     D_L06_0017AF60[0] = fast_atan2(vec_length_xy(((Hero *)&g_hero)->motion.displacement.f), ((Hero *)&g_hero)->motion.displacement.f[2]);
                 }
                 if (hasW) {
-                    Hero_SetTiltSpringParams(g_frame_scale_sq * 0.017f, g_frame_scale_sq * 0.3f);
-                    Hero_SetTiltSpringParams(g_frame_scale_sq * 0.027f, g_frame_scale_sq * 0.3f);
-                    Hero_SetTiltSpringParams(g_frame_scale_sq * 0.027f, g_frame_scale_sq * 0.3f);
+                    set_first_hero_easing_parameters(g_frame_scale_sq * 0.017f, g_frame_scale_sq * 0.3f);
+                    set_first_hero_easing_parameters(g_frame_scale_sq * 0.027f, g_frame_scale_sq * 0.3f);
+                    set_first_hero_easing_parameters(g_frame_scale_sq * 0.027f, g_frame_scale_sq * 0.3f);
                     if (((Hero *)&g_hero)->unk5D8 != 0) {
                         float a;
 

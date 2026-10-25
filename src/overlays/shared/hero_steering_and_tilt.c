@@ -221,7 +221,7 @@ void update_hero_transformed_negative_z_angle_parameters(void) {
     vec.q = 0;
     v[2] = -1.0f;
     transform_vector(v, v, (char *)state + 0x40);
-    Hero_SetTiltSpringParams(g_frame_scale_sq * 0.013f, g_frame_scale_sq * 0.3f);
+    set_first_hero_easing_parameters(g_frame_scale_sq * 0.013f, g_frame_scale_sq * 0.3f);
     limit = 0.43633232f;
     if (state->state.current == 0x3f) limit = 0.29670596f;
     else if (state->state.current == 0x70) limit = 0.08726646f;
@@ -285,7 +285,7 @@ void adjust_hero_pose_targets_from_motion(void) {
     f32 x;
 
     if (D_0013F450_15A90.state.current == 0x02) {
-        Hero_SetTiltSpringParams(0.04f, 0.2f);
+        set_first_hero_easing_parameters(0.04f, 0.2f);
         func_L00_0020A858_15A90b(0.04f, 0.2f);
         func_L00_0020A858_15A90c(0.04f, 0.2f);
         func_L00_0020A858_15A90d(0.02f, 0.2f);
@@ -326,7 +326,7 @@ void adjust_hero_pose_targets_from_motion(void) {
             (D_L00_0017A780_15A90.f[(0xB68) / 4]) = nw * 0.3f;
         }
     } else if (D_0013F450_15A90.state.current == 0x08 || D_0013F450_15A90.state.current == 0x81) {
-        Hero_SetTiltSpringParams(0.008f, 0.08f);
+        set_first_hero_easing_parameters(0.008f, 0.08f);
         func_L00_0020A858_15A90b(0.015f, 0.08f);
         func_L00_0020A858_15A90c(0.015f, 0.08f);
         func_L00_0020A858_15A90d(0.008f, 0.1f);
@@ -371,7 +371,7 @@ void adjust_hero_pose_targets_from_motion(void) {
         (D_L00_0017A780_15A90.f[(0xAB8) / 4]) = -b * 0.3f;
         (D_L00_0017A780_15A90.f[(0xB68) / 4]) = -b * 0.3f;
     } else if (D_0013F450_15A90.state.control_mode == 2 || D_0013F450_15A90.state.control_mode == 4) {
-        Hero_SetTiltSpringParams(0.04f, 0.2f);
+        set_first_hero_easing_parameters(0.04f, 0.2f);
         func_L00_0020A858_15A90b(0.04f, 0.2f);
         func_L00_0020A858_15A90c(0.04f, 0.2f);
         func_L00_0020A858_15A90d(0.02f, 0.2f);
@@ -556,7 +556,7 @@ typedef int Q_c __attribute__((mode(TI)));
 typedef struct { Q_c q[4]; } QM_c;
 
 /* builds the camera rotation matrix m that looks along v, with pitch smoothing. Adapted from Lombyte (GPL-3.0) for PAL: src/overlays/shared/ui_help_00214658.c, FUN_L00_00216130. */
-void CameraLookAtMatrix(V_c *v, M_c *m, void *p, float a, float b, float c) {
+void compute_hero_reference_tilt_rotation(V_c *v, M_c *m, void *p, float a, float b, float c) {
     M_c m0;
     M_c m1;
     V_c r;
@@ -647,7 +647,7 @@ void apply_hero_reference_tilt(void) {
         f20 = g_frame_scale_sq * 0.001f;
         f21 = f20;
     }
-    CameraLookAtMatrix(&a, &m, 0, f21, f20, f22);
+    compute_hero_reference_tilt_rotation(&a, &m, 0, f21, f20, f22);
     {
     unsigned char *n = (unsigned char *)D_0013E633 + 0xE1D;
     if (n[0x20B3] == 1 && *(short *)(n + 0x30E) != 0) {
@@ -1084,7 +1084,7 @@ extern void func_L00_002A90C0(void *, int);
 extern int *D_L00_00178000[];
 
 /* Initialise the pool once, then for each of the first n entries of type 5 or 9 halve and apply its position. */
-void Hero_HitMobySparks(int a, int n) {
+void emit_filtered_entry_sparkles(int a, int n) {
     if (n != 0) {
         char *d = D_0013E633 + 0xE1D;
         int i;

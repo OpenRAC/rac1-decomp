@@ -67,7 +67,7 @@ extern int D_L08_00161C7C_2E0258 SDATA(D_L08_00161C7C);
 
 /* Draws the Batalia cannon's HUD: a four-part frame, markers for the eight linked and four indexed targets
    (relative to the cannon's heading), the inner frame, a 32-segment health dial and two rotating needles. */
-void DrawCannonHud(Moby *m) {
+void draw_batalia_cannon_hud(Moby *m) {
     long xy[4];
     int color_words[4], uv_words[4];
     float relative[4];
@@ -999,7 +999,7 @@ extern void *func_L00_0025B478(void *, int, int);
 extern void func_L00_00260108(void *, void *, int, float, float);
 extern s32 func_0022ED80(s32, s32, struct Moby *);
 /* Selects a damaged child moby, launches it, and advances the parent's state. */
-void LaunchDamagedPart(struct Moby *moby) {
+void process_gunship_part_hits(struct Moby *moby) {
     char *data = *(char **)((char *)moby + 0x78);
     char *entries = data + 0x60;
     char *p = entries;
@@ -1177,7 +1177,7 @@ void update_gunship(struct Moby *moby) {
                          fast_atan2(vars->follow[0].path->points[waypoint].f[0] - moby->pos.x,
                                       vars->follow[0].path->points[waypoint].f[1] - moby->pos.y),
                          &vars->turn_speed, 0.004f, 0.3f, 0.02f);
-        LaunchDamagedPart(moby);
+        process_gunship_part_hits(moby);
         func_L08_002E33F0_E3860(moby);
         qcopy(&point, &vars->follow[0].path->points[waypoint]);
         if (FastVecDist(&moby->pos, &point) < 0.5f) {
@@ -1538,7 +1538,7 @@ void Batalia_BoltThiefUpdate(Moby *m) {
                     if (m->prev_seq != 6) {
                         MobyBlendAnimation(m, 6, 0, scale_ticks(0x14));
                     }
-                    Moby_StartTumble(d->list[i], (int)m, 0.0f, 0.0f);
+                    begin_bolt_attraction(d->list[i], (int)m, 0.0f, 0.0f);
                     d->list[i] = 0;
                 }
                 found = 1;
@@ -1760,7 +1760,7 @@ void update_batalia_bolt_pickup(Moby *m) {
         set_batalia_bolt_pickup_surface_rotation((char *)m, a);
         d->f60 = random_angle_radians();
         d->f64 = m->rot.x;
-        AimTurret((char *)m, (float *)&m->pos, (float *)&m->rot);
+        compute_batalia_bolt_pickup_surface_pose((char *)m, (float *)&m->pos, (float *)&m->rot);
         if (linked != 0 && GetFlaggedPvarWord(linked) != 0) {
             d->u7C.i = linked;
             convert_pose_to_reference_local(m, linked, d->v0, d->v10, d->v20, d->v30);
@@ -1799,18 +1799,18 @@ void update_batalia_bolt_pickup(Moby *m) {
         switch (m->oclass) {
         case 0x3DD:
             d->f60 = FastAddRots(d->f60, D_L08_00161D3C * 0.017453292f * g_frame_time);
-            d->f64 = FastAddRots(d->f64, D_L08_00161D40 * 0.017453292f * g_frame_time);
+            d->f64 = FastAddRots(d->f64, ten_bolt_pickup_surface_roll_speed_degrees * 0.017453292f * g_frame_time);
             break;
         case 0x3DC:
             d->f60 = FastAddRots(d->f60, D_L08_00161D34 * 0.017453292f * g_frame_time);
-            d->f64 = FastAddRots(d->f64, D_L08_00161D38 * 0.017453292f * g_frame_time);
+            d->f64 = FastAddRots(d->f64, five_bolt_pickup_surface_roll_speed_degrees * 0.017453292f * g_frame_time);
             break;
         default:
-            d->f60 = FastAddRots(d->f60, D_L08_00161D2C * 0.017453292f * g_frame_time);
+            d->f60 = FastAddRots(d->f60, bolt_pickup_default_surface_orbit_speed_degrees * 0.017453292f * g_frame_time);
             d->f64 = FastAddRots(d->f64, D_L08_00161D30 * 0.017453292f * g_frame_time);
             break;
         }
-        AimTurret((char *)m, (float *)&m->pos, (float *)&m->rot);
+        compute_batalia_bolt_pickup_surface_pose((char *)m, (float *)&m->pos, (float *)&m->rot);
         if (d->s6C != 0) {
             d->f74 = FastAddRots(d->f74, g_frame_time * 5.2359877f);
             if (d->u70.i > 12) {
@@ -1821,8 +1821,8 @@ void update_batalia_bolt_pickup(Moby *m) {
             if (fast_dec_timer(&d->u70.i) != 0) {
                 d->s6C = 0;
                 d->u70.i = truncate_float_to_s32(random_float_between((float)scale_ticks(300), (float)scale_ticks(600)));
-            } else if (m->visible != 0 && D_L08_00161D58 != 0) {
-                func_001F49B0_2E16A0(DrawScreenMarkerQuad, m);
+            } else if (m->visible != 0 && bolt_pickup_rotating_quad_enabled != 0) {
+                func_001F49B0_2E16A0(draw_batalia_bolt_pickup_rotating_quad, m);
                 return;
             }
         } else if (fast_dec_timer(&d->u70.i) != 0) {
@@ -1874,7 +1874,7 @@ void update_batalia_bolt_pickup(Moby *m) {
                     d->i68 = 0;
                 }
             }
-            AimTurret((char *)m, (float *)&m->pos, (float *)&m->rot);
+            compute_batalia_bolt_pickup_surface_pose((char *)m, (float *)&m->pos, (float *)&m->rot);
         }
         break;
     }
@@ -1919,7 +1919,7 @@ void update_batalia_bolt_pickup(Moby *m) {
         lim = d->f74 * (float)scale_ticks(20);
         if (dist < lim) {
             if (FastVecDist(b, &m->pos) > 0.52f) {
-                if (D_L08_00161D50 != 0) {
+                if (bolt_pickup_collection_alpha_fade_enabled != 0) {
                     m->alpha = (FastVecDist(b, &m->pos) + lim) * 128.0f / (lim + lim);
                 }
                 if (D_L08_00161D54 != 0) {
@@ -2049,7 +2049,7 @@ void update_batalia_bolt_pickup(Moby *m) {
                 set_batalia_bolt_pickup_surface_rotation((char *)m, a);
                 d->f60 = random_angle_radians();
                 d->f64 = random_angle_radians();
-                AimTurret((char *)m, d->v20, d->v30);
+                compute_batalia_bolt_pickup_surface_pose((char *)m, d->v20, d->v30);
                 FastVecSub(d->v40, d->v20, &m->pos);
                 FastVecScale(d->v40, d->v40, inv);
                 if (cl->moby != 0) {
@@ -2171,7 +2171,7 @@ extern void func_001F9BD8(void *, void *, void *);
 
 /* aims a turret: builds its barrel frame from the base rotation, yaw and pitch, writes the barrel rotation
  * and the muzzle point (offset per turret class) */
-void AimTurret(char *m, float *out, float *rot) {
+void compute_batalia_bolt_pickup_surface_pose(char *m, float *out, float *rot) {
     float r[16];
     float b[16];
     float up[4];
@@ -2245,7 +2245,7 @@ extern short D_L08_00161CF0;
 
 /* When the short at data + 0x6C is nonzero, projects the moby's offset position to screen space and draws a
  * four-corner quad there, its corners rotated in 90-degree steps by the angle at data + 0x74 and scaled by distance. */
-void DrawScreenMarkerQuad(char *m) {
+void draw_batalia_bolt_pickup_rotating_quad(char *m) {
     char *d = *(char **)(m + 0x78);
     if (*(short *)(d + 0x6C) != 0) {
         long v[4];
@@ -2357,7 +2357,7 @@ extern float D_0015EE6C MACRO_ADDR;
  * counter by slot index (1, 2, or 4 for slots 5 and up) and sets the slot's byte at +0xA4 to 0xFF. The counter is added
  * to the short at data + 0x13C; when that reaches 8 it is taken mod 8 and one slot object is released (its state byte
  * set to 1, the slot cleared), or the moby's state becomes 0x63 if none is left. */
-void LaunchDamagedPartSmall(char *m) {
+void process_shrub_part_hits(char *m) {
     char *data = *(char **)(m + 0x78);
     char *base = data + 0x60;
     char **p = (char **)base;

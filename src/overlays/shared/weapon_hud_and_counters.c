@@ -663,7 +663,7 @@ extern short D_L00_0015F848;
 extern short D_L00_0015F84C;
 
 /* Draws a HUD element's backdrop and the 100 entries of its particle table that are due */
-int draw_morphoray_progress_hud(HudElem *e) {
+int draw_uniform_size_hud_stars(HudElem *e) {
     float v0[4], v1[4], v2[4], v3[4], v4[4], v5[4];
     int x, y;
     float t;
@@ -1150,8 +1150,8 @@ void update_hud_item_selector_selection_and_visibility(Obj_38530 *p) {
             if (D_0013F450_38530.w10B8 != id) {
                 if (usage_stats.hA0 < 0xFFFF) usage_stats.hA0++;
             }
-            if (scale_ticks(play_time_ticks) / 600 > usage_stats.hA2)
-                usage_stats.hA2 = scale_ticks(play_time_ticks) / 600;
+            if (scale_ticks(gameplay_event_frame_count) / 600 > usage_stats.hA2)
+                usage_stats.hA2 = scale_ticks(gameplay_event_frame_count) / 600;
             usage_stats.wA4 = usage_stats.wA4 | (1 << g_current_level_index) | 0x80000000;
             if (id == 0x18) D_0013F450_38530.b1FF5 = 1;
             else D_0013F450_38530.w20B8 = id;
@@ -1275,7 +1275,7 @@ int draw_hud_item_selector_panel(HudElem *rec) {
     }
     selected = rec->unk74;
     if (selected >= 0 && *(int *)(((char **)hud_selector_slot_tables)[GI(quick_select_page)] + selected * 0x1C) != 0) {
-        color = FastTweenColor(GI(D_L00_0015F878), GI(D_L00_0015F87C), open * fade);
+        color = FastTweenColor(GI(D_L00_0015F878), GI(hud_item_selector_text_shadow_color_to), open * fade);
         {
         int id;
         id = *(int *)((char *)D_0014171B_i + 0x885 + selected * 4);
@@ -1285,7 +1285,7 @@ int draw_hud_item_selector_panel(HudElem *rec) {
             item = *(int *)(menu_item_enabled_115 + 0x21 + id * 4);
             func_00116248(formatted, D_L00_0015F8A8, item, *(unsigned short *)(wr + 0xE));
             if (item != 0)
-                shadow = FastTweenColor(GI(D_L00_0015F888), GI(D_L00_0015F88C), open * fade);
+                shadow = FastTweenColor(GI(D_L00_0015F888), GI(hud_item_selector_nonzero_ammo_text_color_to), open * fade);
             else
                 shadow = FastTweenColor(GI(D_L00_0015F880), GI(D_L00_0015F884), open * fade);
             FontPrintCenter(x + GI(quick_select_center_x) + 1, y + GI(D_L00_0015F804) + 13, color, formatted, -1);
@@ -1333,9 +1333,9 @@ int draw_hud_item_selector_panel(HudElem *rec) {
         id = *(int *)((char *)D_0014171B_i + 0x885 + selected * 4);
         wr = item_price_table + id * 24;
         if (*(unsigned short *)(wr + 8) != 0)
-            text_y += GI(D_L00_0015F894);
+            text_y += GI(hud_item_selector_title_with_ammo_y_offset);
         else if (prefix_length != 0)
-            text_y += GI(D_L00_0015F898);
+            text_y += GI(hud_item_selector_split_title_without_ammo_y_offset);
         else
             text_y += GI(D_L00_0015F89C);
         }
@@ -2142,7 +2142,7 @@ extern int func_00116248(char *, const char *, ...);
 extern int func_001FA8A8(int, int, float);
 
 /* Draws the weapon HUD tile: three-part frame, weapon icon and ammo text with shadow, faded by the slide-in timers. */
-int HudWeaponDraw(char *m) {
+int draw_weapon_ammo_hud_panel(char *m) {
     char buf[16];
     char *q = m + 0x70;
     int x4;
@@ -2310,7 +2310,7 @@ void update_weapon_hud_state(void) {
         if (w != 0) {
             D_hud_pair[0] = w;
             D_hud_pair[1] = queue_animation_update(0x10, w + 60000, (int)initialize_numeric_hud_timer_and_base_dimensions, (int)HudWeaponUpdate,
-                                           (int)HudWeaponDraw, (int)(menu_item_enabled_115 + 0x21 + w * 4),
+                                           (int)draw_weapon_ammo_hud_panel, (int)(menu_item_enabled_115 + 0x21 + w * 4),
                                            item_price_table[w].unkE);
         } else if (mode == 2) {
             if (D_hud_pair[1] != -1) {

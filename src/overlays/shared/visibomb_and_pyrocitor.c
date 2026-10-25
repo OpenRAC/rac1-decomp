@@ -393,14 +393,14 @@ void visibomb_update(char *m) {
                                 }
                                 if (*(unsigned char *)(m + 0x53) != 3) MobyBlendAnimation(m, 3, 0, 0);
                                 jet_camera_mode();
-                                p[1] = VisibombMissileSpawn(m, t0, f20, f21);
+                                p[1] = spawn_visibomb_missile(m, t0, f20, f21);
                                 {
                                     char *h = D_0014171B + 0x65;
                                     if (*(unsigned short *)(h + 0x68) <= 0xFFFE) {
                                         *(unsigned short *)(h + 0x68) = *(unsigned short *)(h + 0x68) + 1;
                                     }
-                                    if (scale_ticks(play_time_ticks) / 600 > *(unsigned short *)(h + 0x6A)) {
-                                        *(unsigned short *)(h + 0x6A) = scale_ticks(play_time_ticks) / 600;
+                                    if (scale_ticks(gameplay_event_frame_count) / 600 > *(unsigned short *)(h + 0x6A)) {
+                                        *(unsigned short *)(h + 0x6A) = scale_ticks(gameplay_event_frame_count) / 600;
                                     }
                                     *(unsigned int *)(h + 0x6C) = *(unsigned int *)(h + 0x6C) | (1 << g_current_level_index) | 0x80000000;
                                     p[0] = scale_ticks(0x3C);
@@ -515,7 +515,7 @@ extern void func_001F7868_2B4918(void) __asm__("func_001F7868");
 extern void func_L00_001FDE48_2B4918(int, void *, void *, void *, int) __asm__("func_L00_001FDE48");
 
 /* Draws the moby's beam: orients the moby along its child's two joints, draws three quads and a ribbon of 196 points. */
-void DrawChildBeam(Moby *m) {
+void draw_joint_aligned_beam_effect(Moby *m) {
     Quad_2B4918 pk;
     Vec4A mtx[4];
     Vec4A out[2];
@@ -868,7 +868,7 @@ extern int func_L00_001EFFF0(void *, void *, int, int, int);
 extern unsigned char *func_L00_0025D390(void *);
 
 // Finds the best-aimed target moby in the global list for a given yaw and pitch, refining them. Adapted from Lombyte (GPL-3.0) for PAL: overlays/shared/unclassified_002b2100.c, FUN_L00_002b46a8.
-unsigned char *Aim_RefineTarget(int ign, Vec4 *from, float *yaw, float *pitch) {
+unsigned char *select_blaster_auto_aim_target(int ign, Vec4 *from, float *yaw, float *pitch) {
     Vec4 src;
     Vec4 tp;
     Vec4 w;
@@ -1319,7 +1319,7 @@ int func_0022ED80_2b58d8(int, int, void *) __asm__("func_0022ED80");
 int func_L00_001EFFF0_2b58d8(void *, void *, int, void *, int) __asm__("func_L00_001EFFF0");
 void func_00216028_2b58d8(int, int) __asm__("func_00216028");
 /* Creates the type-0xAC moby: links it to its owner and a spawn position, fills its private data, sets up two child objects and probes the line to the owner. Adapted from Lombyte (GPL-3.0) for PAL: overlays/shared/unclassified_002b2100.c, FUN_L00_002b58d8. Declared with the callers' (void *, void *, float, float) -> int prototype. */
-int VisibombMissileSpawn(void *a_, void *pos_, float fa, float fb)
+int spawn_visibomb_missile(void *a_, void *pos_, float fa, float fb)
 {
     unsigned char *m = func_0020D348_2b58d8(0xAC);
     if (m) {
@@ -1908,11 +1908,11 @@ void taunter_update(Moby *m)
     if (o == 0) return;
     if (o->radius == 0.0f) o->radius = 30.0f;
     if (m->prev_seq == 2) m->state = 3;
-    D_L00_001615A4 = 1;
+    taunter_effect_emission_disabled = 1;
     if (m->state == 0) {
         o->anim = -1;
         m->state++;
-        D_L00_0016159C = 1;
+        taunter_effect_reset_pending = 1;
     }
     v = m->state;
     if ((u8)v == 1) {
@@ -1924,7 +1924,7 @@ void taunter_update(Moby *m)
     }
     if ((u8)v != 2) goto end;
     if (m->prev_seq == 3 && D_0013F450_2B8208.b20AC == 0) {
-        D_L00_001615A4 = 0;
+        taunter_effect_emission_disabled = 0;
         o->cnt18++;
     } else {
         o->cnt18 = 0;
@@ -1936,9 +1936,9 @@ void taunter_update(Moby *m)
                 o->frame = scale_ticks(rand_range(0xF, 0x2D));
             }
             if (item_usage.cnt < 0xFFFF) item_usage.cnt++;
-            v2 = scale_ticks(play_time_ticks) / 600;
+            v2 = scale_ticks(gameplay_event_frame_count) / 600;
             if (item_usage.last < v2) {
-                item_usage.last = scale_ticks(play_time_ticks) / 600;
+                item_usage.last = scale_ticks(gameplay_event_frame_count) / 600;
             }
             item_usage.flags |= 1 << g_current_level_index;
             item_usage.flags |= 0x80000000;
@@ -2003,15 +2003,15 @@ void update_taunter_effect_slots(Moby *arg) {
 
     int i;
     int r;
-    if (D_L00_0016159C != 0) {
+    if (taunter_effect_reset_pending != 0) {
         for (i = 9; i >= 0; i--) D_L00_001DB740_b[i].c = 0;
-        D_L00_0016159C = 0;
+        taunter_effect_reset_pending = 0;
         D_L00_001615A0 = 0;
         r = func_001FA898_r(*(float *)&D_L00_00161584_g / (*(float *)&D_L00_00161588_g * g_frame_time));
         *(int *)&D_L00_001615A8_g = r;
         D_L00_001615AC = 1.0f / IntToFloat(r);
     }
-    if (D_L00_001615A4 == 0) {
+    if (taunter_effect_emission_disabled == 0) {
         if (fast_dec_timer(&D_L00_001615A0) != 0) {
             i = 0;
             do {
@@ -2058,7 +2058,7 @@ extern short D_L00_0016158C;
 extern short D_L00_00161590;
 
 /* Draws ten billboard-lit quads around a moby using the table of offsets. */
-void DrawBillboardLitQuads(char *m) {
+void draw_taunter_effect_quads(char *m) {
     struct {
         float v[4][4];
         unsigned int col[4];
@@ -2157,9 +2157,9 @@ void update_pyrocitor_usage_and_cleanup(unsigned char *m)
     if (scale_ticks(0x78) < c) {
         if (*(unsigned short *)(P + 0x50) <= 0xFFFE)
             (*(unsigned short *)(P + 0x50))++;
-        h = scale_ticks(play_time_ticks) / 600;
+        h = scale_ticks(gameplay_event_frame_count) / 600;
         if (*(unsigned short *)(P + 0x52) < h)
-            *(unsigned short *)(P + 0x52) = scale_ticks(play_time_ticks) / 600;
+            *(unsigned short *)(P + 0x52) = scale_ticks(gameplay_event_frame_count) / 600;
         *(int *)(P + 0x54) = *(int *)(P + 0x54) | (1 << g_current_level_index) | 0x80000000;
     } else if (*(short *)(v + 0x50) < scale_ticks(0x1E)) {
         D_0013F450_2B9528[0x20B4]++;
@@ -2618,7 +2618,7 @@ void initialize_tesla_claw_beam(char *moby) {
     }
     (*(int *)&D_L00_00161660) = 0;
     (*(int *)&D_L00_0016174C) = 0;
-    D_L00_00161748 = scale_ticks((*(int *)&D_L00_001616F4));
+    tesla_beam_scaled_initial_frame_count = scale_ticks((*(int *)&D_L00_001616F4));
     (*(int *)&D_L00_001616C8) = 0x7F2020;
     FastVecSub(&d, data + 0x10, data);
     vec_scale_to_length(&step, &d, (*(float *)&D_L00_00161664) / 20.0f);

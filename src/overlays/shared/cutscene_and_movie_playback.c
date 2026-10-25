@@ -40,7 +40,7 @@ void update_game_frame_and_idle_counters(void) {
         (*(int *)&D_L00_001610B0)++;
     }
     level_frame_counter++;
-    play_time_ticks++;
+    gameplay_event_frame_count++;
     if (D_L00_0015F678) {
         if ((*(int *)&D_L00_001610B0) < (int)((float)scale_ticks(15) * 60.0f)) {
             D_0015EF28++;
@@ -187,13 +187,13 @@ void handle_pause_input(void) {
     if (D_L00_00184314) {
         HitS *h = (HitS *)(D_0014171B + 0x22D);
         if (h->h48 < 0xFFFF) h->h48++;
-        if (scale_ticks(play_time_ticks) / 600 > h->h4A) h->h4A = scale_ticks(play_time_ticks) / 600;
+        if (scale_ticks(gameplay_event_frame_count) / 600 > h->h4A) h->h4A = scale_ticks(gameplay_event_frame_count) / 600;
         h->w4C = h->w4C | (1 << g_current_level_index) | 0x80000000;
     }
     if (D_L00_0015F710) {
         D_L00_0015F710 = 0;
         if (((Hero *)(D_0013E633 + 0xE1D))->health.hp) {
-            ShipTakeOff();
+            prepare_level_transition_with_help_cleanup();
             return;
         }
     }

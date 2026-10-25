@@ -27,15 +27,15 @@ void draw_level11_layered_effect_batches(void) {
     emit_level11_layered_effect_batches_with_pair_offset(0);
     if (*(unsigned char *)&D_L11_00162620 != 0) {
         VU1_addGSregister(6, GetEffectTex(0x29));
-        VU1_addGSregister(0x42, (long)((D_L11_0016258C * *(unsigned char *)&D_L11_00162620) >> 8) << 32 | 0x68);
+        VU1_addGSregister(0x42, (long)((layered_effect_texture_29_fixed_alpha_scale * *(unsigned char *)&D_L11_00162620) >> 8) << 32 | 0x68);
         emit_level11_layered_effect_batches_with_pair_offset(1);
-        VU1_addGSregister(0x42, (long)((D_L11_0016258C * *(unsigned char *)&D_L11_00162620) >> 8) << 32 | 0x62);
+        VU1_addGSregister(0x42, (long)((layered_effect_texture_29_fixed_alpha_scale * *(unsigned char *)&D_L11_00162620) >> 8) << 32 | 0x62);
         emit_level11_layered_effect_batches_with_pair_offset(2);
     }
     VU1_addGSregister(6, GetEffectTex(0x2A));
     VU1_addGSregister(0x42, (long)*(int *)&D_L11_001625A8 << 32 | 0x48);
     emit_pair_offset_render_batch(0);
-    VU1_addGSregister(0x42, (long)D_L11_001625AC << 32 | 0x48);
+    VU1_addGSregister(0x42, (long)layered_effect_texture_2a_pair_one_fixed_alpha << 32 | 0x48);
     emit_pair_offset_render_batch(1);
     VU1_addGSregister(6, GetEffectTex(0x2B));
     VU1_addGSregister(0x42, (long)*(int *)&D_L11_001625B8 << 32 | 0x48);
@@ -115,7 +115,7 @@ void update_level11_layered_effect_and_queue_draw(unsigned char *moby) {
             break;
         effect_bounds[0] = *(float *)&D_L11_00162578;
         effect_bounds[1] = D_L11_0016257C;
-        effect_bounds[2] = D_L11_00162580;
+        effect_bounds[2] = layered_effect_position_z;
         effect_bounds[3] = D_L11_00162584;
         if (FastBSphereCheck((char *)effect_bounds, 1000.0f) < 0)
             break;
@@ -123,7 +123,7 @@ void update_level11_layered_effect_and_queue_draw(unsigned char *moby) {
             break;
         effect_to_reference_delta[0] = *(float *)&D_L11_00162578;
         effect_to_reference_delta[1] = D_L11_0016257C;
-        effect_to_reference_delta[2] = D_L11_00162580;
+        effect_to_reference_delta[2] = layered_effect_position_z;
         effect_to_reference_delta[3] = 1.0f;
         FastVecSub(effect_to_reference_delta, reference_position_base + 0x140, effect_to_reference_delta);
         effect_distance = FastVecLength(effect_to_reference_delta);
@@ -190,7 +190,7 @@ extern short D_L11_00162678;
 extern short D_L11_00162688;
 
 // Draws the level 11 HUD gauges: sets up the gfx packets and per-gauge draws.
-void PokitaruSurfaceFarDraw(char *m) {
+void draw_level11_distance_faded_effect_batches(char *m) {
     int *d = *(int **)(m + 0x78);
     int flag = 0;
     char *cam;
@@ -213,15 +213,15 @@ void PokitaruSurfaceFarDraw(char *m) {
     }
     if (*(unsigned char *)&D_L11_001626A0_w != 0 && flag) {
         VU1_addGSregister(6, GetEffectTex(0x29));
-        VU1_addGSregister(0x42, ((long)((D_L11_0016265C * *(unsigned char *)&D_L11_001626A0_w) >> 8) << 32) | 0x68);
+        VU1_addGSregister(0x42, ((long)((distance_faded_effect_texture_29_fixed_alpha_scale * *(unsigned char *)&D_L11_001626A0_w) >> 8) << 32) | 0x68);
         emit_render_batches_with_pair_offset(1);
-        VU1_addGSregister(0x42, ((long)((D_L11_0016265C * *(unsigned char *)&D_L11_001626A0_w) >> 8) << 32) | 0x62);
+        VU1_addGSregister(0x42, ((long)((distance_faded_effect_texture_29_fixed_alpha_scale * *(unsigned char *)&D_L11_001626A0_w) >> 8) << 32) | 0x62);
         emit_render_batches_with_pair_offset(2);
     }
     VU1_addGSregister(6, GetEffectTex(0x2A));
     VU1_addGSregister(0x42, ((long)*(int *)&D_L11_00162678 << 32) | 0x48);
     emit_oil_tanker_render_batches_with_pair_offset(0);
-    VU1_addGSregister(0x42, ((long)D_L11_0016267C << 32) | 0x48);
+    VU1_addGSregister(0x42, ((long)distance_faded_effect_texture_2a_pair_one_fixed_alpha << 32) | 0x48);
     emit_oil_tanker_render_batches_with_pair_offset(1);
     if (flag) {
         VU1_addGSregister(6, GetEffectTex(0x2B));
@@ -289,14 +289,14 @@ void update_level11_distance_faded_effect_and_queue_draw(unsigned char *moby) {
         reference_position_base = (struct Level11Reference *)pokitaru_player_camera;
         if (!(reference_position_base->pos[2] < 170.0f)) {
             effect_bounds[0] = *(float *)&D_L11_00162648;
-            effect_bounds[1] = D_L11_0016264C;
-            effect_bounds[2] = D_L11_00162650;
+            effect_bounds[1] = distance_faded_effect_position_y;
+            effect_bounds[2] = distance_faded_effect_position_z;
             effect_bounds[3] = D_L11_00162654;
             if (FastBSphereCheck((char *)effect_bounds, 1000.0f) >= 0) {
                 if (reference_position_base->pos[2] > 180.0f) {
                     effect_to_reference_delta[0] = *(float *)&D_L11_00162648;
-                    effect_to_reference_delta[1] = D_L11_0016264C;
-                    effect_to_reference_delta[2] = D_L11_00162650;
+                    effect_to_reference_delta[1] = distance_faded_effect_position_y;
+                    effect_to_reference_delta[2] = distance_faded_effect_position_z;
                     effect_to_reference_delta[3] = 1.0f;
                     FastVecSub(effect_to_reference_delta, reference_position_base->pos, effect_to_reference_delta);
                     effect_distance = FastVecLength(effect_to_reference_delta);
@@ -315,7 +315,7 @@ void update_level11_distance_faded_effect_and_queue_draw(unsigned char *moby) {
                     AdvanceScrollEntry(0);
                     AdvanceScrollEntry(0);
                     AdvanceScrollEntry(1);
-                    AddDrawCallback((void (*)(void))PokitaruSurfaceFarDraw, moby);
+                    AddDrawCallback((void (*)(void))draw_level11_distance_faded_effect_batches, moby);
                 }
             }
         }

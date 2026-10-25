@@ -595,9 +595,9 @@ void update_hud(void) {
             }
         }
         col = (D_0015F764 << 24) + 0xF0F0F0;
-        draw_framed_text(0x100, D_0015F768, col, (int)hud_msg_text1);
+        draw_framed_text(0x100, hud_msg_y, col, (int)hud_msg_text1);
         if (hud_msg_text2[0] != 0 && hud_msg_count > 1000) {
-            draw_framed_text(0x100, D_0015F768, col, (int)hud_msg_text2);
+            draw_framed_text(0x100, hud_msg_y, col, (int)hud_msg_text2);
         }
         if (hud_msg_count != 0) {
             hud_msg_count--;
@@ -606,7 +606,7 @@ void update_hud(void) {
             hud_msg_count = 0;
         }
     } else {
-        D_0015F768 = 100;
+        hud_msg_y = 100;
     }
 }
 

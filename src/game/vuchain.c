@@ -360,7 +360,7 @@ void VU1_swapChain(void) {
     int base = D_00160FF8[idx];
     int end;
 
-    D_00161004 = (int)g_render_packet_cursor;
+    previous_render_packet_cursor = (int)g_render_packet_cursor;
     D_00161010 = idx;
     g_render_packet_cursor = (int *)base;
     end = (int)g_render_packet_cursor + D_0016100C_m - D_0015F698_m;
@@ -384,8 +384,8 @@ void VU1_sendChain(void) {
     *(volatile int *)&vif_chain_flags |= 0x1F;
     size = (int)g_render_packet_cursor - D_00160FF8[D_00161010];
     err = 0;
-    if (D_00161014 < size) {
-        D_00161014 = size;
+    if (vu1_chain_peak_bytes < size) {
+        vu1_chain_peak_bytes = size;
         if (D_0016100C_m < size) {
             STUB_printf(D_001E8CF8);
             err = 1;

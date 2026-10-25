@@ -351,8 +351,8 @@ void DmaTfragTextures(void) {
         if (size > 0x400000) {
             STUB_printf(D_001E8CE0);
         }
-        if (D_00160FC4 < size) {
-            D_00160FC4 = size;
+        if (max_tfrag_texture_dma_size < size) {
+            max_tfrag_texture_dma_size = size;
         }
     }
     ((int *)g_render_packet_cursor)[0] = 0x20000000;

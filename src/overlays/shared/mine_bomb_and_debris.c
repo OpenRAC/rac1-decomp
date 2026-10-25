@@ -309,7 +309,7 @@ void mine_update(M910 *m) {
                         t[0] = m->pos.f[0];
                         t[1] = m->pos.f[1];
                         t[2] = coll_hit_point_z[0];
-                        p = Moby775Spawn(t, 2.0f);
+                        p = spawn_burst_moby(t, 2.0f);
                         if (p != 0) {
                             p[0x23] = 0x70;
                         }
@@ -1257,7 +1257,7 @@ extern unsigned char D_0013E15A[];
 extern void func_L00_002ADE90(char *moby);
 
 #define v ((Land_AE6B0 *)vp)
-int HeroBomb_StepFlight(void *vp, void *m, int mode) {
+int predict_throw_landing(void *vp, void *m, int mode) {
     V_AE6B0 position, velocity, previous, hero_position, offset, start;
     int timer, found = 0, object_hit = 0, i;
     char *hero = D_0013E633 + 0xE1D;
@@ -1519,9 +1519,9 @@ void bomb_update(M_2aedd0 *m) {
     }
     if (d->owner->cls == 0xC0 && d->h56 == 0 && FastVecLength(d) > 0.0f) {
         if (D_G910.p2FC == 0 || GetFlaggedPvarWord(D_G910.p2FC) == 0) {
-            HeroBomb_StepFlight(d, m, 1);
-        } else if (HeroBomb_StepFlight(d, m, 0) == 0) {
-            HeroBomb_StepFlight(d, m, 2);
+            predict_throw_landing(d, m, 1);
+        } else if (predict_throw_landing(d, m, 0) == 0) {
+            predict_throw_landing(d, m, 2);
         }
     }
     if (m->state == 1) {
@@ -1621,7 +1621,7 @@ void bomb_update(M_2aedd0 *m) {
                     p.f[0] = m->pos.f[0];
                     p.f[1] = m->pos.f[1];
                     p.f[2] = coll_hit_point_z[0];
-                    s = Moby775Spawn(&p, 2.0f);
+                    s = spawn_burst_moby(&p, 2.0f);
                     if (s != 0) {
                         s[0x23] = 0x70;
                     }
@@ -1763,28 +1763,28 @@ void bomb_update(M_2aedd0 *m) {
                         int gg;
                         int bb;
 
-                        SpawnMoby1192(m, &m->pos, &a, s * 4.0f, scale_ticks(0xF), 0x7F, 0x7F, 0x7F, 0x20);
+                        spawn_randomly_rotated_colored_moby(m, &m->pos, &a, s * 4.0f, scale_ticks(0xF), 0x7F, 0x7F, 0x7F, 0x20);
                         r = 0x7F;
                         gg = 0x20;
                         bb = 0;
                         swap_color_channel_words(&r, &gg, &bb, (unsigned char)D_E910.p0[0xA]);
-                        SpawnMoby1192(m, &m->pos, &a, s * 4.0f, scale_ticks(0x18), r, gg, bb, 0x20);
+                        spawn_randomly_rotated_colored_moby(m, &m->pos, &a, s * 4.0f, scale_ticks(0x18), r, gg, bb, 0x20);
                     }
                     r2 = 0x7F;
                     g2 = 0x3F;
                     b2 = 0;
                     swap_color_channel_words(&r2, &g2, &b2, (unsigned char)D_E910.p0[0xA]);
-                    SpawnMoby1192(m, &m->pos, &a, s * 4.0f, scale_ticks(0x14), r2, g2, b2, 0x30);
+                    spawn_randomly_rotated_colored_moby(m, &m->pos, &a, s * 4.0f, scale_ticks(0x14), r2, g2, b2, 0x30);
                     r2 = 0x60;
                     g2 = 0x10;
                     b2 = 0;
                     swap_color_channel_words(&r2, &g2, &b2, (unsigned char)D_E910.p0[0xA]);
-                    SpawnMoby1192(m, &m->pos, &a, s * 3.5f, scale_ticks(0x1B), r2, g2, b2, 0x40);
+                    spawn_randomly_rotated_colored_moby(m, &m->pos, &a, s * 3.5f, scale_ticks(0x1B), r2, g2, b2, 0x40);
                     r2 = 0x20;
                     g2 = 0;
                     b2 = 0;
                     swap_color_channel_words(&r2, &g2, &b2, (unsigned char)D_E910.p0[0xA]);
-                    SpawnMoby1192(m, &m->pos, &a, s * 3.0f, scale_ticks(0x1D), r2, g2, b2, 0x20);
+                    spawn_randomly_rotated_colored_moby(m, &m->pos, &a, s * 3.0f, scale_ticks(0x1D), r2, g2, b2, 0x20);
                 }
                 if (d->h68 >= scale_ticks(0x14)) {
                     float h;
@@ -1901,7 +1901,7 @@ void bomb_update(M_2aedd0 *m) {
         int n;
 
         m->flags |= 0x41;
-        r = Lerp(0.5f, (IntToFloat(*((unsigned char *)&D_E910 + 0xA)) + 1.0f) * 3.0f - 0.5f,
+        r = interpolate_scalar_linear(0.5f, (IntToFloat(*((unsigned char *)&D_E910 + 0xA)) + 1.0f) * 3.0f - 0.5f,
                               IntToFloat(m->bBC) / (float)scale_ticks(0xF));
         n = coll_sphere_mobys(&m->pos, 0x10, m, 0, r);
         p.q = m->pos.q;

@@ -52,7 +52,7 @@ void build_packet_and_draw_scaled_entries(void *data_ptr, void *list_ptr, int co
     D_L09_0016137C = saved1;
     D_L09_00161380 = saved2;
     D_L09_00161384 = saved3;
-    if (D_L09_0015F558 != 1) {
+    if (textured_grid_view_settings_mode != 1) {
         current[0x218 / 4] = *(float *)(data + 0x20);
         current[0x21c / 4] = *(float *)(data + 0x24);
         current[0x228 / 4] = *(float *)(data + 0x28);
@@ -121,7 +121,7 @@ void build_packet_and_draw_scaled_entries(void *data_ptr, void *list_ptr, int co
     l09_packet = packet + 4;
     color = (unsigned char)data[0x30] | (unsigned char)data[0x31] << 8 | (unsigned char)data[0x32] << 16;
     /* Retail reads the mode after the packet cursor stores. */
-    if (*(volatile int *)&D_L09_0015F558 == 1)
+    if (*(volatile int *)&textured_grid_view_settings_mode == 1)
         color = (long)(*(int *)(current + 0x230 / 4) | (*(int *)(current + 0x234 / 4) << 8) |
                 (*(int *)(current + 0x238 / 4) << 16));
     {
@@ -506,7 +506,7 @@ extern void func_001F9C30(void *, void *, float);
 extern float func_001F9CB8(void *);
 
 /* spawns a debris moby with randomized velocity toward a point */
-char *SpawnDebrisToward(char *owner, float *vec) {
+char *spawn_fading_asteroid_debris(char *owner, float *vec) {
     char *moby = CreateMoby(random_integer_below(4) + 0x107);
     if (moby != 0) {
         char *d = *(char **)(moby + 0x78);
@@ -551,7 +551,7 @@ extern float func_001F9FA8(float);
 extern float func_00214358(void *, int, float);
 
 /* spawns a debris moby at a random point of a ring above the arena, falling toward the centre */
-char *SpawnFallingDebrisRing(void) {
+char *spawn_falling_asteroid(void) {
     float v[4];
     char *moby = CreateMoby(random_integer_below(4) + 0x107);
     if (moby != 0) {
@@ -637,7 +637,7 @@ extern void func_L00_001FF4B0_EBD30(void *, void *, f32) __asm__("func_L00_001FF
 
 /* Spawns one of four pebble classes at the spawner, scattered sideways off the end of its path.
    Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l09/gameplay/entities/0021e538.c, FUN_L09_002eaa50. */
-Moby *SpawnPebble(Moby *owner) {
+Moby *spawn_path_following_asteroid(Moby *owner) {
     Moby *m;
     PebbleVars_EBD30 *ovars;
     PebbleVars_EBD30 *vars;
@@ -820,7 +820,7 @@ void update_falling_asteroid(Moby *m) {
                     PartType11Spawn(d->pos, v4, *pa, *pb, a, b, 0, 0, 400000.0f, sc);
                 }
                 for (i = 9; i >= 0; i--) {
-                    SpawnDebrisToward((char *)m, v0);
+                    spawn_fading_asteroid_debris((char *)m, v0);
                 }
                 d->f58 = h = Sound_PlayClassSound(6, 0, (int)m, 0xC1);
                 if (h != 0) {
@@ -890,7 +890,7 @@ void update_falling_asteroid(Moby *m) {
                     PartType11Spawn(v3, v2, *pa, *pb, a, b, 0, 0, 1200000.0f, sc);
                 }
                 for (i = 9; i >= 0; i--) {
-                    SpawnDebrisToward((char *)m, v0);
+                    spawn_fading_asteroid_debris((char *)m, v0);
                 }
                 d->f58 = h = Sound_PlayClassSound(6, 0, (int)m, 0xC1);
                 if (h != 0) {
@@ -1127,7 +1127,7 @@ char *spawn_breakable_stack_replacement(char *src, int cls) {
         qcopy(moby + 0x40, src + 0x40);
         moby[0xBC] = scale_ticks(10);
         moby_build_matrix(moby);
-        copy_hero_spawn_frame(moby);
+        copy_hero_moby_field_38(moby);
         *(unsigned short *)(moby + 0x34) = *(unsigned short *)(src + 0x34);
         if (cls == 0x514) {
             if (func_001160D8() & 1) {
@@ -1774,9 +1774,9 @@ void update_level09_item_unlock_and_frame_record(char *moby) {
         if (gHaveHeliPack[9] != 0) {
             (*tp)++;
         }
-        n = scale_ticks(play_time_ticks) / 600;
+        n = scale_ticks(gameplay_event_frame_count) / 600;
         if (*(unsigned short *)(b + 0x2DA) < n) {
-            *(unsigned short *)(b + 0x2DA) = scale_ticks(play_time_ticks) / 600;
+            *(unsigned short *)(b + 0x2DA) = scale_ticks(gameplay_event_frame_count) / 600;
         }
         *(int *)(b + 0x2DC) = *(int *)(b + 0x2DC) | (1 << D_0015EE84_m) | 0x80000000;
         if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, *data) != 0) {
@@ -2786,7 +2786,7 @@ char *spawn_barrier_replacement(char *owner, int cls) {
         qcopy(moby + 0x40, owner + 0x40);
         moby[0xBC] = scale_ticks(10);
         moby_build_matrix(moby);
-        copy_hero_spawn_frame(moby);
+        copy_hero_moby_field_38(moby);
         *(float *)(moby + 0x2C) = *(float *)(owner + 0x2C);
         *(unsigned short *)(moby + 0x34) = *(unsigned short *)(owner + 0x34);
         **(int **)(moby + 0x78) = **(int **)(owner + 0x78);

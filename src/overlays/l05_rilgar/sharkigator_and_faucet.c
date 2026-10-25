@@ -73,7 +73,7 @@ void spawn_sharkigator_splash_effects(int unused, char *p) {
     int i;
     char *base;
     int n;
-    r = Moby775Spawn(p, 3.0f);
+    r = spawn_burst_moby(p, 3.0f);
     if (r) r[0x23] = 0x70;
     for (base = (char *)&D_L05_001613A8_m, i = 15; i >= 0; i--) {
         float ang = random_angle_radians();
@@ -392,7 +392,7 @@ extern int D_L05_00160098 MACRO_ADDR;
 extern float D_L05_001CE070[][2];
 
 /* Draw hook for glowing ribbon trails. */
-void DrawRibbonTrails(char *moby) {
+void draw_group_scenery_ship_trails(char *moby) {
     L05GlowPacket packet[16];
     float matrix[8];
     float center[4];
@@ -720,7 +720,7 @@ void extermibot_update(unsigned char *m) {
         set_ground_height_band(m);
         m[0x7F] = 0x16;
     }
-    FlyingEnemyUpdate((Moby *)m);
+    handle_extermibot_hits_and_update_targeting((Moby *)m);
     t = *(char **)(d + 0x160);
     *(float *)(m + 0x2C) = *(float *)(*(char **)(m + 0x24) + 0x24) * (*(float *)&sharkigator_scale);
     switch (m[0x20]) {
@@ -816,7 +816,7 @@ void extermibot_update(unsigned char *m) {
             dir[1] = FastSin(*(float *)(m + 0x48)) * 2.0f;
             dir[2] = 0.0f;
             move_w(m, d + 0xD0, dir, out, 1.0f);
-            PushPointOutsidePath(*(int *)(d + 0x2C0), pos0, pos0, (*(float *)&sharkigator_scale) * 0.4f);
+            resolve_point_path_segment_xy_clearance(*(int *)(d + 0x2C0), pos0, pos0, (*(float *)&sharkigator_scale) * 0.4f);
         }
         (*(short *)(d + 0x2D2))++;
         if ((vec_distance_xy(pos0, d + 0x280) < 1.0f && *(short *)(d + 0x2D2) > scale_ticks(0x3C))
@@ -841,7 +841,7 @@ void extermibot_update(unsigned char *m) {
             dir[1] = FastSin(*(float *)(m + 0x48)) * 2.0f;
             dir[2] = 0.0f;
             move_w(m, d + 0xD0, dir, out, 1.0f);
-            PushPointOutsidePath(*(int *)(d + 0x2C0), pos0, pos0, (*(float *)&sharkigator_scale) * 0.4f);
+            resolve_point_path_segment_xy_clearance(*(int *)(d + 0x2C0), pos0, pos0, (*(float *)&sharkigator_scale) * 0.4f);
         }
         near = 0;
         if (SegmentCrossPolyline(*(int *)(d + 0x2C0), pos0, t + 0x10, hit) != 0
@@ -895,7 +895,7 @@ void extermibot_update(unsigned char *m) {
         break;
     case 4: {
         float dist = vec_distance_xy(m + 0x10, t + 0x10);
-        PathWalker_StepTowardNode((struct Moby *)m, (s32)(t + 0x10), *(float *)(d + 0x294));
+        move_extermibot_along_path((struct Moby *)m, (s32)(t + 0x10), *(float *)(d + 0x294));
         if (dist < 3.0f
             && FastDiffRots(*(float *)(m + 0x48),
                              fast_atan2(*(float *)(t + 0x10) - *(float *)(m + 0x10),
@@ -1002,7 +1002,7 @@ void extermibot_update(unsigned char *m) {
         }
         break;
     case 10:
-        PathWalker_StepTowardNode((struct Moby *)m, (s32)(d + 0x270), 0.0f);
+        move_extermibot_along_path((struct Moby *)m, (s32)(d + 0x270), 0.0f);
         if (vec_distance_xy(m + 0x10, d + 0x270) < 1.0f) {
             m[0x20] = 1;
             if (m[0x53] != 0) MobyBlendAnimation(m, 0, 0, scale_ticks(3));
@@ -1158,7 +1158,7 @@ extern char D_0013E633_3047E8[] __asm__("D_0013E633");
 
 /* Level 5 moby update (a flying enemy): takes hits through func_L00_0025B4D0 and reacts per hit kind, then
    follows its path, retargets the closest moby and turns its head toward the hero. */
-void FlyingEnemyUpdate(Moby *m) {
+void handle_extermibot_hits_and_update_targeting(Moby *m) {
     Vec_3047E8 v0;
     Vec_3047E8 v10;
     int cnt;
@@ -1336,7 +1336,7 @@ extern f32 func_L05_003054B0(s32, void *, void *, f32);
 
 /* Walks m toward its next path node, steering `side` radians off the direct heading while FUN_L05_00303e50 reports the way blocked; slows near the goal and arms the stuck timer when it drifts off the path.
    Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l05/gameplay/entities/002d1688.c, FUN_L05_00303b08. */
-void PathWalker_StepTowardNode(struct Moby *m, s32 node, f32 side) {
+void move_extermibot_along_path(struct Moby *m, s32 node, f32 side) {
     PathWalkerVars *v = (PathWalkerVars *)m->pvars;
     Vec4f dir, out, goal;
     f32 a;
@@ -2140,7 +2140,7 @@ extern int func_L00_0025A5D8(float *, float *, float, float, float);
 extern float func_0020D830(void *);
 
 /* Lines a moby up on its target: aims, counts down a timer, and sets its speed scale. */
-void AimAtTargetWithTimer(unsigned char *moby) {
+void update_racer_jump_animations(unsigned char *moby) {
     char *data;
     float buf[2];
     float f21;
@@ -2408,7 +2408,7 @@ void SkidMcMarxUpdate(Moby *moby) {
                     ApproachValue(&d->f24C, v, g_frame_time_sq * 110.0f);
                 }
             }
-            AimAtTargetWithTimer((unsigned char *)moby);
+            update_racer_jump_animations((unsigned char *)moby);
             copy_racer_path_node((char *)moby, d->f258, v0);
             SpringAngle(&moby->rot.z, fast_atan2(v0[0] - moby->pos.x, v0[1] - moby->pos.y), &d->f248, 0,
                               g_frame_scale_sq * 0.035f, g_frame_scale_sq * 0.3f, g_frame_time * 6.981317f);

@@ -438,14 +438,14 @@ void veldin_robot_enemy_update(VendMoby *moby) {
         probe.f[2] += 0.5f;
         if (coll_line(&mtx[3], &probe, 0, (int)moby, (int)&query) != 0 && hit != 0 &&
             g_coll_hit_moby.moby == hero.moby) {
-            EffectSlot_Free(moby);
+            release_beam_slot_by_id(moby);
             moby->state = VELDIN_ROBOT_STATE_WAIT_TO_RETURN_TO_FACE_TARGET;
             if (moby->anim != 7) MobyBlendAnimation(moby, 7, 0, scale_ticks(10));
         }
         if (coll_line(&mtx[3], &dir, 0, (int)moby, (int)&query) != 0) {
             qcopy(&dir, g_coll_hit_moby.pos);
             if (hit != 0 && g_coll_hit_moby.moby == hero.moby) {
-                EffectSlot_Free(moby);
+                release_beam_slot_by_id(moby);
                 moby->state = VELDIN_ROBOT_STATE_WAIT_TO_RETURN_TO_FACE_TARGET;
                 if (moby->anim != 7) MobyBlendAnimation(moby, 7, 0, scale_ticks(10));
             }
@@ -454,7 +454,7 @@ void veldin_robot_enemy_update(VendMoby *moby) {
         if (moby->unk70 & 2) {
             lim = *(int *)&D_L00_00161CB8;
             if (vars->timer++ == lim) {
-                EffectSlot_Free(moby);
+                release_beam_slot_by_id(moby);
                 moby->state = VELDIN_ROBOT_STATE_WAIT_TO_RETURN_TO_FACE_TARGET;
                 if (moby->anim != 12) MobyBlendAnimation(moby, 12, 0, scale_ticks(10));
             }
@@ -631,7 +631,7 @@ void update_veldin_robot_damage_and_targeting(void *mv) {
             vars->unk26 = scale_ticks(0x3C);
             RerollEffectCounter(m, anim);
         }
-        EffectSlot_Free(m);
+        release_beam_slot_by_id(m);
     }
     m->unkA4 = 0xFF;
     StepColorFade(m, anim);

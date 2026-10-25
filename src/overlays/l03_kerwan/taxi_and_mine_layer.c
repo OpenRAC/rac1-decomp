@@ -1231,10 +1231,10 @@ void apply_helga_big_head_cutscene_adjustments(char *class_reference_moby) {
     int i;
     if (kerwan_game_mode == 2 && gCheats[0]) {
         if (kerwan_cutscene_state.a == 2 && kerwan_cutscene_state.b >= 0x1EA && kerwan_cutscene_state.b < 0x266) {
-            D_L03_0015F680 = -0.2f;
+            helga_big_head_cutscene_adjustment = -0.2f;
         }
         if (kerwan_cutscene_state.a == 2 && kerwan_cutscene_state.b >= 0x2EE && kerwan_cutscene_state.b < 0x321) {
-            D_L03_0015F680 = 0.2f;
+            helga_big_head_cutscene_adjustment = 0.2f;
         }
         for (i = 0; i < kerwan_cutscene_state.n; i++) {
             struct Moby *o = (struct Moby *)kerwan_cutscene_state.objs[i];
@@ -2303,9 +2303,9 @@ void update_kerwan_tutorial_hints(Moby *moby) {
                 && (((unsigned int)((Hero *)(D_0013E633 + 0xE1D))->state.control_mode) < 2 || ((unsigned int)((Hero *)(D_0013E633 + 0xE1D))->state.control_mode) == 9)) {
                 int n;
                 h[3].count++;
-                n = scale_ticks(play_time_ticks) / 600;
+                n = scale_ticks(gameplay_event_frame_count) / 600;
                 if (h[3].time < n) {
-                    h[3].time = scale_ticks(play_time_ticks) / 600;
+                    h[3].time = scale_ticks(gameplay_event_frame_count) / 600;
                 }
                 h[3].mask = h[3].mask | (1 << g_current_level_index) | 0x80000000;
             }
@@ -2337,7 +2337,7 @@ void update_kerwan_tutorial_hints(Moby *moby) {
             && D_L03_00179590[0] == 0 && D_L03_00179590[9] == -1) {
             Help_2E08E8 *b = D_00141A68_2E08E8;
             if (b[0x18].count == 0) {
-                int t = scale_ticks(play_time_ticks) - D_00141948_2E08E8[9].time * 600;
+                int t = scale_ticks(gameplay_event_frame_count) - D_00141948_2E08E8[9].time * 600;
                 if (scale_ticks(0x34BC0) < t) {
                     Help_Request(0xBBC, 0x18);
                 }
@@ -2369,8 +2369,8 @@ void update_kerwan_tutorial_hints(Moby *moby) {
                 if (c <= 0xFFFE) {
                     h[0x13].count = c + 1;
                 }
-                if (scale_ticks(play_time_ticks) / 600 > h[0x13].time) {
-                    h[0x13].time = scale_ticks(play_time_ticks) / 600;
+                if (scale_ticks(gameplay_event_frame_count) / 600 > h[0x13].time) {
+                    h[0x13].time = scale_ticks(gameplay_event_frame_count) / 600;
                 }
                 h[0x13].mask = h[0x13].mask | (1 << g_current_level_index) | 0x80000000;
             }
@@ -2420,9 +2420,9 @@ void update_kerwan_tutorial_hints(Moby *moby) {
                 && (((unsigned int)((Hero *)(D_0013E633 + 0xE1D))->state.control_mode) < 2 || ((unsigned int)((Hero *)(D_0013E633 + 0xE1D))->state.control_mode) == 9)) {
                 int n;
                 h[0xF].count++;
-                n = scale_ticks(play_time_ticks) / 600;
+                n = scale_ticks(gameplay_event_frame_count) / 600;
                 if (h[0xF].time < n) {
-                    h[0xF].time = scale_ticks(play_time_ticks) / 600;
+                    h[0xF].time = scale_ticks(gameplay_event_frame_count) / 600;
                 }
                 h[0xF].mask = h[0xF].mask | (1 << g_current_level_index) | 0x80000000;
             }
@@ -2447,9 +2447,9 @@ void update_kerwan_tutorial_hints(Moby *moby) {
             if (h[0x10].count == 0) {
                 int n;
                 h[0x10].count++;
-                n = scale_ticks(play_time_ticks) / 600;
+                n = scale_ticks(gameplay_event_frame_count) / 600;
                 if (h[0x10].time < n) {
-                    h[0x10].time = scale_ticks(play_time_ticks) / 600;
+                    h[0x10].time = scale_ticks(gameplay_event_frame_count) / 600;
                 }
                 h[0x10].mask = h[0x10].mask | (1 << g_current_level_index) | 0x80000000;
             }

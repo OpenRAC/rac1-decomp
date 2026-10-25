@@ -274,7 +274,7 @@ void sand_shark_update(unsigned char *moby) {
         set_ground_height_band(moby);
         moby[0x7F] = 0x16;
     }
-    PathEnemy_HitAndRespawn(moby);
+    handle_sand_shark_damage_and_targeting(moby);
     *(volatile int *)0x10000000;
     switch (moby[0x20]) {
     case 0:
@@ -379,7 +379,7 @@ void sand_shark_update(unsigned char *moby) {
         }
         if (moby[0x31] != 0 && (random_integer_below(0xFF) & 1)) {
             *(u128b *)v1 = *(u128b *)(moby + 0x10);
-            SpawnRandomParticle(v1);
+            emit_sand_shark_single_particle(v1);
         }
         *(float *)(moby + 0x18) -= sand_shark_sink_depth;
         if (d->i214 == 2) {
@@ -561,7 +561,7 @@ void sand_shark_update(unsigned char *moby) {
             *(float *)(moby + 0x18) += sand_shark_sink_depth;
             if (random_integer_below(0xFF) & 1) {
                 *(u128b *)v4 = *(u128b *)(moby + 0x10);
-                SpawnRandomParticle(v4);
+                emit_sand_shark_single_particle(v4);
             }
         }
         qcopy(v3, d->tgt);
@@ -639,7 +639,7 @@ void sand_shark_update(unsigned char *moby) {
             *(float *)(moby + 0x18) += sand_shark_sink_depth;
             if (random_integer_below(0xFF) & 1) {
                 *(u128b *)v4 = *(u128b *)(moby + 0x10);
-                SpawnRandomParticle(v4);
+                emit_sand_shark_single_particle(v4);
             }
         }
         qcopy(v3, d->home);
@@ -958,7 +958,7 @@ extern short D_L02_00161A24, D_L02_00161A28, D_L02_00161A2C, D_L02_00161A30;
 extern short D_L02_00161A34;
 
 /* Spawns one particle at a point with a random offset and velocity, unless the level counter is too high. */
-void SpawnRandomParticle(void *pos) {
+void emit_sand_shark_single_particle(void *pos) {
     float v[4];
     float w[4];
     float v3[4];
@@ -1066,7 +1066,7 @@ extern void func_L00_0025E590(void *, void *);
 
 /* Path-following enemy: respawns at its home point on request, takes hits (dies and drops to the
    ground), then follows its path and retargets the hero when it strays. Adapted from Lombyte (GPL-3.0) for PAL: src/overlays/l02/gameplay/entities/002400c8.c, FUN_L02_002d5c88. */
-void PathEnemy_HitAndRespawn(unsigned char *moby) {
+void handle_sand_shark_damage_and_targeting(unsigned char *moby) {
     Vars_2D70C0 *d = *(Vars_2D70C0 **)(moby + 0x78);
     char *h;
     int *path;
@@ -2669,7 +2669,7 @@ void transport_pod_update(unsigned char *moby) {
             FastAbsF(((struct Moby *)transport_pod_vars->rail_b)->pos.z - ((struct Moby *)moby)->pos.z + 4.0f) < 0.01f) {
             {
                 extern unsigned short D_00141992[];
-                adjusted_help_ticks = scale_ticks(play_time_ticks) - D_00141992[0] * 600;
+                adjusted_help_ticks = scale_ticks(gameplay_event_frame_count) - D_00141992[0] * 600;
             }
             lim = scale_ticks(3600) * 60.0f;
             if (!(lim < adjusted_help_ticks) || (*(unsigned int *)(D_0014171B + 0x591) & (1 << g_current_level_index))) {

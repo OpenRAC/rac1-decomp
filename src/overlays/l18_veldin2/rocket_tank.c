@@ -342,7 +342,7 @@ extern float func_001FA850(float, float);
 extern void func_L00_00259868(int, int, float, float, float, int);
 extern float func_001F9D10(void *, void *);
 
-void Moby_TurnTowardPathNode(char *m) {
+void update_rocket_tank_path_movement(char *m) {
     char *d = *(char **)(m + 0x78);
     float t[4];
     float v[4];

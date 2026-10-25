@@ -1227,8 +1227,8 @@ void update_hero_hoverboard_trick_score(void) {
     if (((ScoreState_254838 *)(D_0013E633 + 0xE1D))->active != 0) {
         ScoreStats_254838 *stats = (ScoreStats_254838 *)(D_0014171B + 0x22D);
         if (stats->attempts < 0xFFFF) stats->attempts++;
-        if (scale_ticks(play_time_ticks) / 600 > stats->best)
-            stats->best = scale_ticks(play_time_ticks) / 600;
+        if (scale_ticks(gameplay_event_frame_count) / 600 > stats->best)
+            stats->best = scale_ticks(gameplay_event_frame_count) / 600;
         stats->levels = stats->levels | (1 << g_current_level_index) | 0x80000000;
     }
     for (i = 0; i < 3; i++) {
@@ -1275,7 +1275,7 @@ extern float func_00214358(void *, int, float);
 extern void func_001F9BC0(void *);
 
 /* Finds the nearest path node ahead of the hero (behind the facing test) and returns its position and heading. */
-void Hero_FindNearestPathNode(float *out, float *rot) {
+void compute_hero_hoverboard_respawn_transform(float *out, float *rot) {
     char *g = (char *)D_0013E633 + 0xE1D;
     char *m = *(char **)(g + 0x86C);
     char *path;

@@ -270,8 +270,8 @@ void DmaShrubTextures(void) {
         if (size > 0x400000) {
             STUB_printf(D_001E8C00);
         }
-        if (D_001604F8 < size) {
-            D_001604F8 = size;
+        if (max_shrub_texture_dma_size < size) {
+            max_shrub_texture_dma_size = size;
         }
     }
     ((int *)g_render_packet_cursor)[0] = 0x20000000;

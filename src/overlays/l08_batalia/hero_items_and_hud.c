@@ -190,8 +190,8 @@ void HeroL08_UpdateStateTransitions(void) {
                         if (usage_stats.fF8 < 0xFFFF) {
                             usage_stats.fF8++;
                         }
-                        if (scale_ticks(play_time_ticks) / 600 > usage_stats.fFA) {
-                            usage_stats.fFA = scale_ticks(play_time_ticks) / 600;
+                        if (scale_ticks(gameplay_event_frame_count) / 600 > usage_stats.fFA) {
+                            usage_stats.fFA = scale_ticks(gameplay_event_frame_count) / 600;
                         }
                         usage_stats.fFC = usage_stats.fFC | (1 << D_0015EE84_m) | 0x80000000;
                         g_hero.pending_item[0] = next;
@@ -209,7 +209,7 @@ void HeroL08_UpdateStateTransitions(void) {
                         Hero_TryMoveStateL08(1, 1);
                         break;
                     }
-                    HeroClearQueuedSequence();
+                    clear_hero_queued_animation();
                     if (g_hero.unk22CA != 0) {
                         if (g_hero.unk308 == 0 || item_available[0x1C] == 0) {
                             Hero_TryMoveStateL08(0x81, 1);
@@ -725,7 +725,7 @@ void HeroL08_UpdateStateTransitions(void) {
                         break;
                     }
                     if (!(g_hero.air_frames.s < scale_ticks(5)) && !(g_hero.state.prev_control_mode == 0x12 && g_hero.unk20A9 != 0) && g_hero.ground_distance > 1.35f) {
-                        if (CanReachPointAhead() == 0) {
+                        if (check_hero_forward_collision_height() == 0) {
                             Hero_TryMoveStateL08(6, 1);
                             break;
                         }

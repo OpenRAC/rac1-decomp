@@ -1122,7 +1122,7 @@ void elevator_with_button_update(struct Moby *moby) {
     case 1:
         D_0014172A = vars->marker;
         ApproachValue(&vars->fade, 1.0f, 0.133f);
-        rilgar_fade_level = vars->fade;
+        elevator_camera_transition_fade = vars->fade;
         if (vars->fade == 1.0f) {
             func_L05_003173A8_16B98(moby, &eye, &look);
             CameraScript(&eye, &look, 1, 0, 0);
@@ -1138,7 +1138,7 @@ void elevator_with_button_update(struct Moby *moby) {
         if (moby->command) {
             D_0014172A = vars->marker;
             ApproachValue(&vars->fade, 0.0f, 0.133f);
-            rilgar_fade_level = vars->fade;
+            elevator_camera_transition_fade = vars->fade;
             func_L05_003173A8_16B98(moby, &eye, &look);
             set_camera_position(&eye);
             set_camera_rotation(&look);

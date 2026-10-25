@@ -1257,7 +1257,7 @@ void BlargShipUpdate(Ship_5E48 *m) {
         STUB_printf(D_L10_001DD690, m->sA6, m->hA8);
         goto del;
     }
-    Enemy_ProcessHit((char *)m);
+    update_blarg_ship_hit_reactions_and_targeting((char *)m);
     tgt = d->tgt;
     switch (m->state) {
     case 0:
@@ -1473,7 +1473,7 @@ extern int func_L00_00260FB0(float,char *,void *,int,int,void *,int);
 extern char *D_L10_001B0C30[];
 extern unsigned char D_0013E633_e1d[] __asm__("D_0013E633");
 // Updates hit reactions and selects an enemy's movement target.
-void Enemy_ProcessHit(char *m) {
+void update_blarg_ship_hit_reactions_and_targeting(char *m) {
  char *d=*(char **)(m+0x78),*hit=MobyGetHitMessage(m,0x370000,0); int flag; float amount=0;
  int result=ComputeHitResponse(m,hit,d+0x20,5,&flag,&amount,0,4);
  if(hit && flag!=1 && (unsigned char)m[0x20]!=8) {
@@ -1658,7 +1658,7 @@ void nanotech_upgrade_vendor_update(char *m) {
         if (D_L10_0015F6A8 != 2) {
             memcard_Save(0, -1);
             ShowBanner(msgSel(), -1);
-            *(int *)&D_L10_0015F720 = 0xB4;
+            *(int *)&dialogue_message_duration = 0xB4;
             *(int *)(d + 4) = scale_ticks(0xF0);
             moby->state = 0;
         }
@@ -2320,7 +2320,7 @@ extern short D_L10_001620C8, D_L10_001620CC, D_L10_001620D0;
 
 /* Emits falling drips from pos in bursts (burst timer as in func_L10_002EB8A8); each drip lives about as
  * long as it takes to fall the given height. */
-void EmitDripBursts(void *pos, short *timer, short *burst, float height) {
+void emit_height_adjusted_burst_spark_particle(void *pos, short *timer, short *burst, float height) {
     float p[4];
     float vel[4];
     float acc[4];

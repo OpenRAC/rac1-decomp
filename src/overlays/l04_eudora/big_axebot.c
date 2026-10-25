@@ -272,7 +272,7 @@ void blend_big_axebot_and_axe_animation(char *arg, void *a, void *b, void *c) {
     }
 }
 /* Sets the float at 0x58 on the moby and on the linked moby at data+0x424, if any. */
-void SetValueOnSelfAndLinked(char *arg, float f) {
+void set_big_axebot_and_axe_animation_speed(char *arg, float f) {
     char *data = *(char **)(arg + 0x78);
     *(float *)(arg + 0x58) = f;
     if (*(char **)(data + 0x424) != 0) {
@@ -592,7 +592,7 @@ void big_axebot_update(M_B7B0 *moby) {
                     if ((hit->att->cls == 0 || hit->f2C > 1.0f) && (moby->f52 != 4 || hd < 17.0f || hd > 20.0f)) {
                         moby->fBC |= 5;
                         blend_big_axebot_and_axe_animation((char *)moby, (void *)5, 0, (void *)scale_ticks(6));
-                        SetValueOnSelfAndLinked(moby, 2.0f);
+                        set_big_axebot_and_axe_animation_speed(moby, 2.0f);
                         moby->state = 8;
                     }
                     data->f42C = 3.4f / multiply_global_factor(7.0f) * 0.5f;
@@ -609,7 +609,7 @@ void big_axebot_update(M_B7B0 *moby) {
                     data->f448 = scale_ticks(0x1E);
                     moby->fBC |= 5;
                     blend_big_axebot_and_axe_animation((char *)moby, (void *)5, 0, (void *)scale_ticks(6));
-                    SetValueOnSelfAndLinked(moby, 2.0f);
+                    set_big_axebot_and_axe_animation_speed(moby, 2.0f);
                     moby->state = 8;
                     InitKnockback(ang2, moby, data->fC0, 5, 1, 0);
                     data->f110 = 5.0f;
@@ -873,7 +873,7 @@ void big_axebot_update(M_B7B0 *moby) {
                 if (s < 1.0f) {
                     s = 1.0f;
                 }
-                SetValueOnSelfAndLinked(moby, s);
+                set_big_axebot_and_axe_animation_speed(moby, s);
             }
         }
         if (moby->f52 == 4 && (moby->f70 & 2)) {
@@ -887,7 +887,7 @@ void big_axebot_update(M_B7B0 *moby) {
             if (moby->fBC & 4) {
                 moby->fBC &= ~4;
                 blend_big_axebot_and_axe_animation((char *)moby, (void *)4, (void *)4, (void *)scale_ticks(6));
-                SetValueOnSelfAndLinked(moby, 1.5f);
+                set_big_axebot_and_axe_animation_speed(moby, 1.5f);
                 moby->state = 7;
             } else if (moby->f53 == 8 && (hd < 28.0f || moby->f52 != moby->f53)) {
                 float lim = frame_scale * 0.11111111f;
@@ -1221,7 +1221,7 @@ extern void func_L00_001FF4B0(void *, void *, float);
 /* Flock steering for moby m: picks its path target, pushes away from same-class mobys within 3 units,
  * keeps its spacing to the target unless another flock member is closer to it, writes the steer point
  * to out and returns the yaw toward it. (The passed speed is recomputed from the moby's state.) */
-float FlockSteer(void *m, void *out, float speed) {
+float compute_circular_saw_flock_steering(void *m, void *out, float speed) {
     float sep[4];
     float tgt[4];
     float pad[4][4];
@@ -1662,7 +1662,7 @@ void circular_saw_enemy_update(M_35F0 *moby) {
         V4_35F0 save;
         {
         qcopy(save, moby->pos);
-        WanderSteer((char *)moby, (char *)data->f240, 0.35f, 0.25f);
+        update_object_wander_movement((char *)moby, (char *)data->f240, 0.35f, 0.25f);
         if (data->f138 != -1) {
             if (IsPointInPolygon(moby->pos, D_L04_001B0930_2C35F0[data->f138]->pts, D_L04_001B0930_2C35F0[data->f138]->count) == 0) {
                 qcopy(moby->pos, save);
@@ -1708,7 +1708,7 @@ void circular_saw_enemy_update(M_35F0 *moby) {
     case 3:
         if ((flag ? dist < data->f140 * 2.0f : dist < data->f140)
             && (flag || data->f138 == -1 || IsPointInPolygon(&tg, D_L04_001B0930_2C35F0[data->f138]->pts, D_L04_001B0930_2C35F0[data->f138]->count) != 0)) {
-            rot = FlockSteer(moby, dest, flag ? data->f140 * 2.0f : data->f140);
+            rot = compute_circular_saw_flock_steering(moby, dest, flag ? data->f140 * 2.0f : data->f140);
             if (dist < 2.0f && data->f146 == 0 && check_circular_saw_melee_attack_spacing((char *)moby) != 0) {
                 MobyBlendAnimation(moby, (void *)7, 0, (void *)scale_ticks(10));
                 data->f146 = scale_ticks(0x3C);
@@ -1841,7 +1841,7 @@ void circular_saw_enemy_update(M_35F0 *moby) {
         break;
     }
     case 7:
-        rot = FlockSteer(moby, dest, flag ? data->f140 * 2.0f : data->f140);
+        rot = compute_circular_saw_flock_steering(moby, dest, flag ? data->f140 * 2.0f : data->f140);
         if (data->f146 == 0 && (hd > 44.0f || (moby->f70 & 2))) {
             MobyBlendAnimation(moby, 0, 0, (void *)scale_ticks(5));
             data->f146 = scale_ticks(0x78);

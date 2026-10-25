@@ -1129,9 +1129,9 @@ void update_beam_barrier(char *m) {
                     FLD((D_0014171B + 0x34D), 0x158, short) = hh + 1;
             }
             {
-                int q = scale_ticks(play_time_ticks) / 600;
+                int q = scale_ticks(gameplay_event_frame_count) / 600;
                 if ((int)FLD((D_0014171B + 0x34D), 0x15A, unsigned short) < q) {
-                    int q2 = scale_ticks(play_time_ticks) / 600;
+                    int q2 = scale_ticks(gameplay_event_frame_count) / 600;
                     FLD((D_0014171B + 0x34D), 0x15A, short) = q2;
                 }
                 FLD((D_0014171B + 0x34D), 0x15C, int) = FLD((D_0014171B + 0x34D), 0x15C, int) | (1 << g_current_level_index) | 0x80000000;
@@ -1170,7 +1170,7 @@ void update_beam_barrier(char *m) {
                 rand_vec(V.effect, *(float *)&D_L06_00161EC4 * kf, *(float *)&D_L06_00161EC8 * kf);
                 life = (unsigned char)scale_ticks(w);
                 bb = (unsigned char)random_integer_below(0xFF);
-                ((void (*)(float *, char *, int, float, unsigned char, unsigned char, int))PartType60Spawn)(V.offset, (char *)V.effect, c, y1, life, bb, 0);
+                ((void (*)(float *, char *, int, float, unsigned char, unsigned char, int))spawn_moving_hero_relative_alpha_fade_particle)(V.offset, (char *)V.effect, c, y1, life, bb, 0);
                 kk = kk - 1;
             } while (kk >= 0);
             i = j;
@@ -1924,7 +1924,7 @@ extern int D_L06_00161F7C_2FA618 SDATA(D_L06_00161F7C);
 extern float D_L06_00161F60_2FA618 SDATA(D_L06_00161F60);
 
 // Per-frame update for a Blarg moby: its data block (at 0x78) runs a state machine on the state byte at 0x20.
-void Snapper_ApplyDamage(Moby *moby)
+void update_alien_snapper_hit_response_and_targeting(Moby *moby)
 {
     BlargVars_2FA618 *data = (struct BlargVars_2FA618 *)moby->pvars;
     int hit;
@@ -2058,7 +2058,7 @@ extern float func_001FA748(float, float);
 extern char D_0013E633[];
 extern short D_L06_00161F68;
 /* angle from a moby to its owner, clamped to the gaps between obstacles in its list */
-float Snapper_GetSteerAngle(char *self) {
+float compute_alien_snapper_target_gap_angle(char *self) {
     char *owner = *(char **)(*(char **)(self + 0x78) + 0x160);
     float hi, lo, ang, dist, v[3];
     short *p;
@@ -2215,7 +2215,7 @@ void alien_queen_update(unsigned char *moby)
     char *target;
     float v[4];
 
-    AlienQueen_ApplyDamage(moby);
+    update_alien_queen_hit_response_and_recovery(moby);
     target = *(char **)(data + 0xB0);
     func_L00_00264B40_q(moby, *(int *)&D_L06_00161F80, 1.9f, data + 0x130);
     if ((unsigned char)moby[0x31] != 0 && func_001F9D10_q(moby + 0x10, D_L06_00167640_q) < 45.0f) {
@@ -2573,7 +2573,7 @@ extern void func_L06_002FC938(char *);
 extern void func_L06_002FCCF8(char *);
 
 /* Boss-style moby update: applies hit damage, handles recovery and death states. */
-void AlienQueen_ApplyDamage(void *moby_) {
+void update_alien_queen_hit_response_and_recovery(void *moby_) {
     char *moby = moby_;
     char *data;
     char *hit;
@@ -2886,7 +2886,7 @@ extern void func_L00_00262DF0(f32, s32, void *, void *);
 
 /* Circles its centre point on the side away from the hero (at most 45 degrees per step), faces its focus moby, moves while the hero is within 16 units and snaps to the ground.
    Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l06/gameplay/entities/002b4770.c, FUN_L06_002fbc88. */
-void Circler_UpdateMovement(struct Moby *m) {
+void update_alien_queen_orbit_movement(struct Moby *m) {
     CirclerVars *v = (CirclerVars *)m->pvars;
     struct Moby *focus = v->focus;
     Vec4f goal, step;
@@ -2923,7 +2923,7 @@ void Circler_UpdateMovement(struct Moby *m) {
     step.z = 0.0f;
     vec_scale_to_length(&step, &step, v->speed);
     FastVecAdd(&m->pos, &m->pos, &step);
-    PushPointOutsidePath(1.0f, v->ground, &m->pos, &m->pos);
+    resolve_point_path_segment_xy_clearance(1.0f, v->ground, &m->pos, &m->pos);
 }
 typedef u32 u128_FD3E0 __attribute__((mode(TI), aligned(16)));
 extern struct Hero D_0013F450_FD3E0 __asm__("D_0013F450");

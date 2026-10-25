@@ -765,7 +765,7 @@ int can_spawn_codebot_slot_effect(int index) {
     sub = entries[index].sub;
     moby = *(char **)(sub + 4);
     data = *(char **)(moby + 0x70) + 0x40;
-    if (*(short *)(data + 0x14) == 1 && D_L15_0015F4FC != 0.0f) return 1;
+    if (*(short *)(data + 0x14) == 1 && codebot_slot_effect_spawn_gate != 0.0f) return 1;
     return *(short *)(data + 0x14) == 3;
 }
 INCLUDE_ASM("asm/overlays", func_L15_002F8D9C);

@@ -1239,7 +1239,7 @@ void update_moby_translation_delta_matrix(char *m) {
         *(short *)(d + 0x24) = 0;
         d[0x28] = 4;
         *(short *)(d + 0x3E) = 0xD;
-        copy_hero_spawn_frame(m);
+        copy_hero_moby_field_38(m);
         m[0x20] = 1;
     }
 }
@@ -1604,7 +1604,7 @@ extern int func_001FA898(float);
 extern int D_L04_0015F6A8 MACRO_ADDR;
 
 /* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l04/unclassified_002ca420.c, FUN_L04_002e1d00. */
-void SparkleSpritesDraw(char *m) {
+void update_suck_cannon_particles(char *m) {
     L10SpriteData_298940 *p = *(L10SpriteData_298940 **)(m + 0x78);
     float d[4] __attribute__((aligned(16)));
     float e[4] __attribute__((aligned(16)));
@@ -1779,8 +1779,8 @@ void update_eudora_tutorial_hints_and_stats(Moby *moby) {
                 if (h[0x18].count < 0xFFFF) {
                     h[0x18].count++;
                 }
-                if (scale_ticks(play_time_ticks) / 600 > h[0x18].time) {
-                    h[0x18].time = scale_ticks(play_time_ticks) / 600;
+                if (scale_ticks(gameplay_event_frame_count) / 600 > h[0x18].time) {
+                    h[0x18].time = scale_ticks(gameplay_event_frame_count) / 600;
                 }
                 h[0x18].mask = h[0x18].mask | (1 << g_current_level_index) | 0x80000000;
             } else if (D_00141A08 >= 3) {
@@ -1790,7 +1790,7 @@ void update_eudora_tutorial_hints_and_stats(Moby *moby) {
                         Help_Request(0xFA1, 0x1D);
                     }
                 } else {
-                    int t = scale_ticks(play_time_ticks) - D_001418C2 * 600;
+                    int t = scale_ticks(gameplay_event_frame_count) - D_001418C2 * 600;
                     if (scale_ticks(0x4650) < t) {
                         Help_2E57F8 *b = (Help_2E57F8 *)(D_0014171B + 0x34D);
                         if (b[0x1C].count == 0) {
@@ -1868,13 +1868,13 @@ void update_eudora_tutorial_hints_and_stats(Moby *moby) {
             && eudora_help_popup_state[0] == 0 && eudora_help_popup_state[9] == -1) {
             if (D_0013D5E2 == 0) {
                 Help_2E57F8 *b = (Help_2E57F8 *)(D_0014171B + 0x34D);
-                int t = scale_ticks(play_time_ticks) - b[0x1F].time * 600;
+                int t = scale_ticks(gameplay_event_frame_count) - b[0x1F].time * 600;
                 if ((int)(scale_ticks(0x12) * 60.0f) < t || b[0x1F].time * 600 == 0) {
                     Help_Request(0xFA3, 0x1F);
                 } else {
-                    int n = scale_ticks(play_time_ticks) / 600;
+                    int n = scale_ticks(gameplay_event_frame_count) / 600;
                     if (b[0x1F].time < n) {
-                        b[0x1F].time = scale_ticks(play_time_ticks) / 600;
+                        b[0x1F].time = scale_ticks(gameplay_event_frame_count) / 600;
                     }
                 }
             } else {
@@ -1884,8 +1884,8 @@ void update_eudora_tutorial_hints_and_stats(Moby *moby) {
                     if (c <= 0xFFFE) {
                         h[0x11].count = c + 1;
                     }
-                    if (scale_ticks(play_time_ticks) / 600 > h[0x11].time) {
-                        h[0x11].time = scale_ticks(play_time_ticks) / 600;
+                    if (scale_ticks(gameplay_event_frame_count) / 600 > h[0x11].time) {
+                        h[0x11].time = scale_ticks(gameplay_event_frame_count) / 600;
                     }
                     h[0x11].mask = h[0x11].mask | (1 << g_current_level_index) | 0x80000000;
                 } else if (data->fC == 0) {
@@ -1894,21 +1894,21 @@ void update_eudora_tutorial_hints_and_stats(Moby *moby) {
                         data->f8++;
                         b = (Help_2E57F8 *)(D_0014171B + 0x34D);
                         if (b[0x20].count != 0) {
-                            int t = scale_ticks(play_time_ticks) - b[0x20].time * 600;
+                            int t = scale_ticks(gameplay_event_frame_count) - b[0x20].time * 600;
                             if ((int)(scale_ticks(0x12) * 60.0f) < t || b[0x20].time * 600 == 0) {
                                 Help_Request(0xFA4, 0x20);
                             } else {
-                                int n = scale_ticks(play_time_ticks) / 600;
+                                int n = scale_ticks(gameplay_event_frame_count) / 600;
                                 if (b[0x20].time < n) {
-                                    b[0x20].time = scale_ticks(play_time_ticks) / 600;
+                                    b[0x20].time = scale_ticks(gameplay_event_frame_count) / 600;
                                 }
                             }
                         } else {
                             int n;
                             b[0x20].count++;
-                            n = scale_ticks(play_time_ticks) / 600;
+                            n = scale_ticks(gameplay_event_frame_count) / 600;
                             if (b[0x20].time < n) {
-                                b[0x20].time = scale_ticks(play_time_ticks) / 600;
+                                b[0x20].time = scale_ticks(gameplay_event_frame_count) / 600;
                             }
                             b[0x20].mask = b[0x20].mask | (1 << g_current_level_index) | 0x80000000;
                         }
@@ -1924,7 +1924,7 @@ void update_eudora_tutorial_hints_and_stats(Moby *moby) {
         if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, data->f50) != 0
             && (((unsigned int)((Hero *)(D_0013E633 + 0xE1D))->state.control_mode) < 2 || ((unsigned int)((Hero *)(D_0013E633 + 0xE1D))->state.control_mode) == 9)
             && eudora_help_popup_state[0] == 0 && eudora_help_popup_state[9] == -1) {
-            int t = scale_ticks(play_time_ticks) - D_00141992 * 600;
+            int t = scale_ticks(gameplay_event_frame_count) - D_00141992 * 600;
             if (scale_ticks(0x34BC0) < t) {
                 Help_2E57F8 *b = (Help_2E57F8 *)(D_0014171B + 0x34D);
                 if (!(b[0x43].mask & (1 << g_current_level_index))) {
@@ -1960,9 +1960,9 @@ void update_eudora_tutorial_hints_and_stats(Moby *moby) {
                 && (((unsigned int)((Hero *)(D_0013E633 + 0xE1D))->state.control_mode) < 2 || ((unsigned int)((Hero *)(D_0013E633 + 0xE1D))->state.control_mode) == 9)) {
                 int n;
                 h[0x19].count++;
-                n = scale_ticks(play_time_ticks) / 600;
+                n = scale_ticks(gameplay_event_frame_count) / 600;
                 if (h[0x19].time < n) {
-                    h[0x19].time = scale_ticks(play_time_ticks) / 600;
+                    h[0x19].time = scale_ticks(gameplay_event_frame_count) / 600;
                 }
                 h[0x19].mask = h[0x19].mask | (1 << g_current_level_index) | 0x80000000;
             }

@@ -374,7 +374,7 @@ void set_hero_animation(int a0, int a1, float t) {
         *(int *)(g2 + 0xAA4) = 0;
         *(float *)(obj + 0x54) = 0.0f;
     }
-    HeroClearQueuedSequence();
+    clear_hero_queued_animation();
     g3 = D_0013E633 + 0xE1D;
     o = a0 * 4;
     *(unsigned char *)(obj + 0x7C) = *(unsigned char *)(*(int *)(*(int *)(obj + 0x24) + o + 0x48) + 0x11);
@@ -385,7 +385,7 @@ void set_hero_animation(int a0, int a1, float t) {
     if (*(unsigned char *)(g3 + 0x20A4) == 0) {
         blend_hero_slot3_mapped_animation_pair(a0, a1, t);
     }
-    clear_hero_mapped_moby_animation();
+    clear_hero_mapped_moby_animation_state();
     if (*(int *)(g3 + 0x2278) != 0) {
         blend_hero_mapped_moby_animation(a0, a1, t);
     }
@@ -426,7 +426,7 @@ void HeroQueueSequence(int bank, int seq) {
 }
 extern char D_0013E633[];
 // resets two fields in the global game block
-void HeroClearQueuedSequence(void) {
+void clear_hero_queued_animation(void) {
     char *b = D_0013E633 + 0xE1D;
     *(int *)(b + 0xAB0) = -1;
     *(int *)(b + 0xAB8) = 0;
@@ -473,7 +473,7 @@ void advance_hero_animation(void) {
     f32 dt;
     f32 prev;
 
-    clear_hero_mapped_moby_animation();
+    clear_hero_mapped_moby_animation_state();
     ((Hero *)g_hero)->unkA98 &= ~3;
     same = m->seq == m->prev_seq;
     frame0 = m->frame;
@@ -508,7 +508,7 @@ void advance_hero_animation(void) {
             m->anim_time = ((Hero *)g_hero)->unkAB8;
             m->prev_frame = ((Hero *)g_hero)->unkAB4;
             m->prev_frame_data = ((AnimSeq_32EF0 *)m->pclass->seqs[m->prev_seq])->frames[m->prev_frame];
-            HeroClearQueuedSequence();
+            clear_hero_queued_animation();
             sync_hero_mapped_moby_animation_frames();
         } else if (((Hero *)g_hero)->unkAB0 != -1 && ((Hero *)g_hero)->unkAB4 < m->prev_frame) {
             ((Hero *)g_hero)->unkA94 = 0.33333334f;
@@ -1697,7 +1697,7 @@ void show_health_hud(void) {
 
 extern char D_0013F450[];
 /* Clears the secondary animation object pointers, not the movement speed targets. */
-void clear_hero_mapped_moby_animation(void) {
+void clear_hero_mapped_moby_animation_state(void) {
     char *base = g_hero;
     *(int *)(base + 0x2278) = 0;
     *(int *)(base + 0x227C) = 0;

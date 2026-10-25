@@ -72,7 +72,7 @@ extern void func_00205220(int);
 extern int func_00122598(int);
 extern void func_00216960(void);
 // Puts the hero into ship mode: clears the ship records, flags the matching mobys and picks the ship's start sound and camera set. Adapted from Lombyte (GPL-3.0) for PAL: src/overlays/shared/gameplay_space_0028e8a0.c, FUN_L00_0028e9c8.
-void EnterShipMode(int a) {
+void initialize_level_transition_with_audio(int a) {
     O_28e9c8 *o;
     S_171b *z;
     int t, n, m, m2, u;
@@ -145,7 +145,7 @@ extern unsigned char D_0013E15A[] NOT_SDA;
 extern void func_00216EF0(int);
 extern void func_L00_00203FB8(void);
 extern void func_L00_0028FCA0(int);
-void ShipTakeOff(void) {
+void prepare_level_transition_with_help_cleanup(void) {
     char *g = g_hero;
     
     if (*(int *)(g + 0x22A8) <= 0) *(int *)(g + 0x22A8) = 1;
@@ -158,7 +158,7 @@ void ShipTakeOff(void) {
     }
     sound_update();
     clear_active_help_record();
-    EnterShipMode(0);
+    initialize_level_transition_with_audio(0);
     *(short *)(D_0013E15A + 2) = 0;
 }
 extern char D_0013DE6E[];
@@ -195,7 +195,7 @@ void prepare_target_level_transition(int dest) {
         int d = 0x60;
         int v;
         int t;
-        EnterShipMode(8);
+        initialize_level_transition_with_audio(8);
         if (pal_mode) d = 0x50;
         v = scale_ticks(((int *)&D_L00_00160630)[*(short *)(g + 0x26)]);
         *(int *)(h + 0x34) = v;
@@ -246,7 +246,7 @@ in:
     D_L00_0016C960_901A8.x58 = D_L00_00173F00_901A8.x4 + u;
     D_L00_0016C960_901A8.x5c = D_L00_00173F00_901A8.x8_c + u;
     D_L00_0016128C_901A8 = u;
-    EnterShipMode(8);
+    initialize_level_transition_with_audio(8);
 }
 typedef struct { float f[4]; } __attribute__((aligned(16))) V_28efc8;
 typedef struct {

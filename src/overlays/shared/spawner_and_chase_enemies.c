@@ -339,7 +339,7 @@ extern char D_0013E633_2C73D0[] __asm__("D_0013E633");
  * re-rolls its retreat timer and steers along its path or straight at the target.
  * In the steering arms the goal pointer and the "lost" code (2) are set in each arm: retail loads 2 in
  * both arms and keeps the goal in a saved register across the arm's call. */
-void ChaseEnemyUpdate(Moby *m) {
+void update_seeker_damage_and_target(Moby *m) {
     char vec[16];
     int flag;
     float a1;

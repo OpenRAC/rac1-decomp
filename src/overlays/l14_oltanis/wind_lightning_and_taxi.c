@@ -1102,7 +1102,7 @@ void update_path_lightning_controller(char *m) {
         }
     }
     update_branched_lightning_arc(m);
-    if (D_L14_00161D84 == 0) {
+    if (lightning_arc_remaining_frames == 0) {
         *(int *)&D_L14_00161D20 = scale_ticks(*(int *)&D_L14_00161D24);
         *(int *)&D_L14_00161D28 = 0;
     }
@@ -1150,7 +1150,7 @@ void update_branched_lightning_arc(char *moby) {
 
     if (*(int *)&D_L14_00161D28 == 0) {
         *(int *)&D_L14_00161D28 = 1;
-        D_L14_00161DC4 = 1;
+        lightning_arc_sound_pending = 1;
         D_L14_00161DB8 = moby;
         i = 0;
         starts = D_L14_00161DC8;
@@ -1178,8 +1178,8 @@ void update_branched_lightning_arc(char *moby) {
         }
         lerp_vector(D_L14_001E0330, D_L14_001E0330 - 4, D_L14_001E0330 + 4, 0.5f);
         sign = -1.0f;
-        D_L14_00161D84 = D_L14_00161DBC = scale_ticks(rand_range((*(int *)&D_L14_00161D68), (*(int *)&D_L14_00161D6C)));
-        D_L14_00161DC0 = 1.0f / IntToFloat(D_L14_00161D84 - scale_ticks((*(int *)&lightning_grow_ticks)));
+        lightning_arc_remaining_frames = lightning_arc_initial_lifetime_frames = scale_ticks(rand_range((*(int *)&D_L14_00161D68), (*(int *)&D_L14_00161D6C)));
+        lightning_arc_inverse_fade_duration = 1.0f / IntToFloat(lightning_arc_remaining_frames - scale_ticks((*(int *)&lightning_grow_ticks)));
         if (random_integer_below(2) != 0) {
             sign = 1.0f;
         }
@@ -1215,7 +1215,7 @@ void update_branched_lightning_arc(char *moby) {
         }
     }
     if (moby == D_L14_00161DB8) {
-        fast_dec_timer(&D_L14_00161D84);
+        fast_dec_timer(&lightning_arc_remaining_frames);
         for (i = 0; i < 40; i++) {
             s16 v = ++D_L14_001E0350[i];
             if (scale_ticks((*(int *)&lightning_grow_ticks)) < v) {
@@ -1238,22 +1238,22 @@ void update_branched_lightning_arc(char *moby) {
                 }
             }
         }
-        if (D_L14_00161D84 < D_L14_00161DBC - scale_ticks((*(int *)&lightning_grow_ticks))) {
-            if (scale_ticks(60) < D_L14_00161DBC) {
+        if (lightning_arc_remaining_frames < lightning_arc_initial_lifetime_frames - scale_ticks((*(int *)&lightning_grow_ticks))) {
+            if (scale_ticks(60) < lightning_arc_initial_lifetime_frames) {
                 if ((*(float *)&D_L14_00161D3C) < 6.2831855f) {
-                    (*(short *)&D_L14_00161DB2) = truncate_float_to_s32(FastSin(D_L14_00161DB4) * 128.0f);
-                    D_L14_00161DB4 = FastAddRots(D_L14_00161DB4, (*(float *)&D_L14_00161D38));
+                    (*(short *)&lightning_arc_alpha_pulse_offset) = truncate_float_to_s32(FastSin(lightning_arc_alpha_pulse_phase) * 128.0f);
+                    lightning_arc_alpha_pulse_phase = FastAddRots(lightning_arc_alpha_pulse_phase, (*(float *)&D_L14_00161D38));
                     (*(float *)&D_L14_00161D3C) += (*(float *)&D_L14_00161D38) * frame_scale;
                 } else {
-                    (*(short *)&D_L14_00161DB2) = 0;
+                    (*(short *)&lightning_arc_alpha_pulse_offset) = 0;
                 }
             } else {
-                (*(short *)&D_L14_00161DB2) = 0;
+                (*(short *)&lightning_arc_alpha_pulse_offset) = 0;
             }
-            D_L14_00161DB0[0] = (unsigned char)(*(short *)&D_L14_00161DB2) + truncate_float_to_s32(IntToFloat(D_L14_00161D84) * D_L14_00161DC0 * -255.0f + 255.0f);
-            if (D_L14_00161DC4 != 0) {
+            D_L14_00161DB0[0] = (unsigned char)(*(short *)&lightning_arc_alpha_pulse_offset) + truncate_float_to_s32(IntToFloat(lightning_arc_remaining_frames) * lightning_arc_inverse_fade_duration * -255.0f + 255.0f);
+            if (lightning_arc_sound_pending != 0) {
                 allocate_voice_for_group_entry(0, 0, moby);
-                D_L14_00161DC4 = 0;
+                lightning_arc_sound_pending = 0;
             }
             if (D_L14_00161DB0[0] < 50) {
                 spawn_lightning_arc_particle_pairs(D_L14_00161D90, 3);
@@ -2396,7 +2396,7 @@ Moby *find_group_moby_by_tag(char *moby, int tag) {
     struct Moby *pool;
     int group_moby_index;
 
-    if (((Moby *)moby)->group < D_L14_001600B4 && (group_entry_cursor = oltanis_moby_groups[((Moby *)moby)->group]) != 0) {
+    if (((Moby *)moby)->group < moby_group_index_limit && (group_entry_cursor = oltanis_moby_groups[((Moby *)moby)->group]) != 0) {
         pool = oltanis_mobys;
         do {
             group_moby_index = *group_entry_cursor & 0x7FFF;

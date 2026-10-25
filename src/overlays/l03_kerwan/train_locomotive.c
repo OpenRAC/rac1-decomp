@@ -1830,7 +1830,7 @@ int can_release_linked_robot_dog(unsigned char *moby) {
     if (moby[0x20] == 10 || moby[0x20] == 13 || *(int *)(data + 0x284) == -1) return 1;
     return 0;
 }
-int IsMoby574State9(unsigned char *moby) {
+int is_moby_class_23e_in_state_9(unsigned char *moby) {
     if (moby && moby[0x20] != 0xFE && moby[0x20] != 0xFD && *(short *)(moby + 0xA6) == 0x23E && moby[0x20] == 9) {
         return 1;
     }
@@ -1845,7 +1845,7 @@ int is_point_inside_clip_volume_cf(int id) {
     if (id == 0xFF) goto absent;
     get_first_moby_in_group((int *)&item, id, 0, 0);
     while (item != 0) {
-        if (IsMoby574State9(item)) return 1;
+        if (is_moby_class_23e_in_state_9(item)) return 1;
         if (is_moby_class_23d_in_state_5(item)) return 1;
         get_next_moby_in_group((int *)&item, (int)item, 0, 0);
     }
@@ -2013,7 +2013,7 @@ void update_kerwan_path_enemy(Moby *m) {
         DeleteMoby(m);
         return;
     }
-    Moby574DamageReaction(m);
+    update_kerwan_path_enemy_hit_reaction(m);
     fast_subtract_rotations_cf(&d->b263);
     if (m->visible != 0 || dist < 24.0f) {
         if (m->state == 0xC) {

@@ -1136,8 +1136,8 @@ L3D34:
         if (*(char **)(d + 0x50)) {
             char *P = D_0014171B + 0x65;
             if (*(unsigned short *)(P + 0xC8) <= 0xFFFE) *(unsigned short *)(P + 0xC8) = *(unsigned short *)(P + 0xC8) + 1;
-            if (scale_ticks(play_time_ticks) / 600 > (int)*(unsigned short *)(P + 0xCA))
-                *(unsigned short *)(P + 0xCA) = scale_ticks(play_time_ticks) / 600;
+            if (scale_ticks(gameplay_event_frame_count) / 600 > (int)*(unsigned short *)(P + 0xCA))
+                *(unsigned short *)(P + 0xCA) = scale_ticks(gameplay_event_frame_count) / 600;
             *(unsigned int *)(P + 0xCC) = (*(unsigned int *)(P + 0xCC) | (1 << g_current_level_index)) | 0x80000000;
             release_moby_with_collision_check((float *)(d + 0x40), *(char **)(d + 0x50), *(char **)(*(char **)(d + 0x50) + 0x78) + 0x10);
             *(int *)(d + 0x50) = 0;
@@ -1214,7 +1214,7 @@ extern int D_L00_001619E4_2D3F40 SDATA(D_L00_001619E4);
 extern int D_L00_001619E8_2D3F40 SDATA(D_L00_001619E8);
 
 /* Draws the trail of fading ring sprites for a moby. */
-void DrawRingSpriteTrail(Moby *moby) {
+void draw_metal_detector_trail(Moby *moby) {
     Quad_2D3F40 q;
     Vu_2D3F40 tt[6];
     Data_2D3F40 *d = (Data_2D3F40 *)moby->pvars;
@@ -1661,7 +1661,7 @@ char *mine_camera_blast(char *a, char *b, int c, char *d) {
         p[0x1C] = a[0x49];
         *(int *)(p + 0x64) = -1;
         moby_build_matrix(m);
-        copy_hero_spawn_frame(m);
+        copy_hero_moby_field_38(m);
     }
     return m;
 }
@@ -2169,7 +2169,7 @@ void horny_toad_update(Moby *moby) {
             if (moby->prev_seq != 4) MobyBlendAnimation(moby, 4, n, scale_ticks(10));
             moby->anim_speed = random_float_between(0.92f, 1.08f);
         }
-        WanderSteer((char *)moby, (char *)data->f240, 0.5f, 0.5f);
+        update_object_wander_movement((char *)moby, (char *)data->f240, 0.5f, 0.5f);
         if (data->f1C4 != 2) {
             data->f1FC = random_float_between(-20.0f, 20.0f) * 0.017453292f;
             moby->state = 6;
@@ -2425,7 +2425,7 @@ extern float func_001FA790(float, float);
 extern short D_L00_00161A60;
 
 /* Steers an object along a path with speed limits. Adapted from Lombyte (GPL-3.0) for PAL: src/overlays/shared/unclassified_002cfcb8.c, FUN_L00_002d5988. */
-void Path_SteerWithLimits(Obj_6e38 *o, Path_6e38 *path, s32 p) {
+void update_infobot_slot_path_motion(Obj_6e38 *o, Path_6e38 *path, s32 p) {
     St_6e38 *st;
     s32 idx;
     f32 t;
@@ -2666,7 +2666,7 @@ void infobot_update(struct Moby *moby)
         moby->rot.z = ((f32 (*)(f32, f32, f32, f32, f32, f32 *))SpringTurn)(moby->rot.z, infobot->yaw, 0.01f, 0.3f, 0.1f, &infobot->spin[2]);
         moby->rot.y = ((f32 (*)(f32, f32, f32, f32, f32, f32 *))SpringTurn)(moby->rot.y, 0.0f, g_frame_time_sq * 0.5235988f, g_frame_time_sq * 1.0471976f, g_frame_time * 0.7853982f, &infobot->spin[1]);
         moby->rot.x = ((f32 (*)(f32, f32, f32, f32, f32, f32 *))SpringTurn)(moby->rot.x, 0.0f, g_frame_time_sq * 1.0471976f, g_frame_time_sq * 2.0943952f, g_frame_time * 1.5707964f, &infobot->spin[0]);
-        DriftingSprites_Draw((char *)moby);
+        update_infobot_particle_effect((char *)moby);
         if (level_available[infobot->planet] != 0) {
             ((void (*)(struct Moby *))DeleteMoby)(moby);
             return;
@@ -2676,7 +2676,7 @@ void infobot_update(struct Moby *moby)
         }
         break;
     case 3:
-        DriftingSprites_Draw((char *)moby);
+        update_infobot_particle_effect((char *)moby);
         if (level_available[infobot->planet] != 0) {
             ((void (*)(struct Moby *))DeleteMoby)(moby);
             return;
@@ -2695,14 +2695,14 @@ void infobot_update(struct Moby *moby)
         }
         break;
     case 4:
-        Path_SteerWithLimits(moby, level_paths[infobot->slots[infobot->seg]], 3);
-        DriftingSprites_Draw((char *)moby);
+        update_infobot_slot_path_motion(moby, level_paths[infobot->slots[infobot->seg]], 3);
+        update_infobot_particle_effect((char *)moby);
         if (moby->state != 4) {
             infobot->seg++;
         }
         break;
     case 5:
-        DriftingSprites_Draw((char *)moby);
+        update_infobot_particle_effect((char *)moby);
         if (level_available[infobot->planet] != 0) {
             ((void (*)(struct Moby *))DeleteMoby)(moby);
             return;
@@ -2734,7 +2734,7 @@ void infobot_update(struct Moby *moby)
     case 6:
         path = level_paths[infobot->path];
         pos = (Vec *)&moby->pos;
-        DriftingSprites_Draw((char *)moby);
+        update_infobot_particle_effect((char *)moby);
         find_nearest_path_point(path, pos, &point, &segment, &fraction, 0, 999.0f, 5.0f, 0.0f);
         end = IntToFloat(segment) * path->pts[0].v.w + fraction + 2.0f;
         distance = FastVecDist(pos, &path->pts[path->count - 1]);
@@ -2785,7 +2785,7 @@ void infobot_update(struct Moby *moby)
         break;
     case 7: {
         Path *p = level_paths[infobot->path];
-        DriftingSprites_Draw((char *)moby);
+        update_infobot_particle_effect((char *)moby);
         infobot->sway = infobot->sway + g_frame_time;
         if (1.0f < infobot->sway) {
             infobot->sway = 1.0f;
@@ -2902,7 +2902,7 @@ extern int func_001FA898_r(float) __asm__("func_001FA898");
 extern unsigned char *func_L00_00273E08(void *pos, int a1, unsigned char a2, int idx, int flag, int s, int mode, float f);
 
 /* Draws four drifting, colour-cycling sprites around a moby, stepping each one's phase and fade timer. Adapted from Lombyte (GPL-3.0) for PAL: overlays/shared/unclassified_002cfcb8.c, FUN_L00_002d6cd0. */
-void DriftingSprites_Draw(char *o) {
+void update_infobot_particle_effect(char *o) {
     P_p *p = *(P_p **)(o + 0x78);
     union { ti_p q; float f[4]; } v;
     float d[4] __attribute__((aligned(16)));
@@ -3011,7 +3011,7 @@ void particle_spawner_smoke_fire_update(P *p) {
         if (q->f48 < g) q->f48 = g;
         if (q->extra) q->f44 = q->f48; else q->f44 = 3.0f;
         q->f50 = FastVecLength(&level_cuboids[q->idx].v2) * 0.5f;
-        s = q->start = FetchAddCounter(q->count + q->extra);
+        s = q->start = fetch_and_add_global_accumulator(q->count + q->extra);
         e = s + q->count;
         for (i = s; i < e; i++) {
             r = random_integer_below(2);
@@ -3158,10 +3158,10 @@ typedef struct { int a[4]; } Vy __attribute__((aligned(16)));
 extern void func_L00_00251328(void *, int, int, int);
 extern float func_00214158(void);
 /* Creates a class 0x307 moby at src, scaled by f, and returns it (or 0). */
-char *Moby775Spawn(Vy *src, float f) {
+char *spawn_burst_moby(Vy *src, float f) {
     char *m = CreateMoby(0x307);
     if (m != 0) {
-        copy_hero_spawn_frame(m);
+        copy_hero_moby_field_38(m);
         set_moby_color(m, 0x28, 0x28, 0x46);
         *(unsigned char *)(m + 0x30) = 0xFF;
         *(short *)(m + 0x32) = 0x40;

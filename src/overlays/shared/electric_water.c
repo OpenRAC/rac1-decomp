@@ -556,7 +556,7 @@ void initialize_electric_water_bolt_effect(char *m) {
     if ((*(int *)&D_L15_00161C78) != 0) {
         (*(int *)&D_L15_00161C78) = 0;
         (*(int *)&D_L15_00161D64) = 0;
-        D_L15_00161D60 = scale_ticks((*(int *)&D_L15_00161D0C));
+        electric_water_bolt_initial_scaled_frame_count = scale_ticks((*(int *)&D_L15_00161D0C));
         (*(int *)&D_L15_00161CE0) = 0x7F2020;
         FastVecSub(v, d + 0x100, d + 0xF0);
         vec_scale_to_length(step, v, (*(float *)&D_L15_00161C7C) / 20.0f);
@@ -847,13 +847,13 @@ void draw_electric_water_bolt_effect(char *moby) {
                       F(D_L15_00161CF4), F(D_L15_00161CF8), F(D_L15_00161D20));
     draw_beam_and_arc_two_pass_quads(D_L15_001D3E80, *(short *)&D_L15_00161D48, *(short *)&D_L15_00161D48, 5,
                       F(D_L15_00161CF4), F(D_L15_00161CF8), 0.2f);
-    draw_beam_and_arc_two_pass_quads(D_L15_001D3E80 + 0x50, *(short *)&D_L15_00161D4A, *(short *)&D_L15_00161D4A, 5,
+    draw_beam_and_arc_two_pass_quads(D_L15_001D3E80 + 0x50, *(short *)&second_side_arc_fade_level, *(short *)&second_side_arc_fade_level, 5,
                       F(D_L15_00161CF4), F(D_L15_00161CF8), 0.2f);
-    draw_beam_and_arc_two_pass_quads(D_L15_001D3E80 + 0xA0, *(short *)&D_L15_00161D4C, *(short *)&D_L15_00161D4C, 5,
+    draw_beam_and_arc_two_pass_quads(D_L15_001D3E80 + 0xA0, *(short *)&third_side_arc_fade_level, *(short *)&third_side_arc_fade_level, 5,
                       F(D_L15_00161CF4), F(D_L15_00161CF8), 0.2f);
-    draw_beam_and_arc_two_pass_quads(D_L15_001D3E80 + 0xF0, *(short *)&D_L15_00161D4E, *(short *)&D_L15_00161D4E, 5,
+    draw_beam_and_arc_two_pass_quads(D_L15_001D3E80 + 0xF0, *(short *)&fourth_side_arc_fade_level, *(short *)&fourth_side_arc_fade_level, 5,
                       F(D_L15_00161CF4), F(D_L15_00161CF8), 0.2f);
-    DrawBillboardQuadPair(moby);
+    draw_electric_water_bolt_start_quads(moby);
 }
 typedef struct { float f[4]; } __attribute__((aligned(16))) V2d8e48;
 typedef struct { float u, v; } UV2d8e48;
@@ -875,7 +875,7 @@ extern long tex_2d8e48(int) __asm__("func_001F4868");
 extern float rnd_2d8e48(float, float) __asm__("func_L00_00258C80");
 extern void draw_2d8e48(void *, void *, int) __asm__("func_L00_001FD1D8");
 /* Draw callback: builds a camera-facing matrix from the moby's position and draws two quads, each with a jittered scale. Adapted from Lombyte (GPL-3.0) for PAL: overlays/shared/unclassified_002d6810.c, FUN_L15_002d8e48. */
-void DrawBillboardQuadPair(char *mv) {
+void draw_electric_water_bolt_start_quads(char *mv) {
     Q2d8e48 quad;
     V2d8e48 mat[4];
     V2d8e48 *pos;
@@ -1234,7 +1234,7 @@ void codebot_update(unsigned char *moby) {
             }
             break;
         case CODEBOT_CHECK_HERO_PROXIMITY:
-            SparkleSpritesDrawL02(moby);
+            update_collectible_sprite_effect(moby);
             if (FastVecDist(&m->pos, &((Hero_2D7C00 *)&g_hero)->pos) < 3.0f) {
                 if (((HeroStateWord_2D7C00 *)&g_hero)->current != 0x32) {
                     m->flags |= 0x41;

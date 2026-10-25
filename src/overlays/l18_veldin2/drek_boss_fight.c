@@ -1309,7 +1309,7 @@ void drek_final_boss_robot_update(Moby *moby) {
         break;
     }
     case 3:
-        if (FinalBoss_GetMoveStatus(d->f334) == 2) {
+        if (classify_moby_state_two_or_three(d->f334) == 2) {
             qcopy(d->f3C0, d->f300);
             qcopy(((f32 *)&moby->rot), d->f310);
             moby->state = 9;

@@ -1605,7 +1605,7 @@ void snagglebeast_update(unsigned char *m) {
             va.f[2] = *(float *)(d + 0x1B8) + 1.0f;
             spawn_explosion(m, d + 0x100, &va, 0.0f, 0.0f, 0x14, 0xC, 0x40, 7.0f, 5.0f, 10.0f, -1, 1.0f, 50.0f, 1, 1, -1, 0);
             *(unsigned short *)(m + 0x34) |= 0x41;
-            if (*(int *)(d + 0x1CC) != -1) DriftingSprites_Activate(level_mobys + (*(int *)(d + 0x1CC) << 8));
+            if (*(int *)(d + 0x1CC) != -1) initialize_moby_particle_effect_state(level_mobys + (*(int *)(d + 0x1CC) << 8));
             m[0x20] = 0x10;
             *(float *)(m + 0x18) = 20.0f;
         }

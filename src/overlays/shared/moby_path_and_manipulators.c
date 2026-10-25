@@ -46,7 +46,7 @@ extern char D_L00_00160180[];
 
 /* Per-moby effect update: builds a short vector set from the moby's
    0x10 vector and calls the helper chain for each queued unit. */
-void spawn_moby_bolt_drop(char *a, int b, int c, int flags, int idx)
+void spawn_randomized_bolt_drop(char *a, int b, int c, int flags, int idx)
 {
     float s0[4], s10[4], s20[4], s30[4], s40[4], s50[4], s60[4];
     float t70, t74;
@@ -295,7 +295,7 @@ extern int func_001F9850(int);
 extern float func_L00_0025C7A8(float, float, float);
 
 // Steers a moby around: picks a wander heading, moves it and updates its heading toward a target.
-void WanderSteer(char *moby, char *d, float a, float b) {
+void update_object_wander_movement(char *moby, char *d, float a, float b) {
     char *pos;
     float v[4];
     int r;
@@ -460,7 +460,7 @@ extern f32 func_001F9CB8_62DF0(Vec4 *) __asm__("func_001F9CB8");
 extern void func_L00_001FF4B0_62DF0(Vec4 *, Vec4 *, f32) __asm__("func_L00_001FF4B0");
 
 /* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/state/00261968.c, FUN_L00_00261d78. */
-s32 PushPointOutsidePath(f32 distance, s32 path_index, Vec4 *point, Vec4 *out) {
+s32 resolve_point_path_segment_xy_clearance(f32 distance, s32 path_index, Vec4 *point, Vec4 *out) {
     Vec4 difference;
     Vec4 scaled_difference;
     Vec4 working;
@@ -1346,7 +1346,7 @@ void update_timed_hud_visibility(void) {
     if (D_L00_0015F674 == 0 || (*(int *)&D_L00_00161F08_g) == 0) {
         (*(int *)&D_L00_00161F04_g) = -1;
     } else if ((*(int *)&D_L00_00161F04_g) == -1) {
-        (*(int *)&D_L00_00161F04_g) = queue_animation_update(0xC, 0, (void *)((char *)draw_morphoray_progress_hud + 0x340), DefaultVtbl_DeleteMoby, draw_hud_text_panel, 0, 0);
+        (*(int *)&D_L00_00161F04_g) = queue_animation_update(0xC, 0, (void *)((char *)draw_uniform_size_hud_stars + 0x340), DefaultVtbl_DeleteMoby, draw_hud_text_panel, 0, 0);
     } else {
         hud_keep_visible((*(int *)&D_L00_00161F04_g), 0xA);
     }

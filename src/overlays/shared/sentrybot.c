@@ -1998,8 +1998,8 @@ void update_charged_blast(Moby29FF90 *moby) {
             || (add_vectors(v2, moby->pos, d), moby->pos[0] < 2.0f) || moby->pos[0] > 1021.0f
             || moby->pos[1] < 2.0f || moby->pos[1] > 1021.0f
             || moby->pos[2] < 2.0f || moby->pos[2] > 1021.0f) {
-            DeleteMoby(D_L15_0016150C);
-            D_L15_0016150C = 0;
+            DeleteMoby(charged_blast_removal_target);
+            charged_blast_removal_target = 0;
             return;
         }
         n = func_L00_001F2BE8_29FF90(moby->pos, r, 0x10, moby, 0);
@@ -2115,7 +2115,7 @@ void update_hero_seeking_group_moby(char *moby) {
         converted_particle_lifetime_frames = func_001FA898_r((float)particle_lifetime_frames);
         life = (unsigned char)converted_particle_lifetime_frames;
         particle_initial_rotation = random_integer_below(0xFF);
-        PartType60Spawn(pb, (char *)va, *(int *)&D_L15_00161538, life, (unsigned char)particle_initial_rotation, 0, *(float *)&D_L15_0016153C);
+        spawn_moving_hero_relative_alpha_fade_particle(pb, (char *)va, *(int *)&D_L15_00161538, life, (unsigned char)particle_initial_rotation, 0, *(float *)&D_L15_0016153C);
         callback_frame_stamp = data->frame_stamp;
         if (callback_frame_stamp == 0 || *(int *)callback_frame_stamp != quartu_frame_count) {
             if (callback_frame_stamp != 0) {
@@ -2438,7 +2438,7 @@ extern float func_001F9F90(float);
 
 /* Draw callback set by update_spark_emitter_moby: draws six passes of two effect quads (texture 0x2C)
    at the moby transform, with wave-animated corners and a colour that fades with the data timer. */
-void draw_spark_emitter_moby(unsigned char *moby) {
+void draw_spark_emitter_effect_quads(unsigned char *moby) {
     Quad_2A4318 first, second;
     float transform[12] __attribute__((aligned(16)));
     float position[4] __attribute__((aligned(16)));

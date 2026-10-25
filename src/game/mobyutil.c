@@ -438,12 +438,12 @@ float resolve_camera_surface_height(float *pos, void *out) {
             return h;
         }
     }
-    if (D_0016129C != 0 && FastAbsF(pos[2] - D_001612A0[2]) < 0.5f
-        && vec_distance_xy(pos, D_001612A0) < D_001612A0[3]) {
+    if (D_0016129C != 0 && FastAbsF(pos[2] - local_surface_region_center_x[2]) < 0.5f
+        && vec_distance_xy(pos, local_surface_region_center_x) < local_surface_region_center_x[3]) {
         if (out != 0) {
             set_vector_unit_z(out);
         }
-        return D_001612A0[2];
+        return local_surface_region_center_x[2];
     }
     if (out != 0) {
         set_vector_unit_z(out);

@@ -220,7 +220,7 @@ extern float func_L00_001FF860_2939E8(float, float) __asm__("func_L00_001FF860")
 extern char D_L04_00174040_2939E8[] __asm__("D_L04_00174040");
 
 /* Steers a moby from the arg block: height and push terms, returns 2 when the tilt is past pi/4. */
-int HoverMobySteer(StMoby_2939E8 *m, Steer_2939E8 *a)
+int update_leg_rig_height_and_tilt(StMoby_2939E8 *m, Steer_2939E8 *a)
 {
     float push[4];
     float dir[4];

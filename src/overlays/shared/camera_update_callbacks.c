@@ -11,12 +11,12 @@ extern int D_L02_00169670[];
 void register_camera_update_callback(int fn) {
     int i;
 
-    if (D_L02_0015F04C < 16) {
-        for (i = 0; i < D_L02_0015F04C; i++) {
+    if (camera_update_callback_count < 16) {
+        for (i = 0; i < camera_update_callback_count; i++) {
             if (fn == D_L02_00169670[i]) {
                 return;
             }
         }
-        D_L02_00169670[D_L02_0015F04C++] = fn;
+        D_L02_00169670[camera_update_callback_count++] = fn;
     }
 }

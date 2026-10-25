@@ -737,7 +737,7 @@ void configure_graphics_setup_dma_chain(void) {
     int *p;
     int t;
 
-    if (D_0016003C == 0) {
+    if (graphics_setup_dma_chain_enabled == 0) {
         ((int *)graphics_setup_tag_slot)[0] = 0x10000000;
         ((int *)graphics_setup_tag_slot)[1] = 0;
         ((int *)graphics_setup_tag_slot)[2] = 0;
@@ -862,7 +862,7 @@ void DrawMobysCleanUp(void) {
     ProfileMarker_End(D_0015FFE0, 5);
     if (draw_config[10] != 0) {
         ProcessMobyAnimData();
-        if (D_00160038 != 0) {
+        if (moby_word_fill_table_bytes != 0) {
             func_00212508();
         }
     }

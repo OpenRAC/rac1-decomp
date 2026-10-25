@@ -22,7 +22,7 @@ void initialize_bolt_pickup(char *moby) {
     *(float *)(d + 0xC) = random_float_between(a, b);
     *(int *)(d + 0x28) = 0;
     *(float *)(d + 8) = *(float *)(moby + 0x18);
-    copy_hero_spawn_frame(moby);
+    copy_hero_moby_field_38(moby);
     *(int *)(d + 0x24) = spawn_moby_offset_effect(moby);
 }
 typedef struct Target_2B94B0 {
@@ -1017,7 +1017,7 @@ void scatter_bomber_tank_linked_debris(char *moby) {
     if (list == 0) return;
     index = *list & 0x7FFF;
     other = (char *)((Blk_7010 *)batalia_mobys + index);
-    for (i = 0; i < 40 && D_L08_0016003C >= 50; i++) {
+    for (i = 0; i < 40 && available_moby_slot_count >= 50; i++) {
         char *m;
         if (random_integer_below(0xFF) & 1) m = CreateMoby(0x310); else m = CreateMoby(0x311);
         if (m != 0) {
@@ -2455,8 +2455,8 @@ void update_rocket(M46 *m) {
                     other=(M46*)(batalia_mobys+(index<<8));
                     goto linked_object;
                 }
-            if (special) SpawnDebrisBurst(m,d->effect_path,30,1);
-            else SpawnDebrisBurst(m,d->effect_path,30,0);
+            if (special) spawn_rocket_explosion_and_debris(m,d->effect_path,30,1);
+            else spawn_rocket_explosion_and_debris(m,d->effect_path,30,0);
             Moby_PlaySound(2,0,m); m->state=6;
         }
         return;
@@ -2661,7 +2661,7 @@ void update_path_following_moby(char *m) {
     }
     *(unsigned char *)(m + 0xA4) = 0xFF;
     if (*(unsigned char *)(m + 0x31) != 0) {
-        SpawnHitParticle(m, (char *)a);
+        spawn_moby_motion_spark(m, (char *)a);
     }
 }
 typedef int u128 __attribute__((mode(TI)));
@@ -2689,7 +2689,7 @@ extern short D_L08_00161B0C;
 extern short D_L08_00161B10;
 
 // Spawns a debris moby: builds position/velocity vectors with random ranges and creates it.
-void SpawnHitParticle(char *m, char *pos) {
+void spawn_moby_motion_spark(char *m, char *pos) {
     float v10[4];
     float v20[4];
     float v30[4];

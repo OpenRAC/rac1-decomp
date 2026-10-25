@@ -42,11 +42,11 @@ void draw_beam_and_arc_effects(char *m) {
         *(float *)&D_L00_001616DC, *(float *)&D_L00_001616E0, *(float *)&D_L00_00161704);
     draw_beam_and_arc_two_pass_quads(D_L00_001DBD20, *(short *)&D_L00_00161730, *(short *)&D_L00_00161730, 5,
         *(float *)&D_L00_001616DC, *(float *)&D_L00_001616E0, 0.2f);
-    draw_beam_and_arc_two_pass_quads(D_L00_001DBD20 + 0x50, *(short *)&D_L00_00161732, *(short *)&D_L00_00161732, 5,
+    draw_beam_and_arc_two_pass_quads(D_L00_001DBD20 + 0x50, *(short *)&beam_arc_second_row_alpha, *(short *)&beam_arc_second_row_alpha, 5,
         *(float *)&D_L00_001616DC, *(float *)&D_L00_001616E0, 0.2f);
-    draw_beam_and_arc_two_pass_quads(D_L00_001DBD20 + 0xA0, *(short *)&D_L00_00161734, *(short *)&D_L00_00161734, 5,
+    draw_beam_and_arc_two_pass_quads(D_L00_001DBD20 + 0xA0, *(short *)&beam_arc_third_row_alpha, *(short *)&beam_arc_third_row_alpha, 5,
         *(float *)&D_L00_001616DC, *(float *)&D_L00_001616E0, 0.2f);
-    draw_beam_and_arc_two_pass_quads(D_L00_001DBD20 + 0xF0, *(short *)&D_L00_00161736, *(short *)&D_L00_00161736, 5,
+    draw_beam_and_arc_two_pass_quads(D_L00_001DBD20 + 0xF0, *(short *)&beam_arc_fourth_row_alpha, *(short *)&beam_arc_fourth_row_alpha, 5,
         *(float *)&D_L00_001616DC, *(float *)&D_L00_001616E0, 0.2f);
     draw_beam_anchor_camera_facing_quads(m);
 }
@@ -681,7 +681,7 @@ extern int func_L00_0025D390(char *);
 extern void func_00215C00(void *, float, float, float);
 extern int func_L00_001EFFF0(Vec4f *, Vec4f *, int, void *, int);
 
-char *Aim_FindAssistTarget(char *self, float *position, float *heading, float *pitch) {
+char *select_morphoray_target_and_adjust_aim(char *self, float *position, float *heading, float *pitch) {
     float start[4] __attribute__((aligned(16)));
     float end[4] __attribute__((aligned(16)));
     float target[4] __attribute__((aligned(16)));
@@ -1173,7 +1173,7 @@ extern int func_001F9908_2BE3A8(int *) __asm__("func_001F9908");
 /* Tesla claw arc: bends the twelve-point beam toward the target, builds the two side rails and the ring of
  * twenty points around each node, queues the draw callback, sparks at the tip, and runs the three travelling
  * pulses along the beam. */
-void TeslaClawArcDraw(Moby *m) {
+void update_beam_ring_rail_and_pulse_effects(Moby *m) {
     Vec4A aim;
     Vec4A seg;
     Vec4A off;
@@ -2268,7 +2268,7 @@ char *spawn_doom_bot(int owner, void *pos, void *rot) {
         qcopy(p + 0x10, rot);
         *(int *)(p + 0x60) = owner;
         moby_build_matrix(m);
-        copy_hero_spawn_frame(m);
+        copy_hero_moby_field_38(m);
         *(float *)(m + 0x2C) = *(float *)(*(char **)(m + 0x24) + 0x24) * 0.1f;
     }
     return m;

@@ -129,7 +129,7 @@ extern void func_L00_00250478(void *, int, int, int);
 extern void func_L00_002539C8(void *);
 
 /* advances an animation blend timer and steps through its frame table */
-void MobyAnim_StepBlend(void *unused, unsigned char *a) {
+void advance_moby_animation_blend(void *unused, unsigned char *a) {
     float s = *(float *)(a + 0x28);
     a[5] = 0;
     if (s != 0.0f && *(float *)(a + 0x2C) != 0.0f) {

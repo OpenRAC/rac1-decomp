@@ -642,7 +642,7 @@ extern void func_00215C00(void *, float, float, float);
 extern unsigned char *D_L00_001B24E8;
 
 /* Spawn a type-0x3A particle of kind a1 at pos. */
-unsigned char *spawn_type58_particle(float *pos, unsigned char a1, unsigned char a2, unsigned char a3,
+unsigned char *spawn_color_tween_emitter_particle(float *pos, unsigned char a1, unsigned char a2, unsigned char a3,
     unsigned char a4, unsigned char a5, int a6, float f0, float f1) {
     unsigned char *r = create_part(0x3A);
     unsigned char *v;
@@ -734,7 +734,7 @@ void update_color_tween_emitter_particle(unsigned char *p) {
             if (*(short *)(p + 0xA) < scale_ticks(10)) {
                 m = IntToFloat(*(short *)(p + 0xA)) / (float)scale_ticks(10);
             }
-            spawn_type58_particle(t, 2, q[0x11], q[0x12], q[0x13], q[0x15], *(int *)(q + 0x18), *(float *)(q + 0x1C), m);
+            spawn_color_tween_emitter_particle(t, 2, q[0x11], q[0x12], q[0x13], q[0x15], *(int *)(q + 0x18), *(float *)(q + 0x1C), m);
         }
         }
         if (FastDecTimer(p + 0xA)) {
@@ -819,7 +819,7 @@ extern unsigned char *D_L00_001B24D4_p __asm__("D_L00_001B24D4") NOT_SDA;
 extern int func_001FA898_r(float) __asm__("func_001FA898");
 
 /* Spawns an effect record at a position inside the level bounds; Adapted from Lombyte (GPL-3.0) for PAL: overlays/shared/rendering_002712b8.c, FUN_L00_002730e0. */
-unsigned char *PartType60Spawn(float *pos, char *vel, int color, unsigned char life, unsigned char b, int mode, float scale)
+unsigned char *spawn_moving_hero_relative_alpha_fade_particle(float *pos, char *vel, int color, unsigned char life, unsigned char b, int mode, float scale)
 {
     unsigned char *m;
     float *v;
@@ -1784,7 +1784,7 @@ extern unsigned char *func_L00_0025D390(int);
 extern unsigned char *D_L00_001B2538;
 
 /* Spawns a type 78 particle: position, colour, lifetime and mode, with a trailing record of speeds, id and target. Adapted from Lombyte (GPL-3.0) for PAL: overlays/shared/rendering_002712b8.c, FUN_L00_00275910. */
-unsigned char *PartType78Spawn(void *pos, int s, int col, int mode, int b, float *vec, int h, float x, float y) {
+unsigned char *spawn_proximity_corrected_size_alpha_tween_particle(void *pos, int s, int col, int mode, int b, float *vec, int h, float x, float y) {
     unsigned char *m = create_part(0x4E);
     if (m) {
         float *v;

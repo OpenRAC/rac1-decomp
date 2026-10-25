@@ -151,21 +151,21 @@ void skids_agent_update(Moby *m) {
             Stats_2E21F8 *stats = (Stats_2E21F8 *)(D_0014171B + 0x34D);
             if (stats->f70 != 0) {
                 int elapsed, period;
-                elapsed = scale_ticks(play_time_ticks);
+                elapsed = scale_ticks(gameplay_event_frame_count);
                 period = 600;
                 elapsed -= stats->f72 * period;
                 if (elapsed > (int)((float)scale_ticks(18) * 60.0f) || stats->f72 * period == 0) {
                     Help_Request(0x7D4, 0xE);
-                } else if (scale_ticks(play_time_ticks) / 600 > stats->f72) {
-                    stats->f72 = scale_ticks(play_time_ticks) / 600;
+                } else if (scale_ticks(gameplay_event_frame_count) / 600 > stats->f72) {
+                    stats->f72 = scale_ticks(gameplay_event_frame_count) / 600;
                 }
             } else {
                 int now, per;
                 stats->f70++;
-                now = scale_ticks(play_time_ticks);
+                now = scale_ticks(gameplay_event_frame_count);
                 per = 600;
                 if (now / per > stats->f72) {
-                    stats->f72 = scale_ticks(play_time_ticks) / 600;
+                    stats->f72 = scale_ticks(gameplay_event_frame_count) / 600;
                 }
                 stats->f74 = stats->f74 | (1 << g_current_level_index) | 0x80000000;
             }
@@ -906,7 +906,7 @@ void update_tutorial_hint_triggers(unsigned char *moby) {
                 if (saved_mission_state[g_current_level_index][lvl] != 0xFF) {
                     unsigned char *f = menu_item_enabled_115 + 0xB9;
                     if (f[0x10] != 0 && ((int *)(D_0014171B + 0xD875))[lvl] >= 6) {
-                        int t = scale_ticks(play_time_ticks) - D_001418A2 * 600;
+                        int t = scale_ticks(gameplay_event_frame_count) - D_001418A2 * 600;
                         if (scale_ticks(0x4650) < t) {
                             Help_Request(0x7D2, 0xC);
                         }
@@ -974,13 +974,13 @@ void update_tutorial_hint_triggers(unsigned char *moby) {
     if (((Flags_0013D5C8 *)(menu_item_enabled_115 + 0xB9))->b[0xC] == 0) {
         if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, data[5]) != 0) {
             char *b = D_0014171B + 0x34D;
-            int t = scale_ticks(play_time_ticks) - *(unsigned short *)(b + 0x8A) * 600;
+            int t = scale_ticks(gameplay_event_frame_count) - *(unsigned short *)(b + 0x8A) * 600;
             if ((int)(scale_ticks(0x12) * 60.0f) < t || *(unsigned short *)(b + 0x8A) * 600 == 0) {
                 Help_Request(0x7D7, 0x11);
             } else {
-                int n = scale_ticks(play_time_ticks) / 600;
+                int n = scale_ticks(gameplay_event_frame_count) / 600;
                 if (*(unsigned short *)(b + 0x8A) < n) {
-                    *(unsigned short *)(b + 0x8A) = scale_ticks(play_time_ticks) / 600;
+                    *(unsigned short *)(b + 0x8A) = scale_ticks(gameplay_event_frame_count) / 600;
                 }
             }
         }
@@ -988,21 +988,21 @@ void update_tutorial_hint_triggers(unsigned char *moby) {
     if (((Flags_0013D5C8 *)(menu_item_enabled_115 + 0xB9))->b[0xC] != 0 && is_point_inside_clip_volume(D_0013E633 + 0xE9D, data[5]) != 0) {
         char *b = D_0014171B + 0x34D;
         if (*(unsigned short *)(b + 0x90) != 0) {
-            int t = scale_ticks(play_time_ticks) - *(unsigned short *)(b + 0x92) * 600;
+            int t = scale_ticks(gameplay_event_frame_count) - *(unsigned short *)(b + 0x92) * 600;
             if ((int)(scale_ticks(0x12) * 60.0f) < t || *(unsigned short *)(b + 0x92) * 600 == 0) {
                 Help_Request(0x7D8, 0x12);
             } else {
-                int n = scale_ticks(play_time_ticks) / 600;
+                int n = scale_ticks(gameplay_event_frame_count) / 600;
                 if (*(unsigned short *)(b + 0x92) < n) {
-                    *(unsigned short *)(b + 0x92) = scale_ticks(play_time_ticks) / 600;
+                    *(unsigned short *)(b + 0x92) = scale_ticks(gameplay_event_frame_count) / 600;
                 }
             }
         } else {
             int n;
             (*(unsigned short *)(b + 0x90))++;
-            n = scale_ticks(play_time_ticks) / 600;
+            n = scale_ticks(gameplay_event_frame_count) / 600;
             if (*(unsigned short *)(b + 0x92) < n) {
-                *(unsigned short *)(b + 0x92) = scale_ticks(play_time_ticks) / 600;
+                *(unsigned short *)(b + 0x92) = scale_ticks(gameplay_event_frame_count) / 600;
             }
             *(int *)(b + 0x94) = *(int *)(b + 0x94) | (1 << g_current_level_index) | 0x80000000;
         }

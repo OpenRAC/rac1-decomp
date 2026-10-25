@@ -229,8 +229,8 @@ void hero_update_movement(void) {
                             if (usage_stats.f90 < 0xFFFF) {
                                 usage_stats.f90++;
                             }
-                            if (scale_ticks(play_time_ticks) / 600 > usage_stats.f92) {
-                                usage_stats.f92 = scale_ticks(play_time_ticks) / 600;
+                            if (scale_ticks(gameplay_event_frame_count) / 600 > usage_stats.f92) {
+                                usage_stats.f92 = scale_ticks(gameplay_event_frame_count) / 600;
                             }
                             usage_stats.f94 = usage_stats.f94 | (1 << g_current_level_index) | 0x80000000;
                             *(int *)&D_L00_0015F768 = -1;
@@ -506,8 +506,8 @@ void hero_update_movement(void) {
                             usage_stats.f58++;
                         }
                     }
-                    if (scale_ticks(play_time_ticks) / 600 > usage_stats.f5A) {
-                        usage_stats.f5A = scale_ticks(play_time_ticks) / 600;
+                    if (scale_ticks(gameplay_event_frame_count) / 600 > usage_stats.f5A) {
+                        usage_stats.f5A = scale_ticks(gameplay_event_frame_count) / 600;
                     }
                     usage_stats.f5C = usage_stats.f5C | (1 << g_current_level_index) | 0x80000000;
                 } else {
@@ -649,9 +649,9 @@ void hero_update_movement(void) {
             clip_hero_velocity_against_probed_surfaces(0);
             lean = g_hero.unk8EC * FastCos(ang) * -7.0f;
             SpringAngle(&g_hero.motion.rot.f[0], lean, &g_hero.unk8E4, 0, 0.007f, 0.17f, g_frame_time * 1.2217305f);
-            Hero_SetTiltSpringParams(0.009f, 0.22f);
-            Hero_SetTiltSpringParams(0.04f, 0.2f);
-            Hero_SetTiltSpringParams(0.02f, 0.2f);
+            set_first_hero_easing_parameters(0.009f, 0.22f);
+            set_first_hero_easing_parameters(0.04f, 0.2f);
+            set_first_hero_easing_parameters(0.02f, 0.2f);
             lean_state[1].f60[1] = roll * 47.0f;
             lean_state[1].f60[2] = lean * 1.5f;
             lean_state[1].f60[0] = lean * 1.4f;
@@ -1496,19 +1496,19 @@ void hero_update_movement(void) {
                         vec[4][1] = FastSin(yaw) * 0.8f;
                         vec[4][2] = 0.55f;
                         FastVecAdd(vec[4], vec[4], g_hero.motion.pos.f);
-                        Hero_HitMobySparks((int)w, coll_sphere_mobys(0.8f, vec[4], 0, w, vec[0]));
+                        emit_filtered_entry_sparkles((int)w, coll_sphere_mobys(0.8f, vec[4], 0, w, vec[0]));
                         yaw = FastAddRots(g_hero.motion.rot.f[2], -0.87266463f);
                         vec[4][0] = FastCos(yaw) * 0.8f;
                         vec[4][1] = FastSin(yaw) * 0.8f;
                         vec[4][2] = 0.55f;
                         FastVecAdd(vec[4], vec[4], g_hero.motion.pos.f);
-                        Hero_HitMobySparks((int)w, coll_sphere_mobys(0.8f, vec[4], 0, g_hero.moby, vec[0]));
+                        emit_filtered_entry_sparkles((int)w, coll_sphere_mobys(0.8f, vec[4], 0, g_hero.moby, vec[0]));
                         yaw = FastAddRots(g_hero.motion.rot.f[2], 0.87266463f);
                         vec[4][0] = FastCos(yaw) * 0.8f;
                         vec[4][1] = FastSin(yaw) * 0.8f;
                         vec[4][2] = 0.55f;
                         FastVecAdd(vec[4], vec[4], g_hero.motion.pos.f);
-                        Hero_HitMobySparks((int)w, coll_sphere_mobys(0.8f, vec[4], 0, w, vec[0]));
+                        emit_filtered_entry_sparkles((int)w, coll_sphere_mobys(0.8f, vec[4], 0, w, vec[0]));
                     }
                 }
             }
@@ -1693,10 +1693,10 @@ void hero_update_movement(void) {
         break;
     case 0x2F:
         update_hero_planar_movement_velocity();
-        Hero_SetTiltSpringParams(0.04f, 0.2f);
-        Hero_SetTiltSpringParams(0.04f, 0.2f);
-        Hero_SetTiltSpringParams(0.04f, 0.2f);
-        Hero_SetTiltSpringParams(0.02f, 0.2f);
+        set_first_hero_easing_parameters(0.04f, 0.2f);
+        set_first_hero_easing_parameters(0.04f, 0.2f);
+        set_first_hero_easing_parameters(0.04f, 0.2f);
+        set_first_hero_easing_parameters(0.02f, 0.2f);
         if (moby->prev_seq == 0x37) {
             float a;
 
@@ -1782,9 +1782,9 @@ void hero_update_movement(void) {
             if (g_hero.state_timer > scale_ticks(0x64)) {
                 SpringAngle(&g_hero.motion.rot.f[1], -g_hero.unk9D4, &g_hero.unk9E8, 0, g_frame_scale_sq * 0.035f, g_frame_scale_sq * 0.3f, g_frame_time * 1.9198622f);
             }
-            Hero_SetTiltSpringParams(0.009f, 0.22f);
-            Hero_SetTiltSpringParams(0.04f, 0.2f);
-            Hero_SetTiltSpringParams(0.02f, 0.2f);
+            set_first_hero_easing_parameters(0.009f, 0.22f);
+            set_first_hero_easing_parameters(0.04f, 0.2f);
+            set_first_hero_easing_parameters(0.02f, 0.2f);
             lean_state[1].f60[2] = lean * 2.1f;
             lean_state[1].f60[0] = lean * 3.5f;
         }
@@ -1892,7 +1892,7 @@ void hero_update_movement(void) {
                         if (tilt < -0.7853982f) {
                             tilt = -0.7853982f;
                         }
-                        Hero_SetTiltSpringParams(0.03f, 0.2f);
+                        set_first_hero_easing_parameters(0.03f, 0.2f);
                         if (g_hero.unk58C != 0) {
                             D_L00_0017A7E0[1] = -tilt;
                         } else {
@@ -1904,9 +1904,9 @@ void hero_update_movement(void) {
                     D_L00_0017A7E0[0] = fast_atan2(vec_length_xy(g_hero.motion.displacement.f), g_hero.motion.displacement.f[2]);
                 }
                 if (hasW) {
-                    Hero_SetTiltSpringParams(g_frame_scale_sq * 0.017f, g_frame_scale_sq * 0.3f);
-                    Hero_SetTiltSpringParams(g_frame_scale_sq * 0.027f, g_frame_scale_sq * 0.3f);
-                    Hero_SetTiltSpringParams(g_frame_scale_sq * 0.027f, g_frame_scale_sq * 0.3f);
+                    set_first_hero_easing_parameters(g_frame_scale_sq * 0.017f, g_frame_scale_sq * 0.3f);
+                    set_first_hero_easing_parameters(g_frame_scale_sq * 0.027f, g_frame_scale_sq * 0.3f);
+                    set_first_hero_easing_parameters(g_frame_scale_sq * 0.027f, g_frame_scale_sq * 0.3f);
                     if (g_hero.unk5D8 != 0) {
                         float a;
 

@@ -38,7 +38,7 @@ char *create_class_5c3_moby(int owner, char *pos, int arg, float f0, float f1) {
 LINKER_REMNANT("asm/overlays", func_L05_002D54C0);
 extern char *D_L05_001601AC MACRO_ADDR;
 /* Applies a trigger's switches to the moby at pool index. */
-void ApplyTriggerSwitches(int index, int trigger_arg, int inside) {
+void apply_spatial_trigger_to_moby(int index, int trigger_arg, int inside) {
     int moby = *(int *)((char *)&D_L05_001601AC - 0x114) + index * 0x100;
     char *trigger = (char *)trigger_arg;
     short kind;
@@ -97,7 +97,7 @@ void apply_spatial_trigger_to_moby_list(int a, int b, int i, int c) {
     unsigned short *p = (unsigned short *)rilgar_moby_groups[i];
     if (p != 0) {
         do {
-            ApplyTriggerSwitches(*p & 0x7FFF, b, c);
+            apply_spatial_trigger_to_moby(*p & 0x7FFF, b, c);
         } while (*(short *)p++ >= 0);
     }
 }
@@ -1533,7 +1533,7 @@ extern float func_L00_001EB6A8(void *,float,float,float,float,float);
 extern f32 func_001EC120_ED818(f32 *vel, f32 from, f32 to, f32 stiffness, f32 damping, f32 max) __asm__("func_001EC120");
 
 // Steers the moby's two axis angles toward its target, then runs the blend step once its state byte is 1.
-void orbit_hero_follow_camera_to_overhead(char *moby) {
+void update_hero_follow_camera_orbit(char *moby) {
     char *d = *(char **)(moby + 0x70);
     char *g = D_0013E633 + 0x10AD;
     char *p80;

@@ -218,7 +218,7 @@ void reset_active_camera_position_and_basis(void) {
     D_00187040_19C08.f148 = 64.0f;
     D_00187040_19C08.f144 = 256.0f;
     qzero(&D_00187040_19C08.f350);
-    qzero(&D_001873A0);
+    qzero(&active_camera_basis_column1_x);
     qzero(&D_001873B0);
     D_00187040_19C08.f350 = 1.0f;
     D_00187040_19C08.f364 = 1.0f;
@@ -3035,8 +3035,8 @@ int update_menu_item_slots(SelList_0021D7A0 *arg0) {
         if (s->count <= 0xFFFE) {
             s->count++;
         }
-        if (scale_game_frame_count(play_time_ticks) / 600 > s->best) {
-            s->best = scale_game_frame_count(play_time_ticks) / 600;
+        if (scale_game_frame_count(gameplay_event_frame_count) / 600 > s->best) {
+            s->best = scale_game_frame_count(gameplay_event_frame_count) / 600;
         }
         s->mask = s->mask | (1 << g_current_level_index) | 0x80000000;
         for (i = 0; i < 8; i++) {

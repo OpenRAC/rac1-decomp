@@ -22,9 +22,9 @@ void prepare_scaled_float_table_with_target_byte(char *arg, int val, float scale
     float *base;
     arg[0x3F] = val;
     *(s32 *)(D_L02_001CBC40 + 0x0) = (*(s32 *)&D_L02_00161320);
-    *(s32 *)(D_L02_001CBC40 + 0x4) = D_L02_00161324;
-    *(s32 *)(D_L02_001CBC40 + 0x8) = D_L02_00161328;
-    *(s32 *)(D_L02_001CBC40 + 0xC) = D_L02_0016132C;
+    *(s32 *)(D_L02_001CBC40 + 0x4) = scaled_table_header_second_word;
+    *(s32 *)(D_L02_001CBC40 + 0x8) = scaled_table_header_third_word;
+    *(s32 *)(D_L02_001CBC40 + 0xC) = scaled_table_header_final_word;
     p = (float *)(D_L02_001CBC40 + 0x10);
     base = D_L02_001CB780;
     q = base + 4;
@@ -247,10 +247,10 @@ void restore_view_after_textured_grid(void) {
     int *q;
     vu1_add_vif_code(0x13000000);
     b = D_L02_0016D0C0;
-    *(float *)(b + 0x218) = D_L02_00161378;
-    *(float *)(b + 0x21C) = D_L02_0016137C;
-    *(float *)(b + 0x228) = D_L02_00161380;
-    *(float *)(b + 0x22C) = D_L02_00161384;
+    *(float *)(b + 0x218) = textured_grid_saved_fog_near_distance;
+    *(float *)(b + 0x21C) = textured_grid_saved_fog_far_distance;
+    *(float *)(b + 0x228) = textured_grid_saved_fog_near_intensity;
+    *(float *)(b + 0x22C) = textured_grid_saved_fog_far_intensity;
     UpdateViewContext();
     BuildViewMatrices();
     l02_packet[0] = 0x10000002;
@@ -657,7 +657,7 @@ extern s32 D_L02_0015F6B0 MACRO_ADDR;
 #define func_L02_002DBD70 ((void (*)(u64, f32, f32, f32, s32))func_L02_002DBD70)
 typedef struct { int v[12]; } Ring12;
 /* Draw routine for a 12-marker ring moby. */
-void RingMarkersDraw(char *moby) {
+void draw_tresspasser_puzzle(char *moby) {
     struct { char unk0[0x78]; u64 texture; char unk80[0x10]; } ctx;
     int st0, st1;
     char *data = *(char **)(moby + 0x78);
@@ -818,12 +818,12 @@ void RingMarkersDraw(char *moby) {
         draw_tresspasser_puzzle_ring_arc(ctx.texture, angle, phase, (float)(*(int *)&trespasser_inner_arc_rx), (float)(*(int *)&trespasser_inner_arc_ry), color);
         if (first->v[(i + *(int *)(data + 0x14)) % 12] != 0) {
             if (first->v[(i + *(int *)(data + 0x14)) % 12] >= 3) {
-                DrawRadarArrow(ctx.texture, (*(int *)&D_L02_00161C38), 0, FastAddRots(angle, 0.2617994f), (float)(*(int *)&trespasser_inner_ring_radius));
+                draw_tresspasser_puzzle_arrow(ctx.texture, (*(int *)&D_L02_00161C38), 0, FastAddRots(angle, 0.2617994f), (float)(*(int *)&trespasser_inner_ring_radius));
                 first->v[(i + *(int *)(data + 0x14)) % 12] = 2;
             } else if (first->v[(i + *(int *)(data + 0x14)) % 12] == 2) {
-                DrawRadarArrow(ctx.texture, (*(int *)&D_L02_00161C38), 1, FastAddRots(angle, 0.2617994f), (float)(*(int *)&trespasser_inner_ring_radius));
+                draw_tresspasser_puzzle_arrow(ctx.texture, (*(int *)&D_L02_00161C38), 1, FastAddRots(angle, 0.2617994f), (float)(*(int *)&trespasser_inner_ring_radius));
             } else {
-                DrawRadarArrow(ctx.texture, (*(int *)&D_L02_00161C38), 2, FastAddRots(angle, 0.2617994f), (float)(*(int *)&trespasser_inner_ring_radius));
+                draw_tresspasser_puzzle_arrow(ctx.texture, (*(int *)&D_L02_00161C38), 2, FastAddRots(angle, 0.2617994f), (float)(*(int *)&trespasser_inner_ring_radius));
             }
         }
     }
@@ -843,12 +843,12 @@ void RingMarkersDraw(char *moby) {
         draw_tresspasser_puzzle_ring_arc(ctx.texture, angle, phase, (float)(*(int *)&trespasser_middle_arc_rx), (float)(*(int *)&trespasser_middle_arc_ry), color);
         if (second->v[(i + *(int *)(data + 0x18)) % 12] != 0) {
             if (second->v[(i + *(int *)(data + 0x18)) % 12] >= 3) {
-                DrawRadarArrow(ctx.texture, (*(int *)&D_L02_00161C38), 0, FastAddRots(angle, 0.2617994f), (float)(*(int *)&trespasser_middle_ring_radius));
+                draw_tresspasser_puzzle_arrow(ctx.texture, (*(int *)&D_L02_00161C38), 0, FastAddRots(angle, 0.2617994f), (float)(*(int *)&trespasser_middle_ring_radius));
                 second->v[(i + *(int *)(data + 0x18)) % 12] = 2;
             } else if (second->v[(i + *(int *)(data + 0x18)) % 12] == 2) {
-                DrawRadarArrow(ctx.texture, (*(int *)&D_L02_00161C38), 1, FastAddRots(angle, 0.2617994f), (float)(*(int *)&trespasser_middle_ring_radius));
+                draw_tresspasser_puzzle_arrow(ctx.texture, (*(int *)&D_L02_00161C38), 1, FastAddRots(angle, 0.2617994f), (float)(*(int *)&trespasser_middle_ring_radius));
             } else {
-                DrawRadarArrow(ctx.texture, (*(int *)&D_L02_00161C38), 2, FastAddRots(angle, 0.2617994f), (float)(*(int *)&trespasser_middle_ring_radius));
+                draw_tresspasser_puzzle_arrow(ctx.texture, (*(int *)&D_L02_00161C38), 2, FastAddRots(angle, 0.2617994f), (float)(*(int *)&trespasser_middle_ring_radius));
             }
         }
     }
@@ -868,12 +868,12 @@ void RingMarkersDraw(char *moby) {
         draw_tresspasser_puzzle_ring_arc(ctx.texture, angle, phase, (float)(*(int *)&trespasser_third_arc_rx), (float)(*(int *)&trespasser_third_arc_ry), color);
         if (third->v[(i + *(int *)(data + 0x1c)) % 12] != 0) {
             if (third->v[(i + *(int *)(data + 0x1c)) % 12] >= 3) {
-                DrawRadarArrow(ctx.texture, (*(int *)&D_L02_00161C38), 0, FastAddRots(angle, 0.2617994f), (float)(*(int *)&trespasser_third_ring_radius));
+                draw_tresspasser_puzzle_arrow(ctx.texture, (*(int *)&D_L02_00161C38), 0, FastAddRots(angle, 0.2617994f), (float)(*(int *)&trespasser_third_ring_radius));
                 third->v[(i + *(int *)(data + 0x1c)) % 12] = 2;
             } else if (third->v[(i + *(int *)(data + 0x1c)) % 12] == 2) {
-                DrawRadarArrow(ctx.texture, (*(int *)&D_L02_00161C38), 1, FastAddRots(angle, 0.2617994f), (float)(*(int *)&trespasser_third_ring_radius));
+                draw_tresspasser_puzzle_arrow(ctx.texture, (*(int *)&D_L02_00161C38), 1, FastAddRots(angle, 0.2617994f), (float)(*(int *)&trespasser_third_ring_radius));
             } else {
-                DrawRadarArrow(ctx.texture, (*(int *)&D_L02_00161C38), 2, FastAddRots(angle, 0.2617994f), (float)(*(int *)&trespasser_third_ring_radius));
+                draw_tresspasser_puzzle_arrow(ctx.texture, (*(int *)&D_L02_00161C38), 2, FastAddRots(angle, 0.2617994f), (float)(*(int *)&trespasser_third_ring_radius));
             }
         }
     }
@@ -962,7 +962,7 @@ extern void func_001FA218(void *, void *);
 extern int func_001F4868(int);
 
 /* Draws the rotating radar arrow sprite (style sel) at angle a and scale s, twice. */
-void DrawRadarArrow(int p0, int p1, int sel, float a, float s) {
+void draw_tresspasser_puzzle_arrow(int p0, int p1, int sel, float a, float s) {
     long xy[4];
     u32 col[4];
     int uv[4];
@@ -1165,7 +1165,7 @@ void draw_tresspasser_puzzle_textured_quads(void) {
         c[0] = c[1] = c[2] = c[3] = (*(int *)&trespasser_backdrop_color);
         q = *p++;
         /* The TEX0 is 64 bits (its palette, height and colour mode in the upper half): read and
-           passed whole, as RingMarkersDraw reads it, not through GetEffectTex's int declaration. */
+           passed whole, as draw_tresspasser_puzzle reads it, not through GetEffectTex's int declaration. */
         func_L02_0020BF88_DC2C0(&q, b, c, ((u64 (*)(int))GetEffectTex)((*(int *)&trespasser_effect_tex_base) + 0x28), 1);
     }
 }
@@ -1333,7 +1333,7 @@ void swingshot_versatarget_update(char *m) {
                                       -2.0f / multiply_global_factor(*(float *)&versatarget_sparkle_lifetime));
                     FastVecAdd(particle_position, particle_position, &((struct Moby *)m)->pos);
                     particle_lifetime = truncate_float_to_s32(multiply_global_factor(*(float *)&versatarget_sparkle_lifetime)) & 0xFF;
-                    PartType60Spawn(particle_position, particle_velocity, *(int *)&versatarget_sparkle_color,
+                    spawn_moving_hero_relative_alpha_fade_particle(particle_position, particle_velocity, *(int *)&versatarget_sparkle_color,
                                     particle_lifetime, random_integer_below(0xFF) & 0xFF, 0,
                                     *(float *)&versatarget_sparkle_size);
                 }
@@ -1452,7 +1452,7 @@ void tresspasser_update(char *moby) {
         break;
     case 1:
         *(float *)(moby + 0x48) = FastAddRots(*(float *)(moby + 0x48), r);
-        SparkleSpritesDrawL02(moby);
+        update_collectible_sprite_effect(moby);
         if (frame_counter_ref % 10 != 0) {
             break;
         }
@@ -1602,7 +1602,7 @@ extern unsigned char *func_L00_00273E08(void *, int, unsigned char, int, int, in
 extern float func_001F9B88(float);
 
 /* Animates a moby's four sprite layers (func_L16_002CAA18 lifted by 0.5 instead of 0.1). */
-void SparkleSpritesDrawL02(char *m) {
+void update_collectible_sprite_effect(char *m) {
     L02SpriteData *p = *(L02SpriteData **)(m + 0x78);
     float d[4] __attribute__((aligned(16)));
     float e[4] __attribute__((aligned(16)));
@@ -2222,7 +2222,7 @@ void white_flower_update(char *m) {
 extern char *D_L02_00167480;
 
 /* Store the selected value only while this level object is inactive. */
-void SetActiveObjectValue(int value) {
+void set_follow_camera_control_word(int value) {
     char *moby = aridia_camera_moby;
     if (*(short *)(moby + 0x86) == 0) {
         char *data = *(char **)(moby + 0x70);

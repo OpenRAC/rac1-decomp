@@ -1019,7 +1019,7 @@ extern long func_001F4868(int);
 extern int func_001FA898(float);
 extern void func_001F5800(int, int, int, int, int, int, int, int, long, long);
 
-void DrawTiledScreenOverlay(char *moby) {
+void draw_visibomb_outside_zone_overlay(char *moby) {
     int *vars = *(int **)(moby + 0x78);
     int row_count;
     int column_count;
@@ -1120,7 +1120,7 @@ void update_target_outside_zone_timeout(char *m) {
     }
     if (zone_vars->count > 0) {
         if (*(int *)&D_L01_0015F40C != 0) {
-            AddDrawCallback(DrawTiledScreenOverlay, m);
+            AddDrawCallback(draw_visibomb_outside_zone_overlay, m);
         }
         if (scale_ticks(0x5A) < zone_vars->count) {
             terminate_visibomb_missile(target_moby, target_moby->pvars);
@@ -1354,7 +1354,7 @@ void update_gold_bolt_visuals(char *moby) {
         *(float *)(moby + 0x48) = r;
         *(float *)(moby + 0x4C) = FastAddRots(*(float *)(moby + 0x4C), k);
     }
-    DrawGlowRings(moby);
+    update_gold_bolt_glow_rings(moby);
     if (random_integer_below(*(int *)&D_L01_00161FE0) == 0) {
         spawn_gold_bolt_particles(moby);
     }
@@ -1417,7 +1417,7 @@ extern int func_001FA898_r(float) __asm__("func_001FA898");
 extern unsigned char *func_L00_00273E08(void *, int, unsigned char, int, int, int, int, float);
 
 /* Draws the moby's four pulsing glow rings between it and the camera, fading with distance. */
-void DrawGlowRings(char *m) {
+void update_gold_bolt_glow_rings(char *m) {
     char *d = *(char **)(m + 0x78);
     float dir[4];
     float pos[4];
@@ -1548,13 +1548,13 @@ void spawn_gold_bolt_particles(char *m) {
     t = g_frame_time;
     rand_vec(w, *(float *)&D_L01_00161FE4 * t, *(float *)&D_L01_00161FE8 * t);
     c = *(unsigned char *)&D_L01_00161FF4;
-    PartType60Spawn(v, w, *(int *)&D_L01_00161FF8, c, random_integer_below(0xFF) & 0xFF, 0, *(float *)&D_L01_00162000);
+    spawn_moving_hero_relative_alpha_fade_particle(v, w, *(int *)&D_L01_00161FF8, c, random_integer_below(0xFF) & 0xFF, 0, *(float *)&D_L01_00162000);
     for (i = 2; i >= 0; i--) {
         t = g_frame_time;
         rand_vec(u, *(float *)&D_L01_00161FEC * t, *(float *)&D_L01_00161FF0 * t);
         FastVecAdd(w, w, u);
         c2 = *(unsigned char *)&D_L01_00161FF4;
-        PartType60Spawn(v, w, *(int *)&D_L01_00161FFC, c2, random_integer_below(0xFF) & 0xFF, 0, *(float *)&D_L01_00162004);
+        spawn_moving_hero_relative_alpha_fade_particle(v, w, *(int *)&D_L01_00161FFC, c2, random_integer_below(0xFF) & 0xFF, 0, *(float *)&D_L01_00162004);
     }
 }
 extern void func_L01_0026F090(char *arg, int val);

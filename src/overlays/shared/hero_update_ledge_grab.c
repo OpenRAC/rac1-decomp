@@ -379,7 +379,7 @@ void restore_hero_from_vehicle_mode(void) {
         *(int *)(o + 0x98) = 0;
     }
     *(float *)(g2 + 0xA94) = 1.0f;
-    HeroClearQueuedSequence();
+    clear_hero_queued_animation();
     if (*(int *)(g2 + 0x2084) != 100 || (level_game_mode_q != 2 && level_game_mode_q != 6)) {
         HeroL06_TrySetMoveState(0, 1);
     }

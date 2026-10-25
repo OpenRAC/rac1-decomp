@@ -67,7 +67,7 @@ extern u8 D_0013D5C8[];
 
 /* Builds the vendor list: the stocked items (up to 12, 0xFF-terminated), then every other available item (D_0013D4C0 set, h8 non-zero) not already listed.
    Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/00295100.c, FUN_L00_0029a400. */
-void VendorBuildItemList(s32 skip_unflagged) {
+void build_vendor_menu_rows(s32 skip_unflagged) {
     s32 count, i, j, value, item, k;
 
     count = 0;
@@ -269,7 +269,7 @@ void open_vendor_menu(VendorMoby_pv *m) {
     func_0012E528(0x1D);
     music_Pause(0);
     func_0012DDC0();
-    VendorBuildItemList(VP.mode != 0);
+    build_vendor_menu_rows(VP.mode != 0);
     half = VP.count;
     sel = half / 2;
     if (half < 3) sel = 1;
@@ -282,7 +282,7 @@ void open_vendor_menu(VendorMoby_pv *m) {
         s32 item = VP.entries[VP.cursor].item;
 
         VP.item_text = queue_animation_update(0x30, item + 0xEA60, initialize_numeric_hud_timer_and_base_dimensions,
-                                                  Hud_UpdateCounter, HudWeaponDraw,
+                                                  Hud_UpdateCounter, draw_weapon_ammo_hud_panel,
                                                   &weapon_ammo_counts[item], item_price_table[item].hE);
     }
     skip_frame = 1;
@@ -642,7 +642,7 @@ void handle_vendor_auxiliary_moby_event(int a) {
                     *(int *)(b + 0x30) = rendered_frame_count;
                     r0 = random_integer_below(2);
                     *(int *)(b + 0x3C) = r0;
-                    D_L00_00161250 = 1;
+                    vendor_auxiliary_reaction_started = 1;
                     D_L00_00161254 = 0;
                     *(int *)(D_0014171B + 0x100D1) = (r0 * 3 + 2) * 6 + *(int *)(b + 0x38) + 10000;
                     m[0x20] = 0xB;
@@ -653,7 +653,7 @@ void handle_vendor_auxiliary_moby_event(int a) {
     case 1:
         r1 = random_integer_below(2);
         *(int *)(b + 0x3C) = r1;
-        D_L00_00161250 = a;
+        vendor_auxiliary_reaction_started = a;
         D_L00_00161254 = 0;
         *(int *)(D_0014171B + 0x100D1) = r1 * 0x12 + *(int *)(b + 0x38) + 10000;
         if (m[0x53] != a) MobyBlendAnimation(m, 1, 0, 10);
@@ -945,7 +945,7 @@ void update_vendor_purchase(void) {
                             ((int *)(D_0013DE6E + 0xA))[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item] += n;
                             handle_vendor_auxiliary_moby_event(3);
                             gBolts = gBolts - price;
-                            VendorBuildItemList(D_L00_001CA7C0_9CDE0.f40 != 0);
+                            build_vendor_menu_rows(D_L00_001CA7C0_9CDE0.f40 != 0);
                             set_scrolling_status_message(msg_string(0x4F5F));
                             Moby_PlaySound(7, 0, D_L00_001CA7C0_9CDE0.cam);
                         } else {
@@ -966,12 +966,12 @@ void update_vendor_purchase(void) {
                             D_0013E633[0x2E12] = 1;
                         }
                         gBolts = gBolts - price;
-                        VendorBuildItemList(D_L00_001CA7C0_9CDE0.f40 != 0);
+                        build_vendor_menu_rows(D_L00_001CA7C0_9CDE0.f40 != 0);
                         if (D_L00_001CA7C0_9CDE0.f50 != -1) Hud_SetBarValueById(D_L00_001CA7C0_9CDE0.f50, 0);
                         D_L00_001CA7C0_9CDE0.f50 = -1;
                         if (D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].sel == 1) {
                             D_L00_001CA7C0_9CDE0.f50 = queue_animation_update(0x30, D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item + 0xEA60,
-                                                                     initialize_numeric_hud_timer_and_base_dimensions, Hud_UpdateCounter, HudWeaponDraw,
+                                                                     initialize_numeric_hud_timer_and_base_dimensions, Hud_UpdateCounter, draw_weapon_ammo_hud_panel,
                                                                      &weapon_ammo_counts[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item],
                                                                      item_price_table[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].hE);
                         } else {

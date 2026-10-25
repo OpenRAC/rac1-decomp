@@ -75,7 +75,7 @@ extern int D_L00_0015F654 MACRO_ADDR;
 /* Starts a sound bank entry chosen by (a0, a1, a2) offset from a
    level-specific table row, the same shape as func_0022EE28. */
 int request_grouped_voice(int a0, int a1, int a2, int a3, int a4) {
-    int idx = D_L00_001BDBB0[D_0015EE84_m] + a0 * 4 + a1 * 2 + a2 + D_L00_0015F654;
+    int idx = D_L00_001BDBB0[D_0015EE84_m] + a0 * 4 + a1 * 2 + a2 + grouped_voice_definition_base_index;
     int h;
 
     if (idx >= D_L00_0015F6D0) {

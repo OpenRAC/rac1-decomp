@@ -1263,7 +1263,7 @@ void WaterPlateUpdate(Moby *m) {
         func_L01_002B9198_30D8E8(D_L07_001DD100_30D8E8, 0x24);
         AddDrawCallback(func_L07_0030E100_30D8E8, m);
     }
-    if (d->idx == D_L07_00161BC0) {
+    if (d->idx == water_grid_override_index) {
         D_L07_001DD100_30D8E8[d->idx].h1E = D_L07_00161BC4;
         D_L07_00204940[d->idx] = D_L07_00161BC4;
     }

@@ -867,13 +867,13 @@ extern void func_001F3140(void);
    word's store fits the branch delay slot ($gp-relative there). */
 void UpdateFog(void) {
     if (use_alt_fog != 0) {
-        view_context[0x8C] = D_001611C4.r;
-        view_context[0x8D] = D_001611C4.g;
-        view_context[0x8E] = D_001611C4.b;
-        *(float *)&view_context[0x86] = D_001611C4.f[0];
-        *(float *)&view_context[0x87] = D_001611C4.f[1];
-        *(float *)&view_context[0x8A] = D_001611C4.f[2];
-        *(float *)&view_context[0x8B] = D_001611C4.f[3];
+        view_context[0x8C] = water_fog_color_red.r;
+        view_context[0x8D] = water_fog_color_red.g;
+        view_context[0x8E] = water_fog_color_red.b;
+        *(float *)&view_context[0x86] = water_fog_color_red.f[0];
+        *(float *)&view_context[0x87] = water_fog_color_red.f[1];
+        *(float *)&view_context[0x8A] = water_fog_color_red.f[2];
+        *(float *)&view_context[0x8B] = water_fog_color_red.f[3];
         part_clip_dist = 0x40000;
     } else {
         view_context[0x8C] = fog_color_red.r;
@@ -1232,7 +1232,7 @@ void UpdateViewContext(void) {
     view->fog_slope = fog_distance_slope;
     view->fog_base = view->fog_near_int - view->fog_near_dist / 1024.0f * fog_distance_slope;
     view->fog_mul = fog_multiplier;
-    D_00160C30 = fog_multiplier;
+    view_fog_multiplier = fog_multiplier;
     D_001E0250[0] = fog_multiplier;
     D_001E6E70[0] = fog_multiplier;
     mul_bits = *(s32 *)&view->fog_mul;

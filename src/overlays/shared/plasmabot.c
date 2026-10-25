@@ -111,7 +111,7 @@ void update_plasmabot(char *m) {
             *(unsigned short *)(m + 0x34) |= 0x41;
             *(int *)(m + 0x94) = 0;
             if (((unsigned char *)m)[0x53] == 5) {
-                EffectSlot_Free(m);
+                release_beam_slot_by_id(m);
                 SetDeathBits(m, 0, -1);
                 { call_D678(m); return; }
             }
@@ -212,7 +212,7 @@ void update_plasmabot(char *m) {
         if (FastDecTimer(data + 0x248) == 0) return;
         if (MobyL14_Activate(*(int *)(data + 0x264)) == 0) return;
         if (call_4BF0(m) == 0) return;
-        *(short *)(data + 0x248) = scale_ticks(*(int *)&D_L14_001615B8);
+        *(short *)(data + 0x248) = scale_ticks(*(int *)&plasmabot_path_traversal_delay_frames);
         activate_plasmabot(m);
         ((unsigned char *)m)[0x20] = 2;
         MobySetAnimation(m, 1, 0);
@@ -288,7 +288,7 @@ void update_plasmabot(char *m) {
                 MobyBlendAnimation(m, 2, 0, scale_ticks(10));
                 ((unsigned char *)m)[0x20] = 9;
             } else {
-                *(short *)(data + 0x248) = scale_ticks(*(int *)&D_L14_001615B8);
+                *(short *)(data + 0x248) = scale_ticks(*(int *)&plasmabot_path_traversal_delay_frames);
                 ((unsigned char *)m)[0x20] = 0xD;
             }
         }
@@ -319,7 +319,7 @@ void update_plasmabot(char *m) {
             }
             *(float *)(data + 0x27C) = -1.0f;
             *(float *)(data + 0x254) = *(float *)(data + 0x258) = *(float *)(data + 0x25C) = 0.0f;
-            EffectSlot_Free(m);
+            release_beam_slot_by_id(m);
             break;
         }
         if (FastDecTimer(data + 0x260) == 0) break;
@@ -395,7 +395,7 @@ void update_plasmabot(char *m) {
         if (FastDecTimer(data + 0x262) != 0) {
             MobyBlendAnimation(m, 6, 0, scale_ticks(10));
             ((unsigned char *)m)[0x20] = 7;
-            EffectSlot_Free(m);
+            release_beam_slot_by_id(m);
         }
         break;
     }
@@ -421,7 +421,7 @@ void update_plasmabot(char *m) {
     }
     case 11: {
         if ((mine_fall(m, data + 0x60) & 0x160) == 0) return;
-        EffectSlot_Free(m);
+        release_beam_slot_by_id(m);
         Moby_GetJointWorldPos(m, 2, mat);
         spawn_plasmabot_death_debris(m, (char *)mat);
         call_F4A8(m, data + 0x40, m + 0x10, 0.0f, 0.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, 1.0f, -1, 15.0f, 1, 1, -1, 0);
@@ -437,7 +437,7 @@ void update_plasmabot(char *m) {
         spawn_plasmabot_death_debris(m, (char *)mat);
         x = 0;
         ((void (*)(char *, int *, int))spawn_path_or_ballistic_debris)(m, &x, 1);
-        EffectSlot_Free(m);
+        release_beam_slot_by_id(m);
         call_D678(m);
         return;
     }
@@ -447,7 +447,7 @@ void update_plasmabot(char *m) {
         update_plasmabot_aim_quaternion(m, 0, *(float *)(m + 0x48));
         update_plasmabot_aim_joint_rotation(m, *(float *)(m + 0x48));
     }
-    ShipEngineEffects((struct Moby *)m);
+    update_plasmabot_visual_effects((struct Moby *)m);
 }
 typedef struct { f32 x; f32 y; f32 z; } Vec3_2B3850;
 typedef struct {
@@ -498,7 +498,7 @@ extern void func_L00_001FF4B0_2B3850(void *, void *, f32) __asm__("func_L00_001F
 
 /* Ship engine effects: puffs exhaust particles from joint 1 and places the nozzle and beam points from joints 7 and 2.
  * Adapted from Lombyte (GPL-3.0) for PAL: overlays/shared/gameplay/entities/002b17d8.c, FUN_L14_002b2600. */
-void ShipEngineEffects(struct Moby *m)
+void update_plasmabot_visual_effects(struct Moby *m)
 {
     Vec4 pos;
     Vec4 dir;
@@ -569,7 +569,7 @@ extern f32 D_L14_00161584_3B78 SDATA(D_L14_00161584);
 extern f32 D_L14_00161588_3B78 SDATA(D_L14_00161588);
 
 // Draws five GIF line packets from the moby's beam points at data+0x1E0..0x220.
-void BeamMoby_DrawLines(char *moby) {
+void draw_plasmabot_effect_quads(char *moby) {
     char *data = *(char **)(moby + 0x78);
     struct {
         Vec4 o[4];
@@ -762,7 +762,7 @@ void process_plasmabot_hit_reaction(char *m) {
             char *p60 = d + 0x60;
             int t;
             float e, g, k;
-            EffectSlot_Free(m);
+            release_beam_slot_by_id(m);
             m[0x20] = 0xA;
             t = scale_ticks(0x3C);
             e = D_0015EE6C_x;

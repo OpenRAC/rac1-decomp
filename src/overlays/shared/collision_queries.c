@@ -97,7 +97,7 @@ extern float func_001F9CB8(void *);
 extern float func_001F9D10(void *, void *);
 
 /* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_001ee1b0.c, FUN_L00_001ee318. */
-int IsPointInVolume(Vec4 *pt, int *vol, float rad) {
+int test_point_in_camera_collision_volume(Vec4 *pt, int *vol, float rad) {
     Vec4 p;
     Vec4 c;
     Vec4 d;

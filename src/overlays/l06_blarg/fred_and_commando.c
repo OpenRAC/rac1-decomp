@@ -1602,7 +1602,7 @@ void ShuttleUpdate(Moby *moby) {
             Hero_ResetToPosition(b, rot, 0, 0);
             if (d->f114 != 0) {
                 D_0013D4AF_3039B8[5] = 1;
-                DriftingSprites_Activate(level_mobys_q + (d->f10C << 8));
+                initialize_moby_particle_effect_state(level_mobys_q + (d->f10C << 8));
                 d->f114 = 0;
                 moby->state = 6;
                 if (moby->prev_seq != 2) {
@@ -2608,8 +2608,8 @@ void update_level06_help_hints(struct Moby *moby) {
                 if (help_records[0x2F].count <= 0xFFFE) {
                     help_records[0x2F].count++;
                 }
-                if (scale_ticks(play_time_ticks) / 600 > help_records[0x2F].unk2) {
-                    help_records[0x2F].unk2 = scale_ticks(play_time_ticks) / 600;
+                if (scale_ticks(gameplay_event_frame_count) / 600 > help_records[0x2F].unk2) {
+                    help_records[0x2F].unk2 = scale_ticks(gameplay_event_frame_count) / 600;
                 }
                 help_records[0x2F].level_mask = help_records[0x2F].level_mask | (1 << g_current_level_index) | 0x80000000;
             } else {
@@ -2617,8 +2617,8 @@ void update_level06_help_hints(struct Moby *moby) {
                 if (help_records[0x2E].count <= 0xFFFE) {
                     help_records[0x2E].count++;
                 }
-                if (scale_ticks(play_time_ticks) / 600 > help_records[0x2E].unk2) {
-                    help_records[0x2E].unk2 = scale_ticks(play_time_ticks) / 600;
+                if (scale_ticks(gameplay_event_frame_count) / 600 > help_records[0x2E].unk2) {
+                    help_records[0x2E].unk2 = scale_ticks(gameplay_event_frame_count) / 600;
                 }
                 help_records[0x2E].level_mask = help_records[0x2E].level_mask | (1 << g_current_level_index) | 0x80000000;
             }
@@ -2629,18 +2629,18 @@ void update_level06_help_hints(struct Moby *moby) {
             m = (struct Moby *)(level_mobys_q + (vars[j] << 8));
             if (vars[j] != -1 && m != 0 && m->state != 0xFE && m->state != 0xFD && m->state != 1) {
                 if (help_records[0x28].count != 0) {
-                    elapsed = scale_ticks(play_time_ticks) - help_records[0x28].unk2 * 600;
+                    elapsed = scale_ticks(gameplay_event_frame_count) - help_records[0x28].unk2 * 600;
                     if ((int)(scale_ticks(18) * 60.0f) < elapsed || help_records[0x28].unk2 * 600 == 0) {
                         Help_Request(0x1771, 0x28);
-                    } else if (scale_ticks(play_time_ticks) / 600 > help_records[0x28].unk2) {
-                        help_records[0x28].unk2 = scale_ticks(play_time_ticks) / 600;
+                    } else if (scale_ticks(gameplay_event_frame_count) / 600 > help_records[0x28].unk2) {
+                        help_records[0x28].unk2 = scale_ticks(gameplay_event_frame_count) / 600;
                     }
                 } else {
                     if (help_records[0x28].count <= 0xFFFE) {
                         help_records[0x28].count++;
                     }
-                    if (scale_ticks(play_time_ticks) / 600 > help_records[0x28].unk2) {
-                        help_records[0x28].unk2 = scale_ticks(play_time_ticks) / 600;
+                    if (scale_ticks(gameplay_event_frame_count) / 600 > help_records[0x28].unk2) {
+                        help_records[0x28].unk2 = scale_ticks(gameplay_event_frame_count) / 600;
                     }
                     help_records[0x28].level_mask = help_records[0x28].level_mask | (1 << g_current_level_index) | 0x80000000;
                 }

@@ -210,7 +210,7 @@ char *revive_spawner_pooled_child(char *m, float *at, int cls) {
             spawner_moby->unkB4 = got;
         }
         current_moby->collision = ((SpawnClass *)current_moby->pclass)->collision;
-        copy_hero_spawn_frame(current_moby);
+        copy_hero_moby_field_38(current_moby);
         moby_build_matrix(current_moby);
         spawned = current_moby;
         sound = (SpawnSound *)func_L00_0025D390_p(spawned);

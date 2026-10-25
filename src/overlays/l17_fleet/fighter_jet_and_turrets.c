@@ -695,7 +695,7 @@ void update_fleet_rotating_radial_effect(char *m) {
                             f20 = g_frame_time;
                             f20 *= 10.0f;
                             vec_scale_to_length(spF0, spF0, random_float_between(f20, len / IntToFloat(c * 4)));
-                            PartType60Spawn((float *)spE0, (char *)spF0, *(int *)&fleet_ring_spark_color, c & 0xFF, random_integer_below(0xFF) & 0xFF, 0, *(float *)&fleet_ring_spark_scale);
+                            spawn_moving_hero_relative_alpha_fade_particle((float *)spE0, (char *)spF0, *(int *)&fleet_ring_spark_color, c & 0xFF, random_integer_below(0xFF) & 0xFF, 0, *(float *)&fleet_ring_spark_scale);
                         }
                     }
                 }
@@ -1078,9 +1078,9 @@ void update_drone_flight_and_sparks(char *moby) {
                         unsigned char *rec = D_0014171B + 0x34D;
                         if (*(unsigned short *)(rec + 0x458) == 0) {
                             (*(unsigned short *)(rec + 0x458))++;
-                            n = scale_ticks(play_time_ticks) / 600;
+                            n = scale_ticks(gameplay_event_frame_count) / 600;
                             if (*(unsigned short *)(rec + 0x45A) < n) {
-                                *(unsigned short *)(rec + 0x45A) = scale_ticks(play_time_ticks) / 600;
+                                *(unsigned short *)(rec + 0x45A) = scale_ticks(gameplay_event_frame_count) / 600;
                             }
                             *(int *)(rec + 0x45C) = *(int *)(rec + 0x45C) | (1 << g_current_level_index) | 0x80000000;
                         }
@@ -1092,9 +1092,9 @@ void update_drone_flight_and_sparks(char *moby) {
                         unsigned char *rec = D_0014171B + 0x34D;
                         if (*(unsigned short *)(rec + 0x458) == 0) {
                             (*(unsigned short *)(rec + 0x458))++;
-                            n = scale_ticks(play_time_ticks) / 600;
+                            n = scale_ticks(gameplay_event_frame_count) / 600;
                             if (*(unsigned short *)(rec + 0x45A) < n) {
-                                *(unsigned short *)(rec + 0x45A) = scale_ticks(play_time_ticks) / 600;
+                                *(unsigned short *)(rec + 0x45A) = scale_ticks(gameplay_event_frame_count) / 600;
                             }
                             *(int *)(rec + 0x45C) = *(int *)(rec + 0x45C) | (1 << g_current_level_index) | 0x80000000;
                         }
@@ -1128,7 +1128,7 @@ void update_drone_flight_and_sparks(char *moby) {
         float x = random_float_between(g_frame_time + g_frame_time, g_frame_time * 10.0f);
         float y = random_float_between(-3.1415927f, 3.1415927f);
         BuildSphericalOffset(a, x, y, random_float_between(-3.1415927f, 3.1415927f));
-        PartType60Spawn((float *)(moby + 0x10), (char *)a, 0x60FF3020, 0xF, random_integer_below(0xFF), 0, 3.0f);
+        spawn_moving_hero_relative_alpha_fade_particle((float *)(moby + 0x10), (char *)a, 0x60FF3020, 0xF, random_integer_below(0xFF), 0, 3.0f);
         if (fast_dec_timer(d + 0x38) != 0) {
             DeleteMoby(moby);
         }

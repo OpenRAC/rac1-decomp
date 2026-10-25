@@ -408,14 +408,14 @@ void draw_layered_mesh_effect(void) {
     VU1_addGSregister(0x42, (long)*(int *)&D_L08_00161E60 << 32 | 0x44);
     draw_scrolled_mesh_batch(0);
     VU1_addGSregister(6, GetEffectTex(0x3B));
-    VU1_addGSregister(0x42, (long)((D_L08_00161E64 * *(unsigned char *)&D_L08_00161E98) >> 8) << 32 | 0x62);
+    VU1_addGSregister(0x42, (long)((scrolled_mesh_subtractive_base_fixed_alpha * *(unsigned char *)&D_L08_00161E98) >> 8) << 32 | 0x62);
     draw_scrolled_mesh_batch(1);
-    VU1_addGSregister(0x42, (long)((D_L08_00161E68 * *(unsigned char *)&D_L08_00161E98) >> 8) << 32 | 0x68);
+    VU1_addGSregister(0x42, (long)((scrolled_mesh_additive_base_fixed_alpha * *(unsigned char *)&D_L08_00161E98) >> 8) << 32 | 0x68);
     draw_scrolled_mesh_batch(2);
     VU1_addGSregister(6, GetEffectTex(0x3C));
     VU1_addGSregister(0x42, (long)*(int *)&D_L08_00161E80 << 32 | 0x48);
     Moby600_DrawQuads11(0);
-    VU1_addGSregister(0x42, (long)D_L08_00161E84 << 32 | 0x48);
+    VU1_addGSregister(0x42, (long)offset_mesh_second_pass_fixed_alpha << 32 | 0x48);
     Moby600_DrawQuads11(1);
     VU1_addGSregister(6, GetEffectTex(0x3D));
     VU1_addGSregister(0x42, (long)*(int *)&D_L08_00161E90 << 32 | 0x48);
@@ -487,13 +487,13 @@ void update_layered_mesh_effect(unsigned char *moby) {
         break;
     case 1:
         v[0] = *(float *)&D_L08_00161E50;
-        v[1] = D_L08_00161E54;
-        v[2] = D_L08_00161E58;
-        v[3] = D_L08_00161E5C;
+        v[1] = layered_mesh_effect_center_y;
+        v[2] = layered_mesh_effect_center_z;
+        v[3] = layered_mesh_effect_culling_radius;
         if (FastBSphereCheck((char *)v, 1000.0f) >= 0) {
             w[0] = *(float *)&D_L08_00161E50;
-            w[1] = D_L08_00161E54;
-            w[2] = D_L08_00161E58;
+            w[1] = layered_mesh_effect_center_y;
+            w[2] = layered_mesh_effect_center_z;
             w[3] = 1.0f;
             FastVecSub(w, batalia_hero_pos, w);
             d = FastVecLength(w);
@@ -1447,45 +1447,45 @@ void update_batalia_item_triggers_and_help(char *m) {
     }
     if (ia_p[29] == 0) {
         if (is_point_inside_clip_volume(&hero_p.motion.pos, data->first)) {
-            elapsed = scale_ticks(play_time_ticks) - HR[48].best * 600;
+            elapsed = scale_ticks(gameplay_event_frame_count) - HR[48].best * 600;
             if ((int)((float)scale_ticks(18) * 60.0f) < elapsed || HR[48].best * 600 == 0) {
                 Help_Request(8000, 0x30);
             } else {
-                time = scale_ticks(play_time_ticks) / 600;
+                time = scale_ticks(gameplay_event_frame_count) / 600;
                 if (HR[48].best < time)
-                    HR[48].best = scale_ticks(play_time_ticks) / 600;
+                    HR[48].best = scale_ticks(gameplay_event_frame_count) / 600;
             }
         }
     }
     if (ia_p[29] != 0) {
         if (is_point_inside_clip_volume(&hero_p.motion.pos, data->first) && alt_p[0x2F] == 0) {
             if (HR[49].count != 0) {
-                elapsed = scale_ticks(play_time_ticks) - HR[49].best * 600;
+                elapsed = scale_ticks(gameplay_event_frame_count) - HR[49].best * 600;
                 if ((int)((float)scale_ticks(18) * 60.0f) < elapsed || HR[49].best * 600 == 0) {
                     Help_Request(8001, 0x31);
                 } else {
-                    time = scale_ticks(play_time_ticks) / 600;
+                    time = scale_ticks(gameplay_event_frame_count) / 600;
                     if (HR[49].best < time)
-                        HR[49].best = scale_ticks(play_time_ticks) / 600;
+                        HR[49].best = scale_ticks(gameplay_event_frame_count) / 600;
                 }
             } else {
                 HR[49].count++;
-                time = scale_ticks(play_time_ticks) / 600;
+                time = scale_ticks(gameplay_event_frame_count) / 600;
                 if (HR[49].best < time)
-                    HR[49].best = scale_ticks(play_time_ticks) / 600;
+                    HR[49].best = scale_ticks(gameplay_event_frame_count) / 600;
                 HR[49].flags = HR[49].flags | (1 << g_current_level_index) | 0x80000000;
             }
         }
     }
     if (ia_p[28] == 0) {
         if (is_point_inside_clip_volume(&hero_p.motion.pos, data->second) && D_0013DE4B[7] != 0) {
-            elapsed = scale_ticks(play_time_ticks) - HR[50].best * 600;
+            elapsed = scale_ticks(gameplay_event_frame_count) - HR[50].best * 600;
             if ((int)((float)scale_ticks(18) * 60.0f) < elapsed || HR[50].best * 600 == 0) {
                 Help_Request(8002, 0x32);
             } else {
-                time = scale_ticks(play_time_ticks) / 600;
+                time = scale_ticks(gameplay_event_frame_count) / 600;
                 if (HR[50].best < time)
-                    HR[50].best = scale_ticks(play_time_ticks) / 600;
+                    HR[50].best = scale_ticks(gameplay_event_frame_count) / 600;
             }
             goto sample_volume;
         }
@@ -1493,19 +1493,19 @@ void update_batalia_item_triggers_and_help(char *m) {
     if (ia_p[28] != 0) {
         if (is_point_inside_clip_volume(&hero_p.motion.pos, data->second) && D_0013DE4B[7] != 0) {
             if (HR[112].count != 0) {
-                elapsed = scale_ticks(play_time_ticks) - HR[112].best * 600;
+                elapsed = scale_ticks(gameplay_event_frame_count) - HR[112].best * 600;
                 if ((int)((float)scale_ticks(18) * 60.0f) < elapsed || HR[112].best * 600 == 0) {
                     Help_Request(8005, 0x70);
                 } else {
-                    time = scale_ticks(play_time_ticks) / 600;
+                    time = scale_ticks(gameplay_event_frame_count) / 600;
                     if (HR[112].best < time)
-                        HR[112].best = scale_ticks(play_time_ticks) / 600;
+                        HR[112].best = scale_ticks(gameplay_event_frame_count) / 600;
                 }
             } else {
                 HR[112].count++;
-                time = scale_ticks(play_time_ticks) / 600;
+                time = scale_ticks(gameplay_event_frame_count) / 600;
                 if (HR[112].best < time)
-                    HR[112].best = scale_ticks(play_time_ticks) / 600;
+                    HR[112].best = scale_ticks(gameplay_event_frame_count) / 600;
                 HR[112].flags = HR[112].flags | (1 << g_current_level_index) | 0x80000000;
             }
         }
@@ -1646,14 +1646,14 @@ void queue_batalia_textured_batch_passes(void) {
     VU1_addGSregister(0x42, (long)*(int *)&D_L08_00162420 << 32 | 0x64);
     queue_batalia_eight_textured_batches(0);
     VU1_addGSregister(6, GetEffectTex(0x3B));
-    VU1_addGSregister(0x42, (long)((D_L08_00162424 * *(unsigned char *)&D_L08_00162480) >> 8) << 32 | 0x62);
+    VU1_addGSregister(0x42, (long)((batalia_texture_3b_pair_one_blend_factor_base * *(unsigned char *)&D_L08_00162480) >> 8) << 32 | 0x62);
     queue_batalia_eight_textured_batches(1);
-    VU1_addGSregister(0x42, (long)((D_L08_00162428 * *(unsigned char *)&D_L08_00162480) >> 8) << 32 | 0x68);
+    VU1_addGSregister(0x42, (long)((batalia_texture_3b_pair_two_blend_factor_base * *(unsigned char *)&D_L08_00162480) >> 8) << 32 | 0x68);
     queue_batalia_eight_textured_batches(2);
     VU1_addGSregister(6, GetEffectTex(0x3C));
     VU1_addGSregister(0x42, (long)*(int *)&D_L08_00162440 << 32 | 0x48);
     queue_batalia_six_textured_batches(0);
-    VU1_addGSregister(0x42, (long)D_L08_00162444 << 32 | 0x48);
+    VU1_addGSregister(0x42, (long)batalia_texture_3c_pair_one_blend_factor << 32 | 0x48);
     queue_batalia_six_textured_batches(1);
     VU1_addGSregister(6, GetEffectTex(0x3D));
     VU1_addGSregister(0x42, (long)*(int *)&D_L08_00162450 << 32 | 0x48);
@@ -1712,13 +1712,13 @@ void update_batalia_textured_effect(unsigned char *moby) {
         break;
     case 1:
         v[0] = *(float *)&D_L08_00162410;
-        v[1] = D_L08_00162414;
-        v[2] = D_L08_00162418;
-        v[3] = D_L08_0016241C;
+        v[1] = batalia_effect_reference_position_y;
+        v[2] = batalia_effect_reference_position_z;
+        v[3] = batalia_effect_culling_radius;
         if (FastBSphereCheck((char *)v, 1000.0f) >= 0) {
             w[0] = *(float *)&D_L08_00162410;
-            w[1] = D_L08_00162414;
-            w[2] = D_L08_00162418;
+            w[1] = batalia_effect_reference_position_y;
+            w[2] = batalia_effect_reference_position_z;
             w[3] = 1.0f;
             FastVecSub(w, batalia_hero_pos, w);
             d = FastVecLength(w);

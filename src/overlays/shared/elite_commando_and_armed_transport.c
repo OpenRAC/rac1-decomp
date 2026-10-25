@@ -731,7 +731,7 @@ void emit_blarg_elite_commando_death_particles(void *m) {
         PartType11Spawn(origin,movement,*a,*b,duration1,duration2,0,0,400000.0f,delay);
     } while(remaining!=0);
     }
-    if(*(float *)&D_L16_0015F6B4<0.95f && distance>9.0f) {
+    if(*(float *)&blarg_elite_commando_extra_glow_gate<0.95f && distance>9.0f) {
         spawn_glow_particle(m,origin,movement,4.0f,scale_ticks(15),127,127,127,32);
         spawn_glow_particle(m,origin,movement,4.0f,scale_ticks(24),127,32,0,32);
     }
@@ -1203,7 +1203,7 @@ void grindrail_barrier_update(unsigned char *m) {
                                              ((float *)&D_L16_00161EC8)[i] * 0.017453292f * g_frame_time);
         }
         if (barrier_moby->visible)
-            AddDrawCallback(RingEffectDraw, barrier_moby);
+            AddDrawCallback(draw_grindrail_barrier_effect, barrier_moby);
         if (*(int *)(barrier_data + 0x20) != -1 && check_grindrail_barrier_release_condition(*(int *)(barrier_data + 0x20))) {
             barrier_moby->collision = 0;
             barrier_moby->state = 2;
@@ -1235,7 +1235,7 @@ extern short D_L16_00161EE8, D_L16_00161EEC, D_L16_00161EF0, D_L16_00161EF4;
 extern short D_L16_00161EF8, D_L16_00161EFC, D_L16_00161F00;
 
 /* Draw the animated ring quads and four rotating accents around a moby. */
-void RingEffectDraw(char *m) {
+void draw_grindrail_barrier_effect(char *m) {
     RingQuad quad;
     float transform[4][4], rotation[4];
     RingData *data = *(RingData **)(m + 0x78);

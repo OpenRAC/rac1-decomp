@@ -18,7 +18,7 @@ extern int func_001F9908_r(int *) __asm__("func_001F9908");
 extern void func_L00_002703E8(void *, void *, int, int);
 
 /* while the countdown value is ready, scatter a spawn by the camera's offset and reroll the delay */
-void DriftParticleEmit(char *m) {
+void emit_hydrodisplacer_effect(char *m) {
     char *d = *(char **)(m + 0x78);
     float a[4];
     float b[4];
@@ -190,7 +190,7 @@ typedef struct {
 } FxData;
 
 /* Scrolls the four hue values of a moby's effect and spawns a coloured streak for each. Adapted from Lombyte (GPL-3.0) for PAL: src/overlays/shared/gameplay_vendor_002df730.c, FUN_L00_002e0788. */
-void HueStreakFxUpdate(char *p) {
+void emit_moby_color_cycling_particles(char *p) {
     float v[8];
     FxData *m = *(FxData **)(p + 0x78);
     float *a;
@@ -268,7 +268,7 @@ extern int D_L00_00161D08[];
 extern int D_L00_00161D58[];
 
 // releases the slot owning the given id and its two handles; returns 1 if found
-int EffectSlot_Free(int id) {
+int release_beam_slot_by_id(int id) {
     unsigned int i;
     for (i = 0; (int)i < 3; i++) {
         if (beam_slot_ids[i] == id) {
@@ -567,7 +567,7 @@ void draw_active_beam_slots(char *m) {
         f = D_L00_00161D48_f[i] - frame_scale * 0.2f;
         D_L00_00161D48_f[i] = f;
         if (f <= -8.0f) D_L00_00161D48_f[i] = f + 8.0f;
-        EffectSlot_DrawPane(beam_slot_ids[i], i);
+        draw_beam_endpoint_quads_with_glow(beam_slot_ids[i], i);
         a = d[1] + 0x28;
         b = d[0] + 0x28;
         draw_beam_strand_with_glow(a, b, &D_L00_001E7190[k], 0x80, 0x40, i);
@@ -766,7 +766,7 @@ void func_001F9BD8(void *, void *, void *);
 void func_L00_001FD1D8(void *, s32, s32);
 
 /* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_002df730.c, FUN_L00_002e3388. */
-void EffectSlot_DrawPane(s32 unused, s32 idx) {
+void draw_beam_endpoint_quads_with_glow(s32 unused, s32 idx) {
     Q_e3388 q;
     f32 a[4] __attribute__((aligned(16)));
     f32 b[4] __attribute__((aligned(16)));
@@ -1058,7 +1058,7 @@ extern void func_L00_002E5618(char *, void *);
 extern int func_L00_001EFFF0(void *, void *, int, int, int);
 
 /* build the two edge vectors of a moving box from the game vector and clip them */
-int Cam_GetPulledBackPosition(void *out, int flag) {
+int compute_follow_camera_ground_aware_target_position(void *out, int flag) {
     VQ_2E5770 a, b, c, d;
     char *base = D_0013E633 + 0xE1D;
     float f;
@@ -1105,7 +1105,7 @@ void follow_camera_reset(char *m) {
     char *q;
     char *r;
     float f;
-    Cam_GetPulledBackPosition(a, 0);
+    compute_follow_camera_ground_aware_target_position(a, 0);
     q = p + 0x40;
     f = FastVecDot(a, g3);
     r = p + 0x130;
@@ -1570,7 +1570,7 @@ void follow_cam_focus_velocity(char *m, float *v2) {
                 FastVecSub(e, cam, tmp);
             }
         } else {
-            Cam_GetPulledBackPosition(tmp, 1);
+            compute_follow_camera_ground_aware_target_position(tmp, 1);
             x = FastVecDot(tmp, g + 0x30);
             FastVecScale(v2, g + 0x30, x);
             FastVecSub(e, tmp, v2);
@@ -2675,7 +2675,7 @@ extern s32 func_L00_001F10E0_E87C8(Vec4 *, f32, s32, s32) __asm__("func_L00_001F
 extern s32 func_L00_002E85E8_E87C8(O002e7318 *, Vec4 *, s32, s32) __asm__("func_L00_002E85E8");
 
 /* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/vendor/002e5e38.c, FUN_L00_002e7318. */
-s32 follow_camera_push_eye_out_of_collision(O002e7318 *o) {
+s32 resolve_follow_camera_endpoint_collisions(O002e7318 *o) {
     Vec4 pos;
     Vec4 tmp;
     u8 *b = o->p70;
@@ -2727,7 +2727,7 @@ s32 follow_camera_push_eye_out_of_collision(O002e7318 *o) {
     return r;
 }
 // returns zero, with a 0x50 byte frame
-long Cam_DebugCheck(void) {
+long return_follow_camera_no_collision(void) {
     char buf[0x50];
     return 0;
 }
@@ -2870,7 +2870,7 @@ extern short D_L00_00161DA8;
 extern unsigned char D_0013A5E0[];
 
 // Camera sweep: steps a vector along the path, testing each step against the edge and the wall.
-int Cam_ResolveWallCollision(char *m) {
+int resolve_follow_camera_orbit_path_collisions(char *m) {
     V4 v0, v1, x, t, u, w;
     char *pa;
     int ret;
@@ -2895,7 +2895,7 @@ int Cam_ResolveWallCollision(char *m) {
                 func_L00_002E8E78_f(m, i, v1, f20) == 0) {
                 qcopy(t, collision_hit_point);
                 qcopy(u, v1);
-                if (Cam_PushOutOfWall(m, v1, i, f22, f20) != 0) {
+                if (adjust_follow_camera_orbit_probe_for_collisions(m, v1, i, f22, f20) != 0) {
                     ret = 1;
                     if (*(unsigned char *)(base + 0x20A4) != 2) {
                         if (FastAbsF(*(float *)(D_0013A5E0 + 0x2560)) > 0.05f) {

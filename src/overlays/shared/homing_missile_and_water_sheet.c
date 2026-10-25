@@ -23,7 +23,7 @@ void remove_moby_when_near_hero(char *a0)
     if (FastVecDist(a0 + 0x10, gHeroPos) < 2.0f) {
         D_0013D491[0] = 1;
         func_00116248(D_L11_00179B98, D_L11_0021ABF0);
-        D_L11_0015F720 = scale_ticks(0xB4);
+        proximity_removal_frame_count = scale_ticks(0xB4);
         DeleteMoby(a0);
     }
 }
@@ -501,7 +501,7 @@ extern float D_L11_00161E88[2] SDATA(D_L11_00161E88);
 extern UV_30BCD8 D_L11_00161E98[] MACRO_ADDR;
 
 /* Draws the level's water sheet: a fading edge strip, a far quad, and two scrolling layers of grid cells around the camera. */
-void DrawWaterSheet(Moby *moby) {
+void draw_pokitaru_ocean(Moby *moby) {
     Vec4f v0;
     Vec4f v1;
     Vec4f a;
@@ -1231,7 +1231,7 @@ typedef struct {
     long pk[4];
 } Quad_31A738;
 
-void draw_moby_trail_quads(char *m) {
+void draw_linked_moby_trails(char *m) {
     Quad_31A738 q[16];
     float off[2][4];
     short *p, *np;
@@ -1389,8 +1389,8 @@ void update_moby_hit_stats_and_state(char *m) {
         if (*(unsigned short *)(st + 0x157E8) < 0xFFFF) {
             *(unsigned short *)(st + 0x157E8) += 1;
         }
-        if (scale_ticks(play_time_ticks) / 600 > *(unsigned short *)(st + 0x157EA)) {
-            *(unsigned short *)(st + 0x157EA) = scale_ticks(play_time_ticks) / 600;
+        if (scale_ticks(gameplay_event_frame_count) / 600 > *(unsigned short *)(st + 0x157EA)) {
+            *(unsigned short *)(st + 0x157EA) = scale_ticks(gameplay_event_frame_count) / 600;
         }
         *(int *)(st + 0x157EC) = *(int *)(st + 0x157EC) | (1 << D_0015EE84_3102C8) | 0x80000000;
         if (D_0015EE84_3102C8 == 0xB && *(char **)(info + 0x20) != 0 && *(short *)(*(char **)(info + 0x20) + 0xA6) == 0xAC) {

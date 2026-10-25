@@ -77,12 +77,12 @@ void initialize_vendor_screen(char *m, int lvl) {
     FastMemSet(c, 0, 0x1C0);
     FastMemSet(D_L01_0017C840, 0, 0x40);
     calculate_dma_transfer_address();
-    n = D_L01_0016124C + (int)0xFFFC0000;
+    n = relocated_address_base + (int)0xFFFC0000;
     *(int *)(c + 0x58) = D_L01_00174300[1] + n;
     r = D_L01_001CA720[lvl];
     *(int *)(c + 0x5C) = D_L01_00174300[2] + n;
     D_L01_0015F4FC = 1.0f;
-    D_L01_0016124C = n;
+    relocated_address_base = n;
     *(int *)&D_L01_0015F500 = 0;
     clear_hero_item_slot(0, 0);
     *(int *)(g + 0x20B8) = lvl;

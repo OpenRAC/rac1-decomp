@@ -254,7 +254,7 @@ extern int func_001F9850(int);
 extern void func_L00_0026DD70(void *, void *, unsigned int, unsigned int, float, int);
 
 /* Spawns three bursts of sparks around a moby with random velocity, colours and size. Adapted from Lombyte (GPL-3.0) for PAL: overlays/l01/unclassified_002b96e0.c, FUN_L01_002e6518. */
-void SpawnSparkBursts(SplashMoby *m, u128 *origin) {
+void spawn_birdbot_movement_particles(SplashMoby *m, u128 *origin) {
     Vec4 base;
     Vec4 vel;
     Vec4 tmp;
@@ -994,7 +994,7 @@ void birdbot_update(PeMoby *m) {
                 m->state = 1;
             }
         }
-        SpawnSparkBursts((SplashMoby *)m, (u128 *)&old);
+        spawn_birdbot_movement_particles((SplashMoby *)m, (u128 *)&old);
         break;
     case 6:
         if (v->f1CC < 14.0f && frame >= 14.0f) {
@@ -1100,7 +1100,7 @@ void birdbot_update(PeMoby *m) {
         v->f1B8 = 0.0f;
         v->f1BC = 0.0f;
         m->state = 0xA;
-        SpawnSparkBursts((SplashMoby *)m, (u128 *)&old);
+        spawn_birdbot_movement_particles((SplashMoby *)m, (u128 *)&old);
         break;
     case 10: {
         PeCursor *c;
@@ -1144,7 +1144,7 @@ void birdbot_update(PeMoby *m) {
         if (FastVecDist(&m->pos, &va) < 0.25f) {
             m->state = 0xB;
         }
-        SpawnSparkBursts((SplashMoby *)m, (u128 *)&old);
+        spawn_birdbot_movement_particles((SplashMoby *)m, (u128 *)&old);
         break;
     }
     case 11:
@@ -1178,7 +1178,7 @@ void birdbot_update(PeMoby *m) {
             }
             m->state = 1;
         }
-        SpawnSparkBursts((SplashMoby *)m, (u128 *)&old);
+        spawn_birdbot_movement_particles((SplashMoby *)m, (u128 *)&old);
         break;
     case 12:
         if (mine_fall(m, v->x70) & 0x40) {

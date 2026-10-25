@@ -1166,7 +1166,7 @@ extern void func_001F9C30(void *, void *, float);
 extern void func_L00_001FD1D8(void *, void *, s32);
 
 /* Draws the moby's glow quad, pulled toward the camera so it is not hidden by the moby. */
-void DrawMobyGlowQuad(char *m) {
+void draw_blarg_heavy_interceptor_camera_pulled_glow(char *m) {
     char *d = *(char **)(m + 0x78);
     float pos[4];
     Pk_2af4a0 pk;
@@ -1439,7 +1439,7 @@ int update_blarg_heavy_interceptor_aim_transforms(char *moby, int flag) {
         *(float *)(data + 0x1C0) = rotation_angle;
         qcopy(data + 0x90, data + 0x170);
         if (flag != 0) {
-            AddDrawCallback(DrawMobyGlowQuad, moby);
+            AddDrawCallback(draw_blarg_heavy_interceptor_camera_pulled_glow, moby);
             *(int *)(data + 0x20C) |= 2;
         }
     }
@@ -1792,7 +1792,7 @@ void machinegun_turret_update(char *moby) {
 extern void func_L00_0025E4B0(void *, short *);
 
 // advances a moby's animation timer and picks its next state
-void Turret_ApplyHit(unsigned char *m) {
+void process_machinegun_turret_hit_reactions(unsigned char *m) {
     unsigned char *d = *(unsigned char **)(m + 0x78);
     int loc0;
     float f4 = 0.0f;
@@ -2061,11 +2061,11 @@ void minibomber_update(Moby *moby) {
         }
     }
     tgt = d->f180;
-    Minibomber_ApplyHit((unsigned char *)moby);
+    process_minibomber_hit_reactions((unsigned char *)moby);
     update_minibomber_target((char *)moby);
     ease_minibomber_position_and_heading((char *)moby, tgt, d->f17C, d->f170, d->f174, d->f178, d->f154, d->f158, d->f15C);
-    Minibomber_HoverMotion((char *)moby);
-    Minibomber_EmitExhaust((char *)moby);
+    update_minibomber_oscillation((char *)moby);
+    emit_minibomber_exhaust_puffs((char *)moby);
     if (moby->visible != 0) {
         if (FastVecDist(&moby->pos, oltanis_camera_pos) < 40.0f && moby->state != 0 && moby->state != 1 &&
             moby->state != 9) {
@@ -2124,7 +2124,7 @@ void minibomber_update(Moby *moby) {
         d->f164 = 0.0f;
         d->f168 = 0.0f;
         d->f16C = 0.0f;
-        RecomputePathLengths((char *)moby);
+        initialize_minibomber_path_segment_lengths((char *)moby);
         d->f108 = -1;
         moby->update_dist = 0x80;
         moby->state = 1;
@@ -2151,7 +2151,7 @@ void minibomber_update(Moby *moby) {
         }
         if (d->fB4 == 2) {
             moby->state = 3;
-        } else if (minibomber_follow_spline((char *)moby, (char *)path, (int)&d->fE8, (int)&d->fEC, d->fF0, &d->fE4,
+        } else if (advance_minibomber_along_path((char *)moby, (char *)path, (int)&d->fE8, (int)&d->fEC, d->fF0, &d->fE4,
                                      minibomber_fly_in_speed * frame_scale, minibomber_fly_in_spring_stiffness, minibomber_spring_damping, minibomber_spring_max_speed,
                                      minibomber_fly_in_turn_stiffness, minibomber_turn_damping, minibomber_turn_max_rate) != 0) {
             qcopy(d->f180, path + path->n);
@@ -2186,7 +2186,7 @@ void minibomber_update(Moby *moby) {
         }
         if (d->fB4 != 2) {
             moby->state = 2;
-        } else if (minibomber_follow_spline((char *)moby, (char *)path, (int)&d->fE8, (int)&d->fEC, d->fF0, &d->fE4,
+        } else if (advance_minibomber_along_path((char *)moby, (char *)path, (int)&d->fE8, (int)&d->fEC, d->fF0, &d->fE4,
                                      -(minibomber_retreat_speed * frame_scale), minibomber_patrol_spring_stiffness, minibomber_spring_damping, minibomber_spring_max_speed,
                                      minibomber_patrol_turn_stiffness, minibomber_turn_damping, minibomber_turn_max_rate) != 0) {
             moby->state = 1;
@@ -2196,9 +2196,9 @@ void minibomber_update(Moby *moby) {
     }
     case 4:
         tg = 0.0f;
-        a = CosineInterpolate(tg, d->f104, (float)d->f102 / IntToFloat(scale_ticks(minibomber_turn_back_time)));
+        a = CosineInterpolate(tg, d->f104, (float)d->f102 / IntToFloat(scale_ticks(minibomber_aim_return_duration_frames)));
         axis_rotation_2d48(d->f120, 2, a);
-        if (vec_distance_xy(&moby->pos, &d->fB0->pos) < minibomber_patrol_trigger_radius) {
+        if (vec_distance_xy(&moby->pos, &d->fB0->pos) < minibomber_path_traversal_trigger_distance) {
             if (d->f10C == 0) {
                 d->fE8 = 0;
                 d->fEC = 0.0f;
@@ -2217,7 +2217,7 @@ void minibomber_update(Moby *moby) {
         } else if (FastDecTimer(&d->f102) != 0) {
             if (moby->prev_seq != 2) {
                 moby->state = 5;
-                d->f102 = scale_ticks(minibomber_aim_time);
+                d->f102 = scale_ticks(minibomber_bomb_aim_duration_frames);
                 d->f104 = 0.0f;
                 d->f100 = 0;
             }
@@ -2228,7 +2228,7 @@ void minibomber_update(Moby *moby) {
         if (d->f10C == 1) {
             spd = -spd;
         }
-        if (minibomber_follow_spline((char *)moby, (char *)D_L14_001B0F30_2B5938[d->fDC], (int)&d->fE8, (int)&d->fEC, d->fF0,
+        if (advance_minibomber_along_path((char *)moby, (char *)D_L14_001B0F30_2B5938[d->fDC], (int)&d->fE8, (int)&d->fEC, d->fF0,
                               &d->fE4, spd, minibomber_patrol_spring_stiffness, minibomber_spring_damping, minibomber_spring_max_speed, minibomber_patrol_turn_stiffness,
                               minibomber_turn_damping, minibomber_turn_max_rate) != 0) {
             PathNode_2B5938 *path;
@@ -2260,11 +2260,11 @@ void minibomber_update(Moby *moby) {
     case 5: {
         PathNode_2B5938 *q = D_L14_001B0F30_2B5938[d->fD8] + d->f100;
         tg = FastSubRots(fast_atan2(q[1].v[0] - moby->pos.x, q[1].v[1] - moby->pos.y), moby->rot.z);
-        a = CosineInterpolate(tg, d->f104, (float)d->f102 / IntToFloat(scale_ticks(minibomber_aim_time)));
+        a = CosineInterpolate(tg, d->f104, (float)d->f102 / IntToFloat(scale_ticks(minibomber_bomb_aim_duration_frames)));
         axis_rotation_2d48(d->f120, 2, a);
         if (moby->prev_seq == 2) {
             moby->state = 4;
-            d->f102 = scale_ticks(minibomber_turn_back_time);
+            d->f102 = scale_ticks(minibomber_aim_return_duration_frames);
         } else if (FastDecTimer(&d->f102) != 0) {
             d->f104 = a;
             moby->state = 6;
@@ -2275,7 +2275,7 @@ void minibomber_update(Moby *moby) {
     case 6:
         if (IsFrameWithinWindow(moby, 3.0f) != 0) {
             PathNode_2B5938 *q;
-            n = (float)scale_ticks(minibomber_bomb_flight_frames);
+            n = (float)scale_ticks(minibomber_bomb_flight_duration_frames);
             axis_rotation_2d48(d->f120, 2, d->f104);
             Moby_GetJointWorldPos(moby, 1, v);
             FastVecSub(v + 4, D_L14_001B0F30_2B5938[d->fD8] + (d->f100 + 1), v);
@@ -2285,13 +2285,13 @@ void minibomber_update(Moby *moby) {
             q = D_L14_001B0F30_2B5938[d->fD8] + d->f100;
             d->f48 = -((v[2] - q[1].v[2]) + -g * (n * n) * 0.5f) / n;
             func_L14_00302968_2B5938((int)moby, v, v + 4, g, scale_ticks(minibomber_bomb_life));
-            SpawnRadialSparks((char *)moby, v, d->f104);
+            emit_minibomber_bomb_release_effects((char *)moby, v, d->f104);
             d->f100++;
             if (d->f100 >= D_L14_001B0F30_2B5938[d->fD8]->n) {
                 moby->state = 4;
-                d->f102 = scale_ticks(minibomber_turn_back_time);
+                d->f102 = scale_ticks(minibomber_aim_return_duration_frames);
             } else {
-                d->f102 = scale_ticks(minibomber_aim_time);
+                d->f102 = scale_ticks(minibomber_bomb_aim_duration_frames);
                 moby->state = 5;
             }
         }
@@ -2326,7 +2326,7 @@ void minibomber_update(Moby *moby) {
  * it is skipped for states 0 and 9, state 9 is what cases 1/2 set (6 in the sibling) and cases
  * 3-8 also start func_00213DE0 and store 1.75f at +0x58. Written from the sibling's C; f4 has to
  * be zeroed after the +0x2C store. */
-void Minibomber_ApplyHit(unsigned char *m) {
+void process_minibomber_hit_reactions(unsigned char *m) {
     unsigned char *d = *(unsigned char **)(m + 0x78);
     int loc0;
     float f4;
@@ -2385,7 +2385,7 @@ extern short D_L14_0016160C;
 extern short D_L14_00161610;
 
 // Steers a moby's two smoothed angles toward their targets, unless it is in a dormant state.
-void Minibomber_HoverMotion(char *moby) {
+void update_minibomber_oscillation(char *moby) {
     int raw = ((unsigned char *)moby)[0x20];
     unsigned char state = raw;
     char *data = *(char **)(moby + 0x78);
@@ -2417,7 +2417,7 @@ void update_minibomber_target(char *moby) {
 }
 
 /* Recomputes the per-segment lengths of three paths held by the moby, then clears a counter. */
-void RecomputePathLengths(char *moby) {
+void initialize_minibomber_path_segment_lengths(char *moby) {
     char *data = *(char **)(moby + 0x78);
     char *p;
     int i;
@@ -2439,7 +2439,7 @@ extern float func_L00_001FF860(float, float);
 extern void func_L00_002592B0(char *moby, float *vel, float target, float k, float d, float max);
 
 /* steer a moby's position toward a target and update its velocity */
-int minibomber_follow_spline(char *moby, char *a1, int a2, int a3, float *v, float *vel,
+int advance_minibomber_along_path(char *moby, char *a1, int a2, int a3, float *v, float *vel,
                       float f12, float f13, float f14, float f15, float f16, float f17, float f18) {
     float tmp[4];
     int r = func_L00_0025E860_AD858(a1, tmp, (void *)a2, (void *)a3, 0, f12);
@@ -2474,7 +2474,7 @@ extern float D_L14_0015F660[] MACRO_ADDR;
 extern char D_L14_001D8BD0[];
 
 /* emits six glowing particles and sixteen radial sparks around a heading */
-void SpawnRadialSparks(char *m, float *input, float angle) {
+void emit_minibomber_bomb_release_effects(char *m, float *input, float angle) {
     float v[4], pos[4], axis[4], rotated[4], saved[4];
     float a = FastAddRots(angle, *(float *)(m + 0x48));
     int i;
@@ -3542,7 +3542,7 @@ extern float func_001F9C78(void *a, void *b);
 extern float func_001F9FC0(float x);
 
 // Turns a moby's tail toward its target: a spring on each of its three points, with the axis-angle rotation for the tilt.
-void Moby309_TrackHero(char *moby) {
+void update_platform_tilt_basis(char *moby) {
     char *data = *(char **)(moby + 0x78);
     char *g = (char *)D_0013E633 + 0xE1D;
     float v[4];

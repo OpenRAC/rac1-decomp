@@ -92,7 +92,7 @@ extern int D_L00_00173F40[];
 extern float D_0015EE70 MACRO_ADDR;
 
 /* Drops a moby onto the ground or a riding platform: follows the platform if there is one, else falls under gravity. */
-void DropMobyToGround(D9668Moby *m) {
+void update_nanotech_ball_grounding_and_fall(D9668Moby *m) {
     D9668Rec *d = m->rec;
     Vt P;
     Vt Q;
@@ -172,7 +172,7 @@ extern int func_002140B0(int);
 extern void func_L00_00273F80(void *, void *, int, int, int, int, float);
 
 /* Build a direction to the target, scale it and emit two effect pieces from the moby's position. */
-void EmitDirectedEffectPair(char *m) {
+void spawn_nanotech_ball_collection_effect_pair(char *m) {
     Vx a;
     Vx b;
     Vx c;
@@ -181,8 +181,8 @@ void EmitDirectedEffectPair(char *m) {
     FastVecScale(&b, D_0013E633 + 0x10AD,
         random_float_between(*(float *)&D_L00_00161B30 * g_frame_time, *(float *)&D_L00_00161B34 * g_frame_time));
     build_look_at_matrix(&c, &b, random_angle_radians(), &a);
-    PartType60Spawn(p, &c, *(int *)&D_L00_00161B3C, D_L00_00161B38, random_integer_below(0xFF) & 0xFF, 1, *(float *)&D_L00_00161B44);
-    PartType60Spawn(p, &c, *(int *)&D_L00_00161B40, D_L00_00161B38, random_integer_below(0xFF) & 0xFF, 1, *(float *)&D_L00_00161B48);
+    spawn_moving_hero_relative_alpha_fade_particle(p, &c, *(int *)&D_L00_00161B3C, D_L00_00161B38, random_integer_below(0xFF) & 0xFF, 1, *(float *)&D_L00_00161B44);
+    spawn_moving_hero_relative_alpha_fade_particle(p, &c, *(int *)&D_L00_00161B40, D_L00_00161B38, random_integer_below(0xFF) & 0xFF, 1, *(float *)&D_L00_00161B48);
 }
 typedef struct { f32 x, y, z, w; } __attribute__((aligned(16))) V_2d8510;
 typedef struct { u8 p0[0x58]; s16 h58[4]; f32 f60[4]; } O_2d8510;
@@ -210,7 +210,7 @@ s32 func_001FA8A8(s32, s32, f32);
 u8 *func_L00_00273E08(void *, s32, u8, s32, s32, s32, s32, f32);
 
 /* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002d7f88.c, FUN_L00_002d8510. */
-s32 spawn_nanotech_ball_glow_rings(M_2d8510 *m) {
+s32 update_nanotech_ball_collection_effects(M_2d8510 *m) {
     O_2d8510 *o;
     V_2d8510 a, b;
     s32 i, ret, c, hi, al;
@@ -1005,7 +1005,7 @@ extern char D_L00_00166D80[];
 extern char D_0013E633[];
 
 /* picks camera yaw/pitch style outputs and a position offset per camera mode */
-void SuckCannon_GetAimOrigin(char *m, float *a, float *b, float *c) {
+void compute_suck_cannon_suction_aim_and_origin(char *m, float *a, float *b, float *c) {
     float v[3];
     char *g;
     Moby_GetJointWorldPos(m, 0, c);
@@ -1321,8 +1321,8 @@ void suckcannon_update(M40 *self) {
             data->cooldown = scale_ticks(10);
             stats = (Stats40 *)(D_0014171B + 0x65);
             if (stats->uses < 65535) stats->uses++;
-            if (scale_ticks(play_time_ticks)/600 > stats->longest)
-                stats->longest = scale_ticks(play_time_ticks)/600;
+            if (scale_ticks(gameplay_event_frame_count)/600 > stats->longest)
+                stats->longest = scale_ticks(gameplay_event_frame_count)/600;
             stats->levels = (stats->levels | (1 << g_current_level_index)) | 0x80000000;
             self->state = 2;
         }
@@ -1440,8 +1440,8 @@ void suckcannon_update(M40 *self) {
             data->cooldown=scale_ticks(25);
             stats=(Stats40 *)(D_0014171B+0x65);
             if(stats->uses<65535) stats->uses++;
-            if(scale_ticks(play_time_ticks)/600>stats->longest)
-                stats->longest=scale_ticks(play_time_ticks)/600;
+            if(scale_ticks(gameplay_event_frame_count)/600>stats->longest)
+                stats->longest=scale_ticks(gameplay_event_frame_count)/600;
             stats->levels = (stats->levels | (1 << g_current_level_index)) | 0x80000000;
             self->state=5;
         }
@@ -1958,7 +1958,7 @@ typedef struct { float v[4]; } __attribute__((aligned(16))) Q2DDDE8;
 extern void func_L00_002DD3D8(char *, char *);
 
 // Initializes an object from its template and calls its handler.
-void EndCarriedMoby(char *p, char *q, int flag) {
+void finalize_suck_cannon_moby(char *p, char *q, int flag) {
     Mtx2DDDE8 m;
     void (*fn)(char *);
     if (flag) spawn_suck_cannon_projectile_explosion(p, q);
@@ -2585,7 +2585,7 @@ void ScatterMobyFromHazards(char *m) {
     if (*(unsigned char *)(m + 0x20) == 0xFD) return;
     if (random_integer_below(10)) return;
     if (*(int *)(m + 0x24) == 0 || *(short *)(*(int *)(m + 0x24) + 0x46) != 0x13) {
-        if (!IsMobyScatterClass(m)) return;
+        if (!is_moby_class_e2_cc_de_3ee_d6_e1_d5_or_df(m)) return;
     }
     if (!(FastVecDist(m + 0x10, pos = D_0013E633 + 0xE9D) < 30.0f)) return;
     for (i = 0; i < 10 && suck_beam_segment_alpha[i] >= 8; i++) {
@@ -2594,7 +2594,7 @@ void ScatterMobyFromHazards(char *m) {
         if (FastVecDist(m + 0x10, D_L00_001E6290 + i * 16) < lim) {
             if (m != 0 && *(int *)(m + 0x24) != 0 && *(short *)(*(int *)(m + 0x24) + 0x46) == 0x13) {
                 base = pos - 0x80;
-                Moby_StartTumble(m, *(int *)(base + 0x2080), 0.0f, 0.0f);
+                begin_bolt_attraction(m, *(int *)(base + 0x2080), 0.0f, 0.0f);
             } else {
                 try_collect_ammo_pickup(m);
             }
@@ -2607,7 +2607,7 @@ int func_L00_0025A2F0(void *, s32, s32, s32);
 void func_L00_00264690(void *, void *, f32, f32);
 
 /* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002d7f88.c, FUN_L00_002df3d8. */
-void GroupMoby_DrawBillboards(u8 *p) {
+void draw_red_orb_group_effect_quads(u8 *p) {
     u8 *it[2] __attribute__((aligned(16)));
     f32 s = 1.2f;
     if (g_current_level_index == 0 || g_current_level_index == 0x12) {
@@ -2719,7 +2719,7 @@ typedef int q_2adbb0 __attribute__((mode(TI)));
 extern void func_L00_00251E30(void *);
 
 /* Creates a moby of type 0x4A8 at pos with a random rotation, and fills its data block from the arguments. */
-char *SpawnMoby1192(void *owner, void *pos, void *vel, int life, unsigned char r, unsigned char g, unsigned char b, unsigned char a, float scale) {
+char *spawn_randomly_rotated_colored_moby(void *owner, void *pos, void *vel, int life, unsigned char r, unsigned char g, unsigned char b, unsigned char a, float scale) {
     char *m = CreateMoby(0x4A8);
     if (m != 0) {
         char *d = *(char **)(m + 0x78);

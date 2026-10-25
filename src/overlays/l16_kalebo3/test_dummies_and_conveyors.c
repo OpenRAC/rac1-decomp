@@ -425,7 +425,7 @@ void update_spinning_moby_sprite_effect(unsigned char *m) {
     }
     case MOBY_STATE_SPIN_AND_DRAW_SPRITES:
         moby->rot.z = FastAddRots(moby->rot.z, g_frame_time * 4.1887903f);
-        AnimateSpriteLayers((char *)moby);
+        emit_moby_sprite_effect_particles((char *)moby);
         break;
     }
 }
@@ -472,7 +472,7 @@ extern int func_001FA8A8_caa18(int, int, float) __asm__("func_001FA8A8");
 extern int func_001FA898_caa18(float) __asm__("func_001FA898");
 extern unsigned char *func_L00_00273E08(void *, int, unsigned char, int, int, int, int, float);
 
-void AnimateSpriteLayers(char *m) {
+void emit_moby_sprite_effect_particles(char *m) {
     L16SpriteData *p = *(L16SpriteData **)(m + 0x78);
     float d[4] __attribute__((aligned(16)));
     float e[4] __attribute__((aligned(16)));
@@ -550,7 +550,7 @@ void Moby471Update(unsigned char *m) {
         AddDrawCallback(draw_conveyor_belt_strips, m);
         break;
     }
-    if (m[0x20]) Moby471_AttachToNearest(m);
+    if (m[0x20]) update_conveyor_group_voice(m);
 }
 extern char D_L16_00167240[];
 extern int *D_L16_001ABFC0[];
@@ -559,7 +559,7 @@ extern void func_L00_001FF4B0(void *, void *, float);
 extern void func_001F9BD8(void *, void *, void *);
 extern int func_0022ED80_cae18(int, int, void *) __asm__("func_0022ED80");
 
-void Moby471_AttachToNearest(unsigned char *m) {
+void update_conveyor_group_voice(unsigned char *m) {
     short *p = (short *)kalebo3_moby_groups[m[0x21]];
     char *d = *(char **)(m + 0x78);
     char *nearest = 0;
@@ -1233,7 +1233,7 @@ void update_test_dummy_group_glow_phases(char *moby) {
     char *m;
     char *data;
     if (((unsigned char *)moby)[0x21] != 0xFF) {
-        f = *(float *)&D_L16_00161A9C * 0.017453292f * g_frame_time;
+        f = *(float *)&test_dummy_glow_phase_rate_degrees * 0.017453292f * g_frame_time;
         p = (short *)kalebo3_moby_groups[((unsigned char *)moby)[0x21]];
         do {
 again:
@@ -1506,14 +1506,14 @@ void draw_linked_pair_ribbons(char *moby, char *partner) {
     frame[2][2] = 1.0f;
     FastVecCross(frame[1], frame[0], frame[2]);
     qcopy(frame[3], moby + 0x10);
-    frame[3][2] += D_L16_00161AB8;
+    frame[3][2] += linked_pair_ribbon_origin_z_offset;
     frame[3][3] = 1.0f;
-    packet.texture = GetEffectTex(D_L16_00161AC0);
-    packet.mode = (long)D_L16_00161AA8 | ((long)D_L16_00161AAC << 2) | ((long)D_L16_00161AB0 << 4) |
-                  ((long)D_L16_00161AB4 << 6) | 0x8000000000L;
+    packet.texture = GetEffectTex(linked_pair_ribbon_texture_id);
+    packet.mode = (long)linked_pair_ribbon_alpha_blend_a_selector | ((long)linked_pair_ribbon_alpha_blend_b_selector << 2) | ((long)linked_pair_ribbon_alpha_blend_c_selector << 4) |
+                  ((long)linked_pair_ribbon_alpha_blend_d_selector << 6) | 0x8000000000L;
     packet.flags = 0xFF9000000260L;
     packet.zero = 0;
-    color = D_L16_00161AC4;
+    color = linked_pair_ribbon_vertex_color;
     for (corner = 0; corner < 4; corner++) {
         packet.uv[corner].u = D_L16_001D3480[corner][0];
         packet.uv[corner].v = D_L16_001D3480[corner][1];
@@ -1522,7 +1522,7 @@ void draw_linked_pair_ribbons(char *moby, char *partner) {
     }
     for (pass = 0; pass < 4; pass++) {
         draw_world_quad(&packet, frame[0], 0);
-        frame[3][2] += D_L16_00161ABC;
+        frame[3][2] += linked_pair_ribbon_pass_z_step;
     }
 }
 typedef struct {
@@ -3625,7 +3625,7 @@ float move_chomper_toward_position(void *m_v, void *t_v) {
     vec_scale_to_length(vec, m + 0xC0, *(float *)(d + 0x204));
     vec[2] = *(float *)(d + 0x208) - g_frame_time_sq * 10.0f;
     move_4318(m, vec, 0.5f, 0.5f, 0.0f, 0x10);
-    PushPointOutsidePath(0.333f, *(void **)(d + 0x1F0), m + 0x10, m + 0x10);
+    resolve_point_path_segment_xy_clearance(0.333f, *(void **)(d + 0x1F0), m + 0x10, m + 0x10);
     *(float *)(d + 0x208) = oldz - *(float *)(m + 0x18);
     return dist;
 }

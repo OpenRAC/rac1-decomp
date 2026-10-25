@@ -1469,17 +1469,17 @@ int update_arc_motion(char *m, char *p) {
     return arc_motion_state->state;
 }
 // Linear interpolation from a to b by t.
-float Lerp(float a, float b, float t) {
+float interpolate_scalar_linear(float a, float b, float t) {
     return a + (b - a) * t;
 }
 typedef struct { float x, y, z, w; } Lerp_C710 __attribute__((aligned(16)));
 void func_L00_0025C710_r(Lerp_C710 *, Lerp_C710, Lerp_C710, float) __asm__("func_L00_0025C710");
 /* Interpolates four copied vector components through the scalar helper. */
 void func_L00_0025C710_r(Lerp_C710 *dst, Lerp_C710 a, Lerp_C710 b, float t) {
-    dst->x = Lerp(a.x, b.x, t);
-    dst->y = Lerp(a.y, b.y, t);
-    dst->z = Lerp(a.z, b.z, t);
-    dst->w = Lerp(a.w, b.w, t);
+    dst->x = interpolate_scalar_linear(a.x, b.x, t);
+    dst->y = interpolate_scalar_linear(a.y, b.y, t);
+    dst->z = interpolate_scalar_linear(a.z, b.z, t);
+    dst->w = interpolate_scalar_linear(a.w, b.w, t);
 }
 float interpolate_angle(float a, float b, float c) {
     float r = FastSubRots(b, a);
@@ -1768,7 +1768,7 @@ int mine_fall(char *moby, char *st) {
         if (*(float *)(st + 0x5C) == 0.0f && f21 <= v10[2] && v10[2] + *(float *)(st + 0x8) < f21) {
             *(float *)(st + 0x5C) = 1.0f;
             v10[2] = f21;
-            Moby775Spawn(v10, 3.0f);
+            spawn_burst_moby(v10, 3.0f);
         }
         f21 = func_L00_0025A748_f((moby + 0x10));
     } else {
@@ -1923,7 +1923,7 @@ typedef struct {
 extern u8 D_001414D0[];
 
 /* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/0025d1b8.c, FUN_L00_0025d1b8. */
-void copy_hero_spawn_frame(S *p, s64 v) {
+void copy_hero_moby_field_38(S *p, s64 v) {
     v = (*(S **)&g_hero_moby[0])->v;
     p->v = v;
 }
@@ -2337,7 +2337,7 @@ f32 normalize_angle(f32 a) {
     return x - pi;
 }
 extern int func_L00_0025F410(void *);
-int IsMobyClass502OrOutsideRange(char *a) {
+int is_nonnull_moby_outside_table_or_class_range_500_to_540_or_class_502(char *a) {
     int r;
     if (a == 0) {
         r = 0;
@@ -2363,7 +2363,7 @@ int is_moby_in_class_range_500_to_540(void *moby) {
     return (unsigned int)*(unsigned short *)((char *)moby + 0xA6) - 0x1F4 < 0x29;
 }
 INCLUDE_ASM("asm/overlays", func_L00_0025F420);
-int IsMobyScatterClass(void *p) {
+int is_moby_class_e2_cc_de_3ee_d6_e1_d5_or_df(void *p) {
     short v = *(short *)((char *)p + 0xA6);
     if (v == 0xE2 || v == 0xCC || v == 0xDE || v == 0x3EE || v == 0xD6 || v == 0xE1 || v == 0xD5 ||
         v == 0xDF) {

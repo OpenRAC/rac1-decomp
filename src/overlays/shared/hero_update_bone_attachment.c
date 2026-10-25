@@ -233,7 +233,7 @@ void restore_saved_hero_moby_and_clear_vehicle_mode(void) {
     qcopy(m + 0x10, b + 0x80);
     *(int *)(m + 0x98) = 0;
     *(float *)(b + 0xA94) = 1.0f;
-    HeroClearQueuedSequence();
+    clear_hero_queued_animation();
     if (*(int *)(b + 0x2084) != 100 || (quartu_game_mode != 2 && quartu_game_mode != 6)) {
         HeroQuartu_TrySetMoveState(0, 1);
     }

@@ -699,7 +699,7 @@ extern char D_L00_00166D80_c[] __asm__("D_L00_00166D80") NOT_SDA;
 
 // steps a follow-camera object toward a target moby, easing its angle and position or snapping to a goal
 // Adapted from Lombyte (GPL-3.0) for PAL: overlays/shared/gameplay_vendor_002e9010.c, FUN_L00_002eb648.
-int Camera_PlaceBehindMoby(char *a, char *t) {
+int update_orbit_camera_from_target_moby(char *a, char *t) {
     u128 v[1];
     u128 w[1];
     char *m;
@@ -779,7 +779,7 @@ char *initialize_mode6_orbit_camera(char *a) {
     char *q;
     D_L00_00166FF0[0] = 0;
     SwitchCamera(m);
-    Camera_PlaceBehindMoby(m, a);
+    update_orbit_camera_from_target_moby(m, a);
     p = *(char **)(m + 0x70);
     qcopy(p + 0xB0, p + 0x80);
     q = p + 0x14;

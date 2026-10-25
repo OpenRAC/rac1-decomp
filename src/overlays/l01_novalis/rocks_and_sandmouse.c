@@ -145,7 +145,7 @@ void fan_update(SwayMoby *m) {
 
     v = m->pvars;
     if (m->state == 0) {
-        copy_hero_spawn_frame(m);
+        copy_hero_moby_field_38(m);
         m->state = 1;
         v->sway = random_float_between(-1.0f, 1.0f);
         v->dir = (func_001160D8() & 1) ? 1.0f : -1.0f;
@@ -1506,7 +1506,7 @@ char *pool_drip(void *position,float scale) {
  char *m=CreateMoby(0x313);
  if(m) {
   char *data=*(char **)(m+0x78);
-  copy_hero_spawn_frame(m);
+  copy_hero_moby_field_38(m);
   *(int *)(m+0x40)=0;
   *(float *)(m+0x2C)*=scale;
   *(short *)(m+0x32)=0x40;
@@ -1561,7 +1561,7 @@ void update_falling_splash_moby(char *m) {
             at[0] = *(float *)(m + 0x10);
             at[1] = *(float *)(m + 0x14);
             at[2] = D_L01_00174368_s;
-            o = Moby775Spawn(at, 2.0f);
+            o = spawn_burst_moby(at, 2.0f);
             if (o != 0) {
                 o[0x23] = 0x70;
             }
@@ -1761,12 +1761,12 @@ void update_level01_tutorial_hints(Moby *moby) {
         break;
     case 1:
         if (novalis_frame_count < scale_ticks(400) && usage_stats[12].count != 0 && usage_stats[11].count == 0) {
-            if (scale_ticks(play_time_ticks) - usage_stats[12].unk2 * 600 < scale_ticks(1100) && help_records[0x51].v >= 0) {
+            if (scale_ticks(gameplay_event_frame_count) - usage_stats[12].unk2 * 600 < scale_ticks(1100) && help_records[0x51].v >= 0) {
                 Help_Request(0x4E27, 0x51);
             }
         }
         if (novalis_frame_count < scale_ticks(400) && usage_stats[29].count != 0) {
-            if (scale_ticks(play_time_ticks) - usage_stats[29].unk2 * 600 < scale_ticks(1100) && help_records[0x72].v >= 0) {
+            if (scale_ticks(gameplay_event_frame_count) - usage_stats[29].unk2 * 600 < scale_ticks(1100) && help_records[0x72].v >= 0) {
                 Help_Request(0x4E28, 0x72);
             }
         }
@@ -1782,7 +1782,7 @@ void update_level01_tutorial_hints(Moby *moby) {
         if (is_point_inside_clip_volume(&g_hero.motion.pos, data[15]) &&
             ((u32)g_hero.state.control_mode < 2 || g_hero.state.control_mode == 9) && help_state.state == 0 &&
             help_state.cur == -1) {
-            t = scale_ticks(play_time_ticks) - usage_stats[9].unk2 * 600;
+            t = scale_ticks(gameplay_event_frame_count) - usage_stats[9].unk2 * 600;
             if (scale_ticks(216000) < t && (u32)(help_records[0x43].v & (1 << D_0015EE84_2FBBD8)) < 1) {
                 Help_Request(0x3EF, 0x43);
             }
@@ -1820,9 +1820,9 @@ void update_level01_tutorial_hints(Moby *moby) {
                 if (usage_stats[22].count < 0xFFFF) {
                     usage_stats[22].count++;
                 }
-                t = scale_ticks(play_time_ticks) / 600;
+                t = scale_ticks(gameplay_event_frame_count) / 600;
                 if (usage_stats[22].unk2 < t) {
-                    usage_stats[22].unk2 = scale_ticks(play_time_ticks) / 600;
+                    usage_stats[22].unk2 = scale_ticks(gameplay_event_frame_count) / 600;
                 }
                 usage_stats[22].level_mask = usage_stats[22].level_mask | (1 << D_0015EE84_2FBBD8) | 0x80000000;
             } else if (is_point_inside_clip_volume(&g_hero.motion.pos, data[9]) && scale_ticks(360) < data[11] &&
@@ -1831,9 +1831,9 @@ void update_level01_tutorial_hints(Moby *moby) {
                 if (usage_stats[23].count < 0xFFFF) {
                     usage_stats[23].count++;
                 }
-                t = scale_ticks(play_time_ticks) / 600;
+                t = scale_ticks(gameplay_event_frame_count) / 600;
                 if (usage_stats[23].unk2 < t) {
-                    usage_stats[23].unk2 = scale_ticks(play_time_ticks) / 600;
+                    usage_stats[23].unk2 = scale_ticks(gameplay_event_frame_count) / 600;
                 }
                 usage_stats[23].level_mask = usage_stats[23].level_mask | (1 << D_0015EE84_2FBBD8) | 0x80000000;
             }
@@ -1850,9 +1850,9 @@ void update_level01_tutorial_hints(Moby *moby) {
                     if (usage_stats[13].count < 0xFFFF) {
                         usage_stats[13].count++;
                     }
-                    t = scale_ticks(play_time_ticks) / 600;
+                    t = scale_ticks(gameplay_event_frame_count) / 600;
                     if (usage_stats[13].unk2 < t) {
-                        usage_stats[13].unk2 = scale_ticks(play_time_ticks) / 600;
+                        usage_stats[13].unk2 = scale_ticks(gameplay_event_frame_count) / 600;
                     }
                     usage_stats[13].level_mask = usage_stats[13].level_mask | (1 << D_0015EE84_2FBBD8) | 0x80000000;
                     Help_Request(1, 1);
@@ -2088,7 +2088,7 @@ void update_level01_cutscene_effects(struct Moby *moby) {
                 if (fx_cutscene_D568.scene == 1 && fx_cutscene_D568.frame == scale_ticks(472) && fx_cutscene_D568.slot[0] != 0) {
                     Moby_GetJointWorldPos(fx_cutscene_D568.slot[0], 1, &effect_position_or_motion_delta);
                     {
-                        char *burst = Moby775Spawn(&effect_position_or_motion_delta, 3.0f);
+                        char *burst = spawn_burst_moby(&effect_position_or_motion_delta, 3.0f);
 
                         if (burst != 0) {
                             burst[0x23] = 0x70;

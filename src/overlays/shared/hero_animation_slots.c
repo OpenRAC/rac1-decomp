@@ -383,7 +383,7 @@ int Hero_IsInSpecialState(void) {
     return 0;
 }
 // Returns b, or the byte at 0xA5 of a when b is 0xFF.
-int ResolveUnsetByte(char *a, int b) {
+int resolve_moby_animation_id(char *a, int b) {
     if (b == 0xFF) {
         b = *(unsigned char *)(a + 0xA5);
     }
@@ -435,7 +435,7 @@ extern float func_001F9D48(void *, void *);
 extern int func_L00_0025F410(void *);
 
 /* Scores how far moby O is from the camera/hero reference point; flags *OUT when it is out of range. Adapted from Lombyte (GPL-3.0) for PAL: overlays/shared/ui_help_0020c758.c, FUN_L00_0020d6b0. */
-float Target_ScoreCandidate(void *o_v, float yaw, float range, float ylim, float plim, int *out) {
+float score_hero_target_candidate(void *o_v, float yaw, float range, float ylim, float plim, int *out) {
     char *o = o_v;
     float v[4] __attribute__((aligned(16)));
     char *g;
@@ -483,7 +483,7 @@ char *find_best_hero_heading_target(float a, float b, float c, float d) {
         float *f = (float *)GetFlaggedPvarWord(o);
         if (f != 0 && *f != 0.0f && (*(unsigned short *)(o + 0x34) & 0x1000)) {
             int out;
-            float dist = Target_ScoreCandidate(o, b, a, c, d, &out);
+            float dist = score_hero_target_candidate(o, b, a, c, d, &out);
             if (out == 0 && dist < bd) {
                 bd = dist;
                 best = o;
@@ -615,7 +615,7 @@ void update_hero_condition_animation(void) {
             if (*(unsigned char *)(e + 0x23) != id) {
                 initialize_moby_animation_blend(*(int *)(z + 0x2080), *(void **)(z + 0xD10), id, 0, scale_ticks(8), 1);
             } else {
-                MobyAnim_StepBlend(*(void **)(z + 0x2080), (unsigned char *)e);
+                advance_moby_animation_blend(*(void **)(z + 0x2080), (unsigned char *)e);
             }
         }
     }
@@ -803,7 +803,7 @@ void update_hero_held_items_and_orientation(void) {
         current = slot_owner->unkD08 + slot_index;
         {
         struct Hero *pose_owner = (struct Hero *)(D_0013E633 + 0xE1D);
-        MobyAnim_StepBlend((u8 *)pose_owner->moby, *current);
+        advance_moby_animation_blend((u8 *)pose_owner->moby, *current);
 
         if (pose_owner->unkD14 != 0) {
             if (pose_owner->unkD14 == 2) {
@@ -1764,7 +1764,7 @@ void enter_hero_vehicle_mode(int mode, int id, char *obj) {
     *(unsigned short *)(o + 0x34) |= 6;
     *(float *)(p + 0xA90) = 1.0f;
     *(float *)(p + 0xA94) = 1.0f;
-    HeroClearQueuedSequence();
+    clear_hero_queued_animation();
     apply_env_zone_lighting(*(void **)(p + 0x2080));
     apply_hero_and_item_scale_sequence();
     *(short *)(p + 0x22CC) = id;
@@ -1833,7 +1833,7 @@ void exit_hero_vehicle_mode(void) {
     qcopy(r + 0x10, g + 0x80);
     *(int *)(r + 0x98) = 0;
     *(float *)(g + 0xA94) = 1.0f;
-    HeroClearQueuedSequence();
+    clear_hero_queued_animation();
     if (*(int *)(g + 0x2084) != 100 || (cinematic_mode != 2 && cinematic_mode != 6)) {
         HeroEnterMoveState(0, 1);
     }
@@ -2084,7 +2084,7 @@ void Hero_OnKilled(void) {
     D_0013E0E0[lvl]++;
     D_0015EFAC++;
     if (D_0013F450_11908.m2280 != 0 && *(s16 *)(D_0013F450_11908.m2280 + 0xA6) == 0x4D && lvl == 15) {
-        D_L00_0015F684 = 1;
+        level_15_class_4d_respawn_flag = 1;
     }
     clear_help_record_high_bits();
     m = D_0013F450_11908.m2280;
@@ -3031,7 +3031,7 @@ extern void func_001F9BF0(float *, float *, float *);
 extern char D_L00_00173F70[];
 
 /* Moves the help camera and tests the result; returns 1 when settled, -1 when it is too far. */
-int Hero_ResolveCollisionStep(int arg) {
+int resolve_hero_current_position_collisions(int arg) {
     float v0[4];
     float v1[4];
     float v2[4];
@@ -3137,7 +3137,7 @@ void resolve_hero_collisions_with_history(void) {
     for (i = 0; i < 16; i++) {
         char *base;
 
-        if (Hero_ResolveCollisionStep(i) == 1)
+        if (resolve_hero_current_position_collisions(i) == 1)
             return;
 
         base = g_hero;

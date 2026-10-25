@@ -246,7 +246,7 @@ unsigned char *spawn_class_53_projectile(char *owner, char *pos, char *vec) {
             MobyBlendAnimation(moby, 1, 0, 10);
         }
         moby_build_matrix(moby);
-        copy_hero_spawn_frame(moby);
+        copy_hero_moby_field_38(moby);
     }
     return moby;
 }
@@ -873,7 +873,7 @@ extern void func_L00_00258DB0(float *, float, float);
 extern void func_L00_0025E590(void *, void *);
 
 // steps a moby's hit-reaction timer and applies a small positional shake
-void BlargFighter_TakeHit(unsigned char *moby, unsigned char *d, float *fp) {
+void process_blarg_space_fighter_damage(unsigned char *moby, unsigned char *d, float *fp) {
     if (*(unsigned char *)(moby + 0x20) != 3) {
         int cnt;
         float vec[4];
@@ -1060,7 +1060,7 @@ extern int func_001F9938(short *);
 int func_L13_002C4F10(char *m, char *d, int aim);
 
 /* Speed and direction control for a path-following vehicle moby. */
-int PathVehicle_ControlSpeed(char *moby, char *vars, int aim) {
+int update_blarg_space_fighter_path_following(char *moby, char *vars, int aim) {
     char *path = walker_paths[*(int *)(vars + 0xA0)];
     char *linked;
     char *veh;
@@ -1294,7 +1294,7 @@ void update_blarg_space_fighter(Moby *moby) {
         Boss_2C56B0 *bossd;
         float dist;
 
-        BlargFighter_TakeHit((unsigned char *)moby, (unsigned char *)d, &d->f20);
+        process_blarg_space_fighter_damage((unsigned char *)moby, (unsigned char *)d, &d->f20);
         if (veh != 0 && veh->state != 0xFE && veh->state != 0xFD) {
             vehd = (void *)veh->pvars;
             qcopy(hpos, &((Hero *)(D_0013E633 + 0xE1D))->ship_moby->pos);
@@ -1361,8 +1361,8 @@ void update_blarg_space_fighter(Moby *moby) {
                     d->fB8 = scale_ticks(0x78);
                     moby->command = 2;
                 }
-                if (fast_dec_timer(&d->fA4) != 0 && D_L13_0015F6B4 < 0.9f && D_L13_0015F6B8 < 0.9f) {
-                    d->fA4 = scale_ticks(6) + func_001FA898_s((D_L13_0015F6B4 + D_L13_0015F6B8) * 1.3f);
+                if (fast_dec_timer(&d->fA4) != 0 && optional_glow_suppression_level < 0.9f && blarg_space_fighter_fire_suppression_level < 0.9f) {
+                    d->fA4 = scale_ticks(6) + func_001FA898_s((optional_glow_suppression_level + blarg_space_fighter_fire_suppression_level) * 1.3f);
                     if (vehd != 0) {
                         Vec_2C56B0 up = { 0.0f, 0.0f, 1.0f };
                         float v70[4];
@@ -1738,7 +1738,7 @@ void emit_forcefield_tower_destruction_effects(unsigned char *a0, void *a1, int 
             PartType11Spawn(pA, vC, *pa, *pb, C, F, 0, 1200000.0f, 0, yv);
         } while (j != 0);
     }
-    if (D_L13_0015F6B4 < 0.95f) {
+    if (optional_glow_suppression_level < 0.95f) {
         s = scale_ticks(15);
         spawn_glow_particle(a0, pA, vC, 9.0f, s, 0x7F, 0x7F, 0x7F, 0x20);
         s = scale_ticks(24);
@@ -2027,7 +2027,7 @@ char *spawn_asteroid_fragment(char *owner, char *pos, char *vec, int a3, float f
         *(float *)(moby + 0x44) = random_angle_radians();
         *(float *)(moby + 0x48) = random_angle_radians();
         moby_build_matrix(moby);
-        copy_hero_spawn_frame(moby);
+        copy_hero_moby_field_38(moby);
     }
     return moby;
 }
@@ -2040,7 +2040,7 @@ extern void func_0020D678(void *);
 
 /* Blob hit: splashes (bigger when the player is near), then splits off one or two smaller blobs while
  * pieces are left, or turns into its pop state / is deleted when none are. */
-void BlobHit(char *m, char *d, float s) {
+void process_asteroid_hit(char *m, char *d, float s) {
     float v[4];
     float p[4];
     float a = s * 7.0f;
@@ -2587,7 +2587,7 @@ char *spawn_owner_linked_class_160_moby(char *owner) {
         *(int *)(data + 4) = 0;
         *(unsigned short *)(moby + 0x34) |= 0x200;
         moby_build_matrix(moby);
-        copy_hero_spawn_frame(moby);
+        copy_hero_moby_field_38(moby);
         *(float *)(moby + 0x2C) = *(float *)(*(char **)(moby + 0x24) + 0x24);
     }
     return moby;
@@ -2702,7 +2702,7 @@ extern struct MusicStreamState D_001517D0;
 extern unsigned char D_L13_001D3828[];
 
 /* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l13/gameplay/entities/002c13b0.c, FUN_L13_002e86f8. */
-int QueueRandomSecondaryTrack(void *unused, unsigned char *p, int base, int n) {
+int queue_starfighter_voice_line(void *unused, unsigned char *p, int base, int n) {
     int j = func_001160D8() % n;
     int id = D_L13_001D3828[base + j];
     int i;
@@ -2917,7 +2917,7 @@ void update_moby_spring_steering_and_banking(char *m, char *p, float a, float b)
 }
 extern float func_001F9CE8(void *);
 /* Steers moby m along path idx toward its next point, facing along the motion (or the hero in state 5); turns it when turn. Returns 1 on a wrap. */
-int Moby_SteerAlongPathFacing(char *m, char *d, int idx, int turn) {
+int advance_moby_along_selected_path(char *m, char *d, int idx, int turn) {
     char *path = walker_paths[*(int *)(d + (idx << 2) + 0xB0)];
     float yaw, pitch;
     float a, seg, diff, t;
@@ -3019,7 +3019,7 @@ int update_moby_path_following_away_from_hero(struct Moby *m, char *d, int idx, 
                 *(float *)(d + 0xAC) = 0.0f;
             }
         }
-        r = Moby_SteerAlongPathFacing(m, d, idx, aim);
+        r = advance_moby_along_selected_path(m, d, idx, aim);
     }
     if (0.0f < *(float *)(path + (*(short *)(d + 0x9C) << 4) + 0x1C)) {
         r |= 2;
@@ -3031,7 +3031,7 @@ extern void func_001F9C30(void *, void *, float);
 extern float func_002140F8(float, float);
 
 /* Launches the child moby held in slot idx of p: spins it off with random-ish velocities and clears the slot. */
-void LaunchChildMoby(void *unused, char *p, int idx) {
+void detach_moby_joint_attachment(void *unused, char *p, int idx) {
     char *base = p + 0xC4;
     int off = idx * 4;
     char **slot = (char **)(base + off);
@@ -3076,7 +3076,7 @@ extern void func_001FFDA0(int, int);
 extern char * D_L13_0016016C MACRO_ADDR;
 
 /* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l13/gameplay/entities/002c13b0.c, FUN_L13_002e97e0. */
-void start_space_fighter_defeat_path(struct Moby *moby, char *vars, int *result) {
+void begin_starfighter_death_sequence(struct Moby *moby, char *vars, int *result) {
     int path_ids = (int)vars + 0xB0;
     struct Moby *mobys;
     float dx;
@@ -3141,7 +3141,7 @@ void start_space_fighter_defeat_path(struct Moby *moby, char *vars, int *result)
     moby->state = 7;
     *(float *)(vars + 0xAC) = g_frame_time * 80.0f;
     *(int *)(vars + 0xF8) = scale_ticks(600);
-    QueueRandomSecondaryTrack(moby, (unsigned char *)vars, 0x22, 1);
+    queue_starfighter_voice_line(moby, (unsigned char *)vars, 0x22, 1);
     *(short *)(vars + 0x138) = 0;
     vars[0x148] = 0;
     if (*(int *)(vars + 0x104) != -1) {

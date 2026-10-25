@@ -224,7 +224,7 @@ void reset_hero_to_idle(void) {
     hero_state->state.current = HERO_STATE_IDLE;
     *(int *)(D_0014171B + 0x4D) = 0;
     hero_state->unkA94 = 1.0f;
-    HeroClearQueuedSequence();
+    clear_hero_queued_animation();
     HeroEnterMoveState(HERO_STATE_IDLE, 1);
 }
 typedef struct { char pad[0x24]; int v; char pad2[0x24]; } Rec;
@@ -2450,7 +2450,7 @@ void emit_hero_surface_effect_burst(s32 puffs, s32 debris, s32 flash) {
     if (flash) {
         qcopy(&v, &D_0013F450_0A320.motion.pos);
         v.f[2] = D_0013F450_0A320.water_surface_z;
-        Moby775Spawn(&v, 2.25f);
+        spawn_burst_moby(&v, 2.25f);
     }
     for (j = 0; j < puffs; j++) {
         v.f[0] = D_0013F450_0A320.motion.pos.f[0] + random_float_between(-0.3f, 0.3f);
@@ -2531,7 +2531,7 @@ void emit_hero_timed_effects(void) {
 }
 extern char D_L00_0017A780[];
 // stores two floats into a global block
-void Hero_SetTiltSpringParams(float a, float b) {
+void set_first_hero_easing_parameters(float a, float b) {
     char *p = lean_state;
     *(float *)(p + 0xA4) = a;
     *(float *)(p + 0xA8) = b;
@@ -2663,7 +2663,7 @@ void update_hero_pitch_and_yaw_easing_targets(void) {
     ga = (char *)D_0013E633 + 0xE1D;
     if (*(int *)(ga + 0x260) != 0 && *(float *)(ga + 0x258) > 1.4f && *(float *)(ga + 0x248) > 1.0f) {
         b = *(float *)&D_0015EE64_g;
-        Hero_SetTiltSpringParams(b * 0.015f, b * 0.3f);
+        set_first_hero_easing_parameters(b * 0.015f, b * 0.3f);
         a = *(float *)(ga + 0x258) * 1.5f * 0.0174532924f + 0.191986218f;
         if (a > 0.471238881f) a = 0.471238881f;
         lim = (1.0f - *(float *)(ga + 0x25C)) * 35.0f * 0.0174532924f;
@@ -2671,7 +2671,7 @@ void update_hero_pitch_and_yaw_easing_targets(void) {
         f1 = D_0015EE64_m;
         h3 = lean_state;
         *(float *)(h3 + 0x274) = a;
-        Hero_SetTiltSpringParams(f1 * 0.008f, f1 * 0.3f);
+        set_first_hero_easing_parameters(f1 * 0.008f, f1 * 0.3f);
         *(float *)(h3 + 0x114) = *(float *)(h3 + 0x274) * 0.7f;
         return;
     }
@@ -2687,8 +2687,8 @@ void update_hero_pitch_and_yaw_easing_targets(void) {
         *(float *)(q + 0x1004) = -random_float_between(-0.157079637f, 0.436332315f);
         *(float *)(q + 0x1008) = randf_sym(0.349065840f, 0.994837642f);
         f = random_float_between(0.0f, 1.0f);
-        *(float *)(q + 0x1014) = Lerp(0.015f, 0.007f, f);
-        *(float *)(q + 0x1018) = Lerp(0.29f, 0.3f, f);
+        *(float *)(q + 0x1014) = interpolate_scalar_linear(0.015f, 0.007f, f);
+        *(float *)(q + 0x1018) = interpolate_scalar_linear(0.29f, 0.3f, f);
         *(int *)(q + 0x1010) = rand_range(scale_ticks(0x5A), scale_ticks(0xC8));
         *(int *)(q + 0x1010) += truncate_float_to_s32((float)scale_ticks(0x50) * f);
     }
@@ -2703,12 +2703,12 @@ void update_hero_pitch_and_yaw_easing_targets(void) {
         if (*(float *)(g3 + 0x1004) < 0.0f) *(float *)(g3 + 0x1004) = 0.0f;
     }
     g4 = (char *)D_0013E633 + 0xE1D;
-    Hero_SetTiltSpringParams(*(float *)(g4 + 0x1014), *(float *)(g4 + 0x1018));
+    set_first_hero_easing_parameters(*(float *)(g4 + 0x1014), *(float *)(g4 + 0x1018));
     f2 = D_0015EE64_m;
     h4 = lean_state;
     *(float *)(h4 + 0x278) = *(float *)(g4 + 0x1008);
     *(float *)(h4 + 0x274) = *(float *)(g4 + 0x1004);
-    Hero_SetTiltSpringParams(f2 * 0.008f, f2 * 0.3f);
+    set_first_hero_easing_parameters(f2 * 0.008f, f2 * 0.3f);
     *(float *)(h4 + 0x118) = *(float *)(h4 + 0x278) * 0.52f;
     *(float *)(h4 + 0x114) = *(float *)(h4 + 0x274) * 0.55f;
 }
@@ -2852,11 +2852,11 @@ void update_hero_target_tracking(void) {
         else if (f20 < -0.296705961f) f20 = -0.296705961f;
         f21 = 0.0f;
     }
-    Hero_SetTiltSpringParams(g_frame_scale_sq * 0.021f, g_frame_scale_sq * 0.27f);
+    set_first_hero_easing_parameters(g_frame_scale_sq * 0.021f, g_frame_scale_sq * 0.27f);
     p = lean_state;
     *(float *)(p + 0x274) = f21;
     *(float *)(p + 0x278) = f20 * 0.7f;
-    Hero_SetTiltSpringParams(g_frame_scale_sq * 0.014f, g_frame_scale_sq * 0.3f);
+    set_first_hero_easing_parameters(g_frame_scale_sq * 0.014f, g_frame_scale_sq * 0.3f);
     *(float *)(p + 0x1C8) = *(float *)(p + 0x278) * 0.55f;
 }
 typedef struct { u8 p0[0x2C0]; f32 f2C0, f2C4, f2C8, f2CC, f2D0, f2D4; u8 p2D8[0x308 - 0x2D8]; s16 h308; u8 p30A[0x418 - 0x30A]; s32 i418; u8 p41C[0x10E0 - 0x41C]; s32 i10E0; u8 p10E4[0x12A0 - 0x10E4]; f32 f12A0, f12A4; s32 i12A8; s16 h12AC; u16 h12AE; u8 p12B0[0x2080 - 0x12B0]; u8 *p2080; s32 i2084; u8 p2088[4]; s32 i208C; } P_20b1d8;

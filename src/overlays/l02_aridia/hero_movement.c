@@ -780,8 +780,8 @@ void update_hero_state_motion(void) {
                             if (usage_stats.f90 < 0xFFFF) {
                                 usage_stats.f90++;
                             }
-                            if (scale_ticks(play_time_ticks) / 600 > usage_stats.f92) {
-                                usage_stats.f92 = scale_ticks(play_time_ticks) / 600;
+                            if (scale_ticks(gameplay_event_frame_count) / 600 > usage_stats.f92) {
+                                usage_stats.f92 = scale_ticks(gameplay_event_frame_count) / 600;
                             }
                             usage_stats.f94 = usage_stats.f94 | (1 << g_current_level_index) | 0x80000000;
                             *(int *)&D_L02_0015F768 = -1;
@@ -1556,19 +1556,19 @@ void update_hero_state_motion(void) {
                         vec[4][1] = FastSin(yaw) * 0.8f;
                         vec[4][2] = 0.55f;
                         FastVecAdd(vec[4], vec[4], g_hero.motion.pos.f);
-                        Hero_HitMobySparks((int)w, coll_sphere_mobys(0.8f, vec[4], 0, w, vec[0]));
+                        emit_filtered_entry_sparkles((int)w, coll_sphere_mobys(0.8f, vec[4], 0, w, vec[0]));
                         yaw = FastAddRots(g_hero.motion.rot.f[2], -0.87266463f);
                         vec[4][0] = FastCos(yaw) * 0.8f;
                         vec[4][1] = FastSin(yaw) * 0.8f;
                         vec[4][2] = 0.55f;
                         FastVecAdd(vec[4], vec[4], g_hero.motion.pos.f);
-                        Hero_HitMobySparks((int)w, coll_sphere_mobys(0.8f, vec[4], 0, g_hero.moby, vec[0]));
+                        emit_filtered_entry_sparkles((int)w, coll_sphere_mobys(0.8f, vec[4], 0, g_hero.moby, vec[0]));
                         yaw = FastAddRots(g_hero.motion.rot.f[2], 0.87266463f);
                         vec[4][0] = FastCos(yaw) * 0.8f;
                         vec[4][1] = FastSin(yaw) * 0.8f;
                         vec[4][2] = 0.55f;
                         FastVecAdd(vec[4], vec[4], g_hero.motion.pos.f);
-                        Hero_HitMobySparks((int)w, coll_sphere_mobys(0.8f, vec[4], 0, w, vec[0]));
+                        emit_filtered_entry_sparkles((int)w, coll_sphere_mobys(0.8f, vec[4], 0, w, vec[0]));
                     }
                 }
             }

@@ -576,10 +576,10 @@ void bomb_glove_update(struct Moby *moby) {
             if (item_usage.deliveries <= 0xfffe)
                 ++item_usage.deliveries;
             {
-                s32 frames = scale_ticks(play_time_ticks);
+                s32 frames = scale_ticks(gameplay_event_frame_count);
                 frames /= 600;
                 if (item_usage.unkA2 < frames)
-                    item_usage.unkA2 = scale_ticks(play_time_ticks) / 600;
+                    item_usage.unkA2 = scale_ticks(gameplay_event_frame_count) / 600;
             }
             item_usage.levels = (item_usage.levels | (1u << g_current_level_index)) | 0x80000000;
             vars->held = 0;
@@ -773,7 +773,7 @@ u8 *spawn_decoy(s32 value, u128_C48C8 *position, u128_C48C8 *other_position) {
             }
         }
         func_L00_00251E30_C48C8(m);
-        copy_hero_spawn_frame(m);
+        copy_hero_moby_field_38(m);
         *(u16 *)data = 0;
         data[8] = 0;
         data[9] = 0;
@@ -1428,7 +1428,7 @@ char *spawn_on_path(void *pos, int idx, int a2, int a3) {
         d[8] = scale_ticks(0x10);
         *(float *)(d + 10) = *(float *)(m + 0x18);
         moby_build_matrix(m);
-        copy_hero_spawn_frame(m);
+        copy_hero_moby_field_38(m);
     }
     return m;
 }
@@ -2193,7 +2193,7 @@ typedef struct { float x, y, z, w; } Vq __attribute__((aligned(16)));
 
 /* Aims a point near p toward q (at most range away), then fills out with a heading vector of length 8.5 * D_0015EE6C and a clamped height.
    Adapted from Lombyte (GPL-3.0) for PAL: src/overlays/shared/unclassified_002bffa8.c, FUN_L00_002c7320. */
-void ComputeFollowHeading(float *pos, float *tgt, float *out, float speed, float unused, float range) {
+void compute_glove_of_doom_launch_velocity(float *pos, float *tgt, float *out, float speed, float unused, float range) {
     Vq t;
     Vq u;
     float ang;

@@ -895,7 +895,7 @@ extern void func_L12_002E43A8(struct Moby *);
 
 /* Damage and alert step of the l12 troll: refreshes its speed while alerted, now and then calls for help behind itself, and takes hits (dying, or staggering back).
    Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l12/gameplay/entities/002bf140.c, FUN_L12_002e3528. */
-void TrollDamageAndAlert(struct Moby *moby) {
+void process_hoven_anklebiter_damage_and_alerts(struct Moby *moby) {
     TrollVars_e3528 *vars = (TrollVars_e3528 *)moby->pvars;
     Vec4 v;
     s32 hit;
@@ -1013,7 +1013,7 @@ extern void func_00214D28(void *, float, float);
 extern float func_L00_0025CCF0(float *, float, float *, int, float, float, float);
 
 /* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l12/gameplay/entities/002bf140.c, FUN_L12_002e3c08. */
-void Moby240SteerToward(char *m, float *ang, void *target, int unused, int brake) {
+void steer_platform_toward_target(char *m, float *ang, void *target, int unused, int brake) {
     char *d = *(char **)(m + 0x78);
     float v[4];
     float dist;
@@ -3173,7 +3173,7 @@ extern short D_0015EF04;
 extern short D_L12_00161A34;
 
 // Spawns the effect for a moby and updates its state flags from the effect timer.
-void Moby336_HandleHit(char *m, int flag) {
+void process_helicopter_hits_and_reactivation(char *m, int flag) {
     char *d = *(char **)(m + 0x78);
     float a[4];
     float b[4];
@@ -3192,7 +3192,7 @@ void Moby336_HandleHit(char *m, int flag) {
         }
         qcopy(a, m + 0x10);
         clear_u64_value(b);
-        spawn_moby_bolt_drop(m, 0x1F, 0x4A, 2, -1);
+        spawn_randomized_bolt_drop(m, 0x1F, 0x4A, 2, -1);
         *(int *)(d + 0xA4) = scale_ticks(500);
         spawn_explosion(m, b, a, 0.0f, 0.0f, 0x14, 3, 4, 4.0f, 2.0f, 100000.0f, -1, 3.0f, 15.0f, 1, 1, -1, 0);
     }
@@ -3231,7 +3231,7 @@ void Moby336Update(char *m) {
     float E[4];
     if (d != 0) {
         int r = func_L01_00276680_i(m, IntToFloat(*(short *)(m + 0x32)));
-        Moby336_HandleHit(m, r == -1);
+        process_helicopter_hits_and_reactivation(m, r == -1);
         switch ((unsigned char)m[0x20]) {
         case 0:
             if (*(int *)(d + 0x74) != -1) {

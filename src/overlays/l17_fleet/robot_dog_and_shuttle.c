@@ -1089,7 +1089,7 @@ extern struct {
 extern void func_L00_00264870();
 
 // Update moby: on first tick set state 1 and 0xFF at 0x30; later dispatch through a table.
-void Moby750SparkTriggerUpdate(unsigned char *m) {
+void update_fleet_guarded_moby_effects(unsigned char *m) {
     switch (m[0x20]) {
     case 0:
         m[0x30] = 0xFF;
@@ -1133,7 +1133,7 @@ typedef struct {
 } Pkt;
 
 /* Draws the Drek's Fleet reflection/backdrop quads around a moby. */
-void FleetReflectionDraw(char *moby) {
+void draw_fleet_backdrop_quads(char *moby) {
     Pkt pkt;
     u128_2F4E30 vv[4];
     char *data = *(char **)(moby + 0x78);
@@ -1306,7 +1306,7 @@ done:
                 D_L17_001DE370[i] += 1.0f;
             }
         }
-        AddDrawCallback(FleetReflectionDraw, moby);
+        AddDrawCallback(draw_fleet_backdrop_quads, moby);
     }
 }
 extern void func_L11_0031B630(void *);

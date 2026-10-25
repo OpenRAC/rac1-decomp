@@ -205,7 +205,7 @@ void SetDeathBits(unsigned char *m, int flags, int arg) {
         int n2 = truncate_float_to_s32(amt);
         int hi = n2 + r;
         n2 -= r;
-        spawn_moby_bolt_drop(m, n2, hi, f, arg);
+        spawn_randomized_bolt_drop(m, n2, hi, f, arg);
         }
     }
 }

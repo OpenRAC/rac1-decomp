@@ -634,7 +634,7 @@ extern short D_L08_00161DA4;
 extern short D_L08_00161DA8;
 
 /* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002937a0.c, FUN_L08_002e7eb0. */
-char *Moby458Spawn(int owner, float *position, float *rotation, int value) {
+char *create_moby_with_particles(int owner, float *position, float *rotation, int value) {
     float position_copy[4] __attribute__((aligned(16)));
     float rotation_copy[4] __attribute__((aligned(16)));
     float matrix[4][4] __attribute__((aligned(16)));
@@ -1575,7 +1575,7 @@ void update_blarg_paratrooper_damage_and_state(char *m) {
                 InitKnockback(m, d + 0x70, q5c, 0xC, 1, 0);
                 *(unsigned char *)(m + 0x20) = 11;
                 *(unsigned char *)(d + 0x67) = 0xF0;
-                spawn_moby_bolt_drop(m, 2, 3, 0, -1);
+                spawn_randomized_bolt_drop(m, 2, 3, 0, -1);
                 break;
             default:
                 break;
@@ -1734,11 +1734,11 @@ void randomize_ground_particle_scatter_parameters(int arg) {
     D_L08_001623F0[0] = random_float_between(-(a * g_frame_time), a * g_frame_time);
     D_L08_001623F0[1] = random_float_between(-(a * g_frame_time), a * g_frame_time);
     b = multiply_global_factor(b);
-    D_L08_00162400 = random_float_between(b, multiply_global_factor(10.0f));
+    ground_particle_scatter_refresh_countdown = random_float_between(b, multiply_global_factor(10.0f));
     v[0] = a * g_frame_time;
     v[1] = v[0];
     t = vec_length_xy(D_L08_001623F0) / FastVecLength(v);
-    D_L08_00162404 = (int)(t * (c - d) + d);
+    ground_particle_scatter_base_attempt_count = (int)(t * (c - d) + d);
 }
 typedef int u128_3091B0 __attribute__((mode(TI)));
 typedef struct { float x, y, z, w; } __attribute__((aligned(16))) V_3091B0;
@@ -2000,7 +2000,7 @@ void spawn_moby_radial_particles(char *moby) {
             FastVecSub(w, v, batalia_hero_pos);
             if (!(vec_length_xy(w) <= *(float *)(d + 0x10))) {
                 o[0] = D_L08_001623F0[0] + random_float_between(-r, r);
-                o[1] = D_L08_001623F4 + random_float_between(-r, r);
+                o[1] = ground_particle_scatter_spawn_vector_y_bias + random_float_between(-r, r);
                 o[2] = -(random_float_between(*(float *)(d + 0x18), *(float *)(d + 0x1C)) * g_frame_time);
                 o[3] = 0.0f;
                 spawn_span_particle(v, *(void **)d, o, *(float *)(moby + 0x18) - *(float *)(d + 0x20));

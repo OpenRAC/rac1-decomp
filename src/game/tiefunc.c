@@ -311,8 +311,8 @@ void DmaTieTextures(void) {
         if (size > 0x400000) {
             STUB_printf(D_001E8D80);
         }
-        if (D_00161074 < size) {
-            D_00161074 = size;
+        if (max_tie_texture_dma_size < size) {
+            max_tie_texture_dma_size = size;
         }
     }
     ((int *)g_render_packet_cursor)[0] = 0x20000000;

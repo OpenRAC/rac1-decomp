@@ -595,7 +595,7 @@ char *spawn_blarg_turret_child(char *parent) {
         d[0x2A] = 3;
         *(float *)(d + 0x30) = 0.7f;
         moby_build_matrix(m);
-        copy_hero_spawn_frame(m);
+        copy_hero_moby_field_38(m);
     }
     return m;
 }
@@ -609,7 +609,7 @@ extern int func_001F9850(int);
 extern void func_L00_0025E590(void *, void *);
 
 // Per-frame update of a moby's timed state: checks its target, counts down and switches state.
-void GemLockTurret_HandleHit(char *m, char *p) {
+void process_blarg_gunner_hits(char *m, char *p) {
     float *tm = (float *)(p + 0x20);
     char *q;
     int k;
@@ -717,7 +717,7 @@ void blarg_gunner_update(unsigned char *raw) {
                 moby->anim_speed = random_float_between(0.8f, 1.2f);
             }
         }
-        GemLockTurret_HandleHit(moby, moby_vars);
+        process_blarg_gunner_hits(moby, moby_vars);
         break;
     case BLARG_GUNNER_STATE_DESTROY:
         if (moby->anim_flags & 2) {
@@ -1767,7 +1767,7 @@ void robosquawker_update(RsMoby *m) {
         return;
     }
     if (v->h20A == 2) {
-        if (D_L13_0015F6B8 > 0.98f || D_L13_0015F6B4 > 0.98f) {
+        if (blarg_space_fighter_fire_suppression_level > 0.98f || optional_glow_suppression_level > 0.98f) {
             if (random_integer_below(0x1D) == 0 && m->b31 == 0) {
                 int r;
 

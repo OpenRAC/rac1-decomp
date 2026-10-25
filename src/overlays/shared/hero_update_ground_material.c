@@ -719,7 +719,7 @@ void enter_hero_vehicle_mode_and_set_moby(int a, int b, int c) {
     *(unsigned short *)(*(char **)(g + 0x2080) + 0x34) |= 6;
     *(float *)(g + 0xA90) = 1.0f;
     *(float *)(g + 0xA94) = 1.0f;
-    HeroClearQueuedSequence();
+    clear_hero_queued_animation();
     apply_env_zone_lighting(*(void **)(g + 0x2080));
     apply_hero_and_item_scale_sequence();
     *(short *)(g + 0x22CC) = b;
@@ -758,7 +758,7 @@ void exit_hero_vehicle_mode_and_restore_moby(void) {
     qcopy(a + 0x10, g + 0x80);
     *(int *)(a + 0x98) = 0;
     *(float *)(g + 0xA94) = 1.0f;
-    HeroClearQueuedSequence();
+    clear_hero_queued_animation();
     if (*(int *)(g + 0x2084) == 0x64) {
         if (novalis_game_mode == 2) return;
         if (novalis_game_mode == 6) return;
@@ -1773,12 +1773,12 @@ void select_hero_locomotion_state(void) {
     }
 }
 // Load global pointer and OR a field with 1
-void HeroHideMoby(void) {
+void set_hero_moby_flag_bit_zero(void) {
     *(unsigned short *)((char *)(*(char **)(D_0013E633 + 0x2E9D)) + 0x34) |= 1;
 }
 extern unsigned char D_0013E633_490F8b[] __asm__("D_0013E633");
 
 /* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00226f10.c, FUN_L01_00248900. */
-void HeroShowMoby(void) {
+void clear_hero_moby_flag_bit_zero(void) {
     *(unsigned short *)((char *)(*(char **)(D_0013E633_490F8b + 0x2E9D)) + 0x34) &= ~1;
 }

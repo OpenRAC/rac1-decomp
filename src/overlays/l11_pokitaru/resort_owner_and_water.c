@@ -389,16 +389,16 @@ void apply_resort_owner_movement(void *mp) {
     qcopy(B, d + 0x130);
     move_4318((int)moby, (int)B, 0.5f, 0.3f, 0.0f, 0x10);
     if ((moby[0x20] >= 4 && moby[0x20] <= 6) || (moby[0x20] == 7 && *(int *)(d + 0x15C) == 3)) {
-        PushPointOutsidePath(0.3f, *(void **)(d + 0x60 - -(*(int *)(d + 0x158) * 4)), moby + 0x10, moby + 0x10);
+        resolve_point_path_segment_xy_clearance(0.3f, *(void **)(d + 0x60 - -(*(int *)(d + 0x158) * 4)), moby + 0x10, moby + 0x10);
         switch (*(int *)(d + 0x158)) {
         case 2:
-            PushPointOutsidePath(0.3f, *(void **)(d + 0x80), moby + 0x10, moby + 0x10);
-            PushPointOutsidePath(0.3f, *(void **)(d + 0x84), moby + 0x10, moby + 0x10);
-            PushPointOutsidePath(0.3f, *(void **)(d + 0x88), moby + 0x10, moby + 0x10);
+            resolve_point_path_segment_xy_clearance(0.3f, *(void **)(d + 0x80), moby + 0x10, moby + 0x10);
+            resolve_point_path_segment_xy_clearance(0.3f, *(void **)(d + 0x84), moby + 0x10, moby + 0x10);
+            resolve_point_path_segment_xy_clearance(0.3f, *(void **)(d + 0x88), moby + 0x10, moby + 0x10);
             break;
         case 3:
-            PushPointOutsidePath(0.3f, *(void **)(d + 0x80), moby + 0x10, moby + 0x10);
-            PushPointOutsidePath(0.3f, *(void **)(d + 0x84), moby + 0x10, moby + 0x10);
+            resolve_point_path_segment_xy_clearance(0.3f, *(void **)(d + 0x80), moby + 0x10, moby + 0x10);
+            resolve_point_path_segment_xy_clearance(0.3f, *(void **)(d + 0x84), moby + 0x10, moby + 0x10);
             break;
         }
     }
@@ -695,7 +695,7 @@ extern short D_L11_00161464;
 extern short D_L11_00161490;
 
 /* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l11/gameplay/entities/002cb668.c, FUN_L11_002d2088. */
-void BossL11_SetState(struct Moby *moby, unsigned char state) {
+void set_resort_owner_state(struct Moby *moby, unsigned char state) {
     char *d = (char *)moby->pvars;
     float tmp[4];
 
@@ -1283,7 +1283,7 @@ void Moby318Update(struct Moby *moby) {
     }
     case 3:
         if (*(float *)(data + 0x3C) != 0.0f) {
-            AddDrawCallback(DrawShimmeringRing, moby);
+            AddDrawCallback(draw_teleporter_ring, moby);
             func_00214D28_F3888((float *)(data + 0x3C), 0.0f, g_frame_time * 4.0f);
         } else {
             char *t = pokitaru_mobys + (*(int *)data << 8);
@@ -1321,7 +1321,7 @@ void Moby318Update(struct Moby *moby) {
         if (D_0013F4D8 < 138.0f)
             menu_item_enabled_73 = 1;
         if (*(float *)(data + 0x3C) < 1.95f) {
-            AddDrawCallback(DrawShimmeringRing, moby);
+            AddDrawCallback(draw_teleporter_ring, moby);
             func_00214D28_F3888((float *)(data + 0x3C), 1.95f, g_frame_time * 4.0f);
         } else if (0.0f < *(float *)(data + 0x24)) {
             ApproachWithVelocity((float *)(data + 0x24), (float *)(data + 0x28), 0.0f,
@@ -1378,7 +1378,7 @@ extern void func_L00_001FD1D8(void *, void *, int);
 
 /* Draws the moby's shimmering ring as 32 four-vertex strips around its radius, thicker as the ring
  * shrinks below 1.15, and flags when it gets below 0.65. */
-void DrawShimmeringRing(char *moby) {
+void draw_teleporter_ring(char *moby) {
     Quad_2f40c8 q;
     float m[12];
     float pos[4];
@@ -2952,7 +2952,7 @@ char *spawn_moby_with_random_yaw(void *position, void *vector, int id) {
         *(float *)(moby + 0x48) = angle;
         *(float *)(moby + 0x44) = 0.7853982f;
         moby_build_matrix(moby);
-        copy_hero_spawn_frame(moby);
+        copy_hero_moby_field_38(moby);
     }
     return moby;
 }
@@ -3159,7 +3159,7 @@ char *spawn_ship_pickup_child(char *owner) {
             MobyBlendAnimation(moby, 2, 0xD, 0);
         }
         moby_build_matrix(moby);
-        copy_hero_spawn_frame(moby);
+        copy_hero_moby_field_38(moby);
     }
     return moby;
 }

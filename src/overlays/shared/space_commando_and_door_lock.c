@@ -116,7 +116,7 @@ void blarg_space_commando_update(struct Moby *moby) {
     f32 frame;
     f32 cur_frame;
 
-    update_blarg_space_commando_state(moby);
+    process_blarg_space_commando_hits(moby);
     target = vars->target;
     Manipulator_ApplyScale(moby, 1, vars->unk420, 2.5f);
     if (moby->visible != 0 && FastVecDist(&moby->pos, &D_L06_00167640) < 27.0f) {
@@ -306,7 +306,7 @@ void blarg_space_commando_update(struct Moby *moby) {
         a.f[1] = 2.0f * FastSin(moby->rot.z);
         a.f[2] = 0.0f;
         move_w(moby, &vars->ctl, &a, &b, 1.0f);
-        PushPointOutsidePath(vars->path, &moby->pos, &moby->pos, 0.75f);
+        resolve_point_path_segment_xy_clearance(vars->path, &moby->pos, &moby->pos, 0.75f);
         if (SegmentCrossPolyline(vars->path, &moby->pos, &target->pos, &c) != 0 &&
             FastVecDist(&moby->pos, &c) < 0.8f) {
             near = 1;
@@ -359,7 +359,7 @@ void blarg_space_commando_update(struct Moby *moby) {
                 moby->rot.z, fast_atan2(vars->home.f[0] - moby->pos.x, vars->home.f[1] - moby->pos.y)) <
             0.7853982f) {
             move_w(moby, &vars->ctl, &a, &b, 1.0f);
-            PushPointOutsidePath(vars->path, &moby->pos, &moby->pos, 0.75f);
+            resolve_point_path_segment_xy_clearance(vars->path, &moby->pos, &moby->pos, 0.75f);
         }
         if (FastVecDist(&vars->home, &moby->pos) < 1.0f) {
             moby->state = 1;
@@ -439,7 +439,7 @@ extern short D_L06_00162038;
 extern char D_0013D50F[];
 
 // Level 06 update for a moby with a 12-state machine: aims at a target, runs timed effects, and sets its rotation.
-void update_blarg_space_commando_state(char *m) {
+void process_blarg_space_commando_hits(char *m) {
     extern unsigned char D_0013D510[];
     char *d;
     char *t;

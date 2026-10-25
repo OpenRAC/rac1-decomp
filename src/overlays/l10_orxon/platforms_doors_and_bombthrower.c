@@ -298,9 +298,9 @@ void update_hero_relocation_trigger(char *m) {
                     int r2;
                     if (t1 <= 0xFFFE)
                         *(short *)(T + 0x100) = t1 + 1;
-                    r2 = scale_ticks(play_time_ticks);
+                    r2 = scale_ticks(gameplay_event_frame_count);
                     if (r2 / 600 > *(unsigned short *)(T + 0x102)) {
-                        *(short *)(T + 0x102) = scale_ticks(play_time_ticks) / 600;
+                        *(short *)(T + 0x102) = scale_ticks(gameplay_event_frame_count) / 600;
                     }
                     {
                         int w = *(int *)(T + 0x104);
@@ -579,11 +579,11 @@ void update_timed_effect_emitter(unsigned char *moby) {
         r[2] = *(float *)data * 3.0f * g_frame_time;
         transform_vector(r, r, d);
         FastVecScale(s, r, 0.33f);
-        PartType40Spawn((char *)v, (char *)r, 0x40, (int)moby);
+        spawn_splitting_effect_particle_with_collision_response_and_fade((char *)v, (char *)r, 0x40, (int)moby);
         FastVecAdd(v, v, s);
-        PartType40Spawn((char *)v, (char *)r, 0x40, (int)moby);
+        spawn_splitting_effect_particle_with_collision_response_and_fade((char *)v, (char *)r, 0x40, (int)moby);
         FastVecAdd(v, v, s);
-        PartType40Spawn((char *)v, (char *)r, 0x40, (int)moby);
+        spawn_splitting_effect_particle_with_collision_response_and_fade((char *)v, (char *)r, 0x40, (int)moby);
         if (Sound_IsPlaying(moby, *(int *)(data + 0x10)) == 0) {
             *(int *)(data + 0x10) = Sound_PlayClassSound(0, 4, (int)moby, 0x519);
         }
@@ -2359,7 +2359,7 @@ typedef struct Anim_2E0FF8 { char pad0[0x30]; float f30[4], f40[4]; char pad50[0
 typedef struct Path_2E0FF8 { int count; char pad4[0xC]; float pts[4]; } Path_2E0FF8;
 
 /* Moby update for a damageable enemy that follows a path. */
-void PathEnemyL10Update(struct Moby *moby) {
+void update_screamer_hit_reactions_and_targeting(struct Moby *moby) {
     extern unsigned char D_0013D50F[];
     extern void func_00213DE0(void *, int, int, int);
     extern int func_L00_0025B4D0(void *, void *, void *, int, int *, float *, int, int);
@@ -2390,7 +2390,7 @@ void PathEnemyL10Update(struct Moby *moby) {
         ComputeHitResponse(moby, r, &data->f20, 5, &st, 0, 0, 4);
         if (r != 0) {
             if (data->f20 <= r->f2C) {
-                if (D_L10_00161FB8 != 0 && (f = menu_item_enabled_115 + 1, f[0x10]) == 0) {
+                if (hero_inside_conditional_help_volume != 0 && (f = menu_item_enabled_115 + 1, f[0x10]) == 0) {
                     f[0x10] = 1;
                     PlayBankSound(1, 0, 0);
                     ShowBanner(0x53DB, -1);
@@ -2410,7 +2410,7 @@ void PathEnemyL10Update(struct Moby *moby) {
                 InitKnockback(moby, data->f60, ang, 5, 1, 0);
                 data->f117 = 0x78;
                 RerollEffectCounter(moby, data->f110);
-                spawn_moby_bolt_drop(moby, 1, 3, 0, -1);
+                spawn_randomized_bolt_drop(moby, 1, 3, 0, -1);
             } else {
                 data->f20 = data->f20 - r->f2C;
                 data->f117 = 0xFA;
@@ -2532,7 +2532,7 @@ void Moby1199Update(Moby *m) {
     D_2E1568 *d = (D_2E1568 *)m->pvars;
     Moby *P;
 
-    OwnerTrackingShooterUpdate(m);
+    update_class_1199_hit_reactions_and_targeting(m);
     P = d->f100;
     func_L00_00264B40_2E0630(2.5f, m, 1, d->a270);
     if (m->visible != 0 && func_001F9D10_2E0630(&m->pos, &D_L10_001672C0_2E0630) < 29.0f) {
@@ -2960,7 +2960,7 @@ extern Anim_2E2B80 *D_L10_0016016C_2E2B80 __asm__("D_L10_0016016C") MACRO_ADDR;
 extern Path_2E2B80 *D_L10_001B0C30_2E2B80[] __asm__("D_L10_001B0C30");
 
 /* Level 10 moby update: tracks the owner's height and fires a shot, then sets the moby's display state. */
-void OwnerTrackingShooterUpdate(Moby *moby)
+void update_class_1199_hit_reactions_and_targeting(Moby *moby)
 {
     MobyData_2E2B80 *data = (struct MobyData_2E2B80 *)moby->pvars;
     float v[4];

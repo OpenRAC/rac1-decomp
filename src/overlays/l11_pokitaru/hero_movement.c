@@ -292,8 +292,8 @@ void HeroL11_UpdateMovement(void) {
                             if (usage_stats.f90 < 0xFFFF) {
                                 usage_stats.f90++;
                             }
-                            if (scale_ticks(play_time_ticks) / 600 > usage_stats.f92) {
-                                usage_stats.f92 = scale_ticks(play_time_ticks) / 600;
+                            if (scale_ticks(gameplay_event_frame_count) / 600 > usage_stats.f92) {
+                                usage_stats.f92 = scale_ticks(gameplay_event_frame_count) / 600;
                             }
                             usage_stats.f94 = usage_stats.f94 | (1 << D_0015EE84_m) | 0x80000000;
                             *(int *)&D_L11_0015F768 = -1;
@@ -562,8 +562,8 @@ void HeroL11_UpdateMovement(void) {
                             usage_stats.f58++;
                         }
                     }
-                    if (scale_ticks(play_time_ticks) / 600 > usage_stats.f5A) {
-                        usage_stats.f5A = scale_ticks(play_time_ticks) / 600;
+                    if (scale_ticks(gameplay_event_frame_count) / 600 > usage_stats.f5A) {
+                        usage_stats.f5A = scale_ticks(gameplay_event_frame_count) / 600;
                     }
                     usage_stats.f5C = usage_stats.f5C | (1 << D_0015EE84_m) | 0x80000000;
                 } else {
@@ -705,9 +705,9 @@ void HeroL11_UpdateMovement(void) {
             clip_hero_horizontal_velocity(0);
             lean = g_hero.unk8EC * FastCos(ang) * -7.0f;
             SpringAngle(&g_hero.motion.rot.f[0], lean, &g_hero.unk8E4, 0, 0.007f, 0.17f, g_frame_time * 1.2217305f);
-            Hero_SetTiltSpringParams(0.009f, 0.22f);
-            Hero_SetTiltSpringParams(0.04f, 0.2f);
-            Hero_SetTiltSpringParams(0.02f, 0.2f);
+            set_first_hero_easing_parameters(0.009f, 0.22f);
+            set_first_hero_easing_parameters(0.04f, 0.2f);
+            set_first_hero_easing_parameters(0.02f, 0.2f);
             pokitaru_hero_bones[1].f60[1] = roll * 47.0f;
             pokitaru_hero_bones[1].f60[2] = lean * 1.5f;
             pokitaru_hero_bones[1].f60[0] = lean * 1.4f;
@@ -1502,19 +1502,19 @@ void HeroL11_UpdateMovement(void) {
                         vec[4][1] = FastSin(yaw) * 0.8f;
                         vec[4][2] = 0.55f;
                         FastVecAdd(vec[4], vec[4], g_hero.motion.pos.f);
-                        Hero_HitMobySparks((int)w, coll_sphere_mobys(0.8f, vec[4], 0, w, vec[0]));
+                        emit_filtered_entry_sparkles((int)w, coll_sphere_mobys(0.8f, vec[4], 0, w, vec[0]));
                         yaw = FastAddRots(g_hero.motion.rot.f[2], -0.87266463f);
                         vec[4][0] = FastCos(yaw) * 0.8f;
                         vec[4][1] = FastSin(yaw) * 0.8f;
                         vec[4][2] = 0.55f;
                         FastVecAdd(vec[4], vec[4], g_hero.motion.pos.f);
-                        Hero_HitMobySparks((int)w, coll_sphere_mobys(0.8f, vec[4], 0, g_hero.moby, vec[0]));
+                        emit_filtered_entry_sparkles((int)w, coll_sphere_mobys(0.8f, vec[4], 0, g_hero.moby, vec[0]));
                         yaw = FastAddRots(g_hero.motion.rot.f[2], 0.87266463f);
                         vec[4][0] = FastCos(yaw) * 0.8f;
                         vec[4][1] = FastSin(yaw) * 0.8f;
                         vec[4][2] = 0.55f;
                         FastVecAdd(vec[4], vec[4], g_hero.motion.pos.f);
-                        Hero_HitMobySparks((int)w, coll_sphere_mobys(0.8f, vec[4], 0, w, vec[0]));
+                        emit_filtered_entry_sparkles((int)w, coll_sphere_mobys(0.8f, vec[4], 0, w, vec[0]));
                     }
                 }
             }

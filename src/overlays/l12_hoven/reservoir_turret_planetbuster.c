@@ -456,7 +456,7 @@ extern float D_L12_00161E74_303CA8 SDATA(D_L12_00161E74);
 extern float D_L12_00161E78_303CA8 SDATA(D_L12_00161E78);
 
 /* Hoven vendor draw: builds the two strip matrices, then draws the four rings as quads lit by their phase. */
-void DrawRingQuads(Moby *moby) {
+void draw_oscillating_target_link_strips(Moby *moby) {
     Quad_303CA8 quad[2];
     float m[16];
     float mats[5][16];
@@ -539,7 +539,7 @@ extern float D_0015EE6C MACRO_ADDR;
 extern char D_L12_001672C0[];
 
 /* Moby update for an animated electric-arc effect. */
-void ElectricArcUpdate(struct Moby *moby) {
+void update_oscillating_target_link_strips(struct Moby *moby) {
     char *data = (char *)moby->pvars;
     float cycle = (*(float *)&D_L12_00161E78) + (*(float *)&D_L12_00161E7C) * g_frame_time;
     int strip;
@@ -586,7 +586,7 @@ void ElectricArcUpdate(struct Moby *moby) {
                     points += 4;
                 } while (count < *(int *)(data + 0x232c) - 1);
             }
-            *(int *)(timers + (strip << 2)) = D_L12_00161E84;
+            *(int *)(timers + (strip << 2)) = oscillating_link_strip_reset_ticks;
         } else {
             for (i = 1; i < *(int *)(data + 0x232c) - 1; i++) {
                 float *point = (float *)(data + strip * 0x460 + i * 16);
@@ -596,7 +596,7 @@ void ElectricArcUpdate(struct Moby *moby) {
         }
     }
     if (FastVecDist(&moby->pos, hoven_camera_pos) < 48.0f)
-        AddDrawCallback(DrawRingQuads, moby);
+        AddDrawCallback(draw_oscillating_target_link_strips, moby);
 }
 typedef struct Data_304310 {
     char pad0[0x2300];
@@ -983,7 +983,7 @@ void hoven_turret_update(Moby *moby) {
         ((Hero *)(D_0013E633_e + 0xE1D))->unk1CC = scale_ticks(0x78);
         ((Hero *)(D_0013E633_e + 0xE1D))->invulnerable_frames = scale_ticks(0x78);
         if (hoven_cinematic_mode != 2 && D_L12_00161A20 == 0) {
-            AddDrawCallback(DrawGauge, moby);
+            AddDrawCallback(draw_hoven_turret_hud, moby);
         }
         update_hoven_turret_target_alignment_timer(moby);
         if (func_001F9908_304920(&d->f90)) {
@@ -1093,7 +1093,7 @@ void hoven_turret_update(Moby *moby) {
                 FastVecAdd(muz, muz, dir);
                 FastVecAdd(muz, muz, dir);
                 FastVecAdd(muz, muz, dir);
-                Moby458Spawn(moby, muz, dir, 0);
+                create_moby_with_particles(moby, muz, dir, 0);
                 Moby_PlaySound(0, 0, (int)moby);
                 ((Cam_304920 *)D_L12_00167180_304920)->f160 = 0.03f;
                 ((Cam_304920 *)D_L12_00167180_304920)->f168 = scale_ticks(0xA);
@@ -1203,7 +1203,7 @@ typedef struct {
 } Data_3055F8;
 
 /* Draws the HUD gauge: a four-part frame, a 32-segment dial that fades with the data's charge, and two rotating needles. */
-void DrawGauge(Moby *moby) {
+void draw_hoven_turret_hud(Moby *moby) {
     int uv[4];
     long xy[4];
     int col[4];
@@ -1893,12 +1893,12 @@ void update_planetbuster_maximus_detached_parts(char *moby) {
             f1 = D_L12_00161FC0;
             if (f1 == -1.0f) {
                 qcopy((char *)&D_L12_00161FC0, obj + 0x10);
-                qcopy((char *)&D_L12_00161FD0, obj + 0x40);
+                qcopy((char *)&planetbuster_maximus_detached_owner_rotation, obj + 0x40);
             }
             qcopy((char *)&D_L12_00161FE0, obj + 0x10);
             qcopy((char *)&D_L12_00161FF0, obj + 0x40);
             qcopy(obj + 0x10, (char *)&D_L12_00161FC0);
-            qcopy(obj + 0x40, (char *)&D_L12_00161FD0);
+            qcopy(obj + 0x40, (char *)&planetbuster_maximus_detached_owner_rotation);
             f1 = *(float *)(obj + 0x18);
         } else {
             f1 = *(float *)(obj + 0x18);
@@ -1932,7 +1932,7 @@ void update_planetbuster_maximus_detached_parts(char *moby) {
         }
         if (i == last) {
             qcopy((char *)&D_L12_00161FC0, obj + 0x10);
-            qcopy((char *)&D_L12_00161FD0, obj + 0x40);
+            qcopy((char *)&planetbuster_maximus_detached_owner_rotation, obj + 0x40);
         }
         moby_build_matrix(obj);
     }
@@ -2549,7 +2549,7 @@ void draw_hoven_scrolling_texture_layers(char *m) {
     }
     VU1_addGSregister(6, GetEffectTex(0x2F));
     queue_oil_tanker_front_texture_2b_batches(0);
-    VU1_addGSregister(0x42, ((long)D_L12_00162154 << 32) | 0x68);
+    VU1_addGSregister(0x42, ((long)hoven_scrolling_second_layer_fixed_alpha << 32) | 0x68);
     VU1_addGSregister(6, GetEffectTex(0x30));
     queue_oil_tanker_front_texture_2b_batches(1);
 }

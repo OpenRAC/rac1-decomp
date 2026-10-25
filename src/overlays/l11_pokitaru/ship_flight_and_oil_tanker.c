@@ -345,8 +345,8 @@ void draw_ship_hud(char *moby) {
             ((HelpTab_313218 *)(D_0014171B + 0x34D))->r[0x58].count++;
         }
         per = 600;
-        if (scale_ticks(play_time_ticks) / per > ((HelpTab_313218 *)(D_0014171B + 0x34D))->r[0x58].best) {
-            ((HelpTab_313218 *)(D_0014171B + 0x34D))->r[0x58].best = scale_ticks(play_time_ticks) / 600;
+        if (scale_ticks(gameplay_event_frame_count) / per > ((HelpTab_313218 *)(D_0014171B + 0x34D))->r[0x58].best) {
+            ((HelpTab_313218 *)(D_0014171B + 0x34D))->r[0x58].best = scale_ticks(gameplay_event_frame_count) / 600;
         }
         ((HelpTab_313218 *)(D_0014171B + 0x34D))->r[0x58].flags = ((HelpTab_313218 *)(D_0014171B + 0x34D))->r[0x58].flags | (1 << g_current_level_index) | 0x80000000;
         *(int *)(d + 0x11C) = 0;
@@ -996,14 +996,14 @@ void jet_fighter_update(Moby *moby) {
                 } else {
                     int elapsed, period;
                     char *statistics;
-                    elapsed = scale_ticks(play_time_ticks);
+                    elapsed = scale_ticks(gameplay_event_frame_count);
                     period = 600;
                     statistics = D_0014171B + 0x34D;
                     elapsed -= *(unsigned short *)(statistics + 0x1E2) * period;
                     if (elapsed > (int)((float)scale_ticks(18) * 60.0f) || *(unsigned short *)(statistics + 0x1E2) * period == 0) {
                         Help_Request(0x2AFA, 0x3C);
-                    } else if (scale_ticks(play_time_ticks) / 600 > *(unsigned short *)(statistics + 0x1E2)) {
-                        *(unsigned short *)(statistics + 0x1E2) = scale_ticks(play_time_ticks) / 600;
+                    } else if (scale_ticks(gameplay_event_frame_count) / 600 > *(unsigned short *)(statistics + 0x1E2)) {
+                        *(unsigned short *)(statistics + 0x1E2) = scale_ticks(gameplay_event_frame_count) / 600;
                     }
                 }
                 if (item_available[7] != 0 && (*(int *)(D_0013A5E0 + 0x2604) & 0x10)) {
@@ -3331,7 +3331,7 @@ void update_bubble_motion_and_scale(char *m) {
         *(float *)(bubble_vars + 8) -= *(float *)&D_L11_00162490 * g_frame_time_sq;
         if (**(float **)(bubble_vars + 0x24) + 3.0f < bubble_moby->pos.z) {
             if (random_integer_below(*(int *)&D_L11_001624A0) == 0) {
-                Bubble_EmitParticle(m);
+                spawn_bubble_spark(m);
             }
         }
         if (bubble_moby->pos.z < **(float **)(bubble_vars + 0x24)) {
@@ -3434,7 +3434,7 @@ extern short D_L11_001624E0;
 extern short D_L11_001624E4;
 
 // Builds a lit, coloured four-corner effect for a moby and spawns it.
-void Bubble_EmitParticle(char *m) {
+void spawn_bubble_spark(char *m) {
     float v1[4];
     float v2[4];
     char *d;

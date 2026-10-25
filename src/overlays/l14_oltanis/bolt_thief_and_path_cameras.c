@@ -1700,7 +1700,7 @@ extern float func_001F9B88(float input);
 extern f32 func_001F9CE8(void *);
 
 /* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/vendor/00300e00.c, FUN_L14_00307620. */
-int BlargInterceptor_FollowPath(struct Moby *moby) {
+int update_flying_car_path_motion(struct Moby *moby) {
     float pos[4];
     float delta[4];
     char *d = (char *)moby->pvars;
@@ -1777,7 +1777,7 @@ extern void func_L12_002BD3D0(void *, int, int, int);
 extern char D_L14_001F62C0[];
 extern int func_001F4868(int);
 /* Draw callback for the 0x13-entry effect at D_L14_001F62C0. */
-void DrawQueuedEffect(void) {
+void draw_level14_textured_effect_list(void) {
     draw_textured_effect_list(D_L14_001F62C0, 0x13, GetEffectTex(0x2E), GetEffectTex(0x2F));
 }
 extern void func_L14_00308EB0(void);
@@ -1791,7 +1791,7 @@ void enqueue_moby_draw_callback(unsigned char *moby)
         moby[0x30] = 0xFF;
         break;
     case 1:
-        AddDrawCallback(DrawQueuedEffect, moby);
+        AddDrawCallback(draw_level14_textured_effect_list, moby);
         break;
     }
 }
@@ -2077,7 +2077,7 @@ void update_path_camera(struct UpdateCam *cam) {
     if (q->started == 0) {
         char *pa = oltanis_paths[*(int *)(rec + 0x20)];
         char *pb = oltanis_paths[*(int *)(rec + 0x24)];
-        D_L14_0015F504 = 1;
+        path_camera_active = 1;
         q->started = 1;
         qcopy(&cam->pos, pa + 0x10);
         if (*(int *)(rec + 0x28) >= 0) {
@@ -2115,7 +2115,7 @@ void update_path_camera(struct UpdateCam *cam) {
         UpdateViewContext();
         D_L14_001676D8 = 0.25f;
         cam->transition_state = 4;
-        D_L14_0015F504 = 0;
+        path_camera_active = 0;
         mb = oltanis_mobys;
         reset_racer_group_to_hero_path_position((struct Moby *)(mb + *(int *)(rec + 0x50) * 256));
         hp = (char *)g_hero.unk560;

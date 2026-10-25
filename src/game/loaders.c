@@ -245,13 +245,13 @@ void ParseParticleTexs(int *hdr, int base, int *list, int count) {
         else D_001CE300[i] = *p - (off - (int)D_001CE500);
     }
     copy_memory_aligned(D_001CE500, (char *)hdr + off, size);
-    for (D_001601C0 = 0; D_001601C0 < count; D_001601C0++) {
+    for (particle_texture_range_count = 0; particle_texture_range_count < count; particle_texture_range_count++) {
         int a = base + *list++;
         int b = *list++;
         int c = base + *list++;
         int d = *list++;
-        D_001CDD00[D_001601C0].a = (a << 4) + b;
-        D_001CDD00[D_001601C0].b = (c << 4) + log2dim(d);
+        D_001CDD00[particle_texture_range_count].a = (a << 4) + b;
+        D_001CDD00[particle_texture_range_count].b = (c << 4) + log2dim(d);
     }
 }
 

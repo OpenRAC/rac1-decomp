@@ -507,7 +507,7 @@ extern char D_L00_00161910;
 extern unsigned char D_0013E15A[];
 
 // spawns a moby of class 0x10E from a source moby and records it in a 20-entry ring
-char *SpawnMoby270(char *src) {
+char *spawn_morphoray_chicken(char *src) {
     float v[4] __attribute__((aligned(16)));
     float t[4] __attribute__((aligned(16)));
     char *m = func_0020D348_2CD3B8(0x10E);
@@ -1081,7 +1081,7 @@ extern short D_L00_00161944;
 extern short D_L00_00161948;
 
 // Builds a moby's data block from its source moby and a position vector; returns the new moby or 0.
-char *SpawnMoby305(char *a, char *vec, char *b, float f12, float f13, float f14, float f15) {
+char *spawn_homing_shot(char *a, char *vec, char *b, float f12, float f13, float f14, float f15) {
     float tv[4];
     float lf[4];
     float out[4];
@@ -1167,13 +1167,13 @@ char *SpawnMoby305(char *a, char *vec, char *b, float f12, float f13, float f14,
             } while (k >= 0);
             p = (unsigned char *)D_0013E15A + 0x4C6;
             if (p[0xF] == 0) {
-                RefreshSparkParts(m, 0);
+                clear_homing_shot_trail_and_spawn_end_effects(m, 0);
                 DeleteMoby(m);
                 return 0;
             }
             *(int *)(d + 0x28) = *(int *)(d + 0x28) + 1;
             if (p[0xF] + 5 < *(int *)(d + 0x28)) {
-                RefreshSparkParts(m, 1);
+                clear_homing_shot_trail_and_spawn_end_effects(m, 1);
                 DeleteMoby(m);
                 return 0;
             }
@@ -1435,7 +1435,7 @@ extern u8 *func_L00_0026DEA0(void *, s32, f32, f32, void *, u32, f32, f32);
 extern float D_0015EE6C MACRO_ADDR;
 extern float D_0015EE60 MACRO_ADDR;
 
-void RefreshSparkParts(u8 *m, s32 enabled)
+void clear_homing_shot_trail_and_spawn_end_effects(u8 *m, s32 enabled)
 {
     s32 i;
     s32 j;
@@ -1561,7 +1561,7 @@ char *spawn_feather_moby(int unused, float *pos, float *vel) {
         }
         d->f20 = random_float_between(-1.2f, -0.4f) * g_frame_time;
         moby_build_matrix(m);
-        copy_hero_spawn_frame(m);
+        copy_hero_moby_field_38(m);
     }
     return m;
 }
@@ -1607,7 +1607,7 @@ extern float func_001F9D48(void *, void *);
 extern float func_001FA850(float, float);
 
 /* Finds the best-scoring target moby in the target list within range and angle limits. */
-char *FindBestTargetMoby(float *pos, float *lim, int *skip, float maxy, float maxp, float maxd) {
+char *select_ryno_target(float *pos, float *lim, int *skip, float maxy, float maxp, float maxd) {
     char *best = 0;
     float bestScore = 1e9f;
     int i = 0;
@@ -1913,7 +1913,7 @@ extern float D_0015EE60 MACRO_ADDR;
 extern float D_0015EE6C MACRO_ADDR;
 
 /* Spawns a type-0x1C9 projectile moby at a position, aimed at an optional target; returns it, or 0 if it was launched at once. Adapted from Lombyte (GPL-3.0) for PAL: overlays/shared/unclassified_002c8440.c, FUN_L00_002ccee0. */
-unsigned char *SpawnMoby457(int a, V4 *pos, unsigned char *tgt, float f12, float f13, float f14) {
+unsigned char *spawn_ryno_rocket(int a, V4 *pos, unsigned char *tgt, float f12, float f13, float f14) {
     V4 w;
     V4 s;
     V4 dir;
@@ -2248,8 +2248,8 @@ void replenish_hero_drones(void) {
             if (s->hC0 < 0xFFFF) {
                 s->hC0++;
             }
-            if (scale_ticks(play_time_ticks) / 600 > s->hC2) {
-                s->hC2 = scale_ticks(play_time_ticks) / 600;
+            if (scale_ticks(gameplay_event_frame_count) / 600 > s->hC2) {
+                s->hC2 = scale_ticks(gameplay_event_frame_count) / 600;
             }
             s->wC4 = s->wC4 | (1 << g_current_level_index) | 0x80000000;
 
@@ -2280,7 +2280,7 @@ extern float func_001F9D10(void *, void *);
 
 /* finds the nearest eligible moby to a point, skipping a list of nine */
 /* Exact match: tools/ps2eeas_nops.py keeps the hazard nop after the label the branch lands on. */
-char *Moby_FindNearestTarget(char *a, int *excl) {
+char *select_nearest_drone_target(char *a, int *excl) {
     char *result = 0;
     char *m;
     float best = 1e9f;
