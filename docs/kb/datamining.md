@@ -34,7 +34,7 @@ Older notes (source files, `CardState`, save chunk ids, hub functions):
 `func_L00_00284410` (`src/overlays/shared/pause_menu.c`, matched, 512
 bytes, identical in all 19 levels), called each frame from the page-menu
 update `func_L00_00277A88` (line 356). The page menu is case 3 of the
-game-mode switch in `func_L00_002465F8` (`map_002465F8.c`): pause / map /
+game-mode switch in `func_L00_002465F8` (`level_runtime_and_menus.c`): pause / map /
 planet select. **verified**
 
 ### 1.1 Input
@@ -65,10 +65,10 @@ never match; all four are in the no-effect range. **verified**
 
 | Codes | Effect | Target (verified) | Meaning |
 |---|---|---|---|
-| 0x00-0x24 | `D_0013D5C8[c] = 1; D_0013D5F0[c] = 1` | 37-byte per-item arrays | item owned / item obtained (**verified**: `GiveItem` `func_L00_002618D8` in `mobyutil_00258BC8.c` sets the same two arrays; `func_0020C940` in `src/game/missionfunc.c` tests them as condition types 2 and 3) |
+| 0x00-0x24 | `D_0013D5C8[c] = 1; D_0013D5F0[c] = 1` | 37-byte per-item arrays | item owned / item obtained (**verified**: `GiveItem` `func_L00_002618D8` in `moby_ground_collision.c` sets the same two arrays; `func_0020C940` in `src/game/missionfunc.c` tests them as condition types 2 and 3) |
 | 0x25-0x36 | `UnlockPlanet(c - 0x24)` (`func_L00_00261848`) | `D_0013DE48[1..18]` + `gGalaxyList` | planets 1-18, Novalis to Veldin (return) (**verified** call; planet order from `docs/OVERLAYS.md`) |
 | 0x37-0x3C | `gSpecialItems[c - 0x37] = 1` (`D_0013D490`) | first 6 special-item flags | index 0 is the Zoomerator in the memory map that `config/names.tsv` cites (**inferred** for 1-5) |
-| 0x3D-0x5A | if `gSkillPoints[c - 0x3D] == 0`: set it, `func_0022EE28(1,0,0)`, `ShowBanner(0x53DB, -1)` | 30 skill-point flags (`D_0013D510`) | the same three steps the game uses for every real skill-point award (e.g. `l08_batalia/vendor_002EAF48.c:1338`, `shared/help_00237B00.c:1469`) (**verified**) |
+| 0x3D-0x5A | if `gSkillPoints[c - 0x3D] == 0`: set it, `func_0022EE28(1,0,0)`, `ShowBanner(0x53DB, -1)` | 30 skill-point flags (`D_0013D510`) | the same three steps the game uses for every real skill-point award (e.g. `l08_batalia/commando_deserter_and_effects.c:1338`, `shared/hero_gadget_use.c:1469`) (**verified**) |
 | 0x5B-0x90 | nothing | | |
 
 - Item codes set the raw flags only: no banner, starting ammo
@@ -217,7 +217,7 @@ for index in range(2, 0x93):
   references them (hence 0 xrefs in `strings.tsv`). Title at (0x100,
   0x10): `I-5`.
 - State `debug_menu60` = `D_L00_0016C158`, initialised on every level start
-  (`map_002465F8.c`: 0x8 = 15, 0x38 = -1, ...).
+  (`level_runtime_and_menus.c`: 0x8 = 15, 0x38 = -1, ...).
 
 Pages (draw code + level-00 value tables):
 
