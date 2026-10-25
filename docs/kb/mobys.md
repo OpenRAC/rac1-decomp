@@ -33,7 +33,7 @@ in-game and must be kept.
   zeroed by `CreateMoby`: the class's private state. Catalogue:
   `docs/PVARS.md` (offset caveat above). Level code casts pvars to private
   structs, e.g. `KillFlags`/`VoiceSlot` in
-  `src/overlays/shared/vendor_00298BB8.c`.
+  `src/overlays/shared/sentrybot.c`.
 
 ## Lifecycle
 
@@ -135,7 +135,7 @@ for (m = func_0020E6B8(); m != NULL; m = m->next) {   /* head also saved in a $g
 - `func_0020E3D0` (pre) / `func_0020ED48` (post): handwritten
   animation/matrix passes. Both read 0x50-0x53; post also reads `unk71`
   and 0xA8. Exact jobs inferred.
-- Also called from pause code (`src/overlays/shared/pause_00277208.c:436`,
+- Also called from pause code (`src/overlays/shared/pause_menu.c:436`,
   `src/game/pause.c`): some menus keep mobys ticking.
 - Changes a moby makes to another are seen by later mobys in the same
   frame.
@@ -156,11 +156,11 @@ for (m = func_0020E6B8(); m != NULL; m = m->next) {   /* head also saved in a $g
   tables (per-level BSS) and save bits `D_0014C190[level][id >> 5]`.
   Collect-once classes test it at init, e.g.
   `D_L01_001BB9C0.collected[(short)moby->save_id] != 0`
-  (`src/overlays/shared/vendor_002B90A8.c:516`). `killed[]` stores "spawn
-  slot + 2" (`src/overlays/shared/vendor_00298BB8.c`).
+  (`src/overlays/shared/water_pool_and_sand_mouse.c:516`). `killed[]` stores "spawn
+  slot + 2" (`src/overlays/shared/sentrybot.c`).
 - `mission` (0xB0) indexes the level's `D_0014C050` row (0xFF = not
   spawned). Level code writes `collected[save_id] = mission + 2`
-  (`src/overlays/l01_novalis/vendor_002FABE8.c:849`). Shared helpers
+  (`src/overlays/l01_novalis/rocks_and_sandmouse.c:849`). Shared helpers
   (candidate names): `SetMissionDone` (`func_L00_002512D8`),
   `SetDeathBits` (`func_L00_002584A8`).
 - `parent` (0xB8): spawner; its byte 0xB1 is a per-level id.

@@ -31,7 +31,7 @@ Older notes (source files, `CardState`, save chunk ids, hub functions):
 
 ## 1. Hidden button-code system
 
-`func_L00_00284410` (`src/overlays/shared/pause_00277208.c`, matched, 512
+`func_L00_00284410` (`src/overlays/shared/pause_menu.c`, matched, 512
 bytes, identical in all 19 levels), called each frame from the page-menu
 update `func_L00_00277A88` (line 356). The page menu is case 3 of the
 game-mode switch in `func_L00_002465F8` (`map_002465F8.c`): pause / map /
@@ -211,7 +211,7 @@ for index in range(2, 0x93):
   `case -1` calls `func_00216270`, `func_L00_001F4918` (4932 bytes) and
   `func_L00_001F5C60` (4884 bytes), present in all 19 levels (candidate
   names `DebugCameraUpdate` / `DebugCameraRender`).
-- `func_L00_001F5C60` (matched, `src/overlays/shared/draw_001F3A78.c:523`)
+- `func_L00_001F5C60` (matched, `src/overlays/shared/debug_menu_and_text.c:523`)
   draws the menu: 71 lui/addiu refs into level `lit` strings
   0x15F108-0x15F3B8 (+3 from `func_L00_001F4918`). The ELF never
   references them (hence 0 xrefs in `strings.tsv`). Title at (0x100,

@@ -146,7 +146,7 @@ What that meant for the nine functions that had per-function flags
 | Function | Flag | Its file with the flag | Now |
 |---|---|---|---|
 | func_0023C960, func_0023C9B0 (`src/game/movie/disp.c`) | `-mno-split-addresses` | 2 of 2 exact | the file has the flag |
-| func_L16_002D0328 (`src/overlays/l16_kalebo3/vendor_002A50F0.c`) | `-fno-sched-interblock` | 64 of 64 exact | the file has the flag |
+| func_L16_002D0328 (`src/overlays/l16_kalebo3/test_dummies_and_conveyors.c`) | `-fno-sched-interblock` | 64 of 64 exact | the file has the flag |
 | func_L15_002F9FF8 | `-fno-force-mem` | 2 of 3 | its own file, `vendor_002F9FF8.c` |
 | func_L18_002FAEF8 | `-mno-split-addresses` | 7 of 12 | its own file, `vendor_002FAEF8.c` |
 | func_L00_002E9D78 | `-fno-schedule-insns` | 12 of 53 | its own file, `shared/vendor_002E9D78.c` |
