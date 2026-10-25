@@ -417,6 +417,7 @@ typedef struct AnimRec {
     s32 pending;             /* 0x68: cleared once the pending values are applied */
 } AnimRec;
 
+/* Loads the queued animation and copies its pending values into place. */
 void apply_pending_animation(void *arg0) {
     struct AnimRec *anim = (struct AnimRec *)arg0;
 
@@ -522,6 +523,7 @@ extern void func_001166FC(Cfg13 *, void *);
    expands the 0x13 bytes as unaligned ldl/ldr + sdl/sdr pairs with the
    trailing three bytes done singly, which is exactly retail's shape. */
 extern int func_00116810_hud(void *) __asm__("func_00116810");
+/* Copies text into the shared message buffer, preloading the too-long label when under 80 chars. */
 void copy_text_to_shared_buffer(void *arg0) {
     if ((unsigned int)func_00116810_hud(arg0) < 0x50) {
         message_text_buffer = message_too_long_label;
@@ -533,6 +535,7 @@ LINKER_REMNANT("asm/remnants/text", func_001FFF08);
 
 extern short D_0015F9D0;   /* SDA (gp -0x7330) */
 
+/* Counts the resource counter down by one until it reaches 0. */
 void update_resource_counter(void) {
     int v = *(int *)&ResourceCounter;
     if (v != 0) {
@@ -1211,6 +1214,7 @@ struct Screen {
 
 extern struct Screen screen_extent __asm__("D_0013E600") NOT_SDA;
 
+/* Emits a GS packet that draws a HUD rectangle, in pixel or subpixel coordinates. */
 void draw_hud_rect(int x0, int y0, int x1, int y1, long prim, int pixels) {
     long *packet_words;
 

@@ -275,6 +275,7 @@ int resolve_path_node_index(char *effect, int steps) {
 }
 INCLUDE_ASM("asm/overlays", func_L01_0028C618);
 INCLUDE_ASM("asm/overlays", func_L01_0028C628);
+/* Steps the path node index forward, wrapping at the path's last node; returns it. */
 int advance_path_node_index(char *p)
 {
     int max = 0;

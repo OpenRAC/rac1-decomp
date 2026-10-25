@@ -8,6 +8,7 @@
 
 extern void func_L02_002A52B0(void *);
 
+/* Prepares the scaled table on a scratch buffer. */
 void func_L02_002A59D8(void) {
     char scratch[0x40];
     prepare_scaled_table_with_byte_128(scratch);
@@ -16,6 +17,7 @@ extern void func_L02_002A52D0(void *);
 extern void func_L02_002100E8(void *, int, int);
 extern char D_L02_001CB680[];
 
+/* Builds an interpolated DMA packet from the given parameters and uploads it to scratchpad. */
 void begin_animated_frame_rendering(int a, int b, int c, int d, float x, float y, float z, float w, int e, int f, int g) {
     char scratch[0x40];
     scratch[0x30] = a;
@@ -1167,6 +1169,7 @@ extern void func_00213DE0(void *, int, int, int);
 extern float func_L00_001FF860(float, float);
 extern void func_L00_00251E30(void *);
 
+/* Launches a sand shark from a position along a direction. */
 void launch_sand_shark(unsigned char *moby, void *position, float *direction) {
     char *data = (char *)((struct Moby *)moby)->pvars;
     ((struct Moby *)moby)->state = 0x1B;
@@ -1204,6 +1207,7 @@ extern int func_L02_002D6A90(void *);
 extern void func_L02_002D51D0(void *);
 extern void func_0020D678(void *);
 
+/* Queues a sand shark to relaunch from its nest, or removes it with a dust burst. */
 void prepare_sand_shark_for_relaunch_or_remove(unsigned char *moby) {
     struct Moby *m = (struct Moby *)moby;
     char *data = (char *)m->pvars;
@@ -1224,6 +1228,7 @@ extern char *D_L02_001B0DB0[];
 extern int func_L00_0025A778(void *, void *, int);
 extern int func_001F9850(int);
 
+/* Sends a sand shark home when it leaves its path polygon. */
 void begin_sand_shark_return_home_if_outside_path(unsigned char *moby) {
     char *data = ((char *)((Moby *)moby)->pvars);
     char *entry = aridia_paths[*(int *)(data + 0x290)];
@@ -2268,6 +2273,7 @@ void handle_sand_shark_nest_damage(char *m) {
     fast_subtract_rotations_cf(m + 0xBC);
 }
 
+/* Picks a waiting sand shark from the nest's group and splits the nest's count with it. */
 char *select_inactive_group_sand_shark_for_nest(char *m) {
     Moby *owner = (Moby *)m;
     short *group_ids;
@@ -2408,6 +2414,7 @@ extern void func_L02_002F9ED8(float, float, float, float, float, float);
 typedef struct PPlayer { char pad0[0x2FC]; unsigned char *pod; char pad300[0xE]; short mode; char pad310[0x1D94]; unsigned char blocked; } PPlayer;
 #define G(i) ((char *)D_L02_00160058 + ((i) << 8))
 #define HP ((float *)(D_0013E633 + 0xE9D))
+/* Transport pod state machine: boarding, rail moves, ride camera and disembarking. */
 void transport_pod_update(unsigned char *moby) {
     enum {
         TRANSPORT_POD_INITIALIZE = 0,

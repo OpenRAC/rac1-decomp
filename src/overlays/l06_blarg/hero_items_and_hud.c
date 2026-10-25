@@ -2399,6 +2399,7 @@ extern void func_L00_0028A5A8(void);
 extern void func_0022C870(void);
 extern void func_00234C98(int, long);
 extern int D_0015EF88 MACRO_ADDR;
+/* Draw the Blarg sky: three shells with particles in level 6, static shells otherwise. */
 void render_sky_with_gif_paging(void) {
     SetupSkyGifPaging();
     if (D_0015EE84_m == 6) {

@@ -200,6 +200,7 @@ void update_level_12_water_tile(char *moby) {
 }
 extern void func_L01_002BA380(char *, int);
 extern char D_L12_001CC1C0[];
+/* Draws Hoven's water ripple grids. */
 void render_level_12_water_grids(void) {
     render_water_grids(hoven_ripple_patches, 0x11);
 }
@@ -253,6 +254,7 @@ extern int func_L00_002DCDA8(void *);
 extern void func_L01_0026F040(int, int);
 
 extern int func_L00_002DCDA8_pos(void *, void *, void *) __asm__("func_L00_002DCDA8");
+/* Suck cannon suction for a group moby: marks its group and sets state 8 while held. */
 int GroupMoby_UpdateActiveState(unsigned char *moby, void *pos, void *target) {
     int active;
     if (moby[0x20] == 9 || moby[0x20] == 11 || moby[0x20] == 13) return 0;
@@ -1512,6 +1514,7 @@ extern void func_L12_002E8530(void);
 extern int func_00215570(void *, int);
 extern void func_001F49B0(void *, void *);
 
+/* Queues the level 12 effects draw when the camera is inside the moby's clip volume. */
 void register_level_12_effects_draw_callback(unsigned char *moby) {
     char *data = ((char *)((Moby *)moby)->pvars);
     switch (((Moby *)moby)->state) {
@@ -1583,6 +1586,7 @@ typedef int u128_2E8640 __attribute__((mode(TI)));
 
 #define COPY4(dst, src) qcopy((void *)(dst), (void *)(src))
 
+/* Blarg trooper update: movement, attacks, damage and death. */
 void Moby294Update(char *moby) {
     char *data;
     char *hero;
@@ -2209,6 +2213,7 @@ void remove_blarg_trooper_and_attachment(Level12VendorMoby *moby) {
 extern void func_L00_00250800(void *, int, void *);
 extern void *func_L04_002CF460(void *, void *);
 
+/* Keeps the Blarg trooper's attachment on its bone, spawning it if missing. */
 void update_blarg_trooper_attachment(unsigned char *moby) {
     char *data = ((char *)((Moby *)moby)->pvars);
     unsigned char *target = *(unsigned char **)(data + 0x248);
@@ -2352,6 +2357,7 @@ typedef int u128q __attribute__((mode(TI)));
 #define COPY4(dst, src) (*(u128q *)(dst) = *(u128q *)(src))
 
 #define S_I(p, o) (((struct { char _p[o]; int v; } *)(p))->v)
+/* Blarg helicopter update: targeting, hits, movement and removal. */
 void Moby326Update(char *moby) {
     char *data;
     float buf[20] __attribute__((aligned(16)));

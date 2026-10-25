@@ -2346,6 +2346,7 @@ typedef struct OilChainVars_318730 {
     s32 sound;                         /* 0xF4 */
 } OilChainVars_318730;
 
+/* Oil tanker front: lays out its chain along a path, then moves along it and handles damage. */
 void oil_tanker_front_update(char *moby) {
     OilChainVars_318730 *chain_vars = (OilChainVars_318730 *)((struct Moby *)moby)->pvars;
     int st = ((struct Moby *)moby)->state;

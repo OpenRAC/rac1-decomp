@@ -365,6 +365,7 @@ void initialize_hud_element_defaults(HudElem *e) {
 extern char D_0013E633[];
 extern int func_001F9850(int);
 
+/* Fades the progress HUD in when the hero is in mode 0x16, else fades it out. */
 void set_progress_hud_fade_from_hero_mode(char *moby)
 {
     if (*(int *)(D_0013E633 + 0x2EA9) == 0x16) {
@@ -400,6 +401,7 @@ extern int func_00116248(char *, char *, ...);
 extern void func_L00_001FB7F8(int, int, long, char *, int);
 extern int func_001F6600(char *, int);
 
+/* Screen-bottom offset minus a HUD element's Y, using the PAL or NTSC margin. */
 static inline int hud_sub_66D10(int d, int pal, short *p) {
     int o;
     if (pal) {
@@ -410,10 +412,12 @@ static inline int hud_sub_66D10(int d, int pal, short *p) {
     return d - o;
 }
 
+/* Returns the HUD bottom margin for PAL or NTSC. */
 static inline int hud_py_66D10(int pal) {
     return pal ? 0xA : 0x12;
 }
 
+/* Draws the progress frame with its label, count and rank; returns 0 when hidden. */
 int draw_hud_progress_and_rank(char *e) {
     char buf[0x50] __attribute__((aligned(16)));
     int x, y, y1, tx, px, py, w;

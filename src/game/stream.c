@@ -195,6 +195,7 @@ extern int D_0015EFBC MACRO_ADDR;
 extern int D_0015EFC0 MACRO_ADDR;
 extern void func_00121750(int, int, int, void *);
 
+/* Start a CD stream read of arg2 sectors from arg1 into arg0 at the current spindle speed. */
 int Stream_SubmitRead(int arg0, int arg1, int arg2) {
     StreamHdr hdr = stream_read_mode_template;
 
@@ -300,6 +301,7 @@ struct MusicStreamState {
     s16 read_state;            /* 0x08: 0 idle, 1 reading, 2 done */
 };
 
+/* Pump music and stream updates, until the CD read is idle if arg0; return the read state. */
 short update_audio_stream_until_idle(int arg0) {
     if (arg0 != 0) {
         struct MusicStreamState *d;
@@ -324,6 +326,7 @@ short update_audio_stream_until_idle(int arg0) {
 
 extern int func_0012F030(void);
 
+/* CD read callback: mark the music stream read finished, or done if more data is ready. */
 void finish_audio_stream_read(int callback_value) {
     struct MusicStreamState *state;
     if (callback_value == 1) {
@@ -335,6 +338,7 @@ void finish_audio_stream_read(int callback_value) {
     }
 }
 
+/* Stream callback: move a music channel from state 2 to ready (3) once the voice is valid. */
 void music_channel_ready_callback(int arg0, long arg1) {
     short *p = (short *)(int)arg1;
     if (p != 0 && arg0 != 0 && p[5] == 2) {
@@ -344,6 +348,7 @@ void music_channel_ready_callback(int arg0, long arg1) {
 
 extern void func_002167C0(short, short, short);
 
+/* Stream callback: store the voice handle and advance the channel, or restart the secondary track. */
 void music_secondary_start_callback(int arg0, long arg1) {
     short *p = (short *)(int)arg1;
     if (p == 0) {
@@ -362,6 +367,7 @@ void music_secondary_start_callback(int arg0, long arg1) {
 
 extern void func_002169B8(short, short, short);
 
+/* Stream callback: store the voice handle and advance the channel, or redo the primary preseek. */
 void music_primary_preseek_callback(int arg0, long arg1) {
     short *p = (short *)(int)arg1;
     if (p == 0) {
@@ -380,6 +386,7 @@ void music_primary_preseek_callback(int arg0, long arg1) {
 
 extern short D_001517F0 NOT_SDA;
 
+/* Stream callback: store the voice handle and mark the transition track playing, or reset it. */
 void music_transition_start_callback(int arg0, long arg1) {
     short *p = (short *)(int)arg1;
     if (p != 0) {
@@ -398,6 +405,7 @@ void music_transition_start_callback(int arg0, long arg1) {
     }
 }
 
+/* Stream callback: switch a replaced primary track to playing, or reset the channel on failure. */
 void music_primary_replace_callback(int arg0, long arg1) {
     short *p = (short *)(int)arg1;
     if (p != 0) {
@@ -417,6 +425,7 @@ void music_primary_replace_callback(int arg0, long arg1) {
     }
 }
 
+/* Stream callback: store the voice handle and mark the primary track started, or reset it. */
 void music_primary_start_callback(int arg0, long arg1) {
     short *p = (short *)(int)arg1;
     if (p != 0) {
@@ -449,6 +458,7 @@ void set_sound_handle_id(int arg0, long arg1) {
     }
 }
 
+/* Stream callback: save the remaining time and its quarter, then advance the channel. */
 void music_remaining_time_callback(int arg0, long arg1) {
     char *p = (char *)(int)arg1;
     short *b;
@@ -535,6 +545,7 @@ extern s32 func_00216098(void);
 
 void func_00217AE8(void *arg0, Menu *menu, s32 arg2);
 
+/* Handle menu cursor moves and build the help text for the selected entry (arg2: cursor moved). */
 void process_menu_entry(void *arg0, Menu *menu, s32 arg2) {
     char buf[0x100];
     Suffixes sfx;
@@ -644,6 +655,7 @@ void process_menu_entry(void *arg0, Menu *menu, s32 arg2) {
 
 extern char D_0013CA40[];
 
+/* Clear the controller state's pending input fields. */
 void pad_resetState(void) {
     char *p = g_controller_state;
     *(short *)(p + 0x18E) = 0;
@@ -664,6 +676,7 @@ typedef struct {
     s32 slot;
 } PadSocketParam;
 
+/* Init the pad library and open controller ports 0 and 1. */
 void init_pads(void) {
     PadSocketParam *p = (PadSocketParam *)&pad_socket_param;
 

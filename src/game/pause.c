@@ -2901,6 +2901,7 @@ struct MapSelection_21D4C0 {
     s32 level;                           /* 0x224: selected level 0..19 */
 };
 
+/* Mission list input of the level map screen; returns 1 to close the menu. */
 int update_menu_mission_list(struct Menu *menu_screen) {
     int old;
     int i;
@@ -3978,6 +3979,7 @@ typedef struct ItemPreviewCamera {
     Vec4f pos;                         /* 0x140: eye position */
 } ItemPreviewCamera;
 
+/* Spawns or swaps the 3D preview moby for the selected item cell, in front of the camera. */
 int update_item_preview_moby(char *arg0) {
     ItemPreviewScreen *menu = (ItemPreviewScreen *)arg0;
     PreviewGridScreen *grid = *(PreviewGridScreen **)(current_menu_page + 0x40);
@@ -4626,6 +4628,7 @@ struct RotatingPreviewOwner {
     struct Moby *preview_moby;               /* 0x44 */
 };
 
+/* Spawns the rotating preview moby (class 0x46E) in front of the menu camera. */
 int create_rotating_preview_moby(void *owner) {
     struct Moby *moby = (struct Moby *)func_00226720_a(0x46E);
     struct RotatingPreviewCamera *preview_camera;
@@ -5507,6 +5510,7 @@ typedef struct StreamScreen_220D08 {
     } data;                    /* 0x30 */
 } StreamScreen_220D08;
 
+/* Enters a streamed menu image screen: grabs two stream buffers and resets their state. */
 int enter_menu_stream_image(void *arg0) {
     StreamScreen_220D08 *menu = (StreamScreen_220D08 *)arg0;
 
@@ -6230,6 +6234,7 @@ typedef struct FsAaBuffer {
     s16 target_height;         /* 0x162 */
 } FsAaBuffer;
 
+/* Draws the loaded level map's background and overlay layers on the map screen. */
 int draw_map_screen_layers(void) {
     LevelMapSelection *g = (LevelMapSelection *)D_001A01F0_c;
     s32 loaded_map_index = g->loaded;
@@ -6325,6 +6330,7 @@ struct MenuItemInfo {
     u8 pad_3A[0x12];
 };
 
+/* Draws the pause/quick-select ring of item icons around the screen center. */
 int draw_pause_ring(char *arg0) {
     struct PauseState *pause_state = (struct PauseState *)arg0;
     s32 i;
@@ -8473,6 +8479,7 @@ struct MenuPreviewScreen_225358 {
     char flags[0x18];            /* 0xA4: 24 flag bytes cleared on setup, ending at 0xBB */
 };
 
+/* Sets up the menu preview stream buffers, animation queue and preview objects. */
 int initialize_menu_preview_objects(char *arg0) {
     struct Moby *object;
     int *resource_buffer_slot;

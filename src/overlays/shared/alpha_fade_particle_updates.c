@@ -237,6 +237,7 @@ void update_expanding_rotating_alpha_fade_particle(char *particle) {
 extern char *D_L00_001B24BC;
 extern int func_001FA898(float);
 
+/* Spawn a grey type-0x2F particle at a with velocity b, size f, random alpha and spin. */
 unsigned char *spawn_random_alpha_rotated_particle(void *a, void *b, float f) {
     unsigned char *r = create_part(0x2F);
     if (r != 0) {
@@ -254,6 +255,7 @@ unsigned char *spawn_random_alpha_rotated_particle(void *a, void *b, float f) {
 }
 extern void func_001F9BD8(void *, void *, void *);
 extern void func_L00_002688A8(void *);
+/* Particle update: damp and apply velocity, grow, spin, fade out; kill when fully transparent. */
 void update_expanding_damped_fading_particle(char *m) {
     char *v = m + 0x20;
     int t;
@@ -271,6 +273,7 @@ extern void func_001F9BD8(void *, void *, void *);
 extern int func_001FA8A8(int, int, float);
 extern int func_001F9938(void *);
 extern void func_L00_002688A8(void *);
+/* Particle update: move and spin, tween colour over the lifetime; kill when the timer ends. */
 void update_color_tween_particle(char *m) {
     char *v = m + 0x20;
     m[8] += v[0x1C];
@@ -385,6 +388,7 @@ void update_damped_fading_particle(char *m) {
         p->frame += 1;
     }
 }
+/* Particle update: tween colour and size over the lifetime; kill when the timer ends. */
 void update_color_size_tween_particle(char *m) {
     char *v;
     float f;
@@ -435,6 +439,7 @@ unsigned char *PartType53Spawn(float *pos, int a, int col, int mode, int b, floa
     }
     return r;
 }
+/* Copy an xyz vector and clear the w word. */
 static __inline__ void vcopy_273090(float *d, float *s) {
     d[0] = s[0];
     d[1] = s[1];
@@ -985,6 +990,7 @@ unsigned char *spawn_mode_controlled_alpha_fade_particle(void *a, int b, int c) 
     }
     return r;
 }
+/* Particle update: optionally follow an owner with an offset and fade alpha; kill at zero. */
 void update_mode_controlled_alpha_fade_particle(char *a) {
     char *s = a + 0x20;
     int w;
@@ -1213,6 +1219,7 @@ unsigned char *spawn_random_planar_drift_particle(void *pos, int color, float f,
     }
     return r;
 }
+/* Particle update: move, grow and spin; drop alpha by 1 every 2 frames, kill at zero. */
 void update_moving_resizing_periodic_alpha_fade_particle(char *m) {
     char *v = m + 0x20;
     int t;
@@ -1484,6 +1491,7 @@ unsigned char *spawn_texture_indexed_rotated_particle(void *a, int idx, float an
     return r;
 }
 extern void func_L00_002688A8(void *);
+/* Particle update: drop alpha by 1 every 2 frames; kill the particle at zero alpha. */
 void update_periodic_alpha_fade_particle(char *a) {
     int t = *(unsigned short *)(a + 0xA) - 1;
     *(short *)(a + 0xA) = t;
@@ -1598,6 +1606,7 @@ unsigned char *spawn_random_size_rotated_particle(char *a, char *b, int c, float
     return p;
 }
 extern void func_L00_002688A8(void *);
+/* Particle update: spin the particle; kill it once its size reaches zero. */
 void update_size_gated_rotating_particle(char *a) {
     *(unsigned char *)(a + 8) = *(unsigned char *)(a + 8) + *(unsigned char *)(a + 0x38);
     if (*(float *)(a + 0xC) <= 0.0f) {
@@ -1745,6 +1754,7 @@ void update_gravity_damped_resizing_particle(char *m) {
 extern void func_L00_0025A468(void *, void *);
 extern int func_001F9938(void *);
 extern short D_L00_00160300;
+/* Particle update: fade the packed alpha by a fixed step; kill when the timer ends. */
 void update_timed_alpha_fade_particle(char *a) {
     decrement_packed_countdown(a + 4, *(void **)&timed_fade_particle_alpha_step);
     if (FastDecTimer(a + 0xA) != 0) {
@@ -1765,6 +1775,7 @@ typedef struct {
     Vec4 vel;                  /* 0x20 */
 } O00275860;
 
+/* Particle update: move, scale alpha and spin by the remaining lifetime; kill at timer end. */
 void update_moving_lifetime_scaled_alpha_particle(char *m) {
     O00275860 *particle = (O00275860 *)m;
     Vec4 velocity_xyz;
@@ -1825,6 +1836,7 @@ unsigned char *spawn_proximity_corrected_size_alpha_tween_particle(void *pos, in
 extern void func_001F9CA0(void *, void *, void *);
 extern short D_L00_0016030C;
 
+/* Copy an xyz vector and clear the w word. */
 static __inline__ void vcopy_276940(float *d, float *s) {
     d[0] = s[0];
     d[1] = s[1];

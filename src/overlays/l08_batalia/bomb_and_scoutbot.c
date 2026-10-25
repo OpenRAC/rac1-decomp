@@ -1755,6 +1755,7 @@ typedef struct LiftVars {
     s32 ridable;                       /* 0x124 nonzero: the hero may stand on it */
 } LiftVars;
 
+/* Route platform: spin, ride the hero along shuttle paths and pick the next route at each stop. */
 void RoutePlatformUpdate(char *m) {
     struct Moby *moby = (struct Moby *)m;
     LiftVars *vars = (LiftVars *)moby->pvars;

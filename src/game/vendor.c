@@ -427,6 +427,7 @@ void update_scrolling_status_message(void) {
 extern int D_001611A8 MACRO_ADDR;
 extern int D_001E66E4;
 
+/* Draws the capture framebuffer rect and its moby list when enabled. */
 void render_capture_effect_pass(void) {
     draw_framebuffer_rect(0, 0, 0x200, 0x80, 0x200, 0x80, 0);
     if (capture_moby_pass_enabled == 1) {
@@ -439,6 +440,7 @@ extern char D_00161180[];
 /* Unprototyped: the two call sites pass different argument counts. */
 extern void func_00116248();
 
+/* Formats a number into a string, with a thousands separator from 1000 up. */
 void format_scaled_display_value(void *arg0, int arg1) {
     if (arg1 >= 1000) {
         func_00116248(arg0, fmt_thousands_grouped_int, arg1 / 1000, arg1 % 1000);
@@ -628,6 +630,7 @@ extern unsigned char D_0013D5EB[];
 extern void func_001153FC(void *, int, int);
 extern void func_001F75D0(void *, long, void *, int);
 
+/* Draws the vendor's buy label and price for the selected slot. */
 void render_vendor_buy_label_pass(char *unused, int x, int y) {
     char sp[0x18];
     VendorA *v;
@@ -868,6 +871,7 @@ void configure_capture_target(int a, int b, float f) {
 __asm__(".section .text\n\tnop\n");
 
 
+/* Sets up the draw buffer and view context for rendering. */
 void setup_view_context(void) {
     PutDrawBufferLarge();
     InitViewContext();

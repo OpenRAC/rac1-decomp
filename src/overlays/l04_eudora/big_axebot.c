@@ -20,6 +20,7 @@ extern f32 func_001F9CB8_9FCF0(Vec4 *v) __asm__("func_001F9CB8");
 extern void func_L00_001FF4B0_9FCF0(Vec4 *out, Vec4 *v, f32 len) __asm__("func_L00_001FF4B0");
 extern f32 func_001F9C78_9FCF0(Vec4 *a, Vec4 *b) __asm__("func_001F9C78");
 extern void func_001F9BD8_9FCF0(Vec4 *out, Vec4 *a, Vec4 *b) __asm__("func_001F9BD8");
+/* Next point index on a looping path in direction dir, wrapping at both ends. */
 static inline s32 path_next_eb20_9FCF0(PathPoints_eb20_9FCF0 *path, s32 i, s32 dir) {
     if (i == path->count - 1) {
         return dir > 0 ? 0 : path->count - 2;
@@ -132,6 +133,7 @@ typedef struct SwarmVars {
     s32 child_count;
 } SwarmVars;
 
+/* Class 0x55 swarm controller: counts its children and steers them around the origin. */
 void update_class_55_swarm_controller(struct PMoby *moby) {
     SwarmVars *data = (SwarmVars *)moby->pvars;
     struct PMoby **children;
@@ -262,6 +264,7 @@ void update_moby_random_interval_animation(char *m) {
 }
 extern void func_00213DE0(void *, void *, void *, void *);
 
+/* Blend the big axebot's animation and, if present, its axe moby's animation the same way. */
 void blend_big_axebot_and_axe_animation(char *arg, void *a, void *b, void *c) {
     char *data = ((char *)((Moby *)arg)->pvars);
     void *other;
@@ -2004,6 +2007,7 @@ void circular_saw_enemy_update(M_35F0 *moby) {
 extern char *func_L00_002DCD40(char *);
 extern int func_L00_002DD0E0(char *, int, int, float);
 extern int func_0022ED80(int, int, char *);
+/* Run the suck cannon hit check; set state 9 while caught, back to 1 when released. */
 int process_moby_hit_state_and_voice(char *m, int a, int b, float f) {
     char *h = get_moby_suck_cannon_record(m);
     int r = launch_suck_cannon_projectile(m, a, b, f);
@@ -2112,6 +2116,7 @@ void spawn_smoke_puff_trail_with_endpoint_bursts(void *owner, void *from, void *
 extern void func_0020D678(void *);
 extern void func_L04_002C5A50(void *);
 
+/* Destroy a Blarg trooper: delete its linked moby, spawn a puff, then delete it. */
 void destroy_blarg_trooper(char *arg) {
     char *data = ((char *)((Moby *)arg)->pvars);
     void *other = *(void **)(data + 0xF8);

@@ -639,6 +639,7 @@ void update_mine(struct Moby *m) {
 }
 extern char *func_L00_0025B478(void *, int, int);
 
+/* On a hit from a moby of another class, puts the mine into state 4 (exploding). */
 void handle_mine_hit(unsigned char *arg) {
     char *item = MobyGetHitMessage(arg, 0x130000, 0);
     if (item != 0) {
@@ -700,6 +701,7 @@ s32 is_taxi_in_round_trip_phase(u8 *object) {
 }
 extern void func_00215F80(int, int);
 
+/* Shows the Kerwan taxi return help message (same text for every mode). */
 void request_taxi_return_help_message(void *arg, int mode) {
     if (mode == 1) {
         try_set_help_message(8, 0xBC9);
@@ -1316,6 +1318,7 @@ extern f32 func_001FA790(f32, f32);
 extern f32 func_001F9CE8(void *);
 extern void func_L00_00263950(void *, void *, int, f32, f32);
 
+/* Helga's per-frame update: big head cheat, talk states and head tracking toward the hero. */
 void helga_update(struct Moby *m) {
     struct QuestGiverVars_hg *v = (struct QuestGiverVars_hg *)m->pvars;
     struct TalkState_hg *talk = &v->talk;
@@ -1678,6 +1681,7 @@ typedef struct {
 #define stage (D_0014171B + 0xAA35)
 #define BASE_gd ((char *)D_L03_00160058)
 static inline u8 flag2(void) { u8 *p = menu_item_enabled_115 + 0xB9; return p[2]; }
+/* Big Al's per-frame update: facing setup, talk states and head tracking toward the hero. */
 void big_al_update(struct Moby *m) {
     struct GuideVars_gd *v = (struct GuideVars_gd *)m->pvars;
     struct Moby *t;
@@ -1889,6 +1893,7 @@ extern int D_L03_0015F6A8;
 typedef struct { int pad0[8]; int source; int pad1; unsigned char type; } Hit_DD158;
 typedef struct { unsigned char pad[4]; short mode; unsigned char pad2[0x30]; short unk36; unsigned char pad3[0x14]; int warp; } Vars_DD158;
 
+/* Robot Qwark statue update: ground shadow near the camera, goes to state 3 once hit or saved. */
 void robot_qwark_update(unsigned char *m) {
     Vars_DD158 *d = ((Vars_DD158 *)((Moby *)m)->pvars);
     Hit_DD158 *hit;
@@ -1986,6 +1991,7 @@ int is_rail_lift_started(struct Moby *moby) {
     }
     return 0;
 }
+/* Returns 1 if the moby has a nonzero state and its data flag at 0x7C equals 1. */
 int IsStateAndPvarFlagSet(unsigned char *moby, char *data) {
     if (moby[0x20] && *(int *)(data + 0x7C) == 1) {
         return 1;
@@ -2572,6 +2578,7 @@ extern void func_L01_00279790(void *);
 extern void func_L00_00264EA8(void *, int, int, int, int, int, int);
 extern void func_L01_00279E10(void *, int);
 extern void func_0020D678(void *);
+/* Lightpost update: on a hit it plays a sound, drops bolts, breaks apart and spawns its remains. */
 void lightpost_update(char *m) {
     int hit = 0;
     char *r = MobyGetHitMessage(m, 0x10000, 0);
@@ -2776,6 +2783,7 @@ void rebuild_camera_orientation_axes(void *arg) {
     vec_scale_to_length(m + 0x10, m + 0x10, 1.0f);
     FastVecCross(m + 0x20, m + 0x10, m);
 }
+/* Returns -1 if hero state is 6, or hero mode is 0x50 and state is not 0x11; else 0. */
 int func_L03_002ED138(void) {
     char *g = D_0013E633 + 0xE1D;
 
@@ -2792,6 +2800,7 @@ extern void func_L03_002ECEC8(void *);
 extern void func_001E9768(void *);
 extern void func_L03_002ED020(void *);
 
+/* Updates the hero-relative camera position, then rebuilds the camera axes. */
 void update_camera_position_and_orientation(void *arg) {
     update_smoothed_hero_relative_camera_position(arg);
     Profile_Mark(arg);
@@ -2800,6 +2809,7 @@ void update_camera_position_and_orientation(void *arg) {
 extern int D_L03_0015F050 MACRO_ADDR;
 extern int func_00215570(void *, int);
 
+/* Sets the camera moby's mode to 3 when the hero leaves its clip volume. */
 void update_camera_state_outside_clip_volume(char *moby)
 {
     char *entry = (char *)((*(short *)(moby + 0x84) << 5) + kerwan_camera_descriptors);

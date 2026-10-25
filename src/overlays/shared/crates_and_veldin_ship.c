@@ -833,6 +833,7 @@ extern void func_001F9C30(void *, void *, f32);
 extern f32 func_001F9B50(f32);
 extern void func_L00_001FD1D8(void *, s32, s32);
 
+/* Draw the Veldin ship's glow quads from its vertices when the camera is near or it is active. */
 void veldin_ship_draw(u8 *m) {
     Quad_2d19b0 quad;
     Vec_2d19b0 a, c, b;
@@ -2586,6 +2587,7 @@ extern Path *D_L00_001B0830[];
 extern u8 D_0013DE48[];
 extern Player D_0013F4D0;
 extern s32 D_L00_0015F6A8 MACRO_ADDR;
+/* Store each path segment's length in the w of its start point. */
 static inline void measure_path(Path *path) {
     s32 j;
 

@@ -37,6 +37,7 @@ void initialize_moby_state_record(char *m) {
     *(int *)(g + 0x38) = src[2];
 }
 extern char *D_0013E130;
+/* Hides and deactivates the recorded moby, if any. */
 void deactivate_recorded_moby(void) {
     char *m = level_render_state;
     if (m != 0) {
@@ -146,6 +147,7 @@ extern unsigned char D_0013E15A[] NOT_SDA;
 extern void func_00216EF0(int);
 extern void func_L00_00203FB8(void);
 extern void func_L00_0028FCA0(int);
+/* Pauses music, clears the help message and starts the level transition. */
 void prepare_level_transition_with_help_cleanup(void) {
     char *g = g_hero;
     

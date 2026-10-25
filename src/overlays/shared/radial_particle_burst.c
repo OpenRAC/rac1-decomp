@@ -38,6 +38,7 @@ void rotate_vector_by_scaled_angle_between_vectors(float t, float *dst, float *a
 }
 LINKER_REMNANT("asm/overlays", func_L03_0024FA90);
 
+/* Set up a jump arc in p[5..7] for distance a and height b under the gravity in p[4]. */
 void trooper_set_knockback(float *p, float a, float b)
 {
     float root = vec_length((b + b) * p[4]);
@@ -57,31 +58,37 @@ extern unsigned char *func_L00_00272158(void *, void *, int, int, int, int, floa
 extern int func_001FA898(float);
 extern void func_L00_0026DA50(void *, void *, int, int, int, int, float);
 typedef int U128 __attribute__((mode(TI)));
+/* Convert a 60 Hz frame count to game ticks. */
 static inline int game_frames(int n)
 {
     return scale_ticks(n);
 }
+/* Return a random tick count between lo and hi frames. */
 static inline int rand_ticks(int lo, int hi)
 {
     int a = game_frames(lo);
     int b = game_frames(hi);
     return rand_range(a, b);
 }
+/* Return a random value within plus or minus spread. */
 static inline float rand_jitter(float spread)
 {
     float r = randf_sym(0.0f, spread);
     return r;
 }
+/* Return a random particle speed between 0.05 and 0.1. */
 static inline float rand_speed(void)
 {
     float s = random_float_between(0.05f, 0.1f);
     return s;
 }
+/* Return a random spin step from 0 to 3. */
 static inline int rand_spin(void)
 {
     int s = rand_range(0, 3);
     return s;
 }
+/* Return 0 or 1 at random. */
 static inline int coin_flip(void)
 {
     int r = random_integer_below(2);

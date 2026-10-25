@@ -6,6 +6,7 @@ typedef struct {
     float x, y, z, w;
 } V_24d4a8;
 
+/* Return 1 + the first polygon edge that p lies left of in XY, or 0 if none. */
 int find_first_positive_polygon_edge_cross_xy(float *p, float *poly, int n) {
     V_24d4a8 *v = (V_24d4a8 *)poly;
     int i;

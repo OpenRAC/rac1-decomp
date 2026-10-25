@@ -439,6 +439,7 @@ void VU1_addDataRef(void *data, int qwc) {
 
 LINKER_REMNANT("asm/remnants/text", func_00234B98);
 
+/* Append a DMA packet that unpacks qwc quadwords from src to VU1 memory address arg0. */
 void write_vif_unpack_packet(int arg0, void *src, int qwc) {
     g_render_packet_cursor[0] = qwc | 0x10000000;
     g_render_packet_cursor[1] = 0;
@@ -451,6 +452,7 @@ void write_vif_unpack_packet(int arg0, void *src, int qwc) {
 
 LINKER_REMNANT("asm/remnants/text", func_00234C48);
 
+/* Append an empty DMA cnt tag carrying the VIF code arg0. */
 void vu1_add_vif_code(int arg0) {
     g_render_packet_cursor[0] = 0x10000000;
     g_render_packet_cursor[1] = 0;
@@ -544,6 +546,7 @@ void VU1_gsRegsNormal(void) {
 
 extern char D_001DE770[];
 
+/* Append a DMA ref tag that sends the alt GS register packet (3 qwords) via DIRECT. */
 void vu1_gs_regs_alt(void) {
     g_render_packet_cursor[0] = 0x30000003;
     g_render_packet_cursor[1] = (int)gs_regs_alt_packet;
@@ -556,6 +559,7 @@ LINKER_REMNANT("asm/remnants/text", func_00234FA0);
 
 extern char D_0013D010[];
 
+/* Append a DMA ref tag that sends the draw environment (11 qwords) via DIRECT. */
 void vu1_gs_regs_font(void) {
     g_render_packet_cursor[0] = 0x3000000B;
     g_render_packet_cursor[1] = (int)draw_environment;
@@ -601,6 +605,7 @@ void DMAC_VIF1_Enable(void) {
 extern int func_00118AD0(int, int);
 extern int func_001193F8(int);
 
+/* Stop VIF1 DMA, remove the VIF1 DMA and VU1 halt interrupt handlers. */
 void DMAC_VIF1_Disable(void) {
     if ((*(volatile int *)0x1000E010 & 0x20000) != 0) {
         *(volatile int *)0x1000E010 = 0x20000;
@@ -618,6 +623,7 @@ extern char D_001E8D38[];
 extern char D_001E8D50[];
 extern char D_001E8D68[];
 
+/* Print the VIF1 DMA register values and hang (VU1 timeout handler). */
 void print_register_values_and_halt(void) {
     int a = *(volatile int *)0x10009000;
     int b = *(volatile int *)0x10009030;
@@ -642,6 +648,7 @@ typedef struct {
 } Qword;
 extern Qword *D_00161000_q __asm__("D_00161000") MACRO_ADDR;
 
+/* Append an interrupting DMA tag with qword count arg0 to the second packet list. */
 void append_dma_tag(int arg0) {
     Qword *p = D_00161000_q++;
     p->w[0] = arg0 + 0x90000000;

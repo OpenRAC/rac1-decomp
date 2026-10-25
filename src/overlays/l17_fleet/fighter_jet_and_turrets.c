@@ -1190,6 +1190,7 @@ char *spawn_class_558_moby_toward_target(char *source_moby, char *spawn_position
 }
 extern int func_001F4868(int);
 extern void func_L11_003121C0(float, float, float, float, float, int, int, long, int, int, int, int, int);
+/* Draws effect texture 0x2E four times at x, y, each copy turned a further 90 degrees. */
 void draw_four_quarter_turn_effect_quads(unsigned char a, unsigned char b, unsigned char c, unsigned char d, float x, float y, float s, float ang) {
     int h;
     float w;
@@ -2846,6 +2847,7 @@ typedef struct {
 extern CameraGlobals D_0013F450;
 extern void func_L00_001FF500(void *, void *, float);
 
+/* Builds the magnet elevator camera spot 2.5 units toward the camera, facing the hero. */
 void build_magnet_elevator_camera_pose(char *moby, char *temp, char *state) {
     FastVecSub(temp, fleet_camera_pos, moby + 0x10);
     vec_set_length_xy(temp, temp, 2.5f);
@@ -2858,6 +2860,7 @@ void build_magnet_elevator_camera_pose(char *moby, char *temp, char *state) {
 }
 extern char D_L17_001DA240[];
 
+/* While the hero rides this magnet elevator, rebuilds its 11-point path in world space. */
 void rebuild_magnet_elevator_world_path(char *moby) {
     char *state = *(char **)(moby + 0x78);
     if (g_hero.active && g_hero.current == moby) {

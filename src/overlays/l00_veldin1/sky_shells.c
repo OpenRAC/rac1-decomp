@@ -29,6 +29,7 @@ extern void func_L00_0028C358(void);
 extern void func_L00_0028C478(void);
 extern void b8f8_a(void) __asm__("func_L00_0028B8F8");
 extern void b8f8_b(void) __asm__("func_L00_0028B8F8");
+/* Draws the sky shells for the current level. */
 void draw_level_sky(void) {
     SetupSkyGifPaging();
     switch (D_0015EE84_m) {

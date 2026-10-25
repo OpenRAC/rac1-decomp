@@ -499,6 +499,7 @@ void DetachManipulator(void *arg0, void *arg1) {
 
 extern int D_001B2F40[];
 
+/* Returns the render slot holding moby v, or claims a free one; -1 if all 16 are taken. */
 int find_or_allocate_id_slot(int v) {
     int i = 0;
     int *p = moby_render_slots;
@@ -513,6 +514,7 @@ int find_or_allocate_id_slot(int v) {
     return -1;
 }
 
+/* Clears render slots whose moby is dead or no longer in its expected state. */
 void prune_moby_references(void) {
     int sentinel = 0xFF;
     char **p = (char **)moby_render_slots;
@@ -641,6 +643,7 @@ struct TexRemap {
     s16 hi;
 };
 
+/* Patches the texture addresses in the GIF packets of moby classes listed for remapping. */
 void PatchMobyGifs(void) {
     s32 *id;
     s32 *next;
@@ -683,6 +686,7 @@ extern float D_001CAE00[] NOT_SDA;
 extern float func_001F9F90(float);
 extern float func_001F9FA8(float);
 
+/* Sets the shadow light direction from the light direction at the hero. */
 void update_resident_packed_direction(void) {
     float buf[4];
     float a;

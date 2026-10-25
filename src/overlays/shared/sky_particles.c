@@ -597,6 +597,7 @@ extern void func_0022C9A8(int);
 extern void func_L00_0028A198(int, int);
 extern void func_L00_0028A3E0(void);
 extern void func_00234C98(int, long);
+/* Draws sky shells 0 and 1, updates and draws the sky particles, then draws shell 2. */
 void draw_three_sky_shells_with_particles(void) {
     set_identity_matrix(sky_shell_matrix);
     SkyDrawShell(0);

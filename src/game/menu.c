@@ -73,24 +73,28 @@ extern PadSlots D_001A01F0_slots __asm__("D_001A01F0");
 extern int D_001A01F0[];
 extern int *D_001602E0;
 
+/* Map hit test: point_is_clockwise of (x1, y1) against one fixed map edge. */
 int Menu_IsPointInFixedQuad(int x1, int y1) {
     return point_is_clockwise(x1, y1, 0xD3, 0xDB, 0x129, 0xF9);
 }
 
 extern unsigned char D_0013D49C NOT_SDA;
 
+/* Map filter: shown once menu item flag 0 is set. */
 int map_filter_l01_1(void) {
     return menu_item_enabled_0 != 0;
 }
 
 extern unsigned char D_0013D49D NOT_SDA;
 
+/* Map filter: shown once menu item flag 1 is set. */
 int map_filter_l01_2(void) {
     return g_menu_item_enabled_1 != 0;
 }
 
 extern unsigned char D_0013D4A5 NOT_SDA;
 
+/* Map filter: shown once menu item flag 9 is set. */
 int map_filter_l02_0(void) {
     return menu_item_enabled_9 != 0;
 }
@@ -151,36 +155,42 @@ int map_filter_l01_5(int reveal_test_selector, float unused1, float unused2, flo
 
 extern short D_0015FE24;   /* declared small so -G2 puts it in SDA */
 
+/* Map filter: shown while the menu selection count is zero. */
 int map_filter_l03_0(void) {
     return *(int *)&menu_selection_count == 0;
 }
 
 extern unsigned char D_0013D4AC NOT_SDA;
 
+/* Map filter: shown once menu item flag 16 is set. */
 int map_filter_l04_0(void) {
     return menu_item_enabled_16 != 0;
 }
 
 extern unsigned char D_0013D4AD NOT_SDA;
 
+/* Map filter: shown once menu item flag 17 is set. */
 int map_filter_l04_1(void) {
     return menu_item_enabled_17 != 0;
 }
 
 extern unsigned char D_0013D4AE NOT_SDA;
 
+/* Map filter: shown once menu item flag 18 is set. */
 int map_filter_l04_2(void) {
     return menu_item_enabled_18 != 0;
 }
 
 extern unsigned char D_0013D4AF NOT_SDA;
 
+/* Map filter: shown once menu item flag 19 is set. */
 int map_filter_l04_3(void) {
     return menu_item_enabled_19 != 0;
 }
 
 extern unsigned char D_0013D4B5 NOT_SDA;
 
+/* Map filter: shown once menu item flag 25 is set. */
 int map_filter_l06_0(void) {
     return menu_item_enabled_25 != 0;
 }
@@ -437,6 +447,7 @@ s32 map_filter_l07_7(s32 px, s32 py, f32 fparg0, f32 fparg1, f32 reveal_test_val
 extern unsigned char D_0013D4C5 NOT_SDA;
 extern int D_001414DC NOT_SDA;
 
+/* Map filter: above y 0x100 needs hero control mode 15, else menu item flag 41. */
 int map_filter_l08_0(int arg0, int arg1) {
     if (arg1 >= 0x101) {
         return hero_control_mode == 0xF;
@@ -488,26 +499,32 @@ extern unsigned char D_0013D4D3 NOT_SDA;
 extern unsigned char D_0013D4D4 NOT_SDA;
 extern unsigned char D_0013D4D5 NOT_SDA;
 
+/* Map filter: shown once menu item flag 36 is set. */
 int map_filter_l08_5(void) {
     return menu_item_enabled_36 != 0;
 }
 
+/* Map filter: shown once menu item flag 37 is set. */
 int map_filter_l08_6(void) {
     return menu_item_enabled_37 != 0;
 }
 
+/* Map filter: shown once menu item flag 38 is set. */
 int map_filter_l08_7(void) {
     return menu_item_enabled_38 != 0;
 }
 
+/* Map filter: shown once menu item flag 55 is set. */
 int map_filter_l09_0(void) {
     return menu_item_enabled_55 != 0;
 }
 
+/* Map filter: shown once menu item flag 56 is set. */
 int map_filter_l09_1(void) {
     return menu_item_enabled_56 != 0;
 }
 
+/* Map filter: shown once menu item flag 57 is set. */
 int map_filter_l09_2(void) {
     return menu_item_enabled_57 != 0;
 }
@@ -528,28 +545,34 @@ extern unsigned char D_0013D4DE NOT_SDA;
 extern unsigned char D_0013D4DF NOT_SDA;
 extern unsigned char D_0013D4E1 NOT_SDA;
 
+/* Map filter: shown once menu item flag 64 is set. */
 int map_filter_l10_1(void) {
     return menu_item_enabled_64 != 0;
 }
 
+/* Map filter: shown once menu item flag 65 is set. */
 int map_filter_l10_2(void) {
     return menu_item_enabled_65 != 0;
 }
 
+/* Map filter: shown once menu item flag 66 is set. */
 int map_filter_l10_3(void) {
     return menu_item_enabled_66 != 0;
 }
 
+/* Map filter: shown once menu item flag 67 is set. */
 int map_filter_l10_4(void) {
     return menu_item_enabled_67 != 0;
 }
 
+/* Map filter: shown once menu item flag 69 is set. */
 int map_filter_l10_5(void) {
     return menu_item_enabled_69 != 0;
 }
 
 extern unsigned char D_0013D4E6 NOT_SDA;
 
+/* Map filter: height band 232-235 plus flag 74 below 0xDD, else height at most 180. */
 int map_filter_l11_0(int arg0, float unused1, float unused2, float arg1) {
     if (arg0 < 0xDD) {
         return arg1 >= 232.0f && arg1 <= 235.0f && menu_item_enabled_74 != 0;
@@ -559,6 +582,7 @@ int map_filter_l11_0(int arg0, float unused1, float unused2, float arg1) {
 
 extern unsigned char D_0013D4E7 NOT_SDA;
 
+/* Map filter: height at least 242 below 0xDD, else height at most 180 plus flag 75. */
 int map_filter_l11_1(int arg0, float unused1, float unused2, float arg1) {
     if (arg0 < 0xDD) {
         return (arg1 >= 242.0f) ? 1 : 0;
@@ -568,6 +592,7 @@ int map_filter_l11_1(int arg0, float unused1, float unused2, float arg1) {
 
 extern unsigned char D_0013D4E8 NOT_SDA;
 
+/* Map filter: height band 238-241 below 0xDD, else height at most 180 plus flag 76. */
 int map_filter_l11_2(int arg0, float unused1, float unused2, float arg1) {
     if (arg0 < 0xDD) {
         return (arg1 >= 238.0f && arg1 <= 241.0f) ? 1 : 0;
@@ -592,6 +617,7 @@ int map_filter_l11_3(int reveal_test_selector, float unused1, float unused2, flo
 
 extern unsigned char D_0013D4EB NOT_SDA;
 
+/* Map filter: height band 228-230 below 0x15F, else band 233-235 plus flag 79. */
 int map_filter_l11_4(int arg0, float unused1, float unused2, float arg1) {
     if (arg0 < 0x15F) {
         return (arg1 >= 228.0f && arg1 <= 230.0f) ? 1 : 0;
@@ -601,6 +627,7 @@ int map_filter_l11_4(int arg0, float unused1, float unused2, float arg1) {
 
 extern unsigned char D_0013D4E9 NOT_SDA;
 
+/* Map filter: shown once menu item flag 77 is set. */
 int map_filter_l11_5(void) {
     return menu_item_enabled_77 != 0;
 }
@@ -619,10 +646,12 @@ int map_filter_l12_0(void *arg0, int arg1, float unused1, float unused2, float a
     return r;
 }
 
+/* Map filter that always returns 1. */
 int MenuL12_IsAlwaysActive1(void) {
     return 1;
 }
 
+/* Map filter that always returns 1. */
 int map_filter_l12_2(void) {
     return 1;
 }
@@ -648,12 +677,14 @@ int map_filter_l15_0(int x, int y) {
 
 extern unsigned char D_0013D502 NOT_SDA;
 
+/* Map filter: shown once menu item flag 102 is set. */
 int map_filter_l16_0(void) {
     return menu_item_enabled_102 != 0;
 }
 
 extern unsigned char D_0013D503 NOT_SDA;
 
+/* Map filter: shown once menu item flag 103 is set. */
 int map_filter_l16_1(void) {
     return menu_item_enabled_103 != 0;
 }
@@ -662,14 +693,17 @@ extern unsigned char D_0013D504 NOT_SDA;
 extern unsigned char D_0013D505 NOT_SDA;
 extern unsigned char D_0013D50F NOT_SDA;
 
+/* Map filter: shown once menu item flag 104 is set. */
 int map_filter_l16_2(void) {
     return menu_item_enabled_104 != 0;
 }
 
+/* Map filter: shown once menu item flag 105 is set. */
 int map_filter_l16_3(void) {
     return menu_item_enabled_105 != 0;
 }
 
+/* Map filter: shown once menu item flag 115 is set. */
 int map_filter_l18_0(void) {
     return menu_item_enabled_115 != 0;
 }
@@ -711,6 +745,7 @@ extern int D_001A0218[] NOT_SDA;
 extern void func_00208458(void *, unsigned char *, int);
 extern void func_00208688(void *, unsigned char *);
 
+/* Load a saved map coverage chunk, decoding it as compressed or plain by its first bit. */
 void load_map_chunk(void *arg0, unsigned char *arg1, int arg2) {
     /* func_00209040 is empty in retail and takes no arguments; $4/$5/$6
        still hold our own incoming arguments across it, which is why retail
@@ -1024,6 +1059,7 @@ extern void func_00201640(int, int, int, int, long, int);
 extern int func_00200198(int, int);
 extern void func_002008B8(int, int, int, int, int, int);
 
+/* Draw the level's map markers inside the given screen rectangle, scaled by map zoom. */
 void draw_map_markers(int left, int top, int right, int bottom) {
     float nx;
     float ny;
@@ -1096,6 +1132,7 @@ void copy_level_object_positions(void) {
     }
 }
 
+/* Empty debug hook; retail calls it but it does nothing. */
 void DebugEnter_Nop(void) {
 }
 
@@ -1238,6 +1275,7 @@ void save_card_state_good_save(void) {
     }
 }
 
+/* Card menu warning state: clear a busy slot, then go to state 3 when flag 1 clears. */
 void save_card_state_warning(void) {
     char *b = memory_card_state;
     char *base = b + 0xB0;
@@ -1251,6 +1289,7 @@ void save_card_state_warning(void) {
     }
 }
 
+/* Card menu state 3: reset the pending card requests and the busy slot, then go to state 4. */
 void CardMenu_State03ClearSlots(void) {
     char *b = memory_card_state;
     char *base = b + 0xB0;
@@ -1270,6 +1309,7 @@ void CardMenu_State03ClearSlots(void) {
     mode_freeze_state = 4;
 }
 
+/* Card menu state 4: once the card is checked, pick state 9 or 5 (unformatted) from its result. */
 void CardMenu_State04AdvanceOnStatus(void) {
     char *b = memory_card_state;
     int v;
@@ -1288,6 +1328,7 @@ void CardMenu_State04AdvanceOnStatus(void) {
     }
 }
 
+/* Card unformatted state: back to state 3 if the card changed, to state 6 on confirm. */
 void save_card_state_unformatted(void) {
     if (D_0013D3AC != -2) {
         mode_freeze_state = 3;
@@ -1300,6 +1341,7 @@ void save_card_state_unformatted(void) {
 
 extern int D_0015F6C8 MACRO_ADDR;
 
+/* Card format prompt: flag 0x20 returns to state 5 (0x17 at boot), flag 8 goes to state 7. */
 void save_card_state_prompt_format(void) {
     int flags;
     if (D_0013D3AC != -2) {
@@ -1322,6 +1364,7 @@ void save_card_state_prompt_format(void) {
     }
 }
 
+/* Card format request: queue the format command if idle, then go to state 8. */
 void save_card_state_format_pending(void) {
     char *s = memory_card_state;
     *(int *)(s + 0x1C) = 0;
@@ -1332,6 +1375,7 @@ void save_card_state_format_pending(void) {
     mode_freeze_state = 8;
 }
 
+/* Card formatting state: when the format ends, go to state 0xE or to failure state 0x11. */
 void save_card_state_formatting(void) {
     char *s = memory_card_state;
     if (*(int *)(s + 0xDC) == 2 && *(int *)(s + 0xE4) < 0) {
@@ -1344,6 +1388,7 @@ void save_card_state_formatting(void) {
     }
 }
 
+/* Card formatted state: back to state 3 if the card changed, to state 0xA on confirm. */
 void save_card_state_formatted(void) {
     if (D_0013D3AC != 0) {
         mode_freeze_state = 3;
@@ -1354,6 +1399,7 @@ void save_card_state_formatted(void) {
     }
 }
 
+/* Card save check: when idle, queue the save-file scan and go to state 0xB. */
 void save_card_state_check_save(void) {
     char *s = memory_card_state;
     if (*(int *)(s + 0xDC) == 2 && *(int *)(s + 0xE4) < 0) {
@@ -1404,6 +1450,7 @@ void CardMenu_State11MarkSlotChoose(void) {
     }
 }
 
+/* Card no-save state: back to state 3 if the card changed, to state 0xD on confirm. */
 void save_card_state_no_save(void) {
     if (D_0013D3AC != 0) {
         mode_freeze_state = 3;
@@ -1414,6 +1461,7 @@ void save_card_state_no_save(void) {
     }
 }
 
+/* Create-save prompt: flag 0x20 returns to state 0xC (0x18 at boot), flag 0x10 goes to 0xE. */
 void save_card_state_prompt_create_save(void) {
     int flags;
     if (D_0013D3AC != 0) {
@@ -1436,6 +1484,7 @@ void save_card_state_prompt_create_save(void) {
     }
 }
 
+/* Create-save request: when idle, queue the create command and go to state 0xF. */
 void save_card_state_create_save_pending(void) {
     char *s = memory_card_state;
     if (*(int *)(s + 0xDC) == 2 && *(int *)(s + 0xE4) < 0) {
@@ -1445,6 +1494,7 @@ void save_card_state_create_save_pending(void) {
     }
 }
 
+/* Creating-save state: when done, rescan and go to state 0x10, or fail to state 0x12. */
 void save_card_state_creating_save(void) {
     char *s = memory_card_state;
     if (*(int *)(s + 0xDC) == 2 && *(int *)(s + 0xE4) < 0) {
@@ -1495,6 +1545,7 @@ void CardMenu_State16NextState(void) {
 }
 
 
+/* Format failed state: free the busy slot and go to state 3 once the message closes. */
 void save_card_state_format_failed(void) {
     char *b = memory_card_state;
     char *base = b + 0xB0;
@@ -1508,6 +1559,7 @@ void save_card_state_format_failed(void) {
     }
 }
 
+/* Create failed state: free the busy slot and go to state 3 once the message closes. */
 void save_card_state_create_failed(void) {
     char *b = memory_card_state;
     char *base = b + 0xB0;
@@ -1521,12 +1573,14 @@ void save_card_state_create_failed(void) {
     }
 }
 
+/* Card no-room state: go back to state 3 when the card status changes. */
 void save_card_state_no_room(void) {
     if (D_0013D3AC != 0) {
         mode_freeze_state = 3;
     }
 }
 
+/* Load failed state: free the busy slot and go to state 3 once the message closes. */
 void save_card_state_load_failed(void) {
     char *b = memory_card_state;
     char *base = b + 0xB0;
@@ -1540,6 +1594,7 @@ void save_card_state_load_failed(void) {
     }
 }
 
+/* Save failed state: free the busy slot and go to state 3 once the message closes. */
 void save_card_state_save_failed(void) {
     char *b = memory_card_state;
     char *base = b + 0xB0;
@@ -1553,6 +1608,7 @@ void save_card_state_save_failed(void) {
     }
 }
 
+/* Card state 22: when idle, finish to state 1 or show the error state 0x15. */
 void CardMenu_State22StartOrFinish(void) {
     char *b = memory_card_state;
     if (*(int *)(b + 0xDC) < 3 && *(int *)(b + 0xE4) < 0) {
@@ -1566,6 +1622,7 @@ void CardMenu_State22StartOrFinish(void) {
     }
 }
 
+/* Begin prompt on an unformatted card: state 3 if the card changed, state 5 on flag 0x20. */
 void save_card_state_prompt_begin_unformatted(void) {
     int flags;
     if (D_0013D3AC != -2) {
@@ -1579,6 +1636,7 @@ void save_card_state_prompt_begin_unformatted(void) {
     }
 }
 
+/* Begin prompt on a card with no save: state 3 if the card changed, state 0xC on flag 0x20. */
 void save_card_state_prompt_begin_no_save(void) {
     int flags;
     if (D_0013D3AC != 0) {

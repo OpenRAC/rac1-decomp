@@ -486,6 +486,7 @@ typedef struct McmarxRelocVars {
     s32 state;                 /* 0x180 0 idle, 1 running, 2 done */
 } McmarxRelocVars;
 
+/* Skid McMarx relocation: after a timer, fades out and moves Skid and the hero to the next spot. */
 void update_skid_mcmarx_relocation_sequence(char *moby) {
     struct Moby *m = (struct Moby *)moby;
     struct McmarxRelocVars *data = (struct McmarxRelocVars *)m->pvars;
@@ -709,6 +710,7 @@ extern void func_L02_002A59D8(float);
 extern void func_L02_002EB480(void);
 extern void func_001F49B0(void (*)(void), void *);
 
+/* Aridia ocean update: sets the ocean speed once, then queues its draw callback each frame. */
 void ocean_aridia_update(unsigned char *moby) {
     switch (moby[0x20]) {
     case 0:

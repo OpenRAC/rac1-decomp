@@ -37,6 +37,7 @@ typedef struct {
     int i60;
 } E;
 
+/* Clank cutscene trigger: hide during cinematics and start the dialog when the hero is near. */
 void clank_cutscene_trigger_update(M *m) {
     unsigned char *g, *h;
     E *e = (E *)m->ext;
@@ -801,6 +802,7 @@ extern G D_L00_0016C960;
 
 typedef struct { char pad[0x20]; unsigned char state; char pad2[0xF]; unsigned char v; } M2;
 
+/* Cutscene effect controller: switch camera targets and spawn a smoke trail at a joint. */
 void update_phase_effect_controller(M2 *m) {
     char buf[16];
     int idx;

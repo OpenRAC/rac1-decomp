@@ -1489,6 +1489,7 @@ char *spawn_spawner_egg(int owner, void *pos, void *rot, unsigned char a, unsign
 }
 extern void func_0020D678(void *);
 
+/* Clear the egg's slot in its live spawner (class 0x75D), then delete the egg moby. */
 void remove_spawner_egg(void *moby, char *data)
 {
     char *other = *(char **)(data + 0x10);
@@ -1552,6 +1553,7 @@ extern void func_L00_001FF610(void *, void *, void *);
 extern void func_L00_0025B040(struct Moby *, f32);
 extern f32 func_L00_0025F368(f32);
 extern struct Moby *func_L09_0030BB28(struct Moby *, Vec4 *);
+/* Bounce a bubble off what it hit: slow on floors until it stops, play its bounce sound. */
 static inline void bubble_bounce(struct Moby *moby, BubbleVars *vars) {
     CollisionHit *hit = &gaspar_coll_hit;
 

@@ -297,6 +297,7 @@ void SetupFS_AA_buffer(int display_width, int display_height, int storage_width,
 
 extern long D_00152178 NOT_SDA;
 
+/* Set the background clear colour from 8-bit red, green and blue. */
 void SetBackgroundColor(int arg0, int arg1, int arg2) {
     background_rgbaq = (long)arg0 | ((long)arg1 << 8) | ((long)arg2 << 16) | 0x80000000L;
 }
@@ -443,6 +444,7 @@ void AA_BlurPass(void) {
 
 extern char D_00151C60[];
 
+/* Append a DMA tag that calls the frame AA transfer packet to the render packet. */
 void append_palette_transfer_packet(void) {
     g_render_packet_cursor[0] = 0x30000029;
     g_render_packet_cursor[1] = (int)fs_aa_transfer_packet;

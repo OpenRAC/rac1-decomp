@@ -50,6 +50,7 @@ ASM_FUNC("asm/handwritten/text", func_001F7C60);
 
 ASM_FUNC("asm/handwritten/text", func_001F7DD8);
 
+/* Store in dst the point on segment a-b closest to c (VU0); return its clamped 0..1 position t. */
 float closest_point_on_segment(float *dst, float *a, float *b, float *c) {
     float t;
     __asm__ __volatile__(

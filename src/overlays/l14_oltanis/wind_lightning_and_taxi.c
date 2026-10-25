@@ -2343,6 +2343,7 @@ enum {
     TAXI_STOP_RETURN_FEEDER_DESTINATION = 3
 };
 
+/* Pick the taxi's path and direction from its stop kind, then set its travel speed limits. */
 void prepare_taxi_route(char *moby)
 {
     char *taxi_vars = (char *)((struct Moby *)moby)->pvars;

@@ -1146,6 +1146,7 @@ typedef struct BombHero {
     BombHeroState state;        /* 0x2084 */
 } BombHero;
 
+/* Launch a bomb with the given velocity, adding the hero's or target's motion, and aim it. */
 void launch_bomb(float *pos, unsigned char *moby, float *velocity) {
     BombMoby *m = (BombMoby *)moby;
     BombVars *vars = m->pvars;
@@ -1258,6 +1259,7 @@ extern unsigned char D_0013E15A[];
 extern void func_L00_002ADE90(char *moby);
 
 #define v ((Land_AE6B0 *)vp)
+/* Simulate a throw's arc from the hero or holder to find where it lands; 0 when blocked. */
 int predict_throw_landing(void *vp, void *m, int mode) {
     V_AE6B0 position, velocity, previous, hero_position, offset, start;
     int timer, found = 0, object_hit = 0, i;
@@ -2052,6 +2054,7 @@ typedef struct DebrisData2B0D30 {
     short bounces; short timer;
     float velocity[4]; float spin[3];
 } DebrisData2B0D30;
+/* Nanotech crate fragment: fall and spin, bounce off collision a few times, then go away. */
 void nanotech_crate_fragment_update(char *moby) {
     Moby *mob = (Moby *)moby;
     float old[4];
@@ -2375,6 +2378,7 @@ extern void transform1688(void *,void *,void *) __asm__("func_001F9EE8");
 extern void rings1688(void *,void *,int,int,float,int,int,int,int,float) __asm__("func_L00_0026B890");
 extern void debris1688(void *,void *,int,int,float,int) __asm__("func_L00_0026B368");
 
+/* Gold Devastator missile update: steer toward its target, trail smoke and explode on hit. */
 void gold_devastator_missile_update(M910 *m) {
     B910 effect=devastator_blast_fx;
     B910 gold_effect=devastator_gold_blast_fx;

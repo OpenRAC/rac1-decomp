@@ -65,6 +65,7 @@ extern float func_001F9FA8(float);
 extern void func_001F9BD8(void *, void *, void *);
 extern void func_L01_002F9908(void *, void *, unsigned int, int, float, float, float, float, int);
 
+/* Moves a linked group of class 0x630 mobys together, then makes it fall once the hero leaves it. */
 void update_linked_moby_group_transform_and_fall(unsigned char *moby) {
     VData *d = ((VData *)((Moby *)moby)->pvars);
     if (d) {
@@ -186,6 +187,7 @@ void update_linked_moby_group_transform_and_fall(unsigned char *moby) {
 extern void func_L18_002F3108(int, int);
 extern void func_L18_002FBCE8(int, int);
 
+/* Activates a class 0x565 moby in state 1: marks block entries in its bounds and wakes its group. */
 void activate_drek_boss_class_0565_moby(unsigned char *moby) {
     Moby *m = (Moby *)moby;
     char *state = (char *)m->pvars;
@@ -267,6 +269,7 @@ typedef struct VoiceSlot {
     void *owner;                /* 0x88 moby the sound plays on */
 } VoiceSlot;
 
+/* Glow moby update: queues its quad draw, loops its sound, fades out once its linked moby opens. */
 void update_glow_moby_state_and_voice(unsigned char *m)
 {
     enum {
@@ -345,6 +348,7 @@ extern int func_001F4868(int);
 extern int func_001FA8A8(int, int, float);
 extern void func_L00_001FD1D8(void *, void *, int);
 
+/* Draws the glow moby's scrolling layered quads, faded by distance from the camera. */
 void draw_glow_moby_layered_quads(struct Moby *moby) {
     struct GeometryQuad_33D8 quads[4];
     float matrix[4][4] __attribute__((aligned(16)));
@@ -416,6 +420,7 @@ extern void func_L18_002F3DD0(char *);
 
 typedef struct { float f0; float f4; int w8; int wc; int w10; int w14; float f18; } VD;
 
+/* Lift update: registers the lift, then moves it between its low and high heights on command. */
 void update_lift_state_and_queue_draw(unsigned char *m)
 {
     VD *d = ((VD *)((Moby *)m)->pvars);
@@ -508,6 +513,7 @@ typedef struct { int pad[2]; float f; char pad2[0x1190 - 12]; } E;
 extern E D_L18_001DB7C0[];
 typedef struct { char pad[0x18]; float f; char pad2[0x5]; unsigned char idx; } S;
 
+/* Copies the lift's height to every moby in its group and to their linked table entries. */
 void synchronize_lift_group_height(void *a)
 {
     unsigned char *s = a;
@@ -2385,6 +2391,7 @@ extern float func_001F9C78(void *, void *);
 extern short D_L18_001623C8;
 extern short D_L18_001623CC;
 
+/* Returns the nearest sinkable platform (class 0x24B) in range for the Drek boss to fire at. */
 unsigned char *select_drek_boss_platform_firing_target(char *self) {
     char *data = ((char *)((Moby *)self)->pvars);
     short *p = veldin2_moby_groups[*(int *)(data + 0x398)];
@@ -2433,6 +2440,7 @@ start:
     return best;
 }
 
+/* Hides every live moby in the given group and turns off its collision. */
 void hide_drek_boss_moby_group(int unused, int idx)
 {
     short *p = veldin2_moby_groups[idx];
@@ -2505,6 +2513,7 @@ typedef union { long long quad; float f[4]; } L18Vector;
 extern float func_L00_001FF860(float, float);
 extern float func_001FA790(float, float);
 
+/* Stores in dest the yaw from one point to another, relative to the source moby's yaw. */
 void set_drek_boss_relative_aim_yaw(char *source, char *dest, L18Vector *from, L18Vector *to) {
     L18Vector from_position, to_position;
     from_position.quad = from->quad;
@@ -2670,6 +2679,7 @@ extern short D_L18_001624D4;
 extern short D_L18_001624D8;
 extern short D_L18_001624DC;
 
+/* Spawns the spark and smoke particles of a Drek boss shot at the muzzle point. */
 void spawn_drek_boss_firing_effects(char *moby, void *p) {
     QVec a = {{0.0f, 0.0f, 0.0f, 0.0f}};
     QVec b = {{0.0f, 0.0f, 0.0f, 0.0f}};
@@ -2722,6 +2732,7 @@ typedef struct {
     int p3B8;
 } L18Q;
 
+/* Draws pulsing glows on the Drek boss rider's joints, plus charge glows during attack anims. */
 void render_drek_boss_joint_glows(char *moby) {
     char a[16];
     char b[16];

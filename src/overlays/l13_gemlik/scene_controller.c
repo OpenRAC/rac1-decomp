@@ -346,6 +346,7 @@ void remove_moby_when_tracked_count_below_threshold(struct Moby *m) {
 extern char *func_0020D348(int);
 extern void func_L00_00251E30(void *);
 
+/* Spawns a class 0x660 moby at position, scaled and owned by owner. */
 char *spawn_scaled_owned_moby(char *owner, void *position, float scale) {
     char *moby = CreateMoby(0x660);
     if (moby != 0) {

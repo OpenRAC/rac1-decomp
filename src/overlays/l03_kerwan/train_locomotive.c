@@ -1393,6 +1393,7 @@ char *func_L03_002BC038_r(Moby *parent, int unused, int color, int a3, int a4, f
     }
     return m;
 }
+/* Return 1 when moby is a live class 0x23D moby in state 5. */
 int is_moby_class_23d_in_state_5(unsigned char *moby) {
     if (moby && moby[0x20] != 0xFE && moby[0x20] != 0xFD && *(short *)(moby + 0xA6) == 0x23D && moby[0x20] == 5) {
         return 1;
@@ -1817,6 +1818,7 @@ void update_robot_dog_hit_reaction(unsigned char *moby) {
 }
 LINKER_REMNANT("asm/overlays", func_L03_002C8000);
 
+/* Return 1 when the robot dog (class 0x23E) may be released from the train. */
 int can_release_linked_robot_dog(unsigned char *moby) {
     unsigned char state;
     char *data;
@@ -1830,6 +1832,7 @@ int can_release_linked_robot_dog(unsigned char *moby) {
     if (((Moby *)moby)->state == 10 || ((Moby *)moby)->state == 13 || *(int *)(data + 0x284) == -1) return 1;
     return 0;
 }
+/* Return 1 when moby is a live class 0x23E moby in state 9. */
 int is_moby_class_23e_in_state_9(unsigned char *moby) {
     if (moby && moby[0x20] != 0xFE && moby[0x20] != 0xFD && *(short *)(moby + 0xA6) == 0x23E && moby[0x20] == 9) {
         return 1;

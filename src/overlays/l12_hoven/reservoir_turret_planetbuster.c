@@ -2463,11 +2463,13 @@ typedef struct {
 extern Level12MobyList D_L12_0016CD60;
 extern void func_L00_00264870(int);
 
+/* Picks cutscene moby slot 2 for step 1, else slot 0. */
 static inline unsigned char func_L12_pick(int cur) {
     if (cur == 1) return 2;
     return 0;
 }
 
+/* Cutscene moby: on cinematic steps 1 and 7 aims the camera at a picked moby. */
 void emit_phase_selected_moby_effects(unsigned char *moby) {
     Level12MobyList *list;
     Level12MobyList *l2;

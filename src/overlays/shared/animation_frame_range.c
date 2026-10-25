@@ -5,6 +5,7 @@
 extern char *D_L04_00197780[];
 extern float func_001FA888(int);
 
+/* Return the first frame of animation b of moby class a (0 when b is none). */
 float animation_start(int a, unsigned int b)
 {
     char *entry;
@@ -14,6 +15,7 @@ float animation_start(int a, unsigned int b)
     nested = *(char **)(entry + 0x48);
     return IntToFloat(*(short *)(*(char **)(nested + 0x1C) + 4)) * 0.0625f;
 }
+/* Return the last frame of animation b of moby class a (0 when b is none). */
 float animation_end(int a, unsigned int b)
 {
     char *entry;

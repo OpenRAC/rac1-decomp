@@ -15,6 +15,7 @@ extern int D_0015EF84 MACRO_ADDR;
 extern char *D_0015EFB8 MACRO_ADDR;
 extern char D_00151EF0[];
 
+/* Builds the DMA packet that uploads a w x h movie image to the frame buffer in 16x16 blocks. */
 void setImageTag(unsigned long *p, unsigned int image, int w, int h) {
     int mbx, mby;
     int i, j;

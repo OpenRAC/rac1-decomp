@@ -5,6 +5,7 @@
 
 extern int D_001414DC;
 extern unsigned char D_0013D49E[];
+/* Returns 1 when v is nonzero. */
 static inline unsigned char is_set_249720(unsigned char v) {
     if (v != 0) return 1;
     return 0;
@@ -54,6 +55,7 @@ int ovl_map_filter_l01_5_tail(float a, float b, float x) { return x >= 95.0f; }
 extern int D_L00_001845C0;
 extern int D_L00_001845B8;
 
+/* Level 7 map filter: true when x is in the range for b's side and that side's flag is set. */
 int ovl_map_filter_l07_5(float c, float d, float x, int a, int b) {
     if (b < 0x9D) {
         if (x < 73.5f || 80.0f < x || D_L00_001845C0 == 0) return 0;
@@ -165,6 +167,7 @@ typedef struct {
 extern void func_00207090(unsigned char *dst, int row, unsigned char *src, short *offs);
 extern Cache D_L00_001842F0;
 extern int D_L00_0015F4F8 MACRO_ADDR;
+/* Finds or loads the map menu cache entry for key, evicting the oldest on a miss. */
 int ensure_menu_cache_entry(int key) {
     int i;
     int victim;
@@ -229,6 +232,7 @@ typedef struct {
 } MapScale_182B70;
 extern MapScale_182B70 D_L00_00182B70[];
 
+/* Converts world X/Y to map texture UVs for planet k. */
 void map_world_to_uv(float *p1, float *p2, int k, float t, float u) {
     int seven = 0;
 
@@ -302,6 +306,7 @@ void CardMenu_AdvanceOnCardStatus(void) {
 }
 INCLUDE_ASM("asm/overlays", func_L00_0024B940);
 extern int D_L00_0015F688 MACRO_ADDR;
+/* Advances the card menu state from its ready flags. */
 void card_menu_advance_on_ready_flags(void) {
     int flags;
     if (*(int *)(D_0013D355 + 0x57) != -2) {

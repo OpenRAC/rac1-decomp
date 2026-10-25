@@ -53,6 +53,7 @@ void set_moby_local_table_entry(char *a, int idx, void *pos, float x, float y) {
     *(float *)(e + 4) = y * s;
     *(float *)(e + 0x1C) = x * s;
 }
+/* Shifts every point pair in the class's point lists by dx, dy. */
 void offset_moby_class_point_pairs(unsigned char *a, int dx, int dy) {
     int i;
     int n = a[4] + a[5];
@@ -77,6 +78,7 @@ typedef struct Slot {
 extern Slot D_L00_0018EEC0[];
 extern char D_L00_001870C0[];
 
+/* Takes the first free of six animation slots for animation id and links it to the moby. */
 Slot *allocate_moby_animation_slot(char *o, int id) {
     int i = 0;
     Slot *s;
@@ -232,6 +234,7 @@ extern void FUN_00118a80_50478p(int) __asm__("func_00118D80");
 /* Defined under a local name: this unit already declares FUN_L00_0024f440
  * with a generic prototype for its callers. */
 void func_L00_00250478_r(Object_50478p *obj, int i, int j, Packet_50478p *out) __asm__("func_L00_00250478");
+/* Copies the data of frame j of sequence i of the object's model into packet out. */
 void func_L00_00250478_r(Object_50478p *obj, int i, int j, Packet_50478p *out) {
     Model_50478p *t = obj->second;
     Model_50478p *u = obj->first;
@@ -304,6 +307,7 @@ INCLUDE_ASM("asm/overlays", func_L00_00250700);
 extern void func_001F9EC0(void *, void *, void *);
 extern void func_001F9BD8(void *, void *, void *);
 
+/* Writes the world position of joint arg1 of moby arg0 to arg2. */
 void Moby_GetJointWorldPos(char *arg0, int arg1, void *arg2) {
     char buf[0x40];
     int n;
@@ -393,6 +397,7 @@ void apply_nearest_environment_sample(char *o) {
 }
 extern int D_0015EE84 MACRO_ADDR;
 extern unsigned char D_0014C150[];
+/* Clears saved mission state entry idx of the current level, unless idx is 0xFF. */
 void jet_clear_persistent(int idx) {
     if (idx != 0xFF) {
         saved_mission_state[idx + g_current_level_index * 16] = 0xFF;

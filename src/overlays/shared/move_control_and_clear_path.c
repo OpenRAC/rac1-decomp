@@ -27,6 +27,7 @@ typedef struct {
     char pad21[0xDF];
 } O_26e008;
 
+/* Count the live members of moby group i that are not in state st (st -1: count all). */
 int count_active_moby_group_members(int i, int st) {
     unsigned short *p;
     int n = 0;
@@ -79,6 +80,7 @@ void set_moby_list_state(int list, int state)
 extern void func_001F9C48(void *, void *, float);
 extern int func_L00_00200290(char *, float);
 
+/* Run a bounding-sphere check of radius scale at vec scaled down by 1/1024. */
 void check_scaled_vector_bsphere(char *vec, float scale)
 {
     char scratch[16];
@@ -240,6 +242,7 @@ s32 follow_path(s32 *ids, s32 n, s32 path_index, f32 radius,
     return 1;
 }
 extern char D_0013E633[];
+/* Return 1 when the hero is standing on or riding moby m. */
 int is_hero_on_moby(char *m) {
     char *h = D_0013E633 + 0xE1D;
 

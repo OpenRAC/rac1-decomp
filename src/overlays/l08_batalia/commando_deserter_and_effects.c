@@ -1071,6 +1071,7 @@ typedef struct DeserterData_2EAF48 {
     s32 target_timer;         /* 0x198 */
 } DeserterData_2EAF48;
 
+/* Batalia deserter: run his dialog when the hero comes close, then play his scene animation. */
 void batalia_deserter_update(char *m) {
     struct Moby *moby = (struct Moby *)m;
     DeserterData_2EAF48 *deserter_data = (DeserterData_2EAF48 *)moby->pvars;
@@ -1275,6 +1276,7 @@ typedef struct {
     f32 aim[4];                /* 0xD0 */
 } BataliaHeroView;
 
+/* The Plumber on Batalia: dialog, then the cannon scene, movie or hero kill by dialog result. */
 void the_plumber_batalia_update(char *m) {
     BataliaPlumberData *d = (BataliaPlumberData *)((struct Moby *)m)->pvars;
     attach_batalia_plumber_class_manipulator(m);

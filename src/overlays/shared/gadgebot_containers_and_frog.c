@@ -180,6 +180,7 @@ extern void func_001F9C30(void *, void *, float);
 extern long func_001F4868(int);
 extern void func_L00_001FD1D8(void *, int, int);
 
+/* Transform src by matrix m into dst. */
 static inline void TransformPoint(float *dst, float *src, float (*m)[4]) {
     transform_vector(dst, src, m);
 }

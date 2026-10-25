@@ -203,6 +203,7 @@ void reset_music(void) {
 extern void func_0012F068(void *);
 extern void func_002177F0(int);
 
+/* Register the CD read callback used by the music stream. */
 void register_audio_stream_callback(void) {
     func_0012F068(finish_audio_stream_read);
 }
@@ -269,6 +270,7 @@ typedef struct {
     SndSecondaryChannel secondary;  /* 0x50: the secondary record in D_001517D0 */
 } SndStreamBlock;
 
+/* Start music track 60000+ on the secondary stream channel if that channel is free. */
 void music_start_track_60000(int arg0, int arg1, int arg2) {
     SndToc *toc = (SndToc *)disc_table;
     int i = arg0 - 60000;
@@ -305,6 +307,7 @@ typedef struct {
     s32 music_50000[40][6];     /* 0xF00: tracks 50000.., one handle per language */
 } TrackDiscTable;
 
+/* Start music track 50000+ (per-language) on the secondary stream channel if it is free. */
 void music_start_track_50000(int track, int flags, int volume) {
     TrackDiscTable *track_disc_table = (TrackDiscTable *)disc_table;
     int i = track - 50000;
@@ -337,6 +340,7 @@ typedef struct {
     struct MusicStreamChannel secondary;
 } MusicStreamTail;
 
+/* Start music track 40000+ on the secondary stream channel if that channel is free. */
 void music_start_track_40000(int track, int track_flags, int volume) {
     SndToc *toc = (SndToc *)disc_table;
     int i = track - 40000;
@@ -412,6 +416,7 @@ typedef struct {
     MusicTrackChannel secondary; /* 0x50 */
 } MusicStreamLayout;
 
+/* Start music track 20000+ on the secondary stream channel if that channel is free. */
 void music_start_track_20000(int track, int track_flags, int volume) {
     SndToc *toc = (SndToc *)disc_table;
     int index = track - 20000;
@@ -459,6 +464,7 @@ typedef struct {
     PalStreamChannel secondary; /* 0x50 */
 } PalStreamState;
 
+/* Start music track 10000+ on the secondary stream channel if that channel is free. */
 void music_start_track_10000(int track, int flags, int volume) {
     SndToc *toc = (SndToc *)disc_table;
     int i = track - 10000;
@@ -497,6 +503,7 @@ typedef struct {
     struct MusicStreamChannel secondary;
 } MusicStateSecondaryView;
 
+/* Start a track on the secondary channel, picking the table by id range (else a scene sound). */
 void music_start_track_by_id(int track, int track_flags, int volume) {
     MusicStateSecondaryView *s;
     int handle;
@@ -548,6 +555,7 @@ void music_start_track_by_id(int track, int track_flags, int volume) {
 extern short D_001517D0[];
 extern void func_0012EDE0(void *);
 
+/* Resume the secondary stream once its channel is ready; return 1 if it was resumed. */
 int Music_ContinueStreamIfReady(void) {
     char *d = (char *)cd_read_state;
     void *p = *(void **)(d + 0x50);
@@ -583,6 +591,7 @@ typedef struct {
     PreseekChannel primary; /* 0x34 */
 } PreseekStreamState;
 
+/* Preseek a music track on the primary stream channel if that channel is free. */
 void music_PreseekTrack(int arg0, int arg1, int arg2) {
     PreseekStreamState *music_stream_state = (PreseekStreamState *)cd_read_state;
     u8 *disc_table_base;
@@ -628,6 +637,7 @@ typedef struct {
     s32 remaining_time;        /* 0x4C */
 } MusicPrimaryStream;
 
+/* Start a music track on the primary stream channel if that channel is free. */
 void music_StartTrack(int arg0, int arg1, int arg2) {
     MusicPrimaryStream *s = (MusicPrimaryStream *)cd_read_state;
     char *base;
@@ -734,6 +744,7 @@ typedef struct {
     MusicTransitionSlot transition;    /* 0x6C */
 } MusicTransitionBlock;
 
+/* Start a crossfade transition track on its channel; return 1 if it was started. */
 int music_Transition(int arg0, int arg1, int arg2, int arg3) {
     MusicTransitionBlock *s = (MusicTransitionBlock *)cd_read_state;
     MusicTrackTable *base;
@@ -812,6 +823,7 @@ typedef struct {
     struct MusicStreamChannel transition; /* 0x6C */
 } MusicStreamBlock;
 
+/* Wait for pending stream opens, stop all music streams and reset the channel state. */
 void music_Stop(void) {
     {
         MusicStreamBlock *d;

@@ -95,6 +95,7 @@ void update_pokitaru_paired_rotation(char *moby) {
 }
 extern struct { unsigned char value; char pad[3]; } D_0013D4EA;
 
+/* Moves a class 0x41 moby from state 1 to 2 and sets its paired child moby to state 2. */
 void trigger_pokitaru_paired_rotation(char *moby) {
     struct Moby *m = (struct Moby *)moby;
     char *state = (char *)m->pvars;
@@ -265,6 +266,7 @@ extern void func_L11_002D2500(void *);
 extern void func_L11_002D2670(void *);
 extern void func_L11_002D3970(void *);
 
+/* Per-frame resort owner update: ground band when near the camera, then actions, motion, looks. */
 void resort_owner_update(unsigned char *moby) {
     attach_big_head_cheat_manipulator_to_matching_moby(moby);
     if (moby[0x31] && FastVecDist(moby + 0x10, camera_pos_b358) < 38.0f) {
@@ -1335,6 +1337,7 @@ void Moby318Update(struct Moby *moby) {
 }
 extern void func_00215F80(int, int);
 
+/* Shows the teleporter help message that matches the moby's current mode. */
 void request_teleporter_help_message(char *moby) {
     char *data = ((char *)((Moby *)moby)->pvars);
     switch (*(int *)(data + 0x10)) {
@@ -1427,6 +1430,7 @@ void draw_teleporter_ring(char *moby) {
         draw_world_quad(&q, m, 0);
     }
 }
+/* Makes the teleporter and its three children visible and restores their class collision. */
 void restore_teleporter_visibility_and_collision(char *moby) {
     char *data = ((char *)((Moby *)moby)->pvars);
     char **child = (char **)(data + 0x14);
@@ -1462,6 +1466,7 @@ typedef struct {
 } Globals;
 extern Globals D_0013F450;
 
+/* Deletes itself if its pvar is -1; later copies the pvar into the hero's index field. */
 void copy_pokitaru_pvar_to_hero(unsigned char *moby) {
     char *state = ((char *)((Moby *)moby)->pvars);
     switch (((Moby *)moby)->state) {
@@ -1753,6 +1758,7 @@ void pokitaru_boat_update(Moby *m) {
 extern int func_001F9850(int);
 extern void func_00213DE0(void *, int, int, int);
 
+/* Activates the gate when in state 1 and the hero is using it; returns 1 if activated. */
 int try_activate_pokitaru_gate(unsigned char *moby) {
     char *current;
     if (moby[0x20] != 1) return 0;
@@ -1837,10 +1843,12 @@ void update_pokitaru_boat_joint_effects(struct Moby *moby) {
         }
     }
 }
+/* Returns 1 if the moby is in state 5. */
 int is_moby_in_state_five(unsigned char *arg) {
     return arg[0x20] == 5;
 }
 
+/* Sets the boss part's flag word in its pvars to 1. */
 void BossL11_SetPartFlag(unsigned char *arg) {
     *(int *)(*(int *)(arg + 0x78) + 0xB8) = 1;
 }
@@ -2124,6 +2132,7 @@ extern void func_001FA1F8(void *, void *);
 #define mat_p func_001FA1F8
 #define zero_p func_001F9BC0
 #define refresh_p func_L00_00251E30
+/* Poses the six and four child mobys around this moby from its rotation and tilt values. */
 void update_child_set_poses(void *mv) {
     struct Moby *m = (struct Moby *)mv;
     Vec4f v;
@@ -2542,6 +2551,7 @@ extern void func_L11_0030FBF8(int);
 #define D_L11_001DA740_pv D_L11_001DAA00
 #define D_L11_001808C0_pv D_L11_00180940
 
+/* Water tile update: sets tints, registers the tile slot and sets up ripple patches and light. */
 void update_water_tile(struct Moby *m) {
     int *pv = (int *)m->pvars;
     int i;
@@ -2674,6 +2684,7 @@ void update_water_tile(struct Moby *m) {
 }
 extern void func_L01_002BA380(char *, int);
 extern char D_L11_001DAB40[];
+/* Draws the 20 Pokitaru pool water grids. */
 void render_level_11_water_grids(void) {
     render_water_grids(pokitaru_pool_tiles, 0x14);
 }
@@ -2740,6 +2751,7 @@ extern unsigned char *D_L11_00160058_t __asm__("D_L11_00160058") MACRO_ADDR;
 extern char D_0013D355_t[] __asm__("D_0013D355");
 typedef struct { char pad[0x57]; char f57; } Rec57;
 
+/* Spawns a mirrored partner, waits for its linked moby to trigger, then moves along its axis. */
 void update_link_triggered_moby_motion(unsigned char *m) {
     struct Moby *moving_moby = (struct Moby *)m;
     char *private_data = (char *)moving_moby->pvars;
@@ -2905,6 +2917,7 @@ extern float func_00214158(void);
 extern void func_L00_00251E30(void *);
 extern void func_L00_0025E210(void *);
 
+/* Spawns a moby of the given class at a position with a random yaw and stores its vector. */
 char *spawn_moby_with_random_yaw(void *position, void *vector, int id) {
     char *moby = CreateMoby(id);
     if (moby != 0) {
@@ -2966,6 +2979,7 @@ typedef struct AmmoCrateVars {
     struct Moby *child;        /* 0x34 attached child moby */
 } AmmoCrateVars;
 
+/* Ship pickup update: falls, homes in on the player ship, gets collected or explodes on hit. */
 void ShipCollider_Update(struct Moby *pickup) {
     enum {
         AMMOCRATE_STATE_INITIALIZE = 0,
@@ -3113,6 +3127,7 @@ void ShipCollider_Update(struct Moby *pickup) {
     }
     jet_animate(pickup, 0.5f);
 }
+/* Spawns the ship pickup child moby (class 0x4C3) at the owner's position and rotation. */
 char *spawn_ship_pickup_child(char *owner) {
     char *moby = CreateMoby(0x4C3);
     if (moby != 0) {

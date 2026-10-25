@@ -1019,6 +1019,7 @@ extern long func_001F4868(int);
 extern int func_001FA898(float);
 extern void func_001F5800(int, int, int, int, int, int, int, int, long, long);
 
+/* Draws the visibomb's tiled screen overlay when outside its zone. */
 void draw_visibomb_outside_zone_overlay(char *moby) {
     int *vars = ((int *)((Moby *)moby)->pvars);
     int row_count;
@@ -1957,6 +1958,7 @@ extern int func_L00_0023F0D0(void *, float, float, float, float, float);
 extern void func_L00_0023F1D0(int);
 extern char D_L01_001807C0[];
 
+/* Point light that blends between keyed colors and positions over time. */
 void update_moby_interpolated_point_light(unsigned char *m) {
     int state = ((Moby *)m)->state;
     char *e = ((char *)((Moby *)m)->pvars);
@@ -2666,6 +2668,7 @@ extern char *D_L01_00167300;
 #define LNK(i) (((Moby *)D_L01_00160058) + (i))
 #define VOICE(i) (D_0013E633 + 0x1D + (i) * 0x70)
 
+/* Sand mouse update: follows the hero, turns its linked moby, and runs its states. */
 void sandmouse_update(Moby *m) {
     Pv_30F318 *p;
     f32 ang;

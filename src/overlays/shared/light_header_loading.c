@@ -7,6 +7,7 @@ extern int D_L00_0015FD5C MACRO_ADDR;
 extern float D_L00_0015FD60 MACRO_ADDR;
 extern float D_L00_0015FD64 MACRO_ADDR;
 extern char *D_L00_0015FD68 MACRO_ADDR;
+/* Reads the height map header (size, height range) and points at its data. */
 void load_two_int_two_float_header(char *p) {
     height_map_width = *(int *)p; p += 4;
     height_map_rows = *(int *)p; p += 4;

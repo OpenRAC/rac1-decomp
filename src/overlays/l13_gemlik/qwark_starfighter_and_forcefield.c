@@ -1234,6 +1234,7 @@ void update_qwarks_starfighter_part(char *m) {
         }
     }
 }
+/* Damages each moby that touches the forcefield's rectangle, at the touching point. */
 void spawn_forcefield_contact_effects(void *moby, void *data) {
     extern void func_001FA1F8(void *, void *);
     extern void func_001F9EC0(void *, void *, void *);
@@ -1703,6 +1704,7 @@ typedef struct { char pad[0x18]; struct Moby *moby; int pad1; L13Vec_p pos; L13V
 #define D_L13_00174140_p (*(L13Hit_p *)D_L13_001741C0)
 void func_L13_00306EF0(struct Moby *moby);
 #define func_L13_00306EF0_r func_L13_00306EF0
+/* Shot update: rides its launcher while held, then flies with a trail and explodes on hit or range. */
 void func_L13_00306EF0_r(struct Moby *moby) {
     char *data = (char *)moby->pvars;
     struct Moby *source;
@@ -1862,6 +1864,7 @@ extern void func_L00_0025F4A8_alt(void *, void *, void *, float, float, int, int
                                   float, float, float, float, int, float, int, int, int, int)
     __asm__("func_L00_0025F4A8");
 
+/* Spawns a damaging explosion at the attached rocket's position. */
 void spawn_attached_rocket_explosion(char *moby) {
     char vector[16];
     clear_u64_value(vector);
@@ -1872,6 +1875,7 @@ extern void func_001F9BC0(void *);
 extern void func_L00_0025F4A8(void *, void *, void *, float, float, int, int, int,
                               float, float, float, int, float, float, int, int, int, int);
 
+/* Spawns a small explosion with no damage at the attached rocket's position. */
 void spawn_attached_rocket_non_damaging_explosion(char *moby) {
     char vector[16];
     clear_u64_value(vector);
@@ -2244,6 +2248,7 @@ struct BlastVars {
     s32 timer;                         /* 0x70 */
 };
 
+/* Poison vessel update: takes hits while intact, then blasts apart when destroyed. */
 void Moby1261Update(char *moby) {
     enum {
         POISON_VESSEL_INTACT = 0,
@@ -2770,6 +2775,7 @@ struct WalkerVars_a1c8 {
     int target_moby;
 };
 
+/* Blarg space commando update: hit reactions, target choice and walking along the ground. */
 void update_blarg_space_commando_damage_targeting_and_ground_motion(Moby *moby)
 {
     struct WalkerVars_a1c8 *vars = (struct WalkerVars_a1c8 *)moby->pvars;
@@ -3291,6 +3297,7 @@ void update_gemlik_bobbing_pool_tile(struct Moby *moby) {
 }
 extern void func_L01_002BA380(char *, int);
 extern char D_L13_001D9E80[];
+/* Draws the 22 Gemlik pool water grids. */
 void render_level13_water_grids(void) {
     render_water_grids(Tiles_9e88, 0x16);
 }

@@ -17,6 +17,7 @@ extern short D_L06_0015F9BC;
 extern short D_L06_0015F9C4;
 extern short D_L06_0015F9C8;
 
+/* Draw the segmented HUD meter (3, 6 or 7 segments by level), fading with the element's opacity. */
 int draw_segmented_hud_meter(unsigned char *p) {
     int y;
     int ntsc_y;

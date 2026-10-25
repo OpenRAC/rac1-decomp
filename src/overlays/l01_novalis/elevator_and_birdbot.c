@@ -2121,6 +2121,7 @@ typedef struct CaveDoorVars_2BA898 {
     f32 speed;                 /* 0x08 rotation speed, converted to radians on init */
 } CaveDoorVars_2BA898;
 
+/* Cave door: rotate between its rest angle and the open angle by the linked class 0x118 moby's value. */
 void cave_door_update(char *m) {
     Moby *self = (Moby *)m;
     CaveDoorVars_2BA898 *cave_door_vars;
@@ -2522,6 +2523,7 @@ void update_and_draw_level01_scrolling_layers(void *moby) {
     update_and_draw_scrolling_overlay_layers(8, novalis_scroll_layers);
 }
 extern char D_L01_001E3660[];
+/* Draw the two bounded Novalis scroll layers after the default moby handler. */
 void draw_two_scroll_layers(void *moby) {
     DefaultVtbl_DeleteMoby(moby);
     update_and_draw_scrolling_overlay_layers(2, novalis_bounded_scroll_layers);
@@ -3203,6 +3205,7 @@ typedef struct CapCameraPoint {
 
 extern Hero hero __asm__("D_0013F450");
 
+/* Falling rock: drop debris while waiting, then fall when triggered and stay fallen. */
 void falling_rock_update(Moby *falling_rock) {
     enum {
         FALLING_ROCK_STATE_INITIALIZE = 0,

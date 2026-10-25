@@ -36,6 +36,7 @@ extern unsigned char D_0013D5C8[];
 extern int D_0013D530[];
 extern char D_0014171B[];
 
+/* Picks a killed moby's drop, preferring ammo for weapons that run low; item goes to *item. */
 int ChooseDropItem(unsigned char *m, int *item) {
     extern short D_0015EE84;
     int shortfall = 0;

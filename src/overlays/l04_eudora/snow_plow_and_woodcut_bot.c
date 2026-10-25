@@ -412,6 +412,7 @@ void FloatingPlatformUpdate(char *m) {
     FastVecSub(delta, m + 0x10, old);
     update_entity_matrix(d + 0x60, delta, m + 0x40, m + 0x40);
 }
+/* Transport ship update: deletes the moby at once. */
 void transport_ship_update(void *m) {
     char pad[0x50];
     DeleteMoby(m);
@@ -1410,6 +1411,7 @@ void leaf_update(struct MobyP *moby) {
 #undef vector_length_xy
 #undef random_int_between
 #undef collision_line
+/* Return the riser's vertical speed by moby class (negative values move it down). */
 float riser_rise_speed(char *moby) {
     enum {
         RISER_CLASS_ASCENDING_WITH_COMPLETION_VOICE = 0x44D,
@@ -1982,6 +1984,7 @@ typedef struct BounceData2E6558 {
     short bounces; short timer;
     float velocity[4]; float spin[3];
 } BounceData2E6558;
+/* Fragment update: fall, spin and bounce off geometry; sink below the floor, then delete. */
 void update_entity_bounce_and_decay(char *moby) {
     enum {
         ENTITY_MOTION_STATE_BOUNCE = 0,
@@ -2069,6 +2072,7 @@ extern void func_L01_00279790(void *);
 extern void func_L00_00264EA8(void *, int, int, int, int, int, int);
 extern void func_L01_00279E10(void *, int);
 extern void func_0020D678(void *);
+/* Breakable update: on a hit, play its sound, drop bolts, spawn pieces and delete itself. */
 void BreakableL04_Update(char *m) {
     int hit = 0;
     char *r = MobyGetHitMessage(m, 0x10000, 0);

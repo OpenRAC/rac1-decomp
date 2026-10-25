@@ -1952,6 +1952,7 @@ extern void func_L00_0028A5A8(void);
 extern void func_0022C870(void);
 extern void func_00234C98(int, long);
 extern int D_0015EF88 MACRO_ADDR;
+/* Draws the Hoven sky shells (three rotation speeds on level 12), then restores GS registers. */
 void DrawSkyL12(void) {
     SetupSkyGifPaging();
     if (D_0015EE84_m == 12) {

@@ -145,6 +145,7 @@ extern void func_002014B8(s32, s32, s32, s32, u64, s32);
 extern void func_00201640(s32, s32, s32, s32, u64, s32);
 extern void func_00234C98(s32, u64);
 
+/* Map state of a level: 3 when visited, 2 when available, else 0. */
 static inline s32 map_availability_FDF78(s32 level_index) {
     if (level_visit_state[level_index] != 0) {
         return 3;

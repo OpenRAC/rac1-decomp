@@ -7,6 +7,7 @@
 extern float func_001FA790(float, float);
 extern float func_001FA748(float, float);
 
+/* Store in dst the angle scale of the way from a toward b, wrapped. */
 void interpolate_rotation_angle(float *dst, float a, float b, float scale) {
     float v = FastSubRots(b, a) * scale;
     *dst = v;
@@ -116,6 +117,7 @@ extern void func_L01_00279790(void *);
 extern void func_L00_00264EA8(void *, int, int, int, int, int, int);
 extern void func_L01_00279E10(void *, int);
 extern void func_0020D678(void *);
+/* Breakable update: on a hit, play its sound, drop bolts, spawn pieces and delete itself. */
 void BreakableL09_Update(char *m) {
     int hit = 0;
     char *r = MobyGetHitMessage(m, 0x10000, 0);

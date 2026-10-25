@@ -358,6 +358,7 @@ extern s32 mc_call_00123D48(s32 fd, void *buf, s32 size) __asm__("func_00123D48"
 extern s32 mc_call_00116248(char *str, const char *format, ...) __asm__("func_00116248");
 extern char *mc_call_001166FC(char *, const char *) __asm__("func_001166FC");
 
+/* Memory card state machine: polls the async call, then steps through card checks. */
 void memcard_update_state(void) {
     union {
         char name[0x40];

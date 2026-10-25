@@ -255,6 +255,7 @@ extern char *func_0020D348(int);
 extern void func_001F9BC0(void *);
 extern void func_0020EEE8(void *);
 extern void func_L00_00251E30(void *);
+/* Spawn a class 0xB3 moby linked to src, copying its basis rows; returns the moby or 0. */
 char *spawn_linked_moby_from_basis(char *src) {
     char *m = CreateMoby(0xB3);
     if (m != 0) {
@@ -681,6 +682,7 @@ extern int func_L00_0025D390(char *);
 extern void func_00215C00(void *, float, float, float);
 extern int func_L00_001EFFF0(Vec4f *, Vec4f *, int, void *, int);
 
+/* Find the Morph-o-Ray target near the aim line and bend heading/pitch toward it; returns it or 0. */
 char *select_morphoray_target_and_adjust_aim(char *self, float *position, float *heading, float *pitch) {
     float start[4] __attribute__((aligned(16)));
     float end[4] __attribute__((aligned(16)));
@@ -1635,6 +1637,7 @@ extern Vec4A D_L00_001DD3D0[];
 extern short D_L00_00161834;
 extern short D_L00_00161830;
 
+/* Draw each active Tesla pulse as a camera-facing textured quad in the pulse colour. */
 void draw_beam_pulse_quads(void *unused) {
     QuadPkt q;
     Vec4A A, B, C, D, E;
@@ -1767,6 +1770,7 @@ int probe_moby_raised_sphere_collision(char *a, int b, Vx *c) {
     return r;
 }
 extern char D_0013F450[];
+/* Copy five state fields from a into their hero slots. */
 void save_state_fields_to_hero(char *a) {
     char *g = g_hero;
     *(float *)(g + 0x1ED0) = *(float *)(a + 0x40);
@@ -1775,6 +1779,7 @@ void save_state_fields_to_hero(char *a) {
     *(int *)(g + 0x1F08) = *(int *)(a + 0x4C);
     *(float *)(g + 0x1EE4) = *(float *)(a + 0x5C);
 }
+/* Copy the five hero state fields saved by save_state_fields_to_hero back into a. */
 void restore_state_fields_from_hero(char *a) {
     char *g = g_hero;
     *(float *)(a + 0x40) = *(float *)(g + 0x1ED0);
@@ -1783,6 +1788,7 @@ void restore_state_fields_from_hero(char *a) {
     *(int *)(a + 0x4C) = *(int *)(g + 0x1F08);
     *(float *)(a + 0x5C) = *(float *)(g + 0x1EE4);
 }
+/* Copy a's vector, a flag byte and a float into the hero's second save slots. */
 void save_state_vector_and_fields_to_hero(char *a) {
     char *g = g_hero;
     *(float *)(g + 0x1F20) = *(float *)(a + 0x50);
@@ -1792,6 +1798,7 @@ void save_state_vector_and_fields_to_hero(char *a) {
     *(float *)(g + 0x1F40) = *(float *)(a + 0x44);
     qcopy(g + 0x1F10, a);
 }
+/* Copy the hero's second save slots back into a (without the vector). */
 void restore_saved_state_fields_from_hero(char *a) {
     char *g = g_hero;
     *(float *)(a + 0x50) = *(float *)(g + 0x1F20);
@@ -2254,6 +2261,7 @@ int try_start_moby_hop(Mob_2C0CF8 *m, Blk_2C0CF8 *p, void *q, int flag) {
 }
 extern void func_L00_0025E210(void *);
 
+/* Spawn a doom bot (class 0xBA) for owner at pos with rot; returns the moby or 0. */
 char *spawn_doom_bot(int owner, void *pos, void *rot) {
     char *m = CreateMoby(0xBA);
     if (m != 0) {

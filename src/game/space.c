@@ -393,6 +393,7 @@ extern int D_0015F6E4 MACRO_ADDR;
 extern int D_0015F6FC_m __asm__("D_0015F6FC") MACRO_ADDR;
 extern short D_0015F690; /* SDA, gp -0x7670 */
 
+/* Requests a switch to level arg0 and flags the load as pending. */
 void initialize_global_state_entry(int arg0) {
     space_load_level = arg0;
     *(int *)&space_load_pending = 1;
@@ -498,10 +499,12 @@ extern unsigned int trail_lerp_2F738(unsigned int, unsigned int, float) __asm__(
 extern float trail_float_2F738(int) __asm__("func_001FA888");
 extern void trail_scale_2F738(void *, void *, float) __asm__("func_001F9DC0");
 
+/* Returns trail point n of ring t. */
 static __inline__ Vec4 *trail_at_2F738(int t, int n) {
     return &trail_state_2F738.ring[t][n];
 }
 
+/* Builds and draws the two engine trail ribbons from the ring of recent trail points. */
 void build_resident_indexed_texture_warp_meshes(int unused) {
     GeometryQuad_2F4C8 q;
     struct {
@@ -657,6 +660,7 @@ extern void func_00234C98_l(int, long) __asm__("func_00234C98");
 extern int D_0013E604;
 extern long D_00160688 MACRO_ADDR;
 
+/* Draws the 256x32 banner texture near the bottom of the screen with alpha arg0. */
 void draw_resident_textured_banner(int arg0) {
     func_00234C98_l(0x47, 0x31801);
     func_00234C98_l(0x42, ((long)0x8000 << 24) | 0x44);
@@ -1072,6 +1076,7 @@ extern void resident_call_0022F258() __asm__("func_0022F258");
 extern void resident_call_0022F738() __asm__("func_0022F738");
 extern void resident_call_00233AB8() __asm__("func_00233AB8");
 
+/* Runs the space flight sequence: skip input, end cleanup, camera keyframes and path motion. */
 void update_resident_gameplay_state(void) {
     Vector4_230A90 scratch_vectors[4];
     s32 keyframe_flags;
@@ -1882,6 +1887,7 @@ extern void func_0022F090();
 #define sceGsSyncV ((s32 (*)(s32))func_00122598)
 #define snd_flush_sound_commands ((s32 (*)(void))func_0012DDC0)
 #define snd_resolve_bank_xrefs ((void (*)(void))func_0012E2E8)
+/* Sets up a newly loaded level: memory slots, moby classes, textures, sky and view contexts. */
 void initialize_level_runtime(void) {
     s64 texture_packet[4];
     LevelHeader *header;

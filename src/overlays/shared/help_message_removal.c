@@ -7,6 +7,7 @@ extern int D_L00_0015F670 MACRO_ADDR;
 extern int D_L00_00161F04 MACRO_ADDR;
 extern int func_001FFCB0(int);
 
+/* Removes the timed help message if it belongs to selector a; returns 1 when removed. */
 int remove_help_message_for_selector(int a) {
     if (timed_hud_visible == a) {
         if (timed_hud_handle != -1) {

@@ -38,6 +38,7 @@ extern float D_0015EE6C MACRO_ADDR;
 extern float func_001FA790(float, float);
 extern void func_001F99B0(void *, int, int);
 
+/* Age the 16 glints: spin them, grow then shrink their angle, and clear dead ones. */
 void update_glints(void) {
     int i;
     P *p = glints;

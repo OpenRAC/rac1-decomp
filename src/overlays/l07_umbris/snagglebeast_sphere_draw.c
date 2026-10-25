@@ -31,6 +31,7 @@ typedef struct {
     u64 primitive;
 } FlareQuad_h6 __attribute__((aligned(16)));
 
+/* Returns the color with each RGB channel given at least bit 0x40 set. */
 static inline int fx_tint(int col) {
     int k = col | 0x404040;
     return k;

@@ -604,6 +604,7 @@ struct GeometryQuad {
     u64 primitive;
 };
 
+/* Draw a beam strand along curved points as textured quads, with a wider glow strand around it. */
 void draw_beam_strand_with_glow(int texture_id, int glow_texture_id, void *points, int alpha, int glow_alpha, int slot)
 {
     struct GeometryQuad quads[2];

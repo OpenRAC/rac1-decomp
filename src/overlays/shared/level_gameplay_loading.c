@@ -1883,6 +1883,7 @@ extern f32 func_001FA888(s32);
 extern void func_L00_002657B8(UpdD244 *);
 /* level archive load state; the shared header pointer at +4 is D_0015EF4C */
 extern struct { u16 stage; s16 busy; s32 *shared; } D_0015EF48 MACRO_ADDR;
+/* Load the level archive's resources and textures into the level buffers; full also loads gameplay. */
 s32 load_level_archive_resources(s32 full, s32 keep) {
     Load244110 *ld = ((Load244110 *)&lvl_resource_buffers);
     Hdr244 *h = (Hdr244 *)ld->f4;

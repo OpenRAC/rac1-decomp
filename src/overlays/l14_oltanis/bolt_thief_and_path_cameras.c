@@ -2243,6 +2243,7 @@ extern void add_16E60(void *, void *, void *) __asm__("func_001F9BD8");
 extern void normalize_16E60(void *, void *, float) __asm__("func_L00_001FF4B0");
 extern void cross_16E60(void *, void *, void *) __asm__("func_001F9CA0");
 
+/* Start a path-key camera: sum its three paths' lengths, aim it at the hero, set key durations. */
 void initialize_path_key_camera(struct UpdateCam *cam) {
     float ang[4];
     float pad[4]; /* unused; keeps the frame layout */

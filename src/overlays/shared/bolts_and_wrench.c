@@ -28,6 +28,7 @@ typedef struct WaterPatch {
     char rest[0x1190 - 0xBD0];
 } WaterPatch;
 
+/* Push water ripple heights in a circle of radius at (x, y) over count patches, sharing edges. */
 void RippleDisturb(WaterPatch *g, int count, int mode, float x, float y, float radius, float amount) {
     WaterPatch *buf = g;
     int r;
@@ -1237,6 +1238,7 @@ extern short D_L00_00161484;
 #define FUN_001f9a68_2a7780 func_001F9C30
 #define FUN_001f7d30_2a7780 func_L00_001FD1D8
 
+/* Draw the wrench swing trail as a strip of textured quads behind the swung wrench. */
 void draw_wrench_swing_effect(void *op) {
     O_2a7780 *o = (O_2a7780 *)op;
     R_2a7780 *r;
@@ -1357,6 +1359,7 @@ void update_wrench_animation_from_hero_state(char *m) {
 }
 extern void *D_L00_00173F58;
 extern char *func_L00_0025D390(void *);
+/* Return 1 when the moby the wrench hit uses the alternate hit sound. */
 int get_wrench_hit_sound_variant(void) {
     int r = 0;
     char *x = 0;
@@ -1365,6 +1368,7 @@ int get_wrench_hit_sound_variant(void) {
     return r;
 }
 extern char *func_L00_0025D390(void *);
+/* Return 1 when the moby the wrench hit is flagged to react to wrench hits. */
 int should_trigger_wrench_hit_reaction(void) {
     char *x = GetFlaggedPvarWord(g_coll_hit_moby);
     if (x != 0) {
@@ -1488,6 +1492,7 @@ extern void func_L00_001FF4B0(float *, float *, float);
 
 extern Hero hero __asm__("D_0013F450");
 
+/* Shrink a wrench knockback vector the more it points away from the hero's heading (to 70%). */
 void scale_wrench_collision_vector_by_heading(float *in_out_vector) {
     float k = 1.8325957f;
     float vector_heading_angle = fast_atan2(in_out_vector[0], in_out_vector[1]);

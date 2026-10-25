@@ -587,6 +587,7 @@ void update_blarg_elite_commando_damage_and_pursuit(char *m) {
     if (range < vec_distance_xy(m + 0x10, d->target)) d->pursuit_mode = 2;
     if (d->owner == 0) d->owner = ((L16DamageResident *)((char *)&D_L16DamageState + 0xE1D))->owner;
 }
+/* Store the commando's parent moby, attach position and heading from vector[2]. */
 void set_blarg_elite_commando_parent_transform(char *moby, void *owner, void *position, char *vector) {
     char *data = ((char *)((Moby *)moby)->pvars);
     *(void **)(data + 0x2D0) = owner;
@@ -662,6 +663,7 @@ next:
 }
 extern float func_L00_001FF860(float, float);
 extern float func_001FA790(float, float);
+/* Blend the commando's walk animation (forward, left or right) by the angle to its path point. */
 void select_blarg_elite_commando_movement_animation(char *moby) {
     char *data = ((char *)((Moby *)moby)->pvars);
     char *target = kalebo3_path_table[*(int *)(data + 0x120)] + (*(short *)(data + 0x300) << 4);
@@ -1150,6 +1152,7 @@ void compute_armed_transport_path_headings(void *arg) {
 }
 extern void func_L00_00263950(char *, char *, int, float, float);
 
+/* Ease the armed transport's two joint offsets toward their targets each frame. */
 void update_armed_transport_joint_animation(char *moby)
 {
     float ticks = g_frame_scale_sq;
@@ -1345,6 +1348,7 @@ void Group_TriggerNearest(int idx) {
     }
 }
 extern void func_L16_002EB158(void);
+/* Draw-only moby update: after init, queue the reflection mesh draw every frame. */
 void Moby_UpdateDrawOnly(unsigned char *moby) {
     switch (moby[0x20]) {
     case 0:

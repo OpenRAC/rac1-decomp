@@ -843,6 +843,7 @@ extern void func_00203808_03B70(ResidentRenderPacket_03B70 *packet, s32 draw_hig
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/textbin/prepare_resident_class_render_data.c, prepare_resident_class_render_data. */
 void func_00203B70_r(ResidentClassRenderHeader_03B70 *header, u8 *textures, u8 *material_map, s32 class_id)
     __asm__("func_00203B70");
+/* Prepares a resident class's render data: relocates its groups and binds its textures. */
 void func_00203B70_r(ResidentClassRenderHeader_03B70 *header, u8 *textures, u8 *material_map, s32 class_id) {
     s32 group_count;
     s32 class_slot;
@@ -1010,6 +1011,7 @@ extern char D_001E3100[] NOT_SDA;
 extern char D_001E3900[] NOT_SDA;
 extern int func_001FA898(float);
 
+/* Registers an object render class: assigns its slot, fixes pointers and sets thresholds. */
 void register_object_render_class(char *self, int a1, char *src, int a3) {
     int N;
     int N2;

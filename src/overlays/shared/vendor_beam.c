@@ -47,6 +47,7 @@ typedef struct {
     float seg[4][4][4];
 } D_03430;
 
+/* Draws the vendor's beam effect. */
 void draw_vendor_beam(char *m) {
     D_03430 *d = ((D_03430 *)((Moby *)m)->pvars);
     Pkt_03430 P[3];

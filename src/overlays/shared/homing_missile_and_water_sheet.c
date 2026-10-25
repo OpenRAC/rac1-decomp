@@ -147,6 +147,7 @@ extern void func_L00_001FF610(void *, void *, void *);
 extern int func_L00_00258BC8(int, int);
 extern char *func_L00_0026EBC0_09DA0(void *, void *, int, int, float) __asm__("func_L00_0026EBC0");
 extern int func_001F9908(int *);
+/* Copy an xyz vector. */
 static inline void copy_xyz_089d0(float *dst, float *src) {
     dst[0] = src[0];
     dst[1] = src[1];
@@ -1231,6 +1232,7 @@ typedef struct {
     long pk[4];
 } Quad_31A738;
 
+/* Draw textured trail quads between the moby's linked mobys (longer with cheat 2 on). */
 void draw_linked_moby_trails(char *m) {
     Quad_31A738 q[16];
     float off[2][4];

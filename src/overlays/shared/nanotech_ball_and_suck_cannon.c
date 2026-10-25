@@ -51,6 +51,7 @@ int is_moby_in_state_one(unsigned char *m) {
     return m[0x20] == 1;
 }
 extern char *func_0020D348(int);
+/* Spawns a class 0x326 moby linked to and placed at moby a. */
 char *create_linked_class_0326_moby(char *a) {
     char *m;
     if (a[0x20] < 0) return 0;
@@ -251,6 +252,7 @@ extern void func_002156E0(void *, void *, float, void *);
 extern void func_L00_001FF4B0(void *, void *, float);
 extern void func_001F9BD8(void *, void *, void *);
 
+/* World position of nanotech ball slot i. */
 void compute_nanotech_ball_slot_position(char *m, float *out, int i) {
     Vz v;
     char *pv = ((char *)((Moby *)m)->pvars);
@@ -930,6 +932,7 @@ extern void func_001FA218(void *, void *);
 extern void func_001FA460(void *, void *);
 extern void func_001FA480(void *, void *);
 extern void func_0020EEE8(void *);
+/* Sets b's rotation to a's rotation combined with Euler offset c. */
 void compose_moby_rotation_with_euler_offset(char *a, char *b, void *c) {
     V t0, t1, t2;
     euler_to_matrix(&t0, c);
@@ -984,6 +987,7 @@ int process_suck_cannon_suction_candidate(u8 *p, void *q, void *m_, void *r_, vo
     }
     return ret;
 }
+/* Calls the moby class's suction-cancel handler; returns 1 when it has none. */
 int dispatch_suck_cannon_suction_cancel(char *a) {
     int (*fn)(char *) = *(int (**)(char *))(*(char **)(*(char **)(a + 0x24) + 0x2C) + 0xC);
     if (fn != 0) {
@@ -1575,6 +1579,7 @@ typedef struct { char pad[0x10]; Fn2DCD40 f10; } Cb2DCD40;
 typedef struct { char pad[0x2C]; Cb2DCD40 *f2C; } Sub2DCD40;
 typedef struct { char pad0[0x20]; unsigned char f20; char pad1[3]; Sub2DCD40 *f24; char pad2[0x50]; int f78; } Obj2DCD40;
 
+/* Returns the moby's suck cannon record from its class handler, or 0. */
 char *get_moby_suck_cannon_record(char *p) {
     Obj2DCD40 *o = (Obj2DCD40 *)p;
     Fn2DCD40 f;
@@ -2524,6 +2529,7 @@ INCLUDE_ASM("asm/overlays", func_L00_002DF410);
 extern void func_L00_002DED98(void);
 extern void func_001F49B0(void (*)(void), int);
 
+/* Fades the suck beam segments and queues the beam draw while it is visible. */
 void SuckBeam_QueueDraw(int arg0) {
     int i;
     if (suck_beam_segment_alpha[0] > 0) {
@@ -2681,6 +2687,7 @@ void red_orb_update(char *m) {
     }
 }
 extern void func_0023B5D0(void *);
+/* Resets the quad moby's blend values when flagged, then updates its attachment points. */
 void QuadMoby_Update(char *a) {
     if (*(unsigned char *)(a + 0x70) & 2) {
         float o = 1.0f;

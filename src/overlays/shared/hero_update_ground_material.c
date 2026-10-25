@@ -91,6 +91,7 @@ typedef struct {
 } GS_28598;
 #define GG ((GS_28598 *)(D_0013E633 + 0xE1D))
 
+/* Per-frame hero update: animation, movement, ground effects, vehicle, scaling and more. */
 void HeroFrameUpdate(void) {
     int h2, v2, t;
     int v, h, i, r16, r17, r18, c20, color;
@@ -568,6 +569,7 @@ typedef struct {
 } CollisionHit_2DE30;
 f32 func_001F9F90_2DE30(f32) __asm__("func_001F9F90");
 f32 func_001F9FA8_2DE30(f32) __asm__("func_001F9FA8");
+/* Adds to v an xy offset of length 2r in direction ang. */
 static inline void circle_offset_2DE30(Vec4 *v, f32 ang, f32 r)
 {
     r += r;
@@ -1706,6 +1708,7 @@ skip:
         Hero_OnKilled();
     }
 }
+/* Puts the hero into the idle move state that fits the current vehicle mode (0 or 3). */
 void request_hero_idle_state_for_vehicle_mode(void)
 {
     switch ((unsigned char)D_0013E633[0x2EC1]) {

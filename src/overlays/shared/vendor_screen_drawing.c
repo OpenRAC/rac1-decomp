@@ -25,6 +25,7 @@ extern int D_L00_00161F30 MACRO_ADDR;
 extern char D_L00_00161228[];
 extern char D_L00_00161230[];
 
+/* Draws the vendor's item cost and purchase text box at x, y. */
 void draw_vendor_purchase_text(void *m, int x, int y) {
     TBox box;
     char text[256];

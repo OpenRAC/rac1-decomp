@@ -301,6 +301,7 @@ struct VoiceVolumeDefinition {
     u8 attenuation_flags;         /* 0x19: bit 0 selects the squared falloff */
 };
 
+/* Map distance x to a voice volume between near (lo) and far (hi), linear or squared falloff. */
 int calculate_voice_distance_volume(void *arg0, float x, float lo, float hi) {
     struct VoiceVolumeDefinition *definition = (struct VoiceVolumeDefinition *)arg0;
     int r;
@@ -322,6 +323,7 @@ extern float func_001F9D10(int, void *);
    declaring it int would move its next temporary to $v1. */
 extern void func_0022DA10_v(void *, float, float, float) __asm__("func_0022DA10");
 
+/* Set a voice's volume from its distance to the camera using its near/far range. */
 void calculate_voice_volume(void *arg0, int arg1) {
     char *s = (char *)arg0;
     float v = FastVecDist(arg1, camera_position);
@@ -373,6 +375,7 @@ extern void func_0012E3F8(int, int, int);
 extern void func_0012E348(int, int);
 extern void func_002161E0(void);
 
+/* Reset the voice pool, set up the sound library, voices and volumes, and reset music. */
 void initialize_gameplay_sound_system(void) {
     s32 i;
     s32 p;
@@ -915,6 +918,7 @@ int load_audio_bank_by_location(void *arg0) {
 /* 12 bytes of post-endlabel nop padding in retail -- see func_001F6668. */
 __asm__(".section .text\n\tnop\n\tnop\n\tnop\n");
 
+/* Stop a voice slot: free a queued one at once, else mark it for stopping (idx < 0: no-op). */
 void sound_KillChannel(int idx) {
     if (idx >= 0) {
         char *e = voice_pool + idx * 0x70;
@@ -1148,6 +1152,7 @@ int Moby_PlaySound(int idx, int arg1, int arg2) {
 
 extern char *D_0015F714 MACRO_ADDR;
 
+/* Play bank sound idx on a free voice owned by arg2; return the voice slot or -1. */
 int PlayBankSound(int idx, int arg1, int arg2) {
     int h;
 
@@ -1172,6 +1177,7 @@ struct VoiceGroupEntryWindow {
     s32 owner;                 /* 0x88 */
 };
 
+/* Play a level group sound (after the bank sounds) on a free voice; return the slot or -1. */
 int allocate_voice_for_group_entry(int group_entry_index, int flags, int owner) {
     int entry_index;
     int slot_index;
@@ -1192,6 +1198,7 @@ int allocate_voice_for_group_entry(int group_entry_index, int flags, int owner) 
 
 LINKER_REMNANT("asm/remnants/text", func_0022EF50);
 
+/* Return the voice pool base. */
 static inline char *SndSys(void) {
     return voice_pool;
 }
@@ -1276,6 +1283,7 @@ void sound_StopAllSounds(void) {
     } while (p < end);
 }
 
+/* Sound library callback: store the returned handle at arg1 when arg1 is set. */
 void SoundBank_StoreHandle(int arg0, long arg1) {
     int *p = (int *)(int)arg1;
     if (p != 0) {
@@ -1283,6 +1291,7 @@ void SoundBank_StoreHandle(int arg0, long arg1) {
     }
 }
 
+/* Voice start callback: store the handle and mark the voice playing, or clear it on failure. */
 void voice_start_callback(int arg0, long arg1) {
     unsigned char *p = (unsigned char *)(int)arg1;
     if (p != 0) {
@@ -1299,6 +1308,7 @@ void voice_start_callback(int arg0, long arg1) {
     }
 }
 
+/* Voice update callback: store the handle, or clear the voice slot when the handle is 0. */
 void voice_update_callback(int arg0, long arg1) {
     int *p = (int *)(int)arg1;
     if (p != 0) {

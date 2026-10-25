@@ -171,6 +171,7 @@ int EnemyStunUpdate(unsigned char *moby, void *pos, void *target, float h) {
     }
     return result;
 }
+/* Cancels the Suck Cannon's suction on the moby and puts it into state 12. */
 int cancel_suck_cannon_suction_and_set_state_12(char *a) {
     int r = cancel_suck_cannon_suction(a);
     a[0x20] = 12;
@@ -312,6 +313,7 @@ void update_robot_dog_glow_effects(unsigned char *moby) {
     }
 }
 extern void func_L00_00264690(void *, int, float, float);
+/* Draws three glow quads in the moby's glow color at the points stored in its pvars. */
 void draw_three_moby_effect_quads(char *m) {
     int v = (((Moby *)m)->glow_color & 0xFFFFFF) | 0x30000000;
     char *p = ((char *)((Moby *)m)->pvars) + 0x200;

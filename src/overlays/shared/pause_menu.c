@@ -133,6 +133,7 @@ extern Moby_277208 *func_00226720(int);
 extern void func_00213D28(void *, int, int);
 extern void func_L00_002E0AE8(void);
 
+/* Open the pause menu: pick its page from the menu state, then set up the menu camera and view. */
 void initialize_pause_menu(void) {
     Menu_277208 *m = &(*(Menu_277208 *)level_menu_system);
     int *page;

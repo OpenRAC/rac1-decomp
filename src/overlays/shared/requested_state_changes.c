@@ -4,6 +4,7 @@
 
 extern char D_0013E633[];
 
+/* Stores the requested values and sets change bits for each one that differs from before. */
 void set_requested_state_and_mark_changes(int a, int b, int c, int d, int e)
 {
     char *p = D_0013E633 + 0x1D;

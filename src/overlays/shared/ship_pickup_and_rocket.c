@@ -103,6 +103,7 @@ extern unsigned char *func_0020D348(int);
 extern void func_L00_00251E30(void *);
 extern void func_L00_0025E210(void *);
 
+/* Spawns a ship pickup moby of the given class at position. */
 unsigned char *spawn_ship_pickup(char *position, int moby_class)
 {
     unsigned char *moby = CreateMoby(moby_class);
@@ -134,6 +135,7 @@ extern void func_001F9BD8(void *, void *, void *);
 extern void func_0022ED80(int, int, void *);
 extern void func_0020D678(void *);
 extern void func_L00_00263B78(float, float, void *, void *, void *);
+/* Ship pickup update: waits, homes in on the player ship and gives ammo or health when taken. */
 void ShipPickupUpdate(char *moby) {
     int *vars = ((int *)((Moby *)moby)->pvars);
     int hero_moby = ((char *)g_hero.ship_moby);

@@ -149,6 +149,7 @@ enum GrindrailTriggerState {
     GRINDRAIL_TRIGGER_WAIT_FOR_COMMAND_TIMEOUT = 2
 };
 
+/* Rocket update: wait for the hero in its clip volume, fly the path once, then hide and reset. */
 void update_path_following_rocket(unsigned char *moby) {
     struct Moby *m = (struct Moby *)moby;
     RocketPathData *data = (RocketPathData *)m->pvars;
@@ -472,6 +473,7 @@ extern int func_001FA8A8_caa18(int, int, float) __asm__("func_001FA8A8");
 extern int func_001FA898_caa18(float) __asm__("func_001FA898");
 extern unsigned char *func_L00_00273E08(void *, int, unsigned char, int, int, int, int, float);
 
+/* Emit four camera-facing glow particles at the moby, cycling their spin and colour timers. */
 void emit_moby_sprite_effect_particles(char *m) {
     L16SpriteData *p = ((L16SpriteData *)((Moby *)m)->pvars);
     float d[4] __attribute__((aligned(16)));
@@ -559,6 +561,7 @@ extern void func_L00_001FF4B0(void *, void *, float);
 extern void func_001F9BD8(void *, void *, void *);
 extern int func_0022ED80_cae18(int, int, void *) __asm__("func_0022ED80");
 
+/* Keep the conveyor group's loop sound on the conveyor nearest the camera, within 64 units. */
 void update_conveyor_group_voice(unsigned char *m) {
     short *p = (short *)kalebo3_moby_groups[((Moby *)m)->group];
     char *d = ((char *)((Moby *)m)->pvars);
@@ -1203,6 +1206,7 @@ void activate_test_dummy_group(int idx) {
 typedef int L16MoveQuad __attribute__((mode(TI)));
 extern float func_L00_0025CE58(float *, float *, float, float, float, float);
 extern float func_00214D88(float, float, float, float, float *, float *);
+/* Steer a test dummy toward vec and heading angle; return 1 once it has arrived and stopped. */
 int move_test_dummy_toward_position_and_heading(char *moby, void *vec, float angle) {
     float a[4] __attribute__((aligned(16)));
     float b[4] __attribute__((aligned(16)));
@@ -2371,6 +2375,7 @@ void Challenge_SetLayoutParam(float f) {
 }
 extern void func_0022ED80(int, int, void *);
 
+/* Play the moby's sound and switch it from state 1 to state 7. */
 void request_target_reposition(unsigned char *moby) {
     int state = 1;
     if (moby[0x20] == state) {
@@ -3102,6 +3107,7 @@ void transfer_moby_placement_to_linked_moby(void *moby_v)
 }
 extern float func_00214D88(float, float, float, float, float *, float *);
 extern void func_00215CA8(int *, int, void *, float *, int, float);
+/* Ease the moby's path progress toward 1 and sample its path point; return 1 at the end. */
 int Path_AdvanceProgress(char *m) {
     char *d = ((char *)((Moby *)m)->pvars);
     int *path;
@@ -3111,6 +3117,7 @@ int Path_AdvanceProgress(char *m) {
     return *(float *)(d + 0xB0) >= 1.0f;
 }
 extern void func_00215F80(int, int);
+/* Show the help message picked by the moby's message index. */
 void request_moby_help_message(char *moby) {
     switch (*(short *)(((char *)((Moby *)moby)->pvars) + 0xAE)) {
     case 0: try_set_help_message(8, 0x3E89); break;
@@ -3133,6 +3140,7 @@ typedef struct {
     f32 phase_c;               /* 0xC0 */
 } L16WobbleData;
 
+/* Bob and sway the moby around its saved position with three sine phases, clamped to 10 degrees. */
 void apply_moby_wobble(char *moby_arg) {
     struct Moby *moby = (struct Moby *)moby_arg;
     L16WobbleData *data = (L16WobbleData *)moby->pvars;
@@ -3165,6 +3173,7 @@ extern char *D_L16_001B0C30[];
 extern void func_001F9EC0(void *, void *, void *);
 extern char D_L16_001D99B0[];
 extern void func_001F9BD8(void *, void *, void *);
+/* Move the moby's 7-point path into world space by its matrix and hand its index to the hero. */
 void transform_moby_table_entry_vectors(char *a) {
     char *data = ((char *)((Moby *)a)->pvars);
     int idx = *(int *)(data + 0xA0);
@@ -3292,6 +3301,7 @@ extern void func_L16_002E6B48_6908(void *) __asm__("func_L16_002E6B48");
 extern int func_0022ED80_6908(int, int, void *) __asm__("func_0022ED80");
 extern int func_001FA8A8(float, int, int);
 
+/* Grind rail button: on a matching side-on hero approach or a hit, fire it; pulse its glow. */
 void grindrail_button_update(unsigned char *m) {
     enum {
         GRINDRAIL_BUTTON_INITIALIZE_GLOW_PHASE = 0,

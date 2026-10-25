@@ -2105,6 +2105,7 @@ extern void func_L00_0028A5A8(void);
 extern void func_0022C870(void);
 extern void func_00234C98(int, long);
 extern int D_0015EF88 MACRO_ADDR;
+/* Draw the Oltanis sky shells (rotating in level 14, static elsewhere) and restore GS test and Z. */
 void render_sky_shells_with_gif_paging(void) {
     SetupSkyGifPaging();
     if (D_0015EE84_m == 14) {

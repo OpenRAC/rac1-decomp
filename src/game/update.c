@@ -296,6 +296,7 @@ extern void func_00238688(void *);
 extern char D_001E3500[];
 extern char D_001E4700[];
 
+/* Empty debug profiler hook. */
 void DebugProfiler_Hook(void) {
 }
 
@@ -308,6 +309,7 @@ LINKER_REMNANT("asm/remnants/text", func_00239180);
 extern char D_001E66C0[];
 extern char D_001E8DA0[];
 
+/* Formats arg0 into the scrolling status message and resets its offset. */
 void set_scrolling_status_message(int arg0) {
     char *b = vendor_state;
     func_00116248(*(int *)(b + 0x2C), str_scrolling_status_fmt, arg0);

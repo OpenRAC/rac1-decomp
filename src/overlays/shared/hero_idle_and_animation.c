@@ -110,6 +110,7 @@ void clear_jet_camera_mode_latch(void) {
 }
 extern unsigned char D_L00_00179550[];
 
+/* Finds id in column a1 of the 150-row help id pair table; returns the row, other id in *out. */
 int lookup_help_id_pair(short id, int a1, unsigned short *out) {
     char *base = (char *)help_id_pair_table;
     int off;

@@ -4,6 +4,7 @@
 
 typedef struct { char pad[0x2C]; float f; } O_28aa68;
 
+/* Returns the non-null candidate with the largest float at 0x2C; later ones win ties. */
 O_28aa68 *select_candidate_by_max_float_2c(O_28aa68 *a, O_28aa68 *b, O_28aa68 *c, O_28aa68 *d) {
     O_28aa68 *r = a;
 

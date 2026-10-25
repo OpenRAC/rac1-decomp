@@ -353,6 +353,7 @@ extern void func_00236A98(void);
 extern char D_001E4500[];
 extern char D_001E4100[];
 
+/* Patch the tie GIF tags, save the patch list and texture remap table, then patch again. */
 void copy_render_buffer_pair(void) {
     PatchTieGifs();
     FastMemCopy(tie_gif_patch_list, tie_gif_patch_list_saved, 0x200);
@@ -364,6 +365,7 @@ extern void func_00238688(void *);
 extern char D_001E3500[];
 extern char D_001E4700[];
 
+/* Light the ties from both tie light data blocks. */
 void register_entity_render_resources(void) {
     LightTies(tie_light_data);
     LightTies(tie_light_data2);

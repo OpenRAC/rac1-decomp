@@ -2679,6 +2679,7 @@ extern char D_L14_00180AC0[];
 extern int func_L00_0028EF68();
 extern int func_L00_0023F0D0(float *, float, float, float, float, float);
 extern void func_L14_002BC728(char *);
+/* Flying debris update: drift with drag, spin, smoke, glow with a point light; remove on timeout. */
 void update_flying_debris(struct Moby *m) {
     char *d = (char *)m->pvars;
     float joint[4];
@@ -2820,6 +2821,7 @@ unsigned char *spawn_flying_debris(char *owner, float angle, char *posp) {
 extern void func_L00_0023F1D0(int);
 extern void func_0020D678(void *);
 
+/* Release the debris' point light slot and delete the moby. */
 void remove_flying_debris(char *moby)
 {
     char *data = ((char *)((Moby *)moby)->pvars);
@@ -3161,6 +3163,7 @@ extern int func_L00_002E3640(struct Moby *, void *, void *);
 extern char *func_L00_002757E8(void *, void *, int, void *);
 extern int func_L00_0023F0D0(float *, float, float, float, float, float);
 
+/* Racer update: track the race path ahead of the hero, orient along it and fire its beam weapon. */
 void update_racer_path_and_weapon(struct Moby *m) {
     char *d = (char *)m->pvars;
     char *path = *(char **)((char *)race_paths + *(int *)(d + 0x60) * 32 + 0x10);

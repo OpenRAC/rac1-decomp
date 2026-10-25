@@ -837,6 +837,7 @@ void update_moby_rotation_oscillation(float *o, float *a, float *b, float r, flo
     *b = FastAddRots(*b, l2);
 }
 extern void func_00215C00_x(void *, float, float, float) __asm__("func_00215C00");
+/* Set a to b plus the spherical offset built from r, y and z. */
 void fast_add_rotations_cf(void *a, void *b, float r, float y, float z) {
     typedef float W[4] __attribute__((aligned(16)));
     W v;

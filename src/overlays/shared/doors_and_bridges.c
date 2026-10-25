@@ -9,6 +9,7 @@ extern void func_001F49B0(void *, void *);
 extern char D_L07_001D36C0[];
 extern char func_00216270[];
 
+/* Umbris ambient stream moby: sets up its table, then queues the audio stream. */
 void AmbientStreamL07Update(unsigned char *moby)
 {
     switch (moby[0x20]) {
@@ -198,6 +199,7 @@ extern void func_0022ED80(s32, s32, void *);
 extern u8 * D_L07_00160058 MACRO_ADDR;
 extern f32 D_0015EE6C MACRO_ADDR;
 
+/* Door update: moves between open and closed states, gated by its mission state. */
 void door_update(u8 *moby)
 {
     u8 *data = ((u8 *)((Moby *)moby)->pvars);

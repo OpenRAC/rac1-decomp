@@ -257,6 +257,7 @@ void spawn_timed_effect_particle(char *pos, int a1) {
 extern int func_001F9938(void *);
 extern void func_L00_002688A8(void *);
 
+/* Particle update: fade alpha and step the texture frame over the lifetime; kill at timer end. */
 void update_timed_effect_particle(char *m) {
     int t = *(short *)(m + 0xA) * *(int *)(m + 0x20) / scale_ticks(0x1B);
     int a;

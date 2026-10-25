@@ -271,6 +271,7 @@ void reset_numeric_hud_element_32x32_base(HudElem *e) {
     e->h = 0x20;
     initialize_numeric_hud_values_and_dimensions(e);
 }
+/* Extend the hold time of an idle HUD element with this key to val; returns 0 if found, else 1. */
 int hud_keep_visible(int key, int val) {
     int i;
     int r;
@@ -723,6 +724,7 @@ int draw_uniform_size_hud_stars(HudElem *e) {
     }
     return e->w;
 }
+/* Set up a 32x32 numeric HUD element with a 10-tick show timer, then its values and size. */
 void initialize_numeric_hud_element(HudElem *e) {
     e->unk7C = scale_ticks(0xA) + 0x1E;
     e->unk48 = 0;
@@ -754,6 +756,7 @@ extern int D_0015EF58[] MACRO_ADDR;
 extern int D_0015EF68[] MACRO_ADDR;
 extern const char D_L00_001E8840[];
 extern const char D_L00_0015F858[];
+/* Draw the fading HUD text panel, plus the best race time and score near the race start points. */
 int draw_hud_text_panel(char *e) {
     int w1, tex, l1, y, i, width, left, w2, l2, alpha, color, c, level, elapsed, score, interval, per, seconds, minutes, rem, idx;
     float fade;
@@ -1210,6 +1213,7 @@ extern char D_0013D50F[];
 
 #define GI(x) (*(int *)&(x))
 #define GF(x) (*(float *)&(x))
+/* Draw the quick select panel: opening fade, pulsing marker, item icons and the selected name. */
 int draw_hud_item_selector_panel(HudElem *rec) {
     extern char D_L00_001C43B0[];
     char *wr;
@@ -1357,6 +1361,7 @@ extern int D_L00_0015FB48 MACRO_ADDR;
 extern void *D_L00_0015FB78 MACRO_ADDR;
 extern short D_L00_0015F820;
 extern short D_L00_0015F80C;
+/* Set up the HUD selector for four slots: slot tables, size, timer and first page. */
 void initialize_four_slot_hud_selector(char *a) {
     int x = *(int *)&quick_select_width;
     int y = *(int *)&quick_select_height;
@@ -2027,6 +2032,7 @@ extern float func_001F9FA8(float);
 extern int func_001FA8A8(int, int, float);
 extern void func_L00_001FB7F8(int, int, int, char *, int);
 
+/* Draw the bolt counter panel sliding in with its fade; skipped in some hero states. */
 int draw_hud_bolt_exclamation_panel(char *m) {
     char buf[16];
     unsigned char *q;

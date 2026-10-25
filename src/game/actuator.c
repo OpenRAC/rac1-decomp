@@ -138,6 +138,7 @@ extern int D_0015EF8C MACRO_ADDR;
 extern int D_0015F020 MACRO_ADDR;
 extern short D_0015EF74;
 
+/* Reset the texture allocation count and the GS texture allocation cursor. */
 void initialize_streaming_state(void) {
     texture_alloc_counter = 0;
     *(int *)&g_gs_texture_allocation_cursor = g_gs_texture_allocation_base;

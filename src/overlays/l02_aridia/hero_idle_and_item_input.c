@@ -3270,6 +3270,7 @@ f32 resolve_hero_trajectory_parameter(f32 a, f32 b, f32 c) {
     return a;
 }
 
+/* Put the hero in idle when nearly stopped, else in the stopping move state. */
 void enter_hero_idle_or_stop(void)
 {
     if (*(float *)(D_0013E633 + 0xF7D) < g_frame_time * 2.7f) {

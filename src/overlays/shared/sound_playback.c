@@ -5,6 +5,7 @@
 #include "include_asm.h"
 
 extern char D_0013E633[];
+/* Returns 1 if sound slot i belongs to owner a and is starting or playing. */
 int Sound_IsPlaying(int a, int i) {
     if (i >= 0) {
         char *p = D_0013E633 + 0x1D + i * 0x70;
@@ -36,6 +37,7 @@ extern char D_0013E633[] NOT_SDA;
 extern unsigned char D_L00_00197F40[] NOT_SDA;
 extern char *D_L00_00197680[] NOT_SDA;
 
+/* Plays sound i of the class in slot k on owner v; returns the voice slot or -1. */
 int Sound_PlayClassSound(int i, int a1, int v, int k) {
     char *t = moby_class_headers[g_class_slot[k]];
     char *e;
@@ -56,6 +58,7 @@ int Sound_PlayClassSound(int i, int a1, int v, int k) {
 }
 extern int D_L00_0015F6D0 MACRO_ADDR;
 extern char *D_L00_0015F6D4 MACRO_ADDR;
+/* Plays level sound a with the given settings; returns the voice slot or -1. */
 int play_voice(int a, int b, int c, int d) {
     int r;
     if (a >= level_sound_slot_count) return -1;
@@ -100,6 +103,7 @@ int Sound_SetPitchBend(int i, int v) {
 typedef struct { int k; int v; } TE;
 extern TE D_L00_001EAD00[];
 
+/* Finds the record's key in the key/value table and stores the index and value in it. */
 void resolve_lookup_record(short *a) {
     int i;
     for (i = 0; lookup_record_key_values[i].k != -1 && lookup_record_key_values[i].k != a[0]; i++) {

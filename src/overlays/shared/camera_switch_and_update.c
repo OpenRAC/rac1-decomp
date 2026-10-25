@@ -15,6 +15,7 @@ extern DebugFreeCam D_L00_0016C158;
 extern int D_L00_0015F04C MACRO_ADDR;
 extern void (*D_L00_001690F0[])(void);
 
+/* Run and clear the level's queued camera post-update callbacks. */
 void Camera_RunQueuedCallbacks(void) {
     int i;
     for (i = 0; i < gCamPostUpdCountLvl; i++) {

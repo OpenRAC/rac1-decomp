@@ -1886,6 +1886,7 @@ extern void func_L00_0028A5A8(void);
 extern void func_0022C870(void);
 extern void func_00234C98(int, long);
 extern int D_0015EF88 MACRO_ADDR;
+/* Draws the Kerwan sky shells (two rotating on level 3), then restores the GS draw registers. */
 void DrawSkyShellsL03(void) {
     SetupSkyGifPaging();
     if (D_0015EE84_m == 3) {

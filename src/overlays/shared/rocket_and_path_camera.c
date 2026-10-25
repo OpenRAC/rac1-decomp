@@ -342,6 +342,7 @@ extern void func_L00_001FD1D8(void *, void *, int);
     ((unsigned long)(a) | ((unsigned long)(b) << 2) | ((unsigned long)(c) << 4) | \
      ((unsigned long)(d) << 6) | ((unsigned long)(fix) << 32))
 
+/* Draw the moby's textured quad layers with sine/cosine scrolling UVs in its frame. */
 void draw_moby_animated_quad_layers(unsigned char *m) {
     Quad_2EA578 first, second;
     float transform[12] __attribute__((aligned(16)));

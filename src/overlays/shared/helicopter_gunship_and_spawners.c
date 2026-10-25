@@ -11,6 +11,7 @@ extern void func_L02_00250A58(char *);
 extern void func_L02_002A58C0(char *);
 extern char D_L03_001CB180[];
 
+/* Draw the textured grid moby: build and upload its DMA packet, draw, then restore the view. */
 void draw_textured_grid(char *moby)
 {
     build_interpolated_dma_packet(moby);
@@ -842,6 +843,7 @@ int is_moby_class_23e_in_state_14(char *moby) {
     }
     return 0;
 }
+/* Set the moby's state to 14. */
 void set_moby_state_14(unsigned char *moby) {
     moby[0x20] = 14;
 }
@@ -1272,6 +1274,7 @@ void handle_blarg_helicopter_hits(char *m) {
 extern float D_L03_0015F660[] MACRO_ADDR;
 extern void func_L01_00279790(void *);
 extern void func_L00_00265050(void *, int, void *, void *, int, int, float, void *, void *, void *);
+/* Statue update: wait for a hit, then play a sound, drop bolts, break into three pieces and delete. */
 void statue_update(unsigned char *m) {
     int flag = 0;
     float z;
@@ -1617,6 +1620,7 @@ typedef struct {
 
 extern Hero hero __asm__("D_0013F450");
 
+/* Qwark on Rilgar: check its regions, wait for the hero to enter region A, then react. */
 void qwark_rilgar_update(char *m)
 {
     enum {
@@ -1752,6 +1756,7 @@ typedef struct {
 extern LevelCollected_2dddf8 D_L03_001BB640;
 extern s32 D_0014C290[][64];
 extern s32 D_0015EE84 MACRO_ADDR;
+/* Rise 4 units at frame speed once the moby's save slot is collected or killed, then hold. */
 void RiseWhenCollectedUpdate(struct Moby *m)
 {
     Vec4 *target = (Vec4 *)m->pvars;
@@ -1814,6 +1819,7 @@ extern void func_001FA218(void *, void *);
 typedef struct { char pad0[0x40]; int x40; char pad1[8]; float x4C; } CamSub;
 typedef struct { char pad0[4]; float f4; float f8; int fC; CamSub sub; char pad1[0x20]; int x80; } CamInfo;
 
+/* Set up a camera from its level camera descriptor: position, rotation matrix and smoothing rates. */
 void initialize_transform_state_from_level_table(char *cam) {
     float v[4] __attribute__((aligned(16)));
     float mat[16] __attribute__((aligned(16)));

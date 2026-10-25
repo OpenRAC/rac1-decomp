@@ -343,6 +343,7 @@ LINKER_REMNANT("asm/remnants/text", func_00214080);
 
 extern int func_001160D8(void);
 
+/* Returns a random integer from 0 to arg0 - 1. */
 int random_integer_below(int arg0) {
     return ((func_001160D8() >> 16) & 0x7FFF) % arg0;
 }
@@ -369,6 +370,7 @@ extern float func_00214158(void);
 extern float func_002140F8(float, float);
 extern void func_00215C00(void *, float, float, float);
 
+/* Writes a random offset with length between arg1 and arg2 in a random direction. */
 void random_spherical_offset(void *arg0, float arg1, float arg2) {
     float r1 = random_angle_radians();
     float r2 = random_angle_radians();
@@ -522,6 +524,7 @@ extern float func_001F9CB8(void *);
 
 typedef struct { float v[4]; } __attribute__((aligned(16))) Q_214778;
 
+/* Picks a moby's hit reaction from the damage record, scales the knockback; returns the reaction. */
 int select_damage_reaction(char *a, char *B, char *an, unsigned int btn, int *outA, float *outF, int *outI, int k) {
     float v[4] __attribute__((aligned(16)));
     float w[4] __attribute__((aligned(16)));
@@ -756,6 +759,7 @@ int select_damage_reaction(char *a, char *B, char *an, unsigned int btn, int *ou
 
 LINKER_REMNANT("asm/remnants/text", func_00214CF8);
 
+/* Steps *p toward target by at most maxstep; returns the distance still left. */
 float ApproachValue(float *p, float target, float maxstep) {
     float d = target - *p;
     if (maxstep < d) {
@@ -1228,6 +1232,7 @@ float round_float_to_decimal_places(int arg0, float arg1) {
 extern float func_0020D830(char *);
 extern float func_00215A98(int, float);
 
+/* Returns 1 if the moby's current anim frame lies inside the one-frame window starting at arg1. */
 int IsFrameWithinWindow(char *arg0, float arg1) {
     float now = MobyGetFrameValue(arg0);
     float a = round_float_to_decimal_places(4, now - arg1);
@@ -1367,6 +1372,7 @@ int try_set_help_message(int arg0, int arg1) {
     return 0;
 }
 
+/* Sets a help message even when another one shows, and keeps it alive; returns 3 on success. */
 int force_help_message(int arg0, int arg1) {
     int busy = try_set_help_message(arg0, arg1);
     if (busy != 0) {
@@ -1381,6 +1387,7 @@ int force_help_message(int arg0, int arg1) {
     return 3;
 }
 
+/* Returns gold bolts collected minus four per gold weapon bought, clamped to 0..40. */
 int compute_clamped_count_difference(void) {
     int a = count_nonzero_entries_up_to_40();
     int b = count_nonzero_entries_up_to_10();
@@ -1391,6 +1398,7 @@ int compute_clamped_count_difference(void) {
 
 extern unsigned char D_0014BFC0[];
 
+/* Counts the gold bolts collected, capped at 40. */
 int count_nonzero_entries_up_to_40(void) {
     int count = 0;
     int row;
@@ -1408,6 +1416,7 @@ int count_nonzero_entries_up_to_40(void) {
 
 extern unsigned char D_0013E620[];
 
+/* Counts the gold weapons bought, capped at 10. */
 int count_nonzero_entries_up_to_10(void) {
     int count = 0;
     int i;
@@ -1420,6 +1429,7 @@ int count_nonzero_entries_up_to_10(void) {
 
 extern unsigned char D_0013D510[];
 
+/* Counts the skill points earned, capped at 30. */
 int count_nonzero_entries_up_to_30(void) {
     int count = 0;
     int i;

@@ -35,6 +35,7 @@ void Stream_SetSlotValue(int value, long arg) {
 void stream_slot_clear_state(void *a0, unsigned char *a1) {
     *(volatile unsigned short *)(a1 + 0xA) = 0;
 }
+/* Stream slot callback: store a negative result, wake a waiting slot (state 9 to 4), or reset it on 0. */
 void func_L00_00267130(int value, long arg) {
     Slot_2670E0 *s = (Slot_2670E0 *)arg;
 
@@ -98,6 +99,7 @@ extern void func_L00_0023A690(void);
 extern void func_L00_0023A788(void);
 extern char D_0013D605[];
 extern s32 D_L00_0015F6B0 MACRO_ADDR;
+/* Start an NPC's dialog when the hero is close and facing it; returns nonzero if it started. */
 int Npc_TryStartDialog(char *p, char *q) {
     extern float func_001F9D10(void *, void *);
     extern s32 func_L00_00267618(void *);
@@ -161,6 +163,7 @@ int Npc_TryStartDialog(char *p, char *q) {
 extern s32 D_0015EE84 MACRO_ADDR;
 extern s32 D_L00_001C47B8[];
 extern s32 D_L00_001792B8[];
+/* Find the dialogue entry index of p within the current level's range; -1 if not found. */
 s32 get_dialogue_entry(s32 p, s32 unused) {
     s32 n = g_current_level_index;
     s32 lo;
@@ -242,6 +245,7 @@ s32 DialogRequest_Init(void *p, u8 *out_p)
 }
 typedef struct { char pad[0x18E]; s16 head; s32 count; char pad2[0x1E0-0x194]; u32 t[30]; char pad3[0x2D0-0x258]; f32 v[30]; } Hist_266e80;
 extern Hist_266e80 D_0013CA40;
+/* Search the last n pad history frames for a press in mask; returns the bits, *out gets the age. */
 int pad_pressed_within(int mask, int n, int *out) {
     int lim = g_controller_state.count;
     int i;
@@ -260,6 +264,7 @@ int pad_pressed_within(int mask, int n, int *out) {
 INCLUDE_ASM("asm/overlays", func_L00_00267C34);
 extern int func_L00_00267BA8(int, int, int *);
 extern int func_001F9B70(int);
+/* True when both masks a and b were pressed within c frames, less than d frames apart. */
 int check_pad_press_separation(int a, int b, int c, int d) {
     int v[2];
     int r = 0;

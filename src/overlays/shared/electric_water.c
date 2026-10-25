@@ -158,6 +158,7 @@ typedef struct ElectricWaterVars {
     s32 reset_area_b;             /* 0x128 */
 } ElectricWaterVars;
 
+/* Electric water: switch the shock on or off, light its lamps, and hurt the hero when wet inside it. */
 void electric_water_update(unsigned char *m) {
     enum {
         ELECTRIC_WATER_INITIALIZE = 0,
@@ -926,6 +927,7 @@ void draw_electric_water_bolt_start_quads(char *mv) {
 }
 extern int func_L11_00310738(void *);
 
+/* Electric water switch: when its linked trigger turns, go to state 1 and raise it by 1.5. */
 void reset_electric_water_switch(char *moby)
 {
     if (test_linked_moby_turn_trigger(moby)) {

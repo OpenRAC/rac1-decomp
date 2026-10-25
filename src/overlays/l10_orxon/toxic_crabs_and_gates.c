@@ -1560,6 +1560,7 @@ extern int D_0015EE98 MACRO_ADDR;
 extern short D_0015EEA0;
 extern short D_L10_0015F720;
 
+/* Pick one of two banner message ids by a game flag. */
 static inline short msgSel(void) {
     if (D_0013D355[0x140] != 0) {
         return 0x271D;

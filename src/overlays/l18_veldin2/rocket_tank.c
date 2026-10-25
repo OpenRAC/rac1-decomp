@@ -70,6 +70,7 @@ typedef struct {
     float f40;
 } M;
 
+/* Shows the moby during a cinematic step; flips it and reflects its height when the boss camera resets. */
 void update_moby_scene_visibility_and_height_reflection(M *moby) {
     switch (moby->state) {
     case 0:
@@ -136,6 +137,7 @@ typedef struct {
    with the pointer typed void *, hence the alias. */
 extern void func_L18_002F9AB8_v(void *) __asm__("func_L18_002F9AB8");
 
+/* Rocket tank state machine: setup, path movement, firing and destruction. */
 void rocket_tank_update(M1454 *m) {
     D1454 *d = m->data;
     update_rocket_tank_damage_and_aim(m);
@@ -253,6 +255,7 @@ extern void func_L00_001FFED8(void *, int, float);
 extern void func_L00_0025E590(void *, void *);
 extern float func_L00_0025CE58(float *, float *, float, float, float, float);
 
+/* Applies hits to the rocket tank and breaks it apart when its health runs out. */
 void update_rocket_tank_damage_and_aim(void *mv) {
     unsigned char *m = mv;
     char *d = *(char **)(m + 0x78);
@@ -343,6 +346,7 @@ extern float func_001FA850(float, float);
 extern void func_L00_00259868(int, int, float, float, float, int);
 extern float func_001F9D10(void *, void *);
 
+/* Turns and drives the rocket tank toward its next path point, picking a new one on arrival. */
 void update_rocket_tank_path_movement(char *m) {
     char *d = ((char *)((Moby *)m)->pvars);
     float t[4];

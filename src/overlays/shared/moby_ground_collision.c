@@ -7,6 +7,7 @@
 #include "vector.h"
 
 extern int func_001160D8(void);
+/* Returns a random integer in the inclusive range lo..hi. */
 int rand_range(int lo, int hi) {
     return ((func_001160D8() >> 16) & 0x7FFF) % (hi - lo + 1) + lo;
 }
@@ -28,6 +29,7 @@ extern float func_002140F8(float, float);
 extern float func_00214158(void);
 extern float func_001F9F90(float);
 extern float func_001F9FA8(float);
+/* Writes a random direction vector scaled by a random length between lo and hi. */
 void rand_vec(float *o, float lo, float hi) {
     float a = random_float_between(lo, hi);
     float b = random_angle_radians();
@@ -36,6 +38,7 @@ void rand_vec(float *o, float lo, float hi) {
     o[1] = FastSin(b) * FastSin(c) * a;
     o[2] = FastCos(c) * a;
 }
+/* Cubic interpolation between b and c using neighbours a and d at parameter t. */
 float CubicInterpolate(float a, float b, float c, float d, float t) {
     float p = (d - c) - (a - b);
     float q = (a - b) - p;
@@ -46,6 +49,7 @@ float CubicInterpolate(float a, float b, float c, float d, float t) {
 extern float func_001FA790(float, float);
 extern float func_001F9F90(float);
 extern float func_001FA748(float, float);
+/* Cosine-eased blend from angle x toward angle y at parameter z, with wraparound. */
 float interpolate_wrapped_angle_cosine_eased(float x, float y, float z) {
     float t = FastSubRots(y, x);
     float c = FastCos(z * 3.1415927f);
@@ -75,6 +79,7 @@ void interpolate_vector_xyz_cosine_eased(void *dst, void *a, void *b, float t) {
     FastVecScale(tmp, tmp, ease);
     FastVecAdd(dst, a, tmp);
 }
+/* Cosine-eased blend of three wrapped rotation angles from a toward b. */
 void interpolate_wrapped_rotations_cosine_eased(float *out, float *a, float *b, float ang) {
     float s = (1.0f - FastCos(ang * 3.1415927f)) * 0.5f;
     out[0] = FastAddRots(a[0], FastSubRots(b[0], a[0]) * s);
@@ -137,6 +142,7 @@ LINKER_REMNANT("asm/overlays", func_L00_00259418);
 typedef struct { float a[4]; } Vs __attribute__((aligned(16)));
 extern int D_L00_00173F40[];
 extern int func_L00_001EFFF0(void *, void *, int, int, int);
+/* Casts a vertical collision line around p; returns the hit, or 0 when filtered out. */
 int probe_vertical_ground_collision(Vs *p, int x, int y, float f, float g) {
     Vs t0;
     Vs t1;
@@ -606,6 +612,7 @@ int func_L00_0025A2F0_r(int *out, unsigned char *m, int a2, int a3) {
 INCLUDE_ASM("asm/overlays", func_L00_0025A344);
 INCLUDE_ASM("asm/overlays", func_L00_0025A43C);
 LINKER_REMNANT("asm/overlays", func_L00_0025A458);
+/* Subtracts b from the countdown in the top byte of *p; returns 1 when it reaches 0. */
 int decrement_packed_countdown(int *p, int b) {
     int w = *p;
     int v = (w >> 24) - b;
@@ -615,6 +622,7 @@ int decrement_packed_countdown(int *p, int b) {
 }
 extern int func_001FA898(float);
 extern float func_001FA888(int);
+/* Height after n gravity steps of size f, n = b.z / f; stores n in *out when given. */
 float calculate_triangular_corrected_scalar(float *a, float *b, int *out, float f) {
     int n = truncate_float_to_s32(b[2] / f);
     float s = IntToFloat(n);
@@ -625,6 +633,7 @@ float calculate_triangular_corrected_scalar(float *a, float *b, int *out, float 
     return r;
 }
 extern float func_001FA888(int);
+/* Predicts the position after d frames of velocity c with per-frame gravity f. */
 void predict_position_with_vertical_drop(void *a, void *b, void *c, int d, float f) {
     float t[4];
     FastVecScale(t, c, IntToFloat(d));
@@ -656,6 +665,7 @@ int solve_quadratic_equation(float *r0, float *r1, float a, float b, float c) {
 }
 extern void func_00214358(void *, int, float);
 
+/* Probes the ground height below a point with collision mask 0x20. */
 void probe_ground_height_flag20(void *arg) {
     ProbeGroundHeight(arg, 0x20, 0.5f);
 }
@@ -683,6 +693,7 @@ int test_moby_linked_record_word8(char *a) {
     if (p && *(int *)(p + 8)) return 1;
     return 0;
 }
+/* Fills a hit query with two ids and a scale, marking it as having no direction. */
 void initialize_hit_descriptor(char *a, int b, int c, float d) {
     *(int *)(a + 0x10) = b;
     *(int *)(a + 0x14) = c;
@@ -690,6 +701,7 @@ void initialize_hit_descriptor(char *a, int b, int c, float d) {
     *(int *)(a + 0x20) = 0;
     clear_u64_value(a);
 }
+/* Fills a hit query with two ids, a scale and the direction vector from src. */
 void InitDirectionalHitQuery(char *arg, int a, int b, void *src, float scale) {
     *(int *)(arg + 0x10) = a;
     *(int *)(arg + 0x14) = b;
@@ -834,6 +846,7 @@ int sweep_hit_segment(void *a, void *b, void *c, void *d, int e, int f, int n) {
 }
 typedef struct { int a[4]; } Vk __attribute__((aligned(16)));
 extern void func_L00_001FFED8(void *, int, float);
+/* Builds a quaternion from X, Y and Z axis rotations in v. */
 void build_quaternion_from_axis_rotations(void *a, float *v) {
     Vk t0, t1, t2;
     axis_rotation_2d48(&t2, 0, v[0]);
@@ -874,6 +887,7 @@ void jet_animate(unsigned char *m, float s) {
     }
 }
 LINKER_REMNANT("asm/overlays", func_L00_0025B168);
+/* Stores a narrow ground height band under the object, or zeros when no ground is hit. */
 void set_ground_height_band(char *o) {
     float a[4];
     float b[4];
@@ -894,6 +908,7 @@ void set_ground_height_band(char *o) {
         *(int *)(o + 0x88) = 0;
     }
 }
+/* Reads one byte through a pointer. */
 static inline unsigned char load_u8_0025B478(unsigned char *p) {
     return *p;
 }
@@ -1139,6 +1154,7 @@ void SendRadialMessageToMobys(char *self, Q4 *pos, char **list, int n, char *ski
 /* From Lombyte's project (GPL-3.0), FUN_L00_0025ab48 (PR #66), adapted to PAL. */
 typedef struct { float f[4]; } __attribute__((aligned(16))) Q25BBA0;
 
+/* Writes the XY heading of v to *ang and scales s1/s2 when its w holds the marker value. */
 void HeadingFromVector(Q25BBA0 *v, float *ang, float *s1, float *s2) {
     Q25BBA0 t;
     t = *v;
@@ -1155,6 +1171,7 @@ typedef struct { float x, y, z, w; } Vc0 __attribute__((aligned(16)));
 extern void func_001F9BF0(void *, void *, void *);
 extern float func_001F9CE8(void *);
 
+/* Vertical launch speed to reach b from a at the given ground speed and gravity. */
 float jump_speed_4318(float *a, float *b, float *out, float speed, float g) {
     Vc0 d;
     float t;
@@ -1479,12 +1496,14 @@ void func_L00_0025C710_r(Lerp_C710 *dst, Lerp_C710 a, Lerp_C710 b, float t) {
     dst->z = interpolate_scalar_linear(a.z, b.z, t);
     dst->w = interpolate_scalar_linear(a.w, b.w, t);
 }
+/* Linearly blends angle a toward angle b by c, with wraparound. */
 float interpolate_angle(float a, float b, float c) {
     float r = FastSubRots(b, a);
     return FastAddRots(a, r * c);
 }
 extern float func_001F9B88(float arg0);
 
+/* Damped velocity step: adds b*rate - c*v, then clamps to limit and to |rate|. */
 void advance_damped_scalar_velocity(float *ptr, float rate, float b, float c, float limit) {
     float v = *ptr + (b * rate - c * (*ptr));
 
@@ -1505,6 +1524,7 @@ void advance_damped_scalar_velocity(float *ptr, float rate, float b, float c, fl
 extern void func_L00_0025C7F0(float *ptr, float rate, float b, float c, float limit);
 extern float func_001F9B88(float);
 
+/* Moves *p toward t with a damped spring; snaps to t when close and returns the gap. */
 float Spring(float *p, float *v, float t, float u1, float u2, float eps) {
     float n, d;
     advance_damped_scalar_velocity(v, t - *p, u1, u2, eps);
@@ -1518,6 +1538,7 @@ float Spring(float *p, float *v, float t, float u1, float u2, float eps) {
     }
     return d;
 }
+/* Angle delta from y to x, forced the long way round to match the sign of n. */
 float compute_directed_angle_delta(int n, float x, float y) {
     float d = FastSubRots(x, y);
     if (n == 0 || d * (float)n > 0.0f) return d;
@@ -1598,6 +1619,7 @@ float SteerAngleWithVelocity(float *p, float *v, float a, float b, float c, floa
     *p = FastAddRots(*v, *p);
     return *v;
 }
+/* Packs float RGBA channels (0..1) into a 32-bit color. */
 unsigned int PackColorRGBA(float r, float g, float b, float a) {
     unsigned int x = truncate_float_to_s32(r * 255.0f) & 0xFF;
     unsigned int y = truncate_float_to_s32(g * 255.0f) & 0xFF;
@@ -1605,6 +1627,7 @@ unsigned int PackColorRGBA(float r, float g, float b, float a) {
     unsigned int w = truncate_float_to_s32(a * 255.0f);
     return x | (y << 8) | (z << 16) | (w << 24);
 }
+/* Swaps the three channel values in pairs selected by the mask bits. */
 void swap_color_channel_words(int *a, int *b, int *c, int mask) {
     int x, y;
     if (mask & 1) { x = *b; y = *a; *a = x; *b = y; }
@@ -1612,6 +1635,7 @@ void swap_color_channel_words(int *a, int *b, int *c, int mask) {
     if (mask & 4) { x = *a; y = *c; *c = x; *a = y; }
 }
 extern void func_L00_0025D0E0(int *, int *, int *, int);
+/* Returns the packed color with its RGB channels swapped as the mask selects. */
 unsigned swap_packed_color_channels(unsigned c, int mask) {
     int v[3];
     unsigned a;
@@ -1626,6 +1650,7 @@ unsigned swap_packed_color_channels(unsigned c, int mask) {
 extern void func_001F9BF0(void *, void *, void *);
 extern void func_001FA4A0(void *, void *);
 extern void func_001F9EE8(void *, void *, void *);
+/* Returns component d of (c - a) expressed in the basis b. */
 float compute_transformed_delta_component(void *a, void *b, void *c, int d) {
     float v0[4], v1[4], v2[16];
     float *w = v1;
@@ -1638,6 +1663,7 @@ typedef struct { int a[4]; } Vq __attribute__((aligned(16)));
 extern void func_L00_001FF4B0(void *, void *, float);
 extern float func_001F9C78(void *, void *);
 extern void func_001F9BF0(void *dst, void *a, void *b);
+/* Removes s times the projection of b onto the direction c from b, into a. */
 void subtract_homogeneous_scaled_vector_xyz(void *a, void *b, void *c, float s) {
     Vq t0, t1;
     vec_scale_to_length(&t1, c, 1.0f);
@@ -2114,6 +2140,7 @@ extern void func_001F9D48(V *, V *);
 extern void func_001F9D10(V *, V *);
 extern float func_001F9D48_r(V *, V *) __asm__("func_001F9D48");
 extern float func_001F9D10_r(V *, V *) __asm__("func_001F9D10");
+/* Distance from a to b; XY only when their heights differ by less than r, else full 3D. */
 float DistanceWithHeightTolerance(V *a, V *b, float r) {
     V t0, t1;
     V *p = &t0, *q = &t1;
@@ -2335,6 +2362,7 @@ f32 normalize_angle(f32 a) {
     return x - pi;
 }
 extern int func_L00_0025F410(void *);
+/* True for a moby outside classes 500..540 or of class 502; false for null. */
 int is_nonnull_moby_outside_table_or_class_range_500_to_540_or_class_502(char *a) {
     int r;
     if (a == 0) {
@@ -2361,6 +2389,7 @@ int is_moby_in_class_range_500_to_540(void *moby) {
     return (unsigned int)*(unsigned short *)((char *)moby + 0xA6) - 0x1F4 < 0x29;
 }
 INCLUDE_ASM("asm/overlays", func_L00_0025F420);
+/* True when the moby is one of eight specific classes. */
 int is_moby_class_e2_cc_de_3ee_d6_e1_d5_or_df(void *p) {
     short v = *(short *)((char *)p + 0xA6);
     if (v == 0xE2 || v == 0xCC || v == 0xDE || v == 0x3EE || v == 0xD6 || v == 0xE1 || v == 0xD5 ||
@@ -2720,6 +2749,7 @@ void spawn_color_swapped_explosion_burst(char *a, char *b, float sc, float fl) {
 }
 extern float func_001F9CB8(void *);
 extern void func_L00_001FF4B0(void *, void *, float);
+/* Shortens vector a to length x when it is longer. */
 void ClampVectorLength(void *a, float x) {
     if (x < FastVecLength(a)) {
         vec_scale_to_length(a, a, x);
@@ -2727,6 +2757,7 @@ void ClampVectorLength(void *a, float x) {
 }
 extern int D_L00_00160098 MACRO_ADDR;
 
+/* Adds a moby's index to a counted list unless present or the list is full. */
 void append_unique_moby_index(int a, short *list, short max) {
     int k = ((a - moby_array_start) << 8) >> 16;
     int i;
@@ -2776,6 +2807,7 @@ M25f878 *find_listed_moby_by_data_id(s32 id) {
 }
 INCLUDE_ASM("asm/overlays", func_L00_0026093C);
 extern float func_002140F8(float, float);
+/* Adds a random offset in -s..s to each of the vector's X, Y and Z. */
 void add_random_offset_to_vector_xyz(float *v, float s) {
     v[0] += random_float_between(-s, s);
     v[1] += random_float_between(-s, s);
@@ -2785,6 +2817,7 @@ typedef struct { float x, y, z, w; } Vp __attribute__((aligned(16)));
 extern char *D_L00_001601BC MACRO_ADDR;
 extern void func_001F9EC0(void *, void *, void *);
 
+/* True when p lies inside level cylinder i. */
 int test_point_in_transformed_unit_cylinder(void *p, int i) {
     Vp a;
     Vp b;
@@ -2804,6 +2837,7 @@ int test_point_in_transformed_unit_cylinder(void *p, int i) {
     return 0;
 }
 extern int D_L00_001601B4 MACRO_ADDR;
+/* True when p lies inside level sphere idx. */
 int test_point_in_transformed_unit_sphere(float *p, int idx) {
     float a[4] __attribute__((aligned(16)));
     float b[4] __attribute__((aligned(16)));
@@ -3059,6 +3093,7 @@ int transform_attachment_pose(int x, char *o, float *p, float *q, float *r, floa
 }
 extern int func_L00_0025D390(char *);
 
+/* Converts a world position and rotation into object o's local frame; 0 when o is not flagged. */
 int convert_pose_to_reference_local(int x, char *o, float *a, float *c, float *b, float *d) {
     float m[16];
     float v[4];
@@ -3075,6 +3110,7 @@ int convert_pose_to_reference_local(int x, char *o, float *a, float *c, float *b
 }
 typedef struct { int a[16]; } Mx __attribute__((aligned(16)));
 typedef struct { int a[4]; } Vx __attribute__((aligned(16)));
+/* Composes rotation d with the inverse of rotation c into a, and copies position b. */
 void update_entity_matrix(char *a, Vx *b, void *c, void *d) {
     Mx t0, t1, t2;
     euler_to_matrix(&t0, c);
@@ -3090,6 +3126,7 @@ extern int D_0013D618[];
 extern int D_0015EE84 MACRO_ADDR;
 extern void func_L00_00263DB0(int);
 
+/* Unlocks planet id on the galaxy map and queues its unlock message. */
 void unlock_planet(int id) {
     int n = 0;
     int i;

@@ -36,6 +36,7 @@ extern void func_L00_00217570(int, int);
 extern void func_L00_002091D8(void);
 extern void func_L00_0025805C(void *);
 
+/* Per-frame hero update: animation, state, voices, vehicle, scale, glow pulse and attachments. */
 void HeroL15_FrameUpdate(void) {
     unsigned char *b0, *b1, *b2, *b3, *b4, *b5, *b6;
     unsigned char *moby;

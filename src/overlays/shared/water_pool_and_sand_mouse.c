@@ -121,6 +121,7 @@ extern void func_L00_002A5158(void *, int, int);
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_002b7ef0.c, FUN_L01_002b8288. */
 extern void func_L00_002A5158_pt(float, float, float, float, void *, int, int) __asm__("func_L00_002A5158");
 
+/* Spawns a water pool ripple at the given position. */
 void pool_ripple(float x, float y, float z, float w, void *a, int b) {
     func_L00_002A5158_pt(x, y, z, w, a, b, 0);
 }
@@ -277,6 +278,7 @@ typedef struct L01Camera {
     f32 f22C;                  /* 0x22C */
 } L01Camera;
 
+/* Builds the VU1 setup packet used to render the water. */
 void build_water_render_setup_packet(void)
 {
     f32 scaled_translation_matrix[4][4];
@@ -860,6 +862,7 @@ static inline char *hero_p(void) { return D_0013E633 + 0xE1D; }
 #define F(p, o) (*(float *)((p) + (o)))
 #define I(p, o) (*(int *)((p) + (o)))
 
+/* Bolt crank: hero grabs and turns it with the pad, which drives its linked moby. */
 void bolt_crank_update(char *m) {
     char *s = ((char *)((Moby *)m)->pvars);
     float W0[16];
@@ -1205,6 +1208,7 @@ void gold_weapon_case_update(struct Moby *m) {
 }
 extern void func_L00_001FF4B0(void *, void *, float);
 
+/* Sand mouse approach target: the hero position plus a unit direction. */
 void compute_sand_mouse_approach_target(int unused, void *out)
 {
     char scratch[16];
@@ -1406,6 +1410,7 @@ extern void func_L00_001FF548(void *, void *, float);
 extern int func_L00_00259B08(void *, void *, int, int, float, float);
 extern float func_001F9CB8(void *);
 extern float func_00214358(void *, int, float);
+/* Steers a hovering moby toward a target point per its current command. */
 void update_hover_moby_steering(M_4BA8 *m, char *p) {
     float v[4];
     float d, ang, len, ground, near;
@@ -2770,6 +2775,7 @@ void spawn_amoeboid_burst_sparks(unsigned char *moby, f32 *mode) {
 }
 extern int func_L00_002DCDA8_pt(void *, void *, void *) __asm__("func_L00_002DCDA8");
 
+/* Suck cannon suction for the amoeboid: sets state 14 while held, back to 1 when released. */
 int process_amoeboid_suck_cannon_suction(unsigned char *moby, void *pos, void *target)
 {
     int value = func_L00_002DCDA8_pt(moby, pos, target);
@@ -2799,6 +2805,7 @@ int Moby_HoldStateIfFound(char *a, void *v, void *t, float h) {
     }
     return r;
 }
+/* Cancels suck cannon suction and sets the moby to state 14. */
 int cancel_suck_cannon_suction_and_set_state_14(char *a) {
     int r = cancel_suck_cannon_suction(a);
     a[0x20] = 14;
@@ -2863,6 +2870,7 @@ int launch_suck_cannon_projectile_and_sync_moby_state(char *m, int a, int b, flo
     }
     return r;
 }
+/* Cancels suck cannon suction and sets the moby to state 7. */
 int run_moby_helper_and_set_state_7(char *a) {
     int r = cancel_suck_cannon_suction(a);
     a[0x20] = 7;

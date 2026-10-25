@@ -1019,6 +1019,7 @@ extern float func_001F9D10(void *, void *);
 extern void func_001F49B0(void *, void *);
 extern void func_L00_001FF240(void *, void *, void *);
 extern void func_L01_00286530(void *, void *, int, unsigned int, int, int, int, float);
+/* Return color with blue placed in the blue channel. */
 static inline unsigned int or_blue_channel_p(int blue, unsigned int color) {
     return blue * 0x10000 | color;
 }

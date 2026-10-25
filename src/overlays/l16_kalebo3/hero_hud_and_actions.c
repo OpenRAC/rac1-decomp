@@ -2419,6 +2419,7 @@ extern void func_L00_0028A5A8(void);
 extern void func_0022C870(void);
 extern void func_00234C98(int, long);
 extern int D_0015EF88 MACRO_ADDR;
+/* Draw the level 16 sky: shells at three rotation speeds, static shells in other levels. */
 void render_level16_sky_shells(void) {
     SetupSkyGifPaging();
     if (D_0015EE84_m == 16) {

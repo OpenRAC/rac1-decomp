@@ -532,6 +532,7 @@ void update_umbris_scene_progression(Moby *moby)
 extern void func_001F49B0(void *, void *);
 extern void func_00233AB8(void);
 
+/* Sets up an environment-mapped moby and registers its draw callback. */
 void InitEnvMappedMoby(char *arg) {
     arg[0x30] = 8;
     *(short *)(arg + 0xA6) = 0x215;
@@ -637,6 +638,7 @@ typedef struct FollowerSegmentView {
     s32 owner;                 /* 0xA0 */
 } FollowerSegmentView;
 
+/* Bolt crate that follows a path and bursts when hit. */
 void boltcrate_possibly_for_metal_detector_update(char *m) {
     enum {
         INITIALIZE_PATH_CHILDREN = 0x0,
@@ -1270,6 +1272,7 @@ void WaterPlateUpdate(Moby *m) {
 }
 extern void func_L01_002BA380(char *, int);
 extern char D_L07_001DD100[];
+/* Draws Umbris's water grids. */
 void render_level07_water_grids(void) {
     render_water_grids(umbris_water_grids, 0x24);
 }
@@ -1340,6 +1343,7 @@ typedef struct {
     float radius;
 } Vars30E370;
 
+/* Platform that slides out from its origin and back, gated by a linked moby's state. */
 void update_linked_state_sliding_platform(unsigned char *moby) {
     enum {
         PLATFORM_INITIALIZE = 0,
@@ -1476,6 +1480,7 @@ extern void func_L02_002A52B0(void *, float);
 extern int func_00215570(void *, int);
 extern void func_00216270(void);
 
+/* Umbris ocean moby: sets up its table, then queues the audio stream when outside the clip volume. */
 void ocean_umbris_update(unsigned char *moby) {
     switch (((Moby *)moby)->state) {
     case 0:
@@ -1739,6 +1744,7 @@ extern long func_001F4868(int);
 extern float func_L00_002001D8(void *, float);
 extern void func_L00_001FD1D8(void *, int, int);
 
+/* Draws a ring of fading quad bands around the moby. */
 void draw_fading_ring_effect(unsigned char *moby) {
     char packet[0x90] __attribute__((aligned(16)));
     char second[0x90] __attribute__((aligned(16)));
@@ -2111,6 +2117,7 @@ void handle_sharkigator_hit(char *m, char *x, float *hp) {
 }
 extern float func_001F9D10(void *, void *);
 
+/* Caches the distance from each path point to the next, wrapping at the end. */
 void cache_path_segment_lengths(char *data) {
     int i, count;
     if (data != 0) {
@@ -2129,6 +2136,7 @@ void cache_path_segment_lengths(char *data) {
 }
 extern float func_L00_0025A748(void *);
 
+/* Classifies the gap between ground and water height for a sharkigator: 0 deep, 1 mid, 2 shallow. */
 int classify_sharkigator_water_height_gap(char *moby, char *data) {
     float distance = probe_ground_height_flag20(moby + 0x10);
     float delta;
@@ -2383,6 +2391,7 @@ extern void func_L00_00250800(void *, int, void *);
 extern int func_L00_001F10E0(float, void *, int, void *);
 extern int D_L07_00173F58;
 
+/* True when the sharkigator's joint sphere hits something and the hit target is id. */
 int test_sharkigator_target_sphere_collision(void *moby, int id, float scale) {
     char temp[16];
     Moby_GetJointWorldPos(moby, 0, temp);
@@ -3303,6 +3312,7 @@ void configure_timed_point_light(float radius, void *moby_, void *obj_, short pa
     }
 }
 
+/* Sets a controller rumble whose strength falls off with distance up to 80 units. */
 void RumbleByDistance(char *moby) {
     float distance = FastVecDist(moby + 0x10, debris_far_point);
     char *state;

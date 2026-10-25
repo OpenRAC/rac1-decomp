@@ -1031,6 +1031,7 @@ extern char *func_L00_002DCD40(char *);
 extern int func_L00_002DD0E0(char *, int, int, float);
 extern void func_0022ED80(int, int, char *);
 
+/* Launch the moby's suck cannon shot: state 5 on success, back to 1 on a failed refire. */
 int launch_suck_cannon_projectile_and_update_moby_state(char *m, int a, int b, float f) {
     char *h = get_moby_suck_cannon_record(m);
     int r = launch_suck_cannon_projectile(m, a, b, f);
@@ -1045,6 +1046,7 @@ int launch_suck_cannon_projectile_and_update_moby_state(char *m, int a, int b, f
     return r;
 }
 extern int func_L00_002DD2D0(void *);
+/* Cancel the moby's suck cannon suction and set it to state 5; return the cancel result. */
 int cancel_suck_cannon_suction_and_set_moby_state_5(char *a) {
     int r = cancel_suck_cannon_suction(a);
     a[0x20] = 5;
@@ -1435,6 +1437,7 @@ extern u8 *func_L00_0026DEA0(void *, s32, f32, f32, void *, u32, f32, f32);
 extern float D_0015EE6C MACRO_ADDR;
 extern float D_0015EE60 MACRO_ADDR;
 
+/* Kill the homing shot's 17 trail particles, and if enabled spawn its end burst effects. */
 void clear_homing_shot_trail_and_spawn_end_effects(u8 *m, s32 enabled)
 {
     s32 i;
@@ -2266,6 +2269,7 @@ void replenish_hero_drones(void) {
 }
 extern int func_L00_00273478(void *, int, float, float, unsigned, unsigned);
 
+/* Spawn the drone's two joint-attached glow particles if they are missing. */
 void ensure_drone_attached_particles(char *m) {
     char *p = ((char *)((Moby *)m)->pvars);
     if (*(int *)(p + 0x4C) == 0) {

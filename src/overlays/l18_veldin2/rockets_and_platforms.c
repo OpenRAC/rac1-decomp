@@ -595,6 +595,7 @@ extern int func_L00_002DCDA8_D74F8(void *) __asm__("func_L00_002DCDA8");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l18/gameplay/entities/002a7220.c, FUN_L18_002d6108. */
 extern int func_L00_002DCDA8_D74F8_pos(void *, void *, void *) __asm__("func_L00_002DCDA8");
+/* Pauses the moby in state 4 while the path check fails, restores its state after; returns code. */
 int update_moby_state_pause(struct Moby *m, void *pos, void *target) {
     char *d = (char *)m->pvars;
     int r = func_L00_002DCDA8_D74F8_pos(m, pos, target);
@@ -3282,6 +3283,7 @@ extern short D_L18_001622F4;
 extern short D_L18_001622F8;
 extern short D_L18_001622FC;
 
+/* Draws the pulsing glows of every Drek fight missile (class 0x54B) in this moby's group. */
 void render_drek_fight_missile_group_effects(char *moby) {
     short *p;
     float a, b;

@@ -172,6 +172,7 @@ __asm__(".section .text\n\tnop\n");
 
 extern int D_001A0468[];
 
+/* Returns a used map slot that holds no map (id -1), searched downward unless arg0 is 0. */
 int find_free_map_slot(int arg0) {
     int *a = map_slot_use;
     int *b = map_slot_use + 5;
@@ -295,6 +296,7 @@ void move_map_entry_slot(int a, int b) {
 
 extern int D_001A01F0[];
 
+/* Returns the used map slot that holds map arg0, or -1. */
 int find_map_entry_slot(int arg0) {
     int i;
     for (i = 0; i < 5; i++) {

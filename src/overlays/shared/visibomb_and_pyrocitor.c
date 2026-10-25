@@ -730,6 +730,7 @@ void emit_beam_trail_particles(X *x) {
     g->f0C = 1;
 }
 extern char *func_0020D348(int);
+/* Spawns a hidden class 0xA7 moby and stores index a in its pvars. */
 char *spawn_indexed_class_a7_moby(int a) {
     char *m = CreateMoby(0xA7);
     if (m != 0) {
@@ -1383,6 +1384,7 @@ extern void func_L00_00222B80(int, int);
 extern void func_L00_002B6AE0(int, int);
 extern void func_L00_00204190(void);
 extern void func_0020D678(int);
+/* Ends Visibomb control: deletes the missile, restores the camera and the hero's move state. */
 void terminate_visibomb_missile(int a, int *b) {
     int *p = *(int **)(*(char **)b + 0x78);
     if (p != 0) p[1] = 0;

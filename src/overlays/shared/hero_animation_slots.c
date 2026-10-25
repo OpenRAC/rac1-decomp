@@ -23,6 +23,7 @@ typedef struct {
 } CollisionHit;
 f32 func_001F9F90(f32);
 f32 func_001F9FA8(f32);
+/* Adds to v an xy offset of length 2r in direction ang. */
 static inline void circle_offset(Vec4 *v, f32 ang, f32 r)
 {
     r += r;

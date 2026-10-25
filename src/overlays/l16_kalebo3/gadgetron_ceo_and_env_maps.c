@@ -829,6 +829,7 @@ typedef struct L16SignMoby {
     struct { f32 x; f32 y; f32 z; f32 w; } rot; /* 0x40 */
 } L16SignMoby;
 
+/* Gadgetron sign: scales and raises itself once, then spins slowly. */
 void gadgetron_sign_update(unsigned char *moby_bytes)
 {
     L16SignMoby *moby = (L16SignMoby *)moby_bytes;
@@ -855,6 +856,7 @@ extern int func_L00_00258BC8(int, int);
 extern int func_L16_002E2290(void *);
 extern float func_00214358(void *, int, float);
 extern void func_L16_002C57E8(void *, void *);
+/* Repositions a target at random intervals while the hero is in the clip volume. */
 void update_target_reposition_cycle(char *moby) {
     char *g = D_0013E633 + 0xE9D;
     char *data = ((char *)((Moby *)moby)->pvars);

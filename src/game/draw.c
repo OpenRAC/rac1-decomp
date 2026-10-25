@@ -1915,6 +1915,7 @@ typedef struct {
 extern PageSlot D_0018D540[];
 extern char D_0019A4E8[];
 
+/* Returns the HUD state block that serves as the GIF paging arena. */
 static inline char *PagingArena(void) {
     return hud_state;
 }

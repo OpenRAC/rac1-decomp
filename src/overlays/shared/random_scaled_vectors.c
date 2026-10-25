@@ -4,6 +4,7 @@
 
 extern int func_001160D8(void);
 
+/* Scale by 1 - r*r for a random r in [0, 1), so small results are rarer. */
 float scale_by_one_minus_random_squared(float scale)
 {
     int x = (func_001160D8() >> 16) & 0xFFF;
@@ -19,6 +20,7 @@ extern void func_001F9BC0(void *);
 extern float func_001F9F90(float);
 extern float func_001F9FA8(float);
 
+/* Write a 2D vector at a random angle with length from scale_by_one_minus_random_squared. */
 void generate_random_scaled_vector2(float *out, float scale)
 {
     float angle = random_angle_radians();

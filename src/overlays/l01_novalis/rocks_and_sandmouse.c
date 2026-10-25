@@ -42,6 +42,7 @@ extern char *func_L00_0025B478(void *, int, int);
 extern int func_0022ED80(int, int, int);
 extern void func_L01_002F9908(void *, void *, u32, s32, f32, f32, f32, f32, s32);
 
+/* Rock formation update: when hit, plays a sound and bursts into 200 debris pieces. */
 void rock_formation_update(DebrisMoby *m) {
     DebrisHit *hit;
     int i;
@@ -1008,6 +1009,7 @@ extern f32 D_L01_0016128C MACRO_ADDR;
 extern f32 D_L01_00161290 MACRO_ADDR;
 extern f32 D_L01_00161294 MACRO_ADDR;
 
+/* Novalis pool update: sets up the ripple tiles and runs the pool's water effects. */
 void update_pool_tiles_and_effects(PMoby *moby) {
     s32 *volumes;
     s32 found;
@@ -1417,6 +1419,7 @@ void Moby778Update(char *m) {
 }
 extern void func_L00_00251E30(void *, int);
 
+/* Spawns the replacement pipe moby (class 0x30B) at the owner's position and rotation. */
 char *spawn_pipe_replacement_moby(char *owner) {
     char *moby = CreateMoby(0x30B);
     if (moby != 0) {
@@ -1665,6 +1668,7 @@ char *initialize_beehive_spawn_moby(char *owner) {
 extern char *func_L00_0025B478(void *, int, int);
 extern void func_0020D678(void *);
 
+/* Deletes the mushroom underside when it takes a hit. */
 void mushroom_underside_update(void *arg) {
     char *item = MobyGetHitMessage(arg, 0x10000, 0);
     if (item != 0 && *(float *)(item + 0x2C) > 0.0f) {
@@ -1695,6 +1699,7 @@ void draw_level01_scroll_layers(void *moby) {
 extern void func_L01_0030AFD0(void *);
 extern void func_001F49B0(void *, void *);
 
+/* Sets the moby's draw distances to 0xFF and queues the scroll layer draw callback. */
 void set_moby_flags_and_queue_draw_callback(unsigned char *moby) {
     int value = 0xFF;
     *(short *)(moby + 0x32) = value;
@@ -1718,6 +1723,7 @@ extern float func_001F9D10(void *, void *);
 extern int func_L00_00203F20(int, int);
 extern int func_L00_002D95D8(void *);
 extern int func_L01_00276680(float, void *);
+/* Shows Novalis tutorial help messages based on what the player has used so far. */
 void update_level01_tutorial_hints(Moby *moby) {
     s32 *data;
     Moby *m;
@@ -1892,6 +1898,7 @@ extern void func_L00_0025F4A8(void *, void *, void *, float, float, int, int, in
 extern void func_L00_0026DA50(void *, void *, int, int, float, int, int);
 extern FxSpark_D568 *func_L00_0026DEA0(void *, float, float, float, int, void *, float, int);
 
+/* Flying explosive blob: drag, gravity and spin; explodes on hit or timeout, leaves smoke. */
 void update_explosive_moby(struct Moby *m) {
     BlobVars *v;
     int hit;
@@ -2009,6 +2016,7 @@ extern void func_L00_00264BE8(void *, void *, void *, float, float);
 extern void func_00233AB8(void);
 #define fx_cutscene_D568 (*(CutsceneFx_D568 *)&D_L01_0016CD60)
 
+/* Spawns the camera targets, splashes and bursts of the Novalis cutscenes by scene and frame. */
 void update_level01_cutscene_effects(struct Moby *moby) {
     enum {
         CUTSCENE_FX_STATE_INITIALIZE = 0,

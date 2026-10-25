@@ -2231,6 +2231,7 @@ typedef struct {
     Vec4 pos;                  /* 0x140 eye position */
 } CameraBlock;
 
+/* Draws effect quads for the moby's group members. */
 void draw_group_moby_effect_quads(char *moby) {
     float vertices[4][4];      /* the quad's v[4][4]: the four corners, one row each */
     int colors[4];

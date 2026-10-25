@@ -557,6 +557,7 @@ void fire_blarg_turret_projectile(char *moby)
 }
 extern int func_L00_00260D30(void *, void *, float);
 
+/* Blarg turret: target the nearest moby in range (wider in state 3), else the hero; apply commands. */
 void update_blarg_turret_target_and_state(unsigned char *moby) {
     char *data = ((char *)((Moby *)moby)->pvars);
     float distance;
@@ -732,6 +733,7 @@ void blarg_gunner_update(unsigned char *raw) {
 extern void * func_L13_002811B0(void *, int, int, float, float, int, float, int);
 extern void func_L00_002688A8(void *);
 
+/* Robosquawker: keep its joint particle alive while flagged visible, kill it otherwise. */
 void update_robosquawker_particle(unsigned char *moby, char *data) {
     float opacity = 0.2f;
     void **handle = (void **)(data + 0x228);
@@ -1752,6 +1754,7 @@ void robosquawker_update(Moby *m) {
 extern int func_001F4868(int);
 extern void func_L11_003121C0(float, float, float, float, float, int, int, long, int, int, int, int, int);
 extern float func_001FA748(float, float);
+/* Append the same effect quad four times at x, y, each turned a further quarter turn. */
 void append_four_quarter_turn_effect_quads(unsigned char a, unsigned char b, unsigned char c, unsigned char d, float x, float y, float s, float ang) {
     int h;
     float w;
