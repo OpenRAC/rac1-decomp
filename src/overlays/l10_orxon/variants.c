@@ -9,6 +9,7 @@ extern void func_L00_0028A5A8(void);
 extern void func_0022C870(void);
 extern void func_00234C98(int, long);
 extern int D_0015EF88 MACRO_ADDR;
+/* Draw the Orxon sky: phase-rotated shells in level 10, static shells otherwise. */
 void SkyFrameDraw(void) {
     SetupSkyGifPaging();
     if (D_0015EE84_m == 10) {
@@ -18,5 +19,5 @@ void SkyFrameDraw(void) {
     }
     DoSkyGifPaging();
     VU1_addGSregister(0x47, 0x5360B);
-    VU1_addGSregister(0x4E, 0x1000000 | (D_0015EF88 >> 13));
+    VU1_addGSregister(0x4E, 0x1000000 | (depth_buffer_address >> 13));
 }

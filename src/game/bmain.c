@@ -52,20 +52,20 @@ void start_level(int level) {
     if (level < 0) {
         return;
     }
-    if (D_0015EE80 != 0) {
+    if (pal_mode != 0) {
         b = D_00137C80_g.alt[level].b;
         a = D_00137C80_g.alt[level].a;
     } else {
         b = D_00137C80_g.normal[level].b;
         a = D_00137C80_g.normal[level].a;
     }
-    D_0015EFD8 = 2;
-    D_0013E650[0x6B] |= 8;
+    decode_mode = 2;
+    voice_pool[0x6B] |= 8;
     func_00118D80(0);
     sound_StopAllSounds();
     music_Stop();
-    FadeToBlack(func_001F98C0(12));
-    D_0015F6E8 = 1;
+    FadeToBlack(scale_game_frame_count(12));
+    g_game_mode = 1;
     func_00118D80(0);
     sound_StopAllSounds();
     music_Stop();
@@ -86,11 +86,11 @@ void start_level(int level) {
     func_00122598(0);
     func_00120858(0, 0);
     func_00123168(func_0012F308);
-    Hud_sendTexture(0x1000000, D_0015EF88, 0x1B, 6, 6, 1);
-    D_0015EFD8 = 0;
+    Hud_sendTexture(0x1000000, depth_buffer_address, 0x1B, 6, 6, 1);
+    decode_mode = 0;
     FadeToBlack(4);
-    D_0015F6E8 = 0;
-    D_0013E650[0x6B] |= 0x10;
+    g_game_mode = 0;
+    voice_pool[0x6B] |= 0x10;
 }
 
 /* Pad state, as far as this function reads it. */
@@ -190,7 +190,7 @@ extern void func_00233308_E99D8(void) __asm__("func_00233308");
    the level load.
    The slot stores are in this order on purpose: the last store through each table, the last
    one of the bank value and the two globals are what the scheduler moves to the front.
-   Adapted from Lombyte (GPL-3.0) for PAL: src/textbin/world/startlevel.c, startlevel. */
+   Adapted from Lombyte's project (GPL-3.0) for PAL: src/textbin/world/startlevel.c, startlevel. */
 void startlevel(void) {
     LevelHeader_E99D8 *hdr;
     LevelChunk_E99D8 *tbl;

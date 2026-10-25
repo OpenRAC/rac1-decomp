@@ -59,7 +59,7 @@ extern HudIconRec *D_0019A504;
 /* Finds arg0 in the table D_0019A504 points to (ended by id 0xFFFF).
    The older decode read D_0019A504 as the table itself. */
 int Hud_GetIconIndex(int arg0) {
-    HudIconRec *tab = D_0019A504;
+    HudIconRec *tab = hud_icon_table;
     int i = 0;
 
     while (tab[i].id != 0xFFFF && tab[i].id != arg0) {
@@ -98,7 +98,7 @@ extern HudBank D_00199C60_b[] __asm__("D_00199C60") NOT_SDA;
    indexed through a struct array: each field access is its own giv,
    and loop.c's pick (the +0x24 one) is retail's loop pointer. */
 void init_hud(void) {
-    int *arena = &D_0019A4E8;
+    int *arena = &hud_state;
     int i;
     unsigned char *buf;
 
@@ -119,7 +119,7 @@ void init_hud(void) {
     }
     buf = hud_bank_main;
     hud_bank_end = buf + 0x2800;
-    D_0015FABC = buf;
+    hud_bank_cursor = buf;
     FastMemZero16(buf, 0x2800);
     hud_bank_main[0x20] = 0xFF;
 }
@@ -261,7 +261,7 @@ extern void func_001FF7F0(s32 bank, s32 base);
 extern void func_00201348_FF958(u32 data, s32 dbp, s32 psm, s32 wlog, s32 hlog, s32 immediate) __asm__("func_00201348");
 
 /* Uploads the image pages of one HUD bank to GS memory, from the depth buffer address up, and records each page's block offset. Bank 0's pages are linked first when the bank file is not linked yet.
-   Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/ui/hud/hud_send_resident_bank.c, hud_send_resident_bank. */
+   Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/ui/hud/hud_send_resident_bank.c, hud_send_resident_bank. */
 void Hud_SendResidentBank(s32 bank, s32 base, s32 immediate) {
     struct HudTexCounts *counts;
     s32 address;
@@ -276,9 +276,9 @@ void Hud_SendResidentBank(s32 bank, s32 base, s32 immediate) {
 
     if (D_0019A4E8_FF958.header.counts->loaded[bank] == 0) {
         LinkHudBank(0, base);
-        address = D_0015EF88;
+        address = depth_buffer_address;
     } else {
-        address = D_0015EF88;
+        address = depth_buffer_address;
     }
     counts = D_0019A4E8_FF958.header.counts;
     bank_offset = bank << 2;
@@ -302,7 +302,7 @@ extern int D_0019A4E8 NOT_SDA;
 
 /* Hud_HeapReset(void) */
 void Hud_HeapReset(void) {
-    int *p = &D_0019A4E8;
+    int *p = &hud_state;
     int v = hud_heap_base;
     p[5] = v + 0x64000;
     p[4] = v;
@@ -312,7 +312,7 @@ void Hud_HeapReset(void) {
    p[5] the limit. Rounds the request up to 16 bytes. */
 /* Hud_HeapAlloc(unsigned int, char *, char *, int) */
 int Hud_HeapAlloc(int size) {
-    int *p = &D_0019A4E8;
+    int *p = &hud_state;
     int cur;
 
     if (p[4] == 0) {
@@ -359,7 +359,7 @@ int queue_animation_update(int arg0, int arg1, int arg2, int arg3, int arg4,
     int r3;
     int cur;
 
-    if (D_0015F6E8 == 5 && idx != 2 && idx != 0) {
+    if (g_game_mode == 5 && idx != 2 && idx != 0) {
         return 0;
     }
     if (*(int *)(p + 0x2C) == arg5 && *(int *)(p + 0x28) == arg6
@@ -368,14 +368,14 @@ int queue_animation_update(int arg0, int arg1, int arg2, int arg3, int arg4,
         && *(int *)(p + 0x38) == arg4) {
         return *(int *)(p + 0x64);
     }
-    cur = D_0019A4E8;
+    cur = hud_state;
     *(int *)(p + 0x2C) = arg5;
     r3 = masked0 & *(int *)(p + 4);
     *(int *)(p + 0x64) = cur;
     r3 = r3 & 0x20;
     cur = cur + 1;
     *(int *)(p + 0x28) = arg6;
-    D_0019A4E8 = cur;
+    hud_state = cur;
     *(int *)(p + 0x20) = arg1;
     *(int *)(p + 0x30) = arg2;
     *(int *)(p + 0x34) = arg3;
@@ -417,6 +417,7 @@ typedef struct AnimRec {
     s32 pending;             /* 0x68: cleared once the pending values are applied */
 } AnimRec;
 
+/* Loads the queued animation and copies its pending values into place. */
 void apply_pending_animation(void *arg0) {
     struct AnimRec *anim = (struct AnimRec *)arg0;
 
@@ -479,7 +480,7 @@ void load_animation_definition(void *arg0, int arg1) {
     /* base materialized only after the call, so it lands in a temp
        register rather than a callee-saved one; tbl[7] is volatile because
        retail re-loads that pointer field before each record access. */
-    tbl = (volatile int *)&D_0019A4E8;
+    tbl = (volatile int *)&hud_state;
     v = *(unsigned short *)((char *)tbl[7] + r * 8);
     *(short *)(self + 0x40) = r;
     *(int *)(self + 0) = v;
@@ -522,6 +523,7 @@ extern void func_001166FC(Cfg13 *, void *);
    expands the 0x13 bytes as unaligned ldl/ldr + sdl/sdr pairs with the
    trailing three bytes done singly, which is exactly retail's shape. */
 extern int func_00116810_hud(void *) __asm__("func_00116810");
+/* Copies text into the shared message buffer, preloading the too-long label when under 80 chars. */
 void copy_text_to_shared_buffer(void *arg0) {
     if ((unsigned int)func_00116810_hud(arg0) < 0x50) {
         message_text_buffer = message_too_long_label;
@@ -533,6 +535,7 @@ LINKER_REMNANT("asm/remnants/text", func_001FFF08);
 
 extern short D_0015F9D0;   /* SDA (gp -0x7330) */
 
+/* Counts the resource counter down by one until it reaches 0. */
 void update_resource_counter(void) {
     int v = *(int *)&ResourceCounter;
     if (v != 0) {
@@ -570,7 +573,7 @@ void update_hud(void) {
     HudBankCb *p;
     int col;
 
-    if (*(int *)(arena + 0x30) != 0 || D_0015F544 != 0) {
+    if (*(int *)(arena + 0x30) != 0 || letterbox_enabled != 0) {
         *(int *)(arena + 0x30) = 0;
         return;
     }
@@ -582,22 +585,22 @@ void update_hud(void) {
         }
         p++;
     }
-    if ((hud_msg_count != 0 || D_0015F764 != 0) && D_0015F6E8 == 0) {
+    if ((hud_msg_count != 0 || hud_msg_alpha != 0) && g_game_mode == 0) {
         if (hud_msg_count != 0) {
-            D_0015F764 += 128 / func_001F98C0(8);
-            if (D_0015F764 > 128) {
-                D_0015F764 = 128;
+            hud_msg_alpha += 128 / scale_game_frame_count(8);
+            if (hud_msg_alpha > 128) {
+                hud_msg_alpha = 128;
             }
         } else {
-            D_0015F764 -= 128 / func_001F98C0(8);
-            if (D_0015F764 < 0) {
-                D_0015F764 = 0;
+            hud_msg_alpha -= 128 / scale_game_frame_count(8);
+            if (hud_msg_alpha < 0) {
+                hud_msg_alpha = 0;
             }
         }
-        col = (D_0015F764 << 24) + 0xF0F0F0;
-        draw_framed_text(0x100, D_0015F768, col, (int)hud_msg_text1);
+        col = (hud_msg_alpha << 24) + 0xF0F0F0;
+        draw_framed_text(0x100, hud_msg_y, col, (int)hud_msg_text1);
         if (hud_msg_text2[0] != 0 && hud_msg_count > 1000) {
-            draw_framed_text(0x100, D_0015F768, col, (int)hud_msg_text2);
+            draw_framed_text(0x100, hud_msg_y, col, (int)hud_msg_text2);
         }
         if (hud_msg_count != 0) {
             hud_msg_count--;
@@ -606,7 +609,7 @@ void update_hud(void) {
             hud_msg_count = 0;
         }
     } else {
-        D_0015F768 = 100;
+        hud_msg_y = 100;
     }
 }
 
@@ -687,7 +690,7 @@ extern struct FrameTextureTables_00248 D_0019A4E8_00248 __asm__("D_0019A4E8");
 
 /* GetFrameTex: returns the TEX0 word of a HUD frame, allocating GS blocks for its palette and image pages
    and queueing their uploads the first time.
-   Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/textbin/gameplay/animation/get_frame_texture.c, get_frame_texture. */
+   Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/textbin/gameplay/animation/get_frame_texture.c, get_frame_texture. */
 u64 func_00200248_r(s32 frame_id) __asm__("func_00200248");
 /* GetFrameTex(int) */
 u64 func_00200248_r(s32 frame_id) {
@@ -808,29 +811,29 @@ void HudSprite(int tex, int x, int y, int w, int h, int alpha) {
 
     tw = 1 << e[6];
     th = 1 << e[7];
-    D_00161000[0] = 0x10000005;
-    D_00161000[1] = 0;
-    D_00161000[2] = 0;
-    D_00161000[3] = 0x50000005;
+    g_render_packet_cursor[0] = 0x10000005;
+    g_render_packet_cursor[1] = 0;
+    g_render_packet_cursor[2] = 0;
+    g_render_packet_cursor[3] = 0x50000005;
 
-    base = D_00161000;
-    D_00161000 = base + 4;
-    p = (long *)D_00161000;
+    base = g_render_packet_cursor;
+    g_render_packet_cursor = base + 4;
+    p = (long *)g_render_packet_cursor;
     p[0] = 0x7400000000008001L;
     p[1] = 0x5353106;
     p[2] = GetFrameTex(tex);
     p[3] = 0x156;
     p[4] = ((long)alpha << 24) | 0x7F7F7F;
     p[5] = 0;
-    p[6] = (x * 16 + D_0013E600[4] - 8)
-         | ((long)(y * 16 + D_0013E600[5] - 8) << 16)
+    p[6] = (x * 16 + g_screen_extent[4] - 8)
+         | ((long)(y * 16 + g_screen_extent[5] - 8) << 16)
          | ((long)*(int *)(arena + 0xC) << 32);
     p[7] = (th << 20) + tw * 16;
-    p[8] = ((x + w) * 16 + D_0013E600[4] - 8)
-         | ((long)((y + h) * 16 + D_0013E600[5] - 8) << 16)
+    p[8] = ((x + w) * 16 + g_screen_extent[4] - 8)
+         | ((long)((y + h) * 16 + g_screen_extent[5] - 8) << 16)
          | ((long)*(int *)(arena + 0xC) << 32);
     p[9] = 0;
-    D_00161000 = (int *)((char *)D_00161000 + 0x50);
+    g_render_packet_cursor = (int *)((char *)g_render_packet_cursor + 0x50);
 }
 
 /* func_00200468 drawn as a four-vertex strip (PRIM 0x154) instead of a
@@ -847,43 +850,43 @@ void draw_hud_sprite_flipped(int tex, int x, int y, int w, int h, int alpha) {
 
     tw = 1 << e[6];
     th = 1 << e[7];
-    D_00161000[0] = 0x10000007;
-    D_00161000[1] = 0;
-    D_00161000[2] = 0;
-    D_00161000[3] = 0x50000007;
+    g_render_packet_cursor[0] = 0x10000007;
+    g_render_packet_cursor[1] = 0;
+    g_render_packet_cursor[2] = 0;
+    g_render_packet_cursor[3] = 0x50000007;
 
-    base = D_00161000;
-    D_00161000 = base + 4;
-    p = (long *)D_00161000;
+    base = g_render_packet_cursor;
+    g_render_packet_cursor = base + 4;
+    p = (long *)g_render_packet_cursor;
     p[0] = 0xB400000000008001L;
     p[1] = 0x53535353106L;
     p[2] = GetFrameTex(tex);
     p[3] = 0x154;
     p[4] = ((long)alpha << 24) | 0x7F7F7F;
     p[5] = tw * 16;
-    p[6] = (x * 16 + D_0013E600[4] - 8)
-         | ((long)((y + h) * 16 + D_0013E600[5] - 8) << 16)
+    p[6] = (x * 16 + g_screen_extent[4] - 8)
+         | ((long)((y + h) * 16 + g_screen_extent[5] - 8) << 16)
          | ((long)*(int *)(arena + 0xC) << 32);
     p[7] = (th << 20) + tw * 16;
-    p[8] = (x * 16 + D_0013E600[4] - 8)
-         | ((long)(y * 16 + D_0013E600[5] - 8) << 16)
+    p[8] = (x * 16 + g_screen_extent[4] - 8)
+         | ((long)(y * 16 + g_screen_extent[5] - 8) << 16)
          | ((long)*(int *)(arena + 0xC) << 32);
     p[9] = 0;
-    p[10] = ((x + w) * 16 + D_0013E600[4] - 8)
-          | ((long)((y + h) * 16 + D_0013E600[5] - 8) << 16)
+    p[10] = ((x + w) * 16 + g_screen_extent[4] - 8)
+          | ((long)((y + h) * 16 + g_screen_extent[5] - 8) << 16)
           | ((long)*(int *)(arena + 0xC) << 32);
     p[11] = th << 20;
-    p[12] = ((x + w) * 16 + D_0013E600[4] - 8)
-          | ((long)(y * 16 + D_0013E600[5] - 8) << 16)
+    p[12] = ((x + w) * 16 + g_screen_extent[4] - 8)
+          | ((long)(y * 16 + g_screen_extent[5] - 8) << 16)
           | ((long)*(int *)(arena + 0xC) << 32);
     p[13] = 0;
-    D_00161000 = (int *)((char *)D_00161000 + 0x70);
+    g_render_packet_cursor = (int *)((char *)g_render_packet_cursor + 0x70);
 }
 
 LINKER_REMNANT("asm/remnants/text", func_002008B0);
 
 /* func_00200468 with the position and size already in 16ths of a pixel. */
-void func_002008B8(int tex, int x, int y, int w, int h, int alpha) {
+void draw_hud_sprite_subpixel(int tex, int x, int y, int w, int h, int alpha) {
     char *arena = D_0019A4E8_raw;
     unsigned char *e = (unsigned char *)(*(char **)(arena + 0x24)
         + *(short *)(*(char **)(arena + 0x20) + tex * 4 + 2) * 8);
@@ -894,29 +897,29 @@ void func_002008B8(int tex, int x, int y, int w, int h, int alpha) {
 
     tw = 1 << e[6];
     th = 1 << e[7];
-    D_00161000[0] = 0x10000005;
-    D_00161000[1] = 0;
-    D_00161000[2] = 0;
-    D_00161000[3] = 0x50000005;
+    g_render_packet_cursor[0] = 0x10000005;
+    g_render_packet_cursor[1] = 0;
+    g_render_packet_cursor[2] = 0;
+    g_render_packet_cursor[3] = 0x50000005;
 
-    base = D_00161000;
-    D_00161000 = base + 4;
-    p = (long *)D_00161000;
+    base = g_render_packet_cursor;
+    g_render_packet_cursor = base + 4;
+    p = (long *)g_render_packet_cursor;
     p[0] = 0x7400000000008001L;
     p[1] = 0x5353106;
     p[2] = GetFrameTex(tex);
     p[3] = 0x156;
     p[4] = ((long)alpha << 24) | 0x7F7F7F;
     p[5] = 0;
-    p[6] = (x + D_0013E600[4] - 8)
-         | ((long)(y + D_0013E600[5] - 8) << 16)
+    p[6] = (x + g_screen_extent[4] - 8)
+         | ((long)(y + g_screen_extent[5] - 8) << 16)
          | ((long)*(int *)(arena + 0xC) << 32);
     p[7] = (th << 20) + tw * 16;
-    p[8] = (x + w + D_0013E600[4] - 8)
-         | ((long)(y + h + D_0013E600[5] - 8) << 16)
+    p[8] = (x + w + g_screen_extent[4] - 8)
+         | ((long)(y + h + g_screen_extent[5] - 8) << 16)
          | ((long)*(int *)(arena + 0xC) << 32);
     p[9] = 0;
-    D_00161000 = (int *)((char *)D_00161000 + 0x50);
+    g_render_packet_cursor = (int *)((char *)g_render_packet_cursor + 0x50);
 }
 
 /* func_002008B8 with an explicit texture window: UVs run from (u, v) to
@@ -932,29 +935,29 @@ void draw_hud_sprite_uv(int tex, int x, int y, int w, int h, int u, int v, int a
     image_page = &hud->image_pages[hud->frame_refs[tex].image_index];
     tw = 1 << (image_page->width_log2 + 4);
     th = 1 << (image_page->height_log2 + 4);
-    D_00161000[0] = 0x10000005;
-    D_00161000[1] = 0;
-    D_00161000[2] = 0;
-    D_00161000[3] = 0x50000005;
+    g_render_packet_cursor[0] = 0x10000005;
+    g_render_packet_cursor[1] = 0;
+    g_render_packet_cursor[2] = 0;
+    g_render_packet_cursor[3] = 0x50000005;
 
-    base = D_00161000;
-    D_00161000 = base + 4;
-    p = (long *)D_00161000;
+    base = g_render_packet_cursor;
+    g_render_packet_cursor = base + 4;
+    p = (long *)g_render_packet_cursor;
     p[0] = 0x7400000000008001L;
     p[1] = 0x5353106;
     p[2] = GetFrameTex(tex);
     p[3] = 0x156;
     p[4] = ((long)alpha << 24) | 0x7F7F7F;
     p[5] = u | ((long)v << 16);
-    p[6] = (x + D_0013E600[4] - 8)
-         | ((long)(y + D_0013E600[5] - 8) << 16)
+    p[6] = (x + g_screen_extent[4] - 8)
+         | ((long)(y + g_screen_extent[5] - 8) << 16)
          | ((long)hud->z << 32);
     p[7] = (u + tw) | ((long)(v + th) << 16);
-    p[8] = (x + w + D_0013E600[4] - 8)
-         | ((long)(y + h + D_0013E600[5] - 8) << 16)
+    p[8] = (x + w + g_screen_extent[4] - 8)
+         | ((long)(y + h + g_screen_extent[5] - 8) << 16)
          | ((long)hud->z << 32);
     p[9] = 0;
-    D_00161000 = (int *)((char *)D_00161000 + 0x50);
+    g_render_packet_cursor = (int *)((char *)g_render_packet_cursor + 0x50);
 }
 
 extern int *D_00161000 MACRO_ADDR;
@@ -1009,13 +1012,13 @@ void append_power_of_two_textured_screen_sprite(long texture_register_value, s32
     packet_words[4] = ((s64)alpha << 24) | 0x7F7F7F;
     packet_words[3] = 0x156;
     packet_words[5] = texture_u | ((s64)texture_v << 16);
-    packet_words[6] = (screen_x + D_0013E600[4] - 8)
-                    | ((s64)(screen_y + D_0013E600[5] - 8) << 16)
+    packet_words[6] = (screen_x + g_screen_extent[4] - 8)
+                    | ((s64)(screen_y + g_screen_extent[5] - 8) << 16)
                     | ((long)arena->z_and_fog << 32);
     packet_words[7] = (texture_u + (1 << (texture_width_log2 + 4)))
                     | ((s64)(texture_v + (1 << (texture_height_log2 + 4))) << 16);
-    packet_words[8] = (screen_x + screen_width + D_0013E600[4] - 8)
-                    | ((s64)(screen_y + screen_height + D_0013E600[5] - 8) << 16)
+    packet_words[8] = (screen_x + screen_width + g_screen_extent[4] - 8)
+                    | ((s64)(screen_y + screen_height + g_screen_extent[5] - 8) << 16)
                     | ((long)arena->z_and_fog << 32);
     packet_words[9] = 0;
     render_packet_cursor.p = (struct SpritePacket *)((u8 *)render_packet_cursor.p + 0x50);
@@ -1033,7 +1036,7 @@ extern void func_001F9BF0(float *, float *, float *);
    (func_001F9BD8 adds, func_001F9BF0 subtracts vectors), each packed as
    XYZ2 with D_0013E600[4]/[5] - 8 and the HUD arena's +0xC depth; UVs
    run from (0, 0) to (u * 16, v << 20). */
-void func_00200E38(int u, int v, long tex, float x, float y, float w, float h, float rot) {
+void draw_rotated_sprite(int u, int v, long tex, float x, float y, float w, float h, float rot) {
     float a[4];
     float b[4];
     float pos[4];
@@ -1061,14 +1064,14 @@ void func_00200E38(int u, int v, long tex, float x, float y, float w, float h, f
     FastVecSub(c3, pos, a);
     FastVecAdd(c3, c3, b);
 
-    D_00161000[0] = 0x10000007;
-    D_00161000[1] = 0;
-    D_00161000[2] = 0;
-    D_00161000[3] = 0x50000007;
-    base = D_00161000;
-    D_00161000 = base + 4;
-    p = (long *)D_00161000;
-    vp = D_0013E600;
+    g_render_packet_cursor[0] = 0x10000007;
+    g_render_packet_cursor[1] = 0;
+    g_render_packet_cursor[2] = 0;
+    g_render_packet_cursor[3] = 0x50000007;
+    base = g_render_packet_cursor;
+    g_render_packet_cursor = base + 4;
+    p = (long *)g_render_packet_cursor;
+    vp = g_screen_extent;
     arena = D_0019A4E8_raw;
     p[0] = 0xB400000000008001L;
     p[1] = 0x53535353106L;
@@ -1092,7 +1095,7 @@ void func_00200E38(int u, int v, long tex, float x, float y, float w, float h, f
           | ((long)((int)c3[1] + vp[5] - 8) << 16)
           | ((long)*(int *)(arena + 0xC) << 32);
     p[13] = 0;
-    D_00161000 = (int *)((char *)D_00161000 + 0x70);
+    g_render_packet_cursor = (int *)((char *)g_render_packet_cursor + 0x70);
 }
 
 typedef struct {
@@ -1100,20 +1103,20 @@ typedef struct {
     int depth;
 } HudDepthView;
 
-/* HUD sprite packet with explicit UV corners, adapted from Lombyte (GPL-3.0). */
+/* HUD sprite packet with explicit UV corners, adapted from Lombyte's project (GPL-3.0). */
 void draw_hud_sprite_rect(int tex, int x0, int y0, int x1, int y1,
                    int u0, int v0, int u1, int v1, int alpha) {
     int *base;
     long *p;
     HudDepthView *arena;
 
-    D_00161000[0] = 0x10000005;
-    D_00161000[1] = 0;
-    D_00161000[2] = 0;
-    D_00161000[3] = 0x50000005;
-    base = D_00161000;
-    D_00161000 = base + 4;
-    p = (long *)D_00161000;
+    g_render_packet_cursor[0] = 0x10000005;
+    g_render_packet_cursor[1] = 0;
+    g_render_packet_cursor[2] = 0;
+    g_render_packet_cursor[3] = 0x50000005;
+    base = g_render_packet_cursor;
+    g_render_packet_cursor = base + 4;
+    p = (long *)g_render_packet_cursor;
     p[0] = ((long)0xE800 << 47) | 0x8001;
     p[1] = 0x5353106;
     p[2] = GetFrameTex(tex);
@@ -1121,15 +1124,15 @@ void draw_hud_sprite_rect(int tex, int x0, int y0, int x1, int y1,
     p[4] = ((long)alpha << 24) | 0x7F7F7F;
     p[5] = u0 | ((long)v0 << 16);
     arena = (HudDepthView *)D_0019A4E8_raw;
-    p[6] = (x0 + D_0013E600[4] - 8)
-         | ((long)(y0 + D_0013E600[5] - 8) << 16)
+    p[6] = (x0 + g_screen_extent[4] - 8)
+         | ((long)(y0 + g_screen_extent[5] - 8) << 16)
          | ((long)arena->depth << 32);
     p[7] = u1 | ((long)v1 << 16);
-    p[8] = (x1 + D_0013E600[4] - 8)
-         | ((long)(y1 + D_0013E600[5] - 8) << 16)
+    p[8] = (x1 + g_screen_extent[4] - 8)
+         | ((long)(y1 + g_screen_extent[5] - 8) << 16)
          | ((long)arena->depth << 32);
     p[9] = 0;
-    D_00161000 = (int *)((char *)D_00161000 + 0x50);
+    g_render_packet_cursor = (int *)((char *)g_render_packet_cursor + 0x50);
 }
 
 extern int *D_00161000 MACRO_ADDR;
@@ -1165,13 +1168,13 @@ void Hud_sendTexture(char *arg0, int arg1, int arg2, int arg3, int arg4, int arg
 
     p7 = arg2;
     if (arg5 == 0) {
-        D_00161000[0] = 0x10000006;
-        D_00161000[1] = 0;
-        D_00161000[2] = 0;
-        D_00161000[3] = 0x50000006;
-        base = D_00161000;
+        g_render_packet_cursor[0] = 0x10000006;
+        g_render_packet_cursor[1] = 0;
+        g_render_packet_cursor[2] = 0;
+        g_render_packet_cursor[3] = 0x50000006;
+        base = g_render_packet_cursor;
         dst = base + 4;
-        D_00161000 = base + 0x1C;
+        g_render_packet_cursor = base + 0x1C;
     } else {
         dst = buf;
     }
@@ -1185,12 +1188,12 @@ void Hud_sendTexture(char *arg0, int arg1, int arg2, int arg3, int arg4, int arg
     func_00122630(dst, p5, p6, p7, 0, 0, p10, p11);
 
     if (arg5 == 0) {
-        int *cur = D_00161000;
+        int *cur = g_render_packet_cursor;
         cur[0] = 0x30000000 | nloop2;
-        D_00161000[1] = (int)arg0;
-        D_00161000[2] = 0;
-        D_00161000[3] = 0x50000000 | nloop2;
-        D_00161000 = D_00161000 + 4;
+        g_render_packet_cursor[1] = (int)arg0;
+        g_render_packet_cursor[2] = 0;
+        g_render_packet_cursor[3] = 0x50000000 | nloop2;
+        g_render_packet_cursor = g_render_packet_cursor + 4;
     } else {
         func_00118D80(0);
         func_00122958(dst, arg0);
@@ -1211,16 +1214,17 @@ struct Screen {
 
 extern struct Screen screen_extent __asm__("D_0013E600") NOT_SDA;
 
+/* Emits a GS packet that draws a HUD rectangle, in pixel or subpixel coordinates. */
 void draw_hud_rect(int x0, int y0, int x1, int y1, long prim, int pixels) {
     long *packet_words;
 
-    D_00161000[0] = 0x10000003;
-    D_00161000[1] = 0;
-    D_00161000[2] = 0;
-    D_00161000[3] = 0x50000003;
+    g_render_packet_cursor[0] = 0x10000003;
+    g_render_packet_cursor[1] = 0;
+    g_render_packet_cursor[2] = 0;
+    g_render_packet_cursor[3] = 0x50000003;
 
-    packet_words = (long *)D_00161000;
-    D_00161000 = (int *)(packet_words + 2);
+    packet_words = (long *)g_render_packet_cursor;
+    g_render_packet_cursor = (int *)(packet_words + 2);
     packet_words[2] = 0x4400000000000001UL;
     packet_words[3] = 0x4410;
     packet_words[4] = 0x41;
@@ -1240,7 +1244,7 @@ void draw_hud_rect(int x0, int y0, int x1, int y1, long prim, int pixels) {
             | ((long)(y1 * 16 + screen_extent.top - 0x10) << 16)
             | 0x00FFFFF000000000L;
     }
-    D_00161000 += 12;
+    g_render_packet_cursor += 12;
 }
 
 extern int *D_00161000 MACRO_ADDR;
@@ -1249,41 +1253,41 @@ extern int *D_00161000 MACRO_ADDR;
    func_002017C8's, instead of 0x41): same 1-tag + 3-quadword PACKED GIF
    packet with a FIXED mask 0x00FFFFF000000000 in the vertices' upper 32
    bits instead of a Z parameter. */
-void func_00201640(int arg0, int arg1, int arg2, int arg3, long arg4,
+void draw_hud_rect_blended(int arg0, int arg1, int arg2, int arg3, long arg4,
                     int arg5) {
     int *base;
 
-    D_00161000[0] = 0x10000003;
-    D_00161000[1] = 0;
-    D_00161000[2] = 0;
-    D_00161000[3] = 0x50000003;
+    g_render_packet_cursor[0] = 0x10000003;
+    g_render_packet_cursor[1] = 0;
+    g_render_packet_cursor[2] = 0;
+    g_render_packet_cursor[3] = 0x50000003;
 
-    base = D_00161000;
-    D_00161000 = base + 4;
+    base = g_render_packet_cursor;
+    g_render_packet_cursor = base + 4;
     *(long *)((char *)base + 0x10) = 0x4400000000000001UL;
     *(long *)((char *)base + 0x18) = 0x4410;
     *(long *)((char *)base + 0x20) = 0x46;
     *(long *)((char *)base + 0x28) = arg4;
     if (arg5 != 0) {
         *(long *)((char *)base + 0x30) =
-            (arg0 + D_0013E600[4] - 8)
-            | ((long)(arg1 + D_0013E600[5] - 8) << 16)
+            (arg0 + g_screen_extent[4] - 8)
+            | ((long)(arg1 + g_screen_extent[5] - 8) << 16)
             | 0x00FFFFF000000000L;
         *(long *)((char *)base + 0x38) =
-            (arg2 + D_0013E600[4] - 8)
-            | ((long)(arg3 + D_0013E600[5] - 8) << 16)
+            (arg2 + g_screen_extent[4] - 8)
+            | ((long)(arg3 + g_screen_extent[5] - 8) << 16)
             | 0x00FFFFF000000000L;
     } else {
         *(long *)((char *)base + 0x30) =
-            (arg0 * 16 + D_0013E600[4] - 0x10)
-            | ((long)(arg1 * 16 + D_0013E600[5] - 0x10) << 16)
+            (arg0 * 16 + g_screen_extent[4] - 0x10)
+            | ((long)(arg1 * 16 + g_screen_extent[5] - 0x10) << 16)
             | 0x00FFFFF000000000L;
         *(long *)((char *)base + 0x38) =
-            (arg2 * 16 + D_0013E600[4] - 0x10)
-            | ((long)(arg3 * 16 + D_0013E600[5] - 0x10) << 16)
+            (arg2 * 16 + g_screen_extent[4] - 0x10)
+            | ((long)(arg3 * 16 + g_screen_extent[5] - 0x10) << 16)
             | 0x00FFFFF000000000L;
     }
-    D_00161000 = (int *)((char *)D_00161000 + 0x30);
+    g_render_packet_cursor = (int *)((char *)g_render_packet_cursor + 0x30);
 }
 
 extern int *D_00161000 MACRO_ADDR;
@@ -1300,37 +1304,37 @@ void draw_hud_rect_depth(int arg0, int arg1, int arg2, int arg3, long arg4,
                     int arg5, int arg6) {
     int *base;
 
-    D_00161000[0] = 0x10000003;
-    D_00161000[1] = 0;
-    D_00161000[2] = 0;
-    D_00161000[3] = 0x50000003;
+    g_render_packet_cursor[0] = 0x10000003;
+    g_render_packet_cursor[1] = 0;
+    g_render_packet_cursor[2] = 0;
+    g_render_packet_cursor[3] = 0x50000003;
 
-    base = D_00161000;
-    D_00161000 = base + 4;
+    base = g_render_packet_cursor;
+    g_render_packet_cursor = base + 4;
     *(long *)((char *)base + 0x10) = 0x4400000000000001UL;
     *(long *)((char *)base + 0x18) = 0x4410;
     *(long *)((char *)base + 0x20) = 0x46;
     *(long *)((char *)base + 0x28) = arg4;
     if (arg6 != 0) {
         *(long *)((char *)base + 0x30) =
-            (arg0 + D_0013E600[4] - 8)
-            | ((long)(arg1 + D_0013E600[5] - 8) << 16)
+            (arg0 + g_screen_extent[4] - 8)
+            | ((long)(arg1 + g_screen_extent[5] - 8) << 16)
             | ((long)arg5 << 32);
         *(long *)((char *)base + 0x38) =
-            (arg2 + D_0013E600[4] - 8)
-            | ((long)(arg3 + D_0013E600[5] - 8) << 16)
+            (arg2 + g_screen_extent[4] - 8)
+            | ((long)(arg3 + g_screen_extent[5] - 8) << 16)
             | ((long)arg5 << 32);
     } else {
         *(long *)((char *)base + 0x30) =
-            (arg0 * 16 + D_0013E600[4] - 0x10)
-            | ((long)(arg1 * 16 + D_0013E600[5] - 0x10) << 16)
+            (arg0 * 16 + g_screen_extent[4] - 0x10)
+            | ((long)(arg1 * 16 + g_screen_extent[5] - 0x10) << 16)
             | ((long)arg5 << 32);
         *(long *)((char *)base + 0x38) =
-            (arg2 * 16 + D_0013E600[4] - 0x10)
-            | ((long)(arg3 * 16 + D_0013E600[5] - 0x10) << 16)
+            (arg2 * 16 + g_screen_extent[4] - 0x10)
+            | ((long)(arg3 * 16 + g_screen_extent[5] - 0x10) << 16)
             | ((long)arg5 << 32);
     }
-    D_00161000 = (int *)((char *)D_00161000 + 0x30);
+    g_render_packet_cursor = (int *)((char *)g_render_packet_cursor + 0x30);
 }
 
 LINKER_REMNANT("asm/remnants/text", func_00201948);
@@ -1356,7 +1360,7 @@ extern s32 func_001F6FD8_01A38(s32, s32, u64, s32, s32) __asm__("func_001F6FD8")
 extern void func_00201960(s32, s32, s32, s32, s32);
 void func_00201A38(s32 x, s32 y, s32 color, s32 text);
 
-/* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/textbin/ui/frames/draw_framed_text.c, draw_framed_text. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/textbin/ui/frames/draw_framed_text.c, draw_framed_text. */
 void draw_framed_text(s32 x, s32 y, s32 color, s32 text) {
     s32 alpha = (s32)color >> 24;
     s32 text_left;
@@ -1387,7 +1391,7 @@ extern s32 D_0015EE80 MACRO_ADDR;
 extern s32 D_0015EF84 MACRO_ADDR;
 void func_00201AF0(u32 image_address);
 
-/* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/textbin/draw_boot_image.c, draw_boot_image. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/textbin/draw_boot_image.c, draw_boot_image. */
 void draw_boot_image(u32 image_address) {
     struct DmaTag *tag;
     struct DmaTag *next;
@@ -1398,8 +1402,8 @@ void draw_boot_image(u32 image_address) {
     s32 rows_after_upload;
     s64 image_quadword_count;
 
-    remaining_rows = D_0015EE80 ? 0x1C0 : 0x1A0;
-    destination_block = D_0015EF84 >> 8;
+    remaining_rows = pal_mode ? 0x1C0 : 0x1A0;
+    destination_block = draw_buffer_address >> 8;
     do {
         rows_after_upload = remaining_rows - 0x80;
         upload_rows = 0x80;

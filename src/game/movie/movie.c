@@ -1,4 +1,5 @@
 #include "common.h"
+#include "pad.h"
 #include "callees.h"
 #include "structs.h"
 
@@ -15,13 +16,13 @@ extern void func_0023BE38(void);
 int Movie_Play(int a,int b,int c,char *state,int e) {
     decoder_buffer_address=c;
     decoder_state=state;
-    D_00161314=0;
+    movie_play_step=0;
     movie_clear_gp=0;
     func_00118BA0(func_00118BE0(),1);
-    D_00161314=1;
+    movie_play_step=1;
     if(initAll(a,b,e)) {
         char *base=movie_gp_base;
-        D_00161314=2;
+        movie_play_step=2;
         read_mpeg(base+0xD9048,base,base+0xD9040);
     }
     termAll();
@@ -35,12 +36,7 @@ extern int D_0015EFA0 MACRO_ADDR;
 extern int D_0015EF20 MACRO_ADDR;
 extern int D_0015EE84 MACRO_ADDR;
 /* pad state at D_0013CA40: two words read at 0x1A0/0x1A4 */
-typedef struct MvPad {
-    char pad0[0x1A0];
-    int f1A0;
-    int f1A4;
-} __attribute__((aligned(16))) MvPad;
-extern MvPad D_0013CA40;
+extern PadState D_0013CA40;
 /* global block at D_0013E650: word at 0x5C */
 typedef struct MvGlobals {
     char pad0[0x5C];
@@ -86,28 +82,28 @@ int read_mpeg(char *vd, char *rb, int *file) {
     int put;
     int get;
 
-    D_00161314 = 3;
+    movie_play_step = 3;
     func_00118D80(0);
     toread = left;
     func_00118D80(2);
     func_00122598(0);
-    D_00161314 = 4;
+    movie_play_step = 4;
 
     while (left >= 5 && videoDecGetState(vd) != 3) {
         int hit;
 
-        D_00161314 = 5;
-        D_00161318++;
+        movie_play_step = 5;
+        movie_frame_count++;
         UpdatePad();
-        D_00161314 = 6;
-        if (D_0015EFD8 != -1) {
-            D_00161314 = 7;
-            if (D_0015EFD8 == 2 && D_0013CA40.f1A4 != 0) {
+        movie_play_step = 6;
+        if (decode_mode != -1) {
+            movie_play_step = 7;
+            if (decode_mode == 2 && g_controller_state.pressed != 0) {
                 hit = 1;
-            } else if ((D_0015EFA0 || D_0015EF20 || D_0015EFD8 || D_0015EE84 <= 0)
-                       && (D_0013CA40.f1A4 & 0x800)) {
+            } else if ((challenge_mode || D_0015EF20 || decode_mode || g_current_level_index <= 0)
+                       && (g_controller_state.pressed & 0x800)) {
                 hit = 1;
-            } else if ((D_0013CA40.f1A0 & 0xF) == 0xF && (D_0013CA40.f1A4 & 0x800)) {
+            } else if ((g_controller_state.held & 0xF) == 0xF && (g_controller_state.pressed & 0x800)) {
                 hit = 1;
             } else {
                 hit = 0;
@@ -116,46 +112,46 @@ int read_mpeg(char *vd, char *rb, int *file) {
                 aborted = 1;
                 videoDecAbort(decoder_state + 0xD9048);
             }
-            D_00161314 = 8;
+            movie_play_step = 8;
         }
-        D_00161314 = 9;
+        movie_play_step = 9;
         space = readBufBeginPut(rb, &put);
-        D_00161314 = 10;
+        movie_play_step = 10;
         if (toread > 0 && space > 0xFFFF) {
-            D_00161314 = 11;
+            movie_play_step = 11;
             got = read_cd_stream_sectors(file, put, 0x10000, 0);
-            D_00161314 = 12;
+            movie_play_step = 12;
             readBufEndPut(rb, got);
             toread -= got;
-            D_00161314 = 13;
+            movie_play_step = 13;
         }
-        D_00161314 = 14;
+        movie_play_step = 14;
         proceedAudio();
-        D_00161314 = 15;
+        movie_play_step = 15;
         switchThread();
-        D_00161314 = 16;
+        movie_play_step = 16;
         avail = readBufBeginGet(rb, &get);
-        D_00161314 = 17;
+        movie_play_step = 17;
         if (avail > 0) {
             int size = *(int *)(rb + 0x50008);
 
-            D_00161314 = 18;
+            movie_play_step = 18;
             used = func_0012AD10(vd, get, avail, rb, size);
-            D_00161314 = 19;
+            movie_play_step = 19;
             readBufEndGet(rb, used);
             left -= used;
-            D_00161314 = 20;
+            movie_play_step = 20;
         }
-        D_00161314 = 21;
+        movie_play_step = 21;
         proceedAudio();
-        D_00161314 = 22;
+        movie_play_step = 22;
         if (!started && voBufIsFull(decoder_state + 0xD9168) && isAudioOK()) {
-            D_00161314 = 23;
+            movie_play_step = 23;
             started = 1;
             startDisplay(1);
-            D_00161314 = 24;
+            movie_play_step = 24;
             audioDecStart(decoder_state + 0xD9100);
-            D_00161314 = 25;
+            movie_play_step = 25;
         }
     }
 
@@ -169,10 +165,10 @@ int read_mpeg(char *vd, char *rb, int *file) {
     }
     endDisplay();
     audioDecReset(decoder_state + 0xD9100);
-    func_0012E348(5, D_0013E650.f5C);
+    func_0012E348(5, voice_pool.f5C);
     func_0012DDC0();
-    D_00161314 = 0;
-    D_00161318 = 0;
+    movie_play_step = 0;
+    movie_frame_count = 0;
     return aborted;
 }
 extern int func_00118BC0(int);
@@ -248,10 +244,10 @@ int initAll(int stream_source, int source_mode, int callback_context) {
     decoder_thread.entry = videoDecMain;
     decoder_thread.stack_size = 0x4000;
     decoder_thread.priority = 1;
-    decoder_thread.gp = D_00166D00;
+    decoder_thread.gp = gp_base;
     decoder_thread.gs_tag = 0;
     thread_id = func_00118B50(&decoder_thread);
-    D_00161310 = thread_id;
+    movie_decoder_thread_id = thread_id;
     func_00118B70(thread_id, ((char *)decoder_state) + 0xD9048);
     if (set_state_fields(((char *)decoder_state) + 0xD9040, stream_source, source_mode) == 0) {
         opened = 0;

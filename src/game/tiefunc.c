@@ -297,31 +297,31 @@ extern void func_00234E80(void);
 
 /* DmaTieTextures: the same splice for ties, largest size in D_00161074. */
 void DmaTieTextures(void) {
-    int *p = (int *)D_00161000;
+    int *p = (int *)g_render_packet_cursor;
     int size;
 
-    D_00161000 += 0x10;
-    ((int *)D_00161068)[0] = 0x20000000;
-    ((int *)D_00161068)[1] = D_00161000;
-    ((int *)D_00161068)[2] = 0;
-    ((int *)D_00161068)[3] = 0;
+    g_render_packet_cursor += 0x10;
+    ((int *)tie_tex_dma_tag_slot)[0] = 0x20000000;
+    ((int *)tie_tex_dma_tag_slot)[1] = g_render_packet_cursor;
+    ((int *)tie_tex_dma_tag_slot)[2] = 0;
+    ((int *)tie_tex_dma_tag_slot)[3] = 0;
     if (draw_config[6] != 0 && draw_config[5] != 0) {
-        size = BuildTieTextureDma(D_0015EF74);
+        size = BuildTieTextureDma(g_gs_texture_allocation_cursor);
         VU1_texFlush();
         if (size > 0x400000) {
-            STUB_printf(D_001E8D80);
+            STUB_printf(str_tie_texture_overflow);
         }
-        if (D_00161074 < size) {
-            D_00161074 = size;
+        if (max_tie_texture_dma_size < size) {
+            max_tie_texture_dma_size = size;
         }
     }
-    ((int *)D_00161000)[0] = 0x20000000;
-    ((int *)D_00161000)[1] = D_00161068 + 0x10;
-    ((int *)D_00161000)[2] = 0;
-    ((int *)D_00161000)[3] = 0;
-    D_00161000 += 0x10;
+    ((int *)g_render_packet_cursor)[0] = 0x20000000;
+    ((int *)g_render_packet_cursor)[1] = tie_tex_dma_tag_slot + 0x10;
+    ((int *)g_render_packet_cursor)[2] = 0;
+    ((int *)g_render_packet_cursor)[3] = 0;
+    g_render_packet_cursor += 0x10;
     p[0] = 0x20000000;
-    p[1] = D_00161000;
+    p[1] = g_render_packet_cursor;
     p[2] = 0;
     p[3] = 0;
 }
@@ -336,12 +336,12 @@ extern char D_001E2D00[];
    0x33 into the low 14 bits of the words at +0x00 and +0x20. */
 void PatchTieGifs(void) {
     int *p;
-    for (p = (int *)D_001E3300; *p >= 0; p++) {
+    for (p = (int *)tie_gif_patch_list; *p >= 0; p++) {
         char *tie = object_render_classes[*p];
         char *r = *(char **)(tie + 0x2C);
         int i;
         for (i = 0; i < *(unsigned char *)(tie + 0x23); i++) {
-            short *ent = (short *)(D_001E2D00 + *(unsigned char *)(r + 0x33) * 4);
+            short *ent = (short *)(tie_tex_remap_table + *(unsigned char *)(r + 0x33) * 4);
             if (ent[0] != 0) *(int *)r = (*(int *)r & 0xFFFFC000) | ent[0];
             if (ent[1] != 0) *(int *)(r + 0x20) = (*(int *)(r + 0x20) & 0xFFFFC000) | ent[1];
             r += 0x50;
@@ -353,10 +353,11 @@ extern void func_00236A98(void);
 extern char D_001E4500[];
 extern char D_001E4100[];
 
+/* Patch the tie GIF tags, save the patch list and texture remap table, then patch again. */
 void copy_render_buffer_pair(void) {
     PatchTieGifs();
-    FastMemCopy(D_001E3300, D_001E4500, 0x200);
-    FastMemCopy(D_001E2D00, D_001E4100, 0x400);
+    FastMemCopy(tie_gif_patch_list, tie_gif_patch_list_saved, 0x200);
+    FastMemCopy(tie_tex_remap_table, tie_tex_remap_table_saved, 0x400);
     PatchTieGifs();
 }
 
@@ -364,6 +365,7 @@ extern void func_00238688(void *);
 extern char D_001E3500[];
 extern char D_001E4700[];
 
+/* Light the ties from both tie light data blocks. */
 void register_entity_render_resources(void) {
     LightTies(tie_light_data);
     LightTies(tie_light_data2);
@@ -382,22 +384,22 @@ extern void func_00236958(void); /* DmaTieTextures */
 /* DrawTies_1: DrawShrubs' shape, the packet pointer advanced through a
    local. */
 void DrawTies_1(void) {
-    int p = D_00161000;
+    int p = g_render_packet_cursor;
 
-    D_00161068 = p;
-    D_0015EF74 = D_0015EF78;
+    tie_tex_dma_tag_slot = p;
+    g_gs_texture_allocation_cursor = g_gs_texture_allocation_start;
     p += 0x10;
-    D_00161000 = p;
-    ProfileMarker_Begin(D_00161030, 1);
+    g_render_packet_cursor = p;
+    ProfileMarker_Begin(str_tie_texs, 1);
     if (D_0018A3C8 != 0) {
         func_00118D80(0);
         TieProc();
         write_dma_channel(tie_light_data, 0x3600, 0x40);
     }
-    ProfileMarker_Begin(D_00161040, 5);
+    ProfileMarker_Begin(str_tie_draw, 5);
     DmaTieTextures();
-    FastMemCopy((void *)D_00161000, D_001DF3B0, 0x20);
-    ProfileMarker_End(D_00161040, 5);
+    FastMemCopy((void *)g_render_packet_cursor, tie_packet_tail_tags, 0x20);
+    ProfileMarker_End(str_tie_draw, 5);
 }
 
 extern int D_0016104C MACRO_ADDR;
@@ -418,19 +420,19 @@ typedef struct {
 void DrawTies_2(void) {
     {
         int i;
-        int n = D_0016104C;
+        int n = registered_object_render_class_count;
         for (i = 1; i < n; i += 2) {
             *(short *)(object_render_classes[i] + 0x24) |= 8;
         }
     }
     {
-        int p = D_00161000;
-        D_00161068 = p;
-        D_0015EF74 = D_0015EF78;
+        int p = g_render_packet_cursor;
+        tie_tex_dma_tag_slot = p;
+        g_gs_texture_allocation_cursor = g_gs_texture_allocation_start;
         p += 0x10;
-        D_00161000 = p;
+        g_render_packet_cursor = p;
     }
-    ProfileMarker_Begin(D_00161030, 1);
+    ProfileMarker_Begin(str_tie_texs, 1);
     {
         DrawCfg_236CA8 *d = (DrawCfg_236CA8 *)draw_config;
         if (d->unk18 != 0) {
@@ -440,44 +442,44 @@ void DrawTies_2(void) {
         }
     }
     DmaTieTextures();
-    FastMemCopy(D_001E4500, D_001E3300, 0x200);
-    FastMemCopy(D_001E4100, D_001E2D00, 0x400);
+    FastMemCopy(tie_gif_patch_list_saved, tie_gif_patch_list, 0x200);
+    FastMemCopy(tie_tex_remap_table_saved, tie_tex_remap_table, 0x400);
     {
         int i;
-        int n = D_0016104C;
+        int n = registered_object_render_class_count;
         for (i = 1; i < n; i += 2) {
             *(short *)(object_render_classes[i] + 0x24) &= ~8;
         }
     }
     {
         int i;
-        int n = D_0016104C;
+        int n = registered_object_render_class_count;
         for (i = 0; i < n; i += 2) {
             *(short *)(object_render_classes[i] + 0x24) |= 8;
         }
     }
     {
         DrawCfg_236CA8 *d = (DrawCfg_236CA8 *)draw_config;
-        int p = D_00161000;
-        D_00161068 = p;
-        D_0015EF74 = D_0015EF78;
+        int p = g_render_packet_cursor;
+        tie_tex_dma_tag_slot = p;
+        g_gs_texture_allocation_cursor = g_gs_texture_allocation_start;
         p += 0x10;
-        D_00161000 = p;
+        g_render_packet_cursor = p;
         if (d->unk18 != 0) {
             func_00118D80(0);
             TieProc();
             write_dma_channel(tie_light_data, 0x3600, 0x40);
         }
     }
-    ProfileMarker_Begin(D_00161040, 5);
+    ProfileMarker_Begin(str_tie_draw, 5);
     DmaTieTextures();
     {
         int i;
-        int n = D_0016104C;
+        int n = registered_object_render_class_count;
         for (i = 0; i < n; i += 2) {
             *(short *)(object_render_classes[i] + 0x24) &= ~8;
         }
     }
-    FastMemCopy((void *)D_00161000, D_001DF3B0, 0x20);
-    ProfileMarker_End(D_00161040, 5);
+    FastMemCopy((void *)g_render_packet_cursor, tie_packet_tail_tags, 0x20);
+    ProfileMarker_End(str_tie_draw, 5);
 }

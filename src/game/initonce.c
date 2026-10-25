@@ -77,8 +77,8 @@ extern int D_001941C0[];
  * emitted last. The allocation follows the schedule.
  */
 void InitMemSlots(void) {
-    int base = (int)D_0024272F & 0xFFFFC000;
-    int size = D_0016100C;
+    int base = (int)image_end_round_16k & 0xFFFFC000;
+    int size = current_vu_chain;
     int a = base + size;
     int b = a + size;
     int c = b + 0x64000;
@@ -153,7 +153,7 @@ extern char D_001E7E40[]; /* "Unsupported language %d\n" */
  * the 16 KB-aligned end of the image, sets up memory slots, loads a
  * palette/font image, and finally maps sceCdGetDiskType's result to the
  * current-language global.
- * Adapted from Lombyte (GPL-3.0) for PAL: runtime/startup/init_once.c, init_once. */
+ * Adapted from Lombyte's project (GPL-3.0) for PAL: runtime/startup/init_once.c, init_once. */
 void InitOnce(void) {
     unsigned char buf[0x800];
     char *seg;
@@ -184,21 +184,21 @@ void InitOnce(void) {
     func_00118D80(0);
 
     region = buf[0x33] != 0x4E;
-    pause_action_list_mode = D_0015EE80 = region;
+    pause_action_list_mode = pal_mode = region;
     memcard_get_name(buf);
 
-    func_00121B78(0, 1, (D_0015EE80 != 0) ? 3 : 2, 0);
+    func_00121B78(0, 1, (pal_mode != 0) ? 3 : 2, 0);
     InitDma();
     SetPalMode();
     VU0_loadMicroProgram(&vu0_micro_program);
     func_0012F3F8();
 
-    base = (int)D_0024272F & 0xFFFFC000;
+    base = (int)image_end_round_16k & 0xFFFFC000;
     tbl = (int *)(base + 0x2C0000);
-    seg = D_1FF8000 - (D_00137C80[0x4B1] << 0xB);
-    func_0012F348(D_00137C80[0x4B0], D_00137C80[0x4B1], seg);
+    seg = D_1FF8000 - (disc_table[0x4B1] << 0xB);
+    func_0012F348(disc_table[0x4B0], disc_table[0x4B1], seg);
     func_00118D80(0);
-    func_0020C468(seg, tbl);
+    fast_decompress(seg, tbl);
     func_00118D80(0);
     LoadIRXModule((void *)(tbl[0x1C] + (int)tbl), (void *)(int)tbl[0x1D]);
     LoadIRXModule((void *)(tbl[0x1E] + (int)tbl), (void *)(int)tbl[0x1F]);
@@ -215,7 +215,7 @@ void InitOnce(void) {
     func_00121490(0);
     init_pads();
     func_00123168(func_0012F308);
-    D_0016100C = 0x160000;
+    current_vu_chain = 0x160000;
     InitMemSlots();
     func_00121490(0);
     memcard_Init();
@@ -238,22 +238,22 @@ void InitOnce(void) {
     lang = func_0012D380();
     switch (lang) {
     case 2:
-        D_0015EE88 = 2;
+        g_game_language = 2;
         return;
     case 4:
-        D_0015EE88 = 3;
+        g_game_language = 3;
         return;
     case 3:
-        D_0015EE88 = 4;
+        g_game_language = 4;
         return;
     case 5:
-        D_0015EE88 = 5;
+        g_game_language = 5;
         return;
     default:
         STUB_printf(unsupported_lang_message, lang);
         /* fallthrough */
     case 1:
-        D_0015EE88 = 0;
+        g_game_language = 0;
         return;
     }
 }

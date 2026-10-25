@@ -195,7 +195,7 @@ int viBufAddDMA(ViBuf *vb) {
 
     func_00118CB0(vb->sema);
     if (vb->f44 == 0) {
-        ErrMessage(D_001E8E50);
+        ErrMessage(vibuf_dma_not_active_msg);
         return 0;
     }
     setD4_CHCR(5);

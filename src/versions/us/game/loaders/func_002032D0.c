@@ -17,14 +17,14 @@ void LoadHudBanks(void) {
     int *d941c0;
 
     base = D_0015EF4C_src;
-    out = D_0019A520;
+    out = hud_bank_sizes;
     p = &base->bank[1].size;
     for (n = 0; n < 5; n++) {
         *out++ = ALIGN64(*p);
         p += 2;
     }
 
-    fname = D_0015FC70;
+    fname = hud_bank_alloc_file;
     d941c0 = level_resource_buffers;
     size24 = ALIGN64(base->bank[0].size);
     header = (HudHdr *) func_001FFAB8_d(size24, 0, fname, 0x23A);
@@ -41,7 +41,7 @@ void LoadHudBanks(void) {
         shift54 = (unsigned int) ALIGN64(base->bank[1].size) >> 4;
         LoadCompressedHudBank(0, bank2);
         D_0019A4E8_arena.header->unk94 = Stash_SendData(
-            base->bank[1].off + (int) base, shift54, shift54, (int) D_0015FC80);
+            base->bank[1].off + (int) base, shift54, shift54, (int) hud_bank1_stash_comment);
         Hud_SendResidentBank(0, (void *) bank2, 1);
     }
 
@@ -56,18 +56,18 @@ void LoadHudBanks(void) {
     if (D_0019A4E8_arena.header->unk5C != 0) {
         shift5C = (unsigned int) ALIGN64(base->bank[3].size) >> 4;
         D_0019A4E8_arena.header->unk9C = Stash_SendData(
-            base->bank[3].off + (int) base, shift5C, shift5C, (int) D_0015FC90);
+            base->bank[3].off + (int) base, shift5C, shift5C, (int) hud_bank3_stash_comment);
     }
 
     if (D_0019A4E8_arena.header->unk60 != 0) {
         shift60 = (unsigned int) ALIGN64(base->bank[4].size) >> 4;
         D_0019A4E8_arena.header->unkA0 = Stash_SendData(
-            base->bank[4].off + (int) base, shift60, shift60, (int) D_0015FCA0);
+            base->bank[4].off + (int) base, shift60, shift60, (int) hud_bank4_stash_comment);
     }
 
     if (D_0019A4E8_arena.header->unk64 != 0) {
         shift64 = (unsigned int) ALIGN64(base->bank[5].size) >> 4;
         D_0019A4E8_arena.header->unkA4 = Stash_SendData(
-            base->bank[5].off + (int) base, shift64, shift64, (int) D_0015FCB0);
+            base->bank[5].off + (int) base, shift64, shift64, (int) hud_bank5_stash_comment);
     }
 }

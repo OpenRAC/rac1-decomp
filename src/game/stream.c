@@ -177,7 +177,7 @@ extern int func_0012EFE8_i(void) __asm__("func_0012EFE8");
 /* func_0012EFE8 returns int (989snd.c): with the result in $v0, the
    constant goes to the register retail uses. */
 void request_audio_stream_break(void) {
-    short *p = D_001517D0;
+    short *p = cd_read_state;
     if (p[4] != 0) {
         func_0012EFE8_i();
         ((char *)p)[0xA] = 1;
@@ -195,12 +195,13 @@ extern int D_0015EFBC MACRO_ADDR;
 extern int D_0015EFC0 MACRO_ADDR;
 extern void func_00121750(int, int, int, void *);
 
+/* Start a CD stream read of arg2 sectors from arg1 into arg0 at the current spindle speed. */
 int Stream_SubmitRead(int arg0, int arg1, int arg2) {
-    StreamHdr hdr = D_00151800;
+    StreamHdr hdr = stream_read_mode_template;
 
-    hdr.b[1] = D_0015EE58[0];
-    D_0015EFBC = 0;
-    D_0015EFC0 = 0;
+    hdr.b[1] = cd_read_spindle_speed[0];
+    cd_read_wait_frames = 0;
+    cd_read_slowdown_applied = 0;
     func_00121750(arg1, arg2, arg0, &hdr);
     return 1;
 }
@@ -214,7 +215,7 @@ extern int func_0012EE98(int, int, int, void *);
    units the caller wants, arg2 << 11; on a rejected request it reports
    the failure and returns 0. */
 int start_audio_stream_read(int arg0, int arg1, int arg2) {
-    char *d = (char *)D_001517D0;
+    char *d = (char *)cd_read_state;
 
     if (*(short *)(d + 8) != 0) {
         return 0;
@@ -223,7 +224,7 @@ int start_audio_stream_read(int arg0, int arg1, int arg2) {
         return 0;
     }
     if (func_0012EE98(arg1, arg2, arg0, d + 0x30) == 0) {
-        STUB_printf(D_001E8980);
+        STUB_printf(load_file_start_failed_string);
         raise_kernel_trap();
         return 0;
     }
@@ -272,7 +273,7 @@ int Load(int arg0, int arg1, int arg2) {
     char *d;
     int r = start_audio_stream_read(arg0, arg1, arg2);
     if (r != 0) {
-        while (d = (char *)D_001517D0, *(short *)(d + 0x8) != 0) {
+        while (d = (char *)cd_read_state, *(short *)(d + 0x8) != 0) {
             func_00122598(0);
             music_Update();
             func_0012EC40();
@@ -300,10 +301,11 @@ struct MusicStreamState {
     s16 read_state;            /* 0x08: 0 idle, 1 reading, 2 done */
 };
 
+/* Pump music and stream updates, until the CD read is idle if arg0; return the read state. */
 short update_audio_stream_until_idle(int arg0) {
     if (arg0 != 0) {
         struct MusicStreamState *d;
-        while (d = (struct MusicStreamState *)D_001517D0, d->read_state != 0) {
+        while (d = (struct MusicStreamState *)cd_read_state, d->read_state != 0) {
             func_00122598(0);
             music_Update();
             func_0012EC40();
@@ -317,17 +319,18 @@ short update_audio_stream_until_idle(int arg0) {
         func_0012EC30();
     }
     {
-        struct MusicStreamState *d = (struct MusicStreamState *)D_001517D0;
+        struct MusicStreamState *d = (struct MusicStreamState *)cd_read_state;
         return d->read_state;
     }
 }
 
 extern int func_0012F030(void);
 
+/* CD read callback: mark the music stream read finished, or done if more data is ready. */
 void finish_audio_stream_read(int callback_value) {
     struct MusicStreamState *state;
     if (callback_value == 1) {
-        state = (struct MusicStreamState *)D_001517D0;
+        state = (struct MusicStreamState *)cd_read_state;
         state->read_state = 0;
         if (func_0012F030() != 0) {
             state->read_state = 2;
@@ -335,6 +338,7 @@ void finish_audio_stream_read(int callback_value) {
     }
 }
 
+/* Stream callback: move a music channel from state 2 to ready (3) once the voice is valid. */
 void music_channel_ready_callback(int arg0, long arg1) {
     short *p = (short *)(int)arg1;
     if (p != 0 && arg0 != 0 && p[5] == 2) {
@@ -344,6 +348,7 @@ void music_channel_ready_callback(int arg0, long arg1) {
 
 extern void func_002167C0(short, short, short);
 
+/* Stream callback: store the voice handle and advance the channel, or restart the secondary track. */
 void music_secondary_start_callback(int arg0, long arg1) {
     short *p = (short *)(int)arg1;
     if (p == 0) {
@@ -355,13 +360,14 @@ void music_secondary_start_callback(int arg0, long arg1) {
             p[5] = 2;
         }
     } else {
-        short *b = D_001517D0;
+        short *b = cd_read_state;
         music_start_track_by_id(b[0x2A], b[0x2C], b[0x2B]);
     }
 }
 
 extern void func_002169B8(short, short, short);
 
+/* Stream callback: store the voice handle and advance the channel, or redo the primary preseek. */
 void music_primary_preseek_callback(int arg0, long arg1) {
     short *p = (short *)(int)arg1;
     if (p == 0) {
@@ -373,13 +379,14 @@ void music_primary_preseek_callback(int arg0, long arg1) {
             p[5] = 2;
         }
     } else {
-        short *b = D_001517D0;
+        short *b = cd_read_state;
         music_PreseekTrack(b[0x1C], b[0x1E], b[0x1D]);
     }
 }
 
 extern short D_001517F0 NOT_SDA;
 
+/* Stream callback: store the voice handle and mark the transition track playing, or reset it. */
 void music_transition_start_callback(int arg0, long arg1) {
     short *p = (short *)(int)arg1;
     if (p != 0) {
@@ -398,6 +405,7 @@ void music_transition_start_callback(int arg0, long arg1) {
     }
 }
 
+/* Stream callback: switch a replaced primary track to playing, or reset the channel on failure. */
 void music_primary_replace_callback(int arg0, long arg1) {
     short *p = (short *)(int)arg1;
     if (p != 0) {
@@ -417,6 +425,7 @@ void music_primary_replace_callback(int arg0, long arg1) {
     }
 }
 
+/* Stream callback: store the voice handle and mark the primary track started, or reset it. */
 void music_primary_start_callback(int arg0, long arg1) {
     short *p = (short *)(int)arg1;
     if (p != 0) {
@@ -439,7 +448,7 @@ void set_sound_handle_id(int arg0, long arg1) {
     short *p = (short *)(int)arg1;
     if (p != 0) {
         if (*(unsigned int *)p != 0xFFFFFFFF) {
-            STUB_printf(D_00160168);
+            STUB_printf(sound_handle_in_use_message);
         } else {
             *(int *)p = arg0;
             if (arg0 == 0) {
@@ -449,6 +458,7 @@ void set_sound_handle_id(int arg0, long arg1) {
     }
 }
 
+/* Stream callback: save the remaining time and its quarter, then advance the channel. */
 void music_remaining_time_callback(int arg0, long arg1) {
     char *p = (char *)(int)arg1;
     short *b;
@@ -459,7 +469,7 @@ void music_remaining_time_callback(int arg0, long arg1) {
     if (*(short *)(p + 0x10) == 0) {
         return;
     }
-    b = D_001517D0;
+    b = cd_read_state;
     if (b[0x10] != 1) {
         return;
     }
@@ -473,7 +483,7 @@ void music_remaining_time_callback(int arg0, long arg1) {
 
 LINKER_REMNANT("asm/remnants/text", func_00217AD0);
 
-/* Adapted from Lombyte (GPL-3.0): src/ui/menus/fun_00216c48.c. */
+/* Adapted from Lombyte's project (GPL-3.0): src/ui/menus/fun_00216c48.c. */
 
 typedef struct {
     s32 unk0;
@@ -535,6 +545,7 @@ extern s32 func_00216098(void);
 
 void func_00217AE8(void *arg0, Menu *menu, s32 arg2);
 
+/* Handle menu cursor moves and build the help text for the selected entry (arg2: cursor moved). */
 void process_menu_entry(void *arg0, Menu *menu, s32 arg2) {
     char buf[0x100];
     Suffixes sfx;
@@ -554,7 +565,7 @@ void process_menu_entry(void *arg0, Menu *menu, s32 arg2) {
     }
     if (arg2 != 0) {
         menu->unk4 = menu->unk36;
-        menu->unk38 = D_0015F6F0;
+        menu->unk38 = world_update_time;
         n = e->unk6;
         if (menu->unk36 != n) {
             flags = e->unk10;
@@ -562,13 +573,13 @@ void process_menu_entry(void *arg0, Menu *menu, s32 arg2) {
             e = (MenuItem *)(menu->unk3C + n * 0x1C);
             menu->unk8 = *(u8 *)&e->unk10 & 1;
             if (flags & 4) {
-                D_001994C0[2] = (s32)arg0;
-                D_001994C0[3] = (s32)menu;
+                menu_entry_trigger_state[2] = (s32)arg0;
+                menu_entry_trigger_state[3] = (s32)menu;
                 if (e->unk4 & 0x4000) {
                     noop_callback_n((s16)(e->unk4 ^ 0x4000));
                 } else {
-                    remove_hud_item(D_00160170);
-                    D_00160170 = -1;
+                    remove_hud_item(menu_help_hud_item);
+                    menu_help_hud_item = -1;
                     noop_callback_o((s16)e->unk4);
                 }
             }
@@ -577,26 +588,26 @@ void process_menu_entry(void *arg0, Menu *menu, s32 arg2) {
     if (menu->unk36 == -1) {
         return;
     }
-    D_001994C0[5] = e->unk0;
+    menu_entry_trigger_state[5] = e->unk0;
     kind = e->unk8;
     if (kind == 6) {
-        sfx = D_001E89B0;
+        sfx = menu_time_suffixes;
         func_001166FC((Cfg13*)((char *)0x70000000), msg_string(e->unk0));
-        p = func_00116CC0(((char *)0x70000000), D_00160188);
+        p = func_00116CC0(((char *)0x70000000), menu_entry_find_token);
         if (p != 0) {
             p[1] = 's';
         }
         t = vendor_item_prices[e->unkA].unk14;
-        func_00116248(num, D_00160190, t / 1000, sfx.s[D_0015EE88 % 6], t % 1000);
+        func_00116248(num, menu_time_value_format, t / 1000, sfx.s[g_game_language % 6], t % 1000);
         func_00116248(buf, ((char *)0x70000000), num);
     } else {
         func_00116248(buf, msg_string(e->unk0));
     }
-    if (D_001994C0[5] != 0) {
+    if (menu_entry_trigger_state[5] != 0) {
         copy_text_to_shared_buffer(buf);
-    } else if (D_00160170 != -1) {
-        remove_hud_item(D_00160170);
-        D_00160170 = -1;
+    } else if (menu_help_hud_item != -1) {
+        remove_hud_item(menu_help_hud_item);
+        menu_help_hud_item = -1;
     }
     if (e->unk8 == 0) {
         return;
@@ -644,8 +655,9 @@ void process_menu_entry(void *arg0, Menu *menu, s32 arg2) {
 
 extern char D_0013CA40[];
 
+/* Clear the controller state's pending input fields. */
 void pad_resetState(void) {
-    char *p = D_0013CA40;
+    char *p = g_controller_state;
     *(short *)(p + 0x18E) = 0;
     *(int *)(p + 0x190) = 0;
 }
@@ -664,16 +676,17 @@ typedef struct {
     s32 slot;
 } PadSocketParam;
 
+/* Init the pad library and open controller ports 0 and 1. */
 void init_pads(void) {
-    PadSocketParam *p = (PadSocketParam *)&D_001CDAE0;
+    PadSocketParam *p = (PadSocketParam *)&pad_socket_param;
 
     func_00124650();
     func_00124B88(0);
-    D_001CDAE0 = 2;
+    pad_socket_param = 2;
     p->slot = 0;
-    ((struct PadState *)D_0013CA40)->socket = func_00124BC8(p, D_0013CA40);
-    D_001CDAE0 = 2;
+    ((struct PadState *)g_controller_state)->socket = func_00124BC8(p, g_controller_state);
+    pad_socket_param = 2;
     p->slot = 1;
-    ((struct PadState *)D_0013CA40)->profile_state = 0;
-    ((struct PadState *)D_0013CA40)->device_state = 0;
+    ((struct PadState *)g_controller_state)->profile_state = 0;
+    ((struct PadState *)g_controller_state)->device_state = 0;
 }

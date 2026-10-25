@@ -39,7 +39,7 @@ void Transition_DrawSky(void) {
     SkyLevelGeneric___maybe();
     DoSkyGifPaging();
     VU1_addGSregister(0x47, 0x5360B);
-    VU1_addGSregister(0x4E, 0x1000000 | (D_0015EF88 >> 13));
+    VU1_addGSregister(0x4E, 0x1000000 | (depth_buffer_address >> 13));
 }
 
 /* Level init from the level header hdr: loads the frame and fog constants, uploads the VU0
@@ -210,24 +210,24 @@ unsigned char *initialize_level_render_state(LevelHeaderE9EC8 *hdr)
     FRowE9EC8 *t3;
 
     p = D_001941D8;
-    ((void (*)(void *, int, int))FastMemSet)(D_0013F450, 0, 0x2310);
+    ((void (*)(void *, int, int))FastMemSet)(g_hero, 0, 0x2310);
     ((void (*)(void *, int, int))FastMemSet)(gCamera, 0, 0x3A0);
     ((void (*)(void *, int, int))FastMemSet)(D_001AADC0, 0, 0x180);
-    if (D_0015EE80 != 0) {
-        if (D_0015EE60 == 1.0f) {
+    if (pal_mode != 0) {
+        if (frame_scale == 1.0f) {
             set_video_timing(1);
         }
-    } else if (D_0015EE60 != 1.0f) {
+    } else if (frame_scale != 1.0f) {
         set_video_timing(0);
     }
-    *(unsigned char *)&requested_video_mode = *(unsigned char *)&D_0015EE80;
+    *(unsigned char *)&requested_video_mode = *(unsigned char *)&pal_mode;
     coll_output.x4 = image_clear_buffer;
     coll_output.x8 = D_00194280;
     coll_output.xC = 0;
     coll_output.x10 = 0;
     coll_output.x14 = 0;
     FastMemZero16(moby_grids, 0x10000);
-    FastMemZero16(D_001C7A60, 0x60);
+    FastMemZero16(moby_slot_bitmap, 0x60);
 
     c = (unsigned char *)hdr + hdr->x0;
     view_context.x23C = *(int *)c;
@@ -247,26 +247,26 @@ unsigned char *initialize_level_render_state(LevelHeaderE9EC8 *hdr)
     fog_near_intensity = *(float *)(c + 8);
     fog_far_intensity = *(float *)(c + 12);
     ((void (*)(void))UpdateFog)();
-    D_00160FC0 = 512000.0f;
-    D_00161070 = 720.0f;
+    tfrag_draw_distance = 512000.0f;
+    tie_draw_distance = 720.0f;
     occl_fog_density_set = 500.0f;
-    D_00160030 = 500;
-    D_001601BC = 0x1F4000;
+    occl_fog_count = 500;
+    part_clip_dist = 0x1F4000;
     SetBackgroundColor(view_context.x23C, view_context.x240, view_context.x244);
-    ((void (*)(void *))VU0_loadMicroProgram)(D_00100AE0);
-    FastMemZero16(D_0019C2C0, 0x100);
-    FastMemZero16(D_0019C4C0, 0x180);
-    FastMemZero16(D_0019BEC0, 0x400);
+    ((void (*)(void *))VU0_loadMicroProgram)(frame_vu0_micro_program);
+    FastMemZero16(point_lights, 0x100);
+    FastMemZero16(point_light_data, 0x180);
+    FastMemZero16(dir_lights, 0x400);
 
     lc = (unsigned char *)hdr + hdr->x4;
     n = *(int *)lc;
     lc += 0x10;
     if (n >= 12) {
-        STUB_printf(D_001E79D8);
+        STUB_printf(str_too_many_dir_lights);
         n = 12;
     }
     if (n != 0) {
-        copy_memory_aligned(D_0019BEC0, lc, n << 6);
+        copy_memory_aligned(dir_lights, lc, n << 6);
     }
 
     for (i0 = 0; i0 < tfrag_render_record_count; i0++) {
@@ -326,7 +326,7 @@ unsigned char *initialize_level_render_state(LevelHeaderE9EC8 *hdr)
         sh->x18 = (short)id;
         sc += 0x50;
         sd->m[3].w = object_render_classes[sh->cls]->x40;
-        func_001F9EC0(sh, object_render_classes[sh->cls]->x30, sd);
+        matrix_mul_vec3(sh, object_render_classes[sh->cls]->x30, sd);
         s = FastVecLength(sd);
         len1 = FastVecLength(r1);
         s = max_float(s, len1);
@@ -374,7 +374,7 @@ unsigned char *initialize_level_render_state(LevelHeaderE9EC8 *hdr)
         ((void (*)(void *, int, int))FastMemSet)(shrub_colors, 0, size4);
     }
     lastTie = -1;
-    D_00160BB0.x4 = shrub_colors;
+    shrub_color_dma_ref_tag.x4 = shrub_colors;
     shrubs_end = shrubs + shrub_count;
 
     for (i = 0; i < shrub_count; i++) {
@@ -434,7 +434,7 @@ unsigned char *initialize_level_render_state(LevelHeaderE9EC8 *hdr)
         td->m[0].w = (int)(((unsigned int)bl << 16) | (unsigned int)g | (unsigned int)r);
         tie->x1C = *(unsigned short *)tc;
         tc += 0x10;
-        func_001F9EC0(tie, shrub_render_classes[cls], td);
+        matrix_mul_vec3(tie, shrub_render_classes[cls], td);
         s = FastVecLength(td);
         len1 = FastVecLength(t1);
         s = max_float(s, len1);
@@ -476,18 +476,18 @@ unsigned char *initialize_level_render_state(LevelHeaderE9EC8 *hdr)
     resident_object_pool = (Ent100E9EC8 *)p;
     ((void (*)(void *, int, int))FastMemSet)(p, 0, 0x4000);
     p += 0x4000;
-    D_0016001C = resident_object_pool;
+    moby_instance_end = resident_object_pool;
     *((unsigned char *)resident_object_pool + 0x20) = 0xFF;
-    D_00160028 = p;
+    g_moby_vars = p;
     p += 0x2000;
     D_001601AC = p;
-    D_00160020 = (Ent100E9EC8 *)((unsigned char *)resident_object_pool + 0x3F00);
+    moby_instance_perm_end = (Ent100E9EC8 *)((unsigned char *)resident_object_pool + 0x3F00);
     p += 0x20000;
     D_001601B4 = -1;
     D_001601B0 = 0;
     D_001601B8 = 0;
     FastMemZero16(D_001CDB00, 0x200);
-    for (e = resident_object_pool; e != D_00160020; e++) {
+    for (e = resident_object_pool; e != moby_instance_perm_end; e++) {
         e->x36 = 0x7F80;
     }
     for (o = ties; o != ties_end; o++) {
@@ -504,7 +504,7 @@ unsigned char *initialize_level_render_state(LevelHeaderE9EC8 *hdr)
     ResetDrawGlobals();
     pad_resetState();
     Font_EnableColorCodes();
-    D_0015F6F0 = 0;
+    world_update_time = 0;
     gFade = 1.0f;
     return p;
 }
@@ -673,7 +673,7 @@ extern s32 func_00122958_EABE8(void *, u8 *) __asm__("func_00122958");
 /* Loads the space-transition wad to 0x1400000 and unpacks it at the level arena: textures and
    their tables, the three kinds of moby classes, sound and help text tables, the loading image;
    then resets the sequence state and relocates the eight help text tables.
-   Adapted from Lombyte (GPL-3.0) for PAL: src/gameplay/state/transition_load_wad.c, transition_load_wad. */
+   Adapted from Lombyte's project (GPL-3.0) for PAL: src/gameplay/state/transition_load_wad.c, transition_load_wad. */
 void transition_load_wad(void)
 {
   u8 li[0x60];
@@ -895,7 +895,7 @@ extern void func_001F3140(void);
    a flag byte at +0xC, then X/Y/Z angles) sets the camera position and
    its orientation matrix (negated first two rows); returns the flag. */
 unsigned char Transition_UpdateMovieCamera(void) {
-    char *t = D_0018CC20;
+    char *t = render_sequence;
     char *key = *(char **)(t + 0x54) + *(int *)(t + 0x38) * 32;
     unsigned char flag = key[0xC];
     float *ang = (float *)(key + 0x10);
@@ -984,7 +984,7 @@ extern void func_0022DD68_EB458(void) __asm__("func_0022DD68");
 /* One frame of the space-flight sequence between levels: steps the sequence clock and its
    scene chunks, the movie camera, each actor's animation frame and interpolated position,
    then the intro overlay fades and the mode's own update (pause menu, freeze) and sound.
-   Adapted from Lombyte (GPL-3.0) for PAL: src/textbin/fun_001eb0a8.c, update_gameplay_frame. */
+   Adapted from Lombyte's project (GPL-3.0) for PAL: src/textbin/fun_001eb0a8.c, update_gameplay_frame. */
 void update_gameplay_frame(void) {
     Vec4A first_position;
     Vec4A next_position;
@@ -1125,7 +1125,7 @@ extern void func_00236BE0();
 extern s32 func_00238688();
 void func_001EB7C0(s32 *arg0);
 
-/* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/gameplay/state/transition_default_draw.c, transition_default_draw. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/gameplay/state/transition_default_draw.c, transition_default_draw. */
 void Transition_DefaultDraw(s32 *arg0)
 {
     s32 n;
@@ -1148,7 +1148,7 @@ void Transition_DefaultDraw(s32 *arg0)
     append_dma_tag(0x02020000);
     DrawShrubs();
     append_dma_tag(0x02040000);
-    if (D_0015F6E8 == 3) {
+    if (g_game_mode == 3) {
         render_level_effects_and_screen_sprites();
     } else {
         DrawMobys();
@@ -1160,7 +1160,7 @@ void Transition_DefaultDraw(s32 *arg0)
         dispatch_callback_list_1();
     }
     vu1_gs_regs_alt();
-    if (D_0018A3E8[0] != 0) {
+    if (transition_draw_particles[0] != 0) {
         func_00234C98_EB7C0(8, 5);
         vu1_gs_regs_alt();
         func_00118D80(0);
@@ -1171,10 +1171,10 @@ void Transition_DefaultDraw(s32 *arg0)
     ResetGsRegisters();
     if (intro_overlay_alpha != 0) {
         DrawTexturedQuad(0xEC, 0x10, 0x100, 0x80, 0, 0, 0x100, 0x80,
-                      (long)(intro_overlay_alpha << 24 | 0x808080), (*(s64 *)&D_0015F048));
+                      (long)(intro_overlay_alpha << 24 | 0x808080), (*(s64 *)&intro_overlay_tex0));
     }
     if (language_intro_overlay_alpha != 0) {
-        n = (*(s32 *)&D_0015EE88) - 1;
+        n = (*(s32 *)&g_game_language) - 1;
         if (n < 0) {
             n = 0;
         }
@@ -1188,19 +1188,19 @@ void Transition_DefaultDraw(s32 *arg0)
         }
         emit_rgba_draw_packet(0, 0, 0, truncate_float_to_s32(gFade * 128.0f));
     }
-    VU0_loadMicroProgram(D_00100AE0);
+    VU0_loadMicroProgram(frame_vu0_micro_program);
     func_00118D80(0);
-    if (D_0015F6E8 == 4) {
-        func_001FBE80();
+    if (g_game_mode == 4) {
+        draw_freeze_message_box();
     }
     VU1_syncChain(2);
-    LightTfrags(D_001E1600);
+    LightTfrags(tfrag_dma_block);
     PatchTfragGifs();
     VU1_syncChain(4);
     LightTies(tie_light_data);
     PatchTieGifs();
     VU1_syncChain(8);
-    LightShrubs(D_001D9240);
+    LightShrubs(shrub_scratchpad_copy);
     patch_shrub_gifs();
     VU1_syncChain(0x10);
     PatchMobyGifs();
@@ -1216,7 +1216,7 @@ extern int D_0015F694_m __asm__("D_0015F694") MACRO_ADDR;
    through a MACRO_ADDR alias it is retail's one-register load. */
 int is_active_state_entry(int arg0, int arg1) {
     if (arg0 >= 0) {
-        char *p = D_0013E650 + arg0 * 0x70;
+        char *p = voice_pool + arg0 * 0x70;
         if (*(short *)(p + 0x7E) == arg1 + D_0015F694_m) {
             unsigned char s = p[0x74];
             if (s == 1 || s == 2) {
@@ -1319,7 +1319,7 @@ extern void reset_graph_BB48(s16, s16, s16, s16) __asm__("func_00121B78");
 extern void set_pal_mode_BB48(void) __asm__("func_001F3890");
 extern void vu1_sync_chain_BB48(s32) __asm__("func_00234AC8");
 
-/* Adapted from Lombyte (GPL-3.0): src/gameplay/state/transition_do_transition.c, transition_do_transition. */
+/* Adapted from Lombyte's project (GPL-3.0): src/gameplay/state/transition_do_transition.c, transition_do_transition. */
 void transition_do_transition(void) {
     WadHeader_BB48 *hdr;
     u8 *p;

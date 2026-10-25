@@ -111,11 +111,11 @@ long load_texture_file(char *p) {
     t.tw = log2dim(*(int *)(p + 8));
     t.th = log2dim(*(int *)(p + 0xC));
     t.pix = p + 0x20 + t.clutSize;
-    addr = D_0015EF74;
+    addr = g_gs_texture_allocation_cursor;
     cbp = addr >> 8;
     addr += 0x400;
     tbp = addr >> 8;
-    D_0015EF74 = addr + (1 << (t.tw + t.th));
+    g_gs_texture_allocation_cursor = addr + (1 << (t.tw + t.th));
     w = t.tw - 6;
     if (w < 0) {
         w = 0;
@@ -124,15 +124,15 @@ long load_texture_file(char *p) {
     reg = (long)tbp | ((long)w << 14) | ((long)0x13 << 20)
         | ((long)t.tw << 26) | ((long)t.th << 30) | ((long)1 << 34)
         | ((long)cbp << 37) | ((long)4 << 61);
-    if (D_0015F558 < 0x40) {
-        pending_texture_uploads[D_0015F558].addr = (int)t.clut;
-        pending_texture_uploads[D_0015F558].cbp = cbp;
-        pending_texture_uploads[D_0015F558].unk4 = 0;
-        pending_texture_uploads[D_0015F558].unk8 = (int)t.pix;
-        pending_texture_uploads[D_0015F558].tw = t.tw;
-        pending_texture_uploads[D_0015F558].th = t.th;
-        pending_texture_uploads[D_0015F558].tbp = tbp;
-        D_0015F558++;
+    if (pending_texture_upload_count < 0x40) {
+        pending_texture_uploads[pending_texture_upload_count].addr = (int)t.clut;
+        pending_texture_uploads[pending_texture_upload_count].cbp = cbp;
+        pending_texture_uploads[pending_texture_upload_count].unk4 = 0;
+        pending_texture_uploads[pending_texture_upload_count].unk8 = (int)t.pix;
+        pending_texture_uploads[pending_texture_upload_count].tw = t.tw;
+        pending_texture_uploads[pending_texture_upload_count].th = t.th;
+        pending_texture_uploads[pending_texture_upload_count].tbp = tbp;
+        pending_texture_upload_count++;
     }
     return reg;
 }
@@ -155,16 +155,16 @@ long register_8bit_texture(int tw, int th, int a2, int a3, int clut, int tex) {
     reg = (long)tbp | ((long)w << 14) | ((long)0x13 << 20)
         | ((long)tw << 26) | ((long)th << 30) | ((long)1 << 34)
         | ((long)cbp << 37) | ((long)4 << 61);
-    if (D_0015F558 < 0x40) {
+    if (pending_texture_upload_count < 0x40) {
 
-        pending_texture_uploads[D_0015F558].addr = a2;
-        pending_texture_uploads[D_0015F558].cbp = cbp;
-        pending_texture_uploads[D_0015F558].unk4 = 0;
-        pending_texture_uploads[D_0015F558].unk8 = a3;
-        pending_texture_uploads[D_0015F558].tw = tw;
-        pending_texture_uploads[D_0015F558].th = th;
-        pending_texture_uploads[D_0015F558].tbp = tbp;
-        D_0015F558++;
+        pending_texture_uploads[pending_texture_upload_count].addr = a2;
+        pending_texture_uploads[pending_texture_upload_count].cbp = cbp;
+        pending_texture_uploads[pending_texture_upload_count].unk4 = 0;
+        pending_texture_uploads[pending_texture_upload_count].unk8 = a3;
+        pending_texture_uploads[pending_texture_upload_count].tw = tw;
+        pending_texture_uploads[pending_texture_upload_count].th = th;
+        pending_texture_uploads[pending_texture_upload_count].tbp = tbp;
+        pending_texture_upload_count++;
     }
     return reg;
 }
@@ -172,9 +172,10 @@ __asm__(".section .text\n\tnop\n");
 
 extern int D_001A0468[];
 
+/* Returns a used map slot that holds no map (id -1), searched downward unless arg0 is 0. */
 int find_free_map_slot(int arg0) {
-    int *a = D_001A0468;
-    int *b = D_001A0468 + 5;
+    int *a = map_slot_use;
+    int *b = map_slot_use + 5;
     int i = 0;
     do {
         int idx = 4 - i;
@@ -295,6 +296,7 @@ void move_map_entry_slot(int a, int b) {
 
 extern int D_001A01F0[];
 
+/* Returns the used map slot that holds map arg0, or -1. */
 int find_map_entry_slot(int arg0) {
     int i;
     for (i = 0; i < 5; i++) {
@@ -463,7 +465,7 @@ int update_map_zoom_and_pan(void) {
     int *ys;
 
     DebugEnter_Nop();
-    pad = D_0013CA40;
+    pad = g_controller_state;
     if (*(int *)(pad + 0x1A4) & 0x500) {
         return 1;
     }
@@ -512,7 +514,7 @@ int update_map_zoom_and_pan(void) {
     return 0;
 }
 
-/* Adapted from Lombyte (GPL-3.0): src/assembly/textbin/ui/map/draw_map_overlay.c. */
+/* Adapted from Lombyte's project (GPL-3.0): src/assembly/textbin/ui/map/draw_map_overlay.c. */
 struct DmaTag_205E70 { u32 tag, addr, vif0, vif1; };
 struct TagPtr_205E70 { struct DmaTag_205E70 *p; };
 typedef struct { s32 flags; u8 pad4[12]; } MapIdFlags_205E70;
@@ -624,23 +626,23 @@ extern f32 map_data_0015FE50 SDATA(D_0015FE50);
 extern f32 map_data_0015FE54 SDATA(D_0015FE54);
 extern u8 map_data_001E8398[] __asm__("D_001E8398");
 
-extern s32 print_debug_text_centered(s32, s32, s32, u8 *) __asm__("func_001F0FF8");
+extern s32 func_001F0FF8(s32, s32, s32, u8 *);
 extern void setup_gif_paging(s32) __asm__("func_001F4630");
 extern void do_gif_paging(void) __asm__("func_001F4748");
 extern void draw_ui_frame(s32, s32, s32, s32, s32) __asm__("func_001F62C8");
-extern void font_print_window_small(void *, u64, void *, s32) __asm__("func_001F75D0");
+extern void func_001F75D0(void *, u64, void *, s32);
 extern f32 fast_add_rotations(f32, f32) __asm__("func_001FA748");
 extern f32 fast_subtract_rotations(f32, f32) __asm__("func_001FA790");
 extern s32 get_icon_frame(s32, s32) __asm__("func_00200198");
 extern u64 get_frame_texture(s32) __asm__("func_00200248");
-extern void draw_hud_sprite_subpixel(s32, s32, s32, s32, s32, s32) __asm__("func_002008B8");
-extern void draw_rotated_sprite(f32, f32, f32, f32, f32, s32, s32, u64) __asm__("func_00200E38");
+extern void func_002008B8(s32, s32, s32, s32, s32, s32);
+extern void func_00200E38(f32, f32, f32, f32, f32, s32, s32, u64);
 extern void append_screen_rect_packet(s32, s32, s32, s32, u64, s32) __asm__("func_00201640");
 extern void format_menu_item_text(s32, void *) __asm__("func_00208AB0");
-extern void world_to_map_coords(f32 *, f32 *, s32, f32, f32) __asm__("func_00208C38");
+extern void world_to_map_coords_r(f32 *, f32 *, s32, f32, f32) __asm__("func_00208C38");
 /* EABI places floating and integer arguments in independent register banks. */
 extern void world_to_map_coords_xy_205E70(f32, f32, f32 *, f32 *, s32) __asm__("func_00208C38");
-extern void draw_map_markers(s32, s32, s32, s32) __asm__("func_00208D38");
+extern void func_00208D38(s32, s32, s32, s32);
 extern void vu1_add_g_sregister(s32, s64) __asm__("func_00234C98");
 extern void *map_memset_205E70(void *, s32, u32) __asm__("func_001153FC");
 
@@ -1035,7 +1037,7 @@ void draw_map_overlay(void) {
                 angle = fast_add_rotations(angle, 1.5707964f);
             }
             if (map_data_0015FE20 != 0) {
-                world_to_map_coords(&label_buffer.f[0], &label_buffer.f[1], map_data_0015EE84 + 100,
+                world_to_map_coords_r(&label_buffer.f[0], &label_buffer.f[1], map_data_0015EE84 + 100,
                                     map_data_0013F450.x, map_data_0013F450.y);
                 angle = fast_add_rotations(angle, 1.5707964f);
             } else {

@@ -1,4 +1,5 @@
 #include "common.h"
+#include "vector.h"
 #include "callees.h"
 #include "records.h"
 #include "hero.h"
@@ -261,7 +262,7 @@ void clamp_voice_position_to_collision(void *arg0) {
     random_spherical_offset(arg0, 0.5f, 6.0f);
     func_001F9BD8_a(arg0, arg0, D_00187180_a);
     if (func_001EFE10_a(D_00187180_a, arg0, 0x82, sound_probe_ignore, 0) != 0) {
-        func_001F9BF0_a(arg0, D_00194220, D_00187180_a);
+        func_001F9BF0_a(arg0, coll_hit_pos, D_00187180_a);
         func_001F9C30_a(arg0, arg0, 0.75f);
         func_001F9BD8_a(arg0, arg0, D_00187180_a);
     }
@@ -280,7 +281,7 @@ int test_voice_occlusion(void *arg0, void *arg1) {
 
     FastVecSub(v, (char *)arg0 + 0x20, camera_position);
     FastVecScale(v, v, 0.75f);
-    func_001F9E58(v, v, 64.0f);
+    clamp_vector_length(v, v, 64.0f);
     FastVecAdd(v, v, camera_position);
     return func_001EFE10_a(arg1, v, 0x82, *(int *)((char *)arg0 + 0x18), 0);
 }
@@ -301,6 +302,7 @@ struct VoiceVolumeDefinition {
     u8 attenuation_flags;         /* 0x19: bit 0 selects the squared falloff */
 };
 
+/* Map distance x to a voice volume between near (lo) and far (hi), linear or squared falloff. */
 int calculate_voice_distance_volume(void *arg0, float x, float lo, float hi) {
     struct VoiceVolumeDefinition *definition = (struct VoiceVolumeDefinition *)arg0;
     int r;
@@ -322,6 +324,7 @@ extern float func_001F9D10(int, void *);
    declaring it int would move its next temporary to $v1. */
 extern void func_0022DA10_v(void *, float, float, float) __asm__("func_0022DA10");
 
+/* Set a voice's volume from its distance to the camera using its near/far range. */
 void calculate_voice_volume(void *arg0, int arg1) {
     char *s = (char *)arg0;
     float v = FastVecDist(arg1, camera_position);
@@ -343,8 +346,8 @@ void calculate_voice_pan(void *arg0, void *arg1, void *arg2) {
     float t;
 
     func_001F9BF0_a(v, arg1, D_00187180_a);
-    func_001F9EE8(v, v, arg2);
-    t = clamp_float(func_001F9CE8(v) - 1.0f, 0.0f, 1.0f);
+    transform_vector(v, v, arg2);
+    t = clamp_float(vec_length_xy(v) - 1.0f, 0.0f, 1.0f);
     truncate_float_to_s32(-func_001FA058_a(v[0], v[1]) * 180.0f * t * 0.31830987f);
 }
 
@@ -373,6 +376,7 @@ extern void func_0012E3F8(int, int, int);
 extern void func_0012E348(int, int);
 extern void func_002161E0(void);
 
+/* Reset the voice pool, set up the sound library, voices and volumes, and reset music. */
 void initialize_gameplay_sound_system(void) {
     s32 i;
     s32 p;
@@ -380,11 +384,11 @@ void initialize_gameplay_sound_system(void) {
     s32 v;
 
     for (i = 0; i < 4; i++) {
-        qzero(&((SndState_2DBE8 *)D_0013E650)->q[i]);
+        qzero(&((SndState_2DBE8 *)voice_pool)->q[i]);
     }
-    ((SndState_2DBE8 *)D_0013E650)->x40 = 0;
-    ((SndState_2DBE8 *)D_0013E650)->x44 = 0;
-    p = (s32)D_0013E650;
+    ((SndState_2DBE8 *)voice_pool)->x40 = 0;
+    ((SndState_2DBE8 *)voice_pool)->x44 = 0;
+    p = (s32)voice_pool;
     end = p + 0xD20;
     do {
         ((SndVoice_2DBE8 *)p)[1].x0 = 0;
@@ -398,27 +402,23 @@ void initialize_gameplay_sound_system(void) {
     func_0012E3F8(1, 0x18, 0x2F);
     func_0012E3F8(2, 0x18, 0x2F);
     func_0012E3F8(4, 0x18, 0x2F);
-    v = D_0015EEF0;
-    ((SndState_2DBE8 *)D_0013E650)->vol[0] = (v * 8) / 10;
-    ((SndState_2DBE8 *)D_0013E650)->vol[1] = music_volume;
-    ((SndState_2DBE8 *)D_0013E650)->vol[2] = (v * 8) / 10;
-    ((SndState_2DBE8 *)D_0013E650)->vol[3] = (v * 7) / 10;
-    ((SndState_2DBE8 *)D_0013E650)->vol[4] = (v * 7) / 10;
-    ((SndState_2DBE8 *)D_0013E650)->vol[5] = v;
+    v = sound_volume;
+    ((SndState_2DBE8 *)voice_pool)->vol[0] = (v * 8) / 10;
+    ((SndState_2DBE8 *)voice_pool)->vol[1] = music_volume;
+    ((SndState_2DBE8 *)voice_pool)->vol[2] = (v * 8) / 10;
+    ((SndState_2DBE8 *)voice_pool)->vol[3] = (v * 7) / 10;
+    ((SndState_2DBE8 *)voice_pool)->vol[4] = (v * 7) / 10;
+    ((SndState_2DBE8 *)voice_pool)->vol[5] = v;
     reset_music();
-    func_0012E348(0, ((SndState_2DBE8 *)D_0013E650)->vol[0]);
-    func_0012E348(1, ((SndState_2DBE8 *)D_0013E650)->vol[1]);
-    func_0012E348(2, ((SndState_2DBE8 *)D_0013E650)->vol[2]);
-    func_0012E348(3, ((SndState_2DBE8 *)D_0013E650)->vol[3]);
-    func_0012E348(4, ((SndState_2DBE8 *)D_0013E650)->vol[4]);
-    func_0012E348(5, ((SndState_2DBE8 *)D_0013E650)->vol[5]);
+    func_0012E348(0, ((SndState_2DBE8 *)voice_pool)->vol[0]);
+    func_0012E348(1, ((SndState_2DBE8 *)voice_pool)->vol[1]);
+    func_0012E348(2, ((SndState_2DBE8 *)voice_pool)->vol[2]);
+    func_0012E348(3, ((SndState_2DBE8 *)voice_pool)->vol[3]);
+    func_0012E348(4, ((SndState_2DBE8 *)voice_pool)->vol[4]);
+    func_0012E348(5, ((SndState_2DBE8 *)voice_pool)->vol[5]);
 }
 
 typedef unsigned int u128_DD68 __attribute__((mode(TI), aligned(16)));
-typedef union {
-    u128_DD68 q;
-    f32 f[4];
-} VoiceVector_DD68;
 
 typedef struct {
     u8 pad00[0x18];
@@ -430,10 +430,10 @@ typedef struct {
 
 typedef struct {
     u8 pad00[0x10];
-    VoiceVector_DD68 position;
+    Vec4 position;
     u8 state;
     u8 pad21[0x9F];
-    VoiceVector_DD68 rotation;
+    Vec4 rotation;
 } VoiceMoby_DD68;
 
 typedef struct {
@@ -447,15 +447,15 @@ typedef struct {
     s32 pitch_bend;                     /* 0x14 */
     VoiceMoby_DD68 *moby;               /* 0x18 */
     s32 owner_context;                  /* 0x1C */
-    VoiceVector_DD68 position;          /* 0x20 */
-    VoiceVector_DD68 position_offset;   /* 0x30 */
+    Vec4 position;          /* 0x20 */
+    Vec4 position_offset;   /* 0x30 */
     u32 occlusion_history_position;     /* 0x40 */
     u8 occlusion_history[36];           /* 0x44 */
     u8 pad68[8];
 } VoiceSlot_DD68;
 
 typedef struct {
-    VoiceVector_DD68 listener_history[4];   /* 0x000 */
+    Vec4 listener_history[4];   /* 0x000 */
     s32 listener_history_position;          /* 0x040 */
     s32 pad44;
     s32 group_0_volume;                     /* 0x048 */
@@ -475,7 +475,7 @@ typedef struct {
     s32 padD90[2];
     s32 occlusion_frame;                    /* 0xD98 */
     s32 padD9C;
-    VoiceVector_DD68 occlusion_samples[6];  /* 0xDA0 */
+    Vec4 occlusion_samples[6];  /* 0xDA0 */
 } VoiceRuntimeState_DD68;
 
 extern VoiceRuntimeState_DD68 voice_pool_DD68 __asm__("D_0013E650");
@@ -514,8 +514,8 @@ extern s32 truncate_float_to_s32_DD68(f32) __asm__("func_001FA898");
 extern void music_Update_DD68() __asm__("func_00217130");
 extern void Sound_PickOcclusionOrigin_DD68(void *) __asm__("func_0022D8C0");
 extern u8 Sound_LineTest_DD68(VoiceSlot_DD68 *, void *) __asm__("func_0022D970");
-extern s32 Sound_ApplyDistanceFade_DD68(VoiceSlot_DD68 *, VoiceVector_DD68 *) __asm__("func_0022DB00");
-extern s32 Sound_ComputePan_DD68(VoiceSlot_DD68 *, VoiceVector_DD68 *, void *) __asm__("func_0022DB48");
+extern s32 Sound_ApplyDistanceFade_DD68(VoiceSlot_DD68 *, Vec4 *) __asm__("func_0022DB00");
+extern s32 Sound_ComputePan_DD68(VoiceSlot_DD68 *, Vec4 *, void *) __asm__("func_0022DB48");
 extern void Sound_StoreHandleAdvance_DD68() __asm__("func_0022F0A8");
 extern void Sound_StoreHandleReset_DD68() __asm__("func_0022F0F0");
 
@@ -524,7 +524,7 @@ extern void Sound_StoreHandleReset_DD68() __asm__("func_0022F0F0");
    radial velocity, distance volume and occlusion (a 36-sample history per voice), and starts, updates or stops
    its sound. Ends with the music update and the command flush. Returns 0; callees.h has it as void, hence the
    alias.
-   Adapted from Lombyte (GPL-3.0) for PAL: src/audio/voices/sound_update.c, sound_update (FUN_0022ca50). Two of its
+   Adapted from Lombyte's project (GPL-3.0) for PAL: src/audio/voices/sound_update.c, sound_update (FUN_0022ca50). Two of its
    loops are written plainly here: the occlusion-history copy as history[offset + i] = history[offset], and the
    sample clamp with a counter of its own. With Lombyte's byte-index local for the copy, the second voice loop is
    short enough at the first loop pass (192 insns against 208) that the voice_flags address giv is reduced there
@@ -532,14 +532,14 @@ extern void Sound_StoreHandleReset_DD68() __asm__("func_0022F0F0");
 s32 func_0022DD68_r(void) __asm__("func_0022DD68");
 s32 func_0022DD68_r(void) {
     VoiceSlot_DD68 *voices;
-    VoiceVector_DD68 listener_occlusion_position;
-    VoiceVector_DD68 listener_velocity;
-    VoiceVector_DD68 relative_velocity;
+    Vec4 listener_occlusion_position;
+    Vec4 listener_velocity;
+    Vec4 relative_velocity;
     s32 flags[30];
     s32 voice_volumes[30];
     f32 radial_velocities[30];
-    VoiceVector_DD68 direction;
-    VoiceVector_DD68 listener_matrix[4];
+    Vec4 direction;
+    Vec4 listener_matrix[4];
     s32 slot_index;
     s32 underwater;
     s32 *voice_flags;
@@ -897,7 +897,7 @@ extern void func_0012E2E8(void);
    returns int: a value call resets $v0's readers, which lets the
    capture sink into its slot. */
 int load_audio_bank_by_location(void *arg0) {
-    char *base = D_0013E650;
+    char *base = voice_pool;
     int r = 0;
 
     if (*(int *)(base + 0x44) == 0) {
@@ -915,9 +915,10 @@ int load_audio_bank_by_location(void *arg0) {
 /* 12 bytes of post-endlabel nop padding in retail -- see func_001F6668. */
 __asm__(".section .text\n\tnop\n\tnop\n\tnop\n");
 
+/* Stop a voice slot: free a queued one at once, else mark it for stopping (idx < 0: no-op). */
 void sound_KillChannel(int idx) {
     if (idx >= 0) {
-        char *e = D_0013E650 + idx * 0x70;
+        char *e = voice_pool + idx * 0x70;
         unsigned char st = *(unsigned char *)(e + 0x74);
         if (st == 7) {
             *(int *)(e + 0x88) = 0;
@@ -930,10 +931,6 @@ void sound_KillChannel(int idx) {
 }
 
 typedef int u128_2EB08 __attribute__((mode(TI)));
-typedef union {
-    u128_2EB08 q;
-    f32 f[4];
-} VoiceVector_2EB08;
 typedef struct {
     u8 pad0[0x10];
     s32 pitch_bend_min;
@@ -945,7 +942,7 @@ typedef struct {
 } VoiceDefinition_2EB08;
 typedef struct {
     u8 pad0[0x10];
-    VoiceVector_2EB08 position;
+    Vec4 position;
     u8 pad20[0x86];
     s16 class_id;
 } VoiceMoby_2EB08;
@@ -961,8 +958,8 @@ typedef struct {
     s32 pitch_bend;
     VoiceMoby_2EB08 *owner;
     s32 reserved1C;
-    VoiceVector_2EB08 position;
-    VoiceVector_2EB08 position_offset;
+    Vec4 position;
+    Vec4 position_offset;
     s32 history_position;
     u8 history[0x2C];
 } VoiceSlot_2EB08;
@@ -976,26 +973,26 @@ typedef struct {
     VoiceSlot_2EB08 voice;
 } VoicePoolWindow_2EB08;
 typedef struct {
-    VoiceVector_2EB08 value;
+    Vec4 value;
     u8 pad10[0x60];
 } VoicePositionRecord_2EB08;
 extern VoicePool_2EB08 D_0013E650_2EB08 __asm__("D_0013E650");
 extern Hero D_0013F450_2EB08 __asm__("D_0013F450");
 extern VoicePositionRecord_2EB08 D_0013E6E0_2EB08[] __asm__("D_0013E6E0");
 extern u8 D_0013E6C0_2EB08[] __asm__("D_0013E6C0");
-extern void func_001F9BC0_2EB08(VoiceVector_2EB08 *) __asm__("func_001F9BC0");
+extern void func_001F9BC0_2EB08(Vec4 *) __asm__("func_001F9BC0");
 extern s32 func_002140B0_2EB08(s32) __asm__("func_002140B0");
-extern s32 func_0022DB00_2EB08(VoiceSlot_2EB08 *, VoiceVector_2EB08 *) __asm__("func_0022DB00");
+extern s32 func_0022DB00_2EB08(VoiceSlot_2EB08 *, Vec4 *) __asm__("func_0022DB00");
 
-s32 func_0022EB08_r(VoiceDefinition_2EB08 *, u32, VoiceMoby_2EB08 *, VoiceVector_2EB08 *,
+s32 func_0022EB08_r(VoiceDefinition_2EB08 *, u32, VoiceMoby_2EB08 *, Vec4 *,
                     s32) __asm__("func_0022EB08");
 
 /* Takes a free voice of the sound pool for a definition (26 voices, 30 for the hero, the
    held item and class 0x472), places it at the moby or the given position, drops it when
    it would be inaudible and picks its pitch bend. Returns the voice index or -1.
-   Adapted from Lombyte (GPL-3.0) for PAL: src/textbin/fun_0022d7f0.c, allocate_voice_slot. */
+   Adapted from Lombyte's project (GPL-3.0) for PAL: src/textbin/fun_0022d7f0.c, allocate_voice_slot. */
 s32 func_0022EB08_r(VoiceDefinition_2EB08 *definition, u32 flags, VoiceMoby_2EB08 *moby,
-                    VoiceVector_2EB08 *position, s32 volume) {
+                    Vec4 *position, s32 volume) {
     s32 volume_offset;
     s32 pitch_bend_max;
     s32 pitch_bend_min;
@@ -1082,7 +1079,7 @@ calculate_volume:
     }
     volume_offset = slot_index * 0x70;
     result = func_0022DB00_2EB08((VoiceSlot_2EB08 *)(D_0013E6C0_2EB08 + volume_offset),
-                                 (VoiceVector_2EB08 *)(D_0013E6C0_2EB08 + volume_offset + 0x20));
+                                 (Vec4 *)(D_0013E6C0_2EB08 + volume_offset + 0x20));
     goto check_calculated_volume;
 commit_if_audible:
     result = volume;
@@ -1139,7 +1136,7 @@ int Moby_PlaySound(int idx, int arg1, int arg2) {
     }
     h = allocate_voice_slot(tbl + idx * 32, arg1, arg2, 0, 0x400);
     if (h >= 0) {
-        char *rec = D_0013E650 + h * 0x70;
+        char *rec = voice_pool + h * 0x70;
         *(int *)(rec + 0x88) = arg2;
         *(short *)(rec + 0x7E) = idx;
     }
@@ -1148,15 +1145,16 @@ int Moby_PlaySound(int idx, int arg1, int arg2) {
 
 extern char *D_0015F714 MACRO_ADDR;
 
+/* Play bank sound idx on a free voice owned by arg2; return the voice slot or -1. */
 int PlayBankSound(int idx, int arg1, int arg2) {
     int h;
 
-    if (idx >= D_0015F694) {
+    if (idx >= bank_sound_count) {
         return -1;
     }
     h = allocate_voice_slot(level_sound_defs + idx * 32, arg1, arg2, 0, 0x400);
     if (h >= 0) {
-        char *rec = D_0013E650 + h * 0x70;
+        char *rec = voice_pool + h * 0x70;
         *(int *)(rec + 0x88) = arg2;
         *(short *)(rec + 0x7E) = idx;
     }
@@ -1172,18 +1170,19 @@ struct VoiceGroupEntryWindow {
     s32 owner;                 /* 0x88 */
 };
 
+/* Play a level group sound (after the bank sounds) on a free voice; return the slot or -1. */
 int allocate_voice_for_group_entry(int group_entry_index, int flags, int owner) {
     int entry_index;
     int slot_index;
     struct VoiceGroupEntryWindow *slot;
 
-    entry_index = group_entry_index + D_0015F694;
+    entry_index = group_entry_index + bank_sound_count;
     if (entry_index >= level_sound_def_count) {
         return -1;
     }
     slot_index = allocate_voice_slot(level_sound_defs + entry_index * 32, flags, owner, 0, 0x400);
     if (slot_index >= 0) {
-        slot = (struct VoiceGroupEntryWindow *)(D_0013E650 + slot_index * 0x70);
+        slot = (struct VoiceGroupEntryWindow *)(voice_pool + slot_index * 0x70);
         slot->owner = owner;
         slot->linked_index = entry_index;
     }
@@ -1192,8 +1191,9 @@ int allocate_voice_for_group_entry(int group_entry_index, int flags, int owner) 
 
 LINKER_REMNANT("asm/remnants/text", func_0022EF50);
 
+/* Return the voice pool base. */
 static inline char *SndSys(void) {
-    return D_0013E650;
+    return voice_pool;
 }
 
 typedef struct VoiceRequest {
@@ -1249,7 +1249,7 @@ extern s32 func_0012DDC0_2EFE8() __asm__("func_0012DDC0");
 extern s32 func_0012E4F8();
 extern s32 func_0012EC40_2EFE8() __asm__("func_0012EC40");
 
-/* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/audio/voices/sound_stop_all_sounds.c, sound_stop_all_sounds. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/audio/voices/sound_stop_all_sounds.c, sound_stop_all_sounds. */
 void sound_StopAllSounds(void) {
     s32 i;
     SndState *s;
@@ -1276,6 +1276,7 @@ void sound_StopAllSounds(void) {
     } while (p < end);
 }
 
+/* Sound library callback: store the returned handle at arg1 when arg1 is set. */
 void SoundBank_StoreHandle(int arg0, long arg1) {
     int *p = (int *)(int)arg1;
     if (p != 0) {
@@ -1283,6 +1284,7 @@ void SoundBank_StoreHandle(int arg0, long arg1) {
     }
 }
 
+/* Voice start callback: store the handle and mark the voice playing, or clear it on failure. */
 void voice_start_callback(int arg0, long arg1) {
     unsigned char *p = (unsigned char *)(int)arg1;
     if (p != 0) {
@@ -1299,6 +1301,7 @@ void voice_start_callback(int arg0, long arg1) {
     }
 }
 
+/* Voice update callback: store the handle, or clear the voice slot when the handle is 0. */
 void voice_update_callback(int arg0, long arg1) {
     int *p = (int *)(int)arg1;
     if (p != 0) {

@@ -51,8 +51,13 @@ code (`symbol`, `name`, `evidence`, optional `override`). `tools/names.py
 local` merges it into `names.tsv` (and `build` applies it too): a local name
 fills a symbol with no name or only a candidate, as tier descriptive;
 `override` replaces a wrong recovered/descriptive name, keeping the old one
-in the alternatives. After `local`, run `header`, then `apply-defs` and
-`apply`.
+in the alternatives. `clash` does the same, and also wins over the NTSC
+decomp's adopted name: use it when that name is wrong for the body, or is already a struct
+field, a local or a label in src/, so names.h would leave it out (`g_class_slot` for
+`class_slot`, a `Moby` field). A local view of a named symbol (a cast or
+offset `#define`, an alias with another prototype) takes the `_r` suffix
+instead, so the name stays free. After `local`, run `header`, then
+`apply-defs` and `apply`.
 
 ## The NTSC decomp's names
 

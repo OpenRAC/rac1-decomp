@@ -26,7 +26,7 @@ extern f32 func_001FA888(s32);
 extern s32 func_001FA898(f32);
 extern f32 func_001F9F90(f32);
 
-/* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/start_001eaa08.c, FUN_L00_001eaa08. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/start_001eaa08.c, FUN_L00_001eaa08. */
 s32 actuator_CalcPower(s32 *p1)
 {
     s32 aa[3][4];
@@ -138,9 +138,10 @@ extern int D_0015EF8C MACRO_ADDR;
 extern int D_0015F020 MACRO_ADDR;
 extern short D_0015EF74;
 
+/* Reset the texture allocation count and the GS texture allocation cursor. */
 void initialize_streaming_state(void) {
     texture_alloc_counter = 0;
-    *(int *)&D_0015EF74 = D_0015EF8C;
+    *(int *)&g_gs_texture_allocation_cursor = g_gs_texture_allocation_base;
 }
 __asm__(".section .text
 	nop

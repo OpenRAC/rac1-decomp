@@ -1,4 +1,5 @@
 #include "common.h"
+#include "moby.h"
 #include "callees.h"
 #include "records.h"
 #include "structs.h"
@@ -149,32 +150,6 @@ typedef struct {
     char _pad13[0x1C - 0x13];
     int frames[1]; /* 0x1C */
 } MobySeq;
-typedef struct {
-    char _pad00[0x48];
-    MobySeq *seqs[1]; /* 0x48: animation sequences */
-} MobyClass;
-typedef struct {
-    char _pad00[0x20];
-    unsigned char state; /* 0x20 */
-    char _pad21[0x24 - 0x21];
-    MobyClass *pClass; /* 0x24 */
-    char _pad28[0x38 - 0x28];
-    unsigned long unk38; /* 0x38 */
-    char _pad40[0x50 - 0x40];
-    unsigned char frame;     /* 0x50 */
-    unsigned char prevFrame; /* 0x51 */
-    unsigned char seq;       /* 0x52: 0xFF for none */
-    unsigned char prevSeq;   /* 0x53 */
-    char _pad54[0x68 - 0x54];
-    int frameData;     /* 0x68 */
-    int prevFrameData; /* 0x6C */
-    char _pad70[0x78 - 0x70];
-    char *pvars; /* 0x78: this moby's 0x80 bytes at D_00160028 */
-    unsigned char unk7C; /* 0x7C: the sound it wants (func_0020D790) */
-    unsigned char unk7D; /* 0x7D: the handle of the one playing, or 0xFF */
-    unsigned char unk7E; /* 0x7E */
-    char _pad7F[0x100 - 0x7F];
-} Moby;
 extern char *D_0016001C MACRO_ADDR;
 extern char *D_00160020 MACRO_ADDR;
 extern char *D_00160028 MACRO_ADDR;
@@ -188,21 +163,21 @@ extern void func_0020D440(void *, int);
 Moby *CreateMoby(int oClass) {
     Moby *m;
 
-    for (m = (Moby *)D_0016001C; m < (Moby *)D_00160020; m++) {
-        if (m->state >= 0xFE && (unsigned int)D_0015F6F0 >= m->unk38) {
+    for (m = (Moby *)moby_instance_end; m < (Moby *)moby_instance_perm_end; m++) {
+        if (m->state >= 0xFE && (unsigned int)world_update_time >= m->spawn_frame) {
             if (m->state == 0xFF) {
                 m[1].state = 0xFF;
             }
             InitMobyInstance(m, oClass);
-            m->pvars = D_00160028 + (m - (Moby *)D_0016001C) * 0x80;
-            FastMemSet(m->pvars, 0, 0x80);
+            m->pvars = (u8 *)(g_moby_vars + (m - (Moby *)moby_instance_end) * 0x80);
+            FastMemSet((char *)m->pvars, 0, 0x80);
             if (num_spawnable_mobys != 0) {
                 num_spawnable_mobys--;
             }
             return m;
         }
     }
-    STUB_printf(s_tried_to_create_moby, D_0015F6F0, oClass);
+    STUB_printf(s_tried_to_create_moby, world_update_time, oClass);
     return 0;
 }
 
@@ -299,7 +274,7 @@ void InitMobyInstance(void *arg0, int oClass) {
     MobyIClass *pClass;
 
     FastMemSet(m, 0, 0x100);
-    c = D_001B3E40[oClass];
+    c = resident_class_slot_by_id[oClass];
     m->unk23 = 0x80;
     m->oClass = c;
     m->unkA4 = 0xFF;
@@ -319,7 +294,7 @@ void InitMobyInstance(void *arg0, int oClass) {
     m->unk7D = 0xFF;
     m->unkA1 = 0x7F;
     m->unkA3 = 0x80;
-    m->unk74 = D_001B3900[m->oClass];
+    m->unk74 = resident_moby_class_data[m->oClass];
     if (m->unk74 == 0) {
         m->flags |= 2;
     }
@@ -381,12 +356,12 @@ extern void func_0020EA70(void *, int);
 
 /* DeleteMoby */
 void DeleteMoby(MobyDel *m) {
-    if ((char *)m < D_0016001C) {
+    if ((char *)m < moby_instance_end) {
         m->state = 0xFD;
     } else {
         m->state = 0xFE;
     }
-    m->unk38 = D_0015F6F0 + 2;
+    m->unk38 = world_update_time + 2;
     update_moby_grids(m, 0x80807F7F);
 }
 
@@ -403,16 +378,16 @@ extern unsigned char D_001AAF40[];
 void update_moby_animation_state(Moby *m) {
     MobyClass *mc;
     if (m->seq != 0xFF) {
-        mc = m->pClass;
-        m->frameData = mc->seqs[m->seq]->frames[m->frame];
-        m->unk7E = mc->seqs[m->seq]->unk12;
-        m->unk7C = mc->seqs[m->seq]->unk11;
+        mc = m->pclass;
+        m->cur_frame_data = (void *)(((MobySeq *)mc->seqs[m->seq])->frames[m->frame]);
+        m->anim_trigger_count = ((MobySeq *)mc->seqs[m->seq])->unk12;
+        m->unk7C = ((MobySeq *)mc->seqs[m->seq])->unk11;
     } else {
         m->unk7C = m->seq;
-        m->unk7E = 0;
-        m->frameData = (int)&debug_font_buffer[m->frame << 11];
+        m->anim_trigger_count = 0;
+        m->cur_frame_data = (void *)((int)&debug_font_buffer[m->frame << 11]);
     }
-    m->prevFrameData = m->pClass->seqs[m->prevSeq]->frames[m->prevFrame];
+    m->prev_frame_data = (void *)(((MobySeq *)m->pclass->seqs[m->prev_seq])->frames[m->prev_frame]);
 }
 
 extern void func_0022EAB0(int);
@@ -427,7 +402,7 @@ extern int func_0022ED80(int, int, int);
 void update_moby_voice(unsigned char *s) {
     if (s[0x7D] != 0xFF) {
         int id = s[0x7D];
-        char *e = D_0013E650 + id * 0x70;
+        char *e = voice_pool + id * 0x70;
         if (*(unsigned char **)(e + 0x88) != s) {
             s[0x7D] = 0xFF;
         } else if (*(short *)(e + 0x7E) != s[0x7C]) {
@@ -453,17 +428,17 @@ float MobyGetFrameValue(Moby *m) {
     int fd;
 
     if (m->seq != 0xFF) {
-        fd = m->frameData;
+        fd = (int)m->cur_frame_data;
     } else {
-        fd = m->prevFrameData;
+        fd = (int)m->prev_frame_data;
     }
     if (*(float *)((char *)m + 0x54) == 0.0f) {
         return IntToFloat(*(short *)(fd + 4)) * 0.0625f;
     }
-    if (m->seq != m->prevSeq || m->frame > m->prevFrame) {
+    if (m->seq != m->prev_seq || m->frame > m->prev_frame) {
         return IntToFloat(*(short *)(fd + 4)) * 0.0625f + *(float *)((char *)m + 0x54);
     } else {
-        int prev = m->prevFrameData;
+        int prev = (int)m->prev_frame_data;
         float a = IntToFloat(*(short *)(fd + 4)) * (1.0f - *(float *)((char *)m + 0x54));
         return (a + IntToFloat(*(short *)(prev + 4)) * *(float *)((char *)m + 0x54)) * 0.0625f;
     }
@@ -524,6 +499,7 @@ void DetachManipulator(void *arg0, void *arg1) {
 
 extern int D_001B2F40[];
 
+/* Returns the render slot holding moby v, or claims a free one; -1 if all 16 are taken. */
 int find_or_allocate_id_slot(int v) {
     int i = 0;
     int *p = moby_render_slots;
@@ -538,6 +514,7 @@ int find_or_allocate_id_slot(int v) {
     return -1;
 }
 
+/* Clears render slots whose moby is dead or no longer in its expected state. */
 void prune_moby_references(void) {
     int sentinel = 0xFF;
     char **p = (char **)moby_render_slots;
@@ -573,7 +550,7 @@ void MobyTransformScaledVertex(char *arg0, int arg1, char *arg2) {
 
     s = *(float *)(arg0 + 0x2C) * 0.0009765625f;
     n = arg1;
-    func_002116A0(arg0, 1, &n, arg2);
+    get_moby_joint_matrices(arg0, 1, &n, arg2);
     v = arg2 + 0x30;
     FastVecScale(v, v, s);
     func_001FA460_2(buf, arg0 + 0xC0);
@@ -589,12 +566,12 @@ void transform_scaled_vertex_batch(char *arg0, int arg1, void *arg2, char *arg3)
     float s;
 
     s = *(float *)(arg0 + 0x2C) * 0.0009765625f;
-    func_00211548(arg0, arg1, arg2, arg3);
+    get_moby_joint_matrices_batch(arg0, arg1, arg2, arg3);
     if (n > 0) {
         do {
             FastVecScale(v, v, s);
             n--;
-            func_001F9EC0(v, v, arg0 + 0xC0);
+            matrix_mul_vec3(v, v, arg0 + 0xC0);
             FastVecAdd(v, v, arg0 + 0x10);
             v += 0x10;
         } while (n != 0);
@@ -614,24 +591,24 @@ extern void func_00234E80(void);
    D_0016000C the tag slot DrawMobysSetup reserved. Every access goes
    back to the globals, because each store through them could alias. */
 void DmaMobyTextures(void) {
-    int *p = (int *)D_00161000;
+    int *p = (int *)g_render_packet_cursor;
 
-    D_00161000 += 0x10;
-    ((int *)D_0016000C)[0] = 0x20000000;
-    ((int *)D_0016000C)[1] = D_00161000;
-    ((int *)D_0016000C)[2] = 0;
-    ((int *)D_0016000C)[3] = 0;
+    g_render_packet_cursor += 0x10;
+    ((int *)moby_texture_tag_slot)[0] = 0x20000000;
+    ((int *)moby_texture_tag_slot)[1] = g_render_packet_cursor;
+    ((int *)moby_texture_tag_slot)[2] = 0;
+    ((int *)moby_texture_tag_slot)[3] = 0;
     if (draw_config[10] != 0 && draw_config[9] != 0) {
-        func_00212258(D_0015EF74);
+        func_00212258(g_gs_texture_allocation_cursor);
         VU1_texFlush();
     }
-    ((int *)D_00161000)[0] = 0x20000000;
-    ((int *)D_00161000)[1] = D_0016000C + 0x10;
-    ((int *)D_00161000)[2] = 0;
-    ((int *)D_00161000)[3] = 0;
-    D_00161000 += 0x10;
+    ((int *)g_render_packet_cursor)[0] = 0x20000000;
+    ((int *)g_render_packet_cursor)[1] = moby_texture_tag_slot + 0x10;
+    ((int *)g_render_packet_cursor)[2] = 0;
+    ((int *)g_render_packet_cursor)[3] = 0;
+    g_render_packet_cursor += 0x10;
     p[0] = 0x20000000;
-    p[1] = D_00161000;
+    p[1] = g_render_packet_cursor;
     p[2] = 0;
     p[3] = 0;
 }
@@ -666,6 +643,7 @@ struct TexRemap {
     s16 hi;
 };
 
+/* Patches the texture addresses in the GIF packets of moby classes listed for remapping. */
 void PatchMobyGifs(void) {
     s32 *id;
     s32 *next;
@@ -708,15 +686,16 @@ extern float D_001CAE00[] NOT_SDA;
 extern float func_001F9F90(float);
 extern float func_001F9FA8(float);
 
+/* Sets the shadow light direction from the light direction at the hero. */
 void update_resident_packed_direction(void) {
     float buf[4];
     float a;
 
-    func_0020E360((void *)D_001414D0, buf);
-    a = func_001FA058(buf[0], buf[1]);
-    D_001CAE00[0] = FastCos(a) * 0.14f;
-    D_001CAE00[1] = FastSin(a) * 0.14f;
-    D_001CAE00[2] = -0.99f;
+    get_moby_light_direction((void *)g_hero_moby, buf);
+    a = fast_arc_tan(buf[0], buf[1]);
+    shadow_light_dir[0] = FastCos(a) * 0.14f;
+    shadow_light_dir[1] = FastSin(a) * 0.14f;
+    shadow_light_dir[2] = -0.99f;
 }
 
 extern int D_0016003C MACRO_ADDR;
@@ -737,33 +716,33 @@ void configure_graphics_setup_dma_chain(void) {
     int *p;
     int t;
 
-    if (D_0016003C == 0) {
-        ((int *)D_00160040)[0] = 0x10000000;
-        ((int *)D_00160040)[1] = 0;
-        ((int *)D_00160040)[2] = 0;
-        ((int *)D_00160040)[3] = 0;
+    if (graphics_setup_dma_chain_enabled == 0) {
+        ((int *)graphics_setup_tag_slot)[0] = 0x10000000;
+        ((int *)graphics_setup_tag_slot)[1] = 0;
+        ((int *)graphics_setup_tag_slot)[2] = 0;
+        ((int *)graphics_setup_tag_slot)[3] = 0;
         return;
     }
-    t = D_00161000;
+    t = g_render_packet_cursor;
     p = (int *)t;
     t += 0x10;
-    D_00161000 = t;
-    ((int *)D_00160040)[0] = 0x20000000;
-    ((int *)D_00160040)[1] = D_00161000;
-    ((int *)D_00160040)[2] = 0;
-    ((int *)D_00160040)[3] = 0;
+    g_render_packet_cursor = t;
+    ((int *)graphics_setup_tag_slot)[0] = 0x20000000;
+    ((int *)graphics_setup_tag_slot)[1] = g_render_packet_cursor;
+    ((int *)graphics_setup_tag_slot)[2] = 0;
+    ((int *)graphics_setup_tag_slot)[3] = 0;
     func_00228A58();
-    submit_graphics_setup_command_stream(D_001C8A00);
-    ((int *)D_00161000)[0] = 0x20000000;
-    ((int *)D_00161000)[1] = D_00160040 + 0x10;
-    ((int *)D_00161000)[2] = 0;
-    ((int *)D_00161000)[3] = 0;
-    D_00161000 += 0x10;
+    submit_graphics_setup_command_stream(graphics_setup_command_stream);
+    ((int *)g_render_packet_cursor)[0] = 0x20000000;
+    ((int *)g_render_packet_cursor)[1] = graphics_setup_tag_slot + 0x10;
+    ((int *)g_render_packet_cursor)[2] = 0;
+    ((int *)g_render_packet_cursor)[3] = 0;
+    g_render_packet_cursor += 0x10;
     p[0] = 0x20000000;
-    p[1] = D_00161000;
+    p[1] = g_render_packet_cursor;
     p[2] = 0;
     p[3] = 0;
-    ProfileMarker_End(D_0015FFC0, 8);
+    ProfileMarker_End(graphics_setup_profile_label, 8);
 }
 
 extern void func_00118D80(int);
@@ -777,7 +756,7 @@ extern int D_0015F71C MACRO_ADDR;
 void ProcessMobyAnimData(void) {
     func_00118D80(0);
     FastMemCopy((void *)0x70003800, normal_lut, 0x800);
-    MobyAnimProc(D_0015F718, D_0015F71C);
+    MobyAnimProc(render_packet_end, vu1_chain_safe_end);
 }
 
 
@@ -819,19 +798,19 @@ extern int D_00161008 MACRO_ADDR;
 void DrawMobysSetup(void) {
     int p;
 
-    VU1_addDataRef(D_0010FAA0, D_0010FA90);
+    VU1_addDataRef(moby_vu1_data, moby_vu1_data_qwc);
     font_state = 6;
-    VU0_loadMicroProgram(D_00100080);
+    VU0_loadMicroProgram(moby_vu0_micro_program);
     VU1_addGSregister(0x47, 0x5360B);
-    p = D_00161000;
-    D_0016000C = p;
-    D_0015EF74 = D_0015EF78;
+    p = g_render_packet_cursor;
+    moby_texture_tag_slot = p;
+    g_gs_texture_allocation_cursor = g_gs_texture_allocation_start;
     p += 0x10;
-    D_00161000 = p;
-    ProfileMarker_Begin(D_0015FFD0, 1);
-    D_00160040 = 0;
-    vu1_chain_limit = D_0015F71C - 0x10000;
-    moby_anim_head = D_0015F718;
+    g_render_packet_cursor = p;
+    ProfileMarker_Begin(draw_mobys_profile_label, 1);
+    graphics_setup_tag_slot = 0;
+    vu1_chain_limit = vu1_chain_safe_end - 0x10000;
+    moby_anim_head = render_packet_end;
 }
 
 extern int func_00212658(int, int, int, int);
@@ -857,17 +836,17 @@ extern int D_00160038 MACRO_ADDR;
    DmaMobyTextures and func_00212508 take nothing. With the arguments
    right, D_0015FFF0 is a plain array, not MACRO_ADDR. */
 void DrawMobysCleanUp(void) {
-    ProfileMarker_Begin(D_0015FFE0, 3);
+    ProfileMarker_Begin(moby_texture_dma_profile_label, 3);
     DmaMobyTextures();
-    ProfileMarker_End(D_0015FFE0, 5);
+    ProfileMarker_End(moby_texture_dma_profile_label, 5);
     if (draw_config[10] != 0) {
         ProcessMobyAnimData();
-        if (D_00160038 != 0) {
+        if (moby_word_fill_table_bytes != 0) {
             func_00212508();
         }
     }
-    ProfileMarker_End(D_0015FFF0, 3);
-    if (draw_config[10] != 0 && D_00160040 != 0) {
+    ProfileMarker_End(draw_mobys_cleanup_profile_label, 3);
+    if (draw_config[10] != 0 && graphics_setup_tag_slot != 0) {
         configure_graphics_setup_dma_chain();
     }
 }
@@ -883,7 +862,7 @@ void DrawMobys(void) {
     if (D_0018A3D8 != 0) {
         InitMobyClassDists();
         moby_anim_head = moby_proc(resident_object_pool, moby_anim_head, -1, 1);
-        if (D_00161000 > vu1_chain_limit) {
+        if (g_render_packet_cursor > vu1_chain_limit) {
             STUB_printf(vu_chain_overflow_message);
         }
     }
@@ -894,7 +873,7 @@ LINKER_REMNANT("asm/remnants/text", func_0020E330);
 
 void func_0020E340(u64 *command_words, u64 upper_field, u64 middle_field, u64 low_field, u64 tail_field);
 
-/* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/rendering/commands/pack_render_command_fields.c, PackRenderCommandFields. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/rendering/commands/pack_render_command_fields.c, PackRenderCommandFields. */
 void pack_render_command_fields(u64 *command_words, u64 upper_field,
                              u64 middle_field, u64 low_field, u64 tail_field) {
     int command_word_index;

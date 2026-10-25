@@ -65,7 +65,7 @@ extern int func_00118BC0(int);
 extern int func_00118C40(int);
 extern int func_0011A690(const char *, ...);
 
-/* topThread: kernel service dispatcher. Adapted from Lombyte (GPL-3.0) for PAL. */
+/* topThread: kernel service dispatcher. Adapted from Lombyte's project (GPL-3.0) for PAL. */
 void func_001194C8(void *arg0) {
     TopThreadContext *ctx = (TopThreadContext *)arg0;
     int i;
@@ -163,7 +163,7 @@ int func_001195A0(void) {
     tp.entry = func_001194C8;
     tp.stack = D_00154200;
     tp.stackSize = 0x400;
-    tp.gpReg = D_00166D00;
+    tp.gpReg = gp_base;
     tp.initPriority = 0;
     tid = func_00118B50(&tp);
     top_thread_id = tid;

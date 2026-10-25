@@ -1,4 +1,5 @@
 #include "common.h"
+#include "moby.h"
 #include "callees.h"
 #include "records.h"
 #include "structs.h"
@@ -310,7 +311,7 @@ extern f32 func_001FA888(s32);
 #define TRUNC(x) ((s32 (*)(f32))func_001FA898)(x)
 extern u64 func_00200248(s32);
 
-/* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/assembly/textbin/fun_00238310.c, render_capture_scrolling_text. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/assembly/textbin/fun_00238310.c, render_capture_scrolling_text. */
 void render_capture_scrolling_text(char *text, s32 start_x, s32 start_y, f32 scale) {
     s64 texture;
     s32 cursor_x;
@@ -361,11 +362,11 @@ void render_capture_scrolling_text(char *text, s32 start_x, s32 start_y, f32 sca
                     if (blink_next_glyph != 0) {
                         skip_draw = 0;
                         blink_next_glyph = 0;
-                        long_blink_period = func_001F98C0(0x1E);
-                        short_blink_period = func_001F98C0(0xA);
+                        long_blink_period = scale_game_frame_count(0x1E);
+                        short_blink_period = scale_game_frame_count(0xA);
                         blink_period = long_blink_period + short_blink_period;
-                        blink_remainder = D_0015F538 % blink_period;
-                        long_blink_period = func_001F98C0(0xA);
+                        blink_remainder = game_frame_counter % blink_period;
+                        long_blink_period = scale_game_frame_count(0xA);
                         if (blink_remainder < long_blink_period) {
                             skip_draw = 1;
                         }
@@ -415,7 +416,7 @@ void update_scrolling_status_message(void) {
     if (func_00116810_s(*(char **)(v + 0x2C)) - *(int *)(v + 0x44) / 20 > 0) {
         *(int *)(v + 0x44) += 2;
     } else {
-        set_scrolling_status_message(func_001FE540_id(D_001E62B8[random_integer_below(0x18)]));
+        set_scrolling_status_message(func_001FE540_id(status_message_text_ids[random_integer_below(0x18)]));
     }
     w = vendor_state;
     render_capture_scrolling_text(*(char **)(w + 0x2C), -*(int *)(w + 0x44), 8, 2.0f);
@@ -426,10 +427,11 @@ void update_scrolling_status_message(void) {
 extern int D_001611A8 MACRO_ADDR;
 extern int D_001E66E4;
 
+/* Draws the capture framebuffer rect and its moby list when enabled. */
 void render_capture_effect_pass(void) {
     draw_framebuffer_rect(0, 0, 0x200, 0x80, 0x200, 0x80, 0);
-    if (D_001611A8 == 1) {
-        DrawMobyList(D_001E66E4, 1);
+    if (capture_moby_pass_enabled == 1) {
+        DrawMobyList(capture_moby_list, 1);
     }
 }
 
@@ -438,11 +440,12 @@ extern char D_00161180[];
 /* Unprototyped: the two call sites pass different argument counts. */
 extern void func_00116248();
 
+/* Formats a number into a string, with a thousands separator from 1000 up. */
 void format_scaled_display_value(void *arg0, int arg1) {
     if (arg1 >= 1000) {
-        func_00116248(arg0, D_00161178, arg1 / 1000, arg1 % 1000);
+        func_00116248(arg0, fmt_thousands_grouped_int, arg1 / 1000, arg1 % 1000);
     } else {
-        func_00116248(arg0, D_00161180, arg1);
+        func_00116248(arg0, fmt_plain_int, arg1);
     }
 }
 
@@ -496,7 +499,7 @@ void render_vendor_item_icon_strip_pass(void) {
         if (D_001E66C0_ui.slotCount > 0) {
             do {
                 slotKind = (s32 *) (void *) ((u8 *)&D_001E66C0_ui + 0xD4 + itemIndex * 0x14);
-                itemIconId = ((struct VendorItemResource *) (void *) ((u8 *)D_001864D0 + slotKind[-1] * 0x4C))->iconId;
+                itemIconId = ((struct VendorItemResource *) (void *) ((u8 *)item_info_table + slotKind[-1] * 0x4C))->iconId;
                 if (slotKind[0] == 1) {
                     itemIcon = GetIconFrame(itemIconId, 2);
                 } else {
@@ -521,7 +524,7 @@ void render_vendor_item_icon_strip_pass(void) {
         do {
             selectedMinusThree = D_001E66C0_ui.selectedIndex - 3;
             slotOffset = ((s32) ((D_001E66C0_ui.slotCount * 2) + i + selectedMinusThree) % (s32) D_001E66C0_ui.slotCount) * 0x14;
-            displayIconId = ((struct VendorItemResource *) (void *) ((u8 *)D_001864D0 + *(s32 *)(void *)(slotOffset + ((u8 *)&D_001E66C0_ui + 0xD0)) * 0x4C))->iconId;
+            displayIconId = ((struct VendorItemResource *) (void *) ((u8 *)item_info_table + *(s32 *)(void *)(slotOffset + ((u8 *)&D_001E66C0_ui + 0xD0)) * 0x4C))->iconId;
             if (*(s32 *)(void *)(slotOffset + ((u8 *)&D_001E66C0_ui + 0xD4)) == 1) {
                 displayIcon = GetIconFrame(displayIconId, 2);
             } else {
@@ -555,7 +558,7 @@ extern struct T239 D_001864D0_t[] __asm__("D_001864D0");
 extern struct P239 D_001E02B0_p[] __asm__("D_001E02B0");
 extern unsigned char D_0013D5C8_b[] __asm__("D_0013D5C8") NOT_SDA;
 
-/* Vendor item panel: draws the selected item's name and description, and for the ammo/alt slots a pulsing price shadow. Adapted from Lombyte (GPL-3.0) for PAL: src/ui/menus/fun_002389e0.c, fun_002389e0. */
+/* Vendor item panel: draws the selected item's name and description, and for the ammo/alt slots a pulsing price shadow. Adapted from Lombyte's project (GPL-3.0) for PAL: src/ui/menus/fun_002389e0.c, fun_002389e0. */
 void render_vendor_item_details_pass(void) {
     char buf[0x100];
     int w;
@@ -570,13 +573,13 @@ void render_vendor_item_details_pass(void) {
         func_001F6D88_c(0x76, 0x65, 0x80F0F0F0L, buf, -1);
         if (D_001E66C0_m.f40 != 0) {
             w = measure_text_width_regular((unsigned char *)buf, -1);
-            func_00201640(0x75 - w, 0x6D, 0x7B, 0x70, 0x20959544L, 0);
-            func_00201640(0x76 - w, 0x6D, 0x7A, 0x70, 0x30959544L, 0);
-            func_00201640(0x77 - w, 0x6D, 0x79, 0x70, 0x40959544L, 0);
-            func_00201640(0x78 - w, 0x6D, 0x78, 0x70, 0x50959544L, 0);
-            func_00201640(0x79 - w, 0x6D, 0x77, 0x70, 0x60959544L, 0);
-            func_00201640(0x7A - w, 0x6D, 0x76, 0x70, 0x70959544L, 0);
-            func_00201640(0x7B - w, 0x6D, 0x75, 0x70, 0x80959544L, 0);
+            draw_hud_rect_blended(0x75 - w, 0x6D, 0x7B, 0x70, 0x20959544L, 0);
+            draw_hud_rect_blended(0x76 - w, 0x6D, 0x7A, 0x70, 0x30959544L, 0);
+            draw_hud_rect_blended(0x77 - w, 0x6D, 0x79, 0x70, 0x40959544L, 0);
+            draw_hud_rect_blended(0x78 - w, 0x6D, 0x78, 0x70, 0x50959544L, 0);
+            draw_hud_rect_blended(0x79 - w, 0x6D, 0x77, 0x70, 0x60959544L, 0);
+            draw_hud_rect_blended(0x7A - w, 0x6D, 0x76, 0x70, 0x70959544L, 0);
+            draw_hud_rect_blended(0x7B - w, 0x6D, 0x75, 0x70, 0x80959544L, 0);
             format_scaled_display_value(buf, D_001E66C0_m.f40 ? D_001E02B0_p[D_001E66C0_m.slots[D_001E66C0_m.idx].id].d
                                                  : D_001E02B0_p[D_001E66C0_m.slots[D_001E66C0_m.idx].id].c);
             func_001F6D88_c(0x76, 0x55, 0x80F0F0F0L, buf, -1);
@@ -587,13 +590,13 @@ void render_vendor_item_details_pass(void) {
         func_001F6D88_c(0x76, 0x65, D_0013D5C8_b[0x23] ? 0x80808080L : 0x80F0F0F0L, buf, -1);
         if (D_0013D5C8_b[0x23] != 0) {
             w = measure_text_width_regular((unsigned char *)buf, -1);
-            func_00201640(0x75 - w, 0x6D, 0x7B, 0x70, 0x20959544L, 0);
-            func_00201640(0x76 - w, 0x6D, 0x7A, 0x70, 0x30959544L, 0);
-            func_00201640(0x77 - w, 0x6D, 0x79, 0x70, 0x40959544L, 0);
-            func_00201640(0x78 - w, 0x6D, 0x78, 0x70, 0x50959544L, 0);
-            func_00201640(0x79 - w, 0x6D, 0x77, 0x70, 0x60959544L, 0);
-            func_00201640(0x7A - w, 0x6D, 0x76, 0x70, 0x70959544L, 0);
-            func_00201640(0x7B - w, 0x6D, 0x75, 0x70, 0x80959544L, 0);
+            draw_hud_rect_blended(0x75 - w, 0x6D, 0x7B, 0x70, 0x20959544L, 0);
+            draw_hud_rect_blended(0x76 - w, 0x6D, 0x7A, 0x70, 0x30959544L, 0);
+            draw_hud_rect_blended(0x77 - w, 0x6D, 0x79, 0x70, 0x40959544L, 0);
+            draw_hud_rect_blended(0x78 - w, 0x6D, 0x78, 0x70, 0x50959544L, 0);
+            draw_hud_rect_blended(0x79 - w, 0x6D, 0x77, 0x70, 0x60959544L, 0);
+            draw_hud_rect_blended(0x7A - w, 0x6D, 0x76, 0x70, 0x70959544L, 0);
+            draw_hud_rect_blended(0x7B - w, 0x6D, 0x75, 0x70, 0x80959544L, 0);
             format_scaled_display_value(buf, D_0013D5C8_b[0x23] ? D_001E02B0_p[D_001E66C0_m.slots[D_001E66C0_m.idx].id].b
                                                  : D_001E02B0_p[D_001E66C0_m.slots[D_001E66C0_m.idx].id].a);
             func_001F6D88_c(0x76, 0x55, 0x80F0F0F0L, buf, -1);
@@ -627,6 +630,7 @@ extern unsigned char D_0013D5EB[];
 extern void func_001153FC(void *, int, int);
 extern void func_001F75D0(void *, long, void *, int);
 
+/* Draws the vendor's buy label and price for the selected slot. */
 void render_vendor_buy_label_pass(char *unused, int x, int y) {
     char sp[0x18];
     VendorA *v;
@@ -674,10 +678,10 @@ void render_vendor_buy_label_pass(char *unused, int x, int y) {
     }
     if (m != 0) {
         *(unsigned short *)(sp + 0x12) |= 4;
-        func_001F75D0(sp, 0x80F0F0F0L, func_001FE540_id(m), -1);
+        font_print_window_small(sp, 0x80F0F0F0L, func_001FE540_id(m), -1);
         *(unsigned short *)(sp + 0x12) ^= 4;
         *(short *)(sp + 0xA) = (y - *(short *)(sp + 0xE)) >> 1;
-        func_001F75D0(sp, 0x80F0F0F0L, func_001FE540_id(m), -1);
+        font_print_window_small(sp, 0x80F0F0F0L, func_001FE540_id(m), -1);
     }
 }
 
@@ -764,7 +768,7 @@ extern s64 func_001F4868_3A5E0(s32) __asm__("func_001F4868");
 extern f32 func_001FA888(s32);
 extern void func_001F5988(f32, f32, f32, f32, s32, s32, s32, s32, u64, s64);
 
-/* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/textbin/render_vendor_capture_texture_overlays_pass.c, render_vendor_capture_texture_overlays_pass. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/textbin/render_vendor_capture_texture_overlays_pass.c, render_vendor_capture_texture_overlays_pass. */
 void render_vendor_capture_texture_overlays_pass(s32 pass_index, f32 capture_width,
                                                  f32 capture_height) {
     s32 flash_timer;
@@ -867,6 +871,7 @@ void configure_capture_target(int a, int b, float f) {
 __asm__(".section .text\n\tnop\n");
 
 
+/* Sets up the draw buffer and view context for rendering. */
 void setup_view_context(void) {
     PutDrawBufferLarge();
     InitViewContext();
@@ -919,13 +924,13 @@ void render_vendor_capture_pass_sequence(char *m) {
         FastVecSub(d1, &out[1], out);
         FastVecSub(d2, &out[2], out);
         len = FastVecLength(d1);
-        func_001F9DC0(tmp, d1, capture_bounds_adjustments[i][0]);
+        fast_vec_normalize(tmp, d1, capture_bounds_adjustments[i][0]);
         FastVecAdd(base, base, tmp);
-        func_001F9DC0(d1, d1, len - 2.0f * capture_bounds_adjustments[i][2]);
+        fast_vec_normalize(d1, d1, len - 2.0f * capture_bounds_adjustments[i][2]);
         len = FastVecLength(d2);
-        func_001F9DC0(tmp, d2, capture_bounds_adjustments[i][1]);
+        fast_vec_normalize(tmp, d2, capture_bounds_adjustments[i][1]);
         FastVecAdd(base, base, tmp);
-        func_001F9DC0(d2, d2, len - 2.0f * capture_bounds_adjustments[i][3]);
+        fast_vec_normalize(d2, d2, len - 2.0f * capture_bounds_adjustments[i][3]);
         FastVecAdd(tmp, base, d1);
         FastVecAdd(tmp, tmp, d2);
         project_graphics_bounds_float(base, tmp, &sx, &sy, &sw, &sh);
@@ -939,12 +944,12 @@ void render_vendor_capture_pass_sequence(char *m) {
             }
             len = FastVecLength(d1);
             g = 1.0f - f;
-            func_001F9DC0(tmp, d1, len * g * 0.5f);
-            func_001F9DC0(d1, d1, len * f);
+            fast_vec_normalize(tmp, d1, len * g * 0.5f);
+            fast_vec_normalize(d1, d1, len * f);
             FastVecAdd(base, base, tmp);
             len = FastVecLength(d2);
-            func_001F9DC0(tmp, d2, len * g * 0.5f);
-            func_001F9DC0(d2, d2, len * f);
+            fast_vec_normalize(tmp, d2, len * g * 0.5f);
+            fast_vec_normalize(d2, d2, len * f);
             FastVecAdd(base, base, tmp);
         }
         qcopy(&c[0], base);
@@ -983,8 +988,8 @@ void render_vendor_capture_pass_sequence(char *m) {
         func_00234C98_l(0x42, 0x8000000064L);
         func_00234C98_l(8, 5);
         VU1_texFlush();
-        tex = D_0015EFD0;
-        if (D_0015EE80 != 0) {
+        tex = capture_texture_tex0;
+        if (pal_mode != 0) {
             append_subpixel_textured_screen_quad(w, h, x, y, 0, 0, (int)(sx - 1.0f),
                           func_001FA898_3AA38(sy * 0.92857146f - 1.0f),
                           0x80808080, tex);
@@ -1080,7 +1085,7 @@ extern s32 func_001FA898_3B210(f32) __asm__("func_001FA898");
 extern void func_001F9CA0(f32 *, f32 *, f32 *);
 extern void func_001F9DC0_3B210(f32 *, f32 *, f32) __asm__("func_001F9DC0");
 
-/* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/textbin/fun_00239f58.c, sample_surface_height_map. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/textbin/fun_00239f58.c, sample_surface_height_map. */
 s32 sample_surface_height_map(f32 *height, f32 *normal, f32 x, f32 y, f32 z) {
     f32 x_tangent[4] __attribute__((aligned(16)));
     f32 y_tangent[4] __attribute__((aligned(16)));
@@ -1198,9 +1203,9 @@ void update_instance_attachment_points_and_lengths(char *arg0) {
     float a[4];
     float b[4];
     Cfg16 cfg;
-    char *p = *(char **)(arg0 + 0x78);
+    char *p = ((char *)((Moby *)arg0)->pvars);
 
-    cfg = D_00160FD0;
+    cfg = attachment_vertex_indices;
     transform_scaled_vertex_batch(arg0, 4, &cfg, p);
     func_001F9BF0_b(a, p + 0x10, p);
     func_001F9BF0_b(b, p + 0x20, p);

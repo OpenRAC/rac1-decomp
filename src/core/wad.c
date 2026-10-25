@@ -165,7 +165,7 @@ int func_0012F348(int lba, int sectors, void *buf) {
     char hdr[4];
 
     hdr[0] = 0x20;
-    hdr[1] = D_0015EE58[0];
+    hdr[1] = cd_read_spindle_speed[0];
     hdr[2] = 0;
     hdr[3] = 0;
 
@@ -192,7 +192,7 @@ int func_0012F3F8(void) {
     unsigned int i;
 
     hdr.b[0] = 0x20;
-    hdr.b[1] = D_0015EE58[0];
+    hdr.b[1] = cd_read_spindle_speed[0];
     hdr.b[2] = 0;
     hdr.b[3] = 0;
 
@@ -204,7 +204,7 @@ int func_0012F3F8(void) {
     } while (func_00121930() != 0);
 
     for (i = 0; i < 0x2960; i++) {
-        ((char *)D_00137C80)[i] = buf[i];
+        ((char *)disc_table)[i] = buf[i];
     }
     return 1;
 }
@@ -224,7 +224,7 @@ int func_0012F4A8(int arg0) {
     unsigned int i;
 
     hdr.b[0] = 0x20;
-    hdr.b[1] = D_0015EE58[0];
+    hdr.b[1] = cd_read_spindle_speed[0];
     hdr.b[2] = 0;
     hdr.b[3] = 0;
     entry = &D_0013A548[arg0 * 2];

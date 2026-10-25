@@ -25474,8 +25474,8 @@
      }
     },
     {
-     "name": "func_L01_00262BC0",
-     "size": "360",
+     "name": "func_L00_00262BC0",
+     "size": "548",
      "fuzzy_match_percent": 100.0,
      "address": "491064",
      "metadata": {
@@ -25483,8 +25483,8 @@
      }
     },
     {
-     "name": "func_L00_00262BC0",
-     "size": "548",
+     "name": "func_L01_00262BC0",
+     "size": "360",
      "fuzzy_match_percent": 100.0,
      "address": "491064",
      "metadata": {
@@ -32152,8 +32152,8 @@
      }
     },
     {
-     "name": "func_L02_002DB810",
-     "size": "744",
+     "name": "func_L00_002DB810",
+     "size": "764",
      "fuzzy_match_percent": 100.0,
      "address": "985736",
      "metadata": {
@@ -32161,8 +32161,8 @@
      }
     },
     {
-     "name": "func_L00_002DB810",
-     "size": "764",
+     "name": "func_L02_002DB810",
+     "size": "744",
      "fuzzy_match_percent": 100.0,
      "address": "985736",
      "metadata": {
@@ -33376,8 +33376,8 @@
      }
     },
     {
-     "name": "func_L03_002E99F0",
-     "size": "260",
+     "name": "func_L00_002E99F0",
+     "size": "36",
      "fuzzy_match_percent": 100.0,
      "address": "1043560",
      "metadata": {
@@ -33385,8 +33385,8 @@
      }
     },
     {
-     "name": "func_L00_002E99F0",
-     "size": "36",
+     "name": "func_L03_002E99F0",
+     "size": "260",
      "fuzzy_match_percent": 100.0,
      "address": "1043560",
      "metadata": {
@@ -33430,8 +33430,8 @@
      }
     },
     {
-     "name": "func_L03_002E9AF8",
-     "size": "316",
+     "name": "func_L00_002E9AF8",
+     "size": "40",
      "fuzzy_match_percent": 100.0,
      "address": "1043824",
      "metadata": {
@@ -33439,8 +33439,8 @@
      }
     },
     {
-     "name": "func_L00_002E9AF8",
-     "size": "40",
+     "name": "func_L03_002E9AF8",
+     "size": "316",
      "fuzzy_match_percent": 100.0,
      "address": "1043824",
      "metadata": {
@@ -35455,8 +35455,8 @@
      }
     },
     {
-     "name": "func_L11_0030A8C8",
-     "size": "1480",
+     "name": "func_L01_0030A8C8",
+     "size": "756",
      "fuzzy_match_percent": 100.0,
      "address": "1178432",
      "metadata": {
@@ -35464,8 +35464,8 @@
      }
     },
     {
-     "name": "func_L01_0030A8C8",
-     "size": "756",
+     "name": "func_L11_0030A8C8",
+     "size": "1480",
      "fuzzy_match_percent": 100.0,
      "address": "1178432",
      "metadata": {

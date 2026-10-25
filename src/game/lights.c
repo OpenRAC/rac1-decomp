@@ -78,7 +78,7 @@ extern void func_00202790(int);
    D_0019C2C0) that has moved more than 8 units is re-placed and either
    created (state 1 -> 2) or refreshed (state 2). */
 void UpdateAllPointLights(void) {
-    char *l = D_0019BEC0;
+    char *l = dir_lights;
     float ang;
     int i;
 
@@ -92,8 +92,8 @@ void UpdateAllPointLights(void) {
     *(float *)(l + 0x358) = -0.5f;
     *(int *)(l + 0x35C) = 0;
     for (i = 0; i < 8; i++) {
-        char *src = D_0019C2C0 + i * 0x20;
-        char *dst = D_0019C4C0 + i * 0x30;
+        char *src = point_lights + i * 0x20;
+        char *dst = point_light_data + i * 0x30;
 
         if (*(int *)(dst + 0x10) != 0 && FastVecDist(src + 0x10, dst + 0x20) > 8.0f) {
             qcopy(dst + 0x20, src + 0x10);
@@ -147,7 +147,7 @@ extern LtObj20 *D_001604D8_o __asm__("D_001604D8") MACRO_ADDR;
 extern int func_001F9D78(void *, void *);
 extern void func_001F9C48(void *, void *, float);
 
-/* CreatePointLight: lists which objects of the three lists the light's sphere touches and records the light's index in their packed nibble field. Adapted from Lombyte (GPL-3.0) for PAL: src/rendering/create_point_light.c, create_point_light. */
+/* CreatePointLight: lists which objects of the three lists the light's sphere touches and records the light's index in their packed nibble field. Adapted from Lombyte's project (GPL-3.0) for PAL: src/rendering/create_point_light.c, create_point_light. */
 void CreatePointLight(int i) {
     LtSlot *slot;
     LtDef *def;
@@ -161,10 +161,10 @@ void CreatePointLight(int i) {
     int n3;
     unsigned int v;
 
-    slot = &((LtSlot *)D_0019C4C0)[i];
+    slot = &((LtSlot *)point_light_data)[i];
     p = slot->buf;
     end = p + 0x200;
-    def = &((LtDef *)D_0019C2C0)[i];
+    def = &((LtDef *)point_lights)[i];
     qcopy(&sphere, &def->sphere);
     sphere.v[3] += 8.0f;
     if (p < end) {
@@ -324,7 +324,7 @@ void DetachPointLight(s32 arg0) {
     struct PointLightLinks *links;
 
     firstNibble = arg0 & 0xFFFF;
-    links = (arg0 * 0x30) + D_0019C4C0;
+    links = (arg0 * 0x30) + point_light_data;
     secondNibble = (arg0 * 0x10) & 0xFFFF;
     thirdNibble = (arg0 << 8) & 0xFFFF;
     firstLinks = links->unkC + (links->unk0 * 2);
@@ -344,7 +344,7 @@ void DetachPointLight(s32 arg0) {
             } else if ((firstPacked & 0xF000) == fourthNibble) {
                 firstPacked |= 0xF000;
             } else {
-                STUB_printf(D_001E7E80);
+                STUB_printf(str_bad_point_light_tie);
             }
             firstLinks += 1;
             if (firstPacked == 0xFFFF) {
@@ -371,7 +371,7 @@ void DetachPointLight(s32 arg0) {
             } else if ((secondPacked & 0xF000) == fourthNibble) {
                 secondPacked |= 0xF000;
             } else {
-                STUB_printf(D_001E7EA0);
+                STUB_printf(str_bad_point_light_tfrag);
             }
             secondLinks += 1;
             if (secondPacked == 0xFFFF) {
@@ -398,7 +398,7 @@ void DetachPointLight(s32 arg0) {
             } else if ((thirdPacked & 0xF000) == fourthNibble) {
                 thirdPacked |= 0xF000;
             } else {
-                STUB_printf(D_001E7EC8);
+                STUB_printf(str_bad_point_light_shrub);
             }
             thirdLinks += 1;
             if (thirdPacked == 0xFFFF) {

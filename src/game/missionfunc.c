@@ -140,8 +140,8 @@ int update_mission_list(void) {
     char *node;
 
     {
-        char *p = D_001A2F90;
-        *(char **)(p + 0x10) = D_001A2EF0[level_map_selection[0x89]];
+        char *p = mission_list_state;
+        *(char **)(p + 0x10) = planet_mission_lists[level_map_selection[0x89]];
         if (*(char **)(p + 0x10) == 0) {
             return 0;
         }
@@ -160,7 +160,7 @@ int update_mission_list(void) {
         node += 0x28;
     }
     {
-        char *p = D_001A2F90;
+        char *p = mission_list_state;
         for (node = *(char **)(p + 0x10); *(short *)node != 0; node += 0x28) {
             if (*(int (**)(int))(node + 0x1C) != 0) {
                 *(short *)(node + 0x26) = (*(int (**)(int))(node + 0x1C))(*(int *)(node + 0x20));
@@ -168,7 +168,7 @@ int update_mission_list(void) {
         }
     }
     {
-        char *p = D_001A2F90;
+        char *p = mission_list_state;
         *(int *)(p + 0xC) = 0;
         for (node = *(char **)(p + 0x10); *(short *)node != 0; node += 0x28) {
             if (*(short *)(node + 0x24) == 1 && !(*(unsigned short *)(node + 0x10) & 2)) {
@@ -177,7 +177,7 @@ int update_mission_list(void) {
         }
     }
     {
-        char *p = D_001A2F90;
+        char *p = mission_list_state;
         return *(int *)(p + 0xC) == 0;
     }
 }
@@ -196,7 +196,7 @@ int check_mission_condition(short type, int arg) {
     case 0:
         return 1;
     case 1:
-        return D_0013DE48[arg] != 0;
+        return level_available[arg] != 0;
     case 2:
         return D_0013D5C8_b[arg] != 0;
     case 3:
@@ -212,7 +212,7 @@ int check_mission_condition(short type, int arg) {
     case 7:
         return ((int (*)(void))arg)() != 0;
     case 8:
-        return D_0014BFC0[arg >> 16][arg & 0xFFFF] != 0;
+        return gold_bolts_collected[arg >> 16][arg & 0xFFFF] != 0;
     case 9:
         break;
     }
@@ -287,7 +287,7 @@ extern unsigned char D_0013D4A8 NOT_SDA;
 
 /* Predicate: true when D_0013D844 and the flag byte D_0013D4A8 are both set. */
 int MissionCond_Obj18AndSpecial18(void) {
-    if (D_0013D844 != 0 && D_0013D4A8 != 0) return 1;
+    if (D_0013D844 != 0 && menu_item_enabled_12 != 0) return 1;
     return 0;
 }
 
@@ -304,7 +304,7 @@ extern int D_0013D6B8 NOT_SDA;
 
 /* Predicate: true when both mission words at D_0013D6B8 are non-zero. */
 int MissionCond_Obj3FAnd40(void) {
-    char *base = (char *)&D_0013D6B8;
+    char *base = (char *)&race_gates;
     if (*(int *)(base + 0x40C) != 0 && *(int *)(base + 0x3FC) != 0) return 1;
     return 0;
 }
@@ -314,7 +314,7 @@ extern unsigned char D_0013D4E5 NOT_SDA;
 
 /* Predicate: true when D_0013DAE4 and the flag byte D_0013D4E5 are both set. */
 int MissionCond_Obj42AndSpecial55(void) {
-    if (D_0013DAE4 != 0 && D_0013D4E5 != 0) return 1;
+    if (D_0013DAE4 != 0 && menu_item_enabled_73 != 0) return 1;
     return 0;
 }
 
@@ -323,7 +323,7 @@ extern unsigned char D_0013D4F1 NOT_SDA;
 
 /* Predicate: true when D_0013DB24 and the flag byte D_0013D4F1 are both set. */
 int MissionCond_Obj46AndSpecial61(void) {
-    if (D_0013DB24 != 0 && D_0013D4F1 != 0) return 1;
+    if (D_0013DB24 != 0 && menu_item_enabled_85 != 0) return 1;
     return 0;
 }
 
@@ -340,14 +340,14 @@ extern int D_0013D5C8 NOT_SDA;
 
 /* Predicate: true when two entries of the D_0013D5C8 table are both set. */
 int MissionCond_Items1FAnd21(void) {
-    unsigned char *base = (unsigned char *)&D_0013D5C8;
+    unsigned char *base = (unsigned char *)&item_available;
     if (base[0x21] != 0 && base[0x1F] != 0) return 1;
     return 0;
 }
 
 /* Returns whether entry arg0 of the D_0013D5C8 table is set. */
 int is_item_available(int arg0) {
-    unsigned char *base = (unsigned char *)&D_0013D5C8;
+    unsigned char *base = (unsigned char *)&item_available;
     return base[arg0] != 0;
 }
 
@@ -368,7 +368,7 @@ extern unsigned char D_0013D4B0 NOT_SDA;
 /* Returns 0 when D_0013D9B4 is clear, else 2 or 1 depending on D_0013D4B0. */
 int MissionCond_Obj2FVariant(void) {
     if (D_0013D9B4 != 0) {
-        return D_0013D4B0 ? 2 : 1;
+        return menu_item_enabled_20 ? 2 : 1;
     }
     return 0;
 }
@@ -377,7 +377,7 @@ extern unsigned char D_0013DE55 NOT_SDA;
 
 /* Predicate: true when both D_0013D4F1 and D_0013DE55 are set. */
 int MissionCond_Special61AndFlag0D(void) {
-    if (D_0013D4F1 != 0 && D_0013DE55 != 0) return 1;
+    if (menu_item_enabled_85 != 0 && gemlik_available != 0) return 1;
     return 0;
 }
 
@@ -398,7 +398,7 @@ int HasHologuise(void) {
 
 /* Returns 2 or the state of another entry of the D_0013D5C8 table, depending on the first. */
 int Mission_GetHologuiseOrMapStatus(void) {
-    unsigned char *base = (unsigned char *)&D_0013D5C8;
+    unsigned char *base = (unsigned char *)&item_available;
     if (base[0x1F] != 0) return 2;
     return base[0x21] != 0;
 }
@@ -489,7 +489,7 @@ extern void func_001F75D0_0CDE0(struct TextRegion_0CDE0 *, long, char *,
 /* Map screen icon refresh: picks the level's icon list, centres the map on the hero when
    it is the current level, places the fixed icons (-1..-9) and projects the others to map
    coordinates, then sets each icon's active flag and sizes its label box.
-   Adapted from Lombyte (GPL-3.0) for PAL: src/ui/map/update_map_icons.c, update_map_icons. */
+   Adapted from Lombyte's project (GPL-3.0) for PAL: src/ui/map/update_map_icons.c, update_map_icons. */
 void update_map_icons(s32 level, s32 flag) {
     char label_text[128];
     f32 map_x;

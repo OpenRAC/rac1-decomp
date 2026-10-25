@@ -221,7 +221,7 @@ extern f32 func_002140F8(f32, f32);
 extern void func_002158E8(void *, void *);
 extern void func_00215A10(void *, void *);
 
-/* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/rendering/fun_00218888.c, FUN_00218888. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/rendering/fun_00218888.c, FUN_00218888. */
 struct Obj *PartType02Spawn(u128 *arg0, f32 *arg1, f32 *arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8) {
     struct Obj *o;
     struct Sub *s;
@@ -240,7 +240,7 @@ struct Obj *PartType02Spawn(u128 *arg0, f32 *arg1, f32 *arg2, s32 arg3, s32 arg4
         if (arg8 == -1) {
             o->b2 = *D_001CE35C[0];
         } else {
-            o->b2 = *D_001CE300[(u16)arg8];
+            o->b2 = *particle_texture_ptrs[(u16)arg8];
             if (arg8 & 0x10000) {
                 o->b3 = 0x48;
             }

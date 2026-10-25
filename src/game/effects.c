@@ -27,10 +27,10 @@ extern f32 func_001F9D10_1edff8(void *, void *) __asm__("func_001F9D10");
 extern f32 ConvertIntegerToFloat(s32) __asm__("func_001FA888");
 extern s32 truncate_float_to_s32(f32) __asm__("func_001FA898");
 extern float AbsoluteFloat(float input) __asm__("func_001F9B88");
-extern void project_to_screen(f32 *, void *) __asm__("func_001F2418");
+extern void project_to_screen_r(f32 *, void *) __asm__("func_001F2418");
 extern s64 get_effect_texture(s32) __asm__("func_001F4868");
 extern void draw_textured_quad(s32, s32, s32, s32, s32, s32, s32, s32, s64, s64) __asm__("func_001F5800");
-/* Lens flare: projects the flare moby to the screen and fills the per-element alpha, texture, colour, distance and scale tables. Adapted from Lombyte (GPL-3.0) for PAL: rendering/effects/fun_001edc50.c, FUN_001edc50. */
+/* Lens flare: projects the flare moby to the screen and fills the per-element alpha, texture, colour, distance and scale tables. Adapted from Lombyte's project (GPL-3.0) for PAL: rendering/effects/fun_001edc50.c, FUN_001edc50. */
 void draw_lens_flare(void) {
     f32 scr[4];
     f32 ctr[4];
@@ -60,7 +60,7 @@ void draw_lens_flare(void) {
     dist = func_001F9D10_1edff8(D_00187080_1edff8, D_00187300_1edff8.moby->pos);
     ctr[0] = ConvertIntegerToFloat(D_0013E600_1edff8.cx);
     ctr[1] = ConvertIntegerToFloat(D_0013E600_1edff8.cy);
-    project_to_screen(scr, D_00187300_1edff8.moby->pos);
+    project_to_screen_r(scr, D_00187300_1edff8.moby->pos);
     scr[0] = (scr[0] - ConvertIntegerToFloat(D_0013E600_1edff8.ox)) * 0.0625f;
     scr[1] = (scr[1] - ConvertIntegerToFloat(D_0013E600_1edff8.oy)) * 0.0625f;
     d[0] = ctr[0] - scr[0];
@@ -219,12 +219,12 @@ void render_queued_rotated_sprites(void) {
     float pos[4];
     int i;
 
-    if (D_001414D4 == 0x72) {
+    if (hero_current_state == 0x72) {
         rotated_sprite_queue.count = 0;
     }
     if (rotated_sprite_queue.count != 0) {
-        centre[0] = IntToFloat(D_0013E600[2]);
-        centre[1] = IntToFloat(D_0013E600[3]);
+        centre[0] = IntToFloat(g_screen_extent[2]);
+        centre[1] = IntToFloat(g_screen_extent[3]);
         for (i = 0; i < rotated_sprite_queue.count; i++) {
             GlowSlot *s = &rotated_sprite_queue.slot[i];
 
@@ -232,9 +232,9 @@ void render_queued_rotated_sprites(void) {
                 continue;
             }
             if (s->onScreen != 0) {
-                func_001F2418(pos, s);
-                pos[0] = (pos[0] - IntToFloat(D_0013E600[4])) * 0.0625f;
-                pos[1] = (pos[1] - IntToFloat(D_0013E600[5])) * 0.0625f;
+                project_to_screen(pos, s);
+                pos[0] = (pos[0] - IntToFloat(g_screen_extent[4])) * 0.0625f;
+                pos[1] = (pos[1] - IntToFloat(g_screen_extent[5])) * 0.0625f;
             } else {
                 qcopy(pos, centre);
             }
@@ -271,7 +271,7 @@ extern FogPreset D_0015F584 MACRO_ADDR;
 extern s32 func_00213A78(void *, f32 *, s32 *);
 extern s32 func_001FA898(f32);
 
-/* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/textbin/update_camera_environment_from_regions.c,
+/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/textbin/update_camera_environment_from_regions.c,
  * update_camera_environment_from_regions; the fog preset written as the struct src/game/draw.c reads. */
 void update_camera_environment_from_regions(void *position) {
     f32 blend;

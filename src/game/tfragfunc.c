@@ -309,17 +309,17 @@ void SetTfragDists(void) {
     c = tfrag_render_ranges[2] * fog_params;
     ab = 1.0f / (a - b);
     bc = 1.0f / (b - c);
-    FastMemZero16(D_001DEB70, 0x40);
-    D_001DEB70[0][0] = ab * 0.5f;
-    D_001DEB70[0][1] = -ab;
-    D_001DEB70[1][0] = bc * 0.5f;
-    D_001DEB70[1][1] = -bc;
-    D_001DEB70[2][0] = b * ab * -0.5f;
-    D_001DEB70[2][1] = a * ab;
-    D_001DEB70[3][0] = c * bc * -0.5f;
-    D_001DEB70[3][1] = b * bc;
-    D_001DEB70[1][3] = b;
-    D_001DEB70[0][3] = a;
+    FastMemZero16(tfrag_lod_blend_matrix, 0x40);
+    tfrag_lod_blend_matrix[0][0] = ab * 0.5f;
+    tfrag_lod_blend_matrix[0][1] = -ab;
+    tfrag_lod_blend_matrix[1][0] = bc * 0.5f;
+    tfrag_lod_blend_matrix[1][1] = -bc;
+    tfrag_lod_blend_matrix[2][0] = b * ab * -0.5f;
+    tfrag_lod_blend_matrix[2][1] = a * ab;
+    tfrag_lod_blend_matrix[3][0] = c * bc * -0.5f;
+    tfrag_lod_blend_matrix[3][1] = b * bc;
+    tfrag_lod_blend_matrix[1][3] = b;
+    tfrag_lod_blend_matrix[0][3] = a;
 }
 
 extern int D_00161000 MACRO_ADDR;
@@ -336,32 +336,32 @@ extern void func_00234E80(void);
    the largest size seen in D_00160FC4. */
 /* A copy of its twin func_00229C08. */
 void DmaTfragTextures(void) {
-    int *p = (int *)D_00161000;
+    int *p = (int *)g_render_packet_cursor;
     int size;
 
-    D_00161000 += 0x10;
-    ((int *)D_00160FBC)[0] = 0x20000000;
-    ((int *)D_00160FBC)[1] = D_00161000;
-    ((int *)D_00160FBC)[2] = 0;
-    ((int *)D_00160FBC)[3] = 0;
+    g_render_packet_cursor += 0x10;
+    ((int *)tfrag_tex_dma_tag_slot)[0] = 0x20000000;
+    ((int *)tfrag_tex_dma_tag_slot)[1] = g_render_packet_cursor;
+    ((int *)tfrag_tex_dma_tag_slot)[2] = 0;
+    ((int *)tfrag_tex_dma_tag_slot)[3] = 0;
     if (draw_config[4] != 0 && draw_config[3] != 0) {
         ComputeTfragTextureUsage();
-        size = build_tfrag_texture_dma(D_0015EF74);
+        size = build_tfrag_texture_dma(g_gs_texture_allocation_cursor);
         VU1_texFlush();
         if (size > 0x400000) {
-            STUB_printf(D_001E8CE0);
+            STUB_printf(str_tfrag_texture_overflow);
         }
-        if (D_00160FC4 < size) {
-            D_00160FC4 = size;
+        if (max_tfrag_texture_dma_size < size) {
+            max_tfrag_texture_dma_size = size;
         }
     }
-    ((int *)D_00161000)[0] = 0x20000000;
-    ((int *)D_00161000)[1] = D_00160FBC + 0x10;
-    ((int *)D_00161000)[2] = 0;
-    ((int *)D_00161000)[3] = 0;
-    D_00161000 += 0x10;
+    ((int *)g_render_packet_cursor)[0] = 0x20000000;
+    ((int *)g_render_packet_cursor)[1] = tfrag_tex_dma_tag_slot + 0x10;
+    ((int *)g_render_packet_cursor)[2] = 0;
+    ((int *)g_render_packet_cursor)[3] = 0;
+    g_render_packet_cursor += 0x10;
     p[0] = 0x20000000;
-    p[1] = D_00161000;
+    p[1] = g_render_packet_cursor;
     p[2] = 0;
     p[3] = 0;
 }
@@ -391,12 +391,12 @@ void PatchTfragGifs(void) {
     int i;
     int n;
 
-    c = D_001E1200;
+    c = tfrag_gif_chunk_list;
     while (c->items != 0) {
         n = c->count;
         r = c->items;
         for (i = 0; i < n; i++) {
-            e = &D_001E0F00[*(unsigned char *)(r + 0x23)];
+            e = &tfrag_tex_remap_table[*(unsigned char *)(r + 0x23)];
             if (e->a != 0) {
                 *(int *)r = (*(int *)r & 0xFFFFC000) | e->a;
             }
@@ -423,14 +423,14 @@ extern void func_002344D8(void);
 /* DrawTfrag, in DrawShrubs' shape. */
 void DrawTfrag(void) {
     float m[4][4];
-    int p = D_00161000;
+    int p = g_render_packet_cursor;
 
-    D_00160FBC = p;
-    D_0015EF74 = D_0015EF78;
+    tfrag_tex_dma_tag_slot = p;
+    g_gs_texture_allocation_cursor = g_gs_texture_allocation_start;
     p += 0x10;
-    D_00161000 = p;
-    ProfileMarker_Begin(D_00160F70, 1);
-    func_001FA190(m);
+    g_render_packet_cursor = p;
+    ProfileMarker_Begin(str_tfrag_texs, 1);
+    set_identity_matrix(m);
     FastVecScale(m[3], camera_position, -1024.0f);
     m[3][3] = 1.0f;
     sce_vu0_mul_matrix(m, camera_position - 0x100, m);
@@ -440,12 +440,12 @@ void DrawTfrag(void) {
         func_00118D80(0);
         TfragProc();
     }
-    ProfileMarker_Begin(D_00160F80, 2);
+    ProfileMarker_Begin(str_tfrag_draw, 2);
     DmaTfragTextures();
     if (draw_config[4] != 0) {
-        write_dma_channel(D_001E1600, 0x3000, 0x40);
+        write_dma_channel(tfrag_dma_block, 0x3000, 0x40);
     }
-    ProfileMarker_End(D_00160F80, 2);
+    ProfileMarker_End(str_tfrag_draw, 2);
 }
 
 /* The last function in the object: retail pads to 16 bytes after it

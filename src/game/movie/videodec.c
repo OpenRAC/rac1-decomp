@@ -114,7 +114,7 @@ extern void movie_end_put(void *, int) __asm__("func_0023DFE0");
 extern void func_0023DA30(void *);
 /* videoDecFlush(VideoDec *) */
 int videoDecFlush(VideoDec *dec) {
-    MovieFourBytes marker = D_00161320;
+    MovieFourBytes marker = mpeg_sequence_end_code;
     MoviePutSpans spans;
     videoDecBeginPut(dec, &spans.first, &spans.firstSize, &spans.second, &spans.secondSize);
     if (spans.firstSize + spans.secondSize < 4) return 0;
@@ -180,11 +180,11 @@ int sceMpegGetPicture(VideoDec *dec) {
         char *frame;
         if (videoDecGetState(dec) == 1) {
             result = -1;
-            STUB_printf(D_001E8E68);
+            STUB_printf(str_decode_thread_aborted);
             break;
         }
         while ((frame = voBufGetData(decoder_state + 0xD9168)) == 0) switchThread();
-        if (func_0012BB30(dec, frame, 0x340) < 0) ErrMessage(D_001E8E80);
+        if (func_0012BB30(dec, frame, 0x340) < 0) ErrMessage(str_mpeg_get_picture_error);
         {
             char *ringState;
             if (dec->f08 == 0) {

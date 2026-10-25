@@ -263,6 +263,7 @@ extern void func_001FA238_2BEB0(void *, void *) __asm__("func_001FA238");
 extern void func_001F9C48_2BEB0(void *, void *, f32) __asm__("func_001F9C48");
 extern void func_0022C9A8_2BEB0(s32) __asm__("func_0022C9A8");
 
+/* Draw the sky shells, each layer scrolling and rotating at its own rate. */
 void DrawSkyShellsScrolling(void) {
     f32 rot[4];
     f32 scale;
@@ -367,7 +368,7 @@ extern void func_0022CEB8();
 extern void func_00234C98_2C188(s32, u64) __asm__("func_00234C98");
 extern s32 func_001160D8();
 
-/* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/rendering/sky/update_sky_effects.c, update_sky_effects. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/rendering/sky/update_sky_effects.c, update_sky_effects. */
 void SkyLevelGeneric___maybe(void) {
     f32 trig_product;
     f32 elevation;
@@ -386,7 +387,7 @@ void SkyLevelGeneric___maybe(void) {
     s16 *angles;
 
     D_0016055C_2C188->relocation_state = 0;
-    func_001FA190(sky_matrix);
+    set_identity_matrix(sky_matrix);
     SkyDrawShell(0);
     SkyDrawShell(1);
     if (D_0016055C_2C188->effect_count == 0) {
@@ -503,7 +504,7 @@ extern void func_0022C7E0(void);
 extern void func_0022C870(void);
 extern void func_00234C98_2C5A0(s32, s64) __asm__("func_00234C98");
 
-/* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/rendering/sky/draw_sky_shells.c, draw_sky_shells. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/rendering/sky/draw_sky_shells.c, draw_sky_shells. */
 void draw_sky_shells(void) {
     f32 rotation_angles[4];
     f32 shell_scale;
@@ -548,7 +549,7 @@ void draw_sky_shells(void) {
                 shell_scale = 2.0f;
                 break;
             }
-            func_001FA238(&D_001D9A70_2C5A0, rotation_angles);
+            euler_to_matrix_ee(&D_001D9A70_2C5A0, rotation_angles);
             transform_row = (u8 *)&D_001D9A70_2C5A0;
             scale_vector(transform_row, transform_row, shell_scale);
             scale_vector(transform_row + 0x10, transform_row + 0x10, shell_scale);
@@ -600,14 +601,14 @@ void SetupSkyGifPaging(void) {
     SkyDef *s;
     int i;
 
-    p = D_00161000;
-    D_00160570 = p;
+    p = g_render_packet_cursor;
+    sky_gif_paging_tag = p;
     p += 0x10;
-    D_00161000 = p;
-    ProfileMarker_Begin(D_00160550, 1);
+    g_render_packet_cursor = p;
+    ProfileMarker_Begin(str_sky_texs, 1);
     s = level_sky_effect_data;
-    D_0015EF74 = D_0015EF78;
-    D_0015F558 = 0;
+    g_gs_texture_allocation_cursor = g_gs_texture_allocation_start;
+    pending_texture_upload_count = 0;
     for (i = 0; i < s->npages; i++) {
         s->pages[i].tag = 0;
     }
@@ -630,7 +631,7 @@ extern void func_00234E80(void);
 void DoSkyGifPaging(void) {
     int *p = D_00161000_p;
 
-    D_00160574 = p;
+    sky_gif_paging_start = p;
     p += 4;
     D_00161000_p = p;
     D_00160570_p[0] = 0x20000000;
@@ -638,7 +639,7 @@ void DoSkyGifPaging(void) {
     D_00160570_p[2] = 0;
     D_00160570_p[3] = 0;
     if (draw_config[1] != 0) {
-        func_0020C2F8();
+        flush_pending_texture_uploads();
         VU1_texFlush();
     }
     D_00161000_p[0] = 0x20000000;
@@ -646,11 +647,11 @@ void DoSkyGifPaging(void) {
     D_00161000_p[2] = 0;
     D_00161000_p[3] = 0;
     D_00161000_p += 4;
-    D_00160574[0] = 0x20000000;
-    D_00160574[1] = (int)D_00161000_p;
-    D_00160574[2] = 0;
-    D_00160574[3] = 0;
-    D_0015EF74 = D_0015EF78;
+    sky_gif_paging_start[0] = 0x20000000;
+    sky_gif_paging_start[1] = (int)D_00161000_p;
+    sky_gif_paging_start[2] = 0;
+    sky_gif_paging_start[3] = 0;
+    g_gs_texture_allocation_cursor = g_gs_texture_allocation_start;
 }
 
 /* Retail carries 4 bytes of inter-function padding after this endlabel. */
@@ -721,7 +722,7 @@ extern void func_0020C230_2CA00(void) __asm__("func_0020C230");
 extern s32 func_0022D2AC_2CA00(s32, s32, s32, s32) __asm__("func_0022D2AC");
 extern void func_0022D520_2CA00(s32, s32, s32, s32) __asm__("func_0022D520");
 
-/* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/rendering/sky/sky_draw_shell_textured.c, sky_draw_shell_textured. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/rendering/sky/sky_draw_shell_textured.c, sky_draw_shell_textured. */
 void func_0022CA00_r(struct Shell_2CA00 *shell) __asm__("func_0022CA00");
 /* SkyDrawShellTextured */
 void func_0022CA00_r(struct Shell_2CA00 *shell) {
@@ -747,7 +748,7 @@ void func_0022CA00_r(struct Shell_2CA00 *shell) {
     D_00160510_2CA00 = 1 - D_00160510_2CA00;
     if (visibility[0] == 1) {
         func_0020C210_2CA00(shell->tiles[0].address, shell->tiles[0].unkE >> 4,
-                                 (((s32 *)&D_00160508))[D_00160510_2CA00]);
+                                 (((s32 *)&sky_tile_spr_buffers))[D_00160510_2CA00]);
     }
 
     for (i = 0; i < shell->count; i++) {
@@ -759,11 +760,11 @@ void func_0022CA00_r(struct Shell_2CA00 *shell) {
         D_00160510_2CA00 = 1 - D_00160510_2CA00;
         if (next < shell->count && visibility[next] == 1) {
             func_0020C210_2CA00(shell->tiles[next].address, shell->tiles[next].unkE >> 4,
-                                     (((s32 *)&D_00160508))[D_00160510_2CA00]);
+                                     (((s32 *)&sky_tile_spr_buffers))[D_00160510_2CA00]);
         }
 
         if (visibility[i] == 1) {
-            dest = (((s32 *)&D_00160508))[1 - D_00160510_2CA00];
+            dest = (((s32 *)&sky_tile_spr_buffers))[1 - D_00160510_2CA00];
             c_dest = dest + shell->tiles[i].unkC;
             a_dest = dest + shell->tiles[i].unkA;
             if (func_0022D2AC_2CA00(dest + shell->tiles[i].unk8, 0x70002000, shell->tiles[i].unk4,
@@ -814,7 +815,7 @@ extern s32 func_0022D2AC_2CC40(s32, s32, s32, s32) __asm__("func_0022D2AC");
 extern void func_0022D3F8_2CC40(s32, s32, s32, s32) __asm__("func_0022D3F8");
 extern s32 func_00234C98_2CC40(s32, s64) __asm__("func_00234C98");
 
-/* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/rendering/sky/sky_draw_shell_gouraud.c, sky_draw_shell_gouraud. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/rendering/sky/sky_draw_shell_gouraud.c, sky_draw_shell_gouraud. */
 void func_0022CC40_r(struct Shell_2CC40 *shell) __asm__("func_0022CC40");
 /* SkyDrawShellGouraud */
 void func_0022CC40_r(struct Shell_2CC40 *shell) {
@@ -840,7 +841,7 @@ void func_0022CC40_r(struct Shell_2CC40 *shell) {
     D_00160510_2CC40 = 1 - D_00160510_2CC40;
     if (visibility[0] == 1) {
         func_0020C210_2CC40(shell->tiles[0].address, shell->tiles[0].unkE >> 4,
-                                 (((s32 *)&D_00160508))[D_00160510_2CC40]);
+                                 (((s32 *)&sky_tile_spr_buffers))[D_00160510_2CC40]);
     }
 
     for (i = 0; i < shell->count; i++) {
@@ -852,11 +853,11 @@ void func_0022CC40_r(struct Shell_2CC40 *shell) {
         D_00160510_2CC40 = 1 - D_00160510_2CC40;
         if (next < shell->count && visibility[next] == 1) {
             func_0020C210_2CC40(shell->tiles[next].address, shell->tiles[next].unkE >> 4,
-                                     (((s32 *)&D_00160508))[D_00160510_2CC40]);
+                                     (((s32 *)&sky_tile_spr_buffers))[D_00160510_2CC40]);
         }
 
         if (visibility[i] == 1) {
-            dest = (((s32 *)&D_00160508))[1 - D_00160510_2CC40];
+            dest = (((s32 *)&sky_tile_spr_buffers))[1 - D_00160510_2CC40];
             c_dest = dest + shell->tiles[i].unkC;
             a_dest = dest + shell->tiles[i].unkA;
             if (func_0022D2AC_2CC40(dest + shell->tiles[i].unk8, 0x70002000, shell->tiles[i].unk4,

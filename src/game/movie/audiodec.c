@@ -19,7 +19,7 @@ int audioDecCreate(char *dec, void *buffer, int size, char *staging) {
     *(int *)(dec + 0x58) = 0;
     *(int *)(dec + 0x5C) = 0;
     *(int *)(dec + 0x60) = 0;
-    D_001613B8 = staging;
+    movie_adpcm_staging_buf = staging;
     *(int *)(dec + 0x4C) = 0x400;
     *(int *)(dec + 0x48) = func_0012F1A8(0x400, 0x1000, 0x400, 0, 5, 3);
     if (*(int *)(dec + 0x48) < 0) return 0;
@@ -214,7 +214,7 @@ void sendADPCM(AudioDec *dec) {
             done = 0;
             src = d->buf + (d->rd - d->cnt + d->size) % d->size;
             src += ch * d->chunk;
-            dst = (unsigned char *)D_001613B8;
+            dst = (unsigned char *)movie_adpcm_staging_buf;
             do {
                 for (j = 0; j < d->chunk; j++) {
                     *dst++ = *src++;
@@ -223,14 +223,14 @@ void sendADPCM(AudioDec *dec) {
                 src += d->chunk * (d->nch - 1);
             } while (done < 0x400);
             if (d->pos + 0x400 == 0x1000) {
-                D_001613B8[0x3F1] = 3;
+                movie_adpcm_staging_buf[0x3F1] = 3;
             }
             if (d->pos == 0) {
-                char *p = D_001613B8;
+                char *p = movie_adpcm_staging_buf;
                 p[1] = 6;
                 p[0x11] = 2;
             }
-            sendToSPU(dec, (unsigned char *)D_001613B8, 0x400, (ch << 12) + d->pos);
+            sendToSPU(dec, (unsigned char *)movie_adpcm_staging_buf, 0x400, (ch << 12) + d->pos);
         }
         v = d->pos + 0x400;
         w = (v > -1) ? v : v + 0xFFF;

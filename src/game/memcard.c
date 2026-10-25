@@ -131,25 +131,25 @@ void memcard_get_name(void *arg0) {
     int i;
 
     if (region == 'E') {
-        D_0013D2D0[2] = region;
+        memcard_save_dir_name[2] = region;
     } else if (region == 'P') {
-        D_0013D2D0[2] = 'I';
+        memcard_save_dir_name[2] = 'I';
     }
     for (i = 3; i < 7; i++) {
-        D_0013D2D0[i] = a[i + 0xD];
+        memcard_save_dir_name[i] = a[i + 0xD];
     }
     for (i = 8; i < 0xB; i++) {
-        D_0013D2D0[i] = a[i + 0xD];
+        memcard_save_dir_name[i] = a[i + 0xD];
     }
     for (i = 0xB; i < 0xD; i++) {
-        D_0013D2D0[i] = a[i + 0xE];
+        memcard_save_dir_name[i] = a[i + 0xE];
     }
-    func_00116B00(D_0013D2E8, D_0013D2D0, 0xD);
-    func_00116B00(D_0013D300, D_0013D2D0, 0xD);
-    func_00116B00(D_0013D320, D_0013D2D0, 0xD);
-    func_00116B00(D_0013D340, D_0013D2D0, 0xD);
-    func_00116B00(D_0013D340 + 0x14, D_0013D2D0, 0xD);
-    func_00116B00(D_0013D370, D_0013D2D0, 0xD);
+    func_00116B00(memcard_dir_search_path, memcard_save_dir_name, 0xD);
+    func_00116B00(memcard_icon_path_a, memcard_save_dir_name, 0xD);
+    func_00116B00(memcard_icon_path_b, memcard_save_dir_name, 0xD);
+    func_00116B00(memcard_icon_path_c, memcard_save_dir_name, 0xD);
+    func_00116B00(memcard_icon_path_c + 0x14, memcard_save_dir_name, 0xD);
+    func_00116B00(memcard_slot_path_format, memcard_save_dir_name, 0xD);
 }
 
 extern int func_00124068(int, int, int *, int *, int *);
@@ -173,7 +173,7 @@ int check_memory_card(void) {
         return 1;
     }
     if (D_0013D390_i[0x31] != -2 && format != 0) {
-        result = func_001241F0(D_0013D390_i[0], D_0013D390_i[1], D_0013D2D0, 0, -1, 0);
+        result = func_001241F0(D_0013D390_i[0], D_0013D390_i[1], memcard_save_dir_name, 0, -1, 0);
         while (func_00123F30(1, &cmd, &result) == 0) {
             func_00122598(0);
         }
@@ -206,7 +206,7 @@ void memcard_RestoreGame(int arg0) {
     a = memcard_GetDataSize(mc_gamedata);
     b = memcard_GetDataSize(mc_leveldata);
     if (*(int *)p != a || *(int *)(p + 4) != b) {
-        STUB_printf(D_001E8500);
+        STUB_printf(memcard_restore_size_mismatch_msg);
         return;
     }
     p += 8;
@@ -244,20 +244,20 @@ void load_and_initialize_level_chunk(void) {
     int s1;
     int s2;
 
-    calculate_ring_buffer_bounds(D_00137C80[5] << 11, &a, &b);
+    calculate_ring_buffer_bounds(disc_table[5] << 11, &a, &b);
     update_audio_stream_until_idle(1);
-    func_002176C8_i(a, D_00137C80[4], D_00137C80[5]);
-    s2 = D_0015EEF0;
+    func_002176C8_i(a, disc_table[4], disc_table[5]);
+    s2 = sound_volume;
     s1 = music_volume;
     s0 = playback_mode;
     memcard_RestoreGame(a + *(int *)(a + 0x10));
-    D_0015EEF0 = s2;
+    sound_volume = s2;
     music_volume = s1;
     playback_mode = s0;
     D_0015EE84_m = 0;
 }
 
-/* Adapted from Lombyte (GPL-3.0): src/storage/memory_card/memcard_update_state.c; PAL directory validation reconstructed from assembly. */
+/* Adapted from Lombyte's project (GPL-3.0): src/storage/memory_card/memcard_update_state.c; PAL directory validation reconstructed from assembly. */
 typedef struct { u8 pad0[16]; u32 size; u8 pad14[12]; char name[32]; } McDirEntry_209E68;
 extern McDirEntry_209E68 mc_directory[] __asm__("D_001A0980");
 extern char D_0013D315[], D_0013D335[], D_0013D355[], D_0015FF58[], D_0015FF60[];
@@ -358,6 +358,7 @@ extern s32 mc_call_00123D48(s32 fd, void *buf, s32 size) __asm__("func_00123D48"
 extern s32 mc_call_00116248(char *str, const char *format, ...) __asm__("func_00116248");
 extern char *mc_call_001166FC(char *, const char *) __asm__("func_001166FC");
 
+/* Memory card state machine: polls the async call, then steps through card checks. */
 void memcard_update_state(void) {
     union {
         char name[0x40];
@@ -502,8 +503,8 @@ void memcard_update_state(void) {
                     if (mc_strcmp(filename, D_0013D315) == 0) icon0 = 1;
                     if (mc_strcmp(filename, D_0013D335) == 0) icon1 = 1;
                     if (mc_strcmp(filename, D_0013D355) == 0) icon2 = 1;
-                    if (mc_strncmp(filename, D_0015FF58, 4) == 0 &&
-                        mc_strncmp(filename + 5, D_0015FF60, 4) == 0) {
+                    if (mc_strncmp(filename, memcard_slot_file_prefix, 4) == 0 &&
+                        mc_strncmp(filename + 5, memcard_slot_file_suffix, 4) == 0) {
                         slot = (u8)entry->name[4] - '0';
                         if (slot < 0) continue;
                         if (slot < 5) workspace.directory.seen[slot] = 1;
@@ -1505,7 +1506,7 @@ struct SaveHeader {
 
 /* memcard_PrepData: pack the save blocks (id, size, data, 4-aligned) after
    an 8-byte header, end with an id -1 record, checksum it. Adapted from
-   Lombyte (GPL-3.0) for PAL. */
+   Lombyte's project (GPL-3.0) for PAL. */
 int memcard_PrepData(void *dst, int slot, int *table) {
     struct SaveHeader *out = dst;
     struct SaveBlock *blk = table;
@@ -1604,7 +1605,7 @@ extern int func_001151B4(const void *, const void *, int); /* memcmp */
    marking each entry 1 (same size), -1 (block shorter) or -2 (longer),
    and count blocks with no entry, a wrong total and entries left
    unrestored as errors, stored in the current card slot. Adapted from
-   Lombyte (GPL-3.0) for PAL. */
+   Lombyte's project (GPL-3.0) for PAL. */
 int memcard_RestoreData(void *src, int slot, int *table) {
     unsigned char *buf = src;
     struct RestoreEntry *tbl = (struct RestoreEntry *)table;
@@ -1651,7 +1652,7 @@ int memcard_RestoreData(void *src, int slot, int *table) {
                 e->status = -2;
             }
             if (func_001151B4(dst, ((struct RestoreBlock *)buf)->data, n) != 0) {
-                (*(int *)&D_0015FF50)++;
+                (*(int *)&memcard_restore_mismatch_count)++;
             }
             copy_memory_aligned(dst, ((struct RestoreBlock *)buf)->data, n);
             total += ((n + 3) & ~3) + 8;
@@ -1705,10 +1706,10 @@ extern char D_001507D0[];
 int memcard_Save(int slot, int flags) {
     unsigned char saved;
 
-    func_00121A80(D_0015EF98);
-    func_0012D818(D_0015EF98);
+    func_00121A80(save_clock_time);
+    func_0012D818(save_clock_time);
     copy_level_object_positions();
-    save_map_coverage(D_00141FC0 + (D_0015EE84_m << 11));
+    save_map_coverage(level_map_coverage + (D_0015EE84_m << 11));
     {
         char *p = memory_card_state;
         int active = *(int *)(p + 0xC8);
@@ -1747,11 +1748,11 @@ int memcard_Save(int slot, int flags) {
 
         *(int *)(q + *(int *)(q + 0x14) * 0x1C + 0x24) = gBolts;
         *(int *)(q + *(int *)(q + 0x14) * 0x1C + 0x20) = D_0015EE84_m;
-        *(int *)(q + *(int *)(q + 0x14) * 0x1C + 0x2C) = D_0015EF24;
-        memcpy(names + *(int *)(q + 0x14) * 0x1C, D_0015EF98, 8);
+        *(int *)(q + *(int *)(q + 0x14) * 0x1C + 0x2C) = game_clock_ticks;
+        memcpy(names + *(int *)(q + 0x14) * 0x1C, save_clock_time, 8);
         *(int *)(q + *(int *)(q + 0x14) * 0x1C + 0x28) = D_0015EF20;
-        memcard_PrepData(D_0014EFD0, 0, mc_gamedata);
-        memcard_PrepData(D_001507D0, *(int *)(q + 0xD0), mc_leveldata);
+        memcard_PrepData(memcard_game_data_buffer, 0, mc_gamedata);
+        memcard_PrepData(memcard_level_data_buffer, *(int *)(q + 0xD0), mc_leveldata);
         if (flags >= 0) {
             level_visit_state[D_0015EE84_m] = saved;
             D_0015EE84_m = *(int *)(q + 0xD0);
