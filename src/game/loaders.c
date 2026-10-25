@@ -1,4 +1,5 @@
 #include "common.h"
+#include "moby.h"
 #include "callees.h"
 #include "records.h"
 #include "structs.h"
@@ -107,6 +108,8 @@ extern int func_00122630(void *, short, short, short, short, short, short, short
 extern int func_00122958(void *, void *);
 extern int func_00120858(int, unsigned short);
 
+/* Uploads a texture and its mip levels to GS memory (with the palette for the 4/8-bit formats
+   0x14/0x13) and writes the matching GS register words to regs. */
 s32 func_00202AA8(MipTexture_202AA8 *tex, u64 *regs)
 {
     MipUpload_202AA8 upload;
@@ -758,6 +761,8 @@ void func_00203958(int base, int count, Chunk *list) {
     D_0015EF78 = D_0015EF74;
 }
 
+/* Makes animation sequence idx of the class at arg0 (its seqs[] at +0x48) absolute: the pointer at
+   +0x14 and the frame pointer table at +0x1C (count at +0x10) become base + offset. */
 void relocateObjectPointers(char *arg0, int idx) {
     char *obj;
     int *p;
@@ -1438,6 +1443,8 @@ extern float D_00160FA0[3];
 extern char *D_00160F8C MACRO_ADDR;
 extern void func_00234380(void);
 
+/* Sets up the tfrag render records: stores their count and LOD distances from hdr, relocates each
+   record, and writes the GS texture words of every entry from the texture table tbl. */
 void initialize_tfrag_render_data(FontHdr_04918 *hdr, char *tbl) {
     char *base;
     float scale;
@@ -1515,6 +1522,8 @@ extern int D_00137C80[];
 extern char D_1FF7FF0[];
 extern int func_002175C8(int, int, int);
 
+/* Starts the disc read of the level chunk into the top of memory below D_1FF7FF0, sized from the
+   disc table, and returns 1. */
 int load_level_chunk_from_disc(void) {
     int *hdr = D_00137C80;
     int want = ((hdr[0x13F] << 11) + 0x1057) & 0xFFFFF000;
@@ -1738,27 +1747,6 @@ struct GlobalIndex {
     short slot;         /* 0x26 */
 };
 
-struct Moby {
-    unsigned char pad00[0x24];
-    struct PartList *parts;  /* 0x24 */
-    unsigned char pad28[0xA];
-    unsigned short unk32;        /* 0x32 */
-    unsigned short unk34;        /* 0x34 */
-    unsigned char pad36[2];
-    unsigned long color;        /* 0x38 */
-    unsigned char pad40[8];
-    int attach;       /* 0x48 */
-    unsigned char pad4C[6];
-    unsigned char idx;           /* 0x52 */
-    unsigned char slot;          /* 0x53 */
-    unsigned char pad54[0x1E];
-    unsigned char flag72;        /* 0x72 */
-    unsigned char flag73;        /* 0x73 */
-    unsigned char pad74[4];
-    int model;        /* 0x78 */
-    unsigned char pad7C[0x18];
-    int unk94;        /* 0x94 */
-};
 
 struct ModelRec {
     unsigned short flags;        /* 0x00 */
@@ -1847,26 +1835,26 @@ void update_world_object_animation(void *arg0) {
         mob = D_0018CC20_t.slots[i];
         if (mob == 0) {
             mob = func_0020D348_m(id);
-            idx = mob->parts->used;
-            mob->parts->used = idx + 1;
-            mob->idx = idx;
-            mob->slot = idx;
-            mob->unk32 = 0x1FF;
-            mob->unk34 |= 6;
-            mob->flag72 = 0xFF;
-            mob->unk94 = 0;
+            idx = ((struct PartList *)mob->pclass)->used;
+            ((struct PartList *)mob->pclass)->used = idx + 1;
+            mob->seq = idx;
+            mob->prev_seq = idx;
+            mob->draw_dist = 0x1FF;
+            mob->flags |= 6;
+            mob->unk72 = 0xFF;
+            mob->collision = 0;
             if (D_0013F450_r.color_src == 0) {
-                mob->color = 0x38383800000000;
+                mob->spawn_frame = 0x38383800000000;
             } else {
-                mob->color = D_0013F450_r.color_src->color;
+                mob->spawn_frame = D_0013F450_r.color_src->color;
             }
-            if (mob->parts->flag) {
-                mob->flag73 = 0x18;
+            if (((struct PartList *)mob->pclass)->flag) {
+                mob->unk73 = 0x18;
             }
             D_0018CC20_t.slots[i] = mob;
         }
-        mob->model = endp;
-        mob->parts->entries[mob->idx] = sp;
+        mob->pvars = (u8 *)endp;
+        ((struct PartList *)mob->pclass)->entries[mob->seq] = sp;
         for (k = 0; k < ((unsigned char *)sp)[0x10]; k++) {
             int *w = (int *)((unsigned char *)sp + 0x1C);
 
@@ -1923,6 +1911,8 @@ extern GadgetRec_05270 D_001864D0[];
 extern unsigned char D_0013E620[];
 extern long D_0019E7F0[];
 
+/* Decompresses the resources of moby class class_id into a decode buffer (buffer_index, or the
+   free one when -1), prepares its render data and fills its runtime and vendor item tables. */
 void select_world_object_resource_tables(int class_id, int buffer_index) {
     int runtime_index;
     int resource_table_index;
