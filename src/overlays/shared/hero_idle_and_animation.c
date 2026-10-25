@@ -63,7 +63,7 @@ extern char *D_L00_0015F740 MACRO_ADDR;
 /* Cancels the active help popup and resets its state. */
 void clear_active_help_record(void) {
     if (*(int *)(help_popup_state) != 0) {
-        int v = *(int *)((char *)(*(int *)(help_popup_state + 0x20) << 4) + (int)D_L00_0015F740 + 8);
+        int v = *(int *)((char *)(*(int *)(help_popup_state + 0x20) << 4) + (int)help_text_entries + 8);
         if (v != -1) {
             char *g = (char *)D_0014171B + 0x100B5;
             if (v == *(short *)(g + 0x54) - 0x7530) {

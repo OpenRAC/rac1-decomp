@@ -150,7 +150,7 @@ void SetDeathBits(unsigned char *m, int flags, int arg) {
     }
     lvl = g_current_level_index;
     level_moby_killed[lvl][*(short *)(m + 0xB2) >> 5] |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
-    D_L00_001BA860[*(short *)(m + 0xB2) >> 5] |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
+    session_moby_killed[*(short *)(m + 0xB2) >> 5] |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
     D_L00_001BA960.a[*(short *)(m + 0xB2)] = m[0xB0] + 2;
     k = m[0xB0];
     {unsigned int u = k & 0xFF;

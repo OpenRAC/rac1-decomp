@@ -763,7 +763,7 @@ void update_color_tween_emitter_particle(unsigned char *p) {
             *(float *)(p + 0xC) -= frame_scale * 0.08f * 210000.0f;
         }
         p[2] = D_L00_001B24E8[func_001160D8() & 7];
-        if (((p - D_L00_0016022C) >> 6) & 1) {
+        if (((p - particle_pool) >> 6) & 1) {
             p[8]++;
         } else {
             p[8]--;

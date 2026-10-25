@@ -602,7 +602,7 @@ void update_pause_menu(void) {
         D_L00_0016CBF0 = GS.unkE8;
         select_moby_context(0);
         if (GS.unk140 != 0) {
-            *(int *)&D_L00_001600CC = -1;
+            *(int *)&loaded_swap_moby_class_set = -1;
             select_world_object_resource_tables(GS.unk140, GS.unk144);
         }
         UpdateFog();
@@ -1375,7 +1375,7 @@ void jet_reset_camera(void *a0, void *a1)
         if ((unsigned char)v != 1 && saved_mission_state[lvl][(unsigned char)v - 2] != 0xFF) continue;
         D_L00_001BB610.f[i] = v;
         level_moby_killed[lvl][i >> 5] |= 1 << (i & 0x1F);
-        D_L00_001BA860[i >> 5] |= 1 << (i & 0x1F);
+        session_moby_killed[i >> 5] |= 1 << (i & 0x1F);
     }
     g = (char *)D_L00_001BB5C0;
     *(int *)g = 1;

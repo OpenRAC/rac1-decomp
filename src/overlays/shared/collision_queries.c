@@ -118,7 +118,7 @@ int IsPointInVolume(Vec4 *pt, int *vol, float rad) {
     }
     case 6: {
         unsigned char *e;
-        e = D_L00_001601BC;
+        e = level_cylinders;
         e += vol[5] << 7;
         r = 0;
         FastVecSub(&d, pt, e + 0x30);
@@ -140,7 +140,7 @@ int IsPointInVolume(Vec4 *pt, int *vol, float rad) {
     }
     case 7: {
         unsigned char *e;
-        e = D_L00_001601A4 + vol[5] * 0x90;
+        e = level_clip_volumes + vol[5] * 0x90;
         FastVecSub(&d, pt, e + 0x30);
         d.i[3] = 0;
         matrix_mul_vec3(&l, &d, e + 0x40);

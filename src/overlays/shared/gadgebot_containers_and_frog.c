@@ -844,7 +844,7 @@ void blend_frog_rotation_to_facing_frame(char *m, float *a1, float *a2) {
     m += 0xC0;
     extract_matrix_rotation_quaternion(A, m);
     extract_matrix_rotation_quaternion(B, F);
-    func_001FA5C8(A, A, B, *(float *)&D_L06_00161C90);
+    quat_nlerp(A, A, B, *(float *)&D_L06_00161C90);
     func_001FA648(A, m);
 }
 extern void func_001F9BD8(void *, void *, void *);

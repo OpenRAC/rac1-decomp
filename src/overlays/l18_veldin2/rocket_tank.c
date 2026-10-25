@@ -74,7 +74,7 @@ void update_moby_scene_visibility_and_height_reflection(M *moby) {
     case 0:
         moby->state = 1;
     case 1:
-        if ((veldin2_cinematic_mode == 2 && D_L18_0016D310 == 3) ||
+        if ((veldin2_cinematic_mode == 2 && veldin2_cinematic_step == 3) ||
             (veldin2_frame_count < 5 && D_L18_00162430 != 0 && moby->f40 == 0.0f)) {
             moby->state = 2;
             moby->flags |= 1;

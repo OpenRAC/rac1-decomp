@@ -116,7 +116,7 @@ void update_fleet_beam(char *m) {
         FastVecAdd(b, &beam_moby->pos, beam_vector_scratch);
         *(v128 *)c = *(v128 *)b;
         if (coll_line(&beam_moby->pos, c, 2, 0, 0)) {
-            *(v128 *)c = *(v128 *)D_L17_001747E0;
+            *(v128 *)c = *(v128 *)fleet_coll_hit_point;
         }
         FastVecSub(b, c, &beam_moby->pos);
         *(v128 *)beam_vars->p30 = *(v128 *)b;
@@ -147,7 +147,7 @@ void update_fleet_beam(char *m) {
             FastVecAdd(b, &beam_moby->pos, beam_vector_scratch);
             *(v128 *)c = *(v128 *)b;
             if (coll_line(&beam_moby->pos, c, 2, 0, 0)) {
-                *(v128 *)c = *(v128 *)D_L17_001747E0;
+                *(v128 *)c = *(v128 *)fleet_coll_hit_point;
             }
             flag = 1;
             FastVecSub(b, c, &beam_moby->pos);
@@ -161,8 +161,8 @@ void update_fleet_beam(char *m) {
     FastVecAdd(b, &beam_moby->pos, beam_vars->p30);
     *(v128 *)c = *(v128 *)b;
     if (beam_vars->peer != 0) {
-        vec_scale_to_length(beam_vars->p20, beam_vector_scratch, -(*(float *)&D_L17_00161518 - 0.2f));
-        vec_scale_to_length(beam_vars->peer->p10, beam_vector_scratch, -*(float *)&D_L17_00161518);
+        vec_scale_to_length(beam_vars->p20, beam_vector_scratch, -(*(float *)&fleet_beam_peer_inset - 0.2f));
+        vec_scale_to_length(beam_vars->peer->p10, beam_vector_scratch, -*(float *)&fleet_beam_peer_inset);
         FastVecAdd(b, beam_vars->p20, c);
         e = beam_vars->peer;
         *(v128 *)beam_vars->p20 = *(v128 *)b;
@@ -253,8 +253,8 @@ void draw_fleet_beam_quad(char *moby) {
     s.w[1] = 0x80243278;
     s.w[0] = 0x80243278;
     for (i = 0; i < 4; i++) {
-        s.f[i].a = D_L17_001E6620[i].a;
-        s.f[i].b = D_L17_001E6620[i].b;
+        s.f[i].a = fleet_beam_quad_uvs[i].a;
+        s.f[i].b = fleet_beam_quad_uvs[i].b;
     }
     FastVecSub(m0, d + 0x10, m1);
     *(u128 *)(s.pad + 0) = *(u128 *)m0;
@@ -376,7 +376,7 @@ void dreks_fleet_turret_update(char *m) {
             float turn;
             float off;
 
-            transform_scaled_vertex_batch(m, 2, &D_L17_00161A00, (char *)j);
+            transform_scaled_vertex_batch(m, 2, &fleet_turret_aim_vertices, (char *)j);
             FastVecScale(tmp, fleet_camera_points + (d->zone << 7), random_float_between(0.0f, 1.0f));
             FastVecAdd(acc, tmp, fleet_camera_points + (d->zone << 7) + 0x30);
             FastVecScale(tmp, fleet_camera_points + (d->zone << 7) + 0x10, random_float_between(0.0f, 1.0f));
@@ -423,7 +423,7 @@ void dreks_fleet_turret_update(char *m) {
             float turn;
             float off;
 
-            transform_scaled_vertex_batch(m, 2, &D_L17_00161A00, (char *)j);
+            transform_scaled_vertex_batch(m, 2, &fleet_turret_aim_vertices, (char *)j);
             FindNearestTargetMoby(m, &aim, 512.0f);
             FastVecSub(dir, aim.pos, j);
             qcopy(from, j + 4);
@@ -536,7 +536,7 @@ void distribute_class_733_group_mobys_along_path(char *moby) {
     int i = v->group;
 
     if (i != -1) {
-        p = D_L17_001AC440[i];
+        p = fleet_moby_groups[i];
         if (p != 0) {
             unsigned short s;
             FleetPath *path;
@@ -551,7 +551,7 @@ void distribute_class_733_group_mobys_along_path(char *moby) {
             } while ((short)s >= 0);
             path = *(FleetPath **)(fleet_paths + v->path * 4);
             q = path->count / count;
-            p = D_L17_001AC440[i];
+            p = fleet_moby_groups[i];
             do {
                 /* i again, now the listed moby's offset in the moby table */
                 i = (*p & 0x7FFF) << 8;
@@ -632,7 +632,7 @@ void update_fleet_rotating_radial_effect(char *m) {
         case 0:
             *(unsigned char *)(m + 0x30) = 0xFF;
             *(unsigned char *)(m + 0x20) = 1;
-            d[1] = d[0] * *(float *)&D_L17_00161BF8 * 0.017453292f * g_frame_time;
+            d[1] = d[0] * *(float *)&fleet_ring_spin_rate_deg * 0.017453292f * g_frame_time;
             break;
         case 1:
             *(float *)(m + 0x40) = FastAddRots(*(float *)(m + 0x40), d[1]);
@@ -663,25 +663,25 @@ void update_fleet_rotating_radial_effect(char *m) {
         do {
             j = 0;
             do {
-                f21 = FastNormalizeAngle(*(float *)&D_L17_00161C00 * 0.017453292f * IntToFloat(j) * 0.5f) - *(float *)&D_L17_00161C00 * 0.017453292f;
-                g = *(float *)&D_L17_00161BFC * 0.017453292f;
-                BuildSphericalOffset(spC0, *(float *)&D_L17_00161C04, 1.5707964f, FastAddRots(FastAddRots(g, FastNormalizeAngle(IntToFloat(i) * 2.0943952f)), f21));
+                f21 = FastNormalizeAngle(*(float *)&fleet_ring_arc_deg * 0.017453292f * IntToFloat(j) * 0.5f) - *(float *)&fleet_ring_arc_deg * 0.017453292f;
+                g = *(float *)&fleet_ring_angle_offset_deg * 0.017453292f;
+                BuildSphericalOffset(spC0, *(float *)&fleet_ring_radius, 1.5707964f, FastAddRots(FastAddRots(g, FastNormalizeAngle(IntToFloat(i) * 2.0943952f)), f21));
                 transform_vector(spC0, spC0, mat2);
                 add_vectors(spD0, spC0, (m + 0x10));
                 if (FastVecDist((m + 0x10), D_0013E633 + 0xE9D) < 30.0f) {
                     coll_line((m + 0x10), spC0, 9, m, &blk);
                 }
                 spD0[0] = *(u128_2D8CC8 *)(m + 0x10);
-                *(float *)((char *)spD0 + 0xC) = *(float *)&D_L17_00161C04;
+                *(float *)((char *)spD0 + 0xC) = *(float *)&fleet_ring_radius;
                 if (FastBSphereCheck((char *)spD0, 20.0f) != -1 && (j == 0 || j == 4)) {
                     spF0[0] = 0;
                     *(float *)((char *)spF0 + 8) = 12.0f;
                     matrix_mul_vec3(spF0, spF0, (m + 0xC0));
                     {
-                        for (k = 0; k < *(int *)&D_L17_00161C08; k++) {
+                        for (k = 0; k < *(int *)&fleet_ring_spark_count; k++) {
                             f20 = -1.0f;
                             if (func_001160D8() & 1) f20 = 1.0f;
-                            c = func_001FA898_r(multiply_global_factor(random_float_between(*(float *)&D_L17_00161C10 * 0.5f, *(float *)&D_L17_00161C10)));
+                            c = func_001FA898_r(multiply_global_factor(random_float_between(*(float *)&fleet_ring_spark_life * 0.5f, *(float *)&fleet_ring_spark_life)));
                             if (c <= 0) c = 1;
                             FastVecSub(sp100, spC0, (m + 0x10));
                             spF0[0] = sp100[0];
@@ -695,7 +695,7 @@ void update_fleet_rotating_radial_effect(char *m) {
                             f20 = g_frame_time;
                             f20 *= 10.0f;
                             vec_scale_to_length(spF0, spF0, random_float_between(f20, len / IntToFloat(c * 4)));
-                            PartType60Spawn((float *)spE0, (char *)spF0, *(int *)&D_L17_00161C14, c & 0xFF, random_integer_below(0xFF) & 0xFF, 0, *(float *)&D_L17_00161C0C);
+                            PartType60Spawn((float *)spE0, (char *)spF0, *(int *)&fleet_ring_spark_color, c & 0xFF, random_integer_below(0xFF) & 0xFF, 0, *(float *)&fleet_ring_spark_scale);
                         }
                     }
                 }
@@ -745,47 +745,47 @@ void draw_fleet_scrolling_radial_quads(char *moby) {
     int j;
     int k;
 
-    scroll = IntToFloat(fleet_frame_count) * (D_L17_00161C3C * g_frame_time);
+    scroll = IntToFloat(fleet_frame_count) * (fleet_ring_scroll_rate * g_frame_time);
     scroll = fast_fmod(scroll, 1.0f);
     euler_to_matrix(moby_transform_matrix, (float *)&((FleetMoby *)moby)->rot.x);
     *(u128 *)&moby_transform_matrix[12] = *(u128 *)&((FleetMoby *)moby)->pos;
     moby_transform_matrix[15] = 1.0f;
     quad_primitive.tex = GetEffectTex(0x28);
     quad_primitive.q80 = 0xFF9000000260L;
-    quad_primitive.alpha = (long)D_L17_00161C18 | ((long)D_L17_00161C1C << 2) | ((long)D_L17_00161C20 << 4) | ((long)D_L17_00161C24 << 6) | 0x8000000000L;
+    quad_primitive.alpha = (long)fleet_ring_alpha_a | ((long)fleet_ring_alpha_b << 2) | ((long)fleet_ring_alpha_c << 4) | ((long)fleet_ring_alpha_d << 6) | 0x8000000000L;
     quad_primitive.z70 = 0;
     for (pass = 0; pass < 2; pass++) {
         for (k = 0; k < 4; k++) {
-            RingStep step = D_L17_00161C40;
+            RingStep step = fleet_ring_v_scroll_scale;
 
-            quad_primitive.uv[k].y = D_L17_001D4240[k].y + scroll * step.v[pass];
+            quad_primitive.uv[k].y = fleet_ring_quad_uvs[k].y + scroll * step.v[pass];
         }
         for (i = 0; i < 3; i++) {
             for (j = 0; j < 4; j++) {
-                RingStep step = D_L17_00161C48;
+                RingStep step = fleet_ring_u_scroll_scale;
                 float spread[4] = {
                     0.0f,
-                    -*(float *)&D_L17_00161C00 * 0.017453292f,
-                    *(float *)&D_L17_00161C00 * 0.017453292f,
+                    -*(float *)&fleet_ring_arc_deg * 0.017453292f,
+                    *(float *)&fleet_ring_arc_deg * 0.017453292f,
                     0.0f
                 };
                 float *vj;
                 float radius;
 
-                quad_primitive.uv[j].x = D_L17_001D4240[j].x + scroll * step.v[pass];
+                quad_primitive.uv[j].x = fleet_ring_quad_uvs[j].x + scroll * step.v[pass];
                 radius = 0.0f;
                 if (j != 0) {
-                    radius = *(float *)&D_L17_00161C04;
+                    radius = *(float *)&fleet_ring_radius;
                 }
                 vj = quad_primitive.v[j];
                 BuildSphericalOffset(vj, radius, 1.5707964f,
-                              FastNormalizeAngle(*(float *)&D_L17_00161BFC * 0.017453292f + IntToFloat(i) * 2.0943952f + spread[j]));
+                              FastNormalizeAngle(*(float *)&fleet_ring_angle_offset_deg * 0.017453292f + IntToFloat(i) * 2.0943952f + spread[j]));
                 vj[3] = 1.0f;
             }
-            quad_primitive.rgba[3] = D_L17_00161C38;
-            quad_primitive.rgba[2] = D_L17_00161C38;
-            quad_primitive.rgba[1] = D_L17_00161C38;
-            quad_primitive.rgba[0] = D_L17_00161C38;
+            quad_primitive.rgba[3] = fleet_ring_quad_color;
+            quad_primitive.rgba[2] = fleet_ring_quad_color;
+            quad_primitive.rgba[1] = fleet_ring_quad_color;
+            quad_primitive.rgba[0] = fleet_ring_quad_color;
             draw_world_quad(&quad_primitive, moby_transform_matrix, 0);
         }
     }
@@ -830,13 +830,13 @@ void update_fleet_bobbing_moby(char *m) {
         *(unsigned char *)(m + 0x20) = 1;
         break;
     case 1:
-        update_moby_vertical_oscillation(*(float *)&D_L17_00161DAC, *(float *)&D_L17_00161DB0 * 0.017453292f * g_frame_time, m, (float *)(data + 0x60), (float *)(data + 0x64));
+        update_moby_vertical_oscillation(*(float *)&fleet_bobber_height, *(float *)&fleet_bobber_rate_deg * 0.017453292f * g_frame_time, m, (float *)(data + 0x60), (float *)(data + 0x64));
         func_L00_0025A8C0_alt(w, (int)m, 0x10001, 1.0f, v);
         qcopy(pos, m + 0x10);
         pos[2] = pos[2] + 0.75f;
         g = (char *)D_0013E633 + 0xE1D;
         if (*(char **)(g + 0x23C) == m || *(char **)(g + 0x240) == m || func_L00_001F2BE8_alt(1.0f, pos, 0x10, m, w)) {
-            if (D_L17_001747D8 != 0 && *(short *)(D_L17_001747D8 + 0xA6) != 0x343) {
+            if (fleet_coll_hit_moby != 0 && *(short *)(fleet_coll_hit_moby + 0xA6) != 0x343) {
                 func_L00_0025F4A8_alt(m, v, 0, 0.0f, 0.0f, 3, 3, 5, 2.0f, 1.0f, 4.0f, 1.0f, 1, 7.0f, 0, 1, -1, 0);
                 *(float *)(m + 0x18) = *(float *)(m + 0x18) + 1.0f;
                 yy = resolve_camera_surface_height((float *)(m + 0x10), q);
@@ -1067,7 +1067,7 @@ void update_drone_flight_and_sparks(char *moby) {
         func_L00_0025A8C0_alt((char *)w, (int)moby, 1, 6.0f, d);
         *(short *)((char *)w + 0x1A) = *(short *)(moby + 0xA6);
         qcopy(moby + 0x10, a);
-        r = D_L17_001747C0;
+        r = fleet_coll_hit_result;
         *(int *)(r + 0x18) = 0;
         if (coll_line(b, a, 0, moby, w) != 0 || coll_sphere(0.5f, moby + 0x10, 0, moby) != 0) {
             hit = *(int *)(r + 0x18);
@@ -1085,10 +1085,10 @@ void update_drone_flight_and_sparks(char *moby) {
                             *(int *)(rec + 0x45C) = *(int *)(rec + 0x45C) | (1 << g_current_level_index) | 0x80000000;
                         }
                     }
-                    qcopy(moby + 0x10, D_L17_001747E0);
+                    qcopy(moby + 0x10, fleet_coll_hit_point);
                     MobySphereHitDirectional((int)moby, 0.75f, moby + 0x10, 1, 6.0f, 0.0f, 0, 1, 0);
                     g2 = (char *)D_0013E633 + 0xE1D;
-                    if (*(short *)(g2 + 0x308) != 0 && *(int *)(D_L17_001747E0 - 8) == *(int *)(g2 + 0x2080)) {
+                    if (*(short *)(g2 + 0x308) != 0 && *(int *)(fleet_coll_hit_point - 8) == *(int *)(g2 + 0x2080)) {
                         unsigned char *rec = D_0014171B + 0x34D;
                         if (*(unsigned short *)(rec + 0x458) == 0) {
                             (*(unsigned short *)(rec + 0x458))++;
@@ -1255,7 +1255,7 @@ void draw_fighter_jet_radar_contact_icon(char *rot, char *from, char *moby, int 
             color &= 0xFFFFFF;
             color = (func_001FA898_r(f * 0.125f) << 24) | color;
         }
-        t = &D_L17_001D9E08[icon];
+        t = &fleet_radar_icon_table[icon];
         y -= 0x50;
         y += *(int *)(D_0013E15A + 0x4AA);
         x += 0x1B0;
@@ -1291,7 +1291,7 @@ int select_fighter_jet_target_and_draw_contacts(int a, char *p, char *a2, char *
     int dx, dy, r, d2;
     float x, y, ang, dd, dist, h, k, s, t;
 
-    m = D_L17_00160064;
+    m = fleet_moby_list;
     best = 0x7FFFFFFF;
     ret = 0;
     *(int *)(p + 0xE8) = 0;
@@ -1307,8 +1307,8 @@ int select_fighter_jet_target_and_draw_contacts(int a, char *p, char *a2, char *
             dy = sy - *(int *)(p + 0xE4);
             if (dx < 0) dx = -dx;
             if (dy < 0) dy = -dy;
-            qcopy(v, D_L17_00167960);
-            FastVecScale(v, D_L17_00167960, *(float *)(m + 0xC) / 1280.0f);
+            qcopy(v, fleet_camera_matrix_row1);
+            FastVecScale(v, fleet_camera_matrix_row1, *(float *)(m + 0xC) / 1280.0f);
             FastVecAdd(v, v, m + 0x10);
             project_world_point_to_screen_pixels(v, &tx, &ty, 0);
             tx -= sx;
@@ -1355,13 +1355,13 @@ int select_fighter_jet_target_and_draw_contacts(int a, char *p, char *a2, char *
                         float x = (v[0] - scr[4]) * 0.0625f;
                         float y = (v[1] - scr[5]) * 0.0625f;
                         float ang = normalize_angle(IntToFloat(fleet_frame_count) / 20.0f);
-                        emit_transformed_2d_vertex_packet(D_L17_001D9D90, 0x1E, 0xFFFFF3, 0x500000FF, x, y, 1.0f, ang);
+                        emit_transformed_2d_vertex_packet(fleet_target_reticle_shape, 0x1E, 0xFFFFF3, 0x500000FF, x, y, 1.0f, ang);
                     }
                     {
                         float x = (v[0] - scr[4]) * 0.0625f;
                         float y = (v[1] - scr[5]) * 0.0625f;
                         float ang = normalize_angle(IntToFloat(fleet_frame_count) / 20.0f);
-                        emit_transformed_2d_vertex_packet(D_L17_001D9D90, 0x1E, 0xFFFFF3, 0x500000FF, x, y, 1.3f, -ang);
+                        emit_transformed_2d_vertex_packet(fleet_target_reticle_shape, 0x1E, 0xFFFFF3, 0x500000FF, x, y, 1.3f, -ang);
                     }
                 }
             }
@@ -1380,13 +1380,13 @@ int select_fighter_jet_target_and_draw_contacts(int a, char *p, char *a2, char *
                     float x = (v[0] - scr[4]) * 0.0625f;
                     float y = (v[1] - scr[5]) * 0.0625f;
                     float ang = normalize_angle(IntToFloat(fleet_frame_count) / 20.0f);
-                    emit_transformed_2d_vertex_packet(D_L17_001D9D90, 0x1E, 0xFFFFF3, 0x400000FF, x, y, 2.0f, ang);
+                    emit_transformed_2d_vertex_packet(fleet_target_reticle_shape, 0x1E, 0xFFFFF3, 0x400000FF, x, y, 2.0f, ang);
                 }
                 {
                     float x = (v[0] - scr[4]) * 0.0625f;
                     float y = (v[1] - scr[5]) * 0.0625f;
                     float ang = normalize_angle(IntToFloat(fleet_frame_count) / 20.0f);
-                    emit_transformed_2d_vertex_packet(D_L17_001D9D90, 0x1E, 0xFFFFF3, 0x400000FF, x, y, 2.5f, -ang);
+                    emit_transformed_2d_vertex_packet(fleet_target_reticle_shape, 0x1E, 0xFFFFF3, 0x400000FF, x, y, 2.5f, -ang);
                 }
             }
             dd = FastVecDist(m + 0x10, D_0013E633 + 0xE9D);
@@ -1406,7 +1406,7 @@ int select_fighter_jet_target_and_draw_contacts(int a, char *p, char *a2, char *
                         float x = (v[0] - scr[4]) * 0.0625f;
                         float y = (v[1] - scr[5]) * 0.0625f;
                         float ang = normalize_angle(IntToFloat(fleet_frame_count) / 20.0f);
-                        emit_transformed_2d_vertex_packet(D_L17_001D9D90, 0x1E, 0xFFFFF3, 0xFF00FF00, x, y, 1.0f, -ang);
+                        emit_transformed_2d_vertex_packet(fleet_target_reticle_shape, 0x1E, 0xFFFFF3, 0xFF00FF00, x, y, 1.0f, -ang);
                     }
                 }
                 draw_fighter_jet_radar_contact_icon(a3, a2, m, 1, 0x70808080, *(int *)(p + 0x104));
@@ -1420,7 +1420,7 @@ int select_fighter_jet_target_and_draw_contacts(int a, char *p, char *a2, char *
                         float x = (v[0] - scr[4]) * 0.0625f;
                         float y = (v[1] - scr[5]) * 0.0625f;
                         float ang = normalize_angle(IntToFloat(fleet_frame_count) / 20.0f);
-                        emit_transformed_2d_vertex_packet(D_L17_001D9D90, 0x1E, 0xFFFFF3, 0xFF00FF00, x, y, 1.0f, -ang);
+                        emit_transformed_2d_vertex_packet(fleet_target_reticle_shape, 0x1E, 0xFFFFF3, 0xFF00FF00, x, y, 1.0f, -ang);
                     }
                 }
                 draw_fighter_jet_radar_contact_icon(a3, a2, m, 1, 0x70808080, *(int *)(p + 0x104));
@@ -1448,7 +1448,7 @@ int select_fighter_jet_target_and_draw_contacts(int a, char *p, char *a2, char *
         u[2] += 4.0f;
         ap = (char *)a + 0x10;
         project_to_screen(w, u);
-        matrix_from_basis_rows(mat, D_L17_00167950);
+        matrix_from_basis_rows(mat, fleet_camera_matrix);
         FastVecSub(v, np, D_0013E633 + 0xE9D);
         transform_vector(v, v, mat);
         v[0] = -v[1];
@@ -1468,7 +1468,7 @@ int select_fighter_jet_target_and_draw_contacts(int a, char *p, char *a2, char *
         s = vec_length(h * h + k * k);
         t = FastAddRots(*(float *)(p + 0x114), 0.1f / (s / 3.1415927f));
         *(float *)(p + 0x114) = t;
-        emit_transformed_2d_vertex_packet(&D_L17_00162208, 3, 0xFFFFF3,
+        emit_transformed_2d_vertex_packet(&fleet_pickup_arrow_shape, 3, 0xFFFFF3,
                           (func_001FA898_r((FastSin(t) + 1.4f) * 53.0f) << 24) | 0x8000,
                           v[0], v[1], 240.0f / dist + 1.5f, ang);
     }
@@ -1525,7 +1525,7 @@ skip:
     }
     if (r != 0 && (P(p, 0x88) == 0 || (H(P(p, 0x88), 0xA6) != 0x3EB && H(r, 0xA6) == 0x3EB)) && FLAG != 0) {
         P(p, 0x88) = r;
-        h = *(int *)&D_L17_001621EC;
+        h = *(int *)&fleet_jet_lock_time;
         W(p, 0x128) = H(r, 0xA6);
         W(p, 0x8C) = h;
     }
@@ -1600,9 +1600,9 @@ void DrawFleetHud(char *moby) {
     update_fighter_jet_target_lock((int)moby, d);
     if (*(int *)(d + 0x88) != 0) {
         project_world_point_to_screen_pixels(*(char **)(d + 0x88) + 0x10, &sp10, &sp14, 0);
-        if (*(int *)(d + 0x8C) > *(int *)&D_L17_001621F0) {
-            t = IntToFloat(*(int *)(d + 0x8C) - *(int *)&D_L17_001621F0);
-            t = t / IntToFloat(*(int *)&D_L17_001621F4);
+        if (*(int *)(d + 0x8C) > *(int *)&fleet_jet_lock_anim_start) {
+            t = IntToFloat(*(int *)(d + 0x8C) - *(int *)&fleet_jet_lock_anim_start);
+            t = t / IntToFloat(*(int *)&fleet_jet_lock_anim_frames);
             m = 2.0f * (1.0f - t);
             k = t * 5.0f + 1.0f;
             if (m > 1.0f) m = 1.0f;
@@ -1623,9 +1623,9 @@ void DrawFleetHud(char *moby) {
     for (i = 0; i < n; i++) {
         g = D_0013E633 + 0xE1D;
         if (i < g[0x15F6]) {
-            append_scaled_screen_triangle_strip(x, y, 0.5f, D_L17_001D9CB0, 0x19, 0xFFFFF3, 0x50008F00);
+            append_scaled_screen_triangle_strip(x, y, 0.5f, fleet_hud_ammo_pip_shape, 0x19, 0xFFFFF3, 0x50008F00);
         } else {
-            append_scaled_screen_triangle_strip(x, y, 0.5f, D_L17_001D9CB0, 0x19, 0xFFFFF3, 0x20004F00);
+            append_scaled_screen_triangle_strip(x, y, 0.5f, fleet_hud_ammo_pip_shape, 0x19, 0xFFFFF3, 0x20004F00);
         }
         n = g[0x15F7];
         if (i == n >> 1) {
@@ -1661,9 +1661,9 @@ void DrawFleetHud(char *moby) {
     for (j = lo; j <= hi; j++) {
         idx = (j & 0xE7) | ((j & 0x10) >> 1) | ((j & 8) << 1);
         if (j < v) {
-            (*(int **)&D_L17_00162200)[idx] = D_L17_001D9E38[idx];
+            (*(int **)&fleet_hud_health_clut)[idx] = fleet_hud_health_clut_backup[idx];
         } else {
-            (*(int **)&D_L17_00162200)[idx] = 0x80000000;
+            (*(int **)&fleet_hud_health_clut)[idx] = 0x80000000;
         }
     }
     *(int *)(d + 0xF4) = v;
@@ -1680,7 +1680,7 @@ void update_fighter_jet_aim_and_fire_projectile(char *moby, char *obj, float p2,
     char b[16];
     char c[16];
     char d[16];
-    BuildSphericalOffset(a, *(float *)&D_L17_001620EC * *(float *)&D_L17_00162120, p2, p3);
+    BuildSphericalOffset(a, *(float *)&fleet_jet_gun_aim_distance * *(float *)&fleet_frame_scale, p2, p3);
     FastVecAdd(a, a, obj);
     if (fast_dec_timer(obj + 0x80) && (*(int *)(D_0013A5E0 + 0x2610) & 0x84)) {
         Moby_PlaySound(3, 0, (int)moby);
@@ -1688,7 +1688,7 @@ void update_fighter_jet_aim_and_fire_projectile(char *moby, char *obj, float p2,
         Moby_GetJointWorldPos(moby, 3 + (obj[0x61] & 1), b);
         FastVecAdd(b, b, c);
         spawn_class_3f1_moby(moby, a, b, 200.0f, -1.0f);
-        *(int *)(obj + 0x80) = *(int *)&D_L17_001620F0;
+        *(int *)(obj + 0x80) = *(int *)&fleet_jet_gun_fire_delay;
         obj[0x61] ^= 1;
     }
     vec_scale_to_length(a, a, 23.0f);
@@ -1728,12 +1728,12 @@ void try_fire_fighter_jet_rocket(char *moby, char *ship_vars) {
             Moby_GetJointWorldPos(moby, t + 7, projectile_spawn_position);
             vec_scale_to_length(projectile_spawn_offset, ship_vars, 0.3f);
             FastVecAdd(projectile_spawn_position, projectile_spawn_position, projectile_spawn_offset);
-            projectile_scale = *(float *)&D_L17_001620F4 * *(float *)&D_L17_00162120;
+            projectile_scale = *(float *)&fleet_jet_rocket_speed * *(float *)&fleet_frame_scale;
             scaled_frame_count = scale_ticks(300);
             if (spawn_ship_rocket(moby, projectile_spawn_position, ((FighterJetVars *)ship_vars)->rocket_target, projectile_initial_rotation, projectile_scale, scaled_frame_count)) {
                 Moby_PlaySound(2, 0, (int)moby);
                 hero->ship_ammo -= 1;
-                ((FighterJetVars *)ship_vars)->fire_timer = *(int *)&D_L17_001620F8;
+                ((FighterJetVars *)ship_vars)->fire_timer = *(int *)&fleet_jet_rocket_fire_delay;
             }
         }
     }
@@ -1895,7 +1895,7 @@ void PlayerShipUpdate(Moby *m, Obj *o) {
 
     m->flags &= 0xFEFF;
     if (m->bc == 0) {
-        if (D_L17_00162080 < o->count) {
+        if (fleet_jet_launch_frames < o->count) {
             pad = (char *)D_0013A5E0 + 0x2460;
             if (*(int *)(pad + 0x1B4) & 0x40) {
                 idx = o->i10C;
@@ -1919,52 +1919,52 @@ void PlayerShipUpdate(Moby *m, Obj *o) {
             }
             pad = (char *)D_0013A5E0 + 0x2460;
             if (*(int *)(pad + 0x1B0) & 0x40) {
-                float f = o->speed + D_L17_0016208C * D_L17_00162120_f;
-                float max = D_L17_00162088 * D_L17_00162120_f;
+                float f = o->speed + fleet_jet_boost_accel * D_L17_00162120_f;
+                float max = fleet_jet_max_speed * D_L17_00162120_f;
                 o->speed = f;
                 if (max < f) {
                     o->speed = max;
                 }
             } else {
-                float hi = D_L17_00162084 * D_L17_00162120_f;
-                float step = D_L17_0016207C * D_L17_00162120_f;
+                float hi = fleet_jet_cruise_speed * D_L17_00162120_f;
+                float step = fleet_jet_cruise_accel * D_L17_00162120_f;
                 float cur = o->speed;
                 if (cur < hi - step) {
                     o->speed = cur + step;
                 } else if (hi < cur) {
-                    o->speed = cur + (hi - cur) * D_L17_00162090;
+                    o->speed = cur + (hi - cur) * fleet_jet_slowdown_blend;
                 } else {
                     o->speed = hi;
                 }
             }
         } else {
-            o->speed += D_L17_00162078 * dt;
+            o->speed += fleet_jet_launch_accel * dt;
             o->count += 1;
         }
     } else {
         o->speed = 0.0001f;
     }
 
-    if (D_L17_00162094 < o->count) {
+    if (fleet_jet_steer_start_frame < o->count) {
         g = (char *)D_0013E633 + 0xE1D;
         x = *(float *)(g + 0x1D20);
         y = *(float *)(g + 0x1D24);
-        ka = D_L17_00162134;
-        kb = D_L17_00162144;
+        ka = fleet_jet_yaw_steer_max_rate;
+        kb = fleet_jet_pitch_steer_max_rate;
         a = x;
         b = y;
         if (*(int *)(D_0013A5E0 + 0x2600) & 0x200) {
-            a = x / D_L17_001620A8 * D_L17_001620B0;
-            b = y / D_L17_001620A4 * D_L17_001620AC;
-            ka = D_L17_00162138;
-            kb = D_L17_00162148;
+            a = x / fleet_jet_yaw_rate * fleet_jet_sharp_yaw_rate;
+            b = y / fleet_jet_pitch_rate * fleet_jet_sharp_pitch_rate;
+            ka = fleet_jet_sharp_yaw_steer_max_rate;
+            kb = fleet_jet_sharp_pitch_steer_max_rate;
         }
         adjust_fighter_jet_steering_for_flight_bounds((char *)m, &a, &b);
-        Spring(&o->f6C, &o->f90, a, D_L17_0016212C, D_L17_00162130, ka);
-        Spring(&o->f70, &o->f94, b, D_L17_0016213C, D_L17_00162140, kb);
-        SpringAngle((char *)&o->f30, (char *)&o->f98, 0, o->f6C * D_L17_0016210C, D_L17_0016214C, D_L17_00162150, D_L17_00162154);
-        o->f34 = FastSubRots(o->f34, o->f70 * D_L17_001620A4);
-        o->f38 = FastSubRots(o->f38, o->f6C * D_L17_001620A8);
+        Spring(&o->f6C, &o->f90, a, fleet_jet_yaw_steer_stiffness, fleet_jet_yaw_steer_damping, ka);
+        Spring(&o->f70, &o->f94, b, fleet_jet_pitch_steer_stiffness, fleet_jet_pitch_steer_damping, kb);
+        SpringAngle((char *)&o->f30, (char *)&o->f98, 0, o->f6C * fleet_jet_roll_per_yaw_steer, fleet_jet_roll_stiffness, fleet_jet_roll_damping, fleet_jet_roll_max_rate);
+        o->f34 = FastSubRots(o->f34, o->f70 * fleet_jet_pitch_rate);
+        o->f38 = FastSubRots(o->f38, o->f6C * fleet_jet_yaw_rate);
         if (o->f34 > 1.3962634f) {
             o->f34 = 1.3962634f;
         } else if (o->f34 < -1.3962634f) {
@@ -1987,10 +1987,10 @@ void PlayerShipUpdate(Moby *m, Obj *o) {
         FastVecAdd(diff, (o->i110 << 7) + fleet_camera_points, (o->i110 << 7) + fleet_camera_points + 0x10);
         lenB = FastVecLength(diff);
     } else {
-        qcopy(target, &D_L17_00162270);
+        qcopy(target, &fleet_jet_default_heading_target);
     }
 
-    d = vec_distance_xy(m->pos, &D_L17_00162270);
+    d = vec_distance_xy(m->pos, &fleet_jet_default_heading_target);
     o->f38 = interpolate_value_with_repeated_squaring(1, 5, d, o->f38, fast_atan2(target[0] - m->pos[0], target[1] - m->pos[1]), 50.0f, lenB);
     m->r48 = interpolate_value_with_repeated_squaring(1, 5, d, m->r48, fast_atan2(target[0] - m->pos[0], target[1] - m->pos[1]), 50.0f, lenB);
     e1 = FastAbsF(target[2] - m->pos[2]);
@@ -2004,9 +2004,9 @@ void PlayerShipUpdate(Moby *m, Obj *o) {
         FastVecAdd(m->pos, m->pos, dir);
     }
     {
-        float lo = D_L17_00162084;
+        float lo = fleet_jet_cruise_speed;
         float sp = o->speed - lo;
-        float range = D_L17_00162088 - lo;
+        float range = fleet_jet_max_speed - lo;
         if (sp < 0.0f) {
             ratio = 0.0f / range;
         } else {
@@ -2016,19 +2016,19 @@ void PlayerShipUpdate(Moby *m, Obj *o) {
     o->fC4 = ratio;
     {
         W4 tbl[2] = {
-            { (D_L17_001620B4 - o->f70 * D_L17_001621B8 - ratio * D_L17_001621C0) * fighter_jet_scale,
-              o->f6C * D_L17_00162110 * fighter_jet_scale,
-              (D_L17_001620B8 + o->f70 * D_L17_001621BC) * fighter_jet_scale },
-            { D_L17_001620BC * fighter_jet_scale,
+            { (fleet_jet_chase_cam_x - o->f70 * fleet_jet_cam_x_per_pitch_steer - ratio * fleet_jet_cam_x_per_speed) * fighter_jet_scale,
+              o->f6C * fleet_jet_cam_y_per_yaw_steer * fighter_jet_scale,
+              (fleet_jet_chase_cam_z + o->f70 * fleet_jet_cam_z_per_pitch_steer) * fighter_jet_scale },
+            { fleet_jet_near_cam_x * fighter_jet_scale,
               0.0f,
-              D_L17_001620C0 * fighter_jet_scale }
+              fleet_jet_near_cam_z * fighter_jet_scale }
         };
         float mat[12];
         W4 w;
         W4 r;
-        Spring(&o->fB4, &o->fC8, tbl[o->sel][0], D_L17_00162194, D_L17_00162198, D_L17_0016219C);
-        Spring(&o->fB8, &o->fCC, tbl[o->sel][1], D_L17_001621A0, D_L17_001621A4, D_L17_001621A8);
-        Spring(&o->fBC, &o->fD0, tbl[o->sel][2], D_L17_001621AC, D_L17_001621B0, D_L17_001621B4);
+        Spring(&o->fB4, &o->fC8, tbl[o->sel][0], fleet_jet_cam_x_stiffness, fleet_jet_cam_x_damping, fleet_jet_cam_x_max_rate);
+        Spring(&o->fB8, &o->fCC, tbl[o->sel][1], fleet_jet_cam_y_stiffness, fleet_jet_cam_y_damping, fleet_jet_cam_y_max_rate);
+        Spring(&o->fBC, &o->fD0, tbl[o->sel][2], fleet_jet_cam_z_stiffness, fleet_jet_cam_z_damping, fleet_jet_cam_z_max_rate);
         diff[0] = o->fB4;
         diff[1] = o->fB8;
         diff[2] = o->fBC;
@@ -2037,39 +2037,39 @@ void PlayerShipUpdate(Moby *m, Obj *o) {
         matrix_mul_vec3(target, diff, mat);
         FastVecAdd(w, m->pos, target);
         set_camera_position(w);
-        r[0] = FastAddRots(o->f30 * D_L17_001620C8, o->f6C * D_L17_001620C4);
-        r[1] = FastSubRots(FastAddRots(o->f34, D_L17_001620CC), o->f70 * D_L17_001620A4);
+        r[0] = FastAddRots(o->f30 * fleet_jet_cam_roll_follow, o->f6C * fleet_jet_cam_roll_per_yaw_steer);
+        r[1] = FastSubRots(FastAddRots(o->f34, fleet_jet_cam_pitch_offset), o->f70 * fleet_jet_pitch_rate);
         r[2] = o->f38;
-        SpringAngle((char *)&o->f20, (char *)&o->fA0, 0, r[0], D_L17_00162170, D_L17_00162174, D_L17_00162178);
-        SpringAngle((char *)&o->f24, (char *)&o->fA4, 0, r[1], D_L17_0016217C, D_L17_00162180, D_L17_00162184);
-        SpringAngle((char *)&o->f28, (char *)&o->fA8, 0, r[2], D_L17_00162188, D_L17_0016218C, D_L17_00162190);
+        SpringAngle((char *)&o->f20, (char *)&o->fA0, 0, r[0], fleet_jet_cam_roll_stiffness, fleet_jet_cam_roll_damping, fleet_jet_cam_roll_max_rate);
+        SpringAngle((char *)&o->f24, (char *)&o->fA4, 0, r[1], fleet_jet_cam_pitch_stiffness, fleet_jet_cam_pitch_damping, fleet_jet_cam_pitch_max_rate);
+        SpringAngle((char *)&o->f28, (char *)&o->fA8, 0, r[2], fleet_jet_cam_yaw_stiffness, fleet_jet_cam_yaw_damping, fleet_jet_cam_yaw_max_rate);
     }
     ang[0] = o->f20;
     ang[2] = o->f28;
     ang[1] = o->f24;
     set_camera_rotation(ang);
-    Spring(&o->fB0, &o->fC0, D_L17_001621C4 + (D_L17_001621C8 - D_L17_001621C4) * ratio, D_L17_001621CC, D_L17_001621D0, D_L17_001621D4);
+    Spring(&o->fB0, &o->fC0, fleet_jet_fov_at_cruise + (fleet_jet_fov_at_max_speed - fleet_jet_fov_at_cruise) * ratio, fleet_jet_fov_stiffness, fleet_jet_fov_damping, fleet_jet_fov_max_rate);
     h = o->fB0 * 0.5f;
     tn = FastSin(h) / FastCos(h);
-    D_L17_0016D470 = tn;
+    fleet_view_tan_half_fov = tn;
     UpdateViewContext();
-    m->r40 = FastAddRots(o->f30, o->f6C * D_L17_001621E0);
-    m->r44 = FastAddRots(o->f34, -o->f70 * D_L17_001621E4);
-    m->r48 = FastAddRots(o->f38, -o->f6C * D_L17_001621E8);
+    m->r40 = FastAddRots(o->f30, o->f6C * fleet_jet_model_roll_per_yaw_steer);
+    m->r44 = FastAddRots(o->f34, -o->f70 * fleet_jet_model_pitch_per_pitch_steer);
+    m->r48 = FastAddRots(o->f38, -o->f6C * fleet_jet_model_yaw_per_yaw_steer);
     if (coll_sphere(1.2f, m->pos, 0, m)) {
-        p = D_L17_001747C0;
+        p = fleet_coll_hit_result;
         if (*(char **)(p + 0x18) == 0 || (hc = *(short *)(*(char **)(p + 0x18) + 0xA6), hc != 0 && hc != 0x192 && hc != 0x4C2 && hc != 0x4C3 && hc != 0x52 && hc != 0x53)) {
             qcopy(m->pos, p + 0x30);
             vec_reflect(dir, dir, p + 0x40);
-            o->f38 = FastAddRots(o->f38, FastSubRots(fast_atan2(dir[0], dir[1]), o->f38) * D_L17_00162098);
-            t = FastAddRots(o->f34, FastSubRots(-fast_atan2(vec_length_xy(dir), dir[2]), o->f34) * D_L17_0016209C);
-            k = o->speed * D_L17_001620DC;
+            o->f38 = FastAddRots(o->f38, FastSubRots(fast_atan2(dir[0], dir[1]), o->f38) * fleet_jet_bounce_yaw_blend);
+            t = FastAddRots(o->f34, FastSubRots(-fast_atan2(vec_length_xy(dir), dir[2]), o->f34) * fleet_jet_bounce_pitch_blend);
+            k = o->speed * fleet_jet_bounce_speed_scale;
             o->f34 = t;
             o->speed = k;
             if (*(char **)(p + 0x18) != 0 && *(short *)(*(char **)(p + 0x18) + 0xA6) != 0x15B) {
                 if (o->iDC == 0) {
                     g = (char *)D_0013E633 + 0xE1D;
-                    *(float *)(g + 0x15FC) = *(float *)(g + 0x15FC) - D_L17_001620E0;
+                    *(float *)(g + 0x15FC) = *(float *)(g + 0x15FC) - fleet_jet_wall_hit_damage;
                     if (*(float *)(g + 0x15FC) < 0.0f) {
                         FastVecSub(side, p + 0x50, p + 0x60);
                         vec_scale_to_length(side, side, 1.0f);
@@ -2079,12 +2079,12 @@ void PlayerShipUpdate(Moby *m, Obj *o) {
                         func_L00_0025F4A8_alt(m, vel, 0, 8.0f, 100.0f, 0x1E, 0xA, 0x18, 16.0f, 8.0f, 9.0f, 1.0f, -1, 50.0f, 1, 1, -1, 0);
                         m->state = 7;
                     }
-                    o->iDC = D_L17_001621DC;
+                    o->iDC = fleet_jet_wall_hit_cooldown;
                 }
             } else {
                 *(int *)(D_0013E633 + 0x2419) = 0;
                 func_L00_0025F4A8_alt(m, vel, 0, 8.0f, 100.0f, 0x1E, 0xA, 0x18, 16.0f, 8.0f, 9.0f, 1.0f, -1, 50.0f, 1, 1, -1, 0);
-                o->s62 = D_L17_001621FC;
+                o->s62 = fleet_jet_crash_time;
                 m->state = 7;
                 m->flags |= 0x41;
             }
@@ -2268,7 +2268,7 @@ void FighterJetUpdate(Moby1379 *moby) {
                         q->f160 = 1.0f;
                         p = r + 0x10;
                         q->i168 = scale_ticks(4);
-                        f = *(float *)(r + 0x2C) * D_L17_00162108;
+                        f = *(float *)(r + 0x2C) * fleet_jet_hit_deflect_per_damage;
                         BuildSphericalOffset(v, d->f64, d->v30[2], -d->v30[1]);
                         clamp_vec_length(p, p, g_frame_time * 3.0f);
                         FastVecAdd(moby->pos, moby->pos, p);
@@ -2299,7 +2299,7 @@ void FighterJetUpdate(Moby1379 *moby) {
         {
             Glob1379 *g = (Glob1379 *)(D_0013E633 + 0xE1D);
             if (g->cur == (int)moby) {
-                g->i1608 = (int)(g->t / D_L17_00162104 * 200.0f);
+                g->i1608 = (int)(g->t / fleet_jet_max_health * 200.0f);
             }
         }
         switch (moby->state) {
@@ -2321,12 +2321,12 @@ void FighterJetUpdate(Moby1379 *moby) {
             qcopy(d->v40, moby->pos);
             {
                 int i = d->i104 + 0x28;
-                *(char **)&D_L17_00162200 = D_L17_0015F520 + (D_L17_0016DB00 + i)->h * 16;
+                *(char **)&fleet_hud_health_clut = D_L17_0015F520 + (D_L17_0016DB00 + i)->h * 16;
             }
-            if (*(int *)&D_L17_00162204 == 0) {
-                *(Blk400 *)D_L17_001D9E38 = **(Blk400 **)&D_L17_00162200;
+            if (*(int *)&fleet_hud_health_clut_saved == 0) {
+                *(Blk400 *)fleet_hud_health_clut_backup = **(Blk400 **)&fleet_hud_health_clut;
             }
-            *(int *)&D_L17_00162204 = 1;
+            *(int *)&fleet_hud_health_clut_saved = 1;
             d->tF8 = 1;
             d->iE8 = 1;
             if (moby->b0 != 0xFF && saved_mission_state[g_current_level_index][moby->b0] == 0xFF) {
@@ -2341,7 +2341,7 @@ void FighterJetUpdate(Moby1379 *moby) {
         case 1: {
             Glob1379 *g = (Glob1379 *)(D_0013E633 + 0xE1D);
             int ok = 0;
-            if (jet_distance(moby, g->p2080) < *(float *)&D_L17_00162060) {
+            if (jet_distance(moby, g->p2080) < *(float *)&fleet_jet_board_radius) {
                 int t = g->i2084;
                 if (t != 0x32 && t != 0x1D && g->b20A4 == 0 && try_set_help_message(7, 0x53E9) != 0) {
                     int m = *(int *)(D_0013A5E0 + 0x2604) & 0x10;
@@ -2355,28 +2355,28 @@ void FighterJetUpdate(Moby1379 *moby) {
                 d->i124 = -1;
             } else if (d->f130 != 0.0f) {
                 ApproachValue(&d->f130, 0.0f, g_frame_time * 4.0f);
-                D_L17_0015F4FC = d->f130;
+                fleet_fade_level = d->f130;
             }
-            jet_animate((unsigned char *)moby, *(float *)&D_L17_001620D4 * fighter_jet_scale);
+            jet_animate((unsigned char *)moby, *(float *)&fleet_jet_idle_anim_speed * fighter_jet_scale);
             break;
         }
         case 2: {
             float f;
             ApproachValue(&d->f130, 1.0f, g_frame_time * 4.0f);
             f = d->f130;
-            D_L17_0015F4FC = f;
+            fleet_fade_level = f;
             if (f == 1.0f) {
                 Glob1379 *g = (Glob1379 *)(D_0013E633 + 0xE1D);
                 g->cur = (int)moby;
                 g->id = moby->a6;
-                g->n6 = D_L17_001620E4;
+                g->n6 = fleet_jet_start_ammo;
                 g->b160E = 1;
-                g->n7 = D_L17_001620E8;
-                g->n8 = D_L17_001620E8;
-                g->t = D_L17_001620D8;
+                g->n7 = fleet_jet_max_ammo;
+                g->n8 = fleet_jet_max_ammo;
+                g->t = fleet_jet_start_health;
                 d->iF0 = 0;
                 d->iF4 = 0xFF;
-                g->f1600 = D_L17_00162104;
+                g->f1600 = fleet_jet_max_health;
                 g->f1604 = 100.0f;
                 g->n9 = 3;
                 g->nA = 3;
@@ -2395,7 +2395,7 @@ void FighterJetUpdate(Moby1379 *moby) {
                 }
                 force_help_message(6, 0);
                 CameraScript(moby->pos, moby->rot, 1, 0, 0);
-                d->f64 = D_L17_00162064;
+                d->f64 = fleet_jet_launch_speed;
                 d->h68 = 0;
                 d->i6C = 0;
                 d->i70 = 0;
@@ -2405,11 +2405,11 @@ void FighterJetUpdate(Moby1379 *moby) {
                 moby->b30 = 0xFF;
                 d->v30[2] = moby->rot[2];
                 d->v20[2] = d->v30[2];
-                d->fB4 = D_L17_001620B4 * fighter_jet_scale;
-                d->fBC = D_L17_001620B8 * fighter_jet_scale;
+                d->fB4 = fleet_jet_chase_cam_x * fighter_jet_scale;
+                d->fBC = fleet_jet_chase_cam_z * fighter_jet_scale;
                 d->iB8 = 0;
                 g->p2080->i98 = -1;
-                BuildSphericalOffset(d, D_L17_00162064, d->v30[2], -d->v30[1]);
+                BuildSphericalOffset(d, fleet_jet_launch_speed, d->v30[2], -d->v30[1]);
                 if (d->i11C > 0) {
                     jet_group_state(d->i11C, 1, 1, 1);
                 }
@@ -2421,7 +2421,7 @@ void FighterJetUpdate(Moby1379 *moby) {
                     d->i108 = Moby_PlaySound(0, 4, (int)moby);
                 }
                 jet_camera_mode();
-                D_L17_0015F6E8 = 2;
+                fleet_play_mode = 2;
                 PlayerShipUpdate(moby, d);
                 moby->state = 4;
             }
@@ -2430,7 +2430,7 @@ void FighterJetUpdate(Moby1379 *moby) {
         case 4: {
             char *e;
             force_help_message(6, 0);
-            D_L17_0015F6E8 = 2;
+            fleet_play_mode = 2;
             e = voice_pool + d->i108 * 0x70;
             if (*(void **)(e + 0x88) != moby || *(unsigned char *)(e + 0x74) == 0) {
                 d->i108 = -1;
@@ -2438,12 +2438,12 @@ void FighterJetUpdate(Moby1379 *moby) {
             }
             PlayerShipUpdate(moby, d);
             if (d->iE8 <= 0) {
-                d->tF8 = *(int *)&D_L17_001621F8;
+                d->tF8 = *(int *)&fleet_jet_exit_fade_delay;
                 moby->state = 8;
             }
             if (d->f130 != 0.0f) {
                 ApproachValue(&d->f130, 0.0f, g_frame_time * 4.0f);
-                D_L17_0015F4FC = d->f130;
+                fleet_fade_level = d->f130;
             }
             {
                 Glob1379 *g = (Glob1379 *)(D_0013E633 + 0xE1D);
@@ -2484,12 +2484,12 @@ void FighterJetUpdate(Moby1379 *moby) {
             d->i10C = -1;
             moby->state = 1;
             d->f130 = 0.99f;
-            D_L17_0015F4FC = 0.99f;
+            fleet_fade_level = 0.99f;
             break;
         }
         case 7:
             force_help_message(6, 0);
-            D_L17_0015F6E8 = 2;
+            fleet_play_mode = 2;
             if (FastDecTimer(&d->t62) != 0) {
                 clear_jet_camera_mode_latch();
                 {
@@ -2521,11 +2521,11 @@ void FighterJetUpdate(Moby1379 *moby) {
             break;
         case 8:
             force_help_message(6, 0);
-            D_L17_0015F6E8 = 2;
+            fleet_play_mode = 2;
             PlayerShipUpdate(moby, d);
             if (fast_dec_timer(&d->tF8) != 0) {
                 ApproachValue(&d->f130, 1.0f, g_frame_time * 4.0f);
-                D_L17_0015F4FC = d->f130;
+                fleet_fade_level = d->f130;
             }
             if (d->f130 >= 1.0f) {
                 Glob1379 *g = (Glob1379 *)(D_0013E633 + 0xE1D);
@@ -2537,7 +2537,7 @@ void FighterJetUpdate(Moby1379 *moby) {
                 MusicRequestTrack(0, 5);
                 i = d->i100;
                 if (i == -1) {
-                    STUB_printf(D_L17_001E71A0);
+                    STUB_printf(fleet_jet_err_no_jet_point);
                     qcopy(moby->pos, d->v40);
                     qcopy(moby->rot, d->v50);
                 } else {
@@ -2549,7 +2549,7 @@ void FighterJetUpdate(Moby1379 *moby) {
                 moby->scale = *(float *)(moby->cls + 0x24);
                 moby_anim_sphere_lerp(moby);
                 if (d->iFC == -1) {
-                    STUB_printf(D_L17_001E71D8);
+                    STUB_printf(fleet_jet_err_no_exit_point);
                 } else {
                     char *e;
                     if (d->i11C > 0) {
@@ -2586,7 +2586,7 @@ void FighterJetUpdate(Moby1379 *moby) {
                 return;
             }
             ApproachValue(&d->f130, 0.0f, g_frame_time * 4.0f);
-            D_L17_0015F4FC = d->f130;
+            fleet_fade_level = d->f130;
             break;
         case 3:
         case 6:
@@ -2865,7 +2865,7 @@ void rebuild_magnet_elevator_world_path(char *moby) {
         char *point = moby + 0xC0;
         int i;
         for (i = 10; i >= 0; i--) {
-            matrix_mul_vec3(vec, D_L17_001DA240 + (10 - i) * 0x10, point);
+            matrix_mul_vec3(vec, fleet_magnet_elevator_path_offsets + (10 - i) * 0x10, point);
             FastVecAdd(vec, vec, moby + 0x10);
             *(float *)(vec + 0xC) = 1.0f;
             vec += 0x10;

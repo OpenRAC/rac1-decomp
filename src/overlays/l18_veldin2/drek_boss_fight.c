@@ -955,7 +955,7 @@ void drek_final_boss_robot_update(Moby *moby) {
             moby->collision = (*(int **)&moby->pclass)[4];
             moby->state = *(unsigned char *)&d->f39C;
             if (moby->state == 5) {
-                D_L18_0015F4FC = 1.0f;
+                veldin2_screen_fade = 1.0f;
             }
             if (moby->state == 0x19) {
                 Hero_OnKilled();
@@ -1938,7 +1938,7 @@ void count_drek_boss_platform_event_once(char *moby) {
             *(int *)(d + 0x3E4) = 1;
             if (t != 0) {
                 if (*(short *)(t + 0xA6) == 0x24B) {
-                    *(int *)&D_L18_00162438 = *(int *)&D_L18_00162438 + 1;
+                    *(int *)&sinking_platform_fall_count = *(int *)&sinking_platform_fall_count + 1;
                 }
             }
         }

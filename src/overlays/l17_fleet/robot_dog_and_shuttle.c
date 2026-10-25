@@ -1537,7 +1537,7 @@ extern short *D_L17_001AC440[];
 
 /* Finds the listed moby of type 0x733 in state 4 and launches it along a rotated vector. */
 char *try_activate_blarg_ship_from_list(int list) {
-    short *s = D_L17_001AC440[list];
+    short *s = fleet_moby_groups[list];
     float A[4], B[4], C[4], D[4], E[4], F[4];
     char *m;
     char *d;

@@ -638,7 +638,7 @@ int step_camera_blend(Camera *to, CamBlendLerp *lerp) {
     extract_matrix_rotation_quaternion(m, to);
     rot = lerp->rot.f;
     t = CosineInterpolate(0.0f, 1.0f, lerp->rot_t);
-    func_001FA5C8(rot, &lerp->from_rot, m, t);
+    quat_nlerp(rot, &lerp->from_rot, m, t);
     quaternion_to_matrix(rot, q);
     if (st->active == 0) {
         matrix_copy_rows(gCamera.matrix, q);

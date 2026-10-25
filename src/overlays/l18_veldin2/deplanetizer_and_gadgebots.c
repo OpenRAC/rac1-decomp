@@ -696,7 +696,7 @@ void update_moby_visibility_and_half_turn(char *moby) {
         ((struct Moby *)moby)->state = 1;
         break;
     case WAIT_TO_HIDE_AND_TURN:
-        if (veldin2_cinematic_mode == 2 && D_L18_0016D310 == 3) {
+        if (veldin2_cinematic_mode == 2 && veldin2_cinematic_step == 3) {
             ((struct Moby *)moby)->flags |= 1;
             ((struct Moby *)moby)->visible = 0;
             ((struct Moby *)moby)->rot.x = FastAddRots(((struct Moby *)moby)->rot.x, 3.1415927f);

@@ -328,7 +328,7 @@ void hoverboard_update(unsigned char *moby) {
         if (data->unk50 == 0) {
             if (D_0013D355[0x13B] != 0) {
                 if (*(unsigned short *)(D_0014171B + 0x31D) == 0) {
-                    if (D_L05_0015F788 != 0) {
+                    if (hoverboard_race_finished != 0) {
                         struct Hero *h = (struct Hero *)(D_0013E633 + 0xE1D);
                         int ret = scale_ticks(0x4B0);
                         if (ret < h->unk19C) {
@@ -736,8 +736,8 @@ extern short D_L05_00161FA8;
 void attach_big_head_cheat_manipulator(char *a) {
     if (rilgar_cinematic_mode == 2 && gCheats[0] != 0) {
         int i;
-        for (i = 0; i < D_L05_0016CD60.n; i++) {
-            char *moby = D_L05_0016CD60.m[i];
+        for (i = 0; i < rilgar_cutscene_state.n; i++) {
+            char *moby = rilgar_cutscene_state.m[i];
             if (*(short *)(moby + 0xA6) == *(short *)(a + 0xA6)) {
                 unsigned char *q = D_L05_0017C9A0;
                 if (q[1] == 0) {

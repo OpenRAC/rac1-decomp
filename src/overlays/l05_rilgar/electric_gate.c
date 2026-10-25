@@ -71,8 +71,8 @@ void electric_gate_update(char *m) {
         **(int **)(data + 4) = -1;
         break;
     case 1:
-        if (*(int *)&D_L05_00161DF8 != rilgar_frame_count) {
-            *(int *)&D_L05_00161DF8 = rilgar_frame_count;
+        if (*(int *)&electric_gate_last_draw_frame != rilgar_frame_count) {
+            *(int *)&electric_gate_last_draw_frame = rilgar_frame_count;
             AddDrawCallback(draw_electric_gate_beams, m);
         }
         pos = m + 0x10;
@@ -160,31 +160,31 @@ void draw_electric_gate_beams(char *a) {
     do {
         nx = i + 1;
         t = (FastSin(ang) + 1.0f) * 0.5f;
-        r1 = FastTweenColor(*(int *)&D_L05_00161DFC, *(int *)&D_L05_00161E00, t);
-        r2 = FastTweenColor(*(int *)&D_L05_00161E04, *(int *)&D_L05_00161E08, t);
+        r1 = FastTweenColor(*(int *)&electric_gate_outer_color_from, *(int *)&electric_gate_outer_color_to, t);
+        r2 = FastTweenColor(*(int *)&electric_gate_inner_color_from, *(int *)&electric_gate_inner_color_to, t);
         ang = FastAddRots(ang, 1.2566371f);
         j = 0;
         do {
-            tex = GetEffectTex(*(int *)&D_L05_00161E58);
+            tex = GetEffectTex(*(int *)&electric_gate_effect_tex);
             nj = j + 1;
-            arr[j][i].a88 = (s64)*(int *)&D_L05_00161E30 | ((s64)*(int *)&D_L05_00161E34 << 2) | ((s64)*(int *)&D_L05_00161E38 << 4) | ((s64)*(int *)&D_L05_00161E3C << 6) | 0x8000000000LL;
+            arr[j][i].a88 = (s64)*(int *)&electric_gate_alpha_a | ((s64)*(int *)&electric_gate_alpha_b << 2) | ((s64)*(int *)&electric_gate_alpha_c << 4) | ((s64)*(int *)&electric_gate_alpha_d << 6) | 0x8000000000LL;
             arr[j][i].a78 = tex;
             arr[j][i].a80 = 0xFF9000000260LL;
             arr[j][i].a70 = 0;
             for (n = 0; n < 4; n++) {
-                arr[j][i].uv[n][0] = ((float (*)[2])D_L05_0020BA80)[n][0];
-                arr[j][i].uv[n][1] = ((float (*)[2])D_L05_0020BA80)[n][1];
+                arr[j][i].uv[n][0] = ((float (*)[2])electric_gate_quad_uvs)[n][0];
+                arr[j][i].uv[n][1] = ((float (*)[2])electric_gate_quad_uvs)[n][1];
                 if (j != 0) {
                     arr[j][i].c[n] = r1;
                     {
-                        qw128 *src = &((qw128 *)D_L05_0020BAA0)[n];
+                        qw128 *src = &((qw128 *)electric_gate_outer_corners)[n];
                         qcopy(&arr[j][i].v[n], src);
                     }
                     ((float *)&arr[j][i].v[n])[2] += (float)(i + 1);
                 } else {
                     arr[0][i].c[n] = r2;
                     {
-                        qw128 *src = &((qw128 *)D_L05_0020BAE0)[n];
+                        qw128 *src = &((qw128 *)electric_gate_inner_corners)[n];
                         qcopy(&arr[0][i].v[n], src);
                     }
                     ((float *)&arr[0][i].v[n])[2] += (float)(i + 1);
@@ -243,14 +243,14 @@ void update_fog_zone(char *m) {
     }
     switch (((unsigned char *)m)[0x20]) {
     case 0:
-        d[0x20] = D_L05_0015F544[0];
-        d[0x21] = D_L05_0015F545[0];
-        d[0x22] = D_L05_0015F546[0];
+        d[0x20] = rilgar_fog_color_red[0];
+        d[0x21] = rilgar_fog_color_green[0];
+        d[0x22] = rilgar_fog_color_blue[0];
         {
-            float f0 = D_L05_0015F548;
-            float f1 = D_L05_0015F54C;
-            float f2 = D_L05_0015F550;
-            float f3 = D_L05_0015F554;
+            float f0 = rilgar_fog_near_distance;
+            float f1 = rilgar_fog_far_distance;
+            float f2 = rilgar_fog_near_intensity;
+            float f3 = rilgar_fog_far_intensity;
             *(float *)(d + 0) = f0;
             *(float *)(d + 8) = f1;
             *(float *)(d + 4) = f2;
@@ -264,7 +264,7 @@ void update_fog_zone(char *m) {
         *(int *)(d + 0x10) = 0;
         *(int *)(d + 0x1C) = 0;
         {
-            int c = D_L05_001612C0[0] + (D_L05_001612C1[0] << 8) + (D_L05_001612C2[0] << 16) + (D_L05_001612C3[0] << 24);
+            int c = rilgar_zone_tint_red[0] + (rilgar_zone_tint_green[0] << 8) + (rilgar_zone_tint_blue[0] << 16) + (rilgar_zone_tint_alpha[0] << 24);
             *(int *)(d + 0x34) = 0x40408070;
             *(int *)(d + 0x30) = c;
         }
@@ -272,36 +272,36 @@ void update_fog_zone(char *m) {
         break;
     case 1:
         if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, *(int *)(d + 0x2C))) {
-            D_L05_0015F544[0] = d[0x23];
-            D_L05_0015F545[0] = d[0x24];
-            D_L05_0015F546[0] = d[0x25];
+            rilgar_fog_color_red[0] = d[0x23];
+            rilgar_fog_color_green[0] = d[0x24];
+            rilgar_fog_color_blue[0] = d[0x25];
             {
                 float f0 = *(float *)(d + 0x10);
                 float f1 = *(float *)(d + 0x18);
                 float f2 = *(float *)(d + 0x14);
                 float f3 = *(float *)(d + 0x1C);
-                D_L05_0015F548 = f0;
-                D_L05_0015F54C = f1;
-                D_L05_0015F550 = f2;
-                D_L05_0015F554 = f3;
+                rilgar_fog_near_distance = f0;
+                rilgar_fog_far_distance = f1;
+                rilgar_fog_near_intensity = f2;
+                rilgar_fog_far_intensity = f3;
             }
             m[0x20] = 2;
         }
         break;
     case 2:
         if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, *(int *)(d + 0x28))) {
-            D_L05_0015F544[0] = d[0x20];
-            D_L05_0015F545[0] = d[0x21];
-            D_L05_0015F546[0] = d[0x22];
+            rilgar_fog_color_red[0] = d[0x20];
+            rilgar_fog_color_green[0] = d[0x21];
+            rilgar_fog_color_blue[0] = d[0x22];
             {
                 float f0 = *(float *)(d + 0);
                 float f1 = *(float *)(d + 8);
                 float f2 = *(float *)(d + 4);
                 float f3 = *(float *)(d + 0xC);
-                D_L05_0015F548 = f0;
-                D_L05_0015F54C = f1;
-                D_L05_0015F550 = f2;
-                D_L05_0015F554 = f3;
+                rilgar_fog_near_distance = f0;
+                rilgar_fog_far_distance = f1;
+                rilgar_fog_near_intensity = f2;
+                rilgar_fog_far_intensity = f3;
             }
             m[0x20] = 1;
         }
@@ -314,10 +314,10 @@ void update_fog_zone(char *m) {
         v[3] = 0.0f;
         matrix_mul_vec3(w, v, D_L05_001601AC_c + *(int *)(d + 0x38) * 128 + 0x40);
         c = FastTweenColor(*(int *)(d + 0x30), *(int *)(d + 0x34), (w[0] + 1.0f) * 0.5f);
-        D_L05_001612C1[0] = c >> 8;
-        D_L05_001612C2[0] = c >> 16;
-        D_L05_001612C0[0] = c;
-        D_L05_001612C3[0] = c >> 24;
+        rilgar_zone_tint_green[0] = c >> 8;
+        rilgar_zone_tint_blue[0] = c >> 16;
+        rilgar_zone_tint_red[0] = c;
+        rilgar_zone_tint_alpha[0] = c >> 24;
     }
 }
 extern float D_0015EE6C_30F9D0 __asm__("D_0015EE6C") MACRO_ADDR;
@@ -521,13 +521,13 @@ void drain_cover_update(Moby *moby) {
         if (rilgar_cinematic_mode == 0 && vec_distance_xy(&moby->pos, D_0013E633 + 0xE9D) < 24.0f && fast_dec_timer(&d->timer) != 0) {
             moby->state = 2;
             clear_u64_value(d->vel);
-            d->vel[2] = vec_length(d->f80 * 2.0f * (D_L05_00161E6C * g_frame_time_sq));
-        } else if ((float)d->timer < (float)scale_ticks(*(int *)&D_L05_00161E78) * 0.5f) {
-            emit_drain_cover_particles((char *)moby, d->home[2], D_L05_00161EA8 + d->home[2]);
-            emit_drain_cover_particles((char *)moby, d->home[2], D_L05_00161EA8 + d->home[2]);
-            if ((float)d->timer < (float)scale_ticks(*(int *)&D_L05_00161E78) * 0.2f) {
-                a = D_L05_00161EB4;
-                b = D_L05_00161EB8;
+            d->vel[2] = vec_length(d->f80 * 2.0f * (drain_cover_gravity * g_frame_time_sq));
+        } else if ((float)d->timer < (float)scale_ticks(*(int *)&drain_cover_spray_life) * 0.5f) {
+            emit_drain_cover_particles((char *)moby, d->home[2], drain_cover_warning_spray_height + d->home[2]);
+            emit_drain_cover_particles((char *)moby, d->home[2], drain_cover_warning_spray_height + d->home[2]);
+            if ((float)d->timer < (float)scale_ticks(*(int *)&drain_cover_spray_life) * 0.2f) {
+                a = drain_cover_burst_color_a;
+                b = drain_cover_burst_color_b;
                 r = func_001FA898_r(multiply_global_factor(random_float_between(10.0f, 20.0f)));
                 g = func_001FA898_r(multiply_global_factor(random_float_between(10.0f, 20.0f)));
                 bl = func_001FA898_r(multiply_global_factor(random_float_between(10.0f, 40.0f)));
@@ -536,8 +536,8 @@ void drain_cover_update(Moby *moby) {
                     v60[0] = FastCos(ang) * 0.75f;
                     v60[1] = FastSin(ang) * 0.75f;
                     v60[2] = 0.0f;
-                    vec_scale_to_length(v40, v60, random_float_between(D_L05_00161EAC, D_L05_00161EB0) * g_frame_time);
-                    v40[2] = random_float_between(0.0f, D_L05_00161EBC) * g_frame_time;
+                    vec_scale_to_length(v40, v60, random_float_between(drain_cover_burst_speed_min, drain_cover_burst_speed_max) * g_frame_time);
+                    v40[2] = random_float_between(0.0f, drain_cover_burst_rise_max) * g_frame_time;
                     vec_set_length_xy(v50, v40, 0.0f);
                     FastVecAdd(v60, &moby->pos, v60);
                     v60[2] = random_float_between(moby->pos.z - 0.25f, moby->pos.z + 0.5f);
@@ -551,10 +551,10 @@ void drain_cover_update(Moby *moby) {
         if ((rilgar_frame_count & 3) == 0) {
             MobySphereHitDirectional((int)moby, 1.0f, &moby->pos, 0x10000, 2.0f, 1.0f, 0, 1, 0);
         }
-        emit_drain_cover_particles((char *)moby, d->home[2], d->vel[2] * (float)scale_ticks(*(int *)&D_L05_00161E78) * 0.5f + moby->pos.z);
-        update_drain_cover_tilt((char *)moby, D_L05_00161E94, 1.0f);
+        emit_drain_cover_particles((char *)moby, d->home[2], d->vel[2] * (float)scale_ticks(*(int *)&drain_cover_spray_life) * 0.5f + moby->pos.z);
+        update_drain_cover_tilt((char *)moby, drain_cover_air_wobble, 1.0f);
         FastVecAdd(&moby->pos, &moby->pos, d->vel);
-        d->vel[2] = d->vel[2] - D_L05_00161E6C * g_frame_time_sq;
+        d->vel[2] = d->vel[2] - drain_cover_gravity * g_frame_time_sq;
         if (d->vel[2] <= 0.0f) {
             moby->state = 3;
             d->home[3] = d->f84 - 0.5f;
@@ -563,8 +563,8 @@ void drain_cover_update(Moby *moby) {
         break;
     case 3:
         emit_drain_cover_particles((char *)moby, d->home[2], moby->pos.z);
-        update_drain_cover_tilt((char *)moby, D_L05_00161E94, 1.0f);
-        ApproachWithVelocity(d->home[2] + d->home[3], D_L05_00161E70 * g_frame_time_sq, D_L05_00161E70 * g_frame_time_sq, g_frame_time * 20.0f, &moby->pos.z, &d->vel[2]);
+        update_drain_cover_tilt((char *)moby, drain_cover_air_wobble, 1.0f);
+        ApproachWithVelocity(d->home[2] + d->home[3], drain_cover_bob_accel * g_frame_time_sq, drain_cover_bob_accel * g_frame_time_sq, g_frame_time * 20.0f, &moby->pos.z, &d->vel[2]);
         if (d->vel[2] == 0.0f) {
             if (d->home[3] > d->f84) {
                 d->home[3] = d->f84 - 0.5f;
@@ -577,10 +577,10 @@ void drain_cover_update(Moby *moby) {
         }
         break;
     case 4:
-        emit_drain_cover_particles((char *)moby, d->home[2], d->vel[2] * (float)scale_ticks(*(int *)&D_L05_00161E78) + moby->pos.z);
-        update_drain_cover_tilt((char *)moby, d->home[2] + 1.0f < moby->pos.z ? D_L05_00161E94 : 0.0f, d->home[2] + 1.0f < moby->pos.z ? 1.0f : 10.0f);
+        emit_drain_cover_particles((char *)moby, d->home[2], d->vel[2] * (float)scale_ticks(*(int *)&drain_cover_spray_life) + moby->pos.z);
+        update_drain_cover_tilt((char *)moby, d->home[2] + 1.0f < moby->pos.z ? drain_cover_air_wobble : 0.0f, d->home[2] + 1.0f < moby->pos.z ? 1.0f : 10.0f);
         FastVecAdd(&moby->pos, &moby->pos, d->vel);
-        d->vel[2] = d->vel[2] - D_L05_00161E6C * g_frame_time_sq;
+        d->vel[2] = d->vel[2] - drain_cover_gravity * g_frame_time_sq;
         if (moby->pos.z < d->home[2]) {
             func_0022ED80_i(1, 0, moby);
             moby->state = 1;
@@ -594,7 +594,7 @@ void drain_cover_update(Moby *moby) {
         break;
     }
     hero = (Hero *)(D_0013E633 + 0xE1D);
-    if (moby->pos.z - 2.0f > hero->motion.pos.f[2] && vec_distance_xy(&moby->pos, hero->motion.pos.f) < D_L05_00161EC0) {
+    if (moby->pos.z - 2.0f > hero->motion.pos.f[2] && vec_distance_xy(&moby->pos, hero->motion.pos.f) < drain_cover_push_radius) {
         v40[0] = FastCos(fast_atan2(hero->motion.pos.f[0] - moby->pos.x, hero->motion.pos.f[1] - moby->pos.y)) * 0.2f;
         v40[1] = FastSin(fast_atan2(hero->motion.pos.f[0] - moby->pos.x, hero->motion.pos.f[1] - moby->pos.y)) * 0.2f;
         v40[2] = 0.0f;
@@ -647,12 +647,12 @@ void emit_drain_cover_particles(char *obj, float a, float b) {
     float ground, x, y, t, u;
     int i, j, k, m, n;
     clear_u64_value(v);
-    v[2] = *(float *)&D_L05_00161E88 * g_frame_time;
-    ground = v[2] * 0.75f * IntToFloat(*(int *)&D_L05_00161E78);
+    v[2] = *(float *)&drain_cover_spray_rise_speed * g_frame_time;
+    ground = v[2] * 0.75f * IntToFloat(*(int *)&drain_cover_spray_life);
     j = 0;
-    for (i = j; (float)i < (b - a) / *(float *)&D_L05_00161E74; i++) {
+    for (i = j; (float)i < (b - a) / *(float *)&drain_cover_spray_spacing; i++) {
         float fi = (float)j;
-        x = random_float_between(fi, *(float *)&D_L05_00161E90);
+        x = random_float_between(fi, *(float *)&drain_cover_spray_radius);
         y = random_angle_radians();
         w[0] = FastCos(y) * x;
         w[1] = FastSin(y) * x;
@@ -661,10 +661,10 @@ void emit_drain_cover_particles(char *obj, float a, float b) {
         w[2] = random_float_between(a, b) - ground;
         t = random_float_between((a + b) * 0.5f, b) - ground;
         if (t < w[2]) w[2] = t;
-        u = random_float_between(*(float *)&D_L05_00161E7C, *(float *)&D_L05_00161E80);
-        k = scale_ticks(*(int *)&D_L05_00161E78);
+        u = random_float_between(*(float *)&drain_cover_spray_size_min, *(float *)&drain_cover_spray_size_max);
+        k = scale_ticks(*(int *)&drain_cover_spray_life);
         m = func_001FA898_r(randf_sym(fi, (float)*(int *)&D_L05_00161E84));
-        n = *(int *)&D_L05_00161E8C;
+        n = *(int *)&drain_cover_spray_color;
         create_particle_with_velocity_and_lifetime(u, w, v, k, m, n);
     }
 }
@@ -705,17 +705,17 @@ void update_drain_cover_tilt(char *moby, float turn_scale, float speed_scale) {
     deg_to_rad = 0.017453292f;
     *(float *)(data + 0x98) = FastAddRots(*(float *)(data + 0x98), *(float *)(data + 0xA0));
     *(float *)(data + 0x9C) = FastAddRots(*(float *)(data + 0x9C), *(float *)(data + 0xA4));
-    target0 = FastAddRots(vertical, FastSin(*(float *)(data + 0x98)) * turn_scale * *(float *)&D_L05_00161E98);
-    target1 = FastAddRots(horizontal, FastSin(*(float *)(data + 0x9C)) * turn_scale * *(float *)&D_L05_00161E98);
+    target0 = FastAddRots(vertical, FastSin(*(float *)(data + 0x98)) * turn_scale * *(float *)&drain_cover_wobble_amount);
+    target1 = FastAddRots(horizontal, FastSin(*(float *)(data + 0x9C)) * turn_scale * *(float *)&drain_cover_wobble_amount);
 
     func_L00_0025CE58_3108D0(&m->rot.x, target0, (float *)(data + 0x90),
-                      *(float *)&D_L05_00161E9C * speed_scale * deg_to_rad * g_frame_time_sq,
-                      *(float *)&D_L05_00161EA0 * speed_scale * deg_to_rad * g_frame_time_sq,
-                      *(float *)&D_L05_00161EA4 * deg_to_rad * g_frame_time);
+                      *(float *)&drain_cover_tilt_accel * speed_scale * deg_to_rad * g_frame_time_sq,
+                      *(float *)&drain_cover_tilt_decel * speed_scale * deg_to_rad * g_frame_time_sq,
+                      *(float *)&drain_cover_tilt_max_speed * deg_to_rad * g_frame_time);
     func_L00_0025CE58_3108D0(&m->rot.y, target1, (float *)(data + 0x94),
-                      *(float *)&D_L05_00161E9C * speed_scale * deg_to_rad * g_frame_time_sq,
-                      *(float *)&D_L05_00161EA0 * speed_scale * deg_to_rad * g_frame_time_sq,
-                      *(float *)&D_L05_00161EA4 * deg_to_rad * g_frame_time);
+                      *(float *)&drain_cover_tilt_accel * speed_scale * deg_to_rad * g_frame_time_sq,
+                      *(float *)&drain_cover_tilt_decel * speed_scale * deg_to_rad * g_frame_time_sq,
+                      *(float *)&drain_cover_tilt_max_speed * deg_to_rad * g_frame_time);
 }
 typedef u32 u128_10A90 __attribute__((mode(TI), aligned(16)));
 extern void *func_L00_0025B478(struct Moby *, int, int);
@@ -812,7 +812,7 @@ void pipe_mounted_grating_update(struct Moby *moby) {
             }
         }
         moby->command = 1;
-        record_moby_context_bytes(&moby->command, 1, moby, 1, D_L05_001BAE30);
+        record_moby_context_bytes(&moby->command, 1, moby, 1, rilgar_saved_moby_bytes);
         func_0020D678_10A90(moby);
     } else if (moby->command) {
         func_0020D678_10A90(moby);
@@ -863,16 +863,16 @@ void update_triggered_gate_motion(struct Moby *m) {
         break;
     case 2:
         if (func_001F9908_16378(&d->riseTimer)) {
-            ApproachWithVelocity(d->topZ, (*(float *)&D_L05_00161F40) * g_frame_time_sq, (*(float *)&D_L05_00161F44) * g_frame_time_sq,
-                                       (*(float *)&D_L05_00161F48) * g_frame_time, &m->pos.z, &d->riseSpeed);
+            ApproachWithVelocity(d->topZ, (*(float *)&triggered_gate_rise_accel) * g_frame_time_sq, (*(float *)&triggered_gate_rise_decel) * g_frame_time_sq,
+                                       (*(float *)&triggered_gate_rise_max_speed) * g_frame_time, &m->pos.z, &d->riseSpeed);
             if (m->oclass == 0x355 && FastAbsF(m->pos.z - d->topZ) < 3.0f &&
                 3.0f < FastAbsF(d->topZ - m->pos.z + d->riseSpeed))
                 Moby_PlaySound(0, 0, m);
         }
         if (func_001F9908_16378(&d->swingTimer)) {
-            SteerAngleWithVelocity(&m->rot.y, &d->swingSpeed, 0.0f, (*(float *)&D_L05_00161F4C) * 0.017453292f * g_frame_time_sq,
-                             (*(float *)&D_L05_00161F50) * 0.017453292f * g_frame_time_sq,
-                             (*(float *)&D_L05_00161F54) * 0.017453292f * g_frame_time);
+            SteerAngleWithVelocity(&m->rot.y, &d->swingSpeed, 0.0f, (*(float *)&triggered_gate_swing_accel) * 0.017453292f * g_frame_time_sq,
+                             (*(float *)&triggered_gate_swing_decel) * 0.017453292f * g_frame_time_sq,
+                             (*(float *)&triggered_gate_swing_max_speed) * 0.017453292f * g_frame_time);
             if (m->rot.y == 0.0f)
                 m->state = 3;
         } else if (d->swingTimer == 1 && m->oclass == 0x354) {
@@ -1122,7 +1122,7 @@ void elevator_with_button_update(struct Moby *moby) {
     case 1:
         D_0014172A = vars->marker;
         ApproachValue(&vars->fade, 1.0f, 0.133f);
-        D_L05_0015F4FC = vars->fade;
+        rilgar_fade_level = vars->fade;
         if (vars->fade == 1.0f) {
             func_L05_003173A8_16B98(moby, &eye, &look);
             CameraScript(&eye, &look, 1, 0, 0);
@@ -1138,7 +1138,7 @@ void elevator_with_button_update(struct Moby *moby) {
         if (moby->command) {
             D_0014172A = vars->marker;
             ApproachValue(&vars->fade, 0.0f, 0.133f);
-            D_L05_0015F4FC = vars->fade;
+            rilgar_fade_level = vars->fade;
             func_L05_003173A8_16B98(moby, &eye, &look);
             set_camera_position(&eye);
             set_camera_rotation(&look);
@@ -1273,11 +1273,11 @@ extern short D_L05_00161F84;
 // Positions the camera-relative point and fills the output angles.
 void lift_camera_view(char *a, char *b, char *c) {
     float t;
-    vec_scale_to_length(b, a + 0xC0, *(float *)&D_L05_00161F88);
+    vec_scale_to_length(b, a + 0xC0, *(float *)&lift_camera_distance);
     FastVecAdd(b, b, a + 0x10);
-    *(float *)(b + 8) = *(float *)(b + 8) + *(float *)&D_L05_00161F80;
+    *(float *)(b + 8) = *(float *)(b + 8) + *(float *)&lift_camera_height;
     clear_u64_value(c);
-    t = *(float *)&D_L05_00161F84;
+    t = *(float *)&lift_camera_pitch_deg;
     *(float *)(c + 8) = *(float *)(a + 0x48);
     *(float *)(c + 4) = t * 0.017453292f;
 }
@@ -1319,7 +1319,7 @@ void draw_ocean_grid_outside_clip_volumes(char *moby) {
             break;
         }
     }
-    if (none) draw_textured_grid(D_L05_00211E60);
+    if (none) draw_textured_grid(rilgar_ocean_grid);
 }
 extern void func_L02_002A52B0(void *, float);
 extern void func_L05_00317538_3175D8(void) __asm__("func_L05_00317538");
@@ -1543,8 +1543,8 @@ extern void func_L05_00317CD8(char *, int);
 void update_hoverboard_girl_cutscene_instances(char *arg) {
     if (rilgar_cinematic_mode == 2 && (gCheats[0] != 0 || *(int *)&g_breast_growth_count != 0)) {
         int i;
-        for (i = 0; i < D_L05_0016CD60.n; i++) {
-            char *moby = D_L05_0016CD60.m[i];
+        for (i = 0; i < rilgar_cutscene_state.n; i++) {
+            char *moby = rilgar_cutscene_state.m[i];
             if (*(short *)(moby + 0xA6) == *(short *)(arg + 0xA6)) {
                 if (gCheats[0] != 0) {
                     unsigned char *q = D_L05_0017C9A0;
@@ -2009,7 +2009,7 @@ void qwarks_bouncer_update(char *m)
             DeleteMoby(m);
             return;
         }
-        bouncer_data->ptr20 = D_L05_00161FB0;
+        bouncer_data->ptr20 = qwarks_bouncer_dialogue_name;
         bouncer_moby->state = 1;
         DialogRequest_Init(m, bouncer_data);
         bouncer_data->fC = 3.7f;
@@ -2158,7 +2158,7 @@ void shady_salesman_update(char *m)
         }
         moby->pos.z += 0.5f;
         moby->pos.z = ProbeGroundHeight(&moby->pos, 0, 0.5f);
-        npc_data->ptr20 = D_L05_00161FB8;
+        npc_data->ptr20 = shady_salesman_dialogue_name;
         moby->state = 1;
         DialogRequest_Init(m, npc_data);
         break;
@@ -2290,7 +2290,7 @@ void television_update(unsigned char *moby) {
     float bobbing_phase;
     char *data = (char *)m->pvars;
     int g;
-    m->scale = m->pclass->scale * *(float *)&D_L05_00161FC8;
+    m->scale = m->pclass->scale * *(float *)&television_scale;
     switch (m->state) {
     case TELEVISION_INITIALIZE:
         m->state = 1;
@@ -2847,7 +2847,7 @@ void update_selected_moby_effects(unsigned char *m) {
         break;
     case 1:
         if (rilgar_cinematic_mode == 2) {
-            g = &D_L05_0016CD60;
+            g = &rilgar_cutscene_state;
             t = *(int *)((char *)g + 0x30) - 10;
             if (t < 2) {
                 int k = 3;

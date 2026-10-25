@@ -516,13 +516,13 @@ int get_first_moby_in_group(char **out, int idx, int a, int b) {
     char *e;
     int c;
     int h;
-    if (idx < 0 || D_L00_001600B4 < idx) {
+    if (idx < 0 || moby_group_count < idx) {
         *out = 0;
         return -1;
     }
     *out = 0;
     D_L00_001601D4 = 0;
-    v = D_L00_001ABBC0[idx];
+    v = level_moby_groups[idx];
     D_L00_001601CC_5A208 = v;
     if (v == 0) return -1;
     h = *v & 0x7FFF;
@@ -2795,7 +2795,7 @@ int test_point_in_transformed_unit_cylinder(void *p, int i) {
     if (i < 0) {
         return 0;
     }
-    e = D_L00_001601BC + i * 128;
+    e = level_cylinders + i * 128;
     FastVecSub(&a, p, e + 0x30);
     a.w = 0;
     matrix_mul_vec3(&b, &a, e + 0x40);

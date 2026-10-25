@@ -279,7 +279,7 @@ void apply_hero_item_slot_selection(int i) {
                 ((int *)(D_0014171B + 0x45))[i] = w;
                 g->b[i] = w;
                 if (i == 0) {
-                    D_L05_0017A020[g->b[0]].f20 = 0x20;
+                    rilgar_item_defs[g->b[0]].f20 = 0x20;
                 }
                 changed = 1;
             }
@@ -339,7 +339,7 @@ void apply_hero_item_slot_selection(int i) {
                     }
                     if (i == 0) {
                         Sel *k = (Sel *)(D_0013E633 + 0xE1D);
-                        D_L05_0017A020[k->b[0]].f20 = 0x20;
+                        rilgar_item_defs[k->b[0]].f20 = 0x20;
                     }
                 }
                 changed = 1;
@@ -1008,8 +1008,8 @@ int process_hero_primary_item_input(void) {
     if (D_0013F450_h2523C8.state_timer == start) {
         if (hero_slot_item_id(3) == 3 && D_0013F450_h2523C8.state.current != 0x81 && (D_0013F450_h2523C8.unk308 == 0 || D_0013D5C8_2523C8[0x1C] == 0)
             && D_0013F450_h2523C8.unk22D8 == 0) {
-            func_001F9908_2523C8(&D_L05_0015F754);
-            if (D_L05_0015F754 != 0) {
+            func_001F9908_2523C8(&gadget_double_tap_timer);
+            if (gadget_double_tap_timer != 0) {
                 if (D_0013F450_h2523C8.state.control_mode < 2U || D_0013F450_h2523C8.state.control_mode == 0xC
                     || ((D_0013F450_h2523C8.state.control_mode == 2 || D_0013F450_h2523C8.state.control_mode == 4) && D_0013F450_h2523C8.grounded_frames != 0)) {
                     if ((D_0013CA40_p2523C8.held & 8) && (D_0013CA40_p2523C8.pressed & 8)) {
@@ -1018,7 +1018,7 @@ int process_hero_primary_item_input(void) {
                 }
             }
             if ((D_0013CA40_p2523C8.pressed & 8) && D_0013F450_h2523C8.state.current != 0x81) {
-                D_L05_0015F754 = scale_ticks(0x1E);
+                gadget_double_tap_timer = scale_ticks(0x1E);
             }
         } else if (D_0013F450_h2523C8.state.current != 0x13 && D_0013F450_h2523C8.state.current != 0x81 && D_0013F450_h2523C8.state.current != 0x15 && D_0013F450_h2523C8.state.current != 0x16) {
             D_0013F450_h2523C8.unk22CA = 0;
@@ -1049,8 +1049,8 @@ void update_hero_hoverboard_trick_animations(void) {
             int a = ((unsigned char *)h)[0x88F] + 0x69;
             if (((unsigned char *)*(char **)(h + 0x2080))[0x53] != a) {
                 set_hero_animation(a, 2, (float)scale_ticks(5));
-                HeroQueueSequence(D_L05_00179CC0[((unsigned char *)h)[0x88F]].bank,
-                                  D_L05_00179CC0[((unsigned char *)h)[0x88F]].seq);
+                HeroQueueSequence(hoverboard_trick_sounds[((unsigned char *)h)[0x88F]].bank,
+                                  hoverboard_trick_sounds[((unsigned char *)h)[0x88F]].seq);
             } else if ((float)*(int *)(h + 0xAB0) - 2.0f < *(float *)(h + 0xAA8)) {
                 ((Hero *)h)->unk6E0[((unsigned char *)h)[0x88F]] = 1;
                 *(int *)(h + 0x6F8) += 1;
@@ -1261,7 +1261,7 @@ void update_hero_hoverboard_trick_score(void) {
         if (G->actions[i] != 0) G->actionCount++;
     }
     {
-        ScoreWeights_254838 weights = D_L05_00216D68;
+        ScoreWeights_254838 weights = hoverboard_trick_multipliers;
         G->multiplier = weights.value[G->actionCount];
         G->actionScore = truncate_float_to_s32((float)((G->elapsed * 100) / (int)(multiply_global_factor(1.0f) * 60.0f)));
         G->actionScore += G->actionCount * 25;
@@ -1530,7 +1530,7 @@ void update_hero_hoverboard_race_progress(void) {
         return;
     }
     if (*(D_0013D355_254DE8 + 0x13B) != 0) {
-        D_L05_0015F788 = 1;
+        hoverboard_race_finished = 1;
     }
     if (D_0015EE84_2523C8 == 5) {
         D_0015EF38_254DE8++;
@@ -1828,7 +1828,7 @@ L_DEC:
         return 1;
     }
     if (((H_9F0 *)(D_0013E633 + 0xE1D))->p2080[0x53] >= 0x69 && ((H_9F0 *)(D_0013E633 + 0xE1D))->p2080[0x53] <= 0x6C) {
-        if (((H_9F0 *)(D_0013E633 + 0xE1D))->fAA8 < (float)((int *)&D_L05_0015F778)[((H_9F0 *)(D_0013E633 + 0xE1D))->b88F]) {
+        if (((H_9F0 *)(D_0013E633 + 0xE1D))->fAA8 < (float)((int *)&hoverboard_trick_min_frames)[((H_9F0 *)(D_0013E633 + 0xE1D))->b88F]) {
             Hero_TryMoveStateL05(0x6D, 1);
             return 1;
         }

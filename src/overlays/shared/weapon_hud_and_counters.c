@@ -99,14 +99,14 @@ void select_moby_context(int state) {
         D_L00_0015FB2C = oldDC;
         oldDC = moby_array_last;
         old78 = D_L00_0015FB30;
-        oldE8 = D_L00_001600A8;
+        oldE8 = moby_spawn_pvar_pool;
         old7C = D_L00_0015FB34;
         (*(volatile int *)&D_L00_0015F808) = oldState ^ 1;
         *(volatile int *)&moby_array_start = old70;
         level_mobys_end = old74;
         moby_array_last = old78;
         D_L00_0015FB30 = oldDC;
-        D_L00_001600A8 = old7C;
+        moby_spawn_pvar_pool = old7C;
         D_L00_0015FB34 = oldE8;
     }
 }
@@ -2561,10 +2561,10 @@ void init_level_runtime_state(void) {
     FastMemSet(g_class_slot, -1, 0x800);
     FastMemSet(D_L00_0019AD00, -1, 0xE00);
     FastMemSet(D_L00_0019A600, 0, 0xE0);
-    FastMemSet(D_L00_001C5E00, -1, 0xC00);
+    FastMemSet(tie_class_slot_by_id, -1, 0xC00);
     FastMemSet(D_L00_001C7A00, -1, 0x800);
     FastMemSet(D_L00_001C7200, 0, 0x80);
-    FastMemSet(D_L00_001BC540, -1, 0x400);
+    FastMemSet(shrub_class_slot_by_id, -1, 0x400);
     FastMemSet(D_L00_001BD740, -1, 0x400);
     FastMemSet(D_L00_001BD140, 0, 0x40);
     InitViewContext();

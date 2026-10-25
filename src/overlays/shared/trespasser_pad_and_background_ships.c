@@ -705,30 +705,30 @@ void RingMarkersDraw(char *moby) {
         slot = index % 12;
         if (first->v[slot] == 2) {
             other = i + *(int *)(data + 0x18) + st0 - st1;
-            color = (*(int *)&D_L02_00161C3C);
+            color = (*(int *)&trespasser_beam_color);
             if (second->v[other % 12] != 0) distance = (float)(*(int *)&trespasser_middle_ring_radius);
             else {
                 int t = i + *(int *)(data + 0x1c) + st0 - st2;
                 if (third->v[t % 12] != 0) distance = (float)(*(int *)&trespasser_third_ring_radius);
                 else if (third->v[(t + 6) % 12] != 0) distance = (float)-(*(int *)&trespasser_third_ring_radius);
                 else if (second->v[(other + 6) % 12] != 0) distance = (float)-(*(int *)&trespasser_middle_ring_radius);
-                else if (first->v[(index + 6) % 12] != 0) distance = (float)-(*(int *)&D_L02_00161BE0);
+                else if (first->v[(index + 6) % 12] != 0) distance = (float)-(*(int *)&trespasser_inner_ring_radius);
                 else {
                     int k;
-                    distance = (float)-(*(int *)&D_L02_00161BEC);
+                    distance = (float)-(*(int *)&trespasser_beam_end_radius);
                     draw_second = 0;
                     k = st0 + 6;
                     if (markers->v[(i + k) % 12] != 0) {
                         int m = (i + k) % 12;
                         first->v[slot] = 3;
                         markers->v[m] = 2;
-                        color = (*(int *)&D_L02_00161C40);
+                        color = (*(int *)&trespasser_beam_hit_color);
                     }
                 }
             }
-            draw_tresspasser_puzzle_radial_strip(ctx.texture, FastAddRots(angle, 0.31415927f), (float)(*(int *)&D_L02_00161BE0), distance, color);
+            draw_tresspasser_puzzle_radial_strip(ctx.texture, FastAddRots(angle, 0.31415927f), (float)(*(int *)&trespasser_inner_ring_radius), distance, color);
             if (draw_second) {
-                draw_tresspasser_puzzle_radial_strip(ctx.texture, FastAddRots(angle, 0.31415927f), distance, (float)(*(int *)&D_L02_00161BE0), (*(int *)&D_L02_00161C44));
+                draw_tresspasser_puzzle_radial_strip(ctx.texture, FastAddRots(angle, 0.31415927f), distance, (float)(*(int *)&trespasser_inner_ring_radius), (*(int *)&trespasser_beam_return_color));
             }
         }
     }
@@ -739,7 +739,7 @@ void RingMarkersDraw(char *moby) {
     for (i = 0; i < 12; ++i) {
         draw_second = 1;
         phase = -0.31415927f;
-        color = (*(int *)&D_L02_00161C3C);
+        color = (*(int *)&trespasser_beam_color);
         if (*(int *)(data + 0xe0) == 2) phase = FastAddRots(phase, *(float *)(data + 0xe4));
         angle = FastAddRots(phase, (float)(i * 30) * 0.017453292f);
         index = i + *(int *)(data + 0x18);
@@ -749,22 +749,22 @@ void RingMarkersDraw(char *moby) {
             if (third->v[other % 12] != 0) distance = (float)(*(int *)&trespasser_third_ring_radius);
             else if (third->v[(other + 6) % 12] != 0) distance = (float)-(*(int *)&trespasser_third_ring_radius);
             else if (second->v[(index + 6) % 12] != 0) distance = (float)-(*(int *)&trespasser_middle_ring_radius);
-            else if (first->v[(i + *(int *)(data + 0x14) + st1 - st0 + 6) % 12] != 0) distance = (float)-(*(int *)&D_L02_00161BE0);
+            else if (first->v[(i + *(int *)(data + 0x14) + st1 - st0 + 6) % 12] != 0) distance = (float)-(*(int *)&trespasser_inner_ring_radius);
             else {
                 int k;
-                distance = (float)-(*(int *)&D_L02_00161BEC);
+                distance = (float)-(*(int *)&trespasser_beam_end_radius);
                 draw_second = 0;
                 k = st1 + 6;
                 if (markers->v[(i + k) % 12] != 0) {
                     int m = (i + k) % 12;
                     second->v[slot] = 3;
                     markers->v[m] = 2;
-                    color = (*(int *)&D_L02_00161C40);
+                    color = (*(int *)&trespasser_beam_hit_color);
                 }
             }
             draw_tresspasser_puzzle_radial_strip(ctx.texture, FastAddRots(angle, 0.31415927f), (float)(*(int *)&trespasser_middle_ring_radius), distance, color);
             if (draw_second) {
-                draw_tresspasser_puzzle_radial_strip(ctx.texture, FastAddRots(angle, 0.31415927f), distance, (float)(*(int *)&trespasser_middle_ring_radius), (*(int *)&D_L02_00161C44));
+                draw_tresspasser_puzzle_radial_strip(ctx.texture, FastAddRots(angle, 0.31415927f), distance, (float)(*(int *)&trespasser_middle_ring_radius), (*(int *)&trespasser_beam_return_color));
             }
         }
     }
@@ -775,7 +775,7 @@ void RingMarkersDraw(char *moby) {
     for (i = 0; i < 12; ++i) {
         draw_second = 1;
         phase = -0.31415927f;
-        color = (*(int *)&D_L02_00161C3C);
+        color = (*(int *)&trespasser_beam_color);
         if (*(int *)(data + 0xe0) == 3) phase = FastAddRots(phase, *(float *)(data + 0xe4));
         angle = FastAddRots(phase, (float)(i * 30) * 0.017453292f);
         index = i + *(int *)(data + 0x1c);
@@ -783,22 +783,22 @@ void RingMarkersDraw(char *moby) {
         if (third->v[slot] == 2) {
             if (third->v[(index + 6) % 12] != 0) distance = (float)-(*(int *)&trespasser_third_ring_radius);
             else if (second->v[(i + *(int *)(data + 0x18) + st2 - st1 + 6) % 12] != 0) distance = (float)-(*(int *)&trespasser_middle_ring_radius);
-            else if (first->v[(i + *(int *)(data + 0x14) + st2 - st0 + 6) % 12] != 0) distance = (float)-(*(int *)&D_L02_00161BE0);
+            else if (first->v[(i + *(int *)(data + 0x14) + st2 - st0 + 6) % 12] != 0) distance = (float)-(*(int *)&trespasser_inner_ring_radius);
             else {
                 int k;
-                distance = (float)-(*(int *)&D_L02_00161BEC);
+                distance = (float)-(*(int *)&trespasser_beam_end_radius);
                 draw_second = 0;
                 k = st2 + 6;
                 if (markers->v[(i + k) % 12] != 0) {
                     int m = (i + k) % 12;
                     third->v[slot] = 3;
                     markers->v[m] = 2;
-                    color = (*(int *)&D_L02_00161C40);
+                    color = (*(int *)&trespasser_beam_hit_color);
                 }
             }
             draw_tresspasser_puzzle_radial_strip(ctx.texture, FastAddRots(angle, 0.31415927f), (float)(*(int *)&trespasser_third_ring_radius), distance, color);
             if (draw_second) {
-                draw_tresspasser_puzzle_radial_strip(ctx.texture, FastAddRots(angle, 0.31415927f), distance, (float)(*(int *)&trespasser_third_ring_radius), (*(int *)&D_L02_00161C44));
+                draw_tresspasser_puzzle_radial_strip(ctx.texture, FastAddRots(angle, 0.31415927f), distance, (float)(*(int *)&trespasser_third_ring_radius), (*(int *)&trespasser_beam_return_color));
             }
         }
     }
@@ -809,21 +809,21 @@ void RingMarkersDraw(char *moby) {
     for (i = 0; i < 12; ++i) {
         angle = -0.2617994f;
         if (*(int *)(data + 0xe0) == 1) {
-            color = FastTweenColor((*(int *)&D_L02_00161C30), (*(int *)&D_L02_00161C30) & 0xffffff,
+            color = FastTweenColor((*(int *)&trespasser_active_ring_color), (*(int *)&trespasser_active_ring_color) & 0xffffff,
                                   FastSin((float)((frame_counter_ref % 60) * 6) * 0.017453292f) * 0.5f + 0.5f);
             if (*(float *)(data + 0xe4) != 0.0f) angle = FastAddRots(angle, *(float *)(data + 0xe4));
-        } else color = (*(int *)&D_L02_00161C34);
+        } else color = (*(int *)&trespasser_ring_color);
         angle = FastAddRots(angle, (float)(i * 30) * 0.017453292f);
         phase = FastAddRots(angle, 0.5235988f);
-        draw_tresspasser_puzzle_ring_arc(ctx.texture, angle, phase, (float)(*(int *)&D_L02_00161BDC), (float)(*(int *)&D_L02_00161BD8), color);
+        draw_tresspasser_puzzle_ring_arc(ctx.texture, angle, phase, (float)(*(int *)&trespasser_inner_arc_rx), (float)(*(int *)&trespasser_inner_arc_ry), color);
         if (first->v[(i + *(int *)(data + 0x14)) % 12] != 0) {
             if (first->v[(i + *(int *)(data + 0x14)) % 12] >= 3) {
-                DrawRadarArrow(ctx.texture, (*(int *)&D_L02_00161C38), 0, FastAddRots(angle, 0.2617994f), (float)(*(int *)&D_L02_00161BE0));
+                DrawRadarArrow(ctx.texture, (*(int *)&D_L02_00161C38), 0, FastAddRots(angle, 0.2617994f), (float)(*(int *)&trespasser_inner_ring_radius));
                 first->v[(i + *(int *)(data + 0x14)) % 12] = 2;
             } else if (first->v[(i + *(int *)(data + 0x14)) % 12] == 2) {
-                DrawRadarArrow(ctx.texture, (*(int *)&D_L02_00161C38), 1, FastAddRots(angle, 0.2617994f), (float)(*(int *)&D_L02_00161BE0));
+                DrawRadarArrow(ctx.texture, (*(int *)&D_L02_00161C38), 1, FastAddRots(angle, 0.2617994f), (float)(*(int *)&trespasser_inner_ring_radius));
             } else {
-                DrawRadarArrow(ctx.texture, (*(int *)&D_L02_00161C38), 2, FastAddRots(angle, 0.2617994f), (float)(*(int *)&D_L02_00161BE0));
+                DrawRadarArrow(ctx.texture, (*(int *)&D_L02_00161C38), 2, FastAddRots(angle, 0.2617994f), (float)(*(int *)&trespasser_inner_ring_radius));
             }
         }
     }
@@ -834,13 +834,13 @@ void RingMarkersDraw(char *moby) {
     for (i = 0; i < 12; ++i) {
         angle = -0.2617994f;
         if (*(int *)(data + 0xe0) == 2) {
-            color = FastTweenColor((*(int *)&D_L02_00161C30), (*(int *)&D_L02_00161C30) & 0xffffff,
+            color = FastTweenColor((*(int *)&trespasser_active_ring_color), (*(int *)&trespasser_active_ring_color) & 0xffffff,
                                   FastSin((float)((frame_counter_ref % 60) * 6) * 0.017453292f) * 0.5f + 0.5f);
             if (*(float *)(data + 0xe4) != 0.0f) angle = FastAddRots(angle, *(float *)(data + 0xe4));
-        } else color = (*(int *)&D_L02_00161C34);
+        } else color = (*(int *)&trespasser_ring_color);
         angle = FastAddRots(angle, (float)(i * 30) * 0.017453292f);
         phase = FastAddRots(angle, 0.5235988f);
-        draw_tresspasser_puzzle_ring_arc(ctx.texture, angle, phase, (float)(*(int *)&D_L02_00161BD0), (float)(*(int *)&D_L02_00161BCC), color);
+        draw_tresspasser_puzzle_ring_arc(ctx.texture, angle, phase, (float)(*(int *)&trespasser_middle_arc_rx), (float)(*(int *)&trespasser_middle_arc_ry), color);
         if (second->v[(i + *(int *)(data + 0x18)) % 12] != 0) {
             if (second->v[(i + *(int *)(data + 0x18)) % 12] >= 3) {
                 DrawRadarArrow(ctx.texture, (*(int *)&D_L02_00161C38), 0, FastAddRots(angle, 0.2617994f), (float)(*(int *)&trespasser_middle_ring_radius));
@@ -859,13 +859,13 @@ void RingMarkersDraw(char *moby) {
     for (i = 0; i < 12; ++i) {
         angle = -0.2617994f;
         if (*(int *)(data + 0xe0) == 3) {
-            color = FastTweenColor((*(int *)&D_L02_00161C30), (*(int *)&D_L02_00161C30) & 0xffffff,
+            color = FastTweenColor((*(int *)&trespasser_active_ring_color), (*(int *)&trespasser_active_ring_color) & 0xffffff,
                                   FastSin((float)((frame_counter_ref % 60) * 6) * 0.017453292f) * 0.5f + 0.5f);
             if (*(float *)(data + 0xe4) != 0.0f) angle = FastAddRots(angle, *(float *)(data + 0xe4));
-        } else color = (*(int *)&D_L02_00161C34);
+        } else color = (*(int *)&trespasser_ring_color);
         angle = FastAddRots(angle, (float)(i * 30) * 0.017453292f);
         phase = FastAddRots(angle, 0.5235988f);
-        draw_tresspasser_puzzle_ring_arc(ctx.texture, angle, phase, (float)(*(int *)&D_L02_00161BC4), (float)(*(int *)&D_L02_00161BC0), color);
+        draw_tresspasser_puzzle_ring_arc(ctx.texture, angle, phase, (float)(*(int *)&trespasser_third_arc_rx), (float)(*(int *)&trespasser_third_arc_ry), color);
         if (third->v[(i + *(int *)(data + 0x1c)) % 12] != 0) {
             if (third->v[(i + *(int *)(data + 0x1c)) % 12] >= 3) {
                 DrawRadarArrow(ctx.texture, (*(int *)&D_L02_00161C38), 0, FastAddRots(angle, 0.2617994f), (float)(*(int *)&trespasser_third_ring_radius));
@@ -886,10 +886,10 @@ void RingMarkersDraw(char *moby) {
         phase = FastAddRots(angle, 0.17453292f);
         value = markers->v[i];
         if (value != 0) {
-            if (value == 2) color = (*(int *)&D_L02_00161C54);
-            else if (frame_counter_ref & 0x20) color = (*(int *)&D_L02_00161C50);
-            else color = (*(int *)&D_L02_00161C4C);
-            draw_tresspasser_puzzle_ring_arc(ctx.texture, angle, phase, (float)(*(int *)&D_L02_00161BE8), (float)(*(int *)&D_L02_00161BE4), color);
+            if (value == 2) color = (*(int *)&trespasser_marker_lit_color);
+            else if (frame_counter_ref & 0x20) color = (*(int *)&trespasser_marker_flash_color);
+            else color = (*(int *)&trespasser_marker_dim_color);
+            draw_tresspasser_puzzle_ring_arc(ctx.texture, angle, phase, (float)(*(int *)&trespasser_marker_arc_rx), (float)(*(int *)&trespasser_marker_arc_ry), color);
         }
     }
     }
@@ -913,10 +913,10 @@ void draw_tresspasser_puzzle_ring_arc(int tex, u32 col, float a, float b, float 
     int uv[4];
     float step = FastSubRots(b, a) / 5.0f;
     int i;
-    uv[0] = *(int *)&D_L02_00161B9C;
-    uv[1] = *(int *)&D_L02_00161BA0;
-    uv[2] = *(int *)&D_L02_00161BA4;
-    uv[3] = *(int *)&D_L02_00161BA8;
+    uv[0] = *(int *)&trespasser_arc_uv_0;
+    uv[1] = *(int *)&trespasser_arc_uv_1;
+    uv[2] = *(int *)&trespasser_arc_uv_2;
+    uv[3] = *(int *)&trespasser_arc_uv_3;
     cols[3] = col;
     cols[2] = col;
     cols[1] = col;
@@ -973,29 +973,29 @@ void DrawRadarArrow(int p0, int p1, int sel, float a, float s) {
     int tex;
     switch (sel) {
     case 0:
-        uv[0] = *(int *)&D_L02_00161B4C;
-        uv[1] = *(int *)&D_L02_00161B50;
-        uv[2] = *(int *)&D_L02_00161B54;
-        uv[3] = *(int *)&D_L02_00161B58;
+        uv[0] = *(int *)&trespasser_arrow_hit_uv_0;
+        uv[1] = *(int *)&trespasser_arrow_hit_uv_1;
+        uv[2] = *(int *)&trespasser_arrow_hit_uv_2;
+        uv[3] = *(int *)&trespasser_arrow_hit_uv_3;
         break;
     case 1:
-        uv[0] = *(int *)&D_L02_00161B5C;
-        uv[1] = *(int *)&D_L02_00161B60;
-        uv[2] = *(int *)&D_L02_00161B64;
-        uv[3] = *(int *)&D_L02_00161B68;
+        uv[0] = *(int *)&trespasser_arrow_active_uv_0;
+        uv[1] = *(int *)&trespasser_arrow_active_uv_1;
+        uv[2] = *(int *)&trespasser_arrow_active_uv_2;
+        uv[3] = *(int *)&trespasser_arrow_active_uv_3;
         break;
     case 2:
     default:
-        uv[0] = *(int *)&D_L02_00161B6C;
-        uv[1] = *(int *)&D_L02_00161B70;
-        uv[2] = *(int *)&D_L02_00161B74;
-        uv[3] = *(int *)&D_L02_00161B78;
+        uv[0] = *(int *)&trespasser_arrow_idle_uv_0;
+        uv[1] = *(int *)&trespasser_arrow_idle_uv_1;
+        uv[2] = *(int *)&trespasser_arrow_idle_uv_2;
+        uv[3] = *(int *)&trespasser_arrow_idle_uv_3;
         break;
     }
-    col[3] = *(u32 *)&D_L02_00161C2C;
-    col[2] = *(u32 *)&D_L02_00161C2C;
-    col[1] = *(u32 *)&D_L02_00161C2C;
-    col[0] = *(u32 *)&D_L02_00161C2C;
+    col[3] = *(u32 *)&trespasser_arrow_color;
+    col[2] = *(u32 *)&trespasser_arrow_color;
+    col[1] = *(u32 *)&trespasser_arrow_color;
+    col[0] = *(u32 *)&trespasser_arrow_color;
     y = func_001FA898_r(FastSin(a) * s * 16.0f);
     x = func_001FA898_r(FastCos(a) * s * 16.0f);
     v = (long)y + 0xFFFFF080000000L;
@@ -1008,7 +1008,7 @@ void DrawRadarArrow(int p0, int p1, int sel, float a, float s) {
     clear_u64_value(ang);
     ang[2] = -a;
     euler_to_matrix(M, ang);
-    sce_vu0_mul_matrix(M, M, D_L02_001D3680);
+    sce_vu0_mul_matrix(M, M, trespasser_arrow_corners);
     xy[0] += func_001FA898_r(M[0][0] * 16.0f) << 16;
     xy[0] += func_001FA898_r(M[0][1] * 16.0f);
     xy[1] += func_001FA898_r(M[1][0] * 16.0f) << 16;
@@ -1017,7 +1017,7 @@ void DrawRadarArrow(int p0, int p1, int sel, float a, float s) {
     xy[2] += func_001FA898_r(M[2][1] * 16.0f);
     xy[3] += func_001FA898_r(M[3][0] * 16.0f) << 16;
     xy[3] += func_001FA898_r(M[3][1] * 16.0f);
-    tex = GetEffectTex(*(int *)&D_L02_00161BAC + 0x29);
+    tex = GetEffectTex(*(int *)&trespasser_effect_tex_base + 0x29);
     draw_geometry_quad_5188(xy, uv, col, tex, 1);
     draw_geometry_quad_5188(xy, uv, col, tex, 1);
 }
@@ -1049,16 +1049,16 @@ void draw_tresspasser_puzzle_radial_strip(void *unused, f32 a, f32 b, f32 c, s32
     f32 f24, f25, f26, f27, f28, f29, f30, f31;
     f32 s0;
 
-    t = truncate_float_to_s32((f32)frame_counter_ref * (*(f32 *)&D_L02_00161BF0));
+    t = truncate_float_to_s32((f32)frame_counter_ref * (*(f32 *)&trespasser_beam_scroll_speed));
     off = (t % 512) << 16;
     a4[3] = d;
     a4[2] = d;
     a4[1] = d;
     a4[0] = d;
-    p4[0] = (s32)((*(char * *)&D_L02_00161B7C) + off);
-    p4[1] = (s32)((*(char * *)&D_L02_00161B80) + off);
-    p4[2] = (s32)((*(char * *)&D_L02_00161B84) + off);
-    p4[3] = (s32)((*(char * *)&D_L02_00161B88) + off);
+    p4[0] = (s32)((*(char * *)&trespasser_beam_uv_0) + off);
+    p4[1] = (s32)((*(char * *)&trespasser_beam_uv_1) + off);
+    p4[2] = (s32)((*(char * *)&trespasser_beam_uv_2) + off);
+    p4[3] = (s32)((*(char * *)&trespasser_beam_uv_3) + off);
 
     f25 = FastSin(a) * b;
     f24 = FastCos(a) * b;
@@ -1095,13 +1095,13 @@ void draw_tresspasser_puzzle_radial_strip(void *unused, f32 a, f32 b, f32 c, s32
     { s32 q_ = (truncate_float_to_s32(f27)); q_ = q_ << 20; (m[3]) += (u64_t)(u32)(-q_ + 0x80000000u); };
     { s32 q_ = (truncate_float_to_s32(f28)); q_ = (q_ << 4) + 0x8000; (m[3]) += (u64_t)q_; };
 
-    tex = GetEffectTex((*(s32 *)&D_L02_00161BF4));
+    tex = GetEffectTex((*(s32 *)&trespasser_beam_tex_index));
     draw_geometry_quad_5188(m, p4, a4, tex, 0);
 
-    p4[0] = (s32)(*(char * *)&D_L02_00161B8C);
-    p4[1] = (s32)(*(char * *)&D_L02_00161B90);
-    p4[2] = (s32)(*(char * *)&D_L02_00161B94);
-    p4[3] = (s32)(*(char * *)&D_L02_00161B98);
+    p4[0] = (s32)(*(char * *)&trespasser_beam_glow_uv_0);
+    p4[1] = (s32)(*(char * *)&trespasser_beam_glow_uv_1);
+    p4[2] = (s32)(*(char * *)&trespasser_beam_glow_uv_2);
+    p4[3] = (s32)(*(char * *)&trespasser_beam_glow_uv_3);
 
     f25 = FastSin(a) * b;
     f24 = FastCos(a) * b;
@@ -1155,18 +1155,18 @@ void draw_tresspasser_puzzle_textured_quads(void) {
     Q_2dae88 q;
     int c[4];
     int b[4];
-    Q_2dae88 *p = D_L02_001D35E0;
+    Q_2dae88 *p = trespasser_backdrop_quads;
     int i;
     for (i = 3; i >= 0; i--) {
-        b[0] = (*(int *)&D_L02_00161B3C);
-        b[1] = (*(int *)&D_L02_00161B40);
-        b[2] = (*(int *)&D_L02_00161B44);
-        b[3] = (*(int *)&D_L02_00161B48);
-        c[0] = c[1] = c[2] = c[3] = (*(int *)&D_L02_00161C24);
+        b[0] = (*(int *)&trespasser_backdrop_uv_0);
+        b[1] = (*(int *)&trespasser_backdrop_uv_1);
+        b[2] = (*(int *)&trespasser_backdrop_uv_2);
+        b[3] = (*(int *)&trespasser_backdrop_uv_3);
+        c[0] = c[1] = c[2] = c[3] = (*(int *)&trespasser_backdrop_color);
         q = *p++;
         /* The TEX0 is 64 bits (its palette, height and colour mode in the upper half): read and
            passed whole, as RingMarkersDraw reads it, not through GetEffectTex's int declaration. */
-        func_L02_0020BF88_DC2C0(&q, b, c, ((u64 (*)(int))GetEffectTex)((*(int *)&D_L02_00161BAC) + 0x28), 1);
+        func_L02_0020BF88_DC2C0(&q, b, c, ((u64 (*)(int))GetEffectTex)((*(int *)&trespasser_effect_tex_base) + 0x28), 1);
     }
 }
 extern int func_001F9850(int);
@@ -1197,7 +1197,7 @@ void escalator_update(char *moby) {
     goto move;
 state0:
         clear_u64_value(data + 0x40);
-        *(int *)(data + 0xa0) = scale_ticks((*(int *)&D_L02_00161CA8));
+        *(int *)(data + 0xa0) = scale_ticks((*(int *)&escalator_reverse_delay));
         *(u32 *)(data + 0x9c) |= 4;
         if (*(int *)(data + 0xa4) != 0) *(u8 *)(moby + 0x20) = 3;
         else *(u8 *)(moby + 0x20) = 1;
@@ -1207,9 +1207,9 @@ state1: {
 
         *(float *)(moby + 0x58) = 1.0f;
         if (fast_dec_timer((int *)(data + 0xa0))) {
-            speed = FastVecLength(data + 0x40) - (*(float *)&D_L02_00161CAC) * g_frame_time_sq;
+            speed = FastVecLength(data + 0x40) - (*(float *)&escalator_accel) * g_frame_time_sq;
             if (speed <= 0.0f) {
-                *(int *)(data + 0xa0) = scale_ticks((*(int *)&D_L02_00161CA8));
+                *(int *)(data + 0xa0) = scale_ticks((*(int *)&escalator_reverse_delay));
                 *(u8 *)(moby + 0x20) = 2;
             } else {
                 *(float *)(data + 0x40) = FastCos(*(float *)(moby + 0x48)) * -speed;
@@ -1219,14 +1219,14 @@ state1: {
             }
         } else {
             speed = FastVecLength(data + 0x40);
-            limit = FastAbsF((*(float *)&D_L02_00161CA4) * g_frame_time);
+            limit = FastAbsF((*(float *)&escalator_max_speed) * g_frame_time);
             /* Retail loads D_0015EE6C_sq through its absolute EE address here. */
-            if (speed < limit) speed += (*(float *)&D_L02_00161CAC) * g_frame_time_sq;
+            if (speed < limit) speed += (*(float *)&escalator_accel) * g_frame_time_sq;
             *(float *)(data + 0x40) = FastCos(*(float *)(moby + 0x48)) * -speed;
             *(float *)(data + 0x44) = FastSin(*(float *)(moby + 0x48)) * -speed;
             *(int *)(data + 0x48) = 0;
         }
-        *(float *)(moby + 0x58) = speed / ((*(float *)&D_L02_00161CA4) * g_frame_time);
+        *(float *)(moby + 0x58) = speed / ((*(float *)&escalator_max_speed) * g_frame_time);
         goto move;
 }
 state2: {
@@ -1234,9 +1234,9 @@ state2: {
 
         *(float *)(moby + 0x58) = -1.0f;
         if (fast_dec_timer((int *)(data + 0xa0))) {
-            speed = FastVecLength(data + 0x40) - (*(float *)&D_L02_00161CAC) * g_frame_time_sq;
+            speed = FastVecLength(data + 0x40) - (*(float *)&escalator_accel) * g_frame_time_sq;
             if (speed <= 0.0f) {
-                *(int *)(data + 0xa0) = scale_ticks((*(int *)&D_L02_00161CA8));
+                *(int *)(data + 0xa0) = scale_ticks((*(int *)&escalator_reverse_delay));
                 *(u8 *)(moby + 0x20) = 1;
             } else {
                 *(float *)(data + 0x40) = FastCos(*(float *)(moby + 0x48)) * speed;
@@ -1245,18 +1245,18 @@ state2: {
             }
         } else {
             speed = FastVecLength(data + 0x40);
-            limit = FastAbsF((*(float *)&D_L02_00161CA4) * g_frame_time);
-            if (speed < limit) speed += (*(float *)&D_L02_00161CAC) * g_frame_time_sq;
+            limit = FastAbsF((*(float *)&escalator_max_speed) * g_frame_time);
+            if (speed < limit) speed += (*(float *)&escalator_accel) * g_frame_time_sq;
             *(float *)(data + 0x40) = FastCos(*(float *)(moby + 0x48)) * speed;
             *(float *)(data + 0x44) = FastSin(*(float *)(moby + 0x48)) * speed;
             *(int *)(data + 0x48) = 0;
         }
-        *(float *)(moby + 0x58) = speed / -((*(float *)&D_L02_00161CA4) * g_frame_time);
+        *(float *)(moby + 0x58) = speed / -((*(float *)&escalator_max_speed) * g_frame_time);
         goto move;
 }
 state3:
-        *(float *)(data + 0x40) = FastCos(*(float *)(moby + 0x48)) * -((*(float *)&D_L02_00161CA4) * g_frame_time);
-        *(float *)(data + 0x44) = FastSin(*(float *)(moby + 0x48)) * -((*(float *)&D_L02_00161CA4) * g_frame_time);
+        *(float *)(data + 0x40) = FastCos(*(float *)(moby + 0x48)) * -((*(float *)&escalator_max_speed) * g_frame_time);
+        *(float *)(data + 0x44) = FastSin(*(float *)(moby + 0x48)) * -((*(float *)&escalator_max_speed) * g_frame_time);
         *(int *)(data + 0x48) = 0;
 move:
     update_entity_matrix(data + 0x60, data + 0x40, moby + 0x40, moby + 0x40);
@@ -1328,14 +1328,14 @@ void swingshot_versatarget_update(char *m) {
                     if (D_L02_0015F6B0_2A52D0 & 4)
                         direction_sign = -1.0f;
                     vec_scale_to_length(particle_position, &((struct Moby *)m)->rot_row1,
-                                      direction_sign * *(float *)&D_L02_00161D4C);
+                                      direction_sign * *(float *)&versatarget_sparkle_offset);
                     vec_scale_to_length(particle_velocity, particle_position,
-                                      -2.0f / multiply_global_factor(*(float *)&D_L02_00161D40));
+                                      -2.0f / multiply_global_factor(*(float *)&versatarget_sparkle_lifetime));
                     FastVecAdd(particle_position, particle_position, &((struct Moby *)m)->pos);
-                    particle_lifetime = truncate_float_to_s32(multiply_global_factor(*(float *)&D_L02_00161D40)) & 0xFF;
-                    PartType60Spawn(particle_position, particle_velocity, *(int *)&D_L02_00161D44,
+                    particle_lifetime = truncate_float_to_s32(multiply_global_factor(*(float *)&versatarget_sparkle_lifetime)) & 0xFF;
+                    PartType60Spawn(particle_position, particle_velocity, *(int *)&versatarget_sparkle_color,
                                     particle_lifetime, random_integer_below(0xFF) & 0xFF, 0,
-                                    *(float *)&D_L02_00161D48);
+                                    *(float *)&versatarget_sparkle_size);
                 }
             }
         }
@@ -1375,7 +1375,7 @@ void attach_big_head_cheat_manipulator_to_matching_moby(char *moby) {
         for (i = 0; i < talk_camera.count; i++) {
             char *e = talk_camera.mobys[i];
             if (*(short *)(e + 0xA6) == *(short *)(moby + 0xA6)) {
-                unsigned char *s = D_L02_0017CAC0;
+                unsigned char *s = big_head_cheat_manipulator;
                 if (s[1] == 0) {
                     AttachManipulator(e, 0, s);
                     *(float *)(s + 0x20) = 2.75f;
@@ -1539,8 +1539,8 @@ void tresspasser_update(char *moby) {
             }
             set_camera_position(o);
             set_camera_rotation(w);
-            e = &D_L02_00179A90;
-            if (D_L02_00179A90 == 0 && e[9] == -1 && *(float *)(d + 0x40) > 0.2f) {
+            e = &aridia_help_popup_state;
+            if (aridia_help_popup_state == 0 && e[9] == -1 && *(float *)(d + 0x40) > 0.2f) {
                 ApproachValue(&aridia_fade_level, 1.0f, g_frame_time * 4.0f);
             } else {
                 ApproachValue(&aridia_fade_level, 0.0f, g_frame_time * 4.0f);
@@ -1747,12 +1747,12 @@ void background_ship_1_update(char *moby) {
         *(short *)(moby + 0x32) = 0xFF;
         m1 = -1;
         if (*(int *)(d + 0x60) == m1) {
-            STUB_printf(D_L02_001FB050, *(short *)(moby + 0xB2));
+            STUB_printf(background_ship_1_no_path_msg, *(short *)(moby + 0xB2));
             DeleteMoby(moby);
             return;
         }
         if (*(int *)aridia_paths[*(int *)(d + 0x60)] == 0) {
-            STUB_printf(D_L02_001FB070, *(short *)(moby + 0xB2));
+            STUB_printf(background_ship_1_empty_path_msg, *(short *)(moby + 0xB2));
             DeleteMoby(moby);
             return;
         }
@@ -1773,7 +1773,7 @@ void background_ship_1_update(char *moby) {
         if (Sound_IsPlaying(moby, *(int *)(d + 0x6C)) == 0) {
             *(int *)(d + 0x6C) = func_0022ED80_r(1, 4, (int)moby);
         }
-        p2 = *(float *)&D_L02_00161FF4 * g_frame_time;
+        p2 = *(float *)&background_ship_1_speed * g_frame_time;
         *(float *)(d + 0x64) = *(float *)(d + 0x64) + p2 / *(float *)(d + 0x70);
         if ((float)*(int *)t < *(float *)(d + 0x64)) {
             *(float *)(d + 0x64) = *(float *)(d + 0x64) - (float)*(int *)t;
@@ -1802,8 +1802,8 @@ void background_ship_1_update(char *moby) {
         break;
     case 2:
         if (D_0015EE84_2D9F08 == 2) {
-            D_0015EEF4 = D_0015EEF4 + 1;
-            if (D_0015EEF4 >= 3) {
+            aridia_skill_ship_kills = aridia_skill_ship_kills + 1;
+            if (aridia_skill_ship_kills >= 3) {
                 unsigned char *p = menu_item_enabled_115 + 1;
                 if (p[2] == 0) {
                     p[2] = 1;
@@ -1814,8 +1814,8 @@ void background_ship_1_update(char *moby) {
         }
         if (D_0015EE84_2D9F08 == 9) {
             if (*(int *)(D_0013E633 + 0x2EA1) == 0x32) {
-                D_0015EEFC = D_0015EEFC + 1;
-                if (D_0015EEFC >= 5) {
+                gaspar_skill_ship_kills = gaspar_skill_ship_kills + 1;
+                if (gaspar_skill_ship_kills >= 5) {
                     unsigned char *p = menu_item_enabled_115 + 1;
                     if (p[0xF] == 0) {
                         p[0xF] = 1;
@@ -1826,8 +1826,8 @@ void background_ship_1_update(char *moby) {
             }
         }
         func_0022ED80_r(0, 0, (int)moby);
-        FastVecScale(tv, moby + 0xC0, *(float *)&D_L02_0016200C * frame_scale);
-        tv[2] = tv[2] + *(float *)&D_L02_00162010 * frame_scale;
+        FastVecScale(tv, moby + 0xC0, *(float *)&background_ship_1_debris_speed * frame_scale);
+        tv[2] = tv[2] + *(float *)&background_ship_1_debris_lift * frame_scale;
         r1 = scale_ticks(90);
         SpawnBreakFragment(moby, 0x5F2, (float *)(moby + 0x10), (void *)(moby + 0x40), r1, 0, g_frame_time_sq * 12.0f, tv, aridia_zero_vec, aridia_zero_vec);
         r2 = scale_ticks(90);
@@ -1849,8 +1849,8 @@ void background_ship_1_update(char *moby) {
         {
             int res;
             float k;
-            res = func_001FA8A8_2ebce8(*(int *)&D_L02_00162004, *(int *)&D_L02_00162008, x);
-            k = *(float *)&D_L02_00162000 * 0.017453292f * g_frame_time;
+            res = func_001FA8A8_2ebce8(*(int *)&background_ship_1_light_color_off, *(int *)&background_ship_1_light_color_on, x);
+            k = *(float *)&background_ship_1_light_spin_rate * 0.017453292f * g_frame_time;
             *(int *)(moby + 0x90) = res;
             *(float *)(d + 0x68) = FastAddRots(*(float *)(d + 0x68), k);
         }
@@ -1889,17 +1889,17 @@ void spawn_background_ship_1_joint_sparks(char *m, void *arg1) {
         int a, b, c, d, e;
         char *p;
         Moby_GetJointWorldPos(m, i, v50);
-        FastVecScale(v10, v30, *(float *)&D_L02_00162014);
-        FastVecScale(v20, v30, *(float *)&D_L02_00162018);
-        rand_vec(v40, 0.0f, *(float *)&D_L02_0016201C * g_frame_time);
+        FastVecScale(v10, v30, *(float *)&background_ship_1_spark_start_vel_scale);
+        FastVecScale(v20, v30, *(float *)&background_ship_1_spark_end_vel_scale);
+        rand_vec(v40, 0.0f, *(float *)&background_ship_1_spark_jitter * g_frame_time);
         FastVecAdd(v20, v20, v40);
-        v10[3] = random_float_between(*(float *)&D_L02_00162030, *(float *)&D_L02_00162034);
-        v20[3] = random_float_between(*(float *)&D_L02_00162038, *(float *)&D_L02_0016203C);
-        a = FastTweenColor(*(int *)&D_L02_00162040, *(int *)&D_L02_00162044, random_float_between(0.0f, 1.0f));
-        b = FastTweenColor(*(int *)&D_L02_00162048, *(int *)&D_L02_0016204C, random_float_between(0.0f, 1.0f));
-        c = func_001FA898_r(multiply_global_factor((float)*(int *)&D_L02_00162020 * random_float_between(0.0f, 1.0f) + 1.0f));
-        d = func_001FA898_r(multiply_global_factor((float)*(int *)&D_L02_00162024 * (random_float_between(-*(float *)&D_L02_0016202C, *(float *)&D_L02_0016202C) + 1.0f)));
-        e = func_001FA898_r(multiply_global_factor((float)*(int *)&D_L02_00162028 * (random_float_between(-*(float *)&D_L02_0016202C, *(float *)&D_L02_0016202C) + 1.0f)));
+        v10[3] = random_float_between(*(float *)&background_ship_1_spark_start_size_min, *(float *)&background_ship_1_spark_start_size_max);
+        v20[3] = random_float_between(*(float *)&background_ship_1_spark_end_size_min, *(float *)&background_ship_1_spark_end_size_max);
+        a = FastTweenColor(*(int *)&background_ship_1_spark_start_color_a, *(int *)&background_ship_1_spark_start_color_b, random_float_between(0.0f, 1.0f));
+        b = FastTweenColor(*(int *)&background_ship_1_spark_end_color_a, *(int *)&background_ship_1_spark_end_color_b, random_float_between(0.0f, 1.0f));
+        c = func_001FA898_r(multiply_global_factor((float)*(int *)&background_ship_1_spark_lifetime * random_float_between(0.0f, 1.0f) + 1.0f));
+        d = func_001FA898_r(multiply_global_factor((float)*(int *)&D_L02_00162024 * (random_float_between(-*(float *)&background_ship_1_spark_time_jitter, *(float *)&background_ship_1_spark_time_jitter) + 1.0f)));
+        e = func_001FA898_r(multiply_global_factor((float)*(int *)&D_L02_00162028 * (random_float_between(-*(float *)&background_ship_1_spark_time_jitter, *(float *)&background_ship_1_spark_time_jitter) + 1.0f)));
         p = PartType02Spawn(v50, v10, v20, a, b, c, d, e, -1);
         if (p != 0) p[9] = func_001FA898_r(8.0f) + 0x60;
     }
@@ -1995,12 +1995,12 @@ void background_ship_2_update(char *moby) {
         }
         m1 = -1;
         if (*(int *)(d + 0x60) == m1) {
-            STUB_printf(D_L02_001FB0A0, *(short *)(moby + 0xB2));
+            STUB_printf(background_ship_2_no_path_msg, *(short *)(moby + 0xB2));
             DeleteMoby(moby);
             return;
         }
         if (*(int *)aridia_paths[*(int *)(d + 0x60)] == 0) {
-            STUB_printf(D_L02_001FB0C0, *(short *)(moby + 0xB2));
+            STUB_printf(background_ship_2_empty_path_msg, *(short *)(moby + 0xB2));
             DeleteMoby(moby);
             return;
         }
@@ -2025,7 +2025,7 @@ void background_ship_2_update(char *moby) {
         if (Sound_IsPlaying(moby, *(int *)(d + 0x6C)) == 0) {
             *(int *)(d + 0x6C) = func_0022ED80_r(1, 4, (int)moby);
         }
-        p2 = *(float *)&D_L02_00162050 * g_frame_time;
+        p2 = *(float *)&background_ship_2_speed * g_frame_time;
         if (D_0015EE84_2D9F08 == 10) {
             p2 = p2 * 0.25f;
         }
@@ -2061,8 +2061,8 @@ void background_ship_2_update(char *moby) {
         break;
     case 2:
         if (D_0015EE84_2D9F08 == 2) {
-            D_0015EEF4 = D_0015EEF4 + 1;
-            if (D_0015EEF4 >= 3) {
+            aridia_skill_ship_kills = aridia_skill_ship_kills + 1;
+            if (aridia_skill_ship_kills >= 3) {
                 unsigned char *p = menu_item_enabled_115 + 1;
                 if (p[2] == 0) {
                     p[2] = 1;
@@ -2073,8 +2073,8 @@ void background_ship_2_update(char *moby) {
         }
         if (D_0015EE84_2D9F08 == 9) {
             if (*(int *)(D_0013E633 + 0x2EA1) == 0x32) {
-                D_0015EEFC = D_0015EEFC + 1;
-                if (D_0015EEFC >= 5) {
+                gaspar_skill_ship_kills = gaspar_skill_ship_kills + 1;
+                if (gaspar_skill_ship_kills >= 5) {
                     unsigned char *p = menu_item_enabled_115 + 1;
                     if (p[0xF] == 0) {
                         p[0xF] = 1;
@@ -2085,8 +2085,8 @@ void background_ship_2_update(char *moby) {
             }
         }
         func_0022ED80_r(0, 0, (int)moby);
-        FastVecScale(tv, moby + 0xC0, *(float *)&D_L02_00162060 * frame_scale);
-        tv[2] = tv[2] + *(float *)&D_L02_00162064 * frame_scale;
+        FastVecScale(tv, moby + 0xC0, *(float *)&background_ship_2_debris_speed * frame_scale);
+        tv[2] = tv[2] + *(float *)&background_ship_2_debris_lift * frame_scale;
         r1 = scale_ticks(90);
         SpawnBreakFragment(moby, 0x5F6, (float *)(moby + 0x10), (void *)(moby + 0x40), r1, 0, g_frame_time_sq * 12.0f, tv, aridia_zero_vec, aridia_zero_vec);
         r2 = scale_ticks(90);
@@ -2108,8 +2108,8 @@ void background_ship_2_update(char *moby) {
         {
             int res;
             float k;
-            res = func_001FA8A8_2ebce8(*(int *)&D_L02_00162058, *(int *)&D_L02_0016205C, x);
-            k = *(float *)&D_L02_00162054 * 0.017453292f * g_frame_time;
+            res = func_001FA8A8_2ebce8(*(int *)&background_ship_2_light_color_off, *(int *)&background_ship_2_light_color_on, x);
+            k = *(float *)&background_ship_2_light_spin_rate * 0.017453292f * g_frame_time;
             *(int *)(moby + 0x90) = res;
             *(float *)(d + 0x68) = FastAddRots(*(float *)(d + 0x68), k);
         }
@@ -2140,17 +2140,17 @@ void spawn_background_ship_2_joint_sparks(char *m, void *arg1) {
         int a, b, c, d, e;
         char *p;
         Moby_GetJointWorldPos(m, i, v50);
-        FastVecScale(v10, v30, *(float *)&D_L02_00162068);
-        FastVecScale(v20, v30, *(float *)&D_L02_0016206C);
-        rand_vec(v40, 0.0f, *(float *)&D_L02_00162070 * g_frame_time);
+        FastVecScale(v10, v30, *(float *)&background_ship_2_spark_start_vel_scale);
+        FastVecScale(v20, v30, *(float *)&background_ship_2_spark_end_vel_scale);
+        rand_vec(v40, 0.0f, *(float *)&background_ship_2_spark_jitter * g_frame_time);
         FastVecAdd(v20, v20, v40);
-        v10[3] = random_float_between(*(float *)&D_L02_00162084, *(float *)&D_L02_00162088);
-        v20[3] = random_float_between(*(float *)&D_L02_0016208C, *(float *)&D_L02_00162090);
-        a = FastTweenColor(*(int *)&D_L02_00162094, *(int *)&D_L02_00162098, random_float_between(0.0f, 1.0f));
-        b = FastTweenColor(*(int *)&D_L02_0016209C, *(int *)&D_L02_001620A0, random_float_between(0.0f, 1.0f));
-        c = func_001FA898_r(multiply_global_factor((float)*(int *)&D_L02_00162074 * random_float_between(0.0f, 1.0f) + 1.0f));
-        d = func_001FA898_r(multiply_global_factor((float)*(int *)&D_L02_00162078 * (random_float_between(-*(float *)&D_L02_00162080, *(float *)&D_L02_00162080) + 1.0f)));
-        e = func_001FA898_r(multiply_global_factor((float)*(int *)&D_L02_0016207C * (random_float_between(-*(float *)&D_L02_00162080, *(float *)&D_L02_00162080) + 1.0f)));
+        v10[3] = random_float_between(*(float *)&background_ship_2_spark_start_size_min, *(float *)&background_ship_2_spark_start_size_max);
+        v20[3] = random_float_between(*(float *)&background_ship_2_spark_end_size_min, *(float *)&background_ship_2_spark_end_size_max);
+        a = FastTweenColor(*(int *)&background_ship_2_spark_start_color_a, *(int *)&background_ship_2_spark_start_color_b, random_float_between(0.0f, 1.0f));
+        b = FastTweenColor(*(int *)&background_ship_2_spark_end_color_a, *(int *)&background_ship_2_spark_end_color_b, random_float_between(0.0f, 1.0f));
+        c = func_001FA898_r(multiply_global_factor((float)*(int *)&background_ship_2_spark_lifetime * random_float_between(0.0f, 1.0f) + 1.0f));
+        d = func_001FA898_r(multiply_global_factor((float)*(int *)&D_L02_00162078 * (random_float_between(-*(float *)&background_ship_2_spark_time_jitter, *(float *)&background_ship_2_spark_time_jitter) + 1.0f)));
+        e = func_001FA898_r(multiply_global_factor((float)*(int *)&D_L02_0016207C * (random_float_between(-*(float *)&background_ship_2_spark_time_jitter, *(float *)&background_ship_2_spark_time_jitter) + 1.0f)));
         p = PartType02Spawn(v50, v10, v20, a, b, c, d, e, -1);
         if (p != 0) p[9] = func_001FA898_r(8.0f) + 0x60;
     }
@@ -2176,17 +2176,17 @@ void spawn_background_ship_2_level_10_joint_sparks(char *moby, void *arg) {
         int a, b, c, d, e;
         char *p;
         Moby_GetJointWorldPos(moby, i, m);
-        FastVecScale(v0, mat, *(float *)&D_L02_001620A4);
-        FastVecScale(v1, mat, *(float *)&D_L02_001620A8);
-        rand_vec(v2, 0.0f, *(float *)&D_L02_001620AC * g_frame_time);
+        FastVecScale(v0, mat, *(float *)&background_ship_2_orxon_spark_start_vel_scale);
+        FastVecScale(v1, mat, *(float *)&background_ship_2_orxon_spark_end_vel_scale);
+        rand_vec(v2, 0.0f, *(float *)&background_ship_2_orxon_spark_jitter * g_frame_time);
         FastVecAdd(v1, v1, v2);
-        v0[3] = random_float_between(*(float *)&D_L02_00162084, *(float *)&D_L02_00162088) / 1.5f;
-        v1[3] = random_float_between(*(float *)&D_L02_0016208C, *(float *)&D_L02_00162090) / 1.5f;
-        a = FastTweenColor(*(int *)&D_L02_001620B0, *(int *)&D_L02_001620B4, random_float_between(0.0f, 1.0f));
-        b = FastTweenColor(*(int *)&D_L02_001620B8, *(int *)&D_L02_001620BC, random_float_between(0.0f, 1.0f));
-        c = func_001FA898_r(multiply_global_factor((float)*(int *)&D_L02_00162074 * random_float_between(0.0f, 1.0f) + 1.0f));
-        d = func_001FA898_r(multiply_global_factor((float)*(int *)&D_L02_00162078 * (random_float_between(-*(float *)&D_L02_00162080, *(float *)&D_L02_00162080) + 1.0f)));
-        e = func_001FA898_r(multiply_global_factor((float)*(int *)&D_L02_0016207C * (random_float_between(-*(float *)&D_L02_00162080, *(float *)&D_L02_00162080) + 1.0f)));
+        v0[3] = random_float_between(*(float *)&background_ship_2_spark_start_size_min, *(float *)&background_ship_2_spark_start_size_max) / 1.5f;
+        v1[3] = random_float_between(*(float *)&background_ship_2_spark_end_size_min, *(float *)&background_ship_2_spark_end_size_max) / 1.5f;
+        a = FastTweenColor(*(int *)&background_ship_2_orxon_spark_start_color_a, *(int *)&background_ship_2_orxon_spark_start_color_b, random_float_between(0.0f, 1.0f));
+        b = FastTweenColor(*(int *)&background_ship_2_orxon_spark_end_color_a, *(int *)&background_ship_2_orxon_spark_end_color_b, random_float_between(0.0f, 1.0f));
+        c = func_001FA898_r(multiply_global_factor((float)*(int *)&background_ship_2_spark_lifetime * random_float_between(0.0f, 1.0f) + 1.0f));
+        d = func_001FA898_r(multiply_global_factor((float)*(int *)&D_L02_00162078 * (random_float_between(-*(float *)&background_ship_2_spark_time_jitter, *(float *)&background_ship_2_spark_time_jitter) + 1.0f)));
+        e = func_001FA898_r(multiply_global_factor((float)*(int *)&D_L02_0016207C * (random_float_between(-*(float *)&background_ship_2_spark_time_jitter, *(float *)&background_ship_2_spark_time_jitter) + 1.0f)));
         p = PartType02Spawn(m, v0, v1, a, b, c, d, e, -1);
         if (p != 0) {
             p[9] = func_001FA898_r(8.0f) + 0x60;
@@ -2284,8 +2284,8 @@ extern void func_L02_001FC308(void (*)(void));
 
 /* Start the timed effect while its duration is nonzero. */
 void apply_camera_offset_effect(void) {
-    if (D_L02_0016768C != 0.0f) {
-        Cam_SetEyeOffset(1, D_L02_0016768C * 0.35f + 0.0f, 0.005f);
+    if (camera_offset_effect_strength != 0.0f) {
+        Cam_SetEyeOffset(1, camera_offset_effect_strength * 0.35f + 0.0f, 0.005f);
         register_camera_update_callback(update_camera_offset_effect_state);
     }
 }
@@ -2299,10 +2299,10 @@ extern S D_L02_00167680;
 extern short D_L02_0016241C;
 // Resets a timer block: sets a large value and decays a countdown toward zero.
 void update_camera_offset_effect_state(void) {
-    S *s = &D_L02_00167680;
+    S *s = &camera_offset_effect_state;
     s->c = 10000.0f;
     if (s->b == 0) {
-        float v = s->d - *(float *)&D_L02_0016241C;
+        float v = s->d - *(float *)&camera_offset_effect_step;
         s->d = v;
         if (v < 0.0f) {
             s->d = 0.0f;
@@ -2345,7 +2345,7 @@ void try_select_camera_offset_effect_moby(char *m) {
                                 }
                                 ang = 1.5707964f - FastArcSin(FastVecDot(p, v) / d);
                                 if (ang < 0.62831855f) {
-                                    f = *(float *)(h + 0xC) + *(float *)&D_L02_0016241C;
+                                    f = *(float *)(h + 0xC) + *(float *)&camera_offset_effect_step;
                                     *(char **)(g + 0x380) = p;
                                     *(float *)(h + 8) = d;
                                     *(char **)(h + 4) = m;
@@ -2376,7 +2376,7 @@ extern int func_L00_0025A778(void *, void *, int);
 /* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/vendor/002ec308.c, FUN_L02_002fb648. */
 int test_moby_camera_control_activation(char *moby) {
     char *special = D_L02_0016755C;
-    char *data = *(char **)(D_L02_0015F050 + *(short *)(moby + 0x84) * 32 + 0x1c);
+    char *data = *(char **)(aridia_camera_descriptors + *(short *)(moby + 0x84) * 32 + 0x1c);
     char *target = *(char **)(data + 0x48);
     int *entry;
     int result;
@@ -2444,7 +2444,7 @@ int test_moby_camera_target_angle_limits(char *moby, float a, float b) {
     float dot3;
     float den;
 
-    char *tbl = D_L02_0015F050;
+    char *tbl = aridia_camera_descriptors;
     char *src;
 
     data = *(char **)(tbl + *(short *)(moby + 0x84) * 32 + 0x1C);
@@ -2515,7 +2515,7 @@ extern void f_vsub_2FCE00(void *, void *, void *) __asm__("func_001F9BF0");
    heading, springs and offsets for its mode (data +0x3C). Adapted from Lombyte
    (GPL-3.0), FUN_L02_002fb9c8. */
 void apply_moby_camera_control(char *moby) {
-    char *data = *(char **)(D_L02_0015F050 + *(short *)(moby + 0x84) * 32 + 0x1c);
+    char *data = *(char **)(aridia_camera_descriptors + *(short *)(moby + 0x84) * 32 + 0x1c);
     char *target;
     unsigned short *group;
     int id;
@@ -2601,7 +2601,7 @@ void apply_moby_camera_control(char *moby) {
     if (*(short *)(data + 0x3c) == 5) {
         angle = f_atan_2FCE00(*(float *)aridia_camera_moby, *(float *)(aridia_camera_moby + 4));
         if (*(short *)(data + 0x20) < 2)
-            *(float *)(data + 0x40) = *(float *)(D_L02_0015F050 + *(short *)(moby + 0x84) * 32 + 0x18);
+            *(float *)(data + 0x40) = *(float *)(aridia_camera_descriptors + *(short *)(moby + 0x84) * 32 + 0x18);
         else if (f_abs_2FCE00(D_0013CA40_2FCE00.analog[0]) >= 0.3f || f_abs_2FCE00(D_0013CA40_2FCE00.analog[1]) >= 0.3f)
             *(float *)(data + 0x40) = angle;
         heading = *(float *)(data + 0x40);
@@ -2609,7 +2609,7 @@ void apply_moby_camera_control(char *moby) {
             f_addrot_2FCE00(heading, 3.1415927f);
     }
     if (*(short *)(data + 0x3c) == 4) {
-        heading = *(float *)(D_L02_0015F050 + *(short *)(moby + 0x84) * 32 + 0x18);
+        heading = *(float *)(aridia_camera_descriptors + *(short *)(moby + 0x84) * 32 + 0x18);
         angle = f_atan_2FCE00(*(float *)aridia_camera_moby, *(float *)(aridia_camera_moby + 4));
         if (f_diffrot_2FCE00(heading, angle) > 1.5707964f)
             heading = f_addrot_2FCE00(heading, 3.1415927f);
@@ -2744,7 +2744,7 @@ void apply_moby_camera_control(char *moby) {
 
 // Camera init: runs the setup when the flag is clear and the camera record is not negative, then clears a field and returns 0.
 int update_moby_camera_control(char *moby) {
-    char *cam = *(char **)(D_L02_0015F050 + *(short *)(moby + 0x84) * 32 + 0x1C);
+    char *cam = *(char **)(aridia_camera_descriptors + *(short *)(moby + 0x84) * 32 + 0x1C);
     if (*(short *)(aridia_camera_moby + 0x86) == 0 && *(short *)(cam + 0x20) >= 0) apply_moby_camera_control(moby);
     *(int *)(cam + 0x50) = 0;
     return 0;

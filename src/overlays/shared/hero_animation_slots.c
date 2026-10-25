@@ -173,7 +173,7 @@ int nearest_rail_point(Vec4 *from, s32 **outOwner, Vec4 *to, s32 *outI, f32 *out
     struct Hero *hero_state;
 
     *(OvlQuad *)p = *(OvlQuad *)from;
-    for (i = 0; i < D_L00_0015F7F0; i++) {
+    for (i = 0; i < level_rail_count; i++) {
         if (skip != 0 && level_rails[i].owner == skip)
             continue;
         if (only != 0 && level_rails[i].owner != only)

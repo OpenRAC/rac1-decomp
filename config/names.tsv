@@ -715,7 +715,7 @@ func_L00_00264E28	queue_formatted_dialogue_message	descriptive	the NTSC decomp	q
 func_L00_00265050	SpawnBreakFragment	descriptive	config/names_local.tsv	comment: spawns break-effect fragment moby of class cls from src and initialises motion data	BreakFxB,spawn_debris_c8e0
 func_L00_002653A0	update_timed_hud_visibility	descriptive	the NTSC decomp	update_timed_hud_visibility at US level 00 0x00264328 (src/overlays/shared/gameplay/entities/002630b8.c); US function table counterpart	CountdownDisplayUpdate,RaceTimerShow
 func_L00_00265558	remove_help_message_for_selector	descriptive	the NTSC decomp	remove_help_message_for_selector at US level 00 0x002644E0 (src/overlays/l06/gameplay/entities/fred.c); US function table counterpart	Hud_ClosePopupIfActive,OpenShipMenu
-func_L00_002657B8	MobyLoadTimeUpdatePass	candidate	ReRAC doc_names.csv	suggested at US level 01 0x2792D0 (docs/plan/particles.md:328): coined: FUN_002792d0 runs every moby update once before first frame; fingerprint	
+func_L00_002657B8	link_and_update_all_mobys	descriptive	config/names_local.tsv	asm: links live mobys via +0x28, calls each update at +0x74 then moby_build_matrix	MobyLoadTimeUpdatePass
 func_L00_002664B0	MusicRequestTrack	descriptive	config/names_local.tsv	requests a music track with optional stinger via D_001517D0 (body)	jet_game_state
 func_L00_00267188	MusicStartCallback	candidate	ReRAC doc_names.csv	suggested at US level 01 0x27AF20 (docs/plan/audio.md:188): coined: handle callback sets state 8; fingerprint	
 func_L00_00267BA8	pad_pressed_within	descriptive	the NTSC decomp	pad_pressed_within at US level 00 0x00266D60 (src/overlays/l01/gameplay/hero/00242930.c); US function table counterpart	PadPressedWithin
@@ -4388,6 +4388,820 @@ D_L11_001DA7E0	pokitaru_water_sheet_uvs	descriptive	config/names_local.tsv	homin
 D_L00_00161D18	beam_tip_light_slots	descriptive	config/names_local.tsv	follow_camera.c: per beam slot point light at the beam tip, -1 when none, freed by release_point_light_slot.	
 D_L00_00161088	level_tie_matrices	descriptive	config/names_local.tsv	level_gameplay_loading.c: 0x1C0-byte tie matrix block per tie instance (count D_L00_0016108C), row lengths inverted at load.	
 D_L01_00167180	novalis_player_camera	descriptive	config/names_local.tsv	l01 hero_movement.c: Cam with yaw f158, matrix f350 and shake f160/f168, as player_camera in other levels.	
+D_L05_0017A020	rilgar_item_defs	descriptive	config/names_local.tsv	hero_gadget_use: per-item 0x4C records indexed by item id, +0x24 anim id; L05 copy of item_defs	
+D_L05_0015F754	gadget_double_tap_timer	descriptive	config/names_local.tsv	hero_gadget_use: set to 30 ticks on R1 press, R1 again while it runs enters state 0x81	
+D_L05_0015F788	hoverboard_race_finished	descriptive	config/names_local.tsv	update_hero_hoverboard_race_progress: set after three laps; trigger script then offers the race help	
+D_L05_00179CC0	hoverboard_trick_sounds	descriptive	config/names_local.tsv	update_hero_hoverboard_trick_animations: bank/seq pair queued per trick index g[0x88F]	
+D_L05_00216D68	hoverboard_trick_multipliers	descriptive	config/names_local.tsv	update_hero_hoverboard_trick_score: five floats indexed by trick action count give the score multiplier	
+D_L05_0015F778	hoverboard_trick_min_frames	descriptive	config/names_local.tsv	hero_gadget_use: per-trick int table; bail state 0x6D if trick anim frame is below it	
+D_L00_00161014	tfrag_texture_count	descriptive	config/names_local.tsv	load_level_archive_resources: count from header v[0xC], loop bound for tfrag texture addresses	
+D_L00_001C4D00	tfrag_texture_addrs	descriptive	config/names_local.tsv	load_level_archive_resources: texture address+log2 size per tfrag texture; read by BuildTfragTextureDma	
+D_L00_00160088	moby_texture_count	descriptive	config/names_local.tsv	load_level_archive_resources: count from header v[0xE] (the table passed to register_moby_class)	texture_count
+D_L00_00199E00	moby_texture_addrs	descriptive	config/names_local.tsv	load_level_archive_resources: texture address+log2 size per moby texture	
+D_L00_001AEF40	moby_texture_records	descriptive	config/names_local.tsv	load_level_archive_resources: 16-byte texture records copied for each moby texture	
+D_L00_00161094	tie_texture_count	descriptive	config/names_local.tsv	load_level_archive_resources: count from header v[0x10] (table passed to register_object_render_class)	
+D_L00_001C6A00	tie_texture_addrs	descriptive	config/names_local.tsv	load_level_archive_resources: texture address+log2 size per tie texture	
+D_L00_0016056C	shrub_texture_count	descriptive	config/names_local.tsv	load_level_archive_resources: count from header v[0x12] (table passed to register_shrub_render_class)	
+D_L00_001BC940	shrub_texture_addrs	descriptive	config/names_local.tsv	load_level_archive_resources: texture address+log2 size per shrub texture	
+D_L00_0016108C	tie_instance_count	descriptive	config/names_local.tsv	load_level_gameplay: tie instance count; sizes tie_instances and level_tie_matrices	
+D_L00_00161084	tie_instances_end	descriptive	config/names_local.tsv	load_level_gameplay: tie_instances + count; end of the tie instance loops	
+D_L00_001C5E00	tie_class_slot_by_id	descriptive	config/names_local.tsv	load_level_gameplay: maps a tie instance's class id to its level_tie_classes slot	
+D_L00_00160554	shrub_instances	descriptive	config/names_local.tsv	load_level_gameplay: 32-byte shrub instance array, level_shrub_count entries	
+D_L00_0016055C	shrub_matrices	descriptive	config/names_local.tsv	load_level_gameplay: 64-byte matrix per shrub; +0x1C gets the averaged colour	
+D_L00_00160560	shrub_vertex_colors	descriptive	config/names_local.tsv	load_level_gameplay: 0x60 bytes per shrub, 24 RGBA values averaged into the shrub colour	
+D_L00_00160558	shrub_instances_end	descriptive	config/names_local.tsv	load_level_gameplay: shrub_instances + level_shrub_count	
+D_L00_001BC540	shrub_class_slot_by_id	descriptive	config/names_local.tsv	load_level_gameplay: maps a shrub instance's class id to its shrub_class_table slot	
+D_L00_00161010	tfrag_count	descriptive	config/names_local.tsv	load_level_gameplay: loop bound for LightTfrags and tfrag occlusion setup	
+D_L00_0016100C	tfrag_records	descriptive	config/names_local.tsv	load_level_gameplay: tfrag array; +0x3A occlusion bits, +0x3D id checked against occlusion data	
+D_L00_0015FC84	env_zone_count	descriptive	config/names_local.tsv	load_level_gameplay: count from header f80; loop bound in the env zone sphere test	
+D_L00_0017EDC0	env_zone_spheres	descriptive	config/names_local.tsv	func_L00_00257E18: 16-byte xyz+radius records tested against a position	
+D_L00_0017EFC0	env_zone_lights	descriptive	config/names_local.tsv	load_level_gameplay: 0x80-byte zone light records; read by apply_env_zone_lighting	
+D_L00_0017FFC0	level_moby_lights	descriptive	config/names_local.tsv	load_level_gameplay: up to 12 64-byte light records from header f4; read by MobyProc	
+D_L00_001E89D8	too_many_moby_lights_msg	descriptive	config/names_local.tsv	load_level_gameplay: printed when the light count reaches 12	
+D_L00_0015F740	help_text_entries	descriptive	config/names_local.tsv	load_level_gameplay: localized help text records, offsets relocated by the text base	
+D_L00_001ACB00	moby_index_by_file_order	descriptive	config/names_local.tsv	load_level_gameplay: file moby index to moby array index, -1 when not spawned	
+D_L00_001BA860	session_moby_killed	descriptive	config/names_local.tsv	moby_drops_and_death: per-level killed bits set beside level_moby_killed; checked with spawn flag 8	
+D_L00_001ABBC0	level_moby_groups	descriptive	config/names_local.tsv	load_level_gameplay: pointer per moby group from header f48; read by moby_ground_collision	
+D_L00_001600B4	moby_group_count	descriptive	config/names_local.tsv	load_level_gameplay: last valid group + 1; bound check before indexing level_moby_groups	
+D_L00_001600A8	moby_spawn_pvar_pool	descriptive	config/names_local.tsv	load_level_gameplay: n2*0x80 bytes after the moby array; swapped by select_moby_context	
+D_L00_001601C4	level_path_count	descriptive	config/names_local.tsv	load_level_gameplay: path count from header f70; loop bound for level_paths	
+D_L00_001601C8	level_path_data	descriptive	config/names_local.tsv	load_level_gameplay: copied path data block that level_paths point into	
+D_L00_0015F7F0	level_rail_count	descriptive	config/names_local.tsv	load_level_gameplay: count from header f74; loop bound for level_rails	
+D_L00_001601A4	level_clip_volumes	descriptive	config/names_local.tsv	collision_queries: 0x90-byte volume records from header f6C, indexed by vol[5]	
+D_L00_001601A8	level_clip_volume_count	descriptive	config/names_local.tsv	load_level_gameplay: count of the 0x90-byte volume records	
+D_L00_001601B0	level_cuboid_count	descriptive	config/names_local.tsv	load_level_gameplay: count of level_cuboids	
+D_L00_001601B8	level_sphere_count	descriptive	config/names_local.tsv	load_level_gameplay: count of level_spheres	
+D_L00_001601BC	level_cylinders	descriptive	config/names_local.tsv	load_level_gameplay: 0x80-byte shape records from header f68, after cuboids and spheres	
+D_L00_001601C0	level_cylinder_count	descriptive	config/names_local.tsv	load_level_gameplay: count of the header f68 shape records	
+D_L00_0016022C	particle_pool	descriptive	config/names_local.tsv	load_level_gameplay: 0x20000 bytes reserved; particle code indexes it in 0x40-byte slots	
+D_L00_001B1C00	particle_slot_bitmap	descriptive	config/names_local.tsv	create_part2: bit per particle slot, set on alloc; zeroed (0x200 bytes) at load	
+D_L00_00160080	moby_class_count	descriptive	config/names_local.tsv	load_level_archive_resources: loop bound over moby_class_headers	
+D_L00_00197D80	moby_class_ids	descriptive	config/names_local.tsv	load_level_archive_resources: class id per moby class slot, matched against swap class ids	
+D_L00_001600C8	swap_moby_class_count	descriptive	config/names_local.tsv	load_level_archive_resources: count of header v[0x20] class records	
+D_L00_001AFF40	swap_moby_class_ids	descriptive	config/names_local.tsv	load_level_archive_resources: class id of each swap class record	
+D_L00_001AFFA0	swap_moby_class_data	descriptive	config/names_local.tsv	load_level_archive_resources: data pointer of each swap class record	
+D_L00_001B0060	swap_moby_class_headers	descriptive	config/names_local.tsv	load_level_archive_resources: class header qword copied per swap class	
+D_L00_001B01E0	swap_moby_class_sounds	descriptive	config/names_local.tsv	load_level_archive_resources: up to 15 sound ids per swap class	
+D_L00_001600CC	loaded_swap_moby_class_set	descriptive	config/names_local.tsv	pause_menu: reset to -1 before select_world_object_resource_tables	
+D_L00_001600C4	level_sound_bank_handle	descriptive	config/names_local.tsv	load_level_archive_resources: copy of sound_bank_handle after texture upload	
+D_L00_001E8A28	occlusion_moby_mismatch_fmt	descriptive	config/names_local.tsv	load_level_gameplay: printed with mismatched and total moby counts	
+D_L00_001E8A60	occlusion_tfrag_mismatch_msg	descriptive	config/names_local.tsv	load_level_gameplay: printed before tfrag occlusion is reset to 0x7F80	
+D_L00_001E8A88	occlusion_tie_mismatch_fmt	descriptive	config/names_local.tsv	load_level_gameplay: printed with mismatched and total tie counts	
+D_L00_001E8AC0	no_occlusion_data_msg	descriptive	config/names_local.tsv	load_level_gameplay: printed when there is no occlusion grid or data	
+D_L00_001E8B00	sound_slot_out_of_range_msg	descriptive	config/names_local.tsv	load_level_archive_resources: printed when a sound slot's index is past the table	
+D_L00_001E8B20	class_sound_count_mismatch_fmt	descriptive	config/names_local.tsv	load_level_archive_resources: printed with the class id when its sound count differs	
+D_L00_002F2298	level_overlay_end	descriptive	config/names_local.tsv	load_level_archive_resources: address used as the top of code in the memory report	
+D_L00_001E8B50	mem_report_header_msg	descriptive	config/names_local.tsv	load_level_archive_resources: first line of the memory report	
+D_L00_001E8B68	mem_report_low_mem_fmt	descriptive	config/names_local.tsv	load_level_archive_resources: prints the first 1 MB in KB	
+D_L00_001E8B80	mem_report_code_fmt	descriptive	config/names_local.tsv	load_level_archive_resources: prints overlay end minus 1 MB in KB	
+D_L00_001E8C30	mem_report_occlusion_fmt	descriptive	config/names_local.tsv	load_level_archive_resources: prints the occlusion grid size in KB	
+D_L00_001E8C48	mem_report_sky_fmt	descriptive	config/names_local.tsv	load_level_archive_resources: prints the sky data size in KB	
+D_L00_001E8C60	mem_report_collision_fmt	descriptive	config/names_local.tsv	load_level_archive_resources: prints collision up to the texture data in KB	
+D_L00_001E8CC0	mem_report_moby_classes_fmt	descriptive	config/names_local.tsv	load_level_archive_resources: prints moby class headers up to tie classes in KB	
+D_L00_001E8CD8	mem_report_tie_classes_fmt	descriptive	config/names_local.tsv	load_level_archive_resources: prints tie classes up to shrub classes in KB	
+D_L00_001E8CF0	mem_report_shrub_classes_fmt	descriptive	config/names_local.tsv	load_level_archive_resources: prints shrub classes up to the moby seqs in KB	
+D_L00_001E8D20	mem_report_tie_instances_fmt	descriptive	config/names_local.tsv	load_level_archive_resources: prints tie instances up to shrub instances in KB	
+D_L00_001E8D38	mem_report_shrub_instances_fmt	descriptive	config/names_local.tsv	load_level_archive_resources: prints shrub instances up to the moby array in KB	
+D_L00_001E8D50	mem_report_mobys_fmt	descriptive	config/names_local.tsv	load_level_archive_resources: prints the moby array size in KB	
+D_0015EF48	level_archive_load_state	descriptive	config/names_local.tsv	load_level_archive_resources: stage, busy flag and the shared header pointer	
+D_L02_00161BE0	trespasser_inner_ring_radius	descriptive	config/names_local.tsv	RingMarkersDraw: first-ring beam radius, beside trespasser_middle/third_ring_radius	
+D_L02_00161BEC	trespasser_beam_end_radius	descriptive	config/names_local.tsv	RingMarkersDraw: beam length when no ring blocks it	
+D_L02_00161C3C	trespasser_beam_color	descriptive	config/names_local.tsv	RingMarkersDraw: default colour of a beam strip	
+D_L02_00161C40	trespasser_beam_hit_color	descriptive	config/names_local.tsv	RingMarkersDraw: beam colour when it lights an outer marker	
+D_L02_00161C44	trespasser_beam_return_color	descriptive	config/names_local.tsv	RingMarkersDraw: colour of the second, returning strip	
+D_L02_00161C30	trespasser_active_ring_color	descriptive	config/names_local.tsv	RingMarkersDraw: pulsing colour of the ring being turned	
+D_L02_00161C34	trespasser_ring_color	descriptive	config/names_local.tsv	RingMarkersDraw: colour of rings not being turned	
+D_L02_00161BDC	trespasser_inner_arc_rx	descriptive	config/names_local.tsv	RingMarkersDraw: inner ring arc rx	
+D_L02_00161BD8	trespasser_inner_arc_ry	descriptive	config/names_local.tsv	RingMarkersDraw: inner ring arc ry	
+D_L02_00161BD0	trespasser_middle_arc_rx	descriptive	config/names_local.tsv	RingMarkersDraw: middle ring arc rx	
+D_L02_00161BCC	trespasser_middle_arc_ry	descriptive	config/names_local.tsv	RingMarkersDraw: middle ring arc ry	
+D_L02_00161BC4	trespasser_third_arc_rx	descriptive	config/names_local.tsv	RingMarkersDraw: third ring arc rx	
+D_L02_00161BC0	trespasser_third_arc_ry	descriptive	config/names_local.tsv	RingMarkersDraw: third ring arc ry	
+D_L02_00161BE8	trespasser_marker_arc_rx	descriptive	config/names_local.tsv	RingMarkersDraw: outer marker arc rx	
+D_L02_00161BE4	trespasser_marker_arc_ry	descriptive	config/names_local.tsv	RingMarkersDraw: outer marker arc ry	
+D_L02_00161C4C	trespasser_marker_dim_color	descriptive	config/names_local.tsv	RingMarkersDraw: unlit marker colour on frames without bit 0x20	
+D_L02_00161C50	trespasser_marker_flash_color	descriptive	config/names_local.tsv	RingMarkersDraw: unlit marker colour on frames with bit 0x20	
+D_L02_00161C54	trespasser_marker_lit_color	descriptive	config/names_local.tsv	RingMarkersDraw: colour of a marker hit by a beam	
+D_L02_00161B9C	trespasser_arc_uv_0	descriptive	config/names_local.tsv	draw_tresspasser_puzzle_ring_arc: first of the four arc sprite UVs	
+D_L02_00161BA0	trespasser_arc_uv_1	descriptive	config/names_local.tsv	draw_tresspasser_puzzle_ring_arc: second arc sprite UV	
+D_L02_00161BA4	trespasser_arc_uv_2	descriptive	config/names_local.tsv	draw_tresspasser_puzzle_ring_arc: third arc sprite UV	
+D_L02_00161BA8	trespasser_arc_uv_3	descriptive	config/names_local.tsv	draw_tresspasser_puzzle_ring_arc: fourth arc sprite UV	
+D_L02_00161B4C	trespasser_arrow_hit_uv_0	descriptive	config/names_local.tsv	DrawRadarArrow: style 0 (hit slot) UV 0	
+D_L02_00161B50	trespasser_arrow_hit_uv_1	descriptive	config/names_local.tsv	DrawRadarArrow: style 0 (hit slot) UV 1	
+D_L02_00161B54	trespasser_arrow_hit_uv_2	descriptive	config/names_local.tsv	DrawRadarArrow: style 0 (hit slot) UV 2	
+D_L02_00161B58	trespasser_arrow_hit_uv_3	descriptive	config/names_local.tsv	DrawRadarArrow: style 0 (hit slot) UV 3	
+D_L02_00161B5C	trespasser_arrow_active_uv_0	descriptive	config/names_local.tsv	DrawRadarArrow: style 1 (active slot) UV 0	
+D_L02_00161B60	trespasser_arrow_active_uv_1	descriptive	config/names_local.tsv	DrawRadarArrow: style 1 (active slot) UV 1	
+D_L02_00161B64	trespasser_arrow_active_uv_2	descriptive	config/names_local.tsv	DrawRadarArrow: style 1 (active slot) UV 2	
+D_L02_00161B68	trespasser_arrow_active_uv_3	descriptive	config/names_local.tsv	DrawRadarArrow: style 1 (active slot) UV 3	
+D_L02_00161B6C	trespasser_arrow_idle_uv_0	descriptive	config/names_local.tsv	DrawRadarArrow: style 2 (idle slot) UV 0	
+D_L02_00161B70	trespasser_arrow_idle_uv_1	descriptive	config/names_local.tsv	DrawRadarArrow: style 2 (idle slot) UV 1	
+D_L02_00161B74	trespasser_arrow_idle_uv_2	descriptive	config/names_local.tsv	DrawRadarArrow: style 2 (idle slot) UV 2	
+D_L02_00161B78	trespasser_arrow_idle_uv_3	descriptive	config/names_local.tsv	DrawRadarArrow: style 2 (idle slot) UV 3	
+D_L02_00161C2C	trespasser_arrow_color	descriptive	config/names_local.tsv	DrawRadarArrow: colour of all four arrow corners	
+D_L02_00161BAC	trespasser_effect_tex_base	descriptive	config/names_local.tsv	DrawRadarArrow/draw_tresspasser_puzzle_textured_quads: base of GetEffectTex index (+0x28, +0x29)	
+D_L02_001D3680	trespasser_arrow_corners	descriptive	config/names_local.tsv	DrawRadarArrow: 4x4 corner offsets rotated by the arrow angle	
+D_L02_00161BF0	trespasser_beam_scroll_speed	descriptive	config/names_local.tsv	draw_tresspasser_puzzle_radial_strip: frame count times this scrolls the beam UV	
+D_L02_00161B7C	trespasser_beam_uv_0	descriptive	config/names_local.tsv	draw_tresspasser_puzzle_radial_strip: core strip UV 0	
+D_L02_00161B80	trespasser_beam_uv_1	descriptive	config/names_local.tsv	draw_tresspasser_puzzle_radial_strip: core strip UV 1	
+D_L02_00161B84	trespasser_beam_uv_2	descriptive	config/names_local.tsv	draw_tresspasser_puzzle_radial_strip: core strip UV 2	
+D_L02_00161B88	trespasser_beam_uv_3	descriptive	config/names_local.tsv	draw_tresspasser_puzzle_radial_strip: core strip UV 3	
+D_L02_00161B8C	trespasser_beam_glow_uv_0	descriptive	config/names_local.tsv	draw_tresspasser_puzzle_radial_strip: wide glow strip UV 0	
+D_L02_00161B90	trespasser_beam_glow_uv_1	descriptive	config/names_local.tsv	draw_tresspasser_puzzle_radial_strip: wide glow strip UV 1	
+D_L02_00161B94	trespasser_beam_glow_uv_2	descriptive	config/names_local.tsv	draw_tresspasser_puzzle_radial_strip: wide glow strip UV 2	
+D_L02_00161B98	trespasser_beam_glow_uv_3	descriptive	config/names_local.tsv	draw_tresspasser_puzzle_radial_strip: wide glow strip UV 3	
+D_L02_00161BF4	trespasser_beam_tex_index	descriptive	config/names_local.tsv	draw_tresspasser_puzzle_radial_strip: GetEffectTex index for both strips	
+D_L02_001D35E0	trespasser_backdrop_quads	descriptive	config/names_local.tsv	draw_tresspasser_puzzle_textured_quads: four quad position records	
+D_L02_00161C24	trespasser_backdrop_color	descriptive	config/names_local.tsv	draw_tresspasser_puzzle_textured_quads: colour of all four quads	
+D_L02_00161B3C	trespasser_backdrop_uv_0	descriptive	config/names_local.tsv	draw_tresspasser_puzzle_textured_quads: quad UV 0	
+D_L02_00161B40	trespasser_backdrop_uv_1	descriptive	config/names_local.tsv	draw_tresspasser_puzzle_textured_quads: quad UV 1	
+D_L02_00161B44	trespasser_backdrop_uv_2	descriptive	config/names_local.tsv	draw_tresspasser_puzzle_textured_quads: quad UV 2	
+D_L02_00161B48	trespasser_backdrop_uv_3	descriptive	config/names_local.tsv	draw_tresspasser_puzzle_textured_quads: quad UV 3	
+D_L02_00161CA8	escalator_reverse_delay	descriptive	config/names_local.tsv	escalator_update: scale_ticks timer before each direction change	
+D_L02_00161CAC	escalator_accel	descriptive	config/names_local.tsv	escalator_update: speed change per frame squared	
+D_L02_00161CA4	escalator_max_speed	descriptive	config/names_local.tsv	escalator_update: speed limit, also used for the animation rate	
+D_L02_00161D4C	versatarget_sparkle_offset	descriptive	config/names_local.tsv	swingshot_versatarget_update: distance of sparkle spawn from the target	
+D_L02_00161D40	versatarget_sparkle_lifetime	descriptive	config/names_local.tsv	swingshot_versatarget_update: sparkle life, also sets its inward speed	
+D_L02_00161D44	versatarget_sparkle_color	descriptive	config/names_local.tsv	swingshot_versatarget_update: colour passed to PartType60Spawn	
+D_L02_00161D48	versatarget_sparkle_size	descriptive	config/names_local.tsv	swingshot_versatarget_update: float size passed to PartType60Spawn	
+D_L02_0017CAC0	big_head_cheat_manipulator	descriptive	config/names_local.tsv	attach_big_head_cheat_manipulator_to_matching_moby: manipulator attached with 2.75 scale	
+D_L02_00179A90	aridia_help_popup_state	descriptive	config/names_local.tsv	tresspasser_update: i0 == 0 and +0x24 == -1 means no help popup, as help_popup_state	
+D_L02_001FB050	background_ship_1_no_path_msg	descriptive	config/names_local.tsv	background_ship_1_update: printed with the uid when the path index is -1	
+D_L02_001FB070	background_ship_1_empty_path_msg	descriptive	config/names_local.tsv	background_ship_1_update: printed with the uid when the path is empty	
+D_L02_00161FF4	background_ship_1_speed	descriptive	config/names_local.tsv	background_ship_1_update: path distance moved per second	
+D_0015EEF4	aridia_skill_ship_kills	descriptive	config/names_local.tsv	background_ship_update: ships destroyed on level 2; 3 unlocks skill point 2	
+D_0015EEFC	gaspar_skill_ship_kills	descriptive	config/names_local.tsv	background_ship_update: ships destroyed on level 9 under a hero condition; 5 unlocks skill point 0xF	
+D_L02_0016200C	background_ship_1_debris_speed	descriptive	config/names_local.tsv	background_ship_1_update: scales moby velocity for break fragments	
+D_L02_00162010	background_ship_1_debris_lift	descriptive	config/names_local.tsv	background_ship_1_update: added to break fragment z velocity	
+D_L02_00162000	background_ship_1_light_spin_rate	descriptive	config/names_local.tsv	background_ship_1_update: degrees per second of the light phase	
+D_L02_00162004	background_ship_1_light_color_off	descriptive	config/names_local.tsv	background_ship_1_update: colour at phase 0 of the light tween	
+D_L02_00162008	background_ship_1_light_color_on	descriptive	config/names_local.tsv	background_ship_1_update: colour at phase 1 of the light tween	
+D_L02_00162014	background_ship_1_spark_start_vel_scale	descriptive	config/names_local.tsv	spawn_background_ship_1_joint_sparks: motion delta scale for the start vector	
+D_L02_00162018	background_ship_1_spark_end_vel_scale	descriptive	config/names_local.tsv	spawn_background_ship_1_joint_sparks: motion delta scale for the end vector	
+D_L02_0016201C	background_ship_1_spark_jitter	descriptive	config/names_local.tsv	spawn_background_ship_1_joint_sparks: random vector length per second	
+D_L02_00162030	background_ship_1_spark_start_size_min	descriptive	config/names_local.tsv	spawn_background_ship_1_joint_sparks: start size random range low	
+D_L02_00162034	background_ship_1_spark_start_size_max	descriptive	config/names_local.tsv	spawn_background_ship_1_joint_sparks: start size random range high	
+D_L02_00162038	background_ship_1_spark_end_size_min	descriptive	config/names_local.tsv	spawn_background_ship_1_joint_sparks: end size random range low	
+D_L02_0016203C	background_ship_1_spark_end_size_max	descriptive	config/names_local.tsv	spawn_background_ship_1_joint_sparks: end size random range high	
+D_L02_00162040	background_ship_1_spark_start_color_a	descriptive	config/names_local.tsv	spawn_background_ship_1_joint_sparks: start colour tween end a	
+D_L02_00162044	background_ship_1_spark_start_color_b	descriptive	config/names_local.tsv	spawn_background_ship_1_joint_sparks: start colour tween end b	
+D_L02_00162048	background_ship_1_spark_end_color_a	descriptive	config/names_local.tsv	spawn_background_ship_1_joint_sparks: end colour tween end a	
+D_L02_0016204C	background_ship_1_spark_end_color_b	descriptive	config/names_local.tsv	spawn_background_ship_1_joint_sparks: end colour tween end b	
+D_L02_00162020	background_ship_1_spark_lifetime	descriptive	config/names_local.tsv	spawn_background_ship_1_joint_sparks: ticks stored as the particle life (+0xA)	
+D_L02_0016202C	background_ship_1_spark_time_jitter	descriptive	config/names_local.tsv	spawn_background_ship_1_joint_sparks: +- random fraction on the two later timings	
+D_L02_001FB0A0	background_ship_2_no_path_msg	descriptive	config/names_local.tsv	background_ship_2_update: printed with the uid when the path index is -1	
+D_L02_001FB0C0	background_ship_2_empty_path_msg	descriptive	config/names_local.tsv	background_ship_2_update: printed with the uid when the path is empty	
+D_L02_00162050	background_ship_2_speed	descriptive	config/names_local.tsv	background_ship_2_update: path distance moved per second, quartered on level 10	
+D_L02_00162060	background_ship_2_debris_speed	descriptive	config/names_local.tsv	background_ship_2_update: scales moby velocity for break fragments	
+D_L02_00162064	background_ship_2_debris_lift	descriptive	config/names_local.tsv	background_ship_2_update: added to break fragment z velocity	
+D_L02_00162054	background_ship_2_light_spin_rate	descriptive	config/names_local.tsv	background_ship_2_update: degrees per second of the light phase	
+D_L02_00162058	background_ship_2_light_color_off	descriptive	config/names_local.tsv	background_ship_2_update: colour at phase 0 of the light tween	
+D_L02_0016205C	background_ship_2_light_color_on	descriptive	config/names_local.tsv	background_ship_2_update: colour at phase 1 of the light tween	
+D_L02_00162068	background_ship_2_spark_start_vel_scale	descriptive	config/names_local.tsv	spawn_background_ship_2_joint_sparks: motion delta scale for the start vector	
+D_L02_0016206C	background_ship_2_spark_end_vel_scale	descriptive	config/names_local.tsv	spawn_background_ship_2_joint_sparks: motion delta scale for the end vector	
+D_L02_00162070	background_ship_2_spark_jitter	descriptive	config/names_local.tsv	spawn_background_ship_2_joint_sparks: random vector length per second	
+D_L02_00162074	background_ship_2_spark_lifetime	descriptive	config/names_local.tsv	spawn_background_ship_2_joint_sparks: ticks stored as the particle life (+0xA)	
+D_L02_00162080	background_ship_2_spark_time_jitter	descriptive	config/names_local.tsv	spawn_background_ship_2_joint_sparks: +- random fraction on the two later timings	
+D_L02_00162084	background_ship_2_spark_start_size_min	descriptive	config/names_local.tsv	spawn_background_ship_2_joint_sparks: start size random range low	
+D_L02_00162088	background_ship_2_spark_start_size_max	descriptive	config/names_local.tsv	spawn_background_ship_2_joint_sparks: start size random range high	
+D_L02_0016208C	background_ship_2_spark_end_size_min	descriptive	config/names_local.tsv	spawn_background_ship_2_joint_sparks: end size random range low	
+D_L02_00162090	background_ship_2_spark_end_size_max	descriptive	config/names_local.tsv	spawn_background_ship_2_joint_sparks: end size random range high	
+D_L02_00162094	background_ship_2_spark_start_color_a	descriptive	config/names_local.tsv	spawn_background_ship_2_joint_sparks: start colour tween end a	
+D_L02_00162098	background_ship_2_spark_start_color_b	descriptive	config/names_local.tsv	spawn_background_ship_2_joint_sparks: start colour tween end b	
+D_L02_0016209C	background_ship_2_spark_end_color_a	descriptive	config/names_local.tsv	spawn_background_ship_2_joint_sparks: end colour tween end a	
+D_L02_001620A0	background_ship_2_spark_end_color_b	descriptive	config/names_local.tsv	spawn_background_ship_2_joint_sparks: end colour tween end b	
+D_L02_001620A4	background_ship_2_orxon_spark_start_vel_scale	descriptive	config/names_local.tsv	spawn_background_ship_2_level_10_joint_sparks: motion delta scale for the start vector	
+D_L02_001620A8	background_ship_2_orxon_spark_end_vel_scale	descriptive	config/names_local.tsv	spawn_background_ship_2_level_10_joint_sparks: motion delta scale for the end vector	
+D_L02_001620AC	background_ship_2_orxon_spark_jitter	descriptive	config/names_local.tsv	spawn_background_ship_2_level_10_joint_sparks: random vector length per second	
+D_L02_001620B0	background_ship_2_orxon_spark_start_color_a	descriptive	config/names_local.tsv	spawn_background_ship_2_level_10_joint_sparks: start colour tween end a	
+D_L02_001620B4	background_ship_2_orxon_spark_start_color_b	descriptive	config/names_local.tsv	spawn_background_ship_2_level_10_joint_sparks: start colour tween end b	
+D_L02_001620B8	background_ship_2_orxon_spark_end_color_a	descriptive	config/names_local.tsv	spawn_background_ship_2_level_10_joint_sparks: end colour tween end a	
+D_L02_001620BC	background_ship_2_orxon_spark_end_color_b	descriptive	config/names_local.tsv	spawn_background_ship_2_level_10_joint_sparks: end colour tween end b	
+D_L02_00167680	camera_offset_effect_state	descriptive	config/names_local.tsv	initialize_camera_offset_effect_state: a, b, 10000.0 limit, strength, callback	
+D_L02_0016768C	camera_offset_effect_strength	descriptive	config/names_local.tsv	apply_camera_offset_effect: field +0xC; scaled by 0.35 into Cam_SetEyeOffset	
+D_L02_0016241C	camera_offset_effect_step	descriptive	config/names_local.tsv	update_camera_offset_effect_state: per-frame decay of the strength, also its rise step	
+D_L02_0015F050	aridia_camera_descriptors	descriptive	config/names_local.tsv	test_moby_camera_control_activation: 32-byte records by moby +0x84, as camera_descriptors on L00	
+D_L18_0015F4FC	veldin2_screen_fade	descriptive	config/names_local.tsv	update_position_and_rotation_transition: ramped 0..1 before the hero and camera are warped, then ramped back	
+D_L18_0016D310	veldin2_cinematic_step	descriptive	config/names_local.tsv	thruster locks and drek missiles delete themselves when it is 3 during cinematic mode 2	
+D_L18_001620E4	electric_bolt_color	descriptive	config/names_local.tsv	update_electric_bolt_geometry_and_particles: rgb set per frame and ORed into the bolt spark colors	
+D_L18_001DA430	electric_bolt_branch_points	descriptive	config/names_local.tsv	update_electric_bolt_geometry_and_particles: 4 side branches of 5 points rebuilt when their timer runs out	
+D_L18_00162438	sinking_platform_fall_count	descriptive	config/names_local.tsv	SinkingPlatformUpdate: count of hero falls (bumped in drek_boss_fight) that slows platform sinking	
+D_L18_00161A24	class238_landing_roll_distance	descriptive	config/names_local.tsv	update_class_238_moby: distance short of target and roll amount after landing	
+D_L18_00161A28	green_thruster_lock_scale	descriptive	config/names_local.tsv	thruster_pack_lock_green_update: multiplies class scale of the lock and its parts	
+D_L18_00161AF0	sinking_platform_fall_count_min	descriptive	config/names_local.tsv	SinkingPlatformUpdate: fall count where sink slowdown starts	
+D_L18_00161AF4	sinking_platform_fall_count_max	descriptive	config/names_local.tsv	SinkingPlatformUpdate: fall count where sink slowdown is full	
+D_L18_00161B04	floating_platform_spark_speed_spread	descriptive	config/names_local.tsv	spawn_floating_platform_sparks: +- random factor on both spark speeds	
+D_L18_00161B18	floating_platform_spark_time_spread	descriptive	config/names_local.tsv	spawn_floating_platform_sparks: +- random factor on spark time2/time3	
+D_L18_00161CAC	ring_projectile_spark_time_spread	descriptive	config/names_local.tsv	update_ballistic_ring_projectile: +- random factor on trail spark time2/time3	
+D_L18_001D9FB0	electric_bolt_glow_quad_uvs	descriptive	config/names_local.tsv	draw_moby_billboard_quad_pair: uv per corner of both glow quads	
+D_L18_001622A4	drek_missile_wander_speed	descriptive	config/names_local.tsv	drek_fight_missile_update: forward speed per second while wandering	
+D_L18_00161A30	green_thruster_lock_idle_height	descriptive	config/names_local.tsv	thruster_pack_lock_green_update: height offset the lock returns to when inactive	
+D_L18_00161C8C	ring_projectile_glow_color_a	descriptive	config/names_local.tsv	update_ballistic_ring_projectile: first color of the pulsing glow tween	
+D_L18_00161D2C	ring_effect_max_timer	descriptive	config/names_local.tsv	refresh_ring_effect: cap for the ring effect timer, also the fade divisor in draw	
+D_L18_0015F504	veldin2_transition_warp_active	descriptive	config/names_local.tsv	update_position_and_rotation_transition: set 1 when fully faded and the hero is warped, cleared at the end	
+D_L18_00161F88	homing_spark_quad_colors	descriptive	config/names_local.tsv	HomingSpark_Draw: color of each of the 4 spark quads	
+D_L18_00161FF8	homing_spark_particle_texture	descriptive	config/names_local.tsv	texture index given to PartType02Spawn for homing spark trail and burst sparks	
+D_L18_00162059	homing_spark_glow1_gba	descriptive	config/names_local.tsv	spawn_explosion_burst: green, blue, alpha bytes of the first glow	
+D_L18_00162065	homing_spark_glow2_gba	descriptive	config/names_local.tsv	spawn_explosion_burst: green, blue, alpha bytes of the second glow	
+D_L18_00162071	homing_spark_glow3_gba	descriptive	config/names_local.tsv	spawn_explosion_burst: green, blue, alpha bytes of the third glow	
+D_L18_00162098	electric_bolt_wave_phase	descriptive	config/names_local.tsv	update_electric_bolt_geometry_and_particles: phase of the vertical sine wave along the bolt	
+D_L18_001620A0	electric_bolt_twist_phase	descriptive	config/names_local.tsv	update_electric_bolt_geometry_and_particles: phase of the sideways twist of the second strand	
+D_L18_001620B4	electric_bolt_swell_phase	descriptive	config/names_local.tsv	update_electric_bolt_geometry_and_particles: phase of the twist amplitude sine	
+D_L18_001DA2A0	electric_bolt_twist_offsets	descriptive	config/names_local.tsv	update_electric_bolt_geometry_and_particles: per-point sideways offset of the second strand, mirrored past point 10	
+D_L18_00162148	electric_bolt_branch_timers	descriptive	config/names_local.tsv	update_electric_bolt_geometry_and_particles: per-branch countdown; rebuilds the branch at zero	
+D_L18_001622C8	drek_missile_effects_disabled	descriptive	config/names_local.tsv	both drek missile draw callbacks return early when nonzero	
+D_L18_0015F7F0	veldin2_rail_count	descriptive	config/names_local.tsv	update_path_junction_selection: loop bound over veldin2_rails	
+D_L18_00161C90	ring_projectile_glow_color_b	descriptive	config/names_local.tsv	update_ballistic_ring_projectile: second color of the pulsing glow tween	
+D_L18_00161D18	expanding_ring_particle_scale	descriptive	config/names_local.tsv	spawn_expanding_ring_segment_particles: scale passed to both PartType60Spawn calls	
+D_L18_001F2C90	hit_burst_start_colors	descriptive	config/names_local.tsv	update_moby_hit_response_burst_and_ballistic_flight: 6 start colors picked at random for PartType11 burst	
+D_L18_001F2CA8	hit_burst_end_colors	descriptive	config/names_local.tsv	update_moby_hit_response_burst_and_ballistic_flight: 6 end colors picked at random for PartType11 burst	
+D_L18_00161F68	homing_spark_bolt_jitter	descriptive	config/names_local.tsv	update_moby_target_travel_and_electric_effects: rand_vec range for the bolt end, scaled by intensity	
+D_L18_001D9E20	homing_spark_quad_uvs	descriptive	config/names_local.tsv	HomingSpark_Draw: uv per corner of the spark quads	
+D_L18_0016201C	homing_spark_burst_spark_size	descriptive	config/names_local.tsv	spawn_explosion_burst: start and end size of the burst sparks	
+D_L18_0016204C	homing_spark_plume_spread_radius	descriptive	config/names_local.tsv	spawn_explosion_burst: max xy offset of the rising plume particles	
+D_L18_00162050	homing_spark_glow1_size	descriptive	config/names_local.tsv	spawn_explosion_burst: size of the first glow, skipped when 0	
+D_L18_0016205C	homing_spark_glow2_size	descriptive	config/names_local.tsv	spawn_explosion_burst: size of the second glow, skipped when 0	
+D_L18_00162068	homing_spark_glow3_size	descriptive	config/names_local.tsv	spawn_explosion_burst: size of the third glow, skipped when 0	
+D_L18_00162074	homing_spark_burst_shake_amplitude	descriptive	config/names_local.tsv	spawn_explosion_burst: camera shake amplitude, skipped when 0	
+D_L18_00162090	electric_bolt_wave_height_start	descriptive	config/names_local.tsv	update_electric_bolt_geometry_and_particles: wave height at the bolt start, lerped to the end value	
+D_L18_001DA250	electric_bolt_wave_heights	descriptive	config/names_local.tsv	update_electric_bolt_geometry_and_particles: last height offset per point, undone next frame	
+D_L18_001DA3E0	electric_bolt_twist_heights	descriptive	config/names_local.tsv	update_electric_bolt_geometry_and_particles: per-point height offset of the second strand, mirrored past point 10	
+D_L18_00162150	electric_bolt_branch_alpha	descriptive	config/names_local.tsv	update_electric_bolt_geometry_and_particles: per-branch fade from timer distance to its peak	
+D_L18_001D9F70	electric_bolt_glow_quad_corners	descriptive	config/names_local.tsv	draw_moby_billboard_quad_pair: unit corners scaled for both glow quads	
+D_L18_001DA5C0	drek_missile_trail_uvs	descriptive	config/names_local.tsv	draw_drek_fight_missile_group_trails: uv per corner of the trail quads	
+D_L18_001622F8	drek_missile_glow_size	descriptive	config/names_local.tsv	render_drek_fight_missile_group_effects: size of the glow quad at the missile nose	
+D_L18_001622C0	drek_missile_last_draw_frame	descriptive	config/names_local.tsv	update_drek_fight_missile_trail_and_queue_effects: frame count so draw callbacks are added once per frame	
+D_L18_001619F4	rocket_target_pulse_frames	descriptive	config/names_local.tsv	update_rocket_moby: target pulse is drawn when this few frames are left	
+D_L18_001619F0	rocket_scale	descriptive	config/names_local.tsv	create_rocket_moby: multiplies the moby scale	
+D_L18_001B2DDC	rocket_smoke_texture_ptr	descriptive	config/names_local.tsv	rocket trail code: byte it points to is written as the smoke particle texture	
+D_L18_001619FC	rocket_explosion_damage	descriptive	config/names_local.tsv	spawn_rocket_explosion: hit amount passed to MobySphereHitDirectional	
+D_L18_00161A00	rocket_target_pulse_alpha_a	descriptive	config/names_local.tsv	draw_rocket_target_pulse_quad: field A of the GS alpha blend	
+D_L18_00161A04	rocket_target_pulse_alpha_b	descriptive	config/names_local.tsv	draw_rocket_target_pulse_quad: field B of the GS alpha blend	
+D_L18_00161A08	rocket_target_pulse_alpha_c	descriptive	config/names_local.tsv	draw_rocket_target_pulse_quad: field C of the GS alpha blend	
+D_L18_00161A0C	rocket_target_pulse_alpha_d	descriptive	config/names_local.tsv	draw_rocket_target_pulse_quad: field D of the GS alpha blend	
+D_L18_00161A10	rocket_target_pulse_color_a	descriptive	config/names_local.tsv	draw_rocket_target_pulse_quad: first color of the pulse tween	
+D_L18_00161A14	rocket_target_pulse_color_b	descriptive	config/names_local.tsv	draw_rocket_target_pulse_quad: second color of the pulse tween	
+D_L18_00161A2C	green_thruster_lock_active_height	descriptive	config/names_local.tsv	thruster_pack_lock_green_update: height offset the lock rises to while active	
+D_L18_00161AA0	red_thruster_lock_scale	descriptive	config/names_local.tsv	thruster_pack_lock_red_update: multiplies class scale on init	
+D_L18_00161AA4	red_thruster_lock_wait_height	descriptive	config/names_local.tsv	thruster_pack_lock_red_update: height offset approached in the timed wait state	
+D_L18_00161AA8	red_thruster_lock_raised_height	descriptive	config/names_local.tsv	thruster_pack_lock_red_update: height offset approached in states 1 and 3	
+D_L18_00161ACC	timer_frame_color	descriptive	config/names_local.tsv	draw_pulsing_timer_hud: last argument of DrawUIFrame for the timer panel	
+D_L18_00161AD0	sinking_platform_sink_accel_flagged	descriptive	config/names_local.tsv	SinkingPlatformUpdate: sink acceleration when data+0x84 is set	
+D_L18_00161AD4	sinking_platform_sink_accel	descriptive	config/names_local.tsv	SinkingPlatformUpdate: sink acceleration when data+0x84 is clear	
+D_L18_00161AE0	sinking_platform_tilt_speed_flagged	descriptive	config/names_local.tsv	SinkingPlatformUpdate: tilt speed (deg/s) when data+0x84 is set	
+D_L18_00161AE8	sinking_platform_tilt_speed	descriptive	config/names_local.tsv	SinkingPlatformUpdate: tilt speed (deg/s) when data+0x84 is clear	
+D_L18_00161AEC	sinking_platform_trigger_radius	descriptive	config/names_local.tsv	SinkingPlatformUpdate: hero xy distance that starts sinking for proximity platforms	
+D_L18_00161ADC	floating_platform_bob_speed	descriptive	config/names_local.tsv	update_floating_platform_tilt_and_bob: bob phase speed in deg/s	
+D_L18_00161AD8	floating_platform_bob_height	descriptive	config/names_local.tsv	update_floating_platform_tilt_and_bob: sine amplitude added to base height	
+D_L18_00161AF8	floating_platform_spark_start_speed	descriptive	config/names_local.tsv	spawn_floating_platform_sparks: start velocity length along platform up	
+D_L18_00161AFC	floating_platform_spark_end_speed	descriptive	config/names_local.tsv	spawn_floating_platform_sparks: end velocity length	
+D_L18_00161B00	floating_platform_spark_gravity	descriptive	config/names_local.tsv	spawn_floating_platform_sparks: subtracted from end velocity z	
+D_L18_00161B08	floating_platform_spark_jitter	descriptive	config/names_local.tsv	spawn_floating_platform_sparks: rand_vec range added to start velocity	
+D_L18_00161B0C	floating_platform_spark_life	descriptive	config/names_local.tsv	spawn_floating_platform_sparks: life (time1) for PartType02Spawn	
+D_L18_00161B10	floating_platform_spark_time2	descriptive	config/names_local.tsv	spawn_floating_platform_sparks: time2 for PartType02Spawn	
+D_L18_00161B14	floating_platform_spark_time3	descriptive	config/names_local.tsv	spawn_floating_platform_sparks: time3 for PartType02Spawn	
+D_L18_00161B1C	floating_platform_spark_start_size_min	descriptive	config/names_local.tsv	spawn_floating_platform_sparks: start size random min	
+D_L18_00161B20	floating_platform_spark_start_size_max	descriptive	config/names_local.tsv	spawn_floating_platform_sparks: start size random max	
+D_L18_00161B24	floating_platform_spark_end_size_min	descriptive	config/names_local.tsv	spawn_floating_platform_sparks: end size random min	
+D_L18_00161B28	floating_platform_spark_end_size_max	descriptive	config/names_local.tsv	spawn_floating_platform_sparks: end size random max	
+D_L18_00161B2C	floating_platform_spark_start_color_a	descriptive	config/names_local.tsv	spawn_floating_platform_sparks: start color tween end a	
+D_L18_00161B30	floating_platform_spark_start_color_b	descriptive	config/names_local.tsv	spawn_floating_platform_sparks: start color tween end b	
+D_L18_00161B34	floating_platform_spark_end_color_a	descriptive	config/names_local.tsv	spawn_floating_platform_sparks: end color tween end a	
+D_L18_00161B38	floating_platform_spark_end_color_b	descriptive	config/names_local.tsv	spawn_floating_platform_sparks: end color tween end b	
+D_L18_00161B44	floating_platform_spark_texture	descriptive	config/names_local.tsv	spawn_floating_platform_sparks: texture index for PartType02Spawn	
+D_L18_00161C94	ring_projectile_spark_gravity	descriptive	config/names_local.tsv	update_ballistic_ring_projectile: end velocity z drop per spark time	
+D_L18_00161C98	ring_projectile_spark_speed_scale	descriptive	config/names_local.tsv	update_ballistic_ring_projectile: projectile velocity scale for trail sparks	
+D_L18_00161C9C	ring_projectile_spark_jitter	descriptive	config/names_local.tsv	update_ballistic_ring_projectile: rand_vec range added to spark velocity	
+D_L18_00161CA0	ring_projectile_spark_life	descriptive	config/names_local.tsv	update_ballistic_ring_projectile: life (time1) for PartType02Spawn	
+D_L18_00161CA4	ring_projectile_spark_time2	descriptive	config/names_local.tsv	update_ballistic_ring_projectile: time2 for PartType02Spawn	
+D_L18_00161CA8	ring_projectile_spark_time3	descriptive	config/names_local.tsv	update_ballistic_ring_projectile: time3 for PartType02Spawn	
+D_L18_00161CB0	ring_projectile_spark_start_size_min	descriptive	config/names_local.tsv	update_ballistic_ring_projectile: start size random min	
+D_L18_00161CB4	ring_projectile_spark_start_size_max	descriptive	config/names_local.tsv	update_ballistic_ring_projectile: start size random max	
+D_L18_00161CB8	ring_projectile_spark_end_size_min	descriptive	config/names_local.tsv	update_ballistic_ring_projectile: end size random min	
+D_L18_00161CBC	ring_projectile_spark_end_size_max	descriptive	config/names_local.tsv	update_ballistic_ring_projectile: end size random max	
+D_L18_00161CC0	ring_projectile_spark_start_color_a	descriptive	config/names_local.tsv	update_ballistic_ring_projectile: start color tween end a	
+D_L18_00161CC4	ring_projectile_spark_start_color_b	descriptive	config/names_local.tsv	update_ballistic_ring_projectile: start color tween end b	
+D_L18_00161CC8	ring_projectile_spark_end_color_a	descriptive	config/names_local.tsv	update_ballistic_ring_projectile: end color tween end a	
+D_L18_00161CCC	ring_projectile_spark_end_color_b	descriptive	config/names_local.tsv	update_ballistic_ring_projectile: end color tween end b	
+D_L18_00161CD0	ring_projectile_spark_count	descriptive	config/names_local.tsv	update_ballistic_ring_projectile: trail sparks spawned per frame in flight	
+D_L18_00161CD4	ring_projectile_spark_texture	descriptive	config/names_local.tsv	update_ballistic_ring_projectile: texture index for PartType02Spawn	
+D_L18_00161C88	ring_projectile_scale	descriptive	config/names_local.tsv	spawn_class_270_moby: multiplies the moby scale	
+D_L18_00161C84	expanding_ring_cull_margin	descriptive	config/names_local.tsv	spawn_expanding_ring_segment_particles: radius for FastBSphereCheck of a ring segment	
+D_L18_00161D28	expanding_ring_particle_chance	descriptive	config/names_local.tsv	spawn_expanding_ring_segment_particles: random 0..1 below it spawns particles	
+D_L18_00161D10	expanding_ring_particle_color_a	descriptive	config/names_local.tsv	spawn_expanding_ring_segment_particles: color tween end a	
+D_L18_00161D14	expanding_ring_particle_color_b	descriptive	config/names_local.tsv	spawn_expanding_ring_segment_particles: color tween end b	
+D_L18_00161D1C	expanding_ring_particle_life	descriptive	config/names_local.tsv	spawn_expanding_ring_segment_particles: life of the rising particle	
+D_L18_00161D20	expanding_ring_flat_particle_life	descriptive	config/names_local.tsv	spawn_expanding_ring_segment_particles: life of the second particle with zero z velocity	
+D_L18_00161D30	ring_effect_color_scroll_speed	descriptive	config/names_local.tsv	update_class_274_ring_effect: speed of the phase that scrolls the ring color in draw	
+D_L18_00161F60	homing_spark_quad2_spin_speed	descriptive	config/names_local.tsv	update_moby_target_travel_and_electric_effects: deg/s spin of the angle used for the third spark quad	
+D_L18_00161F64	homing_spark_quad3_spin_speed	descriptive	config/names_local.tsv	update_moby_target_travel_and_electric_effects: deg/s spin of the angle used for the fourth spark quad	
+D_L18_00161F70	homing_spark_travel_speed	descriptive	config/names_local.tsv	update_moby_target_travel_and_electric_effects: step length per second toward the target	
+D_L18_001D9E40	homing_spark_quad_vertices	descriptive	config/names_local.tsv	HomingSpark_Draw: 4 corner vertices for each of the 4 quads	
+D_L18_00161F74	homing_spark_alpha_a	descriptive	config/names_local.tsv	HomingSpark_Draw: field A of the GS alpha blend	
+D_L18_00161F78	homing_spark_alpha_b	descriptive	config/names_local.tsv	HomingSpark_Draw: field B of the GS alpha blend	
+D_L18_00161F7C	homing_spark_alpha_c	descriptive	config/names_local.tsv	HomingSpark_Draw: field C of the GS alpha blend	
+D_L18_00161F80	homing_spark_alpha_d	descriptive	config/names_local.tsv	HomingSpark_Draw: field D of the GS alpha blend	
+D_L18_00161F98	homing_spark_quad_textures	descriptive	config/names_local.tsv	HomingSpark_Draw: effect texture id for each of the 4 quads	
+D_L18_00161FAC	homing_spark_trail_start_color_a	descriptive	config/names_local.tsv	spawn_sparks_along_target_direction: start color tween end a	
+D_L18_00161FB0	homing_spark_trail_start_color_b	descriptive	config/names_local.tsv	spawn_sparks_along_target_direction: start color tween end b	
+D_L18_00161FB4	homing_spark_trail_end_color_a	descriptive	config/names_local.tsv	spawn_sparks_along_target_direction: end color tween end a	
+D_L18_00161FB8	homing_spark_trail_end_color_b	descriptive	config/names_local.tsv	spawn_sparks_along_target_direction: end color tween end b	
+D_L18_00161FBC	homing_spark_trail_start_size_min	descriptive	config/names_local.tsv	spawn_sparks_along_target_direction: start size random min	
+D_L18_00161FC0	homing_spark_trail_start_size_max	descriptive	config/names_local.tsv	spawn_sparks_along_target_direction: start size random max	
+D_L18_00161FC4	homing_spark_trail_end_size_min	descriptive	config/names_local.tsv	spawn_sparks_along_target_direction: end size random min	
+D_L18_00161FC8	homing_spark_trail_end_size_max	descriptive	config/names_local.tsv	spawn_sparks_along_target_direction: end size random max	
+D_L18_00161FCC	homing_spark_trail_life_min	descriptive	config/names_local.tsv	spawn_sparks_along_target_direction: life (time1) random min	
+D_L18_00161FD0	homing_spark_trail_life_max	descriptive	config/names_local.tsv	spawn_sparks_along_target_direction: life (time1) random max	
+D_L18_00161FD4	homing_spark_trail_time2_min	descriptive	config/names_local.tsv	spawn_sparks_along_target_direction: time2 random min	
+D_L18_00161FD8	homing_spark_trail_time2_max	descriptive	config/names_local.tsv	spawn_sparks_along_target_direction: time2 random max	
+D_L18_00161FDC	homing_spark_trail_time3_min	descriptive	config/names_local.tsv	spawn_sparks_along_target_direction: time3 random min	
+D_L18_00161FE0	homing_spark_trail_time3_max	descriptive	config/names_local.tsv	spawn_sparks_along_target_direction: time3 random max	
+D_L18_00161FE4	homing_spark_trail_speed_min	descriptive	config/names_local.tsv	spawn_sparks_along_target_direction: rand_vec min speed per second	
+D_L18_00161FE8	homing_spark_trail_speed_max	descriptive	config/names_local.tsv	spawn_sparks_along_target_direction: rand_vec max speed per second	
+D_L18_00161FEC	homing_spark_trail_end_speed_scale	descriptive	config/names_local.tsv	spawn_sparks_along_target_direction: end velocity is start velocity times this	
+D_L18_00161FF0	homing_spark_trail_drop_min	descriptive	config/names_local.tsv	spawn_sparks_along_target_direction: end velocity z drop random min	
+D_L18_00161FF4	homing_spark_trail_drop_max	descriptive	config/names_local.tsv	spawn_sparks_along_target_direction: end velocity z drop random max	
+D_L18_00161FFC	homing_spark_burst_spark_count	descriptive	config/names_local.tsv	spawn_explosion_burst: number of PartType02 sparks	
+D_L18_00162000	homing_spark_burst_speed_min	descriptive	config/names_local.tsv	spawn_explosion_burst: spark speed random min	
+D_L18_00162004	homing_spark_burst_speed_max	descriptive	config/names_local.tsv	spawn_explosion_burst: spark speed random max	
+D_L18_00162008	homing_spark_burst_start_color	descriptive	config/names_local.tsv	spawn_explosion_burst: start color of the sparks	
+D_L18_0016200C	homing_spark_burst_end_color	descriptive	config/names_local.tsv	spawn_explosion_burst: end color of the sparks	
+D_L18_00162010	homing_spark_burst_life	descriptive	config/names_local.tsv	spawn_explosion_burst: spark life (time1) in ticks	
+D_L18_00162014	homing_spark_burst_time2	descriptive	config/names_local.tsv	spawn_explosion_burst: spark time2 in ticks	
+D_L18_00162018	homing_spark_burst_time3	descriptive	config/names_local.tsv	spawn_explosion_burst: spark time3 in ticks	
+D_L18_00162020	homing_spark_burst_rise_speed	descriptive	config/names_local.tsv	spawn_explosion_burst: added to end velocity z	
+D_L18_00162024	homing_spark_burst_end_speed_scale	descriptive	config/names_local.tsv	spawn_explosion_burst: end velocity is start velocity times this	
+D_L18_00162028	homing_spark_plume_count	descriptive	config/names_local.tsv	spawn_explosion_burst: number of rising PartType11 plume particles	
+D_L18_00162030	homing_spark_plume_speed_min	descriptive	config/names_local.tsv	spawn_explosion_burst: plume speed random min	
+D_L18_00162034	homing_spark_plume_speed_max	descriptive	config/names_local.tsv	spawn_explosion_burst: plume speed random max	
+D_L18_00162038	homing_spark_plume_scale	descriptive	config/names_local.tsv	spawn_explosion_burst: plume particle scale (times 400000)	
+D_L18_0016203C	homing_spark_plume_time1_min	descriptive	config/names_local.tsv	spawn_explosion_burst: first plume time random min	
+D_L18_00162040	homing_spark_plume_time1_max	descriptive	config/names_local.tsv	spawn_explosion_burst: first plume time random max	
+D_L18_00162044	homing_spark_plume_time2_min	descriptive	config/names_local.tsv	spawn_explosion_burst: second plume time random min	
+D_L18_00162048	homing_spark_plume_time2_max	descriptive	config/names_local.tsv	spawn_explosion_burst: second plume time random max	
+D_L18_00162054	homing_spark_glow1_life	descriptive	config/names_local.tsv	spawn_explosion_burst: life in ticks of the first glow	
+D_L18_00162058	homing_spark_glow1_rgba	descriptive	config/names_local.tsv	spawn_explosion_burst: red byte (start of rgba) of the first glow	
+D_L18_00162060	homing_spark_glow2_life	descriptive	config/names_local.tsv	spawn_explosion_burst: life in ticks of the second glow	
+D_L18_00162064	homing_spark_glow2_rgba	descriptive	config/names_local.tsv	spawn_explosion_burst: red byte (start of rgba) of the second glow	
+D_L18_0016206C	homing_spark_glow3_life	descriptive	config/names_local.tsv	spawn_explosion_burst: life in ticks of the third glow	
+D_L18_00162070	homing_spark_glow3_rgba	descriptive	config/names_local.tsv	spawn_explosion_burst: red byte (start of rgba) of the third glow	
+D_L18_00162078	homing_spark_burst_shake_frames	descriptive	config/names_local.tsv	spawn_explosion_burst: camera shake length in ticks	
+D_L18_001D9F40	homing_spark_plume_start_colors	descriptive	config/names_local.tsv	spawn_explosion_burst: 6 start colors picked at random for plume particles	
+D_L18_001D9F58	homing_spark_plume_end_colors	descriptive	config/names_local.tsv	spawn_explosion_burst: 6 end colors picked at random for plume particles	
+D_L18_0016209C	electric_bolt_wave_phase_speed	descriptive	config/names_local.tsv	update_electric_bolt_geometry_and_particles: added to the wave phase each frame	
+D_L18_001620A4	electric_bolt_twist_phase_speed	descriptive	config/names_local.tsv	update_electric_bolt_geometry_and_particles: subtracted from the twist phase each frame	
+D_L18_001620A8	electric_bolt_twist_phase_step	descriptive	config/names_local.tsv	update_electric_bolt_geometry_and_particles: twist phase step per point	
+D_L18_001620AC	electric_bolt_twist_height	descriptive	config/names_local.tsv	update_electric_bolt_geometry_and_particles: height amplitude of the second strand twist	
+D_L18_001620B0	electric_bolt_twist_width	descriptive	config/names_local.tsv	update_electric_bolt_geometry_and_particles: sideways amplitude of the second strand twist	
+D_L18_001620B8	electric_bolt_swell_phase_speed	descriptive	config/names_local.tsv	update_electric_bolt_geometry_and_particles: added to the swell phase each frame	
+D_L18_001620BC	electric_bolt_swell_phase_step	descriptive	config/names_local.tsv	update_electric_bolt_geometry_and_particles: swell phase step per point	
+D_L18_0016208C	electric_bolt_wave_phase_step	descriptive	config/names_local.tsv	update_electric_bolt_geometry_and_particles: wave phase step per point	
+D_L18_00162094	electric_bolt_wave_height_end	descriptive	config/names_local.tsv	update_electric_bolt_geometry_and_particles: wave height at the bolt end	
+D_L18_001620D0	electric_bolt_wave_jitter_base	descriptive	config/names_local.tsv	update_electric_bolt_geometry_and_particles: first randf_sym argument for per-point height noise	
+D_L18_001620D4	electric_bolt_wave_jitter_range	descriptive	config/names_local.tsv	update_electric_bolt_geometry_and_particles: second randf_sym argument for per-point height noise	
+D_L18_00162114	electric_bolt_spark_reach	descriptive	config/names_local.tsv	update_electric_bolt_geometry_and_particles: length of the spark direction from the bolt start	
+D_L18_0016211C	electric_bolt_wander_blend	descriptive	config/names_local.tsv	update_electric_bolt_geometry_and_particles: lerp factor from last step to a random step per point	
+D_L18_00162158	electric_bolt_branch_periods	descriptive	config/names_local.tsv	update_electric_bolt_geometry_and_particles: ticks a branch lives before rebuild, per branch	
+D_L18_00162160	electric_bolt_branch_peak_ticks	descriptive	config/names_local.tsv	update_electric_bolt_geometry_and_particles: timer value of full branch alpha, per branch	
+D_L18_00162130	electric_bolt_glow_core_color	descriptive	config/names_local.tsv	draw_moby_billboard_quad_pair: color of the first (inner) glow quad	
+D_L18_00162138	electric_bolt_glow_core_size	descriptive	config/names_local.tsv	draw_moby_billboard_quad_pair: base size of the first glow quad	
+D_L18_0016213C	electric_bolt_glow_halo_size	descriptive	config/names_local.tsv	draw_moby_billboard_quad_pair: base size of the second glow quad	
+D_L18_001622A0	drek_missile_spin_speed	descriptive	config/names_local.tsv	drek_fight_missile_update: roll speed in deg/s outside state 4	
+D_L18_001622A8	drek_missile_dive_speed	descriptive	config/names_local.tsv	drek_fight_missile_update: step length per second when diving at the target	
+D_L18_001622C4	drek_missile_dive_odds	descriptive	config/names_local.tsv	drek_fight_missile_update: 1 in N chance per frame to start a dive	
+D_L18_001622BC	drek_missile_climb_pitch	descriptive	config/names_local.tsv	update_drek_fight_missile_wander_movement: pitch is this times vertical speed	
+D_L18_001622B8	drek_missile_wander_radius_max	descriptive	config/names_local.tsv	select_drek_fight_missile_wander_target: max xy distance of a new wander point	
+D_L18_001622B4	drek_missile_wander_radius_min	descriptive	config/names_local.tsv	select_drek_fight_missile_wander_target: min xy distance of a new wander point	
+D_L18_001622AC	drek_missile_wander_height_min	descriptive	config/names_local.tsv	select_drek_fight_missile_wander_target: min height of a new wander point	
+D_L18_001622B0	drek_missile_wander_height_max	descriptive	config/names_local.tsv	select_drek_fight_missile_wander_target: max height of a new wander point	
+D_L18_001622CC	drek_missile_trails_hidden	descriptive	config/names_local.tsv	draw_drek_fight_missile_group_trails: trail quads are skipped when nonzero	
+D_L18_001622D0	drek_missile_trail_alpha_a	descriptive	config/names_local.tsv	draw_drek_fight_missile_group_trails: field A of the GS alpha blend	
+D_L18_001622D4	drek_missile_trail_alpha_b	descriptive	config/names_local.tsv	draw_drek_fight_missile_group_trails: field B of the GS alpha blend	
+D_L18_001622D8	drek_missile_trail_alpha_c	descriptive	config/names_local.tsv	draw_drek_fight_missile_group_trails: field C of the GS alpha blend	
+D_L18_001622DC	drek_missile_trail_alpha_d	descriptive	config/names_local.tsv	draw_drek_fight_missile_group_trails: field D of the GS alpha blend	
+D_L18_001622E0	drek_missile_trail_color_head	descriptive	config/names_local.tsv	draw_drek_fight_missile_group_trails: trail color at t=0	
+D_L18_001622E4	drek_missile_trail_color_tail	descriptive	config/names_local.tsv	draw_drek_fight_missile_group_trails: trail color at t=1	
+D_L18_001622E8	drek_missile_glow_pulse_speed	descriptive	config/names_local.tsv	render_drek_fight_missile_group_effects: glow pulse speed in deg/s in states 2 and 3	
+D_L18_001622EC	drek_missile_dive_glow_pulse_speed	descriptive	config/names_local.tsv	render_drek_fight_missile_group_effects: glow pulse speed in deg/s in state 4	
+D_L18_001622F0	drek_missile_glow_color_a	descriptive	config/names_local.tsv	render_drek_fight_missile_group_effects: glow color tween end a	
+D_L18_001622F4	drek_missile_glow_color_b	descriptive	config/names_local.tsv	render_drek_fight_missile_group_effects: glow color tween end b	
+D_L18_001622FC	drek_missile_glow_offset	descriptive	config/names_local.tsv	render_drek_fight_missile_group_effects: distance along the moby forward axis to the glow	
+D_L17_001D9D90	fleet_target_reticle_shape	descriptive	config/names_local.tsv	select_fighter_jet_target_and_draw_contacts: vertex shape drawn spinning around the picked target	
+D_L17_0015F4FC	fleet_fade_level	descriptive	config/names_local.tsv	FighterJetUpdate: eased 0..1 with the jet's f130 fade, L17 copy of gFadeLvl	
+D_L17_00161C38	fleet_ring_quad_color	descriptive	config/names_local.tsv	draw_fleet_scrolling_radial_quads: written to all four quad vertex colors	
+D_L17_001AC440	fleet_moby_groups	descriptive	config/names_local.tsv	distribute_class_733_group_mobys_along_path: per-group list of moby indices ended by a negative entry	
+D_L17_001747E0	fleet_coll_hit_point	descriptive	config/names_local.tsv	update_fleet_beam/update_drone_flight_and_sparks: point coll_line hit, fleet_coll_hit_result +0x20	
+D_L17_00161C00	fleet_ring_arc_deg	descriptive	config/names_local.tsv	update_fleet_rotating_radial_effect: arc spread in degrees of each ring spoke	
+D_L17_00162200	fleet_hud_health_clut	descriptive	config/names_local.tsv	DrawFleetHud: 256-entry color table whose entries are set or blanked as the health gauge fills	
+D_L17_001620A4	fleet_jet_pitch_rate	descriptive	config/names_local.tsv	PlayerShipUpdate: pitch angle change per unit of pitch steer	
+D_L17_0015F6E8	fleet_play_mode	descriptive	config/names_local.tsv	FighterJetUpdate: L17 copy of g_game_mode, set 2 while the jet flies	
+D_L17_00161C04	fleet_ring_radius	descriptive	config/names_local.tsv	update_fleet_rotating_radial_effect: spoke length and bsphere radius of the ring	
+D_L17_00162120	fleet_frame_scale	descriptive	config/names_local.tsv	PlayerShipUpdate: multiplies every per-frame speed step, like frame_scale in the L13 copy	
+D_L17_00162084	fleet_jet_cruise_speed	descriptive	config/names_local.tsv	PlayerShipUpdate: speed the jet settles to without boost; low end of the speed ratio	
+D_L17_00162088	fleet_jet_max_speed	descriptive	config/names_local.tsv	PlayerShipUpdate: boost speed cap; high end of the speed ratio	
+D_L17_001620A8	fleet_jet_yaw_rate	descriptive	config/names_local.tsv	PlayerShipUpdate: yaw angle change per unit of yaw steer	
+D_L17_001620B4	fleet_jet_chase_cam_x	descriptive	config/names_local.tsv	PlayerShipUpdate/FighterJetUpdate: chase camera offset x (times fighter_jet_scale)	
+D_L17_001620B8	fleet_jet_chase_cam_z	descriptive	config/names_local.tsv	PlayerShipUpdate/FighterJetUpdate: chase camera offset z (times fighter_jet_scale)	
+D_L17_001621C4	fleet_jet_fov_at_cruise	descriptive	config/names_local.tsv	PlayerShipUpdate: camera fov spring target at speed ratio 0	
+D_L17_00162104	fleet_jet_max_health	descriptive	config/names_local.tsv	FighterJetUpdate: stored as the ship's max health and divides health for the bar	
+D_L17_00162064	fleet_jet_launch_speed	descriptive	config/names_local.tsv	FighterJetUpdate: jet speed f64 set and used for the offset when the hero boards	
+D_L17_00161518	fleet_beam_peer_inset	descriptive	config/names_local.tsv	update_fleet_beam: pulls both linked beam ends back along the beam by this length	
+D_L17_001E6620	fleet_beam_quad_uvs	descriptive	config/names_local.tsv	draw_fleet_beam_quad: four uv pairs copied into the beam quad	
+D_L17_00161A00	fleet_turret_aim_vertices	descriptive	config/names_local.tsv	dreks_fleet_turret_update: two model points transformed to get the barrel tip and base	
+D_L17_00161BFC	fleet_ring_angle_offset_deg	descriptive	config/names_local.tsv	update_fleet_rotating_radial_effect: start angle in degrees added to each spoke	
+D_L17_00161C10	fleet_ring_spark_life	descriptive	config/names_local.tsv	update_fleet_rotating_radial_effect: particle life picked between half and full of it	
+D_L17_001D4240	fleet_ring_quad_uvs	descriptive	config/names_local.tsv	draw_fleet_scrolling_radial_quads: base uvs of the ring quad before scrolling	
+D_L17_00161C18	fleet_ring_alpha_a	descriptive	config/names_local.tsv	draw_fleet_scrolling_radial_quads: field A of the GS ALPHA register	
+D_L17_00161C1C	fleet_ring_alpha_b	descriptive	config/names_local.tsv	draw_fleet_scrolling_radial_quads: field B of the GS ALPHA register	
+D_L17_00161C20	fleet_ring_alpha_c	descriptive	config/names_local.tsv	draw_fleet_scrolling_radial_quads: field C of the GS ALPHA register	
+D_L17_00161C24	fleet_ring_alpha_d	descriptive	config/names_local.tsv	draw_fleet_scrolling_radial_quads: field D of the GS ALPHA register	
+D_L17_00161C3C	fleet_ring_scroll_rate	descriptive	config/names_local.tsv	draw_fleet_scrolling_radial_quads: uv scroll per frame	
+D_L17_001747D8	fleet_coll_hit_moby	descriptive	config/names_local.tsv	update_fleet_bobbing_moby: moby the last collision hit, fleet_coll_hit_result +0x18	
+D_L17_001747C0	fleet_coll_hit_result	descriptive	config/names_local.tsv	PlayerShipUpdate/update_drone_flight_and_sparks: collision result with hit moby +0x18, pos +0x30, normal +0x40	
+D_L17_00167960	fleet_camera_matrix_row1	descriptive	config/names_local.tsv	select_fighter_jet_target_and_draw_contacts: second row of fleet_camera_matrix, scaled to size a target on screen	
+D_L17_001D9CB0	fleet_hud_ammo_pip_shape	descriptive	config/names_local.tsv	DrawFleetHud: strip drawn once per ammo slot, bright or dim	
+D_L17_001D9E38	fleet_hud_health_clut_backup	descriptive	config/names_local.tsv	FighterJetUpdate: copy of the 1 KB health color table, restored into it by DrawFleetHud	
+D_L17_001621F0	fleet_jet_lock_anim_start	descriptive	config/names_local.tsv	DrawFleetHud: lock timer above this draws the closing lock-on reticle	
+D_L17_00162078	fleet_jet_launch_accel	descriptive	config/names_local.tsv	PlayerShipUpdate: speed gained per frame during the launch frames	
+D_L17_0016207C	fleet_jet_cruise_accel	descriptive	config/names_local.tsv	PlayerShipUpdate: speed step toward cruise speed when below it	
+D_L17_00162080	fleet_jet_launch_frames	descriptive	config/names_local.tsv	PlayerShipUpdate: frames of forced acceleration before throttle input	
+D_L17_0016208C	fleet_jet_boost_accel	descriptive	config/names_local.tsv	PlayerShipUpdate: speed added per frame while the boost button is held	
+D_L17_00162090	fleet_jet_slowdown_blend	descriptive	config/names_local.tsv	PlayerShipUpdate: blend factor easing speed down to cruise speed	
+D_L17_00162094	fleet_jet_steer_start_frame	descriptive	config/names_local.tsv	PlayerShipUpdate: frame count after which stick steering is read	
+D_L17_00162098	fleet_jet_bounce_yaw_blend	descriptive	config/names_local.tsv	PlayerShipUpdate/FighterJetUpdate: fraction of the yaw turned toward the reflected direction on a hit	
+D_L17_0016209C	fleet_jet_bounce_pitch_blend	descriptive	config/names_local.tsv	PlayerShipUpdate/FighterJetUpdate: fraction of the pitch turned toward the reflected direction on a hit	
+D_L17_001620AC	fleet_jet_sharp_pitch_rate	descriptive	config/names_local.tsv	PlayerShipUpdate: pitch rate used instead while pad bit 0x200 is held	
+D_L17_001620B0	fleet_jet_sharp_yaw_rate	descriptive	config/names_local.tsv	PlayerShipUpdate: yaw rate used instead while pad bit 0x200 is held	
+D_L17_001620BC	fleet_jet_near_cam_x	descriptive	config/names_local.tsv	PlayerShipUpdate: camera offset x of the second camera table entry	
+D_L17_001620C0	fleet_jet_near_cam_z	descriptive	config/names_local.tsv	PlayerShipUpdate: camera offset z of the second camera table entry	
+D_L17_001620C4	fleet_jet_cam_roll_per_yaw_steer	descriptive	config/names_local.tsv	PlayerShipUpdate: camera roll added per unit of yaw steer	
+D_L17_001620C8	fleet_jet_cam_roll_follow	descriptive	config/names_local.tsv	PlayerShipUpdate: fraction of the jet roll the camera roll follows	
+D_L17_001620CC	fleet_jet_cam_pitch_offset	descriptive	config/names_local.tsv	PlayerShipUpdate: added to the jet pitch for the camera pitch target	
+D_L17_001620DC	fleet_jet_bounce_speed_scale	descriptive	config/names_local.tsv	PlayerShipUpdate: speed multiplier after bouncing off a wall	
+D_L17_001620E0	fleet_jet_wall_hit_damage	descriptive	config/names_local.tsv	PlayerShipUpdate: subtracted from ship health on a wall hit	
+D_L17_0016210C	fleet_jet_roll_per_yaw_steer	descriptive	config/names_local.tsv	PlayerShipUpdate: jet roll spring target per unit of yaw steer	
+D_L17_00162110	fleet_jet_cam_y_per_yaw_steer	descriptive	config/names_local.tsv	PlayerShipUpdate: chase camera side offset per unit of yaw steer	
+D_L17_0016212C	fleet_jet_yaw_steer_stiffness	descriptive	config/names_local.tsv	PlayerShipUpdate: Spring stiffness of the yaw steer value	
+D_L17_00162130	fleet_jet_yaw_steer_damping	descriptive	config/names_local.tsv	PlayerShipUpdate: Spring damping of the yaw steer value	
+D_L17_00162134	fleet_jet_yaw_steer_max_rate	descriptive	config/names_local.tsv	PlayerShipUpdate: Spring max rate of the yaw steer value	
+D_L17_00162138	fleet_jet_sharp_yaw_steer_max_rate	descriptive	config/names_local.tsv	PlayerShipUpdate: yaw steer max rate while pad bit 0x200 is held	
+D_L17_0016213C	fleet_jet_pitch_steer_stiffness	descriptive	config/names_local.tsv	PlayerShipUpdate: Spring stiffness of the pitch steer value	
+D_L17_00162140	fleet_jet_pitch_steer_damping	descriptive	config/names_local.tsv	PlayerShipUpdate: Spring damping of the pitch steer value	
+D_L17_00162144	fleet_jet_pitch_steer_max_rate	descriptive	config/names_local.tsv	PlayerShipUpdate: Spring max rate of the pitch steer value	
+D_L17_00162148	fleet_jet_sharp_pitch_steer_max_rate	descriptive	config/names_local.tsv	PlayerShipUpdate: pitch steer max rate while pad bit 0x200 is held	
+D_L17_0016214C	fleet_jet_roll_stiffness	descriptive	config/names_local.tsv	PlayerShipUpdate: SpringAngle stiffness of the jet roll	
+D_L17_00162150	fleet_jet_roll_damping	descriptive	config/names_local.tsv	PlayerShipUpdate: SpringAngle damping of the jet roll	
+D_L17_00162154	fleet_jet_roll_max_rate	descriptive	config/names_local.tsv	PlayerShipUpdate: SpringAngle max rate of the jet roll	
+D_L17_00162170	fleet_jet_cam_roll_stiffness	descriptive	config/names_local.tsv	PlayerShipUpdate: SpringAngle stiffness of the camera roll	
+D_L17_00162174	fleet_jet_cam_roll_damping	descriptive	config/names_local.tsv	PlayerShipUpdate: SpringAngle damping of the camera roll	
+D_L17_00162178	fleet_jet_cam_roll_max_rate	descriptive	config/names_local.tsv	PlayerShipUpdate: SpringAngle max rate of the camera roll	
+D_L17_0016217C	fleet_jet_cam_pitch_stiffness	descriptive	config/names_local.tsv	PlayerShipUpdate: SpringAngle stiffness of the camera pitch	
+D_L17_00162180	fleet_jet_cam_pitch_damping	descriptive	config/names_local.tsv	PlayerShipUpdate: SpringAngle damping of the camera pitch	
+D_L17_00162184	fleet_jet_cam_pitch_max_rate	descriptive	config/names_local.tsv	PlayerShipUpdate: SpringAngle max rate of the camera pitch	
+D_L17_00162188	fleet_jet_cam_yaw_stiffness	descriptive	config/names_local.tsv	PlayerShipUpdate: SpringAngle stiffness of the camera yaw	
+D_L17_0016218C	fleet_jet_cam_yaw_damping	descriptive	config/names_local.tsv	PlayerShipUpdate: SpringAngle damping of the camera yaw	
+D_L17_00162190	fleet_jet_cam_yaw_max_rate	descriptive	config/names_local.tsv	PlayerShipUpdate: SpringAngle max rate of the camera yaw	
+D_L17_00162194	fleet_jet_cam_x_stiffness	descriptive	config/names_local.tsv	PlayerShipUpdate: Spring stiffness of the camera offset x	
+D_L17_00162198	fleet_jet_cam_x_damping	descriptive	config/names_local.tsv	PlayerShipUpdate: Spring damping of the camera offset x	
+D_L17_0016219C	fleet_jet_cam_x_max_rate	descriptive	config/names_local.tsv	PlayerShipUpdate: Spring max rate of the camera offset x	
+D_L17_001621A0	fleet_jet_cam_y_stiffness	descriptive	config/names_local.tsv	PlayerShipUpdate: Spring stiffness of the camera offset y	
+D_L17_001621A4	fleet_jet_cam_y_damping	descriptive	config/names_local.tsv	PlayerShipUpdate: Spring damping of the camera offset y	
+D_L17_001621A8	fleet_jet_cam_y_max_rate	descriptive	config/names_local.tsv	PlayerShipUpdate: Spring max rate of the camera offset y	
+D_L17_001621AC	fleet_jet_cam_z_stiffness	descriptive	config/names_local.tsv	PlayerShipUpdate: Spring stiffness of the camera offset z	
+D_L17_001621B0	fleet_jet_cam_z_damping	descriptive	config/names_local.tsv	PlayerShipUpdate: Spring damping of the camera offset z	
+D_L17_001621B4	fleet_jet_cam_z_max_rate	descriptive	config/names_local.tsv	PlayerShipUpdate: Spring max rate of the camera offset z	
+D_L17_001621B8	fleet_jet_cam_x_per_pitch_steer	descriptive	config/names_local.tsv	PlayerShipUpdate: chase camera x offset change per unit of pitch steer	
+D_L17_001621BC	fleet_jet_cam_z_per_pitch_steer	descriptive	config/names_local.tsv	PlayerShipUpdate: chase camera z offset change per unit of pitch steer	
+D_L17_001621C0	fleet_jet_cam_x_per_speed	descriptive	config/names_local.tsv	PlayerShipUpdate: chase camera x offset change times the speed ratio	
+D_L17_001621C8	fleet_jet_fov_at_max_speed	descriptive	config/names_local.tsv	PlayerShipUpdate: camera fov spring target at speed ratio 1	
+D_L17_001621CC	fleet_jet_fov_stiffness	descriptive	config/names_local.tsv	PlayerShipUpdate: Spring stiffness of the camera fov	
+D_L17_001621D0	fleet_jet_fov_damping	descriptive	config/names_local.tsv	PlayerShipUpdate: Spring damping of the camera fov	
+D_L17_001621D4	fleet_jet_fov_max_rate	descriptive	config/names_local.tsv	PlayerShipUpdate: Spring max rate of the camera fov	
+D_L17_001621DC	fleet_jet_wall_hit_cooldown	descriptive	config/names_local.tsv	PlayerShipUpdate: iDC timer set after a wall hit; no damage while it runs	
+D_L17_001621E0	fleet_jet_model_roll_per_yaw_steer	descriptive	config/names_local.tsv	PlayerShipUpdate: model roll added per unit of yaw steer	
+D_L17_001621E4	fleet_jet_model_pitch_per_pitch_steer	descriptive	config/names_local.tsv	PlayerShipUpdate: model pitch added per unit of pitch steer	
+D_L17_001621E8	fleet_jet_model_yaw_per_yaw_steer	descriptive	config/names_local.tsv	PlayerShipUpdate: model yaw added per unit of yaw steer	
+D_L17_00162270	fleet_jet_default_heading_target	descriptive	config/names_local.tsv	PlayerShipUpdate: point the jet steers toward when it has no camera point	
+D_L17_00162108	fleet_jet_hit_deflect_per_damage	descriptive	config/names_local.tsv	FighterJetUpdate: hit damage times this scales how far a hit turns the jet	
+D_L17_00162204	fleet_hud_health_clut_saved	descriptive	config/names_local.tsv	FighterJetUpdate: set once the health color table backup is taken	
+D_L17_001620E8	fleet_jet_max_ammo	descriptive	config/names_local.tsv	FighterJetUpdate: stored as the ship's ammo slot count (ammo pips drawn)	
+D_L17_001620D8	fleet_jet_start_health	descriptive	config/names_local.tsv	FighterJetUpdate: ship health when the hero boards	
+D_L17_00161BF8	fleet_ring_spin_rate_deg	descriptive	config/names_local.tsv	update_fleet_rotating_radial_effect: ring spin speed in degrees per frame	
+D_L17_00161C08	fleet_ring_spark_count	descriptive	config/names_local.tsv	update_fleet_rotating_radial_effect: particles spawned per spoke	
+D_L17_00161C0C	fleet_ring_spark_scale	descriptive	config/names_local.tsv	update_fleet_rotating_radial_effect: scale passed to PartType60Spawn	
+D_L17_00161C14	fleet_ring_spark_color	descriptive	config/names_local.tsv	update_fleet_rotating_radial_effect: color passed to PartType60Spawn	
+D_L17_00161C40	fleet_ring_v_scroll_scale	descriptive	config/names_local.tsv	draw_fleet_scrolling_radial_quads: per-pass factor on the v scroll	
+D_L17_00161C48	fleet_ring_u_scroll_scale	descriptive	config/names_local.tsv	draw_fleet_scrolling_radial_quads: per-pass factor on the u scroll	
+D_L17_00161DAC	fleet_bobber_height	descriptive	config/names_local.tsv	update_fleet_bobbing_moby: amplitude passed to update_moby_vertical_oscillation	
+D_L17_00161DB0	fleet_bobber_rate_deg	descriptive	config/names_local.tsv	update_fleet_bobbing_moby: bob phase step in degrees per frame	
+D_L17_001D9E08	fleet_radar_icon_table	descriptive	config/names_local.tsv	draw_fighter_jet_radar_contact_icon: icon rects (offset, size, uv, tex) indexed by icon	
+D_L17_00160064	fleet_moby_list	descriptive	config/names_local.tsv	select_fighter_jet_target_and_draw_contacts: head of the moby list walked through +0x28	
+D_L17_00167950	fleet_camera_matrix	descriptive	config/names_local.tsv	select_fighter_jet_target_and_draw_contacts: fleet_player_camera +0x350 matrix rows	
+D_L17_00162208	fleet_pickup_arrow_shape	descriptive	config/names_local.tsv	select_fighter_jet_target_and_draw_contacts: 3-vertex arrow pointed at the nearest pickup	
+D_L17_001621EC	fleet_jet_lock_time	descriptive	config/names_local.tsv	update_fighter_jet_target_lock: lock timer set when a new target is taken	
+D_L17_001621F4	fleet_jet_lock_anim_frames	descriptive	config/names_local.tsv	DrawFleetHud: divides the lock timer for the closing reticle animation	
+D_L17_001620EC	fleet_jet_gun_aim_distance	descriptive	config/names_local.tsv	update_fighter_jet_aim_and_fire_projectile: length of the aim offset in front of the jet	
+D_L17_001620F0	fleet_jet_gun_fire_delay	descriptive	config/names_local.tsv	update_fighter_jet_aim_and_fire_projectile: timer set after each gun shot	
+D_L17_001620F4	fleet_jet_rocket_speed	descriptive	config/names_local.tsv	try_fire_fighter_jet_rocket: times fleet_frame_scale, passed to spawn_ship_rocket	
+D_L17_001620F8	fleet_jet_rocket_fire_delay	descriptive	config/names_local.tsv	try_fire_fighter_jet_rocket: fire_timer set after each rocket	
+D_L17_0016D470	fleet_view_tan_half_fov	descriptive	config/names_local.tsv	PlayerShipUpdate: tan of half the sprung fov, read back as the view fov	
+D_L17_001621FC	fleet_jet_crash_time	descriptive	config/names_local.tsv	PlayerShipUpdate: s62 timer set when the jet crashes into a ship	
+D_L17_001E71A0	fleet_jet_err_no_jet_point	descriptive	config/names_local.tsv	FighterJetUpdate: debug message printed when the jet reset point index is -1	
+D_L17_001E71D8	fleet_jet_err_no_exit_point	descriptive	config/names_local.tsv	FighterJetUpdate: debug message printed when the hero exit point index is -1	
+D_L17_00162060	fleet_jet_board_radius	descriptive	config/names_local.tsv	FighterJetUpdate: hero distance under which boarding is offered	
+D_L17_001620D4	fleet_jet_idle_anim_speed	descriptive	config/names_local.tsv	FighterJetUpdate: jet_animate speed while parked	
+D_L17_001620E4	fleet_jet_start_ammo	descriptive	config/names_local.tsv	FighterJetUpdate: ship ammo set when the hero boards	
+D_L17_001621F8	fleet_jet_exit_fade_delay	descriptive	config/names_local.tsv	FighterJetUpdate: tF8 timer before the fade when the jet runs out	
+D_L17_001DA240	fleet_magnet_elevator_path_offsets	descriptive	config/names_local.tsv	rebuild_magnet_elevator_world_path: 11 local points turned into the world path	
+D_L14_00161468	interceptor_spring_stiffness	descriptive	config/names_local.tsv	update_blarg_heavy_interceptor: Spring stiffness paired with interceptor_spring_damping	
+D_L14_001614E0	interceptor_ring_vertex_count	descriptive	config/names_local.tsv	draw_blarg_heavy_interceptor_light_ring: vertex count of the light ring mesh	
+D_L14_001D83C8	interceptor_ring_vertex_colors	descriptive	config/names_local.tsv	draw_blarg_heavy_interceptor_light_ring: per-vertex colors, alpha animated	
+D_L14_00161640	minibomber_spring_damping	descriptive	config/names_local.tsv	minibomber_update: Spring damping of the position follow	
+D_L14_00161644	minibomber_spring_max_speed	descriptive	config/names_local.tsv	minibomber_update: Spring max rate of the position follow	
+D_L14_0016164C	minibomber_turn_damping	descriptive	config/names_local.tsv	minibomber_update: MobySpringTurn damping	
+D_L14_00161650	minibomber_turn_max_rate	descriptive	config/names_local.tsv	minibomber_update: MobySpringTurn max rate	
+func_001FA5C8	quat_nlerp	descriptive	config/names_local.tsv	update_racer_path_and_weapon: blends two quaternions by a weight and normalizes (VU0)	quaternion_nlerp
+D_L14_00180AC0	oltanis_lights	descriptive	config/names_local.tsv	update_flying_debris: 32-byte colored light slots from allocate_colored_effect_slot (as quartu_lights)	
+D_L14_001D8138	interceptor_ring_uvs	descriptive	config/names_local.tsv	draw_blarg_heavy_interceptor_light_ring: uv array passed to draw_env_overlay_mesh	
+D_L14_00161624	minibomber_aim_time	descriptive	config/names_local.tsv	minibomber_update: frames to turn toward the next drop point	
+D_L14_00161628	minibomber_turn_back_time	descriptive	config/names_local.tsv	minibomber_update: frames to turn back after a drop	
+D_L14_00161654	minibomber_patrol_spring_stiffness	descriptive	config/names_local.tsv	minibomber_update: Spring stiffness while patrolling or retreating	
+D_L14_00161658	minibomber_patrol_turn_stiffness	descriptive	config/names_local.tsv	minibomber_update: MobySpringTurn stiffness while patrolling or retreating	
+D_L14_001614B4	interceptor_wreck_drag	descriptive	config/names_local.tsv	update_blarg_heavy_interceptor: velocity multiplier each frame while the wreck falls	
+D_L14_001614C4	interceptor_return_spring_damping	descriptive	config/names_local.tsv	update_blarg_heavy_interceptor_return_path_position: Spring damping toward the path point	
+D_L14_00161608	minibomber_tilt_amount	descriptive	config/names_local.tsv	minibomber_update: target of the tilt rotation oscillation radius	
+D_L14_0016163C	minibomber_fly_in_spring_stiffness	descriptive	config/names_local.tsv	minibomber_update: Spring stiffness while flying the entry path	
+D_L14_00161648	minibomber_fly_in_turn_stiffness	descriptive	config/names_local.tsv	minibomber_update: MobySpringTurn stiffness while flying the entry path	
+D_L14_001616A4	flying_debris_drag	descriptive	config/names_local.tsv	update_flying_debris: velocity multiplier each frame	
+D_L14_00161B08	oltanis_racer_path_step	descriptive	config/names_local.tsv	initialize_racer_path_tracking: per-frame path advance distance stored at +0x74	
+D_L14_00161464	interceptor_cull_radius	descriptive	config/names_local.tsv	update_blarg_heavy_interceptor: bsphere radius for the on-screen test	
+D_L14_00161498	interceptor_attack_time	descriptive	config/names_local.tsv	update_blarg_heavy_interceptor: timer set when it enters the attack state	
+D_L14_001614B8	interceptor_wreck_min_speed	descriptive	config/names_local.tsv	update_blarg_heavy_interceptor: wreck drag applies only above this speed	
+D_L14_001614D4	interceptor_alert_glow_r	descriptive	config/names_local.tsv	update_blarg_heavy_interceptor: red of the glow color in states 3 and 4	
+D_L14_001614D8	interceptor_alert_glow_g	descriptive	config/names_local.tsv	update_blarg_heavy_interceptor: green of the glow color in states 3 and 4	
+D_L14_001614DC	interceptor_alert_glow_b	descriptive	config/names_local.tsv	update_blarg_heavy_interceptor: blue of the glow color in states 3 and 4	
+D_L14_001D7D60	interceptor_ring_vertices	descriptive	config/names_local.tsv	draw_blarg_heavy_interceptor_light_ring: local ring vertices transformed to face the camera	
+D_L14_001D8510	interceptor_ring_alpha_phases	descriptive	config/names_local.tsv	update_blarg_heavy_interceptor_light_ring_alpha: per-vertex phase that sets the color alpha	
+D_L14_00161614	minibomber_fly_in_speed	descriptive	config/names_local.tsv	minibomber_update: path speed along the entry path	
+D_L14_00161618	minibomber_patrol_speed	descriptive	config/names_local.tsv	minibomber_update: path speed in the patrol state	
+D_L14_0016161C	minibomber_retreat_speed	descriptive	config/names_local.tsv	minibomber_update: backward path speed when retreating	
+D_L14_0016162C	minibomber_bomb_flight_frames	descriptive	config/names_local.tsv	minibomber_update: frames the dropped bomb takes to reach the drop point	
+D_L14_00161630	minibomber_bomb_gravity	descriptive	config/names_local.tsv	minibomber_update: gravity of the dropped bomb arc	
+D_L14_00161634	minibomber_bomb_life	descriptive	config/names_local.tsv	minibomber_update: tick count passed with the bomb spawn	
+D_L14_00161638	minibomber_patrol_trigger_radius	descriptive	config/names_local.tsv	minibomber_update: xy distance to its target that starts the patrol	
+D_L14_001616A8	flying_debris_min_speed	descriptive	config/names_local.tsv	update_flying_debris: drag applies only above this speed	
+D_L14_00161B30	joint_effect_light_range	descriptive	config/names_local.tsv	update_moby_joint_visual_effects: radius of the colored light at the joint	
+D_L14_0016149C	interceptor_wreck_time	descriptive	config/names_local.tsv	update_blarg_heavy_interceptor: timer set when it is destroyed	
+D_L14_001614A0	interceptor_wreck_push_min	descriptive	config/names_local.tsv	update_blarg_heavy_interceptor: min horizontal fling speed of the wreck	
+D_L14_001614A4	interceptor_wreck_push_max	descriptive	config/names_local.tsv	update_blarg_heavy_interceptor: max horizontal fling speed of the wreck	
+D_L14_001614A8	interceptor_wreck_lift_min	descriptive	config/names_local.tsv	update_blarg_heavy_interceptor: min upward fling speed of the wreck	
+D_L14_001614AC	interceptor_wreck_lift_max	descriptive	config/names_local.tsv	update_blarg_heavy_interceptor: max upward fling speed of the wreck	
+D_L14_001614B0	interceptor_wreck_gravity	descriptive	config/names_local.tsv	update_blarg_heavy_interceptor: subtracted from wreck z speed each frame	
+D_L14_001614BC	interceptor_return_path_speed	descriptive	config/names_local.tsv	update_blarg_heavy_interceptor: path speed passed to update_blarg_heavy_interceptor_return_path_position	
+D_L14_001614C0	interceptor_return_spring_stiffness	descriptive	config/names_local.tsv	update_blarg_heavy_interceptor: Spring stiffness passed to update_blarg_heavy_interceptor_return_path_position	
+D_L14_001614C8	interceptor_idle_glow_r	descriptive	config/names_local.tsv	update_blarg_heavy_interceptor: red of the glow color in state 1	
+D_L14_001614CC	interceptor_idle_glow_g	descriptive	config/names_local.tsv	update_blarg_heavy_interceptor: green of the glow color in state 1	
+D_L14_001614D0	interceptor_idle_glow_b	descriptive	config/names_local.tsv	update_blarg_heavy_interceptor: blue of the glow color in state 1	
+D_L14_001614FC	interceptor_beam_offset	descriptive	config/names_local.tsv	draw_blarg_heavy_interceptor_spinning_beam: start distance of the beam quads along the beam	
+D_L14_00161500	interceptor_beam_offset_step	descriptive	config/names_local.tsv	draw_blarg_heavy_interceptor_spinning_beam: distance added per beam quad	
+D_L14_00161504	interceptor_beam_quad_size	descriptive	config/names_local.tsv	draw_blarg_heavy_interceptor_spinning_beam: start size of the beam quads	
+D_L14_00161508	interceptor_beam_quad_size_step	descriptive	config/names_local.tsv	draw_blarg_heavy_interceptor_spinning_beam: size added per beam quad	
+D_L14_0016150C	interceptor_beam_r	descriptive	config/names_local.tsv	draw_blarg_heavy_interceptor_spinning_beam: start red of the beam quads	
+D_L14_00161510	interceptor_beam_g	descriptive	config/names_local.tsv	draw_blarg_heavy_interceptor_spinning_beam: start green of the beam quads	
+D_L14_00161514	interceptor_beam_b	descriptive	config/names_local.tsv	draw_blarg_heavy_interceptor_spinning_beam: start blue of the beam quads	
+D_L14_00161518	interceptor_beam_a	descriptive	config/names_local.tsv	draw_blarg_heavy_interceptor_spinning_beam: start alpha of the beam quads	
+D_L14_0016151C	interceptor_beam_r_fade	descriptive	config/names_local.tsv	draw_blarg_heavy_interceptor_spinning_beam: red removed per beam quad	
+D_L14_00161520	interceptor_beam_g_fade	descriptive	config/names_local.tsv	draw_blarg_heavy_interceptor_spinning_beam: green removed per beam quad	
+D_L14_00161524	interceptor_beam_b_fade	descriptive	config/names_local.tsv	draw_blarg_heavy_interceptor_spinning_beam: blue removed per beam quad	
+D_L14_00161528	interceptor_beam_a_fade	descriptive	config/names_local.tsv	draw_blarg_heavy_interceptor_spinning_beam: alpha removed per beam quad	
+D_L14_001D8900	interceptor_quad_corners	descriptive	config/names_local.tsv	draw_blarg_heavy_interceptor_camera_facing_glow/spinning_beam: four corner vectors scaled per quad	
+D_L14_00161540	interceptor_glow_forward_offset	descriptive	config/names_local.tsv	draw_blarg_heavy_interceptor_camera_facing_glow: glow moved this far along the facing vector	
+D_L14_0016153C	interceptor_glow_size	descriptive	config/names_local.tsv	draw_blarg_heavy_interceptor_camera_facing_glow: scale of the glow quad corners	
+D_L14_001D8940	oltanis_glow_quad_corners	descriptive	config/names_local.tsv	DrawMobyGlowQuad: four corner vectors scaled by the moby's glow size	
+D_L14_00161544	oltanis_glow_camera_margin	descriptive	config/names_local.tsv	DrawMobyGlowQuad: glow is pulled toward the camera but kept this far from it	
+D_L14_00161548	oltanis_glow_idle_color	descriptive	config/names_local.tsv	DrawMobyGlowQuad: quad color when the moby is not alerted	
+D_L14_00161470	interceptor_bob_height	descriptive	config/names_local.tsv	update_blarg_heavy_interceptor_oscillation_and_patrol_heading: update_moby_vertical_oscillation amplitude	
+D_L14_00161474	interceptor_bob_rate	descriptive	config/names_local.tsv	update_blarg_heavy_interceptor_oscillation_and_patrol_heading: bob phase step per frame	
+D_L14_00161478	interceptor_wobble_amount	descriptive	config/names_local.tsv	update_blarg_heavy_interceptor_oscillation_and_patrol_heading: update_moby_rotation_oscillation radius	
+D_L14_0016147C	interceptor_wobble_rate_a	descriptive	config/names_local.tsv	update_blarg_heavy_interceptor_oscillation_and_patrol_heading: first wobble phase step	
+D_L14_00161480	interceptor_wobble_rate_b	descriptive	config/names_local.tsv	update_blarg_heavy_interceptor_oscillation_and_patrol_heading: second wobble phase step	
+D_L14_00161484	interceptor_heading_change_interval	descriptive	config/names_local.tsv	update_blarg_heavy_interceptor_oscillation_and_patrol_heading: ticks between new patrol headings	
+D_L14_00161488	interceptor_heading_change_angle	descriptive	config/names_local.tsv	update_blarg_heavy_interceptor_oscillation_and_patrol_heading: angle added left or right to the heading	
+D_L14_0016148C	interceptor_heading_stiffness	descriptive	config/names_local.tsv	update_blarg_heavy_interceptor_oscillation_and_patrol_heading: Spring stiffness of the yaw	
+D_L14_00161490	interceptor_heading_damping	descriptive	config/names_local.tsv	update_blarg_heavy_interceptor_oscillation_and_patrol_heading: Spring damping of the yaw	
+D_L14_00161494	interceptor_heading_max_rate	descriptive	config/names_local.tsv	update_blarg_heavy_interceptor_oscillation_and_patrol_heading: Spring max rate of the yaw	
+D_L14_001D8980	group_moby_excluded_uids	descriptive	config/names_local.tsv	select_farthest_unselected_group_moby: 20 moby uids (+0xB2) skipped when picking	
+D_L14_001615D4	machinegun_turret_rise_time	descriptive	config/names_local.tsv	machinegun_turret_update: ticks of the rise; half of it turns on collision	
+D_L14_001615D8	machinegun_turret_rise_anim_scale	descriptive	config/names_local.tsv	machinegun_turret_update: rise ticks times this sets the animation speed	
+D_L14_001FC160	minibomber_err_no_entry_path	descriptive	config/names_local.tsv	minibomber_update: debug message when the entry path index (fD0) is -1	
+D_L14_001FC188	minibomber_err_empty_entry_path	descriptive	config/names_local.tsv	minibomber_update: debug message when the entry path has no points	
+D_L14_001FC1C8	minibomber_err_no_target_path	descriptive	config/names_local.tsv	minibomber_update: debug message when the target path index (fD4) is -1	
+D_L14_001FC1F0	minibomber_err_empty_target_path	descriptive	config/names_local.tsv	minibomber_update: debug message when the target path has no points	
+D_L14_001FC230	minibomber_err_no_drop_path	descriptive	config/names_local.tsv	minibomber_update: debug message when the drop path index (fD8) is -1	
+D_L14_001FC258	minibomber_err_empty_drop_path	descriptive	config/names_local.tsv	minibomber_update: debug message when the drop path has no points	
+D_L14_001FC290	minibomber_err_no_alt_entry_path	descriptive	config/names_local.tsv	minibomber_update: debug message when the second entry path index (f150) is -1	
+D_L14_001FC2B8	minibomber_err_empty_alt_entry_path	descriptive	config/names_local.tsv	minibomber_update: debug message when the second entry path has no points	
+D_L14_00161600	minibomber_bob_height	descriptive	config/names_local.tsv	Minibomber_HoverMotion: update_moby_vertical_oscillation amplitude	
+D_L14_00161604	minibomber_bob_rate	descriptive	config/names_local.tsv	Minibomber_HoverMotion: Spring target of the bob phase step	
+D_L14_0016160C	minibomber_wobble_rate_a	descriptive	config/names_local.tsv	Minibomber_HoverMotion: first rotation oscillation phase step	
+D_L14_00161610	minibomber_wobble_rate_b	descriptive	config/names_local.tsv	Minibomber_HoverMotion: second rotation oscillation phase step	
+D_L14_001D8BD0	minibomber_drop_blast_params	descriptive	config/names_local.tsv	SpawnRadialSparks: blast spawn block passed to mine_camera_blast at the drop	
+D_L14_001616A0	flying_debris_gravity	descriptive	config/names_local.tsv	update_flying_debris: subtracted from z speed each frame	
+D_L14_00161B2C	oltanis_racer_death_debris_params	descriptive	config/names_local.tsv	update_level14_racer: block passed to spawn_path_or_ballistic_debris when it dies	
+D_L14_00161B0C	oltanis_racer_aim_blend_time	descriptive	config/names_local.tsv	update_racer_path_and_weapon: ticks of the aim timer (+0x1C0) that shrinks the aim lead	
+D_L14_00161B10	oltanis_racer_aim_lead_min	descriptive	config/names_local.tsv	update_racer_path_and_weapon: smallest path lead of the aim point as the timer runs out	
+D_L14_00161B14	oltanis_racer_muzzle_flash_offset	descriptive	config/names_local.tsv	update_racer_path_and_weapon: muzzle flash moved this far along the aim vector	
+D_L14_00161B18	oltanis_racer_muzzle_flash_size	descriptive	config/names_local.tsv	update_racer_path_and_weapon: flash particle size blended from 1000	
+D_L14_00161B1C	oltanis_racer_muzzle_light_range	descriptive	config/names_local.tsv	update_racer_path_and_weapon: muzzle light radius blended from 0.1	
+D_L14_00161B20	oltanis_racer_muzzle_light_r	descriptive	config/names_local.tsv	update_racer_path_and_weapon: red of the muzzle light	
+D_L14_00161B24	oltanis_racer_muzzle_light_g	descriptive	config/names_local.tsv	update_racer_path_and_weapon: green of the muzzle light	
+D_L14_00161B28	oltanis_racer_muzzle_light_b	descriptive	config/names_local.tsv	update_racer_path_and_weapon: blue of the muzzle light	
+D_L14_00161B00	oltanis_racer_path_speed	descriptive	config/names_local.tsv	Moby211_AdvanceOnPath: race path advance distance per frame time	
+D_L14_00161BD4	oltanis_tilting_platform_aim_height	descriptive	config/names_local.tsv	Moby309_TrackHero: added to the hero z before aiming the tilt	
+D_L14_00161BD0	oltanis_tilting_platform_max_tilt_deg	descriptive	config/names_local.tsv	Moby309_TrackHero: tilt angle limit in degrees	
+D_L06_0015F4FC	blarg_fade_level	descriptive	config/names_local.tsv	fred_update: ApproachValue to 0/1 around the cutscene camera, the L06 copy of gFadeLvl	
+D_L06_0016202C	dual_texture_mesh_scale	descriptive	config/names_local.tsv	draw_dual_texture_*_quad_mesh: scales every quad center and vertex	
+D_L06_0016200C	dual_texture_mesh_alpha_a	descriptive	config/names_local.tsv	draw_dual_texture_*_quad_mesh: bits 0-1 of the GS ALPHA word	
+D_L06_00162010	dual_texture_mesh_alpha_b	descriptive	config/names_local.tsv	draw_dual_texture_*_quad_mesh: shifted to bit 2 of the GS ALPHA word	
+D_L06_00162014	dual_texture_mesh_alpha_c	descriptive	config/names_local.tsv	draw_dual_texture_*_quad_mesh: shifted to bit 4 of the GS ALPHA word	
+D_L06_00162018	dual_texture_mesh_alpha_d	descriptive	config/names_local.tsv	draw_dual_texture_*_quad_mesh: shifted to bit 6 of the GS ALPHA word	
+D_L06_0016201C	dual_texture_mesh_alpha_fix	descriptive	config/names_local.tsv	draw_dual_texture_*_quad_mesh: shifted to bit 32 of the GS ALPHA word	
+D_L06_00162020	dual_texture_mesh_texture	descriptive	config/names_local.tsv	draw_dual_texture_*_quad_mesh: texture index of the first layer (second is 0x2A)	
+D_L06_00162030	dual_texture_mesh_u_scroll_scale	descriptive	config/names_local.tsv	draw_dual_texture_*_quad_mesh: times referencePosition[86], added to the first layer u	
+D_L06_00162034	dual_texture_mesh_v_scroll_scale	descriptive	config/names_local.tsv	draw_dual_texture_*_quad_mesh: times referencePosition[85], added to the first layer v	
+D_L06_001F2960	dual_mesh50_centers	descriptive	config/names_local.tsv	draw_dual_texture_50_quad_mesh: per-quad center, scaled and turned into the view direction	
+D_L06_001F1D20	dual_mesh50_normals	descriptive	config/names_local.tsv	draw_dual_texture_50_quad_mesh: per-quad normal dotted with the view direction	
+D_L06_001F1570	dual_mesh50_corner_indices	descriptive	config/names_local.tsv	draw_dual_texture_50_quad_mesh: 4 (vertex, uv) index pairs per quad	
+D_L06_001F0C50	dual_mesh50_verts	descriptive	config/names_local.tsv	draw_dual_texture_50_quad_mesh: vertex table indexed by the corner list	
+D_L06_001F1890	dual_mesh50_uvs	descriptive	config/names_local.tsv	draw_dual_texture_50_quad_mesh: uv table indexed by the corner list	
+D_L06_001F08B0	dual_mesh58_centers	descriptive	config/names_local.tsv	draw_dual_texture_58_quad_mesh: per-quad center, scaled and turned into the view direction	
+D_L06_001EFF30	dual_mesh58_normals	descriptive	config/names_local.tsv	draw_dual_texture_58_quad_mesh: per-quad normal multiplied by the matrix	
+D_L06_001EF660	dual_mesh58_corner_indices	descriptive	config/names_local.tsv	draw_dual_texture_58_quad_mesh: 4 (vertex, uv) index pairs per quad	
+D_L06_001EF080	dual_mesh58_verts	descriptive	config/names_local.tsv	draw_dual_texture_58_quad_mesh: vertex table scaled per corner	
+D_L06_001EFA00	dual_mesh58_uvs	descriptive	config/names_local.tsv	draw_dual_texture_58_quad_mesh: uv table indexed by the corner list	
+D_L06_001EBA80	dual_mesh864_centers	descriptive	config/names_local.tsv	draw_dual_texture_864_quad_mesh: per-quad center, scaled and turned into the view direction	
+D_L06_001E4D80	dual_mesh864_normals	descriptive	config/names_local.tsv	draw_dual_texture_864_quad_mesh: per-quad normal multiplied by the matrix	
+D_L06_001DFA40	dual_mesh864_corner_indices	descriptive	config/names_local.tsv	draw_dual_texture_864_quad_mesh: 4 (vertex, uv) index pairs per quad	
+D_L06_001DC340	dual_mesh864_verts	descriptive	config/names_local.tsv	draw_dual_texture_864_quad_mesh: vertex table scaled per corner	
+D_L06_001E3040	dual_mesh864_uvs	descriptive	config/names_local.tsv	draw_dual_texture_864_quad_mesh: uv table indexed by the corner list	
+D_L06_001620E4	blarg_tube_alpha_a	descriptive	config/names_local.tsv	DrawBackdropMesh/EffectQuad_DrawSingle (tube draw callbacks): bits 0-1 of the GS ALPHA word	
+D_L06_001620E8	blarg_tube_alpha_b	descriptive	config/names_local.tsv	DrawBackdropMesh/EffectQuad_DrawSingle: shifted to bit 2 of the GS ALPHA word	
+D_L06_001620EC	blarg_tube_alpha_c	descriptive	config/names_local.tsv	DrawBackdropMesh/EffectQuad_DrawSingle: shifted to bit 4 of the GS ALPHA word	
+D_L06_001620F0	blarg_tube_alpha_d	descriptive	config/names_local.tsv	DrawBackdropMesh/EffectQuad_DrawSingle: shifted to bit 6 of the GS ALPHA word	
+D_L06_001620F8	blarg_tube_alpha_fix	descriptive	config/names_local.tsv	DrawBackdropMesh/EffectQuad_DrawSingle: shifted to bit 32 of the GS ALPHA word	
+D_L06_001620F4	blarg_tube_texture	descriptive	config/names_local.tsv	DrawBackdropMesh/EffectQuad_DrawSingle: texture index passed to func_001F4868	
+D_L06_001620FC	blarg_tube_color	descriptive	config/names_local.tsv	DrawBackdropMesh/EffectQuad_DrawSingle: one color copied to all four corners	
+D_L06_00162104	blarg_tube_mesh_scale	descriptive	config/names_local.tsv	DrawBackdropMesh/EffectQuad_DrawSingle: scales every vertex and quad center	
+D_L06_001620DC	blarg_tube_base_z	descriptive	config/names_local.tsv	tube draws put it in the matrix z; spawn_moby_breakup_effect spawns shards 0.5..4.5 above it	
+D_L06_001F3200	blarg_tube_mesh64_verts	descriptive	config/names_local.tsv	DrawBackdropMesh: vertex table indexed by the corner list	
+D_L06_001F3800	blarg_tube_mesh64_corner_indices	descriptive	config/names_local.tsv	DrawBackdropMesh: 4 (vertex, uv) short pairs per quad, 64 quads	
+D_L06_001F3C00	blarg_tube_mesh64_uvs	descriptive	config/names_local.tsv	DrawBackdropMesh: uv table indexed by the corner list	
+D_L06_001FB340	blarg_tube_mesh96_centers	descriptive	config/names_local.tsv	EffectQuad_DrawSingle: per-quad center for the back-face test	
+D_L06_001FA640	blarg_tube_mesh96_normals	descriptive	config/names_local.tsv	EffectQuad_DrawSingle: per-quad normal; quad skipped when it faces away	
+D_L06_001F7B00	blarg_tube_mesh96_verts	descriptive	config/names_local.tsv	EffectQuad_DrawSingle: vertex table scaled per corner	
+D_L06_001F8200	blarg_tube_mesh96_corner_indices	descriptive	config/names_local.tsv	EffectQuad_DrawSingle: 4 (vertex, uv) index pairs per quad, 96 quads	
+D_L06_001F8800	blarg_tube_mesh96_uvs	descriptive	config/names_local.tsv	EffectQuad_DrawSingle: uv table indexed by the corner list	
+func_L06_003019E0	draw_tube_mesh64_twin	descriptive	config/names_local.tsv	same code fingerprint as DrawBackdropMesh; enqueued by the tube update when data[0] is 0	
+func_L06_00301DB0	draw_tube_mesh96_twin	descriptive	config/names_local.tsv	same code fingerprint as EffectQuad_DrawSingle; enqueued by the tube update when data[0] is 0	
+D_L06_001620D8	blarg_tube_scale	descriptive	config/names_local.tsv	update_moby_camera_sequence_and_draw_selection: times the class scale into moby scale	
+D_L06_001620D4	blarg_tube_fade_ticks	descriptive	config/names_local.tsv	update_moby_camera_sequence_and_draw_selection: fade level is 1 - timer/this	
+D_L06_001620E0	blarg_tube_camera_pitch_deg	descriptive	config/names_local.tsv	update_moby_camera_sequence_and_draw_selection: degrees, converted to radians for the camera pitch	
+D_L06_0015F504	blarg_cutscene_active	descriptive	config/names_local.tsv	update_moby_camera_sequence_and_draw_selection: set to 1 when the camera shot starts, 0 when control returns	
+D_L06_00162120	blarg_bobbing_moby_amplitude	descriptive	config/names_local.tsv	update_moby_bobbing_and_motion: times the 600-frame sine added to the home z	
+D_L06_00201C00	fred_dialogue_name	descriptive	config/names_local.tsv	fred_update: stored in the dialogue state +0x20 before DialogRequest_Init, like race_girl_name	
+D_L06_00162148	blarg_random_line_used	descriptive	config/names_local.tsv	queue_moby_dialogue_line: 3 used-flags for the random line pick, cleared when all are used	
+D_L06_0016214C	blarg_random_line_used_1	descriptive	config/names_local.tsv	queue_moby_dialogue_line: second used-flag, cleared with the others	
+D_L06_00162150	blarg_random_line_used_2	descriptive	config/names_local.tsv	queue_moby_dialogue_line: third used-flag, cleared with the others	
+D_L06_00162194	blarg_explosion_flash_pending	descriptive	config/names_local.tsv	ShuttleUpdate: when set, cleared and a timed flash is spawned at the hero	
+D_L06_00162198	blarg_explosion_flash_ticks	descriptive	config/names_local.tsv	ShuttleUpdate/break_apart_shuttle_linked_mobys: duration passed to spawn_timed_projected_sprite_effect	
+D_L06_0016219C	blarg_explosion_flash_color_a	descriptive	config/names_local.tsv	spawn_timed_projected_sprite_effect color argument (stored at +8)	
+D_L06_001621A0	blarg_explosion_flash_color_b	descriptive	config/names_local.tsv	spawn_timed_projected_sprite_effect color argument (stored at +0xC)	
+D_L06_00162190	shuttle_forced_departure	descriptive	config/names_local.tsv	ShuttleUpdate: when set, the shuttle leaves with route 2 and the flag is cleared	
+D_L06_001621E0	scatter_explode_particles_per_piece	descriptive	config/names_local.tsv	ScatterPiecesExplode: particle loop runs n times this	
+D_L06_001621A4	scatter_explode_speed_min	descriptive	config/names_local.tsv	ScatterPiecesExplode: random speed range of the particle velocity	
+D_L06_001621A8	scatter_explode_speed_max	descriptive	config/names_local.tsv	ScatterPiecesExplode: random speed range of the particle velocity	
+D_L06_001621AC	scatter_explode_start_size_min	descriptive	config/names_local.tsv	ScatterPiecesExplode: random range put in velocity w (particle size)	
+D_L06_001621B0	scatter_explode_start_size_max	descriptive	config/names_local.tsv	ScatterPiecesExplode: random range put in velocity w (particle size)	
+D_L06_001621B4	scatter_explode_accel_min	descriptive	config/names_local.tsv	ScatterPiecesExplode: random speed range of the second particle vector	
+D_L06_001621B8	scatter_explode_accel_max	descriptive	config/names_local.tsv	ScatterPiecesExplode: random speed range of the second particle vector	
+D_L06_001621BC	scatter_explode_end_size_min	descriptive	config/names_local.tsv	ScatterPiecesExplode: random range put in the second vector w	
+D_L06_001621C0	scatter_explode_end_size_max	descriptive	config/names_local.tsv	ScatterPiecesExplode: random range put in the second vector w	
+D_L06_001621C4	scatter_explode_color_a_from	descriptive	config/names_local.tsv	ScatterPiecesExplode: first color is tweened between this and the next	
+D_L06_001621C8	scatter_explode_color_a_to	descriptive	config/names_local.tsv	ScatterPiecesExplode: first color tween end	
+D_L06_001621CC	scatter_explode_color_b_from	descriptive	config/names_local.tsv	ScatterPiecesExplode: second color is tweened between this and the next	
+D_L06_001621D0	scatter_explode_color_b_to	descriptive	config/names_local.tsv	ScatterPiecesExplode: second color tween end	
+D_L06_001621D4	scatter_explode_life_ticks	descriptive	config/names_local.tsv	ScatterPiecesExplode: particle life is random between this and twice it	
+D_L06_001621E4	scatter_explode_sprite	descriptive	config/names_local.tsv	ScatterPiecesExplode: low half of the PartType02Spawn sprite argument	
+D_L06_001621E8	scatter_explode_sprite_flags	descriptive	config/names_local.tsv	ScatterPiecesExplode: shifted into the high half of the sprite argument	
+D_L06_00201CC8	scatter_explode_spark_colors_start	descriptive	config/names_local.tsv	ScatterPiecesExplode: 6 colors, one picked at random as PartType11Spawn start color	
+D_L06_00201CE0	scatter_explode_spark_colors_end	descriptive	config/names_local.tsv	ScatterPiecesExplode: 6 colors, one picked at random as PartType11Spawn end color	
+D_L06_00162220	shuttle_debris_particles_per_piece	descriptive	config/names_local.tsv	break_apart_shuttle_linked_mobys: particle loop count for each piece	
+D_L06_001621EC	shuttle_debris_particle_speed	descriptive	config/names_local.tsv	break_apart_shuttle_linked_mobys: max random velocity length per frame	
+D_L06_00162200	shuttle_debris_start_size_min	descriptive	config/names_local.tsv	break_apart_shuttle_linked_mobys: random range put in velocity w	
+D_L06_00162204	shuttle_debris_start_size_max	descriptive	config/names_local.tsv	break_apart_shuttle_linked_mobys: random range put in velocity w	
+D_L06_00162208	shuttle_debris_end_size_min	descriptive	config/names_local.tsv	break_apart_shuttle_linked_mobys: random range put in accel w	
+D_L06_0016220C	shuttle_debris_end_size_max	descriptive	config/names_local.tsv	break_apart_shuttle_linked_mobys: random range put in accel w	
+D_L06_00162210	shuttle_debris_color_a_from	descriptive	config/names_local.tsv	break_apart_shuttle_linked_mobys: first particle color tween start	
+D_L06_00162214	shuttle_debris_color_a_to	descriptive	config/names_local.tsv	break_apart_shuttle_linked_mobys: first particle color tween end	
+D_L06_00162218	shuttle_debris_color_b_from	descriptive	config/names_local.tsv	break_apart_shuttle_linked_mobys: second particle color tween start	
+D_L06_0016221C	shuttle_debris_color_b_to	descriptive	config/names_local.tsv	break_apart_shuttle_linked_mobys: second particle color tween end	
+D_L06_001621F0	shuttle_debris_life_ticks	descriptive	config/names_local.tsv	break_apart_shuttle_linked_mobys: particle life is 1 + this * random 0..1	
+D_L06_001621FC	shuttle_debris_time_jitter	descriptive	config/names_local.tsv	break_apart_shuttle_linked_mobys: +-fraction applied to the two later particle timings	
+D_L06_00162224	shuttle_debris_sprite	descriptive	config/names_local.tsv	break_apart_shuttle_linked_mobys: last PartType02Spawn argument (sprite index)	
+D_L06_00162248	red_button_burst_count	descriptive	config/names_local.tsv	emit_red_button_particle_burst: number of particles spawned	
+D_L06_00162244	red_button_burst_scale	descriptive	config/names_local.tsv	emit_red_button_particle_burst: scales the PartType11Spawn size and speed	
+D_L06_00201D20	red_button_burst_colors_start	descriptive	config/names_local.tsv	emit_red_button_particle_burst: 6 colors, one picked as the start color	
+D_L06_00201D38	red_button_burst_colors_end	descriptive	config/names_local.tsv	emit_red_button_particle_burst: 6 colors, one picked as the end color	
+D_L06_001622A0	vector_stream_moby_scale	descriptive	config/names_local.tsv	update_moby_vector_streams_and_particle_burst: times the class scale into moby scale	
+D_L06_001622C4	vector_stream_regen_ticks	descriptive	config/names_local.tsv	update_moby_vector_streams_and_particle_burst: each stream is rebuilt when its timer runs out, then reset to this	
+D_L06_001622C8	vector_stream_fade_ticks	descriptive	config/names_local.tsv	draw_moby_vector_streams: passed with the regen ticks to the stream draw, which divides by it	
+D_L06_00162288	vector_stream_uv_scroll	descriptive	config/names_local.tsv	update_moby_vector_streams_and_particle_burst: advanced by speed*frame time and wrapped at 1	
+D_L06_0016228C	vector_stream_uv_scroll_speed	descriptive	config/names_local.tsv	update_moby_vector_streams_and_particle_burst: per-frame step of the uv scroll	
+D_L06_00162294	vector_stream_length	descriptive	config/names_local.tsv	update_moby_vector_streams_and_particle_burst: 30 points from -len/2 in len/30 steps	
+D_L06_00162290	vector_stream_jitter	descriptive	config/names_local.tsv	update_moby_vector_streams_and_particle_burst: random offset length per stream point	
+D_L06_00162298	vector_stream_matrix_scale	descriptive	config/names_local.tsv	update/draw_moby_vector_streams: set_scale_matrix on the moby rotation	
+D_L06_001FEBE0	vector_stream_rotations	descriptive	config/names_local.tsv	update/draw_moby_vector_streams: 4 euler rotations, one per stream	
+D_L06_001622A4	vector_stream_burst_color_from	descriptive	config/names_local.tsv	update_moby_vector_streams_and_particle_burst: burst particle color tween start	
+D_L06_001622A8	vector_stream_burst_color_to	descriptive	config/names_local.tsv	update_moby_vector_streams_and_particle_burst: burst particle color tween end	
+D_L06_001622AC	vector_stream_burst_size_min	descriptive	config/names_local.tsv	update_moby_vector_streams_and_particle_burst: random burst particle scale range	
+D_L06_001622B0	vector_stream_burst_size_max	descriptive	config/names_local.tsv	update_moby_vector_streams_and_particle_burst: random burst particle scale range	
+D_L06_001622B4	vector_stream_burst_life_min	descriptive	config/names_local.tsv	update_moby_vector_streams_and_particle_burst: random life ticks range	
+D_L06_001622B8	vector_stream_burst_life_max	descriptive	config/names_local.tsv	update_moby_vector_streams_and_particle_burst: random life ticks range	
+D_L06_001622BC	vector_stream_burst_speed_min	descriptive	config/names_local.tsv	update_moby_vector_streams_and_particle_burst: random velocity length range	
+D_L06_001622C0	vector_stream_burst_speed_max	descriptive	config/names_local.tsv	update_moby_vector_streams_and_particle_burst: random velocity length range	
+D_L06_00162278	vector_stream_hit_line_half_length	descriptive	config/names_local.tsv	test_moby_vector_stream_collision_lines: line runs from +x to -x	
+D_L06_0016227C	vector_stream_hit_line_y	descriptive	config/names_local.tsv	test_moby_vector_stream_collision_lines: the two lines sit at +y and -y	
+D_L06_00162280	vector_stream_hit_line_z	descriptive	config/names_local.tsv	test_moby_vector_stream_collision_lines: z of both line ends	
+D_L06_00162250	vector_stream_alpha_a	descriptive	config/names_local.tsv	draw_moby_vector_streams: bits 0-1 of the GS ALPHA register	
+D_L06_00162254	vector_stream_alpha_b	descriptive	config/names_local.tsv	draw_moby_vector_streams: shifted to bit 2 of the GS ALPHA register	
+D_L06_00162258	vector_stream_alpha_c	descriptive	config/names_local.tsv	draw_moby_vector_streams: shifted to bit 4 of the GS ALPHA register	
+D_L06_0016225C	vector_stream_alpha_d	descriptive	config/names_local.tsv	draw_moby_vector_streams: shifted to bit 6 of the GS ALPHA register	
+D_L06_00162270	vector_stream_color_a	descriptive	config/names_local.tsv	draw_moby_vector_streams: first of two colors the stream draw blends	
+D_L06_00162274	vector_stream_color_b	descriptive	config/names_local.tsv	draw_moby_vector_streams: second of two colors the stream draw blends	
+D_L06_0016D0E0	blarg_cutscene_state	descriptive	config/names_local.tsv	update_gated_moby_effects: cutscene block with scene id +0x30, frame +0x34, camera moby +0x180	
+D_L05_0016CD60	rilgar_cutscene_state	descriptive	config/names_local.tsv	update_hoverboard_girl_cutscene_instances: moby count/list and scene id +0x30, like batalia_cutscene_state	
+D_L05_00161E78	drain_cover_spray_life	descriptive	config/names_local.tsv	emit_drain_cover_particles: particle life ticks; drain_cover_update times the warning by it	
+D_L05_00161E6C	drain_cover_gravity	descriptive	config/names_local.tsv	drain_cover_update: subtracted from z velocity each frame and sets the launch speed	
+D_L05_00161E94	drain_cover_air_wobble	descriptive	config/names_local.tsv	drain_cover_update: tilt amount passed to update_drain_cover_tilt while airborne	
+D_L05_00161E70	drain_cover_bob_accel	descriptive	config/names_local.tsv	drain_cover_update: ApproachWithVelocity accel/decel while bobbing on the water	
+D_L05_00161EA8	drain_cover_warning_spray_height	descriptive	config/names_local.tsv	drain_cover_update: spray top above home before the cover launches	
+D_L05_00161EAC	drain_cover_burst_speed_min	descriptive	config/names_local.tsv	drain_cover_update: random outward speed range of the warning burst	
+D_L05_00161EB0	drain_cover_burst_speed_max	descriptive	config/names_local.tsv	drain_cover_update: random outward speed range of the warning burst	
+D_L05_00161EB4	drain_cover_burst_color_a	descriptive	config/names_local.tsv	drain_cover_update: first PartType02Spawn color of the warning burst	
+D_L05_00161EB8	drain_cover_burst_color_b	descriptive	config/names_local.tsv	drain_cover_update: second PartType02Spawn color of the warning burst	
+D_L05_00161EBC	drain_cover_burst_rise_max	descriptive	config/names_local.tsv	drain_cover_update: max random upward speed of the warning burst	
+D_L05_00161EC0	drain_cover_push_radius	descriptive	config/names_local.tsv	drain_cover_update: xy distance under which the hero below gets pushed out	
+D_L05_00161E74	drain_cover_spray_spacing	descriptive	config/names_local.tsv	emit_drain_cover_particles: height range divided by it gives the particle count	
+D_L05_00161E7C	drain_cover_spray_size_min	descriptive	config/names_local.tsv	emit_drain_cover_particles: random particle size range	
+D_L05_00161E80	drain_cover_spray_size_max	descriptive	config/names_local.tsv	emit_drain_cover_particles: random particle size range	
+D_L05_00161E88	drain_cover_spray_rise_speed	descriptive	config/names_local.tsv	emit_drain_cover_particles: upward velocity per frame	
+D_L05_00161E8C	drain_cover_spray_color	descriptive	config/names_local.tsv	emit_drain_cover_particles: color passed to create_particle_with_velocity_and_lifetime	
+D_L05_00161E90	drain_cover_spray_radius	descriptive	config/names_local.tsv	emit_drain_cover_particles: max random radius around the cover	
+D_L05_00161E98	drain_cover_wobble_amount	descriptive	config/names_local.tsv	update_drain_cover_tilt: times the sine phases added to the tilt targets	
+D_L05_00161E9C	drain_cover_tilt_accel	descriptive	config/names_local.tsv	update_drain_cover_tilt: first rate (deg, times frame time sq) of the tilt approach	
+D_L05_00161EA0	drain_cover_tilt_decel	descriptive	config/names_local.tsv	update_drain_cover_tilt: second rate (deg, times frame time sq) of the tilt approach	
+D_L05_00161EA4	drain_cover_tilt_max_speed	descriptive	config/names_local.tsv	update_drain_cover_tilt: max tilt speed (deg, times frame time)	
+D_L05_0015F544	rilgar_fog_color_red	descriptive	config/names_local.tsv	update_fog_zone: first fog color byte swapped between the two settings (L00 level_fog_color_red slot)	
+D_L05_0015F545	rilgar_fog_color_green	descriptive	config/names_local.tsv	update_fog_zone: second fog color byte swapped between the two settings	
+D_L05_0015F546	rilgar_fog_color_blue	descriptive	config/names_local.tsv	update_fog_zone: third fog color byte, like level_fog_color_blue	
+D_L05_0015F548	rilgar_fog_near_distance	descriptive	config/names_local.tsv	update_fog_zone: fog setting float, like level_fog_near_distance	
+D_L05_0015F54C	rilgar_fog_far_distance	descriptive	config/names_local.tsv	update_fog_zone: fog setting float (33792 in the second setting), like level_fog_far_distance	
+D_L05_0015F550	rilgar_fog_near_intensity	descriptive	config/names_local.tsv	update_fog_zone: fog setting float (255 in the second setting), like level_fog_near_intensity	
+D_L05_0015F554	rilgar_fog_far_intensity	descriptive	config/names_local.tsv	update_fog_zone: fog setting float, like level_fog_far_intensity	
+D_L05_001612C0	rilgar_zone_tint_red	descriptive	config/names_local.tsv	update_fog_zone: byte 0 of a color tweened by the hero's side of the gate volume	
+D_L05_001612C1	rilgar_zone_tint_green	descriptive	config/names_local.tsv	update_fog_zone: byte 1 of the tweened color	
+D_L05_001612C2	rilgar_zone_tint_blue	descriptive	config/names_local.tsv	update_fog_zone: byte 2 of the tweened color	
+D_L05_001612C3	rilgar_zone_tint_alpha	descriptive	config/names_local.tsv	update_fog_zone: byte 3 of the tweened color	
+D_L05_00161DF8	electric_gate_last_draw_frame	descriptive	config/names_local.tsv	electric_gate_update: draw callback added once per frame, guarded by this frame number	
+D_L05_0020BA80	electric_gate_quad_uvs	descriptive	config/names_local.tsv	draw_electric_gate_beams: 4 uv pairs copied into every quad	
+D_L05_0020BAA0	electric_gate_outer_corners	descriptive	config/names_local.tsv	draw_electric_gate_beams: 4 corners of the layer-1 quads, raised by row	
+D_L05_0020BAE0	electric_gate_inner_corners	descriptive	config/names_local.tsv	draw_electric_gate_beams: 4 corners of the layer-0 quads, raised by row	
+D_L05_00161DFC	electric_gate_outer_color_from	descriptive	config/names_local.tsv	draw_electric_gate_beams: layer-1 color tween start, pulsed by a sine	
+D_L05_00161E00	electric_gate_outer_color_to	descriptive	config/names_local.tsv	draw_electric_gate_beams: layer-1 color tween end	
+D_L05_00161E04	electric_gate_inner_color_from	descriptive	config/names_local.tsv	draw_electric_gate_beams: layer-0 color tween start, pulsed by a sine	
+D_L05_00161E08	electric_gate_inner_color_to	descriptive	config/names_local.tsv	draw_electric_gate_beams: layer-0 color tween end	
+D_L05_00161E30	electric_gate_alpha_a	descriptive	config/names_local.tsv	draw_electric_gate_beams: bits 0-1 of the GS ALPHA word	
+D_L05_00161E34	electric_gate_alpha_b	descriptive	config/names_local.tsv	draw_electric_gate_beams: shifted to bit 2 of the GS ALPHA word	
+D_L05_00161E38	electric_gate_alpha_c	descriptive	config/names_local.tsv	draw_electric_gate_beams: shifted to bit 4 of the GS ALPHA word	
+D_L05_00161E3C	electric_gate_alpha_d	descriptive	config/names_local.tsv	draw_electric_gate_beams: shifted to bit 6 of the GS ALPHA word	
+D_L05_00161E58	electric_gate_effect_tex	descriptive	config/names_local.tsv	draw_electric_gate_beams: GetEffectTex index for every beam quad	
+D_L05_0015F4FC	rilgar_fade_level	descriptive	config/names_local.tsv	elevator_with_button_update: ApproachValue fade 0..1 copied here, the L05 copy of gFadeLvl	
+D_L05_00161F88	lift_camera_distance	descriptive	config/names_local.tsv	lift_camera_view: camera point distance along the moby's forward row	
+D_L05_00161F80	lift_camera_height	descriptive	config/names_local.tsv	lift_camera_view: added to the camera point z	
+D_L05_00161F84	lift_camera_pitch_deg	descriptive	config/names_local.tsv	lift_camera_view: degrees, converted to radians for the camera pitch	
+D_L05_00161F40	triggered_gate_rise_accel	descriptive	config/names_local.tsv	update_triggered_gate_motion: ApproachWithVelocity accel toward topZ	
+D_L05_00161F44	triggered_gate_rise_decel	descriptive	config/names_local.tsv	update_triggered_gate_motion: ApproachWithVelocity decel toward topZ	
+D_L05_00161F48	triggered_gate_rise_max_speed	descriptive	config/names_local.tsv	update_triggered_gate_motion: ApproachWithVelocity speed cap toward topZ	
+D_L05_00161F4C	triggered_gate_swing_accel	descriptive	config/names_local.tsv	update_triggered_gate_motion: SteerAngleWithVelocity accel (deg) back to 0	
+D_L05_00161F50	triggered_gate_swing_decel	descriptive	config/names_local.tsv	update_triggered_gate_motion: SteerAngleWithVelocity decel (deg)	
+D_L05_00161F54	triggered_gate_swing_max_speed	descriptive	config/names_local.tsv	update_triggered_gate_motion: SteerAngleWithVelocity speed cap (deg)	
+D_L05_001BAE30	rilgar_saved_moby_bytes	descriptive	config/names_local.tsv	pipe_mounted_grating_update: table passed to record_moby_context_bytes to keep the moby command byte	
+D_L05_00211E60	rilgar_ocean_grid	descriptive	config/names_local.tsv	draw_ocean_grid_outside_clip_volumes: grid passed to draw_textured_grid	
+D_L05_00161F98	race_girl_dialogue_name	descriptive	config/names_local.tsv	update_hoverboard_girl_cutscene_instances: macro race_girl_name, stored as the dialogue name	
+D_L05_00215F00	rilgar_race_camera_vectors	descriptive	config/names_local.tsv	hoverboard girl update: macro race_camera_vectors, eye/look pairs for set_race_camera	
+D_L05_00161FB0	qwarks_bouncer_dialogue_name	descriptive	config/names_local.tsv	qwarks_bouncer_update: stored in the dialogue state +0x20 (dialogue_name)	
+D_L05_00161FB8	shady_salesman_dialogue_name	descriptive	config/names_local.tsv	shady_salesman_update: stored in the dialogue state +0x20 (dialogue_name)	
+D_L05_00161FC8	television_scale	descriptive	config/names_local.tsv	television_update: times the class scale into moby scale	
 func_001E9770	noop_callback_a	descriptive	the NTSC decomp	noop_callback_a at US boot 0x001E93F0 (src/gameplay/update_resident_gameplay_state.c); US function table counterpart	
 func_001E9788	noop_callback_d	descriptive	the NTSC decomp	noop_callback_d at US boot 0x001E9408 (src/gameplay/update_resident_gameplay_state.c); US function table counterpart	
 func_001E9790	noop_callback_e	descriptive	the NTSC decomp	noop_callback_e at US boot 0x001E9410 (src/gameplay/state/update_gameplay_frame.c); US function table counterpart	
@@ -5096,7 +5910,6 @@ func_001F7EF8	fast_draw_quad_real	candidate	the NTSC decomp	held-alias: fast_dra
 func_001F9E10	set_vector_length_xy	candidate	the NTSC decomp	held-alias: set_vector_length_xy at US boot 0x001F9C48 (src/assembly/textbin/math/vectors/set_vector_length_xy.c); US function table counterpart	bolt_normalize_xy,cap_0e00,normalize_vector_xy,scale_collision_vector,scale_vector_4318,scale_vector_5e80,transform_vector,trooper_scale,vdir_cc2e8
 func_001F9E58	clamp_vector_length	candidate	the NTSC decomp	held-alias: clamp_vector_length at US boot 0x001F9C90 (src/assembly/textbin/math/vectors/clamp_vector_length.c); US function table counterpart	jet_scale_vector,scale_vector_xyz_1638
 func_001FA4F0	multiply_matrix3x3	candidate	the NTSC decomp	held-alias: multiply_matrix3x3 at US boot 0x001FA328 (src/assembly/textbin/math/matrices/multiply_matrix3x3.c); US function table counterpart	matrix_mul_dba20,matrix_mul_dc4b8,multiply_matrix_basis_columns
-func_001FA5C8	quaternion_nlerp	candidate	the NTSC decomp	held-alias: quaternion_nlerp at US boot 0x001FA400 (src/assembly/textbin/math/quaternions/quaternion_nlerp.c); US function table counterpart	slerp_67e8
 func_001FA648	quaternion_to_rotation_basis	candidate	the NTSC decomp	held-alias: quaternion_to_rotation_basis at US boot 0x001FA480 (src/assembly/textbin/math/quaternions/quaternion_to_rotation_basis.c); US function table counterpart	quaternion_rotation_basis
 func_001FA8F0	fast_bsphere_check	candidate	the NTSC decomp	held-alias: fast_bsphere_check at US boot 0x001FA728 (src/assembly/textbin/fast_bsphere_check.c); US function table counterpart	sphere_in_view,sphere_in_view_7920,sphere_visible,sphere_visible_ff640
 func_0020E3D0	advance_moby_animation	candidate	the NTSC decomp	held-alias: advance_moby_animation at US boot 0x0020D580 (src/assembly/textbin/gameplay/animation/advance_moby_animation.c); US function table counterpart	advance_moby_animation_alt,advance_resident_object_animation
@@ -5114,7 +5927,6 @@ D_00160450	preview_request_count	candidate	the NTSC decomp	held-alias: preview_r
 D_0016129C	moby_occl_cluster_count	candidate	the NTSC decomp	held-alias: moby_occl_cluster_count at US boot 0x0016119C (include/rnc/gameplay/state/game_globals.h); US/PAL address translation (code of both refers to it)	moby_occl_cluster_count_gp
 D_00161310	decoder_thread	candidate	the NTSC decomp	held-alias: decoder_thread at US boot 0x00161210 (include/rnc/video/decoder/decoder_globals.h); US/PAL address translation (code of both refers to it)	decoder_thread_id
 D_L00_0015F0E0	level_file_path_format	candidate	the NTSC decomp	held-alias: level_file_path_format at US level 00 0x0015EFE0 (src/overlays/shared/rendering/debug/001f36f8.c); US/PAL address translation (code of both refers to it)	level_file_path_format_gp
-D_L00_00160088	texture_count	candidate	the NTSC decomp	held-alias: texture_count at US level 00 0x0015FFC8 (src/overlays/shared/world/loaders/load_level_gameplay.c); US/PAL address translation (code of both refers to it)	texture_count_macro
 D_L00_001614B0	spin_angles	candidate	the NTSC decomp	held-alias: spin_angles at US level 00 0x001613E0 (src/overlays/shared/gameplay/entities/camera_object.c); US/PAL address translation (code of both refers to it)	spin_angles_x
 D_L00_001E7C88	level_directory	candidate	the NTSC decomp	held-alias: level_directory at US level 00 0x001E7938 (src/overlays/shared/rendering/debug/001f36f8.c); US/PAL address translation (code of both refers to it)	level_directory_macro
 D_L04_00160058	moby_array	candidate	the NTSC decomp	held-alias: moby_array at US level 04 0x0015FFD8 (include/rnc/overlay/level_labels.h); US/PAL address translation (code of both refers to it)	level_moby_table,level_mobys
