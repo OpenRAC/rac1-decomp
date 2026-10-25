@@ -21,45 +21,45 @@ void update_batalia_item_triggers_and_help(char *m) {
     }
     if (ia_p[29] == 0) {
         if (is_point_inside_clip_volume(&hero_p.motion.pos, data->first)) {
-            elapsed = scale_ticks(D_0015EFA4) - HR[48].best * 600;
+            elapsed = scale_ticks(gameplay_event_frame_count) - HR[48].best * 600;
             if ((int)((float)scale_ticks(18) * 60.0f) < elapsed || HR[48].best * 600 == 0) {
                 Help_Request(8000, 0x30);
             } else {
-                time = scale_ticks(D_0015EFA4) / 600;
+                time = scale_ticks(gameplay_event_frame_count) / 600;
                 if (HR[48].best < time)
-                    HR[48].best = scale_ticks(D_0015EFA4) / 600;
+                    HR[48].best = scale_ticks(gameplay_event_frame_count) / 600;
             }
         }
     }
     if (ia_p[29] != 0) {
         if (is_point_inside_clip_volume(&hero_p.motion.pos, data->first) && alt_p[0x2F] == 0) {
             if (HR[49].count != 0) {
-                elapsed = scale_ticks(D_0015EFA4) - HR[49].best * 600;
+                elapsed = scale_ticks(gameplay_event_frame_count) - HR[49].best * 600;
                 if ((int)((float)scale_ticks(18) * 60.0f) < elapsed || HR[49].best * 600 == 0) {
                     Help_Request(8001, 0x31);
                 } else {
-                    time = scale_ticks(D_0015EFA4) / 600;
+                    time = scale_ticks(gameplay_event_frame_count) / 600;
                     if (HR[49].best < time)
-                        HR[49].best = scale_ticks(D_0015EFA4) / 600;
+                        HR[49].best = scale_ticks(gameplay_event_frame_count) / 600;
                 }
             } else {
                 HR[49].count++;
-                time = scale_ticks(D_0015EFA4) / 600;
+                time = scale_ticks(gameplay_event_frame_count) / 600;
                 if (HR[49].best < time)
-                    HR[49].best = scale_ticks(D_0015EFA4) / 600;
-                HR[49].flags = HR[49].flags | (1 << D_0015EE84) | 0x80000000;
+                    HR[49].best = scale_ticks(gameplay_event_frame_count) / 600;
+                HR[49].flags = HR[49].flags | (1 << g_current_level_index) | 0x80000000;
             }
         }
     }
     if (ia_p[28] == 0) {
         if (is_point_inside_clip_volume(&hero_p.motion.pos, data->second) && D_0013DE4B[7] != 0) {
-            elapsed = scale_ticks(D_0015EFA4) - HR[50].best * 600;
+            elapsed = scale_ticks(gameplay_event_frame_count) - HR[50].best * 600;
             if ((int)((float)scale_ticks(18) * 60.0f) < elapsed || HR[50].best * 600 == 0) {
                 Help_Request(8002, 0x32);
             } else {
-                time = scale_ticks(D_0015EFA4) / 600;
+                time = scale_ticks(gameplay_event_frame_count) / 600;
                 if (HR[50].best < time)
-                    HR[50].best = scale_ticks(D_0015EFA4) / 600;
+                    HR[50].best = scale_ticks(gameplay_event_frame_count) / 600;
             }
             goto sample_volume;
         }
@@ -67,20 +67,20 @@ void update_batalia_item_triggers_and_help(char *m) {
     if (ia_p[28] != 0) {
         if (is_point_inside_clip_volume(&hero_p.motion.pos, data->second) && D_0013DE4B[7] != 0) {
             if (HR[112].count != 0) {
-                elapsed = scale_ticks(D_0015EFA4) - HR[112].best * 600;
+                elapsed = scale_ticks(gameplay_event_frame_count) - HR[112].best * 600;
                 if ((int)((float)scale_ticks(18) * 60.0f) < elapsed || HR[112].best * 600 == 0) {
                     Help_Request(8005, 0x70);
                 } else {
-                    time = scale_ticks(D_0015EFA4) / 600;
+                    time = scale_ticks(gameplay_event_frame_count) / 600;
                     if (HR[112].best < time)
-                        HR[112].best = scale_ticks(D_0015EFA4) / 600;
+                        HR[112].best = scale_ticks(gameplay_event_frame_count) / 600;
                 }
             } else {
                 HR[112].count++;
-                time = scale_ticks(D_0015EFA4) / 600;
+                time = scale_ticks(gameplay_event_frame_count) / 600;
                 if (HR[112].best < time)
-                    HR[112].best = scale_ticks(D_0015EFA4) / 600;
-                HR[112].flags = HR[112].flags | (1 << D_0015EE84) | 0x80000000;
+                    HR[112].best = scale_ticks(gameplay_event_frame_count) / 600;
+                HR[112].flags = HR[112].flags | (1 << g_current_level_index) | 0x80000000;
             }
         }
     }

@@ -36,14 +36,14 @@ void DrawFleetHud(char *moby) {
     update_fighter_jet_target_lock((int)moby, d);
     if (*(int *)(d + 0x88) != 0) {
         project_world_point_to_screen_pixels(*(char **)(d + 0x88) + 0x10, &sp10, &sp14, 0);
-        if (*(int *)(d + 0x8C) > *(int *)&D_L17_001621F0) {
-            t = IntToFloat(*(int *)(d + 0x8C) - *(int *)&D_L17_001621F0);
-            t = t / IntToFloat(*(int *)&D_L17_001621F4);
+        if (*(int *)(d + 0x8C) > *(int *)&fleet_jet_lock_anim_start) {
+            t = IntToFloat(*(int *)(d + 0x8C) - *(int *)&fleet_jet_lock_anim_start);
+            t = t / IntToFloat(*(int *)&fleet_jet_lock_anim_frames);
             m = 2.0f * (1.0f - t);
             k = t * 5.0f + 1.0f;
             if (m > 1.0f) m = 1.0f;
             c = func_001FA898_r(m * 96.0f);
-            func_L17_002EBF08_f(IntToFloat(sp10), IntToFloat(sp14), k, normalize_angle(IntToFloat(D_L17_0015F6B0) / 30.0f), 0, 0xFF, 0, c);
+            func_L17_002EBF08_f(IntToFloat(sp10), IntToFloat(sp14), k, normalize_angle(IntToFloat(fleet_frame_count) / 30.0f), 0, 0xFF, 0, c);
             *(int *)(d + 0xEC) = 0;
         } else {
             a = 0xFF;
@@ -59,9 +59,9 @@ void DrawFleetHud(char *moby) {
     for (i = 0; i < n; i++) {
         g = D_0013E633 + 0xE1D;
         if (i < g[0x15F6]) {
-            append_scaled_screen_triangle_strip(x, y, 0.5f, D_L17_001D9CB0, 0x19, 0xFFFFF3, 0x50008F00);
+            append_scaled_screen_triangle_strip(x, y, 0.5f, fleet_hud_ammo_pip_shape, 0x19, 0xFFFFF3, 0x50008F00);
         } else {
-            append_scaled_screen_triangle_strip(x, y, 0.5f, D_L17_001D9CB0, 0x19, 0xFFFFF3, 0x20004F00);
+            append_scaled_screen_triangle_strip(x, y, 0.5f, fleet_hud_ammo_pip_shape, 0x19, 0xFFFFF3, 0x20004F00);
         }
         n = g[0x15F7];
         if (i == n >> 1) {
@@ -77,7 +77,7 @@ void DrawFleetHud(char *moby) {
     append_rotated_sprite_quad(ex, ey, 40.0f, 40.0f, 0.0f, 0x3F, 0x3F, GetEffectTex(0x12), 0xFFFFF3, 0xFF20FF20, 0, 0, 0.5f, 0.5f);
     append_rotated_sprite_quad(ex, ey, 10.0f, 10.0f, 0.0f, 0x1F, 0x1F, GetEffectTex(8), 0xFFFFF3, 0xFF20FF20, 0, 0, 0.5f, 0.5f);
     b = D_0013E633 + 0xE1D;
-    if (*(float *)(b + 0x15FC) < *(float *)(b + 0x1600) / 10.0f && (D_L17_0015F6B0 / 90) & 1) {
+    if (*(float *)(b + 0x15FC) < *(float *)(b + 0x1600) / 10.0f && (fleet_frame_count / 90) & 1) {
         func_001F6F40_c(0x100, 0x186, 0x80000080L, func_001FE540_id(0x52C0), 0x64);
     }
     if (*(unsigned char *)(moby + 0x20) == 8) {
@@ -97,9 +97,9 @@ void DrawFleetHud(char *moby) {
     for (j = lo; j <= hi; j++) {
         idx = (j & 0xE7) | ((j & 0x10) >> 1) | ((j & 8) << 1);
         if (j < v) {
-            (*(int **)&D_L17_00162200)[idx] = D_L17_001D9E38[idx];
+            (*(int **)&fleet_hud_health_clut)[idx] = fleet_hud_health_clut_backup[idx];
         } else {
-            (*(int **)&D_L17_00162200)[idx] = 0x80000000;
+            (*(int **)&fleet_hud_health_clut)[idx] = 0x80000000;
         }
     }
     *(int *)(d + 0xF4) = v;

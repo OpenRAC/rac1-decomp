@@ -4,8 +4,8 @@ void gadgetron_ceo_update(L16ChallengeMoby *m) {
     L16ChallengeActivation *activation = (L16ChallengeActivation *)d->activation;
     float rate, head_rate;
     int tracking;
-    if (m->visible && FastVecDist(m->position, D_L16_00167240) < 28.0f) {
-        func_L00_0025B178(m);
+    if (m->visible && FastVecDist(m->position, kalebo3_camera_pos) < 28.0f) {
+        set_ground_height_band(m);
         m->distance_class = 22;
     }
     attach_big_head_cheat_manipulator_to_matching_moby(m);
@@ -29,24 +29,24 @@ void gadgetron_ceo_update(L16ChallengeMoby *m) {
             PlaceMarkerAheadOfMoby(3.5f, m);
             m->state = 2;
         }
-        if (!gHaveMorphORay[9] && func_001F9D48(D_0013E633 + 0xE9D, m->position) < 3.5f) {
+        if (!gHaveMorphORay[9] && vec_distance_xy(D_0013E633 + 0xE9D, m->position) < 3.5f) {
             int elapsed, period;
             char *statistics;
-            elapsed = scale_ticks(D_0015EFA4);
+            elapsed = scale_ticks(gameplay_event_frame_count);
             period = 600;
             statistics = D_0014171B + 0x34D;
             elapsed -= *(unsigned short *)(statistics + 0x43A) * period;
             if (elapsed > (int)((float)scale_ticks(18) * 60.0f) || *(unsigned short *)(statistics + 0x43A) * period == 0) {
                 Help_Request(0x3E83, 0x87);
-            } else if (scale_ticks(D_0015EFA4) / 600 > *(unsigned short *)(statistics + 0x43A)) {
-                *(unsigned short *)(statistics + 0x43A) = scale_ticks(D_0015EFA4) / 600;
+            } else if (scale_ticks(gameplay_event_frame_count) / 600 > *(unsigned short *)(statistics + 0x43A)) {
+                *(unsigned short *)(statistics + 0x43A) = scale_ticks(gameplay_event_frame_count) / 600;
             }
         }
         if (activation->mode == 3) {
             char *camera;
             char *pose;
             int pending;
-            pending = D_L16_0015F6B0;
+            pending = kalebo3_frame_count;
             activation->previous = (unsigned short)activation->mode;
             activation->mode = 2;
             activation->pending = pending;
@@ -67,7 +67,7 @@ void gadgetron_ceo_update(L16ChallengeMoby *m) {
         break;
     }
     case 2:
-        if (D_L16_0015F6A8 != 2) {
+        if (kalebo3_game_mode != 2) {
             int previous;
             m->state = 1;
             previous = activation->previous;
@@ -78,7 +78,7 @@ void gadgetron_ceo_update(L16ChallengeMoby *m) {
         }
         break;
     case 4:
-        if (D_L16_0015F6A8 == 0) {
+        if (kalebo3_game_mode == 0) {
             m->state = 1;
             grant_inventory_item(31, 1);
             memcard_Save(0, -1);
@@ -110,7 +110,7 @@ void gadgetron_ceo_update(L16ChallengeMoby *m) {
                 int pending;
                 unsigned short previous;
                 previous = activation->mode;
-                pending = D_L16_0015F6B0;
+                pending = kalebo3_frame_count;
                 activation->previous = previous;
                 activation->mode = 4;
                 activation->pending = pending;
@@ -142,19 +142,19 @@ void gadgetron_ceo_update(L16ChallengeMoby *m) {
     if (m->animation == 0) {
         char *player = (char *)&D_0013E633_challenge + 0xE9D;
         tracking = 1;
-        if (func_001F9D48(m->position, player) < 8.0f &&
+        if (vec_distance_xy(m->position, player) < 8.0f &&
             FastDiffRots(m->yaw,
-                func_L00_001FF860(((L16ChallengePlayer *)((char *)&D_0013E633_challenge + 0xE1D))->aim[0] - m->position[0],
+                fast_atan2(((L16ChallengePlayer *)((char *)&D_0013E633_challenge + 0xE1D))->aim[0] - m->position[0],
                     ((L16ChallengePlayer *)((char *)&D_0013E633_challenge + 0xE1D))->aim[1] - m->position[1])) < 1.5707964f) {
             if (FastVecLength(player + 0x80) > 0.01f) d->moving_timer = scale_ticks(120);
-            else func_001F9908(&d->moving_timer);
+            else fast_dec_timer(&d->moving_timer);
         } else if (d->moving_timer) {
             d->moving_timer = 0;
             qcopy(d->target, (char *)&D_0013E633_challenge + 0xEED);
         }
-        if (func_001F9908(&d->target_timer)) {
+        if (fast_dec_timer(&d->target_timer)) {
             float heading;
-            d->target_timer = truncate_float_to_s32(func_001F9878(random_float_between(180.0f, 300.0f)));
+            d->target_timer = truncate_float_to_s32(multiply_global_factor(random_float_between(180.0f, 300.0f)));
             heading = FastAddRots(m->yaw, random_float_between(-90.0f, 90.0f) * 0.017453292f);
             BuildSphericalOffset(d->target, 6.0f, heading, random_float_between(0.0f, 30.0f) * 0.017453292f);
             FastVecAdd(d->target, d->target, m->position);
@@ -173,8 +173,8 @@ void gadgetron_ceo_update(L16ChallengeMoby *m) {
         qcopy(scratch.eye, m->position);
         scratch.eye[2] += 1.0f;
         FastVecSub(scratch.delta, scratch.target, scratch.eye);
-        yaw = FastSubRots(func_L00_001FF860(scratch.delta[0], scratch.delta[1]), m->yaw);
-        pitch = -func_L00_001FF860(func_001F9CE8(scratch.delta), scratch.delta[2]);
+        yaw = FastSubRots(fast_atan2(scratch.delta[0], scratch.delta[1]), m->yaw);
+        pitch = -fast_atan2(vec_length_xy(scratch.delta), scratch.delta[2]);
         if (yaw > 1.5707964f) yaw = 1.5707964f;
         else if (yaw < -1.5707964f) yaw = -1.5707964f;
         if (pitch > 0.5235988f) pitch = 0.5235988f;
@@ -184,6 +184,6 @@ void gadgetron_ceo_update(L16ChallengeMoby *m) {
         d->head_yaw = yaw * 0.3f;
     }
     if (*(unsigned char *)&D_0015EEB0_challenge) *(float *)((char *)d + 0x150) = 2.75f;
-    EaseManipulatorOffsets(rate * D_0015EE64, head_rate * D_0015EE64, m, d->body, 0);
-    EaseManipulatorOffsets(rate * D_0015EE64, head_rate * D_0015EE64, m, d->head, 1);
+    EaseManipulatorOffsets(rate * g_frame_scale_sq, head_rate * g_frame_scale_sq, m, d->body, 0);
+    EaseManipulatorOffsets(rate * g_frame_scale_sq, head_rate * g_frame_scale_sq, m, d->head, 1);
 }

@@ -4,7 +4,7 @@ void JetFighterUpdateL13(Jet47 *m) {
     int state,initial_state;
     if (((JetPlayer47*)(D_0013E633+0xE1D))->state==0x72) return;
     d=m->data; d->hit_class=0;
-    func_001F9908((int*)&d->timer);
+    fast_dec_timer((int*)&d->timer);
     initial_state=m->state;
     if ((unsigned int)(initial_state-6)>=2 && (unsigned char)initial_state!=1 && (unsigned char)initial_state!=2) {
         JetHit47 *hit=(JetHit47*)MobyGetHitMessage(m,0x30001,0);
@@ -17,20 +17,20 @@ void JetFighterUpdateL13(Jet47 *m) {
                     jet_camera47_r.flash=1.0f; jet_camera47_r.ticks=scale_ticks(4);
                     weight=hit->damage*0.05f;
                     BuildSphericalOffset(impulse,d->speed,d->angles[2],-d->angles[1]);
-                    func_L00_001FF548(hit->velocity,hit->velocity,D_0015EE6C*3.0f);
+                    clamp_vec_length(hit->velocity,hit->velocity,g_frame_time*3.0f);
                     FastVecAdd(m->position,m->position,hit->velocity);
-                    func_L00_001FF610(impulse,impulse,hit->velocity);
-                    yaw_delta=FastSubRots(func_L00_001FF860(impulse[0],impulse[1]),d->angles[2]);
-                    d->angles[2]=FastAddRots(d->angles[2],yaw_delta*(D_0015EE60*0.1f)*weight);
-                    pitch_delta=FastSubRots(func_L00_001FF860(func_001F9CE8(impulse),impulse[2]),d->angles[1]);
-                    d->angles[1]=FastAddRots(d->angles[1],pitch_delta*(D_0015EE60*0.1f)*weight);
+                    vec_reflect(impulse,impulse,hit->velocity);
+                    yaw_delta=FastSubRots(fast_atan2(impulse[0],impulse[1]),d->angles[2]);
+                    d->angles[2]=FastAddRots(d->angles[2],yaw_delta*(frame_scale*0.1f)*weight);
+                    pitch_delta=FastSubRots(fast_atan2(vec_length_xy(impulse),impulse[2]),d->angles[1]);
+                    d->angles[1]=FastAddRots(d->angles[1],pitch_delta*(frame_scale*0.1f)*weight);
                 }
             } else {
                 BuildSphericalOffset(impulse,d->speed,d->angles[2],-d->angles[1]);
                 if (hit->source && (unsigned int)(hit->source->class_id-0x52)<2) d->hit_class=(short)hit->source->class_id+10000;
                 jet_camera47_r.flash=0.2f; jet_camera47_r.ticks=scale_ticks(5);
                 ((JetPlayer47*)(D_0013E633+0xE1D))->health=0.0f; m->flags|=0x41;
-                func_L00_0025F4A8(m,impulse,0,0.0f,0.0f,10,3,16,4.0f,2.0f,9.0f,6,1.0f,15.0f,1,1,-1,0);
+                spawn_explosion(m,impulse,0,0.0f,0.0f,10,3,16,4.0f,2.0f,9.0f,6,1.0f,15.0f,1,1,-1,0);
                 m->animation=0; d->death_timer=scale_ticks(240); m->state=6;
             }
         }
@@ -46,7 +46,7 @@ void JetFighterUpdateL13(Jet47 *m) {
         int texture_index,initialized;
         m->state=1; d->animation_frame=0; m->scale=m->model->scale;
         *(float*)((char*)d+0x20)=d->angles[0]; *(float*)((char*)d+0x24)=d->angles[1];
-        limit=func_L00_001FF860(1.0f,D_L13_0016CE70); limit+=limit;
+        limit=fast_atan2(1.0f,D_L13_0016CE70); limit+=limit;
         d->counterC0=0; d->hit_class=0; *(float*)((char*)d+0xAC)=limit; *(float*)((char*)d+0xB0)=limit;
         qcopy(d->angles,m->rotation); qcopy(d->spawn_rotation,m->rotation); qcopy(d->spawn_position,m->position);
         texture_index=d->texture_id;
@@ -59,7 +59,7 @@ void JetFighterUpdateL13(Jet47 *m) {
         jet_palette47=palette;
         if (!initialized) __builtin_memcpy(D_L13_001CC0F0,palette,1024);
         jet_palette_ready47=1; d->wait_timer=1; d->energy=1;
-        if (m->persistent!=0xFF && (D_0014171B+0xAA35)[m->persistent+(D_0015EE84<<4)]==0xFF) m->state=9;
+        if (m->persistent!=0xFF && (D_0014171B+0xAA35)[m->persistent+(g_current_level_index<<4)]==0xFF) m->state=9;
         if (d->group_a>0) jet_group_state(d->group_a,0,0,0);
         if (d->group_b>0) jet_group_state(d->group_b,0,0,0);
         jet_group_switch(D_L13_001CC068,1,1,-1); jet_group_switch(&D_L13_001614D0,1,-1,-1); jet_group_flag(0x102,0);
@@ -68,7 +68,7 @@ void JetFighterUpdateL13(Jet47 *m) {
     }
     case 1: {
         short enter=0;
-        if (m->persistent!=0xFF && (D_0014171B+0xAA35)[m->persistent+(D_0015EE84<<4)]==0xFF) m->state=9;
+        if (m->persistent!=0xFF && (D_0014171B+0xAA35)[m->persistent+(g_current_level_index<<4)]==0xFF) m->state=9;
         else if (d->trigger!=-1 && is_point_inside_clip_volume(D_0013E633+0xE9D,d->trigger)) { d->blend=0.99f; D_L13_0015F4FC=0.99f; enter=1; }
         else if (jet_distance(m,((JetPlayer47*)(D_0013E633+0xE1D))->moby)<2.0f && ((JetPlayer47*)(D_0013E633+0xE1D))->state!=50 && ((JetPlayer47*)(D_0013E633+0xE1D))->state!=29 && !((JetPlayer47*)(D_0013E633+0xE1D))->busy) {
             int pressed=try_set_help_message(7,0x543B)!=0;
@@ -78,31 +78,31 @@ void JetFighterUpdateL13(Jet47 *m) {
             float limit;
             HeroEnterMoveState(50,1); m->scale=m->model->scale;
             *(float*)((char*)d+0x20)=d->angles[0]; *(float*)((char*)d+0x24)=d->angles[1];
-            limit=func_L00_001FF860(1.0f,D_L13_0016CE70); limit+=limit;
+            limit=fast_atan2(1.0f,D_L13_0016CE70); limit+=limit;
             d->counterC0=0; d->hit_class=0; *(float*)((char*)d+0xAC)=limit; *(float*)((char*)d+0xB0)=limit;
             qcopy(d->angles,m->rotation); d->wait_timer=1; d->energy=1; m->state=2; d->lock_index=-1;
-        } else if (d->blend!=0.0f) { ApproachValue(&d->blend,0.0f,D_0015EE6C*4.0f); D_L13_0015F4FC=d->blend; }
+        } else if (d->blend!=0.0f) { ApproachValue(&d->blend,0.0f,g_frame_time*4.0f); D_L13_0015F4FC=d->blend; }
         jet_animate((unsigned char*)m,1.5f);
         break;
     }
     case 2:
-        ApproachValue(&d->blend,1.0f,D_0015EE6C*4.0f); D_L13_0015F4FC=d->blend;
+        ApproachValue(&d->blend,1.0f,g_frame_time*4.0f); D_L13_0015F4FC=d->blend;
         if (d->blend==1.0f) {
             if (d->entry_path!=-1) {
-                JetPath47 *path=&D_L13_0016016C[d->entry_path];
+                JetPath47 *path=&gemlik_scene_points[d->entry_path];
                 Hero_ResetToPosition(path->position,path->rotation,50,1);
                 {
                     int index=d->entry_path;
-                    JetPath47 *paths=D_L13_0016016C;
+                    JetPath47 *paths=gemlik_scene_points;
                     qcopy(m->position,paths[index].position); qcopy(m->rotation,paths[index].rotation);
                 }
             }
             CameraScript(m->position,m->rotation,0,0,0);
-            d->missile_index=0; d->counter6C=0; d->counter70=0; d->missile_timer=0; d->speed=D_0015EE60*0.1f; d->gun_timer=0;
+            d->missile_index=0; d->counter6C=0; d->counter70=0; d->missile_timer=0; d->speed=frame_scale*0.1f; d->gun_timer=0;
             m->alpha=m->render_flags=0xFF; *(int*)((char*)((JetPlayer47*)(D_0013E633+0xE1D))->moby+0x98)=-1;
             qcopy(d->previous_rotation,m->rotation);
             d->angle_a=0; d->angle_b=0; d->angle_c=0; d->angle_d=0; d->angle_e=0; d->angle_f=0; ((JetPlayer47*)(D_0013E633+0xE1D))->craft=m; { unsigned short cls=m->class_id; ((JetPlayer47*)(D_0013E633+0xE1D))->health=255.0f; ((JetPlayer47*)(D_0013E633+0xE1D))->ammo=10; ((JetPlayer47*)(D_0013E633+0xE1D))->pad160E=1; ((JetPlayer47*)(D_0013E633+0xE1D))->ammo2=20; ((JetPlayer47*)(D_0013E633+0xE1D))->class_id=cls; ((JetPlayer47*)(D_0013E633+0xE1D))->ammo3=20; d->hud_previous=255; d->hud_health=0; ((JetPlayer47*)(D_0013E633+0xE1D))->ammo4=3; ((JetPlayer47*)(D_0013E633+0xE1D))->ammo5=3; ((JetPlayer47*)(D_0013E633+0xE1D))->ammo6=3; ((JetPlayer47*)(D_0013E633+0xE1D))->pad160F=0; ((JetPlayer47*)(D_0013E633+0xE1D))->max_health=256.0f; ((JetPlayer47*)(D_0013E633+0xE1D))->health_scale=100.0f; }
-            BuildSphericalOffset(d,D_0015EE60*0.1f,d->angles[2],-d->angles[1]);
+            BuildSphericalOffset(d,frame_scale*0.1f,d->angles[2],-d->angles[1]);
             if (d->group_a>0) jet_group_state(d->group_a,1,1,1);
             if (d->group_b>0) jet_group_state(d->group_b,1,1,1);
             jet_group_switch(D_L13_001CC068,0,0,-1); jet_group_switch(&D_L13_001614D0,0,-1,-1); jet_group_flag(0x102,0);
@@ -113,7 +113,7 @@ void JetFighterUpdateL13(Jet47 *m) {
         break;
     case 4: {
         unsigned char *audio;
-        if (d->blend!=0.0f) { ApproachValue(&d->blend,0.0f,D_0015EE6C*4.0f); D_L13_0015F4FC=d->blend; }
+        if (d->blend!=0.0f) { ApproachValue(&d->blend,0.0f,g_frame_time*4.0f); D_L13_0015F4FC=d->blend; }
         force_help_message(6,0); D_L13_0015F6E8=2;
         audio=D_0013E633+0x1D+d->engine_sound*0x70;
         if (*(Jet47**)(audio+0x88)!=m || !audio[0x74]) { d->engine_sound=-1; d->engine_sound=Moby_PlaySound(0,4,(int)m); }
@@ -126,12 +126,12 @@ void JetFighterUpdateL13(Jet47 *m) {
         ((JetPlayer47*)(D_0013E633+0xE1D))->in_craft=0; *(int*)((char*)((JetPlayer47*)(D_0013E633+0xE1D))->moby+0x98)=0;
         HeroEnterMoveState(0,1); CameraScript2(0); Hud_SetBarValueById(((JetPlayer47*)(D_0013E633+0xE1D))->weapon,0);
         qcopy(m->position,d->spawn_position); qcopy(m->rotation,d->spawn_rotation);
-        m->scale=m->model->scale; func_0020EEE8(m);
+        m->scale=m->model->scale; moby_anim_sphere_lerp(m);
         if (d->group_a>0) jet_group_state(d->group_a,0,0,0);
         if (d->group_b>0) jet_group_state(d->group_b,0,0,0);
         jet_group_switch(D_L13_001CC068,1,1,-1); jet_group_switch(&D_L13_001614D0,1,-1,-1); jet_group_flag(0x102,0);
-        if (d->exit_path!=-1) { JetPath47 *path=&D_L13_0016016C[d->exit_path]; Hero_ResetToPosition(path->position,path->rotation,0,1); }
-        else Hero_ResetToPosition(d->spawn_position,D_L13_0016016C[d->destination_path].rotation,0,1);
+        if (d->exit_path!=-1) { JetPath47 *path=&gemlik_scene_points[d->exit_path]; Hero_ResetToPosition(path->position,path->rotation,0,1); }
+        else Hero_ResetToPosition(d->spawn_position,gemlik_scene_points[d->destination_path].rotation,0,1);
         {
             int id=d->engine_sound;
             unsigned char *audio;
@@ -164,7 +164,7 @@ void JetFighterUpdateL13(Jet47 *m) {
             int active=transition->active;
             if (active==-1) {
                 Hero_OnKilled(); CameraScript2(0);
-                qcopy(m->position,d->spawn_position); qcopy(m->rotation,d->spawn_rotation); func_0020EEE8(m);
+                qcopy(m->position,d->spawn_position); qcopy(m->rotation,d->spawn_rotation); moby_anim_sphere_lerp(m);
                 {
             int id=d->engine_sound;
             unsigned char *audio;
@@ -183,15 +183,15 @@ void JetFighterUpdateL13(Jet47 *m) {
     case 8:
         ((JetPlayer47*)(D_0013E633+0xE1D))->in_craft=0; *(int*)((char*)((JetPlayer47*)(D_0013E633+0xE1D))->moby+0x98)=0; HeroEnterMoveState(0,1); CameraScript2(0);
         if (d->escape_path==-1) { STUB_printf(D_L13_001F4760); qcopy(m->position,d->spawn_position); qcopy(m->rotation,d->spawn_rotation); }
-        else { int index=d->escape_path; JetPath47 *paths=D_L13_0016016C; qcopy(m->position,paths[index].position); qcopy(m->rotation,paths[index].rotation); m->position[2]+=0.57318f; }
-        m->scale=m->model->scale; func_0020EEE8(m);
+        else { int index=d->escape_path; JetPath47 *paths=gemlik_scene_points; qcopy(m->position,paths[index].position); qcopy(m->rotation,paths[index].rotation); m->position[2]+=0.57318f; }
+        m->scale=m->model->scale; moby_anim_sphere_lerp(m);
         if (d->destination_path==-1) STUB_printf(D_L13_001F4798);
         else {
             JetPath47 *path;
             if (d->group_a>0) jet_group_state(d->group_a,0,0,0);
             if (d->group_b>0) jet_group_state(d->group_b,0,0,0);
             jet_group_switch(D_L13_001CC068,1,1,-1); jet_group_switch(&D_L13_001614D0,1,-1,-1); jet_group_flag(0x102,0);
-            path=&D_L13_0016016C[d->destination_path]; Hero_ResetToPosition(path->position,path->rotation,0,1);
+            path=&gemlik_scene_points[d->destination_path]; Hero_ResetToPosition(path->position,path->rotation,0,1);
         }
         if (m->persistent!=0xFF) jet_clear_persistent(m->persistent);
         {

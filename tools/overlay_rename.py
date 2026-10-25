@@ -10,7 +10,9 @@ executable unit before it, which says nothing about what the file holds.
 Each row of file_names.tsv maps that generated path to a descriptive name
 in the same directory. Renaming moves the file (git mv), records the old
 name and the start address in the file's first comment, and rewrites the
-path in config/file_cflags.txt, config/versions/*/map.tsv and docs/.
+path in config/file_cflags.txt, config/versions/*/map.tsv and docs/. A version's
+own copies (src/versions/<K>/overlays/<dir>/<old stem>/func_*.c, tools/version_src.py) move
+to the new stem's directory with it.
 overlay_src.py reads the same table, so a re-run writes to the new name.
 A file's name never reaches the compiled bytes: an overlay function is
 placed by the address in its own symbol.
@@ -64,9 +66,12 @@ def main():
     if dup:
         sys.exit("file_names.tsv: same new name twice: " + ", ".join(sorted(dup)))
     todo = [(o, n) for o, n in rows if (ROOT / o).exists()]
+    vdirs = [(old, new) for o, n in rows for k in sorted(p.name for p in (ROOT / "src/versions").iterdir())
+             for old, new in [(f"src/versions/{k}/{o[4:-2]}", f"src/versions/{k}/{n[4:-2]}")]
+             if (ROOT / old).is_dir()]
     if check:
-        if todo:
-            sys.exit(f"{len(todo)} rows not applied, e.g. {todo[0][0]}")
+        if todo or vdirs:
+            sys.exit(f"{len(todo) + len(vdirs)} rows not applied, e.g. {(todo or vdirs)[0][0]}")
         print(f"{len(rows)} overlay files renamed")
         return
     for old, new in todo:
@@ -75,7 +80,10 @@ def main():
         subprocess.run(["git", "mv", old, new], cwd=ROOT, check=True)
         p = ROOT / new
         p.write_text(note(p.read_text(), Path(old).name))
-    subs = dict(todo)
+    for old, new in vdirs:
+        (ROOT / new).parent.mkdir(parents=True, exist_ok=True)
+        subprocess.run(["git", "mv", old, new], cwd=ROOT, check=True)
+    subs = dict(todo) | dict(vdirs)
     if subs:
         pat = re.compile("|".join(re.escape(o) for o in sorted(subs, key=len, reverse=True)))
         for glob in REFS:
@@ -84,7 +92,7 @@ def main():
                 t2 = pat.sub(lambda m: subs[m.group(0)], t)
                 if t2 != t:
                     p.write_text(t2)
-    print(f"renamed {len(todo)} files")
+    print(f"renamed {len(todo)} files and {len(vdirs)} version directories")
 
 
 if __name__ == "__main__":

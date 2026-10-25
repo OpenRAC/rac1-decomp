@@ -25,10 +25,10 @@ void draw_three_scaled_camera_facing_quads(void) {
     float tilt;
     char *target;
 
-    if (D_L18_0016D2E0.n == scale_ticks((*(int *)&D_L18_00162528) + 1)) {
+    if (veldin2_cutscene_state.n == scale_ticks((*(int *)&deplanetizer_quads_start_tick) + 1)) {
         D_L18_001625E0 = 1.0f;
         D_L18_001625E4 = 0.0f;
-        if (D_L18_0016D2E0.state == 7) {
+        if (veldin2_cutscene_state.state == 7) {
             tilt = -0.15f;
         } else {
             tilt = 0.15f;
@@ -42,17 +42,17 @@ void draw_three_scaled_camera_facing_quads(void) {
     pk.a = 0;
     VU1_addGSregister(0x4A, 0);
     VU1_addGSregister(0x47, 0x51001);
-    func_001F9EC0(mat[3], &D_L18_001625E0, D_L18_00167A50);
+    matrix_mul_vec3(mat[3], &D_L18_001625E0, D_L18_00167A50);
     target = D_L18_00167A50;
     target -= 0x210;
     FastVecAdd(mat[3], mat[3], target);
     FastVecSub(mat[0], mat[3], target);
-    func_L00_001FF4B0(mat[0], mat[0], 1.0f);
+    vec_scale_to_length(mat[0], mat[0], 1.0f);
     *(u128_9780 *)up = 0;
     up[2] = 1.0f;
     up[3] = 1.0f;
     FastVecCross(mat[1], mat[0], up);
-    func_L00_001FF4B0(mat[1], mat[1], 1.0f);
+    vec_scale_to_length(mat[1], mat[1], 1.0f);
     FastVecCross(mat[2], mat[1], mat[0]);
     pk.uv[0] = 1.0f;
     pk.uv[1] = 1.0f;
@@ -68,23 +68,23 @@ void draw_three_scaled_camera_facing_quads(void) {
     pk.col[1] = color;
     pk.col[0] = color;
     for (i = 0; i < 4; i++) {
-        FastVecScale(pk.m[i], D_L18_001DFE50[i], D_L18_001625B0);
-        func_001F9EE8(pk.m[i], pk.m[i], mat);
+        FastVecScale(pk.m[i], D_L18_001DFE50[i], deplanetizer_camera_quad_base_scale);
+        transform_vector(pk.m[i], pk.m[i], mat);
     }
-    func_L00_001FD1D8(&pk, 0, 0);
+    draw_world_quad(&pk, 0, 0);
     color = (*(int *)&D_L18_0016258C);
     pk.col[3] = color;
     pk.col[2] = color;
     pk.col[1] = color;
     pk.col[0] = color;
     for (i = 0; i < 4; i++) {
-        FastVecScale(pk.m[i], D_L18_001DFE50[i], D_L18_001625B0 * 0.75f);
-        func_001F9EE8(pk.m[i], pk.m[i], mat);
+        FastVecScale(pk.m[i], D_L18_001DFE50[i], deplanetizer_camera_quad_base_scale * 0.75f);
+        transform_vector(pk.m[i], pk.m[i], mat);
     }
-    func_L00_001FD1D8(&pk, 0, 0);
+    draw_world_quad(&pk, 0, 0);
     for (i = 0; i < 4; i++) {
-        FastVecScale(pk.m[i], D_L18_001DFE50[i], D_L18_001625B0 * 0.5f);
-        func_001F9EE8(pk.m[i], pk.m[i], mat);
+        FastVecScale(pk.m[i], D_L18_001DFE50[i], deplanetizer_camera_quad_base_scale * 0.5f);
+        transform_vector(pk.m[i], pk.m[i], mat);
     }
-    func_L00_001FD1D8(&pk, 0, 0);
+    draw_world_quad(&pk, 0, 0);
 }

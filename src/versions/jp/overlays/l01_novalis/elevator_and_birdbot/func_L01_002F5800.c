@@ -32,12 +32,12 @@ void TetheredMineUpdate(char *m) {
         FastVecSub(tmp, d + 0xD0, d + 0xE0);
         m[0x20] = 0x65;
         *(u128 *)dir = *(u128 *)tmp;
-        func_L00_0025F4A8(m, dir, m + 0x10, 0.0f, 0.0f, 0x14, 3, 4, 4.0f, 2.0f, 100000.0f, 3.0f, 1, 15.0f, 1, 1, -1, 0);
+        spawn_explosion(m, dir, m + 0x10, 0.0f, 0.0f, 0x14, 3, 4, 4.0f, 2.0f, 100000.0f, 3.0f, 1, 15.0f, 1, 1, -1, 0);
         SpawnDebrisMoby(m, dir, s);
         t = (int *)(d + 0x140);
         for (i = 0; i < 4; i++) {
             if (t[i] != -1) {
-                DeleteMoby((char *)(*(int *)&D_L01_00160058 + (t[i] << 8)));
+                DeleteMoby((char *)(*(int *)&novalis_mobys + (t[i] << 8)));
             }
         }
         DeleteMoby(m);

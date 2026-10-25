@@ -2,7 +2,7 @@ void scan_hero_input_sequences(void) {
     char *g;
     int s;
     int i;
-    if (D_0015EFA0 == 0 && D_0015EF20 == 0) return;
+    if (challenge_mode == 0 && D_0015EF20 == 0) return;
     g = (char *)D_0013E633 + 0xE1D;
     s = 0;
     if (*(int *)(g + 0x198) == scale_ticks(0xF)) {
@@ -12,10 +12,10 @@ void scan_hero_input_sequences(void) {
                 int c = *(int *)(g + 0x450);
                 if (c == 0) {
                     s = 1;
-                    if (D_0015EEB4[0]) s = 2;
+                    if (draw_map51[0]) s = 2;
                 } else if (c == 1) {
                     s = 2;
-                    if (D_0015EEB4[0]) s = 1;
+                    if (draw_map51[0]) s = 1;
                 } else if (c == 3) {
                     s = 3;
                 }

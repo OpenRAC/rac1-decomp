@@ -1,4 +1,4 @@
-void func_L06_002FFF70(char *m) {
+void process_blarg_space_commando_hits(char *m) {
     extern unsigned char D_0013D510[];
     char *d;
     char *t;
@@ -18,15 +18,15 @@ void func_L06_002FFF70(char *m) {
     *(float *)(m + 0x2C) = *(float *)(*(char **)(m + 0x24) + 0x24) * *(float *)&D_L06_00162038;
     update_blarg_space_commando_beam(m);
     if (*(int *)(d + 0x38) != 0) {
-        *(int *)(d + 0x188) = truncate_float_to_s32(func_001F9878(random_float_between(180.0f, 240.0f)));
+        *(int *)(d + 0x188) = truncate_float_to_s32(multiply_global_factor(random_float_between(180.0f, 240.0f)));
         *(int *)(d + 0x38) = 0;
     }
-    func_001F9908((s32 *)(d + 0x188));
+    fast_dec_timer((s32 *)(d + 0x188));
     *(int *)&dt = 0;
     t = MobyGetHitMessage(m, 0x330000, 0);
     r = ComputeHitResponse(m, t, d + 0x20, 0, &hit, &dt, 0, 4);
     if (hit != 1 && (unsigned char)m[0x20] != 0x10) {
-        if (*(int *)&D_0015EE84 == 0xA && t != 0 && *(char **)(t + 0x20) != 0 &&
+        if (*(int *)&g_current_level_index == 0xA && t != 0 && *(char **)(t + 0x20) != 0 &&
             *(short *)(*(char **)(t + 0x20) + 0xA6) == 0x31A && gSkillPoints[0x11] == 0) {
             gSkillPoints[0x11] = 1;
             PlayBankSound(1, 0, 0);
@@ -53,14 +53,14 @@ void func_L06_002FFF70(char *m) {
             m[0x20] = 0xF;
             q = d + 0x60;
             n = scale_ticks(0x3C);
-            a = *(float *)&D_L06_00162040 * D_0015EE6C;
-            b = *(float *)&D_L06_00162044 * D_0015EE6C;
+            a = *(float *)&D_L06_00162040 * g_frame_time;
+            b = *(float *)&D_L06_00162044 * g_frame_time;
             *(short *)(d + 0x26) = n;
             *(float *)(d + 0x7C) = b;
             *(float *)(d + 0x78) = a;
             *(float *)(d + 0xB0) = 8.0f;
             *(float *)(d + 0xB4) = 15.0f;
-            InitKnockback(m, q, func_L00_001FF860(*(float *)(t + 0x10), *(float *)(t + 0x14)), 7, 1, 0);
+            InitKnockback(m, q, fast_atan2(*(float *)(t + 0x10), *(float *)(t + 0x14)), 7, 1, 0);
             *(unsigned char *)(d + 0x117) = 0xFA;
             break;
         }
@@ -71,8 +71,8 @@ void func_L06_002FFF70(char *m) {
             float a, b;
             m[0x20] = 0x10;
             q = d + 0x60;
-            a = *(float *)&D_L06_00162048 * D_0015EE6C;
-            b = *(float *)&D_L06_0016204C * D_0015EE6C;
+            a = *(float *)&D_L06_00162048 * g_frame_time;
+            b = *(float *)&D_L06_0016204C * g_frame_time;
             *(unsigned short *)(m + 0x34) &= 0xEFFF;
             *(float *)(d + 0x78) = a;
             *(float *)(d + 0x7C) = b;
@@ -82,7 +82,7 @@ void func_L06_002FFF70(char *m) {
             lo = *(float *)&bits;
             bits = 0x3E4CCCCD;
             hi = *(float *)&bits;
-            a = func_L00_001FF860(*(float *)(t + 0x10), *(float *)(t + 0x14));
+            a = fast_atan2(*(float *)(t + 0x10), *(float *)(t + 0x14));
             bits = 0x40400000;
             off = *(float *)&bits;
             InitKnockback(m, q, a, 9, 1, 0);
@@ -96,13 +96,13 @@ void func_L06_002FFF70(char *m) {
                 vv[1] = vv[1] + randf_sym(lo, hi);
                 vv[2] = vv[2] + randf_sym(lo, hi);
                 ang = random_angle_radians();
-                spd = random_float_between(off, 5.7f) * D_0015EE6C;
+                spd = random_float_between(off, 5.7f) * g_frame_time;
                 vec2[0] = FastCos(ang) * spd;
                 vec2[1] = FastSin(ang) * spd;
                 vec2[2] = lo;
-                vec2[0] = vec2[0] + FastCos(func_L00_001FF860(*(float *)(t + 0x10), *(float *)(t + 0x14))) * (D_0015EE6C * pull);
-                vec2[1] = vec2[1] + FastSin(func_L00_001FF860(*(float *)(t + 0x10), *(float *)(t + 0x14))) * (D_0015EE6C * pull);
-                vec2[2] = random_float_between(off, 8.5f) * D_0015EE6C;
+                vec2[0] = vec2[0] + FastCos(fast_atan2(*(float *)(t + 0x10), *(float *)(t + 0x14))) * (g_frame_time * pull);
+                vec2[1] = vec2[1] + FastSin(fast_atan2(*(float *)(t + 0x10), *(float *)(t + 0x14))) * (g_frame_time * pull);
+                vec2[2] = random_float_between(off, 8.5f) * g_frame_time;
                 p = spawn_spinning_moby_fragment((int)m, (char *)vv, (char *)vec2);
                 if (p != 0) {
                     *(float *)(p + 0x2C) = *(float *)(p + 0x2C) * 0.4f;
@@ -128,9 +128,9 @@ void func_L06_002FFF70(char *m) {
     }
     {
     char *q = d + 0x120;
-    e = D_L06_001B0FB0[*(int *)(d + 0x180)];
+    e = blarg_paths[*(int *)(d + 0x180)];
     if (FindNearestEligibleMoby(*(float *)(d + 0x198), m, q, 0, 0, e + 4, *e) != 2) {
-        if (*(float *)(d + 0x198) < func_001F9D48(d + 0x170, d + 0x120)) {
+        if (*(float *)(d + 0x198) < vec_distance_xy(d + 0x170, d + 0x120)) {
             *(int *)(d + 0x164) = 2;
         } else if (3.0f < FastAbsF(*(float *)(m + 0x18) - *(float *)(d + 0x128))) {
             *(int *)(d + 0x164) = 2;

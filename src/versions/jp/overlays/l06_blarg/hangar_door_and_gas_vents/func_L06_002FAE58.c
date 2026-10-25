@@ -4,7 +4,7 @@ void alien_queen_update(unsigned char *moby)
     char *target;
     float v[4];
 
-    AlienQueen_ApplyDamage(moby);
+    update_alien_queen_hit_response_and_recovery(moby);
     target = *(char **)(data + 0xB0);
     func_L00_00264B40_q(moby, *(int *)&D_L06_00161F80, 1.9f, data + 0x130);
     if ((unsigned char)moby[0x31] != 0 && func_001F9D10_q(moby + 0x10, D_L06_00167640_q) < 45.0f) {

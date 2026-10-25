@@ -13,7 +13,7 @@ void update_hero_relocation_trigger(char *m) {
                 *(short *)((b << 8) + (int)D_L10_00160058_00299818 + 0xA6) == 0x325) {
                 char *f1 = *(char **)((*(int *)(d + 0x18) << 8) + (int)D_L10_00160058_00299818 + 0x78);
                 char *f2 = *(char **)((b << 8) + (int)D_L10_00160058_00299818 + 0x78);
-                if (D_0014C150[((unsigned char *)m)[0xB0] + (D_0015EE84 << 4)] == 0xFF) {
+                if (saved_mission_state[((unsigned char *)m)[0xB0] + (g_current_level_index << 4)] == 0xFF) {
                     *(int *)(f1 + 8) |= 8;
                     *(int *)(f2 + 8) &= ~8;
                 } else {
@@ -25,7 +25,7 @@ void update_hero_relocation_trigger(char *m) {
     }
     id = *(unsigned short *)(m + 0xB2);
     if (D_L10_001BB9C0.collected[(short)id] != 0 ||
-        ((*(int *)(D_0014171B + 0xAB75 + ((((short)id >> 5) * 4) + (D_0015EE84 << 8))) >> (id & 0x1F)) & 1) != 0) {
+        ((*(int *)(D_0014171B + 0xAB75 + ((((short)id >> 5) * 4) + (g_current_level_index << 8))) >> (id & 0x1F)) & 1) != 0) {
         if (gHaveHeliPack[4] != 0) {
             char *bs = D_L10_00160058_00299818;
             *(unsigned short *)((*(int *)d << 8) + (int)bs + 0x34) |= 1;
@@ -41,13 +41,13 @@ void update_hero_relocation_trigger(char *m) {
                     int r2;
                     if (t1 <= 0xFFFE)
                         *(short *)(T + 0x100) = t1 + 1;
-                    r2 = scale_ticks(D_0015EFA4);
+                    r2 = scale_ticks(gameplay_event_frame_count);
                     if (r2 / 600 > *(unsigned short *)(T + 0x102)) {
-                        *(short *)(T + 0x102) = scale_ticks(D_0015EFA4) / 600;
+                        *(short *)(T + 0x102) = scale_ticks(gameplay_event_frame_count) / 600;
                     }
                     {
                         int w = *(int *)(T + 0x104);
-                        w |= 1 << D_0015EE84;
+                        w |= 1 << g_current_level_index;
                         w |= 0x80000000;
                         *(int *)(T + 0x104) = w;
                     }
@@ -61,17 +61,17 @@ void update_hero_relocation_trigger(char *m) {
             }
         }
     }
-    *(int *)(D_0014171B + 0xAB75 + ((((short)*(unsigned short *)(m + 0xB2) >> 5) * 4) + (D_0015EE84 << 8)))
+    *(int *)(D_0014171B + 0xAB75 + ((((short)*(unsigned short *)(m + 0xB2) >> 5) * 4) + (g_current_level_index << 8)))
         |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
     D_L10_001BAC60[(short)*(unsigned short *)(m + 0xB2) >> 5] |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
     if (*(int *)(d + 8) == -1 || *(int *)d == -1) return;
     if (gHaveHeliPack[4] == 0) {
         char *e = (char *)((*(int *)d << 8) + (int)D_L10_00160058_00299818);
-        int eo = D_0015EE84 << 4;
+        int eo = g_current_level_index << 4;
         unsigned char byte;
         int k;
         *(int *)(e + 0x94) = *(int *)(*(char **)(e + 0x24) + 0x10);
-        byte = D_0014C150[((unsigned char *)m)[0xB0] + eo];
+        byte = saved_mission_state[((unsigned char *)m)[0xB0] + eo];
         if (byte == 0xFF || *(int *)(d + 0x14) == -1) {
             k = *(int *)(d + 0x14);
             Hero_ResetToPosition(D_L10_0016016C + (k << 7) + 0x30, D_L10_0016016C + (k << 7) + 0x70, 0, 1);

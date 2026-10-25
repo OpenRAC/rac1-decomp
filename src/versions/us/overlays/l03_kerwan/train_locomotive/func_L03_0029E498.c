@@ -25,44 +25,44 @@ void update_spline_moby_destruction_and_respawn(char *moby, void *vel_in, int fl
             func_L00_00261B00_0029E498(moby, 3, 5, 2, -1);
         }
         *(short *)(data + 0x14A) = scale_ticks(600);
-        func_L00_0025F4A8(moby, vel, spot, 0.0f, 0.0f, 20, 3, 4, 4.0f, 2.0f, 100000.0f, -1, 3.0f, 15.0f, 1, 1, -1, 0);
-        FastVecScale(push, moby + 0xC0, D_0015EE60 * 0.075f);
-        push[2] += D_0015EE60 * 0.08f;
+        spawn_explosion(moby, vel, spot, 0.0f, 0.0f, 20, 3, 4, 4.0f, 2.0f, 100000.0f, -1, 3.0f, 15.0f, 1, 1, -1, 0);
+        FastVecScale(push, moby + 0xC0, frame_scale * 0.075f);
+        push[2] += frame_scale * 0.08f;
         switch (*(short *)(moby + 0xA6)) {
         case 0x73:
-            spawn_debris_0029E498(moby, 0x6A9, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, D_0015EE70 * 12.0f, push, D_L03_0015F660, D_L03_0015F660);
-            spawn_debris_0029E498(moby, 0x6AA, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, D_0015EE70 * 12.0f, push, D_L03_0015F660, D_L03_0015F660);
-            spawn_debris_0029E498(moby, 0x6AB, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, D_0015EE70 * 12.0f, push, D_L03_0015F660, D_L03_0015F660);
+            spawn_debris_0029E498(moby, 0x6A9, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, kerwan_zero_vec, kerwan_zero_vec);
+            spawn_debris_0029E498(moby, 0x6AA, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, kerwan_zero_vec, kerwan_zero_vec);
+            spawn_debris_0029E498(moby, 0x6AB, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, kerwan_zero_vec, kerwan_zero_vec);
             break;
         case 0x74:
-            spawn_debris_0029E498(moby, 0x6AC, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, D_0015EE70 * 12.0f, push, D_L03_0015F660, D_L03_0015F660);
-            spawn_debris_0029E498(moby, 0x6AD, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, D_0015EE70 * 12.0f, push, D_L03_0015F660, D_L03_0015F660);
-            spawn_debris_0029E498(moby, 0x6AE, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, D_0015EE70 * 12.0f, push, D_L03_0015F660, D_L03_0015F660);
+            spawn_debris_0029E498(moby, 0x6AC, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, kerwan_zero_vec, kerwan_zero_vec);
+            spawn_debris_0029E498(moby, 0x6AD, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, kerwan_zero_vec, kerwan_zero_vec);
+            spawn_debris_0029E498(moby, 0x6AE, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, kerwan_zero_vec, kerwan_zero_vec);
             break;
         case 0x75:
-            spawn_debris_0029E498(moby, 0x6AF, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, D_0015EE70 * 12.0f, push, D_L03_0015F660, D_L03_0015F660);
-            spawn_debris_0029E498(moby, 0x6B0, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, D_0015EE70 * 12.0f, push, D_L03_0015F660, D_L03_0015F660);
-            spawn_debris_0029E498(moby, 0x6B1, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, D_0015EE70 * 12.0f, push, D_L03_0015F660, D_L03_0015F660);
+            spawn_debris_0029E498(moby, 0x6AF, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, kerwan_zero_vec, kerwan_zero_vec);
+            spawn_debris_0029E498(moby, 0x6B0, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, kerwan_zero_vec, kerwan_zero_vec);
+            spawn_debris_0029E498(moby, 0x6B1, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, kerwan_zero_vec, kerwan_zero_vec);
             break;
         case 0x76:
-            spawn_debris_0029E498(moby, 0x6B2, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, D_0015EE70 * 12.0f, push, D_L03_0015F660, D_L03_0015F660);
-            spawn_debris_0029E498(moby, 0x6B3, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, D_0015EE70 * 12.0f, push, D_L03_0015F660, D_L03_0015F660);
-            spawn_debris_0029E498(moby, 0x6B4, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, D_0015EE70 * 12.0f, push, D_L03_0015F660, D_L03_0015F660);
+            spawn_debris_0029E498(moby, 0x6B2, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, kerwan_zero_vec, kerwan_zero_vec);
+            spawn_debris_0029E498(moby, 0x6B3, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, kerwan_zero_vec, kerwan_zero_vec);
+            spawn_debris_0029E498(moby, 0x6B4, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, kerwan_zero_vec, kerwan_zero_vec);
             break;
         case 0x77:
-            spawn_debris_0029E498(moby, 0x6B5, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, D_0015EE70 * 12.0f, push, D_L03_0015F660, D_L03_0015F660);
-            spawn_debris_0029E498(moby, 0x6B6, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, D_0015EE70 * 12.0f, push, D_L03_0015F660, D_L03_0015F660);
-            spawn_debris_0029E498(moby, 0x6B7, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, D_0015EE70 * 12.0f, push, D_L03_0015F660, D_L03_0015F660);
+            spawn_debris_0029E498(moby, 0x6B5, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, kerwan_zero_vec, kerwan_zero_vec);
+            spawn_debris_0029E498(moby, 0x6B6, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, kerwan_zero_vec, kerwan_zero_vec);
+            spawn_debris_0029E498(moby, 0x6B7, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, kerwan_zero_vec, kerwan_zero_vec);
             break;
         case 0x78:
-            spawn_debris_0029E498(moby, 0x6B8, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, D_0015EE70 * 12.0f, push, D_L03_0015F660, D_L03_0015F660);
-            spawn_debris_0029E498(moby, 0x6B9, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, D_0015EE70 * 12.0f, push, D_L03_0015F660, D_L03_0015F660);
-            spawn_debris_0029E498(moby, 0x6BA, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, D_0015EE70 * 12.0f, push, D_L03_0015F660, D_L03_0015F660);
+            spawn_debris_0029E498(moby, 0x6B8, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, kerwan_zero_vec, kerwan_zero_vec);
+            spawn_debris_0029E498(moby, 0x6B9, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, kerwan_zero_vec, kerwan_zero_vec);
+            spawn_debris_0029E498(moby, 0x6BA, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, kerwan_zero_vec, kerwan_zero_vec);
             break;
         case 0x84:
-            spawn_debris_0029E498(moby, 0x6BC, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, D_0015EE70 * 12.0f, push, D_L03_0015F660, D_L03_0015F660);
-            spawn_debris_0029E498(moby, 0x6BE, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, D_0015EE70 * 12.0f, push, D_L03_0015F660, D_L03_0015F660);
-            spawn_debris_0029E498(moby, 0x6BF, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, D_0015EE70 * 12.0f, push, D_L03_0015F660, D_L03_0015F660);
+            spawn_debris_0029E498(moby, 0x6BC, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, kerwan_zero_vec, kerwan_zero_vec);
+            spawn_debris_0029E498(moby, 0x6BE, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, kerwan_zero_vec, kerwan_zero_vec);
+            spawn_debris_0029E498(moby, 0x6BF, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, kerwan_zero_vec, kerwan_zero_vec);
             break;
         }
         if (*(short *)(moby + 0xA6) == 0x31B && D_0013D510_0029E498[4] == 0) {

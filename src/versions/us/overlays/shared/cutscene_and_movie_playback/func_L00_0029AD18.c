@@ -14,5 +14,5 @@ void play_queued_movie(void) {
                   (*(int *)&D_L00_00161114 + 0x3F) & ~0x3F,
                   (D_L00_00161118 + 0x3F) & ~0x3F, D_L00_00161110);
     func_00120F30(0);
-    func_L00_0029AB38();
+    movie_exit_to_gameplay();
 }

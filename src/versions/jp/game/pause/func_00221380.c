@@ -31,24 +31,24 @@ int draw_checking_memory_card_data_menu(struct Stream_21380 *menu) {
         window_fields[8] = 16;
         window_fields[9] = 5;
         text_window = *(FontWindow_21380 *)window_fields;
-        func_001F75D0(&text_window, 0x80000000L, text, -1);
+        font_print_window_small(&text_window, 0x80000000L, text, -1);
         text_window.anchor_y = (menu->height - text_window.rendered_height) >> 1;
         text_window.flags ^= 4;
-        func_001F75D0(&text_window, 0x80000000L, text, -1);
+        font_print_window_small(&text_window, 0x80000000L, text, -1);
         text_window.top--;
         text_window.bottom--;
         text_window.left--;
         text_window.right--;
         text_window.anchor_x--;
         text_window.anchor_y--;
-        func_001F75D0(&text_window, 0x80FFA888L, text, -1);
+        font_print_window_small(&text_window, 0x80FFA888L, text, -1);
         DoGifPaging();
         goto done;
     }
     if (menu->flags & 4) {
         first = state < 4;
         entry = &((struct MS_21380 *)menu_system)->current->focus->cells[menu->loaded_entry[first ^ 1]];
-        if (entry->kind == 0 && (tp = (unsigned char *)&D_0013D5C8, tp[entry->id] == 0)) {
+        if (entry->kind == 0 && (tp = (unsigned char *)&item_available, tp[entry->id] == 0)) {
             return 1;
         }
         if (entry->kind == 1 && gSpecialItems[entry->id] == 0) {
@@ -61,7 +61,7 @@ int draw_checking_memory_card_data_menu(struct Stream_21380 *menu) {
     } else {
         texture = load_texture_file(menu->buffer[1]);
     }
-    DrawTexturedQuad(0, 0, D_00151880[0xB0], D_00151880[0xB1], 0, 0, menu->tw, menu->th, 0x80808080L, texture);
+    DrawTexturedQuad(0, 0, fs_aa_buffer[0xB0], fs_aa_buffer[0xB1], 0, 0, menu->tw, menu->th, 0x80808080L, texture);
     DoGifPaging();
     return 0x10;
 done:

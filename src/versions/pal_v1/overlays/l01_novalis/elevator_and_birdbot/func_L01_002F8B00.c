@@ -27,7 +27,7 @@ void bomber_jet_update(Moby *m) {
         }
         FastVecSub(&b, d->vD0, d->vE0);
         *(u128 *)&a = *(u128 *)&b;
-        func_L00_0025F4A8(m, &a, &m->pos, 0.0f, 0.0f, 0x14, 3, 4, 4.0f, 2.0f, 100000.0f, 3.0f, 1, 15.0f, 1, 1, -1, 0);
+        spawn_explosion(m, &a, &m->pos, 0.0f, 0.0f, 0x14, 3, 4, 4.0f, 2.0f, 100000.0f, 3.0f, 1, 15.0f, 1, 1, -1, 0);
         SpawnDebrisMoby((char *)m, &a, s * 2.0f);
         for (i = 0; i < 4; i++) {
             if (d->tethers[i] != -1) {
@@ -40,7 +40,7 @@ void bomber_jet_update(Moby *m) {
     do {
         if (m->state == 0) {
             if (sub->path != -1) {
-                Path_F8B00 *path = (Path_F8B00 *)D_L01_001B0C30[sub->path];
+                Path_F8B00 *path = (Path_F8B00 *)novalis_paths[sub->path];
                 j = 0;
                 d->fFC = d->fFC * 2.0f;
                 if (FastVecDist((char *)path + 0x10, (char *)path + (path->count << 4)) < 0.5f) {
@@ -81,7 +81,7 @@ void bomber_jet_update(Moby *m) {
             }
             if (d->timer == -1 && is_point_inside_clip_volume(D_0013E633 + 0xE9D, d->flag170)) {
                 if (D_E1_L01_001BBA84[(short)m->save_id] != 0
-                    || (level_moby_killed[D_0015EE84][(short)m->save_id >> 5] >> (m->save_id & 0x1F)) & 1) {
+                    || (level_moby_killed[g_current_level_index][(short)m->save_id >> 5] >> (m->save_id & 0x1F)) & 1) {
                     for (j = 0; j < 4; j++) {
                         if (d->turrets[j] != -1) {
                             Moby *o = (Moby *)(D_L01_00160058_F8B00 + (d->turrets[j] << 8));
@@ -99,7 +99,7 @@ void bomber_jet_update(Moby *m) {
                 if (d->cam174 != -1) {
                     Hero_SetMoveState(0x72, 0);
                     CameraScript(camera_points + (d->cam174 << 7) + 0x30, camera_points + (d->cam174 << 7) + 0x70, 0, 0, 0);
-                    D_L01_0015F504 = 1;
+                    cutscene_active = 1;
                     m->collision = 0;
                     m->flags &= 0xEFFF;
                     d->timer = scale_ticks(0x1FE);
@@ -108,8 +108,8 @@ void bomber_jet_update(Moby *m) {
                 if (FastDecTimer(&d->timer)) {
                     CameraScript2(0);
                     Hero_SetMoveState(0, 1);
-                    D_L01_0015F504 = 0;
-                    level_moby_killed[D_0015EE84][(short)m->save_id >> 5] |= 1 << (m->save_id & 0x1F);
+                    cutscene_active = 0;
+                    level_moby_killed[g_current_level_index][(short)m->save_id >> 5] |= 1 << (m->save_id & 0x1F);
                     moby_killed[(short)m->save_id >> 5] |= 1 << (m->save_id & 0x1F);
                     DeleteMoby(m);
                     return;
@@ -160,8 +160,8 @@ void bomber_jet_update(Moby *m) {
                 if (j == 0) break;
                 if (is_point_inside_clip_volume(camera_pos, d->flag188)) break;
                 for (i = j - 1; i >= 0; i--) {
-                    if (func_L00_001EFFF0(camera_pos, camera_points + (a.v[i] << 7) + 0x30, 0x86, m, 0)) {
-                        if (D_L01_00174340.moby == 0 || D_L01_00174340.moby != m) {
+                    if (coll_line(camera_pos, camera_points + (a.v[i] << 7) + 0x30, 0x86, m, 0)) {
+                        if (novalis_coll_hit.moby == 0 || novalis_coll_hit.moby != m) {
                             b.v[i] = -1;
                             cnt--;
                             break;
@@ -184,7 +184,7 @@ void bomber_jet_update(Moby *m) {
                     d->side ^= 1;
                     Moby_GetJointWorldPos(m, d->side, &pos);
                     FastVecSub(&dir, camera_points + (i << 7) + 0x30, &pos);
-                    func_L00_001FF4B0(&dir, &dir, D_0015EE6C * 160.0f);
+                    vec_scale_to_length(&dir, &dir, g_frame_time * 160.0f);
                     col.q = *(u128 *)((i << 7) + (int)camera_points + 0x30);
                     bm = func_L01_002F7C78_F8B00(m, &pos, &dir, &col, is_point_inside_clip_volume(D_0013E633 + 0xE9D, d->flag18C), d->flag170 != -1);
                     if (bm != 0) {

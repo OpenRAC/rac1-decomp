@@ -1,12 +1,12 @@
 int draw_selected_item_ammo(char *arg0) {
     char text[0x50];
     short box[10];
-    char *p = *(char **)(D_001D5F74 + 0x40);
+    char *p = *(char **)(current_menu_page + 0x40);
     int id = *(short *)(*(int *)(p + 0x3C) * 10 + *(char **)(p + 0x48) + 6);
     int have, total;
     char *rec;
 
-    if (((unsigned char *)&D_0013D5C8)[id] == 0) {
+    if (((unsigned char *)&item_available)[id] == 0) {
         return 0;
     }
     have = weapon_ammo_counts[id];

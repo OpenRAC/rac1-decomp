@@ -33,7 +33,7 @@ void draw_ship_hud(char *moby) {
     DrawTexturedQuad(0x170, *(int *)(s + 4) - 0x90, 0x80, 0x80, 0, 0, 0x80, 0x80, 0x70808080, func_001F4868_l(0x3D));
     VU1_addGSregister(0x42, 0x8000000048L);
     GetEffectTex(0x3E);
-    p = D_L11_001AC540[*(short *)(d + 0x108)];
+    p = pokitaru_moby_groups[*(short *)(d + 0x108)];
     if (p != 0) {
         do {
             char *o = (char *)(((*(unsigned short *)p & 0x7FFF) << 8) + D_L11_00160058_m);
@@ -111,10 +111,10 @@ void draw_ship_hud(char *moby) {
             ((HelpTab_313218 *)(D_0014171B + 0x34D))->r[0x58].count++;
         }
         per = 600;
-        if (scale_ticks(D_0015EFA4) / per > ((HelpTab_313218 *)(D_0014171B + 0x34D))->r[0x58].best) {
-            ((HelpTab_313218 *)(D_0014171B + 0x34D))->r[0x58].best = scale_ticks(D_0015EFA4) / 600;
+        if (scale_ticks(gameplay_event_frame_count) / per > ((HelpTab_313218 *)(D_0014171B + 0x34D))->r[0x58].best) {
+            ((HelpTab_313218 *)(D_0014171B + 0x34D))->r[0x58].best = scale_ticks(gameplay_event_frame_count) / 600;
         }
-        ((HelpTab_313218 *)(D_0014171B + 0x34D))->r[0x58].flags = ((HelpTab_313218 *)(D_0014171B + 0x34D))->r[0x58].flags | (1 << D_0015EE84) | 0x80000000;
+        ((HelpTab_313218 *)(D_0014171B + 0x34D))->r[0x58].flags = ((HelpTab_313218 *)(D_0014171B + 0x34D))->r[0x58].flags | (1 << g_current_level_index) | 0x80000000;
         *(int *)(d + 0x11C) = 0;
     }
     }

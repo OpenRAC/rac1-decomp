@@ -20,23 +20,23 @@ int Hero_PickHelpMode(void)
     unsigned char c;
 
     g = ((H_9F0 *)(D_0013E633 + 0xE1D));
-    if (!(D_0015EE6C * 12.0f < g->f164)) goto L_BAC;
+    if (!(g_frame_time * 12.0f < g->f164)) goto L_BAC;
     f20 = 0.0f;
     transform_hero_local_offset_to_world(v1, f20, f20, 0.75f);
     vp = v2;
     qcopy(vp, v1);
     qcopy(v3, g->fE0);
-    func_L00_001FF4B0(v3, v3, 0.55f);
+    vec_scale_to_length(v3, v3, 0.55f);
     func_001F9BD8_4C558(v3, v3, g->fE0);
     v3[2] = f20;
     func_001F9BD8_4C558(vp, v1, v3);
-    if (!func_L00_001EFFF0(v1, vp, 2, 0, 0)) goto L_BAC;
+    if (!coll_line(v1, vp, 2, 0, 0)) goto L_BAC;
     h = (char *)&D_L05_00174340_4C558;
     if (*(int *)(h + 0x18) != 0) goto L_BAC;
     if (*(int *)(h + 0x1C) == 0) goto L_BAC;
-    if (!(1.2217305f < func_L00_001FF860(*(float *)(h + 0x48), func_001F9CE8_4C558(h + 0x40)))) goto L_BAC;
-    g->f8A4 = FastAddRots(func_L00_001FF860(*(float *)(h + 0x40), *(float *)(h + 0x44)), 3.1415927f);
-    if (!(FastDiffRots(func_L00_001FF860(g->fE0[0], g->fE0[1]), g->f8A4) < 0.7853982f)) goto L_BAC;
+    if (!(1.2217305f < fast_atan2(*(float *)(h + 0x48), func_001F9CE8_4C558(h + 0x40)))) goto L_BAC;
+    g->f8A4 = FastAddRots(fast_atan2(*(float *)(h + 0x40), *(float *)(h + 0x44)), 3.1415927f);
+    if (!(FastDiffRots(fast_atan2(g->fE0[0], g->fE0[1]), g->f8A4) < 0.7853982f)) goto L_BAC;
     if (g->f2DC < 1.0f) {
         Hero_TryMoveStateL05(0x6F, 1);
         return 1;
@@ -86,7 +86,7 @@ L_BAC:
     f0 = *(float *)((char *)pts + (r4 << 4) + 0x18);
     if (f1 < f0) f20 = f1;
     else f20 = f0;
-    f2 = func_001F9D48(vp, pts[r16 + 1]);
+    f2 = vec_distance_xy(vp, pts[r16 + 1]);
     if (0.5f < f20 - ((H_9F0 *)(D_0013E633 + 0xE1D))->f80[2]) {
         if (4.0f < f2) {
             Hero_TryMoveStateL05(0x6D, 1);
@@ -128,7 +128,7 @@ L_DEC:
         return 1;
     }
     if (((H_9F0 *)(D_0013E633 + 0xE1D))->p2080[0x53] >= 0x69 && ((H_9F0 *)(D_0013E633 + 0xE1D))->p2080[0x53] <= 0x6C) {
-        if (((H_9F0 *)(D_0013E633 + 0xE1D))->fAA8 < (float)((int *)&D_L05_0015F778)[((H_9F0 *)(D_0013E633 + 0xE1D))->b88F]) {
+        if (((H_9F0 *)(D_0013E633 + 0xE1D))->fAA8 < (float)((int *)&hoverboard_trick_min_frames)[((H_9F0 *)(D_0013E633 + 0xE1D))->b88F]) {
             Hero_TryMoveStateL05(0x6D, 1);
             return 1;
         }

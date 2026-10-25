@@ -10,7 +10,7 @@ void snow_plow_update(VehicleMoby_2CB800 *m) {
     sub=(VehicleSub_2CB800 *)d->motion;
     if (state==0) {
         if (sub->path_id!=-1) {
-            s32 *path=D_L04_001B0930[sub->path_id];
+            s32 *path=eudora_paths[sub->path_id];
             if (FastVecDist((char *)path+0x10,(char *)path+(*path<<4))<0.5f) --*path;
         } else {
             STUB_printf(D_L04_001DC110,m->cls,truncate_float_to_s32((float)((s32)((char *)m-(char *)MOBYS)>>8)));
@@ -28,7 +28,7 @@ void snow_plow_update(VehicleMoby_2CB800 *m) {
         case 0: {
             s32 i;
             if (d->speed<d->start_speed) {
-                d->speed+=D_0015EE70*20.0f;
+                d->speed+=g_frame_time_sq*20.0f;
                 if (d->speed>d->start_speed) d->speed=d->start_speed;
             }
             for (i=0,trigger=d->paths;i<4;i++,trigger++) {
@@ -46,14 +46,14 @@ void snow_plow_update(VehicleMoby_2CB800 *m) {
             break;
         }
         case 1:
-            MobySpringTurn(m,&d->turn_velocity,D_L04_0016016C[d->selected].angle,D_0015EE70*1.0471976f,D_0015EE70*3.1415927f,D_0015EE6C*3.1415927f);
-            if (func_001F9D48(&m->pos,&D_L04_0016016C[d->selected].pos)<1.0f &&
+            MobySpringTurn(m,&d->turn_velocity,D_L04_0016016C[d->selected].angle,g_frame_time_sq*1.0471976f,g_frame_time_sq*3.1415927f,g_frame_time*3.1415927f);
+            if (vec_distance_xy(&m->pos,&D_L04_0016016C[d->selected].pos)<1.0f &&
                 FastDiffRots(m->rot.f[2],D_L04_0016016C[d->selected].angle)<0.17453292f) {
                 d->phase=2;
                 d->phase_timer=scale_ticks(300);
             }
             FastVecSub(&delta,&D_L04_0016016C[d->selected].pos,&m->pos);
-            func_L00_001FF4B0(&delta,&delta,D_0015EE6C*3.0f);
+            vec_scale_to_length(&delta,&delta,g_frame_time*3.0f);
             FastVecAdd(&m->pos,&m->pos,&delta);
             break;
         case 2:
@@ -61,8 +61,8 @@ void snow_plow_update(VehicleMoby_2CB800 *m) {
             break;
         case 3: {
             float length,step;
-            MobySpringTurn(m,&d->turn_velocity,d->start_angle,D_0015EE70*1.0471976f,D_0015EE70*3.1415927f,D_0015EE6C*3.1415927f);
-            if (func_001F9D48(&m->pos,&d->start_pos)<1.0f && FastDiffRots(m->rot.f[2],d->start_angle)<0.034906585f) {
+            MobySpringTurn(m,&d->turn_velocity,d->start_angle,g_frame_time_sq*1.0471976f,g_frame_time_sq*3.1415927f,g_frame_time*3.1415927f);
+            if (vec_distance_xy(&m->pos,&d->start_pos)<1.0f && FastDiffRots(m->rot.f[2],d->start_angle)<0.034906585f) {
                 d->phase=0;
                 d->phase_timer=scale_ticks(600);
                 d->speed=zero;
@@ -71,7 +71,7 @@ void snow_plow_update(VehicleMoby_2CB800 *m) {
             }
             FastVecSub(&delta,&d->start_pos,&m->pos);
             length=FastVecLength(&delta);
-            func_L00_001FF4B0(&delta,&delta,D_0015EE6C*3.0f>length ? length : D_0015EE6C*3.0f);
+            vec_scale_to_length(&delta,&delta,g_frame_time*3.0f>length ? length : g_frame_time*3.0f);
             FastVecAdd(&m->pos,&m->pos,&delta);
             break;
         }
@@ -88,15 +88,15 @@ void snow_plow_update(VehicleMoby_2CB800 *m) {
     } else {
         switch ((s16)((u16)m->cls-0x1D2)) {
         case 0:case 14:
-            d->angle0=FastAddRots(d->angle0,D_0015EE6C*12.566371f);
+            d->angle0=FastAddRots(d->angle0,g_frame_time*12.566371f);
             axis_rotation_2d48(d->matrix0+0x10,0,d->angle0);break;
         case 19:case 20:case 28:case 29:case 32:case 89:
-            d->angle0=FastAddRots(d->angle0,D_0015EE6C*12.566371f);
+            d->angle0=FastAddRots(d->angle0,g_frame_time*12.566371f);
             axis_rotation_2d48(d->matrix0+0x10,2,d->angle0);break;
         case 22:case 27:
-            d->angle0=FastAddRots(d->angle0,D_0015EE6C*12.566371f);
+            d->angle0=FastAddRots(d->angle0,g_frame_time*12.566371f);
             axis_rotation_2d48(d->matrix0+0x10,2,d->angle0);
-            d->angle1=FastAddRots(d->angle1,D_0015EE6C*12.566371f);
+            d->angle1=FastAddRots(d->angle1,g_frame_time*12.566371f);
             axis_rotation_2d48(d->matrix1+0x10,2,d->angle1);break;
         }
     }
@@ -107,19 +107,19 @@ void snow_plow_update(VehicleMoby_2CB800 *m) {
         case 0x1E0:
             delta.quad=0;
             delta.f[0]=0.5f;delta.f[2]=-5.0f;
-            func_001F9EC0(&delta,&delta,m->matrix);
+            matrix_mul_vec3(&delta,&delta,m->matrix);
             FastVecAdd(&other->pos,&m->pos,&delta);
             qcopy(&other->rot,&m->rot);
             other->rot.f[1]=FastAddRots(other->rot.f[1],1.5707964f);
-            MobyAnimAdvance(other);func_L00_00251E30(other);func_0020EEE8(other);
+            MobyAnimAdvance(other);moby_build_matrix(other);moby_anim_sphere_lerp(other);
             other->flags|=6;
             break;
         case 0x1EE:
             delta.quad=0;delta.f[2]=-2.0f;
-            func_001F9EC0(&delta,&delta,m->matrix);
+            matrix_mul_vec3(&delta,&delta,m->matrix);
             FastVecAdd(&other->pos,&m->pos,&delta);
             qcopy(&other->rot,&m->rot);
-            MobyAnimAdvance(other);func_L00_00251E30(other);func_0020EEE8(other);
+            MobyAnimAdvance(other);moby_build_matrix(other);moby_anim_sphere_lerp(other);
             other->flags|=6;
             break;
         }
@@ -144,7 +144,7 @@ void snow_plow_update(VehicleMoby_2CB800 *m) {
                 delta.quad=0;delta.f[2]=0.75f;
                 clear_u64_value(none);
                 FastVecAdd(&delta,&delta,&m->pos);
-                func_L00_0025F4A8(m,none,&delta,0.0f,0.0f,10,3,4,2,1,100000,3,-1,15,1,1,-1,0);
+                spawn_explosion(m,none,&delta,0.0f,0.0f,10,3,4,2,1,100000,3,-1,15,1,1,-1,0);
                 if (m->cls==0x1F2 || m->cls==0x22B) Moby_PlaySound(0,0,(s32)m);
                 else if (m->cls!=0x1E6) Moby_PlaySound(1,0,(s32)m);
                 d->visibility_timer=scale_ticks(600);d->visibility_active=1;
@@ -164,7 +164,7 @@ void snow_plow_update(VehicleMoby_2CB800 *m) {
                 FastVecAdd(&delta,&delta,offset);
                 SpawnExplosionFx(m,&delta,-1,1.0f,13.0f);
                 FastVecAdd(&delta,offset,&m->pos);
-                func_L00_0025F4A8(m,none,&delta,0.0f,0.0f,20,5,4,2,1,100000,3,-1,15,1,1,-1,0);
+                spawn_explosion(m,none,&delta,0.0f,0.0f,20,5,4,2,1,100000,3,-1,15,1,1,-1,0);
                 Moby_PlaySound(1,0,(s32)m);
                 query2.flags=0x810000;query2.strength=2;query2.owner=m;
                 clear_u64_value(&query2.vec);query2.result=0;
@@ -174,61 +174,61 @@ void snow_plow_update(VehicleMoby_2CB800 *m) {
             break;
         }
         }
-        FastVecScale(&delta,m->matrix,D_0015EE60*0.075f);
-        delta.f[2]+=D_0015EE60*0.08f;
+        FastVecScale(&delta,m->matrix,frame_scale*0.075f);
+        delta.f[2]+=frame_scale*0.08f;
         if (m->cls==0x1D2) {
-            SpawnBreakFragment(m,0x63F,&m->pos,&m->rot,scale_ticks(90),0,D_0015EE70*12.0f,&delta,D_L04_0015F660,D_L04_0015F660);
-            SpawnBreakFragment(m,0x641,&m->pos,&m->rot,scale_ticks(90),0,D_0015EE70*12.0f,&delta,D_L04_0015F660,D_L04_0015F660);
-            SpawnBreakFragment(m,0x642,&m->pos,&m->rot,scale_ticks(90),0,D_0015EE70*12.0f,&delta,D_L04_0015F660,D_L04_0015F660);
+            SpawnBreakFragment(m,0x63F,&m->pos,&m->rot,scale_ticks(90),0,g_frame_time_sq*12.0f,&delta,eudora_zero_vector,eudora_zero_vector);
+            SpawnBreakFragment(m,0x641,&m->pos,&m->rot,scale_ticks(90),0,g_frame_time_sq*12.0f,&delta,eudora_zero_vector,eudora_zero_vector);
+            SpawnBreakFragment(m,0x642,&m->pos,&m->rot,scale_ticks(90),0,g_frame_time_sq*12.0f,&delta,eudora_zero_vector,eudora_zero_vector);
         }
         else if (m->cls==0x1E0) {
-            SpawnBreakFragment(m,0x642,&m->pos,&m->rot,scale_ticks(90),0,D_0015EE70*12.0f,&delta,D_L04_0015F660,D_L04_0015F660);
-            SpawnBreakFragment(m,0x643,&m->pos,&m->rot,scale_ticks(90),0,D_0015EE70*12.0f,&delta,D_L04_0015F660,D_L04_0015F660);
-            SpawnBreakFragment(m,0x644,&m->pos,&m->rot,scale_ticks(90),0,D_0015EE70*12.0f,&delta,D_L04_0015F660,D_L04_0015F660);
+            SpawnBreakFragment(m,0x642,&m->pos,&m->rot,scale_ticks(90),0,g_frame_time_sq*12.0f,&delta,eudora_zero_vector,eudora_zero_vector);
+            SpawnBreakFragment(m,0x643,&m->pos,&m->rot,scale_ticks(90),0,g_frame_time_sq*12.0f,&delta,eudora_zero_vector,eudora_zero_vector);
+            SpawnBreakFragment(m,0x644,&m->pos,&m->rot,scale_ticks(90),0,g_frame_time_sq*12.0f,&delta,eudora_zero_vector,eudora_zero_vector);
         }
         else if (m->cls==0x1E6) {
             s32 i;
-            SpawnBreakFragment(m,0x645,&m->pos,&m->rot,scale_ticks(90),0,D_0015EE70*12.0f,&delta,D_L04_0015F660,D_L04_0015F660);
+            SpawnBreakFragment(m,0x645,&m->pos,&m->rot,scale_ticks(90),0,g_frame_time_sq*12.0f,&delta,eudora_zero_vector,eudora_zero_vector);
             for (i=0;i<6;i++) {
-            SpawnBreakFragment(m,0x646,&m->pos,&m->rot,scale_ticks(90),0,D_0015EE70*12.0f,&delta,D_L04_0015F660,D_L04_0015F660);
+            SpawnBreakFragment(m,0x646,&m->pos,&m->rot,scale_ticks(90),0,g_frame_time_sq*12.0f,&delta,eudora_zero_vector,eudora_zero_vector);
             }
         }
         else if (m->cls==0x1EA) {
-            SpawnBreakFragment(m,0x647,&m->pos,&m->rot,scale_ticks(90),0,D_0015EE70*12.0f,&delta,D_L04_0015F660,D_L04_0015F660);
-            SpawnBreakFragment(m,0x648,&m->pos,&m->rot,scale_ticks(90),0,D_0015EE70*12.0f,&delta,D_L04_0015F660,D_L04_0015F660);
-            SpawnBreakFragment(m,0x649,&m->pos,&m->rot,scale_ticks(90),0,D_0015EE70*12.0f,&delta,D_L04_0015F660,D_L04_0015F660);
+            SpawnBreakFragment(m,0x647,&m->pos,&m->rot,scale_ticks(90),0,g_frame_time_sq*12.0f,&delta,eudora_zero_vector,eudora_zero_vector);
+            SpawnBreakFragment(m,0x648,&m->pos,&m->rot,scale_ticks(90),0,g_frame_time_sq*12.0f,&delta,eudora_zero_vector,eudora_zero_vector);
+            SpawnBreakFragment(m,0x649,&m->pos,&m->rot,scale_ticks(90),0,g_frame_time_sq*12.0f,&delta,eudora_zero_vector,eudora_zero_vector);
         }
         else if (m->cls==0x1EE) {
-            SpawnBreakFragment(m,0x64D,&m->pos,&m->rot,scale_ticks(90),0,D_0015EE70*12.0f,&delta,D_L04_0015F660,D_L04_0015F660);
-            SpawnBreakFragment(m,0x64E,&m->pos,&m->rot,scale_ticks(90),0,D_0015EE70*12.0f,&delta,D_L04_0015F660,D_L04_0015F660);
+            SpawnBreakFragment(m,0x64D,&m->pos,&m->rot,scale_ticks(90),0,g_frame_time_sq*12.0f,&delta,eudora_zero_vector,eudora_zero_vector);
+            SpawnBreakFragment(m,0x64E,&m->pos,&m->rot,scale_ticks(90),0,g_frame_time_sq*12.0f,&delta,eudora_zero_vector,eudora_zero_vector);
         }
         else if (m->cls==0x1EF) {
-            SpawnBreakFragment(m,0x64F,&m->pos,&m->rot,scale_ticks(90),0,D_0015EE70*12.0f,&delta,D_L04_0015F660,D_L04_0015F660);
-            SpawnBreakFragment(m,0x650,&m->pos,&m->rot,scale_ticks(90),0,D_0015EE70*12.0f,&delta,D_L04_0015F660,D_L04_0015F660);
-            SpawnBreakFragment(m,0x651,&m->pos,&m->rot,scale_ticks(90),0,D_0015EE70*12.0f,&delta,D_L04_0015F660,D_L04_0015F660);
-            SpawnBreakFragment(m,0x658,&m->pos,&m->rot,scale_ticks(90),0,D_0015EE70*12.0f,&delta,D_L04_0015F660,D_L04_0015F660);
+            SpawnBreakFragment(m,0x64F,&m->pos,&m->rot,scale_ticks(90),0,g_frame_time_sq*12.0f,&delta,eudora_zero_vector,eudora_zero_vector);
+            SpawnBreakFragment(m,0x650,&m->pos,&m->rot,scale_ticks(90),0,g_frame_time_sq*12.0f,&delta,eudora_zero_vector,eudora_zero_vector);
+            SpawnBreakFragment(m,0x651,&m->pos,&m->rot,scale_ticks(90),0,g_frame_time_sq*12.0f,&delta,eudora_zero_vector,eudora_zero_vector);
+            SpawnBreakFragment(m,0x658,&m->pos,&m->rot,scale_ticks(90),0,g_frame_time_sq*12.0f,&delta,eudora_zero_vector,eudora_zero_vector);
         }
         else if (m->cls==0x1F2) {
-            SpawnBreakFragment(m,0x652,&m->pos,&m->rot,scale_ticks(90),0,D_0015EE70*12.0f,&delta,D_L04_0015F660,D_L04_0015F660);
-            SpawnBreakFragment(m,0x653,&m->pos,&m->rot,scale_ticks(90),0,D_0015EE70*12.0f,&delta,D_L04_0015F660,D_L04_0015F660);
-            SpawnBreakFragment(m,0x654,&m->pos,&m->rot,scale_ticks(90),0,D_0015EE70*12.0f,&delta,D_L04_0015F660,D_L04_0015F660);
+            SpawnBreakFragment(m,0x652,&m->pos,&m->rot,scale_ticks(90),0,g_frame_time_sq*12.0f,&delta,eudora_zero_vector,eudora_zero_vector);
+            SpawnBreakFragment(m,0x653,&m->pos,&m->rot,scale_ticks(90),0,g_frame_time_sq*12.0f,&delta,eudora_zero_vector,eudora_zero_vector);
+            SpawnBreakFragment(m,0x654,&m->pos,&m->rot,scale_ticks(90),0,g_frame_time_sq*12.0f,&delta,eudora_zero_vector,eudora_zero_vector);
         }
         else if (m->cls==0x1ED) {
             s32 j,k;
-            SpawnBreakFragment(m,0x793,&m->pos,&m->rot,scale_ticks(90),0,D_0015EE70*12.0f,&delta,D_L04_0015F660,D_L04_0015F660);
-            SpawnBreakFragment(m,0x794,&m->pos,&m->rot,scale_ticks(90),0,D_0015EE70*12.0f,&delta,D_L04_0015F660,D_L04_0015F660);
+            SpawnBreakFragment(m,0x793,&m->pos,&m->rot,scale_ticks(90),0,g_frame_time_sq*12.0f,&delta,eudora_zero_vector,eudora_zero_vector);
+            SpawnBreakFragment(m,0x794,&m->pos,&m->rot,scale_ticks(90),0,g_frame_time_sq*12.0f,&delta,eudora_zero_vector,eudora_zero_vector);
             for (j=0;j<3;j++) {
-            SpawnBreakFragment(m,0x795,&m->pos,&m->rot,scale_ticks(90),0,D_0015EE70*12.0f,&delta,D_L04_0015F660,D_L04_0015F660);
+            SpawnBreakFragment(m,0x795,&m->pos,&m->rot,scale_ticks(90),0,g_frame_time_sq*12.0f,&delta,eudora_zero_vector,eudora_zero_vector);
             }
             for (k=0;k<3;k++) {
-            SpawnBreakFragment(m,0x796,&m->pos,&m->rot,scale_ticks(90),0,D_0015EE70*12.0f,&delta,D_L04_0015F660,D_L04_0015F660);
+            SpawnBreakFragment(m,0x796,&m->pos,&m->rot,scale_ticks(90),0,g_frame_time_sq*12.0f,&delta,eudora_zero_vector,eudora_zero_vector);
             }
         }
     }
     m->draw_alpha=0xFF;
     if (d->visibility_active) {
-        if (func_001F9908(&d->visibility_timer) &&
-            FastDiffRots(D_L04_00166E80.angle,func_L00_001FF860(m->pos.f[0]-D_L04_00166E80.x,m->pos.f[1]-D_L04_00166E80.y))>1.5707964f) {
+        if (fast_dec_timer(&d->visibility_timer) &&
+            FastDiffRots(D_L04_00166E80.angle,fast_atan2(m->pos.f[0]-D_L04_00166E80.x,m->pos.f[1]-D_L04_00166E80.y))>1.5707964f) {
             m->sort=*(s32 *)(m->metadata+0x10);
             m->flags&=0xFFBE;
             d->visibility_active=0;

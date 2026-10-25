@@ -7,9 +7,9 @@ int draw_hud_progress_and_rank(char *e) {
 
     if (*(int *)(e + 0x6C) <= 0)
         return 0;
-    pal = D_0015EE80;
-    x = hud_sub_66D10(D_0013E600[1], pal, &D_L05_0015FA60);
-    y = hud_sub_66D10(D_0013E600[1], pal, &D_L05_0015FA7C);
+    pal = pal_mode;
+    x = hud_sub_66D10(g_screen_extent[1], pal, &D_L05_0015FA60);
+    y = hud_sub_66D10(g_screen_extent[1], pal, &D_L05_0015FA7C);
     hd = D_0013E633 + 0xE1D;
     y1 = y + 1;
     draw_stretchable_ui_frame(*(int *)&(D_L05_0015FA5C), x, *(int *)&(D_L05_0015FA64), *(int *)&(D_L05_0015FA68), *(int *)&(D_L05_0015FA6C));
@@ -42,13 +42,13 @@ int draw_hud_progress_and_rank(char *e) {
     tx = tx - w;
     print_text_with_texture_3(tx + 1, y1, 0x80000000L, buf, -1);
     print_text_with_texture_3(tx, y, *(int *)&(D_L05_0015FA70), buf, -1);
-    if (D_0015EE84 != 0x10)
+    if (g_current_level_index != 0x10)
         return *(int *)(e + 0x58);
     func_00116248(buf + 0x40, D_L05_0015F940, *(unsigned char *)(hd + 0x8CE));
-    py = D_0015EE80 ? 0xA : 0x12;
+    py = pal_mode ? 0xA : 0x12;
     px = *(int *)(e + 0x50);
     if (*(unsigned char *)(D_0013D355 + 0x13B) == 0) {
-        py = D_0015EE80 ? 0xA : 0x12;
+        py = pal_mode ? 0xA : 0x12;
     } else {
         px = *(int *)&(D_L05_0015FA98);
         py = *(int *)&(D_L05_0015FA9C);

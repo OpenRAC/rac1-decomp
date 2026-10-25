@@ -8,29 +8,29 @@ int draw_hud_text_panel(char *e) {
     void *pt;
     unsigned char *opacity = (unsigned char *)e + 0x70;
 
-    if (D_0015EE80 != 0) {
+    if (pal_mode != 0) {
         y = *(int *)&D_L00_0015F850 + 0xa;
     } else {
         y = *(int *)&D_L00_0015F850 + 0x12;
     }
     fade = IntToFloat(*opacity);
-    fade /= func_001F9878(8.0f);
+    fade /= multiply_global_factor(8.0f);
     if (fade < 0.0f) fade = 0.0f;
     if (fade > 1.0f) fade = 1.0f;
     text_y = y + 8;
     i = 0;
     alpha = truncate_float_to_s32(fade * 128.0f);
     color = (alpha << 24) | 0x40f040;
-    if (D_L00_0017E630[0] >= 2) {
+    if (hud_text_panel_string[0] >= 2) {
         do {
             i++;
-        } while (D_L00_0017E630[i] >= 2 && i < 0x80);
+        } while (hud_text_panel_string[i] >= 2 && i < 0x80);
     }
-    if (D_L00_0017E630[i] == 1) {
-        D_L00_0017E630[i] = 0;
-        w1 = measure_text_width_regular((const char *)D_L00_0017E630, -1);
+    if (hud_text_panel_string[i] == 1) {
+        hud_text_panel_string[i] = 0;
+        w1 = measure_text_width_regular((const char *)hud_text_panel_string, -1);
         l1 = 0xe0 - (w1 >> 1);
-        w2 = measure_text_width_regular((const char *)&D_L00_0017E630[1] + i, -1);
+        w2 = measure_text_width_regular((const char *)&hud_text_panel_string[1] + i, -1);
         l2 = 0xe0 - (w2 >> 1);
         if (l1 >= l2) {
             left = l2;
@@ -47,11 +47,11 @@ int draw_hud_text_panel(char *e) {
             int t = width + 0x20;
             draw_hud_sprite_flipped(tex, left + t, y, 0x20, 0x36, alpha);
         }
-        FontPrintCenter(0x100, text_y, c, D_L00_0017E630, -1);
-        FontPrintCenter(0x100, y + 0x1b, c, &D_L00_0017E630[1] + i, -1);
+        FontPrintCenter(0x100, text_y, c, hud_text_panel_string, -1);
+        FontPrintCenter(0x100, y + 0x1b, c, &hud_text_panel_string[1] + i, -1);
     } else {
         int w, x;
-        w = measure_text_width_regular((const char *)D_L00_0017E630, -1);
+        w = measure_text_width_regular((const char *)hud_text_panel_string, -1);
         x = 0xe0 - (w >> 1);
         HudSprite(GetIconFrame(0x7580, 1), x, y, 0x20, 0x20, alpha);
         HudSprite(GetIconFrame(0x7580, 0), x + 0x20, y, w, 0x20, alpha);
@@ -60,9 +60,9 @@ int draw_hud_text_panel(char *e) {
             int t = w + 0x20;
             draw_hud_sprite_flipped(tex, x + t, y, 0x20, 0x20, alpha);
         }
-        FontPrintCenter(0x100, text_y, color, D_L00_0017E630, -1);
+        FontPrintCenter(0x100, text_y, color, hud_text_panel_string, -1);
     }
-    level = D_0015EE84;
+    level = g_current_level_index;
     if (level == 5 || level == 0x10) {
         typedef unsigned int quadword __attribute__((mode(TI), aligned(16)));
         *(quadword *)&points[0] = 0;
@@ -81,10 +81,10 @@ int draw_hud_text_panel(char *e) {
         pt = &point;
         if (FastVecDist(gHeroPos, pt) < 5.0f) {
             D_L00_0015F728 = y + 100;
-            elapsed = D_0015EF58[D_0015EE84 == 0x10 ? 1 : 0];
-            score = D_0015EF68[D_0015EE84 == 0x10 ? 1 : 0];
+            elapsed = D_0015EF58[g_current_level_index == 0x10 ? 1 : 0];
+            score = D_0015EF68[g_current_level_index == 0x10 ? 1 : 0];
             if (elapsed != 0) {
-                interval = D_0015EE80 != 0 ? 3000 : 3600;
+                interval = pal_mode != 0 ? 3000 : 3600;
                 per = interval / 60;
                 seconds = elapsed / interval;
                 rem = elapsed - seconds * interval;

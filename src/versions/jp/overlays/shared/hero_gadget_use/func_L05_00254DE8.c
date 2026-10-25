@@ -143,7 +143,7 @@ void update_hero_hoverboard_race_progress(void) {
         return;
     }
     if (*(D_0013D355_254DE8 + 0x13B) != 0) {
-        D_L05_0015F788 = 1;
+        hoverboard_race_finished = 1;
     }
     if (D_0015EE84_2523C8 == 5) {
         D_0015EF38_254DE8++;

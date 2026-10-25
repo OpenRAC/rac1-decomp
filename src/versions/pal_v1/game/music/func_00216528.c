@@ -1,12 +1,12 @@
 extern char D_0011C478[];
 void music_start_track_30000(int arg0, int arg1, int arg2) {
-    int *p = (int *)(D_0011C478 + (arg0 * 4 + D_0015EE88 * 0x258));
+    int *p = (int *)(D_0011C478 + (arg0 * 4 + g_game_language * 0x258));
     char *s;
 
     if (*p == 0) {
         return;
     }
-    s = (char *)D_001517D0;
+    s = (char *)cd_read_state;
     if (*(int *)(s + 0x50) != 0) {
         return;
     }

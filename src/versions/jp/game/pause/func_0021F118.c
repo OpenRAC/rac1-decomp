@@ -1,8 +1,8 @@
 int draw_item_preview_screen(char *arg0) {
     short buf[10];
-    char *p = *(char **)(D_001D5F74 + 0x40);
+    char *p = *(char **)(current_menu_page + 0x40);
 
-    if (((unsigned char *)&D_0013D5C8)[*(short *)(*(int *)(p + 0x3C) * 10 + *(char **)(p + 0x48) + 6)] == 0) {
+    if (((unsigned char *)&item_available)[*(short *)(*(int *)(p + 0x3C) * 10 + *(char **)(p + 0x48) + 6)] == 0) {
         return 0;
     }
     if (*(int *)(arg0 + 0x44) != 0) {

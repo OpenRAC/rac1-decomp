@@ -1,7 +1,7 @@
 void update_kerwan_tutorial_hints(Moby *moby) {
     Data_2E08E8 *data = *(Data_2E08E8 **)&moby->pvars;
 
-    func_001F9908(&data->f58);
+    fast_dec_timer(&data->f58);
     switch (moby->state) {
     case 0:
         data->f50 = 0;
@@ -52,11 +52,11 @@ void update_kerwan_tutorial_hints(Moby *moby) {
                 && (((unsigned int)((Hero *)(D_0013E633 + 0xE1D))->state.control_mode) < 2 || ((unsigned int)((Hero *)(D_0013E633 + 0xE1D))->state.control_mode) == 9)) {
                 int n;
                 h[3].count++;
-                n = scale_ticks(D_0015EFA4) / 600;
+                n = scale_ticks(gameplay_event_frame_count) / 600;
                 if (h[3].time < n) {
-                    h[3].time = scale_ticks(D_0015EFA4) / 600;
+                    h[3].time = scale_ticks(gameplay_event_frame_count) / 600;
                 }
-                h[3].mask = h[3].mask | (1 << D_0015EE84) | 0x80000000;
+                h[3].mask = h[3].mask | (1 << g_current_level_index) | 0x80000000;
             }
         }
 
@@ -86,7 +86,7 @@ void update_kerwan_tutorial_hints(Moby *moby) {
             && D_L03_00179590[0] == 0 && D_L03_00179590[9] == -1) {
             Help_2E08E8 *b = D_00141A68_2E08E8;
             if (b[0x18].count == 0) {
-                int t = scale_ticks(D_0015EFA4) - D_00141948_2E08E8[9].time * 600;
+                int t = scale_ticks(gameplay_event_frame_count) - D_00141948_2E08E8[9].time * 600;
                 if (scale_ticks(0x34BC0) < t) {
                     Help_Request(0xBBC, 0x18);
                 }
@@ -98,7 +98,7 @@ void update_kerwan_tutorial_hints(Moby *moby) {
             int count = 0;
             for (m = D_L03_00160064_2E08E8; m != 0; m = m->next) {
                 if (m->f24 != 0 && m->f24->f46 == 5
-                    && func_001F9D48(m->pos, D_0013E633 + 0xE9D) < 8.0f) {
+                    && vec_distance_xy(m->pos, D_0013E633 + 0xE9D) < 8.0f) {
                     count++;
                 }
             }
@@ -118,10 +118,10 @@ void update_kerwan_tutorial_hints(Moby *moby) {
                 if (c <= 0xFFFE) {
                     h[0x13].count = c + 1;
                 }
-                if (scale_ticks(D_0015EFA4) / 600 > h[0x13].time) {
-                    h[0x13].time = scale_ticks(D_0015EFA4) / 600;
+                if (scale_ticks(gameplay_event_frame_count) / 600 > h[0x13].time) {
+                    h[0x13].time = scale_ticks(gameplay_event_frame_count) / 600;
                 }
-                h[0x13].mask = h[0x13].mask | (1 << D_0015EE84) | 0x80000000;
+                h[0x13].mask = h[0x13].mask | (1 << g_current_level_index) | 0x80000000;
             }
         }
 
@@ -155,7 +155,7 @@ void update_kerwan_tutorial_hints(Moby *moby) {
             }
         }
 
-        if (D_L03_0015F6A8 == 0 && (discount_purchase_pricing + 0x11)[0] != 0
+        if (kerwan_game_mode == 0 && (discount_purchase_pricing + 0x11)[0] != 0
             && D_L03_00179590[0] == 0 && D_L03_00179590[9] == -1) {
             Help_2E08E8 *b = D_00141A68_2E08E8;
             if (b[0x19].count == 0) {
@@ -169,11 +169,11 @@ void update_kerwan_tutorial_hints(Moby *moby) {
                 && (((unsigned int)((Hero *)(D_0013E633 + 0xE1D))->state.control_mode) < 2 || ((unsigned int)((Hero *)(D_0013E633 + 0xE1D))->state.control_mode) == 9)) {
                 int n;
                 h[0xF].count++;
-                n = scale_ticks(D_0015EFA4) / 600;
+                n = scale_ticks(gameplay_event_frame_count) / 600;
                 if (h[0xF].time < n) {
-                    h[0xF].time = scale_ticks(D_0015EFA4) / 600;
+                    h[0xF].time = scale_ticks(gameplay_event_frame_count) / 600;
                 }
-                h[0xF].mask = h[0xF].mask | (1 << D_0015EE84) | 0x80000000;
+                h[0xF].mask = h[0xF].mask | (1 << g_current_level_index) | 0x80000000;
             }
         }
 
@@ -196,11 +196,11 @@ void update_kerwan_tutorial_hints(Moby *moby) {
             if (h[0x10].count == 0) {
                 int n;
                 h[0x10].count++;
-                n = scale_ticks(D_0015EFA4) / 600;
+                n = scale_ticks(gameplay_event_frame_count) / 600;
                 if (h[0x10].time < n) {
-                    h[0x10].time = scale_ticks(D_0015EFA4) / 600;
+                    h[0x10].time = scale_ticks(gameplay_event_frame_count) / 600;
                 }
-                h[0x10].mask = h[0x10].mask | (1 << D_0015EE84) | 0x80000000;
+                h[0x10].mask = h[0x10].mask | (1 << g_current_level_index) | 0x80000000;
             }
         }
 

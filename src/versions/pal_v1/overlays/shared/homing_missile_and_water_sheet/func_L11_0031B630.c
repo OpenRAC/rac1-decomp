@@ -16,8 +16,8 @@ void update_moby_hit_stats_and_state(char *m) {
         if (*(unsigned short *)(st + 0x157E8) < 0xFFFF) {
             *(unsigned short *)(st + 0x157E8) += 1;
         }
-        if (scale_ticks(D_0015EFA4) / 600 > *(unsigned short *)(st + 0x157EA)) {
-            *(unsigned short *)(st + 0x157EA) = scale_ticks(D_0015EFA4) / 600;
+        if (scale_ticks(gameplay_event_frame_count) / 600 > *(unsigned short *)(st + 0x157EA)) {
+            *(unsigned short *)(st + 0x157EA) = scale_ticks(gameplay_event_frame_count) / 600;
         }
         *(int *)(st + 0x157EC) = *(int *)(st + 0x157EC) | (1 << D_0015EE84_3102C8) | 0x80000000;
         if (D_0015EE84_3102C8 == 0xB && *(char **)(info + 0x20) != 0 && *(short *)(*(char **)(info + 0x20) + 0xA6) == 0xAC) {

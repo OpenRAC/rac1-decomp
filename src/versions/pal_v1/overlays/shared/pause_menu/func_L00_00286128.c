@@ -6,24 +6,24 @@ void jet_reset_camera(void *a0, void *a1)
     int lvl;
     char *g;
 
-    func_L00_001FF040((int)&D_E1_L00_001BB280, &D_L00_001BA9B0, 0x404);
+    copy_memory_by_alignment((int)&D_E1_L00_001BB280, &D_L00_001BA9B0, 0x404);
     lvl = D_0015EE84_m;
     for (src = D_L00_001BA9B0.f, i = 0; i < 0x7FF; i++, src++) {
         int v = *src;
         if ((unsigned char)v == 0) continue;
-        if ((unsigned char)v != 1 && D_0014C150[lvl][(unsigned char)v - 2] != 0xFF) continue;
+        if ((unsigned char)v != 1 && saved_mission_state[lvl][(unsigned char)v - 2] != 0xFF) continue;
         D_E1_L00_001BB280.f[i] = v;
         level_moby_killed[lvl][i >> 5] |= 1 << (i & 0x1F);
-        D_L00_001BA860[i >> 5] |= 1 << (i & 0x1F);
+        session_moby_killed[i >> 5] |= 1 << (i & 0x1F);
     }
     g = (char *)D_L00_001BB5C0;
     *(int *)g = 1;
     qcopy(g + 0x10, a0);
     qcopy(g + 0x20, a1);
     {
-        char *hero = D_0013F450;
-        char *stat = D_0013E650;
-        char *fb = D_001517D0;
+        char *hero = g_hero;
+        char *stat = voice_pool;
+        char *fb = cd_read_state;
         char *p = *(char **)(hero + 0x2080);
         signed char v = *(signed char *)(fb + 0x22);
 

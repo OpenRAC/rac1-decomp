@@ -24,7 +24,7 @@ void update_blarg_elite_commando_damage_and_pursuit(char *m) {
         d->health -= scratch.amount;
         if (d->health <= 0.0f) response = 1;
         d->sound_timer = truncate_float_to_s32(512.0f);
-        d->impulse_time = D_0015EE70 * 20.0f;
+        d->impulse_time = g_frame_time_sq * 20.0f;
         d->damping = 0.5f;
         d->vertical_impulse = 0.0f;
         d->active = 1;
@@ -40,7 +40,7 @@ void update_blarg_elite_commando_damage_and_pursuit(char *m) {
         case 6:
         case 7:
         case 8: {
-            float impulse = D_0015EE6C * 6.0f;
+            float impulse = g_frame_time * 6.0f;
             char *source;
             d->blend_start = -1.0f;
             d->blend_end = -1.0f;
@@ -48,7 +48,7 @@ void update_blarg_elite_commando_damage_and_pursuit(char *m) {
             d->lateral_impulse = impulse;
             source = *(char **)(hit + 0x20);
             {
-                float heading = func_L00_001FF860(*(float *)(m + 0x10) - *(float *)(source + 0x10),
+                float heading = fast_atan2(*(float *)(m + 0x10) - *(float *)(source + 0x10),
                 *(float *)(m + 0x14) - *(float *)(source + 0x14));
                 scratch.vector = *(unsigned long long *)(hit + 0x10);
                 scratch.angle = heading;
@@ -62,7 +62,7 @@ void update_blarg_elite_commando_damage_and_pursuit(char *m) {
         case 1:
         case 2: {
             char *source;
-            if (D_0015EE84 == 18 && d->reward_hits) {
+            if (g_current_level_index == 18 && d->reward_hits) {
                 ++*(int *)&D_0015EF10;
                 if (*(int *)&D_0015EF10 >= 10) {
                     if (((L16DamageReward *)(menu_item_enabled_115 + 1))->awarded == 0) {
@@ -72,16 +72,16 @@ void update_blarg_elite_commando_damage_and_pursuit(char *m) {
                     }
                 }
             }
-            time_scale = D_0015EE70 * 20.0f;
+            time_scale = g_frame_time_sq * 20.0f;
             *(unsigned short *)(m + 0x34) &= 0xEFFF;
             d->impulse_time = time_scale;
             if (((L16DamageResident *)((char *)&D_L16DamageState + 0xE1D))->difficulty == 2) {
-                float impulse = D_0015EE6C;
+                float impulse = g_frame_time;
                 *(float *)(m + 0x58) = 0.5f;
                 d->forward_impulse = impulse * 24.0f;
                 d->lateral_impulse = impulse * 8.0f;
             } else {
-                float impulse = D_0015EE6C * 8.0f;
+                float impulse = g_frame_time * 8.0f;
                 d->forward_impulse = impulse;
                 d->lateral_impulse = impulse;
             }
@@ -89,7 +89,7 @@ void update_blarg_elite_commando_damage_and_pursuit(char *m) {
             d->blend_end = -1.0f;
             source = *(char **)(hit + 0x20);
             {
-                float heading = func_L00_001FF860(*(float *)(m + 0x10) - *(float *)(source + 0x10),
+                float heading = fast_atan2(*(float *)(m + 0x10) - *(float *)(source + 0x10),
                 *(float *)(m + 0x14) - *(float *)(source + 0x14));
                 scratch.vector = *(unsigned long long *)(hit + 0x10);
                 scratch.fatal_angle = heading;
@@ -110,9 +110,9 @@ void update_blarg_elite_commando_damage_and_pursuit(char *m) {
     }
     ((unsigned char *)m)[0xA4] = 0xFF;
     StepColorFade(m, d->damage);
-    func_001F9908(&d->pursuit_timer);
+    fast_dec_timer(&d->pursuit_timer);
     if (d->reset_timer) {
-        d->pursuit_timer = truncate_float_to_s32(func_001F9878(random_float_between(180.0f, 240.0f)));
+        d->pursuit_timer = truncate_float_to_s32(multiply_global_factor(random_float_between(180.0f, 240.0f)));
     }
     d->reset_timer = 0;
     range = 255.0f;
@@ -120,11 +120,11 @@ void update_blarg_elite_commando_damage_and_pursuit(char *m) {
     if (((L16DamageResident *)((char *)&D_L16DamageState + 0xE1D))->mode == 22) {
         d->pursuit_mode = 2;
     } else if (d->path_index >= 0 && d->pursuit_timer == 0) {
-        char *path = D_L16_001B0C30[d->path_index];
+        char *path = kalebo3_path_table[d->path_index];
         FindNearestEligibleMoby(24.0f, m, d->target, 0, 0, path + 0x10, *(int *)path);
     } else {
         FindNearestTargetMoby(24.0f, m, d->target);
     }
-    if (range < func_001F9D48(m + 0x10, d->target)) d->pursuit_mode = 2;
+    if (range < vec_distance_xy(m + 0x10, d->target)) d->pursuit_mode = 2;
     if (d->owner == 0) d->owner = ((L16DamageResident *)((char *)&D_L16DamageState + 0xE1D))->owner;
 }

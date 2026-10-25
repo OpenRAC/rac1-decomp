@@ -58,10 +58,10 @@ void update_slideshow(void) {
             ICNT = -1;
             IIDX = IIDX + 1;
             r = IIDX % 20;
-            if (D_0015EE80 != 0) {
-                start_audio_stream_read(slideshow[3], D_00137C80.alt[r].a, D_00137C80.alt[r].b);
+            if (pal_mode != 0) {
+                start_audio_stream_read(slideshow[3], disc_table.alt[r].a, disc_table.alt[r].b);
             } else {
-                start_audio_stream_read(slideshow[3], D_00137C80.normal[r].a, D_00137C80.normal[r].b);
+                start_audio_stream_read(slideshow[3], disc_table.normal[r].a, disc_table.normal[r].b);
             }
         }
     }

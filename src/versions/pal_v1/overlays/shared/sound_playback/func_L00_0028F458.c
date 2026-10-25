@@ -16,21 +16,21 @@ void update_moby_proximity_interaction(unsigned char *m) {
                 *(int *)(m + 0x90) = v | (v << 8) | (v << 16);
             }
             AddDrawCallback(render_environment_mapped_object, m);
-            if (func_001F9D48(m + 0x10, D_L00_00166EC0) < 32.0f) {
+            if (vec_distance_xy(m + 0x10, g_debug_camera) < 32.0f) {
                 AddDrawCallback(draw_light_flare, m);
             }
         }
         p = (float *)(m + 0x10);
         if (*(short *)(d + 0xC) != 0) {
-            func_001F9EC0(tmp, D_L00_001BDC10 + ship_index[0] * 16, m + 0xC0);
+            matrix_mul_vec3(tmp, D_L00_001BDC10 + ship_index[0] * 16, m + 0xC0);
             FastVecAdd(tmp, tmp, p);
             if (FastVecDist(tmp, D_0013E633 + 0xE9D) > 4.1f) {
                 *(short *)(d + 0xC) = 0;
             }
         } else {
             q = (unsigned char *)D_0013E633 + 0xE9D;
-            if (func_001F9D48(p, q) < 6.0f) {
-                func_001F9EC0(tmp, D_L00_001BDC10 + ship_index[0] * 16, m + 0xC0);
+            if (vec_distance_xy(p, q) < 6.0f) {
+                matrix_mul_vec3(tmp, D_L00_001BDC10 + ship_index[0] * 16, m + 0xC0);
                 FastVecAdd(tmp, tmp, p);
                 if (FastVecDist(tmp, q) < 4.0f) {
                     *(short *)(d + 0xC) = 1;
@@ -55,7 +55,7 @@ void update_moby_proximity_interaction(unsigned char *m) {
             }
         }
     } else {
-        if (D_L00_0015F6A8 != 2) {
+        if (cinematic_mode != 2) {
             q = D_0013D355 + 0x13B;
             if (q[0x48] == 0 && gHaveMorphORay[7] != 0) {
                 StartCutscene(4);
