@@ -5,7 +5,6 @@
 #include "vector.h"
 #include "moby.h"
 
-typedef struct { f32 x; f32 y; f32 z; } Vec3_2EAF48;
 /* A looping waypoint path: count points, 16 bytes apart. */
 typedef struct {
     s32 count;
@@ -651,7 +650,6 @@ float interpolate_sample_ring(float x, char *arg) {
     return *(float *)(t - (-(i * 4))) * (1.0f - fr) + *(float *)(t - (-(j * 4))) * fr;
 }
 INCLUDE_ASM("asm/overlays", func_L08_002F7318);
-typedef struct { f32 x; f32 y; f32 z; } Vec3_2F8560;
 typedef int u128_2F8560 __attribute__((mode(TI)));
 /* Pvars of a flickering point light. */
 typedef struct {

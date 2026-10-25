@@ -603,7 +603,6 @@ void update_timed_effect_emitter(unsigned char *moby) {
         break;
     }
 }
-typedef struct { f32 x; f32 y; f32 z; } Vec3_2CAD18;
 /* Box a moby sweeps through: hits other mobys inside it. */
 typedef struct {
     f32 width;
@@ -1560,8 +1559,7 @@ extern void func_L01_002F9908(void *, void *, unsigned int, float, int, float, f
 
 /* Orxon moby update: destroys itself when its item is taken, else fires its effect once per pass. */
 void handle_moby_destruction(char *moby) {
-    typedef union { u128 q; float f[4]; } Vec4;
-    Vec4 v20, v30, v40, v50;
+        Vec4 v20, v30, v40, v50;
     unsigned short id = *(unsigned short *)(moby + 0xB2);
     int n;
     int k;

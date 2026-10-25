@@ -2077,12 +2077,8 @@ void update_moby_interpolated_point_light(unsigned char *m) {
     }
 }
 typedef int OvlQuad_0D380 __attribute__((mode(TI)));
-typedef union {
-    OvlQuad_0D380 q;
-    f32 f[4];
-} GlowVec_bfa8;
 typedef struct {
-    GlowVec_bfa8 corner[4];
+    Vec4 corner[4];
     u32 color[4];
     s32 unk50, unk54, unk58;
     f32 unk5C, unk60;
@@ -2090,8 +2086,8 @@ typedef struct {
     f32 unk68, unk6C;
     s64 unk70, tex, unk80, unk88;
 } GlowQuad_bfa8;
-extern GlowVec_bfa8 D_L01_0020BCC0[4];
-extern GlowVec_bfa8 D_0013F6E0[];
+extern Vec4 D_L01_0020BCC0[4];
+extern Vec4 D_0013F6E0[];
 extern short D_L01_001620F4;
 extern short D_L01_001620FC;
 extern s64 func_001F4868(s32);
@@ -2103,12 +2099,12 @@ extern void func_L00_001FD1D8(void *, void *, s32);
 void draw_moby_offset_textured_quad(char *m) {
     struct {
         GlowQuad_bfa8 quad;
-        GlowVec_bfa8 src_corner[4];
-        struct { GlowVec_bfa8 mat0, mat1, mat2, point, partial, offset; } basis;
+        Vec4 src_corner[4];
+        struct { Vec4 mat0, mat1, mat2, point, partial, offset; } basis;
     } local;
-    GlowVec_bfa8 *dst;
-    GlowVec_bfa8 *src;
-    GlowVec_bfa8 *basis;
+    Vec4 *dst;
+    Vec4 *src;
+    Vec4 *basis;
     s32 i;
     f32 one;
     OvlQuad_0D380 q0, q1, q2, q3;
@@ -2201,11 +2197,6 @@ char *spawn_sandmouse_projectile(char *owner, char *pos, float a, float b, float
 extern f32 D_0015EE60 MACRO_ADDR;
 extern f32 D_0015EE70 MACRO_ADDR;
 typedef int OvlQuad_0DD80 __attribute__((mode(TI)));
-typedef union {
-    OvlQuad_0DD80 q;
-    f32 f[4];
-    s32 i[4];
-} OvlVec4;
 typedef struct {
     OvlQuad_0DD80 dir;
     void *owner;
@@ -2231,8 +2222,8 @@ extern OvlQuad_0DD80 D_0013F4D0_0DD80 __asm__("D_0013F4D0");
 void update_sandmouse_projectile(char *m) {
     char *e = ((char *)((Moby *)m)->pvars);
     f32 *pos;
-    OvlVec4 old_pos;
-    OvlVec4 offset;
+    Vec4 old_pos;
+    Vec4 offset;
     DropProbe_30c9a8 probe;
     f32 desired_yaw, desired_pitch;
     f32 pitch_k, pitch_d, pitch_max;

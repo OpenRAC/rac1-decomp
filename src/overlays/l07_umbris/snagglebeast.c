@@ -2399,7 +2399,6 @@ void mark_swooper_for_removal(char *moby, char *spawner_vars) {
     }
     DeleteMoby(moby);
 }
-typedef struct { f32 x; f32 y; f32 z; } Vec3_31AAB0;
 typedef struct {
     u8 pad0[0x7C];
     f32 speed;
@@ -2609,10 +2608,9 @@ void update_swooper(struct Moby *moby) {
     }
     func_L00_0025B040_31AAB0(moby, 0.7f);
 }
-typedef struct { f32 x; f32 y; f32 z; } Vec3_31B318;
 typedef struct {
     s32 shards;
-    Vec3_31B318 size;
+    Vec3f size;
 } BreakableVars_31B318;
 typedef struct {
     u8 pad0[0x10];

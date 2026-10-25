@@ -22,6 +22,13 @@ typedef struct {
     f32 w;
 } Vec4f;
 
+/* Three floats, 4-byte aligned: a position or direction stored without a w. */
+typedef struct {
+    f32 x;
+    f32 y;
+    f32 z;
+} Vec3f;
+
 /* The quadword. Not called u128: source files declare their own u128,
    and a second typedef of one name is an error. */
 typedef u32 VecQuad __attribute__((mode(TI), aligned(16)));

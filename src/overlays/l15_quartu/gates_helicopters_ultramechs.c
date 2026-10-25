@@ -465,7 +465,6 @@ extern f32 D_0015EE6C MACRO_ADDR;
 extern char D_0014C290[];
 extern unsigned char D_001414F4[];
 extern unsigned char D_0013DE58 NOT_SDA;
-typedef union { u128_A8AA8 q; float f[4]; } Vec_2a7880;
 extern char D_L15_00178780[];
 extern char D_L15_001615E8[];
 typedef struct { u32 words[3]; } Colors_2a7880;
@@ -495,16 +494,16 @@ extern void func_L00_0025F4A8_A8AA8(void *, void *, void *, float, float, int, i
 void update_destructible_moby_with_radial_debris(struct Moby *moby)
 {
     char *slot = 0;
-    Vec_2a7880 velocity, first, second, offset, base;
+    Vec4 velocity, first, second, offset, base;
     u32 palette[4];
     u32 colors[4];
-    Vec_2a7880 position;
+    Vec4 position;
     int i, index, slot_index;
     u32 *palette_entry;
     float radius, angle, size;
     int color, color2, duration;
     void *effect;
-    Vec_2a7880 *base_position;
+    Vec4 *base_position;
 
     if (hero_vehicle_mode[0] != 2 && moby->state == 1)
         return;
@@ -1012,10 +1011,9 @@ void construction_arm_update(char *moby) {
     }
 }
 typedef int SQuad __attribute__((mode(TI)));
-typedef union { SQuad q; float f[4]; } SteeringVec_4f88;
 typedef struct {
     char pad[0x150];
-    SteeringVec_4f88 delta;
+    Vec4 delta;
     char pad160[0x10];
     float speed;
     float pitch_velocity;
@@ -1031,14 +1029,14 @@ extern float func_001FA790(float, float);
 extern float func_L00_00259148(float *vel, float cur, float target, float k, float d, float max);
 extern void func_L15_00248E58(float, float, struct Moby *, void *, int);
 /* Steers a flying moby toward goal while facing look. */
-void steer_helicopter(struct Moby *moby, SteeringVec_4f88 *goal, SteeringVec_4f88 *look) {
-    SteeringVec_4f88 target;
-    SteeringVec_4f88 look_copy;
-    SteeringVec_4f88 scaled;
-    SteeringVec_4f88 origin;
-    SteeringVec_4f88 delta;
-    SteeringVec_4f88 *look_at = &look_copy;
-    SteeringVec_4f88 *target_at = &target;
+void steer_helicopter(struct Moby *moby, Vec4 *goal, Vec4 *look) {
+    Vec4 target;
+    Vec4 look_copy;
+    Vec4 scaled;
+    Vec4 origin;
+    Vec4 delta;
+    Vec4 *look_at = &look_copy;
+    Vec4 *target_at = &target;
     SteeringVars_4f88 *vars = (SteeringVars_4f88 *)moby->pvars;
     float distance;
     float step;

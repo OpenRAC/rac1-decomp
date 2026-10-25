@@ -202,10 +202,6 @@ void update_hero_target_heading(float a, float b, float c) {
 }
 typedef u32 u128_15738 __attribute__((mode(TI), aligned(16)));
 extern struct Hero D_0013F450_15738 __asm__("D_0013F450");
-typedef union {
-    u128_15738 q;
-    f32 f[4];
-} HopVec_214658;
 extern f32 D_0015EE64 MACRO_ADDR;
 extern struct { f32 f[0xB68 / 4]; } D_L00_0017A780_15738 __asm__("D_L00_0017A780");
 extern void func_001F9EE8(void *, void *, void *);
@@ -213,7 +209,7 @@ extern void func_L00_0020A858(f32, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/help/00214658.c, FUN_L00_00214fe8. */
 void update_hero_transformed_negative_z_angle_parameters(void) {
-    HopVec_214658 vec;
+    Vec4 vec;
     f32 *v = vec.f;
     f32 limit, x, y, pitch, z, lean;
     struct Hero *state = &D_0013F450_15738;

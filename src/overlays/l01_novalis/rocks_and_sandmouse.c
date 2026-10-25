@@ -6,10 +6,6 @@
 #include "vector.h"
 
 typedef int u128p __attribute__((mode(TI)));
-typedef union {
-    u128p q;
-    float f[4];
-} DebrisVec;
 typedef struct {
     unsigned int c[3];
 } DebrisColors;
@@ -55,9 +51,9 @@ void rock_formation_update(DebrisMoby *m) {
         Moby_PlaySound(0, 0x10, (int)m);
         for (i = 0; i < 200; i++) {
             {
-                DebrisVec vel;
-                DebrisVec pos;
-                DebrisVec off;
+                Vec4 vel;
+                Vec4 pos;
+                Vec4 off;
 
                 pos.q = 0;
                 pos.f[0] = random_float_between(-1.0f, 1.0f);
@@ -81,9 +77,9 @@ void rock_formation_update(DebrisMoby *m) {
         }
         for (j = 0; j < 40; j++) {
             DebrisColors colors;
-            DebrisVec vel;
-            DebrisVec pos;
-            DebrisVec off;
+            Vec4 vel;
+            Vec4 pos;
+            Vec4 off;
 
             colors = rock_formation_debris_colors;
             pos.q = 0;
@@ -313,7 +309,6 @@ char *spawn_colored_half_scale_moby(int owner, void *pos, void *target, int colo
     }
     return m;
 }
-typedef struct { f32 x; f32 y; f32 z; } Vec3_2FB588;
 typedef int u128_2FB588 __attribute__((mode(TI)));
 typedef struct {
     u32 c[6];
@@ -964,7 +959,6 @@ typedef struct {
     f32 f00, f04, f08, f0C, f10, f14, f18, f1C, f20, f24;
     s32 i28, i2C; f32 f30, f34, f38; u8 c3C, c3D;
 } PoolLight;
-typedef struct { f32 x, y, z, w; } PoolVec;
 typedef struct {
     u8 pad0[0x10]; f32 px, py, pz; u8 pad1C[4]; u8 state; u8 pad21[0xF]; u8 update_dist; u8 pad31[0x47]; void *pvars;
 } PMoby;
@@ -1015,8 +1009,8 @@ void update_pool_tiles_and_effects(PMoby *moby) {
     s32 found;
     s32 i;
     s32 j;
-    PoolVec v;
-    PoolVec p;
+    Vec4f v;
+    Vec4f p;
     s32 k;
     f32 f;
     f32 zero;
@@ -1853,10 +1847,6 @@ typedef struct {
     unsigned char pad38[0x178 - 0x38];
     struct Moby *slot[5];
 } CutsceneFx_D568;
-typedef union {
-    u128_D568 q;
-    float f[4];
-} FxVec_D568;
 typedef struct {
     unsigned char pad0[4];
     int unk4;
@@ -2022,10 +2012,10 @@ void update_level01_cutscene_effects(struct Moby *moby) {
         CUTSCENE_FX_STATE_INITIALIZE = 0,
         CUTSCENE_FX_STATE_UPDATE = 1
     };
-    FxVec_D568 effect_position_or_motion_delta;
-    FxVec_D568 debris_vector_or_effect_position;
-    FxVec_D568 c;
-    FxVec_D568 secondary_effect_position;
+    Vec4 effect_position_or_motion_delta;
+    Vec4 debris_vector_or_effect_position;
+    Vec4 c;
+    Vec4 secondary_effect_position;
     struct Moby *cutscene_moby;
     char *splash;
     FxSpark_D568 *spark;
@@ -2203,22 +2193,16 @@ extern float func_001F9CB8(void *);
 extern float D_L01_001621A0 MACRO_ADDR;
 extern float D_L01_001621A4 MACRO_ADDR;
 
-typedef struct EnvVec {
-    f32 x;
-    f32 y;
-    f32 z;
-    f32 w;
-} EnvVec;
 
 /* Projects each of n point/normal pairs onto a 2D texture coordinate. */
 void generate_level01_environment_map_uvs(int vertex_count, char *normals, char *verts, int unused, float *uv) {
     f32 (*normal_list)[3] = (f32 (*)[3])normals;
     f32 (*vert_list)[3] = (f32 (*)[3])verts;
     f32 (*uv_pairs)[2] = (f32 (*)[2])uv;
-    EnvVec eye;
-    EnvVec vertex_position;
-    EnvVec refl;
-    EnvVec nrm;
+    Vec4f eye;
+    Vec4f vertex_position;
+    Vec4f refl;
+    Vec4f nrm;
     s32 i;
     f32 uv_projection_denominator;
 

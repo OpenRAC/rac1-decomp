@@ -2355,7 +2355,6 @@ void compute_glove_of_doom_throw_velocity(int a0, Moby *m, float *a2)
     func_L00_002C8680_2C88A8(q0, v90, out, D_0015EE70_2C88A8 * 9.0f, 0.00000999999975f,
                              (((PadState *)(D_0013A5E0_2C88A8 + 0x2460))->held & 5) ? 3.5f : 2.5f);
 }
-typedef struct { f32 x; f32 y; f32 z; } Vec3_2C8DB8;
 typedef int u128_2C8DB8 __attribute__((mode(TI)));
 /* Vars of the carrier moby that picks up and holds another moby. */
 typedef struct {

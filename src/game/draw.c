@@ -677,9 +677,6 @@ extern float D_0018D010;
    register with field offsets, as in retail. */
 extern CameraSystem D_00187040_cam __asm__("D_00187040");
 
-typedef struct {
-    float x, y, z;
-} Vec3f;
 
 /* Projects camera-space point a1 through the camera matrix, divides by
    depth (D_0018D010 / w) and scales to x16 screen units. func_002346C0
@@ -1104,13 +1101,12 @@ void InitViewContext(void) {
 __asm__(".section .text\n\tnop\n");
 
 typedef u32 VecQuadP __attribute__((mode(TI), aligned(16)));
-typedef union { VecQuadP q; f32 f[4]; s32 i[4]; } Vec4P;
 struct ViewP {
     s32 fog_color; s32 unk4; s32 unk8; s32 unkC;
-    Vec4P regs[5]; Vec4P gif[4];
+    Vec4 regs[5]; Vec4 gif[4];
     f32 near_clip; f32 far_clip; f32 aspect_x; f32 aspect_y;
-    Vec4P fov; f32 proj[16]; f32 proj2[16]; f32 proj3[16];
-    Vec4P inverse_screen_scale, screen_scale, screen_bias, inverse_projection_scale, viewport_aspect, aspect_scale, clip_scale, clip_distances;
+    Vec4 fov; f32 proj[16]; f32 proj2[16]; f32 proj3[16];
+    Vec4 inverse_screen_scale, screen_scale, screen_bias, inverse_projection_scale, viewport_aspect, aspect_scale, clip_scale, clip_distances;
     f32 half_width, half_height, scr_x, scr_y, fog_mul, fog_add, fog_near_dist, fog_far_dist, fog_slope, fog_base, fog_near_int, fog_far_int;
     s32 fog_r, fog_g, fog_b;
 };
@@ -1125,25 +1121,25 @@ struct FogRegs2P {
     s32 near_int;
 };
 struct ClipP {
-    Vec4P constants[3];
+    Vec4 constants[3];
 };
 
-extern Vec4P D_0018D0C0[4];
+extern Vec4 D_0018D0C0[4];
 extern f32 D_00160820[4];
 extern f32 D_00160C30 MACRO_ADDR;
 extern f32 D_001E0250[];
 extern f32 D_001E6E70[];
 extern struct FogRegs2P D_001DED30;
 extern struct FogRegs2P D_001DED80;
-extern Vec4P D_001DEDC0[2];
-extern Vec4P D_001DEA90[3];
+extern Vec4 D_001DEDC0[2];
+extern Vec4 D_001DEA90[3];
 extern struct {
     u8 pad0[0x10];
     s32 mul;
     s32 far_int;
     s32 near_int;
     u8 pad1c[0x44];
-    Vec4P constants[3];
+    Vec4 constants[3];
     u8 pad90[0x10];
     s32 x;
     s32 y;

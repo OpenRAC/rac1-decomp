@@ -1,4 +1,5 @@
 #include "common.h"
+#include "vector.h"
 #include "callees.h"
 #include "records.h"
 #include "hero.h"
@@ -418,10 +419,6 @@ void initialize_gameplay_sound_system(void) {
 }
 
 typedef unsigned int u128_DD68 __attribute__((mode(TI), aligned(16)));
-typedef union {
-    u128_DD68 q;
-    f32 f[4];
-} VoiceVector_DD68;
 
 typedef struct {
     u8 pad00[0x18];
@@ -433,10 +430,10 @@ typedef struct {
 
 typedef struct {
     u8 pad00[0x10];
-    VoiceVector_DD68 position;
+    Vec4 position;
     u8 state;
     u8 pad21[0x9F];
-    VoiceVector_DD68 rotation;
+    Vec4 rotation;
 } VoiceMoby_DD68;
 
 typedef struct {
@@ -450,15 +447,15 @@ typedef struct {
     s32 pitch_bend;                     /* 0x14 */
     VoiceMoby_DD68 *moby;               /* 0x18 */
     s32 owner_context;                  /* 0x1C */
-    VoiceVector_DD68 position;          /* 0x20 */
-    VoiceVector_DD68 position_offset;   /* 0x30 */
+    Vec4 position;          /* 0x20 */
+    Vec4 position_offset;   /* 0x30 */
     u32 occlusion_history_position;     /* 0x40 */
     u8 occlusion_history[36];           /* 0x44 */
     u8 pad68[8];
 } VoiceSlot_DD68;
 
 typedef struct {
-    VoiceVector_DD68 listener_history[4];   /* 0x000 */
+    Vec4 listener_history[4];   /* 0x000 */
     s32 listener_history_position;          /* 0x040 */
     s32 pad44;
     s32 group_0_volume;                     /* 0x048 */
@@ -478,7 +475,7 @@ typedef struct {
     s32 padD90[2];
     s32 occlusion_frame;                    /* 0xD98 */
     s32 padD9C;
-    VoiceVector_DD68 occlusion_samples[6];  /* 0xDA0 */
+    Vec4 occlusion_samples[6];  /* 0xDA0 */
 } VoiceRuntimeState_DD68;
 
 extern VoiceRuntimeState_DD68 voice_pool_DD68 __asm__("D_0013E650");
@@ -517,8 +514,8 @@ extern s32 truncate_float_to_s32_DD68(f32) __asm__("func_001FA898");
 extern void music_Update_DD68() __asm__("func_00217130");
 extern void Sound_PickOcclusionOrigin_DD68(void *) __asm__("func_0022D8C0");
 extern u8 Sound_LineTest_DD68(VoiceSlot_DD68 *, void *) __asm__("func_0022D970");
-extern s32 Sound_ApplyDistanceFade_DD68(VoiceSlot_DD68 *, VoiceVector_DD68 *) __asm__("func_0022DB00");
-extern s32 Sound_ComputePan_DD68(VoiceSlot_DD68 *, VoiceVector_DD68 *, void *) __asm__("func_0022DB48");
+extern s32 Sound_ApplyDistanceFade_DD68(VoiceSlot_DD68 *, Vec4 *) __asm__("func_0022DB00");
+extern s32 Sound_ComputePan_DD68(VoiceSlot_DD68 *, Vec4 *, void *) __asm__("func_0022DB48");
 extern void Sound_StoreHandleAdvance_DD68() __asm__("func_0022F0A8");
 extern void Sound_StoreHandleReset_DD68() __asm__("func_0022F0F0");
 
@@ -535,14 +532,14 @@ extern void Sound_StoreHandleReset_DD68() __asm__("func_0022F0F0");
 s32 func_0022DD68_r(void) __asm__("func_0022DD68");
 s32 func_0022DD68_r(void) {
     VoiceSlot_DD68 *voices;
-    VoiceVector_DD68 listener_occlusion_position;
-    VoiceVector_DD68 listener_velocity;
-    VoiceVector_DD68 relative_velocity;
+    Vec4 listener_occlusion_position;
+    Vec4 listener_velocity;
+    Vec4 relative_velocity;
     s32 flags[30];
     s32 voice_volumes[30];
     f32 radial_velocities[30];
-    VoiceVector_DD68 direction;
-    VoiceVector_DD68 listener_matrix[4];
+    Vec4 direction;
+    Vec4 listener_matrix[4];
     s32 slot_index;
     s32 underwater;
     s32 *voice_flags;
@@ -934,10 +931,6 @@ void sound_KillChannel(int idx) {
 }
 
 typedef int u128_2EB08 __attribute__((mode(TI)));
-typedef union {
-    u128_2EB08 q;
-    f32 f[4];
-} VoiceVector_2EB08;
 typedef struct {
     u8 pad0[0x10];
     s32 pitch_bend_min;
@@ -949,7 +942,7 @@ typedef struct {
 } VoiceDefinition_2EB08;
 typedef struct {
     u8 pad0[0x10];
-    VoiceVector_2EB08 position;
+    Vec4 position;
     u8 pad20[0x86];
     s16 class_id;
 } VoiceMoby_2EB08;
@@ -965,8 +958,8 @@ typedef struct {
     s32 pitch_bend;
     VoiceMoby_2EB08 *owner;
     s32 reserved1C;
-    VoiceVector_2EB08 position;
-    VoiceVector_2EB08 position_offset;
+    Vec4 position;
+    Vec4 position_offset;
     s32 history_position;
     u8 history[0x2C];
 } VoiceSlot_2EB08;
@@ -980,18 +973,18 @@ typedef struct {
     VoiceSlot_2EB08 voice;
 } VoicePoolWindow_2EB08;
 typedef struct {
-    VoiceVector_2EB08 value;
+    Vec4 value;
     u8 pad10[0x60];
 } VoicePositionRecord_2EB08;
 extern VoicePool_2EB08 D_0013E650_2EB08 __asm__("D_0013E650");
 extern Hero D_0013F450_2EB08 __asm__("D_0013F450");
 extern VoicePositionRecord_2EB08 D_0013E6E0_2EB08[] __asm__("D_0013E6E0");
 extern u8 D_0013E6C0_2EB08[] __asm__("D_0013E6C0");
-extern void func_001F9BC0_2EB08(VoiceVector_2EB08 *) __asm__("func_001F9BC0");
+extern void func_001F9BC0_2EB08(Vec4 *) __asm__("func_001F9BC0");
 extern s32 func_002140B0_2EB08(s32) __asm__("func_002140B0");
-extern s32 func_0022DB00_2EB08(VoiceSlot_2EB08 *, VoiceVector_2EB08 *) __asm__("func_0022DB00");
+extern s32 func_0022DB00_2EB08(VoiceSlot_2EB08 *, Vec4 *) __asm__("func_0022DB00");
 
-s32 func_0022EB08_r(VoiceDefinition_2EB08 *, u32, VoiceMoby_2EB08 *, VoiceVector_2EB08 *,
+s32 func_0022EB08_r(VoiceDefinition_2EB08 *, u32, VoiceMoby_2EB08 *, Vec4 *,
                     s32) __asm__("func_0022EB08");
 
 /* Takes a free voice of the sound pool for a definition (26 voices, 30 for the hero, the
@@ -999,7 +992,7 @@ s32 func_0022EB08_r(VoiceDefinition_2EB08 *, u32, VoiceMoby_2EB08 *, VoiceVector
    it would be inaudible and picks its pitch bend. Returns the voice index or -1.
    Adapted from Lombyte's project (GPL-3.0) for PAL: src/textbin/fun_0022d7f0.c, allocate_voice_slot. */
 s32 func_0022EB08_r(VoiceDefinition_2EB08 *definition, u32 flags, VoiceMoby_2EB08 *moby,
-                    VoiceVector_2EB08 *position, s32 volume) {
+                    Vec4 *position, s32 volume) {
     s32 volume_offset;
     s32 pitch_bend_max;
     s32 pitch_bend_min;
@@ -1086,7 +1079,7 @@ calculate_volume:
     }
     volume_offset = slot_index * 0x70;
     result = func_0022DB00_2EB08((VoiceSlot_2EB08 *)(D_0013E6C0_2EB08 + volume_offset),
-                                 (VoiceVector_2EB08 *)(D_0013E6C0_2EB08 + volume_offset + 0x20));
+                                 (Vec4 *)(D_0013E6C0_2EB08 + volume_offset + 0x20));
     goto check_calculated_volume;
 commit_if_audible:
     result = volume;

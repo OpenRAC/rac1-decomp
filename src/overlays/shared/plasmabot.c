@@ -449,7 +449,6 @@ void update_plasmabot(char *m) {
     }
     update_plasmabot_visual_effects((struct Moby *)m);
 }
-typedef struct { f32 x; f32 y; f32 z; } Vec3_2B3850;
 typedef struct {
     u8 pad0[0x1E0];
     Vec4 exhaust;
@@ -2159,7 +2158,6 @@ void update_vendor_beam_animation(char *moby) {
         }
     }
 }
-typedef struct { f32 x; f32 y; f32 z; } Vec3_3039C0;
 typedef struct {
     int w0;
     short s4, s6, s8, sA;

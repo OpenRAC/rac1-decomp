@@ -951,7 +951,6 @@ void destroy_frog_child_moby(struct Moby *moby) {
     DeleteMoby(*(void **)(vars + 0x20C));
     *(int *)(vars + 0x20C) = 0;
 }
-typedef struct { f32 x; f32 y; f32 z; } Vec3_2EB5C8;
 extern s32 D_L06_00161CA8_2EB5C8 SDATA(D_L06_00161CA8);
 extern s32 D_L06_00161CAC_2EB5C8 SDATA(D_L06_00161CAC);
 extern f32 D_L06_00161CB0_2EB5C8 SDATA(D_L06_00161CB0);

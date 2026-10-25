@@ -5,7 +5,6 @@
 #include "hero.h"
 #include "moby.h"
 
-typedef struct { f32 x; f32 y; f32 z; } Vec3_2C6B30;
 /* Per-instance variables of the oClass 52 moby (moby->pvars). */
 typedef struct {
     u8 pad0[0x20];

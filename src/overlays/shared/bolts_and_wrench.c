@@ -1822,8 +1822,7 @@ void wrench_update(Wrench48 *m) {
     }
 }
 typedef int Q_2aa998 __attribute__((mode(TI)));
-typedef union { Q_2aa998 q; float f[4]; } BoltVector_2AA998;
-typedef struct { char pad[0x10]; BoltVector_2AA998 position; } BoltOwner_2AA998;
+typedef struct { char pad[0x10]; Vec4 position; } BoltOwner_2AA998;
 extern short D_L00_0016148C;
 extern short D_L00_001B0AF0[];
 extern char *func_L00_00264140(void *, void *, void *, float *, float *, float *, float);
@@ -1834,8 +1833,8 @@ extern void func_L00_002607F8(void *, short *, int);
 char *SpawnHomingBolt(void *owner, void *pos, float a, float b, float c, char *tgt, float rz, float ry) {
     char *m;
     char *d;
-    BoltVector_2AA998 t;
-    BoltVector_2AA998 p;
+    Vec4 t;
+    Vec4 p;
     m = (char *)CreateMoby(0x100);
     if (m != 0) {
         ((unsigned char *)m)[0x30] = 0xFF;

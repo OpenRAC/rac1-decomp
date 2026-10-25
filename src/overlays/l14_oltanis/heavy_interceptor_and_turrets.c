@@ -73,12 +73,7 @@ void KeyframePlatformUpdate(unsigned char *moby) {
         PATH_MOVER_COMMAND_TRAVERSE_PATH = 2
     };
     typedef int VecQuad __attribute__((mode(TI), aligned(16)));
-    typedef union {
-        VecQuad q;
-        f32 f[4];
-        s32 i[4];
-    } Vec4;
-    typedef struct {
+        typedef struct {
         s32 count;
         u8 pad4[0xC];
         Vec4 points[1];

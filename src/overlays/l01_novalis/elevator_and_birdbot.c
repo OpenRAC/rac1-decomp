@@ -3173,7 +3173,6 @@ typedef struct {
     unsigned int mode;
 } CapPlayer;
 typedef struct { unsigned int c[3]; } CapColors;
-typedef struct { float x, y, z; } CapVec3;
 
 extern unsigned char D_0014171B[] NOT_SDA;
 extern CapColors D_L01_00161CD0;
@@ -3270,7 +3269,7 @@ void falling_rock_update(Moby *falling_rock) {
         }
         break;
     case FALLING_ROCK_STATE_FALLING: {
-        CapVec3 old;
+        Vec3f old;
 
         apply_falling_rock_camera_overrides((char *)falling_rock);
         falling_rock->pos.z -= 0.0f;

@@ -3317,7 +3317,6 @@ int advance_moby_along_flight_path(char *m) {
     }
     return 0;
 }
-typedef struct { f32 x; f32 y; f32 z; } Vec3_2FF040;
 /* pvars of the flyer this function moves to a path point */
 typedef struct {
     s32 point;

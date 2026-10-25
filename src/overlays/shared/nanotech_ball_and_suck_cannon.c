@@ -666,7 +666,6 @@ void nanotech_ball_update(Moby *m) {
         break;
     }
 }
-typedef struct { f32 x, y, z; } Vec3_2DACC0;
 typedef unsigned int u128_2DACC0 __attribute__((mode(TI), aligned(16)));
 typedef struct {
     u128_2DACC0 points[4];
@@ -818,9 +817,9 @@ void draw_nanotech_ball(Moby *moby) {
         transform_vector_2DACC0(&vertex, D_L00_001E1810_2DACC0 + j * 16, basis);
         {
             float x = vertex[0], y = vertex[1], z = vertex[2];
-            ((Vec3_2DACC0 *)D_L00_001E40F0_2DACC0)[j].x = x;
-            ((Vec3_2DACC0 *)D_L00_001E40F0_2DACC0)[j].y = y;
-            ((Vec3_2DACC0 *)D_L00_001E40F0_2DACC0)[j].z = z;
+            ((Vec3f *)D_L00_001E40F0_2DACC0)[j].x = x;
+            ((Vec3f *)D_L00_001E40F0_2DACC0)[j].y = y;
+            ((Vec3f *)D_L00_001E40F0_2DACC0)[j].z = z;
         }
     }
     func_L00_001FDE48_2DACC0(0x94, D_L00_001E40F0_2DACC0,
