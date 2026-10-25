@@ -289,7 +289,7 @@ extern void func_0020D678(void *);
 extern void func_L00_002E2F58(char *);
 
 /* Vendor (level 0) update: walks a path, turns toward the player, attacks and self-destructs.
-   Adapted from Lombyte (GPL-3.0) for PAL: overlays/l00/gameplay_vendor_002e0988.c, FUN_L00_002e0b88. */
+   Adapted from the NTSC decomp (GPL-3.0) for PAL: overlays/l00/gameplay_vendor_002e0988.c, FUN_L00_002e0b88. */
 extern Hero hero __asm__("D_0013F450");
 
 void veldin_robot_enemy_update(VendMoby *moby) {
@@ -564,7 +564,7 @@ typedef struct {
     Vec4 pos;
 } TrollColl;
 
-/* Update for the troll moby: takes hits, picks and tracks its target. Adapted from Lombyte (GPL-3.0) for PAL: src/overlays/l00/gameplay_vendor_002e0988.c, FUN_L00_002e1678. */
+/* Update for the troll moby: takes hits, picks and tracks its target. Adapted from the NTSC decomp (GPL-3.0) for PAL: src/overlays/l00/gameplay_vendor_002e0988.c, FUN_L00_002e1678. */
 void update_veldin_robot_damage_and_targeting(void *mv) {
     TrollMoby *m = mv;
     TrollVars *vars;
@@ -676,7 +676,7 @@ extern void func_L00_002E3128_2E2F58(void) __asm__("func_L00_002E3128");
 extern float D_L00_0015F660[] MACRO_ADDR;
 
 // spawns a spark: steps the moby's position and emits one fast particle and three slow tails
-// Adapted from Lombyte (GPL-3.0) for PAL: overlays/l00/gameplay_vendor_002e0988.c, FUN_L00_002e1aa8.
+// Adapted from the NTSC decomp (GPL-3.0) for PAL: overlays/l00/gameplay_vendor_002e0988.c, FUN_L00_002e1aa8.
 void update_veldin_robot_effects(char *m) {
     char *vars;
     char *p;

@@ -89,7 +89,7 @@ void initialize_hero_aligned_camera_pose(char *m) {
 }
 extern void func_L00_002EB280(char *m);
 
-/* clears the 7 words of the state block, calls the helper, clears halfword 0x7E. Adapted from Lombyte (GPL-3.0) for PAL: overlays/shared/gameplay_vendor_002e9010.c, FUN_L00_002e9ef0. */
+/* clears the 7 words of the state block, calls the helper, clears halfword 0x7E. Adapted from the NTSC decomp (GPL-3.0) for PAL: overlays/shared/gameplay_vendor_002e9010.c, FUN_L00_002e9ef0. */
 void func_L00_002EB3A0(p)
     char *p;
 {
@@ -126,7 +126,7 @@ float func_001FA748(float, float);
 float func_001FA790(float, float);
 int func_L00_001F10E0(void *, int, void *, float);
 
-/* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_002e9010.c, FUN_L00_002e9f38. */
+/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_002e9010.c, FUN_L00_002e9f38. */
 void update_hero_aligned_camera_from_input(u8 *o) {
     V up;
     V side;
@@ -210,7 +210,7 @@ extern f32 func_001F9CB8_2eb938(void *) __asm__("func_001F9CB8");
 extern void func_L00_001ED600_2eb938(void) __asm__("func_L00_001ED600");
 extern void func_001F9908_2eb938(void *) __asm__("func_001F9908");
 #define P D_0013F450_2eb938
-/* Camera-mode transition update for an InitCamera moby: counts frames while the player and the other camera are in an allowed state, and eases the camera (0.07 / 0.14 rad) toward the target. Adapted from Lombyte (GPL-3.0) for PAL: overlays/shared/gameplay_vendor_002e9010.c, FUN_L00_002ea488. */
+/* Camera-mode transition update for an InitCamera moby: counts frames while the player and the other camera are in an allowed state, and eases the camera (0.07 / 0.14 rad) toward the target. Adapted from the NTSC decomp (GPL-3.0) for PAL: overlays/shared/gameplay_vendor_002e9010.c, FUN_L00_002ea488. */
 int Camera_TransitionUpdate(u8 *m, char *a1) {
     Q_2eb938 *q;
     char *o;
@@ -381,7 +381,7 @@ extern V_2ebf50 D_0013F4D0_2ebf50 __asm__("D_0013F4D0") NOT_SDA;
 u8 *func_L00_001EB578_2ebf50(s32) __asm__("func_L00_001EB578");
 void func_L00_001EB890_2ebf50(u8 *) __asm__("func_L00_001EB890");
 void func_L00_001ED9B0_2ebf50(void *, V_2ebf50 *, V_2ebf50 *) __asm__("func_L00_001ED9B0");
-/* Camera script setup: fills the type-5 moby from two positions, a mode (2 or 3) and two values. Adapted from Lombyte (GPL-3.0) for PAL: overlays/shared/gameplay_vendor_002e9010.c, FUN_L00_002eaaa0. The helper at +0xFC takes a third argument (the camera vector). */
+/* Camera script setup: fills the type-5 moby from two positions, a mode (2 or 3) and two values. Adapted from the NTSC decomp (GPL-3.0) for PAL: overlays/shared/gameplay_vendor_002e9010.c, FUN_L00_002eaaa0. The helper at +0xFC takes a third argument (the camera vector). */
 void CameraScript(V_2ebf50 *pa, V_2ebf50 *pb, s32 mode, s32 w, s32 x) {
     u8 *m = func_L00_001EB578_2ebf50(5);
     V_2ebf50 a, b, c, d;
@@ -601,7 +601,7 @@ void initialize_orbit_camera_from_parameters(char *a, void *b, void *c, float f)
     clear_twelve_bytes(p + 0x90);
     initialize_orbit_camera_pose(a);
 }
-/* From Lombyte (GPL-3.0), FUN_L00_002eb3b0 (PR #66), adapted to PAL. */
+/* From the NTSC decomp (GPL-3.0), FUN_L00_002eb3b0 (PR #66), adapted to PAL. */
 
 void initialize_orbit_camera_state(void *arg) {
     char *p = arg;
@@ -698,7 +698,7 @@ extern float D_L00_00161EA4;
 extern char D_L00_00166D80_c[] __asm__("D_L00_00166D80") NOT_SDA;
 
 // steps a follow-camera object toward a target moby, easing its angle and position or snapping to a goal
-// Adapted from Lombyte (GPL-3.0) for PAL: overlays/shared/gameplay_vendor_002e9010.c, FUN_L00_002eb648.
+// Adapted from the NTSC decomp (GPL-3.0) for PAL: overlays/shared/gameplay_vendor_002e9010.c, FUN_L00_002eb648.
 int update_orbit_camera_from_target_moby(char *a, char *t) {
     u128 v[1];
     u128 w[1];
@@ -943,7 +943,7 @@ extern float rope_turn_k_2ED320 SDATA(D_L00_00161EA8);
 
 /* Follow camera on a rope or a swing: eases the distance, height and lag toward the hero's rope state, turns the
    camera toward the next rope anchor the hero faces (the anchor's neighbour list, classes 0x323/0x2F6) or toward
-   the hero's yaw, then places it behind the hero and pulls it in front of geometry. Adapted from Lombyte (GPL-3.0) for
+   the hero's yaw, then places it behind the hero and pulls it in front of geometry. Adapted from the NTSC decomp (GPL-3.0) for
    PAL: src/overlays/shared/gameplay/camera/follow_camera_update.c, FUN_L00_002ebe70. The moby list pointer
    D_L00_00160098 is MACRO_ADDR (retail loads it with its lui into one register). */
 void update_target_tracking_camera_position(char *cam) {
@@ -1203,7 +1203,7 @@ extern s32 func_L00_00260AB0(void *, s32);
 extern s32 func_L00_00260B68_EDC98(void *, s32) __asm__("func_L00_00260B68");
 extern s32 func_L00_0025A778(void *, void *, s32);
 
-/* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_002e9010.c, FUN_L00_002ec7e8. */
+/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_002e9010.c, FUN_L00_002ec7e8. */
 s32 volume_camera_swing_active(A_2ec7e8 *a) {
     O_2ec7e8 *o;
     s32 v17 = 0;
@@ -1839,7 +1839,7 @@ s32 func_002140B0(s32);
 s32 func_001F9850(s32);
 void func_L00_0028EBF0(s32);
 
-/* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_002e9010.c, FUN_L00_002ed950. */
+/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_002e9010.c, FUN_L00_002ed950. */
 void update_sound_emitter_playback_by_distance(u8 *m) {
     S_2ed950 *s = *(S_2ed950 **)(m + 8);
     f32 d, r;

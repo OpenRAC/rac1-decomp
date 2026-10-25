@@ -38,7 +38,7 @@ extern f32 func_001FA748(f32, f32);
 extern f32 func_001FA850(f32, f32);
 
 /* Ledge probe: steps forward from `pos` along the hero's yaw looking for a flat top (normal within 20 degrees of up, not material 9 or 12) at least `min_height` above the floor and not above pos + up, then for the wall under it. Returns 1 when the hero (facing `*dir`) faces that wall within 65 degrees and the ledge edge is found within 2.4 units along it. Constants live in locals because retail loads each one once.
-   Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/help/0020c758.c, FUN_L00_0020c758. */
+   Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/help/0020c758.c, FUN_L00_0020c758. */
 int probe_hero_ledge_edge(Vec4 *pos, f32 *dir)
 {
     Vec4 probe, top, low, wall, edge;
@@ -220,7 +220,7 @@ f32 func_001F9D10_0D5F0(void *, V_cf58 *) __asm__("func_001F9D10");
 s32 func_L00_0020D3A0_0D5F0(Q_cf58 *, s32 *, V_cf58 *, s32 *, f32 *, s32 *, s32, s32) __asm__("func_L00_0020D3A0");
 extern s32 D_0015EE84_0D5F0b __asm__("D_0015EE84") MACRO_ADDR;
 
-/* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_0020c758.c, FUN_L00_0020cf58. */
+/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_0020c758.c, FUN_L00_0020cf58. */
 /* Exact match: tools/ps2eeas_nops.py keeps the hazard nop after the label the branch lands on. */
 void find_grind_rail(void) {
     V_cf58 v0, v1, v2;
@@ -434,7 +434,7 @@ extern float func_001FA850(float, float);
 extern float func_001F9D48(void *, void *);
 extern int func_L00_0025F410(void *);
 
-/* Scores how far moby O is from the camera/hero reference point; flags *OUT when it is out of range. Adapted from Lombyte (GPL-3.0) for PAL: overlays/shared/ui_help_0020c758.c, FUN_L00_0020d6b0. */
+/* Scores how far moby O is from the camera/hero reference point; flags *OUT when it is out of range. Adapted from the NTSC decomp (GPL-3.0) for PAL: overlays/shared/ui_help_0020c758.c, FUN_L00_0020d6b0. */
 float score_hero_target_candidate(void *o_v, float yaw, float range, float ylim, float plim, int *out) {
     char *o = o_v;
     float v[4] __attribute__((aligned(16)));
@@ -473,7 +473,7 @@ extern float func_L00_0020DD48(void *obj, float y, float x, float z, float w, in
 
 extern void *D_L00_001ABD80[];
 
-/* Finds the listed object nearest a point. Adapted from Lombyte (GPL-3.0) for PAL: overlays/shared/ui_help_0020c758.c, FUN_L00_0020d8f8. */
+/* Finds the listed object nearest a point. Adapted from the NTSC decomp (GPL-3.0) for PAL: overlays/shared/ui_help_0020c758.c, FUN_L00_0020d8f8. */
 char *find_best_hero_heading_target(float a, float b, float c, float d) {
     char *best = 0;
     float bd = 1.0e8f;
@@ -524,7 +524,7 @@ extern void func_L00_00250418(int, void *, int, int, int, int);
 extern void func_L00_002501C8(void *, unsigned char *);
 extern int func_001F9850(int);
 
-// Picks the hero's current animation id and speed from its state and starts or updates the animation slot. Adapted from Lombyte (GPL-3.0) for PAL: overlays/shared/ui_help_0020c758.c, FUN_L00_0020da68.
+// Picks the hero's current animation id and speed from its state and starts or updates the animation slot. Adapted from the NTSC decomp (GPL-3.0) for PAL: overlays/shared/ui_help_0020c758.c, FUN_L00_0020da68.
 void update_hero_condition_animation(void) {
     char *p = D_0013E633 + 0xE1D;
     char *o;
@@ -703,7 +703,7 @@ extern void func_L00_00250120_0EB60(u8 *, u8 **) __asm__("func_L00_00250120");
 extern void func_L00_00250418_0EB60(u8 *, u8 *, s32, s32, s32, s32) __asm__("func_L00_00250418");
 extern void func_L00_00232C10(s32, s32, f32);
 
-/* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_0020c758.c, FUN_L00_0020e4c8. */
+/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_0020c758.c, FUN_L00_0020e4c8. */
 void start_equipped_item_animation(void) {
     s32 t, v19, v20, v21, i;
     u8 *o;
@@ -1912,7 +1912,7 @@ void func_L00_002AAE80(void);
 void func_001F9BC0(void *);
 void func_L00_00211338_113A0(void *, s32, f32, f32) __asm__("func_L00_00211338");
 
-/* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_0020c758.c, FUN_L00_00210ce8. */
+/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_0020c758.c, FUN_L00_00210ce8. */
 s32 hero_check_damage(s32 arg) {
     u8 *m;
     T_210ce8 *tbl;
@@ -2076,7 +2076,7 @@ extern s32 D_L00_0015F684 MACRO_ADDR;
 extern void func_L00_00204040(void);
 extern void func_001F4E08(int);
 
-/* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_0020c758.c, FUN_L00_00211250. */
+/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_0020c758.c, FUN_L00_00211250. */
 void Hero_OnKilled(void) {
     s32 lvl = g_current_level_index;
     char *m;
@@ -2104,7 +2104,7 @@ extern float D_0015EE64 MACRO_ADDR;
 extern float D_0015EE6C MACRO_ADDR;
 extern float func_L00_0025C918(float *p, float *v, float t, float u1, float u2, float eps);
 
-/* Updates the hero camera's follow-speed targets by mode, then eases them. Adapted from Lombyte (GPL-3.0) for PAL: overlays/shared/ui_help_0020c758.c, FUN_L00_00211380. */
+/* Updates the hero camera's follow-speed targets by mode, then eases them. Adapted from the NTSC decomp (GPL-3.0) for PAL: overlays/shared/ui_help_0020c758.c, FUN_L00_00211380. */
 void update_hero_collision_capsule_dimensions(void) {
     char *g = g_hero;
     char *h;
@@ -2284,7 +2284,7 @@ typedef int u128 __attribute__((mode(TI)));
 #define PF(o) (*(float *)(PB + (o)))
 
 /* Turns the stick vector into a target heading and move direction for the player (mode 1 snaps axes, 2 and 3 snap to 4 or 8 directions, 4 uses the player's own heading).
-   Adapted from Lombyte (GPL-3.0) for PAL: overlays/shared/ui_help_0020c758.c, FUN_L00_002118c8. */
+   Adapted from the NTSC decomp (GPL-3.0) for PAL: overlays/shared/ui_help_0020c758.c, FUN_L00_002118c8. */
 void stick_target(float scale, int mode) {
     Vec4 v;
     char *w;
@@ -2553,7 +2553,7 @@ extern int D_L00_00173F40[];
 extern float func_L00_00234250(float *v);
 extern int func_L00_001EFFF0(void *, void *, int, int, int);
 
-/* Hero ground probe: measures the support under the feet, and slides the velocity off a steep floor Adapted from Lombyte (GPL-3.0) for PAL: overlays/shared/ui_help_0020c758.c, FUN_L00_00212318. */
+/* Hero ground probe: measures the support under the feet, and slides the velocity off a steep floor Adapted from the NTSC decomp (GPL-3.0) for PAL: overlays/shared/ui_help_0020c758.c, FUN_L00_00212318. */
 void clip_hero_velocity_against_probed_surfaces(int arg) {
     struct Hero *g = (struct Hero *)(D_0013E633 + 0xE1D);
     Vec4 primary_probe_start;
@@ -2643,7 +2643,7 @@ typedef struct {
     float v[4];
 } __attribute__((aligned(16))) VecA16;
 
-/* Builds the two camera-relative vectors a and b from offsets fa and fb, rotating about the up axis when mode is set. Adapted from Lombyte (GPL-3.0) for PAL: overlays/shared/ui_help_0020c758.c, FUN_L00_002126b8. */
+/* Builds the two camera-relative vectors a and b from offsets fa and fb, rotating about the up axis when mode is set. Adapted from the NTSC decomp (GPL-3.0) for PAL: overlays/shared/ui_help_0020c758.c, FUN_L00_002126b8. */
 void hero_get_collision_ray_endpoints(VecA16 *a, VecA16 *b, int mode, float fa, float fb) {
     VecA16 t[2];
     if (mode) {
@@ -2743,7 +2743,7 @@ typedef struct {
 } HS;
 extern HS D_L00_00173F40_12E70 __asm__("D_L00_00173F40");
 
-/* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_0020c758.c, FUN_L00_002127b8. */
+/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_0020c758.c, FUN_L00_002127b8. */
 void update_hero_ground_contact_and_surface_slopes(void) {
     Vec4 v0, v10, v20, v30, v40, v50, v60;
     f32 f;

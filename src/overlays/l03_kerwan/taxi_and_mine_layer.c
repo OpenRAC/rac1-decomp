@@ -117,7 +117,7 @@ extern f32 func_00214358(void *, int, f32);
 extern void func_L00_0025B178(struct Moby *);
 
 /* l03 trooper update: patrols its rail path, turns to face the hero once in sight, fires three-shot bursts, falls under gravity and blows up when shot down or when it drops into a pit.
-   Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l03/gameplay/entities/002c9eb8.c, FUN_L03_002c9eb8. */
+   Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l03/gameplay/entities/002c9eb8.c, FUN_L03_002c9eb8. */
 void mine_layer_update(struct Moby *m) {
     TrooperVars_CB280 *v = (TrooperVars_CB280 *)m->pvars;
     TrooperPatrol_CB280 *pt;
@@ -369,7 +369,7 @@ extern void func_L00_0025E4B0(struct Moby *, void *);
 extern void func_L00_0025E590(struct Moby *, void *);
 
 /* Trooper hit handler: takes damage, then knocks back away from the attacker by hit strength (dying on lethal hits).
-   Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l03/gameplay/entities/002c9eb8.c, FUN_L03_002ca808. */
+   Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l03/gameplay/entities/002c9eb8.c, FUN_L03_002ca808. */
 void handle_mine_layer_damage(struct Moby *m) {
     TrooperVars_CBBD0 *v = (TrooperVars_CBBD0 *)m->pvars;
     TrooperHit_CBBD0 *h;
@@ -501,7 +501,7 @@ extern void func_L00_002D4CE8(void *, void *, int, int);
 extern void func_L00_00260878(struct Moby *, void *);
 
 /* l03 mine update: falls until it lands, sticks to or homes on its target, arms, and explodes on contact (debris, camera shake, blast) or shrinks away when old.
-   Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l03/gameplay/entities/002c9eb8.c, FUN_L03_002cbea8. */
+   Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l03/gameplay/entities/002c9eb8.c, FUN_L03_002cbea8. */
 void update_mine(struct Moby *m) {
     MineBlast blast = D_L03_001E35A0;
     MineVec tmp;
@@ -656,7 +656,7 @@ extern float func_L00_001FF860(float, float);
 extern void func_L00_0025D5B0(void *, void *, int, int, int, float);
 
 /* Spawns a projectile moby (class 0x273) at pos, heading along dir, owned by parent p.
-   Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l03/gameplay/entities/002c9eb8.c, FUN_L03_002cc888. */
+   Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l03/gameplay/entities/002c9eb8.c, FUN_L03_002cc888. */
 char *spawn_mine_layer_projectile(char *parent_moby, void *pos, float *launch_velocity) {
     struct Moby *spawned_moby = (struct Moby *)CreateMoby(0x273);
     char *spawned_moby_vars;
@@ -769,7 +769,7 @@ extern f32 func_L00_0025CE58(f32 *, f32, f32 *, f32, f32, f32);
 s32 func_L03_002D4CE0_D4560(struct Moby *m, s32 path, s32 *snd) __asm__("func_L03_002D4CE0");
 
 /* Rail taxi: waits at its stop until the hero enters a route's trigger volume, flies the outbound path, lets the hero off, flies back (or onward) and returns to waiting. With the debug flag set it draws its first route's paths.
-   Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l03/gameplay/entities/002c9eb8.c, FUN_L03_002d3198. */
+   Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l03/gameplay/entities/002c9eb8.c, FUN_L03_002d3198. */
 void update_rail_taxi(struct Moby *m) {
     struct RailTaxiVars_D4560 *v = (struct RailTaxiVars_D4560 *)m->pvars;
     Vec4 oldPos, oldRot, move;
@@ -1027,7 +1027,7 @@ struct SpinnerVars_D5220 {
 };
 extern float func_001FA748_D5220(float, float) __asm__("func_001FA748");
 
-/* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l03/gameplay/entities/002c9eb8.c, FUN_L03_002d3e58. */
+/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l03/gameplay/entities/002c9eb8.c, FUN_L03_002d3e58. */
 void robo_shack_sign_update(struct Moby *m) {
     Vec4 move;
     Vec4 oldRot;
@@ -1136,7 +1136,7 @@ extern char D_L03_00173FC0_D5790[] __asm__("D_L03_00173FC0");
 extern int func_001F9908_D5790(s32 *) __asm__("func_001F9908");
 
 /* Homing rocket update: flies on, trails smoke, steers up or down toward a target, explodes on impact or timeout.
-   Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l03/gameplay/entities/002c9eb8.c, FUN_L03_002d43c8. */
+   Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l03/gameplay/entities/002c9eb8.c, FUN_L03_002d43c8. */
 void update_homing_rocket(struct Moby *m) {
     Vec4 old;
     Vec4 side;
@@ -1493,7 +1493,7 @@ extern float func_001FA888_DC3E8(int) __asm__("func_001FA888");
 extern void func_0020D678_DC3E8(char *) __asm__("func_0020D678");
 
 /* Moves the moby along its path: advances the distance, places it on the current segment, and dies at the end of the path.
-   Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l03/gameplay/entities/002c9eb8.c, FUN_L03_002db020. */
+   Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l03/gameplay/entities/002c9eb8.c, FUN_L03_002db020. */
 void RailMobyUpdate(struct Moby *m) {
     float old[4];
     float a[4];
@@ -1540,7 +1540,7 @@ extern void func_L00_0025E210_DC560(struct Moby *) __asm__("func_L00_0025E210");
 extern void func_001F9BC0_DC560(void *) __asm__("func_001F9BC0");
 
 /* Spawns a path mover (class 0x382, moved by FUN_L03_002db020) on path, dist units along it, facing the path's last point.
-   Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l03/gameplay/entities/002c9eb8.c, FUN_L03_002db198. */
+   Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l03/gameplay/entities/002c9eb8.c, FUN_L03_002db198. */
 struct Moby *func_L03_002DC560_r(struct RailPath_DC560 *path, float dist) __asm__("func_L03_002DC560");
 struct Moby *func_L03_002DC560_r(struct RailPath_DC560 *path, float dist) {
     struct Moby *m = func_0020D348_DC560(0x382);
@@ -1602,7 +1602,7 @@ extern int func_001F9908_DC648(s32 *) __asm__("func_001F9908");
 extern int func_L00_0028EB98_DC648(struct RailSpawnerMoby *, int) __asm__("func_L00_0028EB98");
 extern int func_L00_0028EF68_DC648(int, int, struct RailSpawnerMoby *, int) __asm__("func_L00_0028EF68");
 
-/* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l03/gameplay/entities/002c9eb8.c, FUN_L03_002db280. */
+/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l03/gameplay/entities/002c9eb8.c, FUN_L03_002db280. */
 void update_path_mover_spawner(struct RailSpawnerMoby *moby) {
     struct RailSpawnerVars *vars = moby->vars;
     struct RailPath *path;
@@ -1975,7 +1975,7 @@ void robot_qwark_update(unsigned char *m) {
 }
 INCLUDE_ASM("asm/overlays", func_L03_002DDE38);
 INCLUDE_ASM("asm/overlays", func_L03_002DDE9C);
-/* whether the moby is a taxi (class 0x3F4), active, with its pvars word at +0x7C equal to 1. Adapted from Lombyte (GPL-3.0) for PAL: src/overlays/l03/gameplay/entities/002c9eb8.c, FUN_L03_002dcb30. */
+/* whether the moby is a taxi (class 0x3F4), active, with its pvars word at +0x7C equal to 1. Adapted from the NTSC decomp (GPL-3.0) for PAL: src/overlays/l03/gameplay/entities/002c9eb8.c, FUN_L03_002dcb30. */
 int is_rail_lift_started(struct Moby *moby) {
     char *data = (char *)moby->pvars;
     if (moby->oclass != 0x3F4) {
@@ -2072,7 +2072,7 @@ struct RailLiftVars_DE088 {
 };
 void func_L03_002DE4B8_DE088(struct Moby *m) __asm__("func_L03_002DE4B8");
 
-/* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l03/gameplay/entities/002c9eb8.c, FUN_L03_002dccc0. */
+/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l03/gameplay/entities/002c9eb8.c, FUN_L03_002dccc0. */
 void update_rail_lift(struct Moby *m) {
     struct RailLiftVars_DE088 *d = (struct RailLiftVars_DE088 *)m->pvars;
     Vec4 oldPos, oldRot, move;
@@ -2523,7 +2523,7 @@ extern float func_002140F8(float, float);
 extern void func_L00_0026DD70(void *, void *, int, int, float, int);
 
 /* Starts the cutscene, then during mode 3 (frames 900-10000) emits two particle beams from the listed moby.
-   Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l03/gameplay/vendor/002df520.c, FUN_L03_002e01d0. */
+   Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l03/gameplay/vendor/002df520.c, FUN_L03_002e01d0. */
 void update_kerwan_cutscene_effects(char *m) {
     char *moby;
     float from[4];
@@ -2601,7 +2601,7 @@ extern void func_001F9BF0_2ECBA8(void *out, void *a, void *b) __asm__("func_001F
 void func_L03_002ECBA8_r(char *m) __asm__("func_L03_002ECBA8");
 
 /* places the camera behind the hero and rebuilds its orientation axes.
-   Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l03/gameplay/vendor/002df520.c, FUN_L03_002eb7e0. */
+   Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l03/gameplay/vendor/002df520.c, FUN_L03_002eb7e0. */
 void func_L03_002ECBA8_r(char *m) {
     char *d = *(char **)(m + 0x70);
     float *a = (float *)(d + 0xB0);

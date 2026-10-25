@@ -14,7 +14,7 @@ extern void func_001FA218(void *, void *);
 extern void func_001F9EE8(void *, void *, void *);
 extern void func_001F9C30(void *, void *, float);
 
-/* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b7d50.c, FUN_L13_002b7d50. */
+/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b7d50.c, FUN_L13_002b7d50. */
 void emit_transformed_2d_vertex_packet(short *pts, int n, float x0, float y0, unsigned int col, unsigned long prim, float scale, float ang) {
     float mat[4][4];
     float rot[4];

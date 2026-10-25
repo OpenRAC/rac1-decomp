@@ -1011,7 +1011,7 @@ void func_001F49B0_EA2F8(int arg0, int arg1) __asm__("func_001F49B0");
 extern L16SingleSphere_2e8e80 D_L16_001DC8D0_EA2F8[] __asm__("D_L16_001DC8D0");
 extern void func_L16_002EA1B8_EA2F8(void *) __asm__("func_L16_002EA1B8");
 
-/* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l16/gameplay_vendor_002e3190.c, FUN_L16_002e8e80. */
+/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l16/gameplay_vendor_002e3190.c, FUN_L16_002e8e80. */
 void update_level16_three_mesh_render_state(unsigned char *m) {
     int i, j;
     float maxx, maxy, maxz, minx, miny, minz;
@@ -1184,7 +1184,7 @@ typedef struct {float x,y,z,radius;} L16SingleSphere_2e98e0;
 void func_001F49B0_EAD58(int arg0, int arg1) __asm__("func_001F49B0");
 extern L16SingleSphere_2e98e0 D_L16_001DF580_EAD58[] __asm__("D_L16_001DF580");
 
-/* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l16/gameplay_vendor_002e3190.c, FUN_L16_002e98e0. */
+/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l16/gameplay_vendor_002e3190.c, FUN_L16_002e98e0. */
 void update_level16_two_mesh_render_state(unsigned char *m) {
     int i, j;
     float maxx, maxy, maxz, minx, miny, minz;
@@ -1262,7 +1262,7 @@ extern short D_L16_001620C8;
 extern short D_L16_001620D8;
 extern L16SingleSphere_2ea128 D_L16_001E5660[];
 
-/* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l16/gameplay_vendor_002e3190.c, FUN_L16_002ea128. */
+/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l16/gameplay_vendor_002e3190.c, FUN_L16_002ea128. */
 void update_level16_three_mesh_bounds_and_callback(unsigned char *m) {
     int i, j;
     float maxx, maxy, maxz, minx, miny, minz;

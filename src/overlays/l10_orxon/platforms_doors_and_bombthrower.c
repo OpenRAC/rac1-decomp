@@ -192,7 +192,7 @@ extern int save_00299818(int, int) __asm__("func_0020BFC8");
 extern void remove_00299818(void *) __asm__("func_0020D678");
 
 /* Spinning pickup: waits until the hero is close and level with it, then plays the scene, saves and goes away.
-   Adapted from Lombyte (GPL-3.0) for PAL: src/overlays/l10/gameplay/entities/00295a38.c, FUN_L10_00298668. */
+   Adapted from the NTSC decomp (GPL-3.0) for PAL: src/overlays/l10/gameplay/entities/00295a38.c, FUN_L10_00298668. */
 void magnetboots_update(Moby *m) {
     char *d = (char *)m->pvars;
     m->rot.z = addrot_00299818(m->rot.z, D_0015EE6C_x * 1.5707964f);
@@ -628,7 +628,7 @@ extern void func_L00_0025AD38_2CAD18(unsigned char *m, int x, int y, void *p, fl
 
 /* Hits every moby inside the box in front of this one: collects the mobys in a sphere around the box, clamps each
  * one's position into the box and hits it when a small sphere at that point still finds it.
- * Adapted from Lombyte (GPL-3.0) for PAL: overlays/l10/gameplay/entities/00295a38.c, FUN_L10_002c9958. */
+ * Adapted from the NTSC decomp (GPL-3.0) for PAL: overlays/l10/gameplay/entities/00295a38.c, FUN_L10_002c9958. */
 void spawn_linked_hitbox_contact_effects(struct Moby *moby, HitBox_2CAD18 *box) {
     Vec4 mat[3];
     Vec4 center;
@@ -713,7 +713,7 @@ extern char D_L10_001DD0A0[];
 extern char D_L10_001DD0D0[];
 extern char D_L10_001DD100[];
 
-/* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l10/gameplay/entities/00295a38.c, FUN_L10_002c9c70. */
+/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l10/gameplay/entities/00295a38.c, FUN_L10_002c9c70. */
 void update_linked_moby_hitbox(struct Moby *moby) {
     char *d = (char *)moby->pvars;
     int differences = 0;
@@ -861,7 +861,7 @@ extern char D_L10_00174380[];
 extern OvlQuad D_L10_001672C0;
 extern struct Moby * D_001414D0;
 
-/* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l10/gameplay/entities/00295a38.c, FUN_L10_002d7b80. */
+/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l10/gameplay/entities/00295a38.c, FUN_L10_002d7b80. */
 void update_height_adjusted_projectile(struct Moby *moby) {
     char *data = (char *)moby->pvars;
     float old[4] __attribute__((aligned(16)));
@@ -1916,7 +1916,7 @@ typedef struct {
    then the moby deletes itself); state 1 advances the phase and, for each column
    whose timer runs out, rebuilds its rows with fresh jitter and averages the
    jitter into the velocities, otherwise moves the rows by their velocities.
-   Adapted from Lombyte's draft of FUN_L10_002dcc58 (GPL-3.0), with PAL symbols. */
+   Adapted from the NTSC decomp's draft of FUN_L10_002dcc58 (GPL-3.0), with PAL symbols. */
 void update_jitter_strand_grid_moby(unsigned char *moby) {
     PlatformWave_DE018 *vars = *(PlatformWave_DE018 **)(moby + 0x78);
     Vec4 jitter[20][10];
@@ -1991,7 +1991,7 @@ extern float func_002140F8_2DE630(float, float) __asm__("func_002140F8");
 extern void func_L00_0026E940_2DE630(unsigned char *, int, int, int, float) __asm__("func_L00_0026E940");
 unsigned char *func_L10_002DE630_r(int a, void *pos, int b, float x, float y, float z) __asm__("func_L10_002DE630");
 
-/* Spawns moby 0x442 at pos, sets its colour, stores the caller's parameters and a lifetime in its data and starts its sound. Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l10/gameplay/entities/00295a38.c, FUN_L10_002dd270. */
+/* Spawns moby 0x442 at pos, sets its colour, stores the caller's parameters and a lifetime in its data and starts its sound. Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l10/gameplay/entities/00295a38.c, FUN_L10_002dd270. */
 unsigned char *func_L10_002DE630_r(int a, void *pos, int b, float x, float y, float z) {
     unsigned char *o = func_0020D348_2DE630(0x442);
     Data_2DE630 *d;

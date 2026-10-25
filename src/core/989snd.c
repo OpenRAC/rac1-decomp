@@ -150,7 +150,7 @@ extern int func_0012D4E0(int);
 extern int func_0012D4B0(int);
 extern void func_0011DDA0(int);
 
-/* snd_StartSoundSystem. Ported from Lombyte (GPL-3.0); exact for the whole
+/* snd_StartSoundSystem. Ported from the NTSC decomp (GPL-3.0); exact for the whole
  * 989snd object with retail ps2eeas and explicit small-data declarations.
  * The compiler output is assembled unchanged. */
 struct StartSoundWork {
@@ -187,7 +187,7 @@ extern s32 func_0011B2F8(struct SifClientDataStartSound *, u32, s32);
 extern s32 func_00116078_2DB68(const char *, ...) __asm__("func_00116078");
 extern s32 func_0012E688(s32, s32, void *);
 
-/* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/textbin/audio/snd_start_sound_system.c, snd_start_sound_system. */
+/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/textbin/audio/snd_start_sound_system.c, snd_start_sound_system. */
 s32 func_0012DB68(void) {
     s32 bind_result;
     s32 command_arg;
@@ -283,7 +283,7 @@ extern int func_0012EF48(int);
    callbacks queued with the other command buffer (or the abort callback);
    finish a CD read (FlushCache, then its callback with the reply word);
    send the next batch when idle; and poll a stop request. Returns
-   whether an RPC or a CD read is still in flight. Adapted from Lombyte
+   whether an RPC or a CD read is still in flight. Adapted from the NTSC decomp
    (GPL-3.0) for PAL. */
 int func_0012DDC0(void) {
     int i;
@@ -596,7 +596,7 @@ extern int func_0012E038_s(int *, int) __asm__("func_0012E038");
 /* snd_SendIOPCommandAndWait: copy the command data into the send buffer,
    flush pending commands, wait for the RPC server, call command cmd and
    wait for its reply; the reply's second word is the result. Adapted
-   from Lombyte (GPL-3.0) for PAL. */
+   from the NTSC decomp (GPL-3.0) for PAL. */
 int func_0012E688(int cmd, int size, void *arg) {
     unsigned char *data = arg;
     int i;
@@ -648,7 +648,7 @@ extern int func_00116078_p(const char *, ...) __asm__("func_00116078");
 
 /* snd_SendIOPCommandNoWait: sends a bare command at once when nothing is queued or pending; otherwise waits
    for room in the current batch, appends the command and its data, and records the callback for its reply.
-   Adapted from Lombyte (GPL-3.0) for PAL: src/audio/rpc/snd_send_iop_command_no_wait.c, snd_send_iop_command_no_wait. */
+   Adapted from the NTSC decomp (GPL-3.0) for PAL: src/audio/rpc/snd_send_iop_command_no_wait.c, snd_send_iop_command_no_wait. */
 void func_0012E820_r(int cmd, int size, unsigned char *data, int cb, long cb_data) __asm__("func_0012E820");
 /* snd_SendIOPCommandNoWait */
 void func_0012E820_r(int cmd, int size, unsigned char *data, int cb, long cb_data) {
@@ -739,7 +739,7 @@ extern s32 sceSifCallRpc_sb(void *, u32, u32, void *, s32, void *, s32, void (*)
    wait until the sound RPC client is idle (complaining and flushing the
    cache while it is not), send the batch (command 0x4D) with its return
    buffer, then flip to the other batch and reset it.
-   Adapted from Lombyte (GPL-3.0): src/audio/rpc/snd_send_current_batch.c, snd_send_current_batch. */
+   Adapted from the NTSC decomp (GPL-3.0): src/audio/rpc/snd_send_current_batch.c, snd_send_current_batch. */
 void func_0012EB18(void) {
     s32 next;
 

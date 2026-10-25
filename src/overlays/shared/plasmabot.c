@@ -497,7 +497,7 @@ extern void func_001F9C30_2B3850(void *, void *, f32) __asm__("func_001F9C30");
 extern void func_L00_001FF4B0_2B3850(void *, void *, f32) __asm__("func_L00_001FF4B0");
 
 /* Ship engine effects: puffs exhaust particles from joint 1 and places the nozzle and beam points from joints 7 and 2.
- * Adapted from Lombyte (GPL-3.0) for PAL: overlays/shared/gameplay/entities/002b17d8.c, FUN_L14_002b2600. */
+ * Adapted from the NTSC decomp (GPL-3.0) for PAL: overlays/shared/gameplay/entities/002b17d8.c, FUN_L14_002b2600. */
 void update_plasmabot_visual_effects(struct Moby *m)
 {
     Vec4 pos;
@@ -702,7 +702,7 @@ extern f32 func_001F9878(f32);
 extern s32 func_001FA898(f32);
 extern s32 func_001F9908_B4128(s32 *) __asm__("func_001F9908");
 
-/* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b17d8.c, FUN_L14_002b2ed8. */
+/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b17d8.c, FUN_L14_002b2ed8. */
 void update_plasmabot_target_range(struct Moby *m) {
     DelayVars_2b2ed8 *pv = (DelayVars_2b2ed8 *)m->pvars;
 
@@ -1094,7 +1094,7 @@ typedef struct {
     s32 timer;     /* 0x08: fast_dec_timer countdown */
 } PlasmabotHatchVars;
 
-/* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002b17d8.c, FUN_L14_002d96e0. */
+/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002b17d8.c, FUN_L14_002d96e0. */
 void plasmabot_hatch_update(char *moby) {
     enum {
         HATCH_WAIT_ACTIVATION = 0,
@@ -1354,7 +1354,7 @@ extern short D_L14_00161C14;
 extern short D_L14_00161C18;
 
 /* A piece of debris: follows its race path until its timer runs out, then flies, spins and falls until it hits something or leaves the map.
-   Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b17d8.c, FUN_L14_002dfd10. */
+   Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b17d8.c, FUN_L14_002dfd10. */
 void update_path_or_ballistic_debris(struct Moby *moby) {
     Data_dfd10 *data = (Data_dfd10 *)moby->pvars;
     Vec4 probe;
@@ -1662,7 +1662,7 @@ extern short D_L14_001620A4;
 extern short D_L14_001620A8;
 extern short D_L14_001620B4;
 
-/* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b17d8.c, FUN_L14_002feca8. */
+/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b17d8.c, FUN_L14_002feca8. */
 void emit_moby_offset_particles(unsigned char *m) {
     float off[4];
     float pos[4];
@@ -1752,7 +1752,7 @@ extern int func_L00_00200290_00AC8(float *, float) __asm__("func_L00_00200290");
 extern float func_001F9FA8(float);
 
 /* Floating mine: spins and pulses (and bobs in level 16); blows up on a hit and respawns once out of view.
-   Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b17d8.c, FUN_L14_002ff640. */
+   Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b17d8.c, FUN_L14_002ff640. */
 void update_floating_mine(struct Moby *moby) {
     FloatMineVars_ff640 *vars = (FloatMineVars_ff640 *)moby->pvars;
     union {
@@ -2206,7 +2206,7 @@ extern f32 func_001F9C78_3039C0(void *, void *) __asm__("func_001F9C78");
 extern int func_L00_001EFFF0_3039C0(void *, void *, int, void *, void *) __asm__("func_L00_001EFFF0");
 
 /* Sweeps the beam's two end lines; anything they cross takes damage pushed away from the beam.
- * Adapted from Lombyte (GPL-3.0) for PAL: overlays/shared/gameplay/vendor/003015d0.c, FUN_L14_00302538. */
+ * Adapted from the NTSC decomp (GPL-3.0) for PAL: overlays/shared/gameplay/vendor/003015d0.c, FUN_L14_00302538. */
 void apply_vendor_beam_damage(char *self) {
     struct Moby *m = (struct Moby *)self;
     D1224_3039C0 *d = (D1224_3039C0 *)m->pvars;

@@ -71,7 +71,7 @@ extern void func_L00_00245FE0(int, int);
 extern void func_00205220(int);
 extern int func_00122598(int);
 extern void func_00216960(void);
-// Puts the hero into ship mode: clears the ship records, flags the matching mobys and picks the ship's start sound and camera set. Adapted from Lombyte (GPL-3.0) for PAL: src/overlays/shared/gameplay_space_0028e8a0.c, FUN_L00_0028e9c8.
+// Puts the hero into ship mode: clears the ship records, flags the matching mobys and picks the ship's start sound and camera set. Adapted from the NTSC decomp (GPL-3.0) for PAL: src/overlays/shared/gameplay_space_0028e8a0.c, FUN_L00_0028e9c8.
 void initialize_level_transition_with_audio(int a) {
     O_28e9c8 *o;
     S_171b *z;
@@ -172,7 +172,7 @@ extern int D_L00_0015F6A4 MACRO_ADDR;
 extern short D_L00_00160630;
 extern int func_0020BFC8(int, int);
 
-/* start a ship-travel transition to the given destination, setting up the flight path and timing Adapted from Lombyte (GPL-3.0) for PAL: overlays/shared/gameplay_space_0028e8a0.c, FUN_L00_0028ed58. */
+/* start a ship-travel transition to the given destination, setting up the flight path and timing Adapted from the NTSC decomp (GPL-3.0) for PAL: overlays/shared/gameplay_space_0028e8a0.c, FUN_L00_0028ed58. */
 void prepare_target_level_transition(int dest) {
     char *g = D_0013DE6E + 0x2C2;
     char *h;
@@ -221,7 +221,7 @@ extern u8 D_0013D4F8[];
 void func_002348B8(void);
 void func_L00_0028FCA0(s32);
 
-/* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_space_0028e8a0.c, FUN_L00_0028eed0. */
+/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_space_0028e8a0.c, FUN_L00_0028eed0. */
 /* Camera-follow update. Exact once the file declares D_L00_0016128C as a 4-byte MACRO_ADDR int: a `short` declaration of the same symbol makes the assembler use $gp for
  * every access to it. Joined to its trailing fragment (config/overlays/joined.tsv). */
 void prepare_level_entry_transition(void) {
@@ -285,7 +285,7 @@ struct GeometryQuad {
 /* One row of the variant offset tables (quad_positions and its variants). */
 typedef V_28efc8 QuadOffset;
 
-/* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_space_0028e8a0.c, FUN_L00_0028efc8. */
+/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_space_0028e8a0.c, FUN_L00_0028efc8. */
 void build_variant_effect_quads(unsigned char *quad_source) {
     struct GeometryQuad quad;
     QuadOffset quad_source_translation;

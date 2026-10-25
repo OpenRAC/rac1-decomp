@@ -461,7 +461,7 @@ void vu1_add_vif_code(int arg0) {
 
 /*
  * VU1_addGSregister(unsigned int, unsigned long). Real name per the
- * Lombyte NTSC project (github.com/mateuszklysz/Lombyte); their NTSC
+ * the NTSC decomp NTSC project (github.com/mateuszklysz/the NTSC decomp); their NTSC
  * build's version, VU1_addGSregister__FUiUlb, takes a third `bool` arg
  * and is 4 bytes larger (0xb4 vs this PAL build's 176 bytes) -- PAL
  * evidently dropped the bool, confirmed by every real call site in this

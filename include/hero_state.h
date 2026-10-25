@@ -4,7 +4,7 @@
 /*
  * Hero state IDs (HeroState.current) and the hero's vehicle and gravity mode selectors.
  *
- * From the NTSC decomp (Lombyte's project, GPL-3.0): include/rnc/gameplay/hero_state.h
+ * From the NTSC decomp (GPL-3.0): include/rnc/gameplay/hero_state.h
  * at 4e1f255e. Enumerations only: no layout, no code. See THIRD_PARTY_NOTICES.md.
  */
 

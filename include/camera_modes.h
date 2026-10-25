@@ -4,7 +4,7 @@
 /*
  * Camera selectors: the activation mode and the attach mode.
  *
- * From the NTSC decomp (Lombyte's project, GPL-3.0): include/rnc/gameplay/camera/camera_modes.h
+ * From the NTSC decomp (GPL-3.0): include/rnc/gameplay/camera/camera_modes.h
  * at 4e1f255e. Enumerations only: no layout, no code. See THIRD_PARTY_NOTICES.md.
  */
 

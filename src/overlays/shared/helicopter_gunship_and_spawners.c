@@ -1573,7 +1573,7 @@ void attach_shared_manipulator_to_matching_class_moby(char *a) {
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
 extern struct Hero D_0013F450;
 
-/* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/00291918.c, FUN_L03_002dc310. */
+/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/00291918.c, FUN_L03_002dc310. */
 void fred_1_update(char *m) {
     float v[12]; /* unused; sets the frame size */
     FastVecDist(m + 0x10, g_hero.motion.pos.f);
@@ -1874,7 +1874,7 @@ extern int func_00215570(void *arg0, int arg1);
 extern int D_L03_0015F050_E9C38b __asm__("D_L03_0015F050") MACRO_ADDR;
 extern int func_00215570_E9C38b(void *arg0, int arg1) __asm__("func_00215570");
 
-/* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_002de370.c, FUN_L03_002e8870. */
+/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_002de370.c, FUN_L03_002e8870. */
 int evaluate_clip_volume_candidate(char *a0, char *a1) {
     char *entry = (char *)(D_L03_0015F050_E9C38b + (*(short *)(a0 + 0x84) << 5));
     char *sub = *(char **)(entry + 0x1C);

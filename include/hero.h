@@ -7,12 +7,12 @@
  * trail. One definition for every source file, in place of the private
  * copies candidates carried to land without clashing with their files.
  *
- * Adapted from Lombyte (GPL-3.0), the US decompilation:
+ * Adapted from the NTSC decomp (GPL-3.0):
  * include/rnc/gameplay/hero.h at 42adb529, refreshed from the NTSC decomp
  * (the same project, GPL-3.0) at 4e1f255e; state IDs in hero_state.h. Its
  * layout and field names come from the matched code it cites; the PAL code
  * is the same structure.
- * Function and data names in the comments are Lombyte's, from the US build.
+ * Function and data names in the comments are the NTSC decomp's, from the US build.
  * See THIRD_PARTY_NOTICES.md.
  */
 
@@ -748,7 +748,7 @@ struct Hero {
     u8 unk20AD;                    /* 0x20AD */
     u8 unk20AE;                    /* 0x20AE */
     u8 unk20AF;                    /* 0x20AF */
-    u8 unk20B0;                    /* 0x20B0: a 0/1 flag; read unsigned by func_L00_002E0E50 (Lombyte: s8) */
+    u8 unk20B0;                    /* 0x20B0: a 0/1 flag; read unsigned by func_L00_002E0E50 (the NTSC decomp: s8) */
     u8 unk20B1;                    /* 0x20B1 */
     u8 unk20B2;                    /* 0x20B2 */
     u8 unk20B3;                    /* 0x20B3 */
