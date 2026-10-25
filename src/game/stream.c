@@ -473,7 +473,7 @@ void music_remaining_time_callback(int arg0, long arg1) {
 
 LINKER_REMNANT("asm/remnants/text", func_00217AD0);
 
-/* Adapted from the NTSC decomp (GPL-3.0): src/ui/menus/fun_00216c48.c. */
+/* Adapted from Lombyte's project (GPL-3.0): src/ui/menus/fun_00216c48.c. */
 
 typedef struct {
     s32 unk0;

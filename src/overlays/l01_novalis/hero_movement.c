@@ -183,7 +183,7 @@ extern float func_001FA850(float, float);
 extern void func_L00_001FF500(void *, void *, float);
 
 // Per-tick horizontal air movement for the hero's jump states (level 01).
-// Adapted from the NTSC decomp (GPL-3.0) for PAL: src/overlays/l01/ui_help_00233de0.c, FUN_L01_00234b40.
+// Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/l01/ui_help_00233de0.c, FUN_L01_00234b40.
 void update_hero_airborne_planar_motion(void) {
     Vec4 tmp;
     float speed;

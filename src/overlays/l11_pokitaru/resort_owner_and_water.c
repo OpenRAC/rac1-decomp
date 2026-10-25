@@ -694,7 +694,7 @@ extern short D_L11_00161460;
 extern short D_L11_00161464;
 extern short D_L11_00161490;
 
-/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l11/gameplay/entities/002cb668.c, FUN_L11_002d2088. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l11/gameplay/entities/002cb668.c, FUN_L11_002d2088. */
 void set_resort_owner_state(struct Moby *moby, unsigned char state) {
     char *d = (char *)moby->pvars;
     float tmp[4];
@@ -949,7 +949,7 @@ extern char D_0013F4D0_2D3970[] __asm__("D_0013F4D0");
 void func_L11_002D3970_r(WM11_2D3970 *m) __asm__("func_L11_002D3970");
 
 /* Guard head update: in its watching states it turns its body and head toward the hero.
-   Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l11/gameplay/entities/002cb668.c, FUN_L11_002d27b0. */
+   Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l11/gameplay/entities/002cb668.c, FUN_L11_002d27b0. */
 void func_L11_002D3970_r(WM11_2D3970 *m) {
     WS11_2D3970 scratch;
     WD11b_2D3970 *d = (WD11b_2D3970 *)m->data;
@@ -1196,7 +1196,7 @@ extern void func_L00_002664B0(int, int);
 extern int func_001F49B0(void (*)(char *), char *);
 
 /* L11 twin of FUN_L01_00308bd8: a three-part switch moby that, once the hero stands on it in mission state 0xB and presses the button, swings its parts open and moves the linked moby (or its fallback) along.
-   Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l11/gameplay/entities/002cb668.c, FUN_L11_002f2518. */
+   Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l11/gameplay/entities/002cb668.c, FUN_L11_002f2518. */
 void Moby318Update(struct Moby *moby) {
     char *data = (char *)moby->pvars;
 
@@ -1793,7 +1793,7 @@ struct DataA500 {
     struct PartA500 parts[4];
 };
 
-/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l11/gameplay/entities/002cb668.c, FUN_L11_0030a500. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l11/gameplay/entities/002cb668.c, FUN_L11_0030a500. */
 void update_pokitaru_boat_joint_effects(struct Moby *moby) {
     struct DataA500 *d = (struct DataA500 *)moby->pvars;
     float base[4];
@@ -2405,7 +2405,7 @@ extern short D_L11_00161FD4;
 extern short D_L11_00161FD8;
 
 /* Lays out the 4x6 grid of child mobys around this one, fanned by the progress value at pvars+0x6C.
-   Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l11/gameplay/vendor/0030c788.c, FUN_L11_0030dd18. */
+   Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l11/gameplay/vendor/0030c788.c, FUN_L11_0030dd18. */
 void update_child_grid_poses(struct Moby *m) {
     Vec4f v0;
     Vec4f v1;
@@ -2845,7 +2845,7 @@ extern void func_L11_0024E240_10058(int, int) __asm__("func_L11_0024E240");
 extern float func_001FA748_10058(float, float) __asm__("func_001FA748");
 extern void func_L00_002617B0_10058(void *, void *, void *, void *) __asm__("func_L00_002617B0");
 
-/* Adapted from the NTSC decomp (GPL-3.0) for PAL: src/overlays/l11/gameplay/vendor/0030c788.c, FUN_L11_0030eb90. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/l11/gameplay/vendor/0030c788.c, FUN_L11_0030eb90. */
 void seesaw_platform_update(struct Moby *m) {
     Vec4f v;
     Vec4f rot;
@@ -3175,7 +3175,7 @@ extern char D_L11_0021B820_311318[] __asm__("D_L11_0021B820");
 
 void func_L11_00311318_r(struct Moby *m, unsigned char *d, float *t) __asm__("func_L11_00311318");
 
-/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l11/gameplay/vendor/0030c788.c, FUN_L11_0030fe50. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l11/gameplay/vendor/0030c788.c, FUN_L11_0030fe50. */
 void func_L11_00311318_r(struct Moby *m, unsigned char *d, float *t) {
     int out;
     char *info;

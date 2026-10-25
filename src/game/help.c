@@ -155,7 +155,7 @@ static inline s32 map_availability_FDF78(s32 level_index) {
     return 0;
 }
 
-/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/assembly/textbin/fun_001fd748.c, draw_level_selection_map. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/assembly/textbin/fun_001fd748.c, draw_level_selection_map. */
 void draw_level_selection_map(s32 left, s32 right, s32 top, s32 bottom) {
     f32 label_direction[4];
     s32 level_index;
@@ -440,7 +440,7 @@ extern PlayerHud D_001517D0;
 #define RECORD_FLAGS() \
     D_00141A68[HS.entry].flags = D_00141A68[HS.entry].flags | (1 << D_0015EE84) | 0x80000000
 
-/* Advances the help popup's state machine: delay, open, hold, close, record stats. Adapted from the NTSC decomp (GPL-3.0) for PAL: ui/help/update_help_state.c, update_help_state. */
+/* Advances the help popup's state machine: delay, open, hold, close, record stats. Adapted from Lombyte's project (GPL-3.0) for PAL: ui/help/update_help_state.c, update_help_state. */
 void Help_Update(void) {
     if (HS.started == 0) {
         if (HS.delay == 0 && (pad_held & 0xF000)) {

@@ -553,7 +553,7 @@ typedef struct {
     int i504;
 } Spk_k_EC7E8;
 
-/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/entities/002df080.c, FUN_L14_002eb388. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/entities/002df080.c, FUN_L14_002eb388. */
 void initialize_wind_spark(struct Moby *m, int i, void *dir) {
     Spk_k_EC7E8 *d = (Spk_k_EC7E8 *)m->pvars;
     float fwd[4];
@@ -625,7 +625,7 @@ struct L14SparkTarget {
 extern struct L14SparkTarget D_L14_00167480;
 void func_L14_002ECC70_EC9C8(struct Moby *m) __asm__("func_L14_002ECC70");
 
-/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/entities/002df080.c, FUN_L14_002eb568. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/entities/002df080.c, FUN_L14_002eb568. */
 void update_wind_sparks(struct Moby *m) {
     Spk_k_EC9C8 *d = (Spk_k_EC9C8 *)m->pvars;
     float dir[4];
@@ -716,7 +716,7 @@ extern void func_001F9C30(void *, void *, float);
 extern void func_001F9EE8(void *, void *, void *);
 extern void func_L00_001FD1D8_ECC70(void *, int, int) __asm__("func_L00_001FD1D8");
 
-/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/entities/002df080.c, FUN_L14_002eb810. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/entities/002df080.c, FUN_L14_002eb810. */
 void draw_wind_sparks(struct Moby *m) {
     Spk_k *d = (Spk_k *)m->pvars;
     Pk_m pk;
@@ -808,7 +808,7 @@ extern float func_001FA748(float, float);
 extern float func_001F9FA8(float);
 
 /* Mine update: drifts along its looped path while spinning and pulsing; blows up on a hit.
-   Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/entities/002df080.c, FUN_L14_002ec810. */
+   Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/entities/002df080.c, FUN_L14_002ec810. */
 void update_looping_path_moby(struct Moby *m) {
     L14MineVars *d = (L14MineVars *)m->pvars;
     float v[4];
@@ -943,7 +943,7 @@ extern char *func_L00_0026EBC0(char *, char *, int c, int d, float f);
 extern struct { u8 pad0[0x18]; struct Moby *moby; u8 pad1C[4]; Vec4 pos; } D_L14_00174640;
 extern char D_L14_00174680[];
 
-/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/entities/002df080.c, FUN_L14_002ece00. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/entities/002df080.c, FUN_L14_002ece00. */
 void update_flying_bolt(struct Moby *m) {
     L14BoltVars *v = (L14BoltVars *)m->pvars;
     Vec4 old;
@@ -1761,7 +1761,7 @@ void Moby685Update(char *moby) {
 }
 extern char * D_L14_001B0F30[];
 
-/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/entities/002df080.c, FUN_L14_002eef60. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/entities/002df080.c, FUN_L14_002eef60. */
 void initialize_elevator_path_state(struct Moby *m) {
     char *d = (char *)m->pvars;
     int *path;
@@ -1942,7 +1942,7 @@ extern s32 D_0014C290_2F0A30[][64] __asm__("D_0014C290");
 extern int D_L14_001BAF60[];
 void func_L14_002F0A30_r(Level14VendorMoby_F0A30 *m) __asm__("func_L14_002F0A30");
 
-/* Clears the moby's state byte and its data's field 0x124, then sets its save bit in the per-level table and in the level's own bit table. Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/entities/002df080.c, FUN_L14_002ef5a8. */
+/* Clears the moby's state byte and its data's field 0x124, then sets its save bit in the per-level table and in the level's own bit table. Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/entities/002df080.c, FUN_L14_002ef5a8. */
 void func_L14_002F0A30_r(Level14VendorMoby_F0A30 *m) {
     m->state = 0;
     m->data->field124 = 0;
@@ -2314,7 +2314,7 @@ struct L14PickVars_2F24C8 {
     short picked;
 };
 
-/* Adapted from the NTSC decomp: FUN_L14_002f1040. */
+/* Adapted from Lombyte's project (the US decompilation): FUN_L14_002f1040. */
 void initialize_taxi_stop_from_position(char *m) {
     Moby *moby = (Moby *)m;
     struct L14PickVars_2F24C8 *d = (struct L14PickVars_2F24C8 *)moby->pvars;
@@ -2636,7 +2636,7 @@ extern char D_L14_001FD180_FD578[] __asm__("D_L14_001FD180");
 extern char D_L14_001FD1B8_FD578[] __asm__("D_L14_001FD1B8");
 extern char *D_L14_001B0F30_FD578[] __asm__("D_L14_001B0F30");
 
-/* Adapted from the NTSC decomp (GPL-3.0) for PAL: src/overlays/l14/gameplay/entities/002df080.c, FUN_L14_002fc0f0. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/l14/gameplay/entities/002df080.c, FUN_L14_002fc0f0. */
 void update_enemy_fighter(struct Moby *moby) {
     Class908Vars_FD578 *data = (Class908Vars_FD578 *)moby->pvars;
     int hit = func_L00_0025B478_FD578(moby, 0x800000, 0);
@@ -2740,7 +2740,7 @@ extern s32 func_001F9850(s32);
 extern L14Puff_2FD870 *func_L00_0026DEA0_2FD870(void *, f32, f32, f32, int, void *, f32, int) __asm__("func_L00_0026DEA0");
 
 /* Engine exhaust: two smoke puffs and three fading rings on each side of the moby.
-   Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/entities/002df080.c, FUN_L14_002fc3e8. */
+   Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/entities/002df080.c, FUN_L14_002fc3e8. */
 void spawn_enemy_fighter_exhaust(struct Moby *m) {
     Vec4 step;
     Vec4 pos;
@@ -3156,7 +3156,7 @@ extern short D_L14_00162040;
 extern short D_L14_00162044;
 
 /* Exhaust of the second engine moby: puffs and rings on both sides plus a grey puff in the middle.
-   Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/entities/002df080.c, FUN_L14_002fd310. */
+   Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/entities/002df080.c, FUN_L14_002fd310. */
 void spawn_moby_exhaust_puffs(struct Moby *m) {
     Vec4 step;
     Vec4 pos;
@@ -3349,7 +3349,7 @@ extern void func_001F9BD8_2FF040(u8 *, u8 *, u8 *) __asm__("func_001F9BD8");
 
 /* Flyer: state 0 arms it (or removes it without a path point or target); state 2 flies it to its path point,
  * turning toward it, and on arrival removes its target and itself with a burst.
- * Adapted from the NTSC decomp (GPL-3.0) for PAL: overlays/l14/gameplay/entities/002df080.c, FUN_L14_002fdbb8. */
+ * Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/l14/gameplay/entities/002df080.c, FUN_L14_002fdbb8. */
 void FlyerUpdate(struct Moby *moby) {
     FlyerVars_2FF040 *vars = (FlyerVars_2FF040 *)moby->pvars;
     Vec4f diff;

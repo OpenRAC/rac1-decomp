@@ -12,7 +12,7 @@ extern char *func_L00_0026E940(char *, int, int, int, float);
 extern void func_001F9BD8(void *, void *, void *);
 extern void func_00213DE0(void *, int, int, int);
 
-/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l13/unclassified_002c13b0.c, FUN_L13_002c13b0. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l13/unclassified_002c13b0.c, FUN_L13_002c13b0. */
 unsigned char *spawn_level_13_homing_rocket(char *src, char *pos, char *target, char *vec, int arg, float scale,
                                 float f2) {
     unsigned char *moby = (unsigned char *)CreateMoby(0x52);
@@ -2442,7 +2442,7 @@ typedef struct {
     short unk84;
 } SwitchVars;
 
-/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l13/gameplay/entities/002c13b0.c, FUN_L13_002e4448. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l13/gameplay/entities/002c13b0.c, FUN_L13_002e4448. */
 void update_linked_switch_group(char *moby) {
     enum {
         INITIALIZE_LINKED_GROUP = 0,
@@ -2599,7 +2599,7 @@ extern void func_0020D678_2E9910(void *) __asm__("func_0020D678");
 
 /* Fades the moby in (state 1), holds until its owner is gone or dying (state 2), fades it out (state 3) and removes
  * it (state 4), easing its scale toward the class scale and spinning it all the while.
- * Adapted from the NTSC decomp (GPL-3.0) for PAL: overlays/l13/gameplay/entities/002c13b0.c, FUN_L13_002e84d8. */
+ * Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/l13/gameplay/entities/002c13b0.c, FUN_L13_002e84d8. */
 void update_owner_linked_class_160_moby(struct Moby *moby) {
     int *d = (int *)moby->pvars;
     int old;
@@ -2701,7 +2701,7 @@ struct MusicStreamState {
 extern struct MusicStreamState D_001517D0;
 extern unsigned char D_L13_001D3828[];
 
-/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l13/gameplay/entities/002c13b0.c, FUN_L13_002e86f8. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l13/gameplay/entities/002c13b0.c, FUN_L13_002e86f8. */
 int queue_starfighter_voice_line(void *unused, unsigned char *p, int base, int n) {
     int j = func_001160D8() % n;
     int id = D_L13_001D3828[base + j];
@@ -2765,7 +2765,7 @@ typedef struct {
     int on[1];
 } Vd_v_E9D58;
 
-/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l13/gameplay/entities/002c13b0.c, FUN_L13_002e8920. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l13/gameplay/entities/002c13b0.c, FUN_L13_002e8920. */
 void emit_gated_moby_joint_effects(struct Moby *m, char *d) {
     OvlQuad_E9D58 zv;
     float a[4];
@@ -2966,7 +2966,7 @@ extern char * D_L13_001B0AB0[];
 extern char D_0013F4D0[];
 extern int func_L13_002EA598(char *, char *, int, int);
 
-/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l13/gameplay/entities/002c13b0.c, FUN_L13_002e9408. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l13/gameplay/entities/002c13b0.c, FUN_L13_002e9408. */
 int update_moby_path_following_away_from_hero(struct Moby *m, char *d, int idx, int aim) {
     char *path = walker_paths[*(int *)(&d[idx << 2] + 0xB0)];
     int r = 0;
@@ -3075,7 +3075,7 @@ extern void func_L10_002F6E10(int);
 extern void func_001FFDA0(int, int);
 extern char * D_L13_0016016C MACRO_ADDR;
 
-/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l13/gameplay/entities/002c13b0.c, FUN_L13_002e97e0. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l13/gameplay/entities/002c13b0.c, FUN_L13_002e97e0. */
 void begin_starfighter_death_sequence(struct Moby *moby, char *vars, int *result) {
     int path_ids = (int)vars + 0xB0;
     struct Moby *mobys;
@@ -3488,7 +3488,7 @@ extern void func_L13_002EB838_EB978(float *, float *, float *, float) __asm__("f
 extern int func_001F9850_EB978(int) __asm__("func_001F9850");
 extern void func_0022ED80_EB978(int, int, char *) __asm__("func_0022ED80");
 
-/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l13/gameplay/entities/002c13b0.c, FUN_L13_002ea540. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l13/gameplay/entities/002c13b0.c, FUN_L13_002ea540. */
 unsigned char *fire_starfighter_homing_rocket(struct Moby *firing_moby, unsigned char *starfighter_data) {
     float muzzle_position[4];
     struct {

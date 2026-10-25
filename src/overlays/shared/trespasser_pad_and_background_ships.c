@@ -14,7 +14,7 @@ extern s32 D_L02_00161324 MACRO_ADDR;
 extern s32 D_L02_00161328 MACRO_ADDR;
 extern s32 D_L02_0016132C MACRO_ADDR;
 
-/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002a4038.c, FUN_L02_002a4058. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002a4038.c, FUN_L02_002a4058. */
 void prepare_scaled_float_table_with_target_byte(char *arg, int val, float scale) {
     int i;
     float *p;
@@ -308,7 +308,7 @@ extern void func_001F9BD8(void *, void *, void *);
 extern void func_001F9C30(void *, void *, float);
 
 /* Spawn point for the moby: its slot's stored position and rotation, or, with no slot, a point beside it on the side facing the hero.
-   Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002a4038.c, FUN_L02_002d8910. */
+   Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002a4038.c, FUN_L02_002d8910. */
 void compute_tresspasser_pad_camera_transform(float *pos, float *rot, char *moby) {
     V2d8910 v;
     float left;
@@ -1038,7 +1038,7 @@ extern s32 func_001FA898(f32);
 extern s32 func_001F4868(s32);
 typedef unsigned long u64_t;
 
-/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002a4038.c, FUN_L02_002da938. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002a4038.c, FUN_L02_002da938. */
 void draw_tresspasser_puzzle_radial_strip(void *unused, f32 a, f32 b, f32 c, s32 d) {
     u64_t m[4];
     s32 a4[4];
@@ -1150,7 +1150,7 @@ extern short D_L02_00161B48;
 int func_001F4868(int);
 void func_L02_0020BF88_DC2C0(Q_2dae88 *, int *, int *, u64, int) __asm__("func_L02_0020BF88");
 
-/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002a4038.c, FUN_L02_002dae88. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002a4038.c, FUN_L02_002dae88. */
 void draw_tresspasser_puzzle_textured_quads(void) {
     Q_2dae88 q;
     int c[4];
@@ -2269,7 +2269,7 @@ typedef struct {
 extern S_2fa6d8 D_L02_00167680_FBB10 __asm__("D_L02_00167680");
 extern void func_L02_002FBB48(void);
 
-/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_002ec308.c, FUN_L02_002fa6d8. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_002ec308.c, FUN_L02_002fa6d8. */
 void initialize_camera_offset_effect_state(void) {
     D_L02_00167680_FBB10.a = 0;
     D_L02_00167680_FBB10.b = 0;
@@ -2373,7 +2373,7 @@ extern int func_L00_00260AB0(void *, int);
 extern int func_L00_00260B68(void *, int);
 extern int func_L00_0025A778(void *, void *, int);
 
-/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/vendor/002ec308.c, FUN_L02_002fb648. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/vendor/002ec308.c, FUN_L02_002fb648. */
 int test_moby_camera_control_activation(char *moby) {
     char *special = D_L02_0016755C;
     char *data = *(char **)(aridia_camera_descriptors + *(short *)(moby + 0x84) * 32 + 0x1c);
@@ -2512,7 +2512,7 @@ extern void f_vsub_2FCE00(void *, void *, void *) __asm__("func_001F9BF0");
 
 /* Camera setup of a camera moby: picks its target (the first live moby of its
    group, or one by index), checks the trigger, then sets the follow camera's
-   heading, springs and offsets for its mode (data +0x3C). Adapted from the NTSC decomp
+   heading, springs and offsets for its mode (data +0x3C). Adapted from Lombyte's project
    (GPL-3.0), FUN_L02_002fb9c8. */
 void apply_moby_camera_control(char *moby) {
     char *data = *(char **)(aridia_camera_descriptors + *(short *)(moby + 0x84) * 32 + 0x1c);

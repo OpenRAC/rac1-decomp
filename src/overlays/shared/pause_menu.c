@@ -551,7 +551,7 @@ extern void func_00213C78(void);
 extern void func_L00_002777C0(void);
 
 // Page-menu (pause/map/planet-select) per-frame update: state machine over the menu pages.
-// Adapted from the NTSC decomp (GPL-3.0) for PAL: src/overlays/shared/audio_voices_00276368.c, FUN_L00_00276bd0.
+// Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/audio_voices_00276368.c, FUN_L00_00276bd0.
 void update_pause_menu(void) {
     Own *u8p;
     Mth *m;
@@ -1359,7 +1359,7 @@ extern unsigned char D_0014171B NOT_SDA;
 extern unsigned char D_0013E633 NOT_SDA;
 extern int D_0015EE84_m __asm__("D_0015EE84") MACRO_ADDR;
 
-/* Seeds the pause-menu snapshot: copies the header, marks valid entries in the bitmasks, fills the state record. Adapted from the NTSC decomp (GPL-3.0) for PAL: overlays/shared/gameplay_state_00284e50.c, FUN_L00_00284e50. */
+/* Seeds the pause-menu snapshot: copies the header, marks valid entries in the bitmasks, fills the state record. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/gameplay_state_00284e50.c, FUN_L00_00284e50. */
 void jet_reset_camera(void *a0, void *a1)
 {
     unsigned char *src;

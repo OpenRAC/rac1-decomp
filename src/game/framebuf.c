@@ -453,7 +453,7 @@ void append_palette_transfer_packet(void) {
 
 extern void func_00234C98_l(int, long) __asm__("func_00234C98");
 
-/* Clears the screen through a GIF packet appended to D_00161000: a fixed header then n = w / 32 pairs of sprite corner registers stepping 0x200 per column across a w x h area centred on 0x8000. Adapted from the NTSC decomp (GPL-3.0) for PAL: src/rendering/fun_001fb740.c, FUN_001fb740. */
+/* Clears the screen through a GIF packet appended to D_00161000: a fixed header then n = w / 32 pairs of sprite corner registers stepping 0x200 per column across a w x h area centred on 0x8000. Adapted from Lombyte's project (GPL-3.0) for PAL: src/rendering/fun_001fb740.c, FUN_001fb740. */
 void draw_centered_capture_background(int w, int h) {
     int *tag;
     long *q;

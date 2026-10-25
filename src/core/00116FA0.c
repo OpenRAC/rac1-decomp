@@ -174,7 +174,7 @@ extern char vfprintf_string_00152648[] __asm__("D_00152648");
 extern char vfprintf_string_00152668[] __asm__("D_00152668");
 extern char vfprintf_string_00152670[] __asm__("D_00152670");
 typedef char *va_list;
-/* _vfprintf_r, adapted from newlib 1999 through the NTSC decomp.
+/* _vfprintf_r, adapted from newlib 1999 through Lombyte's project.
  * The varargs cursor advances in eight-byte slots on the EE ABI.
  * PRINT/PAD/FLUSH are expanded here to keep their scope local; the build
  * compiles this C directly. See THIRD_PARTY_NOTICES.md.

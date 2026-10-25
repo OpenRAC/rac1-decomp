@@ -335,7 +335,7 @@ extern float advance_30F9D0(float, float, float, float, float *, float *) __asm_
 /* Slides the moby out along its pose-table entry's direction: 0 places it,
    1 waits for the trigger byte 0xBC of its D_L05_00160098 record, 2 eases
    it toward the end point, 3 lowers it to 5.9 below the entry's height.
-   Adapted from the NTSC decomp (GPL-3.0) for PAL: overlays/l05/gameplay/entities/0030d6a0.c, FUN_L05_0030e508. */
+   Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/l05/gameplay/entities/0030d6a0.c, FUN_L05_0030e508. */
 void update_triggered_moby_slide_and_lowering(char *moby) {
     char *data = *(char **)(moby + 0x78);
     float v[4];
@@ -732,7 +732,7 @@ extern void func_L00_00251E30_10A90(struct Moby *) __asm__("func_L00_00251E30");
 extern u8 *func_L00_00272F00(void *pos, s32 life, f32 size0, f32 size1, s32 color, s32 mode, s32 spin, void *vel, f32 f2);
 extern char D_L05_001BAE30[];
 
-/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l05/gameplay/entities/0030d6a0.c, FUN_L05_0030f5c8. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l05/gameplay/entities/0030d6a0.c, FUN_L05_0030f5c8. */
 void pipe_mounted_grating_update(struct Moby *moby) {
     float vel[4];
     float spin_vel[4];
@@ -838,7 +838,7 @@ extern int func_001F9908_16378(s32 *) __asm__("func_001F9908");
 extern float func_L00_0025CE58(float *, float *, float, float, float, float);
 
 /* Gate: waits for its trigger moby, then rises to topZ and swings its yaw back to 0, with sounds per class.
-   Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l05/gameplay/entities/0030d6a0.c, FUN_L05_00314eb0. */
+   Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l05/gameplay/entities/0030d6a0.c, FUN_L05_00314eb0. */
 void update_triggered_gate_motion(struct Moby *m) {
     struct GateVars_16378 *d = (struct GateVars_16378 *)m->pvars;
     struct Moby *t;
@@ -931,7 +931,7 @@ extern short D_L05_00161F74_165B8 SDATA(D_L05_00161F74);
 extern short D_L05_00161F78_165B8 SDATA(D_L05_00161F78);
 extern short D_L05_00161F7C_165B8 SDATA(D_L05_00161F7C);
 
-/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l05/gameplay/entities/0030d6a0.c, FUN_L05_003150f0. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l05/gameplay/entities/0030d6a0.c, FUN_L05_003150f0. */
 void update_triggered_particle_spray_emitter(struct Moby *m) {
     float v[4];
     float w[4];
@@ -1097,7 +1097,7 @@ extern void func_L00_002EC0C8(s32);
 extern void func_L05_003173A8_16B98(void *, void *, void *) __asm__("func_L05_003173A8");
 extern void func_L05_00317438_16B98(void *) __asm__("func_L05_00317438");
 
-/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l05/gameplay/entities/0030d6a0.c, FUN_L05_003156d0. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l05/gameplay/entities/0030d6a0.c, FUN_L05_003156d0. */
 void elevator_with_button_update(struct Moby *moby) {
     LiftVars *vars = (LiftVars *)moby->pvars;
     Vec4 delta;
@@ -1371,7 +1371,7 @@ struct ElectricGateData {
     f32 unk64;                 /* 0x64: angular speed of the manipulator angle */
 };
 
-/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l05/gameplay/entities/0030d6a0.c, FUN_L05_00316258. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l05/gameplay/entities/0030d6a0.c, FUN_L05_00316258. */
 void update_triggered_moby_motion_and_manipulator_angle(char *moby) {
     enum {
         MOBY_INITIALIZE = 0,
@@ -2248,7 +2248,7 @@ extern float sin_319F78(float) __asm__("func_001F9FA8");
 
 /* Two-state marker: arms the moby, then once its target is found copies the
  * target position and sets the bob height from the frame counter.
- * Adapted from the NTSC decomp (GPL-3.0) for PAL: overlays/l05/gameplay/entities/0030d6a0.c, FUN_L05_00318a68. */
+ * Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/l05/gameplay/entities/0030d6a0.c, FUN_L05_00318a68. */
 void update_hero_clip_volume_outputs(char *m) {
     int state = *(unsigned char *)(m + 0x20);
     int *v = *(int **)(m + 0x78);
@@ -2532,7 +2532,7 @@ void PickNearestTargetSlot(char *moby) {
 extern char * D_L05_001B0CB0[];
 extern unsigned char D_0014C150[][16];
 
-/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l05/unclassified_0030d6a0.c, FUN_L05_003193a8. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l05/unclassified_0030d6a0.c, FUN_L05_003193a8. */
 void select_taxi_route(char *moby) {
     char *d = *(char **)(moby + 0x78);
     char *p;

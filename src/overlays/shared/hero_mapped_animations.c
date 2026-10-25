@@ -464,7 +464,7 @@ extern void func_L00_00232A00(void);
    scripted rate table (D_L00_0017BEF0[unkAA0]), moves to the next frame of the sequence each time it passes 1.0
    (wrapping, or jumping as unkAB0/unkAB4/unkAB8 request), fires the sequence's sound triggers crossed this frame,
    keeps the moby's looping sound (sound_slot) in step with unk7C, and records the distance moved (anim_frame, unkAAC).
-   Adapted from the NTSC decomp (GPL-3.0, 4e1f255e) for PAL: src/overlays/shared/ui/help/00232670.c, FUN_L00_00232670. */
+   Adapted from Lombyte's project (GPL-3.0, 4e1f255e) for PAL: src/overlays/shared/ui/help/00232670.c, FUN_L00_00232670. */
 void advance_hero_animation(void) {
     Moby *m = ((Hero *)g_hero)->moby;
     s32 same;
@@ -590,7 +590,7 @@ extern f32 func_L00_002345B0_33410(void *) __asm__("func_L00_002345B0");
 extern f32 func_L00_002342F8_33410(void *) __asm__("func_L00_002342F8");
 extern s32 func_L00_0025A5D8(f32 *, f32 *, f32, f32, f32);
 
-/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00231d08.c, FUN_L00_00232b90. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00231d08.c, FUN_L00_00232b90. */
 f32 predict_hero_trajectory_intercept_time(f32 a, f32 b, f32 c) {
     f32 t[4];
     Vec4 v;
@@ -1318,7 +1318,7 @@ extern float func_001FA790(float, float);
 extern f32 D_0015EE70 MACRO_ADDR;
 
 /* The hero on a moving platform: finds the platform the hero stands on or hangs from, tracks the platform's motion between frames (its attach points at 0x310-0x330) and carries the hero (position, facing, ledge-grab point) with it.
-   Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/hero/set_hero_animation.c, FUN_L00_00233f80. */
+   Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/hero/set_hero_animation.c, FUN_L00_00233f80. */
 void update_hero_attachment(void) {
     Vec4A v0, v10, v20, v30, v40, v50, v60, v70, v80, v90, vA0;
     float sB0, sB4;
@@ -1492,7 +1492,7 @@ s32 func_001FA8A8(s32, s32, f32);
 void func_0020D960(void *, s32, void *);
 void func_L00_001FFED8(void *, s32, f32);
 
-/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00231d08.c, FUN_L00_00234808. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00231d08.c, FUN_L00_00234808. */
 void animate_hero_slot4_and_slot5_visuals(void) {
     char *m0, *m1, *m2;
     f32 k;

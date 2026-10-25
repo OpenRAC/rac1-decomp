@@ -4,7 +4,7 @@
 /*
  * Moby class IDs (Moby.oclass).
  *
- * From the NTSC decomp (GPL-3.0): include/rnc/gameplay/entities/moby_class_id.h
+ * From the NTSC decomp (Lombyte's project, GPL-3.0): include/rnc/gameplay/entities/moby_class_id.h
  * at 4e1f255e. Enumerations only: no layout, no code. See THIRD_PARTY_NOTICES.md.
  */
 

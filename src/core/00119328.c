@@ -65,7 +65,7 @@ extern int func_00118BC0(int);
 extern int func_00118C40(int);
 extern int func_0011A690(const char *, ...);
 
-/* topThread: kernel service dispatcher. Adapted from the NTSC decomp (GPL-3.0) for PAL. */
+/* topThread: kernel service dispatcher. Adapted from Lombyte's project (GPL-3.0) for PAL. */
 void func_001194C8(void *arg0) {
     TopThreadContext *ctx = (TopThreadContext *)arg0;
     int i;

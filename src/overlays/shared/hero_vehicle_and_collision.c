@@ -33,7 +33,7 @@ extern int func_L00_001EFFF0_21A98(void *from, void *to, int mask, void *ignore,
 extern f32 func_001F9D10(void *, void *);
 extern s32 func_L00_001F10E0(f32, Vec4 *, s32, s32);
 
-/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/hero/00221310.c, FUN_L00_00221310. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/hero/00221310.c, FUN_L00_00221310. */
 void update_hero_motion_and_collision_probes(void) {
     Vec4 first;
     Vec4 second;
@@ -132,7 +132,7 @@ extern void func_L00_002222F0_21D50(void) __asm__("func_L00_002222F0");
 extern void func_L00_00233EE0_21D50(void *, f32, f32, f32) __asm__("func_L00_00233EE0");
 extern void func_L00_00211908_21D50(void) __asm__("func_L00_00211908");
 
-/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/hero/00221310.c, FUN_L00_002215c8. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/hero/00221310.c, FUN_L00_002215c8. */
 void update_hero_timers_and_reach_state(void) {
     Vec4 sum;
     Vec4 d;
@@ -375,7 +375,7 @@ typedef struct Q_221ee0 {
     f32 f20;                   /* 0x20 max target distance, 0 = default 16 */
 } Q_221ee0;
 
-// picks the nearest eligible moby of class 0x323 near the player and stores it as the target Adapted from the NTSC decomp (GPL-3.0) for PAL: overlays/shared/ui_help_00221310.c, FUN_L00_00221ee0.
+// picks the nearest eligible moby of class 0x323 near the player and stores it as the target Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/ui_help_00221310.c, FUN_L00_00221ee0.
 void select_hero_grapple_swing_target(void) {
     Hero *g, *gb, *g0, *g2;
     Moby *m;
@@ -2815,7 +2815,7 @@ extern int func_L00_001EFFF0_27F48(void *, void *, int, void *, int) __asm__("fu
 extern int func_L00_00222B80(int, int);
 extern void func_L00_00222B80_27F48b(int, int) __asm__("func_L00_00222B80");
 
-/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/hero/00227778.c, FUN_L00_00227778. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/hero/00227778.c, FUN_L00_00227778. */
 int try_transition_hero_water_state(void) {
     Vec4 start;
     Vec4 end;

@@ -524,9 +524,9 @@ extern void Sound_StoreHandleReset_DD68() __asm__("func_0022F0F0");
    radial velocity, distance volume and occlusion (a 36-sample history per voice), and starts, updates or stops
    its sound. Ends with the music update and the command flush. Returns 0; callees.h has it as void, hence the
    alias.
-   Adapted from the NTSC decomp (GPL-3.0) for PAL: src/audio/voices/sound_update.c, sound_update (FUN_0022ca50). Two of its
+   Adapted from Lombyte's project (GPL-3.0) for PAL: src/audio/voices/sound_update.c, sound_update (FUN_0022ca50). Two of its
    loops are written plainly here: the occlusion-history copy as history[offset + i] = history[offset], and the
-   sample clamp with a counter of its own. With the NTSC decomp's byte-index local for the copy, the second voice loop is
+   sample clamp with a counter of its own. With Lombyte's byte-index local for the copy, the second voice loop is
    short enough at the first loop pass (192 insns against 208) that the voice_flags address giv is reduced there
    rather than in the rerun, and two spill slots (sp+0x22C/0x230) swap. */
 s32 func_0022DD68_r(void) __asm__("func_0022DD68");
@@ -993,7 +993,7 @@ s32 func_0022EB08_r(VoiceDefinition_2EB08 *, u32, VoiceMoby_2EB08 *, VoiceVector
 /* Takes a free voice of the sound pool for a definition (26 voices, 30 for the hero, the
    held item and class 0x472), places it at the moby or the given position, drops it when
    it would be inaudible and picks its pitch bend. Returns the voice index or -1.
-   Adapted from the NTSC decomp (GPL-3.0) for PAL: src/textbin/fun_0022d7f0.c, allocate_voice_slot. */
+   Adapted from Lombyte's project (GPL-3.0) for PAL: src/textbin/fun_0022d7f0.c, allocate_voice_slot. */
 s32 func_0022EB08_r(VoiceDefinition_2EB08 *definition, u32 flags, VoiceMoby_2EB08 *moby,
                     VoiceVector_2EB08 *position, s32 volume) {
     s32 volume_offset;
@@ -1249,7 +1249,7 @@ extern s32 func_0012DDC0_2EFE8() __asm__("func_0012DDC0");
 extern s32 func_0012E4F8();
 extern s32 func_0012EC40_2EFE8() __asm__("func_0012EC40");
 
-/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/audio/voices/sound_stop_all_sounds.c, sound_stop_all_sounds. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/audio/voices/sound_stop_all_sounds.c, sound_stop_all_sounds. */
 void sound_StopAllSounds(void) {
     s32 i;
     SndState *s;

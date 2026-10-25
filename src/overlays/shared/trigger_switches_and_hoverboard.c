@@ -119,7 +119,7 @@ extern s32 func_00215570(void *, s32);
 extern void func_L05_002F6518_F6588(struct Moby *, TriggerVars_2f5200 *, s32, s32) __asm__("func_L05_002F6518");
 extern void func_L05_002F62E8_F6588(s32, TriggerVars_2f5200 *, s32) __asm__("func_L05_002F62E8");
 
-/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b3840.c, FUN_L05_002f5200. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b3840.c, FUN_L05_002f5200. */
 void update_moby_spatial_trigger(struct Moby *m) {
     TriggerVars_2f5200 *v = (TriggerVars_2f5200 *)m->pvars;
     Vec4 target;
@@ -546,7 +546,7 @@ extern int D_L05_00161DCC SDATA(D_L05_00161DCC);
 /* Draw callback of the class 0x337 wobbling effect (update_moby_wobble above):
    builds a basis from the moby (rotation from its pvars phase, direction toward
    D_L05_001672C0) and draws ten pairs of textured quads that widen with each
-   step. Adapted from the NTSC decomp (GPL-3.0), FUN_L05_0030c220. */
+   step. Adapted from Lombyte's project (GPL-3.0), FUN_L05_0030c220. */
 void draw_moby_wobble_quads(unsigned char *m) {
     struct Moby *moby = (struct Moby *)m;
     Quad_0D678 quad_a, quad_b;
@@ -855,7 +855,7 @@ extern char *func_L05_0031AAA8(void *, int);
 extern void func_L05_0031A718(void *);
 extern char * D_L05_001601AC MACRO_ADDR;
 
-/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002b3840.c, FUN_L05_00319510. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002b3840.c, FUN_L05_00319510. */
 void reset_selected_moby_to_current_placement(void *moby_v)
 {
     char *moby = moby_v;
@@ -1064,7 +1064,7 @@ extern char *func_L05_0031E670(unsigned char *);
 void func_L05_0031E468(char *m);
 
 /* Mine update: sets its glow, fades it out with camera distance and blows up into debris, smoke and sparks when something touches it.
-   Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/vendor/0031abe0.c, FUN_L05_0031c8e0. */
+   Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/vendor/0031abe0.c, FUN_L05_0031c8e0. */
 void update_moby_glow_and_contact_explosion(struct Moby *moby) {
     struct MineVars_c8e0 *vars = (struct MineVars_c8e0 *)moby->pvars;
     Vec4 tip;
@@ -1250,7 +1250,7 @@ void draw_moby_glow_sprite(char *m) {
 extern char *func_0020D348(int);
 extern void func_L00_00251E30(void *);
 
-/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_0031abe0.c, FUN_L05_0031d160. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_0031abe0.c, FUN_L05_0031d160. */
 char *spawn_moby_class_5ea_from_source(unsigned char *a0)
 {
     unsigned char *m = (unsigned char *)CreateMoby(0x5EA);
@@ -1469,7 +1469,7 @@ extern void func_001F9BC0_32ABF0(void *) __asm__("func_001F9BC0");
 void func_L05_0032ABF0_r(Camera_32ABF0 *cam) __asm__("func_L05_0032ABF0");
 
 /* Resets the camera from its preset (row cam->preset of D_L05_0015F050): distances, angle limits and damping, cleared velocities, then places it.
-   Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/vendor/0031abe0.c, FUN_L05_003296e0. */
+   Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/vendor/0031abe0.c, FUN_L05_003296e0. */
 void func_L05_0032ABF0_r(Camera_32ABF0 *cam) {
     CameraPreset_32ABF0 *s = D_L05_0015F050_32ABF0[cam->preset].preset;
     CameraOrbit_32ABF0 *d;

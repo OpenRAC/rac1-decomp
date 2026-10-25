@@ -183,7 +183,7 @@ typedef struct { int a, b, c, d; } E00266858;
 extern char D_0013D605[];
 extern int func_L00_00267618(int, int);
 
-/* stores b in the d field of the slot func_L00_00267618 finds, if any. Adapted from the NTSC decomp (GPL-3.0) for PAL: overlays/shared/audio_streaming_00266298.c, FUN_L00_00266858. */
+/* stores b in the d field of the slot func_L00_00267618 finds, if any. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/audio_streaming_00266298.c, FUN_L00_00266858. */
 void set_moby_dialogue_record_value(int a, int b) {
     int i = get_dialogue_entry(a, b);
     if (i != -1) {
@@ -218,7 +218,7 @@ extern P002668a0 * D_L00_001B19F8[];
 extern s32 D_L00_0015F6B0 MACRO_ADDR;
 extern s32 func_L00_00267618_676E8(void *) __asm__("func_L00_00267618");
 
-/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/audio_streaming_00266298.c, FUN_L00_002668a0. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/audio_streaming_00266298.c, FUN_L00_002668a0. */
 s32 DialogRequest_Init(void *p, u8 *out_p)
 {
     Out002668a0 *out;
@@ -272,7 +272,7 @@ int check_pad_press_separation(int a, int b, int c, int d) {
 }
 extern Hist_266e80 D_0013CA40;
 
-/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_menus_00266d60.c, FUN_L00_00266e80. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_menus_00266d60.c, FUN_L00_00266e80. */
 typedef struct {
     char pad[0x18E];
     s16 head;
@@ -283,7 +283,7 @@ typedef struct {
 extern Hist_266e80_67CC8 D_0013CA40_67CC8 __asm__("D_0013CA40");
 
 /* The value n entries back in the 30-entry history ring (n is capped at the count).
-   Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/input/pad/pad_pressed_within.c, FUN_L00_00266e80. */
+   Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/input/pad/pad_pressed_within.c, FUN_L00_00266e80. */
 f32 read_pad_float_history(s32 n) {
     s32 m;
     if (D_0013CA40_67CC8.count < n)

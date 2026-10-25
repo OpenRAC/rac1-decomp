@@ -9,7 +9,7 @@
 extern float D_L01_001CB0E0[];
 extern float D_L01_001CB0E0_B90A8b[] __asm__("D_L01_001CB0E0");
 
-/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_002b7ef0.c, FUN_L01_002b7ef0. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_002b7ef0.c, FUN_L01_002b7ef0. */
 void RescaleFloatTable(float s) {
     unsigned int i;
     float k = s / D_L01_001CB0E0_B90A8b[16];
@@ -118,7 +118,7 @@ void update_animated_offset_pairs(float *m) {
 }
 extern void func_L00_002A5158(void *, int, int);
 
-/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_002b7ef0.c, FUN_L01_002b8288. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_002b7ef0.c, FUN_L01_002b8288. */
 extern void func_L00_002A5158_pt(float, float, float, float, void *, int, int) __asm__("func_L00_002A5158");
 
 void pool_ripple(float x, float y, float z, float w, void *a, int b) {
@@ -151,7 +151,7 @@ extern u32 func_001F9B20(void *);
 extern void func_L01_00263338(s32, s32);
 extern char D_L01_001672C0[];
 
-/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b8c08.c, FUN_L01_002b8cb0. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b8c08.c, FUN_L01_002b8cb0. */
 void cull_and_submit_water_grid_tile(f32 *pos, s32 index, s32 mode) {
     f32 corners[4][4];
     f32 near_clip[4];
@@ -348,7 +348,7 @@ extern void func_L01_00262DA8(f32 *);
 extern void func_L01_002B9288(f32 *);
 extern u64 func_001F4868(s32);
 
-/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b8c08.c, FUN_L01_002b91c8. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b8c08.c, FUN_L01_002b91c8. */
 void render_water_grids(f32 *pos, s32 count) {
     f32 corners[4][4];
     f32 near_clip[4];
@@ -499,7 +499,7 @@ extern void func_001F9C30(void *, void *, float);
 extern void func_001F9BD8(void *, void *, void *);
 extern void func_L00_002617B0(char *, void *, void *, void *);
 
-/* update of a platform that rides a path between its end points. Adapted from the NTSC decomp (GPL-3.0) for PAL: src/overlays/shared/unclassified_002b8c08.c, FUN_L01_002b9eb0. */
+/* update of a platform that rides a path between its end points. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/unclassified_002b8c08.c, FUN_L01_002b9eb0. */
 void novalis_elevator_update(unsigned char *moby) {
     char *data = *(char **)(moby + 0x78);
     char *hero;
@@ -740,7 +740,7 @@ extern void func_0020D678(void *);
 extern short D_L01_00161524;
 extern short D_L01_0016152C;
 
-/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b8c08.c, FUN_L01_002c7530. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b8c08.c, FUN_L01_002c7530. */
 void update_moby_motion_collision_and_lifetime(char *moby) {
     int *data = *(int **)(moby + 0x78);
     char *camera = camera_pos;
@@ -1155,7 +1155,7 @@ extern void func_L01_002AFD00(struct Moby *, s32, ItemPrice_2e1ac0 *);
 extern s32 func_0020BFC8(s32, s32);
 struct Moby;
 
-/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b8c08.c, FUN_L01_002e1ac0. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b8c08.c, FUN_L01_002e1ac0. */
 void gold_weapon_case_update(struct Moby *m) {
     SaleVars_2e1ac0 *v = (SaleVars_2e1ac0 *)m->pvars;
     s32 item;
@@ -1250,7 +1250,7 @@ extern s32 func_L00_00259B08_E4580(void *, void *, s32, s32, f32, f32) __asm__("
 struct Moby;
 
 /* shrinks and sinks the moby, then hands it to the drift emitter.
-   Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b8c08.c, FUN_L01_002e3208. */
+   Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b8c08.c, FUN_L01_002e3208. */
 s32 update_sand_mouse_fall_motion(void *ctx, struct Moby *m) {
     f32 shrink;
 
@@ -1327,7 +1327,7 @@ extern short D_L01_00161990;
 extern short D_L01_0015F6A8;
 extern Vec4 D_0013F4D0;
 
-/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002b8c08.c, FUN_L01_002e35a8. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002b8c08.c, FUN_L01_002e35a8. */
 void update_sand_mouse_targeted_spawning(char *moby, char *state) {
     Vec4 v;
     Vec4 q;
@@ -1989,7 +1989,7 @@ extern char D_L01_00161AD0;
 extern char D_L01_00161AE0;
 extern short D_L01_00161A3C;
 
-/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b8c08.c, FUN_L01_002edca0. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b8c08.c, FUN_L01_002edca0. */
 void large_amoeboid_update(unsigned char *moby) {
     char *data = *(char **)(moby + 0x78);
     char *target;
@@ -2717,7 +2717,7 @@ extern f32 func_001F9878_0B48(f32) __asm__("func_001F9878");
 extern s32 func_001FA898_0B48(f32) __asm__("func_001FA898");
 extern char *func_00219780_0B48(void *, void *, void *, int, int, int, int, int, int) __asm__("func_00219780");
 
-/* Adapted from the NTSC decomp (GPL-3.0) for PAL: src/overlays/shared/gameplay/entities/002b8c08.c, FUN_L01_002ef770. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/gameplay/entities/002b8c08.c, FUN_L01_002ef770. */
 void spawn_amoeboid_burst_sparks(unsigned char *moby, f32 *mode) {
     char *data = (char *)((struct Moby *)moby)->pvars;
     f32 pos[4], origin[4], velocity[4];
@@ -2816,7 +2816,7 @@ u8 *get_moby_data_plus_0xc0(struct Moby *m) {
 extern s32 D_L01_0015F6B0 MACRO_ADDR;
 
 /* Search backward for the first entry below the loaded threshold.
-   Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b8c08.c, FUN_L01_002efbf8. */
+   Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b8c08.c, FUN_L01_002efbf8. */
 s32 reserve_expired_frame_slot(s32 *values, s32 count, s32 offset) {
     s32 index = (s32)((u32)count - 1);
     if (index >= 0) {
@@ -2883,7 +2883,7 @@ extern float D_0015EE70 MACRO_ADDR;
 extern char D_001405A8[];
 extern unsigned char D_0013D5CD NOT_SDA;
 
-/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002b8c08.c, FUN_L01_002f2b68. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002b8c08.c, FUN_L01_002f2b68. */
 void sandmouse_house_update(unsigned char *m) {
     char *d;
     if (m == 0) return;
@@ -3003,7 +3003,7 @@ extern s32 func_L00_0025A778_F4290(void *, void *, s32) __asm__("func_L00_0025A7
 extern s32 func_00215570_F4290(void *, s32) __asm__("func_00215570");
 extern f32 func_001F9D48_F4290(void *, void *) __asm__("func_001F9D48");
 
-/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b8c08.c, FUN_L01_002f2eb8. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b8c08.c, FUN_L01_002f2eb8. */
 void update_nearest_area_moby_selection(struct Moby *m) {
     AreaVars_2f2eb8_F4290 *v = (AreaVars_2f2eb8_F4290 *)m->pvars;
     Vec4 target;

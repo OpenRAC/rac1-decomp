@@ -67,7 +67,7 @@ extern void func_002027C0(int);
 /*
  * upload_mip_texture: sends a texture (a header, then its palette and mip levels) to the GS at the
  * texture allocation cursor and writes its TEX0, MIPTBP1/TEX1 and MIPTBP1 values to regs[0..2].
- * Used for the planet pictures and area captions of the level transition. Adapted from the NTSC decomp
+ * Used for the planet pictures and area captions of the level transition. Adapted from Lombyte's project
  * (GPL-3.0): src/assembly/textbin/fun_00202270.c (US 0x00202270, the same function).
  */
 typedef struct {
@@ -270,7 +270,7 @@ extern LoadPoint D_0018D540_p[] __asm__("D_0018D540");
 extern short func_001F9968_s(int) __asm__("func_001F9968");
 
 /* Unpack count point records (x, y, u, v words, 12.4 fixed point for
-   x/y) into D_0018D540. Adapted from the NTSC decomp (GPL-3.0) for PAL. */
+   x/y) into D_0018D540. Adapted from Lombyte's project (GPL-3.0) for PAL. */
 void unpack_point_records(int *src, int count) {
     int x;
     int y;
@@ -437,7 +437,7 @@ extern char D_0015FCB0[];
 
 #define ALIGN64(x) (((x) + 0x3F) & 0xFFFFFFC0)
 
-/* Builds the runtime HUD-bank arena from the compressed HUD image. Adapted from the NTSC decomp (GPL-3.0) for PAL: ui/hud/load_hud_banks.c, load_hud_banks. */
+/* Builds the runtime HUD-bank arena from the compressed HUD image. Adapted from Lombyte's project (GPL-3.0) for PAL: ui/hud/load_hud_banks.c, load_hud_banks. */
 void LoadHudBanks(void) {
     SrcHdr *base;
     int *out;
@@ -557,7 +557,7 @@ extern u64 D_0019E7C0_035B0[3] __asm__("D_0019E7C0");
 extern u64 D_0019E7D8_035B0[3] __asm__("D_0019E7D8");
 extern s32 func_001F9968(s32);
 
-/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/rendering/build_indexed_resident_render_packet.c, build_indexed_resident_render_packet. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/rendering/build_indexed_resident_render_packet.c, build_indexed_resident_render_packet. */
 void build_indexed_resident_render_packet(u64 *packet,
                                           struct ResidentRenderTextureDefinition *texture,
                                           s32 draw_high, s32 draw_shift, s32 material_base,
@@ -840,7 +840,7 @@ extern MaterialMap_03B70 D_001B6C00_03B70[] __asm__("D_001B6C00");
 extern void func_002035B0_03B70(ResidentRenderPacket_03B70 *, void *, s32, s32, s32, s32, s32) __asm__("func_002035B0");
 extern void func_00203808_03B70(ResidentRenderPacket_03B70 *packet, s32 draw_high, s32 draw_shift, s32 material_base, s32 material_shift, s32 material_index) __asm__("func_00203808");
 
-/* Adapted from the NTSC decomp (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/textbin/prepare_resident_class_render_data.c, prepare_resident_class_render_data. */
+/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/textbin/prepare_resident_class_render_data.c, prepare_resident_class_render_data. */
 void func_00203B70_r(ResidentClassRenderHeader_03B70 *header, u8 *textures, u8 *material_map, s32 class_id)
     __asm__("func_00203B70");
 void func_00203B70_r(ResidentClassRenderHeader_03B70 *header, u8 *textures, u8 *material_map, s32 class_id) {
@@ -1231,7 +1231,7 @@ extern s32 func_001F9968(s32);
 /* Registers a shrub render class in the next free slot: slot and id tables, the class's distance threshold
    (scale * 1024 as an integer), relocates its group and mip-packet pointers, builds the mip packet's TEX0/TEX1/
    MIPTBP1 words from the mip texture (or from the resident material templates when there is none), copies the
-   class's material map and rewrites every packet's texture words. Adapted from the NTSC decomp (GPL-3.0):
+   class's material map and rewrites every packet's texture words. Adapted from Lombyte's project (GPL-3.0):
    src/rendering/register_shrub_render_class.c, register_shrub_render_class (US 0x203B08). */
 void register_shrub_render_class(ShrubRenderClass_04340 *render_class, ResidentRenderTextureDefinition_04340 *textures,
                    u128_04340 *material_map, ShrubMipTextureDefinition_04340 *mip_texture, s32 class_id) {
@@ -1588,7 +1588,7 @@ extern s32 func_00120F30_04C60(s32) __asm__("func_00120F30");
 /* One step of the level archive load: waits for the disc, steps back a stage on a read
    error or a 720-frame stall, then by stage reads the shared, level and sound archives
    below 0x1FF8000 and swaps the level's sound bank. Returns 1 when everything is in.
-   Adapted from the NTSC decomp (GPL-3.0) for PAL: src/gameplay/state/fun_00204428.c, service_level_archive_load. */
+   Adapted from Lombyte's project (GPL-3.0) for PAL: src/gameplay/state/fun_00204428.c, service_level_archive_load. */
 s32 service_level_archive_load(void) {
     s32 stage;
     u16 next_stage;
@@ -1789,7 +1789,7 @@ extern struct Moby *func_0020D348_m(int) __asm__("func_0020D348");
 /* update_world_object_animation: relocate the model record loaded for the
    current chunk (D_0018CC20+0x58) and hook each of its parts to a moby,
    spawning (func_0020D348) and initialising the moby the first time; each
-   part's pointer table is made absolute. Adapted from the NTSC decomp (GPL-3.0) for
+   part's pointer table is made absolute. Adapted from Lombyte's project (GPL-3.0) for
    PAL. */
 void update_world_object_animation(void *arg0) {
     struct ModelRec *rec;
@@ -1875,7 +1875,7 @@ extern int D_0016100C_m __asm__("D_0016100C") MACRO_ADDR;
 /* parse_space_scene_chunk(int): run func_00204FC0 on chunk index's slot,
    with the chunk's value as the current one meanwhile. The slot address is
    written base - (-(index * 4)), which keeps retail's base-first addu
-   (adapted from the NTSC decomp (GPL-3.0) for PAL). */
+   (adapted from Lombyte's project (GPL-3.0) for PAL). */
 void parse_space_scene_chunk(int arg0) {
     char *base = (char *)&render_sequence;
     char *p = base - (-(arg0 * 4));
