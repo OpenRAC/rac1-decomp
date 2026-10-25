@@ -7,7 +7,6 @@
 typedef struct { float f[4]; } __attribute__((aligned(16))) V4h;
 extern Hero D_0013F450;
 typedef struct { char pad0[0x44]; int use_state_40; char pad48[8]; int item_id; char pad54[4]; float interval; char pad5c[4]; int duration_frames; char pad64[0xC]; } Ent;
-typedef struct { float f[4]; } __attribute__((aligned(16))) Vec4_r;
 extern Ent D_L00_00179990[] NOT_SDA;
 extern int D_L00_00179BB0 NOT_SDA;
 extern int D_0015EE84 MACRO_ADDR;
@@ -21,10 +20,10 @@ extern float func_001F9878(float);
 /* Hero idle-fidget picker; returns 1 and writes the chosen index if one is picked. */
 int pick_idle_fidget(int *index) {
     int choices[20];
-    Vec4_r end;
-    Vec4_r start;
+    Vec4 end;
+    Vec4 start;
     Ent *entry;
-    Vec4_r *startp, *endp;
+    Vec4 *startp, *endp;
     int i, item, count, j;
     int *next;
     Ent *table;

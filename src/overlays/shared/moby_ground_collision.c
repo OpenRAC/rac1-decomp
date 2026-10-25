@@ -1166,10 +1166,6 @@ float jump_speed_4318(float *a, float *b, float *out, float speed, float g) {
     }
     return -((a[2] - b[2]) + g * (t * t) * 0.5f) / t;
 }
-typedef union {
-    VecQuad q;
-    float f[4];
-} Vec4_BCF8 __attribute__((aligned(16)));
 extern void f_54218_BCF8(void *, int, int) __asm__("func_L00_00254218");
 extern void f_vadd_BCF8(void *, void *, void *) __asm__("func_001F9BD8");
 extern void f_vsub_BCF8(void *, void *, void *) __asm__("func_001F9BF0");
@@ -1189,8 +1185,8 @@ extern float f_randang_BCF8(void) __asm__("func_00214158");
    shape table (spheres, discs, capsules), picked by volume weight; returns how
    many it wrote. Adapted from Lombyte's project (GPL-3.0), FUN_L00_0025aca0; the sphere case
    transforms its point inside the retry loop, where Lombyte's project has a do-while (0). */
-int func_L00_0025BCF8_r(float density, unsigned char *entity, int maximum, Vec4_BCF8 *out, int mask) __asm__("func_L00_0025BCF8");
-int func_L00_0025BCF8_r(float density, unsigned char *entity, int maximum, Vec4_BCF8 *out, int mask) {
+int func_L00_0025BCF8_r(float density, unsigned char *entity, int maximum, Vec4 *out, int mask) __asm__("func_L00_0025BCF8");
+int func_L00_0025BCF8_r(float density, unsigned char *entity, int maximum, Vec4 *out, int mask) {
     enum {
         SHAPE_INDEXED_CENTER_SPHERE = 2,
         SHAPE_ENDPOINT_SEGMENT_WITH_BALL_OFFSET = 4
@@ -1200,7 +1196,7 @@ int func_L00_0025BCF8_r(float density, unsigned char *entity, int maximum, Vec4_
     };
     float weights[20];
     unsigned char *entries[20];
-    Vec4_BCF8 first, second, third, fourth, fifth;
+    Vec4 first, second, third, fourth, fifth;
     unsigned char *list;
     unsigned char *entry;
     int count, index, chosen, emitted, limit;
