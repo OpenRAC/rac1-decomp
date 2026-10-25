@@ -121,7 +121,7 @@ void func_L00_002B33E8_r(Moby *m) {
     if (func_001F9908_2B33E8(&data->target_timer) ||
         (data->target && ((unsigned char)data->target->state & 0x80))) data->target = 0;
     if (hero_2B33E8.state.current == 1) func_L00_00222B80_2B33E8(30, 1);
-    if (hero_2B33E8.state.current == 30 && (hero_2B33E8.moby->flags & 1) && !hero_2B33E8.unk20AC) {
+    if (hero_2B33E8.state.current == 30 && (hero_2B33E8.moby->flags & 1) && !hero_2B33E8.item_use_locked) {
         velocity.q = 0;
         velocity.f.z = 70.0f;
         func_001F9EE8_2B33E8(&velocity, &velocity, &inverse);
@@ -152,7 +152,7 @@ void func_L00_002B33E8_r(Moby *m) {
         data->target_timer = func_001F9850_2B33E8(20);
         data->target_height = D_L00_00173F68_2B33E8 - data->target->pos.z;
     }
-    if (D_L00_0015F6A8_2B33E8 != 2 && !data->cooldown && !hero_2B33E8.unk20AC && m->seq < 2 &&
+    if (D_L00_0015F6A8_2B33E8 != 2 && !data->cooldown && !hero_2B33E8.item_use_locked && m->seq < 2 &&
         (input_2B33E8.held & hero_2B33E8.items[0].button_mask) && func_001F9850_2B33E8(22) < hero_2B33E8.items[0].unk20) {
         velocity.q = 0;
         if (m->prev_seq == 0) func_00213DE0_2B33E8(m, 1, 0, func_001F9850_2B33E8(4));
@@ -277,7 +277,7 @@ void func_L00_002B33E8_r(Moby *m) {
                 }
                 func_L00_002B0F58_2B33E8(m, &launch, data->target, yaw, pitch, height, yaw0, pitch0);
             }
-            if (hero_2B33E8.state.control_mode == 0 || (hero_2B33E8.state.current == 2 && hero_2B33E8.unk229C < 0.7f)) {
+            if (hero_2B33E8.state.control_mode == 0 || (hero_2B33E8.state.current == 2 && hero_2B33E8.stick_magnitude < 0.7f)) {
                 func_L00_00232C10_2B33E8(0x36, 1, (float)func_001F9850_2B33E8(10));
             } else {
                 func_L00_0020EB60_2B33E8();
@@ -1067,7 +1067,7 @@ void func_L00_002B5C98_r(Moby *m) {
         launch.f.y += 0.15f;
         func_001F9EE8_2B5C98(&launch, &launch, &inverse);
         func_001F9BD8_2B5C98(&launch, &launch, D_L00_00166D80_2B33E8 + 0x140);
-        if (hero_2B33E8.state.current == 30 && (hero_2B33E8.moby->flags & 1) && !hero_2B33E8.unk20AC) {
+        if (hero_2B33E8.state.current == 30 && (hero_2B33E8.moby->flags & 1) && !hero_2B33E8.item_use_locked) {
             func_L00_001EE2E0_2B5C98((int)m, 0xFF0F0FFF, 1.0f, 0, 0.0f, 0x26, -1, 90.0f, 4);
             func_L00_001FF4B0_2B5C98(&reach, &velocity, 20.0f);
             func_001F9BD8_2B5C98(&end, &reach, &launch);
@@ -1107,9 +1107,9 @@ void func_L00_002B5C98_r(Moby *m) {
             func_L00_001EE2E0_2B5C98((int)m, 0xFF0FFF0F, func_001F9B88_2B5C98(0.9f - d * 0.65f), &w.point, 0.0f, 0x26, -1, 90.0f, 4);
         }
     }
-    if (hero_2B33E8.unk20A8 && hero_2B33E8.state.current != 0x72 && D_L00_0015F6A8_2B33E8 != 2) {
+    if (hero_2B33E8.item_anim_active && hero_2B33E8.state.current != 0x72 && D_L00_0015F6A8_2B33E8 != 2) {
         if (func_001F9850_2B5C98(5 - order_2B5C98.level) < hero_2B33E8.unk1BC && data->cooldown == 0) {
-            if (func_L00_00234638_2B5C98(-1, 1) && !hero_2B33E8.unk20AC) {
+            if (func_L00_00234638_2B5C98(-1, 1) && !hero_2B33E8.item_use_locked) {
                 data->cooldown = func_001F9850_2B5C98(6);
                 if (target) {
                     float speed = D_0015EE6C_2B33E8 * 40.0f;
@@ -1175,7 +1175,7 @@ void func_L00_002B5C98_r(Moby *m) {
         }
     }
     if (!(((((Input_2B5C98 *)D_0013CA40_2B5C98)->held & hero_2B33E8.items[0].button_mask) && func_L00_00234718_2B5C98(-1)) ||
-          (!(func_001F9850_2B5C98(9) < hero_2B33E8.unk1BC) && hero_2B33E8.unk20A8)) ||
+          (!(func_001F9850_2B5C98(9) < hero_2B33E8.unk1BC) && hero_2B33E8.item_anim_active)) ||
         hero_2B33E8.state.current == 0x72 || D_L00_0015F6A8_2B33E8 == 2) {
         if ((m->prev_seq != 0 || (m->anim_flags & 2)) && hero_2B33E8.state.current != 0x72 && D_L00_0015F6A8_2B33E8 != 2) {
             if (m->prev_seq != 1) func_00213DE0_2B5C98(m, 1, 0, func_001F9850_2B5C98(7));
@@ -2346,19 +2346,19 @@ void func_L00_002B9AD8_r(Moby *m) {
     Hero *h;
 
     if ((((PadState *)D_0013CA40_2B5C98)->pressed & ((Hero *)D_0013F450_2B7430)->items[0].button_mask) &&
-        !((Hero *)D_0013F450_2B7430)->unk20AC) {
+        !((Hero *)D_0013F450_2B7430)->item_use_locked) {
         s->reach = 0.8f;
     }
     D_L00_0017AFBC_2B9AD8 = 0.9f;
     active = 0;
     ready = func_L00_00234718_2B9AD8(-1);
     if (D_00141E70_2B9AD8[0] == 0 && D_00141A18_2B9AD8[0] == 0 &&
-        ((Hero *)D_0013F450_2B7430)->unk20B5 >= 3) {
+        ((Hero *)D_0013F450_2B7430)->wrench_combo_step >= 3) {
         if ((unsigned int)((Hero *)D_0013F450_2B7430)->state.control_mode < 2 || ((Hero *)D_0013F450_2B7430)->state.control_mode == 9)
             func_L00_00203F20_2B9AD8(0x4E30, 0x81);
     }
     if ((((PadState *)D_0013CA40_2B5C98)->held & ((Hero *)D_0013F450_2B7430)->items[0].button_mask) && m->state != 4 &&
-        m->state != 0 && !((Hero *)D_0013F450_2B7430)->unk20AC && ((Hero *)D_0013F450_2B7430)->state.current != 0x72) {
+        m->state != 0 && !((Hero *)D_0013F450_2B7430)->item_use_locked && ((Hero *)D_0013F450_2B7430)->state.current != 0x72) {
         if (s->timer == 0) {
             if (ready > 0) {
                 if (func_001F9938_2B9AD8(&s->tick)) {
@@ -2504,7 +2504,7 @@ void func_L00_002B9AD8_r(Moby *m) {
             func_L00_0020EB60_2B9AD8();
             m->state = 3;
         }
-        if ((((PadState *)D_0013CA40_2B5C98)->pressed & (h = (Hero *)D_0013F450_2B7430)->items[0].button_mask) && !h->unk20AC) {
+        if ((((PadState *)D_0013CA40_2B5C98)->pressed & (h = (Hero *)D_0013F450_2B7430)->items[0].button_mask) && !h->item_use_locked) {
             if (active) {
                 Stats_2B9AD8 *st = (Stats_2B9AD8 *)(D_0014171B_2B33E8 + 0x65);
                 if (st->uses < 65535) st->uses++;
@@ -2528,7 +2528,7 @@ void func_L00_002B9AD8_r(Moby *m) {
         break;
     case 3:
         if ((((PadState *)D_0013CA40_2B5C98)->released & ((Hero *)D_0013F450_2B7430)->items[0].button_mask) || !active ||
-            ((Hero *)D_0013F450_2B7430)->unk20AC) {
+            ((Hero *)D_0013F450_2B7430)->item_use_locked) {
             h = (Hero *)D_0013F450_2B7430;
             if (func_001F9850_2B9AD8(70) < h->unk1BC) {
                 if (((Stats2_2B9AD8 *)(D_0014171B_2B33E8 + 0x22D))->uses < 65535) ((Stats2_2B9AD8 *)(D_0014171B_2B33E8 + 0x22D))->uses++;
@@ -2537,9 +2537,9 @@ void func_L00_002B9AD8_r(Moby *m) {
                 ((Stats2_2B9AD8 *)(D_0014171B_2B33E8 + 0x22D))->longest = func_001F9850_2B9AD8(D_0015EFA4_2B33E8) / 600;
             ((Stats2_2B9AD8 *)(D_0014171B_2B33E8 + 0x22D))->levels = (((Stats2_2B9AD8 *)(D_0014171B_2B33E8 + 0x22D))->levels | (1 << D_0015EE84_2B33E8)) | 0x80000000;
             if (((Hero *)D_0013F450_2B7430)->unk1BC < func_001F9850_2B9AD8(30))
-                ((Hero *)D_0013F450_2B7430)->unk20B5++;
+                ((Hero *)D_0013F450_2B7430)->wrench_combo_step++;
             else
-                ((Hero *)D_0013F450_2B7430)->unk20B5 = 0;
+                ((Hero *)D_0013F450_2B7430)->wrench_combo_step = 0;
             s->target = 0;
             s->target2 = 0;
             s->lock = 0;

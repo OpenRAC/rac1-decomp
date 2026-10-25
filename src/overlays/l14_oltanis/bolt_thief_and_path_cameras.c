@@ -1551,8 +1551,8 @@ void update_flying_car(Moby *m) {
                 func_001F9BD8_308368(&o->pos, &o->pos, &vec);
                 func_001F9C30_308368(&vec, &m->rot_row2, d->fAC);
                 func_001F9BD8_308368(&o->pos, &o->pos, &vec);
-                if ((((Hero *)(D_0013E633_3071B0 + 0xE1D))->state.control_mode == 13 && ((Hero *)(D_0013E633_3071B0 + 0xE1D))->unk964 == o)
-                    || (((Hero *)(D_0013E633_3071B0 + 0xE1D))->state.control_mode == 14 && ((Hero *)(D_0013E633_3071B0 + 0xE1D))->unk994 == o)) {
+                if ((((Hero *)(D_0013E633_3071B0 + 0xE1D))->state.control_mode == 13 && ((Hero *)(D_0013E633_3071B0 + 0xE1D))->grapple_target == o)
+                    || (((Hero *)(D_0013E633_3071B0 + 0xE1D))->state.control_mode == 14 && ((Hero *)(D_0013E633_3071B0 + 0xE1D))->swing_target_moby == o)) {
                     func_L14_00314A40_308368(m);
                     d->fCC = func_001F9850_308368(0x1E);
                 } else {
@@ -1734,9 +1734,9 @@ int update_flying_car_path_motion(struct Moby *moby) {
         return 0;
     }
     if (((unsigned)(D_0013F450_08AA8.state.current - 0x25) < 2 && *(int *)(d + 0xA0) >= 0 &&
-         D_0013F450_08AA8.unk964 == (struct Moby *)((*(char * *)&D_L14_00160098_08AA8) + *(int *)(d + 0xA0) * 256)) ||
+         D_0013F450_08AA8.grapple_target == (struct Moby *)((*(char * *)&D_L14_00160098_08AA8) + *(int *)(d + 0xA0) * 256)) ||
         (D_0013F450_08AA8.state.control_mode == 0xE && *(int *)(d + 0xA0) >= 0 &&
-         D_0013F450_08AA8.unk994 == (struct Moby *)((*(char * *)&D_L14_00160098_08AA8) + *(int *)(d + 0xA0) * 256))) {
+         D_0013F450_08AA8.swing_target_moby == (struct Moby *)((*(char * *)&D_L14_00160098_08AA8) + *(int *)(d + 0xA0) * 256))) {
         float lim;
         float s;
         s = *(float *)(d + 0xB4) + *(float *)(d + 0xB8) * g_frame_scale_sq;
@@ -2118,13 +2118,13 @@ void update_path_camera(struct UpdateCam *cam) {
         path_camera_active = 0;
         mb = oltanis_mobys;
         reset_racer_group_to_hero_path_position((struct Moby *)(mb + *(int *)(rec + 0x50) * 256));
-        hp = (char *)g_hero.unk560;
-        seg = g_hero.unk564;
-        tt = g_hero.unk568;
+        hp = (char *)g_hero.rail_spline;
+        seg = g_hero.rail_segment;
+        tt = g_hero.rail_seg_frac;
         func_L00_0025E860_16718(hp, &cam->pos.x, &seg, &tt, 0, 10.0f);
         cam->pos.z += 2.0f;
-        seg = g_hero.unk564;
-        tt = g_hero.unk568;
+        seg = g_hero.rail_segment;
+        tt = g_hero.rail_seg_frac;
         func_L00_0025E860_16718(hp, u, &seg, &tt, 0, 0.0f);
         u[2] += 1.5f;
         FastVecSub(t, u, &cam->pos);

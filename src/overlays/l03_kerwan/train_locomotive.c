@@ -441,7 +441,7 @@ void metropolis_train_locomotive_update(Moby *moby) {
                 }
                 d->f108 = -1;
                 FadeToBlack(scale_ticks(0x10));
-                ((Hero *)(D_0013E633 + 0xE1D))->unk20B1 = 1;
+                ((Hero *)(D_0013E633 + 0xE1D))->fall_fade_pending = 1;
                 break;
             }
         } else {

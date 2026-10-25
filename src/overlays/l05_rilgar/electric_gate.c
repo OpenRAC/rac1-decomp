@@ -2440,7 +2440,7 @@ void PickupL05_Update(char *moby) {
     apply_moby_position_and_rotation_wobble(moby);
     if (((struct Moby *)moby)->state >= 3 && ((struct Moby *)moby)->state <= 5) {
         travel_hero = (struct Hero *)(D_0013E633 + 0xE1D);
-        travel_hero->unk1F2 = 2;
+        travel_hero->jump_lock_timer = 2;
         travel_hero->unk1F4 = 2;
         transform_moby_vector_table_to_world_space(moby);
         if (Sound_IsPlaying(moby, *(short *)(taxi_data + 0xB2)) == 0) {

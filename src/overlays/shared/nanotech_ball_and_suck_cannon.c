@@ -2136,8 +2136,8 @@ int CarriedMobyUpdate(Moby *self, char *q) {
                 self->collision = 0;
             }
             if (f20 < m->f98) {
-                ((Hero *)D_0013F450_2DDEA0)->unk207C--;
-                ((Hero *)D_0013F450_2DDEA0)->unk2078++;
+                ((Hero *)D_0013F450_2DDEA0)->suck_cannon_incoming--;
+                ((Hero *)D_0013F450_2DDEA0)->sucked_moby_count++;
                 func_L00_002DB6C8_2DDEA0(self, &fr.v[0]);
                 ((Hero *)D_0013F450_2DDEA0)->unk2050[m->idx]->flags &= 0xEFFF;
             } else {
@@ -2809,29 +2809,29 @@ void hydrodisplacer_update(Moby *m) {
         func_L00_002E17F0_2E0E50(m);
         return;
     }
-    if (((Hero *)(D_0013E633_2E0E50 + 0xE1D))->unk20B0 != 0) {
+    if (((Hero *)(D_0013E633_2E0E50 + 0xE1D))->hydro_tank_full != 0) {
         if (D_L00_0015F6A8_2E0E50 == 0 && !((unsigned int)(((Hero *)(D_0013E633_2E0E50 + 0xE1D))->state.current - 0x38) < 2)) {
             func_L00_002E1660_2E0E50(m);
         }
-        if (((Hero *)(D_0013E633_2E0E50 + 0xE1D))->unk20B0 != 0) {
+        if (((Hero *)(D_0013E633_2E0E50 + 0xE1D))->hydro_tank_full != 0) {
             float a = D_0015EE64_2DDEA0 * 0.02f;
             float b = D_0015EE64_2DDEA0 * 0.3f;
 
-            ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->unk18F0[0].unkA0 = 1;
-            ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->unk18F0[0].scale = 2.3f;
-            ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->unk18F0[0].accel = a;
-            ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->unk18F0[0].max_speed = b;
+            ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->item_eases[0].unkA0 = 1;
+            ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->item_eases[0].scale = 2.3f;
+            ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->item_eases[0].accel = a;
+            ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->item_eases[0].max_speed = b;
             if (!((unsigned int)(((Hero *)(D_0013E633_2E0E50 + 0xE1D))->state.current - 0x38) < 2)) {
                 float c = 1024.0f / m->scale * -0.2f;
 
-                ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->unk18F0[1].accel = a;
-                ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->unk18F0[1].max_speed = b;
-                ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->unk18F0[2].max_speed = b;
-                ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->unk18F0[1].unkA0 = 2;
-                ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->unk18F0[2].unkA0 = 3;
-                ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->unk18F0[2].accel = a;
-                ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->unk18F0[1].pos_target.f[1] = c;
-                ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->unk18F0[2].pos_target.f[1] = c;
+                ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->item_eases[1].accel = a;
+                ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->item_eases[1].max_speed = b;
+                ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->item_eases[2].max_speed = b;
+                ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->item_eases[1].unkA0 = 2;
+                ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->item_eases[2].unkA0 = 3;
+                ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->item_eases[2].accel = a;
+                ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->item_eases[1].pos_target.f[1] = c;
+                ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->item_eases[2].pos_target.f[1] = c;
             }
         }
     }
@@ -2861,7 +2861,7 @@ void hydrodisplacer_update(Moby *m) {
         }
         m->state = 3;
         func_L00_00222B80_2E0E50(0x38, 0);
-        if (((Hero *)(D_0013E633_2E0E50 + 0xE1D))->unk20B0 != 0) {
+        if (((Hero *)(D_0013E633_2E0E50 + 0xE1D))->hydro_tank_full != 0) {
             func_L00_00232C10_2E0E50(0x83, 0, func_001F9850_2E0E50(6));
         } else {
             func_L00_00232C10_2E0E50(0x46, 0, func_001F9850_2E0E50(6));
@@ -2875,18 +2875,18 @@ void hydrodisplacer_update(Moby *m) {
             func_L00_002E17F0_2E0E50(m);
             return;
         }
-        if (!(((Hero *)(D_0013E633_2E0E50 + 0xE1D))->unkA98 & 2)) {
+        if (!(((Hero *)(D_0013E633_2E0E50 + 0xE1D))->anim_flags & 2)) {
             break;
         }
         e = (void *)((Hero *)(D_0013E633_2E0E50 + 0xE1D))->ground_moby->pvars;
         q = D_L00_00160098_2E0E50 + ((*(int *)&e->pad_0) << 8);
         func_L00_00222B80_2E0E50(0x39, 0);
-        if (((Hero *)(D_0013E633_2E0E50 + 0xE1D))->unk20B0 != 0) {
+        if (((Hero *)(D_0013E633_2E0E50 + 0xE1D))->hydro_tank_full != 0) {
             func_L00_00232C10_2E0E50(0x84, 0, func_001F9850_2E0E50(6));
         } else {
             func_L00_00232C10_2E0E50(0x47, 0, func_001F9850_2E0E50(6));
         }
-        if (((Hero *)(D_0013E633_2E0E50 + 0xE1D))->unk20B0 == 0) {
+        if (((Hero *)(D_0013E633_2E0E50 + 0xE1D))->hydro_tank_full == 0) {
             func_0022ED80_2E0E50(0x14, 0, ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->moby);
         } else {
             func_0022ED80_2E0E50(0x15, 0, ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->moby);
@@ -2896,7 +2896,7 @@ void hydrodisplacer_update(Moby *m) {
             m->state = 4;
             d->f10 = 0.0f;
             func_L00_002EBF50_2E0E50(D_L00_00166EC0_2E0E50, D_L00_00166EC0_2E0E50 + 0x10, 1, 0, 0);
-            if (((Hero *)(D_0013E633_2E0E50 + 0xE1D))->unk20B0 != 0) {
+            if (((Hero *)(D_0013E633_2E0E50 + 0xE1D))->hydro_tank_full != 0) {
                 d->i8 = (*(int *)&e->pad_0[4]);
                 d->iC = (*(int *)&e->pad_0[8]);
             } else {
@@ -2907,12 +2907,12 @@ void hydrodisplacer_update(Moby *m) {
         }
         m->state = 5;
         d->i0 = func_001FA898_2E0E50(func_001F9878_2E0E50(D_L00_00161C84_2E0E50));
-        if (((Hero *)(D_0013E633_2E0E50 + 0xE1D))->unk20B0 == 0) {
+        if (((Hero *)(D_0013E633_2E0E50 + 0xE1D))->hydro_tank_full == 0) {
             ((Moby *)q)->command = 8;
-            ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->unk20B0 = 1;
+            ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->hydro_tank_full = 1;
         } else {
             ((Moby *)q)->command = 4;
-            ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->unk20B0 = 0;
+            ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->hydro_tank_full = 0;
         }
         break;
     }
@@ -2934,12 +2934,12 @@ void hydrodisplacer_update(Moby *m) {
             func_L00_002EBE88_2E0E50(D_L00_001601AC_2E0E50 + (d->i8 << 7) + 0x30);
             func_L00_002EBEE0_2E0E50(D_L00_001601AC_2E0E50 + (d->i8 << 7) + 0x70);
             D_L00_0015F504_2E0E50 = 1;
-            if (((Hero *)(D_0013E633_2E0E50 + 0xE1D))->unk20B0 == 0) {
+            if (((Hero *)(D_0013E633_2E0E50 + 0xE1D))->hydro_tank_full == 0) {
                 ((Moby *)q)->command = 8;
-                ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->unk20B0 = 1;
+                ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->hydro_tank_full = 1;
             } else {
                 ((Moby *)q)->command = 4;
-                ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->unk20B0 = 0;
+                ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->hydro_tank_full = 0;
             }
             break;
         }
@@ -2975,7 +2975,7 @@ void hydrodisplacer_update(Moby *m) {
             }
             m->state = 2;
             func_L00_00222B80_2E0E50(0x3A, 0);
-            if (((Hero *)(D_0013E633_2E0E50 + 0xE1D))->unk20B0 != 0) {
+            if (((Hero *)(D_0013E633_2E0E50 + 0xE1D))->hydro_tank_full != 0) {
                 func_L00_00232C10_2E0E50(0x48, 0, func_001F9850_2E0E50(6));
             } else {
                 func_L00_00232C10_2E0E50(0x85, 0, func_001F9850_2E0E50(6));

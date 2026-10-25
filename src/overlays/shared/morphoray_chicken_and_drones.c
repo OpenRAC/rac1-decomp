@@ -1785,7 +1785,7 @@ void ryno_update(Moby *m) {
     case 2:
         if (((Hero *)(D_0013E633_2CDAB8 + 0xE1D))->state.current == 1) hud_2CDAB8(0x1E, 1);
         if ((((PadState *)(D_0013A5E0_2CDAB8 + 0x2460))->pressed & ((Hero *)(D_0013E633_2CDAB8 + 0xE1D))->items[0].button_mask) == 0) return;
-        if (((Hero *)(D_0013E633_2CDAB8 + 0xE1D))->unk20AC != 0) return;
+        if (((Hero *)(D_0013E633_2CDAB8 + 0xE1D))->item_use_locked != 0) return;
         if (use_ammo_2CDAB8(-1, 1) == 0) return;
         {
             int per;
@@ -1814,7 +1814,7 @@ void ryno_update(Moby *m) {
             return;
         }
         if ((((PadState *)(D_0013A5E0_2CDAB8 + 0x2460))->pressed & ((Hero *)(D_0013E633_2CDAB8 + 0xE1D))->items[0].button_mask) == 0) return;
-        if (((Hero *)(D_0013E633_2CDAB8 + 0xE1D))->unk20AC != 0) return;
+        if (((Hero *)(D_0013E633_2CDAB8 + 0xE1D))->item_use_locked != 0) return;
         if (use_ammo_2CDAB8(-1, 1) == 0) return;
         {
             int per;
@@ -2972,7 +2972,7 @@ void crate_update(struct Moby *moby) {
         if (moby->oclass == 0x1F9 &&
             (D_0013F450_C9820.unk240 == (s32)moby || D_0013F450_C9820.coll_hit_moby == (u8 *)moby ||
              (D_0013F450_C9820.ground_moby == moby && D_0013F450_C9820.air_frames.s == 0) ||
-             D_0013F450_C9820.unk4F8 == (s32)moby || touched)) {
+             D_0013F450_C9820.ledge_moby == (s32)moby || touched)) {
             moby->command = 0;
             moby->state = 5;
             break;

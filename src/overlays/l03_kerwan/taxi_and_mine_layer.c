@@ -865,7 +865,7 @@ void update_rail_taxi(struct Moby *m) {
         break;
     case 5:
         if (is_hero_on_moby(m)) {
-            D_0013F450_CBBD0.unk1F2 = 4;
+            D_0013F450_CBBD0.jump_lock_timer = 4;
             D_0013F450_CBBD0.unk1F4 = 4;
         }
         if (func_L03_002D4CE0_D4560(m, v->back[m->command], &v->snd)) {
@@ -2137,7 +2137,7 @@ void update_rail_lift(struct Moby *m) {
         break;
     case 3:
         if (func_L01_00278FA8_DE088(m)) {
-            D_0013F450_CBBD0.unk1F2 = 4;
+            D_0013F450_CBBD0.jump_lock_timer = 4;
             D_0013F450_CBBD0.unk1F4 = 4;
         }
         if (func_L03_002D4CE0_DE088(m, d->path[m->command], &d->snd)) {

@@ -1367,15 +1367,15 @@ void giant_clank_pad_update(char *m) {
         enter_hero_vehicle_mode(2, 0x5A, (char *)other);
         if (g_current_level_index == 0xF) {
             StartCutscene(8);
-            *(u128_2EE458 *)D_0013F450_2EE458.unk1D00 = *(u128_2EE458 *)&D_0013F450_2EE458.motion.pos;
-            *(u128_2EE458 *)(D_0013F450_2EE458.unk1D00 + 0x10) = *(u128_2EE458 *)&D_0013F450_2EE458.motion.rot;
+            *(u128_2EE458 *)D_0013F450_2EE458.saved_pos_rot = *(u128_2EE458 *)&D_0013F450_2EE458.motion.pos;
+            *(u128_2EE458 *)(D_0013F450_2EE458.saved_pos_rot + 0x10) = *(u128_2EE458 *)&D_0013F450_2EE458.motion.rot;
             MusicRequestTrack(2, 4);
             return;
         }
         if (g_current_level_index == 0x12) {
             StartCutscene(6);
-            *(u128_2EE458 *)D_0013F450_2EE458.unk1D00 = *(u128_2EE458 *)&D_0013F450_2EE458.motion.pos;
-            *(u128_2EE458 *)(D_0013F450_2EE458.unk1D00 + 0x10) = *(u128_2EE458 *)&D_0013F450_2EE458.motion.rot;
+            *(u128_2EE458 *)D_0013F450_2EE458.saved_pos_rot = *(u128_2EE458 *)&D_0013F450_2EE458.motion.pos;
+            *(u128_2EE458 *)(D_0013F450_2EE458.saved_pos_rot + 0x10) = *(u128_2EE458 *)&D_0013F450_2EE458.motion.rot;
             m[0x20] = 3;
         }
         return;

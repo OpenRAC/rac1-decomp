@@ -148,9 +148,9 @@ void update_bolt_pickup(Moby *m)
         hit = 0;
         m->rot.z = func_001FA748_2B94B0(m->rot.z, d->fC);
         if (((Hero *)D_0013F450_2B94B0)->state.control_mode == 15) {
-            if (func_001F9D48_2B94B0(((Hero *)D_0013F450_2B94B0)->unk510.f, &m->pos) < 0.5f) hit = 1;
-            if (func_001F9D48_2B94B0(((Hero *)D_0013F450_2B94B0)->unk520.f, &m->pos) < 0.5f) hit = 1;
-            if (func_001F9D48_2B94B0(((Hero *)D_0013F450_2B94B0)->unk530.f, &m->pos) < 0.5f) hit = 1;
+            if (func_001F9D48_2B94B0(((Hero *)D_0013F450_2B94B0)->joint9_world_pos.f, &m->pos) < 0.5f) hit = 1;
+            if (func_001F9D48_2B94B0(((Hero *)D_0013F450_2B94B0)->joint14_world_pos.f, &m->pos) < 0.5f) hit = 1;
+            if (func_001F9D48_2B94B0(((Hero *)D_0013F450_2B94B0)->root_joint_pos.f, &m->pos) < 0.5f) hit = 1;
         } else if (func_001F9D48_2B94B0(&m->pos, ((Hero *)D_0013F450_2B94B0)->motion.pos.f) < ((Hero *)D_0013F450_2B94B0)->reach_distance) {
             if (func_001F9B88_2B94B0(m->pos.z - ((Hero *)D_0013F450_2B94B0)->motion.pos.f[2]) < ((Hero *)D_0013F450_2B94B0)->reach_height) hit = 1;
         }
@@ -1814,9 +1814,9 @@ void RoutePlatformUpdate(char *m) {
     }
     case 3: {
         Hero *q = (Hero *)(D_0013E633 + 0xE1D);
-        q->unk1F2 = 5;
+        q->jump_lock_timer = 5;
         q->unk1F4 = 5;
-        q->unk22DA = vars->stop.u;
+        q->path_constrain_pending = vars->stop.u;
         if (advance_shuttle_path_travel(m)) {
             select_shuttle_route_for_hero(m);
             moby->state = 2;

@@ -115,7 +115,7 @@ void gold_bolt_update(Moby *moby) {
             }
         }
         h = &hero_00309078;
-        if (h->unkA98 & 2) {
+        if (h->anim_flags & 2) {
             func_L00_00232C10_00309078(ticks_00309078(30), 0, 0);
         }
         if (moby->seq != 0 || !countdown_00309078(&vars->timer)) {

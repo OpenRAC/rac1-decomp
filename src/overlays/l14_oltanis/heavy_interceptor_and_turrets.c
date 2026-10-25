@@ -199,7 +199,7 @@ void KeyframePlatformUpdate(unsigned char *moby) {
         break;
     case PATH_MOVER_COMMAND_TRAVERSE_PATH:
         if (vars->silent == 0 && is_hero_on_moby(m)) {
-            hero.unk1F2 = 4;
+            hero.jump_lock_timer = 4;
             hero.unk1F4 = 4;
         }
         if (vars->wait != 0 ||
@@ -3647,11 +3647,11 @@ void update_ribbon_effect_moby(char *moby) {
     case MOBY_STATE_UPDATE:
         x = (struct Hero *)(D_0013E633 + 0xE1D);
         if (x->state.control_mode != 0xF ||
-            (x->unk560 !=
+            (x->rail_spline !=
                  *(int *)((*(int *)(data + 0x1F4) << 5) + race_paths + 0x10) &&
-             x->unk560 !=
+             x->rail_spline !=
                  *(int *)((*(int *)(data + 0x1F8) << 5) + race_paths + 0x10) &&
-             x->unk560 !=
+             x->rail_spline !=
                  *(int *)((*(int *)(data + 0x1FC) << 5) + race_paths + 0x10))) {
             if (16.0f < FastAbsF(x->motion.pos.f[0] - m->pos.x))
                 goto end;

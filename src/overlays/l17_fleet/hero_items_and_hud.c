@@ -169,18 +169,18 @@ void HeroL17_UpdateStateTransitions(void) {
         } else if (process_hero_equipped_item_input() == 0 && try_enter_hero_water_state() == 0 && try_transition_hero_water_state() == 0 && try_start_hero_weapon_fire_state() == 0) {
             if ((g_controller_state.pressed & 0x10) || (((int)g_controller_state.pressed_unmasked) & 0x10)) {
                 if (g_hero.items[0].unk1C != 2 && fleet_shown_help_message == 0
-                    && (g_hero.unk20AC == 0 || g_hero.vehicle_mode == 1 || g_hero.unk1B2 != 0)
-                    && (g_hero.unk20A7 == 0 || g_hero.vehicle_mode == 1 || g_hero.unk1B2 != 0)) {
+                    && (g_hero.item_use_locked == 0 || g_hero.vehicle_mode == 1 || g_hero.unk1B2 != 0)
+                    && (g_hero.item_select_blocked == 0 || g_hero.vehicle_mode == 1 || g_hero.unk1B2 != 0)) {
                     switch (g_hero.vehicle_mode) {
                     case 0:
                     case 3:
                         {
                             int id;
 
-                            if (g_hero.unk22D6 != 0) {
-                                g_hero.unk22D2 = scale_ticks(0x1B);
+                            if (g_hero.quick_swap_tap_window != 0) {
+                                g_hero.item_selector_timer = scale_ticks(0x1B);
                             } else {
-                                g_hero.unk22D2 = scale_ticks(0xF);
+                                g_hero.item_selector_timer = scale_ticks(0xF);
                             }
                             queue_animation_update(3, 0, (int)initialize_eight_slot_hud_selector, (int)update_hud_item_selector_selection_and_visibility, (int)draw_hud_item_selector_panel, 0, 0);
                             id = func_L00_00235790_r();
@@ -195,14 +195,14 @@ void HeroL17_UpdateStateTransitions(void) {
                     }
                 }
             }
-            FastDecTimer(&g_hero.unk22D4);
-            FastDecTimer(&g_hero.unk22D6);
+            FastDecTimer(&g_hero.quick_swap_tap_timer);
+            FastDecTimer(&g_hero.quick_swap_tap_window);
             if (g_controller_state.pressed & 0x10) {
-                g_hero.unk22D4 = scale_ticks(0x14);
+                g_hero.quick_swap_tap_timer = scale_ticks(0x14);
             }
-            if ((g_hero.unk22D4 != 0 || g_hero.unk22D6 != 0) && (g_controller_state.raw_released & 0x10)) {
-                if (g_hero.unk22D6 == 0) {
-                    g_hero.unk22D6 = scale_ticks(0x14);
+            if ((g_hero.quick_swap_tap_timer != 0 || g_hero.quick_swap_tap_window != 0) && (g_controller_state.raw_released & 0x10)) {
+                if (g_hero.quick_swap_tap_window == 0) {
+                    g_hero.quick_swap_tap_window = scale_ticks(0x14);
                 } else {
                     int next = quick_swap_item;
                     if (g_hero.items[0].item_id == 8) {
@@ -217,8 +217,8 @@ void HeroL17_UpdateStateTransitions(void) {
                         }
                         usage_stats.fFC = usage_stats.fFC | (1 << D_0015EE84_m) | 0x80000000;
                         g_hero.pending_item[0] = next;
-                        g_hero.unk22D4 = 0;
-                        g_hero.unk22D6 = 0;
+                        g_hero.quick_swap_tap_timer = 0;
+                        g_hero.quick_swap_tap_window = 0;
                     }
                 }
             }
@@ -250,7 +250,7 @@ void HeroL17_UpdateStateTransitions(void) {
                             }
                             flag = 0;
                         }
-                        if (g_hero.unk12E2 != 0) {
+                        if (g_hero.on_ice_ground != 0) {
                             flag = 0;
                         }
                         if (g_hero.items[3].state == 2) {
@@ -278,7 +278,7 @@ void HeroL17_UpdateStateTransitions(void) {
                             if (pick_idle_fidget(&sp20)) {
                                 Rec70 *rec;
 
-                                g_hero.unk2270 = sp20;
+                                g_hero.fidget_index = sp20;
                                 rec = &fleet_idle_fidgets[sp20];
                                 g_hero.fidget_cooldown = scale_ticks(0x78);
                                 rec->f60 = multiply_global_factor(rec->f5C) * 60.0f;
@@ -288,15 +288,15 @@ void HeroL17_UpdateStateTransitions(void) {
                                     set_hero_animation(rec->f48, 0, scale_ticks(0xC));
                                 }
                             }
-                        } else if (g_hero.unkA98 & 2) {
+                        } else if (g_hero.anim_flags & 2) {
                             int keep = 0;
-                            if (g_hero.unk20A8 != 0 && g_hero.unk20AA != 0) {
-                                if (((unsigned char *)g_hero.moby)[0x53] == g_hero.unk2294 || ((int)g_hero.unkD08[0]) != 0) {
+                            if (g_hero.item_anim_active != 0 && g_hero.unk20AA != 0) {
+                                if (((unsigned char *)g_hero.moby)[0x53] == g_hero.item_hold_anim || ((int)g_hero.held_item_anim_blend[0]) != 0) {
                                     keep = 1;
                                 }
                             }
                             if (!keep) {
-                                g_hero.unk20A8 = 0;
+                                g_hero.item_anim_active = 0;
                                 if (select_hero_help_value(0) == 0x54) {
                                     set_hero_animation(select_hero_help_value(0), 0, scale_ticks(0x12));
                                 } else {
@@ -307,26 +307,26 @@ void HeroL17_UpdateStateTransitions(void) {
                     }
                     if (scale_ticks(0xA) < g_hero.state_timer) {
                         if (((unsigned char *)g_hero.items[3].moby2) != 0 && ((unsigned char *)g_hero.items[3].moby2)[0x53] == 1) {
-                            if (func_001F9908_r(&g_hero.unk22C4)) {
+                            if (func_001F9908_r(&g_hero.slot3_anim_timer)) {
                                 if (0.55850536f > fleet_lean_state.f258 && fleet_lean_state.f254 < 0.34906584f && g_hero.items[3].state == 2) {
-                                    g_hero.unk22C4 = rand_range(scale_ticks(0x6E), scale_ticks(0x10E));
+                                    g_hero.slot3_anim_timer = rand_range(scale_ticks(0x6E), scale_ticks(0x10E));
                                     blend_hero_slot3_animation_pair();
                                 }
                             }
                         }
                     }
-                    if (g_hero.unk20A8 != 0 && g_hero.unkA9C == 0 && g_hero.unk20AA != 0 && g_hero.unk22C8 == 0) {
+                    if (g_hero.item_anim_active != 0 && g_hero.anim_changing == 0 && g_hero.unk20AA != 0 && g_hero.unk22C8 == 0) {
                         int id = hero_slot_item_id(0);
-                        if (id != g_hero.unk2298) {
+                        if (id != g_hero.item_anim_item_id) {
                             cancel_hero_item_animation();
                         } else {
                             int anim = fleet_item_defs[id].f24;
                             if (((unsigned char *)g_hero.moby)[0x53] != anim) {
-                                if (((int)g_hero.unkD08[0]) != 0) {
+                                if (((int)g_hero.held_item_anim_blend[0]) != 0) {
                                     g_hero.unkD14 = 1;
                                 }
-                                g_hero.unk2294 = anim;
-                                set_hero_animation(g_hero.unk2294, 0, scale_ticks(0xB));
+                                g_hero.item_hold_anim = anim;
+                                set_hero_animation(g_hero.item_hold_anim, 0, scale_ticks(0xB));
                             }
                         }
                     }
@@ -348,7 +348,7 @@ void HeroL17_UpdateStateTransitions(void) {
                             break;
                         }
                     }
-                    if (g_hero.unk1C4 != 0) {
+                    if (g_hero.move_lock_timer != 0) {
                         break;
                     }
                     {
@@ -361,7 +361,7 @@ void HeroL17_UpdateStateTransitions(void) {
                         if (ok) {
                             if (g_hero.unk308 != 1) {
                                 int t = scale_ticks(7);
-                                if (g_hero.unk1D4 != 0) {
+                                if (g_hero.jump_buffer_lockout != 0) {
                                     t = 1;
                                 }
                                 if (try_start_hero_jump(t, 0)) {
@@ -386,7 +386,7 @@ void HeroL17_UpdateStateTransitions(void) {
                         HeroL17_SetMoveState(0x28, 1);
                         break;
                     }
-                    if (g_hero.unk12E2 != 0 && g_hero.ground_slope.f > 0.08726646f) {
+                    if (g_hero.on_ice_ground != 0 && g_hero.ground_slope.f > 0.08726646f) {
                         HeroL17_SetMoveState(0x2F, 1);
                         break;
                     }
@@ -400,9 +400,9 @@ void HeroL17_UpdateStateTransitions(void) {
                                 }
                             }
                         }
-                        if (ok && 0.22f < g_hero.unk229C) {
+                        if (ok && 0.22f < g_hero.stick_magnitude) {
                             if (D_0015EE84_m == 0xC) {
-                                int slot = g_hero.unk12ED;
+                                int slot = g_hero.ground_sound_class;
                                 emit_hero_animation_voice_and_ground_particle(slot, 0, 0);
                                 emit_hero_animation_voice_and_ground_particle(slot, 1, 0);
                             }
@@ -432,7 +432,7 @@ void HeroL17_UpdateStateTransitions(void) {
                         HeroL17_SetMoveState(0x41, 1);
                         break;
                     }
-                    if (g_hero.unkA98 & 2) {
+                    if (g_hero.anim_flags & 2) {
                         remove_hero_cached_moby_and_clear_slot_three_moby_flags();
                         HeroL17_SetMoveState(0, 1);
                     }
@@ -466,7 +466,7 @@ void HeroL17_UpdateStateTransitions(void) {
                 case 106:
                 case 128:
                 case 130:
-                    if (g_hero.unkA98 & 2) {
+                    if (g_hero.anim_flags & 2) {
                         Hero_OnKilled();
                         return;
                     }
@@ -490,7 +490,7 @@ void HeroL17_UpdateStateTransitions(void) {
                     }
                     if (g_hero.state.current == 0x33) {
                         float lim = g_frame_time * 2.0f;
-                        if (!(g_controller_state.held & 0xC0) && g_hero.anim_frame > 9.0f && g_hero.anim_frame < 19.0f && g_hero.state.step != 1 && g_hero.unk229C < 0.1f && g_hero.ground_speed < lim) {
+                        if (!(g_controller_state.held & 0xC0) && g_hero.anim_frame > 9.0f && g_hero.anim_frame < 19.0f && g_hero.state.step != 1 && g_hero.stick_magnitude < 0.1f && g_hero.ground_speed < lim) {
                             HeroL17_SetMoveState(0x34, 1);
                             break;
                         }
@@ -500,21 +500,21 @@ void HeroL17_UpdateStateTransitions(void) {
                             HeroL17_SetMoveState(0x35, 1);
                             break;
                         }
-                    } else if (g_hero.state.current == 0x35 && g_hero.unk229C > 0.5f) {
+                    } else if (g_hero.state.current == 0x35 && g_hero.stick_magnitude > 0.5f) {
                         HeroL17_SetMoveState(0x33, 1);
                         break;
                     }
-                    if (g_hero.state.current == 0x35 && !(g_controller_state.held & 0xC0) && g_hero.state.step != 1 && g_hero.unk229C < 0.7f && !(g_controller_state.held & 0xA)) {
+                    if (g_hero.state.current == 0x35 && !(g_controller_state.held & 0xC0) && g_hero.state.step != 1 && g_hero.stick_magnitude < 0.7f && !(g_controller_state.held & 0xA)) {
                         HeroL17_SetMoveState(0x34, 1);
                     }
                     break;
                 case 52:
-                    if (g_hero.unkA98 & 2) {
+                    if (g_hero.anim_flags & 2) {
                         if (((unsigned char *)g_hero.moby)[0x53] != 0x3C) {
                             set_hero_animation(0x3C, 0, scale_ticks(0xB));
                         }
                     }
-                    if (0.2f < g_hero.unk229C || (g_controller_state.held & 0xC0) || (item_available[4] != 0 && (g_controller_state.held & 0xA))) {
+                    if (0.2f < g_hero.stick_magnitude || (g_controller_state.held & 0xC0) || (item_available[4] != 0 && (g_controller_state.held & 0xA))) {
                         if (item_available[4] != 0 && (g_controller_state.held & 0xA)) {
                             HeroL17_SetMoveState(0x35, 1);
                             break;
@@ -523,7 +523,7 @@ void HeroL17_UpdateStateTransitions(void) {
                     }
                     break;
                 case 55:
-                    if (g_hero.unk1D8 == 0) {
+                    if (g_hero.jump_lockout_timer == 0) {
                         if (pad_pressed_within(0x40, scale_ticks(8), 0)) {
                             if (scale_ticks(0xA) < g_hero.state_timer) {
                                 HeroL17_SetMoveState(0x12, 1);
@@ -531,7 +531,7 @@ void HeroL17_UpdateStateTransitions(void) {
                             }
                         }
                     }
-                    g_hero.unk20A7 = 1;
+                    g_hero.item_select_blocked = 1;
                     if (g_hero.unk1DE == 0) {
                         if (pad_pressed_within(0x80, scale_ticks(7), 0) || (item_available[4] != 0 && pad_pressed_within(0xA, scale_ticks(7), 0))) {
                             if (item_available[4] != 0 && (g_controller_state.held & 0xA)) {
@@ -542,19 +542,19 @@ void HeroL17_UpdateStateTransitions(void) {
                             break;
                         }
                     }
-                    if (g_hero.unk20A9 != 0 && g_hero.unk22A4 < 0.4f) {
+                    if (g_hero.wading != 0 && g_hero.water_depth < 0.4f) {
                         if (HeroL17_SetMoveState(0, 0)) {
                             set_hero_animation(select_hero_help_value(0), 0, scale_ticks(0x12));
                         }
                     }
-                    if (0.2f < g_hero.unk229C) {
+                    if (0.2f < g_hero.stick_magnitude) {
                         if (scale_ticks(0xA) < g_hero.state_timer) {
                             HeroL17_SetMoveState(0x36, 1);
                         }
                     }
                     break;
                 case 54:
-                    if (g_hero.unk1D8 == 0) {
+                    if (g_hero.jump_lockout_timer == 0) {
                         if (pad_pressed_within(0x40, scale_ticks(8), 0)) {
                             HeroL17_SetMoveState(0x12, 1);
                             break;
@@ -570,13 +570,13 @@ void HeroL17_UpdateStateTransitions(void) {
                             break;
                         }
                     }
-                    if (g_hero.unk20A9 != 0 && g_hero.unk22A4 < 0.7f) {
+                    if (g_hero.wading != 0 && g_hero.water_depth < 0.7f) {
                         HeroL17_SetMoveState(0x73, 0);
                         set_hero_animation(0x60, 0, scale_ticks(0x11));
                         g_hero.motion.velocity.f[2] = 0.0f;
                         g_hero.motion.displacement.f[2] = 0.0f;
                     }
-                    if (0.1f > g_hero.unk229C && g_hero.ground_speed == 0.0f && g_hero.unk698 == 0) {
+                    if (0.1f > g_hero.stick_magnitude && g_hero.ground_speed == 0.0f && g_hero.unk698 == 0) {
                         HeroL17_SetMoveState(0x37, 1);
                     }
                     break;
@@ -590,7 +590,7 @@ void HeroL17_UpdateStateTransitions(void) {
                         set_hero_animation(0x5F, 0x28, scale_ticks(0x12));
                         break;
                     }
-                    if (g_hero.unkA98 & 2) {
+                    if (g_hero.anim_flags & 2) {
                         HeroL17_SetMoveState(0x34, 1);
                         break;
                     }
@@ -615,7 +615,7 @@ void HeroL17_UpdateStateTransitions(void) {
                     }
                     break;
                 case 58:
-                    if (g_hero.unkA98 & 2) {
+                    if (g_hero.anim_flags & 2) {
                         HeroL17_SetMoveState(0, 1);
                     }
                     break;
@@ -703,9 +703,9 @@ void HeroL17_UpdateStateTransitions(void) {
                     if (g_hero.state.current == 0x14) {
                         int r = truncate_float_to_s32(predict_hero_trajectory_intercept_time(60.0f, g_frame_time_sq * 130.0f, -1.0f));
                         int n = 0x1A;
-                        if (g_hero.unkA70 == 0.0f) {
+                        if (g_hero.slam_descending == 0.0f) {
                             g_hero.anim_speed = 0.33f;
-                        } else if (g_hero.unkA70 != 0.0f && g_hero.air_frames.s != 0 && r != 0 && (float)n - g_hero.anim_frame > 1.0f) {
+                        } else if (g_hero.slam_descending != 0.0f && g_hero.air_frames.s != 0 && r != 0 && (float)n - g_hero.anim_frame > 1.0f) {
                             adjust_hero_animation_speed_for_target_frame(n, r, 0.5f, -1.0f);
                             if (g_hero.ground_distance < 0.7f && g_hero.anim_speed < 0.75f) {
                                 g_hero.anim_speed = 0.75f;
@@ -719,19 +719,19 @@ void HeroL17_UpdateStateTransitions(void) {
                     {
                         Rec2C *rec = &fleet_attack_records[g_hero.attack_record];
                         int t = (truncate_float_to_s32(g_hero.anim_frame) - rec->fC) * 2;
-                        if ((float)rec->f14 < g_hero.anim_frame && g_hero.unkA9C == 0 && !(g_hero.state.current == 0x15 && g_hero.unk308 != 0)) {
+                        if ((float)rec->f14 < g_hero.anim_frame && g_hero.anim_changing == 0 && !(g_hero.state.current == 0x15 && g_hero.unk308 != 0)) {
                             if (pad_pressed_within(0x40, t, 0)) {
                                 if (g_controller_state.held & 0xA) {
                                     if (hero_handle_jump_press()) {
                                         break;
                                     }
-                                } else if (g_hero.unk1F2 == 0) {
+                                } else if (g_hero.jump_lock_timer == 0) {
                                     HeroL17_SetMoveState(7, 1);
                                     break;
                                 }
                             }
                         }
-                        if (g_hero.unkA9C == 0 && (float)rec->f18 < g_hero.anim_frame) {
+                        if (g_hero.anim_changing == 0 && (float)rec->f18 < g_hero.anim_frame) {
                             HeroL17_SetMoveState(0, 0);
                             break;
                         }
@@ -741,15 +741,15 @@ void HeroL17_UpdateStateTransitions(void) {
                             HeroL17_SetMoveState(0, 1);
                             break;
                         }
-                        if (scale_ticks(0x64) < g_hero.state_timer && g_hero.unkAB4 < 0x1A) {
+                        if (scale_ticks(0x64) < g_hero.state_timer && g_hero.queued_anim_frame < 0x1A) {
                             Hero_SetAttackTicks(2);
-                            g_hero.unkAB4 = 0x1A;
+                            g_hero.queued_anim_frame = 0x1A;
                         }
                     }
                     break;
                 case 33:
                 case 122:
-                    if (g_hero.unkA98 & 2) {
+                    if (g_hero.anim_flags & 2) {
                         HeroL17_SetMoveState(0, 1);
                     }
                     break;
@@ -757,14 +757,14 @@ void HeroL17_UpdateStateTransitions(void) {
                 case 47:
                 case 115:
                 case 126:
-                    if (g_hero.unk3BC != 0 && (*(float *)(moby + 0x54) > 0.9f || moby[0x52] != 0xFF)) {
-                        g_hero.unk3BC = 0;
+                    if (g_hero.run_start_blending != 0 && (*(float *)(moby + 0x54) > 0.9f || moby[0x52] != 0xFF)) {
+                        g_hero.run_start_blending = 0;
                     }
                     if (g_hero.on_slip_ground != 0 && g_hero.frames_off_ground.s == 0) {
                         HeroL17_SetMoveState(0x79, 1);
                         break;
                     }
-                    if (!(g_hero.air_frames.s < scale_ticks(5)) && !(g_hero.state.prev_control_mode == 0x12 && g_hero.unk20A9 != 0) && g_hero.ground_distance > 1.35f) {
+                    if (!(g_hero.air_frames.s < scale_ticks(5)) && !(g_hero.state.prev_control_mode == 0x12 && g_hero.wading != 0) && g_hero.ground_distance > 1.35f) {
                         if (check_hero_forward_collision_height() == 0) {
                             HeroL17_SetMoveState(6, 1);
                             break;
@@ -772,11 +772,11 @@ void HeroL17_UpdateStateTransitions(void) {
                     }
                     {
                         int t = scale_ticks(9);
-                        if (g_hero.unk1D4 != 0) {
+                        if (g_hero.jump_buffer_lockout != 0) {
                             t = 1;
                         }
                         if (pad_pressed_within(0x40, t, 0)) {
-                            if (!(g_hero.air_frames.s > scale_ticks(4)) || g_hero.unk1E2 != 0) {
+                            if (!(g_hero.air_frames.s > scale_ticks(4)) || g_hero.still_frames != 0) {
                                 stick_target(0, 1.0f);
                                 if (try_start_hero_jump(t, 1)) {
                                     break;
@@ -797,7 +797,7 @@ void HeroL17_UpdateStateTransitions(void) {
                     if (g_hero.air_frames.s != 0) {
                         break;
                     }
-                    if (g_hero.unk12E2 == 0 || (g_frame_time * 2.0f > g_hero.motion.unk164 && g_hero.ground_slope.f < 0.08726646f)) {
+                    if (g_hero.on_ice_ground == 0 || (g_frame_time * 2.0f > g_hero.motion.unk164 && g_hero.ground_slope.f < 0.08726646f)) {
                         if (g_controller_state.held & 5) {
                             HeroL17_SetMoveState(1, 1);
                             break;
@@ -807,33 +807,33 @@ void HeroL17_UpdateStateTransitions(void) {
                         HeroL17_SetMoveState(4, 1);
                         break;
                     }
-                    if (g_hero.unk12E2 != 0 && g_hero.state.current == 0x2F) {
+                    if (g_hero.on_ice_ground != 0 && g_hero.state.current == 0x2F) {
                         float len = vec_length_xy(g_hero.motion.displacement.f);
-                        if (g_hero.unk229C < 0.17f
+                        if (g_hero.stick_magnitude < 0.17f
                             && (((unsigned char *)g_hero.moby)[0x53] == 0x37 || (((unsigned char *)g_hero.moby)[0x53] == select_hero_help_value(0) && g_hero.ground_slope.f > 0.08726646f))
-                            && scale_ticks(8) < g_hero.unk1AC && g_hero.unkA9C == 0) {
+                            && scale_ticks(8) < g_hero.unk1AC && g_hero.anim_changing == 0) {
                             set_hero_animation(0x6D, 0, scale_ticks(0xE));
-                        } else if (0.3f < g_hero.unk229C && ((unsigned char *)g_hero.moby)[0x53] != 0x37 && g_hero.unkA9C == 0) {
+                        } else if (0.3f < g_hero.stick_magnitude && ((unsigned char *)g_hero.moby)[0x53] != 0x37 && g_hero.anim_changing == 0) {
                             set_hero_animation(0x37, 0, scale_ticks(0xE));
-                        } else if (((unsigned char *)g_hero.moby)[0x53] == 0x6D && g_hero.unkA9C == 0 && g_hero.unk229C < 0.17f && g_hero.ground_slope.f < 0.08726646f && len < g_frame_time * 1.7f) {
+                        } else if (((unsigned char *)g_hero.moby)[0x53] == 0x6D && g_hero.anim_changing == 0 && g_hero.stick_magnitude < 0.17f && g_hero.ground_slope.f < 0.08726646f && len < g_frame_time * 1.7f) {
                             set_hero_animation(select_hero_help_value(0), 0, scale_ticks(0x14));
                         }
                     }
                     if (g_hero.state.current == 2 || g_hero.state.current == 0x7E) {
-                        if (g_hero.unk12E2 != 0) {
+                        if (g_hero.on_ice_ground != 0) {
                             HeroL17_SetMoveState(0x2F, 1);
                         }
                     } else if (g_hero.state.current == 0x2F) {
-                        if (g_hero.unk12E2 == 0) {
+                        if (g_hero.on_ice_ground == 0) {
                             HeroL17_SetMoveState(2, 1);
                         }
                     }
                     if (g_hero.state.current == 2) {
-                        if (g_hero.unk20A9 != 0) {
+                        if (g_hero.wading != 0) {
                             HeroL17_SetMoveState(0x73, 1);
                         }
                     } else if (g_hero.state.current == 0x73) {
-                        if (g_hero.unk20A9 == 0) {
+                        if (g_hero.wading == 0) {
                             HeroL17_SetMoveState(2, 1);
                         }
                     }
@@ -850,7 +850,7 @@ void HeroL17_UpdateStateTransitions(void) {
                         }
                     }
                     if (g_hero.state.current == 2) {
-                        if (g_hero.unk229C < 0.17f) {
+                        if (g_hero.stick_magnitude < 0.17f) {
                             if (g_frame_time * 2.7f < g_hero.motion.speed_xy && g_hero.unk20AA == 0) {
                                 if (g_hero.motion.speed_xy < g_frame_time * 4.4f || read_pad_float_history(4) < 0.8f) {
                                     if (HeroL17_SetMoveState(3, 0) == 0) {
@@ -927,9 +927,9 @@ void HeroL17_UpdateStateTransitions(void) {
                     }
                     break;
                 case 101:
-                    if (vec_distance_xy(g_hero.motion.pos.f, g_hero.unk1640.f) < 0.2f) {
+                    if (vec_distance_xy(g_hero.motion.pos.f, g_hero.target_pose.f) < 0.2f) {
                         if (g_frame_time * 2.7f > g_hero.motion.speed_xy) {
-                            if (FastDiffRots(g_hero.motion.rot.f[2], g_hero.unk1640.f[3]) < 0.034906585f) {
+                            if (FastDiffRots(g_hero.motion.rot.f[2], g_hero.target_pose.f[3]) < 0.034906585f) {
                                 HeroL17_SetMoveState(0x67, 1);
                                 break;
                             }
@@ -942,45 +942,45 @@ void HeroL17_UpdateStateTransitions(void) {
                     update_hero_animation_for_movement_speed();
                     break;
                 case 102:
-                    if (g_hero.unkA98 & 2) {
+                    if (g_hero.anim_flags & 2) {
                         HeroL17_SetMoveState(0x65, 1);
                     }
                     break;
                 case 103:
-                    if ((g_hero.unkA98 & 2) || g_hero.unk1650 != 0) {
+                    if ((g_hero.anim_flags & 2) || g_hero.unk1650 != 0) {
                         HeroL17_SetMoveState(0, 1);
                     }
-                    if (0.2f < vec_distance_xy(g_hero.motion.pos.f, g_hero.unk1640.f)) {
+                    if (0.2f < vec_distance_xy(g_hero.motion.pos.f, g_hero.target_pose.f)) {
                         HeroL17_SetMoveState(0x65, 1);
                     }
                     break;
                 case 104:
-                    if (g_hero.unk1660 < 2) {
-                        if (scale_ticks(0xF) + g_hero.unk1660 * scale_ticks(0x19) < g_hero.state_timer) {
+                    if (g_hero.sink_jump_count < 2) {
+                        if (scale_ticks(0xF) + g_hero.sink_jump_count * scale_ticks(0x19) < g_hero.state_timer) {
                             if (pad_pressed_within(0x40, scale_ticks(7), &sp24)) {
                                 HeroL17_SetMoveState(0x69, 1);
                             }
                         }
                     }
-                    if (g_hero.unk2F4 - 1.2f > g_hero.motion.pos.f[2] || g_hero.state_timer > scale_ticks(0xAA)) {
+                    if (g_hero.sink_surface_z - 1.2f > g_hero.motion.pos.f[2] || g_hero.state_timer > scale_ticks(0xAA)) {
                         Hero_OnKilled();
                         return;
                     }
                     break;
                 case 123:
-                    if (g_hero.unk2F4 - 1.2f > g_hero.motion.pos.f[2] || g_hero.state_timer > scale_ticks(0x96)) {
+                    if (g_hero.sink_surface_z - 1.2f > g_hero.motion.pos.f[2] || g_hero.state_timer > scale_ticks(0x96)) {
                         Hero_OnKilled();
                         return;
                     }
                     break;
                 case 124:
-                    if (g_hero.unk2F4 - 1.2f > g_hero.motion.pos.f[2] || g_hero.state_timer > scale_ticks(0x64)) {
+                    if (g_hero.sink_surface_z - 1.2f > g_hero.motion.pos.f[2] || g_hero.state_timer > scale_ticks(0x64)) {
                         Hero_OnKilled();
                         return;
                     }
                     break;
                 case 125:
-                    if (g_hero.unk2F4 - 0.8f > g_hero.motion.pos.f[2] || g_hero.state_timer > scale_ticks(0x96)) {
+                    if (g_hero.sink_surface_z - 0.8f > g_hero.motion.pos.f[2] || g_hero.state_timer > scale_ticks(0x96)) {
                         Hero_OnKilled();
                         return;
                     }
@@ -1006,7 +1006,7 @@ void HeroL17_UpdateStateTransitions(void) {
                     if (FastAbsF(g_hero.motion.rot.f[1]) > 0.7853982f || FastAbsF(g_hero.motion.rot.f[0]) > 0.7853982f) {
                         g_hero.unk1B0 = scale_ticks(0x28);
                     }
-                    if (g_hero.grounded_frames != 0 && g_hero.unk12E7 == 0 && FastAbsF(g_hero.motion.rot.f[1]) < 0.7853982f && FastAbsF(g_hero.motion.rot.f[0]) < 0.7853982f) {
+                    if (g_hero.grounded_frames != 0 && g_hero.on_magnet_ground == 0 && FastAbsF(g_hero.motion.rot.f[1]) < 0.7853982f && FastAbsF(g_hero.motion.rot.f[0]) < 0.7853982f) {
                         HeroL17_SetMoveState(2, 1);
                         break;
                     }
@@ -1031,19 +1031,19 @@ void HeroL17_UpdateStateTransitions(void) {
                     }
                     break;
                 case 49:
-                    if (g_hero.unk12E3 != 0) {
+                    if (g_hero.selector_4 != 0) {
                         break;
                     }
                     if (g_hero.unk1E0 != 0) {
                         break;
                     }
-                    if (g_hero.unk2220 != -1) {
-                        Row13E650 *e = (Row13E650 *)(voice_pool + g_hero.unk2220 * 0x70);
+                    if (g_hero.voice_slot2 != -1) {
+                        Row13E650 *e = (Row13E650 *)(voice_pool + g_hero.voice_slot2 * 0x70);
                         if (e->f88 == ((unsigned char *)g_hero.moby) && e->f74 != 0) {
-                            Sound_StopSlot(g_hero.unk2220);
+                            Sound_StopSlot(g_hero.voice_slot2);
                         }
                     }
-                    g_hero.unk2220 = -1;
+                    g_hero.voice_slot2 = -1;
                     if (HeroL17_SetMoveState(0, 0) == 0) {
                         break;
                     }
@@ -1055,7 +1055,7 @@ void HeroL17_UpdateStateTransitions(void) {
                         HeroL17_SetMoveState(1, 1);
                         break;
                     }
-                    if (g_hero.unk1C4 == 0) {
+                    if (g_hero.move_lock_timer == 0) {
                         if (g_controller_state.pressed & 0x40) {
                             HeroL17_SetMoveState(7, 1);
                             break;
@@ -1069,7 +1069,7 @@ void HeroL17_UpdateStateTransitions(void) {
                         HeroL17_SetMoveState(6, 1);
                         break;
                     }
-                    if (g_hero.unkA98 & 2) {
+                    if (g_hero.anim_flags & 2) {
                         HeroL17_SetMoveState(0, 1);
                         break;
                     }
@@ -1077,7 +1077,7 @@ void HeroL17_UpdateStateTransitions(void) {
                         HeroL17_SetMoveState(0x28, 1);
                         break;
                     }
-                    if (!(g_hero.unk229C > 0.2f)) {
+                    if (!(g_hero.stick_magnitude > 0.2f)) {
                         break;
                     }
                     if (select_hero_help_value(0) != 0x54) {
@@ -1090,7 +1090,7 @@ void HeroL17_UpdateStateTransitions(void) {
                             set_hero_animation(select_hero_help_value(0), 0, scale_ticks(0x11));
                         }
                     }
-                    if (0.5f < g_hero.unk229C) {
+                    if (0.5f < g_hero.stick_magnitude) {
                         HeroL17_SetMoveState(2, 1);
                     }
                     break;
@@ -1138,26 +1138,26 @@ void HeroL17_UpdateStateTransitions(void) {
                     }
                     break;
                 case 37:
-                    adjust_hero_animation_speed_for_target_frame(10.0f, g_hero.unk96C, 0.5f, -1.0f);
-                    if ((float)scale_ticks(0x16) > g_hero.unk96C && (float)scale_ticks(0x1E) > g_hero.unk96C) {
+                    adjust_hero_animation_speed_for_target_frame(10.0f, g_hero.target_arrival_frames, 0.5f, -1.0f);
+                    if ((float)scale_ticks(0x16) > g_hero.target_arrival_frames && (float)scale_ticks(0x1E) > g_hero.target_arrival_frames) {
                         set_hero_animation(0xA, 0, scale_ticks(0x10));
                     }
                     {
                         int go = 0;
                         if (!(g_controller_state.held & g_hero.items[0].button_mask)) {
-                            if ((float)scale_ticks(0x19) < g_hero.unk96C) {
+                            if ((float)scale_ticks(0x19) < g_hero.target_arrival_frames) {
                                 g_hero.unk988 = 1;
                             }
                             go = 1;
                         }
-                        if (g_hero.state.step == 1 && g_frame_time * 4.0f > g_hero.unk960) {
+                        if (g_hero.state.step == 1 && g_frame_time * 4.0f > g_hero.grapple_pull_speed) {
                             go = 1;
                         }
                         if (!go) {
                             break;
                         }
                     }
-                    g_hero.ground_speed = g_hero.unk960;
+                    g_hero.ground_speed = g_hero.grapple_pull_speed;
                     if (g_frame_time * 7.0f < g_hero.ground_speed) {
                         g_hero.ground_speed = g_frame_time * 7.0f;
                     }
@@ -1173,14 +1173,14 @@ void HeroL17_UpdateStateTransitions(void) {
                         set_hero_animation(0xA, 0, scale_ticks(0x11));
                     }
                     g_hero.unk2284 = 0;
-                    g_hero.unk944 = g_frame_time_sq * 42.0f;
-                    g_hero.unk940 = g_frame_time_sq * 29.0f;
+                    g_hero.stickless_decel = g_frame_time_sq * 42.0f;
+                    g_hero.fall_state_gravity = g_frame_time_sq * 29.0f;
                     break;
                 case 38:
                     if (g_controller_state.held & g_hero.items[0].button_mask) {
                         break;
                     }
-                    g_hero.ground_speed = g_hero.unk960;
+                    g_hero.ground_speed = g_hero.grapple_pull_speed;
                     if (g_frame_time * 7.0f < g_hero.ground_speed) {
                         g_hero.ground_speed = g_frame_time * 7.0f;
                     }
@@ -1200,8 +1200,8 @@ void HeroL17_UpdateStateTransitions(void) {
                             g_hero.unk988 = 1;
                         }
                         HeroL17_SetMoveState(0x2D, 1);
-                        g_hero.unk944 = g_frame_time_sq * 7.0f;
-                        g_hero.unk940 = g_frame_time_sq * 27.0f;
+                        g_hero.stickless_decel = g_frame_time_sq * 7.0f;
+                        g_hero.fall_state_gravity = g_frame_time_sq * 27.0f;
                     }
                     break;
                 case 34:
@@ -1212,18 +1212,18 @@ void HeroL17_UpdateStateTransitions(void) {
                         HeroL17_SetMoveState(0x10, 1);
                     }
                     {
-                        int r = truncate_float_to_s32(predict_hero_trajectory_intercept_time(60.0f, g_hero.unk4B0, -1.0f));
-                        g_hero.unk4BC = r;
-                        if (g_hero.unk4B8 != 0.0f && g_hero.frames_off_ground.s != 0 && r != 0) {
+                        int r = truncate_float_to_s32(predict_hero_trajectory_intercept_time(60.0f, g_hero.rise_fall_gravity, -1.0f));
+                        g_hero.predicted_land_frames = r;
+                        if (g_hero.past_apex != 0.0f && g_hero.frames_off_ground.s != 0 && r != 0) {
                             if (r == 2) {
                                 scale_ticks(0xA);
                             }
-                            adjust_hero_animation_speed_for_target_frame(g_hero.unk4C0, g_hero.unk4BC, 0.5f, -1.0f);
+                            adjust_hero_animation_speed_for_target_frame(g_hero.rise_fall_target_frame, g_hero.predicted_land_frames, 0.5f, -1.0f);
                         } else {
                             g_hero.anim_speed = 1.0f;
                         }
                     }
-                    if (g_hero.unkA98 & 2) {
+                    if (g_hero.anim_flags & 2) {
                         HeroL17_SetMoveState(0, 1);
                     }
                     break;
@@ -1251,10 +1251,10 @@ void HeroL17_UpdateStateTransitions(void) {
                             int ok = 1;
 
                             if (D_0015EE84_m != 0x10) {
-                                qcopy(v0, g_hero.unk500.f);
+                                qcopy(v0, g_hero.rail_point.f);
                                 v0[2] += 2.0f;
-                                v1[0] = FastCos(g_hero.unk57C) * 5.0f;
-                                v1[1] = FastSin(g_hero.unk57C) * 5.0f;
+                                v1[0] = FastCos(g_hero.rail_dir_yaw) * 5.0f;
+                                v1[1] = FastSin(g_hero.rail_dir_yaw) * 5.0f;
                                 v1[2] = 0.0f;
                                 FastVecAdd(v1, v1, v0);
                                 if (coll_line(v0, v1, 2, 0, 0)) {
@@ -1284,7 +1284,7 @@ void HeroL17_UpdateStateTransitions(void) {
                                 g_hero.motion.unk110.f[1] = FastSin(ang) * g_hero.unk574 * 0.7f;
                                 g_hero.motion.unk110.f[2] = g_frame_time * 4.5f;
                             }
-                            if (scale_ticks(0xF) < g_hero.unk570 && g_hero.health.hp < 2) {
+                            if (scale_ticks(0xF) < g_hero.rail_off_frames && g_hero.health.hp < 2) {
                                 g_hero.health.hp = 2;
                             }
                             HeroL17_SetMoveState(0x16, 1);
@@ -1302,22 +1302,22 @@ void HeroL17_UpdateStateTransitions(void) {
                             v0[2] = 42.0f;
                             if (FastVecDist(g_hero.motion.pos.f, v0) < 7.0f) {
                                 go = 0;
-                                g_hero.unk1C4 = scale_ticks(0x64);
+                                g_hero.move_lock_timer = scale_ticks(0x64);
                             }
                         }
                         if (go) {
                             if (pad_pressed_within(0x40, scale_ticks(7), 0)) {
                                 if (g_hero.unk5B8 != 0) {
-                                    g_hero.unk5C0 = 1;
+                                    g_hero.rail_jump_queued = 1;
                                     break;
                                 }
                                 HeroL17_SetMoveState(0x29, 1);
                                 break;
                             }
                         }
-                        if (scale_ticks(5) < g_hero.unk570) {
+                        if (scale_ticks(5) < g_hero.rail_off_frames) {
                             if (g_hero.ground_distance > 8.0f) {
-                                g_hero.unk1C4 = scale_ticks(0x46);
+                                g_hero.move_lock_timer = scale_ticks(0x46);
                             }
                             HeroL17_SetMoveState(6, 1);
                             g_hero.unk1C8 = scale_ticks(8);
@@ -1327,30 +1327,30 @@ void HeroL17_UpdateStateTransitions(void) {
                             HeroL17_SetMoveState(0x2B, 1);
                             break;
                         }
-                        if (g_hero.unk5A8 == -1) {
-                            int a = g_hero.unk58C + 0x31;
+                        if (g_hero.grind_pose == -1) {
+                            int a = g_hero.grind_anim_variant + 0x31;
                             if (((unsigned char *)g_hero.moby)[0x53] != a) {
                                 set_hero_animation(a, 0, scale_ticks(0xC));
                             }
                         } else {
-                            int a = g_hero.unk5A8 + 0x4A;
+                            int a = g_hero.grind_pose + 0x4A;
                             if (((unsigned char *)g_hero.moby)[0x53] != a) {
                                 set_hero_animation(a, 0, scale_ticks(0xC));
                             }
                         }
                         if (g_hero.unk5BC != 0) {
-                            if (g_hero.unk5C0 != 0) {
+                            if (g_hero.rail_jump_queued != 0) {
                                 float t;
 
                                 HeroL17_SetMoveState(0x29, 1);
-                                g_hero.unk5C4 = 1;
-                                t = jump_speed_4318(g_hero.motion.pos.f, g_hero.unk550.f, 0, g_hero.motion.unk164, -g_hero.unk4A0);
+                                g_hero.rail_gap_jump = 1;
+                                t = jump_speed_4318(g_hero.motion.pos.f, g_hero.jump_target_pos.f, 0, g_hero.motion.unk164, -g_hero.jump_gravity);
                                 *(u128 *)v0 = 0;
                                 *(u128 *)v1 = 0;
                                 v1[2] = t;
-                                t = calculate_triangular_corrected_scalar(v0, v1, 0, g_hero.unk4A0);
-                                g_hero.unk488 = t;
-                                g_hero.unk4A0 = g_hero.unk5C8;
+                                t = calculate_triangular_corrected_scalar(v0, v1, 0, g_hero.jump_gravity);
+                                g_hero.jump_height_start = t;
+                                g_hero.jump_gravity = g_hero.rail_jump_gravity;
                                 g_hero.unk430 = t;
                                 g_hero.unk48C = t + 0.05f;
                             }
@@ -1378,50 +1378,50 @@ void HeroL17_UpdateStateTransitions(void) {
                             HeroL17_SetMoveState(0x28, 1);
                             break;
                         }
-                        if (scale_ticks(5) < g_hero.unk570) {
+                        if (scale_ticks(5) < g_hero.rail_off_frames) {
                             HeroL17_SetMoveState(6, 1);
                             g_hero.unk1C8 = scale_ticks(8);
                         }
                     } else if (g_hero.state.current == 0x29 || g_hero.state.current == 0x2A) {
-                        if ((scale_ticks(5) < g_hero.unk570 || g_hero.unk5C4 != 0) && g_hero.grind_rail != 0 && g_hero.motion.pos.f[2] - g_hero.unk500.f[2] < 0.35f) {
+                        if ((scale_ticks(5) < g_hero.rail_off_frames || g_hero.rail_gap_jump != 0) && g_hero.grind_rail != 0 && g_hero.motion.pos.f[2] - g_hero.rail_point.f[2] < 0.35f) {
                             HeroL17_SetMoveState(0x28, 1);
                             break;
                         }
-                        if (g_hero.state.current == 0x29 && g_hero.state_timer < scale_ticks(0xA) && g_hero.unk41E == 0 && g_hero.unk12EE == 0 && g_hero.unk229C > 0.5f && g_hero.unk590 == 0) {
+                        if (g_hero.state.current == 0x29 && g_hero.state_timer < scale_ticks(0xA) && g_hero.past_jump_apex == 0 && g_hero.unk12EE == 0 && g_hero.stick_magnitude > 0.5f && g_hero.rail_switching == 0) {
                             stick_target(0, 1.0f);
-                            if (FastDiffRots(FastDiffRots(g_hero.motion.move_yaw, g_hero.unk57C), 1.5707964f) < 1.2217305f) {
+                            if (FastDiffRots(FastDiffRots(g_hero.motion.move_yaw, g_hero.rail_dir_yaw), 1.5707964f) < 1.2217305f) {
                                 float ang;
                                 float d;
                                 float lim;
 
-                                ang = FastAddRots(g_hero.unk57C, 1.5707964f);
+                                ang = FastAddRots(g_hero.rail_dir_yaw, 1.5707964f);
                                 if (1.5707964f < FastDiffRots(g_hero.motion.move_yaw, ang)) {
-                                    ang = FastAddRots(g_hero.unk57C, -1.5707964f);
+                                    ang = FastAddRots(g_hero.rail_dir_yaw, -1.5707964f);
                                 }
                                 lim = 4.5f;
                                 for (d = 2.0f; d <= lim; d += 0.75f) {
                                     float t = g_hero.motion.speed_xy * (float)scale_ticks(0);
 
                                     qcopy(v0, g_hero.motion.pos.f);
-                                    sp28 = g_hero.unk564;
-                                    sp2C = g_hero.unk568;
-                                    if (Spline_AdvanceByDistance((int *)g_hero.unk560, v0, &sp28, &sp2C, g_hero.unk584, t)) {
+                                    sp28 = g_hero.rail_segment;
+                                    sp2C = g_hero.rail_seg_frac;
+                                    if (Spline_AdvanceByDistance((int *)g_hero.rail_spline, v0, &sp28, &sp2C, g_hero.rail_spline_loops, t)) {
                                         FastVecScale(v1, g_hero.motion.displacement.f, scale_ticks(0x30));
                                         FastVecAdd(v0, g_hero.motion.pos.f, v1);
                                     }
                                     v0[0] += FastCos(ang) * d;
                                     v0[1] += FastSin(ang) * d;
-                                    if (nearest_rail_point(v0, &sp30, v1, &sp34, &sp38, &sp3C, g_hero.unk560, 0)) {
-                                        g_hero.unk594 = g_hero.unk560;
-                                        g_hero.unk598 = g_hero.unk564;
-                                        g_hero.unk59C = g_hero.unk568;
-                                        g_hero.unk5A0 = g_hero.unk584;
-                                        qcopy(g_hero.unk540.f, g_hero.unk500.f);
-                                        g_hero.unk560 = sp30;
-                                        g_hero.unk584 = sp3C;
-                                        find_nearest_path_point((void *)g_hero.unk560, g_hero.motion.pos.f, g_hero.unk500.f, &g_hero.unk564, &g_hero.unk568, g_hero.unk584, 999.0f, 2.0f, 0.0f);
-                                        g_hero.unk5A4 = 0;
-                                        g_hero.unk590 = 1;
+                                    if (nearest_rail_point(v0, &sp30, v1, &sp34, &sp38, &sp3C, g_hero.rail_spline, 0)) {
+                                        g_hero.transfer_from_spline = g_hero.rail_spline;
+                                        g_hero.prev_rail_segment = g_hero.rail_segment;
+                                        g_hero.prev_rail_seg_frac = g_hero.rail_seg_frac;
+                                        g_hero.unk5A0 = g_hero.rail_spline_loops;
+                                        qcopy(g_hero.prev_rail_point.f, g_hero.rail_point.f);
+                                        g_hero.rail_spline = sp30;
+                                        g_hero.rail_spline_loops = sp3C;
+                                        find_nearest_path_point((void *)g_hero.rail_spline, g_hero.motion.pos.f, g_hero.rail_point.f, &g_hero.rail_segment, &g_hero.rail_seg_frac, g_hero.rail_spline_loops, 999.0f, 2.0f, 0.0f);
+                                        g_hero.rail_transfer_frames = 0;
+                                        g_hero.rail_switching = 1;
                                         HeroL17_SetMoveState(0x2A, 1);
                                         break;
                                     }
@@ -1430,13 +1430,13 @@ void HeroL17_UpdateStateTransitions(void) {
                         }
                         if (g_hero.state_timer > g_hero.unk420) {
                             if (gravity_z(g_hero.motion.velocity.f) < 0.001f) {
-                                g_hero.unk41E = 1;
+                                g_hero.past_jump_apex = 1;
                             }
                         }
-                        if (g_hero.state_timer >= g_hero.unk420 + scale_ticks(1) && g_hero.state_timer < g_hero.unk420 + scale_ticks(9) && g_hero.unk41E == 0 && g_hero.unkA9C == 0) {
-                            predict_hero_trajectory_z(g_hero.motion.pos.f, g_hero.motion.velocity.f, &sp40, g_hero.unk4A0);
-                            adjust_hero_animation_speed_for_target_frame(g_hero.unk440, sp40, 0.5f, g_frame_scale_sq * 0.25f);
-                            if (g_hero.unk590 != 0) {
+                        if (g_hero.state_timer >= g_hero.unk420 + scale_ticks(1) && g_hero.state_timer < g_hero.unk420 + scale_ticks(9) && g_hero.past_jump_apex == 0 && g_hero.anim_changing == 0) {
+                            predict_hero_trajectory_z(g_hero.motion.pos.f, g_hero.motion.velocity.f, &sp40, g_hero.jump_gravity);
+                            adjust_hero_animation_speed_for_target_frame(g_hero.apex_anim_frame, sp40, 0.5f, g_frame_scale_sq * 0.25f);
+                            if (g_hero.rail_switching != 0) {
                                 if (g_hero.anim_speed > 2.0f) {
                                     g_hero.anim_speed = 2.0f;
                                 }
@@ -1444,15 +1444,15 @@ void HeroL17_UpdateStateTransitions(void) {
                                     g_hero.anim_speed = 0.5f;
                                 }
                             }
-                        } else if (g_hero.unk41E != 0 && g_hero.unk418 == 0) {
-                            g_hero.unk44C = scale_ticks(0x1E);
-                            if (g_hero.unk570 == 0) {
-                                g_hero.unk44C = truncate_float_to_s32(predict_hero_trajectory_intercept_time(60.0f, g_hero.unk4A0, g_hero.unk500.f[2]));
+                        } else if (g_hero.past_jump_apex != 0 && g_hero.rail_land_frames == 0) {
+                            g_hero.frames_to_land = scale_ticks(0x1E);
+                            if (g_hero.rail_off_frames == 0) {
+                                g_hero.frames_to_land = truncate_float_to_s32(predict_hero_trajectory_intercept_time(60.0f, g_hero.jump_gravity, g_hero.rail_point.f[2]));
                             }
-                            if (g_hero.unk44C != 0) {
-                                adjust_hero_animation_speed_for_target_frame(g_hero.unk444, g_hero.unk44C, 0.5f, g_frame_scale_sq * 0.25f);
+                            if (g_hero.frames_to_land != 0) {
+                                adjust_hero_animation_speed_for_target_frame(g_hero.target_anim_frame, g_hero.frames_to_land, 0.5f, g_frame_scale_sq * 0.25f);
                             }
-                            if (g_hero.unk590 != 0) {
+                            if (g_hero.rail_switching != 0) {
                                 if (g_hero.anim_speed > 2.0f) {
                                     g_hero.anim_speed = 2.0f;
                                 }
@@ -1460,32 +1460,32 @@ void HeroL17_UpdateStateTransitions(void) {
                                     g_hero.anim_speed = 0.5f;
                                 }
                             }
-                            if (g_hero.unk570 == 0 && g_hero.ground_distance < 0.5f) {
-                                if (g_hero.motion.pos.f[2] + g_hero.motion.velocity.f[2] < g_hero.unk500.f[2]) {
-                                    g_hero.motion.velocity.f[2] = g_hero.unk500.f[2] - g_hero.motion.pos.f[2];
-                                    g_hero.unk418 = scale_ticks(1);
+                            if (g_hero.rail_off_frames == 0 && g_hero.ground_distance < 0.5f) {
+                                if (g_hero.motion.pos.f[2] + g_hero.motion.velocity.f[2] < g_hero.rail_point.f[2]) {
+                                    g_hero.motion.velocity.f[2] = g_hero.rail_point.f[2] - g_hero.motion.pos.f[2];
+                                    g_hero.rail_land_frames = scale_ticks(1);
                                     g_hero.anim_speed = 1.0f;
                                 }
                             }
-                            if (-0.5f > g_hero.motion.pos.f[2] - g_hero.unk500.f[2]) {
+                            if (-0.5f > g_hero.motion.pos.f[2] - g_hero.rail_point.f[2]) {
                                 HeroL17_SetMoveState(6, 1);
-                                g_hero.unk1C4 = scale_ticks(0x46);
+                                g_hero.move_lock_timer = scale_ticks(0x46);
                                 g_hero.unk1C8 = scale_ticks(8);
                                 break;
                             }
                         }
-                        if (g_hero.unk418 != 0) {
-                            g_hero.unk418 = g_hero.unk418 + 1;
-                            if (scale_ticks(2) < g_hero.unk418) {
+                        if (g_hero.rail_land_frames != 0) {
+                            g_hero.rail_land_frames = g_hero.rail_land_frames + 1;
+                            if (scale_ticks(2) < g_hero.rail_land_frames) {
                                 int a;
 
                                 g_hero.state.current = 0x28;
-                                a = g_hero.unk58C + 0x31;
+                                a = g_hero.grind_anim_variant + 0x31;
                                 set_hero_animation(a, 0, scale_ticks(7));
                                 break;
                             }
                         }
-                        if (g_hero.unk570 != 0 && g_hero.air_frames.s == 0 && g_hero.unk41E != 0) {
+                        if (g_hero.rail_off_frames != 0 && g_hero.air_frames.s == 0 && g_hero.past_jump_apex != 0) {
                             if (HeroL17_SetMoveState(0, 0)) {
                                 set_hero_animation(0xC, 4, scale_ticks(6));
                             }
@@ -1495,12 +1495,12 @@ void HeroL17_UpdateStateTransitions(void) {
                             predict_hero_trajectory_z(g_hero.motion.pos.f, g_hero.motion.velocity.f, &sp44, g_frame_time_sq * 23.0f);
                             adjust_hero_animation_speed_for_target_frame(9.0f, sp44, 0.5f, -1.0f);
                         }
-                        if (g_hero.unkA98 & 2) {
+                        if (g_hero.anim_flags & 2) {
                             HeroL17_SetMoveState(0x28, 1);
                             break;
                         }
                         if (g_hero.motion.velocity.f[2] < 0.0f) {
-                            if (FastAbsF(g_hero.motion.pos.f[2] - g_hero.unk500.f[2]) < 0.3f) {
+                            if (FastAbsF(g_hero.motion.pos.f[2] - g_hero.rail_point.f[2]) < 0.3f) {
                                 HeroL17_SetMoveState(0x28, 1);
                             }
                         }
@@ -1510,15 +1510,15 @@ void HeroL17_UpdateStateTransitions(void) {
                     if (((unsigned char *)g_hero.moby)[0x53] == 0x73) {
                         if (test_hero_animation_frame_window(11.0f)) {
                             allocate_hero_voice_for_entry(0xD, 0);
-                            emit_randomized_sparkle_pairs(g_hero.unk5E0.f, 4);
+                            emit_randomized_sparkle_pairs(g_hero.grab_rail_point.f, 4);
                         }
-                        if (g_hero.unkA98 & 2) {
+                        if (g_hero.anim_flags & 2) {
                             set_hero_animation(0x66, 0, scale_ticks(0x1E));
                         }
                     }
-                    if (scale_ticks(5) < g_hero.unk600) {
+                    if (scale_ticks(5) < g_hero.follow_path_end_frames) {
                         HeroL17_SetMoveState(6, 1);
-                        g_hero.unk1E4 = scale_ticks(8);
+                        g_hero.rail_grab_cooldown = scale_ticks(8);
                     }
                     break;
                 case 24:
@@ -1527,7 +1527,7 @@ void HeroL17_UpdateStateTransitions(void) {
                     }
                     break;
                 case 25:
-                    if ((g_hero.unkA98 & 2) && ((unsigned char *)g_hero.moby)[0x53] == 0x20) {
+                    if ((g_hero.anim_flags & 2) && ((unsigned char *)g_hero.moby)[0x53] == 0x20) {
                         set_hero_animation(0x21, 0, scale_ticks(6));
                     }
                     stick_target(0, 1.0f);
@@ -1538,7 +1538,7 @@ void HeroL17_UpdateStateTransitions(void) {
                         g_hero.unk1B0 = scale_ticks(0xA);
                         break;
                     }
-                    if ((g_hero.unk229C > 0.5f && pad_pressed_within(0x40, scale_ticks(9), 0) && 2.3561945f < FastDiffRots(g_hero.motion.move_yaw, g_hero.motion.rot.f[2])) || (g_controller_state.pressed & 0xA)) {
+                    if ((g_hero.stick_magnitude > 0.5f && pad_pressed_within(0x40, scale_ticks(9), 0) && 2.3561945f < FastDiffRots(g_hero.motion.move_yaw, g_hero.motion.rot.f[2])) || (g_controller_state.pressed & 0xA)) {
                         HeroL17_SetMoveState(6, 1);
                         g_hero.unk1B0 = scale_ticks(0xA);
                         break;
@@ -1547,7 +1547,7 @@ void HeroL17_UpdateStateTransitions(void) {
                         HeroL17_SetMoveState(0x1C, 1);
                         break;
                     }
-                    if (0.5f < g_hero.unk229C && FastDiffRots(g_hero.motion.move_yaw, FastAddRots(g_hero.motion.rot.f[2], 1.5707964f)) < 0.7853982f) {
+                    if (0.5f < g_hero.stick_magnitude && FastDiffRots(g_hero.motion.move_yaw, FastAddRots(g_hero.motion.rot.f[2], 1.5707964f)) < 0.7853982f) {
                         qcopy(v1, g_hero.motion.pos.f);
                         v1[0] += FastCos(FastAddRots(g_hero.motion.rot.f[2], 1.5707964f)) * 0.3f;
                         v1[1] += FastSin(FastAddRots(g_hero.motion.rot.f[2], 1.5707964f)) * 0.3f;
@@ -1557,7 +1557,7 @@ void HeroL17_UpdateStateTransitions(void) {
                         }
                         break;
                     }
-                    if (0.5f < g_hero.unk229C && FastDiffRots(g_hero.motion.move_yaw, FastAddRots(g_hero.motion.rot.f[2], -1.5707964f)) < 0.7853982f) {
+                    if (0.5f < g_hero.stick_magnitude && FastDiffRots(g_hero.motion.move_yaw, FastAddRots(g_hero.motion.rot.f[2], -1.5707964f)) < 0.7853982f) {
                         qcopy(v1, g_hero.motion.pos.f);
                         v1[0] += FastCos(FastAddRots(g_hero.motion.rot.f[2], -1.5707964f)) * 0.3f;
                         v1[1] += FastSin(FastAddRots(g_hero.motion.rot.f[2], -1.5707964f)) * 0.3f;
@@ -1581,14 +1581,14 @@ void HeroL17_UpdateStateTransitions(void) {
                         v0[1] += FastSin(FastAddRots(g_hero.motion.rot.f[2], ang)) * 0.3f;
                         sp54 = g_hero.motion.rot.f[2];
                         stick_target(0, 1.0f);
-                        if (g_hero.unk229C < 0.5f || 0.7853982f < FastDiffRots(g_hero.motion.move_yaw, FastAddRots(g_hero.motion.rot.f[2], ang)) || probe_hero_ledge_edge(v0, &sp54) == 0) {
-                            if (g_hero.unkA98 & 2) {
+                        if (g_hero.stick_magnitude < 0.5f || 0.7853982f < FastDiffRots(g_hero.motion.move_yaw, FastAddRots(g_hero.motion.rot.f[2], ang)) || probe_hero_ledge_edge(v0, &sp54) == 0) {
+                            if (g_hero.anim_flags & 2) {
                                 HeroL17_SetMoveState(0x19, 1);
                                 break;
                             }
                         }
                     }
-                    if (0.5f < g_hero.unk229C && pad_pressed_within(0x40, scale_ticks(9), 0) && 2.3561945f < FastDiffRots(g_hero.motion.move_yaw, g_hero.motion.rot.f[2])) {
+                    if (0.5f < g_hero.stick_magnitude && pad_pressed_within(0x40, scale_ticks(9), 0) && 2.3561945f < FastDiffRots(g_hero.motion.move_yaw, g_hero.motion.rot.f[2])) {
                         HeroL17_SetMoveState(6, 1);
                         g_hero.unk1B0 = scale_ticks(0x28);
                         break;
@@ -1627,8 +1627,8 @@ void HeroL17_UpdateStateTransitions(void) {
                         int first;
                         int one;
 
-                        emit_hero_animation_voice_and_ground_particle(g_hero.unk12ED, 0, 1);
-                        emit_hero_animation_voice_and_ground_particle(g_hero.unk12ED, 1, 1);
+                        emit_hero_animation_voice_and_ground_particle(g_hero.ground_sound_class, 0, 1);
+                        emit_hero_animation_voice_and_ground_particle(g_hero.ground_sound_class, 1, 1);
                         if (g_frame_time * -9.0f > g_hero.motion.displacement.f[2]) {
                             g_hero.motion.displacement.f[2] = g_frame_time * -9.0f;
                         }
@@ -1646,7 +1646,7 @@ void HeroL17_UpdateStateTransitions(void) {
                                 set_hero_animation(0xC, 4, scale_ticks(6));
                             }
                             if (first) {
-                                g_hero.unk1C4 = scale_ticks(0x16);
+                                g_hero.move_lock_timer = scale_ticks(0x16);
                             }
                             configure_hero_point_effect_emission(0.022f, 0.004f, 0xA, 4, 0, 1);
                             break;
@@ -1657,19 +1657,19 @@ void HeroL17_UpdateStateTransitions(void) {
                             }
                             gravity_set_z(g_hero.motion.unk150.f, g_hero.motion.unk150.f, 0.0f);
                             ClampVectorLength(g_hero.motion.unk150.f, g_frame_time * 7.0f);
-                            g_hero.unk1C4 = scale_ticks(7);
+                            g_hero.move_lock_timer = scale_ticks(7);
                             if (g_hero.state.prev == 0x2D) {
-                                g_hero.unk1C4 = scale_ticks(0xA);
+                                g_hero.move_lock_timer = scale_ticks(0xA);
                             }
                             if (first) {
                                 if (scale_ticks(0x32) < g_hero.state_timer) {
-                                    g_hero.unk1C4 = scale_ticks(0x12);
+                                    g_hero.move_lock_timer = scale_ticks(0x12);
                                 }
                             }
                             configure_hero_point_effect_emission(0.019f, 0.002f, 0xA, 2, 0, 1);
                             break;
                         }
-                        if (g_hero.unk229C > 0.5f && g_hero.unk1C4 == 0) {
+                        if (g_hero.stick_magnitude > 0.5f && g_hero.move_lock_timer == 0) {
                             HeroL17_SetMoveState(2, 1);
                             configure_hero_point_effect_emission(0.016f, 0.002f, 7, 2, 0, 1);
                             break;
@@ -1689,30 +1689,30 @@ void HeroL17_UpdateStateTransitions(void) {
                     if (g_hero.health.hp <= 0) {
                         break;
                     }
-                    if ((g_controller_state.held & 0x40) && item_available[2] != 0 && hero_slot_item_id(3) != 4 && g_hero.unk22D8 == 0 && g_hero.unk1C4 == 0 && g_hero.ground_distance > 0.6f) {
+                    if ((g_controller_state.held & 0x40) && item_available[2] != 0 && hero_slot_item_id(3) != 4 && g_hero.pack_disabled == 0 && g_hero.move_lock_timer == 0 && g_hero.ground_distance > 0.6f) {
                         HeroL17_SetMoveState(8, 1);
                         break;
                     }
-                    if (g_hero.unk1E2 > scale_ticks(0x14)) {
+                    if (g_hero.still_frames > scale_ticks(0x14)) {
                         int t = scale_ticks(6);
-                        if (g_hero.unk1D4 != 0) {
+                        if (g_hero.jump_buffer_lockout != 0) {
                             t = 1;
                         }
                         if (try_start_hero_jump(t, 0)) {
                             break;
                         }
                     }
-                    if (hero_slot_item_id(3) == 3 && g_hero.unk22D8 == 0) {
+                    if (hero_slot_item_id(3) == 3 && g_hero.pack_disabled == 0) {
                         if (check_pad_press_separation(0x40, 0xA, scale_ticks(9), scale_ticks(8))) {
                             if ((g_controller_state.held & 0xA) && (g_controller_state.pressed & 0x40)) {
-                                if (g_hero.unk41E == 0 || g_hero.ground_distance > 1.5f) {
+                                if (g_hero.past_jump_apex == 0 || g_hero.ground_distance > 1.5f) {
                                     HeroL17_SetMoveState(0x10, 1);
                                     break;
                                 }
                             }
                         }
                     }
-                    if (g_hero.unk4E8 != 0) {
+                    if (g_hero.ledge_found != 0) {
                         HeroL17_SetMoveState(0x18, 1);
                         break;
                     }
@@ -1720,7 +1720,7 @@ void HeroL17_UpdateStateTransitions(void) {
                         HeroL17_SetMoveState(0x28, 1);
                         break;
                     }
-                    if (g_hero.unk5FC != 0) {
+                    if (g_hero.grab_rail_found != 0) {
                         HeroL17_SetMoveState(0x74, 1);
                     }
                     break;
@@ -1760,7 +1760,7 @@ void HeroL17_UpdateStateTransitions(void) {
                         }
                     }
                     g_hero.unk22CA = 0;
-                    g_hero.unk1C4 = scale_ticks(0x19);
+                    g_hero.move_lock_timer = scale_ticks(0x19);
                     if (g_hero.air_frames.s != 0) {
                         if (HeroL17_SetMoveState(0, 0) == 0) {
                             break;
@@ -1792,7 +1792,7 @@ void HeroL17_UpdateStateTransitions(void) {
                         HeroL17_SetMoveState(6, 1);
                         break;
                     }
-                    if (g_hero.unk4E8 != 0) {
+                    if (g_hero.ledge_found != 0) {
                         HeroL17_SetMoveState(0x18, 1);
                         break;
                     }
@@ -1800,7 +1800,7 @@ void HeroL17_UpdateStateTransitions(void) {
                         break;
                     }
                     if (scale_ticks(0xA) > g_hero.state_timer) {
-                        g_hero.unk1D4 = scale_ticks(0xC) - g_hero.state_timer;
+                        g_hero.jump_buffer_lockout = scale_ticks(0xC) - g_hero.state_timer;
                     }
                     stick_target(0, 1.0f);
                     if (g_hero.state.prev == 0x10 && scale_ticks(4) > g_hero.state_timer) {
@@ -1808,7 +1808,7 @@ void HeroL17_UpdateStateTransitions(void) {
                             break;
                         }
                         set_hero_animation(5, 0, -1.0f);
-                        g_hero.unk1C4 = scale_ticks(0x22);
+                        g_hero.move_lock_timer = scale_ticks(0x22);
                         break;
                     }
                     if (g_controller_state.held & 0xA) {
@@ -1817,7 +1817,7 @@ void HeroL17_UpdateStateTransitions(void) {
                         break;
                     }
                     if (g_hero.target_speed > fleet_hero_speed_bands.fC && FastDiffRots(g_hero.motion.move_yaw, g_hero.motion.rot.f[2]) < 1.5707964f) {
-                        if (g_hero.unk12E2 != 0 || g_hero.unk20A9 != 0) {
+                        if (g_hero.on_ice_ground != 0 || g_hero.wading != 0) {
                             HeroL17_SetMoveState(2, 1);
                             break;
                         }
@@ -1825,13 +1825,13 @@ void HeroL17_UpdateStateTransitions(void) {
                         if (g_hero.state.current == 2) {
                             g_hero.state.step = 1;
                             set_hero_animation(4, 2, scale_ticks(8));
-                            g_hero.unk3BC = 1;
+                            g_hero.run_start_blending = 1;
                         }
                         configure_hero_point_effect_emission(0.016f, 0.002f, 5, 2, 1, 0);
                         break;
                     }
                     if (fleet_hero_speed_bands.fC < g_hero.target_speed) {
-                        if (g_hero.unk12E2 != 0 || g_hero.unk20A9 != 0) {
+                        if (g_hero.on_ice_ground != 0 || g_hero.wading != 0) {
                             HeroL17_SetMoveState(2, 1);
                             break;
                         }
@@ -1871,18 +1871,18 @@ void HeroL17_UpdateStateTransitions(void) {
                 case 28:
                 case 60:
                 case 105:
-                    if (g_hero.unk4AE != 0) {
+                    if (g_hero.can_chain_high_jump != 0) {
                         int t = get_hero_high_jump_input_window_frames();
-                        if (t > 0 && (g_hero.state_timer < t || g_hero.unk418 != 0) && g_hero.grounded_frames != 0) {
+                        if (t > 0 && (g_hero.state_timer < t || g_hero.rail_land_frames != 0) && g_hero.grounded_frames != 0) {
                             if (g_hero.state.current != 0xB || pad_pressed_within(0x40, scale_ticks(7), 0)) {
                                 int ok = 1;
-                                if (g_hero.state.current == 0x1C || g_hero.unk418 != 0) {
+                                if (g_hero.state.current == 0x1C || g_hero.rail_land_frames != 0) {
                                     if (pad_pressed_within(0x40, scale_ticks(7), 0) == 0) {
                                         ok = 0;
                                     }
                                 }
                                 if (g_hero.state.current == 0xB) {
-                                    if (g_hero.unk418 == 0) {
+                                    if (g_hero.rail_land_frames == 0) {
                                         ok = 0;
                                     }
                                 }
@@ -1897,7 +1897,7 @@ void HeroL17_UpdateStateTransitions(void) {
                             }
                         }
                     }
-                    if (hero_slot_item_id(3) == 3 && g_hero.unk22D8 == 0
+                    if (hero_slot_item_id(3) == 3 && g_hero.pack_disabled == 0
                         && g_hero.state.current != 0x10 && g_hero.state.current != 0x11 && g_hero.state.current != 0x12 && g_hero.state.current != 0x3C
                         && g_hero.state.current != 0xF && g_hero.state.current != 0xA && g_hero.state.current != 0x69
                         && (g_hero.state.current == 0xE || scale_ticks(9) < g_hero.state_timer)
@@ -1910,21 +1910,21 @@ void HeroL17_UpdateStateTransitions(void) {
                     if (scale_ticks(7) > g_hero.state_timer && pad_pressed_within(0xA, 2, 0)
                         && g_hero.state.current != 0x10 && g_hero.state.current != 0xA && g_hero.state.current != 0x12 && g_hero.state.current != 0x3C
                         && g_hero.state.current != 0x11 && g_hero.state.current != 0xE && g_hero.state.current != 0x69) {
-                        if (hero_slot_item_id(3) == 2 && item_available[2] != 0 && g_hero.unk22D8 == 0 && g_frame_time * 0.9f < g_hero.motion.unk168) {
+                        if (hero_slot_item_id(3) == 2 && item_available[2] != 0 && g_hero.pack_disabled == 0 && g_frame_time * 0.9f < g_hero.motion.unk168) {
                             HeroL17_SetMoveState(0xA, 1);
-                        } else if (hero_slot_item_id(3) == 3 && g_hero.unk22D8 == 0 && g_frame_time * 0.9f < g_hero.motion.unk168 && g_hero.unk1B8 == 0) {
+                        } else if (hero_slot_item_id(3) == 3 && g_hero.pack_disabled == 0 && g_frame_time * 0.9f < g_hero.motion.unk168 && g_hero.unk1B8 == 0) {
                             HeroL17_SetMoveState(0x10, 1);
                         }
                     }
                     if (g_hero.unk420 + scale_ticks(8) < g_hero.state_timer
-                        && (g_hero.unk41E == 0 || scale_ticks(0xA) < g_hero.unk44C)
-                        && g_hero.unk229C < 0.3f
+                        && (g_hero.past_jump_apex == 0 || scale_ticks(0xA) < g_hero.frames_to_land)
+                        && g_hero.stick_magnitude < 0.3f
                         && (g_hero.state.current == 7 || g_hero.state.current == 9 || g_hero.state.current == 0xD || g_hero.state.current == 0xF || g_hero.state.current == 0xE)) {
                         if (pad_pressed_within(0xA, scale_ticks(9), 0)) {
                             if (hero_slot_item_id(3) != 3) {
                                 break;
                             }
-                            if (g_hero.unk22D8 != 0) {
+                            if (g_hero.pack_disabled != 0) {
                                 break;
                             }
                             HeroL17_SetMoveState(0x22, 1);
@@ -1935,19 +1935,19 @@ void HeroL17_UpdateStateTransitions(void) {
                         HeroL17_SetMoveState(0x28, 1);
                         break;
                     }
-                    if (g_hero.unk5FC != 0) {
+                    if (g_hero.grab_rail_found != 0) {
                         HeroL17_SetMoveState(0x74, 1);
                         break;
                     }
-                    if (g_hero.unk49A < g_hero.state_timer) {
-                        if (g_hero.unk418 == 0) {
+                    if (g_hero.jump_max_frames < g_hero.state_timer) {
+                        if (g_hero.rail_land_frames == 0) {
                             HeroL17_SetMoveState(6, 1);
                             break;
                         }
-                    } else if (g_hero.unk418 == 0 && (g_hero.state.current == 0xA || g_hero.state.current == 0x10) && g_hero.wall_probe_distance < 0.9f && g_hero.wall_hit != 0) {
+                    } else if (g_hero.rail_land_frames == 0 && (g_hero.state.current == 0xA || g_hero.state.current == 0x10) && g_hero.wall_probe_distance < 0.9f && g_hero.wall_hit != 0) {
                         if (FastVecLength(g_hero.motion.velocity.f) > g_frame_time * 7.0f) {
                             float len = FastVecLength(g_hero.motion.displacement.f);
-                            if (len < FastVecLength(g_hero.motion.velocity.f) * 0.5f && g_hero.unk4E8 == 0 && g_hero.ground_distance < 2.0f) {
+                            if (len < FastVecLength(g_hero.motion.velocity.f) * 0.5f && g_hero.ledge_found == 0 && g_hero.ground_distance < 2.0f) {
                                 HeroL17_SetMoveState(0x7A, 1);
                                 break;
                             }
@@ -1964,27 +1964,27 @@ void HeroL17_UpdateStateTransitions(void) {
                             break;
                         }
                         if (g_hero.state_timer == g_hero.unk420 + 1) {
-                            if (g_hero.unk41C != 0) {
+                            if (g_hero.velocity_keys_active != 0) {
                                 float d = g_hero.unk3D0 - g_hero.state_timer;
                                 if (0.0f < d) {
-                                    adjust_hero_animation_speed_for_target_frame(g_hero.unk3D8, d, g_hero.unk494, -1.0f);
+                                    adjust_hero_animation_speed_for_target_frame(g_hero.keyed_move_target_frame, d, g_hero.jump_anim_retime_scale, -1.0f);
                                 }
                                 break;
                             }
                             if (g_hero.state.current == 0xE) {
                                 break;
                             }
-                            predict_hero_trajectory_z(g_hero.motion.pos.f, g_hero.motion.velocity.f, &sp58, g_hero.unk4A0);
-                            adjust_hero_animation_speed_for_target_frame(g_hero.unk440, sp58, g_hero.unk494, -1.0f);
+                            predict_hero_trajectory_z(g_hero.motion.pos.f, g_hero.motion.velocity.f, &sp58, g_hero.jump_gravity);
+                            adjust_hero_animation_speed_for_target_frame(g_hero.apex_anim_frame, sp58, g_hero.jump_anim_retime_scale, -1.0f);
                             if (1.5f < g_hero.anim_speed) {
                                 g_hero.anim_speed = 1.5f;
                             }
                             break;
                         }
-                        if (g_hero.unk41C != 0 && !(g_hero.state_timer < g_hero.unk3D0) && g_hero.state_timer < g_hero.unk3D4) {
-                            float d = g_hero.unk3E0 - g_hero.unk3D0;
+                        if (g_hero.velocity_keys_active != 0 && !(g_hero.state_timer < g_hero.unk3D0) && g_hero.state_timer < g_hero.velocity_keys_end_frame) {
+                            float d = g_hero.keyed_anim_target_frame - g_hero.unk3D0;
                             if (0.0f < d) {
-                                adjust_hero_animation_speed_for_target_frame(g_hero.unk440, d, g_hero.unk494, -1.0f);
+                                adjust_hero_animation_speed_for_target_frame(g_hero.apex_anim_frame, d, g_hero.jump_anim_retime_scale, -1.0f);
                             }
                             break;
                         }
@@ -1992,33 +1992,33 @@ void HeroL17_UpdateStateTransitions(void) {
                             allocate_hero_voice_for_entry(0x11, 0);
                             emit_hero_surface_effect_burst(3, 0x18, 1);
                         }
-                        if (g_hero.unk418 != 0) {
-                            g_hero.unk418 = g_hero.unk418 + 1;
-                        } else if (g_hero.air_frames.s == 0 && g_hero.unk41E != 0 && !isNear) {
+                        if (g_hero.rail_land_frames != 0) {
+                            g_hero.rail_land_frames = g_hero.rail_land_frames + 1;
+                        } else if (g_hero.air_frames.s == 0 && g_hero.past_jump_apex != 0 && !isNear) {
                             int fr;
 
-                            g_hero.unk418 = scale_ticks(1);
+                            g_hero.rail_land_frames = scale_ticks(1);
                             configure_hero_point_effect_emission(0.016f, 0.002f, 5, 2, 0, 1);
-                            fr = truncate_float_to_s32(g_hero.unk448) + 2;
-                            if (g_hero.unk444 - 1.5f > g_hero.anim_frame) {
+                            fr = truncate_float_to_s32(g_hero.jump_land_anim_frame) + 2;
+                            if (g_hero.target_anim_frame - 1.5f > g_hero.anim_frame) {
                                 set_hero_animation(return_hero_animation_id_unchanged(moby[0x53]), fr, scale_ticks(7));
                             }
                         }
-                        if (g_hero.unk418 != 0) {
+                        if (g_hero.rail_land_frames != 0) {
                             g_hero.anim_speed = 1.0f;
-                        } else if (g_hero.unk41E != 0) {
-                            if (moby[0x51] < truncate_float_to_s32(g_hero.unk448)) {
+                        } else if (g_hero.past_jump_apex != 0) {
+                            if (moby[0x51] < truncate_float_to_s32(g_hero.jump_land_anim_frame)) {
                                 if (g_hero.state.current == 0xE && g_hero.anim_frame < 37.0f) {
                                     ApproachValue(&g_hero.anim_speed, 1.0f, g_frame_scale_sq * 0.15f);
                                 } else {
-                                    int r = truncate_float_to_s32(predict_hero_trajectory_intercept_time(60.0f, g_hero.unk4A0, -1.0f));
-                                    g_hero.unk44C = r;
-                                    adjust_hero_animation_speed_for_target_frame(g_hero.unk444, r, g_hero.unk494, g_frame_scale_sq * 0.2f);
+                                    int r = truncate_float_to_s32(predict_hero_trajectory_intercept_time(60.0f, g_hero.jump_gravity, -1.0f));
+                                    g_hero.frames_to_land = r;
+                                    adjust_hero_animation_speed_for_target_frame(g_hero.target_anim_frame, r, g_hero.jump_anim_retime_scale, g_frame_scale_sq * 0.2f);
                                 }
                                 if (!isNear) {
-                                    int fr = truncate_float_to_s32(g_hero.unk448) + 2;
+                                    int fr = truncate_float_to_s32(g_hero.jump_land_anim_frame) + 2;
                                     if (g_hero.anim_speed > 1.8f) {
-                                        set_hero_animation(return_hero_animation_id_unchanged(moby[0x53]), fr, g_hero.unk44C + 3);
+                                        set_hero_animation(return_hero_animation_id_unchanged(moby[0x53]), fr, g_hero.frames_to_land + 3);
                                     }
                                 }
                                 if (0.2f > g_hero.anim_speed) {
@@ -2028,7 +2028,7 @@ void HeroL17_UpdateStateTransitions(void) {
                                     g_hero.anim_speed = 2.7f;
                                 }
                             }
-                            if (g_hero.state.current == 9 && g_hero.unk444 - g_hero.anim_frame > 6.0f
+                            if (g_hero.state.current == 9 && g_hero.target_anim_frame - g_hero.anim_frame > 6.0f
                                 && (return_hero_animation_id_unchanged(moby[0x52]) == 8 || return_hero_animation_id_unchanged(moby[0x52]) == 9)
                                 && moby[0x52] == moby[0x53]
                                 && fleet_hero_speed_bands.f18 * g_frame_time * 0.1f > g_hero.target_speed
@@ -2040,12 +2040,12 @@ void HeroL17_UpdateStateTransitions(void) {
                                 set_hero_animation(7, (truncate_float_to_s32(g_hero.anim_frame) + 4) / 2, sp);
                                 g_hero.state.current = 7;
                             }
-                            if (truncate_float_to_s32(g_hero.anim_frame) == truncate_float_to_s32(g_hero.unk444)) {
+                            if (truncate_float_to_s32(g_hero.anim_frame) == truncate_float_to_s32(g_hero.target_anim_frame)) {
                                 g_hero.anim_speed = 0.0f;
                             }
                         }
                     }
-                    if (g_hero.unk418 != 0) {
+                    if (g_hero.rail_land_frames != 0) {
                         if (g_hero.state.current == 0xA) {
                             if (HeroL17_SetMoveState(3, 0) == 0) {
                                 break;
@@ -2054,7 +2054,7 @@ void HeroL17_UpdateStateTransitions(void) {
                             FastVecScale(g_hero.motion.unk150.f, g_hero.motion.unk150.f, 0.8f);
                             break;
                         }
-                        if (g_hero.on_slip_ground == 0 && g_hero.unk1C4 == 0) {
+                        if (g_hero.on_slip_ground == 0 && g_hero.move_lock_timer == 0) {
                             if (pad_pressed_within(0x40, scale_ticks(8), 0)) {
                                 if (g_hero.air_frames.s < scale_ticks(4)) {
                                     if (g_hero.target_speed > fleet_hero_speed_bands.fC && FastDiffRots(g_hero.motion.move_yaw, g_hero.motion.rot.f[2]) < 1.0471976f && fleet_hero_speed_bands.f18 * g_frame_time * 0.85f < g_hero.motion.unk164) {
@@ -2067,9 +2067,9 @@ void HeroL17_UpdateStateTransitions(void) {
                             }
                         }
                     }
-                    if (g_hero.unk418 > scale_ticks(1) && g_hero.state.current != 0xA) {
+                    if (g_hero.rail_land_frames > scale_ticks(1) && g_hero.state.current != 0xA) {
                         update_hero_locomotion_state();
-                    } else if (g_hero.unk41E != 0 && !(g_hero.unk4AA > g_hero.state_timer) && g_hero.ground_distance > g_hero.unk490) {
+                    } else if (g_hero.past_jump_apex != 0 && !(g_hero.fall_delay_frames > g_hero.state_timer) && g_hero.ground_distance > g_hero.fall_start_distance) {
                         HeroL17_SetMoveState(6, 1);
                     }
                     if (g_hero.state.current == 0x10 && scale_ticks(0x3C) < g_hero.state_timer && g_hero.ground_distance > 1.5f) {
@@ -2081,7 +2081,7 @@ void HeroL17_UpdateStateTransitions(void) {
                         if (g_hero.state.current == 7 || g_hero.state.current == 9 || g_hero.state.current == 0x11) {
                             hit = 1;
                         }
-                        if (g_hero.unk1B4 != 0 && g_hero.unk418 == 0 && hit) {
+                        if (g_hero.unk1B4 != 0 && g_hero.rail_land_frames == 0 && hit) {
                             if (g_hero.state.current != 0x11 || scale_ticks(0x19) < g_hero.state_timer) {
                                 int a = scale_ticks(7);
                                 if (g_hero.state.current == 0x11) {
@@ -2097,7 +2097,7 @@ void HeroL17_UpdateStateTransitions(void) {
                         }
                     }
                     if (g_hero.state.current == 0xA || g_hero.state.current == 0x10) {
-                        if (scale_ticks(0x19) < g_hero.state_timer && g_hero.unk30A != 0) {
+                        if (scale_ticks(0x19) < g_hero.state_timer && g_hero.on_flagged_ground_moby != 0) {
                             g_hero.unk4A6 = scale_ticks(0x14);
                         }
                     }
@@ -2110,7 +2110,7 @@ void HeroL17_UpdateStateTransitions(void) {
                             delay = scale_ticks(8);
                         }
                         if (g_hero.state.current == 0xE && g_hero.ground_distance > 4.0f) {
-                            if (g_hero.unk41E == 0 && g_hero.anim_speed < 1.3f) {
+                            if (g_hero.past_jump_apex == 0 && g_hero.anim_speed < 1.3f) {
                                 ApproachValue(&g_hero.anim_speed, 1.3f, frame_scale * 0.1f);
                             }
                             delay = scale_ticks(0x11);
@@ -2123,16 +2123,16 @@ void HeroL17_UpdateStateTransitions(void) {
                         if (scale_ticks(0x1E) < n) {
                             n = scale_ticks(0x1E);
                         }
-                        if (g_hero.unk418 == 0
+                        if (g_hero.rail_land_frames == 0
                             && g_hero.state.current != 0x12 && g_hero.state.current != 0x1C && g_hero.state.current != 0x11
                             && g_hero.state.current != 0xB && g_hero.state.current != 0x3C && g_hero.state.current != 0x69) {
                             if (pad_pressed_within(0x40, n, 0) || g_hero.state.current == 0xE || g_hero.state.current == 0xF || g_hero.state.current == 0xD) {
-                                if (g_hero.state.current != 0xE && g_hero.unk20A8 == 0
+                                if (g_hero.state.current != 0xE && g_hero.item_anim_active == 0
                                     && (g_hero.on_slip_ground == 0 || !(g_hero.ground_distance < 0.4f))
-                                    && g_hero.unk4AF != 0 && scale_ticks(0xE) < g_hero.state_timer
-                                    && (g_hero.unk41E == 0 || (g_hero.ground_distance > 0.7f && FastAbsF(gravity_z(g_hero.motion.velocity.f)) < g_frame_time * 5.8f))) {
+                                    && g_hero.can_double_jump != 0 && scale_ticks(0xE) < g_hero.state_timer
+                                    && (g_hero.past_jump_apex == 0 || (g_hero.ground_distance > 0.7f && FastAbsF(gravity_z(g_hero.motion.velocity.f)) < g_frame_time * 5.8f))) {
                                     HeroL17_SetMoveState(0xE, 1);
-                                } else if (item_available[2] != 0 && hero_slot_item_id(3) != 4 && g_hero.unk22D8 == 0 && (g_controller_state.held & 0x40)
+                                } else if (item_available[2] != 0 && hero_slot_item_id(3) != 4 && g_hero.pack_disabled == 0 && (g_controller_state.held & 0x40)
                                     && delay < g_hero.state_timer && g_hero.unk4A6 < g_hero.state_timer) {
                                     float lim = 0.6f;
                                     if (g_hero.state.current == 9 || g_hero.state.current == 7) {
@@ -2148,7 +2148,7 @@ void HeroL17_UpdateStateTransitions(void) {
                             }
                         }
                     }
-                    if (g_hero.unk4E8 != 0 && g_hero.state.current != 0xB) {
+                    if (g_hero.ledge_found != 0 && g_hero.state.current != 0xB) {
                         HeroL17_SetMoveState(0x18, 1);
                     }
                     break;
@@ -2182,7 +2182,7 @@ void HeroL17_UpdateStateTransitions(void) {
                         set_hero_animation(0x12, 0, scale_ticks(0xA));
                         break;
                     }
-                    if (g_hero.unk22FC == 0 && (g_hero.unkA98 & 2)) {
+                    if (g_hero.unk22FC == 0 && (g_hero.anim_flags & 2)) {
                         if (((unsigned char *)g_hero.moby)[0x53] != 0) {
                             set_hero_animation(0, 0, scale_ticks(0xC));
                         } else if (random_float_between(0.0f, 1.0f) < 0.5f) {
@@ -2210,7 +2210,7 @@ void HeroL17_UpdateStateTransitions(void) {
                         break;
                     }
                     stick_target(0, 1.0f);
-                    if (g_hero.unk229C > 0.2f && g_hero.target_speed > 0.0f) {
+                    if (g_hero.stick_magnitude > 0.2f && g_hero.target_speed > 0.0f) {
                         HeroL17_SetMoveState(0x44, 1);
                         break;
                     }
@@ -2227,10 +2227,10 @@ void HeroL17_UpdateStateTransitions(void) {
                         Rec2C *rec = &fleet_attack_records[g_hero.attack_record];
                         int t;
 
-                        if (g_hero.unkA9C == 0 && (float)rec->f18 < g_hero.anim_frame) {
+                        if (g_hero.anim_changing == 0 && (float)rec->f18 < g_hero.anim_frame) {
                             HeroL17_SetMoveState(0x43, 0);
                         }
-                        if (g_hero.unkA9C == 0 && (float)rec->f10 <= g_hero.anim_frame) {
+                        if (g_hero.anim_changing == 0 && (float)rec->f10 <= g_hero.anim_frame) {
                             int n = truncate_float_to_s32(g_hero.anim_frame) - rec->fC;
 
                             if (n < 1) {
@@ -2244,7 +2244,7 @@ void HeroL17_UpdateStateTransitions(void) {
                             }
                         }
                         t = (truncate_float_to_s32(g_hero.anim_frame) - rec->fC) * 2;
-                        if ((float)rec->f14 < g_hero.anim_frame && g_hero.unkA9C == 0) {
+                        if ((float)rec->f14 < g_hero.anim_frame && g_hero.anim_changing == 0) {
                             if (pad_pressed_within(0x40, t, 0)) {
                                 HeroL17_SetMoveState(0x49, 1);
                             }
@@ -2257,40 +2257,40 @@ void HeroL17_UpdateStateTransitions(void) {
                         break;
                     }
                     if (g_hero.state_timer == g_hero.unk420 + scale_ticks(1)) {
-                        predict_hero_trajectory_z(g_hero.motion.pos.f, g_hero.motion.velocity.f, &sp60, g_hero.unk4A0);
-                        adjust_hero_animation_speed_for_target_frame(g_hero.unk440, sp60, 0.5f, -1.0f);
+                        predict_hero_trajectory_z(g_hero.motion.pos.f, g_hero.motion.velocity.f, &sp60, g_hero.jump_gravity);
+                        adjust_hero_animation_speed_for_target_frame(g_hero.apex_anim_frame, sp60, 0.5f, -1.0f);
                         break;
                     }
-                    if (g_hero.unk41C != 0 && !(g_hero.state_timer < g_hero.unk3D0) && g_hero.state_timer < g_hero.unk3D4) {
-                        float d = g_hero.unk3E0 - g_hero.unk3D0;
+                    if (g_hero.velocity_keys_active != 0 && !(g_hero.state_timer < g_hero.unk3D0) && g_hero.state_timer < g_hero.velocity_keys_end_frame) {
+                        float d = g_hero.keyed_anim_target_frame - g_hero.unk3D0;
                         if (0.0f < d) {
-                            adjust_hero_animation_speed_for_target_frame(g_hero.unk440, d, 0.5f, -1.0f);
+                            adjust_hero_animation_speed_for_target_frame(g_hero.apex_anim_frame, d, 0.5f, -1.0f);
                         }
                         break;
                     }
-                    if (g_hero.unk418 != 0) {
-                        g_hero.unk418 = g_hero.unk418 + 1;
-                    } else if (g_hero.air_frames.s == 0 && g_hero.unk41E != 0) {
+                    if (g_hero.rail_land_frames != 0) {
+                        g_hero.rail_land_frames = g_hero.rail_land_frames + 1;
+                    } else if (g_hero.air_frames.s == 0 && g_hero.past_jump_apex != 0) {
                         int fr;
 
-                        g_hero.unk418 = scale_ticks(1);
-                        fr = truncate_float_to_s32(g_hero.unk444) + 3;
-                        if (g_hero.anim_frame < g_hero.unk444) {
+                        g_hero.rail_land_frames = scale_ticks(1);
+                        fr = truncate_float_to_s32(g_hero.target_anim_frame) + 3;
+                        if (g_hero.anim_frame < g_hero.target_anim_frame) {
                             set_hero_animation(moby[0x53], fr, scale_ticks(6));
                         }
                     }
-                    if (g_hero.unk418 != 0) {
+                    if (g_hero.rail_land_frames != 0) {
                         g_hero.anim_speed = 1.0f;
-                    } else if (g_hero.unk41E != 0) {
-                        if (moby[0x51] < truncate_float_to_s32(g_hero.unk444)) {
-                            int r = truncate_float_to_s32(predict_hero_trajectory_intercept_time(60.0f, g_hero.unk4A0, -1.0f));
+                    } else if (g_hero.past_jump_apex != 0) {
+                        if (moby[0x51] < truncate_float_to_s32(g_hero.target_anim_frame)) {
+                            int r = truncate_float_to_s32(predict_hero_trajectory_intercept_time(60.0f, g_hero.jump_gravity, -1.0f));
                             int fr;
 
-                            g_hero.unk44C = r;
-                            adjust_hero_animation_speed_for_target_frame(g_hero.unk444, r, 0.5f, -1.0f);
-                            fr = truncate_float_to_s32(g_hero.unk444) + 1;
+                            g_hero.frames_to_land = r;
+                            adjust_hero_animation_speed_for_target_frame(g_hero.target_anim_frame, r, 0.5f, -1.0f);
+                            fr = truncate_float_to_s32(g_hero.target_anim_frame) + 1;
                             if (g_hero.anim_speed > 1.8f) {
-                                set_hero_animation(moby[0x53], fr, g_hero.unk44C + 2);
+                                set_hero_animation(moby[0x53], fr, g_hero.frames_to_land + 2);
                             }
                             if (g_hero.anim_speed < 0.2f) {
                                 g_hero.anim_speed = 0.2f;
@@ -2299,11 +2299,11 @@ void HeroL17_UpdateStateTransitions(void) {
                                 g_hero.anim_speed = 2.7f;
                             }
                         }
-                        if (truncate_float_to_s32(g_hero.anim_frame) == truncate_float_to_s32(g_hero.unk444)) {
+                        if (truncate_float_to_s32(g_hero.anim_frame) == truncate_float_to_s32(g_hero.target_anim_frame)) {
                             g_hero.anim_speed = 0.0f;
                         }
                     }
-                    if (g_hero.unk418 != 0 && g_hero.unk1C4 == 0) {
+                    if (g_hero.rail_land_frames != 0 && g_hero.move_lock_timer == 0) {
                         if (pad_pressed_within(0x40, scale_ticks(4), 0)) {
                             if (g_hero.air_frames.s < scale_ticks(4)) {
                                 stick_target(0, 1.0f);
@@ -2312,26 +2312,26 @@ void HeroL17_UpdateStateTransitions(void) {
                             }
                         }
                     }
-                    if (scale_ticks(1) < g_hero.unk418) {
+                    if (scale_ticks(1) < g_hero.rail_land_frames) {
                         g_hero.unk2284 = 0;
                         stick_target(0, 1.0f);
-                        if (g_hero.target_speed > fleet_hero_speed_bands.fC && g_hero.unk229C > 0.5f && g_hero.on_slip_ground == 0 && g_hero.unk1C4 == 0 && FastDiffRots(g_hero.motion.move_yaw, g_hero.motion.rot.f[2]) < 1.5707964f) {
+                        if (g_hero.target_speed > fleet_hero_speed_bands.fC && g_hero.stick_magnitude > 0.5f && g_hero.on_slip_ground == 0 && g_hero.move_lock_timer == 0 && FastDiffRots(g_hero.motion.move_yaw, g_hero.motion.rot.f[2]) < 1.5707964f) {
                             HeroL17_SetMoveState(0x44, 1);
-                        } else if (g_hero.unk418 > scale_ticks(0xC)) {
+                        } else if (g_hero.rail_land_frames > scale_ticks(0xC)) {
                             HeroL17_SetMoveState(0x43, 1);
                         }
                     }
-                    if (2.0f < g_hero.ground_distance && g_hero.unk41E != 0 && scale_ticks(0x28) < g_hero.state_timer) {
+                    if (2.0f < g_hero.ground_distance && g_hero.past_jump_apex != 0 && scale_ticks(0x28) < g_hero.state_timer) {
                         HeroL17_SetMoveState(0x45, 1);
                         break;
                     }
-                    if (g_hero.unk41E != 0 && g_hero.ground_distance < 0.2f) {
+                    if (g_hero.past_jump_apex != 0 && g_hero.ground_distance < 0.2f) {
                         if (pad_pressed_within(0x80, scale_ticks(5), 0)) {
                             HeroL17_SetMoveState(0x51, 1);
                             break;
                         }
                     }
-                    if (g_hero.unk4E8 != 0) {
+                    if (g_hero.ledge_found != 0) {
                         HeroL17_SetMoveState(0x4A, 1);
                         break;
                     }
@@ -2348,7 +2348,7 @@ void HeroL17_UpdateStateTransitions(void) {
                         HeroL17_SetMoveState(0x45, 1);
                         break;
                     }
-                    if (g_hero.unk4E8 != 0) {
+                    if (g_hero.ledge_found != 0) {
                         HeroL17_SetMoveState(0x4A, 1);
                         break;
                     }
@@ -2356,9 +2356,9 @@ void HeroL17_UpdateStateTransitions(void) {
                         break;
                     }
                     if (scale_ticks(0xA) > g_hero.state_timer) {
-                        g_hero.unk1D4 = scale_ticks(0xC) - g_hero.state_timer;
+                        g_hero.jump_buffer_lockout = scale_ticks(0xC) - g_hero.state_timer;
                     }
-                    if (g_hero.unk229C > 0.3f) {
+                    if (g_hero.stick_magnitude > 0.3f) {
                         HeroL17_SetMoveState(0x44, 1);
                         break;
                     }
@@ -2381,7 +2381,7 @@ void HeroL17_UpdateStateTransitions(void) {
                             HeroL17_SetMoveState(0x47, 1);
                             break;
                         }
-                        if (g_hero.unk229C > 0.5f && g_hero.unk1C4 == 0) {
+                        if (g_hero.stick_magnitude > 0.5f && g_hero.move_lock_timer == 0) {
                             HeroL17_SetMoveState(0x44, 1);
                             break;
                         }
@@ -2391,7 +2391,7 @@ void HeroL17_UpdateStateTransitions(void) {
                     if (g_hero.health.hp <= 0) {
                         break;
                     }
-                    if (g_hero.unk4E8 != 0) {
+                    if (g_hero.ledge_found != 0) {
                         HeroL17_SetMoveState(0x4A, 1);
                         break;
                     }
@@ -2421,13 +2421,13 @@ void HeroL17_UpdateStateTransitions(void) {
                         break;
                     }
                     if (g_hero.state.current == 0x44) {
-                        if (g_hero.unkA9C == 0 && g_frame_time * 3.0f * 0.5f > g_hero.motion.speed_xy && ((unsigned char *)g_hero.moby)[0x53] != 2) {
+                        if (g_hero.anim_changing == 0 && g_frame_time * 3.0f * 0.5f > g_hero.motion.speed_xy && ((unsigned char *)g_hero.moby)[0x53] != 2) {
                             unsigned char *m = (unsigned char *)g_hero.moby;
                             unsigned char **anims = *(unsigned char ***)(m + 0x24);
                             int fr = (m[0x51] * anims[0x14][0x10] / anims[0x15][0x10] + 1) % anims[0x14][0x10];
 
                             set_hero_animation(2, fr, scale_ticks(8));
-                        } else if (g_hero.unkA9C == 0 && g_frame_time * 3.0f * 0.6f < g_hero.motion.speed_xy && ((unsigned char *)g_hero.moby)[0x53] != 3) {
+                        } else if (g_hero.anim_changing == 0 && g_frame_time * 3.0f * 0.6f < g_hero.motion.speed_xy && ((unsigned char *)g_hero.moby)[0x53] != 3) {
                             unsigned char *m = (unsigned char *)g_hero.moby;
                             unsigned char **anims = *(unsigned char ***)(m + 0x24);
                             int fr = (m[0x51] * anims[0x15][0x10] / anims[0x14][0x10] + 7) % anims[0x15][0x10];
@@ -2456,7 +2456,7 @@ void HeroL17_UpdateStateTransitions(void) {
                             break;
                         }
                     }
-                    if (g_hero.air_frames.s == 0 && g_hero.unk229C < 0.17f) {
+                    if (g_hero.air_frames.s == 0 && g_hero.stick_magnitude < 0.17f) {
                         HeroL17_SetMoveState(0x43, 1);
                     }
                     break;
@@ -2474,7 +2474,7 @@ void HeroL17_UpdateStateTransitions(void) {
                     }
                     break;
                 case 74:
-                    if (g_hero.unkA98 & 2) {
+                    if (g_hero.anim_flags & 2) {
                         HeroL17_SetMoveState(0x4B, 1);
                     }
                     break;
@@ -2487,7 +2487,7 @@ void HeroL17_UpdateStateTransitions(void) {
                         g_hero.unk1B0 = scale_ticks(0xA);
                         break;
                     }
-                    if ((g_hero.unk229C > 0.5f && pad_pressed_within(0x40, scale_ticks(9), 0) && 2.3561945f < FastDiffRots(g_hero.motion.move_yaw, g_hero.motion.rot.f[2])) || (g_controller_state.held & 0xA)) {
+                    if ((g_hero.stick_magnitude > 0.5f && pad_pressed_within(0x40, scale_ticks(9), 0) && 2.3561945f < FastDiffRots(g_hero.motion.move_yaw, g_hero.motion.rot.f[2])) || (g_controller_state.held & 0xA)) {
                         HeroL17_SetMoveState(0x45, 1);
                         g_hero.unk1B0 = scale_ticks(0xA);
                         break;
@@ -2496,7 +2496,7 @@ void HeroL17_UpdateStateTransitions(void) {
                         HeroL17_SetMoveState(0x4C, 1);
                         break;
                     }
-                    if (0.5f < g_hero.unk229C && FastDiffRots(g_hero.motion.move_yaw, FastAddRots(g_hero.motion.rot.f[2], 1.5707964f)) < 0.7853982f) {
+                    if (0.5f < g_hero.stick_magnitude && FastDiffRots(g_hero.motion.move_yaw, FastAddRots(g_hero.motion.rot.f[2], 1.5707964f)) < 0.7853982f) {
                         qcopy(v1, g_hero.motion.pos.f);
                         v1[0] += FastCos(FastAddRots(g_hero.motion.rot.f[2], 1.5707964f)) * 0.3f;
                         v1[1] += FastSin(FastAddRots(g_hero.motion.rot.f[2], 1.5707964f)) * 0.3f;
@@ -2506,7 +2506,7 @@ void HeroL17_UpdateStateTransitions(void) {
                         }
                         break;
                     }
-                    if (0.5f < g_hero.unk229C && FastDiffRots(g_hero.motion.move_yaw, FastAddRots(g_hero.motion.rot.f[2], -1.5707964f)) < 0.7853982f) {
+                    if (0.5f < g_hero.stick_magnitude && FastDiffRots(g_hero.motion.move_yaw, FastAddRots(g_hero.motion.rot.f[2], -1.5707964f)) < 0.7853982f) {
                         qcopy(v1, g_hero.motion.pos.f);
                         v1[0] += FastCos(FastAddRots(g_hero.motion.rot.f[2], -1.5707964f)) * 0.3f;
                         v1[1] += FastSin(FastAddRots(g_hero.motion.rot.f[2], -1.5707964f)) * 0.3f;
@@ -2530,14 +2530,14 @@ void HeroL17_UpdateStateTransitions(void) {
                         v0[1] += FastSin(FastAddRots(g_hero.motion.rot.f[2], ang)) * 0.3f;
                         sp70 = g_hero.motion.rot.f[2];
                         stick_target(0, 1.0f);
-                        if (g_hero.unk229C < 0.5f || 0.7853982f < FastDiffRots(g_hero.motion.move_yaw, FastAddRots(g_hero.motion.rot.f[2], ang)) || probe_hero_ledge_edge(v0, &sp70) == 0) {
-                            if (g_hero.unkA98 & 2) {
+                        if (g_hero.stick_magnitude < 0.5f || 0.7853982f < FastDiffRots(g_hero.motion.move_yaw, FastAddRots(g_hero.motion.rot.f[2], ang)) || probe_hero_ledge_edge(v0, &sp70) == 0) {
+                            if (g_hero.anim_flags & 2) {
                                 HeroL17_SetMoveState(0x4B, 1);
                                 break;
                             }
                         }
                     }
-                    if (0.5f < g_hero.unk229C && pad_pressed_within(0x40, scale_ticks(9), 0) && 2.3561945f < FastDiffRots(g_hero.motion.move_yaw, g_hero.motion.rot.f[2])) {
+                    if (0.5f < g_hero.stick_magnitude && pad_pressed_within(0x40, scale_ticks(9), 0) && 2.3561945f < FastDiffRots(g_hero.motion.move_yaw, g_hero.motion.rot.f[2])) {
                         HeroL17_SetMoveState(0x45, 1);
                         g_hero.unk1B0 = scale_ticks(0x28);
                         break;
@@ -2547,7 +2547,7 @@ void HeroL17_UpdateStateTransitions(void) {
                     }
                     break;
                 case 83:
-                    if (g_hero.unkA98 & 2) {
+                    if (g_hero.anim_flags & 2) {
                         if (((unsigned char *)g_hero.moby)[0x53] != 0) {
                             set_hero_animation(0, 0, scale_ticks(0xC));
                         } else if (random_float_between(0.0f, 1.0f) < 0.5f) {
@@ -2571,16 +2571,16 @@ void HeroL17_UpdateStateTransitions(void) {
                         break;
                     }
                     if (pad_pressed_within(0x80, scale_ticks(7), 0)) {
-                        if (g_hero.unk22DE == 0) {
+                        if (g_hero.vehicle_toggle_timer == 0) {
                             allocate_hero_voice_for_entry(0x19, 0);
-                            g_hero.unk22DE = 0x12;
+                            g_hero.vehicle_toggle_timer = 0x12;
                             g_hero.unk22DC = 1;
                         }
                         hero_switch_item(0);
                         break;
                     }
                     stick_target(0, 1.0f);
-                    if (g_hero.unk229C > 0.22f && g_hero.target_speed > 0.0f) {
+                    if (g_hero.stick_magnitude > 0.22f && g_hero.target_speed > 0.0f) {
                         HeroL17_SetMoveState(0x54, 1);
                     }
                     break;
@@ -2621,14 +2621,14 @@ void HeroL17_UpdateStateTransitions(void) {
                         HeroL17_SetMoveState(0x57, 1);
                         break;
                     }
-                    if (g_hero.unk229C > 0.5f && scale_ticks(0x28) > g_hero.state_timer && g_hero.unk1C4 == 0) {
+                    if (g_hero.stick_magnitude > 0.5f && scale_ticks(0x28) > g_hero.state_timer && g_hero.move_lock_timer == 0) {
                         HeroL17_SetMoveState(0x54, 1);
                         break;
                     }
                     HeroL17_SetMoveState(0x53, 0);
                     set_hero_animation(7, 0, -1.0f);
                     g_hero.anim_speed = 0.35f;
-                    g_hero.unk1C4 = scale_ticks(0x14);
+                    g_hero.move_lock_timer = scale_ticks(0x14);
                     break;
                 case 84:
                     g_hero.anim_speed = g_hero.motion.speed_xy * 54.0f;
@@ -2643,9 +2643,9 @@ void HeroL17_UpdateStateTransitions(void) {
                         }
                     }
                     if (pad_pressed_within(0x80, scale_ticks(7), 0)) {
-                        if (g_hero.unk22DE == 0) {
+                        if (g_hero.vehicle_toggle_timer == 0) {
                             allocate_hero_voice_for_entry(0x19, 0);
-                            g_hero.unk22DE = 0x12;
+                            g_hero.vehicle_toggle_timer = 0x12;
                             g_hero.unk22DC = 1;
                         }
                         hero_switch_item(0);
@@ -2655,7 +2655,7 @@ void HeroL17_UpdateStateTransitions(void) {
                         HeroL17_SetMoveState(0x59, 1);
                         break;
                     }
-                    if (g_hero.air_frames.s == 0 && g_hero.unk229C < 0.17f) {
+                    if (g_hero.air_frames.s == 0 && g_hero.stick_magnitude < 0.17f) {
                         HeroL17_SetMoveState(0x53, 1);
                     }
                     break;
@@ -2664,7 +2664,7 @@ void HeroL17_UpdateStateTransitions(void) {
                         HeroL17_SetMoveState(0x55, 1);
                         break;
                     }
-                    if (g_hero.unkA98 & 2) {
+                    if (g_hero.anim_flags & 2) {
                         HeroL17_SetMoveState(0x53, 1);
                         break;
                     }
@@ -2706,7 +2706,7 @@ void HeroL17_UpdateStateTransitions(void) {
                     D_L17_0016D100 = 0;
                     break;
                 case 32:
-                    if (((unsigned char *)g_hero.items[0].moby) != 0 && g_hero.unkA9C == 0 && g_hero.anim_frame > 20.0f) {
+                    if (((unsigned char *)g_hero.items[0].moby) != 0 && g_hero.anim_changing == 0 && g_hero.anim_frame > 20.0f) {
                         HeroL17_SetMoveState(0, 0);
                     }
                     break;
@@ -2734,10 +2734,10 @@ void HeroL17_UpdateStateTransitions(void) {
         remove_hero_cached_moby_and_clear_slot_three_moby_flags();
     }
     if (prevState != g_hero.state.step) {
-        g_hero.unk1A0 = 0;
+        g_hero.step_frames = 0;
     }
     if (prevAnim != moby[0x53]) {
-        g_hero.unk1A4 = 0;
+        g_hero.anim_seq_frames = 0;
     }
 }
 extern void func_0022C7E0(void);

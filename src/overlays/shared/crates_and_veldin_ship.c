@@ -990,7 +990,7 @@ void DecoyGlove_AimThrow(int collision_arg, Moby *carrier, float *position)
         range = (((PadState *)(D_0013A5E0_2D3608 + 0x2460))->held & 5) ? 3.5f : 2.5f;
         func_001F9C30_2D3608(aim, direction, range);
         func_001F9BD8_2D3608(aim, aim, anchor_ptr);
-        if ((((PadState *)(D_0013A5E0_2D3608 + 0x2460))->held & 5) && h->unk20AC == 0) {
+        if ((((PadState *)(D_0013A5E0_2D3608 + 0x2460))->held & 5) && h->item_use_locked == 0) {
             *(u128_2D3608 *)launch = 0;
             launch[2] = 1.0f;
             func_001F9EE8_2D3608(launch, launch, inverse);
@@ -1401,8 +1401,8 @@ void metal_detector_update(struct Moby *moby) {
     func_L00_00250800_2D4398(moby, 0, &vars->pos);
     switch (moby->state) {
     case 0:
-        ((Hero *)D_0013F450_2D4398)->unk2044 = 100000.0f;
-        ((Hero *)D_0013F450_2D4398)->unk2040 = 0;
+        ((Hero *)D_0013F450_2D4398)->detector_target_dist = 100000.0f;
+        ((Hero *)D_0013F450_2D4398)->metal_detector_target = 0;
         vars->voice0 = -1;
         vars->voice1 = -1;
         vars->voice2 = -1;
@@ -1422,11 +1422,11 @@ void metal_detector_update(struct Moby *moby) {
         one = 1.0f;
         *(u128_2D4398 *)v = 0;
         v[2] = one;
-        if (((Hero *)D_0013F450_2D4398)->unk2040 != 0 && ((Hero *)D_0013F450_2D4398)->unk2040->oclass == 0x25D && ((Hero *)D_0013F450_2D4398)->unk2040->state != 0xFE &&
-            ((Hero *)D_0013F450_2D4398)->unk2040->state != 0xFD) {
-            pitch = distxy_2D4398(&vars->pos, &((Hero *)D_0013F450_2D4398)->unk2040->pos);
-            pitch = atan2_2D4398(pitch, ((Hero *)D_0013F450_2D4398)->unk2040->pos.z - vars->pos.f[2]);
-            yaw = atan2_2D4398(((Hero *)D_0013F450_2D4398)->unk2040->pos.x - vars->pos.f[0], ((Hero *)D_0013F450_2D4398)->unk2040->pos.y - vars->pos.f[1]);
+        if (((Hero *)D_0013F450_2D4398)->metal_detector_target != 0 && ((Hero *)D_0013F450_2D4398)->metal_detector_target->oclass == 0x25D && ((Hero *)D_0013F450_2D4398)->metal_detector_target->state != 0xFE &&
+            ((Hero *)D_0013F450_2D4398)->metal_detector_target->state != 0xFD) {
+            pitch = distxy_2D4398(&vars->pos, &((Hero *)D_0013F450_2D4398)->metal_detector_target->pos);
+            pitch = atan2_2D4398(pitch, ((Hero *)D_0013F450_2D4398)->metal_detector_target->pos.z - vars->pos.f[2]);
+            yaw = atan2_2D4398(((Hero *)D_0013F450_2D4398)->metal_detector_target->pos.x - vars->pos.f[0], ((Hero *)D_0013F450_2D4398)->metal_detector_target->pos.y - vars->pos.f[1]);
             yaw = subrot_2D4398(yaw, ((Hero *)D_0013F450_2D4398)->motion.rot.f[2]);
             pitch = subrot_2D4398(pitch, -1.5707964f);
             abs_yaw = fabs_2D4398(yaw);
@@ -1479,22 +1479,22 @@ void metal_detector_update(struct Moby *moby) {
             vars->unk28 = 0;
         }
         if ((((PadState *)D_0013CA40_2D4398)->held & 0x20) && ((Hero *)D_0013F450_2D4398)->items[0].unk20 > ticks_2D4398(0xF)) {
-            if (((Hero *)D_0013F450_2D4398)->unk2044 < 10.0f) {
+            if (((Hero *)D_0013F450_2D4398)->detector_target_dist < 10.0f) {
                 if (func_L00_0028EB98_2D4398(moby, vars->voice2) == 0 && vars->voice2 == -1) {
                     vars->voice2 = voice_2D4398(1, 4, moby);
                 }
                 if (vars->voice2 != -1) {
                     func_L00_0028F210_2D4398(vars->voice2,
-                                     trunc_2D4398((10.0f - (((Hero *)D_0013F450_2D4398)->unk2044 + ((Hero *)D_0013F450_2D4398)->unk2044)) * 32767.0f / 60.0f) - 0x1FFF);
+                                     trunc_2D4398((10.0f - (((Hero *)D_0013F450_2D4398)->detector_target_dist + ((Hero *)D_0013F450_2D4398)->detector_target_dist)) * 32767.0f / 60.0f) - 0x1FFF);
                 }
                 {
-                    s32 c = trunc_2D4398(((Hero *)D_0013F450_2D4398)->unk2044 * 255.0f / 10.0f);
+                    s32 c = trunc_2D4398(((Hero *)D_0013F450_2D4398)->detector_target_dist * 255.0f / 10.0f);
                     s32 col = (c << 8) | 0xFF000000;
 
                     moby->glow_color = ((c << 16) | col) | 0xFF;
                 }
-                t = ((Hero *)D_0013F450_2D4398)->unk2040;
-                if (t != 0 && t->oclass == 0x25D && t->state != 0xFE && t->state != 0xFD && ((Hero *)D_0013F450_2D4398)->unk2044 < 1.0f) {
+                t = ((Hero *)D_0013F450_2D4398)->metal_detector_target;
+                if (t != 0 && t->oclass == 0x25D && t->state != 0xFE && t->state != 0xFD && ((Hero *)D_0013F450_2D4398)->detector_target_dist < 1.0f) {
                     tv = (TargetVars_2D4398 *)t->pvars;
                     while (tv->count > 0) {
                         w[0] = rand_2D4398(1.0f, 10.0f) * D_0015EE6C_2D19E8;
@@ -1502,28 +1502,28 @@ void metal_detector_update(struct Moby *moby) {
                         w[2] = rand_2D4398(1.0f, 12.0f) * D_0015EE6C_2D19E8;
                         rotate_2D4398(w, w, (Hero *)D_0013F450_2D4398);
                         {
-                            Vec4f *q = &((Hero *)D_0013F450_2D4398)->unk2040->pos;
+                            Vec4f *q = &((Hero *)D_0013F450_2D4398)->metal_detector_target->pos;
 
                             qcopy(q, &vars->pos);
                             func_L00_00260958_2D4398(q, 0.2f);
                         }
-                        t = ((Hero *)D_0013F450_2D4398)->unk2040;
+                        t = ((Hero *)D_0013F450_2D4398)->metal_detector_target;
                         func_L00_002A86D8_2D4398(t, &t->pos, w, 0x13, 5, 0);
-                        t = ((Hero *)D_0013F450_2D4398)->unk2040;
+                        t = ((Hero *)D_0013F450_2D4398)->metal_detector_target;
                         qcopy(&t->pos, &vars->pos);
                         if (tv != 0) {
                             if (tv->count > 0) {
                                 tv->count -= 5;
-                                t = ((Hero *)D_0013F450_2D4398)->unk2040;
+                                t = ((Hero *)D_0013F450_2D4398)->metal_detector_target;
                             }
                             func_L00_002D42D8_2D4398((u8 *)t);
                         } else {
                             func_L00_002D42D8_2D4398((u8 *)t);
                         }
                     }
-                    remove_2D4398(((Hero *)D_0013F450_2D4398)->unk2040);
-                    ((Hero *)D_0013F450_2D4398)->unk2040 = 0;
-                    ((Hero *)D_0013F450_2D4398)->unk2044 = 100000.0f;
+                    remove_2D4398(((Hero *)D_0013F450_2D4398)->metal_detector_target);
+                    ((Hero *)D_0013F450_2D4398)->metal_detector_target = 0;
+                    ((Hero *)D_0013F450_2D4398)->detector_target_dist = 100000.0f;
                     vars->unk8 = 0x7FFF;
                     voice_2D4398(3, 0, moby);
                     if (vars->voice2 != -1) {

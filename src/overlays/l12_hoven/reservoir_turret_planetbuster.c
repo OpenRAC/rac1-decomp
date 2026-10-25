@@ -980,7 +980,7 @@ void hoven_turret_update(Moby *moby) {
     case 4:
         hoven_turret_manned = 1;
         ((Hero *)(D_0013E633_e + 0xE1D))->unk20A5 = 1;
-        ((Hero *)(D_0013E633_e + 0xE1D))->unk1CC = scale_ticks(0x78);
+        ((Hero *)(D_0013E633_e + 0xE1D))->collision_off_frames = scale_ticks(0x78);
         ((Hero *)(D_0013E633_e + 0xE1D))->invulnerable_frames = scale_ticks(0x78);
         if (hoven_cinematic_mode != 2 && planetbuster_death_cam_active == 0) {
             AddDrawCallback(draw_hoven_turret_hud, moby);

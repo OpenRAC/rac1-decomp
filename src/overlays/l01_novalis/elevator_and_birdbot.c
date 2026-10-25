@@ -2057,10 +2057,10 @@ void water_current_update(Moby *self)
     }
 
     if ((u32)(g_hero.state.control_mode - 0x11) < 2) {
-        if (g_hero.unk22B8 < dist) {
+        if (g_hero.current_path_dist < dist) {
             return;
         }
-        g_hero.unk22B8 = dist;
+        g_hero.current_path_dist = dist;
         if (at_end == 0) {
             FastVecSub(&dir, &ahead, &nearest);
             vec_scale_to_length(&dir, &dir, g_frame_time_sq * 7.0f);
@@ -2099,8 +2099,8 @@ void water_current_update(Moby *self)
         len = FastVecLength(v);
         vec_scale_to_length(v, v, frame_scale * -0.014999985694885254f * len + len);
         qcopy(&g_hero.motion.platform_delta, v);
-        if (g_hero.unk1D8 < scale_ticks(0x23)) {
-            g_hero.unk1D8 = scale_ticks(0x23);
+        if (g_hero.jump_lockout_timer < scale_ticks(0x23)) {
+            g_hero.jump_lockout_timer = scale_ticks(0x23);
         }
     }
 }

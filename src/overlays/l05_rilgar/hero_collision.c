@@ -582,12 +582,12 @@ void integrate_hero_motion_with_collisions(void) {
 
     qcopy(previous.f, position);
     player = (Hero *)((char *)position - 0x80);
-    update_hero_attachment(player->unk4F8, (char *)position + 0x70, (char *)position + 0x10);
+    update_hero_attachment(player->ledge_moby, (char *)position + 0x70, (char *)position + 0x10);
     if (player->state.current == 34 || player->state.current == 20) {
         float limit;
         float *limited_velocity;
 
-        if (!player->unk1CC) {
+        if (!player->collision_off_frames) {
             float length;
 
             position = (float *)((char *)position + 0x60);
@@ -611,7 +611,7 @@ void integrate_hero_motion_with_collisions(void) {
 
             if (!hit || *(short *)(hit + 0xA6) == 0x1F6 || *(short *)(hit + 0xA6) == 0x59F) {
                 player = (Hero *)(D_0013E633 + 0xE1D);
-                if (!player->unk1CC) {
+                if (!player->collision_off_frames) {
                     float length;
                     float limit;
 
@@ -624,7 +624,7 @@ void integrate_hero_motion_with_collisions(void) {
         }
     } else if (player->state.control_mode != 13) {
         if (player->state.control_mode != 14) {
-            if (!player->unk1CC) {
+            if (!player->collision_off_frames) {
                 float length;
                 float limit;
 

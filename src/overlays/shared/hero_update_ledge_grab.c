@@ -640,35 +640,35 @@ void update_hero_timers_and_spatial_state(void) {
     s32 n;
     s32 n8;
 
-    if (D_0013F450_35038.unk20AD == 0) {
+    if (D_0013F450_35038.tilt_disabled == 0) {
         update_hero_tilt();
     }
     D_0013F450_35038.state_timer++;
-    D_0013F450_35038.unk19C++;
-    D_0013F450_35038.unk1A0++;
-    D_0013F450_35038.unk1A4++;
-    fast_dec_timer(&D_0013F450_35038.unk1C4);
+    D_0013F450_35038.control_mode_timer++;
+    D_0013F450_35038.step_frames++;
+    D_0013F450_35038.anim_seq_frames++;
+    fast_dec_timer(&D_0013F450_35038.move_lock_timer);
     fast_dec_timer(&D_0013F450_35038.invulnerable_frames);
     FastDecTimer(&D_0013F450_35038.unk1B2);
     fast_dec_timer(&D_0013F450_35038.unk1B8);
-    FastDecTimer(&D_0013F450_35038.unk1D8);
+    FastDecTimer(&D_0013F450_35038.jump_lockout_timer);
     FastDecTimer(&D_0013F450_35038.unk1DE);
     fast_dec_timer(&D_0013F450_35038.unk1B4);
     FastDecTimer(&D_0013F450_35038.unk1F0);
     FastDecTimer(&D_0013F450_35038.unk1B0);
     FastDecTimer(&D_0013F450_35038.unk1C8);
-    FastDecTimer(&D_0013F450_35038.unk1CA);
-    FastDecTimer(&D_0013F450_35038.unk1E4);
-    FastDecTimer(&D_0013F450_35038.unk1E6);
-    fast_dec_timer(&D_0013F450_35038.unk1CC);
+    FastDecTimer(&D_0013F450_35038.rail_catch_grace);
+    FastDecTimer(&D_0013F450_35038.rail_grab_cooldown);
+    FastDecTimer(&D_0013F450_35038.grapple_lockout_timer);
+    fast_dec_timer(&D_0013F450_35038.collision_off_frames);
     fast_dec_timer(&D_0013F450_35038.unk1D0);
-    fast_dec_timer(&D_0013F450_35038.unk1D4);
+    fast_dec_timer(&D_0013F450_35038.jump_buffer_lockout);
     FastDecTimer(&D_0013F450_35038.fidget_cooldown);
     FastDecTimer(&D_0013F450_35038.unk1E0);
     FastDecTimer(&D_0013F450_35038.unk1EE);
     FastDecTimer(&D_0013F450_35038.unk1EA);
     FastDecTimer(&D_0013F450_35038.unk1F4);
-    FastDecTimer(&D_0013F450_35038.unk1F2);
+    FastDecTimer(&D_0013F450_35038.jump_lock_timer);
     FastDecTimer(&D_0013F450_35038.unk1DC);
     FastDecTimer(&D_0013F450_35038.unk1F6);
     FastDecTimer(&D_0013F450_35038.unk1DA);
@@ -676,7 +676,7 @@ void update_hero_timers_and_spatial_state(void) {
     if (!(g_controller_state.held & 5)) {
         D_0013F450_35038.unk1EC = 0;
     }
-    if (D_0013F450_35038.unk20A8 != 0) {
+    if (D_0013F450_35038.item_anim_active != 0) {
         D_0013F450_35038.unk1BC++;
     } else {
         D_0013F450_35038.unk1BC = 0;
@@ -688,52 +688,52 @@ void update_hero_timers_and_spatial_state(void) {
         D_0013F450_35038.unk1AC = 0;
         D_0013F450_35038.unk1A8++;
     }
-    if (D_0013F450_35038.unk22DE != 0 && FastDecTimer(&D_0013F450_35038.unk22DE) != 0 &&
+    if (D_0013F450_35038.vehicle_toggle_timer != 0 && FastDecTimer(&D_0013F450_35038.vehicle_toggle_timer) != 0 &&
         D_0013F450_35038.health.hp != 0 && (*(s32 *)&D_L06_0015F6A8_35038) == 0) {
         if (D_0013F450_35038.vehicle_mode == 3) {
             restore_hero_from_vehicle_mode();
             if (pad_pressed_within(0x80, scale_ticks(0x12), 0)) {
-                D_0013F450_35038.unk20A6 = 1;
+                D_0013F450_35038.force_slot0_item8 = 1;
             }
         } else {
             m = CreateMoby(0x27A);
-            D_0013F450_35038.unkA8C = m;
+            D_0013F450_35038.vehicle_mode3_moby = m;
             if (m != 0) {
                 qcopy(&m->pos, &D_0013F450_35038.motion.pos);
                 qcopy(&m->rot, &D_0013F450_35038.motion.rot);
                 m->draw_dist = 0x40;
-                ((struct Moby *)D_0013F450_35038.unkA8C)->visible = 1;
-                ((struct Moby *)D_0013F450_35038.unkA8C)->glow_color = 0;
-                ((struct Moby *)D_0013F450_35038.unkA8C)->spawn_frame = D_0013F450_35038.moby->spawn_frame;
-                moby_build_matrix(D_0013F450_35038.unkA8C);
-                enter_hero_vehicle_mode_and_set_moby(3, 0x53, D_0013F450_35038.unkA8C);
+                ((struct Moby *)D_0013F450_35038.vehicle_mode3_moby)->visible = 1;
+                ((struct Moby *)D_0013F450_35038.vehicle_mode3_moby)->glow_color = 0;
+                ((struct Moby *)D_0013F450_35038.vehicle_mode3_moby)->spawn_frame = D_0013F450_35038.moby->spawn_frame;
+                moby_build_matrix(D_0013F450_35038.vehicle_mode3_moby);
+                enter_hero_vehicle_mode_and_set_moby(3, 0x53, D_0013F450_35038.vehicle_mode3_moby);
             }
         }
     }
     for (i = 0; i < 5; i++) {
         fast_dec_timer(&D_L06_0017A170[i].w0);
     }
-    D_0013F450_35038.unk22B8 = 9999.0f;
+    D_0013F450_35038.current_path_dist = 9999.0f;
     if (D_0013F450_35038.air_frames.s != 0 && gravity_z(&D_0013F450_35038.motion.velocity) < 0.0f) {
-        if (D_0013F450_35038.unk21B4 != 0x20) goto skip;
+        if (D_0013F450_35038.pos_history_count != 0x20) goto skip;
         clear_u64_value(&sum);
         n8 = 8;
         for (i = 0; i < n8; i++) {
-            n = D_0013F450_35038.unk21B0 - i;
+            n = D_0013F450_35038.pos_history_index - i;
             {
                 s32 a = (n + 0x1F) % 32;
                 s32 b = (n + 0x1E) % 32;
-                FastVecSub(&d, &D_0013F450_35038.unk1B00[a], &D_0013F450_35038.unk1B00[b]);
+                FastVecSub(&d, &D_0013F450_35038.pos_history[a], &D_0013F450_35038.pos_history[b]);
             }
             FastVecAdd(&sum, &sum, &d);
         }
         FastVecScale(&sum, &sum, 1.0f / (f32)n8);
         if (FastVecLength(&sum) < g_frame_time) {
-            D_0013F450_35038.unk1E2++;
+            D_0013F450_35038.still_frames++;
             goto skip;
         }
     }
-    D_0013F450_35038.unk1E2 = 0;
+    D_0013F450_35038.still_frames = 0;
 skip:
     update_hero_planar_distance_spring_motion();
     if (D_0013F450_35038.vehicle_mode == 1) {

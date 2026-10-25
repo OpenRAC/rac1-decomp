@@ -2448,10 +2448,10 @@ void SkidMcMarxUpdate(Moby *moby) {
                     target = g_frame_time * 19.0f;
                 }
                 h2 = (Hero *)(D_0013E633 + 0xE1D);
-                if (h2->unk894 < scale_ticks(0x2BC)) {
+                if (h2->race_time_frames < scale_ticks(0x2BC)) {
                     target += g_frame_time * 3.0f;
                 }
-                if (h2->unk7C0[d->f250] < h2->unk8C0) {
+                if (h2->race_rank[d->f250] < h2->race_position) {
                     target -= g_frame_time * 1.5f;
                 } else {
                     target += g_frame_time;

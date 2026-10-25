@@ -288,7 +288,7 @@ void run_level_main_loop(void) {
         if (D_L00_0015F6A8_2465F8 == 0 && ((Cam_2465F8 *)D_L00_0016C158_2465F8)->f18 != 0) {
             func_001E9768_v_2465F8();
         }
-        if (((Hero *)D_0013F450_2465F8)->unk20B1 == 0) {
+        if (((Hero *)D_0013F450_2465F8)->fall_fade_pending == 0) {
             int mode = D_L00_0015F6A8_2465F8;
 
             if (mode == 0 || mode == 2) {
@@ -318,7 +318,7 @@ void run_level_main_loop(void) {
             }
         }
         func_001F3D00_2465F8();
-        if (D_L00_0015F6A8_2465F8 == 0 && ((Hero *)D_0013F450_2465F8)->unk20B1 != 0) {
+        if (D_L00_0015F6A8_2465F8 == 0 && ((Hero *)D_0013F450_2465F8)->fall_fade_pending != 0) {
             quit = 1;
             full = 1;
         }

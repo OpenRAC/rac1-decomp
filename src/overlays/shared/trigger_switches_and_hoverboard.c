@@ -313,7 +313,7 @@ void hoverboard_update(unsigned char *moby) {
                 player = (struct Hero *)(hero_pos - 0x80);
                 grp = player->state.control_mode;
                 if (grp != 0x15) if (grp != 0x16) {
-                    player->unk86C = moby;
+                    player->hoverboard_moby = moby;
                     ((int (*)(int, int))Hero_TryMoveStateL05)(0x6B, 1);
                     if (data->unk50 == 0) {
                         qcopy(&data->home_pos, &((struct Moby *)moby)->pos);
@@ -331,7 +331,7 @@ void hoverboard_update(unsigned char *moby) {
                     if (hoverboard_race_finished != 0) {
                         struct Hero *h = (struct Hero *)(D_0013E633 + 0xE1D);
                         int ret = scale_ticks(0x4B0);
-                        if (ret < h->unk19C) {
+                        if (ret < h->control_mode_timer) {
                             extern unsigned short D_00141D60[];
                             if (D_00141D60[0] == 0) {
                                 Help_Request(0x138F, 0x5F);
@@ -1804,7 +1804,7 @@ void update_orbit_camera_position(Camera_32B1F8 *m) {
     vec_cross_32B1F8(&m->up, &rel, &down);
     vec_scale_32B1F8(&m->up, &m->up, 1.0f);
     vec_cross_32B1F8(&m->side, &m->up, &rel);
-    if (fl == 0 || fabs_32B1F8(dd) < 0.5f || (v = (float *)(D_0013E633_32B1F8 + 0xE1D), ((Hero *)v)->unk88D != 0)) {
+    if (fl == 0 || fabs_32B1F8(dd) < 0.5f || (v = (float *)(D_0013E633_32B1F8 + 0xE1D), ((Hero *)v)->trick_input != 0)) {
         tr->blend = spring_32B1F8(tr->blend, 0.0f, tr->state, tr->k34, tr->k38, tr->k3C);
     } else {
         float t;

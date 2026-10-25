@@ -471,7 +471,7 @@ void update_quartu_hint_triggers(Moby *m) {
             D_L15_0015F684_2EE7E8 = 0;
         }
         if (func_00215570_2EE7E8(D_0013E633_2EE7E8 + 0xE9D, t->vol54) != 0
-            && ((Hero *)(D_0013E633_2EE7E8 + 0xE1D))->vehicle_mode == 3 && ((Hero *)(D_0013E633_2EE7E8 + 0xE1D))->unk22E0 == 0
+            && ((Hero *)(D_0013E633_2EE7E8 + 0xE1D))->vehicle_mode == 3 && ((Hero *)(D_0013E633_2EE7E8 + 0xE1D))->glow_pulse_level == 0
             && D_L15_00161B48_2EE7E8 == 0 && *(unsigned short *)(D_0014171B_2EE7E8 + 0x78D) == 0) {
             func_L00_00203F20_2EE7E8(0x3A9E, 0x88);
         }

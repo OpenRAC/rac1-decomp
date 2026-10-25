@@ -362,7 +362,7 @@ void PathLiftUpdate(struct Moby *m) {
     axis_rotation_2d48(d->wobble, 0, d->angle);
     FastVecSub(&delta, &m->pos, &old);
     update_entity_matrix((char *)d->spring, &delta, &rot, &m->rot);
-    if (g_hero.state.control_mode == 13 && g_hero.unk964 == rider) {
+    if (g_hero.state.control_mode == 13 && g_hero.grapple_target == rider) {
         if (d->riding == 0) {
             d->riding = 1;
             d->timer = scale_ticks(path_lift_board_time);
@@ -491,7 +491,7 @@ void update_wind_control(Moby *m) {
         D_L14_00162300_2EC3E8.f10 = 1.0f;
         func_L14_002EC9C8_2EC3E8(m);
         h = (Hero *)(D_0013E633_2EC3E8 + 0xE1D);
-        if (h->unk308 == 0 && h->unk2284 != 0xD && (h->unk12E2 != 0 || h->frames_off_ground.s != 0)
+        if (h->unk308 == 0 && h->unk2284 != 0xD && (h->on_ice_ground != 0 || h->frames_off_ground.s != 0)
             && func_00215570_2EC3E8(D_0013E633_2EC3E8 + 0xE9D, d->vol0)) {
             float t;
             func_001F9938_2EC3E8(&d->timer2);
@@ -514,7 +514,7 @@ void update_wind_control(Moby *m) {
             d->timer2 = func_001F9850_2EC3E8(d->ticks);
             d->rate2 = 1.0f / func_001FA888_2EC3E8(d->timer2);
         }
-        if (((Hero *)(D_0013E633_2EC3E8 + 0xE1D))->unk308 != 0 || ((Hero *)(D_0013E633_2EC3E8 + 0xE1D))->unk12E2 == 0) {
+        if (((Hero *)(D_0013E633_2EC3E8 + 0xE1D))->unk308 != 0 || ((Hero *)(D_0013E633_2EC3E8 + 0xE1D))->on_ice_ground == 0) {
             if (d->timer > func_001F9850_2EC3E8(15)) {
                 d->timer = func_001F9850_2EC3E8(15);
                 d->rate = 1.0f / (float)d->timer;
@@ -2278,7 +2278,7 @@ void TaxiUpdate(Moby *moby) {
     if (moby->state >= 3 && moby->state <= 4) {
         Hero *g = (Hero *)(D_0013E633 + 0xE1D);
         if (g->ground_moby == moby && g->air_frames.s == 0) {
-            g->unk1F2 = 2;
+            g->jump_lock_timer = 2;
             g->unk1F4 = 2;
             transform_moby_vector_table_to_world_space((char *)moby);
         }

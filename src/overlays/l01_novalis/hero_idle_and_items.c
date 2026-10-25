@@ -1544,7 +1544,7 @@ int handle_hero_gadget_button(void) {
     int start;
     int mask;
 
-    if (D_0013F450_h241620.unk20AC != 0 && (D_0013F450_h241620.items[0].item_id != 8 || D_0013F450_h241620.unk308 != 1)) {
+    if (D_0013F450_h241620.item_use_locked != 0 && (D_0013F450_h241620.items[0].item_id != 8 || D_0013F450_h241620.unk308 != 1)) {
         return 0;
     }
     if (D_0013F450_h241620.vehicle_mode != 0) {
@@ -1560,7 +1560,7 @@ int handle_hero_gadget_button(void) {
     mask = D_0013F450_h241620.items[0].button_mask;
     switch (D_0013F450_h241620.items[0].item_id) {
     case 8:
-        if (D_0013F450_h241620.state.control_mode < 2U || (D_0013F450_h241620.state.control_mode == 4 && D_0013F450_h241620.unk418 != 0)) {
+        if (D_0013F450_h241620.state.control_mode < 2U || (D_0013F450_h241620.state.control_mode == 4 && D_0013F450_h241620.rail_land_frames != 0)) {
             Moby *m;
 
             if (D_0013F450_h241620.on_slip_ground != 0) {
@@ -1607,7 +1607,7 @@ int handle_hero_gadget_button(void) {
                 if (!func_L00_00267BA8_241620(mask, t, 0)) {
                     break;
                 }
-                if ((D_0013F450_h241620.unk41E == 0 && D_0013F450_h241620.ground_distance > 0.1f) || (D_0013F450_h241620.unk41E != 0 && D_0013F450_h241620.ground_distance > 0.57f)
+                if ((D_0013F450_h241620.past_jump_apex == 0 && D_0013F450_h241620.ground_distance > 0.1f) || (D_0013F450_h241620.past_jump_apex != 0 && D_0013F450_h241620.ground_distance > 0.57f)
                     || (D_0013F450_h241620.state.current == 8 && D_0013F450_h241620.ground_distance > 0.57f)) {
                     Hero_SetMoveState(0x14, 1);
                     break;
@@ -1625,7 +1625,7 @@ int handle_hero_gadget_button(void) {
 
             if (D_0013F450_h241620.state.current == 0x15) {
                 if (D_0013F450_h241620.state_timer > scale_ticks(0x1E)) {
-                    if (D_0013F450_h241620.unkA9C != 0) {
+                    if (D_0013F450_h241620.anim_changing != 0) {
                         break;
                     }
                     if (D_0013F450_h241620.anim_frame >= (float)rec->f10 && (D_0013CA40_p241620.held & 0xA) && func_L00_00267BA8_241620(mask, scale_ticks(0xF), 0)) {
@@ -1634,7 +1634,7 @@ int handle_hero_gadget_button(void) {
                     }
                 }
             }
-            if (D_0013F450_h241620.unkA9C != 0) {
+            if (D_0013F450_h241620.anim_changing != 0) {
                 break;
             }
             if (!(D_0013F450_h241620.anim_frame >= (float)rec->f10)) {
@@ -1680,11 +1680,11 @@ int handle_hero_gadget_button(void) {
         if (((Moby *)D_0013F450_h241620.items[0].moby)->oclass != 0x1E3) {
             break;
         }
-        if (D_0013F450_h241620.unk22DE != 0) {
+        if (D_0013F450_h241620.vehicle_toggle_timer != 0) {
             break;
         }
         allocate_hero_voice_for_entry(0x18, 0);
-        D_0013F450_h241620.unk22DE = 0x12;
+        D_0013F450_h241620.vehicle_toggle_timer = 0x12;
         D_0013F450_h241620.unk22DC = 1;
         break;
     case 32:
@@ -1705,7 +1705,7 @@ int handle_hero_gadget_button(void) {
             pv = (PVar_241620 *)((Moby *)D_0013F450_h241620.items[0].moby)->pvars;
             if (((D_0013CA40_p241620.held & mask) && D_0013F450_h241620.items[0].unk20 > scale_ticks(5)) || (D_0013CA40_p241620.pressed & mask)) {
                 if (get_ammo(-1)) {
-                    if (D_0013F450_h241620.unk20A8 == 0) {
+                    if (D_0013F450_h241620.item_anim_active == 0) {
                         start_equipped_item_animation();
                     }
                     break;
@@ -1731,7 +1731,7 @@ int handle_hero_gadget_button(void) {
             int t;
             int n;
 
-            if (D_0013F450_h241620.unk20A8 != 0) {
+            if (D_0013F450_h241620.item_anim_active != 0) {
                 break;
             }
             t = scale_ticks(7);
@@ -1740,7 +1740,7 @@ int handle_hero_gadget_button(void) {
                 || ((D_0013CA40_p241620.held & 0x20) && n > scale_ticks(8) && n < scale_ticks(0x11))) {
                 if (get_ammo(-1)) {
                     if (D_0013F450_h241620.state.control_mode == 0xC || D_0013F450_h241620.state.control_mode == 0 || D_0013F450_h241620.state.current == 3
-                        || (D_0013F450_h241620.state.control_mode == 1 && D_0013F450_h241620.unk229C < 0.7f)) {
+                        || (D_0013F450_h241620.state.control_mode == 1 && D_0013F450_h241620.stick_magnitude < 0.7f)) {
                         Hero_SetMoveState(0x23, 1);
                     } else {
                         start_equipped_item_animation();
@@ -1754,7 +1754,7 @@ int handle_hero_gadget_button(void) {
         }
         break;
     case 18:
-        if (D_0013F450_h241620.state.control_mode < 2U || (D_0013F450_h241620.state.control_mode == 4 && D_0013F450_h241620.unk418 != 0)) {
+        if (D_0013F450_h241620.state.control_mode < 2U || (D_0013F450_h241620.state.control_mode == 4 && D_0013F450_h241620.rail_land_frames != 0)) {
             if (D_0013F450_h241620.state.current != 1) {
                 int t = scale_ticks(0xA);
                 int n = D_0013F450_h241620.items[0].unk20;
@@ -1780,7 +1780,7 @@ int handle_hero_gadget_button(void) {
     }
     if (D_0013F450_h241620.state_timer == start) {
         if (hero_slot_item_id(3) == 3 && D_0013F450_h241620.state.current != 0x81 && (D_0013F450_h241620.unk308 == 0 || D_0013D5C8_241620[0x1C] == 0)
-            && D_0013F450_h241620.unk22D8 == 0) {
+            && D_0013F450_h241620.pack_disabled == 0) {
             func_001F9908_241620(&r1_double_tap_timer);
             if (r1_double_tap_timer != 0) {
                 if (D_0013F450_h241620.state.control_mode < 2U || D_0013F450_h241620.state.control_mode == 0xC

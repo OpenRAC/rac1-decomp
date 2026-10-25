@@ -202,10 +202,10 @@ void initialize_hero(void) {
     D_0013F450_05278.health.hp = hero_max_health;
     D_0013F450_05278.reach_distance = 2.125f;
     D_0013F450_05278.reach_height = 1.25f;
-    D_0013F450_05278.health.unk22AC = 4;
+    D_0013F450_05278.health.vehicle_mode_hp = 4;
     D_0013F450_05278.health.unk22B0 = D_0013F450_05278.health.hp;
     D_0013F450_05278.unk1010 = rand_range(scale_ticks(0xB4), scale_ticks(0x12C));
-    D_0013F450_05278.unk1014 = 0.007f;
+    D_0013F450_05278.idle_look_ease_rate = 0.007f;
     D_0013F450_05278.unk1018 = 0.3f;
     D_0013F450_05278.unkD20 = 0.97f;
 }
@@ -217,13 +217,13 @@ void reset_hero_to_idle(void) {
     struct Hero *hero_state = &D_0013F450_05278;
     hero_state->capsule_top = 0.8f;
     hero_state->unk234 = 0.45f;
-    hero_state->unk228 = 0.8f;
+    hero_state->capsule_top_target = 0.8f;
     hero_state->unk224 = 0.7f;
     hero_state->unk22C = 0.7f;
-    hero_state->unk22CB = 0;
+    hero_state->vent_updraft = 0;
     hero_state->state.current = HERO_STATE_IDLE;
     *(int *)(D_0014171B + 0x4D) = 0;
-    hero_state->unkA94 = 1.0f;
+    hero_state->anim_frame_rate = 1.0f;
     clear_hero_queued_animation();
     HeroEnterMoveState(HERO_STATE_IDLE, 1);
 }
@@ -1438,8 +1438,8 @@ void update_hero_color_and_item_tint(void) {
     struct Hero *player = &D_0013F450_07CC0;
     int blink;
 
-    if (player->unk22F4 != 0) {
-        int color = player->unk22F8;
+    if (player->color_fade_active != 0) {
+        int color = player->tint_color;
         int red = color & 0xff;
         int blue = (color >> 16) & 0xff;
         int green = (color >> 8) & 0xff;
@@ -1452,7 +1452,7 @@ void update_hero_color_and_item_tint(void) {
         {
             int alpha = (unsigned int)color >> 24;
             set_moby_color(((void *)player->moby), red, green, blue);
-            player->unk22F8 = alpha << 24 | blue << 16 | green << 8 | red;
+            player->tint_color = alpha << 24 | blue << 16 | green << 8 | red;
         }
     }
 
@@ -1789,13 +1789,13 @@ void update_hero_and_equipped_item_glows(void) {
             float k, f;
             int r, g, b, a, col, col1, bs, gs;
             k = D_0015EE6C_2086C8 * 3.14159274f;
-            if (((Hero *)D_0013F450_2086C8)->unk20A8 != 0) k = D_0015EE6C_2086C8 * 4.71238899f;
+            if (((Hero *)D_0013F450_2086C8)->item_anim_active != 0) k = D_0015EE6C_2086C8 * 4.71238899f;
             f = func_001FA748_2086C8(((Hero *)D_0013F450_2086C8)->items[0].glow_phase, k);
             ((Hero *)D_0013F450_2086C8)->items[0].glow_phase = f;
             r = func_001FA898_2086C8(func_001F9FA8_2086C8(f) * 20.0f) + 30;
             g = func_001FA898_2086C8(func_001F9FA8_2086C8(f) * 90.0f) + 150;
             b = func_001FA898_2086C8(func_001F9FA8_2086C8(f) * 20.0f) + 30;
-            if (((Hero *)D_0013F450_2086C8)->unk20A8 != 0) {
+            if (((Hero *)D_0013F450_2086C8)->item_anim_active != 0) {
                 int tmp = r;
                 r = g;
                 g = tmp;
@@ -1817,10 +1817,10 @@ void update_hero_and_equipped_item_glows(void) {
         float k, f;
         int r, g, b, col;
         k = D_0015EE6C_2086C8 * 2.26892805f;
-        if (((Hero *)D_0013F450_2086C8)->unk20A8 != 0) k = D_0015EE6C_2086C8 * 7.33038282f;
+        if (((Hero *)D_0013F450_2086C8)->item_anim_active != 0) k = D_0015EE6C_2086C8 * 7.33038282f;
         f = func_001FA748_2086C8(((Hero *)D_0013F450_2086C8)->items[0].glow_phase, k);
         ((Hero *)D_0013F450_2086C8)->items[0].glow_phase = f;
-        if (((Hero *)D_0013F450_2086C8)->unk20A8 != 0) {
+        if (((Hero *)D_0013F450_2086C8)->item_anim_active != 0) {
             r = func_001FA898_2086C8(func_001F9FA8_2086C8(f) * 30.0f) + 50;
             g = func_001FA898_2086C8(func_001F9FA8_2086C8(f) * 30.0f) + 50;
             b = func_001FA898_2086C8(func_001F9FA8_2086C8(f) * 90.0f) + 170;
@@ -3260,15 +3260,15 @@ void check_ledge_grab(void) {
     Obj_20C568 *b;
 
     if (((Hero *)D_0013F450_20C568)->unk308 == 2) return;
-    ((Hero *)D_0013F450_20C568)->unk4E8 = 0;
+    ((Hero *)D_0013F450_20C568)->ledge_found = 0;
     if (((Hero *)D_0013F450_20C568)->unk1B0 != 0) return;
     go = 0;
     if (((Hero *)D_0013F450_20C568)->vehicle_mode == 0) {
-        if ((((Hero *)D_0013F450_20C568)->state.control_mode == 4 && (((Hero *)D_0013F450_20C568)->unk41E != 0 || ((Hero *)D_0013F450_20C568)->motion.velocity.f[2] < D_0015EE6C_20C568 * 3.5f)) || ((Hero *)D_0013F450_20C568)->state.control_mode == 2 || ((Hero *)D_0013F450_20C568)->state.current == 8 || ((Hero *)D_0013F450_20C568)->state.current == 0x1A || ((Hero *)D_0013F450_20C568)->state.current == 0x1B) go = 1;
+        if ((((Hero *)D_0013F450_20C568)->state.control_mode == 4 && (((Hero *)D_0013F450_20C568)->past_jump_apex != 0 || ((Hero *)D_0013F450_20C568)->motion.velocity.f[2] < D_0015EE6C_20C568 * 3.5f)) || ((Hero *)D_0013F450_20C568)->state.control_mode == 2 || ((Hero *)D_0013F450_20C568)->state.current == 8 || ((Hero *)D_0013F450_20C568)->state.current == 0x1A || ((Hero *)D_0013F450_20C568)->state.current == 0x1B) go = 1;
         if (((Hero *)D_0013F450_20C568)->state.current == 0xE && ((Hero *)D_0013F450_20C568)->anim_frame < 37.0f) go = 0;
     }
     if (((Hero *)D_0013F450_20C568)->vehicle_mode == 1) {
-        if ((((Hero *)D_0013F450_20C568)->state.control_mode == 4 && (((Hero *)D_0013F450_20C568)->unk41E != 0 || ((Hero *)D_0013F450_20C568)->motion.velocity.f[2] < D_0015EE6C_20C568 * 2.5f)) || ((Hero *)D_0013F450_20C568)->state.control_mode == 2 || ((Hero *)D_0013F450_20C568)->state.current == 0x4F || ((Hero *)D_0013F450_20C568)->state.current == 0x4D || ((Hero *)D_0013F450_20C568)->state.current == 0x4E) go = 1;
+        if ((((Hero *)D_0013F450_20C568)->state.control_mode == 4 && (((Hero *)D_0013F450_20C568)->past_jump_apex != 0 || ((Hero *)D_0013F450_20C568)->motion.velocity.f[2] < D_0015EE6C_20C568 * 2.5f)) || ((Hero *)D_0013F450_20C568)->state.control_mode == 2 || ((Hero *)D_0013F450_20C568)->state.current == 0x4F || ((Hero *)D_0013F450_20C568)->state.current == 0x4D || ((Hero *)D_0013F450_20C568)->state.current == 0x4E) go = 1;
     }
     if (!go) return;
 
@@ -3288,8 +3288,8 @@ void check_ledge_grab(void) {
         rise = 0.7f;
         back = 0.32f;
     }
-    speed = ((Hero *)D_0013F450_20C568)->unk940;
-    if (((Hero *)D_0013F450_20C568)->state.control_mode == 4) speed = ((Hero *)D_0013F450_20C568)->unk4A0;
+    speed = ((Hero *)D_0013F450_20C568)->fall_state_gravity;
+    if (((Hero *)D_0013F450_20C568)->state.control_mode == 4) speed = ((Hero *)D_0013F450_20C568)->jump_gravity;
     r = func_001F9850_20C568(2);
     func_L00_0025A540_20C568(v0, ((Hero *)D_0013F450_20C568)->motion.pos.f, ((Hero *)D_0013F450_20C568)->motion.unk110.f, r, speed);
     found = 0;
@@ -3322,7 +3322,7 @@ void check_ledge_grab(void) {
         }
         if (!ok) return;
     }
-    ((Hero *)D_0013F450_20C568)->unk4F8 = (s32)(((Hit_20C568 *)D_L00_00173F40_20C568)->m18);
+    ((Hero *)D_0013F450_20C568)->ledge_moby = (s32)(((Hit_20C568 *)D_L00_00173F40_20C568)->m18);
     if (((Hero *)D_0013F450_20C568)->motion.pos.f[2] + up < ((Hit_20C568 *)D_L00_00173F40_20C568)->v20[2]) return;
     qcopy(v10, ((Hit_20C568 *)D_L00_00173F40_20C568)->v20);
     qcopy(v20, ((Hit_20C568 *)D_L00_00173F40_20C568)->v20);
@@ -3333,12 +3333,12 @@ void check_ledge_grab(void) {
     qcopy(v40, ((Hit_20C568 *)D_L00_00173F40_20C568)->v20);
     v40[2] += 0.6f;
     if (func_L00_001F1D20_20C568(0.45f, 0.6f, v40, 4, (int)((Hero *)D_0013F450_20C568)->moby)) {
-        ((Hero *)D_0013F450_20C568)->unk4F4 |= 1;
+        ((Hero *)D_0013F450_20C568)->ledge_flags |= 1;
     } else {
-        ((Hero *)D_0013F450_20C568)->unk4F4 &= 0xFFFFFFFE;
+        ((Hero *)D_0013F450_20C568)->ledge_flags &= 0xFFFFFFFE;
     }
     ang = func_L00_001FF860_20C568(v10[0] - ((Hero *)D_0013F450_20C568)->motion.pos.f[0], v10[1] - ((Hero *)D_0013F450_20C568)->motion.pos.f[1]);
-    ((Hero *)D_0013F450_20C568)->unk4E0 = v10[2];
+    ((Hero *)D_0013F450_20C568)->ledge_top_z = v10[2];
     if (v10[2] - ((Hero *)D_0013F450_20C568)->ground_z.f < rise) return;
 
     edge = 0;
@@ -3354,12 +3354,12 @@ void check_ledge_grab(void) {
         v50[2] = v60[2];
         if (func_L00_001EFFF0_20C568(v50, v60, 2, 0, 0)) {
             edge = 1;
-            ((Hero *)D_0013F450_20C568)->unk4E4 = func_L00_001FF860_20C568(((Hit_20C568 *)D_L00_00173F40_20C568)->v40[0], ((Hit_20C568 *)D_L00_00173F40_20C568)->v40[1]);
+            ((Hero *)D_0013F450_20C568)->ledge_normal_yaw = func_L00_001FF860_20C568(((Hit_20C568 *)D_L00_00173F40_20C568)->v40[0], ((Hit_20C568 *)D_L00_00173F40_20C568)->v40[1]);
             break;
         }
     }
     if (!edge) return;
-    if (!(func_001FA850_20C568(((Hero *)D_0013F450_20C568)->motion.rot.f[2], func_001FA748_20C568(((Hero *)D_0013F450_20C568)->unk4E4, 3.1415927f)) < 1.1344640f)) return;
+    if (!(func_001FA850_20C568(((Hero *)D_0013F450_20C568)->motion.rot.f[2], func_001FA748_20C568(((Hero *)D_0013F450_20C568)->ledge_normal_yaw, 3.1415927f)) < 1.1344640f)) return;
     {
         float max = 2.4f;
         float step = 0.03f;
@@ -3367,8 +3367,8 @@ void check_ledge_grab(void) {
         for (d = 0.0f; d < max; d += step) {
             qcopy(v60, v10);
             v60[2] = v10[2];
-            v60[0] += func_001F9F90_20C568(((Hero *)D_0013F450_20C568)->unk4E4) * d;
-            v60[1] += func_001F9FA8_20C568(((Hero *)D_0013F450_20C568)->unk4E4) * d;
+            v60[0] += func_001F9F90_20C568(((Hero *)D_0013F450_20C568)->ledge_normal_yaw) * d;
+            v60[1] += func_001F9FA8_20C568(((Hero *)D_0013F450_20C568)->ledge_normal_yaw) * d;
             qcopy(v50, v60);
             v60[2] += 0.5f;
             v50[2] -= 0.5f;
@@ -3377,13 +3377,13 @@ void check_ledge_grab(void) {
                 d = step * 0.5f;
                 d = -d;
                 v70[2] = v10[2];
-                v70[0] += func_001F9F90_20C568(((Hero *)D_0013F450_20C568)->unk4E4) * d;
-                v70[1] += func_001F9FA8_20C568(((Hero *)D_0013F450_20C568)->unk4E4) * d;
-                qcopy(((Hero *)D_0013F450_20C568)->unk4D0.f, v70);
-                ((Hero *)D_0013F450_20C568)->unk4D0.f[0] += func_001F9F90_20C568(((Hero *)D_0013F450_20C568)->unk4E4) * back;
-                ((Hero *)D_0013F450_20C568)->unk4D0.f[1] += func_001F9FA8_20C568(((Hero *)D_0013F450_20C568)->unk4E4) * back;
-                ((Hero *)D_0013F450_20C568)->unk4E8 = 1;
-                ((Hero *)D_0013F450_20C568)->unk4D0.f[2] += drop;
+                v70[0] += func_001F9F90_20C568(((Hero *)D_0013F450_20C568)->ledge_normal_yaw) * d;
+                v70[1] += func_001F9FA8_20C568(((Hero *)D_0013F450_20C568)->ledge_normal_yaw) * d;
+                qcopy(((Hero *)D_0013F450_20C568)->ledge_hang_pos.f, v70);
+                ((Hero *)D_0013F450_20C568)->ledge_hang_pos.f[0] += func_001F9F90_20C568(((Hero *)D_0013F450_20C568)->ledge_normal_yaw) * back;
+                ((Hero *)D_0013F450_20C568)->ledge_hang_pos.f[1] += func_001F9FA8_20C568(((Hero *)D_0013F450_20C568)->ledge_normal_yaw) * back;
+                ((Hero *)D_0013F450_20C568)->ledge_found = 1;
+                ((Hero *)D_0013F450_20C568)->ledge_hang_pos.f[2] += drop;
                 return;
             }
         }

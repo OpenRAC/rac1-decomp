@@ -2008,7 +2008,7 @@ void follow_camera_apply_overrides(O_y *o) {
 
     s = (S220_y *)((u8 *)o->m + 0x220);
     if (hero74.unk2284 == 0xD && s->i10 != 0x14D) {
-        f = FastAddRots(hero74.unk4E4, 3.14159265f);
+        f = FastAddRots(hero74.ledge_normal_yaw, 3.14159265f);
         v[0] = FastCos(f);
         v[1] = FastSin(f);
         v[2] = 0.0f;

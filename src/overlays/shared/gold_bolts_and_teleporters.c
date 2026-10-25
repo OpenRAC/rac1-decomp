@@ -117,8 +117,8 @@ void update_rail_hero_motion(struct Moby *m) {
     }
     if (end == 0) {
         func_001F9BF0_F7700(&dir, &pt, &best_pt);
-        D_0013F450_F7700.unk9D4 = func_L00_001FF860_F7700(func_001F9CE8_F7700(&dir), dir.f[2]);
-        D_0013F450_F7700.unk9D0 = func_L00_001FF860_F7700(dir.f[0], dir.f[1]);
+        D_0013F450_F7700.rail_ride_pitch = func_L00_001FF860_F7700(func_001F9CE8_F7700(&dir), dir.f[2]);
+        D_0013F450_F7700.rail_yaw = func_L00_001FF860_F7700(dir.f[0], dir.f[1]);
         dir.i[2] = 0;
         if (D_0013F450_F7700.unk9DC < d->speed) {
             func_00214D28_F7700(&D_0013F450_F7700.unk9DC, d->speed, (*(f32 *)&D_0015EE70_F7700) * 6.0f);
@@ -132,14 +132,14 @@ void update_rail_hero_motion(struct Moby *m) {
         rate = D_0015EE6C_F7700 * 5.0f;
         pull.f[2] = 0.0f;
         drag = -func_001F9CE8_F7700(&pull);
-        func_L00_0025C918_F7700(&drag, 0.0f, &D_0013F450_F7700.unk9E0, D_0015EE64_F7700 * 0.008f, D_0015EE64_F7700 * 0.3f, rate);
+        func_L00_0025C918_F7700(&drag, 0.0f, &D_0013F450_F7700.rail_pull_step, D_0015EE64_F7700 * 0.008f, D_0015EE64_F7700 * 0.3f, rate);
         {
             f32 len = func_001F9CB8_F7700(&pull);
-            if (len < D_0013F450_F7700.unk9E0) {
-                D_0013F450_F7700.unk9E0 = len;
+            if (len < D_0013F450_F7700.rail_pull_step) {
+                D_0013F450_F7700.rail_pull_step = len;
             }
-            if (D_0013F450_F7700.unk9E0 < len) {
-                func_L00_001FF4B0_F7700(&pull, &pull, D_0013F450_F7700.unk9E0);
+            if (D_0013F450_F7700.rail_pull_step < len) {
+                func_L00_001FF4B0_F7700(&pull, &pull, D_0013F450_F7700.rail_pull_step);
             }
         }
         func_001F9BD8_F7700(&D_0013F450_F7700.motion.platform_delta, &D_0013F450_F7700.motion.platform_delta, &pull);
@@ -1308,7 +1308,7 @@ void gold_bolt_update(Moby *moby) {
             }
         }
         h = &hero_00309078;
-        if (h->unkA98 & 2) {
+        if (h->anim_flags & 2) {
             func_L00_00232C10_00309078(ticks_00309078(30), 0, 0);
         }
         if (moby->seq != 0 || !countdown_00309078(&vars->timer)) {
@@ -3323,14 +3323,14 @@ void update_camera_position_and_orientation_from_paths(Cam_316730 *cam) {
         Path_316730 *path;
         float dist;
 
-        seg = ((Hero *)(D_0013E633 + 0xE1D))->unk564;
-        frac = ((Hero *)(D_0013E633 + 0xE1D))->unk568;
+        seg = ((Hero *)(D_0013E633 + 0xE1D))->rail_segment;
+        frac = ((Hero *)(D_0013E633 + 0xE1D))->rail_seg_frac;
         c->t = frac;
         c->idx = seg;
         Spline_AdvanceByDistance(D_L01_001B0C30_316730[pi], v0, &c->idx, &c->t, 1.0f, 0);
         qcopy(b->pos, v0);
         path = D_L01_001B0C30_316730[pi];
-        dist = path->nodes[seg].w * (frac / ((Path_316730 *)((Hero *)(D_0013E633 + 0xE1D))->unk560)->nodes[seg].w);
+        dist = path->nodes[seg].w * (frac / ((Path_316730 *)((Hero *)(D_0013E633 + 0xE1D))->rail_spline)->nodes[seg].w);
         FastVecSub(v50, &path->nodes[seg + 1], &path->nodes[seg]);
         vec_scale_to_length(v40, v50, dist);
         FastVecAdd(v60, &path->nodes[seg], v40);
@@ -3362,11 +3362,11 @@ void update_camera_position_and_orientation_from_paths(Cam_316730 *cam) {
             lo = func_001FA898_r(pathB->nodes[prev].w);
             hi = func_001FA898_r(pathB->nodes[i].w);
             if (hi < lo) {
-                if (((Hero *)(D_0013E633 + 0xE1D))->unk564 >= lo || ((Hero *)(D_0013E633 + 0xE1D))->unk564 < hi) {
+                if (((Hero *)(D_0013E633 + 0xE1D))->rail_segment >= lo || ((Hero *)(D_0013E633 + 0xE1D))->rail_segment < hi) {
                     break;
                 }
             } else {
-                if (((Hero *)(D_0013E633 + 0xE1D))->unk564 >= lo && ((Hero *)(D_0013E633 + 0xE1D))->unk564 < hi) {
+                if (((Hero *)(D_0013E633 + 0xE1D))->rail_segment >= lo && ((Hero *)(D_0013E633 + 0xE1D))->rail_segment < hi) {
                     break;
                 }
             }
@@ -3381,14 +3381,14 @@ void update_camera_position_and_orientation_from_paths(Cam_316730 *cam) {
             spd = pathB->nodes[j].x;
         }
         base = func_001FA898_r(pathB->nodes[j].w);
-        cnt = ((Hero *)(D_0013E633 + 0xE1D))->unk564 - base;
+        cnt = ((Hero *)(D_0013E633 + 0xE1D))->rail_segment - base;
         if (cnt < 0) {
             cnt += pathD->n;
         }
         for (i = 0; i < cnt; i++) {
             sum += pathD->nodes[(base + i) % pathD->n].w;
         }
-        sum += ((Hero *)(D_0013E633 + 0xE1D))->unk568;
+        sum += ((Hero *)(D_0013E633 + 0xE1D))->rail_seg_frac;
         dist = lenC * (sum / lenB);
         ix = func_001FA898_r(pathC->nodes[j].w);
         fx = 0.0f;
@@ -3428,9 +3428,9 @@ void update_camera_position_and_orientation_from_paths(Cam_316730 *cam) {
             int hseg;
             float hfrac;
 
-            hseg = ((Hero *)(D_0013E633 + 0xE1D))->unk564;
-            hfrac = ((Hero *)(D_0013E633 + 0xE1D))->unk568;
-            Spline_AdvanceByDistance((Path_316730 *)((Hero *)(D_0013E633 + 0xE1D))->unk560, v30, &hseg, &hfrac, p->f38, 1);
+            hseg = ((Hero *)(D_0013E633 + 0xE1D))->rail_segment;
+            hfrac = ((Hero *)(D_0013E633 + 0xE1D))->rail_seg_frac;
+            Spline_AdvanceByDistance((Path_316730 *)((Hero *)(D_0013E633 + 0xE1D))->rail_spline, v30, &hseg, &hfrac, p->f38, 1);
             find_nearest_path_point(path, v30, v0, &seg, &frac, 0, 20.0f, 1.0f, 0.0f);
         }
         cam->pos[0] = Cam_InterpValues(cam->pos[0], v0[0], &d->vel[0], k, 0.175f, 0.0f);
@@ -3452,9 +3452,9 @@ void update_camera_position_and_orientation_from_paths(Cam_316730 *cam) {
         int hseg;
         float hfrac;
 
-        hseg = ((Hero *)(D_0013E633 + 0xE1D))->unk564;
-        hfrac = ((Hero *)(D_0013E633 + 0xE1D))->unk568;
-        Spline_AdvanceByDistance((Path_316730 *)((Hero *)(D_0013E633 + 0xE1D))->unk560, v40, &hseg, &hfrac, spd, 1);
+        hseg = ((Hero *)(D_0013E633 + 0xE1D))->rail_segment;
+        hfrac = ((Hero *)(D_0013E633 + 0xE1D))->rail_seg_frac;
+        Spline_AdvanceByDistance((Path_316730 *)((Hero *)(D_0013E633 + 0xE1D))->rail_spline, v40, &hseg, &hfrac, spd, 1);
     }
     vec_scale_to_length(v10, novalis_camera_up_axis, b->f4C);
     FastVecAdd(v30, v10, v40);
@@ -3663,7 +3663,7 @@ void update_camera_mode_from_preset(CamUser_00317408 *o) {
         if (d->target < 0) {
             return;
         }
-        if (hero_00309078.unk560 == D_L01_0015F7EC_00317408[d->target].unk10 && hero_00309078.unk570 == 0) {
+        if (hero_00309078.rail_spline == D_L01_0015F7EC_00317408[d->target].unk10 && hero_00309078.rail_off_frames == 0) {
             return;
         }
     }

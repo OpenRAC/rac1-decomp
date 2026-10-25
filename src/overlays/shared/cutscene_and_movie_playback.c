@@ -156,7 +156,7 @@ void handle_pause_input(void) {
     if (((((PadS *)(D_0013A5E0 + 0x2460))->w1A4 & 0x800) || noctl) && cinematic_mode_frames >= 8
         && ((Hero *)(D_0013E633 + 0xE1D))->state.current != 0x72 && ((Hero *)(D_0013E633 + 0xE1D))->items[0].unk1C != 2
         && ((Hero *)(D_0013E633 + 0xE1D))->state.current != 0x32 && ((Hero *)(D_0013E633 + 0xE1D))->state.current != 0x1D
-        && !((Hero *)(D_0013E633 + 0xE1D))->unk20B1 && ((Hero *)(D_0013E633 + 0xE1D))->health.hp
+        && !((Hero *)(D_0013E633 + 0xE1D))->fall_fade_pending && ((Hero *)(D_0013E633 + 0xE1D))->health.hp
         && ((AreaS *)(D_0013D355 + 0x3B))->wDC < 3 && ((AreaS *)(D_0013D355 + 0x3B))->wE4 < 0 && lvl == 0) {
         PauseAllSounds(0);
         return;
@@ -164,14 +164,14 @@ void handle_pause_input(void) {
     if (!(g_debug_menu.w8 & 0x10) && cinematic_mode_frames >= 8 && (((PadS *)(D_0013A5E0 + 0x2460))->w1A4 & 0x500)
         && ((Hero *)(D_0013E633 + 0xE1D))->state.control_mode != 0x16 && ((Hero *)(D_0013E633 + 0xE1D))->state.current != 0x72
         && ((Hero *)(D_0013E633 + 0xE1D))->state.current != 0x32 && ((Hero *)(D_0013E633 + 0xE1D))->state.current != 0x1D
-        && !((Hero *)(D_0013E633 + 0xE1D))->unk20B1 && ((Hero *)(D_0013E633 + 0xE1D))->health.hp
+        && !((Hero *)(D_0013E633 + 0xE1D))->fall_fade_pending && ((Hero *)(D_0013E633 + 0xE1D))->health.hp
         && ((AreaS *)(D_0013D355 + 0x3B))->wDC < 3 && ((AreaS *)(D_0013D355 + 0x3B))->wE4 < 0
         && lvl == 0 && !special && !g_debug_menu.wEC) {
         PauseAllSounds(10);
         return;
     }
     if (((AreaS *)(D_0013D355 + 0x3B))->wFC && !(r = (unsigned char *)(D_0013D355_b + 0x13B))[0x10] && cinematic_mode_frames >= 8
-        && !D_0015EF20 && !((Hero *)(D_0013E633 + 0xE1D))->unk20B1 && ((Hero *)(D_0013E633 + 0xE1D))->health.hp
+        && !D_0015EF20 && !((Hero *)(D_0013E633 + 0xE1D))->fall_fade_pending && ((Hero *)(D_0013E633 + 0xE1D))->health.hp
         && scale_ticks(0x1E) < level_frame_counter && g_current_level_index) {
         mode_freeze_init(5, 0, 0);
         r[0x10] = 1;

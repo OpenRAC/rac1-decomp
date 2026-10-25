@@ -906,7 +906,7 @@ void MorphorayUpdate(Moby *m) {
           || ((Hero *)D_0013F450_2BDAF0)->state.control_mode == 4 || ((Hero *)D_0013F450_2BDAF0)->state.control_mode == 5))
         && (*(int *)(D_0013A5E0_2BDAF0 + 0x2600) & ((Hero *)D_0013F450_2BDAF0)->items[0].button_mask) != 0
         && !flag && near) {
-        if (((Hero *)D_0013F450_2BDAF0)->unk20A8 == 0) {
+        if (((Hero *)D_0013F450_2BDAF0)->item_anim_active == 0) {
             func_L00_0020EB60_2BDAF0();
         }
         if (p->seen == 0) {

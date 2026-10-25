@@ -732,10 +732,10 @@ void update_path_junction_selection(struct Moby *moby) {
         }
         break;
     case 1:
-        g_hero.unk1CA = 5;
+        g_hero.rail_catch_grace = 5;
         for (k = 0; k < 4; k++) {
             if (g_hero.state.control_mode == 0xF &&
-                (g_hero.unk560 == (s32)vars->pair[k].first->path || g_hero.unk560 == (s32)vars->pair[k].second->path)) {
+                (g_hero.rail_spline == (s32)vars->pair[k].first->path || g_hero.rail_spline == (s32)vars->pair[k].second->path)) {
                 continue;
             }
             near_first = vec_distance_xy(&g_hero.motion.pos, &vars->pair[k].first->path->points[0]);

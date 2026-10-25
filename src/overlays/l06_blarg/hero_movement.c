@@ -18,17 +18,17 @@ void apply_hero_ground_material_response(void) {
     Hero *g1;
     Hero *g2;
     Hero *g3;
-    int saved_ground_sound_class = hero_state->unk12ED;
+    int saved_ground_sound_class = hero_state->ground_sound_class;
     int previous_ground_type = hero_state->ground_type;
     FastMemZero16(&hero_state->ground_type, 0x10);
-    hero_state->unk12ED = saved_ground_sound_class;
+    hero_state->ground_sound_class = saved_ground_sound_class;
     hero_state->ground_type = -1;
-    hero_state->unk20A9 = 0;
+    hero_state->wading = 0;
     hero_state->unk308 = 0;
     if (previous_ground_type == -1) return;
     if (previous_ground_type == 2) {
         if (hero_state->frames_off_ground.s == 0 || hero_state->ground_distance < 0.3f) {
-            hero_state->unk12E7 = 1;
+            hero_state->on_magnet_ground = 1;
             if (hero_state->vehicle_mode == 0) {
                 Moby *item_slot_1_moby = hero_state->items[1].moby;
                 if (item_slot_1_moby != 0 && item_slot_1_moby->oclass == 0xAD)
@@ -65,7 +65,7 @@ void apply_hero_ground_material_response(void) {
         g2 = (Hero *)(D_0013E633 + 0xE1D);
         if (g2->selector_1 != 0) {
             if (g2->grounded_frames != 0) {
-                if (g2->state.current != 0x3C || g2->unk41E != 0) {
+                if (g2->state.current != 0x3C || g2->past_jump_apex != 0) {
                     exit_hero_vehicle_mode_if_mode_three();
                     if (g2->health.hp != 0) {
                         HeroL06_TrySetMoveState(0x3C, 1);
@@ -255,39 +255,39 @@ void CameraL06_UpdateFollowOffsets(void) {
 
     switch (heroBlock.vehicle_mode) {
     case HERO_VEHICLE_MODE_ON_FOOT:
-        heroBlock.unk228 = 0.8f;
+        heroBlock.capsule_top_target = 0.8f;
         heroBlock.unk22C = 0.7f;
         heroBlock.unk230 = 0.45f;
         break;
     case HERO_VEHICLE_MODE_CLANK:
-        heroBlock.unk228 = 0.59999996f;
+        heroBlock.capsule_top_target = 0.59999996f;
         heroBlock.unk22C = 0.45000002f;
         heroBlock.unk230 = 0.3f;
         break;
     case 3:
-        heroBlock.unk228 = 0.8f;
+        heroBlock.capsule_top_target = 0.8f;
         heroBlock.unk22C = 0.6f;
         heroBlock.unk230 = 0.45f;
         break;
     }
     if (heroBlock.state.control_mode == 4) {
         if (heroBlock.state_timer > heroBlock.unk420) {
-            if (heroBlock.unk41E == 0) heroBlock.unk22C = heroBlock.unk434;
+            if (heroBlock.past_jump_apex == 0) heroBlock.unk22C = heroBlock.unk434;
         }
     } else if (heroBlock.state.current == HERO_STATE_FALL) {
         heroBlock.unk22C = 0.5f;
     } else if (heroBlock.state.current == HERO_STATE_CROUCH) {
-        heroBlock.unk228 = 0.35000002f;
+        heroBlock.capsule_top_target = 0.35000002f;
     } else if (heroBlock.state.current == HERO_STATE_SINK) {
         heroBlock.unk230 = 0.8f;
     }
     if (heroBlock.wall_hit != 0 && heroBlock.state.prev_control_mode != 0x12 &&
         heroBlock.state.control_mode != 0x11 && heroBlock.base_condition == 0) {
-        float dist = vec_distance_xy(heroBlock.unk210.f, heroBlock.motion.pos.f);
+        float dist = vec_distance_xy(heroBlock.wall_contact_point.f, heroBlock.motion.pos.f);
         if (!(heroBlock.unk234 * 0.5f < dist)) return;
     }
     smoothing_state = &heroBlock.capsule_top;
-    ApproachValue(smoothing_state, heroBlock.unk228, frame_scale * 0.02f);
+    ApproachValue(smoothing_state, heroBlock.capsule_top_target, frame_scale * 0.02f);
     ApproachValue(smoothing_state + 1, heroBlock.unk22C, frame_scale * 0.02f);
     Spring(smoothing_state + 5, smoothing_state + 6, heroBlock.unk230,
            g_frame_scale_sq * 0.02f, g_frame_scale_sq * 0.3f, g_frame_time * 4.0f);
@@ -605,10 +605,10 @@ void update_hero_airborne_planar_velocity(void) {
         D_0013F450_s.ground_speed = D_0013F450_s.motion.unk164;
     } else if (state == 16) {
         if (scale_ticks(0x36) < D_0013F450_s.state_timer) {
-            ApproachValue(&D_0013F450_s.unk4A0, g_frame_time_sq * 25.0f, g_frame_time_sq * 7.0f);
+            ApproachValue(&D_0013F450_s.jump_gravity, g_frame_time_sq * 25.0f, g_frame_time_sq * 7.0f);
         }
         if (D_0013F450_s.state_timer < scale_ticks(0x37)) {
-            D_0013F450_s.target_speed = D_0013F450_s.unk3F4;
+            D_0013F450_s.target_speed = D_0013F450_s.long_jump_speed;
         } else {
             D_0013F450_s.target_speed = g_frame_time * 3.5f;
         }
@@ -622,46 +622,46 @@ void update_hero_airborne_planar_velocity(void) {
         }
         if (13.0f <= D_0013F450_s.anim_frame && D_0013F450_s.anim_frame <= 30.0f) {
             if (27.0f < D_0013F450_s.anim_frame) {
-                ApproachValue(&D_0013F450_s.unk45C, 0.0f, g_frame_time_sq * 8.0f);
+                ApproachValue(&D_0013F450_s.ledge_jump_speed, 0.0f, g_frame_time_sq * 8.0f);
             } else {
-                ApproachValue(&D_0013F450_s.unk45C, g_frame_time * 2.0f, g_frame_time_sq * 8.0f);
+                ApproachValue(&D_0013F450_s.ledge_jump_speed, g_frame_time * 2.0f, g_frame_time_sq * 8.0f);
             }
         }
-        D_0013F450_s.motion.velocity.f[0] = FastCos(D_0013F450_s.motion.rot.f[2]) * D_0013F450_s.unk45C;
-        D_0013F450_s.motion.velocity.f[1] = FastSin(D_0013F450_s.motion.rot.f[2]) * D_0013F450_s.unk45C;
+        D_0013F450_s.motion.velocity.f[0] = FastCos(D_0013F450_s.motion.rot.f[2]) * D_0013F450_s.ledge_jump_speed;
+        D_0013F450_s.motion.velocity.f[1] = FastSin(D_0013F450_s.motion.rot.f[2]) * D_0013F450_s.ledge_jump_speed;
     } else if (state == 0x4C) {
         if (5.0f <= D_0013F450_s.anim_frame && D_0013F450_s.anim_frame <= 18.0f) {
             if (15.0f < D_0013F450_s.anim_frame) {
-                ApproachValue(&D_0013F450_s.unk45C, 0.0f, g_frame_time_sq * 8.0f);
+                ApproachValue(&D_0013F450_s.ledge_jump_speed, 0.0f, g_frame_time_sq * 8.0f);
             } else {
-                ApproachValue(&D_0013F450_s.unk45C, g_frame_time * 1.25f, g_frame_time_sq * 8.0f);
+                ApproachValue(&D_0013F450_s.ledge_jump_speed, g_frame_time * 1.25f, g_frame_time_sq * 8.0f);
             }
         }
-        D_0013F450_s.motion.velocity.f[0] = FastCos(D_0013F450_s.motion.rot.f[2]) * D_0013F450_s.unk45C;
-        D_0013F450_s.motion.velocity.f[1] = FastSin(D_0013F450_s.motion.rot.f[2]) * D_0013F450_s.unk45C;
+        D_0013F450_s.motion.velocity.f[0] = FastCos(D_0013F450_s.motion.rot.f[2]) * D_0013F450_s.ledge_jump_speed;
+        D_0013F450_s.motion.velocity.f[1] = FastSin(D_0013F450_s.motion.rot.f[2]) * D_0013F450_s.ledge_jump_speed;
     } else if (state == 11 || state == 12) {
         if (g_current_level_index != 0xE && hero_slot_item_id(3) == 3 && D_0013F450_s.state_timer == scale_ticks(5)) {
             allocate_hero_voice_for_entry(1, 0);
         }
-        D_0013F450_s.motion.move_yaw = D_0013F450_s.unk43C;
+        D_0013F450_s.motion.move_yaw = D_0013F450_s.takeoff_yaw;
         turn_to(0, g_frame_scale_sq * 0.04f, g_frame_scale_sq * 0.2f, g_frame_time * 6.981317f);
         if (D_0013F450_s.unk450 != 3) {
-            D_0013F450_s.ground_speed = D_0013F450_s.unk454;
+            D_0013F450_s.ground_speed = D_0013F450_s.air_target_speed;
         } else {
             D_0013F450_s.ground_speed = 0.0f;
         }
         if (D_0013F450_s.state.current == 11) {
-            if (D_0013F450_s.unk41E != 0 && D_0013F450_s.unk44C < scale_ticks(0xC)) {
-                ApproachValue(&D_0013F450_s.unk458, 0.0f, g_frame_time_sq * 8.0f);
+            if (D_0013F450_s.past_jump_apex != 0 && D_0013F450_s.frames_to_land < scale_ticks(0xC)) {
+                ApproachValue(&D_0013F450_s.high_jump_drift_speed, 0.0f, g_frame_time_sq * 8.0f);
             } else {
-                ApproachValue(&D_0013F450_s.unk458, g_frame_time * 4.2f, g_frame_time_sq * 8.0f);
+                ApproachValue(&D_0013F450_s.high_jump_drift_speed, g_frame_time * 4.2f, g_frame_time_sq * 8.0f);
             }
         }
-        D_0013F450_s.motion.velocity.f[0] = FastCos(D_0013F450_s.unk438) * D_0013F450_s.unk458;
-        D_0013F450_s.motion.velocity.f[1] = FastSin(D_0013F450_s.unk438) * D_0013F450_s.unk458;
-        a = D_0013F450_s.unk454 * FastSin(FastDiffRots(D_0013F450_s.unk43C, D_0013F450_s.unk438));
-        D_0013F450_s.motion.velocity.f[0] += FastCos(D_0013F450_s.unk43C) * a;
-        D_0013F450_s.motion.velocity.f[1] += FastSin(D_0013F450_s.unk43C) * a;
+        D_0013F450_s.motion.velocity.f[0] = FastCos(D_0013F450_s.high_jump_drift_yaw) * D_0013F450_s.high_jump_drift_speed;
+        D_0013F450_s.motion.velocity.f[1] = FastSin(D_0013F450_s.high_jump_drift_yaw) * D_0013F450_s.high_jump_drift_speed;
+        a = D_0013F450_s.air_target_speed * FastSin(FastDiffRots(D_0013F450_s.takeoff_yaw, D_0013F450_s.high_jump_drift_yaw));
+        D_0013F450_s.motion.velocity.f[0] += FastCos(D_0013F450_s.takeoff_yaw) * a;
+        D_0013F450_s.motion.velocity.f[1] += FastSin(D_0013F450_s.takeoff_yaw) * a;
         build_scaled_hero_move_impulse(0.7f, g_frame_time * 0.0f);
         qcopy(&D_0013F450_s.motion.unk150, &D_0013F450_s.move_impulse);
     } else if (state == 0x11) {
@@ -688,20 +688,20 @@ void update_hero_airborne_planar_velocity(void) {
             a = FastSubRots(x, D_0013F450_s.motion.rot.f[2]);
             rotate_hero_about_fixed_local_pivot(0.0f, 0.0f, a);
         } else {
-            turn_to(0, g_frame_scale_sq * 0.04f, g_frame_scale_sq * 0.2f, D_0013F450_s.unk414);
+            turn_to(0, g_frame_scale_sq * 0.04f, g_frame_scale_sq * 0.2f, D_0013F450_s.air_turn_rate);
         }
         build_scaled_hero_move_impulse(0.7f, g_frame_time * 0.0f);
         qcopy(&D_0013F450_s.motion.unk150, &D_0013F450_s.move_impulse);
         arg = g_frame_time_sq * 20.0f;
         if (D_0013F450_s.target_speed < D_L06_0017C650[0] * g_frame_time * 0.2f) {
             if (D_0013F450_s.state.control_mode == 2) {
-                d = D_0013F450_s.unk944;
+                d = D_0013F450_s.stickless_decel;
                 speed = vec_length_xy(&D_0013F450_s.motion.velocity);
                 ApproachValue(&speed, 0.0f, d);
                 vec_set_length_xy(D_0013F450_s.motion.velocity.f, D_0013F450_s.motion.velocity.f, speed);
                 return;
             }
-            if (D_0013F450_s.unk30A != 0) {
+            if (D_0013F450_s.on_flagged_ground_moby != 0) {
                 arg = g_frame_time_sq * 6.0f;
             } else {
                 arg = g_frame_time_sq * 2.0f;
@@ -877,7 +877,7 @@ void HeroL06_UpdateMovement(void) {
                 }
             }
             if (((Hero *)&g_hero)->state.current == 4 || ((Hero *)&g_hero)->state.current == 0x17) {
-                if (((Hero *)&g_hero)->unk229C > 0.2f || ((Hero *)&g_hero)->moby->prev_seq == 0xE || ((Hero *)&g_hero)->moby->prev_seq == 0xF) {
+                if (((Hero *)&g_hero)->stick_magnitude > 0.2f || ((Hero *)&g_hero)->moby->prev_seq == 0xE || ((Hero *)&g_hero)->moby->prev_seq == 0xF) {
                     if (((Hero *)&g_hero)->state.current == 4) {
                         turn_to(0, g_frame_scale_sq * 0.002f, g_frame_scale_sq * 0.07f, g_frame_time * 6.981317f);
                     } else if (((Hero *)&g_hero)->state.current == 0x17) {
@@ -948,7 +948,7 @@ void HeroL06_UpdateMovement(void) {
             speed_step(0.0f, speed);
             clear_u64_value(((Hero *)&g_hero)->motion.velocity.f);
             reduce_and_apply_hero_planar_velocity_addend(speed);
-            if (((Hero *)&g_hero)->unk12E7 != 0 && item_available[0x1C] != 0) {
+            if (((Hero *)&g_hero)->on_magnet_ground != 0 && item_available[0x1C] != 0) {
                 if (((Hero *)&g_hero)->ground_distance > 0.2f) {
                     HeroMoveDownAlongNormal(((Hero *)&g_hero)->motion.velocity.f, ((Hero *)&g_hero)->motion.unk110.f, g_frame_time_sq * 24.0f);
                 } else {
@@ -968,36 +968,36 @@ void HeroL06_UpdateMovement(void) {
                     HeroMoveDownAlongNormal(((Hero *)&g_hero)->motion.velocity.f, ((Hero *)&g_hero)->motion.velocity.f, g_frame_time_sq * 54.0f);
                 }
             }
-            if (((Hero *)&g_hero)->unk22F4 != 0) {
+            if (((Hero *)&g_hero)->color_fade_active != 0) {
                 spawn_hero_radial_particle_burst();
             }
         }
         break;
     case 0x7F:
-        if (((Hero *)&g_hero)->unk6A4 == 0) {
+        if (((Hero *)&g_hero)->sink_effect_moby == 0) {
             Moby *m;
 
             m = (Moby *)CreateMoby(0x52A);
-            ((Hero *)&g_hero)->unk6A4 = m;
-            if (((Hero *)&g_hero)->unk6A4 != 0) {
+            ((Hero *)&g_hero)->sink_effect_moby = m;
+            if (((Hero *)&g_hero)->sink_effect_moby != 0) {
                 qcopy(&m->pos, ((Hero *)&g_hero)->motion.pos.f);
                 qcopy(&m->rot, ((Hero *)&g_hero)->motion.rot.f);
                 m->draw_dist = 0x40;
-                ((Hero *)&g_hero)->unk6A4->visible = 1;
-                ((Hero *)&g_hero)->unk6A4->update_dist = 0;
-                ((Hero *)&g_hero)->unk6A4->alpha = 0;
-                ((Hero *)&g_hero)->unk6A4->flags |= 0x800;
-                moby_build_matrix(((Hero *)&g_hero)->unk6A4);
-                Moby_PlaySound(0, 0, (int)((Hero *)&g_hero)->unk6A4);
+                ((Hero *)&g_hero)->sink_effect_moby->visible = 1;
+                ((Hero *)&g_hero)->sink_effect_moby->update_dist = 0;
+                ((Hero *)&g_hero)->sink_effect_moby->alpha = 0;
+                ((Hero *)&g_hero)->sink_effect_moby->flags |= 0x800;
+                moby_build_matrix(((Hero *)&g_hero)->sink_effect_moby);
+                Moby_PlaySound(0, 0, (int)((Hero *)&g_hero)->sink_effect_moby);
             }
         }
-        if (((Hero *)&g_hero)->unk6A4 != 0) {
-            ((Hero *)&g_hero)->unk6A4->alpha += truncate_float_to_s32(frame_scale * 5.0f);
-            if (((Hero *)&g_hero)->unk6A4->alpha > 0x80) {
-                ((Hero *)&g_hero)->unk6A4->alpha = 0x80;
+        if (((Hero *)&g_hero)->sink_effect_moby != 0) {
+            ((Hero *)&g_hero)->sink_effect_moby->alpha += truncate_float_to_s32(frame_scale * 5.0f);
+            if (((Hero *)&g_hero)->sink_effect_moby->alpha > 0x80) {
+                ((Hero *)&g_hero)->sink_effect_moby->alpha = 0x80;
             }
             {
-                Moby *dst = ((Hero *)&g_hero)->unk6A4;
+                Moby *dst = ((Hero *)&g_hero)->sink_effect_moby;
                 Moby *src = ((Hero *)&g_hero)->moby;
 
                 qcopy(&dst->pos, &src->pos);
@@ -1021,7 +1021,7 @@ void HeroL06_UpdateMovement(void) {
 
             anim = -1;
             frames = 0;
-            if (((Hero *)&g_hero)->unk12E2 != 0) {
+            if (((Hero *)&g_hero)->on_ice_ground != 0) {
                 build_scaled_hero_move_impulse(0.7f, g_frame_time * 0.0f);
             } else {
                 build_scaled_hero_move_impulse(0.5f, g_frame_time * 2.0f);
@@ -1057,8 +1057,8 @@ void HeroL06_UpdateMovement(void) {
         } else {
             HeroMoveDownAlongNormal(((Hero *)&g_hero)->motion.velocity.f, ((Hero *)&g_hero)->motion.velocity.f, g_frame_time_sq * 54.0f);
         }
-        if (((Hero *)&g_hero)->unk964 != 0) {
-            ((Hero *)&g_hero)->motion.move_yaw = fast_atan2(((Hero *)&g_hero)->unk964->pos.x - moby->pos.x, ((Hero *)&g_hero)->unk964->pos.y - moby->pos.y);
+        if (((Hero *)&g_hero)->grapple_target != 0) {
+            ((Hero *)&g_hero)->motion.move_yaw = fast_atan2(((Hero *)&g_hero)->grapple_target->pos.x - moby->pos.x, ((Hero *)&g_hero)->grapple_target->pos.y - moby->pos.y);
             turn_to(0, g_frame_scale_sq * 0.02f, g_frame_scale_sq * 0.15f, g_frame_time * 6.2831855f);
         }
         break;
@@ -1067,27 +1067,27 @@ void HeroL06_UpdateMovement(void) {
             float t0;
             float t1;
 
-            qcopy(vec[0], &((Hero *)&g_hero)->unk964->pos);
+            qcopy(vec[0], &((Hero *)&g_hero)->grapple_target->pos);
             ((Hero *)&g_hero)->unk970 = FastVecDist(((Hero *)&g_hero)->motion.pos.f, vec[0]);
-            ((Hero *)&g_hero)->unk96C = scale_ticks(0x3C);
-            if (((Hero *)&g_hero)->unk960 > 0.0f) {
-                ((Hero *)&g_hero)->unk96C = ((Hero *)&g_hero)->unk970 / ((Hero *)&g_hero)->motion.speed_xy;
+            ((Hero *)&g_hero)->target_arrival_frames = scale_ticks(0x3C);
+            if (((Hero *)&g_hero)->grapple_pull_speed > 0.0f) {
+                ((Hero *)&g_hero)->target_arrival_frames = ((Hero *)&g_hero)->unk970 / ((Hero *)&g_hero)->motion.speed_xy;
             }
             if (((Hero *)&g_hero)->state.step == 0) {
-                ApproachValue(&((Hero *)&g_hero)->unk960, g_frame_time * 27.0f, g_frame_time_sq * 80.0f);
-                ((Hero *)&g_hero)->motion.move_yaw = fast_atan2(((Hero *)&g_hero)->unk964->pos.x - moby->pos.x, ((Hero *)&g_hero)->unk964->pos.y - moby->pos.y);
+                ApproachValue(&((Hero *)&g_hero)->grapple_pull_speed, g_frame_time * 27.0f, g_frame_time_sq * 80.0f);
+                ((Hero *)&g_hero)->motion.move_yaw = fast_atan2(((Hero *)&g_hero)->grapple_target->pos.x - moby->pos.x, ((Hero *)&g_hero)->grapple_target->pos.y - moby->pos.y);
                 turn_to(0, g_frame_scale_sq * 0.03f, g_frame_scale_sq * 0.15f, g_frame_time * 7.330383f);
             } else if (((Hero *)&g_hero)->state.step == 1) {
-                ApproachValue(&((Hero *)&g_hero)->unk960, 0.0f, g_frame_time_sq * 42.0f);
+                ApproachValue(&((Hero *)&g_hero)->grapple_pull_speed, 0.0f, g_frame_time_sq * 42.0f);
             }
-            if (solve_quadratic_equation(&t0, &t1, -(g_frame_time_sq * 42.0f) * 0.5f, ((Hero *)&g_hero)->unk960, -(((Hero *)&g_hero)->unk970 - 1.9f)) > 0 && t0 > 0.0f) {
-                ((Hero *)&g_hero)->unk96C = t0;
+            if (solve_quadratic_equation(&t0, &t1, -(g_frame_time_sq * 42.0f) * 0.5f, ((Hero *)&g_hero)->grapple_pull_speed, -(((Hero *)&g_hero)->unk970 - 1.9f)) > 0 && t0 > 0.0f) {
+                ((Hero *)&g_hero)->target_arrival_frames = t0;
                 ((Hero *)&g_hero)->state.step = 1;
             }
-            if (((Hero *)&g_hero)->unk96C < scale_ticks(0x14)) {
-                ((Hero *)&g_hero)->unk974 = 1;
+            if (((Hero *)&g_hero)->target_arrival_frames < scale_ticks(0x14)) {
+                ((Hero *)&g_hero)->grapple_pull_ending = 1;
             }
-            if (((Hero *)&g_hero)->unk974 != 0) {
+            if (((Hero *)&g_hero)->grapple_pull_ending != 0) {
                 step_angle_toward_target(&((Hero *)&g_hero)->motion.rot.f[1], 0, 0.0f, g_frame_time * 3.8397243f);
             } else {
                 float a;
@@ -1099,12 +1099,12 @@ void HeroL06_UpdateMovement(void) {
             vec[2][1] = FastSin(FastAddRots(((Hero *)&g_hero)->motion.rot.f[2], -1.5707964f)) * -0.57f;
             vec[2][2] = 0.0f;
             FastVecAdd(vec[2], vec[2], ((Hero *)&g_hero)->motion.pos.f);
-            FastVecSub(vec[1], &((Hero *)&g_hero)->unk964->pos, vec[2]);
-            vec_scale_to_length(((Hero *)&g_hero)->motion.velocity.f, vec[1], ((Hero *)&g_hero)->unk960);
-            if (((Hero *)&g_hero)->unk96C < scale_ticks(0x1E)) {
+            FastVecSub(vec[1], &((Hero *)&g_hero)->grapple_target->pos, vec[2]);
+            vec_scale_to_length(((Hero *)&g_hero)->motion.velocity.f, vec[1], ((Hero *)&g_hero)->grapple_pull_speed);
+            if (((Hero *)&g_hero)->target_arrival_frames < scale_ticks(0x1E)) {
                 float d;
 
-                d = scale_ticks(0x1E) - ((Hero *)&g_hero)->unk96C;
+                d = scale_ticks(0x1E) - ((Hero *)&g_hero)->target_arrival_frames;
                 ((Hero *)&g_hero)->motion.velocity.f[2] -= g_frame_time_sq * 29.0f * d;
             }
         }
@@ -1112,15 +1112,15 @@ void HeroL06_UpdateMovement(void) {
     case 0x26:
         {
 
-            ApproachValue(&((Hero *)&g_hero)->unk97C, ((Hero *)&g_hero)->unk980, g_frame_time * 10.0f);
+            ApproachValue(&((Hero *)&g_hero)->tether_radius, ((Hero *)&g_hero)->grapple_target_radius, g_frame_time * 10.0f);
             qcopy(((Hero *)&g_hero)->motion.velocity.f, ((Hero *)&g_hero)->motion.displacement.f);
             FastVecScale(((Hero *)&g_hero)->motion.velocity.f, ((Hero *)&g_hero)->motion.velocity.f, 0.9f);
             ((Hero *)&g_hero)->motion.velocity.f[2] -= g_frame_time_sq * 15.0f;
-            qcopy(vec[0], &((Hero *)&g_hero)->unk964->pos);
+            qcopy(vec[0], &((Hero *)&g_hero)->grapple_target->pos);
             ((Hero *)&g_hero)->unk970 = FastVecDist(((Hero *)&g_hero)->motion.pos.f, vec[0]);
             FastVecAdd(vec[1], ((Hero *)&g_hero)->motion.pos.f, ((Hero *)&g_hero)->motion.velocity.f);
             FastVecSub(vec[3], vec[1], vec[0]);
-            vec_scale_to_length(vec[3], vec[3], ((Hero *)&g_hero)->unk97C);
+            vec_scale_to_length(vec[3], vec[3], ((Hero *)&g_hero)->tether_radius);
             FastVecAdd(vec[2], vec[0], vec[3]);
             FastVecSub(((Hero *)&g_hero)->motion.velocity.f, vec[2], ((Hero *)&g_hero)->motion.pos.f);
         }
@@ -1130,23 +1130,23 @@ void HeroL06_UpdateMovement(void) {
             float oldz;
             int below;
 
-            if ((((Hero *)&g_hero)->unkA98 & 2) && moby->prev_seq == 0x34) {
+            if ((((Hero *)&g_hero)->anim_flags & 2) && moby->prev_seq == 0x34) {
                 set_hero_animation(0x35, 0xA, scale_ticks(0xC));
                 ((Hero *)&g_hero)->anim_speed = 0.3f;
             }
             oldz = ((Hero *)&g_hero)->motion.velocity.f[2];
-            if (((Hero *)&g_hero)->unk994 != 0 && ((Hero *)&g_hero)->unk994->pvars != 0 && *(int *)(((Hero *)&g_hero)->unk994->pvars + 0x34) != 0) {
+            if (((Hero *)&g_hero)->swing_target_moby != 0 && ((Hero *)&g_hero)->swing_target_moby->pvars != 0 && *(int *)(((Hero *)&g_hero)->swing_target_moby->pvars + 0x34) != 0) {
                 float a;
 
-                a = ((Hero *)&g_hero)->unk994->rot.z;
+                a = ((Hero *)&g_hero)->swing_target_moby->rot.z;
                 if (FastDiffRots(a, ((Hero *)&g_hero)->motion.rot.f[2]) > 90.0f) {
                     a = FastAddRots(a, 3.1415927f);
                 }
-                SpringAngle(&((Hero *)&g_hero)->unk9AC, a, &((Hero *)&g_hero)->unk9B8, 0, g_frame_scale_sq * 0.02f, g_frame_scale_sq * 0.3f, 0.0f);
+                SpringAngle(&((Hero *)&g_hero)->swing_yaw, a, &((Hero *)&g_hero)->swing_yaw_vel, 0, g_frame_scale_sq * 0.02f, g_frame_scale_sq * 0.3f, 0.0f);
             }
-            ((Hero *)&g_hero)->motion.move_yaw = ((Hero *)&g_hero)->unk9AC;
+            ((Hero *)&g_hero)->motion.move_yaw = ((Hero *)&g_hero)->swing_yaw;
             turn_to(0, g_frame_scale_sq * 0.02f, g_frame_scale_sq * 0.3f, g_frame_time * 4.712389f);
-            FastVecSub(vec[0], &((Hero *)&g_hero)->unk994->pos, ((Hero *)&g_hero)->motion.pos.f);
+            FastVecSub(vec[0], &((Hero *)&g_hero)->swing_target_moby->pos, ((Hero *)&g_hero)->motion.pos.f);
             vec_scale_to_length(vec[0], vec[0], 1.0f);
             if (vec[0][2] < 0.23f) {
                 vec[0][2] = 0.23f;
@@ -1161,15 +1161,15 @@ void HeroL06_UpdateMovement(void) {
             vec[1][1] = fast_atan2(vec[0][2], vec[0][0]);
             SpringAngle(&((Hero *)&g_hero)->motion.rot.f[1], vec[1][1], &((Hero *)&g_hero)->motion.unkA0.f[1], 0, g_frame_scale_sq * 0.04f, g_frame_scale_sq * 0.2f, g_frame_time * 9.599311f);
             SpringAngle(&((Hero *)&g_hero)->motion.rot.f[0], vec[1][0], &((Hero *)&g_hero)->motion.unkA0.f[0], 0, g_frame_scale_sq * 0.04f, g_frame_scale_sq * 0.2f, g_frame_time * 9.599311f);
-            if (!(((Hero *)&g_hero)->motion.pos.f[2] < ((Hero *)&g_hero)->unk994->pos.z)) {
+            if (!(((Hero *)&g_hero)->motion.pos.f[2] < ((Hero *)&g_hero)->swing_target_moby->pos.z)) {
                 below = 0;
             }
             if (((Hero *)&g_hero)->unk99C != 0) {
-                if (below && ((Hero *)&g_hero)->state_timer > scale_ticks(0x28) && ((Hero *)&g_hero)->unk229C > 0.25f) {
+                if (below && ((Hero *)&g_hero)->state_timer > scale_ticks(0x28) && ((Hero *)&g_hero)->stick_magnitude > 0.25f) {
                     float s;
 
                     stick_target(1.0f, 0);
-                    s = g_frame_time * 0.21f * ((Hero *)&g_hero)->unk229C;
+                    s = g_frame_time * 0.21f * ((Hero *)&g_hero)->stick_magnitude;
                     if (s > g_frame_time * 5.0f) {
                         s = g_frame_time * 5.0f;
                     }
@@ -1182,10 +1182,10 @@ void HeroL06_UpdateMovement(void) {
             if (((Hero *)&g_hero)->unk99C != 0) {
                 float k;
 
-                if (vec_distance_xy(((Hero *)&g_hero)->motion.pos.f, &((Hero *)&g_hero)->unk994->pos) < ((Hero *)&g_hero)->unk9A0 * 1.57f || ((Hero *)&g_hero)->ground_distance > 1.5f) {
+                if (vec_distance_xy(((Hero *)&g_hero)->motion.pos.f, &((Hero *)&g_hero)->swing_target_moby->pos) < ((Hero *)&g_hero)->unk9A0 * 1.57f || ((Hero *)&g_hero)->ground_distance > 1.5f) {
                     HeroMoveDownAlongNormal(((Hero *)&g_hero)->motion.velocity.f, ((Hero *)&g_hero)->motion.displacement.f, g_frame_time_sq * 40.0f);
-                    if (((Hero *)&g_hero)->unk9BE != 0 && gravity_z(((Hero *)&g_hero)->motion.velocity.f) > 0.0f) {
-                        FastVecSub(vec[3], ((Hero *)&g_hero)->motion.pos.f, &((Hero *)&g_hero)->unk994->pos);
+                    if (((Hero *)&g_hero)->swing_entry_push != 0 && gravity_z(((Hero *)&g_hero)->motion.velocity.f) > 0.0f) {
+                        FastVecSub(vec[3], ((Hero *)&g_hero)->motion.pos.f, &((Hero *)&g_hero)->swing_target_moby->pos);
                         HeroMoveDownAlongNormal(((Hero *)&g_hero)->motion.velocity.f, ((Hero *)&g_hero)->motion.velocity.f, g_frame_time_sq * 57.0f);
                     }
                 }
@@ -1194,10 +1194,10 @@ void HeroL06_UpdateMovement(void) {
                 vec_scale_to_length(vec[3], vec[3], k);
                 FastVecAdd(((Hero *)&g_hero)->motion.velocity.f, ((Hero *)&g_hero)->motion.velocity.f, vec[3]);
             }
-            if (((Hero *)&g_hero)->unk994 != 0) {
+            if (((Hero *)&g_hero)->swing_target_moby != 0) {
                 unsigned char *p;
 
-                p = ((Hero *)&g_hero)->unk994->pvars;
+                p = ((Hero *)&g_hero)->swing_target_moby->pvars;
                 if (p != 0) {
                     float len;
                     float cur;
@@ -1221,44 +1221,44 @@ void HeroL06_UpdateMovement(void) {
                 vec[13][2] = 0.0f;
                 FastVecAdd(vec[13], vec[13], ((Hero *)&g_hero)->motion.pos.f);
                 FastVecAdd(vec[3], vec[13], ((Hero *)&g_hero)->motion.velocity.f);
-                FastVecSub(vec[12], vec[3], &((Hero *)&g_hero)->unk994->pos);
+                FastVecSub(vec[12], vec[3], &((Hero *)&g_hero)->swing_target_moby->pos);
                 vec_scale_to_length(vec[12], vec[12], ((Hero *)&g_hero)->unk9A4);
-                FastVecAdd(vec[3], &((Hero *)&g_hero)->unk994->pos, vec[12]);
+                FastVecAdd(vec[3], &((Hero *)&g_hero)->swing_target_moby->pos, vec[12]);
                 FastVecSub(((Hero *)&g_hero)->motion.velocity.f, vec[3], vec[13]);
             }
             {
                 float d;
 
                 d = ((Hero *)&g_hero)->unk9A4;
-                Spring(&((Hero *)&g_hero)->unk9A4, &((Hero *)&g_hero)->unk9A8, ((Hero *)&g_hero)->unk9A0, ((Hero *)&g_hero)->unk9C4, ((Hero *)&g_hero)->unk9C8, ((Hero *)&g_hero)->unk9CC);
+                Spring(&((Hero *)&g_hero)->unk9A4, &((Hero *)&g_hero)->swing_length_vel, ((Hero *)&g_hero)->unk9A0, ((Hero *)&g_hero)->swing_rope_spring_k, ((Hero *)&g_hero)->unk9C8, ((Hero *)&g_hero)->swing_rope_max_speed);
                 d = ((Hero *)&g_hero)->unk9A4 - d;
                 if (((Hero *)&g_hero)->unk9A4 < FastVecLength(vec[12])) {
                     vec_scale_to_length(vec[12], vec[12], d);
                     FastVecAdd(((Hero *)&g_hero)->motion.pos.f, ((Hero *)&g_hero)->motion.pos.f, vec[12]);
                 }
             }
-            if (((Hero *)&g_hero)->unk9BE != 0 && below) {
+            if (((Hero *)&g_hero)->swing_entry_push != 0 && below) {
                 float lim;
                 float len;
 
                 lim = g_frame_time * 14.0f;
                 len = vec_length_xy(((Hero *)&g_hero)->motion.velocity.f);
                 if (len < lim) {
-                    Spring(&len, &((Hero *)&g_hero)->unk9B4, lim, g_frame_scale_sq * 0.047f, g_frame_scale_sq * 0.3f, 0.0f);
-                    vec[3][0] = FastCos(((Hero *)&g_hero)->unk9AC) * ((Hero *)&g_hero)->unk9B4;
-                    vec[3][1] = FastSin(((Hero *)&g_hero)->unk9AC) * ((Hero *)&g_hero)->unk9B4;
+                    Spring(&len, &((Hero *)&g_hero)->swing_push_speed, lim, g_frame_scale_sq * 0.047f, g_frame_scale_sq * 0.3f, 0.0f);
+                    vec[3][0] = FastCos(((Hero *)&g_hero)->swing_yaw) * ((Hero *)&g_hero)->swing_push_speed;
+                    vec[3][1] = FastSin(((Hero *)&g_hero)->swing_yaw) * ((Hero *)&g_hero)->swing_push_speed;
                     vec[3][2] = 0.0f;
                     FastVecAdd(((Hero *)&g_hero)->motion.velocity.f, ((Hero *)&g_hero)->motion.velocity.f, vec[3]);
                 }
             }
-            if (((Hero *)&g_hero)->unk99C != 0 && ((Hero *)&g_hero)->air_frames.s != 0 && ((oldz < 0.0f && ((Hero *)&g_hero)->motion.velocity.f[2] > 0.0f) || ((Hero *)&g_hero)->unk9BC != 0)) {
+            if (((Hero *)&g_hero)->unk99C != 0 && ((Hero *)&g_hero)->air_frames.s != 0 && ((oldz < 0.0f && ((Hero *)&g_hero)->motion.velocity.f[2] > 0.0f) || ((Hero *)&g_hero)->swing_anim_dir != 0)) {
                 float a;
                 int up;
 
-                ((Hero *)&g_hero)->unk9BE = 0;
-                a = vec_length(((Hero *)&g_hero)->unk9A0 / ((Hero *)&g_hero)->unk9B0) * 3.1415927f;
-                if (((Hero *)&g_hero)->unk9BC != 0) {
-                    up = ((Hero *)&g_hero)->unk9BC == 1;
+                ((Hero *)&g_hero)->swing_entry_push = 0;
+                a = vec_length(((Hero *)&g_hero)->unk9A0 / ((Hero *)&g_hero)->swing_gravity) * 3.1415927f;
+                if (((Hero *)&g_hero)->swing_anim_dir != 0) {
+                    up = ((Hero *)&g_hero)->swing_anim_dir == 1;
                 } else {
                     *(u128 *)vec[3] = *(u128 *)((Hero *)&g_hero)->motion.displacement.f;
                     up = forward_component(vec[3]) > 0.0f;
@@ -1266,18 +1266,18 @@ void HeroL06_UpdateMovement(void) {
                 if (up) {
                     if (moby->prev_seq != 0x35) {
                         set_hero_animation(0x35, 6, scale_ticks(0x11));
-                        ((Hero *)&g_hero)->unk9BC = 1;
+                        ((Hero *)&g_hero)->swing_anim_dir = 1;
                     } else if (((Hero *)&g_hero)->moby->seq == ((Hero *)&g_hero)->moby->prev_seq) {
                         adjust_hero_animation_speed_for_target_frame(42.0f, a, 0.5f, -1.0f);
-                        ((Hero *)&g_hero)->unk9BC = 0;
+                        ((Hero *)&g_hero)->swing_anim_dir = 0;
                     }
                 } else {
                     if (moby->prev_seq != 0x35) {
                         set_hero_animation(0x35, 0x15, scale_ticks(9));
-                        ((Hero *)&g_hero)->unk9BC = 2;
+                        ((Hero *)&g_hero)->swing_anim_dir = 2;
                     } else if (((Hero *)&g_hero)->moby->seq == ((Hero *)&g_hero)->moby->prev_seq) {
                         adjust_hero_animation_speed_for_target_frame(12.0f, a, 0.5f, -1.0f);
-                        ((Hero *)&g_hero)->unk9BC = 0;
+                        ((Hero *)&g_hero)->swing_anim_dir = 0;
                     }
                 }
             }
@@ -1304,12 +1304,12 @@ void HeroL06_UpdateMovement(void) {
                 ApproachValue(&z, a, b);
                 gravity_set_z(((Hero *)&g_hero)->motion.velocity.f, ((Hero *)&g_hero)->motion.velocity.f, z);
             } else if (((Hero *)&g_hero)->state_timer > t1) {
-                HeroMoveDownAlongNormal(((Hero *)&g_hero)->motion.velocity.f, ((Hero *)&g_hero)->motion.velocity.f, ((Hero *)&g_hero)->unk4B0);
+                HeroMoveDownAlongNormal(((Hero *)&g_hero)->motion.velocity.f, ((Hero *)&g_hero)->motion.velocity.f, ((Hero *)&g_hero)->rise_fall_gravity);
                 if (gravity_z(((Hero *)&g_hero)->motion.velocity.f) < 0.0f) {
-                    ((Hero *)&g_hero)->unk4B8 = 1.0f;
+                    ((Hero *)&g_hero)->past_apex = 1.0f;
                 }
             }
-            if (((Hero *)&g_hero)->unk4B8 != 0.0f) {
+            if (((Hero *)&g_hero)->past_apex != 0.0f) {
                 if (((Hero *)&g_hero)->air_frames.s != 0) {
 
                     qcopy(vec[0], ((Hero *)&g_hero)->motion.pos.f);
@@ -1321,13 +1321,13 @@ void HeroL06_UpdateMovement(void) {
                     coll_sphere_mobys(0.8f, vec[0], 0x10, ((Hero *)&g_hero)->moby, vec[1]);
                 }
             }
-            if (((Hero *)&g_hero)->unk4B8 != 0.0f) {
+            if (((Hero *)&g_hero)->past_apex != 0.0f) {
                 if (((Hero *)&g_hero)->air_frames.s == 0) {
-                    if (((Hero *)&g_hero)->unk4C4 == 0) {
+                    if (((Hero *)&g_hero)->rise_fall_land_frames == 0) {
                         referencePosition.f160 = 0.2f;
                         referencePosition.f168 = scale_ticks(0x28);
                     }
-                    ((Hero *)&g_hero)->unk4C4++;
+                    ((Hero *)&g_hero)->rise_fall_land_frames++;
                 }
             }
         }
@@ -1339,14 +1339,14 @@ void HeroL06_UpdateMovement(void) {
             float v;
             float acc;
 
-            if (((Hero *)&g_hero)->unkA9C != 0 || ((Hero *)&g_hero)->anim_frame < blarg_attack_records[((Hero *)&g_hero)->attack_record].f18) {
+            if (((Hero *)&g_hero)->anim_changing != 0 || ((Hero *)&g_hero)->anim_frame < blarg_attack_records[((Hero *)&g_hero)->attack_record].f18) {
                 ((Hero *)&g_hero)->items[0].timer = 2;
             }
             ((Hero *)&g_hero)->target_speed = 0.0f;
-            if (((Hero *)&g_hero)->unkA54 != 0) {
+            if (((Hero *)&g_hero)->melee_target != 0) {
                 float d;
 
-                d = vec_distance_xy(((Hero *)&g_hero)->motion.pos.f, &((Hero *)&g_hero)->unkA54->pos);
+                d = vec_distance_xy(((Hero *)&g_hero)->motion.pos.f, &((Hero *)&g_hero)->melee_target->pos);
                 if (d > 2.0f && d < 5.0f) {
                     ((Hero *)&g_hero)->target_speed = g_frame_time * 4.5f;
                 }
@@ -1357,8 +1357,8 @@ void HeroL06_UpdateMovement(void) {
                 speed_step(g_frame_time_sq * 15.0f, g_frame_time_sq * 15.0f);
                 set_gravity_relative_vector_length_xy(((Hero *)&g_hero)->motion.velocity.f, ((Hero *)&g_hero)->motion.velocity.f, ((Hero *)&g_hero)->ground_speed);
             }
-            if (((Hero *)&g_hero)->unkA58 != 0 || ((Hero *)&g_hero)->unkA54 != 0) {
-                ((Hero *)&g_hero)->motion.move_yaw = ((Hero *)&g_hero)->unkA5C;
+            if (((Hero *)&g_hero)->heading_locked != 0 || ((Hero *)&g_hero)->melee_target != 0) {
+                ((Hero *)&g_hero)->motion.move_yaw = ((Hero *)&g_hero)->attack_target_yaw;
                 turn_to(0, g_frame_scale_sq * 0.05f, g_frame_scale_sq * 0.2f, g_frame_time * 15.009831f);
             } else if (((Hero *)&g_hero)->anim_frame < 25.0f) {
                 update_hero_target_heading(8.0f, 1.0471976f, 1.0471976f);
@@ -1372,7 +1372,7 @@ void HeroL06_UpdateMovement(void) {
             }
             acc = g_frame_time_sq * 150.0f;
             t1 = scale_ticks(0xE);
-            if (((Hero *)&g_hero)->unkA9C == 0 && ((Hero *)&g_hero)->anim_frame > 23.5f && ((Hero *)&g_hero)->motion.displacement.f[2] < 0.0f && ((Hero *)&g_hero)->air_frames.s != 0) {
+            if (((Hero *)&g_hero)->anim_changing == 0 && ((Hero *)&g_hero)->anim_frame > 23.5f && ((Hero *)&g_hero)->motion.displacement.f[2] < 0.0f && ((Hero *)&g_hero)->air_frames.s != 0) {
 
                 qcopy(vec[0], ((Hero *)&g_hero)->motion.pos.f);
                 offset_hero_position_against_gravity(vec[0], vec[0], -0.5f);
@@ -1396,7 +1396,7 @@ void HeroL06_UpdateMovement(void) {
             } else if (((Hero *)&g_hero)->state_timer > t1) {
                 HeroMoveDownAlongNormal(((Hero *)&g_hero)->motion.velocity.f, ((Hero *)&g_hero)->motion.velocity.f, g_frame_time_sq * 130.0f);
                 if (gravity_z(((Hero *)&g_hero)->motion.velocity.f) < 0.0f) {
-                    ((Hero *)&g_hero)->unkA70 = 1.0f;
+                    ((Hero *)&g_hero)->slam_descending = 1.0f;
                 }
                 if (gravity_z(((Hero *)&g_hero)->motion.velocity.f) < g_frame_time * -37.0f) {
                     gravity_set_z(((Hero *)&g_hero)->motion.velocity.f, ((Hero *)&g_hero)->motion.velocity.f, g_frame_time * -37.0f);
@@ -1409,7 +1409,7 @@ void HeroL06_UpdateMovement(void) {
             int skip;
 
             ((Hero *)&g_hero)->target_speed = 0.0f;
-            if (((Hero *)&g_hero)->unkA9C != 0 || ((Hero *)&g_hero)->anim_frame < blarg_attack_records[((Hero *)&g_hero)->attack_record].f18) {
+            if (((Hero *)&g_hero)->anim_changing != 0 || ((Hero *)&g_hero)->anim_frame < blarg_attack_records[((Hero *)&g_hero)->attack_record].f18) {
                 ((Hero *)&g_hero)->items[0].timer = 2;
             }
             skip = 0;
@@ -1417,7 +1417,7 @@ void HeroL06_UpdateMovement(void) {
                 skip = 1;
             }
             if (!skip) {
-                if (((Hero *)&g_hero)->unkA58 != 0 || ((Hero *)&g_hero)->unkA54 != 0) {
+                if (((Hero *)&g_hero)->heading_locked != 0 || ((Hero *)&g_hero)->melee_target != 0) {
                     int near;
 
                     near = 1;
@@ -1425,8 +1425,8 @@ void HeroL06_UpdateMovement(void) {
                         float d;
                         float e;
 
-                        d = FastSubRots(((Hero *)&g_hero)->unkA5C, ((Hero *)&g_hero)->motion.rot.f[2]);
-                        e = compute_directed_angle_delta(1, ((Hero *)&g_hero)->unkA5C, ((Hero *)&g_hero)->motion.rot.f[2]);
+                        d = FastSubRots(((Hero *)&g_hero)->attack_target_yaw, ((Hero *)&g_hero)->motion.rot.f[2]);
+                        e = compute_directed_angle_delta(1, ((Hero *)&g_hero)->attack_target_yaw, ((Hero *)&g_hero)->motion.rot.f[2]);
                         if (e > 4.363323f) {
                             near = 0;
                         }
@@ -1436,7 +1436,7 @@ void HeroL06_UpdateMovement(void) {
                     } else {
                         near = 0;
                     }
-                    ((Hero *)&g_hero)->motion.move_yaw = ((Hero *)&g_hero)->unkA5C;
+                    ((Hero *)&g_hero)->motion.move_yaw = ((Hero *)&g_hero)->attack_target_yaw;
                     if (near) {
                         turn_to(1, g_frame_scale_sq * 0.05f, g_frame_scale_sq * 0.2f, g_frame_time * 15.009831f);
                     } else {
@@ -1446,17 +1446,17 @@ void HeroL06_UpdateMovement(void) {
                     int ok;
 
                     ok = 1;
-                    if (((Hero *)&g_hero)->unkA9C == 0 && ((Hero *)&g_hero)->anim_frame > 6.0f) {
+                    if (((Hero *)&g_hero)->anim_changing == 0 && ((Hero *)&g_hero)->anim_frame > 6.0f) {
                         ok = 0;
                     }
                     if (ok) {
-                        if (((Hero *)&g_hero)->unk20B3 == 0) {
+                        if (((Hero *)&g_hero)->gravity_mode == 0) {
                             update_hero_target_heading(14.0f, 0.5235988f, 0.7853982f);
                         }
                     }
                 }
             }
-            if (((Hero *)&g_hero)->unkA9C == 0 && test_hero_animation_frame_window(33.0f)) {
+            if (((Hero *)&g_hero)->anim_changing == 0 && test_hero_animation_frame_window(33.0f)) {
                 launch_hero_wrench();
             }
             speed_step(g_frame_time_sq * 37.0f, g_frame_time_sq * 28.0f);
@@ -1472,19 +1472,19 @@ void HeroL06_UpdateMovement(void) {
         {
             Rec2C *r;
 
-            if (((Hero *)&g_hero)->unkA9C != 0 || ((Hero *)&g_hero)->anim_frame < blarg_attack_records[((Hero *)&g_hero)->attack_record].f20) {
+            if (((Hero *)&g_hero)->anim_changing != 0 || ((Hero *)&g_hero)->anim_frame < blarg_attack_records[((Hero *)&g_hero)->attack_record].f20) {
                 ((Hero *)&g_hero)->items[0].timer = 2;
             }
             ((Hero *)&g_hero)->target_speed = 0.0f;
             r = &blarg_attack_records[((Hero *)&g_hero)->attack_record];
-            if (((Hero *)&g_hero)->unkA54 != 0 && ((Hero *)&g_hero)->state_timer < scale_ticks(4)) {
+            if (((Hero *)&g_hero)->melee_target != 0 && ((Hero *)&g_hero)->state_timer < scale_ticks(4)) {
                 float d;
                 float off;
                 float range;
                 float cap;
                 float e;
 
-                d = vec_distance_xy(&((Hero *)&g_hero)->unkA54->pos, ((Hero *)&g_hero)->motion.pos.f) - 0.5f;
+                d = vec_distance_xy(&((Hero *)&g_hero)->melee_target->pos, ((Hero *)&g_hero)->motion.pos.f) - 0.5f;
                 if (d < 0.0f) {
                     d = 0.0f;
                 }
@@ -1521,7 +1521,7 @@ void HeroL06_UpdateMovement(void) {
                 }
                 break;
             case 1:
-                if (((Hero *)&g_hero)->unkA9C != 0 || ((Hero *)&g_hero)->anim_frame < 9.0f) {
+                if (((Hero *)&g_hero)->anim_changing != 0 || ((Hero *)&g_hero)->anim_frame < 9.0f) {
                     if (((Hero *)&g_hero)->anim_frame > 8.0f) {
                         ((Hero *)&g_hero)->target_speed = g_frame_time * 3.0f * ((Hero *)&g_hero)->speed_scale;
                     } else if (((Hero *)&g_hero)->anim_frame > 7.0f) {
@@ -1532,23 +1532,23 @@ void HeroL06_UpdateMovement(void) {
                 }
                 break;
             case 2:
-                if (((Hero *)&g_hero)->unkA9C != 0 || ((Hero *)&g_hero)->anim_frame < 12.0f) {
+                if (((Hero *)&g_hero)->anim_changing != 0 || ((Hero *)&g_hero)->anim_frame < 12.0f) {
                     ((Hero *)&g_hero)->target_speed = g_frame_time * 3.7f * ((Hero *)&g_hero)->speed_scale;
                 }
                 break;
             }
             ApproachValue(&((Hero *)&g_hero)->anim_speed, 1.0f, 0.2f);
-            if (((Hero *)&g_hero)->unkA58 != 0 || ((Hero *)&g_hero)->unkA54 != 0) {
-                if (r->f4 == 1 && FastSubRots(((Hero *)&g_hero)->unkA5C, ((Hero *)&g_hero)->motion.rot.f[2]) > 0.0f) {
-                    ((Hero *)&g_hero)->anim_speed = 1.0f / (FastDiffRots(((Hero *)&g_hero)->unkA5C, ((Hero *)&g_hero)->motion.rot.f[2]) + 1.0f);
+            if (((Hero *)&g_hero)->heading_locked != 0 || ((Hero *)&g_hero)->melee_target != 0) {
+                if (r->f4 == 1 && FastSubRots(((Hero *)&g_hero)->attack_target_yaw, ((Hero *)&g_hero)->motion.rot.f[2]) > 0.0f) {
+                    ((Hero *)&g_hero)->anim_speed = 1.0f / (FastDiffRots(((Hero *)&g_hero)->attack_target_yaw, ((Hero *)&g_hero)->motion.rot.f[2]) + 1.0f);
                 }
-                ((Hero *)&g_hero)->motion.move_yaw = ((Hero *)&g_hero)->unkA5C;
+                ((Hero *)&g_hero)->motion.move_yaw = ((Hero *)&g_hero)->attack_target_yaw;
                 turn_to(0, g_frame_scale_sq * 0.05f, g_frame_scale_sq * 0.2f, g_frame_time * 15.009831f);
             } else {
                 int ok;
 
                 ok = 1;
-                if (r->f4 == 1 && ((Hero *)&g_hero)->unkA9C == 0 && ((Hero *)&g_hero)->anim_frame > 7.0f) {
+                if (r->f4 == 1 && ((Hero *)&g_hero)->anim_changing == 0 && ((Hero *)&g_hero)->anim_frame > 7.0f) {
                     ok = 0;
                 }
                 if (ok) {
@@ -1556,8 +1556,8 @@ void HeroL06_UpdateMovement(void) {
                 }
             }
             speed_step(g_frame_time_sq * 37.0f, g_frame_time_sq * 28.0f);
-            if (((Hero *)&g_hero)->unkA58 != 0) {
-                set_planar_vel(((Hero *)&g_hero)->unkA5C);
+            if (((Hero *)&g_hero)->heading_locked != 0) {
+                set_planar_vel(((Hero *)&g_hero)->attack_target_yaw);
             } else {
                 set_planar_vel(99999.0f);
             }
@@ -1572,14 +1572,14 @@ void HeroL06_UpdateMovement(void) {
     case 0x21:
     case 0x7A:
         ApproachValue(&((Hero *)&g_hero)->ground_speed, 0.0f, g_frame_time_sq * 24.0f);
-        ((Hero *)&g_hero)->motion.velocity.f[0] = FastCos(((Hero *)&g_hero)->unkA68) * ((Hero *)&g_hero)->ground_speed;
-        ((Hero *)&g_hero)->motion.velocity.f[1] = FastSin(((Hero *)&g_hero)->unkA68) * ((Hero *)&g_hero)->ground_speed;
+        ((Hero *)&g_hero)->motion.velocity.f[0] = FastCos(((Hero *)&g_hero)->pushback_yaw) * ((Hero *)&g_hero)->ground_speed;
+        ((Hero *)&g_hero)->motion.velocity.f[1] = FastSin(((Hero *)&g_hero)->pushback_yaw) * ((Hero *)&g_hero)->ground_speed;
         if (((Hero *)&g_hero)->ground_distance > 0.0f) {
             ((Hero *)&g_hero)->motion.velocity.f[2] = ((Hero *)&g_hero)->motion.unk110.f[2] - g_frame_time_sq * 25.0f;
         } else {
             ((Hero *)&g_hero)->motion.velocity.f[2] = 0.0f;
         }
-        ((Hero *)&g_hero)->motion.move_yaw = FastAddRots(((Hero *)&g_hero)->unkA68, 3.1415927f);
+        ((Hero *)&g_hero)->motion.move_yaw = FastAddRots(((Hero *)&g_hero)->pushback_yaw, 3.1415927f);
         turn_to(0, g_frame_scale_sq * 0.05f, g_frame_scale_sq * 0.2f, g_frame_time * 15.009831f);
         break;
     case 0x20:
@@ -1588,8 +1588,8 @@ void HeroL06_UpdateMovement(void) {
             int t1;
             int n;
 
-            if (((Hero *)&g_hero)->unkA58 != 0 || ((Hero *)&g_hero)->unkA54 != 0) {
-                ((Hero *)&g_hero)->motion.move_yaw = ((Hero *)&g_hero)->unkA5C;
+            if (((Hero *)&g_hero)->heading_locked != 0 || ((Hero *)&g_hero)->melee_target != 0) {
+                ((Hero *)&g_hero)->motion.move_yaw = ((Hero *)&g_hero)->attack_target_yaw;
                 turn_to(0, g_frame_scale_sq * 0.05f, g_frame_scale_sq * 0.2f, g_frame_time * 15.009831f);
             } else if (((Hero *)&g_hero)->state_timer < scale_ticks(4)) {
                 update_hero_target_heading(11.0f, 0.87266463f, -1.0f);
@@ -1614,8 +1614,8 @@ void HeroL06_UpdateMovement(void) {
             if (((Hero *)&g_hero)->state_timer > t0) {
                 speed_step(g_frame_time_sq * 190.0f, g_frame_time_sq * 90.0f);
             }
-            if (((Hero *)&g_hero)->unkA58 != 0) {
-                set_planar_vel(((Hero *)&g_hero)->unkA5C);
+            if (((Hero *)&g_hero)->heading_locked != 0) {
+                set_planar_vel(((Hero *)&g_hero)->attack_target_yaw);
             } else {
                 set_planar_vel(99999.0f);
             }
@@ -1670,8 +1670,8 @@ void HeroL06_UpdateMovement(void) {
         break;
     case 0x23:
         ((Hero *)&g_hero)->target_speed = 0.0f;
-        if (((Hero *)&g_hero)->unkA58 != 0) {
-            ((Hero *)&g_hero)->motion.move_yaw = ((Hero *)&g_hero)->unkA5C;
+        if (((Hero *)&g_hero)->heading_locked != 0) {
+            ((Hero *)&g_hero)->motion.move_yaw = ((Hero *)&g_hero)->attack_target_yaw;
             turn_to(0, g_frame_scale_sq * 0.04f, g_frame_scale_sq * 0.2f, g_frame_time * 15.009831f);
         } else {
             update_hero_target_heading(11.0f, 0.87266463f, -1.0f);
@@ -1692,14 +1692,14 @@ void HeroL06_UpdateMovement(void) {
             float up;
             float down;
 
-            if (((Hero *)&g_hero)->motion.unk164 < g_frame_time * 0.3f && ((Hero *)&g_hero)->unk229C > 0.85f) {
+            if (((Hero *)&g_hero)->motion.unk164 < g_frame_time * 0.3f && ((Hero *)&g_hero)->stick_magnitude > 0.85f) {
                 ((Hero *)&g_hero)->unk3B8 = 1;
             }
-            if (FastAbsF(((Hero *)&g_hero)->motion.unk188) < 0.05235988f || ((Hero *)&g_hero)->unk20A8 != 0 || ((Hero *)&g_hero)->state.step == 1) {
+            if (FastAbsF(((Hero *)&g_hero)->motion.unk188) < 0.05235988f || ((Hero *)&g_hero)->item_anim_active != 0 || ((Hero *)&g_hero)->state.step == 1) {
                 ((Hero *)&g_hero)->unk3B8 = 0;
             }
             if (((Hero *)&g_hero)->unk3BE != 0) {
-                if (FastAbsF(((Hero *)&g_hero)->motion.unk188) < 0.06981317f || ((Hero *)&g_hero)->unk20A8 != 0) {
+                if (FastAbsF(((Hero *)&g_hero)->motion.unk188) < 0.06981317f || ((Hero *)&g_hero)->item_anim_active != 0) {
                     ((Hero *)&g_hero)->unk3BE = 0;
                 }
             }
@@ -1721,9 +1721,9 @@ void HeroL06_UpdateMovement(void) {
                 float sp;
                 float st;
 
-                sp = ((Hero *)&g_hero)->unk229C;
+                sp = ((Hero *)&g_hero)->stick_magnitude;
                 st = ((Hero *)&g_hero)->motion.unk188;
-                if (((Hero *)&g_hero)->unk20A8 != 0) {
+                if (((Hero *)&g_hero)->item_anim_active != 0) {
                     k = 1.0f - st * 0.55f;
                     if (k < 0.0f) {
                         k = 0.0f;
@@ -1738,7 +1738,7 @@ void HeroL06_UpdateMovement(void) {
                 } else {
                     float t;
 
-                    t = ((Hero *)&g_hero)->unk229C + 0.35f;
+                    t = ((Hero *)&g_hero)->stick_magnitude + 0.35f;
                     turn_to(0, g_frame_scale_sq * 0.005f * t, g_frame_scale_sq * 0.1f, g_frame_time * 4.712389f * t);
                 }
             }
@@ -1790,23 +1790,23 @@ void HeroL06_UpdateMovement(void) {
             if (!(((Hero *)&g_hero)->state.current >= 0x29 && ((Hero *)&g_hero)->state.current <= 0x2A) && ((Hero *)&g_hero)->state.current != 0x42) {
                 release_voice_slot_cf(0, (int)((Hero *)&g_hero)->moby, 0);
             } else {
-                if (((Hero *)&g_hero)->unk2218 != -1) {
-                    Row13E650 *e = (Row13E650 *)(voice_pool + ((Hero *)&g_hero)->unk2218 * 0x70);
+                if (((Hero *)&g_hero)->grind_voice != -1) {
+                    Row13E650 *e = (Row13E650 *)(voice_pool + ((Hero *)&g_hero)->grind_voice * 0x70);
 
                     if (e->f88 == ((Hero *)&g_hero)->moby) {
                         if (e->f74 != 0) {
-                            Sound_StopSlot(((Hero *)&g_hero)->unk2218);
+                            Sound_StopSlot(((Hero *)&g_hero)->grind_voice);
                         }
                     }
                 }
-                ((Hero *)&g_hero)->unk2218 = -1;
+                ((Hero *)&g_hero)->grind_voice = -1;
             }
             if (((Hero *)&g_hero)->state.current == 0x28 || ((Hero *)&g_hero)->state.current == 0x2B) {
                 float a;
                 float s;
 
                 qcopy(vec[0], ((Hero *)&g_hero)->motion.pos.f);
-                a = FastAddRots(((Hero *)&g_hero)->unk57C, randf_sym(0.0f, 0.5235988f));
+                a = FastAddRots(((Hero *)&g_hero)->rail_dir_yaw, randf_sym(0.0f, 0.5235988f));
                 s = random_float_between(g_frame_time * 4.0f, g_frame_time * 7.0f);
                 vec[1][0] = FastCos(a) * s;
                 vec[1][1] = FastSin(a) * s;
@@ -1823,40 +1823,40 @@ void HeroL06_UpdateMovement(void) {
             if (hasW) {
                 aim = ((Hero *)&g_hero)->unk20AA != 0;
             }
-            Moby_GetJointWorldPos(((Hero *)&g_hero)->moby, 9, ((Hero *)&g_hero)->unk510.f);
-            Moby_GetJointWorldPos(((Hero *)&g_hero)->moby, 0xE, ((Hero *)&g_hero)->unk520.f);
-            Moby_GetJointWorldPos(((Hero *)&g_hero)->moby, 0, ((Hero *)&g_hero)->unk530.f);
-            if (((Hero *)&g_hero)->unk5A8 >= 2 && ((Hero *)&g_hero)->unk5A8 <= 3) {
-                ((Hero *)&g_hero)->unk5A8 = -1;
+            Moby_GetJointWorldPos(((Hero *)&g_hero)->moby, 9, ((Hero *)&g_hero)->joint9_world_pos.f);
+            Moby_GetJointWorldPos(((Hero *)&g_hero)->moby, 0xE, ((Hero *)&g_hero)->joint14_world_pos.f);
+            Moby_GetJointWorldPos(((Hero *)&g_hero)->moby, 0, ((Hero *)&g_hero)->root_joint_pos.f);
+            if (((Hero *)&g_hero)->grind_pose >= 2 && ((Hero *)&g_hero)->grind_pose <= 3) {
+                ((Hero *)&g_hero)->grind_pose = -1;
             }
-            find_nearest_path_point((unsigned char *)((Hero *)&g_hero)->unk560, ((Hero *)&g_hero)->motion.pos.f, ((Hero *)&g_hero)->unk500.f, &((Hero *)&g_hero)->unk564, &((Hero *)&g_hero)->unk568, ((Hero *)&g_hero)->unk584, 999.0f, 2.0f, 2.5f);
-            if (((Hero *)&g_hero)->unk590 != 0) {
-                find_nearest_path_point((unsigned char *)((Hero *)&g_hero)->unk594, ((Hero *)&g_hero)->motion.pos.f, ((Hero *)&g_hero)->unk540.f, &((Hero *)&g_hero)->unk598, &((Hero *)&g_hero)->unk59C, ((Hero *)&g_hero)->unk5A0, 999.0f, 2.0f, 2.5f);
+            find_nearest_path_point((unsigned char *)((Hero *)&g_hero)->rail_spline, ((Hero *)&g_hero)->motion.pos.f, ((Hero *)&g_hero)->rail_point.f, &((Hero *)&g_hero)->rail_segment, &((Hero *)&g_hero)->rail_seg_frac, ((Hero *)&g_hero)->rail_spline_loops, 999.0f, 2.0f, 2.5f);
+            if (((Hero *)&g_hero)->rail_switching != 0) {
+                find_nearest_path_point((unsigned char *)((Hero *)&g_hero)->transfer_from_spline, ((Hero *)&g_hero)->motion.pos.f, ((Hero *)&g_hero)->prev_rail_point.f, &((Hero *)&g_hero)->prev_rail_segment, &((Hero *)&g_hero)->prev_rail_seg_frac, ((Hero *)&g_hero)->unk5A0, 999.0f, 2.0f, 2.5f);
             }
             late = 0;
-            if (((Hero *)&g_hero)->ground_distance > 0.87f && ((Hero *)&g_hero)->state.current != 0x29 && ((Hero *)&g_hero)->state.current != 0x42 && ((Hero *)&g_hero)->unk590 == 0) {
-                late = ((Hero *)&g_hero)->unk19C > scale_ticks(0x1E);
+            if (((Hero *)&g_hero)->ground_distance > 0.87f && ((Hero *)&g_hero)->state.current != 0x29 && ((Hero *)&g_hero)->state.current != 0x42 && ((Hero *)&g_hero)->rail_switching == 0) {
+                late = ((Hero *)&g_hero)->control_mode_timer > scale_ticks(0x1E);
             }
-            if (((Hero *)&g_hero)->unk570 != 0 || late) {
+            if (((Hero *)&g_hero)->rail_off_frames != 0 || late) {
                 qcopy(((Hero *)&g_hero)->motion.velocity.f, ((Hero *)&g_hero)->motion.unk110.f);
                 if (((Hero *)&g_hero)->state.current >= 0x29 && ((Hero *)&g_hero)->state.current <= 0x2A) {
                     hero_integrate_velocity();
                 } else {
                     ((Hero *)&g_hero)->motion.velocity.f[2] -= g_frame_time_sq * 24.0f;
                 }
-                ((Hero *)&g_hero)->unk570++;
+                ((Hero *)&g_hero)->rail_off_frames++;
             } else {
                 float step;
 
-                step = ((Hero *)&g_hero)->unk574 * ((Hero *)&g_hero)->unk578;
+                step = ((Hero *)&g_hero)->unk574 * ((Hero *)&g_hero)->grind_direction;
                 if (((Hero *)&g_hero)->state.current == 0x42) {
-                    step = ((Hero *)&g_hero)->unk5CC * ((Hero *)&g_hero)->unk578;
+                    step = ((Hero *)&g_hero)->unk5CC * ((Hero *)&g_hero)->grind_direction;
                 }
-                Spline_AdvanceByDistance((unsigned char *)((Hero *)&g_hero)->unk560, vec[0], &((Hero *)&g_hero)->unk564, &((Hero *)&g_hero)->unk568, step, ((Hero *)&g_hero)->unk584);
-                if (((Hero *)&g_hero)->unk590 != 0) {
-                    Spline_AdvanceByDistance((unsigned char *)((Hero *)&g_hero)->unk594, vec[1], &((Hero *)&g_hero)->unk598, &((Hero *)&g_hero)->unk59C, step, ((Hero *)&g_hero)->unk5A0);
+                Spline_AdvanceByDistance((unsigned char *)((Hero *)&g_hero)->rail_spline, vec[0], &((Hero *)&g_hero)->rail_segment, &((Hero *)&g_hero)->rail_seg_frac, step, ((Hero *)&g_hero)->rail_spline_loops);
+                if (((Hero *)&g_hero)->rail_switching != 0) {
+                    Spline_AdvanceByDistance((unsigned char *)((Hero *)&g_hero)->transfer_from_spline, vec[1], &((Hero *)&g_hero)->prev_rail_segment, &((Hero *)&g_hero)->prev_rail_seg_frac, step, ((Hero *)&g_hero)->unk5A0);
                 }
-                if (((Hero *)&g_hero)->unk19C > scale_ticks(0x5A)) {
+                if (((Hero *)&g_hero)->control_mode_timer > scale_ticks(0x5A)) {
                     int idx;
                     float frac;
                     float look;
@@ -1864,16 +1864,16 @@ void HeroL06_UpdateMovement(void) {
 
                     look = multiply_global_factor(30.0f) * ((Hero *)&g_hero)->motion.speed_xy;
                     qcopy(vec[2], ((Hero *)&g_hero)->motion.pos.f);
-                    idx = ((Hero *)&g_hero)->unk564;
-                    frac = ((Hero *)&g_hero)->unk568;
-                    r0 = Spline_AdvanceByDistance((unsigned char *)((Hero *)&g_hero)->unk560, vec[2], &idx, &frac, look, ((Hero *)&g_hero)->unk584);
+                    idx = ((Hero *)&g_hero)->rail_segment;
+                    frac = ((Hero *)&g_hero)->rail_seg_frac;
+                    r0 = Spline_AdvanceByDistance((unsigned char *)((Hero *)&g_hero)->rail_spline, vec[2], &idx, &frac, look, ((Hero *)&g_hero)->rail_spline_loops);
                     qcopy(vec[3], ((Hero *)&g_hero)->motion.pos.f);
-                    idx = ((Hero *)&g_hero)->unk564;
-                    frac = ((Hero *)&g_hero)->unk568;
-                    if ((r0 | Spline_AdvanceByDistance((unsigned char *)((Hero *)&g_hero)->unk560, vec[3], &idx, &frac, look + 0.1f, ((Hero *)&g_hero)->unk584)) == 0 || ((Hero *)&g_hero)->unk584 != 0) {
+                    idx = ((Hero *)&g_hero)->rail_segment;
+                    frac = ((Hero *)&g_hero)->rail_seg_frac;
+                    if ((r0 | Spline_AdvanceByDistance((unsigned char *)((Hero *)&g_hero)->rail_spline, vec[3], &idx, &frac, look + 0.1f, ((Hero *)&g_hero)->rail_spline_loops)) == 0 || ((Hero *)&g_hero)->rail_spline_loops != 0) {
                         float tilt;
 
-                        tilt = FastSubRots(((Hero *)&g_hero)->unk57C, fast_atan2(vec[3][0] - vec[2][0], vec[3][1] - vec[2][1])) * 0.37f;
+                        tilt = FastSubRots(((Hero *)&g_hero)->rail_dir_yaw, fast_atan2(vec[3][0] - vec[2][0], vec[3][1] - vec[2][1])) * 0.37f;
                         if (tilt > 0.7853982f) {
                             tilt = 0.7853982f;
                         }
@@ -1881,7 +1881,7 @@ void HeroL06_UpdateMovement(void) {
                             tilt = -0.7853982f;
                         }
                         set_first_hero_easing_parameters(0.03f, 0.2f);
-                        if (((Hero *)&g_hero)->unk58C != 0) {
+                        if (((Hero *)&g_hero)->grind_anim_variant != 0) {
                             blarg_hero_lean_angles[1] = -tilt;
                         } else {
                             blarg_hero_lean_angles[1] = tilt;
@@ -1895,10 +1895,10 @@ void HeroL06_UpdateMovement(void) {
                     set_first_hero_easing_parameters(g_frame_scale_sq * 0.017f, g_frame_scale_sq * 0.3f);
                     set_first_hero_easing_parameters(g_frame_scale_sq * 0.027f, g_frame_scale_sq * 0.3f);
                     set_first_hero_easing_parameters(g_frame_scale_sq * 0.027f, g_frame_scale_sq * 0.3f);
-                    if (((Hero *)&g_hero)->unk5D8 != 0) {
+                    if (((Hero *)&g_hero)->grind_look_moby != 0) {
                         float a;
 
-                        FastVecSub(vec[2], &((Hero *)&g_hero)->unk5D8->pos, ((Hero *)&g_hero)->motion.pos.f);
+                        FastVecSub(vec[2], &((Hero *)&g_hero)->grind_look_moby->pos, ((Hero *)&g_hero)->motion.pos.f);
                         matrix_mul_vec3(vec[2], vec[2], ((Hero *)&g_hero)->unk40);
                         a = fast_atan2(vec[2][0], vec[2][1]);
                         if (((Hero *)&g_hero)->moby->seq == 0x31) {
@@ -1911,52 +1911,52 @@ void HeroL06_UpdateMovement(void) {
                             blarg_hero_bones[2].f60[2] = a * 0.5f;
                         }
                     } else if (((Hero *)&g_hero)->moby->prev_seq == 0x31) {
-                        blarg_hero_bones[3].f60[2] = FastAddRots(-0.82030475f, ((Hero *)&g_hero)->unk5D0);
-                        blarg_hero_bones[1].f60[2] = FastAddRots(0.7330383f, ((Hero *)&g_hero)->unk5D0 / 1.7f);
-                        blarg_hero_bones[2].f60[2] = FastAddRots(0.7330383f, ((Hero *)&g_hero)->unk5D0 / 1.7f);
+                        blarg_hero_bones[3].f60[2] = FastAddRots(-0.82030475f, ((Hero *)&g_hero)->rail_lean);
+                        blarg_hero_bones[1].f60[2] = FastAddRots(0.7330383f, ((Hero *)&g_hero)->rail_lean / 1.7f);
+                        blarg_hero_bones[2].f60[2] = FastAddRots(0.7330383f, ((Hero *)&g_hero)->rail_lean / 1.7f);
                     } else if (((Hero *)&g_hero)->moby->prev_seq == 0x4B) {
-                        blarg_hero_bones[3].f60[2] = FastAddRots(0.13962634f, ((Hero *)&g_hero)->unk5D0);
-                        blarg_hero_bones[1].f60[2] = FastAddRots(-0.06981317f, ((Hero *)&g_hero)->unk5D0 * 0.5f);
-                        blarg_hero_bones[2].f60[2] = FastAddRots(-0.06981317f, ((Hero *)&g_hero)->unk5D0 * 0.5f);
+                        blarg_hero_bones[3].f60[2] = FastAddRots(0.13962634f, ((Hero *)&g_hero)->rail_lean);
+                        blarg_hero_bones[1].f60[2] = FastAddRots(-0.06981317f, ((Hero *)&g_hero)->rail_lean * 0.5f);
+                        blarg_hero_bones[2].f60[2] = FastAddRots(-0.06981317f, ((Hero *)&g_hero)->rail_lean * 0.5f);
                     } else if (((Hero *)&g_hero)->moby->prev_seq == 0x4A) {
-                        blarg_hero_bones[3].f60[2] = FastAddRots(-0.82030475f, ((Hero *)&g_hero)->unk5D0);
-                        blarg_hero_bones[1].f60[2] = FastAddRots(0.7330383f, ((Hero *)&g_hero)->unk5D0 / 1.7f);
-                        blarg_hero_bones[2].f60[2] = FastAddRots(0.7330383f, ((Hero *)&g_hero)->unk5D0 / 1.7f);
+                        blarg_hero_bones[3].f60[2] = FastAddRots(-0.82030475f, ((Hero *)&g_hero)->rail_lean);
+                        blarg_hero_bones[1].f60[2] = FastAddRots(0.7330383f, ((Hero *)&g_hero)->rail_lean / 1.7f);
+                        blarg_hero_bones[2].f60[2] = FastAddRots(0.7330383f, ((Hero *)&g_hero)->rail_lean / 1.7f);
                     }
                 }
                 {
                     int seg;
 
-                    seg = offset_path_index((unsigned char *)((Hero *)&g_hero)->unk560, ((Hero *)&g_hero)->unk564, ((Hero *)&g_hero)->unk578, ((Hero *)&g_hero)->unk584);
-                    FastVecSub(vec[2], ((unsigned char *)((Hero *)&g_hero)->unk560) + (seg * 0x10 + 0x10), vec[0]);
+                    seg = offset_path_index((unsigned char *)((Hero *)&g_hero)->rail_spline, ((Hero *)&g_hero)->rail_segment, ((Hero *)&g_hero)->grind_direction, ((Hero *)&g_hero)->rail_spline_loops);
+                    FastVecSub(vec[2], ((unsigned char *)((Hero *)&g_hero)->rail_spline) + (seg * 0x10 + 0x10), vec[0]);
                     if (FastVecLength(vec[2]) < 0.001f) {
-                        if (((Hero *)&g_hero)->unk564 == seg) {
-                            ((Hero *)&g_hero)->unk570 = scale_ticks(1);
+                        if (((Hero *)&g_hero)->rail_segment == seg) {
+                            ((Hero *)&g_hero)->rail_off_frames = scale_ticks(1);
                             break;
                         }
                     } else {
-                        ((Hero *)&g_hero)->unk57C = fast_atan2(vec[2][0], vec[2][1]);
-                        ((Hero *)&g_hero)->unk580 = fast_atan2(vec_length_xy(vec[2]), vec[2][2]);
+                        ((Hero *)&g_hero)->rail_dir_yaw = fast_atan2(vec[2][0], vec[2][1]);
+                        ((Hero *)&g_hero)->rail_pitch = fast_atan2(vec_length_xy(vec[2]), vec[2][2]);
                     }
-                    ((Hero *)&g_hero)->motion.move_yaw = FastAddRots(((Hero *)&g_hero)->unk57C, ((Hero *)&g_hero)->unk588);
+                    ((Hero *)&g_hero)->motion.move_yaw = FastAddRots(((Hero *)&g_hero)->rail_dir_yaw, ((Hero *)&g_hero)->grind_yaw_offset);
                     turn_to(0, g_frame_scale_sq * 0.015f, g_frame_scale_sq * 0.15f, g_frame_time * 6.2831855f);
-                    if ((((Hero *)&g_hero)->state.current >= 0x29 && ((Hero *)&g_hero)->state.current <= 0x2A && ((Hero *)&g_hero)->unk418 == 0) || ((Hero *)&g_hero)->state.current == 0x42) {
-                        if (((Hero *)&g_hero)->unk5C4 != 0) {
+                    if ((((Hero *)&g_hero)->state.current >= 0x29 && ((Hero *)&g_hero)->state.current <= 0x2A && ((Hero *)&g_hero)->rail_land_frames == 0) || ((Hero *)&g_hero)->state.current == 0x42) {
+                        if (((Hero *)&g_hero)->rail_gap_jump != 0) {
                             float a;
 
-                            a = fast_atan2(((Hero *)&g_hero)->unk550.f[0] - ((Hero *)&g_hero)->motion.pos.f[0], ((Hero *)&g_hero)->unk550.f[1] - ((Hero *)&g_hero)->motion.pos.f[1]);
+                            a = fast_atan2(((Hero *)&g_hero)->jump_target_pos.f[0] - ((Hero *)&g_hero)->motion.pos.f[0], ((Hero *)&g_hero)->jump_target_pos.f[1] - ((Hero *)&g_hero)->motion.pos.f[1]);
                             if (FastDiffRots(((Hero *)&g_hero)->motion.rot.f[2], a) < 1.5707964f) {
                                 ((Hero *)&g_hero)->motion.move_yaw = a;
                                 turn_to(0, g_frame_scale_sq * 0.04f, g_frame_scale_sq * 0.2f, g_frame_time * 6.2831855f);
                             }
                         }
-                        if (((Hero *)&g_hero)->unk590 != 0 && !(((Hero *)&g_hero)->unk5A4 > scale_ticks(0x30))) {
+                        if (((Hero *)&g_hero)->rail_switching != 0 && !(((Hero *)&g_hero)->rail_transfer_frames > scale_ticks(0x30))) {
                             float t;
 
                             FastVecSub(vec[2], vec[0], vec[1]);
-                            ((Hero *)&g_hero)->unk5A4++;
-                            FastVecScale(vec[2], vec[2], (float)((Hero *)&g_hero)->unk5A4 / scale_ticks(0x30));
-                            t = (float)(((Hero *)&g_hero)->unk5A4 - 1) / scale_ticks(0x30);
+                            ((Hero *)&g_hero)->rail_transfer_frames++;
+                            FastVecScale(vec[2], vec[2], (float)((Hero *)&g_hero)->rail_transfer_frames / scale_ticks(0x30));
+                            t = (float)(((Hero *)&g_hero)->rail_transfer_frames - 1) / scale_ticks(0x30);
                             FastVecSub(vec[3], vec[0], vec[1]);
                             FastVecScale(vec[3], vec[3], t);
                             ((Hero *)&g_hero)->motion.pos.f[2] += vec[2][2] - vec[3][2];
@@ -1964,22 +1964,22 @@ void HeroL06_UpdateMovement(void) {
                             FastVecSub(vec[2], vec[3], ((Hero *)&g_hero)->motion.pos.f);
                             ((Hero *)&g_hero)->motion.velocity.f[0] = vec[2][0];
                             ((Hero *)&g_hero)->motion.velocity.f[1] = vec[2][1];
-                            FastVecSub(vec[2], vec[0], ((Hero *)&g_hero)->unk500.f);
+                            FastVecSub(vec[2], vec[0], ((Hero *)&g_hero)->rail_point.f);
                             ((Hero *)&g_hero)->motion.pos.f[2] += vec[2][2];
-                            if (((Hero *)&g_hero)->motion.pos.f[2] < ((Hero *)&g_hero)->unk500.f[2]) {
-                                if (!(((Hero *)&g_hero)->unk5A4 > scale_ticks(0x30))) {
-                                    if (((Hero *)&g_hero)->motion.pos.f[2] < ((Hero *)&g_hero)->unk500.f[2]) {
-                                        ((Hero *)&g_hero)->motion.pos.f[2] = ((Hero *)&g_hero)->unk500.f[2];
+                            if (((Hero *)&g_hero)->motion.pos.f[2] < ((Hero *)&g_hero)->rail_point.f[2]) {
+                                if (!(((Hero *)&g_hero)->rail_transfer_frames > scale_ticks(0x30))) {
+                                    if (((Hero *)&g_hero)->motion.pos.f[2] < ((Hero *)&g_hero)->rail_point.f[2]) {
+                                        ((Hero *)&g_hero)->motion.pos.f[2] = ((Hero *)&g_hero)->rail_point.f[2];
                                     }
                                 }
                             }
                         } else {
 
-                            FastVecSub(vec[2], vec[0], ((Hero *)&g_hero)->unk500.f);
+                            FastVecSub(vec[2], vec[0], ((Hero *)&g_hero)->rail_point.f);
                             ((Hero *)&g_hero)->motion.velocity.f[0] = vec[2][0];
                             ((Hero *)&g_hero)->motion.velocity.f[1] = vec[2][1];
                             ((Hero *)&g_hero)->motion.pos.f[2] += vec[2][2];
-                            FastVecSub(vec[3], ((Hero *)&g_hero)->unk500.f, ((Hero *)&g_hero)->motion.pos.f);
+                            FastVecSub(vec[3], ((Hero *)&g_hero)->rail_point.f, ((Hero *)&g_hero)->motion.pos.f);
                             vec[3][2] = 0.0f;
                             if (FastVecLength(vec[3]) > g_frame_time) {
                                 vec_scale_to_length(vec[3], vec[3], g_frame_time);
@@ -2000,54 +2000,54 @@ void HeroL06_UpdateMovement(void) {
                         int idx;
                         float frac;
 
-                        ((Hero *)&g_hero)->unk590 = 0;
+                        ((Hero *)&g_hero)->rail_switching = 0;
                         spd = g_frame_time * 12.0f;
-                        if (((Hero *)&g_hero)->unk229C > 0.5f && !aim) {
+                        if (((Hero *)&g_hero)->stick_magnitude > 0.5f && !aim) {
                             float a;
 
                             stick_target(1.0f, 0);
                             a = FastDiffRots(((Hero *)&g_hero)->motion.move_yaw, referencePosition.f158);
                             if (FastDiffRots(a, 1.5707964f) < 1.2217305f || FastDiffRots(a, -1.5707964f) < 1.2217305f) {
                                 if (FastDiffRots(FastSubRots(((Hero *)&g_hero)->motion.move_yaw, referencePosition.f158), 1.5707964f) < 0.7853982f) {
-                                    ((Hero *)&g_hero)->unk5A8 = 2;
+                                    ((Hero *)&g_hero)->grind_pose = 2;
                                 } else {
-                                    ((Hero *)&g_hero)->unk5A8 = 3;
+                                    ((Hero *)&g_hero)->grind_pose = 3;
                                 }
                             }
                         }
                         tgt = 0.0f;
-                        if (((Hero *)&g_hero)->unk229C > 0.2f && aim) {
+                        if (((Hero *)&g_hero)->stick_magnitude > 0.2f && aim) {
                             stick_target(1.0f, 0);
-                            tgt = FastSubRots(((Hero *)&g_hero)->motion.move_yaw, ((Hero *)&g_hero)->unk57C);
+                            tgt = FastSubRots(((Hero *)&g_hero)->motion.move_yaw, ((Hero *)&g_hero)->rail_dir_yaw);
                             if (tgt > 0.7853982f) {
                                 tgt = 0.7853982f;
                             } else if (tgt < -0.7853982f) {
                                 tgt = -0.7853982f;
                             }
                         }
-                        SpringAngle(&((Hero *)&g_hero)->unk5D0, tgt, &((Hero *)&g_hero)->unk5D4, 0, g_frame_scale_sq * 0.015f, g_frame_scale_sq * 0.3f, 0.0f);
-                        ApproachValue(&((Hero *)&g_hero)->unk5B0, spd, g_frame_time_sq * 15.0f);
-                        idx = ((Hero *)&g_hero)->unk564;
-                        frac = ((Hero *)&g_hero)->unk568;
+                        SpringAngle(&((Hero *)&g_hero)->rail_lean, tgt, &((Hero *)&g_hero)->grind_lean_vel, 0, g_frame_scale_sq * 0.015f, g_frame_scale_sq * 0.3f, 0.0f);
+                        ApproachValue(&((Hero *)&g_hero)->grind_base_speed, spd, g_frame_time_sq * 15.0f);
+                        idx = ((Hero *)&g_hero)->rail_segment;
+                        frac = ((Hero *)&g_hero)->rail_seg_frac;
                         qcopy(vec[2], ((Hero *)&g_hero)->motion.pos.f);
-                        Spline_AdvanceByDistance((unsigned char *)((Hero *)&g_hero)->unk560, vec[2], &idx, &frac, 0.3f, ((Hero *)&g_hero)->unk584);
-                        slope = fast_atan2(vec_distance_xy(((Hero *)&g_hero)->unk500.f, vec[2]), vec[2][2] - ((Hero *)&g_hero)->unk500.f[2]);
+                        Spline_AdvanceByDistance((unsigned char *)((Hero *)&g_hero)->rail_spline, vec[2], &idx, &frac, 0.3f, ((Hero *)&g_hero)->rail_spline_loops);
+                        slope = fast_atan2(vec_distance_xy(((Hero *)&g_hero)->rail_point.f, vec[2]), vec[2][2] - ((Hero *)&g_hero)->rail_point.f[2]);
                         if (slope > 0.0f) {
                             acc = slope * 1.9098593f * (g_frame_time * -2.5f);
-                            if (slope > 0.2617994f && ((Hero *)&g_hero)->unk5A8 != 2 && ((Hero *)&g_hero)->unk5A8 != 3) {
-                                ((Hero *)&g_hero)->unk5A8 = 0;
+                            if (slope > 0.2617994f && ((Hero *)&g_hero)->grind_pose != 2 && ((Hero *)&g_hero)->grind_pose != 3) {
+                                ((Hero *)&g_hero)->grind_pose = 0;
                             } else if (slope < 0.13962634f) {
-                                if (((Hero *)&g_hero)->unk5A8 == 0) {
-                                    ((Hero *)&g_hero)->unk5A8 = -1;
+                                if (((Hero *)&g_hero)->grind_pose == 0) {
+                                    ((Hero *)&g_hero)->grind_pose = -1;
                                 }
                             }
                         } else {
                             acc = -slope * 2.864789f * (g_frame_time * 8.0f);
-                            if (slope < -0.19198622f && ((Hero *)&g_hero)->unk5A8 != 2 && ((Hero *)&g_hero)->unk5A8 != 3) {
-                                ((Hero *)&g_hero)->unk5A8 = 1;
+                            if (slope < -0.19198622f && ((Hero *)&g_hero)->grind_pose != 2 && ((Hero *)&g_hero)->grind_pose != 3) {
+                                ((Hero *)&g_hero)->grind_pose = 1;
                             } else if (slope > -0.12217305f) {
-                                if (((Hero *)&g_hero)->unk5A8 == 1) {
-                                    ((Hero *)&g_hero)->unk5A8 = -1;
+                                if (((Hero *)&g_hero)->grind_pose == 1) {
+                                    ((Hero *)&g_hero)->grind_pose = -1;
                                 }
                             }
                         }
@@ -2062,12 +2062,12 @@ void HeroL06_UpdateMovement(void) {
                         if (((Hero *)&g_hero)->unk5AC.f < g_frame_time * -2.5f) {
                             ((Hero *)&g_hero)->unk5AC.f = g_frame_time * -2.5f;
                         }
-                        ((Hero *)&g_hero)->unk574 = ((Hero *)&g_hero)->unk5B0 + ((Hero *)&g_hero)->unk5AC.f;
+                        ((Hero *)&g_hero)->unk574 = ((Hero *)&g_hero)->grind_base_speed + ((Hero *)&g_hero)->unk5AC.f;
                         if (((Hero *)&g_hero)->unk574 < 0.0f) {
                             ((Hero *)&g_hero)->unk574 = 0.0f;
                         }
-                        FastVecSub(((Hero *)&g_hero)->motion.velocity.f, vec[0], ((Hero *)&g_hero)->unk500.f);
-                        FastVecSub(vec[2], ((Hero *)&g_hero)->unk500.f, ((Hero *)&g_hero)->motion.pos.f);
+                        FastVecSub(((Hero *)&g_hero)->motion.velocity.f, vec[0], ((Hero *)&g_hero)->rail_point.f);
+                        FastVecSub(vec[2], ((Hero *)&g_hero)->rail_point.f, ((Hero *)&g_hero)->motion.pos.f);
                         {
                             float lim;
                             float neg;
@@ -2075,20 +2075,20 @@ void HeroL06_UpdateMovement(void) {
 
                             lim = g_frame_time * 7.0f;
                             neg = -FastVecLength(vec[2]);
-                            Spring(&neg, &((Hero *)&g_hero)->unk5DC, 0.0f, g_frame_scale_sq * 0.03f, g_frame_scale_sq * 0.3f, lim);
+                            Spring(&neg, &((Hero *)&g_hero)->rail_snap_dist, 0.0f, g_frame_scale_sq * 0.03f, g_frame_scale_sq * 0.3f, lim);
                             len = FastVecLength(vec[2]);
-                            if (len < ((Hero *)&g_hero)->unk5DC) {
-                                ((Hero *)&g_hero)->unk5DC = len;
+                            if (len < ((Hero *)&g_hero)->rail_snap_dist) {
+                                ((Hero *)&g_hero)->rail_snap_dist = len;
                             }
-                            if (((Hero *)&g_hero)->unk5DC < len) {
-                                vec_scale_to_length(vec[2], vec[2], ((Hero *)&g_hero)->unk5DC);
+                            if (((Hero *)&g_hero)->rail_snap_dist < len) {
+                                vec_scale_to_length(vec[2], vec[2], ((Hero *)&g_hero)->rail_snap_dist);
                             }
                         }
                         FastVecAdd(((Hero *)&g_hero)->motion.pos.f, ((Hero *)&g_hero)->motion.pos.f, vec[2]);
-                        if (((Hero *)&g_hero)->motion.pos.f[2] < ((Hero *)&g_hero)->unk500.f[2]) {
+                        if (((Hero *)&g_hero)->motion.pos.f[2] < ((Hero *)&g_hero)->rail_point.f[2]) {
                             if (((Hero *)&g_hero)->ground_distance < 1.0f) {
-                                if (((Hero *)&g_hero)->motion.pos.f[2] < ((Hero *)&g_hero)->unk500.f[2]) {
-                                    ((Hero *)&g_hero)->motion.pos.f[2] = ((Hero *)&g_hero)->unk500.f[2];
+                                if (((Hero *)&g_hero)->motion.pos.f[2] < ((Hero *)&g_hero)->rail_point.f[2]) {
+                                    ((Hero *)&g_hero)->motion.pos.f[2] = ((Hero *)&g_hero)->rail_point.f[2];
                                 }
                             }
                         }
@@ -2097,7 +2097,7 @@ void HeroL06_UpdateMovement(void) {
                 if (((Hero *)&g_hero)->state.current == 0x2B && ((Hero *)&g_hero)->state_timer < scale_ticks(0x14)) {
                     float a;
 
-                    a = FastAddRots(((Hero *)&g_hero)->unk57C, randf_sym(0.34906584f, 0.61086524f));
+                    a = FastAddRots(((Hero *)&g_hero)->rail_dir_yaw, randf_sym(0.34906584f, 0.61086524f));
                     vec[5][0] = FastCos(a);
                     vec[5][1] = FastSin(a);
                     vec[5][2] = 0.0f;
@@ -2111,18 +2111,18 @@ void HeroL06_UpdateMovement(void) {
         break;
     case 0x18:
     case 0x19:
-        ((Hero *)&g_hero)->motion.move_yaw = FastAddRots(((Hero *)&g_hero)->unk4E4, 3.1415927f);
+        ((Hero *)&g_hero)->motion.move_yaw = FastAddRots(((Hero *)&g_hero)->ledge_normal_yaw, 3.1415927f);
         turn_to(0, g_frame_scale_sq * 0.04f, g_frame_scale_sq * 0.2f, g_frame_time * 6.2831855f);
         step_angle_toward_target(&((Hero *)&g_hero)->motion.rot.f[1], 0, 0.0f, g_frame_time * 4.712389f);
-        FastVecSub(((Hero *)&g_hero)->motion.velocity.f, ((Hero *)&g_hero)->unk4D0.f, ((Hero *)&g_hero)->motion.pos.f);
+        FastVecSub(((Hero *)&g_hero)->motion.velocity.f, ((Hero *)&g_hero)->ledge_hang_pos.f, ((Hero *)&g_hero)->motion.pos.f);
         ClampVectorLength(((Hero *)&g_hero)->motion.velocity.f, g_frame_time * 4.0f);
         ApproachValue(&((Hero *)&g_hero)->unk4F0, ((Hero *)&g_hero)->motion.pos.f[2], g_frame_time * 3.0f);
         break;
     case 0x4A:
     case 0x4B:
-        ((Hero *)&g_hero)->motion.move_yaw = FastAddRots(((Hero *)&g_hero)->unk4E4, 3.1415927f);
+        ((Hero *)&g_hero)->motion.move_yaw = FastAddRots(((Hero *)&g_hero)->ledge_normal_yaw, 3.1415927f);
         turn_to(0, g_frame_scale_sq * 0.02f, g_frame_scale_sq * 0.2f, g_frame_time * 4.712389f);
-        FastVecSub(((Hero *)&g_hero)->motion.velocity.f, ((Hero *)&g_hero)->unk4D0.f, ((Hero *)&g_hero)->motion.pos.f);
+        FastVecSub(((Hero *)&g_hero)->motion.velocity.f, ((Hero *)&g_hero)->ledge_hang_pos.f, ((Hero *)&g_hero)->motion.pos.f);
         ClampVectorLength(((Hero *)&g_hero)->motion.velocity.f, g_frame_time * 1.7f);
         ApproachValue(&((Hero *)&g_hero)->unk4F0, ((Hero *)&g_hero)->motion.pos.f[2], g_frame_time * 3.0f);
         break;
@@ -2147,15 +2147,15 @@ void HeroL06_UpdateMovement(void) {
             }
             FastVecAdd(vec[3], vec[2], vec[4]);
             check_ledge_grab();
-            if (((Hero *)&g_hero)->unk4E8 != 0) {
-                qcopy(vec[0], ((Hero *)&g_hero)->unk4D0.f);
-                a0 = FastAddRots(((Hero *)&g_hero)->unk4E4, 3.1415927f);
+            if (((Hero *)&g_hero)->ledge_found != 0) {
+                qcopy(vec[0], ((Hero *)&g_hero)->ledge_hang_pos.f);
+                a0 = FastAddRots(((Hero *)&g_hero)->ledge_normal_yaw, 3.1415927f);
                 qcopy(((Hero *)&g_hero)->motion.pos.f, vec[3]);
                 check_ledge_grab();
                 qcopy(((Hero *)&g_hero)->motion.pos.f, vec[2]);
-                if (((Hero *)&g_hero)->unk4E8 != 0) {
-                    qcopy(vec[1], ((Hero *)&g_hero)->unk4D0.f);
-                    a1 = FastAddRots(((Hero *)&g_hero)->unk4E4, 3.1415927f);
+                if (((Hero *)&g_hero)->ledge_found != 0) {
+                    qcopy(vec[1], ((Hero *)&g_hero)->ledge_hang_pos.f);
+                    a1 = FastAddRots(((Hero *)&g_hero)->ledge_normal_yaw, 3.1415927f);
                     if (!(FastDiffRots(a0, a1) > 0.5235988f)) {
                         float mid;
                         float spd;
@@ -2198,28 +2198,28 @@ void HeroL06_UpdateMovement(void) {
             }
         }
         quantize_hero_input_target_speed();
-        if (((Hero *)&g_hero)->unk1C4 == 0) {
+        if (((Hero *)&g_hero)->move_lock_timer == 0) {
             update_hero_airborne_planar_velocity();
         }
         adjust_hero_pose_targets_from_motion();
         build_scaled_hero_move_impulse(0.7f, g_frame_time * 0.0f);
-        HeroMoveDownAlongNormal(((Hero *)&g_hero)->motion.velocity.f, ((Hero *)&g_hero)->motion.velocity.f, ((Hero *)&g_hero)->unk940);
+        HeroMoveDownAlongNormal(((Hero *)&g_hero)->motion.velocity.f, ((Hero *)&g_hero)->motion.velocity.f, ((Hero *)&g_hero)->fall_state_gravity);
         if (gravity_z(((Hero *)&g_hero)->motion.velocity.f) < -(g_frame_time * 50.0f)) {
             gravity_set_z(((Hero *)&g_hero)->motion.velocity.f, ((Hero *)&g_hero)->motion.velocity.f, -(g_frame_time * 50.0f));
         }
         break;
     case 0x77:
-        ((Hero *)&g_hero)->unk20AC = 1;
-        ApproachValue(&((Hero *)&g_hero)->unk948, ((Hero *)&g_hero)->unk950, g_frame_time_sq * 8.726646f);
-        ApproachValue(&((Hero *)&g_hero)->unk94C, ((Hero *)&g_hero)->unk954, g_frame_time_sq * 8.726646f);
-        rotate_hero_about_fixed_local_pivot(((Hero *)&g_hero)->unk948, ((Hero *)&g_hero)->unk94C, 0.0f);
+        ((Hero *)&g_hero)->item_use_locked = 1;
+        ApproachValue(&((Hero *)&g_hero)->fatal_fall_roll_rate, ((Hero *)&g_hero)->pivot_rot_x_target, g_frame_time_sq * 8.726646f);
+        ApproachValue(&((Hero *)&g_hero)->fixed_pivot_rot_y, ((Hero *)&g_hero)->fatal_fall_tumble_target_y, g_frame_time_sq * 8.726646f);
+        rotate_hero_about_fixed_local_pivot(((Hero *)&g_hero)->fatal_fall_roll_rate, ((Hero *)&g_hero)->fixed_pivot_rot_y, 0.0f);
         {
             float len;
 
             len = vec_length_xy(((Hero *)&g_hero)->motion.velocity.f);
             clamp_vec_length_xy(frame_scale * -0.100000024f * len + len, ((Hero *)&g_hero)->motion.velocity.f, ((Hero *)&g_hero)->motion.velocity.f);
         }
-        HeroMoveDownAlongNormal(((Hero *)&g_hero)->motion.velocity.f, ((Hero *)&g_hero)->motion.velocity.f, ((Hero *)&g_hero)->unk940);
+        HeroMoveDownAlongNormal(((Hero *)&g_hero)->motion.velocity.f, ((Hero *)&g_hero)->motion.velocity.f, ((Hero *)&g_hero)->fall_state_gravity);
         if (gravity_z(((Hero *)&g_hero)->motion.velocity.f) < -(g_frame_time * 50.0f)) {
             gravity_set_z(((Hero *)&g_hero)->motion.velocity.f, ((Hero *)&g_hero)->motion.velocity.f, -(g_frame_time * 50.0f));
         }
@@ -2240,9 +2240,9 @@ void HeroL06_UpdateMovement(void) {
             if (fast) {
                 b = a;
             }
-            stick_target(((Hero *)&g_hero)->unk229C * b, 0);
-            if (((Hero *)&g_hero)->unk229C > 0.2f && !(g_controller_state.held & 3)) {
-                turn_to(0, g_frame_scale_sq * 0.027f, g_frame_scale_sq * 0.3f, g_frame_time * 5.934119f * ((Hero *)&g_hero)->unk229C);
+            stick_target(((Hero *)&g_hero)->stick_magnitude * b, 0);
+            if (((Hero *)&g_hero)->stick_magnitude > 0.2f && !(g_controller_state.held & 3)) {
+                turn_to(0, g_frame_scale_sq * 0.027f, g_frame_scale_sq * 0.3f, g_frame_time * 5.934119f * ((Hero *)&g_hero)->stick_magnitude);
             }
             if (g_controller_state.held & 3) {
                 float keep;
@@ -2253,7 +2253,7 @@ void HeroL06_UpdateMovement(void) {
                 ((Hero *)&g_hero)->motion.move_yaw = keep;
             }
             v = g_frame_time_sq * 7.0f;
-            if (((Hero *)&g_hero)->unk229C < 0.2f) {
+            if (((Hero *)&g_hero)->stick_magnitude < 0.2f) {
                 v = g_frame_time_sq * 3.5f;
             }
             air_accel(v);
@@ -2262,9 +2262,9 @@ void HeroL06_UpdateMovement(void) {
             if (fast) {
                 gravity_flatten(((Hero *)&g_hero)->motion.velocity.f, ((Hero *)&g_hero)->motion.velocity.f);
                 HeroMoveDownAlongNormal(((Hero *)&g_hero)->motion.velocity.f, ((Hero *)&g_hero)->motion.velocity.f, a * 0.72f);
-                ((Hero *)&g_hero)->unk304 = ((Hero *)&g_hero)->motion.velocity.f[2];
+                ((Hero *)&g_hero)->ground_spring_velocity = ((Hero *)&g_hero)->motion.velocity.f[2];
             } else {
-                Spring(&((Hero *)&g_hero)->motion.pos.f[2], &((Hero *)&g_hero)->unk304, ((Hero *)&g_hero)->ground_z.f + 0.17f, g_frame_scale_sq * 0.02f, g_frame_scale_sq * 0.35f, g_frame_time * 2.5f);
+                Spring(&((Hero *)&g_hero)->motion.pos.f[2], &((Hero *)&g_hero)->ground_spring_velocity, ((Hero *)&g_hero)->ground_z.f + 0.17f, g_frame_scale_sq * 0.02f, g_frame_scale_sq * 0.35f, g_frame_time * 2.5f);
             }
         }
         break;
@@ -2273,14 +2273,14 @@ void HeroL06_UpdateMovement(void) {
             float v;
 
             if (hero_slot_item_id(3) == 2) {
-                if (((Hero *)&g_hero)->unk2228 != -1) {
-                    Row13E650 *e = (Row13E650 *)(voice_pool + ((Hero *)&g_hero)->unk2228 * 0x70);
+                if (((Hero *)&g_hero)->voice_slot4 != -1) {
+                    Row13E650 *e = (Row13E650 *)(voice_pool + ((Hero *)&g_hero)->voice_slot4 * 0x70);
 
                     if (e->f88 == ((Hero *)&g_hero)->moby && e->f74 != 0) {
-                        Sound_StopSlot(((Hero *)&g_hero)->unk2228);
+                        Sound_StopSlot(((Hero *)&g_hero)->voice_slot4);
                     }
                 }
-                ((Hero *)&g_hero)->unk2228 = -1;
+                ((Hero *)&g_hero)->voice_slot4 = -1;
                 release_voice_slot_cf(3, (int)((Hero *)&g_hero)->moby, 2);
             } else {
                 if (((Hero *)&g_hero)->unk2224 != -1) {
@@ -2304,8 +2304,8 @@ void HeroL06_UpdateMovement(void) {
             adjust_hero_pose_targets_from_motion();
             gravity_flatten(((Hero *)&g_hero)->motion.velocity.f, ((Hero *)&g_hero)->motion.velocity.f);
             HeroMoveDownAlongNormal(((Hero *)&g_hero)->motion.velocity.f, ((Hero *)&g_hero)->motion.velocity.f, v * 0.72f);
-            if (((Hero *)&g_hero)->motion.pos.f[2] < ((Hero *)&g_hero)->unk410) {
-                ApproachValue(&((Hero *)&g_hero)->unk410, ((Hero *)&g_hero)->motion.pos.f[2], g_frame_time * 4.0f);
+            if (((Hero *)&g_hero)->motion.pos.f[2] < ((Hero *)&g_hero)->smoothed_ground_z) {
+                ApproachValue(&((Hero *)&g_hero)->smoothed_ground_z, ((Hero *)&g_hero)->motion.pos.f[2], g_frame_time * 4.0f);
             }
             probe_hero_airborne_wall_contact();
         }
@@ -2327,18 +2327,18 @@ void HeroL06_UpdateMovement(void) {
     case 0x4C:
     case 0x5E:
     case 0x69:
-        if (((Hero *)&g_hero)->state.current == 0x1C && ((Hero *)&g_hero)->unk22D8 == 0 && ((Hero *)&g_hero)->items[3].item_id == 3) {
+        if (((Hero *)&g_hero)->state.current == 0x1C && ((Hero *)&g_hero)->pack_disabled == 0 && ((Hero *)&g_hero)->items[3].item_id == 3) {
             if (test_hero_animation_frame_window(10.0f)) {
                 allocate_hero_voice_for_entry(4, 0);
             }
         }
-        if (((Hero *)&g_hero)->unk4A8 != 0 && ((Hero *)&g_hero)->unk12E2 != 0) {
+        if (((Hero *)&g_hero)->unk4A8 != 0 && ((Hero *)&g_hero)->on_ice_ground != 0) {
             ((Hero *)&g_hero)->target_speed = ((Hero *)&g_hero)->ground_speed;
         } else {
-            if (((Hero *)&g_hero)->unk418 != 0) {
+            if (((Hero *)&g_hero)->rail_land_frames != 0) {
                 stick_target(g_frame_time * 5.7f, 0);
             }
-            stick_target(((Hero *)&g_hero)->unk424, 0);
+            stick_target(((Hero *)&g_hero)->air_stick_speed, 0);
         }
         {
             int t;
@@ -2349,31 +2349,31 @@ void HeroL06_UpdateMovement(void) {
             if (t == lim) {
                 qcopy(((Hero *)&g_hero)->unk400.f, ((Hero *)&g_hero)->motion.pos.f);
             }
-            if (((Hero *)&g_hero)->unk418 != 0 || (t < lim && ((Hero *)&g_hero)->state.current != 0xB && ((Hero *)&g_hero)->state.current != 0x10 && ((Hero *)&g_hero)->state.current != 0xC && ((Hero *)&g_hero)->state.current != 0x11 && ((Hero *)&g_hero)->state.current != 0x1C && ((Hero *)&g_hero)->state.current != 0x4C)) {
+            if (((Hero *)&g_hero)->rail_land_frames != 0 || (t < lim && ((Hero *)&g_hero)->state.current != 0xB && ((Hero *)&g_hero)->state.current != 0x10 && ((Hero *)&g_hero)->state.current != 0xC && ((Hero *)&g_hero)->state.current != 0x11 && ((Hero *)&g_hero)->state.current != 0x1C && ((Hero *)&g_hero)->state.current != 0x4C)) {
                 float keep;
 
                 turn_to(0, g_frame_scale_sq * 0.015f, g_frame_scale_sq * 0.2f, g_frame_time * 15.009831f);
                 keep = ((Hero *)&g_hero)->ground_speed;
-                if (((Hero *)&g_hero)->unk418 > 1) {
+                if (((Hero *)&g_hero)->rail_land_frames > 1) {
                     ((Hero *)&g_hero)->ground_speed = keep * 0.4f;
                 }
                 set_planar_vel(99999.0f);
                 ((Hero *)&g_hero)->ground_speed = keep;
-                if (((Hero *)&g_hero)->unk418 != 1) {
-                    speed_step(((Hero *)&g_hero)->unk480, ((Hero *)&g_hero)->unk484);
+                if (((Hero *)&g_hero)->rail_land_frames != 1) {
+                    speed_step(((Hero *)&g_hero)->air_speed_step_up, ((Hero *)&g_hero)->jump_decel);
                 }
                 if (((Hero *)&g_hero)->unk308 != 0) {
                     ((Hero *)&g_hero)->ground_speed = 0.0f;
                 }
-                if (((Hero *)&g_hero)->unk418 != 0) {
+                if (((Hero *)&g_hero)->rail_land_frames != 0) {
                     if (*(int *)(D_0013A5E0 + 0x2634) != 0) {
-                        if (((Hero *)&g_hero)->unk30A != 0) {
+                        if (((Hero *)&g_hero)->on_flagged_ground_moby != 0) {
                             ((Hero *)&g_hero)->ground_speed = 0.0f;
                         }
                     }
                 }
-                if (((Hero *)&g_hero)->unk418 != 0) {
-                    reduce_and_apply_hero_planar_velocity_addend(((Hero *)&g_hero)->unk484);
+                if (((Hero *)&g_hero)->rail_land_frames != 0) {
+                    reduce_and_apply_hero_planar_velocity_addend(((Hero *)&g_hero)->jump_decel);
                 }
                 build_scaled_hero_move_impulse(0.5f, g_frame_time * 2.0f);
                 if (((Hero *)&g_hero)->state.current == 9 && ((Hero *)&g_hero)->state_timer < ((Hero *)&g_hero)->unk420 + scale_ticks(4)) {
@@ -2384,7 +2384,7 @@ void HeroL06_UpdateMovement(void) {
                         add_hero_forward_offset(((Hero *)&g_hero)->motion.velocity.f, ((Hero *)&g_hero)->motion.velocity.f, g_frame_time_sq * 53.0f * ((Hero *)&g_hero)->state_timer);
                     }
                 }
-                if (((Hero *)&g_hero)->state_timer < scale_ticks(0xA) && ((Hero *)&g_hero)->unk229C > 0.2f) {
+                if (((Hero *)&g_hero)->state_timer < scale_ticks(0xA) && ((Hero *)&g_hero)->stick_magnitude > 0.2f) {
 
                     qcopy(vec[0], ((Hero *)&g_hero)->motion.pos.f);
                     HeroOffsetAlongViewZ(vec[0], vec[0], 0.5f);
@@ -2392,26 +2392,26 @@ void HeroL06_UpdateMovement(void) {
                     vec[1][0] += FastCos(((Hero *)&g_hero)->motion.rot.f[2]) * 0.85f;
                     vec[1][1] += FastSin(((Hero *)&g_hero)->motion.rot.f[2]) * 0.85f;
                     if (coll_line(vec[0], vec[1], 4, (int)((Hero *)&g_hero)->moby, 0)) {
-                        ((Hero *)&g_hero)->unk4A4 = 1;
+                        ((Hero *)&g_hero)->jump_blocked_ahead = 1;
                     }
                 }
             } else {
                 update_hero_airborne_planar_velocity();
             }
         }
-        if (((Hero *)&g_hero)->ground_z.f > ((Hero *)&g_hero)->unk410) {
-            ((Hero *)&g_hero)->unk410 = ((Hero *)&g_hero)->unk410 + g_frame_time * 6.0f;
-            if (((Hero *)&g_hero)->unk410 > ((Hero *)&g_hero)->ground_z.f) {
-                ((Hero *)&g_hero)->unk410 = ((Hero *)&g_hero)->ground_z.f;
+        if (((Hero *)&g_hero)->ground_z.f > ((Hero *)&g_hero)->smoothed_ground_z) {
+            ((Hero *)&g_hero)->smoothed_ground_z = ((Hero *)&g_hero)->smoothed_ground_z + g_frame_time * 6.0f;
+            if (((Hero *)&g_hero)->smoothed_ground_z > ((Hero *)&g_hero)->ground_z.f) {
+                ((Hero *)&g_hero)->smoothed_ground_z = ((Hero *)&g_hero)->ground_z.f;
             }
         }
-        if (((Hero *)&g_hero)->motion.pos.f[2] < ((Hero *)&g_hero)->unk410) {
-            ((Hero *)&g_hero)->unk410 = ((Hero *)&g_hero)->motion.pos.f[2];
+        if (((Hero *)&g_hero)->motion.pos.f[2] < ((Hero *)&g_hero)->smoothed_ground_z) {
+            ((Hero *)&g_hero)->smoothed_ground_z = ((Hero *)&g_hero)->motion.pos.f[2];
         }
-        if (((Hero *)&g_hero)->state_timer > ((Hero *)&g_hero)->unk420 && gravity_z(((Hero *)&g_hero)->motion.velocity.f) < 0.001f && (((Hero *)&g_hero)->unk41C == 0 || ((Hero *)&g_hero)->state_timer > ((Hero *)&g_hero)->unk3D4)) {
-            ((Hero *)&g_hero)->unk41E = 1;
-            if (((Hero *)&g_hero)->unk3F8 != 0.0f) {
-                ((Hero *)&g_hero)->unk4A0 = ((Hero *)&g_hero)->unk3F8;
+        if (((Hero *)&g_hero)->state_timer > ((Hero *)&g_hero)->unk420 && gravity_z(((Hero *)&g_hero)->motion.velocity.f) < 0.001f && (((Hero *)&g_hero)->velocity_keys_active == 0 || ((Hero *)&g_hero)->state_timer > ((Hero *)&g_hero)->velocity_keys_end_frame)) {
+            ((Hero *)&g_hero)->past_jump_apex = 1;
+            if (((Hero *)&g_hero)->fall_gravity != 0.0f) {
+                ((Hero *)&g_hero)->jump_gravity = ((Hero *)&g_hero)->fall_gravity;
             }
         }
         if (((Hero *)&g_hero)->vehicle_mode == 0) {
@@ -2444,7 +2444,7 @@ void HeroL06_UpdateMovement(void) {
                 }
             }
         }
-        if (((Hero *)&g_hero)->state.current == 0x3C && ((Hero *)&g_hero)->unk41E == 0 && ((Hero *)&g_hero)->motion.velocity.f[2] > g_frame_time * 1.5f) {
+        if (((Hero *)&g_hero)->state.current == 0x3C && ((Hero *)&g_hero)->past_jump_apex == 0 && ((Hero *)&g_hero)->motion.velocity.f[2] > g_frame_time * 1.5f) {
             emit_hero_timed_effects();
         }
         hero_integrate_velocity();
@@ -2464,7 +2464,7 @@ void HeroL06_UpdateMovement(void) {
             if (len < 0.0f) {
                 len = 0.0f;
             }
-            if (((Hero *)&g_hero)->unk12E7 != 0) {
+            if (((Hero *)&g_hero)->on_magnet_ground != 0) {
                 stop_hero_motion_without_forward_support(3.7f, 0.0f);
             }
             vec_set_length_xy(((Hero *)&g_hero)->motion.velocity.f, ((Hero *)&g_hero)->motion.velocity.f, len);
@@ -2476,11 +2476,11 @@ void HeroL06_UpdateMovement(void) {
             float len;
             float k;
 
-            FastVecSub(vec[0], ((Hero *)&g_hero)->unk1640.f, ((Hero *)&g_hero)->motion.pos.f);
+            FastVecSub(vec[0], ((Hero *)&g_hero)->target_pose.f, ((Hero *)&g_hero)->motion.pos.f);
             ((Hero *)&g_hero)->motion.move_yaw = fast_atan2(vec[0][0], vec[0][1]);
             len = vec_length_xy(vec[0]);
             if (len > 0.2f) {
-                ((Hero *)&g_hero)->unk229C = 1.0f;
+                ((Hero *)&g_hero)->stick_magnitude = 1.0f;
                 ((Hero *)&g_hero)->motion.move_yaw = fast_atan2(vec[0][0], vec[0][1]);
                 ((Hero *)&g_hero)->target_speed = len;
                 if (len < blarg_hero_speed_bands[3]) {
@@ -2494,8 +2494,8 @@ void HeroL06_UpdateMovement(void) {
                     ((Hero *)&g_hero)->target_speed = g_frame_time * 0.9f;
                 }
             } else {
-                ((Hero *)&g_hero)->unk229C = 0.5f;
-                ((Hero *)&g_hero)->motion.move_yaw = ((Hero *)&g_hero)->unk1640.f[3];
+                ((Hero *)&g_hero)->stick_magnitude = 0.5f;
+                ((Hero *)&g_hero)->motion.move_yaw = ((Hero *)&g_hero)->target_pose.f[3];
                 ((Hero *)&g_hero)->target_speed = 0.0f;
             }
             k = 1.0f;
@@ -2529,7 +2529,7 @@ void HeroL06_UpdateMovement(void) {
     case 0x66:
         {
 
-            FastVecSub(vec[0], ((Hero *)&g_hero)->unk1640.f, ((Hero *)&g_hero)->motion.pos.f);
+            FastVecSub(vec[0], ((Hero *)&g_hero)->target_pose.f, ((Hero *)&g_hero)->motion.pos.f);
             if (FastVecDot(vec[0], ((Hero *)&g_hero)->motion.unk150.f) < 0.0f) {
                 clear_u64_value(((Hero *)&g_hero)->motion.unk150.f);
             }
@@ -2590,7 +2590,7 @@ void HeroL06_UpdateMovement(void) {
                 }
                 break;
             }
-            if (((Hero *)&g_hero)->unkA9C == 0 && r->f1C <= ((Hero *)&g_hero)->anim_frame && ((Hero *)&g_hero)->anim_frame <= r->f20) {
+            if (((Hero *)&g_hero)->anim_changing == 0 && r->f1C <= ((Hero *)&g_hero)->anim_frame && ((Hero *)&g_hero)->anim_frame <= r->f20) {
                 int j;
 
                 j = 2;
@@ -2604,17 +2604,17 @@ void HeroL06_UpdateMovement(void) {
                 MobySphereHitDirectional((int)((Hero *)&g_hero)->moby, 0.25f, vec[0], 0x10000, 1.0f, 1.0f, 0, 1, 0);
             }
             ApproachValue(&((Hero *)&g_hero)->anim_speed, 1.0f, 0.2f);
-            if (((Hero *)&g_hero)->unkA58 != 0 || ((Hero *)&g_hero)->unkA54 != 0) {
-                if (r->f4 == 1 && FastSubRots(((Hero *)&g_hero)->unkA5C, ((Hero *)&g_hero)->motion.rot.f[2]) > 0.0f) {
-                    ((Hero *)&g_hero)->anim_speed = 1.0f / (FastDiffRots(((Hero *)&g_hero)->unkA5C, ((Hero *)&g_hero)->motion.rot.f[2]) + 1.0f);
+            if (((Hero *)&g_hero)->heading_locked != 0 || ((Hero *)&g_hero)->melee_target != 0) {
+                if (r->f4 == 1 && FastSubRots(((Hero *)&g_hero)->attack_target_yaw, ((Hero *)&g_hero)->motion.rot.f[2]) > 0.0f) {
+                    ((Hero *)&g_hero)->anim_speed = 1.0f / (FastDiffRots(((Hero *)&g_hero)->attack_target_yaw, ((Hero *)&g_hero)->motion.rot.f[2]) + 1.0f);
                 }
-                ((Hero *)&g_hero)->motion.move_yaw = ((Hero *)&g_hero)->unkA5C;
+                ((Hero *)&g_hero)->motion.move_yaw = ((Hero *)&g_hero)->attack_target_yaw;
                 turn_to(0, g_frame_scale_sq * 0.05f, g_frame_scale_sq * 0.2f, g_frame_time * 15.009831f);
             } else {
                 int ok;
 
                 ok = 1;
-                if (r->f4 == 1 && ((Hero *)&g_hero)->unkA9C == 0 && ((Hero *)&g_hero)->anim_frame > 7.0f) {
+                if (r->f4 == 1 && ((Hero *)&g_hero)->anim_changing == 0 && ((Hero *)&g_hero)->anim_frame > 7.0f) {
                     ok = 0;
                 }
                 if (ok) {
@@ -2622,8 +2622,8 @@ void HeroL06_UpdateMovement(void) {
                 }
             }
             speed_step(g_frame_time_sq * 37.0f, g_frame_time_sq * 28.0f);
-            if (((Hero *)&g_hero)->unkA58 != 0) {
-                set_planar_vel(((Hero *)&g_hero)->unkA5C);
+            if (((Hero *)&g_hero)->heading_locked != 0) {
+                set_planar_vel(((Hero *)&g_hero)->attack_target_yaw);
             } else {
                 set_planar_vel(99999.0f);
             }
@@ -2657,7 +2657,7 @@ void HeroL06_UpdateMovement(void) {
         break;
     case 0x45:
         stick_target(g_frame_time * 3.0f, 0);
-        if (((Hero *)&g_hero)->unk1C4 == 0) {
+        if (((Hero *)&g_hero)->move_lock_timer == 0) {
             update_hero_airborne_planar_velocity();
         }
         HeroMoveDownAlongNormal(((Hero *)&g_hero)->motion.velocity.f, ((Hero *)&g_hero)->motion.velocity.f, g_frame_time_sq * 12.0f);
@@ -2678,7 +2678,7 @@ void HeroL06_UpdateMovement(void) {
             v = g_frame_time * 3.0f;
             stick_target(v, 0);
             k -= d * 0.3f;
-            t = ((Hero *)&g_hero)->unk229C + 0.35f;
+            t = ((Hero *)&g_hero)->stick_magnitude + 0.35f;
             if (k < 0.0f) {
                 k = 0.0f;
             }
@@ -2739,15 +2739,15 @@ void HeroL06_UpdateMovement(void) {
             }
             FastVecAdd(vec[3], vec[2], vec[4]);
             check_ledge_grab();
-            if (((Hero *)&g_hero)->unk4E8 != 0) {
-                qcopy(vec[0], ((Hero *)&g_hero)->unk4D0.f);
-                a0 = FastAddRots(((Hero *)&g_hero)->unk4E4, 3.1415927f);
+            if (((Hero *)&g_hero)->ledge_found != 0) {
+                qcopy(vec[0], ((Hero *)&g_hero)->ledge_hang_pos.f);
+                a0 = FastAddRots(((Hero *)&g_hero)->ledge_normal_yaw, 3.1415927f);
                 qcopy(((Hero *)&g_hero)->motion.pos.f, vec[3]);
                 check_ledge_grab();
                 qcopy(((Hero *)&g_hero)->motion.pos.f, vec[2]);
-                if (((Hero *)&g_hero)->unk4E8 != 0) {
-                    qcopy(vec[1], ((Hero *)&g_hero)->unk4D0.f);
-                    a1 = FastAddRots(((Hero *)&g_hero)->unk4E4, 3.1415927f);
+                if (((Hero *)&g_hero)->ledge_found != 0) {
+                    qcopy(vec[1], ((Hero *)&g_hero)->ledge_hang_pos.f);
+                    a1 = FastAddRots(((Hero *)&g_hero)->ledge_normal_yaw, 3.1415927f);
                     if (!(FastDiffRots(a0, a1) > 0.5235988f)) {
                         float mid;
                         float spd;
@@ -2791,7 +2791,7 @@ void HeroL06_UpdateMovement(void) {
         break;
     case 0x55:
         stick_target(g_frame_time * 1.5f, 0);
-        if (((Hero *)&g_hero)->unk1C4 == 0) {
+        if (((Hero *)&g_hero)->move_lock_timer == 0) {
             update_hero_airborne_planar_velocity();
         }
         HeroMoveDownAlongNormal(((Hero *)&g_hero)->motion.velocity.f, ((Hero *)&g_hero)->motion.velocity.f, g_frame_time_sq * 21.0f);
@@ -2812,7 +2812,7 @@ void HeroL06_UpdateMovement(void) {
             }
             k = 1.0f;
             k -= d * 0.3f;
-            t = ((Hero *)&g_hero)->unk229C + 0.35f;
+            t = ((Hero *)&g_hero)->stick_magnitude + 0.35f;
             if (k < 0.0f) {
                 k = 0.0f;
             }
@@ -2853,9 +2853,9 @@ void HeroL06_UpdateMovement(void) {
         break;
     }
     if (prevState != ((Hero *)&g_hero)->state.step) {
-        ((Hero *)&g_hero)->unk1A0 = 0;
+        ((Hero *)&g_hero)->step_frames = 0;
     }
     if (prevAnim != moby->prev_seq) {
-        ((Hero *)&g_hero)->unk1A4 = 0;
+        ((Hero *)&g_hero)->anim_seq_frames = 0;
     }
 }

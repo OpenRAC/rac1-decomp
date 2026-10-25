@@ -3059,11 +3059,11 @@ void update_nearest_area_moby_selection(struct Moby *m) {
     }
 in_range:
     d = func_001F9D48_F4290(&m->pos, &target);
-    if (d < D_0013F450_F4290.unk2044) {
-        D_0013F450_F4290.unk2040 = m;
-        D_0013F450_F4290.unk2044 = d;
+    if (d < D_0013F450_F4290.detector_target_dist) {
+        D_0013F450_F4290.metal_detector_target = m;
+        D_0013F450_F4290.detector_target_dist = d;
         if (d < 20.0f) {
-            D_0013F450_F4290.unk2048 = 1;
+            D_0013F450_F4290.nearby_moby_close = 1;
         }
     }
 }

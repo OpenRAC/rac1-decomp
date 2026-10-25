@@ -34,7 +34,7 @@ int pick_idle_fidget(int *index) {
     if (g_hero.health.hp == 1) {
         *index = 4;
         if (D_L00_00179BB0 != 0) return 0;
-        if (!(g_hero.unkA98 & 2)) return 0;
+        if (!(g_hero.anim_flags & 2)) return 0;
         return random_float_between(0.0f, 1.0f) < 0.33f;
     }
     i = 0;

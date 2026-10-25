@@ -561,7 +561,7 @@ void draw_freeze_message_box(void) {
             c2 = FastTweenColor(*(s32 *)&freeze_box_record_color, *(s32 *)&freeze_box_record_flash_color, f);
             c3 = FastTweenColor(*(s32 *)&freeze_box_no_record_color, *(s32 *)&freeze_box_no_record_flash_color, f);
         }
-        if (((Hero *)g_hero)->unk89A < 3) {
+        if (((Hero *)g_hero)->race_lap < 3) {
             draw_outlined_rect(*(s32 *)&freeze_short_box_center_y - truncate_float_to_s32((f32)*(s32 *)&freeze_short_box_half_height * scale),
                             *(s32 *)&freeze_short_box_center_y + truncate_float_to_s32((f32)*(s32 *)&freeze_short_box_half_height * scale),
                             *(s32 *)&freeze_short_box_center_x - truncate_float_to_s32((f32)*(s32 *)&freeze_short_box_half_width * scale),
@@ -574,18 +574,18 @@ void draw_freeze_message_box(void) {
                             *(s32 *)&freeze_long_box_center_y + truncate_float_to_s32((f32)*(s32 *)&freeze_long_box_half_height * scale),
                             *(s32 *)&freeze_long_box_center_x - truncate_float_to_s32((f32)*(s32 *)&freeze_long_box_half_width * scale),
                             *(s32 *)&freeze_long_box_center_x + truncate_float_to_s32((f32)*(s32 *)&freeze_long_box_half_width * scale), pulse);
-            sel = ((Hero *)g_hero)->unk8C0 - 1;
+            sel = ((Hero *)g_hero)->race_position - 1;
             if (!(sel < 5)) {
                 sel = 4;
             }
             func_00116248(line, freeze_rank_line_format, msg_string(sel + 0x5229), msg_string(0x5245));
-            if (((Hero *)g_hero)->unk8C0 == 1) {
+            if (((Hero *)g_hero)->race_position == 1) {
                 FontPrintCenter(0x100, *(s32 *)&freeze_long_box_text_y, c2, line, -1);
             } else {
                 FontPrintCenter(0x100, *(s32 *)&freeze_long_box_text_y, c3, line, -1);
             }
             best = race_best_times[(g_current_level_index ^ 0x10) ? 0 : 1];
-            if (best == ((Hero *)g_hero)->unk894) {
+            if (best == ((Hero *)g_hero)->race_time_frames) {
                 unit = pal_mode ? 3000 : 3600;
                 per = unit / 60;
                 min = best / unit;
@@ -601,10 +601,10 @@ void draw_freeze_message_box(void) {
                 FontPrintCenter(0x100, *(s32 *)&freeze_long_box_text_y + 0x30, c3, line, -1);
             }
             record = race_best_records[(g_current_level_index ^ 0x10) ? 0 : 1];
-            if (record != 0 && record == ((Hero *)g_hero)->unk8A8) {
+            if (record != 0 && record == ((Hero *)g_hero)->race_score) {
                 func_00116248(line, freeze_text_line_format, msg_string(0x50A5));
                 FontPrintCenter(0x100, *(s32 *)&freeze_long_box_text_y + 0x56, c2, line, -1);
-                func_00116248(line, freeze_record_value_format, ((Hero *)g_hero)->unk8A8);
+                func_00116248(line, freeze_record_value_format, ((Hero *)g_hero)->race_score);
                 FontPrintCenter(0x100, *(s32 *)&freeze_long_box_text_y + 0x6A, c2, line, -1);
             } else {
                 func_00116248(line, freeze_text_line_format, msg_string(0x50A4));

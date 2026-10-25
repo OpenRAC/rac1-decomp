@@ -3231,7 +3231,7 @@ void update_hero_triggered_moby_height_cycle(Moby *moby) {
                 ok = try_set_help_message(9, 0x1789) != 0;
             }
             if ((*(int *)(D_0013A5E0_2FDA70 + 0x2604) & 0x10) && ((Hero *)(D_0013E633 + 0xE1D))->state.current != 100 && ok) {
-                ((Hero *)(D_0013E633 + 0xE1D))->unk1F2 = scale_ticks(0x3C);
+                ((Hero *)(D_0013E633 + 0xE1D))->jump_lock_timer = scale_ticks(0x3C);
                 d->f90 = scale_ticks(0x78);
                 if (((Hero *)(D_0013E633 + 0xE1D))->vehicle_mode == 1) {
                     FadeToBlack(scale_ticks(0x10));
@@ -3358,9 +3358,9 @@ void update_hero_triggered_moby_height_cycle(Moby *moby) {
         break;
     }
     if (d->f94 != 0) {
-        ((Hero *)(D_0013E633 + 0xE1D))->unk22CB = 1;
+        ((Hero *)(D_0013E633 + 0xE1D))->vent_updraft = 1;
     } else {
-        ((Hero *)(D_0013E633 + 0xE1D))->unk22CB = 0;
+        ((Hero *)(D_0013E633 + 0xE1D))->vent_updraft = 0;
     }
     if (moby->state >= 5 && moby->state <= 8) {
         d->f9C = 0.0f;

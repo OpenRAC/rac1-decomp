@@ -963,8 +963,8 @@ void update_target_tracking_camera_position(char *cam) {
     unsigned short *neighbours;
     int i;
 
-    if (hero_2ED320.unk994 != 0 && hero_2ED320.state.current == 0x2c) {
-        fraction = ((float *)hero_2ED320.unk994)[6] - hero_2ED320.motion.pos.f[2];
+    if (hero_2ED320.swing_target_moby != 0 && hero_2ED320.state.current == 0x2c) {
+        fraction = ((float *)hero_2ED320.swing_target_moby)[6] - hero_2ED320.motion.pos.f[2];
         if (fraction > hero_2ED320.unk9A0) fraction = hero_2ED320.unk9A0;
         else if (fraction < 0.0f) fraction = 0.0f;
         fraction /= hero_2ED320.unk9A0;
@@ -983,13 +983,13 @@ void update_target_tracking_camera_position(char *cam) {
 
     if (hero_2ED320.state.current == 0x2c) {
         if ((current_level_2ED320 != 14 && current_level_2ED320 != 7 && current_level_2ED320 != 9) ||
-            (hero_2ED320.unk994 != 0 && *(unsigned char *)((char *)hero_2ED320.unk994 + 0x21) == 255)) {
+            (hero_2ED320.swing_target_moby != 0 && *(unsigned char *)((char *)hero_2ED320.swing_target_moby + 0x21) == 255)) {
             *angle = rope_spring_turn_2ED320(angle + 1, *angle, hero_2ED320.motion.rot.f[2], 0.00125f, 0.175f, 0.0f);
         } else {
             chosen = 0;
             turn = angle + 1;
             best = 1000.0f;
-            current_target = (char *)hero_2ED320.unk994;
+            current_target = (char *)hero_2ED320.swing_target_moby;
             /* Fakematch: a dead compare with 10.0f loads that constant early, which fixes the
              * register order of the loop constants and of turn. */
             if (target == 10.0f) { }
@@ -1146,13 +1146,13 @@ void update_target_tracking_camera(char *m) {
     if (hero_state == 0x2C) {
         camera_position = (char *)&cam->pos;
         x = camera_target_state->target;
-        y = (int)((void *)b->unk994);
+        y = (int)((void *)b->swing_target_moby);
     } else {
         camera_position = (char *)&cam->pos;
         if ((unsigned)(hero_state - 0x24) >= 3)
             goto done;
         x = camera_target_state->target;
-        y = (int)((void *)b->unk964);
+        y = (int)((void *)b->grapple_target);
     }
     if (x != y) {
         CameraSystemView_2EDB70 *g = (CameraSystemView_2EDB70 *)D_L00_00166D80_c;

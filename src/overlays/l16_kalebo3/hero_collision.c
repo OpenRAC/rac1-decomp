@@ -16,19 +16,19 @@ extern void func_L00_0020BFA8(void);
 /* Per-frame update of the pickup/hit state flags from the state code. */
 void HeroL16_UpdateStateFlags(void) {
     struct Hero *hero_data = (struct Hero *)(D_0013E633 + 0xE1D);
-    int keep = hero_data->unk12ED;
+    int keep = hero_data->ground_sound_class;
     int saved_ground_type = hero_data->ground_type;
     int level_index;
     FastMemZero16(&hero_data->ground_type, 0x10);
-    hero_data->unk12ED = keep;
+    hero_data->ground_sound_class = keep;
     hero_data->ground_type = -1;
-    hero_data->unk20A9 = 0;
+    hero_data->wading = 0;
     hero_data->unk308 = 0;
     if (saved_ground_type == -1)
         return;
     if (saved_ground_type == 2) {
         if (hero_data->frames_off_ground.s == 0 || hero_data->ground_distance < 0.3f) {
-            hero_data->unk12E7 = 1;
+            hero_data->on_magnet_ground = 1;
             if (hero_data->vehicle_mode == 0) {
                 char *item_moby = (char *)hero_data->items[1].moby;
                 if (item_moby != 0 && *(short *)(item_moby + 0xA6) == 0xAD)
@@ -39,15 +39,15 @@ void HeroL16_UpdateStateFlags(void) {
     if (saved_ground_type == 0xE) {
         struct Hero *q = (struct Hero *)(D_0013E633 + 0xE1D);
         q->base_condition = 1;
-        q->unk22A4 = 0.2f;
+        q->water_depth = 0.2f;
         q->water_surface_z = q->ground_z.f + 0.2f;
     }
     if (saved_ground_type == 0) {
         struct Hero *q = (struct Hero *)(D_0013E633 + 0xE1D);
         float water_depth = q->water_surface_z - q->ground_z.f;
-        q->unk22A4 = water_depth;
+        q->water_depth = water_depth;
         if (water_depth < 0.85f && 0.25f < water_depth)
-            q->unk20A9 = 1;
+            q->wading = 1;
         {
             struct Hero *flag = (struct Hero *)(D_0013E633 + 0xE1D);
             flag->base_condition = 1;
@@ -73,7 +73,7 @@ void HeroL16_UpdateStateFlags(void) {
     }
     if (saved_ground_type == 0x5) {
         struct Hero *q = (struct Hero *)(D_0013E633 + 0xE1D);
-        q->unk12E8 = 1;
+        q->selector_5 = 1;
     }
     if (saved_ground_type == 0x6) {
         struct Hero *q = (struct Hero *)(D_0013E633 + 0xE1D);
@@ -81,11 +81,11 @@ void HeroL16_UpdateStateFlags(void) {
     }
     if (saved_ground_type == 0x2) {
         struct Hero *q = (struct Hero *)(D_0013E633 + 0xE1D);
-        q->unk12E7 = 1;
+        q->on_magnet_ground = 1;
     }
     if (saved_ground_type == 0x4) {
         struct Hero *q = (struct Hero *)(D_0013E633 + 0xE1D);
-        q->unk12E3 = 1;
+        q->selector_4 = 1;
     }
     if (saved_ground_type == 0xD) {
         struct Hero *q = (struct Hero *)(D_0013E633 + 0xE1D);
@@ -106,7 +106,7 @@ void HeroL16_UpdateStateFlags(void) {
     {
         struct Hero *q = (struct Hero *)(D_0013E633 + 0xE1D);
         struct Hero *h;
-        if (q->unk12E3 != 0 && q->grounded_frames != 0) {
+        if (q->selector_4 != 0 && q->grounded_frames != 0) {
             int k = q->state.control_mode;
             if (k != 0x10 && k != 0x14 && k != 7) {
                 Hero_TryMoveState(HERO_STATE_VOICE_SLOT_CLEANUP_IDLE_EXIT, 1);
@@ -420,14 +420,14 @@ int HeroL16_ApplyPositionOffset(int mode) {
     s32 control_mode;
     s32 collision_result;
 
-    if (hero.unk1CC != 0) {
+    if (hero.collision_off_frames != 0) {
         return 1;
     }
     qcopy(&old, &hero.motion.pos);
     clear_u64_value(&collision_position_offset);
-    if (hero.unk22DA != 0) {
+    if (hero.path_constrain_pending != 0) {
         Hero_ConstrainToPath();
-        hero.unk22DA = 0;
+        hero.path_constrain_pending = 0;
     }
     control_mode = hero.state.control_mode;
     if (control_mode == 0x11) {
@@ -435,7 +435,7 @@ int HeroL16_ApplyPositionOffset(int mode) {
         transform_hero_local_offset_to_world(&collision_position_offset, 0.0f, 0.0f, 0.7f);
         FastVecSub(&collision_position_offset, &collision_position_offset, &hero.motion.pos);
     } else {
-        int c = hero.unk20B3;
+        int c = hero.gravity_mode;
         if (c != 0 || hero.unk1F8 != 0) {
             if (c == 1 || hero.unk1F8 != 0 || (unsigned)(control_mode - 0x15) < 2U) {
                 HeroOffsetAlongViewZ(&collision_position_offset, &collision_position_offset, 0.6f);
@@ -452,7 +452,7 @@ int HeroL16_ApplyPositionOffset(int mode) {
         mask = 0xD24;
     }
     for (i = 0; i < 8; i++) {
-        if (hero.unk20B3 != 0) {
+        if (hero.gravity_mode != 0) {
             collision_result = coll_sphere(frame_scale * 0.4f, &hero.motion.pos, mask, hero.moby);
             if (collision_result == 0) break;
         } else {
@@ -479,7 +479,7 @@ int HeroL16_ApplyPositionOffset(int mode) {
         collision_output = (Vec4 *)D_L16_001742F0;
         qcopy(&hero.motion.pos, collision_output);
         qcopy(&hero.unk200, collision_output + 1);
-        qcopy(&hero.unk210, collision_output - 1);
+        qcopy(&hero.wall_contact_point, collision_output - 1);
         hero.wall_hit = 1;
         hero.coll_hit_moby = ((u8 **)collision_output)[-6];
     }
@@ -546,13 +546,13 @@ void integrate_hero_motion(void) {
 
     qcopy(previous.f, position);
     player = (Hero *)((char *)position - 0x80);
-    update_hero_attachment(player->unk4F8, (char *)&player->motion.platform_delta, (char *)&player->motion.rot);
+    update_hero_attachment(player->ledge_moby, (char *)&player->motion.platform_delta, (char *)&player->motion.rot);
     /* Limit the velocity by state and mode. Inside an arm `position` moves on to the velocity; it is formed again below. */
     if (player->state.current == 34 || player->state.current == 20) {
         float limit;
         float *limited_velocity;
 
-        if (!player->unk1CC) {
+        if (!player->collision_off_frames) {
             float length;
 
             position = (float *)&((Hero *)(D_0013E633 + 0xE1D))->motion.velocity;
@@ -569,7 +569,7 @@ void integrate_hero_motion(void) {
         }
     } else if (player->state.control_mode == 15) {
         /* The same vertical clamp as in mode 22 below, written out in both places: the compiler merges the two. */
-        if (!player->unk1CC) {
+        if (!player->collision_off_frames) {
             float length;
             float limit;
 
@@ -581,7 +581,7 @@ void integrate_hero_motion(void) {
     } else if (player->state.control_mode == 21) {
         float limit = 0.6f;
 
-        if (!player->unk1CC) {
+        if (!player->collision_off_frames) {
             float *limited_velocity = (float *)&((Hero *)(D_0013E633 + 0xE1D))->motion.velocity;
 
             if (FastVecLength(limited_velocity) > limit) vec_scale_to_length(limited_velocity, limited_velocity, limit);
@@ -595,7 +595,7 @@ void integrate_hero_motion(void) {
 
             if (!hit || *(short *)(hit + 0xA6) == 0x1F6 || *(short *)(hit + 0xA6) == 0x59F) {
                 player = (Hero *)(D_0013E633 + 0xE1D);
-                if (!player->unk1CC) {
+                if (!player->collision_off_frames) {
                     float length;
                     float limit;
 
@@ -608,7 +608,7 @@ void integrate_hero_motion(void) {
         }
     } else if (player->state.control_mode != 13) {
         if (player->state.control_mode != 14) {
-            if (!player->unk1CC) {
+            if (!player->collision_off_frames) {
                 float length;
                 float limit;
 

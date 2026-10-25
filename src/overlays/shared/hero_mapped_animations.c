@@ -474,16 +474,16 @@ void advance_hero_animation(void) {
     f32 prev;
 
     clear_hero_mapped_moby_animation_state();
-    ((Hero *)g_hero)->unkA98 &= ~3;
+    ((Hero *)g_hero)->anim_flags &= ~3;
     same = m->seq == m->prev_seq;
     frame0 = m->frame;
     t0 = m->anim_time;
     if (m->seq == m->prev_seq) {
-        m->anim_time = t0 + ((Hero *)g_hero)->anim_speed * ((Hero *)g_hero)->unkA94;
-    } else if (((Hero *)g_hero)->unkAA0 >= 0) {
-        m->anim_time = hero_anim_blend_curves[((Hero *)g_hero)->unkAA0][((Hero *)g_hero)->unkAA4++];
+        m->anim_time = t0 + ((Hero *)g_hero)->anim_speed * ((Hero *)g_hero)->anim_frame_rate;
+    } else if (((Hero *)g_hero)->anim_blend_curve >= 0) {
+        m->anim_time = hero_anim_blend_curves[((Hero *)g_hero)->anim_blend_curve][((Hero *)g_hero)->anim_blend_step++];
     } else {
-        m->anim_time = t0 + ((Hero *)g_hero)->unkA94;
+        m->anim_time = t0 + ((Hero *)g_hero)->anim_frame_rate;
     }
     if (0.99f < m->anim_time && m->anim_time < 1.01f)
         m->anim_time = 1.0f;
@@ -495,37 +495,37 @@ void advance_hero_animation(void) {
             m->seq = m->prev_seq;
             m->anim_trigger_count = ((AnimSeq_32EF0 *)m->pclass->seqs[m->seq])->trigger_count;
         }
-        ((Hero *)g_hero)->unkAA0 = -1;
-        ((Hero *)g_hero)->unkA98 |= 1;
+        ((Hero *)g_hero)->anim_blend_curve = -1;
+        ((Hero *)g_hero)->anim_flags |= 1;
         m->frame = m->prev_frame;
         m->cur_frame_data = m->prev_frame_data;
         m->prev_frame++;
-        if (((Hero *)g_hero)->unkAB8 != 0) {
-            ((Hero *)g_hero)->unkAB8 = 0;
-            ((Hero *)g_hero)->unkA94 = 1.0f / 0.0f; /* compiler-generated +inf literal pool */
+        if (((Hero *)g_hero)->queued_frame_request != 0) {
+            ((Hero *)g_hero)->queued_frame_request = 0;
+            ((Hero *)g_hero)->anim_frame_rate = 1.0f / 0.0f; /* compiler-generated +inf literal pool */
             /* the just-cleared int, converted: retail holds this 0.0f in a register across the loop,
                which a literal 0.0f (stored from $zero, as in the next branch) does not give */
-            m->anim_time = ((Hero *)g_hero)->unkAB8;
-            m->prev_frame = ((Hero *)g_hero)->unkAB4;
+            m->anim_time = ((Hero *)g_hero)->queued_frame_request;
+            m->prev_frame = ((Hero *)g_hero)->queued_anim_frame;
             m->prev_frame_data = ((AnimSeq_32EF0 *)m->pclass->seqs[m->prev_seq])->frames[m->prev_frame];
             clear_hero_queued_animation();
             sync_hero_mapped_moby_animation_frames();
-        } else if (((Hero *)g_hero)->unkAB0 != -1 && ((Hero *)g_hero)->unkAB4 < m->prev_frame) {
-            ((Hero *)g_hero)->unkA94 = 0.33333334f;
+        } else if (((Hero *)g_hero)->anim_loop_frame != -1 && ((Hero *)g_hero)->queued_anim_frame < m->prev_frame) {
+            ((Hero *)g_hero)->anim_frame_rate = 0.33333334f;
             m->anim_time = 0.0f;
-            m->prev_frame = ((Hero *)g_hero)->unkAB0;
+            m->prev_frame = ((Hero *)g_hero)->anim_loop_frame;
             m->prev_frame_data = ((AnimSeq_32EF0 *)m->pclass->seqs[m->prev_seq])->frames[m->prev_frame];
             sync_hero_mapped_moby_animation_frames();
         } else {
             if (m->prev_frame >= ((AnimSeq_32EF0 *)m->pclass->seqs[m->prev_seq])->frame_count) {
                 m->prev_frame = 0;
-                ((Hero *)g_hero)->unkA98 |= 2;
+                ((Hero *)g_hero)->anim_flags |= 2;
             }
             m->prev_frame_data = ((AnimSeq_32EF0 *)m->pclass->seqs[m->prev_seq])->frames[m->prev_frame];
             m->anim_time -= 1.0f;
-            m->anim_time /= ((Hero *)g_hero)->unkA94;
-            ((Hero *)g_hero)->unkA94 = *(f32 *)m->cur_frame_data;
-            m->anim_time *= ((Hero *)g_hero)->unkA94;
+            m->anim_time /= ((Hero *)g_hero)->anim_frame_rate;
+            ((Hero *)g_hero)->anim_frame_rate = *(f32 *)m->cur_frame_data;
+            m->anim_time *= ((Hero *)g_hero)->anim_frame_rate;
         }
     }
     if (same && m->anim_trigger_count != 0) {
@@ -558,10 +558,10 @@ void advance_hero_animation(void) {
     prev = ((Hero *)g_hero)->anim_frame;
     ((Hero *)g_hero)->anim_frame = MobyGetFrameValue(m);
     if (prev <= ((Hero *)g_hero)->anim_frame)
-        ((Hero *)g_hero)->unkAAC = ((Hero *)g_hero)->anim_frame - prev;
+        ((Hero *)g_hero)->anim_frame_delta = ((Hero *)g_hero)->anim_frame - prev;
     else
-        ((Hero *)g_hero)->unkAAC = dt;
-    ((Hero *)g_hero)->unkA9C = m->seq != m->prev_seq;
+        ((Hero *)g_hero)->anim_frame_delta = dt;
+    ((Hero *)g_hero)->anim_changing = m->seq != m->prev_seq;
 }
 
 
@@ -1332,112 +1332,112 @@ void update_hero_attachment(void) {
     if (((Hero *)g_hero)->air_frames.s == 0) {
         if (((Hero *)g_hero)->ground_moby != 0) {
             mode = 1;
-            if (((Hero *)g_hero)->unk360 != ((Hero *)g_hero)->ground_moby) {
-                ((Hero *)g_hero)->unk364 &= ~1;
+            if (((Hero *)g_hero)->platform_moby != ((Hero *)g_hero)->ground_moby) {
+                ((Hero *)g_hero)->attach_flags &= ~1;
             }
-            ((Hero *)g_hero)->unk360 = ((Hero *)g_hero)->ground_moby;
+            ((Hero *)g_hero)->platform_moby = ((Hero *)g_hero)->ground_moby;
         } else {
-            ((Hero *)g_hero)->unk360 = 0;
-            ((Hero *)g_hero)->unk364 &= ~1;
-            ((Hero *)g_hero)->unk364 &= ~2;
+            ((Hero *)g_hero)->platform_moby = 0;
+            ((Hero *)g_hero)->attach_flags &= ~1;
+            ((Hero *)g_hero)->attach_flags &= ~2;
         }
-    } else if (((Hero *)g_hero)->state.current == 0x1C && ((Hero *)g_hero)->unk4F8 != 0) {
-        ((Hero *)g_hero)->unk360 = (void *)((Hero *)g_hero)->unk4F8;
+    } else if (((Hero *)g_hero)->state.current == 0x1C && ((Hero *)g_hero)->ledge_moby != 0) {
+        ((Hero *)g_hero)->platform_moby = (void *)((Hero *)g_hero)->ledge_moby;
         mode = 1;
-    } else if (((Hero *)g_hero)->state.control_mode == 3 && ((Hero *)g_hero)->unk4F8 != 0) {
-        ((Hero *)g_hero)->unk360 = (void *)((Hero *)g_hero)->unk4F8;
+    } else if (((Hero *)g_hero)->state.control_mode == 3 && ((Hero *)g_hero)->ledge_moby != 0) {
+        ((Hero *)g_hero)->platform_moby = (void *)((Hero *)g_hero)->ledge_moby;
         mode = 1;
-    } else if (((Hero *)g_hero)->unk360 != 0) {
+    } else if (((Hero *)g_hero)->platform_moby != 0) {
         mode = 1;
         IntToFloat(scale_ticks(120) - ((Hero *)g_hero)->air_frames.s);
         func_001F9850_34800b(120);
         amt = ((Hero *)g_hero)->air_frames.s;
     } else {
-        ((Hero *)g_hero)->unk360 = 0;
-        ((Hero *)g_hero)->unk364 &= ~1;
-        ((Hero *)g_hero)->unk364 &= ~2;
+        ((Hero *)g_hero)->platform_moby = 0;
+        ((Hero *)g_hero)->attach_flags &= ~1;
+        ((Hero *)g_hero)->attach_flags &= ~2;
     }
     if (!mode) {
         return;
     }
-    plat = GetFlaggedPvarWord(((Hero *)g_hero)->unk360);
+    plat = GetFlaggedPvarWord(((Hero *)g_hero)->platform_moby);
     if (plat == 0) {
         return;
     }
     if (((((Hero *)g_hero)->state.control_mode == 0 || ((Hero *)g_hero)->state.control_mode == 12) && FastVecLength(&((Hero *)g_hero)->motion.unk150) == 0.0f && ((Hero *)g_hero)->air_frames.s == 0 && ((Hero *)g_hero)->unk1F6 == 0)
         || (unsigned int)(((Hero *)g_hero)->state.current - 0x18) < 2) {
-        if ((((Hero *)g_hero)->unk364 ^ 1) & 1) {
+        if ((((Hero *)g_hero)->attach_flags ^ 1) & 1) {
             if ((unsigned int)(((Hero *)g_hero)->state.current - 0x18) < 2) {
-                qcopy(&v20, &((Hero *)g_hero)->unk4D0);
-                v20.x += FastCos(FastAddRots(((Hero *)g_hero)->unk4E4, 3.1415925f)) * 0.45f;
-                v20.y += FastSin(FastAddRots(((Hero *)g_hero)->unk4E4, 3.1415925f)) * 0.45f;
+                qcopy(&v20, &((Hero *)g_hero)->ledge_hang_pos);
+                v20.x += FastCos(FastAddRots(((Hero *)g_hero)->ledge_normal_yaw, 3.1415925f)) * 0.45f;
+                v20.y += FastSin(FastAddRots(((Hero *)g_hero)->ledge_normal_yaw, 3.1415925f)) * 0.45f;
                 v20.z -= -1.43f;
-                RotateWithMoby((int)((Hero *)g_hero)->moby, ((Hero *)g_hero)->unk360, &((Hero *)g_hero)->unk4D0, &((Hero *)g_hero)->motion.rot, &v30, &v40);
-                RotateWithMoby((int)((Hero *)g_hero)->moby, ((Hero *)g_hero)->unk360, &v20, &((Hero *)g_hero)->motion.rot, &v20, &v40);
-                convert_pose_to_reference_local((int)((Hero *)g_hero)->moby, ((Hero *)g_hero)->unk360, &((Hero *)g_hero)->unk4D0, &((Hero *)g_hero)->motion.rot, &((Hero *)g_hero)->unk310, &v40);
-                convert_pose_to_reference_local((int)((Hero *)g_hero)->moby, ((Hero *)g_hero)->unk360, &v20, &((Hero *)g_hero)->motion.rot, &((Hero *)g_hero)->unk330, &v40);
+                RotateWithMoby((int)((Hero *)g_hero)->moby, ((Hero *)g_hero)->platform_moby, &((Hero *)g_hero)->ledge_hang_pos, &((Hero *)g_hero)->motion.rot, &v30, &v40);
+                RotateWithMoby((int)((Hero *)g_hero)->moby, ((Hero *)g_hero)->platform_moby, &v20, &((Hero *)g_hero)->motion.rot, &v20, &v40);
+                convert_pose_to_reference_local((int)((Hero *)g_hero)->moby, ((Hero *)g_hero)->platform_moby, &((Hero *)g_hero)->ledge_hang_pos, &((Hero *)g_hero)->motion.rot, &((Hero *)g_hero)->platform_local_pos, &v40);
+                convert_pose_to_reference_local((int)((Hero *)g_hero)->moby, ((Hero *)g_hero)->platform_moby, &v20, &((Hero *)g_hero)->motion.rot, &((Hero *)g_hero)->attach_anchor_alt_pos, &v40);
             } else if (plat->i3C & 4) {
-                convert_pose_to_reference_local((int)((Hero *)g_hero)->moby, ((Hero *)g_hero)->unk360, &((Hero *)g_hero)->motion.pos, &((Hero *)g_hero)->motion.rot, &((Hero *)g_hero)->unk310, &v20);
+                convert_pose_to_reference_local((int)((Hero *)g_hero)->moby, ((Hero *)g_hero)->platform_moby, &((Hero *)g_hero)->motion.pos, &((Hero *)g_hero)->motion.rot, &((Hero *)g_hero)->platform_local_pos, &v20);
             } else {
-                RotateWithMoby((int)((Hero *)g_hero)->moby, ((Hero *)g_hero)->unk360, &((Hero *)g_hero)->motion.pos, &((Hero *)g_hero)->motion.rot, &v30, &v40);
-                convert_pose_to_reference_local((int)((Hero *)g_hero)->moby, ((Hero *)g_hero)->unk360, &v30, &v40, &((Hero *)g_hero)->unk310, &v20);
+                RotateWithMoby((int)((Hero *)g_hero)->moby, ((Hero *)g_hero)->platform_moby, &((Hero *)g_hero)->motion.pos, &((Hero *)g_hero)->motion.rot, &v30, &v40);
+                convert_pose_to_reference_local((int)((Hero *)g_hero)->moby, ((Hero *)g_hero)->platform_moby, &v30, &v40, &((Hero *)g_hero)->platform_local_pos, &v20);
             }
-            ((Hero *)g_hero)->unk364 |= 1;
+            ((Hero *)g_hero)->attach_flags |= 1;
         }
     } else {
-        ((Hero *)g_hero)->unk364 &= ~1;
+        ((Hero *)g_hero)->attach_flags &= ~1;
     }
     if ((((Hero *)g_hero)->state.control_mode == 0 || ((Hero *)g_hero)->state.control_mode == 12) && ((Hero *)g_hero)->motion.unk184 == 0.0f && ((Hero *)g_hero)->air_frames.s == 0) {
-        if (!(((Hero *)g_hero)->unk364 & 2)) {
-            convert_pose_to_reference_local((int)((Hero *)g_hero)->moby, ((Hero *)g_hero)->unk360, &((Hero *)g_hero)->motion.pos, &((Hero *)g_hero)->motion.rot, &v20, &((Hero *)g_hero)->unk320);
-            ((Hero *)g_hero)->unk364 |= 2;
+        if (!(((Hero *)g_hero)->attach_flags & 2)) {
+            convert_pose_to_reference_local((int)((Hero *)g_hero)->moby, ((Hero *)g_hero)->platform_moby, &((Hero *)g_hero)->motion.pos, &((Hero *)g_hero)->motion.rot, &v20, &((Hero *)g_hero)->attach_anchor_rot);
+            ((Hero *)g_hero)->attach_flags |= 2;
         }
     } else {
-        ((Hero *)g_hero)->unk364 &= ~2;
+        ((Hero *)g_hero)->attach_flags &= ~2;
     }
-    if (((Hero *)g_hero)->unk364 & 3) {
+    if (((Hero *)g_hero)->attach_flags & 3) {
         mode = 2;
     }
     clear_u64_value(&v20);
     clear_u64_value(&v30);
     if (amt != 0.0f) {
-        sB4 = vec_length_xy(&((Hero *)g_hero)->unk350);
-        sB0 = ((Hero *)g_hero)->unk350.f[2];
+        sB4 = vec_length_xy(&((Hero *)g_hero)->attached_moby_move);
+        sB0 = ((Hero *)g_hero)->attached_moby_move.f[2];
         if (!(plat->i3C & 2)) {
             ApproachValue(&sB0, 0.0f, g_frame_time_sq * 25.0f * amt);
             ApproachValue(&sB4, 0.0f, (g_frame_time_sq + g_frame_time_sq) * amt);
-            func_L00_001FF500_34800(&v20, &((Hero *)g_hero)->unk350, sB4);
+            func_L00_001FF500_34800(&v20, &((Hero *)g_hero)->attached_moby_move, sB4);
             v20.z = sB0;
         } else {
-            qcopy(&v20, &((Hero *)g_hero)->unk350);
+            qcopy(&v20, &((Hero *)g_hero)->attached_moby_move);
         }
         qcopy(&v30, &v20);
     } else if (mode == 1) {
-        RotateWithMoby((int)((Hero *)g_hero)->moby, ((Hero *)g_hero)->unk360, &((Hero *)g_hero)->motion.pos, &((Hero *)g_hero)->motion.rot, &v0, &v10);
+        RotateWithMoby((int)((Hero *)g_hero)->moby, ((Hero *)g_hero)->platform_moby, &((Hero *)g_hero)->motion.pos, &((Hero *)g_hero)->motion.rot, &v0, &v10);
         ((Hero *)g_hero)->motion.rot.f[2] = v10.z;
         FastVecSub(&v20, &v0, &((Hero *)g_hero)->motion.pos);
         qcopy((Vec4A *)(g_hero + 0x350), &v20);
     } else if (mode == 2) {
-        RotateWithMoby((int)((Hero *)g_hero)->moby, ((Hero *)g_hero)->unk360, &((Hero *)g_hero)->motion.pos, &((Hero *)g_hero)->motion.rot, &v40, &v50);
-        transform_attachment_pose((int)((Hero *)g_hero)->moby, ((Hero *)g_hero)->unk360, &((Hero *)g_hero)->unk310, &((Hero *)g_hero)->unk320, &v60, &v70);
-        transform_attachment_pose((int)((Hero *)g_hero)->moby, ((Hero *)g_hero)->unk360, &((Hero *)g_hero)->unk330, &((Hero *)g_hero)->unk320, &v80, &v90);
+        RotateWithMoby((int)((Hero *)g_hero)->moby, ((Hero *)g_hero)->platform_moby, &((Hero *)g_hero)->motion.pos, &((Hero *)g_hero)->motion.rot, &v40, &v50);
+        transform_attachment_pose((int)((Hero *)g_hero)->moby, ((Hero *)g_hero)->platform_moby, &((Hero *)g_hero)->platform_local_pos, &((Hero *)g_hero)->attach_anchor_rot, &v60, &v70);
+        transform_attachment_pose((int)((Hero *)g_hero)->moby, ((Hero *)g_hero)->platform_moby, &((Hero *)g_hero)->attach_anchor_alt_pos, &((Hero *)g_hero)->attach_anchor_rot, &v80, &v90);
         if ((((Hero *)g_hero)->state.current == 1 || ((Hero *)g_hero)->state.current == 0x1E) && ((Hero *)g_hero)->unk20A5 != 0) {
             ((Hero *)g_hero)->motion.rot.f[2] = v50.z;
-        } else if (((Hero *)g_hero)->unk364 & 2) {
+        } else if (((Hero *)g_hero)->attach_flags & 2) {
             ((Hero *)g_hero)->motion.rot.f[2] = v70.z;
         } else {
             ((Hero *)g_hero)->motion.rot.f[2] = v50.z;
         }
-        if (((Hero *)g_hero)->unk364 & 1) {
+        if (((Hero *)g_hero)->attach_flags & 1) {
             if ((unsigned int)(((Hero *)g_hero)->state.current - 0x18) < 2) {
-                vA0.x = FastCos(((Hero *)g_hero)->unk4E4) * 0.45f;
-                vA0.y = FastSin(((Hero *)g_hero)->unk4E4) * 0.45f;
+                vA0.x = FastCos(((Hero *)g_hero)->ledge_normal_yaw) * 0.45f;
+                vA0.y = FastSin(((Hero *)g_hero)->ledge_normal_yaw) * 0.45f;
                 vA0.z = 0.0f;
                 FastVecAdd(&vA0, &vA0, &v80);
                 vA0.z += -1.43f;
                 FastVecSub(&v20, &v40, &((Hero *)g_hero)->motion.pos);
-                qcopy(&((Hero *)g_hero)->unk4D0, &vA0);
-                ((Hero *)g_hero)->unk4E4 = fast_atan2(v60.x - v80.x, v60.y - v80.y);
+                qcopy(&((Hero *)g_hero)->ledge_hang_pos, &vA0);
+                ((Hero *)g_hero)->ledge_normal_yaw = fast_atan2(v60.x - v80.x, v60.y - v80.y);
             } else {
                 float len;
 
@@ -1448,13 +1448,13 @@ void update_hero_attachment(void) {
                     qcopy(&((Hero *)g_hero)->motion.pos, &v60);
                 } else if (2.0f < len) {
                     clear_u64_value(&v20);
-                    ((Hero *)g_hero)->unk364 &= ~2;
-                    ((Hero *)g_hero)->unk364 &= ~1;
+                    ((Hero *)g_hero)->attach_flags &= ~2;
+                    ((Hero *)g_hero)->attach_flags &= ~1;
                 }
                 FastVecAdd(g_hero + 0x4D0, g_hero + 0x4D0, &v20);
                 FastVecSub(&vA0, &v20, g_hero + 0x140);
                 if (0.1f < FastVecLength(&vA0)) {
-                    ((Hero *)g_hero)->unk364 &= ~1;
+                    ((Hero *)g_hero)->attach_flags &= ~1;
                 }
             }
         } else {
