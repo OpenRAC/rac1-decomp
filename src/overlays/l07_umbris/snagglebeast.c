@@ -50,7 +50,7 @@ extern void func_001F9BD8(void *, void *, void *);
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l07/gameplay/entities/00312948.c, FUN_L07_00312e70. */
 void draw_snagglebeast_rope_attack_layer(void *mobyp, float radius, int phase, float speed, int color) {
     char *moby = mobyp;
-    char *vars = *(char **)(moby + 0x78);
+    char *vars = ((char *)((Moby *)moby)->pvars);
     struct GeometryQuad quad;
     struct GeometryQuad inner;
     float offset[4];
@@ -417,8 +417,8 @@ int update_snagglebeast_chase_movement(char *m, char *a, void *p6, float *p7, fl
         if (probe_vertical_ground_collision(mp2, (int)m, 0, 0.1f, 1.0f)) {
             int *t = umbris_coll_hit;
             unsigned char *q = *(unsigned char **)(t + 6);
-            if (q != 0 && t[7] > 0 && *(short *)(q + 0xA6) == 0x42D && q[0xBC] == 0) {
-                if (*(unsigned char *)(*(char **)(q + 0x78) + 0xBE) != 0) {
+            if (q != 0 && t[7] > 0 && ((Moby *)q)->oclass == 0x42D && ((Moby *)q)->command == 0) {
+                if (*(unsigned char *)(((char *)((Moby *)q)->pvars) + 0xBE) != 0) {
                     FastVecSub(v, q + 0x10, mp2);
                     v[2] = 0;
                     FastVecScale(v, v, 0.5f);
@@ -1473,8 +1473,8 @@ void snagglebeast_update(unsigned char *m) {
                         {
                             char *obj = spawn_on_path(&vc, slot, cnt, 0);
                             if (obj != 0) {
-                                qcopy_nc(*(char **)(obj + 0x78) + 0x10, &vb);
-                                *(float *)(*(char **)(obj + 0x78) + 0x28) = zv;
+                                qcopy_nc(((char *)((Moby *)obj)->pvars) + 0x10, &vb);
+                                *(float *)(((char *)((Moby *)obj)->pvars) + 0x28) = zv;
                                 *(int *)(menu_item_enabled_115 + 0x21 + slot * 4) -= cnt;
                                 *(int *)(d + 0x160) = scale_ticks(0);
                             }

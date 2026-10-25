@@ -732,24 +732,24 @@ u8 *spawn_decoy(s32 value, u128_C48C8 *position, u128_C48C8 *other_position) {
 
     m = func_0020D348_C48C8(flags[0x19] ? 0x76c : 0xcb);
     if (m != 0) {
-        m[0x30] = 0xff;
-        *(u16 *)(m + 0x32) = 0xff;
-        m[0x31] = 1;
-        data = *(u8 **)(m + 0x78);
-        m[0x20] = 0;
+        ((Moby *)m)->update_dist = 0xff;
+        *(u16 *)&((Moby *)m)->draw_dist = 0xff;
+        ((Moby *)m)->visible = 1;
+        data = ((u8 *)((Moby *)m)->pvars);
+        ((Moby *)m)->state = 0;
         qcopy(m + 0x10, position);
         qcopy(data + 0x10, other_position);
         speed = frame_scale * -0.5f;
         *(s32 *)(data + 0x40) = value;
         *(u16 *)(data + 0x44) = 0;
         *(s32 *)(data + 0x54) = 0;
-        *(f32 *)(m + 0x2c) = *(f32 *)(*(u8 **)(m + 0x24) + 0x24) * (speed + 1.0f);
+        ((Moby *)m)->scale = *(f32 *)(*(u8 **)(m + 0x24) + 0x24) * (speed + 1.0f);
         *(f32 *)(data + 0x48) = (IntToFloat(flags[0x19]) + 1.0f) * 4.0f;
-        if (m[0x53] != 0)
+        if (((Moby *)m)->prev_seq != 0)
             func_00213DE0_C48C8(m, 0, 0, scale_ticks(0));
-        *(s32 *)(m + 0x94) = 0;
-        *(s32 *)(m + 0x98) = -1;
-        *(f32 *)(m + 0x48) = random_float_between(-3.14159274f, 3.14159274f);
+        *(s32 *)&((Moby *)m)->collision = 0;
+        ((Moby *)m)->collision_disable = -1;
+        ((Moby *)m)->rot.z = random_float_between(-3.14159274f, 3.14159274f);
         *(s32 *)(data + 0x58) = 0;
         *(s32 *)(data + 0x5c) = 0;
         while (D_L00_001B0BB0_C48C8[0] >= 6) {
@@ -758,9 +758,9 @@ u8 *spawn_decoy(s32 value, u128_C48C8 *position, u128_C48C8 *other_position) {
             for (i = 1; i <= D_L00_001B0BB0_C48C8[0]; i++) {
                 u8 *entry = (u8 *)(moby_array_start + (D_L00_001B0BB0_C48C8[i] << 8));
                 if (entry != 0 &&
-                    (*(s16 *)(entry + 0xa6) == 0xcb || *(s16 *)(entry + 0xa6) == 0x76c) &&
-                    entry[0x20] < 5) {
-                    current_value = *(s32 *)(*(u8 **)(entry + 0x78) + 0x54);
+                    (((Moby *)entry)->oclass == 0xcb || ((Moby *)entry)->oclass == 0x76c) &&
+                    ((Moby *)entry)->state < 5) {
+                    current_value = *(s32 *)(((u8 *)((Moby *)entry)->pvars) + 0x54);
                     if (best_value <= current_value) {
                         candidate = entry;
                         best_value = current_value;
@@ -782,7 +782,7 @@ u8 *spawn_decoy(s32 value, u128_C48C8 *position, u128_C48C8 *other_position) {
         *(u16 *)(data + 0x0e) = 0xf;
         append_unique_moby_index(m, D_L00_001B0BB0_C48C8, 0x1f);
         if (D_0013F450_C48C8.unk20A5 != 0 || D_0013F450_C48C8.unk20AF != 0)
-            *(u16 *)(m + 0x34) |= 0x41;
+            ((Moby *)m)->flags |= 0x41;
     }
     return m;
 }
@@ -1411,9 +1411,9 @@ char *spawn_on_path(void *pos, int idx, int a2, int a3) {
         if (e->cnt > 0) m = CreateMoby(e->cnt);
     }
     if (m != 0) {
-        *(unsigned char *)(m + 0x30) = 0xFF;
-        *(short *)(m + 0x32) = 0xFF;
-        d = *(int **)(m + 0x78);
+        ((Moby *)m)->update_dist = 0xFF;
+        ((Moby *)m)->draw_dist = 0xFF;
+        d = ((int *)((Moby *)m)->pvars);
         m[0x31] = 1;
         m[0x20] = 1;
         m[0xBC] = 0;
@@ -1426,7 +1426,7 @@ char *spawn_on_path(void *pos, int idx, int a2, int a3) {
         d[2] = idx;
         *(float *)(d + 3) = (float)a3;
         d[8] = scale_ticks(0x10);
-        *(float *)(d + 10) = *(float *)(m + 0x18);
+        *(float *)(d + 10) = ((Moby *)m)->pos.z;
         moby_build_matrix(m);
         copy_hero_moby_field_38(m);
     }
@@ -2090,21 +2090,21 @@ extern void func_L00_00251E30_2c82e8(unsigned char *) __asm__("func_L00_00251E30
 unsigned char *spawn_swingshot_hook(unsigned char *src, float f) {
     unsigned char *m = func_0020D348_2c82e8(0xd1);
     if (m) {
-        char *q = *(char **)(m + 0x78);
+        char *q = ((char *)((Moby *)m)->pvars);
         *(float *)(q + 4) = f;
         *(unsigned char **)q = src;
-        m[0x30] = 0xff;
-        *(short *)(m + 0x32) = 0xff;
-        m[0x31] = 1;
+        ((Moby *)m)->update_dist = 0xff;
+        ((Moby *)m)->draw_dist = 0xff;
+        ((Moby *)m)->visible = 1;
         func_L00_00251328_2c82e8(m, 0x80, 0x80, 0x80);
         func_L00_00250800_2c82e8(src, 0, m + 0x10);
         *(u128_pt *)(m + 0xc0) = *(u128_pt *)(src + 0xc0);
         *(u128_pt *)(m + 0xd0) = *(u128_pt *)(src + 0xd0);
         *(u128_pt *)(m + 0xe0) = *(u128_pt *)(src + 0xe0);
-        if (m[0x53]) func_00213DE0_2c82e8(m, 0, 0, func_001F9850_2c82e8(10));
+        if (((Moby *)m)->prev_seq) func_00213DE0_2c82e8(m, 0, 0, func_001F9850_2c82e8(10));
         func_L00_00251E30_2c82e8(m);
-        m[0x20] = 0;
-        *(unsigned short *)(m + 0x34) |= 4;
+        ((Moby *)m)->state = 0;
+        ((Moby *)m)->flags |= 4;
     }
     return m;
 }
@@ -2122,12 +2122,12 @@ void swingshot_hook_update(unsigned char *m) {
     p = ((unsigned char *)((Moby *)m)->pvars);
     if (p == 0) return;
     o = *(unsigned char **)p;
-    if (o == 0 || *(short *)(o + 0xA6) != 0xD0 || o[0x20] == 0xFE || o[0x20] == 0xFD ||
-        *(unsigned char **)(*(unsigned char **)(o + 0x78) + 0x14) != m) {
+    if (o == 0 || ((Moby *)o)->oclass != 0xD0 || ((Moby *)o)->state == 0xFE || ((Moby *)o)->state == 0xFD ||
+        *(unsigned char **)(((unsigned char *)((Moby *)o)->pvars) + 0x14) != m) {
         DeleteMoby(m);
         return;
     }
-    if ((*(unsigned short *)(o + 0x34) & 1) || D_001414F5[0xA] != 0) {
+    if ((((Moby *)o)->flags & 1) || D_001414F5[0xA] != 0) {
         ((Moby *)m)->flags |= 0x41;
     } else {
         ((Moby *)m)->flags &= 0xFFBE;
@@ -2531,9 +2531,9 @@ char *spawn_glove_of_doom_held_moby(int a0, char *pos, char *vec) {
     char *old;
 
     if (m != 0) {
-        d = *(char **)(m + 0x78);
-        *(unsigned char *)(m + 0x30) = 0xFF;
-        *(short *)(m + 0x32) = 0xFF;
+        d = ((char *)((Moby *)m)->pvars);
+        ((Moby *)m)->update_dist = 0xFF;
+        ((Moby *)m)->draw_dist = 0xFF;
         m[0x31] = 1;
         m[0x20] = 0;
         qcopy(m + 0x10, pos);
@@ -2541,10 +2541,10 @@ char *spawn_glove_of_doom_held_moby(int a0, char *pos, char *vec) {
         *(int *)(d + 0x30) = a0;
         *(int *)(d + 0x34) = 0;
         *(short *)(d + 0x38) = 0;
-        *(float *)(m + 0x2C) = *(float *)(*(char **)(m + 0x24) + 0x24) * 0.01f;
+        ((Moby *)m)->scale = *(float *)(*(char **)(m + 0x24) + 0x24) * 0.01f;
         g = (char *)D_0013E633 + 0xE1D;
         if (*(unsigned char *)(g + 0x20A5) != 0 || *(unsigned char *)(g + 0x20AF) != 0) {
-            *(unsigned short *)(m + 0x34) |= 0x41;
+            ((Moby *)m)->flags |= 0x41;
         }
         old = (char *)glove_of_doom_ring[*(int *)&glove_of_doom_ring_index];
         if (old != 0) {

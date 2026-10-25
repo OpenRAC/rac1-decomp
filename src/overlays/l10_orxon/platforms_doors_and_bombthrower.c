@@ -957,15 +957,15 @@ struct Swirl { char pad[0x18]; float a; float b; };
 char *spawn_bombthrower_grass_projectile(int owner, char *pos, char *vec) {
     char *moby = CreateMoby(0x3AA);
     if (moby != 0) {
-        char *data = *(char **)(moby + 0x78);
+        char *data = ((char *)((Moby *)moby)->pvars);
         ((unsigned char *)moby)[0x30] = 0xFF;
-        *(short *)(moby + 0x32) = 0x7F;
+        ((Moby *)moby)->draw_dist = 0x7F;
         moby[0x31] = 1;
         moby[0x20] = 0;
         *(int *)(data + 0x10) = owner;
         *(short *)(data + 0x16) = 0;
         qcopy(moby + 0x10, pos);
-        *(float *)(moby + 0x18) = *(float *)(moby + 0x18) + *(float *)&bombthrower_grass_spawn_height;
+        ((Moby *)moby)->pos.z = ((Moby *)moby)->pos.z + *(float *)&bombthrower_grass_spawn_height;
         qcopy(data, vec);
         ((struct Swirl *)data)->a = random_float_between(g_frame_time * 1.0471976f, g_frame_time * 3.1415927f);
         ((struct Swirl *)data)->b = random_float_between(g_frame_time * 1.0471976f, g_frame_time * 3.1415927f);
@@ -1997,12 +1997,12 @@ unsigned char *func_L10_002DE630_r(int a, void *pos, int b, float x, float y, fl
     Data_2DE630 *d;
     float f;
     if (o != 0) {
-        o[0x30] = 0xFF;
-        *(short *)(o + 0x32) = 0xFF;
-        o[0x31] = 1;
-        o[0x23] = 0x40;
-        o[0x20] = 0;
-        d = *(Data_2DE630 **)(o + 0x78);
+        ((Moby *)o)->update_dist = 0xFF;
+        ((Moby *)o)->draw_dist = 0xFF;
+        ((Moby *)o)->visible = 1;
+        ((Moby *)o)->alpha = 0x40;
+        ((Moby *)o)->state = 0;
+        d = ((Data_2DE630 *)((Moby *)o)->pvars);
         *(OvlQuad_2DE630 *)(o + 0x10) = *(OvlQuad_2DE630 *)pos;
         func_L00_00251328_2DE630(o, 0x7F, 0x40, 0);
         f = 10.0f / (D_0015EE6C_x * 5.0f);

@@ -181,12 +181,6 @@ typedef struct L14Data {
     int mode;
 } L14Data;
 
-typedef struct L14Hero {
-    char pad0[0x80];
-    float position[3];
-    char pad1[0x1B0];
-    L14Moby *standing;
-} L14Hero;
 
 extern char D_0013E633[];
 extern float D_0015EE6C MACRO_ADDR;
@@ -226,11 +220,11 @@ void BoltThiefUpdate(L14Moby *m) {
 
     if ((m->status & 2) && m->frame == m->animation && m->frame == 1)
         MobyBlendAnimation(m, 4, 0, scale_ticks(5));
-    if (((L14Hero *)(D_0013E633 + 0xE1D))->standing == m && m->animation != 1 && m->frame != 1)
+    if (((L14Moby *)((Hero *)(D_0013E633 + 0xE1D))->coll_hit_moby) == m && m->animation != 1 && m->frame != 1)
         MobyBlendAnimation(m, 1, 0, scale_ticks(5));
     hit = MobyGetHitMessage(m, 0x210000, 0);
     if (hit && m->state != 6) {
-        L14Hero *hero = (L14Hero *)(D_0013E633 + 0xE1D);
+        Hero *hero = (Hero *)(D_0013E633 + 0xE1D);
 
         d->knock_drag = 0.008f;
         d->knock_gravity = 0.0005f;
@@ -239,7 +233,7 @@ void BoltThiefUpdate(L14Moby *m) {
         d->knock_flags = 1;
         d->knock_bAD = 0;
         InitKnockback(m, d->knock, 1, 1, 0,
-                          fast_atan2(m->position[0] - hero->position[0], m->position[1] - hero->position[1]));
+                          fast_atan2(m->position[0] - hero->motion.pos.f[0], m->position[1] - hero->motion.pos.f[1]));
         d->ticks = 0x78;
         SetDeathBits(m, 0, -1);
         m->state = 6;
@@ -288,10 +282,10 @@ void BoltThiefUpdate(L14Moby *m) {
         d->child = 0;
         break;
     case 1: {
-        L14Hero *hero = (L14Hero *)(D_0013E633 + 0xE1D);
+        Hero *hero = (Hero *)(D_0013E633 + 0xE1D);
 
         MobySpringTurn((char *)m,
-                          fast_atan2(hero->position[0] - m->position[0], hero->position[1] - m->position[1]),
+                          fast_atan2(hero->motion.pos.f[0] - m->position[0], hero->motion.pos.f[1] - m->position[1]),
                           &d->turn, 0.005f, 0.2f, 0.0f);
         emit_moby_offset_particles(m);
         break;
@@ -811,9 +805,9 @@ char *create_bouncing_spark(int a0, float *a1, float *a2, int a3, float f) {
     float t, u;
     unsigned short g;
     if (moby != 0) {
-        char *d = *(char **)(moby + 0x78);
+        char *d = ((char *)((Moby *)moby)->pvars);
         ((unsigned char *)moby)[0x30] = 0xFF;
-        *(short *)(moby + 0x32) = 0xFF;
+        ((Moby *)moby)->draw_dist = 0xFF;
         moby[0x31] = 1;
         moby[0x20] = 0;
         *(int *)(d + 0x24) = a0;
@@ -824,12 +818,12 @@ char *create_bouncing_spark(int a0, float *a1, float *a2, int a3, float f) {
         *(int *)(d + 0x20) = a3;
         *(unsigned short *)(d + 0x28) = g;
         *(short *)(d + 0x2A) = 0;
-        *(int *)(moby + 0x40) = 0;
-        *(int *)(moby + 0x44) = 0;
+        *(int *)&((Moby *)moby)->rot.x = 0;
+        *(int *)&((Moby *)moby)->rot.y = 0;
         t = fast_atan2(a2[0], a2[1]);
-        u = *(float *)(moby + 0x2C) * *(float *)&oltanis_spark_start_scale;
-        *(float *)(moby + 0x48) = t;
-        *(float *)(moby + 0x2C) = u;
+        u = ((Moby *)moby)->scale * *(float *)&oltanis_spark_start_scale;
+        ((Moby *)moby)->rot.z = t;
+        ((Moby *)moby)->scale = u;
         moby_build_matrix(moby);
     }
     return moby;
@@ -1279,7 +1273,7 @@ void Moby1397Update(void *arg) {
     char *d;
     switch ((unsigned char)moby[0x20]) {
     case 0:
-        d = *(char **)(moby + 0x78);
+        d = ((char *)((Moby *)moby)->pvars);
         d[0x28] = 4;
         *(int *)(d + 0x20) = 0;
         *(short *)(d + 0x24) = 0;
@@ -1287,7 +1281,7 @@ void Moby1397Update(void *arg) {
         moby[0x20] = 1;
         break;
     case 2:
-        *(short *)(*(char **)(moby + 0x78) + 0x3E) = 5;
+        *(short *)(((char *)((Moby *)moby)->pvars) + 0x3E) = 5;
         moby[0x20] = 3;
         break;
     }
@@ -1630,7 +1624,7 @@ void initialize_flying_car_path(char *moby) {
     *(int *)(d + 0x74) = 0;
     qcopy(moby + 0x10, p + 0x10);
     ((Moby *)moby)->rot.z = fast_atan2(*(float *)(p + 0x20) - *(float *)(p + 0x10), *(float *)(p + 0x24) - *(float *)(p + 0x14));
-    *(float *)(d + 0x90) = *(float *)(d + 0x94) = *(float *)(d + 0x98) = *(float *)(d + 0x80) = *(float *)(d + 0x84) = *(float *)(d + 0x88) = 0.0f;
+    *(float *)&((Moby *)d)->glow_color = *(float *)&((Moby *)d)->collision = *(float *)&((Moby *)d)->collision_disable = *(float *)&((Moby *)d)->unk80 = *(float *)(d + 0x84) = *(float *)(d + 0x88) = 0.0f;
 }
 typedef u32 u128_08AA8 __attribute__((mode(TI), aligned(16)));
 extern struct Hero D_0013F450_08AA8 __asm__("D_0013F450");
@@ -1711,7 +1705,7 @@ int update_flying_car_path_motion(struct Moby *moby) {
     int idx;
 
     end = func_L00_0025E860_08AA8(oltanis_paths[*(int *)(d + 0x78)], pos, d + 0x70, d + 0x74, *(short *)(d + 0x8E),
-                         *(float *)(d + 0xC8) * g_frame_time);
+                         ((Moby *)d)->rot_row0.z * g_frame_time);
     if ((*(short *)(d + 0x8E) == 0 && end != 0) || moby->pos.z <= (*(float *)&oltanis_flying_car_crash_height)) {
         func_L00_00260108_08AA8(moby, &moby->pos, 5.0f, 13.0f, -1);
         moby->state = 3;
@@ -2409,14 +2403,6 @@ typedef struct {
     float t2C;
 } CamKey171D0;
 
-typedef struct {
-    char pad0[0x560];
-    int planet;
-    int frame;
-    float frac;
-    char pad1[0x2080 - 0x56C];
-    float *target;
-} CamHero171D0;
 
 typedef struct {
     char pad0[0x274];
@@ -2471,14 +2457,14 @@ void update_path_key_camera(char *cam) {
 
     oltanis_key_cam_key_count = data->st.count;
     oltanis_key_cam_key_index = st->idx;
-    if (((CamHero171D0 *)(D_0013E633 + 0xE1D))->planet == D_L14_0015F7EC_z[rec->p34].id) {
+    if (((Hero *)(D_0013E633 + 0xE1D))->rail_spline == D_L14_0015F7EC_z[rec->p34].id) {
         side = 0;
-    } else if (((CamHero171D0 *)(D_0013E633 + 0xE1D))->planet == D_L14_0015F7EC_z[rec->p38].id) {
+    } else if (((Hero *)(D_0013E633 + 0xE1D))->rail_spline == D_L14_0015F7EC_z[rec->p38].id) {
         side = 1;
     } else {
         side = 2;
     }
-    oltanis_key_cam_path_progress = (oltanis_key_cam_path_distances[side][((CamHero171D0 *)(D_0013E633 + 0xE1D))->frame] + ((CamHero171D0 *)(D_0013E633 + 0xE1D))->frac) / oltanis_key_cam_path_distances[side][999];
+    oltanis_key_cam_path_progress = (oltanis_key_cam_path_distances[side][((Hero *)(D_0013E633 + 0xE1D))->rail_segment] + ((Hero *)(D_0013E633 + 0xE1D))->rail_seg_frac) / oltanis_key_cam_path_distances[side][999];
     if (rec->n32 < 2 && oltanis_key_cam_lean_step_progress[rec->n32][side] <= oltanis_key_cam_path_progress) {
         rec->n32++;
     }
@@ -2491,7 +2477,7 @@ void update_path_key_camera(char *cam) {
         CamMoby171D0 *m1 = (CamMoby171D0 *)(oltanis_mobys + (rec->m28 << 8));
         CamMoby171D0 *m2 = (CamMoby171D0 *)(oltanis_mobys + (rec->m2C << 8));
 
-        if (((CamHero171D0 *)(D_0013E633 + 0xE1D))->planet == D_L14_0015F7EC_z[m0->data->zone].id) {
+        if (((Hero *)(D_0013E633 + 0xE1D))->rail_spline == D_L14_0015F7EC_z[m0->data->zone].id) {
             m0->state = 1;
             if (rec->n30 > 0) {
                 {
@@ -2512,7 +2498,7 @@ void update_path_key_camera(char *cam) {
                     }
                 }
             }
-        } else if (((CamHero171D0 *)(D_0013E633 + 0xE1D))->planet == D_L14_0015F7EC_z[m1->data->zone].id) {
+        } else if (((Hero *)(D_0013E633 + 0xE1D))->rail_spline == D_L14_0015F7EC_z[m1->data->zone].id) {
             m1->state = 1;
             if (rec->n30 > 0) {
                 if (random_integer_below(2)) {
@@ -2616,7 +2602,7 @@ void update_path_key_camera(char *cam) {
     k = oltanis_key_cam_angle4_smoothing;
     x = interpolate_angle(oltanis_path_camera_keys[st->idx].a10 * 0.017453292f, oltanis_path_camera_keys[st->idx + 1].a10 * 0.017453292f, t);
     cur->f10 = Camera_SmoothAngle(vel + 4, cur->f10, x, k, 0.2f, 0.0f);
-    ang = FastAddRots(fast_atan2(((CamHero171D0 *)(D_0013E633 + 0xE1D))->target[0x34], ((CamHero171D0 *)(D_0013E633 + 0xE1D))->target[0x35]), cur->f0);
+    ang = FastAddRots(fast_atan2(((float *)((Hero *)(D_0013E633 + 0xE1D))->moby)[0x34], ((float *)((Hero *)(D_0013E633 + 0xE1D))->moby)[0x35]), cur->f0);
     oltanis_key_cam_yaw = ang;
     if (side == 0) {
         a = oltanis_path_camera_keys[st->idx].t18;

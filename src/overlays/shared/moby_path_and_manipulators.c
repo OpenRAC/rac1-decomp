@@ -1275,17 +1275,17 @@ void *SpawnBreakFragment(char *src, int cls, float *pos, void *mat, int a8, int 
 
     if (m != 0) {
         r = *(float *)(src + 0x2C) / *(float *)(*(char **)(src + 0x24) + 0x24);
-        *(float *)(m + 0x2C) = *(float *)(*(char **)(m + 0x24) + 0x24) * r;
+        ((Moby *)m)->scale = *(float *)(*(char **)(m + 0x24) + 0x24) * r;
         m[0x31] = 1;
-        *(unsigned short *)(m + 0x34) |= 0x100;
-        d = *(char **)(m + 0x78);
+        ((Moby *)m)->flags |= 0x100;
+        d = ((char *)((Moby *)m)->pvars);
         *(long *)(m + 0x38) = *(long *)(src + 0x38);
         m[0x20] = 1;
         qcopy(m + 0x10, pos);
         euler_rotation_basis(m + 0xC0, mat);
-        *(unsigned char *)(m + 0x30) = 0xFF;
-        *(short *)(m + 0x32) = 0x80;
-        *(int *)(m + 0x94) = 0;
+        ((Moby *)m)->update_dist = 0xFF;
+        ((Moby *)m)->draw_dist = 0x80;
+        *(int *)&((Moby *)m)->collision = 0;
         if (a8 == 0)
             *(int *)(d + 0x30) = func_001FA898_r(multiply_global_factor(random_float_between(60.0f, 120.0f)));
         else
@@ -1315,7 +1315,7 @@ void *SpawnBreakFragment(char *src, int cls, float *pos, void *mat, int a8, int 
         }
         if (FastVecLength(v12) == 0.0f && v12[3] == 0.0f) {
             qcopy(t, *(char **)(m + 0x24) + 0x30);
-            k2 = *(float *)(m + 0x2C);
+            k2 = ((Moby *)m)->scale;
             k2 = k2 * 0.0009765625f;
             FastVecScale(t, t, k2);
             t[3] = t[3] * k2;

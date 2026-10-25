@@ -350,19 +350,19 @@ extern void func_L00_00251E30(void *);
 char *spawn_scaled_owned_moby(char *owner, void *position, float scale) {
     char *moby = CreateMoby(0x660);
     if (moby != 0) {
-        char *data = *(char **)(moby + 0x78);
+        char *data = ((char *)((Moby *)moby)->pvars);
         ((unsigned char *)moby)[0x30] = 0xFF;
-        *(short *)(moby + 0x32) = 0xFF;
+        ((Moby *)moby)->draw_dist = 0xFF;
         moby[0x31] = 1;
         moby[0x20] = 0;
         *(char **)(data + 0x60) = owner;
-        *(float *)(moby + 0x2C) = *(float *)(*(char **)(moby + 0x24) + 0x24) * scale;
+        ((Moby *)moby)->scale = *(float *)(*(char **)(moby + 0x24) + 0x24) * scale;
         qcopy(moby + 0x10, position);
         if (owner != 0) {
             *(int *)(data + 0x64) = *(short *)(owner + 0xA6);
         }
         *(char **)(data) = data + 0x20;
-        *(unsigned short *)(moby + 0x34) |= 0x20;
+        ((Moby *)moby)->flags |= 0x20;
         moby_build_matrix(moby);
     }
     return moby;
@@ -407,11 +407,11 @@ char *spawn_poison_vessel_effect_moby(void *a, void *b, int c, int d) {
     if (m != 0) {
         char *data;
         float r1, dd;
-        data = *(char **)(m + 0x78);
-        m[0x30] = 0xFF;
-        *(short *)(m + 0x32) = 0xFF;
-        m[0x31] = 1;
-        m[0x23] = rand_range(0x40, 0x80);
+        data = ((char *)((Moby *)m)->pvars);
+        ((Moby *)m)->update_dist = 0xFF;
+        ((Moby *)m)->draw_dist = 0xFF;
+        ((Moby *)m)->visible = 1;
+        ((Moby *)m)->alpha = rand_range(0x40, 0x80);
         set_moby_color(m, 0x20, 0x60, 0x10);
         qcopy(m + 0x10, a);
         qcopy(data, b);
@@ -422,11 +422,11 @@ char *spawn_poison_vessel_effect_moby(void *a, void *b, int c, int d) {
         *(short *)(data + 0x18) = c;
         *(short *)(data + 0x1A) = c;
         if (d == 0) {
-            *(float *)(m + 0x2C) = *(float *)(m + 0x2C) * random_float_between(0.5f, 0.75f);
+            ((Moby *)m)->scale = ((Moby *)m)->scale * random_float_between(0.5f, 0.75f);
         }
-        *(float *)(data + 0x1C) = *(float *)(m + 0x2C);
-        *(float *)(m + 0x2C) = *(float *)(m + 0x2C) * random_float_between(2.0f, 5.0f);
-        m[0xBC] = d;
+        *(float *)(data + 0x1C) = ((Moby *)m)->scale;
+        ((Moby *)m)->scale = ((Moby *)m)->scale * random_float_between(2.0f, 5.0f);
+        ((Moby *)m)->command = d;
         moby_build_matrix(m);
     }
     return (char *)m;
@@ -595,11 +595,11 @@ void Moby1805Update(void *moby) {
     float tmp[4];
     int k, n;
 
-    if ((level_moby_killed[g_current_level_index][(short)*(unsigned short *)(m + 0xB2) >> 5] >> (*(unsigned short *)(m + 0xB2) & 0x1F)) & 1) {
+    if ((level_moby_killed[g_current_level_index][(short)((Moby *)m)->save_id >> 5] >> (((Moby *)m)->save_id & 0x1F)) & 1) {
         DeleteMoby(moby);
         return;
     }
-    data = *(char **)(m + 0x78);
+    data = ((char *)((Moby *)m)->pvars);
     item = MobyGetHitMessage(moby, 0x10000, 0);
     ComputeHitResponse(moby, item, data + 0x20, 0, &st, 0, 0, 4);
     switch (((unsigned char *)m)[0x20]) {
@@ -636,8 +636,8 @@ void Moby1805Update(void *moby) {
         }
         Moby_PlaySound(0, 0, (int)moby);
         spawn_proximity_gated_bolts(moby);
-            level_moby_killed[g_current_level_index][(short)*(unsigned short *)(m + 0xB2) >> 5] |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
-            gemlik_moby_killed_bits[(short)*(unsigned short *)(m + 0xB2) >> 5] |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
+            level_moby_killed[g_current_level_index][(short)((Moby *)m)->save_id >> 5] |= 1 << (((Moby *)m)->save_id & 0x1F);
+            gemlik_moby_killed_bits[(short)((Moby *)m)->save_id >> 5] |= 1 << (((Moby *)m)->save_id & 0x1F);
         for (n = 0; n < 2; n++) {
             for (k = 0x709; k < 0x70D; k++) {
                 qzero(tmp);

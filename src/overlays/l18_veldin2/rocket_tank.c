@@ -258,13 +258,13 @@ extern float func_L00_0025CE58(float *, float *, float, float, float, float);
 /* Applies hits to the rocket tank and breaks it apart when its health runs out. */
 void update_rocket_tank_damage_and_aim(void *mv) {
     unsigned char *m = mv;
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     int r;
     float dist;
     float v[4];
     int res;
     ComputeHitResponse(m, MobyGetHitMessage(m, 0x330000, 0), d + 0x20, 0, &res, &dist, 0, 4);
-    if (res != 1 && m[0x20] != 0) {
+    if (res != 1 && ((Moby *)m)->state != 0) {
         float t = *(float *)(d + 0x20) - dist;
         *(float *)(d + 0x20) = t;
         if (t > 0.0f) {
@@ -298,7 +298,7 @@ void update_rocket_tank_damage_and_aim(void *mv) {
         }
         RerollEffectCounter(m, (short *)(d + 0x60));
     }
-    m[0xA4] = 0xFF;
+    ((Moby *)m)->hit_slot = 0xFF;
     if (FindNearestTargetMoby(m, d + 0x70, 30.0f) != 2) {
         float *pa = (float *)(m + 0x10);
         char *pl = D_0013E633 + 0xE9D;
@@ -330,11 +330,11 @@ void update_rocket_tank_damage_and_aim(void *mv) {
         SteerAngleWithVelocity((float *)(d + 0x110), (float *)(d + 0x114), a, g_frame_time_sq * 12.566371f, g_frame_time_sq * 12.566371f, g_frame_time * 9.424778f);
         SteerAngleWithVelocity((float *)(d + 0x118), (float *)(d + 0x11C), b, g_frame_time_sq * 12.566371f, g_frame_time_sq * 12.566371f, g_frame_time * 9.424778f);
     } else {
-        SteerAngleWithVelocity((float *)(d + 0x110), (float *)(d + 0x114), *(float *)(m + 0x48), g_frame_time_sq * 12.566371f, g_frame_time_sq * 12.566371f, g_frame_time * 9.424778f);
+        SteerAngleWithVelocity((float *)(d + 0x110), (float *)(d + 0x114), ((Moby *)m)->rot.z, g_frame_time_sq * 12.566371f, g_frame_time_sq * 12.566371f, g_frame_time * 9.424778f);
         SteerAngleWithVelocity((float *)(d + 0x118), (float *)(d + 0x11C), 0.0f, g_frame_time_sq * 12.566371f, g_frame_time_sq * 12.566371f, g_frame_time * 9.424778f);
     }
     axis_rotation_2d48(v, 1, *(float *)(d + 0x118));
-    axis_rotation_2d48(d + 0xD0, 2, FastSubRots(*(float *)(d + 0x110), *(float *)(m + 0x48)));
+    axis_rotation_2d48(d + 0xD0, 2, FastSubRots(*(float *)(d + 0x110), ((Moby *)m)->rot.z));
     multiply_quaternions(d + 0xD0, v, d + 0xD0);
     StepColorFade(m, d + 0x60);
 }

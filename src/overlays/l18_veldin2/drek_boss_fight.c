@@ -778,30 +778,6 @@ typedef struct BossData {
     float f3DC;
     float f3E0;
 } BossData;
-typedef struct BossHero {
-    char p0[0x80];
-    float f80[4];
-    float f90[4];
-    char pA0[0x20];
-    float fC0[4];
-    char pD0[0x22C];
-    Moby *f2FC;
-    char p300[0xE];
-    short f30E;
-    char p310[0x250];
-    int *f560;
-    char p564[0x74];
-    Moby *f5D8;
-    char p5DC[0x1AA4];
-    Moby *f2080;
-    int f2084;
-    int f2088;
-    int f208C;
-    char p2090[0x14];
-    unsigned char f20A4;
-    char p20A5[0x1F];
-    int f20C4;
-} BossHero;
 typedef struct BossShared {
     char p0[0x10];
     float f10[4];
@@ -812,7 +788,7 @@ typedef struct BossShared {
     unsigned char f4A;
 } BossShared;
 /* The hero record (D_0013E633 + 0xE1D elsewhere in this file) and the sound slot table before it. */
-extern BossHero D_0013F450;
+extern Hero D_0013F450;
 extern char D_0013E650[];
 extern float D_L18_0015F4FC MACRO_ADDR;
 extern float D_0015EE64 MACRO_ADDR;
@@ -986,7 +962,7 @@ void drek_final_boss_robot_update(Moby *moby) {
         }
         break;
     case 1:
-        if (is_point_inside_clip_volume(g_hero.f80, d->f274) != 0 && g_hero.f20A4 == 2) {
+        if (is_point_inside_clip_volume(g_hero.motion.pos.f, d->f274) != 0 && g_hero.vehicle_mode == 2) {
             moby->state = 7;
             moby->flags |= 0x41;
             StartCutscene(0);
@@ -998,7 +974,7 @@ void drek_final_boss_robot_update(Moby *moby) {
             }
         } else {
             int *t = veldin2_paths[d->f270];
-            if (IsPointInPolygon(g_hero.f80, t + 4, *t) != 0) {
+            if (IsPointInPolygon(g_hero.motion.pos.f, t + 4, *t) != 0) {
                 moby->flags &= 0xFFBE;
                 moby->collision = (*(int **)&moby->pclass)[4];
                 moby->state = 10;
@@ -1007,11 +983,11 @@ void drek_final_boss_robot_update(Moby *moby) {
                     d->f340 = b;
                     qcopy(d->f3C0, b + 4);
                 }
-                moby->rot.z = fast_atan2(g_hero.f80[0] - d->f3C0[0],
-                                                 g_hero.f80[1] - d->f3C0[1]);
+                moby->rot.z = fast_atan2(g_hero.motion.pos.f[0] - d->f3C0[0],
+                                                 g_hero.motion.pos.f[1] - d->f3C0[1]);
                 show_drek_boss_moby_group((int)moby, d->f204[0]);
                 d->f38C = d->f38C * 0.85714287f;
-            } else if (FastVecDist(g_hero.f80, veldin2_arena_nodes + (d->f250[0] << 7) + 0x30) < 50.0f) {
+            } else if (FastVecDist(g_hero.motion.pos.f, veldin2_arena_nodes + (d->f250[0] << 7) + 0x30) < 50.0f) {
                 moby->flags &= 0xFFBE;
                 moby->collision = (*(int **)&moby->pclass)[4];
                 moby->state = 0xC;
@@ -1022,7 +998,7 @@ void drek_final_boss_robot_update(Moby *moby) {
                 }
                 d->f344 = d->f250[0];
                 d->f38C = d->f38C * 0.85714287f;
-            } else if (FastVecDist(g_hero.f80, veldin2_arena_nodes + (d->f250[1] << 7) + 0x30) < 50.0f) {
+            } else if (FastVecDist(g_hero.motion.pos.f, veldin2_arena_nodes + (d->f250[1] << 7) + 0x30) < 50.0f) {
                 moby->flags &= 0xFFBE;
                 moby->collision = (*(int **)&moby->pclass)[4];
                 d->f34C = 1;
@@ -1034,7 +1010,7 @@ void drek_final_boss_robot_update(Moby *moby) {
                     qcopy(d->f3C0, (char *)p + *p * 16);
                 }
                 d->f344 = d->f250[1];
-            } else if (FastVecDist(g_hero.f80, veldin2_arena_nodes + (d->f250[2] << 7) + 0x30) < 50.0f) {
+            } else if (FastVecDist(g_hero.motion.pos.f, veldin2_arena_nodes + (d->f250[2] << 7) + 0x30) < 50.0f) {
                 if (*(int *)&drek_boss_camera_reset_done != 0) {
                     Moby583_ActivateGroup(d->f200);
                     if (Sound_IsPlaying(moby, d->f3B0) != 0) {
@@ -1070,14 +1046,14 @@ void drek_final_boss_robot_update(Moby *moby) {
         break;
     case 2:
         aim = &moby->rot.z;
-        ang = fast_atan2(g_hero.f80[0] - moby->pos.x, g_hero.f80[1] - moby->pos.y);
+        ang = fast_atan2(g_hero.motion.pos.f[0] - moby->pos.x, g_hero.motion.pos.f[1] - moby->pos.y);
         SteerAngleWithVelocity(aim, &d->f370, ang, g_frame_time_sq * 6.2831855f, g_frame_time_sq * 6.2831855f,
                           g_frame_time * 6.2831855f);
         update_drek_boss_arena_circling_movement((char *)moby);
         if (d->f38C <= 301.0f) {
-            if (g_hero.f20A4 != 0) {
-                g_hero.f2080->collision = 0;
-                g_hero.f2080->flags |= 0x41;
+            if (g_hero.vehicle_mode != 0) {
+                g_hero.moby->collision = 0;
+                g_hero.moby->flags |= 0x41;
             }
             restore_saved_hero_moby_and_clear_vehicle_mode();
             {
@@ -1085,7 +1061,7 @@ void drek_final_boss_robot_update(Moby *moby) {
                 Hero_ResetToPosition(b + 0x30, b + 0x70, 0, 1);
             }
             jet_clear_persistent(d->f2B0);
-            jet_reset_camera(g_hero.f80, g_hero.f90);
+            jet_reset_camera(g_hero.motion.pos.f, g_hero.motion.rot.f);
             show_drek_boss_moby_group((int)moby, d->f204[0]);
             StartCutscene(1);
             moby->state = 7;
@@ -1101,14 +1077,14 @@ void drek_final_boss_robot_update(Moby *moby) {
                 d->f340 = b;
                 qcopy(d->f3C0, b + 4);
             }
-            moby->rot.z = fast_atan2(g_hero.f80[0] - d->f3C0[0],
-                                             g_hero.f80[1] - d->f3C0[1]);
+            moby->rot.z = fast_atan2(g_hero.motion.pos.f[0] - d->f3C0[0],
+                                             g_hero.motion.pos.f[1] - d->f3C0[1]);
             d->f368 = -1;
             break;
         }
         if (moby->prev_seq == 10 &&
             (IsFrameWithinWindow((char *)moby, 1.0f) != 0 || IsFrameWithinWindow((char *)moby, 16.0f) != 0)) {
-            qcopy(v0, g_hero.fC0);
+            qcopy(v0, g_hero.motion.near_ground_point.f);
             if (FastAbsF(v0[2] - d->f3C0[2]) < 5.0f) {
                 if ((float)moby->frame < 15.0f) {
                     Moby_GetJointWorldPos(moby, 2, v1);
@@ -1119,7 +1095,7 @@ void drek_final_boss_robot_update(Moby *moby) {
                 {
                     float a = randf_sym(0.08726646f, 0.5235988f);
                     float c = -random_float_between(0.08726646f, 0.17453292f);
-                    float e = vec_distance_xy(((f32 *)&moby->pos), g_hero.f80) * 3.0f;
+                    float e = vec_distance_xy(((f32 *)&moby->pos), g_hero.motion.pos.f) * 3.0f;
                     if (e > 120.0f) {
                         e = 120.0f;
                     } else if (e < 60.0f) {
@@ -1138,7 +1114,7 @@ void drek_final_boss_robot_update(Moby *moby) {
         int hit;
 
         aim = &moby->rot.z;
-        ang = fast_atan2(g_hero.f80[0] - moby->pos.x, g_hero.f80[1] - moby->pos.y);
+        ang = fast_atan2(g_hero.motion.pos.f[0] - moby->pos.x, g_hero.motion.pos.f[1] - moby->pos.y);
         SteerAngleWithVelocity(aim, &d->f370, ang, g_frame_time_sq * 6.2831855f, g_frame_time_sq * 6.2831855f,
                           g_frame_time * 6.2831855f);
         qcopy(v0, d->f340 + 4);
@@ -1197,7 +1173,7 @@ void drek_final_boss_robot_update(Moby *moby) {
         unsigned char *h;
 
         aim = &moby->rot.z;
-        ang = fast_atan2(g_hero.f80[0] - moby->pos.x, g_hero.f80[1] - moby->pos.y);
+        ang = fast_atan2(g_hero.motion.pos.f[0] - moby->pos.x, g_hero.motion.pos.f[1] - moby->pos.y);
         SteerAngleWithVelocity(aim, &d->f370, ang, g_frame_time_sq * 6.2831855f, g_frame_time_sq * 6.2831855f,
                           g_frame_time * 6.2831855f);
         ApproachValue(&d->f374, g_frame_time * 12.0f, g_frame_time_sq * 20.0f);
@@ -1244,8 +1220,8 @@ void drek_final_boss_robot_update(Moby *moby) {
             FastVecAdd(d->f3C0, d->f3C0, v0);
             break;
         }
-        if (vec_distance_xy(((f32 *)&moby->pos), g_hero.f80) < 50.0f && g_hero.f30E == 0 &&
-            (g_hero.f2FC == 0 || g_hero.f2FC->oclass != 0x24B)) {
+        if (vec_distance_xy(((f32 *)&moby->pos), g_hero.motion.pos.f) < 50.0f && g_hero.air_frames.s == 0 &&
+            (g_hero.ground_moby == 0 || g_hero.ground_moby->oclass != 0x24B)) {
             int *p = d->f340;
 
             d->f374 = 0.0f;
@@ -1256,7 +1232,7 @@ void drek_final_boss_robot_update(Moby *moby) {
                     moby->state = 4;
                 } else {
                     moby->state = 0x15;
-                    d->f330 = find_class_247_moby_with_largest_xy_angle_in_list(d->f3C0, g_hero.f80, d->f200);
+                    d->f330 = find_class_247_moby_with_largest_xy_angle_in_list(d->f3C0, g_hero.motion.pos.f, d->f200);
                 }
                 break;
             }
@@ -1264,13 +1240,13 @@ void drek_final_boss_robot_update(Moby *moby) {
         }
         break;
     case 4:
-        if (g_hero.f30E == 0 && (g_hero.f2FC == 0 || g_hero.f2FC->oclass != 0x24B)) {
+        if (g_hero.air_frames.s == 0 && (g_hero.ground_moby == 0 || g_hero.ground_moby->oclass != 0x24B)) {
             int i;
 
             *(int *)&drek_boss_intro_started = 1;
             moby->state = 7;
             d->f39C = 5;
-            d->f330 = (Moby *)find_nearest_class_247_moby_in_list(g_hero.f80, d->f200);
+            d->f330 = (Moby *)find_nearest_class_247_moby_in_list(g_hero.motion.pos.f, d->f200);
             moby->flags |= 0x41;
             StartCutscene(2);
             for (i = 0; i < 3; i++) {
@@ -1309,7 +1285,7 @@ void drek_final_boss_robot_update(Moby *moby) {
         }
         start_position_and_rotation_transition((char *)d->f334, v0, v1, v2, v3, v4, *(int *)&drek_boss_camera_move_ticks,
                           *(int *)&drek_boss_camera_move_hold_ticks, 1);
-        g_hero.f20C4 = 3;
+        g_hero.pending_item[3] = 3;
         moby->state = 8;
         request_thruster_pack_lock_red_wait(veldin2_moby_table + d->f21C * 0x100, scale_ticks(0x708));
         break;
@@ -1407,7 +1383,7 @@ void drek_final_boss_robot_update(Moby *moby) {
 
                     qcopy(v0, veldin2_arena_nodes + d->f280[i] * 0x80 + 0x30);
                     w = FastDiffRots(
-                        fast_atan2(d->f3C0[0] - g_hero.f80[0], d->f3C0[1] - g_hero.f80[1]),
+                        fast_atan2(d->f3C0[0] - g_hero.motion.pos.f[0], d->f3C0[1] - g_hero.motion.pos.f[1]),
                         fast_atan2(d->f3C0[0] - v0[0], d->f3C0[1] - v0[1]));
                     if (best < w) {
                         d->f3A8 = d->f280[i];
@@ -1423,7 +1399,7 @@ void drek_final_boss_robot_update(Moby *moby) {
             if (moby->prev_seq != 1) {
                 MobyBlendAnimation(moby, 1, 0, scale_ticks(0x14));
             }
-            if (vec_distance_xy(((f32 *)&moby->pos), g_hero.f80) < 16.0f) {
+            if (vec_distance_xy(((f32 *)&moby->pos), g_hero.motion.pos.f) < 16.0f) {
                 d->f354 = scale_ticks(0x5A);
             } else {
                 d->f354 = 0;
@@ -1498,7 +1474,7 @@ void drek_final_boss_robot_update(Moby *moby) {
                 if (d->fB4 != 2) {
                     qcopy(v1, d->f70);
                 } else {
-                    qcopy(v1, g_hero.f80);
+                    qcopy(v1, g_hero.motion.pos.f);
                 }
                 a = random_angle_radians();
                 r = random_float_between(1.0f, 10.0f);
@@ -1509,7 +1485,7 @@ void drek_final_boss_robot_update(Moby *moby) {
             } else {
                 qcopy(v0, d->f70);
             }
-            if (g_hero.f208C == 0xF) {
+            if (g_hero.state.control_mode == 0xF) {
                 qcopy(v1, veldin2_arena_nodes + d->f344 * 0x80 + 0x30);
                 FastVecSub(v0, v0, v1);
                 if (vec_length_xy(v0) > 29.0f) {
@@ -1531,7 +1507,7 @@ void drek_final_boss_robot_update(Moby *moby) {
                 vec_scale_to_length(v2, ((f32 *)&moby->rot_row0), g_frame_time * 20.0f);
                 a = randf_sym(0.08726646f, 0.5235988f);
                 c = -random_float_between(0.08726646f, 0.17453292f);
-                e = vec_distance_xy(((f32 *)&moby->pos), g_hero.f80) * 3.0f;
+                e = vec_distance_xy(((f32 *)&moby->pos), g_hero.motion.pos.f) * 3.0f;
                 if (e > 120.0f) {
                     e = 120.0f;
                 } else if (e < 60.0f) {
@@ -1596,7 +1572,7 @@ void drek_final_boss_robot_update(Moby *moby) {
         break;
     case 0x10:
         aim = &moby->rot.z;
-        ang = fast_atan2(g_hero.f80[0] - moby->pos.x, g_hero.f80[1] - moby->pos.y);
+        ang = fast_atan2(g_hero.motion.pos.f[0] - moby->pos.x, g_hero.motion.pos.f[1] - moby->pos.y);
         SteerAngleWithVelocity(aim, &d->f370, ang, g_frame_time_sq * 6.2831855f, g_frame_time_sq * 6.2831855f,
                           g_frame_time * 6.2831855f);
         update_drek_boss_arena_circling_movement((char *)moby);
@@ -1634,7 +1610,7 @@ void drek_final_boss_robot_update(Moby *moby) {
         int n;
 
         aim = &moby->rot.z;
-        ang = fast_atan2(g_hero.f80[0] - moby->pos.x, g_hero.f80[1] - moby->pos.y);
+        ang = fast_atan2(g_hero.motion.pos.f[0] - moby->pos.x, g_hero.motion.pos.f[1] - moby->pos.y);
         SteerAngleWithVelocity(aim, &d->f370, ang, g_frame_time_sq * 6.2831855f, g_frame_time_sq * 6.2831855f,
                           g_frame_time * 6.2831855f);
         update_drek_boss_arena_circling_movement((char *)moby);
@@ -1675,7 +1651,7 @@ void drek_final_boss_robot_update(Moby *moby) {
         int fire;
 
         aim = &moby->rot.z;
-        ang = fast_atan2(g_hero.f80[0] - moby->pos.x, g_hero.f80[1] - moby->pos.y);
+        ang = fast_atan2(g_hero.motion.pos.f[0] - moby->pos.x, g_hero.motion.pos.f[1] - moby->pos.y);
         SteerAngleWithVelocity(aim, &d->f370, ang, g_frame_time_sq * 6.2831855f, g_frame_time_sq * 6.2831855f,
                           g_frame_time * 6.2831855f);
         if (fast_dec_timer(&d->f354) != 0) {
@@ -1687,20 +1663,20 @@ void drek_final_boss_robot_update(Moby *moby) {
         }
         fire = 0;
         if (fast_dec_timer(&d->f358) != 0 &&
-            (g_hero.f208C != 0xF || fast_dec_timer(&d->f35C) != 0)) {
+            (g_hero.state.control_mode != 0xF || fast_dec_timer(&d->f35C) != 0)) {
             fire = 1;
         }
-        if (g_hero.f208C == 0xF) {
-            int *list = g_hero.f560;
+        if (g_hero.state.control_mode == 0xF) {
+            int *list = (int *)g_hero.rail_spline;
 
-            if (vec_distance_xy(g_hero.f80, (char *)list + *list * 16) < 3.0f) {
+            if (vec_distance_xy(g_hero.motion.pos.f, (char *)list + *list * 16) < 3.0f) {
                 fire = 1;
             }
         }
-        if (g_hero.f2084 == 0x16 && vec_distance_xy(((f32 *)&moby->pos), g_hero.f80) < 12.0f) {
+        if (g_hero.state.current == 0x16 && vec_distance_xy(((f32 *)&moby->pos), g_hero.motion.pos.f) < 12.0f) {
             fire = 1;
         }
-        if (vec_distance_xy(g_hero.f80, veldin2_arena_nodes + d->f250[2] * 0x80 + 0x30) >
+        if (vec_distance_xy(g_hero.motion.pos.f, veldin2_arena_nodes + d->f250[2] * 0x80 + 0x30) >
             *(float *)&drek_boss_arena_radius + 5.8f) {
             fire = 1;
         }
@@ -1788,7 +1764,7 @@ void drek_final_boss_robot_update(Moby *moby) {
         int n;
 
         aim = &moby->rot.z;
-        ang = fast_atan2(g_hero.f80[0] - moby->pos.x, g_hero.f80[1] - moby->pos.y);
+        ang = fast_atan2(g_hero.motion.pos.f[0] - moby->pos.x, g_hero.motion.pos.f[1] - moby->pos.y);
         SteerAngleWithVelocity(aim, &d->f370, ang, g_frame_time_sq * 6.2831855f, g_frame_time_sq * 6.2831855f,
                           g_frame_time * 6.2831855f);
         update_drek_boss_arena_circling_movement((char *)moby);
@@ -1841,8 +1817,8 @@ void drek_final_boss_robot_update(Moby *moby) {
             moby->state = 7;
             d->f39C = 0x1B;
         } else if (d->f34C == 7) {
-            if (g_hero.f2FC != 0 && g_hero.f30E == 0 && g_hero.f2FC->oclass == 0x247 &&
-                g_hero.f2084 == 0x22) {
+            if (g_hero.ground_moby != 0 && g_hero.air_frames.s == 0 && g_hero.ground_moby->oclass == 0x247 &&
+                g_hero.state.current == 0x22) {
                 if (d->f3AC == 0) {
                     d->f3AC = 1;
                 }
@@ -1902,7 +1878,7 @@ void drek_final_boss_robot_update(Moby *moby) {
         draw_trail(v0, v0, v2, 600000.0f, 0.0f);
     }
     if (d->f34C > 1) {
-        g_hero.f5D8 = moby;
+        g_hero.grind_look_moby = moby;
     }
     qcopy(((f32 *)&moby->pos), d->f3C0);
     slow = 0.3f;

@@ -30,7 +30,7 @@ void update_hoverboard_girl(Moby *moby) {
         initialize_moby_grounding_r(moby);
         break;
     case 1:
-        if ((*(HGHero *)(D_0013E633 + 0xE1D)).state_current != 0x1D) {
+        if ((*(Hero *)(D_0013E633 + 0xE1D)).state.current != 0x1D) {
         if (update_npc_dialogue(moby, state) != 0) {
             begin_dialogue_camera_transition(2.0f, moby);
             moby->state = 3;
@@ -43,7 +43,7 @@ void update_hoverboard_girl(Moby *moby) {
             set_race_camera(&race_camera_vectors[0], &race_camera_vectors[1], 0, 1);
             qcopy(&((HGVec *)(D_0013E633 + 0x2B1D))[0], &race_camera_vectors[2]);
             qcopy(&((HGVec *)(D_0013E633 + 0x2B1D))[1], &race_camera_vectors[3]);
-            (*(HGHero *)(D_0013E633 + 0xE1D)).flag20AC = 1;
+            (*(Hero *)(D_0013E633 + 0xE1D)).item_use_locked = 1;
             set_race_camera_mode(2, 6);
         }
         }
@@ -110,20 +110,20 @@ void update_hoverboard_girl(Moby *moby) {
     look_enabled = 0;
     if (moby->prev_seq == 0 || moby->prev_seq == 2) {
         look_enabled = 1;
-        if (vector_distance(&moby->pos, &(*(HGHero *)(D_0013E633 + 0xE1D)).pos) < 8.0f &&
+        if (vector_distance(&moby->pos, &(*(Hero *)(D_0013E633 + 0xE1D)).motion.pos) < 8.0f &&
             absolute_angle_difference(
                 moby->rot.z,
-                angle_from_xy((*(HGHero *)(D_0013E633 + 0xE1D)).unkD0.component[0] - moby->pos.x,
-                              (*(HGHero *)(D_0013E633 + 0xE1D)).unkD0.component[1] -
+                angle_from_xy((*(Hero *)(D_0013E633 + 0xE1D)).motion.body_center.f[0] - moby->pos.x,
+                              (*(Hero *)(D_0013E633 + 0xE1D)).motion.body_center.f[1] -
                                   moby->pos.y)) < 1.5707964f) {
-            if (vector_length(&(*(HGHero *)(D_0013E633 + 0xE1D)).displacement) > 0.01f) {
+            if (vector_length(&(*(Hero *)(D_0013E633 + 0xE1D)).motion.displacement) > 0.01f) {
                 state->player_look_timer = scale_frame_count(120);
             } else {
                 advance_timer(&state->player_look_timer);
             }
         } else if (state->player_look_timer != 0) {
             state->player_look_timer = 0;
-            qcopy(&state->look_target, &(*(HGHero *)(D_0013E633 + 0xE1D)).unkD0);
+            qcopy(&state->look_target, &(*(Hero *)(D_0013E633 + 0xE1D)).motion.body_center);
         }
         if (advance_timer(&state->random_look_timer)) {
             state->random_look_timer = truncate_time(scale_time(random_float(180.0f, 300.0f)));
@@ -133,7 +133,7 @@ void update_hoverboard_girl(Moby *moby) {
             add_vector(&state->look_target, &state->look_target, &moby->pos);
         }
         if (state->player_look_timer != 0) {
-            qcopy(&target_position, &(*(HGHero *)(D_0013E633 + 0xE1D)).unkD0);
+            qcopy(&target_position, &(*(Hero *)(D_0013E633 + 0xE1D)).motion.body_center);
             rotation_step = 0.03f;
             rotation_limit = 0.3f;
         } else {
@@ -160,19 +160,19 @@ void update_hoverboard_girl(Moby *moby) {
         state->joints[1].target_rotation[2] = yaw * 0.4f;
     }
 
-    if (vector_distance(&moby->pos, &(*(HGHero *)(D_0013E633 + 0xE1D)).pos) < 15.0f &&
+    if (vector_distance(&moby->pos, &(*(Hero *)(D_0013E633 + 0xE1D)).motion.pos) < 15.0f &&
         absolute_angle_difference(
             moby->rot.z,
-            angle_from_xy((*(HGHero *)(D_0013E633 + 0xE1D)).pos.component[0] - moby->pos.x,
-                          (*(HGHero *)(D_0013E633 + 0xE1D)).pos.component[1] - moby->pos.y)) <
+            angle_from_xy((*(Hero *)(D_0013E633 + 0xE1D)).motion.pos.f[0] - moby->pos.x,
+                          (*(Hero *)(D_0013E633 + 0xE1D)).motion.pos.f[1] - moby->pos.y)) <
             1.2217305f) {
-        if ((*(HGHero *)(D_0013E633 + 0xE1D)).state_current == 11 && (*(HGHero *)(D_0013E633 + 0xE1D)).state_timer == 15) {
+        if ((*(Hero *)(D_0013E633 + 0xE1D)).state.current == 11 && (*(Hero *)(D_0013E633 + 0xE1D)).state_timer == 15) {
             state->breast_growth_count_gp++;
             if (state->breast_growth_count_gp > 20)
                 state->breast_growth_count_gp = 20;
             breast_growth_count_gp_q = state->breast_growth_count_gp;
         }
-        if ((*(HGHero *)(D_0013E633 + 0xE1D)).state_current == 4 && scale_frame_count(20) < (*(HGHero *)(D_0013E633 + 0xE1D)).state_timer &&
+        if ((*(Hero *)(D_0013E633 + 0xE1D)).state.current == 4 && scale_frame_count(20) < (*(Hero *)(D_0013E633 + 0xE1D)).state_timer &&
             frame_number % 10 == 0) {
             state->breast_growth_count_gp--;
             if (state->breast_growth_count_gp < 0)

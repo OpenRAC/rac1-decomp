@@ -640,20 +640,20 @@ char *spawn_class_221_moby(char *owner, float *pos, float *dir, short ang, int a
     char *d;
     m = func_0020D348_m_2C59A0(0x221);
     if (m != 0) {
-        d = *(char **)(m + 0x78);
+        d = ((char *)((Moby *)m)->pvars);
         *(char **)(d + 0x10) = owner;
         qcopy(m + 0x10, pos);
         qcopy(d, dir);
-        *(float *)(m + 0x40) = random_float_between(-3.1415927f, 3.1415927f);
-        *(float *)(m + 0x44) = random_float_between(-3.1415927f, 3.1415927f);
+        ((Moby *)m)->rot.x = random_float_between(-3.1415927f, 3.1415927f);
+        ((Moby *)m)->rot.y = random_float_between(-3.1415927f, 3.1415927f);
         *(int *)(d + 0x18) = 0;
         *(short *)(d + 0x14) = scale_ticks(500);
         *(short *)(d + 0x16) = ang;
-        *(unsigned char *)(m + 0x30) = (*(unsigned char **)(d + 0x10))[0x30];
-        *(unsigned short *)(m + 0x32) = *(unsigned short *)(*(char **)(d + 0x10) + 0x32);
+        ((Moby *)m)->update_dist = (*(unsigned char **)(d + 0x10))[0x30];
+        *(unsigned short *)&((Moby *)m)->draw_dist = *(unsigned short *)(*(char **)(d + 0x10) + 0x32);
         m[0x31] = 1;
         m[0x20] = 0;
-        *(float *)(m + 0x2C) = *(float *)(*(char **)(m + 0x24) + 0x24) * 0.001f;
+        ((Moby *)m)->scale = *(float *)(*(char **)(m + 0x24) + 0x24) * 0.001f;
         *(int *)(d + 0x1C) = arg;
         *(int *)(d + 0x20) = 0;
         moby_build_matrix(m);
@@ -1528,11 +1528,11 @@ char *spawn_homing_spark_projectile(char *a, char *pos, int c, int d, float f)
     char *m = (char *)func_0020D348_m(0x350);
     char *data;
     if (m != 0) {
-        *(unsigned char *)(m + 0x30) = 0xFF;
-        *(short *)(m + 0x32) = 0x7E;
-        *(unsigned char *)(m + 0x31) = 1;
-        *(unsigned char *)(m + 0x20) = 1;
-        data = *(char **)(m + 0x78);
+        ((Moby *)m)->update_dist = 0xFF;
+        ((Moby *)m)->draw_dist = 0x7E;
+        ((Moby *)m)->visible = 1;
+        ((Moby *)m)->state = 1;
+        data = ((char *)((Moby *)m)->pvars);
         qcopy(m + 0x10, pos);
         qcopy(data, a);
         *(float *)(data + 0xC) = f;

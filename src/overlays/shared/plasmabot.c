@@ -792,7 +792,7 @@ void process_plasmabot_hit_reaction(char *m) {
                 *(float *)(d + 0x78) = k;
                 *(float *)(d + 0x7C) = k;
                 *(float *)(d + 0xB0) = 9.0f;
-                *(int *)(d + 0x80) = r80;
+                ((Moby *)d)->unk80 = r80;
                 *(float *)(d + 0xB4) = 15.0f;
             }
             y = fast_atan2(*(float *)(h + 0x10), *(float *)(h + 0x14));
@@ -979,8 +979,8 @@ void Group_ResetClass28Timers(int idx) {
         if (p != 0) {
             do {
                 char *moby = oltanis_mobys + ((*(unsigned short *)p & 0x7FFF) << 8);
-                char *data = *(char **)(moby + 0x78);
-                if (*(short *)(moby + 0xA6) == 0x1C) {
+                char *data = ((char *)((Moby *)moby)->pvars);
+                if (((Moby *)moby)->oclass == 0x1C) {
                     *(short *)(data + 0x260) = scale_ticks(*(int *)&plasmabot_beam_cooldown_ticks);
                 }
             } while (*p++ >= 0);
@@ -1166,13 +1166,13 @@ extern void func_00213D28(void *, int, int);
 int MobyL14_Activate(int i)
 {
     unsigned char *moby = (unsigned char *)(oltanis_mobys + i * 256);
-    int *data = *(int **)(moby + 0x78);
+    int *data = ((int *)((Moby *)moby)->pvars);
     int r = 0;
-    if (moby[0x20] == 0) {
-        moby[0x20] = 5;
+    if (((Moby *)moby)->state == 0) {
+        ((Moby *)moby)->state = 5;
         MobySetAnimation(moby, 1, 0);
     } else {
-        r = moby[0x20] == 6;
+        r = ((Moby *)moby)->state == 6;
     }
     data[2] = scale_ticks(0x3C);
     return r;
@@ -1290,14 +1290,14 @@ unsigned char *spawn_plasmabot_death_debris(char *owner, char *pos) {
     char *g;
     float vec[8];
     if (m != 0) {
-        d = *(char **)(m + 0x78);
+        d = ((char *)((Moby *)m)->pvars);
         *(char **)(d + 0x24) = owner;
         qcopy(m + 0x10, pos);
-        *(float *)(m + 0x48) = *(float *)(owner + 0x48);
-        m[0x20] = 0;
-        m[0x30] = 0xFF;
-        *(short *)(m + 0x32) = 0xFF;
-        m[0x31] = 1;
+        ((Moby *)m)->rot.z = *(float *)(owner + 0x48);
+        ((Moby *)m)->state = 0;
+        ((Moby *)m)->update_dist = 0xFF;
+        ((Moby *)m)->draw_dist = 0xFF;
+        ((Moby *)m)->visible = 1;
         g = D_0013E633 + 0xE9D;
         FastVecSub(vec, m + 0x10, g);
         g = g + 0x210;
@@ -1427,17 +1427,17 @@ unsigned char *spawn_path_or_ballistic_debris(char *owner, float *scale, int mod
     unsigned char *m = CreateMoby(0x193);
     unsigned char *pos;
     if (m != 0) {
-        char *d = *(char **)(m + 0x78);
+        char *d = ((char *)((Moby *)m)->pvars);
         float vec[8];
         pos = m + 0x10;
         qcopy(pos, owner + 0x10);
-        *(float *)(m + 0x48) = ((Moby *)owner)->rot.z;
-        m[0x20] = mode;
-        m[0x30] = 0xFF;
-        *(short *)(m + 0x32) = 0xFF;
-        m[0x31] = 1;
+        ((Moby *)m)->rot.z = ((Moby *)owner)->rot.z;
+        ((Moby *)m)->state = mode;
+        ((Moby *)m)->update_dist = 0xFF;
+        ((Moby *)m)->draw_dist = 0xFF;
+        ((Moby *)m)->visible = 1;
         *(char **)d = owner;
-        if (m[0x20] == 0) {
+        if (((Moby *)m)->state == 0) {
             int index;
             char *path;
             int *fields = (int *)d;
@@ -1842,7 +1842,7 @@ extern float func_002140F8(float, float);
 unsigned char *spawn_floating_mine(unsigned char *owner, char *pos) {
     unsigned char *m = CreateMoby(0x3A5);
     if (m != 0) {
-        char *d = *(char **)(m + 0x78);
+        char *d = ((char *)((Moby *)m)->pvars);
         *(unsigned char **)d = owner;
         *(int *)(d + 8) = 0;
         *(int *)(d + 0xC) = 0;
@@ -1851,11 +1851,11 @@ unsigned char *spawn_floating_mine(unsigned char *owner, char *pos) {
         *(float *)(d + 0x14) = random_float_between(0.00698131695f, 0.0139626339f);
         *(float *)(d + 0x18) = random_float_between(0.00349065848f, 0.00698131695f);
         qcopy(m + 0x10, pos);
-        *(float *)(m + 0x48) = *(float *)(owner + 0x48);
-        m[0x20] = 0;
-        m[0x30] = 0xFF;
-        *(short *)(m + 0x32) = 0xFF;
-        m[0x31] = 1;
+        ((Moby *)m)->rot.z = *(float *)(owner + 0x48);
+        ((Moby *)m)->state = 0;
+        ((Moby *)m)->update_dist = 0xFF;
+        ((Moby *)m)->draw_dist = 0xFF;
+        ((Moby *)m)->visible = 1;
         moby_build_matrix(m);
     }
     return m;

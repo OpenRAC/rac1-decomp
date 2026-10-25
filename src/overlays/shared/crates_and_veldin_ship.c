@@ -480,9 +480,9 @@ void break_crate(void *mv, int a1, int av) {
     int *q1, *q2;
     int c1, c2, a, b, dd, ee;
 
-    dat = *(unsigned char **)(m + 0x78);
+    dat = ((unsigned char *)((Moby *)m)->pvars);
     if (subtract_integer_with_clamp(level_frame_counter - crate_break_sound_frame) >= 2) {
-        if (*(short *)(m + 0xA6) == 0x1FA) Sound_PlayClassSound(0, 0, m, 0x1F4);
+        if (((Moby *)m)->oclass == 0x1FA) Sound_PlayClassSound(0, 0, m, 0x1F4);
         else Moby_PlaySound(0, 0, (int)m);
         crate_break_sound_frame = level_frame_counter;
     }
@@ -513,7 +513,7 @@ void break_crate(void *mv, int a1, int av) {
         FastVecSub(v10, m + 0x10, *(unsigned char **)(D_0013E633 + 0x2E9D) + 0x10);
     }
 
-    switch ((short)(*(unsigned short *)(m + 0xA6) - 0x1F4)) {
+    switch ((short)(*(unsigned short *)&((Moby *)m)->oclass - 0x1F4)) {
     case 1: d8 = 0x15C; break;
     case 3: d8 = 0x15F; break;
     case 2: d8 = 0x162; break;
@@ -531,9 +531,9 @@ void break_crate(void *mv, int a1, int av) {
     else if (free_moby_slot_count >= 0x33) { n = 1; e0 = 0; }
     else { n = 1; e0 = 0; }
 
-    f = fast_atan2(((Cam140 *)player_camera)->x - *(float *)(m + 0x10),
-                          ((Cam140 *)player_camera)->y - *(float *)(m + 0x14));
-    f = FastSubRots(f, *(float *)(m + 0x48));
+    f = fast_atan2(((Cam140 *)player_camera)->x - ((Moby *)m)->pos.x,
+                          ((Cam140 *)player_camera)->y - ((Moby *)m)->pos.y);
+    f = FastSubRots(f, ((Moby *)m)->rot.z);
     f21 = f + 3.1415925f;
     f21 = FastNormalizeAngle((float)truncate_float_to_s32(f21 / 1.57f) * 1.57f);
     clear_u64_value(v20);
@@ -578,10 +578,10 @@ void break_crate(void *mv, int a1, int av) {
         spawn_crate_debris(m, v60, v70, v80, d8 + 1, cnt, 0.25f, 0.5f);
     }
 
-    *(int *)(m + 0x94) = 0;
-    *(unsigned char *)(m + 0x20) = 3;
-    *(unsigned short *)(m + 0x34) = *(unsigned short *)(m + 0x34) | 1;
-    *(unsigned char *)(m + 0xBC) = scale_ticks(0xF);
+    *(int *)&((Moby *)m)->collision = 0;
+    ((Moby *)m)->state = 3;
+    ((Moby *)m)->flags = ((Moby *)m)->flags | 1;
+    ((Moby *)m)->command = scale_ticks(0xF);
 
     c8 = 8.0f;
     if (a1 != 0) {
@@ -683,7 +683,7 @@ void update_crate_stack_motion(char *a) {
     n = a;
     do {
         w = n;
-        n = *(char **)(*(char **)(w + 0x78) + 0xA4);
+        n = *(char **)(((char *)((Moby *)w)->pvars) + 0xA4);
     } while (n != 0);
     n = w;
     do {
@@ -1614,10 +1614,10 @@ char *mine_camera_blast(char *a, char *b, int c, char *d) {
     char *m = CreateMoby(0x27F);
     if (m != 0) {
         char *p;
-        *(unsigned char *)(m + 0x30) = 0xFF;
+        ((Moby *)m)->update_dist = 0xFF;
         m[0x31] = 1;
-        *(unsigned short *)(m + 0x34) |= 1;
-        p = *(char **)(m + 0x78);
+        ((Moby *)m)->flags |= 1;
+        p = ((char *)((Moby *)m)->pvars);
         m[0x20] = 0;
         m[0xBC] = 0;
         qcopy(m + 0x10, b);
@@ -1627,7 +1627,7 @@ char *mine_camera_blast(char *a, char *b, int c, char *d) {
             qcopy(p, a);
         }
         *(int *)(p + 0x20) = c;
-        *(short *)(m + 0x32) = *(unsigned char *)(a + 0x3C);
+        ((Moby *)m)->draw_dist = *(unsigned char *)(a + 0x3C);
         p[0x24] = a[0x10];
         p[0x25] = a[0x11];
         p[0x26] = a[0x12];
@@ -1708,13 +1708,13 @@ void update_animated_point_light_moby(unsigned char *m) {
         qcopy(o + 0x10, m + 0x10);
         *(int *)(o + 0x50) = -1;
         o[0x1C] = b1c;
-        *(int *)(o + 0xC) = *(int *)(o + 0x4C);
+        *(int *)&((Moby *)o)->bsphere.w = *(int *)&((Moby *)o)->rot.w;
         *(short *)(o + 0x74) = *(unsigned short *)(o + 0x6C);
         *(short *)(o + 0x76) = *(unsigned short *)(o + 0x6E);
         *(short *)(o + 0x78) = *(unsigned short *)(o + 0x70);
         *(short *)(o + 0x7A) = *(unsigned short *)(o + 0x72);
-        *(float *)(o + 0x54) = IntToFloat(o[0x25]) / 100.0f;
-        *(float *)(o + 0x58) = IntToFloat(o[0x2A]) / 100.0f;
+        ((Moby *)o)->anim_time = IntToFloat(o[0x25]) / 100.0f;
+        ((Moby *)o)->anim_speed = IntToFloat(o[0x2A]) / 100.0f;
         {
             float f5 = IntToFloat(o[0x2F]) / 100.0f;
             *(float *)(o + 0x60) = *(float *)(o + 0x34);
@@ -1723,15 +1723,15 @@ void update_animated_point_light_moby(unsigned char *m) {
         if (*(int *)(o + 0x64) != -1) {
             *(char **)(o + 0x20) = moby_array_start + (*(int *)(o + 0x64) << 8);
         }
-        if (*(float *)(o + 0x40) < 0.0f) *(float *)(o + 0x40) = -*(float *)(o + 0x40);
-        if (*(float *)(o + 0x44) < 0.0f) *(float *)(o + 0x44) = -*(float *)(o + 0x44);
+        if (((Moby *)o)->rot.x < 0.0f) ((Moby *)o)->rot.x = -((Moby *)o)->rot.x;
+        if (((Moby *)o)->rot.y < 0.0f) ((Moby *)o)->rot.y = -((Moby *)o)->rot.y;
         ((Moby *)m)->state = 1;
     }
     if (((Moby *)m)->command != 0) {
         ((Moby *)m)->command = ((Moby *)m)->command - 1;
         return;
     }
-    if (*(int *)(o + 0x48) != -1 && fast_dec_timer((int *)(o + 0x48))) {
+    if (*(int *)&((Moby *)o)->rot.z != -1 && fast_dec_timer((int *)(o + 0x48))) {
         if (*(int *)(o + 0x50) != -1) {
             release_point_light_slot(*(int *)(o + 0x50));
             *(int *)(o + 0x50) = -1;
@@ -1754,30 +1754,30 @@ void update_animated_point_light_moby(unsigned char *m) {
             qcopy(&t2, o + 0x10);
         }
         v20 = &t2;
-        if (!(*(int *)(o + 0x4C) & 0x800000)) {
-            if (*(int *)(o + 0x4C) & 0x100000) {
-                if (*(int *)(o + 0x4C) & 0x200000) {
-                    t3.x = random_float_between(-*(float *)(o + 0x0), *(float *)(o + 0x0));
-                    t3.y = random_float_between(-*(float *)(o + 0x4), *(float *)(o + 0x4));
-                    t3.z = random_float_between(-*(float *)(o + 0x8), *(float *)(o + 0x8));
+        if (!(*(int *)&((Moby *)o)->rot.w & 0x800000)) {
+            if (*(int *)&((Moby *)o)->rot.w & 0x100000) {
+                if (*(int *)&((Moby *)o)->rot.w & 0x200000) {
+                    t3.x = random_float_between(-((Moby *)o)->bsphere.x, ((Moby *)o)->bsphere.x);
+                    t3.y = random_float_between(-((Moby *)o)->bsphere.y, ((Moby *)o)->bsphere.y);
+                    t3.z = random_float_between(-((Moby *)o)->bsphere.z, ((Moby *)o)->bsphere.z);
                     v19 = &t3;
                 } else {
-                    int c = *(int *)(o + 0xC);
+                    int c = *(int *)&((Moby *)o)->bsphere.w;
                     void *p = &t3;
-                    *(int *)(o + 0xC) = 0;
-                    FastVecScale(p, o, random_float_between(*(float *)(o + 0xC), 1.0f));
-                    *(int *)(o + 0xC) = c;
+                    *(int *)&((Moby *)o)->bsphere.w = 0;
+                    FastVecScale(p, o, random_float_between(((Moby *)o)->bsphere.w, 1.0f));
+                    *(int *)&((Moby *)o)->bsphere.w = c;
                     v19 = p;
                 }
             } else {
-                int c = *(int *)(o + 0xC);
+                int c = *(int *)&((Moby *)o)->bsphere.w;
                 void *p = &t3;
-                *(int *)(o + 0xC) = 0;
+                *(int *)&((Moby *)o)->bsphere.w = 0;
                 qcopy(p, o);
-                *(int *)(o + 0xC) = c;
+                *(int *)&((Moby *)o)->bsphere.w = c;
                 v19 = p;
             }
-            if (*(int *)(o + 0x4C) & 0x400000) {
+            if (*(int *)&((Moby *)o)->rot.w & 0x400000) {
                 if (*(unsigned char **)(o + 0x20) != 0) {
                     matrix_mul_vec3(v19, v19, *(unsigned char **)(o + 0x20) + 0xC0);
                 }
@@ -1789,41 +1789,41 @@ void update_animated_point_light_moby(unsigned char *m) {
         if (*(unsigned short *)(o + 0x72) != 0) {
             if (FastDecTimer(o + 0x7A)) {
                 *(short *)(o + 0x7A) = func_001F9850_D83D8(*(unsigned short *)(o + 0x72));
-                if (*(int *)(o + 0x4C) & 4) {
+                if (*(int *)&((Moby *)o)->rot.w & 4) {
                     c0 = 1;
                     *(float *)(o + 0x60) = *(float *)(o + 0x3C);
-                    *(int *)(o + 0x4C) &= 0xFFFFFFF7;
+                    *(int *)&((Moby *)o)->rot.w &= 0xFFFFFFF7;
                 }
             }
         }
-        if (!(*(int *)(o + 0x4C) & 0x80000)) {
+        if (!(*(int *)&((Moby *)o)->rot.w & 0x80000)) {
             s64 q = *(s64 *)(o + 0x48);
-            if ((q & (0xC000L << 18)) == (0x8000L << 18)) *(int *)(o + 0x4C) ^= 0x2;
-            if (!(*(int *)(o + 0x4C) & 0x2)) {
-                if (*(int *)(o + 0x4C) & 0x8) {
-                    float t = *(float *)(o + 0x60) - *(float *)(o + 0x44) * frame_scale;
+            if ((q & (0xC000L << 18)) == (0x8000L << 18)) *(int *)&((Moby *)o)->rot.w ^= 0x2;
+            if (!(*(int *)&((Moby *)o)->rot.w & 0x2)) {
+                if (*(int *)&((Moby *)o)->rot.w & 0x8) {
+                    float t = *(float *)(o + 0x60) - ((Moby *)o)->rot.y * frame_scale;
                     *(float *)(o + 0x60) = t;
                     if (t <= *(float *)(o + 0x3C)) {
                         *(float *)(o + 0x60) = *(float *)(o + 0x3C);
-                        if (*(int *)(o + 0x4C) & 0x4) {
-                            if (func_001F9850_D83D8(*(unsigned short *)(o + 0x72)) == 0) *(int *)(o + 0x4C) ^= 0x8;
+                        if (*(int *)&((Moby *)o)->rot.w & 0x4) {
+                            if (func_001F9850_D83D8(*(unsigned short *)(o + 0x72)) == 0) *(int *)&((Moby *)o)->rot.w ^= 0x8;
                         }
                     }
                 } else {
-                    float t = *(float *)(o + 0x60) + *(float *)(o + 0x40) * frame_scale;
+                    float t = *(float *)(o + 0x60) + ((Moby *)o)->rot.x * frame_scale;
                     *(float *)(o + 0x60) = t;
                     if (*(float *)(o + 0x38) <= t) {
                         *(float *)(o + 0x60) = *(float *)(o + 0x38);
-                        if (!(*(int *)(o + 0x4C) & 0x1)) {
-                            *(int *)(o + 0x4C) ^= 0x8;
+                        if (!(*(int *)&((Moby *)o)->rot.w & 0x1)) {
+                            *(int *)&((Moby *)o)->rot.w ^= 0x8;
                         } else {
-                            *(unsigned char *)(o + 0x7F) = func_001F9850_D83D8(*(unsigned char *)(o + 0x6B));
-                            *(int *)(o + 0x4C) = (*(int *)(o + 0x4C) | 0x2) ^ 0x8;
+                            ((Moby *)o)->shadow_range = func_001F9850_D83D8(*(unsigned char *)(o + 0x6B));
+                            *(int *)&((Moby *)o)->rot.w = (*(int *)&((Moby *)o)->rot.w | 0x2) ^ 0x8;
                         }
                     }
                 }
             } else {
-                if (*(unsigned char *)(o + 0x6B) != 0 && fast_subtract_rotations_cf(o + 0x7F)) *(int *)(o + 0x4C) ^= 0x2;
+                if (*(unsigned char *)(o + 0x6B) != 0 && fast_subtract_rotations_cf(o + 0x7F)) *(int *)&((Moby *)o)->rot.w ^= 0x2;
             }
         } else {
             if (*(unsigned short *)(o + 0x72) == 0 || c0 == 1) {
@@ -1833,154 +1833,154 @@ void update_animated_point_light_moby(unsigned char *m) {
         if (*(unsigned short *)(o + 0x6C) != 0) {
             if (FastDecTimer(o + 0x74)) {
                 *(short *)(o + 0x74) = func_001F9850_D83D8(*(unsigned short *)(o + 0x6C));
-                *(int *)(o + 0x4C) &= 0xFFFFFF7F;
-                *(float *)(o + 0x54) = (float)*(unsigned char *)(o + 0x27);
+                *(int *)&((Moby *)o)->rot.w &= 0xFFFFFF7F;
+                ((Moby *)o)->anim_time = (float)*(unsigned char *)(o + 0x27);
             }
         }
-        if (!(*(int *)(o + 0x4C) & 0x10000)) {
+        if (!(*(int *)&((Moby *)o)->rot.w & 0x10000)) {
             s64 q = *(s64 *)(o + 0x48);
-            if ((q & (0xC000L << 22)) == (0x8000L << 22)) *(int *)(o + 0x4C) ^= 0x20;
-            if (!(*(int *)(o + 0x4C) & 0x20)) {
-                if (*(int *)(o + 0x4C) & 0x80) {
+            if ((q & (0xC000L << 22)) == (0x8000L << 22)) *(int *)&((Moby *)o)->rot.w ^= 0x20;
+            if (!(*(int *)&((Moby *)o)->rot.w & 0x20)) {
+                if (*(int *)&((Moby *)o)->rot.w & 0x80) {
                     float a = IntToFloat(o[0x27]) / 100.0f;
                     float b = IntToFloat(o[0x29]) / 100.0f;
-                    float t = *(float *)(o + 0x54) - b * frame_scale;
-                    *(float *)(o + 0x54) = t;
+                    float t = ((Moby *)o)->anim_time - b * frame_scale;
+                    ((Moby *)o)->anim_time = t;
                     if (t <= a) {
-                        *(float *)(o + 0x54) = a;
-                        if (*(int *)(o + 0x4C) & 0x40) {
-                            if (*(unsigned short *)(o + 0x6C) == 0) *(int *)(o + 0x4C) ^= 0x80;
+                        ((Moby *)o)->anim_time = a;
+                        if (*(int *)&((Moby *)o)->rot.w & 0x40) {
+                            if (*(unsigned short *)(o + 0x6C) == 0) *(int *)&((Moby *)o)->rot.w ^= 0x80;
                         }
                     }
                 } else {
                     float a = IntToFloat(o[0x26]) / 100.0f;
                     float b = IntToFloat(o[0x28]) / 100.0f;
-                    float t = *(float *)(o + 0x54) + b * frame_scale;
-                    *(float *)(o + 0x54) = t;
+                    float t = ((Moby *)o)->anim_time + b * frame_scale;
+                    ((Moby *)o)->anim_time = t;
                     if (a <= t) {
-                        *(float *)(o + 0x54) = a;
-                        if (!(*(int *)(o + 0x4C) & 0x10)) {
-                            *(int *)(o + 0x4C) ^= 0x80;
+                        ((Moby *)o)->anim_time = a;
+                        if (!(*(int *)&((Moby *)o)->rot.w & 0x10)) {
+                            *(int *)&((Moby *)o)->rot.w ^= 0x80;
                         } else {
-                            *(unsigned char *)(o + 0x7C) = func_001F9850_D83D8(o[0x68]);
-                            *(int *)(o + 0x4C) = (*(int *)(o + 0x4C) | 0x20) ^ 0x80;
+                            ((Moby *)o)->unk7C = func_001F9850_D83D8(o[0x68]);
+                            *(int *)&((Moby *)o)->rot.w = (*(int *)&((Moby *)o)->rot.w | 0x20) ^ 0x80;
                         }
                     }
                 }
             } else {
-                if (o[0x68] != 0 && fast_subtract_rotations_cf(o + 0x7C)) *(int *)(o + 0x4C) ^= 0x20;
+                if (o[0x68] != 0 && fast_subtract_rotations_cf(o + 0x7C)) *(int *)&((Moby *)o)->rot.w ^= 0x20;
             }
         } else {
             if (*(unsigned short *)(o + 0x6C) == 0 || c1 == 1) {
                 float a = (float)func_001FA898_r((float)o[0x27]) / 100.0f;
                 float b = (float)func_001FA898_r((float)o[0x26]) / 100.0f;
-                *(float *)(o + 0x54) = random_float_between(a, b);
+                ((Moby *)o)->anim_time = random_float_between(a, b);
             }
         }
         if (*(unsigned short *)(o + 0x6E) != 0) {
             if (FastDecTimer(o + 0x76)) {
                 *(short *)(o + 0x76) = func_001F9850_D83D8(*(unsigned short *)(o + 0x6E));
-                *(int *)(o + 0x4C) &= 0xFFFFF7FF;
-                *(float *)(o + 0x58) = (float)o[0x2C];
+                *(int *)&((Moby *)o)->rot.w &= 0xFFFFF7FF;
+                ((Moby *)o)->anim_speed = (float)o[0x2C];
             }
         }
-        if (!(*(int *)(o + 0x4C) & 0x20000)) {
+        if (!(*(int *)&((Moby *)o)->rot.w & 0x20000)) {
             s64 q = *(s64 *)(o + 0x48);
-            if ((q & (0xC000L << 26)) == (0x8000L << 26)) *(int *)(o + 0x4C) ^= 0x200;
-            if (!(*(int *)(o + 0x4C) & 0x200)) {
-                if (*(int *)(o + 0x4C) & 0x800) {
+            if ((q & (0xC000L << 26)) == (0x8000L << 26)) *(int *)&((Moby *)o)->rot.w ^= 0x200;
+            if (!(*(int *)&((Moby *)o)->rot.w & 0x200)) {
+                if (*(int *)&((Moby *)o)->rot.w & 0x800) {
                     float a = IntToFloat(o[0x2C]) / 100.0f;
                     float b = IntToFloat(o[0x2E]) / 100.0f;
-                    float t = *(float *)(o + 0x58) - b * frame_scale;
-                    *(float *)(o + 0x58) = t;
+                    float t = ((Moby *)o)->anim_speed - b * frame_scale;
+                    ((Moby *)o)->anim_speed = t;
                     if (t <= a) {
-                        *(float *)(o + 0x58) = a;
-                        if (*(int *)(o + 0x4C) & 0x400) {
-                            if (*(unsigned short *)(o + 0x6E) == 0) *(int *)(o + 0x4C) ^= 0x800;
+                        ((Moby *)o)->anim_speed = a;
+                        if (*(int *)&((Moby *)o)->rot.w & 0x400) {
+                            if (*(unsigned short *)(o + 0x6E) == 0) *(int *)&((Moby *)o)->rot.w ^= 0x800;
                         }
                     }
                 } else {
                     float a = IntToFloat(o[0x2B]) / 100.0f;
                     float b = IntToFloat(o[0x2D]) / 100.0f;
-                    float t = *(float *)(o + 0x58) + b * frame_scale;
-                    *(float *)(o + 0x58) = t;
+                    float t = ((Moby *)o)->anim_speed + b * frame_scale;
+                    ((Moby *)o)->anim_speed = t;
                     if (a <= t) {
-                        *(float *)(o + 0x58) = a;
-                        if (!(*(int *)(o + 0x4C) & 0x100)) {
-                            *(int *)(o + 0x4C) ^= 0x800;
+                        ((Moby *)o)->anim_speed = a;
+                        if (!(*(int *)&((Moby *)o)->rot.w & 0x100)) {
+                            *(int *)&((Moby *)o)->rot.w ^= 0x800;
                         } else {
-                            *(unsigned char *)(o + 0x7D) = func_001F9850_D83D8(o[0x69]);
-                            *(int *)(o + 0x4C) = (*(int *)(o + 0x4C) | 0x200) ^ 0x800;
+                            ((Moby *)o)->sound_slot = func_001F9850_D83D8(o[0x69]);
+                            *(int *)&((Moby *)o)->rot.w = (*(int *)&((Moby *)o)->rot.w | 0x200) ^ 0x800;
                         }
                     }
                 }
             } else {
-                if (o[0x69] != 0 && fast_subtract_rotations_cf(o + 0x7D)) *(int *)(o + 0x4C) ^= 0x200;
+                if (o[0x69] != 0 && fast_subtract_rotations_cf(o + 0x7D)) *(int *)&((Moby *)o)->rot.w ^= 0x200;
             }
         } else {
             if (*(unsigned short *)(o + 0x6E) == 0 || c2 == 1) {
                 float a = (float)func_001FA898_r((float)o[0x2C]) / 100.0f;
                 float b = (float)func_001FA898_r((float)o[0x2B]) / 100.0f;
-                *(float *)(o + 0x58) = random_float_between(a, b);
+                ((Moby *)o)->anim_speed = random_float_between(a, b);
             }
         }
         if (*(unsigned short *)(o + 0x70) != 0) {
             if (FastDecTimer(o + 0x78)) {
                 *(short *)(o + 0x78) = func_001F9850_D83D8(*(unsigned short *)(o + 0x70));
-                *(int *)(o + 0x4C) &= 0xFFFF7FFF;
-                *(float *)(o + 0x5C) = (float)o[0x31];
+                *(int *)&((Moby *)o)->rot.w &= 0xFFFF7FFF;
+                *(float *)(o + 0x5C) = (float)((Moby *)o)->visible;
             }
         }
-        if (!(*(int *)(o + 0x4C) & 0x40000)) {
+        if (!(*(int *)&((Moby *)o)->rot.w & 0x40000)) {
             s64 q = *(s64 *)(o + 0x48);
-            if ((q & (0xC000L << 30)) == (0x8000L << 30)) *(int *)(o + 0x4C) ^= 0x2000;
-            if (!(*(int *)(o + 0x4C) & 0x2000)) {
-                if (*(int *)(o + 0x4C) & 0x8000) {
-                    float a = IntToFloat(o[0x31]) / 100.0f;
+            if ((q & (0xC000L << 30)) == (0x8000L << 30)) *(int *)&((Moby *)o)->rot.w ^= 0x2000;
+            if (!(*(int *)&((Moby *)o)->rot.w & 0x2000)) {
+                if (*(int *)&((Moby *)o)->rot.w & 0x8000) {
+                    float a = IntToFloat(((Moby *)o)->visible) / 100.0f;
                     float b = IntToFloat(o[0x33]) / 100.0f;
                     float t = *(float *)(o + 0x5C) - b * frame_scale;
                     *(float *)(o + 0x5C) = t;
                     if (t <= a) {
                         *(float *)(o + 0x5C) = a;
-                        if (*(int *)(o + 0x4C) & 0x4000) {
-                            if (*(unsigned short *)(o + 0x70) == 0) *(int *)(o + 0x4C) ^= 0x8000;
+                        if (*(int *)&((Moby *)o)->rot.w & 0x4000) {
+                            if (*(unsigned short *)(o + 0x70) == 0) *(int *)&((Moby *)o)->rot.w ^= 0x8000;
                         }
                     }
                 } else {
-                    float a = IntToFloat(o[0x30]) / 100.0f;
+                    float a = IntToFloat(((Moby *)o)->update_dist) / 100.0f;
                     float b = IntToFloat(o[0x32]) / 100.0f;
                     float t = *(float *)(o + 0x5C) + b * frame_scale;
                     *(float *)(o + 0x5C) = t;
                     if (a <= t) {
                         *(float *)(o + 0x5C) = a;
-                        if (!(*(int *)(o + 0x4C) & 0x1000)) {
-                            *(int *)(o + 0x4C) ^= 0x8000;
+                        if (!(*(int *)&((Moby *)o)->rot.w & 0x1000)) {
+                            *(int *)&((Moby *)o)->rot.w ^= 0x8000;
                         } else {
-                            *(unsigned char *)(o + 0x7E) = func_001F9850_D83D8(o[0x6A]);
-                            *(int *)(o + 0x4C) = (*(int *)(o + 0x4C) | 0x2000) ^ 0x8000;
+                            ((Moby *)o)->anim_trigger_count = func_001F9850_D83D8(o[0x6A]);
+                            *(int *)&((Moby *)o)->rot.w = (*(int *)&((Moby *)o)->rot.w | 0x2000) ^ 0x8000;
                         }
                     }
                 }
             } else {
-                if (o[0x6A] != 0 && fast_subtract_rotations_cf(o + 0x7E)) *(int *)(o + 0x4C) ^= 0x2000;
+                if (o[0x6A] != 0 && fast_subtract_rotations_cf(o + 0x7E)) *(int *)&((Moby *)o)->rot.w ^= 0x2000;
             }
         } else {
             if (*(unsigned short *)(o + 0x70) == 0 || c3 == 1) {
-                float a = (float)func_001FA898_r((float)o[0x31]) / 100.0f;
-                float b = (float)func_001FA898_r((float)o[0x30]) / 100.0f;
+                float a = (float)func_001FA898_r((float)((Moby *)o)->visible) / 100.0f;
+                float b = (float)func_001FA898_r((float)((Moby *)o)->update_dist) / 100.0f;
                 *(float *)(o + 0x5C) = random_float_between(a, b);
             }
         }
         r = *(int *)(o + 0x50);
         if (r == -1) {
             float kk = IntToFloat(o[0x24]) / 100.0f;
-            *(int *)(o + 0x50) = allocate_colored_effect_slot((float *)v21, *(float *)(o + 0x60), kk, *(float *)(o + 0x54), *(float *)(o + 0x58), *(float *)(o + 0x5C));
+            *(int *)(o + 0x50) = allocate_colored_effect_slot((float *)v21, *(float *)(o + 0x60), kk, ((Moby *)o)->anim_time, ((Moby *)o)->anim_speed, *(float *)(o + 0x5C));
         } else {
             unsigned char *e = level_point_lights + (r << 5);
             qcopy(e + 0x10, v21);
             *(float *)(e + 0x1C) = *(float *)(o + 0x60);
-            *(float *)(e + 0x0) = *(float *)(o + 0x54);
-            *(float *)(e + 0x4) = *(float *)(o + 0x58);
+            *(float *)(e + 0x0) = ((Moby *)o)->anim_time;
+            *(float *)(e + 0x4) = ((Moby *)o)->anim_speed;
             *(float *)(e + 0x8) = *(float *)(o + 0x5C);
             *(float *)(e + 0xC) = IntToFloat(o[0x24]) / 100.0f;
         }

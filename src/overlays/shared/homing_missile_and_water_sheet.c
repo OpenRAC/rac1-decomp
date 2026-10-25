@@ -83,16 +83,16 @@ extern void func_L00_00251E30(void *);
 unsigned char *spawn_class_3f1_moby(char *owner, float *dir, float *pos, float a, float b) {
     unsigned char *m = CreateMoby(0x3F1);
     if (m) {
-        char *d = *(char **)(m + 0x78);
+        char *d = ((char *)((Moby *)m)->pvars);
         float f;
         *(char **)(d + 0x1C) = owner;
-        m[0x30] = 0xFF;
-        *(short *)(m + 0x32) = func_001FA898_r(a);
-        *(int *)(m + 0x40) = 0;
-        m[0x31] = 1;
+        ((Moby *)m)->update_dist = 0xFF;
+        ((Moby *)m)->draw_dist = func_001FA898_r(a);
+        *(int *)&((Moby *)m)->rot.x = 0;
+        ((Moby *)m)->visible = 1;
         f = vec_length_xy(dir);
-        *(float *)(m + 0x44) = -fast_atan2(f, dir[2]);
-        *(float *)(m + 0x48) = fast_atan2(dir[0], dir[1]);
+        ((Moby *)m)->rot.y = -fast_atan2(f, dir[2]);
+        ((Moby *)m)->rot.z = fast_atan2(dir[0], dir[1]);
         *(float *)(d + 0x10) = 1.0f;
         if (b > 0.0f) {
             vec_scale_to_length(d, dir, b);
@@ -102,10 +102,10 @@ unsigned char *spawn_class_3f1_moby(char *owner, float *dir, float *pos, float a
         }
         qcopy(m + 0x10, pos);
         *(int *)(d + 0x18) = *(int *)(d + 0x14) = func_001FA898_r(a / b);
-        *(short *)(m + 0x34) = 0x200;
-        *(float *)(m + 0x2C) = *(float *)(*(char **)(m + 0x24) + 0x24) *
+        *(short *)&((Moby *)m)->flags = 0x200;
+        ((Moby *)m)->scale = *(float *)(*(char **)(m + 0x24) + 0x24) *
             (*(float *)(owner + 0x2C) / *(float *)(*(char **)(owner + 0x24) + 0x24));
-        m[0x23] = func_001FA898_r(*(float *)(d + 0x10) * 24.0f);
+        ((Moby *)m)->alpha = func_001FA898_r(*(float *)(d + 0x10) * 24.0f);
         set_moby_color(m, 0xFF, 0xFF, 0xFF);
         moby_build_matrix(m);
     }
@@ -243,16 +243,16 @@ extern void func_L00_001FF4B0(void *, void *, float);
 char *spawn_class_3f9_moby(int owner, float *dir, float *pos, float size, float len, float z) {
     char *m = CreateMoby(0x3F9);
     if (m != 0) {
-        char *p = *(char **)(m + 0x78);
+        char *p = ((char *)((Moby *)m)->pvars);
         int r;
-        *(int *)(m + 0x94) = 0;
+        *(int *)&((Moby *)m)->collision = 0;
         *(int *)(p + 0x1C) = owner;
-        *(unsigned char *)(m + 0x30) = 0xFF;
-        *(short *)(m + 0x32) = truncate_float_to_s32(size);
-        *(int *)(m + 0x40) = 0;
+        ((Moby *)m)->update_dist = 0xFF;
+        ((Moby *)m)->draw_dist = truncate_float_to_s32(size);
+        *(int *)&((Moby *)m)->rot.x = 0;
         m[0x31] = 1;
-        *(float *)(m + 0x44) = -fast_atan2(vec_length_xy(dir), dir[2]);
-        *(float *)(m + 0x48) = fast_atan2(dir[0], dir[1]);
+        ((Moby *)m)->rot.y = -fast_atan2(vec_length_xy(dir), dir[2]);
+        ((Moby *)m)->rot.z = fast_atan2(dir[0], dir[1]);
         *(float *)(p + 0x10) = 1.0f;
         if (len > 0.0f) {
             vec_scale_to_length(p, dir, len);
@@ -265,7 +265,7 @@ char *spawn_class_3f9_moby(int owner, float *dir, float *pos, float size, float 
         *(int *)(p + 0x14) = r;
         *(float *)(p + 0x20) = z;
         *(int *)(p + 0x18) = r - 13;
-        *(short *)(m + 0x34) = 0x200;
+        *(short *)&((Moby *)m)->flags = 0x200;
         moby_build_matrix(m);
     }
     return m;
@@ -829,8 +829,8 @@ void Group_CopyZToTableSlots(char *moby) {
         int i = (*p & 0x7FFF) * 256;
         char *e = (char *)(i + base);
         char *s;
-        *(float *)(e + 0x18) = *(float *)(moby + 0x18);
-        s = pokitaru_pool_tiles + *(int *)(*(char **)(e + 0x78) + 4) * 0x1190;
+        ((Moby *)e)->pos.z = *(float *)(moby + 0x18);
+        s = pokitaru_pool_tiles + *(int *)(((char *)((Moby *)e)->pvars) + 4) * 0x1190;
         *(float *)(s + 8) = *(float *)(moby + 0x18);
     } while (*p++ >= 0);
 }
@@ -1282,9 +1282,9 @@ void draw_linked_moby_trails(char *m) {
         np = p + 1;
         skip = 1;
         o = (char *)(((*p & 0x7FFF) << 8) + (int)pokitaru_mobys);
-        c1 = *(short *)(o + 0xA6);
+        c1 = ((Moby *)o)->oclass;
         c2 = *(short *)(m + 0xA6);
-        vis = *(unsigned char *)(o + 0x31);
+        vis = ((Moby *)o)->visible;
         if ((c1 ^ c2) == 0) {
             skip = 0;
         }
@@ -1292,7 +1292,7 @@ void draw_linked_moby_trails(char *m) {
             skip = 1;
         }
         if (!skip) {
-            pv = *(char **)(o + 0x78);
+            pv = ((char *)((Moby *)o)->pvars);
             k = 0;
             if (*(int *)(pv + 0x2C0) > 0) {
                 do {

@@ -1288,7 +1288,7 @@ void compute_hero_hoverboard_respawn_transform(float *out, float *rot) {
         qcopy(rot, g + 0x90);
         return;
     }
-    path = D_L05_001B0CB0_254B38[*(int *)(*(char **)(m + 0x78) + 0x24)];
+    path = D_L05_001B0CB0_254B38[*(int *)(((char *)((Moby *)m)->pvars) + 0x24)];
     distance = 9999999.0f;
     best = 0;
     for (i = 0; i < *(int *)path; i += 2) {

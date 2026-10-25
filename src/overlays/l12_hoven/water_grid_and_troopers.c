@@ -781,7 +781,7 @@ void TrollSpawnBurst(struct Moby *mp) {
     int j;
     int k;
     int x16, x17, x18, x19, r7;
-    d = *(char **)(arg0 + 0x78);
+    d = ((char *)((Moby *)arg0)->pvars);
     if (((unsigned char)arg0[0x20]) == 0xF) {
         n = func_001FA898_r((float)n * 1.5f);
     }

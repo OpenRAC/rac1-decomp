@@ -185,9 +185,9 @@ extern void func_L00_00251E30(void *);
 char *spawn_bomb_with_velocity(int arg, char *pos, char *vec) {
     char *m = CreateMoby(0xF8);
     if (m != 0) {
-        char *d = *(char **)(m + 0x78);
-        *(unsigned char *)(m + 0x30) = 0xFF;
-        *(short *)(m + 0x32) = 0xFF;
+        char *d = ((char *)((Moby *)m)->pvars);
+        ((Moby *)m)->update_dist = 0xFF;
+        ((Moby *)m)->draw_dist = 0xFF;
         m[0x31] = 1;
         m[0x20] = 1;
         *(int *)(d + 0x30) = arg;
@@ -196,8 +196,8 @@ char *spawn_bomb_with_velocity(int arg, char *pos, char *vec) {
         *(int *)(d + 0x24) = 0;
         qcopy(m + 0x10, pos);
         qcopy(d + 0x10, vec);
-        *(float *)(m + 0x40) = random_float_between(-180.0f, 180.0f) * 0.017453292f;
-        *(float *)(m + 0x48) = fast_atan2(*(float *)vec, *(float *)(vec + 4)) + 1.5707964f;
+        ((Moby *)m)->rot.x = random_float_between(-180.0f, 180.0f) * 0.017453292f;
+        ((Moby *)m)->rot.z = fast_atan2(*(float *)vec, *(float *)(vec + 4)) + 1.5707964f;
         moby_build_matrix(m);
     }
     return m;
@@ -1649,7 +1649,7 @@ void blarg_bombthrower_update(Moby *moby) {
             p = spawn_bomb_with_velocity((int)moby, (char *)v50, (char *)v60);
             d->p124 = (Moby *)p;
             if (p != 0) {
-                char *pd = *(char **)(p + 0x78);
+                char *pd = ((char *)((Moby *)p)->pvars);
                 *(int *)(pd + 0x20) = scale_ticks(0xB4);
                 *(short *)(pd + 0xC) = scale_ticks(10);
                 *(short *)(pd + 0xE) = scale_ticks(10);
@@ -2013,10 +2013,10 @@ int advance_shuttle_path_travel(char *m) {
     float b = g_frame_time * 0.08f;
     path = *(int **)(d + 0x120);
     ApproachWithVelocity((float *)(d + 0xE4), (float *)(d + 0xE8), *(float *)(d + 0x104), a, a, b);
-    *(float *)(d + 0x110) = FastAddRots(*(float *)(d + 0x110), *(float *)(d + 0xE8) * 50.0f);
-    SamplePathAt(path, 0, d + 0x60, (float *)(d + 0x70), 0, *(float *)(d + 0xE4) * (float)(*path - 1));
+    *(float *)(d + 0x110) = FastAddRots(*(float *)(d + 0x110), ((Moby *)d)->rot_row2.z * 50.0f);
+    SamplePathAt(path, 0, d + 0x60, (float *)(d + 0x70), 0, ((Moby *)d)->rot_row2.y * (float)(*path - 1));
     *(int *)(d + 0x74) = 0;
-    if (FastAbsF(*(float *)(d + 0xE4) - *(float *)(d + 0x104)) < 0.2f) {
+    if (FastAbsF(((Moby *)d)->rot_row2.y - *(float *)(d + 0x104)) < 0.2f) {
         ApproachWithVelocity((float *)(d + 0x108), (float *)(d + 0x10C), 3.14159f, g_frame_time_sq * 2.0943952f, g_frame_time_sq * 2.0943952f, g_frame_time * 6.2831855f);
     } else {
         *(int *)(d + 0x108) = 0;
@@ -2025,7 +2025,7 @@ int advance_shuttle_path_travel(char *m) {
         *(float *)(d + 0x78) = FastAddRots(*(float *)(d + 0x78), 3.14159f);
     }
     *(float *)(d + 0x78) = FastAddRots(*(float *)(d + 0x78), *(float *)(d + 0x108));
-    return *(float *)(d + 0xE4) == *(float *)(d + 0x104);
+    return ((Moby *)d)->rot_row2.y == *(float *)(d + 0x104);
 }
 extern void func_00215F80(int, int);
 extern int D_L08_001B0FB0[];
@@ -2052,9 +2052,9 @@ char *spawn_bomber_tank_projectile(char *src, char *pos, char *vec) {
     char *moby = CreateMoby(0x1A9);
     char *data;
     if (moby) {
-        data = *(char **)(moby + 0x78);
-        *(unsigned char *)(moby + 0x30) = 0xFF;
-        *(short *)(moby + 0x32) = 0xFF;
+        data = ((char *)((Moby *)moby)->pvars);
+        ((Moby *)moby)->update_dist = 0xFF;
+        ((Moby *)moby)->draw_dist = 0xFF;
         moby[0x31] = 1;
         moby[0x20] = 1;
         *(char **)(data + 0x20) = src;
@@ -2063,8 +2063,8 @@ char *spawn_bomber_tank_projectile(char *src, char *pos, char *vec) {
         *(int *)(data + 0x14) = 0;
         qcopy(moby + 0x10, pos);
         qcopy(data, vec);
-        *(float *)(moby + 0x40) = random_float_between(-180.0f, 180.0f) * 0.017453293f;
-        *(float *)(moby + 0x48) = fast_atan2(*(float *)vec, *(float *)(vec + 4)) + 1.5707964f;
+        ((Moby *)moby)->rot.x = random_float_between(-180.0f, 180.0f) * 0.017453293f;
+        ((Moby *)moby)->rot.z = fast_atan2(*(float *)vec, *(float *)(vec + 4)) + 1.5707964f;
         moby_build_matrix(moby);
     }
     return moby;
@@ -2113,7 +2113,7 @@ extern CollisionHit D_L08_001746C0;
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l08/gameplay/entities/002b8228.c, FUN_L08_002dc9a8. */
 void update_ballistic_projectile(struct Moby *moby) {
     char *m = (char *)moby;
-    char *data = *(char **)(m + 0x78);
+    char *data = ((char *)((Moby *)m)->pvars);
     float original[4];
     EffectRecord_2DC9A8 record;
     float *position;

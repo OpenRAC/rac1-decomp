@@ -812,13 +812,13 @@ unsigned char *spawn_machinegun_turret_projectile(void *pos, float *dir, int a, 
     if (m) {
         char *d;
         float V[4];
-        m[0x30] = 0xFF;
-        *(short *)(m + 0x32) = 0x7F;
-        m[0x31] = 1;
-        *(int *)(m + 0x40) = 0;
-        d = *(char **)(m + 0x78);
-        *(float *)(m + 0x44) = -fast_atan2(vec_length_xy(dir), dir[2]);
-        *(float *)(m + 0x48) = fast_atan2(dir[0], dir[1]);
+        ((Moby *)m)->update_dist = 0xFF;
+        ((Moby *)m)->draw_dist = 0x7F;
+        ((Moby *)m)->visible = 1;
+        *(int *)&((Moby *)m)->rot.x = 0;
+        d = ((char *)((Moby *)m)->pvars);
+        ((Moby *)m)->rot.y = -fast_atan2(vec_length_xy(dir), dir[2]);
+        ((Moby *)m)->rot.z = fast_atan2(dir[0], dir[1]);
         qcopy(m + 0x10, pos);
         qcopy(d + 0x40, pos);
         qcopy(d + 0x30, dir);
@@ -830,10 +830,10 @@ unsigned char *spawn_machinegun_turret_projectile(void *pos, float *dir, int a, 
         d[0x18] = 1;
         d[0x19] = 1;
         MobyBlendAnimation(m, 1, 0, scale_ticks(5));
-        *(short *)(m + 0x34) = 0x208;
+        *(short *)&((Moby *)m)->flags = 0x208;
         *(int *)(d + 0x50) = a;
         *(int *)(d + 0x54) = b;
-        m[0x23] = 0x10;
+        ((Moby *)m)->alpha = 0x10;
         moby_build_matrix(m);
     }
     return m;
@@ -930,13 +930,13 @@ char *spawn_bombomatic_projectile(char *pos, char *vec, int c, short d) {
     char *m = func_0020D348_m(0x372);
     char *p;
     if (m) {
-        p = *(char **)(m + 0x78);
-        *(unsigned char *)(m + 0x30) = 0xFF;
-        *(unsigned short *)(m + 0x32) = 0xFF;
+        p = ((char *)((Moby *)m)->pvars);
+        ((Moby *)m)->update_dist = 0xFF;
+        *(unsigned short *)&((Moby *)m)->draw_dist = 0xFF;
         m[0x31] = 1;
-        *(float *)(m + 0x40) = random_angle_radians();
-        *(float *)(m + 0x44) = random_angle_radians();
-        *(float *)(m + 0x48) = random_angle_radians();
+        ((Moby *)m)->rot.x = random_angle_radians();
+        ((Moby *)m)->rot.y = random_angle_radians();
+        ((Moby *)m)->rot.z = random_angle_radians();
         *(float *)(p + 0x18) = randf_sym(100.0f, 300.0f) * 0.017453292f * g_frame_time;
         *(float *)(p + 0x1C) = randf_sym(100.0f, 300.0f) * 0.017453292f * g_frame_time;
         qcopy(m + 0x10, pos);
@@ -1714,10 +1714,10 @@ unsigned char *spawn_moby_class_1046(int a, void *pos, int b, float f0, float f1
         char *data;
         char *g;
         char *h;
-        data = *(char **)(moby + 0x78);
-        moby[0x30] = 0xFF;
-        *(short *)(moby + 0x32) = 0xFF;
-        moby[0x31] = 1;
+        data = ((char *)((Moby *)moby)->pvars);
+        ((Moby *)moby)->update_dist = 0xFF;
+        ((Moby *)moby)->draw_dist = 0xFF;
+        ((Moby *)moby)->visible = 1;
         qcopy(moby + 0x10, pos);
         *(int *)(data + 0x14) = a;
         *(float *)(data + 4) = f1;
@@ -1727,7 +1727,7 @@ unsigned char *spawn_moby_class_1046(int a, void *pos, int b, float f0, float f1
         *(float *)(data + 8) = f0;
         *(int *)(data + 0x18) = b;
         *(float *)(data + 0x1C) = f4;
-        *(unsigned short *)(moby + 0x34) |= 0x200;
+        ((Moby *)moby)->flags |= 0x200;
         g = debris_far_point;
         h = g - 0x140;
         *(float *)(h + 0x160) = 0.3f - vec_distance_xy(moby + 0x10, g) / 100.0f;
@@ -1890,17 +1890,17 @@ char *spawn_moby_class_1049(char *pos, char *vec, int arg) {
     char *m = func_0020D348_m(0x419);
     if (m != 0) {
         char *data;
-        *(short *)(m + 0x32) = *(unsigned char *)(m + 0x30) = 0xFF;
+        ((Moby *)m)->draw_dist = ((Moby *)m)->update_dist = 0xFF;
         m[0x31] = 1;
-        data = *(char **)(m + 0x78);
-        *(float *)(m + 0x40) = random_angle_radians();
-        *(float *)(m + 0x44) = random_angle_radians();
-        *(float *)(m + 0x48) = random_angle_radians();
+        data = ((char *)((Moby *)m)->pvars);
+        ((Moby *)m)->rot.x = random_angle_radians();
+        ((Moby *)m)->rot.y = random_angle_radians();
+        ((Moby *)m)->rot.z = random_angle_radians();
         qcopy(m + 0x10, pos);
         qcopy(data, vec);
         *(int *)(data + 0x10) = arg;
         m[0x23] = 0x30;
-        *(unsigned short *)(m + 0x34) |= 0x200;
+        ((Moby *)m)->flags |= 0x200;
         moby_build_matrix(m);
         spawn_source_attached_fading_effect_particle(m, 0x800040FF, 0x80, -1, 500000.0f);
     }

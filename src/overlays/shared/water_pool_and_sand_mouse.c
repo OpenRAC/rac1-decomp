@@ -2442,11 +2442,11 @@ void process_amoeboid_hits_and_update_targeting(char *m) {
         if (0.0f < *(float *)(d + 0x20)) {
             t2 = activate_smaller_amoeboid(m);
             if (t2 != 0) {
-                q = *(char **)(t2 + 0x78);
+                q = ((char *)((Moby *)t2)->pvars);
                 q[0x9D] = 3;
                 *(float *)(q + 0x70) = f21;
                 *(int *)(q + 0x84) = 8;
-                *(int *)(q + 0x80) = truncate_float_to_s32(*(float *)(d + 0x250) * f20 * f22);
+                ((Moby *)q)->unk80 = truncate_float_to_s32(*(float *)(d + 0x250) * f20 * f22);
                 k = D_0015EE6C_c;
                 f7 = 7.0f;
                 *(float *)(q + 0x88) = *(float *)(d + 0x250) * f20;
@@ -2460,15 +2460,15 @@ void process_amoeboid_hits_and_update_targeting(char *m) {
                 a1 = FastSubRots(a1, 0.7853982f);
                 InitKnockback(t2, q + 0x60, a1, 4, 8, 0);
                 t2[0x20] = 8;
-                *(float *)(t2 + 0x58) = f24;
+                ((Moby *)t2)->anim_speed = f24;
             }
             t2 = activate_smaller_amoeboid(m);
             if (t2 != 0) {
-                q = *(char **)(t2 + 0x78);
+                q = ((char *)((Moby *)t2)->pvars);
                 *(float *)(q + 0x70) = f21;
                 q[0x9D] = 3;
                 *(int *)(q + 0x84) = 8;
-                *(int *)(q + 0x80) = truncate_float_to_s32(*(float *)(d + 0x250) * f20 * f22);
+                ((Moby *)q)->unk80 = truncate_float_to_s32(*(float *)(d + 0x250) * f20 * f22);
                 k = D_0015EE6C_c;
                 f7 = 7.0f;
                 *(float *)(q + 0x88) = *(float *)(d + 0x250) * f20;
@@ -2482,7 +2482,7 @@ void process_amoeboid_hits_and_update_targeting(char *m) {
                 a2 = FastAddRots(a2, 0.7853982f);
                 InitKnockback(t2, q + 0x60, a2, 4, 8, 0);
                 t2[0x20] = 8;
-                *(float *)(t2 + 0x58) = f24;
+                ((Moby *)t2)->anim_speed = f24;
             }
             p2 = *(char **)(t + 0x20);
             if (p2 != 0 && (x2 = *(char **)(p2 + 0x24)) != 0 && *(short *)(x2 + 0x46) == 5) {

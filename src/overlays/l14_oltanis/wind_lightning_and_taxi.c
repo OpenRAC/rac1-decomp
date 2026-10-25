@@ -891,18 +891,18 @@ char *spawn_flying_bolt(void *a, float *b, int c, int d) {
     char *m = func_0020D348_m(0x2A9);
     if (m) {
         char *data;
-        *(int *)(m + 0x40) = 0;
-        *(unsigned char *)(m + 0x30) = 0xFF;
-        *(short *)(m + 0x32) = 0x7F;
+        *(int *)&((Moby *)m)->rot.x = 0;
+        ((Moby *)m)->update_dist = 0xFF;
+        ((Moby *)m)->draw_dist = 0x7F;
         m[0x31] = 1;
-        data = *(char **)(m + 0x78);
-        *(float *)(m + 0x44) = -fast_atan2(vec_length_xy(b), b[2]);
-        *(float *)(m + 0x48) = fast_atan2(b[0], b[1]);
+        data = ((char *)((Moby *)m)->pvars);
+        ((Moby *)m)->rot.y = -fast_atan2(vec_length_xy(b), b[2]);
+        ((Moby *)m)->rot.z = fast_atan2(b[0], b[1]);
         qcopy(m + 0x10, a);
         qcopy(data + 0x10, a);
         qcopy(data, b);
         MobyBlendAnimation(m, 1, 0, scale_ticks(5));
-        *(short *)(m + 0x34) = 0x208;
+        *(short *)&((Moby *)m)->flags = 0x208;
         *(int *)(data + 0x20) = c;
         *(int *)(data + 0x24) = d;
         m[0x23] = 0x10;
@@ -3285,7 +3285,7 @@ int advance_moby_along_flight_path(char *m) {
                                  (unsigned int)*(int *)(moby_vars + 0x8C) >> 31,
                                  *(float *)&fighter921_path_speed * g_frame_time);
     if (*(int *)(moby_vars + 0x8C) != 0 && (path_boundary_reached != 0 || *(short *)(race_state + 0x86) != 0x13)) {
-        flag_vendor_item(*(int *)(moby_vars + 0x90));
+        flag_vendor_item(((Moby *)moby_vars)->glow_color);
         if (*(int *)(moby_vars + 0x6C) != -1) {
             char *voice_entry = D_0013E633 + 0x1D + *(int *)(moby_vars + 0x6C) * 0x70;
             if (((Voice_2FE038 *)voice_entry)->owner == moby && ((Voice_2FE038 *)voice_entry)->on != 0) {

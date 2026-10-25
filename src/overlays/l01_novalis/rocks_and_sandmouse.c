@@ -294,16 +294,16 @@ char *spawn_colored_half_scale_moby(int owner, void *pos, void *target, int colo
     t = *(Vy *)target;
     m = CreateMoby(0x2D2);
     if (m != 0) {
-        v = *(char **)(m + 0x78);
+        v = ((char *)((Moby *)m)->pvars);
         *(int *)(v + 0x10) = owner;
         m[0x30] = 0x7F;
-        *(short *)(m + 0x32) = 0x7F;
+        ((Moby *)m)->draw_dist = 0x7F;
         m[0x31] = 1;
-        *(float *)(m + 0x2C) = *(float *)(m + 0x2C) * 0.5f;
+        ((Moby *)m)->scale = ((Moby *)m)->scale * 0.5f;
         set_moby_color(m, 0x7F, 0x7F, 0x7F);
-        *(float *)(m + 0x40) = random_angle_radians();
-        *(float *)(m + 0x44) = random_angle_radians();
-        *(float *)(m + 0x48) = random_angle_radians();
+        ((Moby *)m)->rot.x = random_angle_radians();
+        ((Moby *)m)->rot.y = random_angle_radians();
+        ((Moby *)m)->rot.z = random_angle_radians();
         qcopy(m + 0x10, pp);
         qcopy(v, tp);
         *(int *)(v + 0x14) = color;
@@ -1425,10 +1425,10 @@ char *spawn_pipe_replacement_moby(char *owner) {
     if (moby != 0) {
         char *data;
         moby[0x30] = 0x20;
-        *(short *)(moby + 0x32) = 0xFF;
+        ((Moby *)moby)->draw_dist = 0xFF;
         moby[0x31] = 1;
         moby[0x20] = 0;
-        data = *(char **)(moby + 0x78);
+        data = ((char *)((Moby *)moby)->pvars);
         *(unsigned long *)(moby + 0x38) = *(unsigned long *)(owner + 0x38);
         qcopy(moby + 0x10, owner + 0x10);
         qcopy(moby + 0x40, owner + 0x40);
@@ -1483,13 +1483,13 @@ extern float D_0015EE70_s __asm__("D_0015EE70") MACRO_ADDR;
 char *pool_drip(void *position,float scale) {
  char *m=CreateMoby(0x313);
  if(m) {
-  char *data=*(char **)(m+0x78);
+  char *data=((char *)((Moby *)m)->pvars);
   copy_hero_moby_field_38(m);
-  *(int *)(m+0x40)=0;
-  *(float *)(m+0x2C)*=scale;
-  *(short *)(m+0x32)=0x40;
+  *(int *)&((Moby *)m)->rot.x=0;
+  ((Moby *)m)->scale*=scale;
+  ((Moby *)m)->draw_dist=0x40;
   ((unsigned char *)m)[0x30]=0xFF;
-  *(float *)(m+0x48)=random_angle_radians();
+  ((Moby *)m)->rot.z=random_angle_radians();
   qcopy(m+0x10,position);
   qzero(data);
   {float gravity=-g_frame_time;float duration=D_0015EE70_s*15.0f;
@@ -1985,15 +1985,15 @@ char *SpawnDebrisMoby(char *src, void *dir, float scale) {
 
     m = CreateMoby(0x5E6);
     if (m != 0) {
-        v = *(char **)(m + 0x78);
+        v = ((char *)((Moby *)m)->pvars);
         *(char **)(v + 0x24) = src;
         qcopy(m + 0x10, src + 0x10);
         *(Quad *)(m + 0x40) = *(Quad *)(src + 0x40);
         m[0x20] = 0;
-        *(unsigned char *)(m + 0x30) = 0xFF;
-        *(short *)(m + 0x32) = 0xFF;
+        ((Moby *)m)->update_dist = 0xFF;
+        ((Moby *)m)->draw_dist = 0xFF;
         m[0x31] = 1;
-        *(float *)(m + 0x2C) = *(float *)(m + 0x2C) * scale;
+        ((Moby *)m)->scale = ((Moby *)m)->scale * scale;
         vec_scale_to_length(v, dir, random_float_between(0.8f, 1.2f));
         *(float *)(v + 0x10) = randf_sym(0.0f, 0.008726646f);
         *(float *)(v + 0x14) = randf_sym(0.05235988f, 0.13962634f);

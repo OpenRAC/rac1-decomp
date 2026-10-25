@@ -88,11 +88,11 @@ char *create_class_55b_moby_from_source(char *a0)
 {
     unsigned char *m = (unsigned char *)CreateMoby(0x55B);
     if (m != 0) {
-        char *d = *(char **)(m + 0x78);
-        m[0x30] = 0xFF;
-        *(short *)(m + 0x32) = 0x7F;
-        m[0x31] = 1;
-        m[0x20] = 0;
+        char *d = ((char *)((Moby *)m)->pvars);
+        ((Moby *)m)->update_dist = 0xFF;
+        ((Moby *)m)->draw_dist = 0x7F;
+        ((Moby *)m)->visible = 1;
+        ((Moby *)m)->state = 0;
         *(u128_8670 *)(m + 0x10) = *(u128_8670 *)(a0 + 0x10);
         *(u128_8670 *)(m + 0x40) = *(u128_8670 *)(a0 + 0x40);
         *(char **)(m + 0xB8) = a0;

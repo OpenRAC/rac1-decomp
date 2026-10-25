@@ -605,12 +605,12 @@ void update_blarg_heavy_interceptor(struct Moby *m) {
             func_L14_002AFA18_AD858(m);
             if ((s8)(*(struct Moby **)(d + 0x18C))->state < 0 || func_001F9938_AD858((s16 *)(d + 0x1F2))) {
                 *(float *)(d + 0x8C) = 0.0f;
-                *(int *)(d + 0x80) = 0;
+                ((Moby *)d)->unk80 = 0;
                 *(s16 *)(d + 0x208) = 0;
                 m->state = 4;
             }
         } else {
-            *(int *)(d + 0x80) = 0;
+            ((Moby *)d)->unk80 = 0;
             *(float *)(d + 0x8C) = 0.0f;
             *(s16 *)(d + 0x208) = 0;
             m->state = 4;
@@ -651,8 +651,8 @@ void update_blarg_heavy_interceptor(struct Moby *m) {
                 MoverPath *p = (MoverPath *)oltanis_paths[*(int *)(d + 0x204)];
 
                 m->state = 5;
-                *(int *)(d + 0x80) = p->count - 2;
-                *(float *)(d + 0x8C) = p->points[*(int *)(d + 0x80)].f[3];
+                ((Moby *)d)->unk80 = p->count - 2;
+                *(float *)(d + 0x8C) = p->points[((Moby *)d)->unk80].f[3];
                 *(s16 *)(d + 0x208) = 0;
                 func_L14_002AFB40_AD858(m, 0.01f, 5.0f, -1.0f);
                 func_00213DE0_AD858(m, 0, 0, scale_ticks(10));
@@ -1260,10 +1260,10 @@ void initialize_blarg_heavy_interceptor_paths(char *m) {
         *(float *)(d + 0x1CC) = 0.0f;
         func_L00_0025E860_2AF688(q, m + 0x10, d + 0x84, d + 0x1CC, *(short *)(d + 0x8A), *(float *)(d + 0x210) * *(float *)(d + 0x16C));
         *(float *)(d + 0x8C) = 0.0f;
-        *(int *)(d + 0x80) = 0;
+        ((Moby *)d)->unk80 = 0;
         func_L00_0025E860_2AF688(q, m + 0x10, d + 0x80, d + 0x8C, *(short *)(d + 0x8A), *(float *)(d + 0x210) * *(float *)(d + 0x190));
     } else {
-        *(int *)(d + 0x80) = 0;
+        ((Moby *)d)->unk80 = 0;
         *(int *)(d + 0x84) = 0;
         *(float *)(d + 0x8C) = 0.0f;
         *(float *)(d + 0x1CC) = 0.0f;
@@ -1492,8 +1492,8 @@ void draw_blarg_heavy_interceptor_group_effects(struct Moby *moby) {
         do {
             char *m = func_L14_002B0168_B0068(moby->group, ids);
             char *md;
-            *out++ = *(short *)(m + 0xB2);
-            md = *(char **)(m + 0x78);
+            *out++ = *(short *)&((Moby *)m)->save_id;
+            md = ((char *)((Moby *)m)->pvars);
             if (*(int *)(md + 0x20C) & 8)
                 func_L14_002AEF88_B0068(m);
             if (*(int *)(md + 0x20C) & 2)
@@ -1609,12 +1609,12 @@ void machinegun_turret_update(char *moby) {
         *(float *)(data + 0x84) = ((Moby *)moby)->rot.z;
         *(int *)(data + 0x8C) = 0;
         *(short *)(data + 0x74) = 0;
-        if (*(int *)(data + 0x80) == -1) {
+        if (((Moby *)data)->unk80 == -1) {
             func_001E9730_2B4E40(D_L14_001FC0C0_2B4E40, *(short *)&((Moby *)moby)->save_id);
             func_0020D678_2B4E40(moby);
             return;
         }
-        if (*(int *)(data + 0x90) == -1) {
+        if (((Moby *)data)->glow_color == -1) {
             func_001E9730_2B4E40(D_L14_001FC0E8_2B4E40, *(short *)&((Moby *)moby)->save_id);
             func_0020D678_2B4E40(moby);
             return;
@@ -1632,7 +1632,7 @@ void machinegun_turret_update(char *moby) {
             *(unsigned char *)(data + 0x8A) = 0;
             ((Moby *)moby)->flags = ((Moby *)moby)->flags & 0xEFFF;
         }
-        *(int *)(data + 0x98) = func_001F9850_2B4E40(*(int *)(data + 0x94));
+        ((Moby *)data)->collision_disable = func_001F9850_2B4E40(*(int *)&((Moby *)data)->collision);
         return;
     case 1:
         if (*(short *)(data + 0x88) == 0) {
@@ -1674,7 +1674,7 @@ void machinegun_turret_update(char *moby) {
     case 3:
         r = func_L00_00260D30_2B4E40(moby, v20, 34.0f);
         if (r != 2) {
-            if (func_00215570_2B4E40(v20, *(int *)(data + 0x90)) != 0) {
+            if (func_00215570_2B4E40(v20, ((Moby *)data)->glow_color) != 0) {
                 ((Moby *)moby)->state = 4;
                 func_00213D28_2B4E40(moby, 3, 0);
                 *(short *)(data + 0x74) = func_001F9850_2B4E40(120);
@@ -1699,11 +1699,11 @@ void machinegun_turret_update(char *moby) {
         t1 = func_001FA748_2B4E40(*(float *)(data + 0x8C), g0);
         *(float *)(data + 0x8C) = t1;
         t2 = func_001FA748_2B4E40(t1, *(float *)(data + 0x84) * 0.01745329238474369f);
-        d80 = *(int *)(data + 0x80);
+        d80 = ((Moby *)data)->unk80;
         p16 = D_L14_001601AC_2B4E40 + (d80 << 7) + 0x10;
         t3 = func_001F9FA8_2B4E40(t2);
         func_001F9C30_2B4E40(v20, p16, t3);
-        d80 = *(int *)(data + 0x80);
+        d80 = ((Moby *)data)->unk80;
         p6 = D_L14_001601AC_2B4E40 + (d80 << 7) + 0x30;
         func_001F9BD8_2B4E40(v20, v20, p6);
         t4 = func_L00_001FF860_2B4E40(v20[0] - ((Moby *)moby)->pos.x, v20[1] - ((Moby *)moby)->pos.y);
@@ -1736,7 +1736,7 @@ void machinegun_turret_update(char *moby) {
             }
         }
         r = func_L00_00260D30_2B4E40(moby, v70, 34.0f);
-        c17 = (r == 2 || func_00215570_2B4E40(v70, *(int *)(data + 0x90)) == 0);
+        c17 = (r == 2 || func_00215570_2B4E40(v70, ((Moby *)data)->glow_color) == 0);
         if (c17 == 0) {
             return;
         }
@@ -1777,7 +1777,7 @@ void machinegun_turret_update(char *moby) {
         ((Moby *)moby)->state = 1;
         *(short *)(data + 0x74) = func_001F9850_2B4E40(60);
         *(short *)(data + 0x88) = 0;
-        *(int *)(data + 0x98) = func_001F9850_2B4E40(*(int *)(data + 0x94));
+        ((Moby *)data)->collision_disable = func_001F9850_2B4E40(*(int *)&((Moby *)data)->collision);
         ((Moby *)moby)->pos.z = *(float *)(data + 0x70) - D_L14_001615D0_2B4E40;
         ((Moby *)moby)->flags = ((Moby *)moby)->flags & 0xEFFF;
         return;
@@ -1849,9 +1849,9 @@ void activate_waiting_turrets_in_group(int idx) {
         char *base = D_L14_00160098_2B0168;
         do {
             unsigned char *moby = (unsigned char *)base + ((*p & 0x7FFF) << 8);
-            int s = moby[0x20];
+            int s = ((Moby *)moby)->state;
             if (s == 1) {
-                *(short *)(*(char **)(moby + 0x78) + 0x88) = s;
+                *(short *)(((char *)((Moby *)moby)->pvars) + 0x88) = s;
             }
         } while (*p++ >= 0);
     }
@@ -1883,8 +1883,8 @@ int try_retract_turret_group(int index) {
     do {
         st = *(unsigned short *)p & 0x7FFF;
         q = base + (st << 8);
-        if ((*(unsigned char **)(q + 0x78))[0x8B] == 0) {
-            st = q[0x20];
+        if ((((unsigned char *)((Moby *)q)->pvars))[0x8B] == 0) {
+            st = ((Moby *)q)->state;
             if (st != 5 && st != 1) {
                 return 0;
             }
@@ -1894,17 +1894,17 @@ int try_retract_turret_group(int index) {
     do {
         t = *(unsigned short *)p & 0x7FFF;
         o = D_L14_00160098_2B5750 + (t << 8);
-        if (o[0x20] == 3) {
-            d = *(unsigned char **)(o + 0x78);
+        if (((Moby *)o)->state == 3) {
+            d = ((unsigned char *)((Moby *)o)->pvars);
             func_00213D28_2B5750(o, 4, 0);
-            o[0x20] = 5;
+            ((Moby *)o)->state = 5;
             t = func_001F9850_2B5750(D_L14_001615D4_2B5750);
             *(short *)(d + 0x74) = t;
             f = 1.0f / func_001FA888_2B5750(t);
             g = 1.0f / (*(short *)(d + 0x74) * D_L14_001615D8_2B5750);
             *(float *)(d + 0x78) = f;
-            *(float *)(o + 0x58) = g;
-            *(float *)(d + 0x8C) = *(float *)(o + 0x48);
+            ((Moby *)o)->anim_speed = g;
+            *(float *)(d + 0x8C) = ((Moby *)o)->rot.z;
             *(short *)(d + 0x88) = 0;
             d[0x8B] = 0;
         }
@@ -1924,8 +1924,8 @@ scan:
  do {
   unsigned short id = *list;
   char *moby = base + ((id & 0x7FFF) << 8);
-  int state = *(signed char *)(moby + 0x20);
-  char *data = *(char **)(moby + 0x78);
+  int state = *(signed char *)&((Moby *)moby)->state;
+  char *data = ((char *)((Moby *)moby)->pvars);
   if (state >= 0) count++;
   if (state >= 0 && *(short *)(data + 0x88)) goto success;
   list++;
@@ -2793,14 +2793,14 @@ unsigned char *spawn_flying_debris(char *owner, float angle, char *posp) {
     *(u128_2BC560 *)v0 = *(u128_2BC560 *)posp;
     m = (unsigned char *)func_0020D348_m(0x51);
     if (m != 0) {
-        d = *(char **)(m + 0x78);
+        d = ((char *)((Moby *)m)->pvars);
         qcopy(m + 0x10, v0);
         v1 = vec + 4;
-        *(float *)(m + 0x48) = angle;
-        m[0x20] = 0;
-        m[0x30] = 0xFF;
-        *(short *)(m + 0x32) = 0xFF;
-        m[0x31] = 1;
+        ((Moby *)m)->rot.z = angle;
+        ((Moby *)m)->state = 0;
+        ((Moby *)m)->update_dist = 0xFF;
+        ((Moby *)m)->draw_dist = 0xFF;
+        ((Moby *)m)->visible = 1;
         FastVecSub(v1, v0, owner + 0x10);
         vec[6] = 0.0f;
         vec_scale_to_length(v1, v1, random_float_between(frame_scale * 0.075f, frame_scale * 0.2f));
@@ -2971,7 +2971,7 @@ void update_level14_racer(struct Moby *m) {
             Moby_GetJointWorldPos(m, 2, pos);
             spark = spawn_plasmabot_death_debris((char *)m, (char *)pos);
             if (spark) {
-                sv = *(f32 **)(spark + 0x78);
+                sv = ((f32 *)((Moby *)spark)->pvars);
                 vel[0] = FastCos(m->rot.z) * (frame_scale * 0.4f);
                 vel[1] = FastSin(m->rot.z) * (frame_scale * 0.4f);
                 vel[2] = 0.0f;
@@ -3082,7 +3082,7 @@ void reset_racer_group_to_hero_path_position(struct Moby *m) {
     out = list;
     do {
         char *o = D_L14_00160098_D7880 + ((*p & 0x7FFF) << 8);
-        char *od = *(char **)(o + 0x78);
+        char *od = ((char *)((Moby *)o)->pvars);
         char *path = g_hero.f560;
         if (path == *(char **)(D_L14_0015F7EC_D7880 + *(int *)(od + 0x60) * 32 + 0x10)) {
             char *tp = D_L14_001B0F30_D7880[*(int *)(od + 0x88)];
@@ -3101,7 +3101,7 @@ void reset_racer_group_to_hero_path_position(struct Moby *m) {
     } while ((short)*p++ >= 0);
     for (i = 0; i < 3; i++) {
         char *o = list[i];
-        char *od = *(char **)(o + 0x78);
+        char *od = ((char *)((Moby *)o)->pvars);
         char *path = *(char **)(D_L14_0015F7EC_D7880 + *(int *)(od + 0x60) * 32 + 0x10);
         o[0x20] = 6;
         ((M_6570 *)o)->f48 = fast_atan2(g_hero.f80 - m->pos.x, g_hero.f84 - m->pos.y);

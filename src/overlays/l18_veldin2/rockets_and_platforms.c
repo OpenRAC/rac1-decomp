@@ -103,19 +103,19 @@ char *create_class_29_moby(char *owner, float *pos, float *vec, int arg3) {
     if (moby != 0) {
         char *data;
         ((unsigned char *)moby)[0x30] = 0xFF;
-        *(short *)(moby + 0x32) = 0xFF;
+        ((Moby *)moby)->draw_dist = 0xFF;
         moby[0x31] = 1;
         moby[0x20] = 0;
         *(long *)(moby + 0x38) = *(long *)(owner + 0x38);
-        *(float *)(moby + 0x2C) = *(float *)(moby + 0x2C) * 3.0f;
+        ((Moby *)moby)->scale = ((Moby *)moby)->scale * 3.0f;
         qcopy(moby + 0x10, pos);
-        data = *(char **)(moby + 0x78);
+        data = ((char *)((Moby *)moby)->pvars);
         qcopy(data, vec);
         *(short *)(data + 0x10) = scale_ticks(0xF0);
         *(short *)(data + 0x12) = arg3;
         *(char **)(data + 0x14) = owner;
-        *(float *)(moby + 0x48) = fast_atan2(vec[0], vec[1]);
-        *(float *)(moby + 0x44) = -fast_atan2(vec_length_xy(vec), vec[2]);
+        ((Moby *)moby)->rot.z = fast_atan2(vec[0], vec[1]);
+        ((Moby *)moby)->rot.y = -fast_atan2(vec_length_xy(vec), vec[2]);
     }
     return moby;
 }
@@ -224,13 +224,13 @@ char *create_rocket_moby(float *pos, float *dir, float *target, float a, float b
     if (moby != 0) {
         char *data;
         ((unsigned char *)moby)[0x30] = 0xFF;
-        *(short *)(moby + 0x32) = 0xFF;
+        ((Moby *)moby)->draw_dist = 0xFF;
         moby[0x31] = 1;
         moby[0x20] = 0;
         set_moby_color(moby, 0xC0, 0xC0, 0xC0);
-        *(float *)(moby + 0x2C) = *(float *)(moby + 0x2C) * (*(float *)&rocket_scale);
+        ((Moby *)moby)->scale = ((Moby *)moby)->scale * (*(float *)&rocket_scale);
         qcopy(moby + 0x10, pos);
-        data = *(char **)(moby + 0x78);
+        data = ((char *)((Moby *)moby)->pvars);
         qcopy(data, dir);
         qcopy(data + 0x10, target);
         *(float *)(data + 0x24) = a;
@@ -239,8 +239,8 @@ char *create_rocket_moby(float *pos, float *dir, float *target, float a, float b
         *(int *)(data + 0x34) = frames;
         *(int *)(data + 0x30) = frames >> 1;
         *(int *)(data + 0x38) = kind;
-        *(float *)(moby + 0x48) = fast_atan2(dir[0], dir[1]);
-        *(float *)(moby + 0x44) = -fast_atan2(vec_length_xy(dir), dir[2]);
+        ((Moby *)moby)->rot.z = fast_atan2(dir[0], dir[1]);
+        ((Moby *)moby)->rot.y = -fast_atan2(vec_length_xy(dir), dir[2]);
         Moby_PlaySound(0, 0, (int)moby);
     }
     return moby;
@@ -280,7 +280,7 @@ void spawn_rocket_explosion(void *m, void *src) {
     int flags;
     float a, b, c, d, e;
     *(QVec *)qp = *(QVec *)src;
-    flags = *(int *)(*(char **)(moby + 0x78) + 0x38);
+    flags = *(int *)(((char *)((Moby *)moby)->pvars) + 0x38);
     c = (flags & 1) ? 2.0f : 0.75f;
     a = (flags & 1) ? 4.0f : 2.0f;
     b = (flags & 1) ? 2.0f : 1.0f;
@@ -513,24 +513,24 @@ char *launch_class_238_moby_from_list(float f, int a0, int idx, float *p6, float
     moby = found;
     if (moby != 0) {
         ((unsigned char *)moby)[0x30] = 0xFF;
-        *(short *)(moby + 0x32) = 0xFF;
+        ((Moby *)moby)->draw_dist = 0xFF;
         moby[0x31] = 1;
         moby[0x20] = 1;
-        *(unsigned short *)(moby + 0x34) = (*(unsigned short *)(moby + 0x34) & 0xFFBE) | 0x1000;
+        ((Moby *)moby)->flags = (((Moby *)moby)->flags & 0xFFBE) | 0x1000;
         moby[0xBC] = 0;
-        *(int *)(moby + 0x94) = *(int *)(*(char **)(moby + 0x24) + 0x10);
+        *(int *)&((Moby *)moby)->collision = *(int *)(*(char **)(moby + 0x24) + 0x10);
         if (((unsigned char *)moby)[0x53] != 0) {
             MobyBlendAnimation(moby, 0, 0, 1);
         }
         qcopy(moby + 0x10, p6);
         r = *(float *)&class238_landing_roll_distance;
-        *(int *)(moby + 0x40) = 0;
-        *(float *)(moby + 0x44) = -r;
+        *(int *)&((Moby *)moby)->rot.x = 0;
+        ((Moby *)moby)->rot.y = -r;
         p7[2] = p7[2] + 0.75f;
         FastVecSub(v, p7, p6);
         vec_set_length_xy(v, v, vec_length_xy(v) - *(float *)&class238_landing_roll_distance);
         FastVecAdd(v, v, p6);
-        data = *(char **)(moby + 0x78);
+        data = ((char *)((Moby *)moby)->pvars);
         qcopy(data + 0x170, v);
         FastVecSub(data + 0x180, v, p6);
         *(int *)(data + 0x188) = 0;
@@ -538,7 +538,7 @@ char *launch_class_238_moby_from_list(float f, int a0, int idx, float *p6, float
         g = g_frame_time_sq * 10.0f;
         *(short *)(data + 0xC8) = 0;
         *(float *)(data + 0x188) = jump_speed_4318(p6, v, 0, f, -g);
-        *(float *)(moby + 0x48) = fast_atan2(*(float *)(data + 0x180), *(float *)(data + 0x184));
+        ((Moby *)moby)->rot.z = fast_atan2(*(float *)(data + 0x180), *(float *)(data + 0x184));
         *(int *)(data + 0x194) = a8;
         *(int *)(data + 0x198) = a0;
         *(int *)(data + 0x19C) = 0;
@@ -969,8 +969,8 @@ void Moby583_ActivateGroup(int idx) {
         do {
             int off = (*p & 0x7FFF) << 8;
             char *moby = (char *)off + (int)base;
-            if (*(short *)(moby + 0xA6) == 0x247) {
-                char *data = *(char **)(moby + 0x78);
+            if (((Moby *)moby)->oclass == 0x247) {
+                char *data = ((char *)((Moby *)moby)->pvars);
                 *(int *)(data + 0x30) = 1;
                 *(float *)(data + 0x24) = 1.5f;
             }
@@ -1879,7 +1879,7 @@ void update_class_274_ring_effect(char *moby) {
 char *create_class_274_ring_effect(void *owner, void *vector, float value) {
     char *moby = CreateMoby(0x274);
     if (moby != 0) {
-        char *data = *(char **)(moby + 0x78);
+        char *data = ((char *)((Moby *)moby)->pvars);
         ((unsigned char *)moby)[0x30] = 0xFF;
         qcopy(moby + 0x10, vector);
         *(float *)data = value;
@@ -1957,7 +1957,7 @@ void draw_class_274_ring_effect(void *moby_v) {
     int c;
     float t, r, d, s, gi;
 
-    p = *(float **)(moby + 0x78);
+    p = ((float *)((Moby *)moby)->pvars);
     func_001FA190_D8A8(mat);
     qcopy(&mat[3], moby + 0x10);
     mat[3].f[2] = mat[3].f[2] + D_L18_00161D54_D8A8;
@@ -2041,7 +2041,7 @@ void update_position_and_rotation_transition(char *moby) {
         if (1.0f <= t) {
             position_and_rotation_transition_active = 1;
             clear_u64_value(v);
-            v[2] = *(float *)(data + 0x4C);
+            v[2] = ((Moby *)data)->rot.w;
             Hero_ResetToPosition(data + 0x40, v, 0x72, 1);
             CameraScript(data, data + 0x20, 1, 0, 0);
             if (*(int *)(data + 0x78) == 1) {
@@ -2073,13 +2073,13 @@ void update_position_and_rotation_transition(char *moby) {
         if (1.0f <= d) {
             position_and_rotation_transition_active = 0;
             clear_u64_value(v + 8);
-            v[10] = *(float *)(data + 0x4C);
+            v[10] = ((Moby *)data)->rot.w;
             Hero_ResetToPosition(data + 0x40, v + 8, 0, 0);
             CameraScript2(2);
             moby[0x20] = 5;
         } else if (*(int *)(D_0013E633 + 0x2EA1) != 0x72) {
             clear_u64_value(v + 8);
-            v[10] = *(float *)(data + 0x4C);
+            v[10] = ((Moby *)data)->rot.w;
             Hero_ResetToPosition(data + 0x40, v + 8, 0x72, 1);
             return;
         }
@@ -2107,14 +2107,14 @@ void update_position_and_rotation_transition(char *moby) {
                 position_and_rotation_transition_active = 0;
                 *(float *)(data + 0x60) = 1.0f;
                 clear_u64_value(v + 8);
-                v[10] = *(float *)(data + 0x4C);
+                v[10] = ((Moby *)data)->rot.w;
                 Hero_ResetToPosition(data + 0x40, v + 8, 0, 0);
                 CameraScript2(3);
                 moby[0x20] = 5;
             }
         } else if (*(int *)(D_0013E633 + 0x2EA1) != 0x72) {
             clear_u64_value(v + 8);
-            v[10] = *(float *)(data + 0x4C);
+            v[10] = ((Moby *)data)->rot.w;
             Hero_ResetToPosition(data + 0x40, v + 8, 0x72, 1);
             return;
         } else {
@@ -2178,12 +2178,12 @@ extern void func_001F9BC0(void *);
 char *create_class_326_moby(void *vector) {
     char *moby = CreateMoby(0x326);
     if (moby != 0) {
-        char *data = *(char **)(moby + 0x78);
+        char *data = ((char *)((Moby *)moby)->pvars);
         moby[0x30] = 0x40;
         moby[0x20] = 0;
         *(char **)(data + 0x0C) = moby;
-        *(int *)(moby + 0x94) = 0;
-        *(unsigned short *)(moby + 0x34) |= 0x41;
+        *(int *)&((Moby *)moby)->collision = 0;
+        ((Moby *)moby)->flags |= 0x41;
         qcopy(moby + 0x10, vector);
         clear_u64_value(moby + 0x40);
         euler_rotation_basis(moby + 0xC0, moby + 0x40);
@@ -2394,7 +2394,7 @@ char *create_class_3d7_moby(void *owner, void *vector, int value) {
         char *data;
         ((unsigned char *)moby)[0x30] = 0xFF;
         qcopy(moby + 0x10, vector);
-        data = *(char **)(moby + 0x78);
+        data = ((char *)((Moby *)moby)->pvars);
         *(void **)(data + 0x20) = owner;
         *(int *)(data + 0x28) = 5;
         *(int *)(data + 0x34) = value;
@@ -3110,8 +3110,8 @@ int activate_drek_fight_missiles_in_group(char *moby, int group, float *pos) {
     idle = 1;
     while (1) {
         unsigned char *m = (unsigned char *)(((*p & 0x7FFF) << 8) + (int)D_L18_00160058_m);
-        if (*(short *)(m + 0xA6) == 0x54B && m[0x20] == 1) {
-            unsigned char *d = *(unsigned char **)(m + 0x78);
+        if (((Moby *)m)->oclass == 0x54B && ((Moby *)m)->state == 1) {
+            unsigned char *d = ((unsigned char *)((Moby *)m)->pvars);
             idle = 0;
             qcopy(m + 0x10, pos);
             i = 0;
@@ -3120,10 +3120,10 @@ int activate_drek_fight_missiles_in_group(char *moby, int group, float *pos) {
                 i++;
             } while ((float)i < 4.0f);
             *(char **)(d + 0x16C) = moby;
-            m[0x31] = 1;
-            *(unsigned short *)(m + 0x34) &= 0xFFFE;
-            *(int *)(m + 0x94) = *(int *)(*(char **)(m + 0x24) + 0x10);
-            m[0x20] = 2;
+            ((Moby *)m)->visible = 1;
+            ((Moby *)m)->flags &= 0xFFFE;
+            *(int *)&((Moby *)m)->collision = *(int *)(*(char **)(m + 0x24) + 0x10);
+            ((Moby *)m)->state = 2;
         }
         if (*p++ < 0)
             return idle;
@@ -3295,8 +3295,8 @@ void render_drek_fight_missile_group_effects(char *moby) {
     b = *(float *)&drek_missile_dive_glow_pulse_speed * 0.017453292f * g_frame_time;
     do {
         char *o = veldin2_moby_table + (*(unsigned short *)p & 0x7FFF) * 256;
-        if (*(short *)(o + 0xA6) == 0x54B) {
-            char *data = *(char **)(o + 0x78);
+        if (((Moby *)o)->oclass == 0x54B) {
+            char *data = ((char *)((Moby *)o)->pvars);
             int t = FastTweenColor(*(int *)&drek_missile_glow_color_a, *(int *)&drek_missile_glow_color_b,
                                   FastSin(*(float *)(data + 0x168)) * 0.5f + 0.5f);
             float v[4];

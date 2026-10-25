@@ -476,7 +476,7 @@ void process_blarg_space_commando_hits(char *m) {
         f = *(float *)(d + 0x20) - dt;
         *(float *)(d + 0x20) = f;
         if (f <= 0.0f) r = 1;
-        *(int *)(d + 0x80) = 0x1F4;
+        ((Moby *)d)->unk80 = 0x1F4;
         *(float *)(d + 0x88) = 0.5f;
         switch (r) {
         case 3:
@@ -639,7 +639,7 @@ typedef struct {
 /* Shared moby update: steps the timer at 0x21C, spaces 16 entries, and runs the pair checks. */
 void update_blarg_space_commando_beam(void *arg) {
     char *moby = arg;
-    FanData *data = *(FanData **)(moby + 0x78);
+    FanData *data = ((FanData *)((Moby *)moby)->pvars);
     int x;
     float A[4];
     float W[4];
@@ -700,8 +700,8 @@ void update_blarg_space_commando_beam(void *arg) {
         if (0.6f <= *(float *)(e + 0x23C)) {
             f = (char *)data + k * 16;
             if (0.6f <= *(float *)(f + 0x23C)) {
-                A[0] = FastCos(*(float *)(moby + 0x48));
-                A[1] = FastSin(*(float *)(moby + 0x48));
+                A[0] = FastCos(((Moby *)moby)->rot.z);
+                A[1] = FastSin(((Moby *)moby)->rot.z);
                 A[2] = 1.0f;
                 A[3] = 5627.925f;
                 m = 0x10000;
@@ -709,7 +709,7 @@ void update_blarg_space_commando_beam(void *arg) {
                     m = 0x10001;
                 }
                 InitDirectionalHitQuery(&rec, (struct Moby *)moby, m, A, 1.0f);
-                rec.oclass = *(s16 *)(moby + 0xA6);
+                rec.oclass = ((Moby *)moby)->oclass;
                 rec.unk18 = 0;
                 rec.unk19 = 1;
                 coll_line(&data->pts[j], &data->pts[j + 1], 0, moby, &rec);
@@ -908,11 +908,11 @@ char *spawn_spinning_moby_fragment(int unused, char *pa, char *pb) {
     *(u128 *)b = *(u128 *)pb;
     m = mk_a(rnd_a(random_float_between(1085.0f, 1089.0f)));
     if (m != 0) {
-        *(float *)(m + 0x2C) = *(float *)(*(char **)(m + 0x24) + 0x24) * *(float *)&spinning_fragment_scale;
+        ((Moby *)m)->scale = *(float *)(*(char **)(m + 0x24) + 0x24) * *(float *)&spinning_fragment_scale;
         ((unsigned char *)m)[0x30] = 0xFF;
-        *(short *)(m + 0x32) = 0x7E;
+        ((Moby *)m)->draw_dist = 0x7E;
         m[0x31] = 1;
-        data = *(char **)(m + 0x78);
+        data = ((char *)((Moby *)m)->pvars);
         qcopy(m + 0x10, va);
         qcopy(data, vb);
         *(float *)(data + 0x10) = random_float_between(-360.0f, 360.0f) * 0.017453292f * g_frame_time;
@@ -1213,15 +1213,15 @@ void spawn_timed_projected_sprite_effect(char *src, int a1, int a2, int a3) {
     v = *(uq_b *)src;
     m = (unsigned char *)CreateMoby(0x76A);
     if (m) {
-        char *e = *(char **)(m + 0x78);
+        char *e = ((char *)((Moby *)m)->pvars);
         float f;
         qcopy(m + 0x10, vp);
         f = IntToFloat(a1);
         *(int *)(e + 0xC) = a3;
         *(int *)(e + 0x8) = a2;
         *(float *)(e + 0x4) = 2.0f / f;
-        m[0x30] = 0xFF;
-        m[0x20] = 1;
+        ((Moby *)m)->update_dist = 0xFF;
+        ((Moby *)m)->state = 1;
     }
 }
 extern unsigned char D_0013E15A[];

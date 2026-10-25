@@ -989,21 +989,21 @@ char *spawn_class_3a6_moby(char *src, float *v, char *pos) {
     char *m = CreateMoby(0x3A6);
     if (m != 0) {
         char *p;
-        *(unsigned char *)(m + 0x30) = 0xFF;
-        *(short *)(m + 0x32) = 0xFF;
+        ((Moby *)m)->update_dist = 0xFF;
+        ((Moby *)m)->draw_dist = 0xFF;
         m[0x31] = 1;
         m[0x20] = 0;
         *(long *)(m + 0x38) = *(long *)(src + 0x38);
-        *(float *)(m + 0x2C) = *(float *)(m + 0x2C) * 20.0f;
+        ((Moby *)m)->scale = ((Moby *)m)->scale * 20.0f;
         qcopy(m + 0x10, pos);
-        p = *(char **)(m + 0x78);
+        p = ((char *)((Moby *)m)->pvars);
         FastVecScale(p, v, 5.0f);
         *(int *)(p + 0x38) = scale_ticks(0xF0);
         *(char **)(p + 0x3C) = src;
         m[0x23] = 0x30;
-        *(unsigned short *)(m + 0x34) |= 0x200;
-        *(float *)(m + 0x48) = fast_atan2(v[0], v[1]);
-        *(float *)(m + 0x44) = -fast_atan2(vec_length_xy(v), v[2]);
+        ((Moby *)m)->flags |= 0x200;
+        ((Moby *)m)->rot.z = fast_atan2(v[0], v[1]);
+        ((Moby *)m)->rot.y = -fast_atan2(vec_length_xy(v), v[2]);
         moby_build_matrix(m);
         spawn_source_attached_fading_effect_particle(m, 0x600040FF, 0x80, -1, 170000.0f);
     }
@@ -1111,10 +1111,10 @@ void underwater_ring_update(unsigned char *moby) {
         }
         if (vars->triggered == 0 && near_parent) {
             unsigned char *parent = vars->parent;
-            RingVars_6D48 *parent_vars = *(RingVars_6D48 **)(parent + 0x78);
-            if (parent[0x20] == 1) {
+            RingVars_6D48 *parent_vars = ((RingVars_6D48 *)((Moby *)parent)->pvars);
+            if (((Moby *)parent)->state == 1) {
                 vars->child_count = 0;
-                parent[0x20] = 2;
+                ((Moby *)parent)->state = 2;
                 parent_vars->timer = parent_vars->frame_count < 1 ? 900 : scale_ticks(vars->frame_count);
             }
             parent_vars->child_count++;

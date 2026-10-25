@@ -1720,7 +1720,7 @@ void TeleporterPadUpdate(char *moby) {
             ApproachValue((float *)(data + 0x34), 0.0f, g_frame_time * 4.0f);
         } else {
             char *t = novalis_mobys + (*(int *)data << 8);
-            char *td = *(char **)(t + 0x78);
+            char *td = ((char *)((Moby *)t)->pvars);
             float v[4];
             qcopy(v, t + 0x10);
             v[2] += 0.2f;
@@ -1976,13 +1976,13 @@ void update_moby_interpolated_point_light(unsigned char *m) {
 
     switch (state) {
     case 0:
-        if (*(int *)(e + 0x58) < 2) {
+        if (*(int *)&((Moby *)e)->anim_speed < 2) {
             DeleteMoby(m);
             return;
         }
         {
             int i;
-            for (i = 0; i < *(int *)(e + 0x58); i++) {
+            for (i = 0; i < *(int *)&((Moby *)e)->anim_speed; i++) {
                 float *point = ((float *)e) + i * 4;
                 point[0] *= 0.00390625f;
                 point[1] *= 0.00390625f;
@@ -2003,8 +2003,8 @@ void update_moby_interpolated_point_light(unsigned char *m) {
 
     elapsed = vec_distance_xy(m + 0x10, camera_pos);
     active = elapsed < *(float *)(e + 0x5c) ? 1.0f : 0.0f;
-    if (active != 0.0f && *(int *)(e + 0x80) != -1) {
-        if (!is_point_inside_clip_volume(camera_pos, *(int *)(e + 0x80)))
+    if (active != 0.0f && ((Moby *)e)->unk80 != -1) {
+        if (!is_point_inside_clip_volume(camera_pos, ((Moby *)e)->unk80))
             active = 0.0f;
     }
     i = *(int *)(e + 0x84);
@@ -2018,12 +2018,12 @@ void update_moby_interpolated_point_light(unsigned char *m) {
     if (active != 0.0f) {
 
         if (fast_dec_timer(e + 0x6c)) {
-            current = rand_range(*(int *)(e + 0x50), *(int *)(e + 0x54));
+            current = rand_range(*(int *)(e + 0x50), *(int *)&((Moby *)e)->anim_time);
             *(int *)(e + 0x74) = *(int *)(e + 0x78);
             *(int *)(e + 0x70) = current;
             *(int *)(e + 0x6c) = current;
-            next = rand_range(1, *(int *)(e + 0x58) - 1);
-            i = (*(int *)(e + 0x78) + next) % *(int *)(e + 0x58);
+            next = rand_range(1, *(int *)&((Moby *)e)->anim_speed - 1);
+            i = (*(int *)(e + 0x78) + next) % *(int *)&((Moby *)e)->anim_speed;
             *(int *)(e + 0x7c) = *(int *)(e + 0x7c) == 0;
             *(int *)(e + 0x78) = i;
         }
@@ -2056,9 +2056,9 @@ void update_moby_interpolated_point_light(unsigned char *m) {
         }
         slot = *(int *)(e + 0x68);
         if (slot == -1) {
-            slot = allocate_colored_effect_slot(m + 0x10, *(float *)(e + 0x60), *(float *)(e + 0x4c),
-                                  *(float *)(e + 0x40), *(float *)(e + 0x44),
-                                  *(float *)(e + 0x48));
+            slot = allocate_colored_effect_slot(m + 0x10, *(float *)(e + 0x60), ((Moby *)e)->rot.w,
+                                  ((Moby *)e)->rot.x, ((Moby *)e)->rot.y,
+                                  ((Moby *)e)->rot.z);
             *(int *)(e + 0x68) = slot;
             return;
         }
@@ -2174,16 +2174,16 @@ char *spawn_sandmouse_projectile(char *owner, char *pos, float a, float b, float
     p = *(uq *)pos;
     m = CreateMoby(0x661);
     if (m) {
-        char *e = *(char **)(m + 0x78);
+        char *e = ((char *)((Moby *)m)->pvars);
         int t;
         *(char **)(e + 0x10) = owner;
         ((unsigned char *)m)[0x30] = 0xFF;
-        *(short *)(m + 0x32) = 0x7F;
+        ((Moby *)m)->draw_dist = 0x7F;
         m[0x31] = 1;
         *(long *)(m + 0x38) = *(long *)(owner + 0x38);
-        *(float *)(m + 0x44) = d;
-        *(float *)(m + 0x48) = c;
-        *(int *)(m + 0x40) = 0;
+        ((Moby *)m)->rot.y = d;
+        ((Moby *)m)->rot.z = c;
+        *(int *)&((Moby *)m)->rot.x = 0;
         qcopy(m + 0x10, cp);
         *(float *)(e + 8) = a;
         *(float *)(e + 0xC) = b;
@@ -2193,8 +2193,8 @@ char *spawn_sandmouse_projectile(char *owner, char *pos, float a, float b, float
         *(short *)(e + 0x14) = t;
         *(short *)(e + 0x16) = t;
         m[0x23] = 0x40;
-        *(unsigned short *)(m + 0x34) |= 0xA00;
-        *(float *)(m + 0x2C) = *(float *)(m + 0x2C) * 0.5f;
+        ((Moby *)m)->flags |= 0xA00;
+        ((Moby *)m)->scale = ((Moby *)m)->scale * 0.5f;
     }
     return m;
 }

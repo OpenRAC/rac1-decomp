@@ -67,10 +67,10 @@ char *create_rocket(float scale, void *vel, void *pos, int a, int b, int c) {
     char *m = (char *)func_0020D348_m(0x333);
     char *d;
     if (m) {
-        *(float *)(m + 0x2C) = *(float *)(m + 0x2C) * scale;
-        *(unsigned char *)(m + 0x30) = 0xFF;
-        *(short *)(m + 0x32) = 0x7E;
-        d = *(char **)(m + 0x78);
+        ((Moby *)m)->scale = ((Moby *)m)->scale * scale;
+        ((Moby *)m)->update_dist = 0xFF;
+        ((Moby *)m)->draw_dist = 0x7E;
+        d = ((char *)((Moby *)m)->pvars);
         m[0x31] = 1;
         m[0x20] = 1;
         qcopy(m + 0x10, pos);
@@ -82,8 +82,8 @@ char *create_rocket(float scale, void *vel, void *pos, int a, int b, int c) {
         *(float *)(d + 0x38) = FastVecDist(m + 0x10, D_0013E633 + 0xE9D);
         *(int *)(d + 0x30) = 0;
         *(int *)(d + 0x34) = 0;
-        *(float *)(m + 0x48) = fast_atan2(*(float *)d, *(float *)(d + 4));
-        *(float *)(m + 0x44) = -fast_atan2(vec_length_xy(d), *(float *)(d + 8));
+        ((Moby *)m)->rot.z = fast_atan2(*(float *)d, *(float *)(d + 4));
+        ((Moby *)m)->rot.y = -fast_atan2(vec_length_xy(d), *(float *)(d + 8));
         moby_build_matrix(m);
     }
     return m;

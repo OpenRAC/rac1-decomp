@@ -813,14 +813,14 @@ char *spawn_projectile_moby(char *src, void *pos, float *dir) {
     moby = CreateMoby(0x4B8);
     if (moby != 0) {
         moby[0x31] = 1;
-        *(unsigned char *)(moby + 0x30) = *(short *)(moby + 0x32) = 0xFF;
+        ((Moby *)moby)->update_dist = ((Moby *)moby)->draw_dist = 0xFF;
         set_moby_color(moby, (*(int *)&aridia_projectile_color_r), (*(int *)&aridia_projectile_color_g), (*(int *)&aridia_projectile_color_b));
-        *(short *)(moby + 0x34) = *(unsigned short *)(src + 0x34);
+        *(short *)&((Moby *)moby)->flags = *(unsigned short *)(src + 0x34);
         qcopy(moby + 0x10, pos);
-        *(float *)(moby + 0x48) = fast_atan2(dir[0], dir[1]);
-        *(float *)(moby + 0x44) = fast_atan2(vec_length_xy(dir), dir[2]);
+        ((Moby *)moby)->rot.z = fast_atan2(dir[0], dir[1]);
+        ((Moby *)moby)->rot.y = fast_atan2(vec_length_xy(dir), dir[2]);
         moby[0x20] = 1;
-        data = *(char **)(moby + 0x78);
+        data = ((char *)((Moby *)moby)->pvars);
         qcopy(data, dir);
         *(int *)(data + 0x10) = scale_ticks(0x3C);
     }

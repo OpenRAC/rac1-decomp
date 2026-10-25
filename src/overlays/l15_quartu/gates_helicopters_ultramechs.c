@@ -2325,7 +2325,7 @@ extern short D_L15_00161BB8;
 /* Level 15 moby update: finds the table entry that owns this moby, runs its state switch and refreshes its range and target. */
 void process_ultramech_hits_and_update_target(void *mobyp) {
     char *moby = (char *)mobyp;
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     char *other = 0;
     int i;
     Vec4A vA;
@@ -2336,7 +2336,7 @@ void process_ultramech_hits_and_update_target(void *mobyp) {
     int sel;
     int r2;
 
-    *(float *)(moby + 0x2C) = *(float *)&ultramech_hit_check_scale * *(float *)(*(char **)(moby + 0x24) + 0x24);
+    ((Moby *)moby)->scale = *(float *)&ultramech_hit_check_scale * *(float *)(*(char **)(moby + 0x24) + 0x24);
     a44 = 0;
     *(int *)(data + 0x1C8) = 0;
 
@@ -2403,8 +2403,8 @@ void process_ultramech_hits_and_update_target(void *mobyp) {
             *(float *)(data + 0xC0) = 12.0f;
             *(float *)(data + 0xC4) = 16.0f;
             p20 = *(char **)(other + 0x20);
-            r = fast_atan2(*(float *)(moby + 0x10) - *(float *)(p20 + 0x10),
-                                  *(float *)(moby + 0x14) - *(float *)(p20 + 0x14));
+            r = fast_atan2(((Moby *)moby)->pos.x - *(float *)(p20 + 0x10),
+                                  ((Moby *)moby)->pos.y - *(float *)(p20 + 0x14));
             *(u128 *)&vA = *(u128 *)(other + 0x10);
             f48 = r;
             HeadingFromVector(&vA, &f48, data + 0x88, data + 0x8C);
@@ -2417,7 +2417,7 @@ void process_ultramech_hits_and_update_target(void *mobyp) {
         case 1:
         case 2:
             *(u128 *)&vA = 0;
-            *(unsigned short *)(moby + 0x34) &= 0xEFFF;
+            ((Moby *)moby)->flags &= 0xEFFF;
             Moby_GetJointWorldPos(moby, 7, &vB);
             spawn_explosion(moby, &vA, &vB, 0.0f, 0.0f, 20, 6, 0x20, 16.0f, 8.0f, 9.0f, 4.0f, -1, 32.0f, 1, 0x10, -1, 0);
             func_L00_0028EF68_2E9358(0, 0, moby, 0x79);
@@ -2435,7 +2435,7 @@ void process_ultramech_hits_and_update_target(void *mobyp) {
 
     ((unsigned char *)moby)[0xA4] = 0xFF;
     StepColorFade(moby, data + 0x60);
-    *(float *)(moby + 0x2C) = *(float *)(*(char **)(moby + 0x24) + 0x24) * *(float *)&ultramech_scale;
+    ((Moby *)moby)->scale = *(float *)(*(char **)(moby + 0x24) + 0x24) * *(float *)&ultramech_scale;
     *(int *)(data + 0x164) = 0;
 
     if ((unsigned char)moby[0x20] == 1 || *(int *)(data + 0x1D0) == -1) {
@@ -2526,10 +2526,10 @@ extern void func_L00_00251E30(void *, void *);
 char *spawn_poison_vessel(void *unused, void *vector) {
     char *moby = CreateMoby(0x4E9);
     if (moby != 0) {
-        char *data = *(char **)(moby + 0x78);
+        char *data = ((char *)((Moby *)moby)->pvars);
         char *field;
         ((unsigned char *)moby)[0x30] = 0xFF;
-        *(short *)(moby + 0x32) = 0x7F;
+        ((Moby *)moby)->draw_dist = 0x7F;
         moby[0x31] = 1;
         moby[0x20] = 0;
         moby[0xBC] = 0;
@@ -2537,7 +2537,7 @@ char *spawn_poison_vessel(void *unused, void *vector) {
         clear_u64_value(data);
         qcopy(moby + 0x10, vector);
         field = *(char **)(moby + 0x24);
-        *(int *)(moby + 0x94) = *(int *)(field + 0x10);
+        *(int *)&((Moby *)moby)->collision = *(int *)(field + 0x10);
         moby_build_matrix(moby, field);
     }
     return moby;

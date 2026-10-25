@@ -894,8 +894,8 @@ void extend_group_sand_shark_timers(char *arg) {
         p = (short *)aridia_moby_groups[((unsigned char *)arg)[0x21]];
         do {
             char *o = (char *)D_L02_00160058_m + ((*(unsigned short *)p & 0x7FFF) << 8);
-            if (*(short *)(o + 0xA6) == 0x244) {
-                char *d = *(char **)(o + 0x78);
+            if (((Moby *)o)->oclass == 0x244) {
+                char *d = ((char *)((Moby *)o)->pvars);
                 float f = multiply_global_factor(random_float_between(240.0f, 300.0f));
                 if ((float)*(short *)(d + 0x25E) < f) {
                     *(short *)(d + 0x25E) = func_001FA898_r(f);
@@ -1679,7 +1679,7 @@ typedef struct {
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l02/gameplay/entities/002400c8.c, FUN_L02_002d85b8. */
 void handle_level02_bot_damage_and_retargeting(void *arg) {
     char *moby = arg;
-    Vars85b8 *d = *(Vars85b8 **)(moby + 0x78);
+    Vars85b8 *d = ((Vars85b8 *)((Moby *)moby)->pvars);
     char *h;
     char *t;
     int target[20];
@@ -1710,8 +1710,8 @@ void handle_level02_bot_damage_and_retargeting(void *arg) {
                 d->fA0 = 0.5f;
                 d->i94 = 25;
                 d->bAD = 0;
-                InitKnockback(fast_atan2(*(float *)(moby + 0x10) - D_0013F450_D99F0.motion.pos.f[0],
-                                              *(float *)(moby + 0x14) - D_0013F450_D99F0.motion.pos.f[1]),
+                InitKnockback(fast_atan2(((Moby *)moby)->pos.x - D_0013F450_D99F0.motion.pos.f[0],
+                                              ((Moby *)moby)->pos.y - D_0013F450_D99F0.motion.pos.f[1]),
                                  moby, k, 0xB, 1, 0);
                 d->fC0 = 6.5f;
                 d->fC4 = 11.0f;
@@ -1726,12 +1726,12 @@ void handle_level02_bot_damage_and_retargeting(void *arg) {
             d->fBC = D_L02_00161B2C_D99F0 * g_frame_time;
             d->i94 = 9;
             d->bAD = 0;
-            InitKnockback(fast_atan2(*(float *)(moby + 0x10) - D_0013F450_D99F0.motion.pos.f[0],
-                                          *(float *)(moby + 0x14) - D_0013F450_D99F0.motion.pos.f[1]),
+            InitKnockback(fast_atan2(((Moby *)moby)->pos.x - D_0013F450_D99F0.motion.pos.f[0],
+                                          ((Moby *)moby)->pos.y - D_0013F450_D99F0.motion.pos.f[1]),
                              moby, k2, 0xE, 1, 0);
             d->fC0 = 6.5f;
             d->fC4 = 13.0f;
-            *(unsigned short *)(moby + 0x34) &= 0xEFFF;
+            ((Moby *)moby)->flags &= 0xEFFF;
             d->flash = 0xFA;
             moby[0x20] = 0x11;
         }

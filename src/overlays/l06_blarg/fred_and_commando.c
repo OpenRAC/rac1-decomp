@@ -2815,11 +2815,11 @@ void activate_listed_class_5e8_mobys(int idx) {
         p = blarg_moby_groups[idx];
         do {
             m = level_mobys_q + ((*(unsigned short *)p & 0x7FFF) << 8);
-            if (*(short *)(m + 0xA6) == 0x5E8 && (unsigned char)m[0x20] == 1) {
+            if (((Moby *)m)->oclass == 0x5E8 && (unsigned char)m[0x20] == 1) {
                 qcopy(v, m + 0x10);
                 v[3] = 0.25f;
                 if (FastBSphereCheck((char *)v, 64.0f) >= 0) {
-                    data = *(char **)(m + 0x78);
+                    data = ((char *)((Moby *)m)->pvars);
                     m[0x20] = 2;
                     *(int *)(data + 0x28) = func_001FA898_r(multiply_global_factor(random_float_between(30.0f, 60.0f)));
                 }

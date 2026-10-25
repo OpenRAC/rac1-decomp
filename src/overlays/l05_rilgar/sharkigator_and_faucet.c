@@ -107,9 +107,9 @@ void draw_group_moby_glow_quads(unsigned char *moby) {
     char *q;
     get_first_moby_in_group((int *)&it, moby[0x21], 0, 0);
     while (it != 0) {
-        if (it[0x31] != 0) {
-            data = *(char **)(it + 0x78);
-            if (*(short *)(it + 0xA6) == *(short *)(moby + 0xA6)) {
+        if (((Moby *)it)->visible != 0) {
+            data = ((char *)((Moby *)it)->pvars);
+            if (((Moby *)it)->oclass == *(short *)(moby + 0xA6)) {
                 q = data + 0x330;
                 for (i = 2; i >= 0; i--) {
                     draw_offset_textured_effect_quad(q, *(int *)(data + 0x360), 0.45f, 0.4f);
@@ -439,9 +439,9 @@ void draw_group_scenery_ship_trails(char *moby) {
     list = rilgar_moby_groups[(unsigned char)moby[0x21]];
     do {
         member = (char *)(((*list & 0x7fff) << 8) + *(int *)&moby_pool_4f60);
-        if (*(short *)(member + 0xA6) == 0x4f && (unsigned char)member[0x20] == 1) {
+        if (((Moby *)member)->oclass == 0x4f && (unsigned char)member[0x20] == 1) {
             int frame;
-            data = *(char **)(member + 0x78);
+            data = ((char *)((Moby *)member)->pvars);
             qcopy_nc(center, member + 0x10);
             center[3] = 20.0f;
             if (FastBSphereCheck(center, 512.0f) != -1) {
@@ -1628,12 +1628,12 @@ void extermitank_update(unsigned char *m) {
         *(float *)(d + 0xAC) = 0.01f;
         *(float *)(d + 0xB0) = 0.3f;
         *(float *)(d + 0xB4) = 0.1f;
-        *(char **)(d + 0xD0) = rilgar_paths[*(int *)(d + 0xD4)];
-        *(int *)(d + 0xC0) = 1;
+        *(char **)(d + 0xD0) = rilgar_paths[*(int *)&((Moby *)d)->rot_row1.y];
+        *(int *)&((Moby *)d)->rot_row0.x = 1;
         qcopy(m + 0x10, *(char **)(d + 0xD0) + 0x10);
         ((Moby *)m)->state = 1;
         if (((Moby *)m)->prev_seq != 0) MobyBlendAnimation(m, 0, 0, 0);
-        *(float *)(d + 0x94) = *(float *)&extermitank_move_speed * g_frame_time;
+        *(float *)&((Moby *)d)->collision = *(float *)&extermitank_move_speed * g_frame_time;
         clear_u64_value(d + 0x40);
         *(unsigned short *)(d + 0x3E) |= 2;
         d[0x2E] = 1;
@@ -1660,7 +1660,7 @@ void extermitank_update(unsigned char *m) {
         int idx;
         char *h;
         if (dir >= 0) last = n - 1;
-        idx = (*(int *)(d + 0xC0) + n + dir) % n;
+        idx = (*(int *)&((Moby *)d)->rot_row0.x + n + dir) % n;
         ClassifyTargetInCone((char *)m, d + 0x70, (float *)(path + (idx * 16 + 0x10)), d + 0x40);
         if (vec_distance_xy(m + 0x10, *(char **)(pp + 0x10) + (idx * 16 + 0x10)) < 1.0f) {
             if (idx == last) {
@@ -1711,7 +1711,7 @@ void extermitank_update(unsigned char *m) {
         int k;
         char *h;
         if (dir >= 0) last = n - 1;
-        idx = (*(int *)(d + 0xC0) + n + dir) % n;
+        idx = (*(int *)&((Moby *)d)->rot_row0.x + n + dir) % n;
         ClassifyTargetInCone((char *)m, d + 0x70, (float *)(path + (idx * 16 + 0x10)), d + 0x40);
         if (vec_distance_xy(m + 0x10, *(char **)(pp + 0x10) + (idx * 16 + 0x10)) < 1.0f) {
             if (idx == last) {
@@ -2945,8 +2945,8 @@ void synchronize_group_water_heights(char *moby) {
     do {
         int idx = *p & 0x7FFF;
         char *m = (char *)(idx * 256 + (int)base);
-        if (*(short *)(m + 0xA6) == 0x33F) {
-            char *d2 = *(char **)(m + 0x78);
+        if (((Moby *)m)->oclass == 0x33F) {
+            char *d2 = ((char *)((Moby *)m)->pvars);
             char *q;
             float f;
             if (*(int *)(data + 0xC) != 0 || *(float *)(d2 + 4) == *(float *)(data + 4)) {
@@ -2954,7 +2954,7 @@ void synchronize_group_water_heights(char *moby) {
             } else {
                 f = *(float *)(d2 + 4) + (((Moby *)moby)->pos.z - *(float *)(data + 4));
             }
-            *(float *)(m + 0x18) = f;
+            ((Moby *)m)->pos.z = f;
             q = water_records + *(int *)(d2 + 0x14) * 0x1190;
             *(float *)(q + 8) = *(float *)(base[idx] + 0x18);
         }

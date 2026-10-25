@@ -190,15 +190,15 @@ char *spawn_rocket(char *src, char *pos, int owner, int seed, float f0, float f1
     if (moby != 0) {
         char *data;
         int r;
-        data = *(char **)(moby + 0x78);
+        data = ((char *)((Moby *)moby)->pvars);
         ((unsigned char *)moby)[0x30] = 0xFF;
-        *(short *)(moby + 0x32) = 0x7E;
+        ((Moby *)moby)->draw_dist = 0x7E;
         moby[0x31] = 1;
         moby[0x20] = 1;
         qcopy(moby + 0x10, pos);
         qcopy(data, src);
-        *(float *)(moby + 0x48) = fast_atan2(*(float *)data, *(float *)(data + 4));
-        *(float *)(moby + 0x44) = -fast_atan2(vec_length_xy(data), *(float *)(data + 8));
+        ((Moby *)moby)->rot.z = fast_atan2(*(float *)data, *(float *)(data + 4));
+        ((Moby *)moby)->rot.y = -fast_atan2(vec_length_xy(data), *(float *)(data + 8));
         r = scale_ticks(seed);
         *(int *)(data + 0x10) = owner;
         *(float *)(data + 0x18) = f2;
@@ -1572,7 +1572,7 @@ void update_planetbuster_maximus_guns(char *moby) {
         idx = *(int *)(d - -(i * 4) + 0x5D0);
         ent = d + idx * 0x30;
         m = (char *)(D_L12_00160058_m + (*(int *)(ent + 0x20) << 8));
-        md = *(Gun_306890 **)(m + 0x78);
+        md = ((Gun_306890 *)((Moby *)m)->pvars);
         qcopy(v0, D_L12_001672C0_304310);
         pv1 = v1;
         v0[2] -= 0.7f;
@@ -1580,8 +1580,8 @@ void update_planetbuster_maximus_guns(char *moby) {
         v1[2] += 1.5f;
         md->f60 = fast_atan2(vec_distance_xy(v1, v0), v0[2] - v1[2]);
         EaseManipulatorOffsets(m, (char *)md, 0, D_0015EE64_f * 0.008f, D_0015EE64_f * 0.3f);
-        yaw = FastSubRots(FastAddRots(fast_atan2(((Hero *)(D_0013E633_e + 0xE1D))->motion.pos.f[0] - *(float *)(m + 0x10),
-                                                            ((Hero *)(D_0013E633_e + 0xE1D))->motion.pos.f[1] - *(float *)(m + 0x14)),
+        yaw = FastSubRots(FastAddRots(fast_atan2(((Hero *)(D_0013E633_e + 0xE1D))->motion.pos.f[0] - ((Moby *)m)->pos.x,
+                                                            ((Hero *)(D_0013E633_e + 0xE1D))->motion.pos.f[1] - ((Moby *)m)->pos.y),
                                           -1.5707964f),
                             ((Moby *)moby)->rot.z);
         if (md->h90 == 0) {
@@ -1633,7 +1633,7 @@ void update_planetbuster_maximus_guns(char *moby) {
                         int n;
                         Moby_GetJointWorldPos(m, md->h9A + 1, v0);
                         md->h9A = md->h9A == 0;
-                        rz = FastAddRots(*(float *)(m + 0x48), 1.5707964f);
+                        rz = FastAddRots(((Moby *)m)->rot.z, 1.5707964f);
                         if (D_L12_00161F80_m != 0) {
                             qcopy(v2, D_L12_001672C0_304310);
                             v2[2] += random_float_between(-1.5f, 0.3f);
@@ -1755,8 +1755,8 @@ void update_planetbuster_maximus_guns(char *moby) {
                         v1[2] = random_float_between(g_frame_time, g_frame_time * 5.5f);
                         spawn_effect_particle_with_target_scalar(v0, v1, 0x500A1414, 0xA0A0A, 420000.0f, c);
                     }
-                    *(int *)(m + 0x94) = 0;
-                    *(unsigned short *)(m + 0x34) |= 0x41;
+                    *(int *)&((Moby *)m)->collision = 0;
+                    ((Moby *)m)->flags |= 0x41;
                 }
             }
         done:
@@ -2039,7 +2039,7 @@ void planetbuster_maximus_part_update(char *moby) {
             for (i = 0; i < 5; i++) {
                 int k = *(int *)(d + 0x5D0 + i * 4);
                 char *o = (char *)D_L12_00160058_m + (*(int *)(d + k * 0x30 + 0x20) << 8);
-                (*(F80_7DB0 **)(o + 0x78))->f80 = 10.0f;
+                (((F80_7DB0 *)((Moby *)o)->pvars))->f80 = 10.0f;
             }
             planetbuster_fall_pos = -1.0f;
             for (j = 17; j >= 0; j--) planetbuster_detached_part_ids[j] = 0;

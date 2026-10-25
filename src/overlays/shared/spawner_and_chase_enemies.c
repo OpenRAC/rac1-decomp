@@ -1467,19 +1467,19 @@ extern void func_L00_00251E30(void *);
 char *spawn_spawner_egg(int owner, void *pos, void *rot, unsigned char a, unsigned char b) {
     char *m = (char *)CreateMoby(0x75E);
     if (m) {
-        char *d = *(char **)(m + 0x78);
+        char *d = ((char *)((Moby *)m)->pvars);
         *(int *)(d + 0x10) = owner;
         qcopy(m + 0x10, pos);
         qcopy(d, rot);
-        *(float *)(m + 0x40) = random_float_between(-3.1415927f, 3.1415927f);
-        *(float *)(m + 0x44) = random_float_between(-3.1415927f, 3.1415927f);
+        ((Moby *)m)->rot.x = random_float_between(-3.1415927f, 3.1415927f);
+        ((Moby *)m)->rot.y = random_float_between(-3.1415927f, 3.1415927f);
         *(int *)(d + 0x14) = 0;
         *(short *)(d + 0x18) = scale_ticks(500);
-        *(unsigned char *)(m + 0x30) = 0xFF;
-        *(short *)(m + 0x32) = 0x40;
+        ((Moby *)m)->update_dist = 0xFF;
+        ((Moby *)m)->draw_dist = 0x40;
         m[0x31] = 1;
         m[0x20] = 0;
-        *(float *)(m + 0x2C) = *(float *)(*(char **)(m + 0x24) + 0x24) * 0.3f;
+        ((Moby *)m)->scale = *(float *)(*(char **)(m + 0x24) + 0x24) * 0.3f;
         d[0x1C] = b;
         d[0x1A] = a;
         d[0x1B] = 0;
@@ -1493,10 +1493,10 @@ extern void func_0020D678(void *);
 void remove_spawner_egg(void *moby, char *data)
 {
     char *other = *(char **)(data + 0x10);
-    if (other != 0 && *(short *)(other + 0xA6) == 0x75D &&
+    if (other != 0 && ((Moby *)other)->oclass == 0x75D &&
         (unsigned char)other[0x20] != 0xFE && (unsigned char)other[0x20] != 0xFD) {
         int index = (unsigned char)data[0x1C];
-        char *base = *(char **)(other + 0x78);
+        char *base = ((char *)((Moby *)other)->pvars);
         base += index * 4;
         *(int *)(base + 0xB0) = 0;
     }

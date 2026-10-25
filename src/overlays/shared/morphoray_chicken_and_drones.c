@@ -528,33 +528,33 @@ char *spawn_morphoray_chicken(char *src) {
     int n, rn;
     if (m != 0) {
         m[0x30] = 0x7F;
-        *(short *)(m + 0x32) = 0x7F;
+        ((Moby *)m)->draw_dist = 0x7F;
         m[0x31] = 1;
-        d = *(char **)(m + 0x78);
+        d = ((char *)((Moby *)m)->pvars);
         if ((((Moby *)src)->flags & 0x20) && (r0 = *(unsigned char **)(((char *)((Moby *)src)->pvars) + 0xC)) != 0) {
             set_moby_color(m, r0[4], r0[5], r0[6]);
         } else {
             *(long *)(m + 0x38) = *(long *)(src + 0x38);
         }
-        *(float *)(m + 0x58) = random_float_between(0.85f, 1.15f);
+        ((Moby *)m)->anim_speed = random_float_between(0.85f, 1.15f);
         p = m + 0x10;
         qcopy(p, src + 0x10);
         clear_u64_value(m + 0x40);
         g = (unsigned char *)D_0013E633 + 0xE1D;
-        *(float *)(m + 0x48) = fast_atan2(*(float *)(m + 0x10) - *(float *)(g + 0x80), *(float *)(m + 0x14) - *(float *)(g + 0x84));
+        ((Moby *)m)->rot.z = fast_atan2(((Moby *)m)->pos.x - *(float *)(g + 0x80), ((Moby *)m)->pos.y - *(float *)(g + 0x84));
         h = ProbeGroundHeight(p, 0, 0.5f);
-        if (*(float *)(m + 0x18) <= h) {
-            *(float *)(m + 0x18) = h;
+        if (((Moby *)m)->pos.z <= h) {
+            ((Moby *)m)->pos.z = h;
             q = coll_hit_result;
-            *(float *)(m + 0x18) = *(float *)&q[10];
+            ((Moby *)m)->pos.z = *(float *)&q[10];
             qcopy(v, q + 16);
-            t[0] = v[0] * FastCos(*(float *)(m + 0x48)) + v[1] * FastSin(*(float *)(m + 0x48));
-            t[1] = v[1] * FastCos(*(float *)(m + 0x48)) - v[0] * FastSin(*(float *)(m + 0x48));
+            t[0] = v[0] * FastCos(((Moby *)m)->rot.z) + v[1] * FastSin(((Moby *)m)->rot.z);
+            t[1] = v[1] * FastCos(((Moby *)m)->rot.z) - v[0] * FastSin(((Moby *)m)->rot.z);
             t[2] = v[2];
-            *(float *)(m + 0x40) = -fast_atan2(vec_length(t[0] * t[0] + v[2] * v[2]), t[1]);
-            *(float *)(m + 0x44) = fast_atan2(t[2], t[0]);
+            ((Moby *)m)->rot.x = -fast_atan2(vec_length(t[0] * t[0] + v[2] * v[2]), t[1]);
+            ((Moby *)m)->rot.y = fast_atan2(t[2], t[0]);
         }
-        *(int *)(m + 0x94) = *(int *)(*(char **)(m + 0x24) + 0x10);
+        *(int *)&((Moby *)m)->collision = *(int *)(*(char **)(m + 0x24) + 0x10);
         func_0022ED80_ri(1, 0, m);
         m[0x20] = 1;
         *(short *)(d + 0x66) = 0;
@@ -577,13 +577,13 @@ char *spawn_morphoray_chicken(char *src) {
         if (r != 0 && *(short *)(r + 0xA6) == 0x10E && r[0x20] != 0xFE && r[0x20] != 0xFD) {
             if (r[0x20] == 5) {
                 *(float *)(d + 0x78) = z;
-                *(unsigned short *)(m + 0x34) &= 0xFFDF;
+                ((Moby *)m)->flags &= 0xFFDF;
             } else if (((DD9 *)d)->f74 == 0) {
                 a = morphoray_chicken_slot_state_blocks + *(int *)&morphoray_chicken_next_slot * 0xB0;
                 b = morphoray_chicken_slot_aux_blocks + *(int *)&morphoray_chicken_next_slot * 0x60;
                 *(char **)(d + 0x14) = a;
                 *(char **)(d + 0x10) = b;
-                *(unsigned short *)(m + 0x34) |= 0x1020;
+                ((Moby *)m)->flags |= 0x1020;
                 *(char **)(*(char **)(d + 0x14) + 0x70) = &D_L00_00161910;
             }
             *(int *)(*(char **)(morphoray_chicken_slots[*(int *)&morphoray_chicken_next_slot] + 0x78) + 0x70) = 1;
@@ -592,7 +592,7 @@ char *spawn_morphoray_chicken(char *src) {
             b2 = morphoray_chicken_slot_aux_blocks + *(int *)&morphoray_chicken_next_slot * 0x60;
             *(char **)(d + 0x14) = a2;
             *(char **)(d + 0x10) = b2;
-            *(unsigned short *)(m + 0x34) |= 0x1020;
+            ((Moby *)m)->flags |= 0x1020;
             *(char **)(*(char **)(d + 0x14) + 0x70) = &D_L00_00161910;
         }
         reset_morphoray_chicken_slot_defaults(*(char **)(d + 0x14));
@@ -601,7 +601,7 @@ char *spawn_morphoray_chicken(char *src) {
         n = ((DD9 *)d)->f74;
         *(int *)&morphoray_chicken_next_slot = *(int *)&morphoray_chicken_next_slot % 20;
         if (n != 0) {
-            *(unsigned short *)(m + 0x34) &= 0xFFDF;
+            ((Moby *)m)->flags &= 0xFFDF;
         }
         moby_build_matrix(m);
     }
@@ -1110,15 +1110,15 @@ char *spawn_homing_shot(char *a, char *vec, char *b, float f12, float f13, float
     *(w128 *)tv = *(w128 *)vec;
     m = CreateMoby(0x131);
     if (m != 0) {
-        d = *(char **)(m + 0x78);
+        d = ((char *)((Moby *)m)->pvars);
         *(char **)(d + 0x20) = a;
-        m[0x30] = 0x7F;
-        *(short *)(m + 0x32) = 0x7F;
-        m[0x31] = 1;
+        ((Moby *)m)->update_dist = 0x7F;
+        ((Moby *)m)->draw_dist = 0x7F;
+        ((Moby *)m)->visible = 1;
         *(long *)(m + 0x38) = *(long *)(a + 0x38);
-        *(float *)(m + 0x40) = ((float *)&homing_shot_fade_effect_size)[2];
-        *(float *)(m + 0x44) = FastAddRots(f15, (&homing_shot_rotation_params)[1]);
-        *(float *)(m + 0x48) = f14;
+        ((Moby *)m)->rot.x = ((float *)&homing_shot_fade_effect_size)[2];
+        ((Moby *)m)->rot.y = FastAddRots(f15, (&homing_shot_rotation_params)[1]);
+        ((Moby *)m)->rot.z = f14;
         qcopy(m + 0x10, t);
         if (b != 0) {
             int rr;
@@ -1146,7 +1146,7 @@ char *spawn_homing_shot(char *a, char *vec, char *b, float f12, float f13, float
         lf[2] = t[2];
         r = coll_line(lf, t, 0, (int)a, 0);
         if (r != 0) {
-            BuildSphericalOffset(out, g_frame_time * 40.0f, *(float *)(m + 0x48), -*(float *)(m + 0x44));
+            BuildSphericalOffset(out, g_frame_time * 40.0f, ((Moby *)m)->rot.z, -((Moby *)m)->rot.y);
             qcopy(m + 0x10, collision_hit_point);
             t = tmp;
             k = 4;
@@ -1180,9 +1180,9 @@ char *spawn_homing_shot(char *a, char *vec, char *b, float f12, float f13, float
                 return 0;
             }
             vec_reflect(out, out, coll_hit_normal);
-            *(float *)(m + 0x48) = fast_atan2(out[0], out[1]);
+            ((Moby *)m)->rot.z = fast_atan2(out[0], out[1]);
             len = vec_length_xy(out);
-            *(float *)(m + 0x44) = -fast_atan2(len, out[2]);
+            ((Moby *)m)->rot.y = -fast_atan2(len, out[2]);
             return m;
         } else {
             spawn_source_attached_fading_effect_particle(m, 0x2F4F7F7F, *(short *)(d + 0x24), -1, *(float *)&homing_shot_fade_effect_size);
@@ -1524,19 +1524,19 @@ char *spawn_feather_moby(int unused, float *pos, float *vel) {
         int lo, hi;
         float sc;
         m[0x30] = 0x40;
-        *(unsigned short *)(m + 0x34) |= 0x1000;
-        *(short *)(m + 0x32) = 0x20;
+        ((Moby *)m)->flags |= 0x1000;
+        ((Moby *)m)->draw_dist = 0x20;
         m[0x31] = 1;
-        d = *(DD **)(m + 0x78);
+        d = ((DD *)((Moby *)m)->pvars);
         m[0x20] = 0;
         m[0xBC] = 0;
         qcopy(m + 0x10, pos);
-        *(float *)(m + 0x18) += random_float_between(0.2f, 0.7f);
-        *(float *)(m + 0x10) += vel[0] * 3.0f;
-        *(float *)(m + 0x14) += vel[1] * 3.0f;
+        ((Moby *)m)->pos.z += random_float_between(0.2f, 0.7f);
+        ((Moby *)m)->pos.x += vel[0] * 3.0f;
+        ((Moby *)m)->pos.y += vel[1] * 3.0f;
         qcopy(d, vel);
-        *(float *)(m + 0x44) = randf_sym(0.17453292f, 0.5235988f);
-        *(float *)(m + 0x40) = random_float_between(0.17453292f, 0.7853982f);
+        ((Moby *)m)->rot.y = randf_sym(0.17453292f, 0.5235988f);
+        ((Moby *)m)->rot.x = random_float_between(0.17453292f, 0.7853982f);
         {
             float t = random_float_between(200.0f, 370.0f) * 0.017453292f * g_frame_time;
             d->i24 = -1;
@@ -1544,9 +1544,9 @@ char *spawn_feather_moby(int unused, float *pos, float *vel) {
         }
         if (func_001160D8() & 1) {
             d->i24 = 1;
-            *(float *)(m + 0x44) = -*(float *)(m + 0x44);
+            ((Moby *)m)->rot.y = -((Moby *)m)->rot.y;
         }
-        *(float *)(m + 0x48) = random_angle_radians();
+        ((Moby *)m)->rot.z = random_angle_radians();
         d->f28 = -(random_float_between(200.0f, 550.0f) * 0.017453292f * g_frame_time);
         d->v10 = random_angle_radians();
         {
@@ -1558,9 +1558,9 @@ char *spawn_feather_moby(int unused, float *pos, float *vel) {
         hi = func_001FA898_r((float)*(int *)&feather_base_lifetime * 1.2f);
         d->r1c = scale_ticks(rand_range(lo, hi));
         sc = *(float *)&feather_scale_multiplier;
-        *(float *)(m + 0x2C) = *(float *)(m + 0x2C) * sc;
+        ((Moby *)m)->scale = ((Moby *)m)->scale * sc;
         if (D_0013E633_2CD3B8[2]) {
-            *(float *)(m + 0x2C) += *(float *)(m + 0x2C);
+            ((Moby *)m)->scale += ((Moby *)m)->scale;
         }
         d->f20 = random_float_between(-1.2f, -0.4f) * g_frame_time;
         moby_build_matrix(m);
@@ -1930,13 +1930,13 @@ unsigned char *spawn_ryno_rocket(int a, V4 *pos, unsigned char *tgt, float f12, 
 
     m = CreateMoby(0x1C9);
     if (m != 0) {
-        v = *(unsigned char **)(m + 0x78);
-        m[0x30] = 0xFF;
-        *(short *)(m + 0x32) = 0xFF;
-        m[0x31] = 1;
-        *(float *)(m + 0x48) = f13;
-        *(float *)(m + 0x44) = f14;
-        m[0x20] = 0;
+        v = ((unsigned char *)((Moby *)m)->pvars);
+        ((Moby *)m)->update_dist = 0xFF;
+        ((Moby *)m)->draw_dist = 0xFF;
+        ((Moby *)m)->visible = 1;
+        ((Moby *)m)->rot.z = f13;
+        ((Moby *)m)->rot.y = f14;
+        ((Moby *)m)->state = 0;
         *(int *)(v + 0x20) = a;
         qcopy(m + 0x10, pos);
         qcopy(v + 0x10, pos);
@@ -1944,7 +1944,7 @@ unsigned char *spawn_ryno_rocket(int a, V4 *pos, unsigned char *tgt, float f12, 
         *(int *)(v + 0x38) = 0;
         *(int *)(v + 0x30) = 0;
         *(unsigned char **)(v + 0x28) = tgt;
-        *(float *)(m + 0x2C) = *(float *)(*(unsigned char **)(m + 0x24) + 0x24) * 0.25f;
+        ((Moby *)m)->scale = *(float *)(*(unsigned char **)(m + 0x24) + 0x24) * 0.25f;
         if (tgt != 0) {
             *(int *)(v + 0x58) = *(short *)(tgt + 0xA6);
             r = (unsigned char *)GetFlaggedPvarWord(tgt);
@@ -1976,9 +1976,9 @@ unsigned char *spawn_ryno_rocket(int a, V4 *pos, unsigned char *tgt, float f12, 
         *(u128 *)&s = *(u128 *)(p + 0x10);
         s.f[2] = pos->f[2];
         if (coll_line(&s, pos, 0, (int)p, 0)) {
-            m[0xBC] = 2;
+            ((Moby *)m)->command = 2;
             qcopy(m + 0x10, collision_hit_point);
-            BuildSphericalOffset(&w, *(float *)(v + 0x30), *(float *)(m + 0x48), -*(float *)(m + 0x44));
+            BuildSphericalOffset(&w, *(float *)(v + 0x30), ((Moby *)m)->rot.z, -((Moby *)m)->rot.y);
             vec_reflect(&dir, &w, collision_hit_point + 0x20);
             vec_scale_to_length(&dir, &dir, g_frame_time + g_frame_time);
             func_L00_0025F4A8_alt(m, &dir, 0, 0.0f, 0.0f, 10, 3, 9, 4.0f, 2.0f, 9.0f, 1.0f, 0, 15.0f, 1, 1, -1, 0);
@@ -2261,7 +2261,7 @@ void replenish_hero_drones(void) {
             for (i = p->b1FF6; i < 6; i++) {
                 m = spawn_hero_drone(m, v);
                 if (m) {
-                    qcopy(*(void **)(m + 0x78), d);
+                    qcopy(((void *)((Moby *)m)->pvars), d);
                 }
             }
         }
@@ -2296,8 +2296,8 @@ char *select_nearest_drone_target(char *a, int *excl) {
         char *h;
         char *x;
         if (cls != 0) t = *(unsigned char *)(cls + 0x46);
-        if (m == 0 || *(unsigned char *)(m + 0x20) == 0xFE) continue;
-        if (*(unsigned char *)(m + 0x20) == 0xFD) continue;
+        if (m == 0 || ((Moby *)m)->state == 0xFE) continue;
+        if (((Moby *)m)->state == 0xFD) continue;
         if (t != 5 && t != 7 && t != 8) continue;
         if (excl != 0) {
             int found = 0;
@@ -2310,14 +2310,14 @@ char *select_nearest_drone_target(char *a, int *excl) {
             }
             if (found) continue;
         }
-        if (t == 5 && (*(unsigned short *)(m + 0x34) & 0x1000) == 0) continue;
-        if (*(unsigned char *)(m + 0x31) == 0) {
-            short c = *(short *)(m + 0xA6);
+        if (t == 5 && (((Moby *)m)->flags & 0x1000) == 0) continue;
+        if (((Moby *)m)->visible == 0) {
+            short c = ((Moby *)m)->oclass;
             if (c != 0x350 && c != 0x31) continue;
         }
         dist = FastVecDist(a, m + 0x10);
-        if (*(short *)(m + 0xA6) == 0x4D6) {
-            vec_scale_to_length(v, *(char **)(m + 0x78), dist);
+        if (((Moby *)m)->oclass == 0x4D6) {
+            vec_scale_to_length(v, ((char *)((Moby *)m)->pvars), dist);
             FastVecAdd(v, v, m + 0x10);
             if (dist < FastVecDist(a, v)) continue;
         } else {
@@ -2376,20 +2376,20 @@ char *func_L00_002CF6A0_r(int a, void *pos) {
     G_2CF6A0 *g;
 
     if (m != 0) {
-        *(unsigned char *)(m + 0x30) = 0xFF;
-        *(short *)(m + 0x32) = 0xFF;
-        *(unsigned char *)(m + 0x31) = 1;
-        *(unsigned char *)(m + 0x20) = 2;
-        v = *(char **)(m + 0x78);
-        *(unsigned char *)(m + 0xBC) = 0;
+        ((Moby *)m)->update_dist = 0xFF;
+        ((Moby *)m)->draw_dist = 0xFF;
+        ((Moby *)m)->visible = 1;
+        ((Moby *)m)->state = 2;
+        v = ((char *)((Moby *)m)->pvars);
+        ((Moby *)m)->command = 0;
         qcopy(m + 0x10, pos);
         *(int *)(v + 0x44) = a;
         g = &D_0013F450_2CF6A0;
         g->count++;
         func_L00_00251E30_2CF6A0(m);
         func_L00_0025E210_2CF6A0(m);
-        *(float *)(v + 0x28) = func_L00_001FF860_2CF6A0(*(float *)(m + 0x10) - g->x, *(float *)(m + 0x14) - g->y);
-        *(float *)(v + 0x24) = func_L00_001FF860_2CF6A0(func_001F9D48_2CF6A0(&g->x, m + 0x10), *(float *)(m + 0x18) - g->z);
+        *(float *)(v + 0x28) = func_L00_001FF860_2CF6A0(((Moby *)m)->pos.x - g->x, ((Moby *)m)->pos.y - g->y);
+        *(float *)(v + 0x24) = func_L00_001FF860_2CF6A0(func_001F9D48_2CF6A0(&g->x, m + 0x10), ((Moby *)m)->pos.z - g->z);
         *(float *)(v + 0x20) = func_001F9D48_2CF6A0(m + 0x10, &g->x);
         *(float *)(v + 0x3C) = g->z;
         for (*(short *)(v + 0x54) = 0; *(short *)(v + 0x54) < 6; (*(short *)(v + 0x54))++) {
@@ -2399,7 +2399,7 @@ char *func_L00_002CF6A0_r(int a, void *pos) {
             }
         }
         *(short *)(v + 0x56) = 100;
-        *(int *)(m + 0x94) = 0;
+        *(int *)&((Moby *)m)->collision = 0;
     }
     return m;
 }

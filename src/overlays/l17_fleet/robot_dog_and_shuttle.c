@@ -956,8 +956,8 @@ void update_fleet_camera_box_watcher(char *moby) {
         ((Moby *)moby)->update_dist = 0xFF;
         *(int *)(d + 0x38) = scale_ticks(600);
         *(unsigned char *)(d + 0x4C) = 0;
-        if (*(int *)(d + 0x44) == -1 || *(int *)(d + 0x40) == -1 || *(int *)(d + 0x3C) == -1 || *(int *)(d + 0x48) == -1) {
-            STUB_printf(fleet_camera_box_missing_ids_msg, *(int *)(d + 0x3C), *(int *)(d + 0x48), *(int *)(d + 0x40), *(int *)(d + 0x44));
+        if (*(int *)&((Moby *)d)->rot.y == -1 || *(int *)&((Moby *)d)->rot.x == -1 || *(int *)(d + 0x3C) == -1 || *(int *)&((Moby *)d)->rot.z == -1) {
+            STUB_printf(fleet_camera_box_missing_ids_msg, *(int *)(d + 0x3C), *(int *)&((Moby *)d)->rot.z, *(int *)&((Moby *)d)->rot.x, *(int *)&((Moby *)d)->rot.y);
             *(unsigned char *)(d + 0x4C) = 1;
         }
         ((Moby *)moby)->state = 1;
@@ -979,9 +979,9 @@ void update_fleet_camera_box_watcher(char *moby) {
             }
         }
         if (found) {
-            *(int *)(d + 0xC) += 1;
+            *(int *)&((Moby *)d)->bsphere.w += 1;
         } else {
-            *(int *)(d + 0xC) = 0;
+            *(int *)&((Moby *)d)->bsphere.w = 0;
             *(int *)(d + 0x30) = -1;
         }
         if (idx != -1) {
@@ -992,7 +992,7 @@ void update_fleet_camera_box_watcher(char *moby) {
             if (*(unsigned char *)(m + 0x20) == 0xFD) goto skip1;
             if (*(unsigned char *)(m + 0x20) == 3) goto skip1;
         }
-        if (*(int *)(d + 0xC) > *(int *)(d + 0x38) && tgt != -1
+        if (*(int *)&((Moby *)d)->bsphere.w > *(int *)(d + 0x38) && tgt != -1
             && ((unsigned int)*(int *)(D_0013E633 + 0x2EA9) < 2 || *(int *)(D_0013E633 + 0x2EA9) == 9)
             && fleet_help_popup_state[0] == 0 && fleet_help_popup_state[9] == -1 && gHaveHologuise != 0) {
             *(int *)(d + 0x38) = scale_ticks(0x708);
@@ -1000,7 +1000,7 @@ void update_fleet_camera_box_watcher(char *moby) {
                 Help_Request(0x3A9A, 0x7D);
             }
             *(int *)(d + 0x30) = tgt;
-            *(int *)(d + 0xC) = 0;
+            *(int *)&((Moby *)d)->bsphere.w = 0;
         }
     skip1:
         if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, *(int *)(d + 0x20)) && fleet_help_popup_state[0] == 0
@@ -1024,18 +1024,18 @@ void update_fleet_camera_box_watcher(char *moby) {
                 break;
             }
         }
-        if (!found || (*(int *)(d + 0x2C) += 1, *(int *)(D_0013E633 + 0x2EA1) == 0x35)) {
-            *(int *)(d + 0x2C) = 0;
+        if (!found || (*(int *)&((Moby *)d)->scale += 1, *(int *)(D_0013E633 + 0x2EA1) == 0x35)) {
+            *(int *)&((Moby *)d)->scale = 0;
             *(int *)(d + 0x30) = -1;
         }
-        if (scale_ticks(0xE10) < *(int *)(d + 0x2C) && tgt != -1 && Hero_IsInSpecialState()
+        if (scale_ticks(0xE10) < *(int *)&((Moby *)d)->scale && tgt != -1 && Hero_IsInSpecialState()
             && fleet_help_popup_state[0] == 0 && fleet_help_popup_state[9] == -1 && gHaveHeliPack[2] != 0) {
             Help_Request(0x4E2E, 0x78);
             *(int *)(d + 0x30) = tgt;
-            *(int *)(d + 0x2C) = 0;
+            *(int *)&((Moby *)d)->scale = 0;
         }
-        if (*(int *)(d + 0x58) != 0xFF
-            && (D_0014171B + 0xAA35)[*(int *)(d + 0x58) + (g_current_level_index << 4)] == 0xFF) {
+        if (*(int *)&((Moby *)d)->anim_speed != 0xFF
+            && (D_0014171B + 0xAA35)[*(int *)&((Moby *)d)->anim_speed + (g_current_level_index << 4)] == 0xFF) {
             *(unsigned char *)(d + 0x4C) = 1;
         }
         if (*(unsigned char *)(d + 0x4C) == 0 && is_point_inside_clip_volume(D_0013E633 + 0xE9D, *(int *)(d + 0x3C))) {
@@ -1054,10 +1054,10 @@ void update_fleet_camera_box_watcher(char *moby) {
     case 2: {
         char *cam;
         set_follow_camera_blend_output_flags();
-        set_follow_camera_angle_blend_from_position((int)(fleet_camera_points + (*(int *)(d + 0x44) << 7) + 0x30), 0.02617994f, 0.0f);
+        set_follow_camera_angle_blend_from_position((int)(fleet_camera_points + (*(int *)&((Moby *)d)->rot.y << 7) + 0x30), 0.02617994f, 0.0f);
         cam = fleet_player_camera;
-        f = fast_atan2(*(float *)(fleet_camera_points + ((*(int *)(d + 0x44) << 7) + 0x30)) - *(float *)(cam + 0x140),
-                              *(float *)(fleet_camera_points + ((*(int *)(d + 0x44) << 7) + 0x34)) - *(float *)(cam + 0x144));
+        f = fast_atan2(*(float *)(fleet_camera_points + ((*(int *)&((Moby *)d)->rot.y << 7) + 0x30)) - *(float *)(cam + 0x140),
+                              *(float *)(fleet_camera_points + ((*(int *)&((Moby *)d)->rot.y << 7) + 0x34)) - *(float *)(cam + 0x144));
         if (FastDiffRots(*(float *)(cam + 0x158), f) < 0.034906585f) {
             ((Moby *)moby)->state = 3;
             *(int *)(d + 0x5C) = scale_ticks(0x3C);
@@ -1068,10 +1068,10 @@ void update_fleet_camera_box_watcher(char *moby) {
         set_follow_camera_blend_output_flags();
         if (func_001F9908_i((int *)(d + 0x5C))) {
             char *cam;
-            set_follow_camera_angle_blend_from_position((int)(fleet_camera_points + (*(int *)(d + 0x40) << 7) + 0x30), 0.02617994f, 0.0f);
+            set_follow_camera_angle_blend_from_position((int)(fleet_camera_points + (*(int *)&((Moby *)d)->rot.x << 7) + 0x30), 0.02617994f, 0.0f);
             cam = fleet_player_camera;
-            f = fast_atan2(*(float *)(fleet_camera_points + ((*(int *)(d + 0x40) << 7) + 0x30)) - *(float *)(cam + 0x140),
-                                  *(float *)(fleet_camera_points + ((*(int *)(d + 0x40) << 7) + 0x34)) - *(float *)(cam + 0x144));
+            f = fast_atan2(*(float *)(fleet_camera_points + ((*(int *)&((Moby *)d)->rot.x << 7) + 0x30)) - *(float *)(cam + 0x140),
+                                  *(float *)(fleet_camera_points + ((*(int *)&((Moby *)d)->rot.x << 7) + 0x34)) - *(float *)(cam + 0x144));
             if (FastDiffRots(*(float *)(cam + 0x158), f) < 0.034906585f) {
                 enter_hero_idle_state_for_current_vehicle_mode();
                 *(unsigned char *)(d + 0x4C) = 1;
@@ -1470,11 +1470,11 @@ void Moby1843Update(unsigned char *moby) {
         FastVecAdd((float *)&((Moby *)moby)->pos, (float *)&((Moby *)moby)->pos, scratch_vector);
         if (((Moby *)moby)->command) {
             if (((Moby *)moby)->visible) {
-                *(int *)(moby_pvars + 0x98) += 1;
+                ((Moby *)moby_pvars)->collision_disable += 1;
             }
             if (FastVecDist(movement_target_position, &((Moby *)moby)->pos) < 2.0f) {
                 ((Moby *)moby)->command = 0;
-            } else if (scale_ticks(120) < *(int *)(moby_pvars + 0x98)) {
+            } else if (scale_ticks(120) < ((Moby *)moby_pvars)->collision_disable) {
                 ((Moby *)moby)->command = 0;
             }
         } else {
@@ -1492,7 +1492,7 @@ void Moby1843Update(unsigned char *moby) {
             if (fleet_frame_count % 10 == 0) {
                 Moby_PlaySound(2, 0, (int)moby);
                 ApproachValue((float *)(moby_pvars + 0x94), 0.0f, 0.25f);
-                vec_scale_to_length(sB0, hero_position_delta, *(float *)(moby_pvars + 0x94));
+                vec_scale_to_length(sB0, hero_position_delta, *(float *)&((Moby *)moby_pvars)->collision);
                 FastVecAdd(sB0, sB0, tgt);
                 if (fleet_frame_count % 20 == 0) {
                     matrix_mul_vec3(sA0, fleet_blarg_ship_gun_offset_alt, &((Moby *)moby)->rot_row0);
@@ -1550,7 +1550,7 @@ char *try_activate_blarg_ship_from_list(int list) {
         if (*(unsigned char *)(0x20 + idx + fleet_mobys) != 4) continue;
         if (random_integer_below(10)) continue;
         m = fleet_mobys + idx;
-        d = *(char **)(m + 0x78);
+        d = ((char *)((Moby *)m)->pvars);
         qcopy(C, fleet_camera_rot);
         C[0] = 0;
         if (C[1] > 0.17453292f) C[1] = 0.17453292f;
@@ -1571,9 +1571,9 @@ char *try_activate_blarg_ship_from_list(int list) {
         m[0xBC] = 1;
         *(float *)(d + 0x6C) = g_frame_time * 20.0f;
         *(float *)(d + 0x94) = 5.0f;
-        if (*(unsigned char *)(m + 0x53)) MobyBlendAnimation(m, 0, 0, scale_ticks(10));
-        *(unsigned short *)(m + 0x34) &= 0xFFFE;
-        *(int *)(m + 0x94) = *(int *)(*(char **)(m + 0x24) + 0x10);
+        if (((Moby *)m)->prev_seq) MobyBlendAnimation(m, 0, 0, scale_ticks(10));
+        ((Moby *)m)->flags &= 0xFFFE;
+        *(int *)&((Moby *)m)->collision = *(int *)(*(char **)(m + 0x24) + 0x10);
         return m;
     } while (*s++ >= 0);
     return 0;

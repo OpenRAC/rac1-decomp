@@ -734,15 +734,15 @@ extern char *func_0020D348(int);
 char *spawn_indexed_class_a7_moby(int a) {
     char *m = CreateMoby(0xA7);
     if (m != 0) {
-        int *p = *(int **)(m + 0x78);
+        int *p = ((int *)((Moby *)m)->pvars);
         p[1] = a;
         p[0] = 0;
         p[2] = 0;
         p[3] = 0;
-        *(unsigned char *)(m + 0x30) = 0xFF;
-        *(short *)(m + 0x32) = 0x7E;
-        *(unsigned char *)(m + 0x31) = 0;
-        *(unsigned char *)(m + 0x20) = 0;
+        ((Moby *)m)->update_dist = 0xFF;
+        ((Moby *)m)->draw_dist = 0x7E;
+        ((Moby *)m)->visible = 0;
+        ((Moby *)m)->state = 0;
     }
     return m;
 }
@@ -1233,7 +1233,7 @@ void Moby_SaveGlobalsState(void *m_) {
     char *p;
     float f0, f1, f2, f3;
 
-    p = *(char **)(m + 0x78);
+    p = ((char *)((Moby *)m)->pvars);
     f0 = D_L00_0015F548_m;
     f1 = D_L00_0015F54C_m;
     f2 = D_L00_0015F550_m;
@@ -1271,7 +1271,7 @@ void Moby_RestoreGlobalsState(int m_, int flag) {
     float f0, f1, f2, f3;
     char *d;
 
-    p = *(char **)(m + 0x78);
+    p = ((char *)((Moby *)m)->pvars);
     D_L00_0015F40C_m = 0;
     f0 = *(float *)(p + 0x30);
     f1 = *(float *)(p + 0x34);
@@ -1324,17 +1324,17 @@ int spawn_visibomb_missile(void *a_, void *pos_, float fa, float fb)
 {
     unsigned char *m = func_0020D348_2b58d8(0xAC);
     if (m) {
-        unsigned char *v = *(unsigned char **)(m + 0x78);
+        unsigned char *v = ((unsigned char *)((Moby *)m)->pvars);
         unsigned char *G = (unsigned char *)&D_0013F450_2b58d8;
         Vec4 t;
         *(unsigned char **)(G + 0x1FE0) = m;
         D_L00_0017E608_2b58d8 = 1;
-        m[0x30] = 0xFF;
-        *(short *)(m + 0x32) = 0xFF;
-        m[0x31] = 1;
-        m[0x20] = 1;
-        *(float *)(m + 0x48) = fa;
-        *(float *)(m + 0x44) = fb;
+        ((Moby *)m)->update_dist = 0xFF;
+        ((Moby *)m)->draw_dist = 0xFF;
+        ((Moby *)m)->visible = 1;
+        ((Moby *)m)->state = 1;
+        ((Moby *)m)->rot.z = fa;
+        ((Moby *)m)->rot.y = fb;
         *(unsigned char **)(v + 0x24) = G + 0x1F60;
         *(unsigned char **)(v + 0x28) = G + 0x1FA0;
         *(unsigned char **)(v + 0x0) = (unsigned char *)a_;
@@ -1369,7 +1369,7 @@ int spawn_visibomb_missile(void *a_, void *pos_, float fa, float fb)
         t.q = *(q_2b58d8 *)((unsigned char *)a_ + 0x10);
         t.f[2] = ((Vec4 *)pos_)->f[2];
         if (func_L00_001EFFF0_2b58d8(&t, (Vec4 *)pos_, 0, ({ G_2b58d8 *g2 = &D_0013F450_2b58d8; g2->w2080; }), 0)) {
-            m[0xBC] = 1;
+            ((Moby *)m)->command = 1;
             qcopy(m + 0x10, &D_L00_00173F60_2b58d8);
         }
         D_L00_0015F6E8_2b58d8 = 1;
@@ -1416,7 +1416,7 @@ void update_attached_moby_transform(unsigned char *m, unsigned char *o) {
     if (e == 0) return;
     k.q = 0;
     k.f[1] = 0.11f;
-    t = *(unsigned char **)(e + 0x78);
+    t = ((unsigned char *)((Moby *)e)->pvars);
     if (0.45f < *(float *)(t + 0xC)) {
         *(float *)(t + 0xC) = *(float *)(t + 0xC) - frame_scale * 0.05f;
     } else if (*(float *)(t + 0xC) < 0.45f) {
@@ -1855,10 +1855,10 @@ int func_L00_002B7EC0_r(char *m, float r) {
         char *mob = *(char **)&moby_array_start + (thrown_mine_list[i] << 8);
         if (mob) {
             if (mob[0x20] >= 0) {
-                char *h2 = *(char **)(mob + 0x78);
+                char *h2 = ((char *)((Moby *)mob)->pvars);
                 if (vec_distance_xy(&pos, mob + 0x10) < r) {
                     char *g3 = D_0013E633 + 0xE1D;
-                    if (FastDiffRots(*(float *)(g3 + 0x98), fast_atan2(*(float *)(mob + 0x10) - *(float *)(g3 + 0x80), *(float *)(mob + 0x14) - *(float *)(g3 + 0x84))) < 0.9599311f) {
+                    if (FastDiffRots(*(float *)(g3 + 0x98), fast_atan2(((Moby *)mob)->pos.x - *(float *)(g3 + 0x80), ((Moby *)mob)->pos.y - *(float *)(g3 + 0x84))) < 0.9599311f) {
                         *(char **)(h2 + 0x78) = m;
                         count++;
                     }

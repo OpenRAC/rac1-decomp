@@ -577,14 +577,6 @@ typedef struct {
     PeVec pos;
     struct PeMoby *src;
 } PeHit;
-typedef struct {
-    char pad0[0x80];
-    PeVec pos;
-    char pad90[0x1000];
-    struct PeMoby *f1090;
-    char pad1094[0xFEC];
-    struct PeMoby *f2080;
-} PeHero;
 
 extern char D_0013E633[];
 extern float D_0015EE70 MACRO_ADDR;
@@ -685,17 +677,17 @@ void birdbot_update(PeMoby *m) {
     FastDecTimer(&v->h26);
     if (hit != 0 && v->h26 == 0) {
         if (hit->src != 0) {
-            PeHero *hero = (PeHero *)(D_0013E633 + 0xE1D);
+            Hero *hero = (Hero *)(D_0013E633 + 0xE1D);
 
-            if (hit->src != hero->f1090) {
+            if (hit->src != ((struct PeMoby *)hero->items[0].moby)) {
                 ang = fast_atan2(m->pos.f[0] - hit->src->pos.f[0], m->pos.f[1] - hit->src->pos.f[1]);
             } else {
-                ang = fast_atan2(m->pos.f[0] - hero->pos.f[0], m->pos.f[1] - hero->pos.f[1]);
+                ang = fast_atan2(m->pos.f[0] - hero->motion.pos.f[0], m->pos.f[1] - hero->motion.pos.f[1]);
             }
         } else {
-            PeHero *hero = (PeHero *)(D_0013E633 + 0xE1D);
+            Hero *hero = (Hero *)(D_0013E633 + 0xE1D);
 
-            ang = fast_atan2(m->pos.f[0] - hero->pos.f[0], m->pos.f[1] - hero->pos.f[1]);
+            ang = fast_atan2(m->pos.f[0] - hero->motion.pos.f[0], m->pos.f[1] - hero->motion.pos.f[1]);
         }
         v->h1E2 = scale_ticks(0x258);
         v->f20 -= dmg;
@@ -810,7 +802,7 @@ void birdbot_update(PeMoby *m) {
         }
         m->h34 |= 0x1000;
         v->b29 = 0;
-        m->l38 = ((PeHero *)(D_0013E633 + 0xE1D))->f2080->l38;
+        m->l38 = ((struct PeMoby *)((Hero *)(D_0013E633 + 0xE1D))->moby)->l38;
         v->b58 = 8;
         v->b5A = 8;
         MoveCtl_Init(v->xD0);

@@ -378,13 +378,13 @@ extern void func_001F9BF0(void *, void *, void *);
 /* moves the parts' positions and stores the moby's displacement since last frame */
 void apply_resort_owner_movement(void *mp) {
     unsigned char *moby = mp;
-    char *d = *(char **)(moby + 0x78);
+    char *d = ((char *)((Moby *)moby)->pvars);
     float A[4];
     float B[4];
     qcopy(A, moby + 0x10);
     qcopy(B, d + 0x130);
     move_4318((int)moby, (int)B, 0.5f, 0.3f, 0.0f, 0x10);
-    if ((moby[0x20] >= 4 && moby[0x20] <= 6) || (moby[0x20] == 7 && *(int *)(d + 0x15C) == 3)) {
+    if ((((Moby *)moby)->state >= 4 && ((Moby *)moby)->state <= 6) || (((Moby *)moby)->state == 7 && *(int *)(d + 0x15C) == 3)) {
         resolve_point_path_segment_xy_clearance(0.3f, *(void **)(d + 0x60 - -(*(int *)(d + 0x158) * 4)), moby + 0x10, moby + 0x10);
         switch (*(int *)(d + 0x158)) {
         case 2:
@@ -1287,7 +1287,7 @@ void Moby318Update(struct Moby *moby) {
             if (*(int *)(data + 4) != -1 &&
                 saved_mission_state[*(int *)(data + 0xC) + g_current_level_index * 16] == 0xFF)
                 t = pokitaru_mobys + (*(int *)(data + 4) << 8);
-            td = *(char **)(t + 0x78);
+            td = ((char *)((Moby *)t)->pvars);
             qcopy(v, t + 0x10);
             v[2] += 0.2f;
             Hero_ResetToPosition(v, t + 0x40, 0, 1);
@@ -1296,7 +1296,7 @@ void Moby318Update(struct Moby *moby) {
                 MusicRequestTrack(*(int *)(data + 0x30), *(int *)(data + 0x34));
             }
             restore_teleporter_visibility_and_collision(t);
-            *(unsigned char *)(t + 0x20) = 4;
+            ((Moby *)t)->state = 4;
             *(float *)(td + 0x3C) = 0.0f;
             *(float *)(td + 0x28) = 0.0f;
             *(float *)(td + 0x2C) = 0.0f;
@@ -1491,11 +1491,11 @@ extern void func_L00_00251E30(void *);
 unsigned char *spawn_ship_projectile(char *src, char *pos, char *target, char *vec, int arg, float scale) {
     unsigned char *moby = func_0020D348_30A748(0x40A);
     if (moby != 0) {
-        char *data = *(char **)(moby + 0x78);
-        moby[0x30] = 0xFF;
-        *(short *)(moby + 0x32) = 0xFF;
-        moby[0x31] = 1;
-        moby[0x20] = 0;
+        char *data = ((char *)((Moby *)moby)->pvars);
+        ((Moby *)moby)->update_dist = 0xFF;
+        ((Moby *)moby)->draw_dist = 0xFF;
+        ((Moby *)moby)->visible = 1;
+        ((Moby *)moby)->state = 0;
         *(char **)(data + 0x20) = src;
         *(char **)(data + 0x24) = target;
         qcopy(moby + 0x10, pos);
@@ -1512,14 +1512,14 @@ unsigned char *spawn_ship_projectile(char *src, char *pos, char *target, char *v
         *(int *)(data + 0x30) = 0;
         *(int *)(data + 0x34) = 0;
         func_00215C00_30A748(data, scale, *(float *)(vec + 8), -*(float *)(vec + 4));
-        if (moby[0x53] != 1) {
+        if (((Moby *)moby)->prev_seq != 1) {
             MobyBlendAnimation(moby, 1, 0, 10);
         }
         FastVecAdd(moby + 0x10, moby + 0x10, data);
         if (*(char **)(data + 0x24) != 0) {
             qcopy(data + 0x10, *(char **)(data + 0x24) + 0x10);
         }
-        *(float *)(moby + 0x2C) = *(float *)(*(char **)(moby + 0x24) + 0x24) *
+        ((Moby *)moby)->scale = *(float *)(*(char **)(moby + 0x24) + 0x24) *
                                   (*(float *)(src + 0x2C) / *(float *)(*(char **)(src + 0x24) + 0x24));
         moby_build_matrix(moby);
     }
@@ -2924,17 +2924,17 @@ char *spawn_moby_with_random_yaw(void *position, void *vector, int id) {
         char *data;
         float angle;
         ((unsigned char *)moby)[0x30] = 0xFF;
-        *(short *)(moby + 0x32) = 0xFF;
+        ((Moby *)moby)->draw_dist = 0xFF;
         moby[0x31] = 1;
         moby[0x20] = 0;
         moby[0xBC] = 0;
-        data = *(char **)(moby + 0x78);
+        data = ((char *)((Moby *)moby)->pvars);
         qcopy(moby + 0x10, position);
         qcopy(data + 0x10, vector);
         angle = random_angle_radians();
-        *(int *)(moby + 0x40) = 0;
-        *(float *)(moby + 0x48) = angle;
-        *(float *)(moby + 0x44) = 0.7853982f;
+        *(int *)&((Moby *)moby)->rot.x = 0;
+        ((Moby *)moby)->rot.z = angle;
+        ((Moby *)moby)->rot.y = 0.7853982f;
         moby_build_matrix(moby);
         copy_hero_moby_field_38(moby);
     }
@@ -3132,9 +3132,9 @@ char *spawn_ship_pickup_child(char *owner) {
     char *moby = CreateMoby(0x4C3);
     if (moby != 0) {
         char *data;
-        data = *(char **)(moby + 0x78);
+        data = ((char *)((Moby *)moby)->pvars);
         ((unsigned char *)moby)[0x30] = 0xFF;
-        *(short *)(moby + 0x32) = 0xFF;
+        ((Moby *)moby)->draw_dist = 0xFF;
         moby[0x31] = 1;
         moby[0x20] = 0;
         moby[0xBC] = 0;

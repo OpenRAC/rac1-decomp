@@ -1242,14 +1242,6 @@ typedef struct {
     int f14;
 } GbOwnerVars;
 
-typedef struct {
-    char p0[0x80];
-    float f80[4];
-    char p90[0x210];
-    float f2A0[4];
-    char p2B0[0x1DD0];
-    Moby *f2080;
-} GbHero;
 
 typedef struct {
     char p0[0x18];
@@ -1266,7 +1258,7 @@ typedef struct {
     int f2C;
 } GbStats;
 
-extern GbHero D_0013F450;
+extern Hero D_0013F450;
 extern unsigned char D_001414F4[];
 extern int D_00141710[];
 extern unsigned char D_0014C150[];
@@ -1352,12 +1344,12 @@ void GadgebotUpdate(Moby *moby) {
 
     flags = 0;
     c = &d->ctl;
-    dist = vec_distance_xy((*(float (*)[4])&moby->pos), g_hero.f80);
-    dz = FastAbsF((*(float (*)[4])&moby->pos)[2] - g_hero.f2A0[2]);
+    dist = vec_distance_xy((*(float (*)[4])&moby->pos), g_hero.motion.pos.f);
+    dz = FastAbsF((*(float (*)[4])&moby->pos)[2] - g_hero.ground_point.f[2]);
     *(u128 *)save1 = *(u128 *)save0 = *(u128 *)(*(float (*)[4])&moby->pos);
     if (moby->state != 1) {
         handle_gadgebot_hit_knockback(moby);
-        if (dist < 16.0f && FastAbsF((*(float (*)[4])&moby->pos)[2] - g_hero.f80[2]) < 1.5f) {
+        if (dist < 16.0f && FastAbsF((*(float (*)[4])&moby->pos)[2] - g_hero.motion.pos.f[2]) < 1.5f) {
             int ok = 0;
             if (moby->state == 2 || moby->state == 5 || moby->state == 3 || moby->state == 6 || moby->state == 7 || moby->state == 4) {
                 ok = 1;
@@ -1509,7 +1501,7 @@ void GadgebotUpdate(Moby *moby) {
                     if (d->paths.id[i] >= 0) {
                         int *p = blarg_paths[d->paths.id[i]];
 
-                        if (IsPointInPolygon(g_hero.f80, p + 4, *p) != 0) {
+                        if (IsPointInPolygon(g_hero.motion.pos.f, p + 4, *p) != 0) {
                             int *q = blarg_paths[d->paths.id[i]];
 
                             if (IsPointInPolygon((*(float (*)[4])&moby->pos), q + 4, *q) != 0) {
@@ -1536,7 +1528,7 @@ void GadgebotUpdate(Moby *moby) {
             ta = &d->f2A0[j];
             tb = &d->f2C0[j];
             m = &level_mobys_q[*ta];
-            if (m->oclass == 0x3F7 && m->state != 4 && is_point_inside_clip_volume((*(float (*)[4])&g_hero.f2080->pos), *tb) != 0
+            if (m->oclass == 0x3F7 && m->state != 4 && is_point_inside_clip_volume((*(float (*)[4])&g_hero.moby->pos), *tb) != 0
                 && is_point_inside_clip_volume((*(float (*)[4])&moby->pos), *tb) == 0) {
                 moby->state = 4;
                 *(u128 *)(*(float (*)[4])&moby->pos) = *(u128 *)v40;
@@ -1561,8 +1553,8 @@ void GadgebotUpdate(Moby *moby) {
                 if (d->f27C >= 0) {
                     int *p;
 
-                    if (follow_path(&d->paths.id[d->f27C], 1, d->paths.node[d->f27C], (*(float (*)[4])&moby->pos), g_hero.f80, v50, 0.1f) == 0) {
-                        qcopy(v50, g_hero.f80);
+                    if (follow_path(&d->paths.id[d->f27C], 1, d->paths.node[d->f27C], (*(float (*)[4])&moby->pos), g_hero.motion.pos.f, v50, 0.1f) == 0) {
+                        qcopy(v50, g_hero.motion.pos.f);
                     }
                     *(u128 *)v70 = *(u128 *)(*(float (*)[4])&moby->pos);
                     resolve_point_path_segment_xy_clearance(0.17f, d->paths.id[d->f27C], (*(float (*)[4])&moby->pos), v70);
@@ -1571,7 +1563,7 @@ void GadgebotUpdate(Moby *moby) {
                         *(u128 *)(*(float (*)[4])&moby->pos) = *(u128 *)v70;
                     }
                 } else {
-                    qcopy(v50, g_hero.f80);
+                    qcopy(v50, g_hero.motion.pos.f);
                 }
                 MobySpringTurn((char *)moby, FastAddRots(fast_atan2(v50[0] - (*(float (*)[4])&moby->pos)[0], v50[1] - (*(float (*)[4])&moby->pos)[1]), d->f17C),
                                   &d->ctl.f14, g_frame_scale_sq * 0.07f, g_frame_scale_sq * 0.3f, g_frame_time * 5.2359877f);
@@ -1586,7 +1578,7 @@ void GadgebotUpdate(Moby *moby) {
                     d->ctl.f24 = g_frame_time * 3.0f * 1.35f;
                 }
                 if (dist > 0.8f) {
-                    flags = move_w(moby, &d->ctl, g_hero.f80, out, 1.0f);
+                    flags = move_w(moby, &d->ctl, g_hero.motion.pos.f, out, 1.0f);
                 }
                 {
                     int ph = ((int)moby >> 8) % 8;
@@ -1595,8 +1587,8 @@ void GadgebotUpdate(Moby *moby) {
                         MobySphereHitDirectional((int)moby, 0.4f, (*(float (*)[4])&moby->pos), 0x1000000, 1.0f, 1.0f, 0, 1, 0);
                     }
                 }
-                dist = vec_distance_xy((*(float (*)[4])&moby->pos), g_hero.f80);
-                dz = FastAbsF((*(float (*)[4])&moby->pos)[2] - g_hero.f2A0[2]);
+                dist = vec_distance_xy((*(float (*)[4])&moby->pos), g_hero.motion.pos.f);
+                dz = FastAbsF((*(float (*)[4])&moby->pos)[2] - g_hero.ground_point.f[2]);
                 ProbeGroundHeight((*(float (*)[4])&moby->pos), 0, 0.5f);
                 if (blarg_coll_hit_moby != 0 && blarg_coll_hit_moby->oclass == 0x3B1) {
                     *(u128 *)(*(float (*)[4])&moby->pos) = *(u128 *)v60;
@@ -1606,7 +1598,7 @@ void GadgebotUpdate(Moby *moby) {
                     if (d->f184 % 14 == 0) {
                         if (vec_distance_xy(d->fF0, (*(float (*)[4])&moby->pos)) < d->ctl.f10) {
                             hit = 1;
-                            d->f188 = vec_distance_xy(g_hero.f80, (*(float (*)[4])&moby->pos));
+                            d->f188 = vec_distance_xy(g_hero.motion.pos.f, (*(float (*)[4])&moby->pos));
                         }
                         qcopy(d->fF0, (*(float (*)[4])&moby->pos));
                     }
@@ -1622,7 +1614,7 @@ void GadgebotUpdate(Moby *moby) {
                 break;
             }
             case 2: {
-                float hd = vec_distance_xy(d->f0, g_hero.f80);
+                float hd = vec_distance_xy(d->f0, g_hero.motion.pos.f);
 
                 if ((d->f190 == 0 && hd > 1.8f) || (d->f190 != 0 && hd > d->f188 + 0.5f)) {
                     if (dz < 1.75f) {
@@ -1632,7 +1624,7 @@ void GadgebotUpdate(Moby *moby) {
                 if (moby->prev_seq != 0) {
                     MobyBlendAnimation(moby, 0, 0, scale_ticks(7));
                 }
-                MobySpringTurn((char *)moby, fast_atan2(g_hero.f80[0] - (*(float (*)[4])&moby->pos)[0], g_hero.f80[1] - (*(float (*)[4])&moby->pos)[1]),
+                MobySpringTurn((char *)moby, fast_atan2(g_hero.motion.pos.f[0] - (*(float (*)[4])&moby->pos)[0], g_hero.motion.pos.f[1] - (*(float (*)[4])&moby->pos)[1]),
                                   &d->ctl.f14, g_frame_scale_sq * 0.05f, g_frame_scale_sq * 0.3f, g_frame_time * 3.4906585f);
                 break;
             }
@@ -1645,7 +1637,7 @@ void GadgebotUpdate(Moby *moby) {
         if (moby->prev_seq != 0) {
             MobyBlendAnimation(moby, 0, 0, scale_ticks(7));
         }
-        MobySpringTurn((char *)moby, fast_atan2(g_hero.f80[0] - (*(float (*)[4])&moby->pos)[0], g_hero.f80[1] - (*(float (*)[4])&moby->pos)[1]),
+        MobySpringTurn((char *)moby, fast_atan2(g_hero.motion.pos.f[0] - (*(float (*)[4])&moby->pos)[0], g_hero.motion.pos.f[1] - (*(float (*)[4])&moby->pos)[1]),
                           &d->ctl.f14, g_frame_scale_sq * 0.05f, g_frame_scale_sq * 0.3f, g_frame_time * 3.4906585f);
         break;
     case 5:
@@ -1657,7 +1649,7 @@ void GadgebotUpdate(Moby *moby) {
                 if (d->paths.id[i] >= 0) {
                     int *p = blarg_paths[d->paths.id[i]];
 
-                    if (IsPointInPolygon(g_hero.f80, p + 4, *p) != 0) {
+                    if (IsPointInPolygon(g_hero.motion.pos.f, p + 4, *p) != 0) {
                         int *q = blarg_paths[d->paths.id[i]];
 
                         if (IsPointInPolygon((*(float (*)[4])&moby->pos), q + 4, *q) != 0) {

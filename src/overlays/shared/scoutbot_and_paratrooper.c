@@ -655,16 +655,16 @@ char *create_moby_with_particles(int owner, float *position, float *rotation, in
     rotation = rotation_copy;
     moby = CreateMoby(0x1ca);
     if (moby != 0) {
-        data = *(char **)(moby + 0x78);
+        data = ((char *)((Moby *)moby)->pvars);
         *(int *)(data + 0x14) = owner;
         *(int *)(data + 0x10) = value;
         set_moby_color(moby, 0xa0, 0xa0, 0xa0);
         *(volatile int *)(moby + 0x40) = 0;
-        *(unsigned char *)(moby + 0x30) = 0xff;
-        *(short *)(moby + 0x32) = 0xff;
-        *(unsigned char *)(moby + 0x31) = 1;
-        *(float *)(moby + 0x44) = -fast_atan2(vec_length_xy(rotation_copy), rotation[2]);
-        *(float *)(moby + 0x48) = fast_atan2(rotation[0], rotation[1]);
+        ((Moby *)moby)->update_dist = 0xff;
+        ((Moby *)moby)->draw_dist = 0xff;
+        ((Moby *)moby)->visible = 1;
+        ((Moby *)moby)->rot.y = -fast_atan2(vec_length_xy(rotation_copy), rotation[2]);
+        ((Moby *)moby)->rot.z = fast_atan2(rotation[0], rotation[1]);
         qcopy(moby + 0x10, position_copy);
         qcopy(data, rotation_copy);
         if (batalia_frame_count & 1)
@@ -790,9 +790,9 @@ void Moby458Update(char *moby) {
     if (target != 0) {
         if ((unsigned char)target[0x20] == 0xfe) goto clear_target;
         if ((unsigned char)target[0x20] == 0xfd) goto clear_target;
-        if (*(short *)(target + 0xa6) != 0x1b3) goto clear_target;
+        if (((Moby *)target)->oclass != 0x1b3) goto clear_target;
         {
-            char *target_data = *(char **)(target + 0x78);
+            char *target_data = ((char *)((Moby *)target)->pvars);
             length = FastVecLength(data);
             spread = FastVecDist(moby + 0x10, *(char **)(data + 0x10) + 0x10);
             FastVecScale(position, target_data + 0x20, spread / length);
@@ -1637,9 +1637,9 @@ char *spawn_paratrooper_projectile(char *pos, char *dir, int a2, int a3, int a4,
     char *m = CreateMoby(0x50C);
     if (m != 0) {
         char *d;
-        *(unsigned char *)(m + 0x30) = 0xFF;
-        *(short *)(m + 0x32) = 0x7E;
-        d = *(char **)(m + 0x78);
+        ((Moby *)m)->update_dist = 0xFF;
+        ((Moby *)m)->draw_dist = 0x7E;
+        d = ((char *)((Moby *)m)->pvars);
         m[0x31] = 1;
         m[0x20] = 1;
         qcopy(m + 0x10, dir);
@@ -1649,8 +1649,8 @@ char *spawn_paratrooper_projectile(char *pos, char *dir, int a2, int a3, int a4,
         *(int *)(d + 0x14) = a3;
         *(int *)(d + 0x2C) = a5;
         *(int *)(d + 0x28) = 0;
-        *(float *)(m + 0x48) = fast_atan2(*(float *)d, *(float *)(d + 4));
-        *(float *)(m + 0x44) = -fast_atan2(vec_length_xy(d), *(float *)(d + 8));
+        ((Moby *)m)->rot.z = fast_atan2(*(float *)d, *(float *)(d + 4));
+        ((Moby *)m)->rot.y = -fast_atan2(vec_length_xy(d), *(float *)(d + 8));
         moby_build_matrix(m);
     }
     return m;

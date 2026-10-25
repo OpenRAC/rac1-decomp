@@ -118,7 +118,7 @@ extern char D_L11_00167A60[];
 float compute_ship_target_reticle_distance_squared(void *moby_v, void *o_v) {
     char *moby = moby_v;
     char *o = o_v;
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     if (*(unsigned char *)(o + 0x31) != 0) {
         char v[16];
         int ax, ay, cx, cy;
@@ -2852,11 +2852,11 @@ char *spawn_class_511_moby_with_sparks(char *src, void *pos, int ticks) {
         char *d;
         unsigned char *p;
         int i, k, t;
-        *(short *)(mob + 0x32) = 0x40;
-        *(unsigned char *)(mob + 0x30) = 0xFF;
+        ((Moby *)mob)->draw_dist = 0x40;
+        ((Moby *)mob)->update_dist = 0xFF;
         mob[0x31] = 1;
-        *(int *)(mob + 0x2C) = 0;
-        d = *(char **)(mob + 0x78);
+        *(int *)&((Moby *)mob)->scale = 0;
+        d = ((char *)((Moby *)mob)->pvars);
         *(long *)(mob + 0x38) = *(long *)(src + 0x38);
         mob[0x20] = 1;
         qcopy(mob + 0x10, pos);
@@ -3245,7 +3245,7 @@ char *activate_listed_blarg_ship(int idx) {
             char *d;
             float a;
             m = (char *)D_L11_00160058_m + (id << 8);
-            d = *(char **)(m + 0x78);
+            d = ((char *)((Moby *)m)->pvars);
             qcopy(v2, pokitaru_camera_rot);
             v2[0] = 0;
             if (v2[1] > 0.17453292f) v2[1] = 0.17453292f;
@@ -3266,8 +3266,8 @@ char *activate_listed_blarg_ship(int idx) {
             *(int *)(d + 0x98) = 0;
             *(float *)(d + 0x94) = 5.0f;
             if (((unsigned char *)m)[0x53] != 0) MobyBlendAnimation(m, 0, 0, scale_ticks(10));
-            *(unsigned short *)(m + 0x34) &= 0xFFFE;
-            *(int *)(m + 0x94) = *(int *)(*(char **)(m + 0x24) + 0x10);
+            ((Moby *)m)->flags &= 0xFFFE;
+            *(int *)&((Moby *)m)->collision = *(int *)(*(char **)(m + 0x24) + 0x10);
             return m;
         }
     } while (*p++ >= 0);
@@ -3372,15 +3372,15 @@ void update_bubble_motion_and_scale(char *m) {
 char *spawn_class_5f4_moby_with_random_rotation(void *position, void *vector, void *owner, float scale) {
     char *moby = CreateMoby(0x5F4);
     if (moby != 0) {
-        char *data = *(char **)(moby + 0x78);
+        char *data = ((char *)((Moby *)moby)->pvars);
         moby[0x20] = 1;
         qcopy(moby + 0x10, position);
-        *(float *)(moby + 0x40) = random_angle_radians();
-        *(float *)(moby + 0x48) = random_angle_radians();
-        *(short *)(moby + 0x32) = 0xFF;
+        ((Moby *)moby)->rot.x = random_angle_radians();
+        ((Moby *)moby)->rot.z = random_angle_radians();
+        ((Moby *)moby)->draw_dist = 0xFF;
         ((unsigned char *)moby)[0x30] = 0xFF;
         moby[0x31] = 1;
-        *(float *)(moby + 0x2C) = *(float *)(*(char **)(moby + 0x24) + 0x24) * scale;
+        ((Moby *)moby)->scale = *(float *)(*(char **)(moby + 0x24) + 0x24) * scale;
         *(void **)(data + 0x24) = owner;
         qcopy(data, vector);
     }

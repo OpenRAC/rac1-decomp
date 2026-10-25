@@ -399,8 +399,8 @@ void FloatingPlatformUpdate(char *m) {
         }
         if (*(int *)(d + 0x230) != -1) {
             char *o = D_L04_00160058_b + (*(int *)(d + 0x230) << 8);
-            if (*(short *)(o + 0xA6) == 0x118) {
-                off = **(float **)(o + 0x78) * 15.0f;
+            if (((Moby *)o)->oclass == 0x118) {
+                off = *((float *)((Moby *)o)->pvars) * 15.0f;
             }
         } else {
             off = 15.0f;

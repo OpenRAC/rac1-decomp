@@ -2320,7 +2320,7 @@ void spawn_shrub_parts(char *moby) {
     *(int *)(data + 0x6C) = 0;
     *(char **)(data + 0x90) = spawn_joint_aligned_moby_part(moby, 0x1C0, 1, 0);
     *(char **)(data + 0x94) = moby;
-    *(int *)(data + 0x98) = 1;
+    ((Moby *)data)->collision_disable = 1;
     *(int *)(data + 0x9C) = 0;
     c = spawn_joint_aligned_moby_part(moby, 0x1BD, 0, 2);
     *(char **)(data + 0x70) = c;
@@ -2388,7 +2388,7 @@ void process_shrub_part_hits(char *m) {
             char **q = (char **)(base + o1);
             char *t = *q;
             char *d2;
-            d2 = *(char **)(t + 0x78);
+            d2 = ((char *)((Moby *)t)->pvars);
             SpawnExplosionFx(m, t + 0x10, -1, 2.0f, 13.0f);
             FastVecSub(d2, *q + 0x10, *(char **)(o1 + data + 0x64) + 0x10);
             vec_scale_to_length(d2, d2, g_frame_time * 10.0f);
@@ -2694,7 +2694,7 @@ void spawn_joint_linked_moby_parts(char *moby) {
     *(int *)(data + 0x6C) = 0;
     *(char **)(data + 0x90) = spawn_joint_aligned_moby_part(moby, 0x1C0, 0, 0);
     *(char **)(data + 0x94) = moby;
-    *(int *)(data + 0x98) = 0;
+    ((Moby *)data)->collision_disable = 0;
     *(int *)(data + 0x9C) = 0;
     c = spawn_joint_aligned_moby_part(moby, 0x1BD, 0, 2);
     *(char **)(data + 0x70) = c;
@@ -2718,18 +2718,18 @@ void spawn_joint_linked_moby_parts(char *moby) {
     c6 = spawn_joint_aligned_moby_part(moby, 0x1D0, 0, 1);
     *(char **)(data + 0xC0) = c6;
     *(char **)(data + 0xC4) = moby;
-    *(int *)(data + 0xC8) = 0;
-    *(int *)(data + 0xCC) = 1;
+    *(int *)&((Moby *)data)->rot_row0.z = 0;
+    *(int *)&((Moby *)data)->rot_row0.w = 1;
     *(unsigned short *)(c6 + 0x34) |= 0x8000;
     *(char **)(data + 0xD0) = spawn_joint_aligned_moby_part(*(char **)(data + 0x80), 0x1D1, 0, 0);
     *(char **)(data + 0xD4) = *(char **)(data + 0x80);
-    *(int *)(data + 0xD8) = 0;
-    *(int *)(data + 0xDC) = 0;
+    *(int *)&((Moby *)data)->rot_row1.z = 0;
+    *(int *)&((Moby *)data)->rot_row1.w = 0;
     c8 = spawn_joint_aligned_moby_part(*(char **)(data + 0x80), 0x1D1, 0, 0);
     *(char **)(data + 0xE0) = c8;
     *(char **)(data + 0xE4) = *(char **)(data + 0x80);
-    *(int *)(data + 0xE8) = 0;
-    *(int *)(data + 0xEC) = 0;
+    *(int *)&((Moby *)data)->rot_row2.z = 0;
+    *(int *)&((Moby *)data)->rot_row2.w = 0;
     *(unsigned short *)(c8 + 0x34) |= 0x8000;
     do {
         int j = i + 2;

@@ -1594,20 +1594,6 @@ typedef struct {
 } HGState;
 typedef struct { unsigned char pad00[0x10C]; int first_gate; unsigned char pad110[0xC]; int second_gate; } HGGates;
 typedef struct { unsigned char pad00[4]; short state; } HGRaceEntry;
-typedef struct {
-    unsigned char pad00[0x80];
-    HGVec pos;
-    unsigned char pad90[0x40];
-    HGVec unkD0;
-    unsigned char padE0[0x20];
-    HGVec displacement;
-    unsigned char pad110[0x88];
-    int state_timer;
-    unsigned char pad19C[0x1EE8];
-    int state_current;
-    unsigned char pad2088[0x24];
-    unsigned char flag20AC;
-} HGHero;
 extern char D_0013D355[];
 extern unsigned char D_0013D50F[];
 extern unsigned char D_0013D605[];
@@ -1703,7 +1689,7 @@ void update_hoverboard_girl(Moby *moby) {
         initialize_moby_grounding_r(moby);
         break;
     case 1:
-        if ((*(HGHero *)(D_0013E633 + 0xE1D)).state_current != 0x1D) {
+        if ((*(Hero *)(D_0013E633 + 0xE1D)).state.current != 0x1D) {
         if (update_npc_dialogue(moby, state) != 0) {
             begin_dialogue_camera_transition(2.0f, moby);
             moby->state = 3;
@@ -1716,7 +1702,7 @@ void update_hoverboard_girl(Moby *moby) {
             set_race_camera(&race_camera_vectors[0], &race_camera_vectors[1], 0, 1);
             qcopy(&((HGVec *)(D_0013E633 + 0x2B1D))[0], &race_camera_vectors[2]);
             qcopy(&((HGVec *)(D_0013E633 + 0x2B1D))[1], &race_camera_vectors[3]);
-            (*(HGHero *)(D_0013E633 + 0xE1D)).flag20AC = 1;
+            (*(Hero *)(D_0013E633 + 0xE1D)).item_use_locked = 1;
             set_race_camera_mode(2, 6);
         }
         }
@@ -1783,20 +1769,20 @@ void update_hoverboard_girl(Moby *moby) {
     look_enabled = 0;
     if (moby->prev_seq == 0 || moby->prev_seq == 2) {
         look_enabled = 1;
-        if (vector_distance(&moby->pos, &(*(HGHero *)(D_0013E633 + 0xE1D)).pos) < 8.0f &&
+        if (vector_distance(&moby->pos, &(*(Hero *)(D_0013E633 + 0xE1D)).motion.pos) < 8.0f &&
             absolute_angle_difference(
                 moby->rot.z,
-                angle_from_xy((*(HGHero *)(D_0013E633 + 0xE1D)).unkD0.component[0] - moby->pos.x,
-                              (*(HGHero *)(D_0013E633 + 0xE1D)).unkD0.component[1] -
+                angle_from_xy((*(Hero *)(D_0013E633 + 0xE1D)).motion.body_center.f[0] - moby->pos.x,
+                              (*(Hero *)(D_0013E633 + 0xE1D)).motion.body_center.f[1] -
                                   moby->pos.y)) < 1.5707964f) {
-            if (vector_length(&(*(HGHero *)(D_0013E633 + 0xE1D)).displacement) > 0.01f) {
+            if (vector_length(&(*(Hero *)(D_0013E633 + 0xE1D)).motion.displacement) > 0.01f) {
                 state->player_look_timer = scale_frame_count(120);
             } else {
                 advance_timer(&state->player_look_timer);
             }
         } else if (state->player_look_timer != 0) {
             state->player_look_timer = 0;
-            qcopy(&state->look_target, &(*(HGHero *)(D_0013E633 + 0xE1D)).unkD0);
+            qcopy(&state->look_target, &(*(Hero *)(D_0013E633 + 0xE1D)).motion.body_center);
         }
         if (advance_timer(&state->random_look_timer)) {
             state->random_look_timer = truncate_time(scale_time(random_float(180.0f, 300.0f)));
@@ -1806,7 +1792,7 @@ void update_hoverboard_girl(Moby *moby) {
             add_vector(&state->look_target, &state->look_target, &moby->pos);
         }
         if (state->player_look_timer != 0) {
-            qcopy(&target_position, &(*(HGHero *)(D_0013E633 + 0xE1D)).unkD0);
+            qcopy(&target_position, &(*(Hero *)(D_0013E633 + 0xE1D)).motion.body_center);
             rotation_step = 0.03f;
             rotation_limit = 0.3f;
         } else {
@@ -1833,19 +1819,19 @@ void update_hoverboard_girl(Moby *moby) {
         state->joints[1].target_rotation[2] = yaw * 0.4f;
     }
 
-    if (vector_distance(&moby->pos, &(*(HGHero *)(D_0013E633 + 0xE1D)).pos) < 15.0f &&
+    if (vector_distance(&moby->pos, &(*(Hero *)(D_0013E633 + 0xE1D)).motion.pos) < 15.0f &&
         absolute_angle_difference(
             moby->rot.z,
-            angle_from_xy((*(HGHero *)(D_0013E633 + 0xE1D)).pos.component[0] - moby->pos.x,
-                          (*(HGHero *)(D_0013E633 + 0xE1D)).pos.component[1] - moby->pos.y)) <
+            angle_from_xy((*(Hero *)(D_0013E633 + 0xE1D)).motion.pos.f[0] - moby->pos.x,
+                          (*(Hero *)(D_0013E633 + 0xE1D)).motion.pos.f[1] - moby->pos.y)) <
             1.2217305f) {
-        if ((*(HGHero *)(D_0013E633 + 0xE1D)).state_current == 11 && (*(HGHero *)(D_0013E633 + 0xE1D)).state_timer == 15) {
+        if ((*(Hero *)(D_0013E633 + 0xE1D)).state.current == 11 && (*(Hero *)(D_0013E633 + 0xE1D)).state_timer == 15) {
             state->breast_growth_count_gp++;
             if (state->breast_growth_count_gp > 20)
                 state->breast_growth_count_gp = 20;
             breast_growth_count_gp_q = state->breast_growth_count_gp;
         }
-        if ((*(HGHero *)(D_0013E633 + 0xE1D)).state_current == 4 && scale_frame_count(20) < (*(HGHero *)(D_0013E633 + 0xE1D)).state_timer &&
+        if ((*(Hero *)(D_0013E633 + 0xE1D)).state.current == 4 && scale_frame_count(20) < (*(Hero *)(D_0013E633 + 0xE1D)).state_timer &&
             frame_number % 10 == 0) {
             state->breast_growth_count_gp--;
             if (state->breast_growth_count_gp < 0)
@@ -2354,7 +2340,7 @@ void PickupL05_Update(char *moby) {
     switch (((struct Moby *)moby)->state) {
     case TAXI_INITIALIZE:
         *(short *)(taxi_data + 0xB0) = -1;
-        *(short *)(taxi_data + 0xB2) = -1;
+        *(short *)&((Moby *)taxi_data)->save_id = -1;
         PickNearestTargetSlot(moby);
         break;
     case TAXI_WAIT_FOR_PICKUP:
@@ -2369,7 +2355,7 @@ void PickupL05_Update(char *moby) {
                 request_moby_variant_help_message(moby);
                 if (*(int *)(D_0013A5E0 + 0x2604) & 0x10) {
                     ((struct Moby *)moby)->state = 3;
-                    destination_stop_moby = FindMobyByDataId(moby, *(short *)(taxi_data + 0xB6));
+                    destination_stop_moby = FindMobyByDataId(moby, ((Moby *)taxi_data)->unkB6);
                     if (destination_stop_moby != 0) {
                         destination_stop_moby->state = 2;
                         destination_stop_moby->flags |= 1;
@@ -2383,42 +2369,42 @@ void PickupL05_Update(char *moby) {
     case TAXI_BLEND_TO_PATH_START:
         ApproachWithVelocity(1.0f, g_frame_time_sq, g_frame_time_sq, g_frame_time * 0.5f, (float *)(taxi_data + 0xC0), (float *)(taxi_data + 0xC4));
         qa = rotation_or_start_position_scratch;
-        s = *(int *)(taxi_data + 0x80 - (-(*(short *)(taxi_data + 0xB4) * 4)));
+        s = *(int *)(taxi_data + 0x80 - (-(((Moby *)taxi_data)->unkB4 * 4)));
         tab = rilgar_level_cuboids;
         qcopy(qa, tab[s].position);
         qcopy(interpolation_start_angles, tab[s].direction);
         z = 0.0f;
         func_00215CA8_f5848(z, *(int **)(taxi_data + 0xAC), 0, interpolation_end_position, interpolation_end_angles, 0);
-        lerp_vector(taxi_data + 0x60, rotation_or_start_position_scratch, interpolation_end_position, *(float *)(taxi_data + 0xC0));
-        *(float *)(taxi_data + 0x74) = FastAddRots(FastSubRots(interpolation_end_angles[1], interpolation_start_angles[1]) * *(float *)(taxi_data + 0xC0), interpolation_start_angles[1]);
-        *(float *)(taxi_data + 0x78) = FastAddRots(FastSubRots(interpolation_end_angles[2], interpolation_start_angles[2]) * *(float *)(taxi_data + 0xC0), interpolation_start_angles[2]);
-        if (1.0f <= *(float *)(taxi_data + 0xC0)) {
-            *(float *)(taxi_data + 0xC0) = z;
-            *(float *)(taxi_data + 0xC4) = z;
+        lerp_vector(taxi_data + 0x60, rotation_or_start_position_scratch, interpolation_end_position, ((Moby *)taxi_data)->rot_row0.x);
+        *(float *)(taxi_data + 0x74) = FastAddRots(FastSubRots(interpolation_end_angles[1], interpolation_start_angles[1]) * ((Moby *)taxi_data)->rot_row0.x, interpolation_start_angles[1]);
+        *(float *)(taxi_data + 0x78) = FastAddRots(FastSubRots(interpolation_end_angles[2], interpolation_start_angles[2]) * ((Moby *)taxi_data)->rot_row0.x, interpolation_start_angles[2]);
+        if (1.0f <= ((Moby *)taxi_data)->rot_row0.x) {
+            ((Moby *)taxi_data)->rot_row0.x = z;
+            ((Moby *)taxi_data)->rot_row0.y = z;
             ((struct Moby *)moby)->state = 4;
         }
         break;
     case TAXI_FOLLOW_PATH:
         if (AdvanceMobyPath(moby)) {
-            *(int *)(taxi_data + 0xC0) = 0;
-            *(int *)(taxi_data + 0xC4) = 0;
+            *(int *)&((Moby *)taxi_data)->rot_row0.x = 0;
+            *(int *)&((Moby *)taxi_data)->rot_row0.y = 0;
             ((struct Moby *)moby)->state = 5;
         }
         break;
     case TAXI_BLEND_TO_DESTINATION:
         ApproachWithVelocity(1.0f, g_frame_time_sq, g_frame_time_sq, g_frame_time * 0.5f, (float *)(taxi_data + 0xC0), (float *)(taxi_data + 0xC4));
         qa = interpolation_end_position;
-        s = *(int *)(taxi_data + 0x80 - (-(*(short *)(taxi_data + 0xB6) * 4)));
+        s = *(int *)(taxi_data + 0x80 - (-(((Moby *)taxi_data)->unkB6 * 4)));
         tab = rilgar_level_cuboids;
         qcopy(qa, tab[s].position);
         qcopy(interpolation_end_angles, tab[s].direction);
         SamplePathAt(*(int **)(taxi_data + 0xAC), 0, rotation_or_start_position_scratch, interpolation_start_angles, 0, (float)**(int **)(taxi_data + 0xAC));
-        lerp_vector(taxi_data + 0x60, rotation_or_start_position_scratch, interpolation_end_position, *(float *)(taxi_data + 0xC0));
-        *(float *)(taxi_data + 0x74) = FastAddRots(FastSubRots(interpolation_end_angles[1], interpolation_start_angles[1]) * *(float *)(taxi_data + 0xC0), interpolation_start_angles[1]);
-        *(float *)(taxi_data + 0x78) = FastAddRots(FastSubRots(interpolation_end_angles[2], interpolation_start_angles[2]) * *(float *)(taxi_data + 0xC0), interpolation_start_angles[2]);
-        if (1.0f <= *(float *)(taxi_data + 0xC0)) {
-            *(int *)(taxi_data + 0xC0) = 0;
-            *(int *)(taxi_data + 0xC4) = 0;
+        lerp_vector(taxi_data + 0x60, rotation_or_start_position_scratch, interpolation_end_position, ((Moby *)taxi_data)->rot_row0.x);
+        *(float *)(taxi_data + 0x74) = FastAddRots(FastSubRots(interpolation_end_angles[1], interpolation_start_angles[1]) * ((Moby *)taxi_data)->rot_row0.x, interpolation_start_angles[1]);
+        *(float *)(taxi_data + 0x78) = FastAddRots(FastSubRots(interpolation_end_angles[2], interpolation_start_angles[2]) * ((Moby *)taxi_data)->rot_row0.x, interpolation_start_angles[2]);
+        if (1.0f <= ((Moby *)taxi_data)->rot_row0.x) {
+            *(int *)&((Moby *)taxi_data)->rot_row0.x = 0;
+            *(int *)&((Moby *)taxi_data)->rot_row0.y = 0;
             ((struct Moby *)moby)->state = 1;
             reset_selected_moby_to_current_placement(moby);
         }
@@ -2443,18 +2429,18 @@ void PickupL05_Update(char *moby) {
         travel_hero->jump_lock_timer = 2;
         travel_hero->unk1F4 = 2;
         transform_moby_vector_table_to_world_space(moby);
-        if (Sound_IsPlaying(moby, *(short *)(taxi_data + 0xB2)) == 0) {
-            *(short *)(taxi_data + 0xB2) = func_0022ED80_i(0, 4, moby);
+        if (Sound_IsPlaying(moby, *(short *)&((Moby *)taxi_data)->save_id) == 0) {
+            *(short *)&((Moby *)taxi_data)->save_id = func_0022ED80_i(0, 4, moby);
         }
-    } else if (Sound_IsPlaying(moby, *(short *)(taxi_data + 0xB2)) != 0) {
-        voice_slot_index = *(short *)(taxi_data + 0xB2);
+    } else if (Sound_IsPlaying(moby, *(short *)&((Moby *)taxi_data)->save_id) != 0) {
+        voice_slot_index = *(short *)&((Moby *)taxi_data)->save_id;
         if (voice_slot_index != -1) {
             voice_slot = D_0013E633 + 0x1D + voice_slot_index * 0x70;
             if (*(char **)(voice_slot + 0x88) == moby && *(unsigned char *)(voice_slot + 0x74) != 0) {
                 Sound_StopSlot(voice_slot_index);
             }
         }
-        *(short *)(taxi_data + 0xB2) = -1;
+        *(short *)&((Moby *)taxi_data)->save_id = -1;
     }
     FastVecSub(position_delta, &((struct Moby *)moby)->pos, old_position);
     update_entity_matrix(taxi_data + 0x20, position_delta, old_rotation, &((struct Moby *)moby)->rot);

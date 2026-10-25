@@ -1048,9 +1048,9 @@ int begin_bolt_attraction(void *moby_v, int target_i, float sx, float sy) {
     char *moby = moby_v;
     char *target = (char *)target_i;
     float v[12];
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
 
-    if (*(unsigned char *)(moby + 0x20) == 4) {
+    if (((Moby *)moby)->state == 4) {
         return 0;
     }
     if ((*(int *)&(bolt_attract_sound_frame)) + scale_ticks(3) < level_frame_counter || level_frame_counter < (*(int *)&(bolt_attract_sound_frame))) {
@@ -1064,7 +1064,7 @@ int begin_bolt_attraction(void *moby_v, int target_i, float sx, float sy) {
             sy = random_float_between(0.0f, 30.0f) * 0.017453293f;
         }
     }
-    if (*(unsigned char *)(moby + 0x20) == 3) {
+    if (((Moby *)moby)->state == 3) {
         euler_rotation_basis(v, data + 0x10);
         vec_scale_to_length((float *)(data + 0x20), v + 8, random_float_between(3.0f, 7.0f) * g_frame_time);
     }
@@ -1841,11 +1841,11 @@ char *SpawnHomingBolt(void *owner, void *pos, float a, float b, float c, char *t
         ((unsigned char *)m)[0x30] = 0xFF;
         m[0x31] = 1;
         m[0x20] = 0;
-        *(float *)(m + 0x2C) *= *(float *)&homing_bolt_bounds_scale;
-        *(short *)(m + 0x32) = 0xFF;
-        d = *(char **)(m + 0x78);
-        *(float *)(m + 0x48) = rz;
-        *(float *)(m + 0x44) = ry;
+        ((Moby *)m)->scale *= *(float *)&homing_bolt_bounds_scale;
+        ((Moby *)m)->draw_dist = 0xFF;
+        d = ((char *)((Moby *)m)->pvars);
+        ((Moby *)m)->rot.z = rz;
+        ((Moby *)m)->rot.y = ry;
         if (tgt == 0) {
             BuildSphericalOffset(&t, g_frame_time * 20.0f, rz, ry);
             p.q = *(Q_2aa998 *)pos;
@@ -1895,7 +1895,7 @@ char *SpawnHomingBolt(void *owner, void *pos, float a, float b, float c, char *t
         }
         moby_build_matrix(m);
         append_unique_moby_index(m, active_homing_missiles, 0x1F);
-        *(float *)(m + 0x2C) += *(float *)(m + 0x2C);
+        ((Moby *)m)->scale += ((Moby *)m)->scale;
     }
     return m;
 }
@@ -1909,18 +1909,18 @@ void *spawn_class_593_moby(int unused, void *pos, int c, float scale, float a, f
         float s;
         qcopy(m + 0x10, pos);
         set_moby_color(m, 0x80, 0x80, 0x70);
-        d = *(char **)(m + 0x78);
+        d = ((char *)((Moby *)m)->pvars);
         s = scale + scale;
         *(float *)d = a;
-        *(float *)(m + 0x2C) = s;
-        *(float *)(m + 0x2C) = s * *(float *)(*(char **)(m + 0x24) + 0x24);
+        ((Moby *)m)->scale = s;
+        ((Moby *)m)->scale = s * *(float *)(*(char **)(m + 0x24) + 0x24);
         *(int *)(d + 4) = c;
         *(int *)(d + 8) = c;
         *(float *)(d + 0xC) = b;
-        *(unsigned char *)(m + 0x30) = 0xFF;
-        *(short *)(m + 0x32) = 0xFF;
-        *(unsigned char *)(m + 0x31) = 1;
-        *(unsigned char *)(m + 0x20) = 0;
+        ((Moby *)m)->update_dist = 0xFF;
+        ((Moby *)m)->draw_dist = 0xFF;
+        ((Moby *)m)->visible = 1;
+        ((Moby *)m)->state = 0;
     }
     return m;
 }
@@ -1941,10 +1941,10 @@ void *spawn_tracked_class_5f3_moby(int unused, float *pos) {
     if (m != 0 && *(int *)&tracked_class_5f3_moby == 0) {
         char *d;
         m[0x20] = 0;
-        *(unsigned char *)(m + 0x30) = 0xFF;
-        *(short *)(m + 0x32) = 0xFF;
+        ((Moby *)m)->update_dist = 0xFF;
+        ((Moby *)m)->draw_dist = 0xFF;
         m[0x31] = 1;
-        d = *(char **)(m + 0x78);
+        d = ((char *)((Moby *)m)->pvars);
         *(u128 *)(m + 0x10) = *(u128 *)pos;
         D_L00_0015F424 = 0xFF;
         D_L00_0015F434 = 0xFFFFFF;
@@ -1970,8 +1970,8 @@ void set_tracked_class_5f3_moby_position(int a, char *pos) {
     }
     if (v != 0) {
         char *m = *(char **)&tracked_class_5f3_moby;
-        char *d = *(char **)(m + 0x78);
-        if (*(short *)(m + 0xA6) == 0x5F3) {
+        char *d = ((char *)((Moby *)m)->pvars);
+        if (((Moby *)m)->oclass == 0x5F3) {
             *(u128_2AAE20 *)(m + 0x10) = tmp;
             *(short *)(d + 0x2E) = 1;
         }
@@ -1984,11 +1984,11 @@ extern void func_0020D678(void *);
 void remove_tracked_class_5f3_moby(void) {
     char *m = *(char **)&tracked_class_5f3_moby;
     if (m != 0) {
-        if (*(short *)(m + 0xA6) == 0x5F3) {
+        if (((Moby *)m)->oclass == 0x5F3) {
             char *data;
             int idx;
-            if (*(unsigned char *)(m + 0x20) != 0) return;
-            data = *(char **)(m + 0x78);
+            if (((Moby *)m)->state != 0) return;
+            data = ((char *)((Moby *)m)->pvars);
             D_L00_0015F420 = 0;
             D_L00_0015F430 = 0;
             idx = *(short *)(data + 0x2C);
@@ -2084,14 +2084,14 @@ void func_L00_00251E30(void *);
 unsigned char *spawn_mine(int owner, q128_2a9ed0 *pos) {
     unsigned char *m = func_0020D348_AB170(0x4A);
     if (m) {
-        unsigned char *v = *(unsigned char **)(m + 0x78);
-        m[0x30] = 0xFF;
-        *(short *)(m + 0x32) = 0x7F;
-        m[0x31] = 1;
-        *(float *)(m + 0x2C) = *(float *)(m + 0x2C) * 0.5f;
-        m[0x20] = 0;
+        unsigned char *v = ((unsigned char *)((Moby *)m)->pvars);
+        ((Moby *)m)->update_dist = 0xFF;
+        ((Moby *)m)->draw_dist = 0x7F;
+        ((Moby *)m)->visible = 1;
+        ((Moby *)m)->scale = ((Moby *)m)->scale * 0.5f;
+        ((Moby *)m)->state = 0;
         *(int *)(v + 0x30) = owner;
-        *(short *)(v + 0x36) = 0;
+        *(short *)&((Moby *)v)->occlusion = 0;
         *(int *)(v + 0x78) = 0;
         qcopy(m + 0x10, pos);
         clear_u64_value(v);
@@ -2113,7 +2113,7 @@ unsigned char *spawn_mine(int owner, q128_2a9ed0 *pos) {
         *(int *)(v + 0x5C) = x;
         *(int *)(v + 0x74) = 0;
         *(int *)(v + 0x68) = -1;
-        *(int *)(m + 0x94) = 0;
+        *(int *)&((Moby *)m)->collision = 0;
         }
         moby_build_matrix(m);
     }

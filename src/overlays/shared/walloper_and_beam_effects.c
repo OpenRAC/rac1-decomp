@@ -259,11 +259,11 @@ extern void func_L00_00251E30(void *);
 char *spawn_linked_moby_from_basis(char *src) {
     char *m = CreateMoby(0xB3);
     if (m != 0) {
-        char *p = *(char **)(m + 0x78);
-        *(unsigned char *)(m + 0x30) = 0xFF;
-        *(short *)(m + 0x32) = 0xFF;
+        char *p = ((char *)((Moby *)m)->pvars);
+        ((Moby *)m)->update_dist = 0xFF;
+        ((Moby *)m)->draw_dist = 0xFF;
         m[0x31] = 1;
-        *(short *)(m + 0x34) = 0x204;
+        *(short *)&((Moby *)m)->flags = 0x204;
         m[0x23] = 0x50;
         m[0x20] = 0;
         *(char **)(p + 8) = src;
@@ -2266,10 +2266,10 @@ char *spawn_doom_bot(int owner, void *pos, void *rot) {
     char *m = CreateMoby(0xBA);
     if (m != 0) {
         char *p;
-        *(unsigned char *)(m + 0x30) = 0xFF;
-        *(short *)(m + 0x32) = 0xFF;
+        ((Moby *)m)->update_dist = 0xFF;
+        ((Moby *)m)->draw_dist = 0xFF;
         m[0x31] = 1;
-        p = *(char **)(m + 0x78);
+        p = ((char *)((Moby *)m)->pvars);
         m[0x20] = 0;
         m[0xBC] = 0;
         qcopy(m + 0x10, pos);
@@ -2277,7 +2277,7 @@ char *spawn_doom_bot(int owner, void *pos, void *rot) {
         *(int *)(p + 0x60) = owner;
         moby_build_matrix(m);
         copy_hero_moby_field_38(m);
-        *(float *)(m + 0x2C) = *(float *)(*(char **)(m + 0x24) + 0x24) * 0.1f;
+        ((Moby *)m)->scale = *(float *)(*(char **)(m + 0x24) + 0x24) * 0.1f;
     }
     return m;
 }

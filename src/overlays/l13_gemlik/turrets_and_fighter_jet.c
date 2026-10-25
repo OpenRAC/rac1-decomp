@@ -577,18 +577,18 @@ extern void func_L00_0025E210(void *);
 char *spawn_blarg_turret_child(char *parent) {
     char *m = CreateMoby(0x24);
     if (m) {
-        char *d = *(char **)(m + 0x78);
+        char *d = ((char *)((Moby *)m)->pvars);
         *(char **)(d + 0x70) = parent;
         *(char **)d = d + 0x20;
         *(char **)(d + 0xC) = d + 0x60;
         m[0x30] = parent[0x30];
-        *(unsigned short *)(m + 0x32) = *(unsigned short *)(*(char **)(d + 0x70) + 0x32);
+        *(unsigned short *)&((Moby *)m)->draw_dist = *(unsigned short *)(*(char **)(d + 0x70) + 0x32);
         m[0x31] = 1;
-        *(unsigned short *)(m + 0x34) |= 0x20;
+        ((Moby *)m)->flags |= 0x20;
         m[0x20] = 0;
         m[0xBC] = 0;
         qcopy(m + 0x10, *(char **)(d + 0x70) + 0x10);
-        *(float *)(m + 0x2C) = *(float *)(*(char **)(m + 0x24) + 0x24) * *(float *)(parent + 0x2C) / *(float *)(*(char **)(parent + 0x24) + 0x24);
+        ((Moby *)m)->scale = *(float *)(*(char **)(m + 0x24) + 0x24) * *(float *)(parent + 0x2C) / *(float *)(*(char **)(parent + 0x24) + 0x24);
         *(float *)(d + 0x20) = 1.0f;
         *(short *)(d + 0x24) = 1;
         d[0x28] = 0;

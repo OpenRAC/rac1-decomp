@@ -17,11 +17,11 @@ unsigned char *spawn_level_13_homing_rocket(char *src, char *pos, char *target, 
                                 float f2) {
     unsigned char *moby = (unsigned char *)CreateMoby(0x52);
     if (moby != 0) {
-        char *data = *(char **)(moby + 0x78);
-        moby[0x30] = 0xFF;
-        *(short *)(moby + 0x32) = 0xFF;
-        moby[0x31] = 1;
-        moby[0x20] = 0;
+        char *data = ((char *)((Moby *)moby)->pvars);
+        ((Moby *)moby)->update_dist = 0xFF;
+        ((Moby *)moby)->draw_dist = 0xFF;
+        ((Moby *)moby)->visible = 1;
+        ((Moby *)moby)->state = 0;
         *(char **)(data + 0x24) = target;
         *(char **)(data + 0x20) = src;
         qcopy(moby + 0x10, pos);
@@ -35,14 +35,14 @@ unsigned char *spawn_level_13_homing_rocket(char *src, char *pos, char *target, 
         *(int *)(data + 0x30) = 0;
         *(int *)(data + 0x34) = 0;
         qcopy(data, ((char *)((Moby *)src)->pvars) + 0xC0);
-        if (moby[0x53] != 1) {
+        if (((Moby *)moby)->prev_seq != 1) {
             MobyBlendAnimation(moby, 1, 0, 10);
         }
         FastVecAdd(moby + 0x10, moby + 0x10, data);
         if (*(char **)(data + 0x24) != 0) {
             qcopy(data + 0x10, *(char **)(data + 0x24) + 0x10);
         }
-        *(float *)(moby + 0x2C) = *(float *)(*(char **)(moby + 0x24) + 0x24);
+        ((Moby *)moby)->scale = *(float *)(*(char **)(moby + 0x24) + 0x24);
         moby_build_matrix(moby);
         spawn_source_attached_fading_effect_particle((char *)moby, 0x60808080, arg, 0, 500000.0f);
     }
@@ -226,13 +226,13 @@ unsigned char *spawn_class_53_projectile(char *owner, char *pos, char *vec) {
     unsigned char *moby = (unsigned char *)CreateMoby(0x53);
     if (moby != 0) {
         char *data;
-        moby[0x30] = 0xFF;
-        *(short *)((char *)moby + 0x32) = 0xFF;
-        moby[0x31] = 1;
-        moby[0x20] = 0;
-        moby[0xBC] = 0;
-        *(float *)((char *)moby + 0x2C) = *(float *)(*(char **)((char *)moby + 0x24) + 0x24) * 0.1f;
-        data = *(char **)((char *)moby + 0x78);
+        ((Moby *)moby)->update_dist = 0xFF;
+        ((Moby *)moby)->draw_dist = 0xFF;
+        ((Moby *)moby)->visible = 1;
+        ((Moby *)moby)->state = 0;
+        ((Moby *)moby)->command = 0;
+        ((Moby *)moby)->scale = *(float *)(*(char **)((char *)moby + 0x24) + 0x24) * 0.1f;
+        data = ((char *)((Moby *)moby)->pvars);
         qcopy((char *)moby + 0x10, pos);
         qcopy(data + 0x60, vec);
         *(char **)(data + 0x74) = owner;
@@ -242,7 +242,7 @@ unsigned char *spawn_class_53_projectile(char *owner, char *pos, char *vec) {
         *(float *)(data + 0x30) = 0.5f;
         data[0x29] = 1;
         *(int *)(data + 0x70) = scale_ticks(0x168);
-        if (moby[0x53] != 1) {
+        if (((Moby *)moby)->prev_seq != 1) {
             MobyBlendAnimation(moby, 1, 0, 10);
         }
         moby_build_matrix(moby);
@@ -1997,20 +1997,20 @@ char *spawn_asteroid_fragment(char *owner, char *pos, char *vec, int a3, float f
         char *d;
         float r;
         ((unsigned char *)moby)[0x30] = 0xFF;
-        d = *(char **)(moby + 0x78);
-        *(unsigned short *)(moby + 0x32) = *(unsigned short *)(owner + 0x32);
+        d = ((char *)((Moby *)moby)->pvars);
+        *(unsigned short *)&((Moby *)moby)->draw_dist = *(unsigned short *)(owner + 0x32);
         moby[0x31] = 1;
         moby[0x20] = 2;
         moby[0xBC] = 0;
         moby[0x72] = 0;
         qcopy(moby + 0x10, pos);
         qcopy(d, vec);
-        *(float *)(moby + 0x2C) = f;
+        ((Moby *)moby)->scale = f;
         *(char **)(d + 0x48) = owner;
         *(int *)(d + 0x40) = 1;
         *(short *)(d + 0x4C) = scale_ticks(0x1E);
         *(short *)(d + 0x4E) = a3;
-        *(int *)(moby + 0x94) = 0;
+        *(int *)&((Moby *)moby)->collision = 0;
         r = random_float_between(-30.0f, 30.0f) * 0.017453292f * g_frame_time;
         switch (func_001160D8() % 3) {
         case 0: *(float *)(d + 0x30) = r; break;
@@ -2023,9 +2023,9 @@ char *spawn_asteroid_fragment(char *owner, char *pos, char *vec, int a3, float f
         case 1: *(float *)(d + 0x34) = r; break;
         case 2: *(float *)(d + 0x38) = r; break;
         }
-        *(float *)(moby + 0x40) = random_angle_radians();
-        *(float *)(moby + 0x44) = random_angle_radians();
-        *(float *)(moby + 0x48) = random_angle_radians();
+        ((Moby *)moby)->rot.x = random_angle_radians();
+        ((Moby *)moby)->rot.y = random_angle_radians();
+        ((Moby *)moby)->rot.z = random_angle_radians();
         moby_build_matrix(moby);
         copy_hero_moby_field_38(moby);
     }
@@ -2577,18 +2577,18 @@ char *spawn_owner_linked_class_160_moby(char *owner) {
     if (moby != 0) {
         char *data;
         ((unsigned char *)moby)[0x30] = 0xFF;
-        *(short *)(moby + 0x32) = 0x3FF;
+        ((Moby *)moby)->draw_dist = 0x3FF;
         moby[0x31] = 1;
-        data = *(char **)(moby + 0x78);
+        data = ((char *)((Moby *)moby)->pvars);
         moby[0x20] = 0;
         moby[0xBC] = 0;
         qcopy(moby + 0x10, owner + 0x10);
         *(char **)data = owner;
         *(int *)(data + 4) = 0;
-        *(unsigned short *)(moby + 0x34) |= 0x200;
+        ((Moby *)moby)->flags |= 0x200;
         moby_build_matrix(moby);
         copy_hero_moby_field_38(moby);
-        *(float *)(moby + 0x2C) = *(float *)(*(char **)(moby + 0x24) + 0x24);
+        ((Moby *)moby)->scale = *(float *)(*(char **)(moby + 0x24) + 0x24);
     }
     return moby;
 }
@@ -3037,7 +3037,7 @@ void detach_moby_joint_attachment(void *unused, char *p, int idx) {
     char **slot = (char **)(base + off);
     char *moby = *slot;
     if (moby != 0) {
-        char *data = *(char **)(moby + 0x78);
+        char *data = ((char *)((Moby *)moby)->pvars);
         float *v = (float *)(data + 0x10);
         float t, r0, r1, r2;
         SpawnExplosionFx(unused, moby + 0x10, -1, 2.0f, 13.0f);
@@ -3058,7 +3058,7 @@ void detach_moby_joint_attachment(void *unused, char *p, int idx) {
         r2 = random_float_between(-t, t);
         *(float *)(data + 0x38) = r2;
         *(long *)(moby + 0x38) = 0x40404000000000L;
-        *(unsigned char *)(moby + 0xA4) = 0xFF;
+        ((Moby *)moby)->hit_slot = 0xFF;
         *slot = 0;
     }
 }

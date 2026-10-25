@@ -258,7 +258,7 @@ void update_metropolis_train_idle_motion(struct Moby *moby) {
         motion = data + 0x60;
         do {
             car = D_L03_00160058_t + (id << 8);
-            car_data = *(char **)(car + 0x78);
+            car_data = ((char *)((Moby *)car)->pvars);
             car[0x72] = 0x40;
             func_001F9BF0_293EB8(delta, car + 0x10, car_data + 0xA0);
             func_L00_002617B0_293EB8(car_data + 0x20, delta, car_data + 0xB0, car + 0x40);
@@ -1212,7 +1212,7 @@ void red_ship_1_update(char *moby) {
                 if (item == 0) {
                     break;
                 }
-                if (check_scaled_vector_bsphere(item, IntToFloat(*(short *)(item + 0x32))) != -1) {
+                if (check_scaled_vector_bsphere(item, IntToFloat(((Moby *)item)->draw_dist)) != -1) {
                     found = 1;
                     break;
                 }
@@ -1220,7 +1220,7 @@ void red_ship_1_update(char *moby) {
             if (!found) {
                 get_first_moby_in_group((int *)&item, ((unsigned char *)moby)[0x21], 0, 0);
                 while (item != 0) {
-                    d = *(char **)(item + 0x78);
+                    d = ((char *)((Moby *)item)->pvars);
                     item[0x20] = 3;
                     *(short *)(d + 0x12C) = scale_ticks(5);
                     get_next_moby_in_group((int *)&item, (int)item, 0, 0);
@@ -1370,16 +1370,16 @@ char *func_L03_002BC038_r(Moby *parent, int unused, int color, int a3, int a4, f
 char *func_L03_002BC038_r(Moby *parent, int unused, int color, int a3, int a4, float f, float scale) {
     char *m = func_0020D348_2BC038(0xEB);
     if (m) {
-        char *d = *(char **)(m + 0x78);
+        char *d = ((char *)((Moby *)m)->pvars);
         int r, g, b;
-        *(unsigned char *)(m + 0x30) = 0xFF;
-        *(short *)(m + 0x32) = 0x7F;
+        ((Moby *)m)->update_dist = 0xFF;
+        ((Moby *)m)->draw_dist = 0x7F;
         m[0x31] = 1;
-        *(float *)(m + 0x2C) *= scale;
+        ((Moby *)m)->scale *= scale;
         *(char **)d = (char *)parent;
         qcopy(m + 0x10, (char *)parent->pvars + 0xF0);
         *(OvlQuad_2BC038 *)(m + 0x40) = *(OvlQuad_2BC038 *)&parent->rot;
-        *(float *)(m + 0x40) = func_00214158_2BC038();
+        ((Moby *)m)->rot.x = func_00214158_2BC038();
         *(short *)(d + 0xC) = a4;
         b = (color >> 16) & 0xFF;
         g = (color >> 8) & 0xFF;

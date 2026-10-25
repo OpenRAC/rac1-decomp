@@ -1057,14 +1057,14 @@ char *compute_interpolated_record_value_cf(char *a, char *pos, char *parent, int
     char *d;
     if (m != 0) {
         float v[4];
-        *(unsigned char *)(m + 0x30) = 0xFF;
-        *(short *)(m + 0x32) = 0x7E;
-        d = *(char **)(m + 0x78);
+        ((Moby *)m)->update_dist = 0xFF;
+        ((Moby *)m)->draw_dist = 0x7E;
+        d = ((char *)((Moby *)m)->pvars);
         m[0x31] = 1;
         m[0x20] = 1;
         qcopy(m + 0x10, pos);
         qcopy(d, a);
-        *(float *)(m + 0x48) = fast_atan2(*(float *)d, *(float *)(d + 4));
+        ((Moby *)m)->rot.z = fast_atan2(*(float *)d, *(float *)(d + 4));
         *(int *)(d + 0x14) = scale_ticks(n);
         *(float *)(d + 0x18) = f2;
         *(float *)(d + 0x1C) = f0;

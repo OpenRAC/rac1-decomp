@@ -57,12 +57,12 @@ char *create_linked_class_0326_moby(char *a) {
     if (a[0x20] < 0) return 0;
     m = CreateMoby(0x326);
     if (m != 0) {
-        char *p = *(char **)(m + 0x78);
-        *(unsigned char *)(m + 0x30) = 0x40;
-        *(unsigned char *)(m + 0x20) = 0;
+        char *p = ((char *)((Moby *)m)->pvars);
+        ((Moby *)m)->update_dist = 0x40;
+        ((Moby *)m)->state = 0;
         *(char **)(p + 0xC) = a;
-        *(int *)(m + 0x94) = 0;
-        *(unsigned short *)(m + 0x34) |= 0x41;
+        *(int *)&((Moby *)m)->collision = 0;
+        ((Moby *)m)->flags |= 0x41;
         qcopy(m + 0x10, a + 0x10);
     }
     return m;
@@ -2622,9 +2622,9 @@ void draw_red_orb_group_effect_quads(u8 *p) {
     get_first_moby_in_group(it, p[0x21], 0, 0);
     while (it[0] != 0) {
         u8 *q = it[0];
-        if (q[0x31] != 0) {
-            void **m = *(void ***)(q + 0x78);
-            if (*(s16 *)(q + 0xA6) == *(s16 *)(p + 0xA6)) {
+        if (((Moby *)q)->visible != 0) {
+            void **m = ((void * *)((Moby *)q)->pvars);
+            if (((Moby *)q)->oclass == *(s16 *)(p + 0xA6)) {
                 draw_offset_textured_effect_quad(q + 0x10, m[1], s, 0.5f);
             }
         }
@@ -2729,7 +2729,7 @@ extern void func_L00_00251E30(void *);
 char *spawn_randomly_rotated_colored_moby(void *owner, void *pos, void *vel, int life, unsigned char r, unsigned char g, unsigned char b, unsigned char a, float scale) {
     char *m = CreateMoby(0x4A8);
     if (m != 0) {
-        char *d = *(char **)(m + 0x78);
+        char *d = ((char *)((Moby *)m)->pvars);
         Vec4 tmp;
         Vec4 rot;
         rot.q = 0;
@@ -2740,11 +2740,11 @@ char *spawn_randomly_rotated_colored_moby(void *owner, void *pos, void *vel, int
         m[0x20] = 0;
         m[0x23] = a;
         ((unsigned char *)m)[0x30] = 0xFF;
-        *(short *)(m + 0x32) = 0xFF;
+        ((Moby *)m)->draw_dist = 0xFF;
         m[0x31] = 1;
         set_moby_color(m, r, g, b);
-        *(float *)(d + 0x18) = *(float *)(m + 0x2C) * scale;
-        *(int *)(m + 0x2C) = 0;
+        *(float *)(d + 0x18) = ((Moby *)m)->scale * scale;
+        *(int *)&((Moby *)m)->scale = 0;
         *(void **)(d + 0x10) = owner;
         qcopy(m + 0x10, pos);
         qcopy(d, vel);

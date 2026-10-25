@@ -277,11 +277,11 @@ extern char *func_L00_0026E940(char *, int, int, int, float);
 unsigned char *spawn_ship_rocket(char *src, char *pos, char *target, char *vec, int arg, float scale) {
     unsigned char *moby = CreateMoby(0x127);
     if (moby != 0) {
-        char *data = *(char **)(moby + 0x78);
-        moby[0x30] = 0xFF;
-        *(short *)(moby + 0x32) = 0xFF;
-        moby[0x31] = 1;
-        moby[0x20] = 0;
+        char *data = ((char *)((Moby *)moby)->pvars);
+        ((Moby *)moby)->update_dist = 0xFF;
+        ((Moby *)moby)->draw_dist = 0xFF;
+        ((Moby *)moby)->visible = 1;
+        ((Moby *)moby)->state = 0;
         *(char **)(data + 0x20) = src;
         *(char **)(data + 0x24) = target;
         qcopy(moby + 0x10, pos);
@@ -299,14 +299,14 @@ unsigned char *spawn_ship_rocket(char *src, char *pos, char *target, char *vec, 
         *(int *)(data + 0x30) = 0;
         *(int *)(data + 0x34) = 0;
         BuildSphericalOffset(data, scale, *(float *)(vec + 8), -*(float *)(vec + 4));
-        if (moby[0x53] != 1) {
+        if (((Moby *)moby)->prev_seq != 1) {
             MobyBlendAnimation(moby, 1, 0, 10);
         }
         FastVecAdd(moby + 0x10, moby + 0x10, data);
         if (*(char **)(data + 0x24) != 0) {
             qcopy(data + 0x10, *(char **)(data + 0x24) + 0x10);
         }
-        *(float *)(moby + 0x2C) = *(float *)(*(char **)(moby + 0x24) + 0x24) *
+        ((Moby *)moby)->scale = *(float *)(*(char **)(moby + 0x24) + 0x24) *
                                   (*(float *)(src + 0x2C) / *(float *)(*(char **)(src + 0x24) + 0x24));
         moby_build_matrix(moby);
         spawn_source_attached_fading_effect_particle((char *)moby, 0x60808080, arg, 0, 500000.0f);

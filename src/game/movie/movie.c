@@ -1,4 +1,5 @@
 #include "common.h"
+#include "pad.h"
 #include "callees.h"
 #include "structs.h"
 
@@ -35,12 +36,7 @@ extern int D_0015EFA0 MACRO_ADDR;
 extern int D_0015EF20 MACRO_ADDR;
 extern int D_0015EE84 MACRO_ADDR;
 /* pad state at D_0013CA40: two words read at 0x1A0/0x1A4 */
-typedef struct MvPad {
-    char pad0[0x1A0];
-    int f1A0;
-    int f1A4;
-} __attribute__((aligned(16))) MvPad;
-extern MvPad D_0013CA40;
+extern PadState D_0013CA40;
 /* global block at D_0013E650: word at 0x5C */
 typedef struct MvGlobals {
     char pad0[0x5C];
@@ -102,12 +98,12 @@ int read_mpeg(char *vd, char *rb, int *file) {
         movie_play_step = 6;
         if (decode_mode != -1) {
             movie_play_step = 7;
-            if (decode_mode == 2 && g_controller_state.f1A4 != 0) {
+            if (decode_mode == 2 && g_controller_state.pressed != 0) {
                 hit = 1;
             } else if ((challenge_mode || D_0015EF20 || decode_mode || g_current_level_index <= 0)
-                       && (g_controller_state.f1A4 & 0x800)) {
+                       && (g_controller_state.pressed & 0x800)) {
                 hit = 1;
-            } else if ((g_controller_state.f1A0 & 0xF) == 0xF && (g_controller_state.f1A4 & 0x800)) {
+            } else if ((g_controller_state.held & 0xF) == 0xF && (g_controller_state.pressed & 0x800)) {
                 hit = 1;
             } else {
                 hit = 0;

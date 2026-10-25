@@ -3,6 +3,7 @@
 #include "callees.h"
 #include "records.h"
 #include "include_asm.h"
+#include "hero.h"
 #include "moby.h"
 
 struct GeometryQuad_EBD00 {
@@ -504,17 +505,6 @@ typedef struct SoundVoice {
 } SoundVoice;
 
 /* The hero fields this function reads: the motion position (0x80), the ship moby (0x15F0), state.current (0x2084). */
-typedef struct HeroView {
-    u8 pad_00[0x80];
-    Vec4f pos;                 /* 0x80 motion.pos */
-    u8 pad_90[0x15F0 - 0x90];
-    Moby388 *ship_moby;        /* 0x15F0 */
-    u8 pad_15F4[0x2084 - 0x15F4];
-    struct {
-        s32 current;           /* 0x2084 */
-        s32 step;              /* 0x2088 */
-    } state;
-} HeroView;
 
 /* Update of Qwark's starfighter part: a state machine that spawns its parts, waits for the hero,
  * flies its path, docks with the hero, dies or resets, with sound handles and a camera light. */
@@ -600,13 +590,13 @@ void update_qwarks_starfighter(Moby388 *moby) {
         break;
     }
     case STARFIGHTER_STATE_WAIT_FOR_HERO_SHIP: {
-        HeroView *hero = (HeroView *)(D_0013E633 + 0xE1D);
-        if (hero->state.current == 0x32 && hero->ship_moby != 0) {
+        Hero *hero = (Hero *)(D_0013E633 + 0xE1D);
+        if (hero->state.current == 0x32 && ((Moby388 *)hero->ship_moby) != 0) {
             moby->flags &= 0xFFBE;
             moby->i94 = ((struct MobyClass *)moby->cls)->collision;
             moby->s32 = 0x3FF;
-            if (hero->ship_moby != 0) {
-                char *ship = (char *)hero->ship_moby->d;
+            if (((Moby388 *)hero->ship_moby) != 0) {
+                char *ship = (char *)((Moby388 *)hero->ship_moby)->d;
                 int elapsed;
                 if (starfighter_start_frame == -1) {
                     starfighter_start_frame = gameplay_event_frame_count;
@@ -631,9 +621,9 @@ void update_qwarks_starfighter(Moby388 *moby) {
     }
     case STARFIGHTER_STATE_FOLLOW_INITIAL_PATH: {
         {
-            HeroView *hero = (HeroView *)(D_0013E633 + 0xE1D);
-            if (hero->ship_moby != 0 && hero->ship_moby->cls_id == 0x45) {
-                hero->ship_moby->bBC = 0;
+            Hero *hero = (Hero *)(D_0013E633 + 0xE1D);
+            if (((Moby388 *)hero->ship_moby) != 0 && ((Moby388 *)hero->ship_moby)->cls_id == 0x45) {
+                ((Moby388 *)hero->ship_moby)->bBC = 0;
             }
         }
         data->hud104 = queue_animation_update(0x11, 0xFFFF, (int)reset_numeric_hud_element, (int)Hud_UpdateCounter,
@@ -641,10 +631,10 @@ void update_qwarks_starfighter(Moby388 *moby) {
                                   (data->s24 << 4) | 0xF);
         data->fAC += (g_frame_time * 42.0f - data->fAC) * 0.1f;
         if (advance_moby_along_selected_path(moby, data, 0, 1) != 0) {
-            HeroView *hero = (HeroView *)(D_0013E633 + 0xE1D);
+            Hero *hero = (Hero *)(D_0013E633 + 0xE1D);
             char *ship;
             moby->bBC = 1;
-            ship = (char *)hero->ship_moby->d;
+            ship = (char *)((Moby388 *)hero->ship_moby)->d;
             *(int *)(ship + 0x88) = 0;
             *(int *)(ship + 0xEC) = 0;
             *(int *)(ship + 0x8C) = 0;
@@ -668,9 +658,9 @@ void update_qwarks_starfighter(Moby388 *moby) {
                                   (int)((char *)func_L06_0024A080 + 0x20), (int)&data->i108,
                                   (data->s24 << 4) | 0xF);
         {
-            HeroView *hero = (HeroView *)(D_0013E633 + 0xE1D);
-            if (hero->ship_moby != 0 && hero->ship_moby->cls_id == 0x45) {
-                hero->ship_moby->bBC = 0;
+            Hero *hero = (Hero *)(D_0013E633 + 0xE1D);
+            if (((Moby388 *)hero->ship_moby) != 0 && ((Moby388 *)hero->ship_moby)->cls_id == 0x45) {
+                ((Moby388 *)hero->ship_moby)->bBC = 0;
             }
         }
         update_qwarks_starfighter_attack_commands(moby, data);
@@ -709,9 +699,9 @@ void update_qwarks_starfighter(Moby388 *moby) {
     have11C:
         if (data->bFF == 0) {
             {
-                HeroView *hero = (HeroView *)(D_0013E633 + 0xE1D);
-                if (hero->ship_moby != 0 && hero->ship_moby->cls_id == 0x45) {
-                    hero->ship_moby->bBC = 0;
+                Hero *hero = (Hero *)(D_0013E633 + 0xE1D);
+                if (((Moby388 *)hero->ship_moby) != 0 && ((Moby388 *)hero->ship_moby)->cls_id == 0x45) {
+                    ((Moby388 *)hero->ship_moby)->bBC = 0;
                 }
             }
             data->fAC += (g_frame_time * 30.0f - data->fAC) * 0.1f;
@@ -760,13 +750,13 @@ void update_qwarks_starfighter(Moby388 *moby) {
                 data->i100 = 0;
             }
         } else {
-            HeroView *hero = (HeroView *)(D_0013E633 + 0xE1D);
+            Hero *hero = (Hero *)(D_0013E633 + 0xE1D);
             float yaw, pitch, distance;
-            yaw = fast_atan2(hero->pos.x - moby->pos[0], hero->pos.y - moby->pos[1]);
-            pitch = -fast_atan2(vec_distance_xy(moby->pos, &hero->pos), hero->pos.z - moby->pos[2]);
+            yaw = fast_atan2(hero->motion.pos.f[0] - moby->pos[0], hero->motion.pos.f[1] - moby->pos[1]);
+            pitch = -fast_atan2(vec_distance_xy(moby->pos, &hero->motion.pos), hero->motion.pos.f[2] - moby->pos[2]);
             update_moby_spring_steering_and_banking(moby, data, yaw, pitch);
-            if (hero->ship_moby != 0 && hero->ship_moby->cls_id == 0x45) {
-                hero->ship_moby->bBC = 1;
+            if (((Moby388 *)hero->ship_moby) != 0 && ((Moby388 *)hero->ship_moby)->cls_id == 0x45) {
+                ((Moby388 *)hero->ship_moby)->bBC = 1;
             }
             data->fAC *= 0.8f;
             FastVecDist(moby->pos, D_0013E633 + 0xE9D);
@@ -781,17 +771,17 @@ void update_qwarks_starfighter(Moby388 *moby) {
                 FastVecAdd(data->v80, data->v80, offset);
             }
             {
-                HeroView *hero = (HeroView *)(D_0013E633 + 0xE1D);
-                if (hero->ship_moby != 0) {
-                    Moby388 *ship_moby = hero->ship_moby;
+                Hero *hero = (Hero *)(D_0013E633 + 0xE1D);
+                if (((Moby388 *)hero->ship_moby) != 0) {
+                    Moby388 *ship_moby = (Moby388 *)hero->ship_moby;
                     char *ship;
                     float yaw_error, abs_yaw_error, pitch_error, abs_pitch_error;
                     qcopy(ship_moby->pos, data->v80);
                     ship = (char *)ship_moby->d;
                     yaw_error = FastSubRots(fast_atan2(moby->pos[0] - ship_moby->pos[0], moby->pos[1] - ship_moby->pos[1]), *(float *)(ship + 0x38));
                     abs_yaw_error = FastAbsF(yaw_error);
-                    pitch_error = FastSubRots(-fast_atan2(vec_distance_xy(hero->ship_moby->pos, moby->pos),
-                                                                  moby->pos[2] - hero->ship_moby->pos[2]),
+                    pitch_error = FastSubRots(-fast_atan2(vec_distance_xy(((Moby388 *)hero->ship_moby)->pos, moby->pos),
+                                                                  moby->pos[2] - ((Moby388 *)hero->ship_moby)->pos[2]),
                                               *(float *)(ship + 0x34));
                     abs_pitch_error = FastAbsF(pitch_error);
                     if (abs_yaw_error > 0.38397244f) {
@@ -809,8 +799,8 @@ void update_qwarks_starfighter(Moby388 *moby) {
             StepColorFade(moby, (char *)data + 0x60);
         }
         {
-            HeroView *hero = (HeroView *)(D_0013E633 + 0xE1D);
-            if (FastDiffRots(moby->rot[2], fast_atan2(hero->pos.x - moby->pos[0], hero->pos.y - moby->pos[1])) < 1.0471976f) {
+            Hero *hero = (Hero *)(D_0013E633 + 0xE1D);
+            if (FastDiffRots(moby->rot[2], fast_atan2(hero->motion.pos.f[0] - moby->pos[0], hero->motion.pos.f[1] - moby->pos[1])) < 1.0471976f) {
                 AddDrawCallback(draw_starfighter_tractor_beam, moby);
             }
         }
@@ -1100,11 +1090,11 @@ void update_qwarks_starfighter(Moby388 *moby) {
         }
     } else {
         if (moby->state != 6) {
-            HeroView *hero = (HeroView *)(D_0013E633 + 0xE1D);
+            Hero *hero = (Hero *)(D_0013E633 + 0xE1D);
             if (hero->state.current == 0x32) {
-                if (hero->ship_moby != 0 &&
-                    hero->ship_moby->cls_id == 0x45 &&
-                    (unsigned int)(*(int *)((char *)hero->ship_moby->d + 0x120) - 1) < 0x270F &&
+                if (((Moby388 *)hero->ship_moby) != 0 &&
+                    ((Moby388 *)hero->ship_moby)->cls_id == 0x45 &&
+                    (unsigned int)(*(int *)((char *)((Moby388 *)hero->ship_moby)->d + 0x120) - 1) < 0x270F &&
                     random_integer_below(2) == 0) {
                     queue_starfighter_voice_line(moby, data, 3, 9);
                 }
@@ -1129,12 +1119,12 @@ char *spawn_moby_joint_attachment(char *src, int arg, int id) {
         char *data;
         float f = *(float *)(*(char **)(moby + 0x24) + 0x24) * *(float *)(src + 0x2C) /
                   *(float *)(*(char **)(src + 0x24) + 0x24);
-        data = *(char **)(moby + 0x78);
-        *(unsigned char *)(moby + 0x30) = 0xFF;
-        *(short *)(moby + 0x32) = 0xFF;
+        data = ((char *)((Moby *)moby)->pvars);
+        ((Moby *)moby)->update_dist = 0xFF;
+        ((Moby *)moby)->draw_dist = 0xFF;
         moby[0x31] = 1;
         moby[0x20] = 0;
-        *(float *)(moby + 0x2C) = f;
+        ((Moby *)moby)->scale = f;
         *(int *)(data + 0x44) = arg;
         Moby_GetJointWorldPos(src, arg, moby + 0x10);
         *(char **)(data + 0x3C) = src;
@@ -1619,10 +1609,10 @@ char *create_attached_rocket(struct Moby *src, short cls) {
     char *d;
     char *pos;
     if (m != 0) {
-        d = *(char **)(m + 0x78);
+        d = ((char *)((Moby *)m)->pvars);
         m[0x31] = 1;
         ((unsigned char *)m)[0x30] = 0xFF;
-        *(short *)(m + 0x32) = 0x7F;
+        ((Moby *)m)->draw_dist = 0x7F;
         m[0x20] = 1;
         *(char **)(d + 0x20) = src;
         *(short *)(d + 0x26) = cls;
@@ -1634,7 +1624,7 @@ char *create_attached_rocket(struct Moby *src, short cls) {
         *(OvlQuad_306D40 *)(m + 0xD0) = *(OvlQuad_306D40 *)&src->rot_row1;
         *(OvlQuad_306D40 *)(m + 0xE0) = *(OvlQuad_306D40 *)&src->rot_row2;
         qcopy(d + 0x10, pos);
-        *(int *)(m + 0x94) = 0;
+        *(int *)&((Moby *)m)->collision = 0;
         func_L00_00251E30_306D40(m);
     }
     return m;
@@ -1897,19 +1887,19 @@ char *spawn_gemlik_projectile(float speed, float *pos, float *dir, void *arg)
     float d;
     m = func_0020D348_m(0x4D6);
     if (m != 0) {
-        *(int *)(m + 0x40) = 0;
-        *(unsigned char *)(m + 0x30) = 0xFF;
-        *(short *)(m + 0x32) = 0x7F;
+        *(int *)&((Moby *)m)->rot.x = 0;
+        ((Moby *)m)->update_dist = 0xFF;
+        ((Moby *)m)->draw_dist = 0x7F;
         m[0x31] = 1;
-        p = *(char **)(m + 0x78);
+        p = ((char *)((Moby *)m)->pvars);
         d = vec_length_xy(dir);
-        *(float *)(m + 0x44) = -fast_atan2(d, dir[2]);
-        *(float *)(m + 0x48) = fast_atan2(dir[0], dir[1]);
+        ((Moby *)m)->rot.y = -fast_atan2(d, dir[2]);
+        ((Moby *)m)->rot.z = fast_atan2(dir[0], dir[1]);
         qcopy(m + 0x10, pos);
         qcopy(p + 0x10, pos);
         qcopy(p, dir);
         MobyBlendAnimation(m, 1, 0, scale_ticks(5));
-        *(short *)(m + 0x34) = 0x208;
+        *(short *)&((Moby *)m)->flags = 0x208;
         *(int *)(p + 0x24) = 1;
         *(void **)(p + 0x20) = arg;
         *(float *)(p + 0x28) = speed;
@@ -3169,14 +3159,6 @@ extern int func_L01_00276680(float, void *);
 extern void func_L13_0030B918(void);
 extern void func_L13_0030B940(int);
 
-typedef struct HeroBobView {
-    u8 pad_00[0x15F0];
-    Moby388 *ship_moby;            /* 0x15F0 */
-    u8 pad_15F4[0x2084 - 0x15F4];
-    s32 current;                   /* 0x2084 */
-    s32 step;                      /* 0x2088 */
-    s32 control_mode;              /* 0x208C */
-} HeroBobView;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l13/gameplay/vendor/003058a8.c, FUN_L13_00309e88. */
 void update_gemlik_bobbing_pool_tile(struct Moby *moby) {
@@ -3189,10 +3171,10 @@ void update_gemlik_bobbing_pool_tile(struct Moby *moby) {
     int i, j, k, tile_index;
     int cr, cg;
 
-    HeroBobView *player_hero = (HeroBobView *)g_hero;
-    Moby388 *ship_moby = player_hero->ship_moby;
+    Hero *player_hero = (Hero *)g_hero;
+    Moby388 *ship_moby = (Moby388 *)player_hero->ship_moby;
     if (ship_moby != 0 && ship_moby->cls_id == 0x45 && ship_moby->state != 0xFE &&
-        ship_moby->state != 0xFD && player_hero->current == 0x32)
+        ship_moby->state != 0xFD && player_hero->state.current == 0x32)
         return;
     bobbing_platform_vars = (Bob_9e88 *)moby->pvars;
     if (bobbing_platform_vars == 0)
@@ -3255,15 +3237,15 @@ void update_gemlik_bobbing_pool_tile(struct Moby *moby) {
         break;
     }
     case BOBBING_PLATFORM_UPDATE: {
-        HeroBobView *hero_context;
+        Hero *hero_context;
         height_half_span_or_tile_enabled = bobbing_platform_vars->top;
         height_half_span_or_tile_enabled -= bobbing_platform_vars->bottom;
         height_half_span_or_tile_enabled *= 0.5f;
         moby->pos.z = bobbing_platform_vars->bottom + (FastCos(bobbing_platform_vars->angle) * height_half_span_or_tile_enabled + height_half_span_or_tile_enabled);
-        hero_context = (HeroBobView *)g_hero;
-        if (hero_context->control_mode != 0x14 && hero_context->control_mode != 0x19 &&
-            hero_context->current != 0x3D && hero_context->current != 0x7B &&
-            hero_context->current != 0x7C)
+        hero_context = (Hero *)g_hero;
+        if (hero_context->state.control_mode != 0x14 && hero_context->state.control_mode != 0x19 &&
+            hero_context->state.current != 0x3D && hero_context->state.current != 0x7B &&
+            hero_context->state.current != 0x7C)
             bobbing_platform_vars->angle = FastAddRots(bobbing_platform_vars->angle, bobbing_platform_vars->speed);
         D_L13_001D9E80_0B340[bobbing_platform_vars->idx].c1C = gemlik_pool_light.c3C;
         D_L13_001D9E80_0B340[bobbing_platform_vars->idx].c1D = gemlik_pool_light.c3D;

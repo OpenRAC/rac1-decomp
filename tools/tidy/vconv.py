@@ -4,7 +4,7 @@
   python3 tools/tidy/vconv.py PALFILE TYPE...
 
 Splices each version's own definitions (src/versions/<K>/<stem>/func_*.c) into
-PALFILE as of HEAD (before the conversion), runs tools/tidy/conv.py --target moby on
+PALFILE as of HEAD (before the conversion), runs tools/tidy/conv.py (--target $TARGET, default moby; shared record $SHORT, default Moby) on
 the private TYPEs there, and writes the converted functions back. Check with
 tools/version_src.py build and tools/version_check.py afterwards.
 """
@@ -33,7 +33,7 @@ for vd in sorted(glob.glob(f'src/versions/*/{stem}')):
     if not any(re.search(r'\b(%s)\b'%'|'.join(types),open(f).read()) for f,_ in names_): continue
     tmp=os.path.join(os.path.dirname(pal),'zz_vconv_tmp.c'); open(tmp,'w').write(text)
     for t in types:
-        subprocess.run(['python3','tools/tidy/conv.py',tmp,'--target','moby','--only',t,'--as',f'{t}=Moby'],capture_output=True)
+        subprocess.run(['python3','tools/tidy/conv.py',tmp,'--target',os.environ.get('TARGET','moby'),'--only',t,'--as',f"{t}={os.environ.get('SHORT','Moby')}"],capture_output=True)
     out=open(tmp).read(); os.remove(tmp)
     for f,n in names_:
         sp=span(out,n); new=out[sp[0]:sp[1]]+'\n'

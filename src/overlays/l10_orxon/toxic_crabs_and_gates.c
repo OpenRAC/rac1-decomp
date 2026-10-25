@@ -726,7 +726,7 @@ void EmitMobyParticles(void *p) {
     float a[4];
     float b[4];
     float o[4];
-    char *d = *(char **)(arg0 + 0x78);
+    char *d = ((char *)((Moby *)arg0)->pvars);
     float f20;
     float f21;
     float f22;

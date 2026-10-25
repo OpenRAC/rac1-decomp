@@ -18,23 +18,23 @@ char *spawn_blarg_elite_commando_rocket(char *owner, float *pos, char *vec) {
         float a;
         float b;
         ((unsigned char *)moby)[0x30] = 0xFF;
-        *(short *)(moby + 0x32) = 0xFF;
+        ((Moby *)moby)->draw_dist = 0xFF;
         moby[0x31] = 1;
         moby[0x20] = 0;
         *(unsigned long *)(moby + 0x38) = *(unsigned long *)(owner + 0x38);
-        *(float *)(moby + 0x2C) = *(float *)(moby + 0x2C) * 3.0f;
+        ((Moby *)moby)->scale = ((Moby *)moby)->scale * 3.0f;
         qcopy(moby + 0x10, vec);
-        data = *(char **)(moby + 0x78);
+        data = ((char *)((Moby *)moby)->pvars);
         qcopy(data, pos);
         *(int *)(data + 0x14) = scale_ticks(0xF0);
         *(char **)(data + 0x18) = owner;
         *(int *)(data + 0x10) = 0;
-        *(float *)(moby + 0x48) = fast_atan2(pos[0], pos[1]);
+        ((Moby *)moby)->rot.z = fast_atan2(pos[0], pos[1]);
         a = vec_length_xy(pos);
         b = fast_atan2(a, pos[2]);
-        *(float *)(moby + 0x44) = -b;
+        ((Moby *)moby)->rot.y = -b;
         moby[0x31] = 0;
-        *(unsigned short *)(moby + 0x34) |= 1;
+        ((Moby *)moby)->flags |= 1;
     }
     return moby;
 }
@@ -106,14 +106,14 @@ char *spawn_class_32_moby(char *owner, char *vec, void *pos, void *vel, int c) {
     char *d;
     float len, x, t, y;
     if (m) {
-        *(unsigned char *)(m + 0x30) = 0xFF;
-        *(short *)(m + 0x32) = 0xFF;
+        ((Moby *)m)->update_dist = 0xFF;
+        ((Moby *)m)->draw_dist = 0xFF;
         m[0x31] = 1;
         m[0x20] = 0;
         *(long *)(m + 0x38) = *(long *)(owner + 0x38);
-        *(float *)(m + 0x2C) = *(float *)(m + 0x2C) * 3.0f;
+        ((Moby *)m)->scale = ((Moby *)m)->scale * 3.0f;
         qcopy(m + 0x10, pos);
-        d = *(char **)(m + 0x78);
+        d = ((char *)((Moby *)m)->pvars);
         qcopy(d, vec);
         qcopy(d + 0x10, vel);
         *(int *)(d + 0x30) = c;
@@ -126,10 +126,10 @@ char *spawn_class_32_moby(char *owner, char *vec, void *pos, void *vel, int c) {
         *(float *)(d + 0x28) = t;
         *(float *)(d + 0x2C) = random_float_between(0.0f, y) * 0.017453292f;
         *(int *)(d + 0x34) = 0;
-        *(float *)(m + 0x48) = fast_atan2(*(float *)vec, *(float *)(vec + 4));
-        *(float *)(m + 0x44) = -fast_atan2(vec_length_xy(vec), *(float *)(vec + 8));
+        ((Moby *)m)->rot.z = fast_atan2(*(float *)vec, *(float *)(vec + 4));
+        ((Moby *)m)->rot.y = -fast_atan2(vec_length_xy(vec), *(float *)(vec + 8));
         m[0x31] = 0;
-        *(unsigned short *)(m + 0x34) |= 1;
+        ((Moby *)m)->flags |= 1;
     }
     return m;
 }

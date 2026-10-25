@@ -124,9 +124,9 @@ void set_listed_class_16f_state_2_and_data_28_to_one(int index)
     if (p != 0) {
         do {
             char *moby = (char *)(((*(unsigned short *)p & 0x7FFF) << 8) + (int)level_mobys_q);
-            if (*(short *)(moby + 0xA6) == 0x16F) {
+            if (((Moby *)moby)->oclass == 0x16F) {
                 moby[0x20] = 2;
-                *(float *)(*(char **)(moby + 0x78) + 0x28) = 1.0f;
+                *(float *)(((char *)((Moby *)moby)->pvars) + 0x28) = 1.0f;
             }
         } while (*p++ >= 0);
     }
@@ -138,8 +138,8 @@ void set_listed_class_16f_state_2_and_clear_data_28(int idx)
     if (p != 0) {
         do {
             char *moby = (char *)(((*p & 0x7FFF) << 8) + (int)level_mobys_q);
-            if (*(short *)(moby + 0xA6) == 0x16F) {
-                char *data = *(char **)(moby + 0x78);
+            if (((Moby *)moby)->oclass == 0x16F) {
+                char *data = ((char *)((Moby *)moby)->pvars);
                 moby[0x20] = 2;
                 *(int *)(data + 0x28) = 0;
             }
@@ -155,15 +155,15 @@ extern float D_0015EE6C MACRO_ADDR;
 /* starts a moby in state 0xF at pos: state 6, fresh random spin, motion setup; 0 if not in state 0xF */
 int activate_state_15_moby_at_position(void *m_, void *pos) {
     char *m = (char *)m_;
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     float f, g;
     if (((unsigned char *)m)[0x20] == 0xF) {
         qcopy(m + 0x10, pos);
-        *(int *)(m + 0x94) = *(int *)(*(char **)(m + 0x24) + 0x10);
-        *(unsigned short *)(m + 0x34) = (*(unsigned short *)(m + 0x34) & 0xFFBE) | 0x1000;
+        *(int *)&((Moby *)m)->collision = *(int *)(*(char **)(m + 0x24) + 0x10);
+        ((Moby *)m)->flags = (((Moby *)m)->flags & 0xFFBE) | 0x1000;
         m[0x20] = 6;
         clear_u64_value(m + 0x40);
-        *(float *)(m + 0x48) = random_angle_radians();
+        ((Moby *)m)->rot.z = random_angle_radians();
         euler_rotation_basis(m + 0xC0, m + 0x40);
         g = g_frame_time_sq * 20.0f;
         f = g_frame_time + g_frame_time;
@@ -241,56 +241,56 @@ extern int func_001F9850(int);
 void toxic_gas_vent_update(char *m) {
     char *d = ((char *)((Moby *)m)->pvars);
     float s;
-    if (*(int *)(d + 0x90) >= 0) {
-        if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, *(int *)(d + 0x90)) != 0) {
+    if (((Moby *)d)->glow_color >= 0) {
+        if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, ((Moby *)d)->glow_color) != 0) {
             float x = *(float *)&D_L06_00161DB4;
             float y = *(float *)&D_L06_00161DB8;
             *(float *)(d + 0x50) = x;
-            *(float *)(d + 0x54) = y;
+            ((Moby *)d)->anim_time = y;
         } else {
             *(int *)(d + 0x50) = 0;
-            *(int *)(d + 0x54) = 0;
+            *(int *)&((Moby *)d)->anim_time = 0;
         }
     }
     switch (((unsigned char *)m)[0x20]) {
     case 0:
         if (*(int *)(d + 0x60) != 0) {
             m[0x20] = 1;
-            *(float *)(d + 0x80) = 360.0f / *(float *)(d + 0x68) * 0.017453292f * g_frame_time;
+            *(float *)&((Moby *)d)->unk80 = 360.0f / *(float *)(d + 0x68) * 0.017453292f * g_frame_time;
             *(float *)(d + 0x7C) = *(float *)(d + 0x6C) * 0.017453292f;
             *(float *)(d + 0x84) = ((Moby *)m)->rot.z;
         } else {
             m[0x20] = 3;
             *(int *)(d + 0x88) = scale_ticks(truncate_float_to_s32(*(float *)(d + 0x74) + *(float *)(d + 0x78) * 60.0f));
         }
-        *(int *)(d + 0x94) = -1;
+        *(int *)&((Moby *)d)->collision = -1;
         break;
     case 1:
-        if (Sound_IsPlaying(m, *(int *)(d + 0x94)) == 0) {
-            *(int *)(d + 0x94) = func_0022ED80_r(0, 4, (int)m);
+        if (Sound_IsPlaying(m, *(int *)&((Moby *)d)->collision) == 0) {
+            *(int *)&((Moby *)d)->collision = func_0022ED80_r(0, 4, (int)m);
         }
         emit_toxic_gas_vent_sparks(m);
         check_oscillating_toxic_gas_vent_collisions(m);
         s = *(float *)(d + 0x64) * 0.017453292f * FastSin(*(float *)(d + 0x7C));
-        *(float *)(d + 0x7C) = FastAddRots(*(float *)(d + 0x7C), *(float *)(d + 0x80));
+        *(float *)(d + 0x7C) = FastAddRots(*(float *)(d + 0x7C), *(float *)&((Moby *)d)->unk80);
         ((Moby *)m)->rot.z = FastAddRots(*(float *)(d + 0x84), s);
         break;
     case 2:
-        if (Sound_IsPlaying(m, *(int *)(d + 0x94)) == 0) {
-            *(int *)(d + 0x94) = func_0022ED80_r(0, 4, (int)m);
+        if (Sound_IsPlaying(m, *(int *)&((Moby *)d)->collision) == 0) {
+            *(int *)&((Moby *)d)->collision = func_0022ED80_r(0, 4, (int)m);
         }
         emit_toxic_gas_vent_sparks(m);
         check_timed_toxic_gas_vent_collisions(m);
         if (fast_dec_timer(d + 0x88) != 0) {
             m[0x20] = 3;
             *(int *)(d + 0x88) = scale_ticks(truncate_float_to_s32(*(float *)(d + 0x74) * 60.0f));
-            if (*(int *)(d + 0x94) != -1) {
-                char *e = D_0013E633 + 0x1D + *(int *)(d + 0x94) * 0x70;
+            if (*(int *)&((Moby *)d)->collision != -1) {
+                char *e = D_0013E633 + 0x1D + *(int *)&((Moby *)d)->collision * 0x70;
                 if (*(char **)(e + 0x88) == m && ((unsigned char *)e)[0x74] != 0) {
-                    Sound_StopSlot(*(int *)(d + 0x94));
+                    Sound_StopSlot(*(int *)&((Moby *)d)->collision);
                 }
             }
-            *(int *)(d + 0x94) = -1;
+            *(int *)&((Moby *)d)->collision = -1;
         }
         break;
     case 3:
@@ -595,7 +595,7 @@ void set_moby_and_links_to_states_2_and_3(char *a) {
             char *c = p[i];
             char *d;
             c[0x20] = 3;
-            d = *(char **)(c + 0x78);
+            d = ((char *)((Moby *)c)->pvars);
             *(unsigned short *)(p[i] + 0x34) &= 0xFFFE;
             p[i][0x31] = 1;
             *(int *)(d + 0x14) = 0;
@@ -2584,9 +2584,9 @@ void update_alien_queen_hit_response_and_recovery(void *moby_) {
     float hp;
     float recovery_hp;
     int *path;
-    data = *(char **)(moby + 0x78);
-    if (*(unsigned char *)(moby + 0x20) == 0) return;
-    if ((unsigned int)(*(unsigned char *)(moby + 0x20) - 4) < 10 && *(int *)(data + 0x108) != -1)
+    data = ((char *)((Moby *)moby)->pvars);
+    if (((Moby *)moby)->state == 0) return;
+    if ((unsigned int)(((Moby *)moby)->state - 4) < 10 && *(int *)(data + 0x108) != -1)
         D_0014172A = *(short *)(data + 0x108);
     *(int *)(data + 0x110) = truncate_float_to_s32(*(float *)(data + 0x20) * 16.0f);
     dmg = 0.0f;
@@ -2646,7 +2646,7 @@ start_recovery:
             SetDeathBits(moby, 0, -1);
             base = blarg_scene_points + (*(int *)(data + 0xF8) << 7);
             jet_reset_camera(base + 0x30, base + 0x70);
-            *(unsigned short *)(moby + 0x34) &= 0xEFFF;
+            ((Moby *)moby)->flags &= 0xEFFF;
             if ((unsigned char)moby[0x53] != 10)
                 func_00213DE0_q(moby, 10, 0, scale_ticks(10));
             *(unsigned char *)(data + 0x67) = 0xFA;
@@ -2656,7 +2656,7 @@ start_recovery:
 hit_response_done:
         RerollEffectCounter(moby, data + 0x60);
     }
-    *(unsigned char *)(moby + 0xA4) = 0xFF;
+    ((Moby *)moby)->hit_slot = 0xFF;
     StepColorFade(moby, data + 0x60);
     if ((data[0x2E] & 2) && (unsigned char)moby[0x20] != 15) {
         if (*(int *)(data + 0x10C) != -1) {
@@ -2679,8 +2679,8 @@ hit_response_done:
                 moby[0x20] = 3;
                 *(int *)(data + 0x170) = 0;
                 qcopy(moby + 0x10, data + 0xC0);
-                *(float *)(moby + 0x48) = fast_atan2(g_hero.motion.pos.f[0] - *(float *)(moby + 0x10),
-                                                         g_hero.motion.pos.f[1] - *(float *)(moby + 0x14));
+                ((Moby *)moby)->rot.z = fast_atan2(g_hero.motion.pos.f[0] - ((Moby *)moby)->pos.x,
+                                                         g_hero.motion.pos.f[1] - ((Moby *)moby)->pos.y);
                 euler_rotation_basis(moby + 0xC0, moby + 0x40);
                 if ((unsigned char)moby[0x53] != 6)
                     func_00213DE0_q(moby, 6, 0, scale_ticks(5));
@@ -2693,8 +2693,8 @@ hit_response_done:
                 base = blarg_scene_points + (*(int *)(data + 0xF8) << 7);
                 Hero_ResetToPosition(base + 0x30, base + 0x70, 0x72, 1);
                 qcopy(moby + 0x10, data + 0xC0);
-                *(float *)(moby + 0x48) = fast_atan2(g_hero.motion.pos.f[0] - *(float *)(moby + 0x10),
-                                                         g_hero.motion.pos.f[1] - *(float *)(moby + 0x14));
+                ((Moby *)moby)->rot.z = fast_atan2(g_hero.motion.pos.f[0] - ((Moby *)moby)->pos.x,
+                                                         g_hero.motion.pos.f[1] - ((Moby *)moby)->pos.y);
                 euler_rotation_basis(moby + 0xC0, moby + 0x40);
                 if ((unsigned char)moby[0x53] != 6)
                     func_00213DE0_q(moby, 6, 0, scale_ticks(5));
@@ -2708,7 +2708,7 @@ hit_response_done:
     }
     *(float *)(data + 0x128) = FastAddRots(*(float *)(data + 0x128),
         *(float *)&alien_queen_glow_pulse_speed * 0.017453292f * g_frame_time);
-    *(int *)(moby + 0x90) = FastTweenColor(*(int *)&alien_queen_glow_color_a, *(int *)&alien_queen_glow_color_b,
+    ((Moby *)moby)->glow_color = FastTweenColor(*(int *)&alien_queen_glow_color_a, *(int *)&alien_queen_glow_color_b,
         (FastSin(*(float *)(data + 0x128)) + 1.0f) * 0.5f);
     path = blarg_paths[*(int *)(data + 0xEC)];
     FindNearestEligibleMoby(255.0f, moby, data + 0x70, 0, 0, path + 4, *path);

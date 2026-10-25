@@ -378,11 +378,11 @@ extern void func_L00_00251E30(void *);
 unsigned char *spawn_thrown_bomb(int a, void *pos, float *dir, int c, float f) {
     unsigned char *moby = (unsigned char *)func_0020D348_m(0x119);
     if (moby != 0) {
-        char *data = *(char **)(moby + 0x78);
-        moby[0x30] = 0xFF;
-        moby[0x31] = 1;
-        moby[0x20] = 1;
-        *(short *)(moby + 0x32) = 0xFF;
+        char *data = ((char *)((Moby *)moby)->pvars);
+        ((Moby *)moby)->update_dist = 0xFF;
+        ((Moby *)moby)->visible = 1;
+        ((Moby *)moby)->state = 1;
+        ((Moby *)moby)->draw_dist = 0xFF;
         *(int *)(data + 0x20) = a;
         *(float *)(data + 0x24) = f;
         *(int *)(data + 0x28) = c;
@@ -390,8 +390,8 @@ unsigned char *spawn_thrown_bomb(int a, void *pos, float *dir, int c, float f) {
         *(short *)(data + 0xE) = scale_ticks(0xF);
         qcopy(moby + 0x10, pos);
         qcopy(data + 0x10, dir);
-        *(float *)(moby + 0x40) = random_float_between(-180.0f, 180.0f) * 0.017453292f;
-        *(float *)(moby + 0x48) = fast_atan2(dir[0], dir[1]) + 1.5707964f;
+        ((Moby *)moby)->rot.x = random_float_between(-180.0f, 180.0f) * 0.017453292f;
+        ((Moby *)moby)->rot.z = fast_atan2(dir[0], dir[1]) + 1.5707964f;
         moby_build_matrix(moby);
     }
     return moby;
@@ -610,8 +610,8 @@ void update_conveyor_group_motion_transforms(int index, void *arg) {
     if (p) {
         do {
             char *moby = kalebo3_moby_array + ((*(unsigned short *)p & 0x7FFF) << 8);
-            if (*(short *)(moby + 0xA6) == 0x1D7) {
-                update_entity_matrix(*(char **)(moby + 0x78) + 0x20, arg, moby + 0x40, moby + 0x40);
+            if (((Moby *)moby)->oclass == 0x1D7) {
+                update_entity_matrix(((char *)((Moby *)moby)->pvars) + 0x20, arg, moby + 0x40, moby + 0x40);
             }
         } while (*p++ >= 0);
     }
@@ -1242,8 +1242,8 @@ void update_test_dummy_group_glow_phases(char *moby) {
         do {
 again:
             m = (char *)(((*(unsigned short *)p & 0x7FFF) << 8) + (int)kalebo3_moby_array);
-            if (*(short *)(m + 0xA6) != 0x21D) goto again;
-            data = *(char **)(m + 0x78);
+            if (((Moby *)m)->oclass != 0x21D) goto again;
+            data = ((char *)((Moby *)m)->pvars);
             *(int *)(data + 0x118) = kalebo3_frame_count;
             *(float *)(data + 0x11C) = FastAddRots(*(float *)(data + 0x11C), f);
         } while (*p++ >= 0);
@@ -1421,12 +1421,12 @@ void initialize_linked_pair_group(char *moby) {
     if (p != 0) {
         do {
             char *other = kalebo3_moby_array + (((unsigned short)*p & 0x7FFF) << 8);
-            if (*(short *)(other + 0xA6) == 0x228) {
+            if (((Moby *)other)->oclass == 0x228) {
                 int *data;
                 if (moby != other) {
-                    *(unsigned short *)(other + 0x34) |= 2;
+                    ((Moby *)other)->flags |= 2;
                 }
-                data = *(int **)(other + 0x78);
+                data = ((int *)((Moby *)other)->pvars);
                 *data = find_linked_pair_partner_by_height(other);
             }
         } while (*p++ >= 0);
@@ -1469,13 +1469,13 @@ void draw_linked_pair_group_ribbons(char *arg) {
     if (p) {
         do {
             char *m=kalebo3_moby_array+((*(unsigned short *)p&0x7FFF)<<8);
-            if (*(short *)(m+0xA6)==0x228) {
-                char *data=*(char **)(m+0x78);
+            if (((Moby *)m)->oclass==0x228) {
+                char *data=((char *)((Moby *)m)->pvars);
                 int generation=kalebo3_frame_count;
                 if (*(int *)(data+4)!=generation) {
                     char *partner=*(char **)data;
                     if (partner) {
-                        char *otherData=*(char **)(partner+0x78);
+                        char *otherData=((char *)((Moby *)partner)->pvars);
                         *(int *)(data+4)=generation;
                         *(int *)(otherData+4)=generation;
                         draw_linked_pair_ribbons(m,partner);
@@ -1634,7 +1634,7 @@ void accumulate_moby_frames_in_group_bounds(char *moby) {
     if (!other) {
         return;
     }
-    od = *(char **)(other + 0x78);
+    od = ((char *)((Moby *)other)->pvars);
     if (*(int *)(od + 0x44) != -1) {
         get_first_moby_in_group((int *)&l1, *(int *)(od + 0x44), 0, 0);
         while (l1) {
@@ -2101,10 +2101,10 @@ void *set_class_0287_group_activation_and_find_nearest(int index, int secondary)
     if (!p) return 0;
     while (1) {
         moby = kalebo3_moby_array + ((*(unsigned short *)p & 0x7FFF) << 8);
-        if (*(short *)(moby + 0xA6) != 0x287) continue;
+        if (((Moby *)moby)->oclass != 0x287) continue;
         d = FastVecDist(kalebo3_camera_pos, moby + 0x10);
         if (d < distance) {distance = d; nearest = moby;}
-        data = *(float **)(moby + 0x78);
+        data = ((float *)((Moby *)moby)->pvars);
         moby[0x20] = 1;
         g = class_0287_group_activation_value;
         data[5] = g;
@@ -2123,9 +2123,9 @@ void *activate_class_0287_group_and_find_nearest(int index, int secondary) {
     if (!p) return 0;
     while (1) {
         moby = kalebo3_moby_array + ((*(unsigned short *)p & 0x7FFF) << 8);
-        if (*(short *)(moby + 0xA6) != 0x287) continue;
+        if (((Moby *)moby)->oclass != 0x287) continue;
         d = FastVecDist(kalebo3_camera_pos, moby + 0x10);
-        data = *(int **)(moby + 0x78);
+        data = ((int *)((Moby *)moby)->pvars);
         if (d < distance) {distance = d; nearest = moby;}
         moby[0x20] = 1;
         data[5] = 0;
@@ -3019,7 +3019,7 @@ extern unsigned char D_0013D5C8_b[] __asm__("D_0013D5C8");
 /* picks the nearest target slot and sets the moby's state */
 void SelectNearestTargetSlot(void *moby_v) {
     char *moby = moby_v;
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     int *list = (int *)(data + 0x80);
     int i;
     int idx;
@@ -3034,14 +3034,14 @@ void SelectNearestTargetSlot(void *moby_v) {
     if (D_0013D5C8_b[0x21] != 0 || *(short *)(data + 0xAC) == 2) {
         int v = *(int *)(*(char **)(moby + 0x24) + 0x10);
         moby[0x31] = 1;
-        *(int *)(moby + 0x94) = v;
-        *(unsigned short *)(moby + 0x34) = *(unsigned short *)(moby + 0x34) & 0xFFFE;
+        *(int *)&((Moby *)moby)->collision = v;
+        ((Moby *)moby)->flags = ((Moby *)moby)->flags & 0xFFFE;
         moby[0x20] = 1;
     } else {
         moby[0x20] = 6;
         moby[0x31] = 0;
-        *(unsigned short *)(moby + 0x34) = *(unsigned short *)(moby + 0x34) | 1;
-        *(int *)(moby + 0x94) = 0;
+        ((Moby *)moby)->flags = ((Moby *)moby)->flags | 1;
+        *(int *)&((Moby *)moby)->collision = 0;
     }
     }
     {
@@ -3088,7 +3088,7 @@ void prepare_taxi_departure_path(char *moby) {
 void transfer_moby_placement_to_linked_moby(void *moby_v)
 {
     char *moby = moby_v;
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     char *spawn = FindMobyByDataId(moby, *(short *)(data + 0xAE));
     char *position;
     if (spawn != 0) {
@@ -3588,14 +3588,14 @@ extern void func_L00_00262DF0(float, void *, void *, void *);
 float move_chomper_toward_position(void *m_v, void *t_v) {
     char *m = m_v;
     float *t = t_v;
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     float vel;
     float vec[4];
     float dist;
     float oldz;
-    float a = fast_atan2(t[0] - *(float *)(m + 0x10), t[1] - *(float *)(m + 0x14));
+    float a = fast_atan2(t[0] - ((Moby *)m)->pos.x, t[1] - ((Moby *)m)->pos.y);
     a = FastAddRots(a, *(float *)(d + 0x1F8));
-    oldz = *(float *)(m + 0x18);
+    oldz = ((Moby *)m)->pos.z;
     vel = 0.0f;
     dist = FastVecDist(m + 0x10, t);
     SteerAngleWithVelocity((float *)(m + 0x48), (float *)(d + 0x1F4), a,
@@ -3608,6 +3608,6 @@ float move_chomper_toward_position(void *m_v, void *t_v) {
     vec[2] = *(float *)(d + 0x208) - g_frame_time_sq * 10.0f;
     move_4318(m, vec, 0.5f, 0.5f, 0.0f, 0x10);
     resolve_point_path_segment_xy_clearance(0.333f, *(void **)(d + 0x1F0), m + 0x10, m + 0x10);
-    *(float *)(d + 0x208) = oldz - *(float *)(m + 0x18);
+    *(float *)(d + 0x208) = oldz - ((Moby *)m)->pos.z;
     return dist;
 }

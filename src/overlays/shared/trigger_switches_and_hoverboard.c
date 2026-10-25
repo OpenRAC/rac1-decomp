@@ -16,12 +16,12 @@ extern float D_0015EE6C MACRO_ADDR;
 char *create_class_5c3_moby(int owner, char *pos, int arg, float f0, float f1) {
     char *moby = (char *)func_0020D348_m(0x5C3);
     if (moby != 0) {
-        char *d = *(char **)(moby + 0x78);
+        char *d = ((char *)((Moby *)moby)->pvars);
         ((unsigned char *)moby)[0x30] = 0xFF;
-        *(short *)(moby + 0x32) = 0xFF;
+        ((Moby *)moby)->draw_dist = 0xFF;
         moby[0x31] = 1;
-        *(float *)(moby + 0x48) = f0;
-        *(float *)(moby + 0x44) = f1;
+        ((Moby *)moby)->rot.z = f0;
+        ((Moby *)moby)->rot.y = f1;
         moby[0x20] = 0;
         *(int *)d = owner;
         qcopy(moby + 0x10, pos);
@@ -30,7 +30,7 @@ char *create_class_5c3_moby(int owner, char *pos, int arg, float f0, float f1) {
         *(int *)(d + 0x14) = 0;
         *(int *)(d + 0x18) = 0;
         *(short *)(d + 6) = 0;
-        *(float *)(moby + 0x2C) *= 2.3f;
+        ((Moby *)moby)->scale *= 2.3f;
         *(short *)(d + 4) = scale_ticks(0x12C);
     }
     return moby;
@@ -227,7 +227,7 @@ extern short D_L05_00161990;
 void update_hydrodisplacer_faucet_pulse_color(void *mv) {
     char *moby = mv;
     char *base = D_0013E633 + 0xE1D;
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     int r;
     float s;
     if (*(char **)(base + 0x2FC) == moby) {
@@ -249,9 +249,9 @@ void update_hydrodisplacer_faucet_pulse_color(void *mv) {
         } else {
             r = FastTweenColor(*(int *)&rilgar_faucet_pulse_color_a2, *(int *)&rilgar_faucet_pulse_color_b2, (FastSin(s) + 1.0f) * 0.5f);
         }
-        *(int *)(moby + 0x90) = FastTweenColor(*(int *)&rilgar_faucet_rest_color, r, *(float *)(data + 0x1C));
+        ((Moby *)moby)->glow_color = FastTweenColor(*(int *)&rilgar_faucet_rest_color, r, *(float *)(data + 0x1C));
     } else {
-        *(int *)(moby + 0x90) = *(int *)&rilgar_faucet_rest_color;
+        ((Moby *)moby)->glow_color = *(int *)&rilgar_faucet_rest_color;
     }
 }
 extern void func_L05_0024D680(int, int);
@@ -428,7 +428,7 @@ void add_moby_frames_for_group_proximity(char *moby) {
     if (fast_dec_timer((int *)(d + 0x264)) == 0) return;
     p = *(char **)(x + 0x86C);
     if (p == 0) return;
-    e = *(char **)(p + 0x78);
+    e = ((char *)((Moby *)p)->pvars);
     if (*(int *)(e + 0x44) != -1) {
         get_first_moby_in_group(&cur0, *(int *)(e + 0x44), 0, 0);
         while (cur0 != 0) {
@@ -859,7 +859,7 @@ extern char * D_L05_001601AC MACRO_ADDR;
 void reset_selected_moby_to_current_placement(void *moby_v)
 {
     char *moby = moby_v;
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     char *spawn = FindMobyByDataId(moby, *(short *)(data + 0xB6));
     char *position;
     if (spawn != 0) {

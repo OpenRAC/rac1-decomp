@@ -283,14 +283,14 @@ void update_moby_height_from_driver(char *m)
         if (i < 0) break;
         o = (char *)((i << 8) + *(int *)&batalia_mobys);
         }
-        if (*(short *)(o + 0xA6) == 0x267 || *(short *)(o + 0xA6) == 0x23F) {
-            if (*(unsigned char *)(o + 0x20) != 4) break;
+        if (((Moby *)o)->oclass == 0x267 || ((Moby *)o)->oclass == 0x23F) {
+            if (((Moby *)o)->state != 4) break;
             g2 = D_0013D355 + 0x13B;
             g2[0x35] = 1;
             func_0022ED80_2EAF48(0, 0, (struct Moby *)m);
             ((Moby *)m)->state = 2;
         } else {
-            ((void (*)(char *, float, float))(void *)ApproachValue)(m + 0x18, (*(float *)d - *(float *)(d + 4)) * **(float **)(o + 0x78) + *(float *)(d + 4), D_0015EE6C_2EAF48 * 10.0f);
+            ((void (*)(char *, float, float))(void *)ApproachValue)(m + 0x18, (*(float *)d - *(float *)(d + 4)) * *((float *)((Moby *)o)->pvars) + *(float *)(d + 4), D_0015EE6C_2EAF48 * 10.0f);
         }
         break;
     case 2:

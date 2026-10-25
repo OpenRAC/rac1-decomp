@@ -2,6 +2,7 @@
 #include "common.h"
 #include "callees.h"
 #include "include_asm.h"
+#include "hero.h"
 #include "moby.h"
 #include "vector.h"
 
@@ -75,21 +76,6 @@ typedef struct {
     float fC;
     int i10;
 } __attribute__((aligned(16))) Qry910;
-typedef struct {
-    char p0[0x80];
-    float pos[4];
-    char p90[0x2FC - 0x90];
-    unsigned char *p2FC;
-    char p300[0x1090 - 0x300];
-    M910 *hero;
-    char p1094[0x2080 - 0x1094];
-    M910 *cam;
-    char p2084[0x20];
-    unsigned char b20A4;
-    unsigned char b20A5;
-    char p20A6[9];
-    unsigned char b20AF;
-} G910;
 typedef struct { char p0[0x11]; unsigned char b11; } E910;
 typedef struct {
     char p0[0x18];
@@ -103,7 +89,7 @@ typedef struct { char p0[0x160]; float f160; char p164[4]; int i168; } Cam910;
 
 extern B910 D_L00_001E9BB0;
 extern B910 D_L00_001E9C00;
-extern G910 D_G910 __asm__("D_0013F450");
+extern Hero D_G910 __asm__("D_0013F450");
 extern E910 D_E910 __asm__("D_0013E620");
 extern H910 D_H910 __asm__("D_L00_00173F40");
 extern Cam910 D_L00_00166D80;
@@ -210,22 +196,22 @@ void mine_update(M910 *m) {
     up.f[2] = 1.0f;
     c.q = old.q;
     v = m->v;
-    if ((D_G910.b20A5 != 0 || D_G910.b20AF != 0) && m->state == 0) {
+    if ((D_G910.unk20A5 != 0 || D_G910.unk20AF != 0) && m->state == 0) {
         m->flags |= 0x41;
     } else {
         m->flags &= 0xFFBE;
     }
-    if ((D_G910.hero == 0 || D_G910.hero->cls != 0xBE) && m->state == 0) {
+    if ((((M910 *)D_G910.items[0].moby) == 0 || ((M910 *)D_G910.items[0].moby)->cls != 0xBE) && m->state == 0) {
         DeleteMoby(m);
         return;
     }
-    if (D_G910.b20A4 != 0 && m->state == 0) {
+    if (D_G910.vehicle_mode != 0 && m->state == 0) {
         DeleteMoby(m);
         return;
     }
     if (v->owner != 0 && v->owner->state != 0xFE && v->owner->state != 0xFD
         && v->owner->cls == 0xBE && v->h36 == 0 && 0.0f < FastVecLength(v)) {
-        if (D_G910.p2FC == 0 || GetFlaggedPvarWord(D_G910.p2FC) == 0) {
+        if (((unsigned char *)D_G910.ground_moby) == 0 || GetFlaggedPvarWord((unsigned char *)D_G910.ground_moby) == 0) {
             predict_mine_impact(v, m, 1);
         } else if (predict_mine_impact(v, m, 0) == 0) {
             predict_mine_impact(v, m, 2);
@@ -233,7 +219,7 @@ void mine_update(M910 *m) {
     }
     st = m->state;
     if (st == 0) {
-        if (D_G910.hero != 0 && D_G910.hero->cls == 0xBE) {
+        if (((M910 *)D_G910.items[0].moby) != 0 && ((M910 *)D_G910.items[0].moby)->cls == 0xBE) {
             float m1[4][4];
             float m2[4][4];
             U910 rot;
@@ -335,7 +321,7 @@ void mine_update(M910 *m) {
                         if (D_H910.moby != 0
                             && (is_moby_in_class_range_500_to_540((int)D_H910.moby) != 0 || (D_H910.moby->flags & 0x5000))
                             && D_H910.moby->cls != m->cls
-                            && D_H910.moby != D_G910.cam
+                            && D_H910.moby != ((M910 *)D_G910.moby)
                             && D_H910.moby != v->owner) {
                             m->bBC = 1;
                             if (m->state != 1) {
@@ -361,7 +347,7 @@ void mine_update(M910 *m) {
                                 qcopy(n, &D_H910.nrm);
                                 goto orient;
                             }
-                        } else if ((D_H910.moby != 0 && D_H910.moby != D_G910.cam && D_H910.moby != v->owner) || D_H910.i1C > 0) {
+                        } else if ((D_H910.moby != 0 && D_H910.moby != ((M910 *)D_G910.moby) && D_H910.moby != v->owner) || D_H910.i1C > 0) {
                             if (v->h50 != 0 || CollType() == 0 || v->vel.f[2] < g_frame_time * -9.8f) {
                                 m->bBC = 1;
                                 qcopy(&m->pos, &D_H910.pos);
@@ -584,19 +570,19 @@ void mine_update(M910 *m) {
             m->bA4 = 0xFF;
             if (m->state & 2) {
                 if (!(m->state & 4)
-                    || (vec_distance_xy(&D_G910.cam->pos, &m->pos) < 0.75f
-                        && FastAbsF(m->pos.f[2] - D_G910.pos[2]) < 0.25f
+                    || (vec_distance_xy(&((M910 *)D_G910.moby)->pos, &m->pos) < 0.75f
+                        && FastAbsF(m->pos.f[2] - D_G910.motion.pos.f[2]) < 0.25f
                         && (m->state & 0x10))) {
                     m->bBC = 1;
-                } else if (FastVecDist(&D_G910.cam->pos, &m->pos) < 0.75f) {
+                } else if (FastVecDist(&((M910 *)D_G910.moby)->pos, &m->pos) < 0.75f) {
                     V910 t;
                     V910 n;
                     V910 r;
                     {
-                        FastVecSub(r, &m->pos, &D_G910.cam->pos);
+                        FastVecSub(r, &m->pos, &((M910 *)D_G910.moby)->pos);
                         *(Q910 *)t = *(Q910 *)r;
                         vec_scale_to_length(t, t, 0.75f);
-                        FastVecAdd(r, &D_G910.cam->pos, t);
+                        FastVecAdd(r, &((M910 *)D_G910.moby)->pos, t);
                         *(Q910 *)n = *(Q910 *)r;
                         MoveKeepingOverGround(m, &m->pos, n, 0.4f, 0.25f, 0.25f, 0.5235988f, 0);
                     }
@@ -858,7 +844,7 @@ void mine_update(M910 *m) {
                 }
                 player_camera.f160 = dist < 20.0f ? 0.4f - dist * 0.0175f : 0.050000012f;
                 player_camera.i168 = scale_ticks(0x19);
-                FastVecDist(&m->pos, D_G910.pos);
+                FastVecDist(&m->pos, D_G910.motion.pos.f);
                 if (D_E910.b11 != 0) {
                     mine_camera_blast((char *)&b, (char *)&m->pos, 0, 0);
                 } else {
@@ -883,7 +869,7 @@ char *spawn_glow_particle(void *owner, void *pos, void *vel, float scale, int li
                         unsigned char r, unsigned char g, unsigned char b, unsigned char a) {
     char *m = CreateMoby(0x70);
     if (m != 0) {
-        char *d = *(char **)(m + 0x78);
+        char *d = ((char *)((Moby *)m)->pvars);
         Vec4 tmp;
         Vec4 rot;
         int s;
@@ -895,11 +881,11 @@ char *spawn_glow_particle(void *owner, void *pos, void *vel, float scale, int li
         m[0x20] = 0;
         m[0x23] = a;
         ((unsigned char *)m)[0x30] = 0xFF;
-        *(short *)(m + 0x32) = 0xFF;
+        ((Moby *)m)->draw_dist = 0xFF;
         m[0x31] = 1;
         set_moby_color(m, r, g, b);
-        *(float *)(d + 0x18) = *(float *)(m + 0x2C) * scale;
-        *(int *)(m + 0x2C) = 0;
+        *(float *)(d + 0x18) = ((Moby *)m)->scale * scale;
+        *(int *)&((Moby *)m)->scale = 0;
         *(void **)(d + 0x10) = owner;
         qcopy(m + 0x10, pos);
         qcopy(d, vel);
@@ -907,7 +893,7 @@ char *spawn_glow_particle(void *owner, void *pos, void *vel, float scale, int li
         *(int *)(d + 0x14) = life;
         s = *(unsigned short *)(d + 0x14) - scale_ticks(4);
         *(short *)(d + 0x1C) = s;
-        *(float *)(m + 0x2C) = IntToFloat(*(int *)(d + 0x14) - (short)s) * *(float *)(d + 0x18) / IntToFloat(*(int *)(d + 0x14));
+        ((Moby *)m)->scale = IntToFloat(*(int *)(d + 0x14) - (short)s) * *(float *)(d + 0x18) / IntToFloat(*(int *)(d + 0x14));
         *(short *)(d + 0x1E) = a;
         moby_build_matrix(m);
     }
@@ -1057,7 +1043,7 @@ char *spawn_bomb(int owner, void *pos) {
     char *m = spawn_79(0x79);
     if (m) {
         V2AE110 u, t;
-        char *v = *(char **)(m + 0x78);
+        char *v = ((char *)((Moby *)m)->pvars);
         char *g;
         float a;
         t.q = 0;
@@ -1065,8 +1051,8 @@ char *spawn_bomb(int owner, void *pos) {
         t.f[1] = random_float_between(-3.1415927f, 3.1415927f);
         t.f[2] = random_float_between(-3.1415927f, 3.1415927f);
         u.q = t.q;
-        *(unsigned char *)(m + 0x30) = 0xFF;
-        *(short *)(m + 0x32) = 0xFF;
+        ((Moby *)m)->update_dist = 0xFF;
+        ((Moby *)m)->draw_dist = 0xFF;
         m[0x31] = 1;
         m[0x20] = 0;
         *(int *)(v + 0x50) = owner;
@@ -1133,18 +1119,6 @@ typedef struct BombHeroState {
     s32 control_mode;           /* 0x08 (hero 0x208C) */
 } BombHeroState;
 
-typedef struct BombHero {
-    u8 pad_000[0x80];
-    BombHeroMotion motion;      /* 0x080 */
-    u8 pad_110[0x1EC];
-    struct BombMoby *ground_moby; /* 0x2FC */
-    u8 pad_300[0x370];
-    f32 unk670;                 /* 0x670 */
-    f32 unk674;                 /* 0x674 */
-    u8 pad_678[0x1A08];
-    struct BombMoby *moby;      /* 0x2080 */
-    BombHeroState state;        /* 0x2084 */
-} BombHero;
 
 /* Launch a bomb with the given velocity, adding the hero's or target's motion, and aim it. */
 void launch_bomb(float *pos, unsigned char *moby, float *velocity) {
@@ -1155,9 +1129,9 @@ void launch_bomb(float *pos, unsigned char *moby, float *velocity) {
     float result[4] __attribute__((aligned(16)));
     float working[4] __attribute__((aligned(16)));
     float desired[4] __attribute__((aligned(16)));
-    BombHero *g;
-    BombHero *gb;
-    BombHero *gc;
+    Hero *g;
+    Hero *gb;
+    Hero *gc;
     unsigned char *mp;
     char *e;
     char *ge;
@@ -1167,10 +1141,10 @@ void launch_bomb(float *pos, unsigned char *moby, float *velocity) {
     vars->unk6A = scale_ticks(30);
     m->state = 1;
     qcopy(vars, velocity);
-    g = (BombHero *)&D_G910;
+    g = (Hero *)&D_G910;
     if (g->state.control_mode == 15) {
         FastVecAdd(&vars->vel, &vars->vel, &g->motion.displacement);
-    } else if (g->ground_moby != 0 && GetFlaggedPvarWord((unsigned char *)g->ground_moby) != 0) {
+    } else if (((struct BombMoby *)g->ground_moby) != 0 && GetFlaggedPvarWord((unsigned char *)((struct BombMoby *)g->ground_moby)) != 0) {
         FastVecAdd(&vars->vel, &vars->vel, &g->motion.displacement);
     } else if (vars->target != 0) {
         short cls = vars->target->oclass;
@@ -1178,7 +1152,7 @@ void launch_bomb(float *pos, unsigned char *moby, float *velocity) {
             FastVecAdd(&vars->vel, &vars->vel, &vars->dir);
         } else if (vars->unk64 != 0) {
             length = vec_length_xy(velocity);
-            FastVecSub(difference, &((BombHero *)&D_G910)->motion.pos, &vars->target->pos);
+            FastVecSub(difference, &((Hero *)&D_G910)->motion.pos, &vars->target->pos);
             vec_scale_to_length(difference, difference, 1.0f);
             dot = FastVecDot(difference, &vars->dir);
             total = dot + length;
@@ -1192,17 +1166,17 @@ void launch_bomb(float *pos, unsigned char *moby, float *velocity) {
                 FastVecAdd(working, direction, &vars->target->pos);
                 *(VecQuad *)direction = *(VecQuad *)working;
             }
-            gb = (BombHero *)&D_G910;
+            gb = (Hero *)&D_G910;
             {
-                float heading = fast_atan2(gb->unk670, gb->unk674);
+                float heading = fast_atan2(gb->facing_x, gb->facing_y);
                 float toward = fast_atan2(direction[0] - gb->motion.pos.f[0],
                                                  direction[1] - gb->motion.pos.f[1]);
                 angle = FastDiffRots(heading, toward);
             }
             if (angle > 1.5707964f) {
-                working[0] = FastCos(fast_atan2(gb->unk670, gb->unk674)) *
+                working[0] = FastCos(fast_atan2(gb->facing_x, gb->facing_y)) *
                              vec_distance_xy(&gb->motion.pos, direction) * 0.5f;
-                angle = FastSin(fast_atan2(gb->unk670, gb->unk674));
+                angle = FastSin(fast_atan2(gb->facing_x, gb->facing_y));
                 working[1] = angle * vec_distance_xy(&gb->motion.pos, direction) * 0.5f;
                 working[2] = 0.0f;
                 FastVecAdd(desired, working, &gb->motion.pos);
@@ -1226,10 +1200,10 @@ void launch_bomb(float *pos, unsigned char *moby, float *velocity) {
     mp = moby + 0x10;
     vars->unk54 = scale_ticks(300);
     qcopy(mp, pos);
-    gc = (BombHero *)&D_G910;
-    *(VecQuad *)difference = *(VecQuad *)&gc->moby->pos;
+    gc = (Hero *)&D_G910;
+    *(VecQuad *)difference = *(VecQuad *)&((struct BombMoby *)gc->moby)->pos;
     difference[2] = pos[2];
-    if (coll_line(difference, pos, 0, (int)gc->moby, 0) != 0) {
+    if (coll_line(difference, pos, 0, (int)((struct BombMoby *)gc->moby), 0) != 0) {
         m->command = 1;
         qcopy(mp, collision_hit_point);
     }
@@ -1507,21 +1481,21 @@ void bomb_update(M_2aedd0 *m) {
     b.q = 0;
     b.f[2] = 1.0f;
     d = m->d;
-    if ((D_G910.hero == 0 || D_G910.hero->cls != 0xC0) && m->state == 0) {
+    if ((((M910 *)D_G910.items[0].moby) == 0 || ((M910 *)D_G910.items[0].moby)->cls != 0xC0) && m->state == 0) {
         DeleteMoby(m);
         return;
     }
-    if (D_G910.b20A4 != 0 && m->state == 0) {
+    if (D_G910.vehicle_mode != 0 && m->state == 0) {
         DeleteMoby(m);
         return;
     }
-    if ((D_G910.b20A5 != 0 || D_G910.b20AF != 0) && m->state == 0) {
+    if ((D_G910.unk20A5 != 0 || D_G910.unk20AF != 0) && m->state == 0) {
         m->flags |= 0x41;
     } else {
         m->flags &= ~0x41;
     }
     if (d->owner->cls == 0xC0 && d->h56 == 0 && FastVecLength(d) > 0.0f) {
-        if (D_G910.p2FC == 0 || GetFlaggedPvarWord(D_G910.p2FC) == 0) {
+        if (((unsigned char *)D_G910.ground_moby) == 0 || GetFlaggedPvarWord((unsigned char *)D_G910.ground_moby) == 0) {
             predict_throw_landing(d, m, 1);
         } else if (predict_throw_landing(d, m, 0) == 0) {
             predict_throw_landing(d, m, 2);
@@ -1641,7 +1615,7 @@ void bomb_update(M_2aedd0 *m) {
                     }
                 } else if (d->h68 != 0 || CollType() != 0) {
                     if (D_H910.moby != 0) {
-                        if ((D_H910.moby != D_G910.cam && D_H910.moby != d->owner) || d->h54 < scale_ticks(0x12C) - scale_ticks(0xA)) {
+                        if ((D_H910.moby != ((M910 *)D_G910.moby) && D_H910.moby != d->owner) || d->h54 < scale_ticks(0x12C) - scale_ticks(0xA)) {
                             if (((M_2aedd0 *)D_H910.moby)->f74 != D_L00_00160830 || D_H910.moby->cls == 0x336) {
                                 H910 *h = &D_H910;
 
@@ -1883,7 +1857,7 @@ void bomb_update(M_2aedd0 *m) {
                 }
                 player_camera.f160 = dist < 20.0f ? 0.4f - dist * 0.0175f : 0.4f - 20.0f * 0.0175f;
                 player_camera.i168 = scale_ticks(0x19);
-                FastVecDist(&m->pos, D_G910.pos);
+                FastVecDist(&m->pos, D_G910.motion.pos.f);
                 mine_camera_blast((char *)&rec, (char *)&m->pos, 0, 0);
                 if (m->state != 2) {
                     DeleteMoby(m);
@@ -1922,11 +1896,11 @@ char *SpawnFallingSpark(char *pos, char *vel, int a, int b, int c) {
     char *m = (char *)func_0020D348_m(0x7A);
     struct Dd *d;
     if (m) {
-        *(unsigned char *)(m + 0x30) = 0xFF;
-        *(short *)(m + 0x32) = 0xFF;
+        ((Moby *)m)->update_dist = 0xFF;
+        ((Moby *)m)->draw_dist = 0xFF;
         m[0x31] = 1;
-        *(unsigned char *)(m + 0x23) = 0x80;
-        d = *(struct Dd **)(m + 0x78);
+        ((Moby *)m)->alpha = 0x80;
+        d = ((struct Dd *)((Moby *)m)->pvars);
         set_moby_color(m, 0x7F, 0x7F, 0x7F);
         qcopy(m + 0x10, pos);
         qcopy((char *)d, vel);
@@ -1935,9 +1909,9 @@ char *SpawnFallingSpark(char *pos, char *vel, int a, int b, int c) {
         d->s0 = a;
         d->s1 = a;
         if (b == 0) {
-            *(float *)(m + 0x2C) = *(float *)(m + 0x2C) * random_float_between(0.5f, 0.75f);
+            ((Moby *)m)->scale = ((Moby *)m)->scale * random_float_between(0.5f, 0.75f);
         }
-        d->z = *(float *)(m + 0x2C);
+        d->z = ((Moby *)m)->scale;
         m[0xBC] = b | (c << 1);
         moby_build_matrix(m);
     }
@@ -2003,21 +1977,21 @@ typedef struct { unsigned char *o; float f4; float f8; short hc; short he; float
 unsigned char *spawn_crate_debris(unsigned char *owner, void *vel, void *pos, void *rot, int type, int n, float lo, float hi) {
     unsigned char *m = (unsigned char *)CreateMoby(type);
     if (m) {
-        V *v = *(V **)(m + 0x78);
+        V *v = ((V *)((Moby *)m)->pvars);
         float a;
         v->o = owner;
-        m[0x30] = 0xFF;
-        *(short *)(m + 0x32) = 0x7E;
-        m[0x31] = 1;
+        ((Moby *)m)->update_dist = 0xFF;
+        ((Moby *)m)->draw_dist = 0x7E;
+        ((Moby *)m)->visible = 1;
         *(long *)(m + 0x38) = *(long *)(owner + 0x38);
-        m[0x20] = 0;
-        *(float *)(m + 0x40) = random_angle_radians();
-        *(float *)(m + 0x44) = random_angle_radians();
-        *(float *)(m + 0x48) = random_angle_radians();
+        ((Moby *)m)->state = 0;
+        ((Moby *)m)->rot.x = random_angle_radians();
+        ((Moby *)m)->rot.y = random_angle_radians();
+        ((Moby *)m)->rot.z = random_angle_radians();
         qcopy(m + 0x10, pos);
         qcopy(m + 0x40, rot);
         qcopy(v->p10, vel);
-        v->f4 = *(float *)(m + 0x18);
+        v->f4 = ((Moby *)m)->pos.z;
         {
             short t = scale_ticks(0x14);
             float l1 = *(float *)&crate_debris_spin_min;
@@ -2032,7 +2006,7 @@ unsigned char *spawn_crate_debris(unsigned char *owner, void *vel, void *pos, vo
             v->f28 = randf_sym(l1, l2) * 0.017453292f * g_frame_time;
         }
         a = random_float_between(lo, hi);
-        *(float *)(m + 0x2C) *= a;
+        ((Moby *)m)->scale *= a;
         v->hc = n;
         v->f8 = a * 0.25f;
         moby_build_matrix(m);
@@ -2121,13 +2095,13 @@ unsigned char *spawn_devastator_missile(unsigned char *a, Vec4 *pos, unsigned ch
 
     m = (unsigned char *)CreateMoby(0x99);
     if (m != 0) {
-        v = *(unsigned char **)(m + 0x78);
-        m[0x30] = 0xFF;
-        *(short *)(m + 0x32) = 0xFF;
-        m[0x31] = 1;
-        *(float *)(m + 0x48) = f15;
-        *(float *)(m + 0x44) = f16;
-        m[0x20] = 0;
+        v = ((unsigned char *)((Moby *)m)->pvars);
+        ((Moby *)m)->update_dist = 0xFF;
+        ((Moby *)m)->draw_dist = 0xFF;
+        ((Moby *)m)->visible = 1;
+        ((Moby *)m)->rot.z = f15;
+        ((Moby *)m)->rot.y = f16;
+        ((Moby *)m)->state = 0;
         *(unsigned char **)(v + 0x10) = a;
         qcopy(m + 0x10, pos);
         t = g_frame_time * 20.0f;
@@ -2173,12 +2147,12 @@ unsigned char *spawn_devastator_missile(unsigned char *a, Vec4 *pos, unsigned ch
         }
         tmp.f[2] = pos->f[2];
         if (coll_line(&tmp, pos, 0, *(int *)(D_0013E633_u + 0x2E9D), 0)) {
-            m[0xBC] = 1;
+            ((Moby *)m)->command = 1;
             qcopy(m + 0x10, collision_hit_point);
         }
         moby_build_matrix(m);
         append_unique_moby_index((int)m, active_homing_missiles, 0x1F);
-        *(float *)(m + 0x2C) += *(float *)(m + 0x2C);
+        ((Moby *)m)->scale += ((Moby *)m)->scale;
     }
     return m;
 }
