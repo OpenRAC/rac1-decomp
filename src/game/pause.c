@@ -313,6 +313,7 @@ void PauseAllSounds(int arg0) {
 
 LINKER_REMNANT("asm/remnants/text", func_00219E48);
 
+/* Switches to game mode 3 and puts the menu system in state 0x2D, clearing its +0xC, +0x10 and +0x110 words. */
 void initialize_transfer_command(void) {
     char *p = menu_system;
     D_0015F6E8 = 3;
@@ -513,6 +514,8 @@ struct PauseMenuScreen {
     void (*leave)(struct PauseMenuScreen *, s32);  /* 0x0C */
 };
 
+/* Closes the menu once it has run 10 updates: calls every screen's leave hook,
+   drops the current page, deletes the panel mobys and sets state 0x14 with a 2-frame timer. */
 void close_menu_system(void) {
     struct MenuSystem *g = (struct MenuSystem *)menu_system;
 
@@ -863,6 +866,9 @@ struct RenderPanel { u8 pad0[4]; s32 (*draw)(RenderPanel *); u8 pad8[8]; s32 fla
 typedef struct { u8 pad0[4]; u8 *current; u8 pad8[0xD0]; s32 unkD8; } MenuSys_p;
 typedef struct { u8 pad0[0x44]; RenderPanel *screens[1]; } MenuScr_p;
 
+/* Per-frame menu render: draws the resident and panel-slot mobys, projects each
+   panel's frame to a screen box, runs the panels' draw callbacks (some into an
+   off-screen target drawn back as a textured quad), then the flashing panel. */
 void render_level_effects_and_screen_sprites(void) {
     Vec4 frame_vectors[4];
     /* Hypothesis, not evidence of a real variable: retail reserves
@@ -1293,14 +1299,17 @@ int rebuild_configured_text_label_list(void) {
     return 0;
 }
 
+/* Enter hook for the choice-list screen: nothing to do. */
 int enter_menu_choice_list(void) {
     return 0;
 }
 
+/* Leave hook for the choice-list screen: nothing to do. */
 int leave_menu_choice_list(void) {
     return 0;
 }
 
+/* Marks no entry selected (+0x44 = -1). */
 int Menu_ClearSelectedIndex(void *arg0) {
     *(int *)((char *)arg0 + 0x44) = -1;
     return 0;
@@ -1330,6 +1339,7 @@ extern int func_0021C6C0(int, int, int);
 #define ST (*(char **)(D_001D5F74 + 0x40))
 typedef struct { short s[12]; } Win;
 
+/* Moves a text window by the menu origin (D_001602BC x, D_001602B8 y). */
 static inline void win_shift(Win *p) {
     int x = (unsigned short)D_001602BC;
     int y = (unsigned short)D_001602B8;
@@ -1341,6 +1351,7 @@ static inline void win_shift(Win *p) {
     p->s[5] += x;
 }
 
+/* Undoes win_shift. */
 static inline void win_unshift(Win *p) {
     int x = (unsigned short)D_001602BC;
     int y = (unsigned short)D_001602B8;
@@ -1352,6 +1363,9 @@ static inline void win_unshift(Win *p) {
     p->s[5] -= x;
 }
 
+/* Draws a menu text label w: picks the font from its flags (+0x30), resolves the
+   text (fixed id, help entry or table entry for the item) and fades it over
+   menu_fade_duration when the content changes. */
 int render_configured_text_label(unsigned char *w) {
     extern void func_001F65A8(void);
     extern void func_001F6598(void);
@@ -2382,6 +2396,7 @@ s32 update_menu_grid_selection(MenuScreen_C840 *grid) {
     return 0;
 }
 
+/* Empty menu hook; returns 0. */
 int func_0021CD98(void) {
     return 0;
 }
@@ -2828,6 +2843,8 @@ extern int D_001CFAD8;
 extern void func_0020C7A0(void *);
 extern int func_0020CA50(void *, void *, void *, int);
 
+/* Enter hook for the mission list: rebuilds the list, collects the mission ids into
+   scratchpad and loads the selected level's entry into D_001CFBF4 / D_001CFAD8. */
 int enter_menu_mission_list(void *arg0) {
     int *p;
 
@@ -3066,6 +3083,7 @@ int load_selection_list(SelList_0021D9C8 *arg0) {
 
 extern int D_00141FA0[];
 
+/* Copies the screen's eight sprite-list words (+0x30) into pause_iop_sprite_lists. */
 int pause_stage_sprite_lists(void *arg0) {
     int *src = (int *)((char *)arg0 + 0x30);
     int *dst = pause_iop_sprite_lists;
@@ -3079,6 +3097,7 @@ int pause_stage_sprite_lists(void *arg0) {
 extern char D_001D0A50[];
 extern char D_001D0A88[];
 
+/* Points the screen's menu table (+0x34) at the heli-pack or the plain version. */
 int SelectHeliPackMenuTable(void *arg0) {
     *(char **)((char *)arg0 + 0x34) =
         (gHaveHeliPack != 0) ? D_001D0A50 : D_001D0A88;
@@ -3087,12 +3106,14 @@ int SelectHeliPackMenuTable(void *arg0) {
 
 extern int D_001A0418 NOT_SDA;
 
+/* Marks the pause memory card state as unset (-1). */
 int reset_pause_memory_card_state(void) {
     pause_memory_card_state = -1;
     return 0;
 }
 
 
+/* Resets the menu stream buffers to the full five-buffer layout. */
 int reset_menu_graphics_buffers(void) {
     initialize_menu_stream_buffers(1);
     return 0;
@@ -3101,6 +3122,7 @@ int reset_menu_graphics_buffers(void) {
 extern int D_0015EEF0 MACRO_ADDR;
 extern int D_0013E6A0;
 
+/* Sets the pause sound volume to 80% of D_0015EEF0. */
 int set_pause_sound_volume(void) {
     pause_sound_volume = (D_0015EEF0 * 8) / 10;
     return 0;
@@ -3377,6 +3399,8 @@ extern Rec0C D_001CFFC0[];
 extern unsigned char D_00141F08[];
 extern Half4 D_00199812[];
 
+/* Fills D_001CFFC0 with the active message records in reverse order, each
+   flagged 1, and ends the list with a 0 entry. */
 int build_reversed_active_message_list(void) {
     int i;
     for (i = 0; i < active_message_record_count;) {
@@ -3391,6 +3415,7 @@ int build_reversed_active_message_list(void) {
     return 0;
 }
 
+/* Empty menu hook; returns 0. */
 int func_0021E1F8(void) {
     return 0;
 }
@@ -3408,6 +3433,9 @@ extern int D_001D6078;
 extern int D_00137C80[];
 extern int func_00217628_3(int, int, int) __asm__("func_00217628");
 
+/* Enter hook for the help text screen: resets the stream buffers, marks the
+   bindings above the buffer limit as taken and starts the help audio stream
+   (+0x50 = 1 on success, 3 on failure). */
 int enter_menu_help_text(char *arg0) {
     int i;
     char *g;
@@ -3447,6 +3475,8 @@ struct MenuHelpTextState {
     s32 saved_text_table;      /* 0x54 */
 };
 
+/* Leave hook for the help text screen: breaks a running help audio stream,
+   resets the stream buffers and restores the saved help text table. */
 int restore_menu_help_text(int arg0) {
     if (D_001517D0[4] != 0 && ((struct MenuHelpTextState *)arg0)->load_state == 1) {
         request_audio_stream_break();
@@ -3904,10 +3934,13 @@ int draw_menu_preview_objects(char *arg0) {
     return 4;
 }
 
+/* Empty menu hook; returns 0. */
 int func_0021EF30(void) {
     return 0;
 }
 
+/* Enter hook for the preview-pair screen: angle +0x38 = pi, clears +0x34 and
+   both preview moby slots. */
 int func_0021EF38(void *arg0) {
     char *p = (char *)arg0;
     *(float *)(p + 0x38) = 3.14159274f;
@@ -3917,6 +3950,7 @@ int func_0021EF38(void *arg0) {
     return 0;
 }
 
+/* Deletes both preview mobys (+0x44, +0x48) and clears their slots. */
 int clear_menu_preview_pair(char *arg0) {
     *(int *)(arg0 + 0x44) = func_002267C0(*(int *)(arg0 + 0x44));
     *(int *)(arg0 + 0x48) = func_002267C0(*(int *)(arg0 + 0x48));
@@ -4039,6 +4073,7 @@ int draw_item_preview_screen(char *arg0) {
 
 extern float func_001FA748(float, float);
 
+/* Moby update for the item preview: spins its +0x48 angle by 0.01 a frame. */
 void rotate_item_preview_moby(char *arg0) {
     *(float *)(arg0 + 0x48) = FastAddRots(*(float *)(arg0 + 0x48), 0.01f);
 }
@@ -4420,6 +4455,8 @@ typedef struct PreviewScreenWords_21F610 {
     s32 second_moby;          /* 0x48: optional, drawn after moby */
 } PreviewScreenWords_21F610;
 
+/* Draws the item preview moby and the optional second one, only when the
+   highlighted item is owned. Returns 0 when it is not. */
 int draw_available_item_preview_mobys(char *arg0) {
     PreviewGridScreen *grid;
     s32 primary_moby;
@@ -4644,6 +4681,7 @@ int create_rotating_preview_moby(void *owner) {
 
 extern int func_002267C0(int);
 
+/* Deletes the item preview moby (+0x44) and clears its slot. */
 int release_item_preview_moby(char *arg0) {
     *(int *)(arg0 + 0x44) = func_002267C0(*(int *)(arg0 + 0x44));
     return 0;
@@ -4697,9 +4735,11 @@ extern int func_00116248(char *, const char *, ...);
 extern char *func_00116428(const char *, int);
 extern char *func_001166FC_1FB28(char *, const char *) __asm__("func_001166FC");
 extern u32 func_00116810_1FB28(const char *) __asm__("func_00116810");
+/* Returns arg0 + arg1. */
 static inline int add_offset(s32 arg0, int arg1) {
     return arg0 + arg1;
 }
+/* Returns a / n. */
 static inline int divide_coordinate(s32 a, int n) {
     return a / n;
 }
@@ -4849,6 +4889,7 @@ int DrawGBsShipMenu__maybe(char *arg0) {
 
 extern float func_001FA748(float, float);
 
+/* Moby update for a rotating preview: spins its +0x40 angle by 0.02 a frame. */
 void rotate_preview_moby_x(void *arg0) {
     *(float *)((char *)arg0 + 0x40) =
         FastAddRots(*(float *)((char *)arg0 + 0x40), 0.02f);
@@ -4915,6 +4956,7 @@ int draw_selected_item_ammo(char *arg0) {
 extern void func_00234C98(int, int);
 extern void func_00205E70(void);
 
+/* Draws the map screen overlay with the needed GS registers set. Returns 8. */
 int draw_map_screen_overlay(void) {
     VU1_addGSregister(0x42, 0x44);
     VU1_addGSregister(0x47, 0xB);
@@ -5084,6 +5126,8 @@ extern void func_00201640(int, int, int, int, long, long);
 extern int func_00200198(int, int);
 extern void func_00200468(int, int, int, int, int, int);
 
+/* Draws the map cursor: a 10x10 box with a coloured inner box at (x, y), plus a
+   marker icon above it when flag is set. */
 void draw_menu_selection_marker(int x, int y, int flag) {
     func_00201640(x - 5, y - 5, x + 5, y + 5, 0x80FFA888L, 0);
     func_00201640(x - 4, y - 4, x + 4, y + 4, *(int *)&D_001602B0, 0);
@@ -5534,6 +5578,8 @@ typedef struct StreamScreen_220DA0 {
     } data;                    /* 0x30 */
 } StreamScreen_220DA0;
 
+/* Leave hook for the stream image screen: frees both stream buffers and resets
+   the loaded entries and state. */
 int leave_menu_stream_image(void *arg0) {
     StreamScreen_220DA0 *menu = (StreamScreen_220DA0 *)arg0;
     menu->data.stream.buffer[0] = release_menu_stream_buffer(menu->data.stream.buffer[0]);
@@ -6037,6 +6083,9 @@ struct MS_21380 { char pad0[4]; struct Focus_21380 *current; char pad8[0x120]; i
 struct Card_21380 { char pad0[8]; int type; char padC[0xD0]; int state; char padE0[4]; int pending_state; };
 extern long func_00205520(int);
 
+/* Draws the stream image screen: while the card is checked it prints the centred
+   status text, otherwise it draws the streamed image full screen. Returns 1 when
+   the item shown is not owned. */
 int draw_checking_memory_card_data_menu(struct Stream_21380 *menu) {
     FontWindow_21380 text_window;
     short window_fields[12];
@@ -6779,6 +6828,7 @@ int build_filtered_menu_item_list(void) {
     return 0;
 }
 
+/* Empty menu hook; returns 0. */
 int func_00222840(void) {
     return 0;
 }
@@ -6846,6 +6896,7 @@ extern int D_0013CC04 NOT_SDA;
 extern char D_001D2678[];
 extern char *D_001D5F78 NOT_SDA;
 
+/* Map screen tick: on pad bit 0x40 switches back to the default action list. */
 int update_level_selection_map_screen(void) {
     if (D_0013CC04 & 0x40) {
         pause_current_action_list = pause_default_action_list;
@@ -6854,6 +6905,8 @@ int update_level_selection_map_screen(void) {
 }
 
 
+/* Draws the level selection map in the screen's box (+0x18 x, +0x1C y,
+   +0x20 width, +0x24 height). Returns 2. */
 int draw_level_selection_map_screen(void *arg0) {
     int *p = (int *)arg0;
     draw_level_selection_map(p[6], p[6] + p[8], p[7], p[7] + p[9]);
@@ -6896,6 +6949,7 @@ int handle_menu_action_buttons(char *arg0) {
 extern int func_00226EA8(int);
 extern char *D_001D5F74 NOT_SDA;
 
+/* Enter hook for the prompt screen: clears the page's +0x84 word and takes a stream buffer. */
 int enter_menu_prompt(void *arg0) {
     *(int *)(D_001D5F74 + 0x84) = 0;
     *(int *)((char *)arg0 + 0x54) = acquire_menu_stream_buffer(0);
@@ -6904,6 +6958,7 @@ int enter_menu_prompt(void *arg0) {
 
 extern int func_00226F68(int);
 
+/* Leave hook for the prompt screen: frees its stream buffer. */
 int leave_menu_prompt(void *arg0) {
     *(int *)((char *)arg0 + 0x54) = release_menu_stream_buffer(*(int *)((char *)arg0 + 0x54));
     return 0;
@@ -6933,6 +6988,8 @@ extern int D_0013CBE4;
    per-block register retail uses instead of one merged pseudo. */
 extern char D_001D5F70[] NOT_SDA;
 
+/* Prompt input: outside modes 1 and 0x10 just goes back; otherwise pad bit 0x20
+   confirms (page +0x84 = 1) and 0x10 cancels, both going back. */
 int Menu_ConfirmPromptInput(void) {
     if (D_0015EFB0_m != 0x10 && D_0015EFB0_m != 1) {
         char *g = menu_system;
@@ -7239,6 +7296,7 @@ int process_global_state_flags(void) {
     return 0;
 }
 
+/* Enter hook for the timed text sequence below: resets its scroll, countdown and step. */
 int func_00223478(void *arg0) {
     *(int *)((char *)arg0 + 0x40) = 0;
     *(int *)((char *)arg0 + 0x50) = 0;
@@ -7652,6 +7710,7 @@ int draw_menu_selection_text(char *arg0) {
 }
 
 
+/* Enter hook for the save slot screen: resets the stream buffers, takes one and clears +0x4C. */
 int enter_save_slot_screen(void *arg0) {
     initialize_menu_stream_buffers(1);
     *(int *)((char *)arg0 + 0x48) = acquire_menu_stream_buffer(0);
@@ -7659,6 +7718,7 @@ int enter_save_slot_screen(void *arg0) {
     return 0;
 }
 
+/* Leave hook for the save slot screen: frees its stream buffer. */
 int leave_save_slot_screen(void *arg0) {
     *(int *)((char *)arg0 + 0x48) = release_menu_stream_buffer(*(int *)((char *)arg0 + 0x48));
     return 0;
@@ -8041,6 +8101,9 @@ extern void func_00227DB0(int);
 extern void func_00227D20(int, int);
 extern void func_0022F4A0(int);
 extern void func_00209DC0(void);
+/* Save slot screen tick: when focused, moves the slot cursor and on confirm
+   starts the memory card save (or a level load for flag 0x2000). Plays a sound
+   when the slot changes. */
 s32 saving_data_menu2(struct MenuScreen_pv *w) {
     s32 old;
     s32 pad;
@@ -8532,6 +8595,8 @@ typedef struct MenuPreviewObjects_225548 {
     s32 objects[24];          /* 0x44: preview object handles, freed by func_002267C0 */
 } MenuPreviewObjects_225548;
 
+/* Leave hook for the preview screen: deletes the 24 preview objects, frees the
+   two stream buffers and marks no animation loaded. */
 int release_menu_preview_objects(void *arg0) {
     int *object_slot;
     int *resource_slot;
@@ -8893,9 +8958,11 @@ s32 LoadHandGadget(HandGadgetState *hand) {
     return 0;
 }
 
+/* Empty moby update for the gadget preview. */
 void NullMobyUpdate_Gadget(void) {
 }
 
+/* Empty moby update for attachments. */
 void attachment_update_callback(void) {
 }
 
@@ -9279,6 +9346,8 @@ void *create_menu_preview_moby(int arg0) {
 extern int D_0015F6F0 MACRO_ADDR;
 extern void func_0020D678(void *); /* DeleteMoby */
 
+/* Deletes moby arg0 (if any) and stamps its +0x38 with D_0015F6F0. Always
+   returns 0 so callers can clear their handle with it. */
 int func_002267C0(int arg0) {
     if (arg0 == 0) {
         return 0;
@@ -9551,6 +9620,7 @@ s32 update_streamed_moby_animation(MobyAnimationStream_26978 *stream) {
 
 extern void func_0020E180(int, int);
 
+/* Draws the 24 moby lists held at arg0+0x44. Returns 4. */
 int draw_moby_entries_from_object(void *arg0) {
     int *p = (int *)((char *)arg0 + 0x44);
     int i = 0x17;
@@ -9564,11 +9634,15 @@ int draw_moby_entries_from_object(void *arg0) {
     return 4;
 }
 
+/* Empty moby update for the menu helper. */
 void NullMobyUpdate_Helper(void) {
 }
 
 extern int D_001D6448[];
 
+/* Lays out the five menu stream buffers from the menu system's two memory
+   regions: a0 = 0 gives one small (0x11800) buffer, otherwise three small and two
+   large (0x4F000) ones. Unused slots are cleared. */
 void initialize_menu_stream_buffers(int a0) {
     char *g = menu_system;
     int v7 = *(int *)(g + 0x108);
@@ -9672,6 +9746,7 @@ int release_menu_stream_buffer(int key) {
 
 extern int D_001D6448[];
 
+/* Returns the size of stream buffer arg0 (0x4F000 large, 0x11800 small), or -1. */
 int get_menu_stream_buffer_size(int arg0) {
     int *e = menu_stream_buffers;
     int i = 0;
@@ -9685,6 +9760,7 @@ int get_menu_stream_buffer_size(int arg0) {
     return -1;
 }
 
+/* Sets bit 2 (read active) on stream buffer arg0. Returns 0, or 1 if not found. */
 int mark_menu_stream_buffer_read_active(int arg0) {
     int i = 0;
     int *base = menu_stream_buffers;
@@ -9969,6 +10045,7 @@ int advance_preview_animation_queue(void) {
 
 extern int D_001D641C;
 
+/* Breaks a pending preview audio stream and clears the preview animation queue. */
 int clear_preview_animation_queue(void) {
     if (D_001517D0[4] != 0) {
         char *g = menu_system;
@@ -9982,6 +10059,8 @@ int clear_preview_animation_queue(void) {
     return 0;
 }
 
+/* Builds a text window from a screen's width (+0x20) and height (+0x24):
+   size, centre and default spacing. */
 void pack_image_descriptor(void *arg0, char *src) {
     char *d = (char *)arg0;
     unsigned short v0, v1;
@@ -10143,6 +10222,8 @@ extern void func_0012D818(void *);
 extern void func_00208FA0(void);
 extern void func_00208338(void *);
 
+/* Gathers the game state into save buffer arg0 (object positions, map coverage)
+   and stores arg0 and arg1 in the memory card state; starts state 0x13 when idle. */
 void prepare_save_game(int arg0, int arg1) {
     char *b = memory_card_state;
     func_00121A80(D_0015EF98);
@@ -10308,6 +10389,8 @@ void load_level_zero_preserving_progress(s32 slot) {
 extern int D_0015F6D0 MACRO_ADDR;
 extern int D_0015EE80 MACRO_ADDR;
 
+/* Advances the D_0015EF24 frame counter unless D_0015F6D0 is set; with
+   D_0015EE80 set it jumps 10 extra every 50th tick. */
 void SpaceTransition_Tick(void) {
     int t;
     if (D_0015F6D0 != 0) {
@@ -10373,6 +10456,7 @@ extern int D_001D6860[];
 extern int D_001D74C0[];
 extern int D_001D6760[];
 
+/* Clears the three scene state buffers. */
 void clear_scene_state_buffers(void) {
     FastMemSet(D_001D6860, 0, 0xC60);
     FastMemSet(D_001D74C0, 0, 0xC60);
@@ -10482,6 +10566,8 @@ extern char D_001D8120[];
 extern short D_00160460;              /* SDA, gp -0x68A0 */
 extern void func_002298B0(int, int);
 
+/* Emits a DMA tag pair for packet n of D_001D8120, then sends graphics entry idx
+   of D_00160460 through func_002298B0. */
 void emit_selected_graphics_dma_packets(int arg0, int idx, int n) {
     D_00161000[0] = 0x30000003;
     D_00161000[1] = (int)(D_001D8120 + n * 0x30);
