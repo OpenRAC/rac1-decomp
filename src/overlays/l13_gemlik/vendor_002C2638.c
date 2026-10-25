@@ -2122,7 +2122,6 @@ struct BlobVarsP {
     s16 cooldown;
     s16 pieces;
 };
-struct Hero_p { u8 pad[0x15F0]; struct MobyP *ship_moby; u8 pad2[0x2084 - 0x15F4]; s32 state; };
 typedef struct {
     u8 pad0[0x18];
     s32 moby;
@@ -2162,7 +2161,7 @@ extern s32 func_L00_00200290(f32, void *);
 #define find_hit_p ((char * (*)(struct MobyP *, s32, s32))(func_L00_0025B478))
 #define remove_p ((void (*)(struct MobyP *))(func_0020D678))
 #define hit_blob_p ((void (*)(struct MobyP *, struct BlobVarsP *, f32))(func_L13_002E2690))
-extern struct Hero_p D_0013F450;
+extern struct Hero D_0013F450;
 #define hero_p D_0013F450
 #define hero_base_p D_0013E633
 extern CollisionHitP D_L13_001741C0;

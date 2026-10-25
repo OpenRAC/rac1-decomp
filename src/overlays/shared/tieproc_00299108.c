@@ -2,6 +2,7 @@
 #include "common.h"
 #include "callees.h"
 #include "include_asm.h"
+#include "hero.h"
 #include "vector.h"
 
 extern int D_L00_0015F524 MACRO_ADDR;
@@ -49,22 +50,6 @@ void update_game_frame_and_idle_counters(void) {
 typedef struct { char pad0[8]; int w8; char pad0C[8]; int w14; int w18; char pad1C[0xA0 - 0x1C]; int wA0; char padA4[0xEC - 0xA4]; int wEC; } CfgS;
 typedef struct { char pad0[0x19C]; int w19C; int w1A0; int w1A4; int w1A8; } PadS;
 typedef struct { char pad0[0xA6]; short hA6; } ObjS;
-typedef struct {
-    char pad0[0x10AC];
-    unsigned char b10AC;
-    char pad10AD[0x15F0 - 0x10AD];
-    ObjS *p15F0;
-    char pad15F4[0x2084 - 0x15F4];
-    int w2084;
-    char pad2088[4];
-    int w208C;
-    char pad2090[0x20A4 - 0x2090];
-    unsigned char b20A4;
-    char pad20A5[0x20B1 - 0x20A5];
-    unsigned char b20B1;
-    char pad20B2[0x22A8 - 0x20B2];
-    int w22A8;
-} HeroS;
 typedef struct { char pad0[0x86]; short h86; } PtrS;
 typedef struct { char pad0[0xDC]; int wDC; char pad0E0[4]; int wE4; char pad0E8[0xFC - 0xE8]; int wFC; } AreaS;
 typedef struct { char pad0[0x48]; unsigned short h48; unsigned short h4A; unsigned int w4C; } HitS;
@@ -130,7 +115,7 @@ void handle_pause_input(void) {
         g_debug_menu.wA0 = ((PadS *)(D_0013A5E0 + 0x2460))->w1A0 & ~0x200;
     }
     lvl = D_L00_0015F6A8;
-    if (lvl == 0 && (D_0015EFB4_m & 0x401) && D_L00_0015F6AC >= 8 && ((HeroS *)(D_0013E633 + 0xE1D))->w2084 != 0x1D) {
+    if (lvl == 0 && (D_0015EFB4_m & 0x401) && D_L00_0015F6AC >= 8 && ((Hero *)(D_0013E633 + 0xE1D))->state.current != 0x1D) {
         mode_freeze_init(3, 0, 0);
         return;
     }
@@ -140,59 +125,59 @@ void handle_pause_input(void) {
         return;
     }
     area = D_0015EE84;
-    if (area == 15 && D_L00_0015F6AC >= 8 && ((HeroS *)(D_0013E633 + 0xE1D))->b20A4 == 2
-        && ((((PadS *)(D_0013A5E0 + 0x2460))->w1A4 & 0x800) || noctl) && ((HeroS *)(D_0013E633 + 0xE1D))->w2084 != 0x72) {
+    if (area == 15 && D_L00_0015F6AC >= 8 && ((Hero *)(D_0013E633 + 0xE1D))->vehicle_mode == 2
+        && ((((PadS *)(D_0013A5E0 + 0x2460))->w1A4 & 0x800) || noctl) && ((Hero *)(D_0013E633 + 0xE1D))->state.current != 0x72) {
         if (D_L00_00166F00->h86 == 0x13) return;
         mode_freeze_init(4, 0, 0);
         return;
     }
     special = 0;
-    if (((HeroS *)(D_0013E633 + 0xE1D))->w208C == 9 && ((HeroS *)(D_0013E633 + 0xE1D))->w2084 == 0x32 && ((HeroS *)(D_0013E633 + 0xE1D))->p15F0) {
-        int k = ((HeroS *)(D_0013E633 + 0xE1D))->p15F0->hA6;
+    if (((Hero *)(D_0013E633 + 0xE1D))->state.control_mode == 9 && ((Hero *)(D_0013E633 + 0xE1D))->state.current == 0x32 && ((ObjS *)((Hero *)(D_0013E633 + 0xE1D))->ship_moby)) {
+        int k = ((ObjS *)((Hero *)(D_0013E633 + 0xE1D))->ship_moby)->hA6;
         if (k == 0x45 || k == 0x563 || k == 0x4DA) special = 1;
     }
     if (special && D_L00_0015F6AC >= 8 && ((((PadS *)(D_0013A5E0 + 0x2460))->w1A4 & 0x800) || noctl)
-        && ((HeroS *)(D_0013E633 + 0xE1D))->w2084 != 0x72 && D_L00_00166F00->h86 != 0x13) {
+        && ((Hero *)(D_0013E633 + 0xE1D))->state.current != 0x72 && D_L00_00166F00->h86 != 0x13) {
         mode_freeze_init(1, 0, 0);
         return;
     }
     if (lvl == 0 && (area == 8 || area == 0xC) && ((((PadS *)(D_0013A5E0 + 0x2460))->w1A4 & 0x800) || noctl)
-        && ((HeroS *)(D_0013E633 + 0xE1D))->w2084 == 0x32) {
+        && ((Hero *)(D_0013E633 + 0xE1D))->state.current == 0x32) {
         mode_freeze_init(1, 0, 0);
         return;
     }
     if (((((PadS *)(D_0013A5E0 + 0x2460))->w1A4 & 0x800) || noctl) && D_L00_0015F6AC >= 8
-        && ((HeroS *)(D_0013E633 + 0xE1D))->w2084 != 0x72 && ((HeroS *)(D_0013E633 + 0xE1D))->w208C == 0x16) {
+        && ((Hero *)(D_0013E633 + 0xE1D))->state.current != 0x72 && ((Hero *)(D_0013E633 + 0xE1D))->state.control_mode == 0x16) {
         mode_freeze_init(0, 0, 0);
         return;
     }
     if (((((PadS *)(D_0013A5E0 + 0x2460))->w1A4 & 0x800) || noctl) && D_L00_0015F6AC >= 8
-        && ((HeroS *)(D_0013E633 + 0xE1D))->w2084 != 0x72 && ((HeroS *)(D_0013E633 + 0xE1D))->b10AC != 2
-        && ((HeroS *)(D_0013E633 + 0xE1D))->w2084 != 0x32 && ((HeroS *)(D_0013E633 + 0xE1D))->w2084 != 0x1D
-        && !((HeroS *)(D_0013E633 + 0xE1D))->b20B1 && ((HeroS *)(D_0013E633 + 0xE1D))->w22A8
+        && ((Hero *)(D_0013E633 + 0xE1D))->state.current != 0x72 && ((Hero *)(D_0013E633 + 0xE1D))->items[0].unk1C != 2
+        && ((Hero *)(D_0013E633 + 0xE1D))->state.current != 0x32 && ((Hero *)(D_0013E633 + 0xE1D))->state.current != 0x1D
+        && !((Hero *)(D_0013E633 + 0xE1D))->unk20B1 && ((Hero *)(D_0013E633 + 0xE1D))->health.hp
         && ((AreaS *)(D_0013D355 + 0x3B))->wDC < 3 && ((AreaS *)(D_0013D355 + 0x3B))->wE4 < 0 && lvl == 0) {
         PauseAllSounds(0);
         return;
     }
     if (!(g_debug_menu.w8 & 0x10) && D_L00_0015F6AC >= 8 && (((PadS *)(D_0013A5E0 + 0x2460))->w1A4 & 0x500)
-        && ((HeroS *)(D_0013E633 + 0xE1D))->w208C != 0x16 && ((HeroS *)(D_0013E633 + 0xE1D))->w2084 != 0x72
-        && ((HeroS *)(D_0013E633 + 0xE1D))->w2084 != 0x32 && ((HeroS *)(D_0013E633 + 0xE1D))->w2084 != 0x1D
-        && !((HeroS *)(D_0013E633 + 0xE1D))->b20B1 && ((HeroS *)(D_0013E633 + 0xE1D))->w22A8
+        && ((Hero *)(D_0013E633 + 0xE1D))->state.control_mode != 0x16 && ((Hero *)(D_0013E633 + 0xE1D))->state.current != 0x72
+        && ((Hero *)(D_0013E633 + 0xE1D))->state.current != 0x32 && ((Hero *)(D_0013E633 + 0xE1D))->state.current != 0x1D
+        && !((Hero *)(D_0013E633 + 0xE1D))->unk20B1 && ((Hero *)(D_0013E633 + 0xE1D))->health.hp
         && ((AreaS *)(D_0013D355 + 0x3B))->wDC < 3 && ((AreaS *)(D_0013D355 + 0x3B))->wE4 < 0
         && lvl == 0 && !special && !g_debug_menu.wEC) {
         PauseAllSounds(10);
         return;
     }
     if (((AreaS *)(D_0013D355 + 0x3B))->wFC && !(r = (unsigned char *)(D_0013D355_b + 0x13B))[0x10] && D_L00_0015F6AC >= 8
-        && !D_0015EF20 && !((HeroS *)(D_0013E633 + 0xE1D))->b20B1 && ((HeroS *)(D_0013E633 + 0xE1D))->w22A8
+        && !D_0015EF20 && !((Hero *)(D_0013E633 + 0xE1D))->unk20B1 && ((Hero *)(D_0013E633 + 0xE1D))->health.hp
         && scale_ticks(0x1E) < D_L00_0015F6B0 && D_0015EE84) {
         mode_freeze_init(5, 0, 0);
         r[0x10] = 1;
         return;
     }
-    if (((HeroS *)(D_0013E633 + 0xE1D))->w2084 != 0x1D && ((HeroS *)(D_0013E633 + 0xE1D))->w2084 != 0x32) update_timed_hud_visibility();
-    if ((((PadS *)(D_0013A5E0 + 0x2460))->w1A4 & 0x200) && ((HeroS *)(D_0013E633 + 0xE1D))->w2084 != 0x1D
-        && ((HeroS *)(D_0013E633 + 0xE1D))->w2084 != 0x32) {
+    if (((Hero *)(D_0013E633 + 0xE1D))->state.current != 0x1D && ((Hero *)(D_0013E633 + 0xE1D))->state.current != 0x32) update_timed_hud_visibility();
+    if ((((PadS *)(D_0013A5E0 + 0x2460))->w1A4 & 0x200) && ((Hero *)(D_0013E633 + 0xE1D))->state.current != 0x1D
+        && ((Hero *)(D_0013E633 + 0xE1D))->state.current != 0x32) {
         int x;
         x = func_L00_00235790_r();
         hud_keep_visible(x, scale_ticks(0xB4));
@@ -207,7 +192,7 @@ void handle_pause_input(void) {
     }
     if (D_L00_0015F710) {
         D_L00_0015F710 = 0;
-        if (((HeroS *)(D_0013E633 + 0xE1D))->w22A8) {
+        if (((Hero *)(D_0013E633 + 0xE1D))->health.hp) {
             ShipTakeOff();
             return;
         }

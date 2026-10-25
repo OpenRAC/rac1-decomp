@@ -2,6 +2,7 @@
 #include "common.h"
 #include "vector.h"
 #include "include_asm.h"
+#include "hero.h"
 
 extern int D_0015EED0[] MACRO_ADDR;
 extern short D_L00_00161E80;
@@ -918,17 +919,7 @@ typedef struct {
     Vec4 pos;                      /* 0x80 */
     Vec4 rot;                      /* 0x90: z is the yaw */
 } HeroMotion_2ED320;
-typedef struct {
-    u8 pad0[0x80];
-    HeroMotion_2ED320 motion;      /* 0x80 */
-    u8 padA0[0x994 - 0xA0];
-    struct Moby *unk994;           /* 0x994: the rope anchor moby */
-    u8 pad998[8];
-    f32 unk9A0;                    /* 0x9A0 */
-    u8 pad9A4[0x2084 - 0x9A4];
-    struct { s32 current; } state; /* 0x2084 */
-} HeroCam_2ED320;
-extern HeroCam_2ED320 hero_2ED320 __asm__("D_0013F450");
+extern Hero hero_2ED320 __asm__("D_0013F450");
 extern CamGlobals_2ED320 cam_globals_2ED320 __asm__("D_L00_00166D80");
 extern s32 current_level_2ED320 __asm__("D_0015EE84") MACRO_ADDR;
 extern f32 frame_time_2ED320 __asm__("D_0015EE6C") MACRO_ADDR;
@@ -1139,23 +1130,12 @@ typedef struct CameraSystemView_2EDB70 {
     } blend;                                /* 0x270 */
 } CameraSystemView_2EDB70;
 
-typedef struct HeroView_2EDB70 {
-    u8 pad_000[0x964];
-    void *unk964;                           /* 0x964 */
-    u8 pad_968[0x2C];
-    void *unk994;                           /* 0x994 */
-    u8 pad_998[0x2084 - 0x998];
-    struct {
-        s32 current;                        /* 0x2084 state id */
-    } state;
-    u8 pad_2088[0x2300 - 0x2088];
-} HeroView_2EDB70;
 
 /* camera update: copies the moby's matrix when the camera mode changes */
-extern HeroView_2EDB70 hero __asm__("D_0013F450");
+extern Hero hero __asm__("D_0013F450");
 
 void update_target_tracking_camera(char *m) {
-    HeroView_2EDB70 *b = &hero;
+    Hero *b = &hero;
     CameraObj_2EDB70 *cam = (CameraObj_2EDB70 *)m;
     CameraTargetState_2EDB70 *camera_target_state = &cam->saved_state->target_state;
     int hero_state = b->state.current;
@@ -1164,13 +1144,13 @@ void update_target_tracking_camera(char *m) {
     if (hero_state == 0x2C) {
         camera_position = (char *)&cam->pos;
         x = camera_target_state->target;
-        y = (int)b->unk994;
+        y = (int)((void *)b->unk994);
     } else {
         camera_position = (char *)&cam->pos;
         if ((unsigned)(hero_state - 0x24) >= 3)
             goto done;
         x = camera_target_state->target;
-        y = (int)b->unk964;
+        y = (int)((void *)b->unk964);
     }
     if (x != y) {
         CameraSystemView_2EDB70 *g = (CameraSystemView_2EDB70 *)D_L00_00166D80_c;
@@ -1531,12 +1511,6 @@ typedef struct UpdateCamSwing_2EE6E0 {
     s16 descriptor_index;              /* 0x84 */
 } UpdateCamSwing_2EE6E0;
 
-typedef struct HeroSwingView_2EE6E0 {
-    u8 pad_000[0x30C];
-    union { s16 s; u16 u; } frames_off_ground;   /* 0x30C */
-    u8 pad_30E[0x2284 - 0x30E];
-    s32 unk2284;                       /* 0x2284 */
-} HeroSwingView_2EE6E0;
 
 // Per-frame check of a linked object's state; runs the handler or clears its flag.
 int volume_camera_swing_check(char *m) {
@@ -1549,7 +1523,7 @@ int volume_camera_swing_check(char *m) {
     k = params->type.u;
     if (k == 1 || k == 10) {
         if (params->timer == 0) {
-            struct HeroSwingView_2EE6E0 *hero_data = (struct HeroSwingView_2EE6E0 *)(D_0013E633 + 0xE1D);
+            struct Hero *hero_data = (struct Hero *)(D_0013E633 + 0xE1D);
             if (hero_data->frames_off_ground.s != 0) {
                 if (*(int *)&D_0015EE84 != 14) return 0;
                 if (hero_data->unk2284 != 13) return 0;

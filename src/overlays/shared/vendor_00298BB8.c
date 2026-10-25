@@ -1847,12 +1847,6 @@ typedef struct {
     Data29FF90 *data;
 } Moby29FF90;
 typedef struct {
-    char pad0[0x98];
-    float f98;
-    char pad9C[0x2008];
-    unsigned char f20A4;
-} Hero29FF90;
-typedef struct {
     float f0;
     float f4;
     char pad8[8];
@@ -1912,7 +1906,7 @@ void update_charged_blast(Moby29FF90 *moby) {
 
     switch (moby->state) {
     case 0:
-        if (d->active != 0 && ((Hero29FF90 *)(D_0013E633 + 0xE1D))->f20A4 == 2) {
+        if (d->active != 0 && ((Hero *)(D_0013E633 + 0xE1D))->vehicle_mode == 2) {
             float t;
             int i;
 
@@ -1979,8 +1973,8 @@ void update_charged_blast(Moby29FF90 *moby) {
             D_L15_0015F420.on = 0;
             D_L15_0015F430.on = 0;
             d->f10 = 0;
-            d->vel[0] = FastCos(((Hero29FF90 *)(D_0013E633 + 0xE1D))->f98) * (D_0015EE6C * 40.0f);
-            d->vel[1] = FastSin(((Hero29FF90 *)(D_0013E633 + 0xE1D))->f98) * (D_0015EE6C * 40.0f);
+            d->vel[0] = FastCos(((Hero *)(D_0013E633 + 0xE1D))->motion.rot.f[2]) * (D_0015EE6C * 40.0f);
+            d->vel[1] = FastSin(((Hero *)(D_0013E633 + 0xE1D))->motion.rot.f[2]) * (D_0015EE6C * 40.0f);
             d->vel[2] = 0.0f;
             moby->state = 1;
             d->f14 = 0;
