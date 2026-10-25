@@ -1431,11 +1431,11 @@ void tresspasser_update(char *moby) {
     sel = 0x16;
     d = *(char **)(moby + 0x78);
     r = 3.1415927f / (float)scale_ticks(0x3C);
-    if (*(short *)(moby + 0xA6) == 0x3ED) {
+    if (((Moby *)moby)->oclass == 0x3ED) {
         sel = 0x1A;
     }
 
-    switch (*(unsigned char *)(moby + 0x20)) {
+    switch (((Moby *)moby)->state) {
     case 0:
         initialize_collectible_sprite_state(moby);
         q = (unsigned char *)(discount_purchase_pricing + 5);
@@ -1447,11 +1447,11 @@ void tresspasser_update(char *moby) {
         ProbeGroundHeight(moby + 0x10, 0, 0.5f);
         *(float *)(moby + 0x40) = 1.5707964f;
         *(float *)(moby + 0x44) = 3.1415927f;
-        *(float *)(moby + 0x18) = aridia_coll_hit_z + k;
+        ((Moby *)moby)->pos.z = aridia_coll_hit_z + k;
         moby[0x20] = 1;
         break;
     case 1:
-        *(float *)(moby + 0x48) = FastAddRots(*(float *)(moby + 0x48), r);
+        ((Moby *)moby)->rot.z = FastAddRots(((Moby *)moby)->rot.z, r);
         update_collectible_sprite_effect(moby);
         if (frame_counter_ref % 10 != 0) {
             break;
@@ -1460,15 +1460,15 @@ void tresspasser_update(char *moby) {
         if (!(vec_distance_xy(moby + 0x10, g) < 1.0f)) {
             break;
         }
-        t = FastAbsF(*(float *)(moby + 0x18) - *(float *)(g + 0x8));
+        t = FastAbsF(((Moby *)moby)->pos.z - *(float *)(g + 0x8));
         if (!(t < 2.0f)) {
             break;
         }
         moby[0x20] = 3;
-        *(unsigned short *)(moby + 0x34) |= 1;
+        ((Moby *)moby)->flags |= 1;
         moby[0x31] = 0;
         *(int *)(moby + 0x94) = 0;
-        if (*(short *)(moby + 0xA6) == 0x3ED) {
+        if (((Moby *)moby)->oclass == 0x3ED) {
             StartCutscene(4);
         } else {
             StartCutscene(2);
@@ -1490,7 +1490,7 @@ void tresspasser_update(char *moby) {
         } else {
             grant_inventory_item(sel, 1);
         }
-        if (*(short *)(moby + 0xA6) == 0x3ED) {
+        if (((Moby *)moby)->oclass == 0x3ED) {
             ShowBanner(0x7DF, -1);
             clear_active_help_record();
             Help_Request(0x7D9, 0x13);
