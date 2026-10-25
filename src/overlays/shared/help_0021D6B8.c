@@ -141,7 +141,7 @@ void update_hero_vehicle_attachments_and_effects(void) {
     float off[4];
     float rm[16];
 
-    func_L00_00232EF0();
+    advance_hero_animation();
     hero_update();
     apply_hero_ground_material_response();
     if (((GS_E7B8 *)(D_0013E633 + 0xE1D))->b20A4 == 1) {

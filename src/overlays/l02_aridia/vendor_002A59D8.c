@@ -1616,7 +1616,7 @@ void update_level02_bot(unsigned char *raw) {
             qcopy(position, &moby->pos);
             position[2] += 1.0f;
             SetDeathBits(moby, 0, -1);
-            func_L00_0025F4A8(moby, data->velocity, position, 0.0f, 0.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, -1, 1.0f, 15.0f, 1, 1, -1, 0);
+            spawn_explosion(moby, data->velocity, position, 0.0f, 0.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, -1, 1.0f, 15.0f, 1, 1, -1, 0);
             SpawnBreakFragment((char *)moby, 0x6D7, (float *)(&moby->pos), &moby->rot, 0, 0, 0.0f, D_L02_0015F660, D_L02_0015F660, D_L02_0015F660);
             SpawnBreakFragment((char *)moby, 0x6D8, (float *)(&moby->pos), &moby->rot, 0, 0, 0.0f, D_L02_0015F660, D_L02_0015F660, D_L02_0015F660);
             SpawnBreakFragment((char *)moby, 0x6D9, (float *)(&moby->pos), &moby->rot, 0, 0, 0.0f, D_L02_0015F660, D_L02_0015F660, D_L02_0015F660);
@@ -2185,7 +2185,7 @@ void sand_shark_nest_update(char *m)
             p->i150 -= 1;
         }
         qcopy(explosion_position, &((struct Moby *)m)->pos);
-        func_L00_0025F4A8(m, nest_vars->vel, explosion_position, 0.0f, 0.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, -1, 1.0f, 15.0f, 1, 1, -1, 0);
+        spawn_explosion(m, nest_vars->vel, explosion_position, 0.0f, 0.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, -1, 1.0f, 15.0f, 1, 1, -1, 0);
         SpawnBreakFragment(m, 0x6E4, (float *)&((struct Moby *)m)->pos, &((struct Moby *)m)->rot, 0, 0, 0.0f, D_L02_0015F660, D_L02_0015F660, D_L02_0015F660);
         SpawnBreakFragment(m, 0x6E4, (float *)&((struct Moby *)m)->pos, &((struct Moby *)m)->rot, 0, 0, 0.0f, D_L02_0015F660, D_L02_0015F660, D_L02_0015F660);
         SpawnBreakFragment(m, 0x6E5, (float *)&((struct Moby *)m)->pos, &((struct Moby *)m)->rot, 0, 0, 0.0f, D_L02_0015F660, D_L02_0015F660, D_L02_0015F660);
@@ -2976,7 +2976,7 @@ void rocket_launcher_update(unsigned char *m) {
             Moby_GetJointWorldPos(m, 0, v20);
             FastVecSub(v20, v30, v20);
             func_L00_001FF4B0(v20, v20, *(float *)&D_L02_00161CFC * D_0015EE6C);
-            func_L00_0025F4A8(m, v20, v30, 0.0f, 0.0f, 0, 6, 32, 7.0f, 4.0f, 1.0f, -1, 3.0f, 30.0f, 0, 1, -1, 0);
+            spawn_explosion(m, v20, v30, 0.0f, 0.0f, 0, 6, 32, 7.0f, 4.0f, 1.0f, -1, 3.0f, 30.0f, 0, 1, -1, 0);
             spawn_projectile_moby((char *)m, v30, v20);
         }
         break;

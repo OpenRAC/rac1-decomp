@@ -22,7 +22,7 @@ void initialize_bolt_pickup(char *moby) {
     *(float *)(d + 0xC) = random_float_between(a, b);
     *(int *)(d + 0x28) = 0;
     *(float *)(d + 8) = *(float *)(moby + 0x18);
-    func_L00_0025E210(moby);
+    copy_hero_spawn_frame(moby);
     *(int *)(d + 0x24) = spawn_moby_offset_effect(moby);
 }
 typedef struct Target_2B94B0 {
@@ -362,7 +362,7 @@ void update_bomb(char *moby) {
         clear_u64_value(&c.p);
         c.p.st = 0;
         coll_sphere_mobys(moby + 0x10, 1.0f, 0x10, moby, &c.p);
-        func_L00_0025F4A8(moby, D_L08_0015F660_36F8, 0, 0.0f, 0.0f, 7, 10, 20, 3.0f, 1.7f, 4.0f, 1.0f, -1, 7.0f, 0, 7, -1, 0);
+        spawn_explosion(moby, D_L08_0015F660_36F8, 0, 0.0f, 0.0f, 7, 10, 20, 3.0f, 1.7f, 4.0f, 1.0f, -1, 7.0f, 0, 7, -1, 0);
         DeleteMoby(moby);
         return;
     case 0x63: {
@@ -1098,7 +1098,7 @@ void scatter_bomber_tank_linked_debris(char *moby) {
                 }
             } else if ((short)cls == 0x1D8) {
                 clear_u64_value(a);
-                func_L00_0025F4A8(other, a, other + 0x10, 0.0f, 0.0f, 0x32, 0x3C, 0x3C, 12.0f, 8.0f, 9.0f, 1.0f, -1, 15.0f, 1, 1, -1, 0);
+                spawn_explosion(other, a, other + 0x10, 0.0f, 0.0f, 0x32, 0x3C, 0x3C, 12.0f, 8.0f, 9.0f, 1.0f, -1, 15.0f, 1, 1, -1, 0);
                 DeleteMoby(other);
             }
         }
@@ -2446,7 +2446,7 @@ void update_rocket(M46 *m) {
                         }
                     } else if ((short)cls==0x1A8) {
                         special=1; clear_u64_value(accel);
-                        func_L00_0025F4A8(other,accel,other->position,0.0f,0.0f,50,60,60,12.0f,8.0f,9.0f,1.0f,-1,15.0f,1,1,-1,0);
+                        spawn_explosion(other,accel,other->position,0.0f,0.0f,50,60,60,12.0f,8.0f,9.0f,1.0f,-1,15.0f,1,1,-1,0);
                         DeleteMoby(other);
                     }
                 }
@@ -2470,7 +2470,7 @@ void update_rocket(M46 *m) {
         if (func_L00_001F39B0(m->position,0x400,2,m,0) || m->position[0]<5.0f || m->position[0]>500.0f || m->position[1]<5.0f || m->position[1]>500.0f || m->position[2]<5.0f || m->position[2]>500.0f || FastVecDist(D_0013E633+0xE9D,m->position)<16.0f) m->state=6;
         return;
     case 6:
-        if (D_L08_0016005C<(unsigned int)m) func_L00_0025F4A8(m,d->velocity,m->position,0.0f,0.0f,15,10,10,3.0f,2.0f,9.0f,1.0f,-1,15.0f,1,1,-1,0);
+        if (D_L08_0016005C<(unsigned int)m) spawn_explosion(m,d->velocity,m->position,0.0f,0.0f,15,10,10,3.0f,2.0f,9.0f,1.0f,-1,15.0f,1,1,-1,0);
         DeleteMoby(m);
         break;
     default: break;
@@ -2532,9 +2532,9 @@ void func_L08_002DF8A0_r(char *moby, int a, int n, int flag) {
     int i;
 
     if (flag) {
-        func_L00_0025F4A8(moby, data + 0x20, moby + 0x10, 0.0f, 0.0f, 0x1E, 0x14, 0x14, 6.0f, 4.0f, 9.0f, 1.0f, -1, 15.0f, 1, 1, -1, 0);
+        spawn_explosion(moby, data + 0x20, moby + 0x10, 0.0f, 0.0f, 0x1E, 0x14, 0x14, 6.0f, 4.0f, 9.0f, 1.0f, -1, 15.0f, 1, 1, -1, 0);
     } else {
-        func_L00_0025F4A8(moby, data + 0x20, moby + 0x10, 0.0f, 0.0f, 0x2D, 0x1E, 0x1E, 10.0f, 6.0f, 9.0f, 1.0f, -1, 15.0f, 1, 1, -1, 0);
+        spawn_explosion(moby, data + 0x20, moby + 0x10, 0.0f, 0.0f, 0x2D, 0x1E, 0x1E, 10.0f, 6.0f, 9.0f, 1.0f, -1, 15.0f, 1, 1, -1, 0);
     }
     for (i = 0; i < n; i++) {
         {
@@ -2633,7 +2633,7 @@ void update_path_following_moby(char *m) {
             return;
         }
         if (coll_sphere(1.25f, pos, 0, m)) {
-            func_L00_0025F4A8(m, v, pos, 0.0f, 0.0f, 0x14, 0x28, 0x10, c10, 5.0f, 9.0f, 1.0f, -1, c15, 1, 1, -1, 0);
+            spawn_explosion(m, v, pos, 0.0f, 0.0f, 0x14, 0x28, 0x10, c10, 5.0f, 9.0f, 1.0f, -1, c15, 1, 1, -1, 0);
             DeleteMoby(m);
             return;
         }
@@ -2656,7 +2656,7 @@ void update_path_following_moby(char *m) {
         FastVecSub(b, m + 0x10, a);
         qcopy(d + 0x10, b);
         *(float *)(d + 0x18) = *(float *)(d + 0x18) + (D_0015EE6C + D_0015EE6C);
-        func_L00_0025F4A8(m, b, m + 0x10, 0.0f, 0.0f, 0x14, 0x28, 0x10, 10.0f, 5.0f, 9.0f, 1.0f, -1, 15.0f, 1, 1, -1, 0);
+        spawn_explosion(m, b, m + 0x10, 0.0f, 0.0f, 0x14, 0x28, 0x10, 10.0f, 5.0f, 9.0f, 1.0f, -1, 15.0f, 1, 1, -1, 0);
         m[0x20] = 2;
     }
     *(unsigned char *)(m + 0xA4) = 0xFF;

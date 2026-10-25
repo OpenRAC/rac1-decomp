@@ -179,7 +179,7 @@ void draw_level_selection_map(s32 left, s32 right, s32 top, s32 bottom) {
     SetupGifPaging(0);
     VU1_addGSregister(0x42, 0x8000000044);
     VU1_addGSregister(0x47, 0x4B);
-    func_00201640(0, 0, 0x200, 0x1C0, 0x80000000, 0);
+    draw_hud_rect_blended(0, 0, 0x200, 0x1C0, 0x80000000, 0);
     texture_index = GetIconFrame(0xE99A, 0xE);
     screen_width_subpixels = (right - left) * 16;
     screen_height_subpixels = (bottom - top) * 16;

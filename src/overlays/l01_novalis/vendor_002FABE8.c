@@ -101,7 +101,7 @@ void rock_formation_update(DebrisMoby *m) {
             pos.q = off.q;
             FastVecAdd(&pos, &pos, &m->pos);
             func_L00_001FF4B0(&vel, &vel, random_float_between(1.0f, 5.0f) * D_0015EE6C);
-            ((void (*)(void *, void *, int, float, int, float, float, float, int))func_L01_002F9908)(&pos, &vel, colors.c[random_integer_below(3)], random_float_between(0.04f, 0.09f),
+            ((void (*)(void *, void *, int, float, int, float, float, float, int))spawn_debris_moby)(&pos, &vel, colors.c[random_integer_below(3)], random_float_between(0.04f, 0.09f),
                               rand_range(60, 180), 1.0f, 1.0f, 0.75f, 0);
         }
         SetDeathBits(m, 0, -1);
@@ -145,7 +145,7 @@ void fan_update(SwayMoby *m) {
 
     v = m->pvars;
     if (m->state == 0) {
-        func_L00_0025E210(m);
+        copy_hero_spawn_frame(m);
         m->state = 1;
         v->sway = random_float_between(-1.0f, 1.0f);
         v->dir = (func_001160D8() & 1) ? 1.0f : -1.0f;
@@ -261,7 +261,7 @@ void bridge_piece_1_update(BurstMoby *self) {
             pos.f[2] = 0.0f;
             func_L00_001FF4B0(&dir, &dir, func_002140F8_FB158b(D_0015EE6C_FB158b * 5.0f, D_0015EE6C_FB158b * 20.0f));
             func_001F9BD8_FB158e(&pos, &pos, &self->pos);
-            func_L01_002F9908(&pos, &dir, colors.c[random_integer_below(3)], func_L00_00258BC8_FB158b(0xB4, 0x12C), 0.05f, 1.0f, 1.0f, 0.75f, 0);
+            spawn_debris_moby(&pos, &dir, colors.c[random_integer_below(3)], func_L00_00258BC8_FB158b(0xB4, 0x12C), 0.05f, 1.0f, 1.0f, 0.75f, 0);
         }
         level_moby_killed[D_0015EE84_FB158][self->id >> 5] |= 1 << (self->id & 0x1F);
         moby_killed[self->id >> 5] |= 1 << (self->id & 0x1F);
@@ -1506,7 +1506,7 @@ char *pool_drip(void *position,float scale) {
  char *m=CreateMoby(0x313);
  if(m) {
   char *data=*(char **)(m+0x78);
-  func_L00_0025E210(m);
+  copy_hero_spawn_frame(m);
   *(int *)(m+0x40)=0;
   *(float *)(m+0x2C)*=scale;
   *(short *)(m+0x32)=0x40;
@@ -1961,7 +1961,7 @@ void update_explosive_moby(struct Moby *m) {
                 clear_u64_value(v);
             }
         }
-        func_L00_0025F4A8(m, v, &m->pos, 0.0f, 0.0f, 0x14, 3, 4, 4.0f, 2.0f, 100000.0f, 3.0f, 0, 15.0f, 1, 1,
+        spawn_explosion(m, v, &m->pos, 0.0f, 0.0f, 0x14, 3, 4, 4.0f, 2.0f, 100000.0f, 3.0f, 0, 15.0f, 1, 1,
                          -1, 0);
         DeleteMoby(m);
         return;
@@ -2150,10 +2150,10 @@ void update_level01_cutscene_effects(struct Moby *moby) {
                     }
                     if (fx_cutscene_D568.frame == scale_ticks(118)) {
                         clear_u64_value(&c);
-                        func_L00_0025F4A8(cutscene_moby, &c, &debris_vector_or_effect_position, 0.0f, 0.0f, 3, 200, 200, 5.0f, 2.5f, 9.0f, 1.0f, -1, 60.0f, 0, 60, -1, 0);
+                        spawn_explosion(cutscene_moby, &c, &debris_vector_or_effect_position, 0.0f, 0.0f, 3, 200, 200, 5.0f, 2.5f, 9.0f, 1.0f, -1, 60.0f, 0, 60, -1, 0);
                         qcopy(&secondary_effect_position, &debris_vector_or_effect_position);
                         secondary_effect_position.f[2] = secondary_effect_position.f[2] - 1.0f;
-                        func_L00_0025F4A8(cutscene_moby, &c, &secondary_effect_position, 0.0f, 0.0f, 300, 2, 2, 1.0f, 0.5f, 9.0f, 1.0f, -1, 60.0f, 0, 0, -1, 0);
+                        spawn_explosion(cutscene_moby, &c, &secondary_effect_position, 0.0f, 0.0f, 300, 2, 2, 1.0f, 0.5f, 9.0f, 1.0f, -1, 60.0f, 0, 0, -1, 0);
                     }
                     AddDrawCallback(render_environment_mapped_object, cutscene_moby);
                     Moby_GetJointWorldPos(cutscene_moby, 1, &c);

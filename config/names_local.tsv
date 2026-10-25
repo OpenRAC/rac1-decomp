@@ -3359,3 +3359,86 @@ func_L06_00306440	electric_fence_probe_corners	called only by electric_fence_upd
 func_L06_003065B0	electric_fence_draw	the draw callback electric_fence_update registers for its arcs (Blarg Station only)	override
 func_L06_00305C58	electric_fence_spawn_debris	the electric fence's particle burst helper (Blarg Station only)	override
 func_L06_002DB0E0	bridge_panel_update	moby class 367 (Blarg Station only), the grid panels that bridges on Blarg Station are made of (seen in game, class confirmed with the port's moby inspector on the panels). The code records the panel's place and a point 11 units along its own axis and, when switched, slides between them, easing in and out. One such bridge was seen missing before the alien queen fight and in place after it. Other bridges use the same panels	override
+func_L00_00249720	ovl_map_filter_l01_4	menu_00249720.c: level-00 overlay copy of map_filter_l01_4 (src/game/menu.c), same flag and 58..86 range test.	
+func_L00_00249750	ovl_map_filter_l01_4_tail	menu_00249720.c: joined tail of the l01_4 copy, the 58..86 range arm only (config/overlays/joined.tsv).	
+func_L00_002497A0	ovl_map_filter_l01_5	menu_00249720.c: overlay copy of map_filter_l01_5, hero control mode 0x11/0x12 or base condition, else x >= 95.	
+func_L00_002497E0	ovl_map_filter_l01_5_tail	menu_00249720.c: joined tail of the l01_5 copy, returns x >= 95.	
+func_L00_00249EE0	ovl_map_filter_l07_5	menu_00249720.c: overlay copy of map_filter_l07_5, same 73.5..80 / 51.5..54 ranges split at 0x9D.	
+func_L00_0024A110	ovl_map_filter_l08_0	menu_00249720.c: overlay copy of map_filter_l08_0, control mode 15 for >= 257 else menu_item_enabled_41.	
+func_L00_0024A140	ovl_map_filter_l08_1	menu_00249720.c: overlay copy of map_filter_l08_1, x >= 47.75 below 224 else x < 29.	
+func_L00_0024A170	ovl_map_filter_l08_1_tail	menu_00249720.c: joined tail of the l08_1 copy, returns x < 29.	
+func_L00_0024A198	ovl_map_filter_l08_2	menu_00249720.c: overlay copy of map_filter_l08_2, 44..45 below 224 else x >= 37.	
+func_L00_0024A320	ovl_map_filter_l10_0	menu_00249720.c: overlay copy of map_filter_l10_0, menu_item_enabled_68 from 190 up else x >= 58.5.	
+func_L00_0024A338	ovl_map_filter_l10_0_tail	menu_00249720.c: joined tail of the l10_0 copy, returns x >= 58.5.	
+func_L00_0024A3B0	ovl_map_filter_l11_0	menu_00249720.c: overlay copy of map_filter_l11_0, 232..235 with flag below 221 else x <= 180.	
+func_L00_0024A404	ovl_map_filter_l11_0_tail	menu_00249720.c: joined tail of the l11_0 copy, returns x <= 180.	
+func_L00_0024A430	ovl_map_filter_l11_1	menu_00249720.c: overlay copy of map_filter_l11_1, x >= 242 below 221 else x <= 180 with flag.	
+func_L00_0024A460	ovl_map_filter_l11_1_tail	menu_00249720.c: joined tail of the l11_1 copy, x <= 180 with menu flag 75.	
+func_L00_0024A490	ovl_map_filter_l11_2	menu_00249720.c: overlay copy of map_filter_l11_2, 238..241 below 221 else x <= 180 with flag 76.	
+func_L00_0024A510	ovl_map_filter_l11_3	menu_00249720.c: overlay copy of map_filter_l11_3, hero-mode gate with x >= 200 below 351 else 233..235 with flag.	
+func_L00_0024A570	ovl_map_filter_l11_3_tail	menu_00249720.c: joined tail of the l11_3 copy, 233..235 with menu flag 78.	
+func_L00_0024A5C0	ovl_map_filter_l11_4	menu_00249720.c: overlay copy of map_filter_l11_4, 228..230 below 351 else 233..235 with flag 79.	
+func_L00_0024B200	map_world_to_uv	menu_00249720.c: maps world x/y to map texture coords per level from map_coefficients, scaled by 1/512.	
+func_L00_0024B960	card_menu_advance_on_ready_flags	menu_00249720.c: state 3 unless card status is -2, else clears flag 0x20 (state 0x17 or 5) or flag 8 (state 7).	
+func_L10_002DE018	update_jitter_strand_grid_moby	vendor_00296BD8.c: moby update that rebuilds 4x10 strands of 20 points with random jitter on timers and moves them by velocity.	
+func_L00_00205110	lookup_help_id_pair	help_00203E98.c: searches a 150-entry table of short pairs on one column for id, writes the other column, returns the index.	
+func_L05_00266BD8	set_progress_hud_fade_from_hero_mode	hud_00263490.c: in hero control mode 0x16 sets a 30-tick timer and fade step +5, else step -6, read by draw_hud_progress_and_rank.	
+func_L00_00261B00	spawn_moby_bolt_drop	mobyutil_00261B00.c: rolls a bolt count between two limits, splits it into 50/20/5/1 pieces and spawns each with spawn_bolt_by_value.	
+func_L00_0029AB38	movie_exit_to_gameplay	tieproc_00299108.c: after movie playback reloads textures to GS, fades, restarts the level music and resumes the pending menu entry.	
+func_L07_003121D0	door_update	vendor_002F9438.c: state machine that slides the moby by an offset when its linked moby reaches a state, with sounds per move.	
+func_L11_0031A738	draw_moby_trail_quads	vendor_002C99E0.c: draws colour-faded quads along the 16-point trail ring that update_moby_trail_points records, for each grouped moby.	
+D_0013D49E	menu_item_enabled_2	menu_00249720.c: byte 2 of the menu_item_enabled flag block at 0x13D49C (menu_item_enabled_0), tested by the l01_4 filter.	
+D_0013D4E6	menu_item_enabled_74	menu_00249720.c: byte 74 of the menu_item_enabled flag block, tested by the l11_0 filter.	
+D_0013D4E7	menu_item_enabled_75	menu_00249720.c: byte 75 of the menu_item_enabled flag block, tested by the l11_1 filter.	
+D_0013D4EA	menu_item_enabled_78	menu_00249720.c: byte 78 of the menu_item_enabled flag block, tested by the l11_3 filter.	
+func_L00_002E87C8	follow_camera_push_eye_out_of_collision	vendor_002E1660.c: up to 3 radial/sphere collision pushes on the camera eye, sets side flag, then update_follow_camera_orbit_after_collision; called from the follow camera collision pass.	
+func_L00_002E9968	follow_camera_set_height	vendor_002E1660.c: sets orbit height goal and rate on the hero camera; caller passes params->height.	
+func_L00_002E9A18	set_follow_camera_orbit_clamp_mode	vendor_002E1660.c: sets the +0x10 mode short that gates the orbit length clamp in follow_camera_auto_turn.	
+func_L00_002E9A40	follow_camera_set_lateral_spring	vendor_002E1660.c: sets the nonzero lateral spring stiffness/damping; caller passes params->lateral_stiffness/damping.	
+func_L00_00267120	stream_slot_clear_state	stream_002670E0.c: zeroes the slot state short at +0xA (same slot layout as Stream_SetSlotValue).	
+func_L00_00232EF0	advance_hero_animation	help_00232560.c: steps the hero moby's anim_time, frames, sequence switches and sound triggers.	
+func_L00_00232A00	clear_hero_mapped_moby_animation	help_00232560.c: zeroes the hero's mapped moby animation pointer and enable word at +0x2278/+0x227C.	
+func_L14_002B4E40	machinegun_turret_update	vendor_002ACCC0.c: seven-state update of the level 14 machine-gun turret (class 30).	
+func_L14_002B6980	minibomber_follow_spline	vendor_002ACCC0.c: advances along a spline, springs the moby position to the point and turns it to the motion heading; used by minibomber_update.	
+func_L08_00303998	update_blarg_paratrooper_damage_and_state	vendor_002D3DF8.c: called by blarg_paratrooper_update; handles its attached moby, hit damage and picks the next state.	
+func_L13_002EAC18	start_space_fighter_defeat_path	vendor_002C2638.c: on lethal damage puts the space fighter on path 4, hides its part, clears its health bar and enters state 7.	
+func_L00_00244AE0	load_level_archive_resources	loaders_00240398.c: copies the level archive header, loads HUD banks, textures and GS tex registers from the shared archive.	
+func_L01_00277FD8	find_path_detour_point	mobyutil_0026E8E0.c: if the line to the target is blocked by volumes, picks the reachable path point nearest the target.	
+func_L15_002A4318	draw_spark_emitter_moby	vendor_00298BB8.c: draw callback set by update_spark_emitter_moby; six passes of two wave-animated effect quads.	
+func_L05_0032ADE8	orbit_hero_follow_camera_to_overhead	vendor_002CF2C0.c: on a hero flag, captures camera yaw/pitch/distance and eases them to an overhead preset (pitch -88 deg, dist 5).	
+func_L06_002FFF70	update_blarg_space_commando_state	vendor_002FF000.c: called by blarg_space_commando_update; beam, hit damage, skill point and 12-state machine.	
+func_0021CD98	menu_update_noop	pause.c: returns 0; slot 0 (update) of menu callback tables D_001CF1D8 and D_001CF3C0.	
+func_0021E1F8	menu_leave_noop	pause.c: returns 0; slot 3 (leave) of menu table D_001D06D8 after update_menu_entry_actions/draw_menu_text_list.	
+func_0021EF30	menu_draw_noop	pause.c: returns 0; slot 1 (draw) of menu callback table D_001CF1D8.	
+func_0021EF38	enter_item_preview	pause.c: enter slot of the item preview table; sets rotation to pi and clears the preview moby slots 0x44/0x48.	
+func_00222840	pause_page_enter_noop	pause.c: returns 0; enter slot of table D_001D23F8 after Pause_PageInput/render_configured_text_label.	
+func_00223478	enter_timed_menu_sequence	pause.c: enter slot of the update_timed_menu_sequence/draw_menu_text_box table; zeroes its timer fields.	
+func_001F10C8	update_render_debug_menu	draw.c: pad input for the paged render debug menu (occlusion, camera, fog near/far distance and intensity).	
+func_001F2418	project_to_screen	draw.c: builds view matrix from camera focus, transforms a world point and writes screen x/y/z in GS units.	
+func_00201640	draw_hud_rect_blended	hud.c: same packet as draw_hud_rect but with alpha-blended sprite prim 0x46.	
+func_L00_0024F048	mission_cond_obj2f_and_specials	missionfunc_0024EEF0.c: overlay copy of MissionCond_Obj2FAndSpecials; object 0x2F flag and gSpecialItems[0x20],[0x21] set.	
+func_L00_0024F1C8	mission_cond_obj2f_variant	missionfunc_0024EEF0.c: overlay copy of MissionCond_Obj2FVariant; 0 if object 0x2F flag clear, else 2 or 1 by gSpecialItems[0x20].	
+func_L00_0024F258	mission_get_hologuise_or_map_status	missionfunc_0024EEF0.c: overlay copy of Mission_GetHologuiseOrMapStatus; 2 if gHaveHologuise, else gHaveMapOMatic.	
+func_001F7E98	closest_point_on_segment	drawquad.c: VU0 projects point c onto segment a-b, clamps t to 0..1, writes the point, returns t.	
+func_001FBE80	draw_freeze_message_box	freeze.c: draws the message box for freeze game mode (D_0015F6E8 == 4) by its state: frame, texts, spinning icon.	
+func_L05_0030D230	floating_platform_update	vendor_002D28D0.c: rocks the moby's x/y rotation by sine, plays a sound on a random timer, updates the rider matrix.	
+func_L15_002C6950	helicopter_update	vendor_0029C1D0.c: moby state machine calling process_helicopter_hits, target search and path following.	
+func_L00_002377E0	draw_morphoray_progress_hud	hud_00235960.c: HUD draw callback queued by MorphorayUpdate; icon plus particle dots scaled by progress out of 10000.	
+func_L00_00273868	spawn_type58_particle	partupd_00272158.c: create_part(0x3A) at a position and fills its fields by mode 0/1/2.	
+func_L10_002F6F18	initialize_path_camera	vendor_00299AF0.c: resets path camera run state, collects FOV stops and segment lengths of its path.	
+func_L00_002D99C0	spawn_nanotech_ball_glow_rings	vendor_002D9438.c: called by nanotech_ball_update; spawns two type-59 particles for each of 4 timed rings toward the camera.	
+func_L00_0025A748	probe_ground_height_flag20	mobyutil_00258BC8.c: ProbeGroundHeight(pos, 0x20, 0.5f) wrapper; callers use the height.	
+func_L00_0025E210	copy_hero_spawn_frame	mobyutil_00258BC8.c: copies the 64-bit spawn_frame (+0x38) of the moby D_001414D0 points at into the given moby.	
+func_L00_0025EFC0	find_nearest_path_point	mobyutil_00258BC8.c: steps along a path to find the closest segment, then projects the point onto it.	
+func_L00_0025F4A8	spawn_explosion	mobyutil_00258BC8.c: optional radial damage message, then n random spark particles at pos and distance-based effects.	
+func_L05_0030F358	draw_electric_gate_beams	vendor_0030EB68.c: draw callback from electric_gate_update; builds pulsing coloured quads and draws them on each 0x346 gate post.	
+func_00214778	select_damage_reaction	mobyutil.c: picks a hit reaction from damage type/level (+0x28/+0x29) via D_001CC400, with per-reaction cooldown timers.	
+func_L06_00303858	queue_moby_dialogue_line	vendor_002FE5D0.c: picks a per-language line id by mode (fixed or random unused) and writes id+20000 to queued_dialogue_id.	
+func_L00_00200598	setup_fs_aa_buffer_level	fastfunc_001FEF78.c: overlay copy of SetupFS_AA_buffer; fills fs_aa_buffer, frame/draw regs and AA packets.	
+func_L06_0024A0A0	draw_segmented_hud_meter	hud_0024A080.c: draws a 3-7 segment bar whose fill (p+0x74 / p+8) tweens red to yellow to green.	
+func_L00_001EAD88	tick_pulse_waveforms	start_001EAD88.c: ticks 8 pulse slots (square/ramp/cosine shapes) and mixes them into 2 output channels.	
+func_L00_002ADBB0	spawn_glow_particle	vendor_002AB910.c: spawns class 0x70 with random spin, tint, velocity and fade-out life.	
+func_L01_002F9908	spawn_debris_moby	vendor_002F7700.c: spawns a moby of the given class with random spin, velocity, gravity and lifetime.	
+D_00160000	resident_moby_class_count	loaders.c: register_moby_class uses it as the next resident slot and increments it.	
+D_001B3C80	resident_class_id_by_slot	loaders.c: register_moby_class stores the class id at index slot (reverse of resident_class_slot_by_id).	
+D_L00_00166100	pulse_waveform_slots	start_001EAD88.c: 8-entry pulse table (type, slot, delay, life, rise, fall, amp) ticked by tick_pulse_waveforms.	

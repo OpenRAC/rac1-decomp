@@ -39,7 +39,7 @@ s32 find_first_nearby_registered_path(Vec4 *from, s32 **outOwner, Vec4 *to, s32 
             continue;
         if (FastVecDist(&D_L03_0015F7EC[i], p) > D_L03_0015F7EC[i].sphere.f[3])
             continue;
-        if (!func_L00_0025EFC0(D_L03_0015F7EC[i].owner, p, to, &gotI, &gotF, D_L03_0015F7EC[i].kind,
+        if (!find_nearest_path_point(D_L03_0015F7EC[i].owner, p, to, &gotI, &gotF, D_L03_0015F7EC[i].kind,
                               12.0f, 10.0f, 0.0f))
             continue;
         if (!(func_001F9D48(p, to) < 1.7f))
@@ -1671,7 +1671,7 @@ void HeroL03_UpdateStatePhysics(void) {
                     spawn_color_decaying_effect_particle((char *)vec[1], (char *)vec[2], 0);
                 }
             }
-            func_L00_0025EFC0((unsigned char *)D_0013F450.unk5F0, vec[0], D_0013F450.unk5E0.f, &D_0013F450.unk5F4, &D_0013F450.unk5F8, D_0013F450.unk60C, 999.0f, 8.0f, 2.5f);
+            find_nearest_path_point((unsigned char *)D_0013F450.unk5F0, vec[0], D_0013F450.unk5E0.f, &D_0013F450.unk5F4, &D_0013F450.unk5F8, D_0013F450.unk60C, 999.0f, 8.0f, 2.5f);
             n = D_0013F450.unk600;
             if (n != 0) {
                 qcopy(D_0013F450.motion.velocity.f, D_0013F450.motion.unk110.f);

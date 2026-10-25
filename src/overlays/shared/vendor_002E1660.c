@@ -961,7 +961,7 @@ void robot_arm_update(char *m) {
             spawn_color_swapped_explosion_burst(m, a20, -1, *(float *)(d + 0x2C) * 0.5f, 0.0f);
         } else {
             float h = *(float *)(d + 0x2C) * 0.5f;
-            func_L00_0025F4A8(m, D_L00_0015F660, a20, 0.0f, 0.0f, 5, *(float *)(d + 0x2C), 3, h, 9.0f, 5, h, -1, 0.0f, 0, 0, -1, 0);
+            spawn_explosion(m, D_L00_0015F660, a20, 0.0f, 0.0f, 5, *(float *)(d + 0x2C), 3, h, 9.0f, 5, h, -1, 0.0f, 0, 0, -1, 0);
         }
         DeleteMoby(m);
         return;
@@ -2017,7 +2017,7 @@ void follow_camera_apply_overrides(O_y *o) {
     }
     if (hero74.state.control_mode == 0x11) {
         o->m->fF0 = 0.25f;
-        func_L00_002E9968(0.5f, 0.003f);
+        follow_camera_set_height(0.5f, 0.003f);
     }
     if (hero74.state.control_mode == 5) {
         flag = 1;
@@ -2025,10 +2025,10 @@ void follow_camera_apply_overrides(O_y *o) {
             S40_y *q5 = (S40_y *)((u8 *)o->m + 0x40);
             if (hero74.vehicle_mode == 1) {
                 q5->fB0 = 0.25f;
-                func_L00_002E9968(1.5f, 0.003f);
+                follow_camera_set_height(1.5f, 0.003f);
             } else {
                 q5->fB0 = 0.25f;
-                func_L00_002E9968(2.5f, 0.003f);
+                follow_camera_set_height(2.5f, 0.003f);
             }
         }
     }
@@ -2039,7 +2039,7 @@ void follow_camera_apply_overrides(O_y *o) {
             Cam_SetDistanceGoal(3.0f, 0.003f, 1);
             if (flag == 0) {
                 q->fB0 = 1.0f;
-                func_L00_002E9968(1.0f, 0.003f);
+                follow_camera_set_height(1.0f, 0.003f);
             }
         }
         *(f32 *)((u8 *)o->m + 0x20C) = 0.6f;
@@ -2048,7 +2048,7 @@ void follow_camera_apply_overrides(O_y *o) {
         if (s->i10 < 2) {
             Cam_SetEyeOffset(0, g68, 0.005f);
             Cam_SetDistanceGoal(g6C, 0.003f, 1);
-            func_L00_002E9968(g70, 0.003f);
+            follow_camera_set_height(g70, 0.003f);
         }
         func_L00_002E9AD0();
         t = (S1D0_y *)((u8 *)o->m + 0x1D0);
@@ -2057,9 +2057,9 @@ void follow_camera_apply_overrides(O_y *o) {
         t->f44 = w; }
     }
     if (hero74.unk20AA != 0 && hero74.state.control_mode != 0xF) {
-        func_L00_002E9A18(0);
+        set_follow_camera_orbit_clamp_mode(0);
         follow_camera_start_slide();
-        func_L00_002E9A40(0.04f, 0.2f);
+        follow_camera_set_lateral_spring(0.04f, 0.2f);
     }
     x = &player_camera_y[1];
     if (x->fn != 0) x->fn();
@@ -2091,9 +2091,9 @@ void follow_camera_apply_overrides(O_y *o) {
         }
     }
     if (hero74.state.current == 0x81 && (D_0013CAE0_y[0] & 3)) {
-        func_L00_002E9A18(0);
+        set_follow_camera_orbit_clamp_mode(0);
         follow_camera_start_slide();
-        func_L00_002E9A40(0.04f, 0.2f);
+        follow_camera_set_lateral_spring(0.04f, 0.2f);
         { M_y *mm = o->m;
         mm->h16 = 0;
         mm->h12 = 0;
@@ -2128,7 +2128,7 @@ void follow_camera_apply_overrides(O_y *o) {
         k = ++m->h16;
         if (scale_ticks(0x1E) < k) m->h16 = scale_ticks(0x1E);
         f = IntToFloat(m->h16) / IntToFloat(scale_ticks(0x1E));
-        func_L00_002E9A40((g58 - 0.015f) * f + 0.015f, 0.2f);
+        follow_camera_set_lateral_spring((g58 - 0.015f) * f + 0.015f, 0.2f);
         g40 = 0.0f;
     } else if (m->h14 != 0) {
         FastDecTimer(&m->h14);
@@ -2675,7 +2675,7 @@ extern s32 func_L00_001F10E0_E87C8(Vec4 *, f32, s32, s32) __asm__("func_L00_001F
 extern s32 func_L00_002E85E8_E87C8(O002e7318 *, Vec4 *, s32, s32) __asm__("func_L00_002E85E8");
 
 /* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/vendor/002e5e38.c, FUN_L00_002e7318. */
-s32 func_L00_002E87C8(O002e7318 *o) {
+s32 follow_camera_push_eye_out_of_collision(O002e7318 *o) {
     Vec4 pos;
     Vec4 tmp;
     u8 *b = o->p70;
@@ -3215,7 +3215,7 @@ void func_L00_002E9940(float value) {
 }
 /* Requests orbit height X for the hero camera: flag +0x3E of the orbit block (+0x130), goal at +0x4C and rate Y at
    +0x54, only while the current camera's id is 0. */
-void func_L00_002E9968(float x, float y) {
+void follow_camera_set_height(float x, float y) {
     char *p = D_L00_00166F00;
     if (*(short *)(p + 0x86) == 0) {
         char *q = *(char **)(p + 0x70) + 0x130;
@@ -3253,7 +3253,7 @@ void func_L00_002E99F0(float value) {
 }
 /* Sets the mode short at +0x10 of the hero camera's state buffer (read by follow_camera_auto_turn) while the
    current camera's id is 0. */
-void func_L00_002E9A18(int value) {
+void set_follow_camera_orbit_clamp_mode(int value) {
     char *moby = D_L00_00166F00;
     if (*(short *)(moby + 0x86) == 0) {
         char *data = *(char **)(moby + 0x70);
@@ -3262,7 +3262,7 @@ void func_L00_002E9A18(int value) {
 }
 /* Sets the target block's (+0x40) ease rates at +0xDC and +0xE0 of the hero camera's state, each only when nonzero,
    while the current camera's id is 0. */
-void func_L00_002E9A40(float a, float b) {
+void follow_camera_set_lateral_spring(float a, float b) {
     char *p = D_L00_00166F00;
     if (*(short *)(p + 0x86) == 0) {
         char *q = *(char **)(p + 0x70) + 0x40;

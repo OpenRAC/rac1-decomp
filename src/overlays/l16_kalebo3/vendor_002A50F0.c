@@ -116,7 +116,7 @@ remove:
         break;
     }
     case 1:
-        func_L00_0025F4A8(m,D_L16_0015F660_spark,0,0.0f,0.0f,3,3,5,1.0f,0.5f,4.0f,0,0.7f,7.0f,0,0,-1,0);
+        spawn_explosion(m,D_L16_0015F660_spark,0,0.0f,0.0f,3,3,5,1.0f,0.5f,4.0f,0,0.7f,7.0f,0,0,-1,0);
         DeleteMoby(m);
         break;
     }
@@ -361,7 +361,7 @@ void update_thrown_bomb(L16FallingMoby *m) {
         break;
     case 3:
         func_0022ED80_i(0, 0, m);
-        func_L00_0025F4A8(m, D_L16_0015F660_spark, 0, 1.5f, 1.0f, 7, 10, 20, 3.0f, 1.7f, 4.0f, -1, 1.0f, 7.0f,
+        spawn_explosion(m, D_L16_0015F660_spark, 0, 1.5f, 1.0f, 7, 10, 20, 3.0f, 1.7f, 4.0f, -1, 1.0f, 7.0f,
                           0, 7, -1, 0);
         DeleteMoby(m);
         return;
@@ -1910,7 +1910,7 @@ void test_dummy_on_hoverboard_update(unsigned char *m) {
         if (MobyGetHitMessage(m, mask, 0)) {
             qcopy(pos, m + 0x10);
             pos[2] += 0.5f;
-            func_L00_0025F4A8(m, D_L16_0015F660_spark, pos, 0.0f, 0.0f, 5, 15, 25, 2.5f, 1.5f, 4.0f, -1, 1.0f, 7.0f, 0, 9, -1, 0);
+            spawn_explosion(m, D_L16_0015F660_spark, pos, 0.0f, 0.0f, 5, 15, 25, 2.5f, 1.5f, 4.0f, -1, 1.0f, 7.0f, 0, 9, -1, 0);
             spawn_moby_break_fragments(m, 0x655, 1, 0x656, 2, 2, 0);
             spawn_moby_break_fragments(m, 0x6FA, 1, 0x6FB, 1, 1, 0);
             *(short *)(d + 0x2F2) = 0;

@@ -198,7 +198,7 @@ extern void func_0022ED80(s32, s32, void *);
 extern u8 * D_L07_00160058 MACRO_ADDR;
 extern f32 D_0015EE6C MACRO_ADDR;
 
-void func_L07_003121D0(u8 *moby)
+void door_update(u8 *moby)
 {
     u8 *data = *(u8 **)(moby + 0x78);
     u8 *other;

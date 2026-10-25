@@ -1127,7 +1127,7 @@ char *spawn_breakable_stack_replacement(char *src, int cls) {
         qcopy(moby + 0x40, src + 0x40);
         moby[0xBC] = scale_ticks(10);
         func_L00_00251E30(moby);
-        func_L00_0025E210(moby);
+        copy_hero_spawn_frame(moby);
         *(unsigned short *)(moby + 0x34) = *(unsigned short *)(src + 0x34);
         if (cls == 0x514) {
             if (func_001160D8() & 1) {
@@ -1235,7 +1235,7 @@ void display_update(struct Moby *moby) {
     }
     FastVecScale(pos, hit + 0x10, 0.5f);
     FastVecAdd(center, center, push);
-    func_L00_0025F4A8(moby, hit + 0x10, center, 0.0f, 0.0f, 10, 3, 16, 3.0f, 2.0f, 1.0f, 1.0f, -1, 15.0f, 1, 1,
+    spawn_explosion(moby, hit + 0x10, center, 0.0f, 0.0f, 10, 3, 16, 3.0f, 2.0f, 1.0f, 1.0f, -1, 15.0f, 1, 1,
                            -1, 0);
     if (moby->oclass == 0x514 || replaced) {
         func_0020D678_EEF80(moby);
@@ -2786,7 +2786,7 @@ char *spawn_barrier_replacement(char *owner, int cls) {
         qcopy(moby + 0x40, owner + 0x40);
         moby[0xBC] = scale_ticks(10);
         func_L00_00251E30(moby);
-        func_L00_0025E210(moby);
+        copy_hero_spawn_frame(moby);
         *(float *)(moby + 0x2C) = *(float *)(owner + 0x2C);
         *(unsigned short *)(moby + 0x34) = *(unsigned short *)(owner + 0x34);
         **(int **)(moby + 0x78) = **(int **)(owner + 0x78);

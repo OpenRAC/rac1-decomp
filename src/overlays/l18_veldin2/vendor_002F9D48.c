@@ -117,7 +117,7 @@ void update_deplanetizer_gun_sequence_effects(Moby *moby) {
                     Moby_GetJointWorldPos(m, 0, pos);
                     clear_u64_value(up);
                     up[2] = 1.0f;
-                    func_L00_0025F4A8(m, up, pos, 0.0f, 0.0f, 0x32, 0x19, 0x19, 8.0f, 4.0f, 9.0f, 1.0f, -1, 30.0f, 0, 0xF, -1, 0);
+                    spawn_explosion(m, up, pos, 0.0f, 0.0f, 0x32, 0x19, 0x19, 8.0f, 4.0f, 9.0f, 1.0f, -1, 30.0f, 0, 0xF, -1, 0);
                 }
             }
             if (D_L18_0016D2E0_9D48.timer == scale_ticks(0x2C6)) {
@@ -128,7 +128,7 @@ void update_deplanetizer_gun_sequence_effects(Moby *moby) {
                     Moby_GetJointWorldPos(m, 0, pos);
                     clear_u64_value(up);
                     up[2] = 1.0f;
-                    func_L00_0025F4A8(m, up, pos, 0.0f, 0.0f, 0x32, 0x19, 0x19, 8.0f, 4.0f, 9.0f, 1.0f, -1, 30.0f, 0, 0xF, -1, 0);
+                    spawn_explosion(m, up, pos, 0.0f, 0.0f, 0x32, 0x19, 0x19, 8.0f, 4.0f, 9.0f, 1.0f, -1, 30.0f, 0, 0xF, -1, 0);
                 }
             }
             if (D_L18_0016D2E0_9D48.timer == scale_ticks(0x2D0)) {
@@ -139,7 +139,7 @@ void update_deplanetizer_gun_sequence_effects(Moby *moby) {
                     Moby_GetJointWorldPos(m, 0, pos);
                     clear_u64_value(up);
                     up[2] = 1.0f;
-                    func_L00_0025F4A8(m, up, pos, 0.0f, 0.0f, 0x32, 0x19, 0x19, 8.0f, 4.0f, 9.0f, 1.0f, -1, 30.0f, 0, 0xF, -1, 0);
+                    spawn_explosion(m, up, pos, 0.0f, 0.0f, 0x32, 0x19, 0x19, 8.0f, 4.0f, 9.0f, 1.0f, -1, 30.0f, 0, 0xF, -1, 0);
                 }
             }
             if (D_L18_0016D2E0_9D48.timer == scale_ticks(0x2DA)) {
@@ -150,7 +150,7 @@ void update_deplanetizer_gun_sequence_effects(Moby *moby) {
                     Moby_GetJointWorldPos(m, 0, pos);
                     clear_u64_value(up);
                     up[2] = 1.0f;
-                    func_L00_0025F4A8(m, up, pos, 0.0f, 0.0f, 0x32, 0x19, 0x19, 8.0f, 4.0f, 9.0f, 1.0f, -1, 30.0f, 0, 0xF, -1, 0);
+                    spawn_explosion(m, up, pos, 0.0f, 0.0f, 0x32, 0x19, 0x19, 8.0f, 4.0f, 9.0f, 1.0f, -1, 30.0f, 0, 0xF, -1, 0);
                 }
             }
             if (D_L18_0016D2E0_9D48.timer == scale_ticks(0x2EC)) {
@@ -163,7 +163,7 @@ void update_deplanetizer_gun_sequence_effects(Moby *moby) {
                 pos[3] = 1.0f;
                 clear_u64_value(up);
                 up[2] = 1.0f;
-                func_L00_0025F4A8(moby, up, pos, 0.0f, 0.0f, 0x12C, 0xC8, 0xC8, 12.0f, 6.0f, 9.0f, 1.0f, -1, 60.0f, 0, 0x3C, -1, 0);
+                spawn_explosion(moby, up, pos, 0.0f, 0.0f, 0x12C, 0xC8, 0xC8, 12.0f, 6.0f, 9.0f, 1.0f, -1, 60.0f, 0, 0x3C, -1, 0);
             }
             if (D_L18_0016D2E0_9D48.timer >= scale_ticks(*(int *)&D_L18_0016254C) && D_L18_0016D2E0_9D48.timer < scale_ticks(*(int *)&D_L18_00162550)) {
                 float f = IntToFloat(D_L18_0016D2E0_9D48.timer - scale_ticks(*(int *)&D_L18_0016254C));

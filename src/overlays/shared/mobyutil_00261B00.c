@@ -46,7 +46,7 @@ extern char D_L00_00160180[];
 
 /* Per-moby effect update: builds a short vector set from the moby's
    0x10 vector and calls the helper chain for each queued unit. */
-void func_L00_00261B00(char *a, int b, int c, int flags, int idx)
+void spawn_moby_bolt_drop(char *a, int b, int c, int flags, int idx)
 {
     float s0[4], s10[4], s20[4], s30[4], s40[4], s50[4], s60[4];
     float t70, t74;
@@ -1346,7 +1346,7 @@ void update_timed_hud_visibility(void) {
     if (D_L00_0015F674 == 0 || (*(int *)&D_L00_00161F08_g) == 0) {
         (*(int *)&D_L00_00161F04_g) = -1;
     } else if ((*(int *)&D_L00_00161F04_g) == -1) {
-        (*(int *)&D_L00_00161F04_g) = queue_animation_update(0xC, 0, (void *)((char *)func_L00_002377E0 + 0x340), DefaultVtbl_DeleteMoby, draw_hud_text_panel, 0, 0);
+        (*(int *)&D_L00_00161F04_g) = queue_animation_update(0xC, 0, (void *)((char *)draw_morphoray_progress_hud + 0x340), DefaultVtbl_DeleteMoby, draw_hud_text_panel, 0, 0);
     } else {
         hud_keep_visible((*(int *)&D_L00_00161F04_g), 0xA);
     }

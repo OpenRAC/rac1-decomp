@@ -114,7 +114,7 @@ unsigned char *spawn_ship_pickup(char *position, int moby_class)
         moby[0xBC] = 0;
         qcopy(moby + 0x10, position);
         func_L00_00251E30(moby);
-        func_L00_0025E210(moby);
+        copy_hero_spawn_frame(moby);
     }
     return moby;
 }

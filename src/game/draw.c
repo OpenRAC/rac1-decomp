@@ -201,7 +201,7 @@ extern int func_0011C5C0(int, void *, int);
 extern int func_0011C208(int);
 
 /* Debug menu: pages of toggles, counters, fog and occlusion sample tools. */
-void func_001F10C8(void) {
+void update_render_debug_menu(void) {
     Tbl1088 t;
 
     ((int (*)(void))sound_update)();

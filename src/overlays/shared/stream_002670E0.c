@@ -32,7 +32,7 @@ void Stream_SetSlotValue(int value, long arg) {
     }
 }
 /* Clear the 16-bit field at offset 0xA; volatile keeps the store before the return delay slot. */
-void func_L00_00267120(void *a0, unsigned char *a1) {
+void stream_slot_clear_state(void *a0, unsigned char *a1) {
     *(volatile unsigned short *)(a1 + 0xA) = 0;
 }
 void func_L00_00267130(int value, long arg) {

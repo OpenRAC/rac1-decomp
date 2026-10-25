@@ -1204,7 +1204,7 @@ void birdbot_update(PeMoby *m) {
         if (m->pos.f[0] < 2.0f || m->pos.f[0] > 1021.0f
             || m->pos.f[1] < 2.0f || m->pos.f[1] > 1021.0f
             || m->pos.f[2] < 2.0f || m->pos.f[2] > 1021.0f) {
-            func_L00_0025F4A8(m, &v->v40, &m->pos, 0.0f, 0.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, 1.0f, 4, 15.0f, 1, 1, -1, 0);
+            spawn_explosion(m, &v->v40, &m->pos, 0.0f, 0.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, 1.0f, 4, 15.0f, 1, 1, -1, 0);
             SetDeathBits(m, 0, -1);
             DeleteMoby(m);
             return;
@@ -1216,7 +1216,7 @@ void birdbot_update(PeMoby *m) {
             || m->pos.f[0] < 2.0f || m->pos.f[0] > 1021.0f
             || m->pos.f[1] < 2.0f || m->pos.f[1] > 1021.0f
             || m->pos.f[2] < 2.0f || m->pos.f[2] > 1021.0f) {
-            func_L00_0025F4A8(m, &v->v40, &m->pos, 0.0f, 0.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, 1.0f, 4, 15.0f, 1, 1, -1, 0);
+            spawn_explosion(m, &v->v40, &m->pos, 0.0f, 0.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, 1.0f, 4, 15.0f, 1, 1, -1, 0);
             SpawnBreakFragment((char *)m, 0x6C8, m->pos.f, &m->rot, 0, 0, 0.0f, D_L01_0015F660, D_L01_0015F660, D_L01_0015F660);
             SpawnBreakFragment((char *)m, 0x6C9, m->pos.f, &m->rot, 0, 0, 0.0f, D_L01_0015F660, D_L01_0015F660, D_L01_0015F660);
             SpawnBreakFragment((char *)m, 0x6CA, m->pos.f, &m->rot, 0, 0, 0.0f, D_L01_0015F660, D_L01_0015F660, D_L01_0015F660);
@@ -1243,7 +1243,7 @@ void birdbot_update(PeMoby *m) {
     }
     set_range_centered_on_value((char *)m, ground);
     if (CollType() == 0 && m->pos.f[2] < ground + 1.0f) {
-        func_L00_0025F4A8(m, &v->v40, &m->pos, 0.0f, 0.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, 1.0f, 4, 15.0f, 1, 1, -1, 0);
+        spawn_explosion(m, &v->v40, &m->pos, 0.0f, 0.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, 1.0f, 4, 15.0f, 1, 1, -1, 0);
         SpawnBreakFragment((char *)m, 0x6C8, m->pos.f, &m->rot, 0, 0, 0.0f, D_L01_0015F660, D_L01_0015F660, D_L01_0015F660);
         SpawnBreakFragment((char *)m, 0x6C9, m->pos.f, &m->rot, 0, 0, 0.0f, D_L01_0015F660, D_L01_0015F660, D_L01_0015F660);
         SpawnBreakFragment((char *)m, 0x6CA, m->pos.f, &m->rot, 0, 0, 0.0f, D_L01_0015F660, D_L01_0015F660, D_L01_0015F660);
@@ -2082,7 +2082,7 @@ void water_current_update(Moby *self)
         && D_0013F450.state.prev != 0x12) {
         return;
     }
-    func_L00_0025EFC0(path, &D_0013F450.motion.pos, &nearest, &t, &seg, 0, 999.0f, 5.0f, 0.0f);
+    find_nearest_path_point(path, &D_0013F450.motion.pos, &nearest, &t, &seg, 0, 999.0f, 5.0f, 0.0f);
     at_end = Spline_AdvanceByDistance(path, &ahead, &t, &seg, 0, 2.0f);
     dist = func_001F9D48(&D_0013F450.motion.pos, &nearest);
     if (v->radius < dist) {
@@ -2224,7 +2224,7 @@ void TetheredMineUpdate(char *m) {
         FastVecSub(tmp, d + 0xD0, d + 0xE0);
         m[0x20] = 0x65;
         *(u128 *)dir = *(u128 *)tmp;
-        func_L00_0025F4A8(m, dir, m + 0x10, 0.0f, 0.0f, 0x14, 3, 4, 4.0f, 2.0f, 100000.0f, 3.0f, 1, 15.0f, 1, 1, -1, 0);
+        spawn_explosion(m, dir, m + 0x10, 0.0f, 0.0f, 0x14, 3, 4, 4.0f, 2.0f, 100000.0f, 3.0f, 1, 15.0f, 1, 1, -1, 0);
         SpawnDebrisMoby(m, dir, s);
         t = (int *)(d + 0x140);
         for (i = 0; i < 4; i++) {
@@ -2801,7 +2801,7 @@ void bomber_jet_update(Moby *m) {
         }
         FastVecSub(&b, d->vD0, d->vE0);
         *(u128 *)&a = *(u128 *)&b;
-        func_L00_0025F4A8(m, &a, &m->pos, 0.0f, 0.0f, 0x14, 3, 4, 4.0f, 2.0f, 100000.0f, 3.0f, 1, 15.0f, 1, 1, -1, 0);
+        spawn_explosion(m, &a, &m->pos, 0.0f, 0.0f, 0x14, 3, 4, 4.0f, 2.0f, 100000.0f, 3.0f, 1, 15.0f, 1, 1, -1, 0);
         SpawnDebrisMoby((char *)m, &a, s * 2.0f);
         for (i = 0; i < 4; i++) {
             if (d->tethers[i] != -1) {
@@ -3154,7 +3154,7 @@ void update_rising_particle_and_debris_emitter(SteamMoby *m) {
         pos.f[2] = 0.0f;
         FastVecAdd(&pos, &pos, &m->pos);
         pos.f[2] += v->height;
-        func_L01_002F9908(&pos, &vel, colors.c[random_integer_below(3)], rand_range(0xB4, 0x12C), 0.05f, 1.0f, 1.0f, 0.75f, 0);
+        spawn_debris_moby(&pos, &vel, colors.c[random_integer_below(3)], rand_range(0xB4, 0x12C), 0.05f, 1.0f, 1.0f, 0.75f, 0);
     }
     for (i = 0; i < 2; i++) {
         colors = D_L01_00161CA8;
@@ -3206,7 +3206,7 @@ void apply_falling_rock_camera_overrides(char *moby) {
     build_look_at_matrix(rotated_vector, camera_record, camera_record + 0x20, *(float *)&D_L01_00161CB8);
     set_follow_camera_angle_blend_from_direction(rotated_vector, 0.13962633907794952f, 0.0f);
     Cam_SetDistanceGoal(*(float *)&D_L01_00161CBC, *(float *)&D_L01_00161CC8, 0);
-    func_L00_002E9968(*(float *)&D_L01_00161CC0, *(float *)&D_L01_00161CC8);
+    follow_camera_set_height(*(float *)&D_L01_00161CC0, *(float *)&D_L01_00161CC8);
     Cam_SetEyeOffset(0, *(float *)&D_L01_00161CC4, *(float *)&D_L01_00161CC8);
 }
 typedef struct {
@@ -3298,7 +3298,7 @@ void falling_rock_update(CapMoby *falling_rock) {
         pos.f[1] = FastSin(debris_spawn_angle) * debris_spawn_radius;
         pos.f[2] = 0.0f;
         FastVecAdd(&pos, &pos, &falling_rock_vars->home);
-        func_L01_002F9908(&pos, &debris_initial_velocity, colors.c[random_integer_below(3)], rand_range(0xB4, 0x12C), 0.05f, 1.0f, 1.0f, 0.75f, 0);
+        spawn_debris_moby(&pos, &debris_initial_velocity, colors.c[random_integer_below(3)], rand_range(0xB4, 0x12C), 0.05f, 1.0f, 1.0f, 0.75f, 0);
     }
     switch (falling_rock->state) {
     case FALLING_ROCK_STATE_INITIALIZE:

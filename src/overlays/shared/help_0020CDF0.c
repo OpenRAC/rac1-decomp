@@ -182,7 +182,7 @@ int nearest_rail_point(Vec4 *from, s32 **outOwner, Vec4 *to, s32 *outI, f32 *out
             continue;
         if (FastVecDist(&D_L00_0015F7EC[i], p) > D_L00_0015F7EC[i].sphere.f[3])
             continue;
-        if (!func_L00_0025EFC0(D_L00_0015F7EC[i].owner, p, to, &gotI, &gotF, D_L00_0015F7EC[i].kind,
+        if (!find_nearest_path_point(D_L00_0015F7EC[i].owner, p, to, &gotI, &gotF, D_L00_0015F7EC[i].kind,
                               12.0f, 10.0f, 0.0f))
             continue;
         hero_state = &D_0013F450_0CDF0;

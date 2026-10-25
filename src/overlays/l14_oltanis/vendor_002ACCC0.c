@@ -1586,7 +1586,7 @@ extern float D_0015EE6C_2B4E40 __asm__("D_0015EE6C") MACRO_ADDR;
  * Retail's frame keeps 0x50 bytes of locals that no instruction touches (sp+0x60 and sp+0x80..0xBF):
  * v60 and m80 stand for them. The aim vector v30 is written out at every use; retail's second
  * register for it is the compiler's own copy. */
-void func_L14_002B4E40(char *moby) {
+void machinegun_turret_update(char *moby) {
     char *data;
     float v20[4];
     float v30[4];
@@ -2151,7 +2151,7 @@ void minibomber_update(Moby *moby) {
         }
         if (d->fB4 == 2) {
             moby->state = 3;
-        } else if (func_L14_002B6980((char *)moby, (char *)path, (int)&d->fE8, (int)&d->fEC, d->fF0, &d->fE4,
+        } else if (minibomber_follow_spline((char *)moby, (char *)path, (int)&d->fE8, (int)&d->fEC, d->fF0, &d->fE4,
                                      D_L14_00161614 * D_0015EE60, D_L14_0016163C, D_L14_00161640, D_L14_00161644,
                                      D_L14_00161648, D_L14_0016164C, D_L14_00161650) != 0) {
             qcopy(d->f180, path + path->n);
@@ -2186,7 +2186,7 @@ void minibomber_update(Moby *moby) {
         }
         if (d->fB4 != 2) {
             moby->state = 2;
-        } else if (func_L14_002B6980((char *)moby, (char *)path, (int)&d->fE8, (int)&d->fEC, d->fF0, &d->fE4,
+        } else if (minibomber_follow_spline((char *)moby, (char *)path, (int)&d->fE8, (int)&d->fEC, d->fF0, &d->fE4,
                                      -(D_L14_0016161C * D_0015EE60), D_L14_00161654, D_L14_00161640, D_L14_00161644,
                                      D_L14_00161658, D_L14_0016164C, D_L14_00161650) != 0) {
             moby->state = 1;
@@ -2228,7 +2228,7 @@ void minibomber_update(Moby *moby) {
         if (d->f10C == 1) {
             spd = -spd;
         }
-        if (func_L14_002B6980((char *)moby, (char *)D_L14_001B0F30_2B5938[d->fDC], (int)&d->fE8, (int)&d->fEC, d->fF0,
+        if (minibomber_follow_spline((char *)moby, (char *)D_L14_001B0F30_2B5938[d->fDC], (int)&d->fE8, (int)&d->fEC, d->fF0,
                               &d->fE4, spd, D_L14_00161654, D_L14_00161640, D_L14_00161644, D_L14_00161658,
                               D_L14_0016164C, D_L14_00161650) != 0) {
             PathNode_2B5938 *path;
@@ -2439,7 +2439,7 @@ extern float func_L00_001FF860(float, float);
 extern void func_L00_002592B0(char *moby, float *vel, float target, float k, float d, float max);
 
 /* steer a moby's position toward a target and update its velocity */
-int func_L14_002B6980(char *moby, char *a1, int a2, int a3, float *v, float *vel,
+int minibomber_follow_spline(char *moby, char *a1, int a2, int a3, float *v, float *vel,
                       float f12, float f13, float f14, float f15, float f16, float f17, float f18) {
     float tmp[4];
     int r = func_L00_0025E860_AD858(a1, tmp, (void *)a2, (void *)a3, 0, f12);
@@ -2977,7 +2977,7 @@ void update_level14_racer(struct Moby *m) {
                 sv[1] = vel[1];
             }
             spawn_path_or_ballistic_debris(m, &(*(s32 *)&D_L14_00161B2C), 0);
-            func_L00_0025F4A8(m, &d->trail, &m->pos, 0.0f, 0.0f, 5, 2, 4, 4.0f, 2.0f, 9.0f, 1, 1.0f,
+            spawn_explosion(m, &d->trail, &m->pos, 0.0f, 0.0f, 5, 2, 4, 4.0f, 2.0f, 9.0f, 1, 1.0f,
                              15.0f, 1, 5, -1, 0);
             DeleteMoby(m);
             return;
@@ -3012,11 +3012,11 @@ void initialize_racer_path_tracking(char *m) {
     tg = (char *)D_L14_001B0F30[*(int *)(d + 0x88)] + 0x30;
     s.t = z;
     s.i = 0;
-    func_L00_0025EFC0(path, tg, s.v, &s.i, &s.t, 0, 20.0f, 5.0f, z);
+    find_nearest_path_point(path, tg, s.v, &s.i, &s.t, 0, 20.0f, 5.0f, z);
     *(short *)(d + 0x8C) = s.i;
     s.t = z;
     s.i = 0;
-    func_L00_0025EFC0(path, (char *)D_L14_001B0F30[*(int *)(d + 0x88)] + 0x20, s.v, &s.i, &s.t, 0, 20.0f, 5.0f, z);
+    find_nearest_path_point(path, (char *)D_L14_001B0F30[*(int *)(d + 0x88)] + 0x20, s.v, &s.i, &s.t, 0, 20.0f, 5.0f, z);
     n = s.i;
     *(short *)(d + 0x8E) = n;
     *(float *)(d + 0x78) = z;
@@ -3197,7 +3197,7 @@ void update_racer_path_and_weapon(struct Moby *m) {
     *(int *)(d + 0x68) = 0;
     *(int *)(d + 0x64) = 0;
     z = *(float *)(d + 0x68);
-    func_L00_0025EFC0(path, &D_0013F3D0_67e8, &near.x, (int *)(d + 0x64), (float *)(d + 0x68), 0, 20.0f, 5.0f, z);
+    find_nearest_path_point(path, &D_0013F3D0_67e8, &near.x, (int *)(d + 0x64), (float *)(d + 0x68), 0, 20.0f, 5.0f, z);
     ((void (*)(void *, void *, void *, void *, int, float))Spline_AdvanceByDistance)(path, &near, d + 0x64, d + 0x68, 0, -*(float *)(d + 0x74));
     ((void (*)(void *, void *, float, float, float, float))Spring)(&m->pos.x, d + 0x90, near.x, 0.01f, 0.2f, z);
     ((void (*)(void *, void *, float, float, float, float))Spring)(&m->pos.y, d + 0x94, near.y, 0.01f, 0.2f, z);

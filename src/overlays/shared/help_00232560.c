@@ -385,7 +385,7 @@ void set_hero_animation(int a0, int a1, float t) {
     if (*(unsigned char *)(g3 + 0x20A4) == 0) {
         blend_hero_slot3_mapped_animation_pair(a0, a1, t);
     }
-    func_L00_00232A00();
+    clear_hero_mapped_moby_animation();
     if (*(int *)(g3 + 0x2278) != 0) {
         blend_hero_mapped_moby_animation(a0, a1, t);
     }
@@ -465,7 +465,7 @@ extern void func_L00_00232A00(void);
    (wrapping, or jumping as unkAB0/unkAB4/unkAB8 request), fires the sequence's sound triggers crossed this frame,
    keeps the moby's looping sound (sound_slot) in step with unk7C, and records the distance moved (anim_frame, unkAAC).
    Adapted from Lombyte (GPL-3.0, 4e1f255e) for PAL: src/overlays/shared/ui/help/00232670.c, FUN_L00_00232670. */
-void func_L00_00232EF0(void) {
+void advance_hero_animation(void) {
     Moby *m = ((Hero *)D_0013F450)->moby;
     s32 same;
     u8 frame0;
@@ -473,7 +473,7 @@ void func_L00_00232EF0(void) {
     f32 dt;
     f32 prev;
 
-    func_L00_00232A00();
+    clear_hero_mapped_moby_animation();
     ((Hero *)D_0013F450)->unkA98 &= ~3;
     same = m->seq == m->prev_seq;
     frame0 = m->frame;
@@ -1697,7 +1697,7 @@ void show_health_hud(void) {
 
 extern char D_0013F450[];
 /* Clears the secondary animation object pointers, not the movement speed targets. */
-void func_L00_00232A00(void) {
+void clear_hero_mapped_moby_animation(void) {
     char *base = D_0013F450;
     *(int *)(base + 0x2278) = 0;
     *(int *)(base + 0x227C) = 0;

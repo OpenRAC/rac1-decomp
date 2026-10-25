@@ -365,7 +365,7 @@ void initialize_hud_element_defaults(HudElem *e) {
 extern char D_0013E633[];
 extern int func_001F9850(int);
 
-void func_L05_00266BD8(char *moby)
+void set_progress_hud_fade_from_hero_mode(char *moby)
 {
     if (*(int *)(D_0013E633 + 0x2EA9) == 0x16) {
         *(int *)(moby + 0x7C) = scale_ticks(0x1E);

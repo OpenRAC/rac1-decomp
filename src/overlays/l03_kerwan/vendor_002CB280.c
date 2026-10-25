@@ -241,7 +241,7 @@ void mine_layer_update(struct Moby *m) {
         } else if (m->pos.z < 5.0f) {
             qcopy(muzzle, &m->pos);
             muzzle[2] += 0.5f;
-            func_L00_0025F4A8(m, v->effect, muzzle, 0.0f, 0.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, 1.0f, -1, 15.0f, 1, 1, -1, 0);
+            spawn_explosion(m, v->effect, muzzle, 0.0f, 0.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, 1.0f, -1, 15.0f, 1, 1, -1, 0);
             SetDeathBits(m, 0, -1);
             func_0020D678_CB280(m);
             return;
@@ -251,7 +251,7 @@ void mine_layer_update(struct Moby *m) {
         if ((func_L00_0025D6F0_CB280(m, v->knockback) & 0x60) || m->pos.z < 5.0f) {
             qcopy(muzzle, &m->pos);
             muzzle[2] += 0.5f;
-            func_L00_0025F4A8(m, v->effect, muzzle, 0.0f, 0.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, 1.0f, -1, 15.0f, 1, 1, -1, 0);
+            spawn_explosion(m, v->effect, muzzle, 0.0f, 0.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, 1.0f, -1, 15.0f, 1, 1, -1, 0);
             SetDeathBits(m, 0, -1);
             func_0020D678_CB280(m);
             return;
@@ -269,7 +269,7 @@ void mine_layer_update(struct Moby *m) {
         } else if (m->pos.z < 5.0f) {
             qcopy(muzzle, &m->pos);
             muzzle[2] += 0.5f;
-            func_L00_0025F4A8(m, v->effect, muzzle, 0.0f, 0.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, 1.0f, -1, 15.0f, 1, 1, -1, 0);
+            spawn_explosion(m, v->effect, muzzle, 0.0f, 0.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, 1.0f, -1, 15.0f, 1, 1, -1, 0);
             SetDeathBits(m, 0, -1);
             func_0020D678_CB280(m);
             return;
@@ -1922,7 +1922,7 @@ void robot_qwark_update(unsigned char *m) {
         *(u128_DD158 *)pos = *(u128_DD158 *)(m + 0x10);
         pos[2] += 1.0f;
         *(u128_DD158 *)vel = 0;
-        func_L00_0025F4A8(m, vel, pos, 0.0f, 0.0f, 10, 3, 16, 4.0f, 2.0f, 9.0f, 1.0f, 0, 15.0f, 1, 1, -1, 0);
+        spawn_explosion(m, vel, pos, 0.0f, 0.0f, 10, 3, 16, 4.0f, 2.0f, 9.0f, 1.0f, 0, 15.0f, 1, 1, -1, 0);
         m[0x20] = type;
         MobySetAnimation(m, 1, 0);
         level_moby_killed[D_0015EE84][(short)*(unsigned short *)(m + 0xB2) >> 5] |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);

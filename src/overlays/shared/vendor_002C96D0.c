@@ -1561,7 +1561,7 @@ char *spawn_feather_moby(int unused, float *pos, float *vel) {
         }
         d->f20 = random_float_between(-1.2f, -0.4f) * D_0015EE6C;
         func_L00_00251E30(m);
-        func_L00_0025E210(m);
+        copy_hero_spawn_frame(m);
     }
     return m;
 }

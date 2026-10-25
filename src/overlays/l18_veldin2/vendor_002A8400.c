@@ -2622,17 +2622,17 @@ void spawn_explosion_burst(void *source_moby) {
     if (F(D_L18_00162050) > 0.0f) {
         char *pos = (char *)&moby->pos;
         int t = scale_ticks(I(D_L18_00162054));
-        func_L00_002ADBB0(source_moby, pos, &D_L18_0015F660, F(D_L18_00162050), t, *(unsigned char *)&D_L18_00162058, D_L18_00162059[0], D_L18_00162059[1], D_L18_00162059[2]);
+        spawn_glow_particle(source_moby, pos, &D_L18_0015F660, F(D_L18_00162050), t, *(unsigned char *)&D_L18_00162058, D_L18_00162059[0], D_L18_00162059[1], D_L18_00162059[2]);
     }
     if (F(D_L18_0016205C) > 0.0f) {
         char *pos = (char *)&moby->pos;
         int t = scale_ticks(I(D_L18_00162060));
-        func_L00_002ADBB0(source_moby, pos, &D_L18_0015F660, F(D_L18_0016205C), t, *(unsigned char *)&D_L18_00162064, D_L18_00162065[0], D_L18_00162065[1], D_L18_00162065[2]);
+        spawn_glow_particle(source_moby, pos, &D_L18_0015F660, F(D_L18_0016205C), t, *(unsigned char *)&D_L18_00162064, D_L18_00162065[0], D_L18_00162065[1], D_L18_00162065[2]);
     }
     if (F(D_L18_00162068) > 0.0f) {
         char *pos = (char *)&moby->pos;
         int t = scale_ticks(I(D_L18_0016206C));
-        func_L00_002ADBB0(source_moby, pos, &D_L18_0015F660, F(D_L18_00162068), t, *(unsigned char *)&D_L18_00162070, D_L18_00162071[0], D_L18_00162071[1], D_L18_00162071[2]);
+        spawn_glow_particle(source_moby, pos, &D_L18_0015F660, F(D_L18_00162068), t, *(unsigned char *)&D_L18_00162070, D_L18_00162071[0], D_L18_00162071[1], D_L18_00162071[2]);
     }
     if (F(D_L18_00162074) > 0.0f) {
         L18FlareView *camera = (L18FlareView *)D_L18_00167700;
@@ -3084,7 +3084,7 @@ void drek_fight_missile_update(char *moby) {
             char *pos = (char *)&m->pos;
             m->state = 2;
             *(short *)(missile_vars + 0x164) = 0;
-            func_L00_0025F4A8(*(void **)(missile_vars + 0x16C), &D_L18_0015F660, pos, 1.0f, 1.0f, 10, 3, 16,
+            spawn_explosion(*(void **)(missile_vars + 0x16C), &D_L18_0015F660, pos, 1.0f, 1.0f, 10, 3, 16,
                               1.5f, 0.5f, 9.0f, 1.0f, 2, 5.0f, 0, 0, -1, 0);
             qcopy(pos, D_L18_00167840);
             m->pos.z += 20.0f;

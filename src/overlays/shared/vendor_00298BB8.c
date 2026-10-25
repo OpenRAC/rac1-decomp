@@ -1385,7 +1385,7 @@ void spawn_rocket_detonation_glow(char *moby)
 {
     char *pos = moby + 0x10;
     int t = scale_ticks(*(int *)&D_L15_001614E4);
-    func_L00_002ADBB0(moby, pos, (int)&D_L15_0015F660, t, *(float *)&D_L15_001614E0,
+    spawn_glow_particle(moby, pos, (int)&D_L15_0015F660, t, *(float *)&D_L15_001614E0,
                       D_L15_001614EC, D_L15_001614F0, D_L15_001614F4, D_L15_001614E8);
 }
 typedef int u128_29E8A0 __attribute__((mode(TI)));
@@ -1771,11 +1771,11 @@ void update_target_leading_missile(M_29E8A0 *m) {
                 }
             }
             if (D_L15_0015F6B4 < 0.95f && 9.0f < dist) {
-                ((void (*)(void *, void *, void *, float, int, int, int, int, int))func_L00_002ADBB0)(m, m->pos, v70, 4.0f, scale_ticks(0xF), 0x7F, 0x7F, 0x7F, 0x20);
-                ((void (*)(void *, void *, void *, float, int, int, int, int, int))func_L00_002ADBB0)(m, m->pos, v70, 4.0f, scale_ticks(0x18), 0x7F, 0x7F, 0x7F, 0x20);
+                ((void (*)(void *, void *, void *, float, int, int, int, int, int))spawn_glow_particle)(m, m->pos, v70, 4.0f, scale_ticks(0xF), 0x7F, 0x7F, 0x7F, 0x20);
+                ((void (*)(void *, void *, void *, float, int, int, int, int, int))spawn_glow_particle)(m, m->pos, v70, 4.0f, scale_ticks(0x18), 0x7F, 0x7F, 0x7F, 0x20);
             }
-            ((void (*)(void *, void *, void *, float, int, int, int, int, int))func_L00_002ADBB0)(m, m->pos, v70, 4.0f, scale_ticks(0x14), 0x7F, 0x7F, 0, 0x30);
-            ((void (*)(void *, void *, void *, float, int, int, int, int, int))func_L00_002ADBB0)(m, m->pos, v70, 2.0f, scale_ticks(0x13), 0xFF, 0xFF, 0xFF, 0x20);
+            ((void (*)(void *, void *, void *, float, int, int, int, int, int))spawn_glow_particle)(m, m->pos, v70, 4.0f, scale_ticks(0x14), 0x7F, 0x7F, 0, 0x30);
+            ((void (*)(void *, void *, void *, float, int, int, int, int, int))spawn_glow_particle)(m, m->pos, v70, 2.0f, scale_ticks(0x13), 0xFF, 0xFF, 0xFF, 0x20);
             vel[0] = 0.0f;
             cam = D_L15_00167300;
             m->bc = 0;
@@ -2438,7 +2438,7 @@ extern float func_001F9F90(float);
 
 /* Draw callback set by update_spark_emitter_moby: draws six passes of two effect quads (texture 0x2C)
    at the moby transform, with wave-animated corners and a colour that fades with the data timer. */
-void func_L15_002A4318(unsigned char *moby) {
+void draw_spark_emitter_moby(unsigned char *moby) {
     Quad_2A4318 first, second;
     float transform[12] __attribute__((aligned(16)));
     float position[4] __attribute__((aligned(16)));

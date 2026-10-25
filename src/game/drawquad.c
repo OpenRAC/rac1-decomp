@@ -50,7 +50,7 @@ ASM_FUNC("asm/handwritten/text", func_001F7C60);
 
 ASM_FUNC("asm/handwritten/text", func_001F7DD8);
 
-float func_001F7E98(float *dst, float *a, float *b, float *c) {
+float closest_point_on_segment(float *dst, float *a, float *b, float *c) {
     float t;
     __asm__ __volatile__(
         "vaddw.xyz $vf24,$vf0,$vf0w\n\t"

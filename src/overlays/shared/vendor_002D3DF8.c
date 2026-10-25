@@ -826,7 +826,7 @@ collision:
         if (*(float *)(moby + 0x10) - 2.0f < radius) radius = *(float *)(moby + 0x10) - 2.0f;
         if (*(float *)(moby + 0x14) - 2.0f < radius) radius = *(float *)(moby + 0x14) - 2.0f;
         if (*(float *)(moby + 0x18) - 2.0f < radius) radius = *(float *)(moby + 0x18) - 2.0f;
-        func_L00_0025F4A8(moby, data, moby + 0x10, 3.0f, 3.0f, 0,
+        spawn_explosion(moby, data, moby + 0x10, 3.0f, 3.0f, 0,
             10, 20, 5.0f, 3.0f, 9.0f, -1, 1.0f, radius, 1, 1, -1, 0);
     }
     DeleteMoby(moby);
@@ -1448,7 +1448,7 @@ extern short D_L08_00162220;
 extern char D_0013E633[] NOT_SDA;
 
 /* Shared moby update (class 152, levels 08 and 09): steers the moby by its hero-relative vectors and picks its next state. */
-void func_L08_00303998(char *m) {
+void update_blarg_paratrooper_damage_and_state(char *m) {
     char *d, *p, *Y, *Y2, *t;
     float S[4];
     float P16[16];
@@ -1575,7 +1575,7 @@ void func_L08_00303998(char *m) {
                 InitKnockback(m, d + 0x70, q5c, 0xC, 1, 0);
                 *(unsigned char *)(m + 0x20) = 11;
                 *(unsigned char *)(d + 0x67) = 0xF0;
-                func_L00_00261B00(m, 2, 3, 0, -1);
+                spawn_moby_bolt_drop(m, 2, 3, 0, -1);
                 break;
             default:
                 break;

@@ -1837,9 +1837,9 @@ void HeroL17_UpdateStatePhysics(void) {
             if (D_0013F450.unk5A8 >= 2 && D_0013F450.unk5A8 <= 3) {
                 D_0013F450.unk5A8 = -1;
             }
-            func_L00_0025EFC0((unsigned char *)D_0013F450.unk560, D_0013F450.motion.pos.f, D_0013F450.unk500.f, &D_0013F450.unk564, &D_0013F450.unk568, D_0013F450.unk584, 999.0f, 2.0f, 2.5f);
+            find_nearest_path_point((unsigned char *)D_0013F450.unk560, D_0013F450.motion.pos.f, D_0013F450.unk500.f, &D_0013F450.unk564, &D_0013F450.unk568, D_0013F450.unk584, 999.0f, 2.0f, 2.5f);
             if (D_0013F450.unk590 != 0) {
-                func_L00_0025EFC0((unsigned char *)D_0013F450.unk594, D_0013F450.motion.pos.f, D_0013F450.unk540.f, &D_0013F450.unk598, &D_0013F450.unk59C, D_0013F450.unk5A0, 999.0f, 2.0f, 2.5f);
+                find_nearest_path_point((unsigned char *)D_0013F450.unk594, D_0013F450.motion.pos.f, D_0013F450.unk540.f, &D_0013F450.unk598, &D_0013F450.unk59C, D_0013F450.unk5A0, 999.0f, 2.0f, 2.5f);
             }
             late = 0;
             if (D_0013F450.ground_distance > 0.87f && D_0013F450.state.current != 0x29 && D_0013F450.state.current != 0x42 && D_0013F450.unk590 == 0) {
@@ -2140,7 +2140,7 @@ void HeroL17_UpdateStatePhysics(void) {
                     spawn_color_decaying_effect_particle((char *)vec[1], (char *)vec[2], 0);
                 }
             }
-            func_L00_0025EFC0((unsigned char *)D_0013F450.unk5F0, vec[0], D_0013F450.unk5E0.f, &D_0013F450.unk5F4, &D_0013F450.unk5F8, D_0013F450.unk60C, 999.0f, 8.0f, 2.5f);
+            find_nearest_path_point((unsigned char *)D_0013F450.unk5F0, vec[0], D_0013F450.unk5E0.f, &D_0013F450.unk5F4, &D_0013F450.unk5F8, D_0013F450.unk60C, 999.0f, 8.0f, 2.5f);
             n = D_0013F450.unk600;
             if (n != 0) {
                 qcopy(D_0013F450.motion.velocity.f, D_0013F450.motion.unk110.f);

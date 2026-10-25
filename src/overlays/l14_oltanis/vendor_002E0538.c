@@ -862,9 +862,9 @@ void update_looping_path_moby(struct Moby *m) {
             clear_u64_value(&vel);
             Moby_PlaySound(0, 0, m);
             if (D_0013F450.coll_hit_moby == (u8 *)m)
-                func_L00_0025F4A8(m, &vel, &m->pos, 3.0f, 1.0f, 10, 20, 60, 3.0f, 5.0f, 9.0f, 1.0f, -1, 15.0f, 1, 1, -1, 0);
+                spawn_explosion(m, &vel, &m->pos, 3.0f, 1.0f, 10, 20, 60, 3.0f, 5.0f, 9.0f, 1.0f, -1, 15.0f, 1, 1, -1, 0);
             else
-                func_L00_0025F4A8(m, &vel, &m->pos, 0.0f, 0.0f, 10, 20, 60, 3.0f, 5.0f, 9.0f, 1.0f, -1, 15.0f, 1, 1, -1, 0);
+                spawn_explosion(m, &vel, &m->pos, 0.0f, 0.0f, 10, 20, 60, 3.0f, 5.0f, 9.0f, 1.0f, -1, 15.0f, 1, 1, -1, 0);
             DeleteMoby(m);
             return;
         }

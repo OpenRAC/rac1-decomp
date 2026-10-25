@@ -130,7 +130,7 @@ int map_filter_l01_4(int arg0, float unused1, float unused2, float arg1) {
     int is16 = D_001414DC_early == 0x10;
 
     if (arg0 < 0x100) {
-        if (D_0013D49E != 0) {
+        if (menu_item_enabled_2 != 0) {
             return 1;
         }
     } else if (arg1 >= 58.0f && arg1 <= 86.0f && !is16) {
@@ -552,7 +552,7 @@ extern unsigned char D_0013D4E6 NOT_SDA;
 
 int map_filter_l11_0(int arg0, float unused1, float unused2, float arg1) {
     if (arg0 < 0xDD) {
-        return arg1 >= 232.0f && arg1 <= 235.0f && D_0013D4E6 != 0;
+        return arg1 >= 232.0f && arg1 <= 235.0f && menu_item_enabled_74 != 0;
     }
     return (arg1 <= 180.0f) ? 1 : 0;
 }
@@ -563,7 +563,7 @@ int map_filter_l11_1(int arg0, float unused1, float unused2, float arg1) {
     if (arg0 < 0xDD) {
         return (arg1 >= 242.0f) ? 1 : 0;
     }
-    return arg1 <= 180.0f && D_0013D4E7 != 0;
+    return arg1 <= 180.0f && menu_item_enabled_75 != 0;
 }
 
 extern unsigned char D_0013D4E8 NOT_SDA;
@@ -587,7 +587,7 @@ int map_filter_l11_3(int reveal_test_selector, float unused1, float unused2, flo
     if (reveal_test_selector < 0x15F) {
         return (reveal_test_value >= 200.0f) ? hero_state_allows_reveal : 0;
     }
-    return reveal_test_value >= 233.0f && reveal_test_value <= 235.0f && D_0013D4EA != 0;
+    return reveal_test_value >= 233.0f && reveal_test_value <= 235.0f && menu_item_enabled_78 != 0;
 }
 
 extern unsigned char D_0013D4EB NOT_SDA;
@@ -1042,7 +1042,7 @@ void func_00208D38(int left, int top, int right, int bottom) {
             continue;
         }
         if (m->icon == -1) {
-            func_00201640(sx - marker_half_size, sy - marker_half_size, sx + marker_half_size,
+            draw_hud_rect_blended(sx - marker_half_size, sy - marker_half_size, sx + marker_half_size,
                           sy + marker_half_size, m->sub, 1);
         } else {
             int tex = GetIconFrame(m->icon, m->sub);

@@ -654,7 +654,7 @@ int solve_quadratic_equation(float *r0, float *r1, float a, float b, float c) {
 }
 extern void func_00214358(void *, int, float);
 
-void func_L00_0025A748(void *arg) {
+void probe_ground_height_flag20(void *arg) {
     ProbeGroundHeight(arg, 0x20, 0.5f);
 }
 // Point-in-polygon test by ray crossing over 16-byte vertices.
@@ -1923,7 +1923,7 @@ typedef struct {
 extern u8 D_001414D0[];
 
 /* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/0025d1b8.c, FUN_L00_0025d1b8. */
-void func_L00_0025E210(S *p, s64 v) {
+void copy_hero_spawn_frame(S *p, s64 v) {
     v = (*(S **)&D_001414D0[0])->v;
     p->v = v;
 }
@@ -2228,7 +2228,7 @@ extern f32 func_L00_0025EAC8_5EFC0(void *, void *, f32) __asm__("func_L00_0025EA
 extern s32 func_L00_0025E860_5EFC0(s32 *, OvlQuad *, s32 *, f32 *, f32, s32) __asm__("func_L00_0025E860");
 
 /* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/math/rotations/0025d238.c, FUN_L00_0025df68. */
-s32 func_L00_0025EFC0(s32 *path, OvlQuad *point, OvlQuad *nearest,
+s32 find_nearest_path_point(s32 *path, OvlQuad *point, OvlQuad *nearest,
                        s32 *segment, f32 *fraction, s32 wrap,
                        f32 limit, f32 step, f32 height_tolerance) {
     OvlQuad work[4];
@@ -2413,7 +2413,7 @@ extern int func_0022ED80_25F4A8(int, int, void *) __asm__("func_0022ED80");
 extern void func_L00_002D4CE8_25F4A8(void *, void *, int, int) __asm__("func_L00_002D4CE8");
 
 /* Beam explosion at moby m: a spark burst from a spawn event, optional glow sparks and a flash, with a cam tint. */
-void func_L00_0025F4A8(char *m, void *unused, char *pos, float fA, float fB, int n, int k8, int k9,
+void spawn_explosion(char *m, void *unused, char *pos, float fA, float fB, int n, int k8, int k9,
                        float fC, float fD, float fE, float fF, int k10, float fG, int k11,
                        int s16, int s18, unsigned char flag) {
     Q_25F4A8 vb;
@@ -2640,9 +2640,9 @@ void SpawnExplosionFx(char *a, char *b, int snd, float sc, float fl) {
     }
     if (a != 0) {
         t1 = sc * 4.0f;
-        func_L00_002ADBB0(a, b, &m, t1, scale_ticks(0x14), 0x7F, 0x40, 0, 0x30);
+        spawn_glow_particle(a, b, &m, t1, scale_ticks(0x14), 0x7F, 0x40, 0, 0x30);
         t2 = sc * 3.0f;
-        func_L00_002ADBB0(a, b, &m, t2, scale_ticks(0x1D), 0x60, 0x20, 0, 0x20);
+        spawn_glow_particle(a, b, &m, t2, scale_ticks(0x1D), 0x60, 0x20, 0, 0x20);
     }
     {
         Vy10_60108 v;
@@ -2702,11 +2702,11 @@ void spawn_color_swapped_explosion_burst(char *a, char *b, float sc, float fl) {
         r[0] = 0x7F; r[1] = 0x40; r[2] = 0;
         swap_color_channel_words(&r[0], &r[1], &r[2], 1);
         t1 = sc * 4.0f;
-        func_L00_002ADBB0(a, b, &m, t1, scale_ticks(0x14), *(unsigned char *)&r[0], *(unsigned char *)&r[1], *(unsigned char *)&r[2], 0x30);
+        spawn_glow_particle(a, b, &m, t1, scale_ticks(0x14), *(unsigned char *)&r[0], *(unsigned char *)&r[1], *(unsigned char *)&r[2], 0x30);
         r[0] = 0x60; r[1] = 0x20; r[2] = 0;
         swap_color_channel_words(&r[0], &r[1], &r[2], 1);
         t2 = sc * 3.0f;
-        func_L00_002ADBB0(a, b, &m, t2, scale_ticks(0x1D), *(unsigned char *)&r[0], *(unsigned char *)&r[1], *(unsigned char *)&r[2], 0x20);
+        spawn_glow_particle(a, b, &m, t2, scale_ticks(0x1D), *(unsigned char *)&r[0], *(unsigned char *)&r[1], *(unsigned char *)&r[2], 0x20);
     }
     if (fl != 0.0f) {
         if (fl > 0.0f) {

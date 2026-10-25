@@ -2268,7 +2268,7 @@ char *spawn_doom_bot(int owner, void *pos, void *rot) {
         qcopy(p + 0x10, rot);
         *(int *)(p + 0x60) = owner;
         func_L00_00251E30(m);
-        func_L00_0025E210(m);
+        copy_hero_spawn_frame(m);
         *(float *)(m + 0x2C) = *(float *)(*(char **)(m + 0x24) + 0x24) * 0.1f;
     }
     return m;

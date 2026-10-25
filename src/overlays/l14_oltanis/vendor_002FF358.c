@@ -767,7 +767,7 @@ void update_bouncing_spark(Moby *m)
     }
 
     case 3:
-      func_L00_0025F4A8(m, &d->vel, &m->pos, 2.0f, 1.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, 0, 1.0f, 15.0f, 1, 1, -1, 0);
+      spawn_explosion(m, &d->vel, &m->pos, 2.0f, 1.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, 0, 1.0f, 15.0f, 1, 1, -1, 0);
       DeleteMoby(m);
       return;
 

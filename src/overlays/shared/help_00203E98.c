@@ -110,7 +110,7 @@ void clear_jet_camera_mode_latch(void) {
 }
 extern unsigned char D_L00_00179550[];
 
-int func_L00_00205110(short id, int a1, unsigned short *out) {
+int lookup_help_id_pair(short id, int a1, unsigned short *out) {
     char *base = (char *)D_L00_00179550;
     int off;
     int i;
@@ -843,7 +843,7 @@ void update_hero_in_vehicle_mode(void) {
     float off[4];
     float rm[16];
 
-    func_L00_00232EF0();
+    advance_hero_animation();
     hero_update();
     apply_hero_selected_flags_and_state_transitions();
     if (((GS_68C8 *)(D_0013E633 + 0xE1D))->b20A4 == 1) {
@@ -1274,7 +1274,7 @@ void coordinate_hero_frame_update(void) {
         update_hero_in_vehicle_mode();
         return;
     }
-    func_L00_00232EF0();
+    advance_hero_animation();
     hero_update();
     apply_hero_selected_flags_and_state_transitions();
     check_ledge_grab();

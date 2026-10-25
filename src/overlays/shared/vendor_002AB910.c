@@ -701,7 +701,7 @@ void mine_update(M910 *m) {
                         SendRadialMessageToMobys(m, t, D_L00_00178000, hit, 0, 0x810000, 4, 1, 3.0f, 0.25f, 1.5f);
                     }
                 }
-                gz = func_L00_0025A748(&m->pos);
+                gz = probe_ground_height_flag20(&m->pos);
                 if (v->h50 != 0) {
                     V910 t;
                     V910 n;
@@ -773,7 +773,7 @@ void mine_update(M910 *m) {
                     V910 t;
                     {
                         clear_u64_value(t);
-                        func_L00_0025F4A8(m, t, 0, 0.0f, 0.0f, 3, 3, 5, 2.0f, 1.0f, 4.0f, 1.0f, 2, 7.0f, 0, 1, -1, D_E910.b11);
+                        spawn_explosion(m, t, 0, 0.0f, 0.0f, 3, 3, 5, 2.0f, 1.0f, 4.0f, 1.0f, 2, 7.0f, 0, 1, -1, D_E910.b11);
                     }
                 } else {
                     float sc = IntToFloat(D_E910.b11) * 0.5f + 1.0f;
@@ -878,7 +878,7 @@ extern float func_001FA888(int);
 extern void func_L00_00251E30(void *);
 
 /* Spawns a spinning shard (type 0x70) at pos with velocity vel, tinted r/g/b, fading out over life. */
-char *func_L00_002ADBB0(void *owner, void *pos, void *vel, float scale, int life,
+char *spawn_glow_particle(void *owner, void *pos, void *vel, float scale, int life,
                         unsigned char r, unsigned char g, unsigned char b, unsigned char a) {
     char *m = CreateMoby(0x70);
     if (m != 0) {
@@ -1833,7 +1833,7 @@ void bomb_update(M_2aedd0 *m) {
                     v.q = m->pos.q;
                     v.f[2] += 3.5f;
                     gz = ProbeGroundHeight(&v, 0, 0.5f);
-                    wz = func_L00_0025A748(&v);
+                    wz = probe_ground_height_flag20(&v);
                     if (gz != wz && gz - wz < 1.2f) {
                         V2AE110 v2;
                         V2AE110 w;
@@ -2675,17 +2675,17 @@ void gold_devastator_missile_update(M910 *m) {
         if(D_L00_0015F6B4<0.95f && distance>9.0f) {
             int c=127,f=127;
             if(D_0013E620.bB) { c=60; f=60; }
-            func_L00_002ADBB0(m,(&m->pos),&blast_velocity,size*4.0f,scale_ticks(15),c,127,f,32);
-            func_L00_002ADBB0(m,(&m->pos),&blast_velocity,size*4.0f,scale_ticks(24),c,127,f,32);
+            spawn_glow_particle(m,(&m->pos),&blast_velocity,size*4.0f,scale_ticks(15),c,127,f,32);
+            spawn_glow_particle(m,(&m->pos),&blast_velocity,size*4.0f,scale_ticks(24),c,127,f,32);
         }
         { unsigned char color=127;
           int life;
           float flash_scale=size*4.0f;
           if(D_0013E620.bB) color=32;
           life=scale_ticks(20);
-          func_L00_002ADBB0(m,(&m->pos),&blast_velocity,flash_scale,life,color,127,0,48);
+          spawn_glow_particle(m,(&m->pos),&blast_velocity,flash_scale,life,color,127,0,48);
         }
-        if(!reduced) func_L00_002ADBB0(m,(&m->pos),&blast_velocity,(size+size),scale_ticks(19),255,255,255,32);
+        if(!reduced) spawn_glow_particle(m,(&m->pos),&blast_velocity,(size+size),scale_ticks(19),255,255,255,32);
         motion.f[0]=0.0f;
         m->bBC=0;
         player_camera.f160=distance<20.0f ? 0.4f-distance*0.0175f : 0.4f-20.0f*0.0175f;

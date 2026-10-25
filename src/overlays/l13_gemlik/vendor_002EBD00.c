@@ -908,7 +908,7 @@ void update_qwarks_starfighter(Moby388 *moby) {
         moby->rot[1] = *(float *)(view + 0x154);
         moby->scale *= 0.98f;
         if (data->iF8 == scale_ticks(0x1E)) {
-            func_L00_0025F4A8(moby, &data->f70, 0, 0.0f, 0.0f, 0x1E, 8, 0x20, 5.0f, 3.0f, 0.0f, 7, 1.0f, 0.0f, 1, 5, -1, 0);
+            spawn_explosion(moby, &data->f70, 0, 0.0f, 0.0f, 0x1E, 8, 0x20, 5.0f, 3.0f, 0.0f, 7, 1.0f, 0.0f, 1, 5, -1, 0);
         }
         func_L13_002E9F90_2(moby, data);
         if (func_001F9908(&data->iF8) != 0) {
@@ -1228,7 +1228,7 @@ void update_qwarks_starfighter_part(char *m) {
             DeleteMoby(moby);
             return;
         case 4:
-            func_L00_0025F4A8(moby, &vars->vel, 0, 2.0f, 4.0f, 10, 3, 16, 4.0f, 2.0f, 9.0f, -1, 1.0f, 15.0f, 1, 1, -1, 0);
+            spawn_explosion(moby, &vars->vel, 0, 2.0f, 4.0f, 10, 3, 16, 4.0f, 2.0f, 9.0f, -1, 1.0f, 15.0f, 1, 1, -1, 0);
             DeleteMoby(moby);
             return;
         }
@@ -1875,7 +1875,7 @@ extern void func_L00_0025F4A8(void *, void *, void *, float, float, int, int, in
 void spawn_attached_rocket_non_damaging_explosion(char *moby) {
     char vector[16];
     clear_u64_value(vector);
-    func_L00_0025F4A8(moby, vector, moby + 0x10, 0.0f, 0.0f, 5, 1, 5,
+    spawn_explosion(moby, vector, moby + 0x10, 0.0f, 0.0f, 5, 1, 5,
                        0.0f, 0.0f, 0.0f, 0, 1.0f, 0.0f, 0, 1, -1, 0);
 }
 extern char *func_0020D348_m(int) __asm__("func_0020D348");
@@ -2703,7 +2703,7 @@ void BlargSpaceCommandoUpdate(struct Moby *moby) {
         break;
     case 16:
         if (mine_fall(moby, &vars->vel) & 0x160) {
-            func_L00_0025F4A8(moby, &vars->vel, 0, 0.0f, 0.0f, 10, 3, 16, 4.0f, 2.0f, 9.0f, -1, 1.0f, 15.0f, 1, 1, -1, 0);
+            spawn_explosion(moby, &vars->vel, 0, 0.0f, 0.0f, 10, 3, 16, 4.0f, 2.0f, 9.0f, -1, 1.0f, 15.0f, 1, 1, -1, 0);
             DeleteMoby(moby);
         }
         break;
@@ -2881,7 +2881,7 @@ void RopeWalkerUpdate(Moby *moby)
         case 13:
             moby->flags &= ~0x1000;
             SetDeathBits(moby, 0, -1);
-            func_L00_0025F4A8(moby, D_L13_00160700, 0, 0.0f, 0.0f, 10, 3, 16, 4.0f, 2.0f, 9.0f, -1, 1.0f, 15.0f, 1, 1, -1, 0);
+            spawn_explosion(moby, D_L13_00160700, 0, 0.0f, 0.0f, 10, 3, 16, 4.0f, 2.0f, 9.0f, -1, 1.0f, 15.0f, 1, 1, -1, 0);
             DeleteMoby(moby);
             return;
         default:

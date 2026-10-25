@@ -571,14 +571,14 @@ void update_path_following_moby_with_fade(struct Moby *moby)
         distance = func_001F9D48(&moby->pos, gHeroPos);
         if ((distance < 2.0f && *(s32 *)(gHeroPos + 0x2004) == 0x42) || *(struct Moby **)(gHeroPos + 0x1bc) == moby) {
             func_0022ED80_F5980(0, 0, moby);
-            func_L00_0025F4A8(moby, D_L08_0015F660, &moby->pos, 3.0f, 1.0f, 10, 20, 60,
+            spawn_explosion(moby, D_L08_0015F660, &moby->pos, 3.0f, 1.0f, 10, 20, 60,
                           3.0f, 5.0f, 9.0f, 1.0f, -1, 15.0f, 1, 1, -1, 0);
             func_0020D678_F5980(moby);
             return;
         }
         if (active != 0) {
             func_0022ED80_F5980(0, 0, moby);
-            func_L00_0025F4A8(moby, D_L08_0015F660, &moby->pos, 0.0f, 0.0f, 10, 20, 60,
+            spawn_explosion(moby, D_L08_0015F660, &moby->pos, 0.0f, 0.0f, 10, 20, 60,
                           1.0f, 3.0f, 9.0f, 1.0f, -1, 15.0f, 1, 1, -1, 0);
             func_0020D678_F5980(moby);
         }
@@ -594,7 +594,7 @@ void update_path_following_moby_with_fade(struct Moby *moby)
         distance = func_001F9D48(&moby->pos, gHeroPos);
         if (distance < 2.0f && *(s32 *)(gHeroPos + 0x2004) == 0x42) {
             clear_u64_value(&velocity);
-            func_L00_0025F4A8(moby, &velocity, &moby->pos, 0.0f, 0.0f, 10, 20, 60,
+            spawn_explosion(moby, &velocity, &moby->pos, 0.0f, 0.0f, 10, 20, 60,
                           3.0f, 5.0f, 9.0f, 1.0f, -1, 15.0f, 1, 1, -1, 0);
             func_0020D678_F5980(moby);
             return;
@@ -612,7 +612,7 @@ void update_path_following_moby_with_fade(struct Moby *moby)
             distance = func_001F9D48(&moby->pos, gHeroPos);
             if (distance < 24.0f) {
                 clear_u64_value(&velocity);
-                func_L00_0025F4A8(moby, &velocity, &moby->pos, 0.0f, 0.0f, 10, 20, 60,
+                spawn_explosion(moby, &velocity, &moby->pos, 0.0f, 0.0f, 10, 20, 60,
                               3.0f, 5.0f, 9.0f, 1.0f, -1, 15.0f, 1, 1, -1, 0);
                 func_0022ED80_F5980(0, 0, moby);
                 func_0020D678_F5980(moby);

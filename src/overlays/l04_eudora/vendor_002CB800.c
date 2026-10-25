@@ -248,7 +248,7 @@ void snow_plow_update(VehicleMoby_2CB800 *m) {
                 delta.quad=0;delta.f[2]=0.75f;
                 clear_u64_value(none);
                 FastVecAdd(&delta,&delta,&m->pos);
-                func_L00_0025F4A8(m,none,&delta,0.0f,0.0f,10,3,4,2,1,100000,3,-1,15,1,1,-1,0);
+                spawn_explosion(m,none,&delta,0.0f,0.0f,10,3,4,2,1,100000,3,-1,15,1,1,-1,0);
                 if (m->cls==0x1F2 || m->cls==0x22B) Moby_PlaySound(0,0,(s32)m);
                 else if (m->cls!=0x1E6) Moby_PlaySound(1,0,(s32)m);
                 d->visibility_timer=scale_ticks(600);d->visibility_active=1;
@@ -268,7 +268,7 @@ void snow_plow_update(VehicleMoby_2CB800 *m) {
                 FastVecAdd(&delta,&delta,offset);
                 SpawnExplosionFx(m,&delta,-1,1.0f,13.0f);
                 FastVecAdd(&delta,offset,&m->pos);
-                func_L00_0025F4A8(m,none,&delta,0.0f,0.0f,20,5,4,2,1,100000,3,-1,15,1,1,-1,0);
+                spawn_explosion(m,none,&delta,0.0f,0.0f,20,5,4,2,1,100000,3,-1,15,1,1,-1,0);
                 Moby_PlaySound(1,0,(s32)m);
                 query2.flags=0x810000;query2.strength=2;query2.owner=m;
                 clear_u64_value(&query2.vec);query2.result=0;
@@ -1239,7 +1239,7 @@ void update_moby_translation_delta_matrix(char *m) {
         *(short *)(d + 0x24) = 0;
         d[0x28] = 4;
         *(short *)(d + 0x3E) = 0xD;
-        func_L00_0025E210(m);
+        copy_hero_spawn_frame(m);
         m[0x20] = 1;
     }
 }

@@ -1191,7 +1191,7 @@ void Transition_DefaultDraw(s32 *arg0)
     VU0_loadMicroProgram(D_00100AE0);
     func_00118D80(0);
     if (D_0015F6E8 == 4) {
-        func_001FBE80();
+        draw_freeze_message_box();
     }
     VU1_syncChain(2);
     LightTfrags(D_001E1600);

@@ -542,7 +542,7 @@ int draw_hud_stars(HudElem *rec) {
         top += h / 256;
         right = left + bh / 64;
         bottom = top + bottom / 256;
-        func_00201640(left, top, right, bottom, 0x80684C2F, 1);
+        draw_hud_rect_blended(left, top, right, bottom, 0x80684C2F, 1);
     }
 
     n = *(int *)(r + 0x74);
@@ -663,7 +663,7 @@ extern short D_L00_0015F848;
 extern short D_L00_0015F84C;
 
 /* Draws a HUD element's backdrop and the 100 entries of its particle table that are due */
-int func_L00_002377E0(HudElem *e) {
+int draw_morphoray_progress_hud(HudElem *e) {
     float v0[4], v1[4], v2[4], v3[4], v4[4], v5[4];
     int x, y;
     float t;
@@ -919,14 +919,14 @@ int Hud_DrawGaugeFrame(HudElem *e) {
     top += h / 256;
     right = left + bh / 64;
     bottom = top + bottom / 256;
-    func_00201640(left, top, right, bottom, 0x80000000, 1);
+    draw_hud_rect_blended(left, top, right, bottom, 0x80000000, 1);
     {
         int st = *(int *)&D_L00_0015F844 * 0xEA0;
         h = *(int *)&D_L00_0015F844;
         top = (pos[1] + e->unk4A) << 4;
         top += (h * 0xF40) / 256;
         bh = (e->unk74 * st) / (e->unk08 << 8);
-        func_00201640(left, top, right, top - bh, 0x80829E00, 1);
+        draw_hud_rect_blended(left, top, right, top - bh, 0x80829E00, 1);
     }
     i = 1;
     if (i < e->unk74) do {
@@ -938,7 +938,7 @@ int Hud_DrawGaugeFrame(HudElem *e) {
         i++;
         top -= step;
         top -= 16;
-        func_00201640(left, top, right, top + 32, 0x80000000, 1);
+        draw_hud_rect_blended(left, top, right, top + 32, 0x80000000, 1);
     } while (i < e->unk74);
     w = GetIconFrame(*(int *)e, 0);
     draw_rotated_hud_sprite(w, pos[0] + e->unk48, pos[1] + e->unk4A, *(int *)&D_L00_0015F840, *(int *)&D_L00_0015F844, 0x80);

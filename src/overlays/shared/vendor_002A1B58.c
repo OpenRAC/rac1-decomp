@@ -90,7 +90,7 @@ void HomingProjectileUpdate(char *m) {
     if(func_L00_001EFFF0((m+0x10),next,0,m,0)!=0 || FastVecLength(remaining)<*(float *)(d+0x24)) {
         if(*(unsigned char*)(D_0013E633+0x2EC1)==2) MobySphereHitDirectional((int)m,2.0f,(m+0x10),3,2.0f,1.0f,0,1,0);
         Sound_PlayClassSound(4,0,(int)m,0x54C);
-        func_L00_0025F4A8(m,d,(m+0x10),4.0f,4.0f,10,3,16,4.0f,2.0f,9.0f,-1,1.0f,15.0f,1,1,-1,0);
+        spawn_explosion(m,d,(m+0x10),4.0f,4.0f,10,3,16,4.0f,2.0f,9.0f,-1,1.0f,15.0f,1,1,-1,0);
         DeleteMoby(m);
     } else qcopy((m+0x10),next);
 }
@@ -732,12 +732,12 @@ void emit_blarg_elite_commando_death_particles(void *m) {
     } while(remaining!=0);
     }
     if(*(float *)&D_L16_0015F6B4<0.95f && distance>9.0f) {
-        func_L00_002ADBB0(m,origin,movement,4.0f,scale_ticks(15),127,127,127,32);
-        func_L00_002ADBB0(m,origin,movement,4.0f,scale_ticks(24),127,32,0,32);
+        spawn_glow_particle(m,origin,movement,4.0f,scale_ticks(15),127,127,127,32);
+        spawn_glow_particle(m,origin,movement,4.0f,scale_ticks(24),127,32,0,32);
     }
-    func_L00_002ADBB0(m,origin,movement,4.0f,scale_ticks(20),127,64,0,48);
-    func_L00_002ADBB0(m,origin,movement,3.5f,scale_ticks(27),96,16,0,64);
-    func_L00_002ADBB0(m,origin,movement,3.0f,scale_ticks(29),32,0,0,32);
+    spawn_glow_particle(m,origin,movement,4.0f,scale_ticks(20),127,64,0,48);
+    spawn_glow_particle(m,origin,movement,3.5f,scale_ticks(27),96,16,0,64);
+    spawn_glow_particle(m,origin,movement,3.0f,scale_ticks(29),32,0,0,32);
 }
 extern void func_001FA4A0(void*,void*);
 extern void func_001F9BF0(void*,void*,void*);
@@ -1004,7 +1004,7 @@ void armed_transport_update(char *m) {
         *(float *)(d + 0x194) -= dt + dt;
         *(float *)(m + 0x40) += dt * 0.2617994f;
         if (func_001F9908((int *)(d + 0x160)) || D_001414F4[0] == 2) {
-            func_L00_0025F4A8(m, D_L16_0015F660, m + 0x10, 0.0f, 0.0f, 20, 12, 8, 4.0f, 2.5f, 9.0f, -1, 2.0f, 0.0f,
+            spawn_explosion(m, D_L16_0015F660, m + 0x10, 0.0f, 0.0f, 20, 12, 8, 4.0f, 2.5f, 9.0f, -1, 2.0f, 0.0f,
                               0, 0, -1, 0);
             SpawnBreakFragment(m, 0x634, (float *)(m + 0x10), m + 0x40, 0, 0, 0.0f, D_L16_0015F660, D_L16_0015F660,
                               D_L16_0015F660);

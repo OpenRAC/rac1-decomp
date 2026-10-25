@@ -1444,7 +1444,7 @@ void BlargShipUpdate(Ship_5E48 *m) {
     }
     case 8: {
         float z = 0.0f;
-        func_L00_0025F4A8(m, d->a40, &m->pos, z, z, 5, 2, 4, 2.0f, 1.0f, 9.0f, 1.0f, 5, 15.0f, 1, 1, -1, 0);
+        spawn_explosion(m, d->a40, &m->pos, z, z, 5, 2, 4, 2.0f, 1.0f, 9.0f, 1.0f, 5, 15.0f, 1, 1, -1, 0);
         SetDeathBits(m, 0, -1);
         SpawnBreakFragment((char *)m, 0x5FD, (float *)&m->pos, (char *)m + 0x40, 0, 0, 0.0f, D_L10_0015F660, D_L10_0015F660, D_L10_0015F660);
         SpawnBreakFragment((char *)m, 0x5FE, (float *)&m->pos, (char *)m + 0x40, 0, 0, 0.0f, D_L10_0015F660, D_L10_0015F660, D_L10_0015F660);

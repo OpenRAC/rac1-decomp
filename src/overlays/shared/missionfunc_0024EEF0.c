@@ -61,7 +61,7 @@ extern int D_0013D9B4 NOT_SDA;
 extern unsigned char D_0013D490[];
 
 /* Mission condition: D_0013D9B4 set, along with gSpecialItems[0x20] (Zoomerator/raritanium) and [0x21]. Joined with func_0020CC88. */
-int func_L00_0024F048(void) {
+int mission_cond_obj2f_and_specials(void) {
     if (D_0013D9B4 != 0) {
         if (gSpecialItems[0x20] != 0 && gSpecialItems[0x21] != 0) {
             return 1;
@@ -88,7 +88,7 @@ INCLUDE_ASM("asm/overlays", func_L00_0024F198);
 extern int D_0013D9B4 NOT_SDA;
 extern u8 D_0013D4B0 NOT_SDA;
 /* 0 when the word at 0x13D9B4 is 0, else 1 or 2 by whether the byte at 0x13D4B0 is set */
-int func_L00_0024F1C8(void) {
+int mission_cond_obj2f_variant(void) {
     if (D_0013D9B4 == 0) return 0;
     if (D_0013D4B0 == 0) return 1;
     return 2;
@@ -102,7 +102,7 @@ int GetMorphORayStatus(void) {
 }
 extern u8 D_0013D5C8[];
 /* 2 when the byte at 0x13D5E7 is set, else whether the byte at 0x13D5E9 is */
-int func_L00_0024F258(void) {
+int mission_get_hologuise_or_map_status(void) {
     if (D_0013D5C8[0x1F]) return 2;
     return D_0013D5C8[0x21] != 0;
 }

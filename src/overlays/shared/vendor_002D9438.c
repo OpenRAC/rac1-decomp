@@ -210,7 +210,7 @@ s32 func_001FA8A8(s32, s32, f32);
 u8 *func_L00_00273E08(void *, s32, u8, s32, s32, s32, s32, f32);
 
 /* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002d7f88.c, FUN_L00_002d8510. */
-s32 func_L00_002D99C0(M_2d8510 *m) {
+s32 spawn_nanotech_ball_glow_rings(M_2d8510 *m) {
     O_2d8510 *o;
     V_2d8510 a, b;
     s32 i, ret, c, hi, al;

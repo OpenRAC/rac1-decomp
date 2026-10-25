@@ -1533,7 +1533,7 @@ extern float func_L00_001EB6A8(void *,float,float,float,float,float);
 extern f32 func_001EC120_ED818(f32 *vel, f32 from, f32 to, f32 stiffness, f32 damping, f32 max) __asm__("func_001EC120");
 
 // Steers the moby's two axis angles toward its target, then runs the blend step once its state byte is 1.
-void func_L05_0032ADE8(char *moby) {
+void orbit_hero_follow_camera_to_overhead(char *moby) {
     char *d = *(char **)(moby + 0x70);
     char *g = D_0013E633 + 0x10AD;
     char *p80;

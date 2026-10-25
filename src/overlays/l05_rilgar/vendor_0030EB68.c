@@ -73,7 +73,7 @@ void electric_gate_update(char *m) {
     case 1:
         if (*(int *)&D_L05_00161DF8 != D_L05_0015F6B0) {
             *(int *)&D_L05_00161DF8 = D_L05_0015F6B0;
-            AddDrawCallback(func_L05_0030F358, m);
+            AddDrawCallback(draw_electric_gate_beams, m);
         }
         pos = m + 0x10;
         tab = D_L05_001672C0;
@@ -146,7 +146,7 @@ typedef struct {
 } Quad;
 
 /* Fills ten 0x90-byte entries from the float tables, then runs the id list at a[0x21] against them. */
-void func_L05_0030F358(char *a) {
+void draw_electric_gate_beams(char *a) {
     Quad arr[2][5];
     char tmp[0x40];
     int tex, i, j, k, n, nx, nj, r1, r2, off;

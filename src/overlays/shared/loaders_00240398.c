@@ -1883,7 +1883,7 @@ extern f32 func_001FA888(s32);
 extern void func_L00_002657B8(UpdD244 *);
 /* level archive load state; the shared header pointer at +4 is D_0015EF4C */
 extern struct { u16 stage; s16 busy; s32 *shared; } D_0015EF48 MACRO_ADDR;
-s32 func_L00_00244AE0(s32 full, s32 keep) {
+s32 load_level_archive_resources(s32 full, s32 keep) {
     Load244110 *ld = ((Load244110 *)&D_L00_00173F00);
     Hdr244 *h = (Hdr244 *)ld->f4;
     s32 *src = D_0015EF48.shared;

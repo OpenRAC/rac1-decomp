@@ -1198,7 +1198,7 @@ void draw_dialog_background_and_text(void) {
         } else {
             if (get_global_state_pointer() == 3) draw_pause_menu_pages(1);
         }
-        func_001FBE80();
+        draw_freeze_message_box();
     }
 }
 void draw_page_contents(void) { if (D_L00_0015F6BC == 0) draw_pause_menu_pages(0); }

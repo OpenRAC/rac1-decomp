@@ -287,7 +287,7 @@ void spawn_proximity_gated_bolts(char *moby)
     if (func_001F9D48(moby + 0x10, D_0013E633 + 0xE9D) < 7.0f) {
         r = 2;
     }
-    func_L00_00261B00(moby, 4, 7, r, -1);
+    spawn_moby_bolt_drop(moby, 4, 7, r, -1);
 }
 LINKER_REMNANT("asm/overlays", func_L01_00279AC0);
 extern char *func_0020D348(int);

@@ -54,7 +54,7 @@ void HeroL03_FrameUpdate(void) {
         HeroFrameUpdate();
         return;
     }
-    func_L00_00232EF0();
+    advance_hero_animation();
     hero_update();
     update_hero_ground_material_effects();
     update_hero_ledge_probe();

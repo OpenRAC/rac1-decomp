@@ -872,7 +872,7 @@ void draw_pause_menu_pages(int transfer_only) {
         page_data->y = rect.y;
         page_data->w = rect.w;
         page_data->h = rect.h;
-        func_00201640(rect.x + 1, rect.y + 1, rect.x + rect.w - 1, rect.y + rect.h - 1, D_L00_00160330, 0);
+        draw_hud_rect_blended(rect.x + 1, rect.y + 1, rect.x + rect.w - 1, rect.y + rect.h - 1, D_L00_00160330, 0);
     }
     for (pass = 0; pass < 2; pass++) {
         HEnt **mobys = D_L00_001BA220;

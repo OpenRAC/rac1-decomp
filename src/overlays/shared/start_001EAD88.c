@@ -33,7 +33,7 @@ typedef struct {
 } Pulse;
 extern Pulse D_L00_00166100[8];
 
-int func_L00_001EAD88(int *out) {
+int tick_pulse_waveforms(int *out) {
     int aa[3][4];
     int *q2;
     int *q1;
@@ -53,18 +53,18 @@ int func_L00_001EAD88(int *out) {
         Pulse *p;
         int r, v;
         unsigned short life;
-        if (D_L00_00166100[i].type == 0) continue;
-        p = &D_L00_00166100[i];
+        if (pulse_waveform_slots[i].type == 0) continue;
+        p = &pulse_waveform_slots[i];
         active++;
-        life = D_L00_00166100[i].life;
-        D_L00_00166100[i].life = life - 1;
+        life = pulse_waveform_slots[i].life;
+        pulse_waveform_slots[i].life = life - 1;
         if ((short)life <= 0) p->type = 0;
-        if (D_L00_00166100[i].delay != 0) {
-            D_L00_00166100[i].delay = D_L00_00166100[i].delay - 1;
+        if (pulse_waveform_slots[i].delay != 0) {
+            pulse_waveform_slots[i].delay = pulse_waveform_slots[i].delay - 1;
             continue;
         }
         v = 0;
-        D_L00_00166100[i].time++;
+        pulse_waveform_slots[i].time++;
         r = p->time % (p->rise + p->fall);
         switch (p->type) {
         case 0:

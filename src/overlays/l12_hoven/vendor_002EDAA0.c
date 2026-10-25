@@ -321,7 +321,7 @@ void HovenShotUpdate(struct Moby *moby) {
         FastVecAdd(&moby->pos, &moby->pos, old_pos);
         if (D_0015EE84_e == 12 && D_001414D4 == 50) {
             char *camera = D_L12_001672C0 - 0x140;
-            func_L00_0025F4A8(moby, D_L12_0015F660, 0, 0.0f, 0.0f, 3, 3, 5, 0.3f, 0.2f, 0.0f, -1, 0.15f, 0.0f, 0, 0,
+            spawn_explosion(moby, D_L12_0015F660, 0, 0.0f, 0.0f, 3, 3, 5, 0.3f, 0.2f, 0.0f, -1, 0.15f, 0.0f, 0, 0,
                              -1, 0);
             *(float *)(camera + 0x160) = 0.025f;
             *(int *)(camera + 0x168) = scale_ticks(20);
@@ -1137,7 +1137,7 @@ void hoven_turret_update(Moby *moby) {
             qcopy(v, ((Cam_304920 *)D_L12_00167180_304920)->f140);
             fast_add_rotations_cf(v, v, a, b, c);
             t = random_float_between(0.5f, 1.3f);
-            func_L00_0025F4A8(moby, D_L12_0015F660, v, 0.0f, 0.0f, 7, 0xF, 0x19, t, t * 0.57f, 10.0f, 3, 0.7f, 0.0f, 0, 0, -1, 0);
+            spawn_explosion(moby, D_L12_0015F660, v, 0.0f, 0.0f, 7, 0xF, 0x19, t, t * 0.57f, 10.0f, 3, 0.7f, 0.0f, 0, 0, -1, 0);
             d->fAE = scale_ticks(rand_range(5, 0xD));
         }
         if (FastDecTimer(&d->fAC)) {

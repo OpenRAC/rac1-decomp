@@ -44,7 +44,7 @@ void HeroL15_FrameUpdate(void) {
     unsigned int color;
     float pulse;
 
-    func_L00_00232EF0();
+    advance_hero_animation();
     hero_update();
     Hero_UpdateAimFlags();
     HeroL15_UpdateStateTransitions();

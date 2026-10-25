@@ -1448,9 +1448,9 @@ stop:
     }
     if (params->height != 0.0f) {
         if (params->type == 6 || params->type == 8) {
-            func_L00_002E9968(params->height, 0.002f);
+            follow_camera_set_height(params->height, 0.002f);
         } else {
-            func_L00_002E9968(params->height, 0.003f);
+            follow_camera_set_height(params->height, 0.003f);
         }
     }
     if (params->offset_scale != 0.0f) {
@@ -1470,14 +1470,14 @@ stop:
         { FollowCamFlags *ctl = &FOLLOW_CAM_STATE(((struct UpdateCam *)D_L00_00166F00))->tail.ctl; ctl->flags |= 1; }
     }
     if (params->keep_unk10 == 0) {
-        func_L00_002E9A18(0);
+        set_follow_camera_orbit_clamp_mode(0);
     }
     if (params->lateral_stiffness != 0.0f || params->lateral_damping != 0.0f) {
         if (params->timer >= scale_ticks(120)) {
-            func_L00_002E9A40(params->lateral_stiffness, params->lateral_damping);
+            follow_camera_set_lateral_spring(params->lateral_stiffness, params->lateral_damping);
         } else {
             t = params->timer / IntToFloat(scale_ticks(120));
-            func_L00_002E9A40(
+            follow_camera_set_lateral_spring(
                 params->start_lateral_stiffness + (params->lateral_stiffness - params->start_lateral_stiffness) * t,
                 params->start_lateral_damping + (params->lateral_damping - params->start_lateral_damping) * t);
         }
@@ -1485,7 +1485,7 @@ stop:
     if (params->type == 1 || params->type == 7 || params->type == 10) {
         func_L00_002E9AD0();
         follow_camera_start_slide();
-        func_L00_002E9A40(0.01f, 0.2f);
+        follow_camera_set_lateral_spring(0.01f, 0.2f);
     }
 }
 extern void func_L00_002EDE38(char *);
@@ -1777,7 +1777,7 @@ run:
         func_L00_002E9AD0();
     }
     if (params->height != 0.0f) {
-        func_L00_002E9968(params->height, 0.003f);
+        follow_camera_set_height(params->height, 0.003f);
     }
     if (params->offset_scale != 0.0f) {
         Cam_SetEyeOffset(0, params->offset_scale, 0.005f);
@@ -1786,7 +1786,7 @@ run:
         func_L00_002E99F0(params->unk28 * 0.017453292f);
     }
     if (params->keep_unk10 == 0) {
-        func_L00_002E9A18(0);
+        set_follow_camera_orbit_clamp_mode(0);
     }
 }
 extern char *D_L00_0015F050 MACRO_ADDR;

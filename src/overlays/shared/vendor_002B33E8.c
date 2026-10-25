@@ -1489,12 +1489,12 @@ void spawn_moby_particle_and_glow_burst(char *m, int flag) {
         } while (--i);
         }
         if (D_L00_0015F6B4 < 0.95f) {
-            func_L00_002ADBB0(m, m + 0x10, n, scale_ticks(15), 0x7F, 0x7F, 0x7F, 0x20, 3.0f);
-            func_L00_002ADBB0(m, m + 0x10, n, scale_ticks(24), 0x7F, 0x20, 0, 0x20, 2.0f);
+            spawn_glow_particle(m, m + 0x10, n, scale_ticks(15), 0x7F, 0x7F, 0x7F, 0x20, 3.0f);
+            spawn_glow_particle(m, m + 0x10, n, scale_ticks(24), 0x7F, 0x20, 0, 0x20, 2.0f);
         }
-        func_L00_002ADBB0(m, m + 0x10, n, scale_ticks(20), 0x7F, 0x40, 0, 0x30, 3.0f);
-        func_L00_002ADBB0(m, m + 0x10, n, scale_ticks(27), 0x60, 0x10, 0, 0x40, 2.0f);
-        func_L00_002ADBB0(m, m + 0x10, n, scale_ticks(29), 0x20, 0, 0, 0x20, 1.0f);
+        spawn_glow_particle(m, m + 0x10, n, scale_ticks(20), 0x7F, 0x40, 0, 0x30, 3.0f);
+        spawn_glow_particle(m, m + 0x10, n, scale_ticks(27), 0x60, 0x10, 0, 0x40, 2.0f);
+        spawn_glow_particle(m, m + 0x10, n, scale_ticks(29), 0x20, 0, 0, 0x20, 1.0f);
     }
 }
 typedef int u128_2B7430 __attribute__((mode(TI)));

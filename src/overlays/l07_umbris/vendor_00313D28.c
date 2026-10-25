@@ -1603,7 +1603,7 @@ void snagglebeast_update(unsigned char *m) {
             *(float *)(d + 0x108) = 1.0f;
             qcopy(&va, m + 0x10);
             va.f[2] = *(float *)(d + 0x1B8) + 1.0f;
-            func_L00_0025F4A8(m, d + 0x100, &va, 0.0f, 0.0f, 0x14, 0xC, 0x40, 7.0f, 5.0f, 10.0f, -1, 1.0f, 50.0f, 1, 1, -1, 0);
+            spawn_explosion(m, d + 0x100, &va, 0.0f, 0.0f, 0x14, 0xC, 0x40, 7.0f, 5.0f, 10.0f, -1, 1.0f, 50.0f, 1, 1, -1, 0);
             *(unsigned short *)(m + 0x34) |= 0x41;
             if (*(int *)(d + 0x1CC) != -1) DriftingSprites_Activate(D_L07_00160058 + (*(int *)(d + 0x1CC) << 8));
             m[0x20] = 0x10;

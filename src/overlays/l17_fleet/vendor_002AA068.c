@@ -2290,7 +2290,7 @@ void FighterJetUpdate(Moby1379 *moby) {
                     HeroL17_SetMoveState(0, 1);
                     g->cur = 0;
                     g->id = -1;
-                    func_L00_0025F4A8(moby, v, 0, 0.0f, 0.0f, 0xA, 3, 0x10, 4.0f, 2.0f, 9.0f, -1, 1.0f, 15.0f, 1, 1, -1, 0);
+                    spawn_explosion(moby, v, 0, 0.0f, 0.0f, 0xA, 3, 0x10, 4.0f, 2.0f, 9.0f, -1, 1.0f, 15.0f, 1, 1, -1, 0);
                     moby->flags |= 0x41;
                 }
             }

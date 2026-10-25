@@ -96,7 +96,7 @@ void HeroFrameUpdate(void) {
     int v, h, i, r16, r17, r18, c20, color;
     float f0, f20, ang;
 
-    func_L00_00232EF0();
+    advance_hero_animation();
     hero_update();
     update_hero_ground_material_effects();
     HeroL01_UpdateStateTransitions();
@@ -229,7 +229,7 @@ void update_hero_frame(void) {
         HeroFrameUpdate();
         return;
     }
-    func_L00_00232EF0();
+    advance_hero_animation();
     hero_update();
     update_hero_ground_material_effects();
     update_hero_ledge_probe();

@@ -482,8 +482,8 @@ int Hero_TryMoveStateL05(int a, int b) {
                     *(int *)(q + 0x880) = queue_animation_update(0x10, 0xFFFF, (int)initialize_trick_combo_hud, (int)update_trick_combo_hud, (int)draw_trick_combo_hud, (int)(q + 0x864), (int)((float)scale_ticks(0x11) * 60.0f));
                 }
                 *(float *)(q + 0x874) = *(float *)(q + 0x98);
-                queue_animation_update(5, 0xFFFF, (int)initialize_hud_element_defaults, (int)func_L05_00266BD8, (int)draw_hud_progress_and_rank, 0, 0);
-                queue_animation_update(7, 0xFFFF, (int)initialize_hud_element_defaults, (int)func_L05_00266BD8, (int)draw_hud_timer, 0, 0);
+                queue_animation_update(5, 0xFFFF, (int)initialize_hud_element_defaults, (int)set_progress_hud_fade_from_hero_mode, (int)draw_hud_progress_and_rank, 0, 0);
+                queue_animation_update(7, 0xFFFF, (int)initialize_hud_element_defaults, (int)set_progress_hud_fade_from_hero_mode, (int)draw_hud_timer, 0, 0);
             } else {
                 *(float *)(q + 0x854) = -FastVecDot(q + 0x290, q + 0x100);
             }

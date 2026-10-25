@@ -17,7 +17,7 @@ extern short D_L06_0015F9BC;
 extern short D_L06_0015F9C4;
 extern short D_L06_0015F9C8;
 
-int func_L06_0024A0A0(unsigned char *p) {
+int draw_segmented_hud_meter(unsigned char *p) {
     int y;
     int ntsc_y;
     int level;
@@ -73,7 +73,7 @@ int func_L06_0024A0A0(unsigned char *p) {
                 color = FastTweenColor(0x800000ff, 0x8000ffff, fill + fill);
             }
         }
-        func_00201640(start_x, y + 8, start_x + x, y + 26, color, 0);
+        draw_hud_rect_blended(start_x, y + 8, start_x + x, y + 26, color, 0);
         x = start_x;
         segments = x - 40;
         if (remaining > 0) {

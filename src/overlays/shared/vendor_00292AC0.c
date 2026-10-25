@@ -210,7 +210,7 @@ char *revive_spawner_pooled_child(char *m, float *at, int cls) {
             spawner_moby->unkB4 = got;
         }
         current_moby->collision = ((SpawnClass *)current_moby->pclass)->collision;
-        func_L00_0025E210(current_moby);
+        copy_hero_spawn_frame(current_moby);
         func_L00_00251E30(current_moby);
         spawned = current_moby;
         sound = (SpawnSound *)func_L00_0025D390_p(spawned);
@@ -465,7 +465,7 @@ void ChildSpawnerUpdate(Moby *moby) {
         Vec4A *vel;
         z = 0.0f;
         p = D_L03_0015F660;
-        func_L00_0025F4A8(moby, d->f70, 0, 0.0f, 0.0f, 0x1E, 8, 0x14, 8.0f, 4.0f, 18.0f, 1.0f, 1, 15.0f, 1, 1, -1, 0);
+        spawn_explosion(moby, d->f70, 0, 0.0f, 0.0f, 0x1E, 8, 0x14, 8.0f, 4.0f, 18.0f, 1.0f, 1, 15.0f, 1, 1, -1, 0);
         vel = (Vec4A *)&moby->rot;
         SpawnBreakFragment(moby, 0x6C5, &moby->pos, vel, 0, 0, z, p, p, p);
         SpawnBreakFragment(moby, 0x6C6, &moby->pos, vel, 0, 0, z, p, p, p);

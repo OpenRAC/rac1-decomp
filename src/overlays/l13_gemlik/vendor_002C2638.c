@@ -246,7 +246,7 @@ unsigned char *spawn_class_53_projectile(char *owner, char *pos, char *vec) {
             MobyBlendAnimation(moby, 1, 0, 10);
         }
         func_L00_00251E30(moby);
-        func_L00_0025E210(moby);
+        copy_hero_spawn_frame(moby);
     }
     return moby;
 }
@@ -658,7 +658,7 @@ void update_hovering_rocket_attacker(char *m) {
         }
     case 8:
         clear_u64_value(scratch_vector);
-        func_L00_0025F4A8(moby, scratch_vector, &moby->pos, 0.0f, 0.0f, 10, 3, 16, 4.0f, 2.0f, 9.0f, 1.0f, 2, 15.0f, 1, 1, -1, 0);
+        spawn_explosion(moby, scratch_vector, &moby->pos, 0.0f, 0.0f, 10, 3, 16, 4.0f, 2.0f, 9.0f, 1.0f, 2, 15.0f, 1, 1, -1, 0);
         if (d->rocket_1) {
             DeleteMoby(d->rocket_1);
         }
@@ -1740,16 +1740,16 @@ void emit_forcefield_tower_destruction_effects(unsigned char *a0, void *a1, int 
     }
     if (D_L13_0015F6B4 < 0.95f) {
         s = scale_ticks(15);
-        func_L00_002ADBB0(a0, pA, vC, 9.0f, s, 0x7F, 0x7F, 0x7F, 0x20);
+        spawn_glow_particle(a0, pA, vC, 9.0f, s, 0x7F, 0x7F, 0x7F, 0x20);
         s = scale_ticks(24);
-        func_L00_002ADBB0(a0, pA, vC, 6.0f, s, 0x7F, 0x20, 0, 0x20);
+        spawn_glow_particle(a0, pA, vC, 6.0f, s, 0x7F, 0x20, 0, 0x20);
     }
     s = scale_ticks(20);
-    func_L00_002ADBB0(a0, pA, vC, 9.0f, s, 0x7F, 0x40, 0, 0x30);
+    spawn_glow_particle(a0, pA, vC, 9.0f, s, 0x7F, 0x40, 0, 0x30);
     s = scale_ticks(27);
-    func_L00_002ADBB0(a0, pA, vC, 6.0f, s, 0x60, 0x10, 0, 0x40);
+    spawn_glow_particle(a0, pA, vC, 6.0f, s, 0x60, 0x10, 0, 0x40);
     s = scale_ticks(29);
-    func_L00_002ADBB0(a0, pA, vC, 3.0f, s, 0x20, 0, 0, 0x20);
+    spawn_glow_particle(a0, pA, vC, 3.0f, s, 0x20, 0, 0, 0x20);
 }
 typedef int Q_2cff90 __attribute__((mode(TI)));
 extern char D_L13_001F4C70[];
@@ -2027,7 +2027,7 @@ char *spawn_asteroid_fragment(char *owner, char *pos, char *vec, int a3, float f
         *(float *)(moby + 0x44) = random_angle_radians();
         *(float *)(moby + 0x48) = random_angle_radians();
         func_L00_00251E30(moby);
-        func_L00_0025E210(moby);
+        copy_hero_spawn_frame(moby);
     }
     return moby;
 }
@@ -2587,7 +2587,7 @@ char *spawn_owner_linked_class_160_moby(char *owner) {
         *(int *)(data + 4) = 0;
         *(unsigned short *)(moby + 0x34) |= 0x200;
         func_L00_00251E30(moby);
-        func_L00_0025E210(moby);
+        copy_hero_spawn_frame(moby);
         *(float *)(moby + 0x2C) = *(float *)(*(char **)(moby + 0x24) + 0x24);
     }
     return moby;
@@ -3076,7 +3076,7 @@ extern void func_001FFDA0(int, int);
 extern char * D_L13_0016016C MACRO_ADDR;
 
 /* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l13/gameplay/entities/002c13b0.c, FUN_L13_002e97e0. */
-void func_L13_002EAC18(struct Moby *moby, char *vars, int *result) {
+void start_space_fighter_defeat_path(struct Moby *moby, char *vars, int *result) {
     int path_ids = (int)vars + 0xB0;
     struct Moby *mobys;
     float dx;

@@ -100,7 +100,7 @@ void trigger_pokitaru_paired_rotation(char *moby) {
     char *state = (char *)m->pvars;
     if (m->oclass == 0x41 && m->state == 1) {
         char *child;
-        D_0013D4EA.value = m->state;
+        menu_item_enabled_78.value = m->state;
         m->state = 2;
         child = *(char **)(state + 8);
         if (child)
@@ -2952,7 +2952,7 @@ char *spawn_moby_with_random_yaw(void *position, void *vector, int id) {
         *(float *)(moby + 0x48) = angle;
         *(float *)(moby + 0x44) = 0.7853982f;
         func_L00_00251E30(moby);
-        func_L00_0025E210(moby);
+        copy_hero_spawn_frame(moby);
     }
     return moby;
 }
@@ -3021,7 +3021,7 @@ void ShipCollider_Update(struct Moby *pickup) {
         if (collision_moby != 0 && (collision_moby->oclass == 0x4DA || collision_moby->oclass == 0x45 || collision_moby->oclass == 0x563)) {
             taken = 1;
         } else {
-            func_L00_0025F4A8(pickup, &pv->vel, &pickup_vector_scratch, 0.0f, 0.0f, 3, 2, 5, 0.0f, 0.0f, 9.0f, 1.0f, -1, 0.0f, 0, 1, -1, 0);
+            spawn_explosion(pickup, &pv->vel, &pickup_vector_scratch, 0.0f, 0.0f, 3, 2, 5, 0.0f, 0.0f, 9.0f, 1.0f, -1, 0.0f, 0, 1, -1, 0);
             pickup->state = AMMOCRATE_STATE_REMOVE;
         }
     }
@@ -3159,7 +3159,7 @@ char *spawn_ship_pickup_child(char *owner) {
             MobyBlendAnimation(moby, 2, 0xD, 0);
         }
         func_L00_00251E30(moby);
-        func_L00_0025E210(moby);
+        copy_hero_spawn_frame(moby);
     }
     return moby;
 }

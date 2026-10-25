@@ -701,7 +701,7 @@ void boltcrate_possibly_for_metal_detector_update(char *m) {
                 *remaining = 0.0f;
                 set_moby_list_state(((CrateGroupView *)data)->group, 3);
                 clear_u64_value(position);
-                func_L00_0025F4A8(m, position, (void *)0, 0.0f, 0.0f, 10, 3, 16, 4.0f, 2.0f, 9.0f, 1.0f, -1, 15.0f, 1, 1, -1, 0);
+                spawn_explosion(m, position, (void *)0, 0.0f, 0.0f, 10, 3, 16, 4.0f, 2.0f, 9.0f, 1.0f, -1, 15.0f, 1, 1, -1, 0);
                 DeleteMoby(m);
                 return;
             }
@@ -986,18 +986,18 @@ void update_tumbling_ballistic_moby(struct Moby *m) {
                 }
                 if (func_001F9D48(pos, debris_far_point) > 50.0f) {
                     if (d->variant & 1) {
-                        func_L00_0025F4A8(m, d, 0, 2.0f, 1.0f, 1, 2, 3, 0.0f, 0.0f, 1000.0f, 1.3f, -1,
+                        spawn_explosion(m, d, 0, 2.0f, 1.0f, 1, 2, 3, 0.0f, 0.0f, 1000.0f, 1.3f, -1,
                                         size, 0, 1, -1, 0);
                     } else {
-                        func_L00_0025F4A8(m, d, 0, 2.0f, 1.0f, 0, 2, 3, 0.0f, 0.0f, 1000.0f, 1.2f, 0,
+                        spawn_explosion(m, d, 0, 2.0f, 1.0f, 0, 2, 3, 0.0f, 0.0f, 1000.0f, 1.2f, 0,
                                         size, 0, 1, -1, 0);
                     }
                 } else {
                     if (d->variant & 1) {
-                        func_L00_0025F4A8(m, d, 0, 2.0f, 1.0f, 0, 2, 4, 0.0f, 1.0f, 1000.0f, 1.0f, 0,
+                        spawn_explosion(m, d, 0, 2.0f, 1.0f, 0, 2, 4, 0.0f, 1.0f, 1000.0f, 1.0f, 0,
                                         size, 0, 1, -1, 0);
                     } else {
-                        func_L00_0025F4A8(m, d, 0, 2.0f, 1.0f, 1, 2, 4, 0.0f, 0.0f, 1000.0f, 1.0f, 0,
+                        spawn_explosion(m, d, 0, 2.0f, 1.0f, 1, 2, 4, 0.0f, 0.0f, 1000.0f, 1.0f, 0,
                                         size, 0, 1, -1, 0);
                     }
                 }
@@ -1596,7 +1596,7 @@ void bombomatic_update(char *m) {
             SetDeathBits(m, 0, -1);
             *(float *)t = 0.0f;
             clear_u64_value(v20);
-            func_L00_0025F4A8(m, v20, 0, 0.0f, 0.0f, 10, 3, 16, 4.0f, 2.0f, 9.0f, 1.0f, 1, 15.0f, 1, 1, -1, 0);
+            spawn_explosion(m, v20, 0, 0.0f, 0.0f, 10, 3, 16, 4.0f, 2.0f, 9.0f, 1.0f, 1, 15.0f, 1, 1, -1, 0);
             SpawnBreakFragment(m, 0x621, (float *)(m + 0x10), m + 0x40, 0, 0, 0.0f, D_L07_0015F660, D_L07_0015F660, D_L07_0015F660);
             SpawnBreakFragment(m, 0x622, (float *)(m + 0x10), m + 0x40, 0, 0, 0.0f, D_L07_0015F660, D_L07_0015F660, D_L07_0015F660);
             DeleteMoby(m);
@@ -2130,7 +2130,7 @@ void cache_path_segment_lengths(char *data) {
 extern float func_L00_0025A748(void *);
 
 int classify_sharkigator_water_height_gap(char *moby, char *data) {
-    float distance = func_L00_0025A748(moby + 0x10);
+    float distance = probe_ground_height_flag20(moby + 0x10);
     float delta;
     *(float *)(data + 0x130) = distance;
     delta = **(float **)(data + 0x12C) - distance;
@@ -2885,7 +2885,7 @@ void SharkigatorUpdate(unsigned char *moby) {
         goto end;
     case 14:
         if (mine_fall(moby, data + 0x70) & (moby[0x70] & 2)) {
-            func_L00_0025F4A8(moby, data + 0xD0, 0, 0.0f, 0.0f, 3, 3, 5, 2.0f, 1.0f, 4.0f, 1.0f, -1, 7.0f,
+            spawn_explosion(moby, data + 0xD0, 0, 0.0f, 0.0f, 3, 3, 5, 2.0f, 1.0f, 4.0f, 1.0f, -1, 7.0f,
                               0, 1, -1, 0);
             DeleteMoby(moby);
             return;

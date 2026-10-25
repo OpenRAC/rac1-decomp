@@ -321,18 +321,18 @@ void update_explosive_projectile(Moby *moby) {
             }
         }
         if (D_L01_0015F6B4 < 0.95f && dist > 9.0f) {
-            func_L00_002ADBB0(moby, &(*(Vec_2F7E08 *)&moby->pos), d, s * 4.0f, scale_ticks(0xF), 0x7F, 0x7F, 0x7F, 0x20);
-            func_L00_002ADBB0(moby, &(*(Vec_2F7E08 *)&moby->pos), d, s * 4.0f, scale_ticks(0x18), 0x7F, 0x7F, 0x7F, 0x20);
+            spawn_glow_particle(moby, &(*(Vec_2F7E08 *)&moby->pos), d, s * 4.0f, scale_ticks(0xF), 0x7F, 0x7F, 0x7F, 0x20);
+            spawn_glow_particle(moby, &(*(Vec_2F7E08 *)&moby->pos), d, s * 4.0f, scale_ticks(0x18), 0x7F, 0x7F, 0x7F, 0x20);
         }
-        func_L00_002ADBB0(moby, &(*(Vec_2F7E08 *)&moby->pos), d, s * 4.0f, scale_ticks(0x14), 0x7F, 0x7F, 0, 0x30);
-        func_L00_002ADBB0(moby, &(*(Vec_2F7E08 *)&moby->pos), d, s * 2.0f, scale_ticks(0x13), 0xFF, 0xFF, 0xFF, 0x20);
+        spawn_glow_particle(moby, &(*(Vec_2F7E08 *)&moby->pos), d, s * 4.0f, scale_ticks(0x14), 0x7F, 0x7F, 0, 0x30);
+        spawn_glow_particle(moby, &(*(Vec_2F7E08 *)&moby->pos), d, s * 2.0f, scale_ticks(0x13), 0xFF, 0xFF, 0xFF, 0x20);
         if (camdist > 100.0f) {
             if (D_L01_0015F6B4 < 0.95f && dist > 9.0f) {
-                func_L00_002ADBB0(moby, &(*(Vec_2F7E08 *)&moby->pos), d, 30.0f, scale_ticks(0xF), 0x7F, 0x7F, 0x7F, 0x20);
-                func_L00_002ADBB0(moby, &(*(Vec_2F7E08 *)&moby->pos), d, 30.0f, scale_ticks(0x18), 0x7F, 0x7F, 0x7F, 0x20);
+                spawn_glow_particle(moby, &(*(Vec_2F7E08 *)&moby->pos), d, 30.0f, scale_ticks(0xF), 0x7F, 0x7F, 0x7F, 0x20);
+                spawn_glow_particle(moby, &(*(Vec_2F7E08 *)&moby->pos), d, 30.0f, scale_ticks(0x18), 0x7F, 0x7F, 0x7F, 0x20);
             }
-            func_L00_002ADBB0(moby, &(*(Vec_2F7E08 *)&moby->pos), d, 30.0f, scale_ticks(0x14), 0x7F, 0x7F, 0, 0x30);
-            func_L00_002ADBB0(moby, &(*(Vec_2F7E08 *)&moby->pos), d, 15.0f, scale_ticks(0x13), 0xFF, 0xFF, 0xFF, 0x20);
+            spawn_glow_particle(moby, &(*(Vec_2F7E08 *)&moby->pos), d, 30.0f, scale_ticks(0x14), 0x7F, 0x7F, 0, 0x30);
+            spawn_glow_particle(moby, &(*(Vec_2F7E08 *)&moby->pos), d, 15.0f, scale_ticks(0x13), 0xFF, 0xFF, 0xFF, 0x20);
         }
         for (q = 0; D_L01_0015F504 != 0 ? q < 10 : q < 40; q++) {
             Vec_2F7E08 b = { random_float_between(-1.0f, 1.0f), random_float_between(-1.0f, 1.0f), random_float_between(-1.0f, 1.0f) };
@@ -392,7 +392,7 @@ extern s32 func_001FA898_F9908(f32) __asm__("func_001FA898");
 extern void func_L00_00251E30_F9908(struct Moby *) __asm__("func_L00_00251E30");
 
 /* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002f6328.c, FUN_L01_002f8530. */
-struct Moby *func_L01_002F9908(Vec4f *pos, Vec4f *vel, s32 oclass, s32 a3, s32 a4,
+struct Moby *spawn_debris_moby(Vec4f *pos, Vec4f *vel, s32 oclass, s32 a3, s32 a4,
                               f32 scale, f32 gravity, f32 spin, f32 seconds) {
     u128_F9908 p;
     u128_F9908 v;
@@ -3157,7 +3157,7 @@ void reset_camera_state_and_prepare_preset_paths(Camera *cam) {
         c = D_L01_001B0C30_16270[s->look_path];
         s->ready = 1;
         for (i = 0; i < a->count; i++) {
-            func_L00_0025EFC0(b, &a->pts[i], &at, &seg, &t, 0, 20.0f, 5.0f, 0.0f);
+            find_nearest_path_point(b, &a->pts[i], &at, &seg, &t, 0, 20.0f, 5.0f, 0.0f);
             a->pts[i].f[0] = a->pts[i].f[3];
             a->pts[i].f[3] = seg;
         }
@@ -3176,7 +3176,7 @@ void reset_camera_state_and_prepare_preset_paths(Camera *cam) {
             prev = i;
         }
         for (i = 0; i < c->count; i++) {
-            func_L00_0025EFC0(d, &c->pts[i], &at, &seg, &t, 0, 20.0f, 5.0f, 0.0f);
+            find_nearest_path_point(d, &c->pts[i], &at, &seg, &t, 0, 20.0f, 5.0f, 0.0f);
             c->pts[i].f[0] = c->pts[i].f[3];
             c->pts[i].f[3] = seg;
         }
@@ -3416,7 +3416,7 @@ void update_camera_position_and_orientation_from_paths(Cam_316730 *cam) {
         if (p->f24 < 0) {
             float off;
 
-            func_L00_0025EFC0(path, ((Hero *)(D_0013E633 + 0xE1D))->motion.pos.f, v30, &seg, &frac, 0, 20.0f, 1.0f, 0.0f);
+            find_nearest_path_point(path, ((Hero *)(D_0013E633 + 0xE1D))->motion.pos.f, v30, &seg, &frac, 0, 20.0f, 1.0f, 0.0f);
             if (p->f36 == 1) {
                 off = -(p->f38 * 4.0f);
             } else {
@@ -3431,7 +3431,7 @@ void update_camera_position_and_orientation_from_paths(Cam_316730 *cam) {
             hseg = ((Hero *)(D_0013E633 + 0xE1D))->unk564;
             hfrac = ((Hero *)(D_0013E633 + 0xE1D))->unk568;
             Spline_AdvanceByDistance((Path_316730 *)((Hero *)(D_0013E633 + 0xE1D))->unk560, v30, &hseg, &hfrac, p->f38, 1);
-            func_L00_0025EFC0(path, v30, v0, &seg, &frac, 0, 20.0f, 1.0f, 0.0f);
+            find_nearest_path_point(path, v30, v0, &seg, &frac, 0, 20.0f, 1.0f, 0.0f);
         }
         cam->pos[0] = Cam_InterpValues(cam->pos[0], v0[0], &d->vel[0], k, 0.175f, 0.0f);
         cam->pos[1] = Cam_InterpValues(cam->pos[1], v0[1], &d->vel[1], k, 0.175f, 0.0f);
@@ -3440,7 +3440,7 @@ void update_camera_position_and_orientation_from_paths(Cam_316730 *cam) {
     if (p->f24 < 0) {
         Path_316730 *path = D_L01_001B0C30_316730[p->f20];
 
-        func_L00_0025EFC0(path, ((Hero *)(D_0013E633 + 0xE1D))->motion.pos.f, v40, &seg, &frac, 0, 20.0f, 1.0f, 0.0f);
+        find_nearest_path_point(path, ((Hero *)(D_0013E633 + 0xE1D))->motion.pos.f, v40, &seg, &frac, 0, 20.0f, 1.0f, 0.0f);
         if (D_0015EE84_c == 0xE && p->f30 == 0) {
             Spline_AdvanceByDistance(path, v50, &seg, &frac, spd, 0);
         } else {
@@ -3613,7 +3613,7 @@ void initialize_camera_transform_and_paths(Camera_171B8 *cam) {
         path = D_L01_001B0C30_171B8[s->track_path];
         seg = 0;
         t = 0.0f;
-        if (func_L00_0025EFC0(path, &D_0013F4D0_171B8, &at, &seg, &t,
+        if (find_nearest_path_point(path, &D_0013F4D0_171B8, &at, &seg, &t,
                              0, 20.0f, 1.0f, 0.0f)) {
             s32 count = path->count;
             next = seg + 1;

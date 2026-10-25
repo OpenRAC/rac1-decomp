@@ -1880,19 +1880,19 @@ void handle_extermitank_hits_and_sync_children(char *moby) {
             SetDeathBits(moby, 0, -1);
             qcopy(position, moby + 0x10);
             position[2] += 3.0f;
-            func_L00_0025F4A8(moby, data + 0x40, position, 0.0f, 0.0f, 0x14, 8, 0x14,
+            spawn_explosion(moby, data + 0x40, position, 0.0f, 0.0f, 0x14, 8, 0x14,
                                   4.0f, 2.0f, 9.0f, 1.0f, -1, 15.0f, 1, 1, -1, 0);
             qcopy(position, moby + 0x10);
             position[0] += 2.0f * FastCos(*(float *)(moby + 0x48));
             position[1] += 2.0f * FastSin(*(float *)(moby + 0x48));
-            func_L00_0025F4A8(moby, data + 0x40, position, 0.0f, 0.0f, 0x14, 8, 0x14,
+            spawn_explosion(moby, data + 0x40, position, 0.0f, 0.0f, 0x14, 8, 0x14,
                                   4.0f, 2.0f, 9.0f, 1.0f, -1, 15.0f, 1, 1, -1, 0);
             qcopy(position, moby + 0x10);
             angle = FastAddRots(*(float *)(moby + 0x48), 3.14159274f);
             position[0] += 2.0f * FastCos(angle);
             angle = FastAddRots(*(float *)(moby + 0x48), 3.14159274f);
             position[1] += 2.0f * FastSin(angle);
-            func_L00_0025F4A8(moby, data + 0x40, position, 0.0f, 0.0f, 0x14, 8, 0x14,
+            spawn_explosion(moby, data + 0x40, position, 0.0f, 0.0f, 0x14, 8, 0x14,
                                   4.0f, 2.0f, 9.0f, 1.0f, -1, 15.0f, 1, 1, -1, 0);
             *(short *)(data + 0x19e) = scale_ticks((*(int *)&D_L05_00161C34));
             moby[0x20] = 3;
@@ -2521,7 +2521,7 @@ extern short D_L05_00161DA4;
 extern short D_L05_00161DA8;
 
 // Update function for a swaying moby: picks a random angle, then eases and rotates it.
-void func_L05_0030D230(unsigned char *moby) {
+void floating_platform_update(unsigned char *moby) {
     char *data = *(char **)(moby + 0x78);
     float v[4];
     float w[4];

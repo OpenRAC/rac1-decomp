@@ -185,13 +185,13 @@ void assign_moby_class_data(int id) {
     struct Obj *class_resource;
     int i = 0;
 
-    class_resource = moby_class_resources[D_00160000];
+    class_resource = moby_class_resources[resident_moby_class_count];
     while (D_001E8F00[i].key != -1 && D_001E8F00[i].key != id) {
         i++;
     }
-    D_001B3900[D_00160000] = D_001E8F00[i].a;
+    D_001B3900[resident_moby_class_count] = D_001E8F00[i].a;
     if (class_resource != 0) {
-        ((struct Obj *)moby_class_resources[D_00160000])->extra = D_001E8F00[i].b;
+        ((struct Obj *)moby_class_resources[resident_moby_class_count])->extra = D_001E8F00[i].b;
     }
 }
 
@@ -521,7 +521,7 @@ extern float func_001F9CB8(void *);
 
 typedef struct { float v[4]; } __attribute__((aligned(16))) Q_214778;
 
-int func_00214778(char *a, char *B, char *an, unsigned int btn, int *outA, float *outF, int *outI, int k) {
+int select_damage_reaction(char *a, char *B, char *an, unsigned int btn, int *outA, float *outF, int *outI, int k) {
     float v[4] __attribute__((aligned(16)));
     float w[4] __attribute__((aligned(16)));
     int s21;

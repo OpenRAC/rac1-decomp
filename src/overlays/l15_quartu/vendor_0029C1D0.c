@@ -559,7 +559,7 @@ void update_destructible_moby_with_radial_debris(struct Moby *moby)
         radius = random_float_between(0.1f, 0.3f);
         duration = rand_range(60, 100);
         size = random_float_between(3.0f, 7.0f);
-        func_L01_002F9908(&offset, &velocity, *palette_entry, radius, duration,
+        spawn_debris_moby(&offset, &velocity, *palette_entry, radius, duration,
                                 size, 0.15f, 2.0f, 1);
         i--;
     } while (i >= 0);
@@ -576,7 +576,7 @@ void update_destructible_moby_with_radial_debris(struct Moby *moby)
         size = random_float_between(0.75f, 1.25f);
         func_001F9C30_A8AA8(size, &velocity, &velocity);
         duration = rand_range(60, 100);
-        effect = func_L01_002F9908(&offset, &velocity, 0xc9, radius, duration,
+        effect = spawn_debris_moby(&offset, &velocity, 0xc9, radius, duration,
                                         5.0f, radius, 2.0f, 1);
         if (effect != 0)
             func_001F9C30_A8AA8(0.35f, (char *)effect + 0x40, (char *)effect + 0x40);
@@ -742,10 +742,10 @@ void update_destructible_moby_on_hit(struct Moby *moby)
             radius = random_float_between(0.1f, 0.3f);
             life = rand_range(100, 160);
             size = random_float_between(3.0f, 7.0f);
-            func_L01_002F9908(&offset, &velocity, *color, radius, life, size, 0.15f, 2.0f, 1);
+            spawn_debris_moby(&offset, &velocity, *color, radius, life, size, 0.15f, 2.0f, 1);
         }
         clear_u64_value(&velocity);
-        func_L00_0025F4A8(moby, &velocity, &center, 0.0f, 0.0f, 20, 3, 4, 10.0f, 5.0f, 100000.0f, 3.0f, 0,
+        spawn_explosion(moby, &velocity, &center, 0.0f, 0.0f, 20, 3, 4, 10.0f, 5.0f, 100000.0f, 3.0f, 0,
                          15.0f, 1, 1, -1, 0);
 
         for (puff = 0; puff < 20; puff++) {
@@ -1307,7 +1307,7 @@ extern short D_L15_00161A90;
 extern short D_L15_00161A8C;
 
 /* Update function of the helicopter (moby class 233): waits, flies its path, hovers near and fires at its target, tilts and bobs, aims its turret, and dies. */
-void func_L15_002C6950(HMoby_6950 *m) {
+void helicopter_update(HMoby_6950 *m) {
     extern UPath_6950 *D_L15_001B0DB0[];
     extern ULevelState D_L15_001BAEE0;
     Vec4 oldpos;
@@ -1435,7 +1435,7 @@ void func_L15_002C6950(HMoby_6950 *m) {
     case 2: {
         UPath_6950 *path;
         path = D_L15_001B0DB0[d->w1AC];
-        func_L00_0025EFC0(path, &m->pos, &v90, &seg, &frac, 0, 999.0f, 5.0f, 0.0f);
+        find_nearest_path_point(path, &m->pos, &v90, &seg, &frac, 0, 999.0f, 5.0f, 0.0f);
         dist = IntToFloat(seg) * path->pt[0].f[3] + frac + 2.0f;
         if (FastVecDist(&m->pos, &path->pt[path->n - 1]) <= d->speed * d->speed / (D_0015EE70 * 10.0f + D_0015EE70 * 10.0f)) {
             d->speed -= D_0015EE70 * 10.0f;
@@ -1591,7 +1591,7 @@ void func_L15_002C6950(HMoby_6950 *m) {
             start_blarg_commander_knockback(m, (struct Moby *)d->child);
             d->child = 0;
         }
-        func_L00_0025F4A8(m, &v80, &m->pos, 0.0f, 0.0f, 0x14, 3, 4, 4.0f, 2.0f, 100000.0f, 3.0f, 2, 15.0f, 1, 1, -1, 0);
+        spawn_explosion(m, &v80, &m->pos, 0.0f, 0.0f, 0x14, 3, 4, 4.0f, 2.0f, 100000.0f, 3.0f, 2, 15.0f, 1, 1, -1, 0);
         SetDeathBits(m, 0x200, -1);
         DetachManipulator(m, d->anim0);
         DetachManipulator(m, d->anim1);
@@ -2019,7 +2019,7 @@ void ultramech_unlimited_update(UMoby *m) {
         float speed = D_0015EE6C * 12.0f;
         float dist;
         float len;
-        func_L00_0025EFC0(path, &m->pos, &v20, &seg, &frac, 0, 999.0f, 5.0f, 0.0f);
+        find_nearest_path_point(path, &m->pos, &v20, &seg, &frac, 0, 999.0f, 5.0f, 0.0f);
         dist = IntToFloat(seg) * path->pt[0].f[3];
         dist += frac;
         dist += 2.0f;
@@ -2419,7 +2419,7 @@ void process_ultramech_hits_and_update_target(void *mobyp) {
             *(u128 *)&vA = 0;
             *(unsigned short *)(moby + 0x34) &= 0xEFFF;
             Moby_GetJointWorldPos(moby, 7, &vB);
-            func_L00_0025F4A8(moby, &vA, &vB, 0.0f, 0.0f, 20, 6, 0x20, 16.0f, 8.0f, 9.0f, 4.0f, -1, 32.0f, 1, 0x10, -1, 0);
+            spawn_explosion(moby, &vA, &vB, 0.0f, 0.0f, 20, 6, 0x20, 16.0f, 8.0f, 9.0f, 4.0f, -1, 32.0f, 1, 0x10, -1, 0);
             func_L00_0028EF68_2E9358(0, 0, moby, 0x79);
             moby[0x20] = 10;
             ((unsigned char *)data)[0x67] = 0xF0;

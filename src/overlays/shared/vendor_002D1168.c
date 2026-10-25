@@ -627,16 +627,16 @@ void break_crate(void *mv, int a1, int av) {
         if (D_L00_0015F6B4 < 0.95f && 9.0f < f21 && dc == 0) {
             f20 = 4.0f;
             a = scale_ticks(0xF);
-            func_L00_002ADBB0(m, v60, v80, f20, a, 0x7F, 0x7F, 0x7F, 0x20);
+            spawn_glow_particle(m, v60, v80, f20, a, 0x7F, 0x7F, 0x7F, 0x20);
             a = scale_ticks(0x18);
-            func_L00_002ADBB0(m, v60, v80, f20, a, 0x7F, 0x20, 0, 0x20);
+            spawn_glow_particle(m, v60, v80, f20, a, 0x7F, 0x20, 0, 0x20);
             a = scale_ticks(0x14);
-            func_L00_002ADBB0(m, v60, v80, f20, a, 0x7F, 0x40, 0, 0x30);
+            spawn_glow_particle(m, v60, v80, f20, a, 0x7F, 0x40, 0, 0x30);
         }
         a = scale_ticks(0x1B);
-        func_L00_002ADBB0(m, v60, v80, 3.5f, a, 0x60, 0x10, 0, 0x40);
+        spawn_glow_particle(m, v60, v80, 3.5f, a, 0x60, 0x10, 0, 0x40);
         a = scale_ticks(0x1D);
-        func_L00_002ADBB0(m, v60, v80, 3.0f, a, 0x20, 0, 0, 0x20);
+        spawn_glow_particle(m, v60, v80, 3.0f, a, 0x20, 0, 0, 0x20);
     }
 }
 typedef struct { float x, y, z, w; } Vx __attribute__((aligned(16)));
@@ -1661,7 +1661,7 @@ char *mine_camera_blast(char *a, char *b, int c, char *d) {
         p[0x1C] = a[0x49];
         *(int *)(p + 0x64) = -1;
         func_L00_00251E30(m);
-        func_L00_0025E210(m);
+        copy_hero_spawn_frame(m);
     }
     return m;
 }
@@ -2439,7 +2439,7 @@ void Path_SteerWithLimits(Obj_6e38 *o, Path_6e38 *path, s32 p) {
     f32 r;
 
     st = o->st;
-    func_L00_0025EFC0(path, &o->v[0], &w, &idx, &t, 0, 999.0f, 5.0f, 0.0f);
+    find_nearest_path_point(path, &o->v[0], &w, &idx, &t, 0, 999.0f, 5.0f, 0.0f);
     d = IntToFloat(idx) * path->a[0].f[3] + t;
     w_ = d + 2.0f;
     l = FastVecDist(&o->v[0], (void *)((char *)path + path->n * 16));
@@ -2735,7 +2735,7 @@ void infobot_update(struct Moby *moby)
         path = D_L00_001B0830[infobot->path];
         pos = (Vec *)&moby->pos;
         DriftingSprites_Draw((char *)moby);
-        func_L00_0025EFC0(path, pos, &point, &segment, &fraction, 0, 999.0f, 5.0f, 0.0f);
+        find_nearest_path_point(path, pos, &point, &segment, &fraction, 0, 999.0f, 5.0f, 0.0f);
         end = IntToFloat(segment) * path->pts[0].v.w + fraction + 2.0f;
         distance = FastVecDist(pos, &path->pts[path->count - 1]);
         accel = D_0015EE70 * 16.0f;
@@ -3161,7 +3161,7 @@ extern float func_00214158(void);
 char *Moby775Spawn(Vy *src, float f) {
     char *m = CreateMoby(0x307);
     if (m != 0) {
-        func_L00_0025E210(m);
+        copy_hero_spawn_frame(m);
         func_L00_00251328(m, 0x28, 0x28, 0x46);
         *(unsigned char *)(m + 0x30) = 0xFF;
         *(short *)(m + 0x32) = 0x40;

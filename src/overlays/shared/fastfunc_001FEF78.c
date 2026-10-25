@@ -137,7 +137,7 @@ extern int func_001222C8(void *, short, short, short, short, short);
 
 #define FA ((FsAa_FAB40 *)D_0015EFB8)
 
-void func_L00_00200598(int display_width, int display_height, int storage_width, int storage_height,
+void setup_fs_aa_buffer_level(int display_width, int display_height, int storage_width, int storage_height,
                    int display_offset_x, int display_offset_y) {
     unsigned long *q;
 

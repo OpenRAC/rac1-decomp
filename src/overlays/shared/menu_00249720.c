@@ -12,11 +12,11 @@ static inline unsigned char is_set_249720(unsigned char v) {
 
 /* item < 256: whether D_0013D49E is set; else 58 <= x <= 86 while the hero's control mode
    (D_001414DC) is not 16 (the joined tail) */
-int func_L00_00249720(int item, float a, float b, float x) {
+int ovl_map_filter_l01_4(int item, float a, float b, float x) {
     int locked = D_001414DC == 16;
 
     if (item < 256) {
-        return is_set_249720(D_0013D49E[0]);
+        return is_set_249720(menu_item_enabled_2[0]);
     }
     if (x >= 58.0f && x <= 86.0f) {
         if (locked == 0) return 1;
@@ -24,7 +24,7 @@ int func_L00_00249720(int item, float a, float b, float x) {
     return 0;
 }
 /* Menu hit test: x in [58, 86] and a flag clear. */
-int func_L00_00249750(float a, float b, float x) {
+int ovl_map_filter_l01_4_tail(float a, float b, float x) {
     int flag;
     if (x >= 58.0f && x <= 86.0f) {
         if (flag == 0) {
@@ -37,7 +37,7 @@ extern Hero D_0013F450_2497A0 __asm__("D_0013F450");
 
 /* item < 256: whether the hero is in control mode 0x11 or 0x12 or has base condition 1;
    else x >= 95.0f (the joined tail) */
-int func_L00_002497A0(int item, float a, float b, float x) {
+int ovl_map_filter_l01_5(int item, float a, float b, float x) {
     int r;
 
     if (item < 256) {
@@ -50,11 +50,11 @@ int func_L00_002497A0(int item, float a, float b, float x) {
     }
     return x >= 95.0f;
 }
-int func_L00_002497E0(float a, float b, float x) { return x >= 95.0f; }
+int ovl_map_filter_l01_5_tail(float a, float b, float x) { return x >= 95.0f; }
 extern int D_L00_001845C0;
 extern int D_L00_001845B8;
 
-int func_L00_00249EE0(float c, float d, float x, int a, int b) {
+int ovl_map_filter_l07_5(float c, float d, float x, int a, int b) {
     if (b < 0x9D) {
         if (x < 73.5f || 80.0f < x || D_L00_001845C0 == 0) return 0;
         return 1;
@@ -66,19 +66,19 @@ INCLUDE_ASM("asm/overlays", func_L00_00249F40);
 extern unsigned char D_0013D4C5 NOT_SDA;
 extern int D_001414DC;
 // Checks a menu flag for small values and mode 15 for larger values.
-int func_L00_0024A110(int unused, int value) {
+int ovl_map_filter_l08_0(int unused, int value) {
     if (value >= 257) return D_001414DC == 15;
     return menu_item_enabled_41 != 0;
 }
 INCLUDE_ASM("asm/overlays", func_L00_0024A12C);
 /* a < 224: x >= 47.75f; else x < 29.0f (the joined tail). */
-int func_L00_0024A140(int a, float b, float c, float x) {
+int ovl_map_filter_l08_1(int a, float b, float c, float x) {
     if (a < 224) return x >= 47.75f;
     return x < 29.0f;
 }
-int func_L00_0024A170(float a, float b, float x) { return x < 29.0f; }
+int ovl_map_filter_l08_1_tail(float a, float b, float x) { return x < 29.0f; }
 /* tests the vertical menu range according to the integer selection */
-int func_L00_0024A198(int a, float b, float c, float x) {
+int ovl_map_filter_l08_2(int a, float b, float c, float x) {
  if (a < 224) return x >= 44.0f && x <= 45.0f;
  return x >= 37.0f;
 }
@@ -91,40 +91,40 @@ int test_selected_z_range(int item, float a, float b, float x) {
 INCLUDE_ASM("asm/overlays", func_L00_0024A25C);
 extern unsigned char D_0013D4E0[];
 /* a >= 190: D_0013D4E0 != 0; else x >= 58.5f (the joined tail). */
-int func_L00_0024A320(int a, float b, float c, float x) {
+int ovl_map_filter_l10_0(int a, float b, float c, float x) {
     if (a >= 190) return menu_item_enabled_68[0] != 0;
     return x >= 58.5f;
 }
-int func_L00_0024A338(float a, float b, float x) { return x >= 58.5f; }
+int ovl_map_filter_l10_0_tail(float a, float b, float x) { return x >= 58.5f; }
 /* a < 221: 232.0f <= x <= 235.0f and D_0013D4E6 != 0; else x <= 180.0f (the joined tail). */
 extern unsigned char D_0013D4E6[];
 /* Same test as func_L00_0024A404 with a leading selector. */
-int func_L00_0024A3B0(int a, float b, float c, float x) {
-    if (a < 221) return x >= 232.0f && x <= 235.0f && D_0013D4E6[0] != 0;
+int ovl_map_filter_l11_0(int a, float b, float c, float x) {
+    if (a < 221) return x >= 232.0f && x <= 235.0f && menu_item_enabled_74[0] != 0;
     return x <= 180.0f;
 }
-int func_L00_0024A404(float a, float b, float x) { return x <= 180.0f; }
+int ovl_map_filter_l11_0_tail(float a, float b, float x) { return x <= 180.0f; }
 extern unsigned char D_0013D4E7[];
 /* a < 221: x >= 242.0f; else x <= 180.0f and D_0013D4E7 != 0 (the joined tail). */
-int func_L00_0024A430(int a, float b, float c, float x) {
+int ovl_map_filter_l11_1(int a, float b, float c, float x) {
     if (a < 221) return x >= 242.0f;
-    return x <= 180.0f && D_0013D4E7[0] != 0;
+    return x <= 180.0f && menu_item_enabled_75[0] != 0;
 }
 /* True when x <= 180.0f and D_0013D4E7[0] is set. */
-int func_L00_0024A460(float a, float b, float x) {
-    return x <= 180.0f && D_0013D4E7[0] != 0;
+int ovl_map_filter_l11_1_tail(float a, float b, float x) {
+    return x <= 180.0f && menu_item_enabled_75[0] != 0;
 }
 /* Range test on x selected by a, with a D_0013D4E7[1] fallback. */
-int func_L00_0024A490(int a, float b, float c, float x) {
+int ovl_map_filter_l11_2(int a, float b, float c, float x) {
     if (a < 221) return x >= 238.0f && x <= 241.0f;
-    return x <= 180.0f && D_0013D4E7[1] != 0;
+    return x <= 180.0f && menu_item_enabled_75[1] != 0;
 }
 /* Joined to func_L00_0024A490. */
 INCLUDE_ASM("asm/overlays", func_L00_0024A4DC);
 extern unsigned char D_0013D4EA[];
 /* item < 351: the hero flag of func_L00_002497A0 while x >= 200.0f; else 233.0f <= x <= 235.0f
    with D_0013D4EA set (the joined tail) */
-int func_L00_0024A510(int item, float a, float b, float x) {
+int ovl_map_filter_l11_3(int item, float a, float b, float x) {
     int r = 0;
 
     if (D_0013F450_2497A0.state.control_mode == 0x11 || D_0013F450_2497A0.state.control_mode == 0x12 ||
@@ -134,16 +134,16 @@ int func_L00_0024A510(int item, float a, float b, float x) {
     if (item < 351) {
         return x >= 200.0f ? r : 0;
     }
-    return x >= 233.0f && x <= 235.0f && D_0013D4EA[0] != 0;
+    return x >= 233.0f && x <= 235.0f && menu_item_enabled_78[0] != 0;
 }
 /* True when 233.0f <= x <= 235.0f and D_0013D4EA[0] is set. */
-int func_L00_0024A570(float a, float b, float x) {
-    return x >= 233.0f && x <= 235.0f && D_0013D4EA[0] != 0;
+int ovl_map_filter_l11_3_tail(float a, float b, float x) {
+    return x >= 233.0f && x <= 235.0f && menu_item_enabled_78[0] != 0;
 }
 /* Range test on x selected by a, with a D_0013D4EA[1] fallback. */
-int func_L00_0024A5C0(int a, float b, float c, float x) {
+int ovl_map_filter_l11_4(int a, float b, float c, float x) {
     if (a < 351) return x >= 228.0f && x <= 230.0f;
-    return x >= 233.0f && x <= 235.0f && D_0013D4EA[1] != 0;
+    return x >= 233.0f && x <= 235.0f && menu_item_enabled_78[1] != 0;
 }
 /* Joined to func_L00_0024A5C0. */
 INCLUDE_ASM("asm/overlays", func_L00_0024A60C);
@@ -229,7 +229,7 @@ typedef struct {
 } MapScale_182B70;
 extern MapScale_182B70 D_L00_00182B70[];
 
-void func_L00_0024B200(float *p1, float *p2, int k, float t, float u) {
+void map_world_to_uv(float *p1, float *p2, int k, float t, float u) {
     int seven = 0;
 
     if (k >= 100) {
@@ -302,7 +302,7 @@ void CardMenu_AdvanceOnCardStatus(void) {
 }
 INCLUDE_ASM("asm/overlays", func_L00_0024B940);
 extern int D_L00_0015F688 MACRO_ADDR;
-void func_L00_0024B960(void) {
+void card_menu_advance_on_ready_flags(void) {
     int flags;
     if (*(int *)(D_0013D355 + 0x57) != -2) {
         D_0015EFB0 = 3;

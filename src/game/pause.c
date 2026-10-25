@@ -962,7 +962,7 @@ void render_level_effects_and_screen_sprites(void) {
             s32 *clr_src = (s32 *)&D_001602B0;
             __builtin_memcpy(&clr, clr_src, 4);
         }
-        func_00201640(screen_x + 1, screen_y + 1, screen_x + projected_width - 1,
+        draw_hud_rect_blended(screen_x + 1, screen_y + 1, screen_x + projected_width - 1,
                                   screen_y + projected_height - 1, (u64)clr, 0);
     }
 
@@ -1214,10 +1214,10 @@ int draw_menu_icon_list(char *arg0) {
         char *e = *(char **)(arg0 + 0x48) + i * 10;
 
         if (*(int *)(arg0 + 0x3C) == i) {
-            func_00201640(x - 0x30, y - 0x30, x + 0x230, y + 0x230,
+            draw_hud_rect_blended(x - 0x30, y - 0x30, x + 0x230, y + 0x230,
                           (unsigned int)((subtract_integer_with_clamp((D_0015F538 & 0x3F) - 0x20) + 0x40)
                                          * 0x10202 | 0x80000000), 1);
-            func_00201640(x - 0x10, y - 0x10, x + 0x210, y + 0x210,
+            draw_hud_rect_blended(x - 0x10, y - 0x10, x + 0x210, y + 0x210,
                           *(int *)&D_001602B0, 1);
         }
         func_002008B8(GetIconFrame(*(unsigned short *)e, *(short *)(e + 2)), x, y,
@@ -1225,11 +1225,11 @@ int draw_menu_icon_list(char *arg0) {
         y += 0x252;
     }
     if (top < 0) {
-        func_00201640(0, 0, *(int *)(arg0 + 0x20), 0x14, *(int *)&D_001602B0, 0);
+        draw_hud_rect_blended(0, 0, *(int *)(arg0 + 0x20), 0x14, *(int *)&D_001602B0, 0);
         HudSprite(GetIconFrame(0xE99E, 6), x >> 4, 2, 0x20, 0x10, 0x80);
     }
     if (*(int *)(arg0 + 0x24) * 16 < y) {
-        func_00201640(0, *(int *)(arg0 + 0x24) - 0x14, *(int *)(arg0 + 0x20),
+        draw_hud_rect_blended(0, *(int *)(arg0 + 0x24) - 0x14, *(int *)(arg0 + 0x20),
                       *(int *)(arg0 + 0x24), *(int *)&D_001602B0, 0);
         draw_hud_sprite_flipped(GetIconFrame(0xE99E, 6), x >> 4, *(int *)(arg0 + 0x24) - 0x12,
                       0x20, 0x10, 0x80);
@@ -2397,7 +2397,7 @@ s32 update_menu_grid_selection(MenuScreen_C840 *grid) {
 }
 
 /* Empty menu hook; returns 0. */
-int func_0021CD98(void) {
+int menu_update_noop(void) {
     return 0;
 }
 
@@ -3416,7 +3416,7 @@ int build_reversed_active_message_list(void) {
 }
 
 /* Empty menu hook; returns 0. */
-int func_0021E1F8(void) {
+int menu_leave_noop(void) {
     return 0;
 }
 
@@ -3935,13 +3935,13 @@ int draw_menu_preview_objects(char *arg0) {
 }
 
 /* Empty menu hook; returns 0. */
-int func_0021EF30(void) {
+int menu_draw_noop(void) {
     return 0;
 }
 
 /* Enter hook for the preview-pair screen: angle +0x38 = pi, clears +0x34 and
    both preview moby slots. */
-int func_0021EF38(void *arg0) {
+int enter_item_preview(void *arg0) {
     char *p = (char *)arg0;
     *(float *)(p + 0x38) = 3.14159274f;
     *(int *)(p + 0x34) = 0;
@@ -5129,8 +5129,8 @@ extern void func_00200468(int, int, int, int, int, int);
 /* Draws the map cursor: a 10x10 box with a coloured inner box at (x, y), plus a
    marker icon above it when flag is set. */
 void draw_menu_selection_marker(int x, int y, int flag) {
-    func_00201640(x - 5, y - 5, x + 5, y + 5, 0x80FFA888L, 0);
-    func_00201640(x - 4, y - 4, x + 4, y + 4, *(int *)&D_001602B0, 0);
+    draw_hud_rect_blended(x - 5, y - 5, x + 5, y + 5, 0x80FFA888L, 0);
+    draw_hud_rect_blended(x - 4, y - 4, x + 4, y + 4, *(int *)&D_001602B0, 0);
     if (flag != 0) {
         int c = GetIconFrame(0xE99E, 1);
         HudSprite(c, x - 0xD, y - 0x12, 0x1E, 0x1E, 0x80);
@@ -6395,12 +6395,12 @@ int draw_pause_ring(char *arg0) {
         if (i == pause_state->sel) {
             unsigned int color = ((subtract_integer_with_clamp((D_0015F538 & 0x3F) - 0x20) + 0x40) * 0x10202) | 0x80000000;
 
-            func_00201640((int)x - 0x13, (int)y - 0x13, (int)x + 0x13, (int)y + 0x13, color, 0);
-            func_00201640((int)x - 0x12, (int)y - 0x12, (int)x + 0x12, (int)y + 0x12, *(int *)&D_001602B0, 0);
+            draw_hud_rect_blended((int)x - 0x13, (int)y - 0x13, (int)x + 0x13, (int)y + 0x13, color, 0);
+            draw_hud_rect_blended((int)x - 0x12, (int)y - 0x12, (int)x + 0x12, (int)y + 0x12, *(int *)&D_001602B0, 0);
         }
         icon_entry_index = pause_state->slots[i];
         if (icon_entry_index == 0) {
-            func_00201640((int)x - 0xF, (int)y - 0xF, (int)x + 0xF, (int)y + 0xF, 0x40404040L, 0);
+            draw_hud_rect_blended((int)x - 0xF, (int)y - 0xF, (int)x + 0xF, (int)y + 0xF, 0x40404040L, 0);
         } else {
             int id = GetIconFrame(iconTab[icon_entry_index].unk38, D_0013E620[icon_entry_index] == 0 ? 0 : 4);
 
@@ -6829,7 +6829,7 @@ int build_filtered_menu_item_list(void) {
 }
 
 /* Empty menu hook; returns 0. */
-int func_00222840(void) {
+int pause_page_enter_noop(void) {
     return 0;
 }
 
@@ -7297,7 +7297,7 @@ int process_global_state_flags(void) {
 }
 
 /* Enter hook for the timed text sequence below: resets its scroll, countdown and step. */
-int func_00223478(void *arg0) {
+int enter_timed_menu_sequence(void *arg0) {
     *(int *)((char *)arg0 + 0x40) = 0;
     *(int *)((char *)arg0 + 0x50) = 0;
     *(int *)((char *)arg0 + 0x3C) = 0;

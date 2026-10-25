@@ -926,7 +926,7 @@ extern void func_00122818(void *, int, int, int, int, int, int, int);
 extern void func_00122AD8(void *, int);
 extern void func_00216A90(int, int, int);
 
-void func_L00_0029AB38(void) {
+void movie_exit_to_gameplay(void) {
     char sp[0x70] __attribute__((aligned(16)));
     int source, destination, big, small, i, j;
     AB *cb;
@@ -1013,7 +1013,7 @@ void play_queued_movie(void) {
                   (*(int *)&D_L00_00161114 + 0x3F) & ~0x3F,
                   (D_L00_00161118 + 0x3F) & ~0x3F, D_L00_00161110);
     func_00120F30(0);
-    func_L00_0029AB38();
+    movie_exit_to_gameplay();
 }
 extern void func_001F99B0(void *, int, int);
 extern int func_00217628(int, int, int);

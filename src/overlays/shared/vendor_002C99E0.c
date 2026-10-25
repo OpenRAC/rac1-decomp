@@ -440,7 +440,7 @@ void Moby1034Update(struct PMoby *moby) {
     }
     Moby_GetJointWorldPos(moby, 1, &spray);
     if (func_L00_001EFFF0(&previous_pos, &spray, 0, data->collision, 0)) {
-        func_L00_0025F4A8(moby, data, D_L11_001748E0, 2.0f, 10.0f, 10, 3, 0x10, 4.0f, 2.0f, 9.0f, 1.0f,
+        spawn_explosion(moby, data, D_L11_001748E0, 2.0f, 10.0f, 10, 3, 0x10, 4.0f, 2.0f, 9.0f, 1.0f,
                 -1, 20.0f, 0, 1, -1, 0);
         DeleteMoby(moby);
         return;
@@ -1231,7 +1231,7 @@ typedef struct {
     long pk[4];
 } Quad_31A738;
 
-void func_L11_0031A738(char *m) {
+void draw_moby_trail_quads(char *m) {
     Quad_31A738 q[16];
     float off[2][4];
     short *p, *np;

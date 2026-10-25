@@ -773,7 +773,7 @@ u8 *spawn_decoy(s32 value, u128_C48C8 *position, u128_C48C8 *other_position) {
             }
         }
         func_L00_00251E30_C48C8(m);
-        func_L00_0025E210(m);
+        copy_hero_spawn_frame(m);
         *(u16 *)data = 0;
         data[8] = 0;
         data[9] = 0;
@@ -1306,7 +1306,7 @@ void decoy_update(char *moby) {
                         wv[1] = a;
                         *(u128 *)v = *(u128 *)wv;
                         add_random_offset_to_vector_xyz(a, v);
-                        func_L00_0025F4A8(moby, v, 0, 0.0f, 0.0f, 0, 0, 0, 4.0f, 3.0f, 9.0f, 2,
+                        spawn_explosion(moby, v, 0, 0.0f, 0.0f, 0, 0, 0, 4.0f, 3.0f, 9.0f, 2,
                                           1.0f, 12.0f, 1, 1, -1, active);
                         if (active != 0) {
                             initialize_hit_descriptor(effect + effect, wv, moby, 0x810000);
@@ -1428,7 +1428,7 @@ char *spawn_on_path(void *pos, int idx, int a2, int a3) {
         d[8] = scale_ticks(0x10);
         *(float *)(d + 10) = *(float *)(m + 0x18);
         func_L00_00251E30(m);
-        func_L00_0025E210(m);
+        copy_hero_spawn_frame(m);
     }
     return m;
 }

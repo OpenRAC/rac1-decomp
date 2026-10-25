@@ -1311,7 +1311,7 @@ extern int func_002140B0(int);
 
 typedef struct { char pad0[0x38]; int a[6]; int b[6]; int c[3][6]; } Pick;
 // picks an id for the moby by mode from its data block and stores it offset by 20000
-void func_L06_00303858(char *moby, int mode) {
+void queue_moby_dialogue_line(char *moby, int mode) {
     int n = D_0015EE88;
     Pick *data;
     int id;

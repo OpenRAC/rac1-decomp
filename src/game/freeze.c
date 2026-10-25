@@ -268,7 +268,7 @@ static __inline__ void draw_box_p(char *text, s32 left, s32 mid, s32 right, stru
     }
 }
 
-void func_001FBE80(void) {
+void draw_freeze_message_box(void) {
     char buf[0x200];
 
     emit_rgba_draw_packet(0, 0, 0, 0x30);

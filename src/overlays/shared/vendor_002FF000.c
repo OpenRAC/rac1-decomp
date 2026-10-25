@@ -116,7 +116,7 @@ void blarg_space_commando_update(struct Moby *moby) {
     f32 frame;
     f32 cur_frame;
 
-    func_L06_002FFF70(moby);
+    update_blarg_space_commando_state(moby);
     target = vars->target;
     Manipulator_ApplyScale(moby, 1, vars->unk420, 2.5f);
     if (moby->visible != 0 && FastVecDist(&moby->pos, &D_L06_00167640) < 27.0f) {
@@ -386,7 +386,7 @@ void blarg_space_commando_update(struct Moby *moby) {
             qcopy(&a, &moby->pos);
             a.f[2] += 1.0f;
             none = -1;
-            func_L00_0025F4A8(moby, &vars->unk40, &a, 0.0f, 0.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, 1.0f, -1, 15.0f, 1, 1, none, 0);
+            spawn_explosion(moby, &vars->unk40, &a, 0.0f, 0.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, 1.0f, -1, 15.0f, 1, 1, none, 0);
             func_L00_00265050_FF000(moby, 0x6A6, &moby->pos, &moby->rot, 0, 0, 0.0f, D_L06_0015F660, D_L06_0015F660,
                              D_L06_0015F660);
             func_L00_00265050_FF000(moby, 0x6A7, &moby->pos, &moby->rot, 0, 0, 0.0f, D_L06_0015F660, D_L06_0015F660,
@@ -439,7 +439,7 @@ extern short D_L06_00162038;
 extern char D_0013D50F[];
 
 // Level 06 update for a moby with a 12-state machine: aims at a target, runs timed effects, and sets its rotation.
-void func_L06_002FFF70(char *m) {
+void update_blarg_space_commando_state(char *m) {
     extern unsigned char D_0013D510[];
     char *d;
     char *t;

@@ -176,7 +176,7 @@ void update_linked_moby_group_transform_and_fall(unsigned char *moby) {
                     v[2] = 15.0f;
                     FastVecAdd(v, v, D_0013E633 + 0xE9D);
                     n = scale_ticks(240);
-                    func_L01_002F9908(v, D_L18_0015F660, 0x2B8, n,
+                    spawn_debris_moby(v, D_L18_0015F660, 0x2B8, n,
                                       *(float *)&D_L18_00162350, 2.0f, 1.0f, 0.75f, 0);
                 }
             }
@@ -2622,7 +2622,7 @@ x = *(float *)&D_L18_00162460;
                             w = *(char **)(q + 0x180);
                             if (w != 0 && *(short *)(w + 0x86) == 0) {
                                 Cam_SetDistanceGoal(*(float *)&D_L18_00162470, 0.003f, 0);
-                                func_L00_002E9968(*(float *)&D_L18_00162474, 0.003f);
+                                follow_camera_set_height(*(float *)&D_L18_00162474, 0.003f);
                             }
                         }
                     }

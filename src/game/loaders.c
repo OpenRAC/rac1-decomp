@@ -976,18 +976,18 @@ extern void func_00203B70(void *, int, int, int);
    kept in D_001B6500 and is set up by func_00203B70 once the count is
    bumped. The slot byte is D_00160000 read again as a byte. */
 void func_00203E78(void *arg0, int arg1, int arg2, int arg3) {
-    int idx = D_00160000;
+    int idx = resident_moby_class_count;
 
-    D_001B3E40[arg3] = *(unsigned char *)&D_00160000;
-    D_001B3C80[idx] = arg3;
+    D_001B3E40[arg3] = *(unsigned char *)&resident_moby_class_count;
+    resident_class_id_by_slot[idx] = arg3;
     moby_class_resources[idx] = arg0;
     if (arg0 == 0) {
         assign_moby_class_data(arg3);
-        D_00160000 = D_00160000 + 1;
+        resident_moby_class_count = resident_moby_class_count + 1;
     } else {
         D_001B6500[idx] = *(int *)((char *)arg0 + 0x2C);
         assign_moby_class_data(arg3);
-        D_00160000 = D_00160000 + 1;
+        resident_moby_class_count = resident_moby_class_count + 1;
         prepare_resident_class_render_data(arg0, arg1, arg2, arg3);
     }
 }

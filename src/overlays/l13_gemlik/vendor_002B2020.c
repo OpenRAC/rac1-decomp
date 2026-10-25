@@ -595,7 +595,7 @@ char *spawn_blarg_turret_child(char *parent) {
         d[0x2A] = 3;
         *(float *)(d + 0x30) = 0.7f;
         func_L00_00251E30(m);
-        func_L00_0025E210(m);
+        copy_hero_spawn_frame(m);
     }
     return m;
 }
@@ -723,7 +723,7 @@ void blarg_gunner_update(unsigned char *raw) {
         if (moby->anim_flags & 2) {
             FastVecSub(explosion_offset, D_L13_00167140, &moby->pos);
             Moby_GetJointWorldPos(moby, 0, explosion_spawn_position);
-            func_L00_0025F4A8(moby, explosion_offset, explosion_spawn_position, 0.0f, 0.0f, 0x14, 9, 0x20, 10.0f, 7.0f, 20.0f, -1, 2.0f, 40.0f, 0, 1, -1, 0);
+            spawn_explosion(moby, explosion_offset, explosion_spawn_position, 0.0f, 0.0f, 0x14, 9, 0x20, 10.0f, 7.0f, 20.0f, -1, 2.0f, 40.0f, 0, 1, -1, 0);
             DeleteMoby(moby);
         }
         break;
@@ -2610,7 +2610,7 @@ void PlayerFighterFlight(void *a0, void *a1) {
                         func_L00_001FF610(vel, dir, p + 0x40);
                         func_L00_001FF4B0(vel, vel, D_0015EE6C + D_0015EE6C);
                         func_L00_001FF4B0(up, p + 0x40, 1.0f);
-                        func_L00_0025F4A8(m, vel, 0, 8.0f, 100.0f, 0x1E, 0xA, 0x18, 16.0f, 8.0f, 9.0f, 6, 1.0f, 50.0f, 1, 1, -1, 0);
+                        spawn_explosion(m, vel, 0, 8.0f, 100.0f, 0x1E, 0xA, 0x18, 16.0f, 8.0f, 9.0f, 6, 1.0f, 50.0f, 1, 1, -1, 0);
                         o->s62 = scale_ticks(240);
                         m->state = 6;
                     }
@@ -2618,7 +2618,7 @@ void PlayerFighterFlight(void *a0, void *a1) {
                 }
             } else {
                 *(float *)(D_0013E633 + 0x2419) = 0.0f;
-                func_L00_0025F4A8(m, vel, 0, 8.0f, 100.0f, 0x1E, 0xA, 0x18, 16.0f, 8.0f, 9.0f, 6, 1.0f, 50.0f, 1, 1, -1, 0);
+                spawn_explosion(m, vel, 0, 8.0f, 100.0f, 0x1E, 0xA, 0x18, 16.0f, 8.0f, 9.0f, 6, 1.0f, 50.0f, 1, 1, -1, 0);
                 m->flags |= 0x41;
                 o->s62 = scale_ticks(240);
                 m->state = 6;
@@ -2733,7 +2733,7 @@ void JetFighterUpdateL13(Jet47 *m) {
                 if (hit->source && (unsigned int)(hit->source->class_id-0x52)<2) d->hit_class=(short)hit->source->class_id+10000;
                 jet_camera47.flash=0.2f; jet_camera47.ticks=scale_ticks(5);
                 ((JetPlayer47*)(D_0013E633+0xE1D))->health=0.0f; m->flags|=0x41;
-                func_L00_0025F4A8(m,impulse,0,0.0f,0.0f,10,3,16,4.0f,2.0f,9.0f,6,1.0f,15.0f,1,1,-1,0);
+                spawn_explosion(m,impulse,0,0.0f,0.0f,10,3,16,4.0f,2.0f,9.0f,6,1.0f,15.0f,1,1,-1,0);
                 m->animation=0; d->death_timer=scale_ticks(240); m->state=6;
             }
         }

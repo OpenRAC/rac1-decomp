@@ -1067,7 +1067,7 @@ void update_spline_moby_destruction_and_respawn(char *moby, void *vel_in, int fl
             func_L00_00261B00_0029E498(moby, 3, 5, 2, -1);
         }
         *(short *)(data + 0x14A) = scale_ticks(600);
-        func_L00_0025F4A8(moby, vel, spot, 0.0f, 0.0f, 20, 3, 4, 4.0f, 2.0f, 100000.0f, -1, 3.0f, 15.0f, 1, 1, -1, 0);
+        spawn_explosion(moby, vel, spot, 0.0f, 0.0f, 20, 3, 4, 4.0f, 2.0f, 100000.0f, -1, 3.0f, 15.0f, 1, 1, -1, 0);
         FastVecScale(push, moby + 0xC0, D_0015EE60 * 0.075f);
         push[2] += D_0015EE60 * 0.08f;
         switch (*(short *)(moby + 0xA6)) {
@@ -2380,7 +2380,7 @@ void update_kerwan_path_enemy(Moby *m) {
             float v[4];
             int seg;
             float frac;
-            func_L00_0025EFC0(pf->path, (*(float (*)[4])&m->pos), v, &seg, &frac, 0, 999.0f, 5.0f, 0.0f);
+            find_nearest_path_point(pf->path, (*(float (*)[4])&m->pos), v, &seg, &frac, 0, 999.0f, 5.0f, 0.0f);
             if (pf->idx < seg) {
                 pf->idx = seg;
             }
@@ -2405,7 +2405,7 @@ void update_kerwan_path_enemy(Moby *m) {
             float v[4];
             int seg;
             float frac;
-            func_L00_0025EFC0(path, (*(float (*)[4])&m->pos), v, &seg, &frac, 0, 999.0f, 5.0f, 0.0f);
+            find_nearest_path_point(path, (*(float (*)[4])&m->pos), v, &seg, &frac, 0, 999.0f, 5.0f, 0.0f);
             if (d->i298 < seg) {
                 d->i298 = seg;
             }
@@ -2468,7 +2468,7 @@ void update_kerwan_path_enemy(Moby *m) {
                 float v[4];
                 qcopy(v, (*(float (*)[4])&m->pos));
                 v[2] += 1.0f;
-                func_L00_0025F4A8(m, d->v40, v, 0.0f, 0.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, 6, 1.0f, 15.0f, 1, 1, -1, 0);
+                spawn_explosion(m, d->v40, v, 0.0f, 0.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, 6, 1.0f, 15.0f, 1, 1, -1, 0);
                 SpawnBreakFragment((char *)m, 0x6D0, (*(float (*)[4])&m->pos), (*(float (*)[4])&m->rot), 0, 0, 0.0f, D_L03_0015F660, D_L03_0015F660, D_L03_0015F660);
                 SpawnBreakFragment((char *)m, 0x6D1, (*(float (*)[4])&m->pos), (*(float (*)[4])&m->rot), 0, 0, 0.0f, D_L03_0015F660, D_L03_0015F660, D_L03_0015F660);
                 SpawnBreakFragment((char *)m, 0x6D2, (*(float (*)[4])&m->pos), (*(float (*)[4])&m->rot), 0, 0, 0.0f, D_L03_0015F660, D_L03_0015F660, D_L03_0015F660);
@@ -2487,7 +2487,7 @@ void update_kerwan_path_enemy(Moby *m) {
             }
         }
         (*(float (*)[4])&m->pos)[2] = (*(float (*)[4])&m->pos)[2] + 2.0f;
-        g = func_L00_0025A748((*(float (*)[4])&m->pos));
+        g = probe_ground_height_flag20((*(float (*)[4])&m->pos));
         (*(float (*)[4])&m->pos)[2] = (*(float (*)[4])&m->pos)[2] - 2.0f;
         if (g + 5.0f < (*(float (*)[4])&m->pos)[2]) {
             Moby_PlaySound(0xA, 0x21, (int)m);
@@ -2529,7 +2529,7 @@ void update_kerwan_path_enemy(Moby *m) {
                     float v[4];
                     qcopy(v, (*(float (*)[4])&m->pos));
                     v[2] += 1.0f;
-                    func_L00_0025F4A8(m, d->v40, v, 0.0f, 0.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, 6, 1.0f, 15.0f, 1, 1, -1, 0);
+                    spawn_explosion(m, d->v40, v, 0.0f, 0.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, 6, 1.0f, 15.0f, 1, 1, -1, 0);
                     SpawnBreakFragment((char *)m, 0x6D0, (*(float (*)[4])&m->pos), (*(float (*)[4])&m->rot), 0, 0, 0.0f, D_L03_0015F660, D_L03_0015F660, D_L03_0015F660);
                     SpawnBreakFragment((char *)m, 0x6D1, (*(float (*)[4])&m->pos), (*(float (*)[4])&m->rot), 0, 0, 0.0f, D_L03_0015F660, D_L03_0015F660, D_L03_0015F660);
                     SpawnBreakFragment((char *)m, 0x6D2, (*(float (*)[4])&m->pos), (*(float (*)[4])&m->rot), 0, 0, 0.0f, D_L03_0015F660, D_L03_0015F660, D_L03_0015F660);
@@ -2600,7 +2600,7 @@ void update_kerwan_path_enemy(Moby *m) {
         int fl = mine_fall(m, &d->q);
         float g;
         d->b255++;
-        g = func_L00_0025A748((*(float (*)[4])&m->pos));
+        g = probe_ground_height_flag20((*(float (*)[4])&m->pos));
         if ((fl & 0x60) && g + 5.0f < (*(float (*)[4])&m->pos)[2] && m->command != 0xB) {
             Moby_PlaySound(0xA, 0, (int)m);
             m->command = 0xB;
@@ -2614,7 +2614,7 @@ void update_kerwan_path_enemy(Moby *m) {
                 float v[4];
                 qcopy(v, (*(float (*)[4])&m->pos));
                 v[2] += 1.0f;
-                func_L00_0025F4A8(m, d->v40, v, 0.0f, 0.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, 6, 1.0f, 15.0f, 1, 1, -1, 0);
+                spawn_explosion(m, d->v40, v, 0.0f, 0.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, 6, 1.0f, 15.0f, 1, 1, -1, 0);
                 SpawnBreakFragment((char *)m, 0x6D0, (*(float (*)[4])&m->pos), (*(float (*)[4])&m->rot), 0, 0, 0.0f, D_L03_0015F660, D_L03_0015F660, D_L03_0015F660);
                 SpawnBreakFragment((char *)m, 0x6D1, (*(float (*)[4])&m->pos), (*(float (*)[4])&m->rot), 0, 0, 0.0f, D_L03_0015F660, D_L03_0015F660, D_L03_0015F660);
                 SpawnBreakFragment((char *)m, 0x6D2, (*(float (*)[4])&m->pos), (*(float (*)[4])&m->rot), 0, 0, 0.0f, D_L03_0015F660, D_L03_0015F660, D_L03_0015F660);
@@ -2748,12 +2748,12 @@ void update_kerwan_path_enemy(Moby *m) {
             float v[4];
             int seg;
             float frac;
-            func_L00_0025EFC0(pf->path, (*(float (*)[4])&m->pos), v, &seg, &frac, 0, 999.0f, 5.0f, 0.0f);
+            find_nearest_path_point(pf->path, (*(float (*)[4])&m->pos), v, &seg, &frac, 0, 999.0f, 5.0f, 0.0f);
             if ((*(float (*)[4])&m->pos)[2] < 5.0f || (*(float (*)[4])&m->pos)[2] < v[2] - 10.0f) {
                 float p[4];
                 qcopy(p, (*(float (*)[4])&m->pos));
                 p[2] += 1.0f;
-                func_L00_0025F4A8(m, d->v40, p, 0.0f, 0.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, 6, 1.0f, 15.0f, 1, 1, -1, 0);
+                spawn_explosion(m, d->v40, p, 0.0f, 0.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, 6, 1.0f, 15.0f, 1, 1, -1, 0);
                 SpawnBreakFragment((char *)m, 0x6D0, (*(float (*)[4])&m->pos), (*(float (*)[4])&m->rot), 0, 0, 0.0f, D_L03_0015F660, D_L03_0015F660, D_L03_0015F660);
                 SpawnBreakFragment((char *)m, 0x6D1, (*(float (*)[4])&m->pos), (*(float (*)[4])&m->rot), 0, 0, 0.0f, D_L03_0015F660, D_L03_0015F660, D_L03_0015F660);
                 SpawnBreakFragment((char *)m, 0x6D2, (*(float (*)[4])&m->pos), (*(float (*)[4])&m->rot), 0, 0, 0.0f, D_L03_0015F660, D_L03_0015F660, D_L03_0015F660);

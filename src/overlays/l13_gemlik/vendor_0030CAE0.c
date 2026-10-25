@@ -254,7 +254,7 @@ void update_moby_path_follower(char *m) {
         if (d[1] == -1) return;
         pth = D_L13_001B0AB0[d[1]];
         if (((unsigned char *)m)[0x20] == 1) {
-            func_L00_0025EFC0(pth, o + 0x10, v, &idx, &t, 0, 100.0f, 1.0f, 0.0f);
+            find_nearest_path_point(pth, o + 0x10, v, &idx, &t, 0, 100.0f, 1.0f, 0.0f);
             if (idx > d[2] || t > ((float *)d)[3] || d[4] < 0x1E) {
                 d[2] = idx;
                 ((float *)d)[3] = t;
@@ -646,7 +646,7 @@ void Moby1805Update(void *moby) {
                 SpawnBreakFragment(m, k, tmp, m + 0x40, 0, 0, D_L13_0015F660, D_L13_0015F660, 0.0f, D_L13_0015F660);
             }
         }
-        func_L00_0025F4A8(moby, m + 0x10, 0, 0.0f, 0.0f, 0xA, 3, 0x10, 6.0f, 3.0f, 9.0f, 0, 1.1f, 15.0f, 1, 3, -1, 0);
+        spawn_explosion(moby, m + 0x10, 0, 0.0f, 0.0f, 0xA, 3, 0x10, 6.0f, 3.0f, 9.0f, 0, 1.1f, 15.0f, 1, 3, -1, 0);
         DeleteMoby(moby);
         break;
     }

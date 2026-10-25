@@ -1310,7 +1310,7 @@ void HovenPlatformUpdate(Moby *moby) {
     case 8:
         FastVecAdd((*(float (*)[4])&moby->pos), (*(float (*)[4])&moby->pos), d->vel);
         if (func_L00_001F39B0((*(float (*)[4])&moby->pos), 0x600, 0, moby, 0) && d->walk.path == 0) {
-            func_L00_0025F4A8(moby, d->vel, 0, 2.0f, 0.0f, 10, 3, 16, 4.0f, 2.0f, 9.0f, -1, 1.0f, 15.0f, 1, 1, -1, 0);
+            spawn_explosion(moby, d->vel, 0, 2.0f, 0.0f, 10, 3, 16, 4.0f, 2.0f, 9.0f, -1, 1.0f, 15.0f, 1, 1, -1, 0);
             DeleteMoby(moby);
             return;
         }
@@ -2713,7 +2713,7 @@ void Moby326Update(char *moby) {
                 M_I(data, 0xAC) = 0;
             }
         }
-        func_L00_0025F4A8(moby, D_L12_0015F660, moby + 0x10, 0.0f, 0.0f, 0x14, 3, 4, 4.0f, 2.0f, 100000.0f, 2, 3.0f, 15.0f, 1, 1, -1, 0);
+        spawn_explosion(moby, D_L12_0015F660, moby + 0x10, 0.0f, 0.0f, 0x14, 3, 4, 4.0f, 2.0f, 100000.0f, 2, 3.0f, 15.0f, 1, 1, -1, 0);
         if (M_I(data, 0xC0) == 0) {
             SetDeathBits(moby, 0, -1);
         }
@@ -3192,9 +3192,9 @@ void Moby336_HandleHit(char *m, int flag) {
         }
         qcopy(a, m + 0x10);
         clear_u64_value(b);
-        func_L00_00261B00(m, 0x1F, 0x4A, 2, -1);
+        spawn_moby_bolt_drop(m, 0x1F, 0x4A, 2, -1);
         *(int *)(d + 0xA4) = scale_ticks(500);
-        func_L00_0025F4A8(m, b, a, 0.0f, 0.0f, 0x14, 3, 4, 4.0f, 2.0f, 100000.0f, -1, 3.0f, 15.0f, 1, 1, -1, 0);
+        spawn_explosion(m, b, a, 0.0f, 0.0f, 0x14, 3, 4, 4.0f, 2.0f, 100000.0f, -1, 3.0f, 15.0f, 1, 1, -1, 0);
     }
     *(unsigned char *)(m + 0xA4) = 0xFF;
     if (*(int *)&D_L12_00161A34 != 0 && flag != 0) {

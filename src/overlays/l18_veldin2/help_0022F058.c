@@ -1328,7 +1328,7 @@ void HeroStateTransitions(void) {
                                         qcopy(D_0013F450.unk540.f, D_0013F450.unk500.f);
                                         D_0013F450.unk560 = sp30;
                                         D_0013F450.unk584 = sp3C;
-                                        func_L00_0025EFC0((void *)D_0013F450.unk560, D_0013F450.motion.pos.f, D_0013F450.unk500.f, &D_0013F450.unk564, &D_0013F450.unk568, D_0013F450.unk584, 999.0f, 2.0f, 0.0f);
+                                        find_nearest_path_point((void *)D_0013F450.unk560, D_0013F450.motion.pos.f, D_0013F450.unk500.f, &D_0013F450.unk564, &D_0013F450.unk568, D_0013F450.unk584, 999.0f, 2.0f, 0.0f);
                                         D_0013F450.unk590 = 1;
                                         D_0013F450.unk5A4 = 0;
                                         HeroL18_SetMoveState(0x2A, 1);

@@ -1829,9 +1829,9 @@ void HeroL06_UpdateMovement(void) {
             if (((Hero *)&D_0013F450)->unk5A8 >= 2 && ((Hero *)&D_0013F450)->unk5A8 <= 3) {
                 ((Hero *)&D_0013F450)->unk5A8 = -1;
             }
-            func_L00_0025EFC0((unsigned char *)((Hero *)&D_0013F450)->unk560, ((Hero *)&D_0013F450)->motion.pos.f, ((Hero *)&D_0013F450)->unk500.f, &((Hero *)&D_0013F450)->unk564, &((Hero *)&D_0013F450)->unk568, ((Hero *)&D_0013F450)->unk584, 999.0f, 2.0f, 2.5f);
+            find_nearest_path_point((unsigned char *)((Hero *)&D_0013F450)->unk560, ((Hero *)&D_0013F450)->motion.pos.f, ((Hero *)&D_0013F450)->unk500.f, &((Hero *)&D_0013F450)->unk564, &((Hero *)&D_0013F450)->unk568, ((Hero *)&D_0013F450)->unk584, 999.0f, 2.0f, 2.5f);
             if (((Hero *)&D_0013F450)->unk590 != 0) {
-                func_L00_0025EFC0((unsigned char *)((Hero *)&D_0013F450)->unk594, ((Hero *)&D_0013F450)->motion.pos.f, ((Hero *)&D_0013F450)->unk540.f, &((Hero *)&D_0013F450)->unk598, &((Hero *)&D_0013F450)->unk59C, ((Hero *)&D_0013F450)->unk5A0, 999.0f, 2.0f, 2.5f);
+                find_nearest_path_point((unsigned char *)((Hero *)&D_0013F450)->unk594, ((Hero *)&D_0013F450)->motion.pos.f, ((Hero *)&D_0013F450)->unk540.f, &((Hero *)&D_0013F450)->unk598, &((Hero *)&D_0013F450)->unk59C, ((Hero *)&D_0013F450)->unk5A0, 999.0f, 2.0f, 2.5f);
             }
             late = 0;
             if (((Hero *)&D_0013F450)->ground_distance > 0.87f && ((Hero *)&D_0013F450)->state.current != 0x29 && ((Hero *)&D_0013F450)->state.current != 0x42 && ((Hero *)&D_0013F450)->unk590 == 0) {

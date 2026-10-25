@@ -1243,7 +1243,7 @@ void update_spinning_moby_with_particle_trail(struct MobyDf *moby) {
         return;
     }
     if (func_001F9908(velocity + 8) != 0 || coll_sphere(0.5f, &moby->pos, 0, *(void **)(velocity + 9)) != 0) {
-        func_L00_0025F4A8((struct Moby *)moby, velocity, &moby->pos, 0.0f, 0.0f, 5, 2, 4,
+        spawn_explosion((struct Moby *)moby, velocity, &moby->pos, 0.0f, 0.0f, 5, 2, 4,
                              1.0f, 0.5f, 9.0f, 1.0f, 0, 15.0f, 1, 5, -1, 0);
         coll_sphere(1.0f, &moby->pos, 0, *(void **)(D_0013E633 + 0x2E9D));
         DeleteMoby((struct Moby *)moby);
@@ -1448,7 +1448,7 @@ unsigned char *spawn_path_or_ballistic_debris(char *owner, float *scale, int mod
             fields[5] = 0;
             fields[3] = index;
             fields[4] = 0;
-            func_L00_0025EFC0(*(void **)(path + index * 0x20 + 0x10),
+            find_nearest_path_point(*(void **)(path + index * 0x20 + 0x10),
                 pos, vec, fields + 4, fields + 5, 0, 20.0f, 5.0f, *(float *)(d + 0x14));
         } else {
             float angle;
@@ -1799,9 +1799,9 @@ void update_floating_mine(struct Moby *moby) {
             clear_u64_value(vel);
             Moby_PlaySound(0, 0, moby);
             if (D_0013F450.coll_hit_moby == (u8 *)moby)
-                func_L00_0025F4A8(moby, vel, &moby->pos, 3.0f, 1.0f, 10, 20, 60, 3.0f, 5.0f, 9.0f, 1.0f, -1, 15.0f, 1, 1, -1, 0);
+                spawn_explosion(moby, vel, &moby->pos, 3.0f, 1.0f, 10, 20, 60, 3.0f, 5.0f, 9.0f, 1.0f, -1, 15.0f, 1, 1, -1, 0);
             else
-                func_L00_0025F4A8(moby, vel, &moby->pos, 0.0f, 0.0f, 10, 20, 60, 3.0f, 5.0f, 9.0f, 1.0f, -1, 15.0f, 1, 1, -1, 0);
+                spawn_explosion(moby, vel, &moby->pos, 0.0f, 0.0f, 10, 20, 60, 3.0f, 5.0f, 9.0f, 1.0f, -1, 15.0f, 1, 1, -1, 0);
             if ((char *)moby < D_L14_0016009C) {
                 moby->state = 2;
                 moby->flags |= 0x41;

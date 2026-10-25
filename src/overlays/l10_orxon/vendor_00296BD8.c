@@ -1579,7 +1579,7 @@ void handle_moby_destruction(char *moby) {
     if (MobyGetHitMessage(moby, 0x40000, 0)) {
         char *c0 = moby + 0xC0;
         v20.q = 0;
-        func_L00_0025F4A8(moby, &v20, moby + 0x10, 0.0f, 0.0f, 5, 3, 4, 4.0f, 2.0f, 100000.0f, 3.0f, -1, 15.0f, 1, 1, -1, 0);
+        spawn_explosion(moby, &v20, moby + 0x10, 0.0f, 0.0f, 5, 3, 4, 4.0f, 2.0f, 100000.0f, 3.0f, -1, 15.0f, 1, 1, -1, 0);
         func_L00_0028EF68_v(0, 0, moby, 0x99);
         n = 0x1D;
         do {
@@ -1599,14 +1599,14 @@ void handle_moby_destruction(char *moby) {
             c16 = rand_range(0x3C, 0x78);
             f20 = random_float_between(2.0f, 3.0f);
             r2 = random_integer_below(4);
-            func_L01_002F9908(&v30, &v40, k, f21, c16, f20, 1.0f, 3.0f, r2 == 0);
+            spawn_debris_moby(&v30, &v40, k, f21, c16, f20, 1.0f, 3.0f, r2 == 0);
         } while (n >= 0);
         v30.q = 0;
         v30.f[0] = 2.8599999f;
         v30.f[1] = 1.57000005f;
         v30.f[2] = 1.83099997f;
         func_001F9EC0(&v30, &v30, c0);
-        func_L00_0025F4A8(moby, &v20, &v30, 0.0f, 0.0f, 5, 3, 4, 4.0f, 2.0f, 100000.0f, 3.0f, -1, 15.0f, 1, 1, -1, 0);
+        spawn_explosion(moby, &v20, &v30, 0.0f, 0.0f, 5, 3, 4, 4.0f, 2.0f, 100000.0f, 3.0f, -1, 15.0f, 1, 1, -1, 0);
         spawn_fixed_height_destruction_moby(moby);
         spawn_destruction_replacement_moby(moby);
         *(int *)(D_0014171B + 0xAB75 + (((short)*(unsigned short *)(moby + 0xB2) >> 5) * 4 + (D_0015EE84_2DA678 << 8))) |= 1 << (*(unsigned short *)(moby + 0xB2) & 0x1F);
@@ -1917,7 +1917,7 @@ typedef struct {
    whose timer runs out, rebuilds its rows with fresh jitter and averages the
    jitter into the velocities, otherwise moves the rows by their velocities.
    Adapted from Lombyte's draft of FUN_L10_002dcc58 (GPL-3.0), with PAL symbols. */
-void func_L10_002DE018(unsigned char *moby) {
+void update_jitter_strand_grid_moby(unsigned char *moby) {
     PlatformWave_DE018 *vars = *(PlatformWave_DE018 **)(moby + 0x78);
     Vec4 jitter[20][10];
 
@@ -2410,7 +2410,7 @@ void PathEnemyL10Update(struct Moby *moby) {
                 InitKnockback(moby, data->f60, ang, 5, 1, 0);
                 data->f117 = 0x78;
                 RerollEffectCounter(moby, data->f110);
-                func_L00_00261B00(moby, 1, 3, 0, -1);
+                spawn_moby_bolt_drop(moby, 1, 3, 0, -1);
             } else {
                 data->f20 = data->f20 - r->f2C;
                 data->f117 = 0xFA;

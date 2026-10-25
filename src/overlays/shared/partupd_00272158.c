@@ -642,7 +642,7 @@ extern void func_00215C00(void *, float, float, float);
 extern unsigned char *D_L00_001B24E8;
 
 /* Spawn a type-0x3A particle of kind a1 at pos. */
-unsigned char *func_L00_00273868(float *pos, unsigned char a1, unsigned char a2, unsigned char a3,
+unsigned char *spawn_type58_particle(float *pos, unsigned char a1, unsigned char a2, unsigned char a3,
     unsigned char a4, unsigned char a5, int a6, float f0, float f1) {
     unsigned char *r = create_part(0x3A);
     unsigned char *v;
@@ -734,7 +734,7 @@ void update_color_tween_emitter_particle(unsigned char *p) {
             if (*(short *)(p + 0xA) < scale_ticks(10)) {
                 m = IntToFloat(*(short *)(p + 0xA)) / (float)scale_ticks(10);
             }
-            func_L00_00273868(t, 2, q[0x11], q[0x12], q[0x13], q[0x15], *(int *)(q + 0x18), *(float *)(q + 0x1C), m);
+            spawn_type58_particle(t, 2, q[0x11], q[0x12], q[0x13], q[0x15], *(int *)(q + 0x18), *(float *)(q + 0x1C), m);
         }
         }
         if (FastDecTimer(p + 0xA)) {

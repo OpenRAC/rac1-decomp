@@ -1249,7 +1249,7 @@ extern int *D_00161000 MACRO_ADDR;
    func_002017C8's, instead of 0x41): same 1-tag + 3-quadword PACKED GIF
    packet with a FIXED mask 0x00FFFFF000000000 in the vertices' upper 32
    bits instead of a Z parameter. */
-void func_00201640(int arg0, int arg1, int arg2, int arg3, long arg4,
+void draw_hud_rect_blended(int arg0, int arg1, int arg2, int arg3, long arg4,
                     int arg5) {
     int *base;
 

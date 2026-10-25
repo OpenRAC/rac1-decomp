@@ -532,7 +532,7 @@ typedef struct PathCam {
 } PathCam;
 
 // Camera 19 activate: builds the two path length tables and copies the start state.
-void func_L10_002F6F18(char *cam) {
+void initialize_path_camera(char *cam) {
     CamPathRec *rec;
     VendorCamRun_5f18 *run;
     VendorCamStops_5f18 *stops;

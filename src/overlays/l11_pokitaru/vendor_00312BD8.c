@@ -944,7 +944,7 @@ void jet_fighter_update(Moby *moby) {
                     Hero_TrySetMoveStateL11(0, 1);
                     g->cur = 0;
                     g->id = -1;
-                    func_L00_0025F4A8(moby, v, 0, 0.0f, 0.0f, 0xA, 3, 0x10, 4.0f, 2.0f, 9.0f, -1, 1.0f, 15.0f, 1, 1, -1, 0);
+                    spawn_explosion(moby, v, 0, 0.0f, 0.0f, 0xA, 3, 0x10, 4.0f, 2.0f, 9.0f, -1, 1.0f, 15.0f, 1, 1, -1, 0);
                 }
             }
         }
@@ -1442,7 +1442,7 @@ void puffoid_update(struct Moby *moby) {
             moby->collision = 0;
             moby->flags |= 1;
         } else {
-            moby->pos.z = func_L00_0025A748(&moby->pos);
+            moby->pos.z = probe_ground_height_flag20(&moby->pos);
             moby->state = 2;
             if (moby->prev_seq != 0) {
                 MobyBlendAnimation(moby, 0, 0, 5);
@@ -2836,7 +2836,7 @@ void Moby1297Update(unsigned char *moby) {
         if (func_001F9908_i(data + 0x20) ||
             func_L00_001EFFF0(vp, (char *)moby + 0x10, 0, moby, 0) ||
             coll_sphere_mobys(0.333f, (char *)moby + 0x10, 0, *(void **)(data + 0x24), 0)) {
-            func_L00_0025F4A8(moby, data, (char *)moby + 0x10, 1.5f, 2.0f, 10, 3, 16, 4.0f, 2.0f, 9.0f, -1, 1.0f, 15.0f, 1, 1, -1, 0);
+            spawn_explosion(moby, data, (char *)moby + 0x10, 1.5f, 2.0f, 10, 3, 16, 4.0f, 2.0f, 9.0f, -1, 1.0f, 15.0f, 1, 1, -1, 0);
             DeleteMoby(moby);
         }
         break;

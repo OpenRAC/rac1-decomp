@@ -289,7 +289,7 @@ void SpawnMarkerEffect(char *moby) {
     float v[4];
     clear_u64_value(v);
     Moby_GetJointWorldPos(moby, 6, w);
-    func_L00_0025F4A8(moby, v, w, 0.0f, 0.0f, 10, 3, 4, 2.0f, 1.0f, 100000.0f, -1, 1.5f, 15.0f, 1, 1, -1, 0);
+    spawn_explosion(moby, v, w, 0.0f, 0.0f, 10, 3, 4, 2.0f, 1.0f, 100000.0f, -1, 1.5f, 15.0f, 1, 1, -1, 0);
 }
 typedef int u128_B7B0 __attribute__((mode(TI)));
 typedef float V4_B7B0[4] __attribute__((aligned(16)));
