@@ -13,6 +13,7 @@ extern int D_L00_0015F528 MACRO_ADDR;
 extern int D_L00_0015F534 MACRO_ADDR;
 extern int D_L00_0015F3F0 MACRO_ADDR;
 extern int D_L00_0015F3F4 MACRO_ADDR;
+/* Clears the frame, ground-shadow and timing counters. */
 void ResetFrameCounters(void) {
     D_L00_0015F524 = 0;
     D_L00_0017E604[0] = 0;
@@ -926,6 +927,7 @@ extern void func_00122818(void *, int, int, int, int, int, int, int);
 extern void func_00122AD8(void *, int);
 extern void func_00216A90(int, int, int);
 
+/* Leaves movie playback: restores the GS and draw buffers and returns to the game. */
 void movie_exit_to_gameplay(void) {
     char sp[0x70] __attribute__((aligned(16)));
     int source, destination, big, small, i, j;
@@ -1053,6 +1055,7 @@ void start_slideshow(void) {
 extern void func_00234AC8(int);
 extern void func_00217588(void);
 extern int D_L00_0015F4FC MACRO_ADDR;
+/* Ends the slideshow: syncs VU1, fades to black, stops the audio stream and leaves cinematic mode. */
 void end_slideshow(void) {
     VU1_syncChain(1);
     FadeToBlack(0xC);
@@ -1070,6 +1073,7 @@ extern int D_L00_00173D00[];
 #define ICNT (((short *)D_L00_0015F700)[2])
 #define ITMR (((short *)D_L00_0015F700)[3])
 
+/* Per-frame slideshow update: fades in, shows each image for its time, then moves to the next. */
 void update_slideshow(void) {
     int s0, t, i, r, one;
     int *src, *dst;

@@ -603,6 +603,7 @@ void initialize_orbit_camera_from_parameters(char *a, void *b, void *c, float f)
 }
 /* From Lombyte's project (GPL-3.0), FUN_L00_002eb3b0 (PR #66), adapted to PAL. */
 
+/* Resets the orbit camera's state block and sets its default smoothing rates. */
 void initialize_orbit_camera_state(void *arg) {
     char *p = arg;
     char *m;
@@ -1134,6 +1135,7 @@ typedef struct CameraSystemView_2EDB70 {
 /* camera update: copies the moby's matrix when the camera mode changes */
 extern Hero hero __asm__("D_0013F450");
 
+/* Camera that follows the hero's target while the hero is in state 0x2C or 0x24-0x26. */
 void update_target_tracking_camera(char *m) {
     Hero *b = &hero;
     CameraObj_2EDB70 *cam = (CameraObj_2EDB70 *)m;

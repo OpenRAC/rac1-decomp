@@ -357,6 +357,7 @@ extern short D_L08_00161908;
 extern float D_L08_00161924 ;
 #define D_L08_00161924_4B80 D_L08_00161924
 
+/* Draws the moby's targeting beam as a textured quad from the moby toward its target. */
 void DrawTargetBeam(char *m) {
     char *data = *(char **)(m + 0x78);
     Packet_2D4B80 pk;
@@ -523,6 +524,7 @@ void update_scoutbot_movement(char *m) {
 extern void *func_L00_002DD2D0(void *);
 extern void func_00213DE0(void *, int, int, int);
 
+/* Cancels suck-cannon suction and puts the scoutbot in state 3 (return home) with its speed and animation. */
 void *enter_scoutbot_return_home_state(char *arg)
 {
     void *result = cancel_suck_cannon_suction(arg);
@@ -2010,6 +2012,7 @@ void spawn_moby_radial_particles(char *moby) {
 }
 extern char *D_L08_00167680;
 
+/* Sets byte 0x88 of the Batalia state block at D_L08_00167680. */
 void func_L08_00315068(void) {
     D_L08_00167680[0x88] = 1;
 }

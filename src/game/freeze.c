@@ -240,6 +240,7 @@ extern void func_00234C98(s32, s64);
 extern void *func_00116B00(void *, char *, s32);
 extern s32 func_00116248(char *, const char *, ...);
 extern void func_001153FC(void *, s32, s32);
+/* Draws a freeze-mode message box sized to its text and centred on screen, fading with the box timer. */
 static __inline__ void draw_box_p(char *text, s32 left, s32 mid, s32 right, struct TextRegionP box) {
     s32 tint;
     s32 y;
@@ -268,6 +269,7 @@ static __inline__ void draw_box_p(char *text, s32 left, s32 mid, s32 right, stru
     }
 }
 
+/* Draws the freeze-mode message box for its current state. */
 void draw_freeze_message_box(void) {
     char buf[0x200];
 
