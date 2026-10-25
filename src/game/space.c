@@ -1,4 +1,5 @@
 #include "common.h"
+#include "camera.h"
 #include "callees.h"
 #include "records.h"
 #include "vector.h"
@@ -2684,11 +2685,6 @@ typedef struct {
     u8 pad18[0x8E];
     s16 class_id;
 } EnvironmentMappedObject;
-typedef struct {
-    u8 pad0[0x140];
-    float position_x;
-    float position_y;
-} EnvironmentCameraState;
 extern s32 D_0013E150_33AB8[] __asm__("D_0013E150");
 extern s32 D_0015F6E8 MACRO_ADDR;
 extern short D_001605A4;
@@ -2700,7 +2696,7 @@ extern short D_00160640;
 extern short D_00160650;
 extern short D_00160660;
 extern short D_00160670;
-extern EnvironmentCameraState D_00187040_33AB8 __asm__("D_00187040");
+extern CameraSystem D_00187040_33AB8 __asm__("D_00187040");
 extern FloatVector4 D_00187180_33AB8 __asm__("D_00187180");
 extern Vec4 D_001DC870[];
 extern float D_001DCED0[][2];
@@ -2757,8 +2753,8 @@ void render_environment_mapped_object(EnvironmentMappedObject *object) {
     colors[1] = color;
     colors[0] = color;
     MobyTransformScaledVertex(object, 0, object_transform);
-    if (g_game_mode != 0 || (FastAbsF(D_00187040_33AB8.position_x - object->position_x) < 16.0f &&
-                            FastAbsF(D_00187040_33AB8.position_y - object->position_y) < 16.0f)) {
+    if (g_game_mode != 0 || (FastAbsF(D_00187040_33AB8.pos.f[0] - object->position_x) < 16.0f &&
+                            FastAbsF(D_00187040_33AB8.pos.f[1] - object->position_y) < 16.0f)) {
         mapping_enabled = 1;
     }
     if (g_game_mode == 6 && D_0013E150_33AB8[0] == 4) {

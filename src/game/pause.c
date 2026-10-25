@@ -1,4 +1,5 @@
 #include "common.h"
+#include "camera.h"
 #include "hero.h"
 #include "callees.h"
 #include "records.h"
@@ -198,32 +199,22 @@ extern int func_00205790(void);
 extern void func_0020BA00(char *out);
 extern void func_00217588(void);
 
-struct S {
-    u8 pad_0[0x140];
-    float f140, f144, f148;
-    u8 pad_14C[0x204];
-    float f350;
-    u8 pad_354[0x10];
-    float f364;
-    u8 pad_368[0x10];
-    float f378, f37C;
-};
-extern struct S D_00187040_19C08 __asm__("D_00187040");
+extern struct CameraSystem D_00187040_19C08 __asm__("D_00187040");
 extern s32 D_001873A0;
 extern s32 D_001873B0;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/rendering/fun_00218d10.c, FUN_00218d10. */
 void reset_active_camera_position_and_basis(void) {
-    D_00187040_19C08.f140 = 256.0f;
-    D_00187040_19C08.f148 = 64.0f;
-    D_00187040_19C08.f144 = 256.0f;
-    qzero(&D_00187040_19C08.f350);
+    D_00187040_19C08.pos.f[0] = 256.0f;
+    D_00187040_19C08.pos.f[2] = 64.0f;
+    D_00187040_19C08.pos.f[1] = 256.0f;
+    qzero(&D_00187040_19C08.matrix[0].f[0]);
     qzero(&active_camera_basis_column1_x);
     qzero(&D_001873B0);
-    D_00187040_19C08.f350 = 1.0f;
-    D_00187040_19C08.f364 = 1.0f;
-    D_00187040_19C08.f378 = 1.0f;
-    D_00187040_19C08.f37C = 1.0f;
+    D_00187040_19C08.matrix[0].f[0] = 1.0f;
+    D_00187040_19C08.matrix[1].f[1] = 1.0f;
+    D_00187040_19C08.matrix[2].f[2] = 1.0f;
+    D_00187040_19C08.matrix[2].f[3] = 1.0f;
 }
 
 extern void func_0012E528(int);
@@ -402,10 +393,6 @@ struct MenuSystem_19E90 {
 
 extern struct MenuSystem_19E90 D_001D5F70_19E90 __asm__("D_001D5F70");
 
-struct S_19E90 {
-    u8 pad_0[0x140];
-    float f140, f144, f148;
-};
 struct P_19E90 {
     u8 pad_0[0x10];
     u8 f10;
@@ -433,7 +420,7 @@ extern s32 D_001941C0_19E90[] __asm__("D_001941C0");
 extern s32 D_0015F538_19E90 __asm__("D_0015F538") MACRO_ADDR;
 extern s32 D_0016100C_19E90 __asm__("D_0016100C") MACRO_ADDR;
 extern void D_0023B578_19E90() __asm__("D_0023B578");
-extern struct S_19E90 D_00187040_19E90 __asm__("D_00187040");
+extern struct CameraSystem D_00187040_19E90 __asm__("D_00187040");
 extern struct O2_19E90 *D_001D6120_19E90[] __asm__("D_001D6120");
 extern u8 D_001602C0_19E90 __asm__("D_001602C0") MACRO_ADDR;
 extern u8 D_001602D0_19E90 __asm__("D_001602D0") MACRO_ADDR;
@@ -485,9 +472,9 @@ void initialize_menu_preview_scene(void) {
                 s32 k;
                 o->f34 &= 0xFFFD;
                 D_001D6120_19E90[i]->f74 = D_0023B578_19E90;
-                D_001D6120_19E90[i]->f10 = D_00187040_19E90.f140;
-                D_001D6120_19E90[i]->f14 = D_00187040_19E90.f144;
-                D_001D6120_19E90[i]->f18 = D_00187040_19E90.f148;
+                D_001D6120_19E90[i]->f10 = D_00187040_19E90.pos.f[0];
+                D_001D6120_19E90[i]->f14 = D_00187040_19E90.pos.f[1];
+                D_001D6120_19E90[i]->f18 = D_00187040_19E90.pos.f[2];
                 D_001D6120_19E90[i]->f40 = 0;
                 D_001D6120_19E90[i]->f44 = 0;
                 D_001D6120_19E90[i]->f48 = 0;
@@ -4275,18 +4262,12 @@ struct ItemPreviewPlacement_1F238 {
     f32 rotation_y;
     u8 pad18[8];
 };
-struct PreviewCamera_1F238 {
-    u8 pad0[0x140];
-    f32 x;
-    f32 y;
-    f32 z;
-};
 struct PreviewClassResource {
     u8 pad0[0xD];
     u8 state_0d;
 };
 extern struct PreviewItemDefinition D_001864D0_1F238[] __asm__("D_001864D0");
-extern struct PreviewCamera_1F238 D_00187040_1F238 __asm__("D_00187040");
+extern struct CameraSystem D_00187040_1F238 __asm__("D_00187040");
 extern struct ItemPreviewPlacement_1F238 D_001E0708_1F238[] __asm__("D_001E0708");
 extern s32 D_00140508[];
 extern s32 D_00160050 MACRO_ADDR;
@@ -4389,15 +4370,15 @@ s32 update_item_preview_binding(struct ItemPreviewBinding_1F238 *preview) {
             }
             preview->primary_moby = moby;
             moby->flags = 0;
-            camera_x = D_00187040_1F238.x;
+            camera_x = D_00187040_1F238.pos.f[0];
             if (use_alternate_x) {
                 position_x = camera_x + D_001E0708_1F238[item_index].alternate_x;
             } else {
                 position_x = camera_x + D_001E0708_1F238[item_index].normal_x;
             }
             moby->pos.x = position_x;
-            moby->pos.y = D_00187040_1F238.y + D_001E0708_1F238[item_index].y;
-            moby->pos.z = D_00187040_1F238.z + D_001E0708_1F238[item_index].z;
+            moby->pos.y = D_00187040_1F238.pos.f[1] + D_001E0708_1F238[item_index].y;
+            moby->pos.z = D_00187040_1F238.pos.f[2] + D_001E0708_1F238[item_index].z;
             moby->rot.x = D_001E0708_1F238[item_index].rotation_x;
             moby->rot.y = D_001E0708_1F238[item_index].rotation_y;
             moby->rot.z = 3.1415927f;
@@ -4497,13 +4478,7 @@ struct ItemPreviewVars {
     u8 pad4[8];
     s32 item_index;
 };
-struct PreviewCamera {
-    u8 pad0[0x140];
-    f32 x;
-    f32 y;
-    f32 z;
-};
-extern struct PreviewCamera D_00187040_1F6A0 __asm__("D_00187040");
+extern struct CameraSystem D_00187040_1F6A0 __asm__("D_00187040");
 extern struct ItemPreviewPlacement D_001E0708[];
 extern f32 func_001F9F90(f32);
 extern f32 func_001F9FA8(f32);
@@ -4520,15 +4495,15 @@ void update_item_preview_transform(struct Moby *moby) {
     f32 negated_forward_offset;
     s32 flags = preview->flags;
     f32 y_offset;
-    struct PreviewCamera *camera;
+    struct CameraSystem *camera;
 
     moby->rot.z = preview->rotation_angle;
-    (*(volatile f32 *)&moby->pos.x) = D_00187040_1F6A0.x + ((flags & 1) ? preview_placements[item_index].alternate_x
+    (*(volatile f32 *)&moby->pos.x) = D_00187040_1F6A0.pos.f[0] + ((flags & 1) ? preview_placements[item_index].alternate_x
                                               : preview_placements[item_index].normal_x);
     camera = &D_00187040_1F6A0;
     y_offset = preview_placements[item_index].y;
-    moby->pos.y = camera->y + y_offset;
-    moby->pos.z = camera->z + preview_placements[item_index].z;
+    moby->pos.y = camera->pos.f[1] + y_offset;
+    moby->pos.z = camera->pos.f[2] + preview_placements[item_index].z;
     forward_offset = preview_placements[item_index].forward_offset;
     side_offset = preview_placements[item_index].side_offset;
     cosine = FastCos(moby->rot.z);
@@ -9369,9 +9344,9 @@ int HelperMobyMenu_Init(char *h) {
         *(char **)(h + 0x44) = m;
         *(short *)(m + 0x34) = 0;
         v = *(int **)(m + 0x78);
-        *(f32 *)(m + 0x10) = D_00187040_19C08.f140 + 2.2f;
-        *(f32 *)(m + 0x14) = D_00187040_19C08.f144 + 0.0f;
-        *(f32 *)(m + 0x18) = D_00187040_19C08.f148 + -1.6f;
+        *(f32 *)(m + 0x10) = D_00187040_19C08.pos.f[0] + 2.2f;
+        *(f32 *)(m + 0x14) = D_00187040_19C08.pos.f[1] + 0.0f;
+        *(f32 *)(m + 0x18) = D_00187040_19C08.pos.f[2] + -1.6f;
         *(void **)(m + 0x74) = (void *)NullMobyUpdate_Helper;
         *(f32 *)(m + 0x48) = 3.1415927f;
         v[0] = (int)h;

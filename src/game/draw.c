@@ -1,4 +1,5 @@
 #include "common.h"
+#include "camera.h"
 #include "hero.h"
 #include "vector.h"
 #include "callees.h"
@@ -672,15 +673,9 @@ extern void func_001F9C30(void *, void *, float);
 extern void func_001F9EE8(void *, void *, void *);
 extern float D_0018D010;
 
-typedef struct {
-    char pad0[0x40];
-    float viewMtx[4][4];   /* +0x40 */
-    char pad1[0xC0];
-    float focus[3];        /* +0x140 */
-} CameraBlock;
 /* The camera block as a struct: all four accesses then share one base
    register with field offsets, as in retail. */
-extern CameraBlock D_00187040_cam __asm__("D_00187040");
+extern CameraSystem D_00187040_cam __asm__("D_00187040");
 
 typedef struct {
     float x, y, z;
@@ -697,10 +692,10 @@ void project_to_screen(Vec3f *a0, float *a1) {
     float invw;
 
     set_identity_matrix(m);
-    m[3][0] = -D_00187040_cam.focus[0] * 1024.0f;
-    m[3][1] = -D_00187040_cam.focus[1] * 1024.0f;
-    m[3][2] = -D_00187040_cam.focus[2] * 1024.0f;
-    sce_vu0_mul_matrix(m2, D_00187040_cam.viewMtx, m);
+    m[3][0] = -D_00187040_cam.pos.f[0] * 1024.0f;
+    m[3][1] = -D_00187040_cam.pos.f[1] * 1024.0f;
+    m[3][2] = -D_00187040_cam.pos.f[2] * 1024.0f;
+    sce_vu0_mul_matrix(m2, D_00187040_cam.view_matrix, m);
 
     FastVecScale(v, a1, 1024.0f);
     v[3] = 1.0f;
@@ -977,9 +972,9 @@ void BuildOcclVisibility(void) {
     float *p;
     int bx, by, bz;
 
-    x = func_001FA898_r(D_00187040_cam.focus[0] * scale);
-    y = func_001FA898_r(D_00187040_cam.focus[1] * scale);
-    z = func_001FA898_r(D_00187040_cam.focus[2] * scale);
+    x = func_001FA898_r(D_00187040_cam.pos.f[0] * scale);
+    y = func_001FA898_r(D_00187040_cam.pos.f[1] * scale);
+    z = func_001FA898_r(D_00187040_cam.pos.f[2] * scale);
     vis = (char *)ParseOcclGrid(x, y, z);
     if (vis != 0) {
         occl_invalid_grid = 0;
@@ -989,11 +984,11 @@ void BuildOcclVisibility(void) {
         occl_invalid_grid = 1;
         if (occl_fallback_mode == 0) {
             gx = (char *)GetOcclGridFromPair(x - 1, y, z, x + 1, y, z,
-                                       D_00187040_cam.focus[0] * scale - IntToFloat(x));
+                                       D_00187040_cam.pos.f[0] * scale - IntToFloat(x));
             gy = (char *)GetOcclGridFromPair(x, y - 1, z, x, y + 1, z,
-                                       D_00187040_cam.focus[1] * scale - IntToFloat(y));
+                                       D_00187040_cam.pos.f[1] * scale - IntToFloat(y));
             gz = (char *)GetOcclGridFromPair(x, y, z - 1, x, y, z + 1,
-                                       D_00187040_cam.focus[2] * scale - IntToFloat(z));
+                                       D_00187040_cam.pos.f[2] * scale - IntToFloat(z));
             if (gx != 0 || gy != 0 || gz != 0) {
                 FastMemZero16(occl_visibility_merged, 0x80);
                 if (gx != 0) {
@@ -1025,9 +1020,9 @@ void BuildOcclVisibility(void) {
             case 2:
                 p = occl_oct;
                 if (p != 0) {
-                    bx = 0.0f < D_00187040_cam.focus[0] - p[0];
-                    by = 0.0f < D_00187040_cam.focus[1] - p[1];
-                    bz = 0.0f < D_00187040_cam.focus[2] - p[2];
+                    bx = 0.0f < D_00187040_cam.pos.f[0] - p[0];
+                    by = 0.0f < D_00187040_cam.pos.f[1] - p[1];
+                    bz = 0.0f < D_00187040_cam.pos.f[2] - p[2];
                     FastMemCopy(occl_visibility, (char *)p + ((bz + by * 2 + bx * 4) * 0x80 + 0x10), 0x80);
                 } else if (camera_position_publication_suppressed == 0 && occl_previous_grid != 0) {
                     FastMemCopy(occl_visibility, occl_previous_grid, 0x80);

@@ -2,6 +2,7 @@
 #include "common.h"
 #include "vector.h"
 #include "include_asm.h"
+#include "camera.h"
 #include "hero.h"
 
 extern int D_0015EED0[] MACRO_ADDR;
@@ -104,10 +105,9 @@ typedef struct {
 } S_9f38;
 typedef struct { u8 pad0[0x14C]; float f14C; u8 pad1[0x308 - 0x150]; s16 s308; u8 pad2[0x2080 - 0x30A]; u8 *p2080; u8 pad3[0x2090 - 0x2084]; int i2090; u8 pad4[0x20A5 - 0x2094]; u8 b20A5; } P350;
 typedef struct { u8 pad0[0x100]; float f100, f104, f108, f10C; u8 pad1[0x1A0 - 0x110]; int i1A0; } C940;
-typedef struct { u8 pad0[0x270]; s16 s270; } G680;
 extern P350 D_0013F450_EB3E8 __asm__("D_0013F450");
 extern C940 D_0013CA40;
-extern G680 D_L00_00166D80_EB3E8 __asm__("D_L00_00166D80");
+extern CameraSystem D_L00_00166D80_EB3E8 __asm__("D_L00_00166D80");
 extern int D_0015EEDC MACRO_ADDR;
 extern short D_L00_00161E90;
 extern short D_L00_00161E94;
@@ -136,7 +136,7 @@ void update_hero_aligned_camera_from_input(u8 *o) {
     st = *(S_9f38 **)(o + 0x70);
     func_L00_002EB170_EB3E8(o);
     vec_scale_to_length(&up, D_0013F450_EB3E8.p2080 + 0xE0, 1.0f);
-    if (D_L00_00166D80_EB3E8.s270 == 0 && D_0013F450_EB3E8.b20A5 == 0) D_0013F450_EB3E8.b20A5 = 1;
+    if (D_L00_00166D80_EB3E8.blend.phase == 0 && D_0013F450_EB3E8.b20A5 == 0) D_0013F450_EB3E8.b20A5 = 1;
     t = -g_controller_state.f108;
     if (t == 0.0f) t = -g_controller_state.f100;
     if (t == 0.0f) t = IntToFloat((g_controller_state.i1A0 >> 15) & 1);
@@ -151,7 +151,7 @@ void update_hero_aligned_camera_from_input(u8 *o) {
     if (t == 0.0f) t = -g_controller_state.f104;
     if (t == 0.0f) t = IntToFloat((g_controller_state.i1A0 >> 12) & 1);
     if (t == 0.0f) t = -IntToFloat((g_controller_state.i1A0 >> 14) & 1);
-    if (D_L00_00166D80_EB3E8.s270 != 0 && D_0013F450_EB3E8.i2090 == 2) t = 0.0f;
+    if (D_L00_00166D80_EB3E8.blend.phase != 0 && D_0013F450_EB3E8.i2090 == 2) t = 0.0f;
     if (invert52 == 0) t = -t;
     r = FastAbsF(st->b);
     k = (*(float *)&hero_aligned_cam_gain_at_rest) + ((*(float *)&hero_aligned_cam_gain_at_full) - (*(float *)&hero_aligned_cam_gain_at_rest)) * r;

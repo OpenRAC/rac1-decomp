@@ -2,6 +2,7 @@
 #include "common.h"
 #include "callees.h"
 #include "include_asm.h"
+#include "camera.h"
 #include "vector.h"
 
 extern int func_001160D8(void);
@@ -2605,10 +2606,9 @@ void spawn_explosion(char *m, void *unused, char *pos, float fA, float fB, int n
 typedef int u128_60108 __attribute__((mode(TI)));
 typedef struct { float x, y, z, w; } Vy10_60108 __attribute__((aligned(16)));
 typedef struct { int v[6]; } S6y10_60108;
-typedef struct { char pad[0x160]; float f160; int f164; int f168; } Cam_60108;
 extern S6y10_60108 D_L00_001E93B0_60108 __asm__("D_L00_001E93B0");
 extern S6y10_60108 D_L00_001E93C8_60108 __asm__("D_L00_001E93C8");
-extern Cam_60108 D_L00_00166D80_60108 __asm__("D_L00_00166D80");
+extern CameraSystem D_L00_00166D80_60108 __asm__("D_L00_00166D80");
 extern float D_L00_001B0670[] NOT_SDA;
 extern int func_002140B0(int);
 extern void func_L00_0026B890(void *, void *, int, int, float, int, int, int, int, float);
@@ -2645,9 +2645,9 @@ void SpawnExplosionFx(char *a, char *b, int snd, float sc, float fl) {
         *(u128_60108 *)&v = *(u128_60108 *)b;
         v.w = 2.0f;
         if (func_L00_00200290_60108(&v, 10.0f) != -1) {
-            Cam_60108 *g = &D_L00_00166D80_60108;
-            g->f160 = sc * 0.1f;
-            g->f168 = scale_ticks(0x14);
+            CameraSystem *g = &D_L00_00166D80_60108;
+            g->shake[0].amplitude = sc * 0.1f;
+            g->shake[0].frames = scale_ticks(0x14);
         }
     }
     if (a != 0 && ((unsigned char *)a)[0x20] != 0xFE && ((unsigned char *)a)[0x20] != 0xFD && snd != -1) {
