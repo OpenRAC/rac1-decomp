@@ -1,4 +1,5 @@
 #include "common.h"
+#include "hero.h"
 #include "callees.h"
 #include "records.h"
 #include "pad.h"
@@ -2201,23 +2202,13 @@ typedef struct {
     char padC[0x40];
 } MenuItemInfo_C840;
 
-typedef struct {
-    char pad0[0x1C4];
-    u32 pressed_unmasked;
-} PadState_C840;
 
-typedef struct {
-    char pad0[0x1FF5];
-    u8 unk1FF5;
-    u8 pad1FF6;
-    u8 ammo_capacity;
-} Hero_C840;
 
 extern MenuSystem_C840 menu_system_C840 __asm__("D_001D5F70");
-extern PadState_C840 controller_state_C840 __asm__("D_0013CA40");
+extern PadState controller_state_C840 __asm__("D_0013CA40");
 extern u8 item_available_C840[] __asm__("D_0013D5C8");
 extern MenuItemInfo_C840 menu_item_info_C840[] __asm__("D_001864D0");
-extern Hero_C840 hero_C840 __asm__("D_0013F450");
+extern Hero hero_C840 __asm__("D_0013F450");
 extern s32 item_count_C840(s32) __asm__("func_001E97E8");
 extern s32 play_menu_sound_C840() __asm__("func_0022ED80");
 
@@ -2874,15 +2865,11 @@ typedef struct {
     int unk124;
 } PauseG;
 typedef struct {
-    char pad0[0x1C4];
-    unsigned int pressed;
-} PadG;
-typedef struct {
     char pad0[0x224];
     int level;
 } LevelG;
 extern PauseG D_001D5F70_g __asm__("D_001D5F70") NOT_SDA;
-extern PadG D_0013CA40_g __asm__("D_0013CA40");
+extern PadState D_0013CA40_g __asm__("D_0013CA40");
 extern LevelG D_001A01F0_lv __asm__("D_001A01F0");
 extern unsigned char D_0013DE48[];
 
@@ -3196,11 +3183,6 @@ struct MenuSystem_1DB30 {
 
 extern struct MenuSystem_1DB30 D_001D5F70_1DB30 __asm__("D_001D5F70");
 
-struct SoundMenuInput_1DB30 {
-    u8 pad_0[0x1C0];
-    s32 held_buttons;
-    s32 pressed_buttons;
-};
 
 struct SoundMenuMixer_1DB30 {
     u8 pad_0[0x48];
@@ -3221,7 +3203,7 @@ struct SoundMenu_1DB30 {
     s32 selected_option;
 };
 
-extern struct SoundMenuInput_1DB30 D_0013CA40_1DB30 __asm__("D_0013CA40");
+extern struct PadState D_0013CA40_1DB30 __asm__("D_0013CA40");
 extern struct SoundMenuMixer_1DB30 D_0013E650_1DB30 __asm__("D_0013E650");
 extern s32 D_001D6094_1DB30 __asm__("D_001D6094") NOT_SDA;
 extern s32 D_0015EEEC_1DB30 __asm__("D_0015EEEC") MACRO_ADDR;
@@ -3243,10 +3225,10 @@ s32 sound_options_menu(struct SoundMenu_1DB30 *menu) {
     s32 previous_sound_volume;
     s32 scaled_sound_volume;
 
-    if ((D_0013CA40_1DB30.pressed_buttons & 0xD00) && (D_001D6094_1DB30 == 0)) {
+    if ((((s32)D_0013CA40_1DB30.pressed_unmasked) & 0xD00) && (D_001D6094_1DB30 == 0)) {
         return 1;
     }
-    if (D_0013CA40_1DB30.pressed_buttons & 0x10) {
+    if (((s32)D_0013CA40_1DB30.pressed_unmasked) & 0x10) {
         struct MenuPage_1DB30 *back_page = D_001D5F70_1DB30.current->back;
 
         if (back_page != 0) {
@@ -3257,10 +3239,10 @@ s32 sound_options_menu(struct SoundMenu_1DB30 *menu) {
         }
     }
     previous_selection = menu->selected_option;
-    if (D_0013CA40_1DB30.pressed_buttons & 0x1000) {
+    if (((s32)D_0013CA40_1DB30.pressed_unmasked) & 0x1000) {
         menu->selected_option = (previous_selection + 2) % 3;
     }
-    if (D_0013CA40_1DB30.pressed_buttons & 0x4000) {
+    if (((s32)D_0013CA40_1DB30.pressed_unmasked) & 0x4000) {
         menu->selected_option = (menu->selected_option + 1) % 3;
     }
     if ((menu->selected_option != previous_selection) || (D_001D5F70_1DB30.current->pending_focus != 0)) {
@@ -3272,7 +3254,7 @@ s32 sound_options_menu(struct SoundMenu_1DB30 *menu) {
     previous_music_volume = D_0015EEEC_1DB30;
     previous_sound_volume = D_0015EEF0_1DB30;
     sound_volume_ptr = &D_0015EEF0_1DB30;
-    if (D_0013CA40_1DB30.held_buttons & 0x2000) {
+    if (((s32)D_0013CA40_1DB30.held_unmasked) & 0x2000) {
         if (menu->selected_option == 0) {
             D_0015EEF0_1DB30 = (previous_sound_volume + 3 < 0x401) ? previous_sound_volume + 3 : 0x400;
         }
@@ -3280,7 +3262,7 @@ s32 sound_options_menu(struct SoundMenu_1DB30 *menu) {
             D_0015EEEC_1DB30 = (previous_music_volume + 3 < 0x401) ? previous_music_volume + 3 : 0x400;
         }
     }
-    if (D_0013CA40_1DB30.held_buttons & 0x8000) {
+    if (((s32)D_0013CA40_1DB30.held_unmasked) & 0x8000) {
         if (menu->selected_option == 0) {
             D_0015EEF0_1DB30 = (D_0015EEF0_1DB30 - 3 <= 0) ? 0 : D_0015EEF0_1DB30 - 3;
         }
@@ -3296,7 +3278,7 @@ s32 sound_options_menu(struct SoundMenu_1DB30 *menu) {
         D_0013E650_1DB30.group_4_volume = scaled_sound_volume;
         D_0013E650_1DB30.group_5_volume = *sound_volume_ptr;
     }
-    if (D_0013CA40_1DB30.pressed_buttons & 0x40) {
+    if (((s32)D_0013CA40_1DB30.pressed_unmasked) & 0x40) {
         if (menu->selected_option == 2) {
             D_0015EEE8_1DB30 = !D_0015EEE8_1DB30;
         }
@@ -8049,17 +8031,9 @@ struct MemoryCardState_pv {
     u8 pad_F0[0xC];
     s32 unkFC;
 };
-struct PadState_pv {
-    u8 pad_0[0x1A4];
-    s32 pressed;
-    u8 pad_1A8[0xC];
-    s32 raw_pressed;
-    u8 pad_1B8[0xC];
-    u32 pressed_unmasked;
-};
 #define menu_system_pv (*(struct MenuSystem_pv *)D_001D5F70)
 #define memory_card_state_pv (*(struct MemoryCardState_pv *)D_0013D390)
-#define controller_state_pv (*(struct PadState_pv *)D_0013CA40)
+#define controller_state_pv (*(struct PadState *)D_0013CA40)
 extern char D_001D51B8[];
 extern char D_001D5318[];
 extern short D_0013E15A[];
@@ -8649,14 +8623,7 @@ typedef struct HandGadgetAnimation {
     s32 attachment2_class;
     s32 attachment2_animation;
 } HandGadgetAnimation;
-typedef struct HandGadgetPlayerState {
-    u8 pad0[0x10B8];
-    s32 equipped_gadget;
-    u8 pad10BC[0xF3A];
-    u8 ammo_used;
-    u8 ammo_capacity;
-} HandGadgetPlayerState;
-extern HandGadgetPlayerState D_0013F450_255F8 __asm__("D_0013F450");
+extern Hero D_0013F450_255F8 __asm__("D_0013F450");
 extern HandGadgetDefinition D_001864D0_255F8[] __asm__("D_001864D0");
 extern u8 * D_001B3580_255F8[] __asm__("D_001B3580");
 extern u8 D_001B3E40[];
@@ -8714,8 +8681,8 @@ s32 LoadHandGadget(HandGadgetState *hand) {
         if (D_001D6160_255F8.active) {
             func_0020D9D8_255F8(hand->source_moby_address, &D_001D6160_255F8);
         }
-        if ((D_0013F450_255F8.equipped_gadget != 0) &&
-            (selected_gadget != D_0013F450_255F8.equipped_gadget)) {
+        if ((D_0013F450_255F8.items[0].item_id != 0) &&
+            (selected_gadget != D_0013F450_255F8.items[0].item_id)) {
             noop_callback_q(0, 0);
         }
         active_decode_buffer = D_001D5F70_255F8.active_decode_buffer == 0;
