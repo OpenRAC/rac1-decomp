@@ -1158,7 +1158,7 @@ void Level_ResetGameplayGlobals(void) {
     ground_shadow_count = 0;
     D_L00_0015F3F0 = 0;
     D_L00_0015F3F4 = 0;
-    D_L00_0015F504 = 0;
+    scripted_camera_move_active = 0;
     D_L00_0015F508 = 0;
     D_0015F40C_F8750 = 0;
     D_0015F420_F8750 = 0;

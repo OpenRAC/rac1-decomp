@@ -179,10 +179,10 @@ void spawn_nanotech_ball_collection_effect_pair(char *m) {
     char *p = m + 0x10;
     FastVecSub(&a, g_debug_camera, p);
     FastVecScale(&b, D_0013E633 + 0x10AD,
-        random_float_between(*(float *)&D_L00_00161B30 * g_frame_time, *(float *)&D_L00_00161B34 * g_frame_time));
+        random_float_between(*(float *)&nanotech_spark_speed_min * g_frame_time, *(float *)&nanotech_spark_speed_max * g_frame_time));
     build_look_at_matrix(&c, &b, random_angle_radians(), &a);
-    spawn_moving_hero_relative_alpha_fade_particle(p, &c, *(int *)&D_L00_00161B3C, D_L00_00161B38, random_integer_below(0xFF) & 0xFF, 1, *(float *)&D_L00_00161B44);
-    spawn_moving_hero_relative_alpha_fade_particle(p, &c, *(int *)&D_L00_00161B40, D_L00_00161B38, random_integer_below(0xFF) & 0xFF, 1, *(float *)&D_L00_00161B48);
+    spawn_moving_hero_relative_alpha_fade_particle(p, &c, *(int *)&nanotech_spark_color_a, nanotech_spark_life, random_integer_below(0xFF) & 0xFF, 1, *(float *)&nanotech_spark_size_a);
+    spawn_moving_hero_relative_alpha_fade_particle(p, &c, *(int *)&nanotech_spark_color_b, nanotech_spark_life, random_integer_below(0xFF) & 0xFF, 1, *(float *)&nanotech_spark_size_b);
 }
 typedef struct { f32 x, y, z, w; } __attribute__((aligned(16))) V_2d8510;
 typedef struct { u8 p0[0x58]; s16 h58[4]; f32 f60[4]; } O_2d8510;
@@ -226,20 +226,20 @@ s32 update_nanotech_ball_collection_effects(M_2d8510 *m) {
     for (i = 0; i < 4; i++) {
         if (FastDecTimer(&o->h58[i])) continue;
         if (o->h58[i] > scale_ticks(0x30)) ret = 1;
-        f = o->f60[i] += (((f32 *)&D_L00_00161B60))[i];
+        f = o->f60[i] += (((f32 *)&nanotech_ring_spin_speeds))[i];
         if (255.0f <= f) o->f60[i] = f - 255.0f;
         else if (f <= 0.0f) o->f60[i] = f + 255.0f;
         t = IntToFloat(scale_ticks(0xFF) - o->h58[i]);
         t = t / (f32)scale_ticks(0xFF);
-        c = FastTweenColor((*(s32 *)&D_L00_00161B4C), (*(s32 *)&D_L00_00161B50), FastAbsF(0.5f - t));
+        c = FastTweenColor((*(s32 *)&nanotech_ring_color_a), (*(s32 *)&nanotech_ring_color_b), FastAbsF(0.5f - t));
         hi = c >> 24;
-        t = 1.0f - o->h58[i] / IntToFloat(scale_ticks((*(s32 *)&D_L00_00161B28)));
+        t = 1.0f - o->h58[i] / IntToFloat(scale_ticks((*(s32 *)&nanotech_ring_fade_ticks)));
         al = truncate_float_to_s32(IntToFloat(hi) * (1.0f - t)) << 24;
         c = al | (c & 0xFFFFFF);
-        a.z = z + (((f32 *)&D_L00_00161B80))[i];
-        p = PartType59Spawn(&a, c, truncate_float_to_s32(o->f60[i]), (*(s32 *)&D_L00_00161B58), 0, 2, 1, (((f32 *)&D_L00_00161B70))[i] * t);
+        a.z = z + (((f32 *)&nanotech_ring_heights))[i];
+        p = PartType59Spawn(&a, c, truncate_float_to_s32(o->f60[i]), (*(s32 *)&nanotech_ring_texture), 0, 2, 1, (((f32 *)&nanotech_ring_sizes))[i] * t);
         if (p) p[2] = *D_L00_001B2400.pF8;
-        p = PartType59Spawn(&a, al | 0xFFFFFF, truncate_float_to_s32(o->f60[i]), (*(s32 *)&D_L00_00161B58), (*(s32 *)&D_L00_00161B54), 2, 1, (((f32 *)&D_L00_00161B70))[i] * (t * 0.7f));
+        p = PartType59Spawn(&a, al | 0xFFFFFF, truncate_float_to_s32(o->f60[i]), (*(s32 *)&nanotech_ring_texture), (*(s32 *)&nanotech_ring_blend_flag), 2, 1, (((f32 *)&nanotech_ring_sizes))[i] * (t * 0.7f));
         if (p) p[2] = *D_L00_001B2400.pF8;
         FastVecAdd(&a, &a, &b);
     }
@@ -255,7 +255,7 @@ void compute_nanotech_ball_slot_position(char *m, float *out, int i) {
     Vz v;
     char *pv = *(char **)(m + 0x78);
     char *o;
-    build_look_at_matrix(&v, D_L00_001E3FF0 + i * 16, *(float *)(pv + 0x2C), pv + 0x20);
+    build_look_at_matrix(&v, nanotech_slot_offsets + i * 16, *(float *)(pv + 0x2C), pv + 0x20);
     o = *(char **)(pv + (i << 2) + 0x30);
     if (o != 0 && *(unsigned char *)(m + 0x20) == 2) {
         vec_scale_to_length(&v, &v, *(float *)(o + 0x28));
@@ -271,8 +271,8 @@ extern short D_L00_00161AE4;
 void update_nanotech_ball_slot_offsets(void) {
     int i;
     for (i = 0; i < 8; i++) {
-        build_look_at_matrix(D_L00_001E3FF0 + i * 16, D_L00_001E3FF0 + i * 16, *(float *)&D_L00_00161AC0, D_L00_001E4070 + i * 16);
-        vec_scale_to_length(D_L00_001E3FF0 + i * 16, D_L00_001E3FF0 + i * 16, *(float *)&D_L00_00161AE4);
+        build_look_at_matrix(nanotech_slot_offsets + i * 16, nanotech_slot_offsets + i * 16, *(float *)&nanotech_slot_spin_step, nanotech_slot_spin_axes + i * 16);
+        vec_scale_to_length(nanotech_slot_offsets + i * 16, nanotech_slot_offsets + i * 16, *(float *)&nanotech_slot_orbit_radius);
     }
 }
 extern char D_0013E633[] NOT_SDA;
@@ -1065,7 +1065,7 @@ void update_suck_cannon_suction(u8 *p, void *q)
     s32 n;
 
     func_L00_002DB700_DB810(p, &a, &b, buf);
-    func_L00_002DF410(p, buf);
+    suck_beam_update(p, buf);
     for (m = suck_moby_list; m != 0; m = m->next) {
         if (m->a6 != 0 && (m->f34 & 0x1000) &&
             *(void **)*(u8 **)(m->p24 + 0x2c) != (void *)noop_callback_l) {
@@ -1658,7 +1658,7 @@ s32 process_moby_suck_cannon_suction(u8 *moby, u8 *position, u8 *target) {
     }
     return 2;
 missing:
-    STUB_printf(D_L00_001EA3B0);
+    STUB_printf(suck_cannon_no_record_msg);
 fail:
     return 0;
 }
@@ -1676,7 +1676,7 @@ int store_moby_in_suck_cannon(unsigned char *m, void *v) {
     if (o == 0) return 0;
     if (m != 0 && m[0x20] != 0xFE && m[0x20] != 0xFD && *(short *)(o + 0x68) != 8) {
         qcopy(m + 0x10, v);
-        compose_moby_rotation_with_euler_offset(*(char **)(o + 0x60), (char *)m, &D_L00_00161BF0);
+        compose_moby_rotation_with_euler_offset(*(char **)(o + 0x60), (char *)m, &suck_cannon_stored_rot_offset);
         moby_anim_sphere_lerp(m);
         g = *(int *)(D_0013E633 + 0x1EAD);
         if (g != 0 && *(short *)(g + 0xA6) == 0x351) {
@@ -1825,7 +1825,7 @@ void spawn_suck_cannon_projectile_explosion(char *self, char *q) {
     float f22, f23, f24, sc, dt;
     int step, i, j, k;
 
-    blk = D_L00_001EA430;
+    blk = suck_cannon_blast_params;
     *(u128_DD3D8 *)c = 0;
     c[2] = g_frame_time + g_frame_time;
     i = 0;
@@ -1901,8 +1901,8 @@ void spawn_suck_cannon_projectile_explosion(char *self, char *q) {
             float sh = f22 * random_float_between(8.0f, 10.0f) * g_frame_time - f24 * g_frame_time;
             int A, B, r1, r2;
             float big;
-            t1 = D_L00_001EA480;
-            t2 = D_L00_001EA498;
+            t1 = suck_cannon_explosion_colors_a;
+            t2 = suck_cannon_explosion_colors_b;
             A = swap_packed_color_channels(t1.v[random_integer_below(6)], (&gold_weapon_purchased)->b9);
             B = swap_packed_color_channels(t2.v[random_integer_below(6)], (&gold_weapon_purchased)->b9);
             big = f22 * 400000.0f;
@@ -2382,19 +2382,19 @@ void SuckBeam_DrawMesh(void) {
     s.t2 = 0x0000FF9000000260L;
     s.t3 = 0x8000000048L;
     s.t0 = 0;
-    a = *(float *)&D_L00_00161C18;
-    *(float *)&D_L00_00161C18 = a + 0.001f;
-    if (*(float *)&D_L00_00161C18 > 7.0f) *(float *)&D_L00_00161C18 -= 7.0f;
+    a = *(float *)&suck_beam_scroll_phase;
+    *(float *)&suck_beam_scroll_phase = a + 0.001f;
+    if (*(float *)&suck_beam_scroll_phase > 7.0f) *(float *)&suck_beam_scroll_phase -= 7.0f;
     step = 0.3f;
     a += step;
     for (i = 1; i < 10; i++) {
-        b = *(float *)&D_L00_00161C1C;
-        *(float *)&D_L00_00161C1C = b + *(float *)&D_L00_00161C20;
-        if (*(float *)&D_L00_00161C1C > 7.0f) *(float *)&D_L00_00161C1C -= 7.0f;
+        b = *(float *)&suck_beam_ring_scroll_phase;
+        *(float *)&suck_beam_ring_scroll_phase = b + *(float *)&suck_beam_scroll_speed;
+        if (*(float *)&suck_beam_ring_scroll_phase > 7.0f) *(float *)&suck_beam_ring_scroll_phase -= 7.0f;
         a2 = a + step;
         for (j = 0; j < 20; j++) {
-            qcopy(s.q[0], D_L00_001E6370 + (j * 16 + i * 0x140));
-            qcopy(s.q[1], D_L00_001E6370 + ((j + 1) % 20 * 16 + i * 0x140));
+            qcopy(s.q[0], suck_beam_ring_vertices + (j * 16 + i * 0x140));
+            qcopy(s.q[1], suck_beam_ring_vertices + ((j + 1) % 20 * 16 + i * 0x140));
             qcopy(s.q[2], D_L00_001E6230 + (j * 16 + i * 0x140));
             qcopy(s.q[3], D_L00_001E6230 + ((j + 1) % 20 * 16 + i * 0x140));
             FastVecSub(vc, s.q[0], s.q[1]);
@@ -2446,8 +2446,8 @@ extern short D_L00_00161C14;
 extern short D_L00_00161C10;
 // sets two flags and clears a short
 void suck_reset(void) {
-    *(int *)&D_L00_00161C10 = 1;
-    *(int *)&D_L00_00161C14 = 1;
+    *(int *)&suck_beam_rebuild = 1;
+    *(int *)&suck_beam_clear_particles = 1;
     suck_beam_segment_alpha[0] = 0;
 }
 extern Hero hero_2DF168 __asm__("D_0013F450");
@@ -2470,14 +2470,14 @@ void SuckBeam_Build(char *a, char *b) {
     char *v;
     short *w;
     int i, st, j;
-    if (*(int *)&D_L00_00161C10 == 0) return;
-    D_L00_00161C54 = 1.7f;
-    *(int *)&D_L00_00161C10 = 0;
+    if (*(int *)&suck_beam_rebuild == 0) return;
+    suck_beam_segment_length = 1.7f;
+    *(int *)&suck_beam_rebuild = 0;
     st = hero_2DF168.state.current;
     if ((st == 0x1E || st == 1) && (hero_2DF168.moby->flags & 1)) {
-        qcopy((char *)s, D_L00_001670D0);
-        qcopy((char *)s + 0x10, D_L00_001670D0 + 0x10);
-        qcopy((char *)s + 0x20, D_L00_001670D0 + 0x20);
+        qcopy((char *)s, player_camera_matrix);
+        qcopy((char *)s + 0x10, player_camera_matrix + 0x10);
+        qcopy((char *)s + 0x20, player_camera_matrix + 0x20);
         v = (char *)s + 0x20;
     } else {
         if (hero_2DF168.unk22C8 == 1) {
@@ -2492,15 +2492,15 @@ void SuckBeam_Build(char *a, char *b) {
             v = (char *)s + 0x20;
         }
     }
-    vec_scale_to_length((char *)s + 0x30, s, D_L00_00161C54);
+    vec_scale_to_length((char *)s + 0x30, s, suck_beam_segment_length);
     vec_scale_to_length((char *)s + 0x40, v, 1.0f);
-    qcopy(D_L00_001E6290, b);
+    qcopy(suck_beam_points, b);
     suck_beam_segment_alpha[0] = 0;
     for (i = 1; i < 10; i++) {
-        FastVecAdd(D_L00_001E6290 + i * 0x10, D_L00_001E6280 + i * 0x10, (char *)s + 0x30);
+        FastVecAdd(suck_beam_points + i * 0x10, D_L00_001E6280 + i * 0x10, (char *)s + 0x30);
         suck_beam_segment_alpha[i] = 0;
     }
-    clear_u64_value(D_L00_00161C30);
+    clear_u64_value(suck_beam_wobble_from);
     s[5] = 0;
     s[6] = 0;
     *(float *)((char *)s + 0x58) = 0.1f;
@@ -2509,14 +2509,14 @@ void SuckBeam_Build(char *a, char *b) {
     *(float *)((char *)s + 0x6C) = 1.0f;
     {
         float f = random_angle_radians();
-        build_look_at_matrix(D_L00_00161C40, (char *)s + 0x50, f, (char *)s + 0x60);
-        D_L00_00161C50 = f;
+        build_look_at_matrix(suck_beam_wobble_to, (char *)s + 0x50, f, (char *)s + 0x60);
+        suck_beam_wobble_angle = f;
     }
-    *(float *)&D_L00_00161C20 = 0.006f;
+    *(float *)&suck_beam_scroll_speed = 0.006f;
     *(int *)&D_L00_00161C24 = 0;
     *(int *)&D_L00_00161C28 = 0;
-    if (*(int *)&D_L00_00161C14 != 0) {
-        *(int *)&D_L00_00161C14 = 0;
+    if (*(int *)&suck_beam_clear_particles != 0) {
+        *(int *)&suck_beam_clear_particles = 0;
         for (j = 199; j >= 0; j--) D_L00_001E4FD0_x[j].f14 = 0;
     }
 }
@@ -2549,17 +2549,17 @@ void stop_suck_cannon_suction_effect(int arg0) {
     float len;
     char *p;
 
-    *(int *)&D_L00_00161C10 = 1;
-    *(float *)&D_L00_00161C20 = *(float *)&D_L00_00161C20 * 0.5f;
-    *(int *)&D_L00_00161C14 = 1;
+    *(int *)&suck_beam_rebuild = 1;
+    *(float *)&suck_beam_scroll_speed = *(float *)&suck_beam_scroll_speed * 0.5f;
+    *(int *)&suck_beam_clear_particles = 1;
     for (i = 0; i < 200; i++) {
-        p = D_L00_001E4FD0[i].p;
+        p = suck_beam_particles[i].p;
         if (p != 0) {
-            D_L00_001E4FD0[i].p = 0;
-            FastVecSub(a, D_L00_001E6280 + D_L00_001E4FD0[i].idx * 16, D_L00_001E6290 + D_L00_001E4FD0[i].idx * 16);
+            suck_beam_particles[i].p = 0;
+            FastVecSub(a, D_L00_001E6280 + suck_beam_particles[i].idx * 16, suck_beam_points + suck_beam_particles[i].idx * 16);
             len = FastVecLength(a);
-            FastVecScale(a, a, D_L00_001E4FD0[i].f / len);
-            FastVecAdd(b, D_L00_001E6290 + D_L00_001E4FD0[i].idx * 16, a);
+            FastVecScale(a, a, suck_beam_particles[i].f / len);
+            FastVecAdd(b, suck_beam_points + suck_beam_particles[i].idx * 16, a);
             FastVecSub(c, p + 0x10, b);
             vec_scale_to_length(c, c, 0.03f);
             FastVecScale(a, a, 0.1f / len);
@@ -2591,7 +2591,7 @@ void ScatterMobyFromHazards(char *m) {
     for (i = 0; i < 10 && suck_beam_segment_alpha[i] >= 8; i++) {
         lim = i * 0.3f + 0.1f;
         if (lim < 2.0f) lim = 2.0f;
-        if (FastVecDist(m + 0x10, D_L00_001E6290 + i * 16) < lim) {
+        if (FastVecDist(m + 0x10, suck_beam_points + i * 16) < lim) {
             if (m != 0 && *(int *)(m + 0x24) != 0 && *(short *)(*(int *)(m + 0x24) + 0x46) == 0x13) {
                 base = pos - 0x80;
                 begin_bolt_attraction(m, *(int *)(base + 0x2080), 0.0f, 0.0f);
@@ -2668,10 +2668,10 @@ void red_orb_update(char *m) {
         m[0x20] = 1;
         break;
     case 1:
-        a = FastAddRots(*(float *)p, *(float *)&D_L00_00161C68 * 0.017453292f * g_frame_time);
+        a = FastAddRots(*(float *)p, *(float *)&red_orb_pulse_speed_deg * 0.017453292f * g_frame_time);
         *(float *)p = a;
         a = FastSin(a);
-        c = FastTweenColor(*(int *)&D_L00_00161C60, *(int *)&D_L00_00161C64, a * 0.5f + 0.5f);
+        c = FastTweenColor(*(int *)&red_orb_color_a, *(int *)&red_orb_color_b, a * 0.5f + 0.5f);
         b = (c >> 16) & 0xFF; g = (c >> 8) & 0xFF; r = c & 0xFF;
         hi = 0x38; if (D_0015EE84_m == 0 || D_0015EE84_m == 0x12) hi = 0x20;
         *(int *)(p + 4) = (hi << 24) | (b << 16) | (g << 8) | r;
@@ -2707,7 +2707,7 @@ void vendor_orb_update(unsigned char *m) {
         AttachManipulator((char *)m, 1, p);
         break;
     case 1: {
-        float f = *(float *)&D_L00_00161C80 * 0.017453292f * g_frame_time;
+        float f = *(float *)&vendor_orb_spin_speed_deg * 0.017453292f * g_frame_time;
         *(float *)(m + 0x48) = FastAddRots(*(float *)(m + 0x48), f);
         *(float *)(p + 0x40) = FastAddRots(*(float *)(p + 0x40), f * -2.0f);
         axis_rotation_2d48(p + 0x10, 2, *(float *)(p + 0x40));

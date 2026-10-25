@@ -43,15 +43,15 @@ void build_packet_and_draw_scaled_entries(void *data_ptr, void *list_ptr, int co
     int *scratch;
     int scratch_color;
     float *old = (float *)0x001612f8;
-    float *current = D_L09_0016CC40;
+    float *current = gaspar_view_params;
     float saved0 = current[0x218 / 4];
     float saved1 = current[0x21c / 4];
     float saved2 = current[0x228 / 4];
     float saved3 = current[0x22c / 4];
-    D_L09_00161378 = saved0;
-    D_L09_0016137C = saved1;
-    D_L09_00161380 = saved2;
-    D_L09_00161384 = saved3;
+    gaspar_grid_saved_view0 = saved0;
+    gaspar_grid_saved_view1 = saved1;
+    gaspar_grid_saved_view2 = saved2;
+    gaspar_grid_saved_view3 = saved3;
     if (textured_grid_view_settings_mode != 1) {
         current[0x218 / 4] = *(float *)(data + 0x20);
         current[0x21c / 4] = *(float *)(data + 0x24);
@@ -105,7 +105,7 @@ void build_packet_and_draw_scaled_entries(void *data_ptr, void *list_ptr, int co
         l09_packet = packet_end;
         packet[60] = 0x30000003;
     }
-    (*(int * volatile *)&l09_packet)[1] = (int)D_L09_001CB6F0;
+    (*(int * volatile *)&l09_packet)[1] = (int)gaspar_grid_setup_dma_block;
     (*(int * volatile *)&l09_packet)[2] = 0;
     (*(int * volatile *)&l09_packet)[3] = 0x50000003;
     {
@@ -135,7 +135,7 @@ void build_packet_and_draw_scaled_entries(void *data_ptr, void *list_ptr, int co
         *(volatile u64 *)&words[2] = (blend << 32) | 100;
         alpha = alpha <= 0x60U ? 0x5370b : 0x5360a;
         blend = alpha;
-        words[4] = *(volatile u64 *)&D_L09_00161370;
+        words[4] = *(volatile u64 *)&gaspar_grid_tex0;
         scratch_color = 0x757c8e;
         words[5] = 6;
         words[6] = (long)color;
@@ -223,7 +223,7 @@ char *find_nearest_moby_by_class(void *pos, int type, float *dist) {
     char *best = 0;
     float bestd = 100000.0f;
     char *m;
-    for (m = D_L09_00160064; m != 0; m = *(char **)(m + 0x28)) {
+    for (m = gaspar_moby_list; m != 0; m = *(char **)(m + 0x28)) {
         if (*(short *)(m + 0xA6) == type) {
             float d = FastVecDist(pos, m + 0x10);
             if (d < bestd) {
@@ -360,7 +360,7 @@ void update_airship_part(Moby *moby) {
                 d->parent = p;
                 (*(Data_2C3858 **)&p->pvars)->parts[moby->oclass - 0x49E] = moby;
             } else {
-                STUB_printf(D_L09_00208590, (*(short *)&moby->save_id), moby->oclass, func_00120778(dist));
+                STUB_printf(airship_part_no_parent_msg, (*(short *)&moby->save_id), moby->oclass, func_00120778(dist));
             }
         }
         joint = 0;
@@ -454,7 +454,7 @@ void update_airship_part(Moby *moby) {
         }
         if (random_integer_below(3) == 0) {
             clear_u64_value(vec);
-            buf.pair = D_L09_00161458;
+            buf.pair = airship_part_smoke_colors;
             PartType11Spawn(((f32 *)&moby->pos), vec, 0x2F3F3F7F, buf.pair.v[random_integer_below(2)], rand_range(scale_ticks(0xF), scale_ticks(0x14)), rand_range(scale_ticks(0x19), scale_ticks(0x1E)), 0, 0, 400000.0f, random_float_between(8.0f, 16.0f) * g_frame_time);
         }
         if (moby->pos.z < 25.0f) {
@@ -804,8 +804,8 @@ void update_falling_asteroid(Moby *m) {
                     int a;
                     int b;
                     s = random_float_between(8.0f, 10.0f);
-                    A = D_L09_00208DF0;
-                    B = D_L09_00208E08;
+                    A = asteroid_impact_start_colors;
+                    B = asteroid_impact_end_colors;
                     sc = s * g_frame_time - extra * g_frame_time;
                     pa = &A.v[random_integer_below(6)];
                     pb = &B.v[random_integer_below(6)];
@@ -870,8 +870,8 @@ void update_falling_asteroid(Moby *m) {
                     int a;
                     int b;
                     s = random_float_between(8.0f, 10.0f);
-                    A = D_L09_00208DF0;
-                    B = D_L09_00208E08;
+                    A = asteroid_impact_start_colors;
+                    B = asteroid_impact_end_colors;
                     sc = s * g_frame_time - extra * g_frame_time;
                     v3[0] = random_float_between(-3.0f, 3.0f);
                     v3[1] = random_float_between(-3.0f, 3.0f);
@@ -937,8 +937,8 @@ void update_falling_asteroid(Moby *m) {
                 int a;
                 int b;
                 s = random_float_between(8.0f, 10.0f);
-                A = D_L09_00208DF0;
-                B = D_L09_00208E08;
+                A = asteroid_impact_start_colors;
+                B = asteroid_impact_end_colors;
                 sc = s * g_frame_time - extra * g_frame_time;
                 v3[0] = random_float_between(-1.0f, 1.0f);
                 v3[1] = random_float_between(-1.0f, 1.0f);
@@ -1397,13 +1397,13 @@ extern char D_L09_001F6680[];
 
 // Animates a blend factor from the level timer, then updates and starts the moby.
 void draw_level09_textured_surfaces(void) {
-    int t = D_L09_0015F6B0;
+    int t = gaspar_frame_count;
     int n = t / 20;
     float a = (float)t / 20.0f;
     float b = (float)n;
-    draw_level09_scrolling_textured_strips(D_L09_001F3340, a - b, 0x6C, (n & 15) + 0x2C, ((n + 1) & 15) + 0x2C);
-    draw_textured_grid(D_L09_001FCA00);
-    build_packet_and_draw_scaled_entries(D_L09_001FCA00, D_L09_001F6680, 10);
+    draw_level09_scrolling_textured_strips(gaspar_scrolling_strips, a - b, 0x6C, (n & 15) + 0x2C, ((n + 1) & 15) + 0x2C);
+    draw_textured_grid(gaspar_textured_grid);
+    build_packet_and_draw_scaled_entries(gaspar_textured_grid, gaspar_grid_scaled_entries, 10);
 }
 typedef int u128_2F0BB8 __attribute__((mode(TI)));
 
@@ -1753,19 +1753,19 @@ void update_level09_item_unlock_and_frame_record(char *moby) {
     unsigned char *b;
     unsigned short *tp;
     int n;
-    if (D_L09_0015F6B0 > 0) {
-        if (D_L09_00161450 == 0) {
+    if (gaspar_frame_count > 0) {
+        if (airship_parts_alive_count == 0) {
             q = menu_item_enabled_115 + 1;
             if (q[0xE] == 0) {
                 q[0xE] = 1;
                 PlayBankSound(1, 0, 0);
                 ShowBanner(0x53DB, -1);
-                D_L09_00161450 = 0;
+                airship_parts_alive_count = 0;
             } else {
-                D_L09_00161450 = 0;
+                airship_parts_alive_count = 0;
             }
         } else {
-            D_L09_00161450 = 0;
+            airship_parts_alive_count = 0;
         }
     }
     b = D_0014171B + 0x34D;
@@ -1835,7 +1835,7 @@ void PathPlatformL09_Update(unsigned char *moby) {
     if (data->path_index == -1) {
         return;
     }
-    path = D_L09_001B0930[data->path_index];
+    path = gaspar_paths[data->path_index];
     if (data->clip_volume != -1) {
         unsigned short id;
         if (is_point_inside_clip_volume(&((Hero *)(D_0013E633 + 0xE1D))->motion.pos, data->clip_volume)
@@ -1843,7 +1843,7 @@ void PathPlatformL09_Update(unsigned char *moby) {
             || ((*(int *)(D_0014171B + 0xAB75 + (g_current_level_index << 8) + (((short)id >> 5) << 2))) >> (id & 0x1F)) & 1) {
             if (data->clip_volume != -1) {
                 (*(int *)(D_0014171B + 0xAB75 + (g_current_level_index << 8) + (((short)m->save_id >> 5) << 2))) |= 1 << (m->save_id & 0x1F);
-                D_L09_001BA960[(short)m->save_id >> 5] |= 1 << (m->save_id & 0x1F);
+                gaspar_moby_killed[(short)m->save_id >> 5] |= 1 << (m->save_id & 0x1F);
                 data->clip_volume = -1;
             }
             on = 1;
@@ -2091,7 +2091,7 @@ void refueling_station_update(char *m) {
         m[0x20] = 1;
         break;
     case 1:
-        if ((D_L09_0015F6B0 & 7) == (((int)m >> 8) & 7)) {
+        if ((gaspar_frame_count & 7) == (((int)m >> 8) & 7)) {
             if (*(int *)(d + 0x7C) == -1
                 || (Sound_IsPlaying(m, *(int *)(d + 0x7C)) == 0 && *(int *)(d + 0x7C) == -1)) {
                 *(int *)(d + 0x7C) = func_0022ED80_r(1, 4, m);
@@ -2224,7 +2224,7 @@ char *find_nearby_chain_attachment(char *self, char *pos, int bone) {
     char *m;
     char *tp = tmp;
     *(u128 *)tmp = *(u128 *)pos;
-    for (m = D_L09_00160064; m != 0; m = *(char **)(m + 0x28)) {
+    for (m = gaspar_moby_list; m != 0; m = *(char **)(m + 0x28)) {
         if (m == self) continue;
         if (m != 0 && *(unsigned char *)(m + 0x20) != 0xFE && *(unsigned char *)(m + 0x20) != 0xFD) {
             if (*(short *)(m + 0xA6) == 0x49D || *(short *)(m + 0xA6) == 0x494 || *(short *)(m + 0xA6) == 0x4A0) {
@@ -2294,7 +2294,7 @@ void AirshipChainLinkUpdate(Moby *m) {
             if (r != 0) {
                 d->hull = r - D_L09_00160058_305710;
             } else {
-                STUB_printf(D_L09_00209340, (*(short *)&m->save_id));
+                STUB_printf(chain_link_no_hull_msg, (*(short *)&m->save_id));
             }
         }
         if (d->next == -1) {
@@ -2303,14 +2303,14 @@ void AirshipChainLinkUpdate(Moby *m) {
             if (r != 0) {
                 d->next = r - D_L09_00160058_305710;
             } else {
-                STUB_printf(D_L09_00209370, (*(short *)&m->save_id));
+                STUB_printf(chain_link_no_next_msg, (*(short *)&m->save_id));
             }
         }
         m->state = 1;
         break;
     case 1:
         if (m->visible == 0 || FastVecDist(((f32 *)&m->pos), gaspar_camera_pos) > 32.0f) {
-            if (D_L09_0015F6B0 % 8 != (short)((*(short *)&m->save_id) % 8)) {
+            if (gaspar_frame_count % 8 != (short)((*(short *)&m->save_id) % 8)) {
                 return;
             }
         }
@@ -2570,14 +2570,14 @@ void turret_update(struct Moby *moby) {
                     fast_atan2(hero.motion.pos.f[0] - moby->pos.x, hero.motion.pos.f[1] - moby->pos.y),
                     moby->rot.z), 1.5707964f) * 0.01f) * 0.9f;
             moby->rot.z = FastAddRots(moby->rot.z, vars->yaw_speed);
-            matrix_mul_vec3(&tmp, &D_L09_00161D40, &moby->rot_row0);
+            matrix_mul_vec3(&tmp, &turret_beam_offset, &moby->rot_row0);
             FastVecAdd(&tmp, &tmp, &seat);
             if (vars->beam == -1) {
                 vars->beam_frames = 0;
                 vars->beam = allocate_colored_effect_slot(&tmp, 0.4f, 0.0f, 4.0f, 4.0f, 4.0f);
                 Moby_PlaySound(1, 0, moby);
             } else {
-                beam = &D_L09_001804C0[vars->beam];
+                beam = &gaspar_colored_effect_slots[vars->beam];
                 beam->pos[0] = tmp.f[0];
                 beam->pos[1] = tmp.f[1];
                 beam->pos[2] = tmp.f[2];
@@ -2645,10 +2645,10 @@ void turret_update(struct Moby *moby) {
                     Moby_GetJointWorldPos(moby, 1, &muzzle);
                     spawn_class_4ea_projectile(moby, &muzzle, &shot, scale_ticks(90));
                     Moby_PlaySound(0, 0, moby);
-                    D_L09_00166E80.unk160 = 0.03f;
-                    D_L09_00166E80.unk168 = scale_ticks(10);
-                    D_L09_00166E80.unk170 = 0.03f;
-                    D_L09_00166E80.unk178 = scale_ticks(7);
+                    gaspar_camera.unk160 = 0.03f;
+                    gaspar_camera.unk168 = scale_ticks(10);
+                    gaspar_camera.unk170 = 0.03f;
+                    gaspar_camera.unk178 = scale_ticks(7);
                     vars->barrel = 0;
                     for (i = 0; i < 5; i++) {
                         rnd.q = 0;
@@ -2672,10 +2672,10 @@ void turret_update(struct Moby *moby) {
                     Moby_GetJointWorldPos(moby, 2, &muzzle);
                     spawn_class_4ea_projectile(moby, &muzzle, &shot, scale_ticks(90));
                     Moby_PlaySound(0, 0, moby);
-                    D_L09_00166E80.unk160 = 0.03f;
-                    D_L09_00166E80.unk168 = scale_ticks(10);
-                    D_L09_00166E80.unk170 = 0.03f;
-                    D_L09_00166E80.unk178 = scale_ticks(7);
+                    gaspar_camera.unk160 = 0.03f;
+                    gaspar_camera.unk168 = scale_ticks(10);
+                    gaspar_camera.unk170 = 0.03f;
+                    gaspar_camera.unk178 = scale_ticks(7);
                     vars->barrel = 1;
                     for (i = 0; i < 5; i++) {
                         rnd.q = 0;
@@ -2745,7 +2745,7 @@ void update_damage_causer(Moby *moby) {
         moby->state = 1;
         data->sound = -1;
     }
-    if ((D_L09_0015F6B0 & 7) == (((int)moby >> 8) & 7)) {
+    if ((gaspar_frame_count & 7) == (((int)moby >> 8) & 7)) {
         if (data->sound == -1 ||
             (Sound_IsPlaying(moby, data->sound) == 0 && data->sound == -1)) {
             data->sound = func_0022ED80_i(0, 4, (int)moby);
@@ -2765,7 +2765,7 @@ void update_damage_causer(Moby *moby) {
             int b = ((Moby *)x)->oclass;
             int a = (short)((Moby *)x)->save_id;
             int c = (short)moby->save_id;
-            hit_log_306DD8(D_L09_002093A0, c, b, a, (double)data->damage);
+            hit_log_306DD8(damage_causer_hit_msg, c, b, a, (double)data->damage);
         }
         FastVecAdd(v10, v10, v);
     }
@@ -3126,7 +3126,7 @@ extern int func_L09_0030B648(struct Moby *);
 /* Moby update for a flyer that follows a node path. */
 void Moby1766Update(struct Moby *moby) {
     PathFlyerVars_00309c08 *vars = (PathFlyerVars_00309c08 *)moby->pvars;
-    PathNodes_00309c08 *path = (PathNodes_00309c08 *)D_L09_001B0930[vars->path];
+    PathNodes_00309c08 *path = (PathNodes_00309c08 *)gaspar_paths[vars->path];
     Vec4 *position = (Vec4 *)&moby->pos;
     Vec4 original;
     Vec4 rotation;
@@ -3147,7 +3147,7 @@ void Moby1766Update(struct Moby *moby) {
         if (*(s32 *)((u8 *)vars + 0xA0) != 0) {
             PathNodes_00309c08 *path;
             attach_manipulator(moby, 0, (u8 *)vars + 0x60);
-            path = (PathNodes_00309c08 *)D_L09_001B0930[vars->path];
+            path = (PathNodes_00309c08 *)gaspar_paths[vars->path];
             moby->state = 1;
             if ((D_0014171B + 0xAA35)[moby->mission + (g_current_level_index << 4)] == 0xFF) {
                 vars->dir = -1;
@@ -3191,7 +3191,7 @@ void Moby1766Update(struct Moby *moby) {
         }
         break;
     case 3:
-        if ((D_L09_0015F6B0 & 7) == (((s32)moby >> 8) & 7)) {
+        if ((gaspar_frame_count & 7) == (((s32)moby >> 8) & 7)) {
             if (*(s32 *)((u8 *)vars + 0xC4) == -1 ||
                 (!check_voice_target_00309c08(moby, *(s32 *)((u8 *)vars + 0xC4)) &&
                  *(s32 *)((u8 *)vars + 0xC4) == -1)) {

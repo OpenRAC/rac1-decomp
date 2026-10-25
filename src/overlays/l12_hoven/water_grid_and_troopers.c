@@ -1309,7 +1309,7 @@ void HovenPlatformUpdate(Moby *moby) {
         break;
     case 8:
         FastVecAdd((*(float (*)[4])&moby->pos), (*(float (*)[4])&moby->pos), d->vel);
-        if (func_L00_001F39B0((*(float (*)[4])&moby->pos), 0x600, 0, moby, 0) && d->walk.path == 0) {
+        if (coll_point_query_stub((*(float (*)[4])&moby->pos), 0x600, 0, moby, 0) && d->walk.path == 0) {
             spawn_explosion(moby, d->vel, 0, 2.0f, 0.0f, 10, 3, 16, 4.0f, 2.0f, 9.0f, -1, 1.0f, 15.0f, 1, 1, -1, 0);
             DeleteMoby(moby);
             return;

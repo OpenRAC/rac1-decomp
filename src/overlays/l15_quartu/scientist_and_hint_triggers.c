@@ -110,7 +110,7 @@ void ultramech_scientist_update(char *moby) {
             break;
         }
         ((struct Moby *)moby)->state = 3;
-        other = D_L15_00160064;
+        other = quartu_moby_list;
         if (other == 0) {
             break;
         }
@@ -152,7 +152,7 @@ void ultramech_scientist_update(char *moby) {
         jet_clear_persistent(*(int *)(data + 0x280));
         ((struct Moby *)moby)->anim_speed = 0.0f;
         ((struct Moby *)moby)->state = 2;
-        other = D_L15_00160064;
+        other = quartu_moby_list;
         if (other == 0) {
             break;
         }

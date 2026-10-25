@@ -1516,8 +1516,8 @@ take:
     W(p, 0x128) = -1;
     W(p, 0x88) = 0;
 skip:
-    qcopy(v, D_L17_00167750);
-    r = (char *)select_fighter_jet_target_and_draw_contacts(a, p, D_L17_00167750 - 0x10, (char *)v, 0.19634955f, 0.19634955f, 255.0f, P(p, 0x88), g);
+    qcopy(v, fleet_camera_rot);
+    r = (char *)select_fighter_jet_target_and_draw_contacts(a, p, fleet_camera_rot - 0x10, (char *)v, 0.19634955f, 0.19634955f, 255.0f, P(p, 0x88), g);
     if ((r != P(p, 0x88) && W(p, 0x8C) >= 0x1F5) || FLAG == 0) {
         W(p, 0xEC) = 0;
         W(p, 0x128) = -1;

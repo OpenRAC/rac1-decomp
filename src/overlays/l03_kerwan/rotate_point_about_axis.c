@@ -44,10 +44,10 @@ void RotatePointAboutAxis(Q_50B88 *axis, Q_50B88 *point, float angle) {
     skew[2][3] = 0.0f;
     skew[3][3] = 0.0f;
     sce_vu0_mul_matrix(skew_sq, skew, skew);
-    func_L00_001FFCF8(cos_part, skew_sq, 1.0f - FastCos(angle));
-    func_L00_001FFCF8(sin_part, skew, FastSin(angle));
-    func_L00_001FFDD0(sin_part, sin_part, cos_part);
+    matrix4_scale(cos_part, skew_sq, 1.0f - FastCos(angle));
+    matrix4_scale(sin_part, skew, FastSin(angle));
+    matrix4_add(sin_part, sin_part, cos_part);
     set_identity_matrix(cos_part);
-    func_L00_001FFDD0(rot, sin_part, cos_part);
+    matrix4_add(rot, sin_part, cos_part);
     matrix_to_euler(rot, point_p);
 }

@@ -381,7 +381,7 @@ void update_swinging_door(struct Moby *moby) {
                        !is_point_inside_clip_volume(quartu_camera_pos, vars->close_volume)) {
                 close = 1;
             }
-            for (m = (struct Moby *)D_L15_00160064; m != 0; m = m->next) {
+            for (m = (struct Moby *)quartu_moby_list; m != 0; m = m->next) {
                 if (GetFlaggedPvarWord(m) == 0) {
                     continue;
                 }
@@ -510,7 +510,7 @@ void update_destructible_moby_with_radial_debris(struct Moby *moby)
         return;
 
     for (slot_index = 0; slot_index < 64; slot_index++) {
-        char *entry = D_L15_00178780 + slot_index * 0x40;
+        char *entry = quartu_moby_hits + slot_index * 0x40;
         if (*(struct Moby **)(entry + 0x34) != moby)
             continue;
         if ((*(u32 *)(entry + 0x24) & 0x80000) == 0)
@@ -522,7 +522,7 @@ void update_destructible_moby_with_radial_debris(struct Moby *moby)
     if (slot == 0)
         goto no_hit;
 
-    __builtin_memcpy(palette, &D_L15_001615E8, 16);
+    __builtin_memcpy(palette, &quartu_debris_colors, 16);
     func_L00_001FF4B0_A8AA8(g_frame_time * 10.0f, &first, slot + 0x10);
     func_001F9C30_A8AA8(2.0f, &second, &first);
     if (FastVecLength(slot) != 0.0f) {
@@ -590,7 +590,7 @@ void update_destructible_moby_with_radial_debris(struct Moby *moby)
     do {
         float radius, angle;
         int color, color2, duration;
-        __builtin_memcpy(colors, &D_L15_001615F8, 12);
+        __builtin_memcpy(colors, &quartu_debris_effect_colors, 12);
         radius = random_float_between(0.0f, 1.5f);
         angle = random_angle_radians();
         if (moby->oclass == 0x94)
@@ -632,7 +632,7 @@ no_hit:
     moby->draw_dist = 0x80;
     moby->scale = moby->scale + moby->scale;
     {
-    u8 saved_flag = D_0013DE58;
+    u8 saved_flag = kalebo3_available;
     u16 save_id = moby->save_id;
     u32 saved_bit = *(u32 *)(level_moby_killed + (((s16)save_id >> 5) * 4) +
                     g_current_level_index * 0x100) &
@@ -696,7 +696,7 @@ void update_destructible_moby_on_hit(struct Moby *moby)
         return;
 
     for (hit_record_index = 0; hit_record_index < 64; hit_record_index++) {
-        struct HitRecord *entry = (struct HitRecord *)(D_L15_00178780 + hit_record_index * 0x40);
+        struct HitRecord *entry = (struct HitRecord *)(quartu_moby_hits + hit_record_index * 0x40);
         if (entry->moby != moby)
             continue;
         if ((entry->flags & 0x80000) == 0)
@@ -706,7 +706,7 @@ void update_destructible_moby_on_hit(struct Moby *moby)
     }
     moby->hit_slot = 0xff;
     if (hit != 0) {
-        __builtin_memcpy(palette, D_L15_00161638, 16);
+        __builtin_memcpy(palette, quartu_hit_debris_colors, 16);
         vec_scale_to_length(&hit_direction, &hit->dir, g_frame_time * 10.0f);
         FastVecScale(&push, &hit_direction, 2.0f);
         if (FastVecLength(hit) != 0.0f) {
@@ -751,7 +751,7 @@ void update_destructible_moby_on_hit(struct Moby *moby)
         for (puff = 0; puff < 20; puff++) {
             float radius, angle;
             int color1, color2, life;
-            __builtin_memcpy(colors, D_L15_00161648, 12);
+            __builtin_memcpy(colors, quartu_hit_effect_colors, 12);
             angle = random_float_between(moby->rot.z, 1.5707963267948966f);
             radius = FastCos(angle);
             radius *= random_float_between(-3.0f, 3.0f);
@@ -866,8 +866,8 @@ void construction_arm_update(char *moby) {
     }
     switch (m->state) {
     case CONSTRUCTION_ARM_INITIALIZE: {
-        float a = multiply_global_factor(*(float *)&D_L15_00161A80 * 60.0f);
-        float b = multiply_global_factor(*(float *)&D_L15_00161A84 * 60.0f);
+        float a = multiply_global_factor(*(float *)&construction_arm_wait_min * 60.0f);
+        float b = multiply_global_factor(*(float *)&construction_arm_wait_max * 60.0f);
         int d = truncate_float_to_s32(random_float_between(a, b));
         arm_vars->timer = d;
         *(int *)&arm_vars->yaw = 0;
@@ -943,10 +943,10 @@ void construction_arm_update(char *moby) {
     }
     case CONSTRUCTION_ARM_WAIT_TO_START_EXIT_ANIMATION: {
         if (FastVecDist(&m->pos, quartu_camera_pos) < 20.0f && random_integer_below(2) == 0 && m->visible != 0) {
-            float A = *(float *)&D_L15_00161A7C;
+            float A = *(float *)&construction_arm_puff_speed;
             float t1 = random_float_between(A / 5.0f, A);
             float f22 = t1 * g_frame_time;
-            float t2 = random_float_between(0.0f, *(float *)&D_L15_00161A7C / 5.0f);
+            float t2 = random_float_between(0.0f, *(float *)&construction_arm_puff_speed / 5.0f);
             float f23 = t2 * g_frame_time;
             float t3 = random_angle_radians();
             float vP[4];
@@ -970,10 +970,10 @@ void construction_arm_update(char *moby) {
             add_vectors(vO, vA, vB);
             Moby_GetJointWorldPos(m, 1, vP);
             {
-                int ra = scale_ticks(*(int *)&D_L15_00161A74);
-                int rb = scale_ticks(*(int *)&D_L15_00161A78);
+                int ra = scale_ticks(*(int *)&construction_arm_puff_life_min);
+                int rb = scale_ticks(*(int *)&construction_arm_puff_life_max);
                 int c = rand_range(ra, rb);
-                PartType21Spawn(vP, vA, *(int *)&D_L15_00161A6C, *(int *)&D_L15_00161A6C, c, 1, 40000.0f);
+                PartType21Spawn(vP, vA, *(int *)&construction_arm_puff_color, *(int *)&construction_arm_puff_color, c, 1, 40000.0f);
             }
         }
         if (!FastDecTimer(&arm_vars->timer)) break;
@@ -991,8 +991,8 @@ void construction_arm_update(char *moby) {
         int r;
         if (m->prev_seq != arm_vars->side * 2 + 3) break;
         if (!(m->anim_flags & 2)) break;
-        a = multiply_global_factor(*(float *)&D_L15_00161A80 * 60.0f);
-        b = multiply_global_factor(*(float *)&D_L15_00161A84 * 60.0f);
+        a = multiply_global_factor(*(float *)&construction_arm_wait_min * 60.0f);
+        b = multiply_global_factor(*(float *)&construction_arm_wait_max * 60.0f);
         t = truncate_float_to_s32(random_float_between(a, b));
         arm_vars->timer = t;
         r = scale_ticks(6);
@@ -1148,7 +1148,7 @@ float compute_helicopter_flocking_steering_point(struct Moby *m, float *out, Goa
     clear = 1;
     clear_u64_value(out);
     wsum = 0.0f;
-    for (o = D_L15_00160064; o != 0; o = *(char **)(o + 0x28)) {
+    for (o = quartu_moby_list; o != 0; o = *(char **)(o + 0x28)) {
         if (o == m)
             continue;
         if (*(short *)(o + 0xA6) != m->oclass)
@@ -1626,12 +1626,12 @@ void helicopter_update(HMoby_6950 *m) {
         }
     }
     {
-        float z = m->pos.f[2] - *(float *)&D_L15_00161A90 * FastCos(d->bob);
-        float arg = *(float *)&D_L15_00161A8C * 60.0f;
+        float z = m->pos.f[2] - *(float *)&helicopter_bob_amplitude * FastCos(d->bob);
+        float arg = *(float *)&helicopter_bob_period * 60.0f;
         m->pos.f[2] = z;
         d->bob = FastAddRots(d->bob, 6.2831855f / multiply_global_factor(arg));
     }
-    m->pos.f[2] += *(float *)&D_L15_00161A90 * FastCos(d->bob);
+    m->pos.f[2] += *(float *)&helicopter_bob_amplitude * FastCos(d->bob);
     if (d->child != 0) {
         d->child->pos.q = m->pos.q;
         d->child->rot.q = m->rot.q;
@@ -1742,7 +1742,7 @@ float compute_ultramech_flocking_steering_point(void *m_, void *out, float r) {
     func_L00_00260D30_t(m, tgt, r);
     dist = vec_distance_xy(m + 0x10, tgt);
     func_001F9BC0_t(out);
-    for (o = D_L15_00160064; o != 0; o = *(char **)(o + 0x28)) {
+    for (o = quartu_moby_list; o != 0; o = *(char **)(o + 0x28)) {
         if (o == m) continue;
         if (*(short *)(o + 0xA6) != *(short *)(m + 0xA6)) continue;
         if (vec_distance_xy(o + 0x10, m + 0x10) < 3.0f) {
@@ -2009,7 +2009,7 @@ void ultramech_unlimited_update(UMoby *m) {
                     m->pos.q = path->pt[0].q;
                     FastVecSub(&d->vel, (Vec4 *)path + path->n, &m->pos);
                     vec_set_length_xy(&d->vel, &d->vel, *(float *)&ultramech_jump_speed * g_frame_time);
-                    d->vel.f[2] = jump_speed_4318(&m->pos, (Vec4 *)path + path->n, 0, *(float *)&ultramech_jump_speed * g_frame_time, -(*(float *)&D_L15_00161BA0 * g_frame_time_sq));
+                    d->vel.f[2] = jump_speed_4318(&m->pos, (Vec4 *)path + path->n, 0, *(float *)&ultramech_jump_speed * g_frame_time, -(*(float *)&ultramech_gravity * g_frame_time_sq));
                 }
             }
         }
@@ -2056,13 +2056,13 @@ void ultramech_unlimited_update(UMoby *m) {
     case 3:
         if (m->anim == 3 && (m->animFlags & 2)) MobyBlendAnimation(m, 4, 0, scale_ticks(6));
         FastVecAdd(&m->pos, &m->pos, &d->vel);
-        d->vel.f[2] -= *(float *)&D_L15_00161BA0 * g_frame_time_sq;
+        d->vel.f[2] -= *(float *)&ultramech_gravity * g_frame_time_sq;
         if (d->vel.f[2] < 0.0f) {
             float z;
             qcopy(&v10, &m->pos);
             v10.f[2] += 1.0f;
             z = ProbeGroundHeight(&v10, 0, 0.5f);
-            if (m->pos.f[2] - z < d->vel.f[2] * multiply_global_factor(26.0f) + *(float *)&D_L15_00161BA0 * g_frame_time_sq * 0.5f * multiply_global_factor(26.0f) * multiply_global_factor(26.0f) && m->anim != 5) {
+            if (m->pos.f[2] - z < d->vel.f[2] * multiply_global_factor(26.0f) + *(float *)&ultramech_gravity * g_frame_time_sq * 0.5f * multiply_global_factor(26.0f) * multiply_global_factor(26.0f) && m->anim != 5) {
                 MobyBlendAnimation(m, 5, 0, scale_ticks(6));
             }
             if (m->pos.f[2] < z) {
@@ -2078,10 +2078,10 @@ void ultramech_unlimited_update(UMoby *m) {
         if (d->w164 != 2) {
             SteerAngleWithVelocity(&m->rot.f[2], fast_atan2(tgt->pos.f[0] - m->pos.f[0], tgt->pos.f[1] - m->pos.f[1]), &d->turnVel, g_frame_time_sq * 8.726646f, g_frame_time_sq * 8.726646f, g_frame_time * 12.566371f);
             if (fast_dec_timer(&d->timer)) {
-                if (d->w1D8 == 0 && vec_distance_xy(&m->pos, &tgt->pos) < *(float *)&D_L15_00161BAC) {
+                if (d->w1D8 == 0 && vec_distance_xy(&m->pos, &tgt->pos) < *(float *)&ultramech_close_attack_range) {
                     m->state = 7;
                     if (m->anim != 1) MobyBlendAnimation(m, 1, 0, scale_ticks(0xA));
-                } else if (d->w1D8 == 0 && vec_distance_xy(&m->pos, &tgt->pos) < *(float *)&D_L15_00161BB0) {
+                } else if (d->w1D8 == 0 && vec_distance_xy(&m->pos, &tgt->pos) < *(float *)&ultramech_mid_attack_range) {
                     m->state = 8;
                     if (m->anim != 2) MobyBlendAnimation(m, 2, 0, scale_ticks(0xA));
                 } else {
@@ -2095,7 +2095,7 @@ void ultramech_unlimited_update(UMoby *m) {
     case 5:
         if (m->anim == 6 && (m->animFlags & 2)) {
             MobyBlendAnimation(m, 7, 0, scale_ticks(5));
-            m->animSpeed = *(float *)&D_L15_00161BBC;
+            m->animSpeed = *(float *)&ultramech_fire_anim_speed;
         }
         if (d->w164 != 2) {
             int fire = -1;
@@ -2107,10 +2107,10 @@ void ultramech_unlimited_update(UMoby *m) {
                 Moby_GetJointWorldPos(m, 0, &v10);
                 FastVecSub(&v20, &tgt->pos, &v10);
                 v20.f[2] += 0.5f;
-                vec_scale_to_length(&v20, &v20, *(float *)&D_L15_00161BA8 * g_frame_time);
+                vec_scale_to_length(&v20, &v20, *(float *)&ultramech_rocket_speed * g_frame_time);
                 if (0.0f < v20.f[2]) v20.f[2] = 0.0f;
                 if (v20.f[2] < 0.0f) v20.f[2] = 0.0f;
-                func_L10_002CD578_v(&v20, 3.0f, &v10, (int)m, (int)tgt, scale_ticks(*(int *)&D_L15_00161BA4));
+                func_L10_002CD578_v(&v20, 3.0f, &v10, (int)m, (int)tgt, scale_ticks(*(int *)&ultramech_rocket_life));
                 vec_scale_to_length(&v20, &v20, 3.0f);
                 add_vectors(&v30, &v10, &v20);
                 emit_radial_particle_burst(m, &v10, 0);
@@ -2119,10 +2119,10 @@ void ultramech_unlimited_update(UMoby *m) {
                 m->state = 6;
                 if (m->anim != 0) MobyBlendAnimation(m, 0, 0, scale_ticks(0xA));
                 d->timer = func_001FA898_r(multiply_global_factor(d->f188 * 60.0f));
-            } else if (d->w1D8 == 0 && vec_distance_xy(&m->pos, &tgt->pos) < *(float *)&D_L15_00161BAC) {
+            } else if (d->w1D8 == 0 && vec_distance_xy(&m->pos, &tgt->pos) < *(float *)&ultramech_close_attack_range) {
                 m->state = 7;
                 if (m->anim != 1) MobyBlendAnimation(m, 1, 0, scale_ticks(0xA));
-            } else if (d->w1D8 == 0 && vec_distance_xy(&m->pos, &tgt->pos) < *(float *)&D_L15_00161BB0) {
+            } else if (d->w1D8 == 0 && vec_distance_xy(&m->pos, &tgt->pos) < *(float *)&ultramech_mid_attack_range) {
                 m->state = 8;
                 if (m->anim != 2) MobyBlendAnimation(m, 2, 0, scale_ticks(0xA));
             } else if (d->w1D8 == 0 && vec_distance_xy(&m->pos, &tgt->pos) > 10.0f && d->w1C8 != 0 && d->w1D4 == 0) {
@@ -2132,7 +2132,7 @@ void ultramech_unlimited_update(UMoby *m) {
                 if (m->anim != 3) MobyBlendAnimation(m, 3, 0, scale_ticks(0x14));
                 FastVecSub(&d->vel, (Vec4 *)quartu_paths[((UPaths *)((char *)d + 0x180))->idx[d->side]] + (d->point + 1), &m->pos);
                 vec_set_length_xy(&d->vel, &d->vel, *(float *)&ultramech_jump_speed * g_frame_time);
-                d->vel.f[2] = jump_speed_4318(&m->pos, (Vec4 *)quartu_paths[((UPaths *)((char *)d + 0x180))->idx[d->side]] + (d->point + 1), 0, *(float *)&ultramech_jump_speed * g_frame_time, -(*(float *)&D_L15_00161BA0 * g_frame_time_sq));
+                d->vel.f[2] = jump_speed_4318(&m->pos, (Vec4 *)quartu_paths[((UPaths *)((char *)d + 0x180))->idx[d->side]] + (d->point + 1), 0, *(float *)&ultramech_jump_speed * g_frame_time, -(*(float *)&ultramech_gravity * g_frame_time_sq));
             }
         } else {
             m->state = 4;
@@ -2149,7 +2149,7 @@ void ultramech_unlimited_update(UMoby *m) {
                 if (m->anim != 3) MobyBlendAnimation(m, 3, 0, scale_ticks(0x14));
                 FastVecSub(&d->vel, (Vec4 *)quartu_paths[((UPaths *)((char *)d + 0x180))->idx[d->side]] + (d->point + 1), &m->pos);
                 vec_set_length_xy(&d->vel, &d->vel, *(float *)&ultramech_jump_speed * g_frame_time);
-                d->vel.f[2] = jump_speed_4318(&m->pos, (Vec4 *)quartu_paths[((UPaths *)((char *)d + 0x180))->idx[d->side]] + (d->point + 1), 0, *(float *)&ultramech_jump_speed * g_frame_time, -(*(float *)&D_L15_00161BA0 * g_frame_time_sq));
+                d->vel.f[2] = jump_speed_4318(&m->pos, (Vec4 *)quartu_paths[((UPaths *)((char *)d + 0x180))->idx[d->side]] + (d->point + 1), 0, *(float *)&ultramech_jump_speed * g_frame_time, -(*(float *)&ultramech_gravity * g_frame_time_sq));
             } else if (fast_dec_timer(&d->timer)) {
                 m->state = 5;
                 if (m->anim != 6) MobyBlendAnimation(m, 6, 0, scale_ticks(0x14));
@@ -2164,7 +2164,7 @@ void ultramech_unlimited_update(UMoby *m) {
         float ang = fast_atan2(tgt->pos.f[0] - m->pos.f[0], tgt->pos.f[1] - m->pos.f[1]);
         if (d->w164 != 2) {
             ang = compute_ultramech_flocking_steering_point(m, &v20, d->f1B8);
-            if (vec_distance_xy(&m->pos, &tgt->pos) < *(float *)&D_L15_00161BB0) {
+            if (vec_distance_xy(&m->pos, &tgt->pos) < *(float *)&ultramech_mid_attack_range) {
                 m->state = 8;
                 if (m->anim != 2) MobyBlendAnimation(m, 2, 0, scale_ticks(0xA));
             }
@@ -2190,15 +2190,15 @@ void ultramech_unlimited_update(UMoby *m) {
     case 8:
         SteerAngleWithVelocity(&m->rot.f[2], fast_atan2(tgt->pos.f[0] - m->pos.f[0], tgt->pos.f[1] - m->pos.f[1]), &d->turnVel, g_frame_time_sq * 8.726646f, g_frame_time_sq * 8.726646f, g_frame_time * 12.566371f);
         if (m->animFlags & 2) {
-            if (vec_distance_xy(&m->pos, &tgt->pos) < *(float *)&D_L15_00161BB0 && d->w1D4 == 0 && d->point < quartu_paths[((UPaths *)((char *)d + 0x180))->idx[d->side]]->n - 1) {
+            if (vec_distance_xy(&m->pos, &tgt->pos) < *(float *)&ultramech_mid_attack_range && d->w1D4 == 0 && d->point < quartu_paths[((UPaths *)((char *)d + 0x180))->idx[d->side]]->n - 1) {
                 m->state = 3;
                 d->timer = 0;
                 d->point++;
                 if (m->anim != 3) MobyBlendAnimation(m, 3, 0, scale_ticks(0x14));
                 FastVecSub(&d->vel, (Vec4 *)quartu_paths[((UPaths *)((char *)d + 0x180))->idx[d->side]] + (d->point + 1), &m->pos);
                 vec_set_length_xy(&d->vel, &d->vel, *(float *)&ultramech_jump_speed * g_frame_time);
-                d->vel.f[2] = jump_speed_4318(&m->pos, (Vec4 *)quartu_paths[((UPaths *)((char *)d + 0x180))->idx[d->side]] + (d->point + 1), 0, *(float *)&ultramech_jump_speed * g_frame_time, -(*(float *)&D_L15_00161BA0 * g_frame_time_sq));
-            } else if (*(float *)&D_L15_00161BB0 < vec_distance_xy(&m->pos, &tgt->pos)) {
+                d->vel.f[2] = jump_speed_4318(&m->pos, (Vec4 *)quartu_paths[((UPaths *)((char *)d + 0x180))->idx[d->side]] + (d->point + 1), 0, *(float *)&ultramech_jump_speed * g_frame_time, -(*(float *)&ultramech_gravity * g_frame_time_sq));
+            } else if (*(float *)&ultramech_mid_attack_range < vec_distance_xy(&m->pos, &tgt->pos)) {
                 m->state = 4;
                 if (m->anim != 0) MobyBlendAnimation(m, 0, 0, scale_ticks(0x14));
             }
@@ -2237,7 +2237,7 @@ void ultramech_unlimited_update(UMoby *m) {
                 if (m->anim != 3) MobyBlendAnimation(m, 3, 0, scale_ticks(0x14));
                 FastVecSub(&d->vel, &v10, &m->pos);
                 vec_set_length_xy(&d->vel, &d->vel, *(float *)&ultramech_jump_speed * g_frame_time);
-                d->vel.f[2] = jump_speed_4318(&m->pos, &v10, 0, *(float *)&ultramech_jump_speed * g_frame_time, -(*(float *)&D_L15_00161BA0 * g_frame_time_sq));
+                d->vel.f[2] = jump_speed_4318(&m->pos, &v10, 0, *(float *)&ultramech_jump_speed * g_frame_time, -(*(float *)&ultramech_gravity * g_frame_time_sq));
             } else {
                 m->state = 4;
                 if (m->anim != 0) MobyBlendAnimation(m, 0, 0, scale_ticks(0x14));
@@ -2246,8 +2246,8 @@ void ultramech_unlimited_update(UMoby *m) {
         break;
     }
     case 10:
-        FastVecScale(&v10, m->mtx, *(float *)&D_L15_00161BC0 * frame_scale);
-        v10.f[2] += *(float *)&D_L15_00161BC4 * frame_scale;
+        FastVecScale(&v10, m->mtx, *(float *)&ultramech_debris_speed * frame_scale);
+        v10.f[2] += *(float *)&ultramech_debris_lift * frame_scale;
         SpawnBreakFragment(m, 0x64A, &m->pos, &m->rot, scale_ticks(0x5A), 0, g_frame_time_sq * 12.0f, &v10, quartu_zero_vec, quartu_zero_vec);
         SpawnBreakFragment(m, 0x64B, &m->pos, &m->rot, scale_ticks(0x5A), 0, g_frame_time_sq * 12.0f, &v10, quartu_zero_vec, quartu_zero_vec);
         SpawnBreakFragment(m, 0x64C, &m->pos, &m->rot, 0, 0, 0.0f, quartu_zero_vec, quartu_zero_vec, quartu_zero_vec);
@@ -2336,12 +2336,12 @@ void process_ultramech_hits_and_update_target(void *mobyp) {
     int sel;
     int r2;
 
-    *(float *)(moby + 0x2C) = *(float *)&D_L15_00161BB4 * *(float *)(*(char **)(moby + 0x24) + 0x24);
+    *(float *)(moby + 0x2C) = *(float *)&ultramech_hit_check_scale * *(float *)(*(char **)(moby + 0x24) + 0x24);
     a44 = 0;
     *(int *)(data + 0x1C8) = 0;
 
     for (i = 0; i < 0x40; i++) {
-        char *e = D_L15_00178780 + (i << 6);
+        char *e = quartu_moby_hits + (i << 6);
         int fl;
         if (*(int *)(e + 0x34) != (int)moby)
             continue;
@@ -2370,7 +2370,7 @@ void process_ultramech_hits_and_update_target(void *mobyp) {
             sel = 1;
 
         r2 = truncate_float_to_s32(2560.0f);
-        *(float *)(data + 0x80) = *(float *)&D_L15_00161B88 * g_frame_time_sq;
+        *(float *)(data + 0x80) = *(float *)&ultramech_knock_gravity * g_frame_time_sq;
         *(int *)(data + 0x90) = r2;
         *(float *)(data + 0x98) = 2.5f;
         *(float *)(data + 0x84) = 0.0005f;
@@ -2393,8 +2393,8 @@ void process_ultramech_hits_and_update_target(void *mobyp) {
         case 8: {
             char *p20;
             float k = g_frame_time;
-            float a = *(float *)&D_L15_00161B90 * k;
-            float b = *(float *)&D_L15_00161B8C * k;
+            float a = *(float *)&ultramech_knock_speed * k;
+            float b = *(float *)&ultramech_knock_lift * k;
             float r;
             *(int *)(data + 0x1C8) = 1;
             *(float *)(data + 0x88) = a;
@@ -2435,7 +2435,7 @@ void process_ultramech_hits_and_update_target(void *mobyp) {
 
     ((unsigned char *)moby)[0xA4] = 0xFF;
     StepColorFade(moby, data + 0x60);
-    *(float *)(moby + 0x2C) = *(float *)(*(char **)(moby + 0x24) + 0x24) * *(float *)&D_L15_00161BB8;
+    *(float *)(moby + 0x2C) = *(float *)(*(char **)(moby + 0x24) + 0x24) * *(float *)&ultramech_scale;
     *(int *)(data + 0x164) = 0;
 
     if ((unsigned char)moby[0x20] == 1 || *(int *)(data + 0x1D0) == -1) {
@@ -2470,11 +2470,11 @@ void update_moby_yaw_from_linked_state(char *moby) {
         int linked_moby_state = other->state;
         float step;
         if (linked_moby_state == 2) {
-            step = *(float *)&D_L15_00161F40 * 0.017453292f * g_frame_time;
+            step = *(float *)&quartu_linked_spin_rate * 0.017453292f * g_frame_time;
             if (*(int *)(linked_moby_vars + 0x10) != 0)
                 step = -step;
         } else if (linked_moby_state == 4) {
-            step = *(float *)&D_L15_00161F40 * 0.017453292f * g_frame_time;
+            step = *(float *)&quartu_linked_spin_rate * 0.017453292f * g_frame_time;
             if (*(int *)(linked_moby_vars + 0x10) == 0)
                 step = -step;
         } else {
@@ -2689,7 +2689,7 @@ void bolt_grabber_update(unsigned char *m) {
     struct Moby *moby = (struct Moby *)m;
 
     moby->rot.z = FastAddRots(moby->rot.z, g_frame_time * 1.5707964f);
-    moby->scale = moby->pclass->scale * *(float *)&D_L15_001620F8;
+    moby->scale = moby->pclass->scale * *(float *)&bolt_grabber_scale;
     switch (moby->state) {
     case BOLT_GRABBER_INITIALIZE:
         initialize_moby_particle_effect((char *)moby);
@@ -2711,7 +2711,7 @@ void bolt_grabber_update(unsigned char *m) {
     case BOLT_GRABBER_FINALIZE_AND_SAVE:
         if (quartu_game_mode != 2) {
             ShowBanner(0x3AA3, -1);
-            D_L15_0015F720 = scale_ticks(0xB4);
+            quartu_dialogue_message_duration = scale_ticks(0xB4);
             grant_inventory_item(0x22, 1);
             memcard_Save(0, -1);
             moby->state = 3;
@@ -2736,7 +2736,7 @@ void update_poison_vessel_spawner(char *moby) {
         break;
     case 1:
         if (fast_dec_timer(data)) {
-            data[0] = func_001FA898_r(multiply_global_factor(*(float *)&D_L15_001620FC * 60.0f));
+            data[0] = func_001FA898_r(multiply_global_factor(*(float *)&poison_vessel_spawn_interval * 60.0f));
             spawn_poison_vessel(moby, moby + 0x10);
         }
         break;
@@ -2777,45 +2777,45 @@ void draw_moby_radial_ripple_mesh_buffers(char *moby) {
     int color;
     int i, j, uv_buffer_index, uv_vertex_index, draw_buffer_index;
 
-    scale = IntToFloat(quartu_frame_count) * (D_L15_00162184 * g_frame_time);
-    VU1_addGSregister(6, GetEffectTex(D_L15_00162170));
-    VU1_addGSregister(0x42, ((long)D_L15_0016216C << 32) | 0x44);
+    scale = IntToFloat(quartu_frame_count) * (quartu_ripple_uv_scroll_rate * g_frame_time);
+    VU1_addGSregister(6, GetEffectTex(quartu_ripple_texture));
+    VU1_addGSregister(0x42, ((long)quartu_ripple_alpha_fix << 32) | 0x44);
     VU1_addGSregister(8, 0);
     VU1_addGSregister(0x14, ((long)0xFF90 << 32) | 0x260);
     ripple_data->f0 = ripple_data->f4;
-    ripple_data->f4 = FastAddRots(ripple_data->f4, 360.0f / multiply_global_factor(D_L15_0016217C) * 0.017453292f * g_frame_time);
+    ripple_data->f4 = FastAddRots(ripple_data->f4, 360.0f / multiply_global_factor(quartu_ripple_wave_period) * 0.017453292f * g_frame_time);
     get_moby_color(moby, &r, &g, &b);
-    color = (D_L15_00162174 << 24) | (b << 16) | (g << 8) | r;
+    color = (quartu_ripple_alpha << 24) | (b << 16) | (g << 8) | r;
     for (i = 0; i < 3; i++) {
-        for (j = 0; j < ((int *)&D_L15_00162100)[i]; j++) {
-            int *template_vertex_buffer_entry = (int *)&D_L15_00162140 + i;
+        for (j = 0; j < ((int *)&quartu_ripple_strip_counts)[i]; j++) {
+            int *template_vertex_buffer_entry = (int *)&quartu_ripple_template_verts + i;
             float *p = (float *)(*template_vertex_buffer_entry + j * 12);
-            float t = D_L15_00162180 *
+            float t = quartu_ripple_wave_height *
                 FastSin(FastAddRots(FastNormalizeAngle(
-                    fast_fmod(vec_length(p[0] * p[0] + p[1] * p[1]), D_L15_00162178)
-                        * 6.2831855f / D_L15_00162178), ripple_data->f4));
-            *(float *)(j * 12 + ((int *)&D_L15_00162110)[i]) = p[0] + m->pos.x;
-            *(float *)(j * 12 + ((int *)&D_L15_00162110)[i] + 4) = p[1] + m->pos.y;
-            *(float *)(j * 12 + ((int *)&D_L15_00162110)[i] + 8) = p[2] + m->pos.z + t;
-            *(int *)(j * 4 + ((int *)&D_L15_00162130)[i]) = color;
+                    fast_fmod(vec_length(p[0] * p[0] + p[1] * p[1]), quartu_ripple_wavelength)
+                        * 6.2831855f / quartu_ripple_wavelength), ripple_data->f4));
+            *(float *)(j * 12 + ((int *)&quartu_ripple_position_bufs)[i]) = p[0] + m->pos.x;
+            *(float *)(j * 12 + ((int *)&quartu_ripple_position_bufs)[i] + 4) = p[1] + m->pos.y;
+            *(float *)(j * 12 + ((int *)&quartu_ripple_position_bufs)[i] + 8) = p[2] + m->pos.z + t;
+            *(int *)(j * 4 + ((int *)&quartu_ripple_color_bufs)[i]) = color;
         }
     }
     for (i = 0; i < 2; i++) {
         for (uv_buffer_index = 0; uv_buffer_index < 3; uv_buffer_index++) {
-            for (uv_vertex_index = 0; uv_vertex_index < ((int *)&D_L15_00162100)[uv_buffer_index]; uv_vertex_index++) {
-                T4_2EC080 uv_scroll_factors = D_L15_00162188;
-                *(float *)(uv_vertex_index * 8 + ((int *)&D_L15_00162120)[uv_buffer_index]) =
-                    *(float *)(uv_vertex_index * 8 + ((int *)&D_L15_00162150)[uv_buffer_index])
+            for (uv_vertex_index = 0; uv_vertex_index < ((int *)&quartu_ripple_strip_counts)[uv_buffer_index]; uv_vertex_index++) {
+                T4_2EC080 uv_scroll_factors = quartu_ripple_uv_scroll_factors;
+                *(float *)(uv_vertex_index * 8 + ((int *)&quartu_ripple_uv_bufs)[uv_buffer_index]) =
+                    *(float *)(uv_vertex_index * 8 + ((int *)&quartu_ripple_base_uvs)[uv_buffer_index])
                     + fast_fmod(scale * uv_scroll_factors.p[i].v[0], 1.0f);
-                *(float *)(uv_vertex_index * 8 + ((int *)&D_L15_00162120)[uv_buffer_index] + 4) =
-                    *(float *)(uv_vertex_index * 8 + ((int *)&D_L15_00162150)[uv_buffer_index] + 4)
+                *(float *)(uv_vertex_index * 8 + ((int *)&quartu_ripple_uv_bufs)[uv_buffer_index] + 4) =
+                    *(float *)(uv_vertex_index * 8 + ((int *)&quartu_ripple_base_uvs)[uv_buffer_index] + 4)
                     + fast_fmod(scale * uv_scroll_factors.p[i].v[1], 1.0f);
             }
         }
         font_queue_vu_state();
         for (draw_buffer_index = 0; draw_buffer_index < 3; draw_buffer_index++) {
-            draw_env_overlay_mesh(((int *)&D_L15_00162100)[draw_buffer_index], ((int *)&D_L15_00162110)[draw_buffer_index],
-                ((int *)&D_L15_00162130)[draw_buffer_index], (void *)((int *)&D_L15_00162120)[draw_buffer_index], 1);
+            draw_env_overlay_mesh(((int *)&quartu_ripple_strip_counts)[draw_buffer_index], ((int *)&quartu_ripple_position_bufs)[draw_buffer_index],
+                ((int *)&quartu_ripple_color_bufs)[draw_buffer_index], (void *)((int *)&quartu_ripple_uv_bufs)[draw_buffer_index], 1);
         }
     }
 }
@@ -2858,43 +2858,43 @@ void RingWave_DrawA(char *moby) {
     float scale;
     Quad4 *v_scroll_factors;
     float *output_vertex;
-    scale = IntToFloat(quartu_frame_count) * (D_L15_001621EC * g_frame_time);
-    VU1_addGSregister(6, GetEffectTex(D_L15_001621D8));
-    VU1_addGSregister(0x42, ((long)D_L15_001621D4 << 32) | 0x44);
+    scale = IntToFloat(quartu_frame_count) * (ring_wave_uv_scroll_rate * g_frame_time);
+    VU1_addGSregister(6, GetEffectTex(ring_wave_texture));
+    VU1_addGSregister(0x42, ((long)ring_wave_alpha_fix << 32) | 0x44);
     VU1_addGSregister(8, 0);
     VU1_addGSregister(0x14, 0xFF9000000260L);
     data->prev = data->angle;
-    data->angle = FastAddRots(data->angle, 360.0f / multiply_global_factor(D_L15_001621E4) * 0.017453292f * g_frame_time);
+    data->angle = FastAddRots(data->angle, 360.0f / multiply_global_factor(ring_wave_period) * 0.017453292f * g_frame_time);
     get_moby_color(moby, &r, &g, &b);
     /* The second float of each pair in uv_scroll_factors: v_scroll_factors->f[0] is f[1], v_scroll_factors->f[2] is f[3]. */
     v_scroll_factors = (Quad4 *)&uv_scroll_factors.f[1];
-    color = (D_L15_001621DC << 24) | (b << 16) | (g << 8) | r;
-    output_vertex = D_L15_001DE4D0;
+    color = (ring_wave_alpha << 24) | (b << 16) | (g << 8) | r;
+    output_vertex = ring_wave_positions;
     do {
-        float *template_vertex = &D_L15_001DDE70[i * 3];
+        float *template_vertex = &ring_wave_template_verts[i * 3];
         float x = template_vertex[0];
         float y = template_vertex[1];
         float rad = vec_length(x * x + y * y);
-        float radius_remainder = fast_fmod(rad, D_L15_001621E0);
-        float w = FastNormalizeAngle(radius_remainder * 6.2831855f / D_L15_001621E0);
+        float radius_remainder = fast_fmod(rad, ring_wave_wavelength);
+        float w = FastNormalizeAngle(radius_remainder * 6.2831855f / ring_wave_wavelength);
         float z = FastSin(FastAddRots(w, data->angle));
         output_vertex[0] = template_vertex[0] + ((struct Moby *)moby)->pos.x;
-        *(float *)((char *)D_L15_001DE4D0 + 4 + output_vertex_byte_offset) = template_vertex[1] + ((struct Moby *)moby)->pos.y;
-        output_vertex[2] = template_vertex[2] + ((struct Moby *)moby)->pos.z + D_L15_001621E8 * z;
-        D_L15_001DEA20[i] = color;
+        *(float *)((char *)ring_wave_positions + 4 + output_vertex_byte_offset) = template_vertex[1] + ((struct Moby *)moby)->pos.y;
+        output_vertex[2] = template_vertex[2] + ((struct Moby *)moby)->pos.z + ring_wave_height * z;
+        ring_wave_colors[i] = color;
         i++;
         output_vertex_byte_offset += 12;
         output_vertex += 3;
     } while (i < 68);
     for (j = 0; j < 2; j++) {
         for (n = 0; n < 68; n++) {
-            uv_scroll_factors = D_L15_001621F0;
-            D_L15_001DE800[n][0] = D_L15_001DE1A0[n][0] + fast_fmod(scale * uv_scroll_factors.f[j * 2], 1.0f);
-            D_L15_001DE800[n][1] = D_L15_001DE1A0[n][1] + fast_fmod(scale * v_scroll_factors->f[j * 2], 1.0f);
+            uv_scroll_factors = ring_wave_uv_scroll_factors;
+            ring_wave_uvs[n][0] = ring_wave_base_uvs[n][0] + fast_fmod(scale * uv_scroll_factors.f[j * 2], 1.0f);
+            ring_wave_uvs[n][1] = ring_wave_base_uvs[n][1] + fast_fmod(scale * v_scroll_factors->f[j * 2], 1.0f);
         }
         font_queue_vu_state();
         for (k = 0; k < 1; k++) {
-            draw_env_overlay_mesh(D_L15_001621A0[k], D_L15_001621C0[k], D_L15_001621D0[k], (void *)D_L15_001621C8[k], 1);
+            draw_env_overlay_mesh(ring_wave_vertex_counts[k], ring_wave_position_ptrs[k], ring_wave_color_ptrs[k], (void *)ring_wave_uv_ptrs[k], 1);
         }
     }
 }
@@ -2921,7 +2921,7 @@ void update_quartu_cutscene_trigger(unsigned char *moby) {
     switch (moby[0x20]) {
     case 0:
         if (saved_mission_state[moby[0xB0] + (g_current_level_index << 4)] != 0xFF
-            && *(int *)&D_L15_00161B48 == 0
+            && *(int *)&quartu_alarm_on == 0
             && is_point_inside_clip_volume(D_0013E633 + 0xE9D, data[0])) {
             if (*(unsigned char *)(*(char **)&D_L15_00160058_g + data[2] * 256 + 0x20) == 3) {
                 StartCutscene(3);
@@ -2989,7 +2989,7 @@ void draw_quartu_cutscene_messages(void) {
         if (scale_ticks(0xB5) < *(int *)(s + 0x34)) {
             if (*(int *)(s + 0x34) < scale_ticks(0x104)) {
                 flag = 1;
-                func_00116248(buf, D_L15_00162210, msg_string(0x526F));
+                func_00116248(buf, quartu_cutscene_msg_format, msg_string(0x526F));
                 val = (*(int *)(s + 0x34) - scale_ticks(0xB5)) >> 2;
             }
         }
@@ -2997,7 +2997,7 @@ void draw_quartu_cutscene_messages(void) {
         if (scale_ticks(0x1C2) < *(int *)(s2 + 0x34)) {
             if (*(int *)(s2 + 0x34) < scale_ticks(0x280)) {
                 flag = 1;
-                func_00116248(buf, D_L15_00162210, msg_string(0x5270));
+                func_00116248(buf, quartu_cutscene_msg_format, msg_string(0x5270));
                 val = (*(int *)(s2 + 0x34) - scale_ticks(0x1C2)) >> 2;
             }
         }
@@ -3005,7 +3005,7 @@ void draw_quartu_cutscene_messages(void) {
         if (scale_ticks(0x2EE) < *(int *)(s3 + 0x34)) {
             if (*(int *)(s3 + 0x34) < scale_ticks(0x3A2)) {
                 flag = 1;
-                func_00116248(buf, D_L15_00162210, msg_string(0x5271));
+                func_00116248(buf, quartu_cutscene_msg_format, msg_string(0x5271));
                 val = (*(int *)(s3 + 0x34) - scale_ticks(0x2EE)) >> 2;
             }
         }
@@ -3013,7 +3013,7 @@ void draw_quartu_cutscene_messages(void) {
         if (scale_ticks(0x8FC) < *(int *)(s + 0x34)) {
             if (*(int *)(s + 0x34) < scale_ticks(0x960)) {
                 flag = 1;
-                func_00116248(buf, D_L15_00162210, msg_string(0x5273));
+                func_00116248(buf, quartu_cutscene_msg_format, msg_string(0x5273));
                 val = (*(int *)(s + 0x34) - scale_ticks(0x8FC)) >> 2;
             }
         }
@@ -3025,8 +3025,8 @@ void draw_quartu_cutscene_messages(void) {
     } else if (n < val) {
         if ((n - val) & 4) n = n - 1;
     }
-    print_text_with_texture_3((void *)(*(int *)&D_L15_00162200 + 1), (void *)(*(int *)&D_L15_00162204 + 1), (void *)*(int *)&D_L15_0016220C, buf, (void *)n);
-    print_text_with_texture_3((void *)*(int *)&D_L15_00162200, (void *)*(int *)&D_L15_00162204, (void *)*(int *)&D_L15_00162208, buf, (void *)n);
+    print_text_with_texture_3((void *)(*(int *)&quartu_cutscene_msg_x + 1), (void *)(*(int *)&quartu_cutscene_msg_y + 1), (void *)*(int *)&quartu_cutscene_msg_shadow_color, buf, (void *)n);
+    print_text_with_texture_3((void *)*(int *)&quartu_cutscene_msg_x, (void *)*(int *)&quartu_cutscene_msg_y, (void *)*(int *)&quartu_cutscene_msg_color, buf, (void *)n);
 }
 extern void func_L00_0026FF20(float, float, char *, float *);
 extern float D_0015EE6C MACRO_ADDR;
@@ -3038,10 +3038,10 @@ void emit_randomized_vertical_effect(char *moby)
 {
     float vec[4];
     float *data = *(float **)(moby + 0x78);
-    if (random_integer_below(*(int *)&D_L15_0016221C - 1) == 0) {
+    if (random_integer_below(*(int *)&quartu_rising_puff_chance - 1) == 0) {
         char *pos = moby + 0x10;
         clear_u64_value(vec);
-        vec[2] = random_float_between(0.75f, 1.5f) * *(float *)&D_L15_00162218 * g_frame_time;
+        vec[2] = random_float_between(0.75f, 1.5f) * *(float *)&quartu_rising_puff_speed * g_frame_time;
         PartType34Spawn(random_float_between(0.06f, 0.12f) * 210000.0f, *data, pos, vec);
     }
 }
@@ -3155,7 +3155,7 @@ void codebot_slot_update(char *moby) {
             m->state = CODEBOT_SLOT_COMPLETED;
             break;
         }
-        D_L15_00184B2C = 0;
+        quartu_codebot_slot_done = 0;
         m->state = CODEBOT_SLOT_WAIT_FOR_PROXIMITY;
         {
             int *p = &data[8];
@@ -3236,7 +3236,7 @@ void codebot_slot_update(char *moby) {
     }
     case CODEBOT_SLOT_COMPLETED: {
         char *effect;
-        D_L15_00184B2C = 1;
+        quartu_codebot_slot_done = 1;
         effect = (char *)data[1];
         if (effect == 0) {
             float a = FastAddRots(m->rot.z, -1.5707964f);

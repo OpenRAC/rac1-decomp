@@ -193,7 +193,7 @@ s32 process_hero_incoming_hit(s32 arg) {
     if (m[0xA4] == 0xFF) {
         return 0;
     }
-    tbl = &D_L15_00178780[m[0xA4]];
+    tbl = &quartu_moby_hits[m[0xA4]];
     if (tbl->p34 != m) {
         return 0;
     }
@@ -2184,8 +2184,8 @@ void Hero_UpdateStatePhysicsL15(void) {
 
                     FastVecScale(vec[1], g_hero.motion.displacement.f, 7.0f);
                     for (i = 0; i < n; i++) {
-                        if (is_moby_in_class_range_500_to_540((int)D_L15_00178580[i])) {
-                            PostHitMessage(D_L15_00178580[i], (int)g_hero.moby, 0x10000, g_hero.motion.pos.f, vec[1], 1.0f);
+                        if (is_moby_in_class_range_500_to_540((int)quartu_coll_sphere_moby_hits[i])) {
+                            PostHitMessage(quartu_coll_sphere_moby_hits[i], (int)g_hero.moby, 0x10000, g_hero.motion.pos.f, vec[1], 1.0f);
                         }
                     }
                 }

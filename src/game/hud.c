@@ -570,7 +570,7 @@ void update_hud(void) {
     HudBankCb *p;
     int col;
 
-    if (*(int *)(arena + 0x30) != 0 || D_0015F544 != 0) {
+    if (*(int *)(arena + 0x30) != 0 || letterbox_enabled != 0) {
         *(int *)(arena + 0x30) = 0;
         return;
     }

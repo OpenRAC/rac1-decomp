@@ -1282,20 +1282,20 @@ int rebuild_configured_text_label_list(void) {
     int names[7];
     int i, n;
 
-    *(Blk32 *)ids = D_001E8A58;
-    *(Blk28 *)names = D_001E8A78;
+    *(Blk32 *)ids = cheat_menu_ids_init;
+    *(Blk28 *)names = cheat_menu_text_ids_init;
     n = 0;
     for (i = 0; i < 12 && ids[i] != -1; i++) {
         if (selector_available[ids[i]] != 0) {
-            D_001D3E90[n].val = names[i];
-            D_001D3E90[n].addr = &gCheats[ids[i]];
-            D_001D3E90[n].c1 = 0x4F5A;
-            D_001D3E90[n].c2 = 0x4F5B;
-            D_001D3E90[n].zero = 0;
+            cheat_toggle_menu_items[n].val = names[i];
+            cheat_toggle_menu_items[n].addr = &gCheats[ids[i]];
+            cheat_toggle_menu_items[n].c1 = 0x4F5A;
+            cheat_toggle_menu_items[n].c2 = 0x4F5B;
+            cheat_toggle_menu_items[n].zero = 0;
             n++;
         }
     }
-    D_001D3E90[n].val = 0;
+    cheat_toggle_menu_items[n].val = 0;
     return 0;
 }
 
@@ -1373,7 +1373,7 @@ int render_configured_text_label(unsigned char *w) {
     int id;
     Win win;
     Win tmp;
-    char *text = D_00160370;
+    char *text = str_default;
     unsigned char *glyphs = normal_font_metrics;
     int font = 1;
     int f0, flags, g, f, content, variant = 0, a21, a23, colour, t, wflags;
@@ -1485,21 +1485,21 @@ int render_configured_text_label(unsigned char *w) {
         }
         text = TEXT(*(int *)(w + 0x34));
     } else if ((g & 0x100) && content == -1) {
-        text = D_00160378;
+        text = str_empty_menu_label;
     } else if (*(int *)(w + 0x34) != 0) {
         unsigned int at = (unsigned int)(content * *(int *)(w + 0x38)) >> 2 << 2;
         char *table = *(char **)(w + 0x34);
         text = TEXT(*(int *)(at + (unsigned int)(table + variant * 4)));
     }
     if ((*(int *)(w + 0x30) & 0x11E4) == 0 && ((unsigned char *)&item_available)[content] == 0) {
-        text = D_00160378;
+        text = str_empty_menu_label;
     }
     if (*(int *)(w + 0x30) & 0x200) {
         unsigned int at = (unsigned int)(content * *(int *)(w + 0x38)) >> 2 << 2;
         char *table = *(char **)(w + 0x34);
         int id = *(int *)(at + (unsigned int)table);
         if (id != 0x4ED2 && id != 0x4ED9 && id != 0x4EDD) {
-            func_00116248(buf, D_00160380, TEXT(0x4ECC), text);
+            func_00116248(buf, fmt_two_strings, TEXT(0x4ECC), text);
             text = buf;
         }
     }
@@ -1515,7 +1515,7 @@ int render_configured_text_label(unsigned char *w) {
         f |= 3;
     }
     if (text == 0) {
-        text = D_00160388;
+        text = str_null_text;
     }
     wflags = 8;
     if (f & 1) {
@@ -1530,13 +1530,13 @@ int render_configured_text_label(unsigned char *w) {
     SetupGifPaging(0);
     tex = GetEffectTex(font);
     ((void *(*)(void *, int, int))func_001153FC)(&tmp, 0, 0x18);
-    tmp.s[0] = D_00160358;
-    tmp.s[1] = *(unsigned short *)(w + 0x24) - D_00160358;
+    tmp.s[0] = menu_label_text_inset;
+    tmp.s[1] = *(unsigned short *)(w + 0x24) - menu_label_text_inset;
     tmp.s[2] = 1;
     tmp.s[3] = *(unsigned short *)(w + 0x20) - 4;
     tmp.s[4] = a23;
     tmp.s[5] = a21 - (*(int *)(w + 0x3C) >> 4);
-    tmp.s[8] = *(int *)&D_00160368;
+    tmp.s[8] = *(int *)&menu_label_marquee_gap;
     tmp.s[9] = wflags;
     tmp.s[11] = -(*(unsigned short *)(w + 0x3C) & 0xF);
     win = tmp;
@@ -1571,7 +1571,7 @@ int render_configured_text_label(unsigned char *w) {
         Font_EnableColorCodes();
     }
     if (*(int *)(w + 0x30) & 0x400) {
-        win.s[5] = win.s[5] + (win.s[7] + *(int *)&D_00160368 * 3);
+        win.s[5] = win.s[5] + (win.s[7] + *(int *)&menu_label_marquee_gap * 3);
         win_shift(&win);
         Font_DisableColorCodes();
         DRAW(0x80000000L, text);
@@ -1579,7 +1579,7 @@ int render_configured_text_label(unsigned char *w) {
         win_unshift(&win);
         DRAW(colour, text);
         if (*(int *)(w + 0x30) & 0x400) {
-            int span = (win.s[7] + *(int *)&D_00160368 * 3) << 4;
+            int span = (win.s[7] + *(int *)&menu_label_marquee_gap * 3) << 4;
             *(int *)(w + 0x3C) += (pad_held[0] & 1) ? 10 : 3;
             *(int *)(w + 0x3C) %= span;
         }
@@ -3406,12 +3406,12 @@ int build_reversed_active_message_list(void) {
     for (i = 0; i < active_message_record_count;) {
         int j = i + 1;
         unsigned char k;
-        D_001CFFC0[i].b = 1;
+        active_message_menu_items[i].b = 1;
         k = active_message_records[active_message_record_count - j];
-        D_001CFFC0[i].a = D_00199812[k].v;
+        active_message_menu_items[i].a = D_00199812[k].v;
         i = j;
     }
-    D_001CFFC0[active_message_record_count].a = 0;
+    active_message_menu_items[active_message_record_count].a = 0;
     return 0;
 }
 
@@ -3794,21 +3794,21 @@ s32 draw_menu_item_grid(MenuItemGrid *grid) {
 
     if (grid->cols >= 2) {
         start_x = grid->margin_x;
-        column_step = (*(f32 *)&D_00160390) + (font->w - (start_x + start_x) - (*(f32 *)&D_00160390) * grid->cols) / (grid->cols - 1);
+        column_step = (*(f32 *)&menu_grid_icon_width) + (font->w - (start_x + start_x) - (*(f32 *)&menu_grid_icon_width) * grid->cols) / (grid->cols - 1);
     } else {
         column_step = 0.0f;
-        start_x = (font->w - (*(f32 *)&D_00160390)) * 0.5f;
+        start_x = (font->w - (*(f32 *)&menu_grid_icon_width)) * 0.5f;
     }
 
     if (grid->flags & 2) {
-        row_step = (*(f32 *)&D_00160394) + 0.15f;
+        row_step = (*(f32 *)&menu_grid_icon_height) + 0.15f;
         start_y = grid->margin_y;
     } else if (grid->rows >= 2) {
         start_y = grid->margin_y;
-        row_step = (*(f32 *)&D_00160394) + (font->h - (start_y + start_y) - (*(f32 *)&D_00160394) * grid->rows) / (grid->rows - 1);
+        row_step = (*(f32 *)&menu_grid_icon_height) + (font->h - (start_y + start_y) - (*(f32 *)&menu_grid_icon_height) * grid->rows) / (grid->rows - 1);
     } else {
         row_step = 0.0f;
-        start_y = (font->h - (*(f32 *)&D_00160394)) * 0.5f;
+        start_y = (font->h - (*(f32 *)&menu_grid_icon_height)) * 0.5f;
     }
 
     largest_dimension = grid->h;
@@ -3816,8 +3816,8 @@ s32 draw_menu_item_grid(MenuItemGrid *grid) {
         largest_dimension = grid->w;
     }
     scale = (f32)(largest_dimension << 4) / (font->h < font->w ? font->w : font->h);
-    icon_width = scale * (*(f32 *)&D_00160390);
-    icon_height = scale * (*(f32 *)&D_00160394);
+    icon_width = scale * (*(f32 *)&menu_grid_icon_width);
+    icon_height = scale * (*(f32 *)&menu_grid_icon_height);
 
     y = start_y;
     for (i = 0; i < grid->rows; i++) {
@@ -4811,15 +4811,15 @@ s32 DrawItemsMenu(ItemsMenu *menu) {
     font_print_right(0xC8, 0x36, 0x80FFA888L, func_001FE540_1FB28(0x4F50), -1);
     font_print_right(0xC8, 0x54, 0x80FFA888L, func_001FE540_1FB28(0x4F51), -1);
     collected_count = count_nonzero_entries_up_to_40();
-    func_00116248(text_buffer, D_001603A0, collected_count);
+    func_00116248(text_buffer, fmt_decimal, collected_count);
     font_print_right_large(add_offset((*(s32 *)&text_shadow_x), 0xF0), add_offset((*(s32 *)&text_shadow_y), 0x1D), 0x80000000L,
                     text_buffer, -1);
     font_print_right_large(0xF0, 0x1D, 0x80FFA888L, text_buffer, -1);
-    func_00116248(text_buffer, D_001603A0, count_nonzero_entries_up_to_10() * 4);
+    func_00116248(text_buffer, fmt_decimal, count_nonzero_entries_up_to_10() * 4);
     font_print_right_large(add_offset((*(s32 *)&text_shadow_x), 0xF0), add_offset((*(s32 *)&text_shadow_y), 0x36), 0x80000000L,
                     text_buffer, -1);
     font_print_right_large(0xF0, 0x36, 0x80FFA888L, text_buffer, -1);
-    func_00116248(text_buffer, D_001603A0, compute_clamped_count_difference());
+    func_00116248(text_buffer, fmt_decimal, compute_clamped_count_difference());
     font_print_right_large(add_offset((*(s32 *)&text_shadow_x), 0xF0), add_offset((*(s32 *)&text_shadow_y), 0x54), 0x80000000L,
                     text_buffer, -1);
     font_print_right_large(0xF0, 0x54, 0x80FFA888L, text_buffer, -1);
@@ -4873,8 +4873,8 @@ int DrawGBsShipMenu__maybe(char *arg0) {
             }
         }
     }
-    func_00116248(buf, D_001603A8, func_001FE540_id(0x4F4F), count,
-                  func_001FE540_id(0x4F53), D_001E0B88[level_map_selection[0x89]]);
+    func_00116248(buf, fmt_gold_bolt_count_line, func_001FE540_id(0x4F4F), count,
+                  func_001FE540_id(0x4F53), map_gold_bolt_totals[level_map_selection[0x89]]);
     func_001F6CF8_c(*(int *)(arg0 + 0x20) - 0x10, (g_screen_extent[1] >> 1) - 8,
                     0x80000000L, buf, -1);
     func_001F6CF8_c(*(int *)(arg0 + 0x20) - 0x11, (g_screen_extent[1] >> 1) - 9,
@@ -4934,14 +4934,14 @@ int draw_selected_item_ammo(char *arg0) {
     } else {
         char *q;
         if (have < 1000) {
-            q = text + func_00116248(text, D_001603B8, have);
+            q = text + func_00116248(text, fmt_ammo_have, have);
         } else {
-            q = text + func_00116248(text, D_001603C0, have / 1000, have % 1000);
+            q = text + func_00116248(text, fmt_ammo_have_thousands, have / 1000, have % 1000);
         }
         if (total < 1000) {
-            func_00116248(q, D_001603A0, total);
+            func_00116248(q, fmt_decimal, total);
         } else {
-            func_00116248(q, D_001603D0, total / 1000, total % 1000);
+            func_00116248(q, fmt_number_thousands, total / 1000, total % 1000);
         }
     }
     SetupGifPaging(0);
@@ -6299,7 +6299,7 @@ int draw_map_screen_layers(void) {
         FsAaBuffer *fb;
 
         map_adjusted_frame_count = game_frame_counter + loaded_map_index * 0x2AB;
-        size = D_001DE2E8[loaded_map_index];
+        size = map_screen_layer_insets[loaded_map_index];
         screen_extent_reduction = size * 2;
         ph = map_adjusted_frame_count % 0x800;
         func_00234C98_l(0x47, 0);
@@ -6411,8 +6411,8 @@ int draw_pause_ring(char *arg0) {
     } while (i < 8);
     HudSprite(GetIconFrame(0xE99E, 0), 8, 0x27, 0x20, -0x20, 0x80);
     HudSprite(GetIconFrame(0xE99E, 0), pause_state->w - 0xA, 0x27, -0x20, -0x20, 0x80);
-    func_001F68E8_c(0x28, 0xF, 0x80FFA888L, D_001603D8, -1);
-    func_001F68E8_c(pause_state->w - 0x3C, 0xF, 0x80FFA888L, D_001603E0, -1);
+    func_001F68E8_c(0x28, 0xF, 0x80FFA888L, pause_ring_left_glyph, -1);
+    func_001F68E8_c(pause_state->w - 0x3C, 0xF, 0x80FFA888L, pause_ring_right_glyph, -1);
     DoGifPaging();
     return 2;
 }
@@ -6746,9 +6746,9 @@ int build_pause_item_list(void) {
     char *m;
 
     for (i = 0; i < 15; i++) {
-        int id = D_001CF4A0[i].id;
+        int id = pause_weapon_menu_slots[i].id;
         if (((unsigned char *)&item_available)[id] != 0) {
-            Item0A *out = &D_001D6470[n];
+            Item0A *out = &pause_weapon_menu_items[n];
             char *rec = item_info_table + id * 0x4C;
             unsigned char b = gold_weapon_purchased[id];
             int f = b != 0;
@@ -6761,7 +6761,7 @@ int build_pause_item_list(void) {
             n++;
         }
     }
-    m = D_001D1080;
+    m = pause_weapon_menu_grid;
     *(int *)(m + 0x40) = n;
     return 0;
 }
@@ -6804,27 +6804,27 @@ int build_filtered_menu_item_list(void) {
     filtered_item_count = 0;
     for (i = 0; i < 14; i++) {
         if (i < 6) {
-            id = D_001CEFA0[i].id;
+            id = gadget_menu_slots_row0[i].id;
         } else if (i < 9) {
-            id = D_001CEFE0[i - 6].id;
+            id = gadget_menu_slots_row1[i - 6].id;
         } else if (i < 12) {
-            id = D_001CF000[i - 9].id;
+            id = gadget_menu_slots_row2[i - 9].id;
         } else {
-            id = D_001CF020[i - 12].id;
+            id = gadget_menu_slots_row3[i - 12].id;
         }
         if (((unsigned char *)&item_available)[id] != 0) {
             item_info = &((struct Info *)item_info_table)[id];
-            D_001D6548[filtered_item_count].a = item_info->icon;
-            D_001D6548[filtered_item_count].b = 0;
-            D_001D6548[filtered_item_count].c = 0;
-            D_001D6548[filtered_item_count].id = id;
-            D_001D6548[filtered_item_count].idx = i;
+            gadget_menu_items[filtered_item_count].a = item_info->icon;
+            gadget_menu_items[filtered_item_count].b = 0;
+            gadget_menu_items[filtered_item_count].c = 0;
+            gadget_menu_items[filtered_item_count].id = id;
+            gadget_menu_items[filtered_item_count].idx = i;
             D_001D65D8[filtered_item_count] = item_info->a;
             D_001D6610[filtered_item_count] = item_info->b;
             filtered_item_count++;
         }
     }
-    ((struct FilteredItemList *)D_001D1408)->count = filtered_item_count;
+    ((struct FilteredItemList *)gadget_menu_grid)->count = filtered_item_count;
     return 0;
 }
 
@@ -6869,12 +6869,12 @@ int BuildGalaxyMenu(MenuObj40 *arg0) {
     int i;
 
     for (i = 0; i < 20 && gGalaxyList[i] != 0; i++) {
-        D_001D6648[i].a = *(unsigned short *)((char *)D_001DE0C0 + gGalaxyList[i] * 12);
-        D_001D6648[i].b = 1;
-        D_001D6648[i].c = 0;
-        D_001D6648[i].d = *(unsigned short *)((char *)D_001DE0C0 + gGalaxyList[i] * 12 + 4);
+        galaxy_menu_items[i].a = *(unsigned short *)((char *)planet_icon_rows + gGalaxyList[i] * 12);
+        galaxy_menu_items[i].b = 1;
+        galaxy_menu_items[i].c = 0;
+        galaxy_menu_items[i].d = *(unsigned short *)((char *)planet_icon_rows + gGalaxyList[i] * 12 + 4);
     }
-    D_001D6648[i].a = 0;
+    galaxy_menu_items[i].a = 0;
     arg0->sel = 0;
     arg0->flags |= 0x8000;
     for (i = 0; D_001602E0_m[i] != 0; i++) {
@@ -7037,7 +7037,7 @@ int draw_prompt_box(char *arg0) {
     func_00234C98_l(0x42, 0x44);
     func_00234C98_l(0x47, 0x2004B);
     SetupGifPaging(0);
-    text = D_001603E8;
+    text = str_error_text;
     v = D_001D6044;
     switch (v) {
     case 0:
@@ -7179,13 +7179,13 @@ int draw_menu_side_indicator(char *arg0) {
 
     SetupGifPaging(0);
     if (*(int *)(arg0 + 0x38) != 0) {
-        buf = *(Glyph2 *)D_001603F0;
+        buf = *(Glyph2 *)menu_side_indicator_left_glyph;
         func_001F68E8_c(4, *(int *)(arg0 + 0x24) / 2 - 8, 0x80FFA888L, &buf, -1);
         func_00200E38_f(640.0f, (float)(*(int *)(arg0 + 0x24) << 3), 0x20, 0x10,
                         GetFrameTex(GetIconFrame(0xE99E, 6)), 128.0f,
                         256.0f, 0.0f);
     } else {
-        buf = *(Glyph2 *)D_001603F8;
+        buf = *(Glyph2 *)menu_side_indicator_right_glyph;
         func_001F68E8_c(*(int *)(arg0 + 0x20) - 0x18,
                         *(int *)(arg0 + 0x24) / 2 - 8, 0x80FFA888L, &buf, -1);
         func_00200E38_f(192.0f, (float)(*(int *)(arg0 + 0x24) << 3), 0x20, 0x10,
@@ -7253,7 +7253,7 @@ int process_global_state_flags(void) {
 
     if (v & 0x20) {
         D_0015EFB4_m |= 2;
-        mode_freeze_init(3, D_001D5240, 0);
+        mode_freeze_init(3, restart_confirm_page, 0);
         return 0;
     }
     if (v & 0x40) {
@@ -7360,7 +7360,7 @@ int update_timed_menu_sequence(char *arg0) {
         *(int *)(arg0 + 0x40) = scale_game_frame_count(0xB4);
         *(int *)(arg0 + 0x3C) = 0;
         timed_sequence_title_id = 0x50A9;
-        *(char **)(arg0 + 0x34) = D_001D5418;
+        *(char **)(arg0 + 0x34) = timed_sequence_page1;
         break;
     case 1:
     case 5:
@@ -7397,7 +7397,7 @@ int update_timed_menu_sequence(char *arg0) {
         *(int *)(arg0 + 0x40) = scale_game_frame_count(0xB4);
         *(int *)(arg0 + 0x3C) = 0;
         timed_sequence_title_id = 0x50D6;
-        *(char **)(arg0 + 0x34) = D_001D54C8;
+        *(char **)(arg0 + 0x34) = timed_sequence_page2;
         break;
     case 3:
         if (*(int *)(arg0 + 0x40) != 0) {
@@ -7414,7 +7414,7 @@ int update_timed_menu_sequence(char *arg0) {
             return 0;
         }
         timed_sequence_title_id = 0x510B;
-        *(char **)(arg0 + 0x34) = D_001D5588;
+        *(char **)(arg0 + 0x34) = timed_sequence_page3;
         *(int *)(arg0 + 0x40) = scale_game_frame_count(0xF0);
         *(int *)(arg0 + 0x3C) = 0;
         *(int *)(arg0 + 0x50) = *(int *)(arg0 + 0x50) + 1;
@@ -7436,7 +7436,7 @@ int update_timed_menu_sequence(char *arg0) {
         *(int *)(arg0 + 0x40) = scale_game_frame_count(0xB4);
         *(int *)(arg0 + 0x3C) = 0;
         timed_sequence_title_id = 0x513D;
-        *(char **)(arg0 + 0x34) = D_001D5618;
+        *(char **)(arg0 + 0x34) = timed_sequence_page4;
         *(int *)(arg0 + 0x50) = 12;
         break;
     case 14:
@@ -7456,7 +7456,7 @@ int update_timed_menu_sequence(char *arg0) {
         *(int *)(arg0 + 0x40) = scale_game_frame_count(0xB4);
         *(int *)(arg0 + 0x3C) = 0;
         timed_sequence_title_id = 0x5149;
-        *(char **)(arg0 + 0x34) = D_001D5630;
+        *(char **)(arg0 + 0x34) = timed_sequence_page5;
         *(int *)(arg0 + 0x50) = 16;
         break;
     case 18:
@@ -7758,7 +7758,7 @@ int saving_data_menu(char *arg0) {
     s = *(int *)(arg0 + 0x4C);
     if (s == 0) {
         char *m = *(char **)(g + 0xD0);
-        if (m == D_001D28F8) {
+        if (m == save_overwrite_confirm_page) {
             if (*(int *)(m + 0x84) != 0) {
                 *(int *)(arg0 + 0x4C) = 1;
             }
@@ -7772,7 +7772,7 @@ int saving_data_menu(char *arg0) {
         g2 = menu_system;
         *(int *)(g2 + 0x12C) = 0x4FB5;
         *(int *)(g2 + 0x128) = 1;
-        D_0015FF4C = 0;
+        memory_card_error_latch = 0;
     }
     *(int *)(arg0 + 0x4C) = 2;
     old = *(int *)(arg0 + 0x40);
@@ -7793,7 +7793,7 @@ int saving_data_menu(char *arg0) {
                 return 0;
             }
             *(int *)(g3 + 0x128) = 0;
-            if (*(int *)(d + 0xEC) != 0 || *(int *)(d + 0x1C) != 0 || D_0015FF4C != 0) {
+            if (*(int *)(d + 0xEC) != 0 || *(int *)(d + 0x1C) != 0 || memory_card_error_latch != 0) {
                 char *d2 = memory_card_state;
                 char *g4 = menu_system;
 
@@ -7883,8 +7883,8 @@ int saving_data_menu(char *arg0) {
                     char *g2 = menu_system;
 
                     *(int *)(g2 + 0xD4) = 0;
-                    *(char **)(g2 + 8) = D_001D28F8;
-                    D_001D29C0 = *(int *)(arg0 + 0x40);
+                    *(char **)(g2 + 8) = save_overwrite_confirm_page;
+                    save_confirm_slot = *(int *)(arg0 + 0x40);
                 } else {
                     *(int *)(arg0 + 0x4C) = 1;
                 }
@@ -7918,7 +7918,7 @@ int loading_data_menu(char *arg0) {
             return 0;
         }
         *(int *)(g + 0x128) = 0;
-        if (*(int *)(d + 0xEC) != 0 || *(int *)(d + 0x1C) != 0 || D_0015FF4C != 0) {
+        if (*(int *)(d + 0xEC) != 0 || *(int *)(d + 0x1C) != 0 || memory_card_error_latch != 0) {
             char *d2 = memory_card_state;
             char *g4 = menu_system;
 
@@ -8024,7 +8024,7 @@ int loading_data_menu(char *arg0) {
                     g2 = menu_system;
                     *(int *)(g2 + 0x128) = 1;
                     *(int *)(g2 + 0x12C) = 0x4FB6;
-                    D_0015FF4C = 0;
+                    memory_card_error_latch = 0;
                 }
             }
         }
@@ -8117,10 +8117,10 @@ s32 saving_data_menu2(struct MenuScreen_pv *w) {
         return 0;
     }
     old = w->slot;
-    if (w->step == 0 && menu_system_pv.previous == ((struct MenuPage_pv *)D_001D51B8) && menu_system_pv.previous->confirmed != 0) {
+    if (w->step == 0 && menu_system_pv.previous == ((struct MenuPage_pv *)save_menu_overwrite_confirm_page) && menu_system_pv.previous->confirmed != 0) {
         w->step = 1;
     }
-    if (w->step == 0 && menu_system_pv.previous == ((struct MenuPage_pv *)D_001D5318) && menu_system_pv.previous->confirmed != 0) {
+    if (w->step == 0 && menu_system_pv.previous == ((struct MenuPage_pv *)save_menu_load_confirm_page) && menu_system_pv.previous->confirmed != 0) {
         w->step = 1;
     }
     if (w->step == 1) {
@@ -8131,7 +8131,7 @@ s32 saving_data_menu2(struct MenuScreen_pv *w) {
         }
         menu_system_pv.card_op_pending = 1;
         menu_system_pv.card_op_text = 0x4FB5;
-        D_0015FF4C = 0;
+        memory_card_error_latch = 0;
     }
     w->step = 2;
 
@@ -8140,7 +8140,7 @@ s32 saving_data_menu2(struct MenuScreen_pv *w) {
             return 0;
         }
         menu_system_pv.card_op_pending = 0;
-        if (memory_card_state_pv.err != 0 || memory_card_state_pv.sync_result != 0 || D_0015FF4C != 0) {
+        if (memory_card_state_pv.err != 0 || memory_card_state_pv.sync_result != 0 || memory_card_error_latch != 0) {
             if (D_0015F6CC != 0) {
                 D_0015EFB4_m |= 0x80;
                 mode_freeze_init(8, menu_system_pv.current, memory_card_state_pv.unkFC);
@@ -8204,9 +8204,9 @@ s32 saving_data_menu2(struct MenuScreen_pv *w) {
     memcard_selected_slot = cursor;
     if ((pad & 0x40) && memory_card_state_pv.type == 2) {
         if (*(s32 *)((u8 *)&memory_card_state_pv + cursor * 0x1C + 0x20) != -1) {
-            menu_system_pv.next = (w->flags & 0x2000) ? ((struct MenuPage_pv *)D_001D5318) : ((struct MenuPage_pv *)D_001D51B8);
+            menu_system_pv.next = (w->flags & 0x2000) ? ((struct MenuPage_pv *)save_menu_load_confirm_page) : ((struct MenuPage_pv *)save_menu_overwrite_confirm_page);
             menu_system_pv.unkD4 = (w->flags & 0x2000) ? 2 : 1;
-            D_001D29C0 = w->slot;
+            save_confirm_slot = w->slot;
         } else {
             w->step = 1;
         }
@@ -9069,7 +9069,7 @@ void update_menu_preview_animation_transform(PauseMoby *m) {
     float mtx[16];
     int id = *(int *)(*m->cls + 0x44);
 
-    func_0020E3D0(m);
+    advance_moby_animation(m);
     refresh_moby_spatial_bounds(m);
     MobyTransformScaledVertex(id, 4, mtx);
     qcopy(m->pos, &mtx[12]);
@@ -9117,7 +9117,7 @@ void update_menu_preview_pose_and_attachments(void *preview) {
     s32 first_attachment_active;
     s32 second_attachment_active;
 
-    func_0020E3D0(moby);
+    advance_moby_animation(moby);
     refresh_moby_spatial_bounds(moby);
     is_second_preview_moby = moby == *(PauseMoby_260A8 **)(*preview_vars + 0x5C);
     MobyTransformScaledVertex(source_moby_address, is_second_preview_moby ? 3 : 2, transform);
@@ -9202,7 +9202,7 @@ void update_menu_preview_class_transform(PauseMoby *m) {
     float mtx[16];
     int id = *(int *)(*m->cls + 0x44);
 
-    func_0020E3D0(m);
+    advance_moby_animation(m);
     refresh_moby_spatial_bounds(m);
     MobyTransformScaledVertex(id, m->oclass == 0x197 ? 0x1E : 0x1D, mtx);
     qcopy(m->pos, &mtx[12]);
@@ -9852,7 +9852,7 @@ int func_00227100_r(char *moby, char *m1, char *m2, char **o0, char **o1, char *
     int result = 0;
     char *p;
 
-    if (D_00160450 == 0) {
+    if (preview_animation_request_count == 0) {
         return 0;
     }
     {
@@ -9882,7 +9882,7 @@ int func_00227100_r(char *moby, char *m1, char *m2, char **o0, char **o1, char *
             }
         }
         if (D_001D5F70_q[0].pending == 0 && D_001517D0_q[0].unk8 == 0 &&
-            D_00160450 > 0 && D_001D6250_q[0].unk00 == 0) {
+            preview_animation_request_count > 0 && D_001D6250_q[0].unk00 == 0) {
             int idx = D_001D5F70_q[0].idx;
             unsigned char *ld = D_001D5F70_q[0].loaded;
             unsigned int want = D_001D6250_q[0].arg[0];
@@ -9906,7 +9906,7 @@ int func_00227100_r(char *moby, char *m1, char *m2, char **o0, char **o1, char *
                 D_001D5F70_q[0].streamed = D_001D6250_q[0].arg[0];
             }
         }
-        if (D_00160450 > 0 && (unsigned int)(D_001D6250_q[0].unk00 - 2) < 2) {
+        if (preview_animation_request_count > 0 && (unsigned int)(D_001D6250_q[0].unk00 - 2) < 2) {
             int item = D_001D6250_q[0].arg[3];
             if (item != 0 && D_001D5F70_q[0].items[0] != item &&
                 D_001D5F70_q[0].items[2] != item && D_001D5F70_q[0].items[1] != item) {
@@ -10006,12 +10006,12 @@ extern Rec38 D_001D6250[];
 
 int queue_preview_animation(int a0, int a1, int a2, int a3, int a4, int a5, int a6,
                   int a7, int a8, int a9, int a10, int a11, int a12) {
-    int n = D_00160450;
+    int n = preview_animation_request_count;
     Rec38 *r;
     if (n >= 8) {
         return -1;
     }
-    D_00160450 = n + 1;
+    preview_animation_request_count = n + 1;
     r = &preview_animation_requests[n];
     r->arg[0] = a0;
     r->arg[1] = a1;
@@ -10039,7 +10039,7 @@ int advance_preview_animation_queue(void) {
         Rec38 *d = &preview_animation_requests[i - 1];
         *d = d[1];
     }
-    D_00160450--;
+    preview_animation_request_count--;
     return 0;
 }
 
@@ -10055,7 +10055,7 @@ int clear_preview_animation_queue(void) {
         }
     }
     D_001D641C = 0;
-    D_00160450 = 0;
+    preview_animation_request_count = 0;
     return 0;
 }
 
@@ -10226,8 +10226,8 @@ extern void func_00208338(void *);
    and stores arg0 and arg1 in the memory card state; starts state 0x13 when idle. */
 void prepare_save_game(int arg0, int arg1) {
     char *b = memory_card_state;
-    func_00121A80(D_0015EF98);
-    func_0012D818(D_0015EF98);
+    func_00121A80(save_clock_time);
+    func_0012D818(save_clock_time);
     copy_level_object_positions();
     save_map_coverage(D_00141FC0 + (g_current_level_index << 11));
     memcard_MakeWholeSave((char *)arg0);
@@ -10251,8 +10251,8 @@ extern void func_00209DC0(void);
    callee-saved register, the reverse of retail's. */
 void start_memory_card_save(int arg0, int arg1) {
     load_and_initialize_level_chunk();
-    func_00121A80(D_0015EF98);
-    func_0012D818(D_0015EF98);
+    func_00121A80(save_clock_time);
+    func_0012D818(save_clock_time);
     memcard_MakeWholeSave((char *)arg0);
     {
         char *b = memory_card_state;
@@ -10393,7 +10393,7 @@ extern int D_0015EE80 MACRO_ADDR;
    D_0015EE80 set it jumps 10 extra every 50th tick. */
 void SpaceTransition_Tick(void) {
     int t;
-    if (D_0015F6D0 != 0) {
+    if (game_clock_paused != 0) {
         return;
     }
     t = game_clock_ticks;
@@ -10423,30 +10423,30 @@ void update_skill_point_and_gold_weapon_menu_entries(void) {
     int c = count_nonzero_entries_up_to_10() >= 10;
 
     {
-        char *g = D_001D2B80;
+        char *g = reward_menu_items;
         *(short *)(g + 0x3E) = a ? 3 : 2;
     }
     {
-        char *g = D_001D2B80;
+        char *g = reward_menu_items;
         *(short *)(g + 0x4A) = b ? 3 : 2;
     }
     {
-        char *g = D_001D2B80;
+        char *g = reward_menu_items;
         *(short *)(g + 0x56) = c ? 10 : 2;
     }
     {
-        char *g = D_001D2B80;
+        char *g = reward_menu_items;
         *(short *)(g + 0x62) = c ? 3 : 2;
     }
     {
-        char *h = D_001D2BF8;
+        char *h = reward_menu_page;
         *(int *)(h + 0x14) = a ? 0x4FD3 : 0x4FD9;
         *(int *)(h + 0x18) = b ? 0x4FD4 : 0x4FDA;
         *(int *)(h + 0x1C) = c ? 0x4FD7 : 0x4FDB;
         *(int *)(h + 0x20) = c ? 0x4FD8 : 0x4FDB;
     }
     if (D_0015EF90_m != 0) {
-        char *g = D_001D2B80;
+        char *g = reward_menu_items;
         *(short *)(g + 0x60) = 0;
     }
 }
@@ -10502,10 +10502,10 @@ void prepare_scaled_direction_and_perpendicular(PauseVec_282D0 *dir, f32 scale) 
     f32 *v = d.v;
 
     d.q = dir->q;
-    func_001F9DC0_282D0(D_00160470, v, 1.0f);
-    D_00160490_282D0[0] = D_00160470[0] * scale;
-    D_00160490_282D0[1] = D_00160470[1] * scale;
-    D_00160490_282D0[2] = D_00160470[2] * scale;
+    func_001F9DC0_282D0(direction_unit, v, 1.0f);
+    D_00160490_282D0[0] = direction_unit[0] * scale;
+    D_00160490_282D0[1] = direction_unit[1] * scale;
+    D_00160490_282D0[2] = direction_unit[2] * scale;
     if (v[0] < v[1]) {
         if (v[0] < v[2]) {
             direction_perpendicular[0] = v[0];
@@ -10525,7 +10525,7 @@ void prepare_scaled_direction_and_perpendicular(PauseVec_282D0 *dir, f32 scale) 
         direction_perpendicular[1] = v[0];
         direction_perpendicular[2] = v[2];
     }
-    FastVecCross(direction_perpendicular, direction_perpendicular, D_00160470);
+    FastVecCross(direction_perpendicular, direction_perpendicular, direction_unit);
     func_001F9DC0_282D0(direction_perpendicular, direction_perpendicular, 1.0f);
 }
 
@@ -10570,7 +10570,7 @@ extern void func_002298B0(int, int);
    of D_00160460 through func_002298B0. */
 void emit_selected_graphics_dma_packets(int arg0, int idx, int n) {
     g_render_packet_cursor[0] = 0x30000003;
-    g_render_packet_cursor[1] = (int)(D_001D8120 + n * 0x30);
+    g_render_packet_cursor[1] = (int)(graphics_setup_dma_packets + n * 0x30);
     g_render_packet_cursor[2] = 0x13000000;
     g_render_packet_cursor[3] = 0x50000003;
     g_render_packet_cursor += 4;
@@ -10791,7 +10791,7 @@ void submit_graphics_setup_command_stream(u8 *command_stream) {
         second_vector[2] = record->second_depth;
         for (command_index = 0; command_index < record->command_count; command_index++) {
             command_stream = func_00228400_28860(command_stream);
-            func_00229838(first_vector, second_vector);
+            stretch_scratchpad_segments_to_depths(first_vector, second_vector);
             func_00228D20(0x70000000, graphics_setup_word, record->command_flags);
             emit_selected_graphics_dma_packets(2, 1, 2);
             emit_selected_graphics_dma_packets(1, 0, 2);

@@ -247,8 +247,8 @@ unsigned char *initialize_level_render_state(LevelHeaderE9EC8 *hdr)
     fog_near_intensity = *(float *)(c + 8);
     fog_far_intensity = *(float *)(c + 12);
     ((void (*)(void))UpdateFog)();
-    D_00160FC0 = 512000.0f;
-    D_00161070 = 720.0f;
+    tfrag_draw_distance = 512000.0f;
+    tie_draw_distance = 720.0f;
     occl_fog_density_set = 500.0f;
     occl_fog_count = 500;
     part_clip_dist = 0x1F4000;

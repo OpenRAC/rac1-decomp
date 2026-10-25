@@ -819,7 +819,7 @@ extern int D_00161008 MACRO_ADDR;
 void DrawMobysSetup(void) {
     int p;
 
-    VU1_addDataRef(D_0010FAA0, D_0010FA90);
+    VU1_addDataRef(moby_vu1_data, moby_vu1_data_qwc);
     font_state = 6;
     VU0_loadMicroProgram(D_00100080);
     VU1_addGSregister(0x47, 0x5360B);

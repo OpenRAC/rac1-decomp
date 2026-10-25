@@ -2342,7 +2342,7 @@ void stick_target(float scale, int mode) {
     if (D_0015EEB4_m[0]) {
         v.f[1] = x;
     }
-    matrix_mul_vec3(D_0013E633 + 0xF8D, &v, D_L00_001670D0);
+    matrix_mul_vec3(D_0013E633 + 0xF8D, &v, player_camera_matrix);
     *(float *)(D_0013E633 + 0xF8D + 0x20) = scale * vec_length_xy(&v);
 }
 extern float D_L00_0017BEB8[];

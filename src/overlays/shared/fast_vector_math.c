@@ -153,7 +153,7 @@ void setup_fs_aa_buffer_level(int display_width, int display_height, int storage
     fs_aa_buffer.psm = 0;
     fs_aa_buffer.target_psm = 0;
     fs_aa_buffer.zpsm = 0x31;
-    fs_aa_buffer.fbp1 = D_0015EF80 >> 13;
+    fs_aa_buffer.fbp1 = display_buffer_address >> 13;
     fs_aa_buffer.fbp0 = draw_buffer_address >> 13;
     fs_aa_buffer.zbp = depth_buffer_address >> 13;
     func_00121DC8(&fs_aa_buffer, 0, storage_width, storage_height, display_offset_x,

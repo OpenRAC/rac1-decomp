@@ -1162,7 +1162,7 @@ void Menu_RunStateHandler(void) {
     int old;
 
     if (*(int *)(b + 0xEC) != 0 || *(int *)(b + 0x1C) != 0) {
-        D_0015FF4C = 1;
+        memory_card_error_latch = 1;
     }
     old = mode_freeze_state;
     if (mode_freeze_flags & 0x80) {

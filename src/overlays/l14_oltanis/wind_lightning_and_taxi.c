@@ -338,7 +338,7 @@ void PathLiftUpdate(struct Moby *m) {
         d->h206 = 0;
         AttachManipulator(m, 0, d->manip);
         if (d->rider == -1) {
-            STUB_printf(D_L14_001FCBB0, m->save_id);
+            STUB_printf(path_lift_no_rider_msg, m->save_id);
             DeleteMoby(m);
             return;
         }
@@ -365,14 +365,14 @@ void PathLiftUpdate(struct Moby *m) {
     if (g_hero.state.control_mode == 13 && g_hero.unk964 == rider) {
         if (d->riding == 0) {
             d->riding = 1;
-            d->timer = scale_ticks(D_L14_00161C5C);
+            d->timer = scale_ticks(path_lift_board_time);
             d->timer_inv = 1.0f / IntToFloat(d->timer);
         }
     } else {
         if (d->riding == 1) {
             if (g_hero.air_frames.s == 0 || g_hero.motion.pos.f[2] <= ((Vec4 *)&m->pos)->f[2] - 3.0f) {
                 d->riding = 0;
-                d->timer = scale_ticks(D_L14_00161C60);
+                d->timer = scale_ticks(path_lift_leave_time);
                 d->timer_inv = 1.0f / IntToFloat(d->timer);
                 d->to = d->height;
             } else {
@@ -380,7 +380,7 @@ void PathLiftUpdate(struct Moby *m) {
                 FastVecSub(&delta, &rider->pos, &base);
                 delta.f[2] = 0.0f;
                 len = FastVecLength(&delta);
-                max = (*(f32 *)&D_L14_00161C58) * g_frame_time;
+                max = (*(f32 *)&path_lift_hero_pull_speed) * g_frame_time;
                 if (max < len) len = max;
                 vec_scale_to_length(&g_hero.motion.platform_delta, &delta, len);
             }
@@ -653,13 +653,13 @@ void update_wind_sparks(struct Moby *m) {
                 func_L14_002EC7E8_EC9C8(m, i, dir);
             }
         } else {
-            opacity = (*(int *)&D_L14_00161CE0);
-            if (d->n380[i] - (*(int *)&D_L14_00161CFC) < d->n320[i]) {
+            opacity = (*(int *)&wind_spark_max_alpha);
+            if (d->n380[i] - (*(int *)&wind_spark_fade_ticks) < d->n320[i]) {
                 first = IntToFloat(d->n380[i] - d->n320[i]);
-                first = first / IntToFloat((*(int *)&D_L14_00161CFC));
+                first = first / IntToFloat((*(int *)&wind_spark_fade_ticks));
             } else {
                 first = IntToFloat(d->n320[i]);
-                first = first / IntToFloat(d->n380[i] - (*(int *)&D_L14_00161CFC));
+                first = first / IntToFloat(d->n380[i] - (*(int *)&wind_spark_fade_ticks));
             }
             {
                 int s = truncate_float_to_s32(((float)opacity - 0.0f) * first + 0.0f);
@@ -741,7 +741,7 @@ void draw_wind_sparks(struct Moby *m) {
     pk.uv[7] = 0.0f;
     for (i = 0; i < 48; i++) {
         if (d->n320[i] != 0) {
-            col = (*(int *)&D_L14_00161CDC) | (d->n3E0[i] << 24);
+            col = (*(int *)&wind_spark_color) | (d->n3E0[i] << 24);
             pk.col[3] = col;
             pk.col[2] = col;
             pk.col[1] = col;
@@ -756,7 +756,7 @@ void draw_wind_sparks(struct Moby *m) {
             vec_scale_to_length(mat[1], mat[1], 1.0f);
             FastVecCross(mat[2], mat[1], mat[0]);
             for (k = 0; k < 4; k++) {
-                FastVecScale(pk.m[k], D_L14_001E0090[k], ((Spk_k *)((char *)d + (i << 4)))->pos[0][3]);
+                FastVecScale(pk.m[k], wind_spark_quad_corners[k], ((Spk_k *)((char *)d + (i << 4)))->pos[0][3]);
                 transform_vector(pk.m[k], pk.m[k], mat);
             }
             func_L00_001FD1D8_ECC70(&pk, 0, 0);
@@ -824,13 +824,13 @@ void update_looping_path_moby(struct Moby *m) {
     switch (m->state) {
     case 0:
         if (d->path == -1) {
-            STUB_printf(D_L14_001FCE08, m->save_id);
+            STUB_printf(looping_path_no_path_msg, m->save_id);
             DeleteMoby(m);
             return;
         }
         path = D_L14_001B0F30_EDC70[d->path];
         if (path->count == 0) {
-            STUB_printf(D_L14_001FCE48, m->save_id);
+            STUB_printf(looping_path_empty_path_msg, m->save_id);
             DeleteMoby(m);
             return;
         }
@@ -852,7 +852,7 @@ void update_looping_path_moby(struct Moby *m) {
         break;
     case 1:
         func_L00_0025E860_EDC70(D_L14_001B0F30_EDC70[d->path], v, &d->segment, &d->along, 1,
-                              (*(f32 *)&D_L14_00161D14) * g_frame_time * d->dir);
+                              (*(f32 *)&looping_path_moby_speed) * g_frame_time * d->dir);
         Spring(&m->pos.x, &d->vel[0], v[0], 0.02f, 0.2f, 0.0f);
         Spring(&m->pos.y, &d->vel[1], v[1], 0.02f, 0.2f, 0.0f);
         Spring(&m->pos.z, &d->vel[2], v[2], 0.02f, 0.2f, 0.0f);
@@ -871,7 +871,7 @@ void update_looping_path_moby(struct Moby *m) {
         m->rot.x = FastAddRots(m->rot.x, d->spin[0]);
         m->rot.y = FastAddRots(m->rot.y, d->spin[1]);
         m->rot.z = FastAddRots(m->rot.z, d->spin[2]);
-        d->phase = FastAddRots(d->phase, (*(f32 *)&D_L14_00161D18));
+        d->phase = FastAddRots(d->phase, (*(f32 *)&looping_path_moby_pulse_speed));
         s = FastSin(d->phase);
         r = truncate_float_to_s32(s * 48.0f) + 0xCF;
         g = truncate_float_to_s32(s * 32.0f) + 0x30;
@@ -1006,7 +1006,7 @@ void update_flying_bolt(struct Moby *m) {
                 spark.f[1] = random_float_between(-1.0f, 1.0f);
                 spark.f[2] = random_float_between(-1.0f, 1.0f);
                 dir.q = spark.q;
-                vec_reflect(&spark, &v->vel, D_L14_00174680);
+                vec_reflect(&spark, &v->vel, oltanis_coll_hit_normal);
                 vec_scale_to_length(&dir, &dir, FastVecLength(&spark) * 0.5f);
                 FastVecAdd(&dir, &spark, &dir);
                 vec_scale_to_length(&dir, &dir, random_float_between(g_frame_time * 3.0f, g_frame_time * 6.0f));
@@ -1056,8 +1056,8 @@ void update_path_lightning_controller(char *m) {
         if (D_0015EE84_m == 0xE) *(short *)(D_0014171B_c + 0xD) = 1;
         m[0x20] = 1;
         ((unsigned char *)m)[0x30] = 0xFF;
-        *(int *)&D_L14_00161D28 = 0;
-        *(int *)&D_L14_00161D20 = 0;
+        *(int *)&lightning_arc_built = 0;
+        *(int *)&lightning_strike_timer = 0;
     }
     st = ((unsigned char *)m)[0x20];
     if (st == 1) {
@@ -1077,34 +1077,34 @@ void update_path_lightning_controller(char *m) {
         ShowTrackedMoby();
         return;
     }
-    if (fast_dec_timer(&D_L14_00161D20) == 0) return;
-    if (*(int *)&D_L14_00161D28 == 0) {
+    if (fast_dec_timer(&lightning_strike_timer) == 0) return;
+    if (*(int *)&lightning_arc_built == 0) {
         int *path = D_L14_001B0F30_ee[*(int *)d];
         int i;
         int n = 0;
         for (i = 0; i < path[0] && n < 5; i++) {
             qcopy(v, (char *)path + i * 16 + 0x10);
-            v[2] += *(float *)&D_L14_00161D34;
-            v[3] = *(float *)&D_L14_00161D30;
+            v[2] += *(float *)&lightning_spot_height_offset;
+            v[3] = *(float *)&lightning_spot_view_radius;
             if (FastBSphereCheck(v, 255.0f) > 0) {
                 idx[n++] = i;
             }
         }
         if (n > 0) {
             int k = random_integer_below(n);
-            qcopy(D_L14_00161D90, (char *)path + idx[k] * 16 + 0x10);
-            D_L14_00161D90[3] = 1.0f;
-            qcopy(D_L14_00161DA0, D_L14_00161D90);
-            D_L14_00161DA0[2] = *(float *)&D_L14_00161D2C;
-            D_L14_00161DA0[0] += randf_sym(0.0f, 20.0f);
-            D_L14_00161DA0[1] += randf_sym(0.0f, 20.0f);
-            qcopy(m + 0x10, D_L14_00161D90);
+            qcopy(lightning_arc_start_pos, (char *)path + idx[k] * 16 + 0x10);
+            lightning_arc_start_pos[3] = 1.0f;
+            qcopy(lightning_arc_end_pos, lightning_arc_start_pos);
+            lightning_arc_end_pos[2] = *(float *)&lightning_arc_sky_height;
+            lightning_arc_end_pos[0] += randf_sym(0.0f, 20.0f);
+            lightning_arc_end_pos[1] += randf_sym(0.0f, 20.0f);
+            qcopy(m + 0x10, lightning_arc_start_pos);
         }
     }
     update_branched_lightning_arc(m);
     if (lightning_arc_remaining_frames == 0) {
-        *(int *)&D_L14_00161D20 = scale_ticks(*(int *)&D_L14_00161D24);
-        *(int *)&D_L14_00161D28 = 0;
+        *(int *)&lightning_strike_timer = scale_ticks(*(int *)&lightning_strike_interval);
+        *(int *)&lightning_arc_built = 0;
     }
 }
 extern unsigned char D_L14_00161DB0[] MACRO_ADDR;
@@ -1148,29 +1148,29 @@ void update_branched_lightning_arc(char *moby) {
     s32 *starts;
     u16 *e;
 
-    if (*(int *)&D_L14_00161D28 == 0) {
-        *(int *)&D_L14_00161D28 = 1;
+    if (*(int *)&lightning_arc_built == 0) {
+        *(int *)&lightning_arc_built = 1;
         lightning_arc_sound_pending = 1;
-        D_L14_00161DB8 = moby;
+        lightning_arc_owner = moby;
         i = 0;
-        starts = D_L14_00161DC8;
-        *(int *)&D_L14_00161D3C = 0;
-        FastVecSub(&delta, D_L14_00161DA0, D_L14_00161D90);
+        starts = lightning_branch_starts;
+        *(int *)&lightning_arc_pulse_progress = 0;
+        FastVecSub(&delta, lightning_arc_end_pos, lightning_arc_start_pos);
         len = FastVecLength(&delta);
-        (*(float *)&D_L14_00161D44) = len / IntToFloat(40);
-        D_L14_00161DB0[0] = 0;
+        (*(float *)&lightning_arc_segment_length) = len / IntToFloat(40);
+        lightning_arc_fade_alpha[0] = 0;
         for (; i < 40; i++) {
-            e = &D_L14_001E0350[i];
-            p = D_L14_001E00D0[i];
+            e = &lightning_arc_point_timers[i];
+            p = lightning_arc_points[i];
             p[1] = p[2] = 0.0f;
             p[3] = 1.0f;
-            p[0] = (*(float *)&D_L14_00161D44) * (float)i;
+            p[0] = (*(float *)&lightning_arc_segment_length) * (float)i;
             if (i < 39) {
-                p[2] = p[-2] + randf_sym((*(float *)&D_L14_00161D5C), (*(float *)&D_L14_00161D60));
-                if ((*(float *)&D_L14_00161D64) < (*&p)[2]) {
-                    p[2] = (*(float *)&D_L14_00161D64);
-                } else if (p[2] < -(*(float *)&D_L14_00161D64)) {
-                    p[2] = -(*(float *)&D_L14_00161D64);
+                p[2] = p[-2] + randf_sym((*(float *)&lightning_arc_step_jitter_min), (*(float *)&lightning_arc_step_jitter_max));
+                if ((*(float *)&lightning_arc_max_offset) < (*&p)[2]) {
+                    p[2] = (*(float *)&lightning_arc_max_offset);
+                } else if (p[2] < -(*(float *)&lightning_arc_max_offset)) {
+                    p[2] = -(*(float *)&lightning_arc_max_offset);
                 }
             }
             t = IntToFloat(i) / IntToFloat(40);
@@ -1178,7 +1178,7 @@ void update_branched_lightning_arc(char *moby) {
         }
         lerp_vector(D_L14_001E0330, D_L14_001E0330 - 4, D_L14_001E0330 + 4, 0.5f);
         sign = -1.0f;
-        lightning_arc_remaining_frames = lightning_arc_initial_lifetime_frames = scale_ticks(rand_range((*(int *)&D_L14_00161D68), (*(int *)&D_L14_00161D6C)));
+        lightning_arc_remaining_frames = lightning_arc_initial_lifetime_frames = scale_ticks(rand_range((*(int *)&lightning_arc_life_min), (*(int *)&lightning_arc_life_max)));
         lightning_arc_inverse_fade_duration = 1.0f / IntToFloat(lightning_arc_remaining_frames - scale_ticks((*(int *)&lightning_grow_ticks)));
         if (random_integer_below(2) != 0) {
             sign = 1.0f;
@@ -1186,10 +1186,10 @@ void update_branched_lightning_arc(char *moby) {
         for (j = 0; j < 3; j++) {
             int k = rand_range(5, 22);
             int m;
-            float (*row)[4] = D_L14_001E03A0[j];
-            u16 *sq = D_L14_001E06A0[j];
+            float (*row)[4] = lightning_branch_points[j];
+            u16 *sq = lightning_branch_point_timers[j];
             starts[j] = k;
-            sq[0] = D_L14_001E0350[k];
+            sq[0] = lightning_arc_point_timers[k];
             row[0][0] = 0.0f;
             row[0][2] = 0.0f;
             r = random_float_between(1.0f, 10.0f);
@@ -1207,24 +1207,24 @@ void update_branched_lightning_arc(char *moby) {
                 } else {
                     ang = na;
                 }
-                D_L14_001E03A0[j][m][0] = r * FastCos(ang);
-                D_L14_001E03A0[j][m][2] = r * FastSin(ang);
-                D_L14_001E06A0[j][m] = D_L14_001E0350[starts[j] + m];
+                lightning_branch_points[j][m][0] = r * FastCos(ang);
+                lightning_branch_points[j][m][2] = r * FastSin(ang);
+                lightning_branch_point_timers[j][m] = lightning_arc_point_timers[starts[j] + m];
             }
             sign = -sign;
         }
     }
-    if (moby == D_L14_00161DB8) {
+    if (moby == lightning_arc_owner) {
         fast_dec_timer(&lightning_arc_remaining_frames);
         for (i = 0; i < 40; i++) {
-            s16 v = ++D_L14_001E0350[i];
+            s16 v = ++lightning_arc_point_timers[i];
             if (scale_ticks((*(int *)&lightning_grow_ticks)) < v) {
-                D_L14_001E0350[i] = scale_ticks((*(int *)&lightning_grow_ticks));
+                lightning_arc_point_timers[i] = scale_ticks((*(int *)&lightning_grow_ticks));
             }
             if (i != 0) {
                 if (i >= 35) {
                     float k5 = 5.0f;
-                    float *pp = D_L14_001E00D0[i];
+                    float *pp = lightning_arc_points[i];
                     pp[2] = pp[2] + (0.0f - pp[2]) * (IntToFloat(i - 35) / k5);
                 }
             }
@@ -1232,34 +1232,34 @@ void update_branched_lightning_arc(char *moby) {
         scale_ticks((*(int *)&lightning_grow_ticks));
         for (j = 0; j < 3; j++) {
             for (n = 0; n < 16; n++) {
-                s16 v = ++D_L14_001E06A0[j][n];
+                s16 v = ++lightning_branch_point_timers[j][n];
                 if (scale_ticks((*(int *)&lightning_grow_ticks)) < v) {
-                    D_L14_001E06A0[j][n] = scale_ticks((*(int *)&lightning_grow_ticks));
+                    lightning_branch_point_timers[j][n] = scale_ticks((*(int *)&lightning_grow_ticks));
                 }
             }
         }
         if (lightning_arc_remaining_frames < lightning_arc_initial_lifetime_frames - scale_ticks((*(int *)&lightning_grow_ticks))) {
             if (scale_ticks(60) < lightning_arc_initial_lifetime_frames) {
-                if ((*(float *)&D_L14_00161D3C) < 6.2831855f) {
+                if ((*(float *)&lightning_arc_pulse_progress) < 6.2831855f) {
                     (*(short *)&lightning_arc_alpha_pulse_offset) = truncate_float_to_s32(FastSin(lightning_arc_alpha_pulse_phase) * 128.0f);
-                    lightning_arc_alpha_pulse_phase = FastAddRots(lightning_arc_alpha_pulse_phase, (*(float *)&D_L14_00161D38));
-                    (*(float *)&D_L14_00161D3C) += (*(float *)&D_L14_00161D38) * frame_scale;
+                    lightning_arc_alpha_pulse_phase = FastAddRots(lightning_arc_alpha_pulse_phase, (*(float *)&lightning_arc_pulse_speed));
+                    (*(float *)&lightning_arc_pulse_progress) += (*(float *)&lightning_arc_pulse_speed) * frame_scale;
                 } else {
                     (*(short *)&lightning_arc_alpha_pulse_offset) = 0;
                 }
             } else {
                 (*(short *)&lightning_arc_alpha_pulse_offset) = 0;
             }
-            D_L14_00161DB0[0] = (unsigned char)(*(short *)&lightning_arc_alpha_pulse_offset) + truncate_float_to_s32(IntToFloat(lightning_arc_remaining_frames) * lightning_arc_inverse_fade_duration * -255.0f + 255.0f);
+            lightning_arc_fade_alpha[0] = (unsigned char)(*(short *)&lightning_arc_alpha_pulse_offset) + truncate_float_to_s32(IntToFloat(lightning_arc_remaining_frames) * lightning_arc_inverse_fade_duration * -255.0f + 255.0f);
             if (lightning_arc_sound_pending != 0) {
                 allocate_voice_for_group_entry(0, 0, moby);
                 lightning_arc_sound_pending = 0;
             }
-            if (D_L14_00161DB0[0] < 50) {
-                spawn_lightning_arc_particle_pairs(D_L14_00161D90, 3);
+            if (lightning_arc_fade_alpha[0] < 50) {
+                spawn_lightning_arc_particle_pairs(lightning_arc_start_pos, 3);
             }
         } else {
-            D_L14_00161DB0[0] = 0;
+            lightning_arc_fade_alpha[0] = 0;
         }
         AddDrawCallback(draw_branched_lightning_arc, (struct Moby *)moby);
     }
@@ -1316,10 +1316,10 @@ void draw_branched_lightning_arc(void) {
     q[0].r88 = 0x8000000048L;
     q[0].r80 = 0xFF9000000260L;
     q[0].r70 = 0;
-    a = func_001FA898_r(IntToFloat(D_L14_001E0350[0]) / IntToFloat(scale_ticks(lightning_grow_ticks)) * 255.0f) - D_L14_00161DB0[0];
+    a = func_001FA898_r(IntToFloat(lightning_arc_point_timers[0]) / IntToFloat(scale_ticks(lightning_grow_ticks)) * 255.0f) - lightning_arc_fade_alpha[0];
     if (a < 0) a = 0;
     if (a > 0xFF) a = 0xFF;
-    c = D_L14_00161D48 | (a << 24);
+    c = lightning_arc_core_color | (a << 24);
     q[0].col[1] = c;
     q[0].col[0] = c;
     q[0].uv[0][0] = 0.0f;
@@ -1332,8 +1332,8 @@ void draw_branched_lightning_arc(void) {
     q[0].uv[3][1] = 1.0f;
     FastMemCopy(&q[1], &q[0], 0x90);
     q[1].tex = GetEffectTex(0x2C);
-    q[1].col[0] = q[1].col[1] = D_L14_00161D4C | ((a >> 1) << 24);
-    FastVecSub(&m[0], D_L14_00161D90, D_L14_00161DA0);
+    q[1].col[0] = q[1].col[1] = lightning_arc_glow_color | ((a >> 1) << 24);
+    FastVecSub(&m[0], lightning_arc_start_pos, lightning_arc_end_pos);
     vec_scale_to_length(&m[0], &m[0], 1.0f);
     m[0].w = 0.0f;
     m[2].x = 1.0f;
@@ -1345,18 +1345,18 @@ void draw_branched_lightning_arc(void) {
     m[1].w = 0.0f;
     FastVecCross(&m[2], &m[1], &m[0]);
     m[2].w = 0.0f;
-    qcopy(&m[3], D_L14_00161DA0);
+    qcopy(&m[3], lightning_arc_end_pos);
     *(u128_2EF078 *)&sz[0] = 0;
-    sz[0].z = D_L14_00161D54;
+    sz[0].z = lightning_arc_width_start;
     sz[0].w = 1.0f;
     *(u128_2EF078 *)&sz[1] = 0;
-    sz[1].z = D_L14_00161D54 * D_L14_00161D58;
+    sz[1].z = lightning_arc_width_start * lightning_arc_glow_width_scale;
     sz[1].w = 1.0f;
     qcopy(&q[0].v[0], &sz[0]);
     FastVecScale(&q[0].v[1], &q[0].v[0], -1.0f);
     qcopy_nc(&q[1].v[0], &sz[1]);
     FastVecScale(&q[1].v[1], &q[1].v[0], -1.0f);
-    nd = &D_L14_001E00D0[1];
+    nd = &lightning_arc_points[1];
     transform_vector(&p[0], nd, &m[0]);
     transform_vector(&p[1], nd + 1, &m[0]);
     qcopy(&m2[0], &m[0]);
@@ -1370,7 +1370,7 @@ void draw_branched_lightning_arc(void) {
     transform_vector(&q[1].v[1], &q[1].v[1], &m2[0]);
     for (i = 1; i < 0x28; i++) {
         int b;
-        float *e = D_L14_00161D90;
+        float *e = lightning_arc_start_pos;
         qcopy(&q[0].v[2], &sz[0]);
         FastVecScale(&q[0].v[3], &q[0].v[2], -1.0f);
         qcopy(&q[1].v[2], &sz[1]);
@@ -1378,7 +1378,7 @@ void draw_branched_lightning_arc(void) {
         if (i == 0x27) {
             qcopy(&p[0], e);
         } else {
-            transform_vector(&p[0], &D_L14_001E00D0[i], &m[0]);
+            transform_vector(&p[0], &lightning_arc_points[i], &m[0]);
         }
         qcopy(&m2[0], &m[0]);
         FastVecSub(&m2[1], oltanis_camera_pos, &p[0]);
@@ -1392,12 +1392,12 @@ void draw_branched_lightning_arc(void) {
         if (i == 0x27) {
             b = 0;
         } else {
-            b = func_001FA898_r(IntToFloat(D_L14_001E0350[i]) / IntToFloat(scale_ticks(lightning_grow_ticks)) * 255.0f) - D_L14_00161DB0[0];
+            b = func_001FA898_r(IntToFloat(lightning_arc_point_timers[i]) / IntToFloat(scale_ticks(lightning_grow_ticks)) * 255.0f) - lightning_arc_fade_alpha[0];
             if (b < 0) b = 0;
             if (b > 0xFF) b = 0xFF;
         }
-        q[0].col[2] = q[0].col[3] = D_L14_00161D48 | (b << 24);
-        q[1].col[2] = q[1].col[3] = D_L14_00161D4C | ((b >> 1) << 24);
+        q[0].col[2] = q[0].col[3] = lightning_arc_core_color | (b << 24);
+        q[1].col[2] = q[1].col[3] = lightning_arc_glow_color | ((b >> 1) << 24);
         draw_world_quad(&q[0], 0, 0);
         draw_world_quad(&q[1], 0, 0);
         q[0].col[0] = q[0].col[1] = q[0].col[2];
@@ -1406,33 +1406,33 @@ void draw_branched_lightning_arc(void) {
         qcopy(&q[0].v[1], &q[0].v[3]);
         qcopy(&q[1].v[0], &q[1].v[2]);
         qcopy(&q[1].v[1], &q[1].v[3]);
-        sz[0].z = D_L14_00161D54 + (D_L14_00161D50 - D_L14_00161D54) * CubicInterpolate(-1.0f, 0.0f, 1.0f, 0.0f, IntToFloat(i) / IntToFloat(0x28));
-        sz[1].z = sz[0].z * D_L14_00161D58;
+        sz[0].z = lightning_arc_width_start + (lightning_arc_width_end - lightning_arc_width_start) * CubicInterpolate(-1.0f, 0.0f, 1.0f, 0.0f, IntToFloat(i) / IntToFloat(0x28));
+        sz[1].z = sz[0].z * lightning_arc_glow_width_scale;
     }
     qcopy(&m2[0], &m[0]);
     qcopy(&m2[1], &m[1]);
     qcopy(&m2[2], &m[2]);
     for (j = 0; j < 3; j++) {
         float t;
-        short *as = D_L14_001E06A0;
-        V_2EF078 *os = D_L14_001E03A0;
+        short *as = lightning_branch_point_timers;
+        V_2EF078 *os = lightning_branch_points;
         V_2EF078 *o;
 
         t = IntToFloat(as[j * 16]) / IntToFloat(scale_ticks(lightning_grow_ticks));
-        a = func_001FA898_r(t * 255.0f) - D_L14_00161DB0[0];
+        a = func_001FA898_r(t * 255.0f) - lightning_arc_fade_alpha[0];
         if (a < 0) a = 0;
         if (a > 0xFF) a = 0xFF;
-        c = D_L14_00161D48 | (a << 24);
+        c = lightning_arc_core_color | (a << 24);
         q[0].col[1] = c;
         q[0].col[0] = c;
-        q[1].col[0] = q[1].col[1] = D_L14_00161D4C | ((a >> 1) << 24);
-        sz[0].z = (D_L14_00161D54 + (D_L14_00161D50 - D_L14_00161D54) * CubicInterpolate(-1.0f, 0.0f, 1.0f, 0.0f, IntToFloat(D_L14_00161DC8[j]) / IntToFloat(0x28))) * 0.75f;
+        q[1].col[0] = q[1].col[1] = lightning_arc_glow_color | ((a >> 1) << 24);
+        sz[0].z = (lightning_arc_width_start + (lightning_arc_width_end - lightning_arc_width_start) * CubicInterpolate(-1.0f, 0.0f, 1.0f, 0.0f, IntToFloat(lightning_branch_starts[j]) / IntToFloat(0x28))) * 0.75f;
         sz[1].z = sz[0].z * 4.0f;
         qcopy(&q[0].v[0], &sz[0]);
         FastVecScale(&q[0].v[1], &q[0].v[0], -1.0f);
         qcopy(&q[1].v[0], &sz[1]);
         FastVecScale(&q[1].v[1], &q[1].v[0], -1.0f);
-        qcopy(&r[0], &D_L14_001E00D0[D_L14_00161DC8[j]]);
+        qcopy(&r[0], &lightning_arc_points[lightning_branch_starts[j]]);
         transform_vector(&r[1], &r[0], &m[0]);
         o = &os[j * 16];
         r[0].x += o->x;
@@ -1460,13 +1460,13 @@ void draw_branched_lightning_arc(void) {
             transform_vector(&q[1].v[2], &q[1].v[2], &m2[0]);
             transform_vector(&q[1].v[3], &q[1].v[3], &m2[0]);
             t = IntToFloat(*s) / IntToFloat(scale_ticks(lightning_grow_ticks));
-            a = func_001FA898_r(t * 255.0f) - D_L14_00161DB0[0];
+            a = func_001FA898_r(t * 255.0f) - lightning_arc_fade_alpha[0];
             if (a < 0) a = 0;
             if (a > 0xFF) a = 0xFF;
-            c = D_L14_00161D48 | (a << 24);
+            c = lightning_arc_core_color | (a << 24);
             q[0].col[3] = c;
             q[0].col[2] = c;
-            q[1].col[2] = q[1].col[3] = D_L14_00161D4C | ((a >> 1) << 24);
+            q[1].col[2] = q[1].col[3] = lightning_arc_glow_color | ((a >> 1) << 24);
             draw_world_quad(&q[0], 0, 0);
             draw_world_quad(&q[1], 0, 0);
             q[0].col[0] = q[0].col[1] = q[0].col[2];
@@ -1503,23 +1503,23 @@ void spawn_lightning_arc_particle_pairs(float *pos, int n) {
     if (n > 0) {
     i = n;
     do {
-        a = random_float_between(*(float *)&D_L14_00161D7C, *(float *)&D_L14_00161D80);
+        a = random_float_between(*(float *)&lightning_spark_size_min, *(float *)&lightning_spark_size_max);
         s = random_integer_below(2);
         if (s == 0) s--;
         f21 = random_angle_radians();
         f20 = random_float_between(0.34906584f, 1.5358897f);
-        BuildSphericalOffset(v, random_float_between(*(float *)&D_L14_00161D70, *(float *)&D_L14_00161D74), f21, f20);
+        BuildSphericalOffset(v, random_float_between(*(float *)&lightning_spark_speed_min, *(float *)&lightning_spark_speed_max), f21, f20);
         qcopy(p2, pos);
         pos[0] += randf_sym(0.0f, 0.15f);
         pos[1] += randf_sym(0.0f, 0.15f);
         pos[2] += randf_sym(0.0f, 0.15f);
         id = scale_ticks(0x3C);
-        r = PartType53Spawn(pos, id, a * 0.1f, a, 0x7F7F2020, 0, s, v, *(float *)&D_L14_00161D78);
+        r = PartType53Spawn(pos, id, a * 0.1f, a, 0x7F7F2020, 0, s, v, *(float *)&lightning_spark_vel_scale);
         if (r != 0) {
             r[9] = func_001FA898_r(4.0f) + 0x70;
         }
         s = -s;
-        r = PartType53Spawn(pos, scale_ticks(0x3C), a * 0.07f, a * 0.7f, 0x7F7F7F7F, 1, s, v, *(float *)&D_L14_00161D78);
+        r = PartType53Spawn(pos, scale_ticks(0x3C), a * 0.07f, a * 0.7f, 0x7F7F7F7F, 1, s, v, *(float *)&lightning_spark_vel_scale);
         if (r != 0) {
             r[9] = func_001FA898_r(4.0f) + 0x70;
         }
@@ -1836,7 +1836,7 @@ int advance_elevator_along_path(char *m) {
         total = *(float *)(moby_vars + 0xBC);
         qcopy(rot, moby_vars + 0xF0);
     }
-    step = *(float *)&D_L14_00161DE4 * g_frame_time;
+    step = *(float *)&elevator_path_speed * g_frame_time;
     path_endpoint_reached = func_L00_0025E860_2F05D8(selected_path, pos, moby_vars + 0xA4, moby_vars + 0xA8, 0, step * *(float *)(moby_vars + 0xAC));
     Spring(&elevator_moby->pos.x, (float *)(moby_vars + 0xC0), pos[0], 0.003f, 0.2f, 0.0f);
     Spring(&elevator_moby->pos.y, (float *)(moby_vars + 0xC4), pos[1], 0.003f, 0.2f, 0.0f);
@@ -1957,7 +1957,7 @@ extern char *D_L14_001B0F30[];
 /* Rebuild the 11 vectors of a table entry from the moby's matrix and position. */
 void rebuild_elevator_world_path(char *moby) {
     char *data = *(char **)(moby + 0x78);
-    char *src = D_L14_001E0700;
+    char *src = elevator_local_path_points;
     char *dst = oltanis_paths[*(int *)(data + 0x114)] + 0x10;
     int i = 10;
     float one = 1.0f;
@@ -2114,7 +2114,7 @@ void TaxiUpdate(Moby *moby) {
             }
         } else {
             if (taxi_vars->vol[0] >= 0 && taxi_vars->cur != 0 && is_point_inside_clip_volume(D_0013E633 + 0xE9D, taxi_vars->vol[0])) {
-                if (D_L14_0015F6B0 < scale_ticks(ticks)) {
+                if (oltanis_frame_count < scale_ticks(ticks)) {
                     taxi_vars->dst = 0;
                     taxi_vars->cur = 0;
                     qcopy_nc(&moby->pos, D_L14_001601AC_2F19C0[taxi_vars->station[taxi_vars->cur]].pos);
@@ -2133,7 +2133,7 @@ void TaxiUpdate(Moby *moby) {
                 }
             }
             if (taxi_vars->vol[1] >= 0 && taxi_vars->cur != 1 && is_point_inside_clip_volume(D_0013E633 + 0xE9D, taxi_vars->vol[1])) {
-                if (D_L14_0015F6B0 < scale_ticks(ticks)) {
+                if (oltanis_frame_count < scale_ticks(ticks)) {
                     taxi_vars->dst = 1;
                     taxi_vars->cur = 1;
                     qcopy_nc(&moby->pos, D_L14_001601AC_2F19C0[taxi_vars->station[taxi_vars->cur]].pos);
@@ -2148,7 +2148,7 @@ void TaxiUpdate(Moby *moby) {
                 }
             }
             if (taxi_vars->vol[2] >= 0 && taxi_vars->cur < 2 && is_point_inside_clip_volume(D_0013E633 + 0xE9D, taxi_vars->vol[2])) {
-                if (D_L14_0015F6B0 < scale_ticks(ticks)) {
+                if (oltanis_frame_count < scale_ticks(ticks)) {
                     taxi_vars->dst = 2;
                     taxi_vars->cur = 2;
                     qcopy_nc(&moby->pos, D_L14_001601AC_2F19C0[taxi_vars->station[taxi_vars->cur]].pos);
@@ -2490,7 +2490,7 @@ void qwark_oltanis_update(char *m) {
             DeleteMoby(m);
             return;
         }
-        *(char **)(d + 0x20) = D_L14_00161FF0;
+        *(char **)(d + 0x20) = qwark_oltanis_dialogue_name;
         DialogRequest_Init(m, d);
         d[8] = 1;
         m[0x20] = 1;
@@ -2755,16 +2755,16 @@ void spawn_enemy_fighter_exhaust(struct Moby *m) {
 
     if (m->state == 0 || m->state == 2 || m->visible == 0)
         return;
-    FastVecScale(&step, &m->rot_row0, (*(f32 *)&D_L14_00162000));
+    FastVecScale(&step, &m->rot_row0, (*(f32 *)&enemy_fighter_exhaust_forward_offset));
     FastVecAdd(&pos, &m->pos, &step);
-    FastVecScale(&step, &m->rot_row2, (*(f32 *)&D_L14_00162008));
+    FastVecScale(&step, &m->rot_row2, (*(f32 *)&enemy_fighter_exhaust_up_offset));
     FastVecAdd(&pos, &pos, &step);
     qcopy(&base, &pos);
-    FastVecScale(&step, &m->rot_row1, (*(f32 *)&D_L14_00162004));
+    FastVecScale(&step, &m->rot_row1, (*(f32 *)&enemy_fighter_exhaust_side_offset));
     FastVecAdd(&pos, &pos, &step);
     for (j = 0; j < 2; j++) {
         spin = random_integer_below(16);
-        puff = func_L00_0026DEA0_2FD870(&pos, 0.2f, 1.0f, 0.9f, random_integer_below(2) == 0 ? spin : -spin, oltanis_zero_vector, 200000.0f, (*(s32 *)&D_L14_00162014));
+        puff = func_L00_0026DEA0_2FD870(&pos, 0.2f, 1.0f, 0.9f, random_integer_below(2) == 0 ? spin : -spin, oltanis_zero_vector, 200000.0f, (*(s32 *)&enemy_fighter_exhaust_color));
         if (puff != 0) {
             L14PuffTail_2FD870 *tail = &puff->tail;
             puff->life = scale_ticks(12);
@@ -2776,7 +2776,7 @@ void spawn_enemy_fighter_exhaust(struct Moby *m) {
     }
     spin = 16;
     size = 100000.0f;
-    FastVecScale(&step, &m->rot_row0, (*(f32 *)&D_L14_0016200C));
+    FastVecScale(&step, &m->rot_row0, (*(f32 *)&enemy_fighter_exhaust_ring_offset));
     FastVecAdd(&pos, &pos, &step);
     life = scale_ticks(2);
     for (i = 0; i < 3; i++) {
@@ -2794,11 +2794,11 @@ void spawn_enemy_fighter_exhaust(struct Moby *m) {
         life *= 2;
         size -= 20000.0f;
     }
-    FastVecScale(&step, &m->rot_row1, (*(f32 *)&D_L14_00162004));
+    FastVecScale(&step, &m->rot_row1, (*(f32 *)&enemy_fighter_exhaust_side_offset));
     FastVecSub(&pos, &base, &step);
     for (j = 0; j < 2; j++) {
         spin = random_integer_below(16);
-        puff = func_L00_0026DEA0_2FD870(&pos, 0.2f, 1.0f, 0.9f, random_integer_below(2) == 0 ? spin : -spin, oltanis_zero_vector, 200000.0f, (*(s32 *)&D_L14_00162014));
+        puff = func_L00_0026DEA0_2FD870(&pos, 0.2f, 1.0f, 0.9f, random_integer_below(2) == 0 ? spin : -spin, oltanis_zero_vector, 200000.0f, (*(s32 *)&enemy_fighter_exhaust_color));
         if (puff != 0) {
             L14PuffTail_2FD870 *tail = &puff->tail;
             puff->frame = (m->draw_dist >> 5 << 4) + truncate_float_to_s32(4.0f);
@@ -2810,7 +2810,7 @@ void spawn_enemy_fighter_exhaust(struct Moby *m) {
     }
     spin = 16;
     size = 100000.0f;
-    FastVecScale(&step, &m->rot_row0, (*(f32 *)&D_L14_0016200C));
+    FastVecScale(&step, &m->rot_row0, (*(f32 *)&enemy_fighter_exhaust_ring_offset));
     FastVecAdd(&pos, &pos, &step);
     life = scale_ticks(2);
     for (i = 0; i < 3; i++) {
@@ -2874,22 +2874,22 @@ void advance_enemy_fighter_along_flight_path(char *m) {
     float path_target_position[3];
     float path_position_delta[3];
     float target_yaw, yaw_error_factor, path_vertical_angle;
-    Spline_AdvanceByDistance((int)oltanis_paths[*(int *)(moby_vars + 0x68)], (char *)path_target_position, moby_vars + 0x60, moby_vars + 0x64, 1, (*(float *)&D_L14_00162018) * g_frame_time);
-    Spring(&moby->pos.x, (float *)(moby_vars + 0x70), path_target_position[0], (*(float *)&D_L14_0016201C), (*(float *)&D_L14_00162020), 0.0f);
-    Spring(&moby->pos.y, (float *)(moby_vars + 0x74), path_target_position[1], (*(float *)&D_L14_0016201C), (*(float *)&D_L14_00162020), 0.0f);
-    Spring(&moby->pos.z, (float *)(moby_vars + 0x78), path_target_position[2], (*(float *)&D_L14_0016201C), (*(float *)&D_L14_00162020), 0.0f);
+    Spline_AdvanceByDistance((int)oltanis_paths[*(int *)(moby_vars + 0x68)], (char *)path_target_position, moby_vars + 0x60, moby_vars + 0x64, 1, (*(float *)&enemy_fighter_path_speed) * g_frame_time);
+    Spring(&moby->pos.x, (float *)(moby_vars + 0x70), path_target_position[0], (*(float *)&enemy_fighter_spring_stiffness), (*(float *)&enemy_fighter_spring_damping), 0.0f);
+    Spring(&moby->pos.y, (float *)(moby_vars + 0x74), path_target_position[1], (*(float *)&enemy_fighter_spring_stiffness), (*(float *)&enemy_fighter_spring_damping), 0.0f);
+    Spring(&moby->pos.z, (float *)(moby_vars + 0x78), path_target_position[2], (*(float *)&enemy_fighter_spring_stiffness), (*(float *)&enemy_fighter_spring_damping), 0.0f);
     FastVecSub(path_position_delta, path_target_position, &moby->pos);
     if (FastAbsF(path_position_delta[0]) > 0.01f) {
         if (FastAbsF(path_position_delta[1]) > 0.01f) {
             target_yaw = fast_atan2(path_position_delta[0], path_position_delta[1]);
             yaw_error_factor = FastSubRots(moby->rot.z, target_yaw);
-            MobySpringTurn(m, (float *)(moby_vars + 0x88), target_yaw, (*(float *)&D_L14_0016201C), (*(float *)&D_L14_00162020), 0.0f);
+            MobySpringTurn(m, (float *)(moby_vars + 0x88), target_yaw, (*(float *)&enemy_fighter_spring_stiffness), (*(float *)&enemy_fighter_spring_damping), 0.0f);
             path_vertical_angle = fast_atan2(vec_length_xy(path_position_delta), path_position_delta[2]);
-            Spring(&moby->rot.y, (float *)(moby_vars + 0x84), -path_vertical_angle, (*(float *)&D_L14_0016201C), (*(float *)&D_L14_00162020), 0.0f);
-            yaw_error_factor = yaw_error_factor / (*(float *)&D_L14_00162028);
+            Spring(&moby->rot.y, (float *)(moby_vars + 0x84), -path_vertical_angle, (*(float *)&enemy_fighter_spring_stiffness), (*(float *)&enemy_fighter_spring_damping), 0.0f);
+            yaw_error_factor = yaw_error_factor / (*(float *)&enemy_fighter_bank_yaw_range);
             if (yaw_error_factor > 1.0f) yaw_error_factor = 1.0f;
             if (yaw_error_factor < -1.0f) yaw_error_factor = -1.0f;
-            Spring(&moby->rot.x, (float *)(moby_vars + 0x80), yaw_error_factor * (*(float *)&D_L14_00162024), 0.003f, (*(float *)&D_L14_00162020), 0.0f);
+            Spring(&moby->rot.x, (float *)(moby_vars + 0x80), yaw_error_factor * (*(float *)&enemy_fighter_max_bank), 0.003f, (*(float *)&enemy_fighter_spring_damping), 0.0f);
         }
     }
 }
@@ -3171,16 +3171,16 @@ void spawn_moby_exhaust_puffs(struct Moby *m) {
 
     if (m->state == 0 || m->state == 3 || m->state == 1)
         return;
-    FastVecScale(&step, &m->rot_row0, (*(f32 *)&D_L14_00162030));
+    FastVecScale(&step, &m->rot_row0, (*(f32 *)&fighter921_exhaust_forward_offset));
     FastVecAdd(&pos, &m->pos, &step);
-    FastVecScale(&step, &m->rot_row2, (*(f32 *)&D_L14_00162038));
+    FastVecScale(&step, &m->rot_row2, (*(f32 *)&fighter921_exhaust_up_offset));
     FastVecAdd(&pos, &pos, &step);
     qcopy(&base, &pos);
-    FastVecScale(&step, &m->rot_row1, (*(f32 *)&D_L14_00162034));
+    FastVecScale(&step, &m->rot_row1, (*(f32 *)&fighter921_exhaust_side_offset));
     FastVecAdd(&pos, &pos, &step);
     for (j = 0; j < 2; j++) {
         spin = random_integer_below(16);
-        puff = PartType23Spawn(&pos, 0.2f, 1.0f, 0.9f, random_integer_below(2) == 0 ? spin : -spin, oltanis_zero_vector, 200000.0f, (*(s32 *)&D_L14_00162044));
+        puff = PartType23Spawn(&pos, 0.2f, 1.0f, 0.9f, random_integer_below(2) == 0 ? spin : -spin, oltanis_zero_vector, 200000.0f, (*(s32 *)&fighter921_exhaust_color));
         if (puff != 0) {
             L14PuffTail *tail = &puff->tail;
             puff->life = scale_ticks(12);
@@ -3190,7 +3190,7 @@ void spawn_moby_exhaust_puffs(struct Moby *m) {
         }
     }
     size = 100000.0f;
-    FastVecScale(&step, &m->rot_row0, (*(f32 *)&D_L14_0016203C));
+    FastVecScale(&step, &m->rot_row0, (*(f32 *)&fighter921_exhaust_ring_offset));
     FastVecAdd(&pos, &pos, &step);
     spin = 16;
     life = scale_ticks(2);
@@ -3209,7 +3209,7 @@ void spawn_moby_exhaust_puffs(struct Moby *m) {
         size -= 20000.0f;
     }
     size = 300000.0f;
-    FastVecScale(&step, &m->rot_row0, (*(f32 *)&D_L14_00162040));
+    FastVecScale(&step, &m->rot_row0, (*(f32 *)&fighter921_exhaust_smoke_offset));
     FastVecAdd(&pos, &base, &step);
     grey = rand_range(0x40, 0x80);
     grey = 0x7F000000 | grey << 16 | grey << 8 | grey;
@@ -3227,11 +3227,11 @@ void spawn_moby_exhaust_puffs(struct Moby *m) {
             tail->fade = scale_ticks(60);
         }
     }
-    FastVecScale(&step, &m->rot_row1, (*(f32 *)&D_L14_00162034));
+    FastVecScale(&step, &m->rot_row1, (*(f32 *)&fighter921_exhaust_side_offset));
     FastVecSub(&pos, &base, &step);
     for (j = 0; j < 2; j++) {
         spin = random_integer_below(16);
-        puff = PartType23Spawn(&pos, 0.2f, 1.0f, 0.9f, random_integer_below(2) == 0 ? spin : -spin, oltanis_zero_vector, 200000.0f, (*(s32 *)&D_L14_00162044));
+        puff = PartType23Spawn(&pos, 0.2f, 1.0f, 0.9f, random_integer_below(2) == 0 ? spin : -spin, oltanis_zero_vector, 200000.0f, (*(s32 *)&fighter921_exhaust_color));
         if (puff != 0) {
             L14PuffTail *tail = &puff->tail;
             puff->life = scale_ticks(12);
@@ -3241,7 +3241,7 @@ void spawn_moby_exhaust_puffs(struct Moby *m) {
         }
     }
     size = 100000.0f;
-    FastVecScale(&step, &m->rot_row0, (*(f32 *)&D_L14_0016203C));
+    FastVecScale(&step, &m->rot_row0, (*(f32 *)&fighter921_exhaust_ring_offset));
     FastVecAdd(&pos, &pos, &step);
     spin = 16;
     life = scale_ticks(2);
@@ -3282,7 +3282,7 @@ int advance_moby_along_flight_path(char *m) {
     int path_boundary_reached;
     path_boundary_reached = func_L00_0025E860_2F05D8(D_L14_001B0F30_ee[*(int *)(moby_vars + 0x68)], path_target_position, moby_vars + 0x60, moby_vars + 0x64,
                                  (unsigned int)*(int *)(moby_vars + 0x8C) >> 31,
-                                 *(float *)&D_L14_00162048 * g_frame_time);
+                                 *(float *)&fighter921_path_speed * g_frame_time);
     if (*(int *)(moby_vars + 0x8C) != 0 && (path_boundary_reached != 0 || *(short *)(race_state + 0x86) != 0x13)) {
         flag_vendor_item(*(int *)(moby_vars + 0x90));
         if (*(int *)(moby_vars + 0x6C) != -1) {
@@ -3295,23 +3295,23 @@ int advance_moby_along_flight_path(char *m) {
         DeleteMoby(moby);
         return 1;
     }
-    Spring(&moby->pos.x, (float *)(moby_vars + 0x70), path_target_position[0], *(float *)&D_L14_0016204C, *(float *)&D_L14_00162050, 0.0f);
-    Spring(&moby->pos.y, (float *)(moby_vars + 0x74), path_target_position[1], *(float *)&D_L14_0016204C, *(float *)&D_L14_00162050, 0.0f);
-    Spring(&moby->pos.z, (float *)(moby_vars + 0x78), path_target_position[2], *(float *)&D_L14_0016204C, *(float *)&D_L14_00162050, 0.0f);
+    Spring(&moby->pos.x, (float *)(moby_vars + 0x70), path_target_position[0], *(float *)&fighter921_spring_stiffness, *(float *)&fighter921_spring_damping, 0.0f);
+    Spring(&moby->pos.y, (float *)(moby_vars + 0x74), path_target_position[1], *(float *)&fighter921_spring_stiffness, *(float *)&fighter921_spring_damping, 0.0f);
+    Spring(&moby->pos.z, (float *)(moby_vars + 0x78), path_target_position[2], *(float *)&fighter921_spring_stiffness, *(float *)&fighter921_spring_damping, 0.0f);
     FastVecSub(path_position_delta, path_target_position, &moby->pos);
     if (0.01f < FastAbsF(path_position_delta[0])) {
         if (0.01f < FastAbsF(path_position_delta[1])) {
             yaw = fast_atan2(path_position_delta[0], path_position_delta[1]);
             yaw_error_factor = FastSubRots(moby->rot.z, yaw);
-            MobySpringTurn(moby, (float *)(moby_vars + 0x88), yaw, *(float *)&D_L14_0016204C, *(float *)&D_L14_00162050, 0.0f);
+            MobySpringTurn(moby, (float *)(moby_vars + 0x88), yaw, *(float *)&fighter921_spring_stiffness, *(float *)&fighter921_spring_damping, 0.0f);
             yaw = fast_atan2(vec_length_xy(path_position_delta), path_position_delta[2]);
-            Spring(&moby->rot.y, (float *)(moby_vars + 0x84), -yaw, *(float *)&D_L14_0016204C, *(float *)&D_L14_00162050, 0.0f);
-            yaw_error_factor = yaw_error_factor / *(float *)&D_L14_00162058;
+            Spring(&moby->rot.y, (float *)(moby_vars + 0x84), -yaw, *(float *)&fighter921_spring_stiffness, *(float *)&fighter921_spring_damping, 0.0f);
+            yaw_error_factor = yaw_error_factor / *(float *)&fighter921_bank_yaw_range;
             if (1.0f < yaw_error_factor)
                 yaw_error_factor = 1.0f;
             if (yaw_error_factor < -1.0f)
                 yaw_error_factor = -1.0f;
-            Spring(&moby->rot.x, (float *)(moby_vars + 0x80), yaw_error_factor * *(float *)&D_L14_00162054, 0.003f, *(float *)&D_L14_00162050, 0.0f);
+            Spring(&moby->rot.x, (float *)(moby_vars + 0x80), yaw_error_factor * *(float *)&fighter921_max_bank, 0.003f, *(float *)&fighter921_spring_damping, 0.0f);
         }
     }
     return 0;

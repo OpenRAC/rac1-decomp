@@ -356,45 +356,45 @@ void draw_moby_radial_ripple_mesh_pair(char *moby) {
     int color;
     int i, j, uv_strip_index, uv_vertex_index, draw_strip_index;
 
-    scale = IntToFloat(fleet_frame_count) * (D_L17_001622E0 * g_frame_time);
-    VU1_addGSregister(6, GetEffectTex(D_L17_001622CC));
-    VU1_addGSregister(0x42, ((long)D_L17_001622C8 << 32) | 0x44);
+    scale = IntToFloat(fleet_frame_count) * (fleet_ripple_pair_uv_scroll_speed * g_frame_time);
+    VU1_addGSregister(6, GetEffectTex(fleet_ripple_pair_texture));
+    VU1_addGSregister(0x42, ((long)fleet_ripple_pair_alpha_fix << 32) | 0x44);
     VU1_addGSregister(8, 0);
     VU1_addGSregister(0x14, ((long)0xFF90 << 32) | 0x260);
     ripple_vars->f0 = ripple_vars->f4;
-    ripple_vars->f4 = FastAddRots(ripple_vars->f4, 360.0f / multiply_global_factor(D_L17_001622D8) * 0.017453292f * g_frame_time);
+    ripple_vars->f4 = FastAddRots(ripple_vars->f4, 360.0f / multiply_global_factor(fleet_ripple_pair_wave_period) * 0.017453292f * g_frame_time);
     get_moby_color(moby, &r, &g, &b);
-    color = (D_L17_001622D0 << 24) | (b << 16) | (g << 8) | r;
+    color = (fleet_ripple_pair_alpha << 24) | (b << 16) | (g << 8) | r;
     for (i = 0; i < 2; i++) {
-        for (j = 0; j < ((int *)&D_L17_00162290)[i]; j++) {
-            int *template_vertex_array_slot = (int *)&D_L17_001622B0 + i;
+        for (j = 0; j < ((int *)&fleet_ripple_pair_vertex_counts)[i]; j++) {
+            int *template_vertex_array_slot = (int *)&fleet_ripple_pair_template_verts + i;
             float *p = (float *)(*template_vertex_array_slot + j * 12);
-            float t = D_L17_001622DC *
+            float t = fleet_ripple_pair_wave_height *
                 FastSin(FastAddRots(FastNormalizeAngle(
-                    fast_fmod(vec_length(p[0] * p[0] + p[1] * p[1]), D_L17_001622D4)
-                        * 6.2831855f / D_L17_001622D4), ripple_vars->f4));
-            *(float *)(j * 12 + ((int *)&D_L17_00162298)[i]) = p[0] + moby_obj->pos.x;
-            *(float *)(j * 12 + ((int *)&D_L17_00162298)[i] + 4) = p[1] + moby_obj->pos.y;
-            *(float *)(j * 12 + ((int *)&D_L17_00162298)[i] + 8) = p[2] + moby_obj->pos.z + t;
-            *(int *)(j * 4 + ((int *)&D_L17_001622A8)[i]) = color;
+                    fast_fmod(vec_length(p[0] * p[0] + p[1] * p[1]), fleet_ripple_pair_wavelength)
+                        * 6.2831855f / fleet_ripple_pair_wavelength), ripple_vars->f4));
+            *(float *)(j * 12 + ((int *)&fleet_ripple_pair_vertex_bufs)[i]) = p[0] + moby_obj->pos.x;
+            *(float *)(j * 12 + ((int *)&fleet_ripple_pair_vertex_bufs)[i] + 4) = p[1] + moby_obj->pos.y;
+            *(float *)(j * 12 + ((int *)&fleet_ripple_pair_vertex_bufs)[i] + 8) = p[2] + moby_obj->pos.z + t;
+            *(int *)(j * 4 + ((int *)&fleet_ripple_pair_color_bufs)[i]) = color;
         }
     }
     for (i = 0; i < 2; i++) {
         for (uv_strip_index = 0; uv_strip_index < 2; uv_strip_index++) {
-            for (uv_vertex_index = 0; uv_vertex_index < ((int *)&D_L17_00162290)[uv_strip_index]; uv_vertex_index++) {
-                T4 uv_scroll_factors = D_L17_001622E8;
-                *(float *)(uv_vertex_index * 8 + ((int *)&D_L17_001622A0)[uv_strip_index]) =
-                    *(float *)(uv_vertex_index * 8 + ((int *)&D_L17_001622B8)[uv_strip_index])
+            for (uv_vertex_index = 0; uv_vertex_index < ((int *)&fleet_ripple_pair_vertex_counts)[uv_strip_index]; uv_vertex_index++) {
+                T4 uv_scroll_factors = fleet_ripple_pair_uv_scroll_factors;
+                *(float *)(uv_vertex_index * 8 + ((int *)&fleet_ripple_pair_uv_bufs)[uv_strip_index]) =
+                    *(float *)(uv_vertex_index * 8 + ((int *)&fleet_ripple_pair_template_uvs)[uv_strip_index])
                     + fast_fmod(scale * uv_scroll_factors.p[i].v[0], 1.0f);
-                *(float *)(uv_vertex_index * 8 + ((int *)&D_L17_001622A0)[uv_strip_index] + 4) =
-                    *(float *)(uv_vertex_index * 8 + ((int *)&D_L17_001622B8)[uv_strip_index] + 4)
+                *(float *)(uv_vertex_index * 8 + ((int *)&fleet_ripple_pair_uv_bufs)[uv_strip_index] + 4) =
+                    *(float *)(uv_vertex_index * 8 + ((int *)&fleet_ripple_pair_template_uvs)[uv_strip_index] + 4)
                     + fast_fmod(scale * uv_scroll_factors.p[i].v[1], 1.0f);
             }
         }
         font_queue_vu_state();
         for (draw_strip_index = 0; draw_strip_index < 2; draw_strip_index++) {
-            draw_env_overlay_mesh(((int *)&D_L17_00162290)[draw_strip_index], ((int *)&D_L17_00162298)[draw_strip_index],
-                ((int *)&D_L17_001622A8)[draw_strip_index], (void *)((int *)&D_L17_001622A0)[draw_strip_index], 1);
+            draw_env_overlay_mesh(((int *)&fleet_ripple_pair_vertex_counts)[draw_strip_index], ((int *)&fleet_ripple_pair_vertex_bufs)[draw_strip_index],
+                ((int *)&fleet_ripple_pair_color_bufs)[draw_strip_index], (void *)((int *)&fleet_ripple_pair_uv_bufs)[draw_strip_index], 1);
         }
     }
 }
@@ -426,35 +426,35 @@ void DrawRippleRing(char *moby) {
     int color;
     int i, j, n, k;
 
-    scale = IntToFloat(fleet_frame_count) * (D_L17_0016234C * g_frame_time);
-    VU1_addGSregister(6, GetEffectTex(D_L17_00162338));
-    VU1_addGSregister(0x42, ((long)D_L17_00162334 << 32) | 0x44);
+    scale = IntToFloat(fleet_frame_count) * (fleet_ripple_ring_uv_scroll_speed * g_frame_time);
+    VU1_addGSregister(6, GetEffectTex(fleet_ripple_ring_texture));
+    VU1_addGSregister(0x42, ((long)fleet_ripple_ring_alpha_fix << 32) | 0x44);
     VU1_addGSregister(8, 0);
     VU1_addGSregister(0x14, ((long)0xFF90 << 32) | 0x260);
     d->f0 = d->f4;
-    d->f4 = FastAddRots(d->f4, 360.0f / multiply_global_factor(D_L17_00162344) * 0.017453292f * g_frame_time);
+    d->f4 = FastAddRots(d->f4, 360.0f / multiply_global_factor(fleet_ripple_ring_wave_period) * 0.017453292f * g_frame_time);
     get_moby_color(moby, &r, &g, &b);
-    color = (D_L17_0016233C << 24) | (b << 16) | (g << 8) | r;
-    for (i = 0; i < D_L17_00162300[0]; i++) {
-        RingPt *p = &D_L17_001DC0F0[i];
-        float w = D_L17_00162348 *
+    color = (fleet_ripple_ring_alpha << 24) | (b << 16) | (g << 8) | r;
+    for (i = 0; i < fleet_ripple_ring_vertex_count[0]; i++) {
+        RingPt *p = &fleet_ripple_ring_template_verts[i];
+        float w = fleet_ripple_ring_wave_height *
             FastSin(FastAddRots(FastNormalizeAngle(
-                fast_fmod(vec_length(p->x * p->x + p->y * p->y), D_L17_00162340)
-                    * 6.2831855f / D_L17_00162340), d->f4));
-        D_L17_001DC950[i].x = p->x + *(float *)(moby + 0x10);
-        D_L17_001DC950[i].y = p->y + *(float *)(moby + 0x14);
-        D_L17_001DC950[i].z = p->z + *(float *)(moby + 0x18) + w;
-        D_L17_001DD048[i] = color;
+                fast_fmod(vec_length(p->x * p->x + p->y * p->y), fleet_ripple_ring_wavelength)
+                    * 6.2831855f / fleet_ripple_ring_wavelength), d->f4));
+        fleet_ripple_ring_vertices[i].x = p->x + *(float *)(moby + 0x10);
+        fleet_ripple_ring_vertices[i].y = p->y + *(float *)(moby + 0x14);
+        fleet_ripple_ring_vertices[i].z = p->z + *(float *)(moby + 0x18) + w;
+        fleet_ripple_ring_colors[i] = color;
     }
     for (j = 0; j < 2; j++) {
-        for (n = 0; n < D_L17_00162300[0]; n++) {
-            t = D_L17_00162350;
-            D_L17_001DCD80[n][0] = D_L17_001DC520[n][0] + fast_fmod(scale * t.p[j].v[0], 1.0f);
-            D_L17_001DCD80[n][1] = D_L17_001DC520[n][1] + fast_fmod(scale * t.p[j].v[1], 1.0f);
+        for (n = 0; n < fleet_ripple_ring_vertex_count[0]; n++) {
+            t = fleet_ripple_ring_uv_scroll_factors;
+            fleet_ripple_ring_uvs[n][0] = fleet_ripple_ring_template_uvs[n][0] + fast_fmod(scale * t.p[j].v[0], 1.0f);
+            fleet_ripple_ring_uvs[n][1] = fleet_ripple_ring_template_uvs[n][1] + fast_fmod(scale * t.p[j].v[1], 1.0f);
         }
         font_queue_vu_state();
         for (k = 0; k < 1; k++) {
-            draw_env_overlay_mesh(D_L17_00162300[k], D_L17_00162320[k], D_L17_00162330[k], (void *)D_L17_00162328[k], 1);
+            draw_env_overlay_mesh(fleet_ripple_ring_vertex_count[k], fleet_ripple_ring_vertex_buf[k], fleet_ripple_ring_color_buf[k], (void *)fleet_ripple_ring_uv_buf[k], 1);
         }
     }
 }
@@ -497,45 +497,45 @@ void DrawLightRing(char *moby) {
     float scale;
     Quad4 *v_scroll_factors;
     float *output_vertex;
-    scale = IntToFloat(fleet_frame_count) * (D_L17_0016240C * g_frame_time);
-    VU1_addGSregister(6, GetEffectTex(D_L17_001623F8));
-    VU1_addGSregister(0x42, ((long)D_L17_001623F4 << 32) | 0x44);
+    scale = IntToFloat(fleet_frame_count) * (fleet_light_ring_uv_scroll_speed * g_frame_time);
+    VU1_addGSregister(6, GetEffectTex(fleet_light_ring_texture));
+    VU1_addGSregister(0x42, ((long)fleet_light_ring_alpha_fix << 32) | 0x44);
     VU1_addGSregister(8, 0);
     VU1_addGSregister(0x14, 0xFF9000000260L);
     data->prev = data->angle;
-    data->angle = FastAddRots(data->angle, 360.0f / multiply_global_factor(D_L17_00162404) * 0.017453292f * g_frame_time);
+    data->angle = FastAddRots(data->angle, 360.0f / multiply_global_factor(fleet_light_ring_wave_period) * 0.017453292f * g_frame_time);
     get_moby_color(moby, &r, &g, &b);
     /* The second float of each pair in t: p->f[0] is t.f[1], p->f[2] is t.f[3]. */
     v_scroll_factors = (Quad4 *)&uv_scroll_factors.f[1];
-    color = (D_L17_001623FC << 24) | (b << 16) | (g << 8) | r;
-    output_vertex = D_L17_001DDE70;
+    color = (fleet_light_ring_alpha << 24) | (b << 16) | (g << 8) | r;
+    output_vertex = fleet_light_ring_vertices;
     do {
-        float *template_vertex = &D_L17_001DDA30[i * 3];
+        float *template_vertex = &fleet_light_ring_template_verts[i * 3];
         float x = template_vertex[0];
         float y = template_vertex[1];
         float rad = vec_length(x * x + y * y);
-        float radial_phase_input = fast_fmod(rad, D_L17_00162400);
-        float w = FastNormalizeAngle(radial_phase_input * 6.2831855f / D_L17_00162400);
+        float radial_phase_input = fast_fmod(rad, fleet_light_ring_wavelength);
+        float w = FastNormalizeAngle(radial_phase_input * 6.2831855f / fleet_light_ring_wavelength);
         float z = FastSin(FastAddRots(w, data->angle));
         output_vertex[0] = template_vertex[0] + ((Moby *)moby)->pos.x;
-        *(float *)((char *)D_L17_001DDE70 + 4 + output_vertex_byte_offset) = template_vertex[1] + ((Moby *)moby)->pos.y;
-        output_vertex[2] = template_vertex[2] + ((Moby *)moby)->pos.z + D_L17_00162408 * z;
-        D_L17_001DE1F8[i] = color;
+        *(float *)((char *)fleet_light_ring_vertices + 4 + output_vertex_byte_offset) = template_vertex[1] + ((Moby *)moby)->pos.y;
+        output_vertex[2] = template_vertex[2] + ((Moby *)moby)->pos.z + fleet_light_ring_wave_height * z;
+        fleet_light_ring_colors[i] = color;
         i++;
         output_vertex_byte_offset += 12;
         output_vertex += 3;
     } while (i < 45);
     for (j = 0; j < 2; j++) {
         for (uv_vertex_index = 0; uv_vertex_index < 45; uv_vertex_index++) {
-            uv_scroll_factors = D_L17_00162410;
-            D_L17_001DE090[uv_vertex_index][0] =
-                D_L17_001DDC50[uv_vertex_index][0] + fast_fmod(scale * uv_scroll_factors.f[j * 2], 1.0f);
-            D_L17_001DE090[uv_vertex_index][1] =
-                D_L17_001DDC50[uv_vertex_index][1] + fast_fmod(scale * v_scroll_factors->f[j * 2], 1.0f);
+            uv_scroll_factors = fleet_light_ring_uv_scroll_factors;
+            fleet_light_ring_uvs[uv_vertex_index][0] =
+                fleet_light_ring_template_uvs[uv_vertex_index][0] + fast_fmod(scale * uv_scroll_factors.f[j * 2], 1.0f);
+            fleet_light_ring_uvs[uv_vertex_index][1] =
+                fleet_light_ring_template_uvs[uv_vertex_index][1] + fast_fmod(scale * v_scroll_factors->f[j * 2], 1.0f);
         }
         font_queue_vu_state();
         for (k = 0; k < 1; k++) {
-            draw_env_overlay_mesh(D_L17_001623C0[k], D_L17_001623E0[k], D_L17_001623F0[k], (void *)D_L17_001623E8[k], 1);
+            draw_env_overlay_mesh(fleet_light_ring_vertex_count[k], fleet_light_ring_vertex_buf[k], fleet_light_ring_color_buf[k], (void *)fleet_light_ring_uv_buf[k], 1);
         }
     }
 }
@@ -603,11 +603,11 @@ void Moby1448Update(unsigned char *m) {
 
     qcopy(old_pos, m + 0x10);
     qcopy(old_rot, m + 0x40);
-    *(float *)(m + 0x2C) = *(float *)(*(char **)(m + 0x24) + 0x24) * *(float *)&D_L17_0016242C;
+    *(float *)(m + 0x2C) = *(float *)(*(char **)(m + 0x24) + 0x24) * *(float *)&shuttle_scale_near;
     v->timer += 1;
     switch (m[0x20]) {
     case 0:
-        if (D_L17_001BBE40.collected[(short)*(unsigned short *)(m + 0xB2)] != 0
+        if (fleet_moby_collected.collected[(short)*(unsigned short *)(m + 0xB2)] != 0
             || (*(int *)(D_0014171B + 0xAB75 + (((short)*(unsigned short *)(m + 0xB2) >> 5) * 4 + (D_0015EE84_m << 8))) >> (*(unsigned short *)(m + 0xB2) & 0x1F)) & 1) {
             v->sel = 0;
             v->dir = 0;
@@ -645,8 +645,8 @@ void Moby1448Update(unsigned char *m) {
                     v->go = 1;
                     switch (s) {
                     case 0: {
-                        float x = *(float *)&D_L17_0016242C;
-                        float y = *(float *)&D_L17_00162428;
+                        float x = *(float *)&shuttle_scale_near;
+                        float y = *(float *)&shuttle_scale_far;
                         v->sel = 1;
                         v->f9C = x;
                         v->fA0 = y;
@@ -654,8 +654,8 @@ void Moby1448Update(unsigned char *m) {
                         break;
                     }
                     case 1: {
-                        float x = *(float *)&D_L17_00162428;
-                        float y = *(float *)&D_L17_0016242C;
+                        float x = *(float *)&shuttle_scale_far;
+                        float y = *(float *)&shuttle_scale_near;
                         v->side = s;
                         v->f9C = x;
                         v->fA0 = y;
@@ -687,7 +687,7 @@ void Moby1448Update(unsigned char *m) {
             set_camera_position(a);
             set_camera_rotation(rot);
             Hero_ResetToPosition(fleet_camera_points + (v->cut << 7) + 0x30, fleet_camera_points + (v->cut << 7) + 0x70, 0x72, 0);
-        } else if (D_L17_001BBE40.collected[(short)*(unsigned short *)(m + 0xB2)] != 0
+        } else if (fleet_moby_collected.collected[(short)*(unsigned short *)(m + 0xB2)] != 0
                    || (*(int *)(D_0014171B + 0xAB75 + (((short)*(unsigned short *)(m + 0xB2) >> 5) * 4 + (D_0015EE84_m << 8))) >> (*(unsigned short *)(m + 0xB2) & 0x1F)) & 1) {
             float d = vec_distance_xy(D_0013E633 + 0xE9D, fleet_camera_points + (v->cam[v->sel] << 7) + 0x30);
             if (vec_distance_xy(D_0013E633 + 0xE9D, fleet_camera_points + (v->cam[v->sel ^ 1] << 7) + 0x30) < d) {
@@ -727,7 +727,7 @@ void Moby1448Update(unsigned char *m) {
             Hero_ResetToPosition(b, rot, 0, 0);
             CameraScript2(0);
             *(int *)(D_0014171B + 0xAB75 + (((short)*(unsigned short *)(m + 0xB2) >> 5) * 4 + (D_0015EE84_m << 8))) |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
-            D_L17_001BB0E0[(short)*(unsigned short *)(m + 0xB2) >> 5] |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
+            fleet_moby_killed_bits[(short)*(unsigned short *)(m + 0xB2) >> 5] |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
         }
         break;
     case 3:
@@ -935,7 +935,7 @@ void update_fleet_camera_box_watcher(char *moby) {
                 *(int *)(d + 0x74) += 1;
             }
             n = *(int *)(d + 0x70) + 1;
-            wrap = fleet_mobys + (n << 8) < D_L17_0016005C;
+            wrap = fleet_mobys + (n << 8) < fleet_mobys_end;
             *(int *)(d + 0x70) = n;
             if (!wrap) {
                 if (*(int *)(d + 0x74) == 0 && sk[0x1B] == 0) {
@@ -955,7 +955,7 @@ void update_fleet_camera_box_watcher(char *moby) {
         *(int *)(d + 0x38) = scale_ticks(600);
         *(unsigned char *)(d + 0x4C) = 0;
         if (*(int *)(d + 0x44) == -1 || *(int *)(d + 0x40) == -1 || *(int *)(d + 0x3C) == -1 || *(int *)(d + 0x48) == -1) {
-            STUB_printf(D_L17_001E7300, *(int *)(d + 0x3C), *(int *)(d + 0x48), *(int *)(d + 0x40), *(int *)(d + 0x44));
+            STUB_printf(fleet_camera_box_missing_ids_msg, *(int *)(d + 0x3C), *(int *)(d + 0x48), *(int *)(d + 0x40), *(int *)(d + 0x44));
             *(unsigned char *)(d + 0x4C) = 1;
         }
         *(unsigned char *)(moby + 0x20) = 1;
@@ -992,7 +992,7 @@ void update_fleet_camera_box_watcher(char *moby) {
         }
         if (*(int *)(d + 0xC) > *(int *)(d + 0x38) && tgt != -1
             && ((unsigned int)*(int *)(D_0013E633 + 0x2EA9) < 2 || *(int *)(D_0013E633 + 0x2EA9) == 9)
-            && D_L17_00179D90[0] == 0 && D_L17_00179D90[9] == -1 && gHaveHologuise != 0) {
+            && fleet_help_popup_state[0] == 0 && fleet_help_popup_state[9] == -1 && gHaveHologuise != 0) {
             *(int *)(d + 0x38) = scale_ticks(0x708);
             if (*(int *)(D_0014171B + 0x739) >= 0) {
                 Help_Request(0x3A9A, 0x7D);
@@ -1001,8 +1001,8 @@ void update_fleet_camera_box_watcher(char *moby) {
             *(int *)(d + 0xC) = 0;
         }
     skip1:
-        if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, *(int *)(d + 0x20)) && D_L17_00179D90[0] == 0
-            && D_L17_00179D90[9] == -1 && gHaveHeliPack[2] == 0) {
+        if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, *(int *)(d + 0x20)) && fleet_help_popup_state[0] == 0
+            && fleet_help_popup_state[9] == -1 && gHaveHeliPack[2] == 0) {
             int w = *(int *)(D_0014171B + 0x761);
             mask = 1 << g_current_level_index;
             if (!(w & mask)) {
@@ -1027,7 +1027,7 @@ void update_fleet_camera_box_watcher(char *moby) {
             *(int *)(d + 0x30) = -1;
         }
         if (scale_ticks(0xE10) < *(int *)(d + 0x2C) && tgt != -1 && Hero_IsInSpecialState()
-            && D_L17_00179D90[0] == 0 && D_L17_00179D90[9] == -1 && gHaveHeliPack[2] != 0) {
+            && fleet_help_popup_state[0] == 0 && fleet_help_popup_state[9] == -1 && gHaveHeliPack[2] != 0) {
             Help_Request(0x4E2E, 0x78);
             *(int *)(d + 0x30) = tgt;
             *(int *)(d + 0x2C) = 0;
@@ -1041,7 +1041,7 @@ void update_fleet_camera_box_watcher(char *moby) {
             if (*(int *)(D_0014171B + 0x7A9) >= 0) {
                 Help_Request(0x4268, 0x8B);
             }
-            if (D_L17_00179D90[0] != 0 || D_L17_00179D90[9] != -1) {
+            if (fleet_help_popup_state[0] != 0 || fleet_help_popup_state[9] != -1) {
                 *(int *)(d + 0x50) = 0;
                 *(unsigned char *)(moby + 0x20) = 2;
                 *(int *)(d + 0x5C) = scale_ticks(0xB4);
@@ -1097,12 +1097,12 @@ void update_fleet_guarded_moby_effects(unsigned char *m) {
         break;
     case 1:
         if (fleet_game_mode == 2) {
-            int v = D_L17_0016D1E0.v;
+            int v = fleet_cutscene_state.v;
             int i;
             if (v != 0 && v != fleet_game_mode) return;
             i = 0;
             if (v == 0 || v == fleet_game_mode) i = 2;
-            cutscene_set_camera_target(D_L17_0016D1E0.tbl[i]);
+            cutscene_set_camera_target(fleet_cutscene_state.tbl[i]);
         }
         break;
     }
@@ -1156,23 +1156,23 @@ void draw_fleet_backdrop_quads(char *moby) {
         FastVecSub(&vv[0], data, fleet_camera_pos);
         FastVecSub(&vv[1], pos, fleet_camera_pos);
         FastVecCross(&vv[0], &vv[0], vb);
-        vec_scale_to_length(&vv[0], &vv[0], D_L17_001DE388[i]);
+        vec_scale_to_length(&vv[0], &vv[0], fleet_backdrop_beam_widths[i]);
         FastVecCross(&vv[1], &vv[1], vb);
         vec_scale_to_length(&vv[1], &vv[1], *(float *)(data + 0x28));
         *(long *)&pkt.q[4] = 0x0000FF9000000260LL;
         *(long *)&pkt.q[6] = 0x0000008000000048LL;
         *(long *)&pkt.q[0] = 0;
-        pkt.col[3] = *(int *)&D_L17_00162438;
-        pkt.col[2] = *(int *)&D_L17_00162438;
-        pkt.col[1] = *(int *)&D_L17_00162438;
-        pkt.col[0] = *(int *)&D_L17_00162438;
+        pkt.col[3] = *(int *)&fleet_backdrop_beam_color;
+        pkt.col[2] = *(int *)&fleet_backdrop_beam_color;
+        pkt.col[1] = *(int *)&fleet_backdrop_beam_color;
+        pkt.col[0] = *(int *)&fleet_backdrop_beam_color;
         {
             float *qu = &pkt.uv[0];
             float *qv = &pkt.uv[1];
             int m;
             for (m = 0; m < 4; m++) {
-                qu[m * 2] = D_L17_001E7340[m * 2];
-                qv[m * 2] = D_L17_001E7340[m * 2 + 1];
+                qu[m * 2] = fleet_backdrop_beam_uvs[m * 2];
+                qv[m * 2] = fleet_backdrop_beam_uvs[m * 2 + 1];
             }
         }
         FastVecSub(&vv[3], data, &vv[0]);
@@ -1183,18 +1183,18 @@ void draw_fleet_backdrop_quads(char *moby) {
         pkt.m[2] = vv[3];
         FastVecAdd(&vv[3], pos, &vv[1]);
         pkt.m[3] = vv[3];
-        *(long *)&pkt.q[2] = GetEffectTex(D_L17_001DE358[i]);
+        *(long *)&pkt.q[2] = GetEffectTex(fleet_backdrop_beam_textures[i]);
         for (j = 0; j < 4; j++) {
-            pu[j * 2] = D_L17_001E7340[j * 2] + D_L17_001DE370[i];
-            pv[j * 2] = D_L17_001E7340[j * 2 + 1];
+            pu[j * 2] = fleet_backdrop_beam_uvs[j * 2] + fleet_backdrop_beam_uv_scroll[i];
+            pv[j * 2] = fleet_backdrop_beam_uvs[j * 2 + 1];
         }
-        D_L17_001DE370[i] += *(float *)((char *)&D_L17_00162440 + i * 4) * frame_delta_time;
+        fleet_backdrop_beam_uv_scroll[i] += *(float *)((char *)&fleet_backdrop_beam_scroll_speeds + i * 4) * frame_delta_time;
         draw_world_quad(&pkt, 0, 0);
     }
     *(long *)&pkt.q[2] = GetEffectTex(0x2F);
     for (k = 0; k < 5; k++) {
-        float s = D_L17_001DE2C8[k];
-        float ang = D_L17_001DE3A0[k];
+        float s = fleet_backdrop_glow_sizes[k];
+        float ang = fleet_backdrop_glow_angles[k];
         float x = *(float *)(data + 0x10) - s * 0.5f;
         float z;
         ((float *)&pkt)[0] = x;
@@ -1222,7 +1222,7 @@ void draw_fleet_backdrop_quads(char *moby) {
         pkt.uv[6] = FastSin(FastAddRots(ang, 1.5707964f)) * 0.5f + 0.5f;
         pkt.uv[7] = FastCos(FastAddRots(ang, 1.5707964f)) * 0.5f + 0.5f;
         {
-            int c = FastTweenColor(D_L17_001DE2E0[k], D_L17_001DE2F8[k], D_L17_001DE310[k]);
+            int c = FastTweenColor(fleet_backdrop_glow_colors_from[k], fleet_backdrop_glow_colors_to[k], fleet_backdrop_glow_color_blend[k]);
             pkt.col[3] = c;
             pkt.col[2] = c;
             pkt.col[1] = c;
@@ -1268,13 +1268,13 @@ done:
     if (mby->state == 0) {
         mby->state = 1;
         for (i = 0; i < 5; i++) {
-            D_L17_001DE3A0[i] = (float)i * 25.0f;
+            fleet_backdrop_glow_angles[i] = (float)i * 25.0f;
         }
         qcopy(moby_pvars, &mby->pos);
         BuildSphericalOffset(offset_accumulator,
-            (*(float *)&D_L17_00162454 + *(float *)&D_L17_00162450) / *(float *)&D_L17_00162458,
+            (*(float *)&fleet_backdrop_base_length + *(float *)&fleet_backdrop_bend_length) / *(float *)&fleet_backdrop_length_divisor,
             mby->rot.z, 0.0f);
-        BuildSphericalOffset(pvar_angle_offset, *(float *)&D_L17_00162450 / *(float *)&D_L17_00162458,
+        BuildSphericalOffset(pvar_angle_offset, *(float *)&fleet_backdrop_bend_length / *(float *)&fleet_backdrop_length_divisor,
             *(float *)(moby_pvars + 0x44), 0.0f);
         FastVecAdd(vector_sum, offset_accumulator, pvar_angle_offset);
         *(u128 *)offset_accumulator = *(u128 *)vector_sum;
@@ -1284,26 +1284,26 @@ done:
         *(float *)(moby_pvars + 0x10) -= 300.0f;
     } else {
         for (i = 0; i < 5; i++) {
-            D_L17_001DE310[i] += D_L17_001DE340[i] * D_L17_001DE328[i] * frame_delta_time;
-            if (1.0f < D_L17_001DE310[i]) {
-                D_L17_001DE310[i] = 1.0f;
-                D_L17_001DE328[i] = -1.0f;
+            fleet_backdrop_glow_color_blend[i] += fleet_backdrop_glow_blend_speeds[i] * fleet_backdrop_glow_blend_dir[i] * frame_delta_time;
+            if (1.0f < fleet_backdrop_glow_color_blend[i]) {
+                fleet_backdrop_glow_color_blend[i] = 1.0f;
+                fleet_backdrop_glow_blend_dir[i] = -1.0f;
             }
-            if (D_L17_001DE310[i] < 0.0f) {
-                D_L17_001DE310[i] = 0.0f;
-                D_L17_001DE328[i] = 1.0f;
+            if (fleet_backdrop_glow_color_blend[i] < 0.0f) {
+                fleet_backdrop_glow_color_blend[i] = 0.0f;
+                fleet_backdrop_glow_blend_dir[i] = 1.0f;
             }
         }
         for (i = 0; i < 5; i++) {
-            D_L17_001DE3A0[i] = FastAddRots(D_L17_001DE3A0[i], D_L17_001DE2B0[i] * 0.1f * frame_delta_time);
+            fleet_backdrop_glow_angles[i] = FastAddRots(fleet_backdrop_glow_angles[i], fleet_backdrop_glow_spin_speeds[i] * 0.1f * frame_delta_time);
         }
         for (i = 0; i < 2; i++) {
-            D_L17_001DE370[i] += ((float *)&D_L17_00162440)[i] * frame_delta_time;
-            if (1.0f <= D_L17_001DE370[i]) {
-                D_L17_001DE370[i] -= 1.0f;
+            fleet_backdrop_beam_uv_scroll[i] += ((float *)&fleet_backdrop_beam_scroll_speeds)[i] * frame_delta_time;
+            if (1.0f <= fleet_backdrop_beam_uv_scroll[i]) {
+                fleet_backdrop_beam_uv_scroll[i] -= 1.0f;
             }
-            if (D_L17_001DE370[i] < 0.0f) {
-                D_L17_001DE370[i] += 1.0f;
+            if (fleet_backdrop_beam_uv_scroll[i] < 0.0f) {
+                fleet_backdrop_beam_uv_scroll[i] += 1.0f;
             }
         }
         AddDrawCallback(draw_fleet_backdrop_quads, moby);
@@ -1434,7 +1434,7 @@ void Moby1843Update(unsigned char *moby) {
         break;
     case BLARG_SHIP_TRACK_HERO_AND_FIRE:
         movement_distance_accumulator = 0.0f;
-        qcopy(clamped_euler_angles, D_L17_00167750);
+        qcopy(clamped_euler_angles, fleet_camera_rot);
         clamped_euler_angles[0] = 0.0f;
         if (clamped_euler_angles[1] > 0.2617994f) {
             clamped_euler_angles[1] = 0.2617994f;
@@ -1493,13 +1493,13 @@ void Moby1843Update(unsigned char *moby) {
                 vec_scale_to_length(sB0, hero_position_delta, *(float *)(moby_pvars + 0x94));
                 FastVecAdd(sB0, sB0, tgt);
                 if (fleet_frame_count % 20 == 0) {
-                    matrix_mul_vec3(sA0, D_L17_001DE3E0, &((Moby *)moby)->rot_row0);
+                    matrix_mul_vec3(sA0, fleet_blarg_ship_gun_offset_alt, &((Moby *)moby)->rot_row0);
                 } else {
-                    matrix_mul_vec3(sA0, D_L17_001DE3F0, &((Moby *)moby)->rot_row0);
+                    matrix_mul_vec3(sA0, fleet_blarg_ship_gun_offset, &((Moby *)moby)->rot_row0);
                 }
                 FastVecAdd(sA0, sA0, (float *)&((Moby *)moby)->pos);
                 FastVecSub(firing_target_delta, sB0, sA0);
-                vec_scale_to_length(firing_direction, firing_target_delta, *(float *)&D_L17_00162468 * g_frame_time);
+                vec_scale_to_length(firing_direction, firing_target_delta, *(float *)&fleet_blarg_ship_shot_speed * g_frame_time);
                 FastVecAdd(firing_direction, firing_direction, hero_position_delta);
                 firing_moby = spawn_class_3f9_moby((int)moby, firing_direction, sA0, 128.0f, -1.0f, 10.0f);
                 if (firing_moby) {
@@ -1549,7 +1549,7 @@ char *try_activate_blarg_ship_from_list(int list) {
         if (random_integer_below(10)) continue;
         m = fleet_mobys + idx;
         d = *(char **)(m + 0x78);
-        qcopy(C, D_L17_00167750);
+        qcopy(C, fleet_camera_rot);
         C[0] = 0;
         if (C[1] > 0.17453292f) C[1] = 0.17453292f;
         else if (C[1] < -0.17453292f) C[1] = -0.17453292f;
@@ -1694,10 +1694,10 @@ void DrawReflectionStrips(void) {
     VU1_addGSregister(8, 0);
     VU1_addGSregister(0x14, 0xFF9000000260L);
     font_queue_vu_state();
-    p = (float *)D_L17_001DEB70;
+    p = (float *)fleet_reflection_strips_uvs;
     for (i = 0; i < 2; i++) {
-        compute_reflection_sphere_map_uvs(((int *)&D_L17_00162470)[i], ((int *)&D_L17_00162488)[i], ((int *)&D_L17_00162478)[i], ((int *)&D_L17_00162480)[i], p);
-        draw_env_overlay_mesh(((int *)&D_L17_00162470)[i], ((int *)&D_L17_00162478)[i], ((int *)&D_L17_00162490)[i], p, 1);
+        compute_reflection_sphere_map_uvs(((int *)&fleet_reflection_strips_vertex_counts)[i], ((int *)&fleet_reflection_strips_normals)[i], ((int *)&fleet_reflection_strips_vertices)[i], ((int *)&D_L17_00162480)[i], p);
+        draw_env_overlay_mesh(((int *)&fleet_reflection_strips_vertex_counts)[i], ((int *)&fleet_reflection_strips_vertices)[i], ((int *)&fleet_reflection_strips_colors)[i], p, 1);
     }
 }
 extern char D_L17_001DF970[];
@@ -1716,10 +1716,10 @@ void DrawReflectionStrip(void) {
     VU1_addGSregister(8, 0);
     VU1_addGSregister(0x14, 0xFF9000000260L);
     font_queue_vu_state();
-    p = (float *)D_L17_001DF970;
+    p = (float *)fleet_reflection_strip_uvs;
     for (i = 0; i < 1; i++) {
-        compute_reflection_sphere_map_uvs(((int *)&D_L17_001624A0)[i], (V3 *)((int *)&D_L17_001624D0)[i], (V3 *)((int *)&D_L17_001624C0)[i], ((int *)&D_L17_001624C8)[i], p);
-        draw_env_overlay_mesh(((int *)&D_L17_001624A0)[i], ((int *)&D_L17_001624C0)[i], ((int *)&D_L17_001624D8)[i], p, 1);
+        compute_reflection_sphere_map_uvs(((int *)&fleet_reflection_strip_vertex_count)[i], (V3 *)((int *)&fleet_reflection_strip_normals)[i], (V3 *)((int *)&fleet_reflection_strip_vertices)[i], ((int *)&D_L17_001624C8)[i], p);
+        draw_env_overlay_mesh(((int *)&fleet_reflection_strip_vertex_count)[i], ((int *)&fleet_reflection_strip_vertices)[i], ((int *)&fleet_reflection_strip_colors)[i], p, 1);
     }
 }
 /* Computes a per-vertex 2D sphere-map texture coordinate from position and normal arrays. */

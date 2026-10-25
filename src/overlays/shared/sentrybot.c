@@ -89,7 +89,7 @@ void sentrybot_update(unsigned char *moby) {
     int color;
     float s;
 
-    if (*(int *)&D_L15_0016149C != 0) return;
+    if (*(int *)&quartu_sentrybot_update_disabled != 0) return;
     data = *(unsigned char **)(moby + 0x78);
     if (quartu_game_mode == 2) {
         *(unsigned short *)(moby + 0x34) |= 0x41;
@@ -298,13 +298,13 @@ void sentrybot_update(unsigned char *moby) {
             float *tbl = 0;
             switch (anim) {
             case 12:
-                tbl = D_L15_001CC360;
+                tbl = quartu_sentrybot_anim12_yaw_deg;
                 break;
             case 10:
-                tbl = D_L15_001CC2E0;
+                tbl = quartu_sentrybot_anim10_yaw_deg;
                 break;
             case 11:
-                tbl = D_L15_001CC260;
+                tbl = quartu_sentrybot_anim11_yaw_deg;
                 break;
             }
             if (moby[0x70] & 2) {
@@ -520,9 +520,9 @@ void sentrybot_update(unsigned char *moby) {
                 j2 = 2;
                 compute_selected_world_matrices(moby, 1, &j2, mat);
                 transform_scaled_vertex_batch((char *)moby, 1, &j2, (char *)pos);
-                vec_scale_to_length(va, mat[1], *(float *)&D_L15_00161498 * g_frame_time);
+                vec_scale_to_length(va, mat[1], *(float *)&quartu_sentrybot_shot_speed * g_frame_time);
                 FastVecSub(vb, data + 0x100, pos);
-                vec_scale_to_length(vb, vb, *(float *)&D_L15_00161498 * g_frame_time);
+                vec_scale_to_length(vb, vb, *(float *)&quartu_sentrybot_shot_speed * g_frame_time);
                 if (FastDiffRots(fast_atan2(va[0], va[1]), fast_atan2(vb[0], vb[1])) > 0.7853982f
                     || FastDiffRots(fast_atan2(vec_length_xy(va), va[2]), fast_atan2(vec_length_xy(vb), vb[2])) > 0.7853982f) {
                     spawn_class_3a6_moby((char *)moby, va, (char *)pos, (char *)(data + 0x100));
@@ -563,9 +563,9 @@ void sentrybot_update(unsigned char *moby) {
                 j3 = 3;
                 compute_selected_world_matrices(moby, 1, &j3, mat);
                 transform_scaled_vertex_batch((char *)moby, 1, &j3, (char *)pos);
-                vec_scale_to_length(va, mat[1], -(*(float *)&D_L15_00161498 * g_frame_time));
+                vec_scale_to_length(va, mat[1], -(*(float *)&quartu_sentrybot_shot_speed * g_frame_time));
                 FastVecSub(vb, data + 0x100, pos);
-                vec_scale_to_length(vb, vb, *(float *)&D_L15_00161498 * g_frame_time);
+                vec_scale_to_length(vb, vb, *(float *)&quartu_sentrybot_shot_speed * g_frame_time);
                 if (FastDiffRots(fast_atan2(va[0], va[1]), fast_atan2(vb[0], vb[1])) > 0.7853982f
                     || FastDiffRots(fast_atan2(vec_length_xy(va), va[2]), fast_atan2(vec_length_xy(vb), vb[2])) > 0.7853982f) {
                     spawn_class_3a6_moby((char *)moby, va, (char *)pos, (char *)(data + 0x100));
@@ -710,8 +710,8 @@ void sentrybot_update(unsigned char *moby) {
         lvl = *(short *)(data + 0x158) != 0;
     }
     tick = quartu_frame_count;
-    if (tick != *(int *)&D_L15_00161470 || ((Hero98BB8 *)(D_0013E633 + 0xE1D))->f22E0 < lvl) {
-        *(int *)&D_L15_00161470 = tick;
+    if (tick != *(int *)&quartu_sentrybot_alert_frame || ((Hero98BB8 *)(D_0013E633 + 0xE1D))->f22E0 < lvl) {
+        *(int *)&quartu_sentrybot_alert_frame = tick;
         ((Hero98BB8 *)(D_0013E633 + 0xE1D))->f22E0 = lvl;
     }
     alpha = 0x80;
@@ -1103,7 +1103,7 @@ void update_sentrybot_hit_response_and_target_visibility(void *object, int flag)
 
     if (moby->state == 0)
         return;
-    moby->scale = moby->pclass->scale * *(float *)&D_L15_00161474;
+    moby->scale = moby->pclass->scale * *(float *)&quartu_sentrybot_scale_factor;
     impact = 0.0f;
     hit = (SentryHitMessage *)MobyGetHitMessage(moby, 0x330000, 0);
     code = ComputeHitResponse(moby, hit, data + 0x20, 0, &kind, &impact, 0, 4);
@@ -1116,7 +1116,7 @@ void update_sentrybot_hit_response_and_target_visibility(void *object, int flag)
         if (*(float *)(data + 0x20) <= 0.0f)
             code = 1;
         amount = func_001FA898_r(512.0f);
-        speed = *(float *)&D_L15_00161478 * g_frame_time_sq;
+        speed = *(float *)&quartu_sentrybot_hit_gravity * g_frame_time_sq;
         *(int *)(data + 0x90) = amount;
         *(float *)(data + 0x98) = 0.5f;
         *(int *)(data + 0x94) = 9;
@@ -1144,12 +1144,12 @@ void update_sentrybot_hit_response_and_target_visibility(void *object, int flag)
                 float vz;
                 float fall_speed;
                 step = g_frame_time;
-                fall_speed = *(float *)&D_L15_00161478;
+                fall_speed = *(float *)&quartu_sentrybot_hit_gravity;
                 step_sq = g_frame_time_sq;
                 fall_speed = fall_speed * step_sq;
-                forward = *(float *)&D_L15_00161484 * step;
-                lateral = *(float *)&D_L15_00161480 * step;
-                vz = *(float *)&D_L15_00161488 * step;
+                forward = *(float *)&quartu_sentrybot_hit_knock_speed_xy * step;
+                lateral = *(float *)&quartu_sentrybot_hit_knock_speed_z * step;
+                vz = *(float *)&quartu_sentrybot_hit_knock_vz * step;
                 *(float *)(data + 0x80) = fall_speed;
                 *(float *)(data + 0x88) = forward;
                 *(float *)(data + 0x8C) = lateral;
@@ -1179,12 +1179,12 @@ void update_sentrybot_hit_response_and_target_visibility(void *object, int flag)
                 float vz;
                 float fall_speed;
                 step = g_frame_time;
-                fall_speed = *(float *)&D_L15_0016147C;
+                fall_speed = *(float *)&quartu_sentrybot_death_gravity;
                 step_sq = g_frame_time_sq;
                 fall_speed = fall_speed * step_sq;
-                forward = *(float *)&D_L15_00161490 * step;
-                lateral = *(float *)&D_L15_0016148C * step;
-                vz = *(float *)&D_L15_00161494 * step;
+                forward = *(float *)&quartu_sentrybot_death_knock_speed_xy * step;
+                lateral = *(float *)&quartu_sentrybot_death_knock_speed_z * step;
+                vz = *(float *)&quartu_sentrybot_death_knock_vz * step;
                 moby->flags &= 0xEFFF;
                 *(float *)(data + 0x80) = fall_speed;
                 *(float *)(data + 0x88) = forward;
@@ -1325,7 +1325,7 @@ void ProjectileUpdate(unsigned char *m) {
     InitDirectionalHitQuery(col, m, 0x10003, s, d);
     *(short *)(col + 0x1A) = *(short *)(m + 0xA6);
     if (coll_line(back, next, 0x10, m, col) != 0 || fast_dec_timer(d + 0x14) != 0) {
-        if (D_L15_001744D8[0] != *(int *)(d + 0x18)) {
+        if (quartu_coll_hit_moby[0] != *(int *)(d + 0x18)) {
             Sound_PlayClassSound(8, 0, m, 0x27E);
             spawn_rocket_detonation_glow((char *)m);
             DeleteMoby(m);
@@ -1354,22 +1354,22 @@ void spawn_rocket_trail_spark(char *moby) {
     char *data = *(char **)(moby + 0x78);
     float s;
     int a, b, c;
-    s = *(float *)&D_L15_001614C8;
+    s = *(float *)&quartu_rocket_trail_start_jitter;
     s *= g_frame_time;
-    FastVecScale(v0, data, *(float *)&D_L15_001614D0);
+    FastVecScale(v0, data, *(float *)&quartu_rocket_trail_start_vel_scale);
     rand_vec(v2, s, s);
     FastVecAdd(v0, v0, v2);
-    s = *(float *)&D_L15_001614CC;
+    s = *(float *)&quartu_rocket_trail_end_jitter;
     s *= g_frame_time;
-    FastVecScale(v1, data, *(float *)&D_L15_001614D4);
+    FastVecScale(v1, data, *(float *)&quartu_rocket_trail_end_vel_scale);
     rand_vec(v2, s, s);
     FastVecAdd(v1, v1, v2);
-    v0[3] = *(float *)&D_L15_001614A8;
-    v1[3] = *(float *)&D_L15_001614AC;
-    a = func_001FA898_r(multiply_global_factor(random_float_between(*(float *)&D_L15_001614B0, *(float *)&D_L15_001614B4)));
-    b = func_001FA898_r(multiply_global_factor(random_float_between(*(float *)&D_L15_001614B8, *(float *)&D_L15_001614BC)));
-    c = func_001FA898_r(multiply_global_factor(random_float_between(*(float *)&D_L15_001614C0, *(float *)&D_L15_001614C4)));
-    PartType02Spawn(moby + 0x10, v0, v1, *(int *)&D_L15_001614A0, *(int *)&D_L15_001614A4, a, b, c, *(int *)&D_L15_001614DC);
+    v0[3] = *(float *)&quartu_rocket_trail_start_size;
+    v1[3] = *(float *)&quartu_rocket_trail_end_size;
+    a = func_001FA898_r(multiply_global_factor(random_float_between(*(float *)&quartu_rocket_trail_time1_min, *(float *)&quartu_rocket_trail_time1_max)));
+    b = func_001FA898_r(multiply_global_factor(random_float_between(*(float *)&quartu_rocket_trail_time2_min, *(float *)&quartu_rocket_trail_time2_max)));
+    c = func_001FA898_r(multiply_global_factor(random_float_between(*(float *)&quartu_rocket_trail_time3_min, *(float *)&quartu_rocket_trail_time3_max)));
+    PartType02Spawn(moby + 0x10, v0, v1, *(int *)&quartu_rocket_trail_start_color, *(int *)&quartu_rocket_trail_end_color, a, b, c, *(int *)&quartu_rocket_trail_texture);
 }
 extern void func_L00_002ADBB0(char *, char *, int, int, float, int, int, int, int);
 extern float D_L15_0015F660[] MACRO_ADDR;
@@ -1384,9 +1384,9 @@ extern unsigned char D_L15_001614E8;
 void spawn_rocket_detonation_glow(char *moby)
 {
     char *pos = moby + 0x10;
-    int t = scale_ticks(*(int *)&D_L15_001614E4);
-    spawn_glow_particle(moby, pos, (int)&quartu_zero_vec, t, *(float *)&D_L15_001614E0,
-                      D_L15_001614EC, D_L15_001614F0, D_L15_001614F4, D_L15_001614E8);
+    int t = scale_ticks(*(int *)&quartu_rocket_glow_life_ticks);
+    spawn_glow_particle(moby, pos, (int)&quartu_zero_vec, t, *(float *)&quartu_rocket_glow_size,
+                      quartu_rocket_glow_red, quartu_rocket_glow_green, quartu_rocket_glow_blue, quartu_rocket_glow_alpha);
 }
 typedef int u128_29E8A0 __attribute__((mode(TI)));
 typedef struct { int w[20]; } __attribute__((aligned(16))) Tbl_29E8A0;
@@ -1492,7 +1492,7 @@ void update_target_leading_missile(M_29E8A0 *m) {
     float pitch;
     int k;
 
-    tbl = D_L15_001E2910;
+    tbl = quartu_missile_camera_blast_params;
     owner = 0;
     *(u128_29E8A0 *)v80 = 0;
     v80[2] = g_frame_time * 8.0f;
@@ -1527,7 +1527,7 @@ void update_target_leading_missile(M_29E8A0 *m) {
             if (d->f38 != 0) {
                 float a, b, c, r1, r2, q;
                 FastVecSub(dv, tp, d->v);
-                func_L00_001FF270(ip, dv, up);
+                vec3_sub_in_place_second_arg(ip, dv, up);
                 qcopy(d->v, tp);
                 c = lensq_cc2e8(dv);
                 b = (dv[0] * delta[0] + dv[1] * delta[1] + dv[2] * delta[2]) * -2.0f;
@@ -1592,7 +1592,7 @@ void update_target_leading_missile(M_29E8A0 *m) {
             p = (Part_29E8A0 *)PartType44Spawn(v90, delta, scale_ticks(0x3C), 0x7F, 0x606060, 3,
                 40000.0f, 1000.0f, 1.0f, -0.0002f, 0.0f);
             if (p != 0) {
-                p->f2 = *D_L15_001B29DC;
+                p->f2 = *quartu_missile_smoke_texture_ptr;
                 p->f3 = 0x44;
             }
             PartType44Spawn(m->pos, delta, scale_ticks(6), 0x7F, 0xB0B0B0, 3, 40000.0f, 1000.0f, 1.0f, -0.0004f, 0.0f);
@@ -1607,7 +1607,7 @@ void update_target_leading_missile(M_29E8A0 *m) {
     }
     FastVecAdd(m->pos, m->pos, vel);
     if (m->pos[0] < 0.0f || m->pos[1] < 0.0f || m->pos[2] < 0.0f) {
-        moby_index_list_remove(m, D_L15_001B1070);
+        moby_index_list_remove(m, quartu_missile_index_list);
         DeleteMoby(m);
         return;
     }
@@ -1649,7 +1649,7 @@ void update_target_leading_missile(M_29E8A0 *m) {
                 vec_scale_to_length(v80, hit + 0x40, 1.0f);
             }
         } else if (fast_dec_timer(&d->timer) != 0 || vec_distance_xy(m->pos, (float *)(hero + 0x80)) > 260.0f) {
-            moby_index_list_remove(m, D_L15_001B1070);
+            moby_index_list_remove(m, quartu_missile_index_list);
             DeleteMoby(m);
             return;
         }
@@ -1660,7 +1660,7 @@ void update_target_leading_missile(M_29E8A0 *m) {
             int i, j;
             int r = coll_sphere_mobys(m->pos, 2.0f, 0x10, m, 0);
             *(u128_29E8A0 *)v100 = *(u128_29E8A0 *)m->pos;
-            SendRadialMessageToMobys(m, v100, D_L15_00178580, r, (int)owner, 0x810000, 3, 1, 3.0f, 1.0f, 1.0f);
+            SendRadialMessageToMobys(m, v100, quartu_coll_sphere_moby_hits, r, (int)owner, 0x810000, 3, 1, 3.0f, 1.0f, 1.0f);
             {
             float K[16];
             float K2[16];
@@ -1689,11 +1689,11 @@ void update_target_leading_missile(M_29E8A0 *m) {
             for (k = 0; k < 10; k++) {
                 if (m->bc == 1) {
                     float ang = random_angle_radians();
-                    func_L00_001FFCF8(M1, K2, 1.0f - FastCos(ang));
-                    func_L00_001FFCF8(M2, K, FastSin(ang));
-                    func_L00_001FFDD0(M2, M2, M1);
+                    matrix4_scale(M1, K2, 1.0f - FastCos(ang));
+                    matrix4_scale(M2, K, FastSin(ang));
+                    matrix4_add(M2, M2, M1);
                     set_identity_matrix(M1);
-                    func_L00_001FFDD0(M3, M2, M1);
+                    matrix4_add(M3, M2, M1);
                     transform_vector(v100, vB0, M3);
                     vec_scale_to_length(v100, v100, random_float_between(8.5f, 16.5f) * g_frame_time);
                 } else {
@@ -1737,8 +1737,8 @@ void update_target_leading_missile(M_29E8A0 *m) {
                 i = 0;
                 while (i < n) {
                     float sz = random_float_between(8.0f, 10.0f) * g_frame_time - under * g_frame_time;
-                    Cols_29E8A0 c1 = D_L15_001E2960;
-                    Cols_29E8A0 c2 = D_L15_001E2978;
+                    Cols_29E8A0 c1 = quartu_missile_blast_start_colors;
+                    Cols_29E8A0 c2 = quartu_missile_blast_end_colors;
                     int *p1 = &c1.c[random_integer_below(6)];
                     int *p2 = &c2.c[random_integer_below(6)];
                     int l1 = rand_range(scale_ticks(0xF), scale_ticks(0x14));
@@ -1752,8 +1752,8 @@ void update_target_leading_missile(M_29E8A0 *m) {
                 }
             }
             for (j = 0; j < 10; j++) {
-                Cols_29E8A0 c1 = D_L15_001E2960;
-                Cols_29E8A0 c2 = D_L15_001E2978;
+                Cols_29E8A0 c1 = quartu_missile_blast_start_colors;
+                Cols_29E8A0 c2 = quartu_missile_blast_end_colors;
                 float dir[4];
                 {
                     float r5[4];
@@ -1770,7 +1770,7 @@ void update_target_leading_missile(M_29E8A0 *m) {
                     spawn_particle_alt_9768(m->pos, dir, *p1, *p2, rand_range(scale_ticks(0x14), scale_ticks(0x23)), 200000.0f);
                 }
             }
-            if (D_L15_0015F6B4 < 0.95f && 9.0f < dist) {
+            if (quartu_cpu_frame_load < 0.95f && 9.0f < dist) {
                 ((void (*)(void *, void *, void *, float, int, int, int, int, int))spawn_glow_particle)(m, m->pos, v70, 4.0f, scale_ticks(0xF), 0x7F, 0x7F, 0x7F, 0x20);
                 ((void (*)(void *, void *, void *, float, int, int, int, int, int))spawn_glow_particle)(m, m->pos, v70, 4.0f, scale_ticks(0x18), 0x7F, 0x7F, 0x7F, 0x20);
             }
@@ -1791,7 +1791,7 @@ void update_target_leading_missile(M_29E8A0 *m) {
             }
             Moby_PlaySound(0, 0, (int)m);
             mine_camera_blast(&tbl, m->pos, 0, 0);
-            moby_index_list_remove(m, D_L15_001B1070);
+            moby_index_list_remove(m, quartu_missile_index_list);
             DeleteMoby(m);
             }
         }
@@ -2004,14 +2004,14 @@ void update_charged_blast(Moby29FF90 *moby) {
         }
         n = func_L00_001F2BE8_29FF90(moby->pos, r, 0x10, moby, 0);
         *(u128_29FF90 *)v2 = *(u128_29FF90 *)moby->pos;
-        SendRadialMessageToMobys(moby, v2, D_L15_00178580, n, 0, 0x8B0000, 2, 1, 20.0f, 1.0f, 1.0f);
+        SendRadialMessageToMobys(moby, v2, quartu_coll_sphere_moby_hits, n, 0, 0x8B0000, 2, 1, 20.0f, 1.0f, 1.0f);
         cnt = scale_ticks(0x3C) - d->f14 < scale_ticks(5) ? scale_ticks(0x3C) - d->f14 : scale_ticks(5);
         func_L00_0026E940_29FF90(r * 0.5f * 210000.0f, (char *)moby,
                                  (0x4F << 24) | (rand_range(0x3F, 0x7F) << 16) | (rand_range(0x2F, 0x3F) << 8) | rand_range(0xF, 0x2F),
                                  cnt, -1);
         random_spherical_offset(w, r * g_frame_time, r * 2.0f * g_frame_time);
         col = (0x7F << 24) | (rand_range(0x3F, 0x7F) << 16) | (rand_range(0x2F, 0x3F) << 8) | rand_range(0xF, 0x2F);
-        func_L00_0026CA10_29FF90(moby->pos, w, col, 0x4F7F4F2F, 210000.0f, scale_ticks(0x2D), 1, *D_L15_001B29AC, -1);
+        func_L00_0026CA10_29FF90(moby->pos, w, col, 0x4F7F4F2F, 210000.0f, scale_ticks(0x2D), 1, *quartu_charged_blast_texture_ptr, -1);
         {
             int i;
 
@@ -2106,16 +2106,16 @@ void update_hero_seeking_group_moby(char *moby) {
     if (((struct Moby *)moby)->state != 1) {
         rand_vec(va, 0.0f, g_frame_time + g_frame_time);
         qcopy(pb, &((struct Moby *)moby)->pos);
-        pb[2] = pb[2] + *(float *)&D_L15_00161544;
+        pb[2] = pb[2] + *(float *)&quartu_hero_seeker_spark_height;
         if (D_L15_00161B40_m == 0) {
             ((struct Moby *)moby)->state = 1;
             goto tailA;
         }
-        particle_lifetime_frames = scale_ticks(*(int *)&D_L15_00161540);
+        particle_lifetime_frames = scale_ticks(*(int *)&quartu_hero_seeker_spark_life_ticks);
         converted_particle_lifetime_frames = func_001FA898_r((float)particle_lifetime_frames);
         life = (unsigned char)converted_particle_lifetime_frames;
         particle_initial_rotation = random_integer_below(0xFF);
-        spawn_moving_hero_relative_alpha_fade_particle(pb, (char *)va, *(int *)&D_L15_00161538, life, (unsigned char)particle_initial_rotation, 0, *(float *)&D_L15_0016153C);
+        spawn_moving_hero_relative_alpha_fade_particle(pb, (char *)va, *(int *)&quartu_hero_seeker_spark_color, life, (unsigned char)particle_initial_rotation, 0, *(float *)&quartu_hero_seeker_spark_scale);
         callback_frame_stamp = data->frame_stamp;
         if (callback_frame_stamp == 0 || *(int *)callback_frame_stamp != quartu_frame_count) {
             if (callback_frame_stamp != 0) {
@@ -2152,9 +2152,9 @@ s3:
     yaw = FastAddRots(data->yaw, fast_atan2(fa, fb));
     target_z = *(float *)(hero_base + 0xC8);
     yaw_cosine = FastCos(yaw);
-    va[0] = yaw_cosine * (*(float *)&D_L15_00161534 * g_frame_time);
+    va[0] = yaw_cosine * (*(float *)&quartu_hero_seeker_speed * g_frame_time);
     yaw_sine = FastSin(yaw);
-    va[1] = yaw_sine * (*(float *)&D_L15_00161534 * g_frame_time);
+    va[1] = yaw_sine * (*(float *)&quartu_hero_seeker_speed * g_frame_time);
     va[2] = 0.0f;
     fd = ((struct Moby *)moby)->pos.z - target_z;
     if (0.6f < fd) {
@@ -2472,24 +2472,24 @@ void draw_spark_emitter_effect_quads(unsigned char *moby) {
     second.col[3] = 0;
     second.col[1] = 0;
     for (corner = 0; corner < 4; corner++) {
-        qcopy(&first.corner[corner], &D_L15_001CE5B0[corner]);
-        qcopy(&secondVertices[corner], &D_L15_001CE570[corner]);
+        qcopy(&first.corner[corner], &quartu_spark_emitter_first_quad_corners[corner]);
+        qcopy(&secondVertices[corner], &quartu_spark_emitter_second_quad_corners[corner]);
     }
     for (pass = 0; pass < 6; pass = nextPass) {
         int parity = pass & 1;
-        first.unk88 = (long)*(int *)(&D_L15_00161558 + parity * 2) | (long)*(int *)(&D_L15_00161560 + parity * 2) << 2 |
-                (long)*(int *)(&D_L15_00161568 + parity * 2) << 4 | (long)*(int *)(&D_L15_00161570 + parity * 2) << 6 | 0x8000000000L;
-        second.unk88 = (long)*(int *)(&D_L15_00161558 + parity * 2) | (long)*(int *)(&D_L15_00161560 + parity * 2) << 2 |
-                (long)*(int *)(&D_L15_00161568 + parity * 2) << 4 | (long)*(int *)(&D_L15_00161570 + parity * 2) << 6 | 0x8000000000L;
+        first.unk88 = (long)*(int *)(&quartu_spark_emitter_alpha_a + parity * 2) | (long)*(int *)(&quartu_spark_emitter_alpha_b + parity * 2) << 2 |
+                (long)*(int *)(&quartu_spark_emitter_alpha_c + parity * 2) << 4 | (long)*(int *)(&quartu_spark_emitter_alpha_d + parity * 2) << 6 | 0x8000000000L;
+        second.unk88 = (long)*(int *)(&quartu_spark_emitter_alpha_a + parity * 2) | (long)*(int *)(&quartu_spark_emitter_alpha_b + parity * 2) << 2 |
+                (long)*(int *)(&quartu_spark_emitter_alpha_c + parity * 2) << 4 | (long)*(int *)(&quartu_spark_emitter_alpha_d + parity * 2) << 6 | 0x8000000000L;
         if (data[5] != 0) {
-            second.col[2] = FastTweenColor(D_L15_001CE4B0[pass], 0, (float)data[5] / 60.0f);
+            second.col[2] = FastTweenColor(quartu_spark_emitter_pass_colors[pass], 0, (float)data[5] / 60.0f);
             second.col[0] = second.col[2];
             first.col[3] = second.col[2];
             first.col[2] = second.col[2];
             first.col[1] = second.col[2];
             first.col[0] = second.col[2];
         } else {
-            second.col[2] = D_L15_001CE4B0[pass];
+            second.col[2] = quartu_spark_emitter_pass_colors[pass];
             second.col[0] = second.col[2];
             first.col[3] = second.col[2];
             first.col[2] = second.col[2];
@@ -2501,7 +2501,7 @@ void draw_spark_emitter_effect_quads(unsigned char *moby) {
         nextPass = pass + 1;
         for (; corner < 4; corner++) {
             float *uv = (float *)(corner * 8 + (unsigned int)firstUv);
-            float *frequency = (float *)((char *)D_L15_001CE4D0 + passOffset);
+            float *frequency = (float *)((char *)quartu_spark_emitter_uv_wave_periods + passOffset);
             int waveform = passOffset;
             int base = corner * 8;
             axis = 1;
@@ -2512,9 +2512,9 @@ void draw_spark_emitter_effect_quads(unsigned char *moby) {
                 float radians;
                 axis--;
                 limit = truncate_float_to_s32(*frequency * 360.0f);
-                angle = IntToFloat(D_L15_0015F4F8 % limit) / *frequency - 180.0f;
+                angle = IntToFloat(quartu_rendered_frame_count % limit) / *frequency - 180.0f;
                 frequency++;
-                value = *(int *)((char *)D_L15_001CE510 + waveform);
+                value = *(int *)((char *)quartu_spark_emitter_uv_wave_use_cos + waveform);
                 waveform += 4;
                 radians = 0.017453292f;
                 step = 0.125f;
@@ -2524,7 +2524,7 @@ void draw_spark_emitter_effect_quads(unsigned char *moby) {
                     angle = FastSin(angle * radians);
                 }
                 delta = angle * step;
-                *uv++ = *(float *)((char *)D_L15_001CE550 + base) + delta;
+                *uv++ = *(float *)((char *)quartu_spark_emitter_base_uvs + base) + delta;
                 base += 4;
             } while (axis >= 0);
         }
@@ -2728,14 +2728,14 @@ void spiderbot_update(unsigned char *moby) {
         } else {
             *(u128_2A8090 *)(d + 0x10) = *(u128_2A8090 *)A;
         }
-        for (i = 0; i < *(int *)&D_L15_001615D8; i++) {
+        for (i = 0; i < *(int *)&quartu_spiderbot_spark_count; i++) {
             float s;
             float len;
             int k;
             unsigned char life;
             s = -1.0f;
             if (func_001160D8() & 1) s = 1.0f;
-            k = truncate_float_to_s32(multiply_global_factor(random_float_between(*(float *)&D_L15_001615E0 * 0.5f, *(float *)&D_L15_001615E0)));
+            k = truncate_float_to_s32(multiply_global_factor(random_float_between(*(float *)&quartu_spiderbot_spark_life * 0.5f, *(float *)&quartu_spiderbot_spark_life)));
             FastVecSub(T2, d + 0x10, moby + 0x10);
             *(u128_2A8090 *)B = *(u128_2A8090 *)T2;
             FastVecScale(B, B, s);
@@ -2745,7 +2745,7 @@ void spiderbot_update(unsigned char *moby) {
             FastVecScale(B, B, random_float_between(0.0f, 0.9f));
             add_vectors(T2, A, B);
             vec_scale_to_length(B, B, random_float_between(g_frame_time * 10.0f, len / IntToFloat(k * 4)));
-            func_L00_00273F80_r(A, (char *)B, 0x604040FF, life, random_integer_below(0xFF), 0, *(float *)&D_L15_001615DC);
+            func_L00_00273F80_r(A, (char *)B, 0x604040FF, life, random_integer_below(0xFF), 0, *(float *)&quartu_spiderbot_spark_scale);
         }
     }
     AddDrawCallback(draw_spiderbot_effect_quad, moby);
@@ -2797,8 +2797,8 @@ void draw_spiderbot_effect_quad(char *moby) {
     q.col[1] = 0x80243278;
     q.col[0] = 0x80243278;
     for (i = 0; i < 4; i++) {
-        q.uv[i][0] = D_L15_001E2AF0[i * 2];
-        q.uv[i][1] = D_L15_001E2AF0[i * 2 + 1];
+        q.uv[i][0] = quartu_spiderbot_effect_quad_uvs[i * 2];
+        q.uv[i][1] = quartu_spiderbot_effect_quad_uvs[i * 2 + 1];
     }
     FastVecSub(D, C, A);
     *(u128_2A8850 *)q.v[0] = *(u128_2A8850 *)D;
@@ -3131,7 +3131,7 @@ void set_sentrybot_alarm_duration(char *m, int a) {
     int flag;
     short *p;
     if (a == -1) {
-        *(int *)&D_L15_00161B44 = 0;
+        *(int *)&quartu_alarm_intensity = 0;
         a = 0;
     }
     flag = a != 0;
@@ -3183,28 +3183,28 @@ extern short D_L15_00161B50;
 void update_sentrybot_alarm_effect(void *moby) {
     struct Hero *base = (struct Hero *)(D_0013E633 + 0xE1D);
     if (base->state.current == 0x65) {
-        ApproachValue(&D_L15_00161B44, 0.0f, g_frame_time * 2);
+        ApproachValue(&quartu_alarm_intensity, 0.0f, g_frame_time * 2);
         set_sentrybot_alarm_duration(moby, 0);
-    } else if (*(int *)&D_L15_00161B40 != 0
+    } else if (*(int *)&quartu_alarm_raised != 0
                && (*(int *)&g_current_level_index != 0xF || 240.0f < base->motion.pos.f[1])) {
-        ApproachValue(&D_L15_00161B44, 1.0f, g_frame_time * 2);
+        ApproachValue(&quartu_alarm_intensity, 1.0f, g_frame_time * 2);
     } else {
-        ApproachValue(&D_L15_00161B44, 0.0f, g_frame_time * 2);
+        ApproachValue(&quartu_alarm_intensity, 0.0f, g_frame_time * 2);
     }
-    if (*(float *)&D_L15_00161B44 != 0.0f) {
-        *(int *)&D_L15_00161B48 = 1;
-        if (Sound_IsPlaying(*(void **)&D_L15_00161B50, *(int *)&D_L15_00161B4C) == 0) {
-            *(int *)&D_L15_00161B4C = Moby_PlaySound(5, 0x11, (int)moby);
-            *(void **)&D_L15_00161B50 = moby;
+    if (*(float *)&quartu_alarm_intensity != 0.0f) {
+        *(int *)&quartu_alarm_on = 1;
+        if (Sound_IsPlaying(*(void **)&quartu_alarm_sound_owner, *(int *)&quartu_alarm_sound_handle) == 0) {
+            *(int *)&quartu_alarm_sound_handle = Moby_PlaySound(5, 0x11, (int)moby);
+            *(void **)&quartu_alarm_sound_owner = moby;
         }
         AddDrawCallback(emit_sine_modulated_rgba_draw_packet, moby);
     } else {
-        if (Sound_IsPlaying(*(void **)&D_L15_00161B50, *(int *)&D_L15_00161B4C) != 0) {
-            Sound_StopSlot(*(int *)&D_L15_00161B4C);
-            *(int *)&D_L15_00161B50 = 0;
-            *(int *)&D_L15_00161B4C = -1;
+        if (Sound_IsPlaying(*(void **)&quartu_alarm_sound_owner, *(int *)&quartu_alarm_sound_handle) != 0) {
+            Sound_StopSlot(*(int *)&quartu_alarm_sound_handle);
+            *(int *)&quartu_alarm_sound_owner = 0;
+            *(int *)&quartu_alarm_sound_handle = -1;
         }
-        *(int *)&D_L15_00161B48 = 0;
+        *(int *)&quartu_alarm_on = 0;
     }
 }
 extern int func_001FA898_r(float) __asm__("func_001FA898");
@@ -3216,15 +3216,15 @@ extern short D_L15_00161B54;
 
 // Draws an oscillating-intensity effect: a sine of the global timer scaled by a level value.
 void emit_sine_modulated_rgba_draw_packet(void) {
-    int n = scale_ticks(*(int *)&D_L15_00161B5C);
+    int n = scale_ticks(*(int *)&quartu_alarm_flash_period_ticks);
     float d = IntToFloat(n);
     float s = FastSin((float)(quartu_frame_count % n) / d * 6.28318f);
-    float v = *(float *)&D_L15_00161B44 + *(float *)&D_L15_00161B58 * s;
+    float v = *(float *)&quartu_alarm_intensity + *(float *)&quartu_alarm_flash_amplitude * s;
     int r;
     int k;
     if (v < 0.0f) v = 0.0f;
     r = func_001FA898_r((float)D_L15_00161B57[0] * v);
-    k = *(int *)&D_L15_00161B54;
+    k = *(int *)&quartu_alarm_flash_color;
     emit_rgba_draw_packet(k & 0xFF, k >= 9, k >= 17, r);
 }
 typedef int u128 __attribute__((mode(TI)));

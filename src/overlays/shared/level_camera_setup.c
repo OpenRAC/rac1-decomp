@@ -31,7 +31,7 @@ void setup_level_cameras(void) {
 
     g->underwater = 0;
     g->frames = 0;
-    *(float *)&D_L00_0015F040 = 0.75f;
+    *(float *)&follow_cam_turn_blend_weight = 0.75f;
     gCamPostUpdCountLvl = 0;
     for (k = 0; k < 48; k++) {
         gCameraSlotsLvl[k].hard_cut = 0;

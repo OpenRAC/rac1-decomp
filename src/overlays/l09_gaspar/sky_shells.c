@@ -117,7 +117,7 @@ void draw_level09_scrolling_textured_strips(char *list, float t, int count, long
     l09_packet[3] = 0x50000009;
     l09_packet += 4;
     font_queue_vu_state();
-    s0 = 1.0f - (float)(D_L09_0015F6B0 & 0x7FF) * 0.00048828125f;
+    s0 = 1.0f - (float)(gaspar_frame_count & 0x7FF) * 0.00048828125f;
     s1 = s0 + s0 + 0.5f;
     sp = (int *)0x70000000;
     for (i = 0; i < 256; i++) {

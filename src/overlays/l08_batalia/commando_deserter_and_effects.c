@@ -464,9 +464,9 @@ void update_layered_mesh_effect(unsigned char *moby) {
     switch (moby[0x20]) {
     case 0:
         if (*(int *)&D_L08_00161E94 == 0) {
-            scale_rgba_tables(D_L08_001E85D0, 13, D_L08_001E2B18, 0.5f, 0.5f, 0.65f, 0.5f, 1);
-            scale_rgba_tables(D_L08_001DE1E0, 8, D_L08_001DB7D8, 0.5f, 0.5f, 0.5f, 1.0f, 1);
-            scale_rgba_tables(D_L08_001E2AE8, 11, D_L08_001DE200, 0.25f, 0.25f, 0.25f, 1.0f, 1);
+            scale_rgba_tables(batalia_mesh13_colors, 13, batalia_mesh13_counts, 0.5f, 0.5f, 0.65f, 0.5f, 1);
+            scale_rgba_tables(batalia_mesh8_colors, 8, batalia_mesh8_counts, 0.5f, 0.5f, 0.5f, 1.0f, 1);
+            scale_rgba_tables(batalia_mesh11_colors, 11, batalia_mesh11_counts, 0.25f, 0.25f, 0.25f, 1.0f, 1);
             *(int *)&D_L08_00161E94 = 1;
         }
         moby[0x20] = 1;

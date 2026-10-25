@@ -1026,7 +1026,7 @@ void update_beam_barrier(char *m) {
             InitDirectionalHitQuery(V.sh.local[0], m, 0x10001, 5.0f, V.matrix[2]);
             coll_line(V.matrix[0], V.matrix[1], 0, m, V.sh.local[0]);
             if (FLD((D_0014171B + 0x34D), 0x158, unsigned short) == 0 && *(short *)(d + 0x16) == 0
-                && D_L06_001746D8 == FLD((D_0013E633 + 0xE1D), 0x2080, char *)) {
+                && blarg_coll_hit_moby == FLD((D_0013E633 + 0xE1D), 0x2080, char *)) {
                 short t = *(short *)(d + 0x14) + 1;
                 *(short *)(d + 0x14) = t;
                 *(short *)(d + 0x16) = scale_ticks(30);
@@ -1052,7 +1052,7 @@ void update_beam_barrier(char *m) {
             InitDirectionalHitQuery(V.sh.local[0], m, 0x10001, 5.0f, V.matrix[2]);
             coll_line(V.matrix[0], V.matrix[1], 0, m, V.sh.local[0]);
             if (FLD((D_0014171B + 0x34D), 0x158, unsigned short) == 0 && *(short *)(d + 0x16) == 0
-                && D_L06_001746D8 == FLD((D_0013E633 + 0xE1D), 0x2080, char *)) {
+                && blarg_coll_hit_moby == FLD((D_0013E633 + 0xE1D), 0x2080, char *)) {
                 short t = *(short *)(d + 0x14) + 1;
                 *(short *)(d + 0x14) = t;
                 *(short *)(d + 0x16) = scale_ticks(30);

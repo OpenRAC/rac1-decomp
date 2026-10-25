@@ -215,7 +215,7 @@ void update_render_debug_menu(void) {
         occl_cam_state.z9C = (int)gCamera.pos[2] >> 2;
         return;
     } else {
-        t = D_001E7AC0;
+        t = render_debug_menu_row_counts;
 
         if (g_controller_state.pressed & 0x2000) {
             int p = ++occl_cam_state.page;
@@ -316,7 +316,7 @@ void update_render_debug_menu(void) {
             }
             break;
         case 2:
-            if (D_0015F720 == 0) {
+            if (occl_grid_data == 0) {
                 occl_cam_state.a1C = 0;
                 break;
             }
@@ -344,14 +344,14 @@ void update_render_debug_menu(void) {
         case 5:
             if (g_controller_state.pressed & 0x50) {
                 if ((occl_cam_state.a28 = !occl_cam_state.a28) != 0) {
-                    D_00160FC0 = 65536.0f;
-                    D_00161070 = 64.0f;
+                    tfrag_draw_distance = 65536.0f;
+                    tie_draw_distance = 64.0f;
                     occl_fog_density_set = 40.0f;
                     occl_fog_count = 0x40;
                     part_clip_dist = 0x40000;
                 } else {
-                    D_00160FC0 = 512000.0f;
-                    D_00161070 = 720.0f;
+                    tfrag_draw_distance = 512000.0f;
+                    tie_draw_distance = 720.0f;
                     occl_fog_density_set = 500.0f;
                     occl_fog_count = 500;
                     part_clip_dist = 0x1F4000;
@@ -431,7 +431,7 @@ void update_render_debug_menu(void) {
                 int i = occl_cam_state.a3C;
                 unsigned char *e = &saved_mission_state[i + g_current_level_index * 16];
                 *e = (*e == 0) ? 0xFF : 0;
-                D_0015FCC8[i] = *e;
+                debug_mission_state_mirror[i] = *e;
             }
             break;
         }
@@ -445,7 +445,7 @@ void update_render_debug_menu(void) {
         int max = 999999;
         int *val;
         if (occl_cam_state.cursor < 13) {
-            unsigned char k = ((unsigned char *)&D_0015F110)[occl_cam_state.cursor];
+            unsigned char k = ((unsigned char *)&debug_weapon_item_ids)[occl_cam_state.cursor];
             max = ((Item1088 *)(k * sizeof(Item1088) + (unsigned int)vendor_item_prices))->max;
             val = &weapon_ammo_counts[k];
         } else {
@@ -487,13 +487,13 @@ void update_render_debug_menu(void) {
             *val = max;
         }
         if (g_controller_state.pressed & 0x10) {
-            gold_weapon_purchased[((unsigned char *)&D_0015F110)[occl_cam_state.cursor]]++;
+            gold_weapon_purchased[((unsigned char *)&debug_weapon_item_ids)[occl_cam_state.cursor]]++;
         }
         if (g_controller_state.pressed & 0x80) {
-            gold_weapon_purchased[((unsigned char *)&D_0015F110)[occl_cam_state.cursor]]--;
+            gold_weapon_purchased[((unsigned char *)&debug_weapon_item_ids)[occl_cam_state.cursor]]--;
         }
         {
-            unsigned char k = ((unsigned char *)&D_0015F110)[occl_cam_state.cursor];
+            unsigned char k = ((unsigned char *)&debug_weapon_item_ids)[occl_cam_state.cursor];
             unsigned char *c = &gold_weapon_purchased[k];
             Gadget1088 *g = &item_info_table[k];
             if (g->cap < *c) {
@@ -590,13 +590,13 @@ void update_render_debug_menu(void) {
         }
         if (occl_cam_state.cursor == 2 && (g_controller_state.pressed & 0xF0)) {
             extern char D_0015F120;
-            char *fmt = D_001E7AD8;
-            char *dev = &D_0015F120;
+            char *fmt = camera_sample_dir;
+            char *dev = &camera_sample_path_format;
             int i, found;
 
             found = 0;
-            for (i = 0; i < D_0015F734; i++) {
-                float *p = D_001941E0 + i;
+            for (i = 0; i < camera_sample_point_count; i++) {
+                float *p = camera_sample_points + i;
                 if (p[0] < gCamera.pos[0] + 0.5f && gCamera.pos[0] - 0.5f < p[0]
                     && p[1] < gCamera.pos[1] + 0.5f && gCamera.pos[1] - 0.5f < p[1]
                     && p[2] < gCamera.pos[2] + 0.5f && gCamera.pos[2] - 0.5f < p[2]) {
@@ -613,8 +613,8 @@ void update_render_debug_menu(void) {
                 float *samples;
                 int fd, size;
 
-                func_00116248(path, dev, fmt, g_current_level_index, D_001E7AF8, D_0015F130);
-                func_00116248(line, D_001E7B10, func_00120778(gCamera.pos[0]),
+                func_00116248(path, dev, fmt, g_current_level_index, camera_sample_text_name, camera_sample_path_suffix);
+                func_00116248(line, camera_sample_line_format, func_00120778(gCamera.pos[0]),
                               func_00120778(gCamera.pos[1]), func_00120778(gCamera.pos[2]));
                 fd = func_0011BF80(path, 0x303);
                 if (fd >= 0) {
@@ -623,8 +623,8 @@ void update_render_debug_menu(void) {
                     func_0011C208(fd);
                     occl_cam_state.bF9 = 0x79;
                 }
-                samples = D_001941E0;
-                func_00116248(path, dev, fmt, g_current_level_index, D_0015F138, D_0015F130);
+                samples = camera_sample_points;
+                func_00116248(path, dev, fmt, g_current_level_index, camera_sample_bin_name, camera_sample_path_suffix);
                 fd = func_0011BF80(path, 0x303);
                 if (fd >= 0) {
                     func_0011C388(fd, 0, 2);
@@ -636,9 +636,9 @@ void update_render_debug_menu(void) {
                     if (size <= 0x100000) {
                         func_0011C388(fd, 0, 0);
                         func_0011C5C0(fd, samples, size);
-                        D_0015F734 = size / 12;
+                        camera_sample_point_count = size / 12;
                     } else {
-                        D_0015F734 = 0;
+                        camera_sample_point_count = 0;
                     }
                     func_0011C208(fd);
                 }
@@ -650,8 +650,8 @@ void update_render_debug_menu(void) {
             char line[64];
             int fd;
 
-            func_00116248(path, D_0015F120, D_001E7AD8, g_current_level_index, D_001E7AF8, D_0015F130);
-            func_00116248(line, D_001E7B30, func_00120778(gCamera.pos[0]),
+            func_00116248(path, camera_sample_path_format, camera_sample_dir, g_current_level_index, camera_sample_text_name, camera_sample_path_suffix);
+            func_00116248(line, camera_sample_alt_line_format, func_00120778(gCamera.pos[0]),
                           func_00120778(gCamera.pos[1]), func_00120778(gCamera.pos[2]));
             fd = func_0011BF80(path, 0x303);
             if (fd >= 0) {
@@ -903,7 +903,7 @@ extern char *D_0015F720 MACRO_ADDR;
    one `if`, which is what leaves retail's shared failure return after
    level 2 and a separate one for the 0xFFFF test. */
 int ParseOcclGrid(int x, int y, int z) {
-    char *grid = D_0015F720;
+    char *grid = occl_grid_data;
     char *base = grid + *(int *)grid;
     unsigned short *l = (unsigned short *)(grid + 4);
     int cz, cy, cx;
@@ -987,7 +987,7 @@ void BuildOcclVisibility(void) {
         occl_previous_grid = vis;
     } else {
         occl_invalid_grid = 1;
-        if (D_0015F728 == 0) {
+        if (occl_fallback_mode == 0) {
             gx = (char *)GetOcclGridFromPair(x - 1, y, z, x + 1, y, z,
                                        D_00187040_cam.focus[0] * scale - IntToFloat(x));
             gy = (char *)GetOcclGridFromPair(x, y - 1, z, x, y + 1, z,
@@ -1011,7 +1011,7 @@ void BuildOcclVisibility(void) {
             }
         }
         if (vis == 0) {
-            switch (D_0015F728) {
+            switch (occl_fallback_mode) {
             case 0:
                 if (camera_position_publication_suppressed == 0 && occl_previous_grid != 0) {
                     FastMemCopy(occl_visibility, occl_previous_grid, 0x80);
@@ -1214,10 +1214,10 @@ void UpdateViewContext(void) {
     near_clip = view->near_clip;
     view->clip_distances.f[1] = near_clip;
     view->clip_scale.f[2] = (horizontal_clip_scale + vertical_clip_scale) * 0.5f;
-    qcopy(&D_0018D0C0[0], &view->fov);
-    qcopy(&D_0018D0C0[1], &view->aspect_scale);
-    qcopy(&D_0018D0C0[2], &view->clip_scale);
-    qcopy(&D_0018D0C0[3], &view->clip_distances);
+    qcopy(&view_clip_constants[0], &view->fov);
+    qcopy(&view_clip_constants[1], &view->aspect_scale);
+    qcopy(&view_clip_constants[2], &view->clip_scale);
+    qcopy(&view_clip_constants[3], &view->clip_distances);
 
     /* Retail lw instructions carry the fog endpoint float bits into packet fields. */
     far_bits = *(s32 *)&view->fog_far_int;
@@ -1256,10 +1256,10 @@ void UpdateViewContext(void) {
     viewport_width = view->half_width;
     viewport_height = view->half_height;
     projection_fog_multiplier = view->fog_mul;
-    D_00160820[0] = 0.5f / 210000.0f;
-    D_00160820[1] = -0.5f / 210000.0f;
-    D_00160820[2] = 0.5f;
-    D_00160820[3] = viewport_width / (horizontal_fov * 210000.0f);
+    view_depth_constants[0] = 0.5f / 210000.0f;
+    view_depth_constants[1] = -0.5f / 210000.0f;
+    view_depth_constants[2] = 0.5f;
+    view_depth_constants[3] = viewport_width / (horizontal_fov * 210000.0f);
     view->proj[0] = viewport_width / (horizontal_fov * projection_near_clip);
     view->proj[1] = 0;
     view->proj[2] = 0;
@@ -1469,13 +1469,13 @@ void SetPalMode(void) {
     if (pal_mode != 0) {
         draw_buffer_address = 0x100000;
         depth_buffer_address = 0x1E0000;
-        D_0015EF80 = 0;
+        display_buffer_address = 0;
         g_gs_texture_allocation_base = 0x2C0000;
         SetupFS_AA_buffer(0x200, 0x1C0, 0x200, 0x200, 4, 0);
     } else {
         draw_buffer_address = 0xE0000;
         depth_buffer_address = 0x1B0000;
-        D_0015EF80 = 0;
+        display_buffer_address = 0;
         g_gs_texture_allocation_base = 0x280000;
         SetupFS_AA_buffer(0x200, 0x1A0, 0x200, 0x1C0, 0, 0);
     }
@@ -1553,12 +1553,12 @@ void ResetDrawGlobals(void) {
     effect_quad_count = 0;
     D_0015F430 = 0;
     D_0015F434 = 0;
-    D_0015F544 = 0;
-    D_0015F548 = 0;
+    letterbox_enabled = 0;
+    letterbox_bar_height = 0;
     *(int *)&screen_overlay_enabled = 0;
     *(int *)&D_0015F460 = 0;
     *(int *)&occl_debug_overlay_enabled = 0;
-    D_0015F728 = 0;
+    occl_fallback_mode = 0;
     surface_height_tiles = 0;
     occl_cell_table = 0;
     occl_cell_count = 0;
@@ -1703,14 +1703,14 @@ void DrawDebugProfiler(void) {
     UpdateOcclusion();
     ResetGsRegisters();
     font_state = -1;
-    func_001F2558_a(D_0015F480, 0xF);
-    func_001F2560_a(D_0015F480, 0xF);
+    func_001F2558_a(profile_mark_frame_start, 0xF);
+    func_001F2560_a(profile_mark_frame_start, 0xF);
     if (level_sky_effect_data != 0 && (D_0015F534_f & 1)) {
         if (draw_config[2] != 0) {
             Transition_DrawSky();
         }
-        func_001F2560_a(D_0015F490, 0xE);
-        func_001F2558_a(D_0015F490, 0xE);
+        func_001F2560_a(profile_mark_after_sky, 0xE);
+        func_001F2558_a(profile_mark_after_sky, 0xE);
     }
     if (D_0015F534_f & 2) {
         DrawTfrag();
@@ -1731,8 +1731,8 @@ void DrawDebugProfiler(void) {
         DoGifPaging();
         VU1_gsRegsNormal();
     }
-    func_001F2558_a(D_0015F4A0, 6);
-    func_001F2560_a(D_0015F4A0, 6);
+    func_001F2558_a(profile_mark_after_ties, 6);
+    func_001F2560_a(profile_mark_after_ties, 6);
     if (D_0015F534_f & 8) {
         DrawShrubs();
     }
@@ -1758,11 +1758,11 @@ void DrawDebugProfiler(void) {
     append_dma_tag(0x02080000);
     SetupGifPaging(0);
     if ((D_0015F534_f & 0x20) && draw_config[0x30 / 4] != 0 && font_state != 6) {
-        VU1_addDataRef(D_0010FAA0, D_0010FA90);
+        VU1_addDataRef(moby_vu1_data, moby_vu1_data_qwc);
         font_state = 6;
     }
-    func_001F2560_a(D_0015F4B0, 4);
-    func_001F2558_a(D_0015F4B0, 4);
+    func_001F2560_a(profile_mark_after_mobys, 4);
+    func_001F2558_a(profile_mark_after_mobys, 4);
     if (D_0015F534_f & 0x20) {
         vu1_gs_regs_alt();
         if (draw_config[0x34 / 4] != 0) {
@@ -1774,8 +1774,8 @@ void DrawDebugProfiler(void) {
             vu1_gs_regs_alt();
             draw_light_quads();
         }
-        func_001F2558_a(D_0015F4C0, 6);
-        func_001F2560_a(D_0015F4C0, 6);
+        func_001F2558_a(profile_mark_after_lights, 6);
+        func_001F2560_a(profile_mark_after_lights, 6);
         if (draw_config[0x38 / 4] != 0) {
             VU1_addGSregister(8, 5);
             vu1_gs_regs_alt();
@@ -1783,8 +1783,8 @@ void DrawDebugProfiler(void) {
             PartProc();
             font_state = 8;
         }
-        func_001F2558_a(D_0015F4D0, 8);
-        func_001F2560_a(D_0015F4D0, 8);
+        func_001F2558_a(profile_mark_after_particles, 8);
+        func_001F2560_a(profile_mark_after_particles, 8);
         if (draw_config[0x3C / 4] != 0) {
             if (draw_callback2_count != 0) {
                 vu1_gs_regs_alt();
@@ -1796,13 +1796,13 @@ void DrawDebugProfiler(void) {
             VU1_addGSregister(0x42, 0x8000000044L);
             render_queued_rotated_sprites();
         }
-        func_001F2558_a(D_0015F4E0, 6);
-        func_001F2560_a(D_0015F4E0, 6);
+        func_001F2558_a(profile_mark_after_sprites, 6);
+        func_001F2560_a(profile_mark_after_sprites, 6);
     }
     if (draw_config[0x48 / 4] != 0) {
         AA_BlurPass();
     }
-    func_001F2560_a(D_0015F4F0, 0xF);
+    func_001F2560_a(profile_mark_after_blur, 0xF);
     vu1_gs_regs_alt();
     if (D_0015F534_f & 0x10000) {
         DebugProfiler_Hook();
@@ -1815,8 +1815,8 @@ void DrawDebugProfiler(void) {
     if (g_game_mode == 2 && D_0015EF40_F3D78[0] != 0) {
         draw_subtitles();
     }
-    func_001F2560_a(D_0015F4F8, 0xE);
-    func_001F2558_a(D_0015F4F8, 0xE);
+    func_001F2560_a(profile_mark_after_hud, 0xE);
+    func_001F2558_a(profile_mark_after_hud, 0xE);
     DoGifPaging();
     if (D_0015F534_f & 0x40) {
         if (draw_config[0x44 / 4] != 0) {
@@ -1830,33 +1830,33 @@ void DrawDebugProfiler(void) {
                 }
                 emit_rgba_draw_packet(0, 0, 0, func_001FA898_r(gFade * 128.0f));
             }
-            if (D_0015F540 > 0.0f) {
-                if (D_0015F540 > 1.0f) {
-                    D_0015F540 = 1.0f;
+            if (white_fade_level > 0.0f) {
+                if (white_fade_level > 1.0f) {
+                    white_fade_level = 1.0f;
                 }
-                emit_rgba_draw_packet(0xFF, 0xFF, 0xFF, func_001FA898_r(D_0015F540 * 128.0f));
+                emit_rgba_draw_packet(0xFF, 0xFF, 0xFF, func_001FA898_r(white_fade_level * 128.0f));
             }
             if (*(int *)&screen_overlay_enabled != 0 && *(int *)&screen_color_effect_now != 0) {
                 draw_screen_effect();
             }
         }
-        func_001F2560_a(D_0015F500, 0xA);
+        func_001F2560_a(profile_mark_after_fades, 0xA);
     }
     VU0_loadMicroProgram(D_00100AE0);
     func_00118D80(0);
     t = IntToFloat(*(volatile int *)0x10000800);
-    D_0015F6F8 = t / (pal_mode != 0 ? 11520.0f : 9600.0f);
+    draw_frame_time_ratio = t / (pal_mode != 0 ? 11520.0f : 9600.0f);
     VU1_syncChain(2);
-    func_001F2558_a(D_0015F510, 0x11);
+    func_001F2558_a(profile_mark_vu1_sync, 0x11);
     if (D_0015F534_f & 2) {
         if (draw_config[0x10 / 4] != 0) {
             LightTfrags(D_001E1600);
             PatchTfragGifs();
         }
-        func_001F2558_a(D_001E7BA0, 2);
+        func_001F2558_a(profile_mark_tfrag_lighting, 2);
     }
     VU1_syncChain(4);
-    func_001F2558_a(D_0015F510, 0x11);
+    func_001F2558_a(profile_mark_vu1_sync, 0x11);
     if (D_0015F534_f & 4) {
         if (draw_config[0x18 / 4] != 0) {
             if (pal_mode != 0) {
@@ -1867,27 +1867,27 @@ void DrawDebugProfiler(void) {
                 PatchTieGifs();
             }
         }
-        func_001F2558_a(D_0015F518, 5);
+        func_001F2558_a(profile_mark_tie_lighting, 5);
     }
     VU1_syncChain(8);
-    func_001F2558_a(D_0015F510, 0x11);
+    func_001F2558_a(profile_mark_vu1_sync, 0x11);
     if (D_0015F534_f & 8) {
         if (draw_config[0x20 / 4] != 0) {
             LightShrubs(D_001D9240);
             patch_shrub_gifs();
         }
-        func_001F2558_a(D_001E7BB8, 7);
+        func_001F2558_a(profile_mark_shrub_lighting, 7);
     }
     VU1_syncChain(0x10);
-    func_001F2558_a(D_0015F510, 0x11);
+    func_001F2558_a(profile_mark_vu1_sync, 0x11);
     if (D_0015F534_f & 0x10) {
         if (draw_config[0x28 / 4] != 0) {
             PatchMobyGifs();
         }
-        func_001F2558_a(D_0015F528, 3);
+        func_001F2558_a(profile_mark_moby_patch, 3);
     }
     func_001F2930_v();
-    D_0015F728 = 0;
+    occl_fallback_mode = 0;
 }
 
 extern int D_0015F6FC;
@@ -1940,7 +1940,7 @@ void SetupGifPaging(int arg0) {
     int *p = g_render_packet_cursor;
     int i;
 
-    D_0015F550 = p;
+    gif_paging_head_tag = p;
     p += 4;
     g_render_packet_cursor = p;
     g_gs_texture_allocation_cursor = g_gs_texture_allocation_start;
@@ -1990,26 +1990,26 @@ extern void func_00234E80(void);
 void DoGifPaging(void) {
     int *p = g_render_packet_cursor;
 
-    D_0015F554 = p;
+    gif_paging_tail_tag = p;
     p += 4;
     g_render_packet_cursor = p;
-    D_0015F550[0] = 0x20000000;
-    D_0015F550[1] = (int)g_render_packet_cursor;
-    D_0015F550[2] = 0;
-    D_0015F550[3] = 0;
+    gif_paging_head_tag[0] = 0x20000000;
+    gif_paging_head_tag[1] = (int)g_render_packet_cursor;
+    gif_paging_head_tag[2] = 0;
+    gif_paging_head_tag[3] = 0;
     if (D_0018A3DC != 0) {
         func_0020C2F8();
         VU1_texFlush();
     }
     g_render_packet_cursor[0] = 0x20000000;
-    g_render_packet_cursor[1] = (int)(D_0015F550 + 4);
+    g_render_packet_cursor[1] = (int)(gif_paging_head_tag + 4);
     g_render_packet_cursor[2] = 0;
     g_render_packet_cursor[3] = 0;
     g_render_packet_cursor += 4;
-    D_0015F554[0] = 0x20000000;
-    D_0015F554[1] = (int)g_render_packet_cursor;
-    D_0015F554[2] = 0;
-    D_0015F554[3] = 0;
+    gif_paging_tail_tag[0] = 0x20000000;
+    gif_paging_tail_tag[1] = (int)g_render_packet_cursor;
+    gif_paging_tail_tag[2] = 0;
+    gif_paging_tail_tag[3] = 0;
 }
 
 /* Retail carries 4 bytes of inter-function padding after this endlabel. */
@@ -2150,7 +2150,7 @@ void dispatch_callback_list_1(void) {
 void dispatch_callback_list_2(void) {
     int i;
     for (i = 0; i < draw_callback3_count; i++) {
-        D_0018E040[i](draw_callback3_args[i]);
+        draw_callback3_funcs[i](draw_callback3_args[i]);
     }
 }
 
@@ -2158,7 +2158,7 @@ void dispatch_callback_list_2(void) {
 void dispatch_callback_list_3(void) {
     int i;
     for (i = 0; i < draw_callback4_count; i++) {
-        D_0018E240[i](draw_callback4_args[i]);
+        draw_callback4_funcs[i](draw_callback4_args[i]);
     }
 }
 
@@ -2217,24 +2217,24 @@ void draw_light_quads(void) {
     pkt[0] = 5;
     pkt[3] = 0x8000000044;
     for (j = 0; j < 4; j++) {
-        uv[j][0] = D_0018CBA0[j].v[2];
-        uv[j][1] = D_0018CBA0[j].v[3];
+        uv[j][0] = effect_quad_corners[j].v[2];
+        uv[j][1] = effect_quad_corners[j].v[3];
         colors[j] = 0x40808080;
     }
     for (i = 0; i < effect_quad_count; i++) {
         float s;
         int k;
 
-        qcopy(&dir, &D_0018E440[i].dir);
+        qcopy(&dir, &effect_quad_entries[i].dir);
         fast_vec_normalize(&dir, &dir, 1.0f);
-        s = D_0018E440[i].pos.v[3];
+        s = effect_quad_entries[i].pos.v[3];
         for (k = 0; k < 4; k++) {
-            float cx = D_0018CBA0[k].v[0];
+            float cx = effect_quad_corners[k].v[0];
             float vx = dir.v[0];
-            float cy = D_0018CBA0[k].v[1];
+            float cy = effect_quad_corners[k].v[1];
             float d = cx * vx + cy * dir.v[1];
 
-            qcopy(&m[k], &D_0018E440[i].pos);
+            qcopy(&m[k], &effect_quad_entries[i].pos);
             m[k].v[0] += (cx - vx * d) * s;
             m[k].v[1] += (cy - dir.v[1] * d) * s;
             m[k].v[2] -= dir.v[2] * d * s;
@@ -2384,17 +2384,17 @@ extern char D_00160930[];
 void draw_letterbox_bars(void) {
     int h;
 
-    if (D_0015F544 != 0) {
-        if (D_0015F548 < 24) {
-            D_0015F548++;
+    if (letterbox_enabled != 0) {
+        if (letterbox_bar_height < 24) {
+            letterbox_bar_height++;
         }
     } else {
-        if (D_0015F548 == 0) {
+        if (letterbox_bar_height == 0) {
             return;
         }
-        D_0015F548--;
+        letterbox_bar_height--;
     }
-    h = D_0015F548;
+    h = letterbox_bar_height;
     if (h == 0) {
         return;
     }
@@ -2406,7 +2406,7 @@ void draw_letterbox_bars(void) {
     {
         int *base = g_render_packet_cursor;
         g_render_packet_cursor = base + 4;
-        qcopy(g_render_packet_cursor, D_00160920);
+        qcopy(g_render_packet_cursor, rect_overlay_gif_regs_a);
         *(short *)(base + 4) = 0x8001;
     }
     {
@@ -2420,7 +2420,7 @@ void draw_letterbox_bars(void) {
     {
         int *base = g_render_packet_cursor;
         g_render_packet_cursor = base + 4;
-        qcopy(g_render_packet_cursor, D_00160930);
+        qcopy(g_render_packet_cursor, rect_overlay_gif_regs_b);
         *(short *)(base + 4) = 0x8008;
     }
     {
@@ -2566,7 +2566,7 @@ void DrawRectOverlay_FiiiiUl(int y0, int y1, int x0, int x1, unsigned long rgba)
     {
         int *base = g_render_packet_cursor;
         g_render_packet_cursor = base + 4;
-        qcopy(g_render_packet_cursor, D_00160920);
+        qcopy(g_render_packet_cursor, rect_overlay_gif_regs_a);
         *(short *)(base + 4) = 0x8001;
     }
     {
@@ -2580,7 +2580,7 @@ void DrawRectOverlay_FiiiiUl(int y0, int y1, int x0, int x1, unsigned long rgba)
     {
         int *base = g_render_packet_cursor;
         g_render_packet_cursor = base + 4;
-        qcopy(g_render_packet_cursor, D_00160930);
+        qcopy(g_render_packet_cursor, rect_overlay_gif_regs_b);
         *(short *)(base + 4) = 0x8004;
     }
     {
@@ -2718,7 +2718,7 @@ void emit_textured_rectangle(float x, float y, float w, float h, int u, int v, i
     s1 = ub * 16;
     base = g_render_packet_cursor;
     g_render_packet_cursor = base + 4;
-    qcopy(base + 4, D_00160960);
+    qcopy(base + 4, textured_rect_gif_regs);
     p = (long *)(base + 8);
     g_render_packet_cursor = base + 8;
     p[0] = tex;

@@ -62,7 +62,7 @@ int advance_shuttle_along_path(struct Moby *moby) {
     Vec4 puff;
     int done = 0;
 
-    path = (PathNodes *)D_L09_001B0930[vars->path];
+    path = (PathNodes *)gaspar_paths[vars->path];
     vars->lag += (0.0f - vars->lag) * 0.005f;
     qcopy(&target, &path->node[vars->node]);
     target.f[2] += vars->speed * (*(f32 *)&D_L09_00161E78);

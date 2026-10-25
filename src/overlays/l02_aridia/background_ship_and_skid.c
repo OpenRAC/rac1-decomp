@@ -128,7 +128,7 @@ void skids_agent_update(Moby *m) {
     switch (m->state) {
     case 0:
         if (discount_purchase_pricing[0xA] != 0) goto del;
-        d->f20 = D_L02_00161D80;
+        d->f20 = skids_agent_dialogue_name;
         m->state = 1;
         DialogRequest_Init(m, d);
         initialize_moby_grounding(m);
@@ -256,7 +256,7 @@ void skids_agent_update(Moby *m) {
         Moby_GetJointWorldPos(m, 2, ((float *)&d->f178->pos));
         MobyTransformScaledVertex(m, 2, v0);
         matrix_copy_rows(((char *)&d->f178->rot_row0), v0);
-        matrix_mul_vec3(v4, &D_L02_00161D70, ((char *)&d->f178->rot_row0));
+        matrix_mul_vec3(v4, &skids_agent_prop_offset, ((char *)&d->f178->rot_row0));
         FastVecAdd(((float *)&d->f178->pos), ((float *)&d->f178->pos), v4);
         moby_build_matrix(d->f178);
     }
@@ -343,7 +343,7 @@ void SkidMcMarxAridiaUpdate(char *m)
             return;
         }
         *(int *)(d + 0x180) = 0;
-        *(char **)(d + 0x20) = D_L02_00161D90;
+        *(char **)(d + 0x20) = skid_mcmarx_dialogue_name;
         *(unsigned char *)(m + 0x20) = 1;
         *(unsigned char *)(m + 0x30) = 0xFF;
         DialogRequest_Init(m, d);
@@ -689,19 +689,19 @@ void func_L02_002EB480_r(Moby *m) __asm__("func_L02_002EB480");
 void func_L02_002EB480_r(Moby *m) {
     int *d = (int *)m->pvars;
 
-    func_L02_002A59F8_2EB480(0.0f, 260080.0f, 255.0f, 0.0f, 15, 15, 25, 30, 40, 64, D_L02_001F4140);
+    func_L02_002A59F8_2EB480(0.0f, 260080.0f, 255.0f, 0.0f, 15, 15, 25, 30, 40, 64, aridia_ocean_frame_state);
     if (D_L02_0015F6E8_2EB480 != 0 || (d[0] != -1 && func_00215570_2EB480(aridia_camera_pos, d[0]))) {
-        func_00202790_2EB480(D_L02_001F3EC0);
+        func_00202790_2EB480(aridia_ocean_zone0_part);
     }
     if (D_L02_0015F6E8_2EB480 != 0 || (d[1] != -1 && func_00215570_2EB480(aridia_camera_pos, d[1]))) {
-        func_00202790_2EB480(D_L02_001F3F90);
-        func_00202790_2EB480(D_L02_001F3FF0);
-        func_00202790_2EB480(D_L02_001F4050);
-        func_00202790_2EB480(D_L02_001F4090);
-        func_00202790_2EB480(D_L02_001F40D0);
+        func_00202790_2EB480(aridia_ocean_zone1_part0);
+        func_00202790_2EB480(aridia_ocean_zone1_part1);
+        func_00202790_2EB480(aridia_ocean_zone1_part2);
+        func_00202790_2EB480(aridia_ocean_zone1_part3);
+        func_00202790_2EB480(aridia_ocean_zone1_part4);
     }
     if (D_L02_0015F6E8_2EB480 != 0 || (d[2] != -1 && func_00215570_2EB480(aridia_camera_pos, d[2]))) {
-        func_00202790_2EB480(D_L02_001F3F20);
+        func_00202790_2EB480(aridia_ocean_zone2_part);
     }
     func_L02_002A59D8_2EB480();
 }
@@ -812,7 +812,7 @@ char *spawn_projectile_moby(char *src, void *pos, float *dir) {
     if (moby != 0) {
         moby[0x31] = 1;
         *(unsigned char *)(moby + 0x30) = *(short *)(moby + 0x32) = 0xFF;
-        set_moby_color(moby, (*(int *)&D_L02_00161FDC), (*(int *)&D_L02_00161FE0), (*(int *)&D_L02_00161FE4));
+        set_moby_color(moby, (*(int *)&aridia_projectile_color_r), (*(int *)&aridia_projectile_color_g), (*(int *)&aridia_projectile_color_b));
         *(short *)(moby + 0x34) = *(unsigned short *)(src + 0x34);
         qcopy(moby + 0x10, pos);
         *(float *)(moby + 0x48) = fast_atan2(dir[0], dir[1]);
@@ -926,7 +926,7 @@ void update_tutorial_hint_triggers(unsigned char *moby) {
                 Help_Request(0x4E22, 0x4C);
             }
         }
-        if (invert52[0] != 0 && D_0015EEE0[0] != 0) {
+        if (invert52[0] != 0 && opt_cam_invert[0] != 0) {
             char *b = D_0014171B + 0x34D;
             if (!(*(unsigned int *)(b + 0x3B4) & (1 << g_current_level_index))) {
                 Help_Request(0x4E2C, 0x76);

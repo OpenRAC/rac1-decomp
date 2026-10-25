@@ -1705,8 +1705,8 @@ extern char D_001507D0[];
 int memcard_Save(int slot, int flags) {
     unsigned char saved;
 
-    func_00121A80(D_0015EF98);
-    func_0012D818(D_0015EF98);
+    func_00121A80(save_clock_time);
+    func_0012D818(save_clock_time);
     copy_level_object_positions();
     save_map_coverage(D_00141FC0 + (D_0015EE84_m << 11));
     {
@@ -1748,7 +1748,7 @@ int memcard_Save(int slot, int flags) {
         *(int *)(q + *(int *)(q + 0x14) * 0x1C + 0x24) = gBolts;
         *(int *)(q + *(int *)(q + 0x14) * 0x1C + 0x20) = D_0015EE84_m;
         *(int *)(q + *(int *)(q + 0x14) * 0x1C + 0x2C) = game_clock_ticks;
-        memcpy(names + *(int *)(q + 0x14) * 0x1C, D_0015EF98, 8);
+        memcpy(names + *(int *)(q + 0x14) * 0x1C, save_clock_time, 8);
         *(int *)(q + *(int *)(q + 0x14) * 0x1C + 0x28) = D_0015EF20;
         memcard_PrepData(D_0014EFD0, 0, mc_gamedata);
         memcard_PrepData(D_001507D0, *(int *)(q + 0xD0), mc_leveldata);

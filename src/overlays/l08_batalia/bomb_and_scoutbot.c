@@ -2467,7 +2467,7 @@ void update_rocket(M46 *m) {
         m->rotation[0]=FastAddRots(m->rotation[0],g_frame_time*6.2831855f);
         BuildSphericalOffset(d->velocity,(D_L08_00161A90+D_L08_00161A90)*g_frame_time,m->rotation[2],-m->rotation[1]);
         FastVecAdd(m->position,m->position,d->velocity);
-        if (func_L00_001F39B0(m->position,0x400,2,m,0) || m->position[0]<5.0f || m->position[0]>500.0f || m->position[1]<5.0f || m->position[1]>500.0f || m->position[2]<5.0f || m->position[2]>500.0f || FastVecDist(D_0013E633+0xE9D,m->position)<16.0f) m->state=6;
+        if (coll_point_query_stub(m->position,0x400,2,m,0) || m->position[0]<5.0f || m->position[0]>500.0f || m->position[1]<5.0f || m->position[1]>500.0f || m->position[2]<5.0f || m->position[2]>500.0f || FastVecDist(D_0013E633+0xE9D,m->position)<16.0f) m->state=6;
         return;
     case 6:
         if (batalia_mobys_last<(unsigned int)m) spawn_explosion(m,d->velocity,m->position,0.0f,0.0f,15,10,10,3.0f,2.0f,9.0f,1.0f,-1,15.0f,1,1,-1,0);

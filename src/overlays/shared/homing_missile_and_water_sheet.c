@@ -829,7 +829,7 @@ void Group_CopyZToTableSlots(char *moby) {
         char *e = (char *)(i + base);
         char *s;
         *(float *)(e + 0x18) = *(float *)(moby + 0x18);
-        s = D_L11_001DAB40 + *(int *)(*(char **)(e + 0x78) + 4) * 0x1190;
+        s = pokitaru_pool_tiles + *(int *)(*(char **)(e + 0x78) + 4) * 0x1190;
         *(float *)(s + 8) = *(float *)(moby + 0x18);
     } while (*p++ >= 0);
 }
