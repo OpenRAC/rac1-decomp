@@ -918,39 +918,6 @@ typedef struct {
     int w22C;
     unsigned char x230[1];
 } RsVars;
-typedef struct {
-    char pad0[0x10];
-    RsVec pos;
-    unsigned char state;
-    unsigned char b21;
-    char pad22[2];
-    char *w24;
-    char pad28[9];
-    unsigned char b31;
-    char pad32[2];
-    unsigned short h34;
-    char pad36[0xA];
-    RsVec rot;
-    char pad50[2];
-    unsigned char b52;
-    unsigned char b53;
-    char pad54[4];
-    float f58;
-    char pad5C[0x14];
-    unsigned char b70;
-    char pad71[7];
-    RsVars *vars;
-    char pad7C[3];
-    unsigned char b7F;
-    char pad80[0x14];
-    int w94;
-    char pad98[0xC];
-    unsigned char bA4;
-    char padA5;
-    unsigned short hA6;
-    char padA8[0x14];
-    unsigned char bBC;
-} RsMoby;
 typedef struct RsOther {
     char pad0[0x10];
     RsVec pos;
@@ -963,13 +930,13 @@ typedef struct RsOther {
 typedef struct {
     char pad0[0x10];
     RsVec pos;
-    RsMoby *src;
+    Moby *src;
     char pad24[8];
     float f2C;
 } RsHit;
 
 /* Robosquawker update: tracks a target, walks its path, flies to a random point, hops and pecks after the hero, and dies with a burst of parts. */
-void robosquawker_update(RsMoby *m) {
+void robosquawker_update(Moby *m) {
     RsVars *v;
     RsVec old;
     RsTarget tgt;
@@ -984,21 +951,21 @@ void robosquawker_update(RsMoby *m) {
     RsHit *hit;
     RsTargetMoby *tm;
 
-    v = m->vars;
+    v = (RsVars *)m->pvars;
     Manipulator_ApplyScale(2.5f, (int)m, 0, v->x230);
-    if (m->b31 != 0) {
+    if (m->visible != 0) {
         if (FastVecDist(&m->pos, gemlik_camera_pos) < 28.0f) {
             set_ground_height_band(m);
-            m->b7F = 0x16;
+            m->shadow_range = 0x16;
         }
     }
     if (gemlik_game_mode == 2) {
-        m->w94 = 0;
-        m->h34 |= 0x41;
+        m->collision = 0;
+        m->flags |= 0x41;
         return;
     }
-    m->w94 = *(int *)(m->w24 + 0x10);
-    m->h34 &= 0xFFBE;
+    m->collision = *(int *)(((char *)m->pclass) + 0x10);
+    m->flags &= 0xFFBE;
     FindNearestTargetMoby(m, &tgt, v->f1FC + 4.0f);
     tm = tgt.moby;
     if (tm == 0 || (v->h214 == 0 && v->w22C != -1 && is_point_inside_clip_volume(&tgt, v->w22C) == 0)) {
@@ -1024,14 +991,14 @@ void robosquawker_update(RsMoby *m) {
     ComputeHitResponse(m, hit, &v->f20, 0, &hits, &dmg, 0, 4);
     FastDecTimer(&v->h26);
     if (v->h26 < scale_ticks(0x2D) && hit != 0 && m->state != 0x63) {
-        if (hit->src->hA6 >= 0xB0 && hit->src->hA6 <= 0xB1 && v->h26 != 0) {
+        if ((*(unsigned short *)&hit->src->oclass) >= 0xB0 && (*(unsigned short *)&hit->src->oclass) <= 0xB1 && v->h26 != 0) {
             hit->f2C = 0.0f;
         }
-        if (m->b21 != 0xFF) {
-            MobyGroup_SetByteBC(m->b21, 1);
+        if (m->group != 0xFF) {
+            MobyGroup_SetByteBC(m->group, 1);
         }
         if (hit->f2C != 0.0f) {
-            ang = fast_atan2(m->pos.f[0] - tgt.pos.f[0], m->pos.f[1] - tgt.pos.f[1]);
+            ang = fast_atan2(m->pos.x - tgt.pos.f[0], m->pos.y - tgt.pos.f[1]);
             v->f148 = 0.5f;
             v->w140 = 0x202;
             v->f20 -= hit->f2C;
@@ -1042,7 +1009,7 @@ void robosquawker_update(RsMoby *m) {
             v->w144 = 9;
             v->b15D = 0;
             if (v->f20 <= 0.0f) {
-                m->h34 &= 0xEFFF;
+                m->flags &= 0xEFFF;
                 v->f138 = g_frame_time * 10.0f;
                 v->f13C = g_frame_time * 5.5f;
                 va = hit->pos;
@@ -1073,20 +1040,20 @@ void robosquawker_update(RsMoby *m) {
             }
         }
     }
-    m->bA4 = 0xFF;
+    m->hit_slot = 0xFF;
     switch (m->state) {
     case 0:
         qcopy(&v->v1D0, &m->pos);
         v->v1D0.f[3] = v->f1FC;
         if (v->h20A != 0) {
             m->state = 1;
-            if (m->b53 != 3) {
+            if (m->prev_seq != 3) {
                 MobyBlendAnimation(m, 3, 0, 0);
             }
         } else {
             m->state = 0xE;
-            m->pos.f[2] += 6.0f;
-            if (m->b53 != 0) {
+            m->pos.z += 6.0f;
+            if (m->prev_seq != 0) {
                 MobyBlendAnimation(m, 0, 0, 0);
             }
         }
@@ -1104,7 +1071,7 @@ void robosquawker_update(RsMoby *m) {
         v->f1A4 = v->f204 * g_frame_time;
         v->w1B8 |= 0x30;
         if (func_001160D8() & 1) {
-            m->h34 |= 0x8000;
+            m->flags |= 0x8000;
         }
         v->pD0 = &D_L13_00161428;
         if (v->w220 != -1) {
@@ -1119,26 +1086,26 @@ void robosquawker_update(RsMoby *m) {
         d = ProbeGroundHeight(&m->pos, 0x120, 0.5f);
         if (d > 1.0f
             && vec_length_xy(&va) < v->f1FC + 4.0f
-            && FastAbsF(m->pos.f[2] - tgt.pos.f[2]) < 10.0f
+            && FastAbsF(m->pos.z - tgt.pos.f[2]) < 10.0f
             && random_integer_below(0x13) == 0) {
-            if (m->b53 != 0) {
+            if (m->prev_seq != 0) {
                 MobyBlendAnimation(m, 0, 0, scale_ticks(3));
             }
             m->state = 0x11;
             release_robosquawker_particle((Level13VendorMoby *)v);
-        } else if (d > 1.0f && m->bBC == 1 && random_integer_below(4) == 0) {
+        } else if (d > 1.0f && m->command == 1 && random_integer_below(4) == 0) {
             if (random_integer_below(0x100) & 1) {
                 v->f1F8 = -v->f1F8;
             }
             v->f1F4 = v->f1F8 * 0.017453292f;
             v->h210 = scale_ticks((int)random_float_between(30.0f, 90.0f));
-            if (m->b53 != 0) {
+            if (m->prev_seq != 0) {
                 MobyBlendAnimation(m, 0, 0, scale_ticks(3));
             }
             release_robosquawker_particle((Level13VendorMoby *)v);
             m->state = 0x11;
             clear_u64_value(&v->v40);
-            m->bBC = 0;
+            m->command = 0;
         } else if (v->w220 != -1) {
             char *path;
 
@@ -1170,7 +1137,7 @@ void robosquawker_update(RsMoby *m) {
                     break;
                 }
             }
-            if (m->b53 != 0) {
+            if (m->prev_seq != 0) {
                 MobyBlendAnimation(m, 0, 0, scale_ticks(3));
             }
             m->state = 0xF;
@@ -1180,10 +1147,10 @@ void robosquawker_update(RsMoby *m) {
     case 0xF: {
         float a;
 
-        a = fast_atan2(v->v1E0.f[0] - m->pos.f[0], v->v1E0.f[1] - m->pos.f[1]);
+        a = fast_atan2(v->v1E0.f[0] - m->pos.x, v->v1E0.f[1] - m->pos.y);
         MobySpringTurn((char *)m, &v->f1F0, a, 0.03f, 0.6f, 0.09f);
         h = FastVecLength(&v->v40);
-        m->f58 = h * 20.0f + 1.0f;
+        m->anim_speed = h * 20.0f + 1.0f;
         FastVecSub(&v->v40, &v->v1E0, &m->pos);
         if (FastVecLength(&v->v40) > 1.0f) {
             ApproachValue(&h, g_frame_time * 4.0f, D_0015EE6C_v[1] * 6.0f);
@@ -1194,7 +1161,7 @@ void robosquawker_update(RsMoby *m) {
         FastVecAdd(&va, &v->v40, &m->pos);
         if (coll_sphere(1.2f, &va, 0, m) != 0) {
             clear_u64_value(&v->v40);
-            if (m->b53 != 0) {
+            if (m->prev_seq != 0) {
                 MobyBlendAnimation(m, 0, 0, scale_ticks(3));
             }
             m->state = 0xE;
@@ -1202,7 +1169,7 @@ void robosquawker_update(RsMoby *m) {
             qcopy(&m->pos, &va);
         }
         if (FastVecDist(&m->pos, &v->v1E0) < h || h == 0.0f) {
-            if (m->b53 != 0) {
+            if (m->prev_seq != 0) {
                 MobyBlendAnimation(m, 0, 0, scale_ticks(3));
             }
             m->state = 0xE;
@@ -1216,12 +1183,12 @@ void robosquawker_update(RsMoby *m) {
         float d;
 
         path = walker_paths[v->w220];
-        a = fast_atan2(v->v1E0.f[0] - m->pos.f[0], v->v1E0.f[1] - m->pos.f[1]);
+        a = fast_atan2(v->v1E0.f[0] - m->pos.x, v->v1E0.f[1] - m->pos.y);
         MobySpringTurn((char *)m, &v->f1F0, a, 0.018f, 0.8f, 0.09f);
         FastVecSub(&v->v40, &v->v1E0, &m->pos);
         ClampVectorLength(&v->v40, g_frame_time * 4.0f);
         FastVecAdd(&va, &v->v40, &m->pos);
-        m->f58 = FastVecLength(&v->v40) * 20.0f + 1.0f;
+        m->anim_speed = FastVecLength(&v->v40) * 20.0f + 1.0f;
         if (coll_sphere(1.2f, &va, 0, m) != 0) {
             int i;
 
@@ -1241,7 +1208,7 @@ void robosquawker_update(RsMoby *m) {
                     break;
                 }
             }
-            if (m->b53 != 0) {
+            if (m->prev_seq != 0) {
                 MobyBlendAnimation(m, 0, 0, scale_ticks(3));
             }
             m->state = 0xF;
@@ -1261,28 +1228,28 @@ void robosquawker_update(RsMoby *m) {
             g = ProbeGroundHeight(&m->pos, 0x120, 0.5f);
             if (g > 1.0f
                 && vec_length_xy(&vb) < v->f1FC + 4.0f
-                && FastAbsF(m->pos.f[2] - tgt.pos.f[2]) < 10.0f
+                && FastAbsF(m->pos.z - tgt.pos.f[2]) < 10.0f
                 && random_integer_below(0x13) == 0) {
-                if (m->b53 != 0) {
+                if (m->prev_seq != 0) {
                     MobyBlendAnimation(m, 0, 0, scale_ticks(3));
                 }
                 qzero(&v->v40);
                 m->state = 0x11;
                 release_robosquawker_particle((Level13VendorMoby *)v);
-            } else if (g > 1.0f && m->bBC == 1 && random_integer_below(4) == 0) {
+            } else if (g > 1.0f && m->command == 1 && random_integer_below(4) == 0) {
                 if (random_integer_below(0x100) & 1) {
                     v->f1F8 = -v->f1F8;
                 }
                 v->f1F4 = v->f1F8 * 0.017453292f;
                 v->h210 = scale_ticks((int)random_float_between(30.0f, 90.0f));
-                if (m->b53 != 0) {
+                if (m->prev_seq != 0) {
                     MobyBlendAnimation(m, 0, 0, scale_ticks(3));
                 }
                 release_robosquawker_particle((Level13VendorMoby *)v);
                 qzero(&v->v40);
                 m->state = 0x11;
                 clear_u64_value(&v->v40);
-                m->bBC = 0;
+                m->command = 0;
             }
         }
         update_robosquawker_particle((unsigned char *)m, (char *)v);
@@ -1294,13 +1261,13 @@ void robosquawker_update(RsMoby *m) {
         g = ProbeGroundHeight(&m->pos, 0x120, 0.5f);
         ApproachValue(&v->v40.f[2], -(g_frame_time * 8.0f), D_0015EE6C_v[1] * 10.8f);
         move_4318(m, &v->v40, 0.6f, 0.5f, 0.0f, 0);
-        if (m->b53 != 2
-            && m->pos.f[2] - g <= g_frame_time * 8.0f * multiply_global_factor(45.0f)
-            && m->b53 != 2) {
+        if (m->prev_seq != 2
+            && m->pos.z - g <= g_frame_time * 8.0f * multiply_global_factor(45.0f)
+            && m->prev_seq != 2) {
             MobyBlendAnimation(m, 2, 0, scale_ticks(5));
         }
-        if (m->pos.f[2] <= g) {
-            m->pos.f[2] = g;
+        if (m->pos.z <= g) {
+            m->pos.z = g;
             if (random_integer_below(0x100) & 1) {
                 v->f1F8 = -v->f1F8;
             }
@@ -1308,7 +1275,7 @@ void robosquawker_update(RsMoby *m) {
             v->h210 = scale_ticks((int)random_float_between(30.0f, 90.0f));
             m->state = 3;
             clear_u64_value(&v->v40);
-            if (m->b53 != 5) {
+            if (m->prev_seq != 5) {
                 MobyBlendAnimation(m, 5, 0, scale_ticks(3));
             }
         }
@@ -1318,16 +1285,16 @@ void robosquawker_update(RsMoby *m) {
         float g;
 
         g = ProbeGroundHeight(&m->pos, 0x120, 0.5f);
-        if (m->pos.f[2] - g < 3.0f) {
+        if (m->pos.z - g < 3.0f) {
             ApproachValue(&v->v40.f[2], g_frame_time * 8.0f, D_0015EE6C_v[1] * 10.8f);
         } else {
             ApproachValue(&v->v40.f[2], g_frame_time, D_0015EE6C_v[1] * 10.8f);
         }
         move_4318(m, &v->v40, 0.6f, 0.5f, 0.0f, 0);
-        m->f58 = 6.0f - (m->pos.f[2] - g) / 6.0f * 5.0f;
-        if (g + 6.0f <= m->pos.f[2]) {
-            m->pos.f[2] = g + 6.0f;
-            if (m->b53 != 0) {
+        m->anim_speed = 6.0f - (m->pos.z - g) / 6.0f * 5.0f;
+        if (g + 6.0f <= m->pos.z) {
+            m->pos.z = g + 6.0f;
+            if (m->prev_seq != 0) {
                 MobyBlendAnimation(m, 0, 0, scale_ticks(3));
             }
             m->state = 0xE;
@@ -1339,27 +1306,27 @@ void robosquawker_update(RsMoby *m) {
     case 1:
         FastVecSub(&va, &tgt, &m->pos);
         if (FastVecLength(&va) < v->f1FC + 4.0f
-            && FastAbsF(m->pos.f[2] - tgt.pos.f[2]) < 8.0f
+            && FastAbsF(m->pos.z - tgt.pos.f[2]) < 8.0f
             && random_integer_below(0x13) == 0) {
             m->state = 2;
-            if (m->b53 != 4) {
+            if (m->prev_seq != 4) {
                 MobyBlendAnimation(m, 4, 0, scale_ticks(3));
             }
-        } else if (m->bBC == 1 && random_integer_below(0x13) == 0) {
+        } else if (m->command == 1 && random_integer_below(0x13) == 0) {
             if (random_integer_below(0x100) & 1) {
                 v->f1F8 = -v->f1F8;
             }
             v->f1F4 = v->f1F8 * 0.017453292f;
             v->h210 = scale_ticks((int)random_float_between(30.0f, 90.0f));
             m->state = 3;
-            if (m->b53 != 5) {
+            if (m->prev_seq != 5) {
                 MobyBlendAnimation(m, 5, 0, scale_ticks(3));
             }
-            m->bBC = 0;
+            m->command = 0;
         } else if (FastVecLength(&va) > v->f1FC + 6.0f && v->h20A == 0) {
             qzero(&v->v40);
             m->state = 0x10;
-            if (m->b53 != 0) {
+            if (m->prev_seq != 0) {
                 MobyBlendAnimation(m, 0, 0, scale_ticks(3));
             }
         }
@@ -1368,11 +1335,11 @@ void robosquawker_update(RsMoby *m) {
     case 8:
         FastVecSub(&va, &tgt, &m->pos);
         if (FastVecLength(&va) < v->f1FC - 4.0f
-            && FastAbsF(m->pos.f[2] - tgt.pos.f[2]) < 8.0f
+            && FastAbsF(m->pos.z - tgt.pos.f[2]) < 8.0f
             && random_integer_below(0x13) == 0) {
             m->state = 2;
-            m->pos.f[2] += 1.0f;
-            if (m->b53 != 4) {
+            m->pos.z += 1.0f;
+            if (m->prev_seq != 4) {
                 MobyBlendAnimation(m, 4, 0, scale_ticks(3));
             }
         }
@@ -1380,14 +1347,14 @@ void robosquawker_update(RsMoby *m) {
     case 0xA: {
         float a;
 
-        a = fast_atan2(v->v1D0.f[0] - m->pos.f[0], v->v1D0.f[1] - m->pos.f[1]);
+        a = fast_atan2(v->v1D0.f[0] - m->pos.x, v->v1D0.f[1] - m->pos.y);
         MobySpringTurn((char *)m, &v->f1F0, a, 0.05f, 0.3f, 0.2f);
         FastVecSub(&va, &tgt, &v->v1D0);
-        if ((FastVecLength(&va) < v->f1FC && FastAbsF(v->v1D0.f[2] - tgt.pos.f[2]) < 8.0f) || m->bBC == 2) {
-            if (m->b21 != 0xFF) {
-                MobyGroup_SetByteBC(m->b21, 2);
+        if ((FastVecLength(&va) < v->f1FC && FastAbsF(v->v1D0.f[2] - tgt.pos.f[2]) < 8.0f) || m->command == 2) {
+            if (m->group != 0xFF) {
+                MobyGroup_SetByteBC(m->group, 2);
             }
-            if (m->b53 != (func_001160D8() & 1) + 9) {
+            if (m->prev_seq != (func_001160D8() & 1) + 9) {
                 MobyBlendAnimation(m, (func_001160D8() & 1) + 9, 0, scale_ticks(3));
             }
             v->f134 = 0.0f;
@@ -1396,7 +1363,7 @@ void robosquawker_update(RsMoby *m) {
             v->f13C = jump_speed_4318(&m->pos, &v->v1D0, &out, robosquawker_jump_speed * g_frame_time, -robosquawker_jump_gravity);
             v->w144 = 0xD;
             v->b15D = 0;
-            InitKnockback(m->rot.f[2], m, v->x120, (func_001160D8() & 1) + 9, 1, 0);
+            InitKnockback(m->rot.z, m, v->x120, (func_001160D8() & 1) + 9, 1, 0);
             v->f170 = 5.0f;
             v->f174 = 10.0f;
             update_robosquawker_particle((unsigned char *)m, (char *)v);
@@ -1414,11 +1381,11 @@ void robosquawker_update(RsMoby *m) {
             }
             v->f1F4 = v->f1F8 * 0.017453292f;
             v->h210 = scale_ticks((int)random_float_between(30.0f, 90.0f));
-            if (m->b53 != 5) {
+            if (m->prev_seq != 5) {
                 MobyBlendAnimation(m, 5, 8, scale_ticks(3));
             }
             return;
-        } else if (m->pos.f[2] < 5.0f) {
+        } else if (m->pos.z < 5.0f) {
             SetDeathBits(m, 0, -1);
             DeleteMoby(m);
             return;
@@ -1427,14 +1394,14 @@ void robosquawker_update(RsMoby *m) {
     case 2: {
         float a;
 
-        a = fast_atan2(m->pos.f[0] - tgt.pos.f[0], m->pos.f[1] - tgt.pos.f[1]);
+        a = fast_atan2(m->pos.x - tgt.pos.f[0], m->pos.y - tgt.pos.f[1]);
         MobySpringTurn((char *)m, &v->f1F0, a, 0.02f, 0.3f, 0.1f);
         FastVecSub(&va, &tgt, &m->pos);
         if (FastVecLength(&va) < v->f1FC
-            && FastAbsF(m->pos.f[2] - tgt.pos.f[2]) < 8.0f
+            && FastAbsF(m->pos.z - tgt.pos.f[2]) < 8.0f
             && random_integer_below(0x13) == 0) {
-            if (m->b21 != 0xFF) {
-                MobyGroup_SetByteBC(m->b21, 1);
+            if (m->group != 0xFF) {
+                MobyGroup_SetByteBC(m->group, 1);
             }
             if (random_integer_below(0x100) & 1) {
                 v->f1F8 = -v->f1F8;
@@ -1442,23 +1409,23 @@ void robosquawker_update(RsMoby *m) {
             v->f1F4 = v->f1F8 * 0.017453292f;
             v->h210 = scale_ticks((int)random_float_between(30.0f, 90.0f));
             m->state = 3;
-            if (m->b53 != 5) {
+            if (m->prev_seq != 5) {
                 MobyBlendAnimation(m, 5, 0, scale_ticks(3));
             }
-            m->bBC = 0;
-        } else if (m->bBC == 1 && random_integer_below(0x13) == 0) {
+            m->command = 0;
+        } else if (m->command == 1 && random_integer_below(0x13) == 0) {
             if (random_integer_below(0x100) & 1) {
                 v->f1F8 = -v->f1F8;
             }
             v->f1F4 = v->f1F8 * 0.017453292f;
             v->h210 = scale_ticks((int)random_float_between(30.0f, 90.0f));
             m->state = 3;
-            if (m->b53 != 5) {
+            if (m->prev_seq != 5) {
                 MobyBlendAnimation(m, 5, 0, scale_ticks(3));
             }
-            m->bBC = 0;
+            m->command = 0;
         }
-        if (m->b53 == 4 && (m->b70 & 2)) {
+        if (m->prev_seq == 4 && (m->anim_flags & 2)) {
             MobyBlendAnimation(m, 3, 0, scale_ticks(3));
         }
         update_robosquawker_ground_height((char *)m, (char *)v);
@@ -1470,17 +1437,17 @@ void robosquawker_update(RsMoby *m) {
         float a;
         float d;
 
-        r = FastAbsF(m->pos.f[2] - tgt.pos.f[2]);
+        r = FastAbsF(m->pos.z - tgt.pos.f[2]);
         r = r / vec_distance_xy(&m->pos, &tgt);
         if (v->w21C != -1) {
             select_list_point_toward_target(m, walker_paths[v->w21C], &tgt, &vb);
         } else {
             qcopy(&vb, &tgt);
         }
-        a = fast_atan2(vb.f[0] - m->pos.f[0], vb.f[1] - m->pos.f[1]) + v->f1F4;
+        a = fast_atan2(vb.f[0] - m->pos.x, vb.f[1] - m->pos.y) + v->f1F4;
         MobySpringTurn((char *)m, &v->f1F0, a, 0.05f, 0.3f, 0.2f);
-        va.f[0] = FastCos(m->rot.f[2]) * 2.0f;
-        va.f[1] = FastSin(m->rot.f[2]) * 2.0f;
+        va.f[0] = FastCos(m->rot.z) * 2.0f;
+        va.f[1] = FastSin(m->rot.z) * 2.0f;
         va.f[2] = 0.0f;
         res = move_w(m, &v->w180, &va, &vb, 1.0f);
         if (FastDecTimer(&v->h210) != 0) {
@@ -1493,23 +1460,23 @@ void robosquawker_update(RsMoby *m) {
              || (tgt.moby != 0 && tgt.moby->hA6 == 0x10E && tgt.moby->state != 0xFE && tgt.moby->state != 0xFD && d < 2.3f))
             && !(res & 2)) {
             m->state = 4;
-            if (m->b53 != 6) {
+            if (m->prev_seq != 6) {
                 MobyBlendAnimation(m, 6, 0, scale_ticks(3));
             }
         } else {
             if (r > 1.0f || (res & 2)) {
-                m->pos.f[0] = old.f[0];
-                m->pos.f[1] = old.f[1];
+                m->pos.x = old.f[0];
+                m->pos.y = old.f[1];
             }
-            if (FastVecLength(&vc) < v->f1FC + 4.0f && FastAbsF(m->pos.f[2] - tgt.pos.f[2]) < 8.0f) {
-                if (m->b21 != 0xFF) {
-                    MobyGroup_SetByteBC(m->b21, 1);
+            if (FastVecLength(&vc) < v->f1FC + 4.0f && FastAbsF(m->pos.z - tgt.pos.f[2]) < 8.0f) {
+                if (m->group != 0xFF) {
+                    MobyGroup_SetByteBC(m->group, 1);
                 }
-            } else if (m->bBC != 1) {
+            } else if (m->command != 1) {
                 m->state = 5;
             }
         }
-        m->bBC = 0;
+        m->command = 0;
         update_robosquawker_ground_height((char *)m, (char *)v);
         break;
     }
@@ -1522,21 +1489,21 @@ void robosquawker_update(RsMoby *m) {
         float da;
         float g;
 
-        a = fast_atan2(tgt.pos.f[0] - m->pos.f[0], tgt.pos.f[1] - m->pos.f[1]);
+        a = fast_atan2(tgt.pos.f[0] - m->pos.x, tgt.pos.f[1] - m->pos.y);
         MobySpringTurn((char *)m, &v->f1F0, a, 0.05f, 0.3f, 0.2f);
-        same = m->b52 == m->b53;
+        same = m->seq == m->prev_seq;
         hh = MobyGetFrameValue(m);
-        dz = FastAbsF(m->pos.f[2] - tgt.pos.f[2]);
+        dz = FastAbsF(m->pos.z - tgt.pos.f[2]);
         d = vec_distance_xy(&m->pos, &tgt);
-        da = FastDiffRots(fast_atan2(tgt.pos.f[0] - m->pos.f[0], tgt.pos.f[1] - m->pos.f[1]), m->rot.f[2]);
+        da = FastDiffRots(fast_atan2(tgt.pos.f[0] - m->pos.x, tgt.pos.f[1] - m->pos.y), m->rot.z);
         if (same
             && FastAbsF(hh - 13.0f) < 0.2f
             && dz < 1.5f
             && (d < 2.0f
                 || (tgt.moby != 0 && tgt.moby->hA6 == 0x10E && tgt.moby->state != 0xFE && tgt.moby->state != 0xFD && d < 2.6f))
             && da < 0.2617994f) {
-            va.f[0] = FastCos(m->rot.f[2]) * 0.2f;
-            va.f[1] = FastSin(m->rot.f[2]) * 0.2f;
+            va.f[0] = FastCos(m->rot.z) * 0.2f;
+            va.f[1] = FastSin(m->rot.z) * 0.2f;
             va.f[2] = 0.0f;
             qcopy(&vb, &tgt);
             vb.f[2] += 0.75f;
@@ -1544,18 +1511,18 @@ void robosquawker_update(RsMoby *m) {
                 PostHitMessage(tm, (int)m, 1, &vb, &va, 1.0f);
             }
         }
-        if ((m->b70 & 2) && vec_distance_xy(&m->pos, &tgt) > 1.5f) {
+        if ((m->anim_flags & 2) && vec_distance_xy(&m->pos, &tgt) > 1.5f) {
             m->state = 3;
-            if (m->b53 != 5) {
+            if (m->prev_seq != 5) {
                 MobyBlendAnimation(m, 5, 0, scale_ticks(3));
             }
         }
         g = ProbeGroundHeight(&m->pos, 0x120, 0.5f);
         v->f198 -= D_0015EE6C_v[1] * 9.8f;
-        m->pos.f[2] += v->f198;
-        if (m->pos.f[2] < g) {
+        m->pos.z += v->f198;
+        if (m->pos.z < g) {
             v->f198 = 0.0f;
-            m->pos.f[2] = g;
+            m->pos.z = g;
         }
         update_robosquawker_ground_height((char *)m, (char *)v);
         break;
@@ -1569,53 +1536,53 @@ void robosquawker_update(RsMoby *m) {
         } else {
             qcopy(&vb, &v->v1D0);
         }
-        a = fast_atan2(vb.f[0] - m->pos.f[0], vb.f[1] - m->pos.f[1]);
+        a = fast_atan2(vb.f[0] - m->pos.x, vb.f[1] - m->pos.y);
         MobySpringTurn((char *)m, &v->f1F0, a, 0.02f, 0.3f, 0.1f);
-        va.f[0] = FastCos(m->rot.f[2]) * 2.0f;
-        va.f[1] = FastSin(m->rot.f[2]) * 2.0f;
+        va.f[0] = FastCos(m->rot.z) * 2.0f;
+        va.f[1] = FastSin(m->rot.z) * 2.0f;
         va.f[2] = 0.0f;
         res = move_w(m, &v->w180, &va, &vb, 1.0f);
         if (vec_distance_xy(&m->pos, &v->v1D0) < 2.0f) {
             m->state = 1;
-            if (m->b53 != 3) {
+            if (m->prev_seq != 3) {
                 MobyBlendAnimation(m, 3, 0, scale_ticks(3));
             }
         }
         FastVecSub(&vc, &tgt, &v->v1D0);
         if (FastVecLength(&vc) < v->f1FC) {
-            if (m->b21 != 0xFF) {
-                MobyGroup_SetByteBC(m->b21, 1);
+            if (m->group != 0xFF) {
+                MobyGroup_SetByteBC(m->group, 1);
             }
             m->state = 3;
-            if (m->b53 != 5) {
+            if (m->prev_seq != 5) {
                 MobyBlendAnimation(m, 5, 0, scale_ticks(3));
             }
-        } else if (m->bBC == 1) {
+        } else if (m->command == 1) {
             m->state = 3;
-            if (m->b53 != 5) {
+            if (m->prev_seq != 5) {
                 MobyBlendAnimation(m, 5, 0, scale_ticks(3));
             }
         } else if (res & 2) {
-            m->pos.f[0] = old.f[0];
-            m->pos.f[1] = old.f[1];
+            m->pos.x = old.f[0];
+            m->pos.y = old.f[1];
             m->state = 0xC;
-            if (m->b53 != 4) {
+            if (m->prev_seq != 4) {
                 MobyBlendAnimation(m, 4, 0, scale_ticks(3));
             }
         }
         update_robosquawker_ground_height((char *)m, (char *)v);
-        m->bBC = 0;
+        m->command = 0;
         break;
     }
     case 6:
         if (mine_fall(m, v->x120) & 1) {
             qzero(v->x120);
             m->state = 3;
-            if (m->b53 != 5) {
+            if (m->prev_seq != 5) {
                 MobyBlendAnimation(m, 5, 0, scale_ticks(3));
             }
             return;
-        } else if (m->pos.f[2] < 5.0f) {
+        } else if (m->pos.z < 5.0f) {
             SetDeathBits(m, 0, -1);
             DeleteMoby(m);
             return;
@@ -1625,7 +1592,7 @@ void robosquawker_update(RsMoby *m) {
         release_robosquawker_particle((Level13VendorMoby *)v);
         if (CarriedMobyUpdate(m, v->x120) != 0) {
             m->state = 0xE;
-            if (m->b53 != 0) {
+            if (m->prev_seq != 0) {
                 MobyBlendAnimation(m, 0, 0, 0);
             }
             v->hC8 = 0;
@@ -1634,7 +1601,7 @@ void robosquawker_update(RsMoby *m) {
     case 0x63: {
         int t;
 
-        m->h34 &= 0xEFFF;
+        m->flags &= 0xEFFF;
         if (mine_fall(m, v->x120) & 0x140) {
             clear_u64_value(&va);
             t = (int)((float)scale_ticks(1) * 60.0f);
@@ -1643,7 +1610,7 @@ void robosquawker_update(RsMoby *m) {
             }
             DeleteMoby(m);
             return;
-        } else if (m->pos.f[2] < 0.0f) {
+        } else if (m->pos.z < 0.0f) {
             DeleteMoby(m);
             return;
         }
@@ -1654,32 +1621,32 @@ void robosquawker_update(RsMoby *m) {
         int res;
         float a;
 
-        r = FastAbsF(m->pos.f[2] - tgt.pos.f[2]);
+        r = FastAbsF(m->pos.z - tgt.pos.f[2]);
         r = r / vec_distance_xy(&m->pos, &tgt);
         if (v->w21C != -1) {
             select_list_point_toward_target(m, walker_paths[v->w21C], &v->v1D0, &vb);
         } else {
             qcopy(&vb, &v->v1D0);
         }
-        a = fast_atan2(vb.f[0] - m->pos.f[0], vb.f[1] - m->pos.f[1]);
+        a = fast_atan2(vb.f[0] - m->pos.x, vb.f[1] - m->pos.y);
         MobySpringTurn((char *)m, &v->f1F0, a, 0.05f, 0.3f, 0.2f);
-        va.f[0] = FastCos(m->rot.f[2]) * 2.0f;
-        va.f[1] = FastSin(m->rot.f[2]) * 2.0f;
+        va.f[0] = FastCos(m->rot.z) * 2.0f;
+        va.f[1] = FastSin(m->rot.z) * 2.0f;
         va.f[2] = 0.0f;
         res = move_w(m, &v->w180, &va, &vb, 1.0f);
         FastVecSub(&vc, &tgt, &v->v1D0);
         if (vec_distance_xy(&m->pos, &tgt) < 1.5f && r <= 1.0f) {
             m->state = 4;
-            if (m->b53 != 6) {
+            if (m->prev_seq != 6) {
                 MobyBlendAnimation(m, 6, 0, scale_ticks(3));
             }
         } else if (r <= 1.0f && !(res & 2)) {
             m->state = 5;
-            if (m->b53 != 5) {
+            if (m->prev_seq != 5) {
                 MobyBlendAnimation(m, 5, 0, scale_ticks(3));
             }
         } else {
-            if (m->b70 & 2) {
+            if (m->anim_flags & 2) {
                 int anim;
 
                 anim = 4;
@@ -1692,24 +1659,24 @@ void robosquawker_update(RsMoby *m) {
             if (random_integer_below(0x63) == 0) {
                 qzero(&v->v40);
                 m->state = 0x10;
-                if (m->b53 != 0) {
+                if (m->prev_seq != 0) {
                     MobyBlendAnimation(m, 0, 0, scale_ticks(3));
                 }
             }
         }
-        m->bBC = 0;
+        m->command = 0;
         break;
     }
     case 0xD: {
         RsOther *o;
         float g;
 
-        if (m->b52 != 5 && m->b53 != 5) {
+        if (m->seq != 5 && m->prev_seq != 5) {
             MobyBlendAnimation(m, 5, 0, scale_ticks(3));
         }
         v->h212 = 1;
-        va.f[0] = FastCos(m->rot.f[2]) * (v->f204 * g_frame_time);
-        va.f[1] = FastSin(m->rot.f[2]) * (v->f204 * g_frame_time);
+        va.f[0] = FastCos(m->rot.z) * (v->f204 * g_frame_time);
+        va.f[1] = FastSin(m->rot.z) * (v->f204 * g_frame_time);
         va.f[2] = 0.0f;
         FastVecAdd(&vb, &m->pos, &va);
         for (o = (RsOther *)gemlik_moby_list; o != 0; o = o->next) {
@@ -1727,14 +1694,14 @@ void robosquawker_update(RsMoby *m) {
                 float a;
                 float d;
 
-                z = m->pos.f[2];
-                a = fast_atan2(o->pos.f[0] - m->pos.f[0], o->pos.f[1] - m->pos.f[1]);
-                a = FastSubRots(m->rot.f[2], a);
+                z = m->pos.z;
+                a = fast_atan2(o->pos.f[0] - m->pos.x, o->pos.f[1] - m->pos.y);
+                a = FastSubRots(m->rot.z, a);
                 d = g_frame_time * 1.5707964f;
                 if (!(a > 0.0f)) {
                     d = -d;
                 }
-                m->rot.f[2] = FastAddRots(m->rot.f[2], d);
+                m->rot.z = FastAddRots(m->rot.z, d);
                 FastVecSub(&vb, &m->pos, &o->pos);
                 vec_scale_to_length(&vb, &vb, 2.0f);
                 FastVecAdd(&vb, &vb, &o->pos);
@@ -1744,36 +1711,36 @@ void robosquawker_update(RsMoby *m) {
         qcopy(&m->pos, &vb);
         g = ProbeGroundHeight(&m->pos, 0x120, 0.5f);
         v->f198 -= D_0015EE6C_v[1] * 9.8f;
-        m->pos.f[2] += v->f198;
-        if (m->pos.f[2] < g) {
+        m->pos.z += v->f198;
+        if (m->pos.z < g) {
             v->f198 = 0.0f;
-            m->pos.f[2] = g;
+            m->pos.z = g;
         }
         if (v->p218 == 0 || vec_distance_xy(&m->pos, v->p218 + 0x10) > IntToFloat(v->h216)) {
             m->state = 5;
-            if (m->b53 != 5) {
+            if (m->prev_seq != 5) {
                 MobyBlendAnimation(m, 5, 0, scale_ticks(3));
             }
         }
-        m->bBC = 0;
+        m->command = 0;
         break;
     }
     }
     StepColorFade(m, v->x110);
-    if (m->pos.f[0] < 2.0f || m->pos.f[0] > 1021.0f
-        || m->pos.f[1] < 2.0f || m->pos.f[1] > 1021.0f
-        || m->pos.f[2] < 2.0f || m->pos.f[2] > 1021.0f) {
+    if (m->pos.x < 2.0f || m->pos.x > 1021.0f
+        || m->pos.y < 2.0f || m->pos.y > 1021.0f
+        || m->pos.z < 2.0f || m->pos.z > 1021.0f) {
         DeleteMoby(m);
         return;
     }
     if (v->h20A == 2) {
         if (blarg_space_fighter_fire_suppression_level > 0.98f || optional_glow_suppression_level > 0.98f) {
-            if (random_integer_below(0x1D) == 0 && m->b31 == 0) {
+            if (random_integer_below(0x1D) == 0 && m->visible == 0) {
                 int r;
 
                 r = func_001160D8() % 3;
-                if (m->b21 != 0xFF) {
-                    r = count_active_moby_group_members(m->b21, -1);
+                if (m->group != 0xFF) {
+                    r = count_active_moby_group_members(m->group, -1);
                 }
                 if (r >= 3) {
                     DeleteMoby(m);

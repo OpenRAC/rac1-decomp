@@ -1,22 +1,22 @@
-void gadgetron_ceo_update(L16ChallengeMoby *m) {
+void gadgetron_ceo_update(Moby *m) {
     L16ChallengeScratch scratch;
-    L16ChallengeData *d = m->data;
+    L16ChallengeData *d = (L16ChallengeData *)m->pvars;
     L16ChallengeActivation *activation = (L16ChallengeActivation *)d->activation;
     float rate, head_rate;
     int tracking;
-    if (m->visible && FastVecDist(m->position, kalebo3_camera_pos) < 28.0f) {
+    if (m->visible && FastVecDist(&m->pos, kalebo3_camera_pos) < 28.0f) {
         set_ground_height_band(m);
-        m->distance_class = 22;
+        m->shadow_range = 22;
     }
     attach_big_head_cheat_manipulator_to_matching_moby(m);
     switch (m->state) {
     case 0:
-        m->opacity = 255;
+        m->update_dist = 255;
         m->state = 1;
         DialogRequest_Init(m, activation);
         *(float *)((char *)d + 0x2C) = 3.7f;
-        d->initial_yaw = m->yaw;
-        if (*(int *)(D_0013D605 + 0x71F) == 0) m->yaw = FastAddRots(m->yaw, 3.14159265f);
+        d->initial_yaw = m->rot.z;
+        if (*(int *)(D_0013D605 + 0x71F) == 0) m->rot.z = FastAddRots(m->rot.z, 3.14159265f);
         restore_gadgetron_ceo_non_challenge_environment((char *)m);
         break;
     case 1: {
@@ -25,11 +25,11 @@ void gadgetron_ceo_update(L16ChallengeMoby *m) {
         else
             *(float *)D_L16_0015F718_view = 100.0f;
         if (((L16ChallengePlayer *)((char *)&D_0013E633_challenge + 0xE1D))->state != 29 && Npc_TryStartDialog(m, (char *)d + 0x20)) {
-            m->yaw = d->initial_yaw;
+            m->rot.z = d->initial_yaw;
             PlaceMarkerAheadOfMoby(3.5f, m);
             m->state = 2;
         }
-        if (!gHaveMorphORay[9] && vec_distance_xy(D_0013E633 + 0xE9D, m->position) < 3.5f) {
+        if (!gHaveMorphORay[9] && vec_distance_xy(D_0013E633 + 0xE9D, &m->pos) < 3.5f) {
             int elapsed, period;
             char *statistics;
             elapsed = scale_ticks(gameplay_event_frame_count);
@@ -50,7 +50,7 @@ void gadgetron_ceo_update(L16ChallengeMoby *m) {
             activation->previous = (unsigned short)activation->mode;
             activation->mode = 2;
             activation->pending = pending;
-            m->event = 0;
+            m->command = 0;
             pose = gadgetron_ceo_hero_and_camera_pose;
             Hero_ResetToPosition(pose, pose + 0x10, 0, 1);
             camera = D_0013E633 + 0x2B1D;
@@ -101,11 +101,11 @@ void gadgetron_ceo_update(L16ChallengeMoby *m) {
             m->state = 1;
             restore_gadgetron_ceo_non_challenge_environment((char *)m);
         }
-        event = m->event;
+        event = m->command;
         if (event == 1) {
             m->state = event;
             Hero_ResetToPosition(gadgetron_ceo_hero_return_pose, gadgetron_ceo_hero_return_pose + 0x10, 0, 1);
-            m->event = 0;
+            m->command = 0;
             if (!D_0013D605[0xA]) {
                 int pending;
                 unsigned short previous;
@@ -118,16 +118,16 @@ void gadgetron_ceo_update(L16ChallengeMoby *m) {
             }
             restore_gadgetron_ceo_non_challenge_environment((char *)m);
         }
-        if (m->event == 2) {
+        if (m->command == 2) {
             m->state = 1;
             Hero_ResetToPosition(gadgetron_ceo_hero_return_pose, gadgetron_ceo_hero_return_pose + 0x10, 0, 1);
-            m->event = 0;
+            m->command = 0;
             restore_gadgetron_ceo_non_challenge_environment((char *)m);
         }
-        if (m->event == 3) {
+        if (m->command == 3) {
             char *camera;
             char *pose = gadgetron_ceo_hero_and_camera_pose;
-            m->event = 0;
+            m->command = 0;
             Hero_ResetToPosition(pose, pose + 0x10, 0, 1);
             camera = D_0013E633 + 0x2B1D;
             qcopy(camera, pose + 0x20);
@@ -139,13 +139,13 @@ void gadgetron_ceo_update(L16ChallengeMoby *m) {
     rate = 0.02f;
     head_rate = 0.3f;
     tracking = 0;
-    if (m->animation == 0) {
+    if (m->prev_seq == 0) {
         char *player = (char *)&D_0013E633_challenge + 0xE9D;
         tracking = 1;
-        if (vec_distance_xy(m->position, player) < 8.0f &&
-            FastDiffRots(m->yaw,
-                fast_atan2(((L16ChallengePlayer *)((char *)&D_0013E633_challenge + 0xE1D))->aim[0] - m->position[0],
-                    ((L16ChallengePlayer *)((char *)&D_0013E633_challenge + 0xE1D))->aim[1] - m->position[1])) < 1.5707964f) {
+        if (vec_distance_xy(&m->pos, player) < 8.0f &&
+            FastDiffRots(m->rot.z,
+                fast_atan2(((L16ChallengePlayer *)((char *)&D_0013E633_challenge + 0xE1D))->aim[0] - m->pos.x,
+                    ((L16ChallengePlayer *)((char *)&D_0013E633_challenge + 0xE1D))->aim[1] - m->pos.y)) < 1.5707964f) {
             if (FastVecLength(player + 0x80) > 0.01f) d->moving_timer = scale_ticks(120);
             else fast_dec_timer(&d->moving_timer);
         } else if (d->moving_timer) {
@@ -155,9 +155,9 @@ void gadgetron_ceo_update(L16ChallengeMoby *m) {
         if (fast_dec_timer(&d->target_timer)) {
             float heading;
             d->target_timer = truncate_float_to_s32(multiply_global_factor(random_float_between(180.0f, 300.0f)));
-            heading = FastAddRots(m->yaw, random_float_between(-90.0f, 90.0f) * 0.017453292f);
+            heading = FastAddRots(m->rot.z, random_float_between(-90.0f, 90.0f) * 0.017453292f);
             BuildSphericalOffset(d->target, 6.0f, heading, random_float_between(0.0f, 30.0f) * 0.017453292f);
-            FastVecAdd(d->target, d->target, m->position);
+            FastVecAdd(d->target, d->target, &m->pos);
         }
         if (d->moving_timer) {
             qcopy(scratch.target, (char *)&D_0013E633_challenge + 0xEED);
@@ -170,10 +170,10 @@ void gadgetron_ceo_update(L16ChallengeMoby *m) {
     if (tracking) {
         float yaw;
         float pitch;
-        qcopy(scratch.eye, m->position);
+        qcopy(scratch.eye, &m->pos);
         scratch.eye[2] += 1.0f;
         FastVecSub(scratch.delta, scratch.target, scratch.eye);
-        yaw = FastSubRots(fast_atan2(scratch.delta[0], scratch.delta[1]), m->yaw);
+        yaw = FastSubRots(fast_atan2(scratch.delta[0], scratch.delta[1]), m->rot.z);
         pitch = -fast_atan2(vec_length_xy(scratch.delta), scratch.delta[2]);
         if (yaw > 1.5707964f) yaw = 1.5707964f;
         else if (yaw < -1.5707964f) yaw = -1.5707964f;

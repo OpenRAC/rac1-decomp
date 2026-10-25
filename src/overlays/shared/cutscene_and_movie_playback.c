@@ -2,6 +2,7 @@
 #include "common.h"
 #include "callees.h"
 #include "include_asm.h"
+#include "moby.h"
 #include "hero.h"
 #include "vector.h"
 
@@ -613,35 +614,6 @@ typedef struct {
     u8 pad0D[0x3B];
     s32 slots[1]; /* 0x48 */
 } VendorMobyClass;
-typedef struct {
-    u8 pad0[0x10];
-    Vec4 pos; /* 0x10 */
-    u8 pad20[2];
-    u8 class_id; /* 0x22 */
-    u8 pad23;
-    VendorMobyClass *pclass; /* 0x24 */
-    u8 pad28[0xA];
-    u16 h32; /* 0x32 */
-    u8 pad34[0xC];
-    Vec4 rot; /* 0x40 */
-    u8 frame; /* 0x50 */
-    u8 next_frame; /* 0x51 */
-    u8 pad52;
-    u8 b53; /* 0x53 */
-    f32 blend; /* 0x54 */
-    f32 f58; /* 0x58 */
-    u8 pad5C[0x14];
-    u8 b70; /* 0x70 */
-    u8 b71; /* 0x71 */
-    u8 pad72[6];
-    Vec4 *keys; /* 0x78 */
-    u8 pad7C[3];
-    u8 b7F; /* 0x7F */
-    u8 pad80[0x26];
-    s16 oclass; /* 0xA6 */
-    u8 padA8[0x18];
-    Vec4 mtx[4]; /* 0xC0 */
-} VendorMoby;
 typedef struct { f32 pos[3]; u8 flag; u8 padD[3]; f32 rot[4]; } CutsceneCameraKey;
 typedef struct {
     char pad0[0x34];
@@ -656,7 +628,7 @@ typedef struct {
     char pad4A[0xA];
     CutsceneCameraKey *f54;
     char pad58[0x120];
-    VendorMoby *f178[1];
+    Moby *f178[1];
 } VendorCutscene;
 extern u32 D_0013CBE4;
 extern f32 D_L00_0015F4FC_9A300 __asm__("D_L00_0015F4FC") MACRO_ADDR;
@@ -681,7 +653,7 @@ extern void func_L00_00207A48(void *);
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/00295100.c, FUN_L00_00298f90. */
 void update_cutscene_playback(void) {
     VendorCutscene *cs;
-    VendorMoby *m;
+    Moby *m;
     s32 done;
     s32 last;
     s32 i;
@@ -746,19 +718,19 @@ void update_cutscene_playback(void) {
             m = D_L00_0016C960_9A300.f178[i];
             id = D_L00_0016C960_9A300.f38 >> 1;
             m->frame = id;
-            m->next_frame = id + 1;
+            m->prev_frame = id + 1;
             update_moby_animation_state(m);
-            m->blend = IntToFloat(D_L00_0016C960_9A300.f38 & 1) * 0.5f;
+            m->anim_time = IntToFloat(D_L00_0016C960_9A300.f38 & 1) * 0.5f;
             if (last && (D_L00_0016C960_9A300.f38 & 1)) {
-                m->blend = 1.0f;
+                m->anim_time = 1.0f;
             }
-            keys = m->keys;
-            FastVecScale(a, &keys[m->frame], 1.0f - m->blend);
-            FastVecScale(b, &keys[m->next_frame], m->blend);
+            keys = (Vec4 *)m->pvars;
+            FastVecScale(a, &keys[m->frame], 1.0f - m->anim_time);
+            FastVecScale(b, &keys[m->prev_frame], m->anim_time);
             FastVecAdd(&m->pos, a, b);
-            m->b71 = 0xFF;
+            m->unk71 = 0xFF;
             moby_build_matrix(m);
-            if (m->b7F) {
+            if (m->shadow_range) {
                 update_moby_shadow_range(m);
             }
             if (m->oclass == 0) {

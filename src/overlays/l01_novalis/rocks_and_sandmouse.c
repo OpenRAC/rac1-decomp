@@ -895,20 +895,6 @@ typedef struct PendulumVars {
     s32 sound;                  /* 0x74 */
 } PendulumVars;
 
-typedef struct PendulumMoby {
-    u8 pad_00[0x10];
-    Vec4 pos;                   /* 0x10 */
-    u8 state;                   /* 0x20 */
-    u8 pad_21[0x23];
-    f32 rot_x;                  /* 0x44 */
-    f32 rot_z;                  /* 0x48 */
-    u8 pad_4C[0x2C];
-    PendulumVars *vars;         /* 0x78 */
-    u8 pad_7C[0x34];
-    u8 id;                      /* 0xB0 */
-    u8 pad_B1[0x0B];
-    u8 trigger;                 /* 0xBC */
-} PendulumMoby;
 
 /* hinged bridge: swings with a sound while triggered and poses the bridge moby from its pivot */
 // Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/l01/unclassified_002f9810.c, FUN_L01_002fb8a8.
@@ -918,14 +904,14 @@ void bridge_half_update(char *p) {
         BRIDGE_HALF_WAIT_FOR_TRIGGER = 1,
         BRIDGE_HALF_REDUCE_SWING_TO_ZERO = 2
     };
-    PendulumMoby *self = (PendulumMoby *)p;
+    Moby *self = (Moby *)p;
     PendulumVars *pendulum_vars;
     Vec4 arm;
     Vec4 swing_offset;
     s32 voice_slot_index;
     u8 *voice;
 
-    pendulum_vars = self->vars;
+    pendulum_vars = (PendulumVars *)self->pvars;
     switch (self->state) {
     case BRIDGE_HALF_INITIALIZE:
         qcopy(&pendulum_vars->pivot, &self->pos);
@@ -934,9 +920,9 @@ void bridge_half_update(char *p) {
         pendulum_vars->sound = -1;
         break;
     case BRIDGE_HALF_WAIT_FOR_TRIGGER:
-        if (self->trigger == 2 || (D_0014171B + 0xAA35)[self->id + (*(int *)&g_current_level_index << 4)] == 0xFF) {
+        if (self->command == 2 || (D_0014171B + 0xAA35)[self->mission + (*(int *)&g_current_level_index << 4)] == 0xFF) {
             self->state = 2;
-            self->trigger = 0;
+            self->command = 0;
         }
         break;
     case BRIDGE_HALF_REDUCE_SWING_TO_ZERO:
@@ -959,13 +945,13 @@ void bridge_half_update(char *p) {
         }
         break;
     }
-    self->rot_x = pendulum_vars->swing * 0.62831855f;
+    self->rot.y = pendulum_vars->swing * 0.62831855f;
     arm.q = 0;
     arm.f[2] = -11.0f;
     FastVecAdd(&arm, &arm, &pendulum_vars->pivot);
-    swing_offset.f[0] = FastCos(self->rot_z) * 11.0f * FastSin(self->rot_x);
-    swing_offset.f[1] = FastSin(self->rot_z) * 11.0f * FastSin(self->rot_x);
-    swing_offset.f[2] = FastCos(self->rot_x) * 11.0f;
+    swing_offset.f[0] = FastCos(self->rot.z) * 11.0f * FastSin(self->rot.y);
+    swing_offset.f[1] = FastSin(self->rot.z) * 11.0f * FastSin(self->rot.y);
+    swing_offset.f[2] = FastCos(self->rot.y) * 11.0f;
     FastVecAdd(&self->pos, &arm, &swing_offset);
 }
 typedef int u128_pool __attribute__((mode(TI)));
@@ -1316,17 +1302,6 @@ void update_scroll_layers_and_queue_draw(void *arg) {
 }
 typedef struct { float f[4]; } V __attribute__((aligned(16)));
 typedef struct { V home; float t; float radius; } HoverVars;
-typedef struct {
-    char pad0[0x10];
-    V pos;
-    unsigned char state;
-    char pad1[0x27];
-    float rot_z;
-    char pad2[0x2C];
-    HoverVars *vars;
-    char pad3[0x2A];
-    short oclass;
-} HoverMoby;
 extern char D_0013E633[];
 extern float func_001F9D48(void *, void *);
 extern float func_001F9B88(float);
@@ -1334,13 +1309,13 @@ extern float func_001F9F90(float);
 extern float func_001F9FA8(float);
 
 /* Sliding door update: opens when the player is near, closes when far, and offsets the door along its heading by the open amount. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/l01/unclassified_002f9810.c, FUN_L01_002fed68. */
-void door_left_update(HoverMoby *m) {
+void door_left_update(Moby *m) {
     HoverVars *v;
     V *player;
     V off;
     float k;
 
-    v = m->vars;
+    v = (HoverVars *)m->pvars;
     switch (m->state) {
     case 0:
         qcopy(&v->home, &m->pos);
@@ -1349,7 +1324,7 @@ void door_left_update(HoverMoby *m) {
         break;
     case 1:
         player = (V *)(D_0013E633 + 0xE9D);
-        if (vec_distance_xy(v, player) < v->radius && FastAbsF(m->pos.f[2] - player->f[2]) < 2.0f) {
+        if (vec_distance_xy(v, player) < v->radius && FastAbsF(m->pos.z - player->f[2]) < 2.0f) {
             m->state = 2;
             if (m->oclass == 0x300) {
                 Moby_PlaySound(0, 0, (int)m);
@@ -1375,7 +1350,7 @@ void door_left_update(HoverMoby *m) {
         break;
     case 4:
         player = (V *)(D_0013E633 + 0xE9D);
-        if (vec_distance_xy(v, player) < v->radius && FastAbsF(m->pos.f[2] - player->f[2]) < 2.0f) {
+        if (vec_distance_xy(v, player) < v->radius && FastAbsF(m->pos.z - player->f[2]) < 2.0f) {
             m->state = 2;
         } else {
             v->t -= 1.0f / multiply_global_factor(20.0f);
@@ -1386,11 +1361,11 @@ void door_left_update(HoverMoby *m) {
         }
         break;
     }
-    off.f[0] = FastCos(m->rot_z) * v->t * (m->oclass == 0x300 ? 2.0f : -2.0f);
-    off.f[1] = FastSin(m->rot_z) * v->t * (m->oclass == 0x300 ? 2.0f : -2.0f);
+    off.f[0] = FastCos(m->rot.z) * v->t * (m->oclass == 0x300 ? 2.0f : -2.0f);
+    off.f[1] = FastSin(m->rot.z) * v->t * (m->oclass == 0x300 ? 2.0f : -2.0f);
     off.f[2] = 0.0f;
-    m->pos.f[0] = v->home.f[0] + off.f[0];
-    m->pos.f[1] = v->home.f[1] + off.f[1];
+    m->pos.x = v->home.f[0] + off.f[0];
+    m->pos.y = v->home.f[1] + off.f[1];
 }
 extern char *func_L00_0025B478(void *, int, int);
 extern int func_002140B0(int);

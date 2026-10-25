@@ -285,12 +285,6 @@ void resort_owner_update(unsigned char *moby) {
  *   hq12 s10 (5 runs, p7-p11): p10 (the rail index read inline as d->rail[k], no arr local) takes the case 9 block
  */
 typedef struct {
-    char pad0[0x10]; float position[4]; unsigned char state;
-    char pad21[0x1f]; float rotation[4]; char pad50[3];
-    unsigned char animation; char pad54[4]; float opacity;
-    char pad5c[0x1c]; char *data;
-} BossMoby_2D21F0;
-typedef struct {
     char pad0[0xf0]; int rail[2]; char padf8[0xc]; int child;
     char pad108[0x18]; float target[4]; float velocity[4];
     char pad140[8]; float verticalSpeed; char pad14c[4];
@@ -319,19 +313,19 @@ extern void func_L11_002CCB50(char *moby);
 /* Boss movement: turns toward and walks to its target point, lunges at it in a jump arc, follows its rail
  * moby, or (rarely) triggers its idle taunt. */
 void update_resort_owner_state_actions(char *m) {
-    BossMoby_2D21F0 *boss = (BossMoby_2D21F0 *)m;
-    BossMovement_2D21F0 *d = (BossMovement_2D21F0 *)boss->data;
+    Moby *boss = (Moby *)m;
+    BossMovement_2D21F0 *d = (BossMovement_2D21F0 *)((char *)boss->pvars);
     switch (boss->state) {
     case 0: case 1: case 2: case 3: case 11: case 12:
         break;
     case 4: case 5: case 6: case 8: case 10: {
-        float *rz = &boss->rotation[2];
-        float yaw = fast_atan2(d->target[0] - boss->position[0], d->target[1] - boss->position[1]);
+        float *rz = &boss->rot.z;
+        float yaw = fast_atan2(d->target[0] - boss->pos.x, d->target[1] - boss->pos.y);
         SteerAngleWithVelocity(rz, yaw, &d->turnSpeed, D_0015EE70_d * 12.566371f,
                           D_0015EE70_d * 25.132742f, D_0015EE6C_d * 12.566371f);
-        d->velocity[0] = FastCos(boss->rotation[2]) * d->moveSpeed;
+        d->velocity[0] = FastCos(boss->rot.z) * d->moveSpeed;
         {
-            float y = FastSin(boss->rotation[2]);
+            float y = FastSin(boss->rot.z);
             d->velocity[2] = d->verticalSpeed;
             d->velocity[2] = d->velocity[2] - D_0015EE70_d * 20.0f;
             d->velocity[1] = y * d->moveSpeed;
@@ -348,12 +342,12 @@ void update_resort_owner_state_actions(char *m) {
             FastVecSub(v, tgt, m + 0x10);
             FastVecScale(v, v, 1.0f / (float)scale_ticks(0x3C));
             d->velocity[2] = jump_speed_4318((float *)(m + 0x10), (float *)tgt, 0, vec_length_xy(v), -(D_0015EE70_d * 10.8f));
-            boss->opacity = 0.6666667f;
+            boss->anim_speed = 0.6666667f;
         }
         if (0.0f < FastVecLength(v)) d->velocity[2] -= D_0015EE70_d * 10.8f;
         if (IsFrameWithinWindow(m, 29.0f)) {
             clear_u64_value(v);
-            boss->opacity = 1.0f;
+            boss->anim_speed = 1.0f;
         }
         break;
     }
@@ -361,7 +355,7 @@ void update_resort_owner_state_actions(char *m) {
         int k = (unsigned int)d->railSelect > 0;
         char *o = (char *)(D_L11_00160058_d + (d->rail[k] << 8));
         func_L00_00261568_c(m, o, &resort_owner_mount_offset, &resort_owner_mount_rot, m + 0x10, m + 0x40);
-        if (try_activate_pokitaru_gate((unsigned char *)o) && boss->animation != 5) {
+        if (try_activate_pokitaru_gate((unsigned char *)o) && boss->prev_seq != 5) {
             MobyBlendAnimation(m, 5, 0, scale_ticks(0x14));
         }
         break;
@@ -688,7 +682,6 @@ void update_resort_owner_state_transitions(void *mp) {
     }
 }
 extern f32 D_0015EE6C MACRO_ADDR;
-struct AnimSeq;
 extern void func_001F9EC0(void *, void *, void *);
 extern short D_L11_00161460;
 extern short D_L11_00161464;
@@ -1773,7 +1766,6 @@ int try_activate_pokitaru_gate(unsigned char *moby) {
     return 1;
 }
 extern f32 D_0015EE6C MACRO_ADDR;
-struct AnimSeq;
 extern float func_002140F8(float, float);
 extern void func_0020D960(struct Moby *, int, void *);
 extern void func_L00_001FFED8(void *, int, float);
@@ -2398,7 +2390,6 @@ void update_child_grid_controller(char *m) {
 #undef func_00214D88_f
 #undef D_L11_00160058_m
 #undef D_L11_0016016C_i
-struct AnimSeq;
 extern void func_L00_001FF4B0(void *out, void *a, f32 len);
 extern short D_L11_00161FD0;
 extern short D_L11_00161FD4;
@@ -2510,26 +2501,6 @@ struct MobyClass_pv {
     u8 pad[0x24];
     f32 scale;
 };
-struct Moby_pv {
-    u8 pad0[0x10];
-    f32 px;
-    f32 py;
-    f32 pz;
-    f32 pw;
-    u8 state;
-    u8 group;
-    u8 pad22[2];
-    struct MobyClass_pv *pclass;
-    u8 pad28[4];
-    f32 scale;
-    u8 update_dist;
-    u8 pad31[3];
-    u16 flags;
-    u8 pad36[0x78 - 0x36];
-    u8 *pvars;
-    u8 pad7C[0xBC - 0x7C];
-    u8 command;
-};
 
 extern char D_L11_001DAB40[];
 extern char D_L11_001CB500[];
@@ -2557,10 +2528,10 @@ extern void func_L01_002B8C00(void *, int);
 extern void func_L01_002B90A8(float);
 extern void func_L01_002B8E20(void *, void *);
 extern void func_L01_0026F090(int, int);
-extern void func_L11_0030FB58(struct Moby_pv *);
+extern void func_L11_0030FB58(struct Moby *);
 extern int func_002140B0(int);
 extern void func_L00_002A5158(void *, int, int, float, float, float, float);
-extern int func_L01_00276680(struct Moby_pv *, float);
+extern int func_L01_00276680(struct Moby *, float);
 extern void func_L01_002B9198(void *, int);
 extern void func_L11_0030FBD0(void);
 extern void func_L11_0030FBF8(int);
@@ -2571,7 +2542,7 @@ extern void func_L11_0030FBF8(int);
 #define D_L11_001DA740_pv D_L11_001DAA00
 #define D_L11_001808C0_pv D_L11_00180940
 
-void update_water_tile(struct Moby_pv *m) {
+void update_water_tile(struct Moby *m) {
     int *pv = (int *)m->pvars;
     int i;
     int n;
@@ -2599,7 +2570,7 @@ void update_water_tile(struct Moby_pv *m) {
         }
         m->update_dist = 0xFF;
         m->flags |= 1;
-        m->scale = m->pclass->scale + m->pclass->scale;
+        m->scale = ((struct MobyClass_pv *)m->pclass)->scale + ((struct MobyClass_pv *)m->pclass)->scale;
         if (pv[1] == 0) {
             Light_pv *l;
             float a;
@@ -2633,9 +2604,9 @@ void update_water_tile(struct Moby_pv *m) {
             D_L11_00161294 = 48.0f;
             D_L11_00161288 = 0;
         }
-        D_L11_001DA880_pv[pv[1]].x = m->px;
-        D_L11_001DA880_pv[pv[1]].y = m->py;
-        D_L11_001DA880_pv[pv[1]].z = m->pz;
+        D_L11_001DA880_pv[pv[1]].x = m->pos.x;
+        D_L11_001DA880_pv[pv[1]].y = m->pos.y;
+        D_L11_001DA880_pv[pv[1]].z = m->pos.z;
         D_L11_001DA880_pv[pv[1]].unk14 = 0x38;
         D_L11_001DA880_pv[pv[1]].unk18 = 0x39;
         D_L11_001DA880_pv[pv[1]].unk1C = 0x1C;
@@ -2657,7 +2628,7 @@ void update_water_tile(struct Moby_pv *m) {
         }
         m->command = 1;
         if (pv[2] != 0) {
-            ApproachWithVelocity(&m->pz, (float *)pv, 132.36f, g_frame_time_sq * 4.0f, g_frame_time_sq * 4.0f, g_frame_time * 4.0f);
+            ApproachWithVelocity(&m->pos.z, (float *)pv, 132.36f, g_frame_time_sq * 4.0f, g_frame_time_sq * 4.0f, g_frame_time * 4.0f);
             Group_CopyZToTableSlots(m);
         }
         if (random_integer_below(200) == 0) {
@@ -2674,7 +2645,7 @@ void update_water_tile(struct Moby_pv *m) {
         }
         m->command = 2;
         if (pv[2] != 0) {
-            ApproachWithVelocity(&m->pz, (float *)pv, 137.0f, g_frame_time_sq * 4.0f, g_frame_time_sq * 4.0f, g_frame_time * 4.0f);
+            ApproachWithVelocity(&m->pos.z, (float *)pv, 137.0f, g_frame_time_sq * 4.0f, g_frame_time_sq * 4.0f, g_frame_time * 4.0f);
             Group_CopyZToTableSlots(m);
         }
         if (random_integer_below(200) == 0) {

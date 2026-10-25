@@ -551,30 +551,6 @@ typedef struct WBData {
     /* 0x3E8 */ float f3E8;
 } WBData;
 
-typedef struct WBMoby {
-    /* 0x00 */ char pad00[0x10];
-    /* 0x10 */ float pos[4];
-    /* 0x20 */ unsigned char state;
-    /* 0x21 */ char pad21[0x10];
-    /* 0x31 */ unsigned char f31;
-    /* 0x32 */ char pad32[0xE];
-    /* 0x40 */ float rot[4];
-    /* 0x50 */ char pad50[2];
-    /* 0x52 */ unsigned char anim;
-    /* 0x53 */ unsigned char anim2;
-    /* 0x54 */ char pad54[4];
-    /* 0x58 */ float f58;
-    /* 0x5C */ char pad5C[0x14];
-    /* 0x70 */ unsigned char f70;
-    /* 0x71 */ char pad71[7];
-    /* 0x78 */ WBData *d;
-    /* 0x7C */ char pad7C[3];
-    /* 0x7F */ unsigned char f7F;
-    /* 0x80 */ char pad80[0x24];
-    /* 0xA4 */ unsigned char fA4;
-    /* 0xA5 */ char padA5[0x17];
-    /* 0xBC */ unsigned char fBC;
-} WBMoby;
 
 typedef struct WBQuery {
     /* 0x00 */ float v[4];
@@ -643,9 +619,9 @@ extern int *D_L04_001B0930[];
 extern float D_L04_0015F660[] MACRO_ADDR;
 
 // Update function of the woodcut bot (moby class 563): damage reaction, saw attack, patrol/chase state machine, recoil and gravity.
-void woodcut_bot_update(WBMoby *m) {
+void woodcut_bot_update(Moby *m) {
     int excited = 0;
-    WBData *d = m->d;
+    WBData *d = (WBData *)m->pvars;
     unsigned char *p120;
     short *tm;
     float *pos;
@@ -663,12 +639,12 @@ void woodcut_bot_update(WBMoby *m) {
     p = &d->f120;
     Manipulator_ApplyScale(2.5f, m, 6, p);
     p120 = p;
-    pos = m->pos;
-    if (m->f31 != 0 && FastVecDist(pos, eudora_camera_pos) < 27.0f) {
+    pos = (float *)&m->pos;
+    if (m->visible != 0 && FastVecDist(pos, eudora_camera_pos) < 27.0f) {
         set_ground_height_band(m);
-        m->f7F = 0x15;
+        m->shadow_range = 0x15;
     }
-    adiff = FastDiffRots(m->rot[2], fast_atan2(tgt[0] - m->pos[0], tgt[1] - m->pos[1]));
+    adiff = FastDiffRots(m->rot.z, fast_atan2(tgt[0] - m->pos.x, tgt[1] - m->pos.y));
     dist = vec_distance_xy(pos, tgt);
     hd = MobyGetFrameValue(m);
     qcopy(v60, pos);
@@ -699,13 +675,13 @@ void woodcut_bot_update(WBMoby *m) {
             if (src != 0) {
                 unsigned char *h = D_0013E633 + 0xE1D;
                 if (src != *(unsigned char **)(h + 0x1090)) {
-                    angle = fast_atan2(m->pos[0] - *(float *)(src + 0x10), m->pos[1] - *(float *)(src + 0x14));
+                    angle = fast_atan2(m->pos.x - *(float *)(src + 0x10), m->pos.y - *(float *)(src + 0x14));
                 } else {
-                    angle = fast_atan2(m->pos[0] - *(float *)(h + 0x80), m->pos[1] - *(float *)(h + 0x84));
+                    angle = fast_atan2(m->pos.x - *(float *)(h + 0x80), m->pos.y - *(float *)(h + 0x84));
                 }
             } else {
                 unsigned char *h = D_0013E633 + 0xE1D;
-                angle = fast_atan2(m->pos[0] - *(float *)(h + 0x80), m->pos[1] - *(float *)(h + 0x84));
+                angle = fast_atan2(m->pos.x - *(float *)(h + 0x80), m->pos.y - *(float *)(h + 0x84));
             }
             a = g_frame_time_sq * 30.0f;
             b = g_frame_time_sq * 10.0f;
@@ -739,10 +715,10 @@ void woodcut_bot_update(WBMoby *m) {
             case 3:
             case 6:
                 d->f3C8 = -0.5235988f;
-                if (m->anim != 4 || hd < 16.0f || hd > 27.0f) {
+                if (m->seq != 4 || hd < 16.0f || hd > 27.0f) {
                     short cls;
 
-                    m->fBC |= 5;
+                    m->command |= 5;
                     MobyBlendAnimation(m, 5, 0, scale_ticks(3));
                     reset_walker_gait_helpers(d->f160);
                     m->state = 9;
@@ -768,7 +744,7 @@ void woodcut_bot_update(WBMoby *m) {
                 d->f3E4 = 2.0f / multiply_global_factor(15.0f);
                 *(w128 *)v = *(w128 *)(p + 0x10);
                 HeadingFromVector(v, &angle, &d->f3E4, &one);
-                m->rot[2] = FastAddRots(3.1415927f, angle);
+                m->rot.z = FastAddRots(3.1415927f, angle);
                 d->fB7 = 0x78;
                 RerollEffectCounter(m, d->fB0);
                 d->t3C4 = scale_ticks(0x1E);
@@ -784,14 +760,14 @@ void woodcut_bot_update(WBMoby *m) {
             }
         }
     }
-    m->fA4 = 0xFF;
+    m->hit_slot = 0xFF;
     if (d->f38 != 0) d->t3C6 = scale_ticks(0xF0);
     tm = &d->t3C2;
     d->f38 = 0;
     FastDecTimer(&d->t3C6);
 
     if (m->state == 8) {
-        if (m->anim == 4 && hd > 16.0f && hd < 27.0f) {
+        if (m->seq == 4 && hd > 16.0f && hd < 27.0f) {
             WBJoints joints = eudora_woodcut_bot_joints;
             float pts[6][4];
             WBQuery s;
@@ -822,7 +798,7 @@ void woodcut_bot_update(WBMoby *m) {
         d->f30 = 1.0f;
         d->f28 = 1;
         d->f29 = 0;
-        m->fBC = 0;
+        m->command = 0;
         d->f3E0 = 0.0f;
         d->t3C6 = 0;
         d->f58 = 8;
@@ -838,7 +814,7 @@ void woodcut_bot_update(WBMoby *m) {
         }
         break;
     case 1:
-        if (m->f70 & 2) {
+        if (m->anim_flags & 2) {
             if (excited ? (d->f3E8 * 2.0f < dist) : (d->f3E8 < dist)) {
                 int anims[6];
 
@@ -854,34 +830,34 @@ void woodcut_bot_update(WBMoby *m) {
                 MobyBlendAnimation(m, 4, 0, scale_ticks(10));
                 m->state = 8;
             } else if (excited ? (dist < d->f3E8 * 2.0f) : (dist < d->f3E8)) {
-                if (m->fBC & 1) {
+                if (m->command & 1) {
                     if (excited || d->f3DC == -1 || IsPointInPolygon(tgt, eudora_paths[d->f3DC] + 4, *eudora_paths[d->f3DC]) != 0) {
                         m->state = 5;
-                        m->fBC |= 8;
+                        m->command |= 8;
                     }
                 } else {
                     d->f3D0 = 0.0f;
                     MobyBlendAnimation(m, 0x10, 0, scale_ticks(10));
                     reset_walker_gait_helpers(d->f160);
                     m->state = 0xA;
-                    m->fBC |= 1;
+                    m->command |= 1;
                 }
             }
             if (!excited) {
                 if (vec_distance_xy(pos, d->f3B0) > 2.0f) {
                     if (d->f3E8 < dist || (d->f3DC != -1 && IsPointInPolygon(tgt, eudora_paths[d->f3DC] + 4, *eudora_paths[d->f3DC]) == 0)) {
                         m->state = 6;
-                        m->fBC |= 8;
+                        m->command |= 8;
                     }
                 }
             }
         }
         break;
     case 2:
-        if (m->anim == 2 && (m->f70 & 2)) {
+        if (m->seq == 2 && (m->anim_flags & 2)) {
             if (excited || d->f3DC == -1 || IsPointInPolygon(tgt, eudora_paths[d->f3DC] + 4, *eudora_paths[d->f3DC]) != 0) {
                 m->state = 5;
-                m->fBC |= 8;
+                m->command |= 8;
             } else {
                 MobyBlendAnimation(m, 0, 0, scale_ticks(10));
                 m->state = 1;
@@ -889,9 +865,9 @@ void woodcut_bot_update(WBMoby *m) {
         }
         break;
     case 3: {
-        if (m->anim != 0 && (m->f70 & 2)) {
+        if (m->seq != 0 && (m->anim_flags & 2)) {
             MobyBlendAnimation(m, 0xC, 0, scale_ticks(10));
-            m->f58 = random_float_between(0.8f, 1.2f);
+            m->anim_speed = random_float_between(0.8f, 1.2f);
         }
         if (IsFrameWithinWindow(m, 36.0f) != 0) {
             int i;
@@ -909,8 +885,8 @@ void woodcut_bot_update(WBMoby *m) {
                 rot[2] = random_float_between(-1.0f, 1.0f);
                 *(w128 *)off = *(w128 *)rot;
                 Moby_GetJointWorldPos(m, 0, p);
-                vel[0] = FastCos(m->rot[2]) * -(random_float_between(5.0f, 10.0f) * g_frame_time);
-                vel[1] = FastSin(m->rot[2]) * -(random_float_between(5.0f, 10.0f) * g_frame_time);
+                vel[0] = FastCos(m->rot.z) * -(random_float_between(5.0f, 10.0f) * g_frame_time);
+                vel[1] = FastSin(m->rot.z) * -(random_float_between(5.0f, 10.0f) * g_frame_time);
                 vel[2] = 0.0f;
                 vec_scale_to_length(off, off, g_frame_time * 3.0f);
                 off[2] += g_frame_time * 3.0f;
@@ -926,17 +902,17 @@ void woodcut_bot_update(WBMoby *m) {
                 MobyBlendAnimation(m, 4, 0, scale_ticks(10));
                 m->state = 8;
             } else if (excited ? (dist < d->f3E8 * 2.0f) : (dist < d->f3E8)) {
-                if (m->fBC & 1) {
+                if (m->command & 1) {
                     if (excited || d->f3DC == -1 || IsPointInPolygon(tgt, eudora_paths[d->f3DC] + 4, *eudora_paths[d->f3DC]) != 0) {
                         m->state = 5;
-                        m->fBC |= 8;
+                        m->command |= 8;
                     }
                 } else {
                     d->f3D0 = 0.0f;
                     MobyBlendAnimation(m, 0x10, 0, scale_ticks(10));
                     reset_walker_gait_helpers(d->f160);
                     m->state = 0xA;
-                    m->fBC |= 1;
+                    m->command |= 1;
                 }
             }
         }
@@ -950,7 +926,7 @@ void woodcut_bot_update(WBMoby *m) {
                 m->state = 8;
             } else if (d->f3DC == -1 || IsPointInPolygon(tgt, eudora_paths[d->f3DC] + 4, *eudora_paths[d->f3DC]) != 0) {
                 m->state = 5;
-                m->fBC |= 8;
+                m->command |= 8;
             } else if (adiff > 1.5707964f) {
                 d->f3D0 = 0.0f;
                 MobyBlendAnimation(m, 0x10, 0, scale_ticks(10));
@@ -962,11 +938,11 @@ void woodcut_bot_update(WBMoby *m) {
         }
         break;
     case 5: {
-        if (m->fBC & 8) {
-            m->fBC &= ~8;
+        if (m->command & 8) {
+            m->command &= ~8;
             reset_leg_rig_from_animation(m, d->f160);
         }
-        LegWalkerUpdate(m, d->f160, g_frame_time * 4.0f, fast_atan2(tgt[0] - m->pos[0], tgt[1] - m->pos[1]), g_frame_time_sq * 20.0f);
+        LegWalkerUpdate(m, d->f160, g_frame_time * 4.0f, fast_atan2(tgt[0] - m->pos.x, tgt[1] - m->pos.y), g_frame_time_sq * 20.0f);
         if (dist < 3.0f && adiff < 1.5707964f) {
             MobyBlendAnimation(m, 4, 0, scale_ticks(10));
             reset_walker_gait_helpers(d->f160);
@@ -974,8 +950,8 @@ void woodcut_bot_update(WBMoby *m) {
         } else if (d->f3DC != -1) {
             float v[4];
 
-            v[0] = FastCos(m->rot[2]) * 2.0f;
-            v[1] = FastSin(m->rot[2]) * 2.0f;
+            v[0] = FastCos(m->rot.z) * 2.0f;
+            v[1] = FastSin(m->rot.z) * 2.0f;
             v[2] = 0.0f;
             p = (unsigned char *)v;
             FastVecAdd(p, p, pos);
@@ -998,8 +974,8 @@ void woodcut_bot_update(WBMoby *m) {
         break;
     }
     case 6:
-        if (m->fBC & 8) {
-            m->fBC &= ~8;
+        if (m->command & 8) {
+            m->command &= ~8;
             reset_leg_rig_from_animation(m, d->f160);
         }
         if (dist < 3.0f && adiff < 1.5707964f) {
@@ -1007,19 +983,19 @@ void woodcut_bot_update(WBMoby *m) {
             reset_walker_gait_helpers(d->f160);
             m->state = 8;
         } else {
-            if (m->fBC & 8) {
-                m->fBC &= ~8;
+            if (m->command & 8) {
+                m->command &= ~8;
                 reset_leg_rig_from_animation(m, d->f160);
             }
             if (vec_distance_xy(pos, d->f3B0) < 2.0f) {
                 m->state = 7;
             } else {
-                LegWalkerUpdate(m, d->f160, g_frame_time * 4.0f, fast_atan2(d->f3B0[0] - m->pos[0], d->f3B0[1] - m->pos[1]), g_frame_time_sq * 20.0f);
+                LegWalkerUpdate(m, d->f160, g_frame_time * 4.0f, fast_atan2(d->f3B0[0] - m->pos.x, d->f3B0[1] - m->pos.y), g_frame_time_sq * 20.0f);
                 if (d->f3DC != -1) {
                     float v[4];
 
-                    v[0] = FastCos(m->rot[2]) * 2.0f;
-                    v[1] = FastSin(m->rot[2]) * 2.0f;
+                    v[0] = FastCos(m->rot.z) * 2.0f;
+                    v[1] = FastSin(m->rot.z) * 2.0f;
                     v[2] = 0.0f;
                     FastVecAdd(v, v, pos);
                     if (IsPointInPolygon(v, eudora_paths[d->f3DC] + 4, *eudora_paths[d->f3DC]) == 0) {
@@ -1027,7 +1003,7 @@ void woodcut_bot_update(WBMoby *m) {
                         MobyBlendAnimation(m, 0x10, 0, scale_ticks(10));
                         reset_walker_gait_helpers(d->f160);
                         m->state = 0xA;
-                        m->fBC |= 0x10;
+                        m->command |= 0x10;
                     } else if (IsPointInPolygon(tgt, eudora_paths[d->f3DC] + 4, *eudora_paths[d->f3DC]) != 0) {
                         m->state = 7;
                     }
@@ -1041,7 +1017,7 @@ void woodcut_bot_update(WBMoby *m) {
             reset_walker_gait_helpers(d->f160);
             m->state = 8;
         } else {
-            LegWalkerUpdate(m, d->f160, g_frame_time * 0.0f, m->rot[2], g_frame_time_sq * 20.0f);
+            LegWalkerUpdate(m, d->f160, g_frame_time * 0.0f, m->rot.z, g_frame_time_sq * 20.0f);
             if (d->f217 == 0) {
                 if (excited) {
                     m->state = 4;
@@ -1052,16 +1028,16 @@ void woodcut_bot_update(WBMoby *m) {
         }
         break;
     case 8:
-        if (m->anim == 4 && (m->f70 & 2)) {
+        if (m->seq == 4 && (m->anim_flags & 2)) {
             d->t3C2 = 0;
             MobyBlendAnimation(m, 0, 0, scale_ticks(10));
             m->state = 1;
         }
         break;
     case 9:
-        if (m->anim2 != 5 || (m->anim == 5 && (m->f70 & 2))) {
-            if (m->fBC & 4) {
-                m->fBC &= ~4;
+        if (m->prev_seq != 5 || (m->seq == 5 && (m->anim_flags & 2))) {
+            if (m->command & 4) {
+                m->command &= ~4;
                 if (d->f3DC == -1) {
                     MobyBlendAnimation(m, 0, 0, scale_ticks(10));
                     m->state = 1;
@@ -1083,8 +1059,8 @@ void woodcut_bot_update(WBMoby *m) {
                         } else {
                             sign = -sign;
                         }
-                        ang = FastAddRots(sign * tab.v[i >> 1], fast_atan2(m->pos[0] - *(float *)(h + 0x80), m->pos[1] - *(float *)(h + 0x84)));
-                        BuildSphericalOffset(v, 6.0f, ang, m->rot[1]);
+                        ang = FastAddRots(sign * tab.v[i >> 1], fast_atan2(m->pos.x - *(float *)(h + 0x80), m->pos.y - *(float *)(h + 0x84)));
+                        BuildSphericalOffset(v, 6.0f, ang, m->rot.y);
                         FastVecAdd(v, v, pos);
                         if (IsPointInPolygon(v, eudora_paths[d->f3DC] + 4, *eudora_paths[d->f3DC]) != 0) {
                             found = 1;
@@ -1095,7 +1071,7 @@ void woodcut_bot_update(WBMoby *m) {
                         }
                     }
                     if (!found) {
-                        if (m->anim == 5) {
+                        if (m->seq == 5) {
                             if (dist < 3.0f && adiff < 1.5707964f) {
                                 MobyBlendAnimation(m, 4, 0, scale_ticks(10));
                                 m->state = 8;
@@ -1113,7 +1089,7 @@ void woodcut_bot_update(WBMoby *m) {
             } else {
                 float v[4];
 
-                if (hd < 28.0f && m->anim == 0x10) {
+                if (hd < 28.0f && m->seq == 0x10) {
                     float lim = frame_scale * 0.11111111f;
 
                     if (d->f3D8 < lim) {
@@ -1121,14 +1097,14 @@ void woodcut_bot_update(WBMoby *m) {
                     } else {
                         d->f3D8 = lim;
                     }
-                    BuildSphericalOffset(v, d->f3D8, d->f3D4, m->rot[1]);
+                    BuildSphericalOffset(v, d->f3D8, d->f3D4, m->rot.y);
                     FastVecAdd(pos, pos, v);
-                    m->rot[2] = SpringTurn(m->rot[2], fast_atan2(tgt[0] - m->pos[0], tgt[1] - m->pos[1]), &d->f3D0, g_frame_time_sq * 3.1415927f, g_frame_time_sq * 6.2831855f, g_frame_time * 4.1887903f);
+                    m->rot.z = SpringTurn(m->rot.z, fast_atan2(tgt[0] - m->pos.x, tgt[1] - m->pos.y), &d->f3D0, g_frame_time_sq * 3.1415927f, g_frame_time_sq * 6.2831855f, g_frame_time * 4.1887903f);
                 } else if (d->f3D8 > 0.0f) {
                     d->f3D8 -= g_frame_time_sq * 200.0f;
-                    BuildSphericalOffset(v, d->f3D8, d->f3D4, m->rot[1]);
+                    BuildSphericalOffset(v, d->f3D8, d->f3D4, m->rot.y);
                     FastVecAdd(pos, pos, v);
-                    m->rot[2] = SpringTurn(m->rot[2], fast_atan2(tgt[0] - m->pos[0], tgt[1] - m->pos[1]), &d->f3D0, g_frame_time_sq * 3.1415927f, g_frame_time_sq * 6.2831855f, g_frame_time * 4.1887903f);
+                    m->rot.z = SpringTurn(m->rot.z, fast_atan2(tgt[0] - m->pos.x, tgt[1] - m->pos.y), &d->f3D0, g_frame_time_sq * 3.1415927f, g_frame_time_sq * 6.2831855f, g_frame_time * 4.1887903f);
                 } else {
                     m->state = 1;
                     d->t3C2 = 0;
@@ -1137,27 +1113,27 @@ void woodcut_bot_update(WBMoby *m) {
         }
         break;
     case 10:
-        if (m->anim == 0x10 && (m->f70 & 2)) {
-            if ((m->fBC & 0x10) || IsPointInPolygon(tgt, eudora_paths[d->f3DC] + 4, *eudora_paths[d->f3DC]) == 0) {
+        if (m->seq == 0x10 && (m->anim_flags & 2)) {
+            if ((m->command & 0x10) || IsPointInPolygon(tgt, eudora_paths[d->f3DC] + 4, *eudora_paths[d->f3DC]) == 0) {
                 m->state = 6;
                 MobyBlendAnimation(m, 0, 0, scale_ticks(10));
             } else {
                 m->state = 5;
                 MobyBlendAnimation(m, 0, 0, scale_ticks(10));
             }
-            m->fBC = (m->fBC | 8) & ~0x10;
-        } else if (m->fBC & 0x10) {
-            m->rot[2] = SpringTurn(m->rot[2], fast_atan2(d->f3B0[0] - m->pos[0], d->f3B0[1] - m->pos[1]), &d->f3D0, g_frame_time_sq * 3.1415927f, g_frame_time_sq * 6.2831855f, g_frame_time * 4.1887903f);
+            m->command = (m->command | 8) & ~0x10;
+        } else if (m->command & 0x10) {
+            m->rot.z = SpringTurn(m->rot.z, fast_atan2(d->f3B0[0] - m->pos.x, d->f3B0[1] - m->pos.y), &d->f3D0, g_frame_time_sq * 3.1415927f, g_frame_time_sq * 6.2831855f, g_frame_time * 4.1887903f);
         } else {
-            m->rot[2] = SpringTurn(m->rot[2], fast_atan2(tgt[0] - m->pos[0], tgt[1] - m->pos[1]), &d->f3D0, 0.03f, 0.3f, g_frame_time * 6.4577184f);
+            m->rot.z = SpringTurn(m->rot.z, fast_atan2(tgt[0] - m->pos.x, tgt[1] - m->pos.y), &d->f3D0, 0.03f, 0.3f, g_frame_time * 6.4577184f);
         }
         break;
     case 11:
-        if ((mine_fall(m, d->fC0) & 0x40) || m->pos[2] < 1.0f) {
+        if ((mine_fall(m, d->fC0) & 0x40) || m->pos.z < 1.0f) {
             emit_woodcut_bot_death_effects(m);
-            SpawnBreakFragment(m, 0x6CB, pos, m->rot, 0, 0, 0.0f, eudora_zero_vector, eudora_zero_vector, eudora_zero_vector);
-            SpawnBreakFragment(m, 0x6CC, pos, m->rot, 0, 0, 0.0f, eudora_zero_vector, eudora_zero_vector, eudora_zero_vector);
-            SpawnBreakFragment(m, 0x6CD, pos, m->rot, 0, 0, 0.0f, eudora_zero_vector, eudora_zero_vector, eudora_zero_vector);
+            SpawnBreakFragment(m, 0x6CB, pos, &m->rot, 0, 0, 0.0f, eudora_zero_vector, eudora_zero_vector, eudora_zero_vector);
+            SpawnBreakFragment(m, 0x6CC, pos, &m->rot, 0, 0, 0.0f, eudora_zero_vector, eudora_zero_vector, eudora_zero_vector);
+            SpawnBreakFragment(m, 0x6CD, pos, &m->rot, 0, 0, 0.0f, eudora_zero_vector, eudora_zero_vector, eudora_zero_vector);
             DeleteMoby(m);
             return;
         }
@@ -1171,8 +1147,8 @@ void woodcut_bot_update(WBMoby *m) {
         if (d->f3E4 > 0.0f) {
             unsigned char *h = D_0013E633 + 0xE1D;
 
-            w[0] = FastCos(fast_atan2(m->pos[0] - *(float *)(h + 0x80), m->pos[1] - *(float *)(h + 0x84))) * d->f3E4;
-            w[1] = FastSin(fast_atan2(m->pos[0] - *(float *)(h + 0x80), m->pos[1] - *(float *)(h + 0x84))) * d->f3E4;
+            w[0] = FastCos(fast_atan2(m->pos.x - *(float *)(h + 0x80), m->pos.y - *(float *)(h + 0x84))) * d->f3E4;
+            w[1] = FastSin(fast_atan2(m->pos.x - *(float *)(h + 0x80), m->pos.y - *(float *)(h + 0x84))) * d->f3E4;
             w[2] = 0.0f;
             FastVecAdd(w, w, pos);
             d->f3E4 += -2.0f / (multiply_global_factor(15.0f) * multiply_global_factor(15.0f));
@@ -1183,18 +1159,18 @@ void woodcut_bot_update(WBMoby *m) {
         axis_rotation_2d48(d->f130, 2, 0.0f);
         multiply_quaternions(d->f130, d->f130, w);
         if (m->state != 9) d->f3C1 = m->state;
-        if (m->state != 5 && m->fBC != 6) {
+        if (m->state != 5 && m->command != 6) {
             float g;
 
             d->f3E0 += g_frame_time_sq * 9.8f;
-            m->pos[2] -= d->f3E0 - 2.0f;
+            m->pos.z -= d->f3E0 - 2.0f;
             g = ProbeGroundHeight(pos, 0, 0.5f);
-            m->pos[2] -= 2.0f;
-            if (m->pos[2] < g) {
-                m->pos[2] = g;
+            m->pos.z -= 2.0f;
+            if (m->pos.z < g) {
+                m->pos.z = g;
                 d->f3E0 = 0.0f;
             }
-            if (m->pos[2] < 2.0f) {
+            if (m->pos.z < 2.0f) {
                 SetDeathBits(m, 0, -1);
                 DeleteMoby(m);
             }
@@ -2056,9 +2032,6 @@ void update_entity_bounce_and_decay(char *moby) {
     }
     }
 }
-struct Manip;
-struct GifEntry;
-struct AnimSeq;
 extern s32 D_L04_0015F6A8 MACRO_ADDR;
 struct L04MissionState {
     char pad0[0x30];

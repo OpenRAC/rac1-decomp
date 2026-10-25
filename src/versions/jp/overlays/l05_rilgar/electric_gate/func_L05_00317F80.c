@@ -1,5 +1,5 @@
-void update_hoverboard_girl(HGMoby *moby) {
-    HGState *state = moby->data;
+void update_hoverboard_girl(Moby *moby) {
+    HGState *state = (HGState *)moby->pvars;
     HGVec target_position;
     HGVec head_position;
     HGVec direction;
@@ -15,10 +15,10 @@ void update_hoverboard_girl(HGMoby *moby) {
     update_hoverboard_girl_cutscene_instances_r(moby);
     switch (moby->state) {
     case 0:
-        if (moby->animation != 0) {
+        if (moby->prev_seq != 0) {
             blend_moby_animation(moby, 0, 0, scale_frame_count(20));
         }
-        moby->position.component[2] = find_ground_height(0.5f, &moby->position, 0);
+        moby->pos.z = find_ground_height(0.5f, (HGVec *)&moby->pos, 0);
         if ((*(HGGates *)(D_0013D605 + 0xB3)).first_gate == 0 || (*(HGGates *)(D_0013D605 + 0xB3)).second_gate == 0) {
             HGRaceEntry **entries = race_entries_r;
             int entry = get_dialogue_entry_r(moby);
@@ -39,7 +39,7 @@ void update_hoverboard_girl(HGMoby *moby) {
             state->previous_dialogue_state = state->dialogue_state;
             state->dialogue_state = 2;
             state->dialogue_state_frame = frame_number;
-            moby->dialogue_event = 0;
+            moby->command = 0;
             set_race_camera(&race_camera_vectors[0], &race_camera_vectors[1], 0, 1);
             qcopy(&((HGVec *)(D_0013E633 + 0x2B1D))[0], &race_camera_vectors[2]);
             qcopy(&((HGVec *)(D_0013E633 + 0x2B1D))[1], &race_camera_vectors[3]);
@@ -47,7 +47,7 @@ void update_hoverboard_girl(HGMoby *moby) {
             set_race_camera_mode(2, 6);
         }
         }
-        if (moby->dialogue_event == 1) {
+        if (moby->command == 1) {
             set_race_camera(&race_camera_vectors[2], &race_camera_vectors[3], 0, 1);
             set_race_camera_mode(0, 8);
             if ((*(unsigned char *)(D_0013D355 + 0x13B)) == 0) {
@@ -56,29 +56,29 @@ void update_hoverboard_girl(HGMoby *moby) {
                 state->dialogue_state_frame = frame_number;
                 state->race_return_pending = 1;
             }
-            moby->dialogue_event = 0;
+            moby->command = 0;
         }
-        if (moby->dialogue_event == 2) {
+        if (moby->command == 2) {
             set_race_camera_mode(0, 8);
             set_race_camera(&race_camera_vectors[2], &race_camera_vectors[3], 0, 1);
-            moby->dialogue_event = 0;
+            moby->command = 0;
         }
-        if (moby->dialogue_event == 3) {
+        if (moby->command == 3) {
             set_race_camera_mode(0, 8);
-            moby->dialogue_event = 0;
+            moby->command = 0;
             set_race_camera(&race_camera_vectors[0], &race_camera_vectors[1], 0, 1);
             qcopy(&((HGVec *)(D_0013E633 + 0x2B1D))[0], &race_camera_vectors[2]);
             qcopy(&((HGVec *)(D_0013E633 + 0x2B1D))[1], &race_camera_vectors[3]);
         }
-        if ((moby->animation == 0 || moby->animation == 2) &&
+        if ((moby->prev_seq == 0 || moby->prev_seq == 2) &&
             advance_timer(&state->idle_animation_timer)) {
             state->idle_animation_timer = truncate_time(scale_time(random_float(1200.0f, 2400.0f)));
-            if (moby->animation != 1) {
+            if (moby->prev_seq != 1) {
                 blend_moby_animation(moby, 1, 0, scale_frame_count(10));
             }
-        } else if (moby->animation_flags & 2) {
+        } else if (moby->anim_flags & 2) {
             animation = random_remainder(2) != 0 ? 0 : 2;
-            if (moby->animation != animation) {
+            if (moby->prev_seq != animation) {
                 blend_moby_animation(moby, animation, 0, scale_frame_count(10));
             }
         }
@@ -98,9 +98,9 @@ void update_hoverboard_girl(HGMoby *moby) {
         }
         break;
     default:
-        if (moby->dialogue_event != 0) {
+        if (moby->command != 0) {
             set_race_camera(&race_camera_vectors[2], &race_camera_vectors[3], 0, 1);
-            moby->dialogue_event = 0;
+            moby->command = 0;
         }
         break;
     }
@@ -108,14 +108,14 @@ void update_hoverboard_girl(HGMoby *moby) {
     rotation_step = 0.02f;
     rotation_limit = 0.3f;
     look_enabled = 0;
-    if (moby->animation == 0 || moby->animation == 2) {
+    if (moby->prev_seq == 0 || moby->prev_seq == 2) {
         look_enabled = 1;
-        if (vector_distance(&moby->position, &(*(HGHero *)(D_0013E633 + 0xE1D)).pos) < 8.0f &&
+        if (vector_distance(&moby->pos, &(*(HGHero *)(D_0013E633 + 0xE1D)).pos) < 8.0f &&
             absolute_angle_difference(
-                moby->yaw,
-                angle_from_xy((*(HGHero *)(D_0013E633 + 0xE1D)).unkD0.component[0] - moby->position.component[0],
+                moby->rot.z,
+                angle_from_xy((*(HGHero *)(D_0013E633 + 0xE1D)).unkD0.component[0] - moby->pos.x,
                               (*(HGHero *)(D_0013E633 + 0xE1D)).unkD0.component[1] -
-                                  moby->position.component[1])) < 1.5707964f) {
+                                  moby->pos.y)) < 1.5707964f) {
             if (vector_length(&(*(HGHero *)(D_0013E633 + 0xE1D)).displacement) > 0.01f) {
                 state->player_look_timer = scale_frame_count(120);
             } else {
@@ -127,10 +127,10 @@ void update_hoverboard_girl(HGMoby *moby) {
         }
         if (advance_timer(&state->random_look_timer)) {
             state->random_look_timer = truncate_time(scale_time(random_float(180.0f, 300.0f)));
-            heading = add_angle(moby->yaw, random_float(-90.0f, 90.0f) * 0.017453292f);
+            heading = add_angle(moby->rot.z, random_float(-90.0f, 90.0f) * 0.017453292f);
             pitch = random_float(0.0f, 30.0f) * 0.017453292f;
             vector_from_angles(6.0f, heading, pitch, &state->look_target);
-            add_vector(&state->look_target, &state->look_target, &moby->position);
+            add_vector(&state->look_target, &state->look_target, &moby->pos);
         }
         if (state->player_look_timer != 0) {
             qcopy(&target_position, &(*(HGHero *)(D_0013E633 + 0xE1D)).unkD0);
@@ -141,11 +141,11 @@ void update_hoverboard_girl(HGMoby *moby) {
         }
     }
     if (look_enabled) {
-        qcopy(&head_position, &moby->position);
+        qcopy(&head_position, &moby->pos);
         head_position.component[2] += 1.0f;
         subtract_vector(&direction, &target_position, &head_position);
         yaw = signed_angle_difference(angle_from_xy(direction.component[0], direction.component[1]),
-                                      moby->yaw);
+                                      moby->rot.z);
         pitch = -angle_from_xy(vector_length_xy(&direction), direction.component[2]);
         if (yaw > 1.5707964f)
             yaw = 1.5707964f;
@@ -160,11 +160,11 @@ void update_hoverboard_girl(HGMoby *moby) {
         state->joints[1].target_rotation[2] = yaw * 0.4f;
     }
 
-    if (vector_distance(&moby->position, &(*(HGHero *)(D_0013E633 + 0xE1D)).pos) < 15.0f &&
+    if (vector_distance(&moby->pos, &(*(HGHero *)(D_0013E633 + 0xE1D)).pos) < 15.0f &&
         absolute_angle_difference(
-            moby->yaw,
-            angle_from_xy((*(HGHero *)(D_0013E633 + 0xE1D)).pos.component[0] - moby->position.component[0],
-                          (*(HGHero *)(D_0013E633 + 0xE1D)).pos.component[1] - moby->position.component[1])) <
+            moby->rot.z,
+            angle_from_xy((*(HGHero *)(D_0013E633 + 0xE1D)).pos.component[0] - moby->pos.x,
+                          (*(HGHero *)(D_0013E633 + 0xE1D)).pos.component[1] - moby->pos.y)) <
             1.2217305f) {
         if ((*(HGHero *)(D_0013E633 + 0xE1D)).state_current == 11 && (*(HGHero *)(D_0013E633 + 0xE1D)).state_timer == 15) {
             state->breast_growth_count_gp++;

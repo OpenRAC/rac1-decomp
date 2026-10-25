@@ -2936,20 +2936,6 @@ void MovingMobyUpdate(struct Moby *moby) {
         }
     }
 }
-typedef struct L15AlarmMoby {
-    char pad0[0x10];
-    float position[3];
-    char pad1[4];
-    unsigned char state;
-    char pad2[0x32];
-    unsigned char animation;
-    char pad3[0x1C];
-    unsigned char status;
-    char pad4[7];
-    void *data;
-    char pad5[0x14];
-    int w90;
-} L15AlarmMoby;
 
 typedef struct L15AlarmData {
     int mode;
@@ -2968,8 +2954,8 @@ extern int func_L15_002A3A48(int idx, void *pos);
 extern void func_L15_002CCFC0(void *arg);
 
 /* Sentrybot alarm update (moby class 408, levels 15 and 17): turn, watch for the hero, raise the alarm. */
-void SentrybotAlarmUpdate(L15AlarmMoby *m) {
-    L15AlarmData *d = m->data;
+void SentrybotAlarmUpdate(Moby *m) {
+    L15AlarmData *d = (void *)m->pvars;
     float f;
     int r;
 
@@ -2982,11 +2968,11 @@ void SentrybotAlarmUpdate(L15AlarmMoby *m) {
         D_L15_00161B44_gp = 0;
         if (mode == 2) {
             m->state = 6;
-            if (m->animation != 4)
+            if (m->prev_seq != 4)
                 MobyBlendAnimation(m, 4, 0, 0);
         } else {
             m->state = 3;
-            if (m->animation != 2)
+            if (m->prev_seq != 2)
                 MobyBlendAnimation(m, 2, 0, 0);
         }
         break;
@@ -2994,7 +2980,7 @@ void SentrybotAlarmUpdate(L15AlarmMoby *m) {
     case 1:
         f = FastSin(d->f14);
         r = FastTweenColor(0x801414BC, 0x801414DC, (f + 1.0f) * 0.5f);
-        m->w90 = r;
+        m->glow_color = r;
         d->f14 = FastAddRots(d->f14, g_frame_time * 6.2831855f);
         if (!d->f8)
             goto tail;
@@ -3005,13 +2991,13 @@ void SentrybotAlarmUpdate(L15AlarmMoby *m) {
             break;
         }
         m->state = 6;
-        if (m->animation != 4)
+        if (m->prev_seq != 4)
             MobyBlendAnimation(m, 4, 0, scale_ticks(30));
         break;
     case 2:
-        if (m->status & 2) {
+        if (m->anim_flags & 2) {
             m->state = 3;
-            if (m->animation != 2)
+            if (m->prev_seq != 2)
                 MobyBlendAnimation(m, 2, 0, scale_ticks(10));
         }
         break;
@@ -3021,40 +3007,40 @@ void SentrybotAlarmUpdate(L15AlarmMoby *m) {
         if (quartu_game_mode == 2)
             break;
         m->state = 4;
-        if (m->animation != 3)
+        if (m->prev_seq != 3)
             MobyBlendAnimation(m, 3, 0, scale_ticks(10));
         break;
     case 4:
-        if (!(m->status & 2))
+        if (!(m->anim_flags & 2))
             break;
         if (d->f8 && quartu_game_mode != 2) {
             if (d->mode == 1) {
                 m->state = 7;
-                if (m->animation != 5)
+                if (m->prev_seq != 5)
                     MobyBlendAnimation(m, 5, 0, scale_ticks(10));
             } else {
-                if (m->animation != 8)
+                if (m->prev_seq != 8)
                     MobyBlendAnimation(m, 8, 0, scale_ticks(10));
                 m->state = 5;
             }
             break;
         }
-        if (m->animation != 8)
+        if (m->prev_seq != 8)
             MobyBlendAnimation(m, 8, 0, scale_ticks(10));
         m->state = 10;
         break;
     case 5:
-        if ((m->status & 2) && m->animation != 0)
+        if ((m->anim_flags & 2) && m->prev_seq != 0)
             MobyBlendAnimation(m, 0, 0, scale_ticks(10));
         f = FastSin(d->f14);
         r = FastTweenColor(0x801414DC, 0x8004048C, (f + 1.0f) * 0.5f);
-        m->w90 = r;
+        m->glow_color = r;
         d->f14 = FastAddRots(d->f14, g_frame_time * 12.566371f);
         if (fast_dec_timer(d->blk18) == 0 && quartu_game_mode != 2)
             break;
         set_sentrybot_alarm_duration((char *)m, 0);
         d->f8 = 0;
-        if (m->animation != 8)
+        if (m->prev_seq != 8)
             MobyBlendAnimation(m, 8, 0, scale_ticks(10));
         m->state = 10;
         break;
@@ -3062,18 +3048,18 @@ void SentrybotAlarmUpdate(L15AlarmMoby *m) {
         if (!d->f8)
             goto tail;
         m->state = 7;
-        if (m->animation != 5)
+        if (m->prev_seq != 5)
             MobyBlendAnimation(m, 5, 0, scale_ticks(10));
         break;
     case 7:
-        if (!(m->status & 2))
+        if (!(m->anim_flags & 2))
             break;
         m->state = 8;
-        if (m->animation != 6)
+        if (m->prev_seq != 6)
             MobyBlendAnimation(m, 6, 0, scale_ticks(10));
         break;
     case 8: {
-        float *pos = m->position;
+        float *pos = (float *)&m->pos;
         char *h2 = D_0013E633 + 0xE9D;
         float tmp[4];
 
@@ -3088,29 +3074,29 @@ void SentrybotAlarmUpdate(L15AlarmMoby *m) {
             set_sentrybot_alarm_duration((char *)m, 0);
             d->f8 = 0;
             m->state = 9;
-            if (m->animation != 7)
+            if (m->prev_seq != 7)
                 MobyBlendAnimation(m, 7, 0, scale_ticks(10));
         }
         break;
     }
     case 9:
-        if (!(m->status & 2))
+        if (!(m->anim_flags & 2))
             break;
         if (d->mode == 2) {
             m->state = 6;
-            if (m->animation != 4)
+            if (m->prev_seq != 4)
                 MobyBlendAnimation(m, 4, 0, scale_ticks(10));
         } else {
             m->state = 10;
-            if (m->animation != 8)
+            if (m->prev_seq != 8)
                 MobyBlendAnimation(m, 8, 0, scale_ticks(10));
         }
         break;
     case 10:
-        if (!(m->status & 2))
+        if (!(m->anim_flags & 2))
             break;
         m->state = 2;
-        if (m->animation != 1)
+        if (m->prev_seq != 1)
             MobyBlendAnimation(m, 1, 0, scale_ticks(10));
         break;
     }

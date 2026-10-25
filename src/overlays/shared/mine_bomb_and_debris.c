@@ -2,6 +2,7 @@
 #include "common.h"
 #include "callees.h"
 #include "include_asm.h"
+#include "moby.h"
 #include "vector.h"
 
 typedef int Q910 __attribute__((mode(TI)));
@@ -2051,29 +2052,22 @@ typedef struct DebrisData2B0D30 {
     short bounces; short timer;
     float velocity[4]; float spin[3];
 } DebrisData2B0D30;
-typedef struct DebrisMoby2B0D30 {
-    char pad0[0x10]; float position[4]; unsigned char state;
-    char pad21[2]; unsigned char opacity;
-    char pad24[8]; float scale;
-    char pad30[0x10]; float rotation[4];
-    char pad50[0x28]; DebrisData2B0D30 *data;
-} DebrisMoby2B0D30;
 void nanotech_crate_fragment_update(char *moby) {
-    DebrisMoby2B0D30 *mob = (DebrisMoby2B0D30 *)moby;
+    Moby *mob = (Moby *)moby;
     float old[4];
     char *pos = moby + 0x10;
-    DebrisData2B0D30 *data = mob->data;
+    DebrisData2B0D30 *data = (DebrisData2B0D30 *)mob->pvars;
     float *vel;
     qcopy(old, pos);
     vel = data->velocity;
     data->velocity[2] = data->velocity[2] - g_frame_time_sq * 20.0f;
     FastVecAdd(pos, pos, vel);
-    mob->rotation[0] = FastAddRots(mob->rotation[0], data->spin[0]);
-    mob->rotation[1] = FastAddRots(mob->rotation[1], data->spin[1]);
-    mob->rotation[2] = FastAddRots(mob->rotation[2], data->spin[2]);
+    mob->rot.x = FastAddRots(mob->rot.x, data->spin[0]);
+    mob->rot.y = FastAddRots(mob->rot.y, data->spin[1]);
+    mob->rot.z = FastAddRots(mob->rot.z, data->spin[2]);
     switch (mob->state) {
     case 0:
-        if (mob->position[2] < data->floor - 3.0f) {
+        if (mob->pos.z < data->floor - 3.0f) {
             mob->state = 1;
         } else if (FastDecTimer(&data->timer) != 0 && data->bounces != 0) {
             if (coll_sphere(data->radius, pos, 2, 0) != 0) {
@@ -2094,11 +2088,11 @@ void nanotech_crate_fragment_update(char *moby) {
     case 1: {
         int t;
         mob->scale = mob->scale * D_L00_00161540_float;
-        t = mob->opacity;
+        t = mob->alpha;
         if (t < D_L00_00161544_count) {
             DeleteMoby(moby);
         } else {
-            mob->opacity = t - D_L00_00161544_byte;
+            mob->alpha = t - D_L00_00161544_byte;
         }
         break;
     }

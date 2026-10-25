@@ -2230,19 +2230,10 @@ void assign_gadgebot_attack_targets(void) {
         if (v != 0) g->f198 = 1;
     }
 }
-typedef struct GbMoby_3D40 {
-    char p0[0x10];
-    float pos[4] __attribute__((aligned(16)));
-    unsigned char state;
-    char p21[0x57];
-    void *vars;
-    char p7C[0x2A];
-    short cls_id;
-} GbMoby_3D40;
 
 typedef struct {
     char p0[0x174];
-    GbMoby_3D40 *target;
+    Moby *target;
     char p178[0x22];
     short target_searched;
     char p19C[0x170];
@@ -2257,9 +2248,9 @@ extern int D_L06_001AC500_3D40[] __asm__("D_L06_001AC500");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/gameplay/entities/00297d10.c, FUN_L06_002f2910. */
 void select_nearest_gadgebot_interaction_target(void *moby_arg) {
-    GbMoby_3D40 *moby = moby_arg;
-    GbVars_3D40 *d = moby->vars;
-    GbMoby_3D40 *candidate;
+    Moby *moby = moby_arg;
+    GbVars_3D40 *d = (void *)moby->pvars;
+    Moby *candidate;
     float best = 12.0f;
     int list;
     int *cursor;
@@ -2268,16 +2259,16 @@ void select_nearest_gadgebot_interaction_target(void *moby_arg) {
     if (d->target_group != -1) {
         func_L00_0025A208_3D40(&list, d->target_group, 0, 0);
         while (list != 0) {
-            if (((GbMoby_3D40 *)list)->cls_id == 0x3b1 || ((GbMoby_3D40 *)list)->cls_id == 0x400 ||
-                ((GbMoby_3D40 *)list)->cls_id == 0x515 || ((GbMoby_3D40 *)list)->cls_id == 0x516) {
-                if (!(best < func_001F9D48_3D40(moby->pos, ((GbMoby_3D40 *)list)->pos)) &&
-                    !(0.2f < func_001F9B88_3D40(moby->pos[2] - ((GbMoby_3D40 *)list)->pos[2])) &&
-                    !(1.5f < func_001F9B88_3D40(moby->pos[2] - ((GbMoby_3D40 *)list)->pos[2]))) {
-                    if ((((GbMoby_3D40 *)list)->cls_id != 0x400 && ((GbMoby_3D40 *)list)->cls_id != 0x516) ||
-                        ((GbMoby_3D40 *)list)->state != 2) {
-                        if (((GbMoby_3D40 *)list)->cls_id != 0x515 || *(int *)((GbMoby_3D40 *)list)->vars != -1) {
-                            best = func_001F9D48_3D40(moby->pos, ((GbMoby_3D40 *)list)->pos);
-                            d->target = (GbMoby_3D40 *)list;
+            if (((Moby *)list)->oclass == 0x3b1 || ((Moby *)list)->oclass == 0x400 ||
+                ((Moby *)list)->oclass == 0x515 || ((Moby *)list)->oclass == 0x516) {
+                if (!(best < func_001F9D48_3D40(&moby->pos, &((Moby *)list)->pos)) &&
+                    !(0.2f < func_001F9B88_3D40(moby->pos.z - ((Moby *)list)->pos.z)) &&
+                    !(1.5f < func_001F9B88_3D40(moby->pos.z - ((Moby *)list)->pos.z))) {
+                    if ((((Moby *)list)->oclass != 0x400 && ((Moby *)list)->oclass != 0x516) ||
+                        ((Moby *)list)->state != 2) {
+                        if (((Moby *)list)->oclass != 0x515 || *(int *)((void *)((Moby *)list)->pvars) != -1) {
+                            best = func_001F9D48_3D40(&moby->pos, &((Moby *)list)->pos);
+                            d->target = (Moby *)list;
                         }
                     }
                 }
@@ -2286,16 +2277,16 @@ void select_nearest_gadgebot_interaction_target(void *moby_arg) {
         }
     } else {
         cursor = D_L06_001AC500_3D40;
-        while ((candidate = (GbMoby_3D40 *)*cursor) != 0) {
-            if (candidate->cls_id == 0x3b1 || candidate->cls_id == 0x400 ||
-                candidate->cls_id == 0x515 || candidate->cls_id == 0x516) {
-                if (!(best < func_001F9D48_3D40(moby->pos, candidate->pos)) &&
-                    !(0.2f < func_001F9B88_3D40(moby->pos[2] - candidate->pos[2])) &&
-                    !(1.5f < func_001F9B88_3D40(moby->pos[2] - candidate->pos[2]))) {
-                    if ((candidate->cls_id != 0x400 && candidate->cls_id != 0x516) ||
+        while ((candidate = (Moby *)*cursor) != 0) {
+            if (candidate->oclass == 0x3b1 || candidate->oclass == 0x400 ||
+                candidate->oclass == 0x515 || candidate->oclass == 0x516) {
+                if (!(best < func_001F9D48_3D40(&moby->pos, &candidate->pos)) &&
+                    !(0.2f < func_001F9B88_3D40(moby->pos.z - candidate->pos.z)) &&
+                    !(1.5f < func_001F9B88_3D40(moby->pos.z - candidate->pos.z))) {
+                    if ((candidate->oclass != 0x400 && candidate->oclass != 0x516) ||
                         candidate->state != 2) {
-                        if (candidate->cls_id != 0x515 || *(int *)candidate->vars != -1) {
-                            best = func_001F9D48_3D40(moby->pos, candidate->pos);
+                        if (candidate->oclass != 0x515 || *(int *)((void *)candidate->pvars) != -1) {
+                            best = func_001F9D48_3D40(&moby->pos, &candidate->pos);
                             d->target = candidate;
                         }
                     }

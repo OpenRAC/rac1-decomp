@@ -1561,31 +1561,23 @@ typedef struct {
     short node;                 /* 0x2F4: the node being steered for */
 } L16PatrolData;
 
-typedef struct {
-    char pad0[0x10];
-    float position[4];          /* 0x10 */
-    char pad20[0x28];
-    float yaw;                  /* 0x48 */
-    char pad4C[0x2C];
-    L16PatrolData *data;        /* 0x78 */
-} L16PatrolMoby;
 
 /* Choose the path node to steer for: step on while the current one is behind the moby or reached. */
 void advance_hoverboard_dummy_path_node(char *m) {
-    L16PatrolMoby *moby = (L16PatrolMoby *)m;
-    L16PatrolData *d = moby->data;
+    Moby *moby = (Moby *)m;
+    L16PatrolData *d = (L16PatrolData *)moby->pvars;
     float target[4];
     float heading, distance;
 
     copy_hoverboard_dummy_path_node((Level16VendorVectorMoby *)moby, d->node, target);
-    heading = fast_atan2(target[0] - moby->position[0], target[1] - moby->position[1]);
+    heading = fast_atan2(target[0] - moby->pos.x, target[1] - moby->pos.y);
     for (;;) {
         L16PatrolPath *path;
         L16PatrolPath *base;
 
         copy_hoverboard_dummy_path_node((Level16VendorVectorMoby *)moby, d->node, target);
         distance = vec_distance_xy(target, d->position);
-        if ((FastDiffRots(heading, moby->yaw) < 1.5707964f || distance > 4.0f) && distance > 2.0f) {
+        if ((FastDiffRots(heading, moby->rot.z) < 1.5707964f || distance > 4.0f) && distance > 2.0f) {
             break;
         }
         path = d->path;
@@ -1607,7 +1599,7 @@ void advance_hoverboard_dummy_path_node(char *m) {
         }
         /* The same two statements as before the loop, written out again: the compiler merges the copies. */
         copy_hoverboard_dummy_path_node((Level16VendorVectorMoby *)moby, d->node, target);
-        heading = fast_atan2(target[0] - moby->position[0], target[1] - moby->position[1]);
+        heading = fast_atan2(target[0] - moby->pos.x, target[1] - moby->pos.y);
     }
 }
 extern char D_0013E633[];
@@ -1717,17 +1709,12 @@ typedef struct {
     char pad2CC[0x18]; int timer; char pad2E8[0xC]; short node;
     char pad2F6[2]; float pitch_speed; char pad2FC[2]; short sequence;
 } L16LeapData;
-typedef struct {
-    char pad0[0x44]; float pitch; char pad48[0xA];
-    unsigned char animation, next_animation; char pad54[4]; float animation_speed;
-    char pad5C[0x14]; unsigned char flags; char pad71[7]; L16LeapData *data;
-} L16LeapMoby;
 
 /* Adjust animation and pitch to the remaining time in a jump. */
-void update_hoverboard_dummy_jump_animation_and_pitch(L16LeapMoby *m) {
+void update_hoverboard_dummy_jump_animation_and_pitch(Moby *m) {
     float root0, root1;
     float pitch;
-    L16LeapData *d = m->data;
+    L16LeapData *d = (L16LeapData *)m->pvars;
     pitch = 0.0f;
     if (d->timer == 0) {
         int next;
@@ -1736,11 +1723,11 @@ void update_hoverboard_dummy_jump_animation_and_pitch(L16LeapMoby *m) {
         distance = vec_distance_xy(d->path + (d->node * 16 + 0x10), d->path + (next + 0x10));
         pitch = fast_atan2(distance, *(float *)(d->path + next + 0x18) - ((L16LeapPath *)d->path)->points[d->node][2]);
     }
-    SpringAngle(&m->pitch, &d->pitch_speed, 0, pitch, g_frame_scale_sq * 0.02f, g_frame_scale_sq * 0.3f, g_frame_time * 3.14159265f);
+    SpringAngle(&m->rot.y, &d->pitch_speed, 0, pitch, g_frame_scale_sq * 0.02f, g_frame_scale_sq * 0.3f, g_frame_time * 3.14159265f);
     if (d->timer != 0) {
         float duration;
         float acceleration;
-        if (m->next_animation != 5 && scale_ticks(3) > d->timer) {
+        if (m->prev_seq != 5 && scale_ticks(3) > d->timer) {
             func_L00_00237B70_anim(m, 5, 4, scale_ticks(5));
             d->sequence = -1;
         }
@@ -1749,7 +1736,7 @@ void update_hoverboard_dummy_jump_animation_and_pitch(L16LeapMoby *m) {
         if (solve_quadratic_equation(&root0, &root1, acceleration, d->vertical_speed - acceleration, d->height - d->target_height) > 0 && root0 > 0.0f) {
             duration = func_001FA898_caa18(root0);
         }
-        if (scale_ticks(7) < d->timer && scale_ticks(11) > d->timer && m->next_animation == 5 && (float)scale_ticks(27) < duration) {
+        if (scale_ticks(7) < d->timer && scale_ticks(11) > d->timer && m->prev_seq == 5 && (float)scale_ticks(27) < duration) {
             short sequence;
             int chosen;
             chosen = rand_range(0, 3) + 1;
@@ -1758,35 +1745,35 @@ void update_hoverboard_dummy_jump_animation_and_pitch(L16LeapMoby *m) {
             func_L00_00237B70_anim(m, sequence, 3, scale_ticks(7));
         }
         if (d->sequence != -1) {
-            if (m->animation == m->next_animation) {
+            if (m->seq == m->prev_seq) {
                 float frame = MobyGetFrameValue(m);
                 if (frame > 7.0f && frame < 20.0f && duration != 0.0f) {
                     float speed = 30.0f / duration;
                     if (speed > 1.7f) speed = 1.7f;
                     if (speed < 0.3f) speed = 0.3f;
-                    m->animation_speed = speed;
+                    m->anim_speed = speed;
                 }
             }
             if (d->sequence != -1) {
                 if (duration < (float)scale_ticks(5)) {
                     func_L00_00237B70_anim(m, 5, 0x33, scale_ticks(5));
                     d->sequence = -1;
-                } else if (m->flags & 2) {
+                } else if (m->anim_flags & 2) {
                     func_L00_00237B70_anim(m, 5, 0x1C, scale_ticks(7));
                     d->sequence = -1;
                 }
             }
         }
-        if (m->animation == m->next_animation && m->animation == 5 && duration != 0.0f) {
+        if (m->seq == m->prev_seq && m->seq == 5 && duration != 0.0f) {
             float remaining;
             remaining = 50.0f;
             remaining -= MobyGetFrameValue(m);
             remaining /= duration;
-            m->animation_speed = remaining;
+            m->anim_speed = remaining;
         }
     } else {
-        m->animation_speed = 1.0f;
-        if ((m->flags & 2) && m->next_animation != 0) {
+        m->anim_speed = 1.0f;
+        if ((m->anim_flags & 2) && m->prev_seq != 0) {
             func_L00_00237B70_anim(m, 0, 0, scale_ticks(8));
         }
     }
@@ -1952,7 +1939,7 @@ void test_dummy_on_hoverboard_update(unsigned char *m) {
                 ApproachValue((float *)(d + 0x2C8), target, g_frame_time_sq * 110.0f);
             }
         }
-        update_hoverboard_dummy_jump_animation_and_pitch((L16LeapMoby *)m);
+        update_hoverboard_dummy_jump_animation_and_pitch((Moby *)m);
         copy_hoverboard_dummy_path_node((Level16VendorVectorMoby *)m, *(short *)(d + 0x2F4), pos);
         angle = fast_atan2(pos[0] - *(float *)(m + 0x10), pos[1] - *(float *)(m + 0x14));
         SpringAngle(m + 0x48, d + 0x2C4, 0, angle, g_frame_scale_sq * 0.035f, g_frame_scale_sq * 0.3f, g_frame_time * 6.981317f);
@@ -2444,21 +2431,6 @@ typedef struct {
     float target[4];
 } L16WatchData;
 typedef struct {
-    char pad00[0x10];
-    float position[4];
-    unsigned char state;
-    char pad21[0xF];
-    unsigned char opacity;
-    char pad31[0x17];
-    float yaw;
-    char pad4C[7];
-    unsigned char animation;
-    char pad54[0x24];
-    L16WatchData *data;
-    char pad7C[0x34];
-    unsigned char widget;
-} L16WatchMoby;
-typedef struct {
     char pad00[0x80];
     float position[4];
     char pad90[0x40];
@@ -2482,14 +2454,14 @@ extern L16WatchPlayer D_0013E633_watch __asm__("D_0013E633");
 extern L16WatchFlags D_0013D355_watch __asm__("D_0013D355");
 
 /* Activate the watcher and steer its body and head toward the player. */
-void help_desk_lady_update(L16WatchMoby *moby) {
+void help_desk_lady_update(Moby *moby) {
     enum {
         HELP_DESK_INITIALIZE_DIALOGUE = 0,
         HELP_DESK_POLL_DIALOGUE = 1,
         HELP_DESK_REQUEST_HELP_AND_SAVE = 2
     };
     L16WatchScratch scratch;
-    L16WatchData *watch_data = moby->data;
+    L16WatchData *watch_data = (L16WatchData *)moby->pvars;
     L16WatchFlags *flags;
     float rate;
     float head_rate;
@@ -2502,7 +2474,7 @@ void help_desk_lady_update(L16WatchMoby *moby) {
         DialogRequest_Init(moby, activation);
         moby->state = 1;
         watch_data->activation.radius = 20.0f;
-        moby->opacity = 0xFF;
+        moby->update_dist = 0xFF;
         break;
     case HELP_DESK_POLL_DIALOGUE: {
         L16WatchPlayer *player = (L16WatchPlayer *)((char *)&D_0013E633_watch + 0xE1D);
@@ -2520,7 +2492,7 @@ void help_desk_lady_update(L16WatchMoby *moby) {
             Hero_ResetToPosition(help_desk_hero_reset_pose, help_desk_hero_reset_pose + 4, 0, 1);
             Help_Request(0x3E82, 0x84);
             grant_inventory_item(0x21, 1);
-            jet_clear_persistent(moby->widget);
+            jet_clear_persistent(moby->mission);
             player = (char *)&D_0013E633_watch + 0xE9D;
             jet_reset_camera(player, player + 0x10);
             memcard_Save(0, -1);
@@ -2538,16 +2510,16 @@ void help_desk_lady_update(L16WatchMoby *moby) {
     rate = 0.02f;
     head_rate = 0.3f;
     tracking = 0;
-    if (moby->animation == 0) {
+    if (moby->prev_seq == 0) {
         char *player = (char *)&D_0013E633_watch + 0xE9D;
         tracking = 1;
-        if (vec_distance_xy(moby->position, player) < 8.0f &&
+        if (vec_distance_xy(&moby->pos, player) < 8.0f &&
             FastDiffRots(
-                moby->yaw,
+                moby->rot.z,
                 fast_atan2(((L16WatchPlayer *)((char *)&D_0013E633_watch + 0xE1D))->aim[0] -
-                                      moby->position[0],
+                                      moby->pos.x,
                                   ((L16WatchPlayer *)((char *)&D_0013E633_watch + 0xE1D))->aim[1] -
-                                      moby->position[1])) < 1.5707964f) {
+                                      moby->pos.y)) < 1.5707964f) {
             if (FastVecLength(player + 0x80) > 0.01f)
                 watch_data->moving_timer = scale_ticks(120);
             else
@@ -2560,10 +2532,10 @@ void help_desk_lady_update(L16WatchMoby *moby) {
             float heading;
             watch_data->target_timer =
                 truncate_float_to_s32(multiply_global_factor(random_float_between(180.0f, 300.0f)));
-            heading = FastAddRots(moby->yaw, random_float_between(-90.0f, 90.0f) * 0.017453292f);
+            heading = FastAddRots(moby->rot.z, random_float_between(-90.0f, 90.0f) * 0.017453292f);
             BuildSphericalOffset(watch_data->target, 6.0f, heading,
                                  random_float_between(0.0f, 30.0f) * 0.017453292f);
-            FastVecAdd(watch_data->target, watch_data->target, moby->position);
+            FastVecAdd(watch_data->target, watch_data->target, &moby->pos);
         }
         if (watch_data->moving_timer) {
             qcopy(scratch.target, ((L16WatchPlayer *)((char *)&D_0013E633_watch + 0xE1D))->aim);
@@ -2576,10 +2548,10 @@ void help_desk_lady_update(L16WatchMoby *moby) {
     if (tracking) {
         float yaw;
         float pitch;
-        qcopy(scratch.eye, moby->position);
+        qcopy(scratch.eye, &moby->pos);
         scratch.eye[2] += 1.5f;
         FastVecSub(scratch.delta, scratch.target, scratch.eye);
-        yaw = FastSubRots(fast_atan2(scratch.delta[0], scratch.delta[1]), moby->yaw);
+        yaw = FastSubRots(fast_atan2(scratch.delta[0], scratch.delta[1]), moby->rot.z);
         pitch = -fast_atan2(vec_length_xy(scratch.delta), scratch.delta[2]);
         if (yaw > 1.5707964f)
             yaw = 1.5707964f;

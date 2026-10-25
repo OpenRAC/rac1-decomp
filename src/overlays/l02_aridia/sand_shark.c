@@ -1629,7 +1629,6 @@ void update_level02_bot(unsigned char *raw) {
     }
     set_ground_height_band(moby);
 }
-struct AnimSeq;
 extern int func_001FA898(float);
 extern struct Hero D_0013F450_D99F0 __asm__("D_0013F450");
 extern char *func_L00_0025B478(void *, int, int);
@@ -2268,40 +2267,28 @@ void handle_sand_shark_nest_damage(char *m) {
     StepColorFade(m, d + 0x60);
     fast_subtract_rotations_cf(m + 0xBC);
 }
-typedef struct {
-    char pad0[0x20];
-    unsigned char state;
-    unsigned char group;
-    char pad22[0x84];
-    short type;
-    char padA8[0xC];
-    short hp;
-    char padB6[2];
-    void *target;
-    char padBC[0x44];
-} Level02GroupMoby;
 
 char *select_inactive_group_sand_shark_for_nest(char *m) {
-    Level02GroupMoby *owner = (Level02GroupMoby *)m;
+    Moby *owner = (Moby *)m;
     short *group_ids;
-    Level02GroupMoby *g;
-    Level02GroupMoby *mobys;
+    Moby *g;
+    Moby *mobys;
     if (((volatile unsigned char *)m)[0x21] == 0xFF) {
         return 0;
     }
     group_ids = (short *)aridia_moby_groups[((unsigned char *)m)[0x21]];
-    mobys = (Level02GroupMoby *)D_L02_00160058_m;
+    mobys = (Moby *)D_L02_00160058_m;
     do {
         int i = *(unsigned short *)group_ids & 0x7FFF;
-        if (mobys[i].type == 0x244 && mobys[i].state == 0x1A) {
-            mobys[i].target = owner;
-            if (owner->hp < mobys[i].hp) {
-                mobys[i].hp = owner->hp;
+        if (mobys[i].oclass == 0x244 && mobys[i].state == 0x1A) {
+            mobys[i].parent = owner;
+            if (owner->unkB4 < mobys[i].unkB4) {
+                mobys[i].unkB4 = owner->unkB4;
             }
-            g = (Level02GroupMoby *)((char *)(i << 8) + D_L02_00160058_m);
-            owner->hp -= g->hp;
-            if (owner->hp <= 0) {
-                owner->hp = 1;
+            g = (Moby *)((char *)(i << 8) + D_L02_00160058_m);
+            owner->unkB4 -= g->unkB4;
+            if (owner->unkB4 <= 0) {
+                owner->unkB4 = 1;
             }
             return (char *)g;
         }

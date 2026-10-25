@@ -315,12 +315,6 @@ typedef struct {
     s16 h1E2;
 } PathPickVars;
 typedef struct {
-    u8 pad0[0x10];
-    Vec4 pos;
-    u8 pad20[0x58];
-    PathPickVars *vars;
-} PathPickMoby;
-typedef struct {
     Vec4 pos;
     Vec4 v10;
     Vec4 v20;
@@ -337,7 +331,7 @@ extern float func_001FA850(float, float);
 /* Picks the path node the follower should head for: an ordered path just steps to the next stop; otherwise the nearest node and its two neighbours are scored (distance, or heading change for slow movers) and the best one is written to *idx. Returns nonzero when the pick differs from the nearest node.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l01/gameplay/entities/002b96e0.c, FUN_L01_002e6790. */
 int select_birdbot_path_node(void *arg, int *idx) {
-    PathPickMoby *m = arg;
+    Moby *m = arg;
     PathPickTarget target;
     Vec4 pt;
     PathPickVars *v;
@@ -355,7 +349,7 @@ int select_birdbot_path_node(void *arg, int *idx) {
     f32 r;
     f32 dist;
 
-    v = m->vars;
+    v = (PathPickVars *)m->pvars;
     fast = 0;
     f = &v->follow;
     if (v->w38 != 0 || v->h1E2 != 0) {
@@ -416,9 +410,9 @@ int select_birdbot_path_node(void *arg, int *idx) {
                 }
             } else {
                 qcopy(&pt, &f->path->pts[*idx]);
-                a = FastDiffRots(fast_atan2(pt.f[0] - m->pos.f[0], pt.f[1] - m->pos.f[1]),
-                                                      fast_atan2(target.pos.f[0] - m->pos.f[0],
-                                                                   target.pos.f[1] - m->pos.f[1]));
+                a = FastDiffRots(fast_atan2(pt.f[0] - m->pos.x, pt.f[1] - m->pos.y),
+                                                      fast_atan2(target.pos.f[0] - m->pos.x,
+                                                                   target.pos.f[1] - m->pos.y));
                 d = FastVecDist(&m->pos, &pt);
                 if (v->stops_only == 0 || pt.f[3] == 1.0f) {
                     if (a < 1.5707964f) {
@@ -1316,33 +1310,6 @@ typedef struct {
     char pad22C[4];
     unsigned char x230[1];
 } GcVars;
-typedef struct {
-    char pad0[0x10];
-    PeVec pos;
-    unsigned char state;
-    unsigned char b21;
-    char pad22[2];
-    char *w24;
-    char pad28[0xC];
-    unsigned short h34;
-    char pad36[0xA];
-    PeVec rot;
-    char pad50[2];
-    unsigned char b52;
-    unsigned char b53;
-    char pad54[0x1C];
-    unsigned char b70;
-    char pad71[7];
-    GcVars *vars;
-    char pad7C[0x18];
-    int w94;
-    char pad98[0xC];
-    unsigned char bA4;
-    char padA5;
-    unsigned short hA6;
-    char padA8[0x14];
-    unsigned char bBC;
-} GcMoby;
 typedef struct GcOther {
     char pad0[0x10];
     PeVec pos;
@@ -1355,7 +1322,7 @@ typedef struct GcOther {
 typedef struct {
     char pad0[0x10];
     PeVec pos;
-    GcMoby *src;
+    Moby *src;
     char pad24[8];
     float f2C;
 } GcHit;
@@ -1387,7 +1354,7 @@ extern float func_001FA888(int);
 extern void func_L00_0025B178(void *);
 
 /* Peckbot update: wanders and hops after the hero, flies in a hurt arc when hit, dies with a burst of parts. */
-void peckbot_update(GcMoby *m) {
+void peckbot_update(Moby *m) {
     GcVars *v;
     PeVec old;
     PeTarget tgt;
@@ -1401,15 +1368,15 @@ void peckbot_update(GcMoby *m) {
     GcHit *hit;
     void *tm;
 
-    v = m->vars;
+    v = (GcVars *)m->pvars;
     Manipulator_ApplyScale(1.5f, (int)m, 0, v->x230);
     if (novalis_game_mode == 2) {
-        m->w94 = 0;
-        m->h34 |= 0x41;
+        m->collision = 0;
+        m->flags |= 0x41;
         return;
     }
-    m->w94 = *(int *)(m->w24 + 0x10);
-    m->h34 &= 0xFFBE;
+    m->collision = *(int *)(((char *)m->pclass) + 0x10);
+    m->flags &= 0xFFBE;
     FindNearestTargetMoby(m, &tgt, v->f1FC + 4.0f);
     tm = tgt.moby;
     qcopy(&old, &m->pos);
@@ -1428,14 +1395,14 @@ void peckbot_update(GcMoby *m) {
     ComputeHitResponse(m, hit, &v->f20, 0, &hits, &dmg, 0, 4);
     FastDecTimer(&v->h26);
     if (v->h26 < scale_ticks(0x2D) && hit != 0 && m->state != 0x63) {
-        if (hit->src->hA6 >= 0xB0 && hit->src->hA6 <= 0xB1 && v->h26 != 0) {
+        if ((*(unsigned short *)&hit->src->oclass) >= 0xB0 && (*(unsigned short *)&hit->src->oclass) <= 0xB1 && v->h26 != 0) {
             hit->f2C = 0.0f;
         }
-        if (m->b21 != 0xFF) {
-            MobyGroup_SetByteBC(m->b21, 1);
+        if (m->group != 0xFF) {
+            MobyGroup_SetByteBC(m->group, 1);
         }
         if (hit->f2C != 0.0f) {
-            ang = fast_atan2(m->pos.f[0] - tgt.pos.f[0], m->pos.f[1] - tgt.pos.f[1]);
+            ang = fast_atan2(m->pos.x - tgt.pos.f[0], m->pos.y - tgt.pos.f[1]);
             v->f20 -= hit->f2C;
             v->f130 = 0.008f;
             v->f134 = 0.0005f;
@@ -1444,7 +1411,7 @@ void peckbot_update(GcMoby *m) {
             v->w144 = 9;
             v->b15D = 0;
             if (v->f20 <= 0.0f) {
-                m->h34 &= 0xEFFF;
+                m->flags &= 0xEFFF;
                 v->f138 = g_frame_time * 11.0f;
                 v->f13C = g_frame_time * 11.0f;
                 va = hit->pos;
@@ -1469,20 +1436,20 @@ void peckbot_update(GcMoby *m) {
             }
         }
     }
-    m->bA4 = 0xFF;
+    m->hit_slot = 0xFF;
     switch (m->state) {
     case 0:
         qcopy(&v->v1D0, &m->pos);
         v->b29 = 0;
         if (v->h20A != 0) {
             m->state = 1;
-            if (m->b53 != 4) {
+            if (m->prev_seq != 4) {
                 MobyBlendAnimation(m, 4, 0, 0);
             }
         } else {
             m->state = 0xE;
-            m->pos.f[2] += 6.0f;
-            if (m->b53 != 0) {
+            m->pos.z += 6.0f;
+            if (m->prev_seq != 0) {
                 MobyBlendAnimation(m, 0, 0, 0);
             }
         }
@@ -1498,7 +1465,7 @@ void peckbot_update(GcMoby *m) {
         v->f188 = 2.0f;
         v->f1A4 = v->f204 * g_frame_time;
         if (func_001160D8() & 1) {
-            m->h34 |= 0x8000;
+            m->flags |= 0x8000;
         }
         v->pD0 = &D_L01_00161B00;
         break;
@@ -1506,10 +1473,10 @@ void peckbot_update(GcMoby *m) {
         FastVecSub(&va, &tgt, &m->pos);
         if (fast_dec_timer(&v->w228) != 0
             && FastVecLength(&va) < v->f1FC + 4.0f
-            && FastAbsF(m->pos.f[2] - tgt.pos.f[2]) < 8.0f
+            && FastAbsF(m->pos.z - tgt.pos.f[2]) < 8.0f
             && random_integer_below(0x13) == 0) {
             m->state = 0x11;
-        } else if (v->w228 == 0 && m->bBC == 1 && random_integer_below(0x13) == 0) {
+        } else if (v->w228 == 0 && m->command == 1 && random_integer_below(0x13) == 0) {
             if (random_integer_below(0x100) & 1) {
                 v->f1F8 = -v->f1F8;
             }
@@ -1517,7 +1484,7 @@ void peckbot_update(GcMoby *m) {
             v->w210 = scale_ticks((int)random_float_between(30.0f, 90.0f));
             m->state = 0x11;
             clear_u64_value(&v->v40);
-            m->bBC = 0;
+            m->command = 0;
         } else if (fast_dec_timer(&v->w20C) != 0) {
             float r;
             float a;
@@ -1536,7 +1503,7 @@ void peckbot_update(GcMoby *m) {
     case 0xF: {
         float a;
 
-        a = fast_atan2(v->v1E0.f[0] - m->pos.f[0], v->v1E0.f[1] - m->pos.f[1]);
+        a = fast_atan2(v->v1E0.f[0] - m->pos.x, v->v1E0.f[1] - m->pos.y);
         MobySpringTurn((char *)m, &v->f1F0, a, 0.05f, 0.3f, 0.2f);
         FastVecSub(&v->v40, &v->v1E0, &m->pos);
         ClampVectorLength(&v->v40, g_frame_time * 4.0f);
@@ -1557,14 +1524,14 @@ void peckbot_update(GcMoby *m) {
 
         g = ProbeGroundHeight(&m->pos, 0, 0.5f);
         ApproachValue(&v->v40.f[2], -(g_frame_time * 8.0f), g_frame_time_sq * 10.8f);
-        m->pos.f[2] += v->v40.f[2];
-        if (m->b53 != 1
-            && m->pos.f[2] - g <= g_frame_time * 8.0f * multiply_global_factor(45.0f)
-            && m->b53 != 1) {
+        m->pos.z += v->v40.f[2];
+        if (m->prev_seq != 1
+            && m->pos.z - g <= g_frame_time * 8.0f * multiply_global_factor(45.0f)
+            && m->prev_seq != 1) {
             MobyBlendAnimation(m, 1, 0, scale_ticks(5));
         }
-        if (m->pos.f[2] <= g) {
-            m->pos.f[2] = g;
+        if (m->pos.z <= g) {
+            m->pos.z = g;
             if (random_integer_below(0x100) & 1) {
                 v->f1F8 = -v->f1F8;
             }
@@ -1572,7 +1539,7 @@ void peckbot_update(GcMoby *m) {
             v->w210 = scale_ticks((int)random_float_between(30.0f, 90.0f));
             m->state = 3;
             clear_u64_value(&v->v40);
-            if (m->b53 != 2) {
+            if (m->prev_seq != 2) {
                 MobyBlendAnimation(m, 2, 0, scale_ticks(3));
             }
         }
@@ -1583,9 +1550,9 @@ void peckbot_update(GcMoby *m) {
 
         g = ProbeGroundHeight(&m->pos, 0, 0.5f);
         ApproachValue(&v->v40.f[2], g_frame_time * 8.0f, g_frame_time_sq * 10.8f);
-        m->pos.f[2] += v->v40.f[2];
-        if (g + 6.0f <= m->pos.f[2]) {
-            m->pos.f[2] = g + 6.0f;
+        m->pos.z += v->v40.f[2];
+        if (g + 6.0f <= m->pos.z) {
+            m->pos.z = g + 6.0f;
             m->state = 0xE;
             v->w228 = scale_ticks(0xB4);
             clear_u64_value(&v->v40);
@@ -1595,26 +1562,26 @@ void peckbot_update(GcMoby *m) {
     case 1:
         FastVecSub(&va, &tgt, &m->pos);
         if (FastVecLength(&va) < v->f1FC + 4.0f
-            && FastAbsF(m->pos.f[2] - tgt.pos.f[2]) < 8.0f
+            && FastAbsF(m->pos.z - tgt.pos.f[2]) < 8.0f
             && random_integer_below(0x13) == 0) {
             m->state = 2;
-            if (m->b53 != 5) {
+            if (m->prev_seq != 5) {
                 MobyBlendAnimation(m, 5, 0, scale_ticks(3));
             }
-        } else if (m->bBC == 1 && random_integer_below(0x13) == 0) {
+        } else if (m->command == 1 && random_integer_below(0x13) == 0) {
             if (random_integer_below(0x100) & 1) {
                 v->f1F8 = -v->f1F8;
             }
             v->f1F4 = v->f1F8 * 0.017453292f;
             v->w210 = scale_ticks((int)random_float_between(30.0f, 90.0f));
             m->state = 3;
-            if (m->b53 != 2) {
+            if (m->prev_seq != 2) {
                 MobyBlendAnimation(m, 2, 0, scale_ticks(3));
             }
-            m->bBC = 0;
+            m->command = 0;
         } else if (FastVecLength(&va) > v->f1FC + 6.0f && v->h20A == 0) {
             m->state = 0x10;
-            if (m->b53 != 0) {
+            if (m->prev_seq != 0) {
                 MobyBlendAnimation(m, 0, 0, scale_ticks(3));
             }
         }
@@ -1622,11 +1589,11 @@ void peckbot_update(GcMoby *m) {
     case 8:
         FastVecSub(&va, &tgt, &m->pos);
         if (FastVecLength(&va) < v->f1FC - 4.0f
-            && FastAbsF(m->pos.f[2] - tgt.pos.f[2]) < 8.0f
+            && FastAbsF(m->pos.z - tgt.pos.f[2]) < 8.0f
             && random_integer_below(0x13) == 0) {
             m->state = 2;
-            m->pos.f[2] += 1.0f;
-            if (m->b53 != 5) {
+            m->pos.z += 1.0f;
+            if (m->prev_seq != 5) {
                 MobyBlendAnimation(m, 5, 0, scale_ticks(3));
             }
         }
@@ -1634,14 +1601,14 @@ void peckbot_update(GcMoby *m) {
     case 0xA: {
         float a;
 
-        a = fast_atan2(v->v1D0.f[0] - m->pos.f[0], v->v1D0.f[1] - m->pos.f[1]);
+        a = fast_atan2(v->v1D0.f[0] - m->pos.x, v->v1D0.f[1] - m->pos.y);
         MobySpringTurn((char *)m, &v->f1F0, a, 0.05f, 0.3f, 0.2f);
         FastVecSub(&va, &tgt, &v->v1D0);
-        if ((FastVecLength(&va) < v->f1FC && FastAbsF(v->v1D0.f[2] - tgt.pos.f[2]) < 8.0f) || m->bBC == 2) {
-            if (m->b21 != 0xFF) {
-                MobyGroup_SetByteBC(m->b21, 2);
+        if ((FastVecLength(&va) < v->f1FC && FastAbsF(v->v1D0.f[2] - tgt.pos.f[2]) < 8.0f) || m->command == 2) {
+            if (m->group != 0xFF) {
+                MobyGroup_SetByteBC(m->group, 2);
             }
-            if (m->b53 != 6) {
+            if (m->prev_seq != 6) {
                 MobyBlendAnimation(m, 6, 0, scale_ticks(3));
             }
             v->f134 = 0.0f;
@@ -1650,7 +1617,7 @@ void peckbot_update(GcMoby *m) {
             v->f13C = jump_speed_4318(&m->pos, &v->v1D0, &out, novalis_peckbot_jump_speed * g_frame_time, -novalis_peckbot_jump_gravity);
             v->w144 = 0xD;
             v->b15D = 0;
-            InitKnockback(m->rot.f[2], m, v->x120, 6, 1, 0);
+            InitKnockback(m->rot.z, m, v->x120, 6, 1, 0);
             v->f170 = 5.0f;
             v->f174 = 10.0f;
             m->state = 0xB;
@@ -1665,11 +1632,11 @@ void peckbot_update(GcMoby *m) {
             }
             v->f1F4 = v->f1F8 * 0.017453292f;
             v->w210 = scale_ticks((int)random_float_between(30.0f, 90.0f));
-            if (m->b53 != 2) {
+            if (m->prev_seq != 2) {
                 MobyBlendAnimation(m, 2, 8, scale_ticks(3));
             }
             return;
-        } else if (m->pos.f[2] < 5.0f) {
+        } else if (m->pos.z < 5.0f) {
             SetDeathBits(m, 0, -1);
             DeleteMoby(m);
             return;
@@ -1678,14 +1645,14 @@ void peckbot_update(GcMoby *m) {
     case 2: {
         float a;
 
-        a = fast_atan2(m->pos.f[0] - tgt.pos.f[0], m->pos.f[1] - tgt.pos.f[1]);
+        a = fast_atan2(m->pos.x - tgt.pos.f[0], m->pos.y - tgt.pos.f[1]);
         MobySpringTurn((char *)m, &v->f1F0, a, 0.02f, 0.3f, 0.1f);
         FastVecSub(&va, &tgt, &m->pos);
         if (FastVecLength(&va) < v->f1FC
-            && FastAbsF(m->pos.f[2] - tgt.pos.f[2]) < 8.0f
+            && FastAbsF(m->pos.z - tgt.pos.f[2]) < 8.0f
             && random_integer_below(0x13) == 0) {
-            if (m->b21 != 0xFF) {
-                MobyGroup_SetByteBC(m->b21, 1);
+            if (m->group != 0xFF) {
+                MobyGroup_SetByteBC(m->group, 1);
             }
             if (random_integer_below(0x100) & 1) {
                 v->f1F8 = -v->f1F8;
@@ -1693,28 +1660,28 @@ void peckbot_update(GcMoby *m) {
             v->f1F4 = v->f1F8 * 0.017453292f;
             v->w210 = scale_ticks((int)random_float_between(30.0f, 90.0f));
             m->state = 3;
-            if (m->b53 != 2) {
+            if (m->prev_seq != 2) {
                 MobyBlendAnimation(m, 2, 0, scale_ticks(3));
             }
-            m->bBC = 0;
-        } else if (m->bBC == 1 && random_integer_below(0x13) == 0) {
+            m->command = 0;
+        } else if (m->command == 1 && random_integer_below(0x13) == 0) {
             if (random_integer_below(0x100) & 1) {
                 v->f1F8 = -v->f1F8;
             }
             v->f1F4 = v->f1F8 * 0.017453292f;
             v->w210 = scale_ticks((int)random_float_between(30.0f, 90.0f));
             m->state = 3;
-            if (m->b53 != 2) {
+            if (m->prev_seq != 2) {
                 MobyBlendAnimation(m, 2, 0, scale_ticks(3));
             }
-            m->bBC = 0;
+            m->command = 0;
         } else if (FastVecLength(&va) > v->f1FC + 6.0f && v->h20A == 0) {
             m->state = 0x10;
-            if (m->b53 != 0) {
+            if (m->prev_seq != 0) {
                 MobyBlendAnimation(m, 0, 0, scale_ticks(3));
             }
         }
-        if (m->b53 == 5 && (m->b70 & 2)) {
+        if (m->prev_seq == 5 && (m->anim_flags & 2)) {
             MobyBlendAnimation(m, 4, 0, scale_ticks(3));
         }
         break;
@@ -1724,17 +1691,17 @@ void peckbot_update(GcMoby *m) {
         int res;
         float a;
 
-        r = FastAbsF(m->pos.f[2] - tgt.pos.f[2]);
+        r = FastAbsF(m->pos.z - tgt.pos.f[2]);
         r = r / vec_distance_xy(&m->pos, &tgt);
         if (v->w21C != -1) {
             select_list_point_toward_target(m, novalis_paths[v->w21C], &tgt, &vb);
         } else {
             qcopy(&vb, &tgt);
         }
-        a = fast_atan2(vb.f[0] - m->pos.f[0], vb.f[1] - m->pos.f[1]) + v->f1F4;
+        a = fast_atan2(vb.f[0] - m->pos.x, vb.f[1] - m->pos.y) + v->f1F4;
         MobySpringTurn((char *)m, &v->f1F0, a, 0.05f, 0.3f, 0.2f);
-        va.f[0] = FastCos(m->rot.f[2]) * 2.0f;
-        va.f[1] = FastSin(m->rot.f[2]) * 2.0f;
+        va.f[0] = FastCos(m->rot.z) * 2.0f;
+        va.f[1] = FastSin(m->rot.z) * 2.0f;
         va.f[2] = 0.0f;
         res = move_w(m, &v->w180, &va, &vb, 1.0f);
         if (fast_dec_timer(&v->w210) != 0) {
@@ -1744,46 +1711,46 @@ void peckbot_update(GcMoby *m) {
         FastVecSub(&vc, &tgt, &v->v1D0);
         if (vec_distance_xy(&m->pos, &tgt) < 1.5f && !(res & 2)) {
             m->state = 4;
-            if (m->b53 != 3) {
+            if (m->prev_seq != 3) {
                 MobyBlendAnimation(m, 3, 0, scale_ticks(3));
             }
         } else if (r > 1.0f || (res & 2)) {
-            m->pos.f[0] = old.f[0];
-            m->pos.f[1] = old.f[1];
+            m->pos.x = old.f[0];
+            m->pos.y = old.f[1];
             m->state = 0xC;
-            if (m->b53 != 5) {
+            if (m->prev_seq != 5) {
                 MobyBlendAnimation(m, 5, 0, scale_ticks(3));
             }
-        } else if (FastVecLength(&vc) < v->f1FC + 4.0f && FastAbsF(m->pos.f[2] - tgt.pos.f[2]) < 8.0f) {
-            if (m->b21 != 0xFF) {
-                MobyGroup_SetByteBC(m->b21, 1);
+        } else if (FastVecLength(&vc) < v->f1FC + 4.0f && FastAbsF(m->pos.z - tgt.pos.f[2]) < 8.0f) {
+            if (m->group != 0xFF) {
+                MobyGroup_SetByteBC(m->group, 1);
             }
-        } else if (m->bBC != 1) {
+        } else if (m->command != 1) {
             m->state = 5;
         }
         ProbeGroundHeight(&m->pos, 0, 0.5f);
         if (CollType() == 0 || CollType() == 8) {
             m->state = 0x10;
-            if (m->b53 != 0) {
+            if (m->prev_seq != 0) {
                 MobyBlendAnimation(m, 0, 0, scale_ticks(3));
             }
         }
-        m->bBC = 0;
+        m->command = 0;
         break;
     }
     case 4: {
         float a;
         float g;
 
-        a = fast_atan2(tgt.pos.f[0] - m->pos.f[0], tgt.pos.f[1] - m->pos.f[1]);
+        a = fast_atan2(tgt.pos.f[0] - m->pos.x, tgt.pos.f[1] - m->pos.y);
         MobySpringTurn((char *)m, &v->f1F0, a, 0.05f, 0.3f, 0.2f);
-        if (m->b52 == m->b53
+        if (m->seq == m->prev_seq
             && MobyGetFrameValue(m) == 13.0f
-            && FastAbsF(m->pos.f[2] - tgt.pos.f[2]) < 0.5f
+            && FastAbsF(m->pos.z - tgt.pos.f[2]) < 0.5f
             && vec_distance_xy(&m->pos, &tgt) < 2.0f
-            && FastDiffRots(fast_atan2(tgt.pos.f[0] - m->pos.f[0], tgt.pos.f[1] - m->pos.f[1]), m->rot.f[2]) < 0.2617994f) {
-            va.f[0] = FastCos(m->rot.f[2]) * 0.2f;
-            va.f[1] = FastSin(m->rot.f[2]) * 0.2f;
+            && FastDiffRots(fast_atan2(tgt.pos.f[0] - m->pos.x, tgt.pos.f[1] - m->pos.y), m->rot.z) < 0.2617994f) {
+            va.f[0] = FastCos(m->rot.z) * 0.2f;
+            va.f[1] = FastSin(m->rot.z) * 0.2f;
             va.f[2] = 0.0f;
             qcopy(&vb, &tgt);
             vb.f[2] += 0.75f;
@@ -1791,18 +1758,18 @@ void peckbot_update(GcMoby *m) {
                 PostHitMessage(tm, (int)m, 1, &vb, &va, 1.0f);
             }
         }
-        if ((m->b70 & 2) && vec_distance_xy(&m->pos, &tgt) > 1.5f) {
+        if ((m->anim_flags & 2) && vec_distance_xy(&m->pos, &tgt) > 1.5f) {
             m->state = 3;
-            if (m->b53 != 2) {
+            if (m->prev_seq != 2) {
                 MobyBlendAnimation(m, 2, 0, scale_ticks(3));
             }
         }
         g = ProbeGroundHeight(&m->pos, 0, 0.5f);
         v->f198 -= g_frame_time_sq * 9.8f;
-        m->pos.f[2] += v->f198;
-        if (m->pos.f[2] < g) {
+        m->pos.z += v->f198;
+        if (m->pos.z < g) {
             v->f198 = 0.0f;
-            m->pos.f[2] = g;
+            m->pos.z = g;
         }
         break;
     }
@@ -1815,58 +1782,58 @@ void peckbot_update(GcMoby *m) {
         } else {
             qcopy(&vb, &v->v1D0);
         }
-        a = fast_atan2(vb.f[0] - m->pos.f[0], vb.f[1] - m->pos.f[1]);
+        a = fast_atan2(vb.f[0] - m->pos.x, vb.f[1] - m->pos.y);
         MobySpringTurn((char *)m, &v->f1F0, a, 0.02f, 0.3f, 0.1f);
-        va.f[0] = FastCos(m->rot.f[2]) * 2.0f;
-        va.f[1] = FastSin(m->rot.f[2]) * 2.0f;
+        va.f[0] = FastCos(m->rot.z) * 2.0f;
+        va.f[1] = FastSin(m->rot.z) * 2.0f;
         va.f[2] = 0.0f;
         res = move_w(m, &v->w180, &va, &vb, 1.0f);
         if (vec_distance_xy(&m->pos, &v->v1D0) < 2.0f) {
             m->state = 1;
-            if (m->b53 != 4) {
+            if (m->prev_seq != 4) {
                 MobyBlendAnimation(m, 4, 0, scale_ticks(3));
             }
         }
         FastVecSub(&vc, &tgt, &v->v1D0);
         if (FastVecLength(&vc) < v->f1FC) {
-            if (m->b21 != 0xFF) {
-                MobyGroup_SetByteBC(m->b21, 1);
+            if (m->group != 0xFF) {
+                MobyGroup_SetByteBC(m->group, 1);
             }
             m->state = 3;
-            if (m->b53 != 2) {
+            if (m->prev_seq != 2) {
                 MobyBlendAnimation(m, 2, 0, scale_ticks(3));
             }
-        } else if (m->bBC == 1) {
+        } else if (m->command == 1) {
             m->state = 3;
-            if (m->b53 != 2) {
+            if (m->prev_seq != 2) {
                 MobyBlendAnimation(m, 2, 0, scale_ticks(3));
             }
         } else if (res & 2) {
-            m->pos.f[0] = old.f[0];
-            m->pos.f[1] = old.f[1];
+            m->pos.x = old.f[0];
+            m->pos.y = old.f[1];
             m->state = 0xC;
-            if (m->b53 != 5) {
+            if (m->prev_seq != 5) {
                 MobyBlendAnimation(m, 5, 0, scale_ticks(3));
             }
         }
         ProbeGroundHeight(&m->pos, 0, 0.5f);
         if (CollType() == 0 || CollType() == 8) {
             m->state = 0x10;
-            if (m->b53 != 0) {
+            if (m->prev_seq != 0) {
                 MobyBlendAnimation(m, 0, 0, scale_ticks(3));
             }
         }
-        m->bBC = 0;
+        m->command = 0;
         break;
     }
     case 6:
         if (mine_fall(m, v->x120) & 1) {
             m->state = 3;
-            if (m->b53 != 2) {
+            if (m->prev_seq != 2) {
                 MobyBlendAnimation(m, 2, 0, scale_ticks(3));
             }
             return;
-        } else if (m->pos.f[2] < 5.0f) {
+        } else if (m->pos.z < 5.0f) {
             SetDeathBits(m, 0, -1);
             DeleteMoby(m);
             return;
@@ -1876,7 +1843,7 @@ void peckbot_update(GcMoby *m) {
         if (CarriedMobyUpdate(m, v->x120) != 0) {
             m->state = 0xE;
             v->w228 = scale_ticks(0xB4);
-            if (m->b53 != 0) {
+            if (m->prev_seq != 0) {
                 MobyBlendAnimation(m, 0, 0, 0);
             }
             v->hC8 = 0;
@@ -1885,22 +1852,22 @@ void peckbot_update(GcMoby *m) {
     case 0x63: {
         int t;
 
-        m->h34 &= 0xEFFF;
+        m->flags &= 0xEFFF;
         if (mine_fall(m, v->x120) & 0x140) {
             clear_u64_value(&va);
             t = (int)((float)scale_ticks(1) * 60.0f);
             if (reserve_expired_frame_slot(novalis_peckbot_explosion_slots, 3, t) >= 0) {
                 SpawnExplosionFx(m, &m->pos, 4, 0.5f, 13.0f);
             }
-            SpawnBreakFragment((char *)m, 0x6D3, m->pos.f, &m->rot, 0, 0, 0.0f, novalis_zero_vec, novalis_zero_vec, novalis_zero_vec);
-            SpawnBreakFragment((char *)m, 0x6D4, m->pos.f, &m->rot, 0, 0, 0.0f, novalis_zero_vec, novalis_zero_vec, novalis_zero_vec);
-            SpawnBreakFragment((char *)m, 0x6D5, m->pos.f, &m->rot, 0, 0, 0.0f, novalis_zero_vec, novalis_zero_vec, novalis_zero_vec);
+            SpawnBreakFragment((char *)m, 0x6D3, (float *)&m->pos, &m->rot, 0, 0, 0.0f, novalis_zero_vec, novalis_zero_vec, novalis_zero_vec);
+            SpawnBreakFragment((char *)m, 0x6D4, (float *)&m->pos, &m->rot, 0, 0, 0.0f, novalis_zero_vec, novalis_zero_vec, novalis_zero_vec);
+            SpawnBreakFragment((char *)m, 0x6D5, (float *)&m->pos, &m->rot, 0, 0, 0.0f, novalis_zero_vec, novalis_zero_vec, novalis_zero_vec);
             DeleteMoby(m);
             return;
-        } else if (m->pos.f[2] < 0.0f) {
-            SpawnBreakFragment((char *)m, 0x6D3, m->pos.f, &m->rot, 0, 0, 0.0f, novalis_zero_vec, novalis_zero_vec, novalis_zero_vec);
-            SpawnBreakFragment((char *)m, 0x6D4, m->pos.f, &m->rot, 0, 0, 0.0f, novalis_zero_vec, novalis_zero_vec, novalis_zero_vec);
-            SpawnBreakFragment((char *)m, 0x6D5, m->pos.f, &m->rot, 0, 0, 0.0f, novalis_zero_vec, novalis_zero_vec, novalis_zero_vec);
+        } else if (m->pos.z < 0.0f) {
+            SpawnBreakFragment((char *)m, 0x6D3, (float *)&m->pos, &m->rot, 0, 0, 0.0f, novalis_zero_vec, novalis_zero_vec, novalis_zero_vec);
+            SpawnBreakFragment((char *)m, 0x6D4, (float *)&m->pos, &m->rot, 0, 0, 0.0f, novalis_zero_vec, novalis_zero_vec, novalis_zero_vec);
+            SpawnBreakFragment((char *)m, 0x6D5, (float *)&m->pos, &m->rot, 0, 0, 0.0f, novalis_zero_vec, novalis_zero_vec, novalis_zero_vec);
             DeleteMoby(m);
             return;
         }
@@ -1911,36 +1878,36 @@ void peckbot_update(GcMoby *m) {
         int res;
         float a;
 
-        r = FastAbsF(m->pos.f[2] - tgt.pos.f[2]);
+        r = FastAbsF(m->pos.z - tgt.pos.f[2]);
         r = r / vec_distance_xy(&m->pos, &tgt);
         if (v->w21C != -1) {
             select_list_point_toward_target(m, novalis_paths[v->w21C], &v->v1D0, &vb);
         } else {
             qcopy(&vb, &v->v1D0);
         }
-        a = fast_atan2(vb.f[0] - m->pos.f[0], vb.f[1] - m->pos.f[1]);
+        a = fast_atan2(vb.f[0] - m->pos.x, vb.f[1] - m->pos.y);
         MobySpringTurn((char *)m, &v->f1F0, a, 0.05f, 0.3f, 0.2f);
-        va.f[0] = FastCos(m->rot.f[2]) * 2.0f;
-        va.f[1] = FastSin(m->rot.f[2]) * 2.0f;
+        va.f[0] = FastCos(m->rot.z) * 2.0f;
+        va.f[1] = FastSin(m->rot.z) * 2.0f;
         va.f[2] = 0.0f;
         res = move_w(m, &v->w180, &va, &vb, 1.0f);
         FastVecSub(&vc, &tgt, &v->v1D0);
         if (vec_distance_xy(&m->pos, &tgt) < 1.5f && r <= 1.0f) {
             m->state = 4;
-            if (m->b53 != 3) {
+            if (m->prev_seq != 3) {
                 MobyBlendAnimation(m, 3, 0, scale_ticks(3));
             }
         } else if (r <= 1.0f && !(res & 2)) {
             m->state = 5;
-            if (m->b53 != 2) {
+            if (m->prev_seq != 2) {
                 MobyBlendAnimation(m, 2, 0, scale_ticks(3));
             }
         } else if (vec_distance_xy(&m->pos, &tgt) > v->f1FC + 6.0f) {
             m->state = 0x10;
-            if (m->b53 != 0) {
+            if (m->prev_seq != 0) {
                 MobyBlendAnimation(m, 0, 0, scale_ticks(3));
             }
-        } else if (m->b70 & 2) {
+        } else if (m->anim_flags & 2) {
             int anim;
 
             anim = 5;
@@ -1953,22 +1920,22 @@ void peckbot_update(GcMoby *m) {
         ProbeGroundHeight(&m->pos, 0, 0.5f);
         if (CollType() == 0 || CollType() == 8) {
             m->state = 0x10;
-            if (m->b53 != 0) {
+            if (m->prev_seq != 0) {
                 MobyBlendAnimation(m, 0, 0, scale_ticks(3));
             }
         }
-        m->bBC = 0;
+        m->command = 0;
         break;
     }
     case 0xD: {
         GcOther *o;
         float g;
 
-        if (m->b52 != 2 && m->b53 != 2) {
+        if (m->seq != 2 && m->prev_seq != 2) {
             MobyBlendAnimation(m, 2, 0, scale_ticks(3));
         }
-        va.f[0] = FastCos(m->rot.f[2]) * (v->f204 * g_frame_time);
-        va.f[1] = FastSin(m->rot.f[2]) * (v->f204 * g_frame_time);
+        va.f[0] = FastCos(m->rot.z) * (v->f204 * g_frame_time);
+        va.f[1] = FastSin(m->rot.z) * (v->f204 * g_frame_time);
         va.f[2] = 0.0f;
         FastVecAdd(&vb, &m->pos, &va);
         for (o = (GcOther *)novalis_moby_list; o != 0; o = o->next) {
@@ -1986,14 +1953,14 @@ void peckbot_update(GcMoby *m) {
                 float a;
                 float d;
 
-                z = m->pos.f[2];
-                a = fast_atan2(o->pos.f[0] - m->pos.f[0], o->pos.f[1] - m->pos.f[1]);
-                a = FastSubRots(m->rot.f[2], a);
+                z = m->pos.z;
+                a = fast_atan2(o->pos.f[0] - m->pos.x, o->pos.f[1] - m->pos.y);
+                a = FastSubRots(m->rot.z, a);
                 d = g_frame_time * 1.5707964f;
                 if (!(a > 0.0f)) {
                     d = -d;
                 }
-                m->rot.f[2] = FastAddRots(m->rot.f[2], d);
+                m->rot.z = FastAddRots(m->rot.z, d);
                 FastVecSub(&vb, &m->pos, &o->pos);
                 vec_scale_to_length(&vb, &vb, 2.0f);
                 FastVecAdd(&vb, &vb, &o->pos);
@@ -2003,18 +1970,18 @@ void peckbot_update(GcMoby *m) {
         qcopy(&m->pos, &vb);
         g = ProbeGroundHeight(&m->pos, 0, 0.5f);
         v->f198 -= g_frame_time_sq * 9.8f;
-        m->pos.f[2] += v->f198;
-        if (m->pos.f[2] < g) {
+        m->pos.z += v->f198;
+        if (m->pos.z < g) {
             v->f198 = 0.0f;
-            m->pos.f[2] = g;
+            m->pos.z = g;
         }
         if (v->p218 == 0 || vec_distance_xy(&m->pos, v->p218 + 0x10) > IntToFloat(v->h216)) {
             m->state = 5;
-            if (m->b53 != 2) {
+            if (m->prev_seq != 2) {
                 MobyBlendAnimation(m, 2, 0, scale_ticks(3));
             }
         }
-        m->bBC = 0;
+        m->command = 0;
         break;
     }
     }
@@ -2402,30 +2369,7 @@ typedef struct {
     f32 yaw; /* 0x78 */
     u8 pad7C[4];
 } CarrierCamPoint;
-typedef struct {
-    u8 pad0[0x10];
-    Vec4f pos; /* 0x10 */
-    u8 state; /* 0x20 */
-    u8 pad21[0xF];
-    u8 unk30; /* 0x30 */
-    u8 pad31[3];
-    u16 flags; /* 0x34 */
-    u8 pad36[0xA];
-    Vec4f rot; /* 0x40 */
-    u8 pad50[2];
-    u8 seq; /* 0x52 */
-    u8 prev_seq; /* 0x53 */
-    u8 pad54[0x24];
-    void *pvars; /* 0x78 */
-    u8 pad7C[0x2A];
-    s16 oclass; /* 0xA6 */
-    u8 padA8[0x14];
-    u8 unkBC; /* 0xBC */
-    u8 padBD[3];
-    Vec4f unkC0; /* 0xC0 */
-    u8 padD0[0x30];
-} CarrierMoby;
-extern CarrierMoby * D_L01_00160058_F5D38 __asm__("D_L01_00160058") MACRO_ADDR;
+extern Moby * D_L01_00160058_F5D38 __asm__("D_L01_00160058") MACRO_ADDR;
 extern CarrierCamPoint * D_L01_0016016C_F5D38 __asm__("D_L01_0016016C") MACRO_ADDR;
 extern CarrierCamera D_L01_00167180_F5D38 __asm__("D_L01_00167180");
 extern CarrierOffsets D_L01_0020B650;
@@ -2436,11 +2380,11 @@ extern void func_L00_00251E30(void *);
 
 /* Rider carrier: waits for the hero in its clip volume, then follows its path carrying up to eight rider mobys (and steers its camera moby), drops them off one by one at the marked node and removes itself at the end of the path.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l01/gameplay/entities/002b96e0.c, FUN_L01_002f4960. */
-void stationary_ship_update(CarrierMoby *m) {
+void stationary_ship_update(Moby *m) {
     CarrierVars *v;
     CarrierCamVars *cv;
     PePath_F5D38 *p;
-    CarrierMoby *tbl;
+    Moby *tbl;
     CarrierRiderVars *rv;
     CarrierOffsets offs;
     s32 i;
@@ -2450,7 +2394,7 @@ void stationary_ship_update(CarrierMoby *m) {
     f32 a;
     f32 d;
 
-    v = (CarrierVars *)m->pvars;
+    v = (CarrierVars *)((void *)m->pvars);
     n = v->volume;
     if (n == -1) {
         if (m->prev_seq != 5) {
@@ -2464,7 +2408,7 @@ void stationary_ship_update(CarrierMoby *m) {
         v->state = 1;
         v->arrived = 0;
         v->keep = 0;
-        m->unk30 = 0xFF;
+        m->update_dist = 0xFF;
         m->flags |= 0x41;
         return;
     case 1:
@@ -2472,9 +2416,9 @@ void stationary_ship_update(CarrierMoby *m) {
             v->state = 2;
             m->flags &= ~0x41;
             if (v->camera != -1) {
-                cv = (CarrierCamVars *)D_L01_00160058_F5D38[v->camera].pvars;
+                cv = (CarrierCamVars *)((void *)D_L01_00160058_F5D38[v->camera].pvars);
                 cv->frames = scale_ticks(truncate_float_to_s32(v->seconds * 60.0f));
-                D_L01_00160058_F5D38[v->camera].unkBC = 1;
+                D_L01_00160058_F5D38[v->camera].command = 1;
             }
             if (v->path != -1) {
                 p = (PePath_F5D38 *)novalis_paths[v->path];
@@ -2490,7 +2434,7 @@ void stationary_ship_update(CarrierMoby *m) {
     case 2:
         gunship_follow_path((char *)m);
         if (v->camera != -1) {
-            cv = (CarrierCamVars *)D_L01_00160058_F5D38[v->camera].pvars;
+            cv = (CarrierCamVars *)((void *)D_L01_00160058_F5D38[v->camera].pvars);
             a = fast_atan2(m->pos.x - D_L01_00167180_F5D38.x, m->pos.y - D_L01_00167180_F5D38.y);
             d = FastSubRots(D_L01_0016016C_F5D38[cv->node].yaw, a);
             if (d < 0.0f) {
@@ -2527,7 +2471,7 @@ void stationary_ship_update(CarrierMoby *m) {
                 if (v->state != 1) {
                     D_L01_00160058_F5D38[v->riders[i]].flags &= ~0x41;
                 }
-                matrix_mul_vec3(&offs.v[i], &offs.v[i], &m->unkC0);
+                matrix_mul_vec3(&offs.v[i], &offs.v[i], &m->rot_row0);
                 FastVecAdd(&D_L01_00160058_F5D38[v->riders[i]].pos, &m->pos, &offs.v[i]);
                 qcopy_nc(&D_L01_00160058_F5D38[v->riders[i]].rot, &m->rot);
                 D_L01_00160058_F5D38[v->riders[i]].rot.z =
@@ -2553,7 +2497,7 @@ void stationary_ship_update(CarrierMoby *m) {
                 D_L01_00160058_F5D38[v->riders[j]].state = 4;
                 break;
             case 0x1CB:
-                rv = (CarrierRiderVars *)D_L01_00160058_F5D38[v->riders[j]].pvars;
+                rv = (CarrierRiderVars *)((void *)D_L01_00160058_F5D38[v->riders[j]].pvars);
                 rv->dropped = 1;
                 rv->drop_timer = scale_ticks(0x1E);
                 FastVecSub(&rv->drop, &v->dropoff, &m->pos);
@@ -3228,15 +3172,6 @@ typedef struct {
     int music;
 } CapVars;
 typedef struct {
-    unsigned char pad0[0x10];
-    Vec4 pos;
-    unsigned char state;
-    unsigned char pad21[0x57];
-    CapVars *pvars;
-    unsigned char pad7c[0x36];
-    unsigned short id;
-} CapMoby;
-typedef struct {
     unsigned char pad0[0x80];
     unsigned char pos[8];
     float z;
@@ -3268,7 +3203,7 @@ typedef struct CapCameraPoint {
 
 extern Hero hero __asm__("D_0013F450");
 
-void falling_rock_update(CapMoby *falling_rock) {
+void falling_rock_update(Moby *falling_rock) {
     enum {
         FALLING_ROCK_STATE_INITIALIZE = 0,
         FALLING_ROCK_STATE_WAIT_FOR_TRIGGER = 1,
@@ -3279,7 +3214,7 @@ void falling_rock_update(CapMoby *falling_rock) {
     CapVars *falling_rock_vars;
     CapCameraPoint *camera_record;
 
-    falling_rock_vars = falling_rock->pvars;
+    falling_rock_vars = (CapVars *)falling_rock->pvars;
     if (falling_rock->state != 1 && !FastDecTimer(&falling_rock_vars->wait) && random_integer_below(100) < 5) {
         CapColors colors;
         Vec4 debris_initial_velocity;
@@ -3308,11 +3243,11 @@ void falling_rock_update(CapMoby *falling_rock) {
         falling_rock_vars->h3E = 5;
         qcopy(&falling_rock_vars->home, &falling_rock->pos);
         falling_rock->state = 1;
-        if (D_L01_001BB9C0.collected[(short)falling_rock->id] != 0
-            || (*(int *)(D_0014171B + 0xAB75 + (((short)falling_rock->id >> 5) * 4 + (D_0015EE84_m << 8))) >> (falling_rock->id & 0x1F)) & 1) {
+        if (D_L01_001BB9C0.collected[(short)falling_rock->save_id] != 0
+            || (*(int *)(D_0014171B + 0xAB75 + (((short)falling_rock->save_id >> 5) * 4 + (D_0015EE84_m << 8))) >> (falling_rock->save_id & 0x1F)) & 1) {
             clear_u64_value(&falling_rock_vars->rot);
             falling_rock->state = 4;
-            falling_rock->pos.f[2] = falling_rock_vars->home.f[2] - 20.0f;
+            falling_rock->pos.z = falling_rock_vars->home.f[2] - 20.0f;
             falling_rock_vars->music = -1;
         }
         break;
@@ -3343,21 +3278,21 @@ void falling_rock_update(CapMoby *falling_rock) {
         CapVec3 old;
 
         apply_falling_rock_camera_overrides((char *)falling_rock);
-        falling_rock->pos.f[2] -= 0.0f;
+        falling_rock->pos.z -= 0.0f;
         qcopy(&old, &falling_rock->pos);
         falling_rock_vars->rot.f[2] -= g_frame_time_sq * 30.0f;
         FastVecAdd(&falling_rock->pos, &falling_rock->pos, &falling_rock_vars->rot);
-        if (FastDecTimer(&falling_rock_vars->hold) && 20.0f < falling_rock_vars->home.f[2] - falling_rock->pos.f[2]) {
+        if (FastDecTimer(&falling_rock_vars->hold) && 20.0f < falling_rock_vars->home.f[2] - falling_rock->pos.z) {
             novalis_player_camera.shake = 0.1f;
             novalis_player_camera.shake_time = scale_ticks(20);
             clear_u64_value(&falling_rock_vars->rot);
             falling_rock->state = 4;
             func_0022ED80_2FA458(0, 0, falling_rock);
-            falling_rock->pos.f[2] = falling_rock_vars->home.f[2] - 20.0f;
-            *(int *)(D_0014171B + 0xAB75 + (((short)falling_rock->id >> 5) * 4 + (D_0015EE84_m << 8))) |= 1 << (falling_rock->id & 0x1F);
-            moby_killed[(short)falling_rock->id >> 5] |= 1 << (falling_rock->id & 0x1F);
+            falling_rock->pos.z = falling_rock_vars->home.f[2] - 20.0f;
+            *(int *)(D_0014171B + 0xAB75 + (((short)falling_rock->save_id >> 5) * 4 + (D_0015EE84_m << 8))) |= 1 << (falling_rock->save_id & 0x1F);
+            moby_killed[(short)falling_rock->save_id >> 5] |= 1 << (falling_rock->save_id & 0x1F);
         }
-        falling_rock->pos.f[2] += 0.0f;
+        falling_rock->pos.z += 0.0f;
         break;
     }
     case FALLING_ROCK_STATE_FALLEN:
@@ -3389,52 +3324,38 @@ typedef struct {
     f32 period;
     s32 xb4;
 } LiftVars;
-typedef struct {
-    u8 pad0[0x10];
-    f32 pos[4];
-    u8 state;
-    u8 pad21[0xF];
-    u8 b30;
-    u8 pad31;
-    s16 h32;
-    u8 pad34[0xC];
-    u8 x40[0x38];
-    LiftVars *pvars;
-    u8 pad7c[0x40];
-    u8 mode;
-} LiftMoby;
 extern int func_001FA898_r(float) __asm__("func_001FA898");
 extern float func_001FA888(int);
 extern void func_001F9BF0(void *, void *, void *);
 extern void func_L00_002617B0(char *, void *, void *, void *);
 
 /* Elevator update: waits, then moves the lift between its two stops and carries whatever rides it. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/l01/unclassified_002b96e0.c, FUN_L01_002f95c0. */
-void piston_platform_update(LiftMoby *m) {
+void piston_platform_update(Moby *m) {
     LiftVars *v;
     float old[4] __attribute__((aligned(16)));
     float delta[4] __attribute__((aligned(16)));
     float *dp;
 
-    v = m->pvars;
-    qcopy(old, m->pos);
+    v = (LiftVars *)m->pvars;
+    qcopy(old, &m->pos);
     FastDecTimer(&v->timer);
     if (m->state == 0) {
         v->x28 = 4;
         v->x3e = 0xD;
         v->x20 = 0;
         v->x24 = 0;
-        v->home_z = m->pos[2];
-        m->mode = v->home_mode;
+        v->home_z = m->pos.z;
+        m->command = v->home_mode;
         v->timer = scale_ticks(0x78);
         m->state = 1;
-        m->b30 = 0xFF;
-        m->h32 = 0xFF;
+        m->update_dist = 0xFF;
+        m->draw_dist = 0xFF;
         v->xb4 = -1;
     }
-    switch (m->mode) {
+    switch (m->command) {
     case 0:
         if (v->timer == 0) {
-            m->mode = 2;
+            m->command = 2;
             v->speed = v->travel / IntToFloat(scale_ticks(func_001FA898_r(v->period * 60.0f)));
             v->timer = scale_ticks(func_001FA898_r(v->period * 60.0f));
             Moby_PlaySound(0, 0, (int)m);
@@ -3442,28 +3363,28 @@ void piston_platform_update(LiftMoby *m) {
         break;
     case 1:
         if (v->timer == 0) {
-            m->mode = 2;
+            m->command = 2;
             v->speed = -(v->travel / IntToFloat(scale_ticks(func_001FA898_r(v->period * 60.0f))));
             v->timer = scale_ticks(func_001FA898_r(v->period * 60.0f));
             Moby_PlaySound(1, 0, (int)m);
         }
         break;
     case 2:
-        m->pos[2] -= v->speed;
+        m->pos.z -= v->speed;
         if (v->timer == 0) {
             if (v->speed < 0.0f) {
-                m->mode = 0;
+                m->command = 0;
             } else {
-                m->mode = 1;
+                m->command = 1;
             }
-            if (m->mode == v->home_mode) {
-                m->pos[2] = v->home_z;
+            if (m->command == v->home_mode) {
+                m->pos.z = v->home_z;
             }
             v->timer = scale_ticks(0x78);
         }
         break;
     }
     dp = delta;
-    FastVecSub(dp, m->pos, old);
-    update_entity_matrix(v->x60, dp, m->x40, m->x40);
+    FastVecSub(dp, &m->pos, old);
+    update_entity_matrix(v->x60, dp, &m->rot, &m->rot);
 }

@@ -386,14 +386,6 @@ void spawn_spark_scatter(void *pos) {
     } while (--i >= 0);
 }
 typedef struct TrollData54_2E2EF0 TrollData54_2E2EF0;
-typedef struct TrollMoby54_2E2EF0 {
-    char p0[0x10]; float pos[4]; unsigned char state, group; char p22[2]; char *model;
-    char p28[9]; unsigned char enabled; unsigned short joints, flags; char p36[0xA];
-    float rot[4]; char p50[2]; unsigned char anim_end, anim; float anim_time, anim_rate;
-    char p5C[0x14]; unsigned char anim_flags; char p71[7]; TrollData54_2E2EF0 *data;
-    char p7C[3]; unsigned char active; char p80[0x14]; int collision;
-    char p98[0x24]; unsigned char proximity;
-} TrollMoby54_2E2EF0;
 struct TrollData54_2E2EF0 {
     char p0[0x20]; float health; char p24[5]; unsigned char mode; char p2A[0x2E];
     unsigned char blend; char p59; unsigned char count; char p5B[0x6D]; short stuck; char pCA[6]; void *tuning;
@@ -406,7 +398,7 @@ struct TrollData54_2E2EF0 {
     char p2B0[8]; int init0, sleep, circle_timer, alert_timer; short group_timer, pad2CA, idle_timer, pad2CE;
     int path, blocked, return_timer, group_enabled; int *group_count; int group_check;
 };
-typedef struct TargetReport54_2E2EF0 { float v0[4], v10[4], v20[4], v30[4]; TrollMoby54_2E2EF0 *moby; int mode; char pad48[8]; } TargetReport54_2E2EF0;
+typedef struct TargetReport54_2E2EF0 { float v0[4], v10[4], v20[4], v30[4]; Moby *moby; int mode; char pad48[8]; } TargetReport54_2E2EF0;
 extern char D_0013E633_2E2EF0[] __asm__("D_0013E633");
 extern float D_0015EE6C_2E2EF0 __asm__("D_0015EE6C") MACRO_ADDR;
 extern float D_0015EE70_2E2EF0 __asm__("D_0015EE70") MACRO_ADDR;
@@ -466,31 +458,31 @@ extern void func_L00_00263950_2E2EF0(char *,char *,int,float,float) __asm__("fun
 extern void func_L00_0025B178_2E2EF0(void *) __asm__("func_L00_0025B178");
 
 /* Updates a Hoven troll's idle, pursuit, melee, leap, landing and death states. */
-void update_hoven_anklebiter(TrollMoby54_2E2EF0 *m) {
+void update_hoven_anklebiter(Moby *m) {
     TargetReport54_2E2EF0 work;
-    TrollMoby54_2E2EF0 *iterator;
+    Moby *iterator;
     float trajectory;
-    TrollData54_2E2EF0 *d = m->data;
-    TrollMoby54_2E2EF0 *target;
+    TrollData54_2E2EF0 *d = (TrollData54_2E2EF0 *)m->pvars;
+    Moby *target;
     float angle;
     int n, first, blocked, hit;
     func_L12_002E4838_2E2EF0(m);
     func_L00_00264BB0_2E2EF0(d->collision_data,2.2f);
     select54((char *)m,(char *)&work,d->range);
     target=work.moby;
-    if (!target) target=*(TrollMoby54_2E2EF0 **)(D_0013E633_2E2EF0+0x2E9D);
-    if (m->pos[2]<26.0f) { func_0020D678_2E2EF0(m); return; }
+    if (!target) target=*(Moby **)(D_0013E633_2E2EF0+0x2E9D);
+    if (m->pos.z<26.0f) { func_0020D678_2E2EF0(m); return; }
     switch(m->state) {
     case 0:
         if(d->sleep) {
-            qcopy(d->home,m->pos); m->state=9;
-            if(m->anim!=12) func_00213DE0_2E2EF0(m,12,0,3);
+            qcopy(d->home,&m->pos); m->state=9;
+            if(m->prev_seq!=12) func_00213DE0_2E2EF0(m,12,0,3);
             m->collision=0; m->flags=(m->flags|0x41)&0xEFFF;
         } else if(d->home[3]!=0.0f) {
-            m->state=11; m->joints=0; m->flags&=0xEFFF; m->collision=0;
+            m->state=11; m->draw_dist=0; m->flags&=0xEFFF; m->collision=0;
         } else {
-            qcopy(d->home,m->pos); m->state=1;
-            if(m->anim!=0) func_00213DE0_2E2EF0(m,0,0,3);
+            qcopy(d->home,&m->pos); m->state=1;
+            if(m->prev_seq!=0) func_00213DE0_2E2EF0(m,0,0,3);
         }
         {
         int initial_mode=1; /* loaded ahead of the other constants: it is the last one stored (retail keeps it in $a2 into the call's delay slot) */
@@ -499,45 +491,45 @@ void update_hoven_anklebiter(TrollMoby54_2E2EF0 *m) {
         d->effect_class=0x38D; d->effect_flags|=0x10; d->effect_speed=D_0015EE6C_2E2EF0*5.5f;
         d->effect_size1=0.5f; d->effect_size0=0.5f;
         if(d->group_enabled) { first=func_001F9850_2E2EF0(20); d->group_timer=func_L00_00258BC8_2E2EF0(first,func_001F9850_2E2EF0(170)); }
-        qcopy(d->idle_pos,m->pos);
+        qcopy(d->idle_pos,&m->pos);
         first=func_001F9850_2E2EF0(120); d->idle_timer=func_L00_00258BC8_2E2EF0(first,func_001F9850_2E2EF0(700));
-        qcopy(work.v0,m->pos); work.v0[2]+=0.8f;
-        m->pos[2]=func_00214358_2E2EF0(work.v0,0,0.5f);
+        qcopy(work.v0,&m->pos); work.v0[2]+=0.8f;
+        m->pos.z=func_00214358_2E2EF0(work.v0,0,0.5f);
         if(func_001160D8_2E2EF0()&1) m->flags|=0x8000;
         d->tuning=&D_L12_00161968_2E2EF0;
         }
         break;
     case 1: {
         float idle_distance, idle_angle, idle_difference;
-        idle_distance=func_001F9D10_2E2EF0(target->pos,d->home);
-        idle_angle=func_L00_001FF860_2E2EF0(target->pos[0]-m->pos[0],target->pos[1]-m->pos[1]);
-        idle_difference=func_001FA850_2E2EF0(m->rot[2],idle_angle);
-        if(idle_distance<d->range && func_001F9B88_2E2EF0(m->pos[2]-target->pos[2])<4.0f) {
+        idle_distance=func_001F9D10_2E2EF0(&target->pos,d->home);
+        idle_angle=func_L00_001FF860_2E2EF0(target->pos.x-m->pos.x,target->pos.y-m->pos.y);
+        idle_difference=func_001FA850_2E2EF0(m->rot.z,idle_angle);
+        if(idle_distance<d->range && func_001F9B88_2E2EF0(m->pos.z-target->pos.z)<4.0f) {
             m->state=3;
             if(idle_difference<0.9599311f) {
-                if(m->anim!=2) func_00213DE0_2E2EF0(m,2,0,func_001F9850_2E2EF0(5));
-                m->anim_rate=1.55f;
-            } else if(m->anim!=17) func_00213DE0_2E2EF0(m,17,0,func_001F9850_2E2EF0(5));
-        } else if(((m->proximity&1)&&func_002140B0_2E2EF0(19)==0)||m->proximity==7) {
+                if(m->prev_seq!=2) func_00213DE0_2E2EF0(m,2,0,func_001F9850_2E2EF0(5));
+                m->anim_speed=1.55f;
+            } else if(m->prev_seq!=17) func_00213DE0_2E2EF0(m,17,0,func_001F9850_2E2EF0(5));
+        } else if(((m->command&1)&&func_002140B0_2E2EF0(19)==0)||m->command==7) {
             if(func_002140B0_2E2EF0(256)&1) d->circle_rate=-d->circle_rate;
             d->circle_angle=d->circle_rate*0.017453292f;
             d->circle_timer=func_001F9850_2E2EF0((int)func_002140F8_2E2EF0(30.0f,90.0f));
             m->state=3;
-            if(m->anim!=2) func_00213DE0_2E2EF0(m,2,0,func_001F9850_2E2EF0(7));
-            m->proximity=0;
+            if(m->prev_seq!=2) func_00213DE0_2E2EF0(m,2,0,func_001F9850_2E2EF0(7));
+            m->command=0;
         } else {
-            if(m->anim!=15) func_00213DE0_2E2EF0(m,15,0,func_001F9850_2E2EF0(14));
+            if(m->prev_seq!=15) func_00213DE0_2E2EF0(m,15,0,func_001F9850_2E2EF0(14));
             n=d->idle_timer;
             if(n>func_001F9850_2E2EF0(20)) smooth54(&d->idle_speed,D_0015EE6C_2E2EF0*2.5f,D_0015EE70_2E2EF0*7.0f);
             else smooth54(&d->idle_speed,0.0f,D_0015EE70_2E2EF0*7.0f);
-            m->anim_rate=0.8f;
+            m->anim_speed=0.8f;
             func_L00_002626A8_2E2EF0((char *)m,(char *)d->idle_pos,0.35f,0.25f);
         }
         break;
     }
     case 9:
         if(d->group_enabled) {
-            if(func_001F9D48_2E2EF0(m->pos,target->pos)<2.0f) break;
+            if(func_001F9D48_2E2EF0(&m->pos,&target->pos)<2.0f) break;
             if(d->group_check<D_L12_0015F6B0_2E2EF0) {
                 d->group_check=D_L12_0015F6B0_2E2EF0; n=0;
                 func_L00_0025A208_2E2EF0((int *)&iterator,m->group,0,0);
@@ -549,51 +541,51 @@ void update_hoven_anklebiter(TrollMoby54_2E2EF0 *m) {
             }
             if(*d->group_count>=6) break;
         }
-        func_001F9BF0_2E2EF0(work.v0,target->pos,m->pos);
-        if(func_001F9CB8_2E2EF0(work.v0)<d->range && func_001F9B88_2E2EF0(m->pos[2]-target->pos[2])<8.0f && func_002140B0_2E2EF0(19)==0) {
+        func_001F9BF0_2E2EF0(work.v0,&target->pos,&m->pos);
+        if(func_001F9CB8_2E2EF0(work.v0)<d->range && func_001F9B88_2E2EF0(m->pos.z-target->pos.z)<8.0f && func_002140B0_2E2EF0(19)==0) {
             if(m->group!=255) func_L01_0026F040_2E2EF0(m->group,1);
-        } else if(!((m->proximity&1)&&func_001F9938_2E2EF0(&d->group_timer)) && m->proximity!=7) break;
+        } else if(!((m->command&1)&&func_001F9938_2E2EF0(&d->group_timer)) && m->command!=7) break;
         m->state=13;
-        if(m->anim!=7) func_00213DE0_2E2EF0(m,7,0,1);
+        if(m->prev_seq!=7) func_00213DE0_2E2EF0(m,7,0,1);
         m->flags|=0x1000;
-        *(long long *)work.v10=*(long long *)m->pos;
+        *(long long *)work.v10=*(long long *)((float *)&m->pos);
         func_L12_002E2CB8_2E2EF0(work.v10);
         break;
     case 13: {
-        int collision=*(int *)(m->model+0x10);
+        int collision=*(int *)(((char *)m->pclass)+0x10);
         m->flags&=0xFFBE; m->collision=collision;
-        angle=func_L00_001FF860_2E2EF0(target->pos[0]-m->pos[0],target->pos[1]-m->pos[1]);
+        angle=func_L00_001FF860_2E2EF0(target->pos.x-m->pos.x,target->pos.y-m->pos.y);
         func_L00_002592B0_2E2EF0((char *)m,&d->turn_velocity,angle,0.03f,0.3f,D_0015EE6C_2E2EF0*6.2831855f);
         if(m->anim_flags&2) {
             if(func_002140B0_2E2EF0(256)&1) d->circle_rate=-d->circle_rate;
             d->circle_angle=d->circle_rate*0.017453292f;
             d->circle_timer=func_001F9850_2E2EF0((int)func_002140F8_2E2EF0(30.0f,90.0f));
-            m->state=4; d->blocked=0; func_L12_002E2BF8_2E2EF0((unsigned char *)m); m->proximity=0;
+            m->state=4; d->blocked=0; func_L12_002E2BF8_2E2EF0((unsigned char *)m); m->command=0;
         }
         break;
     }
     case 11:
-        angle=func_L00_001FF860_2E2EF0(d->home[0]-m->pos[0],d->home[1]-m->pos[1]);
+        angle=func_L00_001FF860_2E2EF0(d->home[0]-m->pos.x,d->home[1]-m->pos.y);
         func_L00_002592B0_2E2EF0((char *)m,&d->turn_velocity,angle,0.05f,0.3f,0.2f);
-        func_001F9BF0_2E2EF0(work.v0,target->pos,d->home);
-        if((func_001F9CB8_2E2EF0(work.v0)<d->range&&func_001F9B88_2E2EF0(d->home[2]-target->pos[2])<8.0f)||m->proximity==2) {
+        func_001F9BF0_2E2EF0(work.v0,&target->pos,d->home);
+        if((func_001F9CB8_2E2EF0(work.v0)<d->range&&func_001F9B88_2E2EF0(d->home[2]-target->pos.z)<8.0f)||m->command==2) {
             if(m->group!=255) func_L01_0026F040_2E2EF0(m->group,2);
-            m->joints=0x40; d->zero=0.0f;
+            m->draw_dist=0x40; d->zero=0.0f;
             d->gravity=D_L12_0016195C_2E2EF0*D_0015EE70_2E2EF0; d->launch_speed=D_L12_00161958_2E2EF0*D_0015EE6C_2E2EF0;
-            d->launch_time=func_L00_0025BC48_2E2EF0(m->pos,d->home,&trajectory,d->launch_speed,-D_L12_0016195C_2E2EF0);
+            d->launch_time=func_L00_0025BC48_2E2EF0(&m->pos,d->home,&trajectory,d->launch_speed,-D_L12_0016195C_2E2EF0);
             d->fall_mode=5; d->falling=0;
-            setup_fall54(m->rot[2],(char *)m,d->fall,8,1,0);
+            setup_fall54(m->rot.z,(char *)m,d->fall,8,1,0);
             d->fall_a=5.0f; d->fall_b=10.0f; m->state=12; m->flags|=0x1000;
-            m->collision=*(int *)(m->model+0x10);
+            m->collision=*(int *)(((char *)m->pclass)+0x10);
         }
         break;
     case 12:
         if(func_L00_0025D6F0_2E2EF0(m,d->fall)&1) {
             m->state=14;
-            if(m->anim!=9) func_00213DE0_2E2EF0(m,9,8,func_001F9850_2E2EF0(7));
+            if(m->prev_seq!=9) func_00213DE0_2E2EF0(m,9,8,func_001F9850_2E2EF0(7));
             return;
         }
-        if(m->pos[2]<0.0f) { func_0020D678_2E2EF0(m); return; }
+        if(m->pos.z<0.0f) { func_0020D678_2E2EF0(m); return; }
         break;
     case 14:
         if(m->anim_flags&2) {
@@ -605,14 +597,14 @@ void update_hoven_anklebiter(TrollMoby54_2E2EF0 *m) {
         }
         break;
     case 3:
-        angle=func_L00_001FF860_2E2EF0(target->pos[0]-m->pos[0],target->pos[1]-m->pos[1]);
+        angle=func_L00_001FF860_2E2EF0(target->pos.x-m->pos.x,target->pos.y-m->pos.y);
         func_L00_002592B0_2E2EF0((char *)m,&d->turn_velocity,angle,0.03f,0.3f,D_0015EE6C_2E2EF0*6.2831855f);
         if(m->anim_flags&2) { m->state=4; d->blocked=0; func_L12_002E2BF8_2E2EF0((unsigned char *)m); }
         break;
     case 4: {
         float chase_angle, look_difference, clamp;
-        chase_angle=func_L00_001FF860_2E2EF0(target->pos[0]-m->pos[0],target->pos[1]-m->pos[1]);
-        look_difference=func_001FA790_2E2EF0(chase_angle,m->rot[2]);
+        chase_angle=func_L00_001FF860_2E2EF0(target->pos.x-m->pos.x,target->pos.y-m->pos.y);
+        look_difference=func_001FA790_2E2EF0(chase_angle,m->rot.z);
         clamp=0.6981317f;
         if(look_difference>clamp || (clamp=-0.6981317f,look_difference<clamp)) look_difference=clamp;
         d->look_angle=look_difference;
@@ -621,36 +613,36 @@ void update_hoven_anklebiter(TrollMoby54_2E2EF0 *m) {
             if(func_001F9908_2E2EF0(&d->circle_timer)) {
                 d->circle_timer=func_001F9850_2E2EF0((int)func_002140F8_2E2EF0(30.0f,90.0f)); d->circle_angle=-d->circle_angle;
             }
-            func_001F9BF0_2E2EF0(work.v0,target->pos,d->home);
-            if(func_001F9D48_2E2EF0(m->pos,target->pos)<1.5f) {
+            func_001F9BF0_2E2EF0(work.v0,&target->pos,d->home);
+            if(func_001F9D48_2E2EF0(&m->pos,&target->pos)<1.5f) {
                 m->state=5;
-                if(m->anim!=4) func_00213DE0_2E2EF0(m,4,0,func_001F9850_2E2EF0(5));
-            } else if(func_001F9CB8_2E2EF0(work.v0)<d->range+5.5f && func_001F9B88_2E2EF0(m->pos[2]-target->pos[2])<4.4f) {
+                if(m->prev_seq!=4) func_00213DE0_2E2EF0(m,4,0,func_001F9850_2E2EF0(5));
+            } else if(func_001F9CB8_2E2EF0(work.v0)<d->range+5.5f && func_001F9B88_2E2EF0(m->pos.z-target->pos.z)<4.4f) {
                 if(m->group!=255) func_L01_0026F040_2E2EF0(m->group,1);
-            } else if(m->proximity!=1 && func_002140B0_2E2EF0(9)==0) { m->state=6; d->return_timer=0; }
+            } else if(m->command!=1 && func_002140B0_2E2EF0(9)==0) { m->state=6; d->return_timer=0; }
         }
-        m->proximity=0;
+        m->command=0;
         break;
     }
     case 5:
-        (*(TrollMoby54_2E2EF0 **)(D_0013E633_2E2EF0+0x2E9D))->anim_rate=1.3f;
-        angle=func_L00_001FF860_2E2EF0(target->pos[0]-m->pos[0],target->pos[1]-m->pos[1]);
+        (*(Moby **)(D_0013E633_2E2EF0+0x2E9D))->anim_speed=1.3f;
+        angle=func_L00_001FF860_2E2EF0(target->pos.x-m->pos.x,target->pos.y-m->pos.y);
         func_L00_002592B0_2E2EF0((char *)m,&d->turn_velocity,angle,0.05f,0.3f,0.2f);
-        if(m->anim_end==m->anim && func_00215B18_2E2EF0((char *)m,13.0f) && func_001F9B88_2E2EF0(m->pos[2]-target->pos[2])<0.5f && func_001F9D48_2E2EF0(m->pos,target->pos)<2.0f && func_001FA850_2E2EF0(func_L00_001FF860_2E2EF0(target->pos[0]-m->pos[0],target->pos[1]-m->pos[1]),m->rot[2])<0.2617994f) {
-            work.v0[0]=func_001F9F90_2E2EF0(m->rot[2])*0.2f; work.v0[1]=func_001F9FA8_2E2EF0(m->rot[2])*0.2f; work.v0[2]=0.0f;
-            qcopy(work.v10,target->pos); work.v10[2]+=0.75f;
+        if(m->seq==m->prev_seq && func_00215B18_2E2EF0((char *)m,13.0f) && func_001F9B88_2E2EF0(m->pos.z-target->pos.z)<0.5f && func_001F9D48_2E2EF0(&m->pos,&target->pos)<2.0f && func_001FA850_2E2EF0(func_L00_001FF860_2E2EF0(target->pos.x-m->pos.x,target->pos.y-m->pos.y),m->rot.z)<0.2617994f) {
+            work.v0[0]=func_001F9F90_2E2EF0(m->rot.z)*0.2f; work.v0[1]=func_001F9FA8_2E2EF0(m->rot.z)*0.2f; work.v0[2]=0.0f;
+            qcopy(work.v10,&target->pos); work.v10[2]+=0.75f;
             func_L00_0025AC00_2E2EF0(target,(int)m,1,work.v10,work.v0,1.0f);
         }
-        if((m->anim_flags&2)&&func_001F9D48_2E2EF0(m->pos,target->pos)>=2.0f) { m->state=4; d->blocked=0; func_L12_002E2BF8_2E2EF0((unsigned char *)m); }
+        if((m->anim_flags&2)&&func_001F9D48_2E2EF0(&m->pos,&target->pos)>=2.0f) { m->state=4; d->blocked=0; func_L12_002E2BF8_2E2EF0((unsigned char *)m); }
         break;
     case 6: {
         float return_distance;
-        func_L12_002E41C8_2E2EF0((char *)m,func_L00_001FF860_2E2EF0(d->home[0]-m->pos[0],d->home[1]-m->pos[1]));
-        if(func_001F9D48_2E2EF0(m->pos,d->home)<2.0f) {
+        func_L12_002E41C8_2E2EF0((char *)m,func_L00_001FF860_2E2EF0(d->home[0]-m->pos.x,d->home[1]-m->pos.y));
+        if(func_001F9D48_2E2EF0(&m->pos,d->home)<2.0f) {
             m->state=1;
-            if(m->anim!=0) func_00213DE0_2E2EF0(m,0,0,func_001F9850_2E2EF0(7));
+            if(m->prev_seq!=0) func_00213DE0_2E2EF0(m,0,0,func_001F9850_2E2EF0(7));
         }
-        return_distance=func_001F9D10_2E2EF0(target->pos,d->home); d->return_timer++; blocked=0;
+        return_distance=func_001F9D10_2E2EF0(&target->pos,d->home); d->return_timer++; blocked=0;
         if(d->path!=-1) {
             char *path=D_L12_001B0C30_2E2EF0[d->path];
             blocked=func_L00_0025A778_2E2EF0(D_0013E633_2E2EF0+0xE9D,path+0x10,*(int *)path)==0;
@@ -661,19 +653,19 @@ void update_hoven_anklebiter(TrollMoby54_2E2EF0 *m) {
                     if(m->group!=255) func_L01_0026F040_2E2EF0(m->group,1);
                     m->state=4; d->blocked=0; func_L12_002E2BF8_2E2EF0((unsigned char *)m);
                 }
-            } else if(m->proximity==1) { m->state=4; d->blocked=0; func_L12_002E2BF8_2E2EF0((unsigned char *)m); }
+            } else if(m->command==1) { m->state=4; d->blocked=0; func_L12_002E2BF8_2E2EF0((unsigned char *)m); }
         }
-        m->proximity=0;
+        m->command=0;
         break;
     }
     case 7:
         if(m->group!=255) func_L01_0026F040_2E2EF0(m->group,1);
         if(func_L00_0025D6F0_2E2EF0(m,d->fall)&1) {
             m->state=10;
-            if(m->anim!=13) func_00213DE0_2E2EF0(m,13,8,func_001F9850_2E2EF0(8));
+            if(m->prev_seq!=13) func_00213DE0_2E2EF0(m,13,8,func_001F9850_2E2EF0(8));
             return;
         }
-        if(m->pos[2]<27.0f) { func_0020D678_2E2EF0(m); return; }
+        if(m->pos.z<27.0f) { func_0020D678_2E2EF0(m); return; }
         break;
     case 8:
         if(func_L00_002DDEA0_2E2EF0(m,d->fall)) { m->state=6; d->return_timer=0; d->stuck=0; }
@@ -683,17 +675,17 @@ void update_hoven_anklebiter(TrollMoby54_2E2EF0 *m) {
         break;
     case 99:
         hit=func_L00_0025D6F0_2E2EF0(m,d->fall);
-        if((hit&0x40)||(height54(m)>37.0f && m->anim_end==m->anim)) {
-            m->anim_rate=0.0f; func_L00_002584A8_2E2EF0(m,0,-1); m->state=15; m->flags|=8;
-        } else if(m->pos[2]<10.0f) { func_L00_002584A8_2E2EF0(m,0,-1); { func_0020D678_2E2EF0(m); return; } }
+        if((hit&0x40)||(height54(m)>37.0f && m->seq==m->prev_seq)) {
+            m->anim_speed=0.0f; func_L00_002584A8_2E2EF0(m,0,-1); m->state=15; m->flags|=8;
+        } else if(m->pos.z<10.0f) { func_L00_002584A8_2E2EF0(m,0,-1); { func_0020D678_2E2EF0(m); return; } }
         else if(hit&1) func_L10_002E51A8_2E2EF0((char *)m);
         break;
     case 15:
         func_L10_002E51A8_2E2EF0((char *)m); func_L12_002E43A8_2E2EF0(m); func_L12_002E43A8_2E2EF0(m); { func_0020D678_2E2EF0(m); return; }
     }
-    if(m->enabled && m->state!=9 && m->state!=8) {
+    if(m->visible && m->state!=9 && m->state!=8) {
         func_L00_00263950_2E2EF0((char *)m,d->collision_data,0,D_0015EE64_2E2EF0*0.018f,D_0015EE64_2E2EF0*0.3f);
-        if(m->enabled && func_001F9D10_2E2EF0(m->pos,D_L12_001672C0_2E2EF0)<28.0f) { func_L00_0025B178_2E2EF0(m); m->active=22; }
+        if(m->visible && func_001F9D10_2E2EF0(&m->pos,D_L12_001672C0_2E2EF0)<28.0f) { func_L00_0025B178_2E2EF0(m); m->shadow_range=22; }
     }
     return;
 }
@@ -2338,7 +2330,6 @@ extern void func_L00_0028EBF0(int);
 extern void func_L12_00309AE8(void *, void *);
 extern char *func_L12_00309A50(void *);
 extern void func_L12_0027CA68(int);
-struct Moby;
 extern int func_L12_002EC2E8(struct Moby *, int);
 extern void func_L00_00203F20(int, int);
 extern float func_L00_00259148(float *, float, float, float, float, float);
