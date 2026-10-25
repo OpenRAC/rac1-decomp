@@ -141,7 +141,7 @@ typedef struct {
 
 // Draws a ring of four-vertex strips around the moby with a lit colour.
 void draw_water_reservoir(char *moby) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     Quad q;
     float m[12];
     float pos[4];
@@ -347,7 +347,7 @@ extern void func_L00_00203F20(int, int);
 /* Hoven challenge tracker: unlocks the area once, records the time and run flags for two skill points and
  * awards them (one for staying airborne long enough). */
 void update_hoven_help_and_dialogue(char *m) {
-    int *d = *(int **)(m + 0x78);
+    int *d = ((int *)((Moby *)m)->pvars);
     if (count_active_moby_group_members(d[3], -1) == 0) {
         unsigned char *s = D_0013D50F_e + 1;
         if (s[0x14] == 0) {
@@ -726,7 +726,7 @@ extern char D_L12_00161F70;
 // Builds a rotated/translated matrix from a moby and its data, then sets a rotation from an angle.
 void update_hoven_turret_camera(char *moby) {
     float m[8];
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     func_L08_00315068(moby);
     matrix_mul_vec3(m, &hoven_turret_camera_offset, moby + 0xC0);
     FastVecAdd(m, m, moby + 0x10);
@@ -1546,7 +1546,7 @@ typedef struct {
 
 /* Hoven turret battery update: aims each manned gun at the hero, fires, takes hits and smokes when damaged. */
 void update_planetbuster_maximus_guns(char *moby) {
-    char *d = *(char **)(moby + 0x78);
+    char *d = ((char *)((Moby *)moby)->pvars);
     int i;
     float v0[4];
     float v1[4];
@@ -1638,7 +1638,7 @@ void update_planetbuster_maximus_guns(char *moby) {
                             qcopy(v2, D_L12_001672C0_304310);
                             v2[2] += random_float_between(-1.5f, 0.3f);
                         } else {
-                            qcopy(v2, &((Hero *)(D_0013E633_e + 0xE1D))->motion.unkD0);
+                            qcopy(v2, &((Hero *)(D_0013E633_e + 0xE1D))->motion.body_center);
                             v2[2] += randf_sym(0.0f, 0.5f);
                         }
                         n = D_L12_00161FA0_s - 3;
@@ -1872,7 +1872,7 @@ extern float D_0015EE6C MACRO_ADDR;
 void update_planetbuster_maximus_detached_parts(char *moby) {
     int i;
     int off;
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     int last = 17;
     for (i = 0, off = 0; i < 18; i++, off += 4) {
         int s = planetbuster_detached_part_ids[i];
@@ -2007,7 +2007,7 @@ extern void func_L00_0028EBF0(int);
 void planetbuster_maximus_part_update(char *moby) {
     float v[4];
     float w[4];
-    char *d = *(char **)(moby + 0x78);
+    char *d = ((char *)((Moby *)moby)->pvars);
     if (((unsigned char *)moby)[0x20] != 0 && planetbuster_detached_part_ids[17] != 0) {
         qcopy(moby + 0x10, (char *)&planetbuster_path_pos);
         qcopy(moby + 0x40, (char *)&planetbuster_path_rot);
@@ -2270,7 +2270,7 @@ extern void func_L12_00308AC0(char *);
 
 /* Door/switch moby: clears its linked mobys, waits for the hero, opens, fires its list one by one, closes. */
 void homing_mine_spawner_update(char *m) {
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     int *slots;
     int i;
     update_homing_mine_spawner_target(m);
@@ -2432,7 +2432,7 @@ extern int func_00215570(void *arg0, int arg1);
 
 /* Vendor-counter moby update: once the shared block is ready, latch its data and copy two vectors. */
 void trigger_scene_once_in_clip_volume(char *moby) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     char *base;
     char *p;
     char *q;
@@ -2533,7 +2533,7 @@ extern int D_L12_00162154 MACRO_ADDR;
 
 /* Draws the moby's 10-piece overlay when its trigger is visible, with its own GS state. */
 void draw_hoven_scrolling_texture_layers(char *m) {
-    int *d = *(int **)(m + 0x78);
+    int *d = ((int *)((Moby *)m)->pvars);
     int i;
     font_queue_vu_state();
     VU1_addGSregister(0x42, 0x7F00000064L);

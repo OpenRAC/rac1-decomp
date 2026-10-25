@@ -13,7 +13,7 @@ extern float D_0015EE60 MACRO_ADDR;
 
 // Scrolls a texture offset and draws two layers.
 void draw_ribbon_effect(char *m) {
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     float v = *(float *)(d + 0x1EC) - frame_scale * 0.2f;
     *(float *)(d + 0x1EC) = v;
     if (v <= -8.0f) {
@@ -223,7 +223,7 @@ void register_hero_hit_in_clip_volume(char *moby)
     char *base = D_0013E633 + 0xE9D;
     Req r;
     char *q;
-    if (is_point_inside_clip_volume(base, *(int *)(*(char **)(moby + 0x78) + 0x200)) != 0) {
+    if (is_point_inside_clip_volume(base, *(int *)(((char *)((Moby *)moby)->pvars) + 0x200)) != 0) {
         r.flags = 0x200001;
         r.range = 100.0f;
         r.one = 1;
@@ -233,7 +233,7 @@ void register_hero_hit_in_clip_volume(char *moby)
         r.v[3] = 5627.925f;
         r.a = 5;
         r.b = 4;
-        r.c = *(unsigned short *)(moby + 0xA6);
+        r.c = *(unsigned short *)&((Moby *)moby)->oclass;
         q = D_0013E633 + 0xE1D;
         *(int *)(q + 0x22A8) = 0;
         record_moby_hit(*(int *)(q + 0x2080), &r);
@@ -1048,7 +1048,7 @@ extern void func_L14_002EE990(char *);
 /* Camera-intro controller: waits for the cutscene flag, then every few seconds moves the focus to a random
  * visible point of its path. */
 void update_path_lightning_controller(char *m) {
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     int idx[5];
     float v[4];
     int st;
@@ -1591,7 +1591,7 @@ void Moby685Update(char *moby) {
     char v20[16];
     float t30;
 
-    data = *(char **)(moby + 0x78);
+    data = ((char *)((Moby *)moby)->pvars);
     if (((unsigned char *)moby)[0x20] != 0) {
         if (((unsigned char *)moby)[0xBC] == 2) {
             if (*(float *)(data + 0xAC) < 0.0f) {
@@ -1881,7 +1881,7 @@ extern float func_L00_0025C918(float *p, float *v, float t, float u1, float u2, 
 
 /* Springs the moby's position (and, while moving, its rotation) toward its current path point. */
 void settle_elevator_at_path_endpoint(char *m) {
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     float pos[4];
     float rot[4];
     char *e;
@@ -1956,7 +1956,7 @@ extern char *D_L14_001B0F30[];
 
 /* Rebuild the 11 vectors of a table entry from the moby's matrix and position. */
 void rebuild_elevator_world_path(char *moby) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     char *src = elevator_local_path_points;
     char *dst = oltanis_paths[*(int *)(data + 0x114)] + 0x10;
     int i = 10;
@@ -2413,7 +2413,7 @@ extern void func_00215F80(int, int);
 
 /* Vendor text: pick the message from the vendor data state. */
 void request_taxi_stop_prompt(char *moby) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     int v = *(short *)(data + 0xB4);
     if (((Moby *)moby)->state == 5) {
         v = *(short *)(data + 0xB6);
@@ -2470,7 +2470,7 @@ extern unsigned char D_0014171B_2FCEA8[] __asm__("D_0014171B") NOT_SDA;
  * byte at +0x20 (state 0 waits until the moby may start, state 1 tracks the hero, state 2 marks the moby done and
  * deletes it, as state 3 does), then the aiming tail on the countdowns at data + 0x194 and 0x198. */
 void qwark_oltanis_update(char *m) {
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     attach_big_head_cheat_manipulator_to_matching_moby(m);
     if (((Moby *)m)->visible != 0) {
         if (FastVecDist(m + 0x10, oltanis_camera_pos) < 28.0f) {

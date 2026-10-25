@@ -4,6 +4,7 @@
  * with it (func_L14_00300130 changes), so it was another object in retail
  * (docs/BUILD_FIDELITY.md, rule 2). */
 #include "common.h"
+#include "moby.h"
 
 typedef struct Pkt_03430 {
     float corner[4][4];
@@ -47,7 +48,7 @@ typedef struct {
 } D_03430;
 
 void draw_vendor_beam(char *m) {
-    D_03430 *d = *(D_03430 **)(m + 0x78);
+    D_03430 *d = ((D_03430 *)((Moby *)m)->pvars);
     Pkt_03430 P[3];
     float M1[16] __attribute__((aligned(16)));
     float M2[16] __attribute__((aligned(16)));

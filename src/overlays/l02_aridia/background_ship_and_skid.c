@@ -268,8 +268,8 @@ void skids_agent_update(Moby *m) {
         tracking = 1;
         if (vec_distance_xy(((float *)&m->pos), player) < 8.0f &&
             FastDiffRots(m->rot.z,
-                fast_atan2(((Hero *)((char *)&D_0013E633_2E21F8 + 0xE1D))->motion.unkD0.f[0] - m->pos.x,
-                    ((Hero *)((char *)&D_0013E633_2E21F8 + 0xE1D))->motion.unkD0.f[1] - m->pos.y)) < 1.5707964f) {
+                fast_atan2(((Hero *)((char *)&D_0013E633_2E21F8 + 0xE1D))->motion.body_center.f[0] - m->pos.x,
+                    ((Hero *)((char *)&D_0013E633_2E21F8 + 0xE1D))->motion.body_center.f[1] - m->pos.y)) < 1.5707964f) {
             if (FastVecLength(player + 0x80) > 0.01f) d->f174 = scale_ticks(120);
             else FastDecTimer((int *)&d->f174);
         } else if (d->f174) {
@@ -333,7 +333,7 @@ void SkidMcMarxAridiaUpdate(char *m)
     float s_eye[4];
     float s_delta[4];
 
-    d = *(char **)(m + 0x78);
+    d = ((char *)((Moby *)m)->pvars);
     attach_big_head_cheat_manipulator_to_matching_moby(m);
     update_skid_mcmarx_relocation_sequence(m);
     switch (((Moby *)m)->state) {
@@ -852,7 +852,7 @@ extern unsigned char D_0015EEE0[4] MACRO_ADDR;
 
 /* UpdateMoby_1324: tutorial hint triggers around the player */
 void update_tutorial_hint_triggers(unsigned char *moby) {
-    int *data = *(int **)(moby + 0x78);
+    int *data = ((int *)((Moby *)moby)->pvars);
     ((Moby *)moby)->update_dist = 0xFF;
 
     if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, data[0x17]) != 0

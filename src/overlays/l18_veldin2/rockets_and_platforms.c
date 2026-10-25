@@ -43,7 +43,7 @@ void update_projectile_motion_collision_and_trail(char *moby) {
     float d[4];
     float e[4];
     float f[4];
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     float *p;
     float f20, f1;
     char *t;
@@ -74,7 +74,7 @@ void update_projectile_motion_collision_and_trail(char *moby) {
         vec_scale_to_length(b, data, 2.0f);
     }
     InitDirectionalHitQuery(c, (int)moby, 1, b, 2.0f);
-    *(short *)(c + 0x1A) = *(unsigned short *)(moby + 0xA6);
+    *(short *)(c + 0x1A) = *(unsigned short *)&((Moby *)moby)->oclass;
     if (coll_line(moby + 0x10, a, 0, *(void **)(data + 0x14), c) != 0 || FastDecTimer(data + 0x10) != 0) {
         func_L00_0025F4A8_alt(moby, data, moby + 0x10, 1.5f, 1.0f, 10, 6, 4, 1.0f, 0.5f, 9.0f, 0.5f, 0, 0.0f, 0, 0, -1, 0);
         DeleteMoby(moby);
@@ -309,7 +309,7 @@ extern float D_L18_001D3940[];
 
 /* Builds a 4-vertex textured quad packet from a moby's angle and draws it. */
 void draw_rocket_target_pulse_quad(char *moby) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     float v[16];
     int col[4];
     float uv[8];
@@ -557,7 +557,7 @@ void func_L18_002D7310_r(unsigned char *m) __asm__("func_L18_002D7310");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l18/gameplay/entities/002a7220.c, FUN_L18_002d5f20. */
 void func_L18_002D7310_r(unsigned char *m) {
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     char *g;
     int hit;
     if (((Moby *)m)->state == 5 || ((Moby *)m)->state == 0 || ((Moby *)m)->state == 4)
@@ -565,8 +565,8 @@ void func_L18_002D7310_r(unsigned char *m) {
     g = D_0013F450_2D7310;
     if (*(int *)(g + 0x2084) == 0x72) {
         ((Moby *)m)->state = 5;
-        *(short *)(m + 0x34) = (*(short *)(m + 0x34) | 0x41) & ~0x1000;
-        *(int *)(m + 0x94) = 0;
+        *(short *)&((Moby *)m)->flags = (*(short *)&((Moby *)m)->flags | 0x41) & ~0x1000;
+        *(int *)&((Moby *)m)->collision = 0;
         return;
     }
     hit = func_L00_0025B478_2D7310(m, 0x330000, 0);
@@ -574,8 +574,8 @@ void func_L18_002D7310_r(unsigned char *m) {
     if (*(unsigned char **)(g + 0x23C) == m || *(unsigned char **)(g + 0x240) == m || *(int *)(d + 0x19C) != 0) {
         func_L00_0025F4A8_2D7310(m, D_L18_0015F660_2D7310, 0, 1.5f, 1.0f, 0x14, 6, 0x20, 3.0f, 1.5f, 9.0f, 1.5f, 1, 0.0f, 1, 0, -1, 0);
         ((Moby *)m)->state = 5;
-        *(short *)(m + 0x34) = (*(short *)(m + 0x34) | 0x41) & ~0x1000;
-        *(int *)(m + 0x94) = 0;
+        *(short *)&((Moby *)m)->flags = (*(short *)&((Moby *)m)->flags | 0x41) & ~0x1000;
+        *(int *)&((Moby *)m)->collision = 0;
         return;
     }
     if (func_001F9908_2D7310((int *)(d + 0x194)) == 0 && hit == 0) {
@@ -586,8 +586,8 @@ void func_L18_002D7310_r(unsigned char *m) {
     }
     func_L00_0025F4A8_2D7310(m, D_L18_0015F660_2D7310, 0, 0.0f, 0.0f, 5, 2, 8, 1.0f, 0.5f, 9.0f, 0.5f, 1, 0.0f, 0, 0, -1, 0);
     ((Moby *)m)->state = 5;
-    *(short *)(m + 0x34) = (*(short *)(m + 0x34) | 0x41) & ~0x1000;
-    *(int *)(m + 0x94) = 0;
+    *(short *)&((Moby *)m)->flags = (*(short *)&((Moby *)m)->flags | 0x41) & ~0x1000;
+    *(int *)&((Moby *)m)->collision = 0;
 }
 struct Manip_D74F8;
 struct GifEntry_D74F8;
@@ -1104,7 +1104,7 @@ extern int func_0022EEB8(int, int, void *);
 
 /* Activates a moby and starts an effect on it if none is playing. */
 void request_thruster_pack_lock_red_wait(unsigned char *arg, int value) {
-    char *data = *(char **)(arg + 0x78);
+    char *data = ((char *)((Moby *)arg)->pvars);
     if (((Moby *)arg)->state != 2) {
         ((Moby *)arg)->state = 2;
         *(int *)(data + 0x6C) = value;
@@ -1117,7 +1117,7 @@ extern void func_L00_0028EBF0(int);
 
 /* Deactivates a moby in state 2 and stops its sound/effect slot. */
 void end_thruster_pack_lock_red_wait(unsigned char *arg) {
-    int *data = *(int **)(arg + 0x78);
+    int *data = ((int *)((Moby *)arg)->pvars);
     if (((Moby *)arg)->state == 2) {
         int idx;
         ((Moby *)arg)->state = 3;
@@ -1134,7 +1134,7 @@ void end_thruster_pack_lock_red_wait(unsigned char *arg) {
 /* Moby state check: state 3 becomes 1 and returns 1; state 2 returns -1 when data+0x6C is zero; else 0. */
 int poll_moby_state_and_rearm(char *moby) {
     unsigned char st = moby[0x20];
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     if (st == 3) {
         moby[0x20] = 1;
         return 1;
@@ -1166,7 +1166,7 @@ extern int func_001F6FD8(int a, int b, int c, int d, int e);
 /* Draws the level timer as "H:MM:SS.t" text with a pulsing colour. */
 void draw_pulsing_timer_hud(char *moby) {
     char buf[8];
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     float v;
     int col;
 
@@ -1402,7 +1402,7 @@ int request_floating_platform_sink(Level18State *obj) {
 }
 /* Sets a moby's state to 3 and stores two words in its data block if its state is 1; returns 1 on success, 0 otherwise. */
 int request_floating_platform_tilt(unsigned char *moby, int a1, int a2) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     if (((Moby *)moby)->state == 1) {
         ((Moby *)moby)->state = 3;
         *(int *)(data + 0x7C) = a1;
@@ -1767,7 +1767,7 @@ void process_expanding_ring_collisions(char *moby) {
     float v[4];
     float a[4];
     float b[4];
-    char *d = *(char **)(moby + 0x78);
+    char *d = ((char *)((Moby *)moby)->pvars);
     float p, q, step;
     int i;
 
@@ -1815,7 +1815,7 @@ void spawn_expanding_ring_segment_particles(char *moby, void *a1, void *a2) {
     float buf[4];
     float v[4];
     float w[4];
-    char *d = *(char **)(moby + 0x78);
+    char *d = ((char *)((Moby *)moby)->pvars);
     int col;
 
     lerp_vector(buf, a1, a2, 0.5f);
@@ -1848,7 +1848,7 @@ extern short D_L18_00161D30;
 void update_class_274_ring_effect(char *moby) {
     char buf[0x30];
     float v[4];
-    float *d = *(float **)(moby + 0x78);
+    float *d = ((float *)((Moby *)moby)->pvars);
     char *tgt;
     char *pos;
     int flag;
@@ -1898,7 +1898,7 @@ typedef struct {
 // Resets a moby's position and advances its counter, wrapping at a limit.
 void refresh_ring_effect(char *moby, void *pos, float f)
 {
-    int *d = *(int **)(moby + 0x78);
+    int *d = ((int *)((Moby *)moby)->pvars);
     int lim;
     qcopy(moby + 0x10, pos);
     lim = *(int *)&ring_effect_max_timer;
@@ -2022,7 +2022,7 @@ extern int D_L18_00179E90[];
 
 /* UpdateMoby state machine for the vendor moby (state at +0x20). */
 void update_position_and_rotation_transition(char *moby) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     float v[12];
     switch (((unsigned char *)moby)[0x20]) {
     case 0:
@@ -2135,7 +2135,7 @@ extern float D_0015EE70 MACRO_ADDR;
 
 // Initialise a moby's data block from five vectors and a few parameters.
 void start_position_and_rotation_transition(char *moby, void *v0, void *v1, void *v2, void *v3, void *v4, int a6, int a7, int a8) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     *(int *)(data + 0x60) = 0;
     *(int *)(data + 0x64) = 0;
     qcopy(data, v0);
@@ -2336,7 +2336,7 @@ extern void func_L00_0025A8E8_2EB260(int, void *, float, int, float, float, int,
 
 /* Moby update for a homing spark (class 0x3D7). */
 void update_moby_target_travel_and_electric_effects(char *moby) {
-    float *d = *(float **)(moby + 0x78);
+    float *d = ((float *)((Moby *)moby)->pvars);
     float t = FastAddRots(d[0xB], *(float *)&homing_spark_quad2_spin_speed * 0.017453292f * g_frame_time);
     float u = *(float *)&homing_spark_quad3_spin_speed * 0.017453292f * g_frame_time;
     d[0xB] = t;
@@ -2404,7 +2404,7 @@ char *create_class_3d7_moby(void *owner, void *vector, int value) {
 
 /* Starts or retargets a homing spark. */
 void refresh_moby_position_and_activate(unsigned char *arg, void *src, void *position, int active, float speed) {
-    char *data = *(char **)(arg + 0x78);
+    char *data = ((char *)((Moby *)arg)->pvars);
     qcopy(arg + 0x10, src);
     *(int *)(data + 0x28) = scale_ticks(5);
     *(float *)(data + 0x24) = speed;
@@ -2440,7 +2440,7 @@ void HomingSpark_Draw(char *moby) {
     Pkt pkt[4];
     float rot[4];
     float m[4][4][4];
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
 
     clear_u64_value(rot);
     rot[2] = fast_atan2(veldin2_player_camera[0x50] - ((Moby *)moby)->pos.x, veldin2_player_camera[0x51] - ((Moby *)moby)->pos.y);
@@ -2522,7 +2522,7 @@ void spawn_sparks_along_target_direction(char *moby) {
     int i;
     int c1, c2, a, b, c;
     float k1, k2, k3, k4;
-    FastVecSub(v40, *(void **)(moby + 0x78), moby + 0x10);
+    FastVecSub(v40, ((void *)((Moby *)moby)->pvars), moby + 0x10);
     vec_scale_to_length(v40, v40, g_frame_time * 60.0f);
     k1 = (*(float *)&(homing_spark_trail_speed_min)) * g_frame_time;
     k2 = (*(float *)&(homing_spark_trail_speed_max)) * g_frame_time;
@@ -2756,7 +2756,7 @@ void update_electric_bolt_geometry_and_particles(void *moby) {
     V_ec290 s[10];
     V_ec290 d[5];
     unsigned char flag = *(unsigned char *)D_0013E633;
-    char *data = *(char **)((char *)moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     float scale;
     int i;
     int k;
@@ -3136,7 +3136,7 @@ extern short D_L18_001622BC;
 int update_drek_fight_missile_wander_movement(char *moby, float *vec) {
     float buf[4];
     float v[4];
-    char *d = *(char **)(moby + 0x78);
+    char *d = ((char *)((Moby *)moby)->pvars);
     char *p;
     float yaw;
 
@@ -3176,7 +3176,7 @@ extern short D_L18_001622B0;
 
 // Builds a direction vector from a random angle and stores it plus a timer.
 void select_drek_fight_missile_wander_target(char *moby, void *out) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     float v[3];
     float r = random_float_between(*(float *)&drek_missile_wander_radius_min, *(float *)&drek_missile_wander_radius_max);
     float ang = random_angle_radians();
@@ -3322,7 +3322,7 @@ extern void func_L18_002F1AB0();
 
 /* Advance a ring of recorded positions, store the moby's position, and register draw callbacks once per frame. */
 void update_drek_fight_missile_trail_and_queue_effects(char *moby) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     int off;
     int cur;
     int old;

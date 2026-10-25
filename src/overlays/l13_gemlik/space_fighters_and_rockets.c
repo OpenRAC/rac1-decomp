@@ -34,7 +34,7 @@ unsigned char *spawn_level_13_homing_rocket(char *src, char *pos, char *target, 
         *(int *)(data + 0x28) = arg;
         *(int *)(data + 0x30) = 0;
         *(int *)(data + 0x34) = 0;
-        qcopy(data, *(char **)(src + 0x78) + 0xC0);
+        qcopy(data, ((char *)((Moby *)src)->pvars) + 0xC0);
         if (moby[0x53] != 1) {
             MobyBlendAnimation(moby, 1, 0, 10);
         }
@@ -1876,7 +1876,7 @@ extern void func_L00_0025F4A8(void *, void *, void *, float, float, int, int, in
 
 /* Forcefield tower update (moby class 170): state machine over its pieces. */
 void forcefield_tower_update(char *moby) {
-    char *d = *(char **)(moby + 0x78);
+    char *d = ((char *)((Moby *)moby)->pvars);
     float vec[4];
     float blk[4];
     float acc[4];

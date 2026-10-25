@@ -1703,7 +1703,7 @@ int handle_hero_gadget_button(void) {
                 break;
             }
             pv = (PVar_241620 *)((Moby *)D_0013F450_h241620.items[0].moby)->pvars;
-            if (((D_0013CA40_p241620.held & mask) && D_0013F450_h241620.items[0].unk20 > scale_ticks(5)) || (D_0013CA40_p241620.pressed & mask)) {
+            if (((D_0013CA40_p241620.held & mask) && D_0013F450_h241620.items[0].ready_frames > scale_ticks(5)) || (D_0013CA40_p241620.pressed & mask)) {
                 if (get_ammo(-1)) {
                     if (D_0013F450_h241620.item_anim_active == 0) {
                         start_equipped_item_animation();
@@ -1735,7 +1735,7 @@ int handle_hero_gadget_button(void) {
                 break;
             }
             t = scale_ticks(7);
-            n = D_0013F450_h241620.items[0].unk20;
+            n = D_0013F450_h241620.items[0].ready_frames;
             if (func_L00_00267BA8_241620(mask, t <= n ? t : n, &out[1])
                 || ((D_0013CA40_p241620.held & 0x20) && n > scale_ticks(8) && n < scale_ticks(0x11))) {
                 if (get_ammo(-1)) {
@@ -1757,7 +1757,7 @@ int handle_hero_gadget_button(void) {
         if (D_0013F450_h241620.state.control_mode < 2U || (D_0013F450_h241620.state.control_mode == 4 && D_0013F450_h241620.rail_land_frames != 0)) {
             if (D_0013F450_h241620.state.current != 1) {
                 int t = scale_ticks(0xA);
-                int n = D_0013F450_h241620.items[0].unk20;
+                int n = D_0013F450_h241620.items[0].ready_frames;
 
                 if (func_L00_00267BA8_241620(mask, t <= n ? t : n, &out[2])) {
                     if (((Moby *)D_0013F450_h241620.items[0].moby) != 0) {

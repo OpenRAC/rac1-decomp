@@ -68,8 +68,8 @@ int probe_hero_ledge_edge(Vec4 *pos, f32 *dir)
     i = 0;
     top_margin = 0.15f;
     max_slope = 0.34906584f; /* 20 degrees */
-    probe.f[0] += FastCos(D_0013F450_0CDF0.motion.rot.f[2]) * D_0013F450_0CDF0.unk234;
-    probe.f[1] += FastSin(D_0013F450_0CDF0.motion.rot.f[2]) * D_0013F450_0CDF0.unk234;
+    probe.f[0] += FastCos(D_0013F450_0CDF0.motion.rot.f[2]) * D_0013F450_0CDF0.capsule_radius;
+    probe.f[1] += FastSin(D_0013F450_0CDF0.motion.rot.f[2]) * D_0013F450_0CDF0.capsule_radius;
     do {
         probe.f[0] += FastCos(D_0013F450_0CDF0.motion.rot.f[2]) * fwd * step;
         probe.f[1] += FastSin(D_0013F450_0CDF0.motion.rot.f[2]) * fwd * step;
@@ -105,7 +105,7 @@ int probe_hero_ledge_edge(Vec4 *pos, f32 *dir)
     for (j = 0; j < 5; j++) {
         qcopy(&low, pos);
         qcopy(&wall, &top);
-        circle_offset(&wall, ang, D_0013F450_0CDF0.unk234);
+        circle_offset(&wall, ang, D_0013F450_0CDF0.capsule_radius);
         wall.f[2] += drop * (one - j / five);
         low.f[2] = wall.f[2];
         if (func_L00_001EFFF0_0CDF0(&low, &wall, 2, 0, 0)) {
@@ -857,12 +857,12 @@ void update_hero_held_items_and_orientation(void) {
     } else {
         u8 *moby = (u8 *)pose_owner->moby;
         VecQuad *basis = (VecQuad *)pose_owner->basis;
-        float *offset = &pose_owner->unk670;
+        float *offset = &pose_owner->facing_x;
         basis[0] = *(VecQuad *)(moby + 0xC0);
         basis[1] = *(VecQuad *)(moby + 0xD0);
         basis[2] = *(VecQuad *)(moby + 0xE0);
         clear_u64_value(offset);
-        pose_owner->unk670 = 1.0f;
+        pose_owner->facing_x = 1.0f;
         matrix_mul_vec3(offset, offset, basis);
         *(VecQuad *)(pose_owner->pad_678 + 8) = pose_owner->motion.rot.q;
     }
@@ -908,7 +908,7 @@ void spawn_hero_item_mobies(void) {
     int id3;
     int t;
 
-    if (HERO->items[0].moby == 0 && rendered_frame_count > HERO->items[0].unk14 &&
+    if (HERO->items[0].moby == 0 && rendered_frame_count > HERO->items[0].respawn_frame &&
         (HERO->pending_item[0] == 0 || HERO->pending_item[0] == 0x24)) {
         id = HERO->selected_item[0];
         if (id == 0) {
@@ -920,7 +920,7 @@ void spawn_hero_item_mobies(void) {
         select_world_object_resource_tables(DEFA[id].cls, -1);
         for (i = 0; i < 3; i++) {
             FastMemSet(&HERO->item_eases[i], 0, sizeof(struct HeroEase));
-            HERO->item_eases[i].unkA0 = -1;
+            HERO->item_eases[i].attach_joint = -1;
         }
         HERO->items[0].item_id = id;
         slot = DEFA[id].slot;
@@ -1663,11 +1663,11 @@ void hero_update_items(void) {
         if (obj != 0) {
             switch (SLOT(i)->items[0].state) {
             case 2:
-                SLOT(i)->items[0].unk20++;
+                SLOT(i)->items[0].ready_frames++;
                 hero_switch_item(i);
                 if (i == 0) {
                     for (k = 0; k < 3; k++) {
-                        if (D_0013F450_0CDF0.item_eases[k].unkA0 != -1) {
+                        if (D_0013F450_0CDF0.item_eases[k].attach_joint != -1) {
                             D_0013F450_0CDF0.item_eases[k].kind = 5;
                             update_hero_easing_record(&D_0013F450_0CDF0.item_eases[k]);
                         }
@@ -1678,7 +1678,7 @@ void hero_update_items(void) {
                 }
                 break;
             case 3:
-                SLOT(i)->items[0].unk1B++;
+                SLOT(i)->items[0].released_frames++;
                 if ((*(unsigned char *)(obj + 0x70) & 2) || i == 1 || i == 0) {
                     clear_hero_item_slot(i, rendered_frame_count + 2);
                 }
@@ -2232,8 +2232,8 @@ void hero_update(void) {
         D_0013F450_211D28.pos_history_count = 0x20;
     }
     func_001FA218_a(&D_0013F450_211D28, &D_0013F450_211D28.motion.rot);
-    func_001FA190_a(D_0013F450_211D28.unk40);
-    func_001FA4A0_a(D_0013F450_211D28.unk40, &D_0013F450_211D28);
+    func_001FA190_a(D_0013F450_211D28.inv_rot_matrix);
+    func_001FA4A0_a(D_0013F450_211D28.inv_rot_matrix, &D_0013F450_211D28);
     func_L00_00211A38_a();
     func_L00_00221A98_a();
     func_L00_00221D50_a();
@@ -3189,7 +3189,7 @@ void apply_hero_motion_and_resolve_collisions(void) {
 
             contact = (float *)((char *)base + 0x60);
             length = gravity_length_xy(contact);
-            limit = ((Hero *)position)->unk234 - 0.02f;
+            limit = ((Hero *)position)->capsule_radius - 0.02f;
             if (limit < length) vec_scale_to_length(contact, contact, limit);
         }
         position = (float *)(D_0013E633 + 0xEFD);
@@ -3206,7 +3206,7 @@ void apply_hero_motion_and_resolve_collisions(void) {
 
             vertical = (float *)((char *)base + 0x60);
             length = vec_length_xy(vertical);
-            limit = ((Hero *)position)->unk234 - 0.02f;
+            limit = ((Hero *)position)->capsule_radius - 0.02f;
             if (limit < length) vec_set_length_xy(vertical, vertical, limit);
         }
     } else if (((Hero *)position)->state.control_mode != 13) {
@@ -3217,7 +3217,7 @@ void apply_hero_motion_and_resolve_collisions(void) {
 
                 vertical = (float *)((char *)base + 0x60);
                 length = FastVecLength(vertical);
-                limit = ((Hero *)position)->unk234 - 0.02f;
+                limit = ((Hero *)position)->capsule_radius - 0.02f;
                 if (limit < length) vec_scale_to_length(vertical, vertical, limit);
             }
         }
@@ -3268,9 +3268,9 @@ void apply_hero_motion_and_resolve_collisions(void) {
     motion_player->motion.speed_xy = FastVecLength(position);
     magnitude = vec_length_xy(position);
     work.q = *(Q_213F38 *)position;
-    motion_player->motion.unk164 = magnitude;
-    motion_player->motion.unk168 = forward_component((void *)work.f);
-    if (motion_player->motion.unk168 < 0.0f) motion_player->motion.unk168 = 0.0f;
+    motion_player->motion.flat_speed = magnitude;
+    motion_player->motion.forward_speed = forward_component((void *)work.f);
+    if (motion_player->motion.forward_speed < 0.0f) motion_player->motion.forward_speed = 0.0f;
     qcopy(work.f, new_position);
     contact = (float *)((char *)position - 0x20);
     external = (float *)((char *)position - 0x10);
@@ -3290,11 +3290,11 @@ void apply_hero_motion_and_resolve_collisions(void) {
     motion_player->motion.platform_carry.f[3] = motion_player->motion.platform_delta.f[3];
     motion_player->motion.platform_delta.f[3] = 0.0f;
     func_001F9BF0_12E70(external, new_position, previous.f);
-    motion_player->motion.unk16C = 0.0f;
-    if (motion_player->motion.unk164 > 0.004f) {
-        motion_player->motion.unk16C = motion_player->motion.displacement.f[2] / motion_player->motion.unk164;
-        if (motion_player->motion.unk16C > 0.5f) motion_player->motion.unk16C = 0.5f;
-        else if (motion_player->motion.unk16C < -0.5f) motion_player->motion.unk16C = -0.5f;
+    motion_player->motion.move_slope = 0.0f;
+    if (motion_player->motion.flat_speed > 0.004f) {
+        motion_player->motion.move_slope = motion_player->motion.displacement.f[2] / motion_player->motion.flat_speed;
+        if (motion_player->motion.move_slope > 0.5f) motion_player->motion.move_slope = 0.5f;
+        else if (motion_player->motion.move_slope < -0.5f) motion_player->motion.move_slope = -0.5f;
     }
     cap_player = (Hero *)(D_0013E633 + 0xE1D);
     magnitude = g_frame_time * 52.0f;

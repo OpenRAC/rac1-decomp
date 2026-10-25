@@ -147,7 +147,7 @@ extern void func_0022F258(void);
 
 /* Per-frame update of a pickup-like moby: pulses its colour, tracks the player's range and collects items. */
 void update_moby_proximity_interaction(unsigned char *m) {
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     float *p;
     float tmp[4];
     int v;

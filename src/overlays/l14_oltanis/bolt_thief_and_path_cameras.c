@@ -113,7 +113,7 @@ extern char *D_L14_00160098 MACRO_ADDR;
 extern void func_0020D678(void *);
 /* deletes the linked moby and then the owner if still active */
 void mark_moby_and_linked_moby_for_removal(char *moby) {
- char *data=*(char **)(moby+0x78);
+ char *data=((char *)((Moby *)moby)->pvars);
  char *other=oltanis_mobys+(*(int *)(data+4)<<8);
  if(other!=0 && other[0x20]>=0) DeleteMoby(other);
  if(moby[0x20]>=0) DeleteMoby(moby);
@@ -397,7 +397,7 @@ extern float func_L00_001FF860(float, float);
 int update_bolt_thief_path_movement(char *moby) {
     float pos[4];
     float delta[4];
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     float t = *(float *)&oltanis_bolt_thief_path_speed * g_frame_time;
     int r;
     char *path;
@@ -459,7 +459,7 @@ extern unsigned char D_0014171B[] NOT_SDA;
  * start, state 1 tracks the hero and fills D_L14_0016D060, state 2 marks the moby done and deletes it, as state
  * 3 does), then the aiming tail on the countdowns at data + 0x160 and 0x164. */
 void sam_update(char *m) {
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     attach_big_head_cheat_manipulator_to_matching_moby(m);
     switch (((Moby *)m)->state) {
     case 0: {
@@ -869,7 +869,7 @@ extern void func_L14_00306B08_06890(struct Moby *) __asm__("func_L14_00306B08");
 /* Moby that unlocks once: skips straight to done if this level already recorded it, otherwise waits for its trigger moby to reach state 2, records the unlock in the level's bit sets and runs a countdown.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/vendor/00300e00.c, FUN_L14_00305408. */
 void update_unlock_sequence_controller(unsigned char *moby) {
-    int *d = *(int **)(moby + 0x78);
+    int *d = ((int *)((Moby *)moby)->pvars);
     short id;
 
     switch (((Moby *)moby)->state) {
@@ -878,7 +878,7 @@ void update_unlock_sequence_controller(unsigned char *moby) {
             DeleteMoby(moby);
             return;
         }
-        id = *(short *)(moby + 0xB2);
+        id = *(short *)&((Moby *)moby)->save_id;
         if (D_L14_001BBCC0.collected[id] != 0) {
             ((Moby *)moby)->state = 3;
             return;
@@ -894,8 +894,8 @@ void update_unlock_sequence_controller(unsigned char *moby) {
         if (((unsigned char *)oltanis_mobys)[d[3] * 0x100 + 0x20] != 2) {
             return;
         }
-        level_moby_killed[g_current_level_index][*(short *)(moby + 0xB2) >> 5] |= 1 << (((Moby *)moby)->save_id & 0x1F);
-        oltanis_moby_killed_bits[*(short *)(moby + 0xB2) >> 5] |= 1 << (((Moby *)moby)->save_id & 0x1F);
+        level_moby_killed[g_current_level_index][*(short *)&((Moby *)moby)->save_id >> 5] |= 1 << (((Moby *)moby)->save_id & 0x1F);
+        oltanis_moby_killed_bits[*(short *)&((Moby *)moby)->save_id >> 5] |= 1 << (((Moby *)moby)->save_id & 0x1F);
         ((Moby *)moby)->state = 2;
         d[1] = scale_ticks(0x78);
         ((float *)d)[2] = 1.0f / IntToFloat(d[1]);
@@ -915,7 +915,7 @@ extern float D_L14_001EE920[];
 
 /* For each entry in a moby-id list, saves the moby's Y and lowers it by 20. */
 void save_and_lower_unlock_sequence_mobys(char *moby) {
-    unsigned short *p = oltanis_moby_groups[**(int **)(moby + 0x78)];
+    unsigned short *p = oltanis_moby_groups[*((int *)((Moby *)moby)->pvars)];
     float *out;
     if (p != 0) {
         int base = oltanis_mobys;
@@ -936,7 +936,7 @@ extern float func_L00_00258E58(float, float, float, float, float);
 /* Per-frame update: slides each listed part toward a rest height by a factor from the moby's animation value.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/vendor/00300e00.c, FUN_L14_00305680. */
 void raise_unlock_sequence_mobys(char *moby) {
-    int *d = *(int **)(moby + 0x78);
+    int *d = ((int *)((Moby *)moby)->pvars);
     short *p = (short *)oltanis_moby_groups[d[0]];
     float t;
     float *h;
@@ -1053,7 +1053,7 @@ extern int func_001F9850(int);
 
 /* initialises a moby's data block: random floats, constants and sound ids */
 void initialize_morphoray_private_state(char *moby) {
-    char *d = *(char **)(moby + 0x78);
+    char *d = ((char *)((Moby *)moby)->pvars);
     int i;
     for (i = 0; i < 4; i++) {
         *(float *)(d + 0x20 + i * 4) = (float)random_integer_below(0xFF);
@@ -1092,7 +1092,7 @@ typedef struct {
 /* Updates and draws four scrolling particle streaks for an Oltanis moby. */
 void update_morphoray_particles(char *p) {
     float v[8];
-    FxData14 *m = *(FxData14 **)(p + 0x78);
+    FxData14 *m = ((FxData14 *)((Moby *)p)->pvars);
     float *a;
     int *t;
     int i, j, c, k;
@@ -1618,7 +1618,7 @@ extern char *D_L14_001B0F30[];
 
 /* Precomputes per-point segment values of a path and snaps the moby to its first point. */
 void initialize_flying_car_path(char *moby) {
-    char *d = *(char **)(moby + 0x78);
+    char *d = ((char *)((Moby *)moby)->pvars);
     char *p = oltanis_paths[*(int *)(d + 0x78)];
     int i;
     for (i = 0; i < *(int *)p; i++) {
@@ -1810,7 +1810,7 @@ extern unsigned char D_0013D510[];
 
 /* Play the level sound once on first update, then handle the two-state moby. */
 void update_moby_list_clear_notification(unsigned char *moby) {
-    int *d = *(int **)(moby + 0x78);
+    int *d = ((int *)((Moby *)moby)->pvars);
     unsigned v;
     int i;
     if (d[0] != -1) {

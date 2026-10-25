@@ -59,7 +59,7 @@ extern char D_L16_00167240[],D_0013E633[];
 /* Steer a projectile toward its target and emit its impact effects. */
 void HomingProjectileUpdate(char *m) {
     float desired[4],next[4],delta[4],blend[4];
-    char *d=*(char**)(m+0x78);
+    char *d=((char *)((Moby *)m)->pvars);
     void *remaining;
     float yaw,pitch;
     if(*(int*)(d+0x34)==0 && func_001F9D10_2E7198(m+0x10,kalebo3_camera_pos)<15.0f) {
@@ -175,7 +175,7 @@ extern short D_L16_00161B3C;
 /* Update the floating enemy's patrol, attack and death states. */
 void blarg_elite_commando_update(char *m) {
     float target[4], temp[4], delta[4];
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     char *source, *owner;
     float distance, angle;
     float *heading, *movement;
@@ -222,7 +222,7 @@ void blarg_elite_commando_update(char *m) {
             m[0x20] = 10;
             m[0x31] = 0;
             ((Moby *)m)->flags = (((Moby *)m)->flags | 1) & 0xEFFF;
-            *(int *)(m + 0x94) = 0;
+            *(int *)&((Moby *)m)->collision = 0;
             if (((unsigned char *)m)[0x53] != 1) {
                 MobyBlendAnimation(m, 1, 0, scale_ticks(20));
             }
@@ -459,7 +459,7 @@ extern L16DamageResident D_L16DamageState __asm__("D_0013E633");
 /* Handle damage and knockback, then update the pursuit target and timer. */
 void update_blarg_elite_commando_damage_and_pursuit(char *m) {
     L16DamageScratch scratch;
-    L16DamageData *d = *(L16DamageData **)(m + 0x78);
+    L16DamageData *d = ((L16DamageData *)((Moby *)m)->pvars);
     char *hit;
     unsigned int response;
     float range;
@@ -588,7 +588,7 @@ void update_blarg_elite_commando_damage_and_pursuit(char *m) {
     if (d->owner == 0) d->owner = ((L16DamageResident *)((char *)&D_L16DamageState + 0xE1D))->owner;
 }
 void set_blarg_elite_commando_parent_transform(char *moby, void *owner, void *position, char *vector) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     *(void **)(data + 0x2D0) = owner;
     qcopy(data + 0x2C0, position);
     *(float *)(data + 0x2CC) = *(float *)(vector + 8);
@@ -596,7 +596,7 @@ void set_blarg_elite_commando_parent_transform(char *moby, void *owner, void *po
 
 // Starts the moby's state-10 setup: sets its animation, flags, and copies position and timing into its data block.
 void start_blarg_elite_commando_return_to_initial_position(char *moby, int arg) {
-    char *d = *(char **)(moby + 0x78);
+    char *d = ((char *)((Moby *)moby)->pvars);
     if (((unsigned char *)moby)[0x20] == 10) {
         moby[0x20] = 1;
         if (((unsigned char *)moby)[0x53] != 1) {
@@ -604,7 +604,7 @@ void start_blarg_elite_commando_return_to_initial_position(char *moby, int arg) 
         }
         moby[0x31] = 1;
         ((Moby *)moby)->flags &= 0xFFFE;
-        *(int *)(moby + 0x94) = *(int *)(*(char **)(moby + 0x24) + 0x10);
+        *(int *)&((Moby *)moby)->collision = *(int *)(*(char **)(moby + 0x24) + 0x10);
         ((Moby *)moby)->flags |= 0x1000;
         *(short *)(d + 0x2DC) = arg;
         *(float *)(d + 0x2BC) = ((Moby *)moby)->pos.z;
@@ -620,7 +620,7 @@ extern void func_001F9BD8(void *, void *, void *);
 
 /* steers the moby's vector toward the target and returns the distance */
 float advance_blarg_elite_commando_base_position(char *moby, float *target) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     char *p = data + 0x2C0;
     float d = FastVecDist(p, target);
     float b = g_frame_time_sq * 4.0f;
@@ -663,7 +663,7 @@ next:
 extern float func_L00_001FF860(float, float);
 extern float func_001FA790(float, float);
 void select_blarg_elite_commando_movement_animation(char *moby) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     char *target = kalebo3_path_table[*(int *)(data + 0x120)] + (*(short *)(data + 0x300) << 4);
     float angle = fast_atan2(*(float *)(target + 0x10) - ((Moby *)moby)->pos.x, *(float *)(target + 0x14) - ((Moby *)moby)->pos.y);
     float delta = FastSubRots(angle, ((Moby *)moby)->rot.z);
@@ -751,7 +751,7 @@ extern float D_0015EE64 MACRO_ADDR;
 /* Aim paired joints toward the owner or player, then smooth their rotations. */
 void update_blarg_elite_commando_joint_aim(char *m) {
     float position[4],target[4],matrix[16],delta[4],aim[4],aimDelta[4],velocity[4];
-    char *d=*(char**)(m+0x78);
+    char *d=((char *)((Moby *)m)->pvars);
     if(*(int*)(d+0x114)!=2) {
         float *savedTarget,*savedMatrix;
         float yaw,pitch;
@@ -844,7 +844,7 @@ extern short D_L16_00161E3C, D_L16_00161E40, D_L16_00161E48, D_L16_00161E4C;
 /* Update the armed transport: fly in, set down its four passengers, hover, track and fire; sink and burst when destroyed. */
 void armed_transport_update(char *m) {
     Vec4 vector, rotation;
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
 
     update_armed_transport_damage_and_targeting(m);
     switch (((Moby *)m)->state) {
@@ -852,7 +852,7 @@ void armed_transport_update(char *m) {
         char *path;
         float speed;
 
-        *(unsigned short *)(m + 0x32) = 255;
+        *(unsigned short *)&((Moby *)m)->draw_dist = 255;
         ((Moby *)m)->update_dist = 255;
         *(float *)(d + 0x20) = 12.0f;
         *(short *)(d + 0x24) = 12;
@@ -873,7 +873,7 @@ void armed_transport_update(char *m) {
         qcopy(m + 0x10, path + 0x10);
         m[0x20] = 1;
         m[0x31] = 0;
-        *(int *)(m + 0x94) = 0;
+        *(int *)&((Moby *)m)->collision = 0;
         ((Moby *)m)->flags = (((Moby *)m)->flags | 1) & 0xEFFF;
         break;
     }
@@ -887,7 +887,7 @@ void armed_transport_update(char *m) {
             m[0x20] = 2;
             ((Moby *)m)->flags &= 0xFFFE;
             m[0x31] = 1;
-            *(int *)(m + 0x94) = *(int *)(*(char **)(m + 0x24) + 0x10);
+            *(int *)&((Moby *)m)->collision = *(int *)(*(char **)(m + 0x24) + 0x10);
             ((Moby *)m)->flags |= 0x1000;
             vector.q = 0;
             vector.f[2] = 3.14159f;
@@ -1040,7 +1040,7 @@ typedef struct {int status;float amount;} L16HitResult;
 /* Update interaction ownership, damage responses and pursuit tracking. */
 void update_armed_transport_damage_and_targeting(char *m) {
     L16HitResult hit;
-    char *d=*(char**)(m+0x78);
+    char *d=((char *)((Moby *)m)->pvars);
     float zero;
     char *record;
     int response;
@@ -1102,7 +1102,7 @@ extern float func_00214D88_path42(float,float,float,float,float*,float*) __asm__
 extern short D_L16_00161E44, D_L16_00161E40;
 /* Advance a path segment and ease the remaining travel distance. */
 int advance_armed_transport_along_path(char *m, char *path) {
-    char *d = *(char **)(m+0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     float progress = (float)*(int *)(d+0x168) + *(float *)(d+0x16C) + *(float *)(d+0x170) / *(float *)(d+0x174);
     int index = truncate_float_to_s32(progress);
     float speed;
@@ -1155,7 +1155,7 @@ void update_armed_transport_joint_animation(char *moby)
     float ticks = g_frame_scale_sq;
     float a = ticks * 0.03f;
     float b = ticks * 0.3f;
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     *(float *)(data + 0x144) = *(float *)(data + 0x17C);
     EaseManipulatorOffsets(moby, data + 0xE0, 2, a, b);
 }
@@ -1238,7 +1238,7 @@ extern short D_L16_00161EF8, D_L16_00161EFC, D_L16_00161F00;
 void draw_grindrail_barrier_effect(char *m) {
     RingQuad quad;
     float transform[4][4], rotation[4];
-    RingData *data = *(RingData **)(m + 0x78);
+    RingData *data = ((RingData *)((Moby *)m)->pvars);
     float scale = ((Moby *)m)->scale / *(float *)(*(char **)(m + 0x24) + 0x24);
     float *u, *v;
     float *angles;

@@ -290,7 +290,7 @@ extern float func_001F9B88(float);
 
 /* Takes hits (dying at 0 health), then follows the moby's path and gives up on it when too far off. */
 void update_scoutbot_health_and_target(char *m) {
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     int hit;
     float dmg;
     int idx;
@@ -359,7 +359,7 @@ extern float D_L08_00161924 ;
 
 /* Draws the moby's targeting beam as a textured quad from the moby toward its target. */
 void DrawTargetBeam(char *m) {
-    char *data = *(char **)(m + 0x78);
+    char *data = ((char *)((Moby *)m)->pvars);
     Packet_2D4B80 pk;
     Vec_2D4B80 matrix[3], direction, pos, delta, angles;
     float length;
@@ -478,7 +478,7 @@ extern float D_L08_001746F0[];
 
 /* Steers a moby along its path state and lifts it clear of the ground. */
 void update_scoutbot_movement(char *m) {
-    char *s = *(char **)(m + 0x78);
+    char *s = ((char *)((Moby *)m)->pvars);
     float f = FastVecLength((float *)(s + 0x40)) - g_frame_time_sq * 6.0f;
     float lim = g_frame_time * 3.0f;
     float t;
@@ -528,7 +528,7 @@ extern void func_00213DE0(void *, int, int, int);
 void *enter_scoutbot_return_home_state(char *arg)
 {
     void *result = cancel_suck_cannon_suction(arg);
-    char *obj = *(char **)(arg + 0x78);
+    char *obj = ((char *)((Moby *)arg)->pvars);
     arg[0x20] = 3;
     *(float *)(obj + 0x200) = 4.0f;
     *(float *)(obj + 0x208) = 0.5f;
@@ -560,7 +560,7 @@ void func_L00_001FD1D8(void *, s32, s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002937a0.c, FUN_L08_002d4108. */
 void draw_scoutbot_glow_quad(char *arg) {
-    char *data = *(char **)(arg + 0x78);
+    char *data = ((char *)((Moby *)arg)->pvars);
     Pk_002d4108 pk;
     float up[4];
     float M[4][4];
@@ -592,7 +592,7 @@ void draw_scoutbot_glow_quad(char *arg) {
     FastVecCross(M[2], M[1], M[0]);
     FastVecScale(t, M[0], (*(float *)&scoutbot_glow_camera_offset));
     FastVecAdd(M[3], M[3], t);
-    col = (*(u32 *)(arg + 0x90) & 0xFFFFFF) | 0x40000000;
+    col = (*(u32 *)&((Moby *)arg)->glow_color & 0xFFFFFF) | 0x40000000;
     pk.col[3] = col;
     pk.col[2] = col;
     pk.col[1] = col;
@@ -740,7 +740,7 @@ extern float D_L08_001746E0[4];
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002937a0.c, FUN_L08_002e8210. */
 void Moby458Update(char *moby) {
     char *position_ptr = moby + 0x10;
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     float position_copy[4] __attribute__((aligned(16)));
     float position[4] __attribute__((aligned(16)));
     float direction[4] __attribute__((aligned(16)));
@@ -988,7 +988,7 @@ void Moby648Update(char *m) {
     char *v;
     s32 s0, s16, s2;
 
-    v = *(char **)(m + 0x78);
+    v = ((char *)((Moby *)m)->pvars);
     if (fast_dec_timer((int *)(v + 0x3C)) == 0) return;
     if (*(s32 *)(v + 0x38) != 0) {
         *(s32 *)(v + 0x3C) = (*(s32 *)&spark_emitter_interval);
@@ -1458,7 +1458,7 @@ void update_blarg_paratrooper_damage_and_state(char *m) {
     int s50, r, r2, x16, st, cls;
     float f, f0, f1, f2, f3, f4, f12, f13;
 
-    d = *(char **)(m + 0x78);
+    d = ((char *)((Moby *)m)->pvars);
     if (((Moby *)m)->state == 0) return;
     {
         float t = *(float *)&paratrooper_move_speed * g_frame_time;
@@ -1668,7 +1668,7 @@ extern void func_0020D678(void *);
 
 /* Fire bolt: flies along its velocity with a smoke trail (while the level is not underwater), damaging what it hits. */
 void update_fire_bolt(char *m) {
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     float prev[4];
     float sc[4];
     float off[4];
@@ -1981,7 +1981,7 @@ void spawn_moby_radial_particles(char *moby) {
     float pos[4];
     float w[4];
     float o[4];
-    char *d = *(char **)(moby + 0x78);
+    char *d = ((char *)((Moby *)moby)->pvars);
     int i;
     FastVecSub(v, batalia_hero_pos, moby + 0x10);
     v[2] = 0.0f;

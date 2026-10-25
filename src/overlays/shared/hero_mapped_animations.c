@@ -1364,7 +1364,7 @@ void update_hero_attachment(void) {
     if (plat == 0) {
         return;
     }
-    if (((((Hero *)g_hero)->state.control_mode == 0 || ((Hero *)g_hero)->state.control_mode == 12) && FastVecLength(&((Hero *)g_hero)->motion.unk150) == 0.0f && ((Hero *)g_hero)->air_frames.s == 0 && ((Hero *)g_hero)->unk1F6 == 0)
+    if (((((Hero *)g_hero)->state.control_mode == 0 || ((Hero *)g_hero)->state.control_mode == 12) && FastVecLength(&((Hero *)g_hero)->motion.momentum) == 0.0f && ((Hero *)g_hero)->air_frames.s == 0 && ((Hero *)g_hero)->unk1F6 == 0)
         || (unsigned int)(((Hero *)g_hero)->state.current - 0x18) < 2) {
         if ((((Hero *)g_hero)->attach_flags ^ 1) & 1) {
             if ((unsigned int)(((Hero *)g_hero)->state.current - 0x18) < 2) {
@@ -1387,7 +1387,7 @@ void update_hero_attachment(void) {
     } else {
         ((Hero *)g_hero)->attach_flags &= ~1;
     }
-    if ((((Hero *)g_hero)->state.control_mode == 0 || ((Hero *)g_hero)->state.control_mode == 12) && ((Hero *)g_hero)->motion.unk184 == 0.0f && ((Hero *)g_hero)->air_frames.s == 0) {
+    if ((((Hero *)g_hero)->state.control_mode == 0 || ((Hero *)g_hero)->state.control_mode == 12) && ((Hero *)g_hero)->motion.yaw_rate == 0.0f && ((Hero *)g_hero)->air_frames.s == 0) {
         if (!(((Hero *)g_hero)->attach_flags & 2)) {
             convert_pose_to_reference_local((int)((Hero *)g_hero)->moby, ((Hero *)g_hero)->platform_moby, &((Hero *)g_hero)->motion.pos, &((Hero *)g_hero)->motion.rot, &v20, &((Hero *)g_hero)->attach_anchor_rot);
             ((Hero *)g_hero)->attach_flags |= 2;
@@ -1671,7 +1671,7 @@ void try_reposition_hero_on_nearby_ground(void) {
     Vec4 candidate_ground_position;
     float h;
 
-    FastVecScale(candidate_ground_position.f, hero_base->unk0, -0.75f);
+    FastVecScale(candidate_ground_position.f, hero_base->rot_matrix, -0.75f);
     FastVecAdd(candidate_ground_position.f, candidate_ground_position.f, hero_base->motion.pos.f);
     candidate_ground_position.f[2] += 0.5f;
     h = ProbeGroundHeight(candidate_ground_position.f, 0, 0.5f);

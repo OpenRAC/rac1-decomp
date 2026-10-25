@@ -298,7 +298,7 @@ void update_projectile_with_trail(char *m) {
     char *pos;
     int c;
     if (m == 0) return;
-    d = *(char **)(m + 0x78);
+    d = ((char *)((Moby *)m)->pvars);
     if (d == 0) return;
     pos = m + 0x10;
     qcopy(old, pos);
@@ -1323,7 +1323,7 @@ extern short D_L11_00162480;
 
 /* Advances a trail ring buffer and records two offset points each fourth frame. */
 void update_moby_trail_points(char *moby) {
-    char *d = *(char **)(moby + 0x78);
+    char *d = ((char *)((Moby *)moby)->pvars);
     float v[4];
     float w[4];
     int t;
@@ -1372,7 +1372,7 @@ extern int func_L00_001F10E0(float, void *, int, void *);
 
 /* Collectable crate: when hit, updates the totals (count, best time, levels mask, a level-11 bonus) and breaks open. */
 void update_moby_hit_stats_and_state(char *m) {
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     char *info = MobyGetHitMessage(m, 0x330000, 0);
     char *g;
     ((unsigned char *)m)[0xA4] = 0xFF;
@@ -1417,7 +1417,7 @@ void update_moby_hit_stats_and_state(char *m) {
         char *g2 = D_0013E633 + 0xE1D;
         if (*(int *)(g2 + 0x2084) != 0x32) {
             m[0x20] = 4;
-            *(int *)(m + 0x94) = 0;
+            *(int *)&((Moby *)m)->collision = 0;
             ((Moby *)m)->flags |= 1;
         }
         if (coll_sphere(1.0f, m + 0x10, 0, m)) {

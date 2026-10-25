@@ -90,7 +90,7 @@ void sentrybot_update(unsigned char *moby) {
     float s;
 
     if (*(int *)&quartu_sentrybot_update_disabled != 0) return;
-    data = *(unsigned char **)(moby + 0x78);
+    data = ((unsigned char *)((Moby *)moby)->pvars);
     if (quartu_game_mode == 2) {
         ((Moby *)moby)->flags |= 0x41;
         return;
@@ -110,12 +110,12 @@ void sentrybot_update(unsigned char *moby) {
     }
     update_sentrybot_hit_response_and_target_visibility(moby, flag);
     if (flag != 0 && ((Moby *)moby)->state != 0x15 && ((Moby *)moby)->state != 0x17) {
-        *(int *)(moby + 0x94) = 0;
+        *(int *)&((Moby *)moby)->collision = 0;
         ((Moby *)moby)->flags = (((Moby *)moby)->flags | 0x41) & 0xEFFF;
         return;
     }
     ((Moby *)moby)->flags = (((Moby *)moby)->flags & 0xFFBE) | 0x1000;
-    *(int *)(moby + 0x94) = *(int *)(*(char **)(moby + 0x24) + 0x10);
+    *(int *)&((Moby *)moby)->collision = *(int *)(*(char **)(moby + 0x24) + 0x10);
     target = *(char **)(data + 0x110);
     Manipulator_SetScale(data + 0x1A0, 2.5f);
     if (((Moby *)moby)->visible != 0 && FastVecDist(moby + 0x10, quartu_camera_pos) < 28.0f) {
@@ -810,7 +810,7 @@ extern float func_001F9D48(float *, float *);
 // Turns a moby toward a point, updates its speed and velocity, and reports whether it is within 0.2 of it.
 int move_sentrybot_toward_point(char *moby, float *point, float arg) {
     float *fp = (float *)(moby + 0x48);
-    char *d = *(char **)(moby + 0x78);
+    char *d = ((char *)((Moby *)moby)->pvars);
     float vec[4];
     float a;
     float ang;
@@ -860,7 +860,7 @@ extern int func_L00_001EFFF0(void *, void *, int, void *, void *);
 
 // Finds the nearest visible target moby from the moby's candidate list, returning its address.
 int find_sentrybot_attention_target(char *m) {
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     int best = 0;
     float bd;
     float a[4];
@@ -1284,7 +1284,7 @@ extern void func_L00_00264690(void *, int, float, float);
 /* Applies the same effect to three consecutive 16-byte slots of a moby's data, tagged with its colour word. */
 void draw_sentrybot_effect_quads(char *m) {
     int v = (((Moby *)m)->glow_color & 0xFFFFFF) | 0x30000000;
-    char *p = *(char **)(m + 0x78) + 0x2A0;
+    char *p = ((char *)((Moby *)m)->pvars) + 0x2A0;
     int i;
     for (i = 2; i >= 0; i--) {
         draw_offset_textured_effect_quad(p, v, 0.2f, 0.08f);
@@ -1302,7 +1302,7 @@ void func_L15_0029C168(char *moby);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/00278fd8.c, FUN_L15_0029ac30. */
 void ProjectileUpdate(unsigned char *m) {
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     float next[4];
     float back[4];
     char col[0x30];
@@ -1351,7 +1351,7 @@ void spawn_rocket_trail_spark(char *moby) {
     float v2[4];
     float v0[4];
     float v1[4];
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     float s;
     int a, b, c;
     s = *(float *)&quartu_rocket_trail_start_jitter;
@@ -2320,7 +2320,7 @@ static inline int save_flag_clear_2A3DD0(unsigned short id) {
 /* Level 15 moby update (class 78), three states: 0 picks the first state from the kill and save flags,
  * 1 sprays sixteen random sparks around the moby and parks its data vector, 2 counts down. */
 void update_spark_emitter_moby(unsigned char *moby) {
-    unsigned char *d = *(unsigned char **)(moby + 0x78);
+    unsigned char *d = ((unsigned char *)((Moby *)moby)->pvars);
     float V[4];
     float W[16];
     float A[4];
@@ -2337,7 +2337,7 @@ void update_spark_emitter_moby(unsigned char *moby) {
             ((Moby *)moby)->state = 1;
         } else {
             ((Moby *)moby)->command = 0xFF;
-            *(int *)(moby + 0x94) = 0;
+            *(int *)&((Moby *)moby)->collision = 0;
             ((Moby *)moby)->state = 3;
         }
         break;
@@ -2442,7 +2442,7 @@ void draw_spark_emitter_effect_quads(unsigned char *moby) {
     Quad_2A4318 first, second;
     float transform[12] __attribute__((aligned(16)));
     float position[4] __attribute__((aligned(16)));
-    int *data = *(int **)(moby + 0x78);
+    int *data = ((int *)((Moby *)moby)->pvars);
     int pass, corner, axis, component;
     float *transformPointer;
     float *firstUv1, *firstUv3, *secondUv0, *secondUv1;
@@ -2614,7 +2614,7 @@ void spiderbot_update(unsigned char *moby) {
     float A[4];
     float B[4];
     float C[4];
-    unsigned char *d = *(unsigned char **)(moby + 0x78);
+    unsigned char *d = ((unsigned char *)((Moby *)moby)->pvars);
     *(u128_2A8090 *)old = *(u128_2A8090 *)(moby + 0x10);
     {
     float D[4];
@@ -2715,7 +2715,7 @@ void spiderbot_update(unsigned char *moby) {
         R.f1C = 1.0f;
         R.i20 = 1;
         vec_scale_to_length(R.v, B, 1.0f);
-        R.h1A = *(unsigned short *)(moby + 0xA6);
+        R.h1A = *(unsigned short *)&((Moby *)moby)->oclass;
         R.f8 = 1.0f;
         R.fC = 5627.9248f;
         R.b18 = 1;
@@ -2774,7 +2774,7 @@ void draw_spiderbot_effect_quad(char *moby) {
     float E[4];
     float C[4];
     float D[4];
-    char *d = *(char **)(moby + 0x78);
+    char *d = ((char *)((Moby *)moby)->pvars);
     int i;
     FastVecSub(A, d + 0x10, moby + 0x10);
     *(u128_2A8850 *)B = *(u128_2A8850 *)A;
@@ -3113,7 +3113,7 @@ extern short D_L15_00161B44;
 
 // Sets the two fields of the moby's data (and of matching mobys in the level list) from a flag.
 void set_sentrybot_alarm_duration(char *m, int a) {
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     int flag;
     short *p;
     if (a == -1) {
@@ -3141,7 +3141,7 @@ void set_sentrybot_alarm_duration(char *m, int a) {
 
 // Moby update: state 1 starts an animation, state 3 allocates a value once.
 void prepare_sentrybot_alarm(unsigned char *moby) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     if (((Moby *)moby)->state == 1) {
         ((Moby *)moby)->state = 2;
         if (((Moby *)moby)->prev_seq != 1) {

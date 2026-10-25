@@ -147,13 +147,13 @@ void func_L00_002B33E8_r(Moby *m) {
                 0x27, -1, 90.0f, 4);
         }
     }
-    if (hero_2B33E8.items[6].unk40) {
+    if (hero_2B33E8.items[6].locked_on) {
         data->target = hero_2B33E8.items[6].lock_target;
         data->target_timer = func_001F9850_2B33E8(20);
         data->target_height = D_L00_00173F68_2B33E8 - data->target->pos.z;
     }
     if (D_L00_0015F6A8_2B33E8 != 2 && !data->cooldown && !hero_2B33E8.item_use_locked && m->seq < 2 &&
-        (input_2B33E8.held & hero_2B33E8.items[0].button_mask) && func_001F9850_2B33E8(22) < hero_2B33E8.items[0].unk20) {
+        (input_2B33E8.held & hero_2B33E8.items[0].button_mask) && func_001F9850_2B33E8(22) < hero_2B33E8.items[0].ready_frames) {
         velocity.q = 0;
         if (m->prev_seq == 0) func_00213DE0_2B33E8(m, 1, 0, func_001F9850_2B33E8(4));
         if (hero_2B33E8.state.current == 30 && (hero_2B33E8.moby->flags & 1)) {
@@ -165,7 +165,7 @@ void func_L00_002B33E8_r(Moby *m) {
         }
         if (func_L00_00234638_2B33E8(-1, 1)) {
             best = 0;
-            if (hero_2B33E8.items[6].unk40) yaw = hero_2B33E8.items[6].unk4C;
+            if (hero_2B33E8.items[6].locked_on) yaw = hero_2B33E8.items[6].lock_yaw;
             else yaw = func_L00_001FF860_2B33E8(velocity.f.x, velocity.f.y);
             pitch = -func_L00_001FF860_2B33E8(func_001F9CE8_2B33E8(&velocity), velocity.f.z);
             yaw0 = yaw;
@@ -298,8 +298,8 @@ void func_L00_002B33E8_r(Moby *m) {
             c = func_001FA888_2B33E8(data->glow) * 0.5f / (float)func_001F9850_2B33E8(10);
         }
         func_L00_00250800_2B33E8(m, 0, &velocity);
-        velocity.f.x += func_001F9F90_2B33E8(func_L00_001FF860_2B33E8(hero_2B33E8.unk670, hero_2B33E8.unk674));
-        velocity.f.y += func_001F9FA8_2B33E8(func_L00_001FF860_2B33E8(hero_2B33E8.unk670, hero_2B33E8.unk674));
+        velocity.f.x += func_001F9F90_2B33E8(func_L00_001FF860_2B33E8(hero_2B33E8.facing_x, hero_2B33E8.facing_y));
+        velocity.f.y += func_001F9FA8_2B33E8(func_L00_001FF860_2B33E8(hero_2B33E8.facing_x, hero_2B33E8.facing_y));
         velocity.f.z += 0.3f;
         if (data->light == -1) {
             data->light = func_L00_0023F0D0_2B33E8(&velocity, 7.0f, 0.0f, a, b, c);
@@ -351,7 +351,7 @@ void visibomb_update(char *m) {
     float t1[4];
     float f20, f21;
     if (m == 0) return;
-    p = *(int **)(m + 0x78);
+    p = ((int *)((Moby *)m)->pvars);
     fast_dec_timer(p);
     g = D_0013E633 + 0xE1D;
     pad = D_0013A5E0 + 0x2460;
@@ -426,7 +426,7 @@ extern short D_L00_00161550;
 
 /* update moby 166 */
 void update_linked_moby_states(char *m) {
-    int *p = *(int **)(m + 0x78);
+    int *p = ((int *)((Moby *)m)->pvars);
     int b;
     char *r;
     int i;
@@ -1081,7 +1081,7 @@ void func_L00_002B5C98_r(Moby *m) {
         func_001F9EC0_2B5C98(&velocity, &velocity, &hero_2B33E8.basis);
         func_L00_00250800_2B5C98(m, 0, &launch);
     }
-    if (hero_2B33E8.items[6].unk40) yaw = hero_2B33E8.items[6].unk4C;
+    if (hero_2B33E8.items[6].locked_on) yaw = hero_2B33E8.items[6].lock_yaw;
     else yaw = func_L00_001FF860_2B5C98(velocity.f.x, velocity.f.y);
     pitch = -func_L00_001FF860_2B5C98(func_001F9CE8_2B5C98(&velocity), velocity.f.z);
     yaw0 = yaw;
@@ -1108,7 +1108,7 @@ void func_L00_002B5C98_r(Moby *m) {
         }
     }
     if (hero_2B33E8.item_anim_active && hero_2B33E8.state.current != 0x72 && D_L00_0015F6A8_2B33E8 != 2) {
-        if (func_001F9850_2B5C98(5 - order_2B5C98.level) < hero_2B33E8.unk1BC && data->cooldown == 0) {
+        if (func_001F9850_2B5C98(5 - order_2B5C98.level) < hero_2B33E8.item_anim_frames && data->cooldown == 0) {
             if (func_L00_00234638_2B5C98(-1, 1) && !hero_2B33E8.item_use_locked) {
                 data->cooldown = func_001F9850_2B5C98(6);
                 if (target) {
@@ -1139,8 +1139,8 @@ void func_L00_002B5C98_r(Moby *m) {
                 w.spawn.owner = m;
                 w.spawn.f1C = 0.25f;
                 w.spawn.i20 = 1;
-                w.spawn.pos.f.x = func_001F9F90_2B5C98(func_L00_001FF860_2B5C98(hero_2B33E8.unk670, hero_2B33E8.unk674));
-                w.spawn.pos.f.y = func_001F9FA8_2B5C98(func_L00_001FF860_2B5C98(hero_2B33E8.unk670, hero_2B33E8.unk674));
+                w.spawn.pos.f.x = func_001F9F90_2B5C98(func_L00_001FF860_2B5C98(hero_2B33E8.facing_x, hero_2B33E8.facing_y));
+                w.spawn.pos.f.y = func_001F9FA8_2B5C98(func_L00_001FF860_2B5C98(hero_2B33E8.facing_x, hero_2B33E8.facing_y));
                 w.spawn.pos.f.z = 1.0f;
                 w.spawn.pos.f.w = 5627.9248f;
                 w.spawn.b18 = 1;
@@ -1175,7 +1175,7 @@ void func_L00_002B5C98_r(Moby *m) {
         }
     }
     if (!(((((Input_2B5C98 *)D_0013CA40_2B5C98)->held & hero_2B33E8.items[0].button_mask) && func_L00_00234718_2B5C98(-1)) ||
-          (!(func_001F9850_2B5C98(9) < hero_2B33E8.unk1BC) && hero_2B33E8.item_anim_active)) ||
+          (!(func_001F9850_2B5C98(9) < hero_2B33E8.item_anim_frames) && hero_2B33E8.item_anim_active)) ||
         hero_2B33E8.state.current == 0x72 || D_L00_0015F6A8_2B33E8 == 2) {
         if ((m->prev_seq != 0 || (m->anim_flags & 2)) && hero_2B33E8.state.current != 0x72 && D_L00_0015F6A8_2B33E8 != 2) {
             if (m->prev_seq != 1) func_00213DE0_2B5C98(m, 1, 0, func_001F9850_2B5C98(7));
@@ -1190,8 +1190,8 @@ void func_L00_002B5C98_r(Moby *m) {
         a = func_001FA888_2B5C98(data->glow < func_001F9850_2B5C98(9) ? data->glow : func_001F9850_2B5C98(9)) * 0.7f / (float)func_001F9850_2B5C98(9);
         b = func_001FA888_2B5C98(data->glow < func_001F9850_2B5C98(9) ? data->glow : func_001F9850_2B5C98(9)) * 0.7f / (float)func_001F9850_2B5C98(9);
         c = func_001FA888_2B5C98(data->glow < func_001F9850_2B5C98(9) ? data->glow : func_001F9850_2B5C98(9)) * 0.7f / (float)func_001F9850_2B5C98(9);
-        w.point.f.x = hero_2B33E8.motion.pos.f[0] + func_001F9F90_2B5C98(func_L00_001FF860_2B5C98(hero_2B33E8.unk670, hero_2B33E8.unk674)) * 2.0f;
-        w.point.f.y = hero_2B33E8.motion.pos.f[1] + func_001F9FA8_2B5C98(func_L00_001FF860_2B5C98(hero_2B33E8.unk670, hero_2B33E8.unk674)) * 2.0f;
+        w.point.f.x = hero_2B33E8.motion.pos.f[0] + func_001F9F90_2B5C98(func_L00_001FF860_2B5C98(hero_2B33E8.facing_x, hero_2B33E8.facing_y)) * 2.0f;
+        w.point.f.y = hero_2B33E8.motion.pos.f[1] + func_001F9FA8_2B5C98(func_L00_001FF860_2B5C98(hero_2B33E8.facing_x, hero_2B33E8.facing_y)) * 2.0f;
         w.point.f.z = hero_2B33E8.motion.pos.f[2] + 1.0f;
         if (data->light == -1) {
             data->light = func_L00_0023F0D0_2B5C98(&w.point, 6.0f, 0.0f, a, b, c);
@@ -1809,7 +1809,7 @@ int func_L00_002B7EC0_r(char *m, float r) {
     float dist;
     int i;
     *(Vx *)&pos = *(Vx *)(m + 0x10);
-    d = *(int **)(m + 0x78);
+    d = ((int *)((Moby *)m)->pvars);
     n = d[5];
     lim = random_integer_below(n > 0 ? n : 1);
     d[5] = 0;
@@ -2121,7 +2121,7 @@ void func_L00_00203F20(int, int);
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002b2100.c, FUN_L00_002b8230. */
 void update_pyrocitor_usage_and_cleanup(unsigned char *m)
 {
-    unsigned char *v = *(unsigned char **)(m + 0x78);
+    unsigned char *v = ((unsigned char *)((Moby *)m)->pvars);
     unsigned char *P;
     unsigned char *voice;
     int h, c;
@@ -2196,7 +2196,7 @@ void update_pyrocitor_flame_effect_slots(char *m) {
     char qv[16];
     float v2[4];
     float v3[4];
-    char *base = *(char **)(m + 0x78) + 4;
+    char *base = ((char *)((Moby *)m)->pvars) + 4;
     unsigned char *q = (unsigned char *)D_0013E15A + 0x4C6;
     int i;
 
@@ -2215,7 +2215,7 @@ void update_pyrocitor_flame_effect_slots(char *m) {
             InitDirectionalHitQuery(buf, (int)m, 0x10000, vec, IntToFloat(q[0x10]) + 1.0f);
             *(unsigned char *)(buf + 0x18) = 5;
             *(unsigned char *)(buf + 0x19) = 1;
-            *(unsigned short *)(buf + 0x1A) = *(unsigned short *)(m + 0xA6);
+            *(unsigned short *)(buf + 0x1A) = *(unsigned short *)&((Moby *)m)->oclass;
             coll_sphere_mobys((o + 0x10), f20, 0, m, buf);
             type = *(short *)(o + 0xA);
             if (type == 10) {
@@ -2530,13 +2530,13 @@ void func_L00_002B9AD8_r(Moby *m) {
         if ((((PadState *)D_0013CA40_2B5C98)->released & ((Hero *)D_0013F450_2B7430)->items[0].button_mask) || !active ||
             ((Hero *)D_0013F450_2B7430)->item_use_locked) {
             h = (Hero *)D_0013F450_2B7430;
-            if (func_001F9850_2B9AD8(70) < h->unk1BC) {
+            if (func_001F9850_2B9AD8(70) < h->item_anim_frames) {
                 if (((Stats2_2B9AD8 *)(D_0014171B_2B33E8 + 0x22D))->uses < 65535) ((Stats2_2B9AD8 *)(D_0014171B_2B33E8 + 0x22D))->uses++;
             }
             if (func_001F9850_2B9AD8(D_0015EFA4_2B33E8) / 600 > ((Stats2_2B9AD8 *)(D_0014171B_2B33E8 + 0x22D))->longest)
                 ((Stats2_2B9AD8 *)(D_0014171B_2B33E8 + 0x22D))->longest = func_001F9850_2B9AD8(D_0015EFA4_2B33E8) / 600;
             ((Stats2_2B9AD8 *)(D_0014171B_2B33E8 + 0x22D))->levels = (((Stats2_2B9AD8 *)(D_0014171B_2B33E8 + 0x22D))->levels | (1 << D_0015EE84_2B33E8)) | 0x80000000;
-            if (((Hero *)D_0013F450_2B7430)->unk1BC < func_001F9850_2B9AD8(30))
+            if (((Hero *)D_0013F450_2B7430)->item_anim_frames < func_001F9850_2B9AD8(30))
                 ((Hero *)D_0013F450_2B7430)->wrench_combo_step++;
             else
                 ((Hero *)D_0013F450_2B7430)->wrench_combo_step = 0;
@@ -2612,7 +2612,7 @@ void initialize_tesla_claw_beam(char *moby) {
     int i;
     int j;
 
-    data = *(char **)(moby + 0x78);
+    data = ((char *)((Moby *)moby)->pvars);
     if ((*(int *)&tesla_beam_start_pending) == 0) {
         return;
     }

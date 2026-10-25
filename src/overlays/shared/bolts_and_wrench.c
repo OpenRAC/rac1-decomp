@@ -347,7 +347,7 @@ void camera_object_update(char *camera_object) {
         if (FastAbsF(d) < 2.5f) {
             if (FastVecLength(a) < 0.1f
                 || FastDiffRots(P->motion.rot.f[2], C->rot.f[2]) < 2.3561945f
-                || P->motion.unk164 < g_frame_time * 0.1f) {
+                || P->motion.flat_speed < g_frame_time * 0.1f) {
                 *(float *)(camera_object + 0x18) = 15.0f;
                 *(float *)(camera_object + 0x14) = 15.0f;
                 *(float *)(camera_object + 0x10) = 15.0f;
@@ -390,7 +390,7 @@ extern G_pp_t G_pp __asm__("D_0013F450");
 
 /* Per-frame update of a pulsing light-beam moby: spawns a child, fades it with distance to the player, draws it and may trigger the player's grab. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/unclassified_002a4830.c, FUN_L00_002a57a8. */
 void vendor_update(char *moby) {
-    char *p = *(char **)(moby + 0x78);
+    char *p = ((char *)((Moby *)moby)->pvars);
     char *c;
     int i;
     float f;
@@ -957,7 +957,7 @@ extern void func_L00_001FF4B0(float *, float *, float);
 
 /* Steers a thrown moby along its path: builds its orientation from the data's angles and, when done, releases the held target. */
 void update_bolt_grounded_pose(char *moby, void *out1, void *out2) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     float m0[12];
     float m1[12];
     float v60[4];
@@ -1446,7 +1446,7 @@ void spawn_wrench_impact_effects(char *m) {
         r = rand_range(scale_ticks(10), scale_ticks(20));
         PartType21Spawn(p, v, 0x4F007FFF, 0x1FFFFFFF, r, 1, 20000.0f);
     }
-    if (*(short *)(*(char **)(m + 0x78) + 0x78) == 0x2B)
+    if (*(short *)(((char *)((Moby *)m)->pvars) + 0x78) == 0x2B)
         emit_randomized_sparkle_pairs(collision_hit_point, 10);
 }
 extern char *D_L00_001600A4 MACRO_ADDR;
@@ -2019,7 +2019,7 @@ void func_L00_002AAEF0_r(char *moby) {
     float M[4][4];
     float E[4][4];
     float rot1[4];
-    char *d = *(char **)(moby + 0x78);
+    char *d = ((char *)((Moby *)moby)->pvars);
     int i;
 
     if (cinematic_mode == 2) return;

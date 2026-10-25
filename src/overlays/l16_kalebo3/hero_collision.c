@@ -59,7 +59,7 @@ void HeroL16_UpdateStateFlags(void) {
     if (level_index == 0xD) {
         struct Hero *q = (struct Hero *)(D_0013E633 + 0xE1D);
         if (q->state.current != HERO_STATE_HEIGHT_OR_TIMEOUT_RESPAWN_WAIT) {
-            if (coll_sphere(q->unk234 + 0.03f, &q->motion.unkD0, 2, 0)) {
+            if (coll_sphere(q->capsule_radius + 0.03f, &q->motion.body_center, 2, 0)) {
                 if (CollType() == 0xB) {
                     Hero_TryMoveState(HERO_STATE_HEIGHT_OR_TIMEOUT_RESPAWN_WAIT, 1);
                     return;
@@ -440,10 +440,10 @@ int HeroL16_ApplyPositionOffset(int mode) {
             if (c == 1 || hero.unk1F8 != 0 || (unsigned)(control_mode - 0x15) < 2U) {
                 HeroOffsetAlongViewZ(&collision_position_offset, &collision_position_offset, 0.6f);
             } else {
-                HeroMoveDownAlongNormal(&collision_position_offset, &collision_position_offset, -hero.unk224);
+                HeroMoveDownAlongNormal(&collision_position_offset, &collision_position_offset, -hero.capsule_bottom);
             }
         } else {
-            collision_position_offset.f[2] = hero.unk224;
+            collision_position_offset.f[2] = hero.capsule_bottom;
         }
     }
     FastVecAdd(&hero.motion.pos, &hero.motion.pos, &collision_position_offset);
@@ -467,18 +467,18 @@ int HeroL16_ApplyPositionOffset(int mode) {
                 collision_result = coll_sphere(frame_scale * 0.45f, &hero.motion.pos, mask, hero.moby);
                 if (collision_result == 0) break;
             } else {
-                collision_extent_or_displacement_length = hero.capsule_top - hero.unk224;
+                collision_extent_or_displacement_length = hero.capsule_top - hero.capsule_bottom;
                 if (collision_extent_or_displacement_length < 0.05f) {
                     collision_extent_or_displacement_length = 0.05f;
                 }
-                collision_result = coll_capsule(hero.unk234, collision_extent_or_displacement_length, &hero.motion.pos, mask, hero.moby);
-                collision_result |= coll_sphere_hero_groups(hero.unk234, &hero.motion.pos);
+                collision_result = coll_capsule(hero.capsule_radius, collision_extent_or_displacement_length, &hero.motion.pos, mask, hero.moby);
+                collision_result |= coll_sphere_hero_groups(hero.capsule_radius, &hero.motion.pos);
                 if (collision_result == 0) break;
             }
         }
         collision_output = (Vec4 *)D_L16_001742F0;
         qcopy(&hero.motion.pos, collision_output);
-        qcopy(&hero.unk200, collision_output + 1);
+        qcopy(&hero.wall_contact_normal, collision_output + 1);
         qcopy(&hero.wall_contact_point, collision_output - 1);
         hero.wall_hit = 1;
         hero.coll_hit_moby = ((u8 **)collision_output)[-6];
@@ -486,7 +486,7 @@ int HeroL16_ApplyPositionOffset(int mode) {
     FastVecSub(&hero.motion.pos, &hero.motion.pos, &collision_position_offset);
     FastVecSub(&resolved_position_delta, &hero.motion.pos, &old);
     collision_extent_or_displacement_length = FastVecLength(&resolved_position_delta);
-    if (hero.unk234 * 1.5f < collision_extent_or_displacement_length) {
+    if (hero.capsule_radius * 1.5f < collision_extent_or_displacement_length) {
         if (mode == 0xF) {
             if (512.0f < resolved_position_delta.f[0]) {
                 resolved_position_delta.f[0] = 512.0f;
@@ -503,7 +503,7 @@ int HeroL16_ApplyPositionOffset(int mode) {
             } else if (resolved_position_delta.f[2] < -512.0f) {
                 resolved_position_delta.f[2] = -512.0f;
             }
-            vec_scale_to_length(&resolved_position_delta, &resolved_position_delta, hero.unk234);
+            vec_scale_to_length(&resolved_position_delta, &resolved_position_delta, hero.capsule_radius);
             FastVecAdd(&hero.motion.pos, &old, &resolved_position_delta);
         }
         return -1;
@@ -557,7 +557,7 @@ void integrate_hero_motion(void) {
 
             position = (float *)&((Hero *)(D_0013E633 + 0xE1D))->motion.velocity;
             length = gravity_length_xy(position);
-            limit = player->unk234 - 0.02f;
+            limit = player->capsule_radius - 0.02f;
             if (limit < length) vec_scale_to_length(position, position, limit);
         }
         limited_velocity = (float *)&((Hero *)(D_0013E633 + 0xE1D))->motion.velocity;
@@ -575,7 +575,7 @@ void integrate_hero_motion(void) {
 
             position = (float *)&((Hero *)(D_0013E633 + 0xE1D))->motion.velocity;
             length = vec_length_xy(position);
-            limit = player->unk234 - 0.02f;
+            limit = player->capsule_radius - 0.02f;
             if (limit < length) vec_set_length_xy(position, position, limit);
         }
     } else if (player->state.control_mode == 21) {
@@ -601,7 +601,7 @@ void integrate_hero_motion(void) {
 
                     position = player->motion.velocity.f;
                     length = vec_length_xy(position);
-                    limit = player->unk234 - 0.02f;
+                    limit = player->capsule_radius - 0.02f;
                     if (limit < length) vec_set_length_xy(position, position, limit);
                 }
             }
@@ -614,7 +614,7 @@ void integrate_hero_motion(void) {
 
                 position = (float *)&((Hero *)(D_0013E633 + 0xE1D))->motion.velocity;
                 length = FastVecLength(position);
-                limit = player->unk234 - 0.02f;
+                limit = player->capsule_radius - 0.02f;
                 if (limit < length) vec_scale_to_length(position, position, limit);
             }
         }
@@ -635,12 +635,12 @@ void integrate_hero_motion(void) {
     } else {
         HeroL16_UpdateGroundCollision();
     }
-    delta = (float *)&((Hero *)(D_0013E633 + 0xE1D))->motion.unk110;
+    delta = (float *)&((Hero *)(D_0013E633 + 0xE1D))->motion.resolved_velocity;
     new_position = (float *)&((Hero *)(D_0013E633 + 0xE1D))->motion.pos;
-    horizontal = (float *)&((Hero *)(D_0013E633 + 0xE1D))->motion.unk130;
+    horizontal = (float *)&((Hero *)(D_0013E633 + 0xE1D))->motion.resolved_velocity_xy;
     FastVecSub(delta, new_position, previous.f);
     qcopy(horizontal, delta);
-    vertical = (float *)&((Hero *)(D_0013E633 + 0xE1D))->motion.unk120;
+    vertical = (float *)&((Hero *)(D_0013E633 + 0xE1D))->motion.resolved_velocity_z;
     qcopy(vertical, delta);
     velocity = (float *)&((Hero *)(D_0013E633 + 0xE1D))->motion.velocity;
     vec_scale_to_length(delta, delta, 1.0f);
@@ -663,10 +663,10 @@ void integrate_hero_motion(void) {
     vec_scale_to_length(vertical, plane.f, magnitude);
     motion_player = (Hero *)(D_0013E633 + 0xE1D);
     motion_player->motion.speed_xy = FastVecLength(delta);
-    motion_player->motion.unk164 = vec_length_xy(delta);
+    motion_player->motion.flat_speed = vec_length_xy(delta);
     work.q = *(Q *)delta;
-    motion_player->motion.unk168 = forward_component(work.f);
-    if (motion_player->motion.unk168 < 0.0f) motion_player->motion.unk168 = 0.0f;
+    motion_player->motion.forward_speed = forward_component(work.f);
+    if (motion_player->motion.forward_speed < 0.0f) motion_player->motion.forward_speed = 0.0f;
     qcopy(work.f, new_position);
     contact = (float *)&((Hero *)(D_0013E633 + 0xE1D))->motion.platform_delta;
     external = (float *)&((Hero *)(D_0013E633 + 0xE1D))->motion.displacement;
@@ -686,11 +686,11 @@ void integrate_hero_motion(void) {
     motion_player->motion.platform_carry.f[3] = motion_player->motion.platform_delta.f[3];
     motion_player->motion.platform_delta.f[3] = 0.0f;
     FastVecSub(external, new_position, previous.f);
-    motion_player->motion.unk16C = 0.0f;
-    if (motion_player->motion.unk164 > 0.004f) {
-        motion_player->motion.unk16C = motion_player->motion.displacement.f[2] / motion_player->motion.unk164;
-        if (motion_player->motion.unk16C > 0.5f) motion_player->motion.unk16C = 0.5f;
-        else if (motion_player->motion.unk16C < -0.5f) motion_player->motion.unk16C = -0.5f;
+    motion_player->motion.move_slope = 0.0f;
+    if (motion_player->motion.flat_speed > 0.004f) {
+        motion_player->motion.move_slope = motion_player->motion.displacement.f[2] / motion_player->motion.flat_speed;
+        if (motion_player->motion.move_slope > 0.5f) motion_player->motion.move_slope = 0.5f;
+        else if (motion_player->motion.move_slope < -0.5f) motion_player->motion.move_slope = -0.5f;
     }
     cap_player = (Hero *)(D_0013E633 + 0xE1D);
     magnitude = g_frame_time * 52.0f;

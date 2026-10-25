@@ -222,7 +222,7 @@ extern int func_L09_00295880(void *, void *, void *, int, int, float);
 
 /* Follows its target moby along a path: snaps to the nearest path point, then walks the path segments. */
 void update_moby_path_follower(char *m) {
-    int *d = *(int **)(m + 0x78);
+    int *d = ((int *)((Moby *)m)->pvars);
     char *path;
     char *pth;
     char *o;
@@ -372,7 +372,7 @@ extern void func_L00_0025AAC0(void *, void *);
 
 /* updates the moby: deletes it when its owner is gone, else copies the owner's effect data and marks it */
 void forward_moby_hits_to_owner(char *moby) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     char *owner = *(char **)(data + 0x60);
     char *p;
     char buf[0x30];

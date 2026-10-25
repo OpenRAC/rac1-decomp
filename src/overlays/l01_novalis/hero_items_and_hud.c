@@ -135,7 +135,7 @@ void HeroL01_UpdateStateTransitions(void) {
             Hero_SetMoveState(0x3D, 1);
         } else if (handle_hero_gadget_button() == 0 && try_enter_hero_water_state() == 0 && try_transition_hero_water_state() == 0 && try_start_hero_weapon_fire_state() == 0) {
             if ((g_controller_state.pressed & 0x10) || (((int)g_controller_state.pressed_unmasked) & 0x10)) {
-                if (g_hero.items[0].unk1C != 2 && D_L01_0015F674 == 0
+                if (g_hero.items[0].switch_lock != 2 && D_L01_0015F674 == 0
                     && (g_hero.item_use_locked == 0 || g_hero.vehicle_mode == 1 || g_hero.unk1B2 != 0)
                     && (g_hero.item_select_blocked == 0 || g_hero.vehicle_mode == 1 || g_hero.unk1B2 != 0)
                     && (g_hero.vehicle_mode == 0 || g_hero.vehicle_mode == 3)) {
@@ -721,7 +721,7 @@ void HeroL01_UpdateStateTransitions(void) {
                                     Hero_SetMoveState(7, 1);
                                     break;
                                 }
-                                if (g_hero.target_speed > novalis_hero_speed_bands.fC && FastDiffRots(g_hero.motion.move_yaw, g_hero.motion.rot.f[2]) < 1.0471976f && novalis_hero_speed_bands.f18 * g_frame_time * 0.85f < g_hero.motion.unk164) {
+                                if (g_hero.target_speed > novalis_hero_speed_bands.fC && FastDiffRots(g_hero.motion.move_yaw, g_hero.motion.rot.f[2]) < 1.0471976f && novalis_hero_speed_bands.f18 * g_frame_time * 0.85f < g_hero.motion.flat_speed) {
                                     Hero_SetMoveState(9, 1);
                                     break;
                                 }
@@ -733,7 +733,7 @@ void HeroL01_UpdateStateTransitions(void) {
                     if (g_hero.air_frames.s != 0) {
                         break;
                     }
-                    if (g_hero.on_ice_ground == 0 || (g_frame_time * 2.0f > g_hero.motion.unk164 && g_hero.ground_slope.f < 0.08726646f)) {
+                    if (g_hero.on_ice_ground == 0 || (g_frame_time * 2.0f > g_hero.motion.flat_speed && g_hero.ground_slope.f < 0.08726646f)) {
                         if (g_controller_state.held & 5) {
                             Hero_SetMoveState(1, 1);
                             break;
@@ -855,7 +855,7 @@ void HeroL01_UpdateStateTransitions(void) {
                         break;
                     }
                     set_hero_animation(get_hero_idle_animation_index(0), 0, scale_ticks(0x11));
-                    qcopy(g_hero.motion.unk150.f, g_hero.motion.platform_carry.f);
+                    qcopy(g_hero.motion.momentum.f, g_hero.motion.platform_carry.f);
                     break;
                 case 3:
                     if (g_controller_state.held & 5) {
@@ -972,12 +972,12 @@ void HeroL01_UpdateStateTransitions(void) {
                     sp24 = g_hero.motion.rot.f[2];
                     if (test_hero_ledge_ahead(v0, &sp24) == 0) {
                         Hero_SetMoveState(6, 1);
-                        g_hero.unk1B0 = scale_ticks(0xA);
+                        g_hero.ledge_probe_cooldown = scale_ticks(0xA);
                         break;
                     }
                     if ((g_hero.stick_magnitude > 0.5f && pad_pressed_within(0x40, scale_ticks(9), 0) && 2.3561945f < FastDiffRots(g_hero.motion.move_yaw, g_hero.motion.rot.f[2])) || (g_controller_state.pressed & 0xA)) {
                         Hero_SetMoveState(6, 1);
-                        g_hero.unk1B0 = scale_ticks(0xA);
+                        g_hero.ledge_probe_cooldown = scale_ticks(0xA);
                         break;
                     }
                     if (pad_pressed_within(0x40, scale_ticks(0x11), 0)) {
@@ -1027,7 +1027,7 @@ void HeroL01_UpdateStateTransitions(void) {
                     }
                     if (0.5f < g_hero.stick_magnitude && pad_pressed_within(0x40, scale_ticks(9), 0) && 2.3561945f < FastDiffRots(g_hero.motion.move_yaw, g_hero.motion.rot.f[2])) {
                         Hero_SetMoveState(6, 1);
-                        g_hero.unk1B0 = scale_ticks(0x28);
+                        g_hero.ledge_probe_cooldown = scale_ticks(0x28);
                         break;
                     }
                     if (pad_pressed_within(0x40, scale_ticks(9), 0)) {
@@ -1092,8 +1092,8 @@ void HeroL01_UpdateStateTransitions(void) {
                             if (Hero_SetMoveState(0, 0)) {
                                 set_hero_animation(0xC, 9, -1.0f);
                             }
-                            gravity_set_z(g_hero.motion.unk150.f, g_hero.motion.unk150.f, 0.0f);
-                            ClampVectorLength(g_hero.motion.unk150.f, g_frame_time * 7.0f);
+                            gravity_set_z(g_hero.motion.momentum.f, g_hero.motion.momentum.f, 0.0f);
+                            ClampVectorLength(g_hero.motion.momentum.f, g_frame_time * 7.0f);
                             g_hero.move_lock_timer = scale_ticks(7);
                             if (g_hero.state.prev == 0x2D) {
                                 g_hero.move_lock_timer = scale_ticks(0xA);
@@ -1111,12 +1111,12 @@ void HeroL01_UpdateStateTransitions(void) {
                             configure_hero_point_effect_emission(0.016f, 0.002f, 7, 2, 0, 1);
                             break;
                         }
-                        if (g_frame_time * 3.0f < g_hero.motion.unk164) {
+                        if (g_frame_time * 3.0f < g_hero.motion.flat_speed) {
                             if (Hero_SetMoveState(3, 0) == 0) {
                                 break;
                             }
                             set_hero_animation(6, 0, scale_ticks(0xC));
-                            ClampVectorLength(g_hero.motion.unk150.f, g_frame_time * 7.7f);
+                            ClampVectorLength(g_hero.motion.momentum.f, g_frame_time * 7.7f);
                             break;
                         }
                         Hero_SetMoveState(0, 1);
@@ -1204,7 +1204,7 @@ void HeroL01_UpdateStateTransitions(void) {
                     configure_hero_point_effect_emission(0.016f, 0.002f, 5, 2, 0, 1);
                     break;
                 case 8:
-                    if (g_hero.unk1B4 != 0) {
+                    if (g_hero.wall_jump_window != 0) {
                         if (scale_ticks(9) > g_hero.state_timer) {
                             int hit = 0;
                             if (g_hero.state.prev == 7 || g_hero.state.prev == 9 || g_hero.state.prev == 0xE || g_hero.state.prev == 0x11) {
@@ -1338,13 +1338,13 @@ void HeroL01_UpdateStateTransitions(void) {
                     if (scale_ticks(7) > g_hero.state_timer && pad_pressed_within(0xA, 2, 0)
                         && g_hero.state.current != 0x10 && g_hero.state.current != 0xA && g_hero.state.current != 0x12 && g_hero.state.current != 0x3C
                         && g_hero.state.current != 0x11 && g_hero.state.current != 0xE && g_hero.state.current != 0x69) {
-                        if (hero_slot_item_id(3) == 2 && item_available[2] != 0 && g_hero.pack_disabled == 0 && g_frame_time * 0.9f < g_hero.motion.unk168) {
+                        if (hero_slot_item_id(3) == 2 && item_available[2] != 0 && g_hero.pack_disabled == 0 && g_frame_time * 0.9f < g_hero.motion.forward_speed) {
                             Hero_SetMoveState(0xA, 1);
-                        } else if (hero_slot_item_id(3) == 3 && g_hero.pack_disabled == 0 && g_frame_time * 0.9f < g_hero.motion.unk168 && g_hero.unk1B8 == 0) {
+                        } else if (hero_slot_item_id(3) == 3 && g_hero.pack_disabled == 0 && g_frame_time * 0.9f < g_hero.motion.forward_speed && g_hero.long_jump_lockout == 0) {
                             Hero_SetMoveState(0x10, 1);
                         }
                     }
-                    if (g_hero.unk420 + scale_ticks(8) < g_hero.state_timer
+                    if (g_hero.takeoff_frame + scale_ticks(8) < g_hero.state_timer
                         && (g_hero.past_jump_apex == 0 || scale_ticks(0xA) < g_hero.frames_to_land)
                         && g_hero.stick_magnitude < 0.3f
                         && (g_hero.state.current == 7 || g_hero.state.current == 9 || g_hero.state.current == 0xD || g_hero.state.current == 0xF || g_hero.state.current == 0xE)) {
@@ -1380,10 +1380,10 @@ void HeroL01_UpdateStateTransitions(void) {
                         if (g_hero.state.current == 0xE && g_hero.anim_frame < 35.0f) {
                             isNear = 1;
                         }
-                        if (!(g_hero.state_timer > g_hero.unk420)) {
+                        if (!(g_hero.state_timer > g_hero.takeoff_frame)) {
                             break;
                         }
-                        if (g_hero.state_timer == g_hero.unk420 + 1) {
+                        if (g_hero.state_timer == g_hero.takeoff_frame + 1) {
                             if (g_hero.velocity_keys_active != 0) {
                                 float d = g_hero.unk3D0 - g_hero.state_timer;
                                 if (0.0f < d) {
@@ -1408,7 +1408,7 @@ void HeroL01_UpdateStateTransitions(void) {
                             }
                             break;
                         }
-                        if (g_hero.unk2F8 == 1) {
+                        if (g_hero.in_water_frames == 1) {
                             allocate_hero_voice_for_entry(0x11, 0);
                             emit_hero_surface_effect_burst(3, 0x18, 1);
                         }
@@ -1452,7 +1452,7 @@ void HeroL01_UpdateStateTransitions(void) {
                                 && (return_hero_animation_id_unchanged(moby[0x52]) == 8 || return_hero_animation_id_unchanged(moby[0x52]) == 9)
                                 && moby[0x52] == moby[0x53]
                                 && novalis_hero_speed_bands.f18 * g_frame_time * 0.1f > g_hero.target_speed
-                                && g_frame_time * 2.5f > g_hero.motion.unk164) {
+                                && g_frame_time * 2.5f > g_hero.motion.flat_speed) {
                                 float sp = (float)scale_ticks(9) / g_hero.anim_speed;
                                 if ((float)scale_ticks(0xA) < sp) {
                                     sp = scale_ticks(0xA);
@@ -1471,13 +1471,13 @@ void HeroL01_UpdateStateTransitions(void) {
                                 break;
                             }
                             set_hero_animation(5, 0, -2.0f);
-                            FastVecScale(g_hero.motion.unk150.f, g_hero.motion.unk150.f, 0.8f);
+                            FastVecScale(g_hero.motion.momentum.f, g_hero.motion.momentum.f, 0.8f);
                             break;
                         }
                         if (g_hero.on_slip_ground == 0 && g_hero.move_lock_timer == 0) {
                             if (pad_pressed_within(0x40, scale_ticks(8), 0)) {
                                 if (g_hero.air_frames.s < scale_ticks(4)) {
-                                    if (g_hero.target_speed > novalis_hero_speed_bands.fC && FastDiffRots(g_hero.motion.move_yaw, g_hero.motion.rot.f[2]) < 1.0471976f && novalis_hero_speed_bands.f18 * g_frame_time * 0.85f < g_hero.motion.unk164) {
+                                    if (g_hero.target_speed > novalis_hero_speed_bands.fC && FastDiffRots(g_hero.motion.move_yaw, g_hero.motion.rot.f[2]) < 1.0471976f && novalis_hero_speed_bands.f18 * g_frame_time * 0.85f < g_hero.motion.flat_speed) {
                                         Hero_SetMoveState(9, 1);
                                         break;
                                     }
@@ -1501,7 +1501,7 @@ void HeroL01_UpdateStateTransitions(void) {
                         if (g_hero.state.current == 7 || g_hero.state.current == 9 || g_hero.state.current == 0x11) {
                             hit = 1;
                         }
-                        if (g_hero.unk1B4 != 0 && g_hero.rail_land_frames == 0 && hit) {
+                        if (g_hero.wall_jump_window != 0 && g_hero.rail_land_frames == 0 && hit) {
                             if (g_hero.state.current != 0x11 || scale_ticks(0x19) < g_hero.state_timer) {
                                 int a = scale_ticks(7);
                                 if (g_hero.state.current == 0x11) {

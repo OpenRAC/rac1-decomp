@@ -363,7 +363,7 @@ void frog_update(unsigned char *m) {
     unsigned char *t;
     int s;
 
-    d = *(char **)(m + 0x78);
+    d = ((char *)((Moby *)m)->pvars);
     if (*(int *)&blarg_frog_update_disabled != 0) {
         return;
     }
@@ -437,7 +437,7 @@ void frog_update(unsigned char *m) {
             ((Moby *)m)->flags |= 0x41;
         } else if (*(short *)(d + 0x202) != 0) {
             ((Moby *)m)->state = 0xF;
-            *(int *)(m + 0x94) = 0;
+            *(int *)&((Moby *)m)->collision = 0;
             ((Moby *)m)->flags = (((Moby *)m)->flags | 0x41) & 0xEFFF;
         } else if (*(int *)(d + 0x1F8) >= 0) {
             ((Moby *)m)->state = 3;
@@ -898,7 +898,7 @@ void move_frog_with_collision_resolution(void *moby, void *out, int use_path, fl
         }
     }
     if (use_path != 0) {
-        resolve_point_path_segment_xy_clearance(0.5f, *(int *)(*(char **)((char *)moby + 0x78) + 0x1EC), (char *)moby + 0x10, (char *)moby + 0x10);
+        resolve_point_path_segment_xy_clearance(0.5f, *(int *)(((char *)((Moby *)moby)->pvars) + 0x1EC), (char *)moby + 0x10, (char *)moby + 0x10);
     }
 }
 typedef u32 u128_EB360 __attribute__((mode(TI), aligned(16)));
@@ -2446,7 +2446,7 @@ int func_L06_002F4720_r(char *moby, int flag)
     int *cursor;
     int entry;
 
-    state = *(char **)(moby + 0x78);
+    state = ((char *)((Moby *)moby)->pvars);
     iter.out = 0;
     list_id = *(int *)(state + 0x30C);
     if (list_id != -1) {
@@ -2538,7 +2538,7 @@ void func_L06_002F4A70_r(unsigned char *moby) __asm__("func_L06_002F4A70");
 /* Looks for a target (query 0x330001); if its owner is a different hostile, sets up the aim/attack data and enters state 9.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/00297d10.c, FUN_L06_002f3640. */
 void func_L06_002F4A70_r(unsigned char *moby) {
-    char *state = *(char **)(moby + 0x78);
+    char *state = ((char *)((Moby *)moby)->pvars);
     if (((Moby *)moby)->state != 9 && ((Moby *)moby)->seq != 2 && ((Moby *)moby)->prev_seq != 2) {
         char *target = func_L00_0025B478_2F4A70(moby, 0x330001, 0);
         if (target != 0) {
@@ -2613,7 +2613,7 @@ void update_gadgebot_glow_effects(char *obj)
     if (((Moby *)obj)->group == 0xFF) {
         return;
     }
-    d = *(char **)(obj + 0x78);
+    d = ((char *)((Moby *)obj)->pvars);
     tint = 0x3228AAAA;
     if (((Moby *)obj)->state == 3 || ((Moby *)obj)->state == 6) {
         tint = 0x3228AA28;
@@ -2802,7 +2802,7 @@ extern void func_L00_0025AC00(void *, int, int, void *, void *, float);
 
 /* Collectible spawner: unless already collected (save bit), spawns the pickup moby; marks the bit once it is taken. */
 void energy_sphere_holder_update(char *m) {
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     char *o;
     unsigned char *q;
     switch (((unsigned char *)m)[0x20]) {
@@ -2855,7 +2855,7 @@ extern int func_001F9850(int);
 
 /* fills random floats and sound handles in the moby's data block */
 void initialize_energy_sphere_holder_vars(char *moby) {
-    float *holder_vars = *(float **)(moby + 0x78);
+    float *holder_vars = ((float *)((Moby *)moby)->pvars);
     int *scaled_frame_counts;
     float *f = holder_vars;
     int i;
@@ -2901,7 +2901,7 @@ void update_energy_sphere_holder_beam_effects(char *m) {
     float step[4];
     float a[4];
     float b[4];
-    Beam_2f8a58 *d = *(Beam_2f8a58 **)(m + 0x78);
+    Beam_2f8a58 *d = ((Beam_2f8a58 *)((Moby *)m)->pvars);
     int i;
     FastVecSub(pos, D_L06_00167640, d->tgt + 0x10);
     vec_scale_to_length(pos, pos, -0.3f);

@@ -282,7 +282,7 @@ extern float func_001F9F90(float);
 int find_batalia_cannon_aim_target(char *m) {
     float a[4];
     float b[4];
-    int *p = (int *)(*(char **)(m + 0x78) + 0x60);
+    int *p = (int *)(((char *)((Moby *)m)->pvars) + 0x60);
     int i;
     for (i = 0; i < 8; i++) {
         if (p[i] != 0) {
@@ -1293,7 +1293,7 @@ extern char *D_L08_00160058 MACRO_ADDR;
 
 /* updates matching objects in the selected object range */
 void build_bolt_thief_target_list(char *moby) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     int oclass=0x279;
     char *base = batalia_mobys;
     int *ids = (int *)(data + 0x130);
@@ -2146,7 +2146,7 @@ void set_batalia_bolt_pickup_surface_rotation(char *a, float *v) {
     float n[16];
     float r[4];
     float s[4];
-    char *d = *(char **)(a + 0x78);
+    char *d = ((char *)((Moby *)a)->pvars);
     r[1] = v[2];
     r[2] = v[0];
     r[0] = -v[1];
@@ -2180,7 +2180,7 @@ void compute_batalia_bolt_pickup_surface_pose(char *m, float *out, float *rot) {
     float dir[4];
     float u[4];
     float v[4];
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     float sx, sy, sz;
     float t;
     switch (((Moby *)m)->oclass) {
@@ -2246,7 +2246,7 @@ extern short D_L08_00161CF0;
 /* When the short at data + 0x6C is nonzero, projects the moby's offset position to screen space and draws a
  * four-corner quad there, its corners rotated in 90-degree steps by the angle at data + 0x74 and scaled by distance. */
 void draw_batalia_bolt_pickup_rotating_quad(char *m) {
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     if (*(short *)(d + 0x6C) != 0) {
         long v[4];
         int w[4];
@@ -2308,7 +2308,7 @@ void draw_batalia_bolt_pickup_rotating_quad(char *m) {
 }
 /* spawns the child mobys this object owns and fills its part table */
 void spawn_shrub_parts(char *moby) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     char *e = data + 0xBC;
     int i = 0;
     char *c;
@@ -2358,7 +2358,7 @@ extern float D_0015EE6C MACRO_ADDR;
  * to the short at data + 0x13C; when that reaches 8 it is taken mod 8 and one slot object is released (its state byte
  * set to 1, the slot cleared), or the moby's state becomes 0x63 if none is left. */
 void process_shrub_part_hits(char *m) {
-    char *data = *(char **)(m + 0x78);
+    char *data = ((char *)((Moby *)m)->pvars);
     char *base = data + 0x60;
     char **p = (char **)base;
     char **sq;
@@ -2681,7 +2681,7 @@ void shrub_update(struct Moby *moby) {
 }
 /* Builds the moby's part hierarchy: body, head, arms and eight trailing segments. */
 void spawn_joint_linked_moby_parts(char *moby) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     char *e = data + 0xFC;
     int i = 0;
     char *c;

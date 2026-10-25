@@ -344,7 +344,7 @@ extern void func_L00_00259868(int, int, float, float, float, int);
 extern float func_001F9D10(void *, void *);
 
 void update_rocket_tank_path_movement(char *m) {
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     float t[4];
     float v[4];
     float ang, f, z, sc;

@@ -37,7 +37,7 @@ extern void func_L00_0025F4A8(void*,void*,void*,float,float,int,int,int,float,fl
 void HomingSparkUpdate(unsigned char *m) {
     L16SparkVector desired,previous,velocity,random;
     L16SparkQuery query;
-    char *d=*(char**)(m+0x78);
+    char *d=((char *)((Moby *)m)->pvars);
     void *position;
     void *matrix;
     char *particle;
@@ -98,7 +98,7 @@ void HomingSparkUpdate(unsigned char *m) {
         query.direction[2]=1.0f;
         query.direction[3]=5627.9248046875f;
         query.kind=3;
-        query.cls=*(unsigned short*)(m+0xA6);
+        query.cls=*(unsigned short *)&((Moby *)m)->oclass;
         query.enabled=impact_state;
         if(func_L00_001EFFF0_spark(previous.f,position,0,*(void**)(player+0x2080),&query)) {
             L16SparkHit *result=&D_L16_001742C0_hit;
@@ -168,7 +168,7 @@ void update_path_following_rocket(unsigned char *moby) {
         struct Hero *player = (struct Hero *)(D_0013E633 + 0xE1D);
         if (player->state.control_mode != 15)
             break;
-        if (is_point_inside_clip_volume(&player->motion.unkD0, data->clip_volume)) {
+        if (is_point_inside_clip_volume(&player->motion.body_center, data->clip_volume)) {
             m->state = 2;
             data->triggered = 0;
         }
@@ -269,11 +269,11 @@ void reposition_moby_with_collision_check(unsigned char *m, void *p) {
         } while (--i >= 0);
         func_0022ED80_57(1, 0, m);
     } else {
-        d = *(char **)(m + 0x78);
+        d = ((char *)((Moby *)m)->pvars);
         *(float *)(d + 0x78) = 1.0f;
         if (((Moby *)m)->prev_seq != 2) MobyBlendAnimation(m, 2, 0, 1);
         ((Moby *)m)->flags = (((Moby *)m)->flags | 0x1000) & 0xFFBE;
-        *(int *)(m + 0x94) = *(int *)(*(char **)(m + 0x24) + 0x10);
+        *(int *)&((Moby *)m)->collision = *(int *)(*(char **)(m + 0x24) + 0x10);
         ((Moby *)m)->state = 4;
         *(short *)(d + 0x66) = scale_ticks(0xB4);
     }
@@ -433,7 +433,7 @@ extern int func_002140B0(int);
 
 // Initialises the per-moby data block with random values, tick scalars and constants.
 void initialize_moby_sprite_effect(char *moby) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     float *f = (float *)data;
     int *p;
     int i;
@@ -473,7 +473,7 @@ extern int func_001FA898_caa18(float) __asm__("func_001FA898");
 extern unsigned char *func_L00_00273E08(void *, int, unsigned char, int, int, int, int, float);
 
 void emit_moby_sprite_effect_particles(char *m) {
-    L16SpriteData *p = *(L16SpriteData **)(m + 0x78);
+    L16SpriteData *p = ((L16SpriteData *)((Moby *)m)->pvars);
     float d[4] __attribute__((aligned(16)));
     float e[4] __attribute__((aligned(16)));
     int i, col;
@@ -513,7 +513,7 @@ extern void func_L16_002CB000(int, void *);
 
 /* Updates a linked moby's movement and follows it while its state is active. */
 void Moby471Update(unsigned char *m) {
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     float vec[4];
     float target;
     int one = 1;
@@ -561,7 +561,7 @@ extern int func_0022ED80_cae18(int, int, void *) __asm__("func_0022ED80");
 
 void update_conveyor_group_voice(unsigned char *m) {
     short *p = (short *)kalebo3_moby_groups[((Moby *)m)->group];
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     char *nearest = 0;
     float best = 1024.0f;
     float v[4];
@@ -629,7 +629,7 @@ typedef struct {
 /* Draw paired textured strips along an indexed pose, fading the end caps. */
 void draw_conveyor_belt_strips(char *m) {
     L16RibbonPacket packets[2];
-    char *d=*(char **)(m+0x78);
+    char *d=((char *)((Moby *)m)->pvars);
     float scale=FastVecLength(D_L16_001601AC_m+((*(int *)(d+0x60))<<7))*2.001f;
     int count=func_001FA898_caa18(scale);
     float step=2.0f/scale;
@@ -1208,7 +1208,7 @@ int move_test_dummy_toward_position_and_heading(char *moby, void *vec, float ang
     float b[4] __attribute__((aligned(16)));
     float speed;
     float dist;
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     *(L16MoveQuad *)a = *(L16MoveQuad *)vec;
     SteerAngleWithVelocity((float *)(moby + 0x48), (float *)(data + 0x100), angle, g_frame_time_sq * 12.566371f, g_frame_time_sq * 12.566371f, g_frame_time * 25.132742f);
     speed = 0.0f;
@@ -1326,7 +1326,7 @@ extern int D_0015EE84 MACRO_ADDR;
 extern short D_L16_0015EE6C;
 /* Pulse a linked control object and toggle its child when hit or its timer expires. */
 void wall_button_update(char *m) {
-    char *d=*(char**)(m+0x78);
+    char *d=((char *)((Moby *)m)->pvars);
     switch((*(unsigned char *)((char *)(m)+(0x20)))) {
     case 0:
         (*(float *)((char *)(d)+(0x68)))=random_angle_radians();(*(float *)((char *)(d)+(0x30)))=0.001f;
@@ -1377,7 +1377,7 @@ extern char D_0013E633[];
 
 /* Updates a moby: waits for trigger, registers a draw callback and a sound handle. */
 void update_linked_pair_effect(char *moby) {
-    int *data = *(int **)(moby + 0x78);
+    int *data = ((int *)((Moby *)moby)->pvars);
     if ((((Moby *)moby)->flags & 2) == 0) {
         unsigned char state = moby[0x20];
         switch (state) {
@@ -1612,7 +1612,7 @@ extern void func_001F9EE8(void *, void *, void *);
 
 // Checks the nearby list entries of two classes against the moby and adds a timed delay when one is close.
 void accumulate_moby_frames_in_group_bounds(char *moby) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     char *g = D_0013E633 + 0xE1D;
     float v[4];
     char *l1;
@@ -1677,7 +1677,7 @@ void accumulate_moby_frames_in_group_bounds(char *moby) {
 
 // Advance the vector-table index until its entry is 2.0 and copy that vector out.
 void prepare_hoverboard_dummy_path_jump(char *moby) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     if (*(float *)(data + 0x2C8) <= 0.0f) {
         int idx = *(short *)(data + 0x2F4);
         char *tab = *(char **)(data + 0x2C0);
@@ -1797,7 +1797,7 @@ extern int D_L16_00161ACC SDATA(D_L16_00161ACC);
 /* Update the hoverboard race competitor: wait for the race, follow the path, leap, and emit spray. */
 void test_dummy_on_hoverboard_update(unsigned char *m) {
     float pos[4], delta[4], ahead[4], impact[4], spray[4], lateral[4], dust[4];
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     char *g;
     int i, n, next;
     /* One mask for both collision calls. Held in a local it is one more instruction when GCSE sizes its
@@ -1821,8 +1821,8 @@ void test_dummy_on_hoverboard_update(unsigned char *m) {
         copy_hoverboard_dummy_path_node((Level16VendorVectorMoby *)m, 0, pos);
         qcopy(m + 0x10, pos);
         qcopy(d + 0x260, m + 0x10);
-        *(int *)(m + 0x40) = 0;
-        *(int *)(m + 0x44) = 0;
+        *(int *)&((Moby *)m)->rot.x = 0;
+        *(int *)&((Moby *)m)->rot.y = 0;
         ((Moby *)m)->rot.z = fast_atan2(*(float *)(path + 0x20) - *(float *)(path + 0x10),
                                                  *(float *)(path + 0x24) - *(float *)(path + 0x14));
         *(unsigned char *)(d + 0x2B) = 1;
@@ -1850,7 +1850,7 @@ void test_dummy_on_hoverboard_update(unsigned char *m) {
     case 1:
         if (*(int *)(D_0013E633 + 0x2EA9) == 22) {
             ((Moby *)m)->update_dist = 255;
-            *(int *)(m + 0x94) = *(int *)(*(char **)(m + 0x24) + 0x10);
+            *(int *)&((Moby *)m)->collision = *(int *)(*(char **)(m + 0x24) + 0x10);
             ((Moby *)m)->flags &= ~0x41;
             *(short *)(d + 0x2F4) = 0;
             *(short *)(d + 0x2F6) = scale_ticks(180);
@@ -1880,7 +1880,7 @@ void test_dummy_on_hoverboard_update(unsigned char *m) {
                 if (FastDiffRots(fast_atan2(((Moby *)m)->pos.x - player->position[0],
                                                     ((Moby *)m)->pos.y - player->position[1]),
                                   player->yaw) > 1.5707964f) {
-                    *(int *)(m + 0x94) = *(int *)(*(char **)(m + 0x24) + 0x10);
+                    *(int *)&((Moby *)m)->collision = *(int *)(*(char **)(m + 0x24) + 0x10);
                     ((Moby *)m)->flags &= ~0x41;
                     ((Moby *)m)->hit_slot = 255;
                     ((Moby *)m)->state = 2;
@@ -1903,7 +1903,7 @@ void test_dummy_on_hoverboard_update(unsigned char *m) {
             *(short *)(d + 0x2F2) = 0;
             *(int *)(g + 0x8A8) += 250;
             ((Moby *)m)->state = 3;
-            *(int *)(m + 0x94) = 0;
+            *(int *)&((Moby *)m)->collision = 0;
             ((Moby *)m)->flags |= 0x41;
             break;
         }
@@ -2062,7 +2062,7 @@ extern float D_0015EE70 MACRO_ADDR;
 
 /* Move the moby toward a target along a slerped path until the parameter reaches its goal. */
 void Moby647Update(unsigned char *moby) {
-    char *d = *(char **)(moby + 0x78);
+    char *d = ((char *)((Moby *)moby)->pvars);
     char *pos;
     char buf[16];
     switch (((Moby *)moby)->state) {
@@ -2188,7 +2188,7 @@ extern int D_L16_0015F6B0_abs __asm__("D_L16_0015F6B0") MACRO_ADDR;
 extern void func_0022ED80_timeout(int,int,void*) __asm__("func_0022ED80");
 /* Rate-limit an idle moby's notification, then reset its random timer. */
 void refresh_test_dummy_door_timer(char *m) {
-    char *d=*(char **)(m+0x78);
+    char *d=((char *)((Moby *)m)->pvars);
     if (*(int *)(d+8)==0) {
         if (subtract_integer_with_clamp(*(int *)&last_test_dummy_door_sound_request_frame-D_L16_0015F6B0_abs)>=4) {
             *(int *)&last_test_dummy_door_sound_request_frame=kalebo3_frame_count;
@@ -2324,7 +2324,7 @@ extern void func_001F9C08(void *, void *, void *, float);
 
 /* Computes a moby's direction vectors from its table entry. */
 void compute_triggered_scene_path_pose(char *moby, void *out1, float *out2) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     float v[4];
     char *entry = D_L16_001601AC_m + (*(int *)data << 7);
     char *tbl = kalebo3_path_table[*(int *)(data + 0xC)];
@@ -2382,7 +2382,7 @@ void request_target_reposition(unsigned char *moby) {
 // Returns 0 if not in state 7/8, 2 if state 8 with data float > 0.2, else 1.
 int get_target_reposition_status(char *m) {
     unsigned char s = m[0x20];
-    m = *(char **)(m + 0x78);
+    m = ((char *)((Moby *)m)->pvars);
     if (s == 7 || s == 8) {
         if (s == 8 && *(float *)(m + 0x34) > 0.2f) {
             return 2;
@@ -2574,7 +2574,7 @@ extern void func_L00_001FF4B0(void *, void *, float);
 
 /* UpdateMoby: on the first tick scales two data floats by 0.25 into the moby and sets its state. */
 void initialize_moby_rotation_scales(unsigned char *moby) {
-    float *d = *(float **)(moby + 0x78);
+    float *d = ((float *)((Moby *)moby)->pvars);
     if (((Moby *)moby)->state == 0) {
         vec_scale_to_length(moby + 0xD0, moby + 0xD0, d[0] * 0.25f);
         vec_scale_to_length(moby + 0xE0, moby + 0xE0, d[1] * 0.25f);
@@ -2846,7 +2846,7 @@ extern short D_L16_00161E50, D_L16_00161E54, D_L16_00161E58;
 int advance_bolt_thief_path(char *moby) {
     float pos[4];
     float delta[4];
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     float t = *(float *)&bolt_thief_path_speed * g_frame_time;
     int r;
     char *path;
@@ -2890,7 +2890,7 @@ extern char D_0013A5E0[];
 
 /* Update the moving pickup, interpolate its path transitions, and manage its sound handle. */
 void PathPickup_Update(char *moby) {
-    char *d = *(char **)(moby + 0x78);
+    char *d = ((char *)((Moby *)moby)->pvars);
     float v00[4], v10[4], v20[4], v30[4], v40[4], v50[4], v60[4], v70[4];
     char *g;
     char *g2;
@@ -2981,7 +2981,7 @@ void PathPickup_Update(char *moby) {
             unsigned short flags = ((Moby *)moby)->flags;
             int value = *(int *)(model + 0x10);
             moby[0x31] = 1;
-            *(int *)(moby + 0x94) = value;
+            *(int *)&((Moby *)moby)->collision = value;
             ((Moby *)moby)->flags = flags & 0xFFFE;
             moby[0x20] = 1;
         }
@@ -3052,7 +3052,7 @@ extern char *D_L16_001B0C30[];
 
 /* Pick the path for the current segment and set the travel speeds from its length. */
 void prepare_taxi_departure_path(char *moby) {
-    char *d = *(char **)(moby + 0x78);
+    char *d = ((char *)((Moby *)moby)->pvars);
     char *p;
     float inv, a, b, r;
     switch (*(short *)(d + 0xAC)) {
@@ -3103,7 +3103,7 @@ void transfer_moby_placement_to_linked_moby(void *moby_v)
 extern float func_00214D88(float, float, float, float, float *, float *);
 extern void func_00215CA8(int *, int, void *, float *, int, float);
 int Path_AdvanceProgress(char *m) {
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     int *path;
     ApproachWithVelocity(1.0f, *(float *)(d + 0xC8), *(float *)(d + 0xC8), *(float *)(d + 0xC4), (float *)(d + 0xB0), (float *)(d + 0xB4));
     path = *(int **)(d + 0xA4);
@@ -3112,7 +3112,7 @@ int Path_AdvanceProgress(char *m) {
 }
 extern void func_00215F80(int, int);
 void request_moby_help_message(char *moby) {
-    switch (*(short *)(*(char **)(moby + 0x78) + 0xAE)) {
+    switch (*(short *)(((char *)((Moby *)moby)->pvars) + 0xAE)) {
     case 0: try_set_help_message(8, 0x3E89); break;
     case 1: try_set_help_message(8, 0x3E8A); break;
     case 2: try_set_help_message(8, 0x139A); break;
@@ -3166,7 +3166,7 @@ extern void func_001F9EC0(void *, void *, void *);
 extern char D_L16_001D99B0[];
 extern void func_001F9BD8(void *, void *, void *);
 void transform_moby_table_entry_vectors(char *a) {
-    char *data = *(char **)(a + 0x78);
+    char *data = ((char *)((Moby *)a)->pvars);
     int idx = *(int *)(data + 0xA0);
     if (idx != -1) {
         char *p = kalebo3_path_table[idx];

@@ -495,7 +495,7 @@ extern short D_L15_00161C74;
 /* Draws the level timer as "H:MM:SS.t" text with a pulsing colour. */
 void draw_electric_water_countdown(char *moby) {
     char buf[8];
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     float v;
     int col;
 
@@ -548,7 +548,7 @@ extern void func_001F9BC0(void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002d6810.c, FUN_L15_002d79e8. */
 void initialize_electric_water_bolt_effect(char *m) {
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     float v[4];
     float step[4];
     int i;
@@ -882,7 +882,7 @@ void draw_electric_water_bolt_start_quads(char *mv) {
     unsigned int c;
     float s;
     int i;
-    pos = *(V2d8e48 **)((char *)mv + 0x78);
+    pos = ((V2d8e48 *)((Moby *)mv)->pvars);
     quad.tex = tex_2d8e48(0xB);
     pos = (V2d8e48 *)((char *)pos + 0xF0);
     quad.unk88 = 0x8000000048L;
@@ -947,7 +947,7 @@ extern void func_L07_0029C6A8(void *, float, int, float);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002d6810.c, FUN_L15_002e4380. */
 void update_spinning_projectile(unsigned char *m) {
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     float next[4];
     char col[0x30];
     char *hit;
@@ -1047,7 +1047,7 @@ typedef struct {
 
 /* Underwater ring update: approach check, then the ring's state machine. */
 void underwater_ring_update(unsigned char *moby) {
-    RingVars_6D48 *vars = *(RingVars_6D48 **)(moby + 0x78);
+    RingVars_6D48 *vars = ((RingVars_6D48 *)((Moby *)moby)->pvars);
     unsigned char delta[16];
     unsigned char matrix[64];
     int child;
@@ -1279,7 +1279,7 @@ typedef int u128_2EE458 __attribute__((mode(TI)));
 
 // Update for the giant Clank pad moby: a small state machine that sets up its effect block and its timers.
 void giant_clank_pad_update(char *m) {
-    char *data = *(char **)(m + 0x78);
+    char *data = ((char *)((Moby *)m)->pvars);
     Moby *other;
     Moby *p0;
     int ns;

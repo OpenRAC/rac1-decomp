@@ -1377,7 +1377,7 @@ typedef int u128b __attribute__((mode(TI)));
 
 // Breakable prop update: when hit, spawns a burst of debris sparks then replaces itself.
 void Moby778Update(char *m) {
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     char *t = MobyGetHitMessage(m, 0x10000, 0);
     ((Moby *)m)->hit_slot = 0xFF;
     if (t != 0 && 0.0f < *(float *)(t + 0x2C)) {
@@ -1455,7 +1455,7 @@ void update_smoke_emitter(char *self) {
     float size;
     int i;
 
-    v = *(int **)(self + 0x78);
+    v = ((int *)((Moby *)self)->pvars);
     if (Sound_IsPlaying(self, *v) == 0) {
         *v = Moby_PlaySound(0, 4, (int)self);
     }
@@ -1512,7 +1512,7 @@ void update_falling_splash_moby(char *m) {
     float np[4];
     float at[4];
     float vel[4];
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     *(float *)(d + 8) -= *(float *)(d + 0x10);
     ((Moby *)m)->rot.x += *(float *)(d + 0x1C);
     FastVecAdd(np, m + 0x10, d);

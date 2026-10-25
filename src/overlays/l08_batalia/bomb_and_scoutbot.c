@@ -18,7 +18,7 @@ void initialize_bolt_pickup(char *moby) {
     ((Moby *)moby)->rot.x = 0.0f;
     ((Moby *)moby)->rot.y = 0.5235988f;
     ((Moby *)moby)->rot.z = 0.0f;
-    d = *(char **)(moby + 0x78);
+    d = ((char *)((Moby *)moby)->pvars);
     *(float *)(d + 0xC) = random_float_between(a, b);
     *(int *)(d + 0x28) = 0;
     *(float *)(d + 8) = ((Moby *)moby)->pos.z;
@@ -246,7 +246,7 @@ void update_bomb(char *moby) {
     int two;
     float f20;
 
-    d = *(char **)(moby + 0x78);
+    d = ((char *)((Moby *)moby)->pvars);
     if (((Moby *)moby)->state != 0x37) {
         if (coll_sphere(0.5f, moby + 0x10, 0x11, moby)) {
             int g = D_L08_001746D8_2B94B0i;
@@ -937,7 +937,7 @@ extern float D_L08_0016198C_2D6C58 SDATA(D_L08_0016198C);
 
 // Jitters the moby's vector, then spawns the effect groups for each of the count steps.
 void spawn_bomber_tank_joint_particles(char *moby, int a1, int count) {
-    char *d = *(char **)(moby + 0x78);
+    char *d = ((char *)((Moby *)moby)->pvars);
     char t10[32];
     float t30[8];
     float t50[4];
@@ -1008,7 +1008,7 @@ void scatter_bomber_tank_linked_debris(char *moby) {
     float a[4];
     float b[4];
     float c[4];
-    char *d = *(char **)(moby + 0x78);
+    char *d = ((char *)((Moby *)moby)->pvars);
     short *list = batalia_moby_groups[((Blk_7010 *)batalia_mobys + *(int *)(d + 0x144))->group];
     char *other;
     unsigned short index;
@@ -1838,7 +1838,7 @@ extern void func_001F9BD8(void *, void *, void *);
 
 // Transforms eight vectors of the current table entry by the moby's matrix.
 void update_shuttle_stop_world_points(char *moby) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     int *t = (int *)batalia_path_table[*(int *)(data + 0x8C)];
     if (*t == 8) {
         char *q = batalia_shuttle_stop_local_points;
@@ -2006,7 +2006,7 @@ extern float D_0015EE70 MACRO_ADDR;
 
 /* Per-frame update: ease the angle and position fields toward their targets. */
 int advance_shuttle_path_travel(char *m) {
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     int *path;
     float a = g_frame_time_sq * 0.1f;
     float b = g_frame_time * 0.08f;
@@ -2031,7 +2031,7 @@ extern int D_L08_001B0FB0[];
 
 /* Moby update that shows a help message chosen from its data values. */
 void try_set_shuttle_departure_help_message(char *moby) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     if (*(float *)(data + 0x104) > 0.9f) {
         try_set_help_message(0xA, 0x1F4D);
     } else if (*(int *)(data + 0x120) == batalia_path_table[*(int *)(data + 0x80)]) {
@@ -2528,7 +2528,7 @@ void func_L08_002DF8A0_r(char *moby, int a, int n, int flag) {
     float vec[4];
     float vec2[4];
     float vec3[4];
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     int i;
 
     if (flag) {
@@ -2584,7 +2584,7 @@ extern unsigned char D_0013D510[];
 void update_path_following_moby(char *m) {
     float a[4];
     float b[4];
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     char *pos = m + 0x10;
     int *t;
     qcopy(a, pos);
@@ -2643,9 +2643,9 @@ void update_path_following_moby(char *m) {
         break;
     }
     if (((Moby *)m)->pos.x < 4.0f || ((Moby *)m)->pos.y < 4.0f || ((Moby *)m)->pos.z < 4.0f) {
-        *(int *)(m + 0x94) = 0;
+        *(int *)&((Moby *)m)->collision = 0;
     } else {
-        *(int *)(m + 0x94) = *(int *)(*(char **)(m + 0x24) + 0x10);
+        *(int *)&((Moby *)m)->collision = *(int *)(*(char **)(m + 0x24) + 0x10);
     }
     if (MobyGetHitMessage(m, 0x10000, 0) != 0 && ((Moby *)m)->state != 2) {
         if (hero_current_state == 0x32 && gSkillPoints[0xC] == 0) {

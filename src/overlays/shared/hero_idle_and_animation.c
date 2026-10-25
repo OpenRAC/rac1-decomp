@@ -216,10 +216,10 @@ extern void func_L00_00222B80(int, int);
 void reset_hero_to_idle(void) {
     struct Hero *hero_state = &D_0013F450_05278;
     hero_state->capsule_top = 0.8f;
-    hero_state->unk234 = 0.45f;
+    hero_state->capsule_radius = 0.45f;
     hero_state->capsule_top_target = 0.8f;
-    hero_state->unk224 = 0.7f;
-    hero_state->unk22C = 0.7f;
+    hero_state->capsule_bottom = 0.7f;
+    hero_state->capsule_bottom_target = 0.7f;
     hero_state->vent_updraft = 0;
     hero_state->state.current = HERO_STATE_IDLE;
     *(int *)(D_0014171B + 0x4D) = 0;
@@ -486,14 +486,14 @@ void update_hero_rotation_targets_and_random_manipulators(void) {
             for (i = 0; i < 7; i++) {
                 if (D_0013F450_05CC0.manipulators[i].attached == 0) {
                     func_0020D960_05CC0((s32)D_0013F450_05CC0.moby, hero_random_manip_joints[i], &D_0013F450_05CC0.manipulators[i]);
-                    D_0013F450_05CC0.manipulators[i].unk3 = 1;
+                    D_0013F450_05CC0.manipulators[i].absolute = 1;
                     qcopy(&D_0013F450_05CC0.manipulators[i].quat, &hero_random_manip_quats[i]);
                     qcopy(&D_0013F450_05CC0.manipulators[i].scale3, &hero_random_manip_scales[i]);
                     qcopy(&D_0013F450_05CC0.manipulators[i].translation, &hero_random_manip_offsets[i]);
                 }
             }
             for (j = 0; j < 7; j++)
-                D_0013F450_05CC0.manipulators[j].unkC = hero_random_manip_blend_curve[D_0013F450_05CC0.rand_timer.fired];
+                D_0013F450_05CC0.manipulators[j].blend = hero_random_manip_blend_curve[D_0013F450_05CC0.rand_timer.fired];
         }
     }
 }
@@ -607,7 +607,7 @@ void update_hero_glow_and_extra_manipulators(void) {
         for (i = 0; i < 4; i++) {
             if (HM[i].attached == 0) {
                 func_0020D960_05CC0((s32)moby, ((s32 *)&D_L00_0015F7D8)[i], &HM[i]);
-                HM[i].unk3 = 1;
+                HM[i].absolute = 1;
                 qcopy(&HM[i].quat, &hero_extra_manip_quats[i]);
                 qcopy(&HM[i].scale3, &hero_extra_manip_scales[i]);
                 qcopy(&HM[i].translation, &hero_extra_manip_offsets[i]);
@@ -615,7 +615,7 @@ void update_hero_glow_and_extra_manipulators(void) {
             }
         }
         for (j = 0; j < 4; j++)
-            HM[j].unkC = hero_extra_manip_blend_curve[HV->timer];
+            HM[j].blend = hero_extra_manip_blend_curve[HV->timer];
     }
 }
 extern unsigned char D_0013D5DD[] NOT_SDA;
@@ -1785,7 +1785,7 @@ void update_hero_and_equipped_item_glows(void) {
         break;
     }
     case 16:
-        if (func_001F9850_2086C8(50) < ((Hero *)D_0013F450_2086C8)->items[0].unk20) {
+        if (func_001F9850_2086C8(50) < ((Hero *)D_0013F450_2086C8)->items[0].ready_frames) {
             float k, f;
             int r, g, b, a, col, col1, bs, gs;
             k = D_0015EE6C_2086C8 * 3.14159274f;
@@ -1806,7 +1806,7 @@ void update_hero_and_equipped_item_glows(void) {
             col1 |= gs;
             col1 |= r;
             m->glow_color = func_001FA8A8_2086C8(m->glow_color, col1, 0.13f);
-            a = ((Hero *)D_0013F450_2086C8)->items[0].unk20 - func_001F9850_2086C8(50);
+            a = ((Hero *)D_0013F450_2086C8)->items[0].ready_frames - func_001F9850_2086C8(50);
             if (a > 32) a = 32;
             col = (a << 24) | bs | gs | r;
             func_L00_00250800_2086C8(m, 1, &v);
@@ -3261,7 +3261,7 @@ void check_ledge_grab(void) {
 
     if (((Hero *)D_0013F450_20C568)->unk308 == 2) return;
     ((Hero *)D_0013F450_20C568)->ledge_found = 0;
-    if (((Hero *)D_0013F450_20C568)->unk1B0 != 0) return;
+    if (((Hero *)D_0013F450_20C568)->ledge_probe_cooldown != 0) return;
     go = 0;
     if (((Hero *)D_0013F450_20C568)->vehicle_mode == 0) {
         if ((((Hero *)D_0013F450_20C568)->state.control_mode == 4 && (((Hero *)D_0013F450_20C568)->past_jump_apex != 0 || ((Hero *)D_0013F450_20C568)->motion.velocity.f[2] < D_0015EE6C_20C568 * 3.5f)) || ((Hero *)D_0013F450_20C568)->state.control_mode == 2 || ((Hero *)D_0013F450_20C568)->state.current == 8 || ((Hero *)D_0013F450_20C568)->state.current == 0x1A || ((Hero *)D_0013F450_20C568)->state.current == 0x1B) go = 1;
@@ -3291,10 +3291,10 @@ void check_ledge_grab(void) {
     speed = ((Hero *)D_0013F450_20C568)->fall_state_gravity;
     if (((Hero *)D_0013F450_20C568)->state.control_mode == 4) speed = ((Hero *)D_0013F450_20C568)->jump_gravity;
     r = func_001F9850_20C568(2);
-    func_L00_0025A540_20C568(v0, ((Hero *)D_0013F450_20C568)->motion.pos.f, ((Hero *)D_0013F450_20C568)->motion.unk110.f, r, speed);
+    func_L00_0025A540_20C568(v0, ((Hero *)D_0013F450_20C568)->motion.pos.f, ((Hero *)D_0013F450_20C568)->motion.resolved_velocity.f, r, speed);
     found = 0;
-    v0[0] += func_001F9F90_20C568(((Hero *)D_0013F450_20C568)->motion.rot.f[2]) * ((Hero *)D_0013F450_20C568)->unk234;
-    v0[1] += func_001F9FA8_20C568(((Hero *)D_0013F450_20C568)->motion.rot.f[2]) * ((Hero *)D_0013F450_20C568)->unk234;
+    v0[0] += func_001F9F90_20C568(((Hero *)D_0013F450_20C568)->motion.rot.f[2]) * ((Hero *)D_0013F450_20C568)->capsule_radius;
+    v0[1] += func_001F9FA8_20C568(((Hero *)D_0013F450_20C568)->motion.rot.f[2]) * ((Hero *)D_0013F450_20C568)->capsule_radius;
     for (i = 0; !found && i < 4; i++) {
         v0[0] += func_001F9F90_20C568(((Hero *)D_0013F450_20C568)->motion.rot.f[2]) * fwd * 0.25f;
         v0[1] += func_001F9FA8_20C568(((Hero *)D_0013F450_20C568)->motion.rot.f[2]) * fwd * 0.25f;
@@ -3347,7 +3347,7 @@ void check_ledge_grab(void) {
 
         qcopy(v50, ((Hero *)D_0013F450_20C568)->motion.pos.f);
         qcopy(v60, v10);
-        len = ((Hero *)D_0013F450_20C568)->unk234 * 2.0f;
+        len = ((Hero *)D_0013F450_20C568)->capsule_radius * 2.0f;
         v60[0] += func_001F9F90_20C568(ang) * len;
         v60[1] += func_001F9FA8_20C568(ang) * len;
         v60[2] += down * (1.0f - (float)j / 5.0f);

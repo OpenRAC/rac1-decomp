@@ -253,7 +253,7 @@ extern void func_001F9BD8(void *, void *, void *);
 
 void compute_nanotech_ball_slot_position(char *m, float *out, int i) {
     Vz v;
-    char *pv = *(char **)(m + 0x78);
+    char *pv = ((char *)((Moby *)m)->pvars);
     char *o;
     build_look_at_matrix(&v, nanotech_slot_offsets + i * 16, *(float *)(pv + 0x2C), pv + 0x20);
     o = *(char **)(pv + (i << 2) + 0x30);
@@ -2658,7 +2658,7 @@ extern short D_L00_00161C64;
 
 /* update for the pulsing colour object */
 void red_orb_update(char *m) {
-    char *p = *(char **)(m + 0x78);
+    char *p = ((char *)((Moby *)m)->pvars);
     unsigned char s = m[0x20];
     float a;
     int c, hi, r, g, b;
@@ -2698,7 +2698,7 @@ extern short D_L00_00161C80;
 
 /* UpdateMoby for class 1143: init then slowly spin/ease its value */
 void vendor_orb_update(unsigned char *m) {
-    char *p = *(char **)(m + 0x78);
+    char *p = ((char *)((Moby *)m)->pvars);
     switch (((Moby *)m)->state) {
     case 0:
         ((Moby *)m)->state = 1;
@@ -2817,7 +2817,7 @@ void hydrodisplacer_update(Moby *m) {
             float a = D_0015EE64_2DDEA0 * 0.02f;
             float b = D_0015EE64_2DDEA0 * 0.3f;
 
-            ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->item_eases[0].unkA0 = 1;
+            ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->item_eases[0].attach_joint = 1;
             ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->item_eases[0].scale = 2.3f;
             ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->item_eases[0].accel = a;
             ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->item_eases[0].max_speed = b;
@@ -2827,8 +2827,8 @@ void hydrodisplacer_update(Moby *m) {
                 ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->item_eases[1].accel = a;
                 ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->item_eases[1].max_speed = b;
                 ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->item_eases[2].max_speed = b;
-                ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->item_eases[1].unkA0 = 2;
-                ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->item_eases[2].unkA0 = 3;
+                ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->item_eases[1].attach_joint = 2;
+                ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->item_eases[2].attach_joint = 3;
                 ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->item_eases[2].accel = a;
                 ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->item_eases[1].pos_target.f[1] = c;
                 ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->item_eases[2].pos_target.f[1] = c;

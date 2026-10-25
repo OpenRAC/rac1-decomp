@@ -650,12 +650,12 @@ void update_hero_timers_and_spatial_state(void) {
     fast_dec_timer(&D_0013F450_35038.move_lock_timer);
     fast_dec_timer(&D_0013F450_35038.invulnerable_frames);
     FastDecTimer(&D_0013F450_35038.unk1B2);
-    fast_dec_timer(&D_0013F450_35038.unk1B8);
+    fast_dec_timer(&D_0013F450_35038.long_jump_lockout);
     FastDecTimer(&D_0013F450_35038.jump_lockout_timer);
     FastDecTimer(&D_0013F450_35038.unk1DE);
-    fast_dec_timer(&D_0013F450_35038.unk1B4);
+    fast_dec_timer(&D_0013F450_35038.wall_jump_window);
     FastDecTimer(&D_0013F450_35038.unk1F0);
-    FastDecTimer(&D_0013F450_35038.unk1B0);
+    FastDecTimer(&D_0013F450_35038.ledge_probe_cooldown);
     FastDecTimer(&D_0013F450_35038.unk1C8);
     FastDecTimer(&D_0013F450_35038.rail_catch_grace);
     FastDecTimer(&D_0013F450_35038.rail_grab_cooldown);
@@ -677,16 +677,16 @@ void update_hero_timers_and_spatial_state(void) {
         D_0013F450_35038.unk1EC = 0;
     }
     if (D_0013F450_35038.item_anim_active != 0) {
-        D_0013F450_35038.unk1BC++;
+        D_0013F450_35038.item_anim_frames++;
     } else {
-        D_0013F450_35038.unk1BC = 0;
+        D_0013F450_35038.item_anim_frames = 0;
     }
     if (g_controller_state.no_direction != 0) {
-        D_0013F450_35038.unk1A8 = 0;
-        D_0013F450_35038.unk1AC++;
+        D_0013F450_35038.stick_held_frames = 0;
+        D_0013F450_35038.stick_idle_frames++;
     } else {
-        D_0013F450_35038.unk1AC = 0;
-        D_0013F450_35038.unk1A8++;
+        D_0013F450_35038.stick_idle_frames = 0;
+        D_0013F450_35038.stick_held_frames++;
     }
     if (D_0013F450_35038.vehicle_toggle_timer != 0 && FastDecTimer(&D_0013F450_35038.vehicle_toggle_timer) != 0 &&
         D_0013F450_35038.health.hp != 0 && (*(s32 *)&D_L06_0015F6A8_35038) == 0) {
@@ -737,11 +737,11 @@ void update_hero_timers_and_spatial_state(void) {
 skip:
     update_hero_planar_distance_spring_motion();
     if (D_0013F450_35038.vehicle_mode == 1) {
-        transform_hero_local_offset_to_world(&D_0013F450_35038.motion.unkD0, 0.0f, 0.0f, 0.4f);
+        transform_hero_local_offset_to_world(&D_0013F450_35038.motion.body_center, 0.0f, 0.0f, 0.4f);
         D_0013F450_35038.reach_distance = 2.125f;
         D_0013F450_35038.reach_height = 1.25f;
     } else {
-        transform_hero_local_offset_to_world(&D_0013F450_35038.motion.unkD0, 0.0f, 0.0f, 0.7f);
+        transform_hero_local_offset_to_world(&D_0013F450_35038.motion.body_center, 0.0f, 0.0f, 0.7f);
         if (D_0013D5EA) {
             D_0013F450_35038.reach_distance = 12.0f;
             D_0013F450_35038.reach_height = 4.5f;
@@ -753,10 +753,10 @@ skip:
     {
         f32 z = D_0013F450_35038.ground_z.f;
         if (D_0013F450_35038.motion.pos.f[2] - z < 4.0f) {
-            qcopy(&D_0013F450_35038.motion.unkC0, &D_0013F450_35038.motion.pos);
-            D_0013F450_35038.motion.unkC0.f[2] = z + 0.5f;
+            qcopy(&D_0013F450_35038.motion.near_ground_point, &D_0013F450_35038.motion.pos);
+            D_0013F450_35038.motion.near_ground_point.f[2] = z + 0.5f;
         } else {
-            qcopy(&D_0013F450_35038.motion.unkC0, &D_0013F450_35038.motion.unkD0);
+            qcopy(&D_0013F450_35038.motion.near_ground_point, &D_0013F450_35038.motion.body_center);
         }
     }
     if (D_0013F450_35038.motion.pos.f[2] < 1.0f) {

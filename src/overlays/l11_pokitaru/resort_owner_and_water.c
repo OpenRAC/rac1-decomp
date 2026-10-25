@@ -783,7 +783,7 @@ struct TgtData {
 
 // Checks a target against the current entry and runs the follow-up test.
 int try_update_resort_owner_path_target(char *moby, char *other) {
-    struct TgtData *d = *(struct TgtData **)(moby + 0x78);
+    struct TgtData *d = ((struct TgtData *)((Moby *)moby)->pvars);
     int *p = d->a;
     int *ent = path_table[*(int *)((char *)p - (-(d->idx * 4)))];
     int buf[8];
@@ -1336,7 +1336,7 @@ void Moby318Update(struct Moby *moby) {
 extern void func_00215F80(int, int);
 
 void request_teleporter_help_message(char *moby) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     switch (*(int *)(data + 0x10)) {
     case 0:
         try_set_help_message(0xB, 0x2B0D);
@@ -1378,7 +1378,7 @@ void draw_teleporter_ring(char *moby) {
     char *d;
     float h;
     int i, j, nj;
-    d = *(char **)(moby + 0x78);
+    d = ((char *)((Moby *)moby)->pvars);
     copy_matrix_rotation(m, moby + 0xC0);
     qcopy(pos, moby + 0x10);
     q.g[1] = GetEffectTex(*(int *)&pokitaru_teleporter_ring_texture);
@@ -1428,13 +1428,13 @@ void draw_teleporter_ring(char *moby) {
     }
 }
 void restore_teleporter_visibility_and_collision(char *moby) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     char **child = (char **)(data + 0x14);
     int count;
     int on;
     moby[0x31] = 1;
     ((Moby *)moby)->flags &= 0xFFFE;
-    *(int *)(moby + 0x94) = *(int *)(*(char **)(moby + 0x24) + 0x10);
+    *(int *)&((Moby *)moby)->collision = *(int *)(*(char **)(moby + 0x24) + 0x10);
     on = 1;
     count = 2;
     do {
@@ -1463,7 +1463,7 @@ typedef struct {
 extern Globals D_0013F450;
 
 void copy_pokitaru_pvar_to_hero(unsigned char *moby) {
-    char *state = *(char **)(moby + 0x78);
+    char *state = ((char *)((Moby *)moby)->pvars);
     switch (((Moby *)moby)->state) {
     case 0:
         ((Moby *)moby)->update_dist = 0xFF;
@@ -1848,7 +1848,7 @@ extern short D_L11_00160074;
 
 // Returns 1 unless a listed moby in the group with state >= 0 and id 0x4DE fails the check.
 int is_pokitaru_boat_target_group_clear(char *m) {
-    int idx = *(short *)(*(char **)(m + 0x78) + 0xB4);
+    int idx = *(short *)(((char *)((Moby *)m)->pvars) + 0xB4);
     short *p;
     if (idx < 0 || *(int *)&pokitaru_moby_group_count < idx) return 1;
     p = pokitaru_moby_groups[idx];
@@ -3201,7 +3201,7 @@ extern float func_0020D830(void *);
 // Per-tick update of moby class 1219: state machine over states 0 to 4.
 void update_owner_linked_moby_state(unsigned char *moby)
 {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     char *u = data + 0x20;
     unsigned char *t = *(unsigned char **)(data + 0x70);
     if (t == 0 || t[0x20] == 0xFE || t[0x20] == 0xFD) {

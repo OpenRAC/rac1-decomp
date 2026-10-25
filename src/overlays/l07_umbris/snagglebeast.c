@@ -10,7 +10,7 @@ extern void func_L07_00313D28(char *, int, float, float, float, float, float);
 /* Starts the effect with an angle ramped from the moby's timer, capped at pi. */
 void draw_snagglebeast_sphere_effect(char *moby)
 {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     float ang;
     if (*(float *)(data + 0x1C8) < 0.8f) {
         ang = *(float *)(data + 0x1C8) * 3.0434179f / 0.8f + 0.09817477f;
@@ -131,7 +131,7 @@ void draw_and_probe_snagglebeast_rope_attack(char *moby) {
     float displacement[4];
     char hit[48];
     float direction[4];
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     void *origin;
     void *position;
     qzero(displacement);
@@ -648,7 +648,7 @@ void snagglebeast_update(unsigned char *m) {
     SbVec vf;
     SbVec vg;
     SbVec vh;
-    unsigned char *d = *(unsigned char **)(m + 0x78);
+    unsigned char *d = ((unsigned char *)((Moby *)m)->pvars);
     int see;
     int t194;
     int t19A;

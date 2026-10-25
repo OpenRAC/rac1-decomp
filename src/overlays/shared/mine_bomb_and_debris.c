@@ -1950,7 +1950,7 @@ extern void func_L00_0026A7F8(void *, void *, int, int, int, int, int, int);
 
 // Per-frame update of a falling spark moby: emits a burst particle, moves, fades and dies when out of bounds. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_002aa670.c, FUN_L00_002af5b8.
 void debris_update(unsigned char *m) {
-    W_2af5b8 *w = *(W_2af5b8 **)(m + 0x78);
+    W_2af5b8 *w = ((W_2af5b8 *)((Moby *)m)->pvars);
     C_2af5b8 c;
     V_2af5b8 v;
     V_2af5b8 t;

@@ -52,7 +52,7 @@ int pick_idle_fidget(int *index) {
         if (i == 3) {
             if (g_current_level_index != 12) continue;
             if (hero_slot_item_id(0) == 23) continue;
-            qcopy(startp, &g_hero.motion.unkD0);
+            qcopy(startp, &g_hero.motion.body_center);
             qcopy(endp, startp);
             end.f[2] += 8.0f;
             if (coll_line(startp, endp, 2, (int)g_hero.moby, 0)) continue;

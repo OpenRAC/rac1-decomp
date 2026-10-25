@@ -30,7 +30,7 @@ extern char D_0013E633[];
 
 /* Moves a moby along a path, easing between nodes and tracking the hero. */
 void update_taxi_platform(unsigned char *moby) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     char *hero;
     char *path;
     float orig[4], delta[4], tmp[4];
@@ -1484,7 +1484,7 @@ void ocean_umbris_update(unsigned char *moby) {
         ((Moby *)moby)->update_dist = 0xFF;
         break;
     case 1:
-        if (!is_point_inside_clip_volume(debris_far_point, **(int **)(moby + 0x78))) {
+        if (!is_point_inside_clip_volume(debris_far_point, *((int *)((Moby *)moby)->pvars))) {
             AddDrawCallback((void *)register_audio_stream_callback, moby);
         }
         break;
@@ -1534,7 +1534,7 @@ void bombomatic_update(char *m) {
     if (m == 0) {
         return;
     }
-    d = *(char **)(m + 0x78);
+    d = ((char *)((Moby *)m)->pvars);
     if (((unsigned char *)m)[0x31] != 0) {
         if (FastVecDist(m + 0x10, debris_far_point) < 27.0f) {
             set_ground_height_band(m);
@@ -1747,7 +1747,7 @@ void draw_fading_ring_effect(unsigned char *moby) {
     int index = 0;
     unsigned int green = 0x80;
     float band = 0.0f;
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     unsigned int green_step = (green / 11) & 0xFF;
     float radius_threshold = 0.9f;
     float inner_scale = 0.96f;
@@ -1851,7 +1851,7 @@ extern char *D_L07_00160064 MACRO_ADDR;
 
 // Fades a moby in and out by its progress, then runs its per-moby callbacks.
 void update_fading_ring_effect(unsigned char *m) {
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     float r;
     char *p;
     *(float *)(d + 8) = *(float *)(d + 8) + *(float *)(d + 0xC);
@@ -2461,7 +2461,7 @@ void SharkigatorUpdate(unsigned char *moby) {
     if (moby == 0) {
         return;
     }
-    data = *(char **)(moby + 0x78);
+    data = ((char *)((Moby *)moby)->pvars);
     if (data == 0) {
         return;
     }
@@ -2538,7 +2538,7 @@ void SharkigatorUpdate(unsigned char *moby) {
         } else {
             f = 1.0f;
         }
-        if (umbris_frame_count % 45 == *(short *)(moby + 0xB2) && random_integer_below(2) == 0) {
+        if (umbris_frame_count % 45 == *(short *)&((Moby *)moby)->save_id && random_integer_below(2) == 0) {
             func_L00_002A5158_30D8E8(umbris_pool_draw_tiles, umbris_pool_draw_count, 1, F(moby, 0x10), F(moby, 0x14), f, s);
         }
         if (umbris_frame_count % ((func_001160D8() & 7) + 20) == 0) {
@@ -2668,7 +2668,7 @@ void SharkigatorUpdate(unsigned char *moby) {
             if (((Moby *)moby)->prev_seq != 2) {
                 MobyBlendAnimation(moby, 2, 4, 2);
             }
-            *(int *)(moby + 0x94) = 0;
+            *(int *)&((Moby *)moby)->collision = 0;
             ((Moby *)moby)->state = 5;
             F(data, 0x14C) = zero;
             qcopy(data + 0x100, moby + 0x10);
@@ -3167,7 +3167,7 @@ void update_hero_triggered_falling_platform(char *m) {
     float t;
     float g;
     if (m == 0) return;
-    d = *(char **)(m + 0x78);
+    d = ((char *)((Moby *)m)->pvars);
     if (d == 0) return;
     qcopy(prev, m + 0x10);
     switch (((unsigned char *)m)[0x20]) {

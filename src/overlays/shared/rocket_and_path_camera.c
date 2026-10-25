@@ -25,7 +25,7 @@ extern char D_L10_001672C0[];
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_00298940.c, FUN_L10_00298940. */
 void emit_moby_sprite_particles(char *m) {
-    L10SpriteData_298940 *p = *(L10SpriteData_298940 **)(m + 0x78);
+    L10SpriteData_298940 *p = ((L10SpriteData_298940 *)((Moby *)m)->pvars);
     float d[4] __attribute__((aligned(16)));
     float e[4] __attribute__((aligned(16)));
     int i, col;
@@ -134,7 +134,7 @@ extern void func_0020D678(void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/00298940.c, FUN_L10_002cc2e8. */
 void Moby819Update(char *m) {
-    Shot_cc2e8 *d = *(Shot_cc2e8 **)(m + 0x78);
+    Shot_cc2e8 *d = ((Shot_cc2e8 *)((Moby *)m)->pvars);
     float pos0[4] __attribute__((aligned(16)));
     float c[4] __attribute__((aligned(16)));
     float diff[4] __attribute__((aligned(16)));
@@ -352,7 +352,7 @@ void draw_moby_animated_quad_layers(unsigned char *m) {
     V4_2EA578 *s1, *s2;
     Quad_2EA578 *sv;
 
-    scale = *(float **)(m + 0x78);
+    scale = ((float *)((Moby *)m)->pvars);
     copy_matrix_rotation(transform, m + 0xC0);
     qcopy(position, m + 0x10);
     position[3] = 1.0f;

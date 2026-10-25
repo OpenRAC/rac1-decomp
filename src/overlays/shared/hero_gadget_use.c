@@ -460,7 +460,7 @@ void update_hero_movement_and_collision_probes(void) {
         if (func_L00_0020A8B8_4C558(0.7f, 4.0f, &D_0013F450_4C558.wall_probe_distance)) {
             CollisionHit_4C558 *wall = &D_L05_00174340_4C558;
             float normal_xy = func_001F9CE8_4C558(&wall->normal_x);
-            D_0013F450_4C558.unk250 = func_L00_001FF860_4C558(wall->normal_z, normal_xy);
+            D_0013F450_4C558.wall_normal_pitch = func_L00_001FF860_4C558(wall->normal_z, normal_xy);
             if (wall->moby != 0) {
                 D_0013F450_4C558.wall_probe_hit_moby = 1;
                 if (func_L00_0025F410_4C558(wall->moby)) D_0013F450_4C558.wall_probe_moby_in_class_range = 1;
@@ -468,8 +468,8 @@ void update_hero_movement_and_collision_probes(void) {
         }
     }
     if (D_L05_0015F6B0_4C558 % 5 == 0) {
-        D_0013F450_4C558.unk260 = 0;
-        D_0013F450_4C558.unk258 = 0.0f;
+        D_0013F450_4C558.edge_ahead = 0;
+        D_0013F450_4C558.edge_drop_depth = 0.0f;
         if (D_0013F450_4C558.grounded_frames) {
             func_L00_00233EE0_4C558(start, 1.1f, 0.0f, 1.0f);
             func_L00_00233EE0_4C558(end, 1.1f, 0.0f, -20.0f);
@@ -481,11 +481,11 @@ void update_hero_movement_and_collision_probes(void) {
             if (!hit || distance > 3.0f) {
                 for (offset = -0.4f; offset < 0.5f; offset += 0.1f) {
                     func_L00_00233EE0_4C558(probe, 1.1f + offset, 0.0f, 0.0f);
-                    if (!func_L00_001F10E0_4C558(D_0013F450_4C558.unk234, probe, 2, 0)) {
-                        D_0013F450_4C558.unk260 = 1;
-                        if (!hit) D_0013F450_4C558.unk258 = 20.0f;
-                        else D_0013F450_4C558.unk258 = distance;
-                        D_0013F450_4C558.edge_probe_offset = D_0013F450_4C558.unk234 + offset;
+                    if (!func_L00_001F10E0_4C558(D_0013F450_4C558.capsule_radius, probe, 2, 0)) {
+                        D_0013F450_4C558.edge_ahead = 1;
+                        if (!hit) D_0013F450_4C558.edge_drop_depth = 20.0f;
+                        else D_0013F450_4C558.edge_drop_depth = distance;
+                        D_0013F450_4C558.edge_probe_offset = D_0013F450_4C558.capsule_radius + offset;
                         if (D_0013F450_4C558.edge_probe_offset < 0.0f) D_0013F450_4C558.edge_probe_offset = 0.0f;
                         break;
                     }
@@ -789,7 +789,7 @@ int process_hero_primary_item_input(void) {
             }
             if (D_0013F450_h2523C8.state.control_mode < 2U || D_0013F450_h2523C8.state.control_mode == 4 || D_0013F450_h2523C8.state.control_mode == 2 || D_0013F450_h2523C8.state.control_mode == 0xF
                 || D_0013F450_h2523C8.state.control_mode == 5 || D_0013F450_h2523C8.state.current == 0x1E) {
-                if (pad_pressed_within(mask, t, 0) || ((D_0013CA40_p2523C8.held & mask) && D_0013F450_h2523C8.items[0].unk20 > scale_ticks(0xF))) {
+                if (pad_pressed_within(mask, t, 0) || ((D_0013CA40_p2523C8.held & mask) && D_0013F450_h2523C8.items[0].ready_frames > scale_ticks(0xF))) {
                     if (D_0013F450_h2523C8.swing_target_in_sight != 0) {
                         if (D_0013F450_h2523C8.grapple_target_in_sight != 0) {
                             if (D_0013F450_h2523C8.swing_target_dist < D_0013F450_h2523C8.unk984) {
@@ -849,7 +849,7 @@ int process_hero_primary_item_input(void) {
                 break;
             }
             pv = (PVar_2523C8 *)((Moby *)D_0013F450_h2523C8.items[0].moby)->pvars;
-            if (((D_0013CA40_p2523C8.held & mask) && D_0013F450_h2523C8.items[0].unk20 > scale_ticks(5)) || (D_0013CA40_p2523C8.pressed & mask)) {
+            if (((D_0013CA40_p2523C8.held & mask) && D_0013F450_h2523C8.items[0].ready_frames > scale_ticks(5)) || (D_0013CA40_p2523C8.pressed & mask)) {
                 if (get_ammo(-1)) {
                     if (D_0013F450_h2523C8.item_anim_active == 0) {
                         start_equipped_item_animation();
@@ -881,7 +881,7 @@ int process_hero_primary_item_input(void) {
                 break;
             }
             t = scale_ticks(7);
-            n = D_0013F450_h2523C8.items[0].unk20;
+            n = D_0013F450_h2523C8.items[0].ready_frames;
             if (pad_pressed_within(mask, t <= n ? t : n, &out1)
                 || ((D_0013CA40_p2523C8.held & 0x20) && n > scale_ticks(8) && n < scale_ticks(0x11))) {
                 if (get_ammo(-1)) {
@@ -903,7 +903,7 @@ int process_hero_primary_item_input(void) {
         if (D_0013F450_h2523C8.state.control_mode < 2U || (D_0013F450_h2523C8.state.control_mode == 4 && D_0013F450_h2523C8.rail_land_frames != 0)) {
             if (D_0013F450_h2523C8.state.current != 1) {
                 int t = scale_ticks(0xA);
-                int n = D_0013F450_h2523C8.items[0].unk20;
+                int n = D_0013F450_h2523C8.items[0].ready_frames;
 
                 if (pad_pressed_within(mask, t <= n ? t : n, &out2)) {
                     if (((Moby *)D_0013F450_h2523C8.items[0].moby) != 0) {

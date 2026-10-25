@@ -1652,7 +1652,7 @@ int GetFlaggedPvarWord(char *m) {
     }
     if ((((Moby *)m)->flags & 0x20) == 0)
         goto none;
-    return *(int *)(*(char **)(m + 0x78));
+    return *(int *)(((char *)((Moby *)m)->pvars));
 }
 INCLUDE_ASM("asm/overlays", func_L00_0025D3A0);
 extern int func_L00_0025BCF8(void *, int, void *, void *, float);

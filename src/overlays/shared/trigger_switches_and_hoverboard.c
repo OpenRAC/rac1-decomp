@@ -417,7 +417,7 @@ extern char D_0013E633[];
 
 /* Scans two moby lists near the player and adds a timer bonus when one is in range. */
 void add_moby_frames_for_group_proximity(char *moby) {
-    char *d = *(char **)(moby + 0x78);
+    char *d = ((char *)((Moby *)moby)->pvars);
     char *x = D_0013E633 + 0xE1D;
     char *p;
     char *e;
@@ -482,7 +482,7 @@ extern void func_L05_0030D678(unsigned char *m);
 
 /* UpdateMoby_823: pick random wobble parameters, then animate them each frame */
 void update_moby_wobble(unsigned char *m) {
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     float r, lo, hi;
     switch (((Moby *)m)->state) {
     case 0:
@@ -761,7 +761,7 @@ typedef struct {
 
 // Initialises a moby's data: copies two vectors, sets a value and three random-ish speeds.
 void initialize_moby_launch_motion(char *m, int b, void *v1, void *v2, int a) {
-    Dat *d = *(Dat **)(m + 0x78);
+    Dat *d = ((Dat *)((Moby *)m)->pvars);
     m[0x20] = 1;
     qcopy((char *)d + 0x30, v1);
     qcopy((char *)d + 0x10, v2);
@@ -787,7 +787,7 @@ extern float D_0015EE70 MACRO_ADDR;
 // Update for the blarg_gun class family: homes the moby toward its target and deletes it when its timer runs out.
 void blarg_gun_update(char *moby)
 {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     char buf[0x70];
     char *hs;
     int n;
@@ -795,7 +795,7 @@ void blarg_gun_update(char *moby)
 
     switch ((unsigned char)moby[0x20]) {
     case 0:
-        if (*(unsigned short *)(moby + 0x32) & 1)
+        if (*(unsigned short *)&((Moby *)moby)->draw_dist & 1)
             ((Moby *)moby)->flags |= 0x8000;
         moby[0x20] = 2;
         break;
@@ -906,7 +906,7 @@ extern void func_00215CA8(int *, int, void *, float *, int, float);
 
 /* Advances a moby's path: steps the path position and returns whether it has reached the end. */
 int AdvanceMobyPath(char *m) {
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     int *path;
     ApproachWithVelocity(1.0f, *(float *)(d + 0xD8), *(float *)(d + 0xD8), *(float *)(d + 0xD4), (float *)(d + 0xC0), (float *)(d + 0xC4));
     path = *(int **)(d + 0xAC);
@@ -917,7 +917,7 @@ extern void func_00215F80(int, int);
 
 /* Plays the sound that goes with the moby's current variant. */
 void request_moby_variant_help_message(char *moby) {
-    switch (*(short *)(*(char **)(moby + 0x78) + 0xB6)) {
+    switch (*(short *)(((char *)((Moby *)moby)->pvars) + 0xB6)) {
     case 0: try_set_help_message(8, 0x13A5); break;
     case 1: try_set_help_message(8, 0x1398); break;
     case 2: try_set_help_message(8, 0x139A); break;
@@ -929,7 +929,7 @@ void request_moby_variant_help_message(char *moby) {
 extern float D_0015EE6C MACRO_ADDR;
 /* Wobbles a moby's position and rotation from its sine-driven state. */
 void apply_moby_position_and_rotation_wobble(char *moby) {
-    char *d = *(char **)(moby + 0x78);
+    char *d = ((char *)((Moby *)moby)->pvars);
     float s, t, w;
     qcopy(moby + 0x10, d + 0x60);
     qcopy(moby + 0x40, d + 0x70);
@@ -958,7 +958,7 @@ extern char D_0013F450[];
 
 /* Transforms the 7 vectors of a level table entry into the moby's space and records its index. */
 void transform_moby_vector_table_to_world_space(char *a) {
-    char *data = *(char **)(a + 0x78);
+    char *data = ((char *)((Moby *)a)->pvars);
     int idx = *(int *)(data + 0xDC);
     if (idx != -1) {
         char *p = rilgar_paths[idx];
@@ -1201,7 +1201,7 @@ extern void func_L00_001FD1D8(void *, void *, s32);
 
 /* Draws the moby's camera-facing glow sprite, flickering its alpha at random. */
 void draw_moby_glow_sprite(char *m) {
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     Pk_31e468 pk;
     float up[4];
     float M[4][4];

@@ -120,8 +120,8 @@ s32 predict_doom_bot_spawner_landing(ThrowVars_2c8440_2C9820 *v, struct Moby *m,
         return 0;
     qcopy(&a, &m->pos);
     if (m->state == 1) {
-        d.f[0] = func_001F9F90_2C9820(func_001FA748_2C9820(-0.36196801066398620605f, func_L00_001FF860_2C9820(D_0013F450_C9820.unk670, D_0013F450_C9820.unk674))) * 0.85903900861740112305f;
-        d.f[1] = func_001F9FA8_2C9820(func_001FA748_2C9820(-0.36196801066398620605f, func_L00_001FF860_2C9820(D_0013F450_C9820.unk670, D_0013F450_C9820.unk674))) * 0.85903900861740112305f;
+        d.f[0] = func_001F9F90_2C9820(func_001FA748_2C9820(-0.36196801066398620605f, func_L00_001FF860_2C9820(D_0013F450_C9820.facing_x, D_0013F450_C9820.facing_y))) * 0.85903900861740112305f;
+        d.f[1] = func_001F9FA8_2C9820(func_001FA748_2C9820(-0.36196801066398620605f, func_L00_001FF860_2C9820(D_0013F450_C9820.facing_x, D_0013F450_C9820.facing_y))) * 0.85903900861740112305f;
         d.f[2] = 0.0f;
         func_001F9BD8_2C9820(&d, &d, &D_0013F450_C9820.motion.pos);
         d.f[2] += 0.39081999659538269043f;
@@ -241,7 +241,7 @@ void update_doom_bot_spawner(char *m) {
     void *g;
 
     if (m == 0) return;
-    s = *(char **)(m + 0x78);
+    s = ((char *)((Moby *)m)->pvars);
     if (s == 0) return;
     if (((Moby *)m)->pos.x < 2.0f || 1021.0f < ((Moby *)m)->pos.x ||
         ((Moby *)m)->pos.y < 2.0f || 1021.0f < ((Moby *)m)->pos.y ||
@@ -468,7 +468,7 @@ void reset_morphoray_chicken_slot_defaults(char *a) {
     if (a != 0) {
         *(int *)(a + 0x78) = 0;
         *(float *)(a + 0x7C) = 0.05f;
-        *(float *)(a + 0x80) = 0.863f;
+        *(float *)&((Moby *)a)->unk80 = 0.863f;
         *(int *)(a + 0x84) = 4;
         *(int *)(a + 0x88) = 3;
         *(float *)(a + 0x8C) = 0.625f;
@@ -531,7 +531,7 @@ char *spawn_morphoray_chicken(char *src) {
         *(short *)(m + 0x32) = 0x7F;
         m[0x31] = 1;
         d = *(char **)(m + 0x78);
-        if ((((Moby *)src)->flags & 0x20) && (r0 = *(unsigned char **)(*(char **)(src + 0x78) + 0xC)) != 0) {
+        if ((((Moby *)src)->flags & 0x20) && (r0 = *(unsigned char **)(((char *)((Moby *)src)->pvars) + 0xC)) != 0) {
             set_moby_color(m, r0[4], r0[5], r0[6]);
         } else {
             *(long *)(m + 0x38) = *(long *)(src + 0x38);
@@ -1448,7 +1448,7 @@ void clear_homing_shot_trail_and_spawn_end_effects(u8 *m, s32 enabled)
     u8 *effect;
     s32 alpha;
 
-    handle = (void **)(*(u8 **)(m + 0x78) + 0x2c);
+    handle = (void **)(((u8 *)((Moby *)m)->pvars) + 0x2c);
     for (i = 16; i >= 0; i--) {
         if (*handle != 0)
             KillPart(*handle);
@@ -1577,7 +1577,7 @@ extern short D_L00_00161978;
 
 // UpdateMoby_428: apply gravity and drag to the moby's velocity, then test for despawn.
 void update_damped_falling_moby(char *m) {
-    float *d = *(float **)(m + 0x78);
+    float *d = ((float *)((Moby *)m)->pvars);
     float z;
     float k;
     FastVecAdd(m + 0x10, m + 0x10, d);
@@ -1795,7 +1795,7 @@ void ryno_update(Moby *m) {
             if (ticks_2CDAB8(D_0015EFA4_2CDAB8) / per > s->best) s->best = ticks_2CDAB8(D_0015EFA4_2CDAB8) / 600;
             s->levels = s->levels | (1 << D_0015EE84_2CDAB8) | 0x80000000;
         }
-        ((Hero *)(D_0013E633_2CDAB8 + 0xE1D))->items[0].unk1C = 2;
+        ((Hero *)(D_0013E633_2CDAB8 + 0xE1D))->items[0].switch_lock = 2;
         m->state = 4;
         d->shot_timer = 0;
         d->slot = 0;
@@ -1824,7 +1824,7 @@ void ryno_update(Moby *m) {
             if (ticks_2CDAB8(D_0015EFA4_2CDAB8) / per > s->best) s->best = ticks_2CDAB8(D_0015EFA4_2CDAB8) / 600;
             s->levels = s->levels | (1 << D_0015EE84_2CDAB8) | 0x80000000;
         }
-        ((Hero *)(D_0013E633_2CDAB8 + 0xE1D))->items[0].unk1C = 2;
+        ((Hero *)(D_0013E633_2CDAB8 + 0xE1D))->items[0].switch_lock = 2;
         m->state = 4;
         d->shot_timer = 0;
         d->slot = 0;
@@ -1853,8 +1853,8 @@ void ryno_update(Moby *m) {
         add_2CDAB8(ofs.f, D_0013E633_2CDAB8 + 0xF1D, D_0013E633_2CDAB8 + 0xF5D);
         scale_2CDAB8(ofs.f, ofs.f, 3.0f);
         add_2CDAB8(dir.f, dir.f, ofs.f);
-        if (((Hero *)(D_0013E633_2CDAB8 + 0xE1D))->items[6].unk40 != 0) {
-            yaw = ((Hero *)(D_0013E633_2CDAB8 + 0xE1D))->items[6].unk4C;
+        if (((Hero *)(D_0013E633_2CDAB8 + 0xE1D))->items[6].locked_on != 0) {
+            yaw = ((Hero *)(D_0013E633_2CDAB8 + 0xE1D))->items[6].lock_yaw;
         } else {
             yaw = angle_2CDAB8(dir.f[0], dir.f[1]);
         }
@@ -1863,7 +1863,7 @@ void ryno_update(Moby *m) {
         fire_start_2CDAB8();
         missile_2CDAB8(m, aim.f, d->target, d->height, yaw, pitch);
         if (d->shots >= 7) {
-            ((Hero *)(D_0013E633_2CDAB8 + 0xE1D))->items[0].unk1C = 0;
+            ((Hero *)(D_0013E633_2CDAB8 + 0xE1D))->items[0].switch_lock = 0;
             fire_end_2CDAB8();
             m->state = 5;
             d->shot_timer = ticks_2CDAB8(60);
@@ -2022,7 +2022,7 @@ void RocketSteerUpdate(char *m) {
     float zf;
 
     if (m == 0) return;
-    d = *(char **)(m + 0x78);
+    d = ((char *)((Moby *)m)->pvars);
     if (d == 0) return;
 
     a = ((Moby *)m)->scale;
@@ -2160,7 +2160,7 @@ done:
     u.h.b18 = 3;
     u.h.w = 5627.925f;
     u.h.b19 = 3;
-    u.h.s = *(unsigned short *)(m + 0xA6);
+    u.h.s = *(unsigned short *)&((Moby *)m)->oclass;
     if (coll_line(&v20, m + 0x10, 0, (int)m, (int)&u.v.a)) {
         gg = (char *)coll_hit_result;
         p = *(char **)(gg + 0x18);
@@ -2267,7 +2267,7 @@ void replenish_hero_drones(void) {
 extern int func_L00_00273478(void *, int, float, float, unsigned, unsigned);
 
 void ensure_drone_attached_particles(char *m) {
-    char *p = *(char **)(m + 0x78);
+    char *p = ((char *)((Moby *)m)->pvars);
     if (*(int *)(p + 0x4C) == 0) {
         *(int *)(p + 0x4C) = spawn_moby_point_attached_particle(m, 0, 0.05f, 0.01f, 0x80808080, 0x10808080);
     }

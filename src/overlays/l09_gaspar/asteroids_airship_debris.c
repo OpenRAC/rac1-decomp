@@ -510,7 +510,7 @@ char *spawn_fading_asteroid_debris(char *owner, float *vec) {
     char *moby = CreateMoby(random_integer_below(4) + 0x107);
     if (moby != 0) {
         char *d = *(char **)(moby + 0x78);
-        char *o = *(char **)(owner + 0x78);
+        char *o = ((char *)((Moby *)owner)->pvars);
         char *dv;
         float len;
         *(float *)d = random_float_between(-2.0f, 2.0f);
@@ -708,7 +708,7 @@ void update_fading_asteroid_debris(unsigned char *m) {
         char *d;
         float len, t;
         ((Moby *)m)->alpha -= 2;
-        d = *(char **)(m + 0x78);
+        d = ((char *)((Moby *)m)->pvars);
         FastVecScale(d, d, frame_scale * -0.0199999809f + 1.0f);
         *(float *)(d + 8) -= g_frame_time_sq * 20.0f;
         FastVecAdd(d + 0x20, d + 0x20, d);
@@ -1596,7 +1596,7 @@ extern void func_0020D678(void *);
 /* Moby update for a drifting particle-like moby. */
 void update_drifting_moby(char *moby)
 {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     FastVecAdd(moby + 0x10, moby + 0x10, data);
     FastVecScale(data, data, 1.0f + frame_scale * -0.019999980926513672f);
     if (moby[0x70] & 2) {
@@ -1748,7 +1748,7 @@ extern int D_0015EE84_m __asm__("D_0015EE84") MACRO_ADDR;
 
 /* UpdateMoby_1000: timer and sound bookkeeping */
 void update_level09_item_unlock_and_frame_record(char *moby) {
-    int *data = *(int **)(moby + 0x78);
+    int *data = ((int *)((Moby *)moby)->pvars);
     unsigned char *q;
     unsigned char *b;
     unsigned short *tp;
@@ -2077,7 +2077,7 @@ extern void func_L00_0025F4A8_alt(void *, void *, void *, float, float, int, int
 
 /* Pressure plate: waits for its trigger slot, hums while armed, wakes its linked moby when stepped on, then shatters. */
 void refueling_station_update(char *m) {
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     float v[4];
     unsigned char *q;
     handle_refueling_station_damage(m, d, d + 0x20);
@@ -2789,7 +2789,7 @@ char *spawn_barrier_replacement(char *owner, int cls) {
         copy_hero_moby_field_38(moby);
         *(float *)(moby + 0x2C) = ((Moby *)owner)->scale;
         *(unsigned short *)(moby + 0x34) = ((Moby *)owner)->flags;
-        **(int **)(moby + 0x78) = **(int **)(owner + 0x78);
+        **(int **)(moby + 0x78) = *((int *)((Moby *)owner)->pvars);
     }
     return moby;
 }
@@ -2950,7 +2950,7 @@ typedef struct {
  * reload D_0015EE6C, a cast store does. The hero block is offsets of D_0013E633 cast to a struct, as retail
  * derives 0xE1D from the register holding 0xE9D. */
 void update_floating_ship_piece(char *moby) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     float v0[4];
     float v1[4];
     float v2[4];
@@ -2981,7 +2981,7 @@ void update_floating_ship_piece(char *moby) {
             ((Moby *)moby)->rot.y = func_002140F8_30A560(-1.57079637f, 1.57079637f);
             moby[0x20] = 1;
         } else {
-            func_001E9730_30A560(D_L09_00209518_30A560, *(short *)(moby + 0xB2), ((Moby *)moby)->oclass);
+            func_001E9730_30A560(D_L09_00209518_30A560, *(short *)&((Moby *)moby)->save_id, ((Moby *)moby)->oclass);
             moby[0x20] = 2;
         }
         break;

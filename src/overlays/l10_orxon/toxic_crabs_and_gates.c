@@ -1442,7 +1442,7 @@ extern char *D_L10_001B0C30[];
 extern unsigned char D_0013E633_e1d[] __asm__("D_0013E633");
 // Updates hit reactions and selects an enemy's movement target.
 void update_blarg_ship_hit_reactions_and_targeting(char *m) {
- char *d=*(char **)(m+0x78),*hit=MobyGetHitMessage(m,0x370000,0); int flag; float amount=0;
+ char *d=((char *)((Moby *)m)->pvars),*hit=MobyGetHitMessage(m,0x370000,0); int flag; float amount=0;
  int result=ComputeHitResponse(m,hit,d+0x20,5,&flag,&amount,0,4);
  if(hit && flag!=1 && (unsigned char)m[0x20]!=8) {
   *(float *)(d+0x20)-=amount; if(*(float *)(d+0x20)<=0) result=1;
@@ -2136,7 +2136,7 @@ extern void func_L10_002EBDC8_a01(float,void *,short *,short *) __asm__("func_L1
 extern void func_L10_002EBB70(void *,short *);
 // Updates a point emitter, optionally applying effects over up to 32 path points.
 void update_configurable_particle_emitter(char *m) {
- char *d=*(char **)(m+0x78);
+ char *d=((char *)((Moby *)m)->pvars);
  switch((unsigned char)m[0x20]) {
  case 0:
   switch(*(int *)d) {

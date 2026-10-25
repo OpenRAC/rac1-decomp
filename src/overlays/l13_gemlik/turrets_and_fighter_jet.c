@@ -15,9 +15,9 @@ extern char D_L13_001F44E8[];
 // Switches linked mobys and lists between two state sets when the watched moby's test changes.
 void update_moby_volume_trigger(char *moby)
 {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     if (*(int *)data == -1) {
-        STUB_printf(volume_trigger_bad_target_msg, *(short *)(moby + 0xB2));
+        STUB_printf(volume_trigger_bad_target_msg, *(short *)&((Moby *)moby)->save_id);
         DeleteMoby(moby);
         return;
     }
@@ -542,7 +542,7 @@ void fire_blarg_turret_projectile(char *moby)
     float v2[4];
     char *data;
     float d, x, ang;
-    data = *(char **)(moby + 0x78);
+    data = ((char *)((Moby *)moby)->pvars);
     if (gemlik_frame_count % *(int *)&gemlik_turret_fire_interval == 0) {
         Moby_GetJointWorldPos(moby, 0, v);
         d = vec_distance_xy(moby + 0x10, *(char **)(data + 0x40) + 0x10);
@@ -558,7 +558,7 @@ void fire_blarg_turret_projectile(char *moby)
 extern int func_L00_00260D30(void *, void *, float);
 
 void update_blarg_turret_target_and_state(unsigned char *moby) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     float distance;
     if (((Moby *)moby)->state == 3) distance = 22.0f;
     else distance = 20.0f;
@@ -2144,7 +2144,7 @@ extern short D_L13_00161450;
 
 /* Draws the Gemlik turret HUD: target marker, ammo icons, gauge sprites and warning, refreshes the gauge colour table, then the two frame halves. */
 void DrawGemlikTurretHud(char *moby) {
-    char *d = *(char **)(moby + 0x78);
+    char *d = ((char *)((Moby *)moby)->pvars);
     char *s;
     unsigned char *base;
     unsigned char *g;

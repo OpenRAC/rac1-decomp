@@ -16,9 +16,9 @@ typedef int u128 __attribute__((mode(TI)));
 extern char D_L10_001DC810[];
 // Update for class 1033: oscillates its height between two limits with timed pauses.
 void update_cycling_platform(char *m) {
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     if (d == 0) {
-        STUB_printf(cycling_platform_no_vars_fmt, ((Moby *)m)->oclass, *(short *)(m + 0xB2));
+        STUB_printf(cycling_platform_no_vars_fmt, ((Moby *)m)->oclass, *(short *)&((Moby *)m)->save_id);
         DeleteMoby(m);
         return;
     }
@@ -256,7 +256,7 @@ extern void func_L00_002111E8(void);
 
 // Level 10 update for moby class 22: links two Ent records, sets table bits, calls the spawn helpers.
 void update_hero_relocation_trigger(char *m) {
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     unsigned short id;
     ((unsigned char *)m)[0x30] = 0xFF;
     if (*(int *)&D_L10_00161410 == 1) {
@@ -419,7 +419,7 @@ extern void func_L00_002E9A18(int);
 /* Moby update that emits sparkles and a sound when the hero is near the target moby. */
 void gadgebot_telepot_pad_update(char *m)
 {
-    int *data = *(int **)(m + 0x78);
+    int *data = ((int *)((Moby *)m)->pvars);
     float position[4];
     float velocity[4];
     float offset[4];
@@ -529,7 +529,7 @@ void gadgebot_telepot_pad_update(char *m)
         angle = phase * 3.1415927f;
     }
     if (3.1415927f < angle) angle -= 6.2831855f;
-    *(unsigned int *)(m + 0x90) = func_001FA8A8_2BFBB8(0x80464646, 0x80828282, (func_001F9FA8_2BFBB8(angle) + 1.0f) * 0.5f);
+    *(unsigned int *)&((Moby *)m)->glow_color = func_001FA8A8_2BFBB8(0x80464646, 0x80828282, (func_001F9FA8_2BFBB8(angle) + 1.0f) * 0.5f);
     func_001F9908_2BFBB8(&D_L10_00161928_2BFBB8);
     if (D_L10_00161928_2BFBB8 != 0) {
         if (D_L10_00161924_2BFBB8 < D_L10_00161928_2BFBB8) angle = 0.002f;
@@ -559,7 +559,7 @@ extern float D_0015EE6C MACRO_ADDR;
 
 // Update for a swirling effect moby: spawns particles along an axis and manages a sound slot.
 void update_timed_effect_emitter(unsigned char *moby) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     float d[16];
     float v[4];
     float r[4];
@@ -1134,7 +1134,7 @@ void Moby938Update(char *m) {
     float s68, s6c, s70;
     int rA, rB;
 
-    data = *(char **)(m + 0x78);
+    data = ((char *)((Moby *)m)->pvars);
     if (((Moby *)m)->pos.x < 1.0f || 511.0f < ((Moby *)m)->pos.x || ((Moby *)m)->pos.y < 1.0f ||
         511.0f < ((Moby *)m)->pos.y || ((Moby *)m)->pos.z < 1.0f || 511.0f < ((Moby *)m)->pos.z) {
         func_0020D678_2D9988(m);
@@ -1218,7 +1218,7 @@ void Moby938Update(char *m) {
         sb.v[3] = 5627.925f;
         sb.s38 = state;
         sb.s39 = 1;
-        sb.s3a = *(unsigned short *)(m + 0xA6);
+        sb.s3a = *(unsigned short *)&((Moby *)m)->oclass;
         func_001F9BD8_2D9988(m + 0x10, m + 0x10, data);
         *(float *)(data + 0x8) = *(float *)(data + 0x8) - D_0015EE70_2D9988 * 9.8f;
         if ((func_001F9938_2D9988(data + 0x14) != 0 && func_L10_002D9530_2D9988(m, data, v0) != 0) || ((Moby *)m)->pos.z < 2.0f) {
@@ -1295,14 +1295,14 @@ extern int func_L00_0028EF68_v(int, int, void *, int) __asm__("func_L00_0028EF68
 
 /* Electric spark: runs along its wire path with a light and a buzzing sound, then rests for a random time. */
 void update_path_spark_emitter(char *m) {
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     int *path;
     float pos[4];
     int seg;
     float frac;
     float len;
     if (*(int *)d == -1) {
-        func_001E9730_2da0f0(path_spark_no_path_fmt, *(short *)(m + 0xB2));
+        func_001E9730_2da0f0(path_spark_no_path_fmt, *(short *)&((Moby *)m)->save_id);
         DeleteMoby(m);
         return;
     }
@@ -1393,13 +1393,13 @@ extern int func_L00_0025A2F0(int *, int, int, int);
 
 /* update for a moby that glides between two heights and sets a flag */
 void lab_door_update(unsigned char *m) {
-    int *d = *(int **)(m + 0x78);
+    int *d = ((int *)((Moby *)m)->pvars);
     u128 v[2];
     int it;
     int flag;
     int hit;
     if (d == 0) {
-        STUB_printf(lab_door_no_vars_fmt, ((Moby *)m)->oclass, *(short *)(m + 0xB2));
+        STUB_printf(lab_door_no_vars_fmt, ((Moby *)m)->oclass, *(short *)&((Moby *)m)->save_id);
         DeleteMoby(m);
         return;
     }
@@ -1769,7 +1769,7 @@ extern void func_L00_001FD1D8(void *, void *, s32);
 
 /* Per-frame draw of a ribbon/trail effect moby. */
 void render_data_processor_linked_effect(u8 *moby) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     char *base = *(char **)((*(int *)(data + 0xc) << 8) + (int)D_L10_00160058_DBA50 + 0x78);
     char scratch[(unsigned int)*(int *)(data + 4) * 0x40];
     struct {
@@ -1918,7 +1918,7 @@ typedef struct {
    jitter into the velocities, otherwise moves the rows by their velocities.
    Adapted from Lombyte's draft of FUN_L10_002dcc58 (GPL-3.0), with PAL symbols. */
 void update_jitter_strand_grid_moby(unsigned char *moby) {
-    PlatformWave_DE018 *vars = *(PlatformWave_DE018 **)(moby + 0x78);
+    PlatformWave_DE018 *vars = ((PlatformWave_DE018 *)((Moby *)moby)->pvars);
     Vec4 jitter[20][10];
 
     switch (((Moby *)moby)->state) {
@@ -2029,7 +2029,7 @@ typedef struct { int owner; float phase,speed,size; int source,timer; float grow
 /* Advances an effect, scales its size over its lifetime and emits hits. */
 void update_path_spark_effect(char *m) {
  float old[4],pos[4],a,b;
- char *d=*(char **)(m+0x78);
+ char *d=((char *)((Moby *)m)->pvars);
  *(Effect128 *)old=*(Effect128 *)(m+0x10);
  ((EffectData *)d)->phase+=((EffectData *)d)->speed;
  ((EffectData *)d)->speed*=(((EffectData *)d)->growth-1.0f)*frame_scale+1.0f;

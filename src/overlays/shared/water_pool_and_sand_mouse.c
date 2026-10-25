@@ -501,7 +501,7 @@ extern void func_L00_002617B0(char *, void *, void *, void *);
 
 /* update of a platform that rides a path between its end points. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/unclassified_002b8c08.c, FUN_L01_002b9eb0. */
 void novalis_elevator_update(unsigned char *moby) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     char *hero;
     char *path;
     float orig[4], delta[4], tmp[4];
@@ -513,13 +513,13 @@ void novalis_elevator_update(unsigned char *moby) {
     if (*(int *)(data + 0xCC) != -1) {
         if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, *(int *)(data + 0xCC)) == 0) {
             ((Moby *)moby)->update_dist = 0xFF;
-            *(int *)(moby + 0x94) = 0;
+            *(int *)&((Moby *)moby)->collision = 0;
             ((Moby *)moby)->flags |= 0x41;
             return;
         }
         if (*(int *)(data + 0xCC) != -1 && is_point_inside_clip_volume(D_0013E633 + 0xE9D, *(int *)(data + 0xCC))) {
             ((Moby *)moby)->flags &= 0xFFBE;
-            *(int *)(moby + 0x94) = *(int *)(*(char **)(moby + 0x24) + 0x10);
+            *(int *)&((Moby *)moby)->collision = *(int *)(*(char **)(moby + 0x24) + 0x10);
             *(int *)(data + 0xCC) = -1;
         }
     }
@@ -742,7 +742,7 @@ extern short D_L01_0016152C;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b8c08.c, FUN_L01_002c7530. */
 void update_moby_motion_collision_and_lifetime(char *moby) {
-    int *data = *(int **)(moby + 0x78);
+    int *data = ((int *)((Moby *)moby)->pvars);
     char *camera = camera_pos;
     char hit[0x30];
     float normal[4];
@@ -861,7 +861,7 @@ static inline char *hero_p(void) { return D_0013E633 + 0xE1D; }
 #define I(p, o) (*(int *)((p) + (o)))
 
 void bolt_crank_update(char *m) {
-    char *s = *(char **)(m + 0x78);
+    char *s = ((char *)((Moby *)m)->pvars);
     float W0[16];
     float V40[4], V50[4], V60[4];
     Vec4 V70, V80;
@@ -1991,7 +1991,7 @@ extern short D_L01_00161A3C;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b8c08.c, FUN_L01_002edca0. */
 void large_amoeboid_update(unsigned char *moby) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     char *target;
     char *target_position;
     float move[4];
@@ -2061,8 +2061,8 @@ void large_amoeboid_update(unsigned char *moby) {
         } else {
             if (*(int *)(data + 0x25c) == -1) ((Moby *)moby)->state = 12;
             else ((Moby *)moby)->state = 13;
-            *(int *)(moby + 0x94) = 0;
-            *(int *)(moby + 0x58) = 0;
+            *(int *)&((Moby *)moby)->collision = 0;
+            *(int *)&((Moby *)moby)->anim_speed = 0;
             ((Moby *)moby)->visible = 0;
             distance = ((Moby *)moby)->pos.z - 20.0f;
             ((Moby *)moby)->flags = (((Moby *)moby)->flags & 0xefff) | 1;
@@ -2325,7 +2325,7 @@ void large_amoeboid_update(unsigned char *moby) {
             ((Moby *)moby)->anim_speed = 1.0f;
             ((Moby *)moby)->pos.z = distance;
             result = *(int *)(*(char **)(moby + 0x24) + 0x10);
-            *(int *)(moby + 0x94) = result;
+            *(int *)&((Moby *)moby)->collision = result;
             ((Moby *)moby)->flags = flags & 0xfffe;
             ((Moby *)moby)->visible = 1;
         }
@@ -2389,7 +2389,7 @@ void process_amoeboid_hits_and_update_targeting(char *m) {
     float f7;
 
     amount = 0.0f;
-    d = *(char **)(m + 0x78);
+    d = ((char *)((Moby *)m)->pvars);
     t = MobyGetHitMessage(m, 0x330000, 0);
     if (t != 0) {
         qcopy(&v, m + 0x10);
@@ -2651,7 +2651,7 @@ extern void func_L01_00287F20(float *, float, float, int, int, int);
 void spawn_amoeboid_movement_particles(unsigned char *moby) {
     char *d;
     float v[3];
-    d = *(char **)(moby + 0x78);
+    d = ((char *)((Moby *)moby)->pvars);
     if (((Moby *)moby)->visible != 0) {
     if (random_integer_below(*(int *)&amoeboid_trail_a_chance - 1) == 0) {
         float a = random_angle_radians();
@@ -2887,7 +2887,7 @@ extern unsigned char D_0013D5CD NOT_SDA;
 void sandmouse_house_update(unsigned char *m) {
     char *d;
     if (m == 0) return;
-    d = *(char **)(m + 0x78);
+    d = ((char *)((Moby *)m)->pvars);
     if (d != 0) {
         if (((Moby *)m)->state != 0) {
             if (D_0013D5CD != 0) {
@@ -3082,7 +3082,7 @@ void apply_gunship_path_position_offsets(char *m, float *out) {
     char *d;
     *(u128 *)v = 0;
     v[0] = 1.0f;
-    d = *(char **)(m + 0x78);
+    d = ((char *)((Moby *)m)->pvars);
     if (*(float *)(d + 0x130) != 0.0f || *(float *)(d + 0x134) != 0.0f) {
         euler_to_matrix(t50, (float *)(m + 0x40));
         transform_vector(t10, v, t50);

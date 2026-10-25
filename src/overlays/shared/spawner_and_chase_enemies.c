@@ -1313,7 +1313,7 @@ typedef struct {
  * has 201 buckets here and hashes by register number), which is the order of the four spill slots 0x64..0x70. */
 void Moby1885Update(char *moby)
 {
-    char *d = *(char **)(moby + 0x78);
+    char *d = ((char *)((Moby *)moby)->pvars);
     float v[4];
     float rot[4];
     float pos2[4];

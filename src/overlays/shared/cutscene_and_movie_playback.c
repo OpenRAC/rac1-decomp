@@ -154,7 +154,7 @@ void handle_pause_input(void) {
         return;
     }
     if (((((PadS *)(D_0013A5E0 + 0x2460))->w1A4 & 0x800) || noctl) && cinematic_mode_frames >= 8
-        && ((Hero *)(D_0013E633 + 0xE1D))->state.current != 0x72 && ((Hero *)(D_0013E633 + 0xE1D))->items[0].unk1C != 2
+        && ((Hero *)(D_0013E633 + 0xE1D))->state.current != 0x72 && ((Hero *)(D_0013E633 + 0xE1D))->items[0].switch_lock != 2
         && ((Hero *)(D_0013E633 + 0xE1D))->state.current != 0x32 && ((Hero *)(D_0013E633 + 0xE1D))->state.current != 0x1D
         && !((Hero *)(D_0013E633 + 0xE1D))->fall_fade_pending && ((Hero *)(D_0013E633 + 0xE1D))->health.hp
         && ((AreaS *)(D_0013D355 + 0x3B))->wDC < 3 && ((AreaS *)(D_0013D355 + 0x3B))->wE4 < 0 && lvl == 0) {

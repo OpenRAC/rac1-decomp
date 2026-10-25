@@ -455,7 +455,7 @@ void process_blarg_space_commando_hits(char *m) {
     float f;
     float lo, hi, spd, off, pull;
 
-    d = *(char **)(m + 0x78);
+    d = ((char *)((Moby *)m)->pvars);
     ((Moby *)m)->scale = *(float *)(*(char **)(m + 0x24) + 0x24) * *(float *)&space_commando_scale;
     update_blarg_space_commando_beam(m);
     if (*(int *)(d + 0x38) != 0) {
@@ -596,7 +596,7 @@ extern short D_L06_00162064;
 extern short D_L06_00162068;
 // Builds the sixteen-segment fan of data vectors for a moby from its yaw.
 void initialize_blarg_space_commando_beam(char *m) {
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     float v[4];
     int i;
     ProbeGroundHeight(m + 0x10, 0, 0.5f);
@@ -750,7 +750,7 @@ extern void func_L00_001FD1D8(void *, void *, s32);
 /* Draws the beam as 15 textured quads between consecutive points of the moby's point list (data + 0x230), each twice: once with the odd corners pulled toward the centre (data + 0x210) and once raised by 0.25.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002fdbd0.c, FUN_L06_002ff680. */
 void DrawBeam(char *moby) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     QuadPacket_f680 pk[2];
     f32 mat[4][4];
     f32 tmp[4];
@@ -829,7 +829,7 @@ extern short D_L06_001620C4, D_L06_001620C8, D_L06_001620CC, D_L06_001620D0;
 
 /* Spawns a burst of effects for each pair of ready entries in the moby's table. */
 void spawn_blarg_space_commando_beam_sparks(char *moby) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     int i, n;
     for (i = 0; i < 15; i = n) {
         float f21, f22;
@@ -946,7 +946,7 @@ extern int func_001F6FD8(int a, int b, int c, int d, int e);
 /* Draws the level timer as "H:MM:SS.t" text with a pulsing colour. */
 void draw_pulsing_timer_display(char *moby) {
     char buf[8];
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     float v;
     int col;
 
@@ -1035,7 +1035,7 @@ struct LockVars_p {
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/vendor/00307578.c, FUN_L06_00307d30. */
 void bot_door_lock_update(char *moby) {
-    struct LockVars_p *data = *(struct LockVars_p **)(moby + 0x78);
+    struct LockVars_p *data = ((struct LockVars_p *)((Moby *)moby)->pvars);
     float pos[4];
     float offset[3];
     float result[4];
@@ -1047,7 +1047,7 @@ void bot_door_lock_update(char *moby) {
 
     if (data->id[0] == -1) return;
     data->f10 = FastAddRots(data->f10, (360.0f / (*(float *)&bot_door_lock_pulse_period)) * 0.017453292f * g_frame_time);
-    *(unsigned int *)(moby + 0x90) = ((unsigned int (*)(float, int, int))FastTweenColor)((FastCos(data->f10) + 1.0f) * 0.5f, 0x80464646, 0x80828282);
+    *(unsigned int *)&((Moby *)moby)->glow_color = ((unsigned int (*)(float, int, int))FastTweenColor)((FastCos(data->f10) + 1.0f) * 0.5f, 0x80464646, 0x80828282);
     switch ((unsigned char)moby[0x20]) {
     case 0:
         data->cnt = data->init_cnt;
@@ -1188,7 +1188,7 @@ extern void func_L06_0030D3E8(char *);
 
 /* UpdateMoby: state 0 deletes, state 1 draws and times out */
 void update_timed_sprite_effect(char *m) {
-    float *d = *(float **)(m + 0x78);
+    float *d = ((float *)((Moby *)m)->pvars);
     switch ((unsigned char)m[0x20]) {
     case 0:
         DeleteMoby(m);
@@ -1235,7 +1235,7 @@ extern s32 D_L06_001624B8_FF000 SDATA(D_L06_001624B8);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/gameplay/vendor/00307578.c, FUN_L06_0030bfa8. */
 void draw_projected_fading_quad(char *moby) {
-    float *d = *(float **)(moby + 0x78);
+    float *d = ((float *)((Moby *)moby)->pvars);
     Vec4f pos;
     s64 corners[4];
     u32 colors[4];

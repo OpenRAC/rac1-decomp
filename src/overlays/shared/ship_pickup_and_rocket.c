@@ -135,7 +135,7 @@ extern void func_0022ED80(int, int, void *);
 extern void func_0020D678(void *);
 extern void func_L00_00263B78(float, float, void *, void *, void *);
 void ShipPickupUpdate(char *moby) {
-    int *vars = *(int **)(moby + 0x78);
+    int *vars = ((int *)((Moby *)moby)->pvars);
     int hero_moby = ((char *)g_hero.ship_moby);
     int hit = 0;
     float distance = 100000.0f;
@@ -151,7 +151,7 @@ void ShipPickupUpdate(char *moby) {
             moby[0x20] = 4;
             break;
         }
-        *(int *)(moby + 0x94) = 0;
+        *(int *)&((Moby *)moby)->collision = 0;
         moby[0x31] = 0;
         ((Moby *)moby)->flags |= 1;
         start_size = *(float *)(*(char **)(moby + 0x24) + 0x24);
@@ -181,7 +181,7 @@ void ShipPickupUpdate(char *moby) {
             moby[0x20] = 4;
         }
         if ((unsigned char)moby[0x20] != 4) goto frame_tail;
-        *(int *)(moby + 0x94) = *(int *)(*(char **)(moby + 0x24) + 0x10);
+        *(int *)&((Moby *)moby)->collision = *(int *)(*(char **)(moby + 0x24) + 0x10);
         moby[0x31] = 1;
         ((Moby *)moby)->flags &= 0xfffe;
         activated_size = *(float *)(*(char **)(moby + 0x24) + 0x24);
@@ -209,7 +209,7 @@ void ShipPickupUpdate(char *moby) {
         }
         if (hit || distance < 4.0f) {
             cls = ((Moby *)moby)->oclass;
-            *(int *)(moby + 0x94) = 0;
+            *(int *)&((Moby *)moby)->collision = 0;
             if (cls == 0xe0) goto collect_ammo;
             if (cls == 0xe4) goto collect_health;
             goto collected;
@@ -247,7 +247,7 @@ collected:
             DeleteMoby(moby);
             return;
         }
-        *(int *)(moby + 0x94) = 0;
+        *(int *)&((Moby *)moby)->collision = 0;
         moby[0x31] = 0;
         ((Moby *)moby)->flags |= 1;
         ((Moby *)moby)->scale = *(float *)(*(char **)(moby + 0x24) + 0x24) * 0.1f;

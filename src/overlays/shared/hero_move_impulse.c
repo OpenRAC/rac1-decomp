@@ -82,8 +82,8 @@ void Hero_UpdateHopMovement(void) {
     state = D_0013F450_s.state.current;
     if (state == 10) {
         build_scaled_hero_move_impulse(0.7f, g_frame_time * 0.0f);
-        qcopy(&D_0013F450_s.motion.unk150, &D_0013F450_s.move_impulse);
-        D_0013F450_s.ground_speed = D_0013F450_s.motion.unk164;
+        qcopy(&D_0013F450_s.motion.momentum, &D_0013F450_s.move_impulse);
+        D_0013F450_s.ground_speed = D_0013F450_s.motion.flat_speed;
     } else if (state == 16) {
         if (scale_ticks(0x36) < D_0013F450_s.state_timer) {
             ApproachValue(&D_0013F450_s.jump_gravity, g_frame_time_sq * 25.0f, g_frame_time_sq * 7.0f);
@@ -134,10 +134,10 @@ void Hero_UpdateHopMovement(void) {
         D_0013F450_s.motion.velocity.f[0] += FastCos(D_0013F450_s.takeoff_yaw) * a;
         D_0013F450_s.motion.velocity.f[1] += FastSin(D_0013F450_s.takeoff_yaw) * a;
         build_scaled_hero_move_impulse(0.7f, g_frame_time * 0.0f);
-        qcopy(&D_0013F450_s.motion.unk150, &D_0013F450_s.move_impulse);
+        qcopy(&D_0013F450_s.motion.momentum, &D_0013F450_s.move_impulse);
     } else if (state == 0x11) {
         D_0013F450_s.motion.move_yaw = D_0013F450_s.unk470.f[3];
-        qcopy(&D_0013F450_s.motion.unk170, &D_0013F450_s.unk470);
+        qcopy(&D_0013F450_s.motion.move_dir, &D_0013F450_s.unk470);
         if (scale_ticks(9) < D_0013F450_s.state_timer) {
             turn_to(-1, g_frame_scale_sq * 0.042f, g_frame_scale_sq * 0.2f, g_frame_time * 11.868238f);
         }
@@ -147,22 +147,22 @@ void Hero_UpdateHopMovement(void) {
                 D_0013F450_s.motion.velocity.f[1] = FastSin(D_0013F450_s.motion.move_yaw) * (g_frame_time * 4.9f);
             } else {
                 set_gravity_relative_vector_length_xy(D_0013F450_s.motion.velocity.f, D_0013F450_s.motion.velocity.f, 0.0f);
-                vec_scale_to_length(&tmp, &D_0013F450_s.motion.unk170, g_frame_time * 4.9f);
+                vec_scale_to_length(&tmp, &D_0013F450_s.motion.move_dir, g_frame_time * 4.9f);
                 FastVecAdd(&D_0013F450_s.motion.velocity, &D_0013F450_s.motion.velocity, &tmp);
             }
         }
-        D_0013F450_s.ground_speed = D_0013F450_s.motion.unk164;
+        D_0013F450_s.ground_speed = D_0013F450_s.motion.flat_speed;
     } else {
         if (state == 0x2D) {
             x = D_0013F450_s.motion.rot.f[2];
-            D_0013F450_s.motion.unk188 = SpringAngle(&x, D_0013F450_s.motion.move_yaw, &D_0013F450_s.motion.unk184, 0, g_frame_scale_sq * 0.018f, g_frame_scale_sq * 0.2f, g_frame_time * 7.330383f);
+            D_0013F450_s.motion.yaw_error = SpringAngle(&x, D_0013F450_s.motion.move_yaw, &D_0013F450_s.motion.yaw_rate, 0, g_frame_scale_sq * 0.018f, g_frame_scale_sq * 0.2f, g_frame_time * 7.330383f);
             a = FastSubRots(x, D_0013F450_s.motion.rot.f[2]);
             rotate_hero_about_fixed_local_pivot(0.0f, 0.0f, a);
         } else {
             turn_to(0, g_frame_scale_sq * 0.04f, g_frame_scale_sq * 0.2f, D_0013F450_s.air_turn_rate);
         }
         build_scaled_hero_move_impulse(0.7f, g_frame_time * 0.0f);
-        qcopy(&D_0013F450_s.motion.unk150, &D_0013F450_s.move_impulse);
+        qcopy(&D_0013F450_s.motion.momentum, &D_0013F450_s.move_impulse);
         arg = g_frame_time_sq * 20.0f;
         if (D_0013F450_s.target_speed < D_L12_0017C2D0[0] * g_frame_time * 0.2f) {
             if (D_0013F450_s.state.control_mode == 2) {

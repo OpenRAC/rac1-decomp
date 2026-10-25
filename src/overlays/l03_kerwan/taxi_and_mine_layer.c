@@ -1010,7 +1010,7 @@ extern short D_L03_00161B80_g __asm__("D_L03_00161B80");
 
 /* Sets two speed pairs on a moby's data from level constants scaled by degrees-to-radians and the frame scale. */
 void update_taxi_bobbing_and_rocking(char *m) {
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     update_moby_vertical_oscillation(*(float *)&D_L03_00161B70_g, *(float *)&D_L03_00161B74_g * 0.0174532925f * g_frame_time, m, (float *)(d + 0xEC), (float *)(d + 0xE8));
     update_moby_rotation_oscillation(m, d + 0xF0, d + 0xF4, *(float *)&D_L03_00161B78_g, *(float *)&D_L03_00161B7C_g * 0.0174532925f * g_frame_time, *(float *)&D_L03_00161B80_g * 0.0174532925f * g_frame_time);
 }
@@ -1428,7 +1428,7 @@ void helga_update(struct Moby *m) {
         tracking = 1;
         if (vec_distance_xy(&m->pos, g) < 8.0f &&
             (h = (struct Hero *)((u8 *)g - 0x80),
-             FastDiffRots(m->rot.z, fast_atan2(h->motion.unkD0.f[0] - m->pos.x, h->motion.unkD0.f[1] - m->pos.y))) <
+             FastDiffRots(m->rot.z, fast_atan2(h->motion.body_center.f[0] - m->pos.x, h->motion.body_center.f[1] - m->pos.y))) <
                 1.5707964f) {
             if (FastVecLength((u8 *)g + 0x80) > 0.01f) {
                 v->watch_timer = scale_ticks(120);
@@ -1437,7 +1437,7 @@ void helga_update(struct Moby *m) {
             }
         } else if (v->watch_timer) {
             v->watch_timer = 0;
-            qcopy(&v->target, &g_hero.motion.unkD0);
+            qcopy(&v->target, &g_hero.motion.body_center);
         }
         if (((int (*)(s32 *))fast_dec_timer)(&v->target_timer)) {
             float heading;
@@ -1447,7 +1447,7 @@ void helga_update(struct Moby *m) {
             FastVecAdd(&v->target, &v->target, &m->pos);
         }
         if (v->watch_timer) {
-            qcopy(scratch_target, &g_hero.motion.unkD0);
+            qcopy(scratch_target, &g_hero.motion.body_center);
             rate = 0.04f;
             head_rate = 0.3f;
         } else {
@@ -1807,7 +1807,7 @@ void big_al_update(struct Moby *m) {
         tracking = 1;
         if (vec_distance_xy(&m->pos, g) < 8.0f &&
             (h = (struct Hero *)((u8 *)g - 0x80),
-             FastDiffRots(m->rot.z, fast_atan2(h->motion.unkD0.f[0] - m->pos.x, h->motion.unkD0.f[1] - m->pos.y))) <
+             FastDiffRots(m->rot.z, fast_atan2(h->motion.body_center.f[0] - m->pos.x, h->motion.body_center.f[1] - m->pos.y))) <
                 1.5707964f) {
             if (FastVecLength((u8 *)g + 0x80) > 0.01f) {
                 v->watch_timer = scale_ticks(120);
@@ -1816,7 +1816,7 @@ void big_al_update(struct Moby *m) {
             }
         } else if (v->watch_timer) {
             v->watch_timer = 0;
-            qcopy(&v->target, &g_hero.motion.unkD0);
+            qcopy(&v->target, &g_hero.motion.body_center);
         }
         if (((int (*)(s32 *))fast_dec_timer)(&v->target_timer)) {
             float heading;
@@ -1826,7 +1826,7 @@ void big_al_update(struct Moby *m) {
             FastVecAdd(&v->target, &v->target, &m->pos);
         }
         if (v->watch_timer) {
-            qcopy(scratch_target, &g_hero.motion.unkD0);
+            qcopy(scratch_target, &g_hero.motion.body_center);
             rate = 0.04f;
             head_rate = 0.3f;
         } else {
@@ -1890,7 +1890,7 @@ typedef struct { int pad0[8]; int source; int pad1; unsigned char type; } Hit_DD
 typedef struct { unsigned char pad[4]; short mode; unsigned char pad2[0x30]; short unk36; unsigned char pad3[0x14]; int warp; } Vars_DD158;
 
 void robot_qwark_update(unsigned char *m) {
-    Vars_DD158 *d = *(Vars_DD158 **)(m + 0x78);
+    Vars_DD158 *d = ((Vars_DD158 *)((Moby *)m)->pvars);
     Hit_DD158 *hit;
     unsigned char type;
     char *w;
@@ -2000,7 +2000,7 @@ extern void func_L00_00237B90(void);
 
 /* Shows a help message for the mode, then keeps a hud queue entry alive. */
 void update_rail_lift_help_and_hud(char *m, int mode) {
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     int h;
     switch (mode) {
     case 1:
@@ -2160,7 +2160,7 @@ extern short D_L03_00161C68;
 extern void func_L00_00263B78(float x, float y, char *a, float *p, float *q);
 /* sets two aim angles on a moby from level constants scaled by degrees-to-radians */
 void update_moby_oscillation(char *moby) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     update_moby_vertical_oscillation(*(float *)&kerwan_moby_bob_height, *(float *)&kerwan_moby_bob_rate_deg * 0.017453292f * g_frame_time, moby, (float *)(data + 0xAC), (float *)(data + 0xA8));
     update_moby_rotation_oscillation((float *)moby, (float *)(data + 0xB0), (float *)(data + 0xB4), *(float *)&kerwan_moby_sway_amplitude, *(float *)&kerwan_moby_sway_rate_a_deg * 0.017453292f * g_frame_time, *(float *)&kerwan_moby_sway_rate_b_deg * 0.017453292f * g_frame_time);
 }

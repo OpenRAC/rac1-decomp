@@ -268,7 +268,7 @@ void sand_shark_update(unsigned char *moby) {
     }
     *(volatile int *)0x10000010 = 0x81;
     *(volatile int *)0x10000000 = 0;
-    d = *(Vars_2D5250 **)(moby + 0x78);
+    d = ((Vars_2D5250 *)((Moby *)moby)->pvars);
     Manipulator_ApplyScale(2.1f, (int)moby, 0, d->blink);
     if (((Moby *)moby)->visible != 0 && FastVecDist(moby + 0x10, aridia_camera_pos) < 28.0f) {
         set_ground_height_band(moby);
@@ -279,12 +279,12 @@ void sand_shark_update(unsigned char *moby) {
     switch (((Moby *)moby)->state) {
     case 0:
         if (d->i290 == -1) {
-            STUB_printf(sand_shark_no_path_fmt, *(short *)(moby + 0xB2));
+            STUB_printf(sand_shark_no_path_fmt, *(short *)&((Moby *)moby)->save_id);
             DeleteMoby(moby);
             return;
         }
         if (*(int *)aridia_paths[d->i290] == 0) {
-            STUB_printf(sand_shark_empty_path_fmt, *(short *)(moby + 0xB2));
+            STUB_printf(sand_shark_empty_path_fmt, *(short *)&((Moby *)moby)->save_id);
             DeleteMoby(moby);
             return;
         }
@@ -316,7 +316,7 @@ void sand_shark_update(unsigned char *moby) {
             }
             ((Moby *)moby)->pos.z += 10.0f;
             ((Moby *)moby)->state = 0xC;
-            *(int *)(moby + 0x94) = 0;
+            *(int *)&((Moby *)moby)->collision = 0;
             ((Moby *)moby)->flags |= 1;
             ((Moby *)moby)->flags &= 0xEFFF;
             if (((Moby *)moby)->prev_seq != 0) {
@@ -331,7 +331,7 @@ void sand_shark_update(unsigned char *moby) {
         } else if (d->i258 >= 0) {
             ((Moby *)moby)->state = 0x1D;
             ((Moby *)moby)->flags |= 0x41;
-            *(int *)(moby + 0x94) = 0;
+            *(int *)&((Moby *)moby)->collision = 0;
             ((Moby *)moby)->flags &= 0xEFFF;
         } else {
             ((Moby *)moby)->state = 1;
@@ -350,7 +350,7 @@ void sand_shark_update(unsigned char *moby) {
         }
         ((Moby *)moby)->flags &= 0xFFBE;
         ((Moby *)moby)->flags |= 0x1000;
-        *(int *)(moby + 0x94) = *(int *)(*(char **)(moby + 0x24) + 0x10);
+        *(int *)&((Moby *)moby)->collision = *(int *)(*(char **)(moby + 0x24) + 0x10);
         d->i258 = -1;
         d->t25C = scale_ticks(0x1518);
         ((Moby *)moby)->state = 0;
@@ -756,7 +756,7 @@ void sand_shark_update(unsigned char *moby) {
             vec_scale_to_length(d->vel, d->vel, k);
             d->vel[2] = vz;
             qcopy(moby + 0x10, m + 0x10);
-            *(int *)(moby + 0x94) = *(int *)(*(char **)(moby + 0x24) + 0x10);
+            *(int *)&((Moby *)moby)->collision = *(int *)(*(char **)(moby + 0x24) + 0x10);
             ((Moby *)moby)->flags &= 0xFFFE;
             ((Moby *)moby)->flags |= 0x1000;
             if (((Moby *)moby)->prev_seq != 0xB) {
@@ -782,7 +782,7 @@ void sand_shark_update(unsigned char *moby) {
         d->vel[2] -= g_frame_time_sq * 10.8f;
         lim = sand_shark_sink_depth;
         if (((Moby *)moby)->pos.z < d->home[2] - lim) {
-            *(int *)(moby + 0x94) = *(int *)(*(char **)(moby + 0x24) + 0x10);
+            *(int *)&((Moby *)moby)->collision = *(int *)(*(char **)(moby + 0x24) + 0x10);
             ((Moby *)moby)->flags |= 0x1000;
             ((Moby *)moby)->pos.z = d->home[2] - lim;
             ((Moby *)moby)->state = 0x17;
@@ -816,7 +816,7 @@ void sand_shark_update(unsigned char *moby) {
                 ((Moby *)moby)->state = 0x1A;
                 qcopy(moby + 0x10, d->home);
                 ((Moby *)moby)->pos.z -= 10.0f;
-                *(int *)(moby + 0x94) = 0;
+                *(int *)&((Moby *)moby)->collision = 0;
                 ((Moby *)moby)->flags |= 0x41;
                 break;
             }
@@ -841,7 +841,7 @@ void sand_shark_update(unsigned char *moby) {
             ((Moby *)moby)->alpha = 0x80;
             ((Moby *)moby)->state = 0x1A;
             qcopy(moby + 0x10, d->home);
-            *(int *)(moby + 0x94) = 0;
+            *(int *)&((Moby *)moby)->collision = 0;
             ((Moby *)moby)->pos.z -= 10.0f;
             break;
         }
@@ -1067,7 +1067,7 @@ extern void func_L00_0025E590(void *, void *);
 /* Path-following enemy: respawns at its home point on request, takes hits (dies and drops to the
    ground), then follows its path and retargets the hero when it strays. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/l02/gameplay/entities/002400c8.c, FUN_L02_002d5c88. */
 void handle_sand_shark_damage_and_targeting(unsigned char *moby) {
-    Vars_2D70C0 *d = *(Vars_2D70C0 **)(moby + 0x78);
+    Vars_2D70C0 *d = ((Vars_2D70C0 *)((Moby *)moby)->pvars);
     char *h;
     int *path;
     int hit;
@@ -1092,7 +1092,7 @@ void handle_sand_shark_damage_and_targeting(unsigned char *moby) {
         }
         ((Moby *)moby)->state = 0x1A;
         qcopy(moby + 0x10, d->home);
-        *(int *)(moby + 0x94) = 0;
+        *(int *)&((Moby *)moby)->collision = 0;
         ((Moby *)moby)->pos.z -= 10.0f;
     }
     if (d->i38 != 0 ||
@@ -1144,7 +1144,7 @@ void handle_sand_shark_damage_and_targeting(unsigned char *moby) {
             d->f170 = 7.0f;
             d->f174 = 14.0f;
             ((Moby *)moby)->state = 0x18;
-            *(int *)(moby + 0x94) = 0;
+            *(int *)&((Moby *)moby)->collision = 0;
             d->b117 = 0x78;
             RerollEffectCounter(moby, d->anim);
         }
@@ -1190,7 +1190,7 @@ void *handle_sand_shark_suck_cannon_storage(char *moby, void *v) {
     if (r) {
         int idx;
         moby[0x20] = 9;
-        idx = *(int *)(*(char **)(moby + 0x78) + 0x288);
+        idx = *(int *)(((char *)((Moby *)moby)->pvars) + 0x288);
         if (idx >= 0) {
             char *o = *(char **)(D_L02_00160058_g + idx * 256 + 0x78);
             (*(int *)(o + 0x14C))--;
@@ -1225,7 +1225,7 @@ extern int func_L00_0025A778(void *, void *, int);
 extern int func_001F9850(int);
 
 void begin_sand_shark_return_home_if_outside_path(unsigned char *moby) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     char *entry = aridia_paths[*(int *)(data + 0x290)];
     if (IsPointInPolygon(moby + 0x10, entry + 0x10, *(int *)entry) == 0) {
         ((Moby *)moby)->state = 0x12;
@@ -1853,7 +1853,7 @@ void ElevatorUpdate(Moby *m) {
             }
             break;
         case 3: {
-            float *hero_feet = g_hero.motion.unkD0.f;
+            float *hero_feet = g_hero.motion.body_center.f;
             float speed;
 
             if (!test_point_in_transformed_unit_cylinder(hero_feet, d->joint)
@@ -1932,7 +1932,7 @@ typedef struct {
 void DrawRotatingQuadRing(char *m) {
     L02RingPacket packet;
     L02RingMatrix matrix;
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     int bound_index = (*(int *)(d + 0xA0)) << 7;
     char *entry = (char *)(bound_index + aridia_elevator_volumes);
     float translation = *(float *)(d + 0xB8);
@@ -2200,7 +2200,7 @@ extern char *func_L00_0025B478(void *, int, int);
 
 /* Enemy hit reaction: on a hit takes damage and is knocked back; when its health runs out it is flung and dies. */
 void handle_sand_shark_nest_damage(char *m) {
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     float v[4];
     int hit;
     float dmg;
@@ -2779,7 +2779,7 @@ void advance_transport_pod_rails_to_offsets(char *moby) {
 // Copies the moby position into two linked objects and eases their heights toward it.
 void snap_transport_pod_rails_to_offsets(char *moby)
 {
-    char *d = *(char **)(moby + 0x78);
+    char *d = ((char *)((Moby *)moby)->pvars);
     char *a = *(char **)(d + 0x84);
     float k, k2;
     float r;
@@ -2993,7 +2993,7 @@ extern short D_L02_00161D24;
 extern int D_001414D4;
 // Sets two sound-channel gains from distance when the expanding range reaches the hero.
 void play_rocket_launcher_delayed_shot_sounds(char *moby) {
- char *data = *(char **)(moby + 0x78);
+ char *data = ((char *)((Moby *)moby)->pvars);
  float distance;
  int sound_a, sound_b, gain_a, gain_b;
  if (*(float *)(data + 0x10) >= 0.0f) {
@@ -3086,7 +3086,7 @@ extern float D_0015EE6C MACRO_ADDR;
 
 // Moby update: copy position, then wait for a partner moby and slide toward it.
 void tresspasser_door1_update(unsigned char *moby) {
-    char *d = *(char **)(moby + 0x78);
+    char *d = ((char *)((Moby *)moby)->pvars);
     float a[4];
     float b[4];
     switch (((Moby *)moby)->state) {
@@ -3121,7 +3121,7 @@ void tresspasser_door1_update(unsigned char *moby) {
 }
 /* moves a moby through three states: latch position, wait for a peer to reach state 4, then slide toward it */
 void tresspasser_door2_update(char *moby) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     switch (((unsigned char *)moby)[0x20]) {
     case 0:
         qcopy(data, moby + 0x10);
@@ -3161,7 +3161,7 @@ extern short D_L02_00161D30;
 void sandshark_egg_update(char *moby) {
     float u[4];
     float v[4];
-    char *d = *(char **)(moby + 0x78);
+    char *d = ((char *)((Moby *)moby)->pvars);
     int i;
     float *vp;
     int r;

@@ -888,7 +888,7 @@ int suck_get_aim_height(char *arg0) {
     if ((((Moby *)arg0)->flags & 0x20) == 0) {
         goto ret0;
     }
-    return **(int **)(arg0 + 0x78);
+    return *((int *)((Moby *)arg0)->pvars);
 }
 
 /* func_00215048 for the +0x10 field. */
@@ -900,7 +900,7 @@ int read_state_field(char *arg0) {
     if ((((Moby *)arg0)->flags & 0x20) == 0) {
         goto ret0;
     }
-    return *(int *)(*(char **)(arg0 + 0x78) + 0x10);
+    return *(int *)(((char *)((Moby *)arg0)->pvars) + 0x10);
 }
 
 LINKER_REMNANT("asm/remnants/text", func_002150A8);

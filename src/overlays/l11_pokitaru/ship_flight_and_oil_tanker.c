@@ -141,7 +141,7 @@ float compute_ship_target_reticle_distance_squared(void *moby_v, void *o_v) {
 }
 /* counts the listed mobys of the type that are active, and of those the ones with 0x31 set */
 void count_active_and_visible_listed_mobys(void *a0, void *a1, void *a2) {
-    char *d = *(char **)((char *)a0 + 0x78);
+    char *d = ((char *)((Moby *)a0)->pvars);
     int type = *(short *)(d + 0x108);
     short *p;
     *(unsigned short *)a1 = 0;
@@ -233,7 +233,7 @@ extern short D_L11_001621FC;
 
 /* Draws the Pokitaru jet HUD: frame halves, a marker on every candidate target, ammo icons, gauge sprites and the lock-on marker; plays the low-health, low-ammo and idle help messages and refreshes the gauge colour table. */
 void draw_ship_hud(char *moby) {
-    char *d = *(char **)(moby + 0x78);
+    char *d = ((char *)((Moby *)moby)->pvars);
     char *s;
     short *p;
     unsigned char *base;
@@ -1230,7 +1230,7 @@ extern unsigned char D_0013F450[];
 
 // Clamps and blends camera inputs near the edges of the movement bounds. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/l11/gameplay_vendor_0030c788.c, FUN_L11_00313f60.
 void adjust_ship_steering_for_flight_bounds(char *moby, float *a, float *b) {
-    char *d = *(char **)(moby + 0x78);
+    char *d = ((char *)((Moby *)moby)->pvars);
     float v[4];
     float zz, dist, tmp, hi, lo, f, t, r, s;
     unsigned char *base;
@@ -2061,7 +2061,7 @@ extern short D_L11_0016238C;
 
 /* turns a moby toward a point and, while in range, spawns a puff */
 void update_moby_target_heading_and_conditional_movement(char *m, float *p) {
-    char *data = *(char **)(m + 0x78);
+    char *data = ((char *)((Moby *)m)->pvars);
     float v[3];
     char tmp[16];
     float ang = fast_atan2(p[0] - ((Moby *)m)->pos.x, p[1] - ((Moby *)m)->pos.y);
@@ -2673,7 +2673,7 @@ void process_oil_tanker_damage_and_destruction(void *moby_v) {
 }
 /* Collects this moby and its linked mobys into out[]; returns the count. */
 int collect_oil_tanker_chain_mobys(char *moby, void **out) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     int i;
     int count = *(int *)(data + 0x64) + 1;
     out[0] = moby;
@@ -2753,7 +2753,7 @@ extern void *func_L00_00265050_s(char *, int, void *, void *, int, int, float *,
 
 /* Bubbling vent: puffs a bubble while the hero is near; on trigger spawns three debris pieces and goes idle. */
 void update_oil_tanker_link_effects_and_destruction(char *m) {
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     float v[4];
     float w[4];
     float r[4];
@@ -2808,7 +2808,7 @@ extern short D_L11_00162418;
 
 // Update function for a moby that eases values, then flies to a target and bursts.
 void Moby1297Update(unsigned char *moby) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     float v[4];
     float *vp;
     spawn_energy_sphere_particles((char *)moby);
@@ -2877,7 +2877,7 @@ char *spawn_class_511_moby_with_sparks(char *src, void *pos, int ticks) {
 }
 /* Copies the vector src into the moby's position and sets a data word to 5. */
 void set_moby_position_and_refresh_removal_timer(char *arg, void *src) {
-    char *dst = *(char **)(arg + 0x78);
+    char *dst = ((char *)((Moby *)arg)->pvars);
     qcopy(arg + 0x10, src);
     *(int *)(dst + 0x28) = 5;
 }
@@ -2888,7 +2888,7 @@ extern int func_001F9850(int);
 void Moby1297_Launch(char *arg, void *src) {
     char *dst;
     arg[0x20] = 2;
-    dst = *(char **)(arg + 0x78);
+    dst = ((char *)((Moby *)arg)->pvars);
     qcopy(dst, src);
     *(int *)(dst + 0x20) = scale_ticks(0x3C);
 }
@@ -2933,7 +2933,7 @@ extern short D_L11_00162414, D_L11_00162410;
 void spawn_energy_sphere_particles(char *moby) {
     float v0[4];
     float v1[4];
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     unsigned char *q;
     float *p = (float *)(moby + 0x10);
     int i;
@@ -3279,7 +3279,7 @@ extern unsigned char D_0013D50F[];
 
 /* Moby update that deletes itself or shows a banner depending on its data. */
 void update_moby_list_empty_dialogue_trigger(char *moby) {
-    int *data = *(int **)(moby + 0x78);
+    int *data = ((int *)((Moby *)moby)->pvars);
     if (data[0] == -1) {
         DeleteMoby(moby);
     } else if (data[1] != -1 && count_active_moby_group_members(data[1], -1) == 0) {
@@ -3439,7 +3439,7 @@ void spawn_bubble_spark(char *m) {
     float v2[4];
     char *d;
     int c0, c1, c2, c3, c4;
-    d = *(char **)(m + 0x78);
+    d = ((char *)((Moby *)m)->pvars);
     rand_vec(v1, 0.0f, *(float *)&bubble_trail_jitter * g_frame_time);
     FastVecAdd(v1, v1, d);
     clear_u64_value(v2);

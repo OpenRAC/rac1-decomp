@@ -22,7 +22,7 @@ extern char D_L05_0015F660[] MACRO_ADDR;
 /* When func_001F9908(data + 0x84) is nonzero, makes two func_L00_00272770 calls at random points around the
  * moby (one with +2.0, one with -2.0), then stores a random 3.0 to 5.0 value, as an int, at data + 0x84. */
 void spawn_sharkigator_surface_effects(char *moby) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     int i;
     float v[4];
     unsigned char *r;
@@ -129,7 +129,7 @@ extern int D_L05_0015F6B0 MACRO_ADDR;
 // Updates a moby's pulsing colour and its draw hook.
 void update_moby_glow_and_queue_draw(char *moby) {
     if ((unsigned char)moby[0x21] != 0xFF && ((unsigned char *)moby)[0x31] != 0) {
-        char *data = *(char **)(moby + 0x78);
+        char *data = ((char *)((Moby *)moby)->pvars);
         char *p = data + 0x330;
         int i;
         int col;
@@ -212,7 +212,7 @@ typedef struct {
  * three trail points per frame in the ring buffers of the data block; state 2 spawns three explosions and
  * deletes it. */
 void scenery_ship_update(char *moby) {
-    Data_2D8388 *d = *(Data_2D8388 **)(moby + 0x78);
+    Data_2D8388 *d = ((Data_2D8388 *)((Moby *)moby)->pvars);
     char *r;
     char *p;
     char *cur;
@@ -319,11 +319,11 @@ void scenery_ship_update(char *moby) {
             func_001F49B0_2D8388(func_L05_002D8B68_2D8388, moby);
         }
         if (((Moby *)moby)->pos.x < 8.0f) {
-            *(int *)(moby + 0x94) = 0;
+            *(int *)&((Moby *)moby)->collision = 0;
         } else if (((Moby *)moby)->pos.y < 8.0f) {
-            *(int *)(moby + 0x94) = 0;
+            *(int *)&((Moby *)moby)->collision = 0;
         } else {
-            *(int *)(moby + 0x94) = *(int *)(*(char **)(moby + 0x24) + 0x10);
+            *(int *)&((Moby *)moby)->collision = *(int *)(*(char **)(moby + 0x24) + 0x10);
         }
         if (r != 0 && 0.0f < *(float *)(r + 0x2C)) flag = 1;
         if (flag) ((Moby *)moby)->state = 2;
@@ -354,7 +354,7 @@ extern void func_00215CA8(int *, int, void *, float *, int, float);
 
 // Advances the moby's path parameter by a scaled step, wraps it, and samples the path.
 void advance_scenery_ship_along_path(char *moby, int *path) {
-    float *d = *(float **)(moby + 0x78);
+    float *d = ((float *)((Moby *)moby)->pvars);
     d[2] = d[2] + *(float *)&rilgar_scenery_ship_speed * g_frame_time / d[3];
     if ((float)path[0] < d[2]) {
         d[2] = d[2] - (float)path[0];
@@ -483,7 +483,7 @@ extern int func_001F9850(int);
 
 /* Grazing critter: wanders between random points of its path, turning toward the next one; wakes up when the hero is far. */
 void amoeboid_update(unsigned char *m) {
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     float dir[4];
     handle_amoeboid_hits(m);
     switch (((Moby *)m)->state) {
@@ -528,7 +528,7 @@ void amoeboid_update(unsigned char *m) {
             ((Moby *)m)->state = 1;
             ((Moby *)m)->visible = 1;
             ((Moby *)m)->flags &= 0xFFFE;
-            *(int *)(m + 0x94) = *(int *)(*(char **)(m + 0x24) + 0x10);
+            *(int *)&((Moby *)m)->collision = *(int *)(*(char **)(m + 0x24) + 0x10);
         }
         break;
     }
@@ -695,7 +695,7 @@ extern short D_L05_00161B44;
 
 /* Extermibot update: wakes from its dormant pose, walks its path, closes in on the target and strikes it, bursts into sparks between strikes, and dies on a hit. */
 void extermibot_update(unsigned char *m) {
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     char *t;
     float dir[4];
     float out[4];
@@ -756,7 +756,7 @@ void extermibot_update(unsigned char *m) {
         if (*(int *)(d + 0x2B4) != 0) {
             ((Moby *)m)->state = 0xC;
             ((Moby *)m)->visible = 0;
-            *(int *)(m + 0x94) = 0;
+            *(int *)&((Moby *)m)->collision = 0;
             ((Moby *)m)->flags &= 0xEFFF;
             ((Moby *)m)->pos.z -= 20.0f;
             ((Moby *)m)->draw_dist = 0;
@@ -1381,7 +1381,7 @@ int test_extermibot_offset_path_clearance(char *moby, float *goal, float s)
 {
     float v[4];
     float w[4];
-    char *d = *(char **)(moby + 0x78);
+    char *d = ((char *)((Moby *)moby)->pvars);
     float a;
     a = fast_atan2(goal[0] - ((Moby *)moby)->pos.x, goal[1] - ((Moby *)moby)->pos.y);
     a = FastAddRots(a, *(float *)(d + 0x294) * 1.5f);
@@ -1562,7 +1562,7 @@ typedef int u128_305778 __attribute__((mode(TI)));
 
 /* Extermitank update: spawns its two parts, follows its path, turns its turret toward the hero and sprays particles while firing. */
 void extermitank_update(unsigned char *m) {
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     float v10[4];
     float v20[4];
     float v30[4];
@@ -1837,7 +1837,7 @@ extern short D_L05_00161BB4;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l05/gameplay/entities/002d1688.c, FUN_L05_00305178. */
 void handle_extermitank_hits_and_sync_children(char *moby) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     char *first;
     char *second;
     char *part0;
@@ -1983,7 +1983,7 @@ typedef struct {
 
 /* Drops stale entries from the moby's 8 slots, then pushes each remaining one away from the hero. */
 void process_extermitank_particle_hits(char *m) {
-    char **slots = (char **)(*(char **)(m + 0x78) + 0x1A0);
+    char **slots = (char **)(((char *)((Moby *)m)->pvars) + 0x1A0);
     char *base;
     Hit_306CF0 h;
     int i;
@@ -2022,7 +2022,7 @@ extern float func_001F9FA8(float);
 
 /* Moves a point along a looped path of 16-byte nodes stored in the moby's data. */
 void copy_racer_path_node(char *moby, int idx, float *out) {
-    char *p = *(char **)(*(char **)(moby + 0x78) + 0x244);
+    char *p = *(char **)(((char *)((Moby *)moby)->pvars) + 0x244);
     float v[4];
     float a;
     qcopy(out, p + 0x10 + idx * 16);
@@ -2046,7 +2046,7 @@ typedef struct {
 /* Advances the path-node index at +0x258, re-aiming at each node, until the heading test and the
  * distance limits (4.0 and 2.0) are satisfied. */
 void advance_racer_path_node(char *moby) {
-    char *d = *(char **)(moby + 0x78);
+    char *d = ((char *)((Moby *)moby)->pvars);
     float target[4];
     float heading, distance;
 
@@ -2087,7 +2087,7 @@ extern char *D_L05_001B0CB0[];
 
 /* advances a moby's path waypoint until it reaches one flagged 2.0 */
 void start_racer_branch_jump(char *moby) {
-    char *d = *(char **)(moby + 0x78);
+    char *d = ((char *)((Moby *)moby)->pvars);
     char *cur = *(char **)(d + 0x244);
     int idx;
     int off;
@@ -2123,7 +2123,7 @@ void blend_racer_and_child_animations(char *moby, int a1, int a2, int a3) {
     float max;
     int idx;
     MobyBlendAnimation(moby, a1, a2, a3);
-    data = *(char **)(moby + 0x78);
+    data = ((char *)((Moby *)moby)->pvars);
     child = *(char **)(data + 0x268);
     if (child != 0) {
         ratio = *(float *)(child + 0x5C) / *(float *)(moby + 0x5C);
@@ -2151,7 +2151,7 @@ void update_racer_jump_animations(unsigned char *moby) {
     char *p;
     short s;
 
-    data = *(char **)(moby + 0x78);
+    data = ((char *)((Moby *)moby)->pvars);
     if (*(int *)(data + 0x26C) != 0) {
         if (((Moby *)moby)->prev_seq != 5) {
             r = scale_ticks(3);
@@ -2522,7 +2522,7 @@ extern short D_L05_00161DA8;
 
 // Update function for a swaying moby: picks a random angle, then eases and rotates it.
 void floating_platform_update(unsigned char *moby) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     float v[4];
     float w[4];
     float d[4];
@@ -2570,7 +2570,7 @@ extern void func_L00_002617B0_0D3F0(char *, float *, float *, char *) __asm__("f
  * State 1: remembers the moby's position and velocity quads, runs func_L00_00261568, and feeds
  * the position change to func_L00_002617B0. */
 void box_update(unsigned char *m) {
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     char *p;
     char *q;
     float v0[4] __attribute__((aligned(16)));
@@ -2939,7 +2939,7 @@ extern char D_L05_001D6BC0[];
 
 // copies the moby's x position onto each linked moby of type 0x33F, following the parent's offset
 void synchronize_group_water_heights(char *moby) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     short *p = rilgar_moby_groups[((Moby *)moby)->group];
     char (*base)[256] = (char (*)[256])moby_pool_4f60;
     do {

@@ -55,7 +55,7 @@ void timed_activation_pads_update(unsigned char *moby)
 
     if (moby == 0)
         return;
-    d = *(char **)(moby + 0x78);
+    d = ((char *)((Moby *)moby)->pvars);
     if (d == 0)
         return;
 
@@ -200,7 +200,7 @@ extern f32 D_0015EE6C MACRO_ADDR;
 
 void door_update(u8 *moby)
 {
-    u8 *data = *(u8 **)(moby + 0x78);
+    u8 *data = ((u8 *)((Moby *)moby)->pvars);
     u8 *other;
     f32 vectors[8];
     f32 distance;
@@ -335,7 +335,7 @@ extern f32 D_0015EE6C MACRO_ADDR;
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b1e48.c, FUN_L07_0031aee0. */
 void bridge_update(u8 *moby)
 {
-    u8 *data = *(u8 **)(moby + 0x78);
+    u8 *data = ((u8 *)((Moby *)moby)->pvars);
     u8 *other;
     f32 delta[4];
     f32 old_rotation[4];

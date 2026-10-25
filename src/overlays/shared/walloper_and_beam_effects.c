@@ -30,7 +30,7 @@ extern void func_L00_002BC3B8(void *);
 
 /* Scrolls the texture offset and refreshes the five scrolling-strip records of a moby. */
 void draw_beam_and_arc_effects(char *m) {
-    char *p = *(char **)(m + 0x78);
+    char *p = ((char *)((Moby *)m)->pvars);
     float t = *(float *)&beam_arc_tex_scroll - *(float *)&beam_arc_tex_scroll_speed * frame_scale;
     *(float *)&beam_arc_tex_scroll = t;
     if (t <= -8.0f) {
@@ -206,7 +206,7 @@ extern char D_0013E633[];
 void draw_beam_anchor_camera_facing_quads(void *mv) {
     Q_2bb0b0 quad;
     V_2bb0b0 mat[4];
-    V_2bb0b0 *pos = *(V_2bb0b0 **)((char *)mv + 0x78);
+    V_2bb0b0 *pos = ((V_2bb0b0 *)((Moby *)mv)->pvars);
     unsigned int c;
     float s;
     int i;
@@ -285,7 +285,7 @@ extern float func_001FA748(float, float);
 
 /* Per-frame update of a moby that follows its parent's flag and spins. */
 void update_linked_moby_scale_and_rotation(char *m) {
-    char *p = *(char **)(m + 0x78);
+    char *p = ((char *)((Moby *)m)->pvars);
     char *par = *(char **)(p + 8);
     char *g;
     int v;
@@ -1063,7 +1063,7 @@ extern Vec4A D_L00_001DD3D0[];
 
 /* rebuilds the camera tables from a moby's matrix */
 void reset_beam_chain_and_pulse_state(char *m) {
-    char *p = *(char **)(m + 0x78);
+    char *p = ((char *)((Moby *)m)->pvars);
     if (tesla_chain_reset_pending != 0) {
         float f;
         char v[16];

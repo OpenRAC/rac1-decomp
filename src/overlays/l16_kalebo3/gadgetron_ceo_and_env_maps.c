@@ -270,7 +270,7 @@ extern float D_L16_0015F718 MACRO_ADDR;
 
 // Sets up the flags of two rows of sub-objects, then a global and a call.
 void activate_gadgetron_ceo_challenge_environment(char *moby) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     int *p = (int *)(data + 0x60);
     int i;
     for (i = 15; i >= 0; i--) {
@@ -291,7 +291,7 @@ extern void func_L16_002DF780(float);
 // Resets the moby's two arrays of handles, then starts the follow-up effect.
 void restore_gadgetron_ceo_non_challenge_environment(char *moby)
 {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     int *p;
     int i;
     p = (int *)(data + 0x60);
@@ -313,7 +313,7 @@ extern int func_00215570(void *, int);
 
 /* update: a two-state trigger on the player's state */
 void update_two_region_trigger_latch(char *moby) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     switch (*(int *)(data + 8)) {
     case 0: {
         char *g = D_0013E633 + 0xE9D;
@@ -379,9 +379,9 @@ void update_path_walker(unsigned char *m) {
     L16WalkerData *d;
     int playing = 0;
 
-    d = *(L16WalkerData **)(m + 0x78);
+    d = ((L16WalkerData *)((Moby *)m)->pvars);
     path = kalebo3_path_table[d->path_index];
-    if (((*(unsigned short *)(m + 0xA6) ^ 1) & 1) != 0) {
+    if (((*(unsigned short *)&((Moby *)m)->oclass ^ 1) & 1) != 0) {
         if (Sound_IsPlaying(m, d->sound) == 0) {
             d->sound = Moby_PlaySound(0, 4, (int)m);
         } else {
@@ -461,7 +461,7 @@ void update_path_walker(unsigned char *m) {
         break;
     }
     }
-    if (*(unsigned short *)(m + 0xA6) & 1) {
+    if (*(unsigned short *)&((Moby *)m)->oclass & 1) {
         emit_path_walker_particle(m, old);
     }
 }
@@ -512,7 +512,7 @@ extern float D_L16_00161F54 SDATA(D_L16_00161F54);
 void initialize_path_walker_group(unsigned char *m) {
     unsigned char *objects[16];
     unsigned char *previous;
-    L16WalkerData *d = *(L16WalkerData **)(m + 0x78);
+    L16WalkerData *d = ((L16WalkerData *)((Moby *)m)->pvars);
     short *list = kalebo3_moby_groups[((Moby *)m)->group];
     short count = 0, rank;
     int i;
@@ -759,7 +759,7 @@ typedef struct { L16RingVector basis[3]; L16RingVector position; } L16RingMatrix
 void DrawRingStack(char *m) {
     L16RingPacket packet;
     L16RingMatrix matrix;
-    char *d=*(char **)(m+0x78);
+    char *d=((char *)((Moby *)m)->pvars);
     int bound_index=(*(int *)((char *)d+0xA0))<<7;
     char *entry=(char *)(bound_index+(int)kalebo3_level_cylinders);
     float translation=(*(float *)((char *)d+0xB8));
@@ -857,7 +857,7 @@ extern float func_00214358(void *, int, float);
 extern void func_L16_002C57E8(void *, void *);
 void update_target_reposition_cycle(char *moby) {
     char *g = D_0013E633 + 0xE9D;
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     char *target;
     int n;
     float pos[4];

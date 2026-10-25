@@ -239,7 +239,7 @@ void update_moby_height_from_driver(char *m)
     extern char func_00214D28[];
     extern unsigned short *D_L08_001AC340[];
     int k;
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     char *o;
     unsigned short *p;
     int i;
@@ -1382,7 +1382,7 @@ void the_plumber_batalia_update(char *m) {
 
 // Sets the vendor state or closes the active interaction.
 void Moby1283SetMode(char *moby, int mode) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     moby[0x20] = 1;
     if (mode != 0) {
         if (mode <= 0) {
@@ -1425,7 +1425,7 @@ extern int func_L00_00203F20(int a, int b);
 extern float func_001F9C78(void *a, void *b);
 /* Moby update for a trigger-volume controller; tracks best times and raises Help_Request. */
 void update_batalia_item_triggers_and_help(char *m) {
-    VData *data = *(VData **)(m + 0x78);
+    VData *data = ((VData *)((Moby *)m)->pvars);
     int elapsed;
     int time;
     float volume[4];
@@ -1550,7 +1550,7 @@ extern float D_0015EE6C MACRO_ADDR;
 
 // Per-frame update: for each entry, builds a rotated vector from the moby's data and spawns an effect.
 void spawn_batalia_moby_effects_with_random_motion(char *moby) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     float a[4];
     float b[12];
     float c[4];

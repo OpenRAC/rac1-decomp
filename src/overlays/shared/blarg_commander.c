@@ -187,7 +187,7 @@ void blarg_commander_update(char *m) {
     MO *mo = (MO *)m;
     char v[16];
     st = ((Moby *)m)->prev_seq;
-    d = *(char **)(m + 0x78);
+    d = ((char *)((Moby *)m)->pvars);
     if (st == 1) {
         p = d + 0x20;
         r = mine_fall(m, p);

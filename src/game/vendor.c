@@ -1,4 +1,5 @@
 #include "common.h"
+#include "moby.h"
 #include "callees.h"
 #include "records.h"
 #include "structs.h"
@@ -1198,7 +1199,7 @@ void update_instance_attachment_points_and_lengths(char *arg0) {
     float a[4];
     float b[4];
     Cfg16 cfg;
-    char *p = *(char **)(arg0 + 0x78);
+    char *p = ((char *)((Moby *)arg0)->pvars);
 
     cfg = attachment_vertex_indices;
     transform_scaled_vertex_batch(arg0, 4, &cfg, p);

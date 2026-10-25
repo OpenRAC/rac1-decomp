@@ -366,7 +366,7 @@ extern void func_L00_002617B0(char *, void *, void *, void *);
 void FloatingPlatformUpdate(char *m) {
     float old[4];
     float delta[4];
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     qcopy(old, m + 0x10);
     if (d == 0) {
         DeleteMoby(m);
@@ -423,7 +423,7 @@ extern void func_L04_00293578(void *, char *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l04/gameplay/entities/002ca420.c, FUN_L04_002d1418. */
 void initialize_woodcut_bot_movement_data(void *m) {
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     char *p = d + 0x160;
     float speed;
     float angleHalf;
@@ -1205,7 +1205,7 @@ extern void func_L00_0025E210(void *);
 
 /* UpdateMoby_584 */
 void update_moby_translation_delta_matrix(char *m) {
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     float v[4];
     FastVecSub(v, m + 0x10, d + 0xA0);
     update_entity_matrix(d + 0x60, v, m + 0x40, m + 0x40);
@@ -1226,7 +1226,7 @@ extern int func_001FA898_r(float) __asm__("func_001FA898");
 
 /* update: blend two keyframes of a path and write the result to a position */
 void interpolate_moby_and_linked_moby_positions_on_path(char *moby) {
-    int *p = *(int **)(moby + 0x78);
+    int *p = ((int *)((Moby *)moby)->pvars);
     int *t = eudora_paths[p[2]];
     char *base = eudora_mobys;
     int o0 = p[0] * 256;
@@ -1581,7 +1581,7 @@ extern int D_L04_0015F6A8 MACRO_ADDR;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l04/unclassified_002ca420.c, FUN_L04_002e1d00. */
 void update_suck_cannon_particles(char *m) {
-    L10SpriteData_298940 *p = *(L10SpriteData_298940 **)(m + 0x78);
+    L10SpriteData_298940 *p = ((L10SpriteData_298940 *)((Moby *)m)->pvars);
     float d[4] __attribute__((aligned(16)));
     float e[4] __attribute__((aligned(16)));
     int i, col;
@@ -1626,7 +1626,7 @@ extern unsigned char D_0014C150[];
 
 // UpdateMoby_1190: Updates the gate moby: checks the player's distance, then steps its four states.
 void lieutenant_update(char *m) {
-    char *data = *(char **)(m + 0x78);
+    char *data = ((char *)((Moby *)m)->pvars);
     float a[4];
     float b[4];
     int g;
@@ -1671,13 +1671,13 @@ void lieutenant_update(char *m) {
         done:
             ((Moby *)m)->state = 3;
             ((Moby *)m)->flags |= 0x41;
-            *(int *)(m + 0x94) = 0;
+            *(int *)&((Moby *)m)->collision = 0;
         } else if (*(int *)&eudora_game_mode != 2) {
             Npc_TryStartDialog(m, data);
         }
         break;
     case 3:
-        *(int *)(m + 0x94) = 0;
+        *(int *)&((Moby *)m)->collision = 0;
         ((Moby *)m)->flags |= 0x41;
         break;
     }

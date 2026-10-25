@@ -54,7 +54,7 @@ extern unsigned char *D_L05_00160098_0F130 __asm__("D_L05_00160098") MACRO_ADDR;
 
 // Updates the claimed-slot marker: claims or reassigns a table slot while the player is near.
 void electric_gate_update(char *m) {
-    char *data = *(char **)(m + 0x78);
+    char *data = ((char *)((Moby *)m)->pvars);
     int state = ((Moby *)m)->state;
     char *base;
     char *tab;
@@ -103,13 +103,13 @@ void electric_gate_update(char *m) {
         if (*(int *)data >= 0) {
             if (D_L05_00160098_0F130[*(int *)data * 256 + 0xBC] != 0) {
                 func_0022ED80_i(1, 0, m);
-                *(int *)(m + 0x94) = 0;
+                *(int *)&((Moby *)m)->collision = 0;
                 ((Moby *)m)->state = 2;
             }
         }
         break;
     case 2:
-        if (*(int *)(m + 0x94) != 0) *(int *)(m + 0x94) = 0;
+        if (*(int *)&((Moby *)m)->collision != 0) *(int *)&((Moby *)m)->collision = 0;
         break;
     }
 }
@@ -234,7 +234,7 @@ extern int func_001FA8A8(int, int, float);
 /* Fog zone: switches the level fog between its two settings when the hero enters either trigger volume, and
  * tints a colour by the hero's side of a gate while inside the third. */
 void update_fog_zone(char *m) {
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     float v[4];
     float w[4];
     char *g = D_0013E633 + 0xE9D;
@@ -337,7 +337,7 @@ extern float advance_30F9D0(float, float, float, float, float *, float *) __asm_
    it toward the end point, 3 lowers it to 5.9 below the entry's height.
    Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/l05/gameplay/entities/0030d6a0.c, FUN_L05_0030e508. */
 void update_triggered_moby_slide_and_lowering(char *moby) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     float v[4];
     float pos;
     float speed;
@@ -1289,7 +1289,7 @@ extern char *D_L05_001B0CB0[];
 // Fill a ring of points (radius 3.5) around the moby from an angle step, rotating each by the moby's matrix.
 void place_marker_ring(char *moby) {
     int i = 0;
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     char *tab = rilgar_paths[*(int *)(data + 0x68)];
     float ang = 0.0f;
     float step = 6.28318f / (float)(*(int *)tab - 1);
@@ -1309,7 +1309,7 @@ extern void func_L03_00292AC0(char *);
 
 // Scans 8 data slots; if none of the set ones passes a check, calls a helper.
 void draw_ocean_grid_outside_clip_volumes(char *moby) {
-    int *p = *(int **)(moby + 0x78);
+    int *p = ((int *)((Moby *)moby)->pvars);
     int i;
     int none = 1;
     for (i = 0; i < 8; p++, i++) {
@@ -2233,7 +2233,7 @@ extern float sin_319F78(float) __asm__("func_001F9FA8");
  * Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/l05/gameplay/entities/0030d6a0.c, FUN_L05_00318a68. */
 void update_hero_clip_volume_outputs(char *m) {
     int state = ((Moby *)m)->state;
-    int *v = *(int **)(m + 0x78);
+    int *v = ((int *)((Moby *)m)->pvars);
     char *t;
 
     switch (state) {
@@ -2241,7 +2241,7 @@ void update_hero_clip_volume_outputs(char *m) {
         ((Moby *)m)->state = 1;
         ((Moby *)m)->flags |= 1;
         ((Moby *)m)->update_dist = 0xFF;
-        *(int *)(m + 0x94) = 0;
+        *(int *)&((Moby *)m)->collision = 0;
         break;
     case 1:
         t = D_0013E633_319F78 + 0xE9D;
@@ -2463,7 +2463,7 @@ extern unsigned char D_0014C150[][16];
 
 /* picks the nearest target slot and sets the moby's state */
 void PickNearestTargetSlot(char *moby) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     int *list = (int *)(data + 0x80);
     int i;
     int idx;
@@ -2479,14 +2479,14 @@ void PickNearestTargetSlot(char *moby) {
         if (saved_mission_state[g_current_level_index][*(int *)(data + 0xB8)] == 0xFF || saved_mission_state[g_current_level_index][*(int *)(data + 0xBC)] == 0xFF) {
             int v = *(int *)(*(char **)(moby + 0x24) + 0x10);
             moby[0x31] = 1;
-            *(int *)(moby + 0x94) = v;
+            *(int *)&((Moby *)moby)->collision = v;
             ((Moby *)moby)->flags = ((Moby *)moby)->flags & 0xFFFE;
             moby[0x20] = 1;
         } else {
             moby[0x20] = 6;
             moby[0x31] = 0;
             ((Moby *)moby)->flags = ((Moby *)moby)->flags | 1;
-            *(int *)(moby + 0x94) = 0;
+            *(int *)&((Moby *)moby)->collision = 0;
         }
         break;
     case 0:
@@ -2496,7 +2496,7 @@ void PickNearestTargetSlot(char *moby) {
         {
             int v = *(int *)(*(char **)(moby + 0x24) + 0x10);
             moby[0x31] = 1;
-            *(int *)(moby + 0x94) = v;
+            *(int *)&((Moby *)moby)->collision = v;
             ((Moby *)moby)->flags = ((Moby *)moby)->flags & 0xFFFE;
             moby[0x20] = 1;
         }
@@ -2516,7 +2516,7 @@ extern unsigned char D_0014C150[][16];
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l05/unclassified_0030d6a0.c, FUN_L05_003193a8. */
 void select_taxi_route(char *moby) {
-    char *d = *(char **)(moby + 0x78);
+    char *d = ((char *)((Moby *)moby)->pvars);
     char *p;
     float inv, a, b, r;
     switch (*(short *)(d + 0xB4)) {

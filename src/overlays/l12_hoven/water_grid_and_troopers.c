@@ -710,7 +710,7 @@ int move_hoven_anklebiter_toward_heading(char *moby, float target) {
     float v[4];
     char *d;
     int r;
-    d = *(char **)(moby + 0x78);
+    d = ((char *)((Moby *)moby)->pvars);
     *(u128 *)pos = *(u128 *)(moby + 0x10);
     ease_hoven_anklebiter_height_to_ground(moby);
     MobySpringTurn(moby, (float *)(d + 0x2A0), target, k, 0.3f, 0.2f);
@@ -1006,7 +1006,7 @@ extern float func_L00_0025CCF0(float *, float, float *, int, float, float, float
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l12/gameplay/entities/002bf140.c, FUN_L12_002e3c08. */
 void steer_platform_toward_target(char *m, float *ang, void *target, int unused, int brake) {
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     float v[4];
     float dist;
     float speed;
@@ -1513,7 +1513,7 @@ extern int func_00215570(void *, int);
 extern void func_001F49B0(void *, void *);
 
 void register_level_12_effects_draw_callback(unsigned char *moby) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     switch (((Moby *)moby)->state) {
     case 0:
         ((Moby *)moby)->state = 1;
@@ -2210,7 +2210,7 @@ extern void func_L00_00250800(void *, int, void *);
 extern void *func_L04_002CF460(void *, void *);
 
 void update_blarg_trooper_attachment(unsigned char *moby) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     unsigned char *target = *(unsigned char **)(data + 0x248);
     if (target != 0) {
         unsigned char *current;
@@ -3165,7 +3165,7 @@ extern short D_L12_00161A34;
 
 // Spawns the effect for a moby and updates its state flags from the effect timer.
 void process_helicopter_hits_and_reactivation(char *m, int flag) {
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     float a[4];
     float b[4];
     unsigned char *q;
@@ -3189,15 +3189,15 @@ void process_helicopter_hits_and_reactivation(char *m, int flag) {
     }
     ((Moby *)m)->hit_slot = 0xFF;
     if (*(int *)&planetbuster_engaged != 0 && flag != 0) {
-        *(int *)(m + 0x94) = 0;
+        *(int *)&((Moby *)m)->collision = 0;
         ((Moby *)m)->flags = (((Moby *)m)->flags | 0x41) & 0xEFFF;
     }
     if (*(int *)(d + 0xA4) == 0 && (((Moby *)m)->flags & 1) == 0) return;
     if (fast_dec_timer((int *)(d + 0xA4)) != 0 && flag != 0 && *(int *)&planetbuster_engaged == 0) {
-        *(int *)(m + 0x94) = *(int *)(*(char **)(m + 0x24) + 0x10);
+        *(int *)&((Moby *)m)->collision = *(int *)(*(char **)(m + 0x24) + 0x10);
         ((Moby *)m)->flags = (((Moby *)m)->flags & 0xFFBE) | 0x1000;
     } else {
-        *(int *)(m + 0x94) = 0;
+        *(int *)&((Moby *)m)->collision = 0;
         ((Moby *)m)->flags = (((Moby *)m)->flags | 0x41) & 0xEFFF;
     }
 }
@@ -3215,7 +3215,7 @@ extern short D_L12_00161A30;
  * places the moby at one of its points; state 1 walks the table's points (index at data + 0x60), easing the angles at
  * +0x40 and +0x48 toward the next point and setting +0x44 to 0.5236. */
 void Moby336Update(char *m) {
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     float A[4];
     float B[4];
     float C[4];

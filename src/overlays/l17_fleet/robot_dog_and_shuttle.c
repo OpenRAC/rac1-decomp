@@ -139,7 +139,7 @@ int move_robot_dog_toward_position(char *moby, float *target, float speed) {
     float ang;
     float turn;
     float tmp[3];
-    data = *(char **)(moby + 0x78);
+    data = ((char *)((Moby *)moby)->pvars);
     ang = fast_atan2(target[0] - ((Moby *)moby)->pos.x, target[1] - ((Moby *)moby)->pos.y);
     turn = g_frame_time_sq * 12.566371f;
     SteerAngleWithVelocity(yaw, (float *)(data + 0x1DC), ang, turn, turn, g_frame_time * 7.3303828f);
@@ -196,7 +196,7 @@ typedef struct {
 
 /* Aims the turret at the hero: yaw and pitch to him, clamped, become the eased part's targets. */
 void update_robot_dog_aim_joint(char *moby) {
-    AimData_1BB0 *d = *(AimData_1BB0 **)(moby + 0x78);
+    AimData_1BB0 *d = ((AimData_1BB0 *)((Moby *)moby)->pvars);
     float accel = 0.02f;
     float speed = 0.3f;
     float tmp[4];
@@ -314,7 +314,7 @@ void update_robot_dog_glow_effects(unsigned char *moby) {
 extern void func_L00_00264690(void *, int, float, float);
 void draw_three_moby_effect_quads(char *m) {
     int v = (((Moby *)m)->glow_color & 0xFFFFFF) | 0x30000000;
-    char *p = *(char **)(m + 0x78) + 0x200;
+    char *p = ((char *)((Moby *)m)->pvars) + 0x200;
     int i;
     for (i = 2; i >= 0; i--) {
         draw_offset_textured_effect_quad(p, v, 0.2f, 0.08f);
@@ -419,7 +419,7 @@ extern T4 D_L17_00162350;
 
 /* Builds the rippling 89-point ring around the moby (template points moved to its position, z waved by distance from the centre), then draws it twice with scrolled texture coordinates. */
 void DrawRippleRing(char *moby) {
-    RippleData *d = *(RippleData **)(moby + 0x78);
+    RippleData *d = ((RippleData *)((Moby *)moby)->pvars);
     T4 t;
     float scale;
     int r, g, b;
@@ -589,7 +589,7 @@ typedef struct {
 
 /* UpdateMoby 1448: a moby that alternates between two camera points and starts a cutscene on a button press. */
 void Moby1448Update(unsigned char *m) {
-    Vars1448 *v = *(Vars1448 **)(m + 0x78);
+    Vars1448 *v = ((Vars1448 *)((Moby *)m)->pvars);
     float old_pos[4];
     float old_rot[4];
     float delta[4];
@@ -747,7 +747,7 @@ extern void func_00215F80(int, int);
 
 // Picks a sound id from the moby's state value and plays it.
 void update_shuttle_help_message(char *moby) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     int mode = *(int *)(data + 0x94);
     switch (mode) {
     case 0:
@@ -803,7 +803,7 @@ struct Dat_3CC0 {
 /* Advances a moby along a three-curve path and updates its heading, pitch and speed. */
 int update_shuttle_travel_and_camera(char *moby, int idx) {
     float m[4], pos[4];
-    struct Dat_3CC0 *d = *(struct Dat_3CC0 **)(moby + 0x78);
+    struct Dat_3CC0 *d = ((struct Dat_3CC0 *)((Moby *)moby)->pvars);
     Path_3CC0 *c1 = ((Path_3CC0 **)fleet_paths)[d->a[idx]];
     Path_3CC0 *c2 = ((Path_3CC0 **)fleet_paths)[d->b[idx]];
     Path_3CC0 *c3 = ((Path_3CC0 **)fleet_paths)[d->c[idx]];
@@ -883,7 +883,7 @@ extern unsigned char D_0013D5CA[] NOT_SDA;
 /* Update for moby class 1470: watches camera boxes around the hero, gives skill points and help messages, and turns the camera. */
 void update_fleet_camera_box_watcher(char *moby) {
     int off;
-    char *d = *(char **)(moby + 0x78);
+    char *d = ((char *)((Moby *)moby)->pvars);
     int st;
     int i;
     int j;
@@ -1136,7 +1136,7 @@ typedef struct {
 void draw_fleet_backdrop_quads(char *moby) {
     Pkt pkt;
     u128_2F4E30 vv[4];
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     char *pos;
     int i;
     int k;

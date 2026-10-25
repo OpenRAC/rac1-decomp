@@ -2727,7 +2727,7 @@ extern char *func_L15_002E92C8(void *, void *);
 
 /* Per-frame update: picks a random value on spawn, then re-rolls and spawns a child when triggered. */
 void update_poison_vessel_spawner(char *moby) {
-    int *data = *(int **)(moby + 0x78);
+    int *data = ((int *)((Moby *)moby)->pvars);
     switch (((Moby *)moby)->state) {
     case 0:
         data[0] = func_001FA898_r(multiply_global_factor(*(float *)(data + 1) * 60.0f));
@@ -2916,7 +2916,7 @@ extern void func_L15_002ECAA8(void);
 
 /* UpdateMoby_1419: state machine for a timed object */
 void update_quartu_cutscene_trigger(unsigned char *moby) {
-    int *data = *(int **)(moby + 0x78);
+    int *data = ((int *)((Moby *)moby)->pvars);
     ((Moby *)moby)->update_dist = 0x80;
     switch (((Moby *)moby)->state) {
     case 0:
@@ -3037,7 +3037,7 @@ extern short D_L15_00162218;
 void emit_randomized_vertical_effect(char *moby)
 {
     float vec[4];
-    float *data = *(float **)(moby + 0x78);
+    float *data = ((float *)((Moby *)moby)->pvars);
     if (random_integer_below(*(int *)&quartu_rising_puff_chance - 1) == 0) {
         char *pos = moby + 0x10;
         clear_u64_value(vec);

@@ -721,7 +721,7 @@ extern void func_L00_00251E30(void *);
 
 /* updates a moby that drags a child moby along with it */
 void update_moby_transform_and_child(char *moby) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     char tmp[16];
     char *child;
     switch (((Moby *)moby)->state) {
@@ -737,7 +737,7 @@ void update_moby_transform_and_child(char *moby) {
         char *c = func_0020D348_m(0x764);
         *(char **)(data + 0x84) = c;
         if (c != 0) {
-            *(unsigned short *)(c + 0x32) = *(unsigned short *)(moby + 0x32);
+            *(unsigned short *)(c + 0x32) = *(unsigned short *)&((Moby *)moby)->draw_dist;
             (*(char **)(data + 0x84))[0x31] = 1;
             *(long *)(*(char **)(data + 0x84) + 0x38) = *(long *)(moby + 0x38);
             *(float *)(*(char **)(data + 0x84) + 0x2C) *= ((Moby *)moby)->scale / *(float *)(*(char **)(moby + 0x24) + 0x24);
@@ -865,7 +865,7 @@ extern char D_L18_00162698;
 /* Moby update for the class 0x772 enemy. */
 void Moby1906Update(unsigned char *m) {
     char tmp[16];
-    unsigned char *e = *(unsigned char **)(m + 0x78);
+    unsigned char *e = ((unsigned char *)((Moby *)m)->pvars);
     unsigned char *s0;
     update_gadgebot_damage_target_and_glow(m);
     switch (((Moby *)m)->state) {
@@ -889,7 +889,7 @@ void Moby1906Update(unsigned char *m) {
         h |= 1;
         ((Moby *)m)->visible = 0;
         h &= 0xEFFF;
-        *(int *)(m + 0x94) = 0;
+        *(int *)&((Moby *)m)->collision = 0;
         ((Moby *)m)->flags = h;
         break;
     }
@@ -972,7 +972,7 @@ void Moby1906Update(unsigned char *m) {
         func_L00_0025F4A8_alt(m, e + 0x40, tmp, 0.0f, 0.0f, 5, 2, 4, 1.0f, 0.5f, 9.0f, 0.5f, 4, 0.0f, 0, 1, -1, 0);
         ((Moby *)m)->state = 8;
         if (((Moby *)m)->prev_seq) MobyBlendAnimation(m, 0, 0, scale_ticks(10));
-        *(int *)(m + 0x94) = 0;
+        *(int *)&((Moby *)m)->collision = 0;
         ((Moby *)m)->flags = (((Moby *)m)->flags | 0x41) & 0xEFFF;
         break;
     }
@@ -1159,7 +1159,7 @@ float move_gadgebot_toward_target(char *self, float *src) {
     float b[4];
     float z = 0.0f;
     float h = 0.5f;
-    char *o = *(char **)(self + 0x78);
+    char *o = ((char *)((Moby *)self)->pvars);
     float dist;
     *(QVec *)&a = *(QVec *)src;
     {

@@ -2091,7 +2091,7 @@ void water_current_update(Moby *self)
                 if (cap < g_hero.ground_speed) {
                     g_hero.ground_speed = cap;
                 }
-                clear_u64_value(&g_hero.motion.unk150);
+                clear_u64_value(&g_hero.motion.momentum);
             }
         }
     } else if ((g_hero.state.prev_control_mode == 0x12 || g_hero.state.prev2_control_mode == 0x12)
@@ -2160,7 +2160,7 @@ extern void func_L01_002F6540(char *);
 void TetheredMineUpdate(char *m) {
     float dir[4];
     float tmp[4];
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     void *hit = MobyGetHitMessage(m, 0x800000, 0);
     float s;
     ((unsigned char *)m)[0xA4] = 0xFF;

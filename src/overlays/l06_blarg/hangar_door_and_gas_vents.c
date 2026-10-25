@@ -20,7 +20,7 @@ extern void func_001F9BD8(void *, void *, void *);
 
 /* Orbiting platform: circles its anchor moby at a fixed radius; the turn direction comes from the level switch state. */
 void hangar_door_update(char *m) {
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     float z;
     float a;
     float s;
@@ -64,7 +64,7 @@ void hangar_door_update(char *m) {
         s = FastSin(a) * *(float *)(d + 0xC);
         tb = blarg_scene_points;
         ((Moby *)m)->pos.y = s;
-        *(int *)(m + 0x18) = 0;
+        *(int *)&((Moby *)m)->pos.z = 0;
         tb += *(int *)d * 0x80;
         FastVecAdd(m + 0x10, m + 0x10, tb + 0x30);
         ((Moby *)m)->pos.z = z;
@@ -77,7 +77,7 @@ void hangar_door_update(char *m) {
         s = FastSin(a) * *(float *)(d + 0xC);
         tb = blarg_scene_points;
         ((Moby *)m)->pos.y = s;
-        *(int *)(m + 0x18) = 0;
+        *(int *)&((Moby *)m)->pos.z = 0;
         tb += *(int *)d * 0x80;
         FastVecAdd(m + 0x10, m + 0x10, tb + 0x30);
         ((Moby *)m)->pos.z = z;
@@ -93,7 +93,7 @@ extern float D_0015EE6C MACRO_ADDR;
 // A bridge panel: when switched it slides 11 units along its own axis, easing in and out.
 void update_moby_position_interpolation(unsigned char *moby) {
     char *data;
-    data = *(char **)(moby + 0x78);
+    data = ((char *)((Moby *)moby)->pvars);
     switch (((Moby *)moby)->state) {
     case 0: {
         char *p = (char *)moby + 0x10;
@@ -239,7 +239,7 @@ extern int func_001F9850(int);
 
 /* Swinging/spinning hazard: waits, swings with a looping sound, then rests for a random time. */
 void toxic_gas_vent_update(char *m) {
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     float s;
     if (*(int *)(d + 0x90) >= 0) {
         if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, *(int *)(d + 0x90)) != 0) {
@@ -417,7 +417,7 @@ void check_oscillating_toxic_gas_vent_collisions(char *m) {
     char *d;
     int n;
     float f25, f27, cur, prev, ang, ra, rb;
-    d = *(char **)(m + 0x78);
+    d = ((char *)((Moby *)m)->pvars);
     n = func_001FA898_r(*(float *)&toxic_gas_vent_reach / (*(float *)&spark_speed_gp * g_frame_time) * 0.25f);
     f25 = *(float *)(d + 0x80) * (float)n;
     f27 = *(float *)&toxic_gas_vent_reach * 0.25f;
@@ -432,7 +432,7 @@ void check_oscillating_toxic_gas_vent_collisions(char *m) {
     s.fC = 5627.9248f;
     s.b18 = 3;
     s.b19 = one;
-    s.h1A = *(unsigned short *)(m + 0xA6);
+    s.h1A = *(unsigned short *)&((Moby *)m)->oclass;
     for (i = 3; i >= 0; i--) {
         prev = cur;
         ra = FastAddRots(*(float *)(d + 0x84), *(float *)(d + 0x64) * 0.017453292f * FastSin(ang));
@@ -480,7 +480,7 @@ void check_timed_toxic_gas_vent_collisions(char *m)
     fl = 0x10000;
     if (*(int *)(D_0013E633 + 0x1F75) != 6) fl = 0x10001;
     q.flags = fl;
-    d = *(char **)(m + 0x78);
+    d = ((char *)((Moby *)m)->pvars);
     q.owner = m;
     q.f1C = 1.0f;
     q.i20 = 1;
@@ -489,7 +489,7 @@ void check_timed_toxic_gas_vent_collisions(char *m)
     q.fC = 5627.9248046875f;
     q.b18 = 3;
     q.b19 = 1;
-    q.s1A = *(unsigned short *)(m + 0xA6);
+    q.s1A = *(unsigned short *)&((Moby *)m)->oclass;
     sp = (*(float *)(d + 0x70) * 60.0f - (float)*(int *)(d + 0x88)) * (*(float *)&spark_speed_gp * g_frame_time);
     if (*(float *)&toxic_gas_vent_reach < sp) sp = *(float *)&toxic_gas_vent_reach;
     vec_scale_to_length(v, m + 0xD0, 0.125f);
@@ -533,7 +533,7 @@ extern void func_0022ED80(int, int, int);
 
 // Marks a moby as done when in state 2: sets state 4, clears two fields and puts its 7 children into state 5.
 void set_moby_and_links_to_states_4_and_5(char *moby) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     char **p;
     int i;
     moby[0xBC] = 1;
@@ -551,7 +551,7 @@ void set_moby_and_links_to_states_4_and_5(char *moby) {
 /* Switches a moby from state 6 to 8 and sets its ten children to state 9. */
 void set_moby_and_links_to_states_8_and_9(char *moby)
 {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     int i;
     char **p;
     moby[0xBC] = 1;
@@ -579,7 +579,7 @@ extern void func_L00_00251E30(void *);
 
 /* Puts a moby in state 2 and its seven linked mobys in state 3, resetting each one's heading. */
 void set_moby_and_links_to_states_2_and_3(char *a) {
-    char *data = *(char **)(a + 0x78);
+    char *data = ((char *)((Moby *)a)->pvars);
     char **p;
     int i;
     a[0xBC] = 1;
@@ -959,7 +959,7 @@ extern char D_0014171B[];
 #define FLD(base, off, T) (((struct { char _p[off]; T v; } *)(base))->v)
 /* Moby class 1035 update (level 06): 0 init, 1 update, 2 spawn an entry, 3 delete. */
 void update_beam_barrier(char *m) {
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     unsigned char st = ((Moby *)m)->state;
     struct {
         float matrix[4][4];
@@ -1111,7 +1111,7 @@ void update_beam_barrier(char *m) {
             }
             if (!ok5)
                 return;
-            *(int *)(m + 0x94) = 0;
+            *(int *)&((Moby *)m)->collision = 0;
             ((Moby *)m)->state = 2;
             {
                 int w = *(int *)(d + 0x10);
@@ -1216,7 +1216,7 @@ void draw_beam_barrier_segments(char *moby) {
     float segment_matrix[9][16];
     float offset[4];
     int params[9];
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     float *matrix;
     float *rotation;
     float *offset_src;
@@ -2059,7 +2059,7 @@ extern char D_0013E633[];
 extern short D_L06_00161F68;
 /* angle from a moby to its owner, clamped to the gaps between obstacles in its list */
 float compute_alien_snapper_target_gap_angle(char *self) {
-    char *owner = *(char **)(*(char **)(self + 0x78) + 0x160);
+    char *owner = *(char **)(((char *)((Moby *)self)->pvars) + 0x160);
     float hi, lo, ang, dist, v[3];
     short *p;
     if ((unsigned char)self[0x21] == 0xFF) {
@@ -2211,7 +2211,7 @@ typedef struct {
 /* Alien queen update: wakes, rises, circles and chases the hero, attacks with probes and dies through its states. */
 void alien_queen_update(unsigned char *moby)
 {
-    unsigned char *data = *(unsigned char **)(moby + 0x78);
+    unsigned char *data = ((unsigned char *)((Moby *)moby)->pvars);
     char *target;
     float v[4];
 
@@ -2246,7 +2246,7 @@ void alien_queen_update(unsigned char *moby)
         *(float *)(data + 0xDC) = func_001F9D48_q(data + 0xC0, data + 0xD0);
         *(float *)(data + 0x128) = func_00214158_q();
         *(int *)(data + 0x12C) = func_001F9850_q(0x1E);
-        *(int *)(moby + 0x94) = 0;
+        *(int *)&((Moby *)moby)->collision = 0;
         ((Moby *)moby)->flags = (((Moby *)moby)->flags | 0x4001) & 0xEFFF;
         ((Moby *)moby)->pos.z = ((Moby *)moby)->pos.z + 17.5f;
         func_L06_002FAD78_q(*(int *)(data + 0xF4));
@@ -2271,7 +2271,7 @@ void alien_queen_update(unsigned char *moby)
         func_L06_002DB1D8_q(*(int *)(data + 0x104));
         *(int *)(data + 0x170) = 0;
         ((Moby *)moby)->state = 2;
-        *(int *)(moby + 0x94) = *(int *)(*(char **)(moby + 0x24) + 0x10);
+        *(int *)&((Moby *)moby)->collision = *(int *)(*(char **)(moby + 0x24) + 0x10);
         ((Moby *)moby)->flags = (((Moby *)moby)->flags | 0x1000) & 0xFFFE;
         if ((unsigned char)((Moby *)moby)->prev_seq != 8) {
             func_00213DE0_q(moby, 8, 0, func_001F9850_q(1));
@@ -2501,7 +2501,7 @@ void alien_queen_update(unsigned char *moby)
             ((Moby *)moby)->flags |= 1;
             ((Moby *)moby)->state = 0xF;
             ((Moby *)moby)->visible = 0;
-            *(int *)(moby + 0x94) = 0;
+            *(int *)&((Moby *)moby)->collision = 0;
             if ((unsigned char)((Moby *)moby)->prev_seq != 1) {
                 func_00213DE0_q(moby, 1, 0, func_001F9850_q(0x14));
                 return;
@@ -2519,7 +2519,7 @@ void alien_queen_update(unsigned char *moby)
         if ((unsigned char)((Moby *)moby)->prev_seq != 1) {
             func_00213DE0_q(moby, 1, 0, func_001F9850_q(0x14));
         }
-        *(int *)(moby + 0x94) = 0;
+        *(int *)&((Moby *)moby)->collision = 0;
         ((Moby *)moby)->visible = 0;
         ((Moby *)moby)->flags |= 1;
         if (*(int *)(data + 0x178) != 0) return;
@@ -2719,7 +2719,7 @@ extern int func_L06_002EB140(void *, void *);
 
 /* raise each listed moby's position z by a fixed amount and notify it */
 void activate_listed_state_15_mobys_at_raised_positions(char *moby) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     short *q = blarg_moby_groups[*(int *)(data + 0xF0)];
     short *p;
     if (q != 0) {
@@ -2745,7 +2745,7 @@ extern int *D_L06_001B0FB0[];
 // sets up a camera-like aim from a moby toward its orbit point and releases the slot
 void start_alien_queen_intro(char *moby) {
     float v0[4], m[4], v1[4];
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     char *base = blarg_scene_points + (*(int *)(data + 0xF8) << 7);
     *(int *)(data + 0x118) = 0;
     Hero_ResetToPosition(base + 0x30, base + 0x70, 0x72, 0);
@@ -2779,7 +2779,7 @@ int update_alien_queen_intro_camera(char *moby) {
     char *pos;
     char *x;
     float t;
-    data = *(char **)(moby + 0x78);
+    data = ((char *)((Moby *)moby)->pvars);
     clear_u64_value(m);
     if (((Moby *)moby)->prev_seq == 8) {
         qcopy(v0, D_L06_00167640);
@@ -2811,7 +2811,7 @@ extern int *D_L06_001B0FB0[];
 
 /* Ends the moby's script. */
 void finish_alien_queen_intro(char *arg) {
-    char *data = *(char **)(arg + 0x78);
+    char *data = ((char *)((Moby *)arg)->pvars);
     HeroL06_TrySetMoveState(0, 0);
     *blarg_paths[*(int *)(data + 0xEC)] = *(int *)(data + 0x114);
     CameraScript2(2);
@@ -2823,7 +2823,7 @@ int update_alien_queen_first_recovery_camera(char *moby) {
     char *pos;
     char *x;
     float t;
-    data = *(char **)(moby + 0x78);
+    data = ((char *)((Moby *)moby)->pvars);
     clear_u64_value(m);
     if (((Moby *)moby)->prev_seq == 6) {
         qcopy(v0, D_L06_00167640);
@@ -2952,7 +2952,7 @@ extern short D_L06_00161FEC;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l06/gameplay/entities/002b4770.c, FUN_L06_002fbfb0. */
 void update_moby_pair_transforms(char *moby) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     char *child;
     float v[4];
     float a, b;
@@ -3386,7 +3386,7 @@ extern void func_L06_002FEB78(void);
 
 /* Registers the moby's draw callbacks, choosing by its four slot ids. */
 void enqueue_moby_draw_callbacks_by_clip_volume(char *moby) {
-    int *data = *(int **)(moby + 0x78);
+    int *data = ((int *)((Moby *)moby)->pvars);
     int *p;
     int i;
     AddDrawCallback((void *)draw_dual_texture_58_quad_mesh, moby);

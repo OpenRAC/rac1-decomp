@@ -619,7 +619,7 @@ extern unsigned char D_0013E650_295DB0[] __asm__("D_0013E650");
  * the ternary then stays a branch through global CSE, which is what lets the compiler share n * 16
  * with the later blocks through a copy, as retail does. */
 void moving_platform_small_update(char *moby) {
-    Data_295DB0 *d = *(Data_295DB0 **)(moby + 0x78);
+    Data_295DB0 *d = ((Data_295DB0 *)((Moby *)moby)->pvars);
     float v0[4];
     float v1[4];
     float v2[4];
@@ -790,7 +790,7 @@ void add_moby_rotation_based_offsets(char *moby, float *out) {
     char *data;
     *(u128 *)v = 0;
     v[0] = 1.0f;
-    data = *(char **)(moby + 0x78);
+    data = ((char *)((Moby *)moby)->pvars);
     if (*(float *)(data + 0x140) != 0.0f || *(float *)(data + 0x144) != 0.0f) {
         euler_to_matrix(m, (float *)(moby + 0x40));
         transform_vector(a, v, m);
@@ -863,9 +863,9 @@ void update_moby_emitter_effects(unsigned char *moby, float *a1, int a2) {
     float a, b;
     vp = v;
     *(u128 *)v = *(u128 *)a1;
-    data = *(unsigned char **)(moby + 0x78);
+    data = ((unsigned char *)((Moby *)moby)->pvars);
     if (((Moby *)moby)->flags & 1) return;
-    switch ((short)*(unsigned short *)(moby + 0xA6)) {
+    switch ((short)*(unsigned short *)&((Moby *)moby)->oclass) {
     case 0x74:
         if (a2 != 0) return;
         FastVecScale(vp, vp, 0.35f);
@@ -1049,7 +1049,7 @@ void update_spline_moby_destruction_and_respawn(char *moby, void *vel_in, int fl
     int idx;
     unsigned char *e;
 
-    data = *(char **)(moby + 0x78);
+    data = ((char *)((Moby *)moby)->pvars);
     hit = MobyGetHitMessage(moby, 0xA30000, 0);
     if (hit != 0 && *(unsigned short *)(hit + 0x28) != 0x102) {
         clear_u64_value(spot);
@@ -1118,10 +1118,10 @@ void update_spline_moby_destruction_and_respawn(char *moby, void *vel_in, int fl
     ((unsigned char *)moby)[0xA4] = 0xFF;
     if (*(short *)(data + 0x14A) != 0) {
         if (FastDecTimer(data + 0x14A) && flag) {
-            *(int *)(moby + 0x94) = *(int *)(*(char **)(moby + 0x24) + 0x10);
+            *(int *)&((Moby *)moby)->collision = *(int *)(*(char **)(moby + 0x24) + 0x10);
             ((Moby *)moby)->flags = (((Moby *)moby)->flags & 0xFFBE) | 0x1000;
         } else {
-            *(int *)(moby + 0x94) = 0;
+            *(int *)&((Moby *)moby)->collision = 0;
             ((Moby *)moby)->flags |= 0x41;
             idx = *(int *)(data + 0x150);
             if (idx != -1) {
@@ -1190,7 +1190,7 @@ void red_ship_1_update(char *moby) {
 
     *(OvlQuad *)zero = 0;
     flag = 0;
-    data = *(char **)(moby + 0x78);
+    data = ((char *)((Moby *)moby)->pvars);
     if (((unsigned char *)moby)[0x31] == 0) {
         *(OvlQuad *)vec = *(OvlQuad *)(moby + 0x10);
         vec[3] = 7.0f;
@@ -1514,7 +1514,7 @@ void Moby573Update(char *moby) {
     float d;
     float a;
 
-    data = *(Data2c5bb8 **)(moby + 0x78);
+    data = ((Data2c5bb8 *)((Moby *)moby)->pvars);
     func_L00_00260D30_C6F80(moby, (char *)&tgt, data->f230);
     Manipulator_ApplyScale(moby, 0, data->m280, 2.1f);
     func_L03_002C7DE8_C6F80((struct Moby *)moby);
@@ -1820,7 +1820,7 @@ LINKER_REMNANT("asm/overlays", func_L03_002C8000);
 int can_release_linked_robot_dog(unsigned char *moby) {
     unsigned char state;
     char *data;
-    data = *(char **)(moby + 0x78);
+    data = ((char *)((Moby *)moby)->pvars);
     if (!moby) return 0;
     state = ((Moby *)moby)->state;
     if (state == 0xFE) return 0;

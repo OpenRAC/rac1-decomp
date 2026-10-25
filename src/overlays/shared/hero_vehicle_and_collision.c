@@ -51,7 +51,7 @@ void update_hero_motion_and_collision_probes(void) {
         D_0013F450_21A98.wall_probe_moby_in_class_range = 0;
         D_0013F450_21A98.wall_probe_hit_moby = 0;
         if (probe_hero_forward_collision(&D_0013F450_21A98.wall_probe_distance, 0.7f, 4.0f)) {
-            D_0013F450_21A98.unk250 = fast_atan2(coll_hit_result.normal_z, vec_length_xy(&coll_hit_result.normal_x));
+            D_0013F450_21A98.wall_normal_pitch = fast_atan2(coll_hit_result.normal_z, vec_length_xy(&coll_hit_result.normal_x));
             if (coll_hit_result.moby != 0) {
                 D_0013F450_21A98.wall_probe_hit_moby = 1;
                 if (is_moby_in_class_range_500_to_540(coll_hit_result.moby)) {
@@ -61,10 +61,10 @@ void update_hero_motion_and_collision_probes(void) {
         }
     }
     if (level_frame_counter % 5 == 0) {
-        D_0013F450_21A98.unk260 = 0;
-        D_0013F450_21A98.unk258 = 0.0f;
+        D_0013F450_21A98.edge_ahead = 0;
+        D_0013F450_21A98.edge_drop_depth = 0.0f;
         if (D_0013F450_21A98.grounded_frames != 0) {
-            base = D_0013F450_21A98.unk258;
+            base = D_0013F450_21A98.edge_drop_depth;
             transform_hero_local_offset_to_world(&first, 1.1f, base, 1.0f);
             transform_hero_local_offset_to_world(&second, 1.1f, base, -20.0f);
             if (second.f[2] < 0.5f) {
@@ -84,14 +84,14 @@ void update_hero_motion_and_collision_probes(void) {
                which gives retail's two mov.s before the loop. */
             for (off = -0.4f; off < 0.5f; off += 0.1f) {
                 transform_hero_local_offset_to_world(&probe, off + 1.1f, 0.0f, 0.0f);
-                if (!coll_sphere(D_0013F450_21A98.unk234, &probe, 2, 0)) {
-                    D_0013F450_21A98.unk260 = 1;
+                if (!coll_sphere(D_0013F450_21A98.capsule_radius, &probe, 2, 0)) {
+                    D_0013F450_21A98.edge_ahead = 1;
                     if (hit == 0) {
-                        D_0013F450_21A98.unk258 = 20.0f;
+                        D_0013F450_21A98.edge_drop_depth = 20.0f;
                     } else {
-                        D_0013F450_21A98.unk258 = dist;
+                        D_0013F450_21A98.edge_drop_depth = dist;
                     }
-                    D_0013F450_21A98.edge_probe_offset = D_0013F450_21A98.unk234 + off;
+                    D_0013F450_21A98.edge_probe_offset = D_0013F450_21A98.capsule_radius + off;
                     if (D_0013F450_21A98.edge_probe_offset < 0.0f) {
                         D_0013F450_21A98.edge_probe_offset = 0.0f;
                     }
@@ -151,12 +151,12 @@ void update_hero_timers_and_reach_state(void) {
     func_001F9908_21D50(&D_0013F450_21A98.move_lock_timer);
     func_001F9908_21D50(&D_0013F450_21A98.invulnerable_frames);
     func_001F9938_21D50(&D_0013F450_21A98.unk1B2);
-    func_001F9908_21D50(&D_0013F450_21A98.unk1B8);
+    func_001F9908_21D50(&D_0013F450_21A98.long_jump_lockout);
     func_001F9938_21D50(&D_0013F450_21A98.jump_lockout_timer);
     func_001F9938_21D50(&D_0013F450_21A98.unk1DE);
-    func_001F9908_21D50(&D_0013F450_21A98.unk1B4);
+    func_001F9908_21D50(&D_0013F450_21A98.wall_jump_window);
     func_001F9938_21D50(&D_0013F450_21A98.unk1F0);
-    func_001F9938_21D50(&D_0013F450_21A98.unk1B0);
+    func_001F9938_21D50(&D_0013F450_21A98.ledge_probe_cooldown);
     func_001F9938_21D50(&D_0013F450_21A98.unk1C8);
     func_001F9938_21D50(&D_0013F450_21A98.rail_catch_grace);
     func_001F9938_21D50(&D_0013F450_21A98.rail_grab_cooldown);
@@ -178,16 +178,16 @@ void update_hero_timers_and_reach_state(void) {
         D_0013F450_21A98.unk1EC = 0;
     }
     if (D_0013F450_21A98.item_anim_active != 0) {
-        D_0013F450_21A98.unk1BC++;
+        D_0013F450_21A98.item_anim_frames++;
     } else {
-        D_0013F450_21A98.unk1BC = 0;
+        D_0013F450_21A98.item_anim_frames = 0;
     }
     if (D_0013CA40_21D50.no_direction != 0) {
-        D_0013F450_21A98.unk1A8 = 0;
-        D_0013F450_21A98.unk1AC++;
+        D_0013F450_21A98.stick_held_frames = 0;
+        D_0013F450_21A98.stick_idle_frames++;
     } else {
-        D_0013F450_21A98.unk1AC = 0;
-        D_0013F450_21A98.unk1A8++;
+        D_0013F450_21A98.stick_idle_frames = 0;
+        D_0013F450_21A98.stick_held_frames++;
     }
     if (D_0013F450_21A98.vehicle_toggle_timer != 0 && func_001F9938_21D50(&D_0013F450_21A98.vehicle_toggle_timer) != 0 &&
         D_0013F450_21A98.health.hp != 0 && (*(s32 *)&D_L00_0015F6A8_21D50) == 0) {
@@ -242,17 +242,17 @@ skip:
     func_L00_002222F0_21D50();
     switch (D_0013F450_21A98.vehicle_mode) {
     case 1:
-        func_L00_00233EE0_21D50(&D_0013F450_21A98.motion.unkD0, 0.0f, 0.0f, 0.4f);
+        func_L00_00233EE0_21D50(&D_0013F450_21A98.motion.body_center, 0.0f, 0.0f, 0.4f);
         D_0013F450_21A98.reach_distance = 2.125f;
         D_0013F450_21A98.reach_height = 1.25f;
         break;
     case 2:
-        func_L00_00233EE0_21D50(&D_0013F450_21A98.motion.unkD0, 0.0f, 0.0f, 4.0f);
+        func_L00_00233EE0_21D50(&D_0013F450_21A98.motion.body_center, 0.0f, 0.0f, 4.0f);
         D_0013F450_21A98.reach_distance = 15.0f;
         D_0013F450_21A98.reach_height = 3.0f;
         break;
     default:
-        func_L00_00233EE0_21D50(&D_0013F450_21A98.motion.unkD0, 0.0f, 0.0f, 0.7f);
+        func_L00_00233EE0_21D50(&D_0013F450_21A98.motion.body_center, 0.0f, 0.0f, 0.7f);
         if (D_0013D5EA_21D50) {
             D_0013F450_21A98.reach_distance = 12.0f;
             D_0013F450_21A98.reach_height = 4.5f;
@@ -265,10 +265,10 @@ skip:
     {
         f32 z = D_0013F450_21A98.ground_z.f;
         if (D_0013F450_21A98.motion.pos.f[2] - z < 4.0f) {
-            qcopy(&D_0013F450_21A98.motion.unkC0, &D_0013F450_21A98.motion.pos);
-            D_0013F450_21A98.motion.unkC0.f[2] = z + 0.5f;
+            qcopy(&D_0013F450_21A98.motion.near_ground_point, &D_0013F450_21A98.motion.pos);
+            D_0013F450_21A98.motion.near_ground_point.f[2] = z + 0.5f;
         } else {
-            qcopy(&D_0013F450_21A98.motion.unkC0, &D_0013F450_21A98.motion.unkD0);
+            qcopy(&D_0013F450_21A98.motion.near_ground_point, &D_0013F450_21A98.motion.body_center);
         }
     }
     if (D_0013F450_21A98.motion.pos.f[2] < 1.0f) {
@@ -3179,7 +3179,7 @@ int process_hero_equipped_item_input(void) {
             }
             if (D_0013F450_h228770.state.control_mode < 2U || D_0013F450_h228770.state.control_mode == 4 || D_0013F450_h228770.state.control_mode == 2 || D_0013F450_h228770.state.control_mode == 0xF
                 || D_0013F450_h228770.state.control_mode == 5 || D_0013F450_h228770.state.current == 0x1E) {
-                if (func_L00_00267BA8_228770(mask, t, 0) || ((D_0013CA40_p228770.held & mask) && D_0013F450_h228770.items[0].unk20 > scale_ticks(0xF))) {
+                if (func_L00_00267BA8_228770(mask, t, 0) || ((D_0013CA40_p228770.held & mask) && D_0013F450_h228770.items[0].ready_frames > scale_ticks(0xF))) {
                     if (D_0013F450_h228770.swing_target_in_sight != 0) {
                         if (D_0013F450_h228770.grapple_target_in_sight != 0) {
                             if (D_0013F450_h228770.swing_target_dist < D_0013F450_h228770.unk984) {
@@ -3239,7 +3239,7 @@ int process_hero_equipped_item_input(void) {
                 break;
             }
             pv = *(PVar_228770 **)&D_0013F450_h228770.items[0].moby->pvars;
-            if (((D_0013CA40_p228770.held & mask) && D_0013F450_h228770.items[0].unk20 > scale_ticks(5)) || (D_0013CA40_p228770.pressed & mask)) {
+            if (((D_0013CA40_p228770.held & mask) && D_0013F450_h228770.items[0].ready_frames > scale_ticks(5)) || (D_0013CA40_p228770.pressed & mask)) {
                 if (get_ammo(-1)) {
                     if (D_0013F450_h228770.item_anim_active == 0) {
                         start_equipped_item_animation();
@@ -3271,7 +3271,7 @@ int process_hero_equipped_item_input(void) {
                 break;
             }
             t = scale_ticks(7);
-            n = D_0013F450_h228770.items[0].unk20;
+            n = D_0013F450_h228770.items[0].ready_frames;
             if (func_L00_00267BA8_228770(mask, t <= n ? t : n, &out[1])
                 || ((D_0013CA40_p228770.held & 0x20) && n > scale_ticks(8) && n < scale_ticks(0x11))) {
                 if (get_ammo(-1)) {
@@ -3293,7 +3293,7 @@ int process_hero_equipped_item_input(void) {
         if (D_0013F450_h228770.state.control_mode < 2U || (D_0013F450_h228770.state.control_mode == 4 && D_0013F450_h228770.rail_land_frames != 0)) {
             if (D_0013F450_h228770.state.current != 1) {
                 int t = scale_ticks(0xA);
-                int n = D_0013F450_h228770.items[0].unk20;
+                int n = D_0013F450_h228770.items[0].ready_frames;
 
                 if (func_L00_00267BA8_228770(mask, t <= n ? t : n, &out[2])) {
                     if (D_0013F450_h228770.items[0].moby != 0) {

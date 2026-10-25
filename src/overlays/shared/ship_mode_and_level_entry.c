@@ -25,13 +25,13 @@ void initialize_moby_state_record(char *m) {
         *(float *)(q + 0x78) = 2.77f;
     }
     g = D_0013E130_a;
-    *(short *)(g + 0x26) = *(unsigned short *)(m + 0xA6) - 0x213;
+    *(short *)(g + 0x26) = *(unsigned short *)&((Moby *)m)->oclass - 0x213;
     *(char **)g = m;
     *(void **)(m + 0x74) = update_moby_proximity_interaction;
     ((Moby *)m)->flags &= 0xFFFC;
-    *(int *)(m + 0x94) = *(int *)(*(int *)(m + 0x24) + 0x10);
+    *(int *)&((Moby *)m)->collision = *(int *)(*(int *)(m + 0x24) + 0x10);
     MobySetAnimation(m, 1, 0);
-    src = *(int **)(m + 0x78);
+    src = ((int *)((Moby *)m)->pvars);
     *(int *)(g + 0x30) = src[0];
     *(int *)(g + 0x34) = src[1];
     *(int *)(g + 0x38) = src[2];

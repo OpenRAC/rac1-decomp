@@ -19,7 +19,7 @@ extern void func_L00_002703E8(void *, void *, int, int);
 
 /* while the countdown value is ready, scatter a spawn by the camera's offset and reroll the delay */
 void emit_hydrodisplacer_effect(char *m) {
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     float a[4];
     float b[4];
     char *pad;
@@ -192,7 +192,7 @@ typedef struct {
 /* Scrolls the four hue values of a moby's effect and spawns a coloured streak for each. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/gameplay_vendor_002df730.c, FUN_L00_002e0788. */
 void emit_moby_color_cycling_particles(char *p) {
     float v[8];
-    FxData *m = *(FxData **)(p + 0x78);
+    FxData *m = ((FxData *)((Moby *)p)->pvars);
     float *a;
     int *t;
     int i, j, c, k;
@@ -554,7 +554,7 @@ extern void func_L00_002E4138(int, int, void *, int, int, int);
 
 /* Scrolls and draws the two panes of each active slot (3 slots). */
 void draw_active_beam_slots(char *m) {
-    int *d = *(int **)(m + 0x78);
+    int *d = ((int *)((Moby *)m)->pvars);
     int i;
     VU1_addGSregister(0x47, 0x51001);
     for (i = 0; i < 3; i++) {
@@ -860,7 +860,7 @@ extern void func_00213DE0(void *, int, int, int);
 
 /* Path-following moby update: start a run along its path in state 0, then step along the path each frame and pick an animation when the flag is set. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/gameplay_vendor_002df730.c, FUN_L00_002e3a88. */
 void pterodactyl_update(unsigned char *m) {
-    D_2e *d = *(D_2e **)(m + 0x78);
+    D_2e *d = ((D_2e *)((Moby *)m)->pvars);
     int *p = level_paths[d->path];
     float y;
     switch (((Moby *)m)->state) {
@@ -930,7 +930,7 @@ extern float D_L00_00173F80[] NOT_SDA;
 
 /* Update of an effect-group moby: state machine over its life, then it steers a sprite along its path and bounces it off surfaces. */
 void robot_arm_update(char *m) {
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     float a20[4];
     float a30[12];
     float a60[4];

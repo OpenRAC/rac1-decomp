@@ -263,7 +263,7 @@ void update_moby_random_interval_animation(char *m) {
 extern void func_00213DE0(void *, void *, void *, void *);
 
 void blend_big_axebot_and_axe_animation(char *arg, void *a, void *b, void *c) {
-    char *data = *(char **)(arg + 0x78);
+    char *data = ((char *)((Moby *)arg)->pvars);
     void *other;
     MobyBlendAnimation(arg, a, b, c);
     other = *(void **)(data + 0x424);
@@ -273,7 +273,7 @@ void blend_big_axebot_and_axe_animation(char *arg, void *a, void *b, void *c) {
 }
 /* Sets the float at 0x58 on the moby and on the linked moby at data+0x424, if any. */
 void set_big_axebot_and_axe_animation_speed(char *arg, float f) {
-    char *data = *(char **)(arg + 0x78);
+    char *data = ((char *)((Moby *)arg)->pvars);
     ((Moby *)arg)->anim_speed = f;
     if (*(char **)(data + 0x424) != 0) {
         *(float *)(*(char **)(data + 0x424) + 0x58) = f;
@@ -1185,7 +1185,7 @@ extern char *D_L04_00160064 MACRO_ADDR;
 
 /* Check that a moby's spot is clear of the other mobys of class 0x154. */
 int check_circular_saw_melee_attack_spacing(char *moby) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     float vec[20];
     float d0;
     float s;
@@ -1225,7 +1225,7 @@ float compute_circular_saw_flock_steering(void *m, void *out, float speed) {
     float sep[4];
     float tgt[4];
     float pad[4][4];
-    char *d = *(char **)((char *)m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     char *o;
     float dist;
     float w;
@@ -2113,7 +2113,7 @@ extern void func_0020D678(void *);
 extern void func_L04_002C5A50(void *);
 
 void destroy_blarg_trooper(char *arg) {
-    char *data = *(char **)(arg + 0x78);
+    char *data = ((char *)((Moby *)arg)->pvars);
     void *other = *(void **)(data + 0xF8);
     if (other != 0) {
         DeleteMoby(other);
@@ -2202,7 +2202,7 @@ void BlargTrooperUpdate(char *moby) {
     int r;
 
     flag = 0;
-    data = *(char **)(moby + 0x78);
+    data = ((char *)((Moby *)moby)->pvars);
     if (*(int *)(data + 0x38) != 0 || *(unsigned char *)(data + 0xFE) != 0) {
         flag = 1;
     }
@@ -2612,7 +2612,7 @@ void BlargTrooperUpdate(char *moby) {
             st.w.p.blk.f8 = 1.0f;
             st.w.p.blk.fC = 5627.925f;
             st.w.p.blk.c19 = 1;
-            st.w.p.blk.h1A = *(unsigned short *)(moby + 0xA6);
+            st.w.p.blk.h1A = *(unsigned short *)&((Moby *)moby)->oclass;
             st.w.p.blk.c18 = 0;
             qcopy(st.w.p.v70, st.v50);
             st.w.p.v70[2] = st.w.p.v70[2] + 0.75f;

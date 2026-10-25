@@ -33,7 +33,7 @@ extern int func_001FA898_r(float) __asm__("func_001FA898");
 
 /* update: follow the parent, blend its color, scale by the wind factor */
 void update_parent_following_effect(char *moby) {
-    char *p = *(char **)(moby + 0x78);
+    char *p = ((char *)((Moby *)moby)->pvars);
     float ratio;
     float v;
     int c;
@@ -689,7 +689,7 @@ void Moby545Update(char *moby)
     int sv0, sv1, sv2, sv3;
 
     if (moby == 0) return;
-    d = *(char **)(moby + 0x78);
+    d = ((char *)((Moby *)moby)->pvars);
     if (d == 0) return;
     fast_dec_timer((int *)(d + 0x20));
     pos = moby + 0x10;
@@ -701,12 +701,12 @@ void Moby545Update(char *moby)
             vec_scale_to_length(t, d, 0.2f);
             FastVecAdd(t, t, pos);
             sv0 = ((Moby *)moby)->collision_disable;
-            sv2 = *(int *)(moby + 0x94);
+            sv2 = *(int *)&((Moby *)moby)->collision;
             sv1 = *(int *)(*(char **)(d + 0x10) + 0x98);
             sv3 = *(int *)(*(char **)(d + 0x10) + 0x94);
             ((Moby *)moby)->collision_disable = -1;
             *(int *)(*(char **)(d + 0x10) + 0x98) = -1;
-            *(int *)(moby + 0x94) = 0;
+            *(int *)&((Moby *)moby)->collision = 0;
             *(int *)(*(char **)(d + 0x10) + 0x94) = 0;
             if (coll_line(a, t, 4, moby, 0)) {
                 FastVecSub(t, kerwan_coll_hit.point, t);
@@ -793,7 +793,7 @@ void Moby545Update(char *moby)
     }
     case 1: {
         f0 = ProbeGroundHeight(pos, 0, 0.5f);
-        *(int *)(moby + 0x1C) = 0;
+        *(int *)&((Moby *)moby)->pos.w = 0;
         ((Moby *)moby)->pos.z = f0 + 0.2f;
         *(VecQuad *)t = *(VecQuad *)(moby + 0x10);
         *(int *)(d + 0x18) = (int)revive_spawner_pooled_child(*(char **)(d + 0x10), t, -1);
@@ -1233,7 +1233,7 @@ void handle_blarg_helicopter_hits(char *m) {
     char *d;
     char *r;
     float a, b, p, q;
-    d = *(char **)(m + 0x78);
+    d = ((char *)((Moby *)m)->pvars);
     fv = 0.0f;
     r = MobyGetHitMessage(m, 0x330000, 0);
     res = ComputeHitResponse(m, r, d + 0x20, 0, &st, &fv, 0, 4);
@@ -1676,15 +1676,15 @@ void qwark_rilgar_update(char *m)
         tracking = 1;
         if (func_001F9D48_07408(&moby->pos, &hero.motion.pos) < 8.0f &&
             FastDiffRots(moby->rot.z,
-                fast_atan2(hero.motion.unkD0.f[0] - moby->pos.x,
-                                  hero.motion.unkD0.f[1] - moby->pos.y)) < 1.5707964f) {
+                fast_atan2(hero.motion.body_center.f[0] - moby->pos.x,
+                                  hero.motion.body_center.f[1] - moby->pos.y)) < 1.5707964f) {
             if (FastVecLength(&hero.motion.displacement) > 0.01f)
                 watch_data->moving_timer = scale_ticks(120);
             else
                 fast_dec_timer(&watch_data->moving_timer);
         } else if (watch_data->moving_timer != 0) {
             watch_data->moving_timer = 0;
-            qcopy(&watch_data->target, &hero.motion.unkD0);
+            qcopy(&watch_data->target, &hero.motion.body_center);
         }
         if (fast_dec_timer(&watch_data->target_timer)) {
             float heading;
@@ -1695,7 +1695,7 @@ void qwark_rilgar_update(char *m)
             FastVecAdd(&watch_data->target, &watch_data->target, &moby->pos);
         }
         if (watch_data->moving_timer != 0) {
-            qcopy(s_target, &hero.motion.unkD0);
+            qcopy(s_target, &hero.motion.body_center);
             rate = 0.04f;
             head_rate = 0.3f;
         } else {
@@ -1792,7 +1792,7 @@ extern void func_0020D678(void *);
 /* Falling moby: applies gravity, eases its angles toward the target and fades out until its timer ends. */
 void update_falling_moby(char *moby) {
     float v[4];
-    char *d = *(char **)(moby + 0x78);
+    char *d = ((char *)((Moby *)moby)->pvars);
     *(float *)(d + 8) = *(float *)(d + 8) - g_frame_time_sq * 9.8f;
     add_vectors(v, moby + 0x10, d);
     ((Moby *)moby)->rot.x = FastAddRots(((Moby *)moby)->rot.x, *(float *)(d + 0x10));

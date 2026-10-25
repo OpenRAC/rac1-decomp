@@ -66,7 +66,7 @@ extern void func_001F9BD8(void *, void *, void *);
 extern void func_L01_002F9908(void *, void *, unsigned int, int, float, float, float, float, int);
 
 void update_linked_moby_group_transform_and_fall(unsigned char *moby) {
-    VData *d = *(VData **)(moby + 0x78);
+    VData *d = ((VData *)((Moby *)moby)->pvars);
     if (d) {
         float a1 = *(float *)&veldin2_moby_group_accel * g_frame_time_sq;
         float a2 = *(float *)&veldin2_moby_group_decel * g_frame_time_sq;
@@ -418,7 +418,7 @@ typedef struct { float f0; float f4; int w8; int wc; int w10; int w14; float f18
 
 void update_lift_state_and_queue_draw(unsigned char *m)
 {
-    VD *d = *(VD **)(m + 0x78);
+    VD *d = ((VD *)((Moby *)m)->pvars);
     switch (((Moby *)m)->state) {
     case 0:
         if (*(int *)&veldin2_lift_raised_flag != 0) {
@@ -435,7 +435,7 @@ void update_lift_state_and_queue_draw(unsigned char *m)
             ((Moby *)m)->flags = fl | 1;
         }
         ((Moby *)m)->draw_dist = 0;
-        *(int *)(m + 0x94) = 0;
+        *(int *)&((Moby *)m)->collision = 0;
         break;
     case 1:
         if (menu_item_enabled_105[9] != 0) {
@@ -1927,7 +1927,7 @@ extern short D_L18_00162438;
 
 /* Latches the target from the global block once, and counts a class 0x24B hit. */
 void count_drek_boss_platform_event_once(char *moby) {
-    char *d = *(char **)(moby + 0x78);
+    char *d = ((char *)((Moby *)moby)->pvars);
     if (*(int *)(d + 0x3E4) == 0) {
         char *a = D_0013E633 + 0xE1D;
         if (*(int *)(a + 0x300) != 0) {
@@ -2219,7 +2219,7 @@ extern void func_001F9BD8(void *, void *, void *);
 
 /* steps a moby's offset vector toward a target, returns whether both settled */
 int advance_drek_boss_planar_position_toward_target(char *moby, float arg, void *x) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     char *p = data + 0x3C0;
     float a[4];
     float b[4];
@@ -2252,7 +2252,7 @@ extern short D_L18_001623DC;
 /* Moves a moby's follow distance toward a target, clamped to a range, then applies it. */
 void update_drek_boss_hero_follow_movement(char *m) {
     float v[4];
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     char *b = D_0013E633 + 0xE9D;
     float t;
     float lo, hi;
@@ -2386,7 +2386,7 @@ extern short D_L18_001623C8;
 extern short D_L18_001623CC;
 
 unsigned char *select_drek_boss_platform_firing_target(char *self) {
-    char *data = *(char **)(self + 0x78);
+    char *data = ((char *)((Moby *)self)->pvars);
     short *p = veldin2_moby_groups[*(int *)(data + 0x398)];
     unsigned char *best = 0;
     float bestd = 1024.0f;
@@ -2468,7 +2468,7 @@ extern short D_L18_001DFE00[];
 
 /* Picks a new state for the moby at random among the allowed transitions, retrying up to 100 times until one is accepted. */
 int select_drek_boss_next_action(char *moby) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     int state = *(int *)(data + 0x350);
     int tries = 0;
     int r;
@@ -2541,7 +2541,7 @@ extern short D_L18_00162474;
 
 /* Steers the camera-ish follow targets of a moby from its state and the player distance. */
 void update_drek_boss_state_dependent_scalars(char *moby) {
-    char *d = *(char **)(moby + 0x78);
+    char *d = ((char *)((Moby *)moby)->pvars);
     char *t = *(char **)(veldin2_camera_descriptors + *(int *)(d + 0x224) * 32 + 0x1C);
     float f;
     float x;
@@ -2725,7 +2725,7 @@ typedef struct {
 void render_drek_boss_joint_glows(char *moby) {
     char a[16];
     char b[16];
-    L18Q *q = *(L18Q **)(moby + 0x78);
+    L18Q *q = ((L18Q *)((Moby *)moby)->pvars);
     int n = scale_ticks(*(int*)&drek_boss_rider_glow_period);
     float f = IntToFloat(veldin2_frame_count % n);
     int h;

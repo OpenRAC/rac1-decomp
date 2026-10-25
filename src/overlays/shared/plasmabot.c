@@ -103,13 +103,13 @@ void update_plasmabot(char *m) {
     Ray ray;
     int x;
 
-    data = *(char **)(m + 0x78);
+    data = ((char *)((Moby *)m)->pvars);
     owner = 0;
     Manipulator_ApplyScale(2.5f, m, 2, data + 0x120);
     if (*(int *)(data + 0x288) != 0) {
         if (((unsigned char *)D_0013E633)[0x2EC1] != 2) {
             ((Moby *)m)->flags |= 0x41;
-            *(int *)(m + 0x94) = 0;
+            *(int *)&((Moby *)m)->collision = 0;
             if (((unsigned char *)m)[0x53] == 5) {
                 release_beam_slot_by_id(m);
                 SetDeathBits(m, 0, -1);
@@ -121,7 +121,7 @@ void update_plasmabot(char *m) {
         }
         ((Moby *)m)->flags &= 0xFFBE;
         if (((unsigned char *)m)[0x20] != 0xB) {
-            *(int *)(m + 0x94) = *(int *)(*(char **)(m + 0x24) + 0x10);
+            *(int *)&((Moby *)m)->collision = *(int *)(*(char **)(m + 0x24) + 0x10);
         }
         ((unsigned char *)m)[0x30] = 0x40;
         ((Moby *)m)->flags |= 0x1000;
@@ -143,24 +143,24 @@ void update_plasmabot(char *m) {
     case 0: {
         if (((unsigned char *)data)[0x24A] != 0) {
             if (*(int *)(data + 0x240) == -1) {
-                STUB_printf(plasmabot_no_path_a_msg, *(short *)(m + 0xB2));
+                STUB_printf(plasmabot_no_path_a_msg, *(short *)&((Moby *)m)->save_id);
                 { call_D678(m); return; }
             }
             if (*oltanis_paths[*(int *)(data + 0x240)] == 0) {
-                STUB_printf(plasmabot_empty_path_a_msg, *(short *)(m + 0xB2));
+                STUB_printf(plasmabot_empty_path_a_msg, *(short *)&((Moby *)m)->save_id);
                 { call_D678(m); return; }
             }
         }
         if (*(int *)(data + 0x244) == -1) {
-            STUB_printf(plasmabot_no_path_b_msg, *(short *)(m + 0xB2));
+            STUB_printf(plasmabot_no_path_b_msg, *(short *)&((Moby *)m)->save_id);
             { call_D678(m); return; }
         }
         if (*oltanis_paths[*(int *)(data + 0x244)] == 0) {
-            STUB_printf(plasmabot_empty_path_b_msg, *(short *)(m + 0xB2));
+            STUB_printf(plasmabot_empty_path_b_msg, *(short *)&((Moby *)m)->save_id);
             { call_D678(m); return; }
         }
         if (((unsigned char *)data)[0x24A] != 0 && *(int *)(data + 0x264) < 0) {
-            STUB_printf(plasmabot_no_link_msg, *(short *)(m + 0xB2));
+            STUB_printf(plasmabot_no_link_msg, *(short *)&((Moby *)m)->save_id);
             { call_D678(m); return; }
         }
         if (random_integer_below(2) != 0) {
@@ -386,7 +386,7 @@ void update_plasmabot(char *m) {
         ray.c = 1.0f;
         ray.d = 5627.9248f;
         ray.b99 = 1;
-        ray.cls = *(unsigned short *)(m + 0xA6);
+        ray.cls = *(unsigned short *)&((Moby *)m)->oclass;
         ray.b98 = 0;
         if (coll_line(mat[3], hit, 0, m, &ray) != 0) {
             qcopy(hit, oltanis_collision_hit_point);
@@ -570,7 +570,7 @@ extern f32 D_L14_00161588_3B78 SDATA(D_L14_00161588);
 
 // Draws five GIF line packets from the moby's beam points at data+0x1E0..0x220.
 void draw_plasmabot_effect_quads(char *moby) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     struct {
         Vec4 o[4];
         unsigned int c[4];
@@ -734,7 +734,7 @@ extern void func_L00_0025E4B0(void *m, short *p);
 
 /* Enemy hit reaction: takes damage from attacks (not from its own kind), staggers or is knocked away and dies. */
 void process_plasmabot_hit_reaction(char *m) {
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     int hit;
     float dmg;
     char *h;
@@ -803,7 +803,7 @@ void process_plasmabot_hit_reaction(char *m) {
             } else {
                 SetDeathBits(m, 0, -1);
             }
-            *(int *)(m + 0x94) = 0;
+            *(int *)&((Moby *)m)->collision = 0;
             break;
         }
         case 0: case 11:
@@ -821,7 +821,7 @@ extern float func_001F9D48(void *, void *);
 
 // Checks the moby's distance against its radius and latches state fields.
 void update_plasmabot_target(char *moby) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     int *tbl = oltanis_paths[*(int *)(data + 0x244)];
     if (FindNearestEligibleMoby(moby, data + 0xD0, *(float *)(data + 0x234), 0, 0, tbl + 4, *tbl) != 2) {
         if (*(float *)(data + 0x234) < vec_distance_xy(moby + 0x10, data + 0xD0)) {
@@ -851,7 +851,7 @@ extern float func_001F9D10(void *, void *);
 
 // Resets a moby's accumulators and fills per-segment lengths of its path.
 void initialize_plasmabot_path_state(char *moby) {
-    char *d = *(char **)(moby + 0x78);
+    char *d = ((char *)((Moby *)moby)->pvars);
     char *p;
     int i;
     *(int *)(d + 0x250) = 0;
@@ -879,7 +879,7 @@ int follow_plasmabot_path(char *moby) {
     float a[4];
     float b[4];
     float c[4];
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     int r = Spline_AdvanceByDistance(oltanis_paths[*(int *)(data + 0x240)], a, data + 0x24C, data + 0x250, 0,
                               *(float *)&plasmabot_path_speed * g_frame_time * *(float *)(data + 0x27C));
     float ang;
@@ -901,7 +901,7 @@ extern short D_L14_001615A4;
 // Scales the moby's velocity by a damping factor and advances its x/y position.
 void scale_and_apply_plasmabot_planar_velocity(char *moby) {
     float f = (*(float *)&plasmabot_planar_drag - 1.0f) * frame_scale + 1.0f;
-    char *d = *(char **)(moby + 0x78);
+    char *d = ((char *)((Moby *)moby)->pvars);
     *(float *)(d + 0x254) = *(float *)(d + 0x254) * f;
     *(float *)(d + 0x258) = *(float *)(d + 0x258) * f;
     ((Moby *)moby)->pos.x = ((Moby *)moby)->pos.x + *(float *)(d + 0x254);
@@ -916,7 +916,7 @@ extern float func_001FA850(float, float);
 
 // steers a moby's pitch toward a target, and its yaw toward its owner when asked
 float update_plasmabot_aim_quaternion(char *moby, int flag, float x) {
-    char *d = *(char **)(moby + 0x78);
+    char *d = ((char *)((Moby *)moby)->pvars);
     char *owner = *(char **)(d + 0x110);
     float s = FastSubRots(x, ((Moby *)moby)->rot.z);
     if (s > 1.2217304706573486f) s = 1.2217304706573486f;
@@ -954,7 +954,7 @@ extern float D_0015EE6C MACRO_ADDR;
 
 /* steers the pitch angle of a moby toward a target and updates the joint */
 void update_plasmabot_aim_joint_rotation(char *a, float x) {
-    char *d = *(char **)(a + 0x78);
+    char *d = ((char *)((Moby *)a)->pvars);
     float s = -*(float *)(d + 0x268);
     float r = FastSubRots(x, ((Moby *)a)->rot.z);
     s = FastAddRots(s, -r);
@@ -1444,7 +1444,7 @@ unsigned char *spawn_path_or_ballistic_debris(char *owner, float *scale, int mod
             ((Data_dfd10 *)d)->timer = scale_ticks(90);
             path = (char *)race_paths;
             *(float *)(d + 8) = *scale * g_frame_time;
-            index = *(int *)(*(char **)(owner + 0x78) + 0x60);
+            index = *(int *)(((char *)((Moby *)owner)->pvars) + 0x60);
             fields[5] = 0;
             fields[3] = index;
             fields[4] = 0;
@@ -1601,7 +1601,7 @@ void emit_debris_trail_particles(Moby *m) {
 
 /* Recomputes a path's segment lengths, aims the moby along its first segment, and recomputes a second path. */
 void initialize_moby_path_state(char *moby) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     char *p;
     int i;
     p = oltanis_paths[*(int *)(data + 0xD8)];
@@ -1627,7 +1627,7 @@ extern void func_001F9BD8(void *, void *, void *);
 
 /* rebuilds two vectors from the moby's transform and applies them to its linked object */
 void update_linked_moby_position(char *moby) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     float tmp[4];
     if (*(char **)(data + 0xF4) != 0) {
         char *p;
@@ -1898,7 +1898,7 @@ extern void func_001F49B0(void (*)(void), void *);
 
 /* Moby update for a timed effect that triggers when the hero is near. */
 void update_vendor_beam(unsigned char *m) {
-    D1224 *d = *(D1224 **)(m + 0x78);
+    D1224 *d = ((D1224 *)((Moby *)m)->pvars);
     float v[4] __attribute__((aligned(16)));
     int s;
     int arg;
@@ -2021,7 +2021,7 @@ typedef struct {
 
 /* Init of a 32-point strip (rope/beam style) moby. */
 void start_vendor_beam_pulse(char *moby) {
-    D_02C80 *beam = *(D_02C80 **)(moby + 0x78);
+    D_02C80 *beam = ((D_02C80 *)((Moby *)moby)->pvars);
     Vq_02C80 path[32];
     Vq_02C80 path_steps[32];
     Vq_02C80 work, delta;
@@ -2127,7 +2127,7 @@ extern short D_L14_001621C8;
 
 // advances a timed chain of vectors and picks an interpolation value
 void update_vendor_beam_animation(char *moby) {
-    D_02C80 *d = *(D_02C80 **)(moby + 0x78);
+    D_02C80 *d = ((D_02C80 *)((Moby *)moby)->pvars);
     if (d->s12 != 0) {
         int i;
         int j;

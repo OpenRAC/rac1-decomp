@@ -299,7 +299,7 @@ void func_L00_002D19E8_r(u8 *a) {
     s16 h;
     f32 t, r, e;
 
-    b = *(u8 **)(a + 0x78);
+    b = ((u8 *)((Moby *)a)->pvars);
     h = ((Moby *)a)->oclass;
     tmp = D_L00_001EA1B0_2D19E8;
     n = *(s16 *)(b + 0xC6) == 0;
@@ -309,7 +309,7 @@ void func_L00_002D19E8_r(u8 *a) {
         func_001F9BC0_2D19E8(&v20);
         if (*(s32 *)(b + 0xF0)) {
             if (a)
-                *(s16 *)(a + 0x36) = 0x7F80;
+                *(s16 *)&((Moby *)a)->occlusion = 0x7F80;
             func_L00_00261478_2D19E8(a, *(s32 *)(b + 0xF0), a + 0x10, a + 0x40, &v30, &v40);
             func_001F9BF0_2D19E8(&v20, &v30, a + 0x10);
         }
@@ -670,7 +670,7 @@ void update_crate_stack_motion(char *a) {
     float v5[4];
     float v6[4];
     float v7[4];
-    char *o = *(char **)(a + 0x78);
+    char *o = ((char *)((Moby *)a)->pvars);
     char *n;
     char *p;
     char *w;
@@ -688,7 +688,7 @@ void update_crate_stack_motion(char *a) {
     n = w;
     do {
         a = n;
-        o = *(char **)(a + 0x78);
+        o = ((char *)((Moby *)a)->pvars);
         flags = *(int *)(o + 0xAC);
         n = *(char **)(o + 0xA0);
         if ((flags & 4) == 0)
@@ -737,7 +737,7 @@ void update_crate_stack_motion(char *a) {
                 qcopy(v4, o + 0xD0);
                 v4[2] = v4[2] + *(float *)(o + 0xF4);
                 if (a != 0)
-                    *(short *)(a + 0x36) = 0x7F80;
+                    *(short *)&((Moby *)a)->occlusion = 0x7F80;
                 qcopy(v5, a + 0x10);
                 qcopy(v6, a + 0x40);
                 transform_attachment_pose((int)a, *(char **)(o + 0xF0), v4, (float *)(o + 0xE0), (float *)(a + 0x10), (float *)(a + 0x40));
@@ -768,7 +768,7 @@ void update_crate_stack_motion(char *a) {
                     len = FastVecLength(o + 0x40);
                     if (g_frame_time * 0.5f < len) {
                         if (((Moby *)a)->oclass == 0x1F9 && ((Moby *)a)->state == 1) {
-                            *(char *)(a + 0xBC) = 0;
+                            *(char *)&((Moby *)a)->command = 0;
                             ((Moby *)a)->state = 5;
                         } else {
                             p = *(char **)(o + 0xA4);
@@ -836,7 +836,7 @@ extern void func_L00_001FD1D8(void *, s32, s32);
 void veldin_ship_draw(u8 *m) {
     Quad_2d19b0 quad;
     Vec_2d19b0 a, c, b;
-    u8 *vars = *(u8 **)(m + 0x78);
+    u8 *vars = ((u8 *)((Moby *)m)->pvars);
     s32 i, j, index, active = 0;
     f32 blend, len, x, y;
 
@@ -981,8 +981,8 @@ void DecoyGlove_AimThrow(int collision_arg, Moby *carrier, float *position)
     func_001F9EC0_2D3608(direction, direction, D_0013E633_2D3608 + 0x145D);
     {
         Hero *h = (Hero *)(D_0013E633_2D3608 + 0xE1D);
-        anchor_ptr[0] = func_001F9F90_2D3608(func_001FA748_2D3608(-0.361968011f, func_L00_001FF860_2D3608(h->unk670, h->unk674))) * 0.859039009f;
-        anchor_ptr[1] = func_001F9FA8_2D3608(func_001FA748_2D3608(-0.361968011f, func_L00_001FF860_2D3608(h->unk670, h->unk674))) * 0.859039009f;
+        anchor_ptr[0] = func_001F9F90_2D3608(func_001FA748_2D3608(-0.361968011f, func_L00_001FF860_2D3608(h->facing_x, h->facing_y))) * 0.859039009f;
+        anchor_ptr[1] = func_001F9FA8_2D3608(func_001FA748_2D3608(-0.361968011f, func_L00_001FF860_2D3608(h->facing_x, h->facing_y))) * 0.859039009f;
         anchor_ptr[2] = 0.0f;
         func_001F9BD8_2D3608(anchor_ptr, anchor_ptr, D_0013E633_2D3608 + 0xE9D);
         anchor_ptr[2] = anchor_ptr[2] + 0.390819997f;
@@ -1076,7 +1076,7 @@ void decoy_glove_update(unsigned char *moby) {
     u128_D3B20 loc;
 
     if (moby == 0) return;
-    d = *(char **)(moby + 0x78);
+    d = ((char *)((Moby *)moby)->pvars);
     if (d == 0) return;
     *(u128_D3B20 *)va = 0;
     va[1] = -0.19f;
@@ -1478,7 +1478,7 @@ void metal_detector_update(struct Moby *moby) {
             vars->unk24 = 0;
             vars->unk28 = 0;
         }
-        if ((((PadState *)D_0013CA40_2D4398)->held & 0x20) && ((Hero *)D_0013F450_2D4398)->items[0].unk20 > ticks_2D4398(0xF)) {
+        if ((((PadState *)D_0013CA40_2D4398)->held & 0x20) && ((Hero *)D_0013F450_2D4398)->items[0].ready_frames > ticks_2D4398(0xF)) {
             if (((Hero *)D_0013F450_2D4398)->detector_target_dist < 10.0f) {
                 if (func_L00_0028EB98_2D4398(moby, vars->voice2) == 0 && vars->voice2 == -1) {
                     vars->voice2 = voice_2D4398(1, 4, moby);
@@ -1696,7 +1696,7 @@ void update_animated_point_light_moby(unsigned char *m) {
     int r;
 
     if (m == 0) return;
-    o = *(unsigned char **)(m + 0x78);
+    o = ((unsigned char *)((Moby *)m)->pvars);
     c0 = 0;
     if (o == 0) return;
     if (((Moby *)m)->state == 0) {
@@ -2281,7 +2281,7 @@ float move_horny_toad_toward_position(unsigned char *m, float *t, float vel) {
     float vec[4] __attribute__((aligned(16)));
     unsigned char *v;
     float ang, d, z, a, lim, w;
-    v = *(unsigned char **)(m + 0x78);
+    v = ((unsigned char *)((Moby *)m)->pvars);
     ang = fast_atan2(t[0] - ((Moby *)m)->pos.x, t[1] - ((Moby *)m)->pos.y);
     z = ((Moby *)m)->pos.z;
     d = FastVecDist(m + 0x10, t);
@@ -2858,7 +2858,7 @@ void infobot_update(struct Moby *moby)
 
 /* Fills the random float, constant and random int slots of a moby's data block. */
 void initialize_moby_particle_effect(char *a) {
-    char *d = *(char **)(a + 0x78);
+    char *d = ((char *)((Moby *)a)->pvars);
     char *p = d + 0x10;
     int i;
     int arg;
@@ -2903,7 +2903,7 @@ extern unsigned char *func_L00_00273E08(void *pos, int a1, unsigned char a2, int
 
 /* Draws four drifting, colour-cycling sprites around a moby, stepping each one's phase and fade timer. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_002cfcb8.c, FUN_L00_002d6cd0. */
 void update_infobot_particle_effect(char *o) {
-    P_p *p = *(P_p **)(o + 0x78);
+    P_p *p = ((P_p *)((Moby *)o)->pvars);
     union { ti_p q; float f[4]; } v;
     float d[4] __attribute__((aligned(16)));
     float e[4] __attribute__((aligned(16)));
@@ -3138,7 +3138,7 @@ extern char D_L00_001D3010[];
 
 /* initialises the random wobble parameters of slot idx */
 void initialize_smoke_fire_spawner_mesh_particle(char *m, int idx) {
-    char *data = *(char **)(m + 0x78);
+    char *data = ((char *)((Moby *)m)->pvars);
     float a, b, r;
     float *w;
     r = randf_sym(0.0f, 1.0f);

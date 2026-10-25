@@ -663,7 +663,7 @@ void update_veldin_robot_effects(char *m) {
     int i;
     int life;
 
-    vars = *(char **)(m + 0x78);
+    vars = ((char *)((Moby *)m)->pvars);
     pos = (float *)(vars + 0x1C0);
     Moby_GetJointWorldPos(m, 1, pos);
     ((float *)(vars + 0x1C0))[2] -= 0.333f;
@@ -713,7 +713,7 @@ void draw_veldin_robot_effect_quad(char *m) {
     float (*p)[4];
     float *qq;
     int i;
-    qcopy(bb, *(char **)(m + 0x78) + 0x1C0);
+    qcopy(bb, ((char *)((Moby *)m)->pvars) + 0x1C0);
     bb[3] = 1.0f;
     FastVecSub(c, g_debug_camera, bb);
     vec_scale_to_length(c, c, 1.0f);

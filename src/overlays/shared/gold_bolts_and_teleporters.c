@@ -144,13 +144,13 @@ void update_rail_hero_motion(struct Moby *m) {
         }
         func_001F9BD8_F7700(&D_0013F450_F7700.motion.platform_delta, &D_0013F450_F7700.motion.platform_delta, &pull);
         D_0013F450_F7700.motion.platform_delta.f[3] = 0.0f;
-        qcopy(&D_0013F450_F7700.motion.unk150, &D_0013F450_F7700.motion.platform_delta);
+        qcopy(&D_0013F450_F7700.motion.momentum, &D_0013F450_F7700.motion.platform_delta);
         if (D_0013F450_F7700.unk1E0 < func_001F9850_F7700(30)) {
             D_0013F450_F7700.unk1E0 = func_001F9850_F7700(30);
         }
     } else {
-        func_001F9C30_F7700(&D_0013F450_F7700.motion.unk150, &D_0013F450_F7700.motion.unk150, (*(f32 *)&D_0015EE60_F7700) * -0.0099999905f + 1.0f);
-        qcopy(&D_0013F450_F7700.motion.platform_delta, &D_0013F450_F7700.motion.unk150);
+        func_001F9C30_F7700(&D_0013F450_F7700.motion.momentum, &D_0013F450_F7700.motion.momentum, (*(f32 *)&D_0015EE60_F7700) * -0.0099999905f + 1.0f);
+        qcopy(&D_0013F450_F7700.motion.platform_delta, &D_0013F450_F7700.motion.momentum);
         D_0013F450_F7700.motion.platform_delta.i[3] = 0;
     }
 }
@@ -609,7 +609,7 @@ extern void func_L01_00240CE8(void);
 /* Cutscene trigger: unless already seen, starts its camera sequence when the hero enters the volume (or it is
  * triggered), then ends it after its timer and re-arms. */
 void update_cutscene_trigger(char *m) {
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     float a[4];
     float b[4];
     func_L01_002FC890_m(m);
@@ -872,15 +872,15 @@ void the_plumber_update(char *m)
         if (vec_distance_xy(&plumber_moby->pos, hero_position) < 8.0f &&
             (hero_aim_view = (Hero *)(hero_position - 0x80),
              FastDiffRots(plumber_moby->rot.z,
-                 fast_atan2(hero_aim_view->motion.unkD0.f[0] - plumber_moby->pos.x,
-                                   hero_aim_view->motion.unkD0.f[1] - plumber_moby->pos.y))) < 1.5707964f) {
+                 fast_atan2(hero_aim_view->motion.body_center.f[0] - plumber_moby->pos.x,
+                                   hero_aim_view->motion.body_center.f[1] - plumber_moby->pos.y))) < 1.5707964f) {
             if (FastVecLength(hero_position + 0x80) > 0.01f)
                 plumber_vars->moving_timer = scale_ticks(120);
             else
                 func_001F9908_c(&plumber_vars->moving_timer);
         } else if (plumber_vars->moving_timer != 0) {
             plumber_vars->moving_timer = 0;
-            qcopy(&plumber_vars->target, hero_F7700.motion.unkD0.f);
+            qcopy(&plumber_vars->target, hero_F7700.motion.body_center.f);
         }
         if (func_001F9908_c(&plumber_vars->target_timer)) {
             float heading;
@@ -891,7 +891,7 @@ void the_plumber_update(char *m)
             FastVecAdd(&plumber_vars->target, &plumber_vars->target, &plumber_moby->pos);
         }
         if (plumber_vars->moving_timer != 0) {
-            qcopy(s_target, hero_F7700.motion.unkD0.f);
+            qcopy(s_target, hero_F7700.motion.body_center.f);
             rate = 0.04f;
             head_rate = 0.3f;
         } else {
@@ -1020,7 +1020,7 @@ extern int func_001FA898(float);
 extern void func_001F5800(int, int, int, int, int, int, int, int, long, long);
 
 void draw_visibomb_outside_zone_overlay(char *moby) {
-    int *vars = *(int **)(moby + 0x78);
+    int *vars = ((int *)((Moby *)moby)->pvars);
     int row_count;
     int column_count;
     int row;
@@ -1339,7 +1339,7 @@ extern short D_L01_00161FE0;
 
 // Per-frame update of a moby: scale, orbit position and angle easing.
 void update_gold_bolt_visuals(char *moby) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     float r;
     float s;
     float k;
@@ -1418,7 +1418,7 @@ extern unsigned char *func_L00_00273E08(void *, int, unsigned char, int, int, in
 
 /* Draws the moby's four pulsing glow rings between it and the camera, fading with distance. */
 void update_gold_bolt_glow_rings(char *m) {
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     float dir[4];
     float pos[4];
     float step[4];
@@ -1480,7 +1480,7 @@ void update_gold_bolt_pickup_camera(char *m) {
     float v[4];
     float a[4];
     float b[4];
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     float f;
     float k;
     char *t;
@@ -1601,7 +1601,7 @@ extern void func_L00_002664B0(int, int);
 
 /* Teleporter pad update: activation check, then per state: spawn rings, wait for the player, charge, teleport, cool down. */
 void TeleporterPadUpdate(char *moby) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     int active = 0;
     if (D_L01_001BB9C0.collected[(short)((Moby *)moby)->save_id] != 0
         || (*(int *)(D_0014171B + 0xAB75 + (((short)((Moby *)moby)->save_id >> 5) * 4 + (D_0015EE84_c << 8))) >> (((Moby *)moby)->save_id & 0x1F)) & 1) {
@@ -1617,11 +1617,11 @@ void TeleporterPadUpdate(char *moby) {
     }
     if (*(int *)(data + 0x3C) != 0) {
         if (D_0015EF20 == 0) {
-            *(int *)(moby + 0x94) = 0;
+            *(int *)&((Moby *)moby)->collision = 0;
             ((Moby *)moby)->flags |= 0x41;
             return;
         }
-        *(int *)(moby + 0x94) = *(int *)(*(char **)(moby + 0x24) + 0x10);
+        *(int *)&((Moby *)moby)->collision = *(int *)(*(char **)(moby + 0x24) + 0x10);
         ((Moby *)moby)->flags &= ~0x41;
     }
     switch (((Moby *)moby)->state) {
@@ -1771,7 +1771,7 @@ extern short D_L01_00162010;
 
 /* Places the three child mobys at this moby's position and orients each from its data. */
 void update_teleporter_child_transforms(char *m) {
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     char **p = (char **)(d + 0x14);
     float v[4];
     int i;
@@ -1803,7 +1803,7 @@ extern void func_00215F80(int, int);
 
 /* Picks a per-stage table by the current stage number and passes the entry for the moby's index on. */
 void try_set_teleporter_help_message(char *moby) {
-    int *data = *(int **)(moby + 0x78);
+    int *data = ((int *)((Moby *)moby)->pvars);
     switch (D_0015EE84_c) {
     case 12:
         try_set_help_message(4, ((int *)&teleporter_help_ids_hoven)[data[4]]);
@@ -1850,7 +1850,7 @@ void draw_moby_radius_ring(char *moby) {
     char *d;
     float h;
     int i, j, nj;
-    d = *(char **)(moby + 0x78);
+    d = ((char *)((Moby *)moby)->pvars);
     copy_matrix_rotation(m, moby + 0xC0);
     qcopy(pos, moby + 0x10);
     q.g[1] = GetEffectTex(*(int *)&teleporter_ring_texture);
@@ -1938,10 +1938,10 @@ void show_teleporter_and_children(char *a) {
     char **q;
     s32 i;
     s8 one;
-    q = (char **)(*(char **)(a + 0x78) + 0x14);
-    *(s32 *)(a + 0x94) = *(s32 *)(p + 0x10);
+    q = (char **)(((char *)((Moby *)a)->pvars) + 0x14);
+    *(s32 *)&((Moby *)a)->collision = *(s32 *)(p + 0x10);
     ((Moby *)a)->flags &= 0xFFFE;
-    *(s8 *)(a + 0x31) = 1;
+    *(s8 *)&((Moby *)a)->visible = 1;
     one = 1;
     for (i = 2; i >= 0; i--) {
         if (*q != 0) {
@@ -1959,7 +1959,7 @@ extern char D_L01_001807C0[];
 
 void update_moby_interpolated_point_light(unsigned char *m) {
     int state = ((Moby *)m)->state;
-    char *e = *(char **)(m + 0x78);
+    char *e = ((char *)((Moby *)m)->pvars);
     int i;
     int current;
     int next;
@@ -2227,7 +2227,7 @@ extern OvlQuad_0DD80 D_0013F4D0_0DD80 __asm__("D_0013F4D0");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/vendor/0030b618.c, FUN_L01_0030c9a8. */
 void update_sandmouse_projectile(char *m) {
-    char *e = *(char **)(m + 0x78);
+    char *e = ((char *)((Moby *)m)->pvars);
     f32 *pos;
     OvlVec4 old_pos;
     OvlVec4 offset;
@@ -2283,7 +2283,7 @@ void update_sandmouse_projectile(char *m) {
     ((f32 *)&probe.dir)[3] = 5627.9248f;
     probe.b28 = 1;
     probe.b29 = 1;
-    probe.id = *(u16 *)(m + 0xa6);
+    probe.id = *(u16 *)&((Moby *)m)->oclass;
     if (FastDecTimer(e + 0x14)) {
         DeleteMoby(m);
         return;
@@ -2583,7 +2583,7 @@ extern void func_L00_00264690(void *, int, float, float);
 
 /* Initialize both consecutive effect entries. */
 void draw_sandmouse_billboard_quads(char *moby) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     char *entry = data + 0x70;
     int i;
     for (i = 1; i >= 0; i--) {
@@ -2595,7 +2595,7 @@ extern void func_L00_00250800(void *, int, void *);
 
 /* Attach two effect entries and register their update callback. */
 void update_sandmouse_billboard_quads(char *moby) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     char *entry = data + 0x70;
     int i;
     for (i = 0; i < 2; i++) {

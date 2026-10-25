@@ -309,7 +309,7 @@ extern int func_001F9850(int);
 
 /* Trigger moby: waits for the hero in its zone, plays its open animation, then launches a listed moby. */
 void update_clip_volume_moby_activation_trigger(char *m) {
-    int *d = *(int **)(m + 0x78);
+    int *d = ((int *)((Moby *)m)->pvars);
     switch (((unsigned char *)m)[0x20]) {
     case 0:
         if (d[1] >= 0 && is_point_inside_clip_volume(D_0013E633 + 0xE9D, d[1])) {
@@ -441,7 +441,7 @@ extern float D_0015EE70 MACRO_ADDR;
 #define frame_time_sq_ff D_0015EE70
 /* A glass containment tube holding a creature: when its energy sphere is hit, a short camera shot of the tube, then the tube breaks and control returns to the hero. */
 void update_moby_camera_sequence_and_draw_selection(char *moby) {
-    int *data = *(int **)(moby + 0x78);
+    int *data = ((int *)((Moby *)moby)->pvars);
     float pos[4], rot[4], from[4], target[4], offset[4];
     int base;
     int state;
@@ -596,7 +596,7 @@ void spawn_moby_breakup_effect(char *m, int burst) {
     float w[4];
     float v[4];
     int i;
-    *(int *)(*(char **)(m + 0x78) + 4) = 0;
+    *(int *)(((char *)((Moby *)m)->pvars) + 4) = 0;
     n = CreateMoby(0x43C);
     *(short *)(n + 0x32) = 0x40;
     n[0x31] = 1;
@@ -755,7 +755,7 @@ extern short D_L06_00162120;
 
 // Update for a bobbing moby: waits, then follows a sine offset, then drifts and deletes itself.
 void update_moby_bobbing_and_motion(char *moby) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     int state;
     if (data == 0) {
         DeleteMoby(moby);
@@ -790,7 +790,7 @@ void update_moby_bobbing_and_motion(char *moby) {
 }
 /* Sets state 2 and stores the vectors a and b in the moby's data block. */
 void begin_moby_linear_and_angular_motion(char *arg, void *a, void *b) {
-    char *dst = *(char **)(arg + 0x78);
+    char *dst = ((char *)((Moby *)arg)->pvars);
     arg[0x20] = 2;
     qcopy(dst, a);
     qcopy(dst + 0x10, b);
@@ -1040,13 +1040,13 @@ void fred_update(Moby *moby) {
             tracking = 1;
             if (vec_distance_xy(((float *)&moby->pos), player) < 8.0f &&
                 FastDiffRots(moby->rot.z,
-                    fast_atan2(g_hero.motion.unkD0.f[0] - moby->pos.x,
-                        g_hero.motion.unkD0.f[1] - moby->pos.y)) < 1.5707964f) {
+                    fast_atan2(g_hero.motion.body_center.f[0] - moby->pos.x,
+                        g_hero.motion.body_center.f[1] - moby->pos.y)) < 1.5707964f) {
                 if (FastVecLength((char *)&g_hero.motion.displacement) > 0.01f) fred_vars->f158 = scale_ticks(120);
                 else fast_dec_timer(&fred_vars->f158);
             } else if (fred_vars->f158) {
                 fred_vars->f158 = 0;
-                qcopy(fred_vars->f140, &g_hero.motion.unkD0);
+                qcopy(fred_vars->f140, &g_hero.motion.body_center);
             }
             if (fast_dec_timer(&fred_vars->f15C)) {
                 float heading;
@@ -1056,7 +1056,7 @@ void fred_update(Moby *moby) {
                 FastVecAdd(fred_vars->f140, fred_vars->f140, ((float *)&moby->pos));
             }
             if (fred_vars->f158) {
-                qcopy(target, &g_hero.motion.unkD0);
+                qcopy(target, &g_hero.motion.body_center);
                 rate = 0.04f;
                 head_rate = 0.3f;
             } else {
@@ -1166,7 +1166,7 @@ typedef struct {
  * table slot address across the vector copy (qcopy_nc) and re-reads the path pointer after the store to d+0xB0.
  * d+0xB8/0xBC are struct members so the stores can sink below the loads of the next call's arguments. */
 void update_moby_linked_sequence_camera_and_timer(unsigned char *m) {
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     float va[4];
     float vc[4];
     float vb[4];
@@ -1318,7 +1318,7 @@ void queue_moby_dialogue_line(char *moby, int mode) {
     int r;
     int i;
     if (n != 0) n = n - 1;
-    data = *(Pick **)(moby + 0x78);
+    data = ((Pick *)((Moby *)moby)->pvars);
     id = -1;
     switch (mode) {
     case 0:
@@ -1681,7 +1681,7 @@ extern void func_00215F80(int, int);
 
 /* Picks the next selection state from the menu mode, then queues the matching sound. */
 void update_shuttle_route_selection_and_prompt(char *m) {
-    char *d = *(char **)(m + 0x78);
+    char *d = ((char *)((Moby *)m)->pvars);
     switch (*(int *)(d + 0xBC)) {
     case 0: {
         int idx = D_0015EE84_302FE8 << 4;
@@ -1763,7 +1763,7 @@ extern char *D_L06_0016016C  MACRO_ADDR;
 /* Moves the moby along three paths and plays the sound marked on the path points. */
 int update_shuttle_path_ride(char *moby, int path) {
     float rotation[4], position[4];
-    struct PathRide_303160 *ride = *(struct PathRide_303160 **)(moby + 0x78);
+    struct PathRide_303160 *ride = ((struct PathRide_303160 *)((Moby *)moby)->pvars);
     Path_303160 *first_path = ((Path_303160 **)blarg_paths)[ride->path_a[path]];
     Path_303160 *middle_path = ((Path_303160 **)blarg_paths)[ride->path_b[path]];
     Path_303160 *third_path = ((Path_303160 **)blarg_paths)[ride->path_c[path]];
@@ -2033,7 +2033,7 @@ extern void func_0020D678(void *);
 /* Deletes every moby in the group stored in the data block. */
 void mark_shuttle_linked_mobys_for_removal(char *moby)
 {
-    char *data = *(char **)(moby + 0x78);
+    char *data = ((char *)((Moby *)moby)->pvars);
     short *p = blarg_moby_groups[*(int *)(data + 0xCC)];
     do {
         DeleteMoby(level_mobys_q + ((*p & 0x7FFF) << 8));
@@ -2330,7 +2330,7 @@ typedef struct {
 /* The electric fence across a ledge (class 1123): waits for its partner, animates four ribbons of arcs, then bursts into particles once switched off. */
 void update_moby_vector_streams_and_particle_burst(char *moby)
 {
-    Data_305E38 *d = *(Data_305E38 **)(moby + 0x78);
+    Data_305E38 *d = ((Data_305E38 *)((Moby *)moby)->pvars);
     union {
         float tmp[30][4];
         struct {
@@ -2353,7 +2353,7 @@ void update_moby_vector_streams_and_particle_burst(char *moby)
         d->f18 = -1;
         if (d->f10 != -1) {
             moby[0x20] = 1;
-            *(int *)(moby + 0x94) = 0;
+            *(int *)&((Moby *)moby)->collision = 0;
         } else {
             moby[0x20] = 2;
         }
@@ -2364,7 +2364,7 @@ void update_moby_vector_streams_and_particle_burst(char *moby)
             return;
         }
         moby[0x20] = 2;
-        *(int *)(moby + 0x94) = *(int *)(*(char **)(moby + 0x24) + 0x10);
+        *(int *)&((Moby *)moby)->collision = *(int *)(*(char **)(moby + 0x24) + 0x10);
         break;
     }
     case 2: {
@@ -2413,7 +2413,7 @@ void update_moby_vector_streams_and_particle_burst(char *moby)
         }
         if (d->f14 >= 0 && *(unsigned char *)(level_mobys_q + 0xBC + (d->f14 << 8)) != 0) {
             int h;
-            *(int *)(moby + 0x94) = 0;
+            *(int *)&((Moby *)moby)->collision = 0;
             moby[0x20] = 3;
             h = d->f18;
             if (h != -1) {
@@ -2528,7 +2528,7 @@ void draw_moby_vector_streams(char *m) {
     float *mp;
     int i;
     int j;
-    data = *(char **)(m + 0x78);
+    data = ((char *)((Moby *)m)->pvars);
     euler_to_matrix(a, (float *)(m + 0x40));
     set_scale_matrix(b, *(float *)&vector_stream_matrix_scale);
     sce_vu0_mul_matrix(a, a, b);
