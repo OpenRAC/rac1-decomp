@@ -43,13 +43,13 @@ void update_parent_following_effect(char *moby) {
         DeleteMoby(moby);
         return;
     }
-    *(float *)(moby + 0x44) = *(float *)(*(char **)p + 0x44);
-    *(float *)(moby + 0x48) = *(float *)(*(char **)p + 0x48);
+    ((Moby *)moby)->rot.y = *(float *)(*(char **)p + 0x44);
+    ((Moby *)moby)->rot.z = *(float *)(*(char **)p + 0x48);
     qcopy(moby + 0x10, *(char **)(*(char **)p + 0x78) + 0xF0);
     v = *(float *)(p + 0x10) + *(float *)(p + 0x14);
     *(float *)(p + 0x10) = v;
-    fast_add_rotations_cf(moby + 0x10, moby + 0x10, -v, *(float *)(moby + 0x48), *(float *)(moby + 0x44));
-    *(float *)(moby + 0x40) = FastAddRots(*(float *)(moby + 0x40), g_frame_time * 5.235987663269043f);
+    fast_add_rotations_cf(moby + 0x10, moby + 0x10, -v, ((Moby *)moby)->rot.z, ((Moby *)moby)->rot.y);
+    ((Moby *)moby)->rot.x = FastAddRots(((Moby *)moby)->rot.x, g_frame_time * 5.235987663269043f);
     ratio = IntToFloat(*(short *)(p + 0xE));
     ratio = ratio / IntToFloat(*(short *)(p + 0xC));
     c = FastTweenColor(*(int *)(p + 8), *(int *)(p + 4), ratio);
@@ -57,7 +57,7 @@ void update_parent_following_effect(char *moby) {
     g = (c >> 8) & 0xFF;
     set_moby_color(moby, c & 0xFF, g, b);
     moby[0x23] = func_001FA898_r(ratio * 128.0f);
-    *(float *)(moby + 0x2C) = *(float *)(moby + 0x2C) * (frame_scale * 0.019999981f + 1.0f);
+    ((Moby *)moby)->scale = ((Moby *)moby)->scale * (frame_scale * 0.019999981f + 1.0f);
 }
 extern char *D_L03_0016016C MACRO_ADDR;
 extern float func_002140F8(float, float);
@@ -696,15 +696,15 @@ void Moby545Update(char *moby)
     qcopy(a, pos);
     switch (((unsigned char *)moby)[0x20]) {
     case 0: {
-            *(float *)(moby + 0x2C) += (*(float *)(*(char **)(moby + 0x24) + 0x24) - *(float *)(moby + 0x2C)) * (frame_scale * 0.05f);
+            ((Moby *)moby)->scale += (*(float *)(*(char **)(moby + 0x24) + 0x24) - ((Moby *)moby)->scale) * (frame_scale * 0.05f);
             FastVecAdd(pos, pos, d);
             vec_scale_to_length(t, d, 0.2f);
             FastVecAdd(t, t, pos);
-            sv0 = *(int *)(moby + 0x98);
+            sv0 = ((Moby *)moby)->collision_disable;
             sv2 = *(int *)(moby + 0x94);
             sv1 = *(int *)(*(char **)(d + 0x10) + 0x98);
             sv3 = *(int *)(*(char **)(d + 0x10) + 0x94);
-            *(int *)(moby + 0x98) = -1;
+            ((Moby *)moby)->collision_disable = -1;
             *(int *)(*(char **)(d + 0x10) + 0x98) = -1;
             *(int *)(moby + 0x94) = 0;
             *(int *)(*(char **)(d + 0x10) + 0x94) = 0;
@@ -794,7 +794,7 @@ void Moby545Update(char *moby)
     case 1: {
         f0 = ProbeGroundHeight(pos, 0, 0.5f);
         *(int *)(moby + 0x1C) = 0;
-        *(float *)(moby + 0x18) = f0 + 0.2f;
+        ((Moby *)moby)->pos.z = f0 + 0.2f;
         *(VecQuad *)t = *(VecQuad *)(moby + 0x10);
         *(int *)(d + 0x18) = (int)revive_spawner_pooled_child(*(char **)(d + 0x10), t, -1);
         ((unsigned char *)moby)[0x20] = 2;
@@ -802,16 +802,16 @@ void Moby545Update(char *moby)
     }
     case 2: {
             f3 = frame_scale * 0.05f;
-            *(float *)(moby + 0x2C) -= *(float *)(moby + 0x2C) * f3;
+            ((Moby *)moby)->scale -= ((Moby *)moby)->scale * f3;
             p = *(char **)(d + 0x18);
             if (p != 0 && (*(int *)(d + 0x1C) & 4)) {
                 *(float *)(p + 0x2C) += (*(float *)(*(char **)(p + 0x24) + 0x24) - *(float *)(p + 0x2C)) * f3;
             }
             f1 = frame_scale * 0.05f;
-            f2 = *(float *)(moby + 0x2C);
+            f2 = ((Moby *)moby)->scale;
             f0 = *(float *)(*(char **)(moby + 0x24) + 0x24) * f1;
             if (f2 < f0) {
-                *(float *)(moby + 0x2C) = 0.0001f;
+                ((Moby *)moby)->scale = 0.0001f;
                 p = *(char **)(d + 0x18);
                 if (p == 0 || ((unsigned char *)p)[0x20] == 0xFE || ((unsigned char *)p)[0x20] == 0xFD
                     || (*(int *)(d + 0x1C) & 4) == 0
@@ -822,17 +822,17 @@ void Moby545Update(char *moby)
             }
     }
     }
-    jet_animate((unsigned char *)moby, *(float *)(moby + 0x2C) * 0.3f / *(float *)(*(char **)(moby + 0x24) + 0x24));
-    if (*(float *)(moby + 0x18) < 5.0f || 500.0f < *(float *)(moby + 0x18)) {
+    jet_animate((unsigned char *)moby, ((Moby *)moby)->scale * 0.3f / *(float *)(*(char **)(moby + 0x24) + 0x24));
+    if (((Moby *)moby)->pos.z < 5.0f || 500.0f < ((Moby *)moby)->pos.z) {
         DeleteMoby(moby);
         return;
     }
-    if (*(float *)(moby + 0x10) < 5.0f) *(float *)(moby + 0x10) = 5.0f;
-    if (1018.0f < *(float *)(moby + 0x10)) *(float *)(moby + 0x10) = 1018.0f;
-    if (*(float *)(moby + 0x14) < 5.0f) *(float *)(moby + 0x14) = 5.0f;
-    if (1018.0f < *(float *)(moby + 0x14)) *(float *)(moby + 0x14) = 1018.0f;
-    if (*(float *)(moby + 0x18) < 5.0f) *(float *)(moby + 0x18) = 5.0f;
-    if (1018.0f < *(float *)(moby + 0x18)) *(float *)(moby + 0x18) = 1018.0f;
+    if (((Moby *)moby)->pos.x < 5.0f) ((Moby *)moby)->pos.x = 5.0f;
+    if (1018.0f < ((Moby *)moby)->pos.x) ((Moby *)moby)->pos.x = 1018.0f;
+    if (((Moby *)moby)->pos.y < 5.0f) ((Moby *)moby)->pos.y = 5.0f;
+    if (1018.0f < ((Moby *)moby)->pos.y) ((Moby *)moby)->pos.y = 1018.0f;
+    if (((Moby *)moby)->pos.z < 5.0f) ((Moby *)moby)->pos.z = 5.0f;
+    if (1018.0f < ((Moby *)moby)->pos.z) ((Moby *)moby)->pos.z = 1018.0f;
 }
 /* moby state predicate: true when field 0xA6 is 0x23E and the state byte is 0xE */
 int is_moby_class_23e_in_state_14(char *moby) {
@@ -1237,36 +1237,36 @@ void handle_blarg_helicopter_hits(char *m) {
     fv = 0.0f;
     r = MobyGetHitMessage(m, 0x330000, 0);
     res = ComputeHitResponse(m, r, d + 0x20, 0, &st, &fv, 0, 4);
-    if (st != 1 && *(unsigned char *)(m + 0x20) != 5) {
+    if (st != 1 && ((Moby *)m)->state != 5) {
         float t = *(float *)(d + 0x20) - fv;
         *(float *)(d + 0x20) = t;
         if (res == 1 || t <= 0.0f) {
-            *(unsigned char *)(m + 0x20) = 5;
+            ((Moby *)m)->state = 5;
         } else if (res != 0xB) {
             *(unsigned char *)(d + 0x67) = 0xB4;
             RerollEffectCounter(m, (short *)(d + 0x60));
-            if (*(float *)(r + 0x1C) == 5627.925f && *(unsigned char *)(m + 0x20) != 4) {
-                a = fast_atan2(*(float *)(m + 0x10) - *(float *)(r + 0), *(float *)(m + 0x14) - *(float *)(r + 4));
-                b = FastSubRots(a, *(float *)(m + 0x48));
+            if (*(float *)(r + 0x1C) == 5627.925f && ((Moby *)m)->state != 4) {
+                a = fast_atan2(((Moby *)m)->pos.x - *(float *)(r + 0), ((Moby *)m)->pos.y - *(float *)(r + 4));
+                b = FastSubRots(a, ((Moby *)m)->rot.z);
                 p = FastCos(b) * 0.08726646f;
                 q = FastSin(b) * -0.34906584f;
-                if (FastAbsF(*(float *)(m + 0x40)) < FastAbsF(q)) {
-                    *(float *)(m + 0x40) = q;
+                if (FastAbsF(((Moby *)m)->rot.x) < FastAbsF(q)) {
+                    ((Moby *)m)->rot.x = q;
                     *(float *)(d + 0x218) = 0.0f;
                 }
-                if (FastAbsF(*(float *)(m + 0x44)) < FastAbsF(p)) {
-                    *(float *)(m + 0x44) = p;
+                if (FastAbsF(((Moby *)m)->rot.y) < FastAbsF(p)) {
+                    ((Moby *)m)->rot.y = p;
                     *(float *)(d + 0x21C) = 0.0f;
                 }
                 *(float *)(d + 0x214) = g_frame_time * 4.0f;
                 *(short *)(d + 0x206) = scale_ticks(0x3C);
-                *(unsigned char *)(m + 0xBC) = *(unsigned char *)(m + 0x20);
-                *(unsigned char *)(m + 0x20) = 4;
+                ((Moby *)m)->command = ((Moby *)m)->state;
+                ((Moby *)m)->state = 4;
                 Moby_PlaySound(1, 0, (int)m);
             }
         }
     }
-    *(unsigned char *)(m + 0xA4) = 0xFF;
+    ((Moby *)m)->hit_slot = 0xFF;
     StepColorFade(m, d + 0x60);
 }
 extern float D_L03_0015F660[] MACRO_ADDR;
@@ -1795,9 +1795,9 @@ void update_falling_moby(char *moby) {
     char *d = *(char **)(moby + 0x78);
     *(float *)(d + 8) = *(float *)(d + 8) - g_frame_time_sq * 9.8f;
     add_vectors(v, moby + 0x10, d);
-    *(float *)(moby + 0x40) = FastAddRots(*(float *)(moby + 0x40), *(float *)(d + 0x10));
-    *(float *)(moby + 0x44) = FastAddRots(*(float *)(moby + 0x44), *(float *)(d + 0x14));
-    *(float *)(moby + 0x48) = FastAddRots(*(float *)(moby + 0x48), *(float *)(d + 0x18));
+    ((Moby *)moby)->rot.x = FastAddRots(((Moby *)moby)->rot.x, *(float *)(d + 0x10));
+    ((Moby *)moby)->rot.y = FastAddRots(((Moby *)moby)->rot.y, *(float *)(d + 0x14));
+    ((Moby *)moby)->rot.z = FastAddRots(((Moby *)moby)->rot.z, *(float *)(d + 0x18));
     {
         float a = IntToFloat(*(int *)(d + 0x24));
         float b = IntToFloat(*(int *)(d + 0x20));

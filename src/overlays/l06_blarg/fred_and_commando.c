@@ -445,7 +445,7 @@ void update_moby_camera_sequence_and_draw_selection(char *moby) {
     float pos[4], rot[4], from[4], target[4], offset[4];
     int base;
     int state;
-    *(float *)(moby + 0x2c) = *(float *)(*(char **)(moby + 0x24) + 0x24) * D_L06_001620D8_ff;
+    ((Moby *)moby)->scale = *(float *)(*(char **)(moby + 0x24) + 0x24) * D_L06_001620D8_ff;
     switch ((unsigned char)moby[0x20]) {
     case 0:
         data[1] = 1;
@@ -491,7 +491,7 @@ void update_moby_camera_sequence_and_draw_selection(char *moby) {
                     base <<= 7;
                     base += (int)D_L06_001600EC_ffcb0;
                     data[6] = 0;
-                    facing = angle_atan2_ffcb0(*(float *)(moby + 0x10) - *(float *)(base + 0x30), *(float *)(moby + 0x14) - *(float *)(base + 0x34));
+                    facing = angle_atan2_ffcb0(((Moby *)moby)->pos.x - *(float *)(base + 0x30), ((Moby *)moby)->pos.y - *(float *)(base + 0x34));
                 }
                 {
                     int state;
@@ -601,12 +601,12 @@ void spawn_moby_breakup_effect(char *m, int burst) {
     *(short *)(n + 0x32) = 0x40;
     n[0x31] = 1;
     *(long *)(n + 0x38) = *(long *)(m + 0x38);
-    *(short *)(n + 0x34) = *(unsigned short *)(m + 0x34);
+    *(short *)(n + 0x34) = ((Moby *)m)->flags;
     qcopy(n + 0x10, m + 0x10);
     qcopy(n + 0x40, m + 0x40);
-    *(float *)(n + 0x2C) = *(float *)(m + 0x2C);
+    *(float *)(n + 0x2C) = ((Moby *)m)->scale;
     moby_build_matrix(n);
-    *(unsigned short *)(m + 0x34) |= 1;
+    ((Moby *)m)->flags |= 1;
     if (burst != 0) {
         for (i = 0; i < 50; i++) {
             float spd = random_float_between(1.0f, 6.0f) * g_frame_time;
@@ -764,18 +764,18 @@ void update_moby_bobbing_and_motion(char *moby) {
     state = (unsigned char)moby[0x20];
     switch (state) {
     case 0:
-        *(short *)(moby + 0x32) = 0x200;
+        ((Moby *)moby)->draw_dist = 0x200;
         ((unsigned char *)moby)[0x30] = 0xFF;
-        *(float *)(data + 0xC) = *(float *)(moby + 0x18);
+        *(float *)(data + 0xC) = ((Moby *)moby)->pos.z;
         moby[0x20] = 1;
         break;
     case 1:
         if (*(int *)(D_0013E633 + 0x2EA1) == 0x72) {
-            *(float *)(moby + 0x18) = *(float *)(data + 0xC);
+            ((Moby *)moby)->pos.z = *(float *)(data + 0xC);
         } else {
             float f = IntToFloat(blarg_frame_count % 600) / 600.0f;
             float g = FastSin(f * 6.28318f);
-            *(float *)(moby + 0x18) = *(float *)(data + 0xC) + *(float *)&blarg_bobbing_moby_amplitude * g;
+            ((Moby *)moby)->pos.z = *(float *)(data + 0xC) + *(float *)&blarg_bobbing_moby_amplitude * g;
         }
         break;
     case 2:
@@ -1171,28 +1171,28 @@ void update_moby_linked_sequence_camera_and_timer(unsigned char *m) {
     float vc[4];
     float vb[4];
 
-    switch (m[0x20]) {
+    switch (((Moby *)m)->state) {
     case 0:
-        if (D_0014C150_302FE8[m[0xB0] + (D_0015EE84_302FE8 << 4)] != 0) {
+        if (D_0014C150_302FE8[((Moby *)m)->mission + (D_0015EE84_302FE8 << 4)] != 0) {
             func_0020D678_302FE8(m);
             return;
         }
         func_L06_002F5A20_302FE8(*(int *)(d + 0x0));
         func_L06_002FAD78_302FE8(*(int *)(d + 0x4));
         func_L06_002FAD78_302FE8(*(int *)(d + 0x8));
-        m[0x20] = 1;
-        m[0x30] = 0xFF;
+        ((Moby *)m)->state = 1;
+        ((Moby *)m)->update_dist = 0xFF;
         return;
     case 1:
         if (func_L01_0026EFB8_302FE8(*(int *)(d + 0x1C), -1) != 0) return;
         func_L06_00305BF8_302FE8(D_L06_00160058_p + (*(int *)(d + 0x2C) << 8));
         if (func_L06_00305C38_302FE8(D_L06_00160058_p + (*(int *)(d + 0x2C) << 8)) != 1) return;
-        m[0x20] = 2;
+        ((Moby *)m)->state = 2;
         func_L06_00303858_302FE8((char *)m, 0);
         return;
     case 2:
         if (func_L06_00305C38_302FE8(D_L06_00160058_p + (*(int *)(d + 0x2C) << 8)) != 2) return;
-        m[0x20] = 3;
+        ((Moby *)m)->state = 3;
         *(int *)(d + 0xB0) = 1;
         func_L00_002664B0_302FE8(6, 9);
         if (D_0015182A_302FE8 == 3) func_00216960_302FE8();
@@ -1235,7 +1235,7 @@ void update_moby_linked_sequence_camera_and_timer(unsigned char *m) {
         nb = b0 + 1;
         *(int *)(d + 0xB0) = nb;
         if (nb == D_L06_001B0FB0_302FE8[*(int *)(d + 0x24)][0] - 1) {
-            m[0x20] = 4;
+            ((Moby *)m)->state = 4;
             func_L06_00303858_302FE8((char *)m, 1);
             *(int *)(d + 0xB4) = func_001FA898_302FE8(func_001F9878_302FE8(*(float *)&D_L06_00162154_302FE8));
             func_L00_002EC0C8_302FE8(2);
@@ -1276,12 +1276,12 @@ void update_moby_linked_sequence_camera_and_timer(unsigned char *m) {
         }
         if (D_L06_0015F6A8_302FE8 == 0) func_001F49B0_302FE8(func_L06_00303630_302FE8, m);
         if (((Hero *)(D_0013E633_302FE8 + 0xE1D))->state.current == 0x72) {
-            m[0x20] = 6;
+            ((Moby *)m)->state = 6;
             return;
         }
         if (D_L06_0015F6A8_302FE8 != 0) return;
         if (func_001F9908_302FE8(d + 0xB4) == 0) return;
-        m[0x20] = 5;
+        ((Moby *)m)->state = 5;
         ((Dat_302FE8 *)d)->iBC = func_001F9850_302FE8(0xF);
         ((Dat_302FE8 *)d)->fB8 = 0.0f;
         func_L06_003054C8_302FE8(D_L06_00160058_p + (*(int *)(d + 0x30) << 8));
@@ -1785,20 +1785,20 @@ int update_shuttle_path_ride(char *moby, int path) {
     set_camera_position(position);
     if (third_index > 0) {
         angle = fast_atan2(third_path->p[third_index].x - third_path->p[third_index - 1].x, third_path->p[third_index].y - third_path->p[third_index - 1].y);
-        *(float *)(moby + 0x48) = FastAddRots(
+        ((Moby *)moby)->rot.z = FastAddRots(
             FastSubRots(fast_atan2(third_path->p[third_index + 1].x - third_path->p[third_index].x, third_path->p[third_index + 1].y - third_path->p[third_index].y), angle) * third_fraction,
             angle);
         angle = -fast_atan2(vec_distance_xy(&third_path->p[third_index - 1], &third_path->p[third_index]), third_path->p[third_index].z - third_path->p[third_index - 1].z);
-        *(float *)(moby + 0x44) = FastAddRots(
+        ((Moby *)moby)->rot.y = FastAddRots(
             FastSubRots(-fast_atan2(vec_distance_xy(&third_path->p[third_index], &third_path->p[third_index + 1]), third_path->p[third_index + 1].z - third_path->p[third_index].z),
                            angle) * third_fraction,
             angle);
-        *(float *)(moby + 0x44) = *(float *)(moby + 0x44) * FastCos(ride->sway);
-        *(float *)(moby + 0x48) = FastAddRots(*(float *)(moby + 0x48), ride->sway);
+        ((Moby *)moby)->rot.y = ((Moby *)moby)->rot.y * FastCos(ride->sway);
+        ((Moby *)moby)->rot.z = FastAddRots(((Moby *)moby)->rot.z, ride->sway);
     } else {
-        *(float *)(moby + 0x44) =
+        ((Moby *)moby)->rot.y =
             -fast_atan2(vec_distance_xy(&third_path->p[0], &third_path->p[1]), third_path->p[1].z - third_path->p[0].z);
-        *(float *)(moby + 0x48) = fast_atan2(third_path->p[1].x - third_path->p[0].x, third_path->p[1].y - third_path->p[0].y);
+        ((Moby *)moby)->rot.z = fast_atan2(third_path->p[1].x - third_path->p[0].x, third_path->p[1].y - third_path->p[0].y);
     }
     if (first_index > 0 && middle_index > 0) {
         clear_u64_value(rotation);
@@ -1811,7 +1811,7 @@ int update_shuttle_path_ride(char *moby, int path) {
             angle);
         set_camera_rotation(rotation);
     }
-    *(float *)(moby + 0x2C) =
+    ((Moby *)moby)->scale =
         *(float *)(*(char **)(moby + 0x24) + 0x24) * (ride->scale_start - (ride->scale_start - ride->scale_end) * ride->progress);
     if (ride->progress > 0.8f) {
         rate = g_frame_time_sq * 12.566371f;
@@ -2343,7 +2343,7 @@ void update_moby_vector_streams_and_particle_burst(char *moby)
 
     switch ((unsigned char)moby[0x20]) {
     case 0:
-        *(float *)(moby + 0x2C) = *(float *)(*(char **)(moby + 0x24) + 0x24) * *(float *)&vector_stream_moby_scale;
+        ((Moby *)moby)->scale = *(float *)(*(char **)(moby + 0x24) + 0x24) * *(float *)&vector_stream_moby_scale;
         vector_stream_fade_ticks = 0x16;
         vector_stream_regen_ticks = 0x2D;
         d->timer[1] = 0xB;

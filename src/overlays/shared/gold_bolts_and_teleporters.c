@@ -616,7 +616,7 @@ void update_cutscene_trigger(char *m) {
     switch (((unsigned char *)m)[0x20]) {
     case 0:
         if (*(int *)(d + 0x24) == -1) {
-            func_001E9730_c(cutscene_trigger_error_fmt, *(short *)(m + 0xA6), *(unsigned short *)(m + 0xA8));
+            func_001E9730_c(cutscene_trigger_error_fmt, ((Moby *)m)->oclass, *(unsigned short *)(m + 0xA8));
             DeleteMoby(m);
             return;
         }
@@ -624,18 +624,18 @@ void update_cutscene_trigger(char *m) {
         m[0x20] = 1;
         {
             int ff = 0xFF;
-            *(short *)(m + 0x32) = ff;
+            ((Moby *)m)->draw_dist = ff;
             ((unsigned char *)m)[0x30] = ff;
         }
         break;
     case 1: {
         char *g;
-        if (D_L01_001BB9C0_s.collected[(short)*(unsigned short *)(m + 0xB2)] != 0) {
+        if (D_L01_001BB9C0_s.collected[(short)((Moby *)m)->save_id] != 0) {
             m[0x20] = 1;
             break;
         }
-        if ((*(int *)((((short)*(unsigned short *)(m + 0xB2) >> 5) << 2) + (D_0015EE84_c << 8) + (D_0014171B_c + 0xAB75))
-             >> (*(unsigned short *)(m + 0xB2) & 0x1F)) & 1) {
+        if ((*(int *)((((short)((Moby *)m)->save_id >> 5) << 2) + (D_0015EE84_c << 8) + (D_0014171B_c + 0xAB75))
+             >> (((Moby *)m)->save_id & 0x1F)) & 1) {
             m[0x20] = 1;
             break;
         }
@@ -1343,16 +1343,16 @@ void update_gold_bolt_visuals(char *moby) {
     float r;
     float s;
     float k;
-    *(float *)(moby + 0x2C) = *(float *)(*(char **)(moby + 0x24) + 0x24) * *(float *)&gold_bolt_scale_factor;
+    ((Moby *)moby)->scale = *(float *)(*(char **)(moby + 0x24) + 0x24) * *(float *)&gold_bolt_scale_factor;
     if (((unsigned char *)moby)[0x20] == 1) {
-        s = FastSin(*(float *)(moby + 0x4C));
-        *(float *)(moby + 0x18) = *(float *)(data + 0x18) + *(float *)&gold_bolt_hover_height + *(float *)&gold_bolt_bob_height * s;
-        *(float *)(moby + 0x40) = FastAddRots(*(float *)(moby + 0x40), *(float *)(data + 0x68));
-        *(float *)(moby + 0x44) = FastAddRots(*(float *)(moby + 0x44), *(float *)(data + 0x64));
-        r = FastAddRots(*(float *)(moby + 0x48), *(float *)(data + 0x60));
+        s = FastSin(((Moby *)moby)->rot.w);
+        ((Moby *)moby)->pos.z = *(float *)(data + 0x18) + *(float *)&gold_bolt_hover_height + *(float *)&gold_bolt_bob_height * s;
+        ((Moby *)moby)->rot.x = FastAddRots(((Moby *)moby)->rot.x, *(float *)(data + 0x68));
+        ((Moby *)moby)->rot.y = FastAddRots(((Moby *)moby)->rot.y, *(float *)(data + 0x64));
+        r = FastAddRots(((Moby *)moby)->rot.z, *(float *)(data + 0x60));
         k = *(float *)&gold_bolt_bob_speed_deg * 0.017453292f * g_frame_time;
-        *(float *)(moby + 0x48) = r;
-        *(float *)(moby + 0x4C) = FastAddRots(*(float *)(moby + 0x4C), k);
+        ((Moby *)moby)->rot.z = r;
+        ((Moby *)moby)->rot.w = FastAddRots(((Moby *)moby)->rot.w, k);
     }
     update_gold_bolt_glow_rings(moby);
     if (random_integer_below(*(int *)&gold_bolt_sparkle_chance) == 0) {
@@ -1485,7 +1485,7 @@ void update_gold_bolt_pickup_camera(char *m) {
     float k;
     char *t;
     char *g;
-    if (*(unsigned char *)(m + 0x52) == 1) {
+    if (((Moby *)m)->seq == 1) {
         f = MobyGetFrameValue(m);
     } else {
         f = 170.0f;
@@ -1603,32 +1603,32 @@ extern void func_L00_002664B0(int, int);
 void TeleporterPadUpdate(char *moby) {
     char *data = *(char **)(moby + 0x78);
     int active = 0;
-    if (D_L01_001BB9C0.collected[(short)*(unsigned short *)(moby + 0xB2)] != 0
-        || (*(int *)(D_0014171B + 0xAB75 + (((short)*(unsigned short *)(moby + 0xB2) >> 5) * 4 + (D_0015EE84_c << 8))) >> (*(unsigned short *)(moby + 0xB2) & 0x1F)) & 1) {
+    if (D_L01_001BB9C0.collected[(short)((Moby *)moby)->save_id] != 0
+        || (*(int *)(D_0014171B + 0xAB75 + (((short)((Moby *)moby)->save_id >> 5) * 4 + (D_0015EE84_c << 8))) >> (((Moby *)moby)->save_id & 0x1F)) & 1) {
         active = 1;
     }
     active = active != 0;
-    if (*(unsigned char *)(moby + 0x20) != 0 && *(int *)(data + 4) != -1 && !active
+    if (((Moby *)moby)->state != 0 && *(int *)(data + 4) != -1 && !active
         && is_point_inside_clip_volume(D_0013E633 + 0xE9D, *(int *)(data + 4)) != 0) {
         active = 1;
         activate_teleporter_and_record_state(moby);
         show_teleporter_and_children(moby);
-        if (*(unsigned char *)(moby + 0x20) == 5) moby[0x20] = 1;
+        if (((Moby *)moby)->state == 5) moby[0x20] = 1;
     }
     if (*(int *)(data + 0x3C) != 0) {
         if (D_0015EF20 == 0) {
             *(int *)(moby + 0x94) = 0;
-            *(unsigned short *)(moby + 0x34) |= 0x41;
+            ((Moby *)moby)->flags |= 0x41;
             return;
         }
         *(int *)(moby + 0x94) = *(int *)(*(char **)(moby + 0x24) + 0x10);
-        *(unsigned short *)(moby + 0x34) &= ~0x41;
+        ((Moby *)moby)->flags &= ~0x41;
     }
-    switch (*(unsigned char *)(moby + 0x20)) {
+    switch (((Moby *)moby)->state) {
     case 0: {
         char **slots = (char **)(data + 0x14);
         int i;
-        *(unsigned char *)(moby + 0x30) = 0xFF;
+        ((Moby *)moby)->update_dist = 0xFF;
         for (i = 0; i < 3; i++) {
             char *g = D_0013E633 + 0xE1D;
             char *c;
@@ -1636,7 +1636,7 @@ void TeleporterPadUpdate(char *moby) {
             *(short *)(slots[i] + 0x32) = 0x40;
             slots[i][0x31] = 1;
             *(long *)(slots[i] + 0x38) = *(long *)(*(char **)(g + 0x2080) + 0x38);
-            *(unsigned short *)(slots[i] + 0x34) = *(unsigned short *)(moby + 0x34);
+            *(unsigned short *)(slots[i] + 0x34) = ((Moby *)moby)->flags;
             c = slots[i];
             qcopy(c + 0x10, moby + 0x10);
             qcopy(c + 0x40, moby + 0x40);
@@ -1652,8 +1652,8 @@ void TeleporterPadUpdate(char *moby) {
         break;
     }
     case 6:
-        if (*(unsigned char *)(moby + 0x21) != 0xFF) {
-            set_moby_list_state((char *)*(unsigned char *)(moby + 0x21), 1);
+        if (((Moby *)moby)->group != 0xFF) {
+            set_moby_list_state((char *)((Moby *)moby)->group, 1);
         }
         moby[0x20] = 1;
     case 1: {
@@ -1672,7 +1672,7 @@ void TeleporterPadUpdate(char *moby) {
         *(int *)(data + 0x30) = -1;
         *(int *)(data + 0x2C) = 0;
         *(int *)(data + 0x28) = 0;
-        request_hero_target_pose((float *)(moby + 0x10), 0, *(float *)(moby + 0x48));
+        request_hero_target_pose((float *)(moby + 0x10), 0, ((Moby *)moby)->rot.z);
         MobySphereHitDirectional((int)moby, 1.5f, moby + 0x10, 0x10000, 20.0f, 1.0f, 0, 1, 0);
         break;
     }
@@ -1940,7 +1940,7 @@ void show_teleporter_and_children(char *a) {
     s8 one;
     q = (char **)(*(char **)(a + 0x78) + 0x14);
     *(s32 *)(a + 0x94) = *(s32 *)(p + 0x10);
-    *(u16 *)(a + 0x34) &= 0xFFFE;
+    ((Moby *)a)->flags &= 0xFFFE;
     *(s8 *)(a + 0x31) = 1;
     one = 1;
     for (i = 2; i >= 0; i--) {
@@ -1958,7 +1958,7 @@ extern void func_L00_0023F1D0(int);
 extern char D_L01_001807C0[];
 
 void update_moby_interpolated_point_light(unsigned char *m) {
-    int state = m[0x20];
+    int state = ((Moby *)m)->state;
     char *e = *(char **)(m + 0x78);
     int i;
     int current;
@@ -1989,9 +1989,9 @@ void update_moby_interpolated_point_light(unsigned char *m) {
             }
         }
         *(int *)(e + 0x68) = -1;
-        if (m[0x30] < truncate_float_to_s32(*(float *)(e + 0x5c)) + 4)
-            m[0x30] = truncate_float_to_s32(*(float *)(e + 0x5c)) + 4;
-        m[0x20] = 1;
+        if (((Moby *)m)->update_dist < truncate_float_to_s32(*(float *)(e + 0x5c)) + 4)
+            ((Moby *)m)->update_dist = truncate_float_to_s32(*(float *)(e + 0x5c)) + 4;
+        ((Moby *)m)->state = 1;
         return;
     case 1:
         break;
@@ -2236,39 +2236,39 @@ void update_sandmouse_projectile(char *m) {
     f32 pitch_k, pitch_d, pitch_max;
     f32 height = *(f32 *)(*(char **)(m + 0x24) + 0x24);
 
-    if (*(f32 *)(m + 0x2c) < height)
-        *(f32 *)(m + 0x2c) += frame_scale * 0.21f * height;
+    if (((Moby *)m)->scale < height)
+        ((Moby *)m)->scale += frame_scale * 0.21f * height;
 
     if (*(s16 *)(e + 0x14) < scale_ticks(0x23) - scale_ticks(1)) {
         desired_yaw = *(f32 *)(e + 8);
         desired_pitch = *(f32 *)(e + 0xc);
     } else {
-        desired_yaw = *(f32 *)(m + 0x48);
-        desired_pitch = *(f32 *)(m + 0x44);
+        desired_yaw = ((Moby *)m)->rot.z;
+        desired_pitch = ((Moby *)m)->rot.y;
     }
     pos = (f32 *)(m + 0x10);
-    desired_yaw = SpringTurn((f32 *)e, *(f32 *)(m + 0x48), desired_yaw,
+    desired_yaw = SpringTurn((f32 *)e, ((Moby *)m)->rot.z, desired_yaw,
                                             g_frame_time_sq * 4.712389f,
                                             g_frame_time_sq * 3.1415927f,
                                             g_frame_time * 3.1415927f);
     pitch_d = g_frame_time_sq * 3.1415927f;
     pitch_k = g_frame_time_sq * 4.712389f;
     pitch_max = g_frame_time * 3.1415927f;
-    *(f32 *)(m + 0x48) = desired_yaw;
+    ((Moby *)m)->rot.z = desired_yaw;
     {
-        f32 pitch_result = SpringTurn((f32 *)(e + 4), *(f32 *)(m + 0x44), desired_pitch,
+        f32 pitch_result = SpringTurn((f32 *)(e + 4), ((Moby *)m)->rot.y, desired_pitch,
                                                 pitch_k, pitch_d, pitch_max);
         pitch_max = g_frame_time * 40.0f;
-        *(f32 *)(m + 0x44) = pitch_result;
+        ((Moby *)m)->rot.y = pitch_result;
         func_00215C00_0DD80(offset.f, pitch_max,
-                                       *(f32 *)(m + 0x48), -pitch_result);
+                                       ((Moby *)m)->rot.z, -pitch_result);
     }
     qcopy(&old_pos, pos);
     FastVecAdd(pos, pos, &offset);
-    if (*(f32 *)(m + 0x10) < 2.0f || *(f32 *)(m + 0x10) > 1021.0f ||
-        *(f32 *)(m + 0x14) < 2.0f || *(f32 *)(m + 0x14) > 1021.0f ||
-        *(f32 *)(m + 0x18) < 2.0f || *(f32 *)(m + 0x18) > 1021.0f ||
-        *(f32 *)(m + 0x10) < 0.0f || *(f32 *)(m + 0x14) < 0.0f || *(f32 *)(m + 0x18) < 0.0f ||
+    if (((Moby *)m)->pos.x < 2.0f || ((Moby *)m)->pos.x > 1021.0f ||
+        ((Moby *)m)->pos.y < 2.0f || ((Moby *)m)->pos.y > 1021.0f ||
+        ((Moby *)m)->pos.z < 2.0f || ((Moby *)m)->pos.z > 1021.0f ||
+        ((Moby *)m)->pos.x < 0.0f || ((Moby *)m)->pos.y < 0.0f || ((Moby *)m)->pos.z < 0.0f ||
         vec_distance_xy(pos, D_L01_001672C0_0DD80) > 64.0f) {
         DeleteMoby(m);
         return;

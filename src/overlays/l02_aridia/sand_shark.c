@@ -270,13 +270,13 @@ void sand_shark_update(unsigned char *moby) {
     *(volatile int *)0x10000000 = 0;
     d = *(Vars_2D5250 **)(moby + 0x78);
     Manipulator_ApplyScale(2.1f, (int)moby, 0, d->blink);
-    if (moby[0x31] != 0 && FastVecDist(moby + 0x10, aridia_camera_pos) < 28.0f) {
+    if (((Moby *)moby)->visible != 0 && FastVecDist(moby + 0x10, aridia_camera_pos) < 28.0f) {
         set_ground_height_band(moby);
-        moby[0x7F] = 0x16;
+        ((Moby *)moby)->shadow_range = 0x16;
     }
     handle_sand_shark_damage_and_targeting(moby);
     *(volatile int *)0x10000000;
-    switch (moby[0x20]) {
+    switch (((Moby *)moby)->state) {
     case 0:
         if (d->i290 == -1) {
             STUB_printf(sand_shark_no_path_fmt, *(short *)(moby + 0xB2));
@@ -306,7 +306,7 @@ void sand_shark_update(unsigned char *moby) {
         d->f184 = 0.5f;
         d->f1A4 = d->f254 * g_frame_time;
         if (func_001160D8() & 1) {
-            *(unsigned short *)(moby + 0x34) |= 0x8000;
+            ((Moby *)moby)->flags |= 0x8000;
         }
         d->pD0 = &D_L02_00161A40;
         if (d->i26C >= 0) {
@@ -314,28 +314,28 @@ void sand_shark_update(unsigned char *moby) {
                 DeleteMoby(moby);
                 return;
             }
-            *(float *)(moby + 0x18) += 10.0f;
-            moby[0x20] = 0xC;
+            ((Moby *)moby)->pos.z += 10.0f;
+            ((Moby *)moby)->state = 0xC;
             *(int *)(moby + 0x94) = 0;
-            *(unsigned short *)(moby + 0x34) |= 1;
-            *(unsigned short *)(moby + 0x34) &= 0xEFFF;
-            if (moby[0x53] != 0) {
+            ((Moby *)moby)->flags |= 1;
+            ((Moby *)moby)->flags &= 0xEFFF;
+            if (((Moby *)moby)->prev_seq != 0) {
                 MobyBlendAnimation(moby, 0, 0, scale_ticks(3));
             }
         } else if (d->i278 >= 0) {
             d->f18C = 0.2f;
-            moby[0x20] = 3;
-            if (moby[0x53] != 2) {
+            ((Moby *)moby)->state = 3;
+            if (((Moby *)moby)->prev_seq != 2) {
                 MobyBlendAnimation(moby, 2, 0, scale_ticks(3));
             }
         } else if (d->i258 >= 0) {
-            moby[0x20] = 0x1D;
-            *(unsigned short *)(moby + 0x34) |= 0x41;
+            ((Moby *)moby)->state = 0x1D;
+            ((Moby *)moby)->flags |= 0x41;
             *(int *)(moby + 0x94) = 0;
-            *(unsigned short *)(moby + 0x34) &= 0xEFFF;
+            ((Moby *)moby)->flags &= 0xEFFF;
         } else {
-            moby[0x20] = 1;
-            if (moby[0x53] != 2) {
+            ((Moby *)moby)->state = 1;
+            if (((Moby *)moby)->prev_seq != 2) {
                 MobyBlendAnimation(moby, 2, 0, scale_ticks(3));
             }
         }
@@ -348,40 +348,40 @@ void sand_shark_update(unsigned char *moby) {
         if (*(int *)(D_0013E633 + 0x2EA1) == 0x72) {
             break;
         }
-        *(unsigned short *)(moby + 0x34) &= 0xFFBE;
-        *(unsigned short *)(moby + 0x34) |= 0x1000;
+        ((Moby *)moby)->flags &= 0xFFBE;
+        ((Moby *)moby)->flags |= 0x1000;
         *(int *)(moby + 0x94) = *(int *)(*(char **)(moby + 0x24) + 0x10);
         d->i258 = -1;
         d->t25C = scale_ticks(0x1518);
-        moby[0x20] = 0;
-        *(float *)(moby + 0x18) -= sand_shark_sink_depth;
+        ((Moby *)moby)->state = 0;
+        ((Moby *)moby)->pos.z -= sand_shark_sink_depth;
         break;
     }
     case 1:
         FastVecSub(v0, D_0013E633 + 0xE9D, moby + 0x10);
-        moby[0x20] = 0x12;
-        if (moby[0x53] != 0) {
+        ((Moby *)moby)->state = 0x12;
+        if (((Moby *)moby)->prev_seq != 0) {
             MobyBlendAnimation(moby, 0, 0, scale_ticks(3));
         }
         break;
     case 2:
-        *(float *)(moby + 0x18) += sand_shark_sink_depth;
+        ((Moby *)moby)->pos.z += sand_shark_sink_depth;
         qcopy(v0, d->home);
-        a = fast_atan2(v0[0] - *(float *)(moby + 0x10), v0[1] - *(float *)(moby + 0x14));
+        a = fast_atan2(v0[0] - ((Moby *)moby)->pos.x, v0[1] - ((Moby *)moby)->pos.y);
         a = FastAddRots(a, d->f244);
         MobySpringTurn((char *)moby, a, &d->f240, 0.05f, 0.3f, 0.04f);
-        *(float *)(moby + 0x10) += FastCos(*(float *)(moby + 0x48)) * g_frame_time;
-        *(float *)(moby + 0x14) += FastSin(*(float *)(moby + 0x48)) * g_frame_time;
+        ((Moby *)moby)->pos.x += FastCos(((Moby *)moby)->rot.z) * g_frame_time;
+        ((Moby *)moby)->pos.y += FastSin(((Moby *)moby)->rot.z) * g_frame_time;
         if (fast_dec_timer(&d->i260)) {
             d->i260 = scale_ticks(0x3C);
             a = d->f248 * 0.017453292f;
             d->f244 = random_float_between(-a, a);
         }
-        if (moby[0x31] != 0 && (random_integer_below(0xFF) & 1)) {
+        if (((Moby *)moby)->visible != 0 && (random_integer_below(0xFF) & 1)) {
             *(u128b *)v1 = *(u128b *)(moby + 0x10);
             emit_sand_shark_single_particle(v1);
         }
-        *(float *)(moby + 0x18) -= sand_shark_sink_depth;
+        ((Moby *)moby)->pos.z -= sand_shark_sink_depth;
         if (d->i214 == 2) {
             if (d->t25E == 0) {
                 break;
@@ -389,9 +389,9 @@ void sand_shark_update(unsigned char *moby) {
             if (random_integer_below(0x13) != 0) {
                 break;
             }
-            moby[0x20] = 0x15;
+            ((Moby *)moby)->state = 0x15;
             Moby_PlaySound(4, 0, (int)moby);
-            if (moby[0x53] != 0) {
+            if (((Moby *)moby)->prev_seq != 0) {
                 MobyBlendAnimation(moby, 0, 0, 0);
             }
             d->i274 = -1;
@@ -416,8 +416,8 @@ void sand_shark_update(unsigned char *moby) {
         }
         d->i260 = scale_ticks((int)random_float_between(30.0f, 90.0f));
         d->f1A4 = g_frame_time * 4.0f;
-        moby[0x20] = 0x11;
-        if (moby[0x53] != 0xC) {
+        ((Moby *)moby)->state = 0x11;
+        if (((Moby *)moby)->prev_seq != 0xC) {
             MobyBlendAnimation(moby, 0xC, 0, scale_ticks(3));
         }
         break;
@@ -428,18 +428,18 @@ void sand_shark_update(unsigned char *moby) {
         if (is_point_inside_clip_volume(d->tgt, d->i278) == 0) {
             break;
         }
-        moby[0x20] = 5;
-        if (moby[0x53] != 0) {
+        ((Moby *)moby)->state = 5;
+        if (((Moby *)moby)->prev_seq != 0) {
             MobyBlendAnimation(moby, 0, 0, scale_ticks(3));
         }
         break;
     case 0xE:
         qcopy(v1, d->tgt);
         hit = 0;
-        a = fast_atan2(v1[0] - *(float *)(moby + 0x10), v1[1] - *(float *)(moby + 0x14));
+        a = fast_atan2(v1[0] - ((Moby *)moby)->pos.x, v1[1] - ((Moby *)moby)->pos.y);
         MobySpringTurn((char *)moby, a + d->f244, &d->f240, 0.05f, 0.3f, 0.2f);
-        v0[0] = FastCos(*(float *)(moby + 0x48)) * 2.0f;
-        v0[1] = FastSin(*(float *)(moby + 0x48)) * 2.0f;
+        v0[0] = FastCos(((Moby *)moby)->rot.z) * 2.0f;
+        v0[1] = FastSin(((Moby *)moby)->rot.z) * 2.0f;
         v0[2] = 0.0f;
         FastVecAdd(v0, v0, moby + 0x10);
         move_w(moby, &d->i180, v0, v2, 1.0f);
@@ -448,19 +448,19 @@ void sand_shark_update(unsigned char *moby) {
             hit = 1;
         }
         if (d->t25E == 0) {
-            moby[0x20] = 0x12;
+            ((Moby *)moby)->state = 0x12;
             break;
         }
         if (hit) {
-            moby[0x20] = 0xF;
-            if (moby[0x53] != 5) {
+            ((Moby *)moby)->state = 0xF;
+            if (((Moby *)moby)->prev_seq != 5) {
                 MobyBlendAnimation(moby, 5, 0, scale_ticks(0xA));
             }
             break;
         }
         if (vec_distance_xy(moby + 0x10, v1) < 1.5f) {
-            moby[0x20] = 6;
-            if (moby[0x53] != 1) {
+            ((Moby *)moby)->state = 6;
+            if (((Moby *)moby)->prev_seq != 1) {
                 MobyBlendAnimation(moby, 1, 0, scale_ticks(0xA));
             }
             break;
@@ -468,23 +468,23 @@ void sand_shark_update(unsigned char *moby) {
         if (d->i214 == 2) {
             break;
         }
-        moby[0x20] = 5;
-        if (moby[0x53] != 0) {
+        ((Moby *)moby)->state = 5;
+        if (((Moby *)moby)->prev_seq != 0) {
             MobyBlendAnimation(moby, 0, 0, scale_ticks(0xF));
         }
         break;
     case 0xF: {
         float *ang = (float *)(moby + 0x48);
-        a = fast_atan2(d->tgt[0] - *(float *)(moby + 0x10), d->tgt[1] - *(float *)(moby + 0x14));
+        a = fast_atan2(d->tgt[0] - ((Moby *)moby)->pos.x, d->tgt[1] - ((Moby *)moby)->pos.y);
         SteerAngleWithVelocity(ang, &d->f240, a, g_frame_time_sq * 6.2831855f, g_frame_time_sq * 6.2831855f,
                           g_frame_time * 6.2831855f);
         if (d->t25E == 0) {
-            moby[0x20] = 0x12;
+            ((Moby *)moby)->state = 0x12;
             break;
         }
         if (vec_distance_xy(moby + 0x10, d->tgt) < 1.5f) {
-            moby[0x20] = 6;
-            if (moby[0x53] != 1) {
+            ((Moby *)moby)->state = 6;
+            if (((Moby *)moby)->prev_seq != 1) {
                 MobyBlendAnimation(moby, 1, 0, scale_ticks(0xA));
             }
             break;
@@ -492,15 +492,15 @@ void sand_shark_update(unsigned char *moby) {
         if (d->i214 == 2) {
             break;
         }
-        moby[0x20] = 5;
-        if (moby[0x53] != 0) {
+        ((Moby *)moby)->state = 5;
+        if (((Moby *)moby)->prev_seq != 0) {
             MobyBlendAnimation(moby, 0, 0, scale_ticks(0xF));
         }
         break;
     }
     case 0x11:
     case 0x12:
-        *(float *)(moby + 0x18) += sand_shark_sink_depth;
+        ((Moby *)moby)->pos.z += sand_shark_sink_depth;
         g = ProbeGroundHeight(moby + 0x10, 0, 0.5f);
         if (g < d->home[2]) {
             g = d->home[2];
@@ -508,17 +508,17 @@ void sand_shark_update(unsigned char *moby) {
         qcopy(v0, moby + 0x10);
         v0[2] = g;
         ApproachValue((float *)(moby + 0x18), g, g_frame_time * 4.0f);
-        if (g == *(float *)(moby + 0x18)) {
-            if (moby[0x53] != 0xC) {
+        if (g == ((Moby *)moby)->pos.z) {
+            if (((Moby *)moby)->prev_seq != 0xC) {
                 MobyBlendAnimation(moby, 0xC, 0, scale_ticks(5));
             }
-            if (moby[0x20] == 0x11) {
-                moby[0x20] = 0x16;
+            if (((Moby *)moby)->state == 0x11) {
+                ((Moby *)moby)->state = 0x16;
             } else {
-                moby[0x20] = 0x17;
+                ((Moby *)moby)->state = 0x17;
             }
         }
-        *(float *)(moby + 0x18) -= sand_shark_sink_depth;
+        ((Moby *)moby)->pos.z -= sand_shark_sink_depth;
         if (scale_ticks(0xA) < frame_counter_ref) {
             emit_sand_shark_radial_particles(v0, 6);
         }
@@ -527,98 +527,98 @@ void sand_shark_update(unsigned char *moby) {
     case 0x14:
     case 0x15: {
         float z;
-        *(float *)(moby + 0x18) += sand_shark_sink_depth;
+        ((Moby *)moby)->pos.z += sand_shark_sink_depth;
         z = ProbeGroundHeight(moby + 0x10, 0, 0.5f);
         qcopy(v0, moby + 0x10);
         v0[2] = z;
         if (ApproachValue((float *)(moby + 0x18), z + sand_shark_sink_depth, g_frame_time * 4.0f) == 0.0f) {
-            if (moby[0x20] == 0x13) {
-                moby[0x20] = 5;
-                if (moby[0x53] != 0) {
+            if (((Moby *)moby)->state == 0x13) {
+                ((Moby *)moby)->state = 5;
+                if (((Moby *)moby)->prev_seq != 0) {
                     MobyBlendAnimation(moby, 0, 0, scale_ticks(3));
                 }
-            } else if (moby[0x20] == 0x14) {
-                moby[0x20] = 7;
-                if (moby[0x53] != 0) {
+            } else if (((Moby *)moby)->state == 0x14) {
+                ((Moby *)moby)->state = 7;
+                if (((Moby *)moby)->prev_seq != 0) {
                     MobyBlendAnimation(moby, 0, 0, scale_ticks(3));
                 }
             } else {
                 d->f294 = random_float_between(2.0f, 3.5f);
                 d->f1A4 = g_frame_time * 4.0f;
-                moby[0x20] = 0xE;
-                if (moby[0x53] != 0) {
+                ((Moby *)moby)->state = 0xE;
+                if (((Moby *)moby)->prev_seq != 0) {
                     MobyBlendAnimation(moby, 0, 0, scale_ticks(3));
                 }
             }
         }
-        *(float *)(moby + 0x18) -= sand_shark_sink_depth;
+        ((Moby *)moby)->pos.z -= sand_shark_sink_depth;
         emit_sand_shark_radial_particles(v0, 6);
         break;
     }
     case 5:
     case 0x16:
-        if (moby[0x20] == 0x16) {
-            *(float *)(moby + 0x18) += sand_shark_sink_depth;
+        if (((Moby *)moby)->state == 0x16) {
+            ((Moby *)moby)->pos.z += sand_shark_sink_depth;
             if (random_integer_below(0xFF) & 1) {
                 *(u128b *)v4 = *(u128b *)(moby + 0x10);
                 emit_sand_shark_single_particle(v4);
             }
         }
         qcopy(v3, d->tgt);
-        a = fast_atan2(v3[0] - *(float *)(moby + 0x10), v3[1] - *(float *)(moby + 0x14));
+        a = fast_atan2(v3[0] - ((Moby *)moby)->pos.x, v3[1] - ((Moby *)moby)->pos.y);
         MobySpringTurn((char *)moby, a + d->f244, &d->f240, 0.05f, 0.3f, 0.2f);
-        v0[0] = FastCos(*(float *)(moby + 0x48)) * 2.0f;
-        v0[1] = FastSin(*(float *)(moby + 0x48)) * 2.0f;
+        v0[0] = FastCos(((Moby *)moby)->rot.z) * 2.0f;
+        v0[1] = FastSin(((Moby *)moby)->rot.z) * 2.0f;
         v0[2] = 0.0f;
         FastVecAdd(v0, v0, moby + 0x10);
         move_w(moby, &d->i180, v0, v1, 1.0f);
         begin_sand_shark_return_home_if_outside_path(moby);
-        if (moby[0x20] == 0x16) {
-            *(float *)(moby + 0x18) -= sand_shark_sink_depth;
+        if (((Moby *)moby)->state == 0x16) {
+            ((Moby *)moby)->pos.z -= sand_shark_sink_depth;
         }
         if (d->i214 != 2) {
             if (d->i278 >= 0 && is_point_inside_clip_volume(d->tgt, d->i278) == 0) {
-                moby[0x20] = 7;
+                ((Moby *)moby)->state = 7;
                 break;
             }
             FastVecSub(v2, d->tgt, d->home);
-            if (vec_distance_xy(moby + 0x10, v3) < 12.0f && moby[0x20] == 0x16) {
-                moby[0x20] = 0x13;
+            if (vec_distance_xy(moby + 0x10, v3) < 12.0f && ((Moby *)moby)->state == 0x16) {
+                ((Moby *)moby)->state = 0x13;
                 Moby_PlaySound(4, 0, (int)moby);
-                if (moby[0x53] != 0) {
+                if (((Moby *)moby)->prev_seq != 0) {
                     MobyBlendAnimation(moby, 0, 0, scale_ticks(3));
                 }
                 break;
             }
-            if (vec_distance_xy(moby + 0x10, v3) < 1.5f && moby[0x20] == 5) {
-                moby[0x20] = 6;
-                if (moby[0x53] != 1) {
+            if (vec_distance_xy(moby + 0x10, v3) < 1.5f && ((Moby *)moby)->state == 5) {
+                ((Moby *)moby)->state = 6;
+                if (((Moby *)moby)->prev_seq != 1) {
                     MobyBlendAnimation(moby, 1, 0, scale_ticks(3));
                 }
             }
             break;
         }
         if (d->i278 >= 0) {
-            moby[0x20] = 7;
+            ((Moby *)moby)->state = 7;
         } else if (d->t25E != 0) {
-            moby[0x20] = 0xE;
+            ((Moby *)moby)->state = 0xE;
         } else {
-            moby[0x20] = 0x12;
+            ((Moby *)moby)->state = 0x12;
         }
         break;
     case 6:
-        a = fast_atan2(d->tgt[0] - *(float *)(moby + 0x10), d->tgt[1] - *(float *)(moby + 0x14));
+        a = fast_atan2(d->tgt[0] - ((Moby *)moby)->pos.x, d->tgt[1] - ((Moby *)moby)->pos.y);
         MobySpringTurn((char *)moby, a, &d->f240, 0.05f, 0.3f, 0.2f);
-        if (moby[0x52] == moby[0x53] && IsFrameWithinWindow((char *)moby, 13.0f)) {
+        if (((Moby *)moby)->seq == ((Moby *)moby)->prev_seq && IsFrameWithinWindow((char *)moby, 13.0f)) {
             vec_scale_to_length(v0, moby + 0xC0, 0.75f);
             FastVecAdd(v0, v0, moby + 0x10);
             v0[2] += 0.5f;
             MobySphereHitDirectional(moby, 0.5f, v0, 1, 1.0f, 1.0f, 0, 1, 0);
         }
-        if (moby[0x70] & 2) {
+        if (((Moby *)moby)->anim_flags & 2) {
             if (vec_distance_xy(moby + 0x10, d->tgt) > 1.5f) {
-                moby[0x20] = 5;
-                if (moby[0x53] != 0) {
+                ((Moby *)moby)->state = 5;
+                if (((Moby *)moby)->prev_seq != 0) {
                     MobyBlendAnimation(moby, 0, 0, scale_ticks(3));
                 }
             }
@@ -626,52 +626,52 @@ void sand_shark_update(unsigned char *moby) {
         {
             float gr = ProbeGroundHeight(moby + 0x10, 0, 0.5f);
             d->f198 -= g_frame_time_sq * 9.8f;
-            *(float *)(moby + 0x18) += d->f198;
-            if (*(float *)(moby + 0x18) < gr) {
+            ((Moby *)moby)->pos.z += d->f198;
+            if (((Moby *)moby)->pos.z < gr) {
                 *(int *)&d->f198 = 0;
-                *(float *)(moby + 0x18) = gr;
+                ((Moby *)moby)->pos.z = gr;
             }
         }
         break;
     case 7:
     case 0x17:
-        if (moby[0x20] == 0x17) {
-            *(float *)(moby + 0x18) += sand_shark_sink_depth;
+        if (((Moby *)moby)->state == 0x17) {
+            ((Moby *)moby)->pos.z += sand_shark_sink_depth;
             if (random_integer_below(0xFF) & 1) {
                 *(u128b *)v4 = *(u128b *)(moby + 0x10);
                 emit_sand_shark_single_particle(v4);
             }
         }
         qcopy(v3, d->home);
-        a = fast_atan2(v3[0] - *(float *)(moby + 0x10), v3[1] - *(float *)(moby + 0x14));
+        a = fast_atan2(v3[0] - ((Moby *)moby)->pos.x, v3[1] - ((Moby *)moby)->pos.y);
         MobySpringTurn((char *)moby, a, &d->f240, 0.02f, 0.3f, 0.1f);
-        v0[0] = FastCos(*(float *)(moby + 0x48)) * 2.0f;
-        v0[1] = FastSin(*(float *)(moby + 0x48)) * 2.0f;
+        v0[0] = FastCos(((Moby *)moby)->rot.z) * 2.0f;
+        v0[1] = FastSin(((Moby *)moby)->rot.z) * 2.0f;
         v0[2] = 0.0f;
         FastVecAdd(v0, v0, moby + 0x10);
         move_w(moby, &d->i180, v0, v1, 1.0f);
-        if (moby[0x20] == 0x17) {
-            *(float *)(moby + 0x18) -= sand_shark_sink_depth;
+        if (((Moby *)moby)->state == 0x17) {
+            ((Moby *)moby)->pos.z -= sand_shark_sink_depth;
         }
         if (vec_distance_xy(moby + 0x10, d->home) < 0.5f) {
             d->i298 = 0;
-            if (moby[0x20] == 7) {
+            if (((Moby *)moby)->state == 7) {
                 if (d->i278 >= 0) {
-                    moby[0x20] = 3;
-                    if (moby[0x53] != 2) {
+                    ((Moby *)moby)->state = 3;
+                    if (((Moby *)moby)->prev_seq != 2) {
                         MobyBlendAnimation(moby, 2, 0, scale_ticks(3));
                     }
                 } else {
-                    moby[0x20] = 0x12;
+                    ((Moby *)moby)->state = 0x12;
                     d->f1A4 = g_frame_time * 1.5f;
-                    if (moby[0x53] != 0) {
+                    if (((Moby *)moby)->prev_seq != 0) {
                         MobyBlendAnimation(moby, 0, 0, scale_ticks(3));
                     }
                 }
             } else {
-                moby[0x20] = 2;
+                ((Moby *)moby)->state = 2;
                 d->f1A4 = g_frame_time * 1.5f;
-                if (moby[0x53] != 0xC) {
+                if (((Moby *)moby)->prev_seq != 0xC) {
                     MobyBlendAnimation(moby, 0xC, 0, scale_ticks(5));
                 }
             }
@@ -681,19 +681,19 @@ void sand_shark_update(unsigned char *moby) {
                 FastVecSub(v2, d->tgt, d->home);
                 if (d->i278 >= 0) {
                     if (is_point_inside_clip_volume(d->tgt, d->i278)) {
-                        moby[0x20] = 5;
+                        ((Moby *)moby)->state = 5;
                         d->f1A4 = d->f254 * g_frame_time;
                     }
                     break;
                 }
                 if (FastVecLength(v2) < d->f24C) {
-                    if (moby[0x20] == 7) {
-                        moby[0x20] = 5;
+                    if (((Moby *)moby)->state == 7) {
+                        ((Moby *)moby)->state = 5;
                     } else {
-                        moby[0x20] = 0x16;
+                        ((Moby *)moby)->state = 0x16;
                     }
                     d->f1A4 = d->f254 * g_frame_time;
-                    if (moby[0x53] != 0) {
+                    if (((Moby *)moby)->prev_seq != 0) {
                         MobyBlendAnimation(moby, 0, 0, scale_ticks(3));
                     }
                 }
@@ -705,9 +705,9 @@ void sand_shark_update(unsigned char *moby) {
             if (random_integer_below(0x13) != 0) {
                 break;
             }
-            moby[0x20] = 0x15;
+            ((Moby *)moby)->state = 0x15;
             Moby_PlaySound(4, 0, (int)moby);
-            if (moby[0x53] != 0) {
+            if (((Moby *)moby)->prev_seq != 0) {
                 MobyBlendAnimation(moby, 0, 0, 0);
             }
             d->i274 = -1;
@@ -718,13 +718,13 @@ void sand_shark_update(unsigned char *moby) {
         break;
     case 8:
         if (mine_fall(moby, d->knock) & 1) {
-            moby[0x20] = 0xB;
-            if (moby[0x53] != 4) {
+            ((Moby *)moby)->state = 0xB;
+            if (((Moby *)moby)->prev_seq != 4) {
                 MobyBlendAnimation(moby, 4, 8, scale_ticks(3));
             }
             return;
         }
-        if (*(float *)(moby + 0x18) < 0.0f) {
+        if (((Moby *)moby)->pos.z < 0.0f) {
             emit_sand_shark_dust_burst(moby);
             DeleteMoby(moby);
             return;
@@ -732,7 +732,7 @@ void sand_shark_update(unsigned char *moby) {
         break;
     case 9:
         if (CarriedMobyUpdate(moby, d->knock)) {
-            moby[0x20] = 1;
+            ((Moby *)moby)->state = 1;
             d->sC8 = 0;
         }
         break;
@@ -757,12 +757,12 @@ void sand_shark_update(unsigned char *moby) {
             d->vel[2] = vz;
             qcopy(moby + 0x10, m + 0x10);
             *(int *)(moby + 0x94) = *(int *)(*(char **)(moby + 0x24) + 0x10);
-            *(unsigned short *)(moby + 0x34) &= 0xFFFE;
-            *(unsigned short *)(moby + 0x34) |= 0x1000;
-            if (moby[0x53] != 0xB) {
+            ((Moby *)moby)->flags &= 0xFFFE;
+            ((Moby *)moby)->flags |= 0x1000;
+            if (((Moby *)moby)->prev_seq != 0xB) {
                 MobyBlendAnimation(moby, 0xB, 0, 0);
             }
-            moby[0x20] = 0xD;
+            ((Moby *)moby)->state = 0xD;
         }
         break;
     }
@@ -777,22 +777,22 @@ void sand_shark_update(unsigned char *moby) {
     }
     case 0xD: {
         float lim;
-        *(float *)(moby + 0x44) = FastSubRots(*(float *)(moby + 0x44), g_frame_time * 12.566371f);
+        ((Moby *)moby)->rot.y = FastSubRots(((Moby *)moby)->rot.y, g_frame_time * 12.566371f);
         FastVecAdd(moby + 0x10, moby + 0x10, d->vel);
         d->vel[2] -= g_frame_time_sq * 10.8f;
         lim = sand_shark_sink_depth;
-        if (*(float *)(moby + 0x18) < d->home[2] - lim) {
+        if (((Moby *)moby)->pos.z < d->home[2] - lim) {
             *(int *)(moby + 0x94) = *(int *)(*(char **)(moby + 0x24) + 0x10);
-            *(unsigned short *)(moby + 0x34) |= 0x1000;
-            *(float *)(moby + 0x18) = d->home[2] - lim;
-            moby[0x20] = 0x17;
-            *(float *)(moby + 0x44) = 0.0f;
-            if (moby[0x53] != 0xC) {
+            ((Moby *)moby)->flags |= 0x1000;
+            ((Moby *)moby)->pos.z = d->home[2] - lim;
+            ((Moby *)moby)->state = 0x17;
+            ((Moby *)moby)->rot.y = 0.0f;
+            if (((Moby *)moby)->prev_seq != 0xC) {
                 MobyBlendAnimation(moby, 0xC, 0, scale_ticks(1));
             }
             break;
         }
-        if (*(float *)(moby + 0x18) < d->home[2] + 0.6f) {
+        if (((Moby *)moby)->pos.z < d->home[2] + 0.6f) {
             *(u128b *)v0 = *(u128b *)(moby + 0x10);
             emit_sand_shark_radial_particles(v0, 6);
         }
@@ -812,19 +812,19 @@ void sand_shark_update(unsigned char *moby) {
             spawn_color_swapped_explosion_burst(moby, v0, -1, 0.333f, 0.0f);
             if ((d->i27C = select_group_class_29c_moby(moby)) != 0) {
                 emit_sand_shark_dust_burst(moby);
-                *(float *)(moby + 0x58) = 0.0f;
-                moby[0x20] = 0x1A;
+                ((Moby *)moby)->anim_speed = 0.0f;
+                ((Moby *)moby)->state = 0x1A;
                 qcopy(moby + 0x10, d->home);
-                *(float *)(moby + 0x18) -= 10.0f;
+                ((Moby *)moby)->pos.z -= 10.0f;
                 *(int *)(moby + 0x94) = 0;
-                *(unsigned short *)(moby + 0x34) |= 0x41;
+                ((Moby *)moby)->flags |= 0x41;
                 break;
             }
             emit_sand_shark_dust_burst(moby);
             DeleteMoby(moby);
             return;
         }
-        if (*(float *)(moby + 0x18) < 0.0f) {
+        if (((Moby *)moby)->pos.z < 0.0f) {
             emit_sand_shark_dust_burst(moby);
             DeleteMoby(moby);
             return;
@@ -832,17 +832,17 @@ void sand_shark_update(unsigned char *moby) {
         break;
     }
     case 0x19:
-        if (moby[0x23] >= 8) {
-            moby[0x23] -= 8;
+        if (((Moby *)moby)->alpha >= 8) {
+            ((Moby *)moby)->alpha -= 8;
             break;
         }
         if ((d->i27C = select_group_class_29c_moby(moby)) != 0) {
             emit_sand_shark_dust_burst(moby);
-            moby[0x23] = 0x80;
-            moby[0x20] = 0x1A;
+            ((Moby *)moby)->alpha = 0x80;
+            ((Moby *)moby)->state = 0x1A;
             qcopy(moby + 0x10, d->home);
             *(int *)(moby + 0x94) = 0;
-            *(float *)(moby + 0x18) -= 10.0f;
+            ((Moby *)moby)->pos.z -= 10.0f;
             break;
         }
         emit_sand_shark_dust_burst(moby);
@@ -1077,8 +1077,8 @@ void handle_sand_shark_damage_and_targeting(unsigned char *moby) {
     Vec4 p;
     Vec4 v;
 
-    d->i280 = moby[0x20];
-    if (moby[0x20] == 0) {
+    d->i280 = ((Moby *)moby)->state;
+    if (((Moby *)moby)->state == 0) {
         return;
     }
     if (d->b2E == 2) {
@@ -1090,10 +1090,10 @@ void handle_sand_shark_damage_and_targeting(unsigned char *moby) {
             DeleteMoby(moby);
             return;
         }
-        moby[0x20] = 0x1A;
+        ((Moby *)moby)->state = 0x1A;
         qcopy(moby + 0x10, d->home);
         *(int *)(moby + 0x94) = 0;
-        *(float *)(moby + 0x18) -= 10.0f;
+        ((Moby *)moby)->pos.z -= 10.0f;
     }
     if (d->i38 != 0 ||
         (!FastDecTimer(&d->t25C) && vec_distance_xy(moby + 0x10, D_0013E633_2D70C0 + 0xE9D) < 10.0f)) {
@@ -1108,7 +1108,7 @@ void handle_sand_shark_damage_and_targeting(unsigned char *moby) {
     dmg = 0.0f;
     h = MobyGetHitMessage(moby, 0x330000, 0);
     ComputeHitResponse(moby, h, &d->hp, 0, &hit, &dmg, 0, 4);
-    if (hit != 1 && moby[0x20] != 0x18) {
+    if (hit != 1 && ((Moby *)moby)->state != 0x18) {
         extend_group_sand_shark_timers((char *)moby);
         d->i29C = 0;
         d->hp -= dmg;
@@ -1126,8 +1126,8 @@ void handle_sand_shark_damage_and_targeting(unsigned char *moby) {
             qcopy(&p, moby + 0x10);
             p.f[2] += 2.0f;
             g = ProbeGroundHeight(&p, 0, 0.5f);
-            if (*(float *)(moby + 0x18) < g) {
-                *(float *)(moby + 0x18) = g;
+            if (((Moby *)moby)->pos.z < g) {
+                ((Moby *)moby)->pos.z = g;
             }
             if (d->i288 >= 0) {
                 (*(Vars_2D70C0 **)((d->i288 << 8) + D_L02_00160058_m + 0x78))->i14C -= 1;
@@ -1136,25 +1136,25 @@ void handle_sand_shark_damage_and_targeting(unsigned char *moby) {
                 p.f[2] += 0.01f;
             }
             d->i144 |= 0x20;
-            *(unsigned short *)(moby + 0x34) &= 0xEFFF;
+            ((Moby *)moby)->flags &= 0xEFFF;
             v.q = *(u128_2D70C0 *)(h + 0x10);
             HeadingFromVector(&v, &k, &d->f138, &d->f13C);
             InitKnockback(k, moby, d->knock, 6, 1, 0);
             d->f148 = 0.85f;
             d->f170 = 7.0f;
             d->f174 = 14.0f;
-            moby[0x20] = 0x18;
+            ((Moby *)moby)->state = 0x18;
             *(int *)(moby + 0x94) = 0;
             d->b117 = 0x78;
             RerollEffectCounter(moby, d->anim);
         }
     }
-    moby[0xA4] = 0xFF;
+    ((Moby *)moby)->hit_slot = 0xFF;
     StepColorFade(moby, d->anim);
     path = D_L02_001B0DB0_2D70C0[d->i290];
     if (FindNearestEligibleMoby(d->f250, moby, d->tgt, 0, 0, path + 4, *path) != 2 &&
         (d->f250 < vec_distance_xy(d->home, d->tgt) ||
-         FastAbsF(*(float *)(moby + 0x18) - d->tgt[2]) > 3.0f)) {
+         FastAbsF(((Moby *)moby)->pos.z - d->tgt[2]) > 3.0f)) {
         d->i214 = 2;
     }
     if (d->i210 == 0) {
@@ -1228,8 +1228,8 @@ void begin_sand_shark_return_home_if_outside_path(unsigned char *moby) {
     char *data = *(char **)(moby + 0x78);
     char *entry = aridia_paths[*(int *)(data + 0x290)];
     if (IsPointInPolygon(moby + 0x10, entry + 0x10, *(int *)entry) == 0) {
-        moby[0x20] = 0x12;
-        if (moby[0x53]) {
+        ((Moby *)moby)->state = 0x12;
+        if (((Moby *)moby)->prev_seq) {
             MobyBlendAnimation(moby, 0, 0, scale_ticks(20));
         }
         *(int *)(data + 0x298) = 1;
@@ -2244,7 +2244,7 @@ void handle_sand_shark_nest_damage(char *m) {
                 d[0x67] = 0x78;
             }
         } else {
-            *(unsigned short *)(m + 0x34) &= 0xEFFF;
+            ((Moby *)m)->flags &= 0xEFFF;
             ((unsigned char *)d)[0x67] = 0xFA;
             m[0x20] = 4;
             {
@@ -2786,14 +2786,14 @@ void snap_transport_pod_rails_to_offsets(char *moby)
     qcopy(a + 0x10, moby + 0x10);
     qcopy(*(char **)(d + 0x88) + 0x10, moby + 0x10);
     k = *(float *)&transport_pod_rail_twist;
-    *(float *)(a + 0x18) = *(float *)(moby + 0x18) + *(float *)(d + 0x94);
+    *(float *)(a + 0x18) = ((Moby *)moby)->pos.z + *(float *)(d + 0x94);
     *(int *)(d + 0x8C) = 0;
-    *(float *)(*(char **)(d + 0x88) + 0x18) = *(float *)(moby + 0x18) + *(float *)(d + 0x98);
+    *(float *)(*(char **)(d + 0x88) + 0x18) = ((Moby *)moby)->pos.z + *(float *)(d + 0x98);
     *(int *)(d + 0x90) = 0;
-    r = FastAddRots(*(float *)(moby + 0x48), (*(float *)(*(char **)(d + 0x84) + 0x18) - *(float *)(moby + 0x18)) * k * 0.017453292f);
+    r = FastAddRots(((Moby *)moby)->rot.z, (*(float *)(*(char **)(d + 0x84) + 0x18) - ((Moby *)moby)->pos.z) * k * 0.017453292f);
     k2 = *(float *)&transport_pod_rail_twist;
     *(float *)(*(char **)(d + 0x84) + 0x48) = r;
-    *(float *)(*(char **)(d + 0x88) + 0x48) = FastAddRots(*(float *)(moby + 0x48), (*(float *)(*(char **)(d + 0x88) + 0x18) - *(float *)(moby + 0x18)) * k2 * 0.017453292f);
+    *(float *)(*(char **)(d + 0x88) + 0x48) = FastAddRots(((Moby *)moby)->rot.z, (*(float *)(*(char **)(d + 0x88) + 0x18) - ((Moby *)moby)->pos.z) * k2 * 0.017453292f);
     moby_build_matrix(*(char **)(d + 0x84));
     moby_build_matrix(*(char **)(d + 0x88));
 }
@@ -3089,10 +3089,10 @@ void tresspasser_door1_update(unsigned char *moby) {
     char *d = *(char **)(moby + 0x78);
     float a[4];
     float b[4];
-    switch (moby[0x20]) {
+    switch (((Moby *)moby)->state) {
     case 0:
         qcopy(d, moby + 0x10);
-        moby[0x20] = 1;
+        ((Moby *)moby)->state = 1;
         break;
     case 1:
         if (*(int *)(d + 0x10) >= 0) {
@@ -3100,7 +3100,7 @@ void tresspasser_door1_update(unsigned char *moby) {
             short c = *(short *)(o + 0xA6);
             if (c == 0x267 || c == 0x23F) {
                 if (o[0x20] == 4) {
-                    moby[0x20] = 2;
+                    ((Moby *)moby)->state = 2;
                     Moby_PlaySound(0, 0, (int)moby);
                 }
             }
@@ -3114,7 +3114,7 @@ void tresspasser_door1_update(unsigned char *moby) {
         FastVecAdd(moby + 0x10, moby + 0x10, b);
         if (FastVecLength(b) == 0.0f) {
             Moby_PlaySound(1, 0, (int)moby);
-            moby[0x20] = 3;
+            ((Moby *)moby)->state = 3;
         }
         break;
     }

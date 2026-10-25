@@ -274,7 +274,7 @@ void blend_big_axebot_and_axe_animation(char *arg, void *a, void *b, void *c) {
 /* Sets the float at 0x58 on the moby and on the linked moby at data+0x424, if any. */
 void set_big_axebot_and_axe_animation_speed(char *arg, float f) {
     char *data = *(char **)(arg + 0x78);
-    *(float *)(arg + 0x58) = f;
+    ((Moby *)arg)->anim_speed = f;
     if (*(char **)(data + 0x424) != 0) {
         *(float *)(*(char **)(data + 0x424) + 0x58) = f;
     }
@@ -1244,7 +1244,7 @@ float compute_circular_saw_flock_steering(void *m, void *out, float speed) {
     o = eudora_moby_list;
     w = 0.0f;
     for (; o != 0; o = *(char **)(o + 0x28)) {
-        if (o == m || *(short *)(o + 0xA6) != *(short *)((char *)m + 0xA6)) continue;
+        if (o == m || *(short *)(o + 0xA6) != ((Moby *)m)->oclass) continue;
         if (vec_distance_xy((float *)(o + 0x10), (float *)((char *)m + 0x10)) < 3.0f) {
             FastVecSub(sep, (char *)m + 0x10, o + 0x10);
             FastVecScale(sep, sep, *(float *)&eudora_circular_saw_separation_weight);
@@ -1273,9 +1273,9 @@ float compute_circular_saw_flock_steering(void *m, void *out, float speed) {
     }
     if (vec_distance_xy((float *)((char *)m + 0x10), (float *)out) < 1.0f) {
         qcopy(out, (char *)m + 0x10);
-        return fast_atan2(tgt[0] - *(float *)((char *)m + 0x10), tgt[1] - *(float *)((char *)m + 0x14));
+        return fast_atan2(tgt[0] - ((Moby *)m)->pos.x, tgt[1] - ((Moby *)m)->pos.y);
     }
-    return fast_atan2(((float *)out)[0] - *(float *)((char *)m + 0x10), ((float *)out)[1] - *(float *)((char *)m + 0x14));
+    return fast_atan2(((float *)out)[0] - ((Moby *)m)->pos.x, ((float *)out)[1] - ((Moby *)m)->pos.y);
 }
 typedef int u128_35F0 __attribute__((mode(TI)));
 typedef float V4_35F0[4] __attribute__((aligned(16)));
@@ -2208,10 +2208,10 @@ void BlargTrooperUpdate(char *moby) {
     }
     pos = (float *)(moby + 0x10);
     Manipulator_SetScale(data + 0x110, 3.0f);
-    if (*(unsigned char *)(moby + 0x31) != 0) {
+    if (((Moby *)moby)->visible != 0) {
         if (FastVecDist(pos, eudora_camera_pos) < 27.0f) {
             set_ground_height_band(moby);
-            *(unsigned char *)(moby + 0x7F) = 0x15;
+            ((Moby *)moby)->shadow_range = 0x15;
         }
     }
     if (flag) {
@@ -2225,7 +2225,7 @@ void BlargTrooperUpdate(char *moby) {
     dist = vec_distance_xy(pos, st.tgt);
     dmg = 0.0f;
     alive = MobyGetFrameValue(moby);
-    if (*(unsigned char *)(moby + 0x20) != 0 && *(unsigned char *)(data + 0x2E) != 1) {
+    if (((Moby *)moby)->state != 0 && *(unsigned char *)(data + 0x2E) != 1) {
         char *o = *(char **)(data + 0xF8);
         if (o != 0) {
             DeleteMoby(o);
@@ -2261,7 +2261,7 @@ void BlargTrooperUpdate(char *moby) {
     r = ComputeHitResponse(moby, hit, data + 0x20, 0, &n, &dmg, 0, 4);
     FastDecTimer(data + 0xF0);
     FastDecTimer(data + 0xF2);
-    if (hit != 0 && *(unsigned char *)(moby + 0x20) < 0xB && *(short *)(data + 0xF0) == 0) {
+    if (hit != 0 && ((Moby *)moby)->state < 0xB && *(short *)(data + 0xF0) == 0) {
         char *o;
         float t;
         o = *(char **)(hit + 0x20);
@@ -2269,13 +2269,13 @@ void BlargTrooperUpdate(char *moby) {
         if (o != 0) {
             char *g = (char *)D_0013E633 + 0xE1D;
             if (o != *(char **)(g + 0x1090)) {
-                ang2 = fast_atan2(*(float *)(moby + 0x10) - *(float *)(o + 0x10), *(float *)(moby + 0x14) - *(float *)(o + 0x14));
+                ang2 = fast_atan2(((Moby *)moby)->pos.x - *(float *)(o + 0x10), ((Moby *)moby)->pos.y - *(float *)(o + 0x14));
             } else {
-                ang2 = fast_atan2(*(float *)(moby + 0x10) - *(float *)(g + 0x80), *(float *)(moby + 0x14) - *(float *)(g + 0x84));
+                ang2 = fast_atan2(((Moby *)moby)->pos.x - *(float *)(g + 0x80), ((Moby *)moby)->pos.y - *(float *)(g + 0x84));
             }
         } else {
             char *g = (char *)D_0013E633 + 0xE1D;
-            ang2 = fast_atan2(*(float *)(moby + 0x10) - *(float *)(g + 0x80), *(float *)(moby + 0x14) - *(float *)(g + 0x84));
+            ang2 = fast_atan2(((Moby *)moby)->pos.x - *(float *)(g + 0x80), ((Moby *)moby)->pos.y - *(float *)(g + 0x84));
         }
         t = *(float *)(data + 0x20) - dmg;
         *(float *)(data + 0x20) = t;
@@ -2288,7 +2288,7 @@ void BlargTrooperUpdate(char *moby) {
             break;
         case 1:
         case 2:
-            *(unsigned short *)(moby + 0x34) &= 0xEFFF;
+            ((Moby *)moby)->flags &= 0xEFFF;
             *(unsigned char *)(data + 0x67) = 0xFA;
             {
                 float a = g_frame_time_sq * 37.0f;
@@ -2305,7 +2305,7 @@ void BlargTrooperUpdate(char *moby) {
             InitKnockback(ang, moby, data + 0x70, 0xD, 1, 0);
             *(float *)(data + 0xC0) = 12.0f;
             *(float *)(data + 0xC4) = 25.0f;
-            *(unsigned char *)(moby + 0x20) = 0xB;
+            ((Moby *)moby)->state = 0xB;
             SetDeathBits(moby, 0, -1);
             break;
         case 3:
@@ -2313,7 +2313,7 @@ void BlargTrooperUpdate(char *moby) {
             int h;
             *(unsigned char *)(data + 0x67) = 0x96;
             MobyBlendAnimation(moby, (void *)8, 0, (void *)scale_ticks(5));
-            *(unsigned char *)(moby + 0x20) = 8;
+            ((Moby *)moby)->state = 8;
             h = *(short *)(*(char **)(hit + 0x20) + 0xA6);
             if (h == 0x131 || h == 0xB0) {
                 *(float *)(data + 0xF4) = 2.0f / multiply_global_factor(15.0f) * 0.5f;
@@ -2322,18 +2322,18 @@ void BlargTrooperUpdate(char *moby) {
             }
             *(u128_5BD0 *)st.w.p.v70 = *(u128_5BD0 *)(hit + 0x10);
             HeadingFromVector(st.w.p.v70, &ang2, data + 0xF4, &one);
-            *(float *)(moby + 0x48) = FastAddRots(3.1415927f, ang2);
+            ((Moby *)moby)->rot.z = FastAddRots(3.1415927f, ang2);
             break;
         }
         case 4:
         case 5:
             *(unsigned char *)(data + 0x67) = 0xFA;
             MobyBlendAnimation(moby, (void *)0xC, 0, (void *)scale_ticks(5));
-            *(unsigned char *)(moby + 0x20) = 0xA;
+            ((Moby *)moby)->state = 0xA;
             *(float *)(data + 0xF4) = 2.0f / multiply_global_factor(15.0f);
             *(u128_5BD0 *)st.w.p.v70 = *(u128_5BD0 *)(hit + 0x10);
             HeadingFromVector(st.w.p.v70, &ang2, data + 0xF4, &one);
-            *(float *)(moby + 0x48) = FastAddRots(3.1415927f, ang2);
+            ((Moby *)moby)->rot.z = FastAddRots(3.1415927f, ang2);
             break;
         case 7:
         case 8:
@@ -2344,16 +2344,16 @@ void BlargTrooperUpdate(char *moby) {
         }
         RerollEffectCounter(moby, (short *)(data + 0x60));
     }
-    *(unsigned char *)(moby + 0xA4) = 0xFF;
+    ((Moby *)moby)->hit_slot = 0xFF;
     if (*(int *)(data + 0x38) != 0) {
         *(unsigned char *)(data + 0xFE) = scale_ticks(0xF0);
     }
     *(int *)(data + 0x38) = 0;
     fast_subtract_rotations_cf(data + 0xFE);
     fast_dec_timer((int *)(data + 0x108));
-    switch (*(unsigned char *)(moby + 0x20)) {
+    switch (((Moby *)moby)->state) {
     case 0:
-        *(unsigned short *)(moby + 0x34) |= 0x1000;
+        ((Moby *)moby)->flags |= 0x1000;
         *(float *)(data + 0x20) = 2.0f;
         *(short *)(data + 0x24) = 2;
         *(unsigned char *)(data + 0x28) = 1;
@@ -2364,62 +2364,62 @@ void BlargTrooperUpdate(char *moby) {
         *(unsigned char *)(data + 0xFF) = 0;
         *(float *)(data + 0xD0) = 0.0f;
         {
-            float z = *(float *)(moby + 0x18);
+            float z = ((Moby *)moby)->pos.z;
             *(unsigned char *)(data + 0x58) = 8;
             *(float *)(data + 0xD4) = z;
             *(unsigned char *)(data + 0x5A) = 0xA;
         }
         if (func_001160D8() & 1) {
-            *(unsigned short *)(moby + 0x34) |= 0x8000;
+            ((Moby *)moby)->flags |= 0x8000;
         }
         if (*(unsigned char *)(data + 0xFC) != 0) {
             MobyBlendAnimation(moby, (void *)3, 0, (void *)scale_ticks(0xA));
-            *(unsigned char *)(moby + 0x20) = 5;
+            ((Moby *)moby)->state = 5;
         } else {
             MobyBlendAnimation(moby, (void *)((func_001160D8() ^ 1) & 1), 0, (void *)scale_ticks(0xA));
-            *(unsigned char *)(moby + 0x20) = 1;
+            ((Moby *)moby)->state = 1;
         }
         break;
     case 1:
-        if (*(unsigned char *)(moby + 0x70) & 2) {
+        if (((Moby *)moby)->anim_flags & 2) {
             MobyBlendAnimation(moby, (void *)((func_001160D8() ^ 1) & 1), 0, (void *)scale_ticks(0xA));
         }
         {
-            float a = fast_atan2(st.v50[0] - *(float *)(moby + 0x10), st.v50[1] - *(float *)(moby + 0x14));
+            float a = fast_atan2(st.v50[0] - ((Moby *)moby)->pos.x, st.v50[1] - ((Moby *)moby)->pos.y);
             MobySpringTurn(moby, (float *)(data + 0xEC), a, g_frame_scale_sq * 0.04f, g_frame_scale_sq * 0.3f, g_frame_time * 7.330382823944092f);
         }
         if (flag) {
             MobyBlendAnimation(moby, (void *)0xB, 0, (void *)scale_ticks(8));
-            *(unsigned char *)(moby + 0x20) = 3;
+            ((Moby *)moby)->state = 3;
             break;
         }
         if (dist > 2.5f && best > 1.0f) {
             if (dist > 14.0f) {
                 MobyBlendAnimation(moby, (void *)0xA, 0, (void *)scale_ticks(8));
-                *(unsigned char *)(moby + 0x20) = 2;
+                ((Moby *)moby)->state = 2;
                 break;
             }
             if (dist < 8.0f && *(int *)(data + 0x108) == 0) {
                 MobyBlendAnimation(moby, (void *)0xB, 0, (void *)scale_ticks(8));
-                *(unsigned char *)(moby + 0x20) = 3;
+                ((Moby *)moby)->state = 3;
                 break;
             }
         }
-        if (dist < 14.0f && dist >= 2.5f && FastAbsF(*(float *)(moby + 0x18) - st.tgt[2]) < 8.0f) {
+        if (dist < 14.0f && dist >= 2.5f && FastAbsF(((Moby *)moby)->pos.z - st.tgt[2]) < 8.0f) {
             if (*(short *)(data + 0xF2) == 0) {
                 *(u128_5BD0 *)st.w.p.v90 = 0;
                 st.w.p.v90[2] = 0.5f;
                 FastVecAdd(st.w.p.v70, pos, st.w.p.v90);
                 FastVecAdd(st.w.p.v80, st.v50, st.w.p.v90);
                 if (coll_line(st.w.p.v70, st.w.p.v80, 0, moby, 0) != 0 && eudora_coll_hit_moby == target) {
-                    *(unsigned char *)(moby + 0x20) = 5;
+                    ((Moby *)moby)->state = 5;
                     MobyBlendAnimation(moby, (void *)3, 0, (void *)scale_ticks(7));
                 }
             }
         } else if (dist <= 2.5f) {
             int t = *(short *)(data + 0xF2);
             if (t <= 0) {
-                *(unsigned char *)(moby + 0x20) = 7;
+                ((Moby *)moby)->state = 7;
                 MobyBlendAnimation(moby, (void *)7, 0, (void *)scale_ticks(7));
             } else if (scale_ticks(0x14) < t) {
                 *(short *)(data + 0xF2) = scale_ticks(0x14);
@@ -2429,11 +2429,11 @@ void BlargTrooperUpdate(char *moby) {
     case 2:
         if (dist < 13.0f || best < 1.0f) {
             MobyBlendAnimation(moby, 0, 0, (void *)scale_ticks(0xA));
-            *(unsigned char *)(moby + 0x20) = 1;
+            ((Moby *)moby)->state = 1;
         } else {
             float f;
             {
-                float a = fast_atan2(st.v60[0] - *(float *)(moby + 0x10), st.v60[1] - *(float *)(moby + 0x14));
+                float a = fast_atan2(st.v60[0] - ((Moby *)moby)->pos.x, st.v60[1] - ((Moby *)moby)->pos.y);
                 MobySpringTurn(moby, (float *)(data + 0xEC), a, g_frame_scale_sq * 0.03f, g_frame_scale_sq * 0.3f, g_frame_time * 4.712389f);
             }
             f = *(float *)(data + 0xEC) * 30.0f;
@@ -2444,8 +2444,8 @@ void BlargTrooperUpdate(char *moby) {
             }
             *(float *)(data + 0x178) = f * 0.7f;
             *(float *)(data + 0x1F8) = f * 0.4f;
-            st.w.p.v70[0] = FastCos(*(float *)(moby + 0x48)) * (g_frame_time * 2.5f);
-            st.w.p.v70[1] = FastSin(*(float *)(moby + 0x48)) * (g_frame_time * 2.5f);
+            st.w.p.v70[0] = FastCos(((Moby *)moby)->rot.z) * (g_frame_time * 2.5f);
+            st.w.p.v70[1] = FastSin(((Moby *)moby)->rot.z) * (g_frame_time * 2.5f);
             st.w.p.v70[2] = 0.0f;
             FastVecAdd(st.w.p.v70, st.w.p.v70, pos);
             func_L00_002594C8_o(moby, pos, st.w.p.v70, 0.5f, 1.0f, 0.5f, 0.5235988f, 0);
@@ -2456,11 +2456,11 @@ void BlargTrooperUpdate(char *moby) {
         if (flag) {
             int k;
             {
-                float a = fast_atan2(st.v50[0] - *(float *)(moby + 0x10), st.v50[1] - *(float *)(moby + 0x14));
+                float a = fast_atan2(st.v50[0] - ((Moby *)moby)->pos.x, st.v50[1] - ((Moby *)moby)->pos.y);
                 MobySpringTurn(moby, (float *)(data + 0xEC), a, g_frame_scale_sq * 0.04f, g_frame_scale_sq * 0.3f, g_frame_time * 4.886922f);
             }
-            st.w.p.v70[0] = FastCos(*(float *)(moby + 0x48)) * (g_frame_time * 6.0f);
-            st.w.p.v70[1] = FastSin(*(float *)(moby + 0x48)) * (g_frame_time * 6.0f);
+            st.w.p.v70[0] = FastCos(((Moby *)moby)->rot.z) * (g_frame_time * 6.0f);
+            st.w.p.v70[1] = FastSin(((Moby *)moby)->rot.z) * (g_frame_time * 6.0f);
             st.w.p.v70[2] = 0.0f;
             FastVecAdd(st.w.p.v70, st.w.p.v70, pos);
             qcopy(st.w.p.v80, pos);
@@ -2474,38 +2474,38 @@ void BlargTrooperUpdate(char *moby) {
             } else {
                 k = 0;
             }
-            if (fast_subtract_rotations_cf(data + 0xFF) != 0 && k != *(unsigned char *)(moby + 0x53)) {
+            if (fast_subtract_rotations_cf(data + 0xFF) != 0 && k != ((Moby *)moby)->prev_seq) {
                 MobyBlendAnimation(moby, (void *)k, 0, (void *)scale_ticks(0xA));
                 *(unsigned char *)(data + 0xFF) = scale_ticks(0xF);
             }
             if (*(short *)(data + 0xF2) == 0) {
-                if (dist < 1.0f && FastDiffRots(fast_atan2(st.v50[0] - *(float *)(moby + 0x10), st.v50[1] - *(float *)(moby + 0x14)), *(float *)(moby + 0x48)) < 0.2617994f) {
-                    *(unsigned char *)(moby + 0x20) = 7;
+                if (dist < 1.0f && FastDiffRots(fast_atan2(st.v50[0] - ((Moby *)moby)->pos.x, st.v50[1] - ((Moby *)moby)->pos.y), ((Moby *)moby)->rot.z) < 0.2617994f) {
+                    ((Moby *)moby)->state = 7;
                     MobyBlendAnimation(moby, (void *)7, 0, (void *)scale_ticks(7));
                     *(unsigned char *)(data + 0xFF) = 0;
                 } else if (dist < 14.0f) {
-                    *(unsigned char *)(moby + 0x20) = 5;
+                    ((Moby *)moby)->state = 5;
                     MobyBlendAnimation(moby, (void *)3, 0, (void *)scale_ticks(7));
                     *(unsigned char *)(data + 0xFF) = 0;
                 }
             }
         } else {
-            if (dist < 1.0f && FastDiffRots(fast_atan2(st.v50[0] - *(float *)(moby + 0x10), st.v50[1] - *(float *)(moby + 0x14)), *(float *)(moby + 0x48)) < 0.2617994f) {
-                *(unsigned char *)(moby + 0x20) = 7;
+            if (dist < 1.0f && FastDiffRots(fast_atan2(st.v50[0] - ((Moby *)moby)->pos.x, st.v50[1] - ((Moby *)moby)->pos.y), ((Moby *)moby)->rot.z) < 0.2617994f) {
+                ((Moby *)moby)->state = 7;
                 MobyBlendAnimation(moby, (void *)7, 0, (void *)scale_ticks(7));
             } else if (dist > 9.0f) {
-                *(unsigned char *)(moby + 0x20) = 5;
+                ((Moby *)moby)->state = 5;
                 MobyBlendAnimation(moby, (void *)3, 0, (void *)scale_ticks(7));
             } else if (best < 1.0f) {
                 MobyBlendAnimation(moby, 0, 0, (void *)scale_ticks(0xA));
-                *(unsigned char *)(moby + 0x20) = 1;
+                ((Moby *)moby)->state = 1;
             } else {
                 {
-                    float a = fast_atan2(st.v60[0] - *(float *)(moby + 0x10), st.v60[1] - *(float *)(moby + 0x14));
+                    float a = fast_atan2(st.v60[0] - ((Moby *)moby)->pos.x, st.v60[1] - ((Moby *)moby)->pos.y);
                     MobySpringTurn(moby, (float *)(data + 0xEC), a, g_frame_scale_sq * 0.035f, g_frame_scale_sq * 0.3f, g_frame_time * 4.712389f);
                 }
-                st.w.p.v70[0] = FastCos(*(float *)(moby + 0x48)) * (g_frame_time * 6.0f);
-                st.w.p.v70[1] = FastSin(*(float *)(moby + 0x48)) * (g_frame_time * 6.0f);
+                st.w.p.v70[0] = FastCos(((Moby *)moby)->rot.z) * (g_frame_time * 6.0f);
+                st.w.p.v70[1] = FastSin(((Moby *)moby)->rot.z) * (g_frame_time * 6.0f);
                 st.w.p.v70[2] = 0.0f;
                 FastVecAdd(st.w.p.v70, st.w.p.v70, pos);
                 func_L00_002594C8_o(moby, pos, st.w.p.v70, 0.5f, 1.0f, 0.5f, 0.5235988f, 0);
@@ -2513,44 +2513,44 @@ void BlargTrooperUpdate(char *moby) {
         }
         break;
     case 4:
-        if (*(unsigned char *)(moby + 0x53) != 2) {
+        if (((Moby *)moby)->prev_seq != 2) {
             MobyBlendAnimation(moby, (void *)2, 0, (void *)scale_ticks(7));
             *(float *)(data + 0xD0) = -(g_frame_time * 7.668f);
-        } else if (*(unsigned char *)(moby + 0x70) & 2) {
+        } else if (((Moby *)moby)->anim_flags & 2) {
             MobyBlendAnimation(moby, 0, 0, (void *)scale_ticks(0xA));
-            *(unsigned char *)(moby + 0x20) = 1;
+            ((Moby *)moby)->state = 1;
         }
         break;
     case 5:
         {
-            float a = fast_atan2(st.v50[0] - *(float *)(moby + 0x10), st.v50[1] - *(float *)(moby + 0x14));
+            float a = fast_atan2(st.v50[0] - ((Moby *)moby)->pos.x, st.v50[1] - ((Moby *)moby)->pos.y);
             MobySpringTurn(moby, (float *)(data + 0xEC), a, g_frame_scale_sq * 0.03f, g_frame_scale_sq * 0.3f, g_frame_time * 5.585053443908691f);
         }
-        if ((*(unsigned char *)(moby + 0x70) & 2) && *(unsigned char *)(moby + 0x52) != 4) {
+        if ((((Moby *)moby)->anim_flags & 2) && ((Moby *)moby)->seq != 4) {
             MobyBlendAnimation(moby, (void *)4, 0, (void *)scale_ticks(7));
         }
         if (!flag && dist > 2.5f && best > 1.0f) {
             if (dist > 14.0f) {
                 MobyBlendAnimation(moby, (void *)0xA, 0, (void *)scale_ticks(9));
-                *(unsigned char *)(moby + 0x20) = 2;
+                ((Moby *)moby)->state = 2;
                 break;
             }
             if (dist < 8.0f && *(int *)(data + 0x108) == 0) {
                 MobyBlendAnimation(moby, (void *)0xB, 0, (void *)scale_ticks(5));
-                *(unsigned char *)(moby + 0x20) = 3;
+                ((Moby *)moby)->state = 3;
                 break;
             }
         }
         if (dist < 2.5f) {
-            *(unsigned char *)(moby + 0x20) = 7;
+            ((Moby *)moby)->state = 7;
             MobyBlendAnimation(moby, (void *)7, 0, (void *)scale_ticks(7));
             break;
         }
-        if (*(short *)(data + 0xF2) == 0 && dist < 14.0f && FastAbsF(*(float *)(moby + 0x18) - st.tgt[2]) < 4.0f) {
+        if (*(short *)(data + 0xF2) == 0 && dist < 14.0f && FastAbsF(((Moby *)moby)->pos.z - st.tgt[2]) < 4.0f) {
             char *g = eudora_camera;
-            if (FastDiffRots(*(float *)(g + 0x158), fast_atan2(*(float *)(moby + 0x10) - *(float *)(g + 0x140), *(float *)(moby + 0x14) - *(float *)(g + 0x144))) < 0.61086524f
-                && FastDiffRots(*(float *)(moby + 0x48), fast_atan2(st.v50[0] - *(float *)(moby + 0x10), st.v50[1] - *(float *)(moby + 0x14))) < 0.7853982f) {
-                *(unsigned char *)(moby + 0x20) = 6;
+            if (FastDiffRots(*(float *)(g + 0x158), fast_atan2(((Moby *)moby)->pos.x - *(float *)(g + 0x140), ((Moby *)moby)->pos.y - *(float *)(g + 0x144))) < 0.61086524f
+                && FastDiffRots(((Moby *)moby)->rot.z, fast_atan2(st.v50[0] - ((Moby *)moby)->pos.x, st.v50[1] - ((Moby *)moby)->pos.y)) < 0.7853982f) {
+                ((Moby *)moby)->state = 6;
                 MobyBlendAnimation(moby, (void *)5, 0, (void *)scale_ticks(7));
                 *(short *)(data + 0xF2) = scale_ticks(0x1E);
                 *(unsigned char *)(data + 0xFD) = 3;
@@ -2558,7 +2558,7 @@ void BlargTrooperUpdate(char *moby) {
             }
         }
         if (dist > 14.0f) {
-            *(unsigned char *)(moby + 0x20) = flag ? 3 : 1;
+            ((Moby *)moby)->state = flag ? 3 : 1;
             MobyBlendAnimation(moby, (void *)6, 0, (void *)scale_ticks(0xA));
             *(short *)(data + 0xF2) = scale_ticks(0x1E);
         }
@@ -2566,19 +2566,19 @@ void BlargTrooperUpdate(char *moby) {
     case 6: {
         char *o;
         {
-            float a = fast_atan2(st.tgt[8] - *(float *)(moby + 0x10), st.tgt[9] - *(float *)(moby + 0x14));
+            float a = fast_atan2(st.tgt[8] - ((Moby *)moby)->pos.x, st.tgt[9] - ((Moby *)moby)->pos.y);
             MobySpringTurn(moby, (float *)(data + 0xEC), a, g_frame_scale_sq * 0.04f, g_frame_scale_sq * 0.3f, g_frame_time * 4.712389f);
         }
         if (dist < 2.5f) {
-            *(unsigned char *)(moby + 0x20) = 7;
+            ((Moby *)moby)->state = 7;
             MobyBlendAnimation(moby, (void *)7, 0, (void *)scale_ticks(7));
         }
-        if (*(unsigned char *)(moby + 0x53) == 5 && *(float *)(data + 0xD8) < 2.0f && alive >= 2.0f && (o = *(char **)(data + 0xF8)) != 0) {
+        if (((Moby *)moby)->prev_seq == 5 && *(float *)(data + 0xD8) < 2.0f && alive >= 2.0f && (o = *(char **)(data + 0xF8)) != 0) {
             float a;
             Moby_GetJointWorldPos(o, 0, st.w.p.v70);
             FastVecSub(st.w.p.v80, st.v50, st.w.p.v70);
             a = fast_atan2(st.w.p.v80[0], st.w.p.v80[1]);
-            a = (FastDiffRots(a, *(float *)(moby + 0x48)) > 0.2617994f) ? *(float *)(moby + 0x48) : a;
+            a = (FastDiffRots(a, ((Moby *)moby)->rot.z) > 0.2617994f) ? ((Moby *)moby)->rot.z : a;
             {
                 float p = fast_atan2(vec_length_xy(st.w.p.v80), st.w.p.v80[2]);
                 BuildSphericalOffset(st.w.p.v80, g_frame_time * 10.0f, a, p);
@@ -2586,24 +2586,24 @@ void BlargTrooperUpdate(char *moby) {
             Moby_PlaySound(7, 0, moby);
             spawn_class_b8_projectile(moby, st.w.p.v70, st.w.p.v80, truncate_float_to_s32(14.0f / (g_frame_time * 10.0f)));
             fast_subtract_rotations_cf(data + 0xFD);
-        } else if ((*(unsigned char *)(moby + 0x70) & 2) && *(short *)(data + 0xF2) == 0 && *(unsigned char *)(data + 0xFD) == 0) {
+        } else if ((((Moby *)moby)->anim_flags & 2) && *(short *)(data + 0xF2) == 0 && *(unsigned char *)(data + 0xFD) == 0) {
             *(short *)(data + 0xF2) = scale_ticks(0xB4);
-            *(unsigned char *)(moby + 0x20) = 5;
+            ((Moby *)moby)->state = 5;
             MobyBlendAnimation(moby, (void *)4, 0, (void *)scale_ticks(0xA));
         }
         break;
     }
     case 7:
         {
-            float a = fast_atan2(st.v50[0] - *(float *)(moby + 0x10), st.v50[1] - *(float *)(moby + 0x14));
+            float a = fast_atan2(st.v50[0] - ((Moby *)moby)->pos.x, st.v50[1] - ((Moby *)moby)->pos.y);
             MobySpringTurn(moby, (float *)(data + 0xEC), a, g_frame_scale_sq * 0.04f, g_frame_scale_sq * 0.3f, g_frame_time * 5.585053443908691f);
         }
-        if (*(unsigned char *)(moby + 0x52) == *(unsigned char *)(moby + 0x53) && alive >= 12.0f && alive < 13.0f
-            && FastAbsF(*(float *)(moby + 0x18) - st.tgt[2]) < 2.0f
+        if (((Moby *)moby)->seq == ((Moby *)moby)->prev_seq && alive >= 12.0f && alive < 13.0f
+            && FastAbsF(((Moby *)moby)->pos.z - st.tgt[2]) < 2.0f
             && vec_distance_xy(pos, st.v50) < 1.0f
-            && FastDiffRots(fast_atan2(st.v50[0] - *(float *)(moby + 0x10), st.v50[1] - *(float *)(moby + 0x14)), *(float *)(moby + 0x48)) < 0.2617994f) {
-            st.w.p.blk.f0 = FastCos(*(float *)(moby + 0x48)) * 0.2f;
-            st.w.p.blk.f4 = FastSin(*(float *)(moby + 0x48)) * 0.2f;
+            && FastDiffRots(fast_atan2(st.v50[0] - ((Moby *)moby)->pos.x, st.v50[1] - ((Moby *)moby)->pos.y), ((Moby *)moby)->rot.z) < 0.2617994f) {
+            st.w.p.blk.f0 = FastCos(((Moby *)moby)->rot.z) * 0.2f;
+            st.w.p.blk.f4 = FastSin(((Moby *)moby)->rot.z) * 0.2f;
             st.w.p.blk.f8 = 0.0f;
             st.w.p.blk.p10 = moby;
             st.w.p.blk.v14 = 1;
@@ -2620,8 +2620,8 @@ void BlargTrooperUpdate(char *moby) {
                 record_moby_hit(target, &st.w.p.blk);
             }
         }
-        if (*(unsigned char *)(moby + 0x70) & 2) {
-            *(unsigned char *)(moby + 0x20) = 5;
+        if (((Moby *)moby)->anim_flags & 2) {
+            ((Moby *)moby)->state = 5;
             *(short *)(data + 0xF2) = scale_ticks(0x14);
             MobyBlendAnimation(moby, (void *)4, 0, (void *)scale_ticks(7));
         }
@@ -2630,17 +2630,17 @@ void BlargTrooperUpdate(char *moby) {
     case 9:
     case 10:
         if (*(float *)(data + 0xF4) > 0.0f) {
-            st.w.p.v70[0] = FastCos(FastAddRots(*(float *)(moby + 0x48), 3.1415927f)) * *(float *)(data + 0xF4);
-            st.w.p.v70[1] = FastSin(FastAddRots(*(float *)(moby + 0x48), 3.1415927f)) * *(float *)(data + 0xF4);
+            st.w.p.v70[0] = FastCos(FastAddRots(((Moby *)moby)->rot.z, 3.1415927f)) * *(float *)(data + 0xF4);
+            st.w.p.v70[1] = FastSin(FastAddRots(((Moby *)moby)->rot.z, 3.1415927f)) * *(float *)(data + 0xF4);
             st.w.p.v70[2] = 0.0f;
             FastVecAdd(st.w.p.v70, st.w.p.v70, pos);
             *(float *)(data + 0xF4) = *(float *)(data + 0xF4) + -2.0f / (multiply_global_factor(15.0f) * multiply_global_factor(15.0f));
             func_L00_002594C8_o(moby, pos, st.w.p.v70, 0.5f, 1.0f, 0.5f, 0.5235988f, 1);
         }
-        if (*(unsigned char *)(moby + 0x70) & 2) {
+        if (((Moby *)moby)->anim_flags & 2) {
             *(unsigned short *)(data + 0xE8) ^= 1;
-            MobyBlendAnimation(moby, (void *)(*(unsigned char *)(moby + 0x20) == 9 ? 9 : 0), 0, (void *)scale_ticks(9));
-            *(unsigned char *)(moby + 0x20) = 1;
+            MobyBlendAnimation(moby, (void *)(((Moby *)moby)->state == 9 ? 9 : 0), 0, (void *)scale_ticks(9));
+            ((Moby *)moby)->state = 1;
             *(int *)(data + 0x108) = scale_ticks(0x78);
         }
         break;
@@ -2653,14 +2653,14 @@ void BlargTrooperUpdate(char *moby) {
     }
     StepColorFade(moby, data + 0x60);
     {
-        int st = *(unsigned char *)(moby + 0x20);
+        int st = ((Moby *)moby)->state;
         if (st == 1 || st == 3 || st == 4 || st == 5 || st == 6) {
             char *t = target;
             if (t == 0) {
                 t = *(char **)((char *)D_0013E633 + 0x2E9D);
             }
             if (vec_distance_xy(pos, (float *)(t + 0x10)) < 24.0f) {
-                float f = FastSubRots(fast_atan2(*(float *)(t + 0x10) - *(float *)(moby + 0x10), *(float *)(t + 0x14) - *(float *)(moby + 0x14)), *(float *)(moby + 0x48));
+                float f = FastSubRots(fast_atan2(*(float *)(t + 0x10) - ((Moby *)moby)->pos.x, *(float *)(t + 0x14) - ((Moby *)moby)->pos.y), ((Moby *)moby)->rot.z);
                 if (f > 0.9599311f) {
                     f = 0.9599311f;
                 } else if (f < -0.9599311f) {
@@ -2671,7 +2671,7 @@ void BlargTrooperUpdate(char *moby) {
             }
         }
     }
-    if (*(unsigned short *)(moby + 0x34) & 0x8000) {
+    if (((Moby *)moby)->flags & 0x8000) {
         *(float *)(data + 0x178) = -*(float *)(data + 0x178);
         *(float *)(data + 0x1F8) = -*(float *)(data + 0x1F8);
     }
@@ -2688,7 +2688,7 @@ void BlargTrooperUpdate(char *moby) {
         normalize_vector_triplet(*(char **)(data + 0xF8) + 0xC0);
         {
             char *q = *(char **)(data + 0xF8);
-            if (*(unsigned short *)(moby + 0x34) & 1) {
+            if (((Moby *)moby)->flags & 1) {
                 *(unsigned short *)(q + 0x34) |= 0x41;
             } else {
                 *(unsigned short *)(q + 0x34) &= 0xFFBE;
@@ -2701,16 +2701,16 @@ void BlargTrooperUpdate(char *moby) {
         *(char **)(data + 0xF8) = spawn_moby_attachment(moby, st.w.m);
     }
     *(float *)(data + 0xD0) = *(float *)(data + 0xD0) + g_frame_time_sq * 9.8f;
-    *(float *)(moby + 0x18) = *(float *)(moby + 0x18) - (*(float *)(data + 0xD0) - 2.0f);
+    ((Moby *)moby)->pos.z = ((Moby *)moby)->pos.z - (*(float *)(data + 0xD0) - 2.0f);
     {
         float g = ProbeGroundHeight(pos, 0, 0.5f);
-        *(float *)(moby + 0x18) = *(float *)(moby + 0x18) - 2.0f;
-        if (*(float *)(moby + 0x18) < g) {
-            *(float *)(moby + 0x18) = g;
+        ((Moby *)moby)->pos.z = ((Moby *)moby)->pos.z - 2.0f;
+        if (((Moby *)moby)->pos.z < g) {
+            ((Moby *)moby)->pos.z = g;
             *(float *)(data + 0xD0) = 0.0f;
         }
     }
-    if (*(float *)(moby + 0x18) < *(float *)(data + 0xD4) - 5.0f) {
+    if (((Moby *)moby)->pos.z < *(float *)(data + 0xD4) - 5.0f) {
         SetDeathBits(moby, 0, -1);
         destroy_blarg_trooper(moby);
         return;

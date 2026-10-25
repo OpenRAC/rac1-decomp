@@ -484,9 +484,9 @@ extern void func_L05_0030D678(unsigned char *m);
 void update_moby_wobble(unsigned char *m) {
     char *d = *(char **)(m + 0x78);
     float r, lo, hi;
-    switch (m[0x20]) {
+    switch (((Moby *)m)->state) {
     case 0:
-        *(float *)(d + 0x40) = *(float *)(m + 0x48);
+        *(float *)(d + 0x40) = ((Moby *)m)->rot.z;
         *(float *)(d + 0x48) = random_angle_radians();
         r = random_angle_radians();
         lo = g_frame_time * 0.47123888f;
@@ -499,7 +499,7 @@ void update_moby_wobble(unsigned char *m) {
         *(float *)(d + 0x4C) = randf_sym(lo, hi);
         set_moby_color(m, 0x80, 0x80, 0x80);
         AttachManipulator((char *)m, 0, d);
-        m[0x20] = 1;
+        ((Moby *)m)->state = 1;
         break;
     case 1: {
         float k = 0.5235988f;
@@ -507,7 +507,7 @@ void update_moby_wobble(unsigned char *m) {
         AddDrawCallback((void *)draw_moby_wobble_quads, m);
         t = FastAddRots(*(float *)(d + 0x44), *(float *)(d + 0x4C));
         *(float *)(d + 0x44) = t;
-        *(float *)(m + 0x48) = FastAddRots(*(float *)(d + 0x40), FastSin(t) * k);
+        ((Moby *)m)->rot.z = FastAddRots(*(float *)(d + 0x40), FastSin(t) * k);
         t = FastAddRots(*(float *)(d + 0x48), *(float *)(d + 0x50));
         *(float *)(d + 0x48) = t;
         axis_rotation_2d48(d + 0x10, 1, FastSin(t) * k + k);
@@ -796,27 +796,27 @@ void blarg_gun_update(char *moby)
     switch ((unsigned char)moby[0x20]) {
     case 0:
         if (*(unsigned short *)(moby + 0x32) & 1)
-            *(unsigned short *)(moby + 0x34) |= 0x8000;
+            ((Moby *)moby)->flags |= 0x8000;
         moby[0x20] = 2;
         break;
     case 1:
         n = *(int *)(data + 4);
         if (n > 0) {
             Moby_GetJointWorldPos(moby, n, buf + 0x40);
-            *(float *)(moby + 0x40) = FastAddRots(*(float *)(moby + 0x40), *(float *)(data + 0x20));
-            *(float *)(moby + 0x44) = FastAddRots(*(float *)(moby + 0x44), *(float *)(data + 0x24));
-            *(float *)(moby + 0x48) = FastAddRots(*(float *)(moby + 0x48), *(float *)(data + 0x28));
+            ((Moby *)moby)->rot.x = FastAddRots(((Moby *)moby)->rot.x, *(float *)(data + 0x20));
+            ((Moby *)moby)->rot.y = FastAddRots(((Moby *)moby)->rot.y, *(float *)(data + 0x24));
+            ((Moby *)moby)->rot.z = FastAddRots(((Moby *)moby)->rot.z, *(float *)(data + 0x28));
             euler_to_matrix(buf, moby + 0x40);
             matrix_copy_rows(moby + 0xC0, buf);
             Moby_GetJointWorldPos(moby, *(int *)(data + 4), buf + 0x50);
             FastVecSub(buf + 0x60, buf + 0x40, buf + 0x50);
         } else {
             matrix_mul_vec3(buf + 0x40, data + 0x10, moby + 0xC0);
-            *(float *)(moby + 0x40) = FastAddRots(*(float *)(moby + 0x40), *(float *)(data + 0x20));
-            *(float *)(moby + 0x44) = FastAddRots(*(float *)(moby + 0x44), *(float *)(data + 0x24));
-            *(float *)(moby + 0x48) = FastAddRots(*(float *)(moby + 0x48), *(float *)(data + 0x28));
+            ((Moby *)moby)->rot.x = FastAddRots(((Moby *)moby)->rot.x, *(float *)(data + 0x20));
+            ((Moby *)moby)->rot.y = FastAddRots(((Moby *)moby)->rot.y, *(float *)(data + 0x24));
+            ((Moby *)moby)->rot.z = FastAddRots(((Moby *)moby)->rot.z, *(float *)(data + 0x28));
             euler_to_matrix(buf, moby + 0x40);
-            if (*(unsigned short *)(moby + 0x34) & 0x8000)
+            if (((Moby *)moby)->flags & 0x8000)
                 FastVecScale(buf + 0x10, buf + 0x10, -1.0f);
             matrix_copy_rows(moby + 0xC0, buf);
             matrix_mul_vec3(buf + 0x50, data + 0x10, moby + 0xC0);
@@ -846,7 +846,7 @@ void blarg_gun_update(char *moby)
         *(float *)(data + 0x38) = *(float *)(data + 0x38) - g_frame_time_sq * 10.8f;
         FastVecAdd(moby + 0x10, moby + 0x10, data + 0x30);
         FastVecAdd(moby + 0x10, moby + 0x10, buf + 0x60);
-        if (*(float *)(moby + 0x18) < 5.0f)
+        if (((Moby *)moby)->pos.z < 5.0f)
             DeleteMoby(moby);
         break;
     }
@@ -937,19 +937,19 @@ void apply_moby_position_and_rotation_wobble(char *moby) {
     *(float *)(d + 0xC8) = s;
     t = FastSin(s);
     w = g_frame_time * 1.6929693f;
-    *(float *)(moby + 0x18) += t * 0.25f;
+    ((Moby *)moby)->pos.z += t * 0.25f;
     s = FastAddRots(*(float *)(d + 0xCC), w);
     *(float *)(d + 0xCC) = s;
-    t = FastAddRots(*(float *)(moby + 0x44), FastSin(s) * 0.08726646f);
+    t = FastAddRots(((Moby *)moby)->rot.y, FastSin(s) * 0.08726646f);
     w = g_frame_time * 0.9250245f;
-    *(float *)(moby + 0x44) = t;
+    ((Moby *)moby)->rot.y = t;
     s = FastAddRots(*(float *)(d + 0xD0), w);
     *(float *)(d + 0xD0) = s;
-    *(float *)(moby + 0x40) = FastAddRots(*(float *)(moby + 0x40), FastSin(s) * 0.08726646f);
-    if (*(float *)(moby + 0x40) > 0.17453292f) *(float *)(moby + 0x40) = 0.17453292f;
-    else if (*(float *)(moby + 0x40) < -0.17453292f) *(float *)(moby + 0x40) = -0.17453292f;
-    if (*(float *)(moby + 0x44) > 0.17453292f) *(float *)(moby + 0x44) = 0.17453292f;
-    else if (*(float *)(moby + 0x44) < -0.17453292f) *(float *)(moby + 0x44) = -0.17453292f;
+    ((Moby *)moby)->rot.x = FastAddRots(((Moby *)moby)->rot.x, FastSin(s) * 0.08726646f);
+    if (((Moby *)moby)->rot.x > 0.17453292f) ((Moby *)moby)->rot.x = 0.17453292f;
+    else if (((Moby *)moby)->rot.x < -0.17453292f) ((Moby *)moby)->rot.x = -0.17453292f;
+    if (((Moby *)moby)->rot.y > 0.17453292f) ((Moby *)moby)->rot.y = 0.17453292f;
+    else if (((Moby *)moby)->rot.y < -0.17453292f) ((Moby *)moby)->rot.y = -0.17453292f;
 }
 extern void func_001F9BD8(void *, void *, void *);
 extern char *D_L05_001B0CB0[];

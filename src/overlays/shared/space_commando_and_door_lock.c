@@ -456,7 +456,7 @@ void process_blarg_space_commando_hits(char *m) {
     float lo, hi, spd, off, pull;
 
     d = *(char **)(m + 0x78);
-    *(float *)(m + 0x2C) = *(float *)(*(char **)(m + 0x24) + 0x24) * *(float *)&space_commando_scale;
+    ((Moby *)m)->scale = *(float *)(*(char **)(m + 0x24) + 0x24) * *(float *)&space_commando_scale;
     update_blarg_space_commando_beam(m);
     if (*(int *)(d + 0x38) != 0) {
         *(int *)(d + 0x188) = truncate_float_to_s32(multiply_global_factor(random_float_between(180.0f, 240.0f)));
@@ -514,7 +514,7 @@ void process_blarg_space_commando_hits(char *m) {
             q = d + 0x60;
             a = *(float *)&space_commando_death_knockback_speed * g_frame_time;
             b = *(float *)&space_commando_death_knockback_lift * g_frame_time;
-            *(unsigned short *)(m + 0x34) &= 0xEFFF;
+            ((Moby *)m)->flags &= 0xEFFF;
             *(float *)(d + 0x78) = a;
             *(float *)(d + 0x7C) = b;
             *(float *)(d + 0xB0) = 9.0f;
@@ -560,7 +560,7 @@ void process_blarg_space_commando_hits(char *m) {
         }
         RerollEffectCounter(m, (short *)(d + 0x110));
     }
-    *(unsigned char *)(m + 0xA4) = 0xFF;
+    ((Moby *)m)->hit_slot = 0xFF;
     StepColorFade(m, d + 0x110);
     if (*(int *)(d + 0x188) != 0) {
         *(float *)(d + 0x198) = *(float *)&space_commando_sight_range + 6.0f;
@@ -573,7 +573,7 @@ void process_blarg_space_commando_hits(char *m) {
     if (FindNearestEligibleMoby(*(float *)(d + 0x198), m, q, 0, 0, e + 4, *e) != 2) {
         if (*(float *)(d + 0x198) < vec_distance_xy(d + 0x170, d + 0x120)) {
             *(int *)(d + 0x164) = 2;
-        } else if (3.0f < FastAbsF(*(float *)(m + 0x18) - *(float *)(d + 0x128))) {
+        } else if (3.0f < FastAbsF(((Moby *)m)->pos.z - *(float *)(d + 0x128))) {
             *(int *)(d + 0x164) = 2;
         }
     }
@@ -602,12 +602,12 @@ void initialize_blarg_space_commando_beam(char *m) {
     ProbeGroundHeight(m + 0x10, 0, 0.5f);
     vec_scale_to_length(d + 0x220, D_L06_00174700, 1.0f);
     Moby_GetJointWorldPos(m, 0, d + 0x210);
-    *(float *)(d + 0x218) = *(float *)(m + 0x18);
+    *(float *)(d + 0x218) = ((Moby *)m)->pos.z;
     for (i = 0; i < 16; i++) {
         float f = IntToFloat(i) * 0.0625f - 0.5f;
         f = f * (*(float *)&space_commando_beam_fan_degrees * 0.017453292f);
-        v[0] = FastCos(FastAddRots(f, *(float *)(m + 0x48))) * 0.2f;
-        v[1] = FastSin(FastAddRots(f, *(float *)(m + 0x48))) * 0.2f;
+        v[0] = FastCos(FastAddRots(f, ((Moby *)m)->rot.z)) * 0.2f;
+        v[1] = FastSin(FastAddRots(f, ((Moby *)m)->rot.z)) * 0.2f;
         v[2] = 0.15f;
         FastVecAdd((float *)(d + 0x230 + i * 16), (float *)(d + 0x210), v);
         if (i == 0 || i == 15) {
@@ -1080,31 +1080,31 @@ void bot_door_lock_update(char *moby) {
                     PartType41Spawn(pos, moby, data->cnt + 2, color, 0x7f, 4, 0xff, 0.5f);
                 } else {
                     if (*(unsigned char *)&draw_map51) {
-                        angle = FastAddRots(*(float *)(moby + 0x48), 1.5707964f);
+                        angle = FastAddRots(((Moby *)moby)->rot.z, 1.5707964f);
                         offset[0] = FastCos(angle) * 0.15f;
-                        angle = FastAddRots(*(float *)(moby + 0x48), 1.5707964f);
+                        angle = FastAddRots(((Moby *)moby)->rot.z, 1.5707964f);
                         offset[1] = FastSin(angle) * 0.15f;
                         offset[2] = 0.0f;
                         add_vectors(result, offset, pos);
                         PartType41Spawn(offset, moby, data->cnt / 10 + 2, color, 0x7f, 4, 0xff, 0.5f);
-                        angle = FastAddRots(*(float *)(moby + 0x48), 1.5707964f);
+                        angle = FastAddRots(((Moby *)moby)->rot.z, 1.5707964f);
                         offset[0] = FastCos(angle) * -0.4f;
-                        angle = FastAddRots(*(float *)(moby + 0x48), 1.5707964f);
+                        angle = FastAddRots(((Moby *)moby)->rot.z, 1.5707964f);
                         offset[1] = FastSin(angle) * -0.4f;
                         offset[2] = 0.0f;
                         add_vectors(result, offset, pos);
                         PartType41Spawn(offset, moby, data->cnt % 10 + 2, color, 0x7f, 4, 0xff, 0.5f);
                     } else {
-                        angle = FastAddRots(*(float *)(moby + 0x48), 1.5707964f);
+                        angle = FastAddRots(((Moby *)moby)->rot.z, 1.5707964f);
                         offset[0] = FastCos(angle) * -0.4f;
-                        angle = FastAddRots(*(float *)(moby + 0x48), 1.5707964f);
+                        angle = FastAddRots(((Moby *)moby)->rot.z, 1.5707964f);
                         offset[1] = FastSin(angle) * -0.4f;
                         offset[2] = 0.0f;
                         add_vectors(result, offset, pos);
                         PartType41Spawn(offset, moby, data->cnt / 10 + 2, color, 0x7f, 4, 0xff, 0.5f);
-                        angle = FastAddRots(*(float *)(moby + 0x48), 1.5707964f);
+                        angle = FastAddRots(((Moby *)moby)->rot.z, 1.5707964f);
                         offset[0] = FastCos(angle) * 0.15f;
-                        angle = FastAddRots(*(float *)(moby + 0x48), 1.5707964f);
+                        angle = FastAddRots(((Moby *)moby)->rot.z, 1.5707964f);
                         offset[1] = FastSin(angle) * 0.15f;
                         offset[2] = 0.0f;
                         add_vectors(result, offset, pos);

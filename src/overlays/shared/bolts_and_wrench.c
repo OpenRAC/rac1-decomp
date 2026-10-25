@@ -401,19 +401,19 @@ void vendor_update(char *moby) {
     *(float *)&vendor_glow_pulse_phase += 0.05f;
     if (3.14f < *(float *)&vendor_glow_pulse_phase) *(float *)&vendor_glow_pulse_phase = -3.14f;
     f = FastSin(*(float *)&vendor_glow_pulse_phase);
-    *(int *)(moby + 0x90) = (((int)(f * 48.0f) + 0x60) * 0x10101) | 0x80000000;
+    ((Moby *)moby)->glow_color = (((int)(f * 48.0f) + 0x60) * 0x10101) | 0x80000000;
 
-    switch (*(unsigned char *)(moby + 0x20)) {
+    switch (((Moby *)moby)->state) {
     case 0:
-        *(unsigned char *)(moby + 0x20) = 1;
+        ((Moby *)moby)->state = 1;
         *(int *)(p + 0) = 0;
         *(int *)(p + 4) = 0;
         *(char **)(p + 0xC) = CreateMoby(0x477);
         *(unsigned short *)(*(char **)(p + 0xC) + 0x34) |= 2;
         *(short *)(*(char **)(p + 0xC) + 0x32) = 0x40;
-        *(float *)(*(char **)(p + 0xC) + 0x10) = *(float *)(moby + 0x10);
-        *(float *)(*(char **)(p + 0xC) + 0x14) = *(float *)(moby + 0x14);
-        *(float *)(*(char **)(p + 0xC) + 0x18) = *(float *)(moby + 0x18) + 2.95f;
+        *(float *)(*(char **)(p + 0xC) + 0x10) = ((Moby *)moby)->pos.x;
+        *(float *)(*(char **)(p + 0xC) + 0x14) = ((Moby *)moby)->pos.y;
+        *(float *)(*(char **)(p + 0xC) + 0x18) = ((Moby *)moby)->pos.z + 2.95f;
         c = *(char **)(p + 0xC);
         if (*(unsigned char *)(*(char **)(c + 0x24) + 6) != 0) *(unsigned char *)(c + 0x73) = 0x20;
         *(int *)(p + 0x90) = 0;
@@ -428,9 +428,9 @@ void vendor_update(char *moby) {
         if ((level_frame_counter & 7) == 0) {
             char *g = D_0013E633 + 0xE9D;
             if (vec_distance_xy(moby + 0x10, g) <= 16.0f) {
-                if (FastAbsF(*(float *)(moby + 0x18) - *(float *)(g + 8)) <= 8.0f) {
-                    *(unsigned char *)(moby + 0x20) = 2;
-                    if (*(unsigned char *)(moby + 0x53) != 1) MobyBlendAnimation(moby, 1, 0, 10);
+                if (FastAbsF(((Moby *)moby)->pos.z - *(float *)(g + 8)) <= 8.0f) {
+                    ((Moby *)moby)->state = 2;
+                    if (((Moby *)moby)->prev_seq != 1) MobyBlendAnimation(moby, 1, 0, 10);
                     *(unsigned short *)(*(char **)(p + 0xC) + 0x34) &= 0xFFFE;
                 }
             }
@@ -456,11 +456,11 @@ void vendor_update(char *moby) {
         if (*(float *)(p + 0x90) < 1.0f) *(float *)(p + 0x90) += 0.1f;
         g = D_0013E633 + 0xE9D;
         dist = vec_distance_xy(moby + 0x10, g);
-        dz = FastAbsF(*(float *)(moby + 0x18) - *(float *)(g + 8));
+        dz = FastAbsF(((Moby *)moby)->pos.z - *(float *)(g + 8));
         if ((level_frame_counter & 7) == 0) {
             if (18.0f < dist || 10.0f < dz) {
-                *(unsigned char *)(moby + 0x20) = 1;
-                if (*(unsigned char *)(moby + 0x53) != 0) MobyBlendAnimation(moby, 0, 0, 10);
+                ((Moby *)moby)->state = 1;
+                if (((Moby *)moby)->prev_seq != 0) MobyBlendAnimation(moby, 0, 0, 10);
                 return;
             }
         }
@@ -479,15 +479,15 @@ void vendor_update(char *moby) {
         if (G_pp.i208C != 0 && G_pp.i2084 != 3 && G_pp.i208C != 1) { a = 0; b = 0; }
         if (G_pp.i2084 == 0x1D || G_pp.i2084 == 0x32) { a = 0; b = 0; }
         if (G_pp.b20A4) { a = 0; b = 0; }
-        if (*(unsigned char *)(moby + 0x52) != 1) a = 0;
+        if (((Moby *)moby)->seq != 1) a = 0;
         if (4.0f < dist || 2.0f < dz) { a = 0; b = 0; }
-        if (FastDiffRots(G_pp.f98, fast_atan2(*(float *)(moby + 0x10) - G_pp.f80, *(float *)(moby + 0x14) - G_pp.f84)) > 1.5707964f) { a = 0; b = 0; }
+        if (FastDiffRots(G_pp.f98, fast_atan2(((Moby *)moby)->pos.x - G_pp.f80, ((Moby *)moby)->pos.y - G_pp.f84)) > 1.5707964f) { a = 0; b = 0; }
         r = 0;
         if (b != 0) r = try_set_help_message(1, 0x53E8) != 0;
         if (*(int *)(D_0013A5E0 + 0x2604) & 0x10) {
             if (a != 0 && r != 0) {
                 open_vendor_menu(moby);
-                *(unsigned char *)(moby + 0x20) = 3;
+                ((Moby *)moby)->state = 3;
             }
         }
         break;
@@ -974,7 +974,7 @@ void update_bolt_grounded_pose(char *moby, void *out1, void *out2) {
         qcopy(A, data);
         qcopy(B, data + 0x10);
     }
-    switch (*(short *)(moby + 0xA6)) {
+    switch (((Moby *)moby)->oclass) {
     case 13:
         c1 = 0.04f; c2 = -0.25f; c3 = 0.04875f; c4 = 0.325f; c5 = 0.15f;
         break;
@@ -1006,7 +1006,7 @@ void update_bolt_grounded_pose(char *moby, void *out1, void *out2) {
     FastVecAdd(moby + 0x10, moby + 0x10, A);
     if (out1 != 0) qcopy(out1, A);
     if (out2 != 0) qcopy(out2, B);
-    if (*(unsigned char *)(moby + 0x20) == 3) {
+    if (((Moby *)moby)->state == 3) {
         char *obj = *(char **)(data + 0x5C);
         if (obj != 0 && *(unsigned char *)(data + 0x57) == 0) {
             int r;

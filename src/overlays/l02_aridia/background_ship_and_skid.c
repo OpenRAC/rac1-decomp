@@ -336,7 +336,7 @@ void SkidMcMarxAridiaUpdate(char *m)
     d = *(char **)(m + 0x78);
     attach_big_head_cheat_manipulator_to_matching_moby(m);
     update_skid_mcmarx_relocation_sequence(m);
-    switch (*(unsigned char *)(m + 0x20)) {
+    switch (((Moby *)m)->state) {
     case 0:
         if (D_0013D605[9] != 0) {
             DeleteMoby(m);
@@ -344,8 +344,8 @@ void SkidMcMarxAridiaUpdate(char *m)
         }
         *(int *)(d + 0x180) = 0;
         *(char **)(d + 0x20) = skid_mcmarx_dialogue_name;
-        *(unsigned char *)(m + 0x20) = 1;
-        *(unsigned char *)(m + 0x30) = 0xFF;
+        ((Moby *)m)->state = 1;
+        ((Moby *)m)->update_dist = 0xFF;
         DialogRequest_Init(m, d);
         initialize_moby_grounding(m);
         break;
@@ -358,25 +358,25 @@ void SkidMcMarxAridiaUpdate(char *m)
         }
         if (Npc_TryStartDialog(m, d)) {
             PlaceMarkerAheadOfMoby(2.5f, m);
-            *(unsigned char *)(m + 0x20) = 2;
+            ((Moby *)m)->state = 2;
         }
         if (*(short *)(d + 4) == 2) {
             Help_Request(0x7D0, 0xA);
             grant_inventory_item(0x1E, 1);
-            jet_clear_persistent(*(unsigned char *)(m + 0xB0));
+            jet_clear_persistent(((Moby *)m)->mission);
             jet_reset_camera((char *)&D_0013E633 + 0xE9D, (char *)&D_0013E633 + 0xEAD);
             memcard_Save(0, -1);
             DeleteMoby(m);
             return;
         }
-        if (*(unsigned char *)(m + 0x53) == 0 && FastDecTimer((int *)(d + 0x16A))) {
+        if (((Moby *)m)->prev_seq == 0 && FastDecTimer((int *)(d + 0x16A))) {
             int mode;
             *(short *)(d + 0x16A) = truncate_float_to_s32(multiply_global_factor(random_float_between(1200.0f, 2400.0f)));
             mode = 1;
             if (random_integer_below(2) == 0) mode = 2;
-            if (*(unsigned char *)(m + 0x53) != mode)
+            if (((Moby *)m)->prev_seq != mode)
                 MobyBlendAnimation(m, mode, 0, scale_ticks(10));
-        } else if ((*(unsigned char *)(m + 0x70) & 2) && *(unsigned char *)(m + 0x53) != 0) {
+        } else if ((((Moby *)m)->anim_flags & 2) && ((Moby *)m)->prev_seq != 0) {
             MobyBlendAnimation(m, 0, 0, scale_ticks(10));
         }
         break;
@@ -389,23 +389,23 @@ void SkidMcMarxAridiaUpdate(char *m)
                 *(float *)(w + 0x18) += 10.0f;
                 *(float *)(w + 0x18) = ProbeGroundHeight(w + 0x10, 0, 0.5f);
                 clear_u64_value(w + 0x20);
-                *(float *)(w + 0x28) = FastAddRots(*(float *)(m + 0x48), 3.14159f);
+                *(float *)(w + 0x28) = FastAddRots(((Moby *)m)->rot.z, 3.14159f);
                 *(unsigned char *)(w + 0x4A) = 1;
             }
-            if (aridia_cinematic_mode != 2) *(unsigned char *)(m + 0x20) = 1;
+            if (aridia_cinematic_mode != 2) ((Moby *)m)->state = 1;
         }
         break;
     }
     rate = 0.02f;
     head_rate = 0.3f;
     tracking = 0;
-    if (*(unsigned char *)(m + 0x53) == 0) {
+    if (((Moby *)m)->prev_seq == 0) {
         p = (char *)&D_0013E633 + 0xE9D;
         tracking = 1;
         if (vec_distance_xy(m + 0x10, p) < 8.0f &&
-            FastDiffRots(*(float *)(m + 0x48),
-                fast_atan2(*(float *)((pl = p - 0x80) + 0xD0) - *(float *)(m + 0x10),
-                    *(float *)(pl + 0xD4) - *(float *)(m + 0x14))) < 1.5707964f) {
+            FastDiffRots(((Moby *)m)->rot.z,
+                fast_atan2(*(float *)((pl = p - 0x80) + 0xD0) - ((Moby *)m)->pos.x,
+                    *(float *)(pl + 0xD4) - ((Moby *)m)->pos.y)) < 1.5707964f) {
             if (FastVecLength(p + 0x80) > 0.01f)
                 *(int *)(d + 0x188) = scale_ticks(120);
             else
@@ -417,7 +417,7 @@ void SkidMcMarxAridiaUpdate(char *m)
         if (fast_dec_timer((int *)(d + 0x18C))) {
             float heading;
             *(int *)(d + 0x18C) = truncate_float_to_s32(multiply_global_factor(random_float_between(180.0f, 300.0f)));
-            heading = FastAddRots(*(float *)(m + 0x48), random_float_between(-90.0f, 90.0f) * 0.017453292f);
+            heading = FastAddRots(((Moby *)m)->rot.z, random_float_between(-90.0f, 90.0f) * 0.017453292f);
             BuildSphericalOffset(d + 0x170, 6.0f, heading, random_float_between(0.0f, 30.0f) * 0.017453292f);
             FastVecAdd(d + 0x170, d + 0x170, m + 0x10);
         }
@@ -435,7 +435,7 @@ void SkidMcMarxAridiaUpdate(char *m)
         qcopy(s_eye, m + 0x10);
         s_eye[2] += 2.0f;
         FastVecSub(s_delta, s_target, s_eye);
-        yaw = FastSubRots(fast_atan2(s_delta[0], s_delta[1]), *(float *)(m + 0x48));
+        yaw = FastSubRots(fast_atan2(s_delta[0], s_delta[1]), ((Moby *)m)->rot.z);
         pitch = -fast_atan2(vec_length_xy(s_delta), s_delta[2]);
         if (yaw > 1.5707964f) yaw = 1.5707964f;
         else if (yaw < -1.5707964f) yaw = -1.5707964f;
@@ -853,7 +853,7 @@ extern unsigned char D_0015EEE0[4] MACRO_ADDR;
 /* UpdateMoby_1324: tutorial hint triggers around the player */
 void update_tutorial_hint_triggers(unsigned char *moby) {
     int *data = *(int **)(moby + 0x78);
-    moby[0x30] = 0xFF;
+    ((Moby *)moby)->update_dist = 0xFF;
 
     if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, data[0x17]) != 0
         && *(unsigned int *)(D_0013E633 + 0xE9D + 0x200C) < 2) {

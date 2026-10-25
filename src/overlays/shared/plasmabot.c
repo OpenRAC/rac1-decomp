@@ -108,7 +108,7 @@ void update_plasmabot(char *m) {
     Manipulator_ApplyScale(2.5f, m, 2, data + 0x120);
     if (*(int *)(data + 0x288) != 0) {
         if (((unsigned char *)D_0013E633)[0x2EC1] != 2) {
-            *(unsigned short *)(m + 0x34) |= 0x41;
+            ((Moby *)m)->flags |= 0x41;
             *(int *)(m + 0x94) = 0;
             if (((unsigned char *)m)[0x53] == 5) {
                 release_beam_slot_by_id(m);
@@ -116,15 +116,15 @@ void update_plasmabot(char *m) {
                 { call_D678(m); return; }
             }
             ((unsigned char *)m)[0x30] = 0xFF;
-            *(unsigned short *)(m + 0x34) &= 0xEFFF;
+            ((Moby *)m)->flags &= 0xEFFF;
             return;
         }
-        *(unsigned short *)(m + 0x34) &= 0xFFBE;
+        ((Moby *)m)->flags &= 0xFFBE;
         if (((unsigned char *)m)[0x20] != 0xB) {
             *(int *)(m + 0x94) = *(int *)(*(char **)(m + 0x24) + 0x10);
         }
         ((unsigned char *)m)[0x30] = 0x40;
-        *(unsigned short *)(m + 0x34) |= 0x1000;
+        ((Moby *)m)->flags |= 0x1000;
     }
     if (((unsigned char *)m)[0x20] != 0) {
         process_plasmabot_hit_reaction(m);
@@ -134,10 +134,10 @@ void update_plasmabot(char *m) {
     }
     if (oltanis_game_mode == 2) {
         ((unsigned char *)m)[0x31] = 0;
-        *(unsigned short *)(m + 0x34) |= 1;
+        ((Moby *)m)->flags |= 1;
     } else if (((unsigned char *)m)[0x20] != 1) {
         ((unsigned char *)m)[0x31] = 1;
-        *(unsigned short *)(m + 0x34) &= 0xFFFE;
+        ((Moby *)m)->flags &= 0xFFFE;
     }
     switch (((unsigned char *)m)[0x20]) {
     case 0: {
@@ -164,7 +164,7 @@ void update_plasmabot(char *m) {
             { call_D678(m); return; }
         }
         if (random_integer_below(2) != 0) {
-            *(unsigned short *)(m + 0x34) |= 0x8000;
+            ((Moby *)m)->flags |= 0x8000;
         }
         initialize_plasmabot_path_state(m);
         if (*(int *)(data + 0x240) != -1) {
@@ -198,7 +198,7 @@ void update_plasmabot(char *m) {
             ((unsigned char *)m)[0x20] = 1;
             return;
         }
-        *(float *)(m + 0x18) = ProbeGroundHeight(0.5f, m + 0x10, 0);
+        ((Moby *)m)->pos.z = ProbeGroundHeight(0.5f, m + 0x10, 0);
         if (*(int *)(data + 0x240) == -1) {
             ((unsigned char *)m)[0x20] = 4;
         } else {
@@ -217,7 +217,7 @@ void update_plasmabot(char *m) {
         ((unsigned char *)m)[0x20] = 2;
         MobySetAnimation(m, 1, 0);
         p = (float *)oltanis_paths[*(int *)(data + 0x240)];
-        *(float *)(m + 0x48) = fast_atan2(p[8] - p[4], p[9] - p[5]);
+        ((Moby *)m)->rot.z = fast_atan2(p[8] - p[4], p[9] - p[5]);
         *(int *)(data + 0x268) = 0;
         *(float *)(data + 0x27C) = 1.0f;
         *(int *)(data + 0x26C) = 0;
@@ -237,7 +237,7 @@ void update_plasmabot(char *m) {
         if ((m[0x70] & 2) && ((unsigned char *)m)[0x52] == ((unsigned char *)m)[0x53]) {
             ((unsigned char *)m)[0x20] = 3;
             MobyBlendAnimation(m, 3, 0, scale_ticks(10));
-            *(float *)(m + 0x58) = 1.0f;
+            ((Moby *)m)->anim_speed = 1.0f;
         }
         break;
     case 9: {
@@ -247,7 +247,7 @@ void update_plasmabot(char *m) {
         if ((m[0x70] & 2) && ((unsigned char *)m)[0x52] == ((unsigned char *)m)[0x53]) {
             MobyBlendAnimation(m, 0, 0, scale_ticks(10));
             ((unsigned char *)m)[0x20] = 1;
-            *(float *)(m + 0x58) = 1.0f;
+            ((Moby *)m)->anim_speed = 1.0f;
             deactivate_plasmabot(m);
             return;
         }
@@ -256,15 +256,15 @@ void update_plasmabot(char *m) {
     case 13: {
         float ang;
         float k;
-        ang = fast_atan2(*(float *)(owner + 0x10) - *(float *)(m + 0x10),
-                                *(float *)(owner + 0x14) - *(float *)(m + 0x14));
+        ang = fast_atan2(*(float *)(owner + 0x10) - ((Moby *)m)->pos.x,
+                                *(float *)(owner + 0x14) - ((Moby *)m)->pos.y);
         k = g_frame_time_sq * 12.566371f;
         call_CE58((float *)(m + 0x48), ang, (float *)(data + 0x23C), k, k, g_frame_time * 6.2831855f);
         if (*(int *)(data + 0x114) == 2) break;
         if (FastDecTimer(data + 0x248) == 0) break;
         ((unsigned char *)m)[0x20] = 3;
         MobyBlendAnimation(m, 3, 0, scale_ticks(10));
-        *(float *)(m + 0x58) = 1.0f;
+        ((Moby *)m)->anim_speed = 1.0f;
         *(int *)(data + 0x250) = 0;
         *(float *)(data + 0x27C) = 1.0f;
         *(int *)(data + 0x24C) = 0;
@@ -298,11 +298,11 @@ void update_plasmabot(char *m) {
         float k;
         float aim;
         scale_and_apply_plasmabot_planar_velocity(m);
-        ang = fast_atan2(*(float *)(owner + 0x10) - *(float *)(m + 0x10),
-                                *(float *)(owner + 0x14) - *(float *)(m + 0x14));
+        ang = fast_atan2(*(float *)(owner + 0x10) - ((Moby *)m)->pos.x,
+                                *(float *)(owner + 0x14) - ((Moby *)m)->pos.y);
         k = g_frame_time_sq * 12.566371f;
         call_CE58((float *)(m + 0x48), ang, (float *)(data + 0x23C), k, k, g_frame_time * 6.2831855f);
-        aim = update_plasmabot_aim_quaternion(m, 0, *(float *)(m + 0x48));
+        aim = update_plasmabot_aim_quaternion(m, 0, ((Moby *)m)->rot.z);
         update_plasmabot_aim_joint_rotation(m, ang);
         if (*(int *)(data + 0x114) == 2) {
             if (*(int *)(data + 0x240) == -1) break;
@@ -326,7 +326,7 @@ void update_plasmabot(char *m) {
         if (count_listed_plasmabots_preparing_or_sweeping_beam(((unsigned char *)m)[0x21]) >= 2) break;
         if (register_beam_slot(m, 1, 0) == 0) break;
         if (random_integer_below(4) != 0) break;
-        if (!(FastDiffRots(*(float *)(m + 0x48), ang) < 0.017453292f)) break;
+        if (!(FastDiffRots(((Moby *)m)->rot.z, ang) < 0.017453292f)) break;
         if (!(aim < 0.017453292f)) break;
         if (test_path_segment_strict_crossing(*(int *)(data + 0x244), m + 0x10, owner + 0x10) != 0) break;
         Group_ResetClass28Timers(((unsigned char *)m)[0x21]);
@@ -338,8 +338,8 @@ void update_plasmabot(char *m) {
     }
     case 5: {
         float ang;
-        ang = fast_atan2(*(float *)(owner + 0x10) - *(float *)(m + 0x10),
-                                *(float *)(owner + 0x14) - *(float *)(m + 0x14));
+        ang = fast_atan2(*(float *)(owner + 0x10) - ((Moby *)m)->pos.x,
+                                *(float *)(owner + 0x14) - ((Moby *)m)->pos.y);
         update_plasmabot_aim_quaternion(m, 0, FastSubRots(ang, *(float *)&plasmabot_beam_sweep_half_angle));
         update_plasmabot_aim_joint_rotation(m, ang);
         if ((m[0x70] & 2) && ((unsigned char *)m)[0x52] == ((unsigned char *)m)[0x53]) {
@@ -355,14 +355,14 @@ void update_plasmabot(char *m) {
         float c;
         float f;
         flag = 0;
-        ang = fast_atan2(*(float *)(owner + 0x10) - *(float *)(m + 0x10),
-                                *(float *)(owner + 0x14) - *(float *)(m + 0x14));
+        ang = fast_atan2(*(float *)(owner + 0x10) - ((Moby *)m)->pos.x,
+                                *(float *)(owner + 0x14) - ((Moby *)m)->pos.y);
         t = IntToFloat(*(short *)(data + 0x262));
         t = t / IntToFloat(scale_ticks(*(int *)&plasmabot_beam_sweep_ticks));
         c = *(float *)&plasmabot_beam_sweep_half_angle;
         f = FastSubRots(*(float *)(data + 0x278), -c + (c + c) * t);
         if (((unsigned char *)data)[0x24B] != 0) {
-            if (*(float *)(owner + 0x18) + 0.1f - *(float *)(m + 0x18) < 0.0f) {
+            if (*(float *)(owner + 0x18) + 0.1f - ((Moby *)m)->pos.z < 0.0f) {
                 flag = 1;
             }
         }
@@ -381,8 +381,8 @@ void update_plasmabot(char *m) {
         ray.flags = 0x10001;
         ray.f = 1;
         ray.e = 1.0f;
-        ray.a = FastCos(*(float *)(m + 0x48));
-        ray.b = FastSin(*(float *)(m + 0x48));
+        ray.a = FastCos(((Moby *)m)->rot.z);
+        ray.b = FastSin(((Moby *)m)->rot.z);
         ray.c = 1.0f;
         ray.d = 5627.9248f;
         ray.b99 = 1;
@@ -444,8 +444,8 @@ void update_plasmabot(char *m) {
     }
     st = ((unsigned char *)m)[0x20];
     if (!(st >= 4 && st <= 7) && st != 1) {
-        update_plasmabot_aim_quaternion(m, 0, *(float *)(m + 0x48));
-        update_plasmabot_aim_joint_rotation(m, *(float *)(m + 0x48));
+        update_plasmabot_aim_quaternion(m, 0, ((Moby *)m)->rot.z);
+        update_plasmabot_aim_joint_rotation(m, ((Moby *)m)->rot.z);
     }
     update_plasmabot_visual_effects((struct Moby *)m);
 }
@@ -749,7 +749,7 @@ void process_plasmabot_hit_reaction(char *m) {
     dmg = 0.0f;
     h = MobyGetHitMessage(m, 0x330000, 0);
     if (h != 0 && *(char **)(h + 0x20) != 0
-        && (*(short *)(*(char **)(h + 0x20) + 0xA6) == *(short *)(m + 0xA6) || *(short *)(*(char **)(h + 0x20) + 0xA6) == 0x370)) {
+        && (*(short *)(*(char **)(h + 0x20) + 0xA6) == ((Moby *)m)->oclass || *(short *)(*(char **)(h + 0x20) + 0xA6) == 0x370)) {
         h = 0;
     }
     r = ComputeHitResponse(m, h, d + 0x20, 0, &hit, &dmg, 0, 4);
@@ -784,7 +784,7 @@ void process_plasmabot_hit_reaction(char *m) {
             } else {
                 m[0x20] = 0xB;
             }
-            *(unsigned short *)(m + 0x34) &= 0xEFFF;
+            ((Moby *)m)->flags &= 0xEFFF;
             {
                 int r80 = truncate_float_to_s32(*(float *)(d + 0x88) * 1024.0f);
                 float k = D_0015EE6C_x * 10.0f;
@@ -904,8 +904,8 @@ void scale_and_apply_plasmabot_planar_velocity(char *moby) {
     char *d = *(char **)(moby + 0x78);
     *(float *)(d + 0x254) = *(float *)(d + 0x254) * f;
     *(float *)(d + 0x258) = *(float *)(d + 0x258) * f;
-    *(float *)(moby + 0x10) = *(float *)(moby + 0x10) + *(float *)(d + 0x254);
-    *(float *)(moby + 0x14) = *(float *)(moby + 0x14) + *(float *)(d + 0x258);
+    ((Moby *)moby)->pos.x = ((Moby *)moby)->pos.x + *(float *)(d + 0x254);
+    ((Moby *)moby)->pos.y = ((Moby *)moby)->pos.y + *(float *)(d + 0x258);
 }
 extern float func_001FA790(float, float);
 extern float func_L00_0025CE58_2B4828(float *, float, float *, float, float, float) __asm__("func_L00_0025CE58");
@@ -918,7 +918,7 @@ extern float func_001FA850(float, float);
 float update_plasmabot_aim_quaternion(char *moby, int flag, float x) {
     char *d = *(char **)(moby + 0x78);
     char *owner = *(char **)(d + 0x110);
-    float s = FastSubRots(x, *(float *)(moby + 0x48));
+    float s = FastSubRots(x, ((Moby *)moby)->rot.z);
     if (s > 1.2217304706573486f) s = 1.2217304706573486f;
     else if (s < -1.2217304706573486f) s = -1.2217304706573486f;
     {
@@ -956,7 +956,7 @@ extern float D_0015EE6C MACRO_ADDR;
 void update_plasmabot_aim_joint_rotation(char *a, float x) {
     char *d = *(char **)(a + 0x78);
     float s = -*(float *)(d + 0x268);
-    float r = FastSubRots(x, *(float *)(a + 0x48));
+    float r = FastSubRots(x, ((Moby *)a)->rot.z);
     s = FastAddRots(s, -r);
     if (s > 1.2217304706573486f) s = 1.2217304706573486f;
     else if (s < -1.2217304706573486f) s = -1.2217304706573486f;
@@ -1431,7 +1431,7 @@ unsigned char *spawn_path_or_ballistic_debris(char *owner, float *scale, int mod
         float vec[8];
         pos = m + 0x10;
         qcopy(pos, owner + 0x10);
-        *(float *)(m + 0x48) = *(float *)(owner + 0x48);
+        *(float *)(m + 0x48) = ((Moby *)owner)->rot.z;
         m[0x20] = mode;
         m[0x30] = 0xFF;
         *(short *)(m + 0x32) = 0xFF;
@@ -1611,7 +1611,7 @@ void initialize_moby_path_state(char *moby) {
     *(int *)(data + 0xD0) = 0;
     *(int *)(data + 0xD4) = 0;
     qcopy(moby + 0x10, p + 0x10);
-    *(float *)(moby + 0x48) = fast_atan2(*(float *)(p + 0x20) - *(float *)(p + 0x10), *(float *)(p + 0x24) - *(float *)(p + 0x14));
+    ((Moby *)moby)->rot.z = fast_atan2(*(float *)(p + 0x20) - *(float *)(p + 0x10), *(float *)(p + 0x24) - *(float *)(p + 0x14));
     *(float *)(data + 0xF0) = *(float *)(data + 0xE4) = *(float *)(data + 0xE8) = *(float *)(data + 0xEC) = 0.0f;
     if (*(int *)(data + 0xFC) != 1) {
         p = oltanis_paths[*(int *)(data + 0xDC)];
@@ -1902,7 +1902,7 @@ void update_vendor_beam(unsigned char *m) {
     float v[4] __attribute__((aligned(16)));
     int s;
     int arg;
-    if (m[0x20] != 0) {
+    if (((Moby *)m)->state != 0) {
         qcopy(v, m + 0x10);
         v[3] = d->f624;
         if (FastBSphereCheck(v, 52.0f) < 0) {
@@ -1912,12 +1912,12 @@ void update_vendor_beam(unsigned char *m) {
     if (*(int *)&D_L14_0016219C_s != 0) {
         return;
     }
-    s = m[0x20];
+    s = ((Moby *)m)->state;
     switch (s) {
     case 0:
         start_vendor_beam_pulse((char *)m);
         d->s10 = scale_ticks(d->wC);
-        m[0x20] = 2;
+        ((Moby *)m)->state = 2;
         d->f624 = FastVecLength(D_L14_001601AC_t + (d->w0 << 7) + 0x10);
         d->s8 = 1;
         d->sA = 1;
@@ -1932,7 +1932,7 @@ void update_vendor_beam(unsigned char *m) {
         break;
     case 2:
         if (FastDecTimer(&d->s10) != 0) {
-            m[0x20] = 3;
+            ((Moby *)m)->state = 3;
             d->s10 = scale_ticks(d->s4);
             start_vendor_beam_pulse((char *)m);
         }
@@ -1940,7 +1940,7 @@ void update_vendor_beam(unsigned char *m) {
     case 3:
         if (FastDecTimer(&d->s10) != 0) {
             if (d->s6 != 0) {
-                m[0x20] = 2;
+                ((Moby *)m)->state = 2;
                 arg = d->s6;
             } else {
                 arg = d->s4;

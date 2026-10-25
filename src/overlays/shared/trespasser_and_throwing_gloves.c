@@ -1105,33 +1105,33 @@ void decoy_update(char *moby) {
     int i, ok, h5;
     short *ids;
 
-    if (*(short *)(moby + 0xA6) == 0xCB) active = 0;
+    if (((Moby *)moby)->oclass == 0xCB) active = 0;
     effect = IntToFloat(active);
-    if (*(float *)(moby + 0x10) < 2.0f || 1021.0f < *(float *)(moby + 0x10) ||
-        *(float *)(moby + 0x14) < 2.0f || 1021.0f < *(float *)(moby + 0x14) ||
-        *(float *)(moby + 0x18) < 2.0f || 1021.0f < *(float *)(moby + 0x18)) {
+    if (((Moby *)moby)->pos.x < 2.0f || 1021.0f < ((Moby *)moby)->pos.x ||
+        ((Moby *)moby)->pos.y < 2.0f || 1021.0f < ((Moby *)moby)->pos.y ||
+        ((Moby *)moby)->pos.z < 2.0f || 1021.0f < ((Moby *)moby)->pos.z) {
         moby_index_list_remove(moby, decoy_list);
         DeleteMoby(moby);
         return;
     }
     {
     if (((char *)D_0013F450_C48C8.items[0].moby == 0 || *(short *)((char *)D_0013F450_C48C8.items[0].moby + 0xA6) != 0x232) &&
-        *(unsigned char *)(moby + 0x20) == 1) {
+        ((Moby *)moby)->state == 1) {
         moby_index_list_remove(moby, decoy_list);
         DeleteMoby(moby);
         return;
     } }
     {
-    if (D_0013F450_C48C8.vehicle_mode != 0 && *(unsigned char *)(moby + 0x20) == 1) {
+    if (D_0013F450_C48C8.vehicle_mode != 0 && ((Moby *)moby)->state == 1) {
         moby_index_list_remove(moby, decoy_list);
         DeleteMoby(moby);
         return;
     } }
     *(int *)(vars + 0x54) = *(int *)(vars + 0x54) + 1;
-    if (D_0013F450_C48C8.unk20A5 != 0 && *(unsigned char *)(moby + 0x20) < 2)
-        *(unsigned short *)(moby + 0x34) = *(unsigned short *)(moby + 0x34) | 0x41;
+    if (D_0013F450_C48C8.unk20A5 != 0 && ((Moby *)moby)->state < 2)
+        ((Moby *)moby)->flags = ((Moby *)moby)->flags | 0x41;
     else
-        *(unsigned short *)(moby + 0x34) = *(unsigned short *)(moby + 0x34) & 0xFFBE;
+        ((Moby *)moby)->flags = ((Moby *)moby)->flags & 0xFFBE;
     if (*(short *)(*(char **)(vars + 0x40) + 0xA6) == 0x232 && *(short *)(vars + 0x46) == 0 &&
         FastVecLength(vars + 0x10) > 0.0f) {
         ground = (char *)D_0013F450_C48C8.ground_moby;
@@ -1141,11 +1141,11 @@ void decoy_update(char *moby) {
             predict_thrown_moby_landing(vars, moby, 2);
         }
     }
-    switch (*(unsigned char *)(moby + 0x20)) {
+    switch (((Moby *)moby)->state) {
     case 0:
-        *(unsigned char *)(moby + 0x20) = 1;
+        ((Moby *)moby)->state = 1;
         *(short *)(vars + 0x44) = 0;
-        *(int *)(moby + 0x98) = -1;
+        ((Moby *)moby)->collision_disable = -1;
         *(short *)(vars + 0x6C) = 0;
         *(unsigned char *)(vars + 0x6E) = 0;
         break;
@@ -1161,8 +1161,8 @@ void decoy_update(char *moby) {
         DeleteMoby(moby);
         return;
     case 2:
-        if (*(float *)(moby + 0x2C) < *(float *)(*(char **)(moby + 0x24) + 0x24))
-            *(float *)(moby + 0x2C) = *(float *)(moby + 0x2C) + frame_scale * 0.02f;
+        if (((Moby *)moby)->scale < *(float *)(*(char **)(moby + 0x24) + 0x24))
+            ((Moby *)moby)->scale = ((Moby *)moby)->scale + frame_scale * 0.02f;
         qcopy(v, moby + 0x10);
         *(float *)(vars + 0x18) = *(float *)(vars + 0x18) - g_frame_time_sq * 9.0f;
         for (i = 1; i <= ((short*)decoy_list)[0]; i++) {
@@ -1214,35 +1214,35 @@ void decoy_update(char *moby) {
                         *(short *)(vars + 0x44) = t44;
                         if (D_L00_00173F40_C4E00.moby == 0 || D_L00_00173F40_C4E00.unk1C > 0 ||
                             (short)t44 > scale_ticks(240)) {
-                            if (*(unsigned char *)(moby + 0x53) != 1)
+                            if (((Moby *)moby)->prev_seq != 1)
                                 MobyBlendAnimation(moby, 1, 0, scale_ticks(10));
                             *(int *)(moby + 0x94) = *(int *)(*(char **)(moby + 0x24) + 0x10);
-                            *(int *)(moby + 0x98) = 0;
+                            ((Moby *)moby)->collision_disable = 0;
                             qzero(vars + 0x10);
-                            *(unsigned char *)(moby + 0x20) = 3;
+                            ((Moby *)moby)->state = 3;
                             *(short *)(vars + 0x44) = (short)scale_ticks(600);
-                            *(float *)(moby + 0x18) = D_L00_00173F40_C4E00.point.f[2];
+                            ((Moby *)moby)->pos.z = D_L00_00173F40_C4E00.point.f[2];
                             qcopy(xv, &D_L00_00173F40_C4E00.normal_x);
                             {
                             float cos_a, sin_a;
-                            cos_a = FastCos(*(float *)(moby + 0x48));
-                            sin_a = FastSin(*(float *)(moby + 0x48));
+                            cos_a = FastCos(((Moby *)moby)->rot.z);
+                            sin_a = FastSin(((Moby *)moby)->rot.z);
                             cv[0] = xv[0] * cos_a + xv[1] * sin_a;
                             }
                             {
                             float cos_a, sin_a;
-                            cos_a = FastCos(*(float *)(moby + 0x48));
-                            sin_a = FastSin(*(float *)(moby + 0x48));
+                            cos_a = FastCos(((Moby *)moby)->rot.z);
+                            sin_a = FastSin(((Moby *)moby)->rot.z);
                             cv[1] = xv[1] * cos_a - xv[0] * sin_a;
                             cv[2] = xv[2];
                             *(float *)(vars + 0x4C) = -fast_atan2(vec_length(cv[0] * cv[0] + cv[2] * cv[2]), cv[1]);
                             *(float *)(vars + 0x50) = fast_atan2(cv[2], cv[0]);
                             }
                             rate = 0.1f;
-                            *(float *)(moby + 0x40) = FastAddRots(*(float *)(moby + 0x40),
-                                FastSubRots(*(float *)(vars + 0x4C), *(float *)(moby + 0x40)) * (frame_scale * rate));
-                            *(float *)(moby + 0x44) = FastAddRots(*(float *)(moby + 0x44),
-                                FastSubRots(*(float *)(vars + 0x50), *(float *)(moby + 0x44)) * (frame_scale * rate));
+                            ((Moby *)moby)->rot.x = FastAddRots(((Moby *)moby)->rot.x,
+                                FastSubRots(*(float *)(vars + 0x4C), ((Moby *)moby)->rot.x) * (frame_scale * rate));
+                            ((Moby *)moby)->rot.y = FastAddRots(((Moby *)moby)->rot.y,
+                                FastSubRots(*(float *)(vars + 0x50), ((Moby *)moby)->rot.y) * (frame_scale * rate));
                         }
                     }
                 }
@@ -1267,10 +1267,10 @@ void decoy_update(char *moby) {
                 spawn_nearby_effect_without_direction(1000.0f, moby, moby, 0x10000, &D_0013F450_C48C8.motion.pos);
         }
         found = MobyGetHitMessage(moby, 0x30001, 0);
-        *(float *)(moby + 0x40) = FastAddRots(*(float *)(moby + 0x40),
-            FastSubRots(*(float *)(vars + 0x4C), *(float *)(moby + 0x40)) * (frame_scale * 0.1f));
-        *(float *)(moby + 0x44) = FastAddRots(*(float *)(moby + 0x44),
-            FastSubRots(*(float *)(vars + 0x50), *(float *)(moby + 0x44)) * (frame_scale * 0.1f));
+        ((Moby *)moby)->rot.x = FastAddRots(((Moby *)moby)->rot.x,
+            FastSubRots(*(float *)(vars + 0x4C), ((Moby *)moby)->rot.x) * (frame_scale * 0.1f));
+        ((Moby *)moby)->rot.y = FastAddRots(((Moby *)moby)->rot.y,
+            FastSubRots(*(float *)(vars + 0x50), ((Moby *)moby)->rot.y) * (frame_scale * 0.1f));
         update_decoy_proximity_motion(moby);
         fast_dec_timer(vars + 0x5C);
         FastDecTimer(vars + 0x6C);
@@ -1323,32 +1323,32 @@ void decoy_update(char *moby) {
             }
         }
     skip:
-        *(unsigned char *)(moby + 0xA4) = 0xFF;
+        ((Moby *)moby)->hit_slot = 0xFF;
         StepColorFade(moby, vars);
-        if ((*(unsigned char *)(moby + 0x70) & 2) != 0) {
-            if (*(unsigned char *)(moby + 0x53) != 2)
+        if ((((Moby *)moby)->anim_flags & 2) != 0) {
+            if (((Moby *)moby)->prev_seq != 2)
                 MobyBlendAnimation(moby, 2, 0, scale_ticks(10));
-            *(float *)(moby + 0x58) = random_float_between(0.7f, 1.05f);
+            ((Moby *)moby)->anim_speed = random_float_between(0.7f, 1.05f);
         }
-        if (*(unsigned char *)(moby + 0x20) != 4) {
+        if (((Moby *)moby)->state != 4) {
             len = ProbeGroundHeight(moby + 0x10, 0, 0.5f);
             if (len == 0.0f) return;
             destroy_decoy_on_selected_materials(moby);
-            if (len + 0.02f < *(float *)(moby + 0x18)) {
+            if (len + 0.02f < ((Moby *)moby)->pos.z) {
                 *(float *)(vars + 0x18) = *(float *)(vars + 0x18) - g_frame_time_sq * 9.8f;
                 FastVecAdd(moby + 0x10, moby + 0x10, vars + 0x10);
                 len = ProbeGroundHeight(moby + 0x10, 0, 0.5f);
-                if (*(float *)(moby + 0x18) < len) {
-                    *(float *)(moby + 0x18) = len;
+                if (((Moby *)moby)->pos.z < len) {
+                    ((Moby *)moby)->pos.z = len;
                     qzero(vars + 0x10);
                     qcopy(v, &D_L00_00173F40_C4E00.normal_x);
                     {
                     float cos_a, sin_a;
-                    cos_a = FastCos(*(float *)(moby + 0x48));
-                    sin_a = FastSin(*(float *)(moby + 0x48));
+                    cos_a = FastCos(((Moby *)moby)->rot.z);
+                    sin_a = FastSin(((Moby *)moby)->rot.z);
                     wv[0] = v[0] * cos_a + v[1] * sin_a;
-                    cos_a = FastCos(*(float *)(moby + 0x48));
-                    sin_a = FastSin(*(float *)(moby + 0x48));
+                    cos_a = FastCos(((Moby *)moby)->rot.z);
+                    sin_a = FastSin(((Moby *)moby)->rot.z);
                     wv[1] = v[1] * cos_a - v[0] * sin_a;
                     wv[2] = v[2];
                     *(float *)(vars + 0x4C) = -fast_atan2(vec_length(wv[0] * wv[0] + wv[2] * wv[2]), wv[1]);
@@ -1361,13 +1361,13 @@ void decoy_update(char *moby) {
             if (D_L00_00173F40_C4E00.moby != 0)
                 RotateWithMoby(moby, (char *)D_L00_00173F40_C4E00.moby, moby + 0x10, moby + 0x40, moby + 0x10, moby + 0x40);
         } else {
-            if (*(float *)(moby + 0x2C) < *(float *)(*(char **)(moby + 0x24) + 0x24))
-                *(float *)(moby + 0x2C) = *(float *)(moby + 0x2C) + frame_scale * 0.02f;
+            if (((Moby *)moby)->scale < *(float *)(*(char **)(moby + 0x24) + 0x24))
+                ((Moby *)moby)->scale = ((Moby *)moby)->scale + frame_scale * 0.02f;
             if (FastDecTimer(vars + 0x44) != 0) {
-                if (*(unsigned char *)(moby + 0x53) != 0)
+                if (((Moby *)moby)->prev_seq != 0)
                     MobyBlendAnimation(moby, 0, 0, scale_ticks(60));
                 moby_index_list_remove(moby, decoy_list);
-                *(unsigned char *)(moby + 0x20) = 5;
+                ((Moby *)moby)->state = 5;
             }
         }
         break;
@@ -1375,23 +1375,23 @@ void decoy_update(char *moby) {
         len = ProbeGroundHeight(moby + 0x10, 0, 0.5f);
         if (len != 0.0f && D_L00_00173F40_C4E00.moby != 0)
             RotateWithMoby(moby, (char *)D_L00_00173F40_C4E00.moby, moby + 0x10, moby + 0x40, moby + 0x10, moby + 0x40);
-        if ((*(unsigned char *)(moby + 0x70) & 2) != 0)
+        if ((((Moby *)moby)->anim_flags & 2) != 0)
             *(int *)(moby + 0x58) = 0;
-        if (FastDecTimer(vars + 0x44) != 0 || (*(unsigned char *)(moby + 0x70) & 2) != 0)
-            *(unsigned char *)(moby + 0x20) = 6;
+        if (FastDecTimer(vars + 0x44) != 0 || (((Moby *)moby)->anim_flags & 2) != 0)
+            ((Moby *)moby)->state = 6;
         break;
     case 6:
         len = ProbeGroundHeight(moby + 0x10, 0, 0.5f);
         if (len != 0.0f && D_L00_00173F40_C4E00.moby != 0)
             RotateWithMoby(moby, (char *)D_L00_00173F40_C4E00.moby, moby + 0x10, moby + 0x40, moby + 0x10, moby + 0x40);
-        *(float *)(moby + 0x2C) = *(float *)(moby + 0x2C) - *(float *)(moby + 0x2C) * (frame_scale * 0.02f);
-        if (!(*(float *)(moby + 0x2C) < *(float *)(*(char **)(moby + 0x24) + 0x24) * 0.1f))
+        ((Moby *)moby)->scale = ((Moby *)moby)->scale - ((Moby *)moby)->scale * (frame_scale * 0.02f);
+        if (!(((Moby *)moby)->scale < *(float *)(*(char **)(moby + 0x24) + 0x24) * 0.1f))
             return;
         DeleteMoby(moby);
         break;
     case 7:
     default:
-        *(unsigned char *)(moby + 0x20) = 0;
+        ((Moby *)moby)->state = 0;
         break;
     }
 }
@@ -1704,7 +1704,7 @@ int try_collect_ammo_pickup(char *m) {
     char *p = *(char **)(m + 0x78);
     int a, b, r, d;
     float f;
-    if (*(unsigned char *)(m + 0x20) == 2) {
+    if (((Moby *)m)->state == 2) {
     fail:
         return 0;
     }
@@ -1720,7 +1720,7 @@ int try_collect_ammo_pickup(char *m) {
     if (f < (float)*(int *)p) {
         *(int *)(D_0013DE6E + 0xA2 + *(int *)(p + 8) * 4) += *(int *)(menu_item_enabled_115 + 0x21 + *(int *)(p + 8) * 4) - a;
         m[0x20] = 2;
-        *(float *)(m + 0x2C) *= frame_scale * 0.20000005f + 1.0f;
+        ((Moby *)m)->scale *= frame_scale * 0.20000005f + 1.0f;
         clear_u64_value(p + 0x10);
         d = level_frame_counter - ammo_pickup_sound_frame;
         *(float *)(p + 0x24) = g_frame_time * 8.0f;
@@ -2128,63 +2128,63 @@ void swingshot_hook_update(unsigned char *m) {
         return;
     }
     if ((*(unsigned short *)(o + 0x34) & 1) || D_001414F5[0xA] != 0) {
-        *(unsigned short *)(m + 0x34) |= 0x41;
+        ((Moby *)m)->flags |= 0x41;
     } else {
-        *(unsigned short *)(m + 0x34) &= 0xFFBE;
+        ((Moby *)m)->flags &= 0xFFBE;
     }
-    switch (m[0x20]) {
+    switch (((Moby *)m)->state) {
     case 0:
-        if (m[0x70] & 2) {
-            if (m[0x53] != 1) MobyBlendAnimation(m, 1, 0, scale_ticks(10));
-            m[0x20] = 1;
-            *(float *)(m + 0x58) = 1.0f;
+        if (((Moby *)m)->anim_flags & 2) {
+            if (((Moby *)m)->prev_seq != 1) MobyBlendAnimation(m, 1, 0, scale_ticks(10));
+            ((Moby *)m)->state = 1;
+            ((Moby *)m)->anim_speed = 1.0f;
         }
         break;
     case 1:
         st = (*(unsigned char **)p)[0x20];
         if (st == 2) {
-            if (m[0x53] != 3) MobyBlendAnimation(m, 3, 0, scale_ticks(10));
-            m[0x20] = 3;
-            *(float *)(m + 0x58) = 1.0f;
+            if (((Moby *)m)->prev_seq != 3) MobyBlendAnimation(m, 3, 0, scale_ticks(10));
+            ((Moby *)m)->state = 3;
+            ((Moby *)m)->anim_speed = 1.0f;
         } else if (st == 8) {
-            if (m[0x53] != 2) MobyBlendAnimation(m, 2, 0, scale_ticks(10));
-            m[0x20] = 2;
-            *(float *)(m + 0x58) = 1.0f;
+            if (((Moby *)m)->prev_seq != 2) MobyBlendAnimation(m, 2, 0, scale_ticks(10));
+            ((Moby *)m)->state = 2;
+            ((Moby *)m)->anim_speed = 1.0f;
         }
         break;
     case 2:
-        if (m[0x70] & 2) {
+        if (((Moby *)m)->anim_flags & 2) {
             DeleteMoby(m);
             return;
         }
         break;
     case 3:
-        if (m[0x70] & 2) {
-            if (m[0x53] != 4) MobyBlendAnimation(m, 4, 0, scale_ticks(10));
-            m[0x20] = 4;
+        if (((Moby *)m)->anim_flags & 2) {
+            if (((Moby *)m)->prev_seq != 4) MobyBlendAnimation(m, 4, 0, scale_ticks(10));
+            ((Moby *)m)->state = 4;
         }
         break;
     case 4:
         if ((unsigned)((*(unsigned char **)p)[0x20] - 3) < 3) {
-            if (m[0x53] != 5) MobyBlendAnimation(m, 5, 0, scale_ticks(10));
-            m[0x20] = 5;
+            if (((Moby *)m)->prev_seq != 5) MobyBlendAnimation(m, 5, 0, scale_ticks(10));
+            ((Moby *)m)->state = 5;
         }
         break;
     case 5:
-        if (m[0x70] & 2) *(int *)(m + 0x58) = 0;
+        if (((Moby *)m)->anim_flags & 2) *(int *)(m + 0x58) = 0;
         if ((unsigned)((*(unsigned char **)p)[0x20] - 6) < 2) {
-            *(float *)(m + 0x58) = 1.0f;
-            if (m[0x53] != 7) MobyBlendAnimation(m, 7, 0, scale_ticks(10));
-            m[0x20] = 7;
+            ((Moby *)m)->anim_speed = 1.0f;
+            if (((Moby *)m)->prev_seq != 7) MobyBlendAnimation(m, 7, 0, scale_ticks(10));
+            ((Moby *)m)->state = 7;
         }
         break;
     case 6:
         break;
     case 7:
-        if (!(m[0x70] & 2)) break;
+        if (!(((Moby *)m)->anim_flags & 2)) break;
     default:
-        if (m[0x53] != 1) MobyBlendAnimation(m, 1, 0, scale_ticks(10));
-        m[0x20] = 1;
+        if (((Moby *)m)->prev_seq != 1) MobyBlendAnimation(m, 1, 0, scale_ticks(10));
+        ((Moby *)m)->state = 1;
         break;
     }
     moby_anim_sphere_lerp(m);

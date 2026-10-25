@@ -375,9 +375,9 @@ void FloatingPlatformUpdate(char *m) {
     switch (((unsigned char *)m)[0x20]) {
     case 0: {
         int i;
-        *(float *)(m + 0x58) = random_float_between(0.5f, 0.8f);
+        ((Moby *)m)->anim_speed = random_float_between(0.5f, 0.8f);
         m[0x20] = 1;
-        *(float *)(d + 0x220) = *(float *)(m + 0x18) + 15.0f;
+        *(float *)(d + 0x220) = ((Moby *)m)->pos.z + 15.0f;
         ((unsigned char *)m)[0x30] = 0xFF;
         *(short *)(d + 0x3E) = 0xD;
         for (i = 0; i < 3; i++) {
@@ -405,7 +405,7 @@ void FloatingPlatformUpdate(char *m) {
         } else {
             off = 15.0f;
         }
-        *(float *)(m + 0x18) = *(float *)(d + 0x220) + bob - off;
+        ((Moby *)m)->pos.z = *(float *)(d + 0x220) + bob - off;
         break;
     }
     }
@@ -1210,7 +1210,7 @@ void update_moby_translation_delta_matrix(char *m) {
     FastVecSub(v, m + 0x10, d + 0xA0);
     update_entity_matrix(d + 0x60, v, m + 0x40, m + 0x40);
     qcopy(d + 0xA0, m + 0x10);
-    if (*(unsigned char *)(m + 0x20) == 0) {
+    if (((Moby *)m)->state == 0) {
         *(int *)(d + 0x20) = 0;
         *(short *)(d + 0x24) = 0;
         d[0x28] = 4;
@@ -1587,12 +1587,12 @@ void update_suck_cannon_particles(char *m) {
     int i, col;
     float f;
 
-    *(float *)(m + 0x18) += 0.25f;
+    ((Moby *)m)->pos.z += 0.25f;
     FastVecSub(d, eudora_camera_pos, m + 0x10);
     vec_scale_to_length(d, d, -0.3f);
     vec_scale_to_length(e, d, 0.1f);
     FastVecAdd(d, d, m + 0x10);
-    *(float *)(m + 0x18) -= 0.25f;
+    ((Moby *)m)->pos.z -= 0.25f;
     for (i = 0; i < 4; i++) {
         float h = p->a[i] + p->b[i];
         p->a[i] = h;
@@ -1631,19 +1631,19 @@ void lieutenant_update(char *m) {
     float b[4];
     int g;
     int c;
-    if (*(unsigned char *)(m + 0x31) != 0) {
+    if (((Moby *)m)->visible != 0) {
         if (FastVecDist(m + 0x10, eudora_camera_pos) < 30.0f) {
             set_ground_height_band(m);
-            *(unsigned char *)(m + 0x7F) = 0x18;
+            ((Moby *)m)->shadow_range = 0x18;
         }
     }
     attach_big_head_cheat_manipulator_to_matching_moby(m);
-    switch (*(unsigned char *)(m + 0x20)) {
+    switch (((Moby *)m)->state) {
     case 0:
-        c = *(unsigned char *)(m + 0xB0);
+        c = ((Moby *)m)->mission;
         g = g_current_level_index;
         if (saved_mission_state[c + (g << 4)] == 0xFF) goto done;
-        *(unsigned char *)(m + 0x20) = 1;
+        ((Moby *)m)->state = 1;
         DialogRequest_Init(m, data);
         break;
     case 1:
@@ -1653,13 +1653,13 @@ void lieutenant_update(char *m) {
             *(float *)(data + 0xC) = 1.0f;
         }
         if (Npc_TryStartDialog(m, data) != 0) {
-            *(unsigned char *)(m + 0x20) = 2;
+            ((Moby *)m)->state = 2;
         }
         break;
     case 2:
         if (*(short *)(data + 4) == 2) {
             unlock_planet(6);
-            jet_clear_persistent(*(unsigned char *)(m + 0xB0));
+            jet_clear_persistent(((Moby *)m)->mission);
             vec_scale_to_length(a, m + 0xC0, 2.0f);
             FastVecAdd(a, a, m + 0x10);
             qcopy(b, m + 0x40);
@@ -1669,8 +1669,8 @@ void lieutenant_update(char *m) {
             eudora_lieutenant_respawn_point[0x3A] = 1;
             memcard_Save(0, -1);
         done:
-            *(unsigned char *)(m + 0x20) = 3;
-            *(unsigned short *)(m + 0x34) |= 0x41;
+            ((Moby *)m)->state = 3;
+            ((Moby *)m)->flags |= 0x41;
             *(int *)(m + 0x94) = 0;
         } else if (*(int *)&eudora_game_mode != 2) {
             Npc_TryStartDialog(m, data);
@@ -1678,7 +1678,7 @@ void lieutenant_update(char *m) {
         break;
     case 3:
         *(int *)(m + 0x94) = 0;
-        *(unsigned short *)(m + 0x34) |= 0x41;
+        ((Moby *)m)->flags |= 0x41;
         break;
     }
 }

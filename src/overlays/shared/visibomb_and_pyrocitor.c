@@ -383,7 +383,7 @@ void visibomb_update(char *m) {
                                 } else {
                                     char *q = D_0013E633 + 0xE1D;
                                     if (*(short *)(q + 0x22C8) == 1) {
-                                        f21 = fast_atan2(vec_length_xy(m + 0xD0), *(float *)(m + 0xD8));
+                                        f21 = fast_atan2(vec_length_xy(m + 0xD0), ((Moby *)m)->rot_row1.z);
                                         BuildSphericalOffset(t0, 0.6f, f20, -f21);
                                         FastVecAdd(t0, t0, m + 0x10);
                                     } else {
@@ -391,7 +391,7 @@ void visibomb_update(char *m) {
                                         FastVecAdd(t0, t0, m + 0x10);
                                     }
                                 }
-                                if (*(unsigned char *)(m + 0x53) != 3) MobyBlendAnimation(m, 3, 0, 0);
+                                if (((Moby *)m)->prev_seq != 3) MobyBlendAnimation(m, 3, 0, 0);
                                 jet_camera_mode();
                                 p[1] = spawn_visibomb_missile(m, t0, f20, f21);
                                 {
@@ -414,8 +414,8 @@ void visibomb_update(char *m) {
             }
         }
     }
-    if ((*(unsigned char *)(m + 0x70) & 2) != 0 && *(unsigned char *)(m + 0x53) != 1) MobyBlendAnimation(m, 1, 0, 0);
-    *(unsigned short *)(m + 0x34) |= 4;
+    if ((((Moby *)m)->anim_flags & 2) != 0 && ((Moby *)m)->prev_seq != 1) MobyBlendAnimation(m, 1, 0, 0);
+    ((Moby *)m)->flags |= 4;
 }
 extern char *func_L00_0025B478(void *, int, int);
 extern int func_001F9908(int *arg0);
@@ -432,9 +432,9 @@ void update_linked_moby_states(char *m) {
     int i;
     char **q;
     char *u;
-    switch (*(unsigned char *)(m + 0x20)) {
+    switch (((Moby *)m)->state) {
     case 0:
-        *(unsigned char *)(m + 0x20) = 1;
+        ((Moby *)m)->state = 1;
         b = moby_array_start;
         p[1] = *(int *)&linked_moby_trigger_ticks;
         p[2] = 3;
@@ -447,7 +447,7 @@ void update_linked_moby_states(char *m) {
         r = MobyGetHitMessage(m, 0x10000, 0);
         fast_dec_timer(p + 3);
         if (r != 0 && p[3] == 0) {
-            *(unsigned char *)(m + 0xA4) = 0xFF;
+            ((Moby *)m)->hit_slot = 0xFF;
             p[3] = *(int *)&linked_moby_hit_cooldown;
             p[2] = p[2] - 1;
             if (p[2] <= 0) {
@@ -2125,8 +2125,8 @@ void update_pyrocitor_usage_and_cleanup(unsigned char *m)
     unsigned char *P;
     unsigned char *voice;
     int h, c;
-    if (m[0x53] == 2) {
-        m[0x20] = 4;
+    if (((Moby *)m)->prev_seq == 2) {
+        ((Moby *)m)->state = 4;
         if (*(void **)v)
             func_0020D678_B9528(*(void **)v);
         if (*(short *)(v + 0x44) != -1) {
@@ -2147,7 +2147,7 @@ void update_pyrocitor_usage_and_cleanup(unsigned char *m)
     P = usage_stats;
     if (*(unsigned short *)(P + 0x50))
         return;
-    if (m[0x20] == 3) {
+    if (((Moby *)m)->state == 3) {
         (*(unsigned short *)(v + 0x50))++;
         return;
     }

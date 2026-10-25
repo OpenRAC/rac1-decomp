@@ -461,11 +461,11 @@ extern unsigned char D_0014171B[] NOT_SDA;
 void sam_update(char *m) {
     char *d = *(char **)(m + 0x78);
     attach_big_head_cheat_manipulator_to_matching_moby(m);
-    switch (*(unsigned char *)(m + 0x20)) {
+    switch (((Moby *)m)->state) {
     case 0: {
         unsigned short id;
         if (gemlik_available[2] != 0
-            || D_L14_001BBCC0_300468.collected[(short)(id = *(unsigned short *)(m + 0xB2))] != 0
+            || D_L14_001BBCC0_300468.collected[(short)(id = ((Moby *)m)->save_id)] != 0
             || (*(int *)(D_0014171B + 0xAB75 + (((short)id >> 5) * 4 + (g_current_level_index << 8))) >> (id & 0x1F)) & 1
             || *(int *)(d + 0x44) == -1
             || *(int *)(d + 0x48) == -1) {
@@ -480,7 +480,7 @@ void sam_update(char *m) {
     }
     case 1:
         if (*(unsigned char *)(d + 8) == 1 && is_point_inside_clip_volume(D_0013E633 + 0xE9D, *(int *)(d + 0x40)) != 0) {
-            if ((D_0014171B + 0xAA35)[*(unsigned char *)(m + 0xB0) + (g_current_level_index << 4)] != 0xFF) {
+            if ((D_0014171B + 0xAA35)[((Moby *)m)->mission + (g_current_level_index << 4)] != 0xFF) {
                 char *t;
                 jet_clear_persistent((unsigned char)m[0xB0]);
                 t = D_L14_001601AC_300468 + (*(int *)(d + 0x44) << 7);
@@ -506,8 +506,8 @@ void sam_update(char *m) {
         if (*(short *)(d + 4) != 4) break;
         unlock_planet(0xF);
         queue_planet_unlock_message(0xF);
-        *(int *)(D_0014171B + 0xAB75 + (((short)*(unsigned short *)(m + 0xB2) >> 5) * 4 + (g_current_level_index << 8))) |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
-        oltanis_moby_killed_bits[(short)*(unsigned short *)(m + 0xB2) >> 5] |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
+        *(int *)(D_0014171B + 0xAB75 + (((short)((Moby *)m)->save_id >> 5) * 4 + (g_current_level_index << 8))) |= 1 << (((Moby *)m)->save_id & 0x1F);
+        oltanis_moby_killed_bits[(short)((Moby *)m)->save_id >> 5] |= 1 << (((Moby *)m)->save_id & 0x1F);
         memcard_Save(0, -1);
     case 3:
         DeleteMoby(m);
@@ -518,14 +518,14 @@ void sam_update(char *m) {
         float sx = 0.02f;
         float sy = 0.3f;
         int doit = 0;
-        if (*(unsigned char *)(m + 0x53) == 0) {
+        if (((Moby *)m)->prev_seq == 0) {
             char *g = D_0013E633 + 0xE9D;
             char *a_;
             doit = 1;
             if (vec_distance_xy(m + 0x10, g) < 8.0f
-                && FastDiffRots(*(float *)(m + 0x48),
-                       fast_atan2(*(float *)((a_ = g - 0x80) + 0xD0) - *(float *)(m + 0x10),
-                                         *(float *)(a_ + 0xD4) - *(float *)(m + 0x14))) < 1.5707964f) {
+                && FastDiffRots(((Moby *)m)->rot.z,
+                       fast_atan2(*(float *)((a_ = g - 0x80) + 0xD0) - ((Moby *)m)->pos.x,
+                                         *(float *)(a_ + 0xD4) - ((Moby *)m)->pos.y)) < 1.5707964f) {
                 if (0.01f < FastVecLength(g + 0x80)) {
                     *(int *)(d + 0x160) = scale_ticks(0x78);
                 } else {
@@ -540,7 +540,7 @@ void sam_update(char *m) {
                 float z;
                 float x = random_float_between(180.0f, 300.0f);
                 *(int *)(d + 0x164) = func_001FA898_r(multiply_global_factor(x));
-                y = FastAddRots(*(float *)(m + 0x48), random_float_between(-90.0f, 90.0f) * 0.017453292f);
+                y = FastAddRots(((Moby *)m)->rot.z, random_float_between(-90.0f, 90.0f) * 0.017453292f);
                 z = random_float_between(0.0f, 30.0f) * 0.017453292f;
                 BuildSphericalOffset(d + 0x150, 6.0f, y, z);
                 FastVecAdd(d + 0x150, d + 0x150, m + 0x10);
@@ -561,7 +561,7 @@ void sam_update(char *m) {
             qcopy(w, m + 0x10);
             w[2] = w[2] + 1.0f;
             FastVecSub(u, b, w);
-            f20 = FastSubRots(fast_atan2(u[0], u[1]), *(float *)(m + 0x48));
+            f20 = FastSubRots(fast_atan2(u[0], u[1]), ((Moby *)m)->rot.z);
             f2 = -fast_atan2(vec_length_xy(u), u[2]);
             if (f20 > 1.5707964f) f20 = 1.5707964f;
             else if (f20 < -1.5707964f) f20 = -1.5707964f;
@@ -872,7 +872,7 @@ void update_unlock_sequence_controller(unsigned char *moby) {
     int *d = *(int **)(moby + 0x78);
     short id;
 
-    switch (moby[0x20]) {
+    switch (((Moby *)moby)->state) {
     case 0:
         if (d[3] < 0 || d[0] < 0 || d[4] < 0) {
             DeleteMoby(moby);
@@ -880,23 +880,23 @@ void update_unlock_sequence_controller(unsigned char *moby) {
         }
         id = *(short *)(moby + 0xB2);
         if (D_L14_001BBCC0.collected[id] != 0) {
-            moby[0x20] = 3;
+            ((Moby *)moby)->state = 3;
             return;
         }
-        if (level_moby_killed[g_current_level_index][id >> 5] >> (*(unsigned short *)(moby + 0xB2) & 0x1F) & 1) {
-            moby[0x20] = 3;
+        if (level_moby_killed[g_current_level_index][id >> 5] >> (((Moby *)moby)->save_id & 0x1F) & 1) {
+            ((Moby *)moby)->state = 3;
             return;
         }
-        moby[0x20] = 1;
+        ((Moby *)moby)->state = 1;
         func_L14_00306A88_06890((char *)moby);
         break;
     case 1:
         if (((unsigned char *)oltanis_mobys)[d[3] * 0x100 + 0x20] != 2) {
             return;
         }
-        level_moby_killed[g_current_level_index][*(short *)(moby + 0xB2) >> 5] |= 1 << (*(unsigned short *)(moby + 0xB2) & 0x1F);
-        oltanis_moby_killed_bits[*(short *)(moby + 0xB2) >> 5] |= 1 << (*(unsigned short *)(moby + 0xB2) & 0x1F);
-        moby[0x20] = 2;
+        level_moby_killed[g_current_level_index][*(short *)(moby + 0xB2) >> 5] |= 1 << (((Moby *)moby)->save_id & 0x1F);
+        oltanis_moby_killed_bits[*(short *)(moby + 0xB2) >> 5] |= 1 << (((Moby *)moby)->save_id & 0x1F);
+        ((Moby *)moby)->state = 2;
         d[1] = scale_ticks(0x78);
         ((float *)d)[2] = 1.0f / IntToFloat(d[1]);
         activate_descriptor(d[4]);
@@ -905,7 +905,7 @@ void update_unlock_sequence_controller(unsigned char *moby) {
         fast_dec_timer(&d[1]);
         func_L14_00306B08_06890((char *)moby);
         if (d[1] == 0) {
-            moby[0x20] = 3;
+            ((Moby *)moby)->state = 3;
         }
         break;
     }
@@ -1629,7 +1629,7 @@ void initialize_flying_car_path(char *moby) {
     *(int *)(d + 0x70) = 0;
     *(int *)(d + 0x74) = 0;
     qcopy(moby + 0x10, p + 0x10);
-    *(float *)(moby + 0x48) = fast_atan2(*(float *)(p + 0x20) - *(float *)(p + 0x10), *(float *)(p + 0x24) - *(float *)(p + 0x14));
+    ((Moby *)moby)->rot.z = fast_atan2(*(float *)(p + 0x20) - *(float *)(p + 0x10), *(float *)(p + 0x24) - *(float *)(p + 0x14));
     *(float *)(d + 0x90) = *(float *)(d + 0x94) = *(float *)(d + 0x98) = *(float *)(d + 0x80) = *(float *)(d + 0x84) = *(float *)(d + 0x88) = 0.0f;
 }
 typedef u32 u128_08AA8 __attribute__((mode(TI), aligned(16)));
@@ -1822,17 +1822,17 @@ void update_moby_list_clear_notification(unsigned char *moby) {
             }
         }
     }
-    switch (moby[0x20]) {
+    switch (((Moby *)moby)->state) {
     case 0:
-        moby[0x30] = 0xFF;
-        moby[0x20] = 1;
+        ((Moby *)moby)->update_dist = 0xFF;
+        ((Moby *)moby)->state = 1;
         break;
     case 1:
         if (oltanis_game_mode == 2) {
             v = oltanis_cutscene_state.state - 3;
             if (v < 3) {
                 i = 0;
-                if (v <= oltanis_game_mode) i = moby[0x20];
+                if (v <= oltanis_game_mode) i = ((Moby *)moby)->state;
                 cutscene_set_camera_target(oltanis_cutscene_state.v178[i]);
             }
         }

@@ -295,14 +295,14 @@ void update_linked_moby_scale_and_rotation(char *m) {
         return;
     }
     if (par != 0) {
-        if ((*(unsigned short *)(m + 0x34) & 1) != (*(unsigned short *)(par + 0x34) & 1)) {
-            *(unsigned short *)(m + 0x34) &= 0xFFFE;
-            *(unsigned short *)(m + 0x34) |= *(unsigned short *)(*(char **)(p + 8) + 0x34) & 1;
+        if ((((Moby *)m)->flags & 1) != (*(unsigned short *)(par + 0x34) & 1)) {
+            ((Moby *)m)->flags &= 0xFFFE;
+            ((Moby *)m)->flags |= *(unsigned short *)(*(char **)(p + 8) + 0x34) & 1;
         }
     }
     g = D_0013E633 + 0xE1D;
     if (*(int *)(g + 0x10B0) < scale_ticks(0x19)) {
-        *(unsigned short *)(m + 0x34) |= 0x41;
+        ((Moby *)m)->flags |= 0x41;
     }
     v = *(int *)(p + 4);
     d = -0xC0;
@@ -315,8 +315,8 @@ void update_linked_moby_scale_and_rotation(char *m) {
         *(int *)(p + 4) = v + 0xF40;
     }
     offset_moby_class_point_pairs(*(unsigned char **)(m + 0x24), 0, d);
-    *(float *)(m + 0x2C) = *(float *)(*(char **)(m + 0x24) + 0x24) * *(float *)(p + 0xC) * random_float_between(0.5f, 1.0f);
-    *(float *)(m + 0x44) = FastAddRots(*(float *)(m + 0x44), normalize_angle(*(float *)(p + 0xC)));
+    ((Moby *)m)->scale = *(float *)(*(char **)(m + 0x24) + 0x24) * *(float *)(p + 0xC) * random_float_between(0.5f, 1.0f);
+    ((Moby *)m)->rot.y = FastAddRots(((Moby *)m)->rot.y, normalize_angle(*(float *)(p + 0xC)));
     moby_anim_sphere_lerp(m);
 }
 extern short D_L00_001DC1C0[];

@@ -1378,9 +1378,9 @@ void update_moby_hit_stats_and_state(char *m) {
     ((unsigned char *)m)[0xA4] = 0xFF;
     g = D_0013E633 + 0xE1D;
     if (*(int *)(g + 0x2084) != 0x32) {
-        *(unsigned short *)(m + 0x34) &= 0xEFFF;
+        ((Moby *)m)->flags &= 0xEFFF;
     } else {
-        *(unsigned short *)(m + 0x34) |= 0x1000;
+        ((Moby *)m)->flags |= 0x1000;
     }
     if (info != 0) {
         char *st = (char *)D_0014171B + 0x34D;
@@ -1418,7 +1418,7 @@ void update_moby_hit_stats_and_state(char *m) {
         if (*(int *)(g2 + 0x2084) != 0x32) {
             m[0x20] = 4;
             *(int *)(m + 0x94) = 0;
-            *(unsigned short *)(m + 0x34) |= 1;
+            ((Moby *)m)->flags |= 1;
         }
         if (coll_sphere(1.0f, m + 0x10, 0, m)) {
             m[0x20] = 6;

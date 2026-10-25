@@ -92,7 +92,7 @@ void sentrybot_update(unsigned char *moby) {
     if (*(int *)&quartu_sentrybot_update_disabled != 0) return;
     data = *(unsigned char **)(moby + 0x78);
     if (quartu_game_mode == 2) {
-        *(unsigned short *)(moby + 0x34) |= 0x41;
+        ((Moby *)moby)->flags |= 0x41;
         return;
     }
     a = *(int *)(data + 0x2D0);
@@ -109,18 +109,18 @@ void sentrybot_update(unsigned char *moby) {
         }
     }
     update_sentrybot_hit_response_and_target_visibility(moby, flag);
-    if (flag != 0 && moby[0x20] != 0x15 && moby[0x20] != 0x17) {
+    if (flag != 0 && ((Moby *)moby)->state != 0x15 && ((Moby *)moby)->state != 0x17) {
         *(int *)(moby + 0x94) = 0;
-        *(unsigned short *)(moby + 0x34) = (*(unsigned short *)(moby + 0x34) | 0x41) & 0xEFFF;
+        ((Moby *)moby)->flags = (((Moby *)moby)->flags | 0x41) & 0xEFFF;
         return;
     }
-    *(unsigned short *)(moby + 0x34) = (*(unsigned short *)(moby + 0x34) & 0xFFBE) | 0x1000;
+    ((Moby *)moby)->flags = (((Moby *)moby)->flags & 0xFFBE) | 0x1000;
     *(int *)(moby + 0x94) = *(int *)(*(char **)(moby + 0x24) + 0x10);
     target = *(char **)(data + 0x110);
     Manipulator_SetScale(data + 0x1A0, 2.5f);
-    if (moby[0x31] != 0 && FastVecDist(moby + 0x10, quartu_camera_pos) < 28.0f) {
+    if (((Moby *)moby)->visible != 0 && FastVecDist(moby + 0x10, quartu_camera_pos) < 28.0f) {
         set_ground_height_band(moby);
-        moby[0x7F] = 0x16;
+        ((Moby *)moby)->shadow_range = 0x16;
     }
     if (((Hero98BB8 *)(D_0013E633 + 0xE1D))->f2084 == 0x65) *(short *)(data + 0x156) = 0;
     FastDecTimer(data + 0x154);
@@ -130,8 +130,8 @@ void sentrybot_update(unsigned char *moby) {
         char *o = (char *)((*(int *)(data + 0x128) << 8) + D_L15_00160058_m);
         if (*(int *)(*(char **)(o + 0x78) + 8) != 0) set_sentrybot_alarm_duration(o, 0xB4);
     }
-    if (moby[0xBC] == 0) data[0x15F] = 0;
-    switch (moby[0x20]) {
+    if (((Moby *)moby)->command == 0) data[0x15F] = 0;
+    switch (((Moby *)moby)->state) {
     case 0:
         if (*(int *)(data + 0x120) == -1 || *quartu_paths[*(int *)(data + 0x120)] == 0) {
             DeleteMoby(moby);
@@ -142,27 +142,27 @@ void sentrybot_update(unsigned char *moby) {
         data[0x28] = 2;
         data[0x29] = 0;
         qcopy(data + 0x160, moby + 0x10);
-        *(float *)(data + 0x16C) = *(float *)(moby + 0x48);
+        *(float *)(data + 0x16C) = ((Moby *)moby)->rot.z;
         if (*(int *)(data + 0x148) < 5) *(int *)(data + 0x148) = 5;
         *(int *)(data + 0x144) = 1;
-        moby[0x20] = 2;
-        *(unsigned short *)(moby + 0x34) |= 0x1000;
+        ((Moby *)moby)->state = 2;
+        ((Moby *)moby)->flags |= 0x1000;
         {
             int i;
             for (i = 0; i < 4; i++) {
                 if (((Sentry98BB8 *)data)->f180[i] != -1) {
-                    moby[0x20] = 1;
+                    ((Moby *)moby)->state = 1;
                     break;
                 }
             }
         }
-        moby[0xBC] = 0;
+        ((Moby *)moby)->command = 0;
         break;
     case 1: {
         int i;
         for (i = 0; i < 4; i++) {
             if (((unsigned char *)((((Sentry98BB8 *)data)->f180[i] << 8) + D_L15_00160058_m))[0x20] >= 2) {
-                moby[0x20] = 2;
+                ((Moby *)moby)->state = 2;
                 break;
             }
         }
@@ -171,16 +171,16 @@ void sentrybot_update(unsigned char *moby) {
     case 2:
     case 3:
         if (*(int *)(data + 0x114) != 2) {
-            moby[0xBC] = 1;
+            ((Moby *)moby)->command = 1;
             if (data[0x15F] != 0) {
-                moby[0x20] = 0x10;
-                if (moby[0x53] != 3) MobyBlendAnimation(moby, 3, 0, scale_ticks(10));
+                ((Moby *)moby)->state = 0x10;
+                if (((Moby *)moby)->prev_seq != 3) MobyBlendAnimation(moby, 3, 0, scale_ticks(10));
             } else {
                 data[0x15F] = 1;
-                moby[0x20] = 0xB;
+                ((Moby *)moby)->state = 0xB;
                 data[0x15C] = 0x10;
                 data[0x15D] = 3;
-                if (moby[0x53] != 1) MobyBlendAnimation(moby, 1, 0, scale_ticks(10));
+                if (((Moby *)moby)->prev_seq != 1) MobyBlendAnimation(moby, 1, 0, scale_ticks(10));
             }
         } else if (*(short *)(data + 0x156) != 0 && data[0x15B] == 0) {
             if (data[0x15A] != 0 || *(int *)(data + 0x124) == -1) {
@@ -190,16 +190,16 @@ void sentrybot_update(unsigned char *moby) {
                     *(int *)(data + 0x13C) = (*(int *)(data + 0x13C) + 1) % *quartu_paths[*(int *)(data + 0x124)];
                 }
                 *(int *)(data + 0x144) = 0;
-                moby[0xBC] = 1;
+                ((Moby *)moby)->command = 1;
                 if (data[0x15F] != 0) {
-                    moby[0x20] = 0xD;
-                    if (moby[0x53] != 0xE) MobyBlendAnimation(moby, 0xE, 0, scale_ticks(10));
+                    ((Moby *)moby)->state = 0xD;
+                    if (((Moby *)moby)->prev_seq != 0xE) MobyBlendAnimation(moby, 0xE, 0, scale_ticks(10));
                 } else {
                     data[0x15F] = 1;
-                    moby[0x20] = 0xB;
+                    ((Moby *)moby)->state = 0xB;
                     data[0x15C] = 0xD;
                     data[0x15D] = 0xE;
-                    if (moby[0x53] != 1) MobyBlendAnimation(moby, 1, 0, scale_ticks(10));
+                    if (((Moby *)moby)->prev_seq != 1) MobyBlendAnimation(moby, 1, 0, scale_ticks(10));
                 }
             }
         } else if (*(short *)(data + 0x19C) != 0) {
@@ -208,24 +208,24 @@ void sentrybot_update(unsigned char *moby) {
                    && (*(int *)(data + 0x190) = find_sentrybot_attention_target((char *)moby)) != 0
                    && (*(short *)(data + 0x194) != 0 || random_integer_below(scale_ticks(0x96)) == 0)) {
             begin_sentrybot_turn_toward_point((char *)moby, data, (float *)(*(char **)(data + 0x190) + 0x10), (void *)0xA, (void *)0xF);
-        } else if (moby[0x20] == 2) {
+        } else if (((Moby *)moby)->state == 2) {
             if (*(int *)(data + 0x124) != -1) {
                 if (*(int *)(data + 0x144) == 0 || can_sentrybot_advance_patrol(moby) != 0) {
                     *(int *)(data + 0x14C) = scale_ticks(*(int *)(data + 0x148));
-                    moby[0x20] = 3;
+                    ((Moby *)moby)->state = 3;
                 }
             } else if (*(short *)(data + 0x158) != 0 && ((Hero98BB8 *)(D_0013E633 + 0xE1D))->f2084 == 0x59) {
                 if (*(int *)(data + 0x150) != -1 || *(int *)(data + 0x12C) != -1
                     || (*(short *)(data + 0x154) == 0 && random_integer_below(0x78) == 0)) {
                     data[0x15D] = 0;
                     data[0x15C] = 2;
-                    moby[0x20] = 5;
-                    if (moby[0x53] != 2) MobyBlendAnimation(moby, 2, 0, scale_ticks(10));
+                    ((Moby *)moby)->state = 5;
+                    if (((Moby *)moby)->prev_seq != 2) MobyBlendAnimation(moby, 2, 0, scale_ticks(10));
                 }
             } else if (*(int *)(data + 0x124) == -1) {
                 begin_sentrybot_turn_toward_heading(moby, data, 2, 0, *(float *)(data + 0x16C));
             }
-        } else if (moby[0x20] == 3) {
+        } else if (((Moby *)moby)->state == 3) {
             if (fast_dec_timer(data + 0x14C) != 0) {
                 if (*(int *)(data + 0x144) != 0) {
                     *(int *)(data + 0x13C) = (*(int *)(data + 0x13C) + 1) % *quartu_paths[*(int *)(data + 0x124)];
@@ -237,26 +237,26 @@ void sentrybot_update(unsigned char *moby) {
         break;
     case 10:
         if (*(int *)(data + 0x114) != 2) {
-            moby[0xBC] = 1;
+            ((Moby *)moby)->command = 1;
             if (data[0x15F] != 0) {
-                moby[0x20] = 0x10;
-                if (moby[0x53] != 3) MobyBlendAnimation(moby, 3, 0, scale_ticks(10));
+                ((Moby *)moby)->state = 0x10;
+                if (((Moby *)moby)->prev_seq != 3) MobyBlendAnimation(moby, 3, 0, scale_ticks(10));
             } else {
                 data[0x15F] = 1;
-                moby[0x20] = 0xB;
+                ((Moby *)moby)->state = 0xB;
                 data[0x15C] = 0x10;
                 data[0x15D] = 3;
-                if (moby[0x53] != 1) MobyBlendAnimation(moby, 1, 0, scale_ticks(10));
+                if (((Moby *)moby)->prev_seq != 1) MobyBlendAnimation(moby, 1, 0, scale_ticks(10));
             }
-        } else if (moby[0x70] & 2) {
-            moby[0x20] = 2;
-            if (moby[0x53] != 0) MobyBlendAnimation(moby, 0, 0, scale_ticks(10));
+        } else if (((Moby *)moby)->anim_flags & 2) {
+            ((Moby *)moby)->state = 2;
+            if (((Moby *)moby)->prev_seq != 0) MobyBlendAnimation(moby, 0, 0, scale_ticks(10));
             *(short *)(data + 0x196) = scale_ticks(0x168);
             *(short *)(data + 0x194) = 0;
         }
         break;
     case 5:
-        if (moby[0x70] & 2) {
+        if (((Moby *)moby)->anim_flags & 2) {
             *(short *)(data + 0x154) = scale_ticks(0xF0);
             if (*(int *)(data + 0x150) != -1) {
                 mark_moby_killed_and_release_owned_voice(D_L15_00160058_m + (*(int *)(data + 0x150) << 8));
@@ -266,13 +266,13 @@ void sentrybot_update(unsigned char *moby) {
                 mark_moby_killed_and_release_owned_voice(D_L15_00160058_m + (*(int *)(data + 0x12C) << 8));
                 *(int *)(data + 0x12C) = -1;
             }
-            moby[0x20] = data[0x15C];
-            switch (moby[0x20]) {
+            ((Moby *)moby)->state = data[0x15C];
+            switch (((Moby *)moby)->state) {
             case 2:
-                if (moby[0x53] != 0) MobyBlendAnimation(moby, 0, 0, scale_ticks(10));
+                if (((Moby *)moby)->prev_seq != 0) MobyBlendAnimation(moby, 0, 0, scale_ticks(10));
                 break;
             case 4:
-                if (moby[0x53] != 0xD) MobyBlendAnimation(moby, 0xD, 0, scale_ticks(10));
+                if (((Moby *)moby)->prev_seq != 0xD) MobyBlendAnimation(moby, 0xD, 0, scale_ticks(10));
                 break;
             }
         }
@@ -281,20 +281,20 @@ void sentrybot_update(unsigned char *moby) {
     case 7:
     case 8:
         if (*(int *)(data + 0x114) != 2
-            && FastDiffRots(*(float *)(moby + 0x48), fast_atan2(*(float *)(data + 0xD0) - *(float *)(moby + 0x10), *(float *)(data + 0xD4) - *(float *)(moby + 0x14))) < 0.5235988f) {
-            moby[0xBC] = 1;
+            && FastDiffRots(((Moby *)moby)->rot.z, fast_atan2(*(float *)(data + 0xD0) - ((Moby *)moby)->pos.x, *(float *)(data + 0xD4) - ((Moby *)moby)->pos.y)) < 0.5235988f) {
+            ((Moby *)moby)->command = 1;
             if (data[0x15F] != 0) {
-                moby[0x20] = 0x10;
-                if (moby[0x53] != 3) MobyBlendAnimation(moby, 3, 0, scale_ticks(10));
+                ((Moby *)moby)->state = 0x10;
+                if (((Moby *)moby)->prev_seq != 3) MobyBlendAnimation(moby, 3, 0, scale_ticks(10));
             } else {
                 data[0x15F] = 1;
-                moby[0x20] = 0xB;
+                ((Moby *)moby)->state = 0xB;
                 data[0x15C] = 0x10;
                 data[0x15D] = 3;
-                if (moby[0x53] != 1) MobyBlendAnimation(moby, 1, 0, scale_ticks(10));
+                if (((Moby *)moby)->prev_seq != 1) MobyBlendAnimation(moby, 1, 0, scale_ticks(10));
             }
         } else {
-            int anim = moby[0x52];
+            int anim = ((Moby *)moby)->seq;
             float *tbl = 0;
             switch (anim) {
             case 12:
@@ -307,64 +307,64 @@ void sentrybot_update(unsigned char *moby) {
                 tbl = quartu_sentrybot_anim11_yaw_deg;
                 break;
             }
-            if (moby[0x70] & 2) {
-                int k = func_001FA898_r(animation_end(moby[0x22], anim));
+            if (((Moby *)moby)->anim_flags & 2) {
+                int k = func_001FA898_r(animation_end(((Moby *)moby)->class_slot, anim));
                 if (tbl != 0) {
-                    *(float *)(moby + 0x48) = FastAddRots(*(float *)(data + 0x170), tbl[k] * 0.017453292f);
+                    ((Moby *)moby)->rot.z = FastAddRots(*(float *)(data + 0x170), tbl[k] * 0.017453292f);
                 }
-                moby[0x20] = data[0x15C];
-                if (moby[0x53] != data[0x15D]) MobyBlendAnimation(moby, data[0x15D], 0, scale_ticks(10));
-            } else if (moby[0x52] == moby[0x53] && tbl != 0) {
+                ((Moby *)moby)->state = data[0x15C];
+                if (((Moby *)moby)->prev_seq != data[0x15D]) MobyBlendAnimation(moby, data[0x15D], 0, scale_ticks(10));
+            } else if (((Moby *)moby)->seq == ((Moby *)moby)->prev_seq && tbl != 0) {
                 float t = MobyGetFrameValue(moby);
                 int k = func_001FA898_r(t);
                 t -= IntToFloat(k);
-                *(float *)(moby + 0x48) = FastAddRots(*(float *)(data + 0x170), (tbl[k] + (tbl[k + 1] - tbl[k]) * t) * 0.017453292f);
+                ((Moby *)moby)->rot.z = FastAddRots(*(float *)(data + 0x170), (tbl[k] + (tbl[k + 1] - tbl[k]) * t) * 0.017453292f);
             }
         }
         break;
     case 4: {
         float sp = g_frame_time * 2.0f;
         if (move_sentrybot_toward_point((char *)moby, (float *)((char *)quartu_paths[*(int *)(data + 0x124)] + (*(int *)(data + 0x13C) * 0x10 + 0x10)), sp)) {
-            moby[0x20] = 2;
+            ((Moby *)moby)->state = 2;
             *(int *)(data + 0x144) = 1;
-            if (moby[0x53] != 0) MobyBlendAnimation(moby, 0, 0, scale_ticks(10));
+            if (((Moby *)moby)->prev_seq != 0) MobyBlendAnimation(moby, 0, 0, scale_ticks(10));
         } else if (*(int *)(data + 0x114) != 2) {
-            moby[0xBC] = 1;
+            ((Moby *)moby)->command = 1;
             if (data[0x15F] != 0) {
-                moby[0x20] = 0x10;
-                if (moby[0x53] != 3) MobyBlendAnimation(moby, 3, 0, scale_ticks(10));
+                ((Moby *)moby)->state = 0x10;
+                if (((Moby *)moby)->prev_seq != 3) MobyBlendAnimation(moby, 3, 0, scale_ticks(10));
             } else {
                 data[0x15F] = 1;
-                moby[0x20] = 0xB;
+                ((Moby *)moby)->state = 0xB;
                 data[0x15C] = 0x10;
                 data[0x15D] = 3;
-                if (moby[0x53] != 1) MobyBlendAnimation(moby, 1, 0, scale_ticks(10));
+                if (((Moby *)moby)->prev_seq != 1) MobyBlendAnimation(moby, 1, 0, scale_ticks(10));
             }
         } else if (*(short *)(data + 0x156) != 0 && data[0x15B] == 0) {
             if (data[0x15A] != 0) {
                 begin_sentrybot_turn_toward_point((char *)moby, data, (float *)(target + 0x10), (void *)0x10, (void *)3);
             } else {
                 *(int *)(data + 0x14C) = scale_ticks(0x3C);
-                moby[0xBC] = 1;
+                ((Moby *)moby)->command = 1;
                 if (data[0x15F] != 0) {
-                    moby[0x20] = 0xD;
-                    if (moby[0x53] != 0xE) MobyBlendAnimation(moby, 0xE, 0, scale_ticks(10));
+                    ((Moby *)moby)->state = 0xD;
+                    if (((Moby *)moby)->prev_seq != 0xE) MobyBlendAnimation(moby, 0xE, 0, scale_ticks(10));
                 } else {
                     data[0x15F] = 1;
-                    moby[0x20] = 0xB;
+                    ((Moby *)moby)->state = 0xB;
                     data[0x15C] = 0xD;
                     data[0x15D] = 0xE;
-                    if (moby[0x53] != 1) MobyBlendAnimation(moby, 1, 0, scale_ticks(10));
+                    if (((Moby *)moby)->prev_seq != 1) MobyBlendAnimation(moby, 1, 0, scale_ticks(10));
                 }
             }
         } else if (*(short *)(data + 0x19C) != 0) {
             begin_sentrybot_turn_toward_point((char *)moby, data, (float *)(*(char **)(data + 0x198) + 0x10), (void *)0xA, (void *)0xF);
         } else if (*(short *)(data + 0x158) != 0 && ((Hero98BB8 *)(D_0013E633 + 0xE1D))->f2084 == 0x59) {
             if (*(int *)(data + 0x150) != -1 || *(int *)(data + 0x12C) != -1 || *(short *)(data + 0x154) == 0) {
-                data[0x15C] = moby[0x20];
+                data[0x15C] = ((Moby *)moby)->state;
                 data[0x15D] = 0xD;
-                moby[0x20] = 5;
-                if (moby[0x53] != 2) MobyBlendAnimation(moby, 2, 0, scale_ticks(10));
+                ((Moby *)moby)->state = 5;
+                if (((Moby *)moby)->prev_seq != 2) MobyBlendAnimation(moby, 2, 0, scale_ticks(10));
             }
         } else if (FastDecTimer(data + 0x196) != 0
                    && (*(int *)(data + 0x190) = find_sentrybot_attention_target((char *)moby)) != 0
@@ -376,26 +376,26 @@ void sentrybot_update(unsigned char *moby) {
     case 13: {
         float sp = g_frame_time * 3.5f;
         if (move_sentrybot_toward_point((char *)moby, (float *)((char *)quartu_paths[*(int *)(data + 0x124)] + (*(int *)(data + 0x13C) * 0x10 + 0x10)), sp)) {
-            moby[0x20] = 0xC;
+            ((Moby *)moby)->state = 0xC;
             *(int *)(data + 0x144) = 1;
-            if (moby[0x53] != 0) MobyBlendAnimation(moby, 0, 0, scale_ticks(10));
+            if (((Moby *)moby)->prev_seq != 0) MobyBlendAnimation(moby, 0, 0, scale_ticks(10));
         } else if (*(int *)(data + 0x114) != 2 && data[0x15B] == 0) {
-            moby[0xBC] = 1;
+            ((Moby *)moby)->command = 1;
             if (data[0x15F] != 0) {
-                moby[0x20] = 0x10;
-                if (moby[0x53] != 3) MobyBlendAnimation(moby, 3, 0, scale_ticks(10));
+                ((Moby *)moby)->state = 0x10;
+                if (((Moby *)moby)->prev_seq != 3) MobyBlendAnimation(moby, 3, 0, scale_ticks(10));
             } else {
                 data[0x15F] = 1;
-                moby[0x20] = 0xB;
+                ((Moby *)moby)->state = 0xB;
                 data[0x15C] = 0x10;
                 data[0x15D] = 3;
-                if (moby[0x53] != 1) MobyBlendAnimation(moby, 1, 0, scale_ticks(10));
+                if (((Moby *)moby)->prev_seq != 1) MobyBlendAnimation(moby, 1, 0, scale_ticks(10));
             }
         } else if (*(short *)(data + 0x156) != 0) {
             *(int *)(data + 0x14C) = scale_ticks(0x3C);
         } else {
-            moby[0x20] = 9;
-            if (moby[0x53] != 0xD) MobyBlendAnimation(moby, 0xD, 0, scale_ticks(10));
+            ((Moby *)moby)->state = 9;
+            if (((Moby *)moby)->prev_seq != 0xD) MobyBlendAnimation(moby, 0xD, 0, scale_ticks(10));
             if (*(int *)(data + 0x128) != -1) {
                 char *o = (char *)((*(int *)(data + 0x128) << 8) + D_L15_00160058_m);
                 if (*(int *)(*(char **)(o + 0x78) + 8) != 0) set_sentrybot_alarm_duration(o, scale_ticks(0x1E));
@@ -408,7 +408,7 @@ void sentrybot_update(unsigned char *moby) {
         if (FastVecDist(moby + 0x10, home) > 0.2f) {
             move_sentrybot_toward_point((char *)moby, (float *)home, g_frame_time * 2.0f);
         } else if (*(int *)(data + 0x124) != -1) {
-            moby[0xBC] = 0;
+            ((Moby *)moby)->command = 0;
             *(int *)(data + 0x144) = 0;
             begin_sentrybot_turn_toward_point((char *)moby, data, (float *)((char *)quartu_paths[*(int *)(data + 0x124)] + (*(int *)(data + 0x13C) * 0x10 + 0x10)), (void *)2, (void *)0);
         } else {
@@ -421,19 +421,19 @@ void sentrybot_update(unsigned char *moby) {
         if (FastVecDist(moby + 0x10, home) > 0.2f) {
             move_sentrybot_toward_point((char *)moby, (float *)home, g_frame_time * 3.0f);
         } else if (*(short *)(data + 0x156) == 0) {
-            moby[0xBC] = 0;
+            ((Moby *)moby)->command = 0;
             *(int *)(data + 0x144) = 0;
             if (*(int *)(data + 0x124) != -1) {
                 begin_sentrybot_turn_toward_point((char *)moby, data, (float *)((char *)quartu_paths[*(int *)(data + 0x124)] + (*(int *)(data + 0x13C) * 0x10 + 0x10)), (void *)2, (void *)0);
             } else {
                 begin_sentrybot_turn_toward_heading(moby, data, 2, 0, *(float *)(data + 0x16C));
             }
-        } else if (FastDiffRots(*(float *)(moby + 0x48), fast_atan2(*(float *)(data + 0xD0) - *(float *)(moby + 0x10), *(float *)(data + 0xD4) - *(float *)(moby + 0x14))) > 0.7853982f
+        } else if (FastDiffRots(((Moby *)moby)->rot.z, fast_atan2(*(float *)(data + 0xD0) - ((Moby *)moby)->pos.x, *(float *)(data + 0xD4) - ((Moby *)moby)->pos.y)) > 0.7853982f
                    && data[0x15B] == 0) {
             begin_sentrybot_turn_toward_point((char *)moby, data, (float *)(data + 0xD0), (void *)0x10, (void *)3);
         } else {
-            moby[0x20] = 0xC;
-            if (moby[0x53] != 0) MobyBlendAnimation(moby, 0, 0, scale_ticks(10));
+            ((Moby *)moby)->state = 0xC;
+            if (((Moby *)moby)->prev_seq != 0) MobyBlendAnimation(moby, 0, 0, scale_ticks(10));
         }
         break;
     }
@@ -441,22 +441,22 @@ void sentrybot_update(unsigned char *moby) {
         if (*(int *)(data + 0x128) != -1) {
             prepare_sentrybot_alarm((unsigned char *)(D_L15_00160058_m + (*(int *)(data + 0x128) << 8)));
         }
-        if (moby[0x70] & 2) {
+        if (((Moby *)moby)->anim_flags & 2) {
             if (((Hero98BB8 *)(D_0013E633 + 0xE1D))->f2084 == 0x65) {
-                moby[0x20] = 0xC;
-                if (moby[0x53] != 0) MobyBlendAnimation(moby, 0, 0, scale_ticks(10));
+                ((Moby *)moby)->state = 0xC;
+                if (((Moby *)moby)->prev_seq != 0) MobyBlendAnimation(moby, 0, 0, scale_ticks(10));
             } else {
                 alert_visible_group_sentrybots(moby);
                 if (*(int *)(data + 0x128) != -1
                     && *(int *)(*(char **)((char *)((*(int *)(data + 0x128) << 8) + D_L15_00160058_m) + 0x78) + 8) == 0
                     && can_sentrybot_approach_linked_moby(moby) != 0) {
-                    moby[0x20] = 0xE;
-                    if (moby[0x53] != 0xE) MobyBlendAnimation(moby, 0xE, 0, scale_ticks(0x14));
+                    ((Moby *)moby)->state = 0xE;
+                    if (((Moby *)moby)->prev_seq != 0xE) MobyBlendAnimation(moby, 0xE, 0, scale_ticks(0x14));
                 } else if (data[0x15C] == 0x10) {
                     begin_sentrybot_turn_toward_point((char *)moby, data, (float *)(target + 0x10), (void *)0x10, (void *)3);
                 } else {
-                    if (data[0x15C] != 0xFF) moby[0x20] = data[0x15C];
-                    if (data[0x15D] != 0xFF && moby[0x53] != data[0x15D]) MobyBlendAnimation(moby, data[0x15D], 0, scale_ticks(10));
+                    if (data[0x15C] != 0xFF) ((Moby *)moby)->state = data[0x15C];
+                    if (data[0x15D] != 0xFF && ((Moby *)moby)->prev_seq != data[0x15D]) MobyBlendAnimation(moby, data[0x15D], 0, scale_ticks(10));
                 }
             }
         }
@@ -467,15 +467,15 @@ void sentrybot_update(unsigned char *moby) {
         vec_scale_to_length(va, va, FastVecLength(va) - 1.5f);
         FastVecAdd(va, va, moby + 0x10);
         if (move_sentrybot_toward_point((char *)moby, va, g_frame_time * 4.0f)) {
-            moby[0x20] = 0xF;
-            if (moby[0x53] != 9) MobyBlendAnimation(moby, 9, 0, scale_ticks(10));
+            ((Moby *)moby)->state = 0xF;
+            if (((Moby *)moby)->prev_seq != 9) MobyBlendAnimation(moby, 9, 0, scale_ticks(10));
         }
         break;
     case 15:
-        if (moby[0x52] == moby[0x53] && MobyGetFrameValue(moby) >= 12.0f) {
+        if (((Moby *)moby)->seq == ((Moby *)moby)->prev_seq && MobyGetFrameValue(moby) >= 12.0f) {
             set_sentrybot_alarm_duration((char *)(D_L15_00160058_m + (*(int *)(data + 0x128) << 8)), 0xB4);
         }
-        if (moby[0x70] & 2) {
+        if (((Moby *)moby)->anim_flags & 2) {
             set_sentrybot_alarm_duration((char *)(D_L15_00160058_m + (*(int *)(data + 0x128) << 8)), 0xB4);
             begin_sentrybot_turn_toward_point((char *)moby, data, (float *)(target + 0x10), (void *)0x14, (void *)0xE);
         }
@@ -484,14 +484,14 @@ void sentrybot_update(unsigned char *moby) {
         *(short *)(data + 0x19C) = 0;
         *(short *)(data + 0x194) = 0;
         alert_visible_group_sentrybots(moby);
-        if (moby[0x70] & 2) {
+        if (((Moby *)moby)->anim_flags & 2) {
             if (((Hero98BB8 *)(D_0013E633 + 0xE1D))->f2084 == 0x65) {
-                moby[0x20] = 0xC;
-                if (moby[0x53] != 0) MobyBlendAnimation(moby, 0, 0, scale_ticks(10));
+                ((Moby *)moby)->state = 0xC;
+                if (((Moby *)moby)->prev_seq != 0) MobyBlendAnimation(moby, 0, 0, scale_ticks(10));
             } else {
-                moby[0x20] = 0x13;
+                ((Moby *)moby)->state = 0x13;
                 data[0x19E] = 0;
-                if (moby[0x53] != 6) MobyBlendAnimation(moby, 6, 0, scale_ticks(10));
+                if (((Moby *)moby)->prev_seq != 6) MobyBlendAnimation(moby, 6, 0, scale_ticks(10));
             }
         }
         break;
@@ -499,14 +499,14 @@ void sentrybot_update(unsigned char *moby) {
         *(short *)(data + 0x19C) = 0;
         *(short *)(data + 0x194) = 0;
         alert_visible_group_sentrybots(moby);
-        if (moby[0x70] & 2) {
+        if (((Moby *)moby)->anim_flags & 2) {
             if (((Hero98BB8 *)(D_0013E633 + 0xE1D))->f2084 == 0x65) {
-                moby[0x20] = 0xC;
-                if (moby[0x53] != 0) MobyBlendAnimation(moby, 0, 0, scale_ticks(10));
+                ((Moby *)moby)->state = 0xC;
+                if (((Moby *)moby)->prev_seq != 0) MobyBlendAnimation(moby, 0, 0, scale_ticks(10));
             } else {
-                moby[0x20] = 0x11;
+                ((Moby *)moby)->state = 0x11;
                 data[0x19E] = 0;
-                if (moby[0x53] != 4) MobyBlendAnimation(moby, 4, 0, scale_ticks(10));
+                if (((Moby *)moby)->prev_seq != 4) MobyBlendAnimation(moby, 4, 0, scale_ticks(10));
             }
         }
         break;
@@ -532,23 +532,23 @@ void sentrybot_update(unsigned char *moby) {
                 data[0x19E] = 1;
             }
         }
-        if (moby[0x70] & 2) {
+        if (((Moby *)moby)->anim_flags & 2) {
             if (((Hero98BB8 *)(D_0013E633 + 0xE1D))->f2084 == 0x65) {
-                moby[0x20] = 0xC;
-                if (moby[0x53] != 0) MobyBlendAnimation(moby, 0, 0, scale_ticks(10));
+                ((Moby *)moby)->state = 0xC;
+                if (((Moby *)moby)->prev_seq != 0) MobyBlendAnimation(moby, 0, 0, scale_ticks(10));
             } else if (*(int *)(data + 0x128) != -1
                        && *(int *)(*(char **)((char *)((*(int *)(data + 0x128) << 8) + D_L15_00160058_m) + 0x78) + 8) == 0
                        && can_sentrybot_approach_linked_moby(moby) != 0) {
-                moby[0x20] = 0xE;
-                if (moby[0x53] != 0xE) MobyBlendAnimation(moby, 0xE, 0, scale_ticks(0x14));
-            } else if (FastDiffRots(*(float *)(moby + 0x48), fast_atan2(*(float *)(data + 0xD0) - *(float *)(moby + 0x10), *(float *)(data + 0xD4) - *(float *)(moby + 0x14))) > 0.7853982f) {
+                ((Moby *)moby)->state = 0xE;
+                if (((Moby *)moby)->prev_seq != 0xE) MobyBlendAnimation(moby, 0xE, 0, scale_ticks(0x14));
+            } else if (FastDiffRots(((Moby *)moby)->rot.z, fast_atan2(*(float *)(data + 0xD0) - ((Moby *)moby)->pos.x, *(float *)(data + 0xD4) - ((Moby *)moby)->pos.y)) > 0.7853982f) {
                 begin_sentrybot_turn_toward_point((char *)moby, data, (float *)(data + 0xD0), (void *)0x10, (void *)3);
             } else if (*(int *)(data + 0x114) == 2) {
-                moby[0x20] = 0xC;
-                if (moby[0x53] != 0) MobyBlendAnimation(moby, 0, 0, scale_ticks(10));
+                ((Moby *)moby)->state = 0xC;
+                if (((Moby *)moby)->prev_seq != 0) MobyBlendAnimation(moby, 0, 0, scale_ticks(10));
             } else {
-                moby[0x20] = 0x10;
-                if (moby[0x53] != 3) MobyBlendAnimation(moby, 3, 0, scale_ticks(10));
+                ((Moby *)moby)->state = 0x10;
+                if (((Moby *)moby)->prev_seq != 3) MobyBlendAnimation(moby, 3, 0, scale_ticks(10));
             }
             data[0x19E] = 0;
         }
@@ -575,31 +575,31 @@ void sentrybot_update(unsigned char *moby) {
                 data[0x19E] = 1;
             }
         }
-        if (moby[0x70] & 2) {
+        if (((Moby *)moby)->anim_flags & 2) {
             if (((Hero98BB8 *)(D_0013E633 + 0xE1D))->f2084 == 0x65) {
-                moby[0x20] = 0xC;
-                if (moby[0x53] != 0) MobyBlendAnimation(moby, 0, 0, scale_ticks(10));
+                ((Moby *)moby)->state = 0xC;
+                if (((Moby *)moby)->prev_seq != 0) MobyBlendAnimation(moby, 0, 0, scale_ticks(10));
             } else if (*(int *)(data + 0x128) != -1
                        && *(int *)(*(char **)((char *)((*(int *)(data + 0x128) << 8) + D_L15_00160058_m) + 0x78) + 8) == 0
                        && can_sentrybot_approach_linked_moby(moby) != 0) {
-                moby[0x20] = 0xE;
-                if (moby[0x53] != 0xE) MobyBlendAnimation(moby, 0xE, 0, scale_ticks(0x14));
-            } else if (FastDiffRots(*(float *)(moby + 0x48), fast_atan2(*(float *)(data + 0xD0) - *(float *)(moby + 0x10), *(float *)(data + 0xD4) - *(float *)(moby + 0x14))) > 0.7853982f) {
+                ((Moby *)moby)->state = 0xE;
+                if (((Moby *)moby)->prev_seq != 0xE) MobyBlendAnimation(moby, 0xE, 0, scale_ticks(0x14));
+            } else if (FastDiffRots(((Moby *)moby)->rot.z, fast_atan2(*(float *)(data + 0xD0) - ((Moby *)moby)->pos.x, *(float *)(data + 0xD4) - ((Moby *)moby)->pos.y)) > 0.7853982f) {
                 begin_sentrybot_turn_toward_point((char *)moby, data, (float *)(data + 0xD0), (void *)0x12, (void *)5);
             } else if (*(int *)(data + 0x114) == 2) {
-                moby[0x20] = 0xC;
-                if (moby[0x53] != 0) MobyBlendAnimation(moby, 0, 0, scale_ticks(10));
+                ((Moby *)moby)->state = 0xC;
+                if (((Moby *)moby)->prev_seq != 0) MobyBlendAnimation(moby, 0, 0, scale_ticks(10));
             } else {
-                moby[0x20] = 0x12;
-                if (moby[0x53] != 5) MobyBlendAnimation(moby, 5, 0, scale_ticks(10));
+                ((Moby *)moby)->state = 0x12;
+                if (((Moby *)moby)->prev_seq != 5) MobyBlendAnimation(moby, 5, 0, scale_ticks(10));
             }
             data[0x19E] = 0;
         }
         break;
     case 12:
         if (((Hero98BB8 *)(D_0013E633 + 0xE1D))->f2084 == 0x65) {
-            moby[0x20] = 9;
-            if (moby[0x53] != 0xD) MobyBlendAnimation(moby, 0xD, 0, scale_ticks(10));
+            ((Moby *)moby)->state = 9;
+            if (((Moby *)moby)->prev_seq != 0xD) MobyBlendAnimation(moby, 0xD, 0, scale_ticks(10));
             if (*(int *)(data + 0x128) != -1) {
                 char *o = (char *)((*(int *)(data + 0x128) << 8) + D_L15_00160058_m);
                 if (*(int *)(*(char **)(o + 0x78) + 8) != 0) set_sentrybot_alarm_duration(o, -1);
@@ -609,8 +609,8 @@ void sentrybot_update(unsigned char *moby) {
             if (mode != 2 && data[0x15B] == 0) {
                 begin_sentrybot_turn_toward_point((char *)moby, data, (float *)(data + 0xD0), (void *)0x10, (void *)3);
             } else if (*(short *)(data + 0x156) == 0) {
-                moby[0x20] = 9;
-                if (moby[0x53] != 0xD) MobyBlendAnimation(moby, 0xD, 0, scale_ticks(10));
+                ((Moby *)moby)->state = 9;
+                if (((Moby *)moby)->prev_seq != 0xD) MobyBlendAnimation(moby, 0xD, 0, scale_ticks(10));
                 if (*(int *)(data + 0x128) != -1) {
                     char *o = (char *)((*(int *)(data + 0x128) << 8) + D_L15_00160058_m);
                     if (*(int *)(*(char **)(o + 0x78) + 8) != 0) set_sentrybot_alarm_duration(o, scale_ticks(0x1E));
@@ -627,16 +627,16 @@ void sentrybot_update(unsigned char *moby) {
                 }
                 *(int *)(data + 0x144) = 0;
                 *(int *)(data + 0x14C) = scale_ticks(0x3C);
-                moby[0xBC] = 1;
+                ((Moby *)moby)->command = 1;
                 if (data[0x15F] != 0) {
-                    moby[0x20] = 0xD;
-                    if (moby[0x53] != 0xE) MobyBlendAnimation(moby, 0xE, 0, scale_ticks(10));
+                    ((Moby *)moby)->state = 0xD;
+                    if (((Moby *)moby)->prev_seq != 0xE) MobyBlendAnimation(moby, 0xE, 0, scale_ticks(10));
                 } else {
                     data[0x15F] = 1;
-                    moby[0x20] = 0xB;
+                    ((Moby *)moby)->state = 0xB;
                     data[0x15C] = 0xD;
                     data[0x15D] = 0xE;
-                    if (moby[0x53] != 1) MobyBlendAnimation(moby, 1, 0, scale_ticks(10));
+                    if (((Moby *)moby)->prev_seq != 1) MobyBlendAnimation(moby, 1, 0, scale_ticks(10));
                 }
             }
         }
@@ -645,21 +645,21 @@ void sentrybot_update(unsigned char *moby) {
         int r = mine_fall(moby, data + 0x70);
         if (r & 0x40) {
             ProbeGroundHeight(moby + 0x10, 0, 0.5f);
-            if (CollType() == -1 && *(float *)(data + 0x168) - 5.0f < *(float *)(moby + 0x18)) {
+            if (CollType() == -1 && *(float *)(data + 0x168) - 5.0f < ((Moby *)moby)->pos.z) {
                 if (((Hero98BB8 *)(D_0013E633 + 0xE1D))->f2084 == 0x65) {
-                    moby[0x20] = 0xC;
-                    if (moby[0x53] != 0) MobyBlendAnimation(moby, 0, 0, scale_ticks(10));
+                    ((Moby *)moby)->state = 0xC;
+                    if (((Moby *)moby)->prev_seq != 0) MobyBlendAnimation(moby, 0, 0, scale_ticks(10));
                 } else {
-                    moby[0xBC] = 1;
+                    ((Moby *)moby)->command = 1;
                     if (data[0x15F] != 0) {
-                        moby[0x20] = 0x10;
-                        if (moby[0x53] != 3) MobyBlendAnimation(moby, 3, 0, scale_ticks(10));
+                        ((Moby *)moby)->state = 0x10;
+                        if (((Moby *)moby)->prev_seq != 3) MobyBlendAnimation(moby, 3, 0, scale_ticks(10));
                     } else {
                         data[0x15F] = 1;
-                        moby[0x20] = 0xB;
+                        ((Moby *)moby)->state = 0xB;
                         data[0x15C] = 0x10;
                         data[0x15D] = 3;
-                        if (moby[0x53] != 1) MobyBlendAnimation(moby, 1, 0, scale_ticks(10));
+                        if (((Moby *)moby)->prev_seq != 1) MobyBlendAnimation(moby, 1, 0, scale_ticks(10));
                     }
                 }
                 return;
@@ -737,7 +737,7 @@ void sentrybot_update(unsigned char *moby) {
             color = (alpha << 24) | (cb << 16) | (cg << 8) | cr;
         }
     }
-    *(int *)(moby + 0x90) = FastTweenColor(*(int *)(moby + 0x90), color, 0.1f);
+    ((Moby *)moby)->glow_color = FastTweenColor(((Moby *)moby)->glow_color, color, 0.1f);
     {
         unsigned char *p = data + 0x2A0;
         int i;
@@ -814,16 +814,16 @@ int move_sentrybot_toward_point(char *moby, float *point, float arg) {
     float vec[4];
     float a;
     float ang;
-    a = fast_atan2(point[0] - *(float *)(moby + 0x10), point[1] - *(float *)(moby + 0x14));
+    a = fast_atan2(point[0] - ((Moby *)moby)->pos.x, point[1] - ((Moby *)moby)->pos.y);
     SteerAngleWithVelocity(fp, (float *)(d + 0x138), a, g_frame_time_sq * 12.566371f, g_frame_time_sq * 12.566371f, g_frame_time * 6.981317f);
-    ang = fast_atan2(point[0] - *(float *)(moby + 0x10), point[1] - *(float *)(moby + 0x14));
-    if (FastDiffRots(*(float *)(moby + 0x48), ang) < 0.7853982f) {
+    ang = fast_atan2(point[0] - ((Moby *)moby)->pos.x, point[1] - ((Moby *)moby)->pos.y);
+    if (FastDiffRots(((Moby *)moby)->rot.z, ang) < 0.7853982f) {
         ApproachValue(d + 0x134, arg, g_frame_time_sq * 9.0f);
     } else {
         ApproachValue(d + 0x134, 0.0f, g_frame_time_sq * 9.0f);
     }
-    vec[0] = FastCos(*(float *)(moby + 0x48)) * *(float *)(d + 0x134);
-    vec[1] = FastSin(*(float *)(moby + 0x48)) * *(float *)(d + 0x134);
+    vec[0] = FastCos(((Moby *)moby)->rot.z) * *(float *)(d + 0x134);
+    vec[1] = FastSin(((Moby *)moby)->rot.z) * *(float *)(d + 0x134);
     vec[2] = -(g_frame_time * 0.5f);
     move_4318((int)moby, (int)vec, 0.5f, 0.5f, 0.0f, 0);
     return vec_distance_xy((float *)(moby + 0x10), point) < 0.2f;
@@ -877,8 +877,8 @@ int find_sentrybot_attention_target(char *m) {
         int id = *(unsigned short *)p & 0x7FFF;
         char *o = (char *)((id << 8) + D_L15_00160058_m);
         if (*(short *)(o + 0xA6) == 0x27B && *(unsigned char *)(o + 0x20) >= 6 && *(unsigned char *)(o + 0x20) < 0x10) {
-            float f = FastDiffRots(*(float *)(m + 0x48),
-                fast_atan2(*(float *)(o + 0x10) - *(float *)(m + 0x10), *(float *)(o + 0x14) - *(float *)(m + 0x14)));
+            float f = FastDiffRots(((Moby *)m)->rot.z,
+                fast_atan2(*(float *)(o + 0x10) - ((Moby *)m)->pos.x, *(float *)(o + 0x14) - ((Moby *)m)->pos.y));
             unsigned char st = ((char *)((id << 8) + D_L15_00160058_m))[0x20];
             if (st == 7 || st == 0xF) *(short *)(d + 0x194) = 1;
             if (*(short *)(d + 0x194) != 0 || f < 1.2217305f) {
@@ -1283,7 +1283,7 @@ extern void func_L00_00264690(void *, int, float, float);
 
 /* Applies the same effect to three consecutive 16-byte slots of a moby's data, tagged with its colour word. */
 void draw_sentrybot_effect_quads(char *m) {
-    int v = (*(int *)(m + 0x90) & 0xFFFFFF) | 0x30000000;
+    int v = (((Moby *)m)->glow_color & 0xFFFFFF) | 0x30000000;
     char *p = *(char **)(m + 0x78) + 0x2A0;
     int i;
     for (i = 2; i >= 0; i--) {
@@ -1313,17 +1313,17 @@ void ProjectileUpdate(unsigned char *m) {
             *(int *)(d + 0x10) = 1;
         }
     }
-    if (m[0x20] != 0)
+    if (((Moby *)m)->state != 0)
         return;
     s = 1.0f;
-    *(float *)(m + 0x40) = FastAddRots(*(float *)(m + 0x40), g_frame_time * 6.2831855f);
+    ((Moby *)m)->rot.x = FastAddRots(((Moby *)m)->rot.x, g_frame_time * 6.2831855f);
     FastVecAdd(next, m + 0x10, d);
     FastVecScale(back, d, -2.0f);
     FastVecAdd(back, back, m + 0x10);
     if (hero_vehicle_mode[0] == 2 && random_integer_below(5) != 0)
         s = 0.0f;
     InitDirectionalHitQuery(col, m, 0x10003, s, d);
-    *(short *)(col + 0x1A) = *(short *)(m + 0xA6);
+    *(short *)(col + 0x1A) = ((Moby *)m)->oclass;
     if (coll_line(back, next, 0x10, m, col) != 0 || fast_dec_timer(d + 0x14) != 0) {
         if (quartu_coll_hit_moby[0] != *(int *)(d + 0x18)) {
             Sound_PlayClassSound(8, 0, m, 0x27E);
@@ -2327,32 +2327,32 @@ void update_spark_emitter_moby(unsigned char *moby) {
     float B[4];
     float C[4];
 
-    switch (moby[0x20]) {
+    switch (((Moby *)moby)->state) {
     case 0: {
         unsigned short id;
-        *(unsigned short *)(moby + 0x34) |= 1;
-        moby[0x31] = 0;
-        id = *(unsigned short *)(moby + 0xB2);
+        ((Moby *)moby)->flags |= 1;
+        ((Moby *)moby)->visible = 0;
+        id = ((Moby *)moby)->save_id;
         if (D_L15_001BBB40_2A3DD0.killed[(short)id] == 0 && save_flag_clear_2A3DD0(id)) {
-            moby[0x20] = 1;
+            ((Moby *)moby)->state = 1;
         } else {
-            moby[0xBC] = 0xFF;
+            ((Moby *)moby)->command = 0xFF;
             *(int *)(moby + 0x94) = 0;
-            moby[0x20] = 3;
+            ((Moby *)moby)->state = 3;
         }
         break;
     }
     case 1: {
         int idx = *(int *)(d + 0x10);
         if ((idx != -1 && D_L15_00160058_2A3DD0[idx].state == 2)
-            || D_0014C150_2A3DD0[D_0015EE84_2A3DD0][moby[0xB0]] == 0xFF) {
+            || D_0014C150_2A3DD0[D_0015EE84_2A3DD0][((Moby *)moby)->mission] == 0xFF) {
             func_L15_002A47B8_2A3DD0(moby);
         } else {
-            Voice_2A3DD0 *e = (Voice_2A3DD0 *)(D_0013E650_2A3DD0 + moby[0xBC] * 0x70);
+            Voice_2A3DD0 *e = (Voice_2A3DD0 *)(D_0013E650_2A3DD0 + ((Moby *)moby)->command * 0x70);
             float lo, hi, z, one;
             int i;
             if (e->owner != (char *)moby || e->active == 0) {
-                moby[0xBC] = func_0022ED80_2A3DD0(0, 4, moby);
+                ((Moby *)moby)->command = func_0022ED80_2A3DD0(0, 4, moby);
             }
             func_001F9BF0_2A3DD0(V, D_0013E633_2A3DD0 + 0xEED, moby + 0x10);
             func_001FA4A0_2A3DD0(W, moby + 0xC0);
@@ -2407,7 +2407,7 @@ void update_spark_emitter_moby(unsigned char *moby) {
     }
     case 2:
         if ((*(int *)(d + 0x14))++ >= 0x3D) {
-            moby[0x20] = 3;
+            ((Moby *)moby)->state = 3;
         } else {
             qzero(d);
             func_001F49B0_2A3DD0(func_L15_002A4318_2A3DD0, moby);
@@ -2620,19 +2620,19 @@ void spiderbot_update(unsigned char *moby) {
     float D[4];
     float M[16];
     float T[4];
-    switch (moby[0x20]) {
+    switch (((Moby *)moby)->state) {
     case 0:
         *(u128_2A8090 *)d = *(u128_2A8090 *)old;
-        *(float *)(moby + 0x58) = *(float *)(d + 0x30) / 1.5f;
+        ((Moby *)moby)->anim_speed = *(float *)(d + 0x30) / 1.5f;
         *(float *)(d + 0x28) = *(float *)(d + 0x28) * 0.017453292f;
         if (*(int *)(d + 0x20) == 0) {
-            moby[0x20] = 1;
-            *(float *)(d + 0x2C) = *(float *)(moby + 0x48);
+            ((Moby *)moby)->state = 1;
+            *(float *)(d + 0x2C) = ((Moby *)moby)->rot.z;
         } else if (*(int *)(d + 0x20) >= 3) {
-            moby[0x20] = 2;
-            *(float *)(d + 0x2C) = *(float *)(moby + 0x48);
+            ((Moby *)moby)->state = 2;
+            *(float *)(d + 0x2C) = ((Moby *)moby)->rot.z;
         } else {
-            moby[0x20] = 3;
+            ((Moby *)moby)->state = 3;
         }
         break;
     case 1: {
@@ -2642,7 +2642,7 @@ void spiderbot_update(unsigned char *moby) {
         *(u128_2A8090 *)B = *(u128_2A8090 *)C;
         *(float *)(d + 0x28) = FastAddRots(*(float *)(d + 0x28),
             360.0f / (*(float *)(d + 0x24) * 6.2831855f / *(float *)(d + 0x30)) * 0.017453292f * g_frame_time);
-        *(float *)(moby + 0x58) = *(float *)(d + 0x30) / 1.5f;
+        ((Moby *)moby)->anim_speed = *(float *)(d + 0x30) / 1.5f;
         C[0] = FastCos(*(float *)(d + 0x2C));
         C[1] = FastSin(*(float *)(d + 0x2C));
         C[2] = 0.0f;
@@ -2654,7 +2654,7 @@ void spiderbot_update(unsigned char *moby) {
         euler_to_matrix(M, D);
         matrix_copy_rows(moby + 0xC0, M);
         normalize_vector_triplet(moby + 0xC0);
-        *(unsigned short *)(moby + 0x34) |= 0x100;
+        ((Moby *)moby)->flags |= 0x100;
         break;
     }
     case 2: {
@@ -2670,7 +2670,7 @@ void spiderbot_update(unsigned char *moby) {
             360.0f / (*(float *)(d + 0x24) * 6.2831855f / *(float *)(d + 0x30)) * 0.017453292f * g_frame_time);
         b2 = FastAddRots(FastNormalizeAngle(FastCos(*(float *)(d + 0x28)) * 1.5707964f),
                            *(int *)(d + 0x20) == 4 ? 1.5707964f : 0.0f);
-        *(float *)(moby + 0x58) = *(float *)(d + 0x24) * FastSubRots(b2, b1) / (g_frame_time * 1.5f);
+        ((Moby *)moby)->anim_speed = *(float *)(d + 0x24) * FastSubRots(b2, b1) / (g_frame_time * 1.5f);
         C[0] = FastCos(*(float *)(d + 0x2C));
         C[1] = FastSin(*(float *)(d + 0x2C));
         C[2] = 0.0f;
@@ -2682,7 +2682,7 @@ void spiderbot_update(unsigned char *moby) {
         euler_to_matrix(M, D);
         matrix_copy_rows(moby + 0xC0, M);
         normalize_vector_triplet(moby + 0xC0);
-        *(unsigned short *)(moby + 0x34) |= 0x100;
+        ((Moby *)moby)->flags |= 0x100;
         break;
     }
     case 3: {
@@ -2692,8 +2692,8 @@ void spiderbot_update(unsigned char *moby) {
         *(float *)(d + 0x28) = FastAddRots(*(float *)(d + 0x28),
             360.0f / (*(float *)(d + 0x24) * 6.2831855f / *(float *)(d + 0x30)) * 0.017453292f * g_frame_time);
         x = FastCos(*(float *)(d + 0x28)) * *(float *)(d + 0x24);
-        *(float *)(moby + 0x58) = (x - w) / (g_frame_time * 1.5f);
-        BuildSphericalOffset(A, x, *(int *)(d + 0x20) != 2 ? *(float *)(moby + 0x48) : 0.0f,
+        ((Moby *)moby)->anim_speed = (x - w) / (g_frame_time * 1.5f);
+        BuildSphericalOffset(A, x, *(int *)(d + 0x20) != 2 ? ((Moby *)moby)->rot.z : 0.0f,
                       *(int *)(d + 0x20) == 2 ? 1.5707964f : 0.0f);
         FastVecAdd(B, d, A);
         *(u128_2A8090 *)(moby + 0x10) = *(u128_2A8090 *)B;
@@ -3142,13 +3142,13 @@ void set_sentrybot_alarm_duration(char *m, int a) {
 // Moby update: state 1 starts an animation, state 3 allocates a value once.
 void prepare_sentrybot_alarm(unsigned char *moby) {
     char *data = *(char **)(moby + 0x78);
-    if (moby[0x20] == 1) {
-        moby[0x20] = 2;
-        if (moby[0x53] != 1) {
+    if (((Moby *)moby)->state == 1) {
+        ((Moby *)moby)->state = 2;
+        if (((Moby *)moby)->prev_seq != 1) {
             MobyBlendAnimation(moby, 1, 0, scale_ticks(10));
         }
     }
-    if (moby[0x20] == 3) {
+    if (((Moby *)moby)->state == 3) {
         if (*(int *)(data + 8) == 0) {
             *(int *)(data + 0x18) = scale_ticks(0x78);
         }

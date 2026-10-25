@@ -714,8 +714,8 @@ int move_hoven_anklebiter_toward_heading(char *moby, float target) {
     *(u128 *)pos = *(u128 *)(moby + 0x10);
     ease_hoven_anklebiter_height_to_ground(moby);
     MobySpringTurn(moby, (float *)(d + 0x2A0), target, k, 0.3f, 0.2f);
-    vel[0] = FastCos(*(float *)(moby + 0x48)) * 2;
-    vel[1] = FastSin(*(float *)(moby + 0x48)) * 2;
+    vel[0] = FastCos(((Moby *)moby)->rot.z) * 2;
+    vel[1] = FastSin(((Moby *)moby)->rot.z) * 2;
     vel[2] = 0;
     r = move_w(moby, d + 0x180, vel, (char *)out, 1.0f);
     if (*(int *)(d + 0x2D0) != -1) {
@@ -1030,8 +1030,8 @@ void steer_platform_toward_target(char *m, float *ang, void *target, int unused,
             speed -= *(float *)(d + 0xD4) * g_frame_time_sq;
     }
     vec_scale_to_length(d + 0x40, v, speed);
-    ApproachValue(m + 0x40, ang[0], FastDiffRots(ang[0], *(float *)(m + 0x40)) / (*(float *)&platform_tilt_approach_divisor));
-    ApproachValue(m + 0x44, ang[1], FastDiffRots(ang[1], *(float *)(m + 0x44)) / (*(float *)&platform_tilt_approach_divisor));
+    ApproachValue(m + 0x40, ang[0], FastDiffRots(ang[0], ((Moby *)m)->rot.x) / (*(float *)&platform_tilt_approach_divisor));
+    ApproachValue(m + 0x44, ang[1], FastDiffRots(ang[1], ((Moby *)m)->rot.y) / (*(float *)&platform_tilt_approach_divisor));
     SpringAngle((float *)(m + 0x48), ang[2], (float *)(d + 0xF8), 0, g_frame_scale_sq * 0.005f, g_frame_scale_sq * 0.3f,
            g_frame_time * lim);
     FastVecAdd(m + 0x10, m + 0x10, d + 0x40);
@@ -1514,10 +1514,10 @@ extern void func_001F49B0(void *, void *);
 
 void register_level_12_effects_draw_callback(unsigned char *moby) {
     char *data = *(char **)(moby + 0x78);
-    switch (moby[0x20]) {
+    switch (((Moby *)moby)->state) {
     case 0:
-        moby[0x20] = 1;
-        moby[0x30] = 0xFF;
+        ((Moby *)moby)->state = 1;
+        ((Moby *)moby)->update_dist = 0xFF;
         break;
     case 1:
         {
@@ -2216,7 +2216,7 @@ void update_blarg_trooper_attachment(unsigned char *moby) {
         unsigned char *current;
         update_moby_bone_attachment(moby, target, 1);
         current = *(unsigned char **)(data + 0x248);
-        if (*(unsigned short *)(moby + 0x34) & 1) {
+        if (((Moby *)moby)->flags & 1) {
             *(unsigned short *)(current + 0x34) |= 0x41;
         } else {
             *(unsigned short *)(current + 0x34) &= 0xFFBE;
@@ -3187,18 +3187,18 @@ void process_helicopter_hits_and_reactivation(char *m, int flag) {
         *(int *)(d + 0xA4) = scale_ticks(500);
         spawn_explosion(m, b, a, 0.0f, 0.0f, 0x14, 3, 4, 4.0f, 2.0f, 100000.0f, -1, 3.0f, 15.0f, 1, 1, -1, 0);
     }
-    *(unsigned char *)(m + 0xA4) = 0xFF;
+    ((Moby *)m)->hit_slot = 0xFF;
     if (*(int *)&planetbuster_engaged != 0 && flag != 0) {
         *(int *)(m + 0x94) = 0;
-        *(unsigned short *)(m + 0x34) = (*(unsigned short *)(m + 0x34) | 0x41) & 0xEFFF;
+        ((Moby *)m)->flags = (((Moby *)m)->flags | 0x41) & 0xEFFF;
     }
-    if (*(int *)(d + 0xA4) == 0 && (*(unsigned short *)(m + 0x34) & 1) == 0) return;
+    if (*(int *)(d + 0xA4) == 0 && (((Moby *)m)->flags & 1) == 0) return;
     if (fast_dec_timer((int *)(d + 0xA4)) != 0 && flag != 0 && *(int *)&planetbuster_engaged == 0) {
         *(int *)(m + 0x94) = *(int *)(*(char **)(m + 0x24) + 0x10);
-        *(unsigned short *)(m + 0x34) = (*(unsigned short *)(m + 0x34) & 0xFFBE) | 0x1000;
+        ((Moby *)m)->flags = (((Moby *)m)->flags & 0xFFBE) | 0x1000;
     } else {
         *(int *)(m + 0x94) = 0;
-        *(unsigned short *)(m + 0x34) = (*(unsigned short *)(m + 0x34) | 0x41) & 0xEFFF;
+        ((Moby *)m)->flags = (((Moby *)m)->flags | 0x41) & 0xEFFF;
     }
 }
 extern float func_001FA888(int);
@@ -3221,7 +3221,7 @@ void Moby336Update(char *m) {
     float C[4];
     float E[4];
     if (d != 0) {
-        int r = func_L01_00276680_i(m, IntToFloat(*(short *)(m + 0x32)));
+        int r = func_L01_00276680_i(m, IntToFloat(((Moby *)m)->draw_dist));
         process_helicopter_hits_and_reactivation(m, r == -1);
         switch ((unsigned char)m[0x20]) {
         case 0:
@@ -3243,8 +3243,8 @@ void Moby336Update(char *m) {
                 d[0x2B] = 1;
                 *(int *)(d + 0x60) = idx;
                 m[0x20] = 1;
-                *(short *)(m + 0x32) = 0xAA;
-                *(unsigned short *)(m + 0x34) |= 0x1000;
+                ((Moby *)m)->draw_dist = 0xAA;
+                ((Moby *)m)->flags |= 0x1000;
             }
             break;
         case 1: {
@@ -3265,8 +3265,8 @@ void Moby336Update(char *m) {
             h = fast_atan2(A[0], A[1]);
             h = FastSubRots(h, fast_atan2(B[0], B[1]));
             ang = h / FastVecLength(A);
-            *(float *)(m + 0x40) = FastAddRots(*(float *)(m + 0x40),
-                FastSubRots(ang * *(float *)&helicopter_path_bank_scale, *(float *)(m + 0x40)) / *(float *)&helicopter_rotation_smoothing_divisor);
+            ((Moby *)m)->rot.x = FastAddRots(((Moby *)m)->rot.x,
+                FastSubRots(ang * *(float *)&helicopter_path_bank_scale, ((Moby *)m)->rot.x) / *(float *)&helicopter_rotation_smoothing_divisor);
             if (FastVecDist(m + 0x10, C) < *(float *)&helicopter_path_speed * g_frame_time) {
                 char *t3;
                 *(int *)(d + 0x60) = next;
@@ -3278,9 +3278,9 @@ void Moby336Update(char *m) {
             FastVecSub(E, C, m + 0x10);
             vec_scale_to_length(E, E, *(float *)&helicopter_path_speed * g_frame_time);
             FastVecAdd(m + 0x10, m + 0x10, E);
-            *(float *)(m + 0x48) = FastAddRots(*(float *)(m + 0x48),
-                FastSubRots(fast_atan2(E[0], E[1]), *(float *)(m + 0x48)) / *(float *)&helicopter_rotation_smoothing_divisor);
-            *(float *)(m + 0x44) = 0.52359879f;
+            ((Moby *)m)->rot.z = FastAddRots(((Moby *)m)->rot.z,
+                FastSubRots(fast_atan2(E[0], E[1]), ((Moby *)m)->rot.z) / *(float *)&helicopter_rotation_smoothing_divisor);
+            ((Moby *)m)->rot.y = 0.52359879f;
             break;
         }
         }

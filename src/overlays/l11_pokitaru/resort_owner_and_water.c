@@ -1433,7 +1433,7 @@ void restore_teleporter_visibility_and_collision(char *moby) {
     int count;
     int on;
     moby[0x31] = 1;
-    *(unsigned short *)(moby + 0x34) &= 0xFFFE;
+    ((Moby *)moby)->flags &= 0xFFFE;
     *(int *)(moby + 0x94) = *(int *)(*(char **)(moby + 0x24) + 0x10);
     on = 1;
     count = 2;
@@ -1464,10 +1464,10 @@ extern Globals D_0013F450;
 
 void copy_pokitaru_pvar_to_hero(unsigned char *moby) {
     char *state = *(char **)(moby + 0x78);
-    switch (moby[0x20]) {
+    switch (((Moby *)moby)->state) {
     case 0:
-        moby[0x30] = 0xFF;
-        moby[0x20] = 1;
+        ((Moby *)moby)->update_dist = 0xFF;
+        ((Moby *)moby)->state = 1;
         if (*(int *)state == -1) DeleteMoby(moby);
         break;
     case 1:
@@ -3205,35 +3205,35 @@ void update_owner_linked_moby_state(unsigned char *moby)
     char *u = data + 0x20;
     unsigned char *t = *(unsigned char **)(data + 0x70);
     if (t == 0 || t[0x20] == 0xFE || t[0x20] == 0xFD) {
-        if (moby[0x20] < 3) {
-            moby[0x20] = 4;
+        if (((Moby *)moby)->state < 3) {
+            ((Moby *)moby)->state = 4;
         }
     }
-    switch (moby[0x20]) {
+    switch (((Moby *)moby)->state) {
     case 0:
-        if (moby[0x53] != 1) {
+        if (((Moby *)moby)->prev_seq != 1) {
             MobyBlendAnimation(moby, 1, 0, 0xF);
         }
-        moby[0x20] = 1;
+        ((Moby *)moby)->state = 1;
         break;
     case 1:
-        if (moby[0x70] & 2) {
-            moby[0xA4] = 0xFF;
-            moby[0x20] = 2;
+        if (((Moby *)moby)->anim_flags & 2) {
+            ((Moby *)moby)->hit_slot = 0xFF;
+            ((Moby *)moby)->state = 2;
         }
         break;
     case 2:
         handle_owner_linked_moby_hits(moby, data, u);
-        if ((moby[0x70] & 2) && moby[0x53] != 1) {
+        if ((((Moby *)moby)->anim_flags & 2) && ((Moby *)moby)->prev_seq != 1) {
             MobyBlendAnimation(moby, 1, 0, 0xA);
         }
         break;
     case 3:
-        if (moby[0x23] != 0) {
-            moby[0x23]--;
+        if (((Moby *)moby)->alpha != 0) {
+            ((Moby *)moby)->alpha--;
         }
         if (MobyGetFrameValue(moby) > 13.5f) {
-            moby[0x20] = 4;
+            ((Moby *)moby)->state = 4;
         }
         break;
     case 4:

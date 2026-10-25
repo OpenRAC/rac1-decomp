@@ -390,9 +390,9 @@ void update_path_walker(unsigned char *m) {
     } else {
         qcopy(old, m + 0x10);
     }
-    switch (m[0x20]) {
+    switch (((Moby *)m)->state) {
     case 0:
-        if (m[0x21] == 255) {
+        if (((Moby *)m)->group == 255) {
             DeleteMoby(m);
             return;
         }
@@ -410,7 +410,7 @@ void update_path_walker(unsigned char *m) {
 
         SamplePathAt(path, d->parameter, 0, m + 0x10, (float *)(m + 0x40), 0);
         acceleration = path_walker_speed_approach_acceleration * g_frame_time_sq;
-        *(float *)(m + 0x18) += d->height_step;
+        ((Moby *)m)->pos.z += d->height_step;
         d->parameter += d->speed;
         ApproachValue(&d->speed, d->target_speed, acceleration);
         gap = other->parameter - d->parameter;
@@ -429,7 +429,7 @@ void update_path_walker(unsigned char *m) {
             ApproachValue(&d->speed, d->target_speed, step);
             ApproachValue(&other->speed, other->target_speed, step);
         }
-        if (m[0x31] == 0 && blocked == 0) {
+        if (((Moby *)m)->visible == 0 && blocked == 0) {
             if (gap > path_walker_gap_range_end + 1.0f) {
                 height = random_float_between(path_walker_height_range_start, path_walker_height_range_end);
                 if (d->owner[0x31] != 0 && d->countdown != 0) {
@@ -513,7 +513,7 @@ void initialize_path_walker_group(unsigned char *m) {
     unsigned char *objects[16];
     unsigned char *previous;
     L16WalkerData *d = *(L16WalkerData **)(m + 0x78);
-    short *list = kalebo3_moby_groups[m[0x21]];
+    short *list = kalebo3_moby_groups[((Moby *)m)->group];
     short count = 0, rank;
     int i;
     float period;

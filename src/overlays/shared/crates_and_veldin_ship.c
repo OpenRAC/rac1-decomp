@@ -300,7 +300,7 @@ void func_L00_002D19E8_r(u8 *a) {
     f32 t, r, e;
 
     b = *(u8 **)(a + 0x78);
-    h = *(s16 *)(a + 0xA6);
+    h = ((Moby *)a)->oclass;
     tmp = D_L00_001EA1B0_2D19E8;
     n = *(s16 *)(b + 0xC6) == 0;
     if (h == 0x1F5)
@@ -313,8 +313,8 @@ void func_L00_002D19E8_r(u8 *a) {
             func_L00_00261478_2D19E8(a, *(s32 *)(b + 0xF0), a + 0x10, a + 0x40, &v30, &v40);
             func_001F9BF0_2D19E8(&v20, &v30, a + 0x10);
         }
-        if (D_0015EE84_2D19E8 == 0xF && func_001F9B88_2D19E8(*(f32 *)(a + 0x10) - 166.0f) < 6.0f &&
-            func_001F9B88_2D19E8(*(f32 *)(a + 0x14) - 193.0f) < 6.0f) {
+        if (D_0015EE84_2D19E8 == 0xF && func_001F9B88_2D19E8(((Moby *)a)->pos.x - 166.0f) < 6.0f &&
+            func_001F9B88_2D19E8(((Moby *)a)->pos.y - 193.0f) < 6.0f) {
             s32 save = D_L00_0015F678_2D19E8;
             D_L00_0015F678_2D19E8 = 0;
             func_L00_002584A8_2D19E8(a, 0x100, -1);
@@ -405,8 +405,8 @@ void func_L00_002D19E8_r(u8 *a) {
             }
         }
     }
-    if (*(s16 *)(a + 0xB4))
-        *(s16 *)(a + 0xB4) = 0;
+    if (((Moby *)a)->unkB4)
+        ((Moby *)a)->unkB4 = 0;
     func_L00_002584A8_2D19E8(a, 0x100, -1);
 }
 /* func_L00_002D1E68 (CrateBreakFx) -- src/overlays/shared/vendor_002D1168.c. EXACT 2026-10-19 (fg). */
@@ -699,14 +699,14 @@ void update_crate_stack_motion(char *a) {
         if (*(int *)(o + 0xAC) & 2)
             return;
         *(int *)(o + 0xB4) = level_frame_counter;
-        if (*(unsigned char *)(a + 0x20) != 0) {
+        if (((Moby *)a)->state != 0) {
             g = D_0013E633 + 0xE9D;
             FastVecSub(v3, g, a + 0x10);
             matrix_mul_vec3(v3, v3, a + 0xC0);
             if (FastAbsF(v3[0]) < 0.55f && FastAbsF(v3[1]) < 0.55f && v3[2] < 0 &&
                 (b = g - 0x80, -(*(float *)(b + 0x220) + *(float *)(b + 0x234)) < v3[2]) &&
-                (*(unsigned char *)(a + 0x20) == 1 || *(unsigned char *)(a + 0x20) == 5)) {
-                break_crate(a, *(short *)(a + 0xA6) == 0x1F9, 0);
+                (((Moby *)a)->state == 1 || ((Moby *)a)->state == 5)) {
+                break_crate(a, ((Moby *)a)->oclass == 0x1F9, 0);
                 crate_drop_bolts(a);
             }
             dt = g_frame_time_sq;
@@ -761,15 +761,15 @@ void update_crate_stack_motion(char *a) {
                     qcopy(v2, *(char **)(o + 0xA4) + 0x10);
                     v2[2] = v2[2] + 1.0f;
                     r = 0;
-                    if (*(float *)(a + 0x18) + *(float *)(o + 0x48) < v2[2])
+                    if (((Moby *)a)->pos.z + *(float *)(o + 0x48) < v2[2])
                         r = 1;
                 }
                 if (r != 0) {
                     len = FastVecLength(o + 0x40);
                     if (g_frame_time * 0.5f < len) {
-                        if (*(short *)(a + 0xA6) == 0x1F9 && *(unsigned char *)(a + 0x20) == 1) {
+                        if (((Moby *)a)->oclass == 0x1F9 && ((Moby *)a)->state == 1) {
                             *(char *)(a + 0xBC) = 0;
-                            *(unsigned char *)(a + 0x20) = 5;
+                            ((Moby *)a)->state = 5;
                         } else {
                             p = *(char **)(o + 0xA4);
                             if (p != 0 && *(short *)(p + 0xA6) == 0x1F9 && *(unsigned char *)(p + 0x20) == 1) {
@@ -778,7 +778,7 @@ void update_crate_stack_motion(char *a) {
                             }
                         }
                     }
-                    *(float *)(a + 0x18) = v2[2];
+                    ((Moby *)a)->pos.z = v2[2];
                     *(int *)(o + 0x48) = 0;
                 } else {
                     *(int *)(o + 0xAC) = *(int *)(o + 0xAC) | 4;
@@ -847,11 +847,11 @@ void veldin_ship_draw(u8 *m) {
                       ((u64)(s64)G_EC << 32);
     quad.texture[0] = 0;
     quad.colors[0] = quad.colors[1] = quad.colors[2] = quad.colors[3] = G_F4;
-    if (FastAbsF(player_camera[80] - *(f32 *)(m + 0x10)) < 16.0f &&
-        FastAbsF(player_camera[81] - *(f32 *)(m + 0x14)) < 16.0f)
+    if (FastAbsF(player_camera[80] - ((Moby *)m)->pos.x) < 16.0f &&
+        FastAbsF(player_camera[81] - ((Moby *)m)->pos.y) < 16.0f)
         active = 1;
-    if (active || m[0x20] == 1) {
-        m[0xbc] = 1;
+    if (active || ((Moby *)m)->state == 1) {
+        ((Moby *)m)->command = 1;
         fast_dec_timer((s32 *)(vars + 0x40));
         blend = IntToFloat(*(s32 *)(vars + 0x40));
         blend /= IntToFloat(scale_ticks(0x3c));
@@ -868,7 +868,7 @@ void veldin_ship_draw(u8 *m) {
             c.z += 1.0f;
             len = vec_length(c.z + c.z);
             len += len;
-            if (m[0x20] == 1 || *(s32 *)(vars + 0x40) == 0) {
+            if (((Moby *)m)->state == 1 || *(s32 *)(vars + 0x40) == 0) {
                 ship_reflection_uvs[i][0] = c.x / len + 0.5f;
                 ship_reflection_uvs[i][1] = c.y / len + 0.5f;
             } else {
@@ -879,11 +879,11 @@ void veldin_ship_draw(u8 *m) {
                 ship_reflection_uvs[i][1] = x + (ship_previous_uvs[i][1] - x) * blend;
             }
         }
-        if (m[0x20] == 1)
-            m[0x20] = 2;
+        if (((Moby *)m)->state == 1)
+            ((Moby *)m)->state = 2;
     } else {
-        if (m[0xbc] == 1) {
-            m[0xbc] = 0;
+        if (((Moby *)m)->command == 1) {
+            ((Moby *)m)->command = 0;
             for (i = 0; i < 0x66; i++) {
                 ship_previous_uvs[i][0] = ship_reflection_uvs[i][0];
                 ship_previous_uvs[i][1] = ship_reflection_uvs[i][1];
@@ -1118,17 +1118,17 @@ target_valid:
 L3D10:
     allocate_hero_voice_for_entry(0x1A, 0);
     use_ammo(-1, 1);
-    moby[0x20] = 3;
+    ((Moby *)moby)->state = 3;
 L3D34:
     *(u128_D3B20 *)&loc = *(u128_D3B20 *)(d + 0x40);
     DecoyGlove_AimThrow((int)moby, (void *)d, (float *)&loc);
 
-    switch (moby[0x20]) {
+    switch (((Moby *)moby)->state) {
     case 0:
         *(int *)(d + 0x50) = 0;
-        if (!(moby[0x70] & 2)) moby[0x20] = 1; else moby[0x20] = 2;
+        if (!(((Moby *)moby)->anim_flags & 2)) ((Moby *)moby)->state = 1; else ((Moby *)moby)->state = 2;
     case 1:
-        if (moby[0x70] & 2) moby[0x20] = 2;
+        if (((Moby *)moby)->anim_flags & 2) ((Moby *)moby)->state = 2;
         break;
     case 2:
         break;
@@ -1144,16 +1144,16 @@ L3D34:
         } else {
             Moby_PlaySound(0, 0, (int)moby);
         }
-        moby[0x20] = 4;
+        ((Moby *)moby)->state = 4;
         *(int *)(d + 0x54) = scale_ticks(0x14);
         break;
     case 4: {
         char *h = D_0013E633 + 0xE1D;
-        if (*(int *)(h + 0x2084) != 0x23 && *(unsigned char *)(h + 0x20A8) == 0) moby[0x20] = 2;
+        if (*(int *)(h + 0x2084) != 0x23 && *(unsigned char *)(h + 0x20A8) == 0) ((Moby *)moby)->state = 2;
         break;
     }
     case 5:
-        moby[0x20] = 6;
+        ((Moby *)moby)->state = 6;
         break;
     case 6:
         return;
@@ -1699,11 +1699,11 @@ void update_animated_point_light_moby(unsigned char *m) {
     o = *(unsigned char **)(m + 0x78);
     c0 = 0;
     if (o == 0) return;
-    if (m[0x20] == 0) {
+    if (((Moby *)m)->state == 0) {
         unsigned char b1c;
-        m[0x30] = 0xFF;
+        ((Moby *)m)->update_dist = 0xFF;
         b1c = o[0x1C];
-        m[0xBC] = b1c;
+        ((Moby *)m)->command = b1c;
         qcopy(o + 0x10, m + 0x10);
         *(int *)(o + 0x50) = -1;
         o[0x1C] = b1c;
@@ -1724,10 +1724,10 @@ void update_animated_point_light_moby(unsigned char *m) {
         }
         if (*(float *)(o + 0x40) < 0.0f) *(float *)(o + 0x40) = -*(float *)(o + 0x40);
         if (*(float *)(o + 0x44) < 0.0f) *(float *)(o + 0x44) = -*(float *)(o + 0x44);
-        m[0x20] = 1;
+        ((Moby *)m)->state = 1;
     }
-    if (m[0xBC] != 0) {
-        m[0xBC] = m[0xBC] - 1;
+    if (((Moby *)m)->command != 0) {
+        ((Moby *)m)->command = ((Moby *)m)->command - 1;
         return;
     }
     if (*(int *)(o + 0x48) != -1 && fast_dec_timer((int *)(o + 0x48))) {
@@ -2282,30 +2282,30 @@ float move_horny_toad_toward_position(unsigned char *m, float *t, float vel) {
     unsigned char *v;
     float ang, d, z, a, lim, w;
     v = *(unsigned char **)(m + 0x78);
-    ang = fast_atan2(t[0] - *(float *)(m + 0x10), t[1] - *(float *)(m + 0x14));
-    z = *(float *)(m + 0x18);
+    ang = fast_atan2(t[0] - ((Moby *)m)->pos.x, t[1] - ((Moby *)m)->pos.y);
+    z = ((Moby *)m)->pos.z;
     d = FastVecDist(m + 0x10, t);
     if (2.0f < d)
         ang = FastAddRots(ang, *(float *)(v + 0x1FC));
-    if (m[0x52] != m[0x53])
+    if (((Moby *)m)->seq != ((Moby *)m)->prev_seq)
         return d;
     SteerAngleWithVelocity((float *)(m + 0x48), (float *)(v + 0x1F4), ang, g_frame_time_sq * 12.566371f, g_frame_time_sq * 12.566371f, g_frame_time * 12.566371f);
     ApproachWithVelocity(&vel, d, g_frame_time_sq * 8.0f, g_frame_time_sq * 12.0f, g_frame_time * 4.0f, (float *)(v + 0x1F8));
     if (*(float *)(v + 0x1F8) < 0.0f)
         *(float *)(v + 0x1F8) = 0.0f;
-    a = *(float *)(m + 0x48);
+    a = ((Moby *)m)->rot.z;
     *(float *)(v + 0x278) = a;
     vec[0] = FastCos(a) * *(float *)(v + 0x1F8);
     vec[1] = FastSin(*(float *)(v + 0x278)) * *(float *)(v + 0x1F8);
     vec[2] = 0.0f;
     vec[2] = *(float *)(v + 0x270) - g_frame_time_sq * 10.0f;
     move_4318((int)m, (int)vec, 0.5f, 0.5f, 0.0f, 0x10);
-    w = *(float *)(m + 0x18) - z;
+    w = ((Moby *)m)->pos.z - z;
     lim = g_frame_time * 4.0f;
     *(float *)(v + 0x270) = w;
     if (lim < w)
         *(float *)(v + 0x270) = lim;
-    if (m[0x70] & 2)
+    if (((Moby *)m)->anim_flags & 2)
         return d;
     return 37.0f;
 }
@@ -2910,7 +2910,7 @@ void update_infobot_particle_effect(char *o) {
     int i, col;
     float f;
 
-    if (*(unsigned short *)(o + 0x34) & 1) {
+    if (((Moby *)o)->flags & 1) {
         return;
     }
     v.q = *(ti_p *)(o + 0x10);

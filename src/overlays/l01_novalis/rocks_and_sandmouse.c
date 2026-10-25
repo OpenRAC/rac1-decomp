@@ -1379,7 +1379,7 @@ typedef int u128b __attribute__((mode(TI)));
 void Moby778Update(char *m) {
     char *d = *(char **)(m + 0x78);
     char *t = MobyGetHitMessage(m, 0x10000, 0);
-    *(unsigned char *)(m + 0xA4) = 0xFF;
+    ((Moby *)m)->hit_slot = 0xFF;
     if (t != 0 && 0.0f < *(float *)(t + 0x2C)) {
         float v[4];
         float w[4];
@@ -1514,7 +1514,7 @@ void update_falling_splash_moby(char *m) {
     float vel[4];
     char *d = *(char **)(m + 0x78);
     *(float *)(d + 8) -= *(float *)(d + 0x10);
-    *(float *)(m + 0x40) += *(float *)(d + 0x1C);
+    ((Moby *)m)->rot.x += *(float *)(d + 0x1C);
     FastVecAdd(np, m + 0x10, d);
     if (coll_line(m + 0x10, np, 2, 0, 0)) {
         int i;
@@ -1523,7 +1523,7 @@ void update_falling_splash_moby(char *m) {
             if (*(int *)(d + 0x18) == 0) {
                 Moby_PlaySound(0, 0, (int)m);
             }
-            RippleDisturb(D_L01_00161350_s, D_L01_00161358_s, 1, *(float *)(m + 0x10), *(float *)(m + 0x14), 0.5f, -0.35f);
+            RippleDisturb(D_L01_00161350_s, D_L01_00161358_s, 1, ((Moby *)m)->pos.x, ((Moby *)m)->pos.y, 0.5f, -0.35f);
             {
                 float g = g_frame_time;
                 float h = D_0015EE70_s;
@@ -1533,8 +1533,8 @@ void update_falling_splash_moby(char *m) {
                 *(float *)(d + 8) = g * -1.5f;
                 *(float *)(d + 0x10) = h * 0.8f;
             }
-            at[0] = *(float *)(m + 0x10);
-            at[1] = *(float *)(m + 0x14);
+            at[0] = ((Moby *)m)->pos.x;
+            at[1] = ((Moby *)m)->pos.y;
             at[2] = D_L01_00174368_s;
             o = spawn_burst_moby(at, 2.0f);
             if (o != 0) {
@@ -1558,7 +1558,7 @@ void update_falling_splash_moby(char *m) {
     }
     qcopy(m + 0x10, np);
     if (*(int *)(d + 0x18) != 0) {
-        *(float *)(m + 0x2C) *= 0.99f;
+        ((Moby *)m)->scale *= 0.99f;
     }
     if (fast_dec_timer((int *)(d + 0x14))) {
         DeleteMoby(m);

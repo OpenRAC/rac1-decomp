@@ -527,7 +527,7 @@ char *spawn_fading_asteroid_debris(char *owner, float *vec) {
         *(int *)(d + 0x4C) = 2;
         moby[0x23] = 0x7F;
         {
-            float v = *(float *)(owner + 0x2C) * random_float_between(0.125f, 0.25f);
+            float v = ((Moby *)owner)->scale * random_float_between(0.125f, 0.25f);
             *(float *)(moby + 0x2C) = v;
             *(float *)(d + 0x50) = v;
         }
@@ -702,12 +702,12 @@ extern float D_L09_00166FC0[];
 
 /* ticks a fading drifting moby: decays its velocity, follows it and eases its rotation */
 void update_fading_asteroid_debris(unsigned char *m) {
-    if (m[0x23] < 3) {
+    if (((Moby *)m)->alpha < 3) {
         DeleteMoby(m);
     } else {
         char *d;
         float len, t;
-        m[0x23] -= 2;
+        ((Moby *)m)->alpha -= 2;
         d = *(char **)(m + 0x78);
         FastVecScale(d, d, frame_scale * -0.0199999809f + 1.0f);
         *(float *)(d + 8) -= g_frame_time_sq * 20.0f;
@@ -717,14 +717,14 @@ void update_fading_asteroid_debris(unsigned char *m) {
         if (len > 100.0f) {
             vec_scale_to_length(m + 0x10, m + 0x10, 100.0f);
             FastVecAdd(m + 0x10, m + 0x10, gaspar_camera_pos);
-            *(float *)(m + 0x2C) = *(float *)(d + 0x50) * (100.0f / len);
+            ((Moby *)m)->scale = *(float *)(d + 0x50) * (100.0f / len);
         } else {
             qcopy(m + 0x10, d + 0x20);
-            *(float *)(m + 0x2C) = *(float *)(d + 0x50);
+            ((Moby *)m)->scale = *(float *)(d + 0x50);
         }
-        t = FastAddRots(*(float *)(m + 0x40), *(float *)(d + 0x40));
-        *(float *)(m + 0x40) = t;
-        *(float *)(m + 0x44) = FastAddRots(t, *(float *)(d + 0x44));
+        t = FastAddRots(((Moby *)m)->rot.x, *(float *)(d + 0x40));
+        ((Moby *)m)->rot.x = t;
+        ((Moby *)m)->rot.y = FastAddRots(t, *(float *)(d + 0x44));
     }
 }
 typedef struct { int v[6]; } V6_2EC188;
@@ -2787,8 +2787,8 @@ char *spawn_barrier_replacement(char *owner, int cls) {
         moby[0xBC] = scale_ticks(10);
         moby_build_matrix(moby);
         copy_hero_moby_field_38(moby);
-        *(float *)(moby + 0x2C) = *(float *)(owner + 0x2C);
-        *(unsigned short *)(moby + 0x34) = *(unsigned short *)(owner + 0x34);
+        *(float *)(moby + 0x2C) = ((Moby *)owner)->scale;
+        *(unsigned short *)(moby + 0x34) = ((Moby *)owner)->flags;
         **(int **)(moby + 0x78) = **(int **)(owner + 0x78);
     }
     return moby;
@@ -2965,7 +2965,7 @@ void update_floating_ship_piece(char *moby) {
 
     func_001F9C30_30A560(v0, moby + 0x10, -1.0f);
     qcopy(v1, moby + 0x40);
-    f25 = *(float *)(moby + 0x18);
+    f25 = ((Moby *)moby)->pos.z;
     f24 = *(float *)(data + 0x84) - 0.300000012f;
     s = ((unsigned char *)moby)[0x20];
     switch (s) {
@@ -2973,15 +2973,15 @@ void update_floating_ship_piece(char *moby) {
         *(int *)(data + 0x80) = 1;
         qcopy(data + 0x60, moby + 0x40);
         qzero(data + 0x70);
-        f1 = *(float *)(moby + 0x18);
+        f1 = ((Moby *)moby)->pos.z;
         *(float *)(data + 0x84) = f1;
         if (*(int *)(data + 0x8C) != -1) {
-            *(float *)(moby + 0x18) = f1 - 5.0f;
-            *(float *)(moby + 0x40) = func_002140F8_30A560(-1.57079637f, 1.57079637f);
-            *(float *)(moby + 0x44) = func_002140F8_30A560(-1.57079637f, 1.57079637f);
+            ((Moby *)moby)->pos.z = f1 - 5.0f;
+            ((Moby *)moby)->rot.x = func_002140F8_30A560(-1.57079637f, 1.57079637f);
+            ((Moby *)moby)->rot.y = func_002140F8_30A560(-1.57079637f, 1.57079637f);
             moby[0x20] = 1;
         } else {
-            func_001E9730_30A560(D_L09_00209518_30A560, *(short *)(moby + 0xB2), *(short *)(moby + 0xA6));
+            func_001E9730_30A560(D_L09_00209518_30A560, *(short *)(moby + 0xB2), ((Moby *)moby)->oclass);
             moby[0x20] = 2;
         }
         break;
@@ -3030,14 +3030,14 @@ void update_floating_ship_piece(char *moby) {
                               D_L09_00161E54_30A560 * k * D_0015EE70_F0780,
                               D_L09_00161E58_30A560 * D_0015EE64_2F9A50,
                               D_L09_00161E5C_30A560 * k * D_0015EE6C_F0780);
-            f2 = *(float *)(moby + 0x18) - D_L09_00161E48_30A560 * D_0015EE6C_F0780;
-            *(float *)(moby + 0x18) = f2;
+            f2 = ((Moby *)moby)->pos.z - D_L09_00161E48_30A560 * D_0015EE6C_F0780;
+            ((Moby *)moby)->pos.z = f2;
             if (f24 < f25 && f2 <= f24) {
                 func_0022ED80_30A560(1, 0, moby);
             }
             func_L07_00289960_30A560(D_0013E633_2F9A50 + 0xE9D, v5, moby + 0x10, v3, data + 0x60);
             func_001F9BF0_30A560(D_0013E633_2F9A50 + 0xE9D + 0x70, v5, D_0013E633_2F9A50 + 0xE9D);
-            ((Hero *)(D_0013E633_2F9A50 + 0xE1D))->motion.platform_delta.f[2] = ((Hero *)(D_0013E633_2F9A50 + 0xE1D))->motion.platform_delta.f[2] + (*(float *)(moby + 0x18) - v4[2]);
+            ((Hero *)(D_0013E633_2F9A50 + 0xE1D))->motion.platform_delta.f[2] = ((Hero *)(D_0013E633_2F9A50 + 0xE1D))->motion.platform_delta.f[2] + (((Moby *)moby)->pos.z - v4[2]);
         } else {
             float r;
             ((Mpos_30A560 *)moby)->z = ((Mpos_30A560 *)moby)->z + (r = D_L09_00161E4C_30A560 * D_0015EE6C_F0780) * (*(float *)(data + 0x84) - ((Mpos_30A560 *)moby)->z);
@@ -3077,8 +3077,8 @@ void update_floating_ship_piece(char *moby) {
         func_L00_00263B78_30A560(0.140000001f, D_0015EE6C_F0780 * 0.52359879f, moby, (float *)(data + 0x98), (float *)(data + 0x9C));
         func_L00_00263BF8_30A560(moby, data + 0x90, data + 0x94, 0.0872664601f,
                           D_0015EE6C_F0780 * 0.436332315f, D_0015EE6C_F0780 * 0.541052043f);
-        *(float *)(moby + 0x40) = func_001FA748_30A560(*(float *)(data + 0x60), *(float *)(moby + 0x40));
-        *(float *)(moby + 0x44) = func_001FA748_30A560(*(float *)(data + 0x64), *(float *)(moby + 0x44));
+        ((Moby *)moby)->rot.x = func_001FA748_30A560(*(float *)(data + 0x60), ((Moby *)moby)->rot.x);
+        ((Moby *)moby)->rot.y = func_001FA748_30A560(*(float *)(data + 0x64), ((Moby *)moby)->rot.y);
         func_001F9BD8_30A560(v0, v0, moby + 0x10);
         func_L00_002617B0_30A560(data + 0x20, v0, v1, moby + 0x40);
         break;

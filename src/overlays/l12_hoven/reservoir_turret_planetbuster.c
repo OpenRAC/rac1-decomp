@@ -733,7 +733,7 @@ void update_hoven_turret_camera(char *moby) {
     set_camera_position(m);
     m[4] = 0;
     m[5] = -*(float *)(data + 0x74);
-    m[6] = FastAddRots(1.5707964f, *(float *)(moby + 0x48));
+    m[6] = FastAddRots(1.5707964f, ((Moby *)moby)->rot.z);
     set_camera_rotation(m + 4);
 }
 typedef u32 u128_04750 __attribute__((mode(TI), aligned(16)));
@@ -1583,7 +1583,7 @@ void update_planetbuster_maximus_guns(char *moby) {
         yaw = FastSubRots(FastAddRots(fast_atan2(((Hero *)(D_0013E633_e + 0xE1D))->motion.pos.f[0] - *(float *)(m + 0x10),
                                                             ((Hero *)(D_0013E633_e + 0xE1D))->motion.pos.f[1] - *(float *)(m + 0x14)),
                                           -1.5707964f),
-                            *(float *)(moby + 0x48));
+                            ((Moby *)moby)->rot.z);
         if (md->h90 == 0) {
             if (step_angle_toward_target((float *)(ent + 0x18), yaw, 0,
                                   g_frame_time * 0.5235988f + g_frame_time * 0.17453292f * (float)i) < 0.08726646f) {
@@ -1604,7 +1604,7 @@ void update_planetbuster_maximus_guns(char *moby) {
         flag = 0;
         hp = (float *)(D_0013E633_e + 0xE1D + 0x80);
         dist = vec_distance_xy(moby + 0x10, hp);
-        dz = func_001F9B88_304310(hp[2] - *(float *)(moby + 0x18));
+        dz = func_001F9B88_304310(hp[2] - ((Moby *)moby)->pos.z);
         if (scale_ticks(0x4B0) < planetbuster_aggro_timer) {
             if (dist < 80.0f && dz < 4.0f) {
                 flag = 1;
@@ -2031,10 +2031,10 @@ void planetbuster_maximus_part_update(char *moby) {
             capture_linked_moby_relative_transforms(moby, d, 0x11);
             path = D_L12_001B0C30_7DB0[*(int *)(d + 0x5C0)];
             qcopy(moby + 0x10, path + 1);
-            *(float *)(d + 0x618) = *(float *)(moby + 0x18);
-            *(float *)(moby + 0x48) = fast_atan2(path[2].v[0] - path[1].v[0], path[2].v[1] - path[1].v[1]);
+            *(float *)(d + 0x618) = ((Moby *)moby)->pos.z;
+            ((Moby *)moby)->rot.z = fast_atan2(path[2].v[0] - path[1].v[0], path[2].v[1] - path[1].v[1]);
             if (*(float *)(D_0013E633_e + 0xEA5) < 52.0f) {
-                *(float *)(moby + 0x18) = *(float *)(moby + 0x18) + 3.0f;
+                ((Moby *)moby)->pos.z = ((Moby *)moby)->pos.z + 3.0f;
             }
             for (i = 0; i < 5; i++) {
                 int k = *(int *)(d + 0x5D0 + i * 4);
@@ -2054,7 +2054,7 @@ void planetbuster_maximus_part_update(char *moby) {
         if (is_point_inside_clip_volume(hoven_camera_pos, *(int *)(d + 0x624))) {
             int i;
             char *base = (char *)D_L12_00160058_m;
-            *(unsigned short *)(moby + 0x34) |= 0x41;
+            ((Moby *)moby)->flags |= 0x41;
             for (i = 0; i < 17; i++) {
                 int s = *(int *)(d + i * 0x30 + 0x20);
                 if (s != -1) ((M34_7DB0 *)(base + (s << 8)))->flags |= 0x41;
@@ -2062,7 +2062,7 @@ void planetbuster_maximus_part_update(char *moby) {
         } else {
             int i;
             char *base = (char *)D_L12_00160058_m;
-            *(unsigned short *)(moby + 0x34) &= ~0x41;
+            ((Moby *)moby)->flags &= ~0x41;
             for (i = 0; i < 17; i++) {
                 int s = *(int *)(d + i * 0x30 + 0x20);
                 if (s != -1) ((M34_7DB0 *)(base + (s << 8)))->flags &= ~0x41;
@@ -2125,9 +2125,9 @@ void planetbuster_maximus_part_update(char *moby) {
         if (*(int *)path - 20 < *(short *)(d + 0x5F8)) f = 3.0543261f;
         MobySpringTurn(moby, f, (float *)(d + 0x5F4), g_frame_scale_sq * 0.0015f, g_frame_scale_sq * 0.3f, g_frame_time * 0.17453292f);
         if (vec_distance_xy(moby + 0x10, &path[*(short *)(d + 0x5F8) + 1]) < 5.0f
-            || FastDiffRots(*(float *)(moby + 0x48),
-                             fast_atan2(*(float *)((char *)path + (*(short *)(d + 0x5F8) << 4) + 0x10) - *(float *)(moby + 0x10),
-                                               *(float *)((char *)path + (*(short *)(d + 0x5F8) << 4) + 0x14) - *(float *)(moby + 0x14))) > 1.5707964f) {
+            || FastDiffRots(((Moby *)moby)->rot.z,
+                             fast_atan2(*(float *)((char *)path + (*(short *)(d + 0x5F8) << 4) + 0x10) - ((Moby *)moby)->pos.x,
+                                               *(float *)((char *)path + (*(short *)(d + 0x5F8) << 4) + 0x14) - ((Moby *)moby)->pos.y)) > 1.5707964f) {
             *(short *)(d + 0x5F8) = (*(short *)(d + 0x5F8) + 1) % *(int *)path;
         }
         apply_linked_moby_relative_transforms(moby, d, 0x11);
@@ -2319,7 +2319,7 @@ void homing_mine_spawner_update(char *m) {
         }
         break;
     case 4:
-        *(unsigned short *)(m + 0x34) &= 0xEFFF;
+        ((Moby *)m)->flags &= 0xEFFF;
         if (((unsigned char *)m)[0x53] != 3) {
             MobyBlendAnimation(m, 3, 0, scale_ticks(2));
         }

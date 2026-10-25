@@ -1314,7 +1314,7 @@ void forcefield_update(char *moby) {
     case 0:
         moby[0x20] = 1;
         moby[0x23] = 0x14;
-        *(unsigned short *)(moby + 0x34) |= 0xA08;
+        ((Moby *)moby)->flags |= 0xA08;
         *(short *)(d + 0xE) = -1;
         *(float *)(d + 4) = 1.0f;
         set_moby_color(moby, 0x80, 0x80, 0x80);
@@ -1330,7 +1330,7 @@ void forcefield_update(char *moby) {
         } else {
             *(float *)(d + 4) = 1.0f;
             moby[0x20] = 2;
-            STUB_printf(forcefield_missing_link_fmt, *(short *)(moby + 0xA6), *(short *)(moby + 0xB2));
+            STUB_printf(forcefield_missing_link_fmt, ((Moby *)moby)->oclass, *(short *)(moby + 0xB2));
         }
         spawn_forcefield_contact_effects(moby, d);
         break;
@@ -1449,7 +1449,7 @@ void update_moby_state_relay(char *moby) {
     switch (data[0x1C]) {
     case 0:
         if (m == 0) {
-            STUB_printf(state_relay_missing_link_fmt, *(short *)(moby + 0xB2), *(short *)(moby + 0xA6));
+            STUB_printf(state_relay_missing_link_fmt, *(short *)(moby + 0xB2), ((Moby *)moby)->oclass);
             DeleteMoby(moby);
         } else if (data[0x1D] != 0) {
             data[0x1C] = 1;
@@ -1533,12 +1533,12 @@ void update_controller_linked_gate(char *m) {
     switch (((unsigned char *)m)[0x20]) {
     case 0:
         if (c == 0) {
-            STUB_printf(linked_gate_missing_link_fmt, *(short *)(m + 0xB2), *(short *)(m + 0xA6));
+            STUB_printf(linked_gate_missing_link_fmt, *(short *)(m + 0xB2), ((Moby *)m)->oclass);
             DeleteMoby(m);
             return;
         }
         set_moby_color(m, 0x80, 0x80, 0x80);
-        *(unsigned short *)(m + 0x34) |= 0xA08;
+        ((Moby *)m)->flags |= 0xA08;
         if (*(int *)(d + 0x18) == 0) {
             *(float *)(d + 0x10) = 1.0f;
             m[0x20] = 1;
@@ -1568,7 +1568,7 @@ void update_controller_linked_gate(char *m) {
             m[0x20] = 3;
             *(int *)(m + 0x94) = 0;
             m[0x31] = 0;
-            *(unsigned short *)(m + 0x34) |= 1;
+            ((Moby *)m)->flags |= 1;
         }
         break;
     case 3:
@@ -1576,7 +1576,7 @@ void update_controller_linked_gate(char *m) {
             m[0x20] = 4;
             *(int *)(m + 0x94) = *(int *)(*(char **)(m + 0x24) + 0x10);
             m[0x31] = 1;
-            *(unsigned short *)(m + 0x34) &= 0xFFFE;
+            ((Moby *)m)->flags &= 0xFFFE;
         }
         break;
     case 4:
@@ -1656,7 +1656,7 @@ void launch_attached_rocket(char *moby, char *pos, int arg2, float arg3) {
     qcopy(d, pos);
     *(int *)(d + 0x2C) = arg2;
     moby[0x20] = 0;
-    *(unsigned short *)(moby + 0x34) &= 0xFFFE;
+    ((Moby *)moby)->flags &= 0xFFFE;
     *(int *)(moby + 0x94) = *(int *)(*(char **)(moby + 0x24) + 0x10);
     moby_build_matrix(moby);
 }
@@ -2933,8 +2933,8 @@ void initialize_gemlik_trail(char *m) {
  Moby_GetJointWorldPos(m,0,d+0x1f0);
  for(i=0;i<16;i++) {
  float angle=(IntToFloat(i)*0.0625f-0.5f)*(*(float *)&gemlik_trail_arc_degrees*0.017453292f);
- v[0]=FastCos(FastAddRots(angle,*(float *)(m+0x48)))*0.5f;
- v[1]=FastSin(FastAddRots(angle,*(float *)(m+0x48)))*0.5f;
+ v[0]=FastCos(FastAddRots(angle,((Moby *)m)->rot.z))*0.5f;
+ v[1]=FastSin(FastAddRots(angle,((Moby *)m)->rot.z))*0.5f;
  v[2]=0;
  FastVecAdd(d+0x210+i*16,d+0x1f0,v);
  if(i==0 || i==15) *(int *)(d+0x21c+i*16)=0;

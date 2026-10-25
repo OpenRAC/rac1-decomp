@@ -1956,7 +1956,7 @@ void debris_update(unsigned char *m) {
     V_2af5b8 t;
     int i;
     float f;
-    if (m[0xBC] & 1) {
+    if (((Moby *)m)->command & 1) {
         for (i = 0; i < 1; i++) {
             c = debris_spark_colors;
             *(Q_2af5b8 *)&t = 0;
@@ -1965,26 +1965,26 @@ void debris_update(unsigned char *m) {
             t.f[2] = random_float_between(-1.0f, 1.0f);
             *(Q_2af5b8 *)&v = *(Q_2af5b8 *)&t;
             vec_scale_to_length(&v, &v, g_frame_time);
-            if (m[0xBC] & 0xFE) {
-                int a = swap_packed_color_channels(c.c[random_integer_below(4)], m[0xBC] >> 1);
-                int b = swap_packed_color_channels(0x4FFF, m[0xBC] >> 1);
+            if (((Moby *)m)->command & 0xFE) {
+                int a = swap_packed_color_channels(c.c[random_integer_below(4)], ((Moby *)m)->command >> 1);
+                int b = swap_packed_color_channels(0x4FFF, ((Moby *)m)->command >> 1);
                 PartType04Spawn(m + 0x10, &v, a, b, scale_ticks(0x2D), 0x32, 0x78, 1);
             } else {
                 PartType04Spawn(m + 0x10, &v, c.c[random_integer_below(4)], 0x4FFF, scale_ticks(0x2D), 0x32, 0x78, 1);
             }
         }
     }
-    *(float *)(m + 0x40) = FastAddRots(*(float *)(m + 0x40), w->x10);
-    *(float *)(m + 0x44) = FastAddRots(*(float *)(m + 0x44), w->x14);
+    ((Moby *)m)->rot.x = FastAddRots(((Moby *)m)->rot.x, w->x10);
+    ((Moby *)m)->rot.y = FastAddRots(((Moby *)m)->rot.y, w->x14);
     FastVecAdd(m + 0x10, m + 0x10, w);
     w->x8 -= g_frame_time_sq * 14.6f;
-    if (*(float *)(m + 0x10) < 0.0f || *(float *)(m + 0x14) < 0.0f || *(float *)(m + 0x18) < 0.0f) {
+    if (((Moby *)m)->pos.x < 0.0f || ((Moby *)m)->pos.y < 0.0f || ((Moby *)m)->pos.z < 0.0f) {
         DeleteMoby(m);
         return;
     }
     if (w->x18 < w->x1a / 4) {
         f = IntToFloat(w->x18);
-        *(float *)(m + 0x2C) = w->x1c * f / IntToFloat(w->x1a / 4);
+        ((Moby *)m)->scale = w->x1c * f / IntToFloat(w->x1a / 4);
     }
     if (FastDecTimer(&w->x18)) DeleteMoby(m);
 }

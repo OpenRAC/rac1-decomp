@@ -186,21 +186,21 @@ void blarg_commander_update(char *m) {
     int r;
     MO *mo = (MO *)m;
     char v[16];
-    st = *(unsigned char *)(m + 0x53);
+    st = ((Moby *)m)->prev_seq;
     d = *(char **)(m + 0x78);
     if (st == 1) {
         p = d + 0x20;
         r = mine_fall(m, p);
         mo->vx = FastAddRots(mo->vx, g_frame_time * 4.3633232f);
         mo->vy = FastAddRots(mo->vy, g_frame_time * 4.3633232f);
-        *(unsigned short *)(m + 0x34) &= 0xEFFF;
+        ((Moby *)m)->flags &= 0xEFFF;
         if (r & 0x61) {
             qcopy(v, m + 0x10);
             ((float *)v)[2] += 1.0f;
             func_L00_0025F4A8_alt(m, p, v, 0.0f, 0.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, 1.0f, 0, 15.0f,
                                   1, st, -1, 0);
             DeleteMoby(m);
-        } else if (*(float *)(m + 0x18) < 5.0f) {
+        } else if (((Moby *)m)->pos.z < 5.0f) {
             DeleteMoby(m);
         }
     }

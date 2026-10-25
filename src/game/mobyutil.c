@@ -1,4 +1,5 @@
 #include "common.h"
+#include "moby.h"
 #include "callees.h"
 #include "records.h"
 #include "structs.h"
@@ -884,7 +885,7 @@ int suck_get_aim_height(char *arg0) {
     ret0:
         return 0;
     }
-    if ((*(unsigned short *)(arg0 + 0x34) & 0x20) == 0) {
+    if ((((Moby *)arg0)->flags & 0x20) == 0) {
         goto ret0;
     }
     return **(int **)(arg0 + 0x78);
@@ -896,7 +897,7 @@ int read_state_field(char *arg0) {
     ret0:
         return 0;
     }
-    if ((*(unsigned short *)(arg0 + 0x34) & 0x20) == 0) {
+    if ((((Moby *)arg0)->flags & 0x20) == 0) {
         goto ret0;
     }
     return *(int *)(*(char **)(arg0 + 0x78) + 0x10);

@@ -496,7 +496,7 @@ void update_scoutbot_movement(char *m) {
     *(float *)(s + 0x204) = FastAddRots(*(float *)(s + 0x204), *(float *)(s + 0x20C));
     t = *(float *)(s + 0x1C8) + *(float *)(s + 0x208) * FastSin(*(float *)(s + 0x204));
     if (*(short *)(s + 0x216)) t += *(float *)(s + 0x200);
-    d = t - *(float *)(m + 0x18);
+    d = t - ((Moby *)m)->pos.z;
     {
         float l2 = g_frame_time * 3.0f;
         if (l2 < d) {
@@ -753,9 +753,9 @@ void Moby458Update(char *moby) {
 
     qcopy(position_copy, position_ptr);
     FastVecAdd(position_ptr, position_ptr, data);
-    if (*(float *)(moby + 0x10) < 10.0f || *(float *)(moby + 0x14) < 10.0f ||
-        *(float *)(moby + 0x18) < 10.0f || 500.0f < *(float *)(moby + 0x10) ||
-        500.0f < *(float *)(moby + 0x14) || 500.0f < *(float *)(moby + 0x18)) {
+    if (((Moby *)moby)->pos.x < 10.0f || ((Moby *)moby)->pos.y < 10.0f ||
+        ((Moby *)moby)->pos.z < 10.0f || 500.0f < ((Moby *)moby)->pos.x ||
+        500.0f < ((Moby *)moby)->pos.y || 500.0f < ((Moby *)moby)->pos.z) {
         DeleteMoby(moby);
         return;
     }
@@ -784,7 +784,7 @@ void Moby458Update(char *moby) {
         PartType02Spawn(position, velocity, offset, (*(int *)&homing_shot_trail_lower),
                                (*(int *)&homing_shot_trail_upper), a, b, c, -1);
     }
-    *(float *)(moby + 0x40) = FastAddRots(*(float *)(moby + 0x40),
+    ((Moby *)moby)->rot.x = FastAddRots(((Moby *)moby)->rot.x,
         (*(float *)&homing_shot_spin_rate) * 0.017453292f * g_frame_time * (float)*(int *)(data + 0x1c));
     target = *(char **)(data + 0x10);
     if (target != 0) {
@@ -822,12 +822,12 @@ collision:
     if (func_L00_001EFFF0_E95E8(position_copy, moby + 0x10, 0, moby, position) == 0)
         return;
     qcopy(moby + 0x10, D_L08_001746E0);
-    if (15.0f < *(float *)(moby + 0x10) && 15.0f < *(float *)(moby + 0x14) &&
-        15.0f < *(float *)(moby + 0x18)) {
+    if (15.0f < ((Moby *)moby)->pos.x && 15.0f < ((Moby *)moby)->pos.y &&
+        15.0f < ((Moby *)moby)->pos.z) {
         radius = 24.0f;
-        if (*(float *)(moby + 0x10) - 2.0f < radius) radius = *(float *)(moby + 0x10) - 2.0f;
-        if (*(float *)(moby + 0x14) - 2.0f < radius) radius = *(float *)(moby + 0x14) - 2.0f;
-        if (*(float *)(moby + 0x18) - 2.0f < radius) radius = *(float *)(moby + 0x18) - 2.0f;
+        if (((Moby *)moby)->pos.x - 2.0f < radius) radius = ((Moby *)moby)->pos.x - 2.0f;
+        if (((Moby *)moby)->pos.y - 2.0f < radius) radius = ((Moby *)moby)->pos.y - 2.0f;
+        if (((Moby *)moby)->pos.z - 2.0f < radius) radius = ((Moby *)moby)->pos.z - 2.0f;
         spawn_explosion(moby, data, moby + 0x10, 3.0f, 3.0f, 0,
             10, 20, 5.0f, 3.0f, 9.0f, -1, 1.0f, radius, 1, 1, -1, 0);
     }
@@ -1459,7 +1459,7 @@ void update_blarg_paratrooper_damage_and_state(char *m) {
     float f, f0, f1, f2, f3, f4, f12, f13;
 
     d = *(char **)(m + 0x78);
-    if (*(unsigned char *)(m + 0x20) == 0) return;
+    if (((Moby *)m)->state == 0) return;
     {
         float t = *(float *)&paratrooper_move_speed * g_frame_time;
         ((MS_ *)m)->f2C = *(float *)(*(char **)(m + 0x24) + 0x24) * *(float *)&paratrooper_scale;
@@ -1477,7 +1477,7 @@ void update_blarg_paratrooper_damage_and_state(char *m) {
             Moby_GetJointWorldPos(m, 4, S);
             qcopy(*(char **)(d + 0x1F8) + 0x10, S);
         }
-        *(unsigned short *)(m + 0x34) |= 0x1000;
+        ((Moby *)m)->flags |= 0x1000;
     } else {
         Moby_GetJointWorldPos(m, 4, S);
         MobyTransformScaledVertex(m, 4, (char *)P16);
@@ -1490,7 +1490,7 @@ void update_blarg_paratrooper_damage_and_state(char *m) {
     fz = 0.0f;
     Y = MobyGetHitMessage(m, 0x330000, 0);
     r = ComputeHitResponse(m, Y, d + 0x20, 0, &s50, &fz, 0, 4);
-    if (s50 != 1 && *(unsigned char *)(m + 0x20) != 0x0B) {
+    if (s50 != 1 && ((Moby *)m)->state != 0x0B) {
         {
             float t = *(float *)(d + 0x20) - fz;
             *(float *)(d + 0x20) = t;
@@ -1533,15 +1533,15 @@ void update_blarg_paratrooper_damage_and_state(char *m) {
                 }
                 {
                     char *y = *(char **)(Y + 0x20);
-                    f12 = *(float *)(m + 0x10) - *(float *)(y + 0x10);
-                    f13 = *(float *)(m + 0x14) - *(float *)(y + 0x14);
+                    f12 = ((Moby *)m)->pos.x - *(float *)(y + 0x10);
+                    f13 = ((Moby *)m)->pos.y - *(float *)(y + 0x14);
                 }
                 f = fast_atan2(f12, f13);
                 *(VecQuad *)S = *(VecQuad *)(Y + 0x10);
                 q58 = f;
                 HeadingFromVector(S, &q58, d + 0x88, d + 0x8C);
                 InitKnockback(m, d + 0x70, q58, 8, 1, 0);
-                *(unsigned char *)(m + 0x20) = 10;
+                ((Moby *)m)->state = 10;
                 *(unsigned char *)(d + 0x67) = 0x78;
                 break;
             case 1:
@@ -1567,15 +1567,15 @@ void update_blarg_paratrooper_damage_and_state(char *m) {
                 }
                 {
                     char *y = *(char **)(Y + 0x20);
-                    f12 = *(float *)(m + 0x10) - *(float *)(y + 0x10);
-                    f13 = *(float *)(m + 0x14) - *(float *)(y + 0x14);
+                    f12 = ((Moby *)m)->pos.x - *(float *)(y + 0x10);
+                    f13 = ((Moby *)m)->pos.y - *(float *)(y + 0x14);
                 }
                 f = fast_atan2(f12, f13);
                 *(VecQuad *)S = *(VecQuad *)(Y + 0x10);
                 q5c = f;
                 HeadingFromVector(S, &q5c, d + 0x88, d + 0x8C);
                 InitKnockback(m, d + 0x70, q5c, 0xC, 1, 0);
-                *(unsigned char *)(m + 0x20) = 11;
+                ((Moby *)m)->state = 11;
                 *(unsigned char *)(d + 0x67) = 0xF0;
                 spawn_randomized_bolt_drop(m, 2, 3, 0, -1);
                 break;
@@ -1585,7 +1585,7 @@ void update_blarg_paratrooper_damage_and_state(char *m) {
         }
         RerollEffectCounter(m, (short *)(d + 0x60));
     }
-    *(unsigned char *)(m + 0xA4) = 0xFF;
+    ((Moby *)m)->hit_slot = 0xFF;
     StepColorFade(m, d + 0x60);
 
     if (*(int *)(d + 0x38) != 0) {
@@ -1606,7 +1606,7 @@ void update_blarg_paratrooper_damage_and_state(char *m) {
         if (r != 2) {
             f0 = vec_distance_xy(m + 0x10, d + 0x120);
             if (*(float *)(d + 0x1DC) < f0
-                || 3.0f < FastAbsF(*(float *)(m + 0x18) - *(float *)(d + 0x128)))
+                || 3.0f < FastAbsF(((Moby *)m)->pos.z - *(float *)(d + 0x128)))
                 *(int *)(d + 0x164) = 2;
         }
     } else {
@@ -1620,10 +1620,10 @@ void update_blarg_paratrooper_damage_and_state(char *m) {
     }
     if (*(int *)(d + 0x160) == 0) *(int *)(d + 0x160) = *(int *)(D_0013E633 + 0x2E9D);
 
-    st = *(unsigned char *)(m + 0x20);
+    st = ((Moby *)m)->state;
     if (st == 0 || st == 5 || st == 7 || st == 4) {
         f1 = ProbeGroundHeight(m + 0x10, 0, 0.5f);
-        if (f1 < *(float *)(m + 0x18)) *(float *)(m + 0x18) = f1;
+        if (f1 < ((Moby *)m)->pos.z) ((Moby *)m)->pos.z = f1;
     }
 }
 extern char *func_0020D348(int);
@@ -2005,7 +2005,7 @@ void spawn_moby_radial_particles(char *moby) {
                 o[1] = ground_particle_scatter_spawn_vector_y_bias + random_float_between(-r, r);
                 o[2] = -(random_float_between(*(float *)(d + 0x18), *(float *)(d + 0x1C)) * g_frame_time);
                 o[3] = 0.0f;
-                spawn_span_particle(v, *(void **)d, o, *(float *)(moby + 0x18) - *(float *)(d + 0x20));
+                spawn_span_particle(v, *(void **)d, o, ((Moby *)moby)->pos.z - *(float *)(d + 0x20));
             }
         }
     }

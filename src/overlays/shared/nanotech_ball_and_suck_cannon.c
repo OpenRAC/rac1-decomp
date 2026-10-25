@@ -257,7 +257,7 @@ void compute_nanotech_ball_slot_position(char *m, float *out, int i) {
     char *o;
     build_look_at_matrix(&v, nanotech_slot_offsets + i * 16, *(float *)(pv + 0x2C), pv + 0x20);
     o = *(char **)(pv + (i << 2) + 0x30);
-    if (o != 0 && *(unsigned char *)(m + 0x20) == 2) {
+    if (o != 0 && ((Moby *)m)->state == 2) {
         vec_scale_to_length(&v, &v, *(float *)(o + 0x28));
     }
     FastVecAdd(out, pv + 0x10, &v);
@@ -2699,16 +2699,16 @@ extern short D_L00_00161C80;
 /* UpdateMoby for class 1143: init then slowly spin/ease its value */
 void vendor_orb_update(unsigned char *m) {
     char *p = *(char **)(m + 0x78);
-    switch (m[0x20]) {
+    switch (((Moby *)m)->state) {
     case 0:
-        m[0x20] = 1;
-        m[0x73] = 0x20;
+        ((Moby *)m)->state = 1;
+        ((Moby *)m)->unk73 = 0x20;
         *(float *)(p + 0x40) = random_angle_radians();
         AttachManipulator((char *)m, 1, p);
         break;
     case 1: {
         float f = *(float *)&vendor_orb_spin_speed_deg * 0.017453292f * g_frame_time;
-        *(float *)(m + 0x48) = FastAddRots(*(float *)(m + 0x48), f);
+        ((Moby *)m)->rot.z = FastAddRots(((Moby *)m)->rot.z, f);
         *(float *)(p + 0x40) = FastAddRots(*(float *)(p + 0x40), f * -2.0f);
         axis_rotation_2d48(p + 0x10, 2, *(float *)(p + 0x40));
         break;

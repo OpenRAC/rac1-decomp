@@ -74,14 +74,14 @@ void update_linked_moby_group_transform_and_fall(unsigned char *moby) {
         float b1 = *(float *)&veldin2_moby_group_late_accel * g_frame_time_sq;
         float b2 = *(float *)&veldin2_moby_group_late_decel * g_frame_time_sq;
         float b3 = *(float *)&veldin2_moby_group_late_max_speed * g_frame_time;
-        switch (moby[0x20]) {
+        switch (((Moby *)moby)->state) {
         case 0: {
             short **tp;
             short *t;
             int j;
             qcopy(d->v10, moby + 0x10);
             qcopy(d->v20, moby + 0x40);
-            tp = veldin2_moby_groups + moby[0x21];
+            tp = veldin2_moby_groups + ((Moby *)moby)->group;
             j = 0;
             t = *tp;
             if (t == 0) return;
@@ -98,7 +98,7 @@ void update_linked_moby_group_transform_and_fall(unsigned char *moby) {
             d->f34C = scale_ticks(5);
             d->cnt = j;
             capture_linked_moby_relative_transforms(moby, (char *)d + 0x30, j);
-            moby[0x20] = 1;
+            ((Moby *)moby)->state = 1;
             break;
         }
         case 2: {
@@ -116,7 +116,7 @@ void update_linked_moby_group_transform_and_fall(unsigned char *moby) {
                 d->f344 = *(int *)&veldin2_moby_group_debris_start_rate;
             }
             if (d->f330 > *(float *)&veldin2_moby_group_fall_progress && d->i8 != 0) {
-                moby[0x20] = 4;
+                ((Moby *)moby)->state = 4;
             }
             v9 = 0;
             for (i = 0; i < d->cnt; i++) {
@@ -132,20 +132,20 @@ void update_linked_moby_group_transform_and_fall(unsigned char *moby) {
             if (p != 0) {
                 short s = *(short *)(p + 0xA6);
                 if (s == 0x764) v9 = 1;
-                if (s == *(short *)(moby + 0xA6)) {
+                if (s == ((Moby *)moby)->oclass) {
                     if (p[0x20] == 4) v9 = 1;
                 }
             }
             if (d->f348 != 0 && v9 == 0 && ((VG *)(D_0013E633 + 0xE1D))->s30E == 0) {
-                if (fast_dec_timer(&d->f34C)) moby[0x20] = 4;
+                if (fast_dec_timer(&d->f34C)) ((Moby *)moby)->state = 4;
             }
             break;
         }
         case 4: {
             float t = g_frame_time_sq * 5.0f;
-            *(float *)(moby + 0x18) += d->f340;
+            ((Moby *)moby)->pos.z += d->f340;
             d->f340 = d->f340 - t;
-            if (*(float *)(moby + 0x18) < 20.0f) {
+            if (((Moby *)moby)->pos.z < 20.0f) {
                 int i;
                 for (i = 0; i < d->cnt; i++) {
                     mark_class_0630_moby_and_child_for_removal(veldin2_moby_table + (d->ent[i].idx << 8));
@@ -156,13 +156,13 @@ void update_linked_moby_group_transform_and_fall(unsigned char *moby) {
             break;
         }
         }
-        if ((unsigned char)(moby[0x20] - 1) < 2) {
+        if ((unsigned char)(((Moby *)moby)->state - 1) < 2) {
             lerp_vector(moby + 0x10, d->v10, veldin2_arena_nodes + (d->i4 << 7) + 0x30, d->f330 * 0.5f);
             lerp_vector(moby + 0x40, d->v20, veldin2_arena_nodes + (d->i4 << 7) + 0x70, d->f330 * 0.5f);
         }
         func_L12_0027C368_v(moby, (char *)d + 0x30, d->cnt);
         if (d->f344 != 0.0f) {
-            if (moby[0x20] != 4) {
+            if (((Moby *)moby)->state != 4) {
                 float v[4];
                 float s, z, f20;
                 int n;
@@ -419,7 +419,7 @@ typedef struct { float f0; float f4; int w8; int wc; int w10; int w14; float f18
 void update_lift_state_and_queue_draw(unsigned char *m)
 {
     VD *d = *(VD **)(m + 0x78);
-    switch (m[0x20]) {
+    switch (((Moby *)m)->state) {
     case 0:
         if (*(int *)&veldin2_lift_raised_flag != 0) {
             D_001414F5[0xB] = *(unsigned char *)&veldin2_lift_raised_flag;
@@ -428,13 +428,13 @@ void update_lift_state_and_queue_draw(unsigned char *m)
             int c = *(int *)&veldin2_lift_count;
             unsigned short fl;
             *(int *)((char *)d + 0x1C) = c;
-            fl = *(unsigned short *)(m + 0x34);
+            fl = ((Moby *)m)->flags;
             *(int *)&veldin2_lift_count = c + 1;
-            m[0x30] = 0xFF;
-            m[0x20] = 1;
-            *(unsigned short *)(m + 0x34) = fl | 1;
+            ((Moby *)m)->update_dist = 0xFF;
+            ((Moby *)m)->state = 1;
+            ((Moby *)m)->flags = fl | 1;
         }
-        *(short *)(m + 0x32) = 0;
+        ((Moby *)m)->draw_dist = 0;
         *(int *)(m + 0x94) = 0;
         break;
     case 1:
@@ -445,38 +445,38 @@ void update_lift_state_and_queue_draw(unsigned char *m)
             int w = d->w8;
             *(int *)&veldin2_lift_count = 0;
             if (w != 0 && D_001414F5[0xB] == 0) {
-                m[0x20] = 2;
-                *(float *)(m + 0x18) = d->f0;
+                ((Moby *)m)->state = 2;
+                ((Moby *)m)->pos.z = d->f0;
             } else {
-                m[0x20] = 3;
-                *(float *)(m + 0x18) = d->f4;
+                ((Moby *)m)->state = 3;
+                ((Moby *)m)->pos.z = d->f4;
             }
         }
         break;
     case 3:
-        if (m[0xBC] & 4) {
+        if (((Moby *)m)->command & 4) {
             *(int *)&veldin2_lift_raised_flag = 0;
-            m[0x20] = 2;
+            ((Moby *)m)->state = 2;
             if (d->w8 == 0) {
                 menu_item_enabled_105[9] = 1;
             }
         }
         ApproachWithVelocity(d->f4, g_frame_time_sq * 4.0f, g_frame_time_sq * 4.0f, g_frame_time * 4.0f, (float *)(m + 0x18), (float *)((char *)d + 0x18));
         synchronize_lift_group_height(m);
-        m[0xBC] = 1;
+        ((Moby *)m)->command = 1;
         break;
     case 2:
-        if (m[0xBC] & 8) {
-            m[0x20] = 3;
+        if (((Moby *)m)->command & 8) {
+            ((Moby *)m)->state = 3;
             *(int *)&veldin2_lift_raised_flag = 1;
         }
-        m[0xBC] = 2;
+        ((Moby *)m)->command = 2;
         synchronize_lift_group_height(m);
         ApproachWithVelocity(d->f0, g_frame_time_sq * 4.0f, g_frame_time_sq * 4.0f, g_frame_time * 4.0f, (float *)(m + 0x18), (float *)((char *)d + 0x18));
-        if (FastAbsF(*(float *)(m + 0x18) - d->f0) > 0.1f) {
+        if (FastAbsF(((Moby *)m)->pos.z - d->f0) > 0.1f) {
             char *b = D_0013E633 + 0xE1D;
             if ((unsigned)(*(int *)(b + 0x208C) - 0x11) < 2) {
-                float f = *(float *)(m + 0x18);
+                float f = ((Moby *)m)->pos.z;
                 if (*(float *)(b + 0x2F0) < f) {
                     *(float *)(b + 0x2F0) = f;
                 }
@@ -2563,7 +2563,7 @@ void update_drek_boss_state_dependent_scalars(char *moby) {
     f = f / (*(float *)&drek_boss_cam_range_far - *(float *)&drek_boss_cam_range_near);
     x = (*(float *)&drek_boss_cam_dist_far - *(float *)&drek_boss_cam_dist_near) * f + *(float *)&drek_boss_cam_dist_near;
     y = (*(float *)&drek_boss_cam_height_far - *(float *)&drek_boss_cam_height_near) * f + *(float *)&drek_boss_cam_height_near;
-    st = *(unsigned char *)(moby + 0x20);
+    st = ((Moby *)moby)->state;
     if (st == 0x13) {
         char *g = D_0013E633 + 0xE1D;
         if ((*(int *)(g + 0x208C) == 0xF || *(int *)(g + 0x2084) == 0x42) && *(int *)(d + 0x364) == 0 &&
@@ -2615,7 +2615,7 @@ x = *(float *)&drek_boss_cam_attack_dist;
                         Hud_SetBarValueById(*(int *)(d + 0x368), 0);
                         *(int *)(d + 0x368) = -1;
                     }
-                    if (*(unsigned char *)(moby + 0x20) >= 2) {
+                    if (((Moby *)moby)->state >= 2) {
                         if (*(int *)(d + 0x3EC) != 0 || *(int *)&drek_boss_camera_reset_done != 0) {
                             char *w;
                             q = veldin2_player_camera;
@@ -2738,7 +2738,7 @@ void render_drek_boss_joint_glows(char *moby) {
     draw_offset_textured_effect_quad(a, h, *(float*)&drek_boss_rider_glow_size, *(float*)&drek_boss_rider_glow_offset);
     Moby_GetJointWorldPos(q->p3A0, 2, a);
     draw_offset_textured_effect_quad(a, h, *(float*)&drek_boss_rider_glow_size, *(float*)&drek_boss_rider_glow_offset);
-    if ((unsigned)(*(unsigned char *)(moby + 0x53) - 11) < 3) {
+    if ((unsigned)(((Moby *)moby)->prev_seq - 11) < 3) {
         int n2 = scale_ticks(*(int*)&drek_boss_charge_glow_period);
         float g = IntToFloat(veldin2_frame_count % n2);
         int h2;

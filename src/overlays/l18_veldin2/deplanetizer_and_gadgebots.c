@@ -724,7 +724,7 @@ void update_moby_transform_and_child(char *moby) {
     char *data = *(char **)(moby + 0x78);
     char tmp[16];
     char *child;
-    switch (*(unsigned char *)(moby + 0x20)) {
+    switch (((Moby *)moby)->state) {
     case 0:
         moby[0x20] = 1;
         break;
@@ -733,14 +733,14 @@ void update_moby_transform_and_child(char *moby) {
         update_entity_matrix(data + 0x20, tmp, data + 0x70, moby + 0x40);
         break;
     }
-    if (*(unsigned char *)(moby + 0xBC) != 0 && *(int *)(data + 0x80) != 0 && *(int *)(data + 0x84) == 0) {
+    if (((Moby *)moby)->command != 0 && *(int *)(data + 0x80) != 0 && *(int *)(data + 0x84) == 0) {
         char *c = func_0020D348_m(0x764);
         *(char **)(data + 0x84) = c;
         if (c != 0) {
             *(unsigned short *)(c + 0x32) = *(unsigned short *)(moby + 0x32);
             (*(char **)(data + 0x84))[0x31] = 1;
             *(long *)(*(char **)(data + 0x84) + 0x38) = *(long *)(moby + 0x38);
-            *(float *)(*(char **)(data + 0x84) + 0x2C) *= *(float *)(moby + 0x2C) / *(float *)(*(char **)(moby + 0x24) + 0x24);
+            *(float *)(*(char **)(data + 0x84) + 0x2C) *= ((Moby *)moby)->scale / *(float *)(*(char **)(moby + 0x24) + 0x24);
         }
     }
     qcopy(data + 0x60, moby + 0x10);
@@ -868,14 +868,14 @@ void Moby1906Update(unsigned char *m) {
     unsigned char *e = *(unsigned char **)(m + 0x78);
     unsigned char *s0;
     update_gadgebot_damage_target_and_glow(m);
-    switch (m[0x20]) {
+    switch (((Moby *)m)->state) {
     case 0: {
         unsigned short h;
-        m[0x20] = 8;
-        if (random_integer_below(2)) *(unsigned short *)(m + 0x34) |= 0x8000;
-        else *(unsigned short *)(m + 0x34) &= 0x7FFF;
-        *(unsigned short *)(m + 0x34) |= 0x100;
-        m[0x73] = D_L18_00162698;
+        ((Moby *)m)->state = 8;
+        if (random_integer_below(2)) ((Moby *)m)->flags |= 0x8000;
+        else ((Moby *)m)->flags &= 0x7FFF;
+        ((Moby *)m)->flags |= 0x100;
+        ((Moby *)m)->unk73 = D_L18_00162698;
         *(void **)(e + 0x140) = &D_L18_00162680;
         *(float *)(e + 0x20) = 1.0f;
         e[0x58] = 8;
@@ -883,14 +883,14 @@ void Moby1906Update(unsigned char *m) {
         e[0x5C] = 1;
         *(float *)(e + 0x30) = 0.5f;
         *(float *)(e + 0x1F8) = random_angle_radians();
-        m[0x30] = 0xFF;
-        h = *(unsigned short *)(m + 0x34);
-        *(short *)(m + 0x32) = 0xFF;
+        ((Moby *)m)->update_dist = 0xFF;
+        h = ((Moby *)m)->flags;
+        ((Moby *)m)->draw_dist = 0xFF;
         h |= 1;
-        m[0x31] = 0;
+        ((Moby *)m)->visible = 0;
         h &= 0xEFFF;
         *(int *)(m + 0x94) = 0;
-        *(unsigned short *)(m + 0x34) = h;
+        ((Moby *)m)->flags = h;
         break;
     }
     case 1: {
@@ -902,18 +902,18 @@ void Moby1906Update(unsigned char *m) {
         qcopy(tmp, s0);
         ((float *)tmp)[2] += 1.0f;
         r = ProbeGroundHeight(tmp, 0, 0.5f);
-        if (*(float *)(m + 0x18) < r) {
-            *(float *)(m + 0x18) = r;
-            m[0x20] = 2;
-            if (m[0x53]) MobyBlendAnimation(m, 0, 0, scale_ticks(10));
-        } else if (*(float *)(m + 0x18) < a) {
-            m[0x20] = 6;
+        if (((Moby *)m)->pos.z < r) {
+            ((Moby *)m)->pos.z = r;
+            ((Moby *)m)->state = 2;
+            if (((Moby *)m)->prev_seq) MobyBlendAnimation(m, 0, 0, scale_ticks(10));
+        } else if (((Moby *)m)->pos.z < a) {
+            ((Moby *)m)->state = 6;
         }
         break;
     }
     case 7:
         if (CarriedMobyUpdate(m, e + 0x70)) {
-            m[0x20] = 2;
+            ((Moby *)m)->state = 2;
             *(short *)(e + 0x138) = 0;
         }
         break;
@@ -921,21 +921,21 @@ void Moby1906Update(unsigned char *m) {
         if (*(int *)(e + 0x1C4) == 2) {
             if (!(10.0f < f9d48_i(m + 0x10, e + 0x180))) break;
         }
-        m[0x20] = 3;
-        if (m[0x53] != 1) MobyBlendAnimation(m, 1, 0, scale_ticks(10));
+        ((Moby *)m)->state = 3;
+        if (((Moby *)m)->prev_seq != 1) MobyBlendAnimation(m, 1, 0, scale_ticks(10));
         break;
     case 3: {
         float f;
         *(QVd058 *)tmp = *(QVd058 *)(e + 0x180);
         f = fd9a0_c(m, tmp);
         if (*(int *)(e + 0x1C4) == 2 && f < 5.0f) {
-            m[0x20] = 2;
-            if (m[0x53]) MobyBlendAnimation(m, 0, 0, scale_ticks(10));
+            ((Moby *)m)->state = 2;
+            if (((Moby *)m)->prev_seq) MobyBlendAnimation(m, 0, 0, scale_ticks(10));
             break;
         }
         if (f < 1.5f) {
-            m[0x20] = 4;
-            if (m[0x53] != 2) {
+            ((Moby *)m)->state = 4;
+            if (((Moby *)m)->prev_seq != 2) {
                 int v = (int)*(float *)&gadgebot_close_anim_start_frame;
                 MobyBlendAnimation(m, 2, v, scale_ticks(5));
             }
@@ -945,21 +945,21 @@ void Moby1906Update(unsigned char *m) {
     case 4: {
         float r, k, b, d;
         s0 = m + 0x48;
-        r = fast_atan2(*(float *)(e + 0x180) - *(float *)(m + 0x10), *(float *)(e + 0x184) - *(float *)(m + 0x14));
+        r = fast_atan2(*(float *)(e + 0x180) - ((Moby *)m)->pos.x, *(float *)(e + 0x184) - ((Moby *)m)->pos.y);
         k = 6.2831855f;
         b = g_frame_time_sq * k;
         d = g_frame_time * k;
         SteerAngleWithVelocity((float *)s0, (float *)(e + 0x1E8), r, b, b, d);
         if (IsFrameWithinWindow((char *)m, 14.0f)) collect_mobies_in_sphere_at_moby_point(m, 0.5f, 1.0f, 1.0f, 1, 1, 0, 1, 0);
-        if (m[0x70] & 2) {
+        if (((Moby *)m)->anim_flags & 2) {
             if (*(int *)(e + 0x1C4) == 2) {
-                m[0x20] = 2;
-                if (m[0x53]) MobyBlendAnimation(m, 0, 0, scale_ticks(10));
+                ((Moby *)m)->state = 2;
+                if (((Moby *)m)->prev_seq) MobyBlendAnimation(m, 0, 0, scale_ticks(10));
                 break;
             }
             if (!(2.5f < f9d48_i(m + 0x10, e + 0x180))) break;
-            m[0x20] = 3;
-            if (m[0x53] != 1) MobyBlendAnimation(m, 1, 0, scale_ticks(10));
+            ((Moby *)m)->state = 3;
+            if (((Moby *)m)->prev_seq != 1) MobyBlendAnimation(m, 1, 0, scale_ticks(10));
             break;
         }
         break;
@@ -970,10 +970,10 @@ void Moby1906Update(unsigned char *m) {
         qcopy(tmp, m + 0x10);
         ((float *)tmp)[2] += 0.5f;
         func_L00_0025F4A8_alt(m, e + 0x40, tmp, 0.0f, 0.0f, 5, 2, 4, 1.0f, 0.5f, 9.0f, 0.5f, 4, 0.0f, 0, 1, -1, 0);
-        m[0x20] = 8;
-        if (m[0x53]) MobyBlendAnimation(m, 0, 0, scale_ticks(10));
+        ((Moby *)m)->state = 8;
+        if (((Moby *)m)->prev_seq) MobyBlendAnimation(m, 0, 0, scale_ticks(10));
         *(int *)(m + 0x94) = 0;
-        *(unsigned short *)(m + 0x34) = (*(unsigned short *)(m + 0x34) | 0x41) & 0xEFFF;
+        ((Moby *)m)->flags = (((Moby *)m)->flags | 0x41) & 0xEFFF;
         break;
     }
     s0 = m + 0xC0;
@@ -1163,14 +1163,14 @@ float move_gadgebot_toward_target(char *self, float *src) {
     float dist;
     *(QVec *)&a = *(QVec *)src;
     {
-        float d = FastAddRots(fast_atan2(a.v[0] - *(float *)(self + 0x10), a.v[1] - *(float *)(self + 0x14)), *(float *)(o + 0x1EC));
+        float d = FastAddRots(fast_atan2(a.v[0] - ((Moby *)self)->pos.x, a.v[1] - ((Moby *)self)->pos.y), *(float *)(o + 0x1EC));
         SteerAngleWithVelocity((float *)(self + 0x48), (float *)(o + 0x1E8), d, g_frame_time_sq * 6.2831855f, g_frame_time_sq * 6.2831855f, g_frame_time * 6.2831855f);
     }
     b[0] = z;
     dist = vec_distance_xy((float *)(self + 0x10), a.v);
     ApproachWithVelocity(b, (float *)(o + 0x1F0), dist, g_frame_time_sq * 6.0f, g_frame_time_sq * 6.0f, g_frame_time * 5.0f);
-    v[0] = FastCos(*(float *)(self + 0x48)) * *(float *)(o + 0x1F0);
-    v[1] = FastSin(*(float *)(self + 0x48)) * *(float *)(o + 0x1F0);
+    v[0] = FastCos(((Moby *)self)->rot.z) * *(float *)(o + 0x1F0);
+    v[1] = FastSin(((Moby *)self)->rot.z) * *(float *)(o + 0x1F0);
     v[2] = -(g_frame_time + g_frame_time);
     move_4318((int)self, (int)v, h, h, z, 0);
     resolve_point_path_segment_xy_clearance(h, *(void **)(o + 0x1E0), self + 0x10, self + 0x10);

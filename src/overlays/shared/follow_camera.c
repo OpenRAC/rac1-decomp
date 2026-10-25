@@ -863,7 +863,7 @@ void pterodactyl_update(unsigned char *m) {
     D_2e *d = *(D_2e **)(m + 0x78);
     int *p = level_paths[d->path];
     float y;
-    switch (m[0x20]) {
+    switch (((Moby *)m)->state) {
     case 0:
         if (d->path == -1) {
             DeleteMoby(m);
@@ -876,21 +876,21 @@ void pterodactyl_update(unsigned char *m) {
             d->i70 = FastAbsF(a - b) < 0.1f;
         }
         d->f6C = d->f68 * (float)*p;
-        m[0x20] = 1;
-        *(float *)(m + 0x2C) *= *(float *)&pterodactyl_scale_factor;
-        m[0x30] = 0xFF;
+        ((Moby *)m)->state = 1;
+        ((Moby *)m)->scale *= *(float *)&pterodactyl_scale_factor;
+        ((Moby *)m)->update_dist = 0xFF;
     case 1:
-        y = *(float *)(m + 0x18);
+        y = ((Moby *)m)->pos.z;
         SamplePathAt(p, d->f6C, d->i70, m + 0x10, (float *)(m + 0x40), 0);
-        *(float *)(m + 0x44) *= 0.5f;
-        *(float *)(m + 0x18) += d->f64;
+        ((Moby *)m)->rot.y *= 0.5f;
+        ((Moby *)m)->pos.z += d->f64;
         d->f6C += d->f74;
         if ((float)*p < d->f6C) d->f6C -= (float)*p;
-        if (m[0x70] & 2) {
-            if (y < *(float *)(m + 0x18) || random_integer_below(3) != 0) {
-                if (m[0x53]) MobyBlendAnimation(m, 0, 0, 10);
+        if (((Moby *)m)->anim_flags & 2) {
+            if (y < ((Moby *)m)->pos.z || random_integer_below(3) != 0) {
+                if (((Moby *)m)->prev_seq) MobyBlendAnimation(m, 0, 0, 10);
             } else {
-                if (m[0x53] != 1) MobyBlendAnimation(m, 1, 0, 10);
+                if (((Moby *)m)->prev_seq != 1) MobyBlendAnimation(m, 1, 0, 10);
             }
         }
         break;
@@ -943,7 +943,7 @@ void robot_arm_update(char *m) {
     float r;
     float *q;
 
-    switch (*(unsigned char *)(m + 0x20)) {
+    switch (((Moby *)m)->state) {
     case 0:
         DeleteMoby(m);
         return;

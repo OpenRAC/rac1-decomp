@@ -1880,20 +1880,20 @@ void forcefield_tower_update(char *moby) {
     float vec[4];
     float blk[4];
     float acc[4];
-    int state = *(unsigned char *)(moby + 0x20);
+    int state = ((Moby *)moby)->state;
 
     switch (state) {
     case 0: {
-        int a = *(unsigned char *)(moby + 0x30);
-        int b = *(short *)(moby + 0x32);
+        int a = ((Moby *)moby)->update_dist;
+        int b = ((Moby *)moby)->draw_dist;
         unsigned short h;
         int w, rnd;
-        *(unsigned char *)(moby + 0xBC) = 0;
-        *(unsigned char *)(moby + 0x20) = 1;
-        if (a < b) *(unsigned char *)(moby + 0x30) = *(unsigned char *)(moby + 0x32);
+        ((Moby *)moby)->command = 0;
+        ((Moby *)moby)->state = 1;
+        if (a < b) ((Moby *)moby)->update_dist = *(unsigned char *)(moby + 0x32);
         rnd = g_current_level_index;
         *(int *)(d + 0x70) = -1;
-        h = *(unsigned short *)(moby + 0xB2);
+        h = ((Moby *)moby)->save_id;
         w = *(int *)((char *)D_0014171B + 0xAB75 + ((short)h >> 5) * 4 + (rnd << 8));
         if ((w >> (h & 0x1F)) & 1) {
             if (*(int *)(d + 0x74) != -1) linked_state_flags[*(int *)(d + 0x74)] = 1;
@@ -1902,7 +1902,7 @@ void forcefield_tower_update(char *moby) {
             Moby_GetJointWorldPos(moby, 0, vec);
             vec[2] = vec[2] + 1.1f;
             spawn_scaled_owned_moby(moby, vec, 2.8f);
-            *(unsigned short *)(moby + 0x34) &= 0xEFFF;
+            ((Moby *)moby)->flags &= 0xEFFF;
         }
     break;
     }
@@ -1921,7 +1921,7 @@ play:
         vec[2] = vec[2] + 8.7f;
         set_voice_position(*(int *)(d + 0x70), vec);
 done:
-        v = *(unsigned char *)(moby + 0x31);
+        v = ((Moby *)moby)->visible;
         if (v != 0 && random_integer_below(9) == 0) {
             int s17 = func_001160D8();
             int s16, s18, e, m;
@@ -1948,7 +1948,7 @@ done:
         *(u128z_2D0298 *)blk = 0;
         f = f * 8.0f;
         s = 1000.0f;
-        c = *(unsigned char *)(moby + 0xBC);
+        c = ((Moby *)moby)->command;
         blk[2] = f;
         *(u128z_2D0298 *)vec = *(u128z_2D0298 *)blk;
         switch (c) {
@@ -1958,12 +1958,12 @@ done:
         }
         if (s < 100.0f) {
             if (IsFrameWithinWindow(moby, s)) {
-                Moby_GetJointWorldPos(moby, *(unsigned char *)(moby + 0xBC) + 1, blk);
+                Moby_GetJointWorldPos(moby, ((Moby *)moby)->command + 1, blk);
                 func_L00_0025F4A8_s(moby, vec, blk, 0.0f, 0.0f, 10, 3, 16, 4.0f, 2.0f, 0.0f, 1.0f, -1, 20.0f, 1, 1, -1, 0);
-                *(unsigned char *)(moby + 0xBC) = *(unsigned char *)(moby + 0xBC) + 1;
+                ((Moby *)moby)->command = ((Moby *)moby)->command + 1;
             }
         }
-        if (*(unsigned char *)(moby + 0x70) & 2) {
+        if (((Moby *)moby)->anim_flags & 2) {
             func_L00_0025F4A8_s(moby, vec, 0, 0.0f, 0.0f, 10, 3, 16, 4.0f, 2.0f, 0.0f, 1.0f, -1, 20.0f, 1, 1, -1, 0);
             Moby_GetJointWorldPos(moby, 3, blk);
             FastVecSub(blk, blk, moby + 0x10);

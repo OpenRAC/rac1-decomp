@@ -955,12 +955,12 @@ void update_spinning_projectile(unsigned char *m) {
         DeleteMoby(m);
         return;
     }
-    if (m[0x20] != 0)
+    if (((Moby *)m)->state != 0)
         return;
-    *(float *)(m + 0x40) = FastAddRots(*(float *)(m + 0x40), g_frame_time * 6.2831855f);
+    ((Moby *)m)->rot.x = FastAddRots(((Moby *)m)->rot.x, g_frame_time * 6.2831855f);
     FastVecAdd(next, m + 0x10, d);
     InitDirectionalHitQuery(col, m, 1, 2.0f, d);
-    *(short *)(col + 0x1A) = *(short *)(m + 0xA6);
+    *(short *)(col + 0x1A) = ((Moby *)m)->oclass;
     if (coll_line(m + 0x10, next, 0, m, col) != 0 || coll_sphere(m + 0x10, 0, m, 0.3f) != 0 || fast_dec_timer(d + 0x38) != 0) {
         hit = (char *)quartu_coll_hit_moby[0];
         if (hit != 0 && (int)hit != *(int *)(d + 0x3C)) {
@@ -1058,7 +1058,7 @@ void underwater_ring_update(unsigned char *moby) {
     int divisor;
     int near_parent = 0;
 
-    if ((unsigned char)(moby[0x20] - 1) < 2) {
+    if ((unsigned char)(((Moby *)moby)->state - 1) < 2) {
         FastVecSub(delta, moby + 0x10, D_0013E633 + 0xE9D);
         if (FastVecLength(delta) < vars->distance) {
             matrix_from_basis_rows(matrix, moby + 0xC0);
@@ -1066,14 +1066,14 @@ void underwater_ring_update(unsigned char *moby) {
             if (*(float *)(delta + 4) < 0.2f) near_parent = 1;
         }
     }
-    switch (moby[0x20]) {
+    switch (((Moby *)moby)->state) {
     case 0:
         if (vars->initialized == 0) {
             Moby_GetJointWorldPos(moby, 0, delta);
             vars->distance = FastVecDist(moby + 0x10, delta);
             vars->notified_count = 0;
             vars->parent = moby;
-            get_first_moby_in_group(&child, moby[0x21], 0, 0);
+            get_first_moby_in_group(&child, ((Moby *)moby)->group, 0, 0);
             while (child != 0) {
                 if ((unsigned char *)child != moby && *(short *)(child + 0xA6) == 0x4b9) {
                     RingVars_6D48 *other = *(RingVars_6D48 **)(child + 0x78);
@@ -1091,19 +1091,19 @@ void underwater_ring_update(unsigned char *moby) {
         vars->triggered = 0;
         vars->flash_timer = 0;
         set_moby_color(moby, 0, 0, 0);
-        moby[0x20] = 1;
+        ((Moby *)moby)->state = 1;
         break;
     case 1:
     case 2:
-        save_id = *(unsigned short *)(moby + 0xB2);
+        save_id = ((Moby *)moby)->save_id;
         save_byte = (unsigned char *)D_L15_001BBB40;
         save_byte -= -(short)save_id;
         if (save_byte[0x454] != 0 ||
             ((((int)*(unsigned int *)(((((short)save_id >> 5) << 2) + (g_current_level_index << 8)) + (unsigned char *)(D_0014171B + 0xAB75))) >> (save_id & 31)) & 1) != 0) {
             if (vars->enabled != 0) {
-                set_moby_list_state(moby[0x21], 4);
+                set_moby_list_state(((Moby *)moby)->group, 4);
                 vars->timer = vars->restart_timer;
-                moby[0x20] = 4;
+                ((Moby *)moby)->state = 4;
                 break;
             }
         }
@@ -1120,19 +1120,19 @@ void underwater_ring_update(unsigned char *moby) {
             set_moby_color(moby, 0, 0xff, 0);
             vars->triggered = 1;
         }
-        if (moby[0x20] == 2) {
+        if (((Moby *)moby)->state == 2) {
             if (vars->child_count >= vars->notified_count) {
-                set_moby_list_state(moby[0x21], 4);
+                set_moby_list_state(((Moby *)moby)->group, 4);
                 ((int (*)(int, int, int))Moby_PlaySound)(1, 0x31, (int)moby);
                 vars->timer = vars->restart_timer;
-                moby[0x20] = 4;
+                ((Moby *)moby)->state = 4;
                 break;
             } else {
                 if (FastDecTimer(&vars->timer) != 0) {
                     vars->child_count = 0;
                     vars->triggered = 0;
                     Moby_PlaySound(2, 0x31, (int)moby);
-                    set_moby_list_state(moby[0x21], 3);
+                    set_moby_list_state(((Moby *)moby)->group, 3);
                 } else if (FastDecTimer(&vars->delay) != 0) {
                     Moby_PlaySound(0, 0x31, (int)moby);
                     first = scale_ticks(0x2d);
@@ -1154,7 +1154,7 @@ void underwater_ring_update(unsigned char *moby) {
         set_moby_color(moby, 0, 0, 0);
         vars->child_count = 0;
         vars->triggered = 0;
-        moby[0x20] = 1;
+        ((Moby *)moby)->state = 1;
         break;
     case 4: {
         unsigned short save_id;
@@ -1169,10 +1169,10 @@ void underwater_ring_update(unsigned char *moby) {
                 vars->flash_color = 1;
             }
         }
-        save_id = *(unsigned short *)(moby + 0xB2);
+        save_id = ((Moby *)moby)->save_id;
         bits = (unsigned int *)(((((short)save_id >> 5) << 2) + (g_current_level_index << 8)) + (unsigned char *)(D_0014171B + 0xAB75));
         *bits |= 1U << (save_id & 31);
-        save_id = *(unsigned short *)(moby + 0xB2);
+        save_id = ((Moby *)moby)->save_id;
         quartu_moby_killed[(short)save_id >> 5] |= 1U << (save_id & 31);
         break;
     }

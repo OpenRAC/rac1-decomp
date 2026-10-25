@@ -366,7 +366,7 @@ void draw_ship_hud(char *moby) {
             Help_Request(0x2AFD, 0x56);
         }
     }
-    if (*(unsigned char *)(moby + 0x20) == 8) {
+    if (((Moby *)moby)->state == 8) {
         func_001F6FD8_c(0x100, 0xC8, 0x80005080L, func_001FE540_id(0x5243), 0x11);
     }
     {
@@ -2064,17 +2064,17 @@ void update_moby_target_heading_and_conditional_movement(char *m, float *p) {
     char *data = *(char **)(m + 0x78);
     float v[3];
     char tmp[16];
-    float ang = fast_atan2(p[0] - *(float *)(m + 0x10), p[1] - *(float *)(m + 0x14));
+    float ang = fast_atan2(p[0] - ((Moby *)m)->pos.x, p[1] - ((Moby *)m)->pos.y);
     float t = FastAddRots(ang, *(float *)(data + 0x24C));
     float dist;
     float b = g_frame_time_sq * 8.726646f;
     SteerAngleWithVelocity((float *)(m + 0x48), (float *)(data + 0x250), t, b, b, D_0015EE6C_313D00 * 12.566371f);
     dist = MobyGetFrameValue(m);
-    if (*(unsigned char *)(m + 0x52) == *(unsigned char *)(m + 0x53)) {
+    if (((Moby *)m)->seq == ((Moby *)m)->prev_seq) {
         if (8.0f < dist && dist < 22.0f) {
             *(float *)(data + 0x1A4) = *(float *)&puffoid_walk_speed * *(float *)&D_0015EE6C_s;
-            v[0] = FastCos(*(float *)(m + 0x48)) * 2;
-            v[1] = FastSin(*(float *)(m + 0x48)) * 2;
+            v[0] = FastCos(((Moby *)m)->rot.z) * 2;
+            v[1] = FastSin(((Moby *)m)->rot.z) * 2;
             v[2] = 0;
             move_w(m, data + 0x180, v, tmp, 1.0f);
         }
@@ -2780,7 +2780,7 @@ void update_oil_tanker_link_effects_and_destruction(char *m) {
         func_L00_00265050_s(m, 0x787, m + 0x10, m + 0x40, scale_ticks(0x5A), 0, v, pokitaru_zero_vec, g_frame_time_sq * 12.0f, pokitaru_zero_vec);
         m[0x20] = 2;
         m[0x31] = 0;
-        *(unsigned short *)(m + 0x34) |= 1;
+        ((Moby *)m)->flags |= 1;
         break;
     }
 }
@@ -2812,7 +2812,7 @@ void Moby1297Update(unsigned char *moby) {
     float v[4];
     float *vp;
     spawn_energy_sphere_particles((char *)moby);
-    switch (moby[0x20]) {
+    switch (((Moby *)moby)->state) {
     case 1:
         if (func_001F9908_i(data + 0x20)) {
             float *p = *(float **)(moby + 0x24);

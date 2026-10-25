@@ -547,7 +547,7 @@ void fire_blarg_turret_projectile(char *moby)
         Moby_GetJointWorldPos(moby, 0, v);
         d = vec_distance_xy(moby + 0x10, *(char **)(data + 0x40) + 0x10);
         x = (20.0f - d) / 20.0f * 5.0f + 2.5f;
-        ang = FastAddRots(random_float_between(-x, x) * 0.017453292f, *(float *)(moby + 0x48));
+        ang = FastAddRots(random_float_between(-x, x) * 0.017453292f, ((Moby *)moby)->rot.z);
         v2[0] = FastCos(ang) * (*(float *)&gemlik_turret_shot_speed * g_frame_time);
         v2[1] = FastSin(ang) * (*(float *)&gemlik_turret_shot_speed * g_frame_time);
         v2[2] = 0;
@@ -560,13 +560,13 @@ extern int func_L00_00260D30(void *, void *, float);
 void update_blarg_turret_target_and_state(unsigned char *moby) {
     char *data = *(char **)(moby + 0x78);
     float distance;
-    if (moby[0x20] == 3) distance = 22.0f;
+    if (((Moby *)moby)->state == 3) distance = 22.0f;
     else distance = 20.0f;
     FindNearestTargetMoby(moby, data, distance);
     if (*(int *)(data + 0x40) == 0) {
         *(int *)(data + 0x40) = *(int *)(D_0013E633 + 0x2E9D);
     }
-    if (moby[0xBC] >= 4) moby[0x20] = moby[0xBC];
+    if (((Moby *)moby)->command >= 4) ((Moby *)moby)->state = ((Moby *)moby)->command;
 }
 extern char *func_0020D348(int);
 extern void func_L00_00251E30(void *);

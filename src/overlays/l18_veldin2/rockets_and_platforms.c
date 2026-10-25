@@ -48,15 +48,15 @@ void update_projectile_motion_collision_and_trail(char *moby) {
     float f20, f1;
     char *t;
 
-    *(float *)(moby + 0x40) = FastAddRots(*(float *)(moby + 0x40), g_frame_time * 6.2831855f);
+    ((Moby *)moby)->rot.x = FastAddRots(((Moby *)moby)->rot.x, g_frame_time * 6.2831855f);
     if (*(short *)(data + 0x12) != 0) {
         f20 = FastVecLength(data);
         FastVecSub(data, D_0013E633 + 0xEDD, moby + 0x10);
         f1 = FastVecLength(data);
         if (f20 < f1) {
             vec_scale_to_length(data, data, f20);
-            *(float *)(moby + 0x48) = fast_atan2(*(float *)data, *(float *)(data + 4));
-            *(float *)(moby + 0x44) = -fast_atan2(vec_length_xy(data), *(float *)(data + 8));
+            ((Moby *)moby)->rot.z = fast_atan2(*(float *)data, *(float *)(data + 4));
+            ((Moby *)moby)->rot.y = -fast_atan2(vec_length_xy(data), *(float *)(data + 8));
         } else if (f1 < 0.1f) {
             DeleteMoby(moby);
             return;
@@ -560,32 +560,32 @@ void func_L18_002D7310_r(unsigned char *m) {
     char *d = *(char **)(m + 0x78);
     char *g;
     int hit;
-    if (m[0x20] == 5 || m[0x20] == 0 || m[0x20] == 4)
+    if (((Moby *)m)->state == 5 || ((Moby *)m)->state == 0 || ((Moby *)m)->state == 4)
         return;
     g = D_0013F450_2D7310;
     if (*(int *)(g + 0x2084) == 0x72) {
-        m[0x20] = 5;
+        ((Moby *)m)->state = 5;
         *(short *)(m + 0x34) = (*(short *)(m + 0x34) | 0x41) & ~0x1000;
         *(int *)(m + 0x94) = 0;
         return;
     }
     hit = func_L00_0025B478_2D7310(m, 0x330000, 0);
-    m[0xA4] = 0xFF;
+    ((Moby *)m)->hit_slot = 0xFF;
     if (*(unsigned char **)(g + 0x23C) == m || *(unsigned char **)(g + 0x240) == m || *(int *)(d + 0x19C) != 0) {
         func_L00_0025F4A8_2D7310(m, D_L18_0015F660_2D7310, 0, 1.5f, 1.0f, 0x14, 6, 0x20, 3.0f, 1.5f, 9.0f, 1.5f, 1, 0.0f, 1, 0, -1, 0);
-        m[0x20] = 5;
+        ((Moby *)m)->state = 5;
         *(short *)(m + 0x34) = (*(short *)(m + 0x34) | 0x41) & ~0x1000;
         *(int *)(m + 0x94) = 0;
         return;
     }
     if (func_001F9908_2D7310((int *)(d + 0x194)) == 0 && hit == 0) {
-        if (m[0x20] != 1)
+        if (((Moby *)m)->state != 1)
             return;
         if (!(func_001F9D48_2D7310(m + 0x10, g + 0x80) < 2.0f))
             return;
     }
     func_L00_0025F4A8_2D7310(m, D_L18_0015F660_2D7310, 0, 0.0f, 0.0f, 5, 2, 8, 1.0f, 0.5f, 9.0f, 0.5f, 1, 0.0f, 0, 0, -1, 0);
-    m[0x20] = 5;
+    ((Moby *)m)->state = 5;
     *(short *)(m + 0x34) = (*(short *)(m + 0x34) | 0x41) & ~0x1000;
     *(int *)(m + 0x94) = 0;
 }
@@ -1105,8 +1105,8 @@ extern int func_0022EEB8(int, int, void *);
 /* Activates a moby and starts an effect on it if none is playing. */
 void request_thruster_pack_lock_red_wait(unsigned char *arg, int value) {
     char *data = *(char **)(arg + 0x78);
-    if (arg[0x20] != 2) {
-        arg[0x20] = 2;
+    if (((Moby *)arg)->state != 2) {
+        ((Moby *)arg)->state = 2;
         *(int *)(data + 0x6C) = value;
     }
     if (!Sound_IsPlaying(arg, *(int *)(data + 0x70))) {
@@ -1118,9 +1118,9 @@ extern void func_L00_0028EBF0(int);
 /* Deactivates a moby in state 2 and stops its sound/effect slot. */
 void end_thruster_pack_lock_red_wait(unsigned char *arg) {
     int *data = *(int **)(arg + 0x78);
-    if (arg[0x20] == 2) {
+    if (((Moby *)arg)->state == 2) {
         int idx;
-        arg[0x20] = 3;
+        ((Moby *)arg)->state = 3;
         idx = data[0x70 / 4];
         if (idx != -1) {
             unsigned char *e = (unsigned char *)voice_pool + idx * 0x70;
@@ -1403,8 +1403,8 @@ int request_floating_platform_sink(Level18State *obj) {
 /* Sets a moby's state to 3 and stores two words in its data block if its state is 1; returns 1 on success, 0 otherwise. */
 int request_floating_platform_tilt(unsigned char *moby, int a1, int a2) {
     char *data = *(char **)(moby + 0x78);
-    if (moby[0x20] == 1) {
-        moby[0x20] = 3;
+    if (((Moby *)moby)->state == 1) {
+        ((Moby *)moby)->state = 3;
         *(int *)(data + 0x7C) = a1;
         *(int *)(data + 0x78) = a2;
         return 1;
@@ -2408,8 +2408,8 @@ void refresh_moby_position_and_activate(unsigned char *arg, void *src, void *pos
     qcopy(arg + 0x10, src);
     *(int *)(data + 0x28) = scale_ticks(5);
     *(float *)(data + 0x24) = speed;
-    if (active && arg[0x20] == 0) {
-        arg[0x20] = 1;
+    if (active && ((Moby *)arg)->state == 0) {
+        ((Moby *)arg)->state = 1;
         *(int *)(data + 0x28) = 0;
         qcopy(data, position);
     }
@@ -2443,8 +2443,8 @@ void HomingSpark_Draw(char *moby) {
     char *data = *(char **)(moby + 0x78);
 
     clear_u64_value(rot);
-    rot[2] = fast_atan2(veldin2_player_camera[0x50] - *(float *)(moby + 0x10), veldin2_player_camera[0x51] - *(float *)(moby + 0x14));
-    rot[1] = -fast_atan2(vec_distance_xy(moby + 0x10, &veldin2_player_camera[0x50]), veldin2_player_camera[0x52] - *(float *)(moby + 0x18));
+    rot[2] = fast_atan2(veldin2_player_camera[0x50] - ((Moby *)moby)->pos.x, veldin2_player_camera[0x51] - ((Moby *)moby)->pos.y);
+    rot[1] = -fast_atan2(vec_distance_xy(moby + 0x10, &veldin2_player_camera[0x50]), veldin2_player_camera[0x52] - ((Moby *)moby)->pos.z);
     euler_to_matrix(m[0][0], rot);
     euler_to_matrix(m[1][0], rot);
     FastVecScale(m[1][1], m[1][1], *(float *)(data + 0x24));
@@ -3144,11 +3144,11 @@ int update_drek_fight_missile_wander_movement(char *moby, float *vec) {
     yaw = FastAddRots(fast_atan2(buf[0], buf[1]), *(float *)(d + 0x148));
     SteerAngleWithVelocity((float *)(moby + 0x48), (float *)(d + 0x140), yaw,
                       *(float *)(d + 0x150), *(float *)(d + 0x150), *(float *)(d + 0x154));
-    *(float *)(moby + 0x10) += FastCos(*(float *)(moby + 0x48)) * (*(float *)&drek_missile_wander_speed * g_frame_time);
-    *(float *)(moby + 0x14) += FastSin(*(float *)(moby + 0x48)) * (*(float *)&drek_missile_wander_speed * g_frame_time);
+    ((Moby *)moby)->pos.x += FastCos(((Moby *)moby)->rot.z) * (*(float *)&drek_missile_wander_speed * g_frame_time);
+    ((Moby *)moby)->pos.y += FastSin(((Moby *)moby)->rot.z) * (*(float *)&drek_missile_wander_speed * g_frame_time);
     ApproachWithVelocity((float *)(moby + 0x18), (float *)(d + 0x144), vec[2], *(float *)(d + 0x158),
                   *(float *)(d + 0x158), *(float *)(d + 0x15C));
-    *(float *)(moby + 0x44) = *(float *)&drek_missile_climb_pitch * *(float *)(d + 0x144);
+    ((Moby *)moby)->rot.y = *(float *)&drek_missile_climb_pitch * *(float *)(d + 0x144);
     if (FastVecLength(buf) < 2.0f) {
         return 1;
     }

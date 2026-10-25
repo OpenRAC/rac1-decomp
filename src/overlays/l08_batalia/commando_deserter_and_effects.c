@@ -247,7 +247,7 @@ void update_moby_height_from_driver(char *m)
     unsigned char *g = D_0013D355 + 0x13B;
     unsigned char *g2;
     if (g[0x2E] != 0 && *(int *)(d + 8) < 0) {
-        o = (char *)&batalia_moby_groups[*(unsigned char *)(m + 0x21)];
+        o = (char *)&batalia_moby_groups[((Moby *)m)->group];
         p = *(unsigned short **)o;
         k = 0x1D8;
         if (p == 0)
@@ -271,10 +271,10 @@ void update_moby_height_from_driver(char *m)
         func_0020D678_2EAF48(m);
         return;
     }
-    switch (*(unsigned char *)(m + 0x20)) {
+    switch (((Moby *)m)->state) {
     case 0:
-        *(float *)(d + 4) = *(float *)(m + 0x18);
-        *(unsigned char *)(m + 0x20) = 1;
+        *(float *)(d + 4) = ((Moby *)m)->pos.z;
+        ((Moby *)m)->state = 1;
         break;
     case 1:
         {
@@ -288,7 +288,7 @@ void update_moby_height_from_driver(char *m)
             g2 = D_0013D355 + 0x13B;
             g2[0x35] = 1;
             func_0022ED80_2EAF48(0, 0, (struct Moby *)m);
-            *(unsigned char *)(m + 0x20) = 2;
+            ((Moby *)m)->state = 2;
         } else {
             ((void (*)(char *, float, float))(void *)ApproachValue)(m + 0x18, (*(float *)d - *(float *)(d + 4)) * **(float **)(o + 0x78) + *(float *)(d + 4), D_0015EE6C_2EAF48 * 10.0f);
         }

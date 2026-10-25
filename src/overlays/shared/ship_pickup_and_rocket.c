@@ -147,16 +147,16 @@ void ShipPickupUpdate(char *moby) {
     switch ((unsigned char)moby[0x20]) {
     case 0:
         if (*((unsigned char *)vars + 0xc) != 0) {
-            *(float *)(moby + 0x2c) = *(float *)(*(char **)(moby + 0x24) + 0x24);
+            ((Moby *)moby)->scale = *(float *)(*(char **)(moby + 0x24) + 0x24);
             moby[0x20] = 4;
             break;
         }
         *(int *)(moby + 0x94) = 0;
         moby[0x31] = 0;
-        *(unsigned short *)(moby + 0x34) |= 1;
+        ((Moby *)moby)->flags |= 1;
         start_size = *(float *)(*(char **)(moby + 0x24) + 0x24);
         moby[0x20] = 1;
-        *(float *)(moby + 0x2c) = start_size * 0.1f;
+        ((Moby *)moby)->scale = start_size * 0.1f;
         break;
     case 1:
         if (vars[0] != -1) {
@@ -183,20 +183,20 @@ void ShipPickupUpdate(char *moby) {
         if ((unsigned char)moby[0x20] != 4) goto frame_tail;
         *(int *)(moby + 0x94) = *(int *)(*(char **)(moby + 0x24) + 0x10);
         moby[0x31] = 1;
-        *(unsigned short *)(moby + 0x34) &= 0xfffe;
+        ((Moby *)moby)->flags &= 0xfffe;
         activated_size = *(float *)(*(char **)(moby + 0x24) + 0x24);
-        *(float *)(moby + 0x2c) = activated_size * 0.1f;
+        ((Moby *)moby)->scale = activated_size * 0.1f;
         break;
     case 4:
-        *(float *)(moby + 0x48) = FastAddRots(*(float *)(moby + 0x48), g_frame_time * 0.7853982f);
-        if (*(float *)(moby + 0x10) < 20.0f) *(float *)(moby + 0x10) = 20.0f;
-        if (1003.0f < *(float *)(moby + 0x10)) *(float *)(moby + 0x10) = 1003.0f;
-        if (*(float *)(moby + 0x14) < 20.0f) *(float *)(moby + 0x14) = 20.0f;
-        if (1003.0f < *(float *)(moby + 0x14)) *(float *)(moby + 0x14) = 1003.0f;
-        if (*(float *)(moby + 0x18) < 20.0f) *(float *)(moby + 0x18) = 20.0f;
-        if (1003.0f < *(float *)(moby + 0x18)) *(float *)(moby + 0x18) = 1003.0f;
+        ((Moby *)moby)->rot.z = FastAddRots(((Moby *)moby)->rot.z, g_frame_time * 0.7853982f);
+        if (((Moby *)moby)->pos.x < 20.0f) ((Moby *)moby)->pos.x = 20.0f;
+        if (1003.0f < ((Moby *)moby)->pos.x) ((Moby *)moby)->pos.x = 1003.0f;
+        if (((Moby *)moby)->pos.y < 20.0f) ((Moby *)moby)->pos.y = 20.0f;
+        if (1003.0f < ((Moby *)moby)->pos.y) ((Moby *)moby)->pos.y = 1003.0f;
+        if (((Moby *)moby)->pos.z < 20.0f) ((Moby *)moby)->pos.z = 20.0f;
+        if (1003.0f < ((Moby *)moby)->pos.z) ((Moby *)moby)->pos.z = 1003.0f;
         Moby_GetJointWorldPos(moby, 0, position);
-        *(float *)(moby + 0x2c) += (*(float *)(*(char **)(moby + 0x24) + 0x24) - *(float *)(moby + 0x2c)) * 0.1f;
+        ((Moby *)moby)->scale += (*(float *)(*(char **)(moby + 0x24) + 0x24) - ((Moby *)moby)->scale) * 0.1f;
         if (coll_sphere(2.0f, position, 1, moby) && D_L13_001741D8 != 0) {
             short cls = *(short *)(D_L13_001741D8 + 0xa6);
             if (cls == 0x4da || cls == 0x45 || cls == 0x563) hit = 1;
@@ -208,7 +208,7 @@ void ShipPickupUpdate(char *moby) {
                 distance = FastVecDist((void *)(hero_moby + 0x10), moby + 0x10);
         }
         if (hit || distance < 4.0f) {
-            cls = *(short *)(moby + 0xa6);
+            cls = ((Moby *)moby)->oclass;
             *(int *)(moby + 0x94) = 0;
             if (cls == 0xe0) goto collect_ammo;
             if (cls == 0xe4) goto collect_health;
@@ -227,7 +227,7 @@ collect_health:
 collected:
             moby[0x20] = 5;
             break;
-        } else if (distance < 40.0f && (*(unsigned char *)(moby + 0x31)) != 0) {
+        } else if (distance < 40.0f && (((Moby *)moby)->visible) != 0) {
             float step = 0.8f / vec_length(distance);
             FastVecSub(direction, (void *)(hero_moby + 0x10), moby + 0x10);
             vec_scale_to_length(direction, direction, step);
@@ -235,10 +235,10 @@ collected:
         }
         goto frame_tail;
     case 5: {
-        float delta = *(float *)(*(char **)(moby + 0x24) + 0x24) - *(float *)(moby + 0x2c);
-        *(float *)(moby + 0x48) = FastAddRots(*(float *)(moby + 0x48), delta + delta);
-        *(float *)(moby + 0x2c) += (*(float *)(*(char **)(moby + 0x24) + 0x24) * 0.01f - *(float *)(moby + 0x2c)) * 0.3f;
-        if (*(float *)(moby + 0x2c) < *(float *)(*(char **)(moby + 0x24) + 0x24) * 0.05f)
+        float delta = *(float *)(*(char **)(moby + 0x24) + 0x24) - ((Moby *)moby)->scale;
+        ((Moby *)moby)->rot.z = FastAddRots(((Moby *)moby)->rot.z, delta + delta);
+        ((Moby *)moby)->scale += (*(float *)(*(char **)(moby + 0x24) + 0x24) * 0.01f - ((Moby *)moby)->scale) * 0.3f;
+        if (((Moby *)moby)->scale < *(float *)(*(char **)(moby + 0x24) + 0x24) * 0.05f)
             moby[0x20] = 6;
         break;
     }
@@ -249,8 +249,8 @@ collected:
         }
         *(int *)(moby + 0x94) = 0;
         moby[0x31] = 0;
-        *(unsigned short *)(moby + 0x34) |= 1;
-        *(float *)(moby + 0x2c) = *(float *)(*(char **)(moby + 0x24) + 0x24) * 0.1f;
+        ((Moby *)moby)->flags |= 1;
+        ((Moby *)moby)->scale = *(float *)(*(char **)(moby + 0x24) + 0x24) * 0.1f;
         vars[4] = vars[2];
         moby[0x20] = 1;
         break;
@@ -258,12 +258,12 @@ collected:
 frame_tail:
     speed = g_frame_time;
     update_moby_vertical_oscillation(0.7f, speed * 1.2217305f, moby, vars + 6, vars + 5);
-    if (*(float *)(moby + 0x10) < 20.0f) *(float *)(moby + 0x10) = 20.0f;
-    if (1003.0f < *(float *)(moby + 0x10)) *(float *)(moby + 0x10) = 1003.0f;
-    if (*(float *)(moby + 0x14) < 20.0f) *(float *)(moby + 0x14) = 20.0f;
-    if (1003.0f < *(float *)(moby + 0x14)) *(float *)(moby + 0x14) = 1003.0f;
-    if (*(float *)(moby + 0x18) < 20.0f) *(float *)(moby + 0x18) = 20.0f;
-    if (1003.0f < *(float *)(moby + 0x18)) *(float *)(moby + 0x18) = 1003.0f;
+    if (((Moby *)moby)->pos.x < 20.0f) ((Moby *)moby)->pos.x = 20.0f;
+    if (1003.0f < ((Moby *)moby)->pos.x) ((Moby *)moby)->pos.x = 1003.0f;
+    if (((Moby *)moby)->pos.y < 20.0f) ((Moby *)moby)->pos.y = 20.0f;
+    if (1003.0f < ((Moby *)moby)->pos.y) ((Moby *)moby)->pos.y = 1003.0f;
+    if (((Moby *)moby)->pos.z < 20.0f) ((Moby *)moby)->pos.z = 20.0f;
+    if (1003.0f < ((Moby *)moby)->pos.z) ((Moby *)moby)->pos.z = 1003.0f;
 }
 extern void *func_L00_0025D390(char *);
 extern void func_00215C00(void *, float, float, float);

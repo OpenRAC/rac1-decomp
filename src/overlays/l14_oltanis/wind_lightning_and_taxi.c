@@ -1614,7 +1614,7 @@ void Moby685Update(char *moby) {
         qcopy(moby + 0x10, D_L14_001B0F30_2EFD38[*(int *)(data + 0xA0)] + 0x10);
         qcopy(moby + 0x40, data + 0xD0);
         {
-            unsigned short hw = *(unsigned short *)(moby + 0xB2);
+            unsigned short hw = ((Moby *)moby)->save_id;
             int sh = (short)hw;
             if (((Tab_2EFD38 *)D_L14_001BBCC0_2EFD38)->b[sh]) {
                 *(short *)(data + 0x124) = 0;
@@ -1629,7 +1629,7 @@ void Moby685Update(char *moby) {
             }
         }
         ((unsigned char *)moby)[0x30] = 0xFF;
-        *(int *)(moby + 0x90) = 0x80303030;
+        ((Moby *)moby)->glow_color = 0x80303030;
         *(int *)(data + 0x12C) = -1;
         *(int *)(data + 0x130) = -1;
         *(int *)(data + 0x134) = -1;
@@ -1696,7 +1696,7 @@ void Moby685Update(char *moby) {
                 func_L00_0028F210_2EFD38(*(int *)(data + 0x12C), *(int *)(data + 0x130));
             }
         }
-        *(int *)(moby + 0x90) = func_001FA8A8_2EFD38(*(int *)(moby + 0x90), 0x80808040, 0.1f);
+        ((Moby *)moby)->glow_color = func_001FA8A8_2EFD38(((Moby *)moby)->glow_color, 0x80808040, 0.1f);
         if (func_L14_002F05D8_2EFD38(moby) != 0) {
             ((unsigned char *)moby)[0x20] = 3;
             *(short *)(data + 0x126) = *(unsigned short *)(data + 0x130);
@@ -2415,7 +2415,7 @@ extern void func_00215F80(int, int);
 void request_taxi_stop_prompt(char *moby) {
     char *data = *(char **)(moby + 0x78);
     int v = *(short *)(data + 0xB4);
-    if (*(unsigned char *)(moby + 0x20) == 5) {
+    if (((Moby *)moby)->state == 5) {
         v = *(short *)(data + 0xB6);
     }
     switch (v) {
@@ -2472,16 +2472,16 @@ extern unsigned char D_0014171B_2FCEA8[] __asm__("D_0014171B") NOT_SDA;
 void qwark_oltanis_update(char *m) {
     char *d = *(char **)(m + 0x78);
     attach_big_head_cheat_manipulator_to_matching_moby(m);
-    if (*(unsigned char *)(m + 0x31) != 0) {
+    if (((Moby *)m)->visible != 0) {
         if (FastVecDist(m + 0x10, oltanis_camera_pos) < 28.0f) {
             set_ground_height_band(m);
             m[0x7F] = 0x16;
         }
     }
-    switch (*(unsigned char *)(m + 0x20)) {
+    switch (((Moby *)m)->state) {
     case 0: {
         unsigned short id;
-        if (D_L14_001BBCC0_2FCEA8.collected[(short)(id = *(unsigned short *)(m + 0xB2))] != 0
+        if (D_L14_001BBCC0_2FCEA8.collected[(short)(id = ((Moby *)m)->save_id)] != 0
             || (*(int *)(D_0014171B_2FCEA8 + 0xAB75 + (((short)id >> 5) * 4 + (D_0015EE84_m << 8))) >> (id & 0x1F)) & 1) {
             DeleteMoby(m);
             return;
@@ -2498,7 +2498,7 @@ void qwark_oltanis_update(char *m) {
     }
     case 1:
         if (*(unsigned char *)(d + 8) == 1 && is_point_inside_clip_volume(D_0013E633 + 0xE9D, *(int *)(d + 0x40)) != 0) {
-            if ((D_0014171B_2FCEA8 + 0xAA35)[*(unsigned char *)(m + 0xB0) + (D_0015EE84_m << 4)] != 0xFF) {
+            if ((D_0014171B_2FCEA8 + 0xAA35)[((Moby *)m)->mission + (D_0015EE84_m << 4)] != 0xFF) {
                 char *t;
                 jet_clear_persistent((unsigned char)m[0xB0]);
                 t = D_L14_001601AC_2EC3E8 + (*(int *)(d + 0x48) << 7);
@@ -2525,8 +2525,8 @@ void qwark_oltanis_update(char *m) {
         }
         grant_inventory_item(0x20, 1);
         mark_elevator_collected(D_L14_00160098_2FCEA8 + (*(int *)(d + 0x44) << 8));
-        *(int *)(D_0014171B_2FCEA8 + 0xAB75 + (((short)*(unsigned short *)(m + 0xB2) >> 5) * 4 + (D_0015EE84_m << 8))) |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
-        oltanis_moby_killed_bits[(short)*(unsigned short *)(m + 0xB2) >> 5] |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
+        *(int *)(D_0014171B_2FCEA8 + 0xAB75 + (((short)((Moby *)m)->save_id >> 5) * 4 + (D_0015EE84_m << 8))) |= 1 << (((Moby *)m)->save_id & 0x1F);
+        oltanis_moby_killed_bits[(short)((Moby *)m)->save_id >> 5] |= 1 << (((Moby *)m)->save_id & 0x1F);
         memcard_Save(0, -1);
         DeleteMoby(m);
         return;
@@ -2539,14 +2539,14 @@ void qwark_oltanis_update(char *m) {
         float sx = 0.02f;
         float sy = 0.3f;
         int doit = 0;
-        if (*(unsigned char *)(m + 0x53) == 0) {
+        if (((Moby *)m)->prev_seq == 0) {
             char *g = D_0013E633 + 0xE9D;
             char *a_;
             doit = 1;
             if (vec_distance_xy(m + 0x10, g) < 8.0f
-                && FastDiffRots(*(float *)(m + 0x48),
-                       fast_atan2(*(float *)((a_ = g - 0x80) + 0xD0) - *(float *)(m + 0x10),
-                                         *(float *)(a_ + 0xD4) - *(float *)(m + 0x14))) < 1.5707964f) {
+                && FastDiffRots(((Moby *)m)->rot.z,
+                       fast_atan2(*(float *)((a_ = g - 0x80) + 0xD0) - ((Moby *)m)->pos.x,
+                                         *(float *)(a_ + 0xD4) - ((Moby *)m)->pos.y)) < 1.5707964f) {
                 if (0.01f < FastVecLength(g + 0x80)) {
                     *(int *)(d + 0x194) = scale_ticks(0x78);
                 } else {
@@ -2561,7 +2561,7 @@ void qwark_oltanis_update(char *m) {
                 float z;
                 float x = random_float_between(180.0f, 300.0f);
                 *(int *)(d + 0x198) = func_001FA898_r(multiply_global_factor(x));
-                y = FastAddRots(*(float *)(m + 0x48), random_float_between(-90.0f, 90.0f) * 0.017453292f);
+                y = FastAddRots(((Moby *)m)->rot.z, random_float_between(-90.0f, 90.0f) * 0.017453292f);
                 z = random_float_between(0.0f, 30.0f) * 0.017453292f;
                 BuildSphericalOffset(d + 0x180, 6.0f, y, z);
                 FastVecAdd(d + 0x180, d + 0x180, m + 0x10);
@@ -2582,7 +2582,7 @@ void qwark_oltanis_update(char *m) {
             qcopy(w, m + 0x10);
             w[2] = w[2] + 1.0f;
             FastVecSub(u, b, w);
-            f20 = FastSubRots(fast_atan2(u[0], u[1]), *(float *)(m + 0x48));
+            f20 = FastSubRots(fast_atan2(u[0], u[1]), ((Moby *)m)->rot.z);
             f2 = -fast_atan2(vec_length_xy(u), u[2]);
             if (f20 > 1.5707964f) f20 = 1.5707964f;
             else if (f20 < -1.5707964f) f20 = -1.5707964f;

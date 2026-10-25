@@ -287,7 +287,7 @@ int find_batalia_cannon_aim_target(char *m) {
     for (i = 0; i < 8; i++) {
         if (p[i] != 0) {
             float d;
-            BuildSphericalOffset(a, 1.0f, *(float *)(m + 0x48), -*(float *)(m + 0x44));
+            BuildSphericalOffset(a, 1.0f, ((Moby *)m)->rot.z, -((Moby *)m)->rot.y);
             FastVecSub(b, (char *)p[i] + 0x10, batalia_hero_pos);
             vec_scale_to_length(b, b, 1.0f);
             d = FastVecDot(b, a);
@@ -2183,7 +2183,7 @@ void compute_batalia_bolt_pickup_surface_pose(char *m, float *out, float *rot) {
     char *d = *(char **)(m + 0x78);
     float sx, sy, sz;
     float t;
-    switch (*(short *)(m + 0xA6)) {
+    switch (((Moby *)m)->oclass) {
     case 0x3DC:
         sx = *(float *)&batalia_bolt5_tilt_deg * *(float *)&batalia_bolt5_scale;
         sy = *(float *)&batalia_bolt5_lift * *(float *)&batalia_bolt5_scale;

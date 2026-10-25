@@ -60,10 +60,10 @@ void timed_activation_pads_update(unsigned char *moby)
         return;
 
     flag = 0;
-    if (moby[0x20] < 6) {
-        if (moby[0xB0] != 0xFF) {
-            if (D_0014C150_30D370[moby[0xB0] + (D_0015EE84_30D370 << 4)] == 0xFF)
-                func_L01_0026F090_30D370(moby[0x21], 6);
+    if (((Moby *)moby)->state < 6) {
+        if (((Moby *)moby)->mission != 0xFF) {
+            if (D_0014C150_30D370[((Moby *)moby)->mission + (D_0015EE84_30D370 << 4)] == 0xFF)
+                func_L01_0026F090_30D370(((Moby *)moby)->group, 6);
         }
     }
 
@@ -71,7 +71,7 @@ void timed_activation_pads_update(unsigned char *moby)
         p = (char *)D_0013E633_30D370 + 0xE1D;
         if (*(short *)(p + 0x30E) == 0)
             flag = *(unsigned char **)(p + 0x2FC) == moby;
-        if (0.7853982f < func_001F9B88_30D370(*(float *)(moby + 0x44))) {
+        if (0.7853982f < func_001F9B88_30D370(((Moby *)moby)->rot.y)) {
             if (func_001F9D48_30D370(moby + 0x10, p + 0x80) < 2.0f) {
                 if (*(int *)(p + 0x2084) == 0x11) {
                     if (*(float *)(p + 0xAA8) < 7.0f) {
@@ -91,12 +91,12 @@ void timed_activation_pads_update(unsigned char *moby)
         }
     }
 
-    st = moby[0x20];
+    st = ((Moby *)moby)->state;
     if ((unsigned int)(st - 2) < 4) {
-        if (moby[0xBC] == 1) {
+        if (((Moby *)moby)->command == 1) {
             if (func_001F9908_30D370((int *)d)) {
                 func_0022ED80_30D370(2, 0, (int)moby);
-                func_L01_0026F090_30D370(moby[0x21], 8);
+                func_L01_0026F090_30D370(((Moby *)moby)->group, 8);
             } else if (func_001F9908_30D370((int *)(d + 4))) {
                 func_0022ED80_30D370(0, 0, (int)moby);
                 *(int *)(d + 4) = func_001F9850_30D370(0x2D) < func_001F9850_30D370(5) + *(int *)d / func_001F9850_30D370(0x28)
@@ -105,11 +105,11 @@ void timed_activation_pads_update(unsigned char *moby)
         }
     }
 
-    switch (moby[0x20]) {
+    switch (((Moby *)moby)->state) {
     case 0:
         func_L00_00251328_30D370(moby, 0x80, 0x80, 0x80);
-        func_L01_0026F040_30D370(moby[0x21], 0);
-        func_L01_0026F090_30D370(moby[0x21], 1);
+        func_L01_0026F040_30D370(((Moby *)moby)->group, 0);
+        func_L01_0026F090_30D370(((Moby *)moby)->group, 1);
         break;
     case 1:
         *(int *)(d + 0x8) = 0;
@@ -122,31 +122,31 @@ void timed_activation_pads_update(unsigned char *moby)
             on = 1;
             func_L00_00251328_30D370(moby, 0, 0xFF, 0);
             *(int *)(d + 0x8) = on;
-            func_L01_0026F040_30D370(moby[0x21], 0);
-            moby[0xBC] = on;
+            func_L01_0026F040_30D370(((Moby *)moby)->group, 0);
+            ((Moby *)moby)->command = on;
             func_0022ED80_30D370(3, 0, (int)moby);
-            func_L01_0026F090_30D370(moby[0x21], 2);
+            func_L01_0026F090_30D370(((Moby *)moby)->group, 2);
         }
         break;
     case 2:
-        moby[0x20] = 3;
+        ((Moby *)moby)->state = 3;
         break;
     case 3:
         if (flag) {
             *(int *)(d + 0x8) = 1;
             func_L00_00251328_30D370(moby, 0, 0xFF, 0);
             func_0022ED80_30D370(3, 0, (int)moby);
-            func_L01_0026F090_30D370(moby[0x21], 4);
+            func_L01_0026F090_30D370(((Moby *)moby)->group, 4);
         }
         break;
     case 4:
-        moby[0x20] = 5;
+        ((Moby *)moby)->state = 5;
         break;
     case 5:
         if (flag) {
             *(int *)(d + 0x8) = 1;
             func_L00_00251328_30D370(moby, 0, 0xFF, 0);
-            func_L01_0026F090_30D370(moby[0x21], 6);
+            func_L01_0026F090_30D370(((Moby *)moby)->group, 6);
             func_0022ED80_30D370(1, 0, (int)moby);
         }
         break;
@@ -154,12 +154,12 @@ void timed_activation_pads_update(unsigned char *moby)
         *(short *)(d + 0xC) = func_001F9850_30D370(0x14);
         *(short *)(d + 0xE) = 0;
         func_L00_00251328_30D370(moby, 0x80, 0xFF, 0x80);
-        moby[0x20] = 7;
+        ((Moby *)moby)->state = 7;
         break;
     case 7:
-        if (moby[0xB0] != 0xFF) {
-            if (D_0014C150_30D370[moby[0xB0] + (D_0015EE84_30D370 << 4)] != 0xFF)
-                func_L00_002512D8_30D370(moby[0xB0]);
+        if (((Moby *)moby)->mission != 0xFF) {
+            if (D_0014C150_30D370[((Moby *)moby)->mission + (D_0015EE84_30D370 << 4)] != 0xFF)
+                func_L00_002512D8_30D370(((Moby *)moby)->mission);
         }
         if (func_001F9938_30D370(d + 0xC)) {
             *(short *)(d + 0xC) = func_001F9850_30D370(0x14);
@@ -180,8 +180,8 @@ void timed_activation_pads_update(unsigned char *moby)
         break;
     case 8:
         func_L00_00251328_30D370(moby, 0x80, 0x80, 0x80);
-        moby[0xBC] = 0;
-        moby[0x20] = 1;
+        ((Moby *)moby)->command = 0;
+        ((Moby *)moby)->state = 1;
         break;
     case 9:
         break;
@@ -207,17 +207,17 @@ void door_update(u8 *moby)
     u8 state;
     typedef u32 quadword __attribute__((mode(TI), aligned(16)));
 
-    if (moby[0xb0] != 0xff &&
-        saved_mission_state[moby[0xb0] + g_current_level_index * 16] == 0xff)
+    if (((Moby *)moby)->mission != 0xff &&
+        saved_mission_state[((Moby *)moby)->mission + g_current_level_index * 16] == 0xff)
         *(s32 *)(data + 0x10) = -1;
 
-    state = moby[0x20];
+    state = ((Moby *)moby)->state;
     switch (state) {
     case 0:
         qcopy(data, moby + 0x10);
         if (*(s32 *)(data + 0x38) != -1)
             umbris_indicator_states[*(s32 *)(data + 0x38)] = 0;
-        moby[0x20] = 1;
+        ((Moby *)moby)->state = 1;
         *(s32 *)(data + 0x0c) = 0;
         return;
     case 1:
@@ -237,7 +237,7 @@ void door_update(u8 *moby)
         *(f32 *)(data + 0x0c) = FastVecLength(vectors);
         if (*(s32 *)(data + 0x30) != -1)
             Moby_PlaySound(*(s32 *)(data + 0x30), 0, moby);
-        moby[0x20] = 2;
+        ((Moby *)moby)->state = 2;
         return;
     case 2:
         if (*(s32 *)(data + 0x38) != -1)
@@ -248,7 +248,7 @@ void door_update(u8 *moby)
                 other[0x20] == *(u32 *)(data + 0x18)) {
                 if (*(s32 *)(data + 0x30) != -1)
                     Moby_PlaySound(*(s32 *)(data + 0x30), 0, moby);
-                moby[0x20] = 4;
+                ((Moby *)moby)->state = 4;
                 return;
             }
         }
@@ -265,7 +265,7 @@ void door_update(u8 *moby)
             return;
         FastVecAdd(moby + 0x10, data, vectors);
         *(f32 *)(data + 0x0c) = 0.0f;
-        moby[0x20] = 3;
+        ((Moby *)moby)->state = 3;
         if (*(s32 *)(data + 0x34) != -1)
             Moby_PlaySound(*(s32 *)(data + 0x30), 0, moby);
         return;
@@ -281,7 +281,7 @@ void door_update(u8 *moby)
         *(s32 *)(data + 0x0c) = 0;
         if (*(s32 *)(data + 0x30) != -1)
             Moby_PlaySound(*(s32 *)(data + 0x30), 0, moby);
-        moby[0x20] = 4;
+        ((Moby *)moby)->state = 4;
         return;
     case 4:
         if (*(s32 *)(data + 0x38) != -1)
@@ -292,7 +292,7 @@ void door_update(u8 *moby)
             other[0x20] == *(u32 *)(data + 0x14)) {
             if (*(s32 *)(data + 0x30) != -1)
                 Moby_PlaySound(*(s32 *)(data + 0x30), 0, moby);
-            moby[0x20] = 2;
+            ((Moby *)moby)->state = 2;
         } else {
             *(quadword *)(vectors + 4) = 0;
             vectors[4] = *(f32 *)(data + 0x1c);
@@ -311,7 +311,7 @@ void door_update(u8 *moby)
                 Moby_PlaySound(*(s32 *)(data + 0x34), 0, moby);
             if (*(s32 *)(data + 0x38) != -1)
                 umbris_indicator_states[*(s32 *)(data + 0x38)] = 0;
-            moby[0x20] = 1;
+            ((Moby *)moby)->state = 1;
         }
         break;
     case 5:
@@ -347,17 +347,17 @@ void bridge_update(u8 *moby)
     FastVecScale(-1.0f, delta, moby + 0x10);
     qcopy(old_rotation, moby + 0x40);
 
-    if (moby[0xb0] != 0xff &&
-        saved_mission_state[moby[0xb0] + g_current_level_index * 16] == 0xff)
+    if (((Moby *)moby)->mission != 0xff &&
+        saved_mission_state[((Moby *)moby)->mission + g_current_level_index * 16] == 0xff)
         *(s32 *)(data + 0xb0) = -1;
 
-    state = moby[0x20];
+    state = ((Moby *)moby)->state;
     switch (state) {
     case 0:
         qcopy(data + 0xa0, moby + 0x10);
         if (*(s32 *)(data + 0xd8) != -1)
             umbris_indicator_states[*(s32 *)(data + 0xd8)] = 0;
-        moby[0x20] = 1;
+        ((Moby *)moby)->state = 1;
         *(s32 *)(data + 0xac) = 0;
         break;
     case 1:
@@ -375,7 +375,7 @@ void bridge_update(u8 *moby)
         *(f32 *)(data + 0xac) = FastVecLength(vectors);
         if (*(s32 *)(data + 0xd0) != -1)
             Moby_PlaySound(*(s32 *)(data + 0xd0), 0, moby);
-        moby[0x20] = 2;
+        ((Moby *)moby)->state = 2;
         break;
     case 2:
         if (*(s32 *)(data + 0xb0) != -1) {
@@ -384,7 +384,7 @@ void bridge_update(u8 *moby)
                 other[0x20] == *(u32 *)(data + 0xb8)) {
                 if (*(s32 *)(data + 0xd0) != -1)
                     Moby_PlaySound(*(s32 *)(data + 0xd0), 0, moby);
-                moby[0x20] = 4;
+                ((Moby *)moby)->state = 4;
                 break;
             }
         }
@@ -402,7 +402,7 @@ void bridge_update(u8 *moby)
             *(f32 *)(data + 0xac) = 0.0f;
             if (*(s32 *)(data + 0xd8) != -1)
                 umbris_indicator_states[*(s32 *)(data + 0xd8)] = 1;
-            moby[0x20] = 3;
+            ((Moby *)moby)->state = 3;
             if (*(s32 *)(data + 0xd4) != -1)
                 Moby_PlaySound(*(s32 *)(data + 0xd0), 0, moby);
         }
@@ -415,7 +415,7 @@ void bridge_update(u8 *moby)
                 *(s32 *)(data + 0xac) = 0;
                 if (*(s32 *)(data + 0xd0) != -1)
                     Moby_PlaySound(*(s32 *)(data + 0xd0), 0, moby);
-                moby[0x20] = 4;
+                ((Moby *)moby)->state = 4;
             }
         }
         break;
@@ -426,7 +426,7 @@ void bridge_update(u8 *moby)
             other[0x20] == *(u32 *)(data + 0xb4)) {
             if (*(s32 *)(data + 0xd0) != -1)
                 Moby_PlaySound(*(s32 *)(data + 0xd0), 0, moby);
-            moby[0x20] = 2;
+            ((Moby *)moby)->state = 2;
         } else {
             *(quadword *)(vectors + 4) = 0;
             vectors[4] = *(f32 *)(data + 0xbc);
@@ -444,7 +444,7 @@ void bridge_update(u8 *moby)
                     Moby_PlaySound(*(s32 *)(data + 0xd4), 0, moby);
                 if (*(s32 *)(data + 0xd8) != -1)
                     umbris_indicator_states[*(s32 *)(data + 0xd8)] = 0;
-                moby[0x20] = 1;
+                ((Moby *)moby)->state = 1;
             }
         }
         break;

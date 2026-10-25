@@ -55,7 +55,7 @@ extern unsigned char *D_L05_00160098_0F130 __asm__("D_L05_00160098") MACRO_ADDR;
 // Updates the claimed-slot marker: claims or reassigns a table slot while the player is near.
 void electric_gate_update(char *m) {
     char *data = *(char **)(m + 0x78);
-    int state = *(unsigned char *)(m + 0x20);
+    int state = ((Moby *)m)->state;
     char *base;
     char *tab;
     char *pos;
@@ -65,9 +65,9 @@ void electric_gate_update(char *m) {
     int idx;
     switch (state) {
     case 0:
-        *(unsigned short *)(m + 0x34) |= 1;
-        *(unsigned char *)(m + 0x20) = 1;
-        *(unsigned char *)(m + 0x31) = 0;
+        ((Moby *)m)->flags |= 1;
+        ((Moby *)m)->state = 1;
+        ((Moby *)m)->visible = 0;
         **(int **)(data + 4) = -1;
         break;
     case 1:
@@ -104,7 +104,7 @@ void electric_gate_update(char *m) {
             if (D_L05_00160098_0F130[*(int *)data * 256 + 0xBC] != 0) {
                 func_0022ED80_i(1, 0, m);
                 *(int *)(m + 0x94) = 0;
-                *(unsigned char *)(m + 0x20) = 2;
+                ((Moby *)m)->state = 2;
             }
         }
         break;
@@ -345,26 +345,26 @@ void update_triggered_moby_slide_and_lowering(char *moby) {
     float len;
     float reach;
 
-    switch (*(u8 *)(moby + 0x20)) {
+    switch (((Moby *)moby)->state) {
     case 0: {
         char *e0;
 
         e0 = (char *)(D_L05_001601AC_30F9D0 + (*(int *)(data + 0x10) << 7));
         qcopy(moby + 0x10, e0 + 0x30);
-        *(float *)(moby + 0x48) = *(float *)(e0 + 0x78);
+        ((Moby *)moby)->rot.z = *(float *)(e0 + 0x78);
         scale_30F9D0(v, e0 + 0x10, *(float *)(data + 0x18));
         if (*(int *)(data + 0x1C) != 0) {
             mul_30F9D0(v, v, -1.0f);
-            *(u16 *)(moby + 0x34) |= 0x8000;
+            ((Moby *)moby)->flags |= 0x8000;
         }
         add_30F9D0(moby + 0x10, moby + 0x10, v);
-        *(u8 *)(moby + 0x20) = 1;
+        ((Moby *)moby)->state = 1;
         break;
     }
     case 1:
         if (D_L05_00160098_0F130[*(int *)(data + 0x14) * 256 + 0xBC] != 0) {
             voice_30F9D0(0, 0, moby);
-            *(u8 *)(moby + 0x20) = 2;
+            ((Moby *)moby)->state = 2;
             clear_30F9D0(data);
         }
         break;
@@ -385,7 +385,7 @@ void update_triggered_moby_slide_and_lowering(char *moby) {
         scale_30F9D0(data, v, speed);
         add_30F9D0(moby + 0x10, moby + 0x10, data);
         if (len_30F9D0(v) < 0.01f) {
-            *(u8 *)(moby + 0x20) = 3;
+            ((Moby *)moby)->state = 3;
         }
         break;
     case 3:
@@ -394,8 +394,8 @@ void update_triggered_moby_slide_and_lowering(char *moby) {
         advance_30F9D0(*(float *)(e + 0x38) - 5.9f, D_0015EE70_30F9D0 * 20.0f,
                        D_0015EE70_30F9D0 * 40.0f, D_0015EE6C_30F9D0 * 10.0f,
                        (float *)(moby + 0x18), (float *)(data + 8));
-        if (*(float *)(moby + 0x18) < *(float *)(e + 0x38) - 5.9f) {
-            *(u8 *)(moby + 0x20) = 4;
+        if (((Moby *)moby)->pos.z < *(float *)(e + 0x38) - 5.9f) {
+            ((Moby *)moby)->state = 4;
         }
         break;
     }
@@ -1545,7 +1545,7 @@ void update_hoverboard_girl_cutscene_instances(char *arg) {
         int i;
         for (i = 0; i < rilgar_cutscene_state.n; i++) {
             char *moby = rilgar_cutscene_state.m[i];
-            if (*(short *)(moby + 0xA6) == *(short *)(arg + 0xA6)) {
+            if (*(short *)(moby + 0xA6) == ((Moby *)arg)->oclass) {
                 if (gCheats[0] != 0) {
                     unsigned char *q = rilgar_big_head_manipulator;
                     if (q[1] == 0) {
@@ -2232,15 +2232,15 @@ extern float sin_319F78(float) __asm__("func_001F9FA8");
  * target position and sets the bob height from the frame counter.
  * Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/l05/gameplay/entities/0030d6a0.c, FUN_L05_00318a68. */
 void update_hero_clip_volume_outputs(char *m) {
-    int state = *(unsigned char *)(m + 0x20);
+    int state = ((Moby *)m)->state;
     int *v = *(int **)(m + 0x78);
     char *t;
 
     switch (state) {
     case 0:
-        *(unsigned char *)(m + 0x20) = 1;
-        *(unsigned short *)(m + 0x34) |= 1;
-        *(unsigned char *)(m + 0x30) = 0xFF;
+        ((Moby *)m)->state = 1;
+        ((Moby *)m)->flags |= 1;
+        ((Moby *)m)->update_dist = 0xFF;
         *(int *)(m + 0x94) = 0;
         break;
     case 1:
@@ -2480,12 +2480,12 @@ void PickNearestTargetSlot(char *moby) {
             int v = *(int *)(*(char **)(moby + 0x24) + 0x10);
             moby[0x31] = 1;
             *(int *)(moby + 0x94) = v;
-            *(unsigned short *)(moby + 0x34) = *(unsigned short *)(moby + 0x34) & 0xFFFE;
+            ((Moby *)moby)->flags = ((Moby *)moby)->flags & 0xFFFE;
             moby[0x20] = 1;
         } else {
             moby[0x20] = 6;
             moby[0x31] = 0;
-            *(unsigned short *)(moby + 0x34) = *(unsigned short *)(moby + 0x34) | 1;
+            ((Moby *)moby)->flags = ((Moby *)moby)->flags | 1;
             *(int *)(moby + 0x94) = 0;
         }
         break;
@@ -2497,7 +2497,7 @@ void PickNearestTargetSlot(char *moby) {
             int v = *(int *)(*(char **)(moby + 0x24) + 0x10);
             moby[0x31] = 1;
             *(int *)(moby + 0x94) = v;
-            *(unsigned short *)(moby + 0x34) = *(unsigned short *)(moby + 0x34) & 0xFFFE;
+            ((Moby *)moby)->flags = ((Moby *)moby)->flags & 0xFFFE;
             moby[0x20] = 1;
         }
         break;

@@ -2728,7 +2728,7 @@ extern char *func_L15_002E92C8(void *, void *);
 /* Per-frame update: picks a random value on spawn, then re-rolls and spawns a child when triggered. */
 void update_poison_vessel_spawner(char *moby) {
     int *data = *(int **)(moby + 0x78);
-    switch (*(unsigned char *)(moby + 0x20)) {
+    switch (((Moby *)moby)->state) {
     case 0:
         data[0] = func_001FA898_r(multiply_global_factor(*(float *)(data + 1) * 60.0f));
         moby[0x20] = 1;
@@ -2917,16 +2917,16 @@ extern void func_L15_002ECAA8(void);
 /* UpdateMoby_1419: state machine for a timed object */
 void update_quartu_cutscene_trigger(unsigned char *moby) {
     int *data = *(int **)(moby + 0x78);
-    moby[0x30] = 0x80;
-    switch (moby[0x20]) {
+    ((Moby *)moby)->update_dist = 0x80;
+    switch (((Moby *)moby)->state) {
     case 0:
-        if (saved_mission_state[moby[0xB0] + (g_current_level_index << 4)] != 0xFF
+        if (saved_mission_state[((Moby *)moby)->mission + (g_current_level_index << 4)] != 0xFF
             && *(int *)&quartu_alarm_on == 0
             && is_point_inside_clip_volume(D_0013E633 + 0xE9D, data[0])) {
             if (*(unsigned char *)(*(char **)&D_L15_00160058_g + data[2] * 256 + 0x20) == 3) {
                 StartCutscene(3);
-                moby[0x20] = 2;
-                jet_clear_persistent(moby[0xB0]);
+                ((Moby *)moby)->state = 2;
+                jet_clear_persistent(((Moby *)moby)->mission);
                 HeroSetObjectFlags();
             }
         }
@@ -2934,13 +2934,13 @@ void update_quartu_cutscene_trigger(unsigned char *moby) {
     case 2:
         if (quartu_game_mode != 2) {
             PlayMovieEntryIfIdle(0x11);
-            moby[0x20] = 1;
+            ((Moby *)moby)->state = 1;
         }
         break;
     case 1:
         if (quartu_game_mode != 2) {
             StartCutscene(4);
-            moby[0x20] = 3;
+            ((Moby *)moby)->state = 3;
             HeroClearObjectFlags();
             if (data[1] != -1) {
                 char *p = quartu_cuboids + data[1] * 128;
@@ -2957,7 +2957,7 @@ void update_quartu_cutscene_trigger(unsigned char *moby) {
             }
             queue_planet_unlock_message(0x11);
             memcard_Save(0, -1);
-            moby[0x20] = 4;
+            ((Moby *)moby)->state = 4;
         }
         break;
     case 4:
