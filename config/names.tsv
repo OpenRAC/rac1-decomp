@@ -8767,7 +8767,7 @@ D_L08_00161358	batalia_pool_draw_count	descriptive	config/names_local.tsv	HeroL0
 D_L08_0015F6B0	batalia_frame_count	descriptive	config/names_local.tsv	HeroL08_UpdateStatePhysics: frame stamp for the button double-press window; other levels' frame_count slot	
 D_L08_0017A340	batalia_item_info	descriptive	config/names_local.tsv	HeroL08_UpdateStatePhysics: 0x4C-byte records by item id, +0x18 tested	
 D_L08_0017AF60	batalia_hero_lean_angles	descriptive	config/names_local.tsv	HeroL08_UpdateStatePhysics: [0] pitch from displacement, [1] tilt	
-D_L08_00178780	batalia_moby_hits	descriptive	config/names_local.tsv	HeroL08_UpdateStatePhysics: moby pointers hit this frame, each sent PostHitMessage; L15 quartu_moby_hits slot	
+D_L08_00178780	batalia_coll_sphere_moby_hits	descriptive	config/names_local.tsv	l08 hero_movement.c: the coll-sphere moby list PostHitMessage walks, as coll_sphere_moby_hits in the shared hero code	batalia_moby_hits
 D_L08_0017C840	batalia_hero_anim_speed_curve	descriptive	config/names_local.tsv	HeroL08_UpdateStatePhysics: 30 floats sampled by anim frame via vector_length_xyz_cf	
 D_L08_0015F76C	batalia_usage_event_count	descriptive	config/names_local.tsv	HeroL08_UpdateStatePhysics: incremented when batalia_usage_event_timer runs out	
 D_L08_001C4730	batalia_hero_anim_frame_speeds	descriptive	config/names_local.tsv	HeroL08_UpdateStatePhysics: speed by anim frame, * 0.5, set as planar velocity	

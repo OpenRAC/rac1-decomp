@@ -8690,7 +8690,7 @@
 #define batalia_frame_count                                                  D_L08_0015F6B0
 #define batalia_item_info                                                    D_L08_0017A340
 #define batalia_hero_lean_angles                                             D_L08_0017AF60
-#define batalia_moby_hits                                                    D_L08_00178780
+#define batalia_coll_sphere_moby_hits                                        D_L08_00178780
 #define batalia_hero_anim_speed_curve                                        D_L08_0017C840
 #define batalia_usage_event_count                                            D_L08_0015F76C
 #define batalia_hero_anim_frame_speeds                                       D_L08_001C4730
