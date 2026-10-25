@@ -1,4 +1,5 @@
 #include "common.h"
+#include "moby.h"
 #include "callees.h"
 #include "records.h"
 #include "structs.h"
@@ -149,32 +150,6 @@ typedef struct {
     char _pad13[0x1C - 0x13];
     int frames[1]; /* 0x1C */
 } MobySeq;
-typedef struct {
-    char _pad00[0x48];
-    MobySeq *seqs[1]; /* 0x48: animation sequences */
-} MobyClass;
-typedef struct {
-    char _pad00[0x20];
-    unsigned char state; /* 0x20 */
-    char _pad21[0x24 - 0x21];
-    MobyClass *pClass; /* 0x24 */
-    char _pad28[0x38 - 0x28];
-    unsigned long unk38; /* 0x38 */
-    char _pad40[0x50 - 0x40];
-    unsigned char frame;     /* 0x50 */
-    unsigned char prevFrame; /* 0x51 */
-    unsigned char seq;       /* 0x52: 0xFF for none */
-    unsigned char prevSeq;   /* 0x53 */
-    char _pad54[0x68 - 0x54];
-    int frameData;     /* 0x68 */
-    int prevFrameData; /* 0x6C */
-    char _pad70[0x78 - 0x70];
-    char *pvars; /* 0x78: this moby's 0x80 bytes at D_00160028 */
-    unsigned char unk7C; /* 0x7C: the sound it wants (func_0020D790) */
-    unsigned char unk7D; /* 0x7D: the handle of the one playing, or 0xFF */
-    unsigned char unk7E; /* 0x7E */
-    char _pad7F[0x100 - 0x7F];
-} Moby;
 extern char *D_0016001C MACRO_ADDR;
 extern char *D_00160020 MACRO_ADDR;
 extern char *D_00160028 MACRO_ADDR;
@@ -189,13 +164,13 @@ Moby *CreateMoby(int oClass) {
     Moby *m;
 
     for (m = (Moby *)moby_instance_end; m < (Moby *)moby_instance_perm_end; m++) {
-        if (m->state >= 0xFE && (unsigned int)world_update_time >= m->unk38) {
+        if (m->state >= 0xFE && (unsigned int)world_update_time >= m->spawn_frame) {
             if (m->state == 0xFF) {
                 m[1].state = 0xFF;
             }
             InitMobyInstance(m, oClass);
-            m->pvars = g_moby_vars + (m - (Moby *)moby_instance_end) * 0x80;
-            FastMemSet(m->pvars, 0, 0x80);
+            m->pvars = (u8 *)(g_moby_vars + (m - (Moby *)moby_instance_end) * 0x80);
+            FastMemSet((char *)m->pvars, 0, 0x80);
             if (num_spawnable_mobys != 0) {
                 num_spawnable_mobys--;
             }
@@ -403,16 +378,16 @@ extern unsigned char D_001AAF40[];
 void update_moby_animation_state(Moby *m) {
     MobyClass *mc;
     if (m->seq != 0xFF) {
-        mc = m->pClass;
-        m->frameData = mc->seqs[m->seq]->frames[m->frame];
-        m->unk7E = mc->seqs[m->seq]->unk12;
-        m->unk7C = mc->seqs[m->seq]->unk11;
+        mc = m->pclass;
+        m->cur_frame_data = (void *)(((MobySeq *)mc->seqs[m->seq])->frames[m->frame]);
+        m->anim_trigger_count = ((MobySeq *)mc->seqs[m->seq])->unk12;
+        m->unk7C = ((MobySeq *)mc->seqs[m->seq])->unk11;
     } else {
         m->unk7C = m->seq;
-        m->unk7E = 0;
-        m->frameData = (int)&debug_font_buffer[m->frame << 11];
+        m->anim_trigger_count = 0;
+        m->cur_frame_data = (void *)((int)&debug_font_buffer[m->frame << 11]);
     }
-    m->prevFrameData = m->pClass->seqs[m->prevSeq]->frames[m->prevFrame];
+    m->prev_frame_data = (void *)(((MobySeq *)m->pclass->seqs[m->prev_seq])->frames[m->prev_frame]);
 }
 
 extern void func_0022EAB0(int);
@@ -453,17 +428,17 @@ float MobyGetFrameValue(Moby *m) {
     int fd;
 
     if (m->seq != 0xFF) {
-        fd = m->frameData;
+        fd = (int)m->cur_frame_data;
     } else {
-        fd = m->prevFrameData;
+        fd = (int)m->prev_frame_data;
     }
     if (*(float *)((char *)m + 0x54) == 0.0f) {
         return IntToFloat(*(short *)(fd + 4)) * 0.0625f;
     }
-    if (m->seq != m->prevSeq || m->frame > m->prevFrame) {
+    if (m->seq != m->prev_seq || m->frame > m->prev_frame) {
         return IntToFloat(*(short *)(fd + 4)) * 0.0625f + *(float *)((char *)m + 0x54);
     } else {
-        int prev = m->prevFrameData;
+        int prev = (int)m->prev_frame_data;
         float a = IntToFloat(*(short *)(fd + 4)) * (1.0f - *(float *)((char *)m + 0x54));
         return (a + IntToFloat(*(short *)(prev + 4)) * *(float *)((char *)m + 0x54)) * 0.0625f;
     }
