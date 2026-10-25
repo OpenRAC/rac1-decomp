@@ -554,7 +554,7 @@ void process_menu_entry(void *arg0, Menu *menu, s32 arg2) {
     }
     if (arg2 != 0) {
         menu->unk4 = menu->unk36;
-        menu->unk38 = D_0015F6F0;
+        menu->unk38 = world_update_time;
         n = e->unk6;
         if (menu->unk36 != n) {
             flags = e->unk10;

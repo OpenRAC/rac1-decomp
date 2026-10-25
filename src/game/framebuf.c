@@ -395,7 +395,7 @@ void setup_render_target(int a, int b, int c) {
     D_00151880_f.fbp = c >> 13;
     D_00151880_f.w = 1 << a;
     D_00151880_f.h = 1 << b;
-    D_0015EFD0 = (unsigned long)(c >> 8) | ((unsigned long)(1 << x) << 14)
+    capture_texture_tex0 = (unsigned long)(c >> 8) | ((unsigned long)(1 << x) << 14)
                | ((unsigned long)0 << 20) | ((unsigned long)a << 26)
                | ((unsigned long)b << 30) | ((unsigned long)1 << 34);
     FastMemZero16(g_render_packet_cursor, 0xF0);

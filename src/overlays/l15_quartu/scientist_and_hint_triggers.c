@@ -186,7 +186,7 @@ void ultramech_scientist_update(char *moby) {
         ((struct Moby *)moby)->anim_speed = 1.0f;
         if (*(short *)(data + 0x4) == 0) {
             if (*(int *)(data + 0x150) != -1) {
-                char *paths = D_L15_0016016C;
+                char *paths = quartu_cuboids;
                 jet_reset_camera(paths + (*(int *)(data + 0x150) << 7) + 0x30, paths + (*(int *)(data + 0x150) << 7) + 0x70);
             }
             ((struct Moby *)moby)->state = 3;
@@ -235,10 +235,10 @@ void ultramech_scientist_update(char *moby) {
         jet_clear_persistent(*(int *)(data + 0x284));
         MusicRequestTrack(0, 5);
         if (*(int *)(data + 0x154) != -1) {
-            char *paths = D_L15_0016016C;
+            char *paths = quartu_cuboids;
             char *paths_again;
             Hero_ResetToPosition(paths + (*(int *)(data + 0x154) << 7) + 0x30, paths + (*(int *)(data + 0x154) << 7) + 0x70, 0, 1);
-            paths_again = D_L15_0016016C;
+            paths_again = quartu_cuboids;
             jet_reset_camera(paths_again + (*(int *)(data + 0x154) << 7) + 0x30, paths_again + (*(int *)(data + 0x154) << 7) + 0x70);
         }
         ((struct Moby *)moby)->state = 5;
@@ -835,11 +835,11 @@ int check_moby_target_angular_limits(char *moby, float a, float b) {
     char *src;
 
     data = *(char **)(tbl + *(short *)(moby + 0x84) * 32 + 0x1C);
-    src = D_L15_0016016C + *(int *)(data + 0x48) * 128;
+    src = quartu_cuboids + *(int *)(data + 0x48) * 128;
     if (a == 0.0f && b == 0.0f) {
         return 1;
     }
-    g = D_L15_00167300;
+    g = quartu_player_camera;
     FastVecSub(d, src + 0x30, *(char **)(g + 0x180) + 0x30);
     dot1 = FastVecDot(d, (vec + 0x30));
     FastVecScale(p, (vec + 0x30), dot1);

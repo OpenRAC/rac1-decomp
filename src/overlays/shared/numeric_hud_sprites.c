@@ -108,7 +108,7 @@ void update_trick_combo_hud(char *a) {
                 return;
             }
         }
-        D_L05_0015FBB8 = 0;
+        trick_combo_score = 0;
         *(int *)(H + 0x70C) = 0;
         *(int *)(H + 0x6F0) = 0;
         {
@@ -147,7 +147,7 @@ void update_trick_combo_hud(char *a) {
     case 2:
     case 3:
         if (u[0] == 0) {
-            D_L05_0015FBB8 = 0;
+            trick_combo_score = 0;
             D_L05_0015FB8C = 0;
             D_L05_0015FB90 = 0;
             {
@@ -159,7 +159,7 @@ void update_trick_combo_hud(char *a) {
             u[2] = 0;
             u[0] = 0;
         } else if (u[2] == 3 && u[0] == scale_ticks(0x6E)) {
-            int n = D_L05_0015FBB8;
+            int n = trick_combo_score;
             H = D_0013E633 + 0xE1D;
             *(int *)(H + 0x8A8) += n;
             *(int *)(H + 0x864) += n * 5;
@@ -265,15 +265,15 @@ int draw_trick_combo_hud(char *a) {
                 }
                 idx = sel + k * 5;
                 D_L05_0015FBA8 = idx;
-                D_L05_0015FBB8 = D_L05_0017EA18[idx];
+                trick_combo_score = D_L05_0017EA18[idx];
                 cnt = 1;
                 for (i = 1; i < 4; i++) {
                     if ((&D_L05_0015FBA8)[i] == D_L05_0015FBA8) {
                         cnt++;
                     }
                 }
-                D_L05_0015FBB8 = D_L05_0015FBB8 / cnt;
-                func_00116248_002670A0(buf, D_L05_0015F940, D_L05_0015FBB8);
+                trick_combo_score = trick_combo_score / cnt;
+                func_00116248_002670A0(buf, D_L05_0015F940, trick_combo_score);
                 draw_framed_text(*(int *)&D_L05_0015F9A4, *(int *)&D_L05_0015F9A8 - 0x18, acc, (int)buf);
                 func_00116248_002670A0(buf, D_L05_0015F9B8, func_001FE540_002670A0(idx + 0x5092));
                 draw_framed_text(*(int *)&D_L05_0015F9A4, *(int *)&D_L05_0015F9A8, acc, (int)buf);
@@ -287,15 +287,15 @@ int draw_trick_combo_hud(char *a) {
                     }
                 }
                 if (D_L05_0015FB90 == 1) {
-                    D_L05_0015FBB8 = D_L05_0015FB8C * 10;
-                    func_00116248_002670A0(buf, D_L05_0015F940, D_L05_0015FBB8);
+                    trick_combo_score = D_L05_0015FB8C * 10;
+                    func_00116248_002670A0(buf, D_L05_0015F940, trick_combo_score);
                     draw_framed_text(*(int *)&D_L05_0015F9A4, *(int *)&D_L05_0015F9A8 - 0x18, acc, (int)buf);
                     func_00116248_002670A0(buf, D_L05_0015F9C0, func_001FE540_002670A0(out[0] + 0x5183), D_L05_0015FB8C,
                                            func_001FE540_002670A0(D_L05_0015FB8C == 0x168 ? 0x50A7 : 0x50A8));
                     draw_framed_text(*(int *)&D_L05_0015F9A4, *(int *)&D_L05_0015F9A8, acc, (int)buf);
                 } else {
-                    D_L05_0015FBB8 = D_L05_0015FB8C * 20;
-                    func_00116248_002670A0(buf, D_L05_0015F940, D_L05_0015FBB8);
+                    trick_combo_score = D_L05_0015FB8C * 20;
+                    func_00116248_002670A0(buf, D_L05_0015F940, trick_combo_score);
                     draw_framed_text(*(int *)&D_L05_0015F9A4, *(int *)&D_L05_0015F9A8 - 0x18, acc, (int)buf);
                     func_00116248_002670A0(buf, D_L05_00216FC0, func_001FE540_002670A0(out[0] + 0x5183),
                                            func_001FE540_002670A0(out[1] + 0x5183), D_L05_0015FB8C);

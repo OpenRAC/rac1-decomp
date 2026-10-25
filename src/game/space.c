@@ -393,7 +393,7 @@ extern int D_0015F6FC_m __asm__("D_0015F6FC") MACRO_ADDR;
 extern short D_0015F690; /* SDA, gp -0x7670 */
 
 void initialize_global_state_entry(int arg0) {
-    D_0015F6E4 = arg0;
+    space_load_level = arg0;
     *(int *)&space_load_pending = 1;
     D_0015F6FC_m = 1;
 }
@@ -2522,10 +2522,10 @@ void DoSpaceTransition(void) {
     D_00194200_b.f10 |= 0x80000000;
     g_game_mode = 6;
     level_render_state.set = 0;
-    if (D_0013DE48_b.f8 != 0 || D_0015F6E4 >= 8) {
+    if (D_0013DE48_b.f8 != 0 || space_load_level >= 8) {
         level_render_state.set = 1;
     }
-    if (D_0013DE48_b.fE != 0 || D_0015F6E4 >= 14) {
+    if (D_0013DE48_b.fE != 0 || space_load_level >= 14) {
         level_render_state.set = 2;
     }
     func_00118D80(0);
@@ -2551,29 +2551,29 @@ void DoSpaceTransition(void) {
     D_0018CE00_b.f218 = 0;
     D_0018CE00_b.f22C = 128.0f;
     SetBackgroundColor(0, 0, 0);
-    if (D_0015F6E4 < 0) {
+    if (space_load_level < 0) {
         while (D_0013D390_b.fDC >= 3 || D_0013D390_b.fE4 >= 0) {
             memcard_update_state();
             Menu_RunStateHandler();
         }
         FadeToBlack(scale_game_frame_count(6));
-        D_0015EE84_m = D_0015F6E4;
+        D_0015EE84_m = space_load_level;
         load_level_chunk_from_disc();
         func_00120F30_i(0);
         D_001517D0_b.fB = 0;
         DMAC_VIF1_Disable();
         return;
     }
-    if (D_0015F6E4 == 0 && level_visit_state[0] == 0) {
+    if (space_load_level == 0 && level_visit_state[0] == 0) {
         FadeToBlack(scale_game_frame_count(6));
         play_level_loading_slides(lvl, 0, 1, scale_game_frame_count(240), 0);
         play_level_transition_movie(0);
         play_level_loading_slides(lvl, 2, 2, scale_game_frame_count(180), 0);
         play_level_transition_movie(1);
-        D_0015EE84_m = D_0015F6E4;
+        D_0015EE84_m = space_load_level;
         play_level_loading_slides(lvl, 3, 4, scale_game_frame_count(240), 1);
         play_level_transition_movie(2);
-    } else if (D_0015EE84_m == 0 && D_0015F6E4 == 1 && level_visit_state[1] == 0) {
+    } else if (D_0015EE84_m == 0 && space_load_level == 1 && level_visit_state[1] == 0) {
         FadeToBlack(scale_game_frame_count(6));
         play_level_loading_slides(lvl, 5, 6, scale_game_frame_count(240), 0);
         play_level_transition_movie(3);
@@ -2581,10 +2581,10 @@ void DoSpaceTransition(void) {
         play_level_loading_slides(lvl, 7, 7, scale_game_frame_count(180), 0);
         play_level_transition_movie(5);
         level_visit_state[D_0015EE84_m] = 2;
-        D_0015EE84_m = D_0015F6E4;
+        D_0015EE84_m = space_load_level;
         play_level_loading_slides(lvl, 8, 8, scale_game_frame_count(240), 1);
     } else {
-        if (D_0015F6E4 == 4 && level_visit_state[4] == 0) {
+        if (space_load_level == 4 && level_visit_state[4] == 0) {
             FadeToBlack(scale_game_frame_count(12));
             play_level_loading_slides(lvl, 9, 10, scale_game_frame_count(240), 0);
             play_level_transition_movie(6);
@@ -2594,7 +2594,7 @@ void DoSpaceTransition(void) {
             play_level_loading_slides(lvl, 11, 11, scale_game_frame_count(240), 0);
             play_level_transition_movie(7);
         }
-        if (D_0015F6E4 == 13 && level_visit_state[13] == 0) {
+        if (space_load_level == 13 && level_visit_state[13] == 0) {
             FadeToBlack(scale_game_frame_count(12));
             play_level_loading_slides(lvl, 12, 13, scale_game_frame_count(240), 0);
             play_level_transition_movie(8);
@@ -2604,7 +2604,7 @@ void DoSpaceTransition(void) {
             play_level_loading_slides(lvl, 14, 14, scale_game_frame_count(240), 0);
             play_level_transition_movie(9);
         }
-        if (D_0015F6E4 == 16 && level_visit_state[16] == 0) {
+        if (space_load_level == 16 && level_visit_state[16] == 0) {
             FadeToBlack(scale_game_frame_count(12));
             play_level_loading_slides(lvl, 15, 16, scale_game_frame_count(240), 0);
             play_level_transition_movie(10);
@@ -2623,7 +2623,7 @@ void DoSpaceTransition(void) {
         }
         *(short *)&D_0015EF4A_i = 1;
         done = 0;
-        D_0015EE84_m = D_0015F6E4;
+        D_0015EE84_m = space_load_level;
         D_0015EF48_m = 0;
         initialize_level_runtime();
         func_0012F4A8(D_0015EE84_m);

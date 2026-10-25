@@ -706,12 +706,12 @@ void RingMarkersDraw(char *moby) {
         if (first->v[slot] == 2) {
             other = i + *(int *)(data + 0x18) + st0 - st1;
             color = (*(int *)&D_L02_00161C3C);
-            if (second->v[other % 12] != 0) distance = (float)(*(int *)&D_L02_00161BD4);
+            if (second->v[other % 12] != 0) distance = (float)(*(int *)&trespasser_middle_ring_radius);
             else {
                 int t = i + *(int *)(data + 0x1c) + st0 - st2;
-                if (third->v[t % 12] != 0) distance = (float)(*(int *)&D_L02_00161BC8);
-                else if (third->v[(t + 6) % 12] != 0) distance = (float)-(*(int *)&D_L02_00161BC8);
-                else if (second->v[(other + 6) % 12] != 0) distance = (float)-(*(int *)&D_L02_00161BD4);
+                if (third->v[t % 12] != 0) distance = (float)(*(int *)&trespasser_third_ring_radius);
+                else if (third->v[(t + 6) % 12] != 0) distance = (float)-(*(int *)&trespasser_third_ring_radius);
+                else if (second->v[(other + 6) % 12] != 0) distance = (float)-(*(int *)&trespasser_middle_ring_radius);
                 else if (first->v[(index + 6) % 12] != 0) distance = (float)-(*(int *)&D_L02_00161BE0);
                 else {
                     int k;
@@ -746,9 +746,9 @@ void RingMarkersDraw(char *moby) {
         slot = index % 12;
         if (second->v[slot] == 2) {
             other = i + *(int *)(data + 0x1c) + st1 - st2;
-            if (third->v[other % 12] != 0) distance = (float)(*(int *)&D_L02_00161BC8);
-            else if (third->v[(other + 6) % 12] != 0) distance = (float)-(*(int *)&D_L02_00161BC8);
-            else if (second->v[(index + 6) % 12] != 0) distance = (float)-(*(int *)&D_L02_00161BD4);
+            if (third->v[other % 12] != 0) distance = (float)(*(int *)&trespasser_third_ring_radius);
+            else if (third->v[(other + 6) % 12] != 0) distance = (float)-(*(int *)&trespasser_third_ring_radius);
+            else if (second->v[(index + 6) % 12] != 0) distance = (float)-(*(int *)&trespasser_middle_ring_radius);
             else if (first->v[(i + *(int *)(data + 0x14) + st1 - st0 + 6) % 12] != 0) distance = (float)-(*(int *)&D_L02_00161BE0);
             else {
                 int k;
@@ -762,9 +762,9 @@ void RingMarkersDraw(char *moby) {
                     color = (*(int *)&D_L02_00161C40);
                 }
             }
-            draw_tresspasser_puzzle_radial_strip(ctx.texture, FastAddRots(angle, 0.31415927f), (float)(*(int *)&D_L02_00161BD4), distance, color);
+            draw_tresspasser_puzzle_radial_strip(ctx.texture, FastAddRots(angle, 0.31415927f), (float)(*(int *)&trespasser_middle_ring_radius), distance, color);
             if (draw_second) {
-                draw_tresspasser_puzzle_radial_strip(ctx.texture, FastAddRots(angle, 0.31415927f), distance, (float)(*(int *)&D_L02_00161BD4), (*(int *)&D_L02_00161C44));
+                draw_tresspasser_puzzle_radial_strip(ctx.texture, FastAddRots(angle, 0.31415927f), distance, (float)(*(int *)&trespasser_middle_ring_radius), (*(int *)&D_L02_00161C44));
             }
         }
     }
@@ -781,8 +781,8 @@ void RingMarkersDraw(char *moby) {
         index = i + *(int *)(data + 0x1c);
         slot = index % 12;
         if (third->v[slot] == 2) {
-            if (third->v[(index + 6) % 12] != 0) distance = (float)-(*(int *)&D_L02_00161BC8);
-            else if (second->v[(i + *(int *)(data + 0x18) + st2 - st1 + 6) % 12] != 0) distance = (float)-(*(int *)&D_L02_00161BD4);
+            if (third->v[(index + 6) % 12] != 0) distance = (float)-(*(int *)&trespasser_third_ring_radius);
+            else if (second->v[(i + *(int *)(data + 0x18) + st2 - st1 + 6) % 12] != 0) distance = (float)-(*(int *)&trespasser_middle_ring_radius);
             else if (first->v[(i + *(int *)(data + 0x14) + st2 - st0 + 6) % 12] != 0) distance = (float)-(*(int *)&D_L02_00161BE0);
             else {
                 int k;
@@ -796,9 +796,9 @@ void RingMarkersDraw(char *moby) {
                     color = (*(int *)&D_L02_00161C40);
                 }
             }
-            draw_tresspasser_puzzle_radial_strip(ctx.texture, FastAddRots(angle, 0.31415927f), (float)(*(int *)&D_L02_00161BC8), distance, color);
+            draw_tresspasser_puzzle_radial_strip(ctx.texture, FastAddRots(angle, 0.31415927f), (float)(*(int *)&trespasser_third_ring_radius), distance, color);
             if (draw_second) {
-                draw_tresspasser_puzzle_radial_strip(ctx.texture, FastAddRots(angle, 0.31415927f), distance, (float)(*(int *)&D_L02_00161BC8), (*(int *)&D_L02_00161C44));
+                draw_tresspasser_puzzle_radial_strip(ctx.texture, FastAddRots(angle, 0.31415927f), distance, (float)(*(int *)&trespasser_third_ring_radius), (*(int *)&D_L02_00161C44));
             }
         }
     }
@@ -843,12 +843,12 @@ void RingMarkersDraw(char *moby) {
         draw_tresspasser_puzzle_ring_arc(ctx.texture, angle, phase, (float)(*(int *)&D_L02_00161BD0), (float)(*(int *)&D_L02_00161BCC), color);
         if (second->v[(i + *(int *)(data + 0x18)) % 12] != 0) {
             if (second->v[(i + *(int *)(data + 0x18)) % 12] >= 3) {
-                DrawRadarArrow(ctx.texture, (*(int *)&D_L02_00161C38), 0, FastAddRots(angle, 0.2617994f), (float)(*(int *)&D_L02_00161BD4));
+                DrawRadarArrow(ctx.texture, (*(int *)&D_L02_00161C38), 0, FastAddRots(angle, 0.2617994f), (float)(*(int *)&trespasser_middle_ring_radius));
                 second->v[(i + *(int *)(data + 0x18)) % 12] = 2;
             } else if (second->v[(i + *(int *)(data + 0x18)) % 12] == 2) {
-                DrawRadarArrow(ctx.texture, (*(int *)&D_L02_00161C38), 1, FastAddRots(angle, 0.2617994f), (float)(*(int *)&D_L02_00161BD4));
+                DrawRadarArrow(ctx.texture, (*(int *)&D_L02_00161C38), 1, FastAddRots(angle, 0.2617994f), (float)(*(int *)&trespasser_middle_ring_radius));
             } else {
-                DrawRadarArrow(ctx.texture, (*(int *)&D_L02_00161C38), 2, FastAddRots(angle, 0.2617994f), (float)(*(int *)&D_L02_00161BD4));
+                DrawRadarArrow(ctx.texture, (*(int *)&D_L02_00161C38), 2, FastAddRots(angle, 0.2617994f), (float)(*(int *)&trespasser_middle_ring_radius));
             }
         }
     }
@@ -868,12 +868,12 @@ void RingMarkersDraw(char *moby) {
         draw_tresspasser_puzzle_ring_arc(ctx.texture, angle, phase, (float)(*(int *)&D_L02_00161BC4), (float)(*(int *)&D_L02_00161BC0), color);
         if (third->v[(i + *(int *)(data + 0x1c)) % 12] != 0) {
             if (third->v[(i + *(int *)(data + 0x1c)) % 12] >= 3) {
-                DrawRadarArrow(ctx.texture, (*(int *)&D_L02_00161C38), 0, FastAddRots(angle, 0.2617994f), (float)(*(int *)&D_L02_00161BC8));
+                DrawRadarArrow(ctx.texture, (*(int *)&D_L02_00161C38), 0, FastAddRots(angle, 0.2617994f), (float)(*(int *)&trespasser_third_ring_radius));
                 third->v[(i + *(int *)(data + 0x1c)) % 12] = 2;
             } else if (third->v[(i + *(int *)(data + 0x1c)) % 12] == 2) {
-                DrawRadarArrow(ctx.texture, (*(int *)&D_L02_00161C38), 1, FastAddRots(angle, 0.2617994f), (float)(*(int *)&D_L02_00161BC8));
+                DrawRadarArrow(ctx.texture, (*(int *)&D_L02_00161C38), 1, FastAddRots(angle, 0.2617994f), (float)(*(int *)&trespasser_third_ring_radius));
             } else {
-                DrawRadarArrow(ctx.texture, (*(int *)&D_L02_00161C38), 2, FastAddRots(angle, 0.2617994f), (float)(*(int *)&D_L02_00161BC8));
+                DrawRadarArrow(ctx.texture, (*(int *)&D_L02_00161C38), 2, FastAddRots(angle, 0.2617994f), (float)(*(int *)&trespasser_third_ring_radius));
             }
         }
     }
@@ -1371,7 +1371,7 @@ extern unsigned char D_L02_0017CAC0[];
 /* Re-arms the matching entry of the moby list when the level mode is 2. */
 void attach_big_head_cheat_manipulator_to_matching_moby(char *moby) {
     int i;
-    if (D_L02_0015F6A8 == 2 && gCheats[0] != 0) {
+    if (aridia_cinematic_mode == 2 && gCheats[0] != 0) {
         for (i = 0; i < talk_camera.count; i++) {
             char *e = talk_camera.mobys[i];
             if (*(short *)(e + 0xA6) == *(short *)(moby + 0xA6)) {
@@ -1477,7 +1477,7 @@ void tresspasser_update(char *moby) {
     case 2:
         break;
     case 3:
-        if (D_L02_0015F6A8 == 2) {
+        if (aridia_cinematic_mode == 2) {
             break;
         }
         if (*(unsigned char *)(D_0013E633 + 0x2EC1) != 0) {
@@ -1494,7 +1494,7 @@ void tresspasser_update(char *moby) {
             ShowBanner(0x7DF, -1);
             clear_active_help_record();
             Help_Request(0x7D9, 0x13);
-            D_L02_0015F4FC = 1.0f;
+            aridia_fade_level = 1.0f;
             moby[0x20] = 4;
             Hero_ResetToPosition(D_0013E633 + 0xE9D, D_0013E633 + 0xE9D + 0x10, 0x72, 1);
         } else {
@@ -1533,7 +1533,7 @@ void tresspasser_update(char *moby) {
             w[1] = FastAddRots(t * *(float *)(d + 0x40), a[9]);
             t = FastSubRots(a[12], a[8]);
             w[0] = FastAddRots(t * *(float *)(d + 0x40), a[8]);
-            gp = D_L02_00167480;
+            gp = aridia_camera_moby;
             if (gp != 0 && *(short *)(gp + 0x86) != 5) {
                 CameraScript(o, w, 1, 0, 0);
             }
@@ -1541,11 +1541,11 @@ void tresspasser_update(char *moby) {
             set_camera_rotation(w);
             e = &D_L02_00179A90;
             if (D_L02_00179A90 == 0 && e[9] == -1 && *(float *)(d + 0x40) > 0.2f) {
-                ApproachValue(&D_L02_0015F4FC, 1.0f, g_frame_time * 4.0f);
+                ApproachValue(&aridia_fade_level, 1.0f, g_frame_time * 4.0f);
             } else {
-                ApproachValue(&D_L02_0015F4FC, 0.0f, g_frame_time * 4.0f);
+                ApproachValue(&aridia_fade_level, 0.0f, g_frame_time * 4.0f);
             }
-            if (D_L02_0015F4FC == 1.0f) {
+            if (aridia_fade_level == 1.0f) {
                 Hero_ResetToPosition(D_0013E633 + 0xE9D, D_0013E633 + 0xE9D + 0x10, 0, 0);
                 CameraScript2(0);
                 moby[0x20] = 5;
@@ -1553,8 +1553,8 @@ void tresspasser_update(char *moby) {
         }
         break;
     case 5:
-        ApproachValue(&D_L02_0015F4FC, 0.0f, g_frame_time * 4.0f);
-        if (D_L02_0015F4FC == 0.0f) {
+        ApproachValue(&aridia_fade_level, 0.0f, g_frame_time * 4.0f);
+        if (aridia_fade_level == 0.0f) {
             memcard_Save(0, -1);
             DeleteMoby(moby);
         }
@@ -1610,7 +1610,7 @@ void SparkleSpritesDrawL02(char *m) {
     float f;
 
     *(float *)(m + 0x18) += 0.5f;
-    FastVecSub(d, D_L02_00167440, m + 0x10);
+    FastVecSub(d, aridia_camera_pos, m + 0x10);
     vec_scale_to_length(d, d, -0.3f);
     vec_scale_to_length(e, d, 0.1f);
     FastVecAdd(d, d, m + 0x10);
@@ -2223,7 +2223,7 @@ extern char *D_L02_00167480;
 
 /* Store the selected value only while this level object is inactive. */
 void SetActiveObjectValue(int value) {
-    char *moby = D_L02_00167480;
+    char *moby = aridia_camera_moby;
     if (*(short *)(moby + 0x86) == 0) {
         char *data = *(char **)(moby + 0x70);
         *(int *)(data + 0x218) = value;
@@ -2231,7 +2231,7 @@ void SetActiveObjectValue(int value) {
 }
 /* Update the active object's coordinates without replacing zero fields. */
 void set_nonzero_follow_camera_parameters(float x, float y, float z) {
-    char *moby = D_L02_00167480;
+    char *moby = aridia_camera_moby;
     if (*(short *)(moby + 0x86) == 0) {
         char *data = *(char **)(moby + 0x70) + 0x1D0;
         if (*(float *)(data + 0x3C) != 0.0f) {
@@ -2248,7 +2248,7 @@ void set_nonzero_follow_camera_parameters(float x, float y, float z) {
 /* stores two coordinate triples in the selected object data */
 void set_selected_object_float_triplets(float a, float b, float c,
                        float d, float e, float f) {
-    char *moby = D_L02_00167480;
+    char *moby = aridia_camera_moby;
     char *data = *(char **)(moby + 0x70);
     char *dst = data + 0x30;
     *(float *)(dst + 0x20) = e;
@@ -2599,7 +2599,7 @@ void apply_moby_camera_control(char *moby) {
         return;
     }
     if (*(short *)(data + 0x3c) == 5) {
-        angle = f_atan_2FCE00(*(float *)D_L02_00167480, *(float *)(D_L02_00167480 + 4));
+        angle = f_atan_2FCE00(*(float *)aridia_camera_moby, *(float *)(aridia_camera_moby + 4));
         if (*(short *)(data + 0x20) < 2)
             *(float *)(data + 0x40) = *(float *)(D_L02_0015F050 + *(short *)(moby + 0x84) * 32 + 0x18);
         else if (f_abs_2FCE00(D_0013CA40_2FCE00.analog[0]) >= 0.3f || f_abs_2FCE00(D_0013CA40_2FCE00.analog[1]) >= 0.3f)
@@ -2610,7 +2610,7 @@ void apply_moby_camera_control(char *moby) {
     }
     if (*(short *)(data + 0x3c) == 4) {
         heading = *(float *)(D_L02_0015F050 + *(short *)(moby + 0x84) * 32 + 0x18);
-        angle = f_atan_2FCE00(*(float *)D_L02_00167480, *(float *)(D_L02_00167480 + 4));
+        angle = f_atan_2FCE00(*(float *)aridia_camera_moby, *(float *)(aridia_camera_moby + 4));
         if (f_diffrot_2FCE00(heading, angle) > 1.5707964f)
             heading = f_addrot_2FCE00(heading, 3.1415927f);
         *(float *)(data + 0x40) = heading;
@@ -2745,7 +2745,7 @@ void apply_moby_camera_control(char *moby) {
 // Camera init: runs the setup when the flag is clear and the camera record is not negative, then clears a field and returns 0.
 int update_moby_camera_control(char *moby) {
     char *cam = *(char **)(D_L02_0015F050 + *(short *)(moby + 0x84) * 32 + 0x1C);
-    if (*(short *)(D_L02_00167480 + 0x86) == 0 && *(short *)(cam + 0x20) >= 0) apply_moby_camera_control(moby);
+    if (*(short *)(aridia_camera_moby + 0x86) == 0 && *(short *)(cam + 0x20) >= 0) apply_moby_camera_control(moby);
     *(int *)(cam + 0x50) = 0;
     return 0;
 }

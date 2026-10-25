@@ -168,7 +168,7 @@ void update_homing_missile(struct Moby *moby) {
 
     moby->scale += (moby->pclass->scale - moby->scale) * 0.1f;
     qcopy(old, &moby->pos);
-    if (level_frame % 6 == (((char *)moby - D_L11_00160058) >> 8) % 6)
+    if (level_frame % 6 == (((char *)moby - pokitaru_mobys) >> 8) % 6)
         vars->target = 0;
     moby->alpha = truncate_float_to_s32(vars->size * 24.0f);
     copy_xyz_089d0(look, vars->target_pos);
@@ -630,33 +630,33 @@ void DrawWaterSheet(Moby *moby) {
             for (y = d->f18 * -2.0f; y < d->f18 * 2.0f; y += d->f18) {
                 n = 0;
                 for (x = d->f18 * -2.0f; x < d->f18 * 2.0f; x += d->f18) {
-                    D_L11_001DA7E0[n].u = x / (d->f18 * 2.0f) * wave_speed[layer] + wave_offset[layer].u;
-                    D_L11_001DA7E0[n].v = y / (d->f18 * 2.0f) * wave_speed[layer] + wave_offset[layer].v;
-                    D_L11_001DA1D8[n].x = x + ((Cam_30BCD8 *)pokitaru_player_camera)->x + 1.0f;
-                    D_L11_001DA1D8[n].y = y + ((Cam_30BCD8 *)pokitaru_player_camera)->y + 1.0f;
-                    D_L11_001DA1D8[n].z = D_L11_00161EA8;
+                    pokitaru_water_sheet_uvs[n].u = x / (d->f18 * 2.0f) * wave_speed[layer] + wave_offset[layer].u;
+                    pokitaru_water_sheet_uvs[n].v = y / (d->f18 * 2.0f) * wave_speed[layer] + wave_offset[layer].v;
+                    pokitaru_water_sheet_verts[n].x = x + ((Cam_30BCD8 *)pokitaru_player_camera)->x + 1.0f;
+                    pokitaru_water_sheet_verts[n].y = y + ((Cam_30BCD8 *)pokitaru_player_camera)->y + 1.0f;
+                    pokitaru_water_sheet_verts[n].z = D_L11_00161EA8;
                     i = n + 1;
-                    D_L11_001DA7E0[i].u = x / (d->f18 * 2.0f) * wave_speed[layer] + wave_offset[layer].u;
-                    D_L11_001DA7E0[i].v = (y + d->f18) / (d->f18 * 2.0f) * wave_speed[layer] + wave_offset[layer].v;
-                    D_L11_001DA1D8[i].x = x + ((Cam_30BCD8 *)pokitaru_player_camera)->x + 1.0f;
-                    D_L11_001DA1D8[i].y = y + d->f18 + ((Cam_30BCD8 *)pokitaru_player_camera)->y + 1.0f;
-                    D_L11_001DA1D8[i].z = D_L11_00161EA8;
+                    pokitaru_water_sheet_uvs[i].u = x / (d->f18 * 2.0f) * wave_speed[layer] + wave_offset[layer].u;
+                    pokitaru_water_sheet_uvs[i].v = (y + d->f18) / (d->f18 * 2.0f) * wave_speed[layer] + wave_offset[layer].v;
+                    pokitaru_water_sheet_verts[i].x = x + ((Cam_30BCD8 *)pokitaru_player_camera)->x + 1.0f;
+                    pokitaru_water_sheet_verts[i].y = y + d->f18 + ((Cam_30BCD8 *)pokitaru_player_camera)->y + 1.0f;
+                    pokitaru_water_sheet_verts[i].z = D_L11_00161EA8;
                     i = n + 2;
-                    D_L11_001DA7E0[i].u = (x + d->f18) / (d->f18 * 2.0f) * wave_speed[layer] + wave_offset[layer].u;
-                    D_L11_001DA7E0[i].v = y / (d->f18 * 2.0f) * wave_speed[layer] + wave_offset[layer].v;
-                    D_L11_001DA1D8[i].x = x + d->f18 + ((Cam_30BCD8 *)pokitaru_player_camera)->x + 1.0f;
-                    D_L11_001DA1D8[i].y = y + ((Cam_30BCD8 *)pokitaru_player_camera)->y + 1.0f;
-                    D_L11_001DA1D8[i].z = D_L11_00161EA8;
+                    pokitaru_water_sheet_uvs[i].u = (x + d->f18) / (d->f18 * 2.0f) * wave_speed[layer] + wave_offset[layer].u;
+                    pokitaru_water_sheet_uvs[i].v = y / (d->f18 * 2.0f) * wave_speed[layer] + wave_offset[layer].v;
+                    pokitaru_water_sheet_verts[i].x = x + d->f18 + ((Cam_30BCD8 *)pokitaru_player_camera)->x + 1.0f;
+                    pokitaru_water_sheet_verts[i].y = y + ((Cam_30BCD8 *)pokitaru_player_camera)->y + 1.0f;
+                    pokitaru_water_sheet_verts[i].z = D_L11_00161EA8;
                     i = n + 3;
-                    D_L11_001DA7E0[i].u = (x + d->f18) / (d->f18 * 2.0f) * wave_speed[layer] + wave_offset[layer].u;
-                    D_L11_001DA7E0[i].v = (y + d->f18) / (d->f18 * 2.0f) * wave_speed[layer] + wave_offset[layer].v;
-                    D_L11_001DA1D8[i].x = x + d->f18 + ((Cam_30BCD8 *)pokitaru_player_camera)->x + 1.0f;
-                    D_L11_001DA1D8[i].y = y + d->f18 + ((Cam_30BCD8 *)pokitaru_player_camera)->y + 1.0f;
-                    D_L11_001DA1D8[i].z = D_L11_00161EA8;
+                    pokitaru_water_sheet_uvs[i].u = (x + d->f18) / (d->f18 * 2.0f) * wave_speed[layer] + wave_offset[layer].u;
+                    pokitaru_water_sheet_uvs[i].v = (y + d->f18) / (d->f18 * 2.0f) * wave_speed[layer] + wave_offset[layer].v;
+                    pokitaru_water_sheet_verts[i].x = x + d->f18 + ((Cam_30BCD8 *)pokitaru_player_camera)->x + 1.0f;
+                    pokitaru_water_sheet_verts[i].y = y + d->f18 + ((Cam_30BCD8 *)pokitaru_player_camera)->y + 1.0f;
+                    pokitaru_water_sheet_verts[i].z = D_L11_00161EA8;
                     for (i = n; i < n + 4; i++) {
-                        v0.x = D_L11_001DA1D8[i].x - ((Cam_30BCD8 *)pokitaru_player_camera)->x;
-                        v0.y = D_L11_001DA1D8[i].y - ((Cam_30BCD8 *)pokitaru_player_camera)->y;
-                        v0.z = D_L11_001DA1D8[i].z - ((Cam_30BCD8 *)pokitaru_player_camera)->z;
+                        v0.x = pokitaru_water_sheet_verts[i].x - ((Cam_30BCD8 *)pokitaru_player_camera)->x;
+                        v0.y = pokitaru_water_sheet_verts[i].y - ((Cam_30BCD8 *)pokitaru_player_camera)->y;
+                        v0.z = pokitaru_water_sheet_verts[i].z - ((Cam_30BCD8 *)pokitaru_player_camera)->z;
                         v0.w = 1.0f;
                         t = vec_length_xy(&v0) / (d->f18 * 2.0f);
                         if (t > 1.0f) {
@@ -669,7 +669,7 @@ void DrawWaterSheet(Moby *moby) {
                         raise_kernel_trap();
                     }
                 }
-                func_L00_001FDE48_30BCD8(n, D_L11_001DA1D8, D_L11_001DA4D8, D_L11_001DA7E0, 1);
+                func_L00_001FDE48_30BCD8(n, pokitaru_water_sheet_verts, D_L11_001DA4D8, pokitaru_water_sheet_uvs, 1);
             }
         }
     }
@@ -822,7 +822,7 @@ extern int D_L11_00160058_m __asm__("D_L11_00160058") MACRO_ADDR;
 
 // For each index in the moby's list, copy its z to the entry and to the table slot the entry points at.
 void Group_CopyZToTableSlots(char *moby) {
-    short *p = D_L11_001AC540[*(unsigned char *)(moby + 0x21)];
+    short *p = pokitaru_moby_groups[*(unsigned char *)(moby + 0x21)];
     int base = D_L11_00160058_m;
     do {
         int i = (*p & 0x7FFF) * 256;
@@ -1275,11 +1275,11 @@ void draw_moby_trail_quads(char *m) {
     off[0][2] = 0.25f;
     off[1][2] = -0.25f;
 
-    p = D_L11_001AC540[*(unsigned char *)(m + 0x21)];
+    p = pokitaru_moby_groups[*(unsigned char *)(m + 0x21)];
     do {
         np = p + 1;
         skip = 1;
-        o = (char *)(((*p & 0x7FFF) << 8) + (int)D_L11_00160058);
+        o = (char *)(((*p & 0x7FFF) << 8) + (int)pokitaru_mobys);
         c1 = *(short *)(o + 0xA6);
         c2 = *(short *)(m + 0xA6);
         vis = *(unsigned char *)(o + 0x31);
@@ -1522,7 +1522,7 @@ extern Pair8 D_L11_001626B8[] MACRO_ADDR;
 void queue_oil_tanker_front_texture_2b_batches(int a) {
     int i;
     for (i = 0; i < 5; i++) {
-        func_L08_00259040(D_L11_00217A30, D_L11_002179D0[i], D_L11_00215528[i], &D_L11_001626B8[a]);
+        add_uv_scroll_offset(D_L11_00217A30, D_L11_002179D0[i], D_L11_00215528[i], &D_L11_001626B8[a]);
         draw_env_overlay_mesh(D_L11_00215528[i], D_L11_002179B8[i], D_L11_00217A00[i], D_L11_00217A30, 1);
     }
 }

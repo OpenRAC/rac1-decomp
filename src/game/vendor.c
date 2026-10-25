@@ -983,7 +983,7 @@ void render_vendor_capture_pass_sequence(char *m) {
         func_00234C98_l(0x42, 0x8000000064L);
         func_00234C98_l(8, 5);
         VU1_texFlush();
-        tex = D_0015EFD0;
+        tex = capture_texture_tex0;
         if (pal_mode != 0) {
             append_subpixel_textured_screen_quad(w, h, x, y, 0, 0, (int)(sx - 1.0f),
                           func_001FA898_3AA38(sy * 0.92857146f - 1.0f),

@@ -156,7 +156,7 @@ void pilots_helmet_update(M_2e03a0_2e03a0 *m) {
         if (D_00141C08[0] == 0) Help_Request(0x2328, 0x34);
         if (p->b != -1) {
             D_L00_001BA960.arr[(*(E_2e03a0_2e03a0 * *)&moby_array_start)[p->b].h] = (*(E_2e03a0_2e03a0 * *)&moby_array_start)[p->b].b0 + 2;
-            if ((*(E_2e03a0_2e03a0 * *)&moby_array_start)[p->b].b0 == 0xFF || (D_L00_0015FD48[(*(E_2e03a0_2e03a0 * *)&moby_array_start)[p->b].b0] != 0xFF && saved_mission_state[(*(E_2e03a0_2e03a0 * *)&moby_array_start)[p->b].b0 + (*(s32 *)&g_current_level_index) * 16] == 0xFF)) {
+            if ((*(E_2e03a0_2e03a0 * *)&moby_array_start)[p->b].b0 == 0xFF || (mission_state[(*(E_2e03a0_2e03a0 * *)&moby_array_start)[p->b].b0] != 0xFF && saved_mission_state[(*(E_2e03a0_2e03a0 * *)&moby_array_start)[p->b].b0 + (*(s32 *)&g_current_level_index) * 16] == 0xFF)) {
                 D_L00_001BB5C0.arr[(*(E_2e03a0_2e03a0 * *)&moby_array_start)[p->b].h] = (*(E_2e03a0_2e03a0 * *)&moby_array_start)[p->b].b0 + 2;
             }
         } else {
@@ -242,20 +242,20 @@ extern s32_2e1f28 D_L00_00161D58[] MACRO_ADDR;
 s32_2e1f28 register_beam_slot(s32_2e1f28 id, s32_2e1f28 a, s32_2e1f28 b) {
     s32_2e1f28 i, j;
     for (i = 0; i < 3; i++) {
-        if (D_L00_00161D58[i] == id) return 1;
+        if (beam_slot_ids[i] == id) return 1;
     }
     for (j = 0; j < 3; j++) {
-        if (D_L00_00161D58[j] == 0) {
-            D_L00_00161D58[j] = id;
+        if (beam_slot_ids[j] == 0) {
+            beam_slot_ids[j] = id;
             D_L00_00161CD8[j] = 0;
             D_L00_00161CE8[j] = 0;
             D_L00_00161CF8[j] = 0;
             D_L00_00161D08[j] = -1;
-            D_L00_00161D18[j] = -1;
+            beam_tip_light_slots[j] = -1;
             D_L00_00161D28[j] = a;
             D_L00_00161D38[j] = b;
             D_L00_00161D48[j] = 0;
-            D_L00_00161CC8[j] = 1;
+            beam_slot_states[j] = 1;
             return 1;
         }
     }
@@ -271,16 +271,16 @@ extern int D_L00_00161D58[];
 int EffectSlot_Free(int id) {
     unsigned int i;
     for (i = 0; (int)i < 3; i++) {
-        if (D_L00_00161D58[i] == id) {
-            D_L00_00161CC8[i] = 0;
-            D_L00_00161D58[i] = 0;
+        if (beam_slot_ids[i] == id) {
+            beam_slot_states[i] = 0;
+            beam_slot_ids[i] = 0;
             if (D_L00_00161D08[i] != -1) {
                 release_point_light_slot(D_L00_00161D08[i]);
                 D_L00_00161D08[i] = -1;
             }
-            if (D_L00_00161D18[i] != -1) {
-                release_point_light_slot(D_L00_00161D18[i]);
-                D_L00_00161D18[i] = -1;
+            if (beam_tip_light_slots[i] != -1) {
+                release_point_light_slot(beam_tip_light_slots[i]);
+                beam_tip_light_slots[i] = -1;
             }
             return 1;
         }
@@ -295,15 +295,15 @@ extern int D_L00_00161D58[] MACRO_ADDR;
 void release_beam_slot(int i) {
     int v;
     v = D_L00_00161D08[i];
-    D_L00_00161CC8[i] = 0;
-    D_L00_00161D58[i] = 0;
+    beam_slot_states[i] = 0;
+    beam_slot_ids[i] = 0;
     if (v != -1) {
         release_point_light_slot(v);
         D_L00_00161D08[i] = -1;
     }
-    if (D_L00_00161D18[i] != -1) {
-        release_point_light_slot(D_L00_00161D18[i]);
-        D_L00_00161D18[i] = -1;
+    if (beam_tip_light_slots[i] != -1) {
+        release_point_light_slot(beam_tip_light_slots[i]);
+        beam_tip_light_slots[i] = -1;
     }
 }
 typedef struct { unsigned char b[0x40]; } B002E3640;
@@ -315,9 +315,9 @@ extern void func_001F9A98(void *, void *, int);
 int set_beam_origin_transform_and_endpoint(int id, void *src, void *v) {
     int i;
     for (i = 0; i < 3; i++) {
-        if (id == D_L00_00161D58[i]) {
-            if (D_L00_00161CC8[i] == 1) D_L00_00161CC8[i] = 2;
-            else if (D_L00_00161CC8[i] == 4) D_L00_00161CC8[i] = 3;
+        if (id == beam_slot_ids[i]) {
+            if (beam_slot_states[i] == 1) beam_slot_states[i] = 2;
+            else if (beam_slot_states[i] == 4) beam_slot_states[i] = 3;
             FastMemCopy(&D_L00_001E7070[i], src, 0x40);
             qcopy(&D_L00_001E7130[i], v);
             return 1;
@@ -561,13 +561,13 @@ void draw_active_beam_slots(char *m) {
         float f;
         int a, b;
         int k, k1;
-        if (D_L00_00161D58[i] == 0 || D_L00_00161CC8[i] < 2) continue;
+        if (beam_slot_ids[i] == 0 || beam_slot_states[i] < 2) continue;
         k = i << 1;
         k1 = k + 1;
         f = D_L00_00161D48_f[i] - frame_scale * 0.2f;
         D_L00_00161D48_f[i] = f;
         if (f <= -8.0f) D_L00_00161D48_f[i] = f + 8.0f;
-        EffectSlot_DrawPane(D_L00_00161D58[i], i);
+        EffectSlot_DrawPane(beam_slot_ids[i], i);
         a = d[1] + 0x28;
         b = d[0] + 0x28;
         draw_beam_strand_with_glow(a, b, &D_L00_001E7190[k], 0x80, 0x40, i);
@@ -644,7 +644,7 @@ void draw_beam_strand_with_glow(int texture_id, int glow_texture_id, void *point
     quads[0].texture_coordinates[2][1] = zero;
     quads[0].texture_coordinates[3][1] = 1.0f;
     half_width = 0.6f;
-    if (((struct Moby *)D_L00_00161D58[slot])->oclass == 0x1C) half_width = 0.3f;
+    if (((struct Moby *)beam_slot_ids[slot])->oclass == 0x1C) half_width = 0.3f;
     width.q = 0;
     glow_width.q = 0;
     glow_width.f[2] = half_width + half_width;
@@ -1029,7 +1029,7 @@ int compute_follow_camera_radial_collision_positions(VQ *p, float r) {
     a = *p;
     q = (int *)func_L00_001EE530_q(&a, r);
     if (q != 0) {
-    e = (char *)D_L00_001601B4 + (q[5] << 7);
+    e = (char *)level_spheres + (q[5] << 7);
     c = e + 0x30;
     FastVecSub(d.f, p->f, (float *)c);
     l = FastVecLength(e);
@@ -3854,7 +3854,7 @@ void run_type5_grid_record_noop_callbacks(int a) {
             for (k = 0; k < *(int *)e; k++) {
                 char *it = e + 0x10 + k * 0x30;
                 if (*(int *)(it + 0x10) == 5) {
-                    char *b = (char *)D_L00_001601B4 + (*(int *)(it + 0x14) << 7);
+                    char *b = (char *)level_spheres + (*(int *)(it + 0x14) << 7);
                     Profile_Mark(b + 0x30, FastVecLength(b));
                 }
             }

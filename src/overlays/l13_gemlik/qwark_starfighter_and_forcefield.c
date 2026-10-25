@@ -649,7 +649,7 @@ void update_qwarks_starfighter(Moby388 *moby) {
             *(int *)(ship + 0xEC) = 0;
             *(int *)(ship + 0x8C) = 0;
             *(int *)(ship + 0x118) = 0;
-            data->b13B = D_L13_001D3718[moby->bBC];
+            data->b13B = qwark_starfighter_path_by_state[moby->bBC];
             data->iF8 = scale_ticks(0x14);
             moby->state = STARFIGHTER_STATE_FOLLOW_COMMAND_PATH;
             data->s9C = select_point_index_by_distance(moby->pos, walker_paths[data->paths[data->b13B]], 0.0f);
@@ -675,14 +675,14 @@ void update_qwarks_starfighter(Moby388 *moby) {
         }
         update_qwarks_starfighter_attack_commands(moby, data);
         if (update_moby_path_following_away_from_hero(moby, data, data->b13B, 1) & 2) {
-            if (data->b13B != D_L13_001D3718[moby->bBC]) {
-                data->b13B = D_L13_001D3718[moby->bBC];
-                data->s9C = select_point_index_by_distance(moby->pos, walker_paths[data->paths[D_L13_001D3718[moby->bBC]]], 0.0f);
+            if (data->b13B != qwark_starfighter_path_by_state[moby->bBC]) {
+                data->b13B = qwark_starfighter_path_by_state[moby->bBC];
+                data->s9C = select_point_index_by_distance(moby->pos, walker_paths[data->paths[qwark_starfighter_path_by_state[moby->bBC]]], 0.0f);
                 data->s9C = *(unsigned short *)&data->s9C + rand_range(3, 7);
-                data->s9C = data->s9C % *(int *)walker_paths[data->paths[D_L13_001D3718[moby->bBC]]];
+                data->s9C = data->s9C % *(int *)walker_paths[data->paths[qwark_starfighter_path_by_state[moby->bBC]]];
                 data->s9E = data->s9C - 1;
                 if (data->s9E < 0) {
-                    data->s9E = *(unsigned short *)walker_paths[data->paths[D_L13_001D3718[moby->bBC]]] - 1;
+                    data->s9E = *(unsigned short *)walker_paths[data->paths[qwark_starfighter_path_by_state[moby->bBC]]] - 1;
                 }
             }
         }
@@ -730,14 +730,14 @@ void update_qwarks_starfighter(Moby388 *moby) {
                 data->bFF = 1;
             }
             if (Moby_SteerAlongPathFacing(moby, data, data->b13B, 1) & 2) {
-                if (data->b13B != D_L13_001D3718[moby->bBC]) {
-                    data->b13B = D_L13_001D3718[moby->bBC];
-                    data->s9C = select_point_index_by_distance(moby->pos, walker_paths[data->paths[D_L13_001D3718[moby->bBC]]], 0.0f);
+                if (data->b13B != qwark_starfighter_path_by_state[moby->bBC]) {
+                    data->b13B = qwark_starfighter_path_by_state[moby->bBC];
+                    data->s9C = select_point_index_by_distance(moby->pos, walker_paths[data->paths[qwark_starfighter_path_by_state[moby->bBC]]], 0.0f);
                     data->s9C = *(unsigned short *)&data->s9C + rand_range(3, 7);
-                    data->s9C = data->s9C % *(int *)walker_paths[data->paths[D_L13_001D3718[moby->bBC]]];
+                    data->s9C = data->s9C % *(int *)walker_paths[data->paths[qwark_starfighter_path_by_state[moby->bBC]]];
                     data->s9E = data->s9C - 1;
                     if (data->s9E < 0) {
-                        data->s9E = *(unsigned short *)walker_paths[data->paths[D_L13_001D3718[moby->bBC]]] - 1;
+                        data->s9E = *(unsigned short *)walker_paths[data->paths[qwark_starfighter_path_by_state[moby->bBC]]] - 1;
                     }
                 }
             }
@@ -1195,7 +1195,7 @@ void update_qwarks_starfighter_part(char *m) {
             FastVecAdd(&moby->pos, &moby->pos, &vars->vel);
             FastVecScale(&vars->vel, &vars->vel, 0.995f);
             if (coll_sphere(2.0f, &moby->pos, 0, moby)) {
-                coll = D_L13_001741C0;
+                coll = gemlik_coll_hit_result;
                 hit = *(struct Moby **)(coll + 0x18);
                 if (hit == 0 || !(hit->oclass == 0x191 || hit->oclass == 0x184
                                   || hit->oclass == 0x185 || hit->oclass == 0x186
@@ -2009,7 +2009,7 @@ void update_gemlik_projectile(struct Moby *moby) {
     }
     if (coll_line(&work.old_pos, &moby->pos, stationary, *(void **)(data + 0x20), work.hit) == 0)
         goto bounds;
-    qcopy(&moby->pos, &(*(L13Hit_p *)D_L13_001741C0).pos);
+    qcopy(&moby->pos, &(*(L13Hit_p *)gemlik_coll_hit_result).pos);
     if (moby->visible != 0) {
         int i;
         for (i = 0; i < 5; i++) {
@@ -2018,7 +2018,7 @@ void update_gemlik_projectile(struct Moby *moby) {
             work.random_direction.y = random_float_between(-1.0f, 1.0f);
             work.random_direction.z = random_float_between(-1.0f, 1.0f);
             *(OvlQuad_p *)&work.direction = *(OvlQuad_p *)&work.random_direction;
-            vec_reflect(&work.random_direction, data, &(*(L13Hit_p *)D_L13_001741C0).matrix);
+            vec_reflect(&work.random_direction, data, &(*(L13Hit_p *)gemlik_coll_hit_result).matrix);
             vec_scale_to_length(&work.direction, &work.direction, FastVecLength(&work.random_direction) * 0.5f);
             FastVecAdd(&work.direction, &work.random_direction, &work.direction);
             vec_scale_to_length(&work.direction, &work.direction,
@@ -2028,7 +2028,7 @@ void update_gemlik_projectile(struct Moby *moby) {
         }
     }
     {
-        struct Moby *target = (*(L13Hit_p *)D_L13_001741C0).moby;
+        struct Moby *target = (*(L13Hit_p *)gemlik_coll_hit_result).moby;
         if (target != 0 && *(short *)((char *)target + 0xA6) == 0)
             Moby_PlaySound(0, 0, (int)moby);
     }
@@ -2886,7 +2886,7 @@ void RopeWalkerUpdate(Moby *moby)
             return;
         default:
             if (moby->state < 0xF) {
-                char *g = D_L13_001741C0;
+                char *g = gemlik_coll_hit_result;
 
                 if (fast_atan2(*(float *)(g + 0x48), vec_length_xy(g + 0x40)) > 0.6981317f) {
                     vec_scale_to_length(push, g + 0x40, 0.05f);

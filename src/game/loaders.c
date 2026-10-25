@@ -1051,13 +1051,13 @@ void register_object_render_class(char *self, int a1, char *src, int a3) {
     char *rec;
     char *E;
 
-    *(short *)(object_render_class_ids + D_0016104C * 2) = a3;
-    *(unsigned char *)(object_render_class_slot_by_id + a3) = D_0016104C;
-    *(char **)(object_render_classes + D_0016104C * 4) = self;
-    *(short *)(self + 0x46) = D_0016104C;
+    *(short *)(object_render_class_ids + registered_object_render_class_count * 2) = a3;
+    *(unsigned char *)(object_render_class_slot_by_id + a3) = registered_object_render_class_count;
+    *(char **)(object_render_classes + registered_object_render_class_count * 4) = self;
+    *(short *)(self + 0x46) = registered_object_render_class_count;
     R = truncate_float_to_s32(*(float *)(self + 0x48) * 1024.0f);
-    N2 = D_0016104C;
-    D_0016104C = N2 + 1;
+    N2 = registered_object_render_class_count;
+    registered_object_render_class_count = N2 + 1;
     *(int *)(object_render_class_fixed_thresholds + 4 * N2) = R;
 
     *(int *)(self + 0x28) = 0;

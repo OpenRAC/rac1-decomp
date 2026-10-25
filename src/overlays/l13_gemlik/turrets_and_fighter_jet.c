@@ -2593,7 +2593,7 @@ void PlayerFighterFlight(void *a0, void *a1) {
     m->r44 = FastAddRots(o->f34, -o->f70 * 0.5f);
     m->r48 = FastAddRots(o->f38, -o->f6C * 0.0f);
     if (coll_sphere(1.2f, m->pos, 0, m)) {
-        p = D_L13_001741C0;
+        p = gemlik_coll_hit_result;
         if (*(char **)(p + 0x18) == 0 || (hc = *(short *)(*(char **)(p + 0x18) + 0xA6), hc != 0 && hc != 0x192 && hc != 0x4C2 && hc != 0x4C3 && hc != 0x52 && hc != 0x53)) {
             qcopy(m->pos, p + 0x30);
             vec_reflect(dir, dir, p + 0x40);
@@ -2792,11 +2792,11 @@ void JetFighterUpdateL13(Jet47 *m) {
         ApproachValue(&d->blend,1.0f,g_frame_time*4.0f); D_L13_0015F4FC=d->blend;
         if (d->blend==1.0f) {
             if (d->entry_path!=-1) {
-                JetPath47 *path=&D_L13_0016016C[d->entry_path];
+                JetPath47 *path=&gemlik_scene_points[d->entry_path];
                 Hero_ResetToPosition(path->position,path->rotation,50,1);
                 {
                     int index=d->entry_path;
-                    JetPath47 *paths=D_L13_0016016C;
+                    JetPath47 *paths=gemlik_scene_points;
                     qcopy(m->position,paths[index].position); qcopy(m->rotation,paths[index].rotation);
                 }
             }
@@ -2833,8 +2833,8 @@ void JetFighterUpdateL13(Jet47 *m) {
         if (d->group_a>0) jet_group_state(d->group_a,0,0,0);
         if (d->group_b>0) jet_group_state(d->group_b,0,0,0);
         jet_group_switch(D_L13_001CC068,1,1,-1); jet_group_switch(&D_L13_001614D0,1,-1,-1); jet_group_flag(0x102,0);
-        if (d->exit_path!=-1) { JetPath47 *path=&D_L13_0016016C[d->exit_path]; Hero_ResetToPosition(path->position,path->rotation,0,1); }
-        else Hero_ResetToPosition(d->spawn_position,D_L13_0016016C[d->destination_path].rotation,0,1);
+        if (d->exit_path!=-1) { JetPath47 *path=&gemlik_scene_points[d->exit_path]; Hero_ResetToPosition(path->position,path->rotation,0,1); }
+        else Hero_ResetToPosition(d->spawn_position,gemlik_scene_points[d->destination_path].rotation,0,1);
         {
             int id=d->engine_sound;
             unsigned char *audio;
@@ -2886,7 +2886,7 @@ void JetFighterUpdateL13(Jet47 *m) {
     case 8:
         ((JetPlayer47*)(D_0013E633+0xE1D))->in_craft=0; *(int*)((char*)((JetPlayer47*)(D_0013E633+0xE1D))->moby+0x98)=0; HeroEnterMoveState(0,1); CameraScript2(0);
         if (d->escape_path==-1) { STUB_printf(D_L13_001F4760); qcopy(m->position,d->spawn_position); qcopy(m->rotation,d->spawn_rotation); }
-        else { int index=d->escape_path; JetPath47 *paths=D_L13_0016016C; qcopy(m->position,paths[index].position); qcopy(m->rotation,paths[index].rotation); m->position[2]+=0.57318f; }
+        else { int index=d->escape_path; JetPath47 *paths=gemlik_scene_points; qcopy(m->position,paths[index].position); qcopy(m->rotation,paths[index].rotation); m->position[2]+=0.57318f; }
         m->scale=m->model->scale; moby_anim_sphere_lerp(m);
         if (d->destination_path==-1) STUB_printf(D_L13_001F4798);
         else {
@@ -2894,7 +2894,7 @@ void JetFighterUpdateL13(Jet47 *m) {
             if (d->group_a>0) jet_group_state(d->group_a,0,0,0);
             if (d->group_b>0) jet_group_state(d->group_b,0,0,0);
             jet_group_switch(D_L13_001CC068,1,1,-1); jet_group_switch(&D_L13_001614D0,1,-1,-1); jet_group_flag(0x102,0);
-            path=&D_L13_0016016C[d->destination_path]; Hero_ResetToPosition(path->position,path->rotation,0,1);
+            path=&gemlik_scene_points[d->destination_path]; Hero_ResetToPosition(path->position,path->rotation,0,1);
         }
         if (m->persistent!=0xFF) jet_clear_persistent(m->persistent);
         {

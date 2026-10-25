@@ -504,7 +504,7 @@ unsigned char *initialize_level_render_state(LevelHeaderE9EC8 *hdr)
     ResetDrawGlobals();
     pad_resetState();
     Font_EnableColorCodes();
-    D_0015F6F0 = 0;
+    world_update_time = 0;
     gFade = 1.0f;
     return p;
 }

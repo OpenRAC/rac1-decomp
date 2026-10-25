@@ -25,32 +25,32 @@ void emit_transformed_2d_vertex_packet(short *pts, int n, float x0, float y0, un
     unsigned long *o;
     int x, y;
     int i;
-    *(int *)(D_L13_00161240 + 0) = q | 0x10000000;
-    *(int *)(D_L13_00161240 + 4) = 0;
-    *(int *)(D_L13_00161240 + 8) = 0;
-    *(int *)(D_L13_00161240 + 12) = q | 0x50000000;
+    *(int *)(gemlik_dma_packet_cursor + 0) = q | 0x10000000;
+    *(int *)(gemlik_dma_packet_cursor + 4) = 0;
+    *(int *)(gemlik_dma_packet_cursor + 8) = 0;
+    *(int *)(gemlik_dma_packet_cursor + 12) = q | 0x50000000;
     {
-        char *t1 = (char *)D_L13_00161240;
-        D_L13_00161240 = (int)(t1 + 0x10);
-        qcopy((void *)D_L13_00161240, &D_L13_00160960);
+        char *t1 = (char *)gemlik_dma_packet_cursor;
+        gemlik_dma_packet_cursor = (int)(t1 + 0x10);
+        qcopy((void *)gemlik_dma_packet_cursor, &D_L13_00160960);
         *(short *)(t1 + 0x10) = -0x7FFF;
     }
     {
-        unsigned long *t2 = (unsigned long *)((char *)D_L13_00161240 + 0x10);
-        D_L13_00161240 = (int)t2;
+        unsigned long *t2 = (unsigned long *)((char *)gemlik_dma_packet_cursor + 0x10);
+        gemlik_dma_packet_cursor = (int)t2;
         t2[0] = 0x144;
         t2[1] = prim;
     }
     {
-        char *t3 = (char *)D_L13_00161240;
-        D_L13_00161240 = (int)(t3 + 0x10);
-        qcopy((void *)D_L13_00161240, &D_L13_00160970);
+        char *t3 = (char *)gemlik_dma_packet_cursor;
+        gemlik_dma_packet_cursor = (int)(t3 + 0x10);
+        qcopy((void *)gemlik_dma_packet_cursor, &D_L13_00160970);
         *(short *)(t3 + 0x10) = n - 0x8000;
     }
     *(u128_7d50 *)rot = 0;
     rot[2] = ang;
-    D_L13_00161240 += 0x10;
-    o = (unsigned long *)D_L13_00161240;
+    gemlik_dma_packet_cursor += 0x10;
+    o = (unsigned long *)gemlik_dma_packet_cursor;
     euler_to_matrix(mat, rot);
     for (i = 0; i < n; i++) {
         *(u128_7d50 *)v = 0;
@@ -65,7 +65,7 @@ void emit_transformed_2d_vertex_packet(short *pts, int n, float x0, float y0, un
         y = truncate_float_to_s32(w[1] * 16.0f);
         o[i] = (unsigned long)(x + g_screen_extent[4] - 8) | ((unsigned long)(y + g_screen_extent[5] - 8) << 16) | ((unsigned long)col << 32);
     }
-    D_L13_00161240 += ((n + 1) / 2) * 16;
+    gemlik_dma_packet_cursor += ((n + 1) / 2) * 16;
 }
 extern float func_001FA790(float, float);
 extern float func_001FA748(float, float);

@@ -270,7 +270,7 @@ void HovenShotUpdate(struct Moby *moby) {
             moby->state = 2;
             break;
         }
-        if (D_0015EE84_e == 12 && D_001414D4 == 50 && vars->owner != 0) {
+        if (D_0015EE84_e == 12 && hero_current_state == 50 && vars->owner != 0) {
             if ((signed char)vars->owner->state < 0) {
                 DeleteMoby(moby);
                 return;
@@ -295,7 +295,7 @@ void HovenShotUpdate(struct Moby *moby) {
         if (coll_line(&moby->pos, old_pos, 0, moby, 0) || coll_sphere(&moby->pos, 0, (struct Moby *)moby, f20)) {
             if (hoven_coll_hit.moby != 0 && hoven_coll_hit.moby != (int)vars->owner) {
                 damage = 1;
-                if (D_0015EE84_e == 12 && D_001414D4 == 50) {
+                if (D_0015EE84_e == 12 && hero_current_state == 50) {
                     damage = D_L12_00161FA0 >= 16 ? 2 : 3;
                 }
                 InitDirectionalHitQuery(&hit, moby, 0x10003, damage, vars);
@@ -316,11 +316,11 @@ void HovenShotUpdate(struct Moby *moby) {
         break;
     }
     case 2:
-        FastVecSub(old_pos, &moby->pos, D_L12_001672C0);
+        FastVecSub(old_pos, &moby->pos, hoven_camera_pos);
         vec_scale_to_length(old_pos, old_pos, 0.4f);
         FastVecAdd(&moby->pos, &moby->pos, old_pos);
-        if (D_0015EE84_e == 12 && D_001414D4 == 50) {
-            char *camera = D_L12_001672C0 - 0x140;
+        if (D_0015EE84_e == 12 && hero_current_state == 50) {
+            char *camera = hoven_camera_pos - 0x140;
             spawn_explosion(moby, D_L12_0015F660, 0, 0.0f, 0.0f, 3, 3, 5, 0.3f, 0.2f, 0.0f, -1, 0.15f, 0.0f, 0, 0,
                              -1, 0);
             *(float *)(camera + 0x160) = 0.025f;
@@ -595,7 +595,7 @@ void ElectricArcUpdate(struct Moby *moby) {
             }
         }
     }
-    if (FastVecDist(&moby->pos, D_L12_001672C0) < 48.0f)
+    if (FastVecDist(&moby->pos, hoven_camera_pos) < 48.0f)
         AddDrawCallback(DrawRingQuads, moby);
 }
 typedef struct Data_304310 {
@@ -782,10 +782,10 @@ void update_hoven_turret_target_alignment_timer(void *moby) {
                 pitch_limit = 0.05235988f;
                 position.f[2] += 1.5f;
             }
-            yaw = fast_atan2(position.f[0] - D_L12_00167180.position.f[0], position.f[1] - D_L12_00167180.position.f[1]);
-            pitch = fast_atan2(vec_distance_xy(&D_L12_00167180.position, &position), position.f[2] - D_L12_00167180.position.f[2]);
-            if (FastDiffRots(yaw, D_L12_00167180.yaw) < yaw_limit &&
-                FastDiffRots(pitch, -D_L12_00167180.pitch) < pitch_limit)
+            yaw = fast_atan2(position.f[0] - hoven_player_camera.position.f[0], position.f[1] - hoven_player_camera.position.f[1]);
+            pitch = fast_atan2(vec_distance_xy(&hoven_player_camera.position, &position), position.f[2] - hoven_player_camera.position.f[2]);
+            if (FastDiffRots(yaw, hoven_player_camera.yaw) < yaw_limit &&
+                FastDiffRots(pitch, -hoven_player_camera.pitch) < pitch_limit)
                 found = 1;
         }
     }
@@ -982,7 +982,7 @@ void hoven_turret_update(Moby *moby) {
         ((Hero *)(D_0013E633_e + 0xE1D))->unk20A5 = 1;
         ((Hero *)(D_0013E633_e + 0xE1D))->unk1CC = scale_ticks(0x78);
         ((Hero *)(D_0013E633_e + 0xE1D))->invulnerable_frames = scale_ticks(0x78);
-        if (D_L12_0015F6A8 != 2 && D_L12_00161A20 == 0) {
+        if (hoven_cinematic_mode != 2 && D_L12_00161A20 == 0) {
             AddDrawCallback(DrawGauge, moby);
         }
         update_hoven_turret_target_alignment_timer(moby);
@@ -1010,7 +1010,7 @@ void hoven_turret_update(Moby *moby) {
             }
         }
         if (d->f94 != -1 && (signed char)((Moby *)((d->f94 << 8) + D_L12_00160058_m))->state < 0) {
-            if (D_L12_0015F6A8 == 2) {
+            if (hoven_cinematic_mode == 2) {
                 if (d->b1 != 0) {
                     DetachManipulator(moby, d);
                 }
@@ -1145,13 +1145,13 @@ void hoven_turret_update(Moby *moby) {
         }
         break;
     case 5:
-        if (D_L12_0015F6A8 != 2) {
+        if (hoven_cinematic_mode != 2) {
             StartCutscene(1);
             moby->state = 8;
         }
         break;
     case 8:
-        if (D_L12_0015F6A8 != 2) {
+        if (hoven_cinematic_mode != 2) {
             func_0020BFC8_304920(0, -1);
             moby->state = 6;
         }
@@ -1722,17 +1722,17 @@ void update_planetbuster_maximus_guns(char *moby) {
                     if (*(short *)(d + 0x5FC) > 0) {
                         int k = D_L12_001FB930[i];
                         if (k != 0x11) {
-                            D_L12_001FB948[k] = *(int *)(d + k * 0x30 + 0x20);
+                            planetbuster_detached_part_ids[k] = *(int *)(d + k * 0x30 + 0x20);
                             *(int *)(d + k * 0x30 + 0x20) = -1;
                         } else {
-                            D_L12_001FB948[0x11] = 1;
+                            planetbuster_detached_part_ids[0x11] = 1;
                         }
                         initialize_planetbuster_maximus_detached_part_motion((struct Moby *)moby, k);
                         if (i == 4) {
                             for (j = 0; j < 0x11; j++) {
                                 int id = *(int *)(d + j * 0x30 + 0x20);
                                 if (id != -1 && *(short *)((id << 8) + D_L12_00160058_m + 0xA6) == 0x4FD) {
-                                    D_L12_001FB948[j] = id;
+                                    planetbuster_detached_part_ids[j] = id;
                                     *(int *)(d + j * 0x30 + 0x20) = -1;
                                     initialize_planetbuster_maximus_detached_part_motion((struct Moby *)moby, j);
                                 }
@@ -1831,7 +1831,7 @@ void initialize_planetbuster_maximus_detached_part_motion(struct Moby *moby, int
         selected = moby;
         offset = 0x44;
     } else {
-        selected = (struct Moby *)(D_L12_00160058_07730 + D_L12_001FB948[slot] * 0x100);
+        selected = (struct Moby *)(D_L12_00160058_07730 + planetbuster_detached_part_ids[slot] * 0x100);
         offset = slot * 4;
     }
 
@@ -1875,7 +1875,7 @@ void update_planetbuster_maximus_detached_parts(char *moby) {
     char *data = *(char **)(moby + 0x78);
     int last = 17;
     for (i = 0, off = 0; i < 18; i++, off += 4) {
-        int s = D_L12_001FB948[i];
+        int s = planetbuster_detached_part_ids[i];
         char *obj;
         float f1;
         if (s == 0) {
@@ -1908,7 +1908,7 @@ void update_planetbuster_maximus_detached_parts(char *moby) {
                 return;
             }
             DeleteMoby(obj);
-            D_L12_001FB948[i] = -1;
+            planetbuster_detached_part_ids[i] = -1;
         }
         f1 = *(float *)(data + 0x338 + i * 16) - *(float *)(data + off + 0x570);
         *(float *)(data + 0x338 + i * 16) = f1;
@@ -2008,7 +2008,7 @@ void planetbuster_maximus_part_update(char *moby) {
     float v[4];
     float w[4];
     char *d = *(char **)(moby + 0x78);
-    if (((unsigned char *)moby)[0x20] != 0 && D_L12_001FB948[17] != 0) {
+    if (((unsigned char *)moby)[0x20] != 0 && planetbuster_detached_part_ids[17] != 0) {
         qcopy(moby + 0x10, (char *)&D_L12_00161FE0);
         qcopy(moby + 0x40, (char *)&D_L12_00161FF0);
     }
@@ -2042,7 +2042,7 @@ void planetbuster_maximus_part_update(char *moby) {
                 (*(F80_7DB0 **)(o + 0x78))->f80 = 10.0f;
             }
             D_L12_00161FC0 = -1.0f;
-            for (j = 17; j >= 0; j--) D_L12_001FB948[j] = 0;
+            for (j = 17; j >= 0; j--) planetbuster_detached_part_ids[j] = 0;
             *(int *)(d + 0x604) = -1;
             *(short *)(d + 0x5FC) = 100;
             moby[0x20] = 1;
@@ -2051,7 +2051,7 @@ void planetbuster_maximus_part_update(char *moby) {
     case 1: {
         char *h;
         int r;
-        if (is_point_inside_clip_volume(D_L12_001672C0, *(int *)(d + 0x624))) {
+        if (is_point_inside_clip_volume(hoven_camera_pos, *(int *)(d + 0x624))) {
             int i;
             char *base = (char *)D_L12_00160058_m;
             *(unsigned short *)(moby + 0x34) |= 0x41;
@@ -2149,8 +2149,8 @@ void planetbuster_maximus_part_update(char *moby) {
             switch ((unsigned char)moby[0xBC]) {
             case 0:
                 moby[0xBC] = 1;
-                set_camera_position(D_L12_0016016C + *(int *)(d + 0x608) * 128 + 0x30);
-                set_camera_rotation(D_L12_0016016C + *(int *)(d + 0x608) * 128 + 0x70);
+                set_camera_position(hoven_camera_points + *(int *)(d + 0x608) * 128 + 0x30);
+                set_camera_rotation(hoven_camera_points + *(int *)(d + 0x608) * 128 + 0x70);
                 D_L12_0015F504 = 1;
                 D_L12_00161A20 = 1;
                 break;
@@ -2158,18 +2158,18 @@ void planetbuster_maximus_part_update(char *moby) {
                 if (*(float *)(d + 0x610) < 1.0f) {
                     ApproachWithVelocity((float *)(d + 0x610), (float *)(d + 0x614), 1.0f,
                                   g_frame_time_sq * 0.666f, g_frame_time_sq * 0.666f, g_frame_time * 0.4f);
-                    lerp_vector(v, D_L12_0016016C + *(int *)(d + 0x608) * 128 + 0x30,
-                                  D_L12_0016016C + *(int *)(d + 0x60C) * 128 + 0x30, *(float *)(d + 0x610));
+                    lerp_vector(v, hoven_camera_points + *(int *)(d + 0x608) * 128 + 0x30,
+                                  hoven_camera_points + *(int *)(d + 0x60C) * 128 + 0x30, *(float *)(d + 0x610));
                     clear_u64_value(w);
-                    w[0] = FastSubRots(*(float *)(D_L12_0016016C + *(int *)(d + 0x60C) * 128 + 0x70),
-                                         *(float *)(D_L12_0016016C + *(int *)(d + 0x608) * 128 + 0x70)) * *(float *)(d + 0x610);
-                    w[0] = FastAddRots(*(float *)(D_L12_0016016C + *(int *)(d + 0x608) * 128 + 0x70), w[1]);
-                    w[1] = FastSubRots(*(float *)(D_L12_0016016C + *(int *)(d + 0x60C) * 128 + 0x74),
-                                         *(float *)(D_L12_0016016C + *(int *)(d + 0x608) * 128 + 0x74)) * *(float *)(d + 0x610);
-                    w[1] = FastAddRots(*(float *)(D_L12_0016016C + *(int *)(d + 0x608) * 128 + 0x74), w[1]);
-                    w[2] = FastSubRots(*(float *)(D_L12_0016016C + *(int *)(d + 0x60C) * 128 + 0x78),
-                                         *(float *)(D_L12_0016016C + *(int *)(d + 0x608) * 128 + 0x78)) * *(float *)(d + 0x610);
-                    w[2] = FastAddRots(*(float *)(D_L12_0016016C + *(int *)(d + 0x608) * 128 + 0x78), w[2]);
+                    w[0] = FastSubRots(*(float *)(hoven_camera_points + *(int *)(d + 0x60C) * 128 + 0x70),
+                                         *(float *)(hoven_camera_points + *(int *)(d + 0x608) * 128 + 0x70)) * *(float *)(d + 0x610);
+                    w[0] = FastAddRots(*(float *)(hoven_camera_points + *(int *)(d + 0x608) * 128 + 0x70), w[1]);
+                    w[1] = FastSubRots(*(float *)(hoven_camera_points + *(int *)(d + 0x60C) * 128 + 0x74),
+                                         *(float *)(hoven_camera_points + *(int *)(d + 0x608) * 128 + 0x74)) * *(float *)(d + 0x610);
+                    w[1] = FastAddRots(*(float *)(hoven_camera_points + *(int *)(d + 0x608) * 128 + 0x74), w[1]);
+                    w[2] = FastSubRots(*(float *)(hoven_camera_points + *(int *)(d + 0x60C) * 128 + 0x78),
+                                         *(float *)(hoven_camera_points + *(int *)(d + 0x608) * 128 + 0x78)) * *(float *)(d + 0x610);
+                    w[2] = FastAddRots(*(float *)(hoven_camera_points + *(int *)(d + 0x608) * 128 + 0x78), w[2]);
                     set_camera_position(v);
                     set_camera_rotation(w);
                 } else {
@@ -2186,8 +2186,8 @@ void planetbuster_maximus_part_update(char *moby) {
                         char *o = (char *)D_L12_00160058_m + (s << 8);
                         if (o[0x20] >= 0) DeleteMoby(o);
                         *(int *)(d + i * 0x30 + 0x20) = -1;
-                    } else if (D_L12_001FB948[i] > 0) {
-                        char *o = (char *)D_L12_00160058_m + (D_L12_001FB948[i] << 8);
+                    } else if (planetbuster_detached_part_ids[i] > 0) {
+                        char *o = (char *)D_L12_00160058_m + (planetbuster_detached_part_ids[i] << 8);
                         if (o[0x20] >= 0) DeleteMoby(o);
                     }
                 }
@@ -2201,10 +2201,10 @@ void planetbuster_maximus_part_update(char *moby) {
         if (*(short *)(d + 0x5FA) == 0) {
             int i;
             for (i = 0; i < 17; i++) {
-                if (D_L12_001FB948[i] == 0) D_L12_001FB948[i] = *(int *)(d + i * 0x30 + 0x20);
+                if (planetbuster_detached_part_ids[i] == 0) planetbuster_detached_part_ids[i] = *(int *)(d + i * 0x30 + 0x20);
                 *(int *)(d + i * 0x30 + 0x20) = -1;
             }
-            D_L12_001FB948[17] = 1;
+            planetbuster_detached_part_ids[17] = 1;
             for (i = 0; i < 18; i++) initialize_planetbuster_maximus_detached_part_motion((struct Moby *)moby, i);
         }
         *(short *)(d + 0x5FA) = *(short *)(d + 0x5FA) + 1;
@@ -2436,7 +2436,7 @@ void trigger_scene_once_in_clip_volume(char *moby) {
     char *base;
     char *p;
     char *q;
-    if (D_L12_0015F6B0 != 0 && D_L12_0015F6A8 == 0) {
+    if (D_L12_0015F6B0 != 0 && hoven_cinematic_mode == 0) {
         base = D_0013D355 + 0x13B;
         if (*(unsigned char *)(*(int *)(data + 4) + base + 0x5C) != 0) {
             DeleteMoby(moby);
@@ -2479,7 +2479,7 @@ void emit_phase_selected_moby_effects(unsigned char *moby) {
         moby[0x20] = 1;
         break;
     case 1:
-        if (D_L12_0015F6A8 == 2) {
+        if (hoven_cinematic_mode == 2) {
             list = &D_L12_0016CD60;
             cur = list->current;
             if (cur == 1 || cur == 7) {
@@ -2540,10 +2540,10 @@ void draw_hoven_scrolling_texture_layers(char *m) {
     VU1_addGSregister(8, 0);
     VU1_addGSregister(0x14, 0xFF9000000260L);
     VU1_addGSregister(0x47, 0x5360A);
-    if (is_point_inside_clip_volume(D_L12_001672C0, d[0])) {
+    if (is_point_inside_clip_volume(hoven_camera_pos, d[0])) {
         VU1_addGSregister(6, GetEffectTex(0x2C));
         for (i = 0; i < 10; i++) {
-            func_L08_00259040(D_L12_00208DC0, D_L12_00205CC8[i], D_L12_001FBFD0[i], D_L12_00162188);
+            add_uv_scroll_offset(D_L12_00208DC0, D_L12_00205CC8[i], D_L12_001FBFD0[i], D_L12_00162188);
             draw_env_overlay_mesh(D_L12_001FBFD0[i], D_L12_00205CA0[i], D_L12_00205D18[i], D_L12_00208DC0, 1);
         }
     }

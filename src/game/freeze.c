@@ -578,9 +578,9 @@ void draw_freeze_message_box(void) {
             }
             func_00116248(line, D_0015F660, msg_string(sel + 0x5229), msg_string(0x5245));
             if (((Hero *)g_hero)->unk8C0 == 1) {
-                FontPrintCenter(0x100, *(s32 *)&D_0015F61C, c2, line, -1);
+                FontPrintCenter(0x100, *(s32 *)&freeze_long_box_text_y, c2, line, -1);
             } else {
-                FontPrintCenter(0x100, *(s32 *)&D_0015F61C, c3, line, -1);
+                FontPrintCenter(0x100, *(s32 *)&freeze_long_box_text_y, c3, line, -1);
             }
             best = D_0015EF58[(g_current_level_index ^ 0x10) ? 0 : 1];
             if (best == ((Hero *)g_hero)->unk894) {
@@ -591,25 +591,25 @@ void draw_freeze_message_box(void) {
                 sec = rem / per;
                 hund = (rem - sec * per) * 100 / per;
                 func_00116248(line, D_0015F668, msg_string(0x50A3));
-                FontPrintCenter(0x100, *(s32 *)&D_0015F61C + 0x26, c2, line, -1);
+                FontPrintCenter(0x100, *(s32 *)&freeze_long_box_text_y + 0x26, c2, line, -1);
                 func_00116248(line, D_0015F670, min, sec, hund);
-                FontPrintCenter(0x100, *(s32 *)&D_0015F61C + 0x3A, c2, line, -1);
+                FontPrintCenter(0x100, *(s32 *)&freeze_long_box_text_y + 0x3A, c2, line, -1);
             } else {
                 func_00116248(line, D_0015F668, msg_string(0x50A2));
-                FontPrintCenter(0x100, *(s32 *)&D_0015F61C + 0x30, c3, line, -1);
+                FontPrintCenter(0x100, *(s32 *)&freeze_long_box_text_y + 0x30, c3, line, -1);
             }
             record = D_0015EF68[(g_current_level_index ^ 0x10) ? 0 : 1];
             if (record != 0 && record == ((Hero *)g_hero)->unk8A8) {
                 func_00116248(line, D_0015F668, msg_string(0x50A5));
-                FontPrintCenter(0x100, *(s32 *)&D_0015F61C + 0x56, c2, line, -1);
+                FontPrintCenter(0x100, *(s32 *)&freeze_long_box_text_y + 0x56, c2, line, -1);
                 func_00116248(line, D_0015F680, ((Hero *)g_hero)->unk8A8);
-                FontPrintCenter(0x100, *(s32 *)&D_0015F61C + 0x6A, c2, line, -1);
+                FontPrintCenter(0x100, *(s32 *)&freeze_long_box_text_y + 0x6A, c2, line, -1);
             } else {
                 func_00116248(line, D_0015F668, msg_string(0x50A4));
-                FontPrintCenter(0x100, *(s32 *)&D_0015F61C + 0x60, c3, line, -1);
+                FontPrintCenter(0x100, *(s32 *)&freeze_long_box_text_y + 0x60, c3, line, -1);
             }
-            FontPrintCenter(0x100, *(s32 *)&D_0015F61C + 0x90, c1, msg_string(0x524E), -1);
-            FontPrintCenter(0x100, *(s32 *)&D_0015F61C + 0xA8, c1, msg_string(0x524D), -1);
+            FontPrintCenter(0x100, *(s32 *)&freeze_long_box_text_y + 0x90, c1, msg_string(0x524E), -1);
+            FontPrintCenter(0x100, *(s32 *)&freeze_long_box_text_y + 0xA8, c1, msg_string(0x524D), -1);
         }
         break;
     }

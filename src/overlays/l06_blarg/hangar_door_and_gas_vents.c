@@ -985,10 +985,10 @@ void update_beam_barrier(char *m) {
     case 0: {
         D_L06_00161EE4 = 0x16;
         D_L06_00161EE0 = 0x2D;
-        D_L06_00161ED0[1] = 0xB;
-        D_L06_00161ED0[2] = 0x17;
-        D_L06_00161ED0[3] = 0x22;
-        D_L06_00161ED0[0] = 0;
+        beam_barrier_strand_timers[1] = 0xB;
+        beam_barrier_strand_timers[2] = 0x17;
+        beam_barrier_strand_timers[3] = 0x22;
+        beam_barrier_strand_timers[0] = 0;
         FLD(d, 0x10, int) = -1;
         FLD(m, 0x20, unsigned char) = 1;
         FLD(m, 0x34, unsigned short) = FLD(m, 0x34, unsigned short) | 0x4000;
@@ -1143,7 +1143,7 @@ void update_beam_barrier(char *m) {
         int kk;
         int ib;
         euler_to_matrix(V.matrix, m + 0x40);
-        func_001FA1C0(V.sh.local, *(float *)&D_L06_00161E9C);
+        set_scale_matrix(V.sh.local, *(float *)&D_L06_00161E9C);
         i = 0;
         pos = (float *)(m + 0x10);
         sce_vu0_mul_matrix(V.matrix, V.matrix, V.sh.local);
@@ -1231,7 +1231,7 @@ void draw_beam_barrier_segments(char *moby) {
     int j;
 
     euler_to_matrix(base_matrix, moby + 0x40);
-    func_001FA1C0(yaw_matrix, (*(float *)&D_L06_00161E9C));
+    set_scale_matrix(yaw_matrix, (*(float *)&D_L06_00161E9C));
     sce_vu0_mul_matrix(base_matrix, base_matrix, yaw_matrix);
     VU1_addGSregister(6, GetEffectTex(14));
     VU1_addGSregister(0x14, 0xFF9000000260L);
@@ -1264,7 +1264,7 @@ void draw_beam_barrier_segments(char *moby) {
     fourth = (*(int *)&D_L06_00161E84);
     seventh = (*(float *)&D_L06_00161E88);
     eighth = (*(float *)&D_L06_00161E8C);
-    sequence = D_L06_00161ED0;
+    sequence = beam_barrier_strand_timers;
     params[0] = first;
     params[2] = (int)sequence;
     params[1] = second;
@@ -1315,7 +1315,7 @@ void animate_beam_barrier_strands(struct Moby *moby) {
     step = D_L06_00161E98_F8430 / 30.0f;
     y = -(D_L06_00161E98_F8430 * 0.5f);
     for (i = 0; i < 4; i++) {
-        if (D_L06_00161ED0[i] == 0) {
+        if (beam_barrier_strand_timers[i] == 0) {
             for (k = 0; k < 30; k++) {
                 func_L06_002172B0(&D_L06_001DB440[i][k]);
                 D_L06_001DB440[i][k].f[1] = y;
@@ -1327,12 +1327,12 @@ void animate_beam_barrier_strands(struct Moby *moby) {
                 FastVecAdd(&D_L06_001DBBC0[i][k], &D_L06_001DBBC0[i][k], &jitter[k + 1]);
                 FastVecScale(&D_L06_001DBBC0[i][k], &D_L06_001DBBC0[i][k], 0.333f);
             }
-            D_L06_00161ED0[i] = D_L06_00161EE0;
+            beam_barrier_strand_timers[i] = D_L06_00161EE0;
         } else {
             for (j = 1; j < 29; j++) {
                 FastVecAdd(&D_L06_001DB440[i][j], &D_L06_001DB440[i][j], &D_L06_001DBBC0[i][j]);
             }
-            D_L06_00161ED0[i]--;
+            beam_barrier_strand_timers[i]--;
         }
     }
 }

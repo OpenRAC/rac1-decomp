@@ -202,7 +202,7 @@ void electric_water_update(unsigned char *m) {
                 save_id = ((struct Moby *)MOBY_2D7C00(vars->switches[reset_sw]))->save_id;
                 *(int *)((((short)save_id >> 5) << 2) + (g_current_level_index << 8) + (int)level_moby_killed) &= ~(1 << (save_id & 0x1F));
                 save_id = ((struct Moby *)MOBY_2D7C00(vars->switches[reset_sw]))->save_id;
-                *(int *)((((short)save_id >> 5) << 2) + (int)D_L15_001BADE0) &= ~(1 << (save_id & 0x1F));
+                *(int *)((((short)save_id >> 5) << 2) + (int)quartu_moby_killed) &= ~(1 << (save_id & 0x1F));
             } else {
                 reset_electric_water_switch(MOBY_2D7C00(vars->switches[reset_sw]));
             }
@@ -1173,7 +1173,7 @@ void underwater_ring_update(unsigned char *moby) {
         bits = (unsigned int *)(((((short)save_id >> 5) << 2) + (g_current_level_index << 8)) + (unsigned char *)(D_0014171B + 0xAB75));
         *bits |= 1U << (save_id & 31);
         save_id = *(unsigned short *)(moby + 0xB2);
-        D_L15_001BADE0[(short)save_id >> 5] |= 1U << (save_id & 31);
+        quartu_moby_killed[(short)save_id >> 5] |= 1U << (save_id & 31);
         break;
     }
     }

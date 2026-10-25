@@ -62,10 +62,10 @@ void draw_vendor_beam(char *m) {
     int c;
     int t;
 
-    euler_to_matrix(M1, ((Frame_03430 *)D_L14_001601AC)[d->idx].v[7]);
+    euler_to_matrix(M1, ((Frame_03430 *)oltanis_clip_volumes)[d->idx].v[7]);
     matrix_from_basis_rows(M2, M1);
-    qcopy_nc(&M1[12], ((Frame_03430 *)D_L14_001601AC)[d->idx].v[3]);
-    FastVecSub(v230, oltanis_camera_pos, ((Frame_03430 *)D_L14_001601AC)[d->idx].v[3]);
+    qcopy_nc(&M1[12], ((Frame_03430 *)oltanis_clip_volumes)[d->idx].v[3]);
+    FastVecSub(v230, oltanis_camera_pos, ((Frame_03430 *)oltanis_clip_volumes)[d->idx].v[3]);
     matrix_mul_vec3(v230, v230, M2);
     tex = GetEffectTex(*(int *)&D_L14_001621AC);
     flags = (long)*(int *)&D_L14_001621B0 | ((long)*(int *)&D_L14_001621B4 << 2) | ((long)*(int *)&D_L14_001621B8 << 4)

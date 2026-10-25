@@ -389,17 +389,17 @@ void PartType11Spawn(void *pos, void *dir, int col, int d, int n, int b1A, int b
     if (0 == n) {
         return;
     }
-    if (0.85f < D_L00_0015F6B4 || 0.85f < D_L00_0015F6B8) {
+    if (0.85f < cpu_frame_load || 0.85f < level_draw_frame_load) {
         if (random_integer_below(3) == 0) {
             return;
         }
     }
-    if (0.9f < D_L00_0015F6B4 || 0.9f < D_L00_0015F6B8) {
+    if (0.9f < cpu_frame_load || 0.9f < level_draw_frame_load) {
         if (random_integer_below(2) == 0) {
             return;
         }
     }
-    if (1.0f < D_L00_0015F6B4 || 1.0f < D_L00_0015F6B8) {
+    if (1.0f < cpu_frame_load || 1.0f < level_draw_frame_load) {
         if (random_integer_below(1) == 0) {
             return;
         }
@@ -525,7 +525,7 @@ void update_branching_and_fading_effect_particle(char *m) {
         } else {
             *(int *)(m + 4) = (*(int *)(m + 4) & 0xFFFFFF) | ((life * 15 / n1) << 24);
         }
-        if (D_L00_0015F6B4 > 1.0f) FastDecTimer(m + 0xA);
+        if (cpu_frame_load > 1.0f) FastDecTimer(m + 0xA);
         if (FastDecTimer(m + 0xA)) KillPart(m);
     }
 }
@@ -881,9 +881,9 @@ char *mine_debris(float f, char *a, char *b, int c, int d, int e, int g) {
     unsigned char *t;
     unsigned char *s;
     if (e == 0) return 0;
-    if (D_L00_0015F6B4 > 0.9f && random_integer_below(3) == 0) return 0;
-    if (D_L00_0015F6B4 > 0.95f && random_integer_below(2) == 0) return 0;
-    if (D_L00_0015F6B4 > 1.0f && random_integer_below(1) == 0) return 0;
+    if (cpu_frame_load > 0.9f && random_integer_below(3) == 0) return 0;
+    if (cpu_frame_load > 0.95f && random_integer_below(2) == 0) return 0;
+    if (cpu_frame_load > 1.0f && random_integer_below(1) == 0) return 0;
     p = create_part(0x10);
     if (p != 0) {
         qcopy(p + 0x10, a);
@@ -2170,7 +2170,7 @@ void update_swaying_and_fading_effect_particle(char *m) {
     *(float *)(p + 0) = v[0];
     *(float *)(p + 8) = v[2];
     *(float *)(p + 0x14) = FastAddRots(*(float *)(p + 0x14), *(float *)(p + 0x18));
-    a = FastAddRots(D_L00_00166ED8, 1.5707964f);
+    a = FastAddRots(camera_yaw, 1.5707964f);
     k = FastSin(*(float *)(p + 0x14)) * *(float *)(p + 0x1C);
     v[0] = FastCos(a) * k;
     v[1] = FastSin(a) * k;

@@ -524,9 +524,9 @@ void update_hero_glow_and_extra_manipulators(void) {
     f32 fp, fa, s, s24;
 
     if (gCheats[3] != 0)
-        ApproachValue((float *)((char *)&D_0015EEF0 + 0x28), 1.8f, 0.05f);
+        ApproachValue((float *)((char *)&sound_volume + 0x28), 1.8f, 0.05f);
     else
-        ApproachValue((float *)((char *)&D_0015EEF0 + 0x28), 1.0f, 0.05f);
+        ApproachValue((float *)((char *)&sound_volume + 0x28), 1.0f, 0.05f);
 
     h0 = (u8 *)&D_0013F450_05CC0;
     if ((u8)(h0[0x20A4] - 1) < 2)
@@ -965,7 +965,7 @@ skip:
         }
         ((GS_68C8 *)(D_0013E633 + 0xE1D))->p22C0 = 0;
     }
-    func_L00_00248EF8(((GS_68C8 *)(D_0013E633 + 0xE1D))->a80);
+    reveal_map_around_position(((GS_68C8 *)(D_0013E633 + 0xE1D))->a80);
     if (((GS_68C8 *)(D_0013E633 + 0xE1D))->b20A4 == 2) {
         if (gCheats[3] != 0) {
             D_L00_0017BB6C = *(float *)&D_0015EF18 * 1.4f;
@@ -1144,7 +1144,7 @@ void scan_hero_input_sequences(void) {
     char *g;
     int s;
     int i;
-    if (D_0015EFA0 == 0 && D_0015EF20 == 0) return;
+    if (challenge_mode == 0 && D_0015EF20 == 0) return;
     g = (char *)D_0013E633 + 0xE1D;
     s = 0;
     if (*(int *)(g + 0x198) == scale_ticks(0xF)) {
@@ -1306,7 +1306,7 @@ void coordinate_hero_frame_update(void) {
     scan_hero_input_sequences();
     Profile_Mark(*(void **)(g + 0x2080));
     if (*(int *)(g + 0x208C) != 0x16 && *(int *)(g + 0x2084) != 0x32) {
-        func_L00_00248EF8(g + 0x80);
+        reveal_map_around_position(g + 0x80);
     }
     {
         char *q = (char *)D_0013E633 + 0xE1D;
@@ -1416,7 +1416,7 @@ void update_moby_pulsing_glow_effects(char *m) {
                 f = *(float *)&D_0015EF18;
             } else {
                 AttachManipulator(m, 2, p);
-                f = *(float *)((char *)&D_0015EEF0 + 0x28);
+                f = *(float *)((char *)&sound_volume + 0x28);
             }
             *(float *)(p + 0x20) = f;
             *(float *)(p + 0x24) = f;

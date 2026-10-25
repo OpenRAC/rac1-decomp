@@ -79,7 +79,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
         char *p = D_0013E633 + 0xE1D;
         if (*(int *)(p + 0x208C) == 0x14 && (a != 0x64 || b != 2)) return 0;
     }
-    if ((D_L11_0015F6A8 == 2 || D_L11_0015F6A8 == 6) && b != 2) return 0;
+    if ((pokitaru_cinematic_mode == 2 || pokitaru_cinematic_mode == 6) && b != 2) return 0;
     {
         char *p = D_0013E633 + 0xE1D;
         if (*(int *)(p + 0x22A8) == 0 && (*(int *)(p + 0x208C) == 2 || *(int *)(p + 0x208C) == 7)
@@ -270,14 +270,14 @@ int Hero_TrySetMoveStateL11(int a, int b) {
         *(short *)(p + 0x90A) = 0;
         if (*(int *)(p + 0x2094) == 0x11) {
             emit_hero_surface_effect_burst(3, 0xA, 0);
-            if (D_L11_00161350 != 0) {
-                RippleDisturb(D_L11_00161350, D_L11_00161358, 0, *(float *)(p + 0x80), *(float *)(p + 0x84), 0.4f, 0.3f);
+            if (pokitaru_pool_draw_tiles != 0) {
+                RippleDisturb(pokitaru_pool_draw_tiles, D_L11_00161358, 0, *(float *)(p + 0x80), *(float *)(p + 0x84), 0.4f, 0.3f);
             }
         } else if (*(float *)(p + 0x108) < g_frame_time * -0.5f) {
             int n = truncate_float_to_s32(FastAbsF(*(float *)(p + 0x108)) * 300.0f);
             emit_hero_surface_effect_burst(3, n < 0x28 ? n : 0x28, 1);
-            if (D_L11_00161350 != 0) {
-                RippleDisturb(D_L11_00161350, D_L11_00161358, 0, *(float *)(p + 0x80), *(float *)(p + 0x84), 0.5f, -0.4f);
+            if (pokitaru_pool_draw_tiles != 0) {
+                RippleDisturb(pokitaru_pool_draw_tiles, D_L11_00161358, 0, *(float *)(p + 0x80), *(float *)(p + 0x84), 0.5f, -0.4f);
             }
             *(short *)(p + 0x90A) = scale_ticks(0x4B);
         }

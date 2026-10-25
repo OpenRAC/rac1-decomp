@@ -58,7 +58,7 @@ extern char *D_L00_0015F6D4 MACRO_ADDR;
 int play_voice(int a, int b, int c, int d) {
     int r;
     if (a >= D_L00_0015F6D0) return -1;
-    r = allocate_voice_slot(D_L00_0015F6D4 + a * 32, b, 0, c + 0x40, d);
+    r = allocate_voice_slot(level_sound_slots + a * 32, b, 0, c + 0x40, d);
     if (r >= 0) {
         char *e = D_0013E633 + 0x1D + r * 0x70;
         *(int *)(e + 0x8C) = c;
@@ -81,7 +81,7 @@ int request_grouped_voice(int a0, int a1, int a2, int a3, int a4) {
     if (idx >= D_L00_0015F6D0) {
         return -1;
     }
-    h = allocate_voice_slot(D_L00_0015F6D4 + idx * 32, a3, a4, 0, 0x400);
+    h = allocate_voice_slot(level_sound_slots + idx * 32, a3, a4, 0, 0x400);
     if (h >= 0) {
         char *rec = voice_pool + h * 0x70;
         *(int *)(rec + 0x88) = a4;

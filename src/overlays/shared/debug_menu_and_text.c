@@ -557,7 +557,7 @@ void update_debug_menu(void) {
             if (g_controller_state.keys.word.pressed & 0x10) { if (--((DebugMenu_1F4918 *)g_debug_menu)->display_mode < 0) ((DebugMenu_1F4918 *)g_debug_menu)->display_mode = 7; }
             break;
         case 2:
-            if (!D_L00_0015F6E0) { ((DebugMenu_1F4918 *)g_debug_menu)->occl_mode = 0; break; }
+            if (!occlusion_grid) { ((DebugMenu_1F4918 *)g_debug_menu)->occl_mode = 0; break; }
             if (g_controller_state.keys.word.pressed & 0x40) { if (++((DebugMenu_1F4918 *)g_debug_menu)->occl_mode >= 3) ((DebugMenu_1F4918 *)g_debug_menu)->occl_mode = 0; }
             if (g_controller_state.keys.word.pressed & 0x10) { if (--((DebugMenu_1F4918 *)g_debug_menu)->occl_mode < 0) ((DebugMenu_1F4918 *)g_debug_menu)->occl_mode = 2; }
             break;
@@ -629,7 +629,7 @@ void update_debug_menu(void) {
                 s32 offset = slot + (g_current_level_index << 4);
                 u8 *p = (u8 *)saved_mission_state + offset;
                 *p = *p ? 0 : 255;
-                D_L00_0015FD48[slot] = *p;
+                mission_state[slot] = *p;
             }
             break;
         }
@@ -669,31 +669,31 @@ void update_debug_menu(void) {
     case 4:
         if (((DebugMenu_1F4918 *)g_debug_menu)->item == 0) {
             u64 keys=g_controller_state.keys.all;
-            if (keys & 0x800000040ULL) D_L00_0015F548 += 1024.0f;
-            if (keys & 0x400000010ULL) D_L00_0015F548 -= 1024.0f;
-            if (D_L00_0015F548 > D_L00_0015F54C) D_L00_0015F548 = D_L00_0015F54C;
-            else if (D_L00_0015F548 < 0.0f) D_L00_0015F548=0.0f;
+            if (keys & 0x800000040ULL) level_fog_near_distance += 1024.0f;
+            if (keys & 0x400000010ULL) level_fog_near_distance -= 1024.0f;
+            if (level_fog_near_distance > level_fog_far_distance) level_fog_near_distance = level_fog_far_distance;
+            else if (level_fog_near_distance < 0.0f) level_fog_near_distance=0.0f;
         }
         if (((DebugMenu_1F4918 *)g_debug_menu)->item == 2) {
             u64 keys=g_controller_state.keys.all;
-            if (keys & 0x800000040ULL) D_L00_0015F54C += 1024.0f;
-            if (keys & 0x400000010ULL) D_L00_0015F54C -= 1024.0f;
-            if (D_L00_0015F54C > 524288.0f) D_L00_0015F54C = 524288.0f;
-            else if (D_L00_0015F54C < D_L00_0015F548) D_L00_0015F54C=D_L00_0015F548;
+            if (keys & 0x800000040ULL) level_fog_far_distance += 1024.0f;
+            if (keys & 0x400000010ULL) level_fog_far_distance -= 1024.0f;
+            if (level_fog_far_distance > 524288.0f) level_fog_far_distance = 524288.0f;
+            else if (level_fog_far_distance < level_fog_near_distance) level_fog_far_distance=level_fog_near_distance;
         }
         if (((DebugMenu_1F4918 *)g_debug_menu)->item == 1) {
             u64 keys=g_controller_state.keys.all;
-            if (keys & 0x800000040ULL) D_L00_0015F550 -= 2.55f;
-            if (keys & 0x400000010ULL) D_L00_0015F550 += 2.55f;
-            if (D_L00_0015F550 > 255.0f) D_L00_0015F550 = 255.0f;
-            else if (D_L00_0015F550 < 0.0f) D_L00_0015F550=0.0f;
+            if (keys & 0x800000040ULL) level_fog_near_intensity -= 2.55f;
+            if (keys & 0x400000010ULL) level_fog_near_intensity += 2.55f;
+            if (level_fog_near_intensity > 255.0f) level_fog_near_intensity = 255.0f;
+            else if (level_fog_near_intensity < 0.0f) level_fog_near_intensity=0.0f;
         }
         if (((DebugMenu_1F4918 *)g_debug_menu)->item == 3) {
             u64 keys=g_controller_state.keys.all;
-            if (keys & 0x800000040ULL) D_L00_0015F554 -= 2.55f;
-            if (keys & 0x400000010ULL) D_L00_0015F554 += 2.55f;
-            if (D_L00_0015F554 > 255.0f) D_L00_0015F554 = 255.0f;
-            else if (D_L00_0015F554 < 0.0f) D_L00_0015F554=0.0f;
+            if (keys & 0x800000040ULL) level_fog_far_intensity -= 2.55f;
+            if (keys & 0x400000010ULL) level_fog_far_intensity += 2.55f;
+            if (level_fog_far_intensity > 255.0f) level_fog_far_intensity = 255.0f;
+            else if (level_fog_far_intensity < 0.0f) level_fog_far_intensity=0.0f;
         }
         if (((DebugMenu_1F4918 *)g_debug_menu)->item == 4) {
             if ((*(u8 *)&D_L00_0015F544) < 255 && (g_controller_state.keys.all&0x800000040ULL)) ++(*(u8 *)&D_L00_0015F544);
@@ -704,8 +704,8 @@ void update_debug_menu(void) {
             if ((*(u8 *)&D_L00_0015F545) > 0 && (g_controller_state.keys.all&0x400000010ULL)) --(*(u8 *)&D_L00_0015F545);
         }
         if (((DebugMenu_1F4918 *)g_debug_menu)->item == 6) {
-            if ((*(u8 *)&D_L00_0015F546) < 255 && (g_controller_state.keys.all&0x800000040ULL)) ++(*(u8 *)&D_L00_0015F546);
-            if ((*(u8 *)&D_L00_0015F546) > 0 && (g_controller_state.keys.all&0x400000010ULL)) --(*(u8 *)&D_L00_0015F546);
+            if ((*(u8 *)&level_fog_color_blue) < 255 && (g_controller_state.keys.all&0x800000040ULL)) ++(*(u8 *)&level_fog_color_blue);
+            if ((*(u8 *)&level_fog_color_blue) > 0 && (g_controller_state.keys.all&0x400000010ULL)) --(*(u8 *)&level_fog_color_blue);
         }
         UpdateFog();
         break;
@@ -1048,16 +1048,16 @@ void draw_debug_menu(void) {
             print_debug_text(0xB9, (debug_menu60.item * 0xF) + 0x112, 0x800000C0, D_L00_0015F160);
         }
         print_debug_text(0xC4, 0x114, 0x8000C0C0, D_L00_0015F340);
-        func_00116248(buf, D_L00_0015F348, promote_float60(D_L00_0015F548 * 0.0009765625f));
+        func_00116248(buf, D_L00_0015F348, promote_float60(level_fog_near_distance * 0.0009765625f));
         print_debug_text(0x11C, 0x114, 0x80F0F0F0, buf);
         print_debug_text(0xC4, 0x123, 0x8000C0C0, D_L00_0015F350);
-        func_00116248(buf, D_L00_0015F348, promote_float60(100.0f - (D_L00_0015F550 / 2.55f)));
+        func_00116248(buf, D_L00_0015F348, promote_float60(100.0f - (level_fog_near_intensity / 2.55f)));
         print_debug_text(0x11C, 0x123, 0x80F0F0F0, buf);
         print_debug_text(0xC4, 0x132, 0x8000C0C0, D_L00_0015F358);
-        func_00116248(buf, D_L00_0015F348, promote_float60(D_L00_0015F54C * 0.0009765625f));
+        func_00116248(buf, D_L00_0015F348, promote_float60(level_fog_far_distance * 0.0009765625f));
         print_debug_text(0x11C, 0x132, 0x80F0F0F0, buf);
         print_debug_text(0xC4, 0x141, 0x8000C0C0, D_L00_0015F360);
-        func_00116248(buf, D_L00_0015F348, promote_float60(100.0f - (D_L00_0015F554 / 2.55f)));
+        func_00116248(buf, D_L00_0015F348, promote_float60(100.0f - (level_fog_far_intensity / 2.55f)));
         print_debug_text(0x11C, 0x141, 0x80F0F0F0, buf);
         print_debug_text(0xC4, 0x150, 0x8000C0C0, D_L00_0015F368);
         func_00116248(buf, fmt, (s32) D_L00_0015F544[0]);
@@ -1066,7 +1066,7 @@ void draw_debug_menu(void) {
         func_00116248(buf, fmt, (s32) D_L00_0015F545[0]);
         print_debug_text(0x11C, 0x15F, 0x80F0F0F0, buf);
         print_debug_text(0xC4, 0x16E, 0x8000C0C0, D_L00_0015F378);
-        func_00116248(buf, fmt, (s32) D_L00_0015F546[0]);
+        func_00116248(buf, fmt, (s32) level_fog_color_blue[0]);
         print_debug_text(0x11C, 0x16E, 0x80F0F0F0, buf);
         print_debug_text(0x160, 0x100, 0x8000C000, D_L00_0015F380);
         print_debug_text(0x160, 0x106, 0x8000C000, D_L00_0015F170);
@@ -1109,7 +1109,7 @@ extern char *D_L00_0015F6E0 MACRO_ADDR;
 /* Looks cell (X, Y, Z) up in the three-level occlusion grid at D_L00_0015F6E0: 0 when the coordinate falls
    outside a level or the cell is empty, else the address of the cell's 128-byte occlusion record. */
 int OcclGrid_Lookup(int x, int y, int z) {
-    char *grid = D_L00_0015F6E0;
+    char *grid = occlusion_grid;
     char *base = grid + *(int *)grid;
     unsigned short *l = (unsigned short *)(grid + 4);
     int cz, cy, cx;
@@ -1155,7 +1155,7 @@ void Level_ResetGameplayGlobals(void) {
     D_L00_0015F52C = 0;
     D_L00_0015F530 = 0;
     D_L00_0015F528 = 0;
-    D_L00_0015F534 = 0;
+    ground_shadow_count = 0;
     D_L00_0015F3F0 = 0;
     D_L00_0015F3F4 = 0;
     D_L00_0015F504 = 0;
@@ -1164,9 +1164,9 @@ void Level_ResetGameplayGlobals(void) {
     D_0015F420_F8750 = 0;
     D_0015F430_F8750 = 0;
     D_L00_0015F6E8 = 0;
-    D_L00_00161390 = 0;
+    water_patches = 0;
     D_L00_00161394 = 0;
-    D_L00_00161398 = 0;
+    water_patch_count = 0;
     D_L00_0016139C = 0;
 }
 extern int D_L00_0015F6BC MACRO_ADDR;

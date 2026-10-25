@@ -1084,7 +1084,7 @@ void HeroL18_UpdateStatePhysics(void) {
             float v;
             float acc;
 
-            if (g_hero.unkA9C != 0 || g_hero.anim_frame < D_L18_0017C6A8[g_hero.attack_record].f18) {
+            if (g_hero.unkA9C != 0 || g_hero.anim_frame < veldin2_attack_records[g_hero.attack_record].f18) {
                 g_hero.items[0].timer = 2;
             }
             g_hero.target_speed = 0.0f;
@@ -1154,7 +1154,7 @@ void HeroL18_UpdateStatePhysics(void) {
             int skip;
 
             g_hero.target_speed = 0.0f;
-            if (g_hero.unkA9C != 0 || g_hero.anim_frame < D_L18_0017C6A8[g_hero.attack_record].f18) {
+            if (g_hero.unkA9C != 0 || g_hero.anim_frame < veldin2_attack_records[g_hero.attack_record].f18) {
                 g_hero.items[0].timer = 2;
             }
             skip = 0;
@@ -1217,11 +1217,11 @@ void HeroL18_UpdateStatePhysics(void) {
         {
             Rec2C *r;
 
-            if (g_hero.unkA9C != 0 || g_hero.anim_frame < D_L18_0017C6A8[g_hero.attack_record].f20) {
+            if (g_hero.unkA9C != 0 || g_hero.anim_frame < veldin2_attack_records[g_hero.attack_record].f20) {
                 g_hero.items[0].timer = 2;
             }
             g_hero.target_speed = 0.0f;
-            r = &D_L18_0017C6A8[g_hero.attack_record];
+            r = &veldin2_attack_records[g_hero.attack_record];
             if (g_hero.unkA54 != 0 && g_hero.state_timer < scale_ticks(4)) {
                 float d;
                 float off;
@@ -2348,10 +2348,10 @@ void HeroL18_UpdateStatePhysics(void) {
                 g_hero.unk229C = 1.0f;
                 g_hero.motion.move_yaw = fast_atan2(vec[0][0], vec[0][1]);
                 g_hero.target_speed = len;
-                if (len < D_L18_0017C838.fC) {
-                    g_hero.target_speed = D_L18_0017C838.f8 * g_frame_time;
+                if (len < veldin2_hero_speed_bands.fC) {
+                    g_hero.target_speed = veldin2_hero_speed_bands.f8 * g_frame_time;
                 } else {
-                    g_hero.target_speed = D_L18_0017C838.f18 * g_frame_time;
+                    g_hero.target_speed = veldin2_hero_speed_bands.f18 * g_frame_time;
                 }
                 if (g_hero.vehicle_mode == 3) {
                     g_hero.target_speed = g_frame_time * 1.5f;

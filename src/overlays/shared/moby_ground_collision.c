@@ -837,8 +837,8 @@ void build_quaternion_from_axis_rotations(void *a, float *v) {
     axis_rotation_2d48(&t2, 0, v[0]);
     axis_rotation_2d48(&t1, 1, v[1]);
     axis_rotation_2d48(&t0, 2, v[2]);
-    func_001FA588(a, &t2, &t1);
-    func_001FA588(a, a, &t0);
+    multiply_quaternions(a, &t2, &t1);
+    multiply_quaternions(a, a, &t0);
 }
 extern float func_00214358f(void *, int, float) __asm__("func_00214358");
 extern int func_L00_001F3958(void);
@@ -853,12 +853,12 @@ void jet_animate(unsigned char *m, float s) {
     float v;
     int n;
     struct Ent *e;
-    if (m[0x31] && D_L00_0015F534 < 32) {
-        n = D_L00_0015F534;
+    if (m[0x31] && ground_shadow_count < 32) {
+        n = ground_shadow_count;
         qcopy(&D_L00_0016E180[n], m + 0x10);
         h = func_00214358f(m + 0x10, 0, 0.5f);
         if (CollType()) {
-            n = D_L00_0015F534;
+            n = ground_shadow_count;
             e = &D_L00_0016E180[n];
             e->a[2] = h + 0.025f;
             qcopy(D_L00_0016E180[n].b, coll_hit_normal);
@@ -866,8 +866,8 @@ void jet_animate(unsigned char *m, float s) {
             if (v < 0.25f) {
                 v = 0.25f;
             }
-            { int off = D_L00_0015F534 * 32; float *q = (float *)((char *)D_L00_0016E180 + off); q[3] = s * v; }
-            D_L00_0015F534++;
+            { int off = ground_shadow_count * 32; float *q = (float *)((char *)D_L00_0016E180 + off); q[3] = s * v; }
+            ground_shadow_count++;
         }
     }
 }
@@ -2357,7 +2357,7 @@ int is_moby_in_class_range_500_to_540(void *moby) {
         return 0;
     }
     if ((unsigned int)moby < (unsigned int)moby_array_start ||
-        (unsigned int)D_L00_001600A0 < (unsigned int)moby) {
+        (unsigned int)moby_array_last < (unsigned int)moby) {
         return 0;
     }
     return (unsigned int)*(unsigned short *)((char *)moby + 0xA6) - 0x1F4 < 0x29;
@@ -2659,15 +2659,15 @@ void SpawnExplosionFx(char *a, char *b, int snd, float sc, float fl) {
     }
     if (fl != 0.0f) {
         if (fl > 0.0f) {
-            D_L00_001B0670[9] = fl;
-            D_L00_001B0670[10] = fl;
-            D_L00_001B0670[8] = fl;
+            blast_spawn_params[9] = fl;
+            blast_spawn_params[10] = fl;
+            blast_spawn_params[8] = fl;
         } else {
-            D_L00_001B0670[9] = 13.0f;
-            D_L00_001B0670[10] = 13.0f;
-            D_L00_001B0670[8] = 13.0f;
+            blast_spawn_params[9] = 13.0f;
+            blast_spawn_params[10] = 13.0f;
+            blast_spawn_params[8] = 13.0f;
         }
-        mine_camera_blast(D_L00_001B0670, b, 0, 0);
+        mine_camera_blast(blast_spawn_params, b, 0, 0);
     }
 }
 typedef struct { float x, y, z, w; } Vy10 __attribute__((aligned(16)));
@@ -2710,15 +2710,15 @@ void spawn_color_swapped_explosion_burst(char *a, char *b, float sc, float fl) {
     }
     if (fl != 0.0f) {
         if (fl > 0.0f) {
-            D_L00_001B0670[9] = fl;
-            D_L00_001B0670[10] = fl;
-            D_L00_001B0670[8] = fl;
+            blast_spawn_params[9] = fl;
+            blast_spawn_params[10] = fl;
+            blast_spawn_params[8] = fl;
         } else {
-            D_L00_001B0670[9] = 13.0f;
-            D_L00_001B0670[10] = 13.0f;
-            D_L00_001B0670[8] = 13.0f;
+            blast_spawn_params[9] = 13.0f;
+            blast_spawn_params[10] = 13.0f;
+            blast_spawn_params[8] = 13.0f;
         }
-        mine_camera_blast(D_L00_001B0670, b, 0, 0);
+        mine_camera_blast(blast_spawn_params, b, 0, 0);
     }
 }
 extern float func_001F9CB8(void *);
@@ -2770,8 +2770,8 @@ extern u8 * D_L00_00160098_608F0 __asm__("D_L00_00160098") MACRO_ADDR;
 /* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/math/rotations/0025d238.c, FUN_L00_0025f878. */
 M25f878 *find_listed_moby_by_data_id(s32 id) {
     s32 i;
-    for (i = 1; i <= D_L00_001B0AF0[0]; i++) {
-        M25f878 *o = (M25f878 *)(D_L00_001B0AF0[i] * 0x100 + (s32)D_L00_00160098_608F0);
+    for (i = 1; i <= active_homing_missiles[0]; i++) {
+        M25f878 *o = (M25f878 *)(active_homing_missiles[i] * 0x100 + (s32)D_L00_00160098_608F0);
         if (o->p78->id == id)
             return o;
     }
@@ -2812,7 +2812,7 @@ int test_point_in_transformed_unit_sphere(float *p, int idx) {
     float b[4] __attribute__((aligned(16)));
     char *e;
     if (idx >= 0) {
-        e = (char *)D_L00_001601B4 + idx * 128;
+        e = (char *)level_spheres + idx * 128;
         FastVecSub(a, p, e + 0x30);
         a[3] = 0;
         matrix_mul_vec3(b, a, e + 0x40);

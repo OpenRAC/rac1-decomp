@@ -146,7 +146,7 @@ void update_class_b8_projectile(struct Moby *m)
         v->unk24 = 1;
     v->hero_dist = d;
     if (m->pos.x < 0.0f || m->pos.y < 0.0f || m->pos.z < 0.0f
-        || range < vec_distance_xy(&m->pos, D_L04_00166FC0)) {
+        || range < vec_distance_xy(&m->pos, eudora_camera_pos)) {
         DeleteMoby(m);
         return;
     }

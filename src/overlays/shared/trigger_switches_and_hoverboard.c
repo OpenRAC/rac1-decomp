@@ -94,7 +94,7 @@ extern void func_L05_002F62E8(int, int, int);
 
 /* Runs func_L05_002F62E8 for each entry of list i until an entry without the top bit set. */
 void apply_spatial_trigger_to_moby_list(int a, int b, int i, int c) {
-    unsigned short *p = (unsigned short *)D_L05_001AC040[i];
+    unsigned short *p = (unsigned short *)rilgar_moby_groups[i];
     if (p != 0) {
         do {
             ApplyTriggerSwitches(*p & 0x7FFF, b, c);
@@ -884,7 +884,7 @@ typedef struct {
 #define POOL (*(char **)&D_L05_00160098)
 /* Returns the moby in the group whose data word at +0xB4 equals id, or 0. */
 char *FindMobyByDataId(void *arg, int id) {
-    unsigned short *p = (unsigned short *)D_L05_001AC040[*((unsigned char *)arg + 0x21)];
+    unsigned short *p = (unsigned short *)rilgar_moby_groups[*((unsigned char *)arg + 0x21)];
     char *pool;
     int idx;
     if (p != 0) {
@@ -1093,7 +1093,7 @@ void update_moby_glow_and_contact_explosion(struct Moby *moby) {
     }
     /* Fakematch: the distance passes through a second variable; assigned directly,
        the compiler keeps it in $f0 and picks other registers for the fade below. */
-    camera_distance = func_001F9D48_1DDF0(D_L05_001672C0, &moby->pos);
+    camera_distance = func_001F9D48_1DDF0(rilgar_camera_pos, &moby->pos);
     distance = camera_distance;
     if (48.0f <= distance) {
         return;
@@ -1226,7 +1226,7 @@ void draw_moby_glow_sprite(char *m) {
     pk.uv[7] = 1.0f;
     FastVecScale(t, m + 0xE0, *(float *)&D_L05_00162088);
     FastVecAdd(M[3], m + 0x10, t);
-    FastVecSub(M[0], D_L05_001672C0, M[3]);
+    FastVecSub(M[0], rilgar_camera_pos, M[3]);
     vec_scale_to_length(M[0], M[0], 1.0f);
     FastVecCross(M[1], M[0], up);
     vec_scale_to_length(M[1], M[1], 1.0f);

@@ -264,7 +264,7 @@ void open_vendor_menu(VendorMoby_pv *m) {
     D_L00_00161F18 = 0;
     D_L00_00161F20 = 0;
     VP.f5C = 0;
-    D_L00_00161F30 = 0;
+    vendor_buy_quantity = 0;
     D_L00_00161F24 = 0;
     func_0012E528(0x1D);
     music_Pause(0);
@@ -327,22 +327,22 @@ void open_vendor_menu(VendorMoby_pv *m) {
     qzero(v);
     qzero(&D_L00_00180360);
     for (i = 0; i < 4; i++) {
-        slot = &D_L00_00165F80[i];
+        slot = &vendor_slot_manipulators[i];
         if (slot->hidden == 0) {
             AttachManipulator(VP.moby, i + 0x14, slot);
         }
     }
     if (VP.count < 8) {
         k = 7 - VP.count;
-        D_L00_00165F80[0].offset = k * 0x681;
-        D_L00_00165F80[1].offset = k * -0x681;
-        D_L00_00165F80[2].offset = k * 0x681;
-        D_L00_00165F80[3].offset = k * -0x681;
+        vendor_slot_manipulators[0].offset = k * 0x681;
+        vendor_slot_manipulators[1].offset = k * -0x681;
+        vendor_slot_manipulators[2].offset = k * 0x681;
+        vendor_slot_manipulators[3].offset = k * -0x681;
     } else {
-        D_L00_00165F80[0].offset = 0;
-        D_L00_00165F80[1].offset = 0;
-        D_L00_00165F80[2].offset = 0;
-        D_L00_00165F80[3].offset = 0;
+        vendor_slot_manipulators[0].offset = 0;
+        vendor_slot_manipulators[1].offset = 0;
+        vendor_slot_manipulators[2].offset = 0;
+        vendor_slot_manipulators[3].offset = 0;
     }
     D_L00_00161248 = 0;
     D_L00_0016124C = 0;
@@ -818,7 +818,7 @@ void update_vendor_purchase(void) {
     if (D_L00_001CA7C0_9CDE0.state == 0) return;
     if (D_L00_001CA7C0_9CDE0.state == 1) {
         int pr1;
-        D_L00_00161F30 = 1;
+        vendor_buy_quantity = 1;
         D_L00_00161F0C = 0;
         InitMobyInstance(D_L00_001CA7C0_9CDE0.obj + 0x400, 0x471);
         *(short *)(D_L00_001CA7C0_9CDE0.obj + 0x432) = 0x40;
@@ -862,8 +862,8 @@ void update_vendor_purchase(void) {
             else D_L00_00161F2C = 0;
             if ((D_0013CA40_9CDE0.pressed & 0x8000)
                 || (D_L00_00161F28 >= 16 && !(D_L00_00161F28 & 7)) || D_L00_00161F28 >= 48) {
-                if (D_L00_00161F30 >= 2) {
-                    D_L00_00161F30--;
+                if (vendor_buy_quantity >= 2) {
+                    vendor_buy_quantity--;
                     if (!(D_L00_00161F28 & 3) || D_L00_00161F28 < 16) {
                         Moby_PlaySound(1, 0, D_L00_001CA7C0_9CDE0.cam);
                     }
@@ -878,8 +878,8 @@ void update_vendor_purchase(void) {
                     room = item_price_table[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].hE
                          - weapon_ammo_counts[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item];
                     if (room < n2) n2 = room;
-                    if (D_L00_00161F30 < n2) {
-                        D_L00_00161F30++;
+                    if (vendor_buy_quantity < n2) {
+                        vendor_buy_quantity++;
                         if (!(D_L00_00161F2C & 3) || D_L00_00161F2C < 16) {
                             Moby_PlaySound(1, 0, D_L00_001CA7C0_9CDE0.cam);
                         }
@@ -921,8 +921,8 @@ void update_vendor_purchase(void) {
             if (D_L00_00161F0C == 1) {
                 if (D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].sel == 1) {
                     cost = D_L00_001CA7C0_9CDE0.f40
-                        ? item_price_table[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].hA * D_L00_00161F30
-                        : item_price_table[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].h8 * D_L00_00161F30;
+                        ? item_price_table[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].hA * vendor_buy_quantity
+                        : item_price_table[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].h8 * vendor_buy_quantity;
                 } else {
                     cost = discount_purchase_pricing[0] ? item_price_table[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].f4
                                           : item_price_table[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].f0;
@@ -933,12 +933,12 @@ void update_vendor_purchase(void) {
                 } else if (D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].sel == 1) {
                     if (weapon_ammo_counts[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item] < item_price_table[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].hE) {
                         price = (D_L00_001CA7C0_9CDE0.f40 ? item_price_table[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].hA
-                                                          : item_price_table[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].h8) * D_L00_00161F30;
+                                                          : item_price_table[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].h8) * vendor_buy_quantity;
                         if (gBolts >= price) {
                             if (weapon_ammo_counts[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item] > item_price_table[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].hE) {
                                 weapon_ammo_counts[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item] = item_price_table[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].hE;
                             }
-                            n = D_L00_00161F30;
+                            n = vendor_buy_quantity;
                             n -= add_ammo(D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item, n);
                             price = (D_L00_001CA7C0_9CDE0.f40 ? item_price_table[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].hA
                                                               : item_price_table[D_L00_001CA7C0_9CDE0.e[D_L00_001CA7C0_9CDE0.idx].item].h8) * n;

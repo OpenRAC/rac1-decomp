@@ -1259,7 +1259,7 @@ void request_hero_target_pose(float *pos, int arg, float t) {
 extern int D_001414D4;
 /* 1 when the word at 0x1414D4 is 101 or 102, 2 when it is 103, else 0 */
 int get_hero_target_pose_status(void) {
-    switch (D_001414D4) {
+    switch (hero_current_state) {
     case 101:
     case 102:
         return 1;

@@ -784,8 +784,8 @@ void update_beam_slot_controller(unsigned char *m) {
     switch (m[0x20]) {
     case 0:
         for (j = 0; j < 3; j++) {
-            D_L00_00161CC8[j] = 0;
-            D_L00_00161D58[j] = 0;
+            beam_slot_states[j] = 0;
+            beam_slot_ids[j] = 0;
         }
         m[0x20] = 1;
         m[0x30] = 0xFF;
@@ -793,14 +793,14 @@ void update_beam_slot_controller(unsigned char *m) {
     case 1:
         n = 0;
         for (i = 0; i < 3; i++) {
-            st = D_L00_00161CC8[i];
+            st = beam_slot_states[i];
             if (st == 1) {
             } else if (st == 4) {
                 release_beam_slot(i);
             } else if (st != 0) {
                 n++;
-                update_slot_panes_and_effects(D_L00_00161D58[i], i);
-                D_L00_00161CC8[i] = 4;
+                update_slot_panes_and_effects(beam_slot_ids[i], i);
+                beam_slot_states[i] = 4;
             }
         }
         if (n != 0) {

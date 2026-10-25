@@ -80,7 +80,7 @@ int HeroL12_SetMoveState(int a, int b) {
         char *p = D_0013E633 + 0xE1D;
         if (*(int *)(p + 0x208C) == 0x14 && (a != 0x64 || b != 2)) return 0;
     }
-    if ((D_L12_0015F6A8 == 2 || D_L12_0015F6A8 == 6) && b != 2) return 0;
+    if ((hoven_cinematic_mode == 2 || hoven_cinematic_mode == 6) && b != 2) return 0;
     {
         char *p = D_0013E633 + 0xE1D;
         if (*(int *)(p + 0x22A8) == 0 && (*(int *)(p + 0x208C) == 2 || *(int *)(p + 0x208C) == 7)
@@ -278,14 +278,14 @@ int HeroL12_SetMoveState(int a, int b) {
         *(short *)(p + 0x90A) = 0;
         if (*(int *)(p + 0x2094) == 0x11) {
             emit_hero_surface_effect_burst(3, 0xA, 0);
-            if (D_L12_00161350 != 0) {
-                RippleDisturb(D_L12_00161350, D_L12_00161358, 0, *(float *)(p + 0x80), *(float *)(p + 0x84), 0.4f, 0.3f);
+            if (hoven_water_patches != 0) {
+                RippleDisturb(hoven_water_patches, D_L12_00161358, 0, *(float *)(p + 0x80), *(float *)(p + 0x84), 0.4f, 0.3f);
             }
         } else if (*(float *)(p + 0x108) < g_frame_time * -0.5f) {
             int n = truncate_float_to_s32(FastAbsF(*(float *)(p + 0x108)) * 300.0f);
             emit_hero_surface_effect_burst(3, n < 0x28 ? n : 0x28, 1);
-            if (D_L12_00161350 != 0) {
-                RippleDisturb(D_L12_00161350, D_L12_00161358, 0, *(float *)(p + 0x80), *(float *)(p + 0x84), 0.5f, -0.4f);
+            if (hoven_water_patches != 0) {
+                RippleDisturb(hoven_water_patches, D_L12_00161358, 0, *(float *)(p + 0x80), *(float *)(p + 0x84), 0.5f, -0.4f);
             }
             *(short *)(p + 0x90A) = scale_ticks(0x4B);
         }
@@ -1341,7 +1341,7 @@ int HeroL12_SetMoveState(int a, int b) {
             }
             q = D_0013E633 + 0xE1D;
             *(unsigned int *)(h + 0x44) = *(unsigned int *)(h + 0x44) | (1 << g_current_level_index) | 0x80000000;
-            e = &D_L12_0017C128[*(int *)(q + 0xA60)];
+            e = &hoven_attack_records[*(int *)(q + 0xA60)];
             *(int *)(q + 0x20F0) = 0;
             k = 0;
             if (*(int *)(q + 0x2094) == 6 && e->a == 0 && *(float *)(q + 0xAA8) < (float)e->c) {
@@ -1397,14 +1397,14 @@ int HeroL12_SetMoveState(int a, int b) {
         *(int *)(p + 0xA64) = 0;
         if (*(int *)(p + 0x2090) == 0x70) {
             int v = 5;
-            if (D_L12_0017C128[*(int *)(p + 0xA60)].b == 0) v = 6;
+            if (hoven_attack_records[*(int *)(p + 0xA60)].b == 0) v = 6;
             *(int *)(p + 0xA60) = v;
         } else {
             *(int *)(p + 0xA60) = 5;
         }
         {
             char *q = D_0013E633 + 0xE1D;
-            int e = D_L12_0017C128[*(int *)(q + 0xA60)].b;
+            int e = hoven_attack_records[*(int *)(q + 0xA60)].b;
             if (b) {
                 char *m;
                 int z = e == 0;
@@ -1423,7 +1423,7 @@ int HeroL12_SetMoveState(int a, int b) {
         *(float *)(p + 0x194) = g_frame_time * 9.0f;
         if (b) {
             char *m;
-            T2C_2407C0 *e = &D_L12_0017C128[*(int *)(p + 0xA60)];
+            T2C_2407C0 *e = &hoven_attack_records[*(int *)(p + 0xA60)];
             int k = e->b;
             int n;
             if (e->a == 1) k = 2;

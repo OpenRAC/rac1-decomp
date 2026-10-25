@@ -31,7 +31,7 @@ void emit_moby_sprite_particles(char *m) {
     float f;
 
     *(float *)(m + 0x18) += 0.5f;
-    FastVecSub(d, D_L10_001672C0, m + 0x10);
+    FastVecSub(d, orxon_camera_pos, m + 0x10);
     vec_scale_to_length(d, d, -0.3f);
     vec_scale_to_length(e, d, 0.1f);
     func_001F9BD8_99AF0(d, d, m + 0x10);
@@ -688,18 +688,18 @@ void Camera19_Update(char *moby) {
         char *pm;
         char *gb;
         float *c3;
-        D_L10_0015F4FC += 0.05f;
-        if (1.0f <= D_L10_0015F4FC) {
+        orxon_fade += 0.05f;
+        if (1.0f <= orxon_fade) {
             a = orxon_paths[*(int *)(e + 0x20)];
             b = orxon_paths[*(int *)(e + 0x24)];
             pm = moby + 0x30;
-            D_L10_0015F4FC = 1.0f;
+            orxon_fade = 1.0f;
             a = a + 0x10;
             D_L10_0015F504 = 1;
             *(short *)(f + 0x14) = 1;
             qcopy(pm, a);
             if (*(int *)(e + 0x28) >= 0) {
-                gb = D_L10_00160058 + (*(int *)(e + 0x28) << 8);
+                gb = orxon_mobys + (*(int *)(e + 0x28) << 8);
                 c3 = (float *)(e + 0x2C);
                 v1[0] = c3[0];
                 v1[1] = c3[1];
@@ -723,10 +723,10 @@ void Camera19_Update(char *moby) {
         float x;
         float aa;
         float bb;
-        D_L10_0015F4FC += 0.05f;
-        if (1.0f <= D_L10_0015F4FC) {
+        orxon_fade += 0.05f;
+        if (1.0f <= orxon_fade) {
             *(short *)(f + 0x14) = 3;
-            D_L10_0015F4FC = 1.0f;
+            orxon_fade = 1.0f;
             x = k->vals[8] * 0.5f;
             aa = FastSin(x);
             bb = FastCos(x);
@@ -746,9 +746,9 @@ void Camera19_Update(char *moby) {
     } else if (st == 3) {
         return;
     } else {
-        D_L10_0015F4FC -= 0.05f;
-        if (D_L10_0015F4FC < 0.0f) {
-            D_L10_0015F4FC = 0.0f;
+        orxon_fade -= 0.05f;
+        if (orxon_fade < 0.0f) {
+            orxon_fade = 0.0f;
         }
     }
 
@@ -813,7 +813,7 @@ void Camera19_Update(char *moby) {
         nv = *(float *)(f + 0x10) + d;
         *(float *)(f + 0x10) = nv;
         if (*(int *)(e + 0x28) >= 0) {
-            char *b17 = D_L10_00160058 + (*(int *)(e + 0x28) << 8);
+            char *b17 = orxon_mobys + (*(int *)(e + 0x28) << 8);
             float *c3 = (float *)(e + 0x2C);
             v2[0] = c3[0];
             v2[1] = c3[1];

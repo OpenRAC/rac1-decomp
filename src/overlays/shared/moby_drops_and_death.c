@@ -154,7 +154,7 @@ void SetDeathBits(unsigned char *m, int flags, int arg) {
     D_L00_001BA960.a[*(short *)(m + 0xB2)] = m[0xB0] + 2;
     k = m[0xB0];
     {unsigned int u = k & 0xFF;
-    if (k == 0xFF || (D_L00_0015FD48[u] != 0xFF && saved_mission_state[lvl][u] == 0xFF)) {
+    if (k == 0xFF || (mission_state[u] != 0xFF && saved_mission_state[lvl][u] == 0xFF)) {
         D_L00_001BB5C0.a[*(short *)(m + 0xB2)] = k + 2;
     }}
     if ((signed char)m[0xB1] >= 0) {
@@ -181,14 +181,14 @@ void SetDeathBits(unsigned char *m, int flags, int arg) {
     if (g_hero.i2084 == 0x10 && FastVecDist(g_hero.v80, m + 0x10) < 4.0f) {
         f |= 2;
     }
-    cnt = D_L00_0016007C;
+    cnt = free_moby_slot_count;
     if (flags & 0x400) {
         f |= 0x10;
     }
     if (cnt < 100 || (flags & 0x800)) {
         f |= 8;
     }
-    if (D_L00_0016007C < 50) {
+    if (free_moby_slot_count < 50) {
         f |= 2;
     }
     if (amt < 0.0f) {

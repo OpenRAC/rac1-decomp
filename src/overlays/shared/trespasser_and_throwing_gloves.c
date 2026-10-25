@@ -212,7 +212,7 @@ void mine_glove_update(struct Moby *moby) {
         FastVecAdd(&pos, &pos, &D_0013F450_2DD8.motion.pos);
         pos.f[2] += 0.490819991f;
         angle = fast_atan2(launch.f[0], launch.f[1]);
-        FastVecScale(&target, &launch, D_0015EE68 * 60.0f);
+        FastVecScale(&target, &launch, inv_frame_scale * 60.0f);
         FastVecAdd(&target, &target, &pos);
         if (D_0013CA40_2DD8.held & 5) {
             probe.q = 0;
@@ -278,7 +278,7 @@ void mine_glove_update(struct Moby *moby) {
                     D_00141780_2DD8.unk8A = scale_ticks(D_0015EFA4_2DD8) / 600;
             }
             D_00141780_2DD8.levels = (D_00141780_2DD8.levels | (1u << D_0015EE84_2DD8)) | 0x80000000;
-            append_unique_moby_index(vars->held, D_L00_001B0B30, 0x3F);
+            append_unique_moby_index(vars->held, thrown_mine_list, 0x3F);
             vars->held = 0;
             vars->timer54 = scale_ticks(10);
         }

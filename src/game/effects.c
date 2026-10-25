@@ -219,7 +219,7 @@ void render_queued_rotated_sprites(void) {
     float pos[4];
     int i;
 
-    if (D_001414D4 == 0x72) {
+    if (hero_current_state == 0x72) {
         rotated_sprite_queue.count = 0;
     }
     if (rotated_sprite_queue.count != 0) {

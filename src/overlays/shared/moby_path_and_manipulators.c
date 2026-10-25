@@ -65,7 +65,7 @@ void spawn_moby_bolt_drop(char *a, int b, int c, int flags, int idx)
     if (!(flags & 0x20)) {
         if (*(unsigned char *)(a + 0xB0) != 0xFF
             && (unsigned)(*(unsigned short *)(a + 0xA6) - 0x1F4) >= 0x29) {
-            D_L00_0015F678 = D_L00_0015FD48[*(unsigned char *)(a + 0xB0)] == 0xFF;
+            D_L00_0015F678 = mission_state[*(unsigned char *)(a + 0xB0)] == 0xFF;
         }
     }
     f84 = 0;
@@ -90,13 +90,13 @@ void spawn_moby_bolt_drop(char *a, int b, int c, int flags, int idx)
         b = 1;
     }
     n = random_integer_below(c - b + 1) + b;
-    if (D_0015EFA0 || D_0015EF20) {
+    if (challenge_mode || D_0015EF20) {
         n <<= 1;
     }
     if (n < 0x1F4) {
         if (f84 && D_0015EF28) {
-            m = (int)((float)scale_ticks(0x3C) * 60.0f) * D_0015EF24[2] / D_0015EF24[1];
-            if (D_0015EFA0 || D_0015EF20) {
+            m = (int)((float)scale_ticks(0x3C) * 60.0f) * game_clock_ticks[2] / game_clock_ticks[1];
+            if (challenge_mode || D_0015EF20) {
                 m /= 2;
             }
             if (m < 0x96) {
@@ -107,7 +107,7 @@ void spawn_moby_bolt_drop(char *a, int b, int c, int flags, int idx)
                     STUB_printf(D_L00_00160170, (0xBE - m) / 20);
                     n *= (0xBE - m) / 20;
                 }
-                if (D_0015EFA0) {
+                if (challenge_mode) {
                     if (n > 0x3E8) n = 0x3E8;
                 } else {
                     if (n > 0x1F4) n = 0x1F4;
@@ -273,9 +273,9 @@ extern int D_0015EE80 MACRO_ADDR;
 /* selects timing constants for the active update mode */
 void SetUpdateModeTiming(int mode) {
  if(!mode) {
- pal_mode=0; frame_scale=1.0f; g_frame_scale_sq=1.0f; D_0015EE68=1.0f; g_frame_time_sq=0.00027777778450399637f; D_0015EE74=0.0000046296295295178425f; D_0015EE78=5; g_frame_time=0.01666666753590107f; frame_delta_time=0.01666666753590107f;
+ pal_mode=0; frame_scale=1.0f; g_frame_scale_sq=1.0f; inv_frame_scale=1.0f; g_frame_time_sq=0.00027777778450399637f; D_0015EE74=0.0000046296295295178425f; D_0015EE78=5; g_frame_time=0.01666666753590107f; frame_delta_time=0.01666666753590107f;
  } else {
- pal_mode=1; frame_scale=1.2f; g_frame_scale_sq=1.44f; D_0015EE68=0.8333333134651184f; g_frame_time=0.020000001415610313f; g_frame_time_sq=0.0004000000189989805f; D_0015EE74=0.000007999999979801942f; D_0015EE78=6; frame_delta_time=0.019999999552965164f;
+ pal_mode=1; frame_scale=1.2f; g_frame_scale_sq=1.44f; inv_frame_scale=0.8333333134651184f; g_frame_time=0.020000001415610313f; g_frame_time_sq=0.0004000000189989805f; D_0015EE74=0.000007999999979801942f; D_0015EE78=6; frame_delta_time=0.019999999552965164f;
  }
 }
 INCLUDE_ASM("asm/overlays", func_L00_00262450);

@@ -885,7 +885,7 @@ void update_moby_emitter_effects(unsigned char *moby, float *a1, int a2) {
     case 0x84:
         if (a2 != 0) return;
         if (!fast_subtract_rotations_cf(data + 0x12E)) return;
-        if (FastVecLength(vp) < g_frame_time * 40.0f && FastVecDist(moby + 0x10, D_L03_00166F40) < 75.0f) {
+        if (FastVecLength(vp) < g_frame_time * 40.0f && FastVecDist(moby + 0x10, kerwan_camera_pos) < 75.0f) {
             FastVecScale(vp, vp, 0.7f);
             n = 9;
             do {
@@ -906,7 +906,7 @@ void update_moby_emitter_effects(unsigned char *moby, float *a1, int a2) {
     case 0x76:
         if (a2 != 0) return;
         if (!fast_subtract_rotations_cf(data + 0x12E)) return;
-        if (FastVecLength(vp) < g_frame_time * 40.0f && FastVecDist(moby + 0x10, D_L03_00166F40) < 90.0f) {
+        if (FastVecLength(vp) < g_frame_time * 40.0f && FastVecDist(moby + 0x10, kerwan_camera_pos) < 90.0f) {
             FastVecScale(vp, vp, 0.5f);
             n2 = 14;
             do {
@@ -933,7 +933,7 @@ void update_moby_emitter_effects(unsigned char *moby, float *a1, int a2) {
             Moby_GetJointWorldPos(moby, 0, data + 0xF0);
         }
         if (data[0x12E] != 0) return;
-        if (FastVecLength(vp) < g_frame_time * 40.0f && FastVecDist(moby + 0x10, D_L03_00166F40) < 90.0f) {
+        if (FastVecLength(vp) < g_frame_time * 40.0f && FastVecDist(moby + 0x10, kerwan_camera_pos) < 90.0f) {
             unsigned char *p;
             int s17 = 0xA040;
             int s18 = 0xA080;
@@ -1013,7 +1013,7 @@ void update_emitter_intermittent_sound(char *moby) {
             if (!FastDecTimer(data + 0x148)) {
                 break;
             }
-            distance_to_reference = FastVecDist((char *)&m->pos, D_L03_00166F40);
+            distance_to_reference = FastVecDist((char *)&m->pos, kerwan_camera_pos);
             if (distance_to_reference > 15.0f && distance_to_reference < 90.0f) {
                 Moby_PlaySound(0, 0, (int)m);
             }
@@ -1754,7 +1754,7 @@ void Moby573Update(char *moby) {
         }
         break;
     }
-    if (((unsigned char *)moby)[0x31] != 0 && FastVecDist(moby + 0x10, D_L03_00166F40) < 32.0f) {
+    if (((unsigned char *)moby)[0x31] != 0 && FastVecDist(moby + 0x10, kerwan_camera_pos) < 32.0f) {
         set_ground_height_band(moby);
     }
     StepColorFade(moby, data->m110);
@@ -2001,7 +2001,7 @@ void update_kerwan_path_enemy(Moby *m) {
         }
         return;
     }
-    if (D_L03_0015F6A8 == 2) {
+    if (kerwan_game_mode == 2) {
         m->flags |= 0x41;
     } else if (m->state != 0xE) {
         m->flags &= 0xFFBE;
@@ -2672,7 +2672,7 @@ void update_kerwan_path_enemy(Moby *m) {
         break;
     }
     if (m->visible != 0) {
-        if (FastVecDist((*(float (*)[4])&m->pos), D_L03_00166F40) < 36.0f) {
+        if (FastVecDist((*(float (*)[4])&m->pos), kerwan_camera_pos) < 36.0f) {
             set_ground_height_band(m);
         }
     }
@@ -2743,7 +2743,7 @@ void update_kerwan_path_enemy(Moby *m) {
         }
     }
     if (d->b262 == 0) {
-        if (vec_distance_xy((*(float (*)[4])&m->pos), D_L03_00166F40) < 70.0f && (D_L03_0015F6B0_m & 7) == d->s28A) {
+        if (vec_distance_xy((*(float (*)[4])&m->pos), kerwan_camera_pos) < 70.0f && (D_L03_0015F6B0_m & 7) == d->s28A) {
             PathF2C8398 *pf = &d->pf;
             float v[4];
             int seg;

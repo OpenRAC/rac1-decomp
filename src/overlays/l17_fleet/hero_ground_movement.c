@@ -217,8 +217,8 @@ void HeroL17_UpdateStatePhysics(void) {
 
                     *(u128 *)vec[0] = 0;
                     vec[0][0] = 1.0f;
-                    matrix_mul_vec3(g_hero.motion.unk170.f, vec[0], D_L17_00167600.f350);
-                    g_hero.motion.move_yaw = D_L17_00167600.f158;
+                    matrix_mul_vec3(g_hero.motion.unk170.f, vec[0], fleet_player_camera.f350);
+                    g_hero.motion.move_yaw = fleet_player_camera.f158;
                     turn_to(0, g_frame_scale_sq, g_frame_scale_sq * 0.0f, g_frame_time * 174.53293f);
                     if (*(int *)&D_L17_0015F768 > 0) {
                         if (fast_dec_timer((int *)&D_L17_0015F768)) {
@@ -1126,8 +1126,8 @@ void HeroL17_UpdateStatePhysics(void) {
             if (g_hero.unk4B8 != 0.0f) {
                 if (g_hero.air_frames.s == 0) {
                     if (g_hero.unk4C4 == 0) {
-                        D_L17_00167600.f160 = 0.2f;
-                        D_L17_00167600.f168 = scale_ticks(0x28);
+                        fleet_player_camera.f160 = 0.2f;
+                        fleet_player_camera.f168 = scale_ticks(0x28);
                     }
                     g_hero.unk4C4++;
                 }
@@ -1141,7 +1141,7 @@ void HeroL17_UpdateStatePhysics(void) {
             float v;
             float acc;
 
-            if (g_hero.unkA9C != 0 || g_hero.anim_frame < D_L17_0017C5A8[g_hero.attack_record].f18) {
+            if (g_hero.unkA9C != 0 || g_hero.anim_frame < fleet_attack_records[g_hero.attack_record].f18) {
                 g_hero.items[0].timer = 2;
             }
             g_hero.target_speed = 0.0f;
@@ -1228,7 +1228,7 @@ void HeroL17_UpdateStatePhysics(void) {
             int skip;
 
             g_hero.target_speed = 0.0f;
-            if (g_hero.unkA9C != 0 || g_hero.anim_frame < D_L17_0017C5A8[g_hero.attack_record].f18) {
+            if (g_hero.unkA9C != 0 || g_hero.anim_frame < fleet_attack_records[g_hero.attack_record].f18) {
                 g_hero.items[0].timer = 2;
             }
             skip = 0;
@@ -1315,11 +1315,11 @@ void HeroL17_UpdateStatePhysics(void) {
         } else {
             Rec2C *r;
 
-            if (g_hero.unkA9C != 0 || g_hero.anim_frame < D_L17_0017C5A8[g_hero.attack_record].f20) {
+            if (g_hero.unkA9C != 0 || g_hero.anim_frame < fleet_attack_records[g_hero.attack_record].f20) {
                 g_hero.items[0].timer = 2;
             }
             g_hero.target_speed = 0.0f;
-            r = &D_L17_0017C5A8[g_hero.attack_record];
+            r = &fleet_attack_records[g_hero.attack_record];
             if (g_hero.unkA54 != 0 && g_hero.state_timer < scale_ticks(4)) {
                 float d;
                 float off;
@@ -2014,9 +2014,9 @@ void HeroL17_UpdateStatePhysics(void) {
                             float a;
 
                             stick_target(1.0f, 0);
-                            a = FastDiffRots(g_hero.motion.move_yaw, D_L17_00167600.f158);
+                            a = FastDiffRots(g_hero.motion.move_yaw, fleet_player_camera.f158);
                             if (FastDiffRots(a, 1.5707964f) < 1.2217305f || FastDiffRots(a, -1.5707964f) < 1.2217305f) {
-                                if (FastDiffRots(FastSubRots(g_hero.motion.move_yaw, D_L17_00167600.f158), 1.5707964f) < 0.7853982f) {
+                                if (FastDiffRots(FastSubRots(g_hero.motion.move_yaw, fleet_player_camera.f158), 1.5707964f) < 0.7853982f) {
                                     g_hero.unk5A8 = 2;
                                 } else {
                                     g_hero.unk5A8 = 3;
@@ -2595,10 +2595,10 @@ void HeroL17_UpdateStatePhysics(void) {
                 g_hero.unk229C = 1.0f;
                 g_hero.motion.move_yaw = fast_atan2(vec[0][0], vec[0][1]);
                 g_hero.target_speed = len;
-                if (len < D_L17_0017C738.fC) {
-                    g_hero.target_speed = D_L17_0017C738.f8 * g_frame_time;
+                if (len < fleet_hero_speed_bands.fC) {
+                    g_hero.target_speed = fleet_hero_speed_bands.f8 * g_frame_time;
                 } else {
-                    g_hero.target_speed = D_L17_0017C738.f18 * g_frame_time;
+                    g_hero.target_speed = fleet_hero_speed_bands.f18 * g_frame_time;
                 }
                 if (g_hero.vehicle_mode == 3) {
                     g_hero.target_speed = g_frame_time * 1.5f;
@@ -2699,7 +2699,7 @@ void HeroL17_UpdateStatePhysics(void) {
             Rec2C *r;
 
             g_hero.target_speed = 0.0f;
-            r = &D_L17_0017C5A8[g_hero.attack_record];
+            r = &fleet_attack_records[g_hero.attack_record];
             switch (r->f4) {
             case 0:
                 if (g_hero.anim_frame < 5.5f) {

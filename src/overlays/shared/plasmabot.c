@@ -132,7 +132,7 @@ void update_plasmabot(char *m) {
         update_plasmabot_target_range((struct Moby *)m);
         owner = *(char **)(data + 0x110);
     }
-    if (D_L14_0015F6A8 == 2) {
+    if (oltanis_game_mode == 2) {
         ((unsigned char *)m)[0x31] = 0;
         *(unsigned short *)(m + 0x34) |= 1;
     } else if (((unsigned char *)m)[0x20] != 1) {
@@ -944,7 +944,7 @@ float update_plasmabot_aim_quaternion(char *moby, int flag, float x) {
         func_L00_0025CE58_2B4828((float *)(d + 0x280), t, (float *)(d + 0x284), g_frame_time_sq * 12.566370964050293f, g_frame_time_sq * 12.566370964050293f, g_frame_time * 6.2831854820251465f);
         cp = c;
         axis_rotation_2d48(cp, 1, *(float *)(d + 0x280));
-        func_001FA588(d + 0x170, d + 0x170, cp);
+        multiply_quaternions(d + 0x170, d + 0x170, cp);
     }
     return FastDiffRots(s, *(float *)(d + 0x268));
 }
@@ -975,7 +975,7 @@ extern int func_001F9850(int);
 void Group_ResetClass28Timers(int idx) {
     short *p;
     if (idx != -1) {
-        p = D_L14_001AC2C0[idx];
+        p = oltanis_moby_groups[idx];
         if (p != 0) {
             do {
                 char *moby = oltanis_mobys + ((*(unsigned short *)p & 0x7FFF) << 8);
@@ -991,7 +991,7 @@ void Group_ResetClass28Timers(int idx) {
 int count_listed_plasmabots_preparing_or_sweeping_beam(int index) {
  int count=0; unsigned short *ids; char *base; unsigned short id;
  if (index == -1) return 0;
- ids=(unsigned short *)D_L14_001AC2C0[index];
+ ids=(unsigned short *)oltanis_moby_groups[index];
  if (!ids) return 0;
  base=oltanis_mobys;
  do { char *m; id=*ids; m=base+(id&0x7FFF)*256;
@@ -1003,7 +1003,7 @@ INCLUDE_ASM("asm/overlays", func_L14_002B4B84);
 /* Returns 0 if the group holds a class 0x1C moby in state 2, else 1. */
 int check_listed_plasmabots_not_starting_path_traversal(unsigned char *m) {
     unsigned short *p;
-    if (*(volatile unsigned char *)(m + 0x21) == 0xFF || (p = (unsigned short *)D_L14_001AC2C0[m[0x21]]) == 0)
+    if (*(volatile unsigned char *)(m + 0x21) == 0xFF || (p = (unsigned short *)oltanis_moby_groups[m[0x21]]) == 0)
         return 1;
     do {
         char *moby = oltanis_mobys + ((*p & 0x7FFF) << 8);
@@ -1364,7 +1364,7 @@ void update_path_or_ballistic_debris(struct Moby *moby) {
     f32 speed;
 
     if (moby->state == 0) {
-        points = D_L14_0015F7EC[data->path].points;
+        points = race_paths[data->path].points;
         qcopy(&probe, &moby->pos);
         Spline_AdvanceByDistance(points, &moby->pos, &data->path_t, &data->path_u, 0, data->path_speed);
         FastVecSub(vec, &moby->pos, &probe);
@@ -1442,7 +1442,7 @@ unsigned char *spawn_path_or_ballistic_debris(char *owner, float *scale, int mod
             char *path;
             int *fields = (int *)d;
             ((Data_dfd10 *)d)->timer = scale_ticks(90);
-            path = (char *)D_L14_0015F7EC;
+            path = (char *)race_paths;
             *(float *)(d + 8) = *scale * g_frame_time;
             index = *(int *)(*(char **)(owner + 0x78) + 0x60);
             fields[5] = 0;
@@ -2031,7 +2031,7 @@ void start_vendor_beam_pulse(char *moby) {
     int low, high, duration;
     int i, j, k, branch;
 
-    frame = (VendorBeamFrame *)((beam->idx << 7) + (int)D_L14_001601AC);
+    frame = (VendorBeamFrame *)((beam->idx << 7) + (int)oltanis_clip_volumes);
     {
         int ticks = (*(int *)&D_L14_0016218C);
         frame->origin.f[3] = 1.0f;
@@ -2041,7 +2041,7 @@ void start_vendor_beam_pulse(char *moby) {
     duration = rand_range(low, high);
     beam->s12 = (short)duration;
     beam->r620 = (short)duration;
-    length = FastVecLength(D_L14_001601AC + (beam->idx << 7) + 0x10);
+    length = FastVecLength(oltanis_clip_volumes + (beam->idx << 7) + 0x10);
     length = length + length;
 
     for (i = 0; i < 32; i++) {
@@ -2092,11 +2092,11 @@ void start_vendor_beam_pulse(char *moby) {
         }
     }
 
-    if (vec_distance_xy(D_L14_001601AC + (beam->idx << 7) + 0x30, oltanis_camera_pos) >= 4.0f) {
+    if (vec_distance_xy(oltanis_clip_volumes + (beam->idx << 7) + 0x30, oltanis_camera_pos) >= 4.0f) {
         int s17;
         int l;
-        euler_to_matrix(matrix, D_L14_001601AC + (beam->idx << 7) + 0x70);
-        qcopy(&matrix[3], (char *)((beam->idx << 7) + (int)D_L14_001601AC) + 0x30);
+        euler_to_matrix(matrix, oltanis_clip_volumes + (beam->idx << 7) + 0x70);
+        qcopy(&matrix[3], (char *)((beam->idx << 7) + (int)oltanis_clip_volumes) + 0x30);
         for (l = 0; l < 32; l += 8) {
             int n;
             Vq_02C80 *p = &beam->pts[l];

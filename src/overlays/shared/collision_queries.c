@@ -109,7 +109,7 @@ int IsPointInVolume(Vec4 *pt, int *vol, float rad) {
     switch (vol[4]) {
     case 3: {
         unsigned char *e;
-        e = D_L00_001601AC;
+        e = level_cuboids;
         e += vol[5] << 7;
         FastVecSub(&d, pt, e + 0x30);
         d.i[3] = 0;
@@ -131,7 +131,7 @@ int IsPointInVolume(Vec4 *pt, int *vol, float rad) {
     }
     case 5: {
         unsigned char *e;
-        e = D_L00_001601B4;
+        e = level_spheres;
         e += vol[5] << 7;
         {
             float s = FastVecLength(e) + rad;

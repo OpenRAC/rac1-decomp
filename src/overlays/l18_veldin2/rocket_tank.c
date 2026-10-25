@@ -272,7 +272,7 @@ void update_rocket_tank_damage_and_aim(void *mv) {
             v[2] = v[2] + 1.0f;
             pa = (float *)(m + 0x10);
             func_L00_0025F4A8_alt(m, d + 0x40, v, 0.0f, 0.0f, 20, 8, 20, 4.0f, 2.0f, 9.0f, 1.0f, -1, 15.0f, 1, 1, -1, 0);
-            dv = D_L18_0015F660;
+            dv = veldin2_zero_vec;
             SpawnBreakFragment(m, 0x700, pa, m + 0x40, 0, 0, 0.0f, dv, dv, dv);
             SpawnBreakFragment(m, 0x701, pa, m + 0x40, 0, 0, 0.0f, dv, dv, dv);
             SpawnBreakFragment(m, 0x702, pa, m + 0x40, 0, 0, 0.0f, dv, dv, dv);
@@ -331,7 +331,7 @@ void update_rocket_tank_damage_and_aim(void *mv) {
     }
     axis_rotation_2d48(v, 1, *(float *)(d + 0x118));
     axis_rotation_2d48(d + 0xD0, 2, FastSubRots(*(float *)(d + 0x110), *(float *)(m + 0x48)));
-    func_001FA588(d + 0xD0, v, d + 0xD0);
+    multiply_quaternions(d + 0xD0, v, d + 0xD0);
     StepColorFade(m, d + 0x60);
 }
 extern int *D_L18_001B11B0[];
@@ -348,7 +348,7 @@ void Moby_TurnTowardPathNode(char *m) {
     float v[4];
     float ang, f, z, sc;
     char *p;
-    qcopy(t, (char *)D_L18_001B11B0[*(int *)(d + 0x100)] + *(int *)(d + 0x120) * 16 + 0x10);
+    qcopy(t, (char *)veldin2_paths[*(int *)(d + 0x100)] + *(int *)(d + 0x120) * 16 + 0x10);
     ang = fast_atan2(t[0] - *(float *)(m + 0x10), t[1] - *(float *)(m + 0x14));
     SteerAngleWithVelocity((float *)(m + 0x48), (float *)(d + 0x128), ang, g_frame_time_sq * 3.1415927f, g_frame_time_sq * 3.1415927f, g_frame_time * 6.2831855f);
     f = *(float *)&D_L18_00162508 * g_frame_time;
@@ -360,8 +360,8 @@ void Moby_TurnTowardPathNode(char *m) {
     vec_scale_to_length(v, m + 0xC0, *(float *)(d + 0x12C));
     move_4318((int)m, (int)v, 0.5f, 0.5f, z, 0);
     if (FastVecDist(m + 0x10, t) < 1.0f) {
-        int k = random_integer_below(*D_L18_001B11B0[*(int *)(d + 0x100)] - 1) + 1;
-        *(int *)(d + 0x120) = (*(int *)(d + 0x120) + k) % *D_L18_001B11B0[*(int *)(d + 0x100)];
+        int k = random_integer_below(*veldin2_paths[*(int *)(d + 0x100)] - 1) + 1;
+        *(int *)(d + 0x120) = (*(int *)(d + 0x120) + k) % *veldin2_paths[*(int *)(d + 0x100)];
     }
     sc = *(float *)(d + 0x12C) / (*(float *)&D_L18_00162510 * g_frame_time);
     if (sc > 2.0f) sc = 2.0f;

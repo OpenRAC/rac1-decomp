@@ -25,10 +25,10 @@ void update_hero_stick_target_magnitude(void) {
             *(float *)(x + 0x190) = two;
         }
     } else if (0.0f < *(float *)(x + 0x190)) {
-        if (*(float *)(x + 0x190) < D_L02_0017C438[3]) {
-            *(float *)(x + 0x190) = D_L02_0017C438[2] * g_frame_time;
+        if (*(float *)(x + 0x190) < aridia_hero_speed_bands[3]) {
+            *(float *)(x + 0x190) = aridia_hero_speed_bands[2] * g_frame_time;
         } else {
-            *(float *)(x + 0x190) = D_L02_0017C438[6] * g_frame_time;
+            *(float *)(x + 0x190) = aridia_hero_speed_bands[6] * g_frame_time;
         }
     }
 }

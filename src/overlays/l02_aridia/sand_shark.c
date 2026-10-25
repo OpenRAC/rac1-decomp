@@ -270,7 +270,7 @@ void sand_shark_update(unsigned char *moby) {
     *(volatile int *)0x10000000 = 0;
     d = *(Vars_2D5250 **)(moby + 0x78);
     Manipulator_ApplyScale(2.1f, (int)moby, 0, d->blink);
-    if (moby[0x31] != 0 && FastVecDist(moby + 0x10, D_L02_00167440) < 28.0f) {
+    if (moby[0x31] != 0 && FastVecDist(moby + 0x10, aridia_camera_pos) < 28.0f) {
         set_ground_height_band(moby);
         moby[0x7F] = 0x16;
     }
@@ -354,7 +354,7 @@ void sand_shark_update(unsigned char *moby) {
         d->i258 = -1;
         d->t25C = scale_ticks(0x1518);
         moby[0x20] = 0;
-        *(float *)(moby + 0x18) -= D_L02_001619AC;
+        *(float *)(moby + 0x18) -= sand_shark_sink_depth;
         break;
     }
     case 1:
@@ -365,7 +365,7 @@ void sand_shark_update(unsigned char *moby) {
         }
         break;
     case 2:
-        *(float *)(moby + 0x18) += D_L02_001619AC;
+        *(float *)(moby + 0x18) += sand_shark_sink_depth;
         qcopy(v0, d->home);
         a = fast_atan2(v0[0] - *(float *)(moby + 0x10), v0[1] - *(float *)(moby + 0x14));
         a = FastAddRots(a, d->f244);
@@ -381,7 +381,7 @@ void sand_shark_update(unsigned char *moby) {
             *(u128b *)v1 = *(u128b *)(moby + 0x10);
             SpawnRandomParticle(v1);
         }
-        *(float *)(moby + 0x18) -= D_L02_001619AC;
+        *(float *)(moby + 0x18) -= sand_shark_sink_depth;
         if (d->i214 == 2) {
             if (d->t25E == 0) {
                 break;
@@ -500,7 +500,7 @@ void sand_shark_update(unsigned char *moby) {
     }
     case 0x11:
     case 0x12:
-        *(float *)(moby + 0x18) += D_L02_001619AC;
+        *(float *)(moby + 0x18) += sand_shark_sink_depth;
         g = ProbeGroundHeight(moby + 0x10, 0, 0.5f);
         if (g < d->home[2]) {
             g = d->home[2];
@@ -518,7 +518,7 @@ void sand_shark_update(unsigned char *moby) {
                 moby[0x20] = 0x17;
             }
         }
-        *(float *)(moby + 0x18) -= D_L02_001619AC;
+        *(float *)(moby + 0x18) -= sand_shark_sink_depth;
         if (scale_ticks(0xA) < frame_counter_ref) {
             emit_sand_shark_radial_particles(v0, 6);
         }
@@ -527,11 +527,11 @@ void sand_shark_update(unsigned char *moby) {
     case 0x14:
     case 0x15: {
         float z;
-        *(float *)(moby + 0x18) += D_L02_001619AC;
+        *(float *)(moby + 0x18) += sand_shark_sink_depth;
         z = ProbeGroundHeight(moby + 0x10, 0, 0.5f);
         qcopy(v0, moby + 0x10);
         v0[2] = z;
-        if (ApproachValue((float *)(moby + 0x18), z + D_L02_001619AC, g_frame_time * 4.0f) == 0.0f) {
+        if (ApproachValue((float *)(moby + 0x18), z + sand_shark_sink_depth, g_frame_time * 4.0f) == 0.0f) {
             if (moby[0x20] == 0x13) {
                 moby[0x20] = 5;
                 if (moby[0x53] != 0) {
@@ -551,14 +551,14 @@ void sand_shark_update(unsigned char *moby) {
                 }
             }
         }
-        *(float *)(moby + 0x18) -= D_L02_001619AC;
+        *(float *)(moby + 0x18) -= sand_shark_sink_depth;
         emit_sand_shark_radial_particles(v0, 6);
         break;
     }
     case 5:
     case 0x16:
         if (moby[0x20] == 0x16) {
-            *(float *)(moby + 0x18) += D_L02_001619AC;
+            *(float *)(moby + 0x18) += sand_shark_sink_depth;
             if (random_integer_below(0xFF) & 1) {
                 *(u128b *)v4 = *(u128b *)(moby + 0x10);
                 SpawnRandomParticle(v4);
@@ -574,7 +574,7 @@ void sand_shark_update(unsigned char *moby) {
         move_w(moby, &d->i180, v0, v1, 1.0f);
         begin_sand_shark_return_home_if_outside_path(moby);
         if (moby[0x20] == 0x16) {
-            *(float *)(moby + 0x18) -= D_L02_001619AC;
+            *(float *)(moby + 0x18) -= sand_shark_sink_depth;
         }
         if (d->i214 != 2) {
             if (d->i278 >= 0 && is_point_inside_clip_volume(d->tgt, d->i278) == 0) {
@@ -636,7 +636,7 @@ void sand_shark_update(unsigned char *moby) {
     case 7:
     case 0x17:
         if (moby[0x20] == 0x17) {
-            *(float *)(moby + 0x18) += D_L02_001619AC;
+            *(float *)(moby + 0x18) += sand_shark_sink_depth;
             if (random_integer_below(0xFF) & 1) {
                 *(u128b *)v4 = *(u128b *)(moby + 0x10);
                 SpawnRandomParticle(v4);
@@ -651,7 +651,7 @@ void sand_shark_update(unsigned char *moby) {
         FastVecAdd(v0, v0, moby + 0x10);
         move_w(moby, &d->i180, v0, v1, 1.0f);
         if (moby[0x20] == 0x17) {
-            *(float *)(moby + 0x18) -= D_L02_001619AC;
+            *(float *)(moby + 0x18) -= sand_shark_sink_depth;
         }
         if (vec_distance_xy(moby + 0x10, d->home) < 0.5f) {
             d->i298 = 0;
@@ -780,7 +780,7 @@ void sand_shark_update(unsigned char *moby) {
         *(float *)(moby + 0x44) = FastSubRots(*(float *)(moby + 0x44), g_frame_time * 12.566371f);
         FastVecAdd(moby + 0x10, moby + 0x10, d->vel);
         d->vel[2] -= g_frame_time_sq * 10.8f;
-        lim = D_L02_001619AC;
+        lim = sand_shark_sink_depth;
         if (*(float *)(moby + 0x18) < d->home[2] - lim) {
             *(int *)(moby + 0x94) = *(int *)(*(char **)(moby + 0x24) + 0x10);
             *(unsigned short *)(moby + 0x34) |= 0x1000;
@@ -1359,7 +1359,7 @@ void update_level02_bot(unsigned char *raw) {
     int triggered;
 
     Manipulator_ApplyScale(2.5f, (int)moby, 1, data->blink);
-    if (moby->visible != 0 && FastVecDist(&moby->pos, D_L02_00167440) < 30.0f) {
+    if (moby->visible != 0 && FastVecDist(&moby->pos, aridia_camera_pos) < 30.0f) {
         set_ground_height_band(moby);
         moby->shadow_range = 0x18;
     }
@@ -2079,7 +2079,7 @@ void sand_shark_nest_update(char *m)
         return;
     }
     if (((struct Moby *)m)->visible != 0) {
-        if (FastVecDist(&((struct Moby *)m)->pos, D_L02_00167440) < 28.0f) {
+        if (FastVecDist(&((struct Moby *)m)->pos, aridia_camera_pos) < 28.0f) {
             set_ground_height_band(m);
             ((struct Moby *)m)->shadow_range = 0x16;
         }
@@ -2579,7 +2579,7 @@ void transport_pod_update(unsigned char *moby) {
             moby[0x20] = 6;
             transport_pod_vars->ride_timer = scale_ticks(0xB4);
             request_hero_target_pose(moby + 0x10, 0, a[2]);
-            CameraScript(D_L02_00167440, D_L02_00167440 + 0x10, 3, scale_ticks(0xF0), 0);
+            CameraScript(aridia_camera_pos, aridia_camera_pos + 0x10, 3, scale_ticks(0xF0), 0);
             set_selected_object_float_triplets((*(float *)&D_L02_00161CD8), (*(float *)&D_L02_00161CDC), (*(float *)&D_L02_00161CE0), (*(float *)&D_L02_00161CE4), (*(float *)&D_L02_00161CE8),
                               (*(float *)&D_L02_00161CF0));
             set_camera_position(camera_position_or_stop_look);
@@ -3010,9 +3010,9 @@ void play_rocket_launcher_delayed_shot_sounds(char *moby) {
  float distance;
  int sound_a, sound_b, gain_a, gain_b;
  if (*(float *)(data + 0x10) >= 0.0f) {
-  distance = FastVecDist(D_L02_00167440, moby + 0x10);
+  distance = FastVecDist(aridia_camera_pos, moby + 0x10);
   *(float *)(data + 0x10) += *(float *)&D_L02_00161D10 * g_frame_time;
-  if (distance < *(float *)(data + 0x10) && D_001414D4 != 0x72) {
+  if (distance < *(float *)(data + 0x10) && hero_current_state != 0x72) {
    sound_a = Moby_PlaySound(0, 0x10, (int)moby);
    sound_b = Moby_PlaySound(1, 0x10, (int)moby);
    gain_a = func_001FA898_r((1.0f - (distance - *(float *)&D_L02_00161D18) / (*(float *)&D_L02_00161D1C - *(float *)&D_L02_00161D18)) * 1024.0f);
@@ -3048,7 +3048,7 @@ void rocket_door1_update(struct Moby *m) {
     Vec4 rxy;
     TurnerVars *v = (TurnerVars *)m->pvars;
 
-    if (D_L02_0015F6A8 == 2 && m->command == 0) {
+    if (aridia_cinematic_mode == 2 && m->command == 0) {
         m->visible = 0;
         m->flags |= 1;
     } else {
@@ -3070,13 +3070,13 @@ void rocket_door1_update(struct Moby *m) {
             axis_rotation_2d48(&qx, 0, v->goal.f[0] * 0.017453292f);
             axis_rotation_2d48(&qy, 1, v->goal.f[1] * 0.017453292f);
             axis_rotation_2d48(&qz, 2, v->goal.f[2] * 0.017453292f);
-            func_001FA588(&qxy, &qx, &qy);
-            func_001FA588(&v->goal, &qxy, &qz);
+            multiply_quaternions(&qxy, &qx, &qy);
+            multiply_quaternions(&v->goal, &qxy, &qz);
             axis_rotation_2d48(&qx, 0, m->rot.x);
             axis_rotation_2d48(&qy, 1, m->rot.y);
             axis_rotation_2d48(&qz, 2, m->rot.z);
-            func_001FA588(&rxy, &qx, &qy);
-            func_001FA588(&v->start, &rxy, &qz);
+            multiply_quaternions(&rxy, &qx, &qy);
+            multiply_quaternions(&v->start, &rxy, &qz);
         }
         break;
     case 1:

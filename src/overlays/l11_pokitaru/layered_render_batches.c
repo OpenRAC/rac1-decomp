@@ -159,7 +159,7 @@ extern int D_L11_002154E0[];
 void emit_render_batches_with_pair_offset(int arg) {
     int i;
     for (i = 0; i < 17; i++) {
-        func_L08_00259040(D_L11_00217A30, D_L11_00215450[i], D_L11_00207BC0[i], D_L11_00217A18 + arg * 8);
+        add_uv_scroll_offset(D_L11_00217A30, D_L11_00215450[i], D_L11_00207BC0[i], D_L11_00217A18 + arg * 8);
         draw_env_overlay_mesh(D_L11_00207BC0[i], D_L11_00215408[i], D_L11_002154E0[i], D_L11_00217A30, 1);
     }
 }
@@ -174,7 +174,7 @@ extern Pair8 D_L11_001626A8[] MACRO_ADDR;
 void emit_oil_tanker_render_batches_with_pair_offset(int a) {
     int i;
     for (i = 0; i < 9; i++) {
-        func_L08_00259040(D_L11_00217A30, D_L11_00207B48[i], D_L11_002009E8[i], &D_L11_001626A8[a]);
+        add_uv_scroll_offset(D_L11_00217A30, D_L11_00207B48[i], D_L11_002009E8[i], &D_L11_001626A8[a]);
         draw_env_overlay_mesh(D_L11_002009E8[i], D_L11_00207B20[i], D_L11_00207B98[i], D_L11_00217A30, 1);
     }
 }

@@ -845,7 +845,7 @@ extern void func_L00_001FDE48(int, int, int, void *, int);
 void draw_scrolled_mesh_batch(int a) {
     int i;
     for (i = 0; i < 13; i++) {
-        func_L08_00259040(D_L08_001E8620, D_L08_001E8560[i], D_L08_001E2B18[i], &batalia_uv_scroll[a]);
+        add_uv_scroll_offset(D_L08_001E8620, D_L08_001E8560[i], D_L08_001E2B18[i], &batalia_uv_scroll[a]);
         draw_env_overlay_mesh(D_L08_001E2B18[i], D_L08_001E8528[i], D_L08_001E85D0[i], D_L08_001E8620, 1);
     }
 }
@@ -860,7 +860,7 @@ extern Pair8 D_L08_00161EA0[] MACRO_ADDR;
 void Moby600_DrawQuads11(int a) {
     int i;
     for (i = 0; i < 11; i++) {
-        func_L08_00259040(D_L08_001E8620, D_L08_001E2A88[i], D_L08_001DE200[i], &scroll_pos_x[a]);
+        add_uv_scroll_offset(D_L08_001E8620, D_L08_001E2A88[i], D_L08_001DE200[i], &scroll_pos_x[a]);
         draw_env_overlay_mesh(D_L08_001DE200[i], D_L08_001E2A58[i], D_L08_001E2AE8[i], D_L08_001E8620, 1);
     }
 }
@@ -874,7 +874,7 @@ extern Pair D_L08_00161EB0[] MACRO_ADDR;
 void emit_pair_offset_render_batch(int a) {
     int i;
     for (i = 0; i < 8; i++) {
-        func_L08_00259040(D_L08_001E8620, D_L08_001DE1A0[i], D_L08_001DB7D8[i], &D_L08_00161EB0[a]);
+        add_uv_scroll_offset(D_L08_001E8620, D_L08_001DE1A0[i], D_L08_001DB7D8[i], &D_L08_00161EB0[a]);
         draw_env_overlay_mesh(D_L08_001DB7D8[i], D_L08_001DE180[i], D_L08_001DE1E0[i], D_L08_001E8620, 1);
     }
 }
@@ -1690,7 +1690,7 @@ void update_fire_bolt(char *m) {
         }
         FastVecAdd(m + 0x10, m + 0x10, d);
         if (coll_line(m + 0x10, prev, 0x10, *(int *)(d + 0x10), 0) != 0) {
-            char *t = D_L08_001746C0;
+            char *t = batalia_coll_hit;
             if (*(int *)(t + 0x18) != *(int *)(d + 0x10)) {
                 if (*(int *)(t + 0x18) != 0) {
                     PostHitMessage(*(void **)(t + 0x18), (int)m, 0x10001, t + 0x20, d, 1.0f);

@@ -1282,7 +1282,7 @@ void Moby_RestoreGlobalsState(int m_, int flag) {
     D_L00_0015F554_m = f3;
     *(unsigned char *)&D_L00_0015F544_m = p[0x40];
     *(unsigned char *)&D_L00_0015F545_m = p[0x41];
-    D_L00_0015F546 = p[0x42];
+    level_fog_color_blue = p[0x42];
     D_L00_0016A0F8 = 1;
     if (flag != 0) {
         D_L00_00161040_m = 512000.0f;
@@ -1488,7 +1488,7 @@ void spawn_moby_particle_and_glow_burst(char *m, int flag) {
             PartType11Spawn(m + 0x10, n, *pa, *pb, a, b, 0, 0, 400000.0f, sc);
         } while (--i);
         }
-        if (D_L00_0015F6B4 < 0.95f) {
+        if (cpu_frame_load < 0.95f) {
             spawn_glow_particle(m, m + 0x10, n, scale_ticks(15), 0x7F, 0x7F, 0x7F, 0x20, 3.0f);
             spawn_glow_particle(m, m + 0x10, n, scale_ticks(24), 0x7F, 0x20, 0, 0x20, 2.0f);
         }
@@ -1849,8 +1849,8 @@ int func_L00_002B7EC0_r(char *m, float r) {
             }
         }
     }
-    for (i = 1; i <= D_L00_001B0B30[0]; i++) {
-        char *mob = *(char **)&moby_array_start + (D_L00_001B0B30[i] << 8);
+    for (i = 1; i <= thrown_mine_list[0]; i++) {
+        char *mob = *(char **)&moby_array_start + (thrown_mine_list[i] << 8);
         if (mob) {
             if (mob[0x20] >= 0) {
                 char *h2 = *(char **)(mob + 0x78);

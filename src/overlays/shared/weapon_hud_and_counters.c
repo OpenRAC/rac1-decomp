@@ -97,14 +97,14 @@ void select_moby_context(int state) {
         oldDC = level_mobys_end;
         old74 = D_L00_0015FB2C;
         D_L00_0015FB2C = oldDC;
-        oldDC = D_L00_001600A0;
+        oldDC = moby_array_last;
         old78 = D_L00_0015FB30;
         oldE8 = D_L00_001600A8;
         old7C = D_L00_0015FB34;
         (*(volatile int *)&D_L00_0015F808) = oldState ^ 1;
         *(volatile int *)&moby_array_start = old70;
         level_mobys_end = old74;
-        D_L00_001600A0 = old78;
+        moby_array_last = old78;
         D_L00_0015FB30 = oldDC;
         D_L00_001600A8 = old7C;
         D_L00_0015FB34 = oldE8;
@@ -427,14 +427,14 @@ void Hud_InitParticles(HudElem *e) {
         span = (232.0f - (v + v)) / (float)n;
         lo = (v - 116.0f) + (float)(i % n) * span;
         hi = lo + span;
-        D_L00_0017E760[i][0] = random_float_between(v - 17.0f, 17.0f - v);
-        D_L00_0017E760[i][1] = random_float_between(lo, hi);
-        D_L00_0017E760[i][2] = random_float_between(-0.4f, 0.4f);
-        D_L00_0017E760[i][3] = random_float_between(-0.6f, 0.6f);
-        D_L00_0017E760[i][2] += random_float_between(-0.4f, 0.4f);
-        D_L00_0017E760[i][3] += random_float_between(-0.6f, 0.6f);
-        D_L00_0017E760[i][2] += random_float_between(-0.4f, 0.4f);
-        D_L00_0017E760[i][3] += random_float_between(-0.6f, 0.6f);
+        hud_star_particles[i][0] = random_float_between(v - 17.0f, 17.0f - v);
+        hud_star_particles[i][1] = random_float_between(lo, hi);
+        hud_star_particles[i][2] = random_float_between(-0.4f, 0.4f);
+        hud_star_particles[i][3] = random_float_between(-0.6f, 0.6f);
+        hud_star_particles[i][2] += random_float_between(-0.4f, 0.4f);
+        hud_star_particles[i][3] += random_float_between(-0.6f, 0.6f);
+        hud_star_particles[i][2] += random_float_between(-0.4f, 0.4f);
+        hud_star_particles[i][3] += random_float_between(-0.6f, 0.6f);
     }
 }
 extern void func_L00_00236830_v(HudElem *) __asm__("func_L00_00236830");
@@ -455,7 +455,7 @@ void Hud_UpdateParticles(HudElem *e) {
     func_L00_00236830_v(e);
     cnt = rendered_frame_count;
     par = cnt - (cnt / 2) * 2;
-    p = D_L00_0017E760[par];
+    p = hud_star_particles[par];
     for (i = par; i < 100; i += 2) {
         float lim;
         float a, b, na, nb;
@@ -635,8 +635,8 @@ int draw_hud_stars(HudElem *rec) {
             w = (int)c2;
             f21 = f21 + c0;
         }
-        if (f21 < D_L00_0017E760[i][1]) continue;
-        func_L00_001FF2F8(v50, D_L00_0017E760[i], v0);
+        if (f21 < hud_star_particles[i][1]) continue;
+        func_L00_001FF2F8(v50, hud_star_particles[i], v0);
         FastVecAdd(v50, v50, v10);
         draw_hud_sprite_subpixel(t21, (int)v50[0], (int)v50[1], w, w, 0x80);
     }
@@ -715,8 +715,8 @@ int draw_morphoray_progress_hud(HudElem *e) {
             sz = (int)(*(float *)&star_init_limit0_gp * 32.0f);
             t += *(float *)&star_init_limit0_gp;
         }
-        if (t < D_L00_0017E760[i][1]) continue;
-        func_L00_001FF2F8(v5, D_L00_0017E760[i], v0);
+        if (t < hud_star_particles[i][1]) continue;
+        func_L00_001FF2F8(v5, hud_star_particles[i], v0);
         FastVecAdd(v5, v5, v1);
         draw_hud_sprite_subpixel(tex, (int)v5[0], (int)v5[1], sz, sz, 0x80);
     }
@@ -776,16 +776,16 @@ int draw_hud_text_panel(char *e) {
     i = 0;
     alpha = truncate_float_to_s32(fade * 128.0f);
     color = (alpha << 24) | 0x40f040;
-    if (D_L00_0017E630[0] >= 2) {
+    if (hud_text_panel_string[0] >= 2) {
         do {
             i++;
-        } while (D_L00_0017E630[i] >= 2 && i < 0x80);
+        } while (hud_text_panel_string[i] >= 2 && i < 0x80);
     }
-    if (D_L00_0017E630[i] == 1) {
-        D_L00_0017E630[i] = 0;
-        w1 = measure_text_width_regular((const char *)D_L00_0017E630, -1);
+    if (hud_text_panel_string[i] == 1) {
+        hud_text_panel_string[i] = 0;
+        w1 = measure_text_width_regular((const char *)hud_text_panel_string, -1);
         l1 = 0xe0 - (w1 >> 1);
-        w2 = measure_text_width_regular((const char *)&D_L00_0017E630[1] + i, -1);
+        w2 = measure_text_width_regular((const char *)&hud_text_panel_string[1] + i, -1);
         l2 = 0xe0 - (w2 >> 1);
         if (l1 >= l2) {
             left = l2;
@@ -802,11 +802,11 @@ int draw_hud_text_panel(char *e) {
             int t = width + 0x20;
             draw_hud_sprite_flipped(tex, left + t, y, 0x20, 0x36, alpha);
         }
-        FontPrintCenter(0x100, text_y, c, D_L00_0017E630, -1);
-        FontPrintCenter(0x100, y + 0x1b, c, &D_L00_0017E630[1] + i, -1);
+        FontPrintCenter(0x100, text_y, c, hud_text_panel_string, -1);
+        FontPrintCenter(0x100, y + 0x1b, c, &hud_text_panel_string[1] + i, -1);
     } else {
         int w, x;
-        w = measure_text_width_regular((const char *)D_L00_0017E630, -1);
+        w = measure_text_width_regular((const char *)hud_text_panel_string, -1);
         x = 0xe0 - (w >> 1);
         HudSprite(GetIconFrame(0x7580, 1), x, y, 0x20, 0x20, alpha);
         HudSprite(GetIconFrame(0x7580, 0), x + 0x20, y, w, 0x20, alpha);
@@ -815,7 +815,7 @@ int draw_hud_text_panel(char *e) {
             int t = w + 0x20;
             draw_hud_sprite_flipped(tex, x + t, y, 0x20, 0x20, alpha);
         }
-        FontPrintCenter(0x100, text_y, color, D_L00_0017E630, -1);
+        FontPrintCenter(0x100, text_y, color, hud_text_panel_string, -1);
     }
     level = g_current_level_index;
     if (level == 5 || level == 0x10) {
@@ -983,8 +983,8 @@ void initialize_eight_slot_hud_selector(Obj238478 *o) {
     DestElem *d;
     int *s;
     SrcElem *tab;
-    D_L00_0015FB48 = 8;
-    D_L00_0015FB78 = &D_L00_0015F80C + 6;
+    quick_select_slot_count = 8;
+    hud_selector_slot_tables = &quick_select_page + 6;
     a = *(int *)&D_L00_0015F7F8;
     b = *(int *)&D_L00_0015F7FC;
     o->x48 = 0;
@@ -992,7 +992,7 @@ void initialize_eight_slot_hud_selector(Obj238478 *o) {
     o->x5c = b; o->x58 = a; o->x74 = -2;
     o->x78 = scale_ticks(0x1E);
     o->x70 = 0;
-    *(int *)&D_L00_0015F80C = 0;
+    *(int *)&quick_select_page = 0;
     d = D_L00_0017DBC0;
     tab = item_defs;
     s = (int *)((char *)D_0014171B_i + 0x885);
@@ -1106,16 +1106,16 @@ void update_hud_item_selector_selection_and_visibility(Obj_38530 *p) {
     old = p->w74;
     if ((p->w78 >> 24) == 1 && (D_0013CA40_38530.w1C0 & 0x10)) {
         if (mag > 0.9f) {
-            a = ang + 3.1415927f + 3.1415927f + 1.5707964f + 3.1415927f / (float)D_L00_0015FB48;
-            f = a * ((float)D_L00_0015FB48 / 6.2831855f);
-            r = (float)old * 6.2831855f / IntToFloat(D_L00_0015FB48) - 3.1415927f;
+            a = ang + 3.1415927f + 3.1415927f + 1.5707964f + 3.1415927f / (float)quick_select_slot_count;
+            f = a * ((float)quick_select_slot_count / 6.2831855f);
+            r = (float)old * 6.2831855f / IntToFloat(quick_select_slot_count) - 3.1415927f;
             if (old == -1 || FastDiffRots(r, FastSubRots(ang, 1.5707964f)) > 0.58904862f) {
-                s = (int)f % D_L00_0015FB48;
+                s = (int)f % quick_select_slot_count;
                 if (((s ^ 1) & 1)) {
                     float fr = f - (float)truncate_float_to_s32(f);
                     if (fr > 1.0f - (*(float *)&D_L00_0015F868)) s++;
                     else if (fr < (*(float *)&D_L00_0015F868)) s--;
-                    s = (s + D_L00_0015FB48) % D_L00_0015FB48;
+                    s = (s + quick_select_slot_count) % quick_select_slot_count;
                 }
                 p->w74 = s;
                 n = -1;
@@ -1125,17 +1125,17 @@ void update_hud_item_selector_selection_and_visibility(Obj_38530 *p) {
         } else if (D_0013CA40_38530.w1D8 == 0 && (D_0013CA40_38530.w1C4 & 0xF000)) {
             int w;
             w = old;
-            if (D_0013CA40_38530.w1C4 & 0x1000) { int t; if (w == -1) t = D_L00_0017DD20; else t = D_L00_0015FB78_38530[(*(s32 *)&D_L00_0015F80C)][w].f10; w = t; }
-            if (D_0013CA40_38530.w1C4 & 0x4000) { int t; if (w == -1) t = D_L00_0017DD24; else t = D_L00_0015FB78_38530[(*(s32 *)&D_L00_0015F80C)][w].f14; w = t; }
-            if (D_0013CA40_38530.w1C4 & 0x8000) { int t; if (w == -1) t = D_L00_0017DD18; else t = D_L00_0015FB78_38530[(*(s32 *)&D_L00_0015F80C)][w].f8; w = t; }
-            if (D_0013CA40_38530.w1C4 & 0x2000) { int t; if (w == -1) t = D_L00_0017DD1C; else t = D_L00_0015FB78_38530[(*(s32 *)&D_L00_0015F80C)][w].fC; w = t; }
+            if (D_0013CA40_38530.w1C4 & 0x1000) { int t; if (w == -1) t = D_L00_0017DD20; else t = D_L00_0015FB78_38530[(*(s32 *)&quick_select_page)][w].f10; w = t; }
+            if (D_0013CA40_38530.w1C4 & 0x4000) { int t; if (w == -1) t = D_L00_0017DD24; else t = D_L00_0015FB78_38530[(*(s32 *)&quick_select_page)][w].f14; w = t; }
+            if (D_0013CA40_38530.w1C4 & 0x8000) { int t; if (w == -1) t = D_L00_0017DD18; else t = D_L00_0015FB78_38530[(*(s32 *)&quick_select_page)][w].f8; w = t; }
+            if (D_0013CA40_38530.w1C4 & 0x2000) { int t; if (w == -1) t = D_L00_0017DD1C; else t = D_L00_0015FB78_38530[(*(s32 *)&quick_select_page)][w].fC; w = t; }
             p->w74 = w;
         }
         {
-            Ent_38530 *t = D_L00_0015FB78_38530[(*(s32 *)&D_L00_0015F80C)];
+            Ent_38530 *t = D_L00_0015FB78_38530[(*(s32 *)&quick_select_page)];
             int cur = p->w74;
             if (t[cur].f0 == 0 && n != 0) {
-                k = (cur + n) % D_L00_0015FB48;
+                k = (cur + n) % quick_select_slot_count;
                 if (t[k].f0 != 0) p->w74 = k;
             }
         }
@@ -1144,7 +1144,7 @@ void update_hud_item_selector_selection_and_visibility(Obj_38530 *p) {
     else if (c[1] < (*(int *)&D_L00_0015F860)) c[1]++;
     if (!(D_0013CA40_38530.w1C0 & 0x10)) {
         int sel = p->w74;
-        if (sel >= 0 && (id = D_L00_0015FB78_38530[(*(s32 *)&D_L00_0015F80C)][sel].f18) != 0) {
+        if (sel >= 0 && (id = D_L00_0015FB78_38530[(*(s32 *)&quick_select_page)][sel].f18) != 0) {
             Route *rr;
             int ri = id;
             if (D_0013F450_38530.w10B8 != id) {
@@ -1253,28 +1253,28 @@ int draw_hud_item_selector_panel(HudElem *rec) {
                   y, -half_w, half_h, alpha);
     HudSprite(GetIconFrame(0xe934, 0), x,
                   y + GI(D_L00_0015F7FC), half_w, -half_h, alpha);
-    for (i = 0; i < D_L00_0015FB48; i++) {
+    for (i = 0; i < quick_select_slot_count; i++) {
         angle = FastAddRots(((float)i + (float)i) * 3.1415927f /
-                              (float)D_L00_0015FB48 - 3.1415927f, 1.5707964f);
-        icon_x = x + GI(D_L00_0015F800) +
+                              (float)quick_select_slot_count - 3.1415927f, 1.5707964f);
+        icon_x = x + GI(quick_select_center_x) +
                  (int)(GF(D_L00_0015F86C) * FastCos(angle) * GF(D_L00_0015F8A4));
         icon_y = y + GI(D_L00_0015F804) +
                  (int)(GF(D_L00_0015F86C) * FastSin(angle));
-        if (rec->unk74 == i && ((E_238C30 **)D_L00_0015FB78)[GI(D_L00_0015F80C)][i].id != 0)
+        if (rec->unk74 == i && ((E_238C30 **)hud_selector_slot_tables)[GI(quick_select_page)][i].id != 0)
             HudSprite(GetIconFrame(0xe99c, 0), icon_x - 0x13,
                           icon_y - 0x13, 0x26, 0x26, marker_alpha);
-        if (((E_238C30 **)D_L00_0015FB78)[GI(D_L00_0015F80C)][i].id != 0) {
+        if (((E_238C30 **)hud_selector_slot_tables)[GI(quick_select_page)][i].id != 0) {
             int icon_alpha;
             if (i != rec->unk74)
                 icon_alpha = truncate_float_to_s32((float)alpha * GF(D_L00_0015F8A0));
             else
                 icon_alpha = alpha;
-            HudFrame((char *)rec, GetIconFrame(((E_238C30 **)D_L00_0015FB78)[GI(D_L00_0015F80C)][i].id,
-                          ((unsigned char *)D_0013E15A + 0x4C6)[((E_238C30 **)D_L00_0015FB78)[GI(D_L00_0015F80C)][i].item] ? 4 : 0), icon_x, icon_y, 1, icon_alpha);
+            HudFrame((char *)rec, GetIconFrame(((E_238C30 **)hud_selector_slot_tables)[GI(quick_select_page)][i].id,
+                          ((unsigned char *)D_0013E15A + 0x4C6)[((E_238C30 **)hud_selector_slot_tables)[GI(quick_select_page)][i].item] ? 4 : 0), icon_x, icon_y, 1, icon_alpha);
         }
     }
     selected = rec->unk74;
-    if (selected >= 0 && *(int *)(((char **)D_L00_0015FB78)[GI(D_L00_0015F80C)] + selected * 0x1C) != 0) {
+    if (selected >= 0 && *(int *)(((char **)hud_selector_slot_tables)[GI(quick_select_page)] + selected * 0x1C) != 0) {
         color = FastTweenColor(GI(D_L00_0015F878), GI(D_L00_0015F87C), open * fade);
         {
         int id;
@@ -1288,15 +1288,15 @@ int draw_hud_item_selector_panel(HudElem *rec) {
                 shadow = FastTweenColor(GI(D_L00_0015F888), GI(D_L00_0015F88C), open * fade);
             else
                 shadow = FastTweenColor(GI(D_L00_0015F880), GI(D_L00_0015F884), open * fade);
-            FontPrintCenter(x + GI(D_L00_0015F800) + 1, y + GI(D_L00_0015F804) + 13, color, formatted, -1);
-            FontPrintCenter(x + GI(D_L00_0015F800), y + GI(D_L00_0015F804) + 12, shadow, formatted, -1);
+            FontPrintCenter(x + GI(quick_select_center_x) + 1, y + GI(D_L00_0015F804) + 13, color, formatted, -1);
+            FontPrintCenter(x + GI(quick_select_center_x), y + GI(D_L00_0015F804) + 12, shadow, formatted, -1);
         }
         }
         prefix_length = 0;
         shadow = FastTweenColor(GI(D_L00_0015F870), GI(D_L00_0015F874), open * fade);
         {
             int item, id;
-            item = *(int *)(((char **)D_L00_0015FB78)[GI(D_L00_0015F80C)] + selected * 0x1C + 0x18);
+            item = *(int *)(((char **)hud_selector_slot_tables)[GI(quick_select_page)] + selected * 0x1C + 0x18);
             if (((unsigned char *)D_0013E15A + 0x4C6)[item])
                 id = ((TI_238C30 *)item_defs)[item].h48;
             else
@@ -1340,14 +1340,14 @@ int draw_hud_item_selector_panel(HudElem *rec) {
             text_y += GI(D_L00_0015F89C);
         }
         if (prefix_length != 0) {
-            FontPrintCenter(x + GI(D_L00_0015F800) + 1, text_y + 1, color, (void *)text, prefix_length);
-            FontPrintCenter(x + GI(D_L00_0015F800), text_y, shadow, (void *)text, prefix_length);
+            FontPrintCenter(x + GI(quick_select_center_x) + 1, text_y + 1, color, (void *)text, prefix_length);
+            FontPrintCenter(x + GI(quick_select_center_x), text_y, shadow, (void *)text, prefix_length);
             text_y += 16;
-            FontPrintCenter(x + GI(D_L00_0015F800) + 1, text_y + 1, color, (void *)suffix, -1);
-            FontPrintCenter(x + GI(D_L00_0015F800), text_y, shadow, (void *)suffix, -1);
+            FontPrintCenter(x + GI(quick_select_center_x) + 1, text_y + 1, color, (void *)suffix, -1);
+            FontPrintCenter(x + GI(quick_select_center_x), text_y, shadow, (void *)suffix, -1);
         } else {
-            FontPrintCenter(x + GI(D_L00_0015F800) + 1, text_y + 1, color, (void *)text, -1);
-            FontPrintCenter(x + GI(D_L00_0015F800), text_y, shadow, (void *)text, -1);
+            FontPrintCenter(x + GI(quick_select_center_x) + 1, text_y + 1, color, (void *)text, -1);
+            FontPrintCenter(x + GI(quick_select_center_x), text_y, shadow, (void *)text, -1);
         }
     }
     return rec->w;
@@ -1359,15 +1359,15 @@ extern short D_L00_0015F80C;
 void initialize_four_slot_hud_selector(char *a) {
     int x = *(int *)&D_L00_0015F7F8;
     int y = *(int *)&D_L00_0015F7FC;
-    D_L00_0015FB48 = 4;
-    D_L00_0015FB78 = &D_L00_0015F820;
+    quick_select_slot_count = 4;
+    hud_selector_slot_tables = &D_L00_0015F820;
     *(short *)(a + 0x48) = 0;
     *(short *)(a + 0x4A) = 0;
     *(int *)(a + 0x58) = x;
     *(int *)(a + 0x5C) = y;
     *(int *)(a + 0x74) = -2;
     *(int *)(a + 0x78) = scale_ticks(30);
-    *(int *)&D_L00_0015F80C = 0;
+    *(int *)&quick_select_page = 0;
 }
 extern short D_L00_0015F80C_39510b __asm__("D_L00_0015F80C");
 typedef struct { int f0, f4, f8, fC, f10, f14, f18; } Ent;
@@ -1915,7 +1915,7 @@ int draw_bolt_counter_hud_panel(HudElem_3A788 *m)
     frame = m->unk80;
     /* the byte offset kept in a local is load-bearing (retail tests m + off) */
     off = 0x70;
-    if (D_001414D4 == 50 || ((u8 *)m)[off] == 0)
+    if (hero_current_state == 50 || ((u8 *)m)[off] == 0)
         return m->w;
 
     fade = m->cnt;
@@ -2576,7 +2576,7 @@ void init_level_runtime_state(void) {
     if (g_current_level_index != 0) {
         unlock_planet(g_current_level_index);
     }
-    D_0015EF24 += 0xB4;
+    game_clock_ticks += 0xB4;
 }
 /* NON_MATCHING func_L00_0023DB30 -- src/overlays/shared/hud_00235960.c
  * Best so far: BYTES 36/572 (93.7% of the bytes match), checked 2026-10-09.

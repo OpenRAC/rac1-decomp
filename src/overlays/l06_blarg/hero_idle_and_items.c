@@ -1211,7 +1211,7 @@ int HeroL06_TrySetMoveState(int a, int b) {
             }
             q = D_0013E633 + 0xE1D;
             *(unsigned int *)(h + 0x44) = *(unsigned int *)(h + 0x44) | (1 << g_current_level_index) | 0x80000000;
-            e = &D_L06_0017C4A8[*(int *)(q + 0xA60)];
+            e = &blarg_attack_records[*(int *)(q + 0xA60)];
             *(int *)(q + 0x20F0) = 0;
             k = 0;
             if (*(int *)(q + 0x2094) == 6 && e->a == 0 && *(float *)(q + 0xAA8) < (float)e->c) {
@@ -1250,7 +1250,7 @@ int HeroL06_TrySetMoveState(int a, int b) {
         }
         case 0x51: {
             char *q = D_0013E633 + 0xE1D;
-            T2C_235E08 *e = &D_L06_0017C4A8[*(int *)(q + 0xA60)];
+            T2C_235E08 *e = &blarg_attack_records[*(int *)(q + 0xA60)];
             int k = 0;
             if ((*(int *)(q + 0x2094) == 6 || (*(int *)(q + 0x20A0) == 6 && (unsigned int)(*(unsigned char *)(*(char **)(q + 0x2080) + 0x53) - 0xF) < 2)) && e->a == 0 && *(float *)(q + 0xAA8) < (float)e->c) {
                 k = (e->b + 1) % 2;
@@ -1310,7 +1310,7 @@ int HeroL06_TrySetMoveState(int a, int b) {
         *(float *)(p + 0x194) = g_frame_time * 9.0f;
         if (b) {
             char *m;
-            T2C_235E08 *e = &D_L06_0017C4A8[*(int *)(p + 0xA60)];
+            T2C_235E08 *e = &blarg_attack_records[*(int *)(p + 0xA60)];
             int k = e->b;
             int n;
             if (e->a == 1) k = 2;

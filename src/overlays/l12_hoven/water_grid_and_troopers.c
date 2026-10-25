@@ -118,7 +118,7 @@ void update_level_12_water_tile(char *moby) {
             *(int *)(P + 11) = data->unk04 + 0x28;
             *(unsigned char *)((char *)P + 0x3C) = 0x1C;
             *(unsigned char *)((char *)P + 0x3D) = 0x40;
-            *(int *)&D_L12_00161350 = (int)hoven_ripple_patches;
+            *(int *)&hoven_water_patches = (int)hoven_ripple_patches;
             *(int *)&D_L12_00161354 = (int)D_L12_001CC080;
             *(int *)&D_L12_00161358 = 0x11;
             D_L12_0016128C = 32768.0f;
@@ -184,7 +184,7 @@ void update_level_12_water_tile(char *moby) {
         if (hit != -1) {
             visible = 1.0f;
         }
-        if (data->clip_volume != -1 && is_point_inside_clip_volume(D_L12_001672C0, data->clip_volume) == 0) {
+        if (data->clip_volume != -1 && is_point_inside_clip_volume(hoven_camera_pos, data->clip_volume) == 0) {
             visible = 0.0f;
         }
         if (visible == 0.0f) {
@@ -732,7 +732,7 @@ int move_hoven_anklebiter_toward_heading(char *moby, float target) {
         vec_scale_to_length(vp, vp, k);
         FastVecAdd(w, pos, vp);
         if (SegmentCrossPolyline(*(int *)(d + 0x2D0), moby + 0x10, w, res)) {
-            int *tbl = (int *)D_L12_001B0C30[*(int *)(d + 0x2D0)];
+            int *tbl = (int *)hoven_paths[*(int *)(d + 0x2D0)];
             if (IsPointInPolygon(moby + 0x10, tbl + 4, *tbl) == 0) {
                 *(u128 *)(moby + 0x10) = *(u128 *)res;
             }
@@ -1442,7 +1442,7 @@ void miner_update(Moby *m) {
             flags->f61 = 1;
             jet_clear_persistent(m->mission);
             if (d->node != -1) {
-                char *t = D_L12_0016016C + (d->node << 7);
+                char *t = hoven_camera_points + (d->node << 7);
                 jet_reset_camera(t + 0x30, t + 0x70);
             }
             memcard_Save(0, -1);
@@ -1530,7 +1530,7 @@ void register_level_12_effects_draw_callback(unsigned char *moby) {
     case 1:
         {
             int value = *(int *)(data + 0xC);
-            if (value == -1 || is_point_inside_clip_volume(D_L12_001672C0, value)) {
+            if (value == -1 || is_point_inside_clip_volume(hoven_camera_pos, value)) {
                 AddDrawCallback((void *)draw_level_12_effects, moby);
             }
         }
@@ -1615,7 +1615,7 @@ void Moby294Update(char *moby) {
     data = M_P(moby, 0x78);
     Manipulator_SetScale(data + 0x120, 3.0f);
 
-    if (D_L12_0015F6A8 == 2) {
+    if (hoven_cinematic_mode == 2) {
         goto hide;
     }
     if (M_U8(moby, 0x20) >= 3) {
@@ -1636,7 +1636,7 @@ void Moby294Update(char *moby) {
         }
     }
     if (M_I(data, 0x270) != -1) {
-        if (((int (*)(void *, int))is_point_inside_clip_volume)(((char *)D_L12_001672C0), M_I(data, 0x270)) == 0) {
+        if (((int (*)(void *, int))is_point_inside_clip_volume)(((char *)hoven_camera_pos), M_I(data, 0x270)) == 0) {
         hide:
             M_U16(moby, 0x34) = M_U16(moby, 0x34) | 0x41;
             {
@@ -1759,7 +1759,7 @@ void Moby294Update(char *moby) {
         if (M_U16(moby, 0x34) & 1) {
             COPY4(v50, (float *)(moby + 0x10));
             v50[2] = v50[2] + 0.5f;
-            if (coll_line(v50, ((char *)D_L12_001672C0), 2, moby, 0) != 0) {
+            if (coll_line(v50, ((char *)hoven_camera_pos), 2, moby, 0) != 0) {
                 M_U16(moby, 0x34) = M_U16(moby, 0x34) & 0xFFBE;
                 {
                     char *o = M_P(data, 0x248);
@@ -1783,7 +1783,7 @@ void Moby294Update(char *moby) {
             M_U8(moby, 0x20) = 3;
             break;
         }
-        M_I(data, 0x260) = select_point_index_by_distance(moby + 0x10, ((char * *)D_L12_001B0C30)[M_I(data, 0x254)], 0.0f);
+        M_I(data, 0x260) = select_point_index_by_distance(moby + 0x10, ((char * *)hoven_paths)[M_I(data, 0x254)], 0.0f);
         M_U8(moby, 0x20) = 1;
         break;
 
@@ -1794,7 +1794,7 @@ void Moby294Update(char *moby) {
         if (M_U8(moby, 0x53) != 8 && M_U8(moby, 0x52) == M_U8(moby, 0x53)) {
             blend_moby_animation_ex(moby, 8, 0, ((int (*)(int))scale_ticks)(11), 5);
         }
-        row = ((char * *)D_L12_001B0C30)[M_I(data, 0x254)];
+        row = ((char * *)hoven_paths)[M_I(data, 0x254)];
         if (((float (*)(void *, void *))vec_distance_xy)(moby + 0x10, row + ((M_I(data, 0x260) << 4) + 0x10)) < 3.0f) {
             M_I(data, 0x260) = M_I(data, 0x260) + 1;
         }
@@ -2297,7 +2297,7 @@ void steer_blarg_trooper_toward_point(struct Moby *moby, float *target, float ma
         vec_scale_to_length(delta, delta, 0.05f);
         FastVecAdd(next, old, delta);
         if (SegmentCrossPolyline(*(int *)(data + 0x26c), &moby->pos, next, result)) {
-            char *path = D_L12_001B0C30[*(int *)(data + 0x26c)];
+            char *path = hoven_paths[*(int *)(data + 0x26c)];
             if (!IsPointInPolygon(&moby->pos, path + 0x10, *(int *)path))
                 *(OvlQuad *)&moby->pos = *(OvlQuad *)result;
             if (FastVecDist(&moby->pos, old) < g_frame_time * 0.5f) {
@@ -2372,7 +2372,7 @@ void Moby326Update(char *moby) {
     int lvl;
 
     data = M_P(moby, 0x78);
-    if (D_L12_0015F6A8 == 2) {
+    if (hoven_cinematic_mode == 2) {
         return;
     }
     FindNearestTargetMoby(moby, buf, 70.0f);
@@ -2419,7 +2419,7 @@ void Moby326Update(char *moby) {
     flagC0 = M_I(data, 0xC0);
     if (lvl == 12 && D_L12_00161F80 != 0) {
         if (flagC0 == 0) {
-            char *X = D_L12_00167180;
+            char *X = hoven_player_camera;
             if (M_P(X, 0x25C) == moby) {
                 M_I(X, 0x25C) = 0;
             }
@@ -2483,7 +2483,7 @@ void Moby326Update(char *moby) {
             o2 = M_P(data, 0xAC);
             M_U16(o2, 0x34) = M_U16(o2, 0x34) | 0x41;
         }
-        qcopy(moby + 0x10, D_L12_001B0C30[M_I(data, 0xA0)] + 0x10);
+        qcopy(moby + 0x10, hoven_paths[M_I(data, 0xA0)] + 0x10);
         if (M_I(data, 0xC0) != 0 && M_I(data, 0xC4) == 0) {
             int t, s, n;
             t = scale_ticks(0xF0);
@@ -2536,7 +2536,7 @@ void Moby326Update(char *moby) {
 
     case 2:
         if (M_I(data, 0xC0) == 0) {
-            char *X = D_L12_00167180;
+            char *X = hoven_player_camera;
             if (M_P(X, 0x25C) == 0) {
                 M_P(X, 0x25C) = moby;
                 M_I(X, 0x260) = 0;
@@ -2572,13 +2572,13 @@ void Moby326Update(char *moby) {
         d = vec_distance_xy(moby + 0x10, tgt);
         if (M_I(data, 0xC0) == 0) {
             if (d < 21.0f && M_F(moby, 0x18) - M_F(tgt, 8) > 1.0f) {
-                char *X = D_L12_00167180;
+                char *X = hoven_player_camera;
                 if (M_P(X, 0x25C) == 0) {
                     M_P(X, 0x25C) = moby;
                     M_I(X, 0x260) = 0;
                 }
             } else {
-                char *X = D_L12_00167180;
+                char *X = hoven_player_camera;
                 if (M_P(X, 0x25C) == moby) {
                     M_I(X, 0x25C) = 0;
                 }
@@ -2601,7 +2601,7 @@ void Moby326Update(char *moby) {
                 M_I(data, 0xB8) = (M_I(data, 0xB8) == 0);
                 qcopy(v90, buf + 8);
                 if (M_I(data, 0xC0) != 0) {
-                    qcopy(v90, D_L12_001672C0);
+                    qcopy(v90, hoven_camera_pos);
                     v90[2] = v90[2] + random_float_between(-0.5f, 0.1f);
                     v90[0] = v90[0] + randf_sym(0.0f, 0.4f);
                 }
@@ -2656,7 +2656,7 @@ void Moby326Update(char *moby) {
         float f;
         f = fast_atan2(buf[0] - M_F(moby, 0x10), buf[1] - M_F(moby, 0x14));
         M_F(moby, 0x48) = SpringTurn((float *)(data + 0x88), M_F(moby, 0x48), f, 0.004f, 0.3f, g_frame_time * 0.78539819f);
-        row = D_L12_001B0C30[M_I(data, 0xA4)];
+        row = hoven_paths[M_I(data, 0xA4)];
         if (M_S16(data, 0xBE) != 0) {
             FastVecSub(v70, row + 0x10, moby + 0x10);
         } else {
@@ -2701,7 +2701,7 @@ void Moby326Update(char *moby) {
     case 6: {
         int r;
         {
-            char *X = D_L12_00167180;
+            char *X = hoven_player_camera;
             if (M_P(X, 0x25C) == moby) {
                 M_I(X, 0x25C) = 0;
             }
@@ -2770,7 +2770,7 @@ void Moby326Update(char *moby) {
     if (M_U8(moby, 0x31) == 0) {
         return;
     }
-    if (FastVecDist(moby + 0x10, D_L12_001672C0) < 30.0f) {
+    if (FastVecDist(moby + 0x10, hoven_camera_pos) < 30.0f) {
         set_ground_height_band(moby);
         M_U8(moby, 0x7F) = 0x18;
     }
@@ -2818,7 +2818,7 @@ typedef struct { float x, y, z, w; } N_af68;
 /* Follows a path: steers toward the current node, slows to a stop near the end, returns 1 once stopped.
    Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l12/gameplay/entities/002bf140.c, FUN_L12_002eaf68. */
 int follow_blarg_helicopter_path(struct Moby *m, int idx) {
-    char *path = D_L12_001B0C30[idx];
+    char *path = hoven_paths[idx];
     char *d = (char *)m->pvars;
     float sum = 0.0f;
     float v[20]; /* target record from the finder; also the step vector */
@@ -3029,7 +3029,7 @@ void edwina_update(char *m) {
             moby->anim_speed = 1.0f;
             jet_clear_persistent(moby->mission);
             if (moby_data->region != -1) {
-                char *t = D_L12_0016016C + (moby_data->region << 7);
+                char *t = hoven_camera_points + (moby_data->region << 7);
                 jet_reset_camera(t + 0x30, t + 0x70);
             }
             moby->state = 1;
@@ -3037,7 +3037,7 @@ void edwina_update(char *m) {
                 grant_inventory_item(4, 0);
                 ShowBanner(0x2EE6, -1);
                 if (moby_data->region != -1) {
-                    char *t = D_L12_0016016C + (moby_data->region << 7);
+                    char *t = hoven_camera_points + (moby_data->region << 7);
                     jet_reset_camera(t + 0x30, t + 0x70);
                 }
                 memcard_Save(0, -1);
@@ -3239,7 +3239,7 @@ void Moby336Update(char *m) {
                 int idx;
                 int cnt;
                 initialize_path_descriptor(d + 0x60);
-                tbl = D_L12_001B0C30[*(int *)(d + 0x74)];
+                tbl = hoven_paths[*(int *)(d + 0x74)];
                 *(char **)(d + 0x70) = tbl;
                 idx = *(int *)(d + 0xA0);
                 cnt = *(int *)tbl - 1;

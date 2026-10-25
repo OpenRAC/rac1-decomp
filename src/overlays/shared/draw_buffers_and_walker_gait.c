@@ -766,14 +766,14 @@ void WalkCycleStep(WalkMoby *m, WalkData *d, int flags, float speed, float ang, 
                 if (t < base + 0.1f) {
                     t = base + 0.1f;
                 }
-                m->f58 = D_0015EE68 * (t - base);
+                m->f58 = inv_frame_scale * (t - base);
             } else {
                 float base = IntToFloat(m->b50) + m->f54;
                 t = d->anim[12]->f44 - d->anim[12]->f0C;
                 if (t < base + 0.1f) {
                     t = base + 0.1f;
                 }
-                m->f58 = D_0015EE68 * (t - base);
+                m->f58 = inv_frame_scale * (t - base);
                 {
                     int ns = 0x14;
                     int fl = 4;
@@ -793,14 +793,14 @@ void WalkCycleStep(WalkMoby *m, WalkData *d, int flags, float speed, float ang, 
                 if (t < base + 0.1f) {
                     t = base + 0.1f;
                 }
-                m->f58 = D_0015EE68 * (t - base);
+                m->f58 = inv_frame_scale * (t - base);
             } else {
                 float base = IntToFloat(m->b50) + m->f54;
                 t = d->anim[10]->f44 - d->anim[10]->f0C;
                 if (t < base + 0.1f) {
                     t = base + 0.1f;
                 }
-                m->f58 = D_0015EE68 * (t - base);
+                m->f58 = inv_frame_scale * (t - base);
                 {
                     int ns = 0x13;
                     int fl = 4;

@@ -208,7 +208,7 @@ int allocate_packed_color_point_light_slot(float *pos, float radius, float inten
     unsigned char *e;
     unsigned char *s;
     unsigned char *q;
-    if (D_L00_0015F6B8 > 0.8f) {
+    if (level_draw_frame_load > 0.8f) {
         return -1;
     }
     for (i = 0; i < 8; i++) {

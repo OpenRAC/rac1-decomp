@@ -85,7 +85,7 @@ void HeroL03_FrameUpdate(void) {
     scan_hero_input_sequences();
     Profile_Mark(*(void **)(g + 0x2080));
     if (*(int *)(g + 0x208C) != 0x16 && *(int *)(g + 0x2084) != 0x32) {
-        func_L00_00248EF8(g + 0x80);
+        reveal_map_around_position(g + 0x80);
     }
     {
         char *q = (char *)D_0013E633 + 0xE1D;

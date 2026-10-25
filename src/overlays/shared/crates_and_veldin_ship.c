@@ -525,10 +525,10 @@ void break_crate(void *mv, int a1, int av) {
     default: d8 = 0x95; break;
     }
 
-    if (D_L00_0016007C >= 0xC9) { n = 4; e0 = 4; }
-    else if (D_L00_0016007C >= 0x97) { n = 2; e0 = 2; }
-    else if (D_L00_0016007C >= 0x65) { n = 2; e0 = 1; }
-    else if (D_L00_0016007C >= 0x33) { n = 1; e0 = 0; }
+    if (free_moby_slot_count >= 0xC9) { n = 4; e0 = 4; }
+    else if (free_moby_slot_count >= 0x97) { n = 2; e0 = 2; }
+    else if (free_moby_slot_count >= 0x65) { n = 2; e0 = 1; }
+    else if (free_moby_slot_count >= 0x33) { n = 1; e0 = 0; }
     else { n = 1; e0 = 0; }
 
     f = fast_atan2(((Cam140 *)player_camera)->x - *(float *)(m + 0x10),
@@ -624,7 +624,7 @@ void break_crate(void *mv, int a1, int av) {
             }
         }
 
-        if (D_L00_0015F6B4 < 0.95f && 9.0f < f21 && dc == 0) {
+        if (cpu_frame_load < 0.95f && 9.0f < f21 && dc == 0) {
             f20 = 4.0f;
             a = scale_ticks(0xF);
             spawn_glow_particle(m, v60, v80, f20, a, 0x7F, 0x7F, 0x7F, 0x20);
@@ -3006,11 +3006,11 @@ void particle_spawner_smoke_fire_update(P *p) {
             func_0020D678_D83D8(p);
             return;
         }
-        q->f48 = FastVecLength(&D_L00_001601AC[q->idx].v1);
-        g = FastVecLength(&D_L00_001601AC[q->idx].v0);
+        q->f48 = FastVecLength(&level_cuboids[q->idx].v1);
+        g = FastVecLength(&level_cuboids[q->idx].v0);
         if (q->f48 < g) q->f48 = g;
         if (q->extra) q->f44 = q->f48; else q->f44 = 3.0f;
-        q->f50 = FastVecLength(&D_L00_001601AC[q->idx].v2) * 0.5f;
+        q->f50 = FastVecLength(&level_cuboids[q->idx].v2) * 0.5f;
         s = q->start = FetchAddCounter(q->count + q->extra);
         e = s + q->count;
         for (i = s; i < e; i++) {
@@ -3028,11 +3028,11 @@ void particle_spawner_smoke_fire_update(P *p) {
             D_L00_001D2B60[i] = r;
             func_L00_002D9208_D83D8(p, i);
         }
-        D_L00_001601AC[q->idx].w = 1.0f;
+        level_cuboids[q->idx].w = 1.0f;
         q->col = q->c2 << 16 | q->c1 << 8 | q->c0;
         return;
     case 1:
-        tbl = (u8 *)&D_L00_001601AC[q->idx];
+        tbl = (u8 *)&level_cuboids[q->idx];
         qcopy(&v, tbl + 0x30);
         v.z += 9.0f;
         v.w = 10.0f;

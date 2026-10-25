@@ -261,7 +261,7 @@ void clamp_voice_position_to_collision(void *arg0) {
     random_spherical_offset(arg0, 0.5f, 6.0f);
     func_001F9BD8_a(arg0, arg0, D_00187180_a);
     if (func_001EFE10_a(D_00187180_a, arg0, 0x82, sound_probe_ignore, 0) != 0) {
-        func_001F9BF0_a(arg0, D_00194220, D_00187180_a);
+        func_001F9BF0_a(arg0, coll_hit_pos, D_00187180_a);
         func_001F9C30_a(arg0, arg0, 0.75f);
         func_001F9BD8_a(arg0, arg0, D_00187180_a);
     }
@@ -398,7 +398,7 @@ void initialize_gameplay_sound_system(void) {
     func_0012E3F8(1, 0x18, 0x2F);
     func_0012E3F8(2, 0x18, 0x2F);
     func_0012E3F8(4, 0x18, 0x2F);
-    v = D_0015EEF0;
+    v = sound_volume;
     ((SndState_2DBE8 *)voice_pool)->vol[0] = (v * 8) / 10;
     ((SndState_2DBE8 *)voice_pool)->vol[1] = music_volume;
     ((SndState_2DBE8 *)voice_pool)->vol[2] = (v * 8) / 10;

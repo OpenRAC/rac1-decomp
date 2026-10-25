@@ -1153,7 +1153,7 @@ void update_pool_tiles_and_effects(PMoby *moby) {
             }
         }
         if (found == 5) {
-            f = pool_wave[D_L01_0015F6B0 % 20] / 20.0f;
+            f = pool_wave[novalis_frame_count % 20] / 20.0f;
             v.x = 0.02f;
             v.y = 0.0f;
             v.z = 0.0f;
@@ -1307,7 +1307,7 @@ void update_scroll_layers_and_queue_draw(void *arg) {
             }
         }
     }
-    s = FastSin((IntToFloat(D_L01_0015F6B0 & 0x3F) - 32.0f) * 0.09817477f);
+    s = FastSin((IntToFloat(novalis_frame_count & 0x3F) - 32.0f) * 0.09817477f);
     s = s * 0.5f + 0.5f;
     for (g = 3; g >= 0; g--) {
         D_L01_001FBF40_FFF30[g].glow = s;
@@ -1710,7 +1710,7 @@ void draw_level01_scroll_layers(void *moby) {
     int i;
     DefaultVtbl_DeleteMoby(moby);
     update_and_draw_scrolling_overlay_layers(3, D_L01_00203040);
-    v = FastSin((IntToFloat(D_L01_0015F6B0 & 0x3F) - 32.0f) * 0.09817477f) * 0.5f + 0.5f;
+    v = FastSin((IntToFloat(novalis_frame_count & 0x3F) - 32.0f) * 0.09817477f) * 0.5f + 0.5f;
     p = (float *)(D_L01_00203040 + 0x11C);
     for (i = 2; i >= 0; i--) {
         *p = v;
@@ -1760,12 +1760,12 @@ void update_level01_tutorial_hints(Moby *moby) {
         data[10] = 0;
         break;
     case 1:
-        if (D_L01_0015F6B0 < scale_ticks(400) && usage_stats[12].count != 0 && usage_stats[11].count == 0) {
+        if (novalis_frame_count < scale_ticks(400) && usage_stats[12].count != 0 && usage_stats[11].count == 0) {
             if (scale_ticks(play_time_ticks) - usage_stats[12].unk2 * 600 < scale_ticks(1100) && help_records[0x51].v >= 0) {
                 Help_Request(0x4E27, 0x51);
             }
         }
-        if (D_L01_0015F6B0 < scale_ticks(400) && usage_stats[29].count != 0) {
+        if (novalis_frame_count < scale_ticks(400) && usage_stats[29].count != 0) {
             if (scale_ticks(play_time_ticks) - usage_stats[29].unk2 * 600 < scale_ticks(1100) && help_records[0x72].v >= 0) {
                 Help_Request(0x4E28, 0x72);
             }
@@ -1800,7 +1800,7 @@ void update_level01_tutorial_hints(Moby *moby) {
         }
         if (help_records[0x42].id < 2 && is_point_inside_clip_volume(&g_hero.motion.pos, data[12]) && g_hero.state.prev == 0x3B &&
             g_hero.state_timer == 0) {
-            for (m = D_L01_00160064; m != 0; m = m->next) {
+            for (m = novalis_moby_list; m != 0; m = m->next) {
                 if (m->oclass == 0x118 && FastVecDist(&m->pos, &g_hero.motion.pos) < 3.0f &&
                     *(f32 *)m->pvars != 1.0f) {
                     data[13]++;
@@ -1842,7 +1842,7 @@ void update_level01_tutorial_hints(Moby *moby) {
         } else {
             data[11] = 0;
         }
-        for (m2 = D_L01_00160064; m2 != 0; m2 = m2->next) {
+        for (m2 = novalis_moby_list; m2 != 0; m2 = m2->next) {
             if (m2->oclass == 0x326 && FastVecDist(&m2->pos, &g_hero.motion.pos) < 10.0f && help_state.state == 0 &&
                 help_state.cur == -1 && help_records[1].id == 0 && help_records[2].id == 0 &&
                 usage_stats[13].count == 0 && is_moby_in_state_one(m2) == 0) {

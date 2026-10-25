@@ -104,7 +104,7 @@ int read_mpeg(char *vd, char *rb, int *file) {
             movie_play_step = 7;
             if (decode_mode == 2 && g_controller_state.f1A4 != 0) {
                 hit = 1;
-            } else if ((D_0015EFA0 || D_0015EF20 || decode_mode || g_current_level_index <= 0)
+            } else if ((challenge_mode || D_0015EF20 || decode_mode || g_current_level_index <= 0)
                        && (g_controller_state.f1A4 & 0x800)) {
                 hit = 1;
             } else if ((g_controller_state.f1A0 & 0xF) == 0xF && (g_controller_state.f1A4 & 0x800)) {

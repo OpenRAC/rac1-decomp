@@ -1748,9 +1748,9 @@ void update_batalia_bolt_pickup(Moby *m) {
             FastVecScale(c, &m->rot_row2, -2.0f);
             FastVecAdd(c, c, &m->pos);
             if (coll_line(b, c, 2, 0, 0) != 0) {
-                qcopy(d->v0, D_L08_001746C0.pos);
-                linked = D_L08_001746C0.moby;
-                vec_scale_to_length(a, D_L08_001746C0.n, 1.0f);
+                qcopy(d->v0, batalia_coll_hit.pos);
+                linked = batalia_coll_hit.moby;
+                vec_scale_to_length(a, batalia_coll_hit.n, 1.0f);
             } else {
                 qcopy(d->v0, &m->pos);
                 clear_u64_value(a);
@@ -2031,11 +2031,11 @@ void update_batalia_bolt_pickup(Moby *m) {
             break;
         }
         if (coll_sphere(0.25f, &m->pos, 0x22, m) != 0) {
-            FastVecSub(a, &m->pos, D_L08_001746C0.pos);
+            FastVecSub(a, &m->pos, batalia_coll_hit.pos);
             vec_reflect(d->v40, d->v40, a);
             if (fast_atan2(a[2], func_001F9CE8_2E16A0(a)) < 0.7853982f
-                && fast_atan2(D_L08_001746C0.n[2], func_001F9CE8_2E16A0(D_L08_001746C0.n)) < 0.7853982f) {
-                Coll_4BE8 *cl = &D_L08_001746C0;
+                && fast_atan2(batalia_coll_hit.n[2], func_001F9CE8_2E16A0(batalia_coll_hit.n)) < 0.7853982f) {
+                Coll_4BE8 *cl = &batalia_coll_hit;
                 int n;
                 float inv;
 

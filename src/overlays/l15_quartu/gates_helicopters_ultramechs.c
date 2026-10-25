@@ -106,7 +106,7 @@ check_lock:
                 mask = 1U << (m->save_id & 31);
                 bits = (u32 *)(D_0014C190 + (((s16)m->save_id >> 5) * 4 + g_current_level_index * 0x100));
                 *bits |= mask;
-                D_L15_001BADE0[((s16)m->save_id >> 5)] |= 1U << (m->save_id & 31);
+                quartu_moby_killed[((s16)m->save_id >> 5)] |= 1U << (m->save_id & 31);
                 m->state = 5;
             } else {
                 m->state = 3;
@@ -885,7 +885,7 @@ void construction_arm_update(char *moby) {
         {
             ok = 1;
             if (m->group != 0xFF) {
-                int lst = D_L15_001AC140[m->group];
+                int lst = quartu_moby_groups[m->group];
                 count = 0;
                 if (lst == 0) break;
                 {
@@ -1606,7 +1606,7 @@ void helicopter_update(HMoby_6950 *m) {
         D_L15_001BAEE0.collected[(short)m->id] = 0;
         D_L15_001BBB40.collected[(short)m->id] = 0;
         *(int *)(D_0014171B + 0xAB75 + (((short)m->id >> 5) * 4 + (g_current_level_index << 8))) &= ~(1 << (m->id & 0x1F));
-        D_L15_001BADE0[(short)m->id >> 5] &= ~(1 << (m->id & 0x1F));
+        quartu_moby_killed[(short)m->id >> 5] &= ~(1 << (m->id & 0x1F));
         if (D_0013E633[0x2EC1] != 2) {
             m->pos.f[2] = d->f1A8 - 7.5f;
             m->scale *= 2.0f;
@@ -2008,8 +2008,8 @@ void ultramech_unlimited_update(UMoby *m) {
                     }
                     m->pos.q = path->pt[0].q;
                     FastVecSub(&d->vel, (Vec4 *)path + path->n, &m->pos);
-                    vec_set_length_xy(&d->vel, &d->vel, *(float *)&D_L15_00161B9C * g_frame_time);
-                    d->vel.f[2] = jump_speed_4318(&m->pos, (Vec4 *)path + path->n, 0, *(float *)&D_L15_00161B9C * g_frame_time, -(*(float *)&D_L15_00161BA0 * g_frame_time_sq));
+                    vec_set_length_xy(&d->vel, &d->vel, *(float *)&ultramech_jump_speed * g_frame_time);
+                    d->vel.f[2] = jump_speed_4318(&m->pos, (Vec4 *)path + path->n, 0, *(float *)&ultramech_jump_speed * g_frame_time, -(*(float *)&D_L15_00161BA0 * g_frame_time_sq));
                 }
             }
         }
@@ -2131,8 +2131,8 @@ void ultramech_unlimited_update(UMoby *m) {
                 d->side = (d->side + 1) & 1;
                 if (m->anim != 3) MobyBlendAnimation(m, 3, 0, scale_ticks(0x14));
                 FastVecSub(&d->vel, (Vec4 *)quartu_paths[((UPaths *)((char *)d + 0x180))->idx[d->side]] + (d->point + 1), &m->pos);
-                vec_set_length_xy(&d->vel, &d->vel, *(float *)&D_L15_00161B9C * g_frame_time);
-                d->vel.f[2] = jump_speed_4318(&m->pos, (Vec4 *)quartu_paths[((UPaths *)((char *)d + 0x180))->idx[d->side]] + (d->point + 1), 0, *(float *)&D_L15_00161B9C * g_frame_time, -(*(float *)&D_L15_00161BA0 * g_frame_time_sq));
+                vec_set_length_xy(&d->vel, &d->vel, *(float *)&ultramech_jump_speed * g_frame_time);
+                d->vel.f[2] = jump_speed_4318(&m->pos, (Vec4 *)quartu_paths[((UPaths *)((char *)d + 0x180))->idx[d->side]] + (d->point + 1), 0, *(float *)&ultramech_jump_speed * g_frame_time, -(*(float *)&D_L15_00161BA0 * g_frame_time_sq));
             }
         } else {
             m->state = 4;
@@ -2148,8 +2148,8 @@ void ultramech_unlimited_update(UMoby *m) {
                 d->point++;
                 if (m->anim != 3) MobyBlendAnimation(m, 3, 0, scale_ticks(0x14));
                 FastVecSub(&d->vel, (Vec4 *)quartu_paths[((UPaths *)((char *)d + 0x180))->idx[d->side]] + (d->point + 1), &m->pos);
-                vec_set_length_xy(&d->vel, &d->vel, *(float *)&D_L15_00161B9C * g_frame_time);
-                d->vel.f[2] = jump_speed_4318(&m->pos, (Vec4 *)quartu_paths[((UPaths *)((char *)d + 0x180))->idx[d->side]] + (d->point + 1), 0, *(float *)&D_L15_00161B9C * g_frame_time, -(*(float *)&D_L15_00161BA0 * g_frame_time_sq));
+                vec_set_length_xy(&d->vel, &d->vel, *(float *)&ultramech_jump_speed * g_frame_time);
+                d->vel.f[2] = jump_speed_4318(&m->pos, (Vec4 *)quartu_paths[((UPaths *)((char *)d + 0x180))->idx[d->side]] + (d->point + 1), 0, *(float *)&ultramech_jump_speed * g_frame_time, -(*(float *)&D_L15_00161BA0 * g_frame_time_sq));
             } else if (fast_dec_timer(&d->timer)) {
                 m->state = 5;
                 if (m->anim != 6) MobyBlendAnimation(m, 6, 0, scale_ticks(0x14));
@@ -2196,8 +2196,8 @@ void ultramech_unlimited_update(UMoby *m) {
                 d->point++;
                 if (m->anim != 3) MobyBlendAnimation(m, 3, 0, scale_ticks(0x14));
                 FastVecSub(&d->vel, (Vec4 *)quartu_paths[((UPaths *)((char *)d + 0x180))->idx[d->side]] + (d->point + 1), &m->pos);
-                vec_set_length_xy(&d->vel, &d->vel, *(float *)&D_L15_00161B9C * g_frame_time);
-                d->vel.f[2] = jump_speed_4318(&m->pos, (Vec4 *)quartu_paths[((UPaths *)((char *)d + 0x180))->idx[d->side]] + (d->point + 1), 0, *(float *)&D_L15_00161B9C * g_frame_time, -(*(float *)&D_L15_00161BA0 * g_frame_time_sq));
+                vec_set_length_xy(&d->vel, &d->vel, *(float *)&ultramech_jump_speed * g_frame_time);
+                d->vel.f[2] = jump_speed_4318(&m->pos, (Vec4 *)quartu_paths[((UPaths *)((char *)d + 0x180))->idx[d->side]] + (d->point + 1), 0, *(float *)&ultramech_jump_speed * g_frame_time, -(*(float *)&D_L15_00161BA0 * g_frame_time_sq));
             } else if (*(float *)&D_L15_00161BB0 < vec_distance_xy(&m->pos, &tgt->pos)) {
                 m->state = 4;
                 if (m->anim != 0) MobyBlendAnimation(m, 0, 0, scale_ticks(0x14));
@@ -2236,8 +2236,8 @@ void ultramech_unlimited_update(UMoby *m) {
                 v10.f[2] = ProbeGroundHeight(&v10, 0, 0.5f);
                 if (m->anim != 3) MobyBlendAnimation(m, 3, 0, scale_ticks(0x14));
                 FastVecSub(&d->vel, &v10, &m->pos);
-                vec_set_length_xy(&d->vel, &d->vel, *(float *)&D_L15_00161B9C * g_frame_time);
-                d->vel.f[2] = jump_speed_4318(&m->pos, &v10, 0, *(float *)&D_L15_00161B9C * g_frame_time, -(*(float *)&D_L15_00161BA0 * g_frame_time_sq));
+                vec_set_length_xy(&d->vel, &d->vel, *(float *)&ultramech_jump_speed * g_frame_time);
+                d->vel.f[2] = jump_speed_4318(&m->pos, &v10, 0, *(float *)&ultramech_jump_speed * g_frame_time, -(*(float *)&D_L15_00161BA0 * g_frame_time_sq));
             } else {
                 m->state = 4;
                 if (m->anim != 0) MobyBlendAnimation(m, 0, 0, scale_ticks(0x14));
@@ -2261,7 +2261,7 @@ void ultramech_unlimited_update(UMoby *m) {
         D_L15_001BAEE0.collected[(short)m->id] = 0;
         D_L15_001BBB40.collected[(short)m->id] = 0;
         *(int *)(D_0014171B + 0xAB75 + (((short)m->id >> 5) * 4 + (g_current_level_index << 8))) &= ~(1 << (m->id & 0x1F));
-        D_L15_001BADE0[(short)m->id >> 5] &= ~(1 << (m->id & 0x1F));
+        quartu_moby_killed[(short)m->id >> 5] &= ~(1 << (m->id & 0x1F));
         if (hero_vehicle_mode[0] != 2) m->state = 0;
         break;
     }
@@ -2943,7 +2943,7 @@ void update_quartu_cutscene_trigger(unsigned char *moby) {
             moby[0x20] = 3;
             HeroClearObjectFlags();
             if (data[1] != -1) {
-                char *p = D_L15_0016016C + data[1] * 128;
+                char *p = quartu_cuboids + data[1] * 128;
                 Hero_ResetToPosition(p + 0x30, p + 0x70, 0, 1);
             }
         }
@@ -2952,7 +2952,7 @@ void update_quartu_cutscene_trigger(unsigned char *moby) {
         if (quartu_game_mode != 2) {
             unlock_planet(0x11);
             if (data[1] != -1) {
-                char *p = D_L15_0016016C + data[1] * 128;
+                char *p = quartu_cuboids + data[1] * 128;
                 jet_reset_camera(p + 0x30, p + 0x70);
             }
             queue_planet_unlock_message(0x11);
@@ -3074,7 +3074,7 @@ extern int D_L15_00160058_ED318 __asm__("D_L15_00160058") MACRO_ADDR;
 
 /* Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l15/gameplay/vendor/002e73c0.c, FUN_L15_002ebf28. */
 void set_moby_list_visibility(int idx, int show) {
-    short *p = (short *)D_L15_001AC140[idx];
+    short *p = (short *)quartu_moby_groups[idx];
     if (p == 0)
         return;
     while (1) {
@@ -3095,7 +3095,7 @@ void set_moby_list_visibility(int idx, int show) {
 extern int D_L15_00160058 MACRO_ADDR;
 /* Counts the mobys in group idx that are dead or missing. */
 int count_missing_or_dying_mobys_in_list(int idx) {
-    unsigned short *p = (unsigned short *)D_L15_001AC140[idx];
+    unsigned short *p = (unsigned short *)quartu_moby_groups[idx];
     int n = 0;
     int base;
     if (p == 0)
@@ -3228,7 +3228,7 @@ void codebot_slot_update(char *moby) {
             }
             {
                 unsigned short save_id = m->save_id;
-                D_L15_001BADE0[(short)save_id >> 5] |= 1 << (save_id & 0x1F);
+                quartu_moby_killed[(short)save_id >> 5] |= 1 << (save_id & 0x1F);
             }
             m->state = CODEBOT_SLOT_COMPLETED;
         }

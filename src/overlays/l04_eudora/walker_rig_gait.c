@@ -454,7 +454,7 @@ void rig_animate(struct Moby *moby, LegRig_93F08 *rig, int flags) {
             axis_rotation_2d48(rig->legs[i].manip_a.rot, 2, row->legs[0].lower_turn);
             if (flags & mask) {
                 axis_rotation_2d48(tilt, 0, -moby->rot.x);
-                func_001FA588(rig->legs[i].manip_a.rot, rig->legs[i].manip_a.rot, tilt);
+                multiply_quaternions(rig->legs[i].manip_a.rot, rig->legs[i].manip_a.rot, tilt);
             }
         }
         mask <<= 2;
@@ -612,7 +612,7 @@ int LegWalkerUpdate(char *m, char *s, float speed, float ang, float accel) {
                     t = g_frame_time * 0.19f;
                     f = (float *)*pp;
                 }
-                *(float *)(m + 0x58) = D_0015EE68 * func_001F9B88_2939E8(t / f[2]);
+                *(float *)(m + 0x58) = inv_frame_scale * func_001F9B88_2939E8(t / f[2]);
                 break;
             }
         }

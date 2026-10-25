@@ -507,7 +507,7 @@ void big_axebot_update(M_B7B0 *moby) {
     }
     Manipulator_ApplyScale(2.5f, (int)moby, 0, (unsigned char *)&data->m120);
     if (moby->f31 != 0) {
-        if (FastVecDist(moby->pos, D_L04_00166FC0) < 27.0f) {
+        if (FastVecDist(moby->pos, eudora_camera_pos) < 27.0f) {
             set_ground_height_band(moby);
             moby->f7F = 0x15;
         }
@@ -533,7 +533,7 @@ void big_axebot_update(M_B7B0 *moby) {
     qcopy(dest, moby->pos);
     qcopy(tpos, tg.pos);
     if (moby->f31 != 0) {
-        if (FastVecDist(moby->pos, D_L04_00166FC0) < 32.0f) {
+        if (FastVecDist(moby->pos, eudora_camera_pos) < 32.0f) {
             set_ground_height_band(moby);
             moby->f7F = 0x1A;
         }
@@ -956,7 +956,7 @@ void big_axebot_update(M_B7B0 *moby) {
     fast_dec_timer(&data->f448);
     axis_rotation_2d48(v, 1, data->f408);
     axis_rotation_2d48(data->m120.q, 2, 0.0f);
-    func_001FA588(data->m120.q, data->m120.q, v);
+    multiply_quaternions(data->m120.q, data->m120.q, v);
     if (moby->state != 8) {
         data->f401 = moby->state;
     }
@@ -989,7 +989,7 @@ void big_axebot_update(M_B7B0 *moby) {
             matrix_to_euler(m, e);
             axis_rotation_2d48(q, 2, FastSubRots(ang, data->f428));
             data->f428 = ang;
-            func_001FA588(data->m160.q, data->m160.q, q);
+            multiply_quaternions(data->m160.q, data->m160.q, q);
         }
     }
     if (data->f424 != 0) {
@@ -1487,7 +1487,7 @@ void circular_saw_enemy_update(M_35F0 *moby) {
     }
     Manipulator_ApplyScale(2.9f, (int)moby, 7, data->f270);
     if (moby->f31 != 0) {
-        if (FastVecDist(moby->pos, D_L04_00166FC0) < 27.0f) {
+        if (FastVecDist(moby->pos, eudora_camera_pos) < 27.0f) {
             set_ground_height_band(moby);
             moby->f7F = 0x15;
         }
@@ -1983,7 +1983,7 @@ void circular_saw_enemy_update(M_35F0 *moby) {
         DeleteMoby(moby);
         return;
     }
-    if (vec_distance_xy(moby->pos, D_L04_00166FC0) < 20.0f) {
+    if (vec_distance_xy(moby->pos, eudora_camera_pos) < 20.0f) {
         V4_35F0 b;
         V4_35F0 a;
         int alt;
@@ -2209,7 +2209,7 @@ void BlargTrooperUpdate(char *moby) {
     pos = (float *)(moby + 0x10);
     Manipulator_SetScale(data + 0x110, 3.0f);
     if (*(unsigned char *)(moby + 0x31) != 0) {
-        if (FastVecDist(pos, D_L04_00166FC0) < 27.0f) {
+        if (FastVecDist(pos, eudora_camera_pos) < 27.0f) {
             set_ground_height_band(moby);
             *(unsigned char *)(moby + 0x7F) = 0x15;
         }

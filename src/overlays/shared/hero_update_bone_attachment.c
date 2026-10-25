@@ -58,7 +58,7 @@ void HeroL15_FrameUpdate(void) {
     update_hero_vehicle_moby();
     update_hero_scalar_pulse();
     apply_hero_and_item_scale_sequence();
-    func_L00_00248EF8(b0 + 0x80);
+    reveal_map_around_position(b0 + 0x80);
 
     if (b0[0x20A4] == 2) {
         if (gCheats[3] != 0)

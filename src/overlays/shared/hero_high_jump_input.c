@@ -246,7 +246,7 @@ int CanReachPointAhead(void) {
     a.z += 0.47f;
     b.z -= 1.0f;
     if (coll_line(&a, &b, 2, *(int *)(g + 0x2080), 0)) {
-        d = D_L00_00173F68 - *(float *)(g + 0x88);
+        d = coll_hit_point_z - *(float *)(g + 0x88);
         if (d < 0.37f && -1.0f < d)
             return 1;
         return 0;

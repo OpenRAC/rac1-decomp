@@ -557,8 +557,8 @@ void Hero_UpdateStatePhysicsL12(void) {
 
                     *(u128 *)vec[0] = 0;
                     vec[0][0] = 1.0f;
-                    matrix_mul_vec3(g_hero.motion.unk170.f, vec[0], D_L12_00167180.f350);
-                    g_hero.motion.move_yaw = D_L12_00167180.f158;
+                    matrix_mul_vec3(g_hero.motion.unk170.f, vec[0], hoven_player_camera.f350);
+                    g_hero.motion.move_yaw = hoven_player_camera.f158;
                     turn_to(0, g_frame_scale_sq, g_frame_scale_sq * 0.0f, g_frame_time * 174.53293f);
                     if (*(int *)&D_L12_0015F768 > 0) {
                         if (fast_dec_timer((int *)&D_L12_0015F768)) {
@@ -768,8 +768,8 @@ void Hero_UpdateStatePhysicsL12(void) {
             if (g_hero.state.step == 1) {
                 if (g_hero.state_timer == 1) {
                     emit_hero_surface_effect_burst(3, 0x10, 0);
-                    if (D_L12_00161350 != 0) {
-                        RippleDisturb(D_L12_00161350, D_L12_00161358, 0, g_hero.motion.pos.f[0], g_hero.motion.pos.f[1], 0.4f, -0.3f);
+                    if (hoven_water_patches != 0) {
+                        RippleDisturb(hoven_water_patches, D_L12_00161358, 0, g_hero.motion.pos.f[0], g_hero.motion.pos.f[1], 0.4f, -0.3f);
                     }
                     g_hero.unk90A = scale_ticks(0x46);
                 }
@@ -1463,8 +1463,8 @@ void Hero_UpdateStatePhysicsL12(void) {
             if (g_hero.unk4B8 != 0.0f) {
                 if (g_hero.air_frames.s == 0) {
                     if (g_hero.unk4C4 == 0) {
-                        D_L12_00167180.f160 = 0.2f;
-                        D_L12_00167180.f168 = scale_ticks(0x28);
+                        hoven_player_camera.f160 = 0.2f;
+                        hoven_player_camera.f168 = scale_ticks(0x28);
                     }
                     g_hero.unk4C4++;
                 }
@@ -1478,7 +1478,7 @@ void Hero_UpdateStatePhysicsL12(void) {
             float v;
             float acc;
 
-            if (g_hero.unkA9C != 0 || g_hero.anim_frame < D_L12_0017C128[g_hero.attack_record].f18) {
+            if (g_hero.unkA9C != 0 || g_hero.anim_frame < hoven_attack_records[g_hero.attack_record].f18) {
                 g_hero.items[0].timer = 2;
             }
             g_hero.target_speed = 0.0f;
@@ -1565,7 +1565,7 @@ void Hero_UpdateStatePhysicsL12(void) {
             int skip;
 
             g_hero.target_speed = 0.0f;
-            if (g_hero.unkA9C != 0 || g_hero.anim_frame < D_L12_0017C128[g_hero.attack_record].f18) {
+            if (g_hero.unkA9C != 0 || g_hero.anim_frame < hoven_attack_records[g_hero.attack_record].f18) {
                 g_hero.items[0].timer = 2;
             }
             skip = 0;
@@ -1652,11 +1652,11 @@ void Hero_UpdateStatePhysicsL12(void) {
         } else {
             Rec2C *r;
 
-            if (g_hero.unkA9C != 0 || g_hero.anim_frame < D_L12_0017C128[g_hero.attack_record].f20) {
+            if (g_hero.unkA9C != 0 || g_hero.anim_frame < hoven_attack_records[g_hero.attack_record].f20) {
                 g_hero.items[0].timer = 2;
             }
             g_hero.target_speed = 0.0f;
-            r = &D_L12_0017C128[g_hero.attack_record];
+            r = &hoven_attack_records[g_hero.attack_record];
             if (g_hero.unkA54 != 0 && g_hero.state_timer < scale_ticks(4)) {
                 float d;
                 float off;
@@ -2300,8 +2300,8 @@ void Hero_UpdateStatePhysicsL12(void) {
         if (g_hero.state.current == 0x12) {
             if (g_hero.state_timer == scale_ticks(0x14)) {
                 emit_hero_surface_effect_burst(3, 0x10, 1);
-                if (D_L12_00161350 != 0) {
-                    RippleDisturb(D_L12_00161350, D_L12_00161358, 0, g_hero.motion.pos.f[0], g_hero.motion.pos.f[1], 0.4f, 0.35f);
+                if (hoven_water_patches != 0) {
+                    RippleDisturb(hoven_water_patches, D_L12_00161358, 0, g_hero.motion.pos.f[0], g_hero.motion.pos.f[1], 0.4f, 0.35f);
                 }
             }
             if (g_hero.anim_frame >= 4.0f && g_hero.anim_frame <= 7.0f) {

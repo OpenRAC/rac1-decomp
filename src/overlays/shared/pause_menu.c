@@ -665,7 +665,7 @@ void update_pause_menu(void) {
         v == 0x23) {
         initialize_pause_menu();
     }
-    if ((D_0015EFB4_m & 1) && !(*(int *)&D_L00_0015F6AC < 8)) {
+    if ((D_0015EFB4_m & 1) && !(*(int *)&cinematic_mode_frames < 8)) {
         mode_freeze_init(3, GS.owner, 0);
         return;
     }
@@ -967,7 +967,7 @@ void draw_pause_menu_pages(int transfer_only) {
             } else if (!(draw_result & 0x10)) {
                 continue;
             }
-            DrawTexturedQuad(x, y, width, height, u_start, v_start, u_end - u_start, v_end - v_start, 0x80808080L, D_0015EFD0);
+            DrawTexturedQuad(x, y, width, height, u_start, v_start, u_end - u_start, v_end - v_start, 0x80808080L, capture_texture_tex0);
         }
         if (pass == 0) {
             RestoreMobyClassDists();

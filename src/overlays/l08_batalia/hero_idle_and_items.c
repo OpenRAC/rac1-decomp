@@ -87,7 +87,7 @@ int Hero_TryMoveStateL08(int a, int b) {
         char *p = D_0013E633 + 0xE1D;
         if (*(int *)(p + 0x208C) == 0x14 && (a != 0x64 || b != 2)) return 0;
     }
-    if ((D_L08_0015F6A8 == 2 || D_L08_0015F6A8 == 6) && b != 2) return 0;
+    if ((batalia_game_mode == 2 || batalia_game_mode == 6) && b != 2) return 0;
     {
         char *p = D_0013E633 + 0xE1D;
         if (*(int *)(p + 0x22A8) == 0 && (*(int *)(p + 0x208C) == 2 || *(int *)(p + 0x208C) == 7)
@@ -1418,7 +1418,7 @@ int Hero_TryMoveStateL08(int a, int b) {
             }
             q = D_0013E633 + 0xE1D;
             *(unsigned int *)(h + 0x44) = *(unsigned int *)(h + 0x44) | (1 << g_current_level_index) | 0x80000000;
-            e = &D_L08_0017C4A8[*(int *)(q + 0xA60)];
+            e = &batalia_attack_records[*(int *)(q + 0xA60)];
             *(int *)(q + 0x20F0) = 0;
             k = 0;
             if (*(int *)(q + 0x2094) == 6 && e->a == 0 && *(float *)(q + 0xAA8) < (float)e->c) {
@@ -1474,14 +1474,14 @@ int Hero_TryMoveStateL08(int a, int b) {
         *(int *)(p + 0xA64) = 0;
         if (*(int *)(p + 0x2090) == 0x70) {
             int v = 5;
-            if (D_L08_0017C4A8[*(int *)(p + 0xA60)].b == 0) v = 6;
+            if (batalia_attack_records[*(int *)(p + 0xA60)].b == 0) v = 6;
             *(int *)(p + 0xA60) = v;
         } else {
             *(int *)(p + 0xA60) = 5;
         }
         {
             char *q = D_0013E633 + 0xE1D;
-            int e = D_L08_0017C4A8[*(int *)(q + 0xA60)].b;
+            int e = batalia_attack_records[*(int *)(q + 0xA60)].b;
             if (b) {
                 char *m;
                 int z = e == 0;
@@ -1519,7 +1519,7 @@ int Hero_TryMoveStateL08(int a, int b) {
         *(float *)(p + 0x194) = g_frame_time * 9.0f;
         if (b) {
             char *m;
-            T2C_231228 *e = &D_L08_0017C4A8[*(int *)(p + 0xA60)];
+            T2C_231228 *e = &batalia_attack_records[*(int *)(p + 0xA60)];
             int k = e->b;
             int n;
             if (e->a == 1) k = 2;

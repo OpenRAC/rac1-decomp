@@ -405,7 +405,7 @@ f32 ProbeGroundHeight(void *arg0, s32 arg1, f32 arg2) {
     qcopy(sp1, arg0);
     *(f32 *)(sp1 + 8) = *(f32 *)(sp1 + 8) + arg2;
     if (func_001EFE10_a(sp1, sp0, arg1 | 2, 0, 0) != 0) {
-        return *(f32 *)(D_00194220 + 8);
+        return *(f32 *)(coll_hit_pos + 8);
     }
     return 0.0f;
 }
@@ -576,9 +576,9 @@ int select_damage_reaction(char *a, char *B, char *an, unsigned int btn, int *ou
         if (a22 == 0x47) {
             char *h = g_hero;
 
-            v[0] = FastCos(func_001FA058(*(float *)(a + 0x10) - *(float *)(h + 0x80),
+            v[0] = FastCos(fast_arc_tan(*(float *)(a + 0x10) - *(float *)(h + 0x80),
                                                *(float *)(a + 0x14) - *(float *)(h + 0x84)));
-            v[1] = FastSin(func_001FA058(*(float *)(a + 0x10) - *(float *)(h + 0x80),
+            v[1] = FastSin(fast_arc_tan(*(float *)(a + 0x10) - *(float *)(h + 0x80),
                                                *(float *)(a + 0x14) - *(float *)(h + 0x84)));
             v[2] = 1.0f;
             fast_vec_normalize(v, v, FastVecLength(B + 0x10) * 0.7f);
@@ -1014,19 +1014,19 @@ void matrix_to_euler(Mtx44 *src, float *out) {
     m = *src;
     clear_u64_value(m.m[3]);
     m.m[3][3] = 1.0f;
-    z = func_001FA058(m.m[0][0], m.m[0][1]);
+    z = fast_arc_tan(m.m[0][0], m.m[0][1]);
     v[0] = 0.0f;
     v[1] = 0.0f;
     v[2] = -z;
     euler_to_matrix(rot, v);
     sce_vu0_mul_matrix(&m, rot, &m);
-    y = func_001FA058(m.m[0][0], -m.m[0][2]);
+    y = fast_arc_tan(m.m[0][0], -m.m[0][2]);
     v[0] = 0.0f;
     v[2] = 0.0f;
     v[1] = -y;
     func_001FA238(rot, v);
     sce_vu0_mul_matrix(&m, rot, &m);
-    x = func_001FA058(m.m[1][1], m.m[1][2]);
+    x = fast_arc_tan(m.m[1][1], m.m[1][2]);
     v[1] = 0.0f;
     v[0] = -x;
     v[2] = 0.0f;
@@ -1085,8 +1085,8 @@ void rotate_vector_by_quaternion(void *arg0, void *arg1, void *arg2) {
     a[3] = ((float *)arg2)[3];
     qcopy(b, arg1);
     b[3] = 0.0f;
-    func_001FA588(c, arg2, b);
-    func_001FA588(arg0, c, a);
+    multiply_quaternions(c, arg2, b);
+    multiply_quaternions(arg0, c, a);
 }
 
 extern void func_00215380(void *arg0, void *axis, float angle);
@@ -1127,7 +1127,7 @@ void set_video_timing(int pal) {
         pal_mode = 0;
         frame_scale = 1.0f;
         g_frame_scale_sq = 1.0f;
-        D_0015EE68 = 1.0f;
+        inv_frame_scale = 1.0f;
         g_frame_time = 0.01666666753590106964111328125f;
         g_frame_time_sq = 0.000277777784503996372222900390625f;
         D_0015EE74 = 0.00000462962952951784245669841766357421875f;
@@ -1137,7 +1137,7 @@ void set_video_timing(int pal) {
         pal_mode = 1;
         frame_scale = 1.2000000476837158203125f;
         g_frame_scale_sq = 1.440000057220458984375f;
-        D_0015EE68 = 0.833333313465118408203125f;
+        inv_frame_scale = 0.833333313465118408203125f;
         g_frame_time = 0.02000000141561031341552734375f;
         g_frame_time_sq = 0.00040000001899898052215576171875f;
         D_0015EE74 = 0.0000079999999798019416630268096923828125f;
@@ -1311,8 +1311,8 @@ void SamplePathAt(Path *path, int wrap, void *pos, float *rot, int flags, float 
         return;
     }
     FastVecSub(&d, &b, &a);
-    yaw = func_001FA058(d.v[0], d.v[1]);
-    pitch = func_001FA058(vec_length_xy(&d), d.v[2]);
+    yaw = fast_arc_tan(d.v[0], d.v[1]);
+    pitch = fast_arc_tan(vec_length_xy(&d), d.v[2]);
     roll = a.v[3];
     if (clamp) {
         yaw2 = yaw;
@@ -1321,8 +1321,8 @@ void SamplePathAt(Path *path, int wrap, void *pos, float *rot, int flags, float 
     } else {
         qcopy(&c, &path->pts[k]);
         FastVecSub(&d, &c, &b);
-        yaw2 = func_001FA058(d.v[0], d.v[1]);
-        pitch2 = func_001FA058(vec_length_xy(&d), d.v[2]);
+        yaw2 = fast_arc_tan(d.v[0], d.v[1]);
+        pitch2 = fast_arc_tan(vec_length_xy(&d), d.v[2]);
         roll2 = b.v[3];
     }
     rot[0] = 0.0f;

@@ -573,33 +573,33 @@ char *SpawnMoby270(char *src) {
         }
         z = 0.0f; PartType05Spawn(m + 0x10, 1000000.0f, 0x7F, 0x7F, 0x7F, scale_ticks(0xF), z);
         FastMemSet(d, 0, 0x20);
-        r = (unsigned char *)D_L00_001DD450[*(int *)&D_L00_00161924];
+        r = (unsigned char *)D_L00_001DD450[*(int *)&morphoray_chicken_next_slot];
         if (r != 0 && *(short *)(r + 0xA6) == 0x10E && r[0x20] != 0xFE && r[0x20] != 0xFD) {
             if (r[0x20] == 5) {
                 *(float *)(d + 0x78) = z;
                 *(unsigned short *)(m + 0x34) &= 0xFFDF;
             } else if (((DD9 *)d)->f74 == 0) {
-                a = D_L00_001DD4A0 + *(int *)&D_L00_00161924 * 0xB0;
-                b = D_L00_001DE260 + *(int *)&D_L00_00161924 * 0x60;
+                a = D_L00_001DD4A0 + *(int *)&morphoray_chicken_next_slot * 0xB0;
+                b = D_L00_001DE260 + *(int *)&morphoray_chicken_next_slot * 0x60;
                 *(char **)(d + 0x14) = a;
                 *(char **)(d + 0x10) = b;
                 *(unsigned short *)(m + 0x34) |= 0x1020;
                 *(char **)(*(char **)(d + 0x14) + 0x70) = &D_L00_00161910;
             }
-            *(int *)(*(char **)(D_L00_001DD450[*(int *)&D_L00_00161924] + 0x78) + 0x70) = 1;
+            *(int *)(*(char **)(D_L00_001DD450[*(int *)&morphoray_chicken_next_slot] + 0x78) + 0x70) = 1;
         } else if (((DD9 *)d)->f74 == 0) {
-            a2 = D_L00_001DD4A0 + *(int *)&D_L00_00161924 * 0xB0;
-            b2 = D_L00_001DE260 + *(int *)&D_L00_00161924 * 0x60;
+            a2 = D_L00_001DD4A0 + *(int *)&morphoray_chicken_next_slot * 0xB0;
+            b2 = D_L00_001DE260 + *(int *)&morphoray_chicken_next_slot * 0x60;
             *(char **)(d + 0x14) = a2;
             *(char **)(d + 0x10) = b2;
             *(unsigned short *)(m + 0x34) |= 0x1020;
             *(char **)(*(char **)(d + 0x14) + 0x70) = &D_L00_00161910;
         }
         reset_morphoray_chicken_slot_defaults(*(char **)(d + 0x14));
-        D_L00_001DD450[*(int *)&D_L00_00161924] = (int)m;
-        *(int *)&D_L00_00161924 = *(int *)&D_L00_00161924 + 1;
+        D_L00_001DD450[*(int *)&morphoray_chicken_next_slot] = (int)m;
+        *(int *)&morphoray_chicken_next_slot = *(int *)&morphoray_chicken_next_slot + 1;
         n = ((DD9 *)d)->f74;
-        *(int *)&D_L00_00161924 = *(int *)&D_L00_00161924 % 20;
+        *(int *)&morphoray_chicken_next_slot = *(int *)&morphoray_chicken_next_slot % 20;
         if (n != 0) {
             *(unsigned short *)(m + 0x34) &= 0xFFDF;
         }

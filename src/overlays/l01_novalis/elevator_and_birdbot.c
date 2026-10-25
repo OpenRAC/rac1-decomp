@@ -1971,7 +1971,7 @@ void peckbot_update(GcMoby *m) {
         va.f[1] = FastSin(m->rot.f[2]) * (v->f204 * g_frame_time);
         va.f[2] = 0.0f;
         FastVecAdd(&vb, &m->pos, &va);
-        for (o = (GcOther *)D_L01_00160064; o != 0; o = o->next) {
+        for (o = (GcOther *)novalis_moby_list; o != 0; o = o->next) {
             if (o == (GcOther *)m) {
                 continue;
             }
@@ -2169,7 +2169,7 @@ void cave_door_update(char *m) {
         break;
     case CAVE_DOOR_STATE_UPDATE_ROTATION:
         if (cave_door_vars->target != -1) {
-            target_moby = &(*(Moby **)&D_L01_00160058)[cave_door_vars->target];
+            target_moby = &(*(Moby **)&novalis_mobys)[cave_door_vars->target];
             if (target_moby->oclass == 0x118) {
                 mv = (f32 *)target_moby->pvars;
                 target_moby->update_dist = 0xFF;
@@ -2229,7 +2229,7 @@ void TetheredMineUpdate(char *m) {
         t = (int *)(d + 0x140);
         for (i = 0; i < 4; i++) {
             if (t[i] != -1) {
-                DeleteMoby((char *)(*(int *)&D_L01_00160058 + (t[i] << 8)));
+                DeleteMoby((char *)(*(int *)&novalis_mobys + (t[i] << 8)));
             }
         }
         DeleteMoby(m);
@@ -3325,8 +3325,8 @@ void falling_rock_update(CapMoby *falling_rock) {
                 falling_rock_vars->wait = rand_range(scale_ticks(300), scale_ticks(600));
                 falling_rock_vars->rise = scale_ticks(falling_rock_vars->rise_len);
                 falling_rock->state = 2;
-                D_L01_00167180.shake = 0.4f;
-                D_L01_00167180.shake_time = scale_ticks(30);
+                novalis_player_camera.shake = 0.4f;
+                novalis_player_camera.shake_time = scale_ticks(30);
                 func_0022ED80_2FA458(1, 0, falling_rock);
             }
         }
@@ -3348,8 +3348,8 @@ void falling_rock_update(CapMoby *falling_rock) {
         falling_rock_vars->rot.f[2] -= g_frame_time_sq * 30.0f;
         FastVecAdd(&falling_rock->pos, &falling_rock->pos, &falling_rock_vars->rot);
         if (FastDecTimer(&falling_rock_vars->hold) && 20.0f < falling_rock_vars->home.f[2] - falling_rock->pos.f[2]) {
-            D_L01_00167180.shake = 0.1f;
-            D_L01_00167180.shake_time = scale_ticks(20);
+            novalis_player_camera.shake = 0.1f;
+            novalis_player_camera.shake_time = scale_ticks(20);
             clear_u64_value(&falling_rock_vars->rot);
             falling_rock->state = 4;
             func_0022ED80_2FA458(0, 0, falling_rock);

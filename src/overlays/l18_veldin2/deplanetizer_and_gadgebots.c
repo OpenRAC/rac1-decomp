@@ -73,8 +73,8 @@ extern void func_L18_002FAEF8(void);
 void update_deplanetizer_gun_sequence_effects(Moby *moby) {
     switch (moby->state) {
     case 0:
-        *(int *)&D_L18_00162528 = 0x163;
-        *(int *)&D_L18_0016254C = 0x3C;
+        *(int *)&deplanetizer_quads_start_tick = 0x163;
+        *(int *)&deplanetizer_glow_start_tick = 0x3C;
         *(int *)&D_L18_00162550 = 0xC8;
         *(int *)&D_L18_00162554 = 0xBE;
         *(int *)&D_L18_0016252C = 0x16D;
@@ -106,7 +106,7 @@ void update_deplanetizer_gun_sequence_effects(Moby *moby) {
                     f = t.s.f[k - 3];
                     if (k == 3 && D_L18_0016D2E0_9D48.timer >= scale_ticks(0x285) && D_L18_0016D2E0_9D48.timer <= scale_ticks(0x2E0)) continue;
                     if (k == 5 && D_L18_0016D2E0_9D48.timer >= scale_ticks(0x285) && D_L18_0016D2E0_9D48.timer <= scale_ticks(0x2DA)) f = 300000.0f;
-                    draw_trail(v, v, D_L18_0015F660, f, f * 0.4f);
+                    draw_trail(v, v, veldin2_zero_vec, f, f * 0.4f);
                 }
             }
             if (D_L18_0016D2E0_9D48.timer == scale_ticks(0x2C2)) {
@@ -165,9 +165,9 @@ void update_deplanetizer_gun_sequence_effects(Moby *moby) {
                 up[2] = 1.0f;
                 spawn_explosion(moby, up, pos, 0.0f, 0.0f, 0x12C, 0xC8, 0xC8, 12.0f, 6.0f, 9.0f, 1.0f, -1, 60.0f, 0, 0x3C, -1, 0);
             }
-            if (D_L18_0016D2E0_9D48.timer >= scale_ticks(*(int *)&D_L18_0016254C) && D_L18_0016D2E0_9D48.timer < scale_ticks(*(int *)&D_L18_00162550)) {
-                float f = IntToFloat(D_L18_0016D2E0_9D48.timer - scale_ticks(*(int *)&D_L18_0016254C));
-                f = f / IntToFloat(scale_ticks(*(int *)&D_L18_00162550 - *(int *)&D_L18_0016254C));
+            if (D_L18_0016D2E0_9D48.timer >= scale_ticks(*(int *)&deplanetizer_glow_start_tick) && D_L18_0016D2E0_9D48.timer < scale_ticks(*(int *)&D_L18_00162550)) {
+                float f = IntToFloat(D_L18_0016D2E0_9D48.timer - scale_ticks(*(int *)&deplanetizer_glow_start_tick));
+                f = f / IntToFloat(scale_ticks(*(int *)&D_L18_00162550 - *(int *)&deplanetizer_glow_start_tick));
                 D_L18_001625B4 = func_001FA898_r(f * 255.0f);
                 AddDrawCallback(draw_moby_two_tint_glow_quads, D_L18_001625B8);
             }
@@ -177,13 +177,13 @@ void update_deplanetizer_gun_sequence_effects(Moby *moby) {
                 D_L18_001625BC = f * 200.0f + 0.25f;
                 AddDrawCallback(func_L18_002FB318_9D48, D_L18_001625B8);
             }
-            if (D_L18_0016D2E0_9D48.timer >= scale_ticks(*(int *)&D_L18_00162528) && D_L18_0016D2E0_9D48.timer < scale_ticks(*(int *)&D_L18_00162530)) {
+            if (D_L18_0016D2E0_9D48.timer >= scale_ticks(*(int *)&deplanetizer_quads_start_tick) && D_L18_0016D2E0_9D48.timer < scale_ticks(*(int *)&D_L18_00162530)) {
                 AddDrawCallback(draw_three_scaled_camera_facing_quads, D_L18_0016D2E0_9D48.objs[0]);
                 if (D_L18_0016D2E0_9D48.timer >= scale_ticks(*(int *)&D_L18_0016252C)) {
                     D_L18_001625B0 = 10.0f;
                 } else {
-                    float f = IntToFloat(D_L18_0016D2E0_9D48.timer - scale_ticks(*(int *)&D_L18_00162528));
-                    f = f / IntToFloat(scale_ticks(*(int *)&D_L18_0016252C - *(int *)&D_L18_00162528));
+                    float f = IntToFloat(D_L18_0016D2E0_9D48.timer - scale_ticks(*(int *)&deplanetizer_quads_start_tick));
+                    f = f / IntToFloat(scale_ticks(*(int *)&D_L18_0016252C - *(int *)&deplanetizer_quads_start_tick));
                     D_L18_001625B0 = *(float *)&D_L18_00162520 + (*(float *)&D_L18_00162524 - *(float *)&D_L18_00162520) * f;
                 }
             }
@@ -195,11 +195,11 @@ void update_deplanetizer_gun_sequence_effects(Moby *moby) {
         if (D_L18_0016D2E0_9D48.state == 7) {
             if (D_L18_0016D2E0_9D48.timer == 1) {
                 Moby *m;
-                *(int *)&D_L18_0016254C = *(int *)&D_L18_00162534;
+                *(int *)&deplanetizer_glow_start_tick = *(int *)&D_L18_00162534;
                 *(int *)&D_L18_00162550 = *(int *)&D_L18_00162538;
                 *(int *)&D_L18_00162554 = *(int *)&D_L18_0016253C;
                 *(int *)&D_L18_00162558 = *(int *)&D_L18_00162540;
-                *(int *)&D_L18_00162528 = *(int *)&D_L18_00162544;
+                *(int *)&deplanetizer_quads_start_tick = *(int *)&D_L18_00162544;
                 *(int *)&D_L18_0016252C = *(int *)&D_L18_00162548;
                 for (m = D_L18_00160064; m != 0; m = m->next) {
                     if (m->oclass == 0x59B) {
@@ -208,9 +208,9 @@ void update_deplanetizer_gun_sequence_effects(Moby *moby) {
                     }
                 }
             }
-            if (D_L18_0016D2E0_9D48.timer >= scale_ticks(*(int *)&D_L18_0016254C) && D_L18_0016D2E0_9D48.timer < scale_ticks(*(int *)&D_L18_00162550)) {
-                float f = IntToFloat(D_L18_0016D2E0_9D48.timer - *(int *)&D_L18_0016254C);
-                f = f / IntToFloat(*(int *)&D_L18_00162550 - *(int *)&D_L18_0016254C);
+            if (D_L18_0016D2E0_9D48.timer >= scale_ticks(*(int *)&deplanetizer_glow_start_tick) && D_L18_0016D2E0_9D48.timer < scale_ticks(*(int *)&D_L18_00162550)) {
+                float f = IntToFloat(D_L18_0016D2E0_9D48.timer - *(int *)&deplanetizer_glow_start_tick);
+                f = f / IntToFloat(*(int *)&D_L18_00162550 - *(int *)&deplanetizer_glow_start_tick);
                 D_L18_001625B4 = func_001FA898_r(f * 255.0f);
                 AddDrawCallback(draw_moby_two_tint_glow_quads, D_L18_001625B8);
             }
@@ -220,13 +220,13 @@ void update_deplanetizer_gun_sequence_effects(Moby *moby) {
                 D_L18_001625BC = f * 200.0f + 0.25f;
                 AddDrawCallback(func_L18_002FB318_9D48, D_L18_001625B8);
             }
-            if (D_L18_0016D2E0_9D48.timer >= scale_ticks(*(int *)&D_L18_00162528) && D_L18_0016D2E0_9D48.timer < scale_ticks(*(int *)&D_L18_00162530)) {
+            if (D_L18_0016D2E0_9D48.timer >= scale_ticks(*(int *)&deplanetizer_quads_start_tick) && D_L18_0016D2E0_9D48.timer < scale_ticks(*(int *)&D_L18_00162530)) {
                 AddDrawCallback(draw_three_scaled_camera_facing_quads, D_L18_0016D2E0_9D48.objs[0]);
                 if (D_L18_0016D2E0_9D48.timer >= *(int *)&D_L18_0016252C) {
                     D_L18_001625B0 = 10.0f;
                 } else {
-                    float f = IntToFloat(D_L18_0016D2E0_9D48.timer - *(int *)&D_L18_00162528);
-                    f = f / IntToFloat(*(int *)&D_L18_0016252C - *(int *)&D_L18_00162528);
+                    float f = IntToFloat(D_L18_0016D2E0_9D48.timer - *(int *)&deplanetizer_quads_start_tick);
+                    f = f / IntToFloat(*(int *)&D_L18_0016252C - *(int *)&deplanetizer_quads_start_tick);
                     D_L18_001625B0 = *(float *)&D_L18_00162520 + (*(float *)&D_L18_00162524 - *(float *)&D_L18_00162520) * f;
                 }
             }
@@ -247,8 +247,8 @@ void update_deplanetizer_gun_sequence_effects(Moby *moby) {
                         float f = IntToFloat(j) / 12.0f;
                         lerp_vector(x, a, D_L18_001625C0, f);
                         lerp_vector(e, b, D_L18_001625D0, f);
-                        spawn_deplanetizer_gun_trail_effects(x, x, D_L18_0015F660, *(float *)&D_L18_00162560, *(float *)&D_L18_00162560 * 0.4f);
-                        spawn_deplanetizer_gun_trail_effects(e, e, D_L18_0015F660, *(float *)&D_L18_00162560, *(float *)&D_L18_00162560 * 0.4f);
+                        spawn_deplanetizer_gun_trail_effects(x, x, veldin2_zero_vec, *(float *)&D_L18_00162560, *(float *)&D_L18_00162560 * 0.4f);
+                        spawn_deplanetizer_gun_trail_effects(e, e, veldin2_zero_vec, *(float *)&D_L18_00162560, *(float *)&D_L18_00162560 * 0.4f);
                     }
                     qcopy(D_L18_001625C0, a);
                     qcopy(D_L18_001625D0, b);
@@ -356,7 +356,7 @@ void draw_three_scaled_camera_facing_quads(void) {
     float tilt;
     char *target;
 
-    if (veldin2_cutscene_state.n == scale_ticks((*(int *)&D_L18_00162528) + 1)) {
+    if (veldin2_cutscene_state.n == scale_ticks((*(int *)&deplanetizer_quads_start_tick) + 1)) {
         D_L18_001625E0 = 1.0f;
         D_L18_001625E4 = 0.0f;
         if (veldin2_cutscene_state.state == 7) {
@@ -478,7 +478,7 @@ void draw_moby_two_tint_glow_quads(struct Moby *m) {
     int c;
     int c2;
     int i;
-    if (D_L18_0016D2E0_FB080.n == scale_ticks((*(int *)&D_L18_0016254C) + 1)) {
+    if (D_L18_0016D2E0_FB080.n == scale_ticks((*(int *)&deplanetizer_glow_start_tick) + 1)) {
         D_L18_001625F8 = -45.0f;
         D_L18_001625FC = 1.0f;
         D_L18_001625F0 = 0;
@@ -492,7 +492,7 @@ void draw_moby_two_tint_glow_quads(struct Moby *m) {
     VU1_addGSregister(0x47, 0x51001);
     matrix_mul_vec3(mat[3], &D_L18_001625F0, &m->rot_row0);
     FastVecAdd(mat[3], mat[3], &m->pos);
-    FastVecSub(mat[0], mat[3], D_L18_00167840);
+    FastVecSub(mat[0], mat[3], veldin2_camera_pos);
     vec_scale_to_length(mat[0], mat[0], 1.0f);
     *(u128_9c20 *)up = 0;
     up[2] = 1.0f;
@@ -565,7 +565,7 @@ void draw_moby_three_scaled_two_tint_quads(struct Moby *m) {
     up[2] = -1.0f;
     up[3] = 1.0f;
     matrix_mul_vec3(mat[0], up, &m->rot_row0);
-    FastVecSub(mat[1], mat[3], D_L18_00167840);
+    FastVecSub(mat[1], mat[3], veldin2_camera_pos);
     FastVecCross(mat[2], mat[1], mat[0]);
     vec_scale_to_length(mat[2], mat[2], 1.0f);
     FastVecCross(mat[1], mat[0], mat[2]);
@@ -1129,7 +1129,7 @@ void update_gadgebot_damage_target_and_glow(void *m_) {
     }
     moby->hit_slot = 0xFF;
     StepColorFade(moby, sentry_vars->anim);
-    fall_setup_value_or_path_slot_address = (int)&D_L18_001B11B0[sentry_vars->path];
+    fall_setup_value_or_path_slot_address = (int)&veldin2_paths[sentry_vars->path];
     reaction_value_or_path_address = *(int *)fall_setup_value_or_path_slot_address;
     FindNearestEligibleMoby(512.0f, moby, &sentry_vars->target, 0, 0,
                             (int *)(reaction_value_or_path_address + 0x10), *(int *)reaction_value_or_path_address);

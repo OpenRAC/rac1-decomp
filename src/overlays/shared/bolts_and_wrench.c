@@ -34,9 +34,9 @@ void RippleDisturb(WaterPatch *g, int count, int mode, float x, float y, float r
     int i;
 
     for (i = 0; i < count; i++) {
-        float oy = g->y + D_L00_001CAB80[3];
-        float fy = (y - oy) / D_L00_001CAB80[5];
-        float fx = (x - (g->x + D_L00_001CAB80[2])) / D_L00_001CAB80[4];
+        float oy = g->y + water_ripple_grid_params[3];
+        float fy = (y - oy) / water_ripple_grid_params[5];
+        float fx = (x - (g->x + water_ripple_grid_params[2])) / water_ripple_grid_params[4];
         int r0, r1, c0, c1;
         float py;
 
@@ -48,10 +48,10 @@ void RippleDisturb(WaterPatch *g, int count, int mode, float x, float y, float r
         c1 = (int)(fx + radius);
         if (c1 >= 16) c1 = 15;
         if (c0 < 0) c0 = 0;
-        py = oy + D_L00_001CAB80[5] * (float)r0;
+        py = oy + water_ripple_grid_params[5] * (float)r0;
 
         for (r = r0; r <= r1; r++) {
-            float px = (g->x + D_L00_001CAB80[2]) + D_L00_001CAB80[4] * (float)c0;
+            float px = (g->x + water_ripple_grid_params[2]) + water_ripple_grid_params[4] * (float)c0;
             int c;
 
             for (c = c0; c <= c1; c++) {
@@ -124,9 +124,9 @@ void RippleDisturb(WaterPatch *g, int count, int mode, float x, float y, float r
                     int cur = WATER_CUR;
                     buf[g->nb[7]].h[cur][22][0] = g->h[cur][15][15];
                 }
-                px += D_L00_001CAB80[4];
+                px += water_ripple_grid_params[4];
             }
-            py += D_L00_001CAB80[5];
+            py += water_ripple_grid_params[5];
         }
         g++;
     }
@@ -1889,7 +1889,7 @@ char *SpawnHomingBolt(void *owner, void *pos, float a, float b, float c, char *t
             qcopy(m + 0x10, &collision_hit_point);
         }
         moby_build_matrix(m);
-        append_unique_moby_index(m, D_L00_001B0AF0, 0x1F);
+        append_unique_moby_index(m, active_homing_missiles, 0x1F);
         *(float *)(m + 0x2C) += *(float *)(m + 0x2C);
     }
     return m;

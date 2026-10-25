@@ -67,7 +67,7 @@ void cache_consecutive_point_distances(int idx) {
     char *p;
     int i;
     if (idx == -1) return;
-    p = D_L12_001B0C30[idx];
+    p = hoven_paths[idx];
     for (i = 0; i < *(int *)p - 1; i++) {
         int o = i * 16;
         *(float *)(p + o + 0x1C) = FastVecDist(p + (o + 0x10), p + (((i + 1) % *(int *)p) * 16 + 0x10));

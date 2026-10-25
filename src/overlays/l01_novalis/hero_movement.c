@@ -444,8 +444,8 @@ void HeroStatePhysics(void) {
 
                     *(u128 *)vec[0] = 0;
                     vec[0][0] = 1.0f;
-                    matrix_mul_vec3(g_hero.motion.unk170.f, vec[0], D_L01_00167180.f350);
-                    g_hero.motion.move_yaw = D_L01_00167180.f158;
+                    matrix_mul_vec3(g_hero.motion.unk170.f, vec[0], novalis_player_camera.f350);
+                    g_hero.motion.move_yaw = novalis_player_camera.f158;
                     turn_to(0, g_frame_scale_sq, g_frame_scale_sq * 0.0f, g_frame_time * 174.53293f);
                     if (*(int *)&D_L01_0015F768 > 0) {
                         if (fast_dec_timer((int *)&D_L01_0015F768)) {
@@ -734,10 +734,10 @@ void HeroStatePhysics(void) {
                 g_hero.unk90C = 0;
             }
             if (g_controller_state.pressed & 0x40) {
-                if (D_L01_0015F6B0 - g_hero.unk914 < scale_ticks(0x46)) {
+                if (novalis_frame_count - g_hero.unk914 < scale_ticks(0x46)) {
                     g_hero.unk910++;
                 }
-                g_hero.unk914 = D_L01_0015F6B0;
+                g_hero.unk914 = novalis_frame_count;
             }
             if (g_hero.unk90E > scale_ticks(0x46)) {
                 g_hero.unk910 = 0;
@@ -1083,8 +1083,8 @@ void HeroStatePhysics(void) {
             if (g_hero.unk4B8 != 0.0f) {
                 if (g_hero.air_frames.s == 0) {
                     if (g_hero.unk4C4 == 0) {
-                        D_L01_00167180.f160 = 0.2f;
-                        D_L01_00167180.f168 = scale_ticks(0x28);
+                        novalis_player_camera.f160 = 0.2f;
+                        novalis_player_camera.f168 = scale_ticks(0x28);
                     }
                     g_hero.unk4C4++;
                 }
@@ -1506,7 +1506,7 @@ void HeroStatePhysics(void) {
                         k = 0.0f;
                     }
                 }
-                if (sp > D_L01_0017C2B8.fC) {
+                if (sp > novalis_hero_speed_bands.fC) {
                     turn_hero_toward_move_direction_with_stick_scale();
                 } else {
                     float t;
@@ -1969,10 +1969,10 @@ void HeroStatePhysics(void) {
                 g_hero.unk229C = 1.0f;
                 g_hero.motion.move_yaw = fast_atan2(vec[0][0], vec[0][1]);
                 g_hero.target_speed = len;
-                if (len < D_L01_0017C2B8.fC) {
-                    g_hero.target_speed = D_L01_0017C2B8.f8 * g_frame_time;
+                if (len < novalis_hero_speed_bands.fC) {
+                    g_hero.target_speed = novalis_hero_speed_bands.f8 * g_frame_time;
                 } else {
-                    g_hero.target_speed = D_L01_0017C2B8.f18 * g_frame_time;
+                    g_hero.target_speed = novalis_hero_speed_bands.f18 * g_frame_time;
                 }
                 if (g_hero.vehicle_mode == 3) {
                     g_hero.target_speed = g_frame_time * 1.5f;

@@ -284,7 +284,7 @@ void build_water_render_setup_packet(void)
     u8 *packet_write_cursor;
     L01Camera *camera;
 
-    func_001FA1C0(scaled_translation_matrix, 1024.0f);
+    set_scale_matrix(scaled_translation_matrix, 1024.0f);
     FastVecScale(scaled_translation_matrix[3], camera_pos, -1024.0f);
     scaled_translation_matrix[3][3] = 1.0f;
     if (D_L01_0015F6C4 != 7) {
@@ -914,7 +914,7 @@ void bolt_crank_update(char *m) {
                                 ok = 1;
                                 ((struct { char pad[0x14]; int timer; } *)s)->timer = 0;
                                 *(float *)&D_L01_00161930 = 0.0f;
-                                for (p = D_L01_00160064; p != 0; p = *(char **)(p + 0x28)) {
+                                for (p = novalis_moby_list; p != 0; p = *(char **)(p + 0x28)) {
                                     if (*(unsigned short *)(p + 0x34) & 0x1000) {
                                         if (vec_distance_xy(m + 0x10, p + 0x10) < 3.25f) {
                                             ok = 0;
@@ -1275,7 +1275,7 @@ void *select_sand_mouse_spawn_target(void *moby, void *from, void *ang, float ya
     char *best = 0;
     float bestScore = 1.0e9f;
     char *t;
-    for (t = D_L01_00160064; t != 0; t = *(char **)(t + 0x28)) {
+    for (t = novalis_moby_list; t != 0; t = *(char **)(t + 0x28)) {
         char *hs = D_L01_00174340_h;
         char *pl = D_0013E633 + 0xE1D;
         float *hp;
@@ -2821,8 +2821,8 @@ s32 reserve_expired_frame_slot(s32 *values, s32 count, s32 offset) {
     s32 index = (s32)((u32)count - 1);
     if (index >= 0) {
         for (; index >= 0; index--) {
-            if (values[index] < D_L01_0015F6B0) {
-                values[index] = (s32)((u32)D_L01_0015F6B0 + (u32)offset);
+            if (values[index] < novalis_frame_count) {
+                values[index] = (s32)((u32)novalis_frame_count + (u32)offset);
                 break;
             }
         }

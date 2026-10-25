@@ -107,7 +107,7 @@ void HeroFrameUpdate(void) {
     update_hero_vehicle_moby();
     update_hero_scalar_pulse();
     apply_hero_and_item_scale_sequence();
-    func_L00_00248EF8(GG->a80);
+    reveal_map_around_position(GG->a80);
     if (GG->b20A4 == 3) {
         if (gCheats[1] != 0) {
             D_L01_0017C0CC = 1.9f;
@@ -121,7 +121,7 @@ void HeroFrameUpdate(void) {
             v = scale_ticks(0x5A);
         }
         f0 = IntToFloat(v);
-        ang = (float)(D_L01_0015F6B0 % v) / f0;
+        ang = (float)(novalis_frame_count % v) / f0;
         ang = ang + ang;
         ang = ang * 3.14159274f;
         f20 = FastSin(ang + -3.14159274f);
@@ -259,7 +259,7 @@ void update_hero_frame(void) {
     scan_hero_input_sequences();
     Profile_Mark(*(void **)(g + 0x2080));
     if (*(int *)(g + 0x208C) != 0x16 && *(int *)(g + 0x2084) != 0x32) {
-        func_L00_00248EF8(g + 0x80);
+        reveal_map_around_position(g + 0x80);
     }
     {
         char *q = (char *)D_0013E633 + 0xE1D;
@@ -856,9 +856,9 @@ s32 HeroL01_TryTakeHit(s32 arg) {
     if ((tbl->i24 ^ 1) & 1) {
         return 0;
     }
-    D_0013E090[g_current_level_index]++;
+    level_hero_hit_counts[g_current_level_index]++;
     D_0013F450_231B98.p2280 = tbl->p20;
-    D_0015EFA8++;
+    hero_hit_count++;
     if (arg == 0) {
         return 1;
     }
@@ -1033,10 +1033,10 @@ void HeroSpeedFromTable(void) {
     stick_target(0, 1.0f);
     x = D_0013E633_328A8 + 0xE1D;
     if (0.0f < *(float *)(x + 0x190)) {
-        if (*(float *)(x + 0x190) < D_L01_0017C2B8[3]) {
-            *(float *)(x + 0x190) = D_L01_0017C2B8[2] * g_frame_time;
+        if (*(float *)(x + 0x190) < novalis_hero_speed_bands[3]) {
+            *(float *)(x + 0x190) = novalis_hero_speed_bands[2] * g_frame_time;
         } else {
-            *(float *)(x + 0x190) = D_L01_0017C2B8[6] * g_frame_time;
+            *(float *)(x + 0x190) = novalis_hero_speed_bands[6] * g_frame_time;
         }
     }
     {

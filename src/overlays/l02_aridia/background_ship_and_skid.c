@@ -180,7 +180,7 @@ void skids_agent_update(Moby *m) {
         }
         break;
     case 2:
-        if (D_L02_0015F6A8 != 2) {
+        if (aridia_cinematic_mode != 2) {
             m->state = 1;
             if (d->f4 == 0) {
                 jet_clear_persistent(m->mission);
@@ -237,11 +237,11 @@ void skids_agent_update(Moby *m) {
                 CameraScript2(0);
             }
         }
-        D_L02_0015F4FC = d->f17C;
+        aridia_fade_level = d->f17C;
         break;
     case 4:
         ApproachValue(&d->f17C, 0.0f, 0.1f);
-        D_L02_0015F4FC = d->f17C;
+        aridia_fade_level = d->f17C;
         if (d->f17C == 0.0f) {
             if (d->f178 != 0) {
                 DeleteMoby(d->f178);
@@ -392,7 +392,7 @@ void SkidMcMarxAridiaUpdate(char *m)
                 *(float *)(w + 0x28) = FastAddRots(*(float *)(m + 0x48), 3.14159f);
                 *(unsigned char *)(w + 0x4A) = 1;
             }
-            if (D_L02_0015F6A8 != 2) *(unsigned char *)(m + 0x20) = 1;
+            if (aridia_cinematic_mode != 2) *(unsigned char *)(m + 0x20) = 1;
         }
         break;
     }
@@ -690,17 +690,17 @@ void func_L02_002EB480_r(Moby *m) {
     int *d = (int *)m->pvars;
 
     func_L02_002A59F8_2EB480(0.0f, 260080.0f, 255.0f, 0.0f, 15, 15, 25, 30, 40, 64, D_L02_001F4140);
-    if (D_L02_0015F6E8_2EB480 != 0 || (d[0] != -1 && func_00215570_2EB480(D_L02_00167440, d[0]))) {
+    if (D_L02_0015F6E8_2EB480 != 0 || (d[0] != -1 && func_00215570_2EB480(aridia_camera_pos, d[0]))) {
         func_00202790_2EB480(D_L02_001F3EC0);
     }
-    if (D_L02_0015F6E8_2EB480 != 0 || (d[1] != -1 && func_00215570_2EB480(D_L02_00167440, d[1]))) {
+    if (D_L02_0015F6E8_2EB480 != 0 || (d[1] != -1 && func_00215570_2EB480(aridia_camera_pos, d[1]))) {
         func_00202790_2EB480(D_L02_001F3F90);
         func_00202790_2EB480(D_L02_001F3FF0);
         func_00202790_2EB480(D_L02_001F4050);
         func_00202790_2EB480(D_L02_001F4090);
         func_00202790_2EB480(D_L02_001F40D0);
     }
-    if (D_L02_0015F6E8_2EB480 != 0 || (d[2] != -1 && func_00215570_2EB480(D_L02_00167440, d[2]))) {
+    if (D_L02_0015F6E8_2EB480 != 0 || (d[2] != -1 && func_00215570_2EB480(aridia_camera_pos, d[2]))) {
         func_00202790_2EB480(D_L02_001F3F20);
     }
     func_L02_002A59D8_2EB480();

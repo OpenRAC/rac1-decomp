@@ -292,7 +292,7 @@ void update_render_debug_menu(void) {
                     occl_cam_state.flags8 = 0;
                     FastVecSub(v, g_hero.motion.pos.f, gCamera.pos);
                     occl_cam_state.f8C = vec_length_xy(v);
-                    occl_cam_state.f88 = FastSubRots(func_001FA058(v[0], v[1]), gCamera.rot[2]);
+                    occl_cam_state.f88 = FastSubRots(fast_arc_tan(v[0], v[1]), gCamera.rot[2]);
                     occl_cam_state.f90 = g_hero.motion.pos.f[2] - gCamera.pos[2];
                     occl_cam_state.f84 = FastSubRots(g_hero.motion.rot.f[2], gCamera.rot[2]);
                     break;
@@ -1198,10 +1198,10 @@ void UpdateViewContext(void) {
     view = &view_context_p;
     view->aspect_x = view->scr_x / view->half_width;
     view->aspect_y = view->scr_y / view->half_height;
-    view->fov.f[2] = 1.0f / fast_cos(func_001FA058(1.0f, view->fov.f[0]));
-    view->fov.f[3] = 1.0f / fast_cos(func_001FA058(1.0f, view->fov.f[1]));
-    horizontal_clip_scale = 1.0f / fast_cos(func_001FA058(1.0f, view->fov.f[0] * view->aspect_x));
-    vertical_clip_scale = 1.0f / fast_cos(func_001FA058(1.0f, view->fov.f[1] * view->aspect_y));
+    view->fov.f[2] = 1.0f / fast_cos(fast_arc_tan(1.0f, view->fov.f[0]));
+    view->fov.f[3] = 1.0f / fast_cos(fast_arc_tan(1.0f, view->fov.f[1]));
+    horizontal_clip_scale = 1.0f / fast_cos(fast_arc_tan(1.0f, view->fov.f[0] * view->aspect_x));
+    vertical_clip_scale = 1.0f / fast_cos(fast_arc_tan(1.0f, view->fov.f[1] * view->aspect_y));
     horizontal_clip_scale /= view->fov.f[2];
     vertical_clip_scale /= view->fov.f[3];
     view->aspect_scale.f[2] = 1.0f / view->aspect_x;
@@ -3477,7 +3477,7 @@ void font_queue_vu_state(void) {
     int *base;
     int *p;
 
-    func_001FA1C0(m, 1024.0f);
+    set_scale_matrix(m, 1024.0f);
     cam = camera_position;
     FastVecScale(&m[12], cam, -1024.0f);
     m[15] = 1.0f;

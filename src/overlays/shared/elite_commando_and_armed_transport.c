@@ -380,7 +380,7 @@ animate_idle:
     }
     if (*(int *)&D_L16_00161B38) update_blarg_elite_commando_joint_aim(m);
     if (*(int *)&D_L16_00161B3C && *(int *)(D_0013E633 + 0x2EA9) != 22) emit_blarg_elite_commando_joint_sparks(m);
-    if (g_current_level_index == 18 && D_L16_0015F6A8 == 2 && (unsigned int)(D_L16_0016CD10 - 3) < 3U) DeleteMoby(m);
+    if (g_current_level_index == 18 && kalebo3_game_mode == 2 && (unsigned int)(D_L16_0016CD10 - 3) < 3U) DeleteMoby(m);
 }
 extern char *func_L00_0025B478(void *, int, int);
 extern int func_L00_0025B4D0(void *, void *, void *, int, int *, float *, int, int);
@@ -880,7 +880,7 @@ void armed_transport_update(char *m) {
     case 1: {
         int i;
 
-        if (D_L16_0015F6A8 == 0
+        if (kalebo3_game_mode == 0
             && (*(int *)(d + 0xD4) == -1
                 || IsPointInPolygon(gHeroPos, kalebo3_path_table[*(int *)(d + 0xD4)] + 0x10,
                                      *(int *)kalebo3_path_table[*(int *)(d + 0xD4)]))) {
@@ -1004,14 +1004,14 @@ void armed_transport_update(char *m) {
         *(float *)(d + 0x194) -= dt + dt;
         *(float *)(m + 0x40) += dt * 0.2617994f;
         if (fast_dec_timer((int *)(d + 0x160)) || hero_vehicle_mode[0] == 2) {
-            spawn_explosion(m, D_L16_0015F660, m + 0x10, 0.0f, 0.0f, 20, 12, 8, 4.0f, 2.5f, 9.0f, -1, 2.0f, 0.0f,
+            spawn_explosion(m, kalebo3_zero_vec, m + 0x10, 0.0f, 0.0f, 20, 12, 8, 4.0f, 2.5f, 9.0f, -1, 2.0f, 0.0f,
                               0, 0, -1, 0);
-            SpawnBreakFragment(m, 0x634, (float *)(m + 0x10), m + 0x40, 0, 0, 0.0f, D_L16_0015F660, D_L16_0015F660,
-                              D_L16_0015F660);
-            SpawnBreakFragment(m, 0x635, (float *)(m + 0x10), m + 0x40, 0, 0, 0.0f, D_L16_0015F660, D_L16_0015F660,
-                              D_L16_0015F660);
-            SpawnBreakFragment(m, 0x636, (float *)(m + 0x10), m + 0x40, 0, 0, 0.0f, D_L16_0015F660, D_L16_0015F660,
-                              D_L16_0015F660);
+            SpawnBreakFragment(m, 0x634, (float *)(m + 0x10), m + 0x40, 0, 0, 0.0f, kalebo3_zero_vec, kalebo3_zero_vec,
+                              kalebo3_zero_vec);
+            SpawnBreakFragment(m, 0x635, (float *)(m + 0x10), m + 0x40, 0, 0, 0.0f, kalebo3_zero_vec, kalebo3_zero_vec,
+                              kalebo3_zero_vec);
+            SpawnBreakFragment(m, 0x636, (float *)(m + 0x10), m + 0x40, 0, 0, 0.0f, kalebo3_zero_vec, kalebo3_zero_vec,
+                              kalebo3_zero_vec);
             SetDeathBits(m, 0, -1);
             DeleteMoby(m);
             return;

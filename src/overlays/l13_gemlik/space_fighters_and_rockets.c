@@ -511,9 +511,9 @@ void update_hovering_rocket_attacker(char *m) {
         int index = d->table_index;
         moby_position = &moby->pos;
         z40 = 0.0f;
-        distance_to_target = FastVecDist(moby_position, D_L13_0016016C + (index << 7) + 0x30);
+        distance_to_target = FastVecDist(moby_position, gemlik_scene_points + (index << 7) + 0x30);
         }
-        FastVecSub(scratch_vector, D_L13_0016016C + (d->table_index << 7) + 0x30, moby_position);
+        FastVecSub(scratch_vector, gemlik_scene_points + (d->table_index << 7) + 0x30, moby_position);
         ApproachWithVelocity(&z40, distance_to_target, &d->approach_vel, g_frame_time_sq * 10.0f, g_frame_time_sq * 10.0f, g_frame_time * 20.0f);
         vec_scale_to_length(scratch_vector, scratch_vector, d->approach_vel);
         FastVecAdd(moby_position, moby_position, scratch_vector);
@@ -3093,7 +3093,7 @@ void start_space_fighter_defeat_path(struct Moby *moby, char *vars, int *result)
     RerollEffectCounter(moby, (short *)(vars + 0x60));
     vars[0x13B] = 4;
     scale = g_frame_time * 10.0f;
-    velocity = D_L13_0016016C + (*(int *)(vars + 0x130) << 7);
+    velocity = gemlik_scene_points + (*(int *)(vars + 0x130) << 7);
     *(short *)(vars + 0x9C) = 0;
     vec_scale_to_length(vars + 0x70, velocity, scale);
     {

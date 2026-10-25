@@ -2514,7 +2514,7 @@ void help_desk_lady_update(L16WatchMoby *moby) {
         break;
     }
     case HELP_DESK_REQUEST_HELP_AND_SAVE:
-        if (*(int *)&D_L16_0015F6A8 != 2) {
+        if (*(int *)&kalebo3_game_mode != 2) {
             char *player;
             moby->state = 1;
             Hero_ResetToPosition(D_L16_001D9990, D_L16_001D9990 + 4, 0, 1);

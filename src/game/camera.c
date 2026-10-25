@@ -977,9 +977,9 @@ void update_camera_underwater_flag(void) {
     a[2] += 0.75f;
     b[2] -= 0.75f;
     i = 0;
-    while (i < 6 && func_001EFE10(a, b, 0x12, 0, 0) != 0) {
+    while (i < 6 && coll_line_fix(a, b, 0x12, 0, 0) != 0) {
         if (func_001F0F00() == 0) {
-            float h = resolve_camera_surface_height(D_00194220, 0) + 0.04f;
+            float h = resolve_camera_surface_height(coll_hit_pos, 0) + 0.04f;
             CameraSystem *c2 = &gCamera;
 
             if (c2->pos.f[2] < h) {
@@ -989,7 +989,7 @@ void update_camera_underwater_flag(void) {
             }
             return;
         }
-        qcopy(a, D_00194220);
+        qcopy(a, coll_hit_pos);
         i++;
         a[2] -= 0.01f;
     }

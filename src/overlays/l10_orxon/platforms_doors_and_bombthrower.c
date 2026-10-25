@@ -941,7 +941,7 @@ void update_height_adjusted_projectile(struct Moby *moby) {
     }
     if (moby->pos.x < 2.0f || moby->pos.y < 2.0f || moby->pos.z < 2.0f ||
         moby->pos.x > 510.0f || moby->pos.y > 510.0f || moby->pos.z > 510.0f ||
-        vec_distance_xy(&moby->pos, &D_L10_001672C0) > 80.0f)
+        vec_distance_xy(&moby->pos, &orxon_camera_pos) > 80.0f)
         DeleteMoby(moby);
 }
 extern char *func_0020D348(int);
@@ -1431,7 +1431,7 @@ void lab_door_update(unsigned char *m) {
         }
         hit = 0;
         if (flag == 0) {
-            v[0] = D_L10_001672C0;
+            v[0] = orxon_camera_pos;
             if (test_point_in_lab_door_local_xy_bounds(m, &v[0]) == 0) {
                 v[1] = gHeroPos;
                 if (test_point_in_lab_door_local_xy_bounds(m, &v[1]) == 0) goto done;
@@ -1688,7 +1688,7 @@ void update_data_processor_linked_effect(struct Moby *moby) {
         radius_squared = half_height * half_height;
         position1[2] += half_height;
         position1[3] = vec_length(radius_squared + half_width * half_width);
-        if (FastVecDist(&moby->pos, &D_L10_001672C0) < 80.0f && 0.0f <= (float)FastBSphereCheck(position1, 80.0f))
+        if (FastVecDist(&moby->pos, &orxon_camera_pos) < 80.0f && 0.0f <= (float)FastBSphereCheck(position1, 80.0f))
             AddDrawCallback((void *)render_data_processor_linked_effect, moby);
         if (Sound_IsPlaying(moby, vars->voice) == 0)
             vars->voice = Moby_PlaySound(0, 4, (int)moby);
@@ -1711,7 +1711,7 @@ void update_data_processor_linked_effect(struct Moby *moby) {
         radius_squared = half_height * half_height;
         scratch.position2[2] += half_height;
         scratch.position2[3] = vec_length(radius_squared + half_width * half_width);
-        if (FastVecDist(&moby->pos, &D_L10_001672C0) < 80.0f && 0.0f <= (float)FastBSphereCheck(scratch.position2, 80.0f))
+        if (FastVecDist(&moby->pos, &orxon_camera_pos) < 80.0f && 0.0f <= (float)FastBSphereCheck(scratch.position2, 80.0f))
             AddDrawCallback((void *)render_data_processor_linked_effect, moby);
         break;
     }
@@ -2459,7 +2459,7 @@ void activate_waiting_moby_group_members(unsigned char *m) {
         p = D_L10_001ABFC0[m[0x21]];
         if (p != 0) {
             do {
-                Ent *base = D_L10_00160058;
+                Ent *base = orxon_mobys;
                 Ent *e = (Ent *)((*(unsigned short *)p & 0x7FFF) * 256 + (int)base);
                 if (e->state == 1) e->state = 2;
             } while (*p++ >= 0);

@@ -721,7 +721,7 @@ void HeroL15_UpdateStateTransitions(void) {
                                     HeroQuartu_TrySetMoveState(7, 1);
                                     break;
                                 }
-                                if (g_hero.target_speed > D_L15_0017C438.fC && FastDiffRots(g_hero.motion.move_yaw, g_hero.motion.rot.f[2]) < 1.0471976f && D_L15_0017C438.f18 * g_frame_time * 0.85f < g_hero.motion.unk164) {
+                                if (g_hero.target_speed > quartu_hero_speed_bands.fC && FastDiffRots(g_hero.motion.move_yaw, g_hero.motion.rot.f[2]) < 1.0471976f && quartu_hero_speed_bands.f18 * g_frame_time * 0.85f < g_hero.motion.unk164) {
                                     HeroQuartu_TrySetMoveState(9, 1);
                                     break;
                                 }
@@ -1335,7 +1335,7 @@ void HeroL15_UpdateStateTransitions(void) {
                         configure_hero_point_effect_emission(0.016f, 0.002f, 5, 2, 0, 1);
                         break;
                     }
-                    if (g_hero.target_speed > D_L15_0017C438.fC && FastDiffRots(g_hero.motion.move_yaw, g_hero.motion.rot.f[2]) < 1.5707964f) {
+                    if (g_hero.target_speed > quartu_hero_speed_bands.fC && FastDiffRots(g_hero.motion.move_yaw, g_hero.motion.rot.f[2]) < 1.5707964f) {
                         if (g_hero.unk12E2 != 0 || g_hero.unk20A9 != 0) {
                             HeroQuartu_TrySetMoveState(2, 1);
                             break;
@@ -1349,7 +1349,7 @@ void HeroL15_UpdateStateTransitions(void) {
                         configure_hero_point_effect_emission(0.016f, 0.002f, 5, 2, 1, 0);
                         break;
                     }
-                    if (D_L15_0017C438.fC < g_hero.target_speed) {
+                    if (quartu_hero_speed_bands.fC < g_hero.target_speed) {
                         if (g_hero.unk12E2 != 0 || g_hero.unk20A9 != 0) {
                             HeroQuartu_TrySetMoveState(2, 1);
                             break;
@@ -1542,7 +1542,7 @@ void HeroL15_UpdateStateTransitions(void) {
                             if (g_hero.state.current == 9 && g_hero.unk444 - g_hero.anim_frame > 6.0f
                                 && (return_hero_animation_id_unchanged(moby[0x52]) == 8 || return_hero_animation_id_unchanged(moby[0x52]) == 9)
                                 && moby[0x52] == moby[0x53]
-                                && D_L15_0017C438.f18 * g_frame_time * 0.1f > g_hero.target_speed
+                                && quartu_hero_speed_bands.f18 * g_frame_time * 0.1f > g_hero.target_speed
                                 && g_frame_time * 2.5f > g_hero.motion.unk164) {
                                 float sp = (float)scale_ticks(9) / g_hero.anim_speed;
                                 if ((float)scale_ticks(0xA) < sp) {
@@ -1568,7 +1568,7 @@ void HeroL15_UpdateStateTransitions(void) {
                         if (g_hero.on_slip_ground == 0 && g_hero.unk1C4 == 0) {
                             if (pad_pressed_within(0x40, scale_ticks(8), 0)) {
                                 if (g_hero.air_frames.s < scale_ticks(4)) {
-                                    if (g_hero.target_speed > D_L15_0017C438.fC && FastDiffRots(g_hero.motion.move_yaw, g_hero.motion.rot.f[2]) < 1.0471976f && D_L15_0017C438.f18 * g_frame_time * 0.85f < g_hero.motion.unk164) {
+                                    if (g_hero.target_speed > quartu_hero_speed_bands.fC && FastDiffRots(g_hero.motion.move_yaw, g_hero.motion.rot.f[2]) < 1.0471976f && quartu_hero_speed_bands.f18 * g_frame_time * 0.85f < g_hero.motion.unk164) {
                                         HeroQuartu_TrySetMoveState(9, 1);
                                         break;
                                     }
@@ -1742,8 +1742,8 @@ void HeroL15_UpdateStateTransitions(void) {
                         int fr;
 
                         g_hero.unk418 = scale_ticks(1);
-                        D_L15_00167300.f160 = 0.15f;
-                        D_L15_00167300.f168 = scale_ticks(0x1E);
+                        quartu_player_camera.f160 = 0.15f;
+                        quartu_player_camera.f168 = scale_ticks(0x1E);
                         fr = truncate_float_to_s32(g_hero.unk448) + 3;
                         if (g_hero.anim_frame < g_hero.unk444) {
                             set_hero_animation(moby[0x53], fr, scale_ticks(6));
@@ -1790,7 +1790,7 @@ void HeroL15_UpdateStateTransitions(void) {
                     if (scale_ticks(1) < g_hero.unk418) {
                         g_hero.unk2284 = 0;
                         stick_target(0, 1.0f);
-                        if (g_hero.target_speed > D_L15_0017C438.fC && g_hero.unk229C > 0.5f && g_hero.unk1C4 == 0 && FastDiffRots(g_hero.motion.move_yaw, g_hero.motion.rot.f[2]) < 1.5707964f) {
+                        if (g_hero.target_speed > quartu_hero_speed_bands.fC && g_hero.unk229C > 0.5f && g_hero.unk1C4 == 0 && FastDiffRots(g_hero.motion.move_yaw, g_hero.motion.rot.f[2]) < 1.5707964f) {
                             HeroQuartu_TrySetMoveState(0x5B, 1);
                             break;
                         }

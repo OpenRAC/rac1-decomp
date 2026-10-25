@@ -148,7 +148,7 @@ void gadgetron_ceo_update(L16ChallengeMoby *m) {
         break;
     }
     case 2:
-        if (D_L16_0015F6A8 != 2) {
+        if (kalebo3_game_mode != 2) {
             int previous;
             m->state = 1;
             previous = activation->previous;
@@ -159,7 +159,7 @@ void gadgetron_ceo_update(L16ChallengeMoby *m) {
         }
         break;
     case 4:
-        if (D_L16_0015F6A8 == 0) {
+        if (kalebo3_game_mode == 0) {
             m->state = 1;
             grant_inventory_item(31, 1);
             memcard_Save(0, -1);
@@ -588,7 +588,7 @@ void update_paired_joint_particle_trails(char *moby) {
         moby[0x20] = 1;
         break;
     case 1:
-        if (D_L16_0015F6A8 == 2) {
+        if (kalebo3_game_mode == 2) {
         char *g = D_L16_0016CCE0;
         if (*(int *)(g + 0x30) == 0) {
             char *p = *(char **)(g + 0x184);

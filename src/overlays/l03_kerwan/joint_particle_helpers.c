@@ -21,7 +21,7 @@ void emit_level3_state5_moby_effects(void) {
  char *moby;
  int i;
  if (g_current_level_index != 3) return;
- g = (char *)&D_L03_0016C9E0;
+ g = (char *)&kerwan_cutscene_state;
  if (*(int *)(g + 0x30) != 5) return;
  if (scale_ticks(900) >= *(int *)(g + 0x34)) return;
  if (*(int *)(g + 0x34) >= scale_ticks(1100)) return;

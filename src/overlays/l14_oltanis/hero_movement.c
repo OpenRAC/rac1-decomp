@@ -169,7 +169,7 @@ s32 process_hero_hit_reaction(s32 arg) {
     if (D_0013F450_23140.i1C0 != 0) {
         return 0;
     }
-    if (D_L14_0015F6A8 != 0) {
+    if (oltanis_game_mode != 0) {
         return 0;
     }
     D_0013F450_23140.p2280 = 0;
@@ -184,9 +184,9 @@ s32 process_hero_hit_reaction(s32 arg) {
     if ((tbl->i24 ^ 1) & 1) {
         return 0;
     }
-    D_0013E090[g_current_level_index]++;
+    level_hero_hit_counts[g_current_level_index]++;
     D_0013F450_23140.p2280 = tbl->p20;
-    D_0015EFA8++;
+    hero_hit_count++;
     if (D_0013F450_23140.i208C == 0xF) {
         D_0013F450_23140.h5BE = 1;
         return 0;
@@ -503,8 +503,8 @@ void HeroL14_UpdateStatePhysics(void) {
 
                     *(u128 *)vec[0] = 0;
                     vec[0][0] = 1.0f;
-                    matrix_mul_vec3(g_hero.motion.unk170.f, vec[0], D_L14_00167480.f350);
-                    g_hero.motion.move_yaw = D_L14_00167480.f158;
+                    matrix_mul_vec3(g_hero.motion.unk170.f, vec[0], oltanis_player_camera.f350);
+                    g_hero.motion.move_yaw = oltanis_player_camera.f158;
                     turn_to(0, g_frame_scale_sq, g_frame_scale_sq * 0.0f, g_frame_time * 174.53293f);
                     if (*(int *)&D_L14_0015F768 > 0) {
                         if (fast_dec_timer((int *)&D_L14_0015F768)) {
@@ -975,8 +975,8 @@ void HeroL14_UpdateStatePhysics(void) {
             if (g_hero.unk4B8 != 0.0f) {
                 if (g_hero.air_frames.s == 0) {
                     if (g_hero.unk4C4 == 0) {
-                        D_L14_00167480.f160 = 0.2f;
-                        D_L14_00167480.f168 = scale_ticks(0x28);
+                        oltanis_player_camera.f160 = 0.2f;
+                        oltanis_player_camera.f168 = scale_ticks(0x28);
                     }
                     g_hero.unk4C4++;
                 }
@@ -990,7 +990,7 @@ void HeroL14_UpdateStatePhysics(void) {
             float v;
             float acc;
 
-            if (g_hero.unkA9C != 0 || g_hero.anim_frame < D_L14_0017C428[g_hero.attack_record].f18) {
+            if (g_hero.unkA9C != 0 || g_hero.anim_frame < oltanis_attack_records[g_hero.attack_record].f18) {
                 g_hero.items[0].timer = 2;
             }
             g_hero.target_speed = 0.0f;
@@ -1077,7 +1077,7 @@ void HeroL14_UpdateStatePhysics(void) {
             int skip;
 
             g_hero.target_speed = 0.0f;
-            if (g_hero.unkA9C != 0 || g_hero.anim_frame < D_L14_0017C428[g_hero.attack_record].f18) {
+            if (g_hero.unkA9C != 0 || g_hero.anim_frame < oltanis_attack_records[g_hero.attack_record].f18) {
                 g_hero.items[0].timer = 2;
             }
             skip = 0;
@@ -1164,11 +1164,11 @@ void HeroL14_UpdateStatePhysics(void) {
         } else {
             Rec2C *r;
 
-            if (g_hero.unkA9C != 0 || g_hero.anim_frame < D_L14_0017C428[g_hero.attack_record].f20) {
+            if (g_hero.unkA9C != 0 || g_hero.anim_frame < oltanis_attack_records[g_hero.attack_record].f20) {
                 g_hero.items[0].timer = 2;
             }
             g_hero.target_speed = 0.0f;
-            r = &D_L14_0017C428[g_hero.attack_record];
+            r = &oltanis_attack_records[g_hero.attack_record];
             if (g_hero.unkA54 != 0 && g_hero.state_timer < scale_ticks(4)) {
                 float d;
                 float off;
@@ -1478,7 +1478,7 @@ void HeroL14_UpdateStatePhysics(void) {
                         k = 0.0f;
                     }
                 }
-                if (sp > D_L14_0017C5B8.fC) {
+                if (sp > oltanis_hero_speed_bands.fC) {
                     turn_hero_toward_move_direction_with_stick_scale();
                 } else {
                     float t;
@@ -1795,9 +1795,9 @@ void HeroL14_UpdateStatePhysics(void) {
                             float a;
 
                             stick_target(1.0f, 0);
-                            a = FastDiffRots(g_hero.motion.move_yaw, D_L14_00167480.f158);
+                            a = FastDiffRots(g_hero.motion.move_yaw, oltanis_player_camera.f158);
                             if (FastDiffRots(a, 1.5707964f) < 1.2217305f || FastDiffRots(a, -1.5707964f) < 1.2217305f) {
-                                if (FastDiffRots(FastSubRots(g_hero.motion.move_yaw, D_L14_00167480.f158), 1.5707964f) < 0.7853982f) {
+                                if (FastDiffRots(FastSubRots(g_hero.motion.move_yaw, oltanis_player_camera.f158), 1.5707964f) < 0.7853982f) {
                                     g_hero.unk5A8 = 2;
                                 } else {
                                     g_hero.unk5A8 = 3;
@@ -2277,10 +2277,10 @@ void HeroL14_UpdateStatePhysics(void) {
                 g_hero.unk229C = 1.0f;
                 g_hero.motion.move_yaw = fast_atan2(vec[0][0], vec[0][1]);
                 g_hero.target_speed = len;
-                if (len < D_L14_0017C5B8.fC) {
-                    g_hero.target_speed = D_L14_0017C5B8.f8 * g_frame_time;
+                if (len < oltanis_hero_speed_bands.fC) {
+                    g_hero.target_speed = oltanis_hero_speed_bands.f8 * g_frame_time;
                 } else {
-                    g_hero.target_speed = D_L14_0017C5B8.f18 * g_frame_time;
+                    g_hero.target_speed = oltanis_hero_speed_bands.f18 * g_frame_time;
                 }
                 if (g_hero.vehicle_mode == 3) {
                     g_hero.target_speed = g_frame_time * 1.5f;

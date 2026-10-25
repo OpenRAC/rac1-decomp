@@ -119,7 +119,7 @@ s32 HeroL17_TryTakeHit(s32 arg) {
     if (g_hero.i1C0 != 0) {
         return 0;
     }
-    if (D_L17_0015F6A8 != 0) {
+    if (fleet_game_mode != 0) {
         return 0;
     }
     g_hero.p2280 = 0;
@@ -134,9 +134,9 @@ s32 HeroL17_TryTakeHit(s32 arg) {
     if ((tbl->i24 ^ 1) & 1) {
         return 0;
     }
-    D_0013E090[g_current_level_index]++;
+    level_hero_hit_counts[g_current_level_index]++;
     g_hero.p2280 = tbl->p20;
-    D_0015EFA8++;
+    hero_hit_count++;
     if (g_hero.i208C == 0xF) {
         g_hero.h5BE = 1;
         return 0;

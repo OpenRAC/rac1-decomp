@@ -330,7 +330,7 @@ void ChildSpawnerUpdate(Moby *moby) {
 
     if (moby == 0) return;
     d = (Data_2C0330 *)moby->pvars;
-    if (moby->visible != 0 && FastVecDist(&moby->pos, D_L03_00166F40) < 28.0f) {
+    if (moby->visible != 0 && FastVecDist(&moby->pos, kerwan_camera_pos) < 28.0f) {
         set_ground_height_band(moby);
         moby->shadow_range = 0x16;
     }
@@ -1481,18 +1481,18 @@ void update_homing_spark_projectile(Moby *moby) {
                     }
                     vec_scale_to_length(&vB0, &vB0, -1.0f);
                     FastVecAdd(&vC0, &vA0, &vB0);
-                    if (coll_line(&vA0, &vC0, 0x10, d->target, &hit) != 0 && D_L03_00173FD8 != 0
-                        && (D_L03_00173FD8 == ((Hero *)(D_0013E633 + 0xE1D))->moby || D_L03_00173FD8->oclass == 0x1DF)) {
+                    if (coll_line(&vA0, &vC0, 0x10, d->target, &hit) != 0 && kerwan_coll_hit_moby != 0
+                        && (kerwan_coll_hit_moby == ((Hero *)(D_0013E633 + 0xE1D))->moby || kerwan_coll_hit_moby->oclass == 0x1DF)) {
                         moby->state = 2;
                     }
                     qcopy(&vC0, &vA0);
                     vC0.z += 2.0f;
-                    if (coll_line(&vA0, &vC0, 0x10, d->target, &hit) != 0 && D_L03_00173FD8 != 0
-                        && (D_L03_00173FD8 == ((Hero *)(D_0013E633 + 0xE1D))->moby || D_L03_00173FD8->oclass == 0x1DF)) {
+                    if (coll_line(&vA0, &vC0, 0x10, d->target, &hit) != 0 && kerwan_coll_hit_moby != 0
+                        && (kerwan_coll_hit_moby == ((Hero *)(D_0013E633 + 0xE1D))->moby || kerwan_coll_hit_moby->oclass == 0x1DF)) {
                         moby->state = 2;
                     }
-                    if (coll_sphere_mobys(0.5f, &moby->pos, 0x10, moby, &hit) != 0 && D_L03_00173FD8 != 0
-                        && (D_L03_00173FD8 == ((Hero *)(D_0013E633 + 0xE1D))->moby || D_L03_00173FD8->oclass == 0x1DF)) {
+                    if (coll_sphere_mobys(0.5f, &moby->pos, 0x10, moby, &hit) != 0 && kerwan_coll_hit_moby != 0
+                        && (kerwan_coll_hit_moby == ((Hero *)(D_0013E633 + 0xE1D))->moby || kerwan_coll_hit_moby->oclass == 0x1DF)) {
                         moby->state = 2;
                     }
                 }
@@ -1554,10 +1554,10 @@ extern short D_L03_00161C44;
 
 /* Re-arms the matching entry of the level's moby list in mode 2 (func_L05_003188A8 with argument 1). */
 void attach_shared_manipulator_to_matching_class_moby(char *a) {
-    if (D_L03_0015F6A8 == 2 && gCheats[0] != 0) {
+    if (kerwan_game_mode == 2 && gCheats[0] != 0) {
         int i;
-        for (i = 0; i < D_L03_0016C9E0.n; i++) {
-            char *moby = D_L03_0016C9E0.m[i];
+        for (i = 0; i < kerwan_cutscene_state.n; i++) {
+            char *moby = kerwan_cutscene_state.m[i];
             if (*(short *)(moby + 0xA6) == *(short *)(a + 0xA6)) {
                 unsigned char *q = D_L03_0017C5C0;
                 if (q[1] == 0) {
@@ -1636,7 +1636,7 @@ void qwark_rilgar_update(char *m)
     watch_data = (QwarkWatchData *)moby->pvars;
     func_L01_002FC890_m(m);
     if (moby->visible != 0) {
-        if (func_001F9D10_1edff8(&moby->pos, D_L03_00166F40) < 30.0f) {
+        if (func_001F9D10_1edff8(&moby->pos, kerwan_camera_pos) < 30.0f) {
             set_ground_height_band(m);
             moby->shadow_range = 0x18;
         }
@@ -1883,8 +1883,8 @@ int evaluate_clip_volume_candidate(char *a0, char *a1) {
     if (*(int *)(a0 + 0x74) != 4) return 0;
     if (a1 != 0 && *(short *)(a1 + 0x7E) == 0 && !(*(unsigned char *)(a0 + 0x7C) > *(unsigned char *)(a1 + 0x7C))) return 0;
     if (func_00215570_E9C38b(D_0013E633_2CDDC8 + 0xE9D, *(int *)(sub + 0xC)) != 0) {
-        if (func_00215570_E9C38b(D_L03_00166F40, *(int *)(sub + 0xC)) != 0) return 1;
-        q = D_L03_00166F40 - 0x140;
+        if (func_00215570_E9C38b(kerwan_camera_pos, *(int *)(sub + 0xC)) != 0) return 1;
+        q = kerwan_camera_pos - 0x140;
         five = *(int *)(q + 0x180);
         *(unsigned char *)(q + 0x273) = 0;
         *(short *)(five + 0x7E) = 2;

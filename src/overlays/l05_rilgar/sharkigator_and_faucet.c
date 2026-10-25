@@ -436,7 +436,7 @@ void DrawRibbonTrails(char *moby) {
     func_001153FC(matrix, 0, 0x20);
     matrix[2] = 0.15f;
     matrix[6] = -0.15f;
-    list = D_L05_001AC040[(unsigned char)moby[0x21]];
+    list = rilgar_moby_groups[(unsigned char)moby[0x21]];
     do {
         member = (char *)(((*list & 0x7fff) << 8) + *(int *)&moby_pool_4f60);
         if (*(short *)(member + 0xA6) == 0x4f && (unsigned char)member[0x20] == 1) {
@@ -716,13 +716,13 @@ void extermibot_update(unsigned char *m) {
         *(int *)(d + 0x2DC) = 0;
         *(unsigned short *)(m + 0x34) &= 0xFFBE;
     }
-    if (m[0x31] != 0 && FastVecDist((float *)(m + 0x10), (float *)D_L05_001672C0) < 28.0f) {
+    if (m[0x31] != 0 && FastVecDist((float *)(m + 0x10), (float *)rilgar_camera_pos) < 28.0f) {
         set_ground_height_band(m);
         m[0x7F] = 0x16;
     }
     FlyingEnemyUpdate((Moby *)m);
     t = *(char **)(d + 0x160);
-    *(float *)(m + 0x2C) = *(float *)(*(char **)(m + 0x24) + 0x24) * (*(float *)&D_L05_00161B58);
+    *(float *)(m + 0x2C) = *(float *)(*(char **)(m + 0x24) + 0x24) * (*(float *)&sharkigator_scale);
     switch (m[0x20]) {
     case 0:
         *(unsigned short *)(m + 0x34) |= 0x1000;
@@ -737,7 +737,7 @@ void extermibot_update(unsigned char *m) {
         d[0x5A] = truncate_float_to_s32(11.2f);
         MoveCtl_Init(d + 0xD0);
         {
-        float q = *(float *)&D_L05_00161B58;
+        float q = *(float *)&sharkigator_scale;
         *(float *)(d + 0xDC) = 2.0f;
         *(float *)(d + 0xD8) = 2.0f;
         {
@@ -773,7 +773,7 @@ void extermibot_update(unsigned char *m) {
     case 1:
         if (*(int *)(d + 0x164) != 2 && random_integer_below(9) == 0) {
             if (follow_path(d + 0x2C0, 1, *(int *)(d + 0x2C4), m + 0x10, (s32)(t + 0x10), dir,
-                                  (*(float *)&D_L05_00161B58) * 0.4f) != 0) {
+                                  (*(float *)&sharkigator_scale) * 0.4f) != 0) {
                 if (random_integer_below(0x100) & 1) {
                     *(float *)(d + 0x298) = -*(float *)(d + 0x298);
                 }
@@ -816,7 +816,7 @@ void extermibot_update(unsigned char *m) {
             dir[1] = FastSin(*(float *)(m + 0x48)) * 2.0f;
             dir[2] = 0.0f;
             move_w(m, d + 0xD0, dir, out, 1.0f);
-            PushPointOutsidePath(*(int *)(d + 0x2C0), pos0, pos0, (*(float *)&D_L05_00161B58) * 0.4f);
+            PushPointOutsidePath(*(int *)(d + 0x2C0), pos0, pos0, (*(float *)&sharkigator_scale) * 0.4f);
         }
         (*(short *)(d + 0x2D2))++;
         if ((vec_distance_xy(pos0, d + 0x280) < 1.0f && *(short *)(d + 0x2D2) > scale_ticks(0x3C))
@@ -841,7 +841,7 @@ void extermibot_update(unsigned char *m) {
             dir[1] = FastSin(*(float *)(m + 0x48)) * 2.0f;
             dir[2] = 0.0f;
             move_w(m, d + 0xD0, dir, out, 1.0f);
-            PushPointOutsidePath(*(int *)(d + 0x2C0), pos0, pos0, (*(float *)&D_L05_00161B58) * 0.4f);
+            PushPointOutsidePath(*(int *)(d + 0x2C0), pos0, pos0, (*(float *)&sharkigator_scale) * 0.4f);
         }
         near = 0;
         if (SegmentCrossPolyline(*(int *)(d + 0x2C0), pos0, t + 0x10, hit) != 0
@@ -1016,7 +1016,7 @@ void extermibot_update(unsigned char *m) {
     case 11:
         if (mine_fall(m, d + 0x70) & 0x60) {
             if (follow_path(d + 0x2C0, 1, *(int *)(d + 0x2C4), m + 0x10, (s32)(d + 0x270), dir,
-                                  (*(float *)&D_L05_00161B58) * 0.4f) != 0) {
+                                  (*(float *)&sharkigator_scale) * 0.4f) != 0) {
                 m[0x20] = 4;
                 if (m[0x53] != 1) MobyBlendAnimation(m, 1, 0, scale_ticks(10));
                 break;
@@ -1343,12 +1343,12 @@ void PathWalker_StepTowardNode(struct Moby *m, s32 node, f32 side) {
     f32 dist;
 
     if ((((s32)m >> 8) & 3) == (rilgar_frame_count & 3)) {
-        if (follow_path(&v->path, 1, v->path_pos, &m->pos, node, &v->goal, (*(f32 *)&D_L05_00161B58) * 0.4f) == 0)
+        if (follow_path(&v->path, 1, v->path_pos, &m->pos, node, &v->goal, (*(f32 *)&sharkigator_scale) * 0.4f) == 0)
             v->mode = 2;
     }
     qcopy(&goal, &v->goal);
     dist = vec_distance_xy(&m->pos, &goal);
-    if (dist > 5.0f && side != 0.0f && test_extermibot_offset_path_clearance((char *)m, (float *)&goal, (*(f32 *)&D_L05_00161B58) * 0.4f)) {
+    if (dist > 5.0f && side != 0.0f && test_extermibot_offset_path_clearance((char *)m, (float *)&goal, (*(f32 *)&sharkigator_scale) * 0.4f)) {
         a = FastAddRots(fast_atan2(goal.x - m->pos.x, goal.y - m->pos.y), side);
         func_L00_0025CE58_04F60(&m->rot.z, a, &v->yaw_vel, g_frame_time_sq * 12.566371f, g_frame_time_sq * 12.566371f,
                        g_frame_time * 25.132742f);
@@ -1365,7 +1365,7 @@ void PathWalker_StepTowardNode(struct Moby *m, s32 node, f32 side) {
     dir.z = 0.0f;
     move_w(m, v->move, &dir, &out, 1.0f);
     if (v->stuck_timer == 0) {
-        if (PushPointFromPath(v->path, &m->pos, &m->pos, (*(f32 *)&D_L05_00161B58) * 0.4f) > 2.0f)
+        if (PushPointFromPath(v->path, &m->pos, &m->pos, (*(f32 *)&sharkigator_scale) * 0.4f) > 2.0f)
             v->stuck_timer = scale_ticks(5);
     }
 }
@@ -1411,7 +1411,7 @@ extern float func_001F9D10(void *, void *);
 
 /* Finds the nearest flagged entry of a table, within 120 units of the moby. */
 char *find_nearest_extermibot_group_target(char *self, int idx) {
-    short *list = D_L05_001AC040[idx];
+    short *list = rilgar_moby_groups[idx];
     float best = 120.0f;
     char *res = 0;
     if (list == 0) {
@@ -1577,7 +1577,7 @@ void extermitank_update(unsigned char *m) {
         return;
     }
     if (m[0x31] != 0) {
-        if (FastVecDist(m + 0x10, D_L05_001672C0) < 27.0f) {
+        if (FastVecDist(m + 0x10, rilgar_camera_pos) < 27.0f) {
             set_ground_height_band(m);
             m[0x7F] = 0x15;
         }
@@ -2306,7 +2306,7 @@ void SkidMcMarxUpdate(Moby *moby) {
     float v3[4];
     Data_308D68 *d = (Data_308D68 *)*(void **)&moby->pvars;
 
-    if (moby->visible != 0 && FastVecDist(((float *)&moby->pos), D_L05_001672C0) < 29.0f) {
+    if (moby->visible != 0 && FastVecDist(((float *)&moby->pos), rilgar_camera_pos) < 29.0f) {
         set_ground_height_band(moby);
         moby->shadow_range = 0x17;
     }
@@ -2718,7 +2718,7 @@ void WaterSurfaceUpdate(Moby *moby) {
             g_light.f2C = 0x2A;
             g_light.b3C = 0x1C;
             g_light.b3D = 0x40;
-            D_L05_00161390 = D_L05_001D6BC0_0030DED8;
+            rilgar_water_patches = D_L05_001D6BC0_0030DED8;
             D_L05_00161394 = D_L05_0020B780;
             D_L05_00161398 = 0x30;
             D_L05_001612C4[0] = 0;
@@ -2940,7 +2940,7 @@ extern char D_L05_001D6BC0[];
 // copies the moby's x position onto each linked moby of type 0x33F, following the parent's offset
 void synchronize_group_water_heights(char *moby) {
     char *data = *(char **)(moby + 0x78);
-    short *p = D_L05_001AC040[*(unsigned char *)(moby + 0x21)];
+    short *p = rilgar_moby_groups[*(unsigned char *)(moby + 0x21)];
     char (*base)[256] = (char (*)[256])moby_pool_4f60;
     do {
         int idx = *p & 0x7FFF;

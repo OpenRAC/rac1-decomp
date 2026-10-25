@@ -76,7 +76,7 @@ void electric_gate_update(char *m) {
             AddDrawCallback(draw_electric_gate_beams, m);
         }
         pos = m + 0x10;
-        tab = D_L05_001672C0;
+        tab = rilgar_camera_pos;
         if (FastVecDist(pos, tab) < 64.0f) {
             idx = **(int **)(data + 4);
             if (idx >= 0) {
@@ -195,7 +195,7 @@ void draw_electric_gate_beams(char *a) {
         i = nx;
     } while (i < 5);
 
-    p = (unsigned short *)D_L05_001AC040[*(unsigned char *)(a + 0x21)];
+    p = (unsigned short *)rilgar_moby_groups[*(unsigned char *)(a + 0x21)];
     do {
         char *base;
         off = (*p & 0x7FFF) << 8;
@@ -1314,7 +1314,7 @@ void draw_ocean_grid_outside_clip_volumes(char *moby) {
     int none = 1;
     for (i = 0; i < 8; p++, i++) {
         if (*p == -1) continue;
-        if (is_point_inside_clip_volume(D_L05_001672C0, *p) != 0) {
+        if (is_point_inside_clip_volume(rilgar_camera_pos, *p) != 0) {
             none = 0;
             break;
         }
@@ -2145,7 +2145,7 @@ void shady_salesman_update(char *m)
     npc_data = (ShadySalesmanNpc *)moby->pvars;
     attach_big_head_cheat_manipulator_to_matching_moby(m);
     if (moby->visible != 0) {
-        if (FastVecDist(&moby->pos, D_L05_001672C0) < 40.0f) {
+        if (FastVecDist(&moby->pos, rilgar_camera_pos) < 40.0f) {
             set_ground_height_band(m);
             moby->shadow_range = 0x20;
         }

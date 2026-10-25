@@ -952,7 +952,7 @@ void draw_pulsing_timer_display(char *moby) {
 
     DrawUIFrame(W(D_L06_00162168) + W(D_L06_0016215C), W(D_L06_0016216C) + W(D_L06_0016215C),
                   W(D_L06_00162170) + W(D_L06_00162158), W(D_L06_00162174) + W(D_L06_00162158), W(D_L06_00162178));
-    v = FastSin(IntToFloat(D_L06_0015F6B0 % 60) / 60.0f * 6.28318f) * 3.0f + 0.5f;
+    v = FastSin(IntToFloat(blarg_frame_count % 60) / 60.0f * 6.28318f) * 3.0f + 0.5f;
     if (v > 1.0f) {
         v = 1.0f;
     } else if (v < 0.0f) {

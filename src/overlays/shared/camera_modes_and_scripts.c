@@ -523,7 +523,7 @@ void update_camera_pose_from_targets(void *arg) {
             t = (float)(*(int *)(c + 4) - *(int *)(d + 0xE0)) / IntToFloat(*(int *)(c + 4));
             compute_spherical_offset_from_positions(d + 0xE8, b, D_0013E633 + 0xE9D);
             x = FastSubRots(F(c, 8), F(c, 0x1C));
-            y = FastSubRots(F(b, 0x18), D_L00_00166ED8);
+            y = FastSubRots(F(b, 0x18), camera_yaw);
             if ((x > 0.34906584f && y < -0.34906584f) || (x < -0.34906584f && y > 0.34906584f)) {
                 diff = F(c, 8) - F(c, 0x1C);
                 z = 0;
@@ -1333,7 +1333,7 @@ void volume_camera_swing(char *arg) {
         return;
     }
     if (params->check_yaw != 0
-        && FastDiffRots(((CamDesc *)camera_descriptors)[cam->descriptor_index].yaw, D_L00_00166ED8) >= 1.3962634f) {
+        && FastDiffRots(((CamDesc *)camera_descriptors)[cam->descriptor_index].yaw, camera_yaw) >= 1.3962634f) {
         goto stop;
     }
     if (params->l_buttons_end != 0 && params->type == 5 && (pad_held_r[0] & 5)) {
@@ -1850,7 +1850,7 @@ void update_sound_emitter_playback_by_distance(u8 *m) {
         E_2ed950 *e = ((E_2ed950 *)((u8 *)voice_pool + (s->snd) * 0x70));
         s32 fl = 0;
         s32 four = 4;
-        if (D_L00_0015F6D4[s->id].b18) fl = four;
+        if (level_sound_slots[s->id].b18) fl = four;
         if (e->o == m && e->b74) return;
         if (!fast_dec_timer(&s->wC)) return;
         s->snd = func_L00_0028F0B0_EEE00(s->id, fl, m, 0x400);

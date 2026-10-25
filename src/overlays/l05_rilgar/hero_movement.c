@@ -418,8 +418,8 @@ void Hero_UpdateMovement(void) {
             if (g_hero.state.step == 1) {
                 if (g_hero.state_timer == 1) {
                     emit_hero_surface_effect_burst(3, 0x10, 0);
-                    if (D_L05_00161390 != 0) {
-                        RippleDisturb(D_L05_00161390, D_L05_00161398, 0, g_hero.motion.pos.f[0], g_hero.motion.pos.f[1], 0.4f, -0.3f);
+                    if (rilgar_water_patches != 0) {
+                        RippleDisturb(rilgar_water_patches, D_L05_00161398, 0, g_hero.motion.pos.f[0], g_hero.motion.pos.f[1], 0.4f, -0.3f);
                     }
                     g_hero.unk90A = scale_ticks(0x46);
                 }
@@ -2130,8 +2130,8 @@ void Hero_UpdateMovement(void) {
         if (g_hero.state.current == 0x12) {
             if (g_hero.state_timer == scale_ticks(0x14)) {
                 emit_hero_surface_effect_burst(3, 0x10, 1);
-                if (D_L05_00161390 != 0) {
-                    RippleDisturb(D_L05_00161390, D_L05_00161398, 0, g_hero.motion.pos.f[0], g_hero.motion.pos.f[1], 0.4f, 0.35f);
+                if (rilgar_water_patches != 0) {
+                    RippleDisturb(rilgar_water_patches, D_L05_00161398, 0, g_hero.motion.pos.f[0], g_hero.motion.pos.f[1], 0.4f, 0.35f);
                 }
             }
             if (g_hero.anim_frame >= 4.0f && g_hero.anim_frame <= 7.0f) {
@@ -2287,10 +2287,10 @@ void Hero_UpdateMovement(void) {
                 g_hero.unk229C = 1.0f;
                 g_hero.motion.move_yaw = fast_atan2(vec[0][0], vec[0][1]);
                 g_hero.target_speed = len;
-                if (len < D_L05_0017C318.fC) {
-                    g_hero.target_speed = D_L05_0017C318.f8 * g_frame_time;
+                if (len < rilgar_hero_speed_bands.fC) {
+                    g_hero.target_speed = rilgar_hero_speed_bands.f8 * g_frame_time;
                 } else {
-                    g_hero.target_speed = D_L05_0017C318.f18 * g_frame_time;
+                    g_hero.target_speed = rilgar_hero_speed_bands.f18 * g_frame_time;
                 }
                 if (g_hero.vehicle_mode == 3) {
                     g_hero.target_speed = g_frame_time * 1.5f;

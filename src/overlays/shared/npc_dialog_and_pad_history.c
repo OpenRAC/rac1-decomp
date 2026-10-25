@@ -123,7 +123,7 @@ int Npc_TryStartDialog(char *p, char *q) {
         if (1.5700000524520874f < f) return 0;
     }
     process_menu_entry(p, q, 0);
-    x = D_L00_00179200;
+    x = active_scene_trigger;
     if (level_frame_counter < *(int *)(x + 0x10)) return 0;
     if (*(unsigned char *)(q + 8) != 0 || (*(int *)(D_0013A5E0 + 0x2604) & 0x10) != 0) {
         i = get_dialogue_entry(p);
@@ -137,7 +137,7 @@ int Npc_TryStartDialog(char *p, char *q) {
             else if (*(short *)(e + 8) == 4) { tb2 = D_0013D355 + 0x13B; tb2[*(short *)(e + 0xA)] = 0; }
         }
         if (*(short *)(e + 4) == -1) { process_menu_entry(p, q, 1); return 1; }
-        y = (char *)&D_L00_00179200;
+        y = (char *)&active_scene_trigger;
         *(int *)(y + 8) = (int)p; *(int *)(y + 0xC) = (int)q;
         if (*(unsigned short *)(e + 4) & 0x4000) { PlayMovieEntryIfIdle((short)(*(unsigned short *)(e + 4) ^ 0x4000)); return 1; }
         remove_hud_item(*(int *)&bolt_hud_item);

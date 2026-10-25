@@ -128,7 +128,7 @@ void gadgebot_spawn_container_update(unsigned char *moby) {
         moby[0x20] = 1;
         break;
     case 1:
-        t = D_L06_0015F6B0;
+        t = blarg_frame_count;
         f = (float)(t % 150) / 150.0f * 2.0f * 3.14159274f;
         if (f > 3.14159274f) {
             f -= 6.28318548f;
@@ -376,7 +376,7 @@ void frog_update(unsigned char *m) {
         *(unsigned short *)(m + 0x34) &= 0xFFBE;
     }
     if (m[0x20] != 0x10) {
-        if (*(int *)&D_L06_0015FE78 != 0) {
+        if (*(int *)&blarg_shuttle_at_second_stop != 0) {
             if (*(short *)(d + 0x242) == 0) return;
         } else {
             if (*(short *)(d + 0x242) != 0) return;
@@ -794,7 +794,7 @@ void RespawnMobyUpdate(struct Moby *moby) {
         vars->target = target;
         qcopy(&vars->target_pos, &target->pos);
     } else if (hero_vehicle_mode[0] == 1) {
-        if (D_L06_0015F6B0 % 8 == vars->frame_slot) {
+        if (blarg_frame_count % 8 == vars->frame_slot) {
             select_hero_or_gadgebot_target((char *)moby, (char **)&vars->target, vars->range);
             if (vars->target == 0) {
                 vars->target_mode = 2;
@@ -1590,7 +1590,7 @@ void GadgebotUpdate(Moby *moby) {
                 {
                     int ph = ((int)moby >> 8) % 8;
 
-                    if (D_L06_0015F6B0 % 8 == ph) {
+                    if (blarg_frame_count % 8 == ph) {
                         MobySphereHitDirectional((int)moby, 0.4f, (*(float (*)[4])&moby->pos), 0x1000000, 1.0f, 1.0f, 0, 1, 0);
                     }
                 }
@@ -1672,11 +1672,11 @@ void GadgebotUpdate(Moby *moby) {
             d->f198 = 0;
             d->f19A = 0;
             d->f17C = randf_sym(0.13962634f, 0.34906584f);
-            d->f18C = D_L06_0015F6B0;
+            d->f18C = blarg_frame_count;
         }
         switch (moby->command) {
         case 1:
-            if (d->f18C < D_L06_0015F6B0) {
+            if (d->f18C < blarg_frame_count) {
                 assign_gadgebot_attack_targets();
             }
             if (d->f174 != 0) {
@@ -1769,7 +1769,7 @@ void GadgebotUpdate(Moby *moby) {
             }
             break;
         case 4:
-            if (d->f18C < D_L06_0015F6B0) {
+            if (d->f18C < blarg_frame_count) {
                 assign_gadgebot_attack_targets();
             }
             if (moby->prev_seq != 0) {
@@ -2224,7 +2224,7 @@ void assign_gadgebot_attack_targets(void) {
     for (i = 0; i < n; i++) {
         GbSlots *g = (GbSlots *)V78(outv[i]);
         int v = g->f178;
-        g->f18C = D_L06_0015F6B0;
+        g->f18C = blarg_frame_count;
         g->f174 = (char *)v;
         g->f19A = 1;
         if (v != 0) g->f198 = 1;
@@ -2659,7 +2659,7 @@ void update_gadgebot_glow_effects(char *obj)
         Moby_GetJointWorldPos(obj, i + 1, d + 0x140 + i * 0x10);
     }
     {
-        int dv = D_L06_0015F6B0;
+        int dv = blarg_frame_count;
         *(int *)(d + 0x290) = *(int *)(obj + 0x90);
         if (dv != 0) {
         int *p = *(int **)(d + 0x294);
@@ -2934,9 +2934,9 @@ void update_energy_sphere_holder_beam_effects(char *m) {
                           d->sz[i]);
         FastVecAdd(pos, pos, step);
     }
-    if ((D_L06_0015F6B0 & 3) == 3 && ((unsigned char *)m)[0x31] != 0) {
+    if ((blarg_frame_count & 3) == 3 && ((unsigned char *)m)[0x31] != 0) {
         float sgn = 1.0f;
-        if (D_L06_0015F6B0 & 4) sgn = -1.0f;
+        if (blarg_frame_count & 4) sgn = -1.0f;
         clear_u64_value(a);
         a[2] += sgn * 0.9f;
         vec_scale_to_length(b, a, -2.0f / (float)scale_ticks(*(int *)&D_L06_00161F00));

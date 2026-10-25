@@ -60,7 +60,7 @@ void build_packet_and_draw_scaled_entries(void *data_ptr, void *list_ptr, int co
     }
     UpdateViewContext();
     BuildViewMatrices();
-    func_001FA1C0(1024.0f, matrix);
+    set_scale_matrix(1024.0f, matrix);
     func_001F9C30_C2B08(-1024.0f, offset, gaspar_camera_pos);
     offset[3] = 1.0f;
     VU1_addDataRef(font_vu_program, font_vu_program_tag[0]);

@@ -720,7 +720,7 @@ void toxic_crab_update(Moby2E30F8 *m) {
         }
     }
     if (m->b31 != 0) {
-        if (FastVecDist(m->pos, D_L10_001672C0) < 18.0f) {
+        if (FastVecDist(m->pos, orxon_camera_pos) < 18.0f) {
             set_ground_height_band(m);
             m->b7F = 0xE;
         }
@@ -1120,10 +1120,10 @@ float compute_toxic_crab_group_approach_angle(char *self) {
     if (group_entry != 0) {
         do {
             int listed_entity_index = *(unsigned short *)group_entry & 0x7FFF;
-            if (D_L10_00160058[listed_entity_index].state == 5 ||
-                FastVecDist(&D_L10_00160058[listed_entity_index].x, &owner->pos) < owner_to_self_distance) {
-                float d = fast_atan2(D_L10_00160058[listed_entity_index].x - owner->pos.x,
-                                            D_L10_00160058[listed_entity_index].y - owner->pos.y);
+            if (orxon_mobys[listed_entity_index].state == 5 ||
+                FastVecDist(&orxon_mobys[listed_entity_index].x, &owner->pos) < owner_to_self_distance) {
+                float d = fast_atan2(orxon_mobys[listed_entity_index].x - owner->pos.x,
+                                            orxon_mobys[listed_entity_index].y - owner->pos.y);
                 float group_angle_offset = FastSubRots(d, owner_to_self_angle);
                 if (group_angle_offset > 0.0f && group_angle_offset < hi) {
                     hi = group_angle_offset;
@@ -1456,7 +1456,7 @@ void BlargShipUpdate(Ship_5E48 *m) {
     }
     }
     if (m->b31 != 0) {
-        if (FastVecDist(&m->pos, D_L10_001672C0) < 28.0f) {
+        if (FastVecDist(&m->pos, orxon_camera_pos) < 28.0f) {
             set_ground_height_band(m);
             m->b7F = 0x16;
         }
@@ -2259,7 +2259,7 @@ void emit_burst_spark_particle(void *pos, short *timer, short *burst) {
         if (++*burst != 0) return;
         *burst = func_001FA898_r(random_float_between((float)*(int *)&D_L10_0016202C, (float)*(int *)&D_L10_00162030));
     }
-    if (32.0f < FastVecDist(D_L10_001672C0, pos)) return;
+    if (32.0f < FastVecDist(orxon_camera_pos, pos)) return;
     qcopy(p, pos);
     p[3] = 2.0f;
     if (FastBSphereCheck((char *)p, 32.0f) == -1 && random_integer_below(3) != 0) return;
@@ -2293,7 +2293,7 @@ void emit_timed_spark_particle(void *pos, short *timer) {
     float acc[4];
     float s;
     int a, b, c, c1;
-    if (32.0f < FastVecDist(D_L10_001672C0, pos)) return;
+    if (32.0f < FastVecDist(orxon_camera_pos, pos)) return;
     qcopy(p, pos);
     p[2] += 6.0f;
     p[3] = 5.0f;

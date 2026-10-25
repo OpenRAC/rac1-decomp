@@ -359,8 +359,8 @@ void update_explosive_projectile(Moby *moby) {
         }
         for (r = 0; r < 4; r++) {
             if (cutscene_active == 0 && d->ids[r] != -1) {
-                if (((Moby *)D_L01_00160058)[d->ids[r]].oclass == 0x2BC) {
-                    Tgt_2F7E08 *e = (*(void **)&((Moby *)D_L01_00160058)[d->ids[r]].pvars);
+                if (((Moby *)novalis_mobys)[d->ids[r]].oclass == 0x2BC) {
+                    Tgt_2F7E08 *e = (*(void **)&((Moby *)novalis_mobys)[d->ids[r]].pvars);
                     if (e->h4 == 0 && e->timer == 0 && is_point_inside_clip_volume(D_0013E633 + 0xE9D, e->vol) != 0
                         && is_point_inside_clip_volume(camera_pos, e->vol) != 0) {
                         e->timer = scale_ticks(rand_range(0x3C, 0xB4));
@@ -1086,7 +1086,7 @@ void update_target_outside_zone_timeout(char *m) {
     moby->update_dist = 0xFF;
     if (*(int *)(D_0013E633 + 0x2EA1) != 0x1D) goto fail;
     {
-        for (candidate_moby = (struct Moby *)D_L01_00160064; candidate_moby != 0; candidate_moby = candidate_moby->next) {
+        for (candidate_moby = (struct Moby *)novalis_moby_list; candidate_moby != 0; candidate_moby = candidate_moby->next) {
             if (candidate_moby->oclass == 0xAC) {
                 target_moby = candidate_moby;
                 break;
@@ -1718,7 +1718,7 @@ void TeleporterPadUpdate(char *moby) {
             AddDrawCallback(draw_moby_radius_ring, moby);
             ApproachValue((float *)(data + 0x34), 0.0f, g_frame_time * 4.0f);
         } else {
-            char *t = D_L01_00160058 + (*(int *)data << 8);
+            char *t = novalis_mobys + (*(int *)data << 8);
             char *td = *(char **)(t + 0x78);
             float v[4];
             qcopy(v, t + 0x10);
@@ -2006,7 +2006,7 @@ void update_moby_interpolated_point_light(unsigned char *m) {
             active = 0.0f;
     }
     i = *(int *)(e + 0x84);
-    if (i != -1 && *(signed char *)((D_L01_00160058 + 0x20) + i * 0x100) < 0) {
+    if (i != -1 && *(signed char *)((novalis_mobys + 0x20) + i * 0x100) < 0) {
         slot = *(int *)(e + 0x68);
         if (slot != -1)
             release_point_light_slot(slot);

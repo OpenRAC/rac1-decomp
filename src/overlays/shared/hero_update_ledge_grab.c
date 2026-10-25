@@ -157,7 +157,7 @@ void update_hero_vehicle_attachments_and_effects(void) {
     update_hero_scalar_pulse();
     apply_hero_and_item_scale_sequence();
     if (((GS_E7B8 *)(D_0013E633 + 0xE1D))->b20A4 == 1) {
-        D_L06_0017C0DC = D_0015EEF0[10];
+        D_L06_0017C0DC = sound_volume[10];
         update_hero_glow_and_extra_manipulators();
         if (((GS_E7B8 *)(D_0013E633 + 0xE1D))->m1624 == 0) {
             ((GS_E7B8 *)(D_0013E633 + 0xE1D))->m1624 = (char *)CreateMoby(0x4B4);
@@ -263,7 +263,7 @@ skip:
         }
         ((GS_E7B8 *)(D_0013E633 + 0xE1D))->p22C0 = 0;
     }
-    func_L00_00248EF8(((GS_E7B8 *)(D_0013E633 + 0xE1D))->a80);
+    reveal_map_around_position(((GS_E7B8 *)(D_0013E633 + 0xE1D))->a80);
     if (((GS_E7B8 *)(D_0013E633 + 0xE1D))->b20A4 == 3) {
         if (gCheats[1] != 0) {
             D_L06_0017C44C = 1.9f;
@@ -277,7 +277,7 @@ skip:
             v = scale_ticks(0x5A);
         }
         f0 = IntToFloat(v);
-        ang = (float)(D_L06_0015F6B0 % v) / f0;
+        ang = (float)(blarg_frame_count % v) / f0;
         ang = ang + ang;
         ang = ang * 3.14159274f;
         f20 = FastSin(ang + -3.14159274f);

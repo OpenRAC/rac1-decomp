@@ -418,7 +418,7 @@ typedef struct {
 void DrawTies_2(void) {
     {
         int i;
-        int n = D_0016104C;
+        int n = registered_object_render_class_count;
         for (i = 1; i < n; i += 2) {
             *(short *)(object_render_classes[i] + 0x24) |= 8;
         }
@@ -444,14 +444,14 @@ void DrawTies_2(void) {
     FastMemCopy(D_001E4100, D_001E2D00, 0x400);
     {
         int i;
-        int n = D_0016104C;
+        int n = registered_object_render_class_count;
         for (i = 1; i < n; i += 2) {
             *(short *)(object_render_classes[i] + 0x24) &= ~8;
         }
     }
     {
         int i;
-        int n = D_0016104C;
+        int n = registered_object_render_class_count;
         for (i = 0; i < n; i += 2) {
             *(short *)(object_render_classes[i] + 0x24) |= 8;
         }
@@ -473,7 +473,7 @@ void DrawTies_2(void) {
     DmaTieTextures();
     {
         int i;
-        int n = D_0016104C;
+        int n = registered_object_render_class_count;
         for (i = 0; i < n; i += 2) {
             *(short *)(object_render_classes[i] + 0x24) &= ~8;
         }

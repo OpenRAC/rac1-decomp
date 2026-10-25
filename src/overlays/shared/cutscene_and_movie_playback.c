@@ -19,7 +19,7 @@ void ResetFrameCounters(void) {
     D_L00_0015F52C = 0;
     D_L00_0015F530 = 0;
     D_L00_0015F528 = 0;
-    D_L00_0015F534 = 0;
+    ground_shadow_count = 0;
     D_L00_0015F3F0 = 0;
     D_L00_0015F3F4 = 0;
 }
@@ -115,7 +115,7 @@ void handle_pause_input(void) {
         g_debug_menu.wA0 = ((PadS *)(D_0013A5E0 + 0x2460))->w1A0 & ~0x200;
     }
     lvl = cinematic_mode;
-    if (lvl == 0 && (D_0015EFB4_m & 0x401) && D_L00_0015F6AC >= 8 && ((Hero *)(D_0013E633 + 0xE1D))->state.current != 0x1D) {
+    if (lvl == 0 && (D_0015EFB4_m & 0x401) && cinematic_mode_frames >= 8 && ((Hero *)(D_0013E633 + 0xE1D))->state.current != 0x1D) {
         mode_freeze_init(3, 0, 0);
         return;
     }
@@ -125,7 +125,7 @@ void handle_pause_input(void) {
         return;
     }
     area = g_current_level_index;
-    if (area == 15 && D_L00_0015F6AC >= 8 && ((Hero *)(D_0013E633 + 0xE1D))->vehicle_mode == 2
+    if (area == 15 && cinematic_mode_frames >= 8 && ((Hero *)(D_0013E633 + 0xE1D))->vehicle_mode == 2
         && ((((PadS *)(D_0013A5E0 + 0x2460))->w1A4 & 0x800) || noctl) && ((Hero *)(D_0013E633 + 0xE1D))->state.current != 0x72) {
         if (g_current_follow_cam->h86 == 0x13) return;
         mode_freeze_init(4, 0, 0);
@@ -136,7 +136,7 @@ void handle_pause_input(void) {
         int k = ((ObjS *)((Hero *)(D_0013E633 + 0xE1D))->ship_moby)->hA6;
         if (k == 0x45 || k == 0x563 || k == 0x4DA) special = 1;
     }
-    if (special && D_L00_0015F6AC >= 8 && ((((PadS *)(D_0013A5E0 + 0x2460))->w1A4 & 0x800) || noctl)
+    if (special && cinematic_mode_frames >= 8 && ((((PadS *)(D_0013A5E0 + 0x2460))->w1A4 & 0x800) || noctl)
         && ((Hero *)(D_0013E633 + 0xE1D))->state.current != 0x72 && g_current_follow_cam->h86 != 0x13) {
         mode_freeze_init(1, 0, 0);
         return;
@@ -146,12 +146,12 @@ void handle_pause_input(void) {
         mode_freeze_init(1, 0, 0);
         return;
     }
-    if (((((PadS *)(D_0013A5E0 + 0x2460))->w1A4 & 0x800) || noctl) && D_L00_0015F6AC >= 8
+    if (((((PadS *)(D_0013A5E0 + 0x2460))->w1A4 & 0x800) || noctl) && cinematic_mode_frames >= 8
         && ((Hero *)(D_0013E633 + 0xE1D))->state.current != 0x72 && ((Hero *)(D_0013E633 + 0xE1D))->state.control_mode == 0x16) {
         mode_freeze_init(0, 0, 0);
         return;
     }
-    if (((((PadS *)(D_0013A5E0 + 0x2460))->w1A4 & 0x800) || noctl) && D_L00_0015F6AC >= 8
+    if (((((PadS *)(D_0013A5E0 + 0x2460))->w1A4 & 0x800) || noctl) && cinematic_mode_frames >= 8
         && ((Hero *)(D_0013E633 + 0xE1D))->state.current != 0x72 && ((Hero *)(D_0013E633 + 0xE1D))->items[0].unk1C != 2
         && ((Hero *)(D_0013E633 + 0xE1D))->state.current != 0x32 && ((Hero *)(D_0013E633 + 0xE1D))->state.current != 0x1D
         && !((Hero *)(D_0013E633 + 0xE1D))->unk20B1 && ((Hero *)(D_0013E633 + 0xE1D))->health.hp
@@ -159,7 +159,7 @@ void handle_pause_input(void) {
         PauseAllSounds(0);
         return;
     }
-    if (!(g_debug_menu.w8 & 0x10) && D_L00_0015F6AC >= 8 && (((PadS *)(D_0013A5E0 + 0x2460))->w1A4 & 0x500)
+    if (!(g_debug_menu.w8 & 0x10) && cinematic_mode_frames >= 8 && (((PadS *)(D_0013A5E0 + 0x2460))->w1A4 & 0x500)
         && ((Hero *)(D_0013E633 + 0xE1D))->state.control_mode != 0x16 && ((Hero *)(D_0013E633 + 0xE1D))->state.current != 0x72
         && ((Hero *)(D_0013E633 + 0xE1D))->state.current != 0x32 && ((Hero *)(D_0013E633 + 0xE1D))->state.current != 0x1D
         && !((Hero *)(D_0013E633 + 0xE1D))->unk20B1 && ((Hero *)(D_0013E633 + 0xE1D))->health.hp
@@ -168,7 +168,7 @@ void handle_pause_input(void) {
         PauseAllSounds(10);
         return;
     }
-    if (((AreaS *)(D_0013D355 + 0x3B))->wFC && !(r = (unsigned char *)(D_0013D355_b + 0x13B))[0x10] && D_L00_0015F6AC >= 8
+    if (((AreaS *)(D_0013D355 + 0x3B))->wFC && !(r = (unsigned char *)(D_0013D355_b + 0x13B))[0x10] && cinematic_mode_frames >= 8
         && !D_0015EF20 && !((Hero *)(D_0013E633 + 0xE1D))->unk20B1 && ((Hero *)(D_0013E633 + 0xE1D))->health.hp
         && scale_ticks(0x1E) < level_frame_counter && g_current_level_index) {
         mode_freeze_init(5, 0, 0);
@@ -411,16 +411,16 @@ void finish_cutscene(void) {
         if (2.0f < f && FastAbsF(D_L00_0016C960_c.v[2] - f) < 2.0f) D_L00_0016C960_c.v[2] = f;
         Hero_ResetToPosition(D_L00_0016C970, D_L00_0016C970 + 0x10, 0, 1);
     }
-    if (D_L00_00179200.a) D_L00_00179200.a->flags &= ~1;
+    if (active_scene_trigger.a) active_scene_trigger.a->flags &= ~1;
     if (level_menu_system.p) {
         level_menu_system.p->flags &= ~1;
         level_menu_system.p = 0;
     }
-    if (D_L00_00179200.a) {
-        Fl *a = D_L00_00179200.a;
-        void *b = D_L00_00179200.b;
-        D_L00_00179200.a = 0;
-        D_L00_00179200.b = 0;
+    if (active_scene_trigger.a) {
+        Fl *a = active_scene_trigger.a;
+        void *b = active_scene_trigger.b;
+        active_scene_trigger.a = 0;
+        active_scene_trigger.b = 0;
         process_menu_entry(a, b, 1);
     }
     Music_SetActiveTrackValue(scale_ticks(30));
@@ -724,7 +724,7 @@ void update_cutscene_playback(void) {
     done = cs->f34 >= cs->h40;
     if (cs->f34 >= scale_ticks(0x12) && D_L00_0015F4FC_9A300 == 0.0f) {
 
-        if (((*(s32 *)&D_0015EFA0) || D_0015EF20 || decode_mode || g_current_level_index <= 0) && (D_0013CA40_9A300.buttons.w.pressed & 0x800)) {
+        if (((*(s32 *)&challenge_mode) || D_0015EF20 || decode_mode || g_current_level_index <= 0) && (D_0013CA40_9A300.buttons.w.pressed & 0x800)) {
             done = 1;
         } else if ((D_0013CA40_9A300.buttons.held_pressed & 0x8000000000FUL) == 0x8000000000FUL) {
             done = 1;
@@ -888,7 +888,7 @@ void prepare_movie_playback(int sector, int size, int arg2) {
     clear_active_help_record();
     cinematic_mode = 1;
     D_L00_00161108_m.buf0 = D_L00_00173F04;
-    D_L00_00161108_m.buf1 = D_L00_0015F50C;
+    D_L00_00161108_m.buf1 = level_texture_data_base;
     big = pal_mode != 0 ? 0xE : 0xD;
     small = pal_mode != 0 ? 0xE : 0x11;
     src = D_L00_00161108_m.buf1;
@@ -968,7 +968,7 @@ void movie_exit_to_gameplay(void) {
         music_StartTrack(*(short *)(hh + 0x38), 1, 0x400);
     }
     cinematic_mode = 0;
-    cb = &D_L00_00179200;
+    cb = &active_scene_trigger;
     if (cb->a != 0) {
         Fl *a = cb->a;
         void *b = cb->b;

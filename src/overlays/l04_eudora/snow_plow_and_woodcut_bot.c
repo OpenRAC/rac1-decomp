@@ -664,7 +664,7 @@ void woodcut_bot_update(WBMoby *m) {
     Manipulator_ApplyScale(2.5f, m, 6, p);
     p120 = p;
     pos = m->pos;
-    if (m->f31 != 0 && FastVecDist(pos, D_L04_00166FC0) < 27.0f) {
+    if (m->f31 != 0 && FastVecDist(pos, eudora_camera_pos) < 27.0f) {
         set_ground_height_band(m);
         m->f7F = 0x15;
     }
@@ -1181,7 +1181,7 @@ void woodcut_bot_update(WBMoby *m) {
         d->f3C8 *= 0.96f;
         axis_rotation_2d48(w, 1, d->f3C8);
         axis_rotation_2d48(d->f130, 2, 0.0f);
-        func_001FA588(d->f130, d->f130, w);
+        multiply_quaternions(d->f130, d->f130, w);
         if (m->state != 9) d->f3C1 = m->state;
         if (m->state != 5 && m->fBC != 6) {
             float g;
@@ -1335,7 +1335,7 @@ void leaf_update(struct MobyP *moby) {
         moby->state = 1;
         break;
     case 1:
-        if (!(vec_distance_xy(&moby->pos, D_L04_00166FC0) < 32.0f))
+        if (!(vec_distance_xy(&moby->pos, eudora_camera_pos) < 32.0f))
             return;
         if (!fast_dec_timer((int *)(data + 0x44)))
             return;
@@ -1348,31 +1348,31 @@ void leaf_update(struct MobyP *moby) {
         moby->scale = 0.0f;
         motion = (float *)moby->pvars;
         initialDirection.q = direction.q;
-        normalize_vector_xyz(&initialDirection, &initialDirection, D_L04_001CBBC0[5] / 5.0f);
-        motion[0] = D_L04_001CBBC0[5] * fast_cos(D_L04_001CBBC0[1]);
-        { float sn = fast_sin(D_L04_001CBBC0[1]); float st = D_L04_001CBBC0[5]; float ft = frame_time;
+        normalize_vector_xyz(&initialDirection, &initialDirection, eudora_leaf_drift[5] / 5.0f);
+        motion[0] = eudora_leaf_drift[5] * fast_cos(eudora_leaf_drift[1]);
+        { float sn = fast_sin(eudora_leaf_drift[1]); float st = eudora_leaf_drift[5]; float ft = frame_time;
         motion[1] = st * sn;
         motion[2] = ft * -0.5f; }
         normalize_vector_xyz(&moby->rot, &initialDirection, 3.1415927f);
         normalize_vector_xyz(motion + 8, &initialDirection, 0.098174773f);
-        normalize_vector_xyz(motion + 4, &initialDirection, D_L04_001CBBC0[5] * 0.5f);
+        normalize_vector_xyz(motion + 4, &initialDirection, eudora_leaf_drift[5] * 0.5f);
         *(int *)(motion + 16) = *(int *)(motion + 17) = random_int_between(720, 1200);
         moby->state = 2;
         return;
     case 2:
         fast_dec_timer((int *)(data + 0x44));
-        normalize_vector_xyz(&random, &random, D_L04_001CBBC0[5] / 10.0f);
+        normalize_vector_xyz(&random, &random, eudora_leaf_drift[5] / 10.0f);
         add_vector_xyz(data + 0x10, data + 0x10, &random);
         normalize_vector_xyz(&work, data + 0x10, 5.0f);
-        normalize_vector_xyz(data + 0x10, data + 0x10, D_L04_001CBBC0[5] * 0.5f);
+        normalize_vector_xyz(data + 0x10, data + 0x10, eudora_leaf_drift[5] * 0.5f);
         add_vector_xyz(&work, &work, &moby->pos);
         if (collision_line(&old, &work, 6, 0, 0) && !rib_p(8)) {
             vec_reflect(data + 0x10, data + 0x10, D_L04_00174060 + 0x20);
-            *(float *)(data + 0x18) += D_L04_001CBBC0[5] / 10.0f;
+            *(float *)(data + 0x18) += eudora_leaf_drift[5] / 10.0f;
         }
         add_vector_xyz(data, data, data + 0x10);
-        work.f[0] = D_L04_001CBBC0[5] * fast_cos(D_L04_001CBBC0[1]);
-        work.f[1] = D_L04_001CBBC0[5] * fast_sin(D_L04_001CBBC0[1]);
+        work.f[0] = eudora_leaf_drift[5] * fast_cos(eudora_leaf_drift[1]);
+        work.f[1] = eudora_leaf_drift[5] * fast_sin(eudora_leaf_drift[1]);
         work.f[2] = frame_time * -0.5f;
         scale_vector_xyz(&work, &work, 0.4f);
         scale_vector_xyz(data, data, 0.6f);
@@ -1383,10 +1383,10 @@ void leaf_update(struct MobyP *moby) {
             vec_reflect(data, data, D_L04_00174060 + 0x20);
             scale_vector_xyz(data, data, 0.25f);
             add_vector_xyz(&moby->pos, &moby->pos, data);
-            *(float *)(data + 8) += D_L04_001CBBC0[5] / 5.0f;
+            *(float *)(data + 8) += eudora_leaf_drift[5] / 5.0f;
         }
-        if (D_L04_001CBBC0[5] < speed)
-            normalize_vector_xyz(data, data, D_L04_001CBBC0[5]);
+        if (eudora_leaf_drift[5] < speed)
+            normalize_vector_xyz(data, data, eudora_leaf_drift[5]);
         {
             float amount = frame_time * -0.5f;
             if (amount < *(float *)(data + 8))
@@ -1612,7 +1612,7 @@ void SparkleSpritesDraw(char *m) {
     float f;
 
     *(float *)(m + 0x18) += 0.25f;
-    FastVecSub(d, D_L04_00166FC0, m + 0x10);
+    FastVecSub(d, eudora_camera_pos, m + 0x10);
     vec_scale_to_length(d, d, -0.3f);
     vec_scale_to_length(e, d, 0.1f);
     FastVecAdd(d, d, m + 0x10);
@@ -1656,7 +1656,7 @@ void lieutenant_update(char *m) {
     int g;
     int c;
     if (*(unsigned char *)(m + 0x31) != 0) {
-        if (FastVecDist(m + 0x10, D_L04_00166FC0) < 30.0f) {
+        if (FastVecDist(m + 0x10, eudora_camera_pos) < 30.0f) {
             set_ground_height_band(m);
             *(unsigned char *)(m + 0x7F) = 0x18;
         }
@@ -1771,7 +1771,7 @@ void update_eudora_tutorial_hints_and_stats(Moby *moby) {
         break;
     case 1:
         if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, data->f0) != 0
-            && D_L04_00179610[0] == 0 && D_L04_00179610[9] == -1
+            && eudora_help_popup_state[0] == 0 && eudora_help_popup_state[9] == -1
             && saved_mission_state[moby->mission + (g_current_level_index << 4)] != 0xFF) {
             if (data->f14 == -1) {
                 Help_2E57F8 *h = (Help_2E57F8 *)(D_0014171B + 0x22D);
@@ -1826,7 +1826,7 @@ void update_eudora_tutorial_hints_and_stats(Moby *moby) {
 
         {
             unsigned char *g = discount_purchase_pricing + 5;
-            if (g[9] != 0 && D_L04_00179610[0] == 0 && D_L04_00179610[9] == -1) {
+            if (g[9] != 0 && eudora_help_popup_state[0] == 0 && eudora_help_popup_state[9] == -1) {
                 Help_2E57F8 *b = (Help_2E57F8 *)(D_0014171B + 0x34D);
                 if (b[0x1E].count == 0) {
                     Help_Request(0xFA2, 0x1E);
@@ -1835,7 +1835,7 @@ void update_eudora_tutorial_hints_and_stats(Moby *moby) {
         }
 
         if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, data->f3C) != 0 && D_00141A40 == 0
-            && D_L04_00179610[0] == 0 && D_L04_00179610[9] == -1) {
+            && eudora_help_popup_state[0] == 0 && eudora_help_popup_state[9] == -1) {
             Help_2E57F8 *b = (Help_2E57F8 *)(D_0014171B + 0x34D);
             if (b[0x77].count == 0) {
                 Help_Request(0x4E2D, 0x77);
@@ -1865,7 +1865,7 @@ void update_eudora_tutorial_hints_and_stats(Moby *moby) {
 
         if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, data->f4) != 0
             && (((unsigned int)((Hero *)(D_0013E633 + 0xE1D))->state.control_mode) < 2 || ((unsigned int)((Hero *)(D_0013E633 + 0xE1D))->state.control_mode) == 9)
-            && D_L04_00179610[0] == 0 && D_L04_00179610[9] == -1) {
+            && eudora_help_popup_state[0] == 0 && eudora_help_popup_state[9] == -1) {
             if (D_0013D5E2 == 0) {
                 Help_2E57F8 *b = (Help_2E57F8 *)(D_0014171B + 0x34D);
                 int t = scale_ticks(play_time_ticks) - b[0x1F].time * 600;
@@ -1923,7 +1923,7 @@ void update_eudora_tutorial_hints_and_stats(Moby *moby) {
 
         if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, data->f50) != 0
             && (((unsigned int)((Hero *)(D_0013E633 + 0xE1D))->state.control_mode) < 2 || ((unsigned int)((Hero *)(D_0013E633 + 0xE1D))->state.control_mode) == 9)
-            && D_L04_00179610[0] == 0 && D_L04_00179610[9] == -1) {
+            && eudora_help_popup_state[0] == 0 && eudora_help_popup_state[9] == -1) {
             int t = scale_ticks(play_time_ticks) - D_00141992 * 600;
             if (scale_ticks(0x34BC0) < t) {
                 Help_2E57F8 *b = (Help_2E57F8 *)(D_0014171B + 0x34D);
@@ -1982,7 +1982,7 @@ void update_eudora_tutorial_hints_and_stats(Moby *moby) {
         if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, data->f2C) != 0 && D_00141A10 == 0
             && (((unsigned int)((Hero *)(D_0013E633 + 0xE1D))->state.control_mode) < 2 || ((unsigned int)((Hero *)(D_0013E633 + 0xE1D))->state.control_mode) == 9)
             && data->f24 >= 3
-            && D_L04_00179610[0] == 0 && D_L04_00179610[9] == -1) {
+            && eudora_help_popup_state[0] == 0 && eudora_help_popup_state[9] == -1) {
             Help_2E57F8 *b = (Help_2E57F8 *)(D_0014171B + 0x34D);
             if (b[0x49].count == 0) {
                 Help_Request(0xFA5, 0x49);

@@ -805,14 +805,14 @@ int HeroEnterMoveState(int a, int b) {
         *(short *)(p + 0x90A) = 0;
         if (*(int *)(p + 0x2094) == 0x11) {
             emit_hero_surface_effect_burst(3, 0xA, 0);
-            if (D_L00_00161390 != 0) {
-                RippleDisturb(D_L00_00161390, D_L00_00161398, 0, *(float *)(p + 0x80), *(float *)(p + 0x84), 0.4f, 0.3f);
+            if (water_patches != 0) {
+                RippleDisturb(water_patches, water_patch_count, 0, *(float *)(p + 0x80), *(float *)(p + 0x84), 0.4f, 0.3f);
             }
         } else if (*(float *)(p + 0x108) < g_frame_time * -0.5f) {
             int n = truncate_float_to_s32(FastAbsF(*(float *)(p + 0x108)) * 300.0f);
             emit_hero_surface_effect_burst(3, n < 0x28 ? n : 0x28, 1);
-            if (D_L00_00161390 != 0) {
-                RippleDisturb(D_L00_00161390, D_L00_00161398, 0, *(float *)(p + 0x80), *(float *)(p + 0x84), 0.5f, -0.4f);
+            if (water_patches != 0) {
+                RippleDisturb(water_patches, water_patch_count, 0, *(float *)(p + 0x80), *(float *)(p + 0x84), 0.5f, -0.4f);
             }
             *(short *)(p + 0x90A) = scale_ticks(0x4B);
         }
@@ -2949,7 +2949,7 @@ int try_enter_hero_water_state(void) {
             int s = CollType();
             *(short *)(u + 0x12E0) = s;
             if ((short)s == 0) {
-                v1[2] = D_L00_00173F68 - 0.01f;
+                v1[2] = coll_hit_point_z - 0.01f;
                 if (coll_line(v1, v2, 2, *(int *)(u + 0x2080), 0) == 0) {
                     HeroEnterMoveState(0x34, 1);
                     return 1;

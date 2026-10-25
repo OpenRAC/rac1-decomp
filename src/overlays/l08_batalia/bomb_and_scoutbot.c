@@ -1765,7 +1765,7 @@ void RoutePlatformUpdate(char *m) {
     float *rp;
     qcopy(old_pos, &moby->pos);
     qcopy(old_rot, &moby->rot);
-    if (D_L08_0015F6A8 != 2 && vars->ridable != 0) {
+    if (batalia_game_mode != 2 && vars->ridable != 0) {
         moby->visible = 1;
         moby->flags &= 0xFFFE;
     } else {
@@ -2142,10 +2142,10 @@ void update_ballistic_projectile(struct Moby *moby) {
         qcopy(record.velocity, data);
         if (coll_line(original, &record, 0, m, 0) != 0) {
             if (*(int *)(data + 0x20) != 0 &&
-                D_L08_001746C0.moby != *(int *)(data + 0x20)) {
+                batalia_coll_hit.moby != *(int *)(data + 0x20)) {
                 m[0x20] = 99;
-                qcopy(position, D_L08_001746C0.point.f);
-                vec_reflect(data, data, &D_L08_001746C0.normal_x);
+                qcopy(position, batalia_coll_hit.point.f);
+                vec_reflect(data, data, &batalia_coll_hit.normal_x);
                 func_L00_001FF4B0_DDD20(D_0015EE6C_DDD20b + D_0015EE6C_DDD20b, data, data);
             }
         } else {
@@ -2369,7 +2369,7 @@ void update_rocket(M46 *m) {
         return;
     }
     case 3:
-        if (D_L08_0015F6A8) return;
+        if (batalia_game_mode) return;
         if (FastVecDist(D_0013E633+0xE9D,(char*)d->path+(d->path->count<<4))<d->activation_range && timer46(&d->timer)) {
             m->flags=0x40; m->state=4; m->animation=m->model->animation;
             m->rotation[2]=fast_atan2(d->path->e[1][0]-m->position[0],d->path->e[1][1]-m->position[1]);
@@ -2380,7 +2380,7 @@ void update_rocket(M46 *m) {
         RouteState46 *route;
         int next;
         float yaw;
-        if (D_L08_0015F6A8) return;
+        if (batalia_game_mode) return;
         route=(RouteState46*)&d->waypoint;
         next=(route->waypoint+route->path->count+route->direction)%route->path->count;
         yaw=fast_atan2(*(float*)((char*)route->path+(next<<4)+0x10)-m->position[0],*(float*)((char*)route->path+(next<<4)+0x14)-m->position[1]);
@@ -2648,7 +2648,7 @@ void update_path_following_moby(char *m) {
         *(int *)(m + 0x94) = *(int *)(*(char **)(m + 0x24) + 0x10);
     }
     if (MobyGetHitMessage(m, 0x10000, 0) != 0 && *(unsigned char *)(m + 0x20) != 2) {
-        if (D_001414D4 == 0x32 && gSkillPoints[0xC] == 0) {
+        if (hero_current_state == 0x32 && gSkillPoints[0xC] == 0) {
             gSkillPoints[0xC] = 1;
             PlayBankSound(1, 0, 0);
             ShowBanner(0x53DB, -1);

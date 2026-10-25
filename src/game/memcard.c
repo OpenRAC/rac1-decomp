@@ -131,25 +131,25 @@ void memcard_get_name(void *arg0) {
     int i;
 
     if (region == 'E') {
-        D_0013D2D0[2] = region;
+        memcard_save_dir_name[2] = region;
     } else if (region == 'P') {
-        D_0013D2D0[2] = 'I';
+        memcard_save_dir_name[2] = 'I';
     }
     for (i = 3; i < 7; i++) {
-        D_0013D2D0[i] = a[i + 0xD];
+        memcard_save_dir_name[i] = a[i + 0xD];
     }
     for (i = 8; i < 0xB; i++) {
-        D_0013D2D0[i] = a[i + 0xD];
+        memcard_save_dir_name[i] = a[i + 0xD];
     }
     for (i = 0xB; i < 0xD; i++) {
-        D_0013D2D0[i] = a[i + 0xE];
+        memcard_save_dir_name[i] = a[i + 0xE];
     }
-    func_00116B00(D_0013D2E8, D_0013D2D0, 0xD);
-    func_00116B00(D_0013D300, D_0013D2D0, 0xD);
-    func_00116B00(D_0013D320, D_0013D2D0, 0xD);
-    func_00116B00(D_0013D340, D_0013D2D0, 0xD);
-    func_00116B00(D_0013D340 + 0x14, D_0013D2D0, 0xD);
-    func_00116B00(D_0013D370, D_0013D2D0, 0xD);
+    func_00116B00(D_0013D2E8, memcard_save_dir_name, 0xD);
+    func_00116B00(D_0013D300, memcard_save_dir_name, 0xD);
+    func_00116B00(D_0013D320, memcard_save_dir_name, 0xD);
+    func_00116B00(D_0013D340, memcard_save_dir_name, 0xD);
+    func_00116B00(D_0013D340 + 0x14, memcard_save_dir_name, 0xD);
+    func_00116B00(D_0013D370, memcard_save_dir_name, 0xD);
 }
 
 extern int func_00124068(int, int, int *, int *, int *);
@@ -173,7 +173,7 @@ int check_memory_card(void) {
         return 1;
     }
     if (D_0013D390_i[0x31] != -2 && format != 0) {
-        result = func_001241F0(D_0013D390_i[0], D_0013D390_i[1], D_0013D2D0, 0, -1, 0);
+        result = func_001241F0(D_0013D390_i[0], D_0013D390_i[1], memcard_save_dir_name, 0, -1, 0);
         while (func_00123F30(1, &cmd, &result) == 0) {
             func_00122598(0);
         }
@@ -247,11 +247,11 @@ void load_and_initialize_level_chunk(void) {
     calculate_ring_buffer_bounds(disc_table[5] << 11, &a, &b);
     update_audio_stream_until_idle(1);
     func_002176C8_i(a, disc_table[4], disc_table[5]);
-    s2 = D_0015EEF0;
+    s2 = sound_volume;
     s1 = music_volume;
     s0 = playback_mode;
     memcard_RestoreGame(a + *(int *)(a + 0x10));
-    D_0015EEF0 = s2;
+    sound_volume = s2;
     music_volume = s1;
     playback_mode = s0;
     D_0015EE84_m = 0;
@@ -1747,7 +1747,7 @@ int memcard_Save(int slot, int flags) {
 
         *(int *)(q + *(int *)(q + 0x14) * 0x1C + 0x24) = gBolts;
         *(int *)(q + *(int *)(q + 0x14) * 0x1C + 0x20) = D_0015EE84_m;
-        *(int *)(q + *(int *)(q + 0x14) * 0x1C + 0x2C) = D_0015EF24;
+        *(int *)(q + *(int *)(q + 0x14) * 0x1C + 0x2C) = game_clock_ticks;
         memcpy(names + *(int *)(q + 0x14) * 0x1C, D_0015EF98, 8);
         *(int *)(q + *(int *)(q + 0x14) * 0x1C + 0x28) = D_0015EF20;
         memcard_PrepData(D_0014EFD0, 0, mc_gamedata);

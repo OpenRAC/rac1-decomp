@@ -178,7 +178,7 @@ void prepare_target_level_transition(int dest) {
     char *h;
     int base;
     int *q;
-    D_L00_0015F6B8[1] = 1;
+    level_draw_frame_load[1] = 1;
     cinematic_mode = 6;
     gFadeLvl = 1.0f;
     D_L00_0015F500 = 0;

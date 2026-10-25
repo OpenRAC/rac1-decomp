@@ -337,7 +337,7 @@ void update_swing_gate_from_driver(struct Moby *moby) {
 
     off.q = 0;
     off.f[2] = 30.0f;
-    if (D_L08_0015F6A8 == 2) {
+    if (batalia_game_mode == 2) {
         moby->visible = 0;
         moby->flags |= 1;
     } else {
@@ -926,7 +926,7 @@ void commando_update(char *m) {
         }
         break;
     case COMMANDO_POST_DIALOGUE:
-        if (D_L08_0015F6A8 == 2) break;
+        if (batalia_game_mode == 2) break;
         commando_vars->b28 = 1;
         if (commando_vars->h24 == 3) {
             char *g;
@@ -1023,18 +1023,18 @@ extern void func_0020D960(char *, int, void *);
 /* triggers objects matching the moby's class */
 void attach_batalia_deserter_class_manipulator(char *moby) {
     int i;
-    if (D_L08_0015F6A8 == 2 && gCheats[0]) {
+    if (batalia_game_mode == 2 && gCheats[0]) {
         if (batalia_cutscene_state.a == 3 && batalia_cutscene_state.b >= 0x1BA && batalia_cutscene_state.b < 0x284) {
             D_L08_0015F67C = 1.0f;
             D_L08_0015F680 = -0.3f;
         }
         for (i = 0; i < batalia_cutscene_state.n; i++) {
             char *o = batalia_cutscene_state.objs[i];
-            if (*(short *)(o + 0xA6) == *(short *)(moby + 0xA6) && D_L08_0017CCC0[1] == 0) {
-                AttachManipulator(o, 0, D_L08_0017CCC0);
-                *(float *)(D_L08_0017CCC0 + 0x20) = 2.75f;
-                *(float *)(D_L08_0017CCC0 + 0x24) = 2.75f;
-                *(float *)(D_L08_0017CCC0 + 0x28) = 2.75f;
+            if (*(short *)(o + 0xA6) == *(short *)(moby + 0xA6) && deserter_scale_manipulator[1] == 0) {
+                AttachManipulator(o, 0, deserter_scale_manipulator);
+                *(float *)(deserter_scale_manipulator + 0x20) = 2.75f;
+                *(float *)(deserter_scale_manipulator + 0x24) = 2.75f;
+                *(float *)(deserter_scale_manipulator + 0x28) = 2.75f;
             }
         }
     }
@@ -1191,7 +1191,7 @@ extern short D_L08_00162390;
 /* triggers objects matching the moby's class, with per-segment settings */
 void attach_batalia_plumber_class_manipulator(char *moby) {
     int i;
-    if (D_L08_0015F6A8 == 2 && gCheats[0]) {
+    if (batalia_game_mode == 2 && gCheats[0]) {
         if (batalia_cutscene_state.a == 6 && batalia_cutscene_state.b >= 0x26C && batalia_cutscene_state.b < 0x2CC) {
             D_L08_0015F67C = 1.0f;
             D_L08_0015F680 = -0.2f;
@@ -1207,13 +1207,13 @@ void attach_batalia_plumber_class_manipulator(char *moby) {
         for (i = 0; i < batalia_cutscene_state.n; i++) {
             char *o = batalia_cutscene_state.objs[i];
             if (*(short *)(o + 0xA6) == *(short *)(moby + 0xA6) || *(short *)(o + 0xA6) == 0x306) {
-                if (D_L08_0017CCC0[1] == 0) {
+                if (deserter_scale_manipulator[1] == 0) {
                     float f;
-                    AttachManipulator(o, 0, D_L08_0017CCC0);
+                    AttachManipulator(o, 0, deserter_scale_manipulator);
                     f = *(float *)&D_L08_00162390;
-                    *(float *)(D_L08_0017CCC0 + 0x20) = f;
-                    *(float *)(D_L08_0017CCC0 + 0x24) = f;
-                    *(float *)(D_L08_0017CCC0 + 0x28) = f;
+                    *(float *)(deserter_scale_manipulator + 0x20) = f;
+                    *(float *)(deserter_scale_manipulator + 0x24) = f;
+                    *(float *)(deserter_scale_manipulator + 0x28) = f;
                 }
             }
         }
@@ -1528,7 +1528,7 @@ void update_batalia_selected_moby_effects(char *moby) {
         moby[0x20] = 1;
         break;
     case 1:
-        if (D_L08_0015F6A8 == 2) {
+        if (batalia_game_mode == 2) {
             int t = batalia_cutscene_state.a;
             if ((t >= 1 && t <= 2) || t == 4 || t == 5) {
                 if (batalia_cutscene_state.a != 1 || scale_ticks(0x8CE) < batalia_cutscene_state.b) {
@@ -1583,7 +1583,7 @@ extern int D_L08_001F87E8_30A278[] __asm__("D_L08_001F87E8");
 void queue_batalia_eight_textured_batches(int arg) {
     int i;
     for (i = 7; i >= 0; i--) {
-        func_L08_00259040(D_L08_001F8820_30A278, D_L08_001F87A8[7 - i], D_L08_001F4F20_30A278[7 - i], (char *)D_L08_001F8808_30A278 + arg * 8);
+        add_uv_scroll_offset(D_L08_001F8820_30A278, D_L08_001F87A8[7 - i], D_L08_001F4F20_30A278[7 - i], (char *)D_L08_001F8808_30A278 + arg * 8);
         draw_env_overlay_mesh(D_L08_001F4F20_30A278[7 - i], D_L08_001F8788[7 - i], D_L08_001F87E8_30A278[7 - i], D_L08_001F8820_30A278, 1);
     }
 }
@@ -1599,7 +1599,7 @@ void queue_batalia_six_textured_batches(int x) {
     int i;
 
     for (i = 0; i < 6; i++) {
-        func_L08_00259040(D_L08_001F8820, D_L08_001F4ED8[i], D_L08_001F0488_30A350[i], &D_L08_00162488_30A350[x]);
+        add_uv_scroll_offset(D_L08_001F8820, D_L08_001F4ED8[i], D_L08_001F0488_30A350[i], &D_L08_00162488_30A350[x]);
         draw_env_overlay_mesh(D_L08_001F0488_30A350[i], D_L08_001F4EC0[i], D_L08_001F4F08_30A350[i], D_L08_001F8820, 1);
     }
 }
@@ -1620,7 +1620,7 @@ void queue_batalia_offset_textured_batches(int x) {
     int *e = (int *)&D_L08_00162478;
 
     for (i = 0; i < 2; i++) {
-        func_L08_00259040(D_L08_001F8820, b[i], a[i], &D_L08_00162498[x]);
+        add_uv_scroll_offset(D_L08_001F8820, b[i], a[i], &D_L08_00162498[x]);
         draw_env_overlay_mesh(a[i], c[i], e[i], D_L08_001F8820, 1);
     }
 }

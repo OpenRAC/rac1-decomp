@@ -842,7 +842,7 @@ int can_sentrybot_approach_linked_moby(void *mm) {
     if (*(int *)(*(char **)(t + 0x78) + 8) != 0) return 0;
     if (((unsigned char *)m)[0x21] == 0xFF) return 1;
     d = vec_distance_xy((float *)(m + 0x10), (float *)(t + 0x10));
-    p = (short *)D_L15_001AC140[((unsigned char *)m)[0x21]];
+    p = (short *)quartu_moby_groups[((unsigned char *)m)[0x21]];
     if (p == 0) return 1;
     do {
         char *o = (char *)(((*(unsigned short *)p & 0x7FFF) << 8) + D_L15_00160058_m);
@@ -868,7 +868,7 @@ int find_sentrybot_attention_target(char *m) {
     short *p;
     int idx = *(int *)(d + 0x17C);
     if (idx == -1) return 0;
-    p = (short *)D_L15_001AC140[idx];
+    p = (short *)quartu_moby_groups[idx];
     if (p == 0) return 0;
     qcopy(a, m + 0x10);
     a[2] += 1.0f;
@@ -904,7 +904,7 @@ int can_sentrybot_advance_patrol(void *mm) {
     char *m = mm;
     unsigned short *p;
     if (((unsigned char *)m)[0x21] == 0xFF) return 1;
-    p = (unsigned short *)D_L15_001AC140[((unsigned char *)m)[0x21]];
+    p = (unsigned short *)quartu_moby_groups[((unsigned char *)m)[0x21]];
     m = *(char **)(m + 0x78);
     if (p == 0) return 1;
     do {
@@ -944,7 +944,7 @@ void alert_visible_group_sentrybots(void *mobyv) {
         *(short *)(d + 0x156) = scale_ticks(0xB4);
         return;
     }
-    list = (unsigned short *)D_L15_001AC140[(unsigned char)moby[0x21]];
+    list = (unsigned short *)quartu_moby_groups[(unsigned char)moby[0x21]];
     if (list == 0) return;
     qcopy(a, moby + 0x10);
     a[2] = a[2] + 1.0f;
@@ -1777,7 +1777,7 @@ void update_target_leading_missile(M_29E8A0 *m) {
             ((void (*)(void *, void *, void *, float, int, int, int, int, int))spawn_glow_particle)(m, m->pos, v70, 4.0f, scale_ticks(0x14), 0x7F, 0x7F, 0, 0x30);
             ((void (*)(void *, void *, void *, float, int, int, int, int, int))spawn_glow_particle)(m, m->pos, v70, 2.0f, scale_ticks(0x13), 0xFF, 0xFF, 0xFF, 0x20);
             vel[0] = 0.0f;
-            cam = D_L15_00167300;
+            cam = quartu_player_camera;
             m->bc = 0;
             if (dist < 20.0f) {
                 *(float *)(cam + 0x160) = 0.4f - dist * 0.0175f;
@@ -1786,7 +1786,7 @@ void update_target_leading_missile(M_29E8A0 *m) {
             }
             {
                 int sh = scale_ticks(0x19);
-                char *cam2 = D_L15_00167300;
+                char *cam2 = quartu_player_camera;
                 *(int *)(cam2 + 0x168) = sh;
             }
             Moby_PlaySound(0, 0, (int)m);
@@ -1911,8 +1911,8 @@ void update_charged_blast(Moby29FF90 *moby) {
             int i;
 
             if (d->f10 == 0) {
-                D_L15_0015F430.on = 1;
-                D_L15_0015F430.col.rgba = 0xFFFF00;
+                quartu_screen_overlay.on = 1;
+                quartu_screen_overlay.col.rgba = 0xFFFF00;
             }
             d->f10++;
             t = IntToFloat(d->f10) / multiply_global_factor(30.0f);
@@ -1937,15 +1937,15 @@ void update_charged_blast(Moby29FF90 *moby) {
                 spawn_owner_target_particle((0x7F << 24) | (rc << 16) | (g << 8) | 0x4F, w, (char *)moby);
             }
             if (d->f10 < 0x32) {
-                int a = D_L15_0015F430.col.b[3];
+                int a = quartu_screen_overlay.col.b[3];
 
-                if (D_L15_0015F430.reg == 0 && a == 0xFF) a = 0x25;
-                D_L15_0015F430.reg = 0x1F00000042L;
+                if (quartu_screen_overlay.reg == 0 && a == 0xFF) a = 0x25;
+                quartu_screen_overlay.reg = 0x1F00000042L;
                 if (a < 0x25 - scale_ticks(1)) a = a + scale_ticks(1);
                 else a = 0x25;
-                D_L15_0015F430.col.rgba = (D_L15_0015F430.col.rgba & 0xFFFF00) | (a << 24);
+                quartu_screen_overlay.col.rgba = (quartu_screen_overlay.col.rgba & 0xFFFF00) | (a << 24);
             } else {
-                D_L15_0015F430.col.rgba = D_L15_0015F430.col.rgba | 0xFF000000;
+                quartu_screen_overlay.col.rgba = quartu_screen_overlay.col.rgba | 0xFF000000;
             }
             if (d->light != -1) {
                 float s;
@@ -1971,7 +1971,7 @@ void update_charged_blast(Moby29FF90 *moby) {
             }
         } else {
             D_L15_0015F420.on = 0;
-            D_L15_0015F430.on = 0;
+            quartu_screen_overlay.on = 0;
             d->f10 = 0;
             d->vel[0] = FastCos(((Hero *)(D_0013E633 + 0xE1D))->motion.rot.f[2]) * (g_frame_time * 40.0f);
             d->vel[1] = FastSin(((Hero *)(D_0013E633 + 0xE1D))->motion.rot.f[2]) * (g_frame_time * 40.0f);
@@ -2190,7 +2190,7 @@ extern float func_002140F8(float, float);
 
 // wakes the first idle moby in a list and initialises it at a position
 int activate_first_inactive_group_moby(int idx, void *pos) {
-    short *p = (short *)D_L15_001AC140[idx];
+    short *p = (short *)quartu_moby_groups[idx];
     char *g = D_0013E633 + 0xE1D;
     do {
         unsigned char *m = (unsigned char *)D_L15_00160058_m + ((*(unsigned short *)p & 0x7FFF) << 8);
@@ -3140,7 +3140,7 @@ void set_sentrybot_alarm_duration(char *m, int a) {
         *(int *)(d + 8) = flag;
         return;
     }
-    p = (short *)D_L15_001AC140[((unsigned char *)m)[0x21]];
+    p = (short *)quartu_moby_groups[((unsigned char *)m)[0x21]];
     if (p) {
         do {
             char *o = (char *)(((*(unsigned short *)p & 0x7FFF) << 8) + D_L15_00160058_m);

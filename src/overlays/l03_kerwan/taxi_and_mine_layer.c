@@ -275,7 +275,7 @@ void mine_layer_update(struct Moby *m) {
             return;
         }
     }
-    if (m->visible != 0 && FastVecDist(&m->pos, D_L03_00166F40) < 32.0f) {
+    if (m->visible != 0 && FastVecDist(&m->pos, kerwan_camera_pos) < 32.0f) {
         set_ground_height_band(m);
     }
 }
@@ -568,7 +568,7 @@ void update_mine(struct Moby *m) {
     case 4: {
         int cnt;
 
-        dist = vec_distance_xy(&m->pos, D_L03_00166F40);
+        dist = vec_distance_xy(&m->pos, kerwan_camera_pos);
         n = coll_sphere_mobys(&m->pos, 0x10, m, 0, 2.0f);
         *(OvlQuad *)tmp = *(OvlQuad *)&m->pos;
         SendRadialMessageToMobys(m, tmp, D_L03_00178080, n, 0, 0x810001, 4, 1, 3.0f, 0.25f, 1.5f);
@@ -1229,15 +1229,15 @@ extern short D_L03_00161C34;
 /* triggers objects matching the moby's class, with per-segment settings */
 void apply_helga_big_head_cutscene_adjustments(char *class_reference_moby) {
     int i;
-    if (D_L03_0015F6A8 == 2 && gCheats[0]) {
-        if (D_L03_0016C9E0.a == 2 && D_L03_0016C9E0.b >= 0x1EA && D_L03_0016C9E0.b < 0x266) {
+    if (kerwan_game_mode == 2 && gCheats[0]) {
+        if (kerwan_cutscene_state.a == 2 && kerwan_cutscene_state.b >= 0x1EA && kerwan_cutscene_state.b < 0x266) {
             D_L03_0015F680 = -0.2f;
         }
-        if (D_L03_0016C9E0.a == 2 && D_L03_0016C9E0.b >= 0x2EE && D_L03_0016C9E0.b < 0x321) {
+        if (kerwan_cutscene_state.a == 2 && kerwan_cutscene_state.b >= 0x2EE && kerwan_cutscene_state.b < 0x321) {
             D_L03_0015F680 = 0.2f;
         }
-        for (i = 0; i < D_L03_0016C9E0.n; i++) {
-            struct Moby *o = (struct Moby *)D_L03_0016C9E0.objs[i];
+        for (i = 0; i < kerwan_cutscene_state.n; i++) {
+            struct Moby *o = (struct Moby *)kerwan_cutscene_state.objs[i];
             if (o->oclass == ((struct Moby *)class_reference_moby)->oclass) {
                 if (((struct HeroManipulator *)D_L03_0017C5C0)->attached == 0) {
                     float f;
@@ -1364,7 +1364,7 @@ void helga_update(struct Moby *m) {
         }
         break;
     case 2:
-        if (D_L03_0015F6A8 != 2) {
+        if (kerwan_game_mode != 2) {
             if (v->talk.mode != 2) {
                 jet_clear_persistent(m->mission);
                 if (v->link != -1) {
@@ -1752,7 +1752,7 @@ void big_al_update(struct Moby *m) {
         break;
     }
     case 2:
-        if (D_L03_0015F6A8 == 2) {
+        if (kerwan_game_mode == 2) {
             break;
         }
         m->anim_speed = 1.0f;
@@ -1898,7 +1898,7 @@ void robot_qwark_update(unsigned char *m) {
     float pos[4] __attribute__((aligned(16)));
     float tmp[4] __attribute__((aligned(16)));
 
-    if (m[0x31] != 0 && FastVecDist(m + 0x10, D_L03_00166F40) < 26.0f) {
+    if (m[0x31] != 0 && FastVecDist(m + 0x10, kerwan_camera_pos) < 26.0f) {
         set_ground_height_band(m);
         m[0x7F] = 21;
     }
@@ -1950,7 +1950,7 @@ void robot_qwark_update(unsigned char *m) {
         }
         break;
     case 2:
-        if (D_L03_0015F6A8 == 2) {
+        if (kerwan_game_mode == 2) {
             break;
         }
         m[0x20] = 1;
@@ -2406,7 +2406,7 @@ void update_kerwan_tutorial_hints(Moby *moby) {
             }
         }
 
-        if (D_L03_0015F6A8 == 0 && (discount_purchase_pricing + 0x11)[0] != 0
+        if (kerwan_game_mode == 0 && (discount_purchase_pricing + 0x11)[0] != 0
             && D_L03_00179590[0] == 0 && D_L03_00179590[9] == -1) {
             Help_2E08E8 *b = D_00141A68_2E08E8;
             if (b[0x19].count == 0) {
@@ -2536,7 +2536,7 @@ void update_kerwan_cutscene_effects(char *m) {
         m[0x20] = 1;
         break;
     case 1:
-        if (D_L03_0015F6A8 != 2)
+        if (kerwan_game_mode != 2)
             break;
         if (D_L03_0016C9E0_2E1598.mode == 4 || D_L03_0016C9E0_2E1598.mode == 10) {
             int v = D_L03_0016C9E0_2E1598.mode;
@@ -2548,7 +2548,7 @@ void update_kerwan_cutscene_effects(char *m) {
                 i = 0;
             cutscene_set_camera_target(D_L03_0016C9E0_2E1598.mobys[i]);
         }
-        if (D_L03_0015F6A8 != 2 || D_L03_0016C9E0_2E1598.mode != 3)
+        if (kerwan_game_mode != 2 || D_L03_0016C9E0_2E1598.mode != 3)
             break;
         if (D_L03_0016C9E0_2E1598.t < scale_ticks(900))
             break;

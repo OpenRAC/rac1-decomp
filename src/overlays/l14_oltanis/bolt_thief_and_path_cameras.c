@@ -501,7 +501,7 @@ void sam_update(char *m) {
         }
         break;
     case 2:
-        if (D_L14_0015F6A8 == 2) break;
+        if (oltanis_game_mode == 2) break;
         m[0x20] = 1;
         if (*(short *)(d + 4) != 4) break;
         unlock_planet(0xF);
@@ -679,19 +679,19 @@ void update_bouncing_spark(Moby *m)
         }
 
       }
-      if ((coll_line(&m->pos, &next, 0, m, 0) != 0) && ((D_L14_00174640.owner == 0) || (D_L14_00174640.owner != d->owner)))
+      if ((coll_line(&m->pos, &next, 0, m, 0) != 0) && ((oltanis_coll_hit.owner == 0) || (oltanis_coll_hit.owner != d->owner)))
       {
-        qcopy(&m->pos, &D_L14_00174640.hit);
+        qcopy(&m->pos, &oltanis_coll_hit.hit);
       }
       else
       {
         qcopy(&m->pos, &next);
       }
-      if (((coll_sphere(&m->pos, 0, m, *(float *)&D_L14_00162158) != 0) && ((m->state == 0) || ((m->pos.z - D_L14_00174640.hit.z) < 0.0f))) && ((D_L14_00174640.owner == 0) || (D_L14_00174640.owner != d->owner)))
+      if (((coll_sphere(&m->pos, 0, m, *(float *)&D_L14_00162158) != 0) && ((m->state == 0) || ((m->pos.z - oltanis_coll_hit.hit.z) < 0.0f))) && ((oltanis_coll_hit.owner == 0) || (oltanis_coll_hit.owner != d->owner)))
       {
-        vec_scale_to_length(&t, &D_L14_00174640.normal, *(float *)&D_L14_00162158);
-        FastVecAdd(&m->pos, &D_L14_00174640.hit, &t);
-        vec_reflect(&d->vel, &d->vel, &D_L14_00174640.normal);
+        vec_scale_to_length(&t, &oltanis_coll_hit.normal, *(float *)&D_L14_00162158);
+        FastVecAdd(&m->pos, &oltanis_coll_hit.hit, &t);
+        vec_reflect(&d->vel, &d->vel, &oltanis_coll_hit.normal);
         Moby_PlaySound(1, 0, m);
         if (m->state == 0)
         {
@@ -915,7 +915,7 @@ extern float D_L14_001EE920[];
 
 /* For each entry in a moby-id list, saves the moby's Y and lowers it by 20. */
 void save_and_lower_unlock_sequence_mobys(char *moby) {
-    unsigned short *p = D_L14_001AC2C0[**(int **)(moby + 0x78)];
+    unsigned short *p = oltanis_moby_groups[**(int **)(moby + 0x78)];
     float *out;
     if (p != 0) {
         int base = oltanis_mobys;
@@ -937,7 +937,7 @@ extern float func_L00_00258E58(float, float, float, float, float);
    Adapted from Lombyte (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/vendor/00300e00.c, FUN_L14_00305680. */
 void raise_unlock_sequence_mobys(char *moby) {
     int *d = *(int **)(moby + 0x78);
-    short *p = (short *)D_L14_001AC2C0[d[0]];
+    short *p = (short *)oltanis_moby_groups[d[0]];
     float t;
     float *h;
     char *base;
@@ -1828,11 +1828,11 @@ void update_moby_list_clear_notification(unsigned char *moby) {
         moby[0x20] = 1;
         break;
     case 1:
-        if (D_L14_0015F6A8 == 2) {
+        if (oltanis_game_mode == 2) {
             v = D_L14_0016D060.state - 3;
             if (v < 3) {
                 i = 0;
-                if (v <= D_L14_0015F6A8) i = moby[0x20];
+                if (v <= oltanis_game_mode) i = moby[0x20];
                 cutscene_set_camera_target(D_L14_0016D060.v178[i]);
             }
         }

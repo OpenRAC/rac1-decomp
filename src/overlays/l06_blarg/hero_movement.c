@@ -176,9 +176,9 @@ s32 HeroL06_TryApplyHitKnockback(s32 arg) {
     if ((tbl->i24 ^ 1) & 1) {
         return 0;
     }
-    D_0013E090[g_current_level_index]++;
+    level_hero_hit_counts[g_current_level_index]++;
     D_0013F450_28510.p2280 = tbl->p20;
-    D_0015EFA8++;
+    hero_hit_count++;
     if (D_0013F450_28510.i208C == 0xF) {
         D_0013F450_28510.h5BE = 1;
         return 0;
@@ -304,10 +304,10 @@ void quantize_hero_input_target_speed(void) {
     x = D_0013E633 + 0xE1D;
     cur = *(float *)(x + 0x190);
     if (0.0f < cur) {
-        if (cur < D_L06_0017C638[3]) {
-            *(float *)(x + 0x190) = D_L06_0017C638[2] * g_frame_time;
+        if (cur < blarg_hero_speed_bands[3]) {
+            *(float *)(x + 0x190) = blarg_hero_speed_bands[2] * g_frame_time;
         } else {
-            *(float *)(x + 0x190) = D_L06_0017C638[6] * g_frame_time;
+            *(float *)(x + 0x190) = blarg_hero_speed_bands[6] * g_frame_time;
         }
     }
 }
@@ -1339,7 +1339,7 @@ void HeroL06_UpdateMovement(void) {
             float v;
             float acc;
 
-            if (((Hero *)&g_hero)->unkA9C != 0 || ((Hero *)&g_hero)->anim_frame < D_L06_0017C4A8[((Hero *)&g_hero)->attack_record].f18) {
+            if (((Hero *)&g_hero)->unkA9C != 0 || ((Hero *)&g_hero)->anim_frame < blarg_attack_records[((Hero *)&g_hero)->attack_record].f18) {
                 ((Hero *)&g_hero)->items[0].timer = 2;
             }
             ((Hero *)&g_hero)->target_speed = 0.0f;
@@ -1409,7 +1409,7 @@ void HeroL06_UpdateMovement(void) {
             int skip;
 
             ((Hero *)&g_hero)->target_speed = 0.0f;
-            if (((Hero *)&g_hero)->unkA9C != 0 || ((Hero *)&g_hero)->anim_frame < D_L06_0017C4A8[((Hero *)&g_hero)->attack_record].f18) {
+            if (((Hero *)&g_hero)->unkA9C != 0 || ((Hero *)&g_hero)->anim_frame < blarg_attack_records[((Hero *)&g_hero)->attack_record].f18) {
                 ((Hero *)&g_hero)->items[0].timer = 2;
             }
             skip = 0;
@@ -1472,11 +1472,11 @@ void HeroL06_UpdateMovement(void) {
         {
             Rec2C *r;
 
-            if (((Hero *)&g_hero)->unkA9C != 0 || ((Hero *)&g_hero)->anim_frame < D_L06_0017C4A8[((Hero *)&g_hero)->attack_record].f20) {
+            if (((Hero *)&g_hero)->unkA9C != 0 || ((Hero *)&g_hero)->anim_frame < blarg_attack_records[((Hero *)&g_hero)->attack_record].f20) {
                 ((Hero *)&g_hero)->items[0].timer = 2;
             }
             ((Hero *)&g_hero)->target_speed = 0.0f;
-            r = &D_L06_0017C4A8[((Hero *)&g_hero)->attack_record];
+            r = &blarg_attack_records[((Hero *)&g_hero)->attack_record];
             if (((Hero *)&g_hero)->unkA54 != 0 && ((Hero *)&g_hero)->state_timer < scale_ticks(4)) {
                 float d;
                 float off;
@@ -2483,10 +2483,10 @@ void HeroL06_UpdateMovement(void) {
                 ((Hero *)&g_hero)->unk229C = 1.0f;
                 ((Hero *)&g_hero)->motion.move_yaw = fast_atan2(vec[0][0], vec[0][1]);
                 ((Hero *)&g_hero)->target_speed = len;
-                if (len < D_L06_0017C638[3]) {
-                    ((Hero *)&g_hero)->target_speed = D_L06_0017C638[2] * g_frame_time;
+                if (len < blarg_hero_speed_bands[3]) {
+                    ((Hero *)&g_hero)->target_speed = blarg_hero_speed_bands[2] * g_frame_time;
                 } else {
-                    ((Hero *)&g_hero)->target_speed = D_L06_0017C638[6] * g_frame_time;
+                    ((Hero *)&g_hero)->target_speed = blarg_hero_speed_bands[6] * g_frame_time;
                 }
                 if (((Hero *)&g_hero)->vehicle_mode == 3) {
                     ((Hero *)&g_hero)->target_speed = g_frame_time * 1.5f;
@@ -2577,7 +2577,7 @@ void HeroL06_UpdateMovement(void) {
             Rec2C *r;
 
             ((Hero *)&g_hero)->target_speed = 0.0f;
-            r = &D_L06_0017C4A8[((Hero *)&g_hero)->attack_record];
+            r = &blarg_attack_records[((Hero *)&g_hero)->attack_record];
             switch (r->f4) {
             case 0:
                 if (((Hero *)&g_hero)->anim_frame < 5.5f) {

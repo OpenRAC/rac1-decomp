@@ -928,14 +928,14 @@ void update_fleet_camera_box_watcher(char *moby) {
         for (j = 0; j < 30; j++) {
             char *mb;
             sk = gSkillPoints;
-            mb = D_L17_00160058 + (*(int *)(d + 0x70) << 8);
+            mb = fleet_mobys + (*(int *)(d + 0x70) << 8);
             if ((*(short *)(mb + 0xA6) == 0x2C || *(short *)(mb + 0xA6) == 0x566)
                 && *(signed char *)(mb + 0x20) >= 0
                 && !is_point_inside_clip_volume(mb + 0x10, *(int *)(d + 0x78))) {
                 *(int *)(d + 0x74) += 1;
             }
             n = *(int *)(d + 0x70) + 1;
-            wrap = D_L17_00160058 + (n << 8) < D_L17_0016005C;
+            wrap = fleet_mobys + (n << 8) < D_L17_0016005C;
             *(int *)(d + 0x70) = n;
             if (!wrap) {
                 if (*(int *)(d + 0x74) == 0 && sk[0x1B] == 0) {
@@ -983,7 +983,7 @@ void update_fleet_camera_box_watcher(char *moby) {
             *(int *)(d + 0x30) = -1;
         }
         if (idx != -1) {
-            m = D_L17_00160058 + (idx << 8);
+            m = fleet_mobys + (idx << 8);
             if (m == 0) goto skip1;
             if (*(short *)(m + 0xA6) != 0x4E) goto skip1;
             if (*(unsigned char *)(m + 0x20) == 0xFE) goto skip1;
@@ -1053,7 +1053,7 @@ void update_fleet_camera_box_watcher(char *moby) {
         char *cam;
         set_follow_camera_blend_output_flags();
         set_follow_camera_angle_blend_from_position((int)(fleet_camera_points + (*(int *)(d + 0x44) << 7) + 0x30), 0.02617994f, 0.0f);
-        cam = D_L17_00167600;
+        cam = fleet_player_camera;
         f = fast_atan2(*(float *)(fleet_camera_points + ((*(int *)(d + 0x44) << 7) + 0x30)) - *(float *)(cam + 0x140),
                               *(float *)(fleet_camera_points + ((*(int *)(d + 0x44) << 7) + 0x34)) - *(float *)(cam + 0x144));
         if (FastDiffRots(*(float *)(cam + 0x158), f) < 0.034906585f) {
@@ -1067,7 +1067,7 @@ void update_fleet_camera_box_watcher(char *moby) {
         if (func_001F9908_i((int *)(d + 0x5C))) {
             char *cam;
             set_follow_camera_angle_blend_from_position((int)(fleet_camera_points + (*(int *)(d + 0x40) << 7) + 0x30), 0.02617994f, 0.0f);
-            cam = D_L17_00167600;
+            cam = fleet_player_camera;
             f = fast_atan2(*(float *)(fleet_camera_points + ((*(int *)(d + 0x40) << 7) + 0x30)) - *(float *)(cam + 0x140),
                                   *(float *)(fleet_camera_points + ((*(int *)(d + 0x40) << 7) + 0x34)) - *(float *)(cam + 0x144));
             if (FastDiffRots(*(float *)(cam + 0x158), f) < 0.034906585f) {
@@ -1096,12 +1096,12 @@ void Moby750SparkTriggerUpdate(unsigned char *m) {
         m[0x20] = 1;
         break;
     case 1:
-        if (D_L17_0015F6A8 == 2) {
+        if (fleet_game_mode == 2) {
             int v = D_L17_0016D1E0.v;
             int i;
-            if (v != 0 && v != D_L17_0015F6A8) return;
+            if (v != 0 && v != fleet_game_mode) return;
             i = 0;
-            if (v == 0 || v == D_L17_0015F6A8) i = 2;
+            if (v == 0 || v == fleet_game_mode) i = 2;
             cutscene_set_camera_target(D_L17_0016D1E0.tbl[i]);
         }
         break;
@@ -1544,10 +1544,10 @@ char *try_activate_blarg_ship_from_list(int list) {
     int idx;
     do {
         idx = (*s & 0x7FFF) << 8;
-        if (*(short *)(0xA6 + idx + D_L17_00160058) != 0x733) continue;
-        if (*(unsigned char *)(0x20 + idx + D_L17_00160058) != 4) continue;
+        if (*(short *)(0xA6 + idx + fleet_mobys) != 0x733) continue;
+        if (*(unsigned char *)(0x20 + idx + fleet_mobys) != 4) continue;
         if (random_integer_below(10)) continue;
-        m = D_L17_00160058 + idx;
+        m = fleet_mobys + idx;
         d = *(char **)(m + 0x78);
         qcopy(C, D_L17_00167750);
         C[0] = 0;
@@ -1633,7 +1633,7 @@ void update_hit_triggered_fragment_and_placement_spawner(unsigned char *m) {
         Moby_PlaySound(0, 0, (int)m);
         SetDeathBits(m, 0, -1);
         spawn_proximity_gated_bolts(m);
-        SpawnBreakFragment((char *)m, 0x753, &((struct Moby *)m)->pos.x, &((struct Moby *)m)->rot, 0, 0, D_L17_0015F660, D_L17_0015F660, 0.0f, D_L17_0015F660);
+        SpawnBreakFragment((char *)m, 0x753, &((struct Moby *)m)->pos.x, &((struct Moby *)m)->rot, 0, 0, fleet_zero_vec, fleet_zero_vec, 0.0f, fleet_zero_vec);
         spawn_moby_break_fragments(m, 0x756, 1, 0x756, 1, 1, 2);
         spawn_moby_from_placement(m, 0x755);
         DeleteMoby(m);

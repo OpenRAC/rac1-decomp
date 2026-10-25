@@ -569,7 +569,7 @@ void initialize_wind_spark(struct Moby *m, int i, void *dir) {
     up[1] = 0.0f;
     up[3] = 0.0f;
     FastVecCross(side, fwd, up);
-    qcopy(d->pos[i], D_L14_001601AC[d->i504].v);
+    qcopy(d->pos[i], oltanis_clip_volumes[d->i504].v);
     x = -d->f14;
     y = randf_sym(0.0f, d->f18);
     z = randf_sym(0.0f, d->f1C);
@@ -673,9 +673,9 @@ void update_wind_sparks(struct Moby *m) {
             FastVecScale(work, dir, d->f440[i]);
             FastVecAdd(pos, pos, work);
             if (in_clip != 0 &&
-                FastAbsF(pos[0] - D_L14_00167480.x) < 8.0f &&
-                FastAbsF(pos[1] - D_L14_00167480.y) < 8.0f &&
-                FastDiffRots(m->rot.z, D_L14_00167480.yaw) > 2.3561945f) {
+                FastAbsF(pos[0] - oltanis_player_camera.x) < 8.0f &&
+                FastAbsF(pos[1] - oltanis_player_camera.y) < 8.0f &&
+                FastDiffRots(m->rot.z, oltanis_player_camera.yaw) > 2.3561945f) {
                 if (d->n320[i] > scale_ticks(20)) {
                     d->n320[i] = scale_ticks(20);
                 }
@@ -990,15 +990,15 @@ void update_flying_bolt(struct Moby *m) {
         return;
     }
     while (tries < 3 && coll_line(&old, &target, pass, ignore, 0) != 0) {
-        hit = D_L14_00174640.moby;
+        hit = oltanis_coll_hit.moby;
         tries++;
         if (hit != 0 && hit->oclass == 0xFC) {
-            qcopy(&old, &D_L14_00174640.pos);
+            qcopy(&old, &oltanis_coll_hit.pos);
             ignore = hit;
             continue;
         }
         coll_line(&old, &target, pass, ignore, &sweep);
-        qcopy(&m->pos, &D_L14_00174640.pos);
+        qcopy(&m->pos, &oltanis_coll_hit.pos);
         if (m->visible != 0) {
             for (j = 0; j < 5; j++) {
                 spark.q = 0;
@@ -1062,7 +1062,7 @@ void update_path_lightning_controller(char *m) {
     st = ((unsigned char *)m)[0x20];
     if (st == 1) {
         unsigned char *p;
-        if (D_L14_0015F6A8 != 0) return;
+        if (oltanis_game_mode != 0) return;
         p = (unsigned char *)D_0013D355 + 0x13B;
         if (p[0x68] != 0) return;
         StartCutscene(0);
@@ -1072,7 +1072,7 @@ void update_path_lightning_controller(char *m) {
         return;
     }
     if (st == 2) {
-        if (D_L14_0015F6A8 == st) return;
+        if (oltanis_game_mode == st) return;
         m[0x20] = 3;
         ShowTrackedMoby();
         return;
@@ -1174,12 +1174,12 @@ void update_branched_lightning_arc(char *moby) {
                 }
             }
             t = IntToFloat(i) / IntToFloat(40);
-            *e = truncate_float_to_s32((float)-scale_ticks((*(int *)&D_L14_00161D40)) * t + 0.0f);
+            *e = truncate_float_to_s32((float)-scale_ticks((*(int *)&lightning_grow_ticks)) * t + 0.0f);
         }
         lerp_vector(D_L14_001E0330, D_L14_001E0330 - 4, D_L14_001E0330 + 4, 0.5f);
         sign = -1.0f;
         D_L14_00161D84 = D_L14_00161DBC = scale_ticks(rand_range((*(int *)&D_L14_00161D68), (*(int *)&D_L14_00161D6C)));
-        D_L14_00161DC0 = 1.0f / IntToFloat(D_L14_00161D84 - scale_ticks((*(int *)&D_L14_00161D40)));
+        D_L14_00161DC0 = 1.0f / IntToFloat(D_L14_00161D84 - scale_ticks((*(int *)&lightning_grow_ticks)));
         if (random_integer_below(2) != 0) {
             sign = 1.0f;
         }
@@ -1218,8 +1218,8 @@ void update_branched_lightning_arc(char *moby) {
         fast_dec_timer(&D_L14_00161D84);
         for (i = 0; i < 40; i++) {
             s16 v = ++D_L14_001E0350[i];
-            if (scale_ticks((*(int *)&D_L14_00161D40)) < v) {
-                D_L14_001E0350[i] = scale_ticks((*(int *)&D_L14_00161D40));
+            if (scale_ticks((*(int *)&lightning_grow_ticks)) < v) {
+                D_L14_001E0350[i] = scale_ticks((*(int *)&lightning_grow_ticks));
             }
             if (i != 0) {
                 if (i >= 35) {
@@ -1229,16 +1229,16 @@ void update_branched_lightning_arc(char *moby) {
                 }
             }
         }
-        scale_ticks((*(int *)&D_L14_00161D40));
+        scale_ticks((*(int *)&lightning_grow_ticks));
         for (j = 0; j < 3; j++) {
             for (n = 0; n < 16; n++) {
                 s16 v = ++D_L14_001E06A0[j][n];
-                if (scale_ticks((*(int *)&D_L14_00161D40)) < v) {
-                    D_L14_001E06A0[j][n] = scale_ticks((*(int *)&D_L14_00161D40));
+                if (scale_ticks((*(int *)&lightning_grow_ticks)) < v) {
+                    D_L14_001E06A0[j][n] = scale_ticks((*(int *)&lightning_grow_ticks));
                 }
             }
         }
-        if (D_L14_00161D84 < D_L14_00161DBC - scale_ticks((*(int *)&D_L14_00161D40))) {
+        if (D_L14_00161D84 < D_L14_00161DBC - scale_ticks((*(int *)&lightning_grow_ticks))) {
             if (scale_ticks(60) < D_L14_00161DBC) {
                 if ((*(float *)&D_L14_00161D3C) < 6.2831855f) {
                     (*(short *)&D_L14_00161DB2) = truncate_float_to_s32(FastSin(D_L14_00161DB4) * 128.0f);
@@ -1316,7 +1316,7 @@ void draw_branched_lightning_arc(void) {
     q[0].r88 = 0x8000000048L;
     q[0].r80 = 0xFF9000000260L;
     q[0].r70 = 0;
-    a = func_001FA898_r(IntToFloat(D_L14_001E0350[0]) / IntToFloat(scale_ticks(D_L14_00161D40)) * 255.0f) - D_L14_00161DB0[0];
+    a = func_001FA898_r(IntToFloat(D_L14_001E0350[0]) / IntToFloat(scale_ticks(lightning_grow_ticks)) * 255.0f) - D_L14_00161DB0[0];
     if (a < 0) a = 0;
     if (a > 0xFF) a = 0xFF;
     c = D_L14_00161D48 | (a << 24);
@@ -1392,7 +1392,7 @@ void draw_branched_lightning_arc(void) {
         if (i == 0x27) {
             b = 0;
         } else {
-            b = func_001FA898_r(IntToFloat(D_L14_001E0350[i]) / IntToFloat(scale_ticks(D_L14_00161D40)) * 255.0f) - D_L14_00161DB0[0];
+            b = func_001FA898_r(IntToFloat(D_L14_001E0350[i]) / IntToFloat(scale_ticks(lightning_grow_ticks)) * 255.0f) - D_L14_00161DB0[0];
             if (b < 0) b = 0;
             if (b > 0xFF) b = 0xFF;
         }
@@ -1418,7 +1418,7 @@ void draw_branched_lightning_arc(void) {
         V_2EF078 *os = D_L14_001E03A0;
         V_2EF078 *o;
 
-        t = IntToFloat(as[j * 16]) / IntToFloat(scale_ticks(D_L14_00161D40));
+        t = IntToFloat(as[j * 16]) / IntToFloat(scale_ticks(lightning_grow_ticks));
         a = func_001FA898_r(t * 255.0f) - D_L14_00161DB0[0];
         if (a < 0) a = 0;
         if (a > 0xFF) a = 0xFF;
@@ -1459,7 +1459,7 @@ void draw_branched_lightning_arc(void) {
             transform_vector(&q[0].v[3], &q[0].v[3], &m2[0]);
             transform_vector(&q[1].v[2], &q[1].v[2], &m2[0]);
             transform_vector(&q[1].v[3], &q[1].v[3], &m2[0]);
-            t = IntToFloat(*s) / IntToFloat(scale_ticks(D_L14_00161D40));
+            t = IntToFloat(*s) / IntToFloat(scale_ticks(lightning_grow_ticks));
             a = func_001FA898_r(t * 255.0f) - D_L14_00161DB0[0];
             if (a < 0) a = 0;
             if (a > 0xFF) a = 0xFF;
@@ -2396,7 +2396,7 @@ Moby *find_group_moby_by_tag(char *moby, int tag) {
     struct Moby *pool;
     int group_moby_index;
 
-    if (((Moby *)moby)->group < D_L14_001600B4 && (group_entry_cursor = D_L14_001AC2C0[((Moby *)moby)->group]) != 0) {
+    if (((Moby *)moby)->group < D_L14_001600B4 && (group_entry_cursor = oltanis_moby_groups[((Moby *)moby)->group]) != 0) {
         pool = oltanis_mobys;
         do {
             group_moby_index = *group_entry_cursor & 0x7FFF;
@@ -2515,7 +2515,7 @@ void qwark_oltanis_update(char *m) {
         }
         break;
     case 2:
-        if (D_L14_0015F6A8 == 2) break;
+        if (oltanis_game_mode == 2) break;
         m[0x20] = 1;
         if (*(short *)(d + 4) != 3 && *(short *)(d + 4) != 4) break;
         if (*(short *)(d + 4) == 4) {

@@ -108,7 +108,7 @@ void DropMobyToGround(D9668Moby *m) {
     Q.z = Q.z - 1.5f;
     if (coll_line(&P, &Q, 2, (int)m, 0)) {
         hit = 1;
-        ground = D_L00_00173F68;
+        ground = coll_hit_point_z;
     } else {
         ground = Q.z;
     }
@@ -1428,7 +1428,7 @@ void suckcannon_update(M40 *self) {
         if(hero40.aim_locked) {
             data->target=hero40.aim_target;
             data->target_timer=scale_ticks(20);
-            data->target_height=D_L00_00173F68-data->target->pos.f.z;
+            data->target_height=coll_hit_point_z-data->target->pos.f.z;
         }
         if(!data->blocked && hero40.count>0 && !data->cooldown &&
             (input40.held&hero40.fire_mask) && hero40.move_mode!=7 && hero40.move_mode!=3 &&
@@ -2407,8 +2407,8 @@ void SuckBeam_DrawMesh(void) {
             } else {
                 b2 = b + 0.05f;
                 am = a - step;
-                y = D_L00_001E6358[i - 1];
-                pv = &D_L00_001E6358[i];
+                y = suck_beam_segment_alpha[i - 1];
+                pv = &suck_beam_segment_alpha[i];
                 v = *pv;
                 for (k = 0; k < 2; k++) {
                     if (v < 0) v = 0;
@@ -2448,7 +2448,7 @@ extern short D_L00_00161C10;
 void suck_reset(void) {
     *(int *)&D_L00_00161C10 = 1;
     *(int *)&D_L00_00161C14 = 1;
-    D_L00_001E6358[0] = 0;
+    suck_beam_segment_alpha[0] = 0;
 }
 extern Hero hero_2DF168 __asm__("D_0013F450");
 typedef int u128_DF168 __attribute__((mode(TI)));
@@ -2495,10 +2495,10 @@ void SuckBeam_Build(char *a, char *b) {
     vec_scale_to_length((char *)s + 0x30, s, D_L00_00161C54);
     vec_scale_to_length((char *)s + 0x40, v, 1.0f);
     qcopy(D_L00_001E6290, b);
-    D_L00_001E6358[0] = 0;
+    suck_beam_segment_alpha[0] = 0;
     for (i = 1; i < 10; i++) {
         FastVecAdd(D_L00_001E6290 + i * 0x10, D_L00_001E6280 + i * 0x10, (char *)s + 0x30);
-        D_L00_001E6358[i] = 0;
+        suck_beam_segment_alpha[i] = 0;
     }
     clear_u64_value(D_L00_00161C30);
     s[5] = 0;
@@ -2526,10 +2526,10 @@ extern void func_001F49B0(void (*)(void), int);
 
 void SuckBeam_QueueDraw(int arg0) {
     int i;
-    if (D_L00_001E6358[0] > 0) {
+    if (suck_beam_segment_alpha[0] > 0) {
         for (i = 0; i < 10; i++) {
-            if (D_L00_001E6358[i] > 0x40) D_L00_001E6358[i] = 0x40;
-            D_L00_001E6358[i] = (unsigned short)D_L00_001E6358[i] - 4;
+            if (suck_beam_segment_alpha[i] > 0x40) suck_beam_segment_alpha[i] = 0x40;
+            suck_beam_segment_alpha[i] = (unsigned short)suck_beam_segment_alpha[i] - 4;
         }
         AddDrawCallback(SuckBeam_DrawMesh, arg0);
     }
@@ -2588,7 +2588,7 @@ void ScatterMobyFromHazards(char *m) {
         if (!IsMobyScatterClass(m)) return;
     }
     if (!(FastVecDist(m + 0x10, pos = D_0013E633 + 0xE9D) < 30.0f)) return;
-    for (i = 0; i < 10 && D_L00_001E6358[i] >= 8; i++) {
+    for (i = 0; i < 10 && suck_beam_segment_alpha[i] >= 8; i++) {
         lim = i * 0.3f + 0.1f;
         if (lim < 2.0f) lim = 2.0f;
         if (FastVecDist(m + 0x10, D_L00_001E6290 + i * 16) < lim) {

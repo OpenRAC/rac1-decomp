@@ -189,7 +189,7 @@ Moby *CreateMoby(int oClass) {
     Moby *m;
 
     for (m = (Moby *)moby_instance_end; m < (Moby *)moby_instance_perm_end; m++) {
-        if (m->state >= 0xFE && (unsigned int)D_0015F6F0 >= m->unk38) {
+        if (m->state >= 0xFE && (unsigned int)world_update_time >= m->unk38) {
             if (m->state == 0xFF) {
                 m[1].state = 0xFF;
             }
@@ -202,7 +202,7 @@ Moby *CreateMoby(int oClass) {
             return m;
         }
     }
-    STUB_printf(s_tried_to_create_moby, D_0015F6F0, oClass);
+    STUB_printf(s_tried_to_create_moby, world_update_time, oClass);
     return 0;
 }
 
@@ -386,7 +386,7 @@ void DeleteMoby(MobyDel *m) {
     } else {
         m->state = 0xFE;
     }
-    m->unk38 = D_0015F6F0 + 2;
+    m->unk38 = world_update_time + 2;
     update_moby_grids(m, 0x80807F7F);
 }
 
@@ -713,7 +713,7 @@ void update_resident_packed_direction(void) {
     float a;
 
     func_0020E360((void *)g_hero_moby, buf);
-    a = func_001FA058(buf[0], buf[1]);
+    a = fast_arc_tan(buf[0], buf[1]);
     shadow_light_dir[0] = FastCos(a) * 0.14f;
     shadow_light_dir[1] = FastSin(a) * 0.14f;
     shadow_light_dir[2] = -0.99f;
@@ -738,24 +738,24 @@ void configure_graphics_setup_dma_chain(void) {
     int t;
 
     if (D_0016003C == 0) {
-        ((int *)D_00160040)[0] = 0x10000000;
-        ((int *)D_00160040)[1] = 0;
-        ((int *)D_00160040)[2] = 0;
-        ((int *)D_00160040)[3] = 0;
+        ((int *)graphics_setup_tag_slot)[0] = 0x10000000;
+        ((int *)graphics_setup_tag_slot)[1] = 0;
+        ((int *)graphics_setup_tag_slot)[2] = 0;
+        ((int *)graphics_setup_tag_slot)[3] = 0;
         return;
     }
     t = g_render_packet_cursor;
     p = (int *)t;
     t += 0x10;
     g_render_packet_cursor = t;
-    ((int *)D_00160040)[0] = 0x20000000;
-    ((int *)D_00160040)[1] = g_render_packet_cursor;
-    ((int *)D_00160040)[2] = 0;
-    ((int *)D_00160040)[3] = 0;
+    ((int *)graphics_setup_tag_slot)[0] = 0x20000000;
+    ((int *)graphics_setup_tag_slot)[1] = g_render_packet_cursor;
+    ((int *)graphics_setup_tag_slot)[2] = 0;
+    ((int *)graphics_setup_tag_slot)[3] = 0;
     func_00228A58();
     submit_graphics_setup_command_stream(D_001C8A00);
     ((int *)g_render_packet_cursor)[0] = 0x20000000;
-    ((int *)g_render_packet_cursor)[1] = D_00160040 + 0x10;
+    ((int *)g_render_packet_cursor)[1] = graphics_setup_tag_slot + 0x10;
     ((int *)g_render_packet_cursor)[2] = 0;
     ((int *)g_render_packet_cursor)[3] = 0;
     g_render_packet_cursor += 0x10;
@@ -829,7 +829,7 @@ void DrawMobysSetup(void) {
     p += 0x10;
     g_render_packet_cursor = p;
     ProfileMarker_Begin(D_0015FFD0, 1);
-    D_00160040 = 0;
+    graphics_setup_tag_slot = 0;
     vu1_chain_limit = vu1_chain_safe_end - 0x10000;
     moby_anim_head = render_packet_end;
 }
@@ -867,7 +867,7 @@ void DrawMobysCleanUp(void) {
         }
     }
     ProfileMarker_End(D_0015FFF0, 3);
-    if (draw_config[10] != 0 && D_00160040 != 0) {
+    if (draw_config[10] != 0 && graphics_setup_tag_slot != 0) {
         configure_graphics_setup_dma_chain();
     }
 }

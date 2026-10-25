@@ -302,13 +302,13 @@ void mine_update(M910 *m) {
                         int i;
                         char *p;
 
-                        RippleDisturb(*(int *)&D_L00_00161390, *(int *)&D_L00_00161398, 1, m->pos.f[0], m->pos.f[1], 0.5f, -0.35f);
+                        RippleDisturb(*(int *)&water_patches, *(int *)&water_patch_count, 1, m->pos.f[0], m->pos.f[1], 0.5f, -0.35f);
                         v->h50 = 1;
                         clear_u64_value((float *)v);
                         v->vel.f[2] = g_frame_time * -1.5f;
                         t[0] = m->pos.f[0];
                         t[1] = m->pos.f[1];
-                        t[2] = D_L00_00173F68[0];
+                        t[2] = coll_hit_point_z[0];
                         p = Moby775Spawn(t, 2.0f);
                         if (p != 0) {
                             p[0x23] = 0x70;
@@ -665,7 +665,7 @@ void mine_update(M910 *m) {
             v->i78 = 0;
             if (v->i5C < 0 || *(int *)&D_L00_001614A0 != 0) {
                 SpawnExplosionFx(m, &m->pos, -1, 0.33f, 13.0f);
-                moby_index_list_remove(m, D_L00_001B0B30);
+                moby_index_list_remove(m, thrown_mine_list);
                 DeleteMoby(m);
             }
             {
@@ -863,7 +863,7 @@ void mine_update(M910 *m) {
                 } else {
                     mine_camera_blast((char *)&a, (char *)&m->pos, 0, 0);
                 }
-                moby_index_list_remove(m, D_L00_001B0B30);
+                moby_index_list_remove(m, thrown_mine_list);
                 DeleteMoby(m);
             } else {
                 jet_animate((unsigned char *)m, 0.25f);
@@ -1614,13 +1614,13 @@ void bomb_update(M_2aedd0 *m) {
                     char *s;
                     int i;
 
-                    RippleDisturb(*(int *)&D_L00_00161390, *(int *)&D_L00_00161398, 1, m->pos.f[0], m->pos.f[1], 0.5f, -0.35f);
+                    RippleDisturb(*(int *)&water_patches, *(int *)&water_patch_count, 1, m->pos.f[0], m->pos.f[1], 0.5f, -0.35f);
                     d->h68 = 1;
                     clear_u64_value(d->v.f);
                     d->v.f[2] = g_frame_time * -1.5f;
                     p.f[0] = m->pos.f[0];
                     p.f[1] = m->pos.f[1];
-                    p.f[2] = D_L00_00173F68[0];
+                    p.f[2] = coll_hit_point_z[0];
                     s = Moby775Spawn(&p, 2.0f);
                     if (s != 0) {
                         s[0x23] = 0x70;
@@ -1680,7 +1680,7 @@ void bomb_update(M_2aedd0 *m) {
                     SendRadialMessageToMobys(m, &v, coll_sphere_moby_hits, n, 0, 0x830000, 2, 1, 2.0f, 1.0f, 1.0f);
                     m->state = 2;
                 }
-                if (D_L00_0016007C > 0x32) {
+                if (free_moby_slot_count > 0x32) {
                     for (i = 0; i < 10; i++) {
                         V2AE110 t;
                         float dp;
@@ -1707,7 +1707,7 @@ void bomb_update(M_2aedd0 *m) {
                     int b2;
                     int cnt;
 
-                    if (D_L00_0016007C > 0x14) {
+                    if (free_moby_slot_count > 0x14) {
                         for (i = 0; i < 4; i++) {
                             float dp;
 
@@ -2180,7 +2180,7 @@ unsigned char *spawn_devastator_missile(unsigned char *a, Vec4 *pos, unsigned ch
             qcopy(m + 0x10, collision_hit_point);
         }
         moby_build_matrix(m);
-        append_unique_moby_index((int)m, D_L00_001B0AF0, 0x1F);
+        append_unique_moby_index((int)m, active_homing_missiles, 0x1F);
         *(float *)(m + 0x2C) += *(float *)(m + 0x2C);
     }
     return m;
@@ -2411,7 +2411,7 @@ void gold_devastator_missile_update(M910 *m) {
     normal.f[2]=1.0f;
     d=(Missile1688 *)m->v;
     target=d->target;
-    if(D_L00_0015F6B4>0.9f || D_L00_0015F6B8>0.9f) reduced=1;
+    if(cpu_frame_load>0.9f || level_draw_frame_load>0.9f) reduced=1;
     d->speed=d->speed+(d->desired_speed-d->speed)/10.0f*g_frame_scale_sq;
     FastDecTimer(&d->turn_time);
     {
@@ -2507,7 +2507,7 @@ void gold_devastator_missile_update(M910 *m) {
     combine_velocity1688(phase.collision.dir,&motion,&hero_vel);
     FastVecAdd((&m->pos),(&m->pos),&motion);
     if(m->pos.f[0]<0.0f || m->pos.f[1]<0.0f || m->pos.f[2]<0.0f) {
-        moby_index_list_remove(m,D_L00_001B0AF0);
+        moby_index_list_remove(m,active_homing_missiles);
         DeleteMoby(m);
         return;
     }
@@ -2553,7 +2553,7 @@ void gold_devastator_missile_update(M910 *m) {
         rotate1688(&surface_motion,&surface_motion,m->mtx);
         rotate1688(&normal,&normal,m->mtx);
         if(!gold_weapon_purchased.bB) {
-            moby_index_list_remove(m,D_L00_001B0AF0);
+            moby_index_list_remove(m,active_homing_missiles);
             DeleteMoby(m);
             return;
         }
@@ -2672,7 +2672,7 @@ void gold_devastator_missile_update(M910 *m) {
             life=rand_range(scale_ticks(20),scale_ticks(35))-particle_reduction*10;
             debris1688((&m->pos),&v,c,f,debris_scale,life);
         }
-        if(D_L00_0015F6B4<0.95f && distance>9.0f) {
+        if(cpu_frame_load<0.95f && distance>9.0f) {
             int c=127,f=127;
             if(gold_weapon_purchased.bB) { c=60; f=60; }
             spawn_glow_particle(m,(&m->pos),&blast_velocity,size*4.0f,scale_ticks(15),c,127,f,32);
@@ -2697,7 +2697,7 @@ void gold_devastator_missile_update(M910 *m) {
         }
         d->bounce_count++;
         if(!gold_weapon_purchased.bB || d->bounce_count==3) {
-            moby_index_list_remove(m,D_L00_001B0AF0);
+            moby_index_list_remove(m,active_homing_missiles);
             DeleteMoby(m);
             return;
         }

@@ -363,7 +363,7 @@ void walloper_update(char *m) {
     case 0:
         m[0x20] = 2;
         for (q = 0; q < 10; q++) {
-            D_L00_001DC1C0[q] = 0;
+            walloper_arc_timers[q] = 0;
             D_L00_001DC1F0[q] = 2;
             D_L00_001DC208[q] = 1;
         }
@@ -401,20 +401,20 @@ void walloper_update(char *m) {
     FastVecAdd(vec0, vec0, m + 0x10);
     any = 0;
     for (j = 0; j < 10; j++) {
-        if (D_L00_001DC1C0[j] != 0) {
+        if (walloper_arc_timers[j] != 0) {
             any = 1;
             break;
         }
     }
     if (!flag && !any) return;
     for (i = 0; i < 10; i = n) {
-        D_L00_001DC1C0[i]--;
-        if (D_L00_001DC1C0[i] < 0) D_L00_001DC1C0[i] = 0;
-        if (D_L00_001DC1C0[i] == 0) {
+        walloper_arc_timers[i]--;
+        if (walloper_arc_timers[i] < 0) walloper_arc_timers[i] = 0;
+        if (walloper_arc_timers[i] == 0) {
             if (flag) {
                 float sign;
                 int k;
-                D_L00_001DC1C0[i] = 2;
+                walloper_arc_timers[i] = 2;
                 D_L00_001DC1D8[i] = 0x40;
                 random_spherical_offset(vec1, *(float *)&D_L00_00161774, *(float *)&D_L00_00161774);
                 qcopy(D_L00_001DBEA0 + i * 0x50, vec0);
@@ -446,7 +446,7 @@ void walloper_update(char *m) {
             for (k = 1; k < 5; k++) {
                 FastVecAdd(((float (*)[4])(D_L00_001DBEA0+i*0x50))[k], D_L00_001DBE90_rows[i].point[k - 1], workspace[k]);
             }
-            if (D_L00_001DC1C0[i] > 0) D_L00_001DC1D8[i] = 0x20;
+            if (walloper_arc_timers[i] > 0) D_L00_001DC1D8[i] = 0x20;
             else D_L00_001DC1D8[i] = 0;
         }
     }
@@ -464,7 +464,7 @@ extern void func_L00_002BD4A8(int);
 void draw_walloper_arc_and_quad_effects(int arg) {
     int i;
     for (i = 9; i >= 0; i--) {
-        if (D_L00_001DC1C0[9 - i] != 0) {
+        if (walloper_arc_timers[9 - i] != 0) {
             int r = func_001FA898_r(IntToFloat(D_L00_001DC1D8[9 - i]) * D_L00_001617A4_m);
             draw_walloper_arc_two_pass_quads(D_L00_001DBEA0 + (9 - i) * 0x50, r, r, 5, *(float *)&D_L00_00161760, *(float *)&D_L00_00161764, 0.2f);
         }

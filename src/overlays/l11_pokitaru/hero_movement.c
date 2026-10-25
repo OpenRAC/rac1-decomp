@@ -491,8 +491,8 @@ void HeroL11_UpdateMovement(void) {
             if (g_hero.state.step == 1) {
                 if (g_hero.state_timer == 1) {
                     emit_hero_surface_effect_burst(3, 0x10, 0);
-                    if (D_L11_00161350 != 0) {
-                        RippleDisturb(D_L11_00161350, D_L11_00161358, 0, g_hero.motion.pos.f[0], g_hero.motion.pos.f[1], 0.4f, -0.3f);
+                    if (pokitaru_pool_draw_tiles != 0) {
+                        RippleDisturb(pokitaru_pool_draw_tiles, D_L11_00161358, 0, g_hero.motion.pos.f[0], g_hero.motion.pos.f[1], 0.4f, -0.3f);
                     }
                     g_hero.unk90A = scale_ticks(0x46);
                 }
@@ -1609,7 +1609,7 @@ void HeroL11_UpdateMovement(void) {
                         k = 0.0f;
                     }
                 }
-                if (sp > D_L11_0017C838.fC) {
+                if (sp > pokitaru_hero_speed_bands.fC) {
                     turn_hero_toward_move_direction_with_stick_scale();
                 } else {
                     float t;
@@ -1879,8 +1879,8 @@ void HeroL11_UpdateMovement(void) {
         if (g_hero.state.current == 0x12) {
             if (g_hero.state_timer == scale_ticks(0x14)) {
                 emit_hero_surface_effect_burst(3, 0x10, 1);
-                if (D_L11_00161350 != 0) {
-                    RippleDisturb(D_L11_00161350, D_L11_00161358, 0, g_hero.motion.pos.f[0], g_hero.motion.pos.f[1], 0.4f, 0.35f);
+                if (pokitaru_pool_draw_tiles != 0) {
+                    RippleDisturb(pokitaru_pool_draw_tiles, D_L11_00161358, 0, g_hero.motion.pos.f[0], g_hero.motion.pos.f[1], 0.4f, 0.35f);
                 }
             }
             if (g_hero.anim_frame >= 4.0f && g_hero.anim_frame <= 7.0f) {
@@ -2033,10 +2033,10 @@ void HeroL11_UpdateMovement(void) {
                 g_hero.unk229C = 1.0f;
                 g_hero.motion.move_yaw = fast_atan2(vec[0][0], vec[0][1]);
                 g_hero.target_speed = len;
-                if (len < D_L11_0017C838.fC) {
-                    g_hero.target_speed = D_L11_0017C838.f8 * g_frame_time;
+                if (len < pokitaru_hero_speed_bands.fC) {
+                    g_hero.target_speed = pokitaru_hero_speed_bands.f8 * g_frame_time;
                 } else {
-                    g_hero.target_speed = D_L11_0017C838.f18 * g_frame_time;
+                    g_hero.target_speed = pokitaru_hero_speed_bands.f18 * g_frame_time;
                 }
                 if (g_hero.vehicle_mode == 3) {
                     g_hero.target_speed = g_frame_time * 1.5f;

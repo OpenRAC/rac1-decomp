@@ -706,21 +706,21 @@ void update_path_junction_selection(struct Moby *moby) {
         n = 0;
         do {
             for (i = 0; i < D_L18_0015F7F0; i++) {
-                if (D_L18_0015F7EC[i].weight == 0.0f) {
+                if (veldin2_rails[i].weight == 0.0f) {
                     continue;
                 }
-                vars->pair[n].first = &D_L18_0015F7EC[i];
-                vars->weight[n].first = D_L18_0015F7EC[i].weight;
+                vars->pair[n].first = &veldin2_rails[i];
+                vars->weight[n].first = veldin2_rails[i].weight;
                 for (j = 0; j < D_L18_0015F7F0; j++) {
-                    if (D_L18_0015F7EC[j].weight == 0.0f) {
+                    if (veldin2_rails[j].weight == 0.0f) {
                         continue;
                     }
-                    if (FastVecDist(&D_L18_0015F7EC[i].path->points[0],
-                                     &D_L18_0015F7EC[j].path->points[D_L18_0015F7EC[j].path->count - 1]) < 0.5f) {
-                        vars->pair[n].second = &D_L18_0015F7EC[j];
-                        vars->weight[n].second = D_L18_0015F7EC[j].weight;
-                        D_L18_0015F7EC[j].weight = 0.0f;
-                        D_L18_0015F7EC[i].weight = 0.0f;
+                    if (FastVecDist(&veldin2_rails[i].path->points[0],
+                                     &veldin2_rails[j].path->points[veldin2_rails[j].path->count - 1]) < 0.5f) {
+                        vars->pair[n].second = &veldin2_rails[j];
+                        vars->weight[n].second = veldin2_rails[j].weight;
+                        veldin2_rails[j].weight = 0.0f;
+                        veldin2_rails[i].weight = 0.0f;
                         n++;
                         break;
                     }
@@ -2622,17 +2622,17 @@ void spawn_explosion_burst(void *source_moby) {
     if (F(D_L18_00162050) > 0.0f) {
         char *pos = (char *)&moby->pos;
         int t = scale_ticks(I(D_L18_00162054));
-        spawn_glow_particle(source_moby, pos, &D_L18_0015F660, F(D_L18_00162050), t, *(unsigned char *)&D_L18_00162058, D_L18_00162059[0], D_L18_00162059[1], D_L18_00162059[2]);
+        spawn_glow_particle(source_moby, pos, &veldin2_zero_vec, F(D_L18_00162050), t, *(unsigned char *)&D_L18_00162058, D_L18_00162059[0], D_L18_00162059[1], D_L18_00162059[2]);
     }
     if (F(D_L18_0016205C) > 0.0f) {
         char *pos = (char *)&moby->pos;
         int t = scale_ticks(I(D_L18_00162060));
-        spawn_glow_particle(source_moby, pos, &D_L18_0015F660, F(D_L18_0016205C), t, *(unsigned char *)&D_L18_00162064, D_L18_00162065[0], D_L18_00162065[1], D_L18_00162065[2]);
+        spawn_glow_particle(source_moby, pos, &veldin2_zero_vec, F(D_L18_0016205C), t, *(unsigned char *)&D_L18_00162064, D_L18_00162065[0], D_L18_00162065[1], D_L18_00162065[2]);
     }
     if (F(D_L18_00162068) > 0.0f) {
         char *pos = (char *)&moby->pos;
         int t = scale_ticks(I(D_L18_0016206C));
-        spawn_glow_particle(source_moby, pos, &D_L18_0015F660, F(D_L18_00162068), t, *(unsigned char *)&D_L18_00162070, D_L18_00162071[0], D_L18_00162071[1], D_L18_00162071[2]);
+        spawn_glow_particle(source_moby, pos, &veldin2_zero_vec, F(D_L18_00162068), t, *(unsigned char *)&D_L18_00162070, D_L18_00162071[0], D_L18_00162071[1], D_L18_00162071[2]);
     }
     if (F(D_L18_00162074) > 0.0f) {
         L18FlareView *camera = (L18FlareView *)veldin2_player_camera;
@@ -2874,7 +2874,7 @@ void update_electric_bolt_geometry_and_particles(void *moby) {
             FastVecAdd(&D_L18_001DA430[k].p[1], &s[8], &s[5]);
             t = 1.0f;
             for (j = 2; j < 5; j++) {
-                FastVecSub(&s[9], &D_L18_001DA420[k].p[j - 1], D_L18_00167840);
+                FastVecSub(&s[9], &D_L18_001DA420[k].p[j - 1], veldin2_camera_pos);
                 f20 = random_float_between(0.17453292f, 0.959931076f) * t;
                 t = -t;
                 build_look_at_matrix(&s[5], &s[5], &s[9], f20);
@@ -2951,11 +2951,11 @@ void draw_moby_billboard_quad_pair(V_2bb0b0 *pos) {
     quad.unk80 = 0xFF9000000260L;
     quad.unk70 = 0;
     pos = pos + 1;
-    FastVecSub(&mat[3], D_L18_00167840, pos);
+    FastVecSub(&mat[3], veldin2_camera_pos, pos);
     vec_scale_to_length(&mat[3], &mat[3], 0.3f);
     FastVecAdd(&mat[3], &mat[3], pos);
     mat[3].f[3] = 1.0f;
-    FastVecSub(&mat[0], D_L18_00167840, &mat[3]);
+    FastVecSub(&mat[0], veldin2_camera_pos, &mat[3]);
     vec_scale_to_length(&mat[0], &mat[0], 1.0f);
     FastVecCross(&mat[1], &mat[0], D_0013E633 + 0x10AD);
     vec_scale_to_length(&mat[1], &mat[1], -1.0f);
@@ -3084,9 +3084,9 @@ void drek_fight_missile_update(char *moby) {
             char *pos = (char *)&m->pos;
             m->state = 2;
             *(short *)(missile_vars + 0x164) = 0;
-            spawn_explosion(*(void **)(missile_vars + 0x16C), &D_L18_0015F660, pos, 1.0f, 1.0f, 10, 3, 16,
+            spawn_explosion(*(void **)(missile_vars + 0x16C), &veldin2_zero_vec, pos, 1.0f, 1.0f, 10, 3, 16,
                               1.5f, 0.5f, 9.0f, 1.0f, 2, 5.0f, 0, 0, -1, 0);
-            qcopy(pos, D_L18_00167840);
+            qcopy(pos, veldin2_camera_pos);
             m->pos.z += 20.0f;
             for (i = 0; (float)i < 4.0f; i++) {
                 qcopy(missile_vars + 0x10 + i * 16, pos);

@@ -37,7 +37,7 @@ int count_active_moby_group_members(int i, int st) {
     }
     p = D_L01_001ABFC0[i];
     do {
-        o = (O_26e008 *)(((*p & 0x7FFF) << 8) + (int)D_L01_00160058);
+        o = (O_26e008 *)(((*p & 0x7FFF) << 8) + (int)novalis_mobys);
         if (o->state >= 0 && (st == -1 || (unsigned char)o->state != st)) {
             n++;
         }
@@ -55,7 +55,7 @@ void MobyGroup_SetByteBC(int i, int v) {
     if (t != 0) {
         p = t;
         do {
-            D_L01_00160058[(*p & 0x7FFF) * 256 + 0xBC] = v;
+            novalis_mobys[(*p & 0x7FFF) * 256 + 0xBC] = v;
         } while (*(short *)p++ >= 0);
     }
 }

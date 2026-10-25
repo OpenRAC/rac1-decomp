@@ -176,7 +176,7 @@ void update_linked_moby_group_transform_and_fall(unsigned char *moby) {
                     v[2] = 15.0f;
                     FastVecAdd(v, v, D_0013E633 + 0xE9D);
                     n = scale_ticks(240);
-                    spawn_debris_moby(v, D_L18_0015F660, 0x2B8, n,
+                    spawn_debris_moby(v, veldin2_zero_vec, 0x2B8, n,
                                       *(float *)&D_L18_00162350, 2.0f, 1.0f, 0.75f, 0);
                 }
             }
@@ -365,7 +365,7 @@ void draw_glow_moby_layered_quads(struct Moby *moby) {
     if (1.0f < vars->scroll) {
         vars->scroll -= 1.0f;
     }
-    alpha = (48.0f - FastVecDist(&moby->pos, D_L18_00167840)) * 0.25f;
+    alpha = (48.0f - FastVecDist(&moby->pos, veldin2_camera_pos)) * 0.25f;
     if (vars->max_alpha < alpha) {
         alpha = vars->max_alpha;
     } else if (alpha < 0.0f) {
@@ -560,10 +560,10 @@ void draw_lift_25_quad_mesh(char *moby) {
     pkt[0] = 0;
     set_identity_matrix(height_offset_transform);
     height_offset_transform[3][2] = m->pos.z - *(float *)data;
-    colors[3] = (*(int *)&D_L18_001623B8);
-    colors[2] = (*(int *)&D_L18_001623B8);
-    colors[1] = (*(int *)&D_L18_001623B8);
-    colors[0] = (*(int *)&D_L18_001623B8);
+    colors[3] = (*(int *)&lift_mesh_color);
+    colors[2] = (*(int *)&lift_mesh_color);
+    colors[1] = (*(int *)&lift_mesh_color);
+    colors[0] = (*(int *)&lift_mesh_color);
     for (i = 0; i < 25; i++) {
         float ofs = *(float *)&D_L18_00162398;
         for (j = 0; j < 4; j++) {
@@ -598,10 +598,10 @@ void draw_lift_38_quad_mesh(char *moby) {
     pkt[0] = 0;
     set_identity_matrix(height_offset_transform);
     height_offset_transform[3][2] = ((struct Moby *)moby)->pos.z - *(float *)data;
-    colors[3] = (*(int *)&D_L18_001623B8);
-    colors[2] = (*(int *)&D_L18_001623B8);
-    colors[1] = (*(int *)&D_L18_001623B8);
-    colors[0] = (*(int *)&D_L18_001623B8);
+    colors[3] = (*(int *)&lift_mesh_color);
+    colors[2] = (*(int *)&lift_mesh_color);
+    colors[1] = (*(int *)&lift_mesh_color);
+    colors[0] = (*(int *)&lift_mesh_color);
     for (i = 0; i < 38; i++) {
         float ofs = *(float *)&D_L18_00162398;
         for (j = 0; j < 4; j++) {
@@ -636,10 +636,10 @@ void draw_lift_22_quad_mesh(char *moby) {
     pkt[0] = 0;
     set_identity_matrix(height_offset_transform);
     height_offset_transform[3][2] = ((Moby *)moby)->pos.z - *(float *)data;
-    colors[3] = (*(int *)&D_L18_001623B8);
-    colors[2] = (*(int *)&D_L18_001623B8);
-    colors[1] = (*(int *)&D_L18_001623B8);
-    colors[0] = (*(int *)&D_L18_001623B8);
+    colors[3] = (*(int *)&lift_mesh_color);
+    colors[2] = (*(int *)&lift_mesh_color);
+    colors[1] = (*(int *)&lift_mesh_color);
+    colors[0] = (*(int *)&lift_mesh_color);
     for (i = 0; i < 22; i++) {
         float ofs = *(float *)&D_L18_00162398;
         for (j = 0; j < 4; j++) {
@@ -918,7 +918,7 @@ void drek_final_boss_robot_update(Moby *moby) {
             Manipulator_ApplyScale(*(float *)&D_L18_00162434, (int)o, 0, d->f1C0);
         }
     }
-    if (moby->visible != 0 && FastVecDist(((f32 *)&moby->pos), D_L18_00167840) < 32.0f) {
+    if (moby->visible != 0 && FastVecDist(((f32 *)&moby->pos), veldin2_camera_pos) < 32.0f) {
         set_ground_height_band(moby);
         moby->shadow_range = 0x1A;
     }
@@ -936,7 +936,7 @@ void drek_final_boss_robot_update(Moby *moby) {
         d->f20 = 500.0f;
         d->f30 = 4.0f;
         d->f24 = 500;
-        d->f340 = D_L18_001B11B0[d->f260[3]];
+        d->f340 = veldin2_paths[d->f260[3]];
         d->f398 = d->f204[0];
         d->f348 = 1;
         d->f368 = -1;
@@ -991,13 +991,13 @@ void drek_final_boss_robot_update(Moby *moby) {
                 MobyBlendAnimation(moby, 10, 0, scale_ticks(10));
             }
         } else {
-            int *t = D_L18_001B11B0[d->f270];
+            int *t = veldin2_paths[d->f270];
             if (IsPointInPolygon(g_hero.f80, t + 4, *t) != 0) {
                 moby->flags &= 0xFFBE;
                 moby->collision = (*(int **)&moby->pclass)[4];
                 moby->state = 10;
                 {
-                    int *b = D_L18_001B11B0[d->f260[0]];
+                    int *b = veldin2_paths[d->f260[0]];
                     d->f340 = b;
                     qcopy(d->f3C0, b + 4);
                 }
@@ -1010,7 +1010,7 @@ void drek_final_boss_robot_update(Moby *moby) {
                 moby->collision = (*(int **)&moby->pclass)[4];
                 moby->state = 0xC;
                 {
-                    int *p = D_L18_001B11B0[d->f260[0]];
+                    int *p = veldin2_paths[d->f260[0]];
                     d->f340 = p;
                     qcopy(d->f3C0, (char *)p + *p * 16);
                 }
@@ -1023,7 +1023,7 @@ void drek_final_boss_robot_update(Moby *moby) {
                 d->f38C = d->f38C * 0.71428573f;
                 moby->state = 0xC;
                 {
-                    int *p = D_L18_001B11B0[d->f260[1]];
+                    int *p = veldin2_paths[d->f260[1]];
                     d->f340 = p;
                     qcopy(d->f3C0, (char *)p + *p * 16);
                 }
@@ -1052,7 +1052,7 @@ void drek_final_boss_robot_update(Moby *moby) {
                     d->f38C = d->f38C * 0.5714286f;
                     moby->state = 0xC;
                     {
-                        int *p = D_L18_001B11B0[d->f260[2]];
+                        int *p = veldin2_paths[d->f260[2]];
                         d->f340 = p;
                         qcopy(d->f3C0, (char *)p + *p * 16);
                     }
@@ -1091,7 +1091,7 @@ void drek_final_boss_robot_update(Moby *moby) {
             d->f348 = 0;
             d->f374 = 0.0f;
             {
-                int *b = D_L18_001B11B0[d->f260[0]];
+                int *b = veldin2_paths[d->f260[0]];
                 d->f340 = b;
                 qcopy(d->f3C0, b + 4);
             }
@@ -1183,7 +1183,7 @@ void drek_final_boss_robot_update(Moby *moby) {
             if (f > 1.0f) {
                 f = 1.0f;
             }
-            refresh_moby_position_and_activate(d->f33C, v1, D_L18_0015F660, 0, f);
+            refresh_moby_position_and_activate(d->f33C, v1, veldin2_zero_vec, 0, f);
         }
         break;
     }
@@ -1796,7 +1796,7 @@ void drek_final_boss_robot_update(Moby *moby) {
             v0[2] = 0.0f;
             v0[2] = random_float_between(3.0f, 8.0f);
             FastVecAdd(v0, v0, d->f3C0);
-            func_L00_0025F4A8_alt(moby, D_L18_0015F660, v0, 0.0f, 0.0f, 0x14, 6, 0x20, 1.0f, 2.5f, 9.0f,
+            func_L00_0025F4A8_alt(moby, veldin2_zero_vec, v0, 0.0f, 0.0f, 0x14, 6, 0x20, 1.0f, 2.5f, 9.0f,
                                   1.0f, -1, 0.0f, 0, 0, -1, 0);
         }
         if (d->f358 == scale_ticks(0x78)) {
@@ -1807,7 +1807,7 @@ void drek_final_boss_robot_update(Moby *moby) {
             v0[1] = FastSin(moby->rot.z) * 3.0f;
             v0[2] = 6.0f;
             FastVecAdd(v0, v0, d->f3C0);
-            func_L00_0025F4A8_alt(moby, D_L18_0015F660, v0, 0.0f, 0.0f, 0x28, 0xA, 0x20, 2.5f, 5.0f, 9.0f,
+            func_L00_0025F4A8_alt(moby, veldin2_zero_vec, v0, 0.0f, 0.0f, 0x28, 0xA, 0x20, 2.5f, 5.0f, 9.0f,
                                   2.0f, -1, 10.0f, 0, 0, -1, 0);
         }
         if (moby->seq == moby->prev_seq && moby->seq == 14 && IsFrameWithinWindow((char *)moby, 30.0f) != 0) {
@@ -2107,7 +2107,7 @@ void update_drek_boss_damage_and_phase_transitions(char *moby) {
     Moby_GetJointWorldPos(boss_data->f3A0, 0, &((Moby *)boss_data->f3A4)->pos);
     moby_build_matrix(boss_data->f3A4);
     {
-        int *e = D_L18_001B11B0[*(int *)boss_data->p218];
+        int *e = veldin2_paths[*(int *)boss_data->p218];
         FindNearestEligibleMoby(512.0f, moby, (char *)boss_data->f70, 0, 0, e + 4, e[0]);
     }
     if (boss_data->fB0 == 0) {
@@ -2153,7 +2153,7 @@ void update_drek_boss_damage_and_phase_transitions(char *moby) {
                 previous_phase_index = boss_data->f34C;
                 k = previous_phase_index + 1;
                 boss_data->f34C = k;
-                next_phase_path = D_L18_001B11B0[((L18StageData *)boss_data)->f260[k]];
+                next_phase_path = veldin2_paths[((L18StageData *)boss_data)->f260[k]];
                 boss_data->f340 = next_phase_path;
                 boss_data->f398 = ((L18StageData *)boss_data)->f204[k];
                 boss_data->f348 = 1;

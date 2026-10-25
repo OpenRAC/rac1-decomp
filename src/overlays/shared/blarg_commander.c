@@ -56,7 +56,7 @@ extern unsigned char D_L12_0017C940[];
 /* Re-arms the matching entry of the moby list when the level mode is 2 (func_L02_002E2110 with argument 1). */
 void apply_npc_big_head_cheat(char *moby) {
     int i;
-    if (D_L12_0015F6A8 == 2 && gCheats[0] != 0) {
+    if (hoven_cinematic_mode == 2 && gCheats[0] != 0) {
         for (i = 0; i < D_L12_0016CD60.count; i++) {
             char *e = D_L12_0016CD60.mobys[i];
             if (*(short *)(e + 0xA6) == *(short *)(moby + 0xA6)) {

@@ -371,7 +371,7 @@ void update_resident_dialogue_animation_state(Moby *m) {
             D_001E66C0_391E8.pick = r;
             queued_dialogue_id = (r * 3 + 1) * 6 + D_001E66C0_391E8.base + 10000;
             D_001611B0 = 1;
-            D_001611B4 = 0;
+            resident_stream_pending = 0;
             if (m->prev_seq != 2) {
                 MobyBlendAnimation(m, 2, 0, scale_game_frame_count(0x12));
             }
@@ -400,8 +400,8 @@ void update_resident_dialogue_animation_state(Moby *m) {
         break;
     case 4:
         if (IsFrameWithinWindow(m, (((s32 *)&D_00161130))[D_001E66C0_391E8.pick]) != 0 &&
-            D_001611B4 != 0) {
-            D_001611B4 = 0;
+            resident_stream_pending != 0) {
+            resident_stream_pending = 0;
             Music_ContinueStreamIfReady();
         }
         if (m->anim_flags & 2) {
@@ -414,8 +414,8 @@ void update_resident_dialogue_animation_state(Moby *m) {
         break;
     case 5:
         if (IsFrameWithinWindow(m, (((s32 *)&D_00161138))[D_001E66C0_391E8.pick]) != 0 &&
-            D_001611B4 != 0) {
-            D_001611B4 = 0;
+            resident_stream_pending != 0) {
+            resident_stream_pending = 0;
             Music_ContinueStreamIfReady();
         }
         if (m->anim_flags & 2) {
@@ -428,8 +428,8 @@ void update_resident_dialogue_animation_state(Moby *m) {
         break;
     case 6:
         if (IsFrameWithinWindow(m, (((s32 *)&D_00161140))[D_001E66C0_391E8.pick]) != 0 &&
-            D_001611B4 != 0) {
-            D_001611B4 = 0;
+            resident_stream_pending != 0) {
+            resident_stream_pending = 0;
             Music_ContinueStreamIfReady();
         }
         if (m->anim_flags & 2) {
@@ -443,7 +443,7 @@ void update_resident_dialogue_animation_state(Moby *m) {
     case 10:
         if (dialogue_playback_phase == 3 && D_001611B0 != 0) {
             D_001611B0 = 0;
-            D_001611B4 = 1;
+            resident_stream_pending = 1;
         }
         if (m->anim_flags & 2) {
             a = D_001E66FC * 3 + 4;
@@ -455,7 +455,7 @@ void update_resident_dialogue_animation_state(Moby *m) {
         break;
     case 12:
         if (dialogue_playback_phase == 3 && D_001611B0 != 0) {
-            D_001611B4 = 1;
+            resident_stream_pending = 1;
             D_001611B0 = 0;
             a = D_001E66FC * 3 + 5;
             if (m->prev_seq != a) {
@@ -466,7 +466,7 @@ void update_resident_dialogue_animation_state(Moby *m) {
         break;
     case 11:
         if (dialogue_playback_phase == 3 && D_001611B0 != 0) {
-            D_001611B4 = 1;
+            resident_stream_pending = 1;
             D_001611B0 = 0;
             a = D_001E66FC * 3 + 6;
             if (m->prev_seq != a) {

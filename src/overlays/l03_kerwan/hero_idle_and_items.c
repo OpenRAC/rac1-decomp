@@ -85,7 +85,7 @@ int HeroL03_SetMoveState(int a, int b) {
         char *p = D_0013E633 + 0xE1D;
         if (*(int *)(p + 0x208C) == 0x14 && (a != 0x64 || b != 2)) return 0;
     }
-    if ((D_L03_0015F6A8 == 2 || D_L03_0015F6A8 == 6) && b != 2) return 0;
+    if ((kerwan_game_mode == 2 || kerwan_game_mode == 6) && b != 2) return 0;
     {
         char *p = D_0013E633 + 0xE1D;
         if (*(int *)(p + 0x22A8) == 0 && (*(int *)(p + 0x208C) == 2 || *(int *)(p + 0x208C) == 7)

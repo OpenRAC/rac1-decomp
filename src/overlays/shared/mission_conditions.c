@@ -115,10 +115,10 @@ extern s32 D_L00_0016007C MACRO_ADDR;
 void CountExpiredMobys(void) {
     u8 *p;
     s32 flag = 0;
-    D_L00_0016007C = 0;
-    for (p = level_mobys_end; p < D_L00_001600A0; p += 0x100) {
+    free_moby_slot_count = 0;
+    for (p = level_mobys_end; p < moby_array_last; p += 0x100) {
         if ((p[0x20] >= 0xFE && level_frame_counter >= *(u64 *)(p + 0x38)) || flag) {
-            D_L00_0016007C++;
+            free_moby_slot_count++;
             if (p[0x20] == 0xFF) flag = 1;
         }
     }

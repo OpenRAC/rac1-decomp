@@ -309,17 +309,17 @@ void SetTfragDists(void) {
     c = tfrag_render_ranges[2] * fog_params;
     ab = 1.0f / (a - b);
     bc = 1.0f / (b - c);
-    FastMemZero16(D_001DEB70, 0x40);
-    D_001DEB70[0][0] = ab * 0.5f;
-    D_001DEB70[0][1] = -ab;
-    D_001DEB70[1][0] = bc * 0.5f;
-    D_001DEB70[1][1] = -bc;
-    D_001DEB70[2][0] = b * ab * -0.5f;
-    D_001DEB70[2][1] = a * ab;
-    D_001DEB70[3][0] = c * bc * -0.5f;
-    D_001DEB70[3][1] = b * bc;
-    D_001DEB70[1][3] = b;
-    D_001DEB70[0][3] = a;
+    FastMemZero16(tfrag_lod_blend_matrix, 0x40);
+    tfrag_lod_blend_matrix[0][0] = ab * 0.5f;
+    tfrag_lod_blend_matrix[0][1] = -ab;
+    tfrag_lod_blend_matrix[1][0] = bc * 0.5f;
+    tfrag_lod_blend_matrix[1][1] = -bc;
+    tfrag_lod_blend_matrix[2][0] = b * ab * -0.5f;
+    tfrag_lod_blend_matrix[2][1] = a * ab;
+    tfrag_lod_blend_matrix[3][0] = c * bc * -0.5f;
+    tfrag_lod_blend_matrix[3][1] = b * bc;
+    tfrag_lod_blend_matrix[1][3] = b;
+    tfrag_lod_blend_matrix[0][3] = a;
 }
 
 extern int D_00161000 MACRO_ADDR;

@@ -68,8 +68,8 @@ void draw_dual_texture_50_quad_mesh(void) {
     first.unk70 = 0;
     matrix_ptr = matrix;
     set_identity_matrix(matrix);
-    first.color[0] = first.color[1] = first.color[2] = first.color[3] = (*(unsigned int *)&D_L06_00162024);
-    second.color[0] = second.color[1] = second.color[2] = second.color[3] = (*(int *)&D_L06_00162028);
+    first.color[0] = first.color[1] = first.color[2] = first.color[3] = (*(unsigned int *)&dual_texture_mesh_color);
+    second.color[0] = second.color[1] = second.color[2] = second.color[3] = (*(int *)&blarg_quad_mesh_second_color);
     i = 0;
     do {
         FastVecScale(vec1, D_L06_001F2960[i], (*(float *)&D_L06_0016202C));
@@ -159,14 +159,14 @@ void draw_dual_texture_58_quad_mesh(void) {
     second.unk70 = 0;
     first.unk70 = 0;
     set_identity_matrix(matrix_ptr);
-    first.color[3] = (*(unsigned int *)&D_L06_00162024);
-    first.color[2] = (*(unsigned int *)&D_L06_00162024);
-    first.color[1] = (*(unsigned int *)&D_L06_00162024);
-    first.color[0] = (*(unsigned int *)&D_L06_00162024);
-    second.color[3] = (*(int *)&D_L06_00162028);
-    second.color[2] = (*(int *)&D_L06_00162028);
-    second.color[1] = (*(int *)&D_L06_00162028);
-    second.color[0] = (*(int *)&D_L06_00162028);
+    first.color[3] = (*(unsigned int *)&dual_texture_mesh_color);
+    first.color[2] = (*(unsigned int *)&dual_texture_mesh_color);
+    first.color[1] = (*(unsigned int *)&dual_texture_mesh_color);
+    first.color[0] = (*(unsigned int *)&dual_texture_mesh_color);
+    second.color[3] = (*(int *)&blarg_quad_mesh_second_color);
+    second.color[2] = (*(int *)&blarg_quad_mesh_second_color);
+    second.color[1] = (*(int *)&blarg_quad_mesh_second_color);
+    second.color[0] = (*(int *)&blarg_quad_mesh_second_color);
     i = 0;
     do {
         FastVecScale(vec1, D_L06_001F08B0[i], (*(float *)&D_L06_0016202C));
@@ -260,14 +260,14 @@ void draw_dual_texture_864_quad_mesh(void) {
     second.unk70 = 0;
     first.unk70 = 0;
     set_identity_matrix(matrix_ptr);
-    first.color[3] = (*(unsigned int *)&D_L06_00162024);
-    first.color[2] = (*(unsigned int *)&D_L06_00162024);
-    first.color[1] = (*(unsigned int *)&D_L06_00162024);
-    first.color[0] = (*(unsigned int *)&D_L06_00162024);
-    second.color[3] = (*(int *)&D_L06_00162028);
-    second.color[2] = (*(int *)&D_L06_00162028);
-    second.color[1] = (*(int *)&D_L06_00162028);
-    second.color[0] = (*(int *)&D_L06_00162028);
+    first.color[3] = (*(unsigned int *)&dual_texture_mesh_color);
+    first.color[2] = (*(unsigned int *)&dual_texture_mesh_color);
+    first.color[1] = (*(unsigned int *)&dual_texture_mesh_color);
+    first.color[0] = (*(unsigned int *)&dual_texture_mesh_color);
+    second.color[3] = (*(int *)&blarg_quad_mesh_second_color);
+    second.color[2] = (*(int *)&blarg_quad_mesh_second_color);
+    second.color[1] = (*(int *)&blarg_quad_mesh_second_color);
+    second.color[0] = (*(int *)&blarg_quad_mesh_second_color);
     i = 0;
     do {
         FastVecScale(vec1, D_L06_001EBA80[i], (*(float *)&D_L06_0016202C));
@@ -773,7 +773,7 @@ void update_moby_bobbing_and_motion(char *moby) {
         if (*(int *)(D_0013E633 + 0x2EA1) == 0x72) {
             *(float *)(moby + 0x18) = *(float *)(data + 0xC);
         } else {
-            float f = IntToFloat(D_L06_0015F6B0 % 600) / 600.0f;
+            float f = IntToFloat(blarg_frame_count % 600) / 600.0f;
             float g = FastSin(f * 6.28318f);
             *(float *)(moby + 0x18) = *(float *)(data + 0xC) + *(float *)&D_L06_00162120 * g;
         }
@@ -1446,7 +1446,7 @@ void ShuttleUpdate(Moby *moby) {
 
     qcopy(old_pos, ((float *)&moby->pos));
     qcopy(old_rot, ((float *)&moby->rot));
-    moby->scale = ((Cls_3039B8 *)moby->pclass)->f24 * D_L06_00162188;
+    moby->scale = ((Cls_3039B8 *)moby->pclass)->f24 * shuttle_scale;
     if (D_L06_00162194 != 0) {
         D_L06_00162194 = 0;
         *(u128_3039B8 *)b = *(u128_3039B8 *)(D_0013E633 + 0xEED);
@@ -1454,7 +1454,7 @@ void ShuttleUpdate(Moby *moby) {
     }
     switch (moby->state) {
     case 0:
-        D_L06_0015FE78 = 0;
+        blarg_shuttle_at_second_stop = 0;
         if (*(unsigned char *)(d->fF8 + (D_0015EE84_302FE8 << 4) + (int)saved_mission_state) == 0xFF) {
             mark_shuttle_linked_mobys_for_removal((char *)moby);
         } else {
@@ -1483,7 +1483,7 @@ void ShuttleUpdate(Moby *moby) {
             now = D_L06_00162190;
             if (now != 0 || ((*(int *)(D_0013A5E0_3039B8 + 0x2604) & 0x10) && D_L06_0015F674 == 10 && d->f9C >= 0)) {
                 d->go = 1;
-                D_L06_0015FE78 = 0;
+                blarg_shuttle_at_second_stop = 0;
                 if (now != 0) {
                     d->f9C = 2;
                     D_L06_00162190 = 0;
@@ -1491,7 +1491,7 @@ void ShuttleUpdate(Moby *moby) {
                 switch (d->f9C) {
                 case 0:
                     d->sel = 1;
-                    d->fC4 = D_L06_00162188;
+                    d->fC4 = shuttle_scale;
                     d->fC8 = D_L06_00162184;
                     d->side = 0;
                     MusicRequestTrack(4, 8);
@@ -1499,27 +1499,27 @@ void ShuttleUpdate(Moby *moby) {
                 case 1:
                     d->side = 1;
                     d->fC4 = D_L06_00162184;
-                    d->fC8 = D_L06_00162188;
+                    d->fC8 = shuttle_scale;
                     d->sel = 0;
                     MusicRequestTrack(0, 10);
                     break;
                 case 2:
                     d->side = 2;
                     d->fC4 = D_L06_00162184;
-                    d->fC8 = D_L06_00162188;
+                    d->fC8 = shuttle_scale;
                     d->sel = 0;
                     break;
                 case 3:
                     d->side = 3;
                     d->sel = 2;
-                    d->fC4 = D_L06_00162188;
-                    d->fC8 = D_L06_00162188;
+                    d->fC4 = shuttle_scale;
+                    d->fC8 = shuttle_scale;
                     break;
                 case 4:
                     d->side = 4;
                     d->sel = 0;
-                    d->fC4 = D_L06_00162188;
-                    d->fC8 = D_L06_00162188;
+                    d->fC4 = shuttle_scale;
+                    d->fC8 = shuttle_scale;
                     break;
                 }
             }
@@ -1530,21 +1530,21 @@ void ShuttleUpdate(Moby *moby) {
                 qcopy(((float *)&moby->pos), (char *)(ofs + base + 0x30));
                 qcopy(((float *)&moby->rot), (char *)(ofs + base + 0x70));
                 d->sel = 2;
-                D_L06_0015FE78 = 0;
+                blarg_shuttle_at_second_stop = 0;
             } else if (d->sel == 2 && is_point_inside_clip_volume(D_0013E633 + 0xE9D, d->zone[1]) != 0) {
                 int ofs = d->cam[0] << 7;
                 int base = (int)blarg_scene_points;
                 qcopy(((float *)&moby->pos), (char *)(ofs + base + 0x30));
                 qcopy(((float *)&moby->rot), (char *)(ofs + base + 0x70));
                 d->sel = 0;
-                D_L06_0015FE78 = 0;
+                blarg_shuttle_at_second_stop = 0;
             } else if (d->sel != 1 && is_point_inside_clip_volume(D_0013E633 + 0xE9D, d->zone[2]) != 0) {
                 int base = (int)blarg_scene_points;
                 int ofs = d->cam[1] << 7;
                 qcopy(((float *)&moby->pos), (char *)(ofs + base + 0x30));
                 qcopy(((float *)&moby->rot), (char *)(ofs + base + 0x70));
                 d->sel = 1;
-                D_L06_0015FE78 = 1;
+                blarg_shuttle_at_second_stop = 1;
                 if (((Flags_3039B8 *)(D_0013D355_3039B8 + 0x13B))->f21 == 0) {
                     ((Flags_3039B8 *)(D_0013D355_3039B8 + 0x13B))->f21 = 1;
                 }
@@ -1586,12 +1586,12 @@ void ShuttleUpdate(Moby *moby) {
             euler_rotation_basis(((float *)&moby->rot_row0), ((float *)&moby->rot));
             moby->scale = ((Cls_3039B8 *)moby->pclass)->f24;
             if (d->sel == 1) {
-                D_L06_0015FE78 = 1;
+                blarg_shuttle_at_second_stop = 1;
                 if (((Flags_3039B8 *)(D_0013D355_3039B8 + 0x13B))->f21 == 0) {
                     ((Flags_3039B8 *)(D_0013D355_3039B8 + 0x13B))->f21 = 1;
                 }
             } else {
-                D_L06_0015FE78 = 0;
+                blarg_shuttle_at_second_stop = 0;
             }
             qcopy(b, ((float *)&moby->pos));
             vec_scale_to_length(a, ((float *)&moby->rot_row0), -2.0f);
@@ -1632,7 +1632,7 @@ void ShuttleUpdate(Moby *moby) {
         if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, d->fF0) != 0) {
             d->side = 2;
             d->fC4 = D_L06_00162184;
-            d->fC8 = D_L06_00162188;
+            d->fC8 = shuttle_scale;
             d->sel = 0;
             d->go = 1;
             d->f114 = 1;
@@ -2432,7 +2432,7 @@ void update_moby_vector_streams_and_particle_burst(char *moby)
         int j;
 
         euler_to_matrix(u.m.a, (float *)(moby + 0x40));
-        func_001FA1C0(u.m.b, *(float *)&D_L06_00162298);
+        set_scale_matrix(u.m.b, *(float *)&D_L06_00162298);
         sce_vu0_mul_matrix(u.m.a, u.m.a, u.m.b);
         for (i = 0; i < 4; i++) {
             euler_to_matrix(u.m.b, &D_L06_001FEBE0[i * 4]);
@@ -2530,7 +2530,7 @@ void draw_moby_vector_streams(char *m) {
     int j;
     data = *(char **)(m + 0x78);
     euler_to_matrix(a, (float *)(m + 0x40));
-    func_001FA1C0(b, *(float *)&D_L06_00162298);
+    set_scale_matrix(b, *(float *)&D_L06_00162298);
     sce_vu0_mul_matrix(a, a, b);
     VU1_addGSregister(6, GetEffectTex(0xE));
     VU1_addGSregister(0x14, 0xFF9000000260L);

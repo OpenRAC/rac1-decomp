@@ -174,15 +174,15 @@ int nearest_rail_point(Vec4 *from, s32 **outOwner, Vec4 *to, s32 *outI, f32 *out
 
     *(OvlQuad *)p = *(OvlQuad *)from;
     for (i = 0; i < D_L00_0015F7F0; i++) {
-        if (skip != 0 && D_L00_0015F7EC[i].owner == skip)
+        if (skip != 0 && level_rails[i].owner == skip)
             continue;
-        if (only != 0 && D_L00_0015F7EC[i].owner != only)
+        if (only != 0 && level_rails[i].owner != only)
             continue;
-        if (*D_L00_0015F7EC[i].owner == 0)
+        if (*level_rails[i].owner == 0)
             continue;
-        if (FastVecDist(&D_L00_0015F7EC[i], p) > D_L00_0015F7EC[i].sphere.f[3])
+        if (FastVecDist(&level_rails[i], p) > level_rails[i].sphere.f[3])
             continue;
-        if (!find_nearest_path_point(D_L00_0015F7EC[i].owner, p, to, &gotI, &gotF, D_L00_0015F7EC[i].kind,
+        if (!find_nearest_path_point(level_rails[i].owner, p, to, &gotI, &gotF, level_rails[i].kind,
                               12.0f, 10.0f, 0.0f))
             continue;
         hero_state = &D_0013F450_0CDF0;
@@ -198,10 +198,10 @@ int nearest_rail_point(Vec4 *from, s32 **outOwner, Vec4 *to, s32 *outI, f32 *out
         height = FastAbsF(p->f[2] - to->f[2]);
         if (!(distance < distance_limit && height < height_limit))
             continue;
-        *outOwner = D_L00_0015F7EC[i].owner;
+        *outOwner = level_rails[i].owner;
         *outI = gotI;
         *outF = gotF;
-        *outKind = D_L00_0015F7EC[i].kind;
+        *outKind = level_rails[i].kind;
         return 1;
     }
     return 0;
@@ -1953,9 +1953,9 @@ s32 hero_check_damage(s32 arg) {
     } else if ((tbl->i24 ^ 1) & 1) {
         return 0;
     }
-    D_0013E090[g_current_level_index]++;
+    level_hero_hit_counts[g_current_level_index]++;
     D_0013F450_113A0.p2280 = tbl->p20;
-    D_0015EFA8++;
+    hero_hit_count++;
     if (D_0013F450_113A0.i208C == 0xF) {
         D_0013F450_113A0.h5BE = 1;
         return 0;
@@ -2332,7 +2332,7 @@ void stick_target(float scale, int mode) {
     if (mode == 4) {
         *(float *)(w + 0x180) = FastAddRots(*(float *)(w + 0x180), *(float *)(w + 0x98));
     } else {
-        *(float *)(w + 0x180) = FastAddRots(*(float *)(w + 0x180), D_L00_00166ED8);
+        *(float *)(w + 0x180) = FastAddRots(*(float *)(w + 0x180), camera_yaw);
     }
     x = v.f[0];
     y = v.f[1];
@@ -2800,21 +2800,21 @@ void update_hero_ground_contact_and_surface_slopes(void) {
         D_0013F450_12E70.xB12ed = r;
     }
     if (D_0013F450_12E70.xH12e0 == 0xD) {
-        D_0013F450_12E70.xF2f0 = D_L00_00173F68;
-        v10.f[2] = D_L00_00173F68 - 0.01f;
+        D_0013F450_12E70.xF2f0 = coll_hit_point_z;
+        v10.f[2] = coll_hit_point_z - 0.01f;
         if (coll_line(&v10, &v0, 4, D_0013F450_12E70.xI2080, 0) == 0) {
             goto d1;
         }
     }
     if (D_0013F450_12E70.xH12e0 == 3) {
-        D_0013F450_12E70.xF2f4 = D_L00_00173F68;
-        v10.f[2] = D_L00_00173F68 - 0.01f;
+        D_0013F450_12E70.xF2f4 = coll_hit_point_z;
+        v10.f[2] = coll_hit_point_z - 0.01f;
         if (coll_line(&v10, &v0, 4, D_0013F450_12E70.xI2080, 0) == 0) {
             goto d1;
         }
     }
     if (D_0013F450_12E70.xH12e0 == 0xB) {
-        D_0013F450_12E70.xF2f4 = D_L00_00173F68;
+        D_0013F450_12E70.xF2f4 = coll_hit_point_z;
         goto d1;
     }
     if (D_0013F450_12E70.xH12e0 == 1 && (u32)(D_0013F450_12E70.xI2084 - 0x7C) < 2) {
