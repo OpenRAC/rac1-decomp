@@ -256,16 +256,16 @@ int HeroL18_SetMoveState(int a, int b) {
         *(short *)(p + 0x90A) = 0;
         if (*(int *)(p + 0x2094) == 0x11) {
             emit_hero_surface_effect_burst(3, 0xA, 0);
-            if (D_L18_00161350 != 0) {
-                RippleDisturb(D_L18_00161350, D_L18_00161358, 0, *(float *)(p + 0x80), *(float *)(p + 0x84), 0.4f, 0.3f);
+            if (veldin2_water_patches != 0) {
+                RippleDisturb(veldin2_water_patches, veldin2_water_patch_count, 0, *(float *)(p + 0x80), *(float *)(p + 0x84), 0.4f, 0.3f);
             }
         } else if (*(float *)(p + 0x108) < g_frame_time * -0.5f) {
             int n = truncate_float_to_s32(FastAbsF(*(float *)(p + 0x108)) * 300.0f);
             int v = n;
             if (n > 0x28) v = 0x28;
             emit_hero_surface_effect_burst(3, v, 1);
-            if (D_L18_00161350 != 0) {
-                RippleDisturb(D_L18_00161350, D_L18_00161358, 0, *(float *)(p + 0x80), *(float *)(p + 0x84), 0.5f, -0.4f);
+            if (veldin2_water_patches != 0) {
+                RippleDisturb(veldin2_water_patches, veldin2_water_patch_count, 0, *(float *)(p + 0x80), *(float *)(p + 0x84), 0.5f, -0.4f);
             }
             *(short *)(p + 0x90A) = scale_ticks(0x4B);
         }
@@ -426,7 +426,7 @@ int HeroL18_SetMoveState(int a, int b) {
         int t;
         *(int *)(p + 0x208C) = 0;
         *(int *)(p + 0x2284) = 4;
-        *(int *)&D_L18_0015F768 = scale_ticks(0x3C);
+        *(int *)&veldin2_look_stat_timer = scale_ticks(0x3C);
         if (*(unsigned char *)(p + 0x20AA) == 0) {
             t = HelpL15_GetRecordValue(1);
             if (*(unsigned char *)(*(char **)(p + 0x2080) + 0x53) != t && b) {

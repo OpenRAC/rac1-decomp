@@ -14,7 +14,7 @@ extern char D_L03_001CB180[];
 void draw_textured_grid(char *moby)
 {
     build_interpolated_dma_packet(moby);
-    func_L02_002100E8(D_L03_001CB180, 0x70002800, 0xF8);
+    write_spr_dma_channel(kerwan_spr_upload_block, 0x70002800, 0xF8);
     func_L02_00250720(moby);
     func_L02_00250A58(moby);
     restore_view_after_textured_grid(moby);
@@ -68,7 +68,7 @@ extern void func_001F9BD8(void *, void *, void *);
 int sample_random_transformed_point(int idx, float *out) {
     char *mat;
     if (idx != -1) {
-        mat = D_L03_0016016C + idx * 128;
+        mat = kerwan_camera_points + idx * 128;
         out[0] = random_float_between(-1.0f, 1.0f);
         out[1] = random_float_between(-1.0f, 1.0f);
         out[2] = random_float_between(-1.0f, 1.0f);
@@ -226,7 +226,7 @@ char *revive_spawner_pooled_child(char *m, float *at, int cls) {
         }
     }
     if (spawned == 0) {
-        STUB_printf(D_L03_001E3290, D_L03_0015F6B0_p, *(s16 *)&spawner_moby->save_id, spawner_moby->oclass);
+        STUB_printf(spawner_revive_failed_fmt, D_L03_0015F6B0_p, *(s16 *)&spawner_moby->save_id, spawner_moby->oclass);
     }
     return (char *)spawned;
 }
@@ -1408,7 +1408,7 @@ void update_homing_spark_projectile(Moby *moby) {
         }
         ang = fast_atan2(d->vel.x, d->vel.y);
         if (FastDiffRots(ang, fast_atan2(tgt.pos.x - moby->pos.x, tgt.pos.y - moby->pos.y)) < 1.5707964f) {
-            step_angle_toward_target(&ang, 0, fast_atan2(tgt.pos.x - moby->pos.x, tgt.pos.y - moby->pos.y), D_L03_00161BB0 * 0.017453292f * g_frame_time);
+            step_angle_toward_target(&ang, 0, fast_atan2(tgt.pos.x - moby->pos.x, tgt.pos.y - moby->pos.y), homing_spark_turn_rate * 0.017453292f * g_frame_time);
             d->vel.x = FastCos(ang) * vec_length_xy(d);
             d->vel.y = FastSin(ang) * vec_length_xy(d);
         }
@@ -1465,7 +1465,7 @@ void update_homing_spark_projectile(Moby *moby) {
                 vec_scale_to_length(&v110, &v110, g_frame_time * 100.0f);
                 create_type_31_part(d->target, &vF0, &v100, &v110, scale_ticks(0x2D));
                 if (coll_line(&vA0, &vC0, 0, d->target, 0) != 0) {
-                    qcopy(&vA0, D_L03_00173FE0);
+                    qcopy(&vA0, kerwan_coll_hit_point);
                     vec_scale_to_length(&vB0, &vB0, g_frame_time * 10.0f);
                     for (j = 0; j < 10; j++) {
                         *(u128_2D5B88 *)&v100 = 0;
@@ -1473,7 +1473,7 @@ void update_homing_spark_projectile(Moby *moby) {
                         v100.y = random_float_between(-1.0f, 1.0f);
                         v100.z = random_float_between(-1.0f, 1.0f);
                         vF0 = v100;
-                        vec_reflect(&v100, &vB0, D_L03_00174000);
+                        vec_reflect(&v100, &vB0, kerwan_coll_hit_normal);
                         vec_scale_to_length(&vF0, &vF0, FastVecLength(&v100) * 0.5f);
                         FastVecAdd(&v100, &v100, &vF0);
                         vec_scale_to_length(&v100, &v100, random_float_between(g_frame_time * 3.0f, g_frame_time * 6.0f));
@@ -1559,12 +1559,12 @@ void attach_shared_manipulator_to_matching_class_moby(char *a) {
         for (i = 0; i < kerwan_cutscene_state.n; i++) {
             char *moby = kerwan_cutscene_state.m[i];
             if (*(short *)(moby + 0xA6) == *(short *)(a + 0xA6)) {
-                unsigned char *q = D_L03_0017C5C0;
+                unsigned char *q = kerwan_big_head_manipulator;
                 if (q[1] == 0) {
                     AttachManipulator(moby, 1, q);
-                    *(float *)(q + 0x20) = *(float *)&D_L03_00161C44;
-                    *(float *)(q + 0x24) = *(float *)&D_L03_00161C44;
-                    *(float *)(q + 0x28) = *(float *)&D_L03_00161C44;
+                    *(float *)(q + 0x20) = *(float *)&kerwan_cutscene_manipulator_scale;
+                    *(float *)(q + 0x24) = *(float *)&kerwan_cutscene_manipulator_scale;
+                    *(float *)(q + 0x28) = *(float *)&kerwan_cutscene_manipulator_scale;
                 }
             }
         }
@@ -1645,11 +1645,11 @@ void qwark_rilgar_update(char *m)
     case QWARK_RILGAR_INITIALIZE:
         moby->update_dist = 0xFF;
         if (watch_data->region_a == -1)
-            STUB_printf(D_L03_001E3918);
+            STUB_printf(qwark_rilgar_no_region_a_msg);
         if (watch_data->region_c == -1)
-            STUB_printf(D_L03_001E3950);
+            STUB_printf(qwark_rilgar_no_region_c_msg);
         if (watch_data->region_b == -1) {
-            STUB_printf(D_L03_001E3980);
+            STUB_printf(qwark_rilgar_no_region_b_msg);
         } else if (D_L03_00160058_2DD840[watch_data->region_b].state != 0) {
             if (watch_data->region_c != -1)
                 D_L03_00160058_2DD840[watch_data->region_c].state = 3;
@@ -1830,7 +1830,7 @@ void initialize_transform_state_from_level_table(char *cam) {
     d->f8 = 0.1f;
     d->fC = 0;
     idx = *(short *)(cam + 0x84);
-    ent = (char *)D_L03_0015F050 + (idx << 5);
+    ent = (char *)kerwan_camera_descriptors + (idx << 5);
     p = *(char **)(ent + 0x1C);
     if (idx < 0) {
         raise_kernel_trap();
@@ -1901,7 +1901,7 @@ extern int func_00215570(void *arg0, int arg1);
 // Exit camera update: in state 4, sets state 3 once the table entry check returns zero.
 void set_transform_state_three_when_outside_clip_volume(char *moby)
 {
-    char *entry = (char *)(D_L03_0015F050 + (*(short *)(moby + 0x84) << 5));
+    char *entry = (char *)(kerwan_camera_descriptors + (*(short *)(moby + 0x84) << 5));
     char *sub = *(char **)(entry + 0x1C);
     if (*(int *)(moby + 0x74) == 4) {
         if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, *(int *)(sub + 0xC)) == 0) {

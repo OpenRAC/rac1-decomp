@@ -304,7 +304,7 @@ void Hero_ChooseStateTransition(void) {
                         if (id != g_hero.unk2298) {
                             cancel_hero_item_animation();
                         } else {
-                            int anim = D_L16_00179FA0[id].f24;
+                            int anim = kalebo3_item_defs[id].f24;
                             if (((unsigned char *)g_hero.moby)[0x53] != anim) {
                                 if (((int)g_hero.unkD08[0]) != 0) {
                                     g_hero.unkD14 = 1;

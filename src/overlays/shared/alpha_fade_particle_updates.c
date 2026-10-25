@@ -26,7 +26,7 @@ unsigned char *PartType44Spawn(void *pos, float *vec, int s, int a, int col, int
         m[1] = 0;
         m[3] = 0x48;
         m[8] = random_integer_below(0xFF);
-        m[2] = *D_L00_001B24B0;
+        m[2] = *part_type44_textures;
         *(short *)(m + 0xA) = s;
         t = (float)n * frame_scale;
         *(float *)(q + 0) = vec[0];
@@ -83,7 +83,7 @@ void update_moving_rotating_resizing_alpha_fade_particle(unsigned char *p) {
         *(int *)&v[3] = 0;
         FastVecAdd(r, r, v);
         t[0] = *(Q *)(D_0013E633 + 0xF5D);
-        func_L00_001FF2C8(m, t, *(float *)(p + 0x1C));
+        scale_vector_xyz_in_place(m, t, *(float *)(p + 0x1C));
         add_vectors(m, r, t);
         FastVecScale(m, D_0013E633 + 0xF5D + 0x150, *(float *)(q + 0xC));
         FastVecAdd(v, v, m);
@@ -121,7 +121,7 @@ unsigned char *spawn_moving_resizing_height_snapped_alpha_fade_particle(void *po
         r[9] = truncate_float_to_s32(2.0f) + 0x20;
         r[3] = 0x48;
         r[1] = 1;
-        r[2] = *D_L00_001B24B4;
+        r[2] = *part_type45_textures;
         r[8] = func_001160D8();
         *(short *)(r + 0xA) = 4;
         *(float *)(r + 0xC) = f * 210000.0f;
@@ -180,7 +180,7 @@ unsigned char *spawn_splash(void *a, void *b, int c, float f, float g) {
         r[9] = truncate_float_to_s32(2.0f) + 0x20;
         r[3] = 0x48;
         r[1] = 1;
-        r[2] = *D_L00_001B24B8;
+        r[2] = *part_type46_textures;
         *(short *)(r + 0xA) = 5;
         *(float *)(r + 0xC) = f * 210000.0f;
         qcopy(v, b);
@@ -245,7 +245,7 @@ unsigned char *spawn_random_alpha_rotated_particle(void *a, void *b, float f) {
         r[9] = truncate_float_to_s32(2.0f) + 0x20;
         r[3] = 0x48;
         r[1] = 0;
-        r[2] = *(unsigned char *)D_L00_001B24BC;
+        r[2] = *(unsigned char *)part_type47_textures;
         *(float *)(r + 0xC) = f;
         qcopy(r + 0x20, b);
         r[8] = random_integer_below(0x100);
@@ -345,8 +345,8 @@ void update_moving_height_culled_particle(unsigned char *m) {
     }
     FastVecAdd(m + 0x10, m + 0x10, v);
     m[8] += v[0x14];
-    if (m[2] == *D_L00_001B24C8) {
-        *(float *)(m + 0xC) += *(float *)&D_L00_001602D0 * g_frame_time * 210000.0f;
+    if (m[2] == *part_type50_textures) {
+        *(float *)(m + 0xC) += *(float *)&height_culled_particle_growth * g_frame_time * 210000.0f;
     }
     if (*(float *)(m + 0x18) < *(float *)(v + 0x10)) {
         KillPart(m);
@@ -372,7 +372,7 @@ void update_damped_fading_particle(char *m) {
     Vec4 *particle_velocity = &p->vel;
     u32 faded_color;
     f32 current_size;
-    func_L00_001FF2C8(&unused_vector_argument, particle_velocity, 0.95f);
+    scale_vector_xyz_in_place(&unused_vector_argument, particle_velocity, 0.95f);
     particle_velocity->f[2] += g_frame_time_sq * 5.0f;
     add_vectors(&unused_vector_argument, &p->pos, particle_velocity);
     faded_color = p->color + 0xFE000000;
@@ -412,7 +412,7 @@ unsigned char *PartType53Spawn(float *pos, int a, int col, int mode, int b, floa
         r[3] = 0x48;
         r[9] = truncate_float_to_s32(0.4f) + 0x20;
         r[1] = 0;
-        r[2] = *(unsigned char *)D_L00_001B24D4;
+        r[2] = *(unsigned char *)part_type53_textures;
         *(short *)(r + 0xA) = a;
         *(float *)(r + 0xC) = f0 * 210000.0f;
         if (mode == 0) {
@@ -542,7 +542,7 @@ P_2725d8 *spawn_moby_point_attached_particle(u8 *a0, u8 *a1, s32 a2, s32 a3, f32
         p->b9 = func_001FA898_73478d(0.4f) + 0x20;
         p->b3 = 0x48;
         p->b1 = 3;
-        p->b2 = *D_L00_001B24DC;
+        p->b2 = *part_type55_textures;
         func_L00_00250800_73478(a0, a1, p->v10);
         qcopy(p->v20, p->v10);
         p->f2C = a5;
@@ -653,7 +653,7 @@ unsigned char *spawn_color_tween_emitter_particle(float *pos, unsigned char a1, 
         r[9] = truncate_float_to_s32(0.0f) + 0x70;
         r[1] = 0;
         r[3] = 0x44;
-        r[2] = D_L00_001B24E8[func_001160D8() & 7];
+        r[2] = part_type58_textures[func_001160D8() & 7];
         *(float *)(r + 0xC) = 21000.0f;
         r[8] = func_001160D8();
         v[0x10] = a1;
@@ -762,7 +762,7 @@ void update_color_tween_emitter_particle(unsigned char *p) {
         } else {
             *(float *)(p + 0xC) -= frame_scale * 0.08f * 210000.0f;
         }
-        p[2] = D_L00_001B24E8[func_001160D8() & 7];
+        p[2] = part_type58_textures[func_001160D8() & 7];
         if (((p - particle_pool) >> 6) & 1) {
             p[8]++;
         } else {
@@ -798,7 +798,7 @@ unsigned char *PartType59Spawn(float f, void *pos, int a1, unsigned char a2, int
         r[8] = a2;
         r[1] = 0;
         *(float *)(r + 0xC) = f * 210000.0f;
-        r[2] = *D_L00_001B2400[idx];
+        r[2] = *part_type_textures[idx];
         *(short *)(r + 0xA) = s;
     }
     return r;
@@ -931,7 +931,7 @@ void update_moby_point_attached_alpha_pulse_particle(P_p *p) {
     }
     e->f8 += frame_scale * 0.001f;
     p->b8 = truncate_float_to_s32(e->f8 * 255.0f);
-    p->b2 = D_L00_001B24F4[e->hC];
+    p->b2 = part_type61_textures[e->hC];
     if (p->fC <= 159600.0f || 0.0f < e->f10) {
         float *q = &e->f4;
         *q += q[3];
@@ -979,7 +979,7 @@ unsigned char *spawn_mode_controlled_alpha_fade_particle(void *a, int b, int c) 
         r[8] = random_integer_below(0xFF);
         *(short *)(v + 2) = c;
         if (c >= 2) c = 0;
-        r[2] = D_L00_001B24F8[c];
+        r[2] = part_type62_textures[c];
         *(short *)(r + 0x20) = truncate_float_to_s32(127.0f / IntToFloat(b));
         *(short *)(r + 0xA) = b;
     }
@@ -1022,7 +1022,7 @@ unsigned char *spawn_gravity_floor_burst_particle(void *pos, void *vel, float sc
         }
         r[3] = big ? 0x48 : 0x44;
         r[1] = 0;
-        r[2] = D_L00_001B2500[1];
+        r[2] = part_type64_textures[1];
         *(int *)(r + 4) = col;
         *(float *)(r + 0xC) = scale * 210000.0f;
         r[8] = (int)random_float_between(0.0f, 255.0f);
@@ -1083,7 +1083,7 @@ void update_gravity_floor_burst_particle(struct EmberParticle *p) {
     cr = p->color & 0xFF;
     cg = (p->color & 0xFF00) >> 8;
     cb = ((u32)p->color >> 16) & 0xFF;
-    if (!random_integer_below((*(u32 *)&D_L00_001602E8) - 1)) {
+    if (!random_integer_below((*(u32 *)&floor_burst_bounce_chance) - 1)) {
         p->pos.f[2] = m->floor_z;
         m->vel.f[0] *= random_float_between(1.0f, 3.5f);
         m->vel.f[1] *= random_float_between(1.0f, 3.5f);
@@ -1196,9 +1196,9 @@ unsigned char *spawn_random_planar_drift_particle(void *pos, int color, float f,
         r[3] = 0x48;
         r[1] = 1;
         if (random_integer_below(0x100) & 1) {
-            r[2] = D_L00_001B2508[0];
+            r[2] = part_type66_textures[0];
         } else {
-            r[2] = D_L00_001B2508[1];
+            r[2] = part_type66_textures[1];
         }
         r[8] = func_001160D8();
         v = (char *)r + 0x20;
@@ -1248,7 +1248,7 @@ unsigned char *spawn_mode_controlled_orbiting_trail_particle(float f0, float f1,
         r[8] = random_integer_below(0xFF);
         *(short *)(v + 0x1C) = flag;
         *(short *)(v + 0x18) = 0;
-        r[2] = flag == 0 ? D_L00_001B250C[0] : D_L00_001B250C[1];
+        r[2] = flag == 0 ? part_type67_textures[0] : part_type67_textures[1];
         if (flag == 0) {
             *(short *)(v + 0x1A) = truncate_float_to_s32(127.0f / IntToFloat(timer));
         }
@@ -1404,7 +1404,7 @@ unsigned char *spawn_mode_controlled_rotating_alpha_fade_particle(void *a, void 
         r[3] = 0x48;
         *(float *)(r + 0xC) = random_float_between(8000.0f, 50000.0f);
         r[8] = random_integer_below(0x100);
-        r[2] = *D_L00_001B2514;
+        r[2] = *part_type69_textures;
         x = scale_ticks(rand_range(10, 30));
         *(short *)(r + 0xA) = x;
         t = IntToFloat((short)x);
@@ -1476,7 +1476,7 @@ unsigned char *spawn_texture_indexed_rotated_particle(void *a, int idx, float an
         r[9] = truncate_float_to_s32(2.0f) + 0x20;
         r[3] = 0x44;
         r[1] = 1;
-        r[2] = D_L00_001B2518[idx];
+        r[2] = part_type70_textures[idx];
         r[8] = truncate_float_to_s32(ang * 128.0f / 3.14159274f) - 0x20;
         *(float *)(r + 0xC) = 147000.0f;
         *(short *)(r + 0xA) = scale_ticks(0x78);
@@ -1579,7 +1579,7 @@ unsigned char *spawn_random_size_rotated_particle(char *a, char *b, int c, float
         }
         u = p + 0x20;
         p[8] = random_integer_below(8) + 0x1C;
-        p[2] = *D_L00_001B2520;
+        p[2] = *part_type72_textures;
         *(int *)(u + 0x10) = c;
         qcopy(u, b);
         *(int *)(u + 0x14) = 0;
@@ -1746,7 +1746,7 @@ extern void func_L00_0025A468(void *, void *);
 extern int func_001F9938(void *);
 extern short D_L00_00160300;
 void update_timed_alpha_fade_particle(char *a) {
-    decrement_packed_countdown(a + 4, *(void **)&D_L00_00160300);
+    decrement_packed_countdown(a + 4, *(void **)&timed_fade_particle_alpha_step);
     if (FastDecTimer(a + 0xA) != 0) {
         KillPart(a);
     }
@@ -1794,7 +1794,7 @@ unsigned char *spawn_proximity_corrected_size_alpha_tween_particle(void *pos, in
         m[3] = 0x48;
         m[9] = truncate_float_to_s32(4.0f) + 0x20;
         m[1] = 0;
-        m[2] = *D_L00_001B2538;
+        m[2] = *part_type78_textures;
         *(short *)(m + 0xA) = s;
         *(float *)(m + 0xC) = x * 210000.0f;
         if (mode == 0) {
@@ -1864,7 +1864,7 @@ void update_proximity_corrected_size_alpha_tween_particle(char *m) {
         FastVecSub(d, *(char **)(v + 0x18) + 0x10, p);
         if (d[0] <= 2.0f && d[1] <= 2.0f) {
             FastVecCross(e, d, D_0013E633 + 0x10AD);
-            vec_scale_to_length(e, e, *(float *)&D_L00_0016030C);
+            vec_scale_to_length(e, e, *(float *)&proximity_particle_side_offset);
             FastVecAdd(p, p, e);
             if (d[0] <= 0.5f && d[1] <= 0.5f) {
                 vec_scale_to_length(a, d, 0.03f);
@@ -1962,7 +1962,7 @@ void load_misc_animations_into_stash(void) {
         int sz = disc_table.e[i].n << 7;
         if (sz) {
             Load(h, disc_table.e[i].a, disc_table.e[i].n);
-            level_menu_system.o[i] = Stash_SendData(h, sz, sz, (int)&D_L00_00160390);
+            level_menu_system.o[i] = Stash_SendData(h, sz, sz, (int)&misc_animations_stash_comment);
         }
     }
 }

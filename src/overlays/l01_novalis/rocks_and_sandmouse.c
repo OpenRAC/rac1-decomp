@@ -84,7 +84,7 @@ void rock_formation_update(DebrisMoby *m) {
             DebrisVec pos;
             DebrisVec off;
 
-            colors = D_L01_00161CE0;
+            colors = rock_formation_debris_colors;
             pos.q = 0;
             pos.f[0] = random_float_between(-1.0f, 1.0f);
             pos.f[1] = random_float_between(-1.0f, 1.0f);
@@ -248,7 +248,7 @@ void bridge_piece_1_update(BurstMoby *self) {
     }
     if (t != 0 && t->moby->oclass == 0x2AE) {
         for (i = 0; i < 20; i++) {
-            colors = D_L01_00161CF0;
+            colors = bridge_piece_debris_colors;
             pos.q = 0;
             pos.f[0] = func_002140F8_FB158b(-D_0015EE6C_FB158b, D_0015EE6C_FB158b);
             pos.f[1] = func_002140F8_FB158b(-D_0015EE6C_FB158b, D_0015EE6C_FB158b);
@@ -1123,21 +1123,21 @@ void update_pool_tiles_and_effects(PMoby *moby) {
         }
         if (found >= 0) {
             if (found > 0 && found < 4) {
-                D_L01_00161280[0] = 0;
-                D_L01_00161281[0] = 0x28;
-                D_L01_00161282[0] = 0x30;
+                novalis_water_tint_r[0] = 0;
+                novalis_water_tint_g[0] = 0x28;
+                novalis_water_tint_b[0] = 0x30;
                 water_tint[0] = 0x40;
-                D_L01_00161284[0] = 0;
-                D_L01_00161285[0] = 0x28;
-                D_L01_00161286[0] = 0x30;
+                novalis_water_tint2_r[0] = 0;
+                novalis_water_tint2_g[0] = 0x28;
+                novalis_water_tint2_b[0] = 0x30;
             } else {
-                D_L01_00161280[0] = 0x18;
-                D_L01_00161281[0] = 0x30;
-                D_L01_00161282[0] = 0x90;
+                novalis_water_tint_r[0] = 0x18;
+                novalis_water_tint_g[0] = 0x30;
+                novalis_water_tint_b[0] = 0x90;
                 water_tint[0] = 0x30;
-                D_L01_00161284[0] = 0x18;
-                D_L01_00161285[0] = 0x30;
-                D_L01_00161286[0] = 0x90;
+                novalis_water_tint2_r[0] = 0x18;
+                novalis_water_tint2_g[0] = 0x30;
+                novalis_water_tint2_b[0] = 0x90;
             }
         }
         RippleSimClock(pool_tiles, 21);
@@ -1247,7 +1247,7 @@ extern char D_L01_001FBF40[];
 /* The moby comes in $a0 and goes on to the delete, untouched. */
 void draw_four_scroll_layers(void *moby) {
     DefaultVtbl_DeleteMoby(moby);
-    update_and_draw_scrolling_overlay_layers(4, D_L01_001FBF40);
+    update_and_draw_scrolling_overlay_layers(4, novalis_four_scroll_layers);
 }
 typedef u32 u128_FFF30 __attribute__((mode(TI), aligned(16)));
 typedef struct {
@@ -1277,8 +1277,8 @@ void update_scroll_layers_and_queue_draw(void *arg) {
     Vec4 *w;
     f32 s;
 
-    if ((*(s32 *)&D_L01_00161D70) == 0) {
-        (*(s32 *)&D_L01_00161D70) = 1;
+    if ((*(s32 *)&novalis_scroll_layers_ready) == 0) {
+        (*(s32 *)&novalis_scroll_layers_ready) = 1;
         for (i = 0; i < 4; i++) {
             v = (D_L01_001FBF40_FFF30 + i)->verts;
             for (j = 0; j < (D_L01_001FBF40_FFF30 + i)->count; j++) {
@@ -1709,9 +1709,9 @@ void draw_level01_scroll_layers(void *moby) {
     float v;
     int i;
     DefaultVtbl_DeleteMoby(moby);
-    update_and_draw_scrolling_overlay_layers(3, D_L01_00203040);
+    update_and_draw_scrolling_overlay_layers(3, novalis_pulse_scroll_layers);
     v = FastSin((IntToFloat(novalis_frame_count & 0x3F) - 32.0f) * 0.09817477f) * 0.5f + 0.5f;
-    p = (float *)(D_L01_00203040 + 0x11C);
+    p = (float *)(novalis_pulse_scroll_layers + 0x11C);
     for (i = 2; i >= 0; i--) {
         *p = v;
         p -= 24;
@@ -1934,16 +1934,16 @@ void update_explosive_moby(struct Moby *m) {
         AddDrawCallback(draw_moby_offset_textured_quad, m);
     }
     FastVecAdd(&m->pos, &m->pos, v);
-    if (FastAbsF(v->vel.x) > *(float *)&D_L01_001620F0 * frame_scale) {
-        v->vel.x *= (*(float *)&D_L01_001620EC - 1.0f) * frame_scale + 1.0f;
+    if (FastAbsF(v->vel.x) > *(float *)&explosive_moby_drag_min_speed * frame_scale) {
+        v->vel.x *= (*(float *)&explosive_moby_drag - 1.0f) * frame_scale + 1.0f;
     }
-    if (FastAbsF(v->vel.y) > *(float *)&D_L01_001620F0 * frame_scale) {
-        v->vel.y *= (*(float *)&D_L01_001620EC - 1.0f) * frame_scale + 1.0f;
+    if (FastAbsF(v->vel.y) > *(float *)&explosive_moby_drag_min_speed * frame_scale) {
+        v->vel.y *= (*(float *)&explosive_moby_drag - 1.0f) * frame_scale + 1.0f;
     }
     if (v->vel.z > 0.0f) {
-        v->vel.z *= (*(float *)&D_L01_001620EC - 1.0f) * frame_scale + 1.0f;
+        v->vel.z *= (*(float *)&explosive_moby_drag - 1.0f) * frame_scale + 1.0f;
     }
-    v->vel.z -= *(float *)&D_L01_001620E8 * g_frame_time_sq;
+    v->vel.z -= *(float *)&explosive_moby_gravity * g_frame_time_sq;
     m->rot.x = FastAddRots(m->rot.x, v->spin.x);
     m->rot.y = FastAddRots(m->rot.y, v->spin.y);
     m->rot.z = FastAddRots(m->rot.z, v->spin.z);
@@ -2256,8 +2256,8 @@ void generate_level01_environment_map_uvs(int vertex_count, char *normals, char 
         vec_scale_to_length(&refl, &refl, 1.0f);
         refl.z += 1.0f;
         uv_projection_denominator = FastVecLength(&refl) * 2.0f;
-        uv_pairs[i][0] = (refl.x / uv_projection_denominator + 0.5f) * 2.0f + D_L01_001621A0;
-        uv_pairs[i][1] = (refl.y / uv_projection_denominator + 0.5f) * 2.0f + D_L01_001621A4;
+        uv_pairs[i][0] = (refl.x / uv_projection_denominator + 0.5f) * 2.0f + novalis_env_map_scroll_u;
+        uv_pairs[i][1] = (refl.y / uv_projection_denominator + 0.5f) * 2.0f + novalis_env_map_scroll_v;
     }
 }
 extern int func_001F4868(int);
@@ -2281,8 +2281,8 @@ void draw_level01_environment_mapped_meshes(void) {
     VU1_addGSregister(0x14, 0xFF9000000260L);
     font_queue_vu_state();
     for (i = 4; i >= 0; i--) {
-        generate_level01_environment_map_uvs(D_L01_00203160[4 - i], D_L01_002083F8[4 - i], D_L01_002083C8[4 - i], D_L01_002083E0[4 - i], D_L01_00208430);
-        draw_env_overlay_mesh(D_L01_00203160[4 - i], (int)D_L01_002083C8[4 - i], D_L01_00208410[4 - i], D_L01_00208430, 1);
+        generate_level01_environment_map_uvs(novalis_env_mesh_vertex_counts[4 - i], novalis_env_mesh_normals[4 - i], novalis_env_mesh_verts[4 - i], D_L01_002083E0[4 - i], novalis_env_mesh_uvs);
+        draw_env_overlay_mesh(novalis_env_mesh_vertex_counts[4 - i], (int)novalis_env_mesh_verts[4 - i], novalis_env_mesh_colors[4 - i], novalis_env_mesh_uvs, 1);
     }
 }
 void func_001F49B0(void *fn, void *arg);

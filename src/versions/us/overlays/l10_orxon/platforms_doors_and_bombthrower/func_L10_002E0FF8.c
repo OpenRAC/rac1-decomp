@@ -68,7 +68,7 @@ void update_screamer_hit_reactions_and_targeting(struct Moby *moby) {
     if (data->f174 == 2) {
         r19 = FindNearestTargetMoby(data->f180, moby, data->fC0);
         if (r19 != 2) {
-            Anim_2E0FF8 *bp = &((Anim_2E0FF8 *)D_L10_0016016C)[data->f194];
+            Anim_2E0FF8 *bp = &((Anim_2E0FF8 *)orxon_scene_points)[data->f194];
             FastVecSub(v, D_0013E633 + 0xE9D, bp->f30);
             v[3] = 0.0f;
             matrix_mul_vec3(w, v, bp->f40);

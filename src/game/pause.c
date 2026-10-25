@@ -10229,7 +10229,7 @@ void prepare_save_game(int arg0, int arg1) {
     func_00121A80(save_clock_time);
     func_0012D818(save_clock_time);
     copy_level_object_positions();
-    save_map_coverage(D_00141FC0 + (g_current_level_index << 11));
+    save_map_coverage(level_map_coverage + (g_current_level_index << 11));
     memcard_MakeWholeSave((char *)arg0);
     *(int *)(b + 0xF4) = arg0;
     *(int *)(b + 0x14) = arg1;

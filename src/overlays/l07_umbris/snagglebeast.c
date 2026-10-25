@@ -415,7 +415,7 @@ int update_snagglebeast_chase_movement(char *m, char *a, void *p6, float *p7, fl
     if ((umbris_frame_count & 3) == 3) {
         char *mp2 = m + 0x10;
         if (probe_vertical_ground_collision(mp2, (int)m, 0, 0.1f, 1.0f)) {
-            int *t = D_L07_00173F40;
+            int *t = umbris_coll_hit;
             unsigned char *q = *(unsigned char **)(t + 6);
             if (q != 0 && t[7] > 0 && *(short *)(q + 0xA6) == 0x42D && q[0xBC] == 0) {
                 if (*(unsigned char *)(*(char **)(q + 0x78) + 0xBE) != 0) {
@@ -528,7 +528,7 @@ void apply_snagglebeast_big_head_cheat(char *arg) {
             char *m = D_L07_0016C960.mobs[i];
             if (*(short *)(m + 0xA6) == *(short *)(arg + 0xA6)) {
                 if (gCheats[0] != 0) {
-                    unsigned char *p = D_L07_0020C980;
+                    unsigned char *p = snagglebeast_big_head_manipulator;
                     if (p[1] == 0) {
                         AttachManipulator(m, 0xB, p);
                         *(float *)(p + 0x20) = 2.75f;
@@ -1342,7 +1342,7 @@ void snagglebeast_update(unsigned char *m) {
             qcopy(d + 0xC0, &va);
             *(float *)(d + 0xC8) = *(float *)(d + 0x128);
             iF0 = 0xA;
-            func_002116A0(m, 1, &iF0, &vb);
+            get_moby_joint_matrices(m, 1, &iF0, &vb);
             matrix_to_euler(&vb, &vg);
             *(float *)(d + 0xCC) = FastAddRots(*(float *)(m + 0x48), vg.f[2]);
         }
@@ -1404,7 +1404,7 @@ void snagglebeast_update(unsigned char *m) {
                     *(float *)(g2 + 0x98) = FastAddRots(*(float *)(g2 + 0x1D48), g_frame_time * 25.132742f);
                 }
                 *(float *)(d + 0x16C) = hdist;
-                slot = D_L07_0020C8C0[*(int *)(d + 0x164)][0];
+                slot = snagglebeast_stage_item_slots[*(int *)(d + 0x164)][0];
                 if (slot == -1) {
                     *(int *)(d + 0x164) = 0;
                     *(short *)(d + 0x196) = scale_ticks(0x320);
@@ -1421,7 +1421,7 @@ void snagglebeast_update(unsigned char *m) {
                     *(int *)(d + 0x1F8) = -1;
                     m[0x20] = 1;
                 } else {
-                    int cnt = (D_L07_00179BC0 + slot)->s3C;
+                    int cnt = (umbris_item_defs + slot)->s3C;
                     int rem;
                     int pos;
                     if (*(short *)(d + 0x19E) == 0) {
@@ -1691,13 +1691,13 @@ void draw_rope_strips(void) {
             qcopy(packet.pos[2], rope_grid[row - 1][column]);
             qcopy(packet.pos[3], rope_grid[row - 1][(column + 1) % 20]);
             end_phase = row_phase + column_step;
-            color = D_L07_0020DE88[row];
+            color = snagglebeast_rope_row_alpha[row];
             for (k = 0; k < 2; k++) {
                 if (color < 0) color = 0;
                 if (color > 64) color = 64;
                 color = (color << 24) | 0x404040;
                 packet.color[k * 2 + 1] = packet.color[k * 2] = color;
-                color = D_L07_0020DE88[row - 1];
+                color = snagglebeast_rope_row_alpha[row - 1];
             }
             if (row == 1) {
                 packet.color[3] = 0x20404040;
@@ -1916,7 +1916,7 @@ float update_snagglebeast_rope(void *moby, void *anchor) {
     {
         int m;
         for (m = 0; m < 20; m++) {
-            FastVecScale(v60, D_L07_0020C9C0[m], 0.02f);
+            FastVecScale(v60, snagglebeast_rope_ring_offsets[m], 0.02f);
             matrix_mul_vec3(v60, v60, rb.m);
             add_319080(rope_grid[0][m], D_L07_0020DDC0_319080[0], v60);
         }
@@ -1936,7 +1936,7 @@ float update_snagglebeast_rope(void *moby, void *anchor) {
         dot = FastVecDot(v60, v70);
         len = FastVecLength(v60);
         ang = 1.5707964f - FastArcSin(dot / (len * 2.8f));
-        sm = Camera_SmoothAngle(&D_L07_0020DE60[i], 0.0f, ang, 0.06f, 0.2f, 0.0f);
+        sm = Camera_SmoothAngle(&snagglebeast_rope_bend_angles[i], 0.0f, ang, 0.06f, 0.2f, 0.0f);
         df = FastSubRots(ang, sm);
         if (FastAbsF(df) > 0.31415927f) {
             sm = FastAddRots(sm, FastSubRots(df, 0.31415927f));
@@ -1987,7 +1987,7 @@ float update_snagglebeast_rope(void *moby, void *anchor) {
             for (m = 0; m < 20; m++) {
                 sc = fi * 0.2f + 0.02f;
                 sc += sc * 0.25f * FastSin(FastAddRots((*(float *)&D_L07_00161C14_319080) + fi * 0.7f, 0.0f));
-                FastVecScale(v120, D_L07_0020C9C0[m], sc);
+                FastVecScale(v120, snagglebeast_rope_ring_offsets[m], sc);
                 matrix_mul_vec3(v120, v120, vF0);
                 add_319080(rope_grid[i][m], D_L07_0020DDC0_319080[i], v120);
             }
@@ -2153,8 +2153,8 @@ void detach_snagglebeast_rope_particles(int arg0) {
     int i;
     char *base;
 
-    *(int *)&D_L07_00161BFC = 1;
-    *(int *)&D_L07_00161C00 = 1;
+    *(int *)&snagglebeast_rope_reset_pending = 1;
+    *(int *)&snagglebeast_rope_clear_pending = 1;
     *(float *)&row_phase_step_gp = *(float *)&row_phase_step_gp * 0.5f;
     Moby_PlaySound(10, 0, arg0);
     base = (char *)rope_particles;

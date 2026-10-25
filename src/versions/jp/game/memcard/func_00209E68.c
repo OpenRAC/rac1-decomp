@@ -142,8 +142,8 @@ void memcard_update_state(void) {
                     if (mc_strcmp(filename, D_0013D315) == 0) icon0 = 1;
                     if (mc_strcmp(filename, D_0013D335) == 0) icon1 = 1;
                     if (mc_strcmp(filename, D_0013D355) == 0) icon2 = 1;
-                    if (mc_strncmp(filename, D_0015FF58, 4) == 0 &&
-                        mc_strncmp(filename + 5, D_0015FF60, 4) == 0) {
+                    if (mc_strncmp(filename, memcard_slot_file_prefix, 4) == 0 &&
+                        mc_strncmp(filename + 5, memcard_slot_file_suffix, 4) == 0) {
                         slot = (u8)entry->name[4] - '0';
                         if (slot < 0) continue;
                         if (slot < 5) workspace.directory.seen[slot] = 1;

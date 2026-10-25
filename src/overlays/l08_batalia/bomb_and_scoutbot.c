@@ -1032,7 +1032,7 @@ void scatter_bomber_tank_linked_debris(char *moby) {
             a[1] = random_float_between(-1.0f, 1.0f);
             a[2] = random_float_between(-1.0f, 1.0f);
             a[3] = 1.0f;
-            transform_vector(a, a, D_L08_0016016C + (*(int *)(d + 0x148) << 7));
+            transform_vector(a, a, batalia_scene_points + (*(int *)(d + 0x148) << 7));
             qcopy(m + 0x10, a);
             ang = random_float_between(-0.2617994f, 0.2617994f);
             clear_u64_value(b);
@@ -2437,7 +2437,7 @@ void update_rocket(M46 *m) {
                             accel[2]=random_float_between(g_frame_time*8.0f,g_frame_time*12.0f);
                             other->animation=0;
                             a=fast_atan2(accel[0],accel[1]);
-                            b=fast_atan2(D_L08_00167500.x-m->position[0],D_L08_00167500.y-m->position[1]);
+                            b=fast_atan2(batalia_player_camera.x-m->position[0],batalia_player_camera.y-m->position[1]);
                             angle_delta=FastDiffRots(a,b);
                             launch_offset=effect;
                             if (angle_delta<0.7853982f) { lo=10.0f; hi=20.0f; }
@@ -2555,7 +2555,7 @@ void func_L08_002DF8A0_r(char *moby, int a, int n, int flag) {
             vec[1] = random_float_between(-1.0f, 1.0f);
             vec[2] = random_float_between(-1.0f, 1.0f);
             vec[3] = 1.0f;
-            transform_vector(vec, vec, D_L08_0016016C + (a << 7));
+            transform_vector(vec, vec, batalia_scene_points + (a << 7));
             qcopy(m + 0x10, vec);
             clear_u64_value(vec2);
             FastVecSub(vec3, vec, moby + 0x10);

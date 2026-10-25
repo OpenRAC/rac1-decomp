@@ -667,7 +667,7 @@ char *create_moby_with_particles(int owner, float *position, float *rotation, in
         *(float *)(moby + 0x48) = fast_atan2(rotation[0], rotation[1]);
         qcopy(moby + 0x10, position_copy);
         qcopy(data, rotation_copy);
-        if (D_L08_0015F6B0 & 1)
+        if (batalia_frame_count & 1)
             *(volatile int *)(data + 0x1c) = 1;
         else
             *(volatile int *)(data + 0x1c) = -1;
@@ -876,7 +876,7 @@ extern Pair D_L08_00161EB0[] MACRO_ADDR;
 void emit_pair_offset_render_batch(int a) {
     int i;
     for (i = 0; i < 8; i++) {
-        add_uv_scroll_offset(batalia_scrolled_uvs, batalia_mesh8_uv_sources[i], batalia_mesh8_counts[i], &D_L08_00161EB0[a]);
+        add_uv_scroll_offset(batalia_scrolled_uvs, batalia_mesh8_uv_sources[i], batalia_mesh8_counts[i], &batalia_mesh8_scroll_offset[a]);
         draw_env_overlay_mesh(batalia_mesh8_counts[i], batalia_mesh8_positions[i], batalia_mesh8_colors[i], batalia_scrolled_uvs, 1);
     }
 }
@@ -1415,7 +1415,7 @@ delete_self:
             float *color;
             char *rotation;
             zero302618(pos);
-            color=D_L08_0015F660;
+            color=batalia_zero_vec;
             explode302618(m,0,-1);
             effect302618(m,m+0x10,0,0.5f,13.0f);
             rotation=m+0x40;

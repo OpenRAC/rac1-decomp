@@ -290,14 +290,14 @@ int HeroL17_SetMoveState(int a, int b) {
         *(short *)(p + 0x90A) = 0;
         if (*(int *)(p + 0x2094) == 0x11) {
             emit_hero_surface_effect_burst(3, 0xA, 0);
-            if (D_L17_00161350 != 0) {
-                RippleDisturb(D_L17_00161350, D_L17_00161358, 0, *(float *)(p + 0x80), *(float *)(p + 0x84), 0.4f, 0.3f);
+            if (fleet_water_patches != 0) {
+                RippleDisturb(fleet_water_patches, fleet_water_patch_count, 0, *(float *)(p + 0x80), *(float *)(p + 0x84), 0.4f, 0.3f);
             }
         } else if (*(float *)(p + 0x108) < g_frame_time * -0.5f) {
             int n = truncate_float_to_s32(FastAbsF(*(float *)(p + 0x108)) * 300.0f);
             emit_hero_surface_effect_burst(3, n < 0x28 ? n : 0x28, 1);
-            if (D_L17_00161350 != 0) {
-                RippleDisturb(D_L17_00161350, D_L17_00161358, 0, *(float *)(p + 0x80), *(float *)(p + 0x84), 0.5f, -0.4f);
+            if (fleet_water_patches != 0) {
+                RippleDisturb(fleet_water_patches, fleet_water_patch_count, 0, *(float *)(p + 0x80), *(float *)(p + 0x84), 0.5f, -0.4f);
             }
             *(short *)(p + 0x90A) = scale_ticks(0x4B);
         }

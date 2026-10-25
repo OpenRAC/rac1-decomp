@@ -72,7 +72,7 @@ void EffectSlots_Fire(char *slots, float *position, float *direction, float dist
     vec_scale_to_length(adjusted, direction, distance + 0.75f);
     FastVecAdd(end, adjusted, origin);
     if (coll_line(origin, end, 2, 0, 0)) {
-        travel = FastVecDist(origin, D_L02_001744E0) - 0.75f;
+        travel = FastVecDist(origin, aridia_coll_hit_point) - 0.75f;
         if (travel < 0.0f) travel = 0.0f;
     } else {
         travel = distance;

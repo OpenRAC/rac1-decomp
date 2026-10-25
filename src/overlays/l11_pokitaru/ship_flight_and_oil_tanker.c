@@ -2767,7 +2767,7 @@ void update_oil_tanker_link_effects_and_destruction(char *m) {
             FastVecSub(w, m + 0x10, d);
             w[2] -= g_frame_time + g_frame_time;
             FastVecAdd(w, w, r);
-            func_L11_0031C210_5(v, w, D_L11_00161EA8, 0, random_float_between(*(float *)&oil_tanker_link_bubble_scale_min, *(float *)&oil_tanker_link_bubble_scale_max));
+            func_L11_0031C210_5(v, w, pokitaru_ocean_height, 0, random_float_between(*(float *)&oil_tanker_link_bubble_scale_min, *(float *)&oil_tanker_link_bubble_scale_max));
         }
         qcopy(d, m + 0x10);
         break;
@@ -3491,13 +3491,13 @@ extern short D_L11_00162600;
 
 // Runs four setup calls over parallel tables, offset by the argument.
 void emit_level11_layered_effect_batches_with_pair_offset(int arg) {
-    int *a = (int *)&D_L11_001625C0;
+    int *a = (int *)&pokitaru_layered_mesh_vertex_counts;
     int *b = (int *)&D_L11_001625D0;
     int *c = (int *)&pokitaru_layered_uv_sources;
-    int *d = (int *)&D_L11_00162600;
+    int *d = (int *)&pokitaru_layered_mesh_colors;
     int i;
     for (i = 0; i < 4; i++) {
-        add_uv_scroll_offset(pokitaru_layered_scrolled_uvs, c[i], a[i], (char *)D_L11_001FFA10 + arg * 8);
+        add_uv_scroll_offset(pokitaru_layered_scrolled_uvs, c[i], a[i], (char *)pokitaru_layered_uv_scroll + arg * 8);
         draw_env_overlay_mesh(a[i], b[i], d[i], pokitaru_layered_scrolled_uvs, 1);
     }
 }

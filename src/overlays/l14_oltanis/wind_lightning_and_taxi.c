@@ -1947,7 +1947,7 @@ void func_L14_002F0A30_r(Level14VendorMoby_F0A30 *m) {
     m->state = 0;
     m->data->field124 = 0;
     D_0014C290_2F0A30[D_0015EE84_m][(short)*(unsigned short *)((char *)m + 0xB2) >> 5] |= 1 << (*(unsigned short *)((char *)m + 0xB2) & 0x1F);
-    D_L14_001BAF60[(short)*(unsigned short *)((char *)m + 0xB2) >> 5] |= 1 << (*(unsigned short *)((char *)m + 0xB2) & 0x1F);
+    oltanis_moby_killed_bits[(short)*(unsigned short *)((char *)m + 0xB2) >> 5] |= 1 << (*(unsigned short *)((char *)m + 0xB2) & 0x1F);
 }
 extern void func_001F9EC0(void *, void *, void *);
 extern void func_001F9BD8(void *, void *, void *);
@@ -2526,7 +2526,7 @@ void qwark_oltanis_update(char *m) {
         grant_inventory_item(0x20, 1);
         mark_elevator_collected(D_L14_00160098_2FCEA8 + (*(int *)(d + 0x44) << 8));
         *(int *)(D_0014171B_2FCEA8 + 0xAB75 + (((short)*(unsigned short *)(m + 0xB2) >> 5) * 4 + (D_0015EE84_m << 8))) |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
-        D_L14_001BAF60[(short)*(unsigned short *)(m + 0xB2) >> 5] |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
+        oltanis_moby_killed_bits[(short)*(unsigned short *)(m + 0xB2) >> 5] |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
         memcard_Save(0, -1);
         DeleteMoby(m);
         return;

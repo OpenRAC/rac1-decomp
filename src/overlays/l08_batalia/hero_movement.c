@@ -316,11 +316,11 @@ void HeroL08_UpdateStatePhysics(void) {
 
                     *(u128 *)vec[0] = 0;
                     vec[0][0] = 1.0f;
-                    matrix_mul_vec3(g_hero.motion.unk170.f, vec[0], D_L08_00167500.f350);
-                    g_hero.motion.move_yaw = D_L08_00167500.f158;
+                    matrix_mul_vec3(g_hero.motion.unk170.f, vec[0], batalia_player_camera.f350);
+                    g_hero.motion.move_yaw = batalia_player_camera.f158;
                     turn_to(0, g_frame_scale_sq, g_frame_scale_sq * 0.0f, g_frame_time * 174.53293f);
-                    if (*(int *)&D_L08_0015F768 > 0) {
-                        if (fast_dec_timer((int *)&D_L08_0015F768)) {
+                    if (*(int *)&batalia_usage_event_timer > 0) {
+                        if (fast_dec_timer((int *)&batalia_usage_event_timer)) {
                             if (usage_stats.f90 < 0xFFFF) {
                                 usage_stats.f90++;
                             }
@@ -328,8 +328,8 @@ void HeroL08_UpdateStatePhysics(void) {
                                 usage_stats.f92 = scale_ticks(gameplay_event_frame_count) / 600;
                             }
                             usage_stats.f94 = usage_stats.f94 | (1 << D_0015EE84_m) | 0x80000000;
-                            *(int *)&D_L08_0015F768 = -1;
-                            (*(int *)&D_L08_0015F76C)++;
+                            *(int *)&batalia_usage_event_timer = -1;
+                            (*(int *)&batalia_usage_event_count)++;
                         }
                     }
                 }
@@ -523,8 +523,8 @@ void HeroL08_UpdateStatePhysics(void) {
             if (g_hero.state.step == 1) {
                 if (g_hero.state_timer == 1) {
                     emit_hero_surface_effect_burst(3, 0x10, 0);
-                    if (D_L08_00161350 != 0) {
-                        RippleDisturb(D_L08_00161350, D_L08_00161358, 0, g_hero.motion.pos.f[0], g_hero.motion.pos.f[1], 0.4f, -0.3f);
+                    if (batalia_pool_draw_tiles != 0) {
+                        RippleDisturb(batalia_pool_draw_tiles, batalia_pool_draw_count, 0, g_hero.motion.pos.f[0], g_hero.motion.pos.f[1], 0.4f, -0.3f);
                     }
                     g_hero.unk90A = scale_ticks(0x46);
                 }
@@ -606,10 +606,10 @@ void HeroL08_UpdateStatePhysics(void) {
                 g_hero.unk90C = 0;
             }
             if (g_controller_state.pressed & 0x40) {
-                if (D_L08_0015F6B0 - g_hero.unk914 < scale_ticks(0x46)) {
+                if (batalia_frame_count - g_hero.unk914 < scale_ticks(0x46)) {
                     g_hero.unk910++;
                 }
-                g_hero.unk914 = D_L08_0015F6B0;
+                g_hero.unk914 = batalia_frame_count;
             }
             if (g_hero.unk90E > scale_ticks(0x46)) {
                 g_hero.unk910 = 0;
@@ -715,7 +715,7 @@ void HeroL08_UpdateStatePhysics(void) {
             } else if (g_hero.state.current == 0x33) {
                 float v;
 
-                v = g_hero.ground_speed * vector_length_xyz_cf(D_L08_0017C840, 0x1E) * 5.0f;
+                v = g_hero.ground_speed * vector_length_xyz_cf(batalia_hero_anim_speed_curve, 0x1E) * 5.0f;
                 if (g_hero.state.prev == 0x35 && g_hero.state_timer < scale_ticks(0xF)) {
                     if (v < g_frame_time * 4.5f) {
                         v = g_frame_time * 4.5f;
@@ -869,7 +869,7 @@ void HeroL08_UpdateStatePhysics(void) {
                 g_hero.target_speed = 0.0f;
             }
             speed_step(g_frame_time_sq * 4.0f, g_frame_time_sq * 5.0f);
-            v = g_hero.ground_speed * vector_length_xyz_cf(D_L08_0017C840, 0x1E) * 5.5f;
+            v = g_hero.ground_speed * vector_length_xyz_cf(batalia_hero_anim_speed_curve, 0x1E) * 5.5f;
             g_hero.motion.velocity.f[0] = FastCos(g_hero.motion.rot.f[2]) * v;
             g_hero.motion.velocity.f[1] = FastSin(g_hero.motion.rot.f[2]) * v;
             g_hero.motion.velocity.f[2] = 0.0f;
@@ -1194,8 +1194,8 @@ void HeroL08_UpdateStatePhysics(void) {
             if (g_hero.unk4B8 != 0.0f) {
                 if (g_hero.air_frames.s == 0) {
                     if (g_hero.unk4C4 == 0) {
-                        D_L08_00167500.f160 = 0.2f;
-                        D_L08_00167500.f168 = scale_ticks(0x28);
+                        batalia_player_camera.f160 = 0.2f;
+                        batalia_player_camera.f168 = scale_ticks(0x28);
                     }
                     g_hero.unk4C4++;
                 }
@@ -1797,7 +1797,7 @@ void HeroL08_UpdateStatePhysics(void) {
                 vec[1][3] = -(g_frame_time_sq * 30.0f);
                 spawn_color_decaying_effect_particle((char *)vec[0], (char *)vec[1], 0);
             }
-            hasW = D_L08_0017A340[g_hero.items[0].item_id].f18 != 0;
+            hasW = batalia_item_info[g_hero.items[0].item_id].f18 != 0;
             if (g_hero.items[0].item_id == 0xC) {
                 hasW = 0;
             }
@@ -1864,14 +1864,14 @@ void HeroL08_UpdateStatePhysics(void) {
                         }
                         set_first_hero_easing_parameters(0.03f, 0.2f);
                         if (g_hero.unk58C != 0) {
-                            D_L08_0017AF60[1] = -tilt;
+                            batalia_hero_lean_angles[1] = -tilt;
                         } else {
-                            D_L08_0017AF60[1] = tilt;
+                            batalia_hero_lean_angles[1] = tilt;
                         }
                     }
                 }
                 if (g_hero.state.current != 0x29 && g_hero.state.current != 0x42 && g_hero.state.current != 0x2A) {
-                    D_L08_0017AF60[0] = fast_atan2(vec_length_xy(g_hero.motion.displacement.f), g_hero.motion.displacement.f[2]);
+                    batalia_hero_lean_angles[0] = fast_atan2(vec_length_xy(g_hero.motion.displacement.f), g_hero.motion.displacement.f[2]);
                 }
                 if (hasW) {
                     set_first_hero_easing_parameters(g_frame_scale_sq * 0.017f, g_frame_scale_sq * 0.3f);
@@ -1988,9 +1988,9 @@ void HeroL08_UpdateStatePhysics(void) {
                             float a;
 
                             stick_target(1.0f, 0);
-                            a = FastDiffRots(g_hero.motion.move_yaw, D_L08_00167500.f158);
+                            a = FastDiffRots(g_hero.motion.move_yaw, batalia_player_camera.f158);
                             if (FastDiffRots(a, 1.5707964f) < 1.2217305f || FastDiffRots(a, -1.5707964f) < 1.2217305f) {
-                                if (FastDiffRots(FastSubRots(g_hero.motion.move_yaw, D_L08_00167500.f158), 1.5707964f) < 0.7853982f) {
+                                if (FastDiffRots(FastSubRots(g_hero.motion.move_yaw, batalia_player_camera.f158), 1.5707964f) < 0.7853982f) {
                                     g_hero.unk5A8 = 2;
                                 } else {
                                     g_hero.unk5A8 = 3;
@@ -2142,7 +2142,7 @@ void HeroL08_UpdateStatePhysics(void) {
                         spd = g_hero.motion.unk164;
                         ApproachValue(&spd, g_hero.target_speed * g_frame_time, g_frame_time_sq * 5.0f);
                         FastVecSub(g_hero.motion.velocity.f, vec[5], g_hero.motion.pos.f);
-                        vec_set_length_xy(g_hero.motion.velocity.f, g_hero.motion.velocity.f, D_L08_001C4730[truncate_float_to_s32(g_hero.anim_frame)] * 0.5f);
+                        vec_set_length_xy(g_hero.motion.velocity.f, g_hero.motion.velocity.f, batalia_hero_anim_frame_speeds[truncate_float_to_s32(g_hero.anim_frame)] * 0.5f);
                     }
                 }
             }
@@ -2317,8 +2317,8 @@ void HeroL08_UpdateStatePhysics(void) {
         if (g_hero.state.current == 0x12) {
             if (g_hero.state_timer == scale_ticks(0x14)) {
                 emit_hero_surface_effect_burst(3, 0x10, 1);
-                if (D_L08_00161350 != 0) {
-                    RippleDisturb(D_L08_00161350, D_L08_00161358, 0, g_hero.motion.pos.f[0], g_hero.motion.pos.f[1], 0.4f, 0.35f);
+                if (batalia_pool_draw_tiles != 0) {
+                    RippleDisturb(batalia_pool_draw_tiles, batalia_pool_draw_count, 0, g_hero.motion.pos.f[0], g_hero.motion.pos.f[1], 0.4f, 0.35f);
                 }
             }
             if (g_hero.anim_frame >= 4.0f && g_hero.anim_frame <= 7.0f) {
@@ -2430,8 +2430,8 @@ void HeroL08_UpdateStatePhysics(void) {
 
                     FastVecScale(vec[1], g_hero.motion.displacement.f, 7.0f);
                     for (i = 0; i < n; i++) {
-                        if (is_moby_in_class_range_500_to_540((int)D_L08_00178780[i])) {
-                            PostHitMessage(D_L08_00178780[i], (int)g_hero.moby, 0x10000, g_hero.motion.pos.f, vec[1], 1.0f);
+                        if (is_moby_in_class_range_500_to_540((int)batalia_moby_hits[i])) {
+                            PostHitMessage(batalia_moby_hits[i], (int)g_hero.moby, 0x10000, g_hero.motion.pos.f, vec[1], 1.0f);
                         }
                     }
                 }

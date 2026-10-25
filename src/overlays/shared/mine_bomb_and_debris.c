@@ -193,8 +193,8 @@ extern void func_L00_0025B040(unsigned char *, float);
 
 /* Mine (moby class 74) update: falls and bounces, sticks to what it hits, homes on a nearby target and explodes. */
 void mine_update(M910 *m) {
-    B910 a = D_L00_001E9BB0;
-    B910 b = D_L00_001E9C00;
+    B910 a = mine_blast_fx;
+    B910 b = mine_gold_blast_fx;
     U910 c;
     U910 old;
     U910 up;
@@ -287,7 +287,7 @@ void mine_update(M910 *m) {
             m->pos.f[2] -= 0.4f;
             q.dir[2] = 1.0f;
             k = IntToFloat(level_frame_counter - v->i74);
-            k = k / multiply_global_factor(*(float *)&D_L00_001614A4);
+            k = k / multiply_global_factor(*(float *)&mine_bob_ramp_ticks);
             if (1.0f < k) {
                 k = 1.0f;
             } else if (k < 0.0f) {
@@ -681,7 +681,7 @@ void mine_update(M910 *m) {
                 }
             }
             k = IntToFloat(level_frame_counter - v->i74);
-            k = k / multiply_global_factor(*(float *)&D_L00_001614A4);
+            k = k / multiply_global_factor(*(float *)&mine_bob_ramp_ticks);
             if (1.0f < k) {
                 k = 1.0f;
             } else if (k < 0.0f) {
@@ -766,7 +766,7 @@ void mine_update(M910 *m) {
                             c2 = swap_packed_color_channels(c2, D_E910.b11);
                             sz = random_float_between(31500.002f, 52500.0f);
                             life = rand_range(scale_ticks(0x5A), scale_ticks(0x96));
-                            spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns(n, r, c1, c2, sz, life, 1, D_L00_001B2400[11][0], -1);
+                            spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns(n, r, c1, c2, sz, life, 1, part_type_textures[11][0], -1);
                         }
                     }
                 } else if (gz + 2.0f < m->pos.f[2]) {
@@ -1490,7 +1490,7 @@ extern float func_L00_0025C700(float, float, float);
 
 /* Update of moby class 121, a thrown bomb: it flies and spins, bounces once on the ground, explodes on a hit or when its timer runs out, then its blast ring grows for 15 frames. */
 void bomb_update(M_2aedd0 *m) {
-    B910 rec = D_L00_001E9C50;
+    B910 rec = bomb_blast_fx;
     V2AE110 delta;
     V2AE110 old;
     V2AE110 a;
@@ -1546,7 +1546,7 @@ void bomb_update(M_2aedd0 *m) {
             if ((level_frame_counter & 7) == 0) {
                 int i;
 
-                for (i = 0; i < *(int *)&D_L00_001614FC; i++) {
+                for (i = 0; i < *(int *)&bomb_trail_spark_count; i++) {
                     V2AE110 v1;
                     V2AE110 v2;
                     V2AE110 v3;
@@ -1556,19 +1556,19 @@ void bomb_update(M_2aedd0 *m) {
                     int n1;
                     int n2;
 
-                    FastVecScale(&v1, d, *(float *)&D_L00_001614C4);
-                    rand_vec(v3.f, 0.0f, *(float *)&D_L00_001614C8 * g_frame_time);
+                    FastVecScale(&v1, d, *(float *)&bomb_trail_spark_speed_scale);
+                    rand_vec(v3.f, 0.0f, *(float *)&bomb_trail_spark_jitter * g_frame_time);
                     FastVecAdd(&v1, &v3, &v1);
                     clear_u64_value(v2.f);
-                    v1.f[3] = random_float_between(*(float *)&D_L00_001614DC, *(float *)&D_L00_001614E0);
-                    v2.f[3] = random_float_between(*(float *)&D_L00_001614E4, *(float *)&D_L00_001614E8);
-                    p0 = FastTweenColor(*(int *)&D_L00_001614EC, *(int *)&D_L00_001614F0, random_float_between(0.0f, 1.0f));
-                    p1 = FastTweenColor(*(int *)&D_L00_001614F4, *(int *)&D_L00_001614F8, random_float_between(0.0f, 1.0f));
-                    n0 = truncate_float_to_s32(multiply_global_factor((float)*(int *)&D_L00_001614CC * random_float_between(0.0f, 1.0f) + 1.0f));
-                    n1 = truncate_float_to_s32(multiply_global_factor((float)*(int *)&D_L00_001614D0 * (random_float_between(-*(float *)&D_L00_001614D8, *(float *)&D_L00_001614D8) + 1.0f)));
-                    n2 = truncate_float_to_s32(multiply_global_factor((float)*(int *)&D_L00_001614D4 * (random_float_between(-*(float *)&D_L00_001614D8, *(float *)&D_L00_001614D8) + 1.0f)));
-                    v2.f[2] -= *(float *)&D_L00_001614C0 * g_frame_time_sq * (float)n1;
-                    PartType02Spawn(&m->pos, &v1, &v2, p0, p1, n0, n1, n2, *(int *)&D_L00_00161500);
+                    v1.f[3] = random_float_between(*(float *)&bomb_trail_spark_start_size_min, *(float *)&bomb_trail_spark_start_size_max);
+                    v2.f[3] = random_float_between(*(float *)&bomb_trail_spark_end_size_min, *(float *)&bomb_trail_spark_end_size_max);
+                    p0 = FastTweenColor(*(int *)&bomb_trail_spark_lower_color_a, *(int *)&bomb_trail_spark_lower_color_b, random_float_between(0.0f, 1.0f));
+                    p1 = FastTweenColor(*(int *)&bomb_trail_spark_upper_color_a, *(int *)&bomb_trail_spark_upper_color_b, random_float_between(0.0f, 1.0f));
+                    n0 = truncate_float_to_s32(multiply_global_factor((float)*(int *)&bomb_trail_spark_ticks1 * random_float_between(0.0f, 1.0f) + 1.0f));
+                    n1 = truncate_float_to_s32(multiply_global_factor((float)*(int *)&bomb_trail_spark_ticks2 * (random_float_between(-*(float *)&bomb_trail_spark_time_jitter, *(float *)&bomb_trail_spark_time_jitter) + 1.0f)));
+                    n2 = truncate_float_to_s32(multiply_global_factor((float)*(int *)&bomb_trail_spark_ticks3 * (random_float_between(-*(float *)&bomb_trail_spark_time_jitter, *(float *)&bomb_trail_spark_time_jitter) + 1.0f)));
+                    v2.f[2] -= *(float *)&bomb_trail_spark_gravity * g_frame_time_sq * (float)n1;
+                    PartType02Spawn(&m->pos, &v1, &v2, p0, p1, n0, n1, n2, *(int *)&bomb_trail_spark_texture);
                 }
             }
         }
@@ -1747,8 +1747,8 @@ void bomb_update(M_2aedd0 *m) {
                     }
                     for (i = 0; i < cnt; i++) {
                         float spd = s * random_float_between(8.0f, 10.0f) * g_frame_time - g * g_frame_time;
-                        C6_2aedd0 c1 = D_L00_001E9CA0;
-                        C6_2aedd0 c2 = D_L00_001E9CB8;
+                        C6_2aedd0 c1 = bomb_blast_colors;
+                        C6_2aedd0 c2 = bomb_blast_fade_colors;
 
                         PartType11Spawn(&m->pos, &a,
                                           swap_packed_color_channels(c1.c[random_integer_below(6)], (unsigned char)D_E910.p0[0xA]),
@@ -1874,7 +1874,7 @@ void bomb_update(M_2aedd0 *m) {
                             v2.f[2] = gz;
                             sz = random_float_between(31500.002f, 52500.0f);
                             life = rand_range(scale_ticks(0x5A), scale_ticks(0x96));
-                            spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns(&v2, &w, c0, c1, sz, life, 1, D_L00_001B2400[11][0], -1);
+                            spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns(&v2, &w, c0, c1, sz, life, 1, part_type_textures[11][0], -1);
                         }
                     }
                 }
@@ -1957,7 +1957,7 @@ void debris_update(unsigned char *m) {
     float f;
     if (m[0xBC] & 1) {
         for (i = 0; i < 1; i++) {
-            c = D_L00_00161508;
+            c = debris_spark_colors;
             *(Q_2af5b8 *)&t = 0;
             t.f[0] = random_float_between(-1.0f, 1.0f);
             t.f[1] = random_float_between(-1.0f, 1.0f);
@@ -2017,14 +2017,14 @@ unsigned char *spawn_crate_debris(unsigned char *owner, void *vel, void *pos, vo
         v->f4 = *(float *)(m + 0x18);
         {
             short t = scale_ticks(0x14);
-            float l1 = *(float *)&D_L00_00161518;
-            float l2 = *(float *)&D_L00_0016151C;
+            float l1 = *(float *)&crate_debris_spin_min;
+            float l2 = *(float *)&crate_debris_spin_max;
             float r;
             v->i20 = 0;
             v->he = t;
             r = randf_sym(l1, l2) * 0.017453292f * g_frame_time;
-            l1 = *(float *)&D_L00_00161518;
-            l2 = *(float *)&D_L00_0016151C;
+            l1 = *(float *)&crate_debris_spin_min;
+            l2 = *(float *)&crate_debris_spin_max;
             v->f24 = r;
             v->f28 = randf_sym(l1, l2) * 0.017453292f * g_frame_time;
         }
@@ -2382,8 +2382,8 @@ extern void rings1688(void *,void *,int,int,float,int,int,int,int,float) __asm__
 extern void debris1688(void *,void *,int,int,float,int) __asm__("func_L00_0026B368");
 
 void gold_devastator_missile_update(M910 *m) {
-    B910 effect=D_L00_001E9CD0;
-    B910 gold_effect=D_L00_001E9D20;
+    B910 effect=devastator_blast_fx;
+    B910 gold_effect=devastator_gold_blast_fx;
     Vec4 camera_delta;
     Vec4 previous;
     Vec4 blast_velocity;
@@ -2548,8 +2548,8 @@ void gold_devastator_missile_update(M910 *m) {
             vec_scale_to_length(&normal,hit_normal,1.0f);
         }
     } else if(fast_dec_timer(&d->life) || d->limit<vec_distance_xy((&m->pos),&g_hero.x80)) {
-        qcopy(&normal,&D_L00_00160740);
-        qcopy(&surface_motion,&D_L00_00160720);
+        qcopy(&normal,&devastator_default_normal);
+        qcopy(&surface_motion,&devastator_default_surface_motion);
         rotate1688(&surface_motion,&surface_motion,m->mtx);
         rotate1688(&normal,&normal,m->mtx);
         if(!gold_weapon_purchased.bB) {
@@ -2640,8 +2640,8 @@ void gold_devastator_missile_update(M910 *m) {
         if(reduced) j/=2;
         for(i=0;i<j;i++) {
             float speed=random_float_between(8.0f,10.0f)*size*g_frame_time-near_adjust*g_frame_time;
-            Colors1688 color=D_L00_001E9D70;
-            Colors1688 fade=D_L00_001E9D88;
+            Colors1688 color=devastator_blast_colors;
+            Colors1688 fade=devastator_blast_fade_colors;
             int c=swap_packed_color_channels(color.colors[random_integer_below(6)],gold_weapon_purchased.bB);
             int f=swap_packed_color_channels(fade.colors[random_integer_below(6)],gold_weapon_purchased.bB);
             int life=rand_range(scale_ticks(15),scale_ticks(20))-particle_reduction*7;
@@ -2653,8 +2653,8 @@ void gold_devastator_missile_update(M910 *m) {
             rings1688((&m->pos),&blast_velocity,0x7FFFFFFF,0xFFFFFF,400000.0f,white_life,white_end,0,0,speed*0.5f);
         }
         for(i=0;i<particles;i++) {
-            Colors1688 color=D_L00_001E9D70;
-            Colors1688 fade=D_L00_001E9D88;
+            Colors1688 color=devastator_blast_colors;
+            Colors1688 fade=devastator_blast_fade_colors;
             Vec4 v;
             int c,f,life;
             float debris_scale;

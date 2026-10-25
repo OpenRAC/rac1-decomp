@@ -521,16 +521,16 @@ int get_first_moby_in_group(char **out, int idx, int a, int b) {
         return -1;
     }
     *out = 0;
-    D_L00_001601D4 = 0;
+    moby_group_iter_moby = 0;
     v = level_moby_groups[idx];
     D_L00_001601CC_5A208 = v;
     if (v == 0) return -1;
     h = *v & 0x7FFF;
     D_L00_001601D0_5A208[0] = h;
     e = D_L00_00160098_5A208 + (h << 8);
-    D_L00_001601D4 = e;
+    moby_group_iter_moby = e;
     *out = e;
-    c = (unsigned)D_L00_001601D4[0x20] >> 31;
+    c = (unsigned)moby_group_iter_moby[0x20] >> 31;
     if (!a) {
         if (b || c) return get_next_moby_in_group(out, D_L00_001601D4_5A208);
     } else if (b && !c) return get_next_moby_in_group(out, D_L00_001601D4_5A208);
@@ -855,18 +855,18 @@ void jet_animate(unsigned char *m, float s) {
     struct Ent *e;
     if (m[0x31] && ground_shadow_count < 32) {
         n = ground_shadow_count;
-        qcopy(&D_L00_0016E180[n], m + 0x10);
+        qcopy(&ground_shadow_entries[n], m + 0x10);
         h = func_00214358f(m + 0x10, 0, 0.5f);
         if (CollType()) {
             n = ground_shadow_count;
-            e = &D_L00_0016E180[n];
+            e = &ground_shadow_entries[n];
             e->a[2] = h + 0.025f;
-            qcopy(D_L00_0016E180[n].b, coll_hit_normal);
+            qcopy(ground_shadow_entries[n].b, coll_hit_normal);
             v = (8.0f - FastAbsF(*(float *)(m + 0x18) - h)) * 0.125f;
             if (v < 0.25f) {
                 v = 0.25f;
             }
-            { int off = ground_shadow_count * 32; float *q = (float *)((char *)D_L00_0016E180 + off); q[3] = s * v; }
+            { int off = ground_shadow_count * 32; float *q = (float *)((char *)ground_shadow_entries + off); q[3] = s * v; }
             ground_shadow_count++;
         }
     }
@@ -958,7 +958,7 @@ int ComputeHitResponse(O_25a478 *obj, P_25a478 *p, Q_25a478 *q, unsigned int fla
     *out = 0;
     if (kp) *kp = -1;
     if (p && p->tgt && (p->tgt->hA6 == 0x131 || p->tgt->hA6 == 0xA8) && q) {
-        p->f2C = ((float *)&D_L00_00160140)[q->b8];
+        p->f2C = ((float *)&hit_damage_by_reaction_class)[q->b8];
     }
     if (!obj) {
         if (q) {
@@ -988,7 +988,7 @@ int ComputeHitResponse(O_25a478 *obj, P_25a478 *p, Q_25a478 *q, unsigned int fla
     }
     if (p->u.s.f1C == 5627.9248f) {
         Vec4 *pv = &p->u.pos;
-        FastVecScale(pv, pv, D_L00_001B0548[idx][p->state]);
+        FastVecScale(pv, pv, hit_push_scale_table[idx][p->state]);
         kind = p->kind;
         p->u.s.f1C = 5627.9248f;
         if (kind == 0x47) {
@@ -1040,7 +1040,7 @@ int ComputeHitResponse(O_25a478 *obj, P_25a478 *p, Q_25a478 *q, unsigned int fla
         break;
     }
     if (kp) *kp = kind;
-    res = D_L00_001B0500[r][q->b8];
+    res = hit_reaction_table[r][q->b8];
     if (q->h14 != kind) q->h1C = 0;
     if (FastDecTimer(&q->h1C)) {
         switch (r) {
@@ -2688,8 +2688,8 @@ void spawn_color_swapped_explosion_burst(char *a, char *b, float sc, float fl) {
     for (i = 2; i >= 0; i--) {
         sp = random_float_between(8.0f, 10.0f) * g_frame_time;
         big = sc * 500000.0f;
-        c0 = D_L00_001E93B0;
-        c1 = D_L00_001E93C8;
+        c0 = color_swapped_burst_colors;
+        c1 = color_swapped_burst_fade_colors;
         PartType11Spawn(b, &m, swap_packed_color_channels(c0.v[random_integer_below(6)], 1), swap_packed_color_channels(c1.v[random_integer_below(6)], 1),
             big, rand_range(scale_ticks(0xF), scale_ticks(0x14)),
             rand_range(scale_ticks(0x19), scale_ticks(0x1E)), 0, 0, sp * sc);
@@ -2852,7 +2852,7 @@ int FindNearestTargetMoby(char *a, char *o, float best) {
         }
     }
     for (j = 0; j < 20; j++) {
-        p = D_L00_001DD450[j];
+        p = morphoray_chicken_slots[j];
         if (p == 0) continue;
         if (*(short *)(p + 0xA6) != 0x10E) continue;
         if (*(unsigned char *)(p + 0x20) == 0xFE) continue;
@@ -2951,7 +2951,7 @@ int FindNearestEligibleMoby(char *a, char *o, float best, int *list, int n, floa
         }
     }
     for (j = 0; j < 20; j++) {
-        q = D_L00_001DD450[j];
+        q = morphoray_chicken_slots[j];
         if (q == 0) continue;
         if (*(short *)(q + 0xA6) != 0x10E) continue;
         if (*(unsigned char *)(q + 0x20) == 0xFE) continue;
@@ -3126,7 +3126,7 @@ void grant_inventory_item(int id, int flag) {
     if (*pa == 0) {
         idx = id;
     }
-    p = &D_L00_001B06C0[idx];
+    p = &item_pickup_banner_ids[idx];
     *pb = 1;
     if (*p != -1) {
         ShowBanner(*p, scale_ticks(0x12C));

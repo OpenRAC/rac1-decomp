@@ -295,7 +295,7 @@ void HeroL08_UpdateStateTransitions(void) {
                         if (id != g_hero.unk2298) {
                             cancel_hero_item_animation();
                         } else {
-                            int anim = D_L08_0017A340[id].f24;
+                            int anim = batalia_item_info[id].f24;
                             if (((unsigned char *)g_hero.moby)[0x53] != anim) {
                                 if (((int)g_hero.unkD08[0]) != 0) {
                                     g_hero.unkD14 = 1;

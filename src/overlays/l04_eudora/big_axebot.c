@@ -143,26 +143,26 @@ void update_class_55_swarm_controller(struct PMoby *moby) {
     f32 size;
     f32 effect[8];
 
-    if (*(int *)&D_L04_00161450 == 0) {
-        f32 *effect_dest = D_L04_001661B0;
+    if (*(int *)&eudora_swarm_initialized == 0) {
+        f32 *effect_dest = eudora_swarm_steer_params;
         func_001153FC(effect, 0, 0x20);
         effect[1] = IntToFloat(data->child_count) * 2.073f;
         effect[3] = 2.0f;
         effect[4] = 1.0f;
         effect[5] = 1.0f;
-        *(int *)&D_L04_00161450 = 1;
+        *(int *)&eudora_swarm_initialized = 1;
         __builtin_memcpy(effect_dest, effect, 0x20);
     }
     if (data->initialized == 0) {
         qcopy(&data->origin, &moby->pos);
         data->angle = 0.0f;
     } else if (data->child_count == 0) {
-        for (other = (struct PMoby *)D_L04_00160064; other != 0; other = other->next) {
+        for (other = (struct PMoby *)eudora_moby_list; other != 0; other = other->next) {
             if ((s8)other->state >= 0 && other->oclass == 0x55) {
                 data->child_count++;
             }
         }
-        D_L04_001661B0[1] = IntToFloat(data->child_count) * 2.073f;
+        eudora_swarm_steer_params[1] = IntToFloat(data->child_count) * 2.073f;
     }
     if (data->path_index == -1) {
         data->angle = FastAddRots(data->angle, frame_scale * 0.0034906587f);
@@ -229,10 +229,10 @@ void update_class_55_swarm_controller(struct PMoby *moby) {
             children = data->children;
             child = children[i];
             part = child->pvars;
-            D_L04_001661B0[6] = ((data->radius * 7.753f) / 1800.0f) * frame_scale * ((child->anim_speed + 1.0f) * 0.5f) * 0.05f * g_frame_scale_sq * ((child->anim_speed + 1.0f) * 0.5f);
-            D_L04_001661B0[7] = (((data->radius * 7.753f) / 1800.0f) * frame_scale) * ((child->anim_speed + 1.0f) * 0.5f);
-            steer_child_moby(children, data->count, child, part, D_L04_001661B0);
-            update_moby_movement_with_sphere_collision(0.0f, child, part, D_L04_001661B0);
+            eudora_swarm_steer_params[6] = ((data->radius * 7.753f) / 1800.0f) * frame_scale * ((child->anim_speed + 1.0f) * 0.5f) * 0.05f * g_frame_scale_sq * ((child->anim_speed + 1.0f) * 0.5f);
+            eudora_swarm_steer_params[7] = (((data->radius * 7.753f) / 1800.0f) * frame_scale) * ((child->anim_speed + 1.0f) * 0.5f);
+            steer_child_moby(children, data->count, child, part, eudora_swarm_steer_params);
+            update_moby_movement_with_sphere_collision(0.0f, child, part, eudora_swarm_steer_params);
         }
     }
 }
@@ -518,7 +518,7 @@ void big_axebot_update(M_B7B0 *moby) {
     dist = vec_distance_xy(moby->pos, (float *)&tg);
     ang = fast_atan2(tg.pos[0] - moby->pos[0], tg.pos[1] - moby->pos[1]);
     hd = MobyGetFrameValue(moby);
-    if (D_L04_0015F6A8 == 2) {
+    if (eudora_game_mode == 2) {
         moby->f34 |= 0x41;
         if (data->f424 != 0) {
             data->f424->f34 |= 0x41;
@@ -1202,7 +1202,7 @@ int check_circular_saw_melee_attack_spacing(char *moby) {
     }
     FindNearestTargetMoby(moby, vec, s);
     d0 = vec_distance_xy((float *)(moby + 0x10), vec);
-    for (o = D_L04_00160064; o != 0; o = *(char **)(o + 0x28)) {
+    for (o = eudora_moby_list; o != 0; o = *(char **)(o + 0x28)) {
         if (o != moby && *(short *)(o + 0xA6) == 0x154) {
             float *q = (float *)(o + 0x10);
             if (vec_distance_xy((float *)(moby + 0x10), q) < 3.0f || vec_distance_xy(q, vec) < d0) {
@@ -1241,15 +1241,15 @@ float compute_circular_saw_flock_steering(void *m, void *out, float speed) {
     dist = vec_distance_xy((float *)((char *)m + 0x10), tgt);
     clear_u64_value(out);
     alone = 1;
-    o = D_L04_00160064;
+    o = eudora_moby_list;
     w = 0.0f;
     for (; o != 0; o = *(char **)(o + 0x28)) {
         if (o == m || *(short *)(o + 0xA6) != *(short *)((char *)m + 0xA6)) continue;
         if (vec_distance_xy((float *)(o + 0x10), (float *)((char *)m + 0x10)) < 3.0f) {
             FastVecSub(sep, (char *)m + 0x10, o + 0x10);
-            FastVecScale(sep, sep, *(float *)&D_L04_00161914);
+            FastVecScale(sep, sep, *(float *)&eudora_circular_saw_separation_weight);
             FastVecAdd(out, out, sep);
-            w += *(float *)&D_L04_00161914;
+            w += *(float *)&eudora_circular_saw_separation_weight;
         }
         if (vec_distance_xy((float *)(o + 0x10), tgt) < dist) alone = 0;
     }
@@ -1592,7 +1592,7 @@ void circular_saw_enemy_update(M_35F0 *moby) {
         for (i = 0; i < 4; i++) {
             S_35F0 p;
             V4_35F0 jp;
-            I4_35F0 joints = D_L04_00161920;
+            I4_35F0 joints = eudora_circular_saw_hit_joints;
             {
             Moby_GetJointWorldPos(moby, joints.v[i], jp);
             p.moby = moby;
@@ -1602,7 +1602,7 @@ void circular_saw_enemy_update(M_35F0 *moby) {
             vec_scale_to_length(p.v, p.v, g_frame_time * 10.0f);
             p.f20 = 1;
             coll_sphere_mobys(jp, 0x10, moby, &p, 0.5f);
-            if (D_L04_00174040.f18 == tgt) {
+            if (eudora_coll_hit.f18 == tgt) {
                 data->f146 = data->f146 < scale_ticks(0x3C) ? data->f146 : scale_ticks(0x3C);
             }
             }
@@ -1803,7 +1803,7 @@ void circular_saw_enemy_update(M_35F0 *moby) {
         }
         switch (data->f15A) {
         case 0: {
-            E_35F0 *e = D_L04_0016016C;
+            E_35F0 *e = eudora_scene_points;
             int n = data->f158;
             qcopy(dest, e[n].f30);
             func_L00_002592B0_b((char *)moby, e[n].f78, &data->f130, g_frame_time_sq * 1.0471976f, g_frame_time_sq * 3.1415927f, g_frame_time * 3.1415927f);
@@ -1811,14 +1811,14 @@ void circular_saw_enemy_update(M_35F0 *moby) {
                 MobyBlendAnimation(moby, (void *)1, 0, (void *)scale_ticks(10));
             }
             if (vec_distance_xy(moby->pos, dest) < 1.0f) {
-                if (FastDiffRots(moby->rot, D_L04_0016016C[data->f158].f78) < 0.17453292f) {
+                if (FastDiffRots(moby->rot, eudora_scene_points[data->f158].f78) < 0.17453292f) {
                     data->f15A = 1;
                 }
             }
             break;
         }
         case 1:
-            qcopy(dest, D_L04_0016016C[data->f158].f30);
+            qcopy(dest, eudora_scene_points[data->f158].f30);
             if (moby->f53 != 7) {
                 MobyBlendAnimation(moby, (void *)7, 0, (void *)scale_ticks(10));
             } else if (moby->f70 & 2) {
@@ -1828,7 +1828,7 @@ void circular_saw_enemy_update(M_35F0 *moby) {
             }
             break;
         case 2: {
-            qcopy(dest, D_L04_0016016C[data->f158].f30);
+            qcopy(dest, eudora_scene_points[data->f158].f30);
             ta = fast_atan2(path->pts[data->f154][0] - moby->pos[0], path->pts[data->f154][1] - moby->pos[1]);
             func_L00_002592B0_b((char *)moby, ta, &data->f130, g_frame_time_sq * 1.0471976f, g_frame_time_sq * 3.1415927f, g_frame_time * 3.1415927f);
             if (FastDiffRots(moby->rot, fast_atan2(path->pts[data->f154][0] - moby->pos[0], path->pts[data->f154][1] - moby->pos[1])) < 0.17453292f) {
@@ -1907,7 +1907,7 @@ void circular_saw_enemy_update(M_35F0 *moby) {
         V4_35F0 np;
         float ang = fast_atan2(dest[0] - moby->pos[0], dest[1] - moby->pos[1]);
         int anim = moby->f53;
-        I4_35F0 tbl = D_L04_00161930;
+        I4_35F0 tbl = eudora_circular_saw_walk_anims;
         int moved;
         {
         if (vec_distance_xy(moby->pos, dest) >= g_frame_time * 3.0f * 2.0f) {
@@ -2075,13 +2075,13 @@ void spawn_smoke_puff_trail_with_endpoint_bursts(void *owner, void *from, void *
         FastVecAdd(&at, from, &at);
         vel.f[0] = randf_sym(0.0f, 0.005f);
         vel.f[1] = randf_sym(0.0f, 0.005f);
-        vel.f[2] = random_float_between((*(f32 *)&D_L04_00161944) * 0.1f, (*(f32 *)&D_L04_00161944));
+        vel.f[2] = random_float_between((*(f32 *)&eudora_smoke_puff_rise_speed) * 0.1f, (*(f32 *)&eudora_smoke_puff_rise_speed));
         tint = rand_range(0x40, 0x70);
         grey = rand_range(0x40, 0x7F);
         grey = grey | (grey << 16 | grey << 8);
         size = random_float_between(1.0f, 1.02f);
         spin = rand_range(-2, 2);
-        puff = PartType23Spawn(&at, (*(f32 *)&D_L04_0016194C), 1.0f, size, spin, &vel, grow + a * 210000.0f, tint << 24 | grey);
+        puff = PartType23Spawn(&at, (*(f32 *)&eudora_smoke_puff_size), 1.0f, size, spin, &vel, grow + a * 210000.0f, tint << 24 | grey);
         if (puff != 0) {
             tail = &puff->tail;
             if (random_integer_below(2) != 0) {
@@ -2235,7 +2235,7 @@ void BlargTrooperUpdate(char *moby) {
     }
     e0 = *(int *)(data + 0xE0);
     if (e0 == -1 || (e4 = *(int *)(data + 0xE4), e4 == -1)) {
-        STUB_printf(D_L04_001DBF80, truncate_float_to_s32((float)((moby - D_L04_00160058) >> 8)));
+        STUB_printf(eudora_blarg_trooper_no_link_msg, truncate_float_to_s32((float)((moby - eudora_mobys) >> 8)));
         destroy_blarg_trooper(moby);
         return;
     }
@@ -2411,7 +2411,7 @@ void BlargTrooperUpdate(char *moby) {
                 st.w.p.v90[2] = 0.5f;
                 FastVecAdd(st.w.p.v70, pos, st.w.p.v90);
                 FastVecAdd(st.w.p.v80, st.v50, st.w.p.v90);
-                if (coll_line(st.w.p.v70, st.w.p.v80, 0, moby, 0) != 0 && D_L04_00174058 == target) {
+                if (coll_line(st.w.p.v70, st.w.p.v80, 0, moby, 0) != 0 && eudora_coll_hit_moby == target) {
                     *(unsigned char *)(moby + 0x20) = 5;
                     MobyBlendAnimation(moby, (void *)3, 0, (void *)scale_ticks(7));
                 }
@@ -2547,7 +2547,7 @@ void BlargTrooperUpdate(char *moby) {
             break;
         }
         if (*(short *)(data + 0xF2) == 0 && dist < 14.0f && FastAbsF(*(float *)(moby + 0x18) - st.tgt[2]) < 4.0f) {
-            char *g = D_L04_00166E80;
+            char *g = eudora_camera;
             if (FastDiffRots(*(float *)(g + 0x158), fast_atan2(*(float *)(moby + 0x10) - *(float *)(g + 0x140), *(float *)(moby + 0x14) - *(float *)(g + 0x144))) < 0.61086524f
                 && FastDiffRots(*(float *)(moby + 0x48), fast_atan2(st.v50[0] - *(float *)(moby + 0x10), st.v50[1] - *(float *)(moby + 0x14))) < 0.7853982f) {
                 *(unsigned char *)(moby + 0x20) = 6;

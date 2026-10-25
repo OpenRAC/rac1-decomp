@@ -6,9 +6,9 @@ void jet_reset_camera(void *a0, void *a1)
     int lvl;
     char *g;
 
-    copy_memory_by_alignment((int)&D_E1_L00_001BB280, &D_L00_001BA9B0, 0x404);
+    copy_memory_by_alignment((int)&D_E1_L00_001BB280, &current_moby_states, 0x404);
     lvl = D_0015EE84_m;
-    for (src = D_L00_001BA9B0.f, i = 0; i < 0x7FF; i++, src++) {
+    for (src = current_moby_states.f, i = 0; i < 0x7FF; i++, src++) {
         int v = *src;
         if ((unsigned char)v == 0) continue;
         if ((unsigned char)v != 1 && saved_mission_state[lvl][(unsigned char)v - 2] != 0xFF) continue;
@@ -16,7 +16,7 @@ void jet_reset_camera(void *a0, void *a1)
         level_moby_killed[lvl][i >> 5] |= 1 << (i & 0x1F);
         session_moby_killed[i >> 5] |= 1 << (i & 0x1F);
     }
-    g = (char *)D_L00_001BB5C0;
+    g = (char *)checkpoint_level_state;
     *(int *)g = 1;
     qcopy(g + 0x10, a0);
     qcopy(g + 0x20, a1);

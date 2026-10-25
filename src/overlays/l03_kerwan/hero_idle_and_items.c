@@ -278,16 +278,16 @@ int HeroL03_SetMoveState(int a, int b) {
         *(short *)(p + 0x90A) = 0;
         if (*(int *)(p + 0x2094) == 0x11) {
             emit_hero_surface_effect_burst(3, 0xA, 0);
-            if (D_L03_00161350 != 0) {
-                RippleDisturb(D_L03_00161350, D_L03_00161358, 0, *(float *)(p + 0x80), *(float *)(p + 0x84), 0.4f, 0.3f);
+            if (kerwan_water_patches != 0) {
+                RippleDisturb(kerwan_water_patches, kerwan_water_patch_count, 0, *(float *)(p + 0x80), *(float *)(p + 0x84), 0.4f, 0.3f);
             }
         } else if (*(float *)(p + 0x108) < g_frame_time * -0.5f) {
             int n = truncate_float_to_s32(FastAbsF(*(float *)(p + 0x108)) * 300.0f);
             int v = n;
             if (n > 0x28) v = 0x28;
             emit_hero_surface_effect_burst(3, v, 1);
-            if (D_L03_00161350 != 0) {
-                RippleDisturb(D_L03_00161350, D_L03_00161358, 0, *(float *)(p + 0x80), *(float *)(p + 0x84), 0.5f, -0.4f);
+            if (kerwan_water_patches != 0) {
+                RippleDisturb(kerwan_water_patches, kerwan_water_patch_count, 0, *(float *)(p + 0x80), *(float *)(p + 0x84), 0.5f, -0.4f);
             }
             *(short *)(p + 0x90A) = scale_ticks(0x4B);
         }
@@ -1329,7 +1329,7 @@ int HeroL03_SetMoveState(int a, int b) {
             }
             q = D_0013E633 + 0xE1D;
             *(unsigned int *)(h + 0x44) = *(unsigned int *)(h + 0x44) | (1 << g_current_level_index) | 0x80000000;
-            e = &D_L03_0017BDA8[*(int *)(q + 0xA60)];
+            e = &kerwan_attack_records[*(int *)(q + 0xA60)];
             *(int *)(q + 0x20F0) = 0;
             k = 0;
             if (*(int *)(q + 0x2094) == 6 && e->a == 0 && *(float *)(q + 0xAA8) < (float)e->c) {
@@ -1386,7 +1386,7 @@ int HeroL03_SetMoveState(int a, int b) {
         *(float *)(p + 0x194) = g_frame_time * 9.0f;
         if (b) {
             char *m;
-            T2C_216D38 *e = &D_L03_0017BDA8[*(int *)(p + 0xA60)];
+            T2C_216D38 *e = &kerwan_attack_records[*(int *)(p + 0xA60)];
             int k = e->b;
             int n;
             if (e->a == 1) k = 2;

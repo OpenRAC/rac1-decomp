@@ -218,7 +218,7 @@ void store_current_level_table_value(int a, int b) {
     int i = D_0015EE84_m;
     if (i < 19) {
         b += D_L00_001C47B8[i];
-        D_L00_001792B8[b] = a;
+        dialogue_entry_ids[b] = a;
     }
 }
 typedef struct {

@@ -31,7 +31,7 @@ void begin_animated_frame_rendering(int a, int b, int c, int d, float x, float y
     ((unsigned char *)scratch)[0x3F] = 0x80;
     *(int *)(scratch + 0x1C) = g;
     build_interpolated_dma_packet(scratch);
-    func_L02_002100E8(aridia_spr_upload_block, 0x70002800, 0xF8);
+    write_spr_dma_channel(aridia_spr_upload_block, 0x70002800, 0xF8);
 }
 typedef int u128b __attribute__((mode(TI)));
 extern void func_001F9BF0(void *, void *, void *);

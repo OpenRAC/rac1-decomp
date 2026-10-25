@@ -674,7 +674,7 @@ void HeroL05_UpdateStateTransitions(void) {
                         }
                     }
                     {
-                        Rec2C *rec = &D_L05_0017C188[g_hero.attack_record];
+                        Rec2C *rec = &rilgar_attack_records[g_hero.attack_record];
                         int t = (truncate_float_to_s32(g_hero.anim_frame) - rec->fC) * 2;
                         if ((float)rec->f14 < g_hero.anim_frame && g_hero.unkA9C == 0 && !(g_hero.state.current == 0x15 && g_hero.unk308 != 0)) {
                             if (pad_pressed_within(0x40, t, 0)) {

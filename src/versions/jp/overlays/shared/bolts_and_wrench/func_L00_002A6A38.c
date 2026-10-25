@@ -7,9 +7,9 @@ void vendor_update(char *moby) {
     float t3;
     char *m;
 
-    *(float *)&D_L00_0016146C += 0.05f;
-    if (3.14f < *(float *)&D_L00_0016146C) *(float *)&D_L00_0016146C = -3.14f;
-    f = FastSin(*(float *)&D_L00_0016146C);
+    *(float *)&vendor_glow_pulse_phase += 0.05f;
+    if (3.14f < *(float *)&vendor_glow_pulse_phase) *(float *)&vendor_glow_pulse_phase = -3.14f;
+    f = FastSin(*(float *)&vendor_glow_pulse_phase);
     *(int *)(moby + 0x90) = (((int)(f * 48.0f) + 0x60) * 0x10101) | 0x80000000;
 
     switch (*(unsigned char *)(moby + 0x20)) {
@@ -44,14 +44,14 @@ void vendor_update(char *moby) {
                 }
             }
         }
-        AddDrawCallback(func_L00_002A62D0, moby);
-        axis_rotation_2d48(p + 0x20, 2, *(float *)&D_L00_00161464);
-        axis_rotation_2d48(p + 0x60, 2, *(float *)&D_L00_00161468);
-        *(float *)&D_L00_00161464 = FastAddRots(*(float *)&D_L00_00161464, 0.01f);
-        t2 = FastAddRots(*(float *)&D_L00_00161468, -0.02f);
+        AddDrawCallback(draw_vendor_effects, moby);
+        axis_rotation_2d48(p + 0x20, 2, *(float *)&vendor_ring_a_angle);
+        axis_rotation_2d48(p + 0x60, 2, *(float *)&vendor_ring_b_angle);
+        *(float *)&vendor_ring_a_angle = FastAddRots(*(float *)&vendor_ring_a_angle, 0.01f);
+        t2 = FastAddRots(*(float *)&vendor_ring_b_angle, -0.02f);
         m = *(char **)(p + 0xC);
         t3 = *(float *)(p + 0x90) * *(float *)(*(char **)(m + 0x24) + 0x24) * 2.5f;
-        *(float *)&D_L00_00161468 = t2;
+        *(float *)&vendor_ring_b_angle = t2;
         *(float *)(m + 0x2C) = t3;
         moby_build_matrix(*(char **)(p + 0xC));
         break;
@@ -73,16 +73,16 @@ void vendor_update(char *moby) {
                 return;
             }
         }
-        AddDrawCallback(func_L00_002A62D0, moby);
+        AddDrawCallback(draw_vendor_effects, moby);
         a = 1;
         b = 1;
-        axis_rotation_2d48(p + 0x20, 2, *(float *)&D_L00_00161464);
-        axis_rotation_2d48(p + 0x60, 2, *(float *)&D_L00_00161468);
-        *(float *)&D_L00_00161464 = FastAddRots(*(float *)&D_L00_00161464, 0.01f);
-        t2 = FastAddRots(*(float *)&D_L00_00161468, -0.02f);
+        axis_rotation_2d48(p + 0x20, 2, *(float *)&vendor_ring_a_angle);
+        axis_rotation_2d48(p + 0x60, 2, *(float *)&vendor_ring_b_angle);
+        *(float *)&vendor_ring_a_angle = FastAddRots(*(float *)&vendor_ring_a_angle, 0.01f);
+        t2 = FastAddRots(*(float *)&vendor_ring_b_angle, -0.02f);
         m = *(char **)(p + 0xC);
         t3 = *(float *)(p + 0x90) * *(float *)(*(char **)(m + 0x24) + 0x24) * 2.5f;
-        *(float *)&D_L00_00161468 = t2;
+        *(float *)&vendor_ring_b_angle = t2;
         *(float *)(m + 0x2C) = t3;
         moby_build_matrix(*(char **)(p + 0xC));
         if (G_pp.i208C != 0 && G_pp.i2084 != 3 && G_pp.i208C != 1) { a = 0; b = 0; }

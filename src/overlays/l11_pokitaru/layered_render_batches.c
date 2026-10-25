@@ -23,22 +23,22 @@ void draw_level11_layered_effect_batches(void) {
     VU1_addGSregister(0x47, 0x513F1);
     font_queue_vu_state();
     VU1_addGSregister(6, GetEffectTex(0x2C));
-    VU1_addGSregister(0x42, (long)*(int *)&D_L11_00162588 << 32 | 0x44);
+    VU1_addGSregister(0x42, (long)*(int *)&layered_effect_texture_2c_fixed_alpha << 32 | 0x44);
     emit_level11_layered_effect_batches_with_pair_offset(0);
-    if (*(unsigned char *)&D_L11_00162620 != 0) {
+    if (*(unsigned char *)&pokitaru_layered_fade_alpha != 0) {
         VU1_addGSregister(6, GetEffectTex(0x29));
-        VU1_addGSregister(0x42, (long)((layered_effect_texture_29_fixed_alpha_scale * *(unsigned char *)&D_L11_00162620) >> 8) << 32 | 0x68);
+        VU1_addGSregister(0x42, (long)((layered_effect_texture_29_fixed_alpha_scale * *(unsigned char *)&pokitaru_layered_fade_alpha) >> 8) << 32 | 0x68);
         emit_level11_layered_effect_batches_with_pair_offset(1);
-        VU1_addGSregister(0x42, (long)((layered_effect_texture_29_fixed_alpha_scale * *(unsigned char *)&D_L11_00162620) >> 8) << 32 | 0x62);
+        VU1_addGSregister(0x42, (long)((layered_effect_texture_29_fixed_alpha_scale * *(unsigned char *)&pokitaru_layered_fade_alpha) >> 8) << 32 | 0x62);
         emit_level11_layered_effect_batches_with_pair_offset(2);
     }
     VU1_addGSregister(6, GetEffectTex(0x2A));
-    VU1_addGSregister(0x42, (long)*(int *)&D_L11_001625A8 << 32 | 0x48);
+    VU1_addGSregister(0x42, (long)*(int *)&layered_effect_texture_2a_pair_zero_fixed_alpha << 32 | 0x48);
     emit_pair_offset_render_batch(0);
     VU1_addGSregister(0x42, (long)layered_effect_texture_2a_pair_one_fixed_alpha << 32 | 0x48);
     emit_pair_offset_render_batch(1);
     VU1_addGSregister(6, GetEffectTex(0x2B));
-    VU1_addGSregister(0x42, (long)*(int *)&D_L11_001625B8 << 32 | 0x48);
+    VU1_addGSregister(0x42, (long)*(int *)&layered_effect_texture_2b_fixed_alpha << 32 | 0x48);
     Moby600_DrawQuads11(0);
     VU1_addGSregister(0x47, 0x5360B);
 }
@@ -87,56 +87,56 @@ void update_level11_layered_effect_and_queue_draw(unsigned char *moby) {
 
     switch (moby[0x20]) {
     case EFFECT_INITIALIZE:
-        if (*(int *)&D_L11_001625BC == 0) {
-            scale_rgba_tables(&D_L11_00162600, 4, &D_L11_001625C0, 0.7f, 1.0f, 0.9f, 0.5f, 1);
-            scale_rgba_tables(D_L11_001F9D08, 11, D_L11_001F4C38, 0.5f, 0.5f, 0.5f, 1.0f, 1);
-            scale_rgba_tables(D_L11_001FF9F0, 8, D_L11_001F9D38, 0.25f, 0.25f, 0.25f, 0.7f, 1);
-            *(int *)&D_L11_001625BC = 1;
+        if (*(int *)&layered_effect_color_tables_initialized == 0) {
+            scale_rgba_tables(&pokitaru_layered_mesh_colors, 4, &pokitaru_layered_mesh_vertex_counts, 0.7f, 1.0f, 0.9f, 0.5f, 1);
+            scale_rgba_tables(pokitaru_layered_mesh11_colors, 11, pokitaru_layered_mesh11_vertex_counts, 0.5f, 0.5f, 0.5f, 1.0f, 1);
+            scale_rgba_tables(pokitaru_layered_mesh8_colors, 8, pokitaru_layered_mesh8_vertex_counts, 0.25f, 0.25f, 0.25f, 0.7f, 1);
+            *(int *)&layered_effect_color_tables_initialized = 1;
         }
         moby[0x20] = EFFECT_UPDATE_AND_QUEUE_DRAW;
         for (i = 0; i < 3; i++) {
-            D_L11_001FFA10[i].a = 0;
-            D_L11_001FFA10[i].b = 0;
-            D_L11_00162640[0].a = 0;
-            D_L11_00162640[0].b = 0;
+            pokitaru_layered_uv_scroll[i].a = 0;
+            pokitaru_layered_uv_scroll[i].b = 0;
+            pokitaru_layered_wobble_phase[0].a = 0;
+            pokitaru_layered_wobble_phase[0].b = 0;
         }
         for (i = 0; i < 2; i++) {
-            D_L11_00162628[i].a = 0;
+            pokitaru_layered_scroll_entries[i].a = 0;
             D_L11_0016262C[i * 2] = i * 0.4f;
         }
         for (i = 0; i < 1; i++) {
-            D_L11_00162638[i].a = 0;
-            *(float *)&D_L11_00162638[i].b = i * 0.4f;
+            pokitaru_layered_2b_scroll[i].a = 0;
+            *(float *)&pokitaru_layered_2b_scroll[i].b = i * 0.4f;
         }
         break;
     case EFFECT_UPDATE_AND_QUEUE_DRAW:
         reference_position_base = pokitaru_player_camera;
         if (*(float *)(reference_position_base + 0x148) < 170.0f)
             break;
-        effect_bounds[0] = *(float *)&D_L11_00162578;
-        effect_bounds[1] = D_L11_0016257C;
+        effect_bounds[0] = *(float *)&layered_effect_position_x;
+        effect_bounds[1] = layered_effect_pos_y;
         effect_bounds[2] = layered_effect_position_z;
-        effect_bounds[3] = D_L11_00162584;
+        effect_bounds[3] = layered_effect_radius;
         if (FastBSphereCheck((char *)effect_bounds, 1000.0f) < 0)
             break;
         if (!(*(float *)(reference_position_base + 0x148) > 180.0f))
             break;
-        effect_to_reference_delta[0] = *(float *)&D_L11_00162578;
-        effect_to_reference_delta[1] = D_L11_0016257C;
+        effect_to_reference_delta[0] = *(float *)&layered_effect_position_x;
+        effect_to_reference_delta[1] = layered_effect_pos_y;
         effect_to_reference_delta[2] = layered_effect_position_z;
         effect_to_reference_delta[3] = 1.0f;
         FastVecSub(effect_to_reference_delta, reference_position_base + 0x140, effect_to_reference_delta);
         effect_distance = FastVecLength(effect_to_reference_delta);
         if (effect_distance <= 35.0f) {
             AdvanceScrollOffsets(0);
-            advance_wrapped_sine_pair(D_L11_001FFA18, 0.52f, 0.62f, 0.06f, D_L11_00162640);
+            advance_wrapped_sine_pair(pokitaru_layered_uv_wobble, 0.52f, 0.62f, 0.06f, pokitaru_layered_wobble_phase);
             AdvanceScrollOffsets(2);
             if (effect_distance < 15.0f) {
-                *(unsigned char *)&D_L11_00162620 = 0xFF;
+                *(unsigned char *)&pokitaru_layered_fade_alpha = 0xFF;
             } else if (effect_distance < 35.0f) {
-                *(char *)&D_L11_00162620 = func_001FA898_r((1.0f - (effect_distance - 15.0f) / 20.0f) * 255.0f);
+                *(char *)&pokitaru_layered_fade_alpha = func_001FA898_r((1.0f - (effect_distance - 15.0f) / 20.0f) * 255.0f);
             } else {
-                *(char *)&D_L11_00162620 = 0;
+                *(char *)&pokitaru_layered_fade_alpha = 0;
             }
         }
         AdvanceScrollEntry(0);
@@ -159,8 +159,8 @@ extern int D_L11_002154E0[];
 void emit_render_batches_with_pair_offset(int arg) {
     int i;
     for (i = 0; i < 17; i++) {
-        add_uv_scroll_offset(D_L11_00217A30, D_L11_00215450[i], D_L11_00207BC0[i], D_L11_00217A18 + arg * 8);
-        draw_env_overlay_mesh(D_L11_00207BC0[i], D_L11_00215408[i], D_L11_002154E0[i], D_L11_00217A30, 1);
+        add_uv_scroll_offset(pokitaru_faded_scrolled_uvs, pokitaru_faded_mesh_uv_sources[i], pokitaru_faded_mesh_vertex_counts[i], pokitaru_faded_uv_scroll + arg * 8);
+        draw_env_overlay_mesh(pokitaru_faded_mesh_vertex_counts[i], pokitaru_faded_mesh_positions[i], pokitaru_faded_mesh_colors[i], pokitaru_faded_scrolled_uvs, 1);
     }
 }
 typedef struct { int a, b; } Pair8;
@@ -174,8 +174,8 @@ extern Pair8 D_L11_001626A8[] MACRO_ADDR;
 void emit_oil_tanker_render_batches_with_pair_offset(int a) {
     int i;
     for (i = 0; i < 9; i++) {
-        add_uv_scroll_offset(D_L11_00217A30, D_L11_00207B48[i], D_L11_002009E8[i], &D_L11_001626A8[a]);
-        draw_env_overlay_mesh(D_L11_002009E8[i], D_L11_00207B20[i], D_L11_00207B98[i], D_L11_00217A30, 1);
+        add_uv_scroll_offset(pokitaru_faded_scrolled_uvs, oil_tanker_mesh_uv_sources[i], oil_tanker_mesh_vertex_counts[i], &pokitaru_faded_scroll_entries[a]);
+        draw_env_overlay_mesh(oil_tanker_mesh_vertex_counts[i], oil_tanker_mesh_positions[i], oil_tanker_mesh_colors[i], pokitaru_faded_scrolled_uvs, 1);
     }
 }
 extern int func_00215570(void *arg0, int arg1);
@@ -208,7 +208,7 @@ void draw_level11_distance_faded_effect_batches(char *m) {
     }
     if (flag) {
         VU1_addGSregister(6, GetEffectTex(0x2C));
-        VU1_addGSregister(0x42, ((long)*(int *)&D_L11_00162658 << 32) | 0x44);
+        VU1_addGSregister(0x42, ((long)*(int *)&distance_faded_effect_texture_2c_fixed_alpha << 32) | 0x44);
         emit_render_batches_with_pair_offset(0);
     }
     if (*(unsigned char *)&D_L11_001626A0_w != 0 && flag) {
@@ -219,13 +219,13 @@ void draw_level11_distance_faded_effect_batches(char *m) {
         emit_render_batches_with_pair_offset(2);
     }
     VU1_addGSregister(6, GetEffectTex(0x2A));
-    VU1_addGSregister(0x42, ((long)*(int *)&D_L11_00162678 << 32) | 0x48);
+    VU1_addGSregister(0x42, ((long)*(int *)&distance_faded_effect_texture_2a_pair_zero_fixed_alpha << 32) | 0x48);
     emit_oil_tanker_render_batches_with_pair_offset(0);
     VU1_addGSregister(0x42, ((long)distance_faded_effect_texture_2a_pair_one_fixed_alpha << 32) | 0x48);
     emit_oil_tanker_render_batches_with_pair_offset(1);
     if (flag) {
         VU1_addGSregister(6, GetEffectTex(0x2B));
-        VU1_addGSregister(0x42, ((long)*(int *)&D_L11_00162688 << 32) | 0x48);
+        VU1_addGSregister(0x42, ((long)*(int *)&distance_faded_effect_texture_2b_fixed_alpha << 32) | 0x48);
         queue_oil_tanker_front_texture_2b_batches(0);
     }
 }
@@ -263,11 +263,11 @@ void update_level11_distance_faded_effect_and_queue_draw(unsigned char *moby) {
 
     switch (moby[0x20]) {
     case EFFECT_INITIALIZE:
-        if (*(int *)&D_L11_0016268C == 0) {
-            scale_rgba_tables(D_L11_002154E0, 17, D_L11_00207BC0, 0.7f, 1.0f, 0.9f, 0.5f, 1);
-            scale_rgba_tables(D_L11_00217A00, 5, D_L11_00215528, 0.5f, 0.5f, 0.5f, 1.0f, 1);
-            scale_rgba_tables(D_L11_00207B98, 9, D_L11_002009E8, 0.25f, 0.25f, 0.25f, 0.7f, 1);
-            *(int *)&D_L11_0016268C = 1;
+        if (*(int *)&distance_faded_effect_color_tables_initialized == 0) {
+            scale_rgba_tables(pokitaru_faded_mesh_colors, 17, pokitaru_faded_mesh_vertex_counts, 0.7f, 1.0f, 0.9f, 0.5f, 1);
+            scale_rgba_tables(oil_tanker_2b_mesh_colors, 5, oil_tanker_2b_mesh_vertex_counts, 0.5f, 0.5f, 0.5f, 1.0f, 1);
+            scale_rgba_tables(oil_tanker_mesh_colors, 9, oil_tanker_mesh_vertex_counts, 0.25f, 0.25f, 0.25f, 0.7f, 1);
+            *(int *)&distance_faded_effect_color_tables_initialized = 1;
         }
         moby[0x20] = EFFECT_UPDATE_AND_QUEUE_DRAW;
         for (i = 0; i < 3; i++) {
@@ -277,24 +277,24 @@ void update_level11_distance_faded_effect_and_queue_draw(unsigned char *moby) {
             D_L11_001626C0_p[0].b = 0;
         }
         for (i = 0; i < 2; i++) {
-            D_L11_001626A8[i].a = 0;
+            pokitaru_faded_scroll_entries[i].a = 0;
             D_L11_001626AC[i * 2] = i * 0.4f;
         }
         for (i = 0; i < 1; i++) {
-            D_L11_001626B8[i].a = 0;
-            *(float *)&D_L11_001626B8[i].b = i * 0.4f;
+            pokitaru_faded_2b_scroll[i].a = 0;
+            *(float *)&pokitaru_faded_2b_scroll[i].b = i * 0.4f;
         }
         break;
     case EFFECT_UPDATE_AND_QUEUE_DRAW:
         reference_position_base = (struct Level11Reference *)pokitaru_player_camera;
         if (!(reference_position_base->pos[2] < 170.0f)) {
-            effect_bounds[0] = *(float *)&D_L11_00162648;
+            effect_bounds[0] = *(float *)&distance_faded_effect_position_x;
             effect_bounds[1] = distance_faded_effect_position_y;
             effect_bounds[2] = distance_faded_effect_position_z;
-            effect_bounds[3] = D_L11_00162654;
+            effect_bounds[3] = distance_faded_effect_radius;
             if (FastBSphereCheck((char *)effect_bounds, 1000.0f) >= 0) {
                 if (reference_position_base->pos[2] > 180.0f) {
-                    effect_to_reference_delta[0] = *(float *)&D_L11_00162648;
+                    effect_to_reference_delta[0] = *(float *)&distance_faded_effect_position_x;
                     effect_to_reference_delta[1] = distance_faded_effect_position_y;
                     effect_to_reference_delta[2] = distance_faded_effect_position_z;
                     effect_to_reference_delta[3] = 1.0f;
@@ -302,7 +302,7 @@ void update_level11_distance_faded_effect_and_queue_draw(unsigned char *moby) {
                     effect_distance = FastVecLength(effect_to_reference_delta);
                     if (effect_distance <= 100.0f) {
                         AdvanceScrollOffsets(0);
-                        advance_wrapped_sine_pair(D_L11_00217A20, 0.52f, 0.62f, 0.06f, D_L11_001626C0_p);
+                        advance_wrapped_sine_pair(pokitaru_faded_uv_wobble, 0.52f, 0.62f, 0.06f, D_L11_001626C0_p);
                         AdvanceScrollOffsets(2);
                         if (effect_distance < 80.0f) {
                             *(unsigned char *)&D_L11_001626A0_w = 0xFF;

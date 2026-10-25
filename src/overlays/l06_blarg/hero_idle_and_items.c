@@ -216,7 +216,7 @@ int HeroL06_TrySetMoveState(int a, int b) {
         int t;
         *(int *)(p + 0x208C) = 0;
         *(int *)(p + 0x2284) = 4;
-        *(int *)&D_L06_0015F768 = scale_ticks(0x3C);
+        *(int *)&blarg_usage_event_timer = scale_ticks(0x3C);
         if (*(unsigned char *)(p + 0x20AA) == 0) {
             t = get_hero_help_value(1);
             if (*(unsigned char *)(*(char **)(p + 0x2080) + 0x53) != t && b) {

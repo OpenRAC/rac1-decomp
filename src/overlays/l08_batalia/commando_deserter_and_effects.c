@@ -405,20 +405,20 @@ void draw_layered_mesh_effect(void) {
     VU1_addGSregister(0x47, 0x513F1);
     font_queue_vu_state();
     VU1_addGSregister(6, GetEffectTex(0x3A));
-    VU1_addGSregister(0x42, (long)*(int *)&D_L08_00161E60 << 32 | 0x44);
+    VU1_addGSregister(0x42, (long)*(int *)&scrolled_mesh_unscaled_fixed_alpha << 32 | 0x44);
     draw_scrolled_mesh_batch(0);
     VU1_addGSregister(6, GetEffectTex(0x3B));
-    VU1_addGSregister(0x42, (long)((scrolled_mesh_subtractive_base_fixed_alpha * *(unsigned char *)&D_L08_00161E98) >> 8) << 32 | 0x62);
+    VU1_addGSregister(0x42, (long)((scrolled_mesh_subtractive_base_fixed_alpha * *(unsigned char *)&layered_mesh_effect_fade_alpha) >> 8) << 32 | 0x62);
     draw_scrolled_mesh_batch(1);
-    VU1_addGSregister(0x42, (long)((scrolled_mesh_additive_base_fixed_alpha * *(unsigned char *)&D_L08_00161E98) >> 8) << 32 | 0x68);
+    VU1_addGSregister(0x42, (long)((scrolled_mesh_additive_base_fixed_alpha * *(unsigned char *)&layered_mesh_effect_fade_alpha) >> 8) << 32 | 0x68);
     draw_scrolled_mesh_batch(2);
     VU1_addGSregister(6, GetEffectTex(0x3C));
-    VU1_addGSregister(0x42, (long)*(int *)&D_L08_00161E80 << 32 | 0x48);
+    VU1_addGSregister(0x42, (long)*(int *)&offset_mesh_first_pass_fixed_alpha << 32 | 0x48);
     Moby600_DrawQuads11(0);
     VU1_addGSregister(0x42, (long)offset_mesh_second_pass_fixed_alpha << 32 | 0x48);
     Moby600_DrawQuads11(1);
     VU1_addGSregister(6, GetEffectTex(0x3D));
-    VU1_addGSregister(0x42, (long)*(int *)&D_L08_00161E90 << 32 | 0x48);
+    VU1_addGSregister(0x42, (long)*(int *)&pair_offset_mesh_fixed_alpha << 32 | 0x48);
     emit_pair_offset_render_batch(0);
 }
 typedef struct { int a, b; } PairA;
@@ -463,11 +463,11 @@ void update_layered_mesh_effect(unsigned char *moby) {
 
     switch (moby[0x20]) {
     case 0:
-        if (*(int *)&D_L08_00161E94 == 0) {
+        if (*(int *)&layered_mesh_effect_colors_scaled == 0) {
             scale_rgba_tables(batalia_mesh13_colors, 13, batalia_mesh13_counts, 0.5f, 0.5f, 0.65f, 0.5f, 1);
             scale_rgba_tables(batalia_mesh8_colors, 8, batalia_mesh8_counts, 0.5f, 0.5f, 0.5f, 1.0f, 1);
             scale_rgba_tables(batalia_mesh11_colors, 11, batalia_mesh11_counts, 0.25f, 0.25f, 0.25f, 1.0f, 1);
-            *(int *)&D_L08_00161E94 = 1;
+            *(int *)&layered_mesh_effect_colors_scaled = 1;
         }
         moby[0x20] = 1;
         for (i = 0; i < 3; i++) {
@@ -481,17 +481,17 @@ void update_layered_mesh_effect(unsigned char *moby) {
             scroll_pos_y[i * 2] = i * 0.4f;
         }
         for (i = 0; i < 1; i++) {
-            D_L08_00161EB0[i].a = 0;
-            *(float *)&D_L08_00161EB0[i].b = i * 0.4f;
+            batalia_mesh8_scroll_offset[i].a = 0;
+            *(float *)&batalia_mesh8_scroll_offset[i].b = i * 0.4f;
         }
         break;
     case 1:
-        v[0] = *(float *)&D_L08_00161E50;
+        v[0] = *(float *)&layered_mesh_effect_center_x;
         v[1] = layered_mesh_effect_center_y;
         v[2] = layered_mesh_effect_center_z;
         v[3] = layered_mesh_effect_culling_radius;
         if (FastBSphereCheck((char *)v, 1000.0f) >= 0) {
-            w[0] = *(float *)&D_L08_00161E50;
+            w[0] = *(float *)&layered_mesh_effect_center_x;
             w[1] = layered_mesh_effect_center_y;
             w[2] = layered_mesh_effect_center_z;
             w[3] = 1.0f;
@@ -502,11 +502,11 @@ void update_layered_mesh_effect(unsigned char *moby) {
                 advance_wrapped_sine_pair(D_L08_001E8610, 0.52f, 0.62f, 0.06f, D_L08_00161EB8_p);
                 AdvanceScrollOffsets(2);
                 if (d < 20.0f) {
-                    *(unsigned char *)&D_L08_00161E98 = 0xFF;
+                    *(unsigned char *)&layered_mesh_effect_fade_alpha = 0xFF;
                 } else if (d < 84.0f) {
-                    *(char *)&D_L08_00161E98 = func_001FA898_r((1.0f - (d - 20.0f) * 0.015625f) * 255.0f);
+                    *(char *)&layered_mesh_effect_fade_alpha = func_001FA898_r((1.0f - (d - 20.0f) * 0.015625f) * 255.0f);
                 } else {
-                    *(char *)&D_L08_00161E98 = 0;
+                    *(char *)&layered_mesh_effect_fade_alpha = 0;
                 }
             }
             AdvanceScrollEntry(0);
@@ -571,14 +571,14 @@ void update_path_following_moby_with_fade(struct Moby *moby)
         distance = vec_distance_xy(&moby->pos, gHeroPos);
         if ((distance < 2.0f && *(s32 *)(gHeroPos + 0x2004) == 0x42) || *(struct Moby **)(gHeroPos + 0x1bc) == moby) {
             func_0022ED80_F5980(0, 0, moby);
-            spawn_explosion(moby, D_L08_0015F660, &moby->pos, 3.0f, 1.0f, 10, 20, 60,
+            spawn_explosion(moby, batalia_zero_vec, &moby->pos, 3.0f, 1.0f, 10, 20, 60,
                           3.0f, 5.0f, 9.0f, 1.0f, -1, 15.0f, 1, 1, -1, 0);
             func_0020D678_F5980(moby);
             return;
         }
         if (active != 0) {
             func_0022ED80_F5980(0, 0, moby);
-            spawn_explosion(moby, D_L08_0015F660, &moby->pos, 0.0f, 0.0f, 10, 20, 60,
+            spawn_explosion(moby, batalia_zero_vec, &moby->pos, 0.0f, 0.0f, 10, 20, 60,
                           1.0f, 3.0f, 9.0f, 1.0f, -1, 15.0f, 1, 1, -1, 0);
             func_0020D678_F5980(moby);
         }
@@ -590,7 +590,7 @@ void update_path_following_moby_with_fade(struct Moby *moby)
             func_0020D678_F5980(moby);
             return;
         }
-        moby->rot.y = FastAddRots(moby->rot.y, (*(f32 *)&D_L08_00162000) * 0.017453292f * g_frame_time);
+        moby->rot.y = FastAddRots(moby->rot.y, (*(f32 *)&path_follower_y_rotation_rate_degrees) * 0.017453292f * g_frame_time);
         distance = vec_distance_xy(&moby->pos, gHeroPos);
         if (distance < 2.0f && *(s32 *)(gHeroPos + 0x2004) == 0x42) {
             clear_u64_value(&velocity);
@@ -876,9 +876,9 @@ void commando_update(char *m) {
     WD8 *commando_vars = (WD8 *)moby->pvars;
     attach_big_head_cheat_manipulator_to_matching_moby(m);
     if (moby->visible != 0) {
-        if (FastVecDist(&moby->pos, batalia_hero_pos) < (float)*(int *)&D_L08_00162268) {
+        if (FastVecDist(&moby->pos, batalia_hero_pos) < (float)*(int *)&commando_height_probe_distance_limit) {
             set_ground_height_band(m);
-            moby->shadow_range = (*(int *)&D_L08_00162268 * 13) >> 4;
+            moby->shadow_range = (*(int *)&commando_height_probe_distance_limit * 13) >> 4;
         }
     }
     switch (moby->state) {
@@ -891,12 +891,12 @@ void commando_update(char *m) {
             return;
         }
         commando_vars->f2C = 3.0f;
-        commando_vars->p40 = D_L08_00162270;
+        commando_vars->p40 = batalia_commando_dialogue_name;
         if (menu_item_enabled_25[7] == 0) {
             moby->state = 1;
         } else {
             int j = commando_vars->joint;
-            int base = (int)D_L08_0016016C;
+            int base = (int)batalia_scene_points;
             qcopy(&moby->pos, (void *)((j << 7) + base + 0x30));
             qcopy(&moby->rot, (void *)((j << 7) + base + 0x70));
             moby->state = 2;
@@ -906,7 +906,7 @@ void commando_update(char *m) {
     case COMMANDO_DIALOGUE_BEFORE_REPOSITION:
         if (Npc_TryStartDialog(m, (char *)commando_vars + 0x20) != 0) {
             int j = commando_vars->joint;
-            int base = (int)D_L08_0016016C;
+            int base = (int)batalia_scene_points;
             qcopy(&moby->pos, (void *)((j << 7) + base + 0x30));
             qcopy(&moby->rot, (void *)((j << 7) + base + 0x70));
             moby->state = 2;
@@ -1025,8 +1025,8 @@ void attach_batalia_deserter_class_manipulator(char *moby) {
     int i;
     if (batalia_game_mode == 2 && gCheats[0]) {
         if (batalia_cutscene_state.a == 3 && batalia_cutscene_state.b >= 0x1BA && batalia_cutscene_state.b < 0x284) {
-            D_L08_0015F67C = 1.0f;
-            D_L08_0015F680 = -0.3f;
+            batalia_big_head_cutscene_fov_scale = 1.0f;
+            batalia_big_head_cutscene_camera_pullback = -0.3f;
         }
         for (i = 0; i < batalia_cutscene_state.n; i++) {
             char *o = batalia_cutscene_state.objs[i];
@@ -1089,7 +1089,7 @@ void batalia_deserter_update(char *m) {
             return;
         }
         deserter_data->f2C = 4.0f;
-        deserter_data->p40 = (void *)D_L08_00162378;
+        deserter_data->p40 = (void *)batalia_deserter_dialogue_name;
         moby->state = 1;
         if (deserter_data->i64 >= 0) DialogRequest_Init(m, (char *)deserter_data + 0x20);
         break;
@@ -1193,16 +1193,16 @@ void attach_batalia_plumber_class_manipulator(char *moby) {
     int i;
     if (batalia_game_mode == 2 && gCheats[0]) {
         if (batalia_cutscene_state.a == 6 && batalia_cutscene_state.b >= 0x26C && batalia_cutscene_state.b < 0x2CC) {
-            D_L08_0015F67C = 1.0f;
-            D_L08_0015F680 = -0.2f;
+            batalia_big_head_cutscene_fov_scale = 1.0f;
+            batalia_big_head_cutscene_camera_pullback = -0.2f;
         }
         if (batalia_cutscene_state.a == 6 && batalia_cutscene_state.b >= 0x47E && batalia_cutscene_state.b < 0x5F1) {
-            D_L08_0015F67C = 1.0f;
-            D_L08_0015F680 = 0.5f;
+            batalia_big_head_cutscene_fov_scale = 1.0f;
+            batalia_big_head_cutscene_camera_pullback = 0.5f;
         }
         if (batalia_cutscene_state.a == 6 && batalia_cutscene_state.b >= 0x5FA && batalia_cutscene_state.b < 0x6AE) {
-            D_L08_0015F67C = 1.0f;
-            D_L08_0015F680 = -0.1f;
+            batalia_big_head_cutscene_fov_scale = 1.0f;
+            batalia_big_head_cutscene_camera_pullback = -0.1f;
         }
         for (i = 0; i < batalia_cutscene_state.n; i++) {
             char *o = batalia_cutscene_state.objs[i];
@@ -1210,7 +1210,7 @@ void attach_batalia_plumber_class_manipulator(char *moby) {
                 if (deserter_scale_manipulator[1] == 0) {
                     float f;
                     AttachManipulator(o, 0, deserter_scale_manipulator);
-                    f = *(float *)&D_L08_00162390;
+                    f = *(float *)&batalia_deserter_manipulator_scale;
                     *(float *)(deserter_scale_manipulator + 0x20) = f;
                     *(float *)(deserter_scale_manipulator + 0x24) = f;
                     *(float *)(deserter_scale_manipulator + 0x28) = f;
@@ -1282,7 +1282,7 @@ void the_plumber_batalia_update(char *m) {
     case 0:
         ((struct Moby *)m)->update_dist = 0xFF;
         if ((D_0014171B_q + 0xAA35)[((struct Moby *)m)->mission + (g_current_level_index << 4)] == 0xFF) goto del;
-        d->p20 = D_L08_00162398;
+        d->p20 = batalia_plumber_dialogue_name;
         ((struct Moby *)m)->state = 1;
         DialogRequest_Init(m, d);
         break;
@@ -1291,7 +1291,7 @@ void the_plumber_batalia_update(char *m) {
         if (Npc_TryStartDialog(m, d) != 0) PlaceMarkerAheadOfMoby(2.7f, m);
         v = d->h36;
         if (v == 2) {
-            char *t = D_L08_0016016C + (d->i48 << 7);
+            char *t = batalia_scene_points + (d->i48 << 7);
             jet_reset_camera(t + 0x30, t + 0x70);
             ((struct Moby *)m)->state = v;
             request_batalia_cannon_mount(batalia_mobys + (d->i50 << 8));
@@ -1583,8 +1583,8 @@ extern int D_L08_001F87E8_30A278[] __asm__("D_L08_001F87E8");
 void queue_batalia_eight_textured_batches(int arg) {
     int i;
     for (i = 7; i >= 0; i--) {
-        add_uv_scroll_offset(D_L08_001F8820_30A278, D_L08_001F87A8[7 - i], D_L08_001F4F20_30A278[7 - i], (char *)D_L08_001F8808_30A278 + arg * 8);
-        draw_env_overlay_mesh(D_L08_001F4F20_30A278[7 - i], D_L08_001F8788[7 - i], D_L08_001F87E8_30A278[7 - i], D_L08_001F8820_30A278, 1);
+        add_uv_scroll_offset(D_L08_001F8820_30A278, batalia_textured_mesh8_uv_sources[7 - i], D_L08_001F4F20_30A278[7 - i], (char *)D_L08_001F8808_30A278 + arg * 8);
+        draw_env_overlay_mesh(D_L08_001F4F20_30A278[7 - i], batalia_textured_mesh8_positions[7 - i], D_L08_001F87E8_30A278[7 - i], D_L08_001F8820_30A278, 1);
     }
 }
 extern char D_L08_001F8820[];
@@ -1599,8 +1599,8 @@ void queue_batalia_six_textured_batches(int x) {
     int i;
 
     for (i = 0; i < 6; i++) {
-        add_uv_scroll_offset(D_L08_001F8820, D_L08_001F4ED8[i], D_L08_001F0488_30A350[i], &D_L08_00162488_30A350[x]);
-        draw_env_overlay_mesh(D_L08_001F0488_30A350[i], D_L08_001F4EC0[i], D_L08_001F4F08_30A350[i], D_L08_001F8820, 1);
+        add_uv_scroll_offset(batalia_textured_scrolled_uvs, batalia_textured_mesh6_uv_sources[i], D_L08_001F0488_30A350[i], &D_L08_00162488_30A350[x]);
+        draw_env_overlay_mesh(D_L08_001F0488_30A350[i], batalia_textured_mesh6_positions[i], D_L08_001F4F08_30A350[i], batalia_textured_scrolled_uvs, 1);
     }
 }
 typedef struct { int a, b; } Pair;
@@ -1614,14 +1614,14 @@ extern short D_L08_00162478;
 /* Runs the two-entry setup loop for slot `x`: one call fills from the tables, the second applies them. */
 void queue_batalia_offset_textured_batches(int x) {
     int i;
-    int *a = (int *)&D_L08_00162458;
-    int *b = (int *)&D_L08_00162468;
-    int *c = (int *)&D_L08_00162460;
-    int *e = (int *)&D_L08_00162478;
+    int *a = (int *)&batalia_textured_mesh2_counts;
+    int *b = (int *)&batalia_textured_mesh2_uv_sources;
+    int *c = (int *)&batalia_textured_mesh2_positions;
+    int *e = (int *)&batalia_textured_mesh2_colors;
 
     for (i = 0; i < 2; i++) {
-        add_uv_scroll_offset(D_L08_001F8820, b[i], a[i], &D_L08_00162498[x]);
-        draw_env_overlay_mesh(a[i], c[i], e[i], D_L08_001F8820, 1);
+        add_uv_scroll_offset(batalia_textured_scrolled_uvs, b[i], a[i], &batalia_textured_mesh2_scroll_offset[x]);
+        draw_env_overlay_mesh(a[i], c[i], e[i], batalia_textured_scrolled_uvs, 1);
     }
 }
 extern void func_L08_0030A278(int);
@@ -1643,20 +1643,20 @@ void queue_batalia_textured_batch_passes(void) {
     VU1_addGSregister(0x47, 0x513F1);
     font_queue_vu_state();
     VU1_addGSregister(6, GetEffectTex(0x3A));
-    VU1_addGSregister(0x42, (long)*(int *)&D_L08_00162420 << 32 | 0x64);
+    VU1_addGSregister(0x42, (long)*(int *)&batalia_texture_3a_blend_factor << 32 | 0x64);
     queue_batalia_eight_textured_batches(0);
     VU1_addGSregister(6, GetEffectTex(0x3B));
-    VU1_addGSregister(0x42, (long)((batalia_texture_3b_pair_one_blend_factor_base * *(unsigned char *)&D_L08_00162480) >> 8) << 32 | 0x62);
+    VU1_addGSregister(0x42, (long)((batalia_texture_3b_pair_one_blend_factor_base * *(unsigned char *)&batalia_textured_effect_fade_alpha) >> 8) << 32 | 0x62);
     queue_batalia_eight_textured_batches(1);
-    VU1_addGSregister(0x42, (long)((batalia_texture_3b_pair_two_blend_factor_base * *(unsigned char *)&D_L08_00162480) >> 8) << 32 | 0x68);
+    VU1_addGSregister(0x42, (long)((batalia_texture_3b_pair_two_blend_factor_base * *(unsigned char *)&batalia_textured_effect_fade_alpha) >> 8) << 32 | 0x68);
     queue_batalia_eight_textured_batches(2);
     VU1_addGSregister(6, GetEffectTex(0x3C));
-    VU1_addGSregister(0x42, (long)*(int *)&D_L08_00162440 << 32 | 0x48);
+    VU1_addGSregister(0x42, (long)*(int *)&batalia_texture_3c_pair_zero_blend_factor << 32 | 0x48);
     queue_batalia_six_textured_batches(0);
     VU1_addGSregister(0x42, (long)batalia_texture_3c_pair_one_blend_factor << 32 | 0x48);
     queue_batalia_six_textured_batches(1);
     VU1_addGSregister(6, GetEffectTex(0x3D));
-    VU1_addGSregister(0x42, (long)*(int *)&D_L08_00162450 << 32 | 0x48);
+    VU1_addGSregister(0x42, (long)*(int *)&batalia_texture_3d_blend_factor << 32 | 0x48);
     queue_batalia_offset_textured_batches(0);
 }
 extern int func_L00_00200290(char *, float);
@@ -1688,35 +1688,35 @@ void update_batalia_textured_effect(unsigned char *moby) {
 
     switch (moby[0x20]) {
     case 0:
-        if (*(int *)&D_L08_00162454 == 0) {
-            scale_rgba_tables(D_L08_001F87E8, 8, D_L08_001F4F20, 0.5f, 0.5f, 0.65f, 0.5f, 1);
-            scale_rgba_tables(&D_L08_00162478, 2, &D_L08_00162458, 0.5f, 0.5f, 0.5f, 1.0f, 1);
-            scale_rgba_tables(D_L08_001F4F08, 6, D_L08_001F0488, 0.25f, 0.25f, 0.25f, 1.0f, 1);
-            *(int *)&D_L08_00162454 = 1;
+        if (*(int *)&batalia_textured_effect_colors_scaled == 0) {
+            scale_rgba_tables(batalia_textured_mesh8_colors, 8, batalia_textured_mesh8_counts, 0.5f, 0.5f, 0.65f, 0.5f, 1);
+            scale_rgba_tables(&batalia_textured_mesh2_colors, 2, &batalia_textured_mesh2_counts, 0.5f, 0.5f, 0.5f, 1.0f, 1);
+            scale_rgba_tables(batalia_textured_mesh6_colors, 6, batalia_textured_mesh6_counts, 0.25f, 0.25f, 0.25f, 1.0f, 1);
+            *(int *)&batalia_textured_effect_colors_scaled = 1;
         }
         moby[0x20] = 1;
         for (i = 0; i < 3; i++) {
-            D_L08_001F8808[i].a = 0;
-            D_L08_001F8808[i].b = 0;
-            D_L08_00162498[1].a = 0;
-            D_L08_00162498[1].b = 0;
+            batalia_textured_mesh8_scroll_offset[i].a = 0;
+            batalia_textured_mesh8_scroll_offset[i].b = 0;
+            batalia_textured_mesh2_scroll_offset[1].a = 0;
+            batalia_textured_mesh2_scroll_offset[1].b = 0;
         }
         for (i = 0; i < 2; i++) {
-            D_L08_00162488[i].a = 0;
-            *(float *)&D_L08_00162488[i].b = i * 0.4f;
+            batalia_textured_mesh6_scroll_offset[i].a = 0;
+            *(float *)&batalia_textured_mesh6_scroll_offset[i].b = i * 0.4f;
         }
         for (i = 0; i < 1; i++) {
-            D_L08_00162498[i].a = 0;
-            *(float *)&D_L08_00162498[i].b = i * 0.4f;
+            batalia_textured_mesh2_scroll_offset[i].a = 0;
+            *(float *)&batalia_textured_mesh2_scroll_offset[i].b = i * 0.4f;
         }
         break;
     case 1:
-        v[0] = *(float *)&D_L08_00162410;
+        v[0] = *(float *)&batalia_effect_reference_position_x;
         v[1] = batalia_effect_reference_position_y;
         v[2] = batalia_effect_reference_position_z;
         v[3] = batalia_effect_culling_radius;
         if (FastBSphereCheck((char *)v, 1000.0f) >= 0) {
-            w[0] = *(float *)&D_L08_00162410;
+            w[0] = *(float *)&batalia_effect_reference_position_x;
             w[1] = batalia_effect_reference_position_y;
             w[2] = batalia_effect_reference_position_z;
             w[3] = 1.0f;
@@ -1724,14 +1724,14 @@ void update_batalia_textured_effect(unsigned char *moby) {
             d = FastVecLength(w);
             if (d <= 84.0f) {
                 AdvanceScrollOffsets(0);
-                advance_wrapped_sine_pair(D_L08_001F8810, 0.52f, 0.62f, 0.06f, &D_L08_00162498[1]);
+                advance_wrapped_sine_pair(D_L08_001F8810, 0.52f, 0.62f, 0.06f, &batalia_textured_mesh2_scroll_offset[1]);
                 AdvanceScrollOffsets(2);
                 if (d < 20.0f) {
-                    *(unsigned char *)&D_L08_00162480 = 0xFF;
+                    *(unsigned char *)&batalia_textured_effect_fade_alpha = 0xFF;
                 } else if (d < 84.0f) {
-                    *(char *)&D_L08_00162480 = func_001FA898_r((1.0f - (d - 20.0f) * 0.015625f) * 255.0f);
+                    *(char *)&batalia_textured_effect_fade_alpha = func_001FA898_r((1.0f - (d - 20.0f) * 0.015625f) * 255.0f);
                 } else {
-                    *(char *)&D_L08_00162480 = 0;
+                    *(char *)&batalia_textured_effect_fade_alpha = 0;
                 }
             }
             AdvanceScrollEntry(0);

@@ -994,13 +994,13 @@ void fred_update(Moby *moby) {
         rot[2] = FastAddRots(FastSubRots(camera_end_rotation[2], camera_start_rotation[2]) * fred_vars->f178, camera_start_rotation[2]);
         rot[1] = FastAddRots(FastSubRots(camera_end_rotation[1], camera_start_rotation[1]) * fred_vars->f178, camera_start_rotation[1]);
         rot[0] = FastAddRots(FastSubRots(camera_end_rotation[0], camera_start_rotation[0]) * fred_vars->f178, camera_start_rotation[0]);
-        if (D_L06_00167680 != 0 && D_L06_00167680->f86 != 5) {
+        if (blarg_camera_moby != 0 && blarg_camera_moby->f86 != 5) {
             CameraScript(camera_start_position, camera_start_rotation, 1, 0, 0);
         }
         set_camera_position(pos);
         set_camera_rotation(rot);
         if (fred_vars->f178 >= 1.0f
-            || (((Busy_3024C8 *)D_L06_00179C90)->f0 == 0 && ((Busy_3024C8 *)D_L06_00179C90)->f24 == -1 && fred_vars->f178 > 0.2f)) {
+            || (((Busy_3024C8 *)blarg_help_popup_state)->f0 == 0 && ((Busy_3024C8 *)blarg_help_popup_state)->f24 == -1 && fred_vars->f178 > 0.2f)) {
             ApproachValue(&blarg_fade_level, 1.0f, g_frame_time * 4.0f);
         } else {
             ApproachValue(&blarg_fade_level, 0.0f, g_frame_time * 4.0f);
@@ -1473,7 +1473,7 @@ void ShuttleUpdate(Moby *moby) {
     case 1:
         busy = 0;
         if (*(unsigned char *)&D_0015EF1D_i != 0 || *(unsigned char *)&D_0015EF1C_i != 0) {
-            if (((Busy_3039B8 *)D_L06_00179C90)->f0 != 0 || ((Busy_3039B8 *)D_L06_00179C90)->f24 != -1) {
+            if (((Busy_3039B8 *)blarg_help_popup_state)->f0 != 0 || ((Busy_3039B8 *)blarg_help_popup_state)->f24 != -1) {
                 busy = 1;
             }
         }
@@ -1915,9 +1915,9 @@ void ScatterPiecesExplode(float f, struct Moby *a0, void *a1, void *a2, int n) {
             g2 = FastTweenColor(*(int *)&scatter_explode_color_b_from, *(int *)&scatter_explode_color_b_to, q5);
             q7 = random_float_between((float)*(int *)&scatter_explode_life_ticks, (float)(*(int *)&scatter_explode_life_ticks * 2));
             x1 = truncate_float_to_s32(multiply_global_factor(q7));
-            q8 = random_float_between((float)*(int *)&D_L06_001621D8, (float)*(int *)&D_L06_001621D8 * 1.2f);
+            q8 = random_float_between((float)*(int *)&scatter_explode_phase2_ticks, (float)*(int *)&scatter_explode_phase2_ticks * 1.2f);
             x2 = truncate_float_to_s32(multiply_global_factor(q8));
-            q3 = random_float_between((float)*(int *)&D_L06_001621DC * 0.8f, (float)*(int *)&D_L06_001621DC);
+            q3 = random_float_between((float)*(int *)&scatter_explode_phase3_ticks * 0.8f, (float)*(int *)&scatter_explode_phase3_ticks);
             x3 = truncate_float_to_s32(multiply_global_factor(q3));
             PartType02Spawn(v4, v2, v3, g1, g2, x1, x2, x3, *(int *)&scatter_explode_sprite + (*(int *)&scatter_explode_sprite_flags << 16));
         }
@@ -2016,9 +2016,9 @@ void break_apart_shuttle_linked_mobys(struct Moby *moby) {
                 FastTweenColor((*(int *)&shuttle_debris_color_b_from), (*(int *)&shuttle_debris_color_b_to), random_float_between(0.0f, 1.0f)),
                 truncate_float_to_s32(multiply_global_factor((float)(*(int *)&shuttle_debris_life_ticks) * random_float_between(0.0f, 1.0f) + 1.0f)),
                 truncate_float_to_s32(multiply_global_factor(
-                    (float)(*(int *)&D_L06_001621F4) * (random_float_between(-(*(float *)&shuttle_debris_time_jitter), (*(float *)&shuttle_debris_time_jitter)) + 1.0f))),
+                    (float)(*(int *)&shuttle_debris_phase2_ticks) * (random_float_between(-(*(float *)&shuttle_debris_time_jitter), (*(float *)&shuttle_debris_time_jitter)) + 1.0f))),
                 truncate_float_to_s32(multiply_global_factor(
-                    (float)(*(int *)&D_L06_001621F8) * (random_float_between(-(*(float *)&shuttle_debris_time_jitter), (*(float *)&shuttle_debris_time_jitter)) + 1.0f))),
+                    (float)(*(int *)&shuttle_debris_phase3_ticks) * (random_float_between(-(*(float *)&shuttle_debris_time_jitter), (*(float *)&shuttle_debris_time_jitter)) + 1.0f))),
                 (*(int *)&shuttle_debris_sprite));
             if (particle != 0) {
                 particle[9] = truncate_float_to_s32(4.0f) - 0x20;
@@ -2557,7 +2557,7 @@ void draw_moby_vector_streams(char *m) {
     s[1] = vector_stream_fade_ticks;
     s[3] = *(int *)&vector_stream_color_a;
     s[4] = *(int *)&vector_stream_color_b;
-    *(float *)&s[7] = *(float *)&D_L06_00162284;
+    *(float *)&s[7] = *(float *)&vector_stream_texture_u_step;
     *(float *)&s[8] = *(float *)&vector_stream_uv_scroll;
     s[5] = 0x1E;
     s[6] = (int)data;

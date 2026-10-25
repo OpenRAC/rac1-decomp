@@ -271,29 +271,29 @@ void update_frame_timing_and_wrapped_value(char *m) {
     switch (*(unsigned char *)(m + 0x20)) {
     case 0: {
         float one;
-        D_L00_00161458 = 0;
+        smoke_particle_pool_next = 0;
         m[0x20] = 1;
         *(unsigned char *)(m + 0x30) = 0xFF;
         one = 1.0f;
-        *(int *)&D_L00_00161444 = scale_ticks(*(int *)&D_L00_00161430);
-        *(int *)&D_L00_00161448 = scale_ticks(*(int *)&D_L00_00161434);
-        *(float *)&D_L00_0016144C = one / IntToFloat(*(int *)&D_L00_00161448);
+        *(int *)&smoke_particle_stagger_ticks = scale_ticks(*(int *)&smoke_particle_stagger_ticks_base);
+        *(int *)&smoke_particle_timer_ticks = scale_ticks(*(int *)&smoke_particle_timer_ticks_base);
+        *(float *)&smoke_particle_timer_ticks_inv = one / IntToFloat(*(int *)&smoke_particle_timer_ticks);
         D_L00_00161450 = scale_ticks(*(int *)&D_L00_00161438);
         *(float *)&D_L00_00161454 = one / (float)D_L00_00161450;
         break;
     }
     case 1: {
-        float t = *(float *)&D_L00_0016143C - *(float *)&D_L00_00161440 * frame_scale;
-        *(float *)&D_L00_0016143C = t;
+        float t = *(float *)&smoke_scroll_offset - *(float *)&smoke_scroll_speed * frame_scale;
+        *(float *)&smoke_scroll_offset = t;
         if (t <= -8.0f) {
-            *(float *)&D_L00_0016143C = t + 8.0f;
+            *(float *)&smoke_scroll_offset = t + 8.0f;
         }
         break;
     }
     }
 }
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002a4830.c, FUN_L00_002a4dc8. */
-int fetch_and_add_global_accumulator(int a) { int t = D_L00_00161458; D_L00_00161458 = t + a; return t; }
+int fetch_and_add_global_accumulator(int a) { int t = smoke_particle_pool_next; smoke_particle_pool_next = t + a; return t; }
 extern void *func_0020D348(int oClass);
 extern void func_L00_00251E30(void *);
 
@@ -398,9 +398,9 @@ void vendor_update(char *moby) {
     float t3;
     char *m;
 
-    *(float *)&D_L00_0016146C += 0.05f;
-    if (3.14f < *(float *)&D_L00_0016146C) *(float *)&D_L00_0016146C = -3.14f;
-    f = FastSin(*(float *)&D_L00_0016146C);
+    *(float *)&vendor_glow_pulse_phase += 0.05f;
+    if (3.14f < *(float *)&vendor_glow_pulse_phase) *(float *)&vendor_glow_pulse_phase = -3.14f;
+    f = FastSin(*(float *)&vendor_glow_pulse_phase);
     *(int *)(moby + 0x90) = (((int)(f * 48.0f) + 0x60) * 0x10101) | 0x80000000;
 
     switch (*(unsigned char *)(moby + 0x20)) {
@@ -435,14 +435,14 @@ void vendor_update(char *moby) {
                 }
             }
         }
-        AddDrawCallback(func_L00_002A62D0, moby);
-        axis_rotation_2d48(p + 0x20, 2, *(float *)&D_L00_00161464);
-        axis_rotation_2d48(p + 0x60, 2, *(float *)&D_L00_00161468);
-        *(float *)&D_L00_00161464 = FastAddRots(*(float *)&D_L00_00161464, 0.01f);
-        t2 = FastAddRots(*(float *)&D_L00_00161468, -0.02f);
+        AddDrawCallback(draw_vendor_effects, moby);
+        axis_rotation_2d48(p + 0x20, 2, *(float *)&vendor_ring_a_angle);
+        axis_rotation_2d48(p + 0x60, 2, *(float *)&vendor_ring_b_angle);
+        *(float *)&vendor_ring_a_angle = FastAddRots(*(float *)&vendor_ring_a_angle, 0.01f);
+        t2 = FastAddRots(*(float *)&vendor_ring_b_angle, -0.02f);
         m = *(char **)(p + 0xC);
         t3 = *(float *)(p + 0x90) * *(float *)(*(char **)(m + 0x24) + 0x24) * 2.5f;
-        *(float *)&D_L00_00161468 = t2;
+        *(float *)&vendor_ring_b_angle = t2;
         *(float *)(m + 0x2C) = t3;
         moby_build_matrix(*(char **)(p + 0xC));
         break;
@@ -464,16 +464,16 @@ void vendor_update(char *moby) {
                 return;
             }
         }
-        AddDrawCallback(func_L00_002A62D0, moby);
+        AddDrawCallback(draw_vendor_effects, moby);
         a = 1;
         b = 1;
-        axis_rotation_2d48(p + 0x20, 2, *(float *)&D_L00_00161464);
-        axis_rotation_2d48(p + 0x60, 2, *(float *)&D_L00_00161468);
-        *(float *)&D_L00_00161464 = FastAddRots(*(float *)&D_L00_00161464, 0.01f);
-        t2 = FastAddRots(*(float *)&D_L00_00161468, -0.02f);
+        axis_rotation_2d48(p + 0x20, 2, *(float *)&vendor_ring_a_angle);
+        axis_rotation_2d48(p + 0x60, 2, *(float *)&vendor_ring_b_angle);
+        *(float *)&vendor_ring_a_angle = FastAddRots(*(float *)&vendor_ring_a_angle, 0.01f);
+        t2 = FastAddRots(*(float *)&vendor_ring_b_angle, -0.02f);
         m = *(char **)(p + 0xC);
         t3 = *(float *)(p + 0x90) * *(float *)(*(char **)(m + 0x24) + 0x24) * 2.5f;
-        *(float *)&D_L00_00161468 = t2;
+        *(float *)&vendor_ring_b_angle = t2;
         *(float *)(m + 0x2C) = t3;
         moby_build_matrix(*(char **)(p + 0xC));
         if (G_pp.i208C != 0 && G_pp.i2084 != 3 && G_pp.i208C != 1) { a = 0; b = 0; }
@@ -1052,8 +1052,8 @@ int begin_bolt_attraction(void *moby_v, int target_i, float sx, float sy) {
     if (*(unsigned char *)(moby + 0x20) == 4) {
         return 0;
     }
-    if ((*(int *)&(D_L00_00161474)) + scale_ticks(3) < level_frame_counter || level_frame_counter < (*(int *)&(D_L00_00161474))) {
-        (*(int *)&(D_L00_00161474)) = level_frame_counter;
+    if ((*(int *)&(bolt_attract_sound_frame)) + scale_ticks(3) < level_frame_counter || level_frame_counter < (*(int *)&(bolt_attract_sound_frame))) {
+        (*(int *)&(bolt_attract_sound_frame)) = level_frame_counter;
         Moby_PlaySound(0, 0x20, (int)moby);
     } else {
         if (sx == 0.0f) {
@@ -1074,7 +1074,7 @@ int begin_bolt_attraction(void *moby_v, int target_i, float sx, float sy) {
     FastVecSub(v + 4, target + 0x10, moby + 0x10);
     FastVecCross(v, data + 0x20, v + 4);
     vec_scale_to_length((float *)(data + 0x30), v, 1.0f);
-    build_quaternion_from_axis_angle(data + 0x30, data + 0x30, random_float_between((*(float *)&(D_L00_00161470)) * 0.333f, (*(float *)&(D_L00_00161470))) * 0.017453293f * g_frame_time);
+    build_quaternion_from_axis_angle(data + 0x30, data + 0x30, random_float_between((*(float *)&(bolt_attract_max_spin_deg)) * 0.333f, (*(float *)&(bolt_attract_max_spin_deg))) * 0.017453293f * g_frame_time);
     moby[0x20] = 4;
     return 1;
 }
@@ -1836,7 +1836,7 @@ char *SpawnHomingBolt(void *owner, void *pos, float a, float b, float c, char *t
         ((unsigned char *)m)[0x30] = 0xFF;
         m[0x31] = 1;
         m[0x20] = 0;
-        *(float *)(m + 0x2C) *= *(float *)&D_L00_0016148C;
+        *(float *)(m + 0x2C) *= *(float *)&homing_bolt_bounds_scale;
         *(short *)(m + 0x32) = 0xFF;
         d = *(char **)(m + 0x78);
         *(float *)(m + 0x48) = rz;
@@ -1933,7 +1933,7 @@ extern long D_L00_0015F428 MACRO_ADDR;
 // Creates the singleton light moby and resets its globals.
 void *spawn_tracked_class_5f3_moby(int unused, float *pos) {
     char *m = CreateMoby(0x5F3);
-    if (m != 0 && *(int *)&D_L00_00161490 == 0) {
+    if (m != 0 && *(int *)&tracked_class_5f3_moby == 0) {
         char *d;
         m[0x20] = 0;
         *(unsigned char *)(m + 0x30) = 0xFF;
@@ -1944,7 +1944,7 @@ void *spawn_tracked_class_5f3_moby(int unused, float *pos) {
         D_L00_0015F424 = 0xFF;
         D_L00_0015F434 = 0xFFFFFF;
         D_L00_0015F438 = 0x1F00000042L;
-        *(int *)&D_L00_00161490 = (int)m;
+        *(int *)&tracked_class_5f3_moby = (int)m;
         D_L00_0015F428 = 0;
         D_L00_0015F420 = 0;
         D_L00_0015F430 = 0;
@@ -1958,13 +1958,13 @@ extern void func_L00_002AAD40_2AAE20(int, void *) __asm__("func_L00_002AAD40");
 // Moves the tracked moby to a position when it is class 0x5F3.
 void set_tracked_class_5f3_moby_position(int a, char *pos) {
     u128_2AAE20 tmp = *(u128_2AAE20 *)pos;
-    int v = *(int *)&D_L00_00161490;
+    int v = *(int *)&tracked_class_5f3_moby;
     if (v == 0) {
         func_L00_002AAD40_2AAE20(a, &tmp);
-        v = *(int *)&D_L00_00161490;
+        v = *(int *)&tracked_class_5f3_moby;
     }
     if (v != 0) {
-        char *m = *(char **)&D_L00_00161490;
+        char *m = *(char **)&tracked_class_5f3_moby;
         char *d = *(char **)(m + 0x78);
         if (*(short *)(m + 0xA6) == 0x5F3) {
             *(u128_2AAE20 *)(m + 0x10) = tmp;
@@ -1977,7 +1977,7 @@ extern void func_0020D678(void *);
 
 // Tears down the tracked moby if it is class 0x5F3 and dead, freeing its slot and clearing the pointer.
 void remove_tracked_class_5f3_moby(void) {
-    char *m = *(char **)&D_L00_00161490;
+    char *m = *(char **)&tracked_class_5f3_moby;
     if (m != 0) {
         if (*(short *)(m + 0xA6) == 0x5F3) {
             char *data;
@@ -1988,9 +1988,9 @@ void remove_tracked_class_5f3_moby(void) {
             D_L00_0015F430 = 0;
             idx = *(short *)(data + 0x2C);
             if (idx != -1) release_point_light_slot(idx);
-            DeleteMoby(*(char **)&D_L00_00161490);
+            DeleteMoby(*(char **)&tracked_class_5f3_moby);
         }
-        *(int *)&D_L00_00161490 = 0;
+        *(int *)&tracked_class_5f3_moby = 0;
     }
 }
 typedef struct {
@@ -2035,7 +2035,7 @@ void func_L00_002AAEF0_r(char *moby) {
         rot1[1] = fast_atan2(*(float *)(d + 0x28), *(float *)(d + 0x20));
         rot1[2] = 0;
         rot1[3] = 0;
-        D_L00_001614B0 = 0;
+        impact_marker_euler = 0;
         ang = IntToFloat(level_frame_counter % scale_ticks(180));
         den = multiply_global_factor(180.0f);
         ang *= 6.2831855f;
@@ -2044,7 +2044,7 @@ void func_L00_002AAEF0_r(char *moby) {
         D_L00_001614B0_v[1] = r;
         D_L00_001614B0_v[2] = 0;
         D_L00_001614B0_v[3] = 0;
-        euler_to_matrix(E, &D_L00_001614B0);
+        euler_to_matrix(E, &impact_marker_euler);
         euler_to_matrix(M, rot1);
         sce_vu0_mul_matrix(M, M, E);
         qcopy(M[3], d + 0x10);

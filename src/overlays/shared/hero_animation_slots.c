@@ -650,7 +650,7 @@ void create_missing_hero_item_slot_animations(int a, int b) {
             char *h;
             if (i == 1 && *(unsigned char *)(k + 0x20AB) != 2) break;
             h = (char *)D_0013E633 + 0xE1D;
-            s = allocate_moby_animation_slot(*(void **)(h + 0x2080), *(int *)((char *)&D_L00_0015F780 + i * 4));
+            s = allocate_moby_animation_slot(*(void **)(h + 0x2080), *(int *)((char *)&hero_item_slot_anim_ids + i * 4));
             *(void **)(h + 0xD08 - (-(i * 4))) = s;
             if (s != 0) {
                 *(int *)(h + 0xD14) = 0;
@@ -729,7 +729,7 @@ void start_equipped_item_animation(void) {
         if (D_0013F450_0EB60.slot[i] != 0) {
             func_L00_00250120_0EB60(D_0013F450_0EB60.p2080, &D_0013F450_0EB60.slot[i]);
         }
-        o = func_L00_00250060_0EB60(D_0013F450_0EB60.p2080, (((s32 *)&D_L00_0015F780))[i]);
+        o = func_L00_00250060_0EB60(D_0013F450_0EB60.p2080, (((s32 *)&hero_item_slot_anim_ids))[i]);
         D_0013F450_0EB60.slot[i] = o;
         if (o != 0) {
             D_0013F450_0EB60.i2294 = v21;
@@ -1127,19 +1127,19 @@ void update_hero_item_rotation_from_history(char *arg, void *mat) {
     {
     char *b = D_0013E633 + 0xE1D;
     if (*(int *)(b + 0x208C) == 0x16) {
-        *(int *)&D_L00_0015F774 = 14;
+        *(int *)&hero_item_history_delay_target = 14;
     } else if (*(int *)(b + 0x2084) == 2) {
-        *(int *)&D_L00_0015F774 = 5;
+        *(int *)&hero_item_history_delay_target = 5;
     } else {
-        *(int *)&D_L00_0015F774 = 11;
+        *(int *)&hero_item_history_delay_target = 11;
     }
     }
 
     {
     char *b = D_0013E633 + 0xE1D;
-    if (*(int *)(b + 0x21C0) < *(int *)&D_L00_0015F774) {
+    if (*(int *)(b + 0x21C0) < *(int *)&hero_item_history_delay_target) {
         *(int *)(b + 0x21C0) = *(int *)(b + 0x21C0) + 1;
-    } else if (*(int *)&D_L00_0015F774 < *(int *)(b + 0x21C0)) {
+    } else if (*(int *)&hero_item_history_delay_target < *(int *)(b + 0x21C0)) {
         *(int *)(b + 0x21C0) = *(int *)(b + 0x21C0) - 1;
     }
     }
@@ -2081,16 +2081,16 @@ void Hero_OnKilled(void) {
     s32 lvl = g_current_level_index;
     char *m;
     u32 t;
-    D_0013E0E0[lvl]++;
-    D_0015EFAC++;
+    level_hero_death_counts[lvl]++;
+    hero_death_count++;
     if (D_0013F450_11908.m2280 != 0 && *(s16 *)(D_0013F450_11908.m2280 + 0xA6) == 0x4D && lvl == 15) {
         level_15_class_4d_respawn_flag = 1;
     }
     clear_help_record_high_bits();
     m = D_0013F450_11908.m2280;
     if (m != 0 && *(u8 *)(m + 0xB0) != 0xFF) {
-        D_0014EA90[g_current_level_index][*(u8 *)(m + 0xB0)]++;
-        D_0014EF90[*(u8 *)(m + 0xB0)]++;
+        level_mission_death_counts[g_current_level_index][*(u8 *)(m + 0xB0)]++;
+        mission_death_counts[*(u8 *)(m + 0xB0)]++;
     }
     FadeToBlack(scale_ticks(0x10));
     D_0013F450_11908.b20B1 = 1;

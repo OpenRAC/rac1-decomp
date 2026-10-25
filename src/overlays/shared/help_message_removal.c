@@ -8,10 +8,10 @@ extern int D_L00_00161F04 MACRO_ADDR;
 extern int func_001FFCB0(int);
 
 int remove_help_message_for_selector(int a) {
-    if (D_L00_0015F674 == a) {
+    if (timed_hud_visible == a) {
         if (D_L00_00161F04 != -1) {
-            D_L00_0015F670 = 0;
-            D_L00_0015F674 = 0;
+            timed_hud_frames_left = 0;
+            timed_hud_visible = 0;
             remove_hud_item(D_L00_00161F04);
             D_L00_00161F04 = -1;
             return 1;

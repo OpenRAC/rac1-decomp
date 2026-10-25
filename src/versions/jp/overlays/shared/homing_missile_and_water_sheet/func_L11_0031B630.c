@@ -21,7 +21,7 @@ void update_moby_hit_stats_and_state(char *m) {
         }
         *(int *)(st + 0x157EC) = *(int *)(st + 0x157EC) | (1 << D_0015EE84_3102C8) | 0x80000000;
         if (D_0015EE84_3102C8 == 0xB && *(char **)(info + 0x20) != 0 && *(short *)(*(char **)(info + 0x20) + 0xA6) == 0xAC) {
-            if (++D_0015EF00 >= 3 && gSkillPoints[0x12] == 0) {
+            if (++skill_point_18_kill_count >= 3 && gSkillPoints[0x12] == 0) {
                 gSkillPoints[0x12] = 1;
                 PlayBankSound(1, 0, 0);
                 ShowBanner(0x542D, -1);

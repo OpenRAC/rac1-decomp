@@ -572,7 +572,7 @@ int map_filter_l11_2(int arg0, float unused1, float unused2, float arg1) {
     if (arg0 < 0xDD) {
         return (arg1 >= 238.0f && arg1 <= 241.0f) ? 1 : 0;
     }
-    return arg1 <= 180.0f && D_0013D4E8 != 0;
+    return arg1 <= 180.0f && menu_item_enabled_76 != 0;
 }
 
 extern unsigned char D_0013D4EA NOT_SDA;
@@ -596,7 +596,7 @@ int map_filter_l11_4(int arg0, float unused1, float unused2, float arg1) {
     if (arg0 < 0x15F) {
         return (arg1 >= 228.0f && arg1 <= 230.0f) ? 1 : 0;
     }
-    return arg1 >= 233.0f && arg1 <= 235.0f && D_0013D4EB != 0;
+    return arg1 >= 233.0f && arg1 <= 235.0f && menu_item_enabled_79 != 0;
 }
 
 extern unsigned char D_0013D4E9 NOT_SDA;
@@ -884,8 +884,8 @@ void downsample_map_coverage(void *arg0) {
     unsigned char *out;
     int i, j, k, m;
 
-    bits = D_001E83B0;
-    src = D_001A01FC;
+    bits = nibble_popcount_table;
+    src = map_coverage_buffer;
     out = dst;
     for (i = 0; i < 0x200; i++) {
         if ((i & 3) == 0) {
@@ -950,7 +950,7 @@ void FormatMenuItemText(int bank, unsigned char *dst) {
     src++;
     if (*src == 'b') {
         char *t2 = (char *)level_map_selection;
-        func_00116248_3(buf, D_0015FE60,
+        func_00116248_3(buf, menu_item_price_fmt,
                         *(int *)(vendor_item_prices + *(short *)(*(char **)(t2 + 0x20) + bank * 0x28 + 0xC) * 0x18));
     } else {
         func_00116248_2(buf, D_0015FE68);
@@ -1073,8 +1073,8 @@ extern char D_0013D6B8[];
 void copy_level_object_positions(void) {
     int i = g_current_level_index;
     if ((unsigned int)i < 0x13) {
-        int start = D_001E06B8[i];
-        int end = D_001E06B8[i + 1];
+        int start = level_object_index_ranges[i];
+        int end = level_object_index_ranges[i + 1];
         if (start < end) {
             void **sbase = menu_action_messages;
             char *dbase = race_gates;
@@ -1173,10 +1173,10 @@ void Menu_RunStateHandler(void) {
         mode_freeze_state = 0x14;
         mode_freeze_flags = (mode_freeze_flags & ~0x100) | 0x40;
     }
-    D_001A0538[mode_freeze_state]();
-    D_00161380++;
+    menu_state_handlers[mode_freeze_state]();
+    menu_state_frame_count++;
     if (mode_freeze_state != old) {
-        D_00161380 = 0;
+        menu_state_frame_count = 0;
     }
 }
 

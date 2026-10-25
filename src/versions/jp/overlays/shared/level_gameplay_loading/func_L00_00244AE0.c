@@ -122,8 +122,8 @@ s32 load_level_archive_resources(s32 full, s32 keep) {
         } else {
             D_L00_0015FD58 = 0;
             D_L00_0015FD5C = 0;
-            D_L00_0015FD64 = 0;
-            D_L00_0015FD60 = 0;
+            height_map_max_height = 0;
+            height_map_min_height = 0;
             D_L00_0015FD68 = 0;
         }
         if (h->v[0x2A])
@@ -238,7 +238,7 @@ s32 load_level_archive_resources(s32 full, s32 keep) {
     } else {
         clear_scene_state_buffers();
         for (z = 15; z >= 0; z--)
-            D_0014EF90[z] = 0;
+            mission_death_counts[z] = 0;
     }
     active_scene_trigger.f10 = 0;
     *(s32 *)&active_scene_trigger.f8 = 0;

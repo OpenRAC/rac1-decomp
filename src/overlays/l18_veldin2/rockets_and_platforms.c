@@ -192,7 +192,7 @@ void update_rocket_moby(char *moby) {
         moby_vars->c = moby_vars->c + 1;
         movement_collision_result = coll_line(previous_position, &((struct Moby *)moby)->pos, 0, moby, 0);
         if (movement_collision_result) {
-            char *collision_filter_moby = D_L18_001748D8;
+            char *collision_filter_moby = veldin2_coll_hit_moby;
             if (collision_filter_moby != 0) {
                 short h = ((struct Moby *)collision_filter_moby)->oclass;
                 if (h == 0x1DF) {
@@ -808,7 +808,7 @@ void thruster_pack_lock_green_update(char *moby) {
         ((struct Moby *)moby)->collision = 0;
         ((struct Moby *)moby)->pos.z = ProbeGroundHeight(&((struct Moby *)moby)->pos, 0, 0.5f);
         qcopy(moby_vars, &((struct Moby *)moby)->pos);
-        if (D_L18_001748D8 != 0) {
+        if (veldin2_coll_hit_moby != 0) {
             moby_vars->i38 = 1;
         }
         {
@@ -2097,7 +2097,7 @@ void update_position_and_rotation_transition(char *moby) {
         set_camera_position(v);
         set_camera_rotation(v + 4);
         if (1.0f <= *(float *)(data + 0x60)
-            || (0.2f < *(float *)(data + 0x60) && D_L18_00179E90[0] == 0 && D_L18_00179E90[9] == -1)) {
+            || (0.2f < *(float *)(data + 0x60) && veldin2_help_popup_state[0] == 0 && veldin2_help_popup_state[9] == -1)) {
             float t;
             ApproachValue((float *)(data + 0x6C), 1.0f, g_frame_time * 4.0f);
             t = *(float *)(data + 0x6C);

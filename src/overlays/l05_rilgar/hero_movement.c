@@ -208,8 +208,8 @@ void Hero_UpdateMovement(void) {
 
                     *(u128 *)vec[0] = 0;
                     vec[0][0] = 1.0f;
-                    matrix_mul_vec3(g_hero.motion.unk170.f, vec[0], D_L05_00167180.f350);
-                    g_hero.motion.move_yaw = D_L05_00167180.f158;
+                    matrix_mul_vec3(g_hero.motion.unk170.f, vec[0], rilgar_player_camera.f350);
+                    g_hero.motion.move_yaw = rilgar_player_camera.f158;
                     turn_to(g_frame_scale_sq, g_frame_scale_sq * 0.0f, g_frame_time * 174.53293f, 0);
                     if (*(int *)&D_L05_0015F768 > 0) {
                         if (fast_dec_timer((int *)&D_L05_0015F768)) {
@@ -419,7 +419,7 @@ void Hero_UpdateMovement(void) {
                 if (g_hero.state_timer == 1) {
                     emit_hero_surface_effect_burst(3, 0x10, 0);
                     if (rilgar_water_patches != 0) {
-                        RippleDisturb(rilgar_water_patches, D_L05_00161398, 0, g_hero.motion.pos.f[0], g_hero.motion.pos.f[1], 0.4f, -0.3f);
+                        RippleDisturb(rilgar_water_patches, rilgar_water_patch_count, 0, g_hero.motion.pos.f[0], g_hero.motion.pos.f[1], 0.4f, -0.3f);
                     }
                     g_hero.unk90A = scale_ticks(0x46);
                 }
@@ -610,7 +610,7 @@ void Hero_UpdateMovement(void) {
             } else if (g_hero.state.current == 0x33) {
                 float v;
 
-                v = g_hero.ground_speed * vector_length_xyz_cf(D_L05_0017C520, 0x1E) * 5.0f;
+                v = g_hero.ground_speed * vector_length_xyz_cf(rilgar_swim_stroke_curve, 0x1E) * 5.0f;
                 if (g_hero.state.prev == 0x35 && g_hero.state_timer < scale_ticks(0xF)) {
                     if (v < g_frame_time * 4.5f) {
                         v = g_frame_time * 4.5f;
@@ -764,7 +764,7 @@ void Hero_UpdateMovement(void) {
                 g_hero.target_speed = 0.0f;
             }
             speed_step(g_frame_time_sq * 4.0f, g_frame_time_sq * 5.0f);
-            v = g_hero.ground_speed * vector_length_xyz_cf(D_L05_0017C520, 0x1E) * 5.5f;
+            v = g_hero.ground_speed * vector_length_xyz_cf(rilgar_swim_stroke_curve, 0x1E) * 5.5f;
             g_hero.motion.velocity.f[0] = FastCos(g_hero.motion.rot.f[2]) * v;
             g_hero.motion.velocity.f[1] = FastSin(g_hero.motion.rot.f[2]) * v;
             g_hero.motion.velocity.f[2] = 0.0f;
@@ -900,7 +900,7 @@ void Hero_UpdateMovement(void) {
             }
             if (g_hero.frames_off_ground.s == 0 || g_hero.unk88D == 0) {
                 smooth_and_clamp_value_pair(vec[0], g_hero.unk720.f, g_frame_scale_sq * 0.17f);
-                g_hero.motion.move_yaw = FastAddRots(D_L05_00167180.f158, fast_atan2(-vec[0][1], vec[0][0]));
+                g_hero.motion.move_yaw = FastAddRots(rilgar_player_camera.f158, fast_atan2(-vec[0][1], vec[0][0]));
                 if (g_hero.unk229C > 0.2f) {
                     float ka;
                     float kb;
@@ -989,8 +989,8 @@ void Hero_UpdateMovement(void) {
 
                 FastVecScale(vec[1], g_hero.motion.displacement.f, 7.0f);
                 for (i = 0; i < n; i++) {
-                    if (is_moby_in_class_range_500_to_540((int)D_L05_00178400[i]) || D_L05_00178400[i]->oclass == 0x85) {
-                        PostHitMessage(D_L05_00178400[i], (int)g_hero.moby, 0x10000, g_hero.motion.pos.f, vec[1], 1.0f);
+                    if (is_moby_in_class_range_500_to_540((int)rilgar_nearby_mobys[i]) || rilgar_nearby_mobys[i]->oclass == 0x85) {
+                        PostHitMessage(rilgar_nearby_mobys[i], (int)g_hero.moby, 0x10000, g_hero.motion.pos.f, vec[1], 1.0f);
                     }
                 }
             }
@@ -1383,8 +1383,8 @@ void Hero_UpdateMovement(void) {
             if (g_hero.unk4B8 != 0.0f) {
                 if (g_hero.air_frames.s == 0) {
                     if (g_hero.unk4C4 == 0) {
-                        D_L05_00167180.f160 = 0.2f;
-                        D_L05_00167180.f168 = scale_ticks(0x28);
+                        rilgar_player_camera.f160 = 0.2f;
+                        rilgar_player_camera.f168 = scale_ticks(0x28);
                     }
                     g_hero.unk4C4++;
                 }
@@ -1398,7 +1398,7 @@ void Hero_UpdateMovement(void) {
             float v;
             float acc;
 
-            if (g_hero.unkA9C != 0 || g_hero.anim_frame < D_L05_0017C188[g_hero.attack_record].f18) {
+            if (g_hero.unkA9C != 0 || g_hero.anim_frame < rilgar_attack_records[g_hero.attack_record].f18) {
                 g_hero.items[0].timer = 2;
             }
             g_hero.target_speed = 0.0f;
@@ -1468,7 +1468,7 @@ void Hero_UpdateMovement(void) {
             int skip;
 
             g_hero.target_speed = 0.0f;
-            if (g_hero.unkA9C != 0 || g_hero.anim_frame < D_L05_0017C188[g_hero.attack_record].f18) {
+            if (g_hero.unkA9C != 0 || g_hero.anim_frame < rilgar_attack_records[g_hero.attack_record].f18) {
                 g_hero.items[0].timer = 2;
             }
             skip = 0;
@@ -1531,11 +1531,11 @@ void Hero_UpdateMovement(void) {
         {
             Rec2C *r;
 
-            if (g_hero.unkA9C != 0 || g_hero.anim_frame < D_L05_0017C188[g_hero.attack_record].f20) {
+            if (g_hero.unkA9C != 0 || g_hero.anim_frame < rilgar_attack_records[g_hero.attack_record].f20) {
                 g_hero.items[0].timer = 2;
             }
             g_hero.target_speed = 0.0f;
-            r = &D_L05_0017C188[g_hero.attack_record];
+            r = &rilgar_attack_records[g_hero.attack_record];
             if (g_hero.unkA54 != 0 && g_hero.state_timer < scale_ticks(4)) {
                 float d;
                 float off;
@@ -2131,7 +2131,7 @@ void Hero_UpdateMovement(void) {
             if (g_hero.state_timer == scale_ticks(0x14)) {
                 emit_hero_surface_effect_burst(3, 0x10, 1);
                 if (rilgar_water_patches != 0) {
-                    RippleDisturb(rilgar_water_patches, D_L05_00161398, 0, g_hero.motion.pos.f[0], g_hero.motion.pos.f[1], 0.4f, 0.35f);
+                    RippleDisturb(rilgar_water_patches, rilgar_water_patch_count, 0, g_hero.motion.pos.f[0], g_hero.motion.pos.f[1], 0.4f, 0.35f);
                 }
             }
             if (g_hero.anim_frame >= 4.0f && g_hero.anim_frame <= 7.0f) {
@@ -2241,8 +2241,8 @@ void Hero_UpdateMovement(void) {
 
                     FastVecScale(vec[1], g_hero.motion.displacement.f, 7.0f);
                     for (i = 0; i < n; i++) {
-                        if (is_moby_in_class_range_500_to_540((int)D_L05_00178400[i])) {
-                            PostHitMessage(D_L05_00178400[i], (int)g_hero.moby, 0x10000, g_hero.motion.pos.f, vec[1], 1.0f);
+                        if (is_moby_in_class_range_500_to_540((int)rilgar_nearby_mobys[i])) {
+                            PostHitMessage(rilgar_nearby_mobys[i], (int)g_hero.moby, 0x10000, g_hero.motion.pos.f, vec[1], 1.0f);
                         }
                     }
                 }

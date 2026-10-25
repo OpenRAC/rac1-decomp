@@ -862,7 +862,7 @@ void update_tutorial_hint_triggers(unsigned char *moby) {
             int count = 0;
             int i;
             for (i = 0; i < 37; i++) {
-                if (D_L02_0017A140[i].active == 0 && i != 8 && i != 24) {
+                if (aridia_item_defs[i].active == 0 && i != 8 && i != 24) {
                     if ((menu_item_enabled_115 + 0xB9)[i] != 0) {
                         count++;
                     }

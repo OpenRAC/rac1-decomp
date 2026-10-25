@@ -196,11 +196,11 @@ extern int D_0015EFC0 MACRO_ADDR;
 extern void func_00121750(int, int, int, void *);
 
 int Stream_SubmitRead(int arg0, int arg1, int arg2) {
-    StreamHdr hdr = D_00151800;
+    StreamHdr hdr = stream_read_mode_template;
 
-    hdr.b[1] = D_0015EE58[0];
-    D_0015EFBC = 0;
-    D_0015EFC0 = 0;
+    hdr.b[1] = cd_read_spindle_speed[0];
+    cd_read_wait_frames = 0;
+    cd_read_slowdown_applied = 0;
     func_00121750(arg1, arg2, arg0, &hdr);
     return 1;
 }
@@ -439,7 +439,7 @@ void set_sound_handle_id(int arg0, long arg1) {
     short *p = (short *)(int)arg1;
     if (p != 0) {
         if (*(unsigned int *)p != 0xFFFFFFFF) {
-            STUB_printf(D_00160168);
+            STUB_printf(sound_handle_in_use_message);
         } else {
             *(int *)p = arg0;
             if (arg0 == 0) {
@@ -562,13 +562,13 @@ void process_menu_entry(void *arg0, Menu *menu, s32 arg2) {
             e = (MenuItem *)(menu->unk3C + n * 0x1C);
             menu->unk8 = *(u8 *)&e->unk10 & 1;
             if (flags & 4) {
-                D_001994C0[2] = (s32)arg0;
-                D_001994C0[3] = (s32)menu;
+                menu_entry_trigger_state[2] = (s32)arg0;
+                menu_entry_trigger_state[3] = (s32)menu;
                 if (e->unk4 & 0x4000) {
                     noop_callback_n((s16)(e->unk4 ^ 0x4000));
                 } else {
-                    remove_hud_item(D_00160170);
-                    D_00160170 = -1;
+                    remove_hud_item(menu_help_hud_item);
+                    menu_help_hud_item = -1;
                     noop_callback_o((s16)e->unk4);
                 }
             }
@@ -577,26 +577,26 @@ void process_menu_entry(void *arg0, Menu *menu, s32 arg2) {
     if (menu->unk36 == -1) {
         return;
     }
-    D_001994C0[5] = e->unk0;
+    menu_entry_trigger_state[5] = e->unk0;
     kind = e->unk8;
     if (kind == 6) {
-        sfx = D_001E89B0;
+        sfx = menu_time_suffixes;
         func_001166FC((Cfg13*)((char *)0x70000000), msg_string(e->unk0));
-        p = func_00116CC0(((char *)0x70000000), D_00160188);
+        p = func_00116CC0(((char *)0x70000000), menu_entry_find_token);
         if (p != 0) {
             p[1] = 's';
         }
         t = vendor_item_prices[e->unkA].unk14;
-        func_00116248(num, D_00160190, t / 1000, sfx.s[g_game_language % 6], t % 1000);
+        func_00116248(num, menu_time_value_format, t / 1000, sfx.s[g_game_language % 6], t % 1000);
         func_00116248(buf, ((char *)0x70000000), num);
     } else {
         func_00116248(buf, msg_string(e->unk0));
     }
-    if (D_001994C0[5] != 0) {
+    if (menu_entry_trigger_state[5] != 0) {
         copy_text_to_shared_buffer(buf);
-    } else if (D_00160170 != -1) {
-        remove_hud_item(D_00160170);
-        D_00160170 = -1;
+    } else if (menu_help_hud_item != -1) {
+        remove_hud_item(menu_help_hud_item);
+        menu_help_hud_item = -1;
     }
     if (e->unk8 == 0) {
         return;

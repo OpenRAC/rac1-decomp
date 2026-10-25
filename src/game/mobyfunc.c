@@ -573,7 +573,7 @@ void MobyTransformScaledVertex(char *arg0, int arg1, char *arg2) {
 
     s = *(float *)(arg0 + 0x2C) * 0.0009765625f;
     n = arg1;
-    func_002116A0(arg0, 1, &n, arg2);
+    get_moby_joint_matrices(arg0, 1, &n, arg2);
     v = arg2 + 0x30;
     FastVecScale(v, v, s);
     func_001FA460_2(buf, arg0 + 0xC0);
@@ -617,16 +617,16 @@ void DmaMobyTextures(void) {
     int *p = (int *)g_render_packet_cursor;
 
     g_render_packet_cursor += 0x10;
-    ((int *)D_0016000C)[0] = 0x20000000;
-    ((int *)D_0016000C)[1] = g_render_packet_cursor;
-    ((int *)D_0016000C)[2] = 0;
-    ((int *)D_0016000C)[3] = 0;
+    ((int *)moby_texture_tag_slot)[0] = 0x20000000;
+    ((int *)moby_texture_tag_slot)[1] = g_render_packet_cursor;
+    ((int *)moby_texture_tag_slot)[2] = 0;
+    ((int *)moby_texture_tag_slot)[3] = 0;
     if (draw_config[10] != 0 && draw_config[9] != 0) {
         func_00212258(g_gs_texture_allocation_cursor);
         VU1_texFlush();
     }
     ((int *)g_render_packet_cursor)[0] = 0x20000000;
-    ((int *)g_render_packet_cursor)[1] = D_0016000C + 0x10;
+    ((int *)g_render_packet_cursor)[1] = moby_texture_tag_slot + 0x10;
     ((int *)g_render_packet_cursor)[2] = 0;
     ((int *)g_render_packet_cursor)[3] = 0;
     g_render_packet_cursor += 0x10;
@@ -712,7 +712,7 @@ void update_resident_packed_direction(void) {
     float buf[4];
     float a;
 
-    func_0020E360((void *)g_hero_moby, buf);
+    get_moby_light_direction((void *)g_hero_moby, buf);
     a = fast_arc_tan(buf[0], buf[1]);
     shadow_light_dir[0] = FastCos(a) * 0.14f;
     shadow_light_dir[1] = FastSin(a) * 0.14f;
@@ -753,7 +753,7 @@ void configure_graphics_setup_dma_chain(void) {
     ((int *)graphics_setup_tag_slot)[2] = 0;
     ((int *)graphics_setup_tag_slot)[3] = 0;
     func_00228A58();
-    submit_graphics_setup_command_stream(D_001C8A00);
+    submit_graphics_setup_command_stream(graphics_setup_command_stream);
     ((int *)g_render_packet_cursor)[0] = 0x20000000;
     ((int *)g_render_packet_cursor)[1] = graphics_setup_tag_slot + 0x10;
     ((int *)g_render_packet_cursor)[2] = 0;
@@ -763,7 +763,7 @@ void configure_graphics_setup_dma_chain(void) {
     p[1] = g_render_packet_cursor;
     p[2] = 0;
     p[3] = 0;
-    ProfileMarker_End(D_0015FFC0, 8);
+    ProfileMarker_End(graphics_setup_profile_label, 8);
 }
 
 extern void func_00118D80(int);
@@ -821,14 +821,14 @@ void DrawMobysSetup(void) {
 
     VU1_addDataRef(moby_vu1_data, moby_vu1_data_qwc);
     font_state = 6;
-    VU0_loadMicroProgram(D_00100080);
+    VU0_loadMicroProgram(moby_vu0_micro_program);
     VU1_addGSregister(0x47, 0x5360B);
     p = g_render_packet_cursor;
-    D_0016000C = p;
+    moby_texture_tag_slot = p;
     g_gs_texture_allocation_cursor = g_gs_texture_allocation_start;
     p += 0x10;
     g_render_packet_cursor = p;
-    ProfileMarker_Begin(D_0015FFD0, 1);
+    ProfileMarker_Begin(draw_mobys_profile_label, 1);
     graphics_setup_tag_slot = 0;
     vu1_chain_limit = vu1_chain_safe_end - 0x10000;
     moby_anim_head = render_packet_end;
@@ -857,16 +857,16 @@ extern int D_00160038 MACRO_ADDR;
    DmaMobyTextures and func_00212508 take nothing. With the arguments
    right, D_0015FFF0 is a plain array, not MACRO_ADDR. */
 void DrawMobysCleanUp(void) {
-    ProfileMarker_Begin(D_0015FFE0, 3);
+    ProfileMarker_Begin(moby_texture_dma_profile_label, 3);
     DmaMobyTextures();
-    ProfileMarker_End(D_0015FFE0, 5);
+    ProfileMarker_End(moby_texture_dma_profile_label, 5);
     if (draw_config[10] != 0) {
         ProcessMobyAnimData();
         if (moby_word_fill_table_bytes != 0) {
             func_00212508();
         }
     }
-    ProfileMarker_End(D_0015FFF0, 3);
+    ProfileMarker_End(draw_mobys_cleanup_profile_label, 3);
     if (draw_config[10] != 0 && graphics_setup_tag_slot != 0) {
         configure_graphics_setup_dma_chain();
     }

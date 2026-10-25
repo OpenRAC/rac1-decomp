@@ -2425,8 +2425,8 @@ void SkidMcMarxUpdate(Moby *moby) {
             if (r != 0) {
                 FastVecScale(v3, v1, 7.0f);
                 for (j = 0; j < r; j++) {
-                    if (is_moby_in_class_range_500_to_540(D_L05_00178400[j]) != 0) {
-                        PostHitMessage((void *)D_L05_00178400[j], (int)moby, 0x30000, d->pos, v3, 1.0f);
+                    if (is_moby_in_class_range_500_to_540(rilgar_nearby_mobys[j]) != 0) {
+                        PostHitMessage((void *)rilgar_nearby_mobys[j], (int)moby, 0x30000, d->pos, v3, 1.0f);
                     }
                 }
             }
@@ -2720,7 +2720,7 @@ void WaterSurfaceUpdate(Moby *moby) {
             g_light.b3D = 0x40;
             rilgar_water_patches = D_L05_001D6BC0_0030DED8;
             rilgar_water_patch_position_table = rilgar_water_patch_positions;
-            D_L05_00161398 = 0x30;
+            rilgar_water_patch_count = 0x30;
             D_L05_001612C4[0] = 0;
             D_L05_001612C5[0] = 0xB;
             D_L05_001612C6[0] = 0x3E;

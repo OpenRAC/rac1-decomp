@@ -181,7 +181,7 @@ void func_L00_0029D988_r(void) {
                         d_0029b4d8(0);
                         vendor_menu_r.f58++;
                         d_voice(1, 0, vendor_menu_r.f1c);
-                        d_status(d_helptext(D_L00_001C2488[(vendor_menu_r.fD0[vendor_menu_r.f58]).fD0].pad[3]));
+                        d_status(d_helptext(vendor_item_info[(vendor_menu_r.fD0[vendor_menu_r.f58]).fD0].pad[3]));
                         if (vendor_menu_r.f50 != -1) {
                             d_meter_free(vendor_menu_r.f50, 0);
                         }
@@ -197,7 +197,7 @@ void func_L00_0029D988_r(void) {
                         d_0029b4d8(0);
                         vendor_menu_r.f58--;
                         d_voice(1, 0, vendor_menu_r.f1c);
-                        d_status(d_helptext(D_L00_001C2488[(vendor_menu_r.fD0[vendor_menu_r.f58]).fD0].pad[3]));
+                        d_status(d_helptext(vendor_item_info[(vendor_menu_r.fD0[vendor_menu_r.f58]).fD0].pad[3]));
                         if (vendor_menu_r.f50 != -1) {
                             d_meter_free(vendor_menu_r.f50, 0);
                         }
@@ -219,7 +219,7 @@ void func_L00_0029D988_r(void) {
                         } else {
                             vendor_menu_r.f58 = 0;
                         }
-                        d_status(d_helptext(D_L00_001C2488[(vendor_menu_r.fD0[vendor_menu_r.f58]).fD0].pad[3]));
+                        d_status(d_helptext(vendor_item_info[(vendor_menu_r.fD0[vendor_menu_r.f58]).fD0].pad[3]));
                         if (vendor_menu_r.f50 != -1) {
                             d_meter_free(vendor_menu_r.f50, 0);
                         }
@@ -240,7 +240,7 @@ void func_L00_0029D988_r(void) {
                         } else {
                             vendor_menu_r.f58 = vendor_menu_r.f210 - 1;
                         }
-                        d_status(d_helptext(D_L00_001C2488[(vendor_menu_r.fD0[vendor_menu_r.f58]).fD0].pad[3]));
+                        d_status(d_helptext(vendor_item_info[(vendor_menu_r.fD0[vendor_menu_r.f58]).fD0].pad[3]));
                         if (vendor_menu_r.f50 != -1) {
                             d_meter_free(vendor_menu_r.f50, 0);
                         }

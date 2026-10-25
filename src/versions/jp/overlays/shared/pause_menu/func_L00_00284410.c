@@ -7,15 +7,15 @@ void process_unlock_code_input(void) {
         pressed = *(int *)(pad + 0x1C4);
         if (!(pressed & 0xF0A0)) return;
 
-        if (*(int *)&D_L00_001604B8 >= 20) return;
+        if (*(int *)&unlock_code_input_count >= 20) return;
         if (pressed & 0x1000) direction = 0;
         else if (pressed & 0x4000) direction = 1;
         else if (pressed & 0x8000) direction = 2;
         else if (pressed & 0x2000) direction = 3;
         else direction = (pressed & 0x80) ? 4 : 5;
-        count = *(int *)&D_L00_001604B8;
-        D_L00_001BA838[count++] = direction;
-        *(int *)&D_L00_001604B8 = count;
+        count = *(int *)&unlock_code_input_count;
+        unlock_code_input[count++] = direction;
+        *(int *)&unlock_code_input_count = count;
         if (count != 20) return;
         code = -1;
         index = 2;
@@ -24,7 +24,7 @@ void process_unlock_code_input(void) {
         for (; index < lim; index++) {
             matched = 1;
             for (j = 0; j < 20; j++) {
-                if (D_L00_001BA838[j] != D_L00_001B9F20[(j * index + index) & 0xff]) {
+                if (unlock_code_input[j] != unlock_code_key_table[(j * index + index) & 0xff]) {
                     matched = 0;
                     break;
                 }
@@ -55,6 +55,6 @@ void process_unlock_code_input(void) {
             }
         }
     } else {
-        *(int *)&D_L00_001604B8 = 0;
+        *(int *)&unlock_code_input_count = 0;
     }
 }

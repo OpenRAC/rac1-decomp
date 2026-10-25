@@ -730,7 +730,7 @@ void boltcrate_possibly_for_metal_detector_update(char *m) {
                               path + 0x10 + ((j + 1) % *(int *)path) * 16);
         }
         if (get_first_moby_in_group(&current, ((CrateGroupView *)data)->group, 1, 0)) {
-            STUB_printf(D_L07_00211840, ((CrateGroupView *)data)->group);
+            STUB_printf(umbris_boltcrate_no_group_msg, ((CrateGroupView *)data)->group);
             return;
         }
         first = ((CrateGroupView *)data)->first_segment = select_point_index_by_distance((char *)&moby->pos, path, 0.0f);
@@ -746,9 +746,9 @@ void boltcrate_possibly_for_metal_detector_update(char *m) {
             if (get_next_moby_in_group(&current, current, 1, 0)) {
                 int child_count = ((CrateGroupView *)data)->child_count;
                 if (placed < child_count - 1) {
-                    STUB_printf(D_L07_00211870, placed + 1, ((CrateGroupView *)data)->group, child_count);
+                    STUB_printf(umbris_boltcrate_too_few_msg, placed + 1, ((CrateGroupView *)data)->group, child_count);
                 } else if (placed == child_count - 1) {
-                    STUB_printf(D_L07_002118C0, ((CrateGroupView *)data)->group, child_count);
+                    STUB_printf(umbris_boltcrate_group_end_msg, ((CrateGroupView *)data)->group, child_count);
                 }
                 ((CrateGroupView *)data)->child_count = placed + 1;
                 break;
@@ -891,7 +891,7 @@ void update_linear_projectile(Moby *m) {
     }
     if ((m->visible != 0 || vec_distance_xy(&m->pos, D_0013E633 + 0xE9D) < 30.0f) &&
         func_L00_001EFFF0_30CA88(&old, &m->pos, pass, v->ignore, v) != 0) {
-        qcopy(&m->pos, &D_L07_00173F60);
+        qcopy(&m->pos, &umbris_coll_hit_point);
         if (m->visible != 0) {
             for (j = 0; j < 5; j++) {
                 spark.q = 0;
@@ -899,7 +899,7 @@ void update_linear_projectile(Moby *m) {
                 spark.f[1] = random_float_between(-1.0f, 1.0f);
                 spark.f[2] = random_float_between(-1.0f, 1.0f);
                 dir.q = spark.q;
-                vec_reflect(&spark, &v->vel, D_L07_00173F80);
+                vec_reflect(&spark, &v->vel, umbris_coll_hit_normal);
                 vec_scale_to_length(&dir, &dir, FastVecLength(&spark) * 0.5f);
                 FastVecAdd(&dir, &spark, &dir);
                 vec_scale_to_length(&dir, &dir,
@@ -1120,8 +1120,8 @@ void WaterPlateUpdate(Moby *m) {
             int (*p)[4];
             func_L01_002B8C00_30D8E8(D_L07_001DD100_30D8E8, 0x24);
             func_L01_002B90A8_30D8E8(1.0f);
-            cab = &D_L07_001CAB80;
-            dir = &D_L07_0017FFC0;
+            cab = &umbris_water_ripple_params;
+            dir = &umbris_moby_lights;
             cab->f0 = 16.0f;
             cab->f4 = 16.0f;
             cab->f8 = -8.0f;
@@ -1136,19 +1136,19 @@ void WaterPlateUpdate(Moby *m) {
             cab->f38 = -0.57735f;
             cab->i28 = 0x28;
             cab->i2C = 0x29;
-            p = D_L07_002049C0;
-            D_L07_00161358 = 0x24;
+            p = umbris_water_patch_coords;
+            umbris_pool_draw_count = 0x24;
             D_L07_0016128C = 32768.0f;
             D_L07_00161290 = 255.0f;
             D_L07_00161294 = 48.0f;
             cab->b3C = 0x40;
             cab->b3D = 0x40;
-            D_L07_00161350 = D_L07_001DD100_30D8E8;
-            D_L07_00161354 = D_L07_002049C0;
+            umbris_pool_draw_tiles = D_L07_001DD100_30D8E8;
+            umbris_pool_draw_tex = umbris_water_patch_coords;
             D_L07_00161288 = 0;
             for (i = 0; i < 0x24; i++) {
                 func_L01_002B8E20_30D8E8(&D_L07_001DD100_30D8E8[i], p[i]);
-                D_L07_001DD100_30D8E8[d->idx].h1E = D_L07_00204940[d->idx];
+                D_L07_001DD100_30D8E8[d->idx].h1E = umbris_water_grid_saved_states[d->idx];
             }
             for (k = 0; k < 0x24; k++) {
                 Rec_30D8E8 *t = D_L07_001DD100_30D8E8;
@@ -1243,7 +1243,7 @@ void WaterPlateUpdate(Moby *m) {
         return;
     }
     {
-        Cab_30D8E8 *cab = &D_L07_001CAB80;
+        Cab_30D8E8 *cab = &umbris_water_ripple_params;
         D_L07_001DD100_30D8E8[d->idx].b1C = cab->b3C;
         D_L07_001DD100_30D8E8[d->idx].b1D = cab->b3D;
     }
@@ -1257,21 +1257,21 @@ void WaterPlateUpdate(Moby *m) {
     if (on == 0.0f) {
         D_L07_001DD100_30D8E8[d->idx].h1E = 0;
     } else {
-        D_L07_001DD100_30D8E8[d->idx].h1E = D_L07_00204940[d->idx];
+        D_L07_001DD100_30D8E8[d->idx].h1E = umbris_water_grid_saved_states[d->idx];
     }
     if (d->idx == 0) {
         func_L01_002B9198_30D8E8(D_L07_001DD100_30D8E8, 0x24);
         AddDrawCallback(func_L07_0030E100_30D8E8, m);
     }
     if (d->idx == water_grid_override_index) {
-        D_L07_001DD100_30D8E8[d->idx].h1E = D_L07_00161BC4;
-        D_L07_00204940[d->idx] = D_L07_00161BC4;
+        D_L07_001DD100_30D8E8[d->idx].h1E = umbris_water_grid_override_value;
+        umbris_water_grid_saved_states[d->idx] = umbris_water_grid_override_value;
     }
 }
 extern void func_L01_002BA380(char *, int);
 extern char D_L07_001DD100[];
 void render_level07_water_grids(void) {
-    render_water_grids(D_L07_001DD100, 0x24);
+    render_water_grids(umbris_water_grids, 0x24);
 }
 typedef struct {
     float x;
@@ -1479,7 +1479,7 @@ extern void func_00216270(void);
 void ocean_umbris_update(unsigned char *moby) {
     switch (moby[0x20]) {
     case 0:
-        prepare_scaled_table_with_byte_128(D_L07_00208820, 0.66666669f);
+        prepare_scaled_table_with_byte_128(umbris_ocean_scaled_table, 0.66666669f);
         moby[0x20] = 1;
         moby[0x30] = 0xFF;
         break;
@@ -1870,7 +1870,7 @@ void update_fading_ring_effect(unsigned char *m) {
     }
     AddDrawCallback((void *)draw_fading_ring_effect, m);
     register_fading_ring_hit(*(void **)(D_0013E633 + 0x2E9D), m, d);
-    for (p = D_L07_00160064; p; p = *(char **)(p + 0x28)) {
+    for (p = umbris_moby_list; p; p = *(char **)(p + 0x28)) {
         register_fading_ring_hit(p, m, d);
     }
 }
@@ -2185,7 +2185,7 @@ int initialize_sharkigator(char *moby, char *d) {
     int i = *(int *)(d + 0x110);
     int j, k, n;
     if (i == -1) {
-        STUB_printf(D_L07_00211A10, (int)(moby - level_mobys) >> 8);
+        STUB_printf(umbris_sharkigator_no_path_msg, (int)(moby - level_mobys) >> 8);
         return 1;
     }
     t = umbris_paths;
@@ -2194,7 +2194,7 @@ int initialize_sharkigator(char *moby, char *d) {
     cache_path_segment_lengths(p);
     j = *(int *)(d + 0x144);
     if (j == -1) {
-        STUB_printf(D_L07_00211A48, (int)(moby - level_mobys) >> 8);
+        STUB_printf(umbris_sharkigator_no_other_path_msg, (int)(moby - level_mobys) >> 8);
         return 1;
     }
     q = t[j];
@@ -2202,7 +2202,7 @@ int initialize_sharkigator(char *moby, char *d) {
     cache_path_segment_lengths(q);
     k = *(int *)(d + 0x118);
     if (k == -1) {
-        STUB_printf(D_L07_00211A80, (int)(moby - level_mobys) >> 8);
+        STUB_printf(umbris_sharkigator_no_target_moby_msg, (int)(moby - level_mobys) >> 8);
         return 1;
     }
     *(char **)(d + 0x12C) = level_mobys + (k << 8) + 0x18;
@@ -2210,7 +2210,7 @@ int initialize_sharkigator(char *moby, char *d) {
     base = D_L07_0016016C_addr;
     n = *(int *)(d + 0x114);
     if (n == -1) {
-        STUB_printf(D_L07_00211AB0, (int)(moby - level_mobys) >> 8);
+        STUB_printf(umbris_sharkigator_no_point_msg, (int)(moby - level_mobys) >> 8);
         return 1;
     }
     qcopy(d + 0xF0, (void *)((n << 7) + base + 0x30));
@@ -2468,7 +2468,7 @@ void SharkigatorUpdate(unsigned char *moby) {
     Manipulator_ApplyScale(moby, 0, data + 0x150, 2.2f);
     if (moby[0x20] == 0) {
         if (initialize_sharkigator((char *)moby, data)) {
-            STUB_printf(D_L07_00211AE8, (int)((char *)moby - level_mobys) >> 8);
+            STUB_printf(umbris_sharkigator_init_failed_msg, (int)((char *)moby - level_mobys) >> 8);
             DeleteMoby(moby);
             return;
         }
@@ -2511,8 +2511,8 @@ void SharkigatorUpdate(unsigned char *moby) {
     moby[0xBC] = classify_sharkigator_water_height_gap((char *)moby, data);
     cur = moby[0xBC];
     if (prev != cur) {
-        next = ((struct { unsigned char t[3][3]; } *)&D_L07_00161BD0)->t[prev][cur];
-        anim = ((struct { unsigned char t[3][3]; } *)&D_L07_00161BE0)->t[prev][cur];
+        next = ((struct { unsigned char t[3][3]; } *)&umbris_sharkigator_gap_next_state)->t[prev][cur];
+        anim = ((struct { unsigned char t[3][3]; } *)&umbris_sharkigator_gap_anim)->t[prev][cur];
     }
     Moby_GetJointWorldPos(moby, 0, pos);
     if (coll_sphere(0.8f, pos, 1, moby) != 0 && CollType() == 0) {
@@ -2532,20 +2532,20 @@ void SharkigatorUpdate(unsigned char *moby) {
         if (moby[0x20] == 0xE || moby[0x20] == 0xC) {
             s += s;
         }
-        if (0.5f < vec_distance_xy(moby + 0x10, &D_L07_00173F60)) {
-            f = vec_distance_xy(moby + 0x10, &D_L07_00173F60);
+        if (0.5f < vec_distance_xy(moby + 0x10, &umbris_coll_hit_point)) {
+            f = vec_distance_xy(moby + 0x10, &umbris_coll_hit_point);
             f += f;
         } else {
             f = 1.0f;
         }
         if (umbris_frame_count % 45 == *(short *)(moby + 0xB2) && random_integer_below(2) == 0) {
-            func_L00_002A5158_30D8E8(D_L07_00161350, D_L07_00161358, 1, F(moby, 0x10), F(moby, 0x14), f, s);
+            func_L00_002A5158_30D8E8(umbris_pool_draw_tiles, umbris_pool_draw_count, 1, F(moby, 0x10), F(moby, 0x14), f, s);
         }
         if (umbris_frame_count % ((func_001160D8() & 7) + 20) == 0) {
             float size = random_float_between(1.5f, 2.4f);
             pos[0] += random_float_between(-0.15f, 0.15f);
             pos[1] += random_float_between(-0.15f, 0.15f);
-            pos[2] = resolve_camera_surface_height(&D_L07_00173F60, 0);
+            pos[2] = resolve_camera_surface_height(&umbris_coll_hit_point, 0);
             spawn_moving_resizing_height_snapped_alpha_fade_particle(pos, 0, -1, size, 5250.0f);
         }
     }
@@ -2555,7 +2555,7 @@ void SharkigatorUpdate(unsigned char *moby) {
 
     switch (moby[0x20]) {
     case 0:
-        STUB_printf(D_L07_00211B28);
+        STUB_printf(umbris_sharkigator_state0_msg);
         goto end;
     case 1:
         if ((moby[0x70] & 2) && moby[0x53] != 0) {
@@ -3263,7 +3263,7 @@ void configure_timed_point_light(float radius, void *moby_, void *obj_, short pa
         }
     }
     if (*(short *)(obj + 0x280) != -1) {
-        e = D_L07_001803C0 + (*(short *)(obj + 0x280) << 5);
+        e = umbris_lights + (*(short *)(obj + 0x280) << 5);
         if (*(short *)(obj + 0x282) == pa && (pa == -1 || *(short *)(obj + 0x284) == 0) || *(short *)(obj + 0x282) != pa) {
             if (b != -1) {
                 *(short *)(obj + 0x284) = b;
@@ -3338,7 +3338,7 @@ void update_timed_point_light_color(char *a) {
             f /= IntToFloat(h);
             c = FastTweenColor(*(int *)(a + 0x288), *(int *)(a + 0x28C), 1.0f - f);
         }
-        p = (float *)(D_L07_001803C0 + *(short *)(a + 0x280) * 32);
+        p = (float *)(umbris_lights + *(short *)(a + 0x280) * 32);
         p[0] = IntToFloat(c & 0xFF) * 0.0078125f;
         p[1] = IntToFloat((c >> 8) & 0xFF) * 0.0078125f;
         p[2] = IntToFloat((c >> 16) & 0xFF) * 0.0078125f;

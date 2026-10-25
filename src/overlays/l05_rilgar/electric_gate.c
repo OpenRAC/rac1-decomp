@@ -663,7 +663,7 @@ void emit_drain_cover_particles(char *obj, float a, float b) {
         if (t < w[2]) w[2] = t;
         u = random_float_between(*(float *)&drain_cover_spray_size_min, *(float *)&drain_cover_spray_size_max);
         k = scale_ticks(*(int *)&drain_cover_spray_life);
-        m = func_001FA898_r(randf_sym(fi, (float)*(int *)&D_L05_00161E84));
+        m = func_001FA898_r(randf_sym(fi, (float)*(int *)&drain_cover_spray_spin_range));
         n = *(int *)&drain_cover_spray_color;
         create_particle_with_velocity_and_lifetime(u, w, v, k, m, n);
     }
@@ -1547,7 +1547,7 @@ void update_hoverboard_girl_cutscene_instances(char *arg) {
             char *moby = rilgar_cutscene_state.m[i];
             if (*(short *)(moby + 0xA6) == *(short *)(arg + 0xA6)) {
                 if (gCheats[0] != 0) {
-                    unsigned char *q = D_L05_0017C9A0;
+                    unsigned char *q = rilgar_big_head_manipulator;
                     if (q[1] == 0) {
                         AttachManipulator(moby, 0, q);
                         *(float *)(q + 0x20) = 2.75f;
@@ -2402,7 +2402,7 @@ void PickupL05_Update(char *moby) {
         ApproachWithVelocity(1.0f, g_frame_time_sq, g_frame_time_sq, g_frame_time * 0.5f, (float *)(taxi_data + 0xC0), (float *)(taxi_data + 0xC4));
         qa = rotation_or_start_position_scratch;
         s = *(int *)(taxi_data + 0x80 - (-(*(short *)(taxi_data + 0xB4) * 4)));
-        tab = D_L05_001601AC;
+        tab = rilgar_level_cuboids;
         qcopy(qa, tab[s].position);
         qcopy(interpolation_start_angles, tab[s].direction);
         z = 0.0f;
@@ -2427,7 +2427,7 @@ void PickupL05_Update(char *moby) {
         ApproachWithVelocity(1.0f, g_frame_time_sq, g_frame_time_sq, g_frame_time * 0.5f, (float *)(taxi_data + 0xC0), (float *)(taxi_data + 0xC4));
         qa = interpolation_end_position;
         s = *(int *)(taxi_data + 0x80 - (-(*(short *)(taxi_data + 0xB6) * 4)));
-        tab = D_L05_001601AC;
+        tab = rilgar_level_cuboids;
         qcopy(qa, tab[s].position);
         qcopy(interpolation_end_angles, tab[s].direction);
         SamplePathAt(*(int **)(taxi_data + 0xAC), 0, rotation_or_start_position_scratch, interpolation_start_angles, 0, (float)**(int **)(taxi_data + 0xAC));

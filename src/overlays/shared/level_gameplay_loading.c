@@ -608,7 +608,7 @@ char *load_level_gameplay(int arg0) {
     func_00118D80(0);
     FastMemSet(&g_hero, 0, 0x2310);
     FastMemSet(player_camera, 0, 0x3A0);
-    FastMemSet(D_L00_0018EEC0, 0, 0x180);
+    FastMemSet(moby_animation_slots, 0, 0x180);
     func_001160C8(0x4D2);
     if (pal_mode != 0) {
         if (frame_scale == 1.0f) {
@@ -1480,11 +1480,11 @@ char *load_level_gameplay(int arg0) {
         char *q = (char *)hdr + hdr->f84;
         int size = *(int *)q;
 
-        D_L00_0015F080 = mem;
+        camera_collision_grid = mem;
         q += 0x10;
         size += 0x4000;
         mem += size;
-        copy_memory_by_alignment(D_L00_0015F080, q, size);
+        copy_memory_by_alignment(camera_collision_grid, q, size);
         mem = (char *)(((u32)mem + 0x3F) & 0xFFFFFFC0);
     }
     if (hdr->f78 != 0) {
@@ -1515,13 +1515,13 @@ char *load_level_gameplay(int arg0) {
         char *q = (char *)hdr + hdr->f88;
         int n = *(int *)q;
 
-        D_L00_00160100 = mem;
-        D_L00_001600D4 = n;
+        environment_samples = mem;
+        environment_sample_count = n;
         q += 0x10;
         mem += n * 0x30;
         mem = (char *)(((u32)mem + 0x3F) & 0xFFFFFFC0);
         if (n != 0) {
-            copy_memory_by_alignment(D_L00_00160100, q, n * 0x30);
+            copy_memory_by_alignment(environment_samples, q, n * 0x30);
         }
     }
     particle_pool = mem;
@@ -2006,8 +2006,8 @@ s32 load_level_archive_resources(s32 full, s32 keep) {
         } else {
             D_L00_0015FD58 = 0;
             D_L00_0015FD5C = 0;
-            D_L00_0015FD64 = 0;
-            D_L00_0015FD60 = 0;
+            height_map_max_height = 0;
+            height_map_min_height = 0;
             D_L00_0015FD68 = 0;
         }
         if (h->v[0x2A])
@@ -2122,7 +2122,7 @@ s32 load_level_archive_resources(s32 full, s32 keep) {
     } else {
         clear_scene_state_buffers();
         for (z = 15; z >= 0; z--)
-            D_0014EF90[z] = 0;
+            mission_death_counts[z] = 0;
     }
     active_scene_trigger.f10 = 0;
     *(s32 *)&active_scene_trigger.f8 = 0;

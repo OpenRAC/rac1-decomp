@@ -141,7 +141,7 @@ void SetDeathBits(unsigned char *m, int flags, int arg) {
     unsigned char *g;
 
     amt = *(short *)(m + 0xB4);
-    STUB_printf(D_L00_001E9280, *(short *)(m + 0xA6), *(short *)(m + 0xB2), *(short *)(m + 0xB4), *(short *)(m + 0xB6));
+    STUB_printf(death_bits_moby_debug_format, *(short *)(m + 0xA6), *(short *)(m + 0xB2), *(short *)(m + 0xB4), *(short *)(m + 0xB6));
     if (m[0xB1] == 0xFE) {
         return;
     }
@@ -151,11 +151,11 @@ void SetDeathBits(unsigned char *m, int flags, int arg) {
     lvl = g_current_level_index;
     level_moby_killed[lvl][*(short *)(m + 0xB2) >> 5] |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
     session_moby_killed[*(short *)(m + 0xB2) >> 5] |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
-    D_L00_001BA960.a[*(short *)(m + 0xB2)] = m[0xB0] + 2;
+    current_level_state.a[*(short *)(m + 0xB2)] = m[0xB0] + 2;
     k = m[0xB0];
     {unsigned int u = k & 0xFF;
     if (k == 0xFF || (mission_state[u] != 0xFF && saved_mission_state[lvl][u] == 0xFF)) {
-        D_L00_001BB5C0.a[*(short *)(m + 0xB2)] = k + 2;
+        checkpoint_level_state.a[*(short *)(m + 0xB2)] = k + 2;
     }}
     if ((signed char)m[0xB1] >= 0) {
         int n1 = *(short *)(m + 0xB6);
@@ -169,7 +169,7 @@ void SetDeathBits(unsigned char *m, int flags, int arg) {
         if (amt < 1.0f) {
             amt = 1.0f;
         }
-        STUB_printf(D_L00_001E92A8, truncate_float_to_s32(amt));
+        STUB_printf(death_bits_bolt_amount_debug_format, truncate_float_to_s32(amt));
     }
     f = 1;
     if (flags & 0x100) {

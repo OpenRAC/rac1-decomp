@@ -87,7 +87,7 @@ void GroundAttachedUpdate(M_2cfcb8 *moby) {
         if (moby->oclass == 0x1F4 && random_integer_below(2) != 0 && moby->rot_x == 0.0f && moby->rot_y == 0.0f) {
             moby->rot_z = FastAddRots(moby->rot_z, 1.5707964f);
         }
-        if (moby->oclass == 0x1F5 && moby->mission != 0xFF && D_0014EF90[moby->mission] < vars->iF8) {
+        if (moby->oclass == 0x1F5 && moby->mission != 0xFF && mission_death_counts[moby->mission] < vars->iF8) {
             func_0020D678_D1168(moby);
             return;
         }
@@ -128,7 +128,7 @@ void GroundAttachedUpdate(M_2cfcb8 *moby) {
             if (moby->oclass == 0x1F4 && random_integer_below(2) != 0 && moby->rot_x == 0.0f && moby->rot_y == 0.0f) {
                 moby->rot_z = FastAddRots(moby->rot_z, 1.5707964f);
             }
-            if (moby->oclass == 0x1F5 && moby->mission != 0xFF && D_0014EF90[moby->mission] < vars->iF8) {
+            if (moby->oclass == 0x1F5 && moby->mission != 0xFF && mission_death_counts[moby->mission] < vars->iF8) {
                 func_0020D678_D1168(moby);
             } else {
                 member_flags = vars->flags;
@@ -481,12 +481,12 @@ void break_crate(void *mv, int a1, int av) {
     int c1, c2, a, b, dd, ee;
 
     dat = *(unsigned char **)(m + 0x78);
-    if (subtract_integer_with_clamp(level_frame_counter - D_L00_001619A4) >= 2) {
+    if (subtract_integer_with_clamp(level_frame_counter - crate_break_sound_frame) >= 2) {
         if (*(short *)(m + 0xA6) == 0x1FA) Sound_PlayClassSound(0, 0, m, 0x1F4);
         else Moby_PlaySound(0, 0, (int)m);
-        D_L00_001619A4 = level_frame_counter;
+        crate_break_sound_frame = level_frame_counter;
     }
-    if (subtract_integer_with_clamp(level_frame_counter - D_L00_001619A8) >= 2) D_L00_001619A8 = level_frame_counter;
+    if (subtract_integer_with_clamp(level_frame_counter - crate_break_effect_frame) >= 2) crate_break_effect_frame = level_frame_counter;
     else dc = 1;
 
     if (*(unsigned char **)(dat + 0xA0)) {
@@ -542,9 +542,9 @@ void break_crate(void *mv, int a1, int av) {
 
     {
         for (k = 0; k < n; k++) {
-            matrix_mul_vec3(v70, D_L00_001DEA40 + k * 16, v30);
+            matrix_mul_vec3(v70, crate_debris_piece_offsets + k * 16, v30);
             FastVecAdd(v70, v70, m + 0x10);
-            qcopy(v80, D_L00_001DEAA0 + k * 16);
+            qcopy(v80, crate_debris_piece_rotations + k * 16);
             v80[2] = FastAddRots(v80[2], v20[2]);
             FastVecSub(v60, v70, m + 0x10);
             v60[2] = 0.0f;
@@ -554,7 +554,7 @@ void break_crate(void *mv, int a1, int av) {
             cnt = random_integer_below(2);
             owner = spawn_crate_debris(m, v60, v70, v80, d8, cnt, 1.0f, 1.0f);
             if (owner) {
-                qcopy(owner + 0x40, D_L00_001DEAA0 + k * 16);
+                qcopy(owner + 0x40, crate_debris_piece_rotations + k * 16);
                 *(float *)(owner + 0x48) = FastAddRots(*(float *)(owner + 0x48), v20[2]);
                 moby_build_matrix(owner);
             }
@@ -608,9 +608,9 @@ void break_crate(void *mv, int a1, int av) {
             int i;
             for (i = 0; i < nn; i++) {
                 f = random_float_between(8.0f, 10.0f);
-                *(B24 *)t90 = *(B24 *)D_L00_001EA200;
+                *(B24 *)t90 = *(B24 *)crate_spark_start_colors;
                 f20 = f * g_frame_time;
-                *(B24 *)tB0 = *(B24 *)D_L00_001EA218;
+                *(B24 *)tB0 = *(B24 *)crate_spark_end_colors;
                 f20 = f20 - f22 * g_frame_time;
                 q1 = t90 + random_integer_below(6);
                 q2 = tB0 + random_integer_below(6);
@@ -1281,8 +1281,8 @@ extern unsigned char D_0014C010[];
 void increment_metal_detector_collection_counter(unsigned char *moby) {
  int row=g_current_level_index;
  if (row<20) { int index=moby[0xBC]-1;
- if (index&1) { unsigned char *p=D_0014C010+(index/2+row*16); unsigned int value=*p; int n=(value&15)+1; if(n>=16)n=15; *p=(value&240)|n; }
- else { unsigned char *p=D_0014C010+(index/2+row*16); unsigned int value=*p; int n=(value>>4)+1; if(n>=16)n=15; *p=(value&15)|(n<<4); }
+ if (index&1) { unsigned char *p=metal_detector_dig_counts+(index/2+row*16); unsigned int value=*p; int n=(value&15)+1; if(n>=16)n=15; *p=(value&240)|n; }
+ else { unsigned char *p=metal_detector_dig_counts+(index/2+row*16); unsigned int value=*p; int n=(value>>4)+1; if(n>=16)n=15; *p=(value&15)|(n<<4); }
  }
 }
 INCLUDE_ASM("asm/overlays", func_L00_002D4348);
@@ -2073,7 +2073,7 @@ void horny_toad_update(Moby *moby) {
     Moby *tgt;
 
     data = (Data_5AC0 *)moby->pvars;
-    func_L00_002D6610(moby);
+    process_horny_toad_hit_reaction(moby);
     tgt = data->tgt;
     if (moby->visible != 0 && FastVecDist((*(Vec_5AC0 *)&moby->pos), g_debug_camera) < 26.0f) {
         set_ground_height_band(moby);
@@ -2083,7 +2083,7 @@ void horny_toad_update(Moby *moby) {
     switch (moby->state) {
     case 0: {
         float k;
-        moby->scale = ((Class_5AC0 *)moby->pclass)->f24 * D_L00_00161A3C;
+        moby->scale = ((Class_5AC0 *)moby->pclass)->f24 * horny_toad_scale;
         qcopy(data->f1D0, (*(Vec_5AC0 *)&moby->pos));
         if (moby->prev_seq != 1) MobyBlendAnimation(moby, 1, 0, 0);
         data->f29 = 1;
@@ -2177,10 +2177,10 @@ void horny_toad_update(Moby *moby) {
         }
         break;
     case 6:
-        if (move_horny_toad_toward_position((unsigned char *)moby, data->f180, 0.5f) < D_L00_00161A50
+        if (move_horny_toad_toward_position((unsigned char *)moby, data->f180, 0.5f) < horny_toad_arrive_distance
             && FastDiffRots(moby->rot.z, fast_atan2((*(Vec_5AC0 *)&tgt->pos)[0] - (*(Vec_5AC0 *)&moby->pos)[0], (*(Vec_5AC0 *)&tgt->pos)[1] - (*(Vec_5AC0 *)&moby->pos)[1])) < 0.17453292f) {
             moby->state = 7;
-            if (moby->prev_seq != 5) MobyBlendAnimation(moby, 5, (int)D_L00_00161A54, scale_ticks(10));
+            if (moby->prev_seq != 5) MobyBlendAnimation(moby, 5, (int)horny_toad_attack_anim_start_frame, scale_ticks(10));
         } else if (data->f1C4 == 2) {
             moby->state = 8;
             if (moby->prev_seq != 4) MobyBlendAnimation(moby, 4, 0, scale_ticks(10));
@@ -2447,7 +2447,7 @@ void update_infobot_slot_path_motion(Obj_6e38 *o, Path_6e38 *path, s32 p) {
     c = st->v60;
     if (l <= (c * c) / (s + s)) {
         f32 a1 = c - s;
-        f32 b1 = *(float *)&D_L00_00161A60 * g_frame_time;
+        f32 b1 = *(float *)&infobot_path_min_speed * g_frame_time;
         st->v60 = a1;
         if (a1 < b1) st->v60 = b1;
     } else {
@@ -2467,7 +2467,7 @@ void update_infobot_slot_path_motion(Obj_6e38 *o, Path_6e38 *path, s32 p) {
     FastVecAdd(&w, &w, &path->a[idx]);
     l = func_001F9D48_r((void *)((char *)path + path->n * 16), &o->v[0]);
     if (l < 1.0f) {
-        if (st->v60 <= *(float *)&D_L00_00161A60 * g_frame_time) {
+        if (st->v60 <= *(float *)&infobot_path_min_speed * g_frame_time) {
             o->flag = p;
         }
     }
@@ -3016,7 +3016,7 @@ void particle_spawner_smoke_fire_update(P *p) {
         for (i = s; i < e; i++) {
             r = random_integer_below(2);
             D_L00_001CBAE0_D83D8[i].w = 1.0f;
-            D_L00_001D2B60[i] = r;
+            smoke_particle_matrix_select[i] = r;
             reset_smoke_fire_spawner_particle(p, i);
             D_L00_001D5A40[i] = 0;
         }
@@ -3025,7 +3025,7 @@ void particle_spawner_smoke_fire_update(P *p) {
         for (i = j; i < e; i++) {
             r = random_integer_below(2);
             D_L00_001CBAE0_D83D8[i].w = 1.0f;
-            D_L00_001D2B60[i] = r;
+            smoke_particle_matrix_select[i] = r;
             func_L00_002D9208_D83D8(p, i);
         }
         level_cuboids[q->idx].w = 1.0f;
@@ -3036,9 +3036,9 @@ void particle_spawner_smoke_fire_update(P *p) {
         qcopy(&v, tbl + 0x30);
         v.z += 9.0f;
         v.w = 10.0f;
-        if (FastBSphereCheck(&v, (*(float *)&D_L00_00161AB0)) < 0) return;
+        if (FastBSphereCheck(&v, (*(float *)&smoke_fire_cull_distance)) < 0) return;
         if (q->flag42 && vec_distance_xy(&D_L00_00166EC0_D83D8, &p->pos) < 128.0f) {
-            for (e = 0; e < (*(int *)&D_L00_00161A8C); e++) {
+            for (e = 0; e < (*(int *)&smoke_fire_particles_per_frame); e++) {
                 a.x = randf_sym(0.0f, 1.0f);
                 a.y = randf_sym(0.0f, 1.0f);
                 a.z = 1.0f;
@@ -3049,9 +3049,9 @@ void particle_spawner_smoke_fire_update(P *p) {
                 a.y = randf_sym(0.0f, g_frame_time * 0.25f);
                 a.z = q->f20 * g_frame_time;
                 f = random_float_between(q->f24, q->f28);
-                col = rand_range(q->h2C, q->h2E) << 24 | (*(int *)&D_L00_00161A98);
-                r = rand_range((*(int *)&D_L00_00161A90), (*(int *)&D_L00_00161A94));
-                ent = PartType23Spawn(&b, r, (*(float *)&D_L00_00161A84), 1.0f, &a, (*(float *)&D_L00_00161A88), col, f);
+                col = rand_range(q->h2C, q->h2E) << 24 | (*(int *)&smoke_fire_particle_rgb);
+                r = rand_range((*(int *)&smoke_fire_particle_min_spin), (*(int *)&smoke_fire_particle_max_spin));
+                ent = PartType23Spawn(&b, r, (*(float *)&smoke_fire_particle_jitter), 1.0f, &a, (*(float *)&smoke_fire_particle_max_size), col, f);
                 if (ent) {
                     sub = &ent->sub;
                     ent->h0A = func_001F9850_D83D8(rand_range(q->x30, q->x34));
@@ -3142,7 +3142,7 @@ void initialize_smoke_fire_spawner_mesh_particle(char *m, int idx) {
     float a, b, r;
     float *w;
     r = randf_sym(0.0f, 1.0f);
-    w = D_L00_001CBAE0[idx];
+    w = smoke_particle_unit_positions[idx];
     w[0] = r;
     w[1] = randf_sym(0.0f, 1.0f);
     w[2] = randf_sym(0.0f, 1.0f);
@@ -3150,9 +3150,9 @@ void initialize_smoke_fire_spawner_mesh_particle(char *m, int idx) {
     b = *(float *)(data + 0x4C);
     D_L00_001D05E0[idx] = random_float_between(a, a + 2.0f);
     D_L00_001D18A0[idx] = random_float_between(b, b + 4.0f);
-    D_L00_001D34C0[idx] = 0.0f;
-    D_L00_001D4780[idx] = random_float_between(0.003f, 0.005f);
-    D_L00_001D3010[idx] = 1;
+    smoke_particle_scroll[idx] = 0.0f;
+    smoke_particle_scroll_speed[idx] = random_float_between(0.003f, 0.005f);
+    smoke_particle_is_mesh[idx] = 1;
 }
 typedef struct { int a[4]; } Vy __attribute__((aligned(16)));
 extern void func_L00_00251328(void *, int, int, int);

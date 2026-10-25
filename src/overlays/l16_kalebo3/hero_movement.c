@@ -216,11 +216,11 @@ void Hero_UpdateStatePhysics(void) {
 
                     *(u128 *)vec[0] = 0;
                     vec[0][0] = 1.0f;
-                    matrix_mul_vec3(g_hero.motion.unk170.f, vec[0], D_L16_00167100.f350);
-                    g_hero.motion.move_yaw = D_L16_00167100.f158;
+                    matrix_mul_vec3(g_hero.motion.unk170.f, vec[0], kalebo3_player_camera.f350);
+                    g_hero.motion.move_yaw = kalebo3_player_camera.f158;
                     turn_to(g_frame_scale_sq, g_frame_scale_sq * 0.0f, g_frame_time * 174.53293f, 0);
-                    if (*(int *)&D_L16_0015F768 > 0) {
-                        if (fast_dec_timer((int *)&D_L16_0015F768)) {
+                    if (*(int *)&kalebo3_look_stat_timer > 0) {
+                        if (fast_dec_timer((int *)&kalebo3_look_stat_timer)) {
                             if (usage_stats.f90 < 0xFFFF) {
                                 usage_stats.f90++;
                             }
@@ -228,8 +228,8 @@ void Hero_UpdateStatePhysics(void) {
                                 usage_stats.f92 = scale_ticks(gameplay_event_frame_count) / 600;
                             }
                             usage_stats.f94 = usage_stats.f94 | (1 << g_current_level_index) | 0x80000000;
-                            *(int *)&D_L16_0015F768 = -1;
-                            (*(int *)&D_L16_0015F76C)++;
+                            *(int *)&kalebo3_look_stat_timer = -1;
+                            (*(int *)&kalebo3_look_stat_count)++;
                         }
                     }
                 }
@@ -423,8 +423,8 @@ void Hero_UpdateStatePhysics(void) {
             if (g_hero.state.step == 1) {
                 if (g_hero.state_timer == 1) {
                     emit_hero_surface_effect_burst(3, 0x10, 0);
-                    if (D_L16_00161390 != 0) {
-                        RippleDisturb(D_L16_00161390, D_L16_00161398, 0, g_hero.motion.pos.f[0], g_hero.motion.pos.f[1], 0.4f, -0.3f);
+                    if (kalebo3_water_patches != 0) {
+                        RippleDisturb(kalebo3_water_patches, kalebo3_water_patch_count, 0, g_hero.motion.pos.f[0], g_hero.motion.pos.f[1], 0.4f, -0.3f);
                     }
                     g_hero.unk90A = scale_ticks(0x46);
                 }
@@ -615,7 +615,7 @@ void Hero_UpdateStatePhysics(void) {
             } else if (g_hero.state.current == 0x33) {
                 float v;
 
-                v = g_hero.ground_speed * vector_length_xyz_cf(D_L16_0017C4A0, 0x1E) * 5.0f;
+                v = g_hero.ground_speed * vector_length_xyz_cf(kalebo3_hero_swim_frame_speeds, 0x1E) * 5.0f;
                 if (g_hero.state.prev == 0x35 && g_hero.state_timer < scale_ticks(0xF)) {
                     if (v < g_frame_time * 4.5f) {
                         v = g_frame_time * 4.5f;
@@ -769,7 +769,7 @@ void Hero_UpdateStatePhysics(void) {
                 g_hero.target_speed = 0.0f;
             }
             speed_step(g_frame_time_sq * 4.0f, g_frame_time_sq * 5.0f);
-            v = g_hero.ground_speed * vector_length_xyz_cf(D_L16_0017C4A0, 0x1E) * 5.5f;
+            v = g_hero.ground_speed * vector_length_xyz_cf(kalebo3_hero_swim_frame_speeds, 0x1E) * 5.5f;
             g_hero.motion.velocity.f[0] = FastCos(g_hero.motion.rot.f[2]) * v;
             g_hero.motion.velocity.f[1] = FastSin(g_hero.motion.rot.f[2]) * v;
             g_hero.motion.velocity.f[2] = 0.0f;
@@ -1075,7 +1075,7 @@ void Hero_UpdateStatePhysics(void) {
             }
             if (g_hero.frames_off_ground.s == 0 || g_hero.unk88D == 0) {
                 smooth_and_clamp_value_pair(vec[0], g_hero.unk720.f, g_frame_scale_sq * 0.17f);
-                g_hero.motion.move_yaw = FastAddRots(D_L16_00167100.f158, fast_atan2(-vec[0][1], vec[0][0]));
+                g_hero.motion.move_yaw = FastAddRots(kalebo3_player_camera.f158, fast_atan2(-vec[0][1], vec[0][0]));
                 if (g_hero.unk229C > 0.2f) {
                     float a;
                     float b;
@@ -1167,8 +1167,8 @@ void Hero_UpdateStatePhysics(void) {
 
                     FastVecScale(vec[1], g_hero.motion.displacement.f, 7.0f);
                     for (i = 0; i < hits; i++) {
-                        if (is_moby_in_class_range_500_to_540((int)D_L16_00178380[i]) || ((Moby *)D_L16_00178380[i])->oclass == 0x85) {
-                            PostHitMessage(D_L16_00178380[i], (int)g_hero.moby, 0x10000, g_hero.motion.pos.f, vec[1], 1.0f);
+                        if (is_moby_in_class_range_500_to_540((int)kalebo3_coll_sphere_moby_hits[i]) || ((Moby *)kalebo3_coll_sphere_moby_hits[i])->oclass == 0x85) {
+                            PostHitMessage(kalebo3_coll_sphere_moby_hits[i], (int)g_hero.moby, 0x10000, g_hero.motion.pos.f, vec[1], 1.0f);
                         }
                     }
                 }
@@ -1536,8 +1536,8 @@ void Hero_UpdateStatePhysics(void) {
             if (g_hero.unk4B8 != 0.0f) {
                 if (g_hero.air_frames.s == 0) {
                     if (g_hero.unk4C4 == 0) {
-                        D_L16_00167100.f160 = 0.2f;
-                        D_L16_00167100.f168 = scale_ticks(0x28);
+                        kalebo3_player_camera.f160 = 0.2f;
+                        kalebo3_player_camera.f168 = scale_ticks(0x28);
                     }
                     g_hero.unk4C4++;
                 }
@@ -2139,7 +2139,7 @@ void Hero_UpdateStatePhysics(void) {
                 vec[1][3] = -(g_frame_time_sq * 30.0f);
                 spawn_color_decaying_effect_particle((char *)vec[0], (char *)vec[1], 0);
             }
-            hasW = D_L16_00179FA0[g_hero.items[0].item_id].f18 != 0;
+            hasW = kalebo3_item_defs[g_hero.items[0].item_id].f18 != 0;
             if (g_hero.items[0].item_id == 0xC) {
                 hasW = 0;
             }
@@ -2330,9 +2330,9 @@ void Hero_UpdateStatePhysics(void) {
                             float a;
 
                             stick_target(1.0f, 0);
-                            a = FastDiffRots(g_hero.motion.move_yaw, D_L16_00167100.f158);
+                            a = FastDiffRots(g_hero.motion.move_yaw, kalebo3_player_camera.f158);
                             if (FastDiffRots(a, 1.5707964f) < 1.2217305f || FastDiffRots(a, -1.5707964f) < 1.2217305f) {
-                                if (FastDiffRots(FastSubRots(g_hero.motion.move_yaw, D_L16_00167100.f158), 1.5707964f) < 0.7853982f) {
+                                if (FastDiffRots(FastSubRots(g_hero.motion.move_yaw, kalebo3_player_camera.f158), 1.5707964f) < 0.7853982f) {
                                     g_hero.unk5A8 = 2;
                                 } else {
                                     g_hero.unk5A8 = 3;
@@ -2484,7 +2484,7 @@ void Hero_UpdateStatePhysics(void) {
                         spd = g_hero.motion.unk164;
                         ApproachValue(&spd, g_hero.target_speed * g_frame_time, g_frame_time_sq * 5.0f);
                         FastVecSub(g_hero.motion.velocity.f, vec[5], g_hero.motion.pos.f);
-                        vec_set_length_xy(g_hero.motion.velocity.f, g_hero.motion.velocity.f, D_L16_001C43B0[truncate_float_to_s32(g_hero.anim_frame)] * 0.5f);
+                        vec_set_length_xy(g_hero.motion.velocity.f, g_hero.motion.velocity.f, kalebo3_hero_ledge_shimmy_frame_speeds[truncate_float_to_s32(g_hero.anim_frame)] * 0.5f);
                     }
                 }
             }
@@ -2659,8 +2659,8 @@ void Hero_UpdateStatePhysics(void) {
         if (g_hero.state.current == 0x12) {
             if (g_hero.state_timer == scale_ticks(0x14)) {
                 emit_hero_surface_effect_burst(3, 0x10, 1);
-                if (D_L16_00161390 != 0) {
-                    RippleDisturb(D_L16_00161390, D_L16_00161398, 0, g_hero.motion.pos.f[0], g_hero.motion.pos.f[1], 0.4f, 0.35f);
+                if (kalebo3_water_patches != 0) {
+                    RippleDisturb(kalebo3_water_patches, kalebo3_water_patch_count, 0, g_hero.motion.pos.f[0], g_hero.motion.pos.f[1], 0.4f, 0.35f);
                 }
             }
             if (g_hero.anim_frame >= 4.0f && g_hero.anim_frame <= 7.0f) {
@@ -2772,8 +2772,8 @@ void Hero_UpdateStatePhysics(void) {
 
                     FastVecScale(vec[1], g_hero.motion.displacement.f, 7.0f);
                     for (i = 0; i < n; i++) {
-                        if (is_moby_in_class_range_500_to_540((int)D_L16_00178380[i])) {
-                            PostHitMessage(D_L16_00178380[i], (int)g_hero.moby, 0x10000, g_hero.motion.pos.f, vec[1], 1.0f);
+                        if (is_moby_in_class_range_500_to_540((int)kalebo3_coll_sphere_moby_hits[i])) {
+                            PostHitMessage(kalebo3_coll_sphere_moby_hits[i], (int)g_hero.moby, 0x10000, g_hero.motion.pos.f, vec[1], 1.0f);
                         }
                     }
                 }

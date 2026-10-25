@@ -63,7 +63,7 @@ void update_hero_relocation_trigger(char *m) {
     }
     *(int *)(D_0014171B + 0xAB75 + ((((short)*(unsigned short *)(m + 0xB2) >> 5) * 4) + (g_current_level_index << 8)))
         |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
-    D_L10_001BAC60[(short)*(unsigned short *)(m + 0xB2) >> 5] |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
+    orxon_moby_killed[(short)*(unsigned short *)(m + 0xB2) >> 5] |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
     if (*(int *)(d + 8) == -1 || *(int *)d == -1) return;
     if (gHaveHeliPack[4] == 0) {
         char *e = (char *)((*(int *)d << 8) + (int)D_L10_00160058_00299818);
@@ -74,10 +74,10 @@ void update_hero_relocation_trigger(char *m) {
         byte = saved_mission_state[((unsigned char *)m)[0xB0] + eo];
         if (byte == 0xFF || *(int *)(d + 0x14) == -1) {
             k = *(int *)(d + 0x14);
-            Hero_ResetToPosition(D_L10_0016016C + (k << 7) + 0x30, D_L10_0016016C + (k << 7) + 0x70, 0, 1);
+            Hero_ResetToPosition(orxon_scene_points + (k << 7) + 0x30, orxon_scene_points + (k << 7) + 0x70, 0, 1);
         } else {
             k = *(int *)(d + 8);
-            Hero_ResetToPosition(D_L10_0016016C + (k << 7) + 0x30, D_L10_0016016C + (k << 7) + 0x70, 0, 1);
+            Hero_ResetToPosition(orxon_scene_points + (k << 7) + 0x30, orxon_scene_points + (k << 7) + 0x70, 0, 1);
         }
         enter_hero_vehicle_mode(1, 0x43, D_L10_00160058_00299818 + (*(int *)d << 8));
         MusicRequestTrack(2, 4);
@@ -86,7 +86,7 @@ void update_hero_relocation_trigger(char *m) {
         if (h[0x20A4] == 1) {
         exit_hero_vehicle_mode();
         {
-            Hero_ResetToPosition(D_L10_0016016C + (*(int *)(d + 4) << 7) + 0x30, D_L10_0016016C + (*(int *)(d + 4) << 7) + 0x70, 0, 1);
+            Hero_ResetToPosition(orxon_scene_points + (*(int *)(d + 4) << 7) + 0x30, orxon_scene_points + (*(int *)(d + 4) << 7) + 0x70, 0, 1);
         }
         MusicRequestTrack(0, 5);
         {

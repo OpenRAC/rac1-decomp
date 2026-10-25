@@ -238,9 +238,9 @@ s32 update_nanotech_ball_collection_effects(M_2d8510 *m) {
         c = al | (c & 0xFFFFFF);
         a.z = z + (((f32 *)&nanotech_ring_heights))[i];
         p = PartType59Spawn(&a, c, truncate_float_to_s32(o->f60[i]), (*(s32 *)&nanotech_ring_texture), 0, 2, 1, (((f32 *)&nanotech_ring_sizes))[i] * t);
-        if (p) p[2] = *D_L00_001B2400.pF8;
+        if (p) p[2] = *part_type_textures.pF8;
         p = PartType59Spawn(&a, al | 0xFFFFFF, truncate_float_to_s32(o->f60[i]), (*(s32 *)&nanotech_ring_texture), (*(s32 *)&nanotech_ring_blend_flag), 2, 1, (((f32 *)&nanotech_ring_sizes))[i] * (t * 0.7f));
-        if (p) p[2] = *D_L00_001B2400.pF8;
+        if (p) p[2] = *part_type_textures.pF8;
         FastVecAdd(&a, &a, &b);
     }
     return ret;

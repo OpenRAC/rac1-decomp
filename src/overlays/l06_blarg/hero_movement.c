@@ -447,8 +447,8 @@ void HeroL06_ResetMotionState(void) {
         g_hero.xB12ed = r;
     }
     if (g_hero.xH12e0 == 0xD) {
-        g_hero.xF2f0 = D_L06_001746E8;
-        v10.f[2] = D_L06_001746E8 - 0.01f;
+        g_hero.xF2f0 = blarg_coll_hit_z;
+        v10.f[2] = blarg_coll_hit_z - 0.01f;
         if (coll_line(&v10, &v0, 4, g_hero.xI2080, 0) == 0) {
             goto d1;
         }
@@ -856,8 +856,8 @@ void HeroL06_UpdateMovement(void) {
                     matrix_mul_vec3(((Hero *)&g_hero)->motion.unk170.f, vec[0], referencePosition.f350);
                     ((Hero *)&g_hero)->motion.move_yaw = referencePosition.f158;
                     turn_to(0, g_frame_scale_sq, g_frame_scale_sq * 0.0f, g_frame_time * 174.53293f);
-                    if (*(int *)&D_L06_0015F768 > 0) {
-                        if (fast_dec_timer((int *)&D_L06_0015F768)) {
+                    if (*(int *)&blarg_usage_event_timer > 0) {
+                        if (fast_dec_timer((int *)&blarg_usage_event_timer)) {
                             if (usage_stats.f90 < 0xFFFF) {
                                 usage_stats.f90++;
                             }
@@ -865,8 +865,8 @@ void HeroL06_UpdateMovement(void) {
                                 usage_stats.f92 = scale_ticks(gameplay_event_frame_count) / 600;
                             }
                             usage_stats.f94 = usage_stats.f94 | (1 << g_current_level_index) | 0x80000000;
-                            *(int *)&D_L06_0015F768 = -1;
-                            (*(int *)&D_L06_0015F76C)++;
+                            *(int *)&blarg_usage_event_timer = -1;
+                            (*(int *)&blarg_usage_event_count)++;
                         }
                     }
                 }
@@ -1882,14 +1882,14 @@ void HeroL06_UpdateMovement(void) {
                         }
                         set_first_hero_easing_parameters(0.03f, 0.2f);
                         if (((Hero *)&g_hero)->unk58C != 0) {
-                            D_L06_0017AF60[1] = -tilt;
+                            blarg_hero_lean_angles[1] = -tilt;
                         } else {
-                            D_L06_0017AF60[1] = tilt;
+                            blarg_hero_lean_angles[1] = tilt;
                         }
                     }
                 }
                 if (((Hero *)&g_hero)->state.current != 0x29 && ((Hero *)&g_hero)->state.current != 0x42 && ((Hero *)&g_hero)->state.current != 0x2A) {
-                    D_L06_0017AF60[0] = fast_atan2(vec_length_xy(((Hero *)&g_hero)->motion.displacement.f), ((Hero *)&g_hero)->motion.displacement.f[2]);
+                    blarg_hero_lean_angles[0] = fast_atan2(vec_length_xy(((Hero *)&g_hero)->motion.displacement.f), ((Hero *)&g_hero)->motion.displacement.f[2]);
                 }
                 if (hasW) {
                     set_first_hero_easing_parameters(g_frame_scale_sq * 0.017f, g_frame_scale_sq * 0.3f);
@@ -2168,7 +2168,7 @@ void HeroL06_UpdateMovement(void) {
                         spd = ((Hero *)&g_hero)->motion.unk164;
                         ApproachValue(&spd, ((Hero *)&g_hero)->target_speed * g_frame_time, g_frame_time_sq * 5.0f);
                         FastVecSub(((Hero *)&g_hero)->motion.velocity.f, vec[5], ((Hero *)&g_hero)->motion.pos.f);
-                        vec_set_length_xy(((Hero *)&g_hero)->motion.velocity.f, ((Hero *)&g_hero)->motion.velocity.f, D_L06_001C4730[truncate_float_to_s32(((Hero *)&g_hero)->anim_frame)] * 0.5f);
+                        vec_set_length_xy(((Hero *)&g_hero)->motion.velocity.f, ((Hero *)&g_hero)->motion.velocity.f, blarg_hero_anim_frame_speeds_a[truncate_float_to_s32(((Hero *)&g_hero)->anim_frame)] * 0.5f);
                     }
                 }
             }
@@ -2437,8 +2437,8 @@ void HeroL06_UpdateMovement(void) {
 
                     FastVecScale(vec[1], ((Hero *)&g_hero)->motion.displacement.f, 7.0f);
                     for (i = 0; i < n; i++) {
-                        if (is_moby_in_class_range_500_to_540((int)D_L06_00178780[i])) {
-                            PostHitMessage(D_L06_00178780[i], (int)((Hero *)&g_hero)->moby, 0x10000, ((Hero *)&g_hero)->motion.pos.f, vec[1], 1.0f);
+                        if (is_moby_in_class_range_500_to_540((int)blarg_moby_hits[i])) {
+                            PostHitMessage(blarg_moby_hits[i], (int)((Hero *)&g_hero)->moby, 0x10000, ((Hero *)&g_hero)->motion.pos.f, vec[1], 1.0f);
                         }
                     }
                 }
@@ -2760,7 +2760,7 @@ void HeroL06_UpdateMovement(void) {
                         spd = ((Hero *)&g_hero)->motion.unk164;
                         ApproachValue(&spd, ((Hero *)&g_hero)->target_speed * g_frame_time, g_frame_time_sq * 5.0f);
                         FastVecSub(((Hero *)&g_hero)->motion.velocity.f, vec[5], ((Hero *)&g_hero)->motion.pos.f);
-                        vec_scale_to_length(((Hero *)&g_hero)->motion.velocity.f, ((Hero *)&g_hero)->motion.velocity.f, D_L06_001C4770[truncate_float_to_s32(((Hero *)&g_hero)->anim_frame)] * 0.5f);
+                        vec_scale_to_length(((Hero *)&g_hero)->motion.velocity.f, ((Hero *)&g_hero)->motion.velocity.f, blarg_hero_anim_frame_speeds_b[truncate_float_to_s32(((Hero *)&g_hero)->anim_frame)] * 0.5f);
                     }
                 }
             }

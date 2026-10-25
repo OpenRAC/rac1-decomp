@@ -12,8 +12,8 @@ void bomber_jet_update(Moby *m) {
     Vec4 col;
     {
         float dist = FastVecDist(&m->pos, camera_pos);
-        float x0 = D_L01_00161C68;
-        float k = -((1.0f - D_L01_00161C60) / (D_L01_00161C64 - x0));
+        float x0 = novalis_bomber_jet_near_distance;
+        float k = -((1.0f - novalis_bomber_jet_min_scale) / (novalis_bomber_jet_far_distance - x0));
         s = k * dist + (1.0f - k * x0);
     }
     hit = MobyGetHitMessage(m, 0x800000, 0);
@@ -58,13 +58,13 @@ void bomber_jet_update(Moby *m) {
                 d->scale178 = m->scale;
                 d->f17C = d->fFC;
             } else {
-                STUB_printf(D_L01_0020B790, m->oclass, func_001FA898_r((float)(((int)m - D_L01_00160058_F8B00) >> 8)));
+                STUB_printf(novalis_bomber_jet_no_path_msg, m->oclass, func_001FA898_r((float)(((int)m - D_L01_00160058_F8B00) >> 8)));
             }
             m->update_dist = 0xFF;
             m->draw_dist = 0xFF;
         }
         if (1.0f < s) s = 1.0f;
-        if (s < D_L01_00161C60) s = D_L01_00161C60;
+        if (s < novalis_bomber_jet_min_scale) s = novalis_bomber_jet_min_scale;
         m->scale = d->scale178 * s;
         d->fFC = d->f17C * s;
         if (175.0f <= m->pos.z) {
@@ -144,9 +144,9 @@ void bomber_jet_update(Moby *m) {
             }
             if (found != -1) {
                 int cnt;
-                a = D_L01_00161C70;
+                a = novalis_bomber_jet_quad_template;
                 j = 0;
-                b = D_L01_00161C70;
+                b = novalis_bomber_jet_quad_template;
                 cnt = 0;
                 for (i = 0; i < 4; i++) {
                     if (d->targets[found][i] != -1) {

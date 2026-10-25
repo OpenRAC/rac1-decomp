@@ -5,8 +5,8 @@ void process_helicopter_hits_and_reactivation(char *m, int flag) {
     unsigned char *q;
     if (MobyGetHitMessage(m, 0xA30000, 0) != 0) {
         if (*(int *)(D_0013E633 + 0x2EA1) != 0x32) {
-            *(int *)&D_0015EF04 += 1;
-            if (*(int *)&D_0015EF04 >= 5) {
+            *(int *)&helicopter_hit_count += 1;
+            if (*(int *)&helicopter_hit_count >= 5) {
                 q = (unsigned char *)(menu_item_enabled_115 + 1);
                 if (q[0x15] == 0) {
                     q[0x15] = 1;

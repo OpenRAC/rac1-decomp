@@ -397,7 +397,7 @@ void toxic_crab_update(Moby2E30F8 *m) {
                     } else {
                         d->i1D8 = 0;
                     }
-                    if (D_L10_0015F6B0 % 7 == 0 && d->i1A8 == 0) {
+                    if (orxon_frame_count % 7 == 0 && d->i1A8 == 0) {
                         if (vec_distance_xy(d->v1C0, m->pos) < d->fF4
                             && diff <= *(float *)&toxic_crab_turn_threshold_deg * 0.017453292f) {
                             m->state = 6;
@@ -1116,7 +1116,7 @@ float compute_toxic_crab_group_approach_angle(char *self) {
     v[1] = FastSin(owner_to_self_angle) * 2.0f;
     v[2] = 0.0f;
     FastVecAdd(v, v, D_0013E633 + 0xE9D);
-    group_entry = D_L10_001ABFC0[((struct Moby *)self)->group];
+    group_entry = orxon_moby_groups[((struct Moby *)self)->group];
     if (group_entry != 0) {
         do {
             int listed_entity_index = *(unsigned short *)group_entry & 0x7FFF;
@@ -1976,7 +1976,7 @@ remove_candidate:
         bits = (int *)(D_0014171B + 0xAB75 + (((int)((unsigned int)save_id << 16) >> 21) * 4 + (g_current_level_index << 8)));
         *bits |= 1 << (save_id & 31);
         save_id = moby->save_id;
-        D_L10_001BAC60[(int)((unsigned int)save_id << 16) >> 21] |= 1 << (save_id & 31);
+        orxon_moby_killed[(int)((unsigned int)save_id << 16) >> 21] |= 1 << (save_id & 31);
         return;
     }
 }
@@ -2036,7 +2036,7 @@ void gate_1_update(struct Moby *moby) {
         save_id = moby->save_id;
         level_moby_killed[g_current_level_index][(short)save_id >> 5] |= 1 << (save_id & 31);
         save_id = moby->save_id;
-        D_L10_001BAC60[(short)save_id >> 5] |= 1 << (save_id & 31);
+        orxon_moby_killed[(short)save_id >> 5] |= 1 << (save_id & 31);
         if (is_point_inside_clip_volume(&g_hero.motion.pos, vars->clip_volume))
             activate_descriptor(vars->sound);
         vars->timer = truncate_float_to_s32(multiply_global_factor(90.0f));

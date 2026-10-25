@@ -59,7 +59,7 @@ extern HudIconRec *D_0019A504;
 /* Finds arg0 in the table D_0019A504 points to (ended by id 0xFFFF).
    The older decode read D_0019A504 as the table itself. */
 int Hud_GetIconIndex(int arg0) {
-    HudIconRec *tab = D_0019A504;
+    HudIconRec *tab = hud_icon_table;
     int i = 0;
 
     while (tab[i].id != 0xFFFF && tab[i].id != arg0) {
@@ -119,7 +119,7 @@ void init_hud(void) {
     }
     buf = hud_bank_main;
     hud_bank_end = buf + 0x2800;
-    D_0015FABC = buf;
+    hud_bank_cursor = buf;
     FastMemZero16(buf, 0x2800);
     hud_bank_main[0x20] = 0xFF;
 }
@@ -582,19 +582,19 @@ void update_hud(void) {
         }
         p++;
     }
-    if ((hud_msg_count != 0 || D_0015F764 != 0) && g_game_mode == 0) {
+    if ((hud_msg_count != 0 || hud_msg_alpha != 0) && g_game_mode == 0) {
         if (hud_msg_count != 0) {
-            D_0015F764 += 128 / scale_game_frame_count(8);
-            if (D_0015F764 > 128) {
-                D_0015F764 = 128;
+            hud_msg_alpha += 128 / scale_game_frame_count(8);
+            if (hud_msg_alpha > 128) {
+                hud_msg_alpha = 128;
             }
         } else {
-            D_0015F764 -= 128 / scale_game_frame_count(8);
-            if (D_0015F764 < 0) {
-                D_0015F764 = 0;
+            hud_msg_alpha -= 128 / scale_game_frame_count(8);
+            if (hud_msg_alpha < 0) {
+                hud_msg_alpha = 0;
             }
         }
-        col = (D_0015F764 << 24) + 0xF0F0F0;
+        col = (hud_msg_alpha << 24) + 0xF0F0F0;
         draw_framed_text(0x100, hud_msg_y, col, (int)hud_msg_text1);
         if (hud_msg_text2[0] != 0 && hud_msg_count > 1000) {
             draw_framed_text(0x100, hud_msg_y, col, (int)hud_msg_text2);

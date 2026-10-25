@@ -36,15 +36,15 @@ int func_001F9850(int);
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_00295100.c, FUN_L00_00297e70. */
 void update_game_frame_and_idle_counters(void) {
     if (g_controller_state.busy != 0 || g_controller_state.c != 0.0f || g_controller_state.d != 0.0f || g_controller_state.a != 0.0f || g_controller_state.b != 0.0f) {
-        (*(int *)&D_L00_001610B0) = 0;
+        (*(int *)&controller_idle_frames) = 0;
     } else {
-        (*(int *)&D_L00_001610B0)++;
+        (*(int *)&controller_idle_frames)++;
     }
     level_frame_counter++;
     gameplay_event_frame_count++;
     if (D_L00_0015F678) {
-        if ((*(int *)&D_L00_001610B0) < (int)((float)scale_ticks(15) * 60.0f)) {
-            D_0015EF28++;
+        if ((*(int *)&controller_idle_frames) < (int)((float)scale_ticks(15) * 60.0f)) {
+            active_play_frame_count++;
         }
     }
 }
@@ -205,23 +205,23 @@ void handle_pause_input(void) {
         enqueue_voice_request();
         update_ambience_target_cycle();
     }
-    func_001E9768_a(D_L00_001610B8, 3);
+    func_001E9768_a(level_profile_mark_after_mobys, 3);
     if ((g_debug_menu.w8 & 1) || ((g_debug_menu.w8 & 0x10) && (((PadS *)(D_0013A5E0 + 0x2460))->w1A4 & 0x200))) coordinate_hero_frame_update();
-    func_001E9768_a(D_L00_001610C8, 7);
+    func_001E9768_a(level_profile_mark_after_hero, 7);
     if ((g_debug_menu.w8 & 4) || ((g_debug_menu.w8 & 0x10) && (((PadS *)(D_0013A5E0 + 0x2460))->w1A4 & 0x200))) {
         UpdateParts();
         update_glints();
     }
-    func_001E9768_a(D_L00_001610D8, 5);
+    func_001E9768_a(level_profile_mark_after_parts, 5);
     if ((g_debug_menu.w8 & 8) || ((g_debug_menu.w8 & 0x10) && (((PadS *)(D_0013A5E0 + 0x2460))->w1A4 & 0x200))) {
         Camera_UpdateFrame();
     } else if (g_debug_menu.w14) {
         update_debug_camera();
         if (g_debug_menu.w14 == 2) update_hero_from_debug_camera();
     }
-    func_001E9768_a(D_L00_001610E8, 8);
+    func_001E9768_a(level_profile_mark_after_camera, 8);
     sound_update();
-    func_001E9768_a(D_L00_001610F8, 6);
+    func_001E9768_a(level_profile_mark_after_sound, 6);
     UpdateAllPointLights();
     update_resident_packed_direction();
     func_L00_0023B610_r(1);
@@ -289,15 +289,15 @@ void StartCutscene(int arg) {
     skip_frame = 1;
     FastMemSet(cutscene_state, 0, 0x1C0);
     FastMemSet(D_L00_0017C540, 0, 0x40);
-    FastMemSet(D_L00_0017C440, 0, 0x40);
-    FastMemSet(D_L00_0017C480, 0, 0x40);
-    FastMemSet(D_L00_0017C500, 0, 0x40);
-    FastMemSet(D_L00_0017C4C0, 0, 0x40);
+    FastMemSet(hero_scale_manipulator, 0, 0x40);
+    FastMemSet(cheat_scale_manipulator, 0, 0x40);
+    FastMemSet(cheat_scale_manipulator_class_555, 0, 0x40);
+    FastMemSet(cheat_scale_manipulator_class_1a3, 0, 0x40);
     *(int *)(cutscene_state + 0x30) = arg;
     v = lvl_vu_chain_buffer_size - 0x3C000;
     one = 1.0f;
-    D_L00_0015F67C = one;
-    *(int *)((char *)&D_L00_0015F67C + 4) = 0;
+    big_head_cutscene_fov_scale = one;
+    *(int *)((char *)&big_head_cutscene_fov_scale + 4) = 0;
     *(int *)(cutscene_state + 0x34) = 0;
     *(int *)(cutscene_state + 0x3C) = 0;
     lvl_vu_chain_buffer_size = v;
@@ -478,7 +478,7 @@ unsigned char apply_cutscene_camera_key(void) {
     f0 = p[3];
     b->unkB0 = f0;
     if (gCheats[0] != 0) {
-        b->unkB0 = f0 * D_L00_0015F67C;
+        b->unkB0 = f0 * big_head_cutscene_fov_scale;
     }
     UpdateViewContext();
     c = g_debug_camera;
@@ -501,7 +501,7 @@ unsigned char apply_cutscene_camera_key(void) {
         FastVecCross(c + 0x220, c + 0x230, c + 0x210);
     }
     if (gCheats[0] != 0) {
-        float f = *(float *)&D_L00_0015F680;
+        float f = *(float *)&big_head_cutscene_camera_pullback;
         if (f != 0.0f) {
             qcopy(v, c + 0x210);
             vec_scale_to_length(v, v, f);
@@ -888,7 +888,7 @@ void prepare_movie_playback(int sector, int size, int arg2) {
     FadeToBlack(4);
     clear_active_help_record();
     cinematic_mode = 1;
-    D_L00_00161108_m.buf0 = D_L00_00173F04;
+    D_L00_00161108_m.buf0 = movie_work_buffer;
     D_L00_00161108_m.buf1 = level_texture_data_base;
     big = pal_mode != 0 ? 0xE : 0xD;
     small = pal_mode != 0 ? 0xE : 0x11;
@@ -916,7 +916,7 @@ void prepare_movie_playback(int sector, int size, int arg2) {
         func_00120858(0, 0);
     }
     if (gs_addr > 0x400000) {
-        STUB_printf(D_L00_001E9800, gs_addr - 0x400000);
+        STUB_printf(movie_gs_overflow_message, gs_addr - 0x400000);
         raise_kernel_trap();
     }
 }
@@ -1011,7 +1011,7 @@ void play_queued_movie(void) {
         }
         memcard_update_state();
     }
-    Movie_Play(D_L00_00161108, D_L00_0016110C,
+    Movie_Play(queued_movie_request, D_L00_0016110C,
                   (*(int *)&D_L00_00161114 + 0x3F) & ~0x3F,
                   (D_L00_00161118 + 0x3F) & ~0x3F, D_L00_00161110);
     func_00120F30(0);
@@ -1087,7 +1087,7 @@ void update_slideshow(void) {
     s0 = *(unsigned char *)(D_0013A5E0 + 0x2CF2) == 0x41;
     one = 1;
     if (IST == 0) {
-        if (ITMR >= D_L00_00173D00[IIDX] - 0x24) {
+        if (ITMR >= slideshow_slide_durations[IIDX] - 0x24) {
             if (*(short *)(D_0014171B + 0x100BD) != 0) {
                 update_audio_stream_until_idle(1);
             }

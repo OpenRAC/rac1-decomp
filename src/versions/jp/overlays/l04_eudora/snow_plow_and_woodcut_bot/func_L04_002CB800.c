@@ -13,7 +13,7 @@ void snow_plow_update(VehicleMoby_2CB800 *m) {
             s32 *path=eudora_paths[sub->path_id];
             if (FastVecDist((char *)path+0x10,(char *)path+(*path<<4))<0.5f) --*path;
         } else {
-            STUB_printf(D_L04_001DC110,m->cls,truncate_float_to_s32((float)((s32)((char *)m-(char *)MOBYS)>>8)));
+            STUB_printf(eudora_snow_plow_no_path_msg,m->cls,truncate_float_to_s32((float)((s32)((char *)m-(char *)MOBYS)>>8)));
         }
         m->shield=0x7F;
         m->alpha=0xFF;
@@ -46,13 +46,13 @@ void snow_plow_update(VehicleMoby_2CB800 *m) {
             break;
         }
         case 1:
-            MobySpringTurn(m,&d->turn_velocity,D_L04_0016016C[d->selected].angle,g_frame_time_sq*1.0471976f,g_frame_time_sq*3.1415927f,g_frame_time*3.1415927f);
-            if (vec_distance_xy(&m->pos,&D_L04_0016016C[d->selected].pos)<1.0f &&
-                FastDiffRots(m->rot.f[2],D_L04_0016016C[d->selected].angle)<0.17453292f) {
+            MobySpringTurn(m,&d->turn_velocity,eudora_scene_points[d->selected].angle,g_frame_time_sq*1.0471976f,g_frame_time_sq*3.1415927f,g_frame_time*3.1415927f);
+            if (vec_distance_xy(&m->pos,&eudora_scene_points[d->selected].pos)<1.0f &&
+                FastDiffRots(m->rot.f[2],eudora_scene_points[d->selected].angle)<0.17453292f) {
                 d->phase=2;
                 d->phase_timer=scale_ticks(300);
             }
-            FastVecSub(&delta,&D_L04_0016016C[d->selected].pos,&m->pos);
+            FastVecSub(&delta,&eudora_scene_points[d->selected].pos,&m->pos);
             vec_scale_to_length(&delta,&delta,g_frame_time*3.0f);
             FastVecAdd(&m->pos,&m->pos,&delta);
             break;
@@ -125,7 +125,7 @@ void snow_plow_update(VehicleMoby_2CB800 *m) {
         }
     }
     if (MobyGetHitMessage(m,0x210000,0)) {
-        if (++D_0015EEF8>=10 && gSkillPoints.flag==0) {
+        if (++eudora_skill_snow_plow_hits>=10 && gSkillPoints.flag==0) {
             gSkillPoints.flag=1;
             PlayBankSound(1,0,0);ShowBanner(0x542D,-1);
         }
@@ -228,7 +228,7 @@ void snow_plow_update(VehicleMoby_2CB800 *m) {
     m->draw_alpha=0xFF;
     if (d->visibility_active) {
         if (fast_dec_timer(&d->visibility_timer) &&
-            FastDiffRots(D_L04_00166E80.angle,fast_atan2(m->pos.f[0]-D_L04_00166E80.x,m->pos.f[1]-D_L04_00166E80.y))>1.5707964f) {
+            FastDiffRots(eudora_camera.angle,fast_atan2(m->pos.f[0]-eudora_camera.x,m->pos.f[1]-eudora_camera.y))>1.5707964f) {
             m->sort=*(s32 *)(m->metadata+0x10);
             m->flags&=0xFFBE;
             d->visibility_active=0;

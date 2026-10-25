@@ -171,7 +171,7 @@ void hero_update_transitions(void) {
             HeroEnterMoveState(0x3D, 1);
         } else if (process_hero_equipped_item_input() == 0 && try_enter_hero_water_state() == 0 && try_transition_hero_water_state() == 0 && try_start_hero_weapon_fire_state() == 0) {
             if ((g_controller_state.pressed & 0x10) || (((int)g_controller_state.pressed_unmasked) & 0x10)) {
-                if (g_hero.items[0].unk1C != 2 && D_L00_0015F674 == 0
+                if (g_hero.items[0].unk1C != 2 && timed_hud_visible == 0
                     && (g_hero.unk20AC == 0 || g_hero.vehicle_mode == 1 || g_hero.unk1B2 != 0)
                     && (g_hero.unk20A7 == 0 || g_hero.vehicle_mode == 1 || g_hero.unk1B2 != 0)) {
                     switch (g_hero.vehicle_mode) {

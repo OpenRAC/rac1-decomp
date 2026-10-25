@@ -16,7 +16,7 @@ extern void func_L00_002E72E8(void *);
 /* Update for the camera moby. */
 void follow_camera_update(char *m) {
     char *p = *(char **)(m + 0x70) + 0x1D0;
-    *(float *)&D_L00_0015F044 = ((float *)&D_L00_00161E80)[vendor_stock[5]];
+    *(float *)&follow_cam_setting_value = ((float *)&follow_cam_setting_values)[vendor_stock[5]];
     apply_follow_camera_translation(m);
     follow_camera_apply_overrides(m);
     Profile_Mark(m);
@@ -142,8 +142,8 @@ void update_hero_aligned_camera_from_input(u8 *o) {
     if (t == 0.0f) t = IntToFloat((g_controller_state.i1A0 >> 15) & 1);
     if (t == 0.0f) t = -IntToFloat((g_controller_state.i1A0 >> 13) & 1);
     r = FastAbsF(st->a);
-    k = (*(float *)&D_L00_00161E90) + ((*(float *)&D_L00_00161E94) - (*(float *)&D_L00_00161E90)) * r;
-    st->a = r = func_001EC120_EB3E8(st->a, t, (*(float *)&D_L00_00161E98), (*(float *)&D_L00_00161E9C), (*(float *)&D_L00_00161EA0), &st->va);
+    k = (*(float *)&hero_aligned_cam_gain_at_rest) + ((*(float *)&hero_aligned_cam_gain_at_full) - (*(float *)&hero_aligned_cam_gain_at_rest)) * r;
+    st->a = r = func_001EC120_EB3E8(st->a, t, (*(float *)&hero_aligned_cam_input_stiffness), (*(float *)&hero_aligned_cam_input_damping), (*(float *)&hero_aligned_cam_input_max_step), &st->va);
     if (r != 0.0f) build_look_at_matrix(o, o, &up, k * r);
     if (D_0013F450_EB3E8.f14C != 0.0f && D_0013F450_EB3E8.s308 == 0)
         build_look_at_matrix(o, o, &up, D_0013F450_EB3E8.f14C);
@@ -154,8 +154,8 @@ void update_hero_aligned_camera_from_input(u8 *o) {
     if (D_L00_00166D80_EB3E8.s270 != 0 && D_0013F450_EB3E8.i2090 == 2) t = 0.0f;
     if (invert52 == 0) t = -t;
     r = FastAbsF(st->b);
-    k = (*(float *)&D_L00_00161E90) + ((*(float *)&D_L00_00161E94) - (*(float *)&D_L00_00161E90)) * r;
-    st->b = func_001EC120_EB3E8(st->b, t, (*(float *)&D_L00_00161E98), (*(float *)&D_L00_00161E9C), (*(float *)&D_L00_00161EA0), &st->vb);
+    k = (*(float *)&hero_aligned_cam_gain_at_rest) + ((*(float *)&hero_aligned_cam_gain_at_full) - (*(float *)&hero_aligned_cam_gain_at_rest)) * r;
+    st->b = func_001EC120_EB3E8(st->b, t, (*(float *)&hero_aligned_cam_input_stiffness), (*(float *)&hero_aligned_cam_input_damping), (*(float *)&hero_aligned_cam_input_max_step), &st->vb);
     if (st->b != 0.0f) {
         float a, n, z;
         FastVecCross(&side, o, &up);
@@ -717,7 +717,7 @@ int update_orbit_camera_from_target_moby(char *a, char *t) {
     if (!t) goto one;
     v[0] = 0;
     ((float *)v)[2] = 0.12f;
-    ((float *)v)[0] = D_L00_00161EA4;
+    ((float *)v)[0] = orbit_cam_target_offset_x;
     n = *(char **)(t + 0x78);
     matrix_mul_vec3(v, v, t + 0xC0);
     FastVecAdd(w, t + 0x10, v);
@@ -778,18 +778,18 @@ char *initialize_mode6_orbit_camera(char *a) {
     char *m = find_camera_record_by_id(6);
     char *p;
     char *q;
-    D_L00_00166FF0[0] = 0;
+    camera_blend_phase[0] = 0;
     SwitchCamera(m);
     update_orbit_camera_from_target_moby(m, a);
     p = *(char **)(m + 0x70);
     qcopy(p + 0xB0, p + 0x80);
     q = p + 0x14;
-    copy_five_floats_with_rotation_offset(q, D_L00_001E7B10, 0.0f);
+    copy_five_floats_with_rotation_offset(q, orbit_cam_mode6_params_a, 0.0f);
     copy_five_floats_with_rotation_offset(m + 0x50, q, 0.0f);
     initialize_orbit_camera_state(m);
     *(int *)(p + 0x9C) = 1;
-    copy_five_floats_with_rotation_offset(p + 0x28, D_L00_001E7B28, 0.0f);
-    copy_five_floats_with_rotation_offset(p + 0x3C, D_L00_001E7B40, 0.0f);
+    copy_five_floats_with_rotation_offset(p + 0x28, orbit_cam_mode6_params_b, 0.0f);
+    copy_five_floats_with_rotation_offset(p + 0x3C, orbit_cam_mode6_params_c, 0.0f);
     zero_five_words(p + 0x50);
     return m;
 }

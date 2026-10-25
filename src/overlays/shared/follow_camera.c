@@ -151,13 +151,13 @@ void pilots_helmet_update(M_2e03a0_2e03a0 *m) {
         if (cinematic_mode == 2) return;
         STUB_printf(pilots_helmet_collected_msg);
         ShowBanner(0x232A, -1);
-        D_L00_0015F720 = 0xB4;
+        banner_display_ticks = 0xB4;
         grant_inventory_item(7, 1);
         if (D_00141C08[0] == 0) Help_Request(0x2328, 0x34);
         if (p->b != -1) {
-            D_L00_001BA960.arr[(*(E_2e03a0_2e03a0 * *)&moby_array_start)[p->b].h] = (*(E_2e03a0_2e03a0 * *)&moby_array_start)[p->b].b0 + 2;
+            current_level_state.arr[(*(E_2e03a0_2e03a0 * *)&moby_array_start)[p->b].h] = (*(E_2e03a0_2e03a0 * *)&moby_array_start)[p->b].b0 + 2;
             if ((*(E_2e03a0_2e03a0 * *)&moby_array_start)[p->b].b0 == 0xFF || (mission_state[(*(E_2e03a0_2e03a0 * *)&moby_array_start)[p->b].b0] != 0xFF && saved_mission_state[(*(E_2e03a0_2e03a0 * *)&moby_array_start)[p->b].b0 + (*(s32 *)&g_current_level_index) * 16] == 0xFF)) {
-                D_L00_001BB5C0.arr[(*(E_2e03a0_2e03a0 * *)&moby_array_start)[p->b].h] = (*(E_2e03a0_2e03a0 * *)&moby_array_start)[p->b].b0 + 2;
+                checkpoint_level_state.arr[(*(E_2e03a0_2e03a0 * *)&moby_array_start)[p->b].h] = (*(E_2e03a0_2e03a0 * *)&moby_array_start)[p->b].b0 + 2;
             }
         } else {
             STUB_printf(pilots_helmet_no_moby_msg, m->h);
@@ -3847,7 +3847,7 @@ void run_type5_grid_record_noop_callbacks(int a) {
     for (i = 0; i < 0x40; i++) {
         for (j = 0; j < 0x40; j++) {
             int idx = i * 0x40 + j;
-            char *tbl = D_L00_0015F080;
+            char *tbl = camera_collision_grid;
             char *e = *(char **)(idx * 4 + tbl);
             if (e == 0) continue;
             e += (int)tbl;

@@ -81,8 +81,8 @@ void initialize_level_transition_with_audio(int a) {
     D_0013E130_s.x20 = a;
     D_0013E130_s.x8 = 0;
     FastMemSet(&D_L00_0016C960_s, 0, 0x1C0);
-    FastMemSet(D_L00_0017C440, 0, 0x40);
-    FastMemSet(D_L00_0017C480, 0, 0x40);
+    FastMemSet(hero_scale_manipulator, 0, 0x40);
+    FastMemSet(cheat_scale_manipulator, 0, 0x40);
     calculate_dma_transfer_address();
     u = lvl_vu_chain_buffer_size - 0x60000;
     D_L00_0016C960_s.x58 = D_L00_00173F00_s.x4 + u;
@@ -205,7 +205,7 @@ void prepare_target_level_transition(int dest) {
         *(int *)(h + 0x38) = *(int *)(h + 0x34) % d;
     } else {
         memcard_Save(0, dest);
-        D_L00_0015F6A4 = dest;
+        memcard_last_save_slot = dest;
         *(int *)(g + 0x20) = 3;
         *(short *)(g + 0x24) = -1;
     }

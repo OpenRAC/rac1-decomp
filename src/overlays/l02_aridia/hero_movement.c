@@ -407,7 +407,7 @@ void Hero_UpdateGroundContact(void) {
     g_hero.unk12ED = collision_sound_class;
     g_hero.ground_type = CollType();
     if (g_hero.ground_type == 0) {
-        g_hero.water_surface_z = resolve_camera_surface_height(D_L02_001744E0, (u8 *)&g_hero.unk280);
+        g_hero.water_surface_z = resolve_camera_surface_height(aridia_coll_hit_point, (u8 *)&g_hero.unk280);
         if (g_hero.motion.pos.f[2] < g_hero.water_surface_z && g_hero.unk2F8 <= 0) {
             g_hero.unk2F8 = 1;
         }

@@ -10,7 +10,7 @@ void play_queued_movie(void) {
         }
         memcard_update_state();
     }
-    Movie_Play(D_L00_00161108, D_L00_0016110C,
+    Movie_Play(queued_movie_request, D_L00_0016110C,
                   (*(int *)&D_L00_00161114 + 0x3F) & ~0x3F,
                   (D_L00_00161118 + 0x3F) & ~0x3F, D_L00_00161110);
     func_00120F30(0);

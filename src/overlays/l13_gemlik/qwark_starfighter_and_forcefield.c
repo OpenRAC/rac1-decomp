@@ -559,7 +559,7 @@ void update_qwarks_starfighter(Moby388 *moby) {
         }
         moby->scale = ((struct MobyClass *)moby->cls)->scale * 4.0f;
         for (i = 0; i < 10; i++) {
-            data->parts[i] = spawn_moby_joint_attachment((char *)moby, i, D_L13_001D37A8[i]);
+            data->parts[i] = spawn_moby_joint_attachment((char *)moby, i, starfighter_part_classes[i]);
         }
         data->owner = (char *)moby;
         for (j = 0; j < 5; j++) {
@@ -608,18 +608,18 @@ void update_qwarks_starfighter(Moby388 *moby) {
             if (hero->ship_moby != 0) {
                 char *ship = (char *)hero->ship_moby->d;
                 int elapsed;
-                if (D_L13_001619E4 == -1) {
-                    D_L13_001619E4 = gameplay_event_frame_count;
-                    STUB_printf(D_L13_001F51E0, gameplay_event_frame_count, gameplay_event_frame_count / 60, gameplay_event_frame_count / 360);
+                if (starfighter_start_frame == -1) {
+                    starfighter_start_frame = gameplay_event_frame_count;
+                    STUB_printf(starfighter_timer_start_fmt, gameplay_event_frame_count, gameplay_event_frame_count / 60, gameplay_event_frame_count / 360);
                 }
-                elapsed = (unsigned int)(gameplay_event_frame_count - D_L13_001619E4) / 360;
+                elapsed = (unsigned int)(gameplay_event_frame_count - starfighter_start_frame) / 360;
                 if (elapsed >= 0x29) {
-                    STUB_printf(D_L13_001619E8);
+                    STUB_printf(starfighter_slow_speed_msg);
                     data->s24 = 0x66;
                     data->f20 = 102.0f;
                     *(int *)(ship + 0x138) = 0x221;
                 } else if (elapsed >= 0x1A) {
-                    STUB_printf(D_L13_001619F8);
+                    STUB_printf(starfighter_mid_speed_msg);
                     data->s24 = 0x78;
                     data->f20 = 120.0f;
                     *(int *)(ship + 0x138) = 0x234;
@@ -752,11 +752,11 @@ void update_qwarks_starfighter(Moby388 *moby) {
             qcopy(probe, data->v80);
             probe[3] = 1.0f;
             if (FastBSphereCheck(probe, 100.0f) <= 0 && moby->b31 == 0) {
-                STUB_printf(D_L13_001F5208);
+                STUB_printf(starfighter_target_not_visible_msg);
                 data->i100 = 0;
             }
             if (FastVecDist(ray_start, D_0013E633 + 0xE9D) > 100.0f) {
-                STUB_printf(D_L13_001F5228);
+                STUB_printf(starfighter_target_too_far_msg);
                 data->i100 = 0;
             }
         } else {
@@ -826,8 +826,8 @@ void update_qwarks_starfighter(Moby388 *moby) {
         if (*(int *)(q + 0x50) == 0) {
             int line = *(int *)(q + 0x1C);
             if (line == -1 && (short)data->h138 <= 0) {
-                if (queue_starfighter_voice_line(moby, data, D_L13_001619E0 + 0x1D, 1) != 0) {
-                    D_L13_001619E0 = (D_L13_001619E0 + 1) % 4;
+                if (queue_starfighter_voice_line(moby, data, starfighter_voice_line_index + 0x1D, 1) != 0) {
+                    starfighter_voice_line_index = (starfighter_voice_line_index + 1) % 4;
                     data->h138 += 1;
                 }
             }
@@ -1063,14 +1063,14 @@ void update_qwarks_starfighter(Moby388 *moby) {
         data->snd114 = -1;
         data->snd114 = Moby_PlaySound(0, 4, (int)moby);
     have114:
-        matrix_mul_vec3(offset, D_L13_001606E0, moby->mat[0]);
+        matrix_mul_vec3(offset, starfighter_light_offset, moby->mat[0]);
         vec_scale_to_length(offset, offset, 7.0f);
         FastVecSub(offset, moby->pos, offset);
         offset[3] = 50.0f;
         if (data->light120 == -1) {
             data->light120 = allocate_colored_effect_slot(offset, 50.0f, 0.0f, 3.0f, 0.5f, 0.01f);
         } else {
-            char *light = D_L13_00180640 + (data->light120 << 5);
+            char *light = gemlik_point_light_slots + (data->light120 << 5);
             qcopy(light + 0x10, offset);
         }
     }
@@ -1081,8 +1081,8 @@ void update_qwarks_starfighter(Moby388 *moby) {
         if (moby->state != 6) {
             if (owner == 0 || owner->cls_id != 0x45 || owner->state == 0xFE || owner->state == 0xFD || owner->state == 7) {
                 moby->state = STARFIGHTER_STATE_OWNER_UNAVAILABLE;
-                if (queue_starfighter_voice_line(moby, data, D_L13_001619E0 + 0x1D, 1) != 0) {
-                    D_L13_001619E0 = (D_L13_001619E0 + 1) % 4;
+                if (queue_starfighter_voice_line(moby, data, starfighter_voice_line_index + 0x1D, 1) != 0) {
+                    starfighter_voice_line_index = (starfighter_voice_line_index + 1) % 4;
                     data->h138 = 1;
                 } else {
                     data->h138 = 0;
@@ -1330,7 +1330,7 @@ void forcefield_update(char *moby) {
         } else {
             *(float *)(d + 4) = 1.0f;
             moby[0x20] = 2;
-            STUB_printf(D_L13_001F52A0, *(short *)(moby + 0xA6), *(short *)(moby + 0xB2));
+            STUB_printf(forcefield_missing_link_fmt, *(short *)(moby + 0xA6), *(short *)(moby + 0xB2));
         }
         spawn_forcefield_contact_effects(moby, d);
         break;
@@ -1393,7 +1393,7 @@ void update_linked_moby_statistics_and_hero_volume_flag(char *moby) {
     unsigned char *p;
     ((unsigned char *)moby)[0x30] = 0xFF;
     data = *(char **)(moby + 0x78);
-    if (D_L13_00179790[0] == 0 && D_L13_00179790[9] == -1) {
+    if (gemlik_help_popup_state[0] == 0 && gemlik_help_popup_state[9] == -1) {
         unsigned int v = *(unsigned int *)(D_0013E633 + 0x2EA9);
         if ((v < 2 || v == 9) ? gemlik_game_mode == 0 : 0) {
             int idx = *(int *)(data + 4);
@@ -1449,7 +1449,7 @@ void update_moby_state_relay(char *moby) {
     switch (data[0x1C]) {
     case 0:
         if (m == 0) {
-            STUB_printf(D_L13_001F54A0, *(short *)(moby + 0xB2), *(short *)(moby + 0xA6));
+            STUB_printf(state_relay_missing_link_fmt, *(short *)(moby + 0xB2), *(short *)(moby + 0xA6));
             DeleteMoby(moby);
         } else if (data[0x1D] != 0) {
             data[0x1C] = 1;
@@ -1533,7 +1533,7 @@ void update_controller_linked_gate(char *m) {
     switch (((unsigned char *)m)[0x20]) {
     case 0:
         if (c == 0) {
-            STUB_printf(D_L13_001F54D0, *(short *)(m + 0xB2), *(short *)(m + 0xA6));
+            STUB_printf(linked_gate_missing_link_fmt, *(short *)(m + 0xB2), *(short *)(m + 0xA6));
             DeleteMoby(m);
             return;
         }
@@ -1970,14 +1970,14 @@ void update_gemlik_projectile(struct Moby *moby) {
                 work.hit[0x18] = 1;
                 *(unsigned short *)(work.hit + 0x1A) = *(unsigned short *)((char *)moby + 0xA6);
                 work.hit[0x19] = 1;
-                if ((unsigned char)ent[0xA4] == 0xFF || (e = &D_L13_00178480[(unsigned char)ent[0xA4]])->p34 != ent) {
+                if ((unsigned char)ent[0xA4] == 0xFF || (e = &gemlik_moby_hits[(unsigned char)ent[0xA4]])->p34 != ent) {
                     record_moby_hit(ent, work.hit);
                 } else {
                     e->f2C += 1.0f;
-                    D_L13_00178480[(unsigned char)ent[0xA4]].b28 = 1;
-                    D_L13_00178480[(unsigned char)ent[0xA4]].b29 = 1;
-                    D_L13_00178480[(unsigned char)ent[0xA4]].s2A = *(unsigned short *)((char *)moby + 0xA6);
-                    { struct L13Ent00178480 *t = &D_L13_00178480[(unsigned char)ent[0xA4]]; t->i24 = f2; }
+                    gemlik_moby_hits[(unsigned char)ent[0xA4]].b28 = 1;
+                    gemlik_moby_hits[(unsigned char)ent[0xA4]].b29 = 1;
+                    gemlik_moby_hits[(unsigned char)ent[0xA4]].s2A = *(unsigned short *)((char *)moby + 0xA6);
+                    { struct L13Ent00178480 *t = &gemlik_moby_hits[(unsigned char)ent[0xA4]]; t->i24 = f2; }
                 }
                 break;
             }
@@ -2169,9 +2169,9 @@ void spawn_poison_vessel_destruction_effects(void *moby, void *data) {
         speed = scale * 400000.0f;
         spread = scale * radius;
         t = lift * g_frame_time;
-        *(blk24 *)colors = *(blk24 *)D_L13_001F5850;
+        *(blk24 *)colors = *(blk24 *)poison_vessel_burst_colors;
         spread = spread * g_frame_time;
-        *(blk24 *)second_colors = *(blk24 *)D_L13_001F5868;
+        *(blk24 *)second_colors = *(blk24 *)poison_vessel_burst_colors2;
         spread = spread - t;
         color = &colors[random_integer_below(6)];
         second_color = &second_colors[random_integer_below(6)];
@@ -2276,7 +2276,7 @@ void Moby1261Update(char *moby) {
         if (hit != 0) {
             int a = m->oclass;
             int b = (s16)m->save_id;
-            STUB_printf(D_L13_001F5880, a, b, func_00120778(hit->damage));
+            STUB_printf(poison_vessel_hit_fmt, a, b, func_00120778(hit->damage));
         }
         r = ComputeHitResponse(m, hit, health, 0, kind, 0, 0, 4);
         switch (r) {
@@ -2326,13 +2326,13 @@ void Moby1261Update(char *moby) {
         one = 1.0f;
         pos[2] = pos[2] + one;
         elapsed = IntToFloat(vars->timer);
-        span = IntToFloat(scale_ticks(*(int *)&D_L13_00161EBC));
-        radius = interpolate_scalar_linear(*(float *)&D_L13_00161EC0, *(float *)&D_L13_00161EC4, elapsed / span);
+        span = IntToFloat(scale_ticks(*(int *)&poison_vessel_blast_ticks));
+        radius = interpolate_scalar_linear(*(float *)&poison_vessel_blast_radius_start, *(float *)&poison_vessel_blast_radius_end, elapsed / span);
         hits = coll_sphere_mobys(radius, pos, 0x10, m, 0);
         SendRadialMessageToMobys(m, pos, sphere_hits_ed158, hits, 0, 0x830001, 2, 1,
-                                 *(float *)&D_L13_00161EC8, one, one);
+                                 *(float *)&poison_vessel_blast_damage, one, one);
         g = (float)vars->timer;
-        if (multiply_global_factor((float)*(int *)&D_L13_00161EBC * 0.5f) < g) {
+        if (multiply_global_factor((float)*(int *)&poison_vessel_blast_ticks * 0.5f) < g) {
             m->flags |= 0x41;
             spawn_type_52_particle_near_moby(m);
         } else {
@@ -2340,7 +2340,7 @@ void Moby1261Update(char *moby) {
             m->alpha = fade / 8;
         }
         timer = vars->timer;
-        duration = *(int *)&D_L13_00161EBC;
+        duration = *(int *)&poison_vessel_blast_ticks;
         timer = timer + 1;
         vars->timer = timer;
         if (scale_ticks(duration) < timer) {
@@ -2782,7 +2782,7 @@ void update_blarg_space_commando_damage_targeting_and_ground_motion(Moby *moby)
     float push[4];
     int st;
 
-    moby->scale = moby->pclass->scale * *(float *)&D_L13_00161EE8;
+    moby->scale = moby->pclass->scale * *(float *)&blarg_commando_scale;
     update_gemlik_trail(moby);
     if (vars->init != 0) {
         vars->idle_timer = truncate_float_to_s32(multiply_global_factor(random_float_between(180.0f, 240.0f)));
@@ -2818,8 +2818,8 @@ void update_blarg_space_commando_damage_targeting_and_ground_motion(Moby *moby)
             float ku, kb;
             moby->state = 0xF;
             st = scale_ticks(0x3C);
-            ku = *(float *)&D_L13_00161EF0 * g_frame_time;
-            kb = *(float *)&D_L13_00161EF4 * g_frame_time;
+            ku = *(float *)&blarg_commando_stun_knock_up * g_frame_time;
+            kb = *(float *)&blarg_commando_stun_knock_back * g_frame_time;
             vars->stun_timer = st;
             vars->knock_up = ku;
             vars->knock_back = kb;
@@ -2834,8 +2834,8 @@ void update_blarg_space_commando_damage_targeting_and_ground_motion(Moby *moby)
             {
             float ku, kb;
             moby->state = 0x10;
-            ku = *(float *)&D_L13_00161EF8 * g_frame_time;
-            kb = *(float *)&D_L13_00161EFC * g_frame_time;
+            ku = *(float *)&blarg_commando_hit_knock_up * g_frame_time;
+            kb = *(float *)&blarg_commando_hit_knock_back * g_frame_time;
             moby->flags &= ~0x1000;
             vars->knock_up = ku;
             vars->knock_min = 9.0f;
@@ -2929,10 +2929,10 @@ extern short D_L13_00161F10,D_L13_00161F14;
 void initialize_gemlik_trail(char *m) {
  float v[4]; int i; char *d=*(char **)(m+0x78);
  ProbeGroundHeight(m+0x10,0,0.5f);
- vec_scale_to_length(d+0x200,D_L13_00174200,1.0f);
+ vec_scale_to_length(d+0x200,gemlik_coll_hit_normal,1.0f);
  Moby_GetJointWorldPos(m,0,d+0x1f0);
  for(i=0;i<16;i++) {
- float angle=(IntToFloat(i)*0.0625f-0.5f)*(*(float *)&D_L13_00161F10*0.017453292f);
+ float angle=(IntToFloat(i)*0.0625f-0.5f)*(*(float *)&gemlik_trail_arc_degrees*0.017453292f);
  v[0]=FastCos(FastAddRots(angle,*(float *)(m+0x48)))*0.5f;
  v[1]=FastSin(FastAddRots(angle,*(float *)(m+0x48)))*0.5f;
  v[2]=0;
@@ -2940,7 +2940,7 @@ void initialize_gemlik_trail(char *m) {
  if(i==0 || i==15) *(int *)(d+0x21c+i*16)=0;
  else *(float *)(d+0x21c+i*16)=1.0f;
  }
- *(float *)(d+0x1fc)=scale_ticks(*(int *)&D_L13_00161F14);
+ *(float *)(d+0x1fc)=scale_ticks(*(int *)&gemlik_trail_ticks);
 }
 typedef struct V4_30A9B0 {
     float x, y, z, w;
@@ -3089,27 +3089,27 @@ void spawn_point_table_sparks(char *moby) {
         int off = i * 16;
         n = i + 1;
         if (*(float *)(data + off + 0x21C) < 0.99f && *(float *)(data - (-(n * 16)) + 0x21C) < 0.99f) { continue; }
-        if (*(float *)&D_L13_00161F78 < random_float_between(0.0f, 1.0f)) { continue; }
+        if (*(float *)&gemlik_trail_spark_chance < random_float_between(0.0f, 1.0f)) { continue; }
         f21 = random_angle_radians();
         f22 = random_angle_radians();
-        v[0] = FastCos(f21) * random_float_between(*(float *)&D_L13_00161F68, *(float *)&D_L13_00161F6C);
-        v[1] = FastSin(f21) * random_float_between(*(float *)&D_L13_00161F68, *(float *)&D_L13_00161F6C);
+        v[0] = FastCos(f21) * random_float_between(*(float *)&gemlik_trail_spark_spread_min, *(float *)&gemlik_trail_spark_spread_max);
+        v[1] = FastSin(f21) * random_float_between(*(float *)&gemlik_trail_spark_spread_min, *(float *)&gemlik_trail_spark_spread_max);
         v[2] = 0;
-        w[0] = FastCos(f22) * random_float_between(*(float *)&D_L13_00161F68, *(float *)&D_L13_00161F6C);
-        w[1] = FastSin(f22) * random_float_between(*(float *)&D_L13_00161F68, *(float *)&D_L13_00161F6C);
+        w[0] = FastCos(f22) * random_float_between(*(float *)&gemlik_trail_spark_spread_min, *(float *)&gemlik_trail_spark_spread_max);
+        w[1] = FastSin(f22) * random_float_between(*(float *)&gemlik_trail_spark_spread_min, *(float *)&gemlik_trail_spark_spread_max);
         w[2] = 0;
-        v[2] = random_float_between(*(float *)&D_L13_00161F70, *(float *)&D_L13_00161F74);
-        w[2] = random_float_between(*(float *)&D_L13_00161F70, *(float *)&D_L13_00161F74);
-        s18 = func_001FA898_r(multiply_global_factor(random_float_between(*(float *)&D_L13_00161F50, *(float *)&D_L13_00161F54)));
-        s19 = func_001FA898_r(multiply_global_factor(random_float_between(*(float *)&D_L13_00161F58, *(float *)&D_L13_00161F5C)));
-        s17 = func_001FA898_r(multiply_global_factor(random_float_between(*(float *)&D_L13_00161F60, *(float *)&D_L13_00161F64)));
+        v[2] = random_float_between(*(float *)&gemlik_trail_spark_lift_min, *(float *)&gemlik_trail_spark_lift_max);
+        w[2] = random_float_between(*(float *)&gemlik_trail_spark_lift_min, *(float *)&gemlik_trail_spark_lift_max);
+        s18 = func_001FA898_r(multiply_global_factor(random_float_between(*(float *)&gemlik_trail_spark_time1_min, *(float *)&gemlik_trail_spark_time1_max)));
+        s19 = func_001FA898_r(multiply_global_factor(random_float_between(*(float *)&gemlik_trail_spark_time2_min, *(float *)&gemlik_trail_spark_time2_max)));
+        s17 = func_001FA898_r(multiply_global_factor(random_float_between(*(float *)&gemlik_trail_spark_time3_min, *(float *)&gemlik_trail_spark_time3_max)));
         FastVecScale(v, v, 1.0f / (float)s18);
-        v[3] = *(float *)&D_L13_00161F48;
+        v[3] = *(float *)&gemlik_trail_spark_start_size;
         FastVecScale(w, w, 1.0f / (float)s17);
-        w[3] = *(float *)&D_L13_00161F4C;
+        w[3] = *(float *)&gemlik_trail_spark_end_size;
         p = data + (off + 0x210);
         lerp_vector(s10, p, p, random_float_between(0.0f, 1.0f));
-        PartType02Spawn(s10, v, w, *(int *)&D_L13_00161F40, *(int *)&D_L13_00161F44, s18, s19, s17, *(int *)&D_L13_00161F7C);
+        PartType02Spawn(s10, v, w, *(int *)&gemlik_trail_spark_lower, *(int *)&gemlik_trail_spark_upper, s18, s19, s17, *(int *)&gemlik_trail_spark_texture);
     }
 }
 struct Manip;
@@ -3204,7 +3204,7 @@ void update_gemlik_bobbing_pool_tile(struct Moby *moby) {
             RipplePatchesInit(D_L13_001D9E80_0B340, 22);
             RescaleFloatTable(1.0f);
             moby->update_dist = 0xFF;
-            tile_lighting = &D_L13_001CAE00;
+            tile_lighting = &gemlik_pool_light;
             tile_lighting->f00 = 16.0f;
             tile_lighting->f04 = 16.0f;
             tile_lighting->f08 = -8.0f;
@@ -3213,7 +3213,7 @@ void update_gemlik_bobbing_pool_tile(struct Moby *moby) {
             tile_lighting->f14 = 1.0f;
             tile_lighting->f18 = 0.9f;
             tile_lighting->f20 = 0.1f;
-            light_direction_angle = fast_atan2(D_L13_00180240[4], D_L13_00180240[5]);
+            light_direction_angle = fast_atan2(gemlik_pool_sun[4], gemlik_pool_sun[5]);
             tile_lighting->f30 = FastCos(light_direction_angle) * 0.57735f;
             tile_lighting->f34 = FastSin(light_direction_angle) * 0.57735f;
             tile_lighting->f38 = -0.57735f;
@@ -3221,17 +3221,17 @@ void update_gemlik_bobbing_pool_tile(struct Moby *moby) {
             tile_lighting->i2C = 0x2E;
             tile_lighting->c3C = 0x60;
             tile_lighting->c3D = 0x40;
-            tb = D_L13_001F2140;
+            tb = gemlik_pool_tile_tex;
             gemlik_pool_tile_count = 22;
             D_L13_0016128C = 32768.0f;
             D_L13_00161290 = 255.0f;
             D_L13_00161294 = 48.0f;
-            D_L13_00161350 = D_L13_001D9E80_0B340;
-            D_L13_00161354 = tb;
+            gemlik_pool_draw_tiles = D_L13_001D9E80_0B340;
+            gemlik_pool_draw_tex = tb;
             D_L13_00161288 = 0;
             for (i = 0; i < 22; i++) {
                 RipplePatch_ToFixedPoint(&D_L13_001D9E80_0B340[i], tb + i * 16);
-                D_L13_001D9E80_0B340[bobbing_platform_vars->idx].c1E = D_L13_001F20E0[bobbing_platform_vars->idx];
+                D_L13_001D9E80_0B340[bobbing_platform_vars->idx].c1E = gemlik_pool_tile_colors[bobbing_platform_vars->idx];
             }
             for (k = 0; k < 22; k++) {
                 for (j = 0; j < 2; j++) {
@@ -3259,8 +3259,8 @@ void update_gemlik_bobbing_pool_tile(struct Moby *moby) {
             hero_context->current != 0x3D && hero_context->current != 0x7B &&
             hero_context->current != 0x7C)
             bobbing_platform_vars->angle = FastAddRots(bobbing_platform_vars->angle, bobbing_platform_vars->speed);
-        D_L13_001D9E80_0B340[bobbing_platform_vars->idx].c1C = D_L13_001CAE00.c3C;
-        D_L13_001D9E80_0B340[bobbing_platform_vars->idx].c1D = D_L13_001CAE00.c3D;
+        D_L13_001D9E80_0B340[bobbing_platform_vars->idx].c1C = gemlik_pool_light.c3C;
+        D_L13_001D9E80_0B340[bobbing_platform_vars->idx].c1D = gemlik_pool_light.c3D;
         if (random_integer_below(200) == 0) {
             float x = D_L13_001D9E80_0B340[bobbing_platform_vars->idx].x + random_float_between(-4.0f, 4.0f);
             float y = random_float_between(-4.0f, 4.0f);
@@ -3278,14 +3278,14 @@ void update_gemlik_bobbing_pool_tile(struct Moby *moby) {
         if (height_half_span_or_tile_enabled == 0.0f)
             D_L13_001D9E80_0B340[bobbing_platform_vars->idx].c1E = 0;
         else
-            D_L13_001D9E80_0B340[bobbing_platform_vars->idx].c1E = D_L13_001F20E0[bobbing_platform_vars->idx];
+            D_L13_001D9E80_0B340[bobbing_platform_vars->idx].c1E = gemlik_pool_tile_colors[bobbing_platform_vars->idx];
         if (bobbing_platform_vars->idx == 0) {
             RippleSimClock(D_L13_001D9E80_0B340, 22);
             AddDrawCallback(render_level13_water_grids, moby);
         }
-        if (bobbing_platform_vars->idx == (*(int *)&D_L13_00161F80)) {
-            D_L13_001D9E80_0B340[bobbing_platform_vars->idx].c1E = D_L13_00161F84;
-            D_L13_001F20E0[bobbing_platform_vars->idx] = D_L13_00161F84;
+        if (bobbing_platform_vars->idx == (*(int *)&gemlik_pool_override_tile)) {
+            D_L13_001D9E80_0B340[bobbing_platform_vars->idx].c1E = gemlik_pool_override_color;
+            gemlik_pool_tile_colors[bobbing_platform_vars->idx] = gemlik_pool_override_color;
         }
     }
 }

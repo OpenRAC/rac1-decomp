@@ -11,9 +11,9 @@ void TetheredMineUpdate(char *m) {
     }
     {
         float dist = FastVecDist(m + 0x10, camera_pos);
-        float lo = *(float *)&D_L01_00161B84;
-        float x0 = *(float *)&D_L01_00161B8C;
-        float k = -((1.0f - lo) / (*(float *)&D_L01_00161B88 - x0));
+        float lo = *(float *)&novalis_tethered_mine_min_scale;
+        float x0 = *(float *)&novalis_tethered_mine_near_distance;
+        float k = -((1.0f - lo) / (*(float *)&novalis_tethered_mine_far_distance - x0));
         s = k * dist + (1.0f - k * x0);
         if (1.0f < s) s = 1.0f;
         if (s < lo) s = lo;

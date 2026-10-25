@@ -180,7 +180,7 @@ void update_class_b8_projectile(struct Moby *m)
     if (coll_line(&old, &m->pos, 0, v->owner, probe) == 0)
         return;
 
-    qcopy(&m->pos, &D_L04_00174060);
+    qcopy(&m->pos, &eudora_coll_hit_point);
     if (m->command == 0) {
         for (i = 0; i < 5; i++) {
             r.q = 0;
@@ -188,7 +188,7 @@ void update_class_b8_projectile(struct Moby *m)
             r.f[1] = random_float_between(-1.0f, 1.0f);
             r.f[2] = random_float_between(-1.0f, 1.0f);
             push.q = r.q;
-            vec_reflect(&r, v, D_L04_00174080);
+            vec_reflect(&r, v, eudora_coll_hit_normal);
             vec_scale_to_length(&push, &push, FastVecLength(&r) * 0.5f);
             FastVecAdd(&push, &r, &push);
             vec_scale_to_length(&push, &push, random_float_between(g_frame_time * 3.0f, g_frame_time * 6.0f));
@@ -207,17 +207,17 @@ extern short D_L04_00161940;
 void spawn_moby_table_segment_puffs(char *a, int i, int j, int k) {
     float v0[4], v10[4];
     char *pi, *pj;
-    pi = D_L04_001D2F60 + i * 16;
+    pi = eudora_puff_segment_points + i * 16;
     qcopy(v0, pi);
     v0[3] = 1.0f;
     matrix_mul_vec3(v0, v0, a + 0xC0);
     FastVecAdd(v0, v0, a + 0x10);
-    pj = D_L04_001D2F60 + j * 16;
+    pj = eudora_puff_segment_points + j * 16;
     qcopy(v10, pj);
     v10[3] = 1.0f;
     matrix_mul_vec3(v10, v10, a + 0xC0);
     FastVecAdd(v10, v10, a + 0x10);
-    spawn_smoke_puff_trail_with_endpoint_bursts(a, v0, v10, k, *(float *)(pi + 0xC) * *(float *)&D_L04_00161940, *(float *)(pj + 0xC) * *(float *)&D_L04_00161940);
+    spawn_smoke_puff_trail_with_endpoint_bursts(a, v0, v10, k, *(float *)(pi + 0xC) * *(float *)&eudora_segment_puff_size_scale, *(float *)(pj + 0xC) * *(float *)&eudora_segment_puff_size_scale);
 }
 extern short D_L04_00161950;
 extern short D_L04_00161954;
@@ -232,20 +232,20 @@ extern void func_L04_002C5938(char *a, int i, int j, int k);
 // Calls the pair helper for each edge index pair with a per-pair global value.
 void spawn_moby_table_puff_pattern(char *a)
 {
-    spawn_moby_table_segment_puffs(a, 0, 1, *(int *)&D_L04_00161950);
-    spawn_moby_table_segment_puffs(a, 2, 3, *(int *)&D_L04_00161954);
-    spawn_moby_table_segment_puffs(a, 4, 5, *(int *)&D_L04_00161958);
-    spawn_moby_table_segment_puffs(a, 5, 6, *(int *)&D_L04_0016195C);
-    spawn_moby_table_segment_puffs(a, 6, 7, *(int *)&D_L04_00161960);
-    spawn_moby_table_segment_puffs(a, 8, 9, *(int *)&D_L04_00161958);
-    spawn_moby_table_segment_puffs(a, 9, 10, *(int *)&D_L04_0016195C);
-    spawn_moby_table_segment_puffs(a, 10, 11, *(int *)&D_L04_00161960);
-    spawn_moby_table_segment_puffs(a, 12, 13, *(int *)&D_L04_00161964);
-    spawn_moby_table_segment_puffs(a, 14, 15, *(int *)&D_L04_00161964);
-    spawn_moby_table_segment_puffs(a, 16, 17, *(int *)&D_L04_00161968);
-    spawn_moby_table_segment_puffs(a, 20, 21, *(int *)&D_L04_00161968);
-    spawn_moby_table_segment_puffs(a, 18, 19, *(int *)&D_L04_0016196C);
-    spawn_moby_table_segment_puffs(a, 22, 23, *(int *)&D_L04_0016196C);
+    spawn_moby_table_segment_puffs(a, 0, 1, *(int *)&eudora_puff_count_a);
+    spawn_moby_table_segment_puffs(a, 2, 3, *(int *)&eudora_puff_count_b);
+    spawn_moby_table_segment_puffs(a, 4, 5, *(int *)&eudora_puff_count_c);
+    spawn_moby_table_segment_puffs(a, 5, 6, *(int *)&eudora_puff_count_d);
+    spawn_moby_table_segment_puffs(a, 6, 7, *(int *)&eudora_puff_count_e);
+    spawn_moby_table_segment_puffs(a, 8, 9, *(int *)&eudora_puff_count_c);
+    spawn_moby_table_segment_puffs(a, 9, 10, *(int *)&eudora_puff_count_d);
+    spawn_moby_table_segment_puffs(a, 10, 11, *(int *)&eudora_puff_count_e);
+    spawn_moby_table_segment_puffs(a, 12, 13, *(int *)&eudora_puff_count_f);
+    spawn_moby_table_segment_puffs(a, 14, 15, *(int *)&eudora_puff_count_f);
+    spawn_moby_table_segment_puffs(a, 16, 17, *(int *)&eudora_puff_count_g);
+    spawn_moby_table_segment_puffs(a, 20, 21, *(int *)&eudora_puff_count_g);
+    spawn_moby_table_segment_puffs(a, 18, 19, *(int *)&eudora_puff_count_h);
+    spawn_moby_table_segment_puffs(a, 22, 23, *(int *)&eudora_puff_count_h);
 }
 typedef int u128 __attribute__((mode(TI)));
 

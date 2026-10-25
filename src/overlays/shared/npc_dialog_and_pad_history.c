@@ -172,7 +172,7 @@ s32 get_dialogue_entry(s32 p, s32 unused) {
     lo = D_L00_001C47B8[n];
     hi = D_L00_001C47B8[n + 1];
     for (i = lo; i < hi; i++) {
-        if (D_L00_001792B8[i] == p) {
+        if (dialogue_entry_ids[i] == p) {
             return i;
         }
     }

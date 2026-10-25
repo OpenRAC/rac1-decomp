@@ -395,7 +395,7 @@ void HeroL17_UpdateStateTransitions(void) {
                         if (g_hero.state.prev == 1 || g_hero.state.prev == 0x1E) {
                             if (scale_ticks(0x18) > g_hero.state_timer && g_hero.unk308 == 0) {
                                 stick_target(0, 1.0f);
-                                if (FastDiffRots(g_hero.motion.move_yaw, D_L17_00167758) > 1.2217305f) {
+                                if (FastDiffRots(g_hero.motion.move_yaw, fleet_camera_yaw) > 1.2217305f) {
                                     ok = 0;
                                 }
                             }

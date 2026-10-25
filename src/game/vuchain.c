@@ -345,9 +345,9 @@ void VU1_initChain(void) {
     int base = level_resource_buffers[1];
     int end;
 
-    D_00160FF8[0] = base;
-    D_00160FF8[1] = level_resource_buffers[2];
-    D_00161010 = 0;
+    vu1_chain_buffers[0] = base;
+    vu1_chain_buffers[1] = level_resource_buffers[2];
+    vu1_chain_buffer_index = 0;
     g_render_packet_cursor = (int *)base;
     end = (int)g_render_packet_cursor + D_0016100C_m - D_0015F698_m;
     render_packet_end = end;
@@ -356,12 +356,12 @@ void VU1_initChain(void) {
 
 /* VU1_swapChain(void) */
 void VU1_swapChain(void) {
-    int idx = 1 - D_00161010;
-    int base = D_00160FF8[idx];
+    int idx = 1 - vu1_chain_buffer_index;
+    int base = vu1_chain_buffers[idx];
     int end;
 
     previous_render_packet_cursor = (int)g_render_packet_cursor;
-    D_00161010 = idx;
+    vu1_chain_buffer_index = idx;
     g_render_packet_cursor = (int *)base;
     end = (int)g_render_packet_cursor + D_0016100C_m - D_0015F698_m;
     render_packet_end = end;
@@ -382,12 +382,12 @@ void VU1_sendChain(void) {
     int *chan;
 
     *(volatile int *)&vif_chain_flags |= 0x1F;
-    size = (int)g_render_packet_cursor - D_00160FF8[D_00161010];
+    size = (int)g_render_packet_cursor - vu1_chain_buffers[vu1_chain_buffer_index];
     err = 0;
     if (vu1_chain_peak_bytes < size) {
         vu1_chain_peak_bytes = size;
         if (D_0016100C_m < size) {
-            STUB_printf(D_001E8CF8);
+            STUB_printf(vu1_chain_overflow_msg);
             err = 1;
         }
     }
@@ -399,7 +399,7 @@ void VU1_sendChain(void) {
         chan = func_001232E0(1);
         *chan |= 0xC0;
         func_00118D80(0);
-        func_001235C8(chan, D_00160FF8[D_00161010]);
+        func_001235C8(chan, vu1_chain_buffers[vu1_chain_buffer_index]);
     } else {
         *(volatile int *)&vif_chain_flags = 0;
     }
@@ -415,7 +415,7 @@ void VU1_syncChain(int mask) {
     while ((*(int *)&vif_chain_flags & mask) != 0) {
         spin_wait(0x400);
         if (i > 100000) {
-            STUB_printf(D_001E8D10);
+            STUB_printf(vu1_sync_timeout_msg);
             reset_graphics();
             break;
         }
@@ -536,7 +536,7 @@ extern char D_001DE740[];
 /* VU1_gsRegsNormal(void) */
 void VU1_gsRegsNormal(void) {
     g_render_packet_cursor[0] = 0x30000003;
-    g_render_packet_cursor[1] = (int)D_001DE740;
+    g_render_packet_cursor[1] = (int)gs_regs_normal_packet;
     g_render_packet_cursor[2] = 0;
     g_render_packet_cursor[3] = 0x50000003;
     g_render_packet_cursor += 4;
@@ -546,7 +546,7 @@ extern char D_001DE770[];
 
 void vu1_gs_regs_alt(void) {
     g_render_packet_cursor[0] = 0x30000003;
-    g_render_packet_cursor[1] = (int)D_001DE770;
+    g_render_packet_cursor[1] = (int)gs_regs_alt_packet;
     g_render_packet_cursor[2] = 0;
     g_render_packet_cursor[3] = 0x50000003;
     g_render_packet_cursor += 4;
@@ -582,12 +582,12 @@ extern void func_00235218(void);
  * leaves a second copy of the handler's lui on the fall-through path.
  */
 void DMAC_VIF1_Enable(void) {
-    if (D_00161018 == 0 && D_0016101C == 0) {
+    if (vif1_dma_handler_id == 0 && vu1_halt_handler_id == 0) {
         if ((*(volatile int *)0x1000E010 & 0x20000) == 0) {
             *(int *)0x1000E010 = 0x20000;
         }
-        D_00161018 = func_00118AB0(1, (void *)vif1_dma_interrupt_handler, (void *)0);
-        D_0016101C = func_00118AB0(0xF, (void *)print_register_values_and_halt, (void *)0);
+        vif1_dma_handler_id = func_00118AB0(1, (void *)vif1_dma_interrupt_handler, (void *)0);
+        vu1_halt_handler_id = func_00118AB0(0xF, (void *)print_register_values_and_halt, (void *)0);
         func_00119460(1);
     }
 }
@@ -605,11 +605,11 @@ void DMAC_VIF1_Disable(void) {
     if ((*(volatile int *)0x1000E010 & 0x20000) != 0) {
         *(volatile int *)0x1000E010 = 0x20000;
     }
-    func_00118AD0(1, D_00161018);
-    func_00118AD0(0xF, D_0016101C);
+    func_00118AD0(1, vif1_dma_handler_id);
+    func_00118AD0(0xF, vu1_halt_handler_id);
     func_001193F8(1);
-    D_00161018 = 0;
-    D_0016101C = 0;
+    vif1_dma_handler_id = 0;
+    vu1_halt_handler_id = 0;
 }
 
 ASM_FUNC("asm/handwritten/text", func_00235118);
@@ -622,9 +622,9 @@ void print_register_values_and_halt(void) {
     int a = *(volatile int *)0x10009000;
     int b = *(volatile int *)0x10009030;
 
-    STUB_printf(D_001E8D38);
-    STUB_printf(D_001E8D50, a, b);
-    STUB_printf(D_001E8D68);
+    STUB_printf(vu1_halt_msg_header);
+    STUB_printf(vu1_halt_register_fmt, a, b);
+    STUB_printf(vu1_halt_msg_footer);
     while (1) {
         ;
     }

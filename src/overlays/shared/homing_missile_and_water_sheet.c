@@ -39,7 +39,7 @@ typedef int u128 __attribute__((mode(TI)));
 char *select_homing_missile_target(float *pos, float *aim, float r1, float r2, float maxd) {
     char *best = 0;
     char *q;
-    char *p = D_L11_00160064;
+    char *p = pokitaru_moby_list;
     float bestd = 10.0f;
     while (p != 0) {
         if ((*(unsigned short *)(p + 0x34) & 0x1000) && p != 0 && *(char **)(p + 0x24) != 0 && *(short *)(*(char **)(p + 0x24) + 0x46) == 5) {
@@ -218,7 +218,7 @@ void update_homing_missile(struct Moby *moby) {
             r[1] = random_float_between(-1.0f, 1.0f);
             r[2] = random_float_between(-1.0f, 1.0f);
             *(OvlQuad *)q = *(OvlQuad *)r;
-            vec_reflect(r, vars, D_L11_00174900);
+            vec_reflect(r, vars, pokitaru_coll_hit_normal);
             vec_scale_to_length(q, q, FastVecLength(r) * 0.5f);
             FastVecAdd(q, r, q);
             vec_scale_to_length(q, q, random_float_between(g_frame_time * 5.0f, g_frame_time * 9.0f));
@@ -302,11 +302,11 @@ void update_projectile_with_trail(char *m) {
     if (d == 0) return;
     pos = m + 0x10;
     qcopy(old, pos);
-    c = FastTweenColor(*(int *)&D_L11_00161E50, *(int *)&D_L11_00161E54, random_float_between(0.0f, 1.0f));
+    c = FastTweenColor(*(int *)&projectile_trail_color_a, *(int *)&projectile_trail_color_b, random_float_between(0.0f, 1.0f));
     rand_vec(p, 0.0f, 0.1f);
     FastVecAdd(p, p, pos);
-    FastVecScale(v, d, *(float *)&D_L11_00161E60);
-    PartType27Spawn((char *)p, (char *)v, c, scale_ticks(*(int *)&D_L11_00161E58), (float)*(int *)&D_L11_00161E5C);
+    FastVecScale(v, d, *(float *)&projectile_trail_speed_scale);
+    PartType27Spawn((char *)p, (char *)v, c, scale_ticks(*(int *)&projectile_trail_life_ticks), (float)*(int *)&projectile_trail_size);
     FastVecAdd(pos, pos, d);
     InitDirectionalHitQuery(hit, m, 0x10000, *(float *)(d + 0x20), d);
     if (coll_line(old, pos, 0, *(void **)(d + 0x1C), hit)) {
@@ -317,7 +317,7 @@ void update_projectile_with_trail(char *m) {
             r[1] = random_float_between(-1.0f, 1.0f);
             r[2] = random_float_between(-1.0f, 1.0f);
             *(u128 *)q = *(u128 *)r;
-            vec_reflect(r, d, D_L11_00174900);
+            vec_reflect(r, d, pokitaru_coll_hit_normal);
             vec_scale_to_length(q, q, FastVecLength(r) * 0.5f);
             FastVecAdd(q, r, q);
             vec_scale_to_length(q, q, random_float_between(D_0015EE6C_e * 5.0f, D_0015EE6C_e * 9.0f));
@@ -440,7 +440,7 @@ void Moby1034Update(struct PMoby *moby) {
     }
     Moby_GetJointWorldPos(moby, 1, &spray);
     if (coll_line(&previous_pos, &spray, 0, data->collision, 0)) {
-        spawn_explosion(moby, data, D_L11_001748E0, 2.0f, 10.0f, 10, 3, 0x10, 4.0f, 2.0f, 9.0f, 1.0f,
+        spawn_explosion(moby, data, pokitaru_collision_hit_point, 2.0f, 10.0f, 10, 3, 0x10, 4.0f, 2.0f, 9.0f, 1.0f,
                 -1, 20.0f, 0, 1, -1, 0);
         DeleteMoby(moby);
         return;
@@ -536,12 +536,12 @@ void draw_pokitaru_ocean(Moby *moby) {
     a.y = 0.0f;
     a.z = 0.0f;
     a.w = 1.0f;
-    matrix_mul_vec3(&a, &a, D_L11_00167A50);
+    matrix_mul_vec3(&a, &a, pokitaru_camera_matrix);
     b.x = 0.0f;
     b.y = 1.0f;
     b.z = 0.0f;
     b.w = 1.0f;
-    matrix_mul_vec3(&b, &b, D_L11_00167A50);
+    matrix_mul_vec3(&b, &b, pokitaru_camera_matrix);
     a.z = 0.0f;
     vec_scale_to_length(&a, &a, 1.0f);
     b.z = 0.0f;
@@ -559,7 +559,7 @@ void draw_pokitaru_ocean(Moby *moby) {
     for (i = 0; i < 4; i++) {
         Vec4f *p = &c[i];
         FastVecAdd(p, p, camera_pos_b358);
-        p->z = D_L11_00161EA8;
+        p->z = pokitaru_ocean_height;
     }
     FastVecSub(&d0, &c[1], &c[0]);
     FastVecSub(&d1, &c[3], &c[2]);
@@ -568,23 +568,23 @@ void draw_pokitaru_ocean(Moby *moby) {
         float f = IntToFloat(i) / 10.0f;
         int col = FastTweenColor(d->f0, d->f4, IntToFloat(i) / t);
         FastVecScale(&v0, &d0, f);
-        D_L11_001DA0D8[i] = col;
-        D_L11_001DA5E0[i].u = 0.0f;
-        D_L11_001DA5E0[i].v = 0.0f;
+        pokitaru_ocean_strip_colors[i] = col;
+        pokitaru_ocean_strip_uvs[i].u = 0.0f;
+        pokitaru_ocean_strip_uvs[i].v = 0.0f;
         FastVecAdd(&v0, &v0, &c[0]);
-        D_L11_001D9DD8[i].x = v0.x;
-        D_L11_001D9DD8[i].y = v0.y;
-        D_L11_001D9DD8[i].z = v0.z;
+        pokitaru_ocean_strip_verts[i].x = v0.x;
+        pokitaru_ocean_strip_verts[i].y = v0.y;
+        pokitaru_ocean_strip_verts[i].z = v0.z;
         FastVecScale(&v0, &d1, f);
-        D_L11_001DA0D8[i + 1] = col;
-        D_L11_001DA5E0[i + 1].u = 0.0f;
-        D_L11_001DA5E0[i + 1].v = 0.0f;
+        pokitaru_ocean_strip_colors[i + 1] = col;
+        pokitaru_ocean_strip_uvs[i + 1].u = 0.0f;
+        pokitaru_ocean_strip_uvs[i + 1].v = 0.0f;
         FastVecAdd(&v0, &v0, &c[2]);
-        D_L11_001D9DD8[i + 1].x = v0.x;
-        D_L11_001D9DD8[i + 1].y = v0.y;
-        D_L11_001D9DD8[i + 1].z = v0.z;
+        pokitaru_ocean_strip_verts[i + 1].x = v0.x;
+        pokitaru_ocean_strip_verts[i + 1].y = v0.y;
+        pokitaru_ocean_strip_verts[i + 1].z = v0.z;
     }
-    func_L00_001FDE48_30BCD8(0xC, D_L11_001D9DD8, D_L11_001DA0D8, D_L11_001DA5E0, 1);
+    func_L00_001FDE48_30BCD8(0xC, pokitaru_ocean_strip_verts, pokitaru_ocean_strip_colors, pokitaru_ocean_strip_uvs, 1);
     q.z78 = GetEffectTex(0x16);
     q.q80 = 0xFF9000000260L;
     q.q88 = 0x8000000044L;
@@ -617,7 +617,7 @@ void draw_pokitaru_ocean(Moby *moby) {
     VU1_addGSregister(0x47, 0x513F1);
     colA = d->fC;
     colB = d->f10;
-    t = 1.0f - (((Cam_30BCD8 *)pokitaru_player_camera)->z - D_L11_00161EA8) / d->f2C;
+    t = 1.0f - (((Cam_30BCD8 *)pokitaru_player_camera)->z - pokitaru_ocean_height) / d->f2C;
     if (t > 1.0f) {
         t = 1.0f;
     }
@@ -634,25 +634,25 @@ void draw_pokitaru_ocean(Moby *moby) {
                     pokitaru_water_sheet_uvs[n].v = y / (d->f18 * 2.0f) * wave_speed[layer] + wave_offset[layer].v;
                     pokitaru_water_sheet_verts[n].x = x + ((Cam_30BCD8 *)pokitaru_player_camera)->x + 1.0f;
                     pokitaru_water_sheet_verts[n].y = y + ((Cam_30BCD8 *)pokitaru_player_camera)->y + 1.0f;
-                    pokitaru_water_sheet_verts[n].z = D_L11_00161EA8;
+                    pokitaru_water_sheet_verts[n].z = pokitaru_ocean_height;
                     i = n + 1;
                     pokitaru_water_sheet_uvs[i].u = x / (d->f18 * 2.0f) * wave_speed[layer] + wave_offset[layer].u;
                     pokitaru_water_sheet_uvs[i].v = (y + d->f18) / (d->f18 * 2.0f) * wave_speed[layer] + wave_offset[layer].v;
                     pokitaru_water_sheet_verts[i].x = x + ((Cam_30BCD8 *)pokitaru_player_camera)->x + 1.0f;
                     pokitaru_water_sheet_verts[i].y = y + d->f18 + ((Cam_30BCD8 *)pokitaru_player_camera)->y + 1.0f;
-                    pokitaru_water_sheet_verts[i].z = D_L11_00161EA8;
+                    pokitaru_water_sheet_verts[i].z = pokitaru_ocean_height;
                     i = n + 2;
                     pokitaru_water_sheet_uvs[i].u = (x + d->f18) / (d->f18 * 2.0f) * wave_speed[layer] + wave_offset[layer].u;
                     pokitaru_water_sheet_uvs[i].v = y / (d->f18 * 2.0f) * wave_speed[layer] + wave_offset[layer].v;
                     pokitaru_water_sheet_verts[i].x = x + d->f18 + ((Cam_30BCD8 *)pokitaru_player_camera)->x + 1.0f;
                     pokitaru_water_sheet_verts[i].y = y + ((Cam_30BCD8 *)pokitaru_player_camera)->y + 1.0f;
-                    pokitaru_water_sheet_verts[i].z = D_L11_00161EA8;
+                    pokitaru_water_sheet_verts[i].z = pokitaru_ocean_height;
                     i = n + 3;
                     pokitaru_water_sheet_uvs[i].u = (x + d->f18) / (d->f18 * 2.0f) * wave_speed[layer] + wave_offset[layer].u;
                     pokitaru_water_sheet_uvs[i].v = (y + d->f18) / (d->f18 * 2.0f) * wave_speed[layer] + wave_offset[layer].v;
                     pokitaru_water_sheet_verts[i].x = x + d->f18 + ((Cam_30BCD8 *)pokitaru_player_camera)->x + 1.0f;
                     pokitaru_water_sheet_verts[i].y = y + d->f18 + ((Cam_30BCD8 *)pokitaru_player_camera)->y + 1.0f;
-                    pokitaru_water_sheet_verts[i].z = D_L11_00161EA8;
+                    pokitaru_water_sheet_verts[i].z = pokitaru_ocean_height;
                     for (i = n; i < n + 4; i++) {
                         v0.x = pokitaru_water_sheet_verts[i].x - ((Cam_30BCD8 *)pokitaru_player_camera)->x;
                         v0.y = pokitaru_water_sheet_verts[i].y - ((Cam_30BCD8 *)pokitaru_player_camera)->y;
@@ -662,14 +662,14 @@ void draw_pokitaru_ocean(Moby *moby) {
                         if (t > 1.0f) {
                             t = 1.0f;
                         }
-                        D_L11_001DA4D8[i] = FastTweenColor(colA, colB, t);
+                        pokitaru_water_sheet_colors[i] = FastTweenColor(colA, colB, t);
                     }
                     n += 4;
                     if (n >= 0x40) {
                         raise_kernel_trap();
                     }
                 }
-                func_L00_001FDE48_30BCD8(n, pokitaru_water_sheet_verts, D_L11_001DA4D8, pokitaru_water_sheet_uvs, 1);
+                func_L00_001FDE48_30BCD8(n, pokitaru_water_sheet_verts, pokitaru_water_sheet_colors, pokitaru_water_sheet_uvs, 1);
             }
         }
     }
@@ -989,7 +989,7 @@ void append_scaled_screen_triangle_strip(short *pts, int n, float x0, float y0, 
     {
         char *t1 = (char *)pokitaru_dma_packet_cursor;
         pokitaru_dma_packet_cursor = (int)(t1 + 0x10);
-        qcopy((void *)pokitaru_dma_packet_cursor, &D_L11_00160960);
+        qcopy((void *)pokitaru_dma_packet_cursor, &screen_strip_gif_tag_head);
         *(short *)(t1 + 0x10) = -0x7FFF;
     }
     {
@@ -1001,7 +1001,7 @@ void append_scaled_screen_triangle_strip(short *pts, int n, float x0, float y0, 
     {
         char *t3 = (char *)pokitaru_dma_packet_cursor;
         pokitaru_dma_packet_cursor = (int)(t3 + 0x10);
-        qcopy((void *)pokitaru_dma_packet_cursor, &D_L11_00160970);
+        qcopy((void *)pokitaru_dma_packet_cursor, &screen_strip_gif_tag_tail);
         *(short *)(t3 + 0x10) = n - 0x8000;
     }
     pokitaru_dma_packet_cursor += 0x10;
@@ -1182,7 +1182,7 @@ void emit_type_74_particles_from_moby_joints(void *m, char *t) {
         float scale;
 
         *(u128_312780 *)vel = 0;
-        scale = *(float *)(t + 0x64) / *(float *)&D_L11_00162084;
+        scale = *(float *)(t + 0x64) / *(float *)&joint_trail_reference_speed;
         if (scale > 1.0f) {
             scale = 1.0f;
         } else if (scale < 0.35f) {
@@ -1197,25 +1197,25 @@ void emit_type_74_particles_from_moby_joints(void *m, char *t) {
         add_random_offset_to_vector_xyz(b, *(float *)(t + 0xC4) * 0.02f + 0.02f);
         add_random_offset_to_vector_xyz(c, *(float *)(t + 0xC4) * 0.01f + 0.02f);
         vel[0] = -((random_float_between(6.0f, 7.0f) + *(float *)(t + 0xC4) * 2.0f) * g_frame_time) * scale;
-        spawn_type_74_particle(m, a, vel, &D_L11_00162258, 1);
+        spawn_type_74_particle(m, a, vel, &joint_trail_particle_cfg_a, 1);
         vel[0] = -((random_float_between(6.0f, 7.0f) + *(float *)(t + 0xC4) * 3.0f) * g_frame_time) * scale;
-        spawn_type_74_particle(m, b, vel, &D_L11_00162268, 1);
+        spawn_type_74_particle(m, b, vel, &joint_trail_particle_cfg_b, 1);
         vel[0] = -((random_float_between(6.0f, 7.0f) + *(float *)(t + 0xC4) * 4.0f) * g_frame_time) * scale;
-        spawn_type_74_particle(m, c, vel, &D_L11_00162278, 1);
+        spawn_type_74_particle(m, c, vel, &joint_trail_particle_cfg_c, 1);
         if (*(float *)(t + 0xC4) > 0.5f) {
             add_random_offset_to_vector_xyz(a, *(float *)(t + 0xC4) * 0.02f + 0.01f);
             add_random_offset_to_vector_xyz(b, *(float *)(t + 0xC4) * 0.02f + 0.01f);
             add_random_offset_to_vector_xyz(c, *(float *)(t + 0xC4) * 0.01f + 0.01f);
             vel[0] = -((random_float_between(6.0f, 7.0f) + *(float *)(t + 0xC4) * 2.0f) * g_frame_time) * scale;
-            spawn_type_74_particle(m, a, vel, &D_L11_00162258, 1);
+            spawn_type_74_particle(m, a, vel, &joint_trail_particle_cfg_a, 1);
             vel[0] = -((random_float_between(6.0f, 7.0f) + *(float *)(t + 0xC4) * 3.0f) * g_frame_time) * scale;
-            spawn_type_74_particle(m, b, vel, &D_L11_00162268, 1);
+            spawn_type_74_particle(m, b, vel, &joint_trail_particle_cfg_b, 1);
             vel[0] = -((random_float_between(6.0f, 7.0f) + *(float *)(t + 0xC4) * 4.0f) * g_frame_time) * scale;
-            spawn_type_74_particle(m, c, vel, &D_L11_00162278, 1);
+            spawn_type_74_particle(m, c, vel, &joint_trail_particle_cfg_c, 1);
             vel[0] = -((random_float_between(6.0f, 7.0f) + *(float *)(t + 0xC4) * 2.0f) * g_frame_time) * scale;
-            spawn_type_74_particle(m, a, vel, &D_L11_00162288, 1);
+            spawn_type_74_particle(m, a, vel, &joint_trail_particle_cfg_d, 1);
             vel[0] = -((random_float_between(6.0f, 7.0f) + *(float *)(t + 0xC4) * 3.0f) * g_frame_time) * scale;
-            spawn_type_74_particle(m, pos, vel, &D_L11_00162298, 1);
+            spawn_type_74_particle(m, pos, vel, &joint_trail_particle_cfg_e, 1);
         }
     }
 }
@@ -1244,9 +1244,9 @@ void draw_linked_moby_trails(char *m) {
         return;
     }
     if (gCheats[2] != 0) {
-        *(float *)&D_L11_00162480 = 16.0f;
+        *(float *)&moby_trail_length = 16.0f;
     } else {
-        *(float *)&D_L11_00162480 = 5.0f;
+        *(float *)&moby_trail_length = 5.0f;
     }
 
     for (i = 0; i < 16; i++) {
@@ -1256,12 +1256,12 @@ void draw_linked_moby_trails(char *m) {
         e->pk[2] = 0xFF9000000260L;
         e->pk[0] = 0;
         e->pk[3] = 0x8000000048L;
-        base = IntToFloat((level_frame + 3) & 3) / (*(float *)&D_L11_00162480 * 4.0f);
+        base = IntToFloat((level_frame + 3) & 3) / (*(float *)&moby_trail_length * 4.0f);
         for (j = 0; j < 4; j++) {
             jj = (j >> 1) - 1;
-            q[i].uv[j][0] = D_L11_001F1750[j][0];
-            q[i].uv[j][1] = D_L11_001F1750[j][1];
-            a = IntToFloat(i - jj) / *(float *)&D_L11_00162480 + base;
+            q[i].uv[j][0] = moby_trail_quad_uvs[j][0];
+            q[i].uv[j][1] = moby_trail_quad_uvs[j][1];
+            a = IntToFloat(i - jj) / *(float *)&moby_trail_length + base;
             if (1.0f < a) {
                 a = 1.0f;
             } else if (a < 0.0f) {
@@ -1329,7 +1329,7 @@ void update_moby_trail_points(char *moby) {
     int t;
     if ((level_frame & 3) == 0) {
         int cnt;
-        float lim = *(float *)&D_L11_00162480;
+        float lim = *(float *)&moby_trail_length;
         cnt = *(int *)(d + 0x2C0);
         *(int *)(d + 0x2C4) = (*(int *)(d + 0x2C4) + 1) % 16;
         if ((float)cnt < lim) {
@@ -1394,7 +1394,7 @@ void update_moby_hit_stats_and_state(char *m) {
         }
         *(int *)(st + 0x157EC) = *(int *)(st + 0x157EC) | (1 << D_0015EE84_3102C8) | 0x80000000;
         if (D_0015EE84_3102C8 == 0xB && *(char **)(info + 0x20) != 0 && *(short *)(*(char **)(info + 0x20) + 0xA6) == 0xAC) {
-            if (++D_0015EF00 >= 3 && gSkillPoints[0x12] == 0) {
+            if (++skill_point_18_kill_count >= 3 && gSkillPoints[0x12] == 0) {
                 gSkillPoints[0x12] = 1;
                 PlayBankSound(1, 0, 0);
                 ShowBanner(0x53DB, -1);
@@ -1522,7 +1522,7 @@ extern Pair8 D_L11_001626B8[] MACRO_ADDR;
 void queue_oil_tanker_front_texture_2b_batches(int a) {
     int i;
     for (i = 0; i < 5; i++) {
-        add_uv_scroll_offset(D_L11_00217A30, D_L11_002179D0[i], D_L11_00215528[i], &D_L11_001626B8[a]);
-        draw_env_overlay_mesh(D_L11_00215528[i], D_L11_002179B8[i], D_L11_00217A00[i], D_L11_00217A30, 1);
+        add_uv_scroll_offset(pokitaru_faded_scrolled_uvs, oil_tanker_2b_mesh_uv_sources[i], oil_tanker_2b_mesh_vertex_counts[i], &pokitaru_faded_2b_scroll[a]);
+        draw_env_overlay_mesh(oil_tanker_2b_mesh_vertex_counts[i], oil_tanker_2b_mesh_positions[i], oil_tanker_2b_mesh_colors[i], pokitaru_faded_scrolled_uvs, 1);
     }
 }

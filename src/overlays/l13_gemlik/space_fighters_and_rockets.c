@@ -577,7 +577,7 @@ void update_hovering_rocket_attacker(char *m) {
                 }
                 pv = shot_direction_vector;
                 FastVecSub(pv, &target->pos, scratch_vector);
-                vec_scale_to_length(pv, pv, *(float *)&D_L13_0016152C * g_frame_time);
+                vec_scale_to_length(pv, pv, *(float *)&hovering_rocket_attacker_launch_vector_speed * g_frame_time);
                 if (d->fire_side != 0) {
                     if (d->rocket_1) {
                         launch_attached_rocket(d->rocket_1, pv, (int)target, d->shot_range);
@@ -1251,7 +1251,7 @@ void update_blarg_space_fighter(Moby *moby) {
             return;
         }
         if (path == 0) {
-            func_001E9730_d(D_L13_001F49F0, (*(short *)&moby->save_id));
+            func_001E9730_d(blarg_space_fighter_no_path_format, (*(short *)&moby->save_id));
             DeleteMoby(moby);
             return;
         }
@@ -1721,9 +1721,9 @@ void emit_forcefield_tower_destruction_effects(unsigned char *a0, void *a1, int 
         do {
             r = random_float_between(8.0f, 10.0f);
             j--;
-            *(Blk24 *)vG.b = *(Blk24 *)&D_L13_001F4C40;
+            *(Blk24 *)vG.b = *(Blk24 *)&forcefield_tower_debris_start_colors;
             yv = r * g_frame_time;
-            *(Blk24 *)vH.b = *(Blk24 *)&D_L13_001F4C58;
+            *(Blk24 *)vH.b = *(Blk24 *)&forcefield_tower_debris_end_colors;
             yv = yv - f21 * g_frame_time;
             ra = random_integer_below(6);
             pa = (int *)(p + ra * 4);
@@ -1783,11 +1783,11 @@ void process_forcefield_tower_damage(char *m, char *d, float *hp) {
         HitAttack2CFF90 *t = (HitAttack2CFF90 *)MobyGetHitMessage(m, 0x330000, 0);
         if (t != 0) {
             int a, b, c;
-            char *fmt = D_L13_001F4C70;
+            char *fmt = forcefield_tower_damage_debug_format;
             int id = mob->id;
             func_001E9730_d(fmt, id, func_00120778(t->damage));
             {
-            char *fmt2 = D_L13_001F4C98;
+            char *fmt2 = forcefield_tower_hit_debug_format;
             a = func_00120778(t->position[0]);
             b = func_00120778(t->position[1]);
             c = func_00120778(t->position[2]);
@@ -2511,7 +2511,7 @@ void update_linked_switch_group(char *moby) {
                 set_moby_list_state((unsigned char)moby[0x21], 4);
                 func_0022ED80_E5810(1, 0, moby);
                 data->unk70 = data->unk84;
-                STUB_printf(D_L13_001F5080, *(short *)(moby + 0xB2), ((struct Moby *)moby)->oclass, gemlik_frame_count);
+                STUB_printf(linked_switch_group_opened_debug_format, *(short *)(moby + 0xB2), ((struct Moby *)moby)->oclass, gemlik_frame_count);
                 ((struct Moby *)moby)->state = 4;
             } else {
                 if (data->unk7C >= 0) {
@@ -2522,7 +2522,7 @@ void update_linked_switch_group(char *moby) {
 
                         func_0022ED80_E5810(2, 0, moby);
                         set_moby_list_state((unsigned char)moby[0x21], 3);
-                        STUB_printf(D_L13_001F50A0, *(short *)(moby + 0xB2), ((struct Moby *)moby)->oclass, gemlik_frame_count);
+                        STUB_printf(linked_switch_group_hit_timeout_debug_format, *(short *)(moby + 0xB2), ((struct Moby *)moby)->oclass, gemlik_frame_count);
                         ((struct Moby *)moby)->state = 3;
                     } else if (FastDecTimer(&data->unk72) != 0) {
                         func_0022ED80_E5810(0, 0, moby);
@@ -2550,7 +2550,7 @@ void update_linked_switch_group(char *moby) {
 
                 func_0022ED80_E5810(2, 0, moby);
                 set_moby_list_state((unsigned char)moby[0x21], 3);
-                STUB_printf(D_L13_001F50C0, *(short *)(moby + 0xB2), ((struct Moby *)moby)->oclass, gemlik_frame_count);
+                STUB_printf(linked_switch_group_open_timeout_debug_format, *(short *)(moby + 0xB2), ((struct Moby *)moby)->oclass, gemlik_frame_count);
                 ((struct Moby *)moby)->state = 3;
             } else if (FastDecTimer(&data->unk72) != 0) {
                 func_0022ED80_E5810(0, 0, moby);
@@ -2704,7 +2704,7 @@ extern unsigned char D_L13_001D3828[];
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l13/gameplay/entities/002c13b0.c, FUN_L13_002e86f8. */
 int queue_starfighter_voice_line(void *unused, unsigned char *p, int base, int n) {
     int j = func_001160D8() % n;
-    int id = D_L13_001D3828[base + j];
+    int id = starfighter_voice_line_ids[base + j];
     int i;
     int lt;
     if (base < 0x1D) {
@@ -2732,7 +2732,7 @@ int queue_starfighter_voice_line(void *unused, unsigned char *p, int base, int n
                     *(int *)(p + 0x13C) &= ~(1 << id);
                 j++;
                 j %= n;
-                id = D_L13_001D3828[base + j];
+                id = starfighter_voice_line_ids[base + j];
             } else {
                 cd_read_state.queued_secondary_track = id + 50000;
                 p[0x13A] = 1;
@@ -2805,14 +2805,14 @@ void emit_randomized_moby_joint_effects(char *moby) {
     u128 zv;
     float a[4];
     int i;
-    for (i = 0; D_L13_001D3808[i] != -1; i++) {
+    for (i = 0; gemlik_effect_joint_list[i] != -1; i++) {
         float s;
         int r, k;
         u128 *z = &zv;
         zv = 0;
         s = *(float *)(moby + 0x2C) / (*(float *)(*(char **)(moby + 0x24) + 0x24) * 4.0f);
         s = s * random_float_between(0.8f, 1.1f);
-        Moby_GetJointWorldPos(moby, D_L13_001D3808[i], a);
+        Moby_GetJointWorldPos(moby, gemlik_effect_joint_list[i], a);
         add_random_offset_to_vector_xyz(a, s * 1.4f);
         if (gemlik_frame_count & 1) {
             r = scale_ticks(rand_range(0x14, 0x3C));
@@ -2865,7 +2865,7 @@ void update_moby_joint_attachments(char *m, char *data) {
             *(u128 *)&attached_moby->rot_row2 = *(u128 *)&parent_moby->rot_row2;
         }
     }
-    attachment_joint_index = D_L13_001D3778[parent_moby->command];
+    attachment_joint_index = gemlik_attachment_joint_by_command[parent_moby->command];
     if (parent_moby->state == 5) attachment_joint_index = -1;
     if (attachment_joint_index != -1) {
         if (attachment_data->selected_child == 0 ||

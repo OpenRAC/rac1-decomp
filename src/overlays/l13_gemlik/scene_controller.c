@@ -290,8 +290,8 @@ void update_cutscene_target_effects(unsigned char *moby)
         moby[0x20] = 1;
         break;
     case 1:
-        if (gemlik_game_mode == 2 && D_L13_0016CBE0.state == 2) {
-            cutscene_set_camera_target(D_L13_0016CBE0.target);
+        if (gemlik_game_mode == 2 && gemlik_cutscene_action.state == 2) {
+            cutscene_set_camera_target(gemlik_cutscene_action.target);
         }
         break;
     }
@@ -491,8 +491,8 @@ void update_moby_motion_and_emit_sparks(char *moby)
 
     qcopy(&old_pos, &((struct Moby *)moby)->pos);
     if (((struct Moby *)moby)->command == 1) {
-        velocity.f[3] = *(float *)&D_L13_00161FEC;
-        acceleration.f[3] = *(float *)&D_L13_00161FF0;
+        velocity.f[3] = *(float *)&gemlik_spark1_start_size;
+        acceleration.f[3] = *(float *)&gemlik_spark1_end_size;
         for (i = 0; i < 2; i++) {
             qcopy(&position, &((struct Moby *)moby)->pos);
             r = random_float_between(-0.0649999976f, 0.0649999976f);
@@ -503,24 +503,24 @@ void update_moby_motion_and_emit_sparks(char *moby)
             position.f[2] = position.f[2] + r;
             qzero(&velocity);
             r = 0.0174532924f;
-            velocity.f[2] = random_float_between(*(float *)&D_L13_00161FC0 * g_frame_time * 0.899999976f, *(float *)&D_L13_00161FC0 * g_frame_time * 1.10000002f);
-            f20 = random_float_between(-*(float *)&D_L13_00161FE0, *(float *)&D_L13_00161FE0) * r;
+            velocity.f[2] = random_float_between(*(float *)&gemlik_spark1_rise_speed * g_frame_time * 0.899999976f, *(float *)&gemlik_spark1_rise_speed * g_frame_time * 1.10000002f);
+            f20 = random_float_between(-*(float *)&gemlik_spark1_spread_deg, *(float *)&gemlik_spark1_spread_deg) * r;
             t = FastAddRots(fast_atan2(data->dir_x, data->dir_y), f20);
-            acceleration.f[0] = FastCos(t) * (*(float *)&D_L13_00161FB4 * g_frame_time);
+            acceleration.f[0] = FastCos(t) * (*(float *)&gemlik_spark1_drift_accel * g_frame_time);
             t = FastAddRots(fast_atan2(data->dir_x, data->dir_y), f20);
-            acceleration.f[1] = FastSin(t) * (*(float *)&D_L13_00161FB4 * g_frame_time);
+            acceleration.f[1] = FastSin(t) * (*(float *)&gemlik_spark1_drift_accel * g_frame_time);
             acceleration.f[2] = 0.0f;
-            acceleration.f[2] = random_float_between(*(float *)&D_L13_00161FB8 * g_frame_time * 0.899999976f, *(float *)&D_L13_00161FB8 * g_frame_time * 1.10000002f);
-            t = random_float_between(*(float *)&D_L13_00161FA8, *(float *)&D_L13_00161FA8 + *(float *)&D_L13_00161FA8);
+            acceleration.f[2] = random_float_between(*(float *)&gemlik_spark1_lift_accel * g_frame_time * 0.899999976f, *(float *)&gemlik_spark1_lift_accel * g_frame_time * 1.10000002f);
+            t = random_float_between(*(float *)&gemlik_spark1_time1, *(float *)&gemlik_spark1_time1 + *(float *)&gemlik_spark1_time1);
             spark_frame_count = func_001FA898_r(multiply_global_factor(t));
-            t = random_float_between(*(float *)&D_L13_00161FAC, *(float *)&D_L13_00161FAC * 1.20000005f);
+            t = random_float_between(*(float *)&gemlik_spark1_time2, *(float *)&gemlik_spark1_time2 * 1.20000005f);
             second_spark_frame_count = func_001FA898_r(multiply_global_factor(t));
-            t = random_float_between(*(float *)&D_L13_00161FB0, *(float *)&D_L13_00161FB0 * 1.20000005f);
+            t = random_float_between(*(float *)&gemlik_spark1_time3, *(float *)&gemlik_spark1_time3 * 1.20000005f);
             third_spark_frame_count = func_001FA898_r(multiply_global_factor(t));
-            PartType02Spawn(&position, &velocity, &acceleration, *(int *)&D_L13_00161F98, *(int *)&D_L13_00161F9C, spark_frame_count, second_spark_frame_count, third_spark_frame_count, -1);
+            PartType02Spawn(&position, &velocity, &acceleration, *(int *)&gemlik_spark1_start_color, *(int *)&gemlik_spark1_end_color, spark_frame_count, second_spark_frame_count, third_spark_frame_count, -1);
         }
-        velocity.f[3] = *(float *)&D_L13_00161FF4;
-        acceleration.f[3] = *(float *)&D_L13_00161FF8;
+        velocity.f[3] = *(float *)&gemlik_spark2_start_size;
+        acceleration.f[3] = *(float *)&gemlik_spark2_end_size;
         for (i = 0; i < 2; i++) {
             qcopy(&second_pos, &((struct Moby *)moby)->pos);
             r = random_float_between(-0.100000001f, 0.100000001f);
@@ -529,24 +529,24 @@ void update_moby_motion_and_emit_sparks(char *moby)
             second_pos.f[1] = second_pos.f[1] + r;
             r = random_float_between(-0.100000001f, 0.100000001f);
             second_pos.f[2] = second_pos.f[2] + r;
-            random_float_between(-*(float *)&D_L13_00161FE8, *(float *)&D_L13_00161FE8);
+            random_float_between(-*(float *)&gemlik_spark2_unused_jitter, *(float *)&gemlik_spark2_unused_jitter);
             qzero(&velocity);
             deg = 0.0174532924f;
-            velocity.f[2] = random_float_between(*(float *)&D_L13_00161FD4 * g_frame_time * 0.699999988f, *(float *)&D_L13_00161FD4 * g_frame_time * 1.5f);
-            f20 = random_float_between(-*(float *)&D_L13_00161FE4, *(float *)&D_L13_00161FE4) * deg;
+            velocity.f[2] = random_float_between(*(float *)&gemlik_spark2_rise_speed * g_frame_time * 0.699999988f, *(float *)&gemlik_spark2_rise_speed * g_frame_time * 1.5f);
+            f20 = random_float_between(-*(float *)&gemlik_spark2_spread_deg, *(float *)&gemlik_spark2_spread_deg) * deg;
             r = FastAddRots(fast_atan2(data->dir_x, data->dir_y), f20);
-            acceleration.f[0] = FastCos(r) * (*(float *)&D_L13_00161FD8 * g_frame_time);
+            acceleration.f[0] = FastCos(r) * (*(float *)&gemlik_spark2_drift_accel * g_frame_time);
             r = FastAddRots(fast_atan2(data->dir_x, data->dir_y), f20);
-            acceleration.f[1] = FastSin(r) * (*(float *)&D_L13_00161FD8 * g_frame_time);
+            acceleration.f[1] = FastSin(r) * (*(float *)&gemlik_spark2_drift_accel * g_frame_time);
             acceleration.f[2] = 0.0f;
-            acceleration.f[2] = random_float_between(*(float *)&D_L13_00161FDC * g_frame_time * 0.699999988f, *(float *)&D_L13_00161FDC * g_frame_time * 1.5f);
-            r = random_float_between(*(float *)&D_L13_00161FC4, *(float *)&D_L13_00161FC4 + *(float *)&D_L13_00161FC4);
+            acceleration.f[2] = random_float_between(*(float *)&gemlik_spark2_lift_accel * g_frame_time * 0.699999988f, *(float *)&gemlik_spark2_lift_accel * g_frame_time * 1.5f);
+            r = random_float_between(*(float *)&gemlik_spark2_time1, *(float *)&gemlik_spark2_time1 + *(float *)&gemlik_spark2_time1);
             spark_frame_count = func_001FA898_r(multiply_global_factor(r));
-            r = random_float_between(*(float *)&D_L13_00161FC8, *(float *)&D_L13_00161FC8 * 1.20000005f);
+            r = random_float_between(*(float *)&gemlik_spark2_time2, *(float *)&gemlik_spark2_time2 * 1.20000005f);
             second_spark_frame_count = func_001FA898_r(multiply_global_factor(r));
-            r = random_float_between(*(float *)&D_L13_00161FCC, *(float *)&D_L13_00161FCC * 1.20000005f);
+            r = random_float_between(*(float *)&gemlik_spark2_time3, *(float *)&gemlik_spark2_time3 * 1.20000005f);
             third_spark_frame_count = func_001FA898_r(multiply_global_factor(r));
-            PartType02Spawn(&second_pos, &velocity, &acceleration, *(int *)&D_L13_00161FA0, *(int *)&D_L13_00161FA4, spark_frame_count, second_spark_frame_count, third_spark_frame_count, -1);
+            PartType02Spawn(&second_pos, &velocity, &acceleration, *(int *)&gemlik_spark2_start_color, *(int *)&gemlik_spark2_end_color, spark_frame_count, second_spark_frame_count, third_spark_frame_count, -1);
         }
     }
 
@@ -636,7 +636,7 @@ void Moby1805Update(void *moby) {
         Moby_PlaySound(0, 0, (int)moby);
         spawn_proximity_gated_bolts(moby);
             level_moby_killed[g_current_level_index][(short)*(unsigned short *)(m + 0xB2) >> 5] |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
-            D_L13_001BAAE0[(short)*(unsigned short *)(m + 0xB2) >> 5] |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
+            gemlik_moby_killed_bits[(short)*(unsigned short *)(m + 0xB2) >> 5] |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
         for (n = 0; n < 2; n++) {
             for (k = 0x709; k < 0x70D; k++) {
                 qzero(tmp);

@@ -2910,7 +2910,7 @@ void update_link_triggered_moby_turn(char *moby) {
     case LINKED_TURN_STATE_WAIT_FOR_LINK:
         if (test_linked_moby_turn_trigger((char *)(D_L11_00160058_d + (*(int *)private_data << 8)))) {
             if (*(int *)&level_frame > 10) {
-                D_0013D4EB = entry_state;
+                menu_item_enabled_79 = entry_state;
                 turning_moby->state = 2;
                 Moby_PlaySound(0, 0, (int)turning_moby);
             } else {

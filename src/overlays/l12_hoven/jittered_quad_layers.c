@@ -46,22 +46,22 @@ void draw_hoven_jittered_quad_layers(char *m) {
     M[15] = 1.0f;
     tex = GetEffectTex(0xE);
     P[0].tex = P[1].tex = tex;
-    c0 = *(int *)&D_L12_00162010;
-    c1 = *(int *)&D_L12_00162014;
+    c0 = *(int *)&hoven_jitter_quad_color;
+    c1 = *(int *)&hoven_jitter_quad_back_color;
     P[0].state = P[1].state = 0xFF9000000260L;
-    P[0].flags = (long)*(int *)&D_L12_0016203C | ((long)*(int *)&D_L12_00162040 << 2) | ((long)*(int *)&D_L12_00162044 << 4)
-                 | ((long)*(int *)&D_L12_00162048 << 6) | (0x8000L << 24);
-    P[1].flags = (long)*(int *)&D_L12_0016204C | ((long)*(int *)&D_L12_00162050 << 2) | ((long)*(int *)&D_L12_00162054 << 4)
-                 | ((long)*(int *)&D_L12_00162058 << 6) | (0x8000L << 24);
+    P[0].flags = (long)*(int *)&hoven_jitter_quad_blend_a | ((long)*(int *)&hoven_jitter_quad_blend_b << 2) | ((long)*(int *)&hoven_jitter_quad_blend_c << 4)
+                 | ((long)*(int *)&hoven_jitter_quad_blend_d << 6) | (0x8000L << 24);
+    P[1].flags = (long)*(int *)&hoven_jitter_quad_back_blend_a | ((long)*(int *)&hoven_jitter_quad_back_blend_b << 2) | ((long)*(int *)&hoven_jitter_quad_back_blend_c << 4)
+                 | ((long)*(int *)&hoven_jitter_quad_back_blend_d << 6) | (0x8000L << 24);
     P[0].color[0] = P[0].color[1] = P[0].color[2] = P[0].color[3] = c0;
     P[0].zero = P[1].zero = 0;
     P[1].color[0] = P[1].color[1] = P[1].color[2] = P[1].color[3] = c1;
     for (j = 0; j < 4; j++) {
         float u, v;
-        qcopy(P[1].corner[j], &D_L12_001FB9B0[j]);
-        qcopy(P[0].corner[j], &D_L12_001FB9F0[j]);
-        u = D_L12_001FB990[j][0];
-        v = D_L12_001FB990[j][1];
+        qcopy(P[1].corner[j], &hoven_jitter_quad_back_corners[j]);
+        qcopy(P[0].corner[j], &hoven_jitter_quad_front_corners[j]);
+        u = hoven_jitter_quad_uvs[j][0];
+        v = hoven_jitter_quad_uvs[j][1];
         P[0].uv[j][0] = u;
         P[0].uv[j][1] = v;
         P[1].uv[j][0] = u;
@@ -74,8 +74,8 @@ void draw_hoven_jittered_quad_layers(char *m) {
             float (*r1)[4] = P[1].corner;
             r0[k][2] = r0[k][2] + 1.0f;
             r1[k][2] = r1[k][2] + 1.0f;
-            P[0].uv[k][0] = D_L12_001FB990[k][0] + f3;
-            P[0].uv[k][1] = D_L12_001FB990[k][1];
+            P[0].uv[k][0] = hoven_jitter_quad_uvs[k][0] + f3;
+            P[0].uv[k][1] = hoven_jitter_quad_uvs[k][1];
         }
         f20 = 0.0f;
         b = -3;

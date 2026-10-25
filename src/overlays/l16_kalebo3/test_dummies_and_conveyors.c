@@ -1888,7 +1888,7 @@ void test_dummy_on_hoverboard_update(unsigned char *m) {
 
             *(short *)(d + 0x2F2) = count;
             if (scale_ticks(240) < timer) {
-                L16RacePlayer *player = &D_L16_00167100;
+                L16RacePlayer *player = &kalebo3_player_camera;
 
                 if (FastDiffRots(fast_atan2(*(float *)(m + 0x10) - player->position[0],
                                                     *(float *)(m + 0x14) - player->position[1]),
@@ -1970,8 +1970,8 @@ void test_dummy_on_hoverboard_update(unsigned char *m) {
         if (n) {
             FastVecScale(impact, delta, 7.0f);
             for (i = 0; i < n; i++) {
-                if (is_moby_in_class_range_500_to_540((int)D_L16_00178380[i])) {
-                    PostHitMessage(D_L16_00178380[i], (int)m, mask, d + 0x260, impact, 1.0f);
+                if (is_moby_in_class_range_500_to_540((int)kalebo3_coll_sphere_moby_hits[i])) {
+                    PostHitMessage(kalebo3_coll_sphere_moby_hits[i], (int)m, mask, d + 0x260, impact, 1.0f);
                 }
             }
         }

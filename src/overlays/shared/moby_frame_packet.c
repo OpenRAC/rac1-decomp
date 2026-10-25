@@ -81,9 +81,9 @@ Slot *allocate_moby_animation_slot(char *o, int id) {
     int i = 0;
     Slot *s;
     unsigned char *r;
-    for (i = 0; i < 6 && D_L00_0018EEC0[i].used != 0; i++) {
+    for (i = 0; i < 6 && moby_animation_slots[i].used != 0; i++) {
     }
-    s = &D_L00_0018EEC0[i];
+    s = &moby_animation_slots[i];
     s->used = 1;
     s->id = id;
     id = (short)id;
@@ -284,7 +284,7 @@ extern char D_L00_00197040[];
 int SlotTable_Insert(int value) {
     int i;
     for (i = 0; i < 16; i++) {
-        int *slot = (int *)(D_L00_00197040 + i * 4);
+        int *slot = (int *)(slot_table_values + i * 4);
         if (*slot == 0 || *slot == value) {
             *slot = value;
             return i;
@@ -311,7 +311,7 @@ void Moby_GetJointWorldPos(char *arg0, int arg1, void *arg2) {
 
     s = *(float *)(arg0 + 0x2C) * 0.0009765625f;
     n = arg1;
-    func_002116A0(arg0, 1, &n, buf);
+    get_moby_joint_matrices(arg0, 1, &n, buf);
     FastVecScale(arg2, buf + 0x30, s);
     matrix_mul_vec3(arg2, arg2, arg0 + 0xC0);
     FastVecAdd(arg2, arg2, arg0 + 0x10);
@@ -326,7 +326,7 @@ void compute_selected_world_matrices(char *o, int n, int *arg2, char *out) {
 
     s = *(float *)(o + 0x2C) * 0.0009765625f;
     copy_matrix_rotation(buf, o + 0xC0);
-    func_002116A0(o, n, arg2, out);
+    get_moby_joint_matrices(o, n, arg2, out);
     for (i = 0; i < n; i++) {
         sce_vu0_mul_matrix(out + i * 0x40, buf, out + i * 0x40);
         FastVecScale(out + i * 0x40 + 0x30, out + i * 0x40 + 0x30, s);
@@ -356,8 +356,8 @@ void apply_nearest_environment_sample(char *o) {
     char *g;
     unsigned char *h;
 
-    for (i = 0; i < D_L00_001600D4; i++) {
-        FastVecSub(vec, o + 0x10, D_L00_00160100 + i * 0x30);
+    for (i = 0; i < environment_sample_count; i++) {
+        FastVecSub(vec, o + 0x10, environment_samples + i * 0x30);
         d = FastVecLength(vec);
         if (d <= 8.0f && d < best) {
             best = d;
@@ -365,14 +365,14 @@ void apply_nearest_environment_sample(char *o) {
         }
     }
     if (idx == -1) {
-        STUB_printf(D_L00_001E9258);
+        STUB_printf(no_environment_sample_msg);
         return;
     }
     off = idx * 0x30;
-    e1 = (char *)(off + (int)D_L00_00160100);
+    e1 = (char *)(off + (int)environment_samples);
     pack_render_command_fields(o, *(int *)(o + 0x80) = (*(int *)(e1 + 0x18) << 16) + (*(int *)(e1 + 0x14) << 8) + *(int *)(e1 + 0x10), 0, 0, 0);
-    *(int *)(o + 0x38) = *(int *)((char *)(off + (int)D_L00_00160100) + 0x1C);
-    e2 = (char *)(off + (int)D_L00_00160100);
+    *(int *)(o + 0x38) = *(int *)((char *)(off + (int)environment_samples) + 0x1C);
+    e2 = (char *)(off + (int)environment_samples);
     if (*(unsigned char *)(e2 + 0x27) != 0) {
         g = D_0013E633 + 0x1D;
         *(int *)(g + 0x64) = *(int *)(e2 + 0x20);
@@ -381,7 +381,7 @@ void apply_nearest_environment_sample(char *o) {
         g[0x6A] = e2[0x26];
         g[0x6B] |= 7;
     }
-    e3 = (char *)(off + (int)D_L00_00160100);
+    e3 = (char *)(off + (int)environment_samples);
     if (*(int *)(e3 + 0x28) >= 0) {
         h = D_0014171B + 0x100B5;
         if (*(short *)(h + 0x3E) == 0) {

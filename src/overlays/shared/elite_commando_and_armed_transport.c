@@ -119,10 +119,10 @@ char *spawn_class_32_moby(char *owner, char *vec, void *pos, void *vel, int c) {
         *(int *)(d + 0x30) = c;
         *(int *)(d + 0x20) = c;
         len = FastVecLength(vec);
-        x = *(float *)&D_L16_001614A8;
+        x = *(float *)&class_32_spawn_max_yaw_deg;
         *(float *)(d + 0x24) = len;
         t = random_float_between(-x, x) * 0.017453292f;
-        y = *(float *)&D_L16_001614AC;
+        y = *(float *)&class_32_spawn_max_pitch_deg;
         *(float *)(d + 0x28) = t;
         *(float *)(d + 0x2C) = random_float_between(0.0f, y) * 0.017453292f;
         *(int *)(d + 0x34) = 0;
@@ -364,7 +364,7 @@ animate_idle:
     default:
         break;
     }
-    if (*(int *)&D_L16_00161B34) {
+    if (*(int *)&blarg_elite_commando_hover_enabled) {
         *(float *)(d + 0x2BC) = *(float *)(m + 0x18);
         if (((unsigned char *)m)[0x20] != 0 && ((unsigned char *)m)[0x20] != 10) {
             ApproachValue((float *)(d + 0x2EC), 0.25f, g_frame_time * 0.25f);
@@ -378,8 +378,8 @@ animate_idle:
         if (func_001F9D10_update(m + 0x10, kalebo3_camera_pos) < 32.0f && !Sound_IsPlaying(m, *(int *)(d + 0x304)))
             *(int *)(d + 0x304) = func_0022ED80_update(7, 4, m);
     }
-    if (*(int *)&D_L16_00161B38) update_blarg_elite_commando_joint_aim(m);
-    if (*(int *)&D_L16_00161B3C && *(int *)(D_0013E633 + 0x2EA9) != 22) emit_blarg_elite_commando_joint_sparks(m);
+    if (*(int *)&blarg_elite_commando_joint_aim_enabled) update_blarg_elite_commando_joint_aim(m);
+    if (*(int *)&blarg_elite_commando_joint_sparks_enabled && *(int *)(D_0013E633 + 0x2EA9) != 22) emit_blarg_elite_commando_joint_sparks(m);
     if (g_current_level_index == 18 && kalebo3_game_mode == 2 && (unsigned int)(D_L16_0016CD10 - 3) < 3U) DeleteMoby(m);
 }
 extern char *func_L00_0025B478(void *, int, int);
@@ -522,8 +522,8 @@ void update_blarg_elite_commando_damage_and_pursuit(char *m) {
         case 2: {
             char *source;
             if (g_current_level_index == 18 && d->reward_hits) {
-                ++*(int *)&D_0015EF10;
-                if (*(int *)&D_0015EF10 >= 10) {
+                ++*(int *)&elite_commando_reward_hit_count;
+                if (*(int *)&elite_commando_reward_hit_count >= 10) {
                     if (((L16DamageReward *)(menu_item_enabled_115 + 1))->awarded == 0) {
                         ((L16DamageReward *)(menu_item_enabled_115 + 1))->awarded = 1;
                         PlayBankSound(1, 0, 0);
@@ -717,8 +717,8 @@ void emit_blarg_elite_commando_death_particles(void *m) {
         int *a,*b,duration1,duration2;
         remaining--;
         sample=random_float_between(8.0f,10.0f);
-        first=D_L16_001E8600;
-        second=D_L16_001E8618;
+        first=elite_commando_death_spark_start_colors;
+        second=elite_commando_death_spark_end_colors;
         delay=sample*g_frame_time-range*g_frame_time;
         a=&first.values[random_integer_below(6)];
         b=&second.values[random_integer_below(6)];
@@ -859,7 +859,7 @@ void armed_transport_update(char *m) {
         d[0x28] = 3;
         if (*(int *)(d + 0xD8) != -1) compute_armed_transport_path_headings(kalebo3_path_table[*(int *)(d + 0xD8)]);
         if (*(int *)(d + 0xDC) != -1) compute_armed_transport_path_headings(kalebo3_path_table[*(int *)(d + 0xDC)]);
-        speed = *(float *)&D_L16_00161E40 * g_frame_time;
+        speed = *(float *)&armed_transport_max_path_speed * g_frame_time;
         *(int *)(d + 0x16C) = 0;
         *(int *)(d + 0x168) = 0;
         *(float *)(d + 0x170) = speed;
@@ -893,7 +893,7 @@ void armed_transport_update(char *m) {
             vector.f[2] = 3.14159f;
             for (i = 0; i < 4; i++) {
                 if (((int *)(d + 0xC0))[i] >= 0) {
-                    set_blarg_elite_commando_parent_transform(kalebo3_moby_array + (((int *)(d + 0xC0))[i] << 8), m, D_L16_001D9950,
+                    set_blarg_elite_commando_parent_transform(kalebo3_moby_array + (((int *)(d + 0xC0))[i] << 8), m, armed_transport_rider_matrix,
                                       (char *)vector.f);
                 }
             }
@@ -934,7 +934,7 @@ void armed_transport_update(char *m) {
 
                 clear_u64_value(rotation.f);
                 rotation.f[2] = FastAddRots(*(float *)(m + 0x48), 3.14159f);
-                matrix_mul_vec3(vector.f, D_L16_001D9950, m + 0xC0);
+                matrix_mul_vec3(vector.f, armed_transport_rider_matrix, m + 0xC0);
                 FastVecAdd(vector.f, vector.f, m + 0x10);
                 start_blarg_elite_commando_return_to_initial_position(passenger, scale_ticks(90));
                 *slot = -1;
@@ -992,7 +992,7 @@ void armed_transport_update(char *m) {
     case 7:
         Moby_GetJointWorldPos(m, 1, vector.f);
         FastVecSub(rotation.f, d + 0x70, vector.f);
-        vec_scale_to_length(rotation.f, rotation.f, *(float *)&D_L16_00161E3C * g_frame_time);
+        vec_scale_to_length(rotation.f, rotation.f, *(float *)&armed_transport_shot_speed * g_frame_time);
         func_0022ED80_update(1, 0, m);
         spawn_class_32_moby(m, (char *)rotation.f, vector.f, d + 0x70, scale_ticks(45));
         m[0x20] = 6;
@@ -1020,8 +1020,8 @@ void armed_transport_update(char *m) {
     }
     }
     *(float *)(d + 0x18C) = FastAddRots(*(float *)(d + 0x18C),
-                                          *(float *)&D_L16_00161E48 * 0.017453292f * g_frame_time);
-    *(float *)(m + 0x18) = *(float *)(d + 0x194) + *(float *)&D_L16_00161E4C * FastSin(*(float *)(d + 0x18C));
+                                          *(float *)&armed_transport_bob_speed_deg * 0.017453292f * g_frame_time);
+    *(float *)(m + 0x18) = *(float *)(d + 0x194) + *(float *)&armed_transport_bob_height * FastSin(*(float *)(d + 0x18C));
     update_armed_transport_joint_animation(m);
 }
 extern int func_L00_0028EB98(void*,int);
@@ -1044,7 +1044,7 @@ void update_armed_transport_damage_and_targeting(char *m) {
     float zero;
     char *record;
     int response;
-    (*(float*)((char*)(m)+(0x2C)))=(*(float*)((char*)(*(char**)(m+0x24))+(0x24)))*(*(float*)&D_L16_00161E38);
+    (*(float*)((char*)(m)+(0x2C)))=(*(float*)((char*)(*(char**)(m+0x24))+(0x24)))*(*(float*)&armed_transport_bounds_scale);
     if((unsigned int)((*(unsigned char*)((char*)(m)+(0x20)))-2)<4) {
         if(!Sound_IsPlaying(m,(*(int*)((char*)(d)+(0x190))))) (*(int*)((char*)(d)+(0x190)))=func_0022ED80_6B70(0,4,m);
     } else if(Sound_IsPlaying(m,(*(int*)((char*)(d)+(0x190))))) {
@@ -1116,8 +1116,8 @@ int advance_armed_transport_along_path(char *m, char *path) {
     *(float *)(d+0x194)=*(float *)(m+0x18);
     speed=0.0f;
     distance=func_001F9D10_path42(position,path+(*(int *)path<<4));
-    rate=*(float *)&D_L16_00161E44*g_frame_time_sq;
-    func_00214D88_path42(distance,rate,rate,*(float *)&D_L16_00161E40*g_frame_time,&speed,(float *)(d+0x170));
+    rate=*(float *)&armed_transport_path_accel*g_frame_time_sq;
+    func_00214D88_path42(distance,rate,rate,*(float *)&armed_transport_max_path_speed*g_frame_time,&speed,(float *)(d+0x170));
     return 0;
     }
     return 1;
@@ -1188,7 +1188,7 @@ void grindrail_barrier_update(unsigned char *m) {
         barrier_moby->update_dist = 0xFF;
         break;
     case GRINDRAIL_BARRIER_STATE_COLLISION_ENABLED:
-        cycle = *(float *)(barrier_data + 0xC) + *(float *)&D_L16_00161EC4 * g_frame_time;
+        cycle = *(float *)(barrier_data + 0xC) + *(float *)&grindrail_barrier_pulse_speed * g_frame_time;
         *(float *)(barrier_data + 0xC) = cycle;
         if (cycle > 1.0f)
             *(float *)(barrier_data + 0xC) = cycle - 1.0f;
@@ -1196,11 +1196,11 @@ void grindrail_barrier_update(unsigned char *m) {
             *(int *)(barrier_data + 0x24) = func_0022ED80_6B70(0, 4, barrier_moby);
         }
         *(float *)(barrier_data + 8) = FastAddRots(*(float *)(barrier_data + 8),
-                                                   *(float *)&D_L16_00161EC0 * 0.017453292f * g_frame_time);
+                                                   *(float *)&grindrail_barrier_spin_speed_deg * 0.017453292f * g_frame_time);
         cardinal_angles = (float *)(barrier_data + 0x10);
         for (i = 0; i < 4; i++) {
             cardinal_angles[i] = FastAddRots(cardinal_angles[i],
-                                             ((float *)&D_L16_00161EC8)[i] * 0.017453292f * g_frame_time);
+                                             ((float *)&grindrail_barrier_core_spin_speeds_deg)[i] * 0.017453292f * g_frame_time);
         }
         if (barrier_moby->visible)
             AddDrawCallback(draw_grindrail_barrier_effect, barrier_moby);
@@ -1247,34 +1247,34 @@ void draw_grindrail_barrier_effect(char *m) {
     int i;
     qcopy(rotation, m + 0x40);
     qcopy(transform[3], m + 0x10);
-    quad.texture = GetEffectTex(*(int *)&D_L16_00161EF8);
+    quad.texture = GetEffectTex(*(int *)&grindrail_barrier_ring_texture);
     u = &quad.uv[0][0];
     v = &quad.uv[0][1];
     quad.giftag = 0xFF9000000260UL;
-    quad.primitive = (unsigned long)*(int *)&D_L16_00161EE8
-        | ((unsigned long)*(int *)&D_L16_00161EEC << 2)
-        | ((unsigned long)*(int *)&D_L16_00161EF0 << 4)
-        | ((unsigned long)*(int *)&D_L16_00161EF4 << 6)
+    quad.primitive = (unsigned long)*(int *)&grindrail_barrier_alpha_a
+        | ((unsigned long)*(int *)&grindrail_barrier_alpha_b << 2)
+        | ((unsigned long)*(int *)&grindrail_barrier_alpha_c << 4)
+        | ((unsigned long)*(int *)&grindrail_barrier_alpha_d << 6)
         | 0x8000000000UL;
     quad.flags = 0;
     color_base = quad.color;
     {
         int k;
         for (k = 0; k < 4; ++k) {
-            u[k * 2] = D_L16_001D9A50[k][0];
-            v[k * 2] = D_L16_001D9A50[k][1];
-            color_base[k] = *(int *)&D_L16_00161EDC;
-            qcopy(quad.position[k], D_L16_001D9A90[k]);
+            u[k * 2] = grindrail_barrier_ring_uvs[k][0];
+            v[k * 2] = grindrail_barrier_ring_uvs[k][1];
+            color_base[k] = *(int *)&grindrail_barrier_ring_color_b;
+            qcopy(quad.position[k], grindrail_barrier_ring_quad_corners[k]);
             FastVecScale(quad.position[k], quad.position[k], scale);
         }
     }
     angles = data->cardinal_angles;
-    angle_step = 6.2831855f / IntToFloat(*(int *)&D_L16_00161F00);
-    phase_step = 3.0f / IntToFloat(*(int *)&D_L16_00161F00);
+    angle_step = 6.2831855f / IntToFloat(*(int *)&grindrail_barrier_quad_count);
+    phase_step = 3.0f / IntToFloat(*(int *)&grindrail_barrier_quad_count);
     phase = data->phase;
     while (phase < 0.0f) phase += 1.0f;
     while (phase > 1.0f) phase -= 1.0f;
-    for (i = 0; i < *(int *)&D_L16_00161F00;) {
+    for (i = 0; i < *(int *)&grindrail_barrier_quad_count;) {
         float blend;
         int color, j;
         rotation[0] = FastAddRots(data->yaw, (float)i * angle_step);
@@ -1282,21 +1282,21 @@ void draw_grindrail_barrier_effect(char *m) {
         if (phase > 0.5f) blend = (-phase + 1.0f) + (-phase + 1.0f);
         else blend = phase + phase;
         ++i;
-        color = FastTweenColor(*(int *)&D_L16_00161ED8, *(int *)&D_L16_00161EDC, blend);
+        color = FastTweenColor(*(int *)&grindrail_barrier_ring_color_a, *(int *)&grindrail_barrier_ring_color_b, blend);
         for (j = 1; j >= 0; --j) color_base[j] = color;
         phase += phase_step;
         if (phase > 1.0f) phase -= 1.0f;
         draw_world_quad(&quad, transform, 0);
     }
-    quad.texture = GetEffectTex(*(int *)&D_L16_00161EFC);
+    quad.texture = GetEffectTex(*(int *)&grindrail_barrier_core_texture);
     {
         int k;
-        int solid_color = *(int *)&D_L16_00161EE0;
+        int solid_color = *(int *)&grindrail_barrier_core_color;
         for (k = 0; k < 4; ++k) {
-            u[k * 2] = D_L16_001D9A70[k][0];
-            v[k * 2] = D_L16_001D9A70[k][1];
+            u[k * 2] = grindrail_barrier_core_uvs[k][0];
+            v[k * 2] = grindrail_barrier_core_uvs[k][1];
             color_base[k] = solid_color;
-            qcopy(quad.position[k], D_L16_001D9AD0[k]);
+            qcopy(quad.position[k], grindrail_barrier_core_quad_corners[k]);
         }
     }
     {

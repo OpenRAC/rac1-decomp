@@ -257,17 +257,17 @@ void spawn_type_52_particle_near_moby(char *moby) {
     float v[3];
     int g, h;
     float a = random_angle_radians();
-    float b = random_float_between(0.0f, *(float *)&D_L10_00161EF0);
-    float c = random_float_between(0.0f, *(float *)&D_L10_00161EE0);
-    float d = random_float_between(*(float *)&D_L10_00161EE0, *(float *)&D_L10_00161EE4);
-    int e = rand_range(*(int *)&D_L10_00161EE8, *(int *)&D_L10_00161EEC);
+    float b = random_float_between(0.0f, *(float *)&orxon_type52_particle_spawn_radius);
+    float c = random_float_between(0.0f, *(float *)&orxon_type52_particle_start_size_max);
+    float d = random_float_between(*(float *)&orxon_type52_particle_start_size_max, *(float *)&orxon_type52_particle_end_size_max);
+    int e = rand_range(*(int *)&orxon_type52_particle_life_min, *(int *)&orxon_type52_particle_life_max);
     v[0] = FastCos(a) * b;
     v[1] = FastSin(a) * b;
     v[2] = 0.0f;
     FastVecAdd(v, v, (float *)(moby + 0x10));
     v[2] = v[2] + 0.025f;
-    g = *(int *)&D_L10_00161ED8;
-    h = *(int *)&D_L10_00161EDC;
+    g = *(int *)&orxon_type52_particle_color_start;
+    h = *(int *)&orxon_type52_particle_color_end;
     spawn_type_52_particle(v, c, d, g, h, e);
 }
 extern void func_001FA4A0(void *, void *);
@@ -367,8 +367,8 @@ void draw_moby_animated_quad_layers(unsigned char *m) {
     pb = (float *)sv;
     qb = (float *)sv;
     pa = (float *)&first;
-    s1 = D_L10_001DA620;
-    s2 = D_L10_001DA5E0;
+    s1 = orxon_quad_layer_first_vertices;
+    s2 = orxon_quad_layer_second_vertices;
     for (i = 0; i < 4; i++) {
         qcopy(pa, &s1[i]);
         qcopy(qb, s2);
@@ -381,14 +381,14 @@ void draw_moby_animated_quad_layers(unsigned char *m) {
         s2++;
         qb += 4;
     }
-    for (pass = 0; pass < *(int *)&D_L10_00161FC0; pass++) {
+    for (pass = 0; pass < *(int *)&quad_layer_count; pass++) {
         int parity = pass & 1;
         int level;
-        first.unk88 = ALPHA_2EA578(((int *)&D_L10_00161FC8)[parity], ((int *)&D_L10_00161FD0)[parity],
-                                   ((int *)&D_L10_00161FD8)[parity], ((int *)&D_L10_00161FE0)[parity], 0x80);
-        second.unk88 = ALPHA_2EA578(((int *)&D_L10_00161FC8)[parity], ((int *)&D_L10_00161FD0)[parity],
-                                    ((int *)&D_L10_00161FD8)[parity], ((int *)&D_L10_00161FE0)[parity], 0x80);
-        level = D_L10_001DA520[pass];
+        first.unk88 = ALPHA_2EA578(((int *)&orxon_quad_layer_alpha_a)[parity], ((int *)&orxon_quad_layer_alpha_b)[parity],
+                                   ((int *)&orxon_quad_layer_alpha_c)[parity], ((int *)&orxon_quad_layer_alpha_d)[parity], 0x80);
+        second.unk88 = ALPHA_2EA578(((int *)&orxon_quad_layer_alpha_a)[parity], ((int *)&orxon_quad_layer_alpha_b)[parity],
+                                    ((int *)&orxon_quad_layer_alpha_c)[parity], ((int *)&orxon_quad_layer_alpha_d)[parity], 0x80);
+        level = orxon_quad_layer_levels[pass];
         second.col[2] = level;
         second.col[0] = level;
         first.col[3] = level;
@@ -397,15 +397,15 @@ void draw_moby_animated_quad_layers(unsigned char *m) {
         first.col[0] = level;
         for (i = 0; i < 4; i++) {
             for (axis = 0; axis < 2; axis++) {
-                int limit = truncate_float_to_s32(D_L10_001DA540[pass][axis] * 360.0f);
-                float angle = IntToFloat(quad_uv_animation_phase_input % limit) / D_L10_001DA540[pass][axis] - 180.0f;
+                int limit = truncate_float_to_s32(orxon_quad_layer_uv_periods[pass][axis] * 360.0f);
+                float angle = IntToFloat(quad_uv_animation_phase_input % limit) / orxon_quad_layer_uv_periods[pass][axis] - 180.0f;
                 float delta;
-                if (D_L10_001DA580[pass][axis] != 0) {
+                if (orxon_quad_layer_uv_use_cos[pass][axis] != 0) {
                     delta = FastCos(angle * 0.017453292f);
                 } else {
                     delta = FastSin(angle * 0.017453292f);
                 }
-                first.uv[i][axis] = D_L10_001DA5C0[i][axis] + delta * 0.125f;
+                first.uv[i][axis] = orxon_quad_layer_base_uvs[i][axis] + delta * 0.125f;
             }
         }
         for (c = 0; c < 2; c++) {
@@ -434,7 +434,7 @@ extern char * D_L10_0015F050 MACRO_ADDR;
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_002e3de8.c, FUN_L10_002f5a50. */
 void activate_descriptor(int i) {
     unsigned char *q;
-    q = *(unsigned char **)(D_L10_0015F050 + i * 0x20 + 0x1C);
+    q = *(unsigned char **)(orxon_camera_descriptors + i * 0x20 + 0x1C);
     q[0x38] = 1;
     q[0x39] = 0;
 }
@@ -447,7 +447,7 @@ extern int func_L00_0025A778(float *, float *, int);
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_002e3de8.c, FUN_L10_002f5a78. */
 int check_descriptor_hero_trigger(char *moby, char *unused)
 {
-    unsigned char *e = *(unsigned char **)(D_L10_0015F050 + *(short *)(moby + 0x84) * 32 + 0x1C);
+    unsigned char *e = *(unsigned char **)(orxon_camera_descriptors + *(short *)(moby + 0x84) * 32 + 0x1C);
 
     if (*(int *)(e + 0x0C) >= 0) {
         if (is_point_inside_clip_volume(gHeroPos, *(int *)(e + 0x0C))) return 1;
@@ -548,7 +548,7 @@ void initialize_path_camera(char *cam) {
     float d, f;
     int i, k, idx, n;
 
-    rec = *(CamPathRec **)(D_L10_0015F050 + ((PathCam *)cam)->descriptor_index * 0x20 + 0x1C);
+    rec = *(CamPathRec **)(orxon_camera_descriptors + ((PathCam *)cam)->descriptor_index * 0x20 + 0x1C);
     rec->done = 1;
     run = (VendorCamRun_5f18 *)((char *)((PathCam *)cam)->saved_state + 0x40);
     run->seg = 0;
@@ -569,7 +569,7 @@ void initialize_path_camera(char *cam) {
         }
     }
 
-    cf = D_L10_0016CF40;
+    cf = orxon_view_params;
     pos = (char *)((PathCam *)cam)->pos;
     m1 = (char *)((PathCam *)cam)->m1;
     m2 = (char *)((PathCam *)cam)->m2;
@@ -630,7 +630,7 @@ void initialize_path_camera(char *cam) {
     *(f32 *)(saved + 0x24) = 0.2f;
     clear_u64_value(saved + 0x30);
 
-    base = D_L10_00167180;
+    base = orxon_player_camera;
     source = *(char **)(base + 0x184);
     qcopy(pos, source + 0x30);
     qcopy(cam, source);
@@ -679,7 +679,7 @@ void Camera19_Update(char *moby) {
     dat = *(char **)(moby + 0x70);
     f = dat + 0x40;
     k = (struct CamK_72D8 *)(dat + 0x58);
-    e = *(char **)(D_L10_0015F050 + *(short *)(moby + 0x84) * 0x20 + 0x1C);
+    e = *(char **)(orxon_camera_descriptors + *(short *)(moby + 0x84) * 0x20 + 0x1C);
     st = *(short *)(f + 0x14);
 
     if (st == 0) {
@@ -695,7 +695,7 @@ void Camera19_Update(char *moby) {
             pm = moby + 0x30;
             orxon_fade = 1.0f;
             a = a + 0x10;
-            D_L10_0015F504 = 1;
+            orxon_path_camera_active = 1;
             *(short *)(f + 0x14) = 1;
             qcopy(pm, a);
             if (*(int *)(e + 0x28) >= 0) {
@@ -735,7 +735,7 @@ void Camera19_Update(char *moby) {
             *(unsigned char *)(e + 0x39) = 1;
             D_L10_001673D8 = 0.05f;
             *(short *)(moby + 0x7E) = 4;
-            D_L10_0015F504 = 0;
+            orxon_path_camera_active = 0;
             if (*(int *)(e + 0x4C) == 0) {
                 HeroEnterMoveState(0, 1);
             }
@@ -804,7 +804,7 @@ void Camera19_Update(char *moby) {
                 m = r * 0.017453292f * 0.5f;
                 aa = FastSin(m);
                 bb = FastCos(m);
-                cam = D_L10_0016CF40;
+                cam = orxon_view_params;
                 *(float *)(cam + 0xB0) = aa / bb;
                 UpdateViewContext();
             }
@@ -854,7 +854,7 @@ typedef struct UpdateCam {
 
 // Decides whether a moby's camera target passes the checks; -1 disabled, 0 no, 1 yes.
 int evaluate_descriptor_eligibility(char *descriptor_owner, char *comparison_object) {
-    unsigned char *descriptor_record = *(unsigned char **)(D_L10_0015F050 + ((UpdateCam *)descriptor_owner)->descriptor_index * 32 + 0x1C);
+    unsigned char *descriptor_record = *(unsigned char **)(orxon_camera_descriptors + ((UpdateCam *)descriptor_owner)->descriptor_index * 32 + 0x1C);
     int x;
     int y;
     if (descriptor_record[0x39] != 0) {

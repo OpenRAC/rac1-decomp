@@ -240,7 +240,7 @@ struct Obj *PartType02Spawn(u128 *arg0, f32 *arg1, f32 *arg2, s32 arg3, s32 arg4
         if (arg8 == -1) {
             o->b2 = *D_001CE35C[0];
         } else {
-            o->b2 = *D_001CE300[(u16)arg8];
+            o->b2 = *particle_texture_ptrs[(u16)arg8];
             if (arg8 & 0x10000) {
                 o->b3 = 0x48;
             }

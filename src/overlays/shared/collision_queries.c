@@ -11,9 +11,9 @@ void EffectQueue_Add(int a0, int a1, float f12, float f13, int *a2, int a3, int 
     int *e;
     int n;
     if (cinematic_mode == 2) return;
-    n = D_L00_00169140[0xC0 / 4];
+    n = effect_queue[0xC0 / 4];
     if (n >= 3) return;
-    e = D_L00_00169140 + n * 12;
+    e = effect_queue + n * 12;
     e[8] = a0;
     e[5] = a1;
     *(float *)&e[4] = f12;
@@ -39,7 +39,7 @@ void EffectQueue_Add(int a0, int a1, float f12, float f13, int *a2, int a3, int 
         *(float *)&e[10] = f14;
         e[11] = t0;
     }
-    D_L00_00169140[0xC0 / 4]++;
+    effect_queue[0xC0 / 4]++;
 }
 typedef int q128 __attribute__((mode(TI)));
 extern void func_001F9BF0(void *, void *, void *);
@@ -65,14 +65,14 @@ s32 *find_camera_collision_volume_for_point(q128 *v, f32 rad) {
     i = truncate_float_to_s32(t.f[0] * 0.0625f);
     j = truncate_float_to_s32(t.f[1] * 0.0625f);
     if (i < 0 || j < 0 || i > 0x40 || j > 0x40) {
-        STUB_printf(D_L00_001E7C00);
+        STUB_printf(camera_collision_out_of_grid_msg);
         return 0;
     }
-    p = (char *)D_L00_0015F080[j * 64 + i];
+    p = (char *)camera_collision_grid[j * 64 + i];
     if (p == 0) {
         return 0;
     }
-    p += (s32)D_L00_0015F080;
+    p += (s32)camera_collision_grid;
     for (k = 0; k < *(s32 *)p; k++) {
         e = p + 0x10 + k * 0x30;
         FastVecSub(&d, e, tp);

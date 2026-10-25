@@ -94,17 +94,17 @@ void spawn_randomized_bolt_drop(char *a, int b, int c, int flags, int idx)
         n <<= 1;
     }
     if (n < 0x1F4) {
-        if (f84 && D_0015EF28) {
+        if (f84 && active_play_frame_count) {
             m = (int)((float)scale_ticks(0x3C) * 60.0f) * game_clock_ticks[2] / game_clock_ticks[1];
             if (challenge_mode || D_0015EF20) {
                 m /= 2;
             }
             if (m < 0x96) {
                 if (m < 0x5B) {
-                    STUB_printf(D_L00_00160160);
+                    STUB_printf(bolt_bonus_x5_debug_message);
                     n *= 5;
                 } else {
-                    STUB_printf(D_L00_00160170, (0xBE - m) / 20);
+                    STUB_printf(bolt_bonus_multiplier_debug_format, (0xBE - m) / 20);
                     n *= (0xBE - m) / 20;
                 }
                 if (challenge_mode) {
@@ -114,10 +114,10 @@ void spawn_randomized_bolt_drop(char *a, int b, int c, int flags, int idx)
                 }
             } else if (m >= 0x12D) {
                 if (m >= 0x160) {
-                    STUB_printf(D_L00_00160180, 0x3FB99999A0000000L);
+                    STUB_printf(bolt_bonus_divisor_debug_format, 0x3FB99999A0000000L);
                     n /= 10;
                 } else {
-                    STUB_printf(D_L00_00160180, IntToFloat(0x168 - m) / 20.0f);
+                    STUB_printf(bolt_bonus_divisor_debug_format, IntToFloat(0x168 - m) / 20.0f);
                     n *= (0x168 - m) / 80;
                 }
                 if (n <= 0) {
@@ -849,7 +849,7 @@ typedef struct { int v[19]; } Tbl;
 
 // Shows the banner message for planet index a (clamped to the table), copying the table locally.
 void queue_planet_unlock_message(int a) {
-    Tbl t = *(Tbl *)D_L00_001E93E0;
+    Tbl t = *(Tbl *)planet_unlock_message_ids;
     if (a < 0) a = 0;
     if (a > 18) a = 18;
     ShowBanner(t.v[a], scale_ticks(0x49C));
@@ -959,7 +959,7 @@ float ground_height_at(V *p) {
     int y = (int)v.f[1];
     int x = (int)v.f[0];
     float t = (float)(D_L00_0015FD68 + D_L00_0015FD58 * y)[x] / 255.0f;
-    return (D_L00_0015FD64 - D_L00_0015FD60) * (1.0f - t) + D_L00_0015FD60;
+    return (height_map_max_height - height_map_min_height) * (1.0f - t) + height_map_min_height;
 }
 typedef struct { char pad[0x140]; V pos; } S166D;
 extern S166D D_L00_00166D80;
@@ -973,7 +973,7 @@ void spawn_ground_contact_effect_particle(V *v) {
     V t, u, d;
     float k, f;
     S166D *b;
-    k = (D_L00_0015FD64 - D_L00_0015FD60) * 0.00390625f;
+    k = (height_map_max_height - height_map_min_height) * 0.00390625f;
     t = *v;
     f = ground_height_at(&t) + k;
     b = &player_camera;
@@ -1025,7 +1025,7 @@ void draw_offset_textured_effect_quad(float *p, int b, float s, float t) {
     FastVecScale(v3, v0, t);
     FastVecAdd(v4, v4, v3);
     bb[3] = b; bb[2] = b; bb[1] = b; bb[0] = b;
-    src = D_L00_001B07F0;
+    src = offset_effect_quad_corners;
     r = m;
     for (i = 3; i >= 0; i--) {
         FastVecScale(r, src, s);
@@ -1216,16 +1216,16 @@ void ShowBanner(int arg0, int arg1) {
     if (arg1 == -1) {
         arg1 = scale_ticks(0xB4);
     }
-    func_001166FC(D_L00_00179218, msg_string(arg0));
-    D_L00_0015F720 = arg1;
+    func_001166FC(banner_text_buffer, msg_string(arg0));
+    banner_display_ticks = arg1;
 }
 extern char D_L00_00179218[] NOT_SDA;
 extern void func_00116248(void *, int, int);
 /* Like func_L00_00264DB8, but draws message a with parameter b. */
 void queue_formatted_dialogue_message(int a, int b, int c) {
     if (c == -1) c = scale_ticks(0xB4);
-    func_00116248(D_L00_00179218, msg_string(a), b);
-    D_L00_0015F720 = c;
+    func_00116248(banner_text_buffer, msg_string(a), b);
+    banner_display_ticks = c;
 }
 extern float D_L00_0015F660[] MACRO_ADDR;
 extern void *func_L00_00265050(char *src, int cls, float *pos, void *mat, int a8, int a9, float *v10, float *v11, float scale, float *v12);
@@ -1337,13 +1337,13 @@ extern void func_L00_00237B90(void);
 extern void func_L00_002367A8(int, int);
 /* Per-frame update for the countdown D_L00_0015F670. */
 void update_timed_hud_visibility(void) {
-    if (D_L00_0015F670 != 0) {
-        D_L00_0015F670 = D_L00_0015F670 - 1;
-        if (D_L00_0015F670 == 0) {
-            D_L00_0015F674 = 0;
+    if (timed_hud_frames_left != 0) {
+        timed_hud_frames_left = timed_hud_frames_left - 1;
+        if (timed_hud_frames_left == 0) {
+            timed_hud_visible = 0;
         }
     }
-    if (D_L00_0015F674 == 0 || (*(int *)&D_L00_00161F08_g) == 0) {
+    if (timed_hud_visible == 0 || (*(int *)&D_L00_00161F08_g) == 0) {
         (*(int *)&D_L00_00161F04_g) = -1;
     } else if ((*(int *)&D_L00_00161F04_g) == -1) {
         (*(int *)&D_L00_00161F04_g) = queue_animation_update(0xC, 0, (void *)((char *)draw_uniform_size_hud_stars + 0x340), DefaultVtbl_DeleteMoby, draw_hud_text_panel, 0, 0);

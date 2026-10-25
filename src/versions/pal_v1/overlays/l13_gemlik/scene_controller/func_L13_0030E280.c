@@ -49,7 +49,7 @@ void Moby1805Update(void *moby) {
         Moby_PlaySound(0, 0, (int)moby);
         spawn_proximity_gated_bolts(moby);
             level_moby_killed[g_current_level_index][(short)*(unsigned short *)(m + 0xB2) >> 5] |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
-            D_L13_001BAAE0[(short)*(unsigned short *)(m + 0xB2) >> 5] |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
+            gemlik_moby_killed_bits[(short)*(unsigned short *)(m + 0xB2) >> 5] |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
         for (n = 0; n < 2; n++) {
             for (k = 0x709; k < 0x70D; k++) {
                 qzero(tmp);

@@ -851,7 +851,7 @@ int HeroL02_SetMoveState(int a, int b) {
                 *(float *)(u + 0x3DC) = 26.0f;
                 *(float *)(u + 0x3D8) = 0.0f;
                 *(int *)(u + 0x3E0) = scale_ticks(0x2D);
-                *(char **)(u + 0x3E4) = D_L02_0017C5A0;
+                *(char **)(u + 0x3E4) = aridia_hero_state_d_jump_velocity_keys;
                 *(unsigned char *)(u + 0x4AE) = 1;
             } else if (*(int *)(u + 0x2084) == 0xF) {
                 *(float *)(u + 0x430) = 1.9f;
@@ -880,7 +880,7 @@ int HeroL02_SetMoveState(int a, int b) {
                     *(float *)(w + 0x3D8) = 29.0f;
                     *(float *)(w + 0x3DC) = 50.0f;
                     *(int *)(w + 0x3E0) = scale_ticks(0x56);
-                    *(char **)(w + 0x3E4) = (char *)&D_L02_0015F7C8;
+                    *(char **)(w + 0x3E4) = (char *)&aridia_hero_state_f_jump_velocity_keys;
                     *(unsigned char *)(w + 0x4AE) = 1;
                 }
             } else if (*(int *)(u + 0x2084) == 0xE) {
@@ -939,7 +939,7 @@ int HeroL02_SetMoveState(int a, int b) {
                 } else if (s == 9) {
                     int id = 8;
                     int n = truncate_float_to_s32(*(float *)(q + 0xAA8));
-                    if (return_hero_animation_id_unchanged(*(unsigned char *)(moby + 0x52)) == 4) id = D_L02_0017C458[n];
+                    if (return_hero_animation_id_unchanged(*(unsigned char *)(moby + 0x52)) == 4) id = aridia_hero_run_jump_land_anim_by_frame[n];
                     set_hero_animation(id, 0, (float)scale_ticks(5));
                 } else if (s == 0xA) {
                     set_hero_animation(0x12, 0, (float)scale_ticks(5));
@@ -1205,7 +1205,7 @@ int HeroL02_SetMoveState(int a, int b) {
             *(int *)(q + 0x1C0) = scale_ticks(0x4D);
             if (b) {
                 set_hero_animation(0x10, 3, -3.0f);
-                *(float *)(*(char **)(q + 0x2080) + 0x54) = D_L02_0017C470[*(int *)(q + 0xAA0)][(*(int *)(q + 0xAA4))++];
+                *(float *)(*(char **)(q + 0x2080) + 0x54) = aridia_hero_anim_time_curves[*(int *)(q + 0xAA0)][(*(int *)(q + 0xAA4))++];
             }
         }
         break;
@@ -1319,7 +1319,7 @@ int HeroL02_SetMoveState(int a, int b) {
         *(int *)(p + 0x1C0) = scale_ticks(0x4D);
         if (b) {
             set_hero_animation(2, 3, -3.0f);
-            *(float *)(*(char **)(p + 0x2080) + 0x54) = D_L02_0017C470[*(int *)(p + 0xAA0)][(*(int *)(p + 0xAA4))++];
+            *(float *)(*(char **)(p + 0x2080) + 0x54) = aridia_hero_anim_time_curves[*(int *)(p + 0xAA0)][(*(int *)(p + 0xAA4))++];
         }
         break;
     }
@@ -1598,7 +1598,7 @@ void HeroL02_UpdateStateTransitions(void) {
                     }
                 }
             }
-            if (D_L02_0015F718 > g_hero.motion.pos.f[2] && g_hero.ground_distance > 2.0f && g_hero.vehicle_mode != 2 && g_hero.state.current != 0x77) {
+            if (aridia_hero_fall_state_height > g_hero.motion.pos.f[2] && g_hero.ground_distance > 2.0f && g_hero.vehicle_mode != 2 && g_hero.state.current != 0x77) {
                 HeroL02_SetMoveState(0x77, 1);
             } else {
                 switch (g_hero.state.current) {
@@ -1636,7 +1636,7 @@ void HeroL02_UpdateStateTransitions(void) {
                                 MobyBlendAnimation(m, 1, 0, scale_ticks(7));
                             }
                         }
-                        if (0.61086524f < D_L02_0017AD00.f258 || D_L02_0017AD00.f254 > 0.43633232f) {
+                        if (0.61086524f < aridia_lean_state.f258 || aridia_lean_state.f254 > 0.43633232f) {
                             m = (unsigned char *)g_hero.items[3].moby;
                             if (m != 0 && m[0x53] != 1) {
                                 MobyBlendAnimation(m, 1, 0, scale_ticks(0xC));
@@ -1652,7 +1652,7 @@ void HeroL02_UpdateStateTransitions(void) {
                                 Rec70 *rec;
 
                                 g_hero.unk2270 = sp20;
-                                rec = &D_L02_00179F10[sp20];
+                                rec = &aridia_idle_fidgets[sp20];
                                 g_hero.fidget_cooldown = scale_ticks(0x78);
                                 rec->f60 = multiply_global_factor(rec->f5C) * 60.0f;
                                 if (rec->f44 != 0) {
@@ -1681,7 +1681,7 @@ void HeroL02_UpdateStateTransitions(void) {
                     if (scale_ticks(0xA) < g_hero.state_timer) {
                         if (((unsigned char *)g_hero.items[3].moby2) != 0 && ((unsigned char *)g_hero.items[3].moby2)[0x53] == 1) {
                             if (func_001F9908_r(&g_hero.unk22C4)) {
-                                if (0.55850536f > D_L02_0017AD00.f258 && D_L02_0017AD00.f254 < 0.34906584f && g_hero.items[3].state == 2) {
+                                if (0.55850536f > aridia_lean_state.f258 && aridia_lean_state.f254 < 0.34906584f && g_hero.items[3].state == 2) {
                                     g_hero.unk22C4 = rand_range(scale_ticks(0x6E), scale_ticks(0x10E));
                                     blend_hero_slot3_animation_pair();
                                 }
@@ -1693,7 +1693,7 @@ void HeroL02_UpdateStateTransitions(void) {
                         if (id != g_hero.unk2298) {
                             cancel_hero_item_animation();
                         } else {
-                            int anim = D_L02_0017A140[id].f24;
+                            int anim = aridia_item_defs[id].f24;
                             if (((unsigned char *)g_hero.moby)[0x53] != anim) {
                                 if (((int)g_hero.unkD08[0]) != 0) {
                                     g_hero.unkD14 = 1;
@@ -2552,15 +2552,15 @@ void HeroL02_UpdateStateTransitions(void) {
                     {
                         int both = 0;
 
-                        func_001F9908_r((int *)&D_L02_0015F758);
-                        if (*(int *)&D_L02_0015F758 != 0) {
+                        func_001F9908_r((int *)&aridia_hero_double_tap_timer);
+                        if (*(int *)&aridia_hero_double_tap_timer != 0) {
                             both = 1;
                             if (!((g_controller_state.held & 8) && (g_controller_state.pressed & 8))) {
                                 both = 0;
                             }
                         }
                         if (g_controller_state.pressed & 8) {
-                            *(int *)&D_L02_0015F758 = scale_ticks(0x1E);
+                            *(int *)&aridia_hero_double_tap_timer = scale_ticks(0x1E);
                         }
                         if (!(g_hero.state_timer > scale_ticks(0x14))) {
                             break;
@@ -3208,8 +3208,8 @@ f32 resolve_hero_trajectory_parameter(f32 a, f32 b, f32 c) {
             clip_negative_segment_endpoint_xyz(&v, t);
             qcopy(&v, &(&D_0013F450_368E8)->v80);
             if (coll_line(&v, t, 0x324, 0, 0) != 0) {
-                if (compute_gravity_relative_vector_inclination((f32 *)D_L02_00174500) <= 0.87266463f) {
-                    c = *(f32 *)(D_L02_00174500 - 0x18);
+                if (compute_gravity_relative_vector_inclination((f32 *)aridia_coll_hit_normal) <= 0.87266463f) {
+                    c = *(f32 *)(aridia_coll_hit_normal - 0x18);
                 }
             }
         }
@@ -3236,7 +3236,7 @@ f32 resolve_hero_trajectory_parameter(f32 a, f32 b, f32 c) {
             nb = b * -0.5f;
             z = func_L00_002342F8_368E8(&(&D_0013F450_368E8)->vE0) - nb;
             x = func_L00_002342F8_368E8(&(&D_0013F450_368E8)->v80);
-            y = func_L00_002342F8_368E8(&D_L02_001744E0);
+            y = func_L00_002342F8_368E8(&aridia_coll_hit_point);
             if (solve_quadratic_equation(&o[2], &o[3], nb, z, x - y) > 0 && o[2] > 0.0f) {
                 return o[2];
             }
@@ -3260,7 +3260,7 @@ f32 resolve_hero_trajectory_parameter(f32 a, f32 b, f32 c) {
             nb = b * -0.5f;
             z = func_L00_002342F8_368E8(&(&D_0013F450_368E8)->vE0) - nb;
             x = func_L00_002342F8_368E8(&(&D_0013F450_368E8)->v80);
-            y = func_L00_002342F8_368E8(&D_L02_001744E0);
+            y = func_L00_002342F8_368E8(&aridia_coll_hit_point);
             if (solve_quadratic_equation(&o[4], &o[5], nb, z, x - y) > 0 && o[4] > 0.0f) {
                 return o[4];
             }

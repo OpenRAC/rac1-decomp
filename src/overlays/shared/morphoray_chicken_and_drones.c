@@ -573,30 +573,30 @@ char *spawn_morphoray_chicken(char *src) {
         }
         z = 0.0f; PartType05Spawn(m + 0x10, 1000000.0f, 0x7F, 0x7F, 0x7F, scale_ticks(0xF), z);
         FastMemSet(d, 0, 0x20);
-        r = (unsigned char *)D_L00_001DD450[*(int *)&morphoray_chicken_next_slot];
+        r = (unsigned char *)morphoray_chicken_slots[*(int *)&morphoray_chicken_next_slot];
         if (r != 0 && *(short *)(r + 0xA6) == 0x10E && r[0x20] != 0xFE && r[0x20] != 0xFD) {
             if (r[0x20] == 5) {
                 *(float *)(d + 0x78) = z;
                 *(unsigned short *)(m + 0x34) &= 0xFFDF;
             } else if (((DD9 *)d)->f74 == 0) {
-                a = D_L00_001DD4A0 + *(int *)&morphoray_chicken_next_slot * 0xB0;
-                b = D_L00_001DE260 + *(int *)&morphoray_chicken_next_slot * 0x60;
+                a = morphoray_chicken_slot_state_blocks + *(int *)&morphoray_chicken_next_slot * 0xB0;
+                b = morphoray_chicken_slot_aux_blocks + *(int *)&morphoray_chicken_next_slot * 0x60;
                 *(char **)(d + 0x14) = a;
                 *(char **)(d + 0x10) = b;
                 *(unsigned short *)(m + 0x34) |= 0x1020;
                 *(char **)(*(char **)(d + 0x14) + 0x70) = &D_L00_00161910;
             }
-            *(int *)(*(char **)(D_L00_001DD450[*(int *)&morphoray_chicken_next_slot] + 0x78) + 0x70) = 1;
+            *(int *)(*(char **)(morphoray_chicken_slots[*(int *)&morphoray_chicken_next_slot] + 0x78) + 0x70) = 1;
         } else if (((DD9 *)d)->f74 == 0) {
-            a2 = D_L00_001DD4A0 + *(int *)&morphoray_chicken_next_slot * 0xB0;
-            b2 = D_L00_001DE260 + *(int *)&morphoray_chicken_next_slot * 0x60;
+            a2 = morphoray_chicken_slot_state_blocks + *(int *)&morphoray_chicken_next_slot * 0xB0;
+            b2 = morphoray_chicken_slot_aux_blocks + *(int *)&morphoray_chicken_next_slot * 0x60;
             *(char **)(d + 0x14) = a2;
             *(char **)(d + 0x10) = b2;
             *(unsigned short *)(m + 0x34) |= 0x1020;
             *(char **)(*(char **)(d + 0x14) + 0x70) = &D_L00_00161910;
         }
         reset_morphoray_chicken_slot_defaults(*(char **)(d + 0x14));
-        D_L00_001DD450[*(int *)&morphoray_chicken_next_slot] = (int)m;
+        morphoray_chicken_slots[*(int *)&morphoray_chicken_next_slot] = (int)m;
         *(int *)&morphoray_chicken_next_slot = *(int *)&morphoray_chicken_next_slot + 1;
         n = ((DD9 *)d)->f74;
         *(int *)&morphoray_chicken_next_slot = *(int *)&morphoray_chicken_next_slot % 20;
@@ -1114,8 +1114,8 @@ char *spawn_homing_shot(char *a, char *vec, char *b, float f12, float f13, float
         *(short *)(m + 0x32) = 0x7F;
         m[0x31] = 1;
         *(long *)(m + 0x38) = *(long *)(a + 0x38);
-        *(float *)(m + 0x40) = ((float *)&D_L00_00161958)[2];
-        *(float *)(m + 0x44) = FastAddRots(f15, (&D_L00_00161960)[1]);
+        *(float *)(m + 0x40) = ((float *)&homing_shot_fade_effect_size)[2];
+        *(float *)(m + 0x44) = FastAddRots(f15, (&homing_shot_rotation_params)[1]);
         *(float *)(m + 0x48) = f14;
         qcopy(m + 0x10, t);
         if (b != 0) {
@@ -1183,15 +1183,15 @@ char *spawn_homing_shot(char *a, char *vec, char *b, float f12, float f13, float
             *(float *)(m + 0x44) = -fast_atan2(len, out[2]);
             return m;
         } else {
-            spawn_source_attached_fading_effect_particle(m, 0x2F4F7F7F, *(short *)(d + 0x24), -1, *(float *)&D_L00_00161958);
+            spawn_source_attached_fading_effect_particle(m, 0x2F4F7F7F, *(short *)(d + 0x24), -1, *(float *)&homing_shot_fade_effect_size);
             for (i = 0; i < 17; i++) {
                 q = (char *)spawn_random_size_rotated_particle(m + 0x10, (char *)veldin1_zero_vec, 1, 0.0f);
                 if (q != 0) {
-                    *(float *)(q + 0xC) = random_float_between(*(float *)&D_L00_00161940, *(float *)&D_L00_00161944);
+                    *(float *)(q + 0xC) = random_float_between(*(float *)&homing_shot_burst_size_min, *(float *)&homing_shot_burst_size_max);
                     fi = IntToFloat(i);
                     f16 = fi / IntToFloat(16);
                     ret = CubicInterpolate(-1.5f, 0.0f, 1.0f, 0.0f, f16);
-                    *(float *)(q + 0xC) = *(float *)(q + 0xC) + (*(float *)&D_L00_00161948 - *(float *)(q + 0xC)) * ret;
+                    *(float *)(q + 0xC) = *(float *)(q + 0xC) + (*(float *)&homing_shot_burst_end_size - *(float *)(q + 0xC)) * ret;
                     r = truncate_float_to_s32(ret * -64.0f + 128.0f);
                     *(int *)(q + 4) = (r << 24) | 0xFFFFFF;
                     ((int *)(d + 0x2C))[i] = (int)q;
@@ -1548,13 +1548,13 @@ char *spawn_feather_moby(int unused, float *pos, float *vel) {
         d->v10 = random_angle_radians();
         {
             float r = random_angle_radians();
-            float n = (float)*(int *)&D_L00_00161974;
+            float n = (float)*(int *)&feather_base_lifetime;
             d->v14 = r;
             lo = func_001FA898_r(n * 0.7f);
         }
-        hi = func_001FA898_r((float)*(int *)&D_L00_00161974 * 1.2f);
+        hi = func_001FA898_r((float)*(int *)&feather_base_lifetime * 1.2f);
         d->r1c = scale_ticks(rand_range(lo, hi));
-        sc = *(float *)&D_L00_00161970;
+        sc = *(float *)&feather_scale_multiplier;
         *(float *)(m + 0x2C) = *(float *)(m + 0x2C) * sc;
         if (D_0013E633_2CD3B8[2]) {
             *(float *)(m + 0x2C) += *(float *)(m + 0x2C);
@@ -1581,7 +1581,7 @@ void update_damped_falling_moby(char *m) {
     float z;
     float k;
     FastVecAdd(m + 0x10, m + 0x10, d);
-    k = *(float *)&D_L00_00161978;
+    k = *(float *)&falling_moby_horizontal_velocity_scale;
     z = d[2] - g_frame_time_sq * 15.0f;
     d[0] *= k;
     d[1] *= k;

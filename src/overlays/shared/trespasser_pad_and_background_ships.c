@@ -21,12 +21,12 @@ void prepare_scaled_float_table_with_target_byte(char *arg, int val, float scale
     float *q;
     float *base;
     arg[0x3F] = val;
-    *(s32 *)(D_L02_001CBC40 + 0x0) = (*(s32 *)&D_L02_00161320);
-    *(s32 *)(D_L02_001CBC40 + 0x4) = scaled_table_header_second_word;
-    *(s32 *)(D_L02_001CBC40 + 0x8) = scaled_table_header_third_word;
-    *(s32 *)(D_L02_001CBC40 + 0xC) = scaled_table_header_final_word;
-    p = (float *)(D_L02_001CBC40 + 0x10);
-    base = D_L02_001CB780;
+    *(s32 *)(aridia_scaled_float_table + 0x0) = (*(s32 *)&scaled_table_header_first_word);
+    *(s32 *)(aridia_scaled_float_table + 0x4) = scaled_table_header_second_word;
+    *(s32 *)(aridia_scaled_float_table + 0x8) = scaled_table_header_third_word;
+    *(s32 *)(aridia_scaled_float_table + 0xC) = scaled_table_header_final_word;
+    p = (float *)(aridia_scaled_float_table + 0x10);
+    base = aridia_scaled_float_table_source;
     q = base + 4;
     for (i = 0xF7; i >= 0; i--) {
         *p = *q * scale;
@@ -246,7 +246,7 @@ void restore_view_after_textured_grid(void) {
     long *g;
     int *q;
     vu1_add_vif_code(0x13000000);
-    b = D_L02_0016D0C0;
+    b = aridia_view_params;
     *(float *)(b + 0x218) = textured_grid_saved_fog_near_distance;
     *(float *)(b + 0x21C) = textured_grid_saved_fog_far_distance;
     *(float *)(b + 0x228) = textured_grid_saved_fog_near_intensity;
@@ -271,7 +271,7 @@ extern unsigned int D_L02_0016005C MACRO_ADDR;
 
 /* Clears a moby's field and sets a flag if its pointer is below the moby pool limit. */
 void trackdrive_left_update(char *moby) {
-    if ((unsigned int)moby < D_L02_0016005C) {
+    if ((unsigned int)moby < aridia_mobys_end) {
         *(int *)(moby + 0x58) = 0;
         *(unsigned short *)(moby + 0x34) |= 0x40;
     }
@@ -1447,7 +1447,7 @@ void tresspasser_update(char *moby) {
         ProbeGroundHeight(moby + 0x10, 0, 0.5f);
         *(float *)(moby + 0x40) = 1.5707964f;
         *(float *)(moby + 0x44) = 3.1415927f;
-        *(float *)(moby + 0x18) = D_L02_001744E8 + k;
+        *(float *)(moby + 0x18) = aridia_coll_hit_z + k;
         moby[0x20] = 1;
         break;
     case 1:
@@ -1898,8 +1898,8 @@ void spawn_background_ship_1_joint_sparks(char *m, void *arg1) {
         a = FastTweenColor(*(int *)&background_ship_1_spark_start_color_a, *(int *)&background_ship_1_spark_start_color_b, random_float_between(0.0f, 1.0f));
         b = FastTweenColor(*(int *)&background_ship_1_spark_end_color_a, *(int *)&background_ship_1_spark_end_color_b, random_float_between(0.0f, 1.0f));
         c = func_001FA898_r(multiply_global_factor((float)*(int *)&background_ship_1_spark_lifetime * random_float_between(0.0f, 1.0f) + 1.0f));
-        d = func_001FA898_r(multiply_global_factor((float)*(int *)&D_L02_00162024 * (random_float_between(-*(float *)&background_ship_1_spark_time_jitter, *(float *)&background_ship_1_spark_time_jitter) + 1.0f)));
-        e = func_001FA898_r(multiply_global_factor((float)*(int *)&D_L02_00162028 * (random_float_between(-*(float *)&background_ship_1_spark_time_jitter, *(float *)&background_ship_1_spark_time_jitter) + 1.0f)));
+        d = func_001FA898_r(multiply_global_factor((float)*(int *)&background_ship_1_spark_time2 * (random_float_between(-*(float *)&background_ship_1_spark_time_jitter, *(float *)&background_ship_1_spark_time_jitter) + 1.0f)));
+        e = func_001FA898_r(multiply_global_factor((float)*(int *)&background_ship_1_spark_time3 * (random_float_between(-*(float *)&background_ship_1_spark_time_jitter, *(float *)&background_ship_1_spark_time_jitter) + 1.0f)));
         p = PartType02Spawn(v50, v10, v20, a, b, c, d, e, -1);
         if (p != 0) p[9] = func_001FA898_r(8.0f) + 0x60;
     }
@@ -2149,8 +2149,8 @@ void spawn_background_ship_2_joint_sparks(char *m, void *arg1) {
         a = FastTweenColor(*(int *)&background_ship_2_spark_start_color_a, *(int *)&background_ship_2_spark_start_color_b, random_float_between(0.0f, 1.0f));
         b = FastTweenColor(*(int *)&background_ship_2_spark_end_color_a, *(int *)&background_ship_2_spark_end_color_b, random_float_between(0.0f, 1.0f));
         c = func_001FA898_r(multiply_global_factor((float)*(int *)&background_ship_2_spark_lifetime * random_float_between(0.0f, 1.0f) + 1.0f));
-        d = func_001FA898_r(multiply_global_factor((float)*(int *)&D_L02_00162078 * (random_float_between(-*(float *)&background_ship_2_spark_time_jitter, *(float *)&background_ship_2_spark_time_jitter) + 1.0f)));
-        e = func_001FA898_r(multiply_global_factor((float)*(int *)&D_L02_0016207C * (random_float_between(-*(float *)&background_ship_2_spark_time_jitter, *(float *)&background_ship_2_spark_time_jitter) + 1.0f)));
+        d = func_001FA898_r(multiply_global_factor((float)*(int *)&background_ship_2_spark_time2 * (random_float_between(-*(float *)&background_ship_2_spark_time_jitter, *(float *)&background_ship_2_spark_time_jitter) + 1.0f)));
+        e = func_001FA898_r(multiply_global_factor((float)*(int *)&background_ship_2_spark_time3 * (random_float_between(-*(float *)&background_ship_2_spark_time_jitter, *(float *)&background_ship_2_spark_time_jitter) + 1.0f)));
         p = PartType02Spawn(v50, v10, v20, a, b, c, d, e, -1);
         if (p != 0) p[9] = func_001FA898_r(8.0f) + 0x60;
     }
@@ -2185,8 +2185,8 @@ void spawn_background_ship_2_level_10_joint_sparks(char *moby, void *arg) {
         a = FastTweenColor(*(int *)&background_ship_2_orxon_spark_start_color_a, *(int *)&background_ship_2_orxon_spark_start_color_b, random_float_between(0.0f, 1.0f));
         b = FastTweenColor(*(int *)&background_ship_2_orxon_spark_end_color_a, *(int *)&background_ship_2_orxon_spark_end_color_b, random_float_between(0.0f, 1.0f));
         c = func_001FA898_r(multiply_global_factor((float)*(int *)&background_ship_2_spark_lifetime * random_float_between(0.0f, 1.0f) + 1.0f));
-        d = func_001FA898_r(multiply_global_factor((float)*(int *)&D_L02_00162078 * (random_float_between(-*(float *)&background_ship_2_spark_time_jitter, *(float *)&background_ship_2_spark_time_jitter) + 1.0f)));
-        e = func_001FA898_r(multiply_global_factor((float)*(int *)&D_L02_0016207C * (random_float_between(-*(float *)&background_ship_2_spark_time_jitter, *(float *)&background_ship_2_spark_time_jitter) + 1.0f)));
+        d = func_001FA898_r(multiply_global_factor((float)*(int *)&background_ship_2_spark_time2 * (random_float_between(-*(float *)&background_ship_2_spark_time_jitter, *(float *)&background_ship_2_spark_time_jitter) + 1.0f)));
+        e = func_001FA898_r(multiply_global_factor((float)*(int *)&background_ship_2_spark_time3 * (random_float_between(-*(float *)&background_ship_2_spark_time_jitter, *(float *)&background_ship_2_spark_time_jitter) + 1.0f)));
         p = PartType02Spawn(m, v0, v1, a, b, c, d, e, -1);
         if (p != 0) {
             p[9] = func_001FA898_r(8.0f) + 0x60;

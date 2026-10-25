@@ -1403,11 +1403,11 @@ void update_moby_pulsing_glow_effects(char *m) {
         v[2] = v[2] - 0.007f;
         HeroDrawQueue_Add(v, 0x200000C0, 0.047f, 0.15f);
     }
-    p = D_L00_0017C480;
+    p = cheat_scale_manipulator;
     if (*(short *)(m + 0xA6) == 0x1A3) {
-        p = D_L00_0017C4C0;
+        p = cheat_scale_manipulator_class_1a3;
     } else if (*(short *)(m + 0xA6) == 0x555) {
-        p = D_L00_0017C500;
+        p = cheat_scale_manipulator_class_555;
     }
     if (gCheats[3] != 0) {
         if (*(unsigned char *)(p + 1) == 0) {

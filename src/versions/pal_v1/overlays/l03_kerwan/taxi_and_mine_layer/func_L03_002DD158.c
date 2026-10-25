@@ -35,7 +35,7 @@ void robot_qwark_update(unsigned char *m) {
         m[0x20] = type;
         MobySetAnimation(m, 1, 0);
         level_moby_killed[g_current_level_index][(short)*(unsigned short *)(m + 0xB2) >> 5] |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
-        D_L03_001BA8E0[(short)*(unsigned short *)(m + 0xB2) >> 5] |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
+        kerwan_moby_killed_bits[(short)*(unsigned short *)(m + 0xB2) >> 5] |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
     }
     m[0xA4] = 0xFF;
     if (gHaveHeliPack[0xA] != 0 && m[0x20] != 3) {

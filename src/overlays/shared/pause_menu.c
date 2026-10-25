@@ -173,7 +173,7 @@ void initialize_pause_menu(void) {
         m->page = page;
         m->next = page;
     } else {
-        page = D_L00_001B2908;
+        page = pause_menu_default_page;
         (*(Menu_277208 *)level_menu_system).state = 2;
         m->page = page;
         m->next = page;
@@ -613,7 +613,7 @@ void update_pause_menu(void) {
         GS.unk10 = 0;
         if (GS.unkC == 2) {
             char *w = map_menu_state;
-            STUB_printf(D_L00_001E9530, *(int *)(w + 0x224));
+            STUB_printf(level_transition_target_fmt, *(int *)(w + 0x224));
             prepare_target_level_transition(*(int *)(w + 0x224));
         } else if (GS.unkC == 3) {
             tmp = decode_mode;
@@ -836,7 +836,7 @@ void draw_pause_menu_pages(int transfer_only) {
     InitMobyClassDists();
     StashMobyClassDists();
     for (i = 0; i < 14; i++) {
-        if (D_L00_001B2740[i] != 0 && menu_preview_mobys[i] != 0 && (i != 6 || PM.unkD8 != 0)) {
+        if (pause_menu_panel_enabled[i] != 0 && menu_preview_mobys[i] != 0 && (i != 6 || PM.unkD8 != 0)) {
             DrawMobyList((int)menu_preview_mobys[i], 1);
         }
     }
@@ -845,7 +845,7 @@ void draw_pause_menu_pages(int transfer_only) {
     }
     for (k = 0; k < 14; k++) {
         PageMobyData *page_data;
-        if (menu_preview_mobys[k] == 0 || D_L00_001B2740[k] == 0) {
+        if (menu_preview_mobys[k] == 0 || pause_menu_panel_enabled[k] == 0) {
             continue;
         }
         if (k == 6 && PM.unkD8 == 0) {
@@ -872,7 +872,7 @@ void draw_pause_menu_pages(int transfer_only) {
         page_data->y = rect.y;
         page_data->w = rect.w;
         page_data->h = rect.h;
-        draw_hud_rect_blended(rect.x + 1, rect.y + 1, rect.x + rect.w - 1, rect.y + rect.h - 1, D_L00_00160330, 0);
+        draw_hud_rect_blended(rect.x + 1, rect.y + 1, rect.x + rect.w - 1, rect.y + rect.h - 1, pause_menu_panel_bg_color, 0);
     }
     for (pass = 0; pass < 2; pass++) {
         HEnt **mobys = menu_preview_mobys;
@@ -889,7 +889,7 @@ void draw_pause_menu_pages(int transfer_only) {
             if (flags & 4) {
                 continue;
             }
-            if (D_L00_001B2740[j] == 0 || *(int *)(page_objects[j] + 4) == 0) {
+            if (pause_menu_panel_enabled[j] == 0 || *(int *)(page_objects[j] + 4) == 0) {
                 continue;
             }
             if (j == 6 && PM.unkD8 == 0) {
@@ -924,7 +924,7 @@ void draw_pause_menu_pages(int transfer_only) {
             configure_graphics_render_target_and_projection(width_log2, height_log2, pass != 0, 1.0f);
             target_width = 1 << width_log2;
             target_height = 1 << height_log2;
-            draw_hud_rect_depth(0, 0, target_width, target_height, D_L00_00160330, 0, 0);
+            draw_hud_rect_depth(0, 0, target_width, target_height, pause_menu_panel_bg_color, 0, 0);
             draw_result = (*(int (**)(char *))(page_objects[j] + 4))(page_objects[j]);
             begin_draw_frame();
             VU1_addGSregister(0x42, 0x8000000064L);
@@ -978,7 +978,7 @@ void draw_pause_menu_pages(int transfer_only) {
     }
     SetupGifPaging(0);
     for (flashing_panel_index = 0; flashing_panel_index < 14; flashing_panel_index++) {
-        if (D_L00_001B2740[flashing_panel_index] != 0 && (flashing_panel_index != 6 || PM.unkD8 != 0)) {
+        if (pause_menu_panel_enabled[flashing_panel_index] != 0 && (flashing_panel_index != 6 || PM.unkD8 != 0)) {
             draw_menu_flashing_panel((int)menu_preview_mobys[flashing_panel_index]);
         }
     }
@@ -1080,8 +1080,8 @@ int PauseMenu_EntryInput(char *entry) {
  }
  if (D_0013CA40_27D3D8.pressed_unmasked & 0x20) {
   D_0013D48C = 0;
-  D_L00_0015F6A4 = -1;
-  D_L00_0015F650 = 1;
+  memcard_last_save_slot = -1;
+  level_loop_exit_requested = 1;
   skip_frame = 1;
  }
  return 0;
@@ -1166,15 +1166,15 @@ void process_unlock_code_input(void) {
         pressed = *(int *)(pad + 0x1C4);
         if (!(pressed & 0xF0A0)) return;
 
-        if (*(int *)&D_L00_001604B8 >= 20) return;
+        if (*(int *)&unlock_code_input_count >= 20) return;
         if (pressed & 0x1000) direction = 0;
         else if (pressed & 0x4000) direction = 1;
         else if (pressed & 0x8000) direction = 2;
         else if (pressed & 0x2000) direction = 3;
         else direction = (pressed & 0x80) ? 4 : 5;
-        count = *(int *)&D_L00_001604B8;
-        D_L00_001BA838[count++] = direction;
-        *(int *)&D_L00_001604B8 = count;
+        count = *(int *)&unlock_code_input_count;
+        unlock_code_input[count++] = direction;
+        *(int *)&unlock_code_input_count = count;
         if (count != 20) return;
         code = -1;
         index = 2;
@@ -1183,7 +1183,7 @@ void process_unlock_code_input(void) {
         for (; index < lim; index++) {
             matched = 1;
             for (j = 0; j < 20; j++) {
-                if (D_L00_001BA838[j] != D_L00_001B9F20[(j * index + index) & 0xff]) {
+                if (unlock_code_input[j] != unlock_code_key_table[(j * index + index) & 0xff]) {
                     matched = 0;
                     break;
                 }
@@ -1214,7 +1214,7 @@ void process_unlock_code_input(void) {
             }
         }
     } else {
-        *(int *)&D_L00_001604B8 = 0;
+        *(int *)&unlock_code_input_count = 0;
     }
 }
 extern void *func_00226720_a(int) __asm__("func_00226720");
@@ -1255,7 +1255,7 @@ int enter_streamed_moby_screen(char *h) {
 extern int D_L00_001BA548[];
 // Finds one of five entries and returns its flag-selected size.
 int StreamSlot_GetSize(int id) {
-    int *p = D_L00_001BA548;
+    int *p = stream_slots;
     int i;
     for (i = 0; i < 5; i++, p += 2) {
         if (p[0] == id) {
@@ -1298,13 +1298,13 @@ extern Rec D_L00_001BA350[];
 
 /* appends one 13-argument record to the queue of 8 entries; returns 0, or -1 when full */
 int QueueRecord(int a0, int a1, int a2, int a3, int a4, int a5, int a6, int a7, int s0, int s1, int s2, int s3, int s4) {
-    int n = D_L00_001604D0;
+    int n = queued_record_count;
     Rec *r;
     if (n >= 8) {
         return -1;
     }
-    D_L00_001604D0 = n + 1;
-    r = &D_L00_001BA350[n];
+    queued_record_count = n + 1;
+    r = &queued_records[n];
     r->f[1] = a0;
     r->f[2] = a1;
     r->f[3] = a2;
@@ -1367,17 +1367,17 @@ void jet_reset_camera(void *a0, void *a1)
     int lvl;
     char *g;
 
-    copy_memory_by_alignment((int)&D_L00_001BB610, &D_L00_001BA9B0, 0x404);
+    copy_memory_by_alignment((int)&checkpoint_moby_states, &current_moby_states, 0x404);
     lvl = D_0015EE84_m;
-    for (src = D_L00_001BA9B0.f, i = 0; i < 0x7FF; i++, src++) {
+    for (src = current_moby_states.f, i = 0; i < 0x7FF; i++, src++) {
         int v = *src;
         if ((unsigned char)v == 0) continue;
         if ((unsigned char)v != 1 && saved_mission_state[lvl][(unsigned char)v - 2] != 0xFF) continue;
-        D_L00_001BB610.f[i] = v;
+        checkpoint_moby_states.f[i] = v;
         level_moby_killed[lvl][i >> 5] |= 1 << (i & 0x1F);
         session_moby_killed[i >> 5] |= 1 << (i & 0x1F);
     }
-    g = (char *)D_L00_001BB5C0;
+    g = (char *)checkpoint_level_state;
     *(int *)g = 1;
     qcopy(g + 0x10, a0);
     qcopy(g + 0x20, a1);
@@ -1418,16 +1418,16 @@ extern void func_00216270(void);
 
 /* loads the saved pause-menu state block into the game globals */
 void restore_or_clear_level_state(void) {
-    char *p = (char *)D_L00_001BB5C0;
+    char *p = (char *)checkpoint_level_state;
     unsigned char *g;
     unsigned char *b;
     char *e;
     int k, s, i;
-    if (*(int *)D_L00_001BB5C0 == 0) {
-        FastMemSet(D_L00_001BA960, 0, 0xC60);
+    if (*(int *)checkpoint_level_state == 0) {
+        FastMemSet(current_level_state, 0, 0xC60);
         return;
     }
-    copy_memory_by_alignment((int)D_L00_001BA960, p, 0xC60);
+    copy_memory_by_alignment((int)current_level_state, p, 0xC60);
     qcopy(g_hero + 0x80, p + 0x10);
     qcopy(g_hero + 0x90, p + 0x20);
     g = (unsigned char *)g_hero;
@@ -1456,7 +1456,7 @@ void restore_or_clear_level_state(void) {
     }
     for (i = 0; (e = (char *)moby_array_start + (i << 8)) < (char *)level_mobys_end; i++) {
         if (*(short *)(e + 0xA6) == s) {
-            int *q = (int *)D_L00_001BB5C0;
+            int *q = (int *)checkpoint_level_state;
             enter_hero_vehicle_mode(q[0x11], q[0x13], e);
             break;
         }

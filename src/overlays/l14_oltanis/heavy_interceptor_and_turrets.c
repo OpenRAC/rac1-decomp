@@ -138,7 +138,7 @@ void KeyframePlatformUpdate(unsigned char *moby) {
             (level_moby_killed[D_0015EE84_m][(s16)id >> 5] >> (id & 0x1F)) & 1) {
             if (vars->trigger != -1) {
                 level_moby_killed[D_0015EE84_m][(s16)m->save_id >> 5] |= 1 << (m->save_id & 0x1F);
-                D_L14_001BAF60[(s16)m->save_id >> 5] |= 1 << (m->save_id & 0x1F);
+                oltanis_moby_killed_bits[(s16)m->save_id >> 5] |= 1 << (m->save_id & 0x1F);
                 vars->trigger = -1;
             }
             on = 1;
@@ -595,7 +595,7 @@ void update_blarg_heavy_interceptor(struct Moby *m) {
             qcopy(w, v);
             w[2] -= 4.0f;
             if (coll_line(v, w, 0x12, 0, 0)) {
-                qcopy(v, &D_L14_00174660);
+                qcopy(v, &oltanis_collision_hit_point);
             } else {
                 v[2] -= 0.5f;
             }

@@ -365,7 +365,7 @@ void update_airship_part(Moby *moby) {
         }
         joint = 0;
         s = moby->scale * 0.0009765625f;
-        func_002116A0(moby, 1, &joint, buf.m);
+        get_moby_joint_matrices(moby, 1, &joint, buf.m);
         FastVecScale(d->off, buf.m[3], s);
         moby->state = 1;
         break;
@@ -2761,7 +2761,7 @@ void update_damage_causer(Moby *moby) {
     func_L00_0025A890_c(buf, moby, data->mask, data->damage);
     for (i = 0; i < data->steps; i++) {
         if (func_L00_001F2BE8_alt(data->radius, v10, 1, moby, buf) != 0) {
-            char *x = D_L09_00174040.p;
+            char *x = gaspar_coll_hit.p;
             int b = ((Moby *)x)->oclass;
             int a = (short)((Moby *)x)->save_id;
             int c = (short)moby->save_id;

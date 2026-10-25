@@ -344,7 +344,7 @@ void HeroL03_UpdateStateTransitions(void) {
                         if (g_hero.state.prev == 1 || g_hero.state.prev == 0x1E) {
                             if (scale_ticks(0x18) > g_hero.state_timer && g_hero.unk308 == 0) {
                                 stick_target(0, 1.0f);
-                                if (FastDiffRots(g_hero.motion.move_yaw, D_L03_00166F58) > 1.2217305f) {
+                                if (FastDiffRots(g_hero.motion.move_yaw, kerwan_camera_yaw) > 1.2217305f) {
                                     ok = 0;
                                 }
                             }
@@ -655,7 +655,7 @@ void HeroL03_UpdateStateTransitions(void) {
                         }
                     }
                     {
-                        Rec2C *rec = &D_L03_0017BDA8[g_hero.attack_record];
+                        Rec2C *rec = &kerwan_attack_records[g_hero.attack_record];
                         int t = (truncate_float_to_s32(g_hero.anim_frame) - rec->fC) * 2;
                         if ((float)rec->f14 < g_hero.anim_frame && g_hero.unkA9C == 0 && !(g_hero.state.current == 0x15 && g_hero.unk308 != 0)) {
                             if (pad_pressed_within(0x40, t, 0)) {

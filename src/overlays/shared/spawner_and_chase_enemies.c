@@ -1553,7 +1553,7 @@ extern void func_L00_0025B040(struct Moby *, f32);
 extern f32 func_L00_0025F368(f32);
 extern struct Moby *func_L09_0030BB28(struct Moby *, Vec4 *);
 static inline void bubble_bounce(struct Moby *moby, BubbleVars *vars) {
-    CollisionHit *hit = &D_L09_00174040;
+    CollisionHit *hit = &gaspar_coll_hit;
 
     if (hit->moby == 0) {
         vec_reflect(&vars->vel, &vars->vel, &hit->normal_x);
@@ -1601,15 +1601,15 @@ void spawner_egg_update(struct Moby *moby) {
         moby->collision = 0;
         vars->owner->collision = 0;
         if (coll_line(&prev, &step, 4, moby, 0) != 0) {
-            FastVecSub(&step, &D_L09_00174040.point, &step);
+            FastVecSub(&step, &gaspar_coll_hit.point, &step);
             vec_scale_to_length(&step, &step, 0.215f);
             FastVecAdd(&moby->pos, &moby->pos, &step);
             bubble_bounce(moby, vars);
         }
         if (coll_sphere(0.2f, &moby->pos, 4, moby) != 0) {
-            FastVecSub(&step, &D_L09_00174040.point, D_L09_00174040.pad30);
+            FastVecSub(&step, &gaspar_coll_hit.point, gaspar_coll_hit.pad30);
             vec_scale_to_length(&step, &step, 0.015f);
-            FastVecAdd(&moby->pos, D_L09_00174040.pad30, &step);
+            FastVecAdd(&moby->pos, gaspar_coll_hit.pad30, &step);
             bubble_bounce(moby, vars);
         }
         owner = (BubbleOwnerVars *)vars->owner->pvars;

@@ -58,12 +58,12 @@ int lookup_hero_slot3_animation_key(int key, int *out) {
     int i;
 
     if (hero_slot_item_id(3) == 2) {
-        tbl = D_L00_0017BCF0;
+        tbl = hero_slot3_item2_seq_table;
     } else if (hero_slot_item_id(3) == 3) {
-        tbl = D_L00_0017BCD0;
+        tbl = hero_slot3_item3_seq_table;
     } else {
         int mode = hero_slot_item_id(3);
-        tbl = (SeqEntry *)&D_L00_0015F798;
+        tbl = (SeqEntry *)&hero_slot3_item4_seq_table;
         if (mode != 4) {
             tbl = 0;
         }
@@ -157,12 +157,12 @@ int select_hero_slot3_animation_pair(int id, int *key, int *arg) {
     count = 0;
     want = return_hero_animation_id_unchanged(id);
     if (hero_slot_item_id(3) == 2) {
-        tbl = D_L00_0017BCF0;
+        tbl = hero_slot3_item2_seq_table;
     } else if (hero_slot_item_id(3) == 3) {
-        tbl = D_L00_0017BCD0;
+        tbl = hero_slot3_item3_seq_table;
     } else {
         int mode = hero_slot_item_id(3);
-        tbl = (SeqEntry *)&D_L00_0015F798;
+        tbl = (SeqEntry *)&hero_slot3_item4_seq_table;
         if (mode != 4) {
             tbl = 0;
         }
@@ -214,7 +214,7 @@ void sync_hero_slot3_animation_speed(void) {
 extern short *D_001416CC;
 /* searches a terminated key/value list */
 int lookup_s16_pair_value(int key, int *out) {
-    short *base = D_001416CC;
+    short *base = hero_mapped_moby_seq_pairs;
     short *p;
     if (!base) return 0;
     if (base[0] == -1) goto missing;
@@ -350,7 +350,7 @@ void set_hero_animation(int a0, int a1, float t) {
     if (slot >= 0) {
         func_L00_00252D20(obj, slot | 0x300);
         func_00118D80(0);
-        e = D_L00_00197080 + slot * 16;
+        e = hero_anim_slot_positions + slot * 16;
         qcopy(e, obj);
         if (*(unsigned char *)(obj + 0x52) != 0xFF) {
             *(unsigned char *)(obj + 0xA5) = *(unsigned char *)(obj + 0x52);
@@ -380,7 +380,7 @@ void set_hero_animation(int a0, int a1, float t) {
     *(unsigned char *)(obj + 0x7C) = *(unsigned char *)(*(int *)(*(int *)(obj + 0x24) + o + 0x48) + 0x11);
     *(int *)(g3 + 0xA9C) = 1;
     if (t < 0.0f) {
-        t = *(int *)((char *)&D_L00_0015F7C0 + *(int *)(g3 + 0xAA0) * 4);
+        t = *(int *)((char *)&hero_anim_blend_presets + *(int *)(g3 + 0xAA0) * 4);
     }
     if (*(unsigned char *)(g3 + 0x20A4) == 0) {
         blend_hero_slot3_mapped_animation_pair(a0, a1, t);
@@ -1206,7 +1206,7 @@ int use_ammo(int id, int amount) {
     if (e->max == 0) return 1;
     if (weapon_ammo_counts[id] < amount) return 0;
     weapon_ammo_counts[id] -= amount;
-    D_0013DFA8[id] += amount;
+    weapon_ammo_used[id] += amount;
     return 1;
 }
 INCLUDE_ASM("asm/overlays", func_L00_00234674);
@@ -1576,7 +1576,7 @@ extern int func_001FA8A8(int, int, float);
 
 // Sets up the hero's camera-shake/glow object: clamps a scale, scales attached objects and sets a colour from a wobble.
 void HeroAttachManipulators(char *obj) {
-    float f20 = *(float *)&D_0015EF14;
+    float f20 = *(float *)&hero_scale;
     char *s0;
     char *q;
     char *q2;
@@ -1586,7 +1586,7 @@ void HeroAttachManipulators(char *obj) {
     if (cinematic_mode == 6) {
         if (1.33f < f20) f20 = 1.33f;
     }
-    s0 = D_L00_0017C440;
+    s0 = hero_scale_manipulator;
     if (*(unsigned char *)(s0 + 1) == 0) {
         AttachManipulator(obj, 0x18, s0);
         *(float *)(s0 + 0x20) = f20;
@@ -1649,13 +1649,13 @@ void configure_moby_from_source_bone4(int id, char *moby) {
     matrix_copy_rows(moby + 0xC0, m);
     moby_anim_sphere_lerp(moby);
     if (*(short *)(moby + 0xA6) == 0x1B1) {
-        pack_pose(D_L00_0017A708, D_L00_0017C780, *(void **)(moby + 0x24), 6, id);
+        pack_pose(source_bone4_joints_class1b1, source_bone4_pose_buffer, *(void **)(moby + 0x24), 6, id);
     } else {
-        pack_pose(D_L00_0015F788, D_L00_0017C780, *(void **)(moby + 0x24), 0, id);
+        pack_pose(source_bone4_joints_default, source_bone4_pose_buffer, *(void **)(moby + 0x24), 0, id);
     }
-    *(char **)(moby + 0x68) = D_L00_0017C780;
+    *(char **)(moby + 0x68) = source_bone4_pose_buffer;
     *(int *)(moby + 0x54) = 0;
-    *(char **)(moby + 0x6C) = D_L00_0017C780;
+    *(char **)(moby + 0x6C) = source_bone4_pose_buffer;
     *(int *)(moby + 0x50) = 0;
 }
 extern float func_00214358(void *, int, float);
@@ -1692,7 +1692,7 @@ extern int func_001FFB38_p(int, int, void *, void *, void *, void *, int) __asm_
    callbacks and the data at D_001416F8. func_001FFB38 is declared with
    int parameters in hud.c; the alias passes pointers. */
 void show_health_hud(void) {
-    func_001FFB38_p(1, 0x7535, initialize_hud_element_with_counters, update_health_hud_animation_and_visibility, draw_health_hud_panel, D_001416F8, 8);
+    func_001FFB38_p(1, 0x7535, initialize_hud_element_with_counters, update_health_hud_animation_and_visibility, draw_health_hud_panel, health_hud_bank_data, 8);
 }
 
 extern char D_0013F450[];

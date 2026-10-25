@@ -275,8 +275,8 @@ void spawn_birdbot_movement_particles(SplashMoby *m, u128 *origin) {
         tmp.f[1] = random_float_between(1.0f, -1.0f) * (g_frame_time * 0.2f);
         tmp.f[2] = random_float_between(0.8f, 1.2f) * (g_frame_time * -7.0f);
         vel.q = tmp.q;
-        inner = D_L01_0020B240;
-        outer = D_L01_0020B258;
+        inner = novalis_birdbot_splash_inner_colors;
+        outer = novalis_birdbot_splash_outer_colors;
         Moby_GetJointWorldPos(m, 1, &tmp);
         matrix_mul_vec3(&vel, &vel, m->mtx);
         FastVecSub(&rel, &m->pos, bp);
@@ -791,7 +791,7 @@ void birdbot_update(PeMoby *m) {
 
         c = &v->main;
         if (v->main.path_id == -1) {
-            STUB_printf(D_L01_0020B270, m->hA6, m->hB2);
+            STUB_printf(novalis_birdbot_no_path_msg, m->hA6, m->hB2);
             DeleteMoby(m);
             return;
         }
@@ -821,7 +821,7 @@ void birdbot_update(PeMoby *m) {
         v->b5A = 8;
         MoveCtl_Init(v->xD0);
         turn = g_frame_time_sq * 5.0f;
-        fall = *(float *)&D_L01_001619E4 * g_frame_time;
+        fall = *(float *)&novalis_birdbot_fly_speed * g_frame_time;
         v->f10C = 0.03f;
         v->f110 = 0.3f;
         v->f114 = 0.25f;
@@ -886,7 +886,7 @@ void birdbot_update(PeMoby *m) {
                         MobyBlendAnimation(m, 8, 0, scale_ticks(10));
                     }
                     i = idx;
-                    f = *(float *)&D_L01_001619EC;
+                    f = *(float *)&novalis_birdbot_anim8_speed;
                     c->idx = i;
                     m->f58 = f;
                     m->state = 9;
@@ -1011,7 +1011,7 @@ void birdbot_update(PeMoby *m) {
             v->v180.f[0] += FastCos(a) * v->f198;
             v->v180.f[1] += FastSin(a) * v->f198;
             FastVecSub(&vb, &v->v180, &va);
-            vec_scale_to_length(&vb, &vb, *(float *)&D_L01_001619E0 * g_frame_time);
+            vec_scale_to_length(&vb, &vb, *(float *)&novalis_birdbot_drift_speed * g_frame_time);
             vb.f[2] += 0.0f;
             vc = m->pos;
             vc.f[2] = va.f[2];
@@ -1060,7 +1060,7 @@ void birdbot_update(PeMoby *m) {
                 if (m->b53 != 8) {
                     MobyBlendAnimation(m, 8, 0, scale_ticks(10));
                 }
-                m->f58 = *(float *)&D_L01_001619EC;
+                m->f58 = *(float *)&novalis_birdbot_anim8_speed;
                 m->state = 9;
             } else {
                 float d;
@@ -1132,12 +1132,12 @@ void birdbot_update(PeMoby *m) {
         va.f[2] += h;
         MobySpringTurn((char *)m, &v->f194, fast_atan2(va.f[0] - m->pos.f[0], va.f[1] - m->pos.f[1]), g_frame_time_sq * 6.2831855f, g_frame_time_sq * 3.1415927f, g_frame_time * 6.2831855f);
         if (FastDiffRots(m->rot.f[2], fast_atan2(va.f[0] - m->pos.f[0], va.f[1] - m->pos.f[1])) < 0.7853982f) {
-            if (v->f1B8 < *(float *)&D_L01_001619E4 * g_frame_time) {
-                v->f1B8 = v->f1B8 + *(float *)&D_L01_001619E4 * g_frame_time_sq;
+            if (v->f1B8 < *(float *)&novalis_birdbot_fly_speed * g_frame_time) {
+                v->f1B8 = v->f1B8 + *(float *)&novalis_birdbot_fly_speed * g_frame_time_sq;
             }
             BuildSphericalOffset(&vb, v->f1B8, m->rot.f[2], fast_atan2(vec_distance_xy(&m->pos, &va), va.f[2] - m->pos.f[2]));
             FastVecAdd(&m->pos, &m->pos, &vb);
-            m->rot.f[1] = SpringTurn(&v->f1BC, m->rot.f[1], v->f1B8 / (*(float *)&D_L01_001619E4 * g_frame_time) * 0.5235988f, g_frame_time_sq * 6.2831855f, g_frame_time_sq * 3.1415927f, g_frame_time * 4.712389f);
+            m->rot.f[1] = SpringTurn(&v->f1BC, m->rot.f[1], v->f1B8 / (*(float *)&novalis_birdbot_fly_speed * g_frame_time) * 0.5235988f, g_frame_time_sq * 6.2831855f, g_frame_time_sq * 3.1415927f, g_frame_time * 4.712389f);
         }
         qcopy(&va, &c->path->pts[c->idx]);
         va.f[2] += h;
@@ -1149,19 +1149,19 @@ void birdbot_update(PeMoby *m) {
     }
     case 11:
         if (v->f1B8 > 0.0f && v->h1EE == 0) {
-            v->f1B8 -= *(float *)&D_L01_001619E4 * 3.0f * g_frame_time_sq;
+            v->f1B8 -= *(float *)&novalis_birdbot_fly_speed * 3.0f * g_frame_time_sq;
             va.f[0] = FastCos(m->rot.f[2]) * v->f1B8;
             va.f[1] = FastSin(m->rot.f[2]) * v->f1B8;
             va.f[2] = 0.0f;
             FastVecAdd(&m->pos, &m->pos, &va);
-            m->rot.f[1] = SpringTurn(&v->f1BC, m->rot.f[1], v->f1B8 / (*(float *)&D_L01_001619E4 * g_frame_time) * 0.5235988f, g_frame_time_sq * 6.2831855f, g_frame_time_sq * 3.1415927f, g_frame_time * 6.2831855f);
+            m->rot.f[1] = SpringTurn(&v->f1BC, m->rot.f[1], v->f1B8 / (*(float *)&novalis_birdbot_fly_speed * g_frame_time) * 0.5235988f, g_frame_time_sq * 6.2831855f, g_frame_time_sq * 3.1415927f, g_frame_time * 6.2831855f);
         } else {
             float a;
             float k;
 
             a = fast_atan2(tgt.pos.f[0] - m->pos.f[0], tgt.pos.f[1] - m->pos.f[1]);
             MobySpringTurn((char *)m, &v->f194, a, 0.02f, 0.3f, 0.1f);
-            k = *(float *)&D_L01_001619E4 * g_frame_time;
+            k = *(float *)&novalis_birdbot_fly_speed * g_frame_time;
             v->f1B8 = 0.0f;
             m->rot.f[1] = SpringTurn(&v->f1BC, m->rot.f[1], v->f1B8 / k * 0.5235988f, g_frame_time_sq * 6.2831855f, g_frame_time_sq * 3.1415927f, g_frame_time * 6.2831855f);
         }
@@ -1190,7 +1190,7 @@ void birdbot_update(PeMoby *m) {
                     MobyBlendAnimation(m, 8, 0, scale_ticks(10));
                 }
                 i = idx;
-                f = *(float *)&D_L01_001619EC;
+                f = *(float *)&novalis_birdbot_anim8_speed;
                 v->main.idx = i;
                 m->f58 = f;
                 m->state = 9;
@@ -1439,8 +1439,8 @@ void peckbot_update(GcMoby *m) {
             v->f20 -= hit->f2C;
             v->f130 = 0.008f;
             v->f134 = 0.0005f;
-            v->f138 = D_L01_00161AF4 * g_frame_time;
-            v->f13C = D_L01_00161AF0 * g_frame_time;
+            v->f138 = novalis_peckbot_hit_knock_speed * g_frame_time;
+            v->f13C = novalis_peckbot_hit_knock_lift * g_frame_time;
             v->w144 = 9;
             v->b15D = 0;
             if (v->f20 <= 0.0f) {
@@ -1645,9 +1645,9 @@ void peckbot_update(GcMoby *m) {
                 MobyBlendAnimation(m, 6, 0, scale_ticks(3));
             }
             v->f134 = 0.0f;
-            v->f130 = D_L01_00161AFC;
-            v->f138 = D_L01_00161AF8 * g_frame_time;
-            v->f13C = jump_speed_4318(&m->pos, &v->v1D0, &out, D_L01_00161AF8 * g_frame_time, -D_L01_00161AFC);
+            v->f130 = novalis_peckbot_jump_gravity;
+            v->f138 = novalis_peckbot_jump_speed * g_frame_time;
+            v->f13C = jump_speed_4318(&m->pos, &v->v1D0, &out, novalis_peckbot_jump_speed * g_frame_time, -novalis_peckbot_jump_gravity);
             v->w144 = 0xD;
             v->b15D = 0;
             InitKnockback(m->rot.f[2], m, v->x120, 6, 1, 0);
@@ -1889,7 +1889,7 @@ void peckbot_update(GcMoby *m) {
         if (mine_fall(m, v->x120) & 0x140) {
             clear_u64_value(&va);
             t = (int)((float)scale_ticks(1) * 60.0f);
-            if (reserve_expired_frame_slot(D_L01_00161B10, 3, t) >= 0) {
+            if (reserve_expired_frame_slot(novalis_peckbot_explosion_slots, 3, t) >= 0) {
                 SpawnExplosionFx(m, &m->pos, 4, 0.5f, 13.0f);
             }
             SpawnBreakFragment((char *)m, 0x6D3, m->pos.f, &m->rot, 0, 0, 0.0f, novalis_zero_vec, novalis_zero_vec, novalis_zero_vec);
@@ -2203,9 +2203,9 @@ void TetheredMineUpdate(char *m) {
     }
     {
         float dist = FastVecDist(m + 0x10, camera_pos);
-        float lo = *(float *)&D_L01_00161B84;
-        float x0 = *(float *)&D_L01_00161B8C;
-        float k = -((1.0f - lo) / (*(float *)&D_L01_00161B88 - x0));
+        float lo = *(float *)&novalis_tethered_mine_min_scale;
+        float x0 = *(float *)&novalis_tethered_mine_near_distance;
+        float k = -((1.0f - lo) / (*(float *)&novalis_tethered_mine_far_distance - x0));
         s = k * dist + (1.0f - k * x0);
         if (1.0f < s) s = 1.0f;
         if (s < lo) s = lo;
@@ -2522,7 +2522,7 @@ void stationary_ship_update(CarrierMoby *m) {
     FastDecTimer(&v->timer);
     if (v->arrived == 0 || v->timer != 0 || m->seq != 2) {
         for (i = 0; i < 8; i++) {
-            offs = D_L01_0020B650;
+            offs = novalis_stationary_ship_rider_offsets;
             if (v->riders[i] != -1) {
                 if (v->state != 1) {
                     D_L01_00160058_F5D38[v->riders[i]].flags &= ~0x41;
@@ -2575,12 +2575,12 @@ extern char D_L01_001E32A0[];
 /* The moby comes in $a0 and goes on to the delete, untouched. */
 void update_and_draw_level01_scrolling_layers(void *moby) {
     DefaultVtbl_DeleteMoby(moby);
-    update_and_draw_scrolling_overlay_layers(8, D_L01_001E32A0);
+    update_and_draw_scrolling_overlay_layers(8, novalis_scroll_layers);
 }
 extern char D_L01_001E3660[];
 void draw_two_scroll_layers(void *moby) {
     DefaultVtbl_DeleteMoby(moby);
-    update_and_draw_scrolling_overlay_layers(2, D_L01_001E3660);
+    update_and_draw_scrolling_overlay_layers(2, novalis_bounded_scroll_layers);
 }
 typedef struct {
     Vec4 *pts;
@@ -2607,8 +2607,8 @@ void initialize_bounds_and_enqueue_scroll_layers(void *arg) {
     s32 k;
     f32 r;
 
-    if ((*(s32 *)&D_L01_00161C30) == 0) {
-        (*(s32 *)&D_L01_00161C30) = 1;
+    if ((*(s32 *)&novalis_scroll_bounds_initialized) == 0) {
+        (*(s32 *)&novalis_scroll_bounds_initialized) = 1;
         for (i = 0; i < 2; i++) {
             qzero(&c);
             p = (D_L01_001E3660_F7558 + i)->pts;
@@ -2787,8 +2787,8 @@ void bomber_jet_update(Moby *m) {
     Vec4 col;
     {
         float dist = FastVecDist(&m->pos, camera_pos);
-        float x0 = D_L01_00161C68;
-        float k = -((1.0f - D_L01_00161C60) / (D_L01_00161C64 - x0));
+        float x0 = novalis_bomber_jet_near_distance;
+        float k = -((1.0f - novalis_bomber_jet_min_scale) / (novalis_bomber_jet_far_distance - x0));
         s = k * dist + (1.0f - k * x0);
     }
     hit = MobyGetHitMessage(m, 0x800000, 0);
@@ -2833,13 +2833,13 @@ void bomber_jet_update(Moby *m) {
                 d->scale178 = m->scale;
                 d->f17C = d->fFC;
             } else {
-                STUB_printf(D_L01_0020B790, m->oclass, func_001FA898_r((float)(((int)m - D_L01_00160058_F8B00) >> 8)));
+                STUB_printf(novalis_bomber_jet_no_path_msg, m->oclass, func_001FA898_r((float)(((int)m - D_L01_00160058_F8B00) >> 8)));
             }
             m->update_dist = 0xFF;
             m->draw_dist = 0xFF;
         }
         if (1.0f < s) s = 1.0f;
-        if (s < D_L01_00161C60) s = D_L01_00161C60;
+        if (s < novalis_bomber_jet_min_scale) s = novalis_bomber_jet_min_scale;
         m->scale = d->scale178 * s;
         d->fFC = d->f17C * s;
         if (175.0f <= m->pos.z) {
@@ -2919,9 +2919,9 @@ void bomber_jet_update(Moby *m) {
             }
             if (found != -1) {
                 int cnt;
-                a = D_L01_00161C70;
+                a = novalis_bomber_jet_quad_template;
                 j = 0;
-                b = D_L01_00161C70;
+                b = novalis_bomber_jet_quad_template;
                 cnt = 0;
                 for (i = 0; i < 4; i++) {
                     if (d->targets[found][i] != -1) {
@@ -3142,7 +3142,7 @@ void update_rising_particle_and_debris_emitter(SteamMoby *m) {
         v->puff_timer = scale_ticks(0x78);
     }
     if (v->burst_timer == 0 && random_integer_below(100) < 5) {
-        colors = D_L01_00161C98;
+        colors = novalis_rising_emitter_debris_colors;
         pos.q = 0;
         pos.f[0] = random_float_between(g_frame_time * -0.5f, g_frame_time * 0.5f);
         pos.f[1] = random_float_between(g_frame_time * -0.5f, g_frame_time * 0.5f);
@@ -3157,7 +3157,7 @@ void update_rising_particle_and_debris_emitter(SteamMoby *m) {
         spawn_debris_moby(&pos, &vel, colors.c[random_integer_below(3)], rand_range(0xB4, 0x12C), 0.05f, 1.0f, 1.0f, 0.75f, 0);
     }
     for (i = 0; i < 2; i++) {
-        colors = D_L01_00161CA8;
+        colors = novalis_rising_emitter_puff_colors;
         puff.q = 0;
         puff.f[0] = random_float_between(g_frame_time * -0.5f, g_frame_time * 0.5f);
         puff.f[1] = random_float_between(g_frame_time * -0.5f, g_frame_time * 0.5f);
@@ -3203,11 +3203,11 @@ void apply_falling_rock_camera_overrides(char *moby) {
     float rotated_vector[4];
     u8 *camera_record = camera_points + (((FallingRockVars *)((Moby *)moby)->pvars)->idx << 7);
 
-    build_look_at_matrix(rotated_vector, camera_record, camera_record + 0x20, *(float *)&D_L01_00161CB8);
+    build_look_at_matrix(rotated_vector, camera_record, camera_record + 0x20, *(float *)&novalis_falling_rock_cam_angle);
     set_follow_camera_angle_blend_from_direction(rotated_vector, 0.13962633907794952f, 0.0f);
-    Cam_SetDistanceGoal(*(float *)&D_L01_00161CBC, *(float *)&D_L01_00161CC8, 0);
-    follow_camera_set_height(*(float *)&D_L01_00161CC0, *(float *)&D_L01_00161CC8);
-    Cam_SetEyeOffset(0, *(float *)&D_L01_00161CC4, *(float *)&D_L01_00161CC8);
+    Cam_SetDistanceGoal(*(float *)&novalis_falling_rock_cam_distance, *(float *)&novalis_falling_rock_cam_blend_speed, 0);
+    follow_camera_set_height(*(float *)&novalis_falling_rock_cam_height, *(float *)&novalis_falling_rock_cam_blend_speed);
+    Cam_SetEyeOffset(0, *(float *)&novalis_falling_rock_cam_eye_offset, *(float *)&novalis_falling_rock_cam_blend_speed);
 }
 typedef struct {
     unsigned char pad0[0x20];
@@ -3287,7 +3287,7 @@ void falling_rock_update(CapMoby *falling_rock) {
         f32 debris_spawn_radius;
         f32 debris_spawn_angle;
 
-        colors = D_L01_00161CD0;
+        colors = novalis_falling_rock_debris_colors;
         pos.q = 0;
         pos.f[0] = random_float_between(g_frame_time * -0.5f, g_frame_time * 0.5f);
         pos.f[1] = random_float_between(g_frame_time * -0.5f, g_frame_time * 0.5f);

@@ -431,8 +431,8 @@ void HeroL17_UpdateStatePhysics(void) {
             if (g_hero.state.step == 1) {
                 if (g_hero.state_timer == 1) {
                     emit_hero_surface_effect_burst(3, 0x10, 0);
-                    if (D_L17_00161350 != 0) {
-                        RippleDisturb(D_L17_00161350, D_L17_00161358, 0, g_hero.motion.pos.f[0], g_hero.motion.pos.f[1], 0.4f, -0.3f);
+                    if (fleet_water_patches != 0) {
+                        RippleDisturb(fleet_water_patches, fleet_water_patch_count, 0, g_hero.motion.pos.f[0], g_hero.motion.pos.f[1], 0.4f, -0.3f);
                     }
                     g_hero.unk90A = scale_ticks(0x46);
                 }
@@ -623,7 +623,7 @@ void HeroL17_UpdateStatePhysics(void) {
             } else if (g_hero.state.current == 0x33) {
                 float v;
 
-                v = g_hero.ground_speed * vector_length_xyz_cf(D_L17_0017C940, 0x1E) * 5.0f;
+                v = g_hero.ground_speed * vector_length_xyz_cf(fleet_hero_stride_speeds, 0x1E) * 5.0f;
                 if (g_hero.state.prev == 0x35 && g_hero.state_timer < scale_ticks(0xF)) {
                     if (v < g_frame_time * 4.5f) {
                         v = g_frame_time * 4.5f;
@@ -777,7 +777,7 @@ void HeroL17_UpdateStatePhysics(void) {
                 g_hero.target_speed = 0.0f;
             }
             speed_step(g_frame_time_sq * 4.0f, g_frame_time_sq * 5.0f);
-            v = g_hero.ground_speed * vector_length_xyz_cf(D_L17_0017C940, 0x1E) * 5.5f;
+            v = g_hero.ground_speed * vector_length_xyz_cf(fleet_hero_stride_speeds, 0x1E) * 5.5f;
             g_hero.motion.velocity.f[0] = FastCos(g_hero.motion.rot.f[2]) * v;
             g_hero.motion.velocity.f[1] = FastSin(g_hero.motion.rot.f[2]) * v;
             g_hero.motion.velocity.f[2] = 0.0f;
@@ -1890,14 +1890,14 @@ void HeroL17_UpdateStatePhysics(void) {
                         }
                         set_first_hero_easing_parameters(0.03f, 0.2f);
                         if (g_hero.unk58C != 0) {
-                            D_L17_0017B060[1] = -tilt;
+                            fleet_hero_lean_angles[1] = -tilt;
                         } else {
-                            D_L17_0017B060[1] = tilt;
+                            fleet_hero_lean_angles[1] = tilt;
                         }
                     }
                 }
                 if (g_hero.state.current != 0x29 && g_hero.state.current != 0x42 && g_hero.state.current != 0x2A) {
-                    D_L17_0017B060[0] = fast_atan2(vec_length_xy(g_hero.motion.displacement.f), g_hero.motion.displacement.f[2]);
+                    fleet_hero_lean_angles[0] = fast_atan2(vec_length_xy(g_hero.motion.displacement.f), g_hero.motion.displacement.f[2]);
                 }
                 if (hasW) {
                     set_first_hero_easing_parameters(g_frame_scale_sq * 0.017f, g_frame_scale_sq * 0.3f);
@@ -2241,7 +2241,7 @@ void HeroL17_UpdateStatePhysics(void) {
                         spd = g_hero.motion.unk164;
                         ApproachValue(&spd, g_hero.target_speed * g_frame_time, g_frame_time_sq * 5.0f);
                         FastVecSub(g_hero.motion.velocity.f, vec[5], g_hero.motion.pos.f);
-                        vec_set_length_xy(g_hero.motion.velocity.f, g_hero.motion.velocity.f, D_L17_001C4830[truncate_float_to_s32(g_hero.anim_frame)] * 0.5f);
+                        vec_set_length_xy(g_hero.motion.velocity.f, g_hero.motion.velocity.f, fleet_hero_anim_step_lengths[truncate_float_to_s32(g_hero.anim_frame)] * 0.5f);
                     }
                 }
             }
@@ -2321,7 +2321,7 @@ void HeroL17_UpdateStatePhysics(void) {
                 float keep;
 
                 keep = g_hero.motion.move_yaw;
-                g_hero.motion.move_yaw = D_L17_00167758;
+                g_hero.motion.move_yaw = fleet_camera_yaw;
                 turn_to(0, g_frame_scale_sq * 0.017f, g_frame_scale_sq * 0.3f, g_frame_time * 4.712389f);
                 g_hero.motion.move_yaw = keep;
             }
@@ -2422,8 +2422,8 @@ void HeroL17_UpdateStatePhysics(void) {
         if (g_hero.state.current == 0x12) {
             if (g_hero.state_timer == scale_ticks(0x14)) {
                 emit_hero_surface_effect_burst(3, 0x10, 1);
-                if (D_L17_00161350 != 0) {
-                    RippleDisturb(D_L17_00161350, D_L17_00161358, 0, g_hero.motion.pos.f[0], g_hero.motion.pos.f[1], 0.4f, 0.35f);
+                if (fleet_water_patches != 0) {
+                    RippleDisturb(fleet_water_patches, fleet_water_patch_count, 0, g_hero.motion.pos.f[0], g_hero.motion.pos.f[1], 0.4f, 0.35f);
                 }
             }
             if (g_hero.anim_frame >= 4.0f && g_hero.anim_frame <= 7.0f) {
@@ -2549,8 +2549,8 @@ void HeroL17_UpdateStatePhysics(void) {
 
                     FastVecScale(vec[1], g_hero.motion.displacement.f, 7.0f);
                     for (i = 0; i < n; i++) {
-                        if (is_moby_in_class_range_500_to_540((int)D_L17_00178880[i])) {
-                            PostHitMessage(D_L17_00178880[i], (int)g_hero.moby, 0x10000, g_hero.motion.pos.f, vec[1], 1.0f);
+                        if (is_moby_in_class_range_500_to_540((int)fleet_coll_sphere_moby_hits[i])) {
+                            PostHitMessage(fleet_coll_sphere_moby_hits[i], (int)g_hero.moby, 0x10000, g_hero.motion.pos.f, vec[1], 1.0f);
                         }
                     }
                 }
@@ -2882,7 +2882,7 @@ void HeroL17_UpdateStatePhysics(void) {
                         spd = g_hero.motion.unk164;
                         ApproachValue(&spd, g_hero.target_speed * g_frame_time, g_frame_time_sq * 5.0f);
                         FastVecSub(g_hero.motion.velocity.f, vec[5], g_hero.motion.pos.f);
-                        vec_scale_to_length(g_hero.motion.velocity.f, g_hero.motion.velocity.f, D_L17_001C4870[truncate_float_to_s32(g_hero.anim_frame)] * 0.5f);
+                        vec_scale_to_length(g_hero.motion.velocity.f, g_hero.motion.velocity.f, fleet_hero_state4e_step_lengths[truncate_float_to_s32(g_hero.anim_frame)] * 0.5f);
                     }
                 }
             }
